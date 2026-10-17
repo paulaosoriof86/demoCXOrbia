@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
   "productTreeAuthority": "861f9d545ba997e2e04d9f94671c888a6aed53d1",
   "predecessorProductSourceSha": "4f35c21bceaee6ec58390cdc1f3a8b11309c6bfb",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V445_2026-10-17.json",
-  "findingsLedgerExpectedGitBlob": "b4b1b9c5cdcd1afefe08050daae96d21b77f31e1",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V123.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V446_2026-10-17.json",
+  "findingsLedgerExpectedGitBlob": "f3733e36557586c25b918a53b1eb55bc3e978af2",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V124.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "A05_ATOMIC_SESSION_PUBLICATION_SOURCE_QA_REQUIRED__SCOPED_DEV_LIVE_PROOF_PENDING__D02_PARSER_PENDING",
+  "activeBlocker": "A05_SOURCE_PROVEN_RUN1739__DEV_MATERIALIZATION_REQUIRED__D02_PARSER_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the same canonical I3 source-proof lane on A05 source 2ae3971a7964c057c2cee509d308d892c8bfd23e. Require atomic off-state candidate construction, session/UID/role/tenant/project generation revalidation, exact protected HR revision readback before publication, refresh Promise readback, and preservation of G05 read-only observation. If source proof passes, perform scoped real DEV/auth/provider proof for A04/C01/G05/A05; D02 remains pending. No production or I4 authorization.",
+  "exactNextAction": "Materialize exactly source 2ae3971a7964c057c2cee509d308d892c8bfd23e/tree 861f9d545ba997e2e04d9f94671c888a6aed53d1 in existing DEV via the canonical Phase A runner, one build/runtime/Hosting+Firestore-rules publication, zero production. Capture artifact/runtime/Hosting/HR fingerprints, then update descriptor to same-artifact live reproof for A04/C01/G05/A05. D02 remains pending.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -82,7 +82,7 @@
     "qaFiles": [
       "tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs"
     ],
-    "sourceProof": "PENDING_CANONICAL_RUN",
+    "sourceProof": "PASS_RUN1739",
     "devMaterialization": "PENDING",
     "production": false,
     "previousSourceFix": {
@@ -189,6 +189,19 @@
           "production": false
         }
       }
+    },
+    "sourceQa": {
+      "runId": 39030664066,
+      "runNumber": 1739,
+      "artifactId": 12100571191,
+      "artifactZipSha256": "4def66713b79b12b19dd12b9b8ade32ba0ca1cb3f96199655621224335839487",
+      "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+      "a05Pass": 5,
+      "a05Fail": 0,
+      "g05Pass": 113,
+      "g05Fail": 0,
+      "a04c01Pass": 19,
+      "a04c01Fail": 0
     }
   },
   "preterminalRequest": {
@@ -11843,5 +11856,24 @@
     "proofTree": "1753d01aa909dd4181e3490c07d24287913d68a0",
     "decision": "PASS_FOCAL_SOURCE_ONLY_I3_HOLD"
   },
-  "lastUpdatedAt": "2026-10-17T11:50:20.673Z"
+  "lastUpdatedAt": "2026-10-17T12:00:37.826Z",
+  "a05SourceProof": {
+    "recordedAt": "2026-10-17T12:00:37.826Z",
+    "productSourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
+    "productTreeAuthority": "861f9d545ba997e2e04d9f94671c888a6aed53d1",
+    "runId": 39030664066,
+    "runNumber": 1739,
+    "artifactId": 12100571191,
+    "artifactZipSha256": "4def66713b79b12b19dd12b9b8ade32ba0ca1cb3f96199655621224335839487",
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "a05Pass": 5,
+    "a05Fail": 0,
+    "g05Pass": 113,
+    "g05Fail": 0,
+    "a04c01Pass": 19,
+    "a04c01Fail": 0,
+    "clickE2ERequired": true,
+    "wholeProductPass": false,
+    "production": false
+  }
 }
