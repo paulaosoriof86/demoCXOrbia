@@ -35,7 +35,8 @@ test('R20 retains claims/tenant/namespace exact checks but no artificial assignm
  assert.match(human,/str\(authority\.rawShopperId\)===str\(ctx\.shopperId\)/);
  assert.doesNotMatch(human,/Number\(authority\.ownVisits\|\|0\)>0/);
  assert.doesNotMatch(human,/Number\(authority\.authorizedPeriods\|\|0\)>0/);
- assert.match(bridge,/shopper_ready_without_assigned_visits/);\n assert.doesNotMatch(chunk,/CX\\.data/);
+ assert.match(bridge,/shopper_ready_without_assigned_visits/);
+ assert.doesNotMatch(chunk,/CX\.data/);
 });
 test('R20 terminal identity failure stops retry and renders safe explanatory state',()=>{
  assert.match(bridge,/errorState\.retryable===false/);
