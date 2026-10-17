@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "99e8e456318b3f0f01c9bd0caa16cc6a0c1c07dc",
   "productTreeAuthority": "866e785dcb15273c9500f5525602d8c4a9cd1ed2",
   "predecessorProductSourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V450_2026-10-17.json",
-  "findingsLedgerExpectedGitBlob": "4a45d825ed507072de07fb2466cef447e74c30b3",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V128.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V451_2026-10-17.json",
+  "findingsLedgerExpectedGitBlob": "4ab25faf9c18f1bcaa93f1d9fc24c86403383537",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V129.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D02_PARSER_FIRST_EXTRACTION_SOURCE_QA_REQUIRED__A04_A05_C01_G05_HUMAN_PREVIEW_READY",
+  "activeBlocker": "D02_SOURCE_PROVEN_RUN1749__DEV_MATERIALIZATION_REQUIRED__D01_AUTHENTIC_DOCUMENT_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the existing canonical source-proof lane for D02. Require real PDF text-layer parsing, Mammoth DOCX parsing, extraction_quality/source hash, fail-closed unsupported or insufficient files before AI, manual-text fallback, and no automatic OCR. Preserve the RUN1740 scoped preview already proven for A04/A05/C01/G05. Authentic approved-document proof remains under D01/D03; production remains blocked.",
+  "exactNextAction": "Materialize exactly D02 source 99e8e456318b3f0f01c9bd0caa16cc6a0c1c07dc/tree 866e785dcb15273c9500f5525602d8c4a9cd1ed2 in the existing DEV via the canonical Phase A runner. Preserve the proven A04/A05/C01/G05 behavior; zero production. After materialization, perform parser live smoke with supported PDF/DOCX fixture and keep authentic approved-document validation explicitly pending D01/D03.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -80,7 +80,7 @@
     "qaFiles": [
       "tools/qa/cxorbia-i3-d02-document-extraction-source.test.mjs"
     ],
-    "sourceProof": "PENDING_CANONICAL_RUN",
+    "sourceProof": "PASS_RUN1749",
     "devMaterialization": "PENDING",
     "production": false,
     "previousSourceFix": {
@@ -242,6 +242,13 @@
         "hrWrites": 0,
         "production": false
       }
+    },
+    "sourceQa": {
+      "runId": 39034592957,
+      "runNumber": 1749,
+      "artifactId": 12102035977,
+      "d02Pass": 5,
+      "d02Fail": 0
     }
   },
   "preterminalRequest": {
@@ -11887,7 +11894,7 @@
     "proofTree": "1753d01aa909dd4181e3490c07d24287913d68a0",
     "decision": "PASS_FOCAL_SOURCE_ONLY_I3_HOLD"
   },
-  "lastUpdatedAt": "2026-10-17T12:56:15.572Z",
+  "lastUpdatedAt": "2026-10-17T13:00:07.338Z",
   "a05SourceProof": {
     "recordedAt": "2026-10-17T12:00:37.826Z",
     "productSourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",

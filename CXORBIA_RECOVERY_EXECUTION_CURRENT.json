@@ -30,15 +30,20 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_D02_CANONICAL_INTEGRATION_2026-10-17.json",
-    "kind": "D02_SOURCE_FIXED_CANONICAL_DECLARATION_SOURCE_QA_PENDING",
+    "path": "CXORBIA_I3_D02_SOURCE_PROOF_RUN1749_2026-10-17.json",
+    "kind": "D02_SOURCE_QA_PASS_DEV_MATERIALIZATION_REQUIRED",
     "tasks": [
       "D02"
     ],
     "sourceSha": "99e8e456318b3f0f01c9bd0caa16cc6a0c1c07dc",
     "productTree": "866e785dcb15273c9500f5525602d8c4a9cd1ed2",
-    "predecessorProductSourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
-    "sourceQa": "PENDING",
+    "sourceQa": {
+      "runId": 39034592957,
+      "runNumber": 1749,
+      "artifactId": 12102035977,
+      "d02Pass": 5,
+      "d02Fail": 0
+    },
     "devMaterialization": "PENDING",
     "productionWrites": 0,
     "preservedReadyPreview": {
@@ -62,7 +67,7 @@
     "A04": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_BY_D02",
     "C01": "LIVE_E2E_PASS_RUN1746_HUMAN_PREVIEW_READY_UNAFFECTED_BY_D02",
     "A05": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_BY_D02",
-    "D02": "SOURCE_FIXED_CANONICAL_SOURCE_QA_PENDING_F10"
+    "D02": "SOURCE_PROVEN_RUN1749_DEV_MATERIALIZATION_REQUIRED"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -80,7 +85,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Run D02 canonical source-proof only; preserve the already-proven A04/A05/C01/G05 scoped preview. No production.",
+  "nextExactAction": "Materialize D02 source 99e8e456 in existing DEV with zero production; then run parser live smoke. Authentic approved-document validation remains pending D01/D03.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -123,7 +128,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-10-17T12:56:37.501Z",
+  "lastUpdatedAt": "2026-10-17T13:00:28.064Z",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
