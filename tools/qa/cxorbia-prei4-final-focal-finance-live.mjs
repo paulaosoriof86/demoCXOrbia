@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
+import {spawnSync} from 'node:child_process';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
@@ -18,6 +19,31 @@ const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[],sha=v=>crypto.cre
 const receiptId=c=>sha(`${c.tenantId}\0${c.projectId}\0${c.periodId}\0${c.idempotencyKey}`).slice(0,40);
 const auditId=c=>sha(`${c.idempotencyKey}\0${c.commandType}`).slice(0,40);
 const assert=(ok,msg)=>{if(!ok)throw new Error(msg);};
+function runC01ConciliarIfRequired(){
+  const descriptorPath='CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json';
+  if(!fs.existsSync(descriptorPath))return;
+  const descriptor=JSON.parse(fs.readFileSync(descriptorPath,'utf8'));
+  const blocker=String(descriptor.activeBlocker||'');
+  if(!blocker.startsWith('C01_CONCILIAR_LIVE_REPROOF_REQUIRED_ON_RUN1740_ARTIFACT'))return;
+  const c01Out=path.join(OUT,'c01-conciliar');
+  fs.mkdirSync(c01Out,{recursive:true});
+  const run=spawnSync(process.execPath,['tools/qa/cxorbia-prei4-admin004-cumulative-live-reproof.mjs'],{
+    env:{...process.env,
+      PREI4_004_LIVE_OUT:c01Out,
+      PREI4_004_ROOT:HOST,
+      PREI4_004_SOURCE:String(process.env.FOCAL_SOURCE||SOURCE),
+      PREI4_004_TREE:String(process.env.FOCAL_TREE||''),
+      PREI4_004_HR_REVISION:String(descriptor.currentMaterialization?.hrRevision||'')
+    },
+    stdio:'inherit'
+  });
+  if(run.status!==0)throw new Error('C01_CONCILIAR_LIVE_REPROOF_FAILED');
+  const result=JSON.parse(fs.readFileSync(path.join(c01Out,'result.json'),'utf8'));
+  assert(result.decision==='PASS_PREI4_ADMIN_004_CUMULATIVE_LIVE','C01_CONCILIAR_DECISION');
+  assert(result.hrWrites===0&&result.bankWrites===0&&result.externalPaymentWrites===0&&result.production===false,'C01_CONCILIAR_SIDE_EFFECT_CONTRACT');
+}
+runC01ConciliarIfRequired();
+
 
 if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
 const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(TENANT);
