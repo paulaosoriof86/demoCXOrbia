@@ -4,7 +4,10 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 const bridge=fs.readFileSync(new URL('../../app/adapters/tya-protected-auth-hr-authority-bridge-v2.js',import.meta.url),'utf8');
 const human=fs.readFileSync(new URL('../../app/adapters/tya-c6-unified-human-runtime-v1.js',import.meta.url),'utf8');
-const start=bridge.indexOf('function shopperReadiness(');\nconst end=bridge.indexOf('\nfunction buildCompositionCandidate(',start);\nassert.ok(start>=0&&end>start,'shopperReadiness source boundaries must exist');\nconst chunk=bridge.slice(start,end);
+const start=bridge.indexOf('function shopperReadiness(');
+const end=bridge.indexOf('\nfunction buildCompositionCandidate(',start);
+assert.ok(start>=0&&end>start,'shopperReadiness source boundaries must exist');
+const chunk=bridge.slice(start,end);
 const fn=vm.runInNewContext(chunk+'\n shopperReadiness;', {str:v=>String(v??'').trim(),arr:v=>Array.isArray(v)?v:[],Set});
 test('R20 authenticated exact shopper with zero assigned visits remains eligible',()=>{
  const profile={ok:true,profile:{id:'canonical-shopper',pais:'GT'},canonicalShopperId:'canonical-shopper'};
