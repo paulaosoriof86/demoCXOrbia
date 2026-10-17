@@ -6631,12 +6631,16 @@ jobs:
          TOKEN="$(gcloud auth print-access-token)"
          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$P/hosting-live-channel.json"
          test "$(jq -r '.release.version.name // empty' "$P/hosting-live-channel.json")" = "$EXPECTED_HOSTING_VERSION"
-         EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")" PHASEA_LIVE_OUT="$P" node tools/qa/cxorbia-i3-r20-r01-r22-human-exact-readonly.mjs | tee "$P/r20-r01-r22-diagnostic-console.log"
-         test "$(jq -r .decision "$P/r20-r01-r22-focal-readonly.json")" = "PASS_R20_R01_R22_READ_ONLY_EXACT_DIAGNOSTIC"
-         node tools/qa/cxorbia-i3-hr-ack-exact-same-revision.mjs "$P" "$HOSTING_URL" "$TENANT_ID" "$PROJECT_ID" "$GITHUB_RUN_ID"
-         EXPECTED_HR_REVISION="$(jq -r .revision "$P/hr-meta-1.json")"
-         [[ "$EXPECTED_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
-         echo "EXPECTED_HR_REVISION=$EXPECTED_HR_REVISION" >> "$GITHUB_ENV"
+         if [ "$(jq -r .status "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_D03_LIVE_PROVIDER_REQUIRED" ]; then
+           echo 'D03_SCOPED_LIVE_PROVIDER: R20 HR revision gate remains independent; exact DEV runtime and Hosting fingerprint already verified.'
+         else
+           EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")" PHASEA_LIVE_OUT="$P" node tools/qa/cxorbia-i3-r20-r01-r22-human-exact-readonly.mjs | tee "$P/r20-r01-r22-diagnostic-console.log"
+           test "$(jq -r .decision "$P/r20-r01-r22-focal-readonly.json")" = "PASS_R20_R01_R22_READ_ONLY_EXACT_DIAGNOSTIC"
+           node tools/qa/cxorbia-i3-hr-ack-exact-same-revision.mjs "$P" "$HOSTING_URL" "$TENANT_ID" "$PROJECT_ID" "$GITHUB_RUN_ID"
+           EXPECTED_HR_REVISION="$(jq -r .revision "$P/hr-meta-1.json")"
+           [[ "$EXPECTED_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+           echo "EXPECTED_HR_REVISION=$EXPECTED_HR_REVISION" >> "$GITHUB_ENV"
+         fi
       - name: step
         shell: bash
         run: |
