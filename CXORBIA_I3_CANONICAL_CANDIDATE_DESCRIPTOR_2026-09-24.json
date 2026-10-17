@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D03_15_GROUNDED_VERTEX_QUESTIONS_DEV_LIVE_REQUIRED",
+  "activeBlocker": "D03_PROVIDER_DIAGNOSTIC_READONLY",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing I3 D03 provider live E2E on same RUN1767 source/artifact, exact PDF SHA, 15 referenced questions and pending_review idempotency.",
+  "exactNextAction": "RUN1768 returned AI_PROVIDER_HTTP_502. Read sanitized Vertex runtime diagnostic logs in exact 19:51-19:53 UTC window with existing CI, no new provider calls; classify and correct exact failure.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
