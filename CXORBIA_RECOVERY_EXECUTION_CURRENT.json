@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "197ec4c84d8d2b0625885afcea6c4a7b43773985",
-  "productTree": "bdb01d02945d86f557a63a6e1d10377a5db4f8c1",
+  "productSourceSha": "a4434a1f223dd6da1468890c99db7339808c1cab",
+  "productTree": "c790126bcf347d7de6b8d632ea58a24a10253fcd",
   "controlParentSha": "ec0e981d495a8151d67d172e2c205dae31ee8c88",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
@@ -30,18 +30,17 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_D03_LIVE_PROVIDER_RUN1764_AUTH_FAILURE_2026-10-17.json",
-    "kind": "D03_LIVE_DRIVE_API_AUTH_FAILURE",
+    "path": "CXORBIA_I3_D03_CLEAN_UNDEFINED_SOURCE_FIX_2026-10-17.json",
+    "kind": "D03_CLEAN_UNDEFINED_SOURCE_FIXED_QA_PENDING",
     "tasks": [
       "D03"
     ],
-    "runId": 39060264839,
-    "runNumber": 1764,
-    "classification": "AUTH_FAILURE",
-    "code": "AUTH_FAILURE:D03_DRIVE_SOURCE_ACCESS_403",
-    "productSourceChanged": false,
-    "vertexCalled": false,
+    "sourceSha": "a4434a1f223dd6da1468890c99db7339808c1cab",
+    "productTree": "c790126bcf347d7de6b8d632ea58a24a10253fcd",
+    "classification": "FUNCTIONAL_DEFECT",
+    "code": "D03_CLEAN_UNDEFINED",
     "providerWrites": 0,
+    "deploys": 0,
     "production": false
   },
   "taskProgress": {
@@ -56,7 +55,7 @@
     "A05": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
     "D02": "PASS_LIVE_PARSER_RUN1753",
     "D01": "PASS_AUTHORIZED_DOCUMENT_SOURCE",
-    "D03": "DEV_MATERIALIZED_RUN1760_LIVE_DRIVE_API_AUTH_FAILURE_RUN1764"
+    "D03": "SOURCE_FIXED_PENDING_CANONICAL_SOURCE_QA"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -74,7 +73,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Read-only diagnose Drive 403 response reason/scope/Drive API policy for exact DEV service account and exact source file; do not rerun identical provider probe without new evidence. Preserve independent R20 HR source-revision drift for its own owner and keep I3 HOLD.",
+  "nextExactAction": "Canonical source proof for D03 no-write input sanitizer; if PASS one DEV materialization then live Vertex grounded 15 questions with pending_review ACK/replay.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",

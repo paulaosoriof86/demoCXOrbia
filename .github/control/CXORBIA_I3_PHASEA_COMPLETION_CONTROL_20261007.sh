@@ -28,6 +28,7 @@ source-proof)
 node --test tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs | tee /tmp/i3-phasea-completion-source-test.log
   node --test tools/qa/cxorbia-i3-d02-document-extraction-source.test.mjs | tee /tmp/i3-d02-document-extraction-source-test.log
   node --test tools/qa/cxorbia-i3-d03-ai-generation-source.test.mjs | tee /tmp/i3-d03-ai-generation-source-test.log
+  node --test backend/runtime/hr-live-service/test/cxorbia-i3-d03-document-source-metadata.test.mjs | tee /tmp/i3-d03-document-source-metadata.log
   node --test backend/runtime/hr-live-service/test/cxorbia-vrm261-264-source-contract.test.mjs | tee /tmp/i3-vrm261-264-source-test.log
   # B7: independent Firestore emulator gate; no DEV/production writes.
   node --check tools/qa/cxorbia-i3-b7-exact-notification-firestore-rules.test.mjs
