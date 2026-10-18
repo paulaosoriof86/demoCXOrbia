@@ -47,8 +47,14 @@ async function sign(m,role){
  await page.waitForFunction(id=>String(window.firebase?.auth?.().currentUser?.uid||'')===id,m.id,{timeout:90000});
  await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
  await page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});
+ try{
  await page.waitForFunction(input=>{const c=window.CX?.backendAuth?.context?.()||{},g=window.CX_C6_HR_AUTHORITY_GATE||{},r=String(c.role||'').toLowerCase();
-  return c.authenticated===true&&(input.role==='admin'?['admin','super'].includes(r):['cliente','client'].includes(r))&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&g.blocked!==true&&String(window.CX?.data?.previewMeta?.sourceRevision||'')===input.hr;},{role,hr:HR},{timeout:120000});
+  return c.authenticated===true&&(input.role==='admin'?['admin','super'].includes(r):['cliente','client'].includes(r))&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&g.blocked!==true&&String(window.CX?.data?.previewMeta?.sourceRevision||'')===input.hr;},{role,hr:HR},{timeout:30000});
+ }catch(e){
+  const diag=await page.evaluate(()=>{const c=window.CX?.backendAuth?.context?.()||{},g=window.CX_C6_HR_AUTHORITY_GATE||{},m=window.CX?.data?.previewMeta||{};
+   return {firebaseAuth:!!window.firebase?.auth?.().currentUser,contextAuth:c.authenticated===true,contextRole:String(c.role||''),sessionRole:String(window.CX?.session?.role||''),project:String(window.CX?.data?.currentProjectId||''),period:String(window.CX?.data?.currentPeriodId||''),hrApplied:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,gateReady:g.ready===true,gateBlocked:g.blocked===true,gateReason:String(g.reason||g.code||'').slice(0,120),sourceRevision:String(m.sourceRevision||''),resourcesAvailable:!!window.CX?.backendResources?.load};});
+  throw Error('ENVIRONMENT_FAILURE:D04_E04_PROTECTED_HR_GATE:'+JSON.stringify({role,expectedRevision:HR,observed:diag}));
+ }
  return {ctx,page};
 }
 try{
@@ -62,7 +68,7 @@ try{
  const rid='certbank-cinepolis-'+current.period+'-'+certId;
  res.scope.period=current.period;
  qaRef=tenant.collection('resources').doc(rid);
- if((await qaRef.get()).exists)throw Error('PERSISTENCE_FAILURE:QA_COLLISION');
+ if((await qaRef.get()).exists){qaRef=null;throw Error('PERSISTENCE_FAILURE:QA_COLLISION');}
  const allBefore=(await tenant.collection('resources').where('projectId','==','cinepolis').where('status','==','active').get()).docs
   .filter(d=>d.data()?.resourceType==='certification_bank')
   .map(d=>({id:d.id,version:d.data().version,revision:d.data().bank?.contentRevision})).sort((a,b)=>a.id.localeCompare(b.id));
