@@ -30,12 +30,13 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_ADMIN_CLIENT_PREVIEW_DEV_MATERIALIZATION_RUN1791_2026-10-18.json",
-    "kind": "ADMIN_CLIENT_EXACT_DEV_MATERIALIZATION_PASS_RUN1791_LIVE_E2E_PENDING",
+    "path": "CXORBIA_I3_ADMIN_CLIENT_PREVIEW_LIVE_E2E_RUN1792_2026-10-18.json",
+    "kind": "ADMIN_CLIENT_PREVIEW_CONNECTED_PASS_RUN1792_HUMAN_PREVIEW_READY",
     "sourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
     "sourceTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
-    "sourceProofRunId": 39168448796,
+    "sourceQaRunId": 39168448796,
     "materializationRunId": 39169125996,
+    "connectedE2ERunId": 39170053670,
     "production": false
   },
   "taskProgress": {
@@ -52,7 +53,7 @@
     "D01": "PASS_AUTHORIZED_DOCUMENT_SOURCE",
     "D03": "LIVE_E2E_PASS_RUN1778_FRESH_GENERATION_15Q_REPLAY_CLEANUP",
     "D04": "CONNECTED_LIVE_QA_15Q_VERSION_ACK_RELOAD_PASS_RUN1788__EDITABLE_NAME_OPEN",
-    "E04": "F12_RUN1788_CLIENT_E2E_PASS_PRIOR_SOURCE; ADMIN_CLIENT_PREVIEW_SOURCE_PATCH_PENDING_QA__F09_DURABLE_COLLABORATION_OPEN"
+    "E04": "RUN1788 F12 REAL_CLIENT_PASS; RUN1792 ADMIN_CLIENT_PREVIEW_E2E_PASS_HUMAN_PENDING; F09_DURABLE_COLLABORATION_OPEN"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -70,7 +71,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Run only scoped real Admin -> Client readonly preview -> Admin, Client F12 and Shopper login on the exact RUN1791 materialized source and SAME current HR revision, without new build. Human visual only after E2E PASS; D04 name/F09 remain open.",
+  "nextExactAction": "Human review of exact RUN1791 DEV for Admin -> Client read-only -> Admin; then scoped D04 editable certification name and E04 F09 durable collaboration P0, followed by B10/B09/B13+A09/B11/A07 and C02–C10. Gate20/21 before any I4 authorization.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -228,11 +229,11 @@
       "sourceCITestsTotal": 4,
       "devMaterialized": 1,
       "devMaterializedTotal": 1,
-      "liveE2e": 0,
+      "liveE2e": 1,
       "liveE2eTotal": 1,
       "humanApproved": 0,
       "humanTotal": 1,
-      "meaning": "Source 4/4 and DEV exact pass; real multi-role browser tests pending"
+      "meaning": "Bounded Admin/Client/Shopper same artifact E2E RUN1792 PASS, human and product-wide gates pending"
     }
   },
   "nextDiagnosisPath": null,
@@ -516,12 +517,22 @@
     "gate21": "PENDING"
   },
   "latestAdminClientPreviewEvidence": {
-    "receiptPath": "CXORBIA_I3_ADMIN_CLIENT_PREVIEW_DEV_MATERIALIZATION_RUN1791_2026-10-18.json",
+    "receiptPath": "CXORBIA_I3_ADMIN_CLIENT_PREVIEW_LIVE_E2E_RUN1792_2026-10-18.json",
     "run1790": 39168448796,
     "run1791": 39169125996,
+    "run1792": 39170053670,
     "sourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
-    "liveE2e": "PENDING",
-    "humanAcceptance": "PENDING",
+    "scope": "FOCAL_MULTIROLE",
+    "humanAcceptance": "READY_PENDING",
+    "production": false
+  },
+  "previousExecutionReceiptBeforeRun1792": {
+    "path": "CXORBIA_I3_ADMIN_CLIENT_PREVIEW_DEV_MATERIALIZATION_RUN1791_2026-10-18.json",
+    "kind": "ADMIN_CLIENT_EXACT_DEV_MATERIALIZATION_PASS_RUN1791_LIVE_E2E_PENDING",
+    "sourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
+    "sourceTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
+    "sourceProofRunId": 39168448796,
+    "materializationRunId": 39169125996,
     "production": false
   }
 }

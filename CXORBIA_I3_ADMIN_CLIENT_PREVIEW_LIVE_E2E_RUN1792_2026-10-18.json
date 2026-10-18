@@ -1,0 +1,125 @@
+{
+  "schemaVersion": "cxorbia.i3.admin-client-preview.live-e2e-run1792.v1",
+  "recordedAt": "2026-10-18",
+  "iteration": "I3",
+  "state": "LIVE_E2E_PASS_HUMAN_PREVIEW_READY",
+  "source": {
+    "sha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
+    "tree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075"
+  },
+  "sourceQa": {
+    "runNumber": 1790,
+    "id": 39168448796,
+    "pass": 4,
+    "fail": 0
+  },
+  "materialization": {
+    "state": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "sourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
+    "sourceTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
+    "runId": 39169125996,
+    "runNumber": 1791,
+    "artifactId": 12151637199,
+    "artifactDigest": "sha256:c0f043bf26e03d08fb687593520cbe991845145502b28220d8fd0a52888f1b75",
+    "artifactDigestType": "SOURCE_TAR_SHA256",
+    "artifactUploadZipSha256": "f45a10945022712ce63ed347c58dfbd6fa0959cd0edd17379da73a70a5048bb8",
+    "runtimeRevision": "cxorbia-live-hr-dev-00312-5g2",
+    "runtimeDigest": "sha256:3815369c5af1736b06935b5fa58e74bd5321aa049dae0c7513978752253913b8",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/8ddb953e7f239c50",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792360031288000",
+    "hrRevision": "2895f9fa413dd88378c5a82372ab98aeb00274942aa9252a949dddeaafb65e78",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/e9070ca6-234c-4a16-acf2-5ab3372eadb3",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "firestoreRulesDeploys": 1,
+    "hrWrites": 0,
+    "production": false,
+    "sameArtifactLive": "PENDING",
+    "humanAcceptance": "PENDING",
+    "gate20": "PENDING",
+    "gate21": "PENDING"
+  },
+  "connectedE2E": {
+    "decision": "PASS_I3_ADMIN_CLIENT_PREVIEW_SAME_ARTIFACT_READONLY_LIVE",
+    "sourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
+    "sourceTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
+    "materializationRun": 1791,
+    "runId": 39170053670,
+    "runNumber": 1792,
+    "artifactId": 12152371820,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/8ddb953e7f239c50",
+    "runtimeRevision": "cxorbia-live-hr-dev-00312-5g2",
+    "hrRevision": "2895f9fa413dd88378c5a82372ab98aeb00274942aa9252a949dddeaafb65e78",
+    "servedOwnerBlobs": {
+      "app/core/backend-browser-auth.js": "2a3552d9757840d73c7bb902043b237e948b0b63",
+      "app/core/router.js": "b972cbedc67502947ed9ff5f3650b07a67dd7b75"
+    },
+    "admin": {
+      "roleRetained": true,
+      "clientPreviewAccessible": true,
+      "readOnly": true,
+      "actionsSuppressed": true,
+      "sessionAfterReload": true,
+      "returnWithoutLogout": true
+    },
+    "client": {
+      "realRoleRetained": true,
+      "f12Visible": true,
+      "sameHrRevision": true
+    },
+    "shopper": {
+      "realRoleRetained": true,
+      "shopperIdentityPresent": true,
+      "misvisitasRoute": true,
+      "sameHrRevision": true,
+      "populationWideVerified": false
+    },
+    "writes": {
+      "firestore": 0,
+      "hr": 0,
+      "production": 0
+    },
+    "deploys": 0,
+    "production": false,
+    "humanApproval": "PENDING"
+  },
+  "readyForHuman": {
+    "eligible": true,
+    "scope": "Admin authorization -> Client read-only view -> Admin; inspect Insights & Benchmark F12 only",
+    "url": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxProjectId=cinepolis",
+    "steps": [
+      "Select Administración/Coordinación and sign in with your existing Admin account",
+      "Use Ver Portal del Cliente on left sidebar",
+      "Open Insights & Benchmark; ensure no fake sector data and readable presentation",
+      "Use Volver a Administración without signing out"
+    ],
+    "humanAcceptanceReceived": false
+  },
+  "stillOpen": [
+    "D04 editable AI certification bank name",
+    "E04 F09 NPS notes meetings durable persistence",
+    "B10 questionnaire and B09 GPS",
+    "A09/B11 exact shopper HR and A07 profile",
+    "C02-C10 finance",
+    "remaining G/A/B/C/D/E/V",
+    "Gate20/Gate21",
+    "I4 authorization"
+  ],
+  "conserved": {
+    "tasks": 82,
+    "findingsVRM": 274,
+    "domains": 21,
+    "F01toF16": true,
+    "humanObservationsPreserved": true,
+    "priorRun1788Unchanged": true,
+    "noNewBuild": true,
+    "production": "DO_NOT_TOUCH"
+  },
+  "nextExactAction": "Human review of exact RUN1791 DEV for Admin -> Client read-only -> Admin; then scoped D04 editable certification name and E04 F09 durable collaboration P0, followed by B10/B09/B13+A09/B11/A07 and C02–C10. Gate20/21 before any I4 authorization.",
+  "authorization": {
+    "requiredForScopedHumanAcceptance": true,
+    "productionExplicitLater": true
+  }
+}
