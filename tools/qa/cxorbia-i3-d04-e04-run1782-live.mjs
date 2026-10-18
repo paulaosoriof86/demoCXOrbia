@@ -99,9 +99,24 @@ try{
  const stored=(await qaRef.get()).data()||{};
  if(stored.version!==2||stored.bank?.preguntas?.length!==15||stored.bank?.preguntas?.[0]?.q!=='Pregunta QA revisada '+RUN||stored.bank?.estado!=='pending_review'||stored.bank?.reviewHistory?.length!==1||stored.bank?.reviewHistory?.[0]?.toVersion!==2)throw Error('PERSISTENCE_FAILURE:D04_VERSION_ACK_READBACK');
  await page.reload({waitUntil:'domcontentloaded',timeout:90000});
- await page.waitForFunction(()=>window.CX?.backendAuth?.context?.()?.authenticated===true&&!!window.CX?.backendResources?.load,null,{timeout:90000});
- const reloaded=await page.evaluate(async a=>{await window.CX.backendResources.load({projectId:'cinepolis',periodId:a.period});const b=window.CX.certStore.bank(a.period,a.id);return{version:b?.__resourceVersion,q:b?.preguntas?.[0]?.q,estado:b?.estado,history:b?.reviewHistory?.length};},{period:current.period,id:certId});
- if(reloaded.version!==2||reloaded.q!=='Pregunta QA revisada '+RUN||reloaded.estado!=='pending_review'||reloaded.history!==1)throw Error('PERSISTENCE_FAILURE:D04_RELOAD');
+ await page.waitForFunction(input=>{
+  const context=window.CX?.backendAuth?.context?.()||{},gate=window.CX_C6_HR_AUTHORITY_GATE||{};
+  return context.authenticated===true&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true
+    &&gate.ready===true&&gate.blocked!==true
+    &&String(window.CX?.data?.previewMeta?.sourceRevision||'')===input.revision
+    &&String(window.CX?.data?.currentProjectId||'')===input.project
+    &&String(window.CX?.data?.period?.()?.id||'')===input.period
+    &&typeof window.CX?.backendResources?.load==='function';
+ },{revision:res.hrRevisionLive,project:'cinepolis',period:current.period},{timeout:90000});
+ const reloaded=await page.evaluate(async a=>{
+  let loadError='';
+  try{await window.CX.backendResources.load({projectId:'cinepolis',periodId:a.period});}catch(e){loadError=String(e?.message||e).slice(0,120);}
+  const b=window.CX.certStore.bank(a.period,a.id);
+  return{version:b?.__resourceVersion??null,q:b?.preguntas?.[0]?.q??null,estado:b?.estado??null,history:b?.reviewHistory?.length??null,foundInResources:(window.CX.backendResources?.items||[]).some(r=>r.id===a.resourceId),loadError,project:String(window.CX?.data?.currentProjectId||''),period:String(window.CX?.data?.period?.()?.id||'')};
+ },{period:current.period,id:certId,resourceId:rid});
+ res.d04.reloadReadback={version:reloaded.version,history:reloaded.history,foundInResources:reloaded.foundInResources,providerLoadError:reloaded.loadError,projectMatched:reloaded.project==='cinepolis',periodMatched:reloaded.period===current.period};
+ if(reloaded.version!==2||reloaded.q!=='Pregunta QA revisada '+RUN||reloaded.estado!=='pending_review'||reloaded.history!==1)
+  throw Error('PERSISTENCE_FAILURE:D04_RELOAD:'+JSON.stringify(res.d04.reloadReadback));
  const allAfter=(await tenant.collection('resources').where('projectId','==','cinepolis').where('status','==','active').get()).docs
   .filter(d=>d.id!==rid&&d.data()?.resourceType==='certification_bank')
   .map(d=>({id:d.id,version:d.data().version,revision:d.data().bank?.contentRevision})).sort((a,b)=>a.id.localeCompare(b.id));
