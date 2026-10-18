@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "4fd4e4cbfc41f99425c839179f029c12d2ec1419",
-  "productTree": "1c88fd5735faa3c869e240e540aeb602e299045b",
+  "productSourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
+  "productTree": "ccb73184906e3cfb8a582f882aef0a7863f3dfd5",
   "controlParentSha": "ec0e981d495a8151d67d172e2c205dae31ee8c88",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
@@ -30,10 +30,12 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_D04_NOMBRE_EDITABLE_SOURCE_PATCH_2026-10-18.json",
-    "kind": "D04_EDITABLE_NAME_SOURCE_PATCH_QA_REQUIRED",
-    "sourceSha": "4fd4e4cbfc41f99425c839179f029c12d2ec1419",
-    "sourceTree": "1c88fd5735faa3c869e240e540aeb602e299045b",
+    "path": "CXORBIA_I3_D04_NOMBRE_EDITABLE_SOURCE_FIX_RUN1794_2026-10-18.json",
+    "kind": "D04_EXACT_NAME_VALIDATION_FIX_RUN1794_PENDING_CI",
+    "sourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
+    "sourceTree": "ccb73184906e3cfb8a582f882aef0a7863f3dfd5",
+    "failedRunId": 39171462310,
+    "devMaterialization": false,
     "production": false
   },
   "taskProgress": {
@@ -49,7 +51,7 @@
     "D02": "PASS_LIVE_PARSER_RUN1753",
     "D01": "PASS_AUTHORIZED_DOCUMENT_SOURCE",
     "D03": "LIVE_E2E_PASS_RUN1778_FRESH_GENERATION_15Q_REPLAY_CLEANUP",
-    "D04": "SOURCE_FIXED_GENERATION_NAME_PLUS_PENDING_RENAME__PENDING_CI_DEV_LIVE_HUMAN",
+    "D04": "SOURCE_FIXED_INITIAL_NAME_AND_PENDING_RENAME__VALIDATION_RUN1794_FAIL_FOCAL_FIXED__CI_PENDING",
     "E04": "RUN1792_ADMIN_CLIENT_F12_LIVE_PASS_HUMAN_PENDING__F09_DURABLE_COLLABORATION_OPEN"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
@@ -68,7 +70,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "SOURCE_PROOF D04 editable-name on exact source 4fd4e4cbfc41f99425c839179f029c12d2ec1419 in existing CI (original question review + name-only CAS + D03 generation and Admin role regressions), then one DEV materialization, focused real Admin review/ACK/reload with QA cleanup; F09 and other P0 remain open.",
+  "nextExactAction": "Repeat existing canonical I3 SOURCE QA once for corrected D04 source 273b8afb4b2ab0c5851c8cc82235639b44165927, then proceed to a single DEV materialization when PASS. Preserve RUN1791 Admin/Client/Shopper visual preview and prior RUN1792 E2E.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -243,7 +245,7 @@
       "liveE2eTotal": 1,
       "humanApproved": 0,
       "humanTotal": 1,
-      "meaning": "Prepared one owner; not yet a functional closure"
+      "meaning": "RUN1794 8/9 tests passed; one input newline validator corrected before source reproof"
     }
   },
   "nextDiagnosisPath": null,
@@ -556,11 +558,18 @@
     "production": false
   },
   "latestD04NameEvidence": {
-    "receiptPath": "CXORBIA_I3_D04_NOMBRE_EDITABLE_SOURCE_PATCH_2026-10-18.json",
+    "receiptPath": "CXORBIA_I3_D04_NOMBRE_EDITABLE_SOURCE_FIX_RUN1794_2026-10-18.json",
+    "sourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
+    "sourceTree": "ccb73184906e3cfb8a582f882aef0a7863f3dfd5",
+    "lastRun1794": "FAIL_VALIDATION_EXACT_CORRECTED",
+    "devStillRun": 1791,
+    "production": false
+  },
+  "previousExecutionReceiptBeforeD04Validation": {
+    "path": "CXORBIA_I3_D04_NOMBRE_EDITABLE_SOURCE_PATCH_2026-10-18.json",
+    "kind": "D04_EDITABLE_NAME_SOURCE_PATCH_QA_REQUIRED",
     "sourceSha": "4fd4e4cbfc41f99425c839179f029c12d2ec1419",
     "sourceTree": "1c88fd5735faa3c869e240e540aeb602e299045b",
-    "devSourceStill": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
-    "existingPreviewValid": true,
     "production": false
   }
 }
