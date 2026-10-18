@@ -30,11 +30,15 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_D04_NOMBRE_EDITABLE_SOURCE_FIX_RUN1794_2026-10-18.json",
-    "kind": "D04_EXACT_NAME_VALIDATION_FIX_RUN1794_PENDING_CI",
+    "path": "CXORBIA_I3_D04_NOMBRE_EDITABLE_SOURCE_PROOF_RUN1795_2026-10-18.json",
+    "kind": "D04_EDITABLE_NAME_SOURCE_PROOF_PASS_RUN1795_DEV_REQUIRED",
     "sourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
     "sourceTree": "ccb73184906e3cfb8a582f882aef0a7863f3dfd5",
-    "failedRunId": 39171462310,
+    "sourceProofRunId": 39171726936,
+    "sourceTests": {
+      "pass": 9,
+      "total": 9
+    },
     "devMaterialization": false,
     "production": false
   },
@@ -51,7 +55,7 @@
     "D02": "PASS_LIVE_PARSER_RUN1753",
     "D01": "PASS_AUTHORIZED_DOCUMENT_SOURCE",
     "D03": "LIVE_E2E_PASS_RUN1778_FRESH_GENERATION_15Q_REPLAY_CLEANUP",
-    "D04": "SOURCE_FIXED_INITIAL_NAME_AND_PENDING_RENAME__VALIDATION_RUN1794_FAIL_FOCAL_FIXED__CI_PENDING",
+    "D04": "NAME_EDIT_SOURCE_PROVEN_RUN1795_9_OF_9__DEV_MATERIALIZATION_AND_LIVE_PENDING",
     "E04": "RUN1792_ADMIN_CLIENT_F12_LIVE_PASS_HUMAN_PENDING__F09_DURABLE_COLLABORATION_OPEN"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
@@ -70,7 +74,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Repeat existing canonical I3 SOURCE QA once for corrected D04 source 273b8afb4b2ab0c5851c8cc82235639b44165927, then proceed to a single DEV materialization when PASS. Preserve RUN1791 Admin/Client/Shopper visual preview and prior RUN1792 E2E.",
+  "nextExactAction": "Single deterministic DEV materialization of source 273b8afb... via existing I3 canonical workflow, then focal D04 live QA name-only edit + ACK/reload/no duplicates; no production or second candidate.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -237,15 +241,17 @@
     "d04EditableName": {
       "sourcePatched": 1,
       "totalOwnerFiles": 1,
-      "sourceQaProven": 0,
+      "sourceQaProven": 1,
       "sourceQaTotal": 1,
+      "sourceQaChecksPassed": 9,
+      "sourceQaChecksTotal": 9,
       "devMaterialized": 0,
       "devMaterializedTotal": 1,
       "liveE2e": 0,
       "liveE2eTotal": 1,
       "humanApproved": 0,
       "humanTotal": 1,
-      "meaning": "RUN1794 8/9 tests passed; one input newline validator corrected before source reproof"
+      "meaning": "Exact D04 code QA PASS, not DEV nor E2E"
     }
   },
   "nextDiagnosisPath": null,
@@ -570,6 +576,15 @@
     "kind": "D04_EDITABLE_NAME_SOURCE_PATCH_QA_REQUIRED",
     "sourceSha": "4fd4e4cbfc41f99425c839179f029c12d2ec1419",
     "sourceTree": "1c88fd5735faa3c869e240e540aeb602e299045b",
+    "production": false
+  },
+  "previousExecutionReceiptBeforeD04Proof": {
+    "path": "CXORBIA_I3_D04_NOMBRE_EDITABLE_SOURCE_FIX_RUN1794_2026-10-18.json",
+    "kind": "D04_EXACT_NAME_VALIDATION_FIX_RUN1794_PENDING_CI",
+    "sourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
+    "sourceTree": "ccb73184906e3cfb8a582f882aef0a7863f3dfd5",
+    "failedRunId": 39171462310,
+    "devMaterialization": false,
     "production": false
   }
 }

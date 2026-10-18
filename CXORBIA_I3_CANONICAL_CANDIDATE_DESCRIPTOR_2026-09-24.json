@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D04_INVALID_NAME_FOCAL_RUN1794_FIXED_SOURCE_QA_PENDING__E04_F09_OPEN",
+  "activeBlocker": "D04_NAME_EDITOR_SOURCE_PROVEN_RUN1795_SINGLE_DEV_MATERIALIZATION_REQUIRED",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -12302,7 +12302,7 @@
     "artifactUnchanged": true,
     "production": false
   },
-  "nextExactAction": "Repeat existing canonical I3 SOURCE QA once for corrected D04 source 273b8afb4b2ab0c5851c8cc82235639b44165927, then proceed to a single DEV materialization when PASS. Preserve RUN1791 Admin/Client/Shopper visual preview and prior RUN1792 E2E.",
+  "nextExactAction": "Single deterministic DEV materialization of source 273b8afb... via existing I3 canonical workflow, then focal D04 live QA name-only edit + ACK/reload/no duplicates; no production or second candidate.",
   "adminClientPreview20261018": {
     "sourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
     "sourceTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
@@ -12381,11 +12381,12 @@
     "ownerBlob": "a624916f7955717936faf4b6466d1eb4332d7dfa",
     "qaFile": "tools/qa/cxorbia-i3-d04-versioned-bank-review.test.mjs",
     "qaBlob": "c09c95ff87c51225d800d5be7b5b7ef924b406f7",
-    "sourceProof": "RUN1794_FAIL_8_9_CORRECTED_PENDING_QA",
-    "dev": "RUN1791_UNCHANGED",
+    "sourceProof": "PASS_RUN1795_9_OF_9",
+    "dev": "PENDING_CANONICAL_MATERIALIZATION",
     "live": "PENDING",
     "human": "PENDING",
     "preserveAdminClientRun1792": true,
-    "production": false
+    "production": false,
+    "sourceProofRunId": 39171726936
   }
 }
