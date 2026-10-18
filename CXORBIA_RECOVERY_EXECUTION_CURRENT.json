@@ -30,21 +30,20 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_D03_RUN1777_ARTIFACT_CONTROL_READBACK_2026-10-17.json",
-    "kind": "D03_RUN1777_CONTROL_ARTIFACT_ID_CORRECTED",
+    "path": "CXORBIA_I3_D03_LIVE_FRESH_15Q_RUN1778_2026-10-17.json",
+    "kind": "D03_LIVE_FRESH_GENERATION_E2E_PASS",
     "tasks": [
       "D03"
     ],
-    "runNumber": 1777,
-    "runId": 39091956835,
-    "classification": "RELEASE_COMPOSITION_FAILURE",
-    "code": "MISSING_CERTIFIED_ARTIFACT_ID_ON_CONTROL_POINTER",
+    "runId": 39092197485,
+    "runNumber": 1778,
     "sourceSha": "d1cfb37774c4107bd9a6072694eb9250041ca5b8",
-    "artifactId": 12122099416,
-    "artifactZipDigest": "sha256:e5a2a02ad636609972a3a778c0338c4fd669e5285008aa2d6c9830122eebe441",
-    "retryOnlyExactQa": true,
-    "providerWrites": 0,
-    "deploys": 0,
+    "latencyMs": 13516,
+    "questions": 15,
+    "sourceReferenceCount": 15,
+    "readbackVerified": true,
+    "idempotentReplay": true,
+    "cleanup": true,
     "production": false
   },
   "taskProgress": {
@@ -59,7 +58,8 @@
     "A05": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
     "D02": "PASS_LIVE_PARSER_RUN1753",
     "D01": "PASS_AUTHORIZED_DOCUMENT_SOURCE",
-    "D03": "PASS_RUN1774_15Q_IDEMPOTENT_PASS_RUN1775_SOURCE_PASS_RUN1776_DEV_FRESH_QA_PENDING"
+    "D03": "LIVE_E2E_PASS_RUN1778_FRESH_GENERATION_15Q_REPLAY_CLEANUP",
+    "D04": "OWNER_PROVEN_SOURCE_FIX_PENDING"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -77,7 +77,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Execute same-artifact D03 fresh QA, after restoring immutable GitHub RUN1776 artifact ID 12122099416 to preflight; no rebuild, no production.",
+  "nextExactAction": "D04 exact owner versioned editor and authorized review on same cumulative candidate; do not regenerate D03 or touch production.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -154,10 +154,10 @@
       "percent": 100
     },
     "realProviderDevProven": {
-      "numerator": 0,
+      "numerator": 1,
       "denominator": 1,
-      "percent": 0,
-      "meaning": "C01 writer/provider ACK proof only; A04/A05/G05 are read-only live proofs"
+      "percent": 100,
+      "meaning": "D03 real fresh Vertex generation with durable ACK, zero-write replay, and QA cleanup PASS RUN1778."
     },
     "accumulatedSourceProvenTasks": [
       "A04",
@@ -174,7 +174,7 @@
       "percent": 11.11,
       "meaning": "Task closures in the source/live repair stage only; not overall CXOrbia completion"
     },
-    "newlyFunctionallyClosedI3Tasks": 2,
+    "newlyFunctionallyClosedI3Tasks": 3,
     "newReadyPreviews": 1,
     "newHumanApprovals": 0,
     "blockTasks": [

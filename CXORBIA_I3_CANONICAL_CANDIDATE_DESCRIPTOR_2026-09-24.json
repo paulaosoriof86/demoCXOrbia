@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_D03_LIVE_PROVIDER_REQUIRED",
+  "status": "HOLD_I3_D04_VERSIONED_EDITOR_SOURCE_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "d1cfb37774c4107bd9a6072694eb9250041ca5b8",
   "productTreeAuthority": "60d6309c3875dedec1b17eac25a111a808235a9e",
   "predecessorProductSourceSha": "a4434a1f223dd6da1468890c99db7339808c1cab",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V464_2026-10-17.json",
-  "findingsLedgerExpectedGitBlob": "df18803988b17c57691faa3f92a1f76fee63d86d",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V136.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V465_2026-10-17.json",
+  "findingsLedgerExpectedGitBlob": "e70a08e0e0191b0276f1ffcf56446fde75a3f599",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V137.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D03_FRESH_QA_E2E_REQUIRED",
+  "activeBlocker": "D04_EDITOR_AND_REVIEW_P0",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute same-artifact D03 fresh QA, after restoring immutable GitHub RUN1776 artifact ID 12122099416 to preflight; no rebuild, no production.",
+  "exactNextAction": "D04 exact owner versioned editor and authorized review on same cumulative candidate; do not regenerate D03 or touch production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -12241,6 +12241,22 @@
     "hostingDeploys": 1,
     "firestoreRulesDeploys": 1,
     "hrWrites": 0,
+    "production": false
+  },
+  "lastLiveProofD03": {
+    "decision": "PASS_I3_D03_FRESH_GENERATION_IDEMPOTENT_CLEAN_DEV",
+    "runId": 39092197485,
+    "runNumber": 1778,
+    "artifactId": 12122723246,
+    "providerRequestMs": 13516,
+    "generationAttempts": 1,
+    "questions": 15,
+    "questionSourceRefs": 15,
+    "providerWrites": 2,
+    "replayWrites": 0,
+    "QAResourceRemoved": true,
+    "QAReceiptRemoved": true,
+    "originalBankUnchanged": true,
     "production": false
   }
 }
