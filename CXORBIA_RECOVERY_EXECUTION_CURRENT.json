@@ -30,21 +30,19 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_ADMIN_CLIENT_PREVIEW_2026-10-18_SOURCE_RECEIPT.json",
-    "kind": "ADMIN_CLIENT_PREVIEW_SOURCE_PATCH_PENDING_CANONICAL_CI",
+    "path": "CXORBIA_I3_ADMIN_CLIENT_PREVIEW_RUN1790_SOURCE_PROOF_2026-10-18.json",
+    "kind": "ADMIN_CLIENT_PREVIEW_PASS_SOURCE_QA_RUN1790_DEV_MATERIALIZATION_REQUIRED",
     "sourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
     "sourceTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
-    "productFilesChanged": 2,
-    "qaTestsAdded": 4,
+    "sourceProofRunId": 39168448796,
     "devMaterialization": false,
-    "liveE2e": false,
     "production": false
   },
   "taskProgress": {
     "G01": "IN_PROGRESS_COVERAGE_CUSTODIED_AUTHORITY_GAPS_RETAINED_IN_G03",
     "G02": "DIRECT_NATIVE_GITHUB_WRITE_READBACK_AND_EXISTING_CI_PROVEN_NO_TINYFISH_REQUIRED",
     "G03": "PENDING_NO_NEW_GENERAL_AUDIT",
-    "G04": "ADMIN_CLIENT_PREVIEW_EXACT_OWNER_PATCH_PENDING_CANONICAL_SOURCE_QA__A04_A05_PREVIOUS_LIVE_PASS_PRESERVED",
+    "G04": "ADMIN_CLIENT_PREVIEW_SOURCE_QA_4_4_PASS_RUN1790__DEV_LIVE_NOT_YET",
     "G05": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
     "G06": "IN_PROGRESS_FROZEN_QUEUE_SINGLE_WRITER",
     "A04": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
@@ -72,7 +70,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Run source-proof in existing workflow on 39e4ee2ad45d1f8a166493b5bcf17bf0c610e005 without DEV deploy; then same-candidate DEV once evidence permits. Admin Client preview read-only only.",
+  "nextExactAction": "Deploy exact already source-proven candidate once via existing canonical DEV workflow; verify served auth/router asset hashes, runtime/hosting digests and same HR revision, then run real Admin/Client/Shopper scoped E2E. Do not review UI until proven.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -226,11 +224,15 @@
     "adminClientPreview": {
       "sourcePatched": 2,
       "totalProductOwners": 2,
-      "sourceCIProven": 0,
+      "sourceCIProven": 4,
+      "sourceCITestsTotal": 4,
       "devMaterialized": 0,
+      "devMaterializedTotal": 1,
       "liveE2e": 0,
+      "liveE2eTotal": 1,
       "humanApproved": 0,
-      "meaning": "No claim of release or E2E success"
+      "humanTotal": 1,
+      "meaning": "Source tests only; no site preview authorization until E2E"
     }
   },
   "nextDiagnosisPath": null,
@@ -464,5 +466,16 @@
     "entry": "Admin claim + client card or Admin sidebar, read-only",
     "status": "SOURCE_PATCH_PENDING_CI",
     "currentClientPortalHumanReview": "ON_HOLD_UNTIL_DEV_PASS"
+  },
+  "previousExecutionReceiptBeforeRun1790": {
+    "path": "CXORBIA_I3_ADMIN_CLIENT_PREVIEW_2026-10-18_SOURCE_RECEIPT.json",
+    "kind": "ADMIN_CLIENT_PREVIEW_SOURCE_PATCH_PENDING_CANONICAL_CI",
+    "sourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
+    "sourceTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
+    "productFilesChanged": 2,
+    "qaTestsAdded": 4,
+    "devMaterialization": false,
+    "liveE2e": false,
+    "production": false
   }
 }

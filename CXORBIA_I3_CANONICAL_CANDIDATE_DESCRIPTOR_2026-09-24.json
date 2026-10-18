@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "ADMIN_CLIENT_PREVIEW_AUTH_ROUTE_SOURCE_TEST_AND_E2E_PENDING__D04_NAME_AND_F09_OPEN",
+  "activeBlocker": "ADMIN_CLIENT_PREVIEW_EXACT_SOURCE_PROVEN_RUN1790_DEV_MATERIALIZATION_REQUIRED",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -12297,7 +12297,7 @@
     "artifactUnchanged": true,
     "production": false
   },
-  "nextExactAction": "Run source-proof in existing workflow on 39e4ee2ad45d1f8a166493b5bcf17bf0c610e005 without DEV deploy; then same-candidate DEV once evidence permits. Admin Client preview read-only only.",
+  "nextExactAction": "Deploy exact already source-proven candidate once via existing canonical DEV workflow; verify served auth/router asset hashes, runtime/hosting digests and same HR revision, then run real Admin/Client/Shopper scoped E2E. Do not review UI until proven.",
   "adminClientPreview20261018": {
     "sourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
     "sourceTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
@@ -12307,9 +12307,11 @@
     ],
     "qa": "tools/qa/cxorbia-i3-admin-client-readonly-preview.test.mjs",
     "oldClientMismatch": "ROLE_SELECTION_MISMATCH",
-    "sourceStatus": "PENDING_REMOTE_CI",
-    "devMaterialization": "NOT_YET_EXECUTED",
-    "humanReview": "NOT_YET_REQUESTED",
-    "production": false
+    "sourceStatus": "PASS_SOURCE_QA_RUN1790_4_OF_4",
+    "devMaterialization": "PENDING_CANONICAL_SINGLE_ARTIFACT",
+    "humanReview": "PENDING",
+    "production": false,
+    "sourceProofRunId": 39168448796,
+    "sourceProofJobId": 117796326289
   }
 }
