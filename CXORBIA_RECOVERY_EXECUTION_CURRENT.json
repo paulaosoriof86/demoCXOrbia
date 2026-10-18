@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "d1cfb37774c4107bd9a6072694eb9250041ca5b8",
-  "productTree": "60d6309c3875dedec1b17eac25a111a808235a9e",
+  "productSourceSha": "330d220882a314b6599372e21f126aaab49cf30b",
+  "productTree": "dc64ea105fbe059d7986a5b99f3740fa38062102",
   "controlParentSha": "ec0e981d495a8151d67d172e2c205dae31ee8c88",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
@@ -30,20 +30,13 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_D03_LIVE_FRESH_15Q_RUN1778_2026-10-17.json",
-    "kind": "D03_LIVE_FRESH_GENERATION_E2E_PASS",
+    "kind": "D04_E04_F12_ONE_SOURCE_SUCCESSOR_QA_PENDING",
     "tasks": [
-      "D03"
+      "D04",
+      "E04"
     ],
-    "runId": 39092197485,
-    "runNumber": 1778,
-    "sourceSha": "d1cfb37774c4107bd9a6072694eb9250041ca5b8",
-    "latencyMs": 13516,
-    "questions": 15,
-    "sourceReferenceCount": 15,
-    "readbackVerified": true,
-    "idempotentReplay": true,
-    "cleanup": true,
+    "sourceSha": "330d220882a314b6599372e21f126aaab49cf30b",
+    "productTree": "dc64ea105fbe059d7986a5b99f3740fa38062102",
     "production": false
   },
   "taskProgress": {
@@ -59,7 +52,8 @@
     "D02": "PASS_LIVE_PARSER_RUN1753",
     "D01": "PASS_AUTHORIZED_DOCUMENT_SOURCE",
     "D03": "LIVE_E2E_PASS_RUN1778_FRESH_GENERATION_15Q_REPLAY_CLEANUP",
-    "D04": "OWNER_PROVEN_SOURCE_FIX_PENDING"
+    "D04": "SOURCE_FIXED_PENDING_QA",
+    "E04": "F12_SOURCE_FIXED_PENDING_QA"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -77,7 +71,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "D04 exact owner versioned editor and authorized review on same cumulative candidate; do not regenerate D03 or touch production.",
+  "nextExactAction": "Run exact D04 and E04/F12 source contract tests in the existing I3 workflow in parallel within Node tests; on PASS materialize single successor DEV and prove persisted review + no-source benchmark, then continue A/B/C/E P0 read-only lanes and terminal gates.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
