@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "a4434a1f223dd6da1468890c99db7339808c1cab",
-  "productTree": "c790126bcf347d7de6b8d632ea58a24a10253fcd",
+  "productSourceSha": "d1cfb37774c4107bd9a6072694eb9250041ca5b8",
+  "productTree": "60d6309c3875dedec1b17eac25a111a808235a9e",
   "controlParentSha": "ec0e981d495a8151d67d172e2c205dae31ee8c88",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
@@ -30,20 +30,20 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_D03_DIAG_RUN1773_RECONCILIATION_2026-10-17.json",
-    "kind": "D03_RUN1773_REMOTE_DURABLE_BANK_CONFIRMED_REPLAY_PENDING",
+    "path": "CXORBIA_I3_D03_RUN1774_REPLAY_AND_LATENCY_FIX_SOURCE_2026-10-17.json",
+    "kind": "D03_EXISTING_DURABLE_REPLAY_PASS_NEW_GEN_PERFORMANCE_SOURCE_FIXED_QA_PENDING",
     "tasks": [
       "D03"
     ],
-    "runNumber": 1773,
-    "runId": 39065339147,
-    "classification": "PROVIDER_FAILURE",
-    "providerHttpStatus": 200,
-    "requestLatencySeconds": 62.605301354,
-    "questionCount": 15,
-    "pendingReviewAckProven": true,
-    "replayNotYetProven": true,
-    "sourceSha": "a4434a1f223dd6da1468890c99db7339808c1cab",
+    "replayRunNumber": 1774,
+    "replayRunId": 39089556743,
+    "sourceSha": "d1cfb37774c4107bd9a6072694eb9250041ca5b8",
+    "productTree": "60d6309c3875dedec1b17eac25a111a808235a9e",
+    "previousSource": "a4434a1f223dd6da1468890c99db7339808c1cab",
+    "existingBankAck": true,
+    "existingBankQuestionCount": 15,
+    "noDuplicate": true,
+    "newGenerationLatencyProof": "PENDING",
     "production": false
   },
   "taskProgress": {
@@ -58,7 +58,7 @@
     "A05": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
     "D02": "PASS_LIVE_PARSER_RUN1753",
     "D01": "PASS_AUTHORIZED_DOCUMENT_SOURCE",
-    "D03": "RUN1773_REMOTE_DURABLE_PENDING_REVIEW_15Q_PASS_IDEMPOTENT_REPLAY_PENDING"
+    "D03": "LIVE_E2E_REPLAY_PASS_RUN1774_NEW_GENERATION_LATENCY_SOURCE_FIXED_QA_PENDING"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -76,7 +76,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Reconcile existing D03 15-question pending_review over exact Hosting DEV by two idempotent replays without provider writes; do not regenerate, then solve new-generation 60-sec Hosting performance P0 within D03.",
+  "nextExactAction": "Prove D03 0-thinking/48s on single candidate source, then exact DEV materialization; validate fresh-generation latency without overwriting existing pending_review bank or making duplicate writes.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
