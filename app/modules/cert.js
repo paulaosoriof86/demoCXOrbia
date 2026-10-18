@@ -3,6 +3,11 @@ CX.certStore = CX.certStore || {
   _demo:{},
   connected(){return CX.BACKEND?.enabled===true;},
   safeId(v){return String(v||'main').trim().toLowerCase().replace(/[^a-z0-9_-]+/g,'-').replace(/^-+|-+$/g,'')||'main';},
+  normalizeName(value){
+    const name=String(value||'').trim().replace(/\s+/g,' ');
+    if(name.length<3||name.length>120||/[<>\x00-\x1f\x7f]/.test(name))throw new Error('CERT_BANK_NAME_INVALID');
+    return name;
+  },
   resourceId(pid,certificationId='main'){
     const projectId=String(CX.data?.currentProjectId||'project'),base=('certbank-'+projectId+'-'+String(pid||'period')).replace(/[^a-zA-Z0-9_-]+/g,'-'),cid=this.safeId(certificationId);
     return cid==='main'?base:(base+'-'+cid);
@@ -23,6 +28,7 @@ CX.certStore = CX.certStore || {
   },
   async save(pid,data,certificationId,options={}){
     const cid=this.safeId(certificationId||data?.certificationId||'main'),bank=Object.assign({},data,{certificationId:cid});
+    if(bank.certificationName!==undefined)bank.certificationName=this.normalizeName(bank.certificationName);
     delete bank.__resourceId;delete bank.__resourceVersion;
     if(!this.connected()){this._demo[pid]=this._demo[pid]||{};this._demo[pid][cid]=bank;CX.bus&&CX.bus.emit('cert');return {ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,demo:true,item:bank};}
     if(!CX.backendResources?.saveMetadata)return {ok:false,status:'blocked',providerAck:false,successUiAllowed:false,code:'CERT_DURABLE_BACKEND_UNAVAILABLE'};
@@ -37,13 +43,14 @@ CX.certStore = CX.certStore || {
     if(options.requireReadback&&result?.providerAck===true){
       const stored=(CX.backendResources?.items||[]).find(x=>x.id===id&&x.projectId===CX.data.currentProjectId&&x.periodId===pid);
       if(!stored||String(stored.version)!==String(result.item?.version)||String(stored.bank?.contentRevision)!==String(bank.contentRevision)
-        ||String(stored.bank?.estado)!==String(bank.estado)||JSON.stringify(stored.bank?.preguntas||[])!==JSON.stringify(bank.preguntas||[]))
+        ||String(stored.bank?.estado)!==String(bank.estado)||JSON.stringify(stored.bank?.preguntas||[])!==JSON.stringify(bank.preguntas||[])
+        ||String(stored.bank?.certificationName||'')!==String(bank.certificationName||'')||String(stored.n||'')!==String(bank.certificationName||bank.name||'Banco de certificación'))
         throw new Error('CERT_REVIEW_REMOTE_READBACK_MISMATCH');
     }
     if(result?.providerAck===true)CX.bus&&CX.bus.emit('cert');
     return result;
   },
-  async reviewDraft(pid,original,questions,policy='authorized_admin'){
+  async reviewDraft(pid,original,questions,policy='authorized_admin',requestedName){
     if(!this.connected())throw new Error('CERT_REVIEW_CONNECTED_PROVIDER_REQUIRED');
     const uid=String(CX.backendCertifications?.currentUid?.()||'');
     const role=String(CX.session?.effectiveRole?.()||CX.session?.role||CX.session?.user?.role||'').toLowerCase();
@@ -55,6 +62,9 @@ CX.certStore = CX.certStore || {
     const version=Number(original.__resourceVersion);
     if(!Number.isInteger(version)||version<1||!original.__resourceId)throw new Error('CERT_REVIEW_EXPECTED_VERSION_REQUIRED');
     if(!Array.isArray(questions)||questions.length!==original.preguntas.length)throw new Error('CERT_REVIEW_QUESTION_COUNT_CHANGED');
+    const previousName=this.normalizeName(original.certificationName||original.name||'');
+    const nextName=this.normalizeName(requestedName===undefined?previousName:requestedName);
+    const nameChanged=nextName!==previousName;
     const pageCount=Number(original.documentSource?.extraction_quality?.pageCount||0);
     const normalized=questions.map((q,i)=>{
       const options=(Array.isArray(q.ops)?q.ops:[]).map(x=>String(x||'').trim());
@@ -74,16 +84,17 @@ CX.certStore = CX.certStore || {
       titles.add(key);
     }
     const changes=normalized.flatMap((q,i)=>JSON.stringify(q)===JSON.stringify(original.preguntas[i])?[]:[{index:i+1,before:original.preguntas[i],after:q}]);
-    if(!changes.length)throw new Error('CERT_REVIEW_NO_CHANGES');
+    if(!changes.length&&!nameChanged)throw new Error('CERT_REVIEW_NO_CHANGES');
     const history=Array.isArray(original.reviewHistory)?original.reviewHistory.slice():[];
     if(history.length>=25)throw new Error('CERT_REVIEW_HISTORY_ARCHIVAL_REQUIRED');
     if(!globalThis.crypto?.subtle)throw new Error('CERT_REVIEW_SECURE_HASH_UNAVAILABLE');
-    const revisionPayload=JSON.stringify({previous:String(original.contentRevision||''),version,questions:normalized,sourceSha256:original.documentSource?.source_sha256||''});
+    const revisionPayload=JSON.stringify({previous:String(original.contentRevision||''),version,questions:normalized,certificationName:nextName,sourceSha256:original.documentSource?.source_sha256||''});
     const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(revisionPayload));
     const revision=Array.from(new Uint8Array(digest)).map(x=>x.toString(16).padStart(2,'0')).join('');
     const now=new Date().toISOString();
-    history.push({at:now,reviewerUid:uid,fromVersion:version,toVersion:version+1,previousContentRevision:String(original.contentRevision||''),contentRevision:revision,changes});
-    const next={...original,preguntas:normalized,estado:'pending_review',contentRevision:revision,
+    history.push({at:now,reviewerUid:uid,fromVersion:version,toVersion:version+1,previousContentRevision:String(original.contentRevision||''),contentRevision:revision,changes,
+      nameChange:nameChanged?{before:previousName,after:nextName}:null});
+    const next={...original,certificationName:nextName,preguntas:normalized,estado:'pending_review',contentRevision:revision,
       previousContentRevision:String(original.contentRevision||''),reviewHistory:history,reviewVersion:version+1,
       ultimaRevisionPorUid:uid,ultimaRevisionAt:now};
     return this.save(pid,next,original.certificationId,{
@@ -303,6 +314,8 @@ CX.module('cert', ({role,data,ui})=>{
     const ia=document.getElementById('certIA');
     if(ia)ia.addEventListener('click',()=>ui.modal('🤖 Crear certificación con IA · '+p.name,`
       <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Carga el <b>instructivo / protocolo</b> del proyecto (o pega el texto). La generación se ejecuta en el backend con Vertex AI; el navegador no recibe credenciales.</p>
+      <label class="lbl" for="ciAiName">Nombre de la certificación</label>
+      <input type="text" class="inp" id="ciAiName" maxlength="120" placeholder="Ej. Protocolo de visitas · periodo actual" style="margin-bottom:9px">
       <input type="file" class="inp" id="ciF" accept=".pdf,.docx,.txt,.md,.csv,.json" style="padding:7px;margin-bottom:8px">
       <textarea class="inp" id="ciT" rows="4" placeholder="…o pega el instructivo / qué debe dominar el evaluador" style="margin-bottom:10px"></textarea>
       <div class="grid g2" style="gap:10px 12px;margin-bottom:6px"><div><label class="lbl">Nº de preguntas</label><input class="inp" id="ciN" type="number" value="10"></div><div><label class="lbl">% mínimo para aprobar</label><input class="inp" id="ciG" type="number" value="80"></div></div>
@@ -311,6 +324,7 @@ CX.module('cert', ({role,data,ui})=>{
       const btn=ov.querySelector('#ciGo'),n=+ov.querySelector('#ciN').value||10,g=+ov.querySelector('#ciG').value||80,pasted=(ov.querySelector('#ciT').value||'').trim();
       btn.disabled=true;btn.textContent='Generando…';
       try{
+        const certificationName=CX.certStore.normalizeName(ov.querySelector('#ciAiName')?.value);
         const file=ov.querySelector('#ciF')?.files?.[0]||null;
         let extraction=null,fileTxt='';
         if(file){
@@ -330,11 +344,13 @@ CX.module('cert', ({role,data,ui})=>{
         if(!CX.ai?.ready?.())throw new Error('AI_PROVIDER_NOT_CONFIGURED');
         const textSha=async value=>{const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(String(value||'')));return Array.from(new Uint8Array(digest)).map(x=>x.toString(16).padStart(2,'0')).join('');};
         const documentSource=extraction?{mode:'attachment',name:extraction.name,format:extraction.format,mime:extraction.mime,size:extraction.size,source_sha256:extraction.source_sha256||null,parser:extraction.parser||null,extraction_quality:extraction.extraction_quality,ocrExecuted:false}:{mode:'manual_text',name:'Texto pegado',format:'text',source_sha256:await textSha(txt),extraction_quality:textQuality,ocrExecuted:false};
-        const generated=await CX.ai.ask(txt,{module:'certification',questionCount:n,gate:g,periodId:p.id,certificationName:'Banco IA pendiente de revisión',sourceSha256:documentSource.source_sha256,sourceTitle:documentSource.name,documentSource});
+        const generated=await CX.ai.ask(txt,{module:'certification',questionCount:n,gate:g,periodId:p.id,certificationName,sourceSha256:documentSource.source_sha256,sourceTitle:documentSource.name,documentSource});
         if(!(generated?.providerAck===true&&Array.isArray(generated.preguntas)&&generated.preguntas.length))throw new Error('AI_PROVIDER_ACK_REQUIRED');
         if(generated.preguntas.length!==n)throw new Error('Se generaron '+generated.preguntas.length+' de '+n+'; falta material suficiente para publicar el banco completo');
         if(!(generated?.committed===true&&generated?.readbackVerified===true&&generated?.item?.bank?.estado==='pending_review'))throw new Error('CERT_BANK_DURABLE_READBACK_REQUIRED');
         if(generated.preguntas.some(q=>!q?.fuente))throw new Error('CERT_BANK_SOURCE_REFERENCE_REQUIRED');
+        if(String(generated.item?.bank?.certificationName||'')!==certificationName)
+          throw new Error('CERT_BANK_NAME_PROVIDER_READBACK_MISMATCH');
         await CX.backend?.refresh?.();
         close();ui.toast('Banco generado por IA real y guardado · requiere revisión autorizada antes de publicarse.','ok',5200);CX.router?.nav?.('cert');
       }catch(error){
@@ -356,13 +372,16 @@ CX.module('cert', ({role,data,ui})=>{
         if(!CX.certStore.connected()){ui.toast('El editor requiere un proveedor durable conectado.','warn');return;}
         ui.modal('Revisión versionada del banco',`
           <div style="font-size:12px;color:var(--t2);margin-bottom:12px" id="certReviewSource"></div>
+          <label class="lbl" for="certReviewName">Nombre de la certificación</label>
+          <input class="inp" type="text" id="certReviewName" maxlength="120" style="margin-bottom:10px">
           <div id="certReviewQuestions" style="max-height:54vh;overflow:auto"></div>
           <div id="certReviewDiff" style="white-space:pre-wrap;font-size:12px;color:var(--t2);max-height:120px;overflow:auto;margin:12px 0"></div>
           <div class="between"><button class="btn btn-soft btn-sm" id="certReviewPreview">Comparar cambios</button>
             <button class="btn btn-pr btn-sm" id="certReviewSave" disabled>Guardar revisión sin publicar</button></div>
         `,{onMount:(ov,close)=>{
           const source=ov.querySelector('#certReviewSource'),list=ov.querySelector('#certReviewQuestions');
-          const preview=ov.querySelector('#certReviewPreview'),save=ov.querySelector('#certReviewSave'),diff=ov.querySelector('#certReviewDiff');
+          const preview=ov.querySelector('#certReviewPreview'),save=ov.querySelector('#certReviewSave'),diff=ov.querySelector('#certReviewDiff'),nameField=ov.querySelector('#certReviewName');
+          nameField.value=String(bank.certificationName||bank.name||'');
           source.textContent='Fuente: '+String(bank.documentSource?.name||'Instructivo no identificado')+
             ' · SHA: '+String(bank.documentSource?.source_sha256||'sin hash')+' · versión '+String(bank.__resourceVersion||'sin versión');
           const fields=[];
@@ -384,22 +403,35 @@ CX.module('cert', ({role,data,ui})=>{
             list.appendChild(fieldset);fields.push({question,options,correct,explanation,reference});
           });
           const read=()=>fields.map(f=>{const ops=f.options.map(x=>x.value.trim()),choice=Number(f.correct.value);return {q:f.question.value.trim(),ops,correcta:ops[choice]||'',exp:f.explanation.value.trim(),fuente:f.reference.value.trim()};});
+          const readName=()=>CX.certStore.normalizeName(nameField.value);
+          const payload=()=>JSON.stringify({name:readName(),questions:read()});
           let previewed='';
           const invalidate=()=>{previewed='';save.disabled=true;};
           list.addEventListener('input',invalidate);list.addEventListener('change',invalidate);
+          nameField.addEventListener('input',invalidate);
           preview.addEventListener('click',()=>{
-            const next=read(),changed=next.flatMap((q,i)=>{
-              const before=bank.preguntas[i]||{};
-              return ['q','ops','correcta','exp','fuente'].some(k=>JSON.stringify(q[k])!==JSON.stringify(before[k]))?[i+1]:[];
-            });
-            diff.textContent=changed.length?'Preguntas modificadas: '+changed.join(', ')+'\nLa edición conservará el historial y permanecerá pendiente de publicación.':'No hay cambios para guardar.';
-            previewed=changed.length?JSON.stringify(next):'';save.disabled=!previewed;
+            try{
+              const next=read(),name=readName(),changed=next.flatMap((q,i)=>{
+                const before=bank.preguntas[i]||{};
+                return ['q','ops','correcta','exp','fuente'].some(k=>JSON.stringify(q[k])!==JSON.stringify(before[k]))?[i+1]:[];
+              });
+              const nameChanged=name!==String(bank.certificationName||bank.name||'').trim();
+              diff.textContent=changed.length||nameChanged?[
+                nameChanged?'Nombre actualizado: '+name:'',
+                changed.length?'Preguntas modificadas: '+changed.join(', '):'',
+                'La revisión conservará el historial y permanecerá pendiente de publicación.'
+              ].filter(Boolean).join('\n'):'No hay cambios para guardar.';
+              previewed=changed.length||nameChanged?payload():'';
+              save.disabled=!previewed;
+            }catch(error){invalidate();ui.toast('Revisa el nombre: entre 3 y 120 caracteres, sin etiquetas HTML.','warn');}
           });
           save.addEventListener('click',async()=>{
-            if(!previewed||previewed!==JSON.stringify(read())){invalidate();ui.toast('Compara nuevamente los cambios antes de guardar.','warn');return;}
+            let current='';
+            try{current=payload();}catch(error){invalidate();ui.toast('Nombre de certificación no válido.','warn');return;}
+            if(!previewed||previewed!==current){invalidate();ui.toast('Compara nuevamente los cambios antes de guardar.','warn');return;}
             save.disabled=true;
             try{
-              const reply=await CX.certStore.reviewDraft(p.id,bank,read(),policy);
+              const reply=await CX.certStore.reviewDraft(p.id,bank,read(),policy,readName());
               if(!(reply?.providerAck===true&&reply?.committed===true))throw new Error('CERT_REVIEW_ACK_REQUIRED');
               close();ui.toast('Revisión guardada en servidor · publicación pendiente.','ok');CX.router?.nav?.('cert');
             }catch(error){console.warn('CXORBIA_CERT_REVIEW_SAFE_ERROR',String(error?.message||error).slice(0,120));ui.toast('No se pudo guardar la revisión. Comprueba tu sesión y vuelve a cargar el banco si alguien lo modificó.','warn');save.disabled=false;}

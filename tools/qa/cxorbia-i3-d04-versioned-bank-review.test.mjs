@@ -69,9 +69,48 @@ test('D04 modal edit button, diff preview and CAS-backed save exist without auto
  assert.match(source,/certReviewEdit/);
  assert.match(source,/certReviewPreview/);
  assert.match(source,/certReviewSave/);
- assert.match(source,/CX\.certStore\.reviewDraft\(p\.id,bank,read\(\),policy\)/);
+ assert.match(source,/CX\.certStore\.reviewDraft\(p\.id,bank,read\(\),policy,readName\(\)\)/);
  assert.match(source,/expectedVersion:version,expectedResourceId:original\.__resourceId,requireReadback:true/);
  const method=source.slice(source.indexOf('  async reviewDraft('),source.indexOf('  async clear(',source.indexOf('  async reviewDraft(')));
  assert.ok(method.length>0);
  assert.doesNotMatch(method,/estado\s*:\s*['"]published['"]/);
+});
+
+test('D04 name-only review keeps bank identity and question content, with versioned durable metadata ACK',async()=>{
+  const {CX,bank,resources,period}=setup();
+  const originalQuestions=clone(bank.preguntas);
+  const result=await CX.certStore.reviewDraft(period,bank,originalQuestions,'maker_checker','Protocolo Sala VIP · Octubre 2026');
+  assert.equal(result.providerAck,true);
+  assert.equal(result.committed,true);
+  const stored=resources.items[0];
+  assert.equal(stored.id,bank.__resourceId);
+  assert.equal(stored.version,4);
+  assert.equal(stored.n,'Protocolo Sala VIP · Octubre 2026');
+  assert.equal(stored.bank.certificationName,'Protocolo Sala VIP · Octubre 2026');
+  assert.equal(stored.bank.certificationId,bank.certificationId);
+  assert.equal(stored.bank.estado,'pending_review');
+  assert.deepEqual(JSON.parse(JSON.stringify(stored.bank.preguntas)),originalQuestions);
+  assert.equal(stored.bank.reviewHistory.length,1);
+  assert.equal(stored.bank.reviewHistory[0].changes.length,0);
+  assert.deepEqual(JSON.parse(JSON.stringify(stored.bank.reviewHistory[0].nameChange)),{before:'Banco IA pendiente de revisión',after:'Protocolo Sala VIP · Octubre 2026'});
+  assert.equal(stored.bank.reviewHistory[0].fromVersion,3);
+  assert.equal(stored.bank.reviewHistory[0].toVersion,4);
+  await assert.rejects(()=>CX.certStore.reviewDraft(period,bank,originalQuestions,'maker_checker','Nombre tardío'),/RESOURCE_EXPECTED_VERSION_CONFLICT/);
+});
+test('D04 rejects blank, unsafe and overly long names without writing provider',async()=>{
+  const {CX,bank,resources,period}=setup();
+  for(const name of ['','  ','a','a'.repeat(121),'<img onerror=alert(1)>','Valor\ninválido']){
+    await assert.rejects(()=>CX.certStore.reviewDraft(period,bank,clone(bank.preguntas),'authorized_admin',name),/CERT_BANK_NAME_INVALID/);
+  }
+  assert.equal(resources.items[0].version,3);
+});
+test('D04 generation and pending-review both expose editable names with full ACK readback',()=>{
+  assert.match(source,/id="ciAiName"/);
+  assert.match(source,/certificationName=CX\.certStore\.normalizeName\(ov\.querySelector\('#ciAiName'\)\?\.value\)/);
+  assert.match(source,/certificationName,sourceSha256:documentSource\.source_sha256/);
+  assert.match(source,/CERT_BANK_NAME_PROVIDER_READBACK_MISMATCH/);
+  assert.match(source,/id="certReviewName"/);
+  assert.match(source,/nameField\.addEventListener\('input',invalidate\)/);
+  assert.match(source,/nameChange:nameChanged\?/);
+  assert.match(source,/expectedVersion:version,expectedResourceId:original\.__resourceId,requireReadback:true/);
 });
