@@ -1,0 +1,3766 @@
+{
+  "schemaVersion": "cxorbia.i3.cumulative-no-omission-reconciliation.v1",
+  "capturedAt": "2026-10-18",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "officialState": "HOLD",
+  "kind": "APPEND_ONLY_CONTROL_COVERAGE_NOT_NEW_PLAN_NOT_FUNCTIONAL_PASS",
+  "authority": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "controlParentSha": "5ebdec835886218ace8a25d5dd191bd6a7cf4f58",
+    "productSourceSha": "330d220882a314b6599372e21f126aaab49cf30b",
+    "productTree": "dc64ea105fbe059d7986a5b99f3740fa38062102",
+    "descriptorPath": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "descriptorBlob": "2889a04bd7de86dca15e757986a3cc862db166ea",
+    "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V139.json",
+    "moduleTruthBlob": "6efc33d2466961731fb806b63939fa461fd47b77",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V468_2026-10-18.json",
+    "ledgerBlob": "e93531c9d9fdbc197921bf14a7810ce71a50705c",
+    "scopeLockPath": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
+    "scopeLockBlob": "a0078f7a78ff3495339e864305b075bdcd6424a2",
+    "fullPlanLibraryFileId": "libfile_4345c0d7d234819191a8ed51898c8be4",
+    "fullPlanSha256": "83e8f2c0a6b190bab1d9dea32bf99158116f3164f419ae72e051fd791fd8576c",
+    "fullPlanTaskId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
+    "doNotOverwritePlan": true,
+    "doNotReplace274Vrm": true
+  },
+  "coverage": {
+    "tasks": 82,
+    "I3Tasks": 63,
+    "I4Tasks": 7,
+    "stabilizationTasks": 6,
+    "evolutionTasks": 6,
+    "findingsForensic": 16,
+    "vrm": 274,
+    "domains": 21,
+    "humanOct06": 45,
+    "humanOct08": 18,
+    "humanOct14": 25,
+    "humanOct18": 11,
+    "humanOct18ScreenshotsReported": 12,
+    "screenshotsFrozenOct16": 20,
+    "criticalFunctions": 42,
+    "routesRoles": 56,
+    "gates": 21,
+    "taskIds": [
+      "G01",
+      "G02",
+      "G03",
+      "G04",
+      "G05",
+      "G06",
+      "A01",
+      "A02",
+      "A03",
+      "A04",
+      "A05",
+      "A06",
+      "A07",
+      "A08",
+      "A09",
+      "B01",
+      "B02",
+      "B03",
+      "B04",
+      "B05",
+      "B06",
+      "B07",
+      "B08",
+      "B09",
+      "B10",
+      "B11",
+      "B12",
+      "B13",
+      "B14",
+      "C01",
+      "C02",
+      "C03",
+      "C04",
+      "C05",
+      "C06",
+      "C07",
+      "C08",
+      "C09",
+      "C10",
+      "D01",
+      "D02",
+      "D03",
+      "D04",
+      "D05",
+      "D06",
+      "D07",
+      "D08",
+      "E01",
+      "E02",
+      "E03",
+      "E04",
+      "E05",
+      "E06",
+      "E07",
+      "E08",
+      "E09",
+      "E10",
+      "E11",
+      "V01",
+      "V02",
+      "V03",
+      "V04",
+      "V05",
+      "P01",
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "P06",
+      "P07",
+      "H01",
+      "H02",
+      "H03",
+      "H04",
+      "H05",
+      "H06",
+      "N01",
+      "N02",
+      "N03",
+      "N04",
+      "N05",
+      "N06"
+    ],
+    "taskStateIndex": [
+      {
+        "id": "G01",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "IN_PROGRESS_COVERAGE_CUSTODIED_AUTHORITY_GAPS_RETAINED_IN_G03",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "G02",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "DIRECT_NATIVE_GITHUB_WRITE_READBACK_AND_EXISTING_CI_PROVEN_NO_TINYFISH_REQUIRED",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "G03",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "PENDING_NO_NEW_GENERAL_AUDIT",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "G04",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "SOURCE_FOCAL_AND_RELATED_QA_PASS_RUN1730_PARTIAL_TASK_COVERAGE_ONLY",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "G05",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "G06",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "IN_PROGRESS_FROZEN_QUEUE_SINGLE_WRITER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "A01",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "A02",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "A03",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "A04",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "A05",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "A06",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "A07",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "A08",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "A09",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "B01",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "B02",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "B03",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "B04",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "B05",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "B06",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "B07",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "B08",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "B09",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "B10",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "B11",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "B12",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "B13",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "B14",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "C01",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "LIVE_E2E_PASS_RUN1746_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "C02",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "C03",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "C04",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "C05",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "C06",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "C07",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "C08",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "C09",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "C10",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "D01",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "PASS_AUTHORIZED_DOCUMENT_SOURCE",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "D02",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "PASS_LIVE_PARSER_RUN1753",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "D03",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "LIVE_E2E_PASS_RUN1778_FRESH_GENERATION_15Q_REPLAY_CLEANUP",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "D04",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "SOURCE_PROVEN_RUN1781_DEV_MATERIALIZED_RUN1782_PENDING_CONNECTED_LIVE_E2E",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "D05",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "D06",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "D07",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "D08",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "E01",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "E02",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "E03",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "E04",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "F12_SOURCE_PROVEN_RUN1781_DEV_MATERIALIZED_RUN1782_PENDING_LIVE_VISUAL__F09_DURABLE_COLLABORATION_OPEN",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "E05",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "E06",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "E07",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "E08",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "E09",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "E10",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "E11",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "V01",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "V02",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "V03",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "V04",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "V05",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "P01",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "P02",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "P03",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "P04",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "P05",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "P06",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "P07",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "H01",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "H02",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "H03",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "H04",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "H05",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "H06",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "N01",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "N02",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "N03",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "N04",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "N05",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      },
+      {
+        "id": "N06",
+        "planStatus": "FROZEN_SCOPE_PRESENT",
+        "latestEvidence": "NOT_RECONCILED_IN_CURRENT_EXECUTION_POINTER",
+        "ownerCriteria": "SEE_PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "noPassInference": true
+      }
+    ],
+    "allKnownArtifactsPreservedByReference": true,
+    "coverageDoesNotMeanPass": true
+  },
+  "humanEvidence": [
+    {
+      "path": "RECOVERY-I3-HUMAN-VISUAL-FAIL-OBSERVATION-MAP-20261006.json",
+      "blob": "3145e068f06eb69b5976a31fa76f7f87a7e9b6bc",
+      "observations": [
+        {
+          "id": 1,
+          "links": [
+            "VRM-197",
+            "VRM-258"
+          ]
+        },
+        {
+          "id": 2,
+          "links": [
+            "VRM-197",
+            "VRM-258"
+          ]
+        },
+        {
+          "id": 3,
+          "links": [
+            "VRM-207",
+            "VRM-211",
+            "VRM-213",
+            "VRM-243",
+            "VRM-258"
+          ]
+        },
+        {
+          "id": 4,
+          "links": [
+            "VRM-258"
+          ]
+        },
+        {
+          "id": 5,
+          "links": [
+            "VRM-054",
+            "VRM-099"
+          ]
+        },
+        {
+          "id": 6,
+          "links": [
+            "VRM-054",
+            "VRM-099"
+          ]
+        },
+        {
+          "id": 7,
+          "links": [
+            "VRM-133"
+          ]
+        },
+        {
+          "id": 8,
+          "links": [
+            "VRM-099"
+          ]
+        },
+        {
+          "id": 9,
+          "links": [
+            "VRM-144",
+            "VRM-165"
+          ]
+        },
+        {
+          "id": 10,
+          "links": [
+            "VRM-097",
+            "VRM-144",
+            "VRM-165"
+          ]
+        },
+        {
+          "id": 11,
+          "links": [
+            "VRM-125",
+            "VRM-168"
+          ]
+        },
+        {
+          "id": 12,
+          "links": [
+            "VRM-155",
+            "VRM-165"
+          ]
+        },
+        {
+          "id": 13,
+          "links": [
+            "VRM-169"
+          ]
+        },
+        {
+          "id": 14,
+          "links": [
+            "VRM-036",
+            "VRM-171"
+          ]
+        },
+        {
+          "id": 15,
+          "links": [
+            "VRM-036",
+            "VRM-171"
+          ]
+        },
+        {
+          "id": 16,
+          "links": [
+            "VRM-112",
+            "VRM-119",
+            "VRM-173"
+          ]
+        },
+        {
+          "id": 17,
+          "links": [
+            "VRM-111",
+            "VRM-148"
+          ]
+        },
+        {
+          "id": 18,
+          "links": [
+            "VRM-165"
+          ]
+        },
+        {
+          "id": 19,
+          "links": [
+            "VRM-101",
+            "VRM-165"
+          ]
+        },
+        {
+          "id": 20,
+          "links": [
+            "VRM-084",
+            "VRM-165"
+          ]
+        },
+        {
+          "id": 21,
+          "links": [
+            "VRM-258"
+          ]
+        },
+        {
+          "id": 22,
+          "links": []
+        },
+        {
+          "id": 23,
+          "links": []
+        },
+        {
+          "id": 24,
+          "links": []
+        },
+        {
+          "id": 25,
+          "links": [
+            "VRM-177"
+          ]
+        },
+        {
+          "id": 26,
+          "links": [
+            "VRM-258"
+          ]
+        },
+        {
+          "id": 27,
+          "links": [
+            "VRM-038",
+            "VRM-258"
+          ]
+        },
+        {
+          "id": 28,
+          "links": [
+            "VRM-259"
+          ]
+        },
+        {
+          "id": 29,
+          "links": [
+            "VRM-092"
+          ]
+        },
+        {
+          "id": 30,
+          "links": [
+            "VRM-092",
+            "VRM-129",
+            "VRM-167"
+          ]
+        },
+        {
+          "id": 31,
+          "links": [
+            "VRM-092"
+          ]
+        },
+        {
+          "id": 32,
+          "links": [
+            "VRM-092",
+            "VRM-123",
+            "VRM-125"
+          ]
+        },
+        {
+          "id": 33,
+          "links": [
+            "VRM-221",
+            "VRM-243"
+          ]
+        },
+        {
+          "id": 34,
+          "links": [
+            "VRM-221"
+          ]
+        },
+        {
+          "id": 35,
+          "links": [
+            "VRM-207",
+            "VRM-213",
+            "VRM-243"
+          ]
+        },
+        {
+          "id": 36,
+          "links": [
+            "VRM-039",
+            "VRM-094",
+            "VRM-132"
+          ]
+        },
+        {
+          "id": 37,
+          "links": [
+            "VRM-094",
+            "VRM-132",
+            "VRM-179"
+          ]
+        },
+        {
+          "id": 38,
+          "links": [
+            "VRM-132",
+            "VRM-151",
+            "VRM-179"
+          ]
+        },
+        {
+          "id": 39,
+          "links": [
+            "VRM-132",
+            "VRM-151"
+          ]
+        },
+        {
+          "id": 40,
+          "links": [
+            "VRM-132",
+            "VRM-151"
+          ]
+        },
+        {
+          "id": 41,
+          "links": [
+            "VRM-151",
+            "VRM-174",
+            "VRM-183"
+          ]
+        },
+        {
+          "id": 42,
+          "links": [
+            "VRM-132",
+            "VRM-179"
+          ]
+        },
+        {
+          "id": 43,
+          "links": [
+            "VRM-094",
+            "VRM-132"
+          ]
+        },
+        {
+          "id": 44,
+          "links": [
+            "VRM-078",
+            "VRM-191"
+          ]
+        },
+        {
+          "id": 45,
+          "links": [
+            "VRM-035",
+            "VRM-196"
+          ]
+        }
+      ],
+      "status": "CARRY_FORWARD_NO_DROPS"
+    },
+    {
+      "path": "CXORBIA_I3_HUMAN_VISUAL_CHECKPOINT_2026-10-08_B1_B2_B3_B5_B7_B8.json",
+      "blob": "74c5cb7931e0e28f852d731e4331468f04573947",
+      "observations": [
+        {
+          "id": "HF-20261008-01",
+          "block": "B1",
+          "sourceState": "OPEN_PERFORMANCE_MEASUREMENT_PENDING"
+        },
+        {
+          "id": "HF-20261008-02",
+          "block": "B1",
+          "sourceState": "HUMAN_VISUAL_PASS_SURFACE_ONLY"
+        },
+        {
+          "id": "HF-20261008-03",
+          "block": "B2",
+          "sourceState": "OPEN"
+        },
+        {
+          "id": "HF-20261008-04",
+          "block": "B3",
+          "sourceState": "OPEN_PARTIAL_VISUAL_IMPROVEMENT"
+        },
+        {
+          "id": "HF-20261008-05",
+          "block": "B3",
+          "sourceState": "OPEN_P0_PROVEN_VALIDATION_GAP"
+        },
+        {
+          "id": "HF-20261008-06",
+          "block": "B3",
+          "sourceState": "OPEN_P0_PROVEN_UI_GAP"
+        },
+        {
+          "id": "HF-20261008-07",
+          "block": "B3/B7",
+          "sourceState": "OPEN_P0_PROVEN_PROJECTION_GAP"
+        },
+        {
+          "id": "HF-20261008-08",
+          "block": "B3",
+          "sourceState": "OPEN_LIVE_REPRO_PENDING"
+        },
+        {
+          "id": "HF-20261008-09",
+          "block": "B3",
+          "sourceState": "OPEN_P0_PROVEN_FALSE_SUCCESS_PRESENTATION"
+        },
+        {
+          "id": "HF-20261008-10",
+          "block": "B3/B7",
+          "sourceState": "OPEN_P0_PROVEN_CROSSROLE_GAP"
+        },
+        {
+          "id": "HF-20261008-11",
+          "block": "B3/B7",
+          "sourceState": "OPEN_P0_DURABILITY_GAP"
+        },
+        {
+          "id": "HF-20261008-12",
+          "block": "B5",
+          "sourceState": "OPEN"
+        },
+        {
+          "id": "HF-20261008-13",
+          "block": "B2/B5",
+          "sourceState": "OPEN"
+        },
+        {
+          "id": "HF-20261008-14",
+          "block": "B5/B8",
+          "sourceState": "OPEN"
+        },
+        {
+          "id": "HF-20261008-15",
+          "block": "B5/B8",
+          "sourceState": "OPEN_P0_FINANCIAL_AUTHORITY_DRIFT"
+        },
+        {
+          "id": "HF-20261008-16",
+          "block": "B5",
+          "sourceState": "OPEN_PROVEN_SORT"
+        },
+        {
+          "id": "HF-20261008-17",
+          "block": "B3/B5",
+          "sourceState": "OPEN_SOURCE_VERIFICATION"
+        },
+        {
+          "id": "HF-20261008-18",
+          "block": "B1/B3",
+          "sourceState": "OPEN_LIVE_HR_REVISION_CHECK"
+        }
+      ],
+      "status": "CARRY_FORWARD_NO_DROPS"
+    },
+    {
+      "path": "CXORBIA_I3_HUMAN_REVIEW_20261014_P0_CUMULATIVE_FROZEN.json",
+      "blob": "dbff4bfb8d9e4ad039bdc9d2dc81016955a82711",
+      "observations": [
+        {
+          "id": "R01",
+          "module": "Dashboard Operativo",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R02",
+          "module": "Shoppers",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R03",
+          "module": "Shoppers",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R04",
+          "module": "Shoppers",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R05",
+          "module": "Postulaciones",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R06",
+          "module": "Postulaciones",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R07",
+          "module": "Postulaciones",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R08",
+          "module": "Certificaciones",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R09",
+          "module": "Finanzas",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R10",
+          "module": "Finanzas",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R11",
+          "module": "Finanzas",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R12",
+          "module": "Finanzas",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R13",
+          "module": "Finanzas",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R14",
+          "module": "Finanzas",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R15",
+          "module": "Finanzas",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R16",
+          "module": "Finanzas",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R17",
+          "module": "Finanzas",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R18",
+          "module": "Finanzas",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R19",
+          "module": "Operación",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R20",
+          "module": "Shopper",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R21",
+          "module": "Shopper",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R22",
+          "module": "Shopper",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R23",
+          "module": "Operación",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R24",
+          "module": "Finanzas",
+          "sourceState": "HUMAN_REPORTED_PENDING_OWNER_PROOF"
+        },
+        {
+          "id": "R25",
+          "module": "Shopper",
+          "sourceState": "PROVEN_BEHAVIOR_PRESERVE"
+        }
+      ],
+      "status": "CARRY_FORWARD_NO_DROPS"
+    },
+    {
+      "path": "CXORBIA_I3_SHOPPER_VISUAL_ADJUDICATION_2026-10-18.json",
+      "blob": "7b99112f0932c156701baa7565c4ec6488301ab1",
+      "observations": [
+        {
+          "index": 0,
+          "tasks": [
+            "B10"
+          ],
+          "stateAtCapture": "OPEN_SOURCE_ROUTER_PROVEN_PROVIDER_CONFIG_UNVERIFIED",
+          "classification": "MAPPING_FAILURE"
+        },
+        {
+          "index": 1,
+          "tasks": [
+            "B10"
+          ],
+          "stateAtCapture": "OWNER_PROVEN_SOURCE_READ_ONLY_NO_WRITE",
+          "classification": "FUNCTIONAL_DEFECT"
+        },
+        {
+          "index": 2,
+          "tasks": [
+            "B10"
+          ],
+          "stateAtCapture": "OWNER_PROVEN_SOURCE_READ_ONLY_NO_WRITE",
+          "classification": "FUNCTIONAL_DEFECT"
+        },
+        {
+          "index": 3,
+          "tasks": [
+            "B09",
+            "B10"
+          ],
+          "stateAtCapture": "REQUIRES_FOCAL_LIVE_PROOF",
+          "classification": "FUNCTIONAL_DEFECT"
+        },
+        {
+          "index": 4,
+          "tasks": [
+            "A09",
+            "B11"
+          ],
+          "stateAtCapture": "OPEN_ROOT_NOT_YET_PROVEN",
+          "classification": "MAPPING_FAILURE"
+        },
+        {
+          "index": 5,
+          "tasks": [
+            "A07"
+          ],
+          "stateAtCapture": "OWNER_PROVEN_VISUAL_REDESIGN_PENDING",
+          "classification": "VISUAL_DEFECT"
+        },
+        {
+          "index": 6,
+          "tasks": [
+            "D04",
+            "D05",
+            "D06"
+          ],
+          "stateAtCapture": "D04_SOURCE_PROVEN_DEV_MATERIALIZED_LIVE_E2E_PENDING",
+          "classification": "FUNCTIONAL_DEFECT"
+        },
+        {
+          "index": 7,
+          "tasks": [
+            "D04"
+          ],
+          "stateAtCapture": "OWNER_PROVEN_SOURCE_READ_ONLY_NO_WRITE",
+          "classification": "FUNCTIONAL_DEFECT"
+        },
+        {
+          "index": 8,
+          "tasks": [
+            "B11"
+          ],
+          "stateAtCapture": "NO_DEFECT_DECLARED_UNTIL_TEMPORAL_ELIGIBILITY_READBACK",
+          "classification": "MAPPING_FAILURE"
+        },
+        {
+          "index": 9,
+          "tasks": [
+            "B11"
+          ],
+          "stateAtCapture": "NO_DEFECT_DECLARED_UNTIL_HR_FINANCE_READBACK",
+          "classification": "MAPPING_FAILURE"
+        },
+        {
+          "index": 10,
+          "tasks": [
+            "B10"
+          ],
+          "stateAtCapture": "SOURCE_CONTRACT_FOUND_LIVE_HR_PARITY_NOT_YET_PROVEN",
+          "classification": "SOURCE_FAILURE"
+        }
+      ],
+      "status": "CARRY_FORWARD_NO_DROPS",
+      "evidenceBoundaries": [
+        "No new E2E actions executed from screenshots; browser connector text confirms current exact shopper has no country and period dropdown empty",
+        "External authoritative HR row readback unavailable here, so three expected visits not certified as observed",
+        "No proof that configured TyAOnline URL/visit-link is persisted in canonical registry; neither link invented nor changed",
+        "No screenshot upload into public repository",
+        "D03 fresh generation PASS RUN1778, D04+E04 source and DEV PASS RUN1782 but connected E2E pending"
+      ]
+    }
+  ],
+  "findingsForensic": [
+    "F01",
+    "F02",
+    "F03",
+    "F04",
+    "F05",
+    "F06",
+    "F07",
+    "F08",
+    "F09",
+    "F10",
+    "F11",
+    "F12",
+    "F13",
+    "F14",
+    "F15",
+    "F16"
+  ],
+  "historicalVRM": {
+    "count": 274,
+    "snapshot": [
+      {
+        "id": "VRM-001",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-002",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-003",
+        "ledgerState": "ALREADY_PROVEN_NO_DRIFT",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-004",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-005",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-006",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-007",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-008",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-009",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-010",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-011",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-012",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-013",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-014",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-015",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-016",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-017",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-018",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-019",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-020",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-021",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-022",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-023",
+        "ledgerState": "ALREADY_PROVEN_NO_DRIFT",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-024",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-025",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-026",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-027",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": null,
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-028",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-029",
+        "ledgerState": "FIXED_PROVEN",
+        "classification": "AUTH_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-030",
+        "ledgerState": "NOT_APPLICABLE_WITH_EVIDENCE",
+        "classification": "ENVIRONMENT_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-031",
+        "ledgerState": "NOT_APPLICABLE_WITH_EVIDENCE",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-032",
+        "ledgerState": "NOT_APPLICABLE_WITH_EVIDENCE",
+        "classification": "AUTH_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-033",
+        "ledgerState": "PASS_CUMULATIVE_IDENTITY_PROVEN_RUN387_PLUS_RUN472",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-034",
+        "ledgerState": "TERMINAL_REPROOF_PENDING_CURRENT_SOURCE",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-035",
+        "ledgerState": "TERMINAL_REPROOF_PENDING_CURRENT_SOURCE",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-036",
+        "ledgerState": "FIXED_SOURCE_PROVEN_NO_DEPLOY",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-037",
+        "ledgerState": "FIXED_SOURCE_PROVEN_NO_DEPLOY",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-038",
+        "ledgerState": "PASS_LIVE_PROVEN_RUN387_CURRENT_OWNER_BLOBS_IDENTICAL",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-039",
+        "ledgerState": "FIXED_SOURCE_PROVEN_NO_DEPLOY",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-040",
+        "ledgerState": "PASS_LIVE_PROVEN_RUN387_CURRENT_OWNER_BLOB_IDENTICAL",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-041",
+        "ledgerState": "TERMINAL_REPROOF_PENDING_CURRENT_SOURCE",
+        "classification": "VISUAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-042",
+        "ledgerState": "FIXED_SOURCE_PROVEN_NO_DEPLOY",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-043",
+        "ledgerState": "TERMINAL_REPROOF_PENDING_CURRENT_SOURCE",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-044",
+        "ledgerState": "CLOSED_PROVEN",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-045",
+        "ledgerState": "PASS_LIVE_PROVEN_RUN440",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-046",
+        "ledgerState": "PASS_LIVE_PROVEN_RUN440",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-047",
+        "ledgerState": "PASS_LIVE_PROVEN_RUN440",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-048",
+        "ledgerState": "PASS_LIVE_PROVEN_RUN440",
+        "classification": "VISUAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-049",
+        "ledgerState": "PASS_LIVE_PROVEN_RUN440",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-050",
+        "ledgerState": "PASS_LIVE_PROVEN_RUN479",
+        "classification": "PROVIDER_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-051",
+        "ledgerState": "PASS_LIVE_PROVEN_RUN440",
+        "classification": "VISUAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-052",
+        "ledgerState": "PASS_LIVE_PROVEN_RUN440",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-053",
+        "ledgerState": "PASS_LIVE_PROVEN_RUN440",
+        "classification": "VISUAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-054",
+        "ledgerState": "PASS_LIVE_AND_SOURCE_PROVEN_RUN472",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-055",
+        "ledgerState": "PASS_LIVE_PROVEN_RUN472_TENANT_ADJUDICATION_PRESERVED",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-056",
+        "ledgerState": "PASS_LIVE_PROVEN_RUN472",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-057",
+        "ledgerState": "PASS_LIVE_PROVEN_RUN467_AND_STABLE_RUN472",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-058",
+        "ledgerState": "PASS_LIVE_PROVEN_RUN472",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-059",
+        "ledgerState": "PASS_LIVE_PROVEN_RUN472",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-060",
+        "ledgerState": "PASS_LIVE_MEASURED_NO_AUTH_TIMEOUT_RUN472",
+        "classification": "ENVIRONMENT_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-061",
+        "ledgerState": "PASS_LIVE_PROVEN_RUN472",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-062",
+        "ledgerState": "PASS_DURABLE_PROVEN_RUN472",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-063",
+        "ledgerState": "PASS_DEV_DURABLE_REPAIR_RUN452",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-064",
+        "ledgerState": "PASS_DEV_DURABLE_REPAIR_RUN452",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-065",
+        "ledgerState": "PASS_LIVE_PROVEN_RUN488",
+        "classification": "PROVIDER_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-066",
+        "ledgerState": "PASS_LIVE_PROVEN_RUN494",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-067",
+        "ledgerState": "PASS_CONTROL_PROVEN_RUN494",
+        "classification": "SOURCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-068",
+        "ledgerState": "PASS_CONTROL_PROVEN_RUN495",
+        "classification": "SOURCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-069",
+        "ledgerState": "PASS_TERMINAL_PROVEN_RUN500",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-070",
+        "ledgerState": "PASS_TERMINAL_PROVEN_RUN500",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-071",
+        "ledgerState": "PASS_TERMINAL_PROVEN_RUN500",
+        "classification": "ENVIRONMENT_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-072",
+        "ledgerState": "PASS_CONTROL_PROVEN_RUN497",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-073",
+        "ledgerState": "PASS_TERMINAL_PROVEN_RUN500",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-074",
+        "ledgerState": "PASS_CONTROL_PROVEN_RUN500",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-075",
+        "ledgerState": "PASS_CONTROL_PROVEN_RUN500",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-076",
+        "ledgerState": "FIXED_PROVEN_RUN502",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-077",
+        "ledgerState": "FIXED_PROVEN_RUN507",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-078",
+        "ledgerState": "FIXED_PROVEN_RUN515",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-079",
+        "ledgerState": "FIXED_PROVEN_RUN518",
+        "classification": "PROVIDER_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-080",
+        "ledgerState": "FIXED_PROVEN_RUN525",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-081",
+        "ledgerState": "FIXED_PROVEN_RUN547",
+        "classification": "AUTH_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-082",
+        "ledgerState": "FIXED_PROVEN_CONTROL_FALSE_NEGATIVE_RUN555",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-083",
+        "ledgerState": "FIXED_PROVEN_RUN564",
+        "classification": "AUTH_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-084",
+        "ledgerState": "FIXED_PROVEN_RUN572",
+        "classification": "VISUAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-085",
+        "ledgerState": "FIXED_PROVEN_CONTROL_FALSE_NEGATIVE_RUN578",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-086",
+        "ledgerState": "FIXED_PROVEN_CONTROL_FALSE_NEGATIVE_RUN581",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-087",
+        "ledgerState": "FIXED_PROVEN_CONTROL_FALSE_NEGATIVE_RUN583",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-088",
+        "ledgerState": "FIXED_PROVEN_CONTROL_FALSE_NEGATIVE_RUN585",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-089",
+        "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-090",
+        "ledgerState": "PASS_CURRENT_ARTIFACT_RUN1152",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-091",
+        "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-092",
+        "ledgerState": "HUMAN_FAIL_REOPENED_POSTULATION_ADMIN_SURFACE_NOT_ACCEPTABLE",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-093",
+        "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-094",
+        "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+        "classification": "VISUAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-095",
+        "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+        "classification": "VISUAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-096",
+        "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+        "classification": "PROVIDER_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-097",
+        "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-098",
+        "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+        "classification": "VISUAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-099",
+        "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-100",
+        "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-101",
+        "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-102",
+        "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-103",
+        "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+        "classification": "VISUAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-104",
+        "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+        "classification": "AUTH_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-105",
+        "ledgerState": "CLOSED_FORENSIC_FALSE_ATTRIBUTION_CORRECTED",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-106",
+        "ledgerState": "FIXED_PROVEN_RUN736",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-107",
+        "ledgerState": "FIXED_PROVEN_RUN736",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-108",
+        "ledgerState": "FIXED_PROVEN_CONTROL_TREE_RESTORED",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-109",
+        "ledgerState": "FIXED_PROVEN_RUN740",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-110",
+        "ledgerState": "FIXED_PROVEN_RUN742",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-111",
+        "ledgerState": "FIXED_SOURCE_PROVEN_READY_DEV_MATERIALIZATION",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-112",
+        "ledgerState": "FIXED_SOURCE_PROVEN_READY_DEV_MATERIALIZATION",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-113",
+        "ledgerState": "FIXED_SOURCE_PROVEN_READY_DEV_MATERIALIZATION",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-114",
+        "ledgerState": "FIXED_CONTROL_RECONCILIATION_PENDING_REPROOF",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-115",
+        "ledgerState": "FIXED_SOURCE_PROVEN_READY_DEV_RESUME",
+        "classification": "SOURCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-116",
+        "ledgerState": "FIXED_CONTROL_READY_REPROOF",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-117",
+        "ledgerState": "FIXED_CONTROL_READY_NO_DEPLOY_REPROOF",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-118",
+        "ledgerState": "FIXED_CONTROL_READY_NO_DEPLOY_REPROOF",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-119",
+        "ledgerState": "FIXED_PROVEN_RUN_36793188546",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-120",
+        "ledgerState": "FIXED_PROVEN_RUN_36792808797",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-121",
+        "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-122",
+        "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-123",
+        "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-124",
+        "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-125",
+        "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-126",
+        "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-127",
+        "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-128",
+        "ledgerState": "HUMAN_FAIL_REOPENED_IDENTITY_ADJUDICATION_NOT_DISCOVERABLE",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-129",
+        "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-130",
+        "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-131",
+        "ledgerState": "OPEN_NON_BLOCKING_HUMAN_VISUAL_RETEST",
+        "classification": "VISUAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-132",
+        "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-133",
+        "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-134",
+        "ledgerState": "LIVE_E2E_PASS_PERFORMANCE_P0_OPEN_RUN1606",
+        "classification": "ENVIRONMENT_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-135",
+        "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+        "classification": "AUTH_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-136",
+        "ledgerState": "SOURCE_FIX_PENDING_DEV_LIVE_REPROOF",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-137",
+        "ledgerState": "FIXED_CONTROL_REPROOF_REQUIRED",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-138",
+        "ledgerState": "FIXED_CONTROL_REPROOF_REQUIRED",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-139",
+        "ledgerState": "FIXED_CONTROL_REPROOF_REQUIRED",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-140",
+        "ledgerState": "FIXED_CONTROL_REPROOF_REQUIRED",
+        "classification": "ENVIRONMENT_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-141",
+        "ledgerState": "FIXED_CONTROL_REPROOF_REQUIRED",
+        "classification": "AUTH_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-142",
+        "ledgerState": "SOURCE_FIX_PENDING_DEV_LIVE_REPROOF",
+        "classification": "AUTH_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-143",
+        "ledgerState": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-144",
+        "ledgerState": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
+        "classification": "VISUAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-145",
+        "ledgerState": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
+        "classification": "VISUAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-146",
+        "ledgerState": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-147",
+        "ledgerState": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-148",
+        "ledgerState": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-149",
+        "ledgerState": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
+        "classification": "VISUAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-150",
+        "ledgerState": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-151",
+        "ledgerState": "FINAL_CANONICAL_DRY_RUN_PASS_DURABLE_RECONCILIATION_REQUIRED",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-152",
+        "ledgerState": "RUNTIME_MATERIALIZED_DURABLE_RECONCILIATION_REQUIRED",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-153",
+        "ledgerState": "DEV_DURABLE_41_PROVIDER_ACK_READBACK_PASS_RUN1415_HUMAN_AND_ARTIFACT_E2E_PENDING",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": true,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-154",
+        "ledgerState": "CLOSED_PROVEN_RUN866",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-155",
+        "ledgerState": "HUMAN_VISUAL_FAIL_SUPERSEDED_BY_VRM165",
+        "classification": "VISUAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-156",
+        "ledgerState": "HUMAN_VISUAL_FAIL_SUPERSEDED_BY_VRM178",
+        "classification": "VISUAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-157",
+        "ledgerState": "CLOSED_PROVEN_RUN855",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-158",
+        "ledgerState": "CLOSED_PROVEN_RUN860_AUTHORITY_EXECUTED",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-159",
+        "ledgerState": "CLOSED_PROVEN_RUN859_WORKFLOW_LOADED_UNDER_LIMIT",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-160",
+        "ledgerState": "CLOSED_PROVEN_RUN860_AUTHORITY_GUARD_PASS",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-161",
+        "ledgerState": "CLOSED_PROVEN_RUN861_AUTH_LIFECYCLE_REACHED_LIVE_UI",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-162",
+        "ledgerState": "CLOSED_PROVEN_RUN866",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-163",
+        "ledgerState": "CONTROL_FIXED_PROVEN_RUN864",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-164",
+        "ledgerState": "CONTROL_FIXED_PROVEN_RUN864",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-165",
+        "ledgerState": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
+        "classification": "VISUAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-166",
+        "ledgerState": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-167",
+        "ledgerState": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-168",
+        "ledgerState": "FIXED_PROVEN_FOCAL_RUN906_TRANSVERSAL_BLOCKED_BY_VRM181",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-169",
+        "ledgerState": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-170",
+        "ledgerState": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-171",
+        "ledgerState": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-172",
+        "ledgerState": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-173",
+        "ledgerState": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-174",
+        "ledgerState": "PASS_CURRENT_ARTIFACT_RUN1233",
+        "classification": "MAPPING_FAILURE",
+        "blocking": false,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-175",
+        "ledgerState": "PASS_CURRENT_ARTIFACT_RUN1152",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-176",
+        "ledgerState": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-177",
+        "ledgerState": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-178",
+        "ledgerState": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
+        "classification": "VISUAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-179",
+        "ledgerState": "PASS_RUN1209_CURRENT_ARTIFACT",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": false,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-180",
+        "ledgerState": "DEV_MATERIALIZED_PENDING_LIVE_E2E",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-181",
+        "ledgerState": "PASS_CURRENT_ARTIFACT_RUN1148",
+        "classification": "VISUAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-182",
+        "ledgerState": "CONTROL_FIXED_SOURCE_DRIFT_PROVEN_RESIDUAL_PERSISTENCE_SEPARATED",
+        "classification": "ENVIRONMENT_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-183",
+        "ledgerState": "FIXED_PROVEN_DURABLE",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-184",
+        "ledgerState": "FIXED_PROVEN_RUN914_CONTROL_FALSE_NEGATIVE",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-185",
+        "ledgerState": "PASS_PROVEN_RUN946",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-186",
+        "ledgerState": "PASS_PROVEN_RUN946",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-187",
+        "ledgerState": "SOURCE_PASS_PROVEN_RUN954_PENDING_BOUNDED_PACKAGE_MATERIALIZATION",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-188",
+        "ledgerState": "SOURCE_PASS_PROVEN_RUN956_PENDING_BOUNDED_PACKAGE_MATERIALIZATION",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-189",
+        "ledgerState": "FIXED_PROVEN_RUN961",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-190",
+        "ledgerState": "SOURCE_PASS_RUN964",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-191",
+        "ledgerState": "SOURCE_PASS_RUN968",
+        "classification": "PROVIDER_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-192",
+        "ledgerState": "SOURCE_PASS_RUN971",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-193",
+        "ledgerState": "OPEN_BLOCKER_CURRENT_CANDIDATE",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-194",
+        "ledgerState": "EXACT_DEV_RUN1053_PENDING_SAME_ARTIFACT_LIVE_REPROOF",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-195",
+        "ledgerState": "FIXED_PROVEN_RUN977",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-196",
+        "ledgerState": "CONTROL_FAIL_CLOSED_RUN980_PRODUCT_REMEDIATION_ACTIVE",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-197",
+        "ledgerState": "PASS_CURRENT_ARTIFACT_RUN1148",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-198",
+        "ledgerState": "CONTROL_GUARD_FIXED_RUN980",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-199",
+        "ledgerState": "PASS_CURRENT_ARTIFACT_RUN1148",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-200",
+        "ledgerState": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-201",
+        "ledgerState": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
+        "classification": "VISUAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-202",
+        "ledgerState": "PASS_CURRENT_ARTIFACT_RUN1148",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-203",
+        "ledgerState": "CONTROL_FIXED_SOURCE_REPROOF_PASS_RUN1045",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-204",
+        "ledgerState": "CONTROL_FIXED_SOURCE_PASS_RUN1052",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-205",
+        "ledgerState": "CONTROL_FIX_PREFLIGHT_PASS_RUN1054",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-206",
+        "ledgerState": "QA_MAPPING_FIX_DISPROVEN_AS_SUFFICIENT_RUN1055",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-207",
+        "ledgerState": "PASS_CURRENT_ARTIFACT_RUN1148",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-208",
+        "ledgerState": "CONTROL_PREFLIGHT_SIMPLIFIED_PENDING_DIAGNOSTIC",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-209",
+        "ledgerState": "CONTROL_FIX_CONFIRMED_RUN1057",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-210",
+        "ledgerState": "CONTROL_FIX_CONFIRMED_RUN1058",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-211",
+        "ledgerState": "PASS_CURRENT_ARTIFACT_RUN1152_WITH_JULISSA_RUN1066",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-212",
+        "ledgerState": "PASS_CURRENT_ARTIFACT_RUN1152_WITH_JULISSA_RUN1066",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-213",
+        "ledgerState": "PASS_CURRENT_ARTIFACT_RUN1152_WITH_JULISSA_RUN1066",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-214",
+        "ledgerState": "POSTWRITE_DURABLE_READBACK_PASS_RUN1066",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-215",
+        "ledgerState": "PASS_RUN1142",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-216",
+        "ledgerState": "FIXED_PROVEN_RUN1073",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-217",
+        "ledgerState": "POST_SWEEP_READBACK_PASS_RUN1083_NO_MORE_CREDENTIAL_SWEEP",
+        "classification": "AUTH_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-218",
+        "ledgerState": "EXACT_OWNER_PROVEN_RUN1101_RUNTIME_RECONCILIATION_CONFIRMED_RESIDUALS_PRESERVED",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-219",
+        "ledgerState": "RUN1092_EXACT_AUTHORITY_PROVEN_BLOCKED_ONLY_BY_MISSING_CANONICAL_PROFILE_VRM220",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-220",
+        "ledgerState": "FIXED_PROVEN_RUN1098_DURABLE",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-221",
+        "ledgerState": "PASS_CURRENT_ARTIFACT_RUN1119",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-222",
+        "ledgerState": "PROVEN_CONTROL_AND_RUNTIME_READBACK",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-223",
+        "ledgerState": "PASS_CURRENT_ARTIFACT_RUN1112_SOURCE_COMPOSED",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-224",
+        "ledgerState": "FIXED_PROVEN_RUN1105_CANONICAL_AUTHORITY_PASS",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-225",
+        "ledgerState": "PASS_CURRENT_ARTIFACT_RUN1112_SOURCE_COMPOSED",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-226",
+        "ledgerState": "SUPERSEDED_BY_VRM-229",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-227",
+        "ledgerState": "PASS_CURRENT_ARTIFACT_RUN1114_REVIEW_CLOSURE_PROVEN",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-228",
+        "ledgerState": "FIXED_PROVEN_RUN1111",
+        "classification": "SOURCE_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-229",
+        "ledgerState": "PASS_CURRENT_ARTIFACT_RUN1114",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-230",
+        "ledgerState": "CONTROL_ONLY_FIXED_RUN1114_PASS",
+        "classification": "ENVIRONMENT_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-231",
+        "ledgerState": "CONTROL_ONLY_FIXED_RUN1116_WORKFLOW_LOADED",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-232",
+        "ledgerState": "CONTROL_ONLY_FIXED_RUN1117_CANONICAL_AUTHORITY_PASS",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-233",
+        "ledgerState": "SUPERSEDED_BY_VRM-234",
+        "classification": "ENVIRONMENT_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-234",
+        "ledgerState": "CONTROL_ONLY_FIXED_RUN1119_PASS",
+        "classification": "ENVIRONMENT_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-235",
+        "ledgerState": "SUPERSEDED_BY_VRM-236",
+        "classification": "AUTH_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-236",
+        "ledgerState": "CONTROL_ONLY_FIXED_RUN1123_PASS",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-237",
+        "ledgerState": "CONTROL_ONLY_FIXED_RUN1124_PREFLIGHT_PASS",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-238",
+        "ledgerState": "PASS_EXACT_OWNER_DIAGNOSTIC_RUN1125",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-239",
+        "ledgerState": "PASS_READINESS_RUN1126",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-240",
+        "ledgerState": "NO_WRITE_FAIL_CLOSED_RUN1127",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-241",
+        "ledgerState": "PASS_DIAGNOSTIC_RUN1128",
+        "classification": "AUTH_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-242",
+        "ledgerState": "PARTIAL_PASS_ALIAS_COMMAND_BLOCKED_RUN1129",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-243",
+        "ledgerState": "PASS_RUN1131",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-244",
+        "ledgerState": "CONTROL_ONLY_FIXED_RUN1131",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-245",
+        "ledgerState": "CONTROL_ONLY_FIXED_RUN1142",
+        "classification": "MAPPING_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-246",
+        "ledgerState": "CONTROL_ONLY_FIXED_WORKFLOW_ACCEPTED_RUN1139",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-247",
+        "ledgerState": "CONTROL_ONLY_FIXED_RUN1148",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-248",
+        "ledgerState": "CONTROL_OBSERVER_FIX_REQUIRED",
+        "classification": "ENVIRONMENT_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-249",
+        "ledgerState": "PASS_RUN1204_CURRENT_ARTIFACT",
+        "classification": "MAPPING_FAILURE",
+        "blocking": false,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-250",
+        "ledgerState": "CONTROL_ONLY_FIXED_WORKFLOW_ACCEPTED_RUN1174",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-251",
+        "ledgerState": "CONTROL_ONLY_FIXED_SCOPED_READBACK_PASS",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-252",
+        "ledgerState": "CONTROL_ONLY_FIXED_RUN1204_PASS",
+        "classification": "MAPPING_FAILURE",
+        "blocking": false,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-253",
+        "ledgerState": "CONTROL_ONLY_FIXED_RUN1204_PASS",
+        "classification": "MAPPING_FAILURE",
+        "blocking": false,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-254",
+        "ledgerState": "CONTROL_ONLY_FIXED_RUN1225_AUTH_PASS",
+        "classification": "ENVIRONMENT_FAILURE",
+        "blocking": false,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-255",
+        "ledgerState": "CONTROL_ONLY_FIXED_RUN1227_STABLE_HR",
+        "classification": "ENVIRONMENT_FAILURE",
+        "blocking": false,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-256",
+        "ledgerState": "FIXED_PROVEN_RUN1240_MIDIA_PASS",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": false,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-257",
+        "ledgerState": "FIXED_PROVEN_RUN1243_BENEFITS_PASS",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": false,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-258",
+        "ledgerState": "FIXED_PROVEN_RUN1258_JULISSA_CANONICAL_PASS",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": false,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-259",
+        "ledgerState": "LIVE_E2E_PASS_HUMAN_B7_PENDING",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": false,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-260",
+        "ledgerState": "FIXED_PROVEN_RUN1357",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": false,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-261",
+        "ledgerState": "FIXED_PROVEN_RUN1330_LIVE",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": false,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-262",
+        "ledgerState": "FIXED_PROVEN_RUN1330_LIVE_DOWNLOAD",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": false,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-263",
+        "ledgerState": "FIXED_PROVEN_RUN1348_DURABLE",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": false,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-264",
+        "ledgerState": "FIXED_PROVEN_RUN1330_NEW_CONTEXT",
+        "classification": "PERSISTENCE_FAILURE",
+        "blocking": false,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-265",
+        "ledgerState": "CONTROL_ONLY_FIXED_RUN1330",
+        "classification": "MAPPING_FAILURE",
+        "blocking": false,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-266",
+        "ledgerState": "CONTROL_ONLY_FIXED_RUN1330",
+        "classification": "MAPPING_FAILURE",
+        "blocking": false,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-267",
+        "ledgerState": "FIXED_PROVEN_RUN1348_DURABLE",
+        "classification": "AUTH_FAILURE",
+        "blocking": false,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-268",
+        "ledgerState": "FIXED_PROVEN_RUN1357",
+        "classification": "MAPPING_FAILURE",
+        "blocking": false,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-269",
+        "ledgerState": "FIXED_PROVEN_RUN1357",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": false,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-270",
+        "ledgerState": "FIXED_PROVEN_RUN1356",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "blocking": false,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-271",
+        "ledgerState": "DEV_FOCAL_UI_E2E_PROVEN_HUMAN_AND_FULL_POPULATION_PENDING",
+        "classification": "MAPPING_FAILURE",
+        "blocking": true,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-272",
+        "ledgerState": "PRODUCT_FIXES_PASS_CONTROL_FALSE_NEGATIVES_FIXED_SAME_ARTIFACT_REPROOF_REQUIRED",
+        "classification": "MAPPING_FAILURE",
+        "blocking": true,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-273",
+        "ledgerState": "DEV_REPRESENTATIVE_E2E_PASS_PENDING_FOCAL_DISPLAY_ACK_AND_HUMAN",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      },
+      {
+        "id": "VRM-274",
+        "ledgerState": "DEV_MATERIALIZED_PENDING_HN_EXACT_POPULATION_E2E_AND_HUMAN",
+        "classification": "FUNCTIONAL_DEFECT",
+        "blocking": null,
+        "doNotReopenHistoricalPassWithoutDrift": true
+      }
+    ],
+    "sourceLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V468_2026-10-18.json",
+    "sourceLedgerBlob": "e93531c9d9fdbc197921bf14a7810ce71a50705c",
+    "precedence": "LIVE_LEDGER_CURRENT_STATE_PREVAILS; THIS_IS_INDEX_NOT_STATE_REPLACEMENT",
+    "criticalFinanceVRM": [
+      {
+        "id": "VRM-039",
+        "ledgerState": "FIXED_SOURCE_PROVEN_NO_DEPLOY",
+        "classification": "RELEASE_COMPOSITION_FAILURE"
+      },
+      {
+        "id": "VRM-084",
+        "ledgerState": "FIXED_PROVEN_RUN572",
+        "classification": "VISUAL_DEFECT"
+      },
+      {
+        "id": "VRM-094",
+        "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+        "classification": "VISUAL_DEFECT"
+      },
+      {
+        "id": "VRM-132",
+        "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+        "classification": "PERSISTENCE_FAILURE"
+      },
+      {
+        "id": "VRM-142",
+        "ledgerState": "SOURCE_FIX_PENDING_DEV_LIVE_REPROOF",
+        "classification": "AUTH_FAILURE"
+      },
+      {
+        "id": "VRM-151",
+        "ledgerState": "FINAL_CANONICAL_DRY_RUN_PASS_DURABLE_RECONCILIATION_REQUIRED",
+        "classification": "PERSISTENCE_FAILURE"
+      },
+      {
+        "id": "VRM-152",
+        "ledgerState": "RUNTIME_MATERIALIZED_DURABLE_RECONCILIATION_REQUIRED",
+        "classification": "PERSISTENCE_FAILURE"
+      },
+      {
+        "id": "VRM-153",
+        "ledgerState": "DEV_DURABLE_41_PROVIDER_ACK_READBACK_PASS_RUN1415_HUMAN_AND_ARTIFACT_E2E_PENDING",
+        "classification": "PERSISTENCE_FAILURE"
+      },
+      {
+        "id": "VRM-174",
+        "ledgerState": "PASS_CURRENT_ARTIFACT_RUN1233",
+        "classification": "MAPPING_FAILURE"
+      },
+      {
+        "id": "VRM-179",
+        "ledgerState": "PASS_RUN1209_CURRENT_ARTIFACT",
+        "classification": "FUNCTIONAL_DEFECT"
+      },
+      {
+        "id": "VRM-183",
+        "ledgerState": "FIXED_PROVEN_DURABLE",
+        "classification": "PERSISTENCE_FAILURE"
+      },
+      {
+        "id": "VRM-262",
+        "ledgerState": "FIXED_PROVEN_RUN1330_LIVE_DOWNLOAD",
+        "classification": "FUNCTIONAL_DEFECT"
+      },
+      {
+        "id": "VRM-271",
+        "ledgerState": "DEV_FOCAL_UI_E2E_PROVEN_HUMAN_AND_FULL_POPULATION_PENDING",
+        "classification": "MAPPING_FAILURE"
+      }
+    ]
+  },
+  "moduleTruth": {
+    "domains": [
+      {
+        "domain": "auth-protected-data-runtime",
+        "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+        "closureRequirement": "COLD_LOGIN_NO_RELOAD_TWO_SHOPPERS_PLUS_ADMIN_SAME_ARTIFACT_E2E"
+      },
+      {
+        "domain": "base-router-shell-cache",
+        "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
+        "closureRequirement": "R20_SERVICE_WORKER_NO_AUTH_ABORT_SOURCE_CI_AND_REAL_SHOPPER_LOGIN"
+      },
+      {
+        "domain": "benefits",
+        "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+        "closureRequirement": "SOURCE_PROOF_EXACT_DEV_RUNTIME_HOSTING_BOTH_ROLES_READBACK"
+      },
+      {
+        "domain": "canonical-hr-state-adapters",
+        "classification": "TRUE_FUNCTIONAL_DEFECT",
+        "closureRequirement": "G05 source-only repair; A05 atomic UI/session publication and scoped DEV/live/human proof remain. No whole-domain PASS."
+      },
+      {
+        "domain": "certifications",
+        "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
+        "closureRequirement": "Exact affected owners D04/F12 source proof, one DEV same-artifact readback and human acceptance; other historical scopes preserved"
+      },
+      {
+        "domain": "client-portal-reportkit",
+        "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
+        "closureRequirement": "E04/F12 source PASS RUN1781; benchmark no fallback live DEV, preserve independent F09 durable collaboration open"
+      },
+      {
+        "domain": "core-config-data-router-permissions",
+        "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+        "closureRequirement": "EXACT_SOURCE_PROOF_DEV_ACTION_E2E_PAULA_BLOCK_PASS"
+      },
+      {
+        "domain": "dashboard-operation",
+        "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+        "closureRequirement": "R01_R09_R12_SOURCE_QA_THEN_DEV_BROWSER_E2E"
+      },
+      {
+        "domain": "documents-resources",
+        "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
+        "closureRequirement": "Exact affected owners D04/F12 source proof, one DEV same-artifact readback and human acceptance; other historical scopes preserved"
+      },
+      {
+        "domain": "finance-core-liquidation-costs",
+        "classification": "TRUE_FUNCTIONAL_DEFECT",
+        "closureRequirement": "A04/C01 focal source proven; dependent A05/C02 and real DEV/provider/human proof remain. No whole-domain PASS."
+      },
+      {
+        "domain": "historical",
+        "classification": "MATCH",
+        "closureRequirement": "SOURCE_PROVIDER_E2E_HUMAN_PER_PLAN"
+      },
+      {
+        "domain": "human-runtime-domain-consistency",
+        "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
+        "closureRequirement": "VRM259_RUN1537_EXACT_DEV_LIVE_PASS__B7_HUMAN_VISUAL_PENDING_AND_OTHER_P0_PENDING"
+      },
+      {
+        "domain": "identity-membership-roll-forward",
+        "classification": "MATCH",
+        "closureRequirement": "NONE__B1_CANONICAL_SESSION_OWNER_LIVE_REPROOF_PASS"
+      },
+      {
+        "domain": "persistence-command-ack-boundary",
+        "classification": "COMPOSED_NOT_DEPLOYED",
+        "closureRequirement": "G05 source-only repair; A05 atomic UI/session publication and scoped DEV/live/human proof remain. No whole-domain PASS."
+      },
+      {
+        "domain": "phase-a-supporting-core",
+        "classification": "MATCH",
+        "closureRequirement": "SOURCE_PROVIDER_E2E_HUMAN_PER_PLAN"
+      },
+      {
+        "domain": "projects-periods-hr-source-wizard-multiproject",
+        "classification": "COMPOSED_NOT_DEPLOYED",
+        "closureRequirement": "G05 source-only repair; A05 atomic UI/session publication and scoped DEV/live/human proof remain. No whole-domain PASS."
+      },
+      {
+        "domain": "questionnaire-shopper",
+        "classification": "MATCH",
+        "closureRequirement": "SOURCE_PROVIDER_E2E_HUMAN_PER_PLAN"
+      },
+      {
+        "domain": "reports-admin-shopper",
+        "classification": "MATCH",
+        "closureRequirement": "SOURCE_PROVIDER_E2E_HUMAN_PER_PLAN"
+      },
+      {
+        "domain": "shoppers-mi-visitas-profile",
+        "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+        "closureRequirement": "R22_CROSS_SURFACE_SOURCE_QA_SAME_ARTIFACT_DEV_E2E_HUMAN"
+      },
+      {
+        "domain": "visits-review-postulations-reservations",
+        "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
+        "closureRequirement": "B7_GESTION_FILTER_ASSIGNMENTS_AND_SINGLE_KPI_MODAL_QA"
+      },
+      {
+        "domain": "tenant-admin-config-branding",
+        "classification": "MATCH",
+        "closureRequirement": "SOURCE_PROVIDER_E2E_HUMAN_PER_PLAN"
+      }
+    ],
+    "scope": "MODULE_CLASSIFICATION_NOT_HUMAN_ACCEPTANCE",
+    "financeDomain": "TRUE_FUNCTIONAL_DEFECT",
+    "phaseAComplete": false,
+    "allModulesMatch": false
+  },
+  "financialMandatory": {
+    "tasks": {
+      "C01": {
+        "evidence": "LIVE_E2E_PASS_RUN1746_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
+        "scope": "Dashboard Conciliar click/action focal PASS RUN1746; NOT finance domain closure",
+        "acceptance": "PROVIDER_ACK_AND_INDEPENDENT_READBACK_WHERE_APPLICABLE; TWO_ROLES; SAME_ARTIFACT; NO_REAL_PAYMENT",
+        "I3Status": "PENDING_COMPLETE_MODULE_CLOSURE_UNTIL_TASK_SPECIFIC_PROOF"
+      },
+      "C02": {
+        "evidence": "TASK_LEVEL_E2E_NOT_CERTIFIED",
+        "scope": "Post-ACK readback after reload and separate admin session",
+        "acceptance": "PROVIDER_ACK_AND_INDEPENDENT_READBACK_WHERE_APPLICABLE; TWO_ROLES; SAME_ARTIFACT; NO_REAL_PAYMENT",
+        "I3Status": "PENDING_COMPLETE_MODULE_CLOSURE_UNTIL_TASK_SPECIFIC_PROOF"
+      },
+      "C03": {
+        "evidence": "TASK_LEVEL_E2E_NOT_CERTIFIED",
+        "scope": "Q7.300 original remesa/advance; project/period/currency and cash vs accrued income",
+        "acceptance": "PROVIDER_ACK_AND_INDEPENDENT_READBACK_WHERE_APPLICABLE; TWO_ROLES; SAME_ARTIFACT; NO_REAL_PAYMENT",
+        "I3Status": "PENDING_COMPLETE_MODULE_CLOSURE_UNTIL_TASK_SPECIFIC_PROOF"
+      },
+      "C04": {
+        "evidence": "TASK_LEVEL_E2E_NOT_CERTIFIED",
+        "scope": "Tenant Global vs project durable movement, account and budgets; no browser authority",
+        "acceptance": "PROVIDER_ACK_AND_INDEPENDENT_READBACK_WHERE_APPLICABLE; TWO_ROLES; SAME_ARTIFACT; NO_REAL_PAYMENT",
+        "I3Status": "PENDING_COMPLETE_MODULE_CLOSURE_UNTIL_TASK_SPECIFIC_PROOF"
+      },
+      "C05": {
+        "evidence": "TASK_LEVEL_E2E_NOT_CERTIFIED",
+        "scope": "CxP/CxC, receivables, financings, country/currency and debtor/creditor",
+        "acceptance": "PROVIDER_ACK_AND_INDEPENDENT_READBACK_WHERE_APPLICABLE; TWO_ROLES; SAME_ARTIFACT; NO_REAL_PAYMENT",
+        "I3Status": "PENDING_COMPLETE_MODULE_CLOSURE_UNTIL_TASK_SPECIFIC_PROOF"
+      },
+      "C06": {
+        "evidence": "TASK_LEVEL_E2E_NOT_CERTIFIED",
+        "scope": "Eligible individual payment: internal record vs bank confirmation; dated reference, durable support, no actual transfer",
+        "acceptance": "PROVIDER_ACK_AND_INDEPENDENT_READBACK_WHERE_APPLICABLE; TWO_ROLES; SAME_ARTIFACT; NO_REAL_PAYMENT",
+        "I3Status": "PENDING_COMPLETE_MODULE_CLOSURE_UNTIL_TASK_SPECIFIC_PROOF"
+      },
+      "C07": {
+        "evidence": "TASK_LEVEL_E2E_NOT_CERTIFIED",
+        "scope": "Chosen-row batch only; currency; upload/download support, export, reconciliation and idempotency",
+        "acceptance": "PROVIDER_ACK_AND_INDEPENDENT_READBACK_WHERE_APPLICABLE; TWO_ROLES; SAME_ARTIFACT; NO_REAL_PAYMENT",
+        "I3Status": "PENDING_COMPLETE_MODULE_CLOSURE_UNTIL_TASK_SPECIFIC_PROOF"
+      },
+      "C08": {
+        "evidence": "TASK_LEVEL_E2E_NOT_CERTIFIED",
+        "scope": "Historical through Jul paid; Aug paid 2026-10-02; Sep only proven receipts (country-specific claims require independent proof); Oct live",
+        "acceptance": "PROVIDER_ACK_AND_INDEPENDENT_READBACK_WHERE_APPLICABLE; TWO_ROLES; SAME_ARTIFACT; NO_REAL_PAYMENT",
+        "I3Status": "PENDING_COMPLETE_MODULE_CLOSURE_UNTIL_TASK_SPECIFIC_PROOF"
+      },
+      "C09": {
+        "evidence": "TASK_LEVEL_E2E_NOT_CERTIFIED",
+        "scope": "Benefit/shopper/admin income, reimbursements, honoraria, batch, dashboards and report exact same financial ledger",
+        "acceptance": "PROVIDER_ACK_AND_INDEPENDENT_READBACK_WHERE_APPLICABLE; TWO_ROLES; SAME_ARTIFACT; NO_REAL_PAYMENT",
+        "I3Status": "PENDING_COMPLETE_MODULE_CLOSURE_UNTIL_TASK_SPECIFIC_PROOF"
+      },
+      "C10": {
+        "evidence": "TASK_LEVEL_E2E_NOT_CERTIFIED",
+        "scope": "Cross-session end-to-end with independent provider, approved fixtures, no money movement",
+        "acceptance": "PROVIDER_ACK_AND_INDEPENDENT_READBACK_WHERE_APPLICABLE; TWO_ROLES; SAME_ARTIFACT; NO_REAL_PAYMENT",
+        "I3Status": "PENDING_COMPLETE_MODULE_CLOSURE_UNTIL_TASK_SPECIFIC_PROOF"
+      }
+    },
+    "relatedHumanOct14": [
+      "R09",
+      "R10",
+      "R11",
+      "R12",
+      "R13",
+      "R14",
+      "R15",
+      "R16",
+      "R17",
+      "R18",
+      "R24"
+    ],
+    "relatedHF": [
+      "HF-20261008-12",
+      "HF-20261008-13",
+      "HF-20261008-14",
+      "HF-20261008-15",
+      "HF-20261008-16",
+      "HF-20261008-17",
+      "HF-20261012-21",
+      "HF-20261012-22",
+      "HF-20261012-23",
+      "HF-20261012-24",
+      "HF-20261012-25",
+      "HF-20261012-26",
+      "HF-20261012-27",
+      "HF-20261012-28"
+    ],
+    "relatedVRM": [
+      "VRM-039",
+      "VRM-084",
+      "VRM-094",
+      "VRM-132",
+      "VRM-142",
+      "VRM-151",
+      "VRM-152",
+      "VRM-153",
+      "VRM-174",
+      "VRM-179",
+      "VRM-183",
+      "VRM-262",
+      "VRM-271"
+    ],
+    "feesHumanReport": {
+      "GT_USD_PER_VISIT": 17,
+      "HN_USD_PER_VISIT": 20,
+      "mode": "REPORTED_REQUIRES_PROJECT_COUNTRY_CONFIG_SOURCE_AND_RATE_REVISION_NOT_HARDCODE"
+    },
+    "historicalCut": {
+      "through": "2026-07",
+      "throughStatus": "HUMAN_HISTORICAL_PAID",
+      "augustPaidOn": "2026-10-02",
+      "september": "ONLY_ROWS_WITH_INDEPENDENT_PAYMENT_RECEIPTS; Oct14 GT/HN-specific human assertions require reconciliation; never infer any bank payment",
+      "october": "LIVE_OPERATIONS_FROM_2026-10-01",
+      "moneyTransfersForQa": false
+    },
+    "remesaQ7300": {
+      "recordMustBeLocatedBySourceId": true,
+      "doNotRecreate": true,
+      "typeUnknownUntilProviderReadback": true
+    },
+    "crossRole": "SHOPPER_BENEFITS_ADMIN_FINANCE_REPORTS_SAME_DURABLE_AUTHORITY_SAME_CURRENCY",
+    "financeFunctionalVerdict": "HOLD; C01 PASS IS NOT FULL B8 PASS",
+    "budgetHF26Readback": "REQUIRED; no false UI success",
+    "paymentsBankAck": "REQUIRED_FOR_EXTERNAL_PAYMENT_CONFIRMATION; INTERNAL_ACK_NOT_BANK_ACK",
+    "noRealPaymentWrites": true,
+    "noReimport": true
+  },
+  "otherMandatory": {
+    "identity": "A01-A09 including 19 equivalent-identity groups, exact keeper/UID/country/bank access, no guessed merges; R03/R20",
+    "hrVisits": "B01-B14 including exact external revision GT/HN, routeSource per project, conflict last-valid-event, assigned vs available, historical, cancellation R07, check-in GPS/Storage, notifications R22/R23",
+    "currentShopperHuman": "B10 external TyAOnline questionnaire route from Mi Dia/Mis Visitas and historical states; A09/B11 three reported assigned visits with exact UID and HR revision; B09 GPS/photo; D04 bank name and reviewer; A07 profile cards",
+    "certifications": "D01-D08; D03 real fresh 15Q E2E PASS RUN1778 with zero-write replay/cleanup; D04 reviewer edit versioned source deployed RUN1782 but connected E2E pending; D05-D08 not automatically PASS",
+    "portalClient": "E04 F12 benchmark no unsupported constant deployed RUN1782; F09 NPS/notes/reunions durable collaboration OPEN; E06 CRM/costs/published program",
+    "crossCutting": "G01-G06, A08 permissions, E01-E03 visual/labels/contrast, E05 tenant/projects config, E07 reports, E08 channels ACK, E09 marketing promised scope, E10 importer DRY_RUN_ONLY, E11 56 routes roles, V01-V05 and Gate20/Gate21"
+  },
+  "executionSequence": [
+    {
+      "order": 1,
+      "taskIds": [
+        "D04",
+        "E04"
+      ],
+      "mode": "EXACT_RUN1782_DEV_LIVE_E2E",
+      "required": "Reviewer edit/version/ACK/reload, F12 absent-source visual; F09 durable remain OPEN"
+    },
+    {
+      "order": 2,
+      "taskIds": [
+        "B10",
+        "B09",
+        "B13",
+        "A09",
+        "B11",
+        "A07"
+      ],
+      "mode": "EXACT_OWNER_AND_EXTERNAL_HR_REVISION_FIRST",
+      "required": "TyAOnline project scoped route, questionnaire lifecycle and notice, accurate geolocation evidence, three reported visits same UID/revision, roles/country and shopper consistency"
+    },
+    {
+      "order": 3,
+      "taskIds": [
+        "C01",
+        "C02",
+        "C03",
+        "C04",
+        "C05",
+        "C06",
+        "C07",
+        "C08",
+        "C09",
+        "C10"
+      ],
+      "mode": "ONE_FINANCIAL_CROSS_MODULE_OWNER_PACKAGE_SINGLE_WRITER",
+      "required": "C01 preservation; C02-C10 explicit readback and source truth; all R09-R18/HF21-28/critical VRM; same GT/HN revision and anti-duplicate; no bank transfer"
+    },
+    {
+      "order": 4,
+      "taskIds": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "A01",
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A07",
+        "A08",
+        "A09",
+        "B01",
+        "B02",
+        "B03",
+        "B04",
+        "B05",
+        "B06",
+        "B07",
+        "B08",
+        "B09",
+        "B10",
+        "B11",
+        "B12",
+        "B13",
+        "B14",
+        "D01",
+        "D02",
+        "D03",
+        "D04",
+        "D05",
+        "D06",
+        "D07",
+        "D08",
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10",
+        "E11"
+      ],
+      "mode": "RECONCILE_ALL_REMAINING_TASKS_BY_EXACT_OWNER_NO_GENERAL_REAUDIT",
+      "required": "Preserve prior accepted PASS; no unverified reclassification to Future/B; G03 F9 baseline and human visual authority"
+    },
+    {
+      "order": 5,
+      "taskIds": [
+        "V01",
+        "V02",
+        "V03",
+        "V04",
+        "V05"
+      ],
+      "mode": "SOURCE_SAME_ARTIFACT_PROVIDER_ADMIN_SHOPPER_VISUAL",
+      "required": "V01-V05 explicit evidence, Gate20 and Gate21 same artifact, individual human approvals; I3 GO only 0 P0"
+    },
+    {
+      "order": 6,
+      "taskIds": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07"
+      ],
+      "mode": "ONLY_AFTER_EXPLICIT_PAULA_PRODUCTION_AUTHORIZATION",
+      "required": "Exact certified artifact not rebuilt; verified rollback and PRODUCTION_LOCK"
+    }
+  ],
+  "safety": {
+    "oneRepository": true,
+    "oneBranch": true,
+    "oneWriter": true,
+    "noNewCandidate": true,
+    "noOverlay": true,
+    "noNewFirebaseProductive": true,
+    "noDataReimport": true,
+    "noProductionUntilI4": true,
+    "production": "DO_NOT_TOUCH",
+    "humanApprovalsCurrent": 0,
+    "historicalPassReopenOnlyWithReproducibleDrift": true
+  },
+  "newThisReceipt": {
+    "sourceProductChanged": false,
+    "providerWrites": 0,
+    "devDeploys": 0,
+    "productionDeploys": 0,
+    "receiptIsEvidenceCoverageNotRepair": true
+  },
+  "nextExactAction": "Run scoped D04 connected reviewer edit/version/ACK/reload test and E04 F12 source-absent visual readback on exact RUN1782 DEV artifact; F09 NPS/notes/reunions durable collaboration remains open. Then revalidate affected owner dependencies, human review, and remaining A/B/C/D/E/V before Gate20/21. No rebuild or production.",
+  "nextAuthorizationRequired": false
+}
