@@ -1300,7 +1300,7 @@ jobs:
           include-hidden-files: true
   prei4-cumulative-regression-source-guard:
     needs: canonical-candidate-authority
-    if: ${{ (needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED'||(needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED')||needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED')&&github.event_name=='push'&&(contains(github.event.head_commit.message, '[prei4-cumulative-regression]')||contains(github.event.head_commit.message, '[prei4-content-001-source]')) }}
+    if: ${{ contains(fromJSON('["HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED","HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED","HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED","HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED","HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED","HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status)&&github.event_name=='push'&&(contains(github.event.head_commit.message, '[prei4-cumulative-regression]')||contains(github.event.head_commit.message, '[prei4-content-001-source]')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
