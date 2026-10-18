@@ -29,6 +29,7 @@ node --test tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs |
   node --test tools/qa/cxorbia-i3-d02-document-extraction-source.test.mjs | tee /tmp/i3-d02-document-extraction-source-test.log
   node --test tools/qa/cxorbia-i3-d03-ai-generation-source.test.mjs | tee /tmp/i3-d03-ai-generation-source-test.log
   node --test tools/qa/cxorbia-i3-d04-versioned-bank-review.test.mjs tools/qa/cxorbia-i3-e04-benchmark-source.test.mjs | tee /tmp/i3-d04-e04-parallel-source-proof.log
+  node --test tools/qa/cxorbia-i3-admin-client-readonly-preview.test.mjs | tee /tmp/i3-admin-client-preview-source-proof.log
   node --test backend/runtime/hr-live-service/test/cxorbia-i3-d03-document-source-metadata.test.mjs | tee /tmp/i3-d03-document-source-metadata.log
   node --test backend/runtime/hr-live-service/test/cxorbia-vrm261-264-source-contract.test.mjs | tee /tmp/i3-vrm261-264-source-test.log
   # B7: independent Firestore emulator gate; no DEV/production writes.
