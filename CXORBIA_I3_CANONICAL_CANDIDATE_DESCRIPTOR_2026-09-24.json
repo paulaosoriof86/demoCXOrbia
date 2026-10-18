@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_CLIENT_PORTAL_REVIEW_AND_F09_DURABLE_OPEN",
+  "status": "HOLD_I3_D04_E04_LIVE_E2E_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -12441,5 +12441,18 @@
     "countryDuplicate": "OPEN_VISUAL_DEFECT",
     "readOnlyFilters": "P0_SOURCE_CAUSE_IDENTIFIED_LIVE_PENDING",
     "humanPass": false
+  },
+  "workflowRoutingLegacyStatusPreserved": {
+    "workflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "guardedJobs": [
+      "phasea-representative-same-artifact-live-reproof"
+    ],
+    "workflowDependsOnLiteral": true,
+    "requiredRoutingStatus": "HOLD_I3_D04_E04_LIVE_E2E_REQUIRED",
+    "statusIsWorkflowRoutingMarkerNotFactualE2EPending": true,
+    "evidenceOfRun1797": "run1797FocalReconciliation",
+    "actualOperationalState": "HOLD_D04_NAME_FOCAL_E2E_PASS_F09_DURABLE_OPEN_CLIENT_PREVIEW_INTERACTIONS_PENDING",
+    "codeChanged": false,
+    "production": false
   }
 }

@@ -645,5 +645,11 @@
     "findingsLedgerGitBlob": "2f2c5af9c6f477c4783c43c3e46a5005292be27a",
     "noOmissionReceiptPath": "CXORBIA_I3_CUMULATIVE_NO_OMISSION_RECONCILIATION_2026-10-18.json",
     "ledger274Unchanged": true
+  },
+  "workflowRoutingGuardReadback": {
+    "literalPreserved": "HOLD_I3_D04_E04_LIVE_E2E_REQUIRED",
+    "artifactRun1796Unchanged": true,
+    "run1797FocalPassRemains": true,
+    "reportByTaskAndReceiptNotStatus": true
   }
 }
