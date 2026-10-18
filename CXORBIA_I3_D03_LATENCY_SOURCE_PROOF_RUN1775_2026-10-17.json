@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "cxorbia.i3.d03.latency-proof.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+  "runId": 39090095635,
+  "runNumber": 1775,
+  "sourceSha": "d1cfb37774c4107bd9a6072694eb9250041ca5b8",
+  "sourceTree": "60d6309c3875dedec1b17eac25a111a808235a9e",
+  "artifactId": 12121799958,
+  "artifactDigest": "sha256:ad57a54b3764c689ee3c7abb4b81a74a1d842e7fee5b38a3f019869fb0062398",
+  "focalTests": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "newGenerationLive": "PENDING",
+  "devMaterialization": "PENDING",
+  "production": false
+}

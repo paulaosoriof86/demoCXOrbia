@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "d1cfb37774c4107bd9a6072694eb9250041ca5b8",
   "productTreeAuthority": "60d6309c3875dedec1b17eac25a111a808235a9e",
   "predecessorProductSourceSha": "a4434a1f223dd6da1468890c99db7339808c1cab",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V461_2026-10-17.json",
-  "findingsLedgerExpectedGitBlob": "552b47262cf4ade4f49a10a97ef0c6e33f342564",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V462_2026-10-17.json",
+  "findingsLedgerExpectedGitBlob": "dd23d7343773856cf3e2c97b4f604482fc90ac73",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V136.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D03_FRESH_GENERATION_LATENCY_SOURCE_PROOF_REQUIRED",
+  "activeBlocker": "D03_LATENCY_RUN1775_SOURCE_PROVEN_DEV_MATERIALIZATION_REQUIRED",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Prove D03 0-thinking/48s on single candidate source, then exact DEV materialization; validate fresh-generation latency without overwriting existing pending_review bank or making duplicate writes.",
+  "exactNextAction": "Materialize only current approved D03 source successor in DEV via existing serial GitHub Actions; verify runtime+hosting digest and same artifact; new Vertex generation latency still requires live proof.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -80,7 +80,7 @@
     "qaFiles": [
       "backend/runtime/hr-live-service/test/cxorbia-i3-r08-vertex-safe-diagnostic.test.mjs"
     ],
-    "sourceProof": "PENDING",
+    "sourceProof": "PASS_RUN1775",
     "devMaterialization": "PENDING",
     "production": false,
     "previousSourceFix": {
@@ -318,7 +318,8 @@
       "sourceProofRunId": 39063550464,
       "sourceProofArtifactId": 12112492256,
       "devMaterializationRunId": 39063771430
-    }
+    },
+    "sourceProofRunId": 39090095635
   },
   "preterminalRequest": {
     "revision": 3,
