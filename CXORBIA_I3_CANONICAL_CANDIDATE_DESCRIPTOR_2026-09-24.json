@@ -7,8 +7,8 @@
   "productSourceSha": "d1cfb37774c4107bd9a6072694eb9250041ca5b8",
   "productTreeAuthority": "60d6309c3875dedec1b17eac25a111a808235a9e",
   "predecessorProductSourceSha": "a4434a1f223dd6da1468890c99db7339808c1cab",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V463_2026-10-17.json",
-  "findingsLedgerExpectedGitBlob": "85719a87715605fdc1ac5bef006f49ddac1cebf2",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V464_2026-10-17.json",
+  "findingsLedgerExpectedGitBlob": "df18803988b17c57691faa3f92a1f76fee63d86d",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V136.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute one D03 fresh 15-question generation in a unique ephemeral DEV QA period on exact RUN1776 runtime and Hosting. Verify <55s, real Vertex, ACK, pending_review, 0-write idempotent replay, no duplicates, delete QA-only resource and receipt, preserve original bank.",
+  "exactNextAction": "Execute same-artifact D03 fresh QA, after restoring immutable GitHub RUN1776 artifact ID 12122099416 to preflight; no rebuild, no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -698,7 +698,9 @@
     "hostingDeploys": 1,
     "firestoreRulesDeploys": 1,
     "hrWrites": 0,
-    "production": false
+    "production": false,
+    "artifactId": 12122099416,
+    "artifactUploadZipSha256": "e5a2a02ad636609972a3a778c0338c4fd669e5285008aa2d6c9830122eebe441"
   },
   "lastFocalAttempt": {
     "runId": 36198284266,
