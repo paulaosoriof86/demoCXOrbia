@@ -30,12 +30,12 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_ADMIN_CLIENT_PREVIEW_RUN1790_SOURCE_PROOF_2026-10-18.json",
-    "kind": "ADMIN_CLIENT_PREVIEW_PASS_SOURCE_QA_RUN1790_DEV_MATERIALIZATION_REQUIRED",
+    "path": "CXORBIA_I3_ADMIN_CLIENT_PREVIEW_DEV_MATERIALIZATION_RUN1791_2026-10-18.json",
+    "kind": "ADMIN_CLIENT_EXACT_DEV_MATERIALIZATION_PASS_RUN1791_LIVE_E2E_PENDING",
     "sourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
     "sourceTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
     "sourceProofRunId": 39168448796,
-    "devMaterialization": false,
+    "materializationRunId": 39169125996,
     "production": false
   },
   "taskProgress": {
@@ -70,7 +70,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Deploy exact already source-proven candidate once via existing canonical DEV workflow; verify served auth/router asset hashes, runtime/hosting digests and same HR revision, then run real Admin/Client/Shopper scoped E2E. Do not review UI until proven.",
+  "nextExactAction": "Run only scoped real Admin -> Client readonly preview -> Admin, Client F12 and Shopper login on the exact RUN1791 materialized source and SAME current HR revision, without new build. Human visual only after E2E PASS; D04 name/F09 remain open.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -226,13 +226,13 @@
       "totalProductOwners": 2,
       "sourceCIProven": 4,
       "sourceCITestsTotal": 4,
-      "devMaterialized": 0,
+      "devMaterialized": 1,
       "devMaterializedTotal": 1,
       "liveE2e": 0,
       "liveE2eTotal": 1,
       "humanApproved": 0,
       "humanTotal": 1,
-      "meaning": "Source tests only; no site preview authorization until E2E"
+      "meaning": "Source 4/4 and DEV exact pass; real multi-role browser tests pending"
     }
   },
   "nextDiagnosisPath": null,
@@ -476,6 +476,52 @@
     "qaTestsAdded": 4,
     "devMaterialization": false,
     "liveE2e": false,
+    "production": false
+  },
+  "previousExecutionReceiptBeforeRun1791": {
+    "path": "CXORBIA_I3_ADMIN_CLIENT_PREVIEW_RUN1790_SOURCE_PROOF_2026-10-18.json",
+    "kind": "ADMIN_CLIENT_PREVIEW_PASS_SOURCE_QA_RUN1790_DEV_MATERIALIZATION_REQUIRED",
+    "sourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
+    "sourceTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
+    "sourceProofRunId": 39168448796,
+    "devMaterialization": false,
+    "production": false
+  },
+  "currentDevMaterialization": {
+    "state": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "sourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
+    "sourceTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
+    "runId": 39169125996,
+    "runNumber": 1791,
+    "artifactId": 12151637199,
+    "artifactDigest": "sha256:c0f043bf26e03d08fb687593520cbe991845145502b28220d8fd0a52888f1b75",
+    "artifactDigestType": "SOURCE_TAR_SHA256",
+    "artifactUploadZipSha256": "f45a10945022712ce63ed347c58dfbd6fa0959cd0edd17379da73a70a5048bb8",
+    "runtimeRevision": "cxorbia-live-hr-dev-00312-5g2",
+    "runtimeDigest": "sha256:3815369c5af1736b06935b5fa58e74bd5321aa049dae0c7513978752253913b8",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/8ddb953e7f239c50",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792360031288000",
+    "hrRevision": "2895f9fa413dd88378c5a82372ab98aeb00274942aa9252a949dddeaafb65e78",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/e9070ca6-234c-4a16-acf2-5ab3372eadb3",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "firestoreRulesDeploys": 1,
+    "hrWrites": 0,
+    "production": false,
+    "sameArtifactLive": "PENDING",
+    "humanAcceptance": "PENDING",
+    "gate20": "PENDING",
+    "gate21": "PENDING"
+  },
+  "latestAdminClientPreviewEvidence": {
+    "receiptPath": "CXORBIA_I3_ADMIN_CLIENT_PREVIEW_DEV_MATERIALIZATION_RUN1791_2026-10-18.json",
+    "run1790": 39168448796,
+    "run1791": 39169125996,
+    "sourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
+    "liveE2e": "PENDING",
+    "humanAcceptance": "PENDING",
     "production": false
   }
 }
