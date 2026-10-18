@@ -6552,7 +6552,7 @@ jobs:
 
   phasea-representative-same-artifact-live-reproof:
     needs: canonical-candidate-authority
-    if: ${{ contains(fromJSON('["HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED","HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED","HOLD_B1_IDENTITY_LIVE_READBACK_REQUIRED","HOLD_B1_LIVE_E2E_REQUIRED","HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED","HOLD_I3_B7_TWO_ROLE_DECISION_LIVE_DEV_REQUIRED","HOLD_I3_GT_E2E","HOLD_I3_D03_LIVE_PROVIDER_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status) }}
+    if: ${{ contains(fromJSON('["HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED","HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED","HOLD_B1_IDENTITY_LIVE_READBACK_REQUIRED","HOLD_B1_LIVE_E2E_REQUIRED","HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED","HOLD_I3_B7_TWO_ROLE_DECISION_LIVE_DEV_REQUIRED","HOLD_I3_GT_E2E","HOLD_I3_D03_LIVE_PROVIDER_REQUIRED","HOLD_I3_D04_E04_LIVE_E2E_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status) }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
@@ -6633,6 +6633,10 @@ jobs:
          test "$(jq -r '.release.version.name // empty' "$P/hosting-live-channel.json")" = "$EXPECTED_HOSTING_VERSION"
          if [ "$(jq -r .status "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_D03_LIVE_PROVIDER_REQUIRED" ]; then
            :
+         elif [ "$(jq -r .status "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_D04_E04_LIVE_E2E_REQUIRED" ]; then
+           EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
+           [[ "$EXPECTED_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+           echo "EXPECTED_HR_REVISION=$EXPECTED_HR_REVISION" >> "$GITHUB_ENV"
          else
            EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")" PHASEA_LIVE_OUT="$P" node tools/qa/cxorbia-i3-r20-r01-r22-human-exact-readonly.mjs | tee "$P/r20-r01-r22-diagnostic-console.log"
            test "$(jq -r .decision "$P/r20-r01-r22-focal-readonly.json")" = "PASS_R20_R01_R22_READ_ONLY_EXACT_DIAGNOSTIC"
@@ -6654,6 +6658,19 @@ jobs:
          if [ "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_B7_TWO_ROLE_DECISION_LIVE_DEV_REQUIRED" ]; then
            B7_OUT="$P/b7" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" node tools/qa/cxorbia-i3-b7-cancel-two-role-focal-live.mjs | tee "$P/b7-console.log"
            test "$(jq -r '.decision' "$P/b7/result.json")" = "PASS_I3_B7_TWO_ROLE_DECISION_LIVE_DEV"
+           exit 0
+         fi
+         if [ "$(jq -r .status "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_D04_E04_LIVE_E2E_REQUIRED" ]; then
+           node --check tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs
+           mkdir -p "$P/d04-e04/served"
+           for ASSET in modules/cert.js modules/cliente-insights.js; do
+             FILE="$P/d04-e04/served/${ASSET##*/}"
+             curl --fail --silent --show-error --location -H "Cache-Control: no-cache" "$HOSTING_URL/$ASSET?cxD04Run=$GITHUB_RUN_ID" -o "$FILE"
+             test "$(git hash-object "$FILE")" = "$(git rev-parse "$FOCAL_SOURCE:app/$ASSET")" || { echo "RELEASE_COMPOSITION_FAILURE:D04_E04_SERVED_BLOB:$ASSET"; exit 1; }
+           done
+           FOCAL_SOURCE="$FOCAL_SOURCE" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" PHASEA_LIVE_OUT="$P" node tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs | tee "$P/d04-e04-console.log"
+           test "$(jq -r .decision "$P/d04-e04/result.json")" = "PASS_D04_E04_CONNECTED_DEV_QA_NO_HUMAN_APPROVAL"
+           test "$(jq -r .cleanup.qaAbsentAfter "$P/d04-e04/result.json")" = "true"
            exit 0
          fi
          FOCAL_SOURCE="$FOCAL_SOURCE" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" PHASEA_LIVE_OUT="$PHASEA_LIVE_OUT" node tools/qa/cxorbia-i3-phasea-representative-live-reproof.mjs | tee "$P/console.log"
