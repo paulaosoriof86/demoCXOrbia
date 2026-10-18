@@ -49,11 +49,19 @@ async function sign(m,role){
  await page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});
  try{
  await page.waitForFunction(input=>{const c=window.CX?.backendAuth?.context?.()||{},g=window.CX_C6_HR_AUTHORITY_GATE||{},r=String(c.role||'').toLowerCase();
-  return c.authenticated===true&&(input.role==='admin'?['admin','super'].includes(r):['cliente','client'].includes(r))&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&g.blocked!==true&&String(window.CX?.data?.previewMeta?.sourceRevision||'')===input.hr;},{role,hr:HR},{timeout:30000});
+  return c.authenticated===true&&(input.role==='admin'?['admin','super'].includes(r):['cliente','client'].includes(r))&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&g.blocked!==true&&/^[0-9a-f]{64}$/.test(String(window.CX?.data?.previewMeta?.sourceRevision||''));},{role,hr:HR},{timeout:30000});
  }catch(e){
   const diag=await page.evaluate(()=>{const c=window.CX?.backendAuth?.context?.()||{},g=window.CX_C6_HR_AUTHORITY_GATE||{},m=window.CX?.data?.previewMeta||{};
    return {firebaseAuth:!!window.firebase?.auth?.().currentUser,contextAuth:c.authenticated===true,contextRole:String(c.role||''),sessionRole:String(window.CX?.session?.role||''),project:String(window.CX?.data?.currentProjectId||''),period:String(window.CX?.data?.currentPeriodId||''),hrApplied:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,gateReady:g.ready===true,gateBlocked:g.blocked===true,gateReason:String(g.reason||g.code||'').slice(0,120),sourceRevision:String(m.sourceRevision||''),resourcesAvailable:!!window.CX?.backendResources?.load};});
   throw Error('ENVIRONMENT_FAILURE:D04_E04_PROTECTED_HR_GATE:'+JSON.stringify({role,expectedRevision:HR,observed:diag}));
+ }
+ const liveRev=await page.evaluate(()=>String(window.CX?.data?.previewMeta?.sourceRevision||''));
+ if(!/^[0-9a-f]{64}$/.test(liveRev))throw Error('PROVIDER_FAILURE:D04_E04_HR_REVISION_NOT_CERTIFIABLE');
+ if(role==='admin'){
+  res.hrRevisionLive=liveRev;
+  res.hrRevisionChangedSinceRun1782=liveRev!==HR;
+ }else if(res.hrRevisionLive!==liveRev){
+  throw Error('PROVIDER_FAILURE:D04_E04_ADMIN_CLIENT_HR_REVISION_MISMATCH');
  }
  return {ctx,page};
 }
@@ -112,7 +120,7 @@ try{
  res.e04={decision:'PASS_CLIENT_F12_SOURCE_AWARE_DOM',sourceStatus:visual.benchmarkStatus||'absent',sourceAbsentWarningShown:visual.sourceMissing,noInventedComparison:visual.noInvented,humanApproval:'PENDING'};
  await client.ctx.close();
  res.decision='PASS_D04_E04_CONNECTED_DEV_QA_NO_HUMAN_APPROVAL';
-}catch(e){res.error={classification:String(e?.message||e).split(':')[0],detail:String(e?.message||e).slice(0,340)};}
+}catch(e){res.error={classification:String(e?.message||e).split(':')[0],detail:String(e?.message||e).slice(0,820)};}
 finally{
  if(qaRef)try{const x=await qaRef.get();if(x.exists)await qaRef.delete();res.cleanup.qaAbsentAfter=!(await qaRef.get()).exists;}catch(e){res.cleanup.error=String(e?.message||e).slice(0,200);}
  else res.cleanup.qaAbsentAfter=true;
