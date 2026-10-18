@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
-  "productTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
+  "productSourceSha": "4fd4e4cbfc41f99425c839179f029c12d2ec1419",
+  "productTree": "1c88fd5735faa3c869e240e540aeb602e299045b",
   "controlParentSha": "ec0e981d495a8151d67d172e2c205dae31ee8c88",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
@@ -30,13 +30,10 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_ADMIN_CLIENT_PREVIEW_LIVE_E2E_RUN1792_2026-10-18.json",
-    "kind": "ADMIN_CLIENT_PREVIEW_CONNECTED_PASS_RUN1792_HUMAN_PREVIEW_READY",
-    "sourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
-    "sourceTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
-    "sourceQaRunId": 39168448796,
-    "materializationRunId": 39169125996,
-    "connectedE2ERunId": 39170053670,
+    "path": "CXORBIA_I3_D04_NOMBRE_EDITABLE_SOURCE_PATCH_2026-10-18.json",
+    "kind": "D04_EDITABLE_NAME_SOURCE_PATCH_QA_REQUIRED",
+    "sourceSha": "4fd4e4cbfc41f99425c839179f029c12d2ec1419",
+    "sourceTree": "1c88fd5735faa3c869e240e540aeb602e299045b",
     "production": false
   },
   "taskProgress": {
@@ -52,8 +49,8 @@
     "D02": "PASS_LIVE_PARSER_RUN1753",
     "D01": "PASS_AUTHORIZED_DOCUMENT_SOURCE",
     "D03": "LIVE_E2E_PASS_RUN1778_FRESH_GENERATION_15Q_REPLAY_CLEANUP",
-    "D04": "CONNECTED_LIVE_QA_15Q_VERSION_ACK_RELOAD_PASS_RUN1788__EDITABLE_NAME_OPEN",
-    "E04": "RUN1788 F12 REAL_CLIENT_PASS; RUN1792 ADMIN_CLIENT_PREVIEW_E2E_PASS_HUMAN_PENDING; F09_DURABLE_COLLABORATION_OPEN"
+    "D04": "SOURCE_FIXED_GENERATION_NAME_PLUS_PENDING_RENAME__PENDING_CI_DEV_LIVE_HUMAN",
+    "E04": "RUN1792_ADMIN_CLIENT_F12_LIVE_PASS_HUMAN_PENDING__F09_DURABLE_COLLABORATION_OPEN"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -71,7 +68,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Human review of exact RUN1791 DEV for Admin -> Client read-only -> Admin; then scoped D04 editable certification name and E04 F09 durable collaboration P0, followed by B10/B09/B13+A09/B11/A07 and C02–C10. Gate20/21 before any I4 authorization.",
+  "nextExactAction": "SOURCE_PROOF D04 editable-name on exact source 4fd4e4cbfc41f99425c839179f029c12d2ec1419 in existing CI (original question review + name-only CAS + D03 generation and Admin role regressions), then one DEV materialization, focused real Admin review/ACK/reload with QA cleanup; F09 and other P0 remain open.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -234,6 +231,19 @@
       "humanApproved": 0,
       "humanTotal": 1,
       "meaning": "Bounded Admin/Client/Shopper same artifact E2E RUN1792 PASS, human and product-wide gates pending"
+    },
+    "d04EditableName": {
+      "sourcePatched": 1,
+      "totalOwnerFiles": 1,
+      "sourceQaProven": 0,
+      "sourceQaTotal": 1,
+      "devMaterialized": 0,
+      "devMaterializedTotal": 1,
+      "liveE2e": 0,
+      "liveE2eTotal": 1,
+      "humanApproved": 0,
+      "humanTotal": 1,
+      "meaning": "Prepared one owner; not yet a functional closure"
     }
   },
   "nextDiagnosisPath": null,
@@ -533,6 +543,24 @@
     "sourceTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
     "sourceProofRunId": 39168448796,
     "materializationRunId": 39169125996,
+    "production": false
+  },
+  "previousExecutionReceiptBeforeD04Name": {
+    "path": "CXORBIA_I3_ADMIN_CLIENT_PREVIEW_LIVE_E2E_RUN1792_2026-10-18.json",
+    "kind": "ADMIN_CLIENT_PREVIEW_CONNECTED_PASS_RUN1792_HUMAN_PREVIEW_READY",
+    "sourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
+    "sourceTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
+    "sourceQaRunId": 39168448796,
+    "materializationRunId": 39169125996,
+    "connectedE2ERunId": 39170053670,
+    "production": false
+  },
+  "latestD04NameEvidence": {
+    "receiptPath": "CXORBIA_I3_D04_NOMBRE_EDITABLE_SOURCE_PATCH_2026-10-18.json",
+    "sourceSha": "4fd4e4cbfc41f99425c839179f029c12d2ec1419",
+    "sourceTree": "1c88fd5735faa3c869e240e540aeb602e299045b",
+    "devSourceStill": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
+    "existingPreviewValid": true,
     "production": false
   }
 }
