@@ -71,5 +71,7 @@ test('D04 modal edit button, diff preview and CAS-backed save exist without auto
  assert.match(source,/certReviewSave/);
  assert.match(source,/CX\.certStore\.reviewDraft\(p\.id,bank,read\(\),policy\)/);
  assert.match(source,/expectedVersion:version,expectedResourceId:original\.__resourceId,requireReadback:true/);
- assert.doesNotMatch(source,/reviewDraft[\s\S]{0,2500}estado:'published'/);
+ const method=source.slice(source.indexOf('  async reviewDraft('),source.indexOf('  async clear(',source.indexOf('  async reviewDraft(')));
+ assert.ok(method.length>0);
+ assert.doesNotMatch(method,/estado\s*:\s*['"]published['"]/);
 });
