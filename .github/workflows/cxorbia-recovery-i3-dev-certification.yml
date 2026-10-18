@@ -6647,6 +6647,7 @@ jobs:
          set -Eeuo pipefail
          P="$PHASEA_LIVE_OUT"
          if [ "$(jq -r .activeBlocker "$CANDIDATE_DESCRIPTOR")" = D03_PROVIDER_DIAGNOSTIC_READONLY ]; then node .github/control/CXORBIA_I3_D03_SAFE_PROVIDER_LOGS_20261017.mjs; exit 0; fi
+         if [[ $(jq -r .activeBlocker "$CANDIDATE_DESCRIPTOR") == D03_FRESH_QA_E2E_REQUIRED ]]; then export D03_QA_FRESH=true; fi
          if [ "$(jq -r .status "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_D03_LIVE_PROVIDER_REQUIRED" ]; then D03_OUT="$P/d03" node .github/control/CXORBIA_I3_D03_LIVE_PROVIDER_20261017.mjs; test "$(jq -r .decision "$P/d03/result.json")" = "PASS_I3_D03_LIVE_VERTEX_PENDING_REVIEW"; exit 0; fi
          if [ "$(jq -r .activeBlocker "$CANDIDATE_DESCRIPTOR")" = "R20_SINGLE_CREDENTIAL_READONLY_REQUIRED" ]; then node tools/qa/cxorbia-i3-r20-ordinary-password-single-readonly.mjs; exit 0; fi
          if [ "$(jq -r .activeBlocker "$CANDIDATE_DESCRIPTOR")" = "R08_FINANCE_PROVENANCE_READONLY_REQUIRED" ]; then node --check tools/qa/cxorbia-i3-r08-finance-provenance-readonly.mjs; R08_FINANCE_OUT="$P/r08-finance" node tools/qa/cxorbia-i3-r08-finance-provenance-readonly.mjs; exit 0; fi
