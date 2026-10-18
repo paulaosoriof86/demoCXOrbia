@@ -2,14 +2,14 @@
   "schemaVersion": "cxorbia.recovery.execution-current.v1",
   "planLockPath": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
   "planId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
-  "asOf": "2026-10-17",
+  "asOf": "2026-10-18",
   "iteration": "I3",
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
   "productSourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
   "productTree": "ccb73184906e3cfb8a582f882aef0a7863f3dfd5",
-  "controlParentSha": "ec0e981d495a8151d67d172e2c205dae31ee8c88",
+  "controlParentSha": "fef20bed13d4d307a4b909f06e1de66013a741ee",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
     "executed": [
@@ -30,19 +30,23 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_D04_EDITABLE_NAME_DEV_MATERIALIZATION_RUN1796_2026-10-18.json",
-    "kind": "D04_EDITABLE_NAME_EXACT_DEV_RUN1796_PASS_LIVE_E2E_REQUIRED",
+    "path": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
+    "kind": "CONTROL_RECONCILIATION_RUN1797_FOCAL_PASS_HUMAN_PENDING",
     "sourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
     "sourceTree": "ccb73184906e3cfb8a582f882aef0a7863f3dfd5",
-    "sourceQaRunId": 39171726936,
-    "devMaterializationRunId": 39172029946,
+    "runId": 39172645706,
+    "runNumber": 1797,
+    "devMaterializationRunId": 1796,
+    "devMaterializationRunIdReal": 39172029946,
+    "qaArtifactId": 12153276766,
+    "productWrites": 0,
     "production": false
   },
   "taskProgress": {
     "G01": "IN_PROGRESS_COVERAGE_CUSTODIED_AUTHORITY_GAPS_RETAINED_IN_G03",
     "G02": "DIRECT_NATIVE_GITHUB_WRITE_READBACK_AND_EXISTING_CI_PROVEN_NO_TINYFISH_REQUIRED",
     "G03": "PENDING_NO_NEW_GENERAL_AUDIT",
-    "G04": "ADMIN_CLIENT_PREVIEW_SOURCE_QA_4_4_PASS_RUN1790__DEV_LIVE_NOT_YET",
+    "G04": "RUN1792_ADMIN_CLIENT_SHOPPER_SAME_ARTIFACT_LIVE_PASS__RUN1797_OWNER_PARITY_PRESERVED__HUMAN_PENDING",
     "G05": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
     "G06": "IN_PROGRESS_FROZEN_QUEUE_SINGLE_WRITER",
     "A04": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
@@ -51,8 +55,8 @@
     "D02": "PASS_LIVE_PARSER_RUN1753",
     "D01": "PASS_AUTHORIZED_DOCUMENT_SOURCE",
     "D03": "LIVE_E2E_PASS_RUN1778_FRESH_GENERATION_15Q_REPLAY_CLEANUP",
-    "D04": "NAME_EDIT_SOURCE_PASS_RUN1795__DEV_PASS_RUN1796__LIVE_E2E_HUMAN_PENDING",
-    "E04": "RUN1792_ADMIN_CLIENT_F12_LIVE_PASS_HUMAN_PENDING__F09_DURABLE_COLLABORATION_OPEN"
+    "D04": "SOURCE_PASS_RUN1795_DEV_RUN1796_NAME_ONLY_CONNECTED_E2E_PASS_RUN1797__HUMAN_AND_FULL_TASK_PENDING",
+    "E04": "F12_CLIENT_SOURCE_ABSENT_LIVE_PASS_RUN1797__F09_NPS_NOTES_MEETINGS_DURABLE_OPEN__HUMAN_PENDING"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -70,7 +74,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "D04 real versioned name-only E2E on exact RUN1796 DEV: Admin user, 15-question QA bank, name rename without question change, ACK/reload/version+history, no publication, no other bank change, cleanup; Client F12 same HR. Preserve Run1792 Admin/Shopper proof unchanged owner hashes.",
+  "nextExactAction": "I3 focal: reproduce Admin->Cliente read-only controls on exact current RUN1796 DEV (click/filter/drilldown vs mutation prevention), verify country display and independent GT/HN KPI parity against HR revision 2895f9fa...; then fix only proven app/core/router.js and app/modules/cliente.js owners with source QA, single serial DEV materialization and same-artifact E2E. F09 NPS/notes/meetings durable OPEN; continue B10/B09/B13 and A09/B11/A07 then C02-C10. Do not run I4.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -243,11 +247,25 @@
       "sourceQaChecksTotal": 9,
       "devMaterialized": 1,
       "devMaterializedTotal": 1,
-      "liveE2e": 0,
+      "liveE2e": 1,
       "liveE2eTotal": 1,
       "humanApproved": 0,
       "humanTotal": 1,
-      "meaning": "Source and exact DEV materialization verified, connected provider name-only ACK/reload pending"
+      "meaning": "Exact name-only versioned provider ACK/history/reload PASS RUN1797 on RUN1796 DEV; wider D04/HUMAN remains pending; source-proven I3 numerator stays 8/63."
+    },
+    "d04NameOnlyRealProvider": {
+      "passed": 1,
+      "total": 1,
+      "percent": 100,
+      "runId": 39172645706,
+      "kind": "FOCAL_ONLY_NOT_FULL_D04"
+    },
+    "e04F12NoBenchmarkFabrication": {
+      "passed": 1,
+      "total": 1,
+      "percent": 100,
+      "runId": 39172645706,
+      "kind": "FOCAL_ONLY_F09_OPEN"
     }
   },
   "nextDiagnosisPath": null,
@@ -525,7 +543,7 @@
     "firestoreRulesDeploys": 1,
     "hrWrites": 0,
     "production": false,
-    "sameArtifactLive": "PENDING_D04_RENAME",
+    "sameArtifactLive": "PASS_FOCAL_D04_NAME_EDIT_F12_RUN1797_HUMAN_PENDING",
     "humanAcceptance": "PENDING",
     "gate20": "PENDING",
     "gate21": "PENDING"
@@ -560,11 +578,14 @@
     "production": false
   },
   "latestD04NameEvidence": {
-    "receiptPath": "CXORBIA_I3_D04_NOMBRE_EDITABLE_SOURCE_FIX_RUN1794_2026-10-18.json",
+    "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
     "sourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
     "sourceTree": "ccb73184906e3cfb8a582f882aef0a7863f3dfd5",
-    "lastRun1794": "FAIL_VALIDATION_EXACT_CORRECTED",
-    "devStillRun": 1791,
+    "sourceQaRunId": 39171726936,
+    "devRunId": 39172029946,
+    "liveFocalRunId": 39172645706,
+    "human": "PENDING",
+    "e04F09": "OPEN",
     "production": false
   },
   "previousExecutionReceiptBeforeD04Validation": {
@@ -595,5 +616,34 @@
     },
     "devMaterialization": false,
     "production": false
+  },
+  "previousExecutionReceiptBeforeRun1797": {
+    "path": "CXORBIA_I3_D04_EDITABLE_NAME_DEV_MATERIALIZATION_RUN1796_2026-10-18.json",
+    "kind": "D04_EDITABLE_NAME_EXACT_DEV_RUN1796_PASS_LIVE_E2E_REQUIRED",
+    "sourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
+    "sourceTree": "ccb73184906e3cfb8a582f882aef0a7863f3dfd5",
+    "sourceQaRunId": 39171726936,
+    "devMaterializationRunId": 39172029946,
+    "production": false
+  },
+  "latestClientHumanPortalOct18": {
+    "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
+    "visualLabels": "OPEN_VISUAL_DEFECT",
+    "readonlyInteraction": "SOURCE_ROOT_CAUSE_IDENTIFIED_LIVE_PENDING",
+    "hrIndependentParity": "PENDING",
+    "humanPass": false
+  },
+  "moduleTruthAuthority": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261018-V145.json",
+    "gitBlob": "878593f08ea1d092ddf1ab54455cd38a43b0eb04",
+    "sourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
+    "allModulesMatch": false
+  },
+  "cumulativeControlReconciliationRun1797": {
+    "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
+    "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V473_2026-10-18.json",
+    "findingsLedgerGitBlob": "2f2c5af9c6f477c4783c43c3e46a5005292be27a",
+    "noOmissionReceiptPath": "CXORBIA_I3_CUMULATIVE_NO_OMISSION_RECONCILIATION_2026-10-18.json",
+    "ledger274Unchanged": true
   }
 }

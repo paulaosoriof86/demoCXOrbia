@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_D04_E04_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_CLIENT_PORTAL_REVIEW_AND_F09_DURABLE_OPEN",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -9,11 +9,11 @@
   "predecessorProductSourceSha": "4fd4e4cbfc41f99425c839179f029c12d2ec1419",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V473_2026-10-18.json",
   "findingsLedgerExpectedGitBlob": "2f2c5af9c6f477c4783c43c3e46a5005292be27a",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261018-V144.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261018-V145.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D04_CERT_NAME_CONNECTED_CAS_ACK_RELOAD_REQUIRED__E04_F09_DURABLE_OPEN",
+  "activeBlocker": "CLIENT_READ_ONLY_NAVIGATION_P0_FOCAL_REQUIRED__VISUAL_COUNTRY_LABEL_OPEN__E04_F09_OPEN",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run scoped D04 connected reviewer edit/version/ACK/reload test and E04 F12 source-absent visual readback on exact RUN1782 DEV artifact; F09 NPS/notes/reunions durable collaboration remains open. Then revalidate affected owner dependencies, human review, and remaining A/B/C/D/E/V before Gate20/21. No rebuild or production.",
+  "exactNextAction": "I3 focal: reproduce Admin->Cliente read-only controls on exact current RUN1796 DEV (click/filter/drilldown vs mutation prevention), verify country display and independent GT/HN KPI parity against HR revision 2895f9fa...; then fix only proven app/core/router.js and app/modules/cliente.js owners with source QA, single serial DEV materialization and same-artifact E2E. F09 NPS/notes/meetings durable OPEN; continue B10/B09/B13 and A09/B11/A07 then C02-C10. Do not run I4.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -725,7 +725,7 @@
     "firestoreRulesDeploys": 1,
     "hrWrites": 0,
     "production": false,
-    "sameArtifactLive": "PENDING_D04_RENAME",
+    "sameArtifactLive": "PASS_FOCAL_D04_NAME_EDIT_F12_RUN1797_HUMAN_PENDING",
     "humanAcceptance": "PENDING",
     "gate20": "PENDING",
     "gate21": "PENDING"
@@ -2944,7 +2944,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "e86b42ad5a28c5b2a1abbbbf5dfcf0f0820ad35b",
+  "moduleTruthExpectedGitBlob": "878593f08ea1d092ddf1ab54455cd38a43b0eb04",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12383,12 +12383,13 @@
     "qaBlob": "c09c95ff87c51225d800d5be7b5b7ef924b406f7",
     "sourceProof": "PASS_RUN1795",
     "dev": "PASS_RUN1796",
-    "live": "PENDING",
+    "live": "PASS_NAME_ONLY_FOCAL_RUN1797",
     "human": "PENDING",
     "preserveAdminClientRun1792": true,
     "production": false,
     "sourceProofRunId": 39171726936,
-    "devMaterializationRunId": 39172029946
+    "devMaterializationRunId": 39172029946,
+    "qaArtifactId": 12153276766
   },
   "previousMaterializationBeforeD04Name": {
     "state": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
@@ -12417,5 +12418,28 @@
     "humanAcceptance": "PENDING",
     "gate20": "PENDING",
     "gate21": "PENDING"
+  },
+  "previousStatusBeforeRun1797": "HOLD_I3_D04_E04_LIVE_E2E_REQUIRED",
+  "run1797FocalReconciliation": {
+    "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
+    "qaRunId": 39172645706,
+    "qaArtifactId": 12153276766,
+    "materializationRunId": 39172029946,
+    "sourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
+    "servedClientProof": "F12_PASS",
+    "d04Name": "PASS",
+    "d04FullHuman": "PENDING",
+    "e04F09": "OPEN",
+    "builds": 0,
+    "deploys": 0,
+    "production": false
+  },
+  "portalClientHumanReview20261018": {
+    "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
+    "kpisHumanSeen": "44/22/19; GT 34/17/14; HN 10/5/5",
+    "independentHrKpiParity": "PENDING",
+    "countryDuplicate": "OPEN_VISUAL_DEFECT",
+    "readOnlyFilters": "P0_SOURCE_CAUSE_IDENTIFIED_LIVE_PENDING",
+    "humanPass": false
   }
 }
