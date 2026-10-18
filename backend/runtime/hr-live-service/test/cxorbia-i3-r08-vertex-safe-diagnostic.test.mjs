@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {vertexCertificationSafeDiagnostic,normalizeGeneratedQuestions,validateVertexQuestionSet,boundedVertexQuestionRetry} from '../certification-runtime.mjs';
+import {vertexCertificationSafeDiagnostic,normalizeGeneratedQuestions,validateVertexQuestionSet,boundedVertexQuestionRetry,vertexCertificationGenerationConfig,vertexCertificationRemainingMs} from '../certification-runtime.mjs';
 test('R08 safe Vertex diagnostics preserve finishReason and shape, never output PDF text',()=>{
  const secret='PDF_INSTRUCTIVO_SECRET';
  const d=vertexCertificationSafeDiagnostic({candidates:[{finishReason:'MAX_TOKENS',content:{role:'model',parts:[{text:secret},{inlineData:{mimeType:'application/pdf'}}]}}],usageMetadata:{candidatesTokenCount:5012}},200,'application/json; charset=UTF-8');
@@ -38,4 +38,18 @@ test('R08 two invalid responses fail closed; provider errors never trigger a bli
  let httpCalls=0;
  await assert.rejects(()=>boundedVertexQuestionRetry(async()=>{httpCalls++;throw new Error('AI_PROVIDER_HTTP_503');},15),/AI_PROVIDER_HTTP_503/);
  assert.equal(httpCalls,1);
+});
+
+test('D03 Gemini 2.5 Flash JSON generation disables costly thinking only for supported model',()=>{
+ const flash=vertexCertificationGenerationConfig('gemini-2.5-flash');
+ assert.deepEqual(flash.thinkingConfig,{thinkingBudget:0});
+ assert.equal(flash.maxOutputTokens,8192);
+ assert.equal(flash.responseMimeType,'application/json');
+ assert.equal(vertexCertificationGenerationConfig('gemini-2.5-pro').thinkingConfig,undefined);
+});
+test('D03 one-bounded-generation deadline leaves room under 60-second Hosting timeout',()=>{
+ assert.equal(vertexCertificationRemainingMs(1000,1000),48000);
+ assert.equal(vertexCertificationRemainingMs(1000,28000),21000);
+ assert.equal(vertexCertificationRemainingMs(1000,49000),0);
+ assert.equal(vertexCertificationRemainingMs(1000,70000),0);
 });

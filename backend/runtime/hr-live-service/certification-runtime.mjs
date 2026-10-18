@@ -259,6 +259,16 @@ export async function boundedVertexQuestionRetry(request,count,{onInvalid=()=>{}
  }
  throw new Error('AI_PROVIDER_RESPONSE_INVALID');
 }
+/* D03: give Gemini 2.5 Flash an explicit low-latency, bounded JSON budget before Hosting's 60s limit. */
+export function vertexCertificationGenerationConfig(model){
+ const config={temperature:0.15,maxOutputTokens:8192,responseMimeType:'application/json'};
+ if(/^gemini-2\.5-flash(?:$|[-.])/i.test(str(model)))config.thinkingConfig={thinkingBudget:0};
+ return config;
+}
+export function vertexCertificationRemainingMs(startedAt,now=Date.now()){
+ return Math.max(0,48000-Math.max(0,now-startedAt));
+}
+
 async function generateBank(db,scope,body,input=generationInput(body)){
   const sourceText=input.sourceText,questionCount=Math.max(3,Math.min(30,Number(body.questionCount||10))),gate=Math.max(1,Math.min(100,Number(body.gate||80)));
   const setting=await resolveAiSetting(db,scope),token=await metadataToken();
@@ -273,9 +283,14 @@ async function generateBank(db,scope,body,input=generationInput(body)){
   ].join('\n');
   const project=process.env.GOOGLE_CLOUD_PROJECT||'cxorbia-backend-dev';
   const endpoint='https://'+setting.location+'-aiplatform.googleapis.com/v1/projects/'+encodeURIComponent(project)+'/locations/'+encodeURIComponent(setting.location)+'/publishers/google/models/'+encodeURIComponent(setting.model)+':generateContent';
+  const vertexStartedAt=Date.now();
   const {preguntas,attempts}=await boundedVertexQuestionRetry(async attempt=>{
+    const remainingMs=vertexCertificationRemainingMs(vertexStartedAt);
+    if(remainingMs<7000)throw new Error('AI_PROVIDER_DEADLINE_EXCEEDED');
     const requestPrompt=attempt===1?prompt:prompt+'\nLa primera salida no cumplió el JSON o la cantidad y estructura requeridas. Responde nuevamente en JSON válido, con exactamente '+questionCount+' preguntas únicas, cuatro opciones por pregunta y explicación breve. Usa solo el mismo instructivo; no inventes preguntas para completar.';
-    const response=await fetch(endpoint,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:requestPrompt}]}],generationConfig:{temperature:0.15,maxOutputTokens:attempt===1?5000:8192,responseMimeType:'application/json'}})});
+    let response;
+    try{response=await fetch(endpoint,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:requestPrompt}]}],generationConfig:vertexCertificationGenerationConfig(setting.model)}),signal:AbortSignal.timeout(remainingMs)});}
+    catch(error){if(['TimeoutError','AbortError'].includes(str(error?.name)))throw new Error('AI_PROVIDER_DEADLINE_EXCEEDED');throw error;}
     const payload=await response.json().catch(()=>({}));
     const diagnostic=vertexCertificationSafeDiagnostic(payload,response.status,response.headers?.get?.('content-type'));
     if(!response.ok){
