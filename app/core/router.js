@@ -231,10 +231,13 @@ CX.router = {
        registro (CX.data.getShopper) — nunca del proyecto. Coordinador/aliado con scopePaises
        (verdadero alcance multipaís asignado) conservan su indicador multipaís sin cambios. */
     const _shopperPais = role==='shopper' ? (()=>{ const raw=String(u.shopperId||'').trim(),sid=raw?String(CX.data.__identityMap?.[raw]||raw).trim():'';const sh=sid&&CX.data.getShopper&&CX.data.getShopper(sid); return sh&&sh.pais ? (CX.paisFlag(sh.pais)+' '+CX.paisName(sh.pais)) : 'sin país asignado'; })() : null;
-    const _roleLineLbl = role==='admin'?'Administración':role==='cliente'?'Portal del cliente':('Shopper · '+(_shopperPais||'—'));
+    const realContext=CX.backendAuth?.context?.()||null;
+    const previewAdmin=role==='cliente' && u.clientPreviewReadOnly===true && CX.backendAuth?.clientPreviewActive?.()===true;
+    const canAdminEnterClient=role==='admin' && realContext?.authenticated===true && ['admin','super'].includes(String(realContext.role||'')) && realContext.clientPreviewTenantAllowed===true;
+    const _roleLineLbl = previewAdmin?'Vista del cliente · consulta':role==='admin'?'Administración':role==='cliente'?'Portal del cliente':('Shopper · '+(_shopperPais||'—'));
     const roleIdentity=document.getElementById('tbRoleIdentity');
     if(roleIdentity){
-      const roleName=role==='admin'?'Administración':role==='cliente'?'Cliente':role==='shopper'?'Shopper':role;
+      const roleName=previewAdmin?'Vista del cliente':role==='admin'?'Administración':role==='cliente'?'Cliente':role==='shopper'?'Shopper':role;
       roleIdentity.innerHTML='<b>'+String(u.name||'Usuario')+'</b><span>'+roleName+'</span>';
     }
     rail.innerHTML=`
@@ -247,6 +250,8 @@ CX.router = {
         <div class="rail-user"><div class="rail-av">${initials}</div>
           <div><div style="font-size:12.5px;font-weight:700;color:#fff" title="${(role==='shopper'?railDisplayName:(u.name||'Usuario demo')).replace(/"/g,'&quot;')}">${role==='shopper'?railDisplayName:(u.name||'Usuario demo')}</div>
           <div style="font-size:10.5px;color:rgba(255,255,255,.5)" title="${_roleLineLbl+((u.scopePaises&&u.scopePaises.length)?' · 🌎 alcance multipaís: '+u.scopePaises.join('/'):'')}">${_roleLineLbl}${(u.scopePaises&&u.scopePaises.length)?' · 🌎 '+u.scopePaises.join('/'):''}</div></div></div>
+        ${canAdminEnterClient?'<button type="button" class="rail-logout" id="cxEnterClientPreview">Ver Portal del Cliente</button>':''}
+        ${previewAdmin?'<button type="button" class="rail-logout" id="cxLeaveClientPreview">Volver a Administración</button>':''}
         <button class="rail-logout" id="logoutBtn">Cerrar sesión</button>
       </div>`;
 
@@ -254,6 +259,8 @@ CX.router = {
       n.addEventListener('click',()=>this.nav(n.dataset.id));
       n.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); this.nav(n.dataset.id); } });
     });
+    rail.querySelector('#cxEnterClientPreview')?.addEventListener('click',()=>CX.backendAuth?.enterClientPreview?.());
+    rail.querySelector('#cxLeaveClientPreview')?.addEventListener('click',()=>CX.backendAuth?.leaveClientPreview?.());
     /* logo del cliente en topbar blanco */
     if(CX.topbar&&CX.topbar.renderLogo)CX.topbar.renderLogo();
     rail.querySelectorAll('.nav-sec').forEach(sec=>sec.addEventListener('click',e=>{
@@ -343,6 +350,26 @@ CX.router = {
       else {host.innerHTML='';}
     } else {
       host.innerHTML=CX.ui.scaffold(id);
+    }
+    // Authenticated administrative Client preview is view-only, never an impersonation.
+    // The Firebase principal and server-side role remain Admin/Super; reject UI mutations.
+    if(!host.__cxClientPreviewGuard){
+      const denyClientAction=e=>{
+        if(CX.session?.role!=='cliente' || CX.session?.user?.clientPreviewReadOnly!==true)return;
+        if(e.type==='keydown' && !['Enter',' '].includes(e.key))return;
+        e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+        if(e.type==='click'||e.type==='submit')CX.ui?.toast?.('Vista de consulta: para realizar cambios vuelve a Administración.','warn');
+      };
+      for(const evt of ['click','submit','input','change','keydown'])host.addEventListener(evt,denyClientAction,true);
+      host.__cxClientPreviewGuard=true;
+    }
+    if(CX.session?.role==='cliente' && CX.session?.user?.clientPreviewReadOnly===true){
+      const notice=document.createElement('div');
+      notice.className='card card-p';
+      notice.setAttribute('role','status');
+      notice.style.cssText='margin-bottom:14px;border-left:3px solid var(--brand);font-size:12.5px;color:var(--t2);padding:10px 14px';
+      notice.textContent='Vista del cliente · consulta administrativa. Para realizar cambios, vuelve a Administración.';
+      host.prepend(notice);
     }
   },
 };

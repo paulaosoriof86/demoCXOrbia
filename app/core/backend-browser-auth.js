@@ -24,6 +24,9 @@ window.CX = window.CX || {};
   let resolveInteractive = null;
   let rejectInteractive = null;
   let selectedRole = '';
+  // Presentation preference only, validated against fresh Firebase claims every time.
+  const CLIENT_PREVIEW_PREF='cxorbia_admin_client_preview';
+  let clientPreviewRequested=false;
   let sessionCredential = null;
   let restorePending = true;
 
@@ -151,6 +154,7 @@ window.CX = window.CX || {};
       shopperId: shopperId || null,
       country: typeof claims.country === 'string' ? claims.country : null,
       authNamespace: claimNamespace || expectedNamespace,
+      clientPreviewTenantAllowed: claims.tenantId === (cfg.tenantId || 'tya') || list(claims.tenants).includes(cfg.tenantId || 'tya'),
       authenticated: true,
       provider: 'firebase',
       source: 'custom-claims-current-rules'
@@ -164,7 +168,8 @@ window.CX = window.CX || {};
   function applyCxSession(ctx){
     if(!CX.session) return;
     const actualRole = ctx.role;
-    const isClient = actualRole === 'cliente' || actualRole === 'client';
+    const isAdminPreview = clientPreviewRequested === true && canAdminPreviewClient(ctx);
+    const isClient = actualRole === 'cliente' || actualRole === 'client' || isAdminPreview;
     const isShopper = actualRole === 'shopper';
     const usesAdminShell = !isClient && !isShopper;
     CX.session.clear();
@@ -179,7 +184,9 @@ window.CX = window.CX || {};
       scopeProjectId: ctx.projectIds.length === 1 ? ctx.projectIds[0] : undefined,
       projectIds: ctx.projectIds.slice(),
       scopePaises: ctx.country ? [ctx.country] : undefined,
-      clienteRole: isClient ? 'director' : undefined
+      clienteRole: isClient ? 'director' : undefined,
+      clientPreviewReadOnly: isAdminPreview,
+      clientPreviewActualRole: isAdminPreview ? actualRole : undefined
     };
     CX.session.view = null;
     CX.session.save();
@@ -200,11 +207,44 @@ window.CX = window.CX || {};
     return roleLabel(r);
   }
 
+  function canAdminPreviewClient(ctx){
+    return !!(ctx && ctx.authenticated === true && ctx.authNamespace === 'staff' &&
+      ctx.clientPreviewTenantAllowed === true && (ctx.role === 'admin' || ctx.role === 'super') &&
+      ctx.tenantId === (cfg.tenantId || 'tya'));
+  }
+  function setClientPreview(ctx, requested){
+    clientPreviewRequested = requested === true && canAdminPreviewClient(ctx);
+    try{
+      if(clientPreviewRequested) sessionStorage.setItem(CLIENT_PREVIEW_PREF,'1');
+      else sessionStorage.removeItem(CLIENT_PREVIEW_PREF);
+    }catch(_){}
+    return clientPreviewRequested;
+  }
+  function restoreClientPreview(ctx){
+    let requested=false;
+    try{requested=sessionStorage.getItem(CLIENT_PREVIEW_PREF)==='1';}catch(_){}
+    return setClientPreview(ctx,requested);
+  }
+  function enterClientPreview(){
+    if(!canAdminPreviewClient(currentContext))return false;
+    setClientPreview(currentContext,true);
+    applyCxSession(currentContext);
+    CX.app?.enter?.();
+    return true;
+  }
+  function leaveClientPreview(){
+    if(!canAdminPreviewClient(currentContext))return false;
+    setClientPreview(currentContext,false);
+    applyCxSession(currentContext);
+    CX.app?.enter?.();
+    return true;
+  }
+
   function roleMatchesSelection(ctx, role){
     const selected = String(role || '').trim().toLowerCase();
     const actual = String(ctx && ctx.role || '').trim().toLowerCase();
     if(selected === 'shopper') return actual === 'shopper';
-    if(selected === 'cliente' || selected === 'client') return actual === 'cliente' || actual === 'client';
+    if(selected === 'cliente' || selected === 'client') return actual === 'cliente' || actual === 'client' || canAdminPreviewClient(ctx);
     if(selected === 'admin') return STAFF_ROLES.has(actual);
     return selected === actual;
   }
@@ -302,6 +342,7 @@ window.CX = window.CX || {};
       const cred = await auth.signInWithEmailAndPassword(providerEmail, String(password || ''));
       const ctx = await contextFromUser(cred.user, ns);
       if(requestedRole && !roleMatchesSelection(ctx, requestedRole)) throw new Error('ROLE_SELECTION_MISMATCH');
+      setClientPreview(ctx, requestedRole === 'cliente' || requestedRole === 'client');
       currentContext = ctx;
       restorePending = false;
       hideAuthRestoring();
@@ -316,6 +357,7 @@ window.CX = window.CX || {};
     }catch(e){
       try{await auth.signOut();}catch(_){ }
       currentContext = null;
+      setClientPreview(null,false);
       clearSessionCredential();
       throw e;
     }
@@ -339,6 +381,7 @@ window.CX = window.CX || {};
       if(restored){
         try{
           currentContext = await contextFromUser(restored);
+          restoreClientPreview(currentContext);
           restorePending = false;
           hideAuthRestoring();
           applyCxSession(currentContext);
@@ -418,6 +461,7 @@ window.CX = window.CX || {};
     visible.login.disabled=false;visible.password.disabled=false;visible.submit.disabled=false;visible.form.dataset.accessStep='credentials';
     if(currentContext){
       if(roleMatchesSelection(currentContext, role)){
+        setClientPreview(currentContext,role === 'cliente' || role === 'client');
         applyCxSession(currentContext);
         if(CX.app && typeof CX.app.enter === 'function') CX.app.enter();
       }else{
@@ -504,6 +548,7 @@ window.CX = window.CX || {};
         resolveInteractive = null;
         rejectInteractive = null;
         selectedRole = '';
+        setClientPreview(null,false);
         restorePending = false;
         hideAuthRestoring();
         clearSessionCredential();
@@ -562,10 +607,14 @@ window.CX = window.CX || {};
       resolveInteractive = null;
       rejectInteractive = null;
       selectedRole = '';
+      setClientPreview(null,false);
       clearSessionCredential();
       if(CX.session) CX.session.clear();
     },
     showForRole: showCredentialStep,
+    enterClientPreview: enterClientPreview,
+    leaveClientPreview: leaveClientPreview,
+    clientPreviewActive: function(){return clientPreviewRequested && canAdminPreviewClient(currentContext);},
     isReady: function(){ return !!currentContext; },
     selectedRole: function(){ return selectedRole; },
     singleVisibleForm: true
