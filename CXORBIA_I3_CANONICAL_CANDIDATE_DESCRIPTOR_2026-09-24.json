@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "330d220882a314b6599372e21f126aaab49cf30b",
   "productTreeAuthority": "dc64ea105fbe059d7986a5b99f3740fa38062102",
   "predecessorProductSourceSha": "d1cfb37774c4107bd9a6072694eb9250041ca5b8",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V466_2026-10-17.json",
-  "findingsLedgerExpectedGitBlob": "c604364247963db13d0b84857bd466859100dc3a",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V138.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V467_2026-10-17.json",
+  "findingsLedgerExpectedGitBlob": "6deafeb9010b99ea1d88e245d15805ac1c4c49eb",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V139.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D04_E04_F12_SOURCE_PROOF_REQUIRED",
+  "activeBlocker": "D04_E04_F12_SOURCE_PASS_DEV_MATERIALIZATION_REQUIRED",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run exact D04 and E04/F12 source contract tests in the existing I3 workflow in parallel within Node tests; on PASS materialize single successor DEV and prove persisted review + no-source benchmark, then continue A/B/C/E P0 read-only lanes and terminal gates.",
+  "exactNextAction": "Materialize exact D04/F12 source 330d220 in the canonical DEV job once, verify Hosting/runtime fingerprint, and test D04 connected reviewer persistence with scoped QA and F12 source-absent human UI on same DEV; preserve other independent A/B/C/E/V open tasks.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -83,7 +83,7 @@
       "tools/qa/cxorbia-i3-d04-versioned-bank-review.test.mjs",
       "tools/qa/cxorbia-i3-e04-benchmark-source.test.mjs"
     ],
-    "sourceProof": "PENDING",
+    "sourceProof": "PASS_RUN1781",
     "devMaterialization": "PENDING",
     "production": false,
     "previousSourceFix": {
@@ -341,7 +341,8 @@
       },
       "sourceProofRunId": 39090095635,
       "freshGenerationE2E": "PENDING_QA_DEV"
-    }
+    },
+    "sourceProofRunId": 39095029741
   },
   "preterminalRequest": {
     "revision": 3,

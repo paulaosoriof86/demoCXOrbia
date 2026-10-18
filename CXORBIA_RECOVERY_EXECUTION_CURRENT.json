@@ -30,13 +30,33 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "kind": "D04_E04_F12_ONE_SOURCE_SUCCESSOR_QA_PENDING",
+    "path": "CXORBIA_I3_D04_E04_SOURCE_PROOF_RUN1781_2026-10-17.json",
+    "kind": "D04_F12_SOURCE_PROOF_PASS",
     "tasks": [
       "D04",
       "E04"
     ],
     "sourceSha": "330d220882a314b6599372e21f126aaab49cf30b",
     "productTree": "dc64ea105fbe059d7986a5b99f3740fa38062102",
+    "sourceProof": {
+      "sourceSha": "330d220882a314b6599372e21f126aaab49cf30b",
+      "sourceTree": "dc64ea105fbe059d7986a5b99f3740fa38062102",
+      "runId": 39095029741,
+      "runNumber": 1781,
+      "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+      "artifactId": 12123818040,
+      "artifactDigest": "sha256:44273f8ddfe856580c3152a9539ebaabcc999a8cfee09853922a9f5ff781aab4",
+      "d04Tests": {
+        "pass": 4,
+        "fail": 0
+      },
+      "f12Tests": {
+        "pass": 2,
+        "fail": 0
+      },
+      "production": false
+    },
+    "devMaterialization": "PENDING",
     "production": false
   },
   "taskProgress": {
@@ -52,8 +72,8 @@
     "D02": "PASS_LIVE_PARSER_RUN1753",
     "D01": "PASS_AUTHORIZED_DOCUMENT_SOURCE",
     "D03": "LIVE_E2E_PASS_RUN1778_FRESH_GENERATION_15Q_REPLAY_CLEANUP",
-    "D04": "SOURCE_FIXED_PENDING_QA",
-    "E04": "F12_SOURCE_FIXED_PENDING_QA"
+    "D04": "SOURCE_PROVEN_RUN1781_DEV_MATERIALIZATION_PENDING",
+    "E04": "F12_SOURCE_PROVEN_RUN1781_E04_REMAINING_CONTRACTS_PENDING"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -71,7 +91,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Run exact D04 and E04/F12 source contract tests in the existing I3 workflow in parallel within Node tests; on PASS materialize single successor DEV and prove persisted review + no-source benchmark, then continue A/B/C/E P0 read-only lanes and terminal gates.",
+  "nextExactAction": "Materialize exact D04/F12 source 330d220 in the canonical DEV job once, verify Hosting/runtime fingerprint, and test D04 connected reviewer persistence with scoped QA and F12 source-absent human UI on same DEV; preserve other independent A/B/C/E/V open tasks.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -160,13 +180,14 @@
       "G05",
       "D01",
       "D02",
-      "D03"
+      "D03",
+      "D04"
     ],
     "i3SourceRepairStage": {
-      "numerator": 7,
+      "numerator": 8,
       "denominator": 63,
-      "percent": 11.11,
-      "meaning": "Task closures in the source/live repair stage only; not overall CXOrbia completion"
+      "percent": 12.7,
+      "meaning": "Source-level proven tasks only; E04 F12 is partial, not whole E04 nor I3 GO"
     },
     "newlyFunctionallyClosedI3Tasks": 3,
     "newReadyPreviews": 1,
