@@ -388,5 +388,21 @@
     "other A/B/C/D/E tasks by exact owner before V01-V05",
     "Gates20/21 then authorized I4"
   ],
-  "coverageGuard": "Do not declare all finance, HR, Shopper, Client, Certification or Phase A PASS solely from source tests or an inherited PASS. Apply task-specific provider/readback/human proof and preserve historical VRM PASS without reproducible drift; no skipped findings."
+  "coverageGuard": "Do not declare all finance, HR, Shopper, Client, Certification or Phase A PASS solely from source tests or an inherited PASS. Apply task-specific provider/readback/human proof and preserve historical VRM PASS without reproducible drift; no skipped findings.",
+  "continuityHandoff": {
+    "path": "CXORBIA_I3_CHECKPOINT_CONTINUIDAD_OPERATIVA_2026-10-18.md",
+    "blobSha": "0309494f340ab2aa9ede43c8554cfff84a1f8ef6",
+    "kind": "CONTROL_ONLY_APPEND_ONLY_NOT_NEW_PLAN",
+    "asOf": "2026-10-18",
+    "frozenPlanId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
+    "productSourceSha": "330d220882a314b6599372e21f126aaab49cf30b",
+    "reviewedHeadBeforeHandoff": "eb6091e42493e26ea77f223993aa18ae7de32642",
+    "noOmissionReceipt": "CXORBIA_I3_CUMULATIVE_NO_OMISSION_RECONCILIATION_2026-10-18.json",
+    "nextTaskIds": [
+      "D04",
+      "E04"
+    ],
+    "noProductChanges": true,
+    "noProduction": true
+  }
 }
