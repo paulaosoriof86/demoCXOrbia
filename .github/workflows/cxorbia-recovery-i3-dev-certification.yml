@@ -6633,7 +6633,7 @@ jobs:
          test "$(jq -r '.release.version.name // empty' "$P/hosting-live-channel.json")" = "$EXPECTED_HOSTING_VERSION"
          if [ "$(jq -r .status "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_D03_LIVE_PROVIDER_REQUIRED" ]; then
            :
-         elif [ "$(jq -r .status "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_D04_E04_LIVE_E2E_REQUIRED" ]; then
+         elif [[ "$(jq -r .status "$CANDIDATE_DESCRIPTOR")" =~ ^HOLD_I3_(D04_E04|PHASEA_CUMULATIVE)_LIVE_E2E_REQUIRED$ ]]; then
            EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
            [[ "$EXPECTED_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
            echo "EXPECTED_HR_REVISION=$EXPECTED_HR_REVISION" >> "$GITHUB_ENV"
@@ -6673,6 +6673,7 @@ jobs:
            test "$(jq -r .cleanup.qaAbsentAfter "$P/d04-e04/result.json")" = "true"
            exit 0
          fi
+         if [ "$(jq -r .activeBlocker "$CANDIDATE_DESCRIPTOR")" = ADMIN_CLIENT_PREVIEW_LIVE_E2E_REQUIRED ];then node tools/qa/cxorbia-i3-ac-view-live.mjs;exit 0;fi
          FOCAL_SOURCE="$FOCAL_SOURCE" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" PHASEA_LIVE_OUT="$PHASEA_LIVE_OUT" node tools/qa/cxorbia-i3-phasea-representative-live-reproof.mjs | tee "$P/console.log"
          test "$(jq -r '.decision' "$P/result.json")" = "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF"
          if [ "$(jq -r .status "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_GT_E2E" ]; then
