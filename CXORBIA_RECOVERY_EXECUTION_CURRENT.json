@@ -30,16 +30,12 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_D04_NOMBRE_EDITABLE_SOURCE_PROOF_RUN1795_2026-10-18.json",
-    "kind": "D04_EDITABLE_NAME_SOURCE_PROOF_PASS_RUN1795_DEV_REQUIRED",
+    "path": "CXORBIA_I3_D04_EDITABLE_NAME_DEV_MATERIALIZATION_RUN1796_2026-10-18.json",
+    "kind": "D04_EDITABLE_NAME_EXACT_DEV_RUN1796_PASS_LIVE_E2E_REQUIRED",
     "sourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
     "sourceTree": "ccb73184906e3cfb8a582f882aef0a7863f3dfd5",
-    "sourceProofRunId": 39171726936,
-    "sourceTests": {
-      "pass": 9,
-      "total": 9
-    },
-    "devMaterialization": false,
+    "sourceQaRunId": 39171726936,
+    "devMaterializationRunId": 39172029946,
     "production": false
   },
   "taskProgress": {
@@ -55,7 +51,7 @@
     "D02": "PASS_LIVE_PARSER_RUN1753",
     "D01": "PASS_AUTHORIZED_DOCUMENT_SOURCE",
     "D03": "LIVE_E2E_PASS_RUN1778_FRESH_GENERATION_15Q_REPLAY_CLEANUP",
-    "D04": "NAME_EDIT_SOURCE_PROVEN_RUN1795_9_OF_9__DEV_MATERIALIZATION_AND_LIVE_PENDING",
+    "D04": "NAME_EDIT_SOURCE_PASS_RUN1795__DEV_PASS_RUN1796__LIVE_E2E_HUMAN_PENDING",
     "E04": "RUN1792_ADMIN_CLIENT_F12_LIVE_PASS_HUMAN_PENDING__F09_DURABLE_COLLABORATION_OPEN"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
@@ -74,7 +70,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Single deterministic DEV materialization of source 273b8afb... via existing I3 canonical workflow, then focal D04 live QA name-only edit + ACK/reload/no duplicates; no production or second candidate.",
+  "nextExactAction": "D04 real versioned name-only E2E on exact RUN1796 DEV: Admin user, 15-question QA bank, name rename without question change, ACK/reload/version+history, no publication, no other bank change, cleanup; Client F12 same HR. Preserve Run1792 Admin/Shopper proof unchanged owner hashes.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -245,13 +241,13 @@
       "sourceQaTotal": 1,
       "sourceQaChecksPassed": 9,
       "sourceQaChecksTotal": 9,
-      "devMaterialized": 0,
+      "devMaterialized": 1,
       "devMaterializedTotal": 1,
       "liveE2e": 0,
       "liveE2eTotal": 1,
       "humanApproved": 0,
       "humanTotal": 1,
-      "meaning": "Exact D04 code QA PASS, not DEV nor E2E"
+      "meaning": "Source and exact DEV materialization verified, connected provider name-only ACK/reload pending"
     }
   },
   "nextDiagnosisPath": null,
@@ -509,18 +505,18 @@
   "currentDevMaterialization": {
     "state": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
     "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
-    "sourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
-    "sourceTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
-    "runId": 39169125996,
-    "runNumber": 1791,
-    "artifactId": 12151637199,
-    "artifactDigest": "sha256:c0f043bf26e03d08fb687593520cbe991845145502b28220d8fd0a52888f1b75",
+    "sourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
+    "sourceTree": "ccb73184906e3cfb8a582f882aef0a7863f3dfd5",
+    "runId": 39172029946,
+    "runNumber": 1796,
+    "artifactId": 12152773419,
+    "artifactDigest": "sha256:5e5851beb13d6dafb026ddb2aafda999acfe7c5853c04ebf1acd814adc89c1d0",
     "artifactDigestType": "SOURCE_TAR_SHA256",
-    "artifactUploadZipSha256": "f45a10945022712ce63ed347c58dfbd6fa0959cd0edd17379da73a70a5048bb8",
-    "runtimeRevision": "cxorbia-live-hr-dev-00312-5g2",
-    "runtimeDigest": "sha256:3815369c5af1736b06935b5fa58e74bd5321aa049dae0c7513978752253913b8",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/8ddb953e7f239c50",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792360031288000",
+    "artifactUploadZipSha256": "2413a143c8a71dfca408eb66ad6da01e95093fe47a1e7edc81af09380638c1c1",
+    "runtimeRevision": "cxorbia-live-hr-dev-00313-hrk",
+    "runtimeDigest": "sha256:f147e8ae70da4dae4d8e098ef3b31e669226ce61d440c2efec80a1e90203ac77",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/3ee9104ddb9f6e9c",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792362412367000",
     "hrRevision": "2895f9fa413dd88378c5a82372ab98aeb00274942aa9252a949dddeaafb65e78",
     "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/e9070ca6-234c-4a16-acf2-5ab3372eadb3",
     "builds": 1,
@@ -529,7 +525,7 @@
     "firestoreRulesDeploys": 1,
     "hrWrites": 0,
     "production": false,
-    "sameArtifactLive": "PENDING",
+    "sameArtifactLive": "PENDING_D04_RENAME",
     "humanAcceptance": "PENDING",
     "gate20": "PENDING",
     "gate21": "PENDING"
@@ -584,6 +580,19 @@
     "sourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
     "sourceTree": "ccb73184906e3cfb8a582f882aef0a7863f3dfd5",
     "failedRunId": 39171462310,
+    "devMaterialization": false,
+    "production": false
+  },
+  "previousExecutionReceiptBeforeD04Materialization": {
+    "path": "CXORBIA_I3_D04_NOMBRE_EDITABLE_SOURCE_PROOF_RUN1795_2026-10-18.json",
+    "kind": "D04_EDITABLE_NAME_SOURCE_PROOF_PASS_RUN1795_DEV_REQUIRED",
+    "sourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
+    "sourceTree": "ccb73184906e3cfb8a582f882aef0a7863f3dfd5",
+    "sourceProofRunId": 39171726936,
+    "sourceTests": {
+      "pass": 9,
+      "total": 9
+    },
     "devMaterialization": false,
     "production": false
   }
