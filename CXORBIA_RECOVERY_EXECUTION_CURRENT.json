@@ -327,5 +327,27 @@
     "newlyFunctionallyClosedI3Tasks": 0,
     "newReadyPreviews": []
   },
-  "nextAuthorizationScope": "Drive read-only permission on exactly one source file for the DEV service account; no broader Drive access."
+  "nextAuthorizationScope": "Drive read-only permission on exactly one source file for the DEV service account; no broader Drive access.",
+  "latestHumanVisualAdjudication": {
+    "receiptPath": "CXORBIA_I3_SHOPPER_VISUAL_ADJUDICATION_2026-10-18.json",
+    "day": "2026-10-18",
+    "scope": "SHOPPER_HUMAN_FOCAL",
+    "observations": 11,
+    "criticalOpen": [
+      "B10 questionnaire route",
+      "B10 notification lifecycle",
+      "A09/B11 exact identity missing visits",
+      "D04 connected review",
+      "A07 profile UX"
+    ],
+    "production": false,
+    "reviewer": "Paula",
+    "sourceSha": "330d220882a314b6599372e21f126aaab49cf30b"
+  },
+  "focalHumanVisualBacklog": {
+    "status": "HOLD",
+    "receiptPath": "CXORBIA_I3_SHOPPER_VISUAL_ADJUDICATION_2026-10-18.json",
+    "priorActionUnchanged": "Run scoped D04 connected reviewer edit/version/ACK/reload test and E04 F12 source-absent visual readback on exact RUN1782 DEV artifact; F09 NPS/notes/reunions durable collaboration remains open. Then revalidate affected owner dependencies, human review, and remaining A/B/C/D/E/V before Gate20/21. No rebuild or production.",
+    "nextExactAction": "Complete D04/E04 exact RUN1782 connected live E2E; resolve B10 questionnaire external routing+notification lifecycle using approved project config and same external HR revision; diagnose A09/B11 shopper country/3 assigned visits before writes; preserve other findings."
+  }
 }
