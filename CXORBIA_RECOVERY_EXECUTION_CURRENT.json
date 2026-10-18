@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "330d220882a314b6599372e21f126aaab49cf30b",
-  "productTree": "dc64ea105fbe059d7986a5b99f3740fa38062102",
+  "productSourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
+  "productTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
   "controlParentSha": "ec0e981d495a8151d67d172e2c205dae31ee8c88",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
@@ -30,22 +30,21 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_D04_E04_CONNECTED_DEV_RUN1788_2026-10-18.json",
-    "kind": "D04_EDIT_CONNECTED_E2E_AND_E04_F12_CLIENT_DOM_FOCAL_PASS_NAME_F09_OPEN",
-    "tasks": [
-      "D04",
-      "E04"
-    ],
-    "sourceSha": "330d220882a314b6599372e21f126aaab49cf30b",
-    "runId": 39163128539,
-    "runNumber": 1788,
+    "path": "CXORBIA_I3_ADMIN_CLIENT_PREVIEW_2026-10-18_SOURCE_RECEIPT.json",
+    "kind": "ADMIN_CLIENT_PREVIEW_SOURCE_PATCH_PENDING_CANONICAL_CI",
+    "sourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
+    "sourceTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
+    "productFilesChanged": 2,
+    "qaTestsAdded": 4,
+    "devMaterialization": false,
+    "liveE2e": false,
     "production": false
   },
   "taskProgress": {
     "G01": "IN_PROGRESS_COVERAGE_CUSTODIED_AUTHORITY_GAPS_RETAINED_IN_G03",
     "G02": "DIRECT_NATIVE_GITHUB_WRITE_READBACK_AND_EXISTING_CI_PROVEN_NO_TINYFISH_REQUIRED",
     "G03": "PENDING_NO_NEW_GENERAL_AUDIT",
-    "G04": "SOURCE_FOCAL_AND_RELATED_QA_PASS_RUN1730_PARTIAL_TASK_COVERAGE_ONLY",
+    "G04": "ADMIN_CLIENT_PREVIEW_EXACT_OWNER_PATCH_PENDING_CANONICAL_SOURCE_QA__A04_A05_PREVIOUS_LIVE_PASS_PRESERVED",
     "G05": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
     "G06": "IN_PROGRESS_FROZEN_QUEUE_SINGLE_WRITER",
     "A04": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
@@ -55,7 +54,7 @@
     "D01": "PASS_AUTHORIZED_DOCUMENT_SOURCE",
     "D03": "LIVE_E2E_PASS_RUN1778_FRESH_GENERATION_15Q_REPLAY_CLEANUP",
     "D04": "CONNECTED_LIVE_QA_15Q_VERSION_ACK_RELOAD_PASS_RUN1788__EDITABLE_NAME_OPEN",
-    "E04": "F12_CLIENT_LIVE_SOURCE_ABSENT_VISUAL_DOM_PASS_RUN1788_HUMAN_PENDING__F09_DURABILITY_OPEN"
+    "E04": "F12_RUN1788_CLIENT_E2E_PASS_PRIOR_SOURCE; ADMIN_CLIENT_PREVIEW_SOURCE_PATCH_PENDING_QA__F09_DURABLE_COLLABORATION_OPEN"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -73,7 +72,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "D04 exact P0 name edit for AI generation and pending-review rename using app/modules/cert.js; add focused tests, source proof, single successor DEV certification; retain F12 focal PASS and F09 open. Then B10/B09/B13 and A09/B11/A07 exact HR identity; C02-C10 and other A/B/C/D/E; V01-V05 Gate20 Gate21; I4 only on GO and express authorization.",
+  "nextExactAction": "Run source-proof in existing workflow on 39e4ee2ad45d1f8a166493b5bcf17bf0c610e005 without DEV deploy; then same-candidate DEV once evidence permits. Admin Client preview read-only only.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -223,6 +222,15 @@
       "passed": 0,
       "total": 2,
       "percent": 0
+    },
+    "adminClientPreview": {
+      "sourcePatched": 2,
+      "totalProductOwners": 2,
+      "sourceCIProven": 0,
+      "devMaterialized": 0,
+      "liveE2e": 0,
+      "humanApproved": 0,
+      "meaning": "No claim of release or E2E success"
     }
   },
   "nextDiagnosisPath": null,
@@ -436,5 +444,25 @@
     "liveHrRevision": "2895f9fa413dd88378c5a82372ab98aeb00274942aa9252a949dddeaafb65e78",
     "f12ReadyForScopedHumanReview": true,
     "d04NameAndE04F09RemainOpen": true
+  },
+  "previousExecutionReceiptBeforeAdminClientPreview": {
+    "path": "CXORBIA_I3_D04_E04_CONNECTED_DEV_RUN1788_2026-10-18.json",
+    "kind": "D04_EDIT_CONNECTED_E2E_AND_E04_F12_CLIENT_DOM_FOCAL_PASS_NAME_F09_OPEN",
+    "tasks": [
+      "D04",
+      "E04"
+    ],
+    "sourceSha": "330d220882a314b6599372e21f126aaab49cf30b",
+    "runId": 39163128539,
+    "runNumber": 1788,
+    "production": false
+  },
+  "newClientRolePreviewEvidence20261018": {
+    "receiptPath": "CXORBIA_I3_ADMIN_CLIENT_PREVIEW_2026-10-18_SOURCE_RECEIPT.json",
+    "sourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
+    "sourceTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
+    "entry": "Admin claim + client card or Admin sidebar, read-only",
+    "status": "SOURCE_PATCH_PENDING_CI",
+    "currentClientPortalHumanReview": "ON_HOLD_UNTIL_DEV_PASS"
   }
 }

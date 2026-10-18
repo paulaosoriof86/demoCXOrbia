@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "cxorbia.i3.admin-client-preview.source-receipt.v1",
+  "recordedAt": "2026-10-18",
+  "iteration": "I3",
+  "officialState": "HOLD",
+  "purpose": "Admin may inspect Client Portal as read-only view without client identity impersonation",
+  "source": {
+    "predecessor": "330d220882a314b6599372e21f126aaab49cf30b",
+    "successor": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
+    "tree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
+    "ownerBlobs": {
+      "app/core/backend-browser-auth.js": "2a3552d9757840d73c7bb902043b237e948b0b63",
+      "app/core/router.js": "b972cbedc67502947ed9ff5f3650b07a67dd7b75"
+    },
+    "otherProductOwnersChanged": false
+  },
+  "before": "ROLE_SELECTION_MISMATCH for valid Admin choosing Client",
+  "afterSourceOnly": "Authenticated same-tenant Super/Admin can enter read-only Client shell; return to Admin; Client/Shopper login stays scoped",
+  "auth": {
+    "tenantClaimsMustMatch": true,
+    "firebasePrincipalRetained": true,
+    "customClaimsUnchanged": true,
+    "uiOnlySessionStoragePreferenceRevalidated": true,
+    "clientMutationEventsSuppressed": true,
+    "rolesDenied": [
+      "ops",
+      "coordinador",
+      "shopper",
+      "foreign-tenant super"
+    ]
+  },
+  "evidence": {
+    "screenshot": "PRIVATE_USER_CHAT_2026-10-18",
+    "existingRun1788": {
+      "id": 39163128539,
+      "scope": "D04/E04 F12 predecessor PASS"
+    },
+    "qa": "PENDING_NODE_TESTS_REMOTE_CI",
+    "dev": "NOT_MATERIALIZED",
+    "humanApproval": false
+  },
+  "preserve": {
+    "tasks": 82,
+    "vrm": 274,
+    "vrm135State": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+    "f01toF16": true,
+    "previousMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V139.json",
+    "previousLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V468_2026-10-18.json",
+    "currentMaterialization": {
+      "state": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+      "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+      "sourceSha": "330d220882a314b6599372e21f126aaab49cf30b",
+      "sourceTree": "dc64ea105fbe059d7986a5b99f3740fa38062102",
+      "runId": 39095229103,
+      "runNumber": 1782,
+      "artifactId": 12124492642,
+      "artifactUploadZipSha256": "0bc4c28a0917a0014618fd90e6d0f5e05ff3a5c489e69deaf7255319074dc862",
+      "artifactDigest": "sha256:8da5df255f485a30e7b44e4ffd037eeff651fdfacb15e8f058a63dbb9a9f182e",
+      "runtimeRevision": "cxorbia-live-hr-dev-00311-jxp",
+      "runtimeDigest": "sha256:b6f2d4abf22ad02eb022968e6272af4f1fa0b1be8fdb12e93f5fc2baf419b4da",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/eb563d12644201cd",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792295849561000",
+      "hrRevision": "5f0b3ef79ccc6d15eb5fdbd5bdc1618e049166131ebe36baba4dd515e4a8d4c1",
+      "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/e9070ca6-234c-4a16-acf2-5ab3372eadb3",
+      "builds": 1,
+      "runtimeDeploys": 1,
+      "hostingDeploys": 1,
+      "firestoreRulesDeploys": 1,
+      "hrWrites": 0,
+      "production": false
+    },
+    "sourceOnly": true,
+    "production": false
+  },
+  "nextExactAction": "Run source-proof in existing workflow on 39e4ee2ad45d1f8a166493b5bcf17bf0c610e005 without DEV deploy; then same-candidate DEV once evidence permits. Admin Client preview read-only only.",
+  "requiresAuthorization": false,
+  "production": "DO_NOT_TOUCH"
+}

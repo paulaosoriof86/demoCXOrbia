@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_D04_NAME_EDIT_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "330d220882a314b6599372e21f126aaab49cf30b",
-  "productTreeAuthority": "dc64ea105fbe059d7986a5b99f3740fa38062102",
-  "predecessorProductSourceSha": "d1cfb37774c4107bd9a6072694eb9250041ca5b8",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V468_2026-10-18.json",
-  "findingsLedgerExpectedGitBlob": "e93531c9d9fdbc197921bf14a7810ce71a50705c",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V139.json",
+  "productSourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
+  "productTreeAuthority": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
+  "predecessorProductSourceSha": "330d220882a314b6599372e21f126aaab49cf30b",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V469_2026-10-18.json",
+  "findingsLedgerExpectedGitBlob": "4d3ed5da36bfcf75f06013f415a9c7cfe22ee83d",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261018-V140.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D04_GENERATION_REVIEW_EDITABLE_CERTIFICATION_NAME_P0__E04_F09_DURABLE_COLLABORATION_OPEN",
+  "activeBlocker": "ADMIN_CLIENT_PREVIEW_AUTH_ROUTE_SOURCE_TEST_AND_E2E_PENDING__D04_NAME_AND_F09_OPEN",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -12295,6 +12295,21 @@
     "hrRevisionLive": "2895f9fa413dd88378c5a82372ab98aeb00274942aa9252a949dddeaafb65e78",
     "hrRevisionHistorical": "5f0b3ef79ccc6d15eb5fdbd5bdc1618e049166131ebe36baba4dd515e4a8d4c1",
     "artifactUnchanged": true,
+    "production": false
+  },
+  "nextExactAction": "Run source-proof in existing workflow on 39e4ee2ad45d1f8a166493b5bcf17bf0c610e005 without DEV deploy; then same-candidate DEV once evidence permits. Admin Client preview read-only only.",
+  "adminClientPreview20261018": {
+    "sourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
+    "sourceTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
+    "files": [
+      "app/core/backend-browser-auth.js",
+      "app/core/router.js"
+    ],
+    "qa": "tools/qa/cxorbia-i3-admin-client-readonly-preview.test.mjs",
+    "oldClientMismatch": "ROLE_SELECTION_MISMATCH",
+    "sourceStatus": "PENDING_REMOTE_CI",
+    "devMaterialization": "NOT_YET_EXECUTED",
+    "humanReview": "NOT_YET_REQUESTED",
     "production": false
   }
 }
