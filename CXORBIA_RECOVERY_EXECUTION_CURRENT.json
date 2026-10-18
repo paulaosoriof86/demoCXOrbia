@@ -30,33 +30,37 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_D04_E04_SOURCE_PROOF_RUN1781_2026-10-17.json",
-    "kind": "D04_F12_SOURCE_PROOF_PASS",
+    "path": "CXORBIA_I3_D04_E04_DEV_MATERIALIZATION_RUN1782_2026-10-18.json",
+    "kind": "D04_E04_DEV_MATERIALIZATION_PASS_RUN1782",
     "tasks": [
       "D04",
       "E04"
     ],
     "sourceSha": "330d220882a314b6599372e21f126aaab49cf30b",
     "productTree": "dc64ea105fbe059d7986a5b99f3740fa38062102",
-    "sourceProof": {
+    "materialization": {
+      "state": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+      "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
       "sourceSha": "330d220882a314b6599372e21f126aaab49cf30b",
       "sourceTree": "dc64ea105fbe059d7986a5b99f3740fa38062102",
-      "runId": 39095029741,
-      "runNumber": 1781,
-      "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
-      "artifactId": 12123818040,
-      "artifactDigest": "sha256:44273f8ddfe856580c3152a9539ebaabcc999a8cfee09853922a9f5ff781aab4",
-      "d04Tests": {
-        "pass": 4,
-        "fail": 0
-      },
-      "f12Tests": {
-        "pass": 2,
-        "fail": 0
-      },
+      "runId": 39095229103,
+      "runNumber": 1782,
+      "artifactId": 12124492642,
+      "artifactUploadZipSha256": "0bc4c28a0917a0014618fd90e6d0f5e05ff3a5c489e69deaf7255319074dc862",
+      "artifactDigest": "sha256:8da5df255f485a30e7b44e4ffd037eeff651fdfacb15e8f058a63dbb9a9f182e",
+      "runtimeRevision": "cxorbia-live-hr-dev-00311-jxp",
+      "runtimeDigest": "sha256:b6f2d4abf22ad02eb022968e6272af4f1fa0b1be8fdb12e93f5fc2baf419b4da",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/eb563d12644201cd",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792295849561000",
+      "hrRevision": "5f0b3ef79ccc6d15eb5fdbd5bdc1618e049166131ebe36baba4dd515e4a8d4c1",
+      "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/e9070ca6-234c-4a16-acf2-5ab3372eadb3",
+      "builds": 1,
+      "runtimeDeploys": 1,
+      "hostingDeploys": 1,
+      "firestoreRulesDeploys": 1,
+      "hrWrites": 0,
       "production": false
     },
-    "devMaterialization": "PENDING",
     "production": false
   },
   "taskProgress": {
@@ -72,8 +76,8 @@
     "D02": "PASS_LIVE_PARSER_RUN1753",
     "D01": "PASS_AUTHORIZED_DOCUMENT_SOURCE",
     "D03": "LIVE_E2E_PASS_RUN1778_FRESH_GENERATION_15Q_REPLAY_CLEANUP",
-    "D04": "SOURCE_PROVEN_RUN1781_DEV_MATERIALIZATION_PENDING",
-    "E04": "F12_SOURCE_PROVEN_RUN1781_E04_REMAINING_CONTRACTS_PENDING"
+    "D04": "SOURCE_PROVEN_RUN1781_DEV_MATERIALIZED_RUN1782_PENDING_CONNECTED_LIVE_E2E",
+    "E04": "F12_SOURCE_PROVEN_RUN1781_DEV_MATERIALIZED_RUN1782_PENDING_LIVE_VISUAL__F09_DURABLE_COLLABORATION_OPEN"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -91,7 +95,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Materialize exact D04/F12 source 330d220 in the canonical DEV job once, verify Hosting/runtime fingerprint, and test D04 connected reviewer persistence with scoped QA and F12 source-absent human UI on same DEV; preserve other independent A/B/C/E/V open tasks.",
+  "nextExactAction": "Run scoped D04 connected reviewer edit/version/ACK/reload test and E04 F12 source-absent visual readback on exact RUN1782 DEV artifact; F09 NPS/notes/reunions durable collaboration remains open. Then revalidate affected owner dependencies, human review, and remaining A/B/C/D/E/V before Gate20/21. No rebuild or production.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -134,7 +138,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-10-17",
+  "lastUpdatedAt": "2026-10-18",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -187,7 +191,7 @@
       "numerator": 8,
       "denominator": 63,
       "percent": 12.7,
-      "meaning": "Source-level proven tasks only; E04 F12 is partial, not whole E04 nor I3 GO"
+      "meaning": "8 source-proven scoped I3 obligations; D04 materialized but not LIVE_E2E_PASS; E04 F12 partial only. Not overall product completion."
     },
     "newlyFunctionallyClosedI3Tasks": 3,
     "newReadyPreviews": 1,
@@ -224,6 +228,12 @@
       "denominator": 1,
       "percent": 0,
       "meaning": "RUN1763 reached Drive preflight and failed 403 before Vertex; environment dependency issue is fixed."
+    },
+    "d04DevMaterialization": {
+      "numerator": 1,
+      "denominator": 1,
+      "percent": 100,
+      "meaning": "Source-validated D04 owner deployed in DEV; connected reviewer proof pending."
     }
   },
   "nextDiagnosisPath": null,
