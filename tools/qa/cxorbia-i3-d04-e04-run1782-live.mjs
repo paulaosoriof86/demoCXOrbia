@@ -15,12 +15,12 @@ if(!ROOT||!SRC||!HR||!/^\d+$/.test(RUN))throw Error('ENVIRONMENT_FAILURE:D04_E04
 assert.equal(descriptor.status,'HOLD_I3_D04_E04_LIVE_E2E_REQUIRED');
 assert.equal(descriptor.productSourceSha,SRC);
 assert.equal(descriptor.currentMaterialization?.sourceSha,SRC);
-assert.equal(descriptor.currentMaterialization?.runNumber,1782);
+assert.ok(Number(descriptor.currentMaterialization?.runNumber)>=1796,'D04 naming requires newly materialized source');
 fs.mkdirSync(OUT,{recursive:true});
 if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
 const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc('tya');
 const str=x=>String(x??'').trim();
-const res={decision:'HOLD',version:'cxorbia.i3.d04-e04.run1782.connected.v1',sourceSha:SRC,sourceTree:descriptor.productTreeAuthority,run1782:descriptor.currentMaterialization.runId,hostingVersion:descriptor.currentMaterialization.hostingVersion,runtimeRevision:descriptor.currentMaterialization.runtimeRevision,hrRevision:HR,scope:{tenant:'tya',project:'cinepolis'},d04:{},e04:{},cleanup:{},writes:{auth:0,hr:0,otherBanks:0,production:0},production:false};
+const res={decision:'HOLD',version:'cxorbia.i3.d04-e04.name-edit.connected.v2',sourceSha:SRC,sourceTree:descriptor.productTreeAuthority,materializationRunId:descriptor.currentMaterialization.runId,hostingVersion:descriptor.currentMaterialization.hostingVersion,runtimeRevision:descriptor.currentMaterialization.runtimeRevision,hrRevision:HR,scope:{tenant:'tya',project:'cinepolis'},d04:{},e04:{},cleanup:{},writes:{auth:0,hr:0,otherBanks:0,production:0},production:false};
 let browser,qaRef=null;
 const record=()=>fs.writeFileSync(OUT+'/result.json',JSON.stringify(res,null,2)+'\n');
 const url=ROOT+'/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxProjectId=cinepolis&d04run='+RUN;
@@ -59,7 +59,7 @@ async function sign(m,role){
  if(!/^[0-9a-f]{64}$/.test(liveRev))throw Error('PROVIDER_FAILURE:D04_E04_HR_REVISION_NOT_CERTIFIABLE');
  if(role==='admin'){
   res.hrRevisionLive=liveRev;
-  res.hrRevisionChangedSinceRun1782=liveRev!==HR;
+  res.hrRevisionChangedSinceMaterialization=liveRev!==HR;
  }else if(res.hrRevisionLive!==liveRev){
   throw Error('PROVIDER_FAILURE:D04_E04_ADMIN_CLIENT_HR_REVISION_MISMATCH');
  }
@@ -91,13 +91,21 @@ try{
  await page.evaluate(id=>{window.CX_CERT_SELECTED_ID=id;window.CX.router.nav('cert',{history:false});},certId);
  await page.locator('#certReviewEdit').waitFor({state:'visible',timeout:30000});
  await page.locator('#certReviewEdit').click();
- await page.locator('#certReviewQuestions fieldset').first().locator('textarea').first().fill('Pregunta QA revisada '+RUN);
+ const newName='QA D04 Certificación Revisada '+RUN;
+  await page.locator('#certReviewName').waitFor({state:'visible',timeout:12000});
+  await page.locator('#certReviewName').fill(newName);
  await page.locator('#certReviewPreview').click();
- if(!/Preguntas modificadas: 1/.test(await page.locator('#certReviewDiff').innerText()))throw Error('FUNCTIONAL_DEFECT:REVIEW_DIFF');
+ const diff=await page.locator('#certReviewDiff').innerText();
+  if(!diff.includes('Nombre actualizado: '+newName)||!diff.includes('pendiente de publicación'))throw Error('FUNCTIONAL_DEFECT:D04_NAME_PREVIEW_DIFF');
  await page.locator('#certReviewSave').click();
  await page.waitForFunction(id=>(window.CX?.backendResources?.items||[]).some(x=>x.id===id&&x.version===2),rid,{timeout:45000});
  const stored=(await qaRef.get()).data()||{};
- if(stored.version!==2||stored.bank?.preguntas?.length!==15||stored.bank?.preguntas?.[0]?.q!=='Pregunta QA revisada '+RUN||stored.bank?.estado!=='pending_review'||stored.bank?.reviewHistory?.length!==1||stored.bank?.reviewHistory?.[0]?.toVersion!==2)throw Error('PERSISTENCE_FAILURE:D04_VERSION_ACK_READBACK');
+ if(stored.version!==2||stored.bank?.preguntas?.length!==15||stored.bank?.preguntas?.[0]?.q!==questions[0].q
+    ||stored.bank?.certificationName!==newName||stored.n!==newName||stored.bank?.certificationId!==certId
+    ||stored.bank?.estado!=='pending_review'||stored.bank?.reviewHistory?.length!==1||stored.bank?.reviewHistory?.[0]?.toVersion!==2
+    ||stored.bank?.reviewHistory?.[0]?.changes?.length!==0
+    ||stored.bank?.reviewHistory?.[0]?.nameChange?.before!=='QA D04 '+RUN||stored.bank?.reviewHistory?.[0]?.nameChange?.after!==newName)
+    throw Error('PERSISTENCE_FAILURE:D04_NAME_CAS_ACK_READBACK');
  await page.reload({waitUntil:'domcontentloaded',timeout:90000});
  await page.waitForFunction(input=>{
   const context=window.CX?.backendAuth?.context?.()||{},gate=window.CX_C6_HR_AUTHORITY_GATE||{};
@@ -112,16 +120,21 @@ try{
   let loadError='';
   try{await window.CX.backendResources.load({projectId:'cinepolis',periodId:a.period});}catch(e){loadError=String(e?.message||e).slice(0,120);}
   const b=window.CX.certStore.bank(a.period,a.id);
-  return{version:b?.__resourceVersion??null,q:b?.preguntas?.[0]?.q??null,estado:b?.estado??null,history:b?.reviewHistory?.length??null,foundInResources:(window.CX.backendResources?.items||[]).some(r=>r.id===a.resourceId),loadError,project:String(window.CX?.data?.currentProjectId||''),period:String(window.CX?.data?.period?.()?.id||'')};
+  return{version:b?.__resourceVersion??null,q:b?.preguntas?.[0]?.q??null,name:b?.certificationName??null,certId:b?.certificationId??null,estado:b?.estado??null,history:b?.reviewHistory?.length??null,foundInResources:(window.CX.backendResources?.items||[]).some(r=>r.id===a.resourceId),loadError,project:String(window.CX?.data?.currentProjectId||''),period:String(window.CX?.data?.period?.()?.id||'')};
  },{period:current.period,id:certId,resourceId:rid});
- res.d04.reloadReadback={version:reloaded.version,history:reloaded.history,foundInResources:reloaded.foundInResources,providerLoadError:reloaded.loadError,projectMatched:reloaded.project==='cinepolis',periodMatched:reloaded.period===current.period};
- if(reloaded.version!==2||reloaded.q!=='Pregunta QA revisada '+RUN||reloaded.estado!=='pending_review'||reloaded.history!==1)
-  throw Error('PERSISTENCE_FAILURE:D04_RELOAD:'+JSON.stringify(res.d04.reloadReadback));
+ res.d04.reloadReadback={version:reloaded.version,nameMatched:reloaded.name===newName,questionsUnchanged:reloaded.q===questions[0].q,certIdMatched:reloaded.certId===certId,history:reloaded.history,foundInResources:reloaded.foundInResources,providerLoadError:reloaded.loadError,projectMatched:reloaded.project==='cinepolis',periodMatched:reloaded.period===current.period};
+ if(reloaded.version!==2||reloaded.name!==newName||reloaded.q!==questions[0].q||reloaded.certId!==certId||reloaded.estado!=='pending_review'||reloaded.history!==1)
+  throw Error('PERSISTENCE_FAILURE:D04_NAME_RELOAD:'+JSON.stringify(res.d04.reloadReadback));
  const allAfter=(await tenant.collection('resources').where('projectId','==','cinepolis').where('status','==','active').get()).docs
   .filter(d=>d.id!==rid&&d.data()?.resourceType==='certification_bank')
   .map(d=>({id:d.id,version:d.data().version,revision:d.data().bank?.contentRevision})).sort((a,b)=>a.id.localeCompare(b.id));
  if(JSON.stringify(allBefore)!==JSON.stringify(allAfter))throw Error('PERSISTENCE_FAILURE:NON_QA_BANK_CHANGED');
- res.d04={decision:'PASS_15_QUESTION_REVIEW_PROVIDER_ACK_VERSION_HISTORY_RELOAD',versionBefore:1,versionAfter:2,questions:15,oldBanksUnchanged:true,autoPublished:false,editableAiName:!!(await page.locator('#ciName').count())};
+ await page.evaluate(()=>window.CX.router.nav('cert',{history:false}));
+  await page.locator('#certIA').click();
+  await page.locator('.cx-ov:visible #ciAiName').waitFor({state:'visible',timeout:12000});
+  const editableAiName=await page.locator('.cx-ov:visible #ciAiName').count()===1;
+  if(!editableAiName)throw Error('FUNCTIONAL_DEFECT:D04_GENERATION_NAME_FIELD_MISSING');
+  res.d04={...res.d04,decision:'PASS_D04_PENDING_NAME_EDIT_PROVIDER_ACK_VERSION_HISTORY_RELOAD',versionBefore:1,versionAfter:2,questions:15,nameBefore:'QA D04 '+RUN,nameAfter:newName,oldBanksUnchanged:true,autoPublished:false,editableAiName,stableId:true,qaFixtureOnly:true};
  await admin.ctx.close();
  const client=await sign(await member('client'),'client');
  await client.page.evaluate(()=>window.CX.router.nav('cli_insights',{history:false}));
