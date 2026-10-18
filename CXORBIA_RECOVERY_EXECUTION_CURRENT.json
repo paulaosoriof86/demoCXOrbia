@@ -30,37 +30,15 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_D04_E04_DEV_MATERIALIZATION_RUN1782_2026-10-18.json",
-    "kind": "D04_E04_DEV_MATERIALIZATION_PASS_RUN1782",
+    "path": "CXORBIA_I3_D04_E04_CONNECTED_DEV_RUN1788_2026-10-18.json",
+    "kind": "D04_EDIT_CONNECTED_E2E_AND_E04_F12_CLIENT_DOM_FOCAL_PASS_NAME_F09_OPEN",
     "tasks": [
       "D04",
       "E04"
     ],
     "sourceSha": "330d220882a314b6599372e21f126aaab49cf30b",
-    "productTree": "dc64ea105fbe059d7986a5b99f3740fa38062102",
-    "materialization": {
-      "state": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
-      "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
-      "sourceSha": "330d220882a314b6599372e21f126aaab49cf30b",
-      "sourceTree": "dc64ea105fbe059d7986a5b99f3740fa38062102",
-      "runId": 39095229103,
-      "runNumber": 1782,
-      "artifactId": 12124492642,
-      "artifactUploadZipSha256": "0bc4c28a0917a0014618fd90e6d0f5e05ff3a5c489e69deaf7255319074dc862",
-      "artifactDigest": "sha256:8da5df255f485a30e7b44e4ffd037eeff651fdfacb15e8f058a63dbb9a9f182e",
-      "runtimeRevision": "cxorbia-live-hr-dev-00311-jxp",
-      "runtimeDigest": "sha256:b6f2d4abf22ad02eb022968e6272af4f1fa0b1be8fdb12e93f5fc2baf419b4da",
-      "hostingVersion": "sites/cxorbia-backend-dev/versions/eb563d12644201cd",
-      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792295849561000",
-      "hrRevision": "5f0b3ef79ccc6d15eb5fdbd5bdc1618e049166131ebe36baba4dd515e4a8d4c1",
-      "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/e9070ca6-234c-4a16-acf2-5ab3372eadb3",
-      "builds": 1,
-      "runtimeDeploys": 1,
-      "hostingDeploys": 1,
-      "firestoreRulesDeploys": 1,
-      "hrWrites": 0,
-      "production": false
-    },
+    "runId": 39163128539,
+    "runNumber": 1788,
     "production": false
   },
   "taskProgress": {
@@ -76,8 +54,8 @@
     "D02": "PASS_LIVE_PARSER_RUN1753",
     "D01": "PASS_AUTHORIZED_DOCUMENT_SOURCE",
     "D03": "LIVE_E2E_PASS_RUN1778_FRESH_GENERATION_15Q_REPLAY_CLEANUP",
-    "D04": "SOURCE_PROVEN_RUN1781_DEV_MATERIALIZED_RUN1782_PENDING_CONNECTED_LIVE_E2E",
-    "E04": "F12_SOURCE_PROVEN_RUN1781_DEV_MATERIALIZED_RUN1782_PENDING_LIVE_VISUAL__F09_DURABLE_COLLABORATION_OPEN"
+    "D04": "CONNECTED_LIVE_QA_15Q_VERSION_ACK_RELOAD_PASS_RUN1788__EDITABLE_NAME_OPEN",
+    "E04": "F12_CLIENT_LIVE_SOURCE_ABSENT_VISUAL_DOM_PASS_RUN1788_HUMAN_PENDING__F09_DURABILITY_OPEN"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -95,7 +73,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Run scoped D04 connected reviewer edit/version/ACK/reload test and E04 F12 source-absent visual readback on exact RUN1782 DEV artifact; F09 NPS/notes/reunions durable collaboration remains open. Then revalidate affected owner dependencies, human review, and remaining A/B/C/D/E/V before Gate20/21. No rebuild or production.",
+  "nextExactAction": "D04 exact P0 name edit for AI generation and pending-review rename using app/modules/cert.js; add focused tests, source proof, single successor DEV certification; retain F12 focal PASS and F09 open. Then B10/B09/B13 and A09/B11/A07 exact HR identity; C02-C10 and other A/B/C/D/E; V01-V05 Gate20 Gate21; I4 only on GO and express authorization.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -193,7 +171,7 @@
       "percent": 12.7,
       "meaning": "8 source-proven scoped I3 obligations; D04 materialized but not LIVE_E2E_PASS; E04 F12 partial only. Not overall product completion."
     },
-    "newlyFunctionallyClosedI3Tasks": 3,
+    "newlyFunctionallyClosedI3Tasks": 0,
     "newReadyPreviews": 1,
     "newHumanApprovals": 0,
     "blockTasks": [
@@ -234,6 +212,17 @@
       "denominator": 1,
       "percent": 100,
       "meaning": "Source-validated D04 owner deployed in DEV; connected reviewer proof pending."
+    },
+    "d04e04SameArtifactConnected": {
+      "passed": 2,
+      "total": 2,
+      "percent": 100,
+      "meaning": "Exact D04 versioned-question edit and E04/F12 absent-source Client DOM focal E2E; DOES NOT CLOSE full D04/E04 tasks"
+    },
+    "d04e04Human": {
+      "passed": 0,
+      "total": 2,
+      "percent": 0
     }
   },
   "nextDiagnosisPath": null,
@@ -404,5 +393,48 @@
     ],
     "noProductChanges": true,
     "noProduction": true
+  },
+  "previousExecutionReceiptBeforeRun1788": {
+    "path": "CXORBIA_I3_D04_E04_DEV_MATERIALIZATION_RUN1782_2026-10-18.json",
+    "kind": "D04_E04_DEV_MATERIALIZATION_PASS_RUN1782",
+    "tasks": [
+      "D04",
+      "E04"
+    ],
+    "sourceSha": "330d220882a314b6599372e21f126aaab49cf30b",
+    "productTree": "dc64ea105fbe059d7986a5b99f3740fa38062102",
+    "materialization": {
+      "state": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+      "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+      "sourceSha": "330d220882a314b6599372e21f126aaab49cf30b",
+      "sourceTree": "dc64ea105fbe059d7986a5b99f3740fa38062102",
+      "runId": 39095229103,
+      "runNumber": 1782,
+      "artifactId": 12124492642,
+      "artifactUploadZipSha256": "0bc4c28a0917a0014618fd90e6d0f5e05ff3a5c489e69deaf7255319074dc862",
+      "artifactDigest": "sha256:8da5df255f485a30e7b44e4ffd037eeff651fdfacb15e8f058a63dbb9a9f182e",
+      "runtimeRevision": "cxorbia-live-hr-dev-00311-jxp",
+      "runtimeDigest": "sha256:b6f2d4abf22ad02eb022968e6272af4f1fa0b1be8fdb12e93f5fc2baf419b4da",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/eb563d12644201cd",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792295849561000",
+      "hrRevision": "5f0b3ef79ccc6d15eb5fdbd5bdc1618e049166131ebe36baba4dd515e4a8d4c1",
+      "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/e9070ca6-234c-4a16-acf2-5ab3372eadb3",
+      "builds": 1,
+      "runtimeDeploys": 1,
+      "hostingDeploys": 1,
+      "firestoreRulesDeploys": 1,
+      "hrWrites": 0,
+      "production": false
+    },
+    "production": false
+  },
+  "latestD04E04ConnectedEvidence": {
+    "path": "CXORBIA_I3_D04_E04_CONNECTED_DEV_RUN1788_2026-10-18.json",
+    "runId": 39163128539,
+    "sourceSha": "330d220882a314b6599372e21f126aaab49cf30b",
+    "run1782HrRevision": "5f0b3ef79ccc6d15eb5fdbd5bdc1618e049166131ebe36baba4dd515e4a8d4c1",
+    "liveHrRevision": "2895f9fa413dd88378c5a82372ab98aeb00274942aa9252a949dddeaafb65e78",
+    "f12ReadyForScopedHumanReview": true,
+    "d04NameAndE04F09RemainOpen": true
   }
 }

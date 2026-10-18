@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_D04_E04_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_D04_NAME_EDIT_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D04_CONNECTED_REVIEWER_E2E_AND_E04_F12_VISUAL_F09_DURABLE_COLLABORATION_UNPROVEN",
+  "activeBlocker": "D04_GENERATION_REVIEW_EDITABLE_CERTIFICATION_NAME_P0__E04_F09_DURABLE_COLLABORATION_OPEN",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -12280,6 +12280,21 @@
     "QAResourceRemoved": true,
     "QAReceiptRemoved": true,
     "originalBankUnchanged": true,
+    "production": false
+  },
+  "d04e04Run1788Readback": {
+    "receiptPath": "CXORBIA_I3_D04_E04_CONNECTED_DEV_RUN1788_2026-10-18.json",
+    "runId": 39163128539,
+    "sourceSha": "330d220882a314b6599372e21f126aaab49cf30b",
+    "sourceTree": "dc64ea105fbe059d7986a5b99f3740fa38062102",
+    "d04ConnectedQuestionReview": true,
+    "d04EditableName": false,
+    "e04F12ClientNoSourceVisualDom": true,
+    "e04F09Durable": false,
+    "humanApproved": false,
+    "hrRevisionLive": "2895f9fa413dd88378c5a82372ab98aeb00274942aa9252a949dddeaafb65e78",
+    "hrRevisionHistorical": "5f0b3ef79ccc6d15eb5fdbd5bdc1618e049166131ebe36baba4dd515e4a8d4c1",
+    "artifactUnchanged": true,
     "production": false
   }
 }
