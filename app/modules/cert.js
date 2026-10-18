@@ -4,8 +4,10 @@ CX.certStore = CX.certStore || {
   connected(){return CX.BACKEND?.enabled===true;},
   safeId(v){return String(v||'main').trim().toLowerCase().replace(/[^a-z0-9_-]+/g,'-').replace(/^-+|-+$/g,'')||'main';},
   normalizeName(value){
-    const name=String(value||'').trim().replace(/\s+/g,' ');
-    if(name.length<3||name.length>120||/[<>\x00-\x1f\x7f]/.test(name))throw new Error('CERT_BANK_NAME_INVALID');
+    const rawName=String(value||'');
+    if(/[<>\x00-\x1f\x7f]/.test(rawName))throw new Error('CERT_BANK_NAME_INVALID');
+    const name=rawName.trim().replace(/\s+/g,' ');
+    if(name.length<3||name.length>120)throw new Error('CERT_BANK_NAME_INVALID');
     return name;
   },
   resourceId(pid,certificationId='main'){
