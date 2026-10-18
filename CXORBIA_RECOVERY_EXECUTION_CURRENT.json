@@ -30,17 +30,20 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_D03_PROVIDER_502_DIAGNOSTIC_2026-10-17.json",
-    "kind": "D03_RUN1768_502_PROVIDER_DIAGNOSTIC_PENDING",
+    "path": "CXORBIA_I3_D03_DIAG_RUN1773_RECONCILIATION_2026-10-17.json",
+    "kind": "D03_RUN1773_REMOTE_DURABLE_BANK_CONFIRMED_REPLAY_PENDING",
     "tasks": [
       "D03"
     ],
-    "runId": 39064166079,
-    "runNumber": 1768,
+    "runNumber": 1773,
+    "runId": 39065339147,
     "classification": "PROVIDER_FAILURE",
-    "code": "AI_PROVIDER_HTTP_502",
+    "providerHttpStatus": 200,
+    "requestLatencySeconds": 62.605301354,
+    "questionCount": 15,
+    "pendingReviewAckProven": true,
+    "replayNotYetProven": true,
     "sourceSha": "a4434a1f223dd6da1468890c99db7339808c1cab",
-    "providerWrites": 0,
     "production": false
   },
   "taskProgress": {
@@ -55,7 +58,7 @@
     "A05": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
     "D02": "PASS_LIVE_PARSER_RUN1753",
     "D01": "PASS_AUTHORIZED_DOCUMENT_SOURCE",
-    "D03": "LIVE_PROVIDER_RUN1768_502_READONLY_DIAG_PENDING"
+    "D03": "RUN1773_REMOTE_DURABLE_PENDING_REVIEW_15Q_PASS_IDEMPOTENT_REPLAY_PENDING"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -73,7 +76,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "RUN1768 returned AI_PROVIDER_HTTP_502. Read sanitized Vertex runtime diagnostic logs in exact 19:51-19:53 UTC window with existing CI, no new provider calls; classify and correct exact failure.",
+  "nextExactAction": "Reconcile existing D03 15-question pending_review over exact Hosting DEV by two idempotent replays without provider writes; do not regenerate, then solve new-generation 60-sec Hosting performance P0 within D03.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",

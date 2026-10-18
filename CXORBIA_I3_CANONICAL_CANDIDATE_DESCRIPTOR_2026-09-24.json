@@ -7,13 +7,13 @@
   "productSourceSha": "a4434a1f223dd6da1468890c99db7339808c1cab",
   "productTreeAuthority": "c790126bcf347d7de6b8d632ea58a24a10253fcd",
   "predecessorProductSourceSha": "197ec4c84d8d2b0625885afcea6c4a7b43773985",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V459_2026-10-17.json",
-  "findingsLedgerExpectedGitBlob": "ae76abb6c3c5ac2948aa69ca0ff14af58d37798c",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V460_2026-10-17.json",
+  "findingsLedgerExpectedGitBlob": "ea5669c2fe2b8776ab8250d3eed923b37b7aa2dd",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V135.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D03_PROVIDER_DIAGNOSTIC_READONLY",
+  "activeBlocker": "D03_PERSISTED_PENDING_REVIEW_IDEMPOTENT_REPLAY_REQUIRED",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN1768 returned AI_PROVIDER_HTTP_502. Read sanitized Vertex runtime diagnostic logs in exact 19:51-19:53 UTC window with existing CI, no new provider calls; classify and correct exact failure.",
+  "exactNextAction": "Reconcile existing D03 15-question pending_review over exact Hosting DEV by two idempotent replays without provider writes; do not regenerate, then solve new-generation 60-sec Hosting performance P0 within D03.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",

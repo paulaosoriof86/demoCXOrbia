@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "cxorbia.i3.d03.proof-run1773.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "decision": "PASS_D03_SAFE_PROVIDER_DIAGNOSTIC",
+  "runId": 39065339147,
+  "runNumber": 1773,
+  "jobId": 117491762380,
+  "sourceSha": "a4434a1f223dd6da1468890c99db7339808c1cab",
+  "runtimeRevision": "cxorbia-live-hr-dev-00309-kvp",
+  "providerHttpStatus": 200,
+  "attempt1": {
+    "finishReason": "MAX_TOKENS",
+    "code": "AI_PROVIDER_RESPONSE_NOT_JSON",
+    "model": "gemini-2.5-flash",
+    "outputTokens": 1420
+  },
+  "requestLatencySeconds": 62.605301354,
+  "hostingDocumentedRequestLimitSeconds": 60,
+  "pendingReview": {
+    "documentHashMatches": true,
+    "resourceExists": true,
+    "receiptExists": true,
+    "receiptStatus": "committed",
+    "entityMatches": true,
+    "commandMatches": true,
+    "questionCount": 15,
+    "generationAttempts": 2,
+    "pendingReviewAckProven": true,
+    "stableReadback": true
+  },
+  "scope": "READ_ONLY_REMOTE_FIRESTORE_AND_SAFE_PROVIDER_LOGS; NO CLIENT_REPLAY_PROOF",
+  "production": false,
+  "nextExactAction": "Reconcile existing D03 15-question pending_review over exact Hosting DEV by two idempotent replays without provider writes; do not regenerate, then solve new-generation 60-sec Hosting performance P0 within D03."
+}
