@@ -21,17 +21,74 @@ CX.certStore = CX.certStore || {
     if(cid){const exact=rows.find(x=>this.safeId(x.certificationId)===cid);if(exact)return exact;}
     return rows.find(x=>['published','confirmed','approved_preview'].includes(String(x.estado||'')))||rows[0]||null;
   },
-  async save(pid,data,certificationId){
+  async save(pid,data,certificationId,options={}){
     const cid=this.safeId(certificationId||data?.certificationId||'main'),bank=Object.assign({},data,{certificationId:cid});
+    delete bank.__resourceId;delete bank.__resourceVersion;
     if(!this.connected()){this._demo[pid]=this._demo[pid]||{};this._demo[pid][cid]=bank;CX.bus&&CX.bus.emit('cert');return {ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,demo:true,item:bank};}
     if(!CX.backendResources?.saveMetadata)return {ok:false,status:'blocked',providerAck:false,successUiAllowed:false,code:'CERT_DURABLE_BACKEND_UNAVAILABLE'};
-    const id=this.resourceId(pid,cid),result=await CX.backendResources.saveMetadata({
+    const id=this.resourceId(pid,cid);
+    if(options.expectedResourceId&&options.expectedResourceId!==id)throw new Error('CERT_REVIEW_RESOURCE_ID_MISMATCH');
+    const result=await CX.backendResources.saveMetadata({
       id,resourceType:'certification_bank',projectId:CX.data.currentProjectId,periodId:pid,
       n:bank.certificationName||bank.name||'Banco de certificación',tipo:'certification_bank',bank,
       visibleRoles:['super','admin','ops','coordinador','shopper'],targetAll:false
-    },{projectId:CX.data.currentProjectId,periodId:pid,idempotencyKey:'certbank.save:'+id+':'+String(bank.contentRevision||bank.updatedAt||bank.generatedAt||'current')});
+    },{projectId:CX.data.currentProjectId,periodId:pid,expectedVersion:options.expectedVersion,
+      idempotencyKey:'certbank.save:'+id+':'+String(bank.contentRevision||bank.updatedAt||bank.generatedAt||'current')});
+    if(options.requireReadback&&result?.providerAck===true){
+      const stored=(CX.backendResources?.items||[]).find(x=>x.id===id&&x.projectId===CX.data.currentProjectId&&x.periodId===pid);
+      if(!stored||String(stored.version)!==String(result.item?.version)||String(stored.bank?.contentRevision)!==String(bank.contentRevision)
+        ||String(stored.bank?.estado)!==String(bank.estado)||JSON.stringify(stored.bank?.preguntas||[])!==JSON.stringify(bank.preguntas||[]))
+        throw new Error('CERT_REVIEW_REMOTE_READBACK_MISMATCH');
+    }
     if(result?.providerAck===true)CX.bus&&CX.bus.emit('cert');
     return result;
+  },
+  async reviewDraft(pid,original,questions,policy='authorized_admin'){
+    if(!this.connected())throw new Error('CERT_REVIEW_CONNECTED_PROVIDER_REQUIRED');
+    const uid=String(CX.backendCertifications?.currentUid?.()||'');
+    const role=String(CX.session?.effectiveRole?.()||CX.session?.role||CX.session?.user?.role||'').toLowerCase();
+    if(!uid||!['super','admin'].includes(role))throw new Error('CERT_REVIEW_AUTHORIZED_ADMIN_REQUIRED');
+    const distinct=['maker_checker','distinct_reviewer','two_person'].includes(String(policy).toLowerCase());
+    if(distinct&&String(original?.generadoPorUid||'')===uid)throw new Error('CERT_REVIEW_DISTINCT_REVIEWER_REQUIRED');
+    if(!original||original.estado!=='pending_review'||!Array.isArray(original.preguntas)||!original.preguntas.length)
+      throw new Error('CERT_REVIEW_PENDING_DRAFT_REQUIRED');
+    const version=Number(original.__resourceVersion);
+    if(!Number.isInteger(version)||version<1||!original.__resourceId)throw new Error('CERT_REVIEW_EXPECTED_VERSION_REQUIRED');
+    if(!Array.isArray(questions)||questions.length!==original.preguntas.length)throw new Error('CERT_REVIEW_QUESTION_COUNT_CHANGED');
+    const pageCount=Number(original.documentSource?.extraction_quality?.pageCount||0);
+    const normalized=questions.map((q,i)=>{
+      const options=(Array.isArray(q.ops)?q.ops:[]).map(x=>String(x||'').trim());
+      const revised={...original.preguntas[i],q:String(q.q||'').trim(),ops:options,correcta:String(q.correcta||'').trim(),exp:String(q.exp||'').trim(),fuente:String(q.fuente||'').trim()};
+      if(!revised.q||options.length!==4||options.some(x=>!x)||new Set(options.map(x=>x.toLowerCase())).size!==4
+        ||!options.includes(revised.correcta)||!revised.exp||!revised.fuente)throw new Error('CERT_REVIEW_INVALID_QUESTION_'+i);
+      if(pageCount>0){
+        const page=Number((revised.fuente.match(/p[aá]gina\s+(\d+)/i)||[])[1]||0);
+        if(page<1||page>pageCount)throw new Error('CERT_REVIEW_SOURCE_PAGE_INVALID_'+i);
+      }
+      return revised;
+    });
+    const titles=new Set();
+    for(const q of normalized){
+      const key=q.q.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ');
+      if(titles.has(key))throw new Error('CERT_REVIEW_DUPLICATE_QUESTION');
+      titles.add(key);
+    }
+    const changes=normalized.flatMap((q,i)=>JSON.stringify(q)===JSON.stringify(original.preguntas[i])?[]:[{index:i+1,before:original.preguntas[i],after:q}]);
+    if(!changes.length)throw new Error('CERT_REVIEW_NO_CHANGES');
+    const history=Array.isArray(original.reviewHistory)?original.reviewHistory.slice():[];
+    if(history.length>=25)throw new Error('CERT_REVIEW_HISTORY_ARCHIVAL_REQUIRED');
+    if(!globalThis.crypto?.subtle)throw new Error('CERT_REVIEW_SECURE_HASH_UNAVAILABLE');
+    const revisionPayload=JSON.stringify({previous:String(original.contentRevision||''),version,questions:normalized,sourceSha256:original.documentSource?.source_sha256||''});
+    const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(revisionPayload));
+    const revision=Array.from(new Uint8Array(digest)).map(x=>x.toString(16).padStart(2,'0')).join('');
+    const now=new Date().toISOString();
+    history.push({at:now,reviewerUid:uid,fromVersion:version,toVersion:version+1,previousContentRevision:String(original.contentRevision||''),contentRevision:revision,changes});
+    const next={...original,preguntas:normalized,estado:'pending_review',contentRevision:revision,
+      previousContentRevision:String(original.contentRevision||''),reviewHistory:history,reviewVersion:version+1,
+      ultimaRevisionPorUid:uid,ultimaRevisionAt:now};
+    return this.save(pid,next,original.certificationId,{
+      expectedVersion:version,expectedResourceId:original.__resourceId,requireReadback:true
+    });
   },
   async clear(pid,certificationId='main'){
     const cid=this.safeId(certificationId),id=this.resourceId(pid,cid);
@@ -287,6 +344,68 @@ CX.module('cert', ({role,data,ui})=>{
       }
     });},dismissOnBackdrop:false,dismissOnEscape:false}));
     if(bank?.estado==='pending_review'){
+      const edit=document.createElement('button');edit.className='btn btn-soft btn-sm';edit.id='certReviewEdit';edit.textContent='Revisar y editar preguntas';ia.insertAdjacentElement('afterend',edit);
+      edit.addEventListener('click',()=>{
+        if(!CX.permissions.gate('certification.publish',CX.permissions.ctx({entityType:'certification_bank',entityId:p.id}),ui))return;
+        const policy=String(p.certificationReviewPolicy||p.certReviewPolicy||'authorized_admin').toLowerCase();
+        const uid=String(CX.backendCertifications?.currentUid?.()||'');
+        if(!uid){ui.toast('Sesión autenticada requerida.','warn');return;}
+        if(['maker_checker','distinct_reviewer','two_person'].includes(policy)&&String(bank.generadoPorUid||'')===uid){
+          ui.toast('Se requiere otra persona autorizada para revisar este banco.','warn');return;
+        }
+        if(!CX.certStore.connected()){ui.toast('El editor requiere un proveedor durable conectado.','warn');return;}
+        ui.modal('Revisión versionada del banco',`
+          <div style="font-size:12px;color:var(--t2);margin-bottom:12px" id="certReviewSource"></div>
+          <div id="certReviewQuestions" style="max-height:54vh;overflow:auto"></div>
+          <div id="certReviewDiff" style="white-space:pre-wrap;font-size:12px;color:var(--t2);max-height:120px;overflow:auto;margin:12px 0"></div>
+          <div class="between"><button class="btn btn-soft btn-sm" id="certReviewPreview">Comparar cambios</button>
+            <button class="btn btn-pr btn-sm" id="certReviewSave" disabled>Guardar revisión sin publicar</button></div>
+        `,{onMount:(ov,close)=>{
+          const source=ov.querySelector('#certReviewSource'),list=ov.querySelector('#certReviewQuestions');
+          const preview=ov.querySelector('#certReviewPreview'),save=ov.querySelector('#certReviewSave'),diff=ov.querySelector('#certReviewDiff');
+          source.textContent='Fuente: '+String(bank.documentSource?.name||'Instructivo no identificado')+
+            ' · SHA: '+String(bank.documentSource?.source_sha256||'sin hash')+' · versión '+String(bank.__resourceVersion||'sin versión');
+          const fields=[];
+          bank.preguntas.forEach((q,i)=>{
+            const fieldset=document.createElement('fieldset');fieldset.style.cssText='border:1px solid var(--border);border-radius:10px;padding:12px;margin:10px 0';
+            const legend=document.createElement('legend');legend.textContent='Pregunta '+(i+1);fieldset.appendChild(legend);
+            const field=(label,value,multi=false)=>{
+              const wrap=document.createElement('label');wrap.className='lbl';wrap.style.display='block';wrap.textContent=label;
+              const control=document.createElement(multi?'textarea':'input');control.className='inp';control.value=String(value||'');
+              control.style.margin='4px 0 8px';if(multi)control.rows=2;
+              wrap.appendChild(control);fieldset.appendChild(wrap);return control;
+            };
+            const question=field('Enunciado',q.q,true),options=(q.ops||[]).map((v,j)=>field('Opción '+(j+1),v));
+            const wrap=document.createElement('label');wrap.className='lbl';wrap.textContent='Respuesta correcta';
+            const correct=document.createElement('select');correct.className='sel';
+            for(let j=0;j<4;j++){const option=document.createElement('option');option.value=String(j);option.textContent='Opción '+(j+1);correct.appendChild(option);}
+            correct.value=String((q.ops||[]).indexOf(q.correcta));wrap.appendChild(correct);fieldset.appendChild(wrap);
+            const explanation=field('Explicación',q.exp,true),reference=field('Referencia a fuente',q.fuente);
+            list.appendChild(fieldset);fields.push({question,options,correct,explanation,reference});
+          });
+          const read=()=>fields.map(f=>{const ops=f.options.map(x=>x.value.trim()),choice=Number(f.correct.value);return {q:f.question.value.trim(),ops,correcta:ops[choice]||'',exp:f.explanation.value.trim(),fuente:f.reference.value.trim()};});
+          let previewed='';
+          const invalidate=()=>{previewed='';save.disabled=true;};
+          list.addEventListener('input',invalidate);list.addEventListener('change',invalidate);
+          preview.addEventListener('click',()=>{
+            const next=read(),changed=next.flatMap((q,i)=>{
+              const before=bank.preguntas[i]||{};
+              return ['q','ops','correcta','exp','fuente'].some(k=>JSON.stringify(q[k])!==JSON.stringify(before[k]))?[i+1]:[];
+            });
+            diff.textContent=changed.length?'Preguntas modificadas: '+changed.join(', ')+'\nLa edición conservará el historial y permanecerá pendiente de publicación.':'No hay cambios para guardar.';
+            previewed=changed.length?JSON.stringify(next):'';save.disabled=!previewed;
+          });
+          save.addEventListener('click',async()=>{
+            if(!previewed||previewed!==JSON.stringify(read())){invalidate();ui.toast('Compara nuevamente los cambios antes de guardar.','warn');return;}
+            save.disabled=true;
+            try{
+              const reply=await CX.certStore.reviewDraft(p.id,bank,read(),policy);
+              if(!(reply?.providerAck===true&&reply?.committed===true))throw new Error('CERT_REVIEW_ACK_REQUIRED');
+              close();ui.toast('Revisión guardada en servidor · publicación pendiente.','ok');CX.router?.nav?.('cert');
+            }catch(error){console.warn('CXORBIA_CERT_REVIEW_SAFE_ERROR',String(error?.message||error).slice(0,120));ui.toast('No se pudo guardar la revisión. Comprueba tu sesión y vuelve a cargar el banco si alguien lo modificó.','warn');save.disabled=false;}
+          });
+        },dismissOnBackdrop:false,dismissOnEscape:false});
+      });
       const publish=document.createElement('button');publish.className='btn btn-green btn-sm';publish.id='certPublish';publish.textContent='✓ Revisar y publicar banco';ia.insertAdjacentElement('afterend',publish);
       publish.addEventListener('click',async()=>{
         const uid=CX.backendCertifications?.currentUid?.()||'';

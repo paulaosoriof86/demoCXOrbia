@@ -13,15 +13,22 @@ CX.module('cli_insights', ({data,ui})=>{
      reales, NUNCA se fabrica un promedio (antes caía a 74 fijo) — se devuelve null y la UI muestra
      "pendiente de fuente" en vez de un número inventado. */
   const scoreProg=()=>{ const vs=data.visitas().filter(v=>v.score!=null); return vs.length? Math.round(vs.reduce((a,v)=>a+v.score,0)/vs.length):null; };
-  /* benchmark por industria (promedios de referencia del sector) */
-  const BENCH={ 'Retail':71,'Banca':68,'Restaurantes':74,'Salud':70,'Telecom':66,'Automotriz':72,'Seguros':69,'Combustibles':73 };
-  const industria=(p.industry||'Retail').split(/[·\-]/)[0].trim();
-  const refInd=BENCH[industria]||71;
+  /* F12: genuine source authority per active project/period; no sector constants or fallback ranking. */
+  const industria=String(p.industry||'').split(/[·\-]/)[0].trim();
+  const benchmark=p.benchmarkSource&&typeof p.benchmarkSource==='object'?p.benchmarkSource:null;
+  const average=Number(benchmark?.meanScore??benchmark?.average);
+  const topScore=Number(benchmark?.topPerformerScore);
+  const benchmarkReady=!!(benchmark&&benchmark.status==='verified'&&benchmark.sourceId&&benchmark.sourceRevision
+    &&benchmark.asOf&&benchmark.methodology&&Number(benchmark.sampleSize)>0&&industria
+    &&String(benchmark.industry||'')===industria&&Number.isFinite(average)&&average>=0&&average<=100);
+  const refInd=benchmarkReady?average:null;
+  const topRef=benchmarkReady&&Number.isFinite(topScore)&&topScore>=refInd&&topScore<=100?topScore:null;
+  const esc=(v)=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
   const draw=()=>{
     const st=load();
     const mio=scoreProg();
-    const delta=mio==null?null:mio-refInd;
+    const delta=mio==null||refInd==null?null:mio-refInd;
     const nps=st.nps||{promotores:0,neutros:0,detractores:0,respuestas:0};
     const npsScore=nps.respuestas? Math.round(((nps.promotores-nps.detractores)/nps.respuestas)*100):null;
     const notas=st.notas||[];
@@ -31,18 +38,21 @@ CX.module('cli_insights', ({data,ui})=>{
       ${ui.ph('Insights & Benchmark', p.name+' · cómo te comparas con tu industria y qué opinas del programa')}
       <div class="grid g4" style="margin-bottom:16px">
         <div class="card card-p"><div class="card-t" style="font-size:12px">Tu score</div><div style="font-size:30px;font-weight:800;color:var(--brand)">${mio==null?ui.statusBdg('pending_source'):mio}</div><div style="font-size:11px;color:var(--t3)">promedio del programa</div></div>
-        <div class="card card-p"><div class="card-t" style="font-size:12px">Promedio ${industria}</div><div style="font-size:30px;font-weight:800;color:var(--t2)">${refInd}</div><div style="font-size:11px;color:var(--t3)">referencia del sector</div></div>
-        <div class="card card-p" style="border-left:3px solid var(--${(delta==null||delta>=0)?'green':'red'})"><div class="card-t" style="font-size:12px">Diferencia</div><div style="font-size:30px;font-weight:800;color:var(--${(delta==null||delta>=0)?'green':'red'})">${delta==null?'—':(delta>=0?'+':'')+delta}</div><div style="font-size:11px;color:var(--t3)">${delta==null?'sin score propio todavía':(delta>=0?'por encima del sector':'bajo el sector')}</div></div>
+        <div class="card card-p"><div class="card-t" style="font-size:12px">Promedio ${industria}</div><div style="font-size:30px;font-weight:800;color:var(--t2)">${refInd==null?ui.statusBdg('pending_source'):refInd}</div><div style="font-size:11px;color:var(--t3)">${benchmarkReady?'fuente validada '+esc(benchmark.asOf):'referencia sectorial pendiente'}</div></div>
+        <div class="card card-p" style="border-left:3px solid var(--${(delta==null||delta>=0)?'green':'red'})"><div class="card-t" style="font-size:12px">Diferencia</div><div style="font-size:30px;font-weight:800;color:var(--${(delta==null||delta>=0)?'green':'red'})">${delta==null?'—':(delta>=0?'+':'')+delta}</div><div style="font-size:11px;color:var(--t3)">${delta==null?'sin comparación válida':(delta>=0?'por encima del sector':'bajo el sector')}</div></div>
         <div class="card card-p"><div class="card-t" style="font-size:12px">NPS del programa</div><div style="font-size:30px;font-weight:800;color:${npsScore==null?'var(--t3)':npsScore>=50?'var(--green)':npsScore>=0?'var(--amber)':'var(--red)'}">${npsScore==null?'—':npsScore}</div><div style="font-size:11px;color:var(--t3)">${nps.respuestas} respuesta(s)</div></div>
       </div>
 
       <div class="grid g2" style="gap:14px;margin-bottom:16px">
         <div class="card card-p">
-          <div class="card-t" style="margin-bottom:12px">📊 Benchmark vs industria (${industria})</div>
-          ${mio==null?`<div style="font-size:12.5px;color:var(--t2);background:var(--panel-2);border-radius:8px;padding:10px 12px;margin-bottom:10px">${ui.statusBdg('pending_source')} <span style="margin-left:6px">Aún no hay score propio validado para este periodo; no se compara contra la industria con cifras aparentes.</span></div>`:`<div style="margin-bottom:10px"><div class="between" style="margin-bottom:3px"><span style="font-size:12px">Tu programa</span><b>${mio}</b></div><div class="bar" style="height:9px"><i style="width:${mio}%;background:var(--brand)"></i></div></div>`}
-          <div style="margin-bottom:10px"><div class="between" style="margin-bottom:3px"><span style="font-size:12px">Promedio industria</span><b>${refInd}</b></div><div class="bar" style="height:9px"><i style="width:${refInd}%;background:var(--t3)"></i></div></div>
-          <div style="margin-bottom:6px"><div class="between" style="margin-bottom:3px"><span style="font-size:12px">Top performers del sector</span><b>85</b></div><div class="bar" style="height:9px"><i style="width:85%;background:var(--green)"></i></div></div>
-          <div style="margin-top:10px">${mio==null?ui.aiBox('En cuanto exista una fuente de cuestionarios validados verás aquí tu posición frente al promedio del sector. Mientras tanto no se muestran diferencias inventadas.','Pendiente de fuente'):ui.aiBox(delta>=0?'Estás por encima del promedio de tu industria. El siguiente objetivo es acercarte al top performer (85).':'Estás por debajo del promedio del sector. Prioriza los planes de acción en las sucursales más débiles para cerrar la brecha.','Análisis competitivo')}</div>
+          <div class="card-t" style="margin-bottom:12px">Benchmark vs industria (${esc(industria||'sin categoría')})</div>
+          ${!benchmarkReady?`<div style="font-size:12.5px;color:var(--t2);background:var(--panel-2);border-radius:8px;padding:10px 12px">${ui.statusBdg('pending_source')} Referencia sectorial pendiente de fuente, revisión, muestra y metodología verificadas para este proyecto y período. No se emiten comparaciones ni juicios de desempeño.</div>`
+            :mio==null?`<div style="font-size:12.5px;color:var(--t2)">No hay todavía score propio validado para comparar. Fuente: ${esc(benchmark.sourceId)} · revisión ${esc(benchmark.sourceRevision)}.</div>`
+            :`<div style="margin-bottom:10px"><div class="between"><span>Tu programa</span><b>${mio}</b></div><div class="bar" style="height:9px"><i style="width:${mio}%;background:var(--brand)"></i></div></div>
+              <div style="margin-bottom:10px"><div class="between"><span>Sector · muestra ${Number(benchmark.sampleSize)}</span><b>${refInd}</b></div><div class="bar" style="height:9px"><i style="width:${refInd}%;background:var(--t3)"></i></div></div>
+              ${topRef==null?'':`<div class="between"><span>Top fuente sectorial</span><b>${topRef}</b></div><div class="bar" style="height:9px"><i style="width:${topRef}%;background:var(--green)"></i></div>`}
+              <div style="font-size:11px;color:var(--t3);margin:10px 0">Fuente: ${esc(benchmark.sourceId)} · revisión ${esc(benchmark.sourceRevision)} · ${esc(benchmark.asOf)} · ${esc(benchmark.methodology)}</div>
+              ${ui.aiBox(delta>=0?'Resultado por encima de la referencia sectorial validada.':'Resultado por debajo de la referencia sectorial validada. Verifica muestras antes de tomar medidas.','Comparación con fuente acreditada')}`}
         </div>
         <div class="card card-p">
           <div class="between" style="margin-bottom:12px"><div class="card-t">😊 NPS · ¿Recomendarías el programa?</div><button class="btn btn-pr btn-sm" id="npsBtn">Responder NPS</button></div>
@@ -61,19 +71,19 @@ CX.module('cli_insights', ({data,ui})=>{
         const vs=data.visitas().filter(v=>v.score!=null);
         const bySuc={}; vs.forEach(v=>{const k=v.sucursal||'—';(bySuc[k]=bySuc[k]||[]).push(v.score);});
         const sucs=Object.entries(bySuc).map(([n,arr])=>({n,score:Math.round(arr.reduce((a,b)=>a+b,0)/arr.length),visitas:arr.length})).sort((a,b)=>a.score-b.score);
-        const alerta=sucs.filter(s=>s.score<refInd).slice(0,6);
+        const alerta=refInd==null?[]:sucs.filter(s=>s.score<refInd).slice(0,6);
         const top=sucs.slice().reverse().slice(0,3);
         return `<div class="grid g2" style="gap:14px;margin-bottom:16px">
           <div class="card card-p"><div class="card-t" style="margin-bottom:10px">🚨 Sucursales con alerta (bajo el promedio ${refInd})</div>
-            ${alerta.length?alerta.map(s=>`<div class="between" style="padding:6px 0;border-bottom:1px solid var(--border-2)"><span style="font-size:12.5px">${s.n} <span style="color:var(--t3);font-size:11px">· ${s.visitas} visita(s)</span></span><b style="color:var(--${s.score<refInd-10?'red':'amber'})">${s.score}</b></div>`).join(''):'<div style="font-size:12.5px;color:var(--t3)">Ninguna sucursal bajo el promedio del sector. 👏</div>'}
+            ${refInd==null?'<div style="font-size:12.5px;color:var(--t3)">No hay alerta sectorial sin benchmark verificable.</div>':alerta.length?alerta.map(s=>`<div class="between" style="padding:6px 0;border-bottom:1px solid var(--border-2)"><span style="font-size:12.5px">${s.n} <span style="color:var(--t3);font-size:11px">· ${s.visitas} visita(s)</span></span><b style="color:var(--${s.score<refInd-10?'red':'amber'})">${s.score}</b></div>`).join(''):'<div style="font-size:12.5px;color:var(--t3)">Ninguna sucursal bajo el promedio del sector. 👏</div>'}
           </div>
           <div class="card card-p"><div class="card-t" style="margin-bottom:10px">💡 Oportunidades de mejora</div>
-            ${alerta.length?`<ul style="margin:0;padding-left:18px;font-size:12.5px;color:var(--t2);line-height:1.7">
+            ${refInd==null?'<div style="font-size:12.5px;color:var(--t3)">No se emiten recomendaciones o juicios de salud sectoriales sin una fuente validada.</div>':alerta.length?`<ul style="margin:0;padding-left:18px;font-size:12.5px;color:var(--t2);line-height:1.7">
               <li>Plan de acción dirigido a <b>${alerta[0].n}</b> (score ${alerta[0].score}), la más rezagada.</li>
               <li>Capacitación al personal de las ${alerta.length} sucursales bajo promedio.</li>
-              <li>Meta: subir el promedio del programa de ${mio} a ${Math.min(85,refInd+5)} el próximo periodo.</li>
+              <li>Meta: subir el promedio del programa de ${mio} a ${Math.min(topRef==null?100:topRef,refInd+5)} el próximo periodo.</li>
               ${top.length?`<li>Replicar buenas prácticas de <b>${top[0].n}</b> (score ${top[0].score}).</li>`:''}
-            </ul>`:'<div style="font-size:12.5px;color:var(--t3)">Programa saludable. Mantén la cadencia y apunta al top performer (85).</div>'}
+            </ul>`:'<div style="font-size:12.5px;color:var(--t3)">No se identificaron sucursales por debajo de la referencia sectorial validada; confirma la muestra.</div>'}
           </div>
         </div>`;
       })()}

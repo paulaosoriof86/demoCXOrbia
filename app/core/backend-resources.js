@@ -68,7 +68,7 @@ window.CX=window.CX||{};
       const ref=c.doc(rid),snap=await tx.get(ref),prior=snap.exists?(snap.data()||{}):null;
       if(prior&&prior.lastIdempotencyKey===idem){output=Object.assign({id:rid},prior);replay=true;return;}
       const expected=options.expectedVersion;
-      if(expected!==undefined&&expected!==null&&prior&&String(prior.version||0)!==String(expected))throw new Error('RESOURCE_EXPECTED_VERSION_CONFLICT');
+      if(expected!==undefined&&expected!==null&&(!prior||String(prior.version||0)!==String(expected)))throw new Error('RESOURCE_EXPECTED_VERSION_CONFLICT');
       const version=Number(prior?.version||0)+1;
       const payload=Object.assign({},clean(prior||{}),clean(item),{
         id:rid,tenantId:scope.tenantId,projectId:scope.projectId,periodId:scope.periodId||null,
