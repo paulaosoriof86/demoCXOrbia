@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "cxorbia.i3.a09-b11.owner-session-iam-readback.v1",
+  "date": "2026-10-19",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "officialState": "HOLD",
+  "classification": "ENVIRONMENT_FAILURE_PRIOR_VERIFIER_CONTEXT_ONLY;MAPPING_FAILURE_UID_B11_NOT_YET_VERIFIED",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlBefore": {
+    "head": "171a1221dc5a61e60854604d6228f3d18996a1ea",
+    "tree": "22940a2ebb3938236edb31438f8dfc0a70124574"
+  },
+  "productSource": {
+    "sha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+    "tree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
+    "modified": false
+  },
+  "priorReceipt": "CXORBIA_I3_A09_B11_CI_READONLY_ROUTE_IAM_GATE_2026-10-19.json",
+  "newEvidence": {
+    "source": "2026-10-19 user's Google Cloud IAM screenshot plus read-only existing Chrome tab context",
+    "projectId": "cxorbia-backend-dev",
+    "browserActiveAccountRole": "OWNER",
+    "browserActiveAccountMatchesIamOwnerEntry": true,
+    "serviceAccount": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com",
+    "serviceAccountExistingRolesObserved": [
+      "roles/datastore.viewer",
+      "roles/firebaseauth.viewer",
+      "Firebase Authentication Administrator",
+      "Cloud Run Administrator"
+    ],
+    "accountRoleInferenceBoundary": "IAM viewer grants exist on listed service account; does not independently identify the GitHub repository secret's principal or confirm Firebase Auth users read",
+    "browserContextAccess": "PASS_READONLY_GOOGLE_CLOUD_IAM_PAGE",
+    "firebaseAuthenticationConsoleAccess": "NOT_TESTED_IN_OWNER_BROWSER",
+    "firebaseFirestoreDocumentAccess": "NOT_TESTED_IN_OWNER_BROWSER",
+    "previousRemoteViewerError": "PROJECT_NOT_VISIBLE_OR_INSUFFICIENT_PERMISSION",
+    "reclassification": "Do not request grant of roles already present; previous remote viewer failure isolated to that verifier context; its precise cause is not proven.",
+    "existingCiRunReadback": {
+      "runNumber": 1797,
+      "runId": 39172645706,
+      "job": "phasea-representative-same-artifact-live-reproof",
+      "conclusion": "success",
+      "googleGithubActionsAuthStep": "success",
+      "extent": "CI service account authenticated to DEV for focal E2E; exact 3-assignment UID chain not tested"
+    }
+  },
+  "stillOpen": {
+    "A09": "UID_customClaims_tenantMembership_FirestoreShopper_aliasCountryPeriod_HRthreeVisits",
+    "B11": "same-target-authenticated-shopper-view",
+    "B10": "SOURCE_PROVEN_DEV_PENDING",
+    "newFunctionalPasses": 0
+  },
+  "notPerformed": {
+    "uidRead": true,
+    "claimsRead": true,
+    "firestoreTargetRead": true,
+    "shopperLogin": true,
+    "providerWrites": 0,
+    "productWrites": 0,
+    "hostingDeploys": 0,
+    "runtimeDeploys": 0,
+    "production": true
+  },
+  "privacy": {
+    "authUidExported": false,
+    "shopperIdentityExported": false,
+    "secretsExported": false
+  },
+  "registerWithoutReopeningPasses": {
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V476_2026-10-19.json",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V148.json",
+    "noModuleStatusesChanged": true
+  },
+  "nextExactAction": "Use already signed-in Cloud IAM OWNER account to open existing Firebase Authentication Users UI for cxorbia-backend-dev and confirm actual Firebase Console project visibility without adding IAM grants, creating credentials or writing; alternatively execute an existing exact-target safe read in canonical CI if a constrained invocation is proven. Follow with separate read-only tenant membership/profile and three HR visit crosswalk. If current chat cannot navigate owner's existing browser, one user navigation to Firebase Console is the minimum browser handoff; do not treat it as a demand for IAM role change.",
+  "iamRoleChangeRequired": false,
+  "productionAuthorizationRequiredLater": true
+}

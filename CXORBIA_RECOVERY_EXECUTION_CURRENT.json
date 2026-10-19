@@ -9,7 +9,7 @@
   "authorizationI4": false,
   "productSourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
   "productTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
-  "controlParentSha": "cb0a5f5e87ea02ab2002e111c86debb36446414b",
+  "controlParentSha": "171a1221dc5a61e60854604d6228f3d18996a1ea",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
     "executed": [
@@ -30,14 +30,13 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_A09_B11_CI_READONLY_ROUTE_IAM_GATE_2026-10-19.json",
-    "kind": "A09_B11_EXISTING_CI_AUTH_ROUTE_INSPECTED_VERIFIER_IAM_HOLD",
+    "path": "CXORBIA_I3_A09_B11_BROWSER_OWNER_IAM_READBACK_2026-10-19.json",
+    "kind": "A09_B11_EXISTING_OWNER_AND_SERVICE_ACCOUNT_IAM_ROLES_CONFIRMED_UID_STILL_OPEN",
     "sourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
     "sourceTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
     "sourceChanges": 0,
     "devDeploys": 0,
-    "production": false,
-    "hrRevision": "4aa7dc7ab2fee95e1c605faed5bb43cf5d29abe089e31617416531da01b12dd5"
+    "production": false
   },
   "taskProgress": {
     "G01": "IN_PROGRESS_COVERAGE_CUSTODIED_AUTHORITY_GAPS_RETAINED_IN_G03",
@@ -82,7 +81,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Grant existing verifier Google principal read-only Firebase Authentication Viewer and Cloud Datastore Viewer on cxorbia-backend-dev only; then read exact UID/claims/membership/shopper profile & HR triple-assignment crosswalk without name-only merge, document provider readback and repeat only A09/B11. Do not materialize B10 or production.",
+  "nextExactAction": "Use already signed-in Cloud IAM OWNER account to open existing Firebase Authentication Users UI for cxorbia-backend-dev and confirm actual Firebase Console project visibility without adding IAM grants, creating credentials or writing; alternatively execute an existing exact-target safe read in canonical CI if a constrained invocation is proven. Follow with separate read-only tenant membership/profile and three HR visit crosswalk. If current chat cannot navigate owner's existing browser, one user navigation to Firebase Console is the minimum browser handoff; do not treat it as a demand for IAM role change.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -288,7 +287,7 @@
     }
   },
   "nextDiagnosisPath": null,
-  "nextUserAuthorizationRequired": true,
+  "nextUserAuthorizationRequired": false,
   "primaryExecutionRoute": "DIRECT_NATIVE_GITHUB_SINGLE_WRITER",
   "tinyFishRequiredForThisAction": false,
   "receiptControlParentSha": "5df72f867d8cc27a680e070865b27cc78eb3dae6",
@@ -783,5 +782,13 @@
     "matrixCarriedForward": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V148.json",
     "previousReceipt": "CXORBIA_I3_A09_B11_HR_DIRECT_PARITY_AUTH_BLOCK_2026-10-19.json",
     "controlHeadInspected": "cb0a5f5e87ea02ab2002e111c86debb36446414b"
+  },
+  "lastIamRoleReadback": {
+    "receiptPath": "CXORBIA_I3_A09_B11_BROWSER_OWNER_IAM_READBACK_2026-10-19.json",
+    "ownerAccountCanAccessCloudIam": true,
+    "serviceAccountHasDatastoreAndFirebaseAuthViewer": true,
+    "noNewRoleGrantRequired": true,
+    "remoteVerifierContextCause": "UNRESOLVED",
+    "uidReadback": "NOT_PROVEN"
   }
 }
