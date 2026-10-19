@@ -112,9 +112,13 @@ test('I3 B7 shared agenda modal reviews exact durable pending date with provider
   const actions=[],toast=[],shown=[];
   const cx={module(){},permissions:{gate:()=>true},backend:{refresh:async()=>{}},notif:{pushDurable:async()=>({ok:true,providerAck:true})}};
   vm.runInNewContext(fs.readFileSync('app/modules/postulaciones.js','utf8'),{CX:cx,window:{},setTimeout:()=>{}},{timeout:5000});
+  // Keep provider-eligible calendar fixtures relative to execution day; prior hardcoded
+  // Oct 18, 2026 became expired and correctly failed closed on Oct 19.
+  const isoAfter=days=>new Date(Date.now()+days*86400000).toISOString().slice(0,10);
+  const scheduleDate=isoAfter(6),proposedDate=isoAfter(7);
   const records=[
-    {id:'visit-c',shopperId:'shopper-c',shopper:'Carlos',sucursal:'Centro C',pais:'GT',agendada:'2026-10-17',rescheduleRequest:{status:'pending_review',newDate:'2026-10-18'}},
-    {id:'visit-d',shopperId:'shopper-d',shopper:'Diana',sucursal:'Centro D',pais:'HN',agendada:'2026-10-17',rescheduleRequest:{status:'pending_review',newDate:'2026-10-19'}}
+    {id:'visit-c',shopperId:'shopper-c',shopper:'Carlos',sucursal:'Centro C',pais:'GT',agendada:scheduleDate,rescheduleRequest:{status:'pending_review',newDate:proposedDate}},
+    {id:'visit-d',shopperId:'shopper-d',shopper:'Diana',sucursal:'Centro D',pais:'HN',agendada:scheduleDate,rescheduleRequest:{status:'pending_review',newDate:isoAfter(8)}}
   ];
   const data={visitas:()=>records,visitFacets:()=>({scheduled:true,realized:false}),currentProjectId:'project-a',currentPeriodId:'period-a',requestVisitReschedule:async(...args)=>{actions.push(args);return {ok:true,status:'committed',providerAck:true,successUiAllowed:true};}};
   const ui={modal:(...args)=>shown.push(args),toast:(...args)=>toast.push(args),empty:()=>'',aiBox:()=>''};
@@ -124,8 +128,10 @@ test('I3 B7 shared agenda modal reviews exact durable pending date with provider
   const approval={dataset:{vid:'visit-c',dateDecision:'approved'},textContent:'Autorizar',disabled:false,addEventListener:(_event,cb)=>approval.click=cb};
   shown[0][2].onMount({querySelectorAll:selector=>selector==='[data-date-decision]'?[approval]:[]},()=>{});
   await approval.click();assert.equal(actions.length,1);
-  assert.equal(actions[0][0],'visit-c');assert.equal(actions[0][1],'2026-10-18');assert.equal(actions[0][2].ackAware,true);
+  assert.equal(actions[0][0],'visit-c');assert.equal(actions[0][1],proposedDate);assert.equal(actions[0][2].ackAware,true);
   assert.equal(actions[0][2].decision,'approved');
+  // Expired proposals must remain non-authorizable even when a newer valid case passes.
+  assert.equal(cx.adminPostulacionesActions.rescheduleReadiness({rescheduleRequest:{newDate:'2020-01-01'}},data).eligible,false);
 });
 
 test('I3 B7 direct contextual menu uses existing Postulaciones owner, scoped assignment and ACK',async()=>{
