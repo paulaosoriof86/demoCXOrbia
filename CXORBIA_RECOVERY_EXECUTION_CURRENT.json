@@ -9,7 +9,7 @@
   "authorizationI4": false,
   "productSourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
   "productTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
-  "controlParentSha": "70a567c816e7d2b988b1f7931dfb380cafeb4925",
+  "controlParentSha": "0a2a09a02329e1352565bc0a30f496dd72ed860f",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
     "executed": [
@@ -30,8 +30,8 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_A09_B11_EXACT_HR_SHOPPER_LOOKUP_2026-10-19.json",
-    "kind": "A09_B11_EXACT_MASKED_HR_SHOPPER_ANCHOR_VERIFIED_FIRESTORE_UID_OPEN",
+    "path": "CXORBIA_I3_A09_B11_SHOPPER_PROFILE_AND_PARALLEL_OWNER_READBACK_2026-10-19.json",
+    "kind": "A09_B11_FIRESTORE_HR_PROFILE_PASS_UID_CANDIDATE_DOC_ABSENT_AND_INDEPENDENT_OWNER_PARITY",
     "sourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
     "sourceTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
     "sourceChanges": 0,
@@ -53,8 +53,8 @@
     "D03": "LIVE_E2E_PASS_RUN1778_FRESH_GENERATION_15Q_REPLAY_CLEANUP",
     "D04": "SOURCE_PASS_RUN1795_DEV_RUN1796_NAME_ONLY_CONNECTED_E2E_PASS_RUN1797__HUMAN_AND_FULL_TASK_PENDING",
     "E04": "F12_CLIENT_SOURCE_ABSENT_LIVE_PASS_RUN1797__F09_NPS_NOTES_MEETINGS_DURABLE_OPEN__HUMAN_PENDING",
-    "A09": "HR_EXACT_TRIPLE_SHOPPER_HASH_PASS__FIREBASE_UID_CLAIMS_MEMBERSHIP_PENDING",
-    "B11": "EXACT_3_GT_VISITS_OCT2026_PASS__PROTECTED_PROFILE_AND_SHOPPER_AUTH_VIEW_PENDING",
+    "A09": "HR_AND_PROTECTED_PROFILE_EXACT_MATCH__CANDIDATE_UID_USERS_DOC_ABSENT__REAL_AUTH_CLAIMS_MEMBERSHIP_PENDING",
+    "B11": "HR_3_GT_VISITS_AND_FIRESTORE_PROFILE_PASS__SHOOPER_SESSION_VISITS_PENDING",
     "B10": "SOURCE_PROVEN_RUN1799_6_OF_6__DEV_E2E_HUMAN_PENDING__TYaONLINE_LINK_PENDING",
     "B09": "OPEN_GPS_PHOTO_STORAGE_ACK_NEGATIVE_AND_POSITIVE_E2E_PENDING",
     "B13": "OPEN_CROSSROLE_NOTIFICATIONS_READ_RESOLVED_PROVIDER_ACK_PENDING",
@@ -81,7 +81,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Read exact Firestore DEV tenants/tya/shoppers target and UID membership in existing owner Chrome, without name-only merge, changes or new IAM. Then check actual Firebase Auth claims. No I4.",
+  "nextExactAction": "Do not repeat HR parity or IAM permissions. Keep A09/B11 focal UID membership/claims correlation on HOLD pending authenticated exact lookup; proceed independently with B09/B13 and B05-B08 same DEV source/served-byte and provider ACK E2E, financial focal source/ACK checks, and B10 authorized TyAOnline provider-link binding, without source writes unless P0 proven. Certify serially one cumulative artifact; I4 only after I3 GO and explicit approval.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -790,5 +790,31 @@
     "noNewRoleGrantRequired": true,
     "remoteVerifierContextCause": "UNRESOLVED",
     "uidReadback": "NOT_PROVEN"
+  },
+  "lastParallelReadOnlyEvidence": {
+    "receiptPath": "CXORBIA_I3_A09_B11_SHOPPER_PROFILE_AND_PARALLEL_OWNER_READBACK_2026-10-19.json",
+    "scope": [
+      "A09",
+      "B11",
+      "B09",
+      "B13",
+      "B05",
+      "B06",
+      "B07",
+      "B08",
+      "C02-C10",
+      "B10"
+    ],
+    "ownerSourceVersusDev": {
+      "matched": 14,
+      "examined": 16,
+      "b10ExpectedDifference": 2
+    },
+    "sourceStaticPredicates": {
+      "pass": 6,
+      "total": 6
+    },
+    "repeatedHrParity": false,
+    "realE2eExecuted": false
   }
 }
