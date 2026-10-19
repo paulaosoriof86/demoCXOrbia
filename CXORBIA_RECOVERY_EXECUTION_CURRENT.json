@@ -30,16 +30,15 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_B10_TYAONLINE_SOURCE_FIX_2026-10-19.json",
-    "kind": "B10_SOURCE_FIXED_PENDING_QA_NOT_MATERIALIZED",
+    "path": "CXORBIA_I3_B10_RUN1799_SOURCE_PROVEN_2026-10-19.json",
+    "kind": "B10_SOURCE_PROVEN_RUN1799_NO_DEV",
     "sourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
     "sourceTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
-    "predecessorSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
-    "productOwnersChanged": 2,
-    "qaAdded": 2,
-    "qaCases": 6,
-    "qaRunId": null,
+    "qaRunId": 39321226031,
+    "qaCasesPassed": 6,
+    "qaCasesTotal": 6,
     "devMaterializationRunId": 39172029946,
+    "devForNewSource": false,
     "production": false
   },
   "taskProgress": {
@@ -59,7 +58,7 @@
     "E04": "F12_CLIENT_SOURCE_ABSENT_LIVE_PASS_RUN1797__F09_NPS_NOTES_MEETINGS_DURABLE_OPEN__HUMAN_PENDING",
     "A09": "OPEN_THREE_REPORTED_VISITS_VS_EXACT_AUTH_UID_HR_REVISION_PENDING",
     "B11": "OPEN_HR_GT_HN_INDEPENDENT_PARITY_AND_PERIOD_COUNTRY_MISSING",
-    "B10": "SOURCE_FIXED_PENDING_REMOTE_QA_DEV_E2E_HUMAN__EXTERNAL_PROVIDER_LINK_NOT_CONFIGURED",
+    "B10": "SOURCE_PROVEN_RUN1799_6_OF_6__DEV_E2E_HUMAN_PENDING__TYaONLINE_LINK_PENDING",
     "B09": "OPEN_GPS_PHOTO_STORAGE_ACK_NEGATIVE_AND_POSITIVE_E2E_PENDING",
     "B13": "OPEN_CROSSROLE_NOTIFICATIONS_READ_RESOLVED_PROVIDER_ACK_PENDING",
     "E01": "OPEN_APPROVED_VISUAL_HASH_BY_MODULE_RECHECK_NO_REBUILD",
@@ -85,7 +84,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Run existing I3 canonical-candidate-authority source QA on B10 successor a11a4c4d6d6a56a026b5fd6b89be94676b217698 with 6 project/provider routing tests; record exact GitHub run and owner fingerprints. Do not materialize DEV until source gate PASS and serial cumulative candidate readiness. A09/B11 Firebase UID vs HR exact profile still open. External TyAOnline per-visit link provider binding is absent and unverified. I4 blocked.",
+  "nextExactAction": "I3 A09/B11: prove exact authenticated shopper Firebase UID/claims/canonicalShopperId and 3 reported assigned October visits against independent same HR revision (currently 4aa7dc7a...), country and period. B10 source PASS RUN1799 but external TyAOnline authorized visit link/credential binding still unverified. Do not treat as DEV/functional PASS; defer new serial DEV materialization until cumulative P0 readiness. Proceed B09/B13 Admin-Shopper actions and C02-C10 finance. No production.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -175,13 +174,14 @@
       "D01",
       "D02",
       "D03",
-      "D04"
+      "D04",
+      "B10"
     ],
     "i3SourceRepairStage": {
-      "numerator": 8,
+      "numerator": 9,
       "denominator": 63,
-      "percent": 12.7,
-      "meaning": "8/63 prior source-proven obligations. B10 source changed and 6 QA cases prepared but not yet CI-proven, so numerator remains 8/63. D04 focal RUN1797 preserved."
+      "percent": 14.3,
+      "meaning": "9/63 scoped I3 source-proven obligations including B10. No whole-module, DEV, human or I3 closure claim."
     },
     "newlyFunctionallyClosedI3Tasks": 0,
     "newReadyPreviews": 1,
@@ -277,6 +277,16 @@
       "percent": 100,
       "runId": 39172645706,
       "kind": "FOCAL_ONLY_F09_OPEN"
+    },
+    "b10ProviderSource": {
+      "passed": 6,
+      "total": 6,
+      "percent": 100,
+      "scope": "SOURCE_ONLY",
+      "devMaterialized": 0,
+      "devTotal": 1,
+      "humanApproved": 0,
+      "humanTotal": 1
     }
   },
   "nextDiagnosisPath": null,
@@ -645,8 +655,8 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V146.json",
-    "gitBlob": "eecc37a2864c9c7f6c52398d3ab528b536f959a3",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V147.json",
+    "gitBlob": "f36ee3c0d16e63fa710a77ce63b7312ee053ce9e",
     "sourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
     "allModulesMatch": false
   },
@@ -706,23 +716,37 @@
     "receiptPath": "CXORBIA_I3_B10_TYAONLINE_SOURCE_FIX_2026-10-19.json",
     "sourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
     "sourceTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
-    "qa": "PENDING",
+    "qa": "PASS_RUN1799",
     "dev": "NOT_DEPLOYED",
     "human": "PENDING",
     "mappedExternalProvider": true,
-    "noProviderLinkInvented": true
+    "noProviderLinkInvented": true,
+    "qaRunId": 39321226031
   },
   "cumulativeB10Ledger": {
-    "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V474_2026-10-19.json",
-    "gitBlob": "9857c3ec1f92a7d99f22ccba4d6ca64036bc7a77",
+    "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V475_2026-10-19.json",
+    "gitBlob": "d9806645a8b1cc5656270ad354e1a56f63af8b89",
     "vrmEntries": 274,
-    "priorLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V473_2026-10-18.json",
-    "priorLedgerBlob": "2f2c5af9c6f477c4783c43c3e46a5005292be27a"
+    "priorLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V474_2026-10-19.json",
+    "priorLedgerBlob": "9857c3ec1f92a7d99f22ccba4d6ca64036bc7a77"
   },
   "previousWorkflowRoutingGuardReadback": {
     "literalPreserved": "HOLD_I3_D04_E04_LIVE_E2E_REQUIRED",
     "artifactRun1796Unchanged": true,
     "run1797FocalPassRemains": true,
     "reportByTaskAndReceiptNotStatus": true
+  },
+  "previousExecutionReceiptBeforeB10SourceProof": {
+    "path": "CXORBIA_I3_B10_TYAONLINE_SOURCE_FIX_2026-10-19.json",
+    "kind": "B10_SOURCE_FIXED_PENDING_QA_NOT_MATERIALIZED",
+    "sourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+    "sourceTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
+    "predecessorSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
+    "productOwnersChanged": 2,
+    "qaAdded": 2,
+    "qaCases": 6,
+    "qaRunId": null,
+    "devMaterializationRunId": 39172029946,
+    "production": false
   }
 }

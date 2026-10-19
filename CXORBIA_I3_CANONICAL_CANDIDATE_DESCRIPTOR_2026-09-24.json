@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B10_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_B10_SOURCE_PROVEN_DEV_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
   "productTreeAuthority": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
   "predecessorProductSourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V474_2026-10-19.json",
-  "findingsLedgerExpectedGitBlob": "9857c3ec1f92a7d99f22ccba4d6ca64036bc7a77",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V146.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V475_2026-10-19.json",
+  "findingsLedgerExpectedGitBlob": "d9806645a8b1cc5656270ad354e1a56f63af8b89",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V147.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B10_EXTERNAL_QUESTIONNAIRE_SOURCE_QA_PENDING",
+  "activeBlocker": "A09_B11_EXACT_SHOPPER_AUTH_HR_READBACK__B10_TYAONLINE_PROVIDER_LINK_UNVERIFIED",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing I3 canonical-candidate-authority source QA on B10 successor a11a4c4d6d6a56a026b5fd6b89be94676b217698 with 6 project/provider routing tests; record exact GitHub run and owner fingerprints. Do not materialize DEV until source gate PASS and serial cumulative candidate readiness. A09/B11 Firebase UID vs HR exact profile still open. External TyAOnline per-visit link provider binding is absent and unverified. I4 blocked.",
+  "exactNextAction": "I3 A09/B11: prove exact authenticated shopper Firebase UID/claims/canonicalShopperId and 3 reported assigned October visits against independent same HR revision (currently 4aa7dc7a...), country and period. B10 source PASS RUN1799 but external TyAOnline authorized visit link/credential binding still unverified. Do not treat as DEV/functional PASS; defer new serial DEV materialization until cumulative P0 readiness. Proceed B09/B13 Admin-Shopper actions and C02-C10 finance. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2944,7 +2944,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "eecc37a2864c9c7f6c52398d3ab528b536f959a3",
+  "moduleTruthExpectedGitBlob": "f36ee3c0d16e63fa710a77ce63b7312ee053ce9e",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12486,7 +12486,7 @@
     "sourceTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
     "predecessorSource": "273b8afb4b2ab0c5851c8cc82235639b44165927",
     "qaCases": 6,
-    "qa": "PENDING_CANONICAL_CI",
+    "qa": "PASS_RUN1799_6_OF_6",
     "dev": "RUN1796_PREDECESSOR_ONLY",
     "live": "PENDING",
     "human": "PENDING",
@@ -12495,6 +12495,10 @@
     "receiptPath": "CXORBIA_I3_B10_TYAONLINE_SOURCE_FIX_2026-10-19.json",
     "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V474_2026-10-19.json",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V146.json",
-    "production": false
-  }
+    "production": false,
+    "qaRunId": 39321226031,
+    "qaJobId": 118295490077,
+    "linkProvider": "UNVERIFIED"
+  },
+  "previousStatusBeforeB10Proof": "HOLD_I3_B10_SOURCE_PROOF_REQUIRED"
 }
