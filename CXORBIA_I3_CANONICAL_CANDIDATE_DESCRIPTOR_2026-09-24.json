@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 focal: reproduce Admin->Cliente read-only controls on exact current RUN1796 DEV (click/filter/drilldown vs mutation prevention), verify country display and independent GT/HN KPI parity against HR revision 2895f9fa...; then fix only proven app/core/router.js and app/modules/cliente.js owners with source QA, single serial DEV materialization and same-artifact E2E. F09 NPS/notes/meetings durable OPEN; continue B10/B09/B13 and A09/B11/A07 then C02-C10. Do not run I4.",
+  "exactNextAction": "I3 priority phase A Admin+Shopper. First perform read-only A09/B11 exact authenticated shopper UID/claims/canonical alias vs independently verified same GT/HN HR revision and 3 reported active visits (do not assume); and B10 exact per-project/period external questionnaireSource URL/provider mapping (do not invent TyAOnline URL). Then focal P0 owner fixes as proven: B09 GPS+photo+Storage ACK, B08/B13 shopper/admin decisions-notifications ACK, B05/B06/B07 assignments, C02-C10 finance, D05-D08, and E01-E03/E11 approved transversal design. Source QA -> serial single-candidate DEV -> same-artifact Admin+Shopper E2E -> scoped human approval -> 21-domain match Gate20/Gate21 -> I3 GO -> explicit I4 authorization. Preserve Portal Cliente E04/F09 as open but not immediate priority.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -12454,5 +12454,22 @@
     "actualOperationalState": "HOLD_D04_NAME_FOCAL_E2E_PASS_F09_DURABLE_OPEN_CLIENT_PREVIEW_INTERACTIONS_PENDING",
     "codeChanged": false,
     "production": false
+  },
+  "previousNextExactActionBeforePhaseAPriority": "I3 focal: reproduce Admin->Cliente read-only controls on exact current RUN1796 DEV (click/filter/drilldown vs mutation prevention), verify country display and independent GT/HN KPI parity against HR revision 2895f9fa...; then fix only proven app/core/router.js and app/modules/cliente.js owners with source QA, single serial DEV materialization and same-artifact E2E. F09 NPS/notes/meetings durable OPEN; continue B10/B09/B13 and A09/B11/A07 then C02-C10. Do not run I4.",
+  "phaseAPriority20261019": {
+    "receiptPath": "CXORBIA_I3_PHASE_A_ADMIN_SHOPPER_PRIORITY_READBACK_2026-10-19.json",
+    "action": "A09+B11 HR+identity exact live read-only, B10 external source contract",
+    "adminShopperFirst": true,
+    "clientIssuesPreserved": true,
+    "visualTargets": [
+      "E01",
+      "E02",
+      "E03",
+      "E11",
+      "V04",
+      "V05"
+    ],
+    "status": "HOLD",
+    "sourceUnchanged": true
   }
 }
