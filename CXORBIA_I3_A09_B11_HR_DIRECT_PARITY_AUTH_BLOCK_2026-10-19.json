@@ -1,0 +1,139 @@
+{
+  "schemaVersion": "cxorbia.i3.a09-b11.independent-hr-vs-uid-diagnostic.v1",
+  "date": "2026-10-19",
+  "iteration": "I3",
+  "officialState": "HOLD",
+  "classification": "MAPPING_FAILURE_UNRESOLVED__ENVIRONMENT_FAILURE_VERIFICATION_IAM_ONLY",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "source": {
+    "sha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+    "tree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
+    "unchanged": true
+  },
+  "controlBaseHead": "24f0b282eda32c70bbefa3b53ce2e5e9c5d58467",
+  "controlBaseTree": "df621a4325eb242dcb390979b3932dd930710bf7",
+  "independentExternalHr": {
+    "provider": "Google Sheets native authenticated read-only connector",
+    "authorityTitle": "HR Guatemala - Sincronizacion Google Sheets",
+    "gtSheet": "OCTUBRE 26",
+    "hnSheet": "OCTUBRE 26 HN",
+    "direct": {
+      "GT": {
+        "visits": 34,
+        "assigned": 33,
+        "unassigned": 1,
+        "completed": 19,
+        "questionnaire": 18,
+        "uniqueAssignedShoppers": 26,
+        "assignmentsDistribution": {
+          "1": 20,
+          "2": 5,
+          "3": 1
+        }
+      },
+      "HN": {
+        "visits": 10,
+        "assigned": 10,
+        "unassigned": 0,
+        "completed": 5,
+        "questionnaire": 5,
+        "uniqueAssignedShoppers": 9,
+        "assignmentsDistribution": {
+          "1": 8,
+          "2": 1
+        }
+      }
+    },
+    "exactThreeVisitOneShopperSameNameInRawRows": true,
+    "piiExcludedFromReceipt": true,
+    "rawSheetUrlOmitted": true,
+    "directSheetIndependentOfAppDerivedSnapshot": true,
+    "directProviderRevisionToken": "NOT_RETURNED_BY_SHEETS_CONNECTOR",
+    "sameRevisionClaim": "SOURCE_RUNTIME_REVISION_STABLE_BRACKETING_SHEET_READ_NOT_ATOMIC_PROVIDER_VERSION"
+  },
+  "devHrRuntime": {
+    "revision": "4aa7dc7ab2fee95e1c605faed5bb43cf5d29abe089e31617416531da01b12dd5",
+    "stableOnReadAndPostRead": true,
+    "provider": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "periodKey": "2026-10",
+    "hrTotalHistoricalVisits": 748,
+    "periods": 17,
+    "octoberVisits": 44,
+    "assigned": 43,
+    "unassigned": 1,
+    "byCountry": {
+      "GT": {
+        "visits": 34,
+        "assigned": 33,
+        "completed": 19,
+        "questionnaire": 18
+      },
+      "HN": {
+        "visits": 10,
+        "assigned": 10,
+        "completed": 5,
+        "questionnaire": 5
+      }
+    },
+    "distinctShopperIdsAssigned": 35,
+    "distribution": {
+      "1": 28,
+      "2": 6,
+      "3": 1
+    },
+    "visitIdDuplicates": 0,
+    "threeVisitShopperTokenSha256": "c6322c620eb4bda6fd090f0ad1c5696b7973ae9d8e8ef386676539a2213df279",
+    "threeVisitShopperCountry": "GT",
+    "threeVisitShopperProjectScoped": true,
+    "threeVisitShopperHRPeriod": "cinepolis-2026-10",
+    "threeVisitShopperSourceProfileOperationalAvailable": false,
+    "note": "Masked HR operational profile flag false does not establish Firebase Auth or protected Firestore profile failure",
+    "HRWrites": 0,
+    "imports": 0,
+    "production": false
+  },
+  "directParity": {
+    "countsByCountry": true,
+    "assignmentCounts": true,
+    "completedDates": true,
+    "questionnaireDates": true,
+    "identityDistributionAcrossBothCountries": true,
+    "sourceMaskedVisitKeysUnique": true,
+    "threeAssignmentsSameRawShopperName": true,
+    "firebaseUidToShopperIdMatch": "NOT_PROVEN",
+    "authClaimsVerified": false,
+    "protectedCountryAndPeriodsReadback": "NOT_PROVEN",
+    "shopperBrowserFromTheUserReportedSession": "NOT_TESTED",
+    "classificationBoundary": "Provider HR aggregate mapping PASS only; authenticated session mapping remains OPEN"
+  },
+  "authVerification": {
+    "method": "existing signed Google browser profile via Firebase Console, read-only",
+    "runId": "a8b74d9a-1c0c-40e4-a04c-7a39f4355b3a",
+    "status": "ENVIRONMENT_FAILURE_IAM_DENIED",
+    "providerError": "PROJECT_NOT_VISIBLE_OR_INSUFFICIENT_PERMISSION",
+    "firebaseAuthClaimsRead": false,
+    "firestoreTenantShopperRead": false,
+    "userActions": 0,
+    "providerWrites": 0,
+    "note": "Cannot classify application AUTH_FAILURE or profile mismatch from this IAM failure."
+  },
+  "preserved": {
+    "tasks": 82,
+    "i3Tasks": 63,
+    "vrm": 274,
+    "domains": 21,
+    "b10Run1799SourcePass": true,
+    "newFunctionalTaskClosures": 0,
+    "newSourceProvenTaskClosures": 0,
+    "currentSourceProvenNumerator": 9,
+    "denominator": 63,
+    "priorPassesUnreopened": true,
+    "production": "DO_NOT_TOUCH"
+  },
+  "nextExactAction": "I3 A09/B11: read-only verify exact Firebase Auth UID/custom claims + tenants/tya/users membership and tenants/tya/shoppers profile against HR stable-ID digest c6322c620e..., preserving projectId cinepolis, period cinepolis-2026-10, country GT and three independently evidenced HR assignments. Existing browser OAuth account lacks Firebase DEV IAM: ENVIRONMENT_FAILURE for this verification route only; use already-authorized scoped DEV credentials in existing canonical CI lane if safe WITHOUT new workflow, artifact build, data writes or deployments. If no safe authenticated path exists, request only indispensable IAM authorization. B10 remains SOURCE_PROVEN RUN1799, DEV_PENDING; after Auth binding prove actual Shopper E2E then serial cumulative DEV. Production DO_NOT_TOUCH.",
+  "authorizationNeededNow": false,
+  "authorizationI4Required": true
+}

@@ -7,13 +7,13 @@
   "productSourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
   "productTreeAuthority": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
   "predecessorProductSourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V475_2026-10-19.json",
-  "findingsLedgerExpectedGitBlob": "d9806645a8b1cc5656270ad354e1a56f63af8b89",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V147.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V476_2026-10-19.json",
+  "findingsLedgerExpectedGitBlob": "eeeae9f38d55d0de81e9cc7ac87cfebad1fc26e7",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V148.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "A09_B11_EXACT_SHOPPER_AUTH_HR_READBACK__B10_TYAONLINE_PROVIDER_LINK_UNVERIFIED",
+  "activeBlocker": "A09_B11_FIREBASE_AUTH_UID_CORRELATION_PENDING_IAM_B10_DEV_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 A09/B11: prove exact authenticated shopper Firebase UID/claims/canonicalShopperId and 3 reported assigned October visits against independent same HR revision (currently 4aa7dc7a...), country and period. B10 source PASS RUN1799 but external TyAOnline authorized visit link/credential binding still unverified. Do not treat as DEV/functional PASS; defer new serial DEV materialization until cumulative P0 readiness. Proceed B09/B13 Admin-Shopper actions and C02-C10 finance. No production.",
+  "exactNextAction": "I3 A09/B11: read-only verify exact Firebase Auth UID/custom claims + tenants/tya/users membership and tenants/tya/shoppers profile against HR stable-ID digest c6322c620e..., preserving projectId cinepolis, period cinepolis-2026-10, country GT and three independently evidenced HR assignments. Existing browser OAuth account lacks Firebase DEV IAM: ENVIRONMENT_FAILURE for this verification route only; use already-authorized scoped DEV credentials in existing canonical CI lane if safe WITHOUT new workflow, artifact build, data writes or deployments. If no safe authenticated path exists, request only indispensable IAM authorization. B10 remains SOURCE_PROVEN RUN1799, DEV_PENDING; after Auth binding prove actual Shopper E2E then serial cumulative DEV. Production DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2944,7 +2944,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "f36ee3c0d16e63fa710a77ce63b7312ee053ce9e",
+  "moduleTruthExpectedGitBlob": "a21cafc5fed380646cb09b2634042859e4496864",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12500,5 +12500,15 @@
     "qaJobId": 118295490077,
     "linkProvider": "UNVERIFIED"
   },
-  "previousStatusBeforeB10Proof": "HOLD_I3_B10_SOURCE_PROOF_REQUIRED"
+  "previousStatusBeforeB10Proof": "HOLD_I3_B10_SOURCE_PROOF_REQUIRED",
+  "previousNextActionBeforeA09B11Readback": "I3 A09/B11: prove exact authenticated shopper Firebase UID/claims/canonicalShopperId and 3 reported assigned October visits against independent same HR revision (currently 4aa7dc7a...), country and period. B10 source PASS RUN1799 but external TyAOnline authorized visit link/credential binding still unverified. Do not treat as DEV/functional PASS; defer new serial DEV materialization until cumulative P0 readiness. Proceed B09/B13 Admin-Shopper actions and C02-C10 finance. No production.",
+  "a09B11Oct19": {
+    "receiptPath": "CXORBIA_I3_A09_B11_HR_DIRECT_PARITY_AUTH_BLOCK_2026-10-19.json",
+    "readOnlyHrParity": "PASS",
+    "uidAuth": "PENDING_IAM",
+    "sourceUnchanged": true,
+    "devMaterializationUnchanged": true,
+    "classification": "ENVIRONMENT_FAILURE_BROWSER_IAM_ONLY",
+    "releaseProduction": false
+  }
 }

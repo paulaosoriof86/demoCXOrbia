@@ -30,15 +30,13 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_B10_RUN1799_SOURCE_PROVEN_2026-10-19.json",
-    "kind": "B10_SOURCE_PROVEN_RUN1799_NO_DEV",
+    "path": "CXORBIA_I3_A09_B11_HR_DIRECT_PARITY_AUTH_BLOCK_2026-10-19.json",
+    "kind": "A09_B11_HR_INDEPENDENT_PARITY_PASS_UID_IAM_BLOCKED",
     "sourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
     "sourceTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
-    "qaRunId": 39321226031,
-    "qaCasesPassed": 6,
-    "qaCasesTotal": 6,
-    "devMaterializationRunId": 39172029946,
-    "devForNewSource": false,
+    "hrRevision": "4aa7dc7ab2fee95e1c605faed5bb43cf5d29abe089e31617416531da01b12dd5",
+    "sourceChanges": 0,
+    "devDeploys": 0,
     "production": false
   },
   "taskProgress": {
@@ -56,8 +54,8 @@
     "D03": "LIVE_E2E_PASS_RUN1778_FRESH_GENERATION_15Q_REPLAY_CLEANUP",
     "D04": "SOURCE_PASS_RUN1795_DEV_RUN1796_NAME_ONLY_CONNECTED_E2E_PASS_RUN1797__HUMAN_AND_FULL_TASK_PENDING",
     "E04": "F12_CLIENT_SOURCE_ABSENT_LIVE_PASS_RUN1797__F09_NPS_NOTES_MEETINGS_DURABLE_OPEN__HUMAN_PENDING",
-    "A09": "OPEN_THREE_REPORTED_VISITS_VS_EXACT_AUTH_UID_HR_REVISION_PENDING",
-    "B11": "OPEN_HR_GT_HN_INDEPENDENT_PARITY_AND_PERIOD_COUNTRY_MISSING",
+    "A09": "HR_DIRECT_PARITY_GT_3_ASSIGNMENTS_PASS__AUTH_UID_CUSTOM_CLAIMS_PENDING_IAM",
+    "B11": "DIRECT_GT_HN_HR_44_43_1_24_23_MATCHES_DEV_REVISION__SHOPPER_AUTH_COUNTRY_PERIOD_PENDING",
     "B10": "SOURCE_PROVEN_RUN1799_6_OF_6__DEV_E2E_HUMAN_PENDING__TYaONLINE_LINK_PENDING",
     "B09": "OPEN_GPS_PHOTO_STORAGE_ACK_NEGATIVE_AND_POSITIVE_E2E_PENDING",
     "B13": "OPEN_CROSSROLE_NOTIFICATIONS_READ_RESOLVED_PROVIDER_ACK_PENDING",
@@ -84,7 +82,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 A09/B11: prove exact authenticated shopper Firebase UID/claims/canonicalShopperId and 3 reported assigned October visits against independent same HR revision (currently 4aa7dc7a...), country and period. B10 source PASS RUN1799 but external TyAOnline authorized visit link/credential binding still unverified. Do not treat as DEV/functional PASS; defer new serial DEV materialization until cumulative P0 readiness. Proceed B09/B13 Admin-Shopper actions and C02-C10 finance. No production.",
+  "nextExactAction": "I3 A09/B11: read-only verify exact Firebase Auth UID/custom claims + tenants/tya/users membership and tenants/tya/shoppers profile against HR stable-ID digest c6322c620e..., preserving projectId cinepolis, period cinepolis-2026-10, country GT and three independently evidenced HR assignments. Existing browser OAuth account lacks Firebase DEV IAM: ENVIRONMENT_FAILURE for this verification route only; use already-authorized scoped DEV credentials in existing canonical CI lane if safe WITHOUT new workflow, artifact build, data writes or deployments. If no safe authenticated path exists, request only indispensable IAM authorization. B10 remains SOURCE_PROVEN RUN1799, DEV_PENDING; after Auth binding prove actual Shopper E2E then serial cumulative DEV. Production DO_NOT_TOUCH.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -655,8 +653,8 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V147.json",
-    "gitBlob": "f36ee3c0d16e63fa710a77ce63b7312ee053ce9e",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V148.json",
+    "gitBlob": "a21cafc5fed380646cb09b2634042859e4496864",
     "sourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
     "allModulesMatch": false
   },
@@ -748,5 +746,33 @@
     "qaRunId": null,
     "devMaterializationRunId": 39172029946,
     "production": false
+  },
+  "previousExecutionReceiptBeforeA09B11": {
+    "path": "CXORBIA_I3_B10_RUN1799_SOURCE_PROVEN_2026-10-19.json",
+    "kind": "B10_SOURCE_PROVEN_RUN1799_NO_DEV",
+    "sourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+    "sourceTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
+    "qaRunId": 39321226031,
+    "qaCasesPassed": 6,
+    "qaCasesTotal": 6,
+    "devMaterializationRunId": 39172029946,
+    "devForNewSource": false,
+    "production": false
+  },
+  "latestA09B11Receipt": {
+    "path": "CXORBIA_I3_A09_B11_HR_DIRECT_PARITY_AUTH_BLOCK_2026-10-19.json",
+    "hrRevision": "4aa7dc7ab2fee95e1c605faed5bb43cf5d29abe089e31617416531da01b12dd5",
+    "sourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+    "hrCountsPass": true,
+    "uidAuthFailClaimed": false,
+    "uidAuthPending": true,
+    "iamDiagnostic": "ENVIRONMENT_FAILURE",
+    "production": false
+  },
+  "a09B11LedgerAuthority": {
+    "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V476_2026-10-19.json",
+    "gitBlob": "eeeae9f38d55d0de81e9cc7ac87cfebad1fc26e7",
+    "previous": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V475_2026-10-19.json",
+    "vrmPreserved": 274
   }
 }
