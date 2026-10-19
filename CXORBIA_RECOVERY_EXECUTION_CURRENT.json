@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
-  "productTree": "ccb73184906e3cfb8a582f882aef0a7863f3dfd5",
+  "productSourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+  "productTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
   "controlParentSha": "fef20bed13d4d307a4b909f06e1de66013a741ee",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
@@ -30,16 +30,16 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
-    "kind": "CONTROL_RECONCILIATION_RUN1797_FOCAL_PASS_HUMAN_PENDING",
-    "sourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
-    "sourceTree": "ccb73184906e3cfb8a582f882aef0a7863f3dfd5",
-    "runId": 39172645706,
-    "runNumber": 1797,
-    "devMaterializationRunId": 1796,
-    "devMaterializationRunIdReal": 39172029946,
-    "qaArtifactId": 12153276766,
-    "productWrites": 0,
+    "path": "CXORBIA_I3_B10_TYAONLINE_SOURCE_FIX_2026-10-19.json",
+    "kind": "B10_SOURCE_FIXED_PENDING_QA_NOT_MATERIALIZED",
+    "sourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+    "sourceTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
+    "predecessorSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
+    "productOwnersChanged": 2,
+    "qaAdded": 2,
+    "qaCases": 6,
+    "qaRunId": null,
+    "devMaterializationRunId": 39172029946,
     "production": false
   },
   "taskProgress": {
@@ -59,7 +59,7 @@
     "E04": "F12_CLIENT_SOURCE_ABSENT_LIVE_PASS_RUN1797__F09_NPS_NOTES_MEETINGS_DURABLE_OPEN__HUMAN_PENDING",
     "A09": "OPEN_THREE_REPORTED_VISITS_VS_EXACT_AUTH_UID_HR_REVISION_PENDING",
     "B11": "OPEN_HR_GT_HN_INDEPENDENT_PARITY_AND_PERIOD_COUNTRY_MISSING",
-    "B10": "OPEN_EXTERNAL_QUESTIONNAIRE_PROJECT_PERIOD_CONFIG_AND_LINK_OWNER_PENDING",
+    "B10": "SOURCE_FIXED_PENDING_REMOTE_QA_DEV_E2E_HUMAN__EXTERNAL_PROVIDER_LINK_NOT_CONFIGURED",
     "B09": "OPEN_GPS_PHOTO_STORAGE_ACK_NEGATIVE_AND_POSITIVE_E2E_PENDING",
     "B13": "OPEN_CROSSROLE_NOTIFICATIONS_READ_RESOLVED_PROVIDER_ACK_PENDING",
     "E01": "OPEN_APPROVED_VISUAL_HASH_BY_MODULE_RECHECK_NO_REBUILD",
@@ -85,7 +85,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 priority phase A Admin+Shopper. First perform read-only A09/B11 exact authenticated shopper UID/claims/canonical alias vs independently verified same GT/HN HR revision and 3 reported active visits (do not assume); and B10 exact per-project/period external questionnaireSource URL/provider mapping (do not invent TyAOnline URL). Then focal P0 owner fixes as proven: B09 GPS+photo+Storage ACK, B08/B13 shopper/admin decisions-notifications ACK, B05/B06/B07 assignments, C02-C10 finance, D05-D08, and E01-E03/E11 approved transversal design. Source QA -> serial single-candidate DEV -> same-artifact Admin+Shopper E2E -> scoped human approval -> 21-domain match Gate20/Gate21 -> I3 GO -> explicit I4 authorization. Preserve Portal Cliente E04/F09 as open but not immediate priority.",
+  "nextExactAction": "Run existing I3 canonical-candidate-authority source QA on B10 successor a11a4c4d6d6a56a026b5fd6b89be94676b217698 with 6 project/provider routing tests; record exact GitHub run and owner fingerprints. Do not materialize DEV until source gate PASS and serial cumulative candidate readiness. A09/B11 Firebase UID vs HR exact profile still open. External TyAOnline per-visit link provider binding is absent and unverified. I4 blocked.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -181,7 +181,7 @@
       "numerator": 8,
       "denominator": 63,
       "percent": 12.7,
-      "meaning": "8/63 source proven prior tasks; this 2026-10-19 priority control update adds 0 functional completions. D04 name-only E2E PASS RUN1797 focal, human/global open."
+      "meaning": "8/63 prior source-proven obligations. B10 source changed and 6 QA cases prepared but not yet CI-proven, so numerator remains 8/63. D04 focal RUN1797 preserved."
     },
     "newlyFunctionallyClosedI3Tasks": 0,
     "newReadyPreviews": 1,
@@ -645,9 +645,9 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261018-V145.json",
-    "gitBlob": "878593f08ea1d092ddf1ab54455cd38a43b0eb04",
-    "sourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V146.json",
+    "gitBlob": "eecc37a2864c9c7f6c52398d3ab528b536f959a3",
+    "sourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
     "allModulesMatch": false
   },
   "cumulativeControlReconciliationRun1797": {
@@ -658,10 +658,12 @@
     "ledger274Unchanged": true
   },
   "workflowRoutingGuardReadback": {
-    "literalPreserved": "HOLD_I3_D04_E04_LIVE_E2E_REQUIRED",
-    "artifactRun1796Unchanged": true,
-    "run1797FocalPassRemains": true,
-    "reportByTaskAndReceiptNotStatus": true
+    "status": "HOLD_I3_B10_SOURCE_PROOF_REQUIRED",
+    "canonicalAuthorityOnly": true,
+    "builds": 0,
+    "deploys": 0,
+    "sourceFocal": "B10",
+    "priorRUN1797Preserved": true
   },
   "previousNextExactActionBeforePhaseAPriority": "I3 focal: reproduce Admin->Cliente read-only controls on exact current RUN1796 DEV (click/filter/drilldown vs mutation prevention), verify country display and independent GT/HN KPI parity against HR revision 2895f9fa...; then fix only proven app/core/router.js and app/modules/cliente.js owners with source QA, single serial DEV materialization and same-artifact E2E. F09 NPS/notes/meetings durable OPEN; continue B10/B09/B13 and A09/B11/A07 then C02-C10. Do not run I4.",
   "phaseAPriority20261019": {
@@ -686,5 +688,41 @@
     ],
     "clientIssuesDeferredInQueueNotErased": true,
     "sourceChange": false
+  },
+  "previousExecutionReceiptBeforeB10Source": {
+    "path": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
+    "kind": "CONTROL_RECONCILIATION_RUN1797_FOCAL_PASS_HUMAN_PENDING",
+    "sourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
+    "sourceTree": "ccb73184906e3cfb8a582f882aef0a7863f3dfd5",
+    "runId": 39172645706,
+    "runNumber": 1797,
+    "devMaterializationRunId": 1796,
+    "devMaterializationRunIdReal": 39172029946,
+    "qaArtifactId": 12153276766,
+    "productWrites": 0,
+    "production": false
+  },
+  "latestB10SourceFix": {
+    "receiptPath": "CXORBIA_I3_B10_TYAONLINE_SOURCE_FIX_2026-10-19.json",
+    "sourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+    "sourceTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
+    "qa": "PENDING",
+    "dev": "NOT_DEPLOYED",
+    "human": "PENDING",
+    "mappedExternalProvider": true,
+    "noProviderLinkInvented": true
+  },
+  "cumulativeB10Ledger": {
+    "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V474_2026-10-19.json",
+    "gitBlob": "9857c3ec1f92a7d99f22ccba4d6ca64036bc7a77",
+    "vrmEntries": 274,
+    "priorLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V473_2026-10-18.json",
+    "priorLedgerBlob": "2f2c5af9c6f477c4783c43c3e46a5005292be27a"
+  },
+  "previousWorkflowRoutingGuardReadback": {
+    "literalPreserved": "HOLD_I3_D04_E04_LIVE_E2E_REQUIRED",
+    "artifactRun1796Unchanged": true,
+    "run1797FocalPassRemains": true,
+    "reportByTaskAndReceiptNotStatus": true
   }
 }

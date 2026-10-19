@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "cxorbia.i3.b10.external-provider-source-fix.v1",
+  "date": "2026-10-19",
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "MAPPING_FAILURE",
+  "source": {
+    "predecessor": "273b8afb4b2ab0c5851c8cc82235639b44165927",
+    "successor": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+    "tree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
+    "files": {
+      "app/adapters/tya-live-source-inplace-apply.js": "45e1cd1b8c01d6276be2c256d5b99baa93e90252",
+      "app/modules/cuestionario-shopper.js": "5f5609aa91fe3d0c3682e1dc13a1d69443bed00b"
+    }
+  },
+  "evidence": {
+    "provider": "masked DEV source-safe HR runtime",
+    "observedRevision": "4aa7dc7ab2fee95e1c605faed5bb43cf5d29abe089e31617416531da01b12dd5",
+    "scope": "tya/cinepolis/2026-10 GT34 HN10",
+    "configuration": "questionnaireSource=TyAOnline",
+    "legacyCuestionarioObject": false,
+    "observedBug": "projected mode interna despite source external",
+    "noExternalLinkDisclosed": true,
+    "hrWrites": 0,
+    "imported": false
+  },
+  "fix": {
+    "behavior": "Project questionnaireSource external provider maps to pending provider mode without defaulting to internal. Explicit inconsistent internal/source conflict fails closed. Existing configured external_general/externo_visita links retain their routes; no link invented.",
+    "sourceQaCases": 6,
+    "qaStatus": "PENDING_CI",
+    "devStatus": "NOT_DEPLOYED",
+    "endToEndStatus": "PENDING_PROVIDER_BINDING",
+    "humanStatus": "PENDING"
+  },
+  "a09B11": {
+    "periodVisits": 44,
+    "countries": {
+      "GT": 34,
+      "HN": 10
+    },
+    "assignedVisits": 43,
+    "unassigned": 1,
+    "uniqueAssignedShoppers": 35,
+    "oneShopperHasExactlyThreeVisits": true,
+    "assignedMissingShopperRows": 0,
+    "assignedCountryMissing": 0,
+    "duplicateVisitIds": 0,
+    "exactFirebaseUidCorrelation": "PENDING",
+    "independentExternalHRDirectSheetReadback": "PENDING",
+    "allShoppersLogin": "NOT_CLAIMED"
+  },
+  "preservation": {
+    "tasks": 82,
+    "vrm": 274,
+    "domains": 21,
+    "passesNotReopenedWithoutDrift": true,
+    "phaseAComplete": false,
+    "sourceOnly": true,
+    "production": "DO_NOT_TOUCH"
+  },
+  "ledger": {
+    "newPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V474_2026-10-19.json",
+    "priorBlob": "2f2c5af9c6f477c4783c43c3e46a5005292be27a"
+  },
+  "matrix": {
+    "newPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V146.json",
+    "priorBlob": "878593f08ea1d092ddf1ab54455cd38a43b0eb04"
+  },
+  "next": "Run existing canonical I3 authority/source QA against exact B10 successor a11a4c4d6d6a56a026b5fd6b89be94676b217698, 6 isolated source routing cases, and check source/ledger/module/owner parity; then only after proof consider serial DEV materialization. A09/B11 exact UID vs HR independent still open; TyAOnline link binding still open. No production."
+}

@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_D04_E04_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_B10_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
-  "productTreeAuthority": "ccb73184906e3cfb8a582f882aef0a7863f3dfd5",
-  "predecessorProductSourceSha": "4fd4e4cbfc41f99425c839179f029c12d2ec1419",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V473_2026-10-18.json",
-  "findingsLedgerExpectedGitBlob": "2f2c5af9c6f477c4783c43c3e46a5005292be27a",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261018-V145.json",
+  "productSourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+  "productTreeAuthority": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
+  "predecessorProductSourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V474_2026-10-19.json",
+  "findingsLedgerExpectedGitBlob": "9857c3ec1f92a7d99f22ccba4d6ca64036bc7a77",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V146.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "CLIENT_READ_ONLY_NAVIGATION_P0_FOCAL_REQUIRED__VISUAL_COUNTRY_LABEL_OPEN__E04_F09_OPEN",
+  "activeBlocker": "B10_EXTERNAL_QUESTIONNAIRE_SOURCE_QA_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 priority phase A Admin+Shopper. First perform read-only A09/B11 exact authenticated shopper UID/claims/canonical alias vs independently verified same GT/HN HR revision and 3 reported active visits (do not assume); and B10 exact per-project/period external questionnaireSource URL/provider mapping (do not invent TyAOnline URL). Then focal P0 owner fixes as proven: B09 GPS+photo+Storage ACK, B08/B13 shopper/admin decisions-notifications ACK, B05/B06/B07 assignments, C02-C10 finance, D05-D08, and E01-E03/E11 approved transversal design. Source QA -> serial single-candidate DEV -> same-artifact Admin+Shopper E2E -> scoped human approval -> 21-domain match Gate20/Gate21 -> I3 GO -> explicit I4 authorization. Preserve Portal Cliente E04/F09 as open but not immediate priority.",
+  "exactNextAction": "Run existing I3 canonical-candidate-authority source QA on B10 successor a11a4c4d6d6a56a026b5fd6b89be94676b217698 with 6 project/provider routing tests; record exact GitHub run and owner fingerprints. Do not materialize DEV until source gate PASS and serial cumulative candidate readiness. A09/B11 Firebase UID vs HR exact profile still open. External TyAOnline per-visit link provider binding is absent and unverified. I4 blocked.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2944,7 +2944,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "878593f08ea1d092ddf1ab54455cd38a43b0eb04",
+  "moduleTruthExpectedGitBlob": "eecc37a2864c9c7f6c52398d3ab528b536f959a3",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -8103,7 +8103,7 @@
     "representativeSameArtifact": "PASS_RUN1427",
     "exactB2Ack": "PENDING"
   },
-  "currentMaterializationIsPredecessorOnly": false,
+  "currentMaterializationIsPredecessorOnly": true,
   "i3B2Run1425SourceProof": {
     "runId": 37887175242,
     "runNumber": 1425,
@@ -12471,5 +12471,30 @@
     ],
     "status": "HOLD",
     "sourceUnchanged": true
+  },
+  "previousRoutingStatusBeforeB10": "HOLD_I3_D04_E04_LIVE_E2E_REQUIRED",
+  "workflowRoutingB10": {
+    "status": "HOLD_I3_B10_SOURCE_PROOF_REQUIRED",
+    "condition": "canonical-candidate-authority only",
+    "noMaterializationMarker": true,
+    "priorD04Run1797Preserved": true,
+    "production": false
+  },
+  "previousNextActionBeforeB10SourceProof": "I3 priority phase A Admin+Shopper. First perform read-only A09/B11 exact authenticated shopper UID/claims/canonical alias vs independently verified same GT/HN HR revision and 3 reported active visits (do not assume); and B10 exact per-project/period external questionnaireSource URL/provider mapping (do not invent TyAOnline URL). Then focal P0 owner fixes as proven: B09 GPS+photo+Storage ACK, B08/B13 shopper/admin decisions-notifications ACK, B05/B06/B07 assignments, C02-C10 finance, D05-D08, and E01-E03/E11 approved transversal design. Source QA -> serial single-candidate DEV -> same-artifact Admin+Shopper E2E -> scoped human approval -> 21-domain match Gate20/Gate21 -> I3 GO -> explicit I4 authorization. Preserve Portal Cliente E04/F09 as open but not immediate priority.",
+  "b10Oct19Source": {
+    "sourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+    "sourceTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
+    "predecessorSource": "273b8afb4b2ab0c5851c8cc82235639b44165927",
+    "qaCases": 6,
+    "qa": "PENDING_CANONICAL_CI",
+    "dev": "RUN1796_PREDECESSOR_ONLY",
+    "live": "PENDING",
+    "human": "PENDING",
+    "providerName": "TyAOnline",
+    "providerLink": "UNVERIFIED",
+    "receiptPath": "CXORBIA_I3_B10_TYAONLINE_SOURCE_FIX_2026-10-19.json",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V474_2026-10-19.json",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V146.json",
+    "production": false
   }
 }
