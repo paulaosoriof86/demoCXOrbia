@@ -19,6 +19,20 @@ window.CX = window.CX || {};
     return {tenantId,projectId,projectName,tenantName:str(snapshot?.tenantName||snapshot?.tenantConfig?.name||tenantId),countries:[...countrySet],currency,projectConfig};
   }
 
+  /* B10: provider authority is scoped in projectConfig.questionnaireSource.
+     Absence of a legacy cuestionario object MUST NOT silently select the internal demo form. */
+  function resolveScopedQuestionnaire(projectConfig){
+    const base={modo:'interna',url:'',label:'Cuestionario del proyecto'};
+    const configured=Object.assign({},base,projectConfig.cuestionario||{});
+    const providerName=str(projectConfig.questionnaireSource);
+    const external=providerName&&!/^(?:internal|interno|interna|platform|plataforma)$/i.test(providerName);
+    if(!external)return configured;
+    const mode=str((projectConfig.cuestionario||{}).modo).toLowerCase();
+    if(!mode)return Object.assign({},configured,{modo:'externo_proveedor',url:'',etiqueta:providerName,providerSource:providerName});
+    if(mode==='interna'||mode==='internal')return Object.assign({},configured,{modo:'fuente_pendiente',url:'',etiqueta:providerName,providerSource:providerName,sourceConflict:true});
+    return Object.assign({},configured,{providerSource:providerName});
+  }
+
   function mapPeriods(snapshot,identity){
     return safeArray(snapshot.periods).map(p=>Object.assign({},p,{
       id:periodId(identity.projectId,p.key),tenantId:identity.tenantId,rootProjectId:identity.projectId,program:identity.projectId,programLabel:identity.projectName,
@@ -31,7 +45,7 @@ window.CX = window.CX || {};
       scenarios:safeArray(identity.projectConfig.scenarios),scenarioDimensions:safeArray(identity.projectConfig.scenarioDimensions).map(x=>Object.assign({},x)),
       quincenas:safeArray(identity.projectConfig.quincenas).length?safeArray(identity.projectConfig.quincenas):['Quincena 1','Quincena 2'],canales:['Visita presencial'],formato:identity.projectConfig.formato||'Mystery shopping',ronda:p.label,periodicidad:identity.projectConfig.periodicidad||null,periodoCumpl:identity.projectConfig.periodoCumpl||null,
       restriccion:'Reglas Q1/Q2, franja y visita previa configurables por proyecto.',
-      cuestionario:Object.assign({modo:'interna',url:'',label:'Cuestionario del proyecto'},identity.projectConfig.cuestionario||{}),
+      cuestionario:resolveScopedQuestionnaire(identity.projectConfig),
       questionnaireProgram:(identity.projectConfig.questionnaireProgramsByPeriod&&identity.projectConfig.questionnaireProgramsByPeriod[periodId(identity.projectId,p.key)])||null,
       questionnaireProgramAuthority:(identity.projectConfig.questionnaireProgramsByPeriod&&identity.projectConfig.questionnaireProgramsByPeriod[periodId(identity.projectId,p.key)])?'firestore_project_config':null,
       pago:{logica:'Pagos y liquidaciones se controlan por submitido y cruce financiero.',diasPago:null,moneda:'local'},

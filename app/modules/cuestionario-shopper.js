@@ -7,16 +7,18 @@ CX.shopperQuestionnaire = function(data, p, visita, ui){
   /* P0.1 — enum unificado: modos externos nuevos (externo_general/externo_visita) + legacy (externa/link).
      P0.2 — cada modo externo abre el link que corresponde y NO cae en el formulario interno. */
   const esPorVisita = (cfg.modo==='externo_visita' || cfg.modo==='link');
-  const esExterno   = (cfg.modo==='externo_general' || cfg.modo==='externa' || esPorVisita);
+  const providerPending=(cfg.modo==='externo_proveedor'||cfg.modo==='fuente_pendiente');
+  const esExterno   = (cfg.modo==='externo_general' || cfg.modo==='externa' || esPorVisita || providerPending);
   if(esExterno){
-    const etiqueta = cfg.etiqueta || cfg.label || 'externo';
+    const etiqueta = String(cfg.etiqueta || cfg.label || 'externo').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const externalKind=providerPending?(cfg.sourceConflict?'con fuente pendiente de conciliar':'externo a través de proveedor'):(esPorVisita?'con link propio por visita (desde la hoja de ruta)':'externo · link general');
     /* link por visita: se toma de la fila de HR de la visita; general: URL del proyecto */
-    const url = esPorVisita ? ((visita&&(visita.questionnaireLink||visita.cuestionarioUrl||visita.linkCuestionario||visita.urlCuestionario||visita.hrQuestionnaireLink))||'') : (cfg.url||'');
+    const url = providerPending ? '' : (esPorVisita ? ((visita&&(visita.questionnaireLink||visita.cuestionarioUrl||visita.linkCuestionario||visita.urlCuestionario||visita.hrQuestionnaireLink))||'') : (cfg.url||''));
     ui.modal('Cuestionario del proyecto', `
       <div style="background:var(--brand-light);border-radius:11px;padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:var(--brand-dark)">
-        Este proyecto usa un <b>cuestionario ${esPorVisita?'con link propio por visita (desde la hoja de ruta)':'externo · link general'}</b>${etiqueta?` (${etiqueta})`:''}. Complétalo y luego marca la visita como cuestionario enviado.</div>
+        Este proyecto usa un <b>cuestionario ${externalKind}</b>${etiqueta?` (${etiqueta})`:''}. Complétalo y luego marca la visita como cuestionario enviado.</div>
       ${url?`<a href="${url}" target="_blank" class="btn btn-pr" style="width:100%;justify-content:center;margin-bottom:10px">🌐 Abrir cuestionario ${esPorVisita?'(link de esta visita)':'externo'}</a>`
-           :`<div class="card-p" style="border:1px dashed var(--amber);border-radius:11px;margin-bottom:10px;font-size:12px;color:#92400e">⏳ Link ${esPorVisita?'de esta visita (pendiente en la hoja de ruta)':'general del proyecto (no configurado)'}. Configúralo en el proyecto o en la fuente de HR.</div>`}
+           :`<div class="card-p" style="border:1px dashed var(--amber);border-radius:11px;margin-bottom:10px;font-size:12px;color:#92400e">${providerPending?(cfg.sourceConflict?'La configuración del cuestionario no coincide con la fuente externa. Coordinación debe resolver el origen antes de continuar.':'El proveedor externo está declarado, pero esta visita todavía no tiene un enlace autorizado. Coordinación debe configurar el acceso.'):('⏳ Link '+(esPorVisita?'de esta visita (pendiente en la hoja de ruta)':'general del proyecto (no configurado)')+'. Configúralo en el proyecto o en la fuente de HR.')}</div>`}
       <button class="btn btn-green" id="markDone" style="width:100%;justify-content:center" ${url?'':'disabled'}>✅ Marcar cuestionario realizado</button>
     `, {onMount:(ov,close)=>{
       ov.querySelector('#markDone').addEventListener('click',async()=>{

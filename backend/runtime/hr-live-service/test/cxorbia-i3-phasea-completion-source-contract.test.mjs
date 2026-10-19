@@ -106,3 +106,4 @@ test('I3 DEV previously-published artifact uses same job in readback-only mode w
 });
 
 import '../../../../tools/qa/cxorbia-i3-r22-notification-route-ack-source.test.mjs';
+import '../../../../tools/qa/cxorbia-i3-b10-external-provider-routing.test.mjs';
