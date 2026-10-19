@@ -9,7 +9,7 @@
   "authorizationI4": false,
   "productSourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
   "productTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
-  "controlParentSha": "0a2a09a02329e1352565bc0a30f496dd72ed860f",
+  "controlParentSha": "a665b729f6b49bd290ed28375f729ad2ac58b9c8",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
     "executed": [
@@ -30,8 +30,8 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_A09_B11_SHOPPER_PROFILE_AND_PARALLEL_OWNER_READBACK_2026-10-19.json",
-    "kind": "A09_B11_FIRESTORE_HR_PROFILE_PASS_UID_CANDIDATE_DOC_ABSENT_AND_INDEPENDENT_OWNER_PARITY",
+    "path": "CXORBIA_I3_B09_B13_ADMIN_SHOPPER_LIVE_READONLY_EXECUTION_2026-10-19.json",
+    "kind": "I3_ADMIN_SHOPPER_CHROME_CLIENT_READONLY_PARITY_AND_B09_B13_CI_READBACK__E2E_OPEN",
     "sourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
     "sourceTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
     "sourceChanges": 0,
@@ -81,7 +81,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Do not repeat HR parity or IAM permissions. Keep A09/B11 focal UID membership/claims correlation on HOLD pending authenticated exact lookup; proceed independently with B09/B13 and B05-B08 same DEV source/served-byte and provider ACK E2E, financial focal source/ACK checks, and B10 authorized TyAOnline provider-link binding, without source writes unless P0 proven. Certify serially one cumulative artifact; I4 only after I3 GO and explicit approval.",
+  "nextExactAction": "Use owner-authenticated existing Chrome in Work mode (Chat-mode browser connector is read-only) to conduct focal live Admin/Shopper B09 checkin photo/GPS Storage ACK, B13 notification resolved and reloaded, B05-B08 postulations/agenda, and C02-C10 finance without mass writes. Meanwhile resolve exact A09/B11 Auth UID claims membership by approved scoped read. Do not create new workflow or candidate, do not deploy B10 alone; I4 remains blocked.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -816,5 +816,15 @@
     },
     "repeatedHrParity": false,
     "realE2eExecuted": false
+  },
+  "lastIndependentFrontalReadOnly": {
+    "receiptPath": "CXORBIA_I3_B09_B13_ADMIN_SHOPPER_LIVE_READONLY_EXECUTION_2026-10-19.json",
+    "hrRevision": "4aa7dc7ab2fee95e1c605faed5bb43cf5d29abe089e31617416531da01b12dd5",
+    "ChromeClientUiRead": "PASS_COUNTS_ONLY",
+    "anonProtectedNegativeHttp": 503,
+    "existingCiRun": 1799,
+    "b09RealE2e": "NOT_EXECUTED",
+    "b13RealE2e": "NOT_EXECUTED",
+    "browserControlRequires": "WORK_MODE"
   }
 }
