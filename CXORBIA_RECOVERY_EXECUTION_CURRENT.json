@@ -9,7 +9,7 @@
   "authorizationI4": false,
   "productSourceSha": "c242e6bf5fc43844ba2f7fba1690f6eb63403c01",
   "productTree": "73d9c6d0bcafaf2a14217e9a08716749dc98a0bb",
-  "controlParentSha": "1cff0125a7ee5715b2c8ea319444d5c58fc1c28e",
+  "controlParentSha": "c371aa32c4a483a384907a7ceec9ae752ea4e08e",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
     "executed": [
@@ -30,11 +30,11 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_UAT_RESERVATIONS_FIRESTORE_RULE_SOURCE_FIXED_2026-10-19.json",
-    "kind": "RESERVATIONS_EXACT_SCOPED_FIRESTORE_RULE_SOURCE_LOCAL_RED_1_GREEN_6_REMOTE_CI_PENDING",
+    "path": "CXORBIA_I3_UAT_RESERVATIONS_RUN1801_SOURCE_PROVEN_2026-10-19.json",
+    "kind": "RESERVATION_RULE_WORK_UAT_RUN1801_6_6_PASS_CANONICAL_GUARD_PASS_DEV_E2E_HOLD",
     "sourceSha": "c242e6bf5fc43844ba2f7fba1690f6eb63403c01",
     "sourceTree": "73d9c6d0bcafaf2a14217e9a08716749dc98a0bb",
-    "sourceChanges": 1,
+    "sourceChanges": 0,
     "devDeploys": 0,
     "production": false
   },
@@ -81,7 +81,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Read existing canonical RUN1801 source QA for reservations rule exact scope; then prove current Firebase rules release + Admin/Shopper own/sibling denied live E2E in DEV. Preserve VRM-249 PASS and other scoped proofs. No prod.",
+  "nextExactAction": "I3 HOLD: resolve A09/B11 exact shopper UID/claims/membership and live GT triple-visit view; materialize cumulative DEV once scope/gate approved to include B10, finance owner and scoped reservations read rule. Then Work performs Admin↔Shopper E2E, GPS/Storage, notifications, finances. No production.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -871,9 +871,13 @@
     "sourceSha": "c242e6bf5fc43844ba2f7fba1690f6eb63403c01",
     "ruleBlob": "833fc1c98f54d6279cb411c30e34f06caab4ddd7",
     "securitySourceRedGreen": "1_TO_6_OF_6",
-    "remoteCI": "PENDING",
+    "remoteCI": "PASS_RUN1801_6_OF_6",
     "actualDeployedRuleId": "projects/cxorbia-backend-dev/rulesets/e9070ca6-234c-4a16-acf2-5ab3372eadb3",
     "currentRemoteReleaseRevalidated": false,
-    "devDeployed": false
+    "devDeployed": false,
+    "runNumber": 1801,
+    "runId": 39355653494,
+    "jobId": 118409693316,
+    "sourceGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY"
   }
 }

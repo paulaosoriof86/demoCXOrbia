@@ -7,9 +7,9 @@
   "productSourceSha": "c242e6bf5fc43844ba2f7fba1690f6eb63403c01",
   "productTreeAuthority": "73d9c6d0bcafaf2a14217e9a08716749dc98a0bb",
   "predecessorProductSourceSha": "2c6ad7c0466101398e6b1c60ba067f44c9ab6c21",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V479_2026-10-19.json",
-  "findingsLedgerExpectedGitBlob": "ea794b65c768f4a37258fceea7b3b47655c9ced1",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V151.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V480_2026-10-19.json",
+  "findingsLedgerExpectedGitBlob": "44b8a69b47a9a6b53a8689e2916cee6dbb20d180",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V152.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Read existing canonical RUN1801 source QA for reservations rule exact scope; then prove current Firebase rules release + Admin/Shopper own/sibling denied live E2E in DEV. Preserve VRM-249 PASS and other scoped proofs. No prod.",
+  "exactNextAction": "I3 HOLD: resolve A09/B11 exact shopper UID/claims/membership and live GT triple-visit view; materialize cumulative DEV once scope/gate approved to include B10, finance owner and scoped reservations read rule. Then Work performs Admin↔Shopper E2E, GPS/Storage, notifications, finances. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2944,7 +2944,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "de744ba30641690153a9aeb8fbe1f8597ca5b723",
+  "moduleTruthExpectedGitBlob": "f07953812348a3cc2c1d2be74ee4e891dd79bf3b",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12545,11 +12545,16 @@
       "VRM-249"
     ],
     "localRedGreen": "1_OF_6_TO_6_OF_6",
-    "remoteCi": "PENDING",
+    "remoteCi": "PASS_RUN1801_6_OF_6",
     "devRulesDeployed": false,
     "providerE2e": false,
     "classification": "AUTH_FAILURE",
     "securityGuarantee": "Operator tenant read or shopper exact own project read; direct browser reservations writes disabled",
-    "production": false
+    "production": false,
+    "runNumber": 1801,
+    "runId": 39355653494,
+    "jobId": 118409693316,
+    "canonicalGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+    "status": "SOURCE_PROVEN_DEV_RULES_DEPLOY_AND_LIVE_E2E_PENDING"
   }
 }
