@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_I3_RUN1809_DEV_MATERIALIZED_LIVE_E2E_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
   "productTreeAuthority": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
   "predecessorProductSourceSha": "c9e5c5313883adc905f2d061219bc121c3b4af7e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V484_2026-10-20.json",
-  "findingsLedgerExpectedGitBlob": "a605ccbfb50c5d34b17719d44b1661f1572bf4c1",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261020-V156.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V485_2026-10-20.json",
+  "findingsLedgerExpectedGitBlob": "1b66e28a0a8c146847610134ee38007839647bcb",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261020-V157.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "I3_CUMULATIVE_DEV_MATERIALIZATION_PENDING_B10_FINANCE_RESERVATIONS_A09_B11_WIZARD",
+  "activeBlocker": "A09_B11_SHOPPER_CLAIMS_3_VISITS_LIVE_E2E__B09_B13_B05_B08_C02_C10_ADMIN_SHOPPER_E2E__B10_WIZARD_DEV_UAT_HUMAN_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing single Phase A DEV materialization from source 81593bfb, require exact artifact readback, DEV only. I3 HOLD awaiting Admin Shopper E2E and HR revision, no prod.",
+  "exactNextAction": "I3 HOLD after RUN1809 DEV PASS: issue an independent Work authenticated role-scoped UAT on exact DEV Hosting/runtime source. Verify Shopper exact Stiven (real claims, real login, 3 GT Oct visits, no duplicate, period), Admin matching visit lifecycle and notifications, B10 questionnaire source, reservations own-scope rules, historical paid label, wizard creation with provider ACK and reload in a disposable new project only if authorization exists, finance and GPS/storage fail-closed. If P0 fails, return exact owner/route/evidence to this technical conversation for bounded fix; preserve no production until I3 GO + express approval.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2944,7 +2944,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "52357706a2064670f11c968b924802b2485de0e5",
+  "moduleTruthExpectedGitBlob": "6a812b721f65a4e05f2f0c5fffa3d7fa206c42fe",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12631,6 +12631,42 @@
     "materializationJobTrigger": "[i3-phasea-dev-materialize]",
     "staticAssetsAppended": 3,
     "production": false,
-    "state": "REQUESTED_NOT_YET_EXECUTED"
+    "state": "PASS_RUN1809_DEV_MATERIALIZED",
+    "runId": 39439528723,
+    "actualRunNumber": 1809,
+    "proofReceipt": "CXORBIA_I3_RUN1809_CUMULATIVE_DEV_MATERIALIZATION_PASS_2026-10-20.json"
+  },
+  "i3Oct20CumulativeDevRun1809": {
+    "state": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "sourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
+    "sourceTree": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
+    "runId": 39439528723,
+    "runNumber": 1809,
+    "jobId": 118685564398,
+    "artifactId": 12273383932,
+    "artifactUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/39439528723/artifacts/12273383932",
+    "artifactDigest": "sha256:b493a2eb376635b22c2619bdc5a13dd6d4559cae112ef0b608f46ce9bfacfc3b",
+    "artifactDigestType": "SOURCE_TAR_SHA256",
+    "artifactUploadZipSha256": "43db9a69a0fffe09015894bfd7a848abe18aed31a60bc836a9148083f6f041f9",
+    "cloudBuildId": "d2362fa0-04e4-4d9a-bba7-a7b35ca03d30",
+    "runtimeRevision": "cxorbia-live-hr-dev-00314-kcr",
+    "runtimeDigest": "sha256:55ccc1aba2068e2e58e4519a8877defb37d463cf7604bc5fe6ef17e768a8405d",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/34569c6f31f4cd72",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792506734803000",
+    "hrRevision": "4aa7dc7ab2fee95e1c605faed5bb43cf5d29abe089e31617416531da01b12dd5",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/fe1c7f11-7265-4d66-95ee-c03f4798d35e",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "firestoreRulesDeploys": 1,
+    "hrWrites": 0,
+    "production": false,
+    "sameArtifactSourceAssetReadback": "PASS_RUN1809",
+    "humanAcceptance": "PENDING",
+    "gate20": "PENDING",
+    "gate21": "PENDING",
+    "receiptPath": "CXORBIA_I3_RUN1809_CUMULATIVE_DEV_MATERIALIZATION_PASS_2026-10-20.json",
+    "stage": "DEV_MATERIALIZED_NOT_LIVE_E2E"
   }
 }
