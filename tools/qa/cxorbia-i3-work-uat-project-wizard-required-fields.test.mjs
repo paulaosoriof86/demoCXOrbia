@@ -18,7 +18,7 @@ class Wrap {
   this.elements={};
   this.elements['#wBack']=new Element();
   this.elements['#wNext']=new Element();
-  const m=value.match(/id="f_name"\s+value="([^"]*)"/);
+  const m=value.match(/id="f_name"[^>]*\bvalue="([^"]*)"/);
   if(m)this.elements['#f_name']=new Element(m[1]);
   if(value.includes('id="f_paisSearch"')){
    this.elements['#f_paisSearch']=new Element();
