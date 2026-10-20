@@ -39,11 +39,11 @@ CX.projectWizard = function(data, ui){
 
   const stepHTML=()=>{
     if(st.step===1) return `
-      <div style="margin-bottom:12px"><label class="lbl">Nombre del proyecto / cliente</label><input class="inp" id="f_name" value="${st.name}" placeholder="Ej. Cadena de retail"></div>
+      <div style="margin-bottom:12px"><label class="lbl">Nombre del proyecto / cliente <span class="muted">(obligatorio)</span></label><input class="inp" id="f_name" required aria-required="true" value="${st.name}" placeholder="Ej. Cadena de retail"></div>
       <div style="margin-bottom:12px"><label class="lbl">Rubro / industria</label><input class="inp" id="f_ind" list="rubroList" value="${st.industry}" placeholder="Busca o crea uno nuevo…">
       <datalist id="rubroList">${['Retail · Cadena de tiendas','Banca · Red de agencias','Restaurantes · Multimarca','Salud · Clínicas','Telecomunicaciones','Automotriz · Concesionarios','Hotelería & Turismo','Seguros','Educación','Gobierno / Sector público','Supermercados','Farmacias'].map(r=>`<option value="${r}">`).join('')}</datalist>
       <div style="font-size:11px;color:var(--t3);margin-top:4px">Elige de la lista o escribe uno nuevo.</div></div>
-      <label class="lbl">Países donde se ejecuta (multipaís)</label>
+      <label class="lbl">Países donde se ejecuta (multipaís) <span class="muted">(selecciona al menos uno)</span></label>
       <input class="inp" id="f_paisSearch" placeholder="🔎 Buscar país…" style="margin-bottom:8px">
       <div style="max-height:160px;overflow:auto;border:1px solid var(--border);border-radius:10px;padding:8px">
         ${CX.COUNTRIES.map(co=>`<label class="between wPaisRow" data-n="${co.n.toLowerCase()}" style="padding:5px 6px;cursor:pointer"><span style="font-size:13px">${co.n} <span class="muted">(${co.cur})</span></span><input type="checkbox" class="wCountry" data-c="${co.c}" data-cur="${co.cur}" ${st.countries.includes(co.c)?'checked':''}></label>`).join('')}
@@ -172,6 +172,7 @@ CX.projectWizard = function(data, ui){
 
   const create=async()=>{
     persist();
+    st.name=String(st.name||'').trim();
     if(!st.name){ui.toast('Ponle nombre al proyecto','warn');st.step=1;render();return;}
     if(!st.countries.length){ui.toast('Selecciona al menos un país','warn');st.step=1;render();return;}
     const windows=(st.ventanas||'').split(',').map(s=>s.trim()).filter(Boolean);
@@ -223,7 +224,27 @@ CX.projectWizard = function(data, ui){
 
   const bind=()=>{
     const back=wrap.querySelector('#wBack'); if(back)back.addEventListener('click',()=>{persist();st.step=Math.max(1,st.step-1);render();});
-    wrap.querySelector('#wNext').addEventListener('click',()=>{persist();if(st.step===st.total){create();}else{st.step++;render();}});
+    const next=wrap.querySelector('#wNext');
+    // I3 Work-UAT: do not present an executable Next/Create action before
+    // required project identity and at least one configured country are present.
+    const updateRequiredScope=()=>{
+      const name=st.step===1?wrap.querySelector('#f_name')?.value:st.name;
+      const countries=st.step===1?wrap.querySelectorAll('.wCountry:checked').length:st.countries.length;
+      const ready=!!String(name||'').trim()&&countries>0;
+      next.disabled=!ready;
+      next.setAttribute('aria-disabled',String(!ready));
+    };
+    next.addEventListener('click',()=>{
+      persist();
+      if(!String(st.name||'').trim()||!st.countries.length){
+        ui.toast('Indica el nombre del proyecto y selecciona al menos un país.','warn',3600);
+        st.step=1;render();return;
+      }
+      if(st.step===st.total){create();}else{st.step++;render();}
+    });
+    wrap.querySelector('#f_name')?.addEventListener('input',updateRequiredScope);
+    wrap.querySelectorAll('.wCountry').forEach(input=>input.addEventListener('change',updateRequiredScope));
+    updateRequiredScope();
     const modR=wrap.querySelectorAll('input[name="wmod"]'); modR.forEach(r=>r.addEventListener('change',()=>{st.modelo=r.value;const d=wrap.querySelector('#directoCosts');if(d)d.style.display=st.modelo==='directo'?'':'none';}));
     const cm=wrap.querySelector('#f_cmodo'); if(cm)cm.addEventListener('change',()=>{const w=wrap.querySelector('#cUrlWrap');if(w){const m=qMode(cm.value);w.style.display=(m==='interna'||m==='externo_visita')?'none':'';}});
     const hr=wrap.querySelector('#f_hr'); if(hr)hr.addEventListener('change',()=>{st.hrFuente=hr.value;const refs=wrap.querySelector('#f_hrRefs');if(refs)refs.style.display=st.hrFuente==='Hoja creada en plataforma'?'none':'';});
