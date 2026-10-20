@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "cxorbia.i3.a09-b11.three-visit-source-qa-run1804.v1",
+  "date": "2026-10-20",
+  "iteration": "I3",
+  "state": "HOLD",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceSha": "c9e5c5313883adc905f2d061219bc121c3b4af7e",
+  "sourceTree": "a2e7398db7c7df94da2fdd9391ea8865a54bb2dd",
+  "priorSourceSha": "c242e6bf5fc43844ba2f7fba1690f6eb63403c01",
+  "owner": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+  "ownerBlob": "3873cbf444aecd727351b494ae41600f9ddc4c48",
+  "qa": "tools/qa/cxorbia-i3-work-uat-a09b11-three-visit-assignment.test.mjs",
+  "qaBlob": "7244208ebeb25e45c720969324bdc04ac5e2d727",
+  "red": {
+    "runNumber": 1802,
+    "runId": 39435553779,
+    "jobId": 118671495615,
+    "testCount": 2,
+    "fail": 2,
+    "reason": "stale assignmentState and hasShopper after HR changes"
+  },
+  "green": {
+    "runNumber": 1804,
+    "runId": 39436657034,
+    "jobId": 118675329758,
+    "conclusion": "success",
+    "testCount": 2,
+    "pass": 2,
+    "fail": 0,
+    "combinedSourceTestCount": 12,
+    "combinedSourceTestPass": 12,
+    "canonicalGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY"
+  },
+  "preserved": {
+    "VRM": 274,
+    "domains": 21,
+    "moduleSourceFiles": 150,
+    "approvedPriorPassesNotReopened": true,
+    "B10": "RUN1799_SOURCE_PROVEN",
+    "finance": "RUN1800_SOURCE_PROVEN",
+    "reservations": "RUN1801_SOURCE_PROVEN"
+  },
+  "boundaries": {
+    "onlyInMemorySynthetic": true,
+    "externalHrCurrentRevision": "NOT_VERIFIED",
+    "realShopperBrowserSession": "NOT_EXECUTED",
+    "authCustomClaims": "NOT_VERIFIED",
+    "realVisitDocumentReconciliation": "NOT_PERFORMED",
+    "sameArtifactDev": "NOT_DEPLOYED",
+    "lastDevRun": 1796,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "production": false
+  },
+  "nextExactAction": "Obtain same-revision live external HR read + scoped Shopper Auth claims and three-visit browser proof; evaluate B09/B13/B05-B08/C02-C10 independent P0 and B10 link, then one serial cumulative DEV artifact when allowed. No prod."
+}

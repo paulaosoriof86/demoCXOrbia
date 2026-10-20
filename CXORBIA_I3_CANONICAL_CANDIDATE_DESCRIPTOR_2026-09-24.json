@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_A09_B11_DURABLE_ASSIGNMENT_SOURCE_FIXED_QA_PENDING",
+  "status": "HOLD_I3_A09_B11_SOURCE_PROVEN_RUN1804_DEV_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "c9e5c5313883adc905f2d061219bc121c3b4af7e",
   "productTreeAuthority": "a2e7398db7c7df94da2fdd9391ea8865a54bb2dd",
   "predecessorProductSourceSha": "c242e6bf5fc43844ba2f7fba1690f6eb63403c01",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V481_2026-10-20.json",
-  "findingsLedgerExpectedGitBlob": "655da8e85ddd16a030321c5c6a187d9f546acf46",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261020-V153.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V482_2026-10-20.json",
+  "findingsLedgerExpectedGitBlob": "0cf4e8cc0e1f058d11cfaa8bafe77e212aaf5e32",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261020-V154.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "A09_B11_CLAIMS_AND_SHOPPER_E2E_PENDING__DURABLE_ASSIGNMENT_QA_PENDING__B10_FINANCE_RESERVATIONS_DEV_PENDING",
+  "activeBlocker": "A09_B11_CLAIMS_LIVE_HR_SHOPPER_E2E_PENDING__B09_B13_B05_B08_C02_C10_FUNCTIONAL_E2E_PENDING__B10_DEV_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD: run canonical source QA two synthetic three-visit assignment tests on source c9e5c531; then same-candidate serial DEV after gate readiness; no real HR or Firebase writes, no production.",
+  "exactNextAction": "A09/B11 source 2/2 confirmed RUN1804. Same-source scoped E2E and cumulative DEV pending; other Phase A owners read-only QA independently. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2944,7 +2944,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "f2eea04b077a75f7789ec62359751c4bf78f1c9b",
+  "moduleTruthExpectedGitBlob": "a38d09b1b06b201047d987acae96a7344fdb39e3",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12571,10 +12571,20 @@
       "id": 39435553779,
       "expectedFail": 2
     },
-    "greenRun": "PENDING",
+    "greenRun": {
+      "id": 39436657034,
+      "number": 1804,
+      "jobId": 118675329758,
+      "passed": 2,
+      "total": 2,
+      "combinedSourceTestsPassed": 12,
+      "combinedSourceTestsTotal": 12,
+      "canonicalGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY"
+    },
     "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V481_2026-10-20.json",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261020-V153.json",
     "devMaterialized": false,
-    "production": false
+    "production": false,
+    "receiptSourceProven": "CXORBIA_I3_A09_B11_THREE_VISIT_RUN1804_SOURCE_PROVEN_2026-10-20.json"
   }
 }
