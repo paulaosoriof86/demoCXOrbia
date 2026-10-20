@@ -1,0 +1,237 @@
+{
+  "schemaVersion": "cxorbia.i3.work-uat.reconciled-technical-disposition.v1",
+  "localDate": "2026-10-19",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "officialState": "HOLD",
+  "production": "DO_NOT_TOUCH",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlParentSha": "aeb0e15a58f65f53a891a0ccf73c03edd8015274",
+  "sourceAuthority": {
+    "productSourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+    "productTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
+    "sourceChanged": false,
+    "liveMaterializationRun": 1796,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/3ee9104ddb9f6e9c",
+    "runtimeRevision": "cxorbia-live-hr-dev-00313-hrk"
+  },
+  "workEvidence": {
+    "chromeReport": {
+      "fileName": "CXORBIA_I3_UAT_CHROME_ADMIN_WORK_2026-10-19 (1).md",
+      "sha256": "2e5a9c8925564403ba381afeabacda6076ed776bd470b12b8c11f303b41c6a5e",
+      "bytes": 47118
+    },
+    "caseCsv": {
+      "fileName": "CXORBIA_I3_UAT_CHROME_ADMIN_WORK_2026-10-19.csv",
+      "sha256": "da850e269518e915107fd2edb65781eb922278eae8cef6ad4ff6217f00ad8cff",
+      "rowCount": 172,
+      "uniqueCaseIds": 171,
+      "duplicateCaseIds": [
+        {
+          "id": "ADM-REPORT-DRILL-01",
+          "occurrences": 2
+        }
+      ]
+    },
+    "rawAttachmentsPreservedInOriginalProjectConversation": true,
+    "generatedLocalIndexSha256": "b84bde7907ff8fcf6c8286400261ed0801900a347f9081645d8d6bf9344cc466",
+    "generatedLocalHandoffSha256": "d5e2cd66f395a18a3a5a5217fe74939e413a2018a7435ed30e41cc2511d1fbe4",
+    "statusCounts": {
+      "PASS": 92,
+      "HOLD": 42,
+      "PASS_UI_ONLY": 21,
+      "FAIL": 12,
+      "FAIL_UI_VALIDATION": 2,
+      "FAIL_UI_GUARD": 2,
+      "SUPERSEDED": 1
+    },
+    "passScope": "Mostly navigation/partial UI, not full module E2E or human approval",
+    "sevenNarrativeIncrementsIncluded": true,
+    "roleCoverage": {
+      "adminVisibleRoutesNavigated": 34,
+      "adminUidVerified": false,
+      "shopperDirectSessionsProven": 1,
+      "shopperSubsequentAuthHold": true,
+      "clientDirectLogin": false,
+      "populationCertified": false
+    },
+    "fingerprintIndependentlyVerifiedInWork": false,
+    "photosInReport": 0,
+    "businessWriteE2e": 0,
+    "providerAckReadbackE2e": 0
+  },
+  "sourceAdjudications": [
+    {
+      "id": "UAT-FINANCE-HISTORY",
+      "cases": [
+        "SHOPPER-MYVISIT-READ-01"
+      ],
+      "owner": "app/modules/misvisitas.js",
+      "secondaryOwner": "app/modules/beneficios.js",
+      "sourceProof": "Mis Visitas renders historical payment by visitContract.paymentState while Mis Beneficios uses financial canonical fromVisit + confirmed proof",
+      "status": "OWNER_PROVEN_FUNCTIONAL_DEFECT__SAME_VISIT_REMOTE_FINANCE_CONFIRMATION_PENDING",
+      "classification": "FUNCTIONAL_DEFECT",
+      "repairGate": "P0_FOCAL_CROSS_SURFACE_FINANCE_PRESENTATION"
+    },
+    {
+      "id": "UAT-RESERVATIONS",
+      "cases": [
+        "ADM-RES-01",
+        "SHOPPER-RESERVE-FORM-01"
+      ],
+      "owner": "firestore.rules",
+      "otherOwner": "app/core/backend-firebase.js",
+      "sourceProof": "Default deny and no match for project reservations in frozen RUN1796 source, Work observed Missing or insufficient permissions",
+      "status": "SOURCE_RULE_GAP_PROVEN_DEPLOYED_RULESET_READBACK_REQUIRED",
+      "classification": "AUTH_FAILURE",
+      "repairGate": "P0_EXACT_RESERVATIONS_RULE_SCOPE"
+    },
+    {
+      "id": "UAT-AUTH",
+      "cases": [
+        "SHOP-AUTH-SECOND-01",
+        "SHOP-DEEP-AUTH-05",
+        "APP-RELOAD-TIMING-02"
+      ],
+      "owner": "app/core/backend-browser-auth.js",
+      "status": "HOLD_UID_CLAIMS_MEMBERSHIP_AND_BEFORE_AFTER_SESSION_NOT_PROVEN",
+      "classification": "AUTH_FAILURE",
+      "repairGate": "A09_B11"
+    },
+    {
+      "id": "UAT-REPORT-MODALS",
+      "cases": [
+        "ADM-REPORT-DRILL-01",
+        "ADM-REPORT-DRILL-02",
+        "ADM-REPORT-DRILL-03",
+        "ADM-REPORT-DRILL-04"
+      ],
+      "owner": "app/modules/operacion-extra.js",
+      "sourceProof": "data-rep parent click handler invokes openReport and ui.modal",
+      "status": "RETEST_OVERLAY_AWARE__CODE_HANDLER_EXISTS",
+      "classification": "FUNCTIONAL_DEFECT_NOT_PROVEN"
+    },
+    {
+      "id": "UAT-PERIOD-COMPARE",
+      "cases": [
+        "ADM-PERIOD-COMPARE-01"
+      ],
+      "owner": "app/modules/periodos.js",
+      "sourceProof": "pdCompare click calls ui.modal",
+      "status": "RETEST_OVERLAY_AWARE__CODE_HANDLER_EXISTS",
+      "classification": "FUNCTIONAL_DEFECT_NOT_PROVEN"
+    },
+    {
+      "id": "UAT-BENEFITS-OVERVIEW",
+      "cases": [
+        "SHOPPER-BENEFIT-OVERVIEW-01"
+      ],
+      "owner": "app/modules/beneficios.js",
+      "sourceProof": "Four cards bind click and keydown -> benDrill -> ui.modal",
+      "status": "RETEST_OVERLAY_AWARE__CODE_HANDLER_EXISTS",
+      "classification": "FUNCTIONAL_DEFECT_NOT_PROVEN"
+    },
+    {
+      "id": "UAT-BENEFITS-FILTER",
+      "cases": [
+        "SHOPPER-BENEFIT-FILTER-PAID-01",
+        "SHOPPER-BENEFIT-FILTER-PENDING-01"
+      ],
+      "owner": "app/modules/beneficios.js",
+      "sourceProof": "benStatus only filters #benCurrentTable; historical table intentionally separate",
+      "status": "RETEST_SCOPE_CURRENT_TABLE_NOT_ALL_HISTORY",
+      "classification": "FUNCTIONAL_DEFECT_NOT_PROVEN"
+    },
+    {
+      "id": "UAT-WIZARD",
+      "cases": [
+        "PROJECT-WIZARD-01",
+        "PROJECT-WIZARD-02"
+      ],
+      "owner": "app/modules/proyecto-wizard.js",
+      "sourceProof": "Visible next/create enabled but create() checks mandatory name and countries before command provider",
+      "status": "UI_VALIDATION_GUARD_ISSUE_NO_INVALID_REMOTE_CREATE_PROVEN",
+      "classification": "VISUAL_DEFECT"
+    },
+    {
+      "id": "UAT-ACADEMY-RETURN",
+      "cases": [
+        "SHOPPER-MANUAL-BACK-01"
+      ],
+      "owner": "app/modules/academia.js",
+      "sourceProof": "manBack opens manuals modal while manual reader host remains rendered",
+      "status": "OWNER_PROVEN_BEHAVIOR__OVERLAY_DETERMINES_EXPECTED_BACK_TARGET",
+      "classification": "FUNCTIONAL_DEFECT"
+    },
+    {
+      "id": "UAT-SHOPPERS-COUNT",
+      "cases": [
+        "ADM-SHOPPERS-DEEP-04"
+      ],
+      "owner": "app/modules/shoppers.js",
+      "sourceProof": "identityReviewIds.size counts review anchors while profiles count data shoppers; Work observed 421 vs 205",
+      "status": "KPI_DENOMINATOR_CONTRACT_PENDING",
+      "classification": "MAPPING_FAILURE"
+    },
+    {
+      "id": "UAT-CLIENTS-ENCODING",
+      "cases": [
+        "ADM-VISUAL-CLIENTS-01"
+      ],
+      "owner": "app/modules/clientes.js",
+      "status": "UPSTREAM_STRING_VS_RENDER_NOT_DISCRIMINATED",
+      "classification": "VISUAL_DEFECT"
+    },
+    {
+      "id": "UAT-DOCUMENTS-ROUTE",
+      "cases": [
+        "SELFADMIN-DOCS-ROUTE-03"
+      ],
+      "status": "ROUTE_CONTRACT_AND_OWNER_READBACK_PENDING",
+      "classification": "FUNCTIONAL_DEFECT"
+    },
+    {
+      "id": "UAT-GUARDS",
+      "cases": [
+        "ADM-REASSIGN-GUARD-04",
+        "ADM-MOVEMENTS-GUARDS-04"
+      ],
+      "status": "UI_ENABLED_WITH_EMPTY_DATA_PROVIDER_REJECTION_NOT_TESTED",
+      "classification": "FUNCTIONAL_DEFECT"
+    }
+  ],
+  "keyCorrection": "Protected DEV source has enableCommandWrites true alongside legacy direct writeMode disabled; cannot infer all provider-command E2E impossible from status message. Use only existing authorized QA fixtures, ACK and cleanup.",
+  "sourceOnlyNext": "Prepare one scoped P0 fix/test for Mis Visitas canonical payment alignment with associated module-truth/ledger/descriptor/manifest source guard. Validate actual deployed Firestore ruleset and narrow reservations read rules; no blind provider writes.",
+  "workRetestScope": "Exact same DEV artifact, verify modals under document body for Reportes, Periodos, Beneficios cards; test benCurrentTable rows separately from historical; isolate Auth UID and claims before/after reload; obtain reversible QA write fixture only if permitted.",
+  "custody": {
+    "originalTasks": 82,
+    "I3Tasks": 63,
+    "VRM": 274,
+    "moduleDomains": 21,
+    "humanFindingsUntouched": true,
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V476_2026-10-19.json",
+    "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V148.json",
+    "ledgerAndMatrixUnchanged": "No new source patch/provider E2E/module state transition; append-only receipt and pointer preserve Work observations without false closure"
+  },
+  "progress": {
+    "sourceProven": 9,
+    "sourceDenominator": 63,
+    "newSourceFixes": 0,
+    "newLiveFunctionalClosures": 0,
+    "newHumanApprovals": 0
+  },
+  "writes": {
+    "product": 0,
+    "auth": 0,
+    "firestore": 0,
+    "hr": 0,
+    "storage": 0,
+    "provider": 0,
+    "hosting": 0,
+    "runtime": 0,
+    "production": 0
+  },
+  "authorizationRequiredNow": false,
+  "i4Authorized": false,
+  "nextExactAction": "Execute scoped source-only unit regression against source RUN1796 for Mis Visitas vs Beneficios payment truth, prove exact deployed Firestore reservations rule gap and claims before mutation; use original single candidate control guard for cumulative source promotion, then Work targeted same-artifact UI E2E. No production until I3 GO and explicit authorization."
+}

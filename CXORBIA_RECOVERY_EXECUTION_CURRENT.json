@@ -9,7 +9,7 @@
   "authorizationI4": false,
   "productSourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
   "productTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
-  "controlParentSha": "a665b729f6b49bd290ed28375f729ad2ac58b9c8",
+  "controlParentSha": "aeb0e15a58f65f53a891a0ccf73c03edd8015274",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
     "executed": [
@@ -30,8 +30,8 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_B09_B13_ADMIN_SHOPPER_LIVE_READONLY_EXECUTION_2026-10-19.json",
-    "kind": "I3_ADMIN_SHOPPER_CHROME_CLIENT_READONLY_PARITY_AND_B09_B13_CI_READBACK__E2E_OPEN",
+    "path": "CXORBIA_I3_UAT_WORK_TECHNICAL_ADJUDICATION_2026-10-19.json",
+    "kind": "WORK_UAT_172_CASES_171_IDS_TECHNICAL_ADJUDICATION_NO_SOURCE_DEPLOY",
     "sourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
     "sourceTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
     "sourceChanges": 0,
@@ -81,7 +81,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Use owner-authenticated existing Chrome in Work mode (Chat-mode browser connector is read-only) to conduct focal live Admin/Shopper B09 checkin photo/GPS Storage ACK, B13 notification resolved and reloaded, B05-B08 postulations/agenda, and C02-C10 finance without mass writes. Meanwhile resolve exact A09/B11 Auth UID claims membership by approved scoped read. Do not create new workflow or candidate, do not deploy B10 alone; I4 remains blocked.",
+  "nextExactAction": "Execute scoped source-only unit regression against source RUN1796 for Mis Visitas vs Beneficios payment truth, prove exact deployed Firestore reservations rule gap and claims before mutation; use original single candidate control guard for cumulative source promotion, then Work targeted same-artifact UI E2E. No production until I3 GO and explicit authorization.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -826,5 +826,26 @@
     "b09RealE2e": "NOT_EXECUTED",
     "b13RealE2e": "NOT_EXECUTED",
     "browserControlRequires": "WORK_MODE"
+  },
+  "lastWorkUatReconciliation": {
+    "receiptPath": "CXORBIA_I3_UAT_WORK_TECHNICAL_ADJUDICATION_2026-10-19.json",
+    "workCsvSha256": "da850e269518e915107fd2edb65781eb922278eae8cef6ad4ff6217f00ad8cff",
+    "workReportSha256": "2e5a9c8925564403ba381afeabacda6076ed776bd470b12b8c11f303b41c6a5e",
+    "caseRows": 172,
+    "caseIds": 171,
+    "duplicateCaseIds": [
+      "ADM-REPORT-DRILL-01"
+    ],
+    "newFunctionalClosures": 0,
+    "sourceOwnerProven": [
+      "app/modules/misvisitas.js",
+      "firestore.rules"
+    ],
+    "nextScopes": [
+      "UAT-FINANCE-HISTORY",
+      "UAT-RESERVATIONS",
+      "A09_B11",
+      "UAT-MODAL_OVERLAY_RETEST"
+    ]
   }
 }
