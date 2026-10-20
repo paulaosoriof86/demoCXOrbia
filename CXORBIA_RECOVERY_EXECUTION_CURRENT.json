@@ -30,15 +30,14 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_RUN1809_CUMULATIVE_DEV_MATERIALIZATION_PASS_2026-10-20.json",
-    "kind": "RUN1809_EXACT_CUMULATIVE_DEV_MATERIALIZATION_PASS_PENDING_LIVE_E2E",
+    "path": "CXORBIA_I3_A09_B11_POST_RUN1809_HR_LIVE_THREE_ROW_READBACK_2026-10-20.json",
+    "kind": "RUN1809_POST_DEPLOY_EXACT_HR_THREE_ROWS_AND_REVISION_PASS__PERSISTED_ASSIGNMENT_CONSISTENCY_HOLD",
     "sourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
     "sourceTree": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
     "sourceChanges": 0,
-    "devDeploys": 1,
+    "devDeploys": 0,
     "production": false,
-    "newFunctionalClosures": 0,
-    "runId": 39439528723
+    "newFunctionalClosures": 0
   },
   "taskProgress": {
     "G01": "IN_PROGRESS_COVERAGE_CUSTODIED_AUTHORITY_GAPS_RETAINED_IN_G03",
@@ -83,7 +82,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 HOLD after RUN1809 DEV PASS: issue an independent Work authenticated role-scoped UAT on exact DEV Hosting/runtime source. Verify Shopper exact Stiven (real claims, real login, 3 GT Oct visits, no duplicate, period), Admin matching visit lifecycle and notifications, B10 questionnaire source, reservations own-scope rules, historical paid label, wizard creation with provider ACK and reload in a disposable new project only if authorization exists, finance and GPS/storage fail-closed. If P0 fails, return exact owner/route/evidence to this technical conversation for bounded fix; preserve no production until I3 GO + express approval.",
+  "nextExactAction": "In Work READ-ONLY: inspect tenant/tya/commandReceipts for hr.snapshot.reconcile matching sourceRevision/project over relevant time, and exact three visit field paths/updatedAt; inspect tenant/tya/resources certification_bank status, project and period October and last published revision. Then this technical lane adjudicates whether a controlled provider-ACK same-revision DEV reconciliation is required; do not execute data write until allowed. In parallel B05-B09/B13 and C02-C10 live role tests. No PROD.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -1050,5 +1049,27 @@
     "sourceChanges": 0,
     "devDeploys": "PENDING",
     "production": false
+  },
+  "previousExecutionReceiptBeforeExactHrRowRead20261020": {
+    "path": "CXORBIA_I3_RUN1809_CUMULATIVE_DEV_MATERIALIZATION_PASS_2026-10-20.json",
+    "kind": "RUN1809_EXACT_CUMULATIVE_DEV_MATERIALIZATION_PASS_PENDING_LIVE_E2E",
+    "sourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
+    "sourceTree": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
+    "sourceChanges": 0,
+    "devDeploys": 1,
+    "production": false,
+    "newFunctionalClosures": 0,
+    "runId": 39439528723
+  },
+  "a09B11PostRun1809LiveHrReadback20261020": {
+    "receiptPath": "CXORBIA_I3_A09_B11_POST_RUN1809_HR_LIVE_THREE_ROW_READBACK_2026-10-20.json",
+    "sourceRevision": "4aa7dc7ab2fee95e1c605faed5bb43cf5d29abe089e31617416531da01b12dd5",
+    "shopperId": "shopper_gt_319cd82eaf",
+    "exactHrRows": 3,
+    "authMember": "PASS",
+    "shopperReport": "PASS_BY_BRANCH_DATE",
+    "durableState": "FAIL",
+    "latestReconcile": null,
+    "certBankOctober": "NOT_VERIFIED"
   }
 }
