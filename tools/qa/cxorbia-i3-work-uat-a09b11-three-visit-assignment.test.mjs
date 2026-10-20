@@ -1,0 +1,137 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createOperationalCommandProvider} from '../../backend/runtime/cxorbia-operational-command-provider-v1.mjs';
+
+// I3 A09/B11: isolated in-memory regression, never touches real HR, Firebase or Auth.
+const copy=v=>v===undefined?undefined:structuredClone(v);
+class Snap {
+  constructor(id,v){this.id=id;this.value=copy(v);this.exists=v!==undefined;}
+  data(){return copy(this.value);}
+}
+class Doc {
+  constructor(db,path){this.db=db;this.path=path;this.id=path.split('/').at(-1);}
+  collection(name){return new Collection(this.db,this.path+'/'+name);}
+}
+class Collection {
+  constructor(db,path){this.db=db;this.path=path;}
+  doc(id){return new Doc(this.db,this.path+'/'+id);}
+}
+class MemoryDb {
+  constructor(){this.store=new Map();}
+  collection(name){return new Collection(this,name);}
+  seed(path,record){this.store.set(path,copy(record));}
+  get(path){return copy(this.store.get(path));}
+  async runTransaction(fn){
+    const working=new Map([...this.store].map(([k,v])=>[k,copy(v)]));
+    const tx={
+      get:async ref=>new Snap(ref.id,working.get(ref.path)),
+      create:(ref,value)=>{if(working.has(ref.path))throw Error('ALREADY_EXISTS');working.set(ref.path,copy(value));},
+      set:(ref,value,opts={})=>{const old=working.get(ref.path);working.set(ref.path,opts.merge&&old?{...copy(old),...copy(value)}:copy(value));},
+      delete:ref=>working.delete(ref.path)
+    };
+    const result=await fn(tx);
+    this.store=working;
+    return result;
+  }
+}
+const policy={
+  schemaVersion:'cxorbia.operational.provider-policy.v1',enabled:true,
+  allowedTenantIds:['qa-tenant'],allowedProjectIds:['qa-project'],
+  conflictPolicy:'review_no_silent_overwrite',hrWrites:false,makeCalls:false,
+  geminiCalls:false,storageWrites:false,paymentWrites:false
+};
+const visitPath=id=>'tenants/qa-tenant/projects/qa-project/visits/'+id;
+const shopperId='qa-stable-exact-shopper';
+const hrRows=['OCTUBRE 26!5','OCTUBRE 26!19','OCTUBRE 26!20'];
+const hrVisits=()=>hrRows.map((hrRowId,i)=>({
+  id:'source-safe-'+String(i+1),visitId:'source-safe-'+String(i+1),hrRowId,
+  sourceTab:'OCTUBRE 26',sourceRow:i===0?5:i===1?19:20,
+  tenantId:'qa-tenant',projectId:'qa-project',periodId:'qa-project-2026-10',
+  periodKey:'2026-10',pais:'GT',shopperId,hasShopper:true,assignmentState:'assigned',
+  estado:i===2?'submitida':'asignada',status:i===2?'submitida':'asignada',
+  canonicalState:i===2?'submitted_complete':'pending_schedule',
+  operationalState:i===2?'submitted_complete':'pending_schedule',
+  availabilityState:'not_applicable_assigned',
+  canonicalFacets:{available:false,assigned:true,scheduled:false,submitted:i===2,realized:i===2}
+}));
+const snapshot=visits=>({
+  sourceSafe:true,imported:false,firestoreWrites:0,
+  tenantId:'qa-tenant',projectId:'qa-project',currentPeriodId:'qa-project-2026-10',
+  visits
+});
+const getProvider=db=>createOperationalCommandProvider({db,
+  auth:{verifyIdToken:async()=>{throw Error('NO_AUTH_CALLS_EXPECTED');}},policy});
+
+test('A09/B11 existing three assigned GT visits reconcile every HR-owned assignment representation',async()=>{
+  const visits=hrVisits(),db=new MemoryDb();
+  for(const row of visits){
+    db.seed(visitPath(row.hrRowId),{
+      id:row.hrRowId,visitId:row.hrRowId,hrRowId:row.hrRowId,
+      tenantId:'qa-tenant',projectId:'qa-project',periodId:'qa-project-2026-09',
+      shopperId,estado:'asignada',status:'asignada',hasShopper:false,
+      assignmentState:'unassigned',canonicalState:'available',
+      operationalState:'available',availabilityState:'eligible_unassigned',
+      canonicalFacets:{available:true,assigned:false},
+      hrManaged:{...copy(row),shopperId:null,hasShopper:false,
+        assignmentState:'unassigned',canonicalFacets:{available:true,assigned:false}},
+      version:2
+    });
+  }
+  const before=copy(visits),prevConcurrency=process.env.CXORBIA_VISIT_RECONCILIATION_CONCURRENCY;
+  process.env.CXORBIA_VISIT_RECONCILIATION_CONCURRENCY='1';
+  try{
+    const provider=getProvider(db);
+    const changed=await provider.reconcileSnapshot(snapshot(visits),{sourceRevision:'qa-current-hr-revision'});
+    assert.equal(changed.ok,true);
+    assert.equal(changed.providerWrites,3,'reconcile every stale visit, no mass reimport');
+    for(const row of visits){
+      const stored=db.get(visitPath(row.hrRowId));
+      assert.equal(stored.periodId,'qa-project-2026-10');
+      assert.equal(stored.shopperId,shopperId);
+      assert.equal(stored.assignmentState,'assigned','outer operational assignment must match HR');
+      assert.equal(stored.hasShopper,true,'outer hasShopper must match HR');
+      assert.equal(stored.canonicalState,row.canonicalState);
+      assert.equal(stored.operationalState,row.operationalState);
+      assert.equal(stored.availabilityState,'not_applicable_assigned');
+      assert.equal(stored.canonicalFacets.assigned,true);
+      assert.equal(stored.canonicalFacets.available,false);
+      assert.equal(stored.hrManaged.shopperId,shopperId,'nested HR origin must be refreshed');
+      assert.equal(stored.hrManaged.assignmentState,'assigned');
+      assert.equal(stored.hrManaged.canonicalFacets.assigned,true);
+      assert.equal(stored.hrSourceRevision,'qa-current-hr-revision');
+    }
+    assert.deepEqual(visits,before,'external HR snapshot is never mutated');
+    const replay=await provider.reconcileSnapshot(snapshot(visits),{sourceRevision:'qa-current-hr-revision'});
+    assert.equal(replay.providerWrites,0,'same revision and content must be idempotent');
+    assert.equal(replay.idempotentReplays,3);
+  }finally{
+    if(prevConcurrency===undefined)delete process.env.CXORBIA_VISIT_RECONCILIATION_CONCURRENCY;
+    else process.env.CXORBIA_VISIT_RECONCILIATION_CONCURRENCY=prevConcurrency;
+  }
+});
+
+test('A09/B11 unassignment clears both nested and outer stale shopper state',async()=>{
+  const row={...hrVisits()[0],shopperId:null,hasShopper:false,assignmentState:'unassigned',
+    estado:'disponible',status:'disponible',canonicalState:'available',
+    operationalState:'available',availabilityState:'eligible_unassigned',
+    canonicalFacets:{available:true,assigned:false}};
+  const db=new MemoryDb();
+  db.seed(visitPath(row.hrRowId),{
+    id:row.hrRowId,visitId:row.hrRowId,hrRowId:row.hrRowId,
+    tenantId:'qa-tenant',projectId:'qa-project',periodId:'qa-project-2026-10',
+    shopperId:'old-incorrect-shopper',hasShopper:true,assignmentState:'assigned',
+    estado:'asignada',status:'asignada',canonicalState:'pending_schedule',
+    operationalState:'pending_schedule',availabilityState:'not_applicable_assigned',
+    canonicalFacets:{available:false,assigned:true},
+    hrManaged:{shopperId:'old-incorrect-shopper',assignmentState:'assigned'}
+  });
+  const p=getProvider(db);
+  await p.reconcileSnapshot(snapshot([row]),{sourceRevision:'qa-next-hr-revision'});
+  const stored=db.get(visitPath(row.hrRowId));
+  assert.equal(stored.shopperId,null);
+  assert.equal(stored.hasShopper,false);
+  assert.equal(stored.assignmentState,'unassigned');
+  assert.equal(stored.canonicalFacets.available,true);
+  assert.equal(stored.hrManaged.shopperId,null);
+  assert.equal(stored.hrManaged.assignmentState,'unassigned');
+});
