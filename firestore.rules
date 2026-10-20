@@ -324,6 +324,17 @@ service cloud.firestore {
           allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
         }
 
+        // I3 Work UAT: read persisted reservations in the exact project and
+        // shopper scope. Provider-only writes remain blocked in browser.
+        match /reservations/{reservationId} {
+          allow read: if tenantAllowed(tenantId) && (
+            isOperator() ||
+            (isShopperRole() && projectAssigned(projectId) &&
+             shopperId() != '' && isOwnResource())
+          );
+          allow create, update, delete: if false;
+        }
+
         match /visits/{visitId} {
           allow read: if tenantAllowed(tenantId) && (
             isOperator() ||
