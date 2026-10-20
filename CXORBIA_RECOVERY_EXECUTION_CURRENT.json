@@ -9,7 +9,7 @@
   "authorizationI4": false,
   "productSourceSha": "2c6ad7c0466101398e6b1c60ba067f44c9ab6c21",
   "productTree": "0ea3f58771047688a0e5744ee098b268aad223df",
-  "controlParentSha": "38ded57b17fb899254ed2acc26aca1e35532db75",
+  "controlParentSha": "6f91284b6da2e0dc5fa5d229eea6cfbf5ffa5543",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
     "executed": [
@@ -30,11 +30,11 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_UAT_MISVISITAS_CANONICAL_FINANCE_SOURCE_FIXED_2026-10-19.json",
-    "kind": "VRM271_RELATED_MISVISITAS_CANONICAL_FINANCE_SOURCE_RED_GREEN_4_OF_4_REMOTE_CI_PENDING",
+    "path": "CXORBIA_I3_UAT_MISVISITAS_RUN1800_CI_SOURCE_PROVEN_2026-10-19.json",
+    "kind": "MISVISITAS_FINANCE_OWNER_SOURCE_CI_RUN1800_PASS_4_4_CANONICAL_GUARD_PASS_DEV_PENDING",
     "sourceSha": "2c6ad7c0466101398e6b1c60ba067f44c9ab6c21",
     "sourceTree": "0ea3f58771047688a0e5744ee098b268aad223df",
-    "sourceChanges": 1,
+    "sourceChanges": 0,
     "devDeploys": 0,
     "production": false
   },
@@ -81,7 +81,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Run existing canonical I3 DEV certification source authority + UAT finance source regression only. Preserve B10 source QA RUN1799, verify public DEV reservations ruleset without changes, leave I3 HOLD; no DEV deploy except serialized approved cumulative candidate.",
+  "nextExactAction": "Next: read currently deployed DEV Firestore ruleset and exact reservations permission in read-only mode, then remediation within owner if confirmed. Run A09/B11 UID/claims/membership focal; preserve RUN1800 source PASS. Do not deploy without cumulative serial build. Production untouched.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -858,8 +858,12 @@
       "total": 4,
       "previousFailed": 2
     },
-    "remoteCI": "PENDING",
+    "remoteCI": "PASS_RUN1800_4_OF_4",
     "devMaterialized": false,
-    "production": false
+    "production": false,
+    "runNumber": 1800,
+    "runId": 39353966592,
+    "jobId": 118404390561,
+    "sourceGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY"
   }
 }

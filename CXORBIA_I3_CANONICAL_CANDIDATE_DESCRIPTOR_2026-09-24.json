@@ -7,9 +7,9 @@
   "productSourceSha": "2c6ad7c0466101398e6b1c60ba067f44c9ab6c21",
   "productTreeAuthority": "0ea3f58771047688a0e5744ee098b268aad223df",
   "predecessorProductSourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V477_2026-10-19.json",
-  "findingsLedgerExpectedGitBlob": "e89f0a197551a1b5afbc4296eea9a0f3496bc35f",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V149.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V478_2026-10-19.json",
+  "findingsLedgerExpectedGitBlob": "c0357339fd880bb717c6a6760e73d7c590daff17",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V150.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing canonical I3 DEV certification source authority + UAT finance source regression only. Preserve B10 source QA RUN1799, verify public DEV reservations ruleset without changes, leave I3 HOLD; no DEV deploy except serialized approved cumulative candidate.",
+  "exactNextAction": "Next: read currently deployed DEV Firestore ruleset and exact reservations permission in read-only mode, then remediation within owner if confirmed. Run A09/B11 UID/claims/membership focal; preserve RUN1800 source PASS. Do not deploy without cumulative serial build. Production untouched.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2944,7 +2944,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "1d5416dd1a8055421e5ba4d88ae807260007b1bd",
+  "moduleTruthExpectedGitBlob": "68cf436bf816b48e17ece80f92dc833d491964a7",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12521,10 +12521,14 @@
     "predecessorSourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
     "test": "tools/qa/cxorbia-i3-work-uat-misvisitas-payment-source.test.mjs",
     "localRedGreen": "RED_2_OF_4_GREEN_4_OF_4",
-    "remoteSourceQa": "PENDING",
+    "remoteSourceQa": "PASS_RUN1800_4_OF_4",
     "devMaterialized": false,
     "financeAuthority": "CX_TYA_CANONICAL_FINANCE_READ_MODEL.fromVisit + paymentConfirmed and provider/historical evidence",
-    "status": "SOURCE_FIXED_AWAITING_CANONICAL_CI_AND_DEV",
-    "production": false
+    "status": "SOURCE_PROVEN_PENDING_DEV_E2E_HUMAN",
+    "production": false,
+    "runNumber": 1800,
+    "runId": 39353966592,
+    "jobId": 118404390561,
+    "sourceGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY"
   }
 }

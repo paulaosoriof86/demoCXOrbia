@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "cxorbia.i3.work-uat.misvisitas-run1800-ci-source-proven.v1",
+  "dateLocal": "2026-10-19",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "state": "HOLD",
+  "oldControlHead": "6f91284b6da2e0dc5fa5d229eea6cfbf5ffa5543",
+  "sourceSha": "2c6ad7c0466101398e6b1c60ba067f44c9ab6c21",
+  "sourceTree": "0ea3f58771047688a0e5744ee098b268aad223df",
+  "owner": "app/modules/misvisitas.js",
+  "ownerBlob": "de7e10c0509aabcf96f3834ee8a5496be297b2b3",
+  "qaFile": "tools/qa/cxorbia-i3-work-uat-misvisitas-payment-source.test.mjs",
+  "qaBlob": "3d7489b2623a9760a0fed786824cbe2dcb8ad5a8",
+  "run": {
+    "number": 1800,
+    "id": 39353966592,
+    "jobId": 118404390561,
+    "conclusion": "success",
+    "headSha": "6f91284b6da2e0dc5fa5d229eea6cfbf5ffa5543",
+    "sourceUnitTestsPassed": 4,
+    "sourceUnitTestsTotal": 4,
+    "sourceUnitTestsFailed": 0,
+    "guard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY"
+  },
+  "historicalPassesPreserved": true,
+  "relatedFindings": [
+    "VRM-271",
+    "VRM-257",
+    "VRM-174"
+  ],
+  "scope": "Focal code source QA only, not provider LIVE_E2E_PASS, not complete functional module, not human approval",
+  "authority": {
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V478_2026-10-19.json",
+    "ledgerBlob": "c0357339fd880bb717c6a6760e73d7c590daff17",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V150.json",
+    "matrixBlob": "68cf436bf816b48e17ece80f92dc833d491964a7",
+    "findingsPreserved": 274,
+    "domains": 21
+  },
+  "progress": {
+    "i3SourceProvenObligationsNumerator": 9,
+    "denominator": 63,
+    "newI3FunctionalClosures": 0
+  },
+  "dev": {
+    "runNumber": 1796,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/3ee9104ddb9f6e9c",
+    "runtimeRevision": "cxorbia-live-hr-dev-00313-hrk",
+    "sourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
+    "changed": false
+  },
+  "writes": {
+    "productFiles": 0,
+    "auth": 0,
+    "firestore": 0,
+    "hr": 0,
+    "provider": 0,
+    "deploys": 0,
+    "production": 0
+  },
+  "next": "Next: read currently deployed DEV Firestore ruleset and exact reservations permission in read-only mode, then remediation within owner if confirmed. Run A09/B11 UID/claims/membership focal; preserve RUN1800 source PASS. Do not deploy without cumulative serial build. Production untouched."
+}
