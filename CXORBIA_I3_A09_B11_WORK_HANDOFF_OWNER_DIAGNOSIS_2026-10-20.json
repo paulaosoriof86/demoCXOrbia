@@ -1,0 +1,125 @@
+{
+  "schemaVersion": "cxorbia.i3.a09b11.work-handoff-source-owner-disposition.20261020.v1",
+  "asOf": "2026-10-20",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "state": "HOLD",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlParentSha": "2aacea86b45e4c4e2da941d0b9d0748b64402df8",
+  "controlParentTree": "f380b2afbb8365bd38c3146411de16de1c924c78",
+  "productSourceSha": "c242e6bf5fc43844ba2f7fba1690f6eb63403c01",
+  "productTree": "73d9c6d0bcafaf2a14217e9a08716749dc98a0bb",
+  "sourceEvidence": "USER_WORK_HANDOFF_2026_10_20_PLUS_CANONICAL_GITHUB_SOURCE_READBACK",
+  "workHandoff": {
+    "identity": {
+      "firebaseAuthExactLoginSearch": "PASS_1_OF_1_ENABLED",
+      "membership": "PASS_EXACT_UID_SHOPPER_TENANT_PROJECT",
+      "protectedProfile": "PASS_COUNTRY_GT",
+      "firebaseCustomClaims": "NOT_VERIFIED",
+      "shopperE2e": "NOT_EXECUTED"
+    },
+    "visits": {
+      "tenantId": "tya",
+      "projectId": "cinepolis",
+      "periodId": "cinepolis-2026-10",
+      "country": "GT",
+      "sourceRowRefs": [
+        "OCTUBRE 26!5",
+        "OCTUBRE 26!19",
+        "OCTUBRE 26!20"
+      ],
+      "count": 3,
+      "allSameShopperInFirestore": true,
+      "assignmentRepresentationConflict": "FAIL_OBSERVED_WORK",
+      "preciseConflictingFieldPaths": "NOT_CAPTURED",
+      "realHrSameRevisionParity": "NOT_VERIFIED"
+    },
+    "period": {
+      "projectDocPeriodId": "cinepolis-2026-09",
+      "octoberPeriodFirestoreDocPresent": false,
+      "actualShopperActivePeriod": "NOT_VERIFIED",
+      "rootProjectPeriodFieldIsSelectorAuthority": "NOT_PROVEN"
+    },
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "production": false
+  },
+  "sourceOwnerReadback": {
+    "hrCanonicalBuilder": {
+      "path": "tools/hr-source/tya-canonical-visit-state-r20.mjs",
+      "blob": "b76677a6a49fc50624b0cd31142f29132f0caa5d",
+      "role": "derives assigned, available, assignmentState and canonicalFacets from HR visit identity"
+    },
+    "durableReconciliation": {
+      "path": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+      "blob": "1d9f5565876906997e525c8d051232efa593ce70",
+      "entry": "reconcileVisitDoc",
+      "existingDocPatch": "writes shopperId, estado, status and canonicalFacets but does not write assignmentState, hasShopper, canonicalState, operationalState, availabilityState or hrManaged on the existing-document merge",
+      "classification": "MAPPING_FAILURE_SOURCE_PROJECTION_GAP_PROVEN",
+      "actualThreeDocumentNestedFieldCausation": "NOT_PROVEN_UNTIL_EXACT_FIELD_PATH_AND_HR_CURRENT_REVISION"
+    },
+    "shopperReadComposer": {
+      "path": "app/adapters/tya-cumulative-read-model-v2.js",
+      "blob": "ee7687c45026ed9b8a590d45ceb133b25b66a7df",
+      "role": "HR base authoritative; Firestore enriched by exact key; canonicalFacets computed from HR, pending platform assignment exceptional"
+    },
+    "shopperView": {
+      "path": "app/modules/misvisitas.js",
+      "blob": "de7e10c0509aabcf96f3834ee8a5496be297b2b3",
+      "role": "uses exact shopper identity, composed visits, canonical facets and active currentPeriodId"
+    },
+    "periodSource": {
+      "path": "app/adapters/tya-live-source-inplace-apply.js",
+      "blob": "45e1cd1b8c01d6276be2c256d5b99baa93e90252",
+      "role": "constructs periodized IDs from HR snapshot, preserves previous period key or selects latest; external HR mode does not by itself require Firestore project period October document"
+    },
+    "bootstrap": {
+      "path": "app/core/backend-firebase.js",
+      "blob": "f116593d8c4606e86cac2e39dcc1213109a28a71",
+      "role": "Firestore initial period collection, then HR bridge replaces period list for external project"
+    },
+    "runtimeBridge": {
+      "path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "blob": "0baa346ed23fef512f29681282eea4760a89bf7f",
+      "role": "requires exact claims/session and composes HR+protected state atomically"
+    }
+  },
+  "liveSourceReadDisposition": {
+    "connectedDriveTitleCollision": "FOUND_HISTORICAL_SHEET_ONLY",
+    "visibleTab": "Hoja 1",
+    "lastModifiedDate": "2025-05-29",
+    "matchesOctober2026Source": "NO",
+    "liveHrExternalOctober2026Read": "NOT_EXECUTED",
+    "liveHrCurrentSourceRevision": "NOT_VERIFIED",
+    "noPotentiallyWritingHrRefreshEndpointCalled": true
+  },
+  "classification": {
+    "identityMapping": "PARTIAL_PASS_AUTH_MEMBERSHIP_PROFILE_ONLY",
+    "documentAssignment": "MAPPING_FAILURE_WITH_SOURCE_PROJECTION_OMISSION",
+    "period": "HOLD_NOT_VERIFIED",
+    "shopperE2e": "NOT_VERIFIED",
+    "production": "DO_NOT_TOUCH"
+  },
+  "notPerformed": {
+    "productOwnerFix": true,
+    "sourceTestExecution": true,
+    "devMaterialization": true,
+    "firestoreRepair": true,
+    "hrRefresh": true,
+    "shopperLogin": true,
+    "claimsRead": true
+  },
+  "preserved": {
+    "lastSourceProven": "RUN1799_B10_6_PASS_RUN1800_FINANCE_4_PASS_RUN1801_RESERVATIONS_6_PASS",
+    "lastDevRun": 1796,
+    "sourceUnchanged": true,
+    "allPriorPassesRemainScoped": true,
+    "moduleTruth": "DO_NOT_PROMOTE_UNPROVEN_GO",
+    "ledgerVrmCountPreserved": 274
+  },
+  "nextExactAction": "For A09/B11 on same candidate, capture field-path-level Firestore readback for OCTUBRE 26!5,!19,!20 and current authorized HR external source revision (without triggering reconciler writes). Reproduce only existing-visit HR-managed assignmentState/hasShopper/hrManaged reconciliation on isolated in-memory fixture; then, if failing, fix only backend/runtime/cxorbia-operational-command-provider-v1.mjs with scope-safe reconciliation and source QA, never mutate real visits. Do not change project.periodId or create periods docs without a demonstrated runtime selector failure. Shopper live E2E only with an existing valid session. Parallel independent Phase A owners can continue. No production.",
+  "authorizationRequiredNow": false,
+  "authorizationI4Required": true
+}
