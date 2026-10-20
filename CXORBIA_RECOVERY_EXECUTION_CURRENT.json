@@ -7,9 +7,9 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
-  "productTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
-  "controlParentSha": "aeb0e15a58f65f53a891a0ccf73c03edd8015274",
+  "productSourceSha": "2c6ad7c0466101398e6b1c60ba067f44c9ab6c21",
+  "productTree": "0ea3f58771047688a0e5744ee098b268aad223df",
+  "controlParentSha": "38ded57b17fb899254ed2acc26aca1e35532db75",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
     "executed": [
@@ -30,11 +30,11 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_UAT_WORK_TECHNICAL_ADJUDICATION_2026-10-19.json",
-    "kind": "WORK_UAT_172_CASES_171_IDS_TECHNICAL_ADJUDICATION_NO_SOURCE_DEPLOY",
-    "sourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
-    "sourceTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
-    "sourceChanges": 0,
+    "path": "CXORBIA_I3_UAT_MISVISITAS_CANONICAL_FINANCE_SOURCE_FIXED_2026-10-19.json",
+    "kind": "VRM271_RELATED_MISVISITAS_CANONICAL_FINANCE_SOURCE_RED_GREEN_4_OF_4_REMOTE_CI_PENDING",
+    "sourceSha": "2c6ad7c0466101398e6b1c60ba067f44c9ab6c21",
+    "sourceTree": "0ea3f58771047688a0e5744ee098b268aad223df",
+    "sourceChanges": 1,
     "devDeploys": 0,
     "production": false
   },
@@ -81,7 +81,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Execute scoped source-only unit regression against source RUN1796 for Mis Visitas vs Beneficios payment truth, prove exact deployed Firestore reservations rule gap and claims before mutation; use original single candidate control guard for cumulative source promotion, then Work targeted same-artifact UI E2E. No production until I3 GO and explicit authorization.",
+  "nextExactAction": "Run existing canonical I3 DEV certification source authority + UAT finance source regression only. Preserve B10 source QA RUN1799, verify public DEV reservations ruleset without changes, leave I3 HOLD; no DEV deploy except serialized approved cumulative candidate.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -847,5 +847,19 @@
       "A09_B11",
       "UAT-MODAL_OVERLAY_RETEST"
     ]
+  },
+  "lastWorkUatFinanceSourceRepair": {
+    "path": "CXORBIA_I3_UAT_MISVISITAS_CANONICAL_FINANCE_SOURCE_FIXED_2026-10-19.json",
+    "owner": "app/modules/misvisitas.js",
+    "ownerBlob": "de7e10c0509aabcf96f3834ee8a5496be297b2b3",
+    "sourceSha": "2c6ad7c0466101398e6b1c60ba067f44c9ab6c21",
+    "localQA": {
+      "passed": 4,
+      "total": 4,
+      "previousFailed": 2
+    },
+    "remoteCI": "PENDING",
+    "devMaterialized": false,
+    "production": false
   }
 }

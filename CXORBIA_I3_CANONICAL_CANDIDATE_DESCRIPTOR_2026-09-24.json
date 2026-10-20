@@ -4,16 +4,16 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
-  "productTreeAuthority": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
-  "predecessorProductSourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V476_2026-10-19.json",
-  "findingsLedgerExpectedGitBlob": "eeeae9f38d55d0de81e9cc7ac87cfebad1fc26e7",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V148.json",
+  "productSourceSha": "2c6ad7c0466101398e6b1c60ba067f44c9ab6c21",
+  "productTreeAuthority": "0ea3f58771047688a0e5744ee098b268aad223df",
+  "predecessorProductSourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V477_2026-10-19.json",
+  "findingsLedgerExpectedGitBlob": "e89f0a197551a1b5afbc4296eea9a0f3496bc35f",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V149.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "A09_B11_FIREBASE_AUTH_UID_CORRELATION_PENDING_IAM_B10_DEV_PENDING",
+  "activeBlocker": "A09_B11_UID_CLAIMS_MEMBERSHIP_PENDING__B10_TYAONLINE_DEV_PENDING__UAT_FINANCE_DEV_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 A09/B11: read-only verify exact Firebase Auth UID/custom claims + tenants/tya/users membership and tenants/tya/shoppers profile against HR stable-ID digest c6322c620e..., preserving projectId cinepolis, period cinepolis-2026-10, country GT and three independently evidenced HR assignments. Existing browser OAuth account lacks Firebase DEV IAM: ENVIRONMENT_FAILURE for this verification route only; use already-authorized scoped DEV credentials in existing canonical CI lane if safe WITHOUT new workflow, artifact build, data writes or deployments. If no safe authenticated path exists, request only indispensable IAM authorization. B10 remains SOURCE_PROVEN RUN1799, DEV_PENDING; after Auth binding prove actual Shopper E2E then serial cumulative DEV. Production DO_NOT_TOUCH.",
+  "exactNextAction": "Run existing canonical I3 DEV certification source authority + UAT finance source regression only. Preserve B10 source QA RUN1799, verify public DEV reservations ruleset without changes, leave I3 HOLD; no DEV deploy except serialized approved cumulative candidate.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -780,7 +780,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "bcc2a0e98e6f65eb09430a091007e80a22427ab3",
+  "productSourceTree": "0ea3f58771047688a0e5744ee098b268aad223df",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -2944,7 +2944,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "a21cafc5fed380646cb09b2634042859e4496864",
+  "moduleTruthExpectedGitBlob": "1d5416dd1a8055421e5ba4d88ae807260007b1bd",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12510,5 +12510,21 @@
     "devMaterializationUnchanged": true,
     "classification": "ENVIRONMENT_FAILURE_BROWSER_IAM_ONLY",
     "releaseProduction": false
+  },
+  "lastWorkUatFinanceSourceFix": {
+    "date": "2026-10-19",
+    "relatedFinding": "VRM-271",
+    "relatedOwnerExpansion": "app/modules/misvisitas.js",
+    "ownerBlob": "de7e10c0509aabcf96f3834ee8a5496be297b2b3",
+    "sourceSha": "2c6ad7c0466101398e6b1c60ba067f44c9ab6c21",
+    "sourceTree": "0ea3f58771047688a0e5744ee098b268aad223df",
+    "predecessorSourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+    "test": "tools/qa/cxorbia-i3-work-uat-misvisitas-payment-source.test.mjs",
+    "localRedGreen": "RED_2_OF_4_GREEN_4_OF_4",
+    "remoteSourceQa": "PENDING",
+    "devMaterialized": false,
+    "financeAuthority": "CX_TYA_CANONICAL_FINANCE_READ_MODEL.fromVisit + paymentConfirmed and provider/historical evidence",
+    "status": "SOURCE_FIXED_AWAITING_CANONICAL_CI_AND_DEV",
+    "production": false
   }
 }
