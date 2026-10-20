@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_A09_B11_SOURCE_PROVEN_RUN1804_DEV_PENDING",
+  "status": "HOLD_I3_PROJECT_WIZARD_REQUIRED_FIELDS_SOURCE_FIXED_QA_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "c9e5c5313883adc905f2d061219bc121c3b4af7e",
-  "productTreeAuthority": "a2e7398db7c7df94da2fdd9391ea8865a54bb2dd",
-  "predecessorProductSourceSha": "c242e6bf5fc43844ba2f7fba1690f6eb63403c01",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V482_2026-10-20.json",
-  "findingsLedgerExpectedGitBlob": "0cf4e8cc0e1f058d11cfaa8bafe77e212aaf5e32",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261020-V154.json",
+  "productSourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
+  "productTreeAuthority": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
+  "predecessorProductSourceSha": "c9e5c5313883adc905f2d061219bc121c3b4af7e",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V483_2026-10-20.json",
+  "findingsLedgerExpectedGitBlob": "d3e5054e29142ddd2ca4c10a08b4681e9527d496",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261020-V155.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "A09_B11_CLAIMS_LIVE_HR_SHOPPER_E2E_PENDING__B09_B13_B05_B08_C02_C10_FUNCTIONAL_E2E_PENDING__B10_DEV_PENDING",
+  "activeBlocker": "PROJECT_WIZARD_UI_VALIDATION_QA_PENDING__A09_B11_SHOPPER_CLAIMS_E2E_PENDING__OTHER_PHASEA_LIVE_E2E_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "A09/B11 source 2/2 confirmed RUN1804. Same-source scoped E2E and cumulative DEV pending; other Phase A owners read-only QA independently. No production.",
+  "exactNextAction": "RUN1807 source QA for project wizard + existing A09/B11, B10, finance, reservations regressions. Only one DEV when authorized; I4 blocked.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -780,7 +780,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "a2e7398db7c7df94da2fdd9391ea8865a54bb2dd",
+  "productSourceTree": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -2944,7 +2944,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "a38d09b1b06b201047d987acae96a7344fdb39e3",
+  "moduleTruthExpectedGitBlob": "6011bedf57671b6613cf5b0d8cce9ab11719574c",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12586,5 +12586,23 @@
     "devMaterialized": false,
     "production": false,
     "receiptSourceProven": "CXORBIA_I3_A09_B11_THREE_VISIT_RUN1804_SOURCE_PROVEN_2026-10-20.json"
+  },
+  "lastProjectWizardRequiredFields20261020": {
+    "receipt": "CXORBIA_I3_PROJECT_WIZARD_REQUIRED_VALIDATION_SOURCE_FIXED_2026-10-20.json",
+    "sourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
+    "sourceTree": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
+    "predecessor": "c9e5c5313883adc905f2d061219bc121c3b4af7e",
+    "owner": "app/modules/proyecto-wizard.js",
+    "ownerBlob": "b32f6277df9bcfca5324c5f67cc9db14e00875f1",
+    "qaPath": "tools/qa/cxorbia-i3-work-uat-project-wizard-required-fields.test.mjs",
+    "qaBlob": "79bb772f0c2ebb531c93ee61cea6ff17d42192ed",
+    "redRun": {
+      "number": 1805,
+      "id": 39437765112,
+      "fails": 2
+    },
+    "greenRun": "PENDING",
+    "devDeployed": false,
+    "production": false
   }
 }

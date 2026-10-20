@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "c9e5c5313883adc905f2d061219bc121c3b4af7e",
-  "productTree": "a2e7398db7c7df94da2fdd9391ea8865a54bb2dd",
+  "productSourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
+  "productTree": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
   "controlParentSha": "c371aa32c4a483a384907a7ceec9ae752ea4e08e",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
@@ -30,14 +30,13 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_A09_B11_THREE_VISIT_RUN1804_SOURCE_PROVEN_2026-10-20.json",
-    "kind": "A09_B11_THREE_VISIT_SOURCE_PROVEN_RUN1804_2_2_RED_RUN1802_2_2",
-    "sourceSha": "c9e5c5313883adc905f2d061219bc121c3b4af7e",
-    "sourceTree": "a2e7398db7c7df94da2fdd9391ea8865a54bb2dd",
-    "sourceChanges": 0,
+    "path": "CXORBIA_I3_PROJECT_WIZARD_REQUIRED_VALIDATION_SOURCE_FIXED_2026-10-20.json",
+    "kind": "I3_PROJECT_WIZARD_REQUIRED_NAME_COUNTRY_SOURCE_FIXED_RUN1805_RED_GREEN_PENDING",
+    "sourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
+    "sourceTree": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
+    "sourceChanges": 1,
     "devDeploys": 0,
-    "production": false,
-    "newFunctionalClosures": 0
+    "production": false
   },
   "taskProgress": {
     "G01": "IN_PROGRESS_COVERAGE_CUSTODIED_AUTHORITY_GAPS_RETAINED_IN_G03",
@@ -82,7 +81,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 HOLD: A09/B11 assignment normalization source passed RUN1804 2/2, but claims/Shopper three visits live and actual HR current revision remain HOLD. Other B09/B13/B05-B08/C02-C10 and B10 run independently; DEV one cumulative gate, I4 blocked.",
+  "nextExactAction": "I3 HOLD: project wizard name/country guard source QA RUN1807 pending; A09/B11 source proven RUN1804 and real Shopper claims/E2E HOLD; B09/B13/B05-B08/C02-C10 independent live E2E pending. DEV RUN1796 and prod unchanged.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -962,5 +961,23 @@
     "devDeploys": 0,
     "production": false,
     "qaGreen": "PENDING"
+  },
+  "previousExecutionReceiptBeforeProjectWizard": {
+    "path": "CXORBIA_I3_A09_B11_THREE_VISIT_RUN1804_SOURCE_PROVEN_2026-10-20.json",
+    "kind": "A09_B11_THREE_VISIT_SOURCE_PROVEN_RUN1804_2_2_RED_RUN1802_2_2",
+    "sourceSha": "c9e5c5313883adc905f2d061219bc121c3b4af7e",
+    "sourceTree": "a2e7398db7c7df94da2fdd9391ea8865a54bb2dd",
+    "sourceChanges": 0,
+    "devDeploys": 0,
+    "production": false,
+    "newFunctionalClosures": 0
+  },
+  "projectWizardRequiredSourceFix20261020": {
+    "path": "CXORBIA_I3_PROJECT_WIZARD_REQUIRED_VALIDATION_SOURCE_FIXED_2026-10-20.json",
+    "owner": "app/modules/proyecto-wizard.js",
+    "redRun": 1805,
+    "redFailures": 2,
+    "greenRun": "PENDING",
+    "dev": "RUN1796_UNCHANGED"
   }
 }
