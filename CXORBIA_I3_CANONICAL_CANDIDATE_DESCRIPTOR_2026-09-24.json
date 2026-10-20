@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PROJECT_WIZARD_REQUIRED_FIELDS_SOURCE_FIXED_QA_PENDING",
+  "status": "HOLD_I3_PROJECT_WIZARD_SOURCE_PROVEN_RUN1808_DEV_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
   "productTreeAuthority": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
   "predecessorProductSourceSha": "c9e5c5313883adc905f2d061219bc121c3b4af7e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V483_2026-10-20.json",
-  "findingsLedgerExpectedGitBlob": "d3e5054e29142ddd2ca4c10a08b4681e9527d496",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261020-V155.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V484_2026-10-20.json",
+  "findingsLedgerExpectedGitBlob": "a605ccbfb50c5d34b17719d44b1661f1572bf4c1",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261020-V156.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PROJECT_WIZARD_UI_VALIDATION_QA_PENDING__A09_B11_SHOPPER_CLAIMS_E2E_PENDING__OTHER_PHASEA_LIVE_E2E_PENDING",
+  "activeBlocker": "A09_B11_CLAIMS_SHOPPER_HR_CURRENT_E2E_PENDING__PROJECT_WIZARD_DEV_E2E_PENDING__OTHER_PHASE_A_LIVE_E2E_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN1807 source QA for project wizard + existing A09/B11, B10, finance, reservations regressions. Only one DEV when authorized; I4 blocked.",
+  "exactNextAction": "Source PASS A09/B11 RUN1804 and project wizard RUN1808. Ready to review single existing DEV lane gates without touching production; Work live tests independent.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2944,7 +2944,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "6011bedf57671b6613cf5b0d8cce9ab11719574c",
+  "moduleTruthExpectedGitBlob": "52357706a2064670f11c968b924802b2485de0e5",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12595,14 +12595,24 @@
     "owner": "app/modules/proyecto-wizard.js",
     "ownerBlob": "b32f6277df9bcfca5324c5f67cc9db14e00875f1",
     "qaPath": "tools/qa/cxorbia-i3-work-uat-project-wizard-required-fields.test.mjs",
-    "qaBlob": "79bb772f0c2ebb531c93ee61cea6ff17d42192ed",
+    "qaBlob": "fcc40b669fa40d64bae783549a6a6a46cecbfd43",
     "redRun": {
       "number": 1805,
       "id": 39437765112,
       "fails": 2
     },
-    "greenRun": "PENDING",
+    "greenRun": {
+      "number": 1808,
+      "id": 39438585245,
+      "jobId": 118682099425,
+      "passed": 3,
+      "total": 3,
+      "combinedPassed": 15,
+      "combinedTotal": 15,
+      "canonicalGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY"
+    },
     "devDeployed": false,
-    "production": false
+    "production": false,
+    "greenReceipt": "CXORBIA_I3_PROJECT_WIZARD_RUN1808_SOURCE_PROVEN_2026-10-20.json"
   }
 }
