@@ -7,9 +7,9 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "2c6ad7c0466101398e6b1c60ba067f44c9ab6c21",
-  "productTree": "0ea3f58771047688a0e5744ee098b268aad223df",
-  "controlParentSha": "6f91284b6da2e0dc5fa5d229eea6cfbf5ffa5543",
+  "productSourceSha": "c242e6bf5fc43844ba2f7fba1690f6eb63403c01",
+  "productTree": "73d9c6d0bcafaf2a14217e9a08716749dc98a0bb",
+  "controlParentSha": "1cff0125a7ee5715b2c8ea319444d5c58fc1c28e",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
     "executed": [
@@ -30,11 +30,11 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_UAT_MISVISITAS_RUN1800_CI_SOURCE_PROVEN_2026-10-19.json",
-    "kind": "MISVISITAS_FINANCE_OWNER_SOURCE_CI_RUN1800_PASS_4_4_CANONICAL_GUARD_PASS_DEV_PENDING",
-    "sourceSha": "2c6ad7c0466101398e6b1c60ba067f44c9ab6c21",
-    "sourceTree": "0ea3f58771047688a0e5744ee098b268aad223df",
-    "sourceChanges": 0,
+    "path": "CXORBIA_I3_UAT_RESERVATIONS_FIRESTORE_RULE_SOURCE_FIXED_2026-10-19.json",
+    "kind": "RESERVATIONS_EXACT_SCOPED_FIRESTORE_RULE_SOURCE_LOCAL_RED_1_GREEN_6_REMOTE_CI_PENDING",
+    "sourceSha": "c242e6bf5fc43844ba2f7fba1690f6eb63403c01",
+    "sourceTree": "73d9c6d0bcafaf2a14217e9a08716749dc98a0bb",
+    "sourceChanges": 1,
     "devDeploys": 0,
     "production": false
   },
@@ -81,7 +81,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Next: read currently deployed DEV Firestore ruleset and exact reservations permission in read-only mode, then remediation within owner if confirmed. Run A09/B11 UID/claims/membership focal; preserve RUN1800 source PASS. Do not deploy without cumulative serial build. Production untouched.",
+  "nextExactAction": "Read existing canonical RUN1801 source QA for reservations rule exact scope; then prove current Firebase rules release + Admin/Shopper own/sibling denied live E2E in DEV. Preserve VRM-249 PASS and other scoped proofs. No prod.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -865,5 +865,15 @@
     "runId": 39353966592,
     "jobId": 118404390561,
     "sourceGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY"
+  },
+  "lastWorkUatReservationReadRules": {
+    "receiptPath": "CXORBIA_I3_UAT_RESERVATIONS_FIRESTORE_RULE_SOURCE_FIXED_2026-10-19.json",
+    "sourceSha": "c242e6bf5fc43844ba2f7fba1690f6eb63403c01",
+    "ruleBlob": "833fc1c98f54d6279cb411c30e34f06caab4ddd7",
+    "securitySourceRedGreen": "1_TO_6_OF_6",
+    "remoteCI": "PENDING",
+    "actualDeployedRuleId": "projects/cxorbia-backend-dev/rulesets/e9070ca6-234c-4a16-acf2-5ab3372eadb3",
+    "currentRemoteReleaseRevalidated": false,
+    "devDeployed": false
   }
 }

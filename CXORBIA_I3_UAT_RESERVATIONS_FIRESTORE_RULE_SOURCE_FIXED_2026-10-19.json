@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "cxorbia.i3.work-uat.reservations-rules-source-only.v1",
+  "localDate": "2026-10-19",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "status": "HOLD",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlParentSha": "1cff0125a7ee5715b2c8ea319444d5c58fc1c28e",
+  "sourceSha": "c242e6bf5fc43844ba2f7fba1690f6eb63403c01",
+  "sourceTree": "73d9c6d0bcafaf2a14217e9a08716749dc98a0bb",
+  "predecessorSource": "2c6ad7c0466101398e6b1c60ba067f44c9ab6c21",
+  "workEvidence": "CXORBIA_I3_UAT_WORK_TECHNICAL_ADJUDICATION_2026-10-19.json",
+  "rootCause": "Deployed RUN1796 firestore.rules published but missing match /projects/{projectId}/reservations/{reservationId}; Work admin/shopper browser READ got Missing or insufficient permissions, fallback empty counts not reliable",
+  "classification": "AUTH_FAILURE",
+  "owner": "firestore.rules",
+  "reproducedSource": {
+    "oldBlob": "69cd9fef6dc3cc46c1bc2723bc289d6cb7b574e2",
+    "newBlob": "833fc1c98f54d6279cb411c30e34f06caab4ddd7",
+    "regressionRed": 1,
+    "regressionGreen": 6,
+    "totalTests": 6,
+    "remoteCI": "PENDING"
+  },
+  "securityScope": {
+    "tenantAllowed": true,
+    "operatorCanRead": true,
+    "shopperProjectAssigned": true,
+    "shopperOnlyOwn": true,
+    "nonemptyShopperId": true,
+    "noClientBroadened": true,
+    "directWritesDenied": true,
+    "otherPathRulesUnchanged": true
+  },
+  "priorRulesEvidence": {
+    "run": 1796,
+    "sourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
+    "rulesetId": "projects/cxorbia-backend-dev/rulesets/e9070ca6-234c-4a16-acf2-5ab3372eadb3",
+    "rulesReleased": true,
+    "currentEffectiveReleaseReadback": "NOT_REPROVEN"
+  },
+  "historicalFindingsPreserved": [
+    "VRM-180",
+    "VRM-249"
+  ],
+  "historicalVrm249PassNotReopened": true,
+  "ci": {
+    "existingWorkflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "newWorkflowCreated": false,
+    "qa": "tools/qa/cxorbia-i3-work-uat-reservations-firestore-source.test.mjs",
+    "qaBlob": "24d6f7d387837ba8aeefec5ae5f867ad14f70edf",
+    "emulator": "NOT_RUN",
+    "liveBrowserE2e": "NOT_RUN"
+  },
+  "authority": {
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V151.json",
+    "matrixBlob": "de744ba30641690153a9aeb8fbe1f8597ca5b723",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V479_2026-10-19.json",
+    "ledgerBlob": "ea794b65c768f4a37258fceea7b3b47655c9ced1",
+    "preservedVrm": 274,
+    "modules": 21
+  },
+  "dev": {
+    "run": 1796,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/3ee9104ddb9f6e9c",
+    "runtime": "cxorbia-live-hr-dev-00313-hrk",
+    "changed": false
+  },
+  "writes": {
+    "productOwnerFiles": 1,
+    "QA": 1,
+    "existingWorkflowFile": 1,
+    "newWorkflow": 0,
+    "newRepo": 0,
+    "newBranch": 0,
+    "auth": 0,
+    "hr": 0,
+    "firestore": 0,
+    "finance": 0,
+    "storage": 0,
+    "hosting": 0,
+    "runtime": 0,
+    "production": 0
+  },
+  "next": "Read existing canonical RUN1801 source QA for reservations rule exact scope; then prove current Firebase rules release + Admin/Shopper own/sibling denied live E2E in DEV. Preserve VRM-249 PASS and other scoped proofs. No prod."
+}

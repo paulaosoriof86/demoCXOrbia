@@ -4,16 +4,16 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "2c6ad7c0466101398e6b1c60ba067f44c9ab6c21",
-  "productTreeAuthority": "0ea3f58771047688a0e5744ee098b268aad223df",
-  "predecessorProductSourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V478_2026-10-19.json",
-  "findingsLedgerExpectedGitBlob": "c0357339fd880bb717c6a6760e73d7c590daff17",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V150.json",
+  "productSourceSha": "c242e6bf5fc43844ba2f7fba1690f6eb63403c01",
+  "productTreeAuthority": "73d9c6d0bcafaf2a14217e9a08716749dc98a0bb",
+  "predecessorProductSourceSha": "2c6ad7c0466101398e6b1c60ba067f44c9ab6c21",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V479_2026-10-19.json",
+  "findingsLedgerExpectedGitBlob": "ea794b65c768f4a37258fceea7b3b47655c9ced1",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V151.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "A09_B11_UID_CLAIMS_MEMBERSHIP_PENDING__B10_TYAONLINE_DEV_PENDING__UAT_FINANCE_DEV_PENDING",
+  "activeBlocker": "A09_B11_AUTH_UID_MEMBERSHIP_PENDING__B10_DEV_LINK_PENDING__UAT_FINANCE_AND_RESERVATIONS_DEV_E2E_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Next: read currently deployed DEV Firestore ruleset and exact reservations permission in read-only mode, then remediation within owner if confirmed. Run A09/B11 UID/claims/membership focal; preserve RUN1800 source PASS. Do not deploy without cumulative serial build. Production untouched.",
+  "exactNextAction": "Read existing canonical RUN1801 source QA for reservations rule exact scope; then prove current Firebase rules release + Admin/Shopper own/sibling denied live E2E in DEV. Preserve VRM-249 PASS and other scoped proofs. No prod.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -780,7 +780,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "0ea3f58771047688a0e5744ee098b268aad223df",
+  "productSourceTree": "73d9c6d0bcafaf2a14217e9a08716749dc98a0bb",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -2944,7 +2944,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "68cf436bf816b48e17ece80f92dc833d491964a7",
+  "moduleTruthExpectedGitBlob": "de744ba30641690153a9aeb8fbe1f8597ca5b723",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12530,5 +12530,26 @@
     "runId": 39353966592,
     "jobId": 118404390561,
     "sourceGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY"
+  },
+  "lastWorkUatReservationRuleSourceFix": {
+    "dateLocal": "2026-10-19",
+    "sourceSha": "c242e6bf5fc43844ba2f7fba1690f6eb63403c01",
+    "sourceTree": "73d9c6d0bcafaf2a14217e9a08716749dc98a0bb",
+    "owner": "firestore.rules",
+    "ownerBlob": "833fc1c98f54d6279cb411c30e34f06caab4ddd7",
+    "priorRuleBlob": "69cd9fef6dc3cc46c1bc2723bc289d6cb7b574e2",
+    "test": "tools/qa/cxorbia-i3-work-uat-reservations-firestore-source.test.mjs",
+    "testBlob": "24d6f7d387837ba8aeefec5ae5f867ad14f70edf",
+    "linkedFindingIds": [
+      "VRM-180",
+      "VRM-249"
+    ],
+    "localRedGreen": "1_OF_6_TO_6_OF_6",
+    "remoteCi": "PENDING",
+    "devRulesDeployed": false,
+    "providerE2e": false,
+    "classification": "AUTH_FAILURE",
+    "securityGuarantee": "Operator tenant read or shopper exact own project read; direct browser reservations writes disabled",
+    "production": false
   }
 }
