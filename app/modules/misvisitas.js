@@ -16,12 +16,24 @@ CX.module('misvisitas',({data,ui})=>{
   const isCancelled=(v,f)=>f.cancelled===true||v.estado==='cancelada'||v.cancelled===true;
   const pendingSchedule=v=>v?.platformSchedulePendingHr?.status==='pending_hr'&&/^20\d{2}-[01]\d-[0-3]\d$/.test(String(v.platformSchedulePendingHr.date||''));
   const periodIdOf=v=>data.recordPeriodId?data.recordPeriodId(v):(v&&(v.periodId||v.projectId));
+  /* I3 UAT: the canonical finance authority, not the HR visit facet,
+     determines payment confirmation across Mi Perfil, Mis Beneficios and Mis Visitas. */
+  const financePaymentForVisit=v=>{
+    try{
+      const pid=periodIdOf(v);
+      const period=(data.projects||[]).find(x=>String(x?.id||'')===String(pid||''))||p;
+      const fromVisit=window.CX_TYA_CANONICAL_FINANCE_READ_MODEL?.fromVisit;
+      const liq=typeof fromVisit==='function'?fromVisit(period,v):typeof CX.liq?.fromVisita==='function'?CX.liq.fromVisita(period,v):null;
+      return liq?.paymentConfirmed===true &&
+        (!!(liq.paymentSourceRef||liq.paymentRef||liq.reconciliationSourceRef)||liq.historicalReconciliationConfirmed===true);
+    }catch(_){return false;}
+  };
   const currentPeriodId=String(data.currentPeriodId||'');
   const isCurrentPeriod=v=>String(periodIdOf(v)||'')===currentPeriodId;
   const assigned=mine.filter(v=>{const f=facets(v);return isCurrentPeriod(v)&&f.assigned&&!f.scheduled&&!pendingSchedule(v)&&!f.realized&&!isCancelled(v,f);});
   const scheduled=mine.filter(v=>{const f=facets(v);return isCurrentPeriod(v)&&(f.scheduled||pendingSchedule(v))&&!f.realized&&!isCancelled(v,f);});
   const realized=mine.filter(v=>{const f=facets(v);return isCurrentPeriod(v)&&f.realized&&!f.submitted&&!isCancelled(v,f);});
-  const history=mine.filter(v=>{const f=facets(v),c=contract(v);return !isCurrentPeriod(v)||f.submitted||isCancelled(v,f)||c.liquidationState==='confirmado'||c.paymentState==='confirmado'||v.estado==='liquidada';});
+  const history=mine.filter(v=>{const f=facets(v),c=contract(v);return !isCurrentPeriod(v)||f.submitted||isCancelled(v,f)||c.liquidationState==='confirmado'||financePaymentForVisit(v)||v.estado==='liquidada';});
   const activeCount=assigned.length+scheduled.length+realized.length;
   const postState=x=>String(x&&(x.estado||x.status)||'').toLowerCase();
   const postPeriod=x=>String((data.recordPeriodId?data.recordPeriodId(x):(x.periodId||x.projectId))||'');
@@ -92,7 +104,7 @@ CX.module('misvisitas',({data,ui})=>{
 
   const stageOf=v=>{
     const f=facets(v),c=contract(v);
-    if(c.paymentState==='confirmado')return'liquidada';
+    if(financePaymentForVisit(v))return'liquidada';
     if(f.submitted)return'submit';
     if(f.questionnaire)return'cuestionario';
     if(f.realized)return'realizada';
@@ -119,7 +131,7 @@ CX.module('misvisitas',({data,ui})=>{
       {key:'cuestionario',label:'Cuestionario',done:!!f.questionnaire},
       {key:'revision',label:'Revisión',done:!!(v.reviewedAt||v.reviewCompletedAt||['approved','revisada','reviewed'].includes(String(v.reviewStatus||v.revisionEstado||'').toLowerCase())||f.submitted)},
       {key:'submit',label:'Submitida',done:!!f.submitted},
-      {key:'liquidada',label:'Liquidada',done:!!(f.liquidationConfirmed||f.paymentConfirmed||c.paymentState==='confirmado')}
+      {key:'liquidada',label:'Liquidada',done:!!(f.liquidationConfirmed||f.paymentConfirmed||financePaymentForVisit(v))}
     ];
     const firstPending=checks.findIndex(x=>!x.done);
     return {certState,checks:checks.map((x,i)=>({...x,state:x.done?'done':i===firstPending?'now':'todo'})),scheduleReady:!!v.instructiveReadAt&&certState.done};
@@ -166,7 +178,7 @@ CX.module('misvisitas',({data,ui})=>{
   };
   const applicationsHTML=()=>currentApps.length?`<div class="card card-p" style="margin-bottom:12px;border-left:3px solid var(--amber)"><div class="card-h"><div class="card-t">Estado de tus postulaciones</div><span class="bdg bdg-a">${currentApps.length}</span></div>${currentApps.map(a=>{const v=visitForApp(a),present=applicationPresentation(a),sync=postSyncState(a);return`<div data-app-state="${sync}" style="padding:9px 0;border-top:1px solid var(--border-2)"><div class="between" style="gap:12px"><div><b style="font-size:12.5px">${v?.sucursal||a.sucursal||'Visita'}</b><div style="font-size:10.5px;color:var(--t3)">${a.fechaProp||a.proposedDate||'Fecha pendiente'} · ${v?.ciudad||a.ciudad||''}</div></div>${present.badge}</div><div style="font-size:11.5px;color:var(--t2);margin-top:6px"><b>${present.title}.</b> ${present.copy}</div></div>`;}).join('')}</div>`:''; 
   const activeHTML=()=>`${ui.ph('Mis Visitas',(p?.name||'')+' · agenda, ejecuta y da seguimiento')}${tabs()}${applicationsHTML()}${geoOn?`<div class="card card-p" style="margin-bottom:12px;border-left:3px solid var(--green)"><div class="flex" style="gap:8px;align-items:center;margin-bottom:4px"><span style="font-size:18px">📍</span><b style="font-size:13px">Check-in con foto geolocalizada</b><span class="bdg bdg-a" style="font-size:10px">Se confirma por visita</span></div><div style="font-size:11.5px;color:var(--t2)">La foto se guarda en Storage con scope de la visita y el GPS queda asociado solo cuando Storage y el provider confirman la operación.</div></div>`:''}${assigned.map(visitCard).join('')}${scheduled.map(visitCard).join('')}${realized.map(visitCard).join('')}${activeCount?'':ui.empty('🗓️','No tienes visitas activas en este momento.')}<div class="card card-p">${ui.aiBox('Cada cambio se muestra como confirmado únicamente cuando queda guardado correctamente. Si no puede guardarse, tu visita permanece sin cambios.','Seguimiento seguro de la visita')}</div>`;
-  const historyHTML=()=>`${ui.ph('Mis Visitas',(p?.name||'')+' · agenda, ejecuta y da seguimiento')}${tabs()}<div class="card card-p"><div class="card-h"><div class="card-t">Historial de visitas</div><span class="muted" style="font-size:11px">submitidas, liquidadas, pagadas o canceladas</span></div>${history.length?`<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Sucursal</th><th>Escenario</th><th>Fecha</th><th>Honorario</th><th>Estado</th><th>Pago</th></tr></thead><tbody>${history.map(v=>{const vc=contract(v);const pay=!vc||vc.paymentState==='no_aplica'?'<span class="muted" style="font-size:11px">—</span>':vc.paymentState==='confirmado'?ui.bdg('Pagado (confirmado)','g'):ui.bdg('Pago pendiente de confirmación','a');return`<tr data-history-visit="${v.id}" style="cursor:pointer" title="Abrir detalle de la visita"><td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad||''}</div></td><td style="font-size:12px">${data.scenarioSummaryForVisit?data.scenarioSummaryForVisit(v,p):(v.escenario||'')}</td><td style="font-size:12px">${v.realizada||v.fechaPago||v.agendada||'—'}</td><td>${ui.money(v.currency,v.honorario)}</td><td>${ui.estadoBadge(v.estado)}</td><td>${pay}</td></tr>`;}).join('')}</tbody></table></div>`:ui.empty('🗒️','Aún no tienes visitas en tu historial.')}</div>`;
+  const historyHTML=()=>`${ui.ph('Mis Visitas',(p?.name||'')+' · agenda, ejecuta y da seguimiento')}${tabs()}<div class="card card-p"><div class="card-h"><div class="card-t">Historial de visitas</div><span class="muted" style="font-size:11px">submitidas, liquidadas, pagadas o canceladas</span></div>${history.length?`<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Sucursal</th><th>Escenario</th><th>Fecha</th><th>Honorario</th><th>Estado</th><th>Pago</th></tr></thead><tbody>${history.map(v=>{const vc=contract(v);const pay=!vc||vc.paymentState==='no_aplica'?'<span class="muted" style="font-size:11px">—</span>':financePaymentForVisit(v)?ui.bdg('Pagado (confirmado)','g'):ui.bdg('Pago pendiente de confirmación','a');return`<tr data-history-visit="${v.id}" style="cursor:pointer" title="Abrir detalle de la visita"><td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad||''}</div></td><td style="font-size:12px">${data.scenarioSummaryForVisit?data.scenarioSummaryForVisit(v,p):(v.escenario||'')}</td><td style="font-size:12px">${v.realizada||v.fechaPago||v.agendada||'—'}</td><td>${ui.money(v.currency,v.honorario)}</td><td>${ui.estadoBadge(v.estado)}</td><td>${pay}</td></tr>`;}).join('')}</tbody></table></div>`:ui.empty('🗒️','Aún no tienes visitas en tu historial.')}</div>`;
 
   const find=id=>mine.find(v=>String(v.id)===String(id));
   const consumePendingAction=()=>{
@@ -192,7 +204,7 @@ CX.module('misvisitas',({data,ui})=>{
     delete window.CX_PENDING_SHOPPER_VISIT_ACTION;
     if(target)setTimeout(()=>target.click(),0);else ui.toast('La acción ya no aplica al estado actual de esta visita.','warn',3200);
   };
-  const bindHistory=()=>host.querySelectorAll('[data-history-visit]').forEach(tr=>tr.addEventListener('click',()=>{const v=find(tr.dataset.historyVisit);if(!v)return;const c=contract(v),f=facets(v);ui.modal('📋 '+safe(v.sucursal||'Detalle de visita'),`<div class="grid g2" style="gap:10px 16px"><div><span class="muted">Periodo</span><div><b>${safe(v.periodLabel||v.periodKey||periodIdOf(v)||'—')}</b></div></div><div><span class="muted">Estado</span><div>${ui.estadoBadge(v.estado)}</div></div><div><span class="muted">Escenario</span><div>${safe(data.scenarioSummaryForVisit?data.scenarioSummaryForVisit(v,p):(v.escenario||'—'))}</div></div><div><span class="muted">Honorario</span><div>${v.honorario!=null?ui.money(v.currency,v.honorario):'Pendiente de fuente'}</div></div><div><span class="muted">Agendada</span><div>${safe(v.agendada||'—')}</div></div><div><span class="muted">Realizada</span><div>${safe(v.realizada||'—')}</div></div><div><span class="muted">Submitida</span><div>${f.submitted?'Sí':'No'}</div></div><div><span class="muted">Pago</span><div>${c?.paymentState==='confirmado'?'Pago confirmado':'Pendiente de confirmación'}</div></div></div><div style="font-size:11px;color:var(--t3);margin-top:12px">Este detalle usa la misma visita canónica del histórico y no modifica datos.</div>`);}));
+  const bindHistory=()=>host.querySelectorAll('[data-history-visit]').forEach(tr=>tr.addEventListener('click',()=>{const v=find(tr.dataset.historyVisit);if(!v)return;const c=contract(v),f=facets(v);ui.modal('📋 '+safe(v.sucursal||'Detalle de visita'),`<div class="grid g2" style="gap:10px 16px"><div><span class="muted">Periodo</span><div><b>${safe(v.periodLabel||v.periodKey||periodIdOf(v)||'—')}</b></div></div><div><span class="muted">Estado</span><div>${ui.estadoBadge(v.estado)}</div></div><div><span class="muted">Escenario</span><div>${safe(data.scenarioSummaryForVisit?data.scenarioSummaryForVisit(v,p):(v.escenario||'—'))}</div></div><div><span class="muted">Honorario</span><div>${v.honorario!=null?ui.money(v.currency,v.honorario):'Pendiente de fuente'}</div></div><div><span class="muted">Agendada</span><div>${safe(v.agendada||'—')}</div></div><div><span class="muted">Realizada</span><div>${safe(v.realizada||'—')}</div></div><div><span class="muted">Submitida</span><div>${f.submitted?'Sí':'No'}</div></div><div><span class="muted">Pago</span><div>${financePaymentForVisit(v)?'Pago confirmado':'Pendiente de confirmación'}</div></div></div><div style="font-size:11px;color:var(--t3);margin-top:12px">Este detalle usa la misma visita canónica del histórico y no modifica datos.</div>`);}));
   const draw=()=>{if(!identityOk){host.innerHTML=blockedHTML();return;}host.innerHTML=view==='historial'?historyHTML():activeHTML();host.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.view;draw();}));if(view==='activas'){bindActive();consumePendingAction();}else{bindHistory();consumePendingAction();}};
   const bindActive=()=>{
     host.querySelectorAll('[data-doc]').forEach(b=>b.addEventListener('click',async()=>{
