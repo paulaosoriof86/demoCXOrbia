@@ -283,7 +283,26 @@ async function reconcileVisitDoc({db,policy,candidate,sourceRevision}){
       disponibleDesde:str(candidate.disponibleDesde||candidate.availableFrom)||null,
       availableFrom:str(candidate.availableFrom||candidate.disponibleDesde)||null
     });
-    const desired=clean({...basePatch,...hrTemporal,estado:candidate.estado,status:candidate.status,shopperId:candidate.shopperId||null,assignmentSource:candidate.assignmentSource||null,assignmentSyncStatus:candidate.assignmentSyncStatus||null,canonicalFacets:candidate.canonicalFacets});
+    // I3 A09/B11: HR is the owner of assignment and availability state.
+    // The existing-record merge must refresh all HR-managed representations,
+    // not only shopperId/estado/canonicalFacets. Otherwise a normalized shopper
+    // has the right owner but stale "unassigned" fields in that same document.
+    const hrAssigned=candidate.canonicalFacets?.assigned===true;
+    const desired=clean({
+      ...basePatch,...hrTemporal,
+      estado:candidate.estado,status:candidate.status,
+      shopperId:candidate.shopperId||null,
+      shopper:candidate.shopper||null,shopperCode:candidate.shopperCode||null,
+      hasShopper:hrAssigned,assignmentState:hrAssigned?'assigned':'unassigned',
+      canonicalState:candidate.canonicalState??null,
+      operationalState:candidate.operationalState??null,
+      availabilityState:candidate.availabilityState??null,
+      availabilityDependency:candidate.availabilityDependency??null,
+      assignmentSource:candidate.assignmentSource||null,
+      assignmentSyncStatus:candidate.assignmentSyncStatus||null,
+      canonicalFacets:candidate.canonicalFacets,
+      hrManaged:candidate.hrManaged
+    });
     const same=Object.entries(desired).every(([key,value])=>JSON.stringify(stable(existing[key]))===JSON.stringify(stable(value)));
     if(same)return {providerWrites:0,created:false,idempotentReplay:true};
     tx.set(visitRef,{...desired,updatedAt:now(),version:Number(existing.version||0)+1},{merge:true});
