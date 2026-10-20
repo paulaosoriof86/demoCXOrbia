@@ -30,12 +30,12 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_PROJECT_WIZARD_RUN1808_SOURCE_PROVEN_2026-10-20.json",
-    "kind": "PROJECT_WIZARD_REQUIRED_NAME_COUNTRY_RUN1808_SOURCE_PASS_3_3",
+    "path": "CXORBIA_I3_CUMULATIVE_DEV_RUN_REQUEST_2026-10-20.json",
+    "kind": "PHASEA_SINGLE_CANDIDATE_CUMULATIVE_DEV_MATERIALIZATION_REQUEST",
     "sourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
     "sourceTree": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
     "sourceChanges": 0,
-    "devDeploys": 0,
+    "devDeploys": "PENDING",
     "production": false
   },
   "taskProgress": {
@@ -81,7 +81,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 HOLD: A09/B11 and Wizard required-fields source PROVEN RUN1804/RUN1808; use one DEV lane and Work target E2E for Shopper, projects, notifications, finance, GPS. No real data writes or production.",
+  "nextExactAction": "Check existing Phase A materialization run exact source 81593bfb; if PASS readback Hosting, runtime, Firestore Ruleset, source digest and HR revision, then Work functional Admin/Shopper E2E; no production.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -989,6 +989,24 @@
     "sourceTree": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
     "sourceChanges": 1,
     "devDeploys": 0,
+    "production": false
+  },
+  "previousExecutionReceiptBeforeCumulativeDevRequest": {
+    "path": "CXORBIA_I3_PROJECT_WIZARD_RUN1808_SOURCE_PROVEN_2026-10-20.json",
+    "kind": "PROJECT_WIZARD_REQUIRED_NAME_COUNTRY_RUN1808_SOURCE_PASS_3_3",
+    "sourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
+    "sourceTree": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
+    "sourceChanges": 0,
+    "devDeploys": 0,
+    "production": false
+  },
+  "i3CumulativeDevRequest20261020": {
+    "receiptPath": "CXORBIA_I3_CUMULATIVE_DEV_RUN_REQUEST_2026-10-20.json",
+    "sourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
+    "sourceTree": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
+    "previousDevRun": 1796,
+    "actualDevRun": "PENDING",
+    "status": "REQUESTED_CI_PENDING",
     "production": false
   }
 }

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PROJECT_WIZARD_SOURCE_PROVEN_RUN1808_DEV_PENDING",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "A09_B11_CLAIMS_SHOPPER_HR_CURRENT_E2E_PENDING__PROJECT_WIZARD_DEV_E2E_PENDING__OTHER_PHASE_A_LIVE_E2E_PENDING",
+  "activeBlocker": "I3_CUMULATIVE_DEV_MATERIALIZATION_PENDING_B10_FINANCE_RESERVATIONS_A09_B11_WIZARD",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Source PASS A09/B11 RUN1804 and project wizard RUN1808. Ready to review single existing DEV lane gates without touching production; Work live tests independent.",
+  "exactNextAction": "Run existing single Phase A DEV materialization from source 81593bfb, require exact artifact readback, DEV only. I3 HOLD awaiting Admin Shopper E2E and HR revision, no prod.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -12614,5 +12614,23 @@
     "devDeployed": false,
     "production": false,
     "greenReceipt": "CXORBIA_I3_PROJECT_WIZARD_RUN1808_SOURCE_PROVEN_2026-10-20.json"
+  },
+  "i3Oct20CumulativeDevRequest": {
+    "receiptPath": "CXORBIA_I3_CUMULATIVE_DEV_RUN_REQUEST_2026-10-20.json",
+    "sourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
+    "sourceTree": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
+    "previousDevRun": 1796,
+    "scope": [
+      "B10",
+      "finance",
+      "reservations",
+      "A09_B11",
+      "projectWizard"
+    ],
+    "oneExistingJob": "b1-canonical-visible-identity-dev-materialization",
+    "materializationJobTrigger": "[i3-phasea-dev-materialize]",
+    "staticAssetsAppended": 3,
+    "production": false,
+    "state": "REQUESTED_NOT_YET_EXECUTED"
   }
 }
