@@ -154,6 +154,45 @@ for(const id of active){
   if(/CXORBIA_PREI4_SOURCE_SHA:\s*\$\{\{\s*github\.sha\s*\}\}/.test(body)||/PRODUCT_SOURCE:\s*\$\{\{\s*github\.sha\s*\}\}/.test(body))fail('RELEASE_COMPOSITION_FAILURE:ACTIVE_JOB_GITHUB_SHA_AS_PRODUCT_AUTHORITY',id);
 }
 
+// POSTDEPLOY_SEAL_V1: exact post-deploy authority check in existing canonical guard.
+let postDeploySealReadback=null;
+if(fs.existsSync('CXORBIA_I3_ANTI_BUCLE_CIERRE_EXECUTION_LOCK_2026-10-21.json')){
+ const p=readJson('CXORBIA_RECOVERY_EXECUTION_CURRENT.json'),lock=readJson('CXORBIA_I3_ANTI_BUCLE_CIERRE_EXECUTION_LOCK_2026-10-21.json');
+ const s=d.postDeployRunSeal,t=p.postDeployRunSeal;
+ const same=(a,b,k)=>{if(String(a??'')!==String(b??''))fail('RELEASE_COMPOSITION_FAILURE:POSTDEPLOY_SEAL_MISMATCH',k);};
+ if(!s||!t||p.state!=='HOLD'||d.production!=='DO_NOT_TOUCH'||lock.state!=='FROZEN_COMPLEMENTARY_I3')fail('RELEASE_COMPOSITION_FAILURE:POSTDEPLOY_SEAL_REQUIRED');
+ if(!['CURRENT_SOURCE_SERVING','PREDECESSOR_SERVING_PENDING_SOURCE'].includes(s.mode))fail('RELEASE_COMPOSITION_FAILURE:POSTDEPLOY_SEAL_MODE');
+ if(d.i3CircuitBreakerAddendum!==lock.addendumPath||p.i3CircuitBreakerLock!=='CXORBIA_I3_ANTI_BUCLE_CIERRE_EXECUTION_LOCK_2026-10-21.json')fail('RELEASE_COMPOSITION_FAILURE:FROZEN_LOCK_POINTER_DRIFT');
+ if(git('rev-parse','HEAD:'+lock.addendumPath)!=='2ebc3afb1acd6e411498145e2040e6f2c779e959')fail('RELEASE_COMPOSITION_FAILURE:FROZEN_ADDENDUM_MODIFIED');
+ if(git('rev-parse','HEAD:CXORBIA_I3_ANTI_BUCLE_CIERRE_EXECUTION_LOCK_2026-10-21.json')!=='40722923432190a6a59079da9de25bcd4acdb36b')fail('RELEASE_COMPOSITION_FAILURE:FROZEN_LOCK_MODIFIED');
+ if(git('rev-parse','HEAD:'+d.moduleTruthPath)!==d.moduleTruthExpectedGitBlob)fail('RELEASE_COMPOSITION_FAILURE:MODULE_TRUTH_BLOB_DRIFT');
+ same(d.productSourceSha,p.productSourceSha,'productSource');
+ same(d.productTreeAuthority,p.productTree,'productTree');
+ same(d.moduleTruthPath,p.moduleTruthAuthority?.path,'matrixPath');
+ same(d.moduleTruthExpectedGitBlob,p.moduleTruthAuthority?.gitBlob,'matrixBlob');
+ const receipt=readJson(s.receiptPath),matrix=readJson(d.moduleTruthPath);
+ if(git('rev-parse','HEAD:'+s.receiptPath)!==s.receiptBlob)fail('RELEASE_COMPOSITION_FAILURE:POSTDEPLOY_RECEIPT_BLOB_DRIFT');
+ for(const k of ['runId','runNumber','sourceSha','sourceTree','artifactDigest','runtimeRevision','runtimeDigest','hostingVersion','hostingRelease','firestoreRuleset','hrRevision']){
+   same(s[k],t[k],'seal.'+k);
+   same(s[k],receipt.materialization?.[k],'receipt.'+k);
+   same(s[k],d.currentMaterialization?.[k],'descriptor.'+k);
+   same(s[k],p.currentDevMaterialization?.[k],'pointer.'+k);
+ }
+ same(s.receiptPath,p.lastExecutionReceipt?.path,'lastReceiptPath');
+ same(s.sourceSha,receipt.source?.sha,'receiptSource');
+ same(s.sourceTree,receipt.source?.tree,'receiptTree');
+ same(matrix.vrm275DevReadback?.runId,s.runId,'matrixRun');
+ same(l.findings?.['VRM-275']?.devMaterialization?.runId,s.runId,'ledgerRun');
+ same(l.findings?.['VRM-275']?.devMaterialization?.sourceArtifactDigest,s.artifactDigest,'ledgerArtifact');
+ if(s.mode==='CURRENT_SOURCE_SERVING'){
+   same(s.sourceSha,d.productSourceSha,'servedSource');
+   same(s.sourceTree,d.productTreeAuthority,'servedTree');
+   if(!String(d.status).includes('DEV_MATERIALIZED'))fail('RELEASE_COMPOSITION_FAILURE:FALSE_CURRENT_DEV_DECLARATION');
+ }else if(String(d.status).includes('DEV_MATERIALIZED')||s.sourceSha===d.productSourceSha)fail('RELEASE_COMPOSITION_FAILURE:FALSE_PREDECESSOR_DEV_DECLARATION');
+ if(d.terminalCertificationAllowed!==false||p.authorizationI4===true||s.production!==false||receipt.materialization.production!==false)fail('RELEASE_COMPOSITION_FAILURE:PRODUCTION_PREMATURE');
+ postDeploySealReadback={pass:true,runId:s.runId,runNumber:s.runNumber,mode:s.mode,sourceSha:s.sourceSha,hostingVersion:s.hostingVersion,artifactDigest:s.artifactDigest,terminalReady:false,production:false};
+}
+
 const result={
   decision:'PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY',
   productSourceSha:d.productSourceSha,
@@ -164,7 +203,7 @@ const result={
   postCandidateProductDrift:false,
   historicalSourceSpecificJobsDisabled:historicalDisabled.length,
   proofScope:'CANONICAL_SOURCE_LINEAGE_ONLY_NOT_MODULE_OR_ARTIFACT_CERTIFICATION',
-  moduleTruthReadback,moduleRegistryReadback,moduleBlobReadback,workflowLedgerReadback,
+  moduleTruthReadback,moduleRegistryReadback,moduleBlobReadback,workflowLedgerReadback,postDeploySealReadback,
   terminalReleaseEligible:terminalLike&&moduleTruthReadback.sourceAligned&&moduleTruthReadback.phaseAComplete&&
     moduleTruthReadback.allModulesMatch&&moduleBlobReadback.pass&&moduleRegistryReadback.historicalSubsetValid&&
     (!legacyWorkflowLedgerActive||workflowLedgerReadback.aligned),

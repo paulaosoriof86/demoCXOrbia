@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "cxorbia.i3.execution-circuit-breaker.20261021.v1",
+  "id": "CXORBIA-I3-EXIT-DISCIPLINE-20261021",
+  "state": "FROZEN_COMPLEMENTARY_I3",
+  "iteration": "I3",
+  "officialState": "HOLD",
+  "production": "DO_NOT_TOUCH",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "planAuthority": "00_LEER_PRIMERO_PLAN_CONGELADO.md",
+  "addendumPath": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-10-21_I3_ANTI_BUCLE_CIERRE_FROZEN.md",
+  "source": {
+    "sha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+    "tree": "15d6b9b376069b27317e03a91b96cb74cd3c9877"
+  },
+  "run1812": {
+    "runId": 39532274529,
+    "runNumber": 1812,
+    "artifactId": 12316195646,
+    "artifactDigest": "sha256:6d2cba1d31e8f8ebfb2a1d98d959f484e8822ee526659b59a724ca16f4bb6d06",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/853b349a4aec1e17",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792549309225000",
+    "runtimeRevision": "cxorbia-live-hr-dev-00315-v8f",
+    "runtimeDigest": "sha256:f4adf10f9527545b68c9beaf3ec74fab8d77d3a0cce149b8b4cbaaf289db5548",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/fe1c7f11-7265-4d66-95ee-c03f4798d35e",
+    "hrRevision": "4aa7dc7ab2fee95e1c605faed5bb43cf5d29abe089e31617416531da01b12dd5"
+  },
+  "control": {
+    "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "pointer": "CXORBIA_RECOVERY_EXECUTION_CURRENT.json",
+    "moduleTruth": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261020-V159.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V487_2026-10-20.json",
+    "materializationReceipt": "CXORBIA_I3_RUN1812_POST_DEPLOY_CONVERGENCE_2026-10-21.json",
+    "guard": "tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs"
+  },
+  "frozenDecisions": [
+    "one-technical-writer",
+    "Work-read-only-authed-live-QA",
+    "source-dev-pointer-ledger-matrix-exact-parity",
+    "post-deploy-seal-mandatory-before-preview-ready",
+    "evidence-based-stage-progression",
+    "preserve-historical-pass-no-unproven-regression",
+    "no-general-reaudit-no-overlays-no-parallel-candidate",
+    "HR-current-revision-ACK-remote-idempotency",
+    "no-data-reimport",
+    "no-product-rebuild-on-readback",
+    "NO_I4_WITHOUT_PAULA_EXPLICIT_APPROVAL"
+  ],
+  "openP0": [
+    {
+      "id": "VRM-275",
+      "state": "DEV_MATERIALIZED_LIVE_E2E_PENDING"
+    },
+    {
+      "id": "A09/B11",
+      "state": "PERSISTENCE_FAILURE_STALE_DURABLE_PROJECTION_RECONCILIATION_RECEIPT_NOT_FOUND"
+    }
+  ],
+  "firstWorkPreview": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxProjectId=cinepolis&cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV",
+  "nextExactAction": "Seal RUN1812 exact control parity and guard; then Work authenticated VRM275 October certification+Admin readback; A09/B11 separate authorized reconciliation preflight with provider ACK. No production.",
+  "changePolicy": "No modify frozen lock. Only later explicit addendum with before/after, evidence, and approval where required."
+}
