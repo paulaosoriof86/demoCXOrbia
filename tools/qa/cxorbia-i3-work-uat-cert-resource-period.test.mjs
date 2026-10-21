@@ -20,7 +20,7 @@ function harness({deferred=false,fail=false}={}){
  }};
  class Query {
   constructor(conditions=[]){this.conditions=conditions;}
-  where(field,op,value){return new Query([...this.conditions,{field,op,value}]);}
+  where(field,op,value){return new Query([...this.conditions,[field,op,value]]);}
   snapshot(){return{docs:items.filter(row=>this.conditions.every(([f,op,v])=>op==='=='?row[f]===v:op==='array-contains'?row[f].includes(v):false)).map(row=>({id:row.id,data:()=>row}))};}
   get(){if(fail)return Promise.reject(new Error('MOCK_FIRESTORE_DENIED'));if(deferred)return new Promise((resolve,reject)=>pending.push({resolve,reject,snapshot:()=>this.snapshot()}));return Promise.resolve(this.snapshot());}
  }
