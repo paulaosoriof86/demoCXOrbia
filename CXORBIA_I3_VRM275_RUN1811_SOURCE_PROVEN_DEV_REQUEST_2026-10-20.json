@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm275.run1811.source-proof-dev-request.20261020.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "controlParentSha": "030ef0234e97b954c48b1c5deeab78d9a85bd681",
+  "run": {
+    "number": 1811,
+    "id": 39531872686,
+    "conclusion": "success",
+    "sourceQa": "PASS_19_OF_19",
+    "canonGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY"
+  },
+  "productSourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+  "productTree": "15d6b9b376069b27317e03a91b96cb74cd3c9877",
+  "predecessorDev": {
+    "run": 1809,
+    "sourceSha": "81593bfb586023d96cdba21beaeac330119a7ead"
+  },
+  "ownerBlobs": {
+    "app/core/backend-resources.js": "9c9303b03cc06f40b59179ff6d8696f91d24f157",
+    "app/core/router.js": "8be484f8281a706fde86fbd5f9edc9804a18b994"
+  },
+  "noNewProductDiff": true,
+  "devRequestOnly": true,
+  "devDeployPerformed": false,
+  "hrWrites": 0,
+  "firestoreDataWrites": 0,
+  "production": false,
+  "followUp": "read exact DEV deploy receipt then Shopper Admin real bank and October period; no data changes until separate authorized reconciliation"
+}

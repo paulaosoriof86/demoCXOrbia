@@ -30,14 +30,15 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_VRM275_CERT_RESOURCE_PERIOD_SOURCE_RECEIPT_2026-10-20.json",
-    "kind": "VRM275_SOURCE_FIXED_LOCAL_RED_GREEN_PENDING_CANONICAL_CI_DEV_E2E",
+    "path": "CXORBIA_I3_VRM275_RUN1811_SOURCE_PROVEN_DEV_REQUEST_2026-10-20.json",
+    "kind": "VRM275_RUN1811_CANONICAL_SOURCE_PROVEN_REQUEST_SERIAL_DEV",
     "sourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
     "sourceTree": "15d6b9b376069b27317e03a91b96cb74cd3c9877",
-    "sourceChanges": 2,
+    "sourceChanges": 0,
     "devDeploys": 0,
     "newFunctionalClosures": 0,
-    "production": false
+    "production": false,
+    "runId": 39531872686
   },
   "taskProgress": {
     "G01": "IN_PROGRESS_COVERAGE_CUSTODIED_AUTHORITY_GAPS_RETAINED_IN_G03",
@@ -82,7 +83,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Canonical I3 source guard CI on VRM-275 source + indexed 21-domain matrix, then one serial DEV-only source materialization and Admin/Shopper live bank October readback. In parallel HR commandReceipts no hr-* observed; control reconciliation requires authorized staff, same HR revision, explicit scoped command, provider ACK and receipt readback; no uncontrolled writes. I3 HOLD / I4 BLOCKED.",
+  "nextExactAction": "Execute existing I3 Phase A materialization once in cxorbia-backend-dev for VRM275 source-proven product, read back source TAR sha, Hosting version, Cloud Run digest and ruleset. Then Work authenticated October Shopper/Admin certification proof, no bank writes. Keep A09/B11 HR durable reconciliation separate, controlled and fail-closed.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -125,7 +126,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-10-21T02:10:36.195Z",
+  "lastUpdatedAt": "2026-10-20T20:15:00-06:00",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -1103,5 +1104,86 @@
     "adminCertUi": "NOT_VERIFIED",
     "reconcileExecuted": false,
     "firestoreWrites": 0
+  },
+  "previousExecutionReceiptBeforeRun1812": {
+    "path": "CXORBIA_I3_VRM275_CERT_RESOURCE_PERIOD_SOURCE_RECEIPT_2026-10-20.json",
+    "kind": "VRM275_SOURCE_FIXED_LOCAL_RED_GREEN_PENDING_CANONICAL_CI_DEV_E2E",
+    "sourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+    "sourceTree": "15d6b9b376069b27317e03a91b96cb74cd3c9877",
+    "sourceChanges": 2,
+    "devDeploys": 0,
+    "newFunctionalClosures": 0,
+    "production": false
+  },
+  "vrm275Run1811SourceProof": {
+    "runNumber": 1811,
+    "runId": 39531872686,
+    "controlHeadSha": "030ef0234e97b954c48b1c5deeab78d9a85bd681",
+    "conclusion": "success",
+    "productSourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+    "productSourceTree": "15d6b9b376069b27317e03a91b96cb74cd3c9877",
+    "sourceGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+    "sourceQa": "PASS_19_OF_19_IN_WILDCARD_SUITE",
+    "focalTests": {
+      "periodTransition": "PASS",
+      "lateStaleRead": "PASS",
+      "crossProject": "PASS",
+      "providerReadFailClosed": "PASS"
+    },
+    "devDeploy": "REQUESTED_NOT_EXECUTED",
+    "liveAuthenticatedShopperCert": "PENDING",
+    "fixesRun1810QaOnly": true,
+    "production": false,
+    "qaCodeOnlyFixCommit": "030ef0234e97b954c48b1c5deeab78d9a85bd681",
+    "qaFixtureBlob": "5d0fedab3575142ca077d517ade70c2163e68d82"
+  },
+  "currentDevMaterializationBeforeVrm275": {
+    "state": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "sourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
+    "sourceTree": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
+    "runId": 39439528723,
+    "runNumber": 1809,
+    "jobId": 118685564398,
+    "artifactId": 12273383932,
+    "artifactUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/39439528723/artifacts/12273383932",
+    "artifactDigest": "sha256:b493a2eb376635b22c2619bdc5a13dd6d4559cae112ef0b608f46ce9bfacfc3b",
+    "artifactDigestType": "SOURCE_TAR_SHA256",
+    "artifactUploadZipSha256": "43db9a69a0fffe09015894bfd7a848abe18aed31a60bc836a9148083f6f041f9",
+    "cloudBuildId": "d2362fa0-04e4-4d9a-bba7-a7b35ca03d30",
+    "runtimeRevision": "cxorbia-live-hr-dev-00314-kcr",
+    "runtimeDigest": "sha256:55ccc1aba2068e2e58e4519a8877defb37d463cf7604bc5fe6ef17e768a8405d",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/34569c6f31f4cd72",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792506734803000",
+    "hrRevision": "4aa7dc7ab2fee95e1c605faed5bb43cf5d29abe089e31617416531da01b12dd5",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/fe1c7f11-7265-4d66-95ee-c03f4798d35e",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "firestoreRulesDeploys": 1,
+    "hrWrites": 0,
+    "production": false,
+    "sameArtifactSourceAssetReadback": "PASS_RUN1809",
+    "humanAcceptance": "PENDING",
+    "gate20": "PENDING",
+    "gate21": "PENDING"
+  },
+  "vrm275DevMaterializationRequest": {
+    "reason": "PROVEN_P0_PUBLISHED_OCTOBER_CERT_BANK_INVISIBLE_SCOPE_CACHE_MISSED_HR_EVENT",
+    "sameSourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+    "sameTree": "15d6b9b376069b27317e03a91b96cb74cd3c9877",
+    "dispatchMode": "EXISTING_I3_PHASEA_WORKFLOW_ONLY",
+    "authorizedEnvironments": [
+      "cxorbia-backend-dev"
+    ],
+    "remoteDataWrites": false,
+    "hrSnapshotReconcile": false,
+    "production": false,
+    "expectedBuilds": 1,
+    "expectedHostingDeploys": 1,
+    "expectedRuntimeDeploys": 1,
+    "expectedRulesDeploys": 1,
+    "priorDevRun": 1809,
+    "gateSourceProofRun": 1811
   }
 }

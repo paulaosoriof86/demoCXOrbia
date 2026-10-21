@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM275_SOURCE_FIXED_PENDING_CANONICAL_CI_DEV_E2E",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD: existing canonical source QA on sole successor for VRM-275; then one serial DEV materialization and exact Shopper/Admin certification bank Oct E2E. HR A09/B11 receipts absent in scoped Work search, no write until explicit same-revision authorized reconcile preflight/ACK. Preserve RUN1809 predecessor and all previous passes.",
+  "exactNextAction": "Execute existing I3 Phase A materialization once in cxorbia-backend-dev for VRM275 source-proven product, read back source TAR sha, Hosting version, Cloud Run digest and ruleset. Then Work authenticated October Shopper/Admin certification proof, no bank writes. Keep A09/B11 HR durable reconciliation separate, controlled and fail-closed.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -12695,5 +12695,43 @@
     "adminLive": "NOT_VERIFIED",
     "hrReconciliationWrites": 0,
     "production": false
+  },
+  "vrm275Run1811CanonicalSourceProof": {
+    "runNumber": 1811,
+    "runId": 39531872686,
+    "controlHeadSha": "030ef0234e97b954c48b1c5deeab78d9a85bd681",
+    "conclusion": "success",
+    "productSourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+    "productSourceTree": "15d6b9b376069b27317e03a91b96cb74cd3c9877",
+    "sourceGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+    "sourceQa": "PASS_19_OF_19_IN_WILDCARD_SUITE",
+    "focalTests": {
+      "periodTransition": "PASS",
+      "lateStaleRead": "PASS",
+      "crossProject": "PASS",
+      "providerReadFailClosed": "PASS"
+    },
+    "devDeploy": "REQUESTED_NOT_EXECUTED",
+    "liveAuthenticatedShopperCert": "PENDING",
+    "fixesRun1810QaOnly": true,
+    "production": false
+  },
+  "vrm275DevMaterializationRequest": {
+    "reason": "PROVEN_P0_PUBLISHED_OCTOBER_CERT_BANK_INVISIBLE_SCOPE_CACHE_MISSED_HR_EVENT",
+    "sameSourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+    "sameTree": "15d6b9b376069b27317e03a91b96cb74cd3c9877",
+    "dispatchMode": "EXISTING_I3_PHASEA_WORKFLOW_ONLY",
+    "authorizedEnvironments": [
+      "cxorbia-backend-dev"
+    ],
+    "remoteDataWrites": false,
+    "hrSnapshotReconcile": false,
+    "production": false,
+    "expectedBuilds": 1,
+    "expectedHostingDeploys": 1,
+    "expectedRuntimeDeploys": 1,
+    "expectedRulesDeploys": 1,
+    "priorDevRun": 1809,
+    "gateSourceProofRun": 1811
   }
 }
