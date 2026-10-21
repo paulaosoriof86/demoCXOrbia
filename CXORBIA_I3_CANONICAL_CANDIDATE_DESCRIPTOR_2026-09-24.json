@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_RUN1809_DEV_MATERIALIZED_LIVE_E2E_PENDING",
+  "status": "HOLD_I3_VRM275_SOURCE_FIXED_PENDING_CANONICAL_CI_DEV_E2E",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
-  "productTreeAuthority": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
-  "predecessorProductSourceSha": "c9e5c5313883adc905f2d061219bc121c3b4af7e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V485_2026-10-20.json",
-  "findingsLedgerExpectedGitBlob": "1b66e28a0a8c146847610134ee38007839647bcb",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261020-V157.json",
+  "productSourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+  "productTreeAuthority": "15d6b9b376069b27317e03a91b96cb74cd3c9877",
+  "predecessorProductSourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V486_2026-10-20.json",
+  "findingsLedgerExpectedGitBlob": "4cfe4e96c64a33f41d01b093f6c184d087857cfc",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261020-V158.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "A09_B11_SHOPPER_CLAIMS_3_VISITS_LIVE_E2E__B09_B13_B05_B08_C02_C10_ADMIN_SHOPPER_E2E__B10_WIZARD_DEV_UAT_HUMAN_PENDING",
+  "activeBlocker": "A09_B11_SHOPPER_CLAIMS_3_VISITS_LIVE_E2E__B09_B13_B05_B08_C02_C10_ADMIN_SHOPPER_E2E__B10_WIZARD_DEV_UAT_HUMAN_PENDING__VRM275_CERT_RESOURCE_PERIOD_PENDING_LIVE",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -39,7 +39,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-275",
+  "nextFindingId": "VRM-276",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD after RUN1809 DEV PASS: issue an independent Work authenticated role-scoped UAT on exact DEV Hosting/runtime source. Verify Shopper exact Stiven (real claims, real login, 3 GT Oct visits, no duplicate, period), Admin matching visit lifecycle and notifications, B10 questionnaire source, reservations own-scope rules, historical paid label, wizard creation with provider ACK and reload in a disposable new project only if authorization exists, finance and GPS/storage fail-closed. If P0 fails, return exact owner/route/evidence to this technical conversation for bounded fix; preserve no production until I3 GO + express approval.",
+  "exactNextAction": "I3 HOLD: existing canonical source QA on sole successor for VRM-275; then one serial DEV materialization and exact Shopper/Admin certification bank Oct E2E. HR A09/B11 receipts absent in scoped Work search, no write until explicit same-revision authorized reconcile preflight/ACK. Preserve RUN1809 predecessor and all previous passes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -780,7 +780,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
+  "productSourceTree": "15d6b9b376069b27317e03a91b96cb74cd3c9877",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -2944,7 +2944,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "6a812b721f65a4e05f2f0c5fffa3d7fa206c42fe",
+  "moduleTruthExpectedGitBlob": "355d04da873481b6f219aa058423e47b8530587e",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12668,5 +12668,32 @@
     "gate21": "PENDING",
     "receiptPath": "CXORBIA_I3_RUN1809_CUMULATIVE_DEV_MATERIALIZATION_PASS_2026-10-20.json",
     "stage": "DEV_MATERIALIZED_NOT_LIVE_E2E"
+  },
+  "vrm275CertificationPeriodSource": {
+    "id": "VRM-275",
+    "classification": "FUNCTIONAL_DEFECT",
+    "stage": "SOURCE_FIXED_PENDING_CANONICAL_CI",
+    "productSourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+    "productSourceTree": "15d6b9b376069b27317e03a91b96cb74cd3c9877",
+    "predecessorSourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
+    "owners": [
+      "app/core/backend-resources.js",
+      "app/core/router.js"
+    ],
+    "qa": "tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V486_2026-10-20.json",
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261020-V158.json",
+    "sourceMockRed": {
+      "publishedOctoberBankVisible": 0
+    },
+    "sourceMockGreen": {
+      "publishedOctoberBankVisible": 1
+    },
+    "existingDevRun": 1809,
+    "devSameSourceMaterialized": false,
+    "shopperLive": "PENDING",
+    "adminLive": "NOT_VERIFIED",
+    "hrReconciliationWrites": 0,
+    "production": false
   }
 }

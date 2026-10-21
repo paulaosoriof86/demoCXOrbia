@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
-  "productTree": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
+  "productSourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+  "productTree": "15d6b9b376069b27317e03a91b96cb74cd3c9877",
   "controlParentSha": "c371aa32c4a483a384907a7ceec9ae752ea4e08e",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
@@ -30,14 +30,14 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_A09_B11_POST_RUN1809_HR_LIVE_THREE_ROW_READBACK_2026-10-20.json",
-    "kind": "RUN1809_POST_DEPLOY_EXACT_HR_THREE_ROWS_AND_REVISION_PASS__PERSISTED_ASSIGNMENT_CONSISTENCY_HOLD",
-    "sourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
-    "sourceTree": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
-    "sourceChanges": 0,
+    "path": "CXORBIA_I3_VRM275_CERT_RESOURCE_PERIOD_SOURCE_RECEIPT_2026-10-20.json",
+    "kind": "VRM275_SOURCE_FIXED_LOCAL_RED_GREEN_PENDING_CANONICAL_CI_DEV_E2E",
+    "sourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+    "sourceTree": "15d6b9b376069b27317e03a91b96cb74cd3c9877",
+    "sourceChanges": 2,
     "devDeploys": 0,
-    "production": false,
-    "newFunctionalClosures": 0
+    "newFunctionalClosures": 0,
+    "production": false
   },
   "taskProgress": {
     "G01": "IN_PROGRESS_COVERAGE_CUSTODIED_AUTHORITY_GAPS_RETAINED_IN_G03",
@@ -82,7 +82,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "In Work READ-ONLY: inspect tenant/tya/commandReceipts for hr.snapshot.reconcile matching sourceRevision/project over relevant time, and exact three visit field paths/updatedAt; inspect tenant/tya/resources certification_bank status, project and period October and last published revision. Then this technical lane adjudicates whether a controlled provider-ACK same-revision DEV reconciliation is required; do not execute data write until allowed. In parallel B05-B09/B13 and C02-C10 live role tests. No PROD.",
+  "nextExactAction": "Canonical I3 source guard CI on VRM-275 source + indexed 21-domain matrix, then one serial DEV-only source materialization and Admin/Shopper live bank October readback. In parallel HR commandReceipts no hr-* observed; control reconciliation requires authorized staff, same HR revision, explicit scoped command, provider ACK and receipt readback; no uncontrolled writes. I3 HOLD / I4 BLOCKED.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -125,7 +125,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-10-20",
+  "lastUpdatedAt": "2026-10-21T02:10:36.195Z",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -656,9 +656,9 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V148.json",
-    "gitBlob": "a21cafc5fed380646cb09b2634042859e4496864",
-    "sourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261020-V158.json",
+    "gitBlob": "355d04da873481b6f219aa058423e47b8530587e",
+    "sourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
     "allModulesMatch": false
   },
   "cumulativeControlReconciliationRun1797": {
@@ -1071,5 +1071,37 @@
     "durableState": "FAIL",
     "latestReconcile": null,
     "certBankOctober": "NOT_VERIFIED"
+  },
+  "previousExecutionReceiptBeforeVrm275": {
+    "path": "CXORBIA_I3_A09_B11_POST_RUN1809_HR_LIVE_THREE_ROW_READBACK_2026-10-20.json",
+    "kind": "RUN1809_POST_DEPLOY_EXACT_HR_THREE_ROWS_AND_REVISION_PASS__PERSISTED_ASSIGNMENT_CONSISTENCY_HOLD",
+    "sourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
+    "sourceTree": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
+    "sourceChanges": 0,
+    "devDeploys": 0,
+    "production": false,
+    "newFunctionalClosures": 0
+  },
+  "latestVrm275WorkHandoff": {
+    "date": "2026-10-20",
+    "state": "HOLD",
+    "firebaseProject": "cxorbia-backend-dev",
+    "hrLiveRevision": "4aa7dc7ab2fee95e1c605faed5bb43cf5d29abe089e31617416531da01b12dd5",
+    "persistedVisitRevision": "5d369d8955ff899095aa113d094dccea5a1c94e8849b455906cd4f154bf28e48",
+    "hrCommandReceiptsObserved": 0,
+    "hrScopeLocksInCommandReceipts": "NOT_FOUND_IN_WORK_READBACK",
+    "gtOctRows": [
+      "OCTUBRE 26!5",
+      "OCTUBRE 26!19",
+      "OCTUBRE 26!20"
+    ],
+    "publishedOctoberBankId": "certbank-cinepolis-cinepolis-2026-10",
+    "publishedOctoberBankVersion": 2,
+    "publishedOctoberQuestions": 8,
+    "shopperOctoberCertUi": "NOT_AVAILABLE",
+    "shopperThreeVisits": "PASS_BY_BRANCH_DATE",
+    "adminCertUi": "NOT_VERIFIED",
+    "reconcileExecuted": false,
+    "firestoreWrites": 0
   }
 }
