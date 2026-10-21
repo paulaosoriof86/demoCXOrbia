@@ -42,18 +42,42 @@ window.CX=window.CX||{};
     const scope=currentScope(input),type=str(input.resourceType);
     return arr(api.items).filter(x=>visible(x,scope)&&(!type||str(x.resourceType)===type));
   };
+  // The active tenant/project/period/role owns the resource cache; stale async reads must never replace it.
+  let latestLoadId=0,lastLoadedKey='',pendingKey='';
+  const cacheKey=scope=>JSON.stringify([scope.tenantId,scope.projectId,scope.periodId,role()]);
   api.load=async function(input={}){
     if(!connected())return [];
-    const c=resourcesCol(),scope=currentScope(input);
-    if(!c||!scope.projectId){api.items=[];window.CX_BACKEND_RESOURCES_STATUS={source:'firestore',status:'blocked',reason:'RESOURCE_SCOPE_UNAVAILABLE',count:0,at:now()};return [];}
-    let q=c.where('projectId','==',scope.projectId).where('status','==','active');
-    if(!isOperator())q=q.where('visibleRoles','array-contains',role());
-    const snap=await q.get();
-    const rows=snap.docs.map(d=>Object.assign({id:d.id},d.data()||{})).filter(x=>visible(x,scope));
-    api.items=rows;
-    window.CX_BACKEND_RESOURCES_STATUS={source:'firestore',status:'ready',tenantId:scope.tenantId,projectId:scope.projectId,periodId:scope.periodId,count:rows.length,at:now()};
-    try{CX.bus?.emit?.('resources',window.CX_BACKEND_RESOURCES_STATUS);}catch(_){}
-    return rows;
+    const c=resourcesCol(),scope=currentScope(input),key=cacheKey(scope),readId=++latestLoadId;
+    pendingKey=key;
+    if(!c||!scope.projectId){
+      if(readId===latestLoadId){
+        api.items=[];lastLoadedKey='';
+        window.CX_BACKEND_RESOURCES_STATUS={source:'firestore',status:'blocked',reason:'RESOURCE_SCOPE_UNAVAILABLE',count:0,at:now()};
+        try{CX.bus?.emit?.('resources',window.CX_BACKEND_RESOURCES_STATUS);}catch(_){}
+        pendingKey='';
+      }
+      return [];
+    }
+    try{
+      let q=c.where('projectId','==',scope.projectId).where('status','==','active');
+      if(!isOperator())q=q.where('visibleRoles','array-contains',role());
+      const snap=await q.get();
+      if(readId!==latestLoadId||cacheKey(currentScope())!==key)return [];
+      const rows=snap.docs.map(d=>Object.assign({id:d.id},d.data()||{})).filter(x=>visible(x,scope));
+      api.items=rows;lastLoadedKey=key;
+      window.CX_BACKEND_RESOURCES_STATUS={source:'firestore',status:'ready',tenantId:scope.tenantId,projectId:scope.projectId,periodId:scope.periodId,count:rows.length,at:now()};
+      try{CX.bus?.emit?.('resources',window.CX_BACKEND_RESOURCES_STATUS);}catch(_){}
+      return rows;
+    }catch(error){
+      if(readId===latestLoadId&&cacheKey(currentScope())===key){
+        api.items=[];lastLoadedKey='';
+        window.CX_BACKEND_RESOURCES_STATUS={source:'firestore',status:'blocked',reason:'RESOURCE_PROVIDER_READ_FAILED',tenantId:scope.tenantId,projectId:scope.projectId,periodId:scope.periodId,count:0,at:now()};
+        try{CX.bus?.emit?.('resources',window.CX_BACKEND_RESOURCES_STATUS);}catch(_){}
+      }
+      throw error;
+    }finally{
+      if(readId===latestLoadId)pendingKey='';
+    }
   };
   api.saveMetadata=async function(item={},options={}){
     if(!connected())return blocked('RESOURCE_CONNECTED_AUTHORITY_DISABLED');
@@ -166,13 +190,21 @@ window.CX=window.CX||{};
     if(item.storagePath){const binary=await api.deleteBinary(item.storagePath,scope);if(binary?.providerAck!==true)return binary;}
     return api.deleteMetadata(item.id,Object.assign({},scope,{idempotencyKey:options.idempotencyKey||('resource.delete:'+item.id)}));
   };
+  function refreshActiveScope(){
+    const scope=currentScope(),key=cacheKey(scope);
+    if(!scope.projectId||key===lastLoadedKey||key===pendingKey)return;
+    api.load().catch(e=>console.warn('[CX.backend-resources]',e));
+  }
   function start(){
     if(!connected())return;
     if(CX.bus?.on){
       CX.bus.on('backend-ready',()=>api.load().catch(e=>console.warn('[CX.backend-resources]',e)));
-      CX.bus.on('backend-auth-ready',()=>setTimeout(()=>api.load().catch(()=>{}),400));
-      CX.bus.on('cx:protected-auth-hr-authority-ready',()=>api.load().catch(()=>{}));
+      CX.bus.on('backend-auth-ready',()=>setTimeout(()=>api.load().catch(e=>console.warn('[CX.backend-resources]',e)),400));
+      CX.bus.on('project',refreshActiveScope);
     }
+    // The HR authority publishes DOM CustomEvents, not bus events.
+    window.addEventListener('cx:protected-auth-hr-authority-ready',refreshActiveScope);
+    window.addEventListener('cx:live-source-updated',refreshActiveScope);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();

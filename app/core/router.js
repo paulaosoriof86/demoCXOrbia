@@ -406,6 +406,6 @@ CX.bus.on('project',()=>{
   }
   /* #239 — 'project' (cambio de programa/periodo) también re-renderiza el módulo activo,
      para que TODOS los módulos reflejen consistentemente el periodo/país seleccionado */
-  ['visit-flow','shoppers','clients','programa','project'].forEach(ev=>CX.bus.on(ev, reRender));
+  ['visit-flow','shoppers','clients','programa','project','resources'].forEach(ev=>CX.bus.on(ev, reRender));
   CX.router._reRender = reRender;
 })();
