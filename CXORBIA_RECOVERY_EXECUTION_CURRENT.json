@@ -84,7 +84,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 HOLD/one DEV RUN1812 sealed. Work read-only real Shopper/Admin on October published 8Q certification bank and scope/reload/timing; return evidence to technical lane. A09/B11: only controlled HR reconciliation after preflight of existing receipts, actor, same-revision, idempotency, ACK, effects; no blind writes. Preserve 82 tasks/275 VRM, no reaudits, I4 BLOCKED.",
+  "nextExactAction": "Work: finish existing authenticated Shopper session on resource Open (new tab/popup and PDF), safe downloads/exports, detailed paid row/provenance, validate profile invalid email on non-destructive event; repeat timing and no write. Independently read direct Firestore hr-* IDs and exact lock, not commandType equality or nonreactive filters. After Shopper checkpoint, Paula re-authenticates Admin; continue 31 routes without revisiting 3 already opened. Technical lane: no hr.snapshot.reconcile until exact prior-effect/actor/scope/revision/ACK preflight; zero production.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -1274,5 +1274,21 @@
     "questions": 8,
     "expectedFreshLoad": true,
     "sourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15"
+  },
+  "latestWorkShopperReadback20261022": {
+    "path": "CXORBIA_I3_WORK_SHOPPER_POST_RUN1812_INCREMENTAL_READBACK_2026-10-22.json",
+    "status": "PARTIAL_UAT_RECEIVED_SOURCE_ADJUDICATED",
+    "workDate": "2026-10-21",
+    "recordedAt": "2026-10-22",
+    "sourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+    "devRun": 1812,
+    "reservedCountVsVisitCount": "DISTINCT_RESERVATIONS_AND_HR_VISITS_NO_DATA_CONFLICT_PROVEN",
+    "benefitsPaymentDate": "VISUAL_OBSERVATION_FIELD_MISSING_EXACT_ROW_NOT_VERIFIED",
+    "hrScopeLock": "DOCUMENT_NOT_FOUND_WORK_READBACK",
+    "hrReceipts": "NOT_VERIFIED",
+    "shopperSession": "PRESERVED",
+    "adminRoutesPendingDeep": 31,
+    "noWrites": true,
+    "production": false
   }
 }
