@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
-  "productTree": "15d6b9b376069b27317e03a91b96cb74cd3c9877",
+  "productSourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
+  "productTree": "0e87694bdf59b1e67485fd4024d1ee439c9df37b",
   "controlParentSha": "c371aa32c4a483a384907a7ceec9ae752ea4e08e",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
@@ -84,7 +84,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Work: finish existing authenticated Shopper session on resource Open (new tab/popup and PDF), safe downloads/exports, detailed paid row/provenance, validate profile invalid email on non-destructive event; repeat timing and no write. Independently read direct Firestore hr-* IDs and exact lock, not commandType equality or nonreactive filters. After Shopper checkpoint, Paula re-authenticates Admin; continue 31 routes without revisiting 3 already opened. Technical lane: no hr.snapshot.reconcile until exact prior-effect/actor/scope/revision/ACK preflight; zero production.",
+  "nextExactAction": "U22 canonical I3 source QA using existing runner/glob for exactly 3 owners + 6 regressions; after PASS, one serial DEV-only materialization (no routine rebuild) with exact readback and Work Shopper focal proof. Resource PDF metadata missing NOT_VERIFIED; A09/B11 PERSISTENCE_FAILURE separate. Maintain I3 HOLD; production DO_NOT_TOUCH.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -657,9 +657,9 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261020-V159.json",
-    "gitBlob": "72e66c0499efd1bcb25f8fceca0cccd34ee0cca8",
-    "sourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261022-V160.json",
+    "gitBlob": "6abe9cb52e10312445ecd113117e0f380bb264be",
+    "sourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
     "allModulesMatch": false,
     "phaseAComplete": false
   },
@@ -1231,7 +1231,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 39532274529,
     "runNumber": 1812,
     "sourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
@@ -1245,7 +1245,7 @@
     "hrRevision": "4aa7dc7ab2fee95e1c605faed5bb43cf5d29abe089e31617416531da01b12dd5",
     "receiptPath": "CXORBIA_I3_RUN1812_POST_DEPLOY_CONVERGENCE_2026-10-21.json",
     "receiptBlob": "9246f04d2bafc64a487c2fe6163e3a3b8f4e32cf",
-    "liveE2e": "PENDING",
+    "liveE2e": "RUN1812_FOCAL_PRIOR_PASS_NEW_SOURCE_PENDING",
     "humanAcceptance": "PENDING",
     "gate20": "PENDING",
     "gate21": "PENDING",
@@ -1288,6 +1288,23 @@
     "hrReceipts": "NOT_VERIFIED",
     "shopperSession": "PRESERVED",
     "adminRoutesPendingDeep": 31,
+    "noWrites": true,
+    "production": false
+  },
+  "previousSourceBeforeU22": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+  "workUatOct22Focal": {
+    "sourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
+    "sourceTree": "0e87694bdf59b1e67485fd4024d1ee439c9df37b",
+    "status": "SOURCE_FIXED_PENDING_CANONICAL_CI",
+    "receiptPath": "CXORBIA_I3_WORK_U22_FOCAL_SOURCE_FIX_2026-10-22.json",
+    "findings": [
+      "VRM-276",
+      "VRM-277",
+      "VRM-278",
+      "VRM-279"
+    ],
+    "currentDevRun": 1812,
+    "sourceNotYetMaterialized": true,
     "noWrites": true,
     "production": false
   }

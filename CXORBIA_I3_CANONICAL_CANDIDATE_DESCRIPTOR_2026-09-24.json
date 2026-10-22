@@ -1,15 +1,15 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_RUN1812_DEV_MATERIALIZED_PENDING_LIVE_E2E",
+  "status": "HOLD_I3_U22_FOCAL_SOURCE_FIXED_PENDING_CANONICAL_QA",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
-  "productTreeAuthority": "15d6b9b376069b27317e03a91b96cb74cd3c9877",
-  "predecessorProductSourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V487_2026-10-20.json",
-  "findingsLedgerExpectedGitBlob": "42369393e7969108c6be3bd8c407e785e436632b",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261020-V159.json",
+  "productSourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
+  "productTreeAuthority": "0e87694bdf59b1e67485fd4024d1ee439c9df37b",
+  "predecessorProductSourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V488_2026-10-22.json",
+  "findingsLedgerExpectedGitBlob": "ad15be6b753994f39423e204c9617612ac8d6821",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261022-V160.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -39,7 +39,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-276",
+  "nextFindingId": "VRM-280",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD/one DEV RUN1812 sealed. Work read-only real Shopper/Admin on October published 8Q certification bank and scope/reload/timing; return evidence to technical lane. A09/B11: only controlled HR reconciliation after preflight of existing receipts, actor, same-revision, idempotency, ACK, effects; no blind writes. Preserve 82 tasks/275 VRM, no reaudits, I4 BLOCKED.",
+  "exactNextAction": "U22 canonical I3 source QA using existing runner/glob for exactly 3 owners + 6 regressions; after PASS, one serial DEV-only materialization (no routine rebuild) with exact readback and Work Shopper focal proof. Resource PDF metadata missing NOT_VERIFIED; A09/B11 PERSISTENCE_FAILURE separate. Maintain I3 HOLD; production DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -782,7 +782,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "15d6b9b376069b27317e03a91b96cb74cd3c9877",
+  "productSourceTree": "0e87694bdf59b1e67485fd4024d1ee439c9df37b",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -2946,7 +2946,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "72e66c0499efd1bcb25f8fceca0cccd34ee0cca8",
+  "moduleTruthExpectedGitBlob": "6abe9cb52e10312445ecd113117e0f380bb264be",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12767,7 +12767,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 39532274529,
     "runNumber": 1812,
     "sourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
@@ -12781,7 +12781,7 @@
     "hrRevision": "4aa7dc7ab2fee95e1c605faed5bb43cf5d29abe089e31617416531da01b12dd5",
     "receiptPath": "CXORBIA_I3_RUN1812_POST_DEPLOY_CONVERGENCE_2026-10-21.json",
     "receiptBlob": "9246f04d2bafc64a487c2fe6163e3a3b8f4e32cf",
-    "liveE2e": "PENDING",
+    "liveE2e": "RUN1812_FOCAL_PRIOR_PASS_NEW_SOURCE_PENDING",
     "humanAcceptance": "PENDING",
     "gate20": "PENDING",
     "gate21": "PENDING",
@@ -12797,5 +12797,31 @@
     "runId": 39532274529,
     "preview": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxProjectId=cinepolis&cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV",
     "liveE2e": "PENDING"
+  },
+  "previousStatusBeforeU22": "HOLD_I3_RUN1812_DEV_MATERIALIZED_PENDING_LIVE_E2E",
+  "previousWorkUatSource": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+  "workUatOct22Focal": {
+    "sourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
+    "sourceTree": "0e87694bdf59b1e67485fd4024d1ee439c9df37b",
+    "findings": [
+      "VRM-276",
+      "VRM-277",
+      "VRM-278",
+      "VRM-279"
+    ],
+    "state": "SOURCE_FIXED_QA_PENDING",
+    "devServedRun": 1812,
+    "devServedSource": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+    "modifiedProductOwners": [
+      "app/modules/beneficios.js",
+      "app/adapters/tya-canonical-shopper-portal-v2.js",
+      "app/core/topbar.js"
+    ],
+    "qa": "tools/qa/cxorbia-i3-work-uat-u22-shopper-controls.test.mjs",
+    "receiptPath": "CXORBIA_I3_WORK_U22_FOCAL_SOURCE_FIX_2026-10-22.json",
+    "sourceQa": "PENDING",
+    "liveE2E": "PENDING",
+    "humanAcceptance": "PENDING",
+    "production": false
   }
 }

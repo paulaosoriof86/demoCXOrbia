@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "cxorbia.i3.work.uat.u22.focal-source-fix.20261022.v1",
+  "iteration": "I3",
+  "status": "HOLD",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedControlParent": "eaaa608f4c3831d66ff722ea2903b07bbd6298a1",
+  "previousSourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+  "sourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
+  "sourceTree": "0e87694bdf59b1e67485fd4024d1ee439c9df37b",
+  "workDate": "2026-10-22",
+  "findingIds": [
+    "VRM-276",
+    "VRM-277",
+    "VRM-278",
+    "VRM-279"
+  ],
+  "historicalPaid": {
+    "hrRowId": "AGOSTO 26!21",
+    "reportAmountGTQ": 267,
+    "authority": "recovery-lock:phase-a-completion:historical-cut:2026-08",
+    "paidAt": "2026-10-02",
+    "policySource": "app/data/tya-payment-history-source-safe.js",
+    "effect": "DISPLAY_HISTORICAL_DATE_NOT_NEW_BANK_MOVEMENT",
+    "firebaseOperationalRowPaymentState": "not_eligible",
+    "dataConflictNotProven": true
+  },
+  "sourceOwners": [
+    {
+      "path": "app/modules/beneficios.js",
+      "blob": "c7060562558f307b9b037e929a6fa7e179db1826",
+      "scope": "paid historical paidAt/source evidence + paid/pending filter visible rows"
+    },
+    {
+      "path": "app/adapters/tya-canonical-shopper-portal-v2.js",
+      "blob": "2ac2d55a17c20be8704483db15ded7cb50bce432",
+      "scope": "optional email format on blur + before save, no provider call when invalid"
+    },
+    {
+      "path": "app/core/topbar.js",
+      "blob": "823fe9af94cdf1a83b3d3b733a5c306b5af2155d",
+      "scope": "shopper mail routes to support; Admin preserved; Client denied with UI feedback"
+    }
+  ],
+  "test": {
+    "path": "tools/qa/cxorbia-i3-work-uat-u22-shopper-controls.test.mjs",
+    "gitBlob": "b642c2f5c83b70f22ae580c9b8bfd247298efb10",
+    "isolatedRegressions": 6,
+    "sourceSyntax": "PASS_3_OF_3",
+    "isolatedHistoricalAugPayment": "PASS",
+    "isolatedBeneficiosDateAndFilters": "PASS",
+    "isolatedTopbarRoles": "PASS",
+    "emailRegex": "PASS",
+    "canonicalCi": "PENDING"
+  },
+  "noChanges": {
+    "externalHr": true,
+    "realFirebaseData": true,
+    "auth": true,
+    "payments": true,
+    "production": true,
+    "resourceMetadata": true
+  },
+  "currentDev": {
+    "runNumber": 1812,
+    "sourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/853b349a4aec1e17",
+    "frozenArtifactPreserved": true
+  },
+  "openUnverified": {
+    "resourcesButton": "RESOURCE_METADATA_AND_BINARY_NOT_PROVEN",
+    "hrReceipts": "NO_PROVEN_RECONCILIATION",
+    "hrVisits": "A09_B11_STALE_DURABLE"
+  }
+}
