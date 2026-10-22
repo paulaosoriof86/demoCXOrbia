@@ -84,7 +84,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "U22 canonical I3 source QA using existing runner/glob for exactly 3 owners + 6 regressions; after PASS, one serial DEV-only materialization (no routine rebuild) with exact readback and Work Shopper focal proof. Resource PDF metadata missing NOT_VERIFIED; A09/B11 PERSISTENCE_FAILURE separate. Maintain I3 HOLD; production DO_NOT_TOUCH.",
+  "nextExactAction": "Execute once the existing I3 Phase A DEV materialization for U22 source 19978907...; collect SHA-256 TAR, Cloud Run runtime digest, Hosting and HR exact same source; update canonical pointers ONLY after PASS. Then Work authenticated Shopper focal and continue Admin. A09/B11 and Resource binary unchanged. No PROD.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -1295,7 +1295,7 @@
   "workUatOct22Focal": {
     "sourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
     "sourceTree": "0e87694bdf59b1e67485fd4024d1ee439c9df37b",
-    "status": "SOURCE_FIXED_PENDING_CANONICAL_CI",
+    "status": "SOURCE_PROVEN_DEV_MATERIALIZATION_REQUESTED",
     "receiptPath": "CXORBIA_I3_WORK_U22_FOCAL_SOURCE_FIX_2026-10-22.json",
     "findings": [
       "VRM-276",
@@ -1306,6 +1306,31 @@
     "currentDevRun": 1812,
     "sourceNotYetMaterialized": true,
     "noWrites": true,
+    "production": false,
+    "sourceQaRunNumber": 1814
+  },
+  "workUatOct22SourceProof": {
+    "runId": 39870141345,
+    "runNumber": 1814,
+    "controlHead": "d21b36c1b472ec4162ee5f20a7deb8daedb5c257",
+    "conclusion": "success",
+    "decision": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+    "sourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
+    "sourceTree": "0e87694bdf59b1e67485fd4024d1ee439c9df37b",
+    "newFocalTests": {
+      "pass": 6,
+      "fail": 0
+    },
+    "totalWorkUatTests": {
+      "pass": 25,
+      "fail": 0
+    },
+    "prodChanges": 0,
+    "devBuilds": 0,
+    "devRunPreviouslyServed": 1812,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
     "production": false
   }
 }

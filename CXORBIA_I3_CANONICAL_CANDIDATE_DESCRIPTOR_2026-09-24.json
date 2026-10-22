@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_U22_FOCAL_SOURCE_FIXED_PENDING_CANONICAL_QA",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "U22 canonical I3 source QA using existing runner/glob for exactly 3 owners + 6 regressions; after PASS, one serial DEV-only materialization (no routine rebuild) with exact readback and Work Shopper focal proof. Resource PDF metadata missing NOT_VERIFIED; A09/B11 PERSISTENCE_FAILURE separate. Maintain I3 HOLD; production DO_NOT_TOUCH.",
+  "exactNextAction": "Execute once the existing I3 Phase A DEV materialization for U22 source 19978907...; collect SHA-256 TAR, Cloud Run runtime digest, Hosting and HR exact same source; update canonical pointers ONLY after PASS. Then Work authenticated Shopper focal and continue Admin. A09/B11 and Resource binary unchanged. No PROD.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -12819,9 +12819,35 @@
     ],
     "qa": "tools/qa/cxorbia-i3-work-uat-u22-shopper-controls.test.mjs",
     "receiptPath": "CXORBIA_I3_WORK_U22_FOCAL_SOURCE_FIX_2026-10-22.json",
-    "sourceQa": "PENDING",
+    "sourceQa": "PASS_RUN1814_CANONICAL",
     "liveE2E": "PENDING",
     "humanAcceptance": "PENDING",
+    "production": false,
+    "sourceProofRunId": 39870141345,
+    "devMaterialization": "REQUESTED_NOT_YET_PROVEN"
+  },
+  "workUatOct22SourceProof": {
+    "runId": 39870141345,
+    "runNumber": 1814,
+    "controlHead": "d21b36c1b472ec4162ee5f20a7deb8daedb5c257",
+    "conclusion": "success",
+    "decision": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+    "sourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
+    "sourceTree": "0e87694bdf59b1e67485fd4024d1ee439c9df37b",
+    "newFocalTests": {
+      "pass": 6,
+      "fail": 0
+    },
+    "totalWorkUatTests": {
+      "pass": 25,
+      "fail": 0
+    },
+    "prodChanges": 0,
+    "devBuilds": 0,
+    "devRunPreviouslyServed": 1812,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
     "production": false
   }
 }

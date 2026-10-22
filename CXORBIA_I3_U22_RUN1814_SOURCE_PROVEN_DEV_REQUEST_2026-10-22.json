@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "cxorbia.i3.u22.run1814.source-proven-dev-materialization-request.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "controlParentSha": "d21b36c1b472ec4162ee5f20a7deb8daedb5c257",
+  "productSourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
+  "productTree": "0e87694bdf59b1e67485fd4024d1ee439c9df37b",
+  "previousDevRun": 1812,
+  "previousDevSource": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+  "sourceProof": {
+    "runId": 39870141345,
+    "runNumber": 1814,
+    "controlHead": "d21b36c1b472ec4162ee5f20a7deb8daedb5c257",
+    "conclusion": "success",
+    "decision": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+    "sourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
+    "sourceTree": "0e87694bdf59b1e67485fd4024d1ee439c9df37b",
+    "newFocalTests": {
+      "pass": 6,
+      "fail": 0
+    },
+    "totalWorkUatTests": {
+      "pass": 25,
+      "fail": 0
+    },
+    "prodChanges": 0,
+    "devBuilds": 0,
+    "devRunPreviouslyServed": 1812,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "production": false
+  },
+  "existingWorkflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+  "explicitMarker": "[i3-phasea-dev-materialize]",
+  "noParallelBuilds": true,
+  "noNewBranch": true,
+  "sourceFilesPreservedExcept": [
+    "app/modules/beneficios.js",
+    "app/adapters/tya-canonical-shopper-portal-v2.js",
+    "app/core/topbar.js"
+  ],
+  "deploymentScope": {
+    "project": "cxorbia-backend-dev",
+    "hosting": "cxorbia-backend-dev",
+    "production": false
+  },
+  "dataMutationScope": {
+    "firestoreDataWrites": 0,
+    "hrSnapshotReconcile": false,
+    "paymentExecution": false,
+    "authChanges": false
+  },
+  "result": "REQUEST_ONLY_NO_REMOTE_EXECUTION_CLAIM"
+}
