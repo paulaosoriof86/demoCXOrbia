@@ -181,9 +181,15 @@ if(fs.existsSync('CXORBIA_I3_ANTI_BUCLE_CIERRE_EXECUTION_LOCK_2026-10-21.json'))
  same(s.receiptPath,p.lastExecutionReceipt?.path,'lastReceiptPath');
  same(s.sourceSha,receipt.source?.sha,'receiptSource');
  same(s.sourceTree,receipt.source?.tree,'receiptTree');
- same(matrix.vrm275DevReadback?.runId,s.runId,'matrixRun');
- same(l.findings?.['VRM-275']?.devMaterialization?.runId,s.runId,'ledgerRun');
- same(l.findings?.['VRM-275']?.devMaterialization?.sourceArtifactDigest,s.artifactDigest,'ledgerArtifact');
+ // Accept the current materialization, never a hardcoded prior finding as release authority.
+ // The VRM275 fallback is historical-only for the already certified RUN1812 seal.
+ const matrixDev=matrix.latestDevMaterialization||matrix.vrm275DevReadback;
+ const ledgerDev=l.latestDevMaterialization||l.findings?.['VRM-275']?.devMaterialization;
+ same(matrixDev?.runId,s.runId,'matrixRun');
+ same(ledgerDev?.runId,s.runId,'ledgerRun');
+ same(ledgerDev?.sourceArtifactDigest||ledgerDev?.artifactDigest,s.artifactDigest,'ledgerArtifact');
+ same(matrixDev?.sourceSha,s.sourceSha,'matrixServedSource');
+ same(ledgerDev?.sourceSha,s.sourceSha,'ledgerServedSource');
  if(s.mode==='CURRENT_SOURCE_SERVING'){
    same(s.sourceSha,d.productSourceSha,'servedSource');
    same(s.sourceTree,d.productTreeAuthority,'servedTree');
