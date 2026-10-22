@@ -221,7 +221,20 @@ CX.topbar = {
     if(bell&&!bell._wired){ bell._wired=true; bell.addEventListener('click',(e)=>{e.stopPropagation();this.toggle();}); }
     if(sup&&!sup._wired){ sup._wired=true; sup.addEventListener('click',()=>this.support()); }
     const ml=document.getElementById('tbMail');
-    if(ml&&!ml._wired){ ml._wired=true; ml.addEventListener('click',()=>{ if(CX.router&&CX.router.nav) CX.router.nav('correo'); else this.openMail(); }); }
+    if(ml&&!ml._wired){ ml._wired=true; ml.addEventListener('click',()=>{
+      const currentRole=this.role();
+      if(currentRole==='shopper'){
+        // Shoppers do not have a Correo route; route to an authorized real support surface.
+        // Never expose the historical localStorage/demo mailbox as a real inbox.
+        if(CX.router?.nav&&CX.MODULES?.soporte?.roles?.includes('shopper')){
+          CX.router.nav('soporte');
+          CX.ui?.toast?.('Para comunicarte con el equipo, utiliza los canales de Soporte.','',3600);
+        }else CX.ui?.toast?.('El correo no está habilitado para este perfil.','warn',3600);
+        return;
+      }
+      if(CX.MODULES?.correo?.roles?.includes(currentRole)&&CX.router?.nav)CX.router.nav('correo');
+      else CX.ui?.toast?.('La bandeja de correo no está disponible para este rol.','warn',3600);
+    }); }
     /* R19 P0-3.D (20260715): control discreto de "Instalar app" DENTRO de la app (antes solo
        existía en la pantalla de login) — para reintentar cuando el navegador ya lo permite
        (deferredPrompt disponible) o mostrar la guía de iOS. Se oculta si ya está instalada

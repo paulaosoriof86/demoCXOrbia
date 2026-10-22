@@ -181,7 +181,7 @@
           <div><label class="lbl">Nombre visible</label><input class="inp" id="sp_display_first" maxlength="80" value="${esc(firstName)}"></div>
           <div><label class="lbl">Apellido visible</label><input class="inp" id="sp_display_last" maxlength="100" value="${esc(lastName)}"></div>
           <div><label class="lbl">WhatsApp</label><input class="inp" id="sp_wa" value="${esc(s.whatsapp||s.phone||'')}"></div>
-          <div><label class="lbl">Correo</label><input class="inp" id="sp_mail" value="${esc(email||'')}"></div>
+          <div><label class="lbl" for="sp_mail">Correo</label><input class="inp" id="sp_mail" type="email" inputmode="email" autocomplete="email" aria-describedby="sp_email_error" value="${esc(email||'')}"><div id="sp_email_error" role="alert" style="font-size:11px;color:var(--red);margin-top:4px"></div></div>
           <div><label class="lbl">Departamento / Región</label><input class="inp" id="sp_depto" value="${esc(s.depto||'')}"></div>
           <div><label class="lbl">Ciudad</label><input class="inp" id="sp_ciudad" value="${esc(s.ciudad||'')}"></div>
           <div><label class="lbl">Edad</label><input class="inp" id="sp_edad" type="number" min="16" max="99" value="${esc(s.edad||'')}"></div>
@@ -196,7 +196,25 @@
         <div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="sp_save">Guardar cambios</button></div>
       `,{onMount:(ov,close)=>{
         const btn=ov.querySelector('#sp_save');
+        const mailInput=ov.querySelector('#sp_mail'),mailError=ov.querySelector('#sp_email_error');
+        const validateEmail=()=>{
+          const value=String(mailInput?.value||'').trim();
+          const valid=!value||/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+          if(mailInput){
+            mailInput.setCustomValidity(valid?'':'Ingresa un correo electrónico válido.');
+            mailInput.setAttribute('aria-invalid',valid?'false':'true');
+          }
+          if(mailError)mailError.textContent=valid?'':'Ingresa un correo electrónico válido.';
+          return valid;
+        };
+        mailInput?.addEventListener('blur',validateEmail);
+        mailInput?.addEventListener('input',()=>{if(mailInput.getAttribute('aria-invalid')==='true')validateEmail();});
         btn.addEventListener('click',async()=>{
+          if(!validateEmail()){
+            mailInput?.focus();
+            if(CX.ui?.toast)CX.ui.toast('Corrige el correo antes de guardar.','warn',3500);
+            return;
+          }
           const val=id=>String(ov.querySelector(id)?.value||'').trim();
           const patch={
             whatsapp:val('#sp_wa'),phone:val('#sp_wa'),email:val('#sp_mail').toLowerCase(),

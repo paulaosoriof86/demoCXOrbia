@@ -21,6 +21,23 @@ CX.module('beneficios', ({data,ui})=>{
   /* V177 P0-3 — SIN moneda primaria del proyecto en ninguna zona. Todo se agrupa por l.moneda.
      benefits_declares_currency_grouping_contract: groupByCurrency / porMoneda / currencyGroups. */
   const isPaid=(l)=>l.paymentConfirmed===true && (!!(l.paymentSourceRef||l.paymentRef)||l.historicalReconciliationConfirmed===true||!!l.reconciliationSourceRef);
+  // Historical payment cut owns payment confirmation and its exact day independently of
+  // the operational Firestore visit. Never fabricate a bank movement or estimated date.
+  const paymentDate=(l)=>{
+    if(isPaid(l)){
+      const paidAt=String(l?.paidAt||'').trim(),precision=String(l?.paidAtPrecision||'').trim();
+      if(/^20\d{2}-[01]\d-[0-3]\d$/.test(paidAt)&&!['source_day_only','frozen_cut_period_confirmation'].includes(precision))return paidAt;
+      return String(l?.fechaEstimadaPago||'').trim()||'Confirmado · fecha no documentada';
+    }
+    return String(l?.fechaEstimadaPago||'').trim()||'—';
+  };
+  const paymentEvidenceLabel=l=>{
+    if(!isPaid(l))return '';
+    const ref=String(l?.paymentSourceRef||l?.reconciliationSourceRef||'');
+    if(ref.startsWith('recovery-lock:phase-a-completion:historical-cut:'))return 'Corte histórico aprobado';
+    if(ref)return 'Fuente de pago confirmada';
+    return l?.historicalReconciliationConfirmed===true?'Conciliación histórica confirmada':'Fuente pendiente de revisión';
+  };
   const curOfL=(l)=>l.moneda||(l.pais&&p.currency&&p.currency[l.pais])||null;
   const _bmoney=(l,v)=>{const cu=curOfL(l);return cu?ui.money(cu,v):'<span class="bdg bdg-a" style="font-size:9px">Pendiente de moneda</span>';};
   const BENEFITS_CURRENCY_GROUPING_CONTRACT='group_by_moneda_never_first_country';
@@ -58,7 +75,7 @@ CX.module('beneficios', ({data,ui})=>{
       <td style="color:var(--purple);font-weight:600">${l.reembolso?_bmoney(l,l.reembolso):'—'}</td>
       <td style="font-weight:700;color:var(--t1)">${_bmoney(l,l.total)}</td>
       <td>${ui.bdg(lb[0],lb[1])}</td>
-      <td style="font-size:12px;${isPaid(l)?'color:var(--green);font-weight:700':''}">${isPaid(l)?'✓ '+(l.fechaEstimadaPago||''):(l.fechaEstimadaPago||'—')}</td>
+      <td style="font-size:12px;${isPaid(l)?'color:var(--green);font-weight:700':''}">${isPaid(l)?'✓ ':''}${paymentDate(l)}</td>
       <td>${payLabel?ui.bdg(payLabel[0],payLabel[1]):'—'}</td></tr>`;
   };
 
@@ -66,7 +83,7 @@ CX.module('beneficios', ({data,ui})=>{
   const conceptoReemb = p.combo || 'Consumo del programa';
 
   setTimeout(()=>{
-    const benDrill=(title,arr)=>ui.modal(title+' · '+arr.length+' visita(s)', arr.length?`<table class="tbl"><thead><tr><th>Visita</th><th>Honorario</th><th>Reembolso</th><th>Total</th><th>Estado</th><th>Pago</th></tr></thead><tbody>${arr.map(l=>{const lb=CX.liq.label(l.estado);return `<tr><td><b style="font-size:12.5px">${l.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(l.pais)} ${l.freal||''}</div></td><td style="color:var(--green);font-weight:700">${_bmoney(l,l.honorario)}</td><td style="color:var(--purple)">${l.reembolso?_bmoney(l,l.reembolso):'—'}</td><td style="font-weight:700">${_bmoney(l,l.total)}</td><td>${ui.bdg(lb[0],lb[1])}</td><td style="font-size:11px">${l.fechaEstimadaPago||'—'}</td></tr>`;}).join('')}</tbody></table>`:ui.empty('💰','Sin visitas en esta categoría.'));
+    const benDrill=(title,arr)=>ui.modal(title+' · '+arr.length+' visita(s)', arr.length?`<table class="tbl"><thead><tr><th>Visita</th><th>Honorario</th><th>Reembolso</th><th>Total</th><th>Estado</th><th>Pago</th></tr></thead><tbody>${arr.map(l=>{const lb=CX.liq.label(l.estado);return `<tr><td><b style="font-size:12.5px">${l.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(l.pais)} ${l.freal||''}</div></td><td style="color:var(--green);font-weight:700">${_bmoney(l,l.honorario)}</td><td style="color:var(--purple)">${l.reembolso?_bmoney(l,l.reembolso):'—'}</td><td style="font-weight:700">${_bmoney(l,l.total)}</td><td>${ui.bdg(lb[0],lb[1])}</td><td style="font-size:11px">${paymentDate(l)}${isPaid(l)?`<div class="muted" data-payment-evidence="${String(l.paymentSourceRef||'').startsWith('recovery-lock:')?'historical':'financial'}">${paymentEvidenceLabel(l)}</div>`:''}</td></tr>`;}).join('')}</tbody></table>`:ui.empty('💰','Sin visitas en esta categoría.'));
     const benKp={hon:['💵 Honorarios',resolved],reemb:['🎁 Reembolsos',resolved.filter(l=>l.reembolso>0)],cobrar:['⏳ Por cobrar',resolved.filter(l=>!isPaid(l))],pagado:['✅ Pagado',resolved.filter(l=>isPaid(l))]};
     document.querySelectorAll('[data-ben-row]').forEach(tr=>tr.addEventListener('click',()=>{const l=allSorted.find(x=>String(x.visitaId||x.visitId||'')===String(tr.dataset.benRow||''));if(l)benDrill('Detalle de '+(l.sucursal||'liquidación'),[l]);}));
     const overviewDrills={
@@ -81,8 +98,30 @@ CX.module('beneficios', ({data,ui})=>{
       el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});
     });
     document.querySelectorAll('#benKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{const d=benKp[el.dataset.k];const cu=el.dataset.cur;const arr=cu?d[1].filter(l=>(l.moneda||'—')===cu):d[1];benDrill(d[0]+(cu?(' · '+cu):''),arr);}));
-    const applyFilters=()=>{const st=document.querySelector('#benStatus')?.value||'',co=document.querySelector('#benCountry')?.value||'',cu=document.querySelector('#benCurrency')?.value||'';document.querySelectorAll('#benCurrentTable tbody tr[data-ben-status]').forEach(tr=>{tr.style.display=(!st||tr.dataset.benStatus===st)&&(!co||tr.dataset.benCountry===co)&&(!cu||tr.dataset.benCurrency===cu)?'':'none';});};
-    ['#benStatus','#benCountry','#benCurrency'].forEach(s=>document.querySelector(s)?.addEventListener('change',applyFilters));
+    // A selection must update the actual displayed rows and visible count, not just the
+    // selector's value. Handle both input and change for browser and mobile controls.
+    const benefitsView=document.getElementById('view')||document;
+    const applyFilters=()=>{
+      const st=benefitsView.querySelector('#benStatus')?.value||'';
+      const co=benefitsView.querySelector('#benCountry')?.value||'';
+      const cu=benefitsView.querySelector('#benCurrency')?.value||'';
+      let shown=0,total=0;
+      benefitsView.querySelectorAll('#benCurrentTable tbody tr[data-ben-status]').forEach(tr=>{
+        total++;
+        const match=(!st||tr.dataset.benStatus===st)&&(!co||tr.dataset.benCountry===co)&&(!cu||tr.dataset.benCurrency===cu);
+        tr.hidden=!match;
+        tr.style.display=match?'':'none';
+        if(match)shown++;
+      });
+      const feedback=benefitsView.querySelector('#benFilterCount');
+      if(feedback)feedback.textContent='Mostrando '+shown+' de '+total+' liquidaciones';
+    };
+    ['#benStatus','#benCountry','#benCurrency'].forEach(id=>{
+      const field=benefitsView.querySelector(id);
+      field?.addEventListener('change',applyFilters);
+      field?.addEventListener('input',applyFilters);
+    });
+    applyFilters();
     const csvCell=(value)=>{let s=String(value==null?'':value);if(/^[=+\-@]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"';};
     document.querySelector('#benDownloadReceipt')?.addEventListener('click',()=>{
       if(!periodRows.length){ui.toast('No hay beneficios del periodo para descargar','warn');return;}
@@ -134,7 +173,7 @@ CX.module('beneficios', ({data,ui})=>{
     <div class="card card-p" style="margin-bottom:16px">
       <div class="card-h"><div class="card-t">Resumen del periodo seleccionado</div><button class="btn btn-ghost btn-sm" id="benDownloadReceipt">⤓ Descargar comprobante</button></div>
       <div class="flex wrap" style="gap:8px;margin-bottom:10px"><select class="sel" id="benStatus" style="width:auto"><option value="">Todos los estados</option><option value="paid">Pagado</option><option value="pending">Pendiente</option></select><select class="sel" id="benCountry" style="width:auto"><option value="">Todos los países</option>${[...new Set(periodRows.map(x=>x.pais).filter(Boolean))].map(x=>`<option>${x}</option>`).join('')}</select><select class="sel" id="benCurrency" style="width:auto"><option value="">Todas las monedas</option>${[...new Set(periodRows.map(curOfL).filter(Boolean))].map(x=>`<option>${x}</option>`).join('')}</select></div>
-      <div class="scroll-hint" aria-label="Desliza para ver más" style="overflow-x:auto"><table class="tbl" id="benCurrentTable"><thead><tr><th>Visita</th><th>Realizada</th><th>💵 Honorario</th><th>🎁 Reembolso</th><th>Total</th><th>Estado</th><th>Pago estimado</th><th>Estado de pago</th></tr></thead>
+      <div id="benFilterCount" role="status" aria-live="polite" style="font-size:11px;color:var(--t3);margin:6px 0"></div><div class="scroll-hint" aria-label="Desliza para ver más" style="overflow-x:auto"><table class="tbl" id="benCurrentTable"><thead><tr><th>Visita</th><th>Realizada</th><th>💵 Honorario</th><th>🎁 Reembolso</th><th>Total</th><th>Estado</th><th>Pago estimado</th><th>Estado de pago</th></tr></thead>
       <tbody>${periodRows.length?periodRows.map(row).join(''):'<tr><td colspan="8">'+ui.empty('💰','Sin liquidaciones en este periodo')+'</td></tr>'}</tbody></table></div>
     </div>
     <div class="card card-p" id="benHistoryCard"><div class="card-h"><div><div class="card-t">Histórico</div><div class="muted" style="font-size:11px;margin-top:3px">De la liquidación más reciente a la más antigua · selecciona una fila para abrir detalle</div></div><span class="muted" style="font-size:11px">Todos los periodos</span></div><div class="scroll-hint" style="overflow-x:auto"><table class="tbl"><thead><tr><th>Visita</th><th>Realizada</th><th>💵 Honorario</th><th>🎁 Reembolso</th><th>Total</th><th>Estado</th><th>Pago</th><th>Estado de pago</th></tr></thead><tbody>${allSorted.length?allSorted.map(row).join(''):'<tr><td colspan="8">'+ui.empty('💰','Sin histórico')+'</td></tr>'}</tbody></table></div></div>`;
