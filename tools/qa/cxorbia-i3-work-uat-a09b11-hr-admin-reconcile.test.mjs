@@ -12,7 +12,7 @@ class Node {
   addEventListener(type,handler){const arr=this.listeners.get(type)||[];arr.push(handler);this.listeners.set(type,arr);}
   async fire(type){for(const fn of this.listeners.get(type)||[])await fn({currentTarget:this});}
 }
-function harness({hostname='cxorbia-backend-dev.web.app',staffRole='admin',viewRole='admin',providerResult,authenticated=true,externalHr=true,programKey='cinepolis'}={}){
+function harness({hostname='cxorbia-backend-dev.web.app',staffRole='admin',viewRole='admin',providerResult,authenticated=true,externalHr=true,programKey='cinepolis',lateRerenderMs=0}={}){
   let module;
   const tasks=[],toasts=[],calls=[],reads=[],navs=[],nodes=new Map(),modal={};
   const elem=id=>{if(!nodes.has(id))nodes.set(id,new Node());return nodes.get(id);};
@@ -41,7 +41,7 @@ function harness({hostname='cxorbia-backend-dev.web.app',staffRole='admin',viewR
   const cx={
     module:(name,fn)=>{assert.equal(name,'visitas');module=fn;},
     BACKEND:{tenantId:'tya',defaultProjectId:'cinepolis',canonicalBackendProjectId:'cxorbia-backend-dev',enableCommandWrites:true},
-    session:{_visAll:false},
+    session:{_visAll:false,view:'visitas'},
     backendAuth:{context:()=>({authenticated,role:staffRole,tenantId:'tya',authNamespace:'staff'})},
     commandAdapter:{execute:async input=>{calls.push(input);return providerResult||{
       ok:true,status:'committed',providerAck:true,readbackVerified:true,receiptPath:'tenants/tya/commandReceipts/hr-test',
@@ -52,13 +52,19 @@ function harness({hostname='cxorbia-backend-dev.web.app',staffRole='admin',viewR
   const window={
     location:{hostname},CX_PROTECTED_DEV_RUNTIME:true,crypto:webcrypto,TextEncoder,
     firebase:{auth:()=>({currentUser:{uid:'admin-test',getIdTokenResult:async()=>({claims:{role:staffRole,authNamespace:'staff',tenantId:'tya'}})}})},
-    CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY:async reason=>{reads.push(reason);return {ok:true};}
+    CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY:async reason=>{
+      reads.push(reason);
+      if(reason==='admin_visits_hr_command_preflight'&&lateRerenderMs>0){
+        setTimeout(()=>{navs.push('visitas');if(modal.title)modal.closed=true;},lateRerenderMs);
+      }
+      return {ok:true};
+    }
   };
   window.CX=cx;
   vm.runInNewContext(script,{window,CX:cx,document:{
     getElementById:id=>id==='vReconcileHr'&&!html.includes('id="vReconcileHr"')?null:elem(id),
     querySelectorAll:()=>[]
-  },setTimeout:fn=>tasks.push(fn),Date,Uint8Array,console});
+  },setTimeout:(fn,delay)=>delay>0?setTimeout(fn,delay):tasks.push(fn),Date,Uint8Array,console});
   let html=module({data,role:viewRole,ui});
   for(const task of tasks)task();
   return {html,cx,data,modal,toasts,calls,reads,navs,node:elem,window};
@@ -92,6 +98,16 @@ test('VRM283 protects live Cinépolis HR when period metadata lacks external sou
   assert.match(h.html,/id="vReconcileHr"/,'authenticated DEV admin command must be discoverable');
   assert.doesNotMatch(h.html,/id="addV"/,'legacy local creation must not masquerade as persistent HR creation');
   assert.match(h.html,/id="vRefreshHR"/,'read-only refresh remains available');
+});
+
+test('VRM284 modal opens after HR refresh rerender instead of being immediately closed by router',async()=>{
+  const h=harness({lateRerenderMs:55,externalHr:false});
+  await h.node('vReconcileHr').fire('click');
+  assert.equal(h.reads[0],'admin_visits_hr_command_preflight');
+  assert.ok(h.navs.includes('visitas'),'the delayed route rerender occurred');
+  assert.equal(h.modal.closed,false,'the human confirmation remains visible after router nav');
+  assert.equal(h.modal.nodes.get('#hrCommandExecute').disabled,true);
+  assert.equal(h.calls.length,0,'the preflight and dialog have no durable writes');
 });
 
 test('A09/B11 human confirmation + command uses exact scoped revision with provider readback',async()=>{

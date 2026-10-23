@@ -329,6 +329,19 @@ CX.module('visitas', ({data,role,ui})=>{
         const digest=await window.crypto.subtle.digest('SHA-256',new window.TextEncoder().encode(idMaterial));
         const hex=Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,'0')).join('');
         const idempotencyKey='i3-a09-b11-hr-'+hex;
+        /* VRM-284: the authorized HR read publishes a new snapshot and queues
+           a route re-render, whose nav() closes all modals. Let that bounded
+           route update settle BEFORE opening the human confirmation. Recheck
+           the exact actor, project, and HR revision after the UI handoff. */
+        await new Promise(resolve=>setTimeout(resolve,350));
+        const settledAuth=CX.backendAuth?.context?.();
+        if(CX.session?.view!=='visitas'||CX.session?._visAll===true||
+          String(data.currentProgramKey?.()||'')!==hrReconcileScope.projectId||
+          window.firebase?.auth?.()?.currentUser?.uid!==currentUser.uid||
+          !settledAuth?.authenticated||settledAuth.authNamespace!=='staff'||
+          !['admin','super'].includes(settledAuth.role)||settledAuth.tenantId!==hrReconcileScope.tenantId||
+          String(CX.data?.previewMeta?.sourceRevision||'')!==revision)
+          throw new Error('HR_ADMIN_SCOPE_OR_REVISION_CHANGED_AFTER_REFRESH');
         ui.modal('🔐 Conciliación persistente HR/Firebase · DEV',`
           <p style="font-size:12.5px;color:var(--t2)">Esta operación puede crear o actualizar datos de shoppers y visitas en <b>Firebase DEV</b>. No modifica la hoja de ruta HR ni producción.</p>
           <div class="card card-p" style="margin:12px 0;font-size:12px">
@@ -359,6 +372,8 @@ CX.module('visitas', ({data,role,ui})=>{
             try{
               const latest=CX.backendAuth?.context?.();
               if(!latest?.authenticated||latest.authNamespace!=='staff'||!['admin','super'].includes(latest.role)||
+                CX.session?.view!=='visitas'||CX.session?._visAll===true||
+                String(data.currentProgramKey?.()||'')!==hrReconcileScope.projectId||
                 String(CX.data?.previewMeta?.sourceRevision||'')!==revision)throw new Error('HR_ADMIN_SCOPE_OR_REVISION_CHANGED');
               const result=await CX.commandAdapter.execute({
                 commandType:'hr.snapshot.reconcile',entityType:'hrSnapshot',entityId:revision,
