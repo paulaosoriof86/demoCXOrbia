@@ -30,12 +30,12 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_RUN1820_POST_DEPLOY_CONVERGENCE_2026-10-22.json",
-    "kind": "RUN1820_EXACT_DEV_SOURCE_ARTIFACT_CONTROL_CONVERGED_VRM280_FOCAL_WORK_PASS_REMAINING_I3_HOLD",
-    "sourceSha": "7c8f5a09131403e042d138e8332f3e97d20f8dd9",
-    "sourceTree": "66cea325e7bf0f292582be3f046392080c6cd3e4",
-    "runId": 39890849861,
-    "runNumber": 1820,
+    "path": "CXORBIA_I3_RUN1823_DEV_MATERIALIZATION_AND_FIRESTORE_READBACK_2026-10-23.json",
+    "kind": "RUN1823_VRM281_EXACT_DEV_MATERIALIZATION_PASS_THREE_DURABLE_OCTOBER_ASSIGNMENTS_STILL_STALE_I3_HOLD",
+    "sourceSha": "4f59ba0da52f3bdcc2e063ed01510a6c63a49819",
+    "sourceTree": "b633409844e29ba699199a528686cb498d3b6387",
+    "runId": 39915614532,
+    "runNumber": 1823,
     "sourceChanges": 0,
     "newFunctionalClosures": 0,
     "production": false
@@ -56,7 +56,7 @@
     "D04": "SOURCE_PASS_RUN1795_DEV_RUN1796_NAME_ONLY_CONNECTED_E2E_PASS_RUN1797__HUMAN_AND_FULL_TASK_PENDING",
     "E04": "F12_CLIENT_SOURCE_ABSENT_LIVE_PASS_RUN1797__F09_NPS_NOTES_MEETINGS_DURABLE_OPEN__HUMAN_PENDING",
     "A09": "EXACT_AUTH_USER_AND_FIRESTORE_MEMBERSHIP_PASS__CLAIMS_PENDING",
-    "B11": "THREE_GT_OCTOBER_DURABLE_VISITS_MATCH_SHOPPER__ASSIGNMENT_REPRESENTATIONS_CONFLICT__LIVE_HR_AND_SHOPPER_E2E_PENDING",
+    "B11": "THREE_GT_OCTOBER_DURABLE_VISITS_ASSIGNMENT_PROJECTIONS_STALE_POST_RUN1823__LIVE_WRITER_ACK_AND_SHOPPER_E2E_PENDING",
     "B10": "SOURCE_PROVEN_RUN1799_6_OF_6__DEV_E2E_HUMAN_PENDING__TYaONLINE_LINK_PENDING",
     "B09": "OPEN_GPS_PHOTO_STORAGE_ACK_NEGATIVE_AND_POSITIVE_E2E_PENDING",
     "B13": "OPEN_CROSSROLE_NOTIFICATIONS_READ_RESOLVED_PROVIDER_ACK_PENDING",
@@ -67,7 +67,7 @@
     "B06": "RUN1637_R05_R06_OWNER_BLOBS_UNCHANGED_PASS_FOCAL__REMAINING_BUSINESS_ACTIONS_OPEN",
     "B07": "RUN1637_R05_R06_OWNER_BLOBS_UNCHANGED_PASS_FOCAL__CROSSROLE_ACK_OPEN",
     "VRM280": "SOURCE_PROVEN_RUN1819_DEV_MATERIALIZED_RUN1820_LIVE_SHOPPER_FOCAL_PASS_HUMAN_PENDING",
-    "VRM281": "SOURCE_PROVEN_RUN1822_G05_113_PASS_0_FAIL_DEV_MATERIALIZATION_PENDING_RUN1820_PREDECESSOR_SERVING"
+    "VRM281": "SOURCE_PROVEN_RUN1822_G05_113_PASS_0_FAIL_DEV_MATERIALIZATION_PASS_RUN1823__THREE_DURABLE_ASSIGNMENT_ROWS_STALE__REAL_ACK_PENDING"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -85,7 +85,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Materialize only source-proven VRM-281 source 4f59ba0 through the existing single DEV runner; verify exact runtime/Hosting/rules/artifact. Then read independent live HR revision, three durable visit rows, receipts and scope lock without invoking HR writer; any bounded DEV reconcile requires separate scoped approval. I3 HOLD.",
+  "nextExactAction": "RUN1823 DEV materialization PASS and exact three October durable assignments still stale. Read exact prior hr-* receipts/intents/effects, actor, source revision and scope locks before adjudicating idempotent provider-ACK reconciliation; obtain separate scoped authorization before HR writer. Continue unrelated read-only cross-role E2E. I3 HOLD; no I4 or production.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -1491,16 +1491,16 @@
     "ownerBlob": "d034ed56c3115ce5d86e4b03ee5fc41a6702b1d4",
     "qaOwner": "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs",
     "qaBlob": "888d52a1870664119e12bcfe9ac25c5a4ecbaf30",
-    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V494_2026-10-23.json",
-    "ledgerGitBlob": "441158ebc4fe6723e26fbfc4977262033a68f0cf",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V495_2026-10-23.json",
+    "ledgerGitBlob": "78b0ccd27ea3544334f50478bea7a2ec221a0aa8",
     "moduleTruth": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V165.json",
     "moduleTruthGitBlob": "525786978d13f3c1f0e45eeb82cd88d76b3332a1",
     "localSyntheticFocalAndNeighborQa": {"pass": 102, "fail": 0, "fullRepositorySuite": "NOT_VERIFIED"},
     "canonicalSourceQa": "PASS_RUN1822_SOURCE_ONLY",
-    "liveSource": "RUN1820_PREDECESSOR_SERVING",
-    "independentHrRevisionAndDurableWriterAck": "NOT_VERIFIED",
+    "liveSource": "PASS_RUN1823_RUNTIME_00318_HOSTING_88270EB33805DDB",
+    "independentHrRevisionAndDurableWriterAck": "HR_META_STABLE__THREE_DURABLE_ROWS_STALE__WRITER_ACK_NOT_VERIFIED",
     "firestoreAuthHrWrites": 0,
-    "devDeploys": 0,
+    "devDeploys": 1,
     "production": false,
     "i3": "HOLD",
     "i4Authorized": false
@@ -1520,5 +1520,31 @@
     "knownUnclosedLegacyGate7Cases": 5,
     "scope": "SOURCE_ONLY_NO_DEV_NO_HR_DATA_WRITES_NO_PRODUCTION",
     "production": false
+  },
+  "vrm281Run1823DevMaterializationAndReadback": {
+    "receiptPath": "CXORBIA_I3_RUN1823_DEV_MATERIALIZATION_AND_FIRESTORE_READBACK_2026-10-23.json",
+    "receiptGitBlob": "c3236f8e81a07ec38ae37c92366032c8d61dc213",
+    "runNumber": 1823,
+    "runId": 39915614532,
+    "controlCommit": "3a7c1c4d532a86eaa33eac85622a2232442476f5",
+    "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "sourceSha": "4f59ba0da52f3bdcc2e063ed01510a6c63a49819",
+    "sourceTree": "b633409844e29ba699199a528686cb498d3b6387",
+    "jobId": 120288498966,
+    "artifactId": 12485390159,
+    "runtimeRevision": "cxorbia-live-hr-dev-00318-58b",
+    "runtimeDigest": "sha256:12642040515ab83511016819ffc0997ad3568a5d99cbf9a4a1e73e1e56660250",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/88270eb33805dddb",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/fe1c7f11-7265-4d66-95ee-c03f4798d35e",
+    "hrRevision": "d19eb12ad8c1c5140b5711ea390deaae50b0edd35ff4f982a69bfdcabbc86dd2",
+    "independentHrMeta": "PASS_REVISION_STABLE",
+    "durableThreeVisitReadback": "THREE_OF_THREE_STALE_ASSIGNMENT_PROJECTION",
+    "scopeLock": "DOCUMENT_NOT_FOUND",
+    "priorReceiptAndEffectHistory": "NOT_VERIFIED",
+    "writerAck": "NOT_VERIFIED",
+    "hrWrites": 0,
+    "production": false,
+    "i3": "HOLD",
+    "i4Authorized": false
   }
 }
