@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_RUN1815_DEV_MATERIALIZED_PENDING_WORK_E2E",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
-  "productTreeAuthority": "0e87694bdf59b1e67485fd4024d1ee439c9df37b",
-  "predecessorProductSourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V489_2026-10-22.json",
-  "findingsLedgerExpectedGitBlob": "e1ac318d35ab91f1fc6bae617c6b67d3be95644a",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261022-V161.json",
+  "productSourceSha": "7c8f5a09131403e042d138e8332f3e97d20f8dd9",
+  "productTreeAuthority": "66cea325e7bf0f292582be3f046392080c6cd3e4",
+  "predecessorProductSourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V490_2026-10-22.json",
+  "findingsLedgerExpectedGitBlob": "de05aa99b77329ad93daa59c8dbae09579233e5d",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261022-V162.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "A09_B11_SHOPPER_CLAIMS_3_VISITS_LIVE_E2E__B09_B13_B05_B08_C02_C10_ADMIN_SHOPPER_E2E__B10_WIZARD_DEV_UAT_HUMAN_PENDING__VRM275_CERT_RESOURCE_PERIOD_PENDING_LIVE",
+  "activeBlocker": "VRM280_EXACT_AUTH_SHOPPER_PROFILE_SOURCE_QA_PENDING__A09_B11_DURABLE_HR_REVISION_AND_RECEIPTS_UNVERIFIED__B09_B13_B05_B08_C02_C10_WORK_E2E_PENDING__RUN1815_PREDECESSOR_SERVING__I4_BLOCKED",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -39,7 +39,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-280",
+  "nextFindingId": "VRM-281",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Work authenticated Shopper on RUN1815 same Hosting fingerprint: payment historical August 2 October, paid/pending filters, email validation without save, Shopper mail -> Soporte; verify PDF metadata in Firestore before changing Resource. Resume 31 Admin routes only after Shopper checkpoint. A09/B11 requires separate authorized same-revision HR reconciliation preflight. I3 HOLD.",
+  "exactNextAction": "Run existing I3 canonical source-proof lane with VRM280 eight-case exact session test and 21-module inventory; on PASS authorize a single scoped DEV materialization, verify exact served bytes and Work Shopper UAT. Preserve RUN1815 as predecessor; I3 HOLD, I4 not authorized.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -783,7 +783,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "0e87694bdf59b1e67485fd4024d1ee439c9df37b",
+  "productSourceTree": "66cea325e7bf0f292582be3f046392080c6cd3e4",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -2947,7 +2947,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "9236277c6728f4b991120f69238ca15f56b3b2e6",
+  "moduleTruthExpectedGitBlob": "b04844bad8f16d630504f95de7f19a215d81de3e",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12768,7 +12768,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 39870391911,
     "runNumber": 1815,
     "sourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
@@ -12892,6 +12892,31 @@
     "runtimeRevision": "cxorbia-live-hr-dev-00316-dn8",
     "hrRevision": "d19eb12ad8c1c5140b5711ea390deaae50b0edd35ff4f982a69bfdcabbc86dd2",
     "proof": "PASS",
+    "production": false
+  },
+  "previousSourceBeforeVrm280": {
+    "sourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
+    "sourceTree": "0e87694bdf59b1e67485fd4024d1ee439c9df37b",
+    "servedRunNumber": 1815,
+    "servedHostingVersion": "sites/cxorbia-backend-dev/versions/9c81f38ec663f7bf"
+  },
+  "vrm280ExactShopperSourceSuccessor": {
+    "id": "VRM-280",
+    "classification": "FUNCTIONAL_DEFECT",
+    "sourceSha": "7c8f5a09131403e042d138e8332f3e97d20f8dd9",
+    "sourceTree": "66cea325e7bf0f292582be3f046392080c6cd3e4",
+    "predecessorSourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
+    "owner": "app/core/shoppers-store.js",
+    "ownerBlob": "22fc0902f4d87f779ca381feaf2977807c620c06",
+    "localQa": {
+      "passed": 8,
+      "failed": 0,
+      "scope": "VM_SYNTHETIC"
+    },
+    "ciRun1817": "RELEASE_COMPOSITION_FAILURE_UNDECLARED_SOURCE_ONLY",
+    "currentState": "SOURCE_FIXED_PENDING_CANONICAL_SOURCE_QA",
+    "devMaterialization": "RUN1815_PREDECESSOR_SERVING",
+    "liveShopperE2e": "NOT_VERIFIED",
     "production": false
   }
 }

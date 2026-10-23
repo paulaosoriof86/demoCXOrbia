@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
-  "productTree": "0e87694bdf59b1e67485fd4024d1ee439c9df37b",
+  "productSourceSha": "7c8f5a09131403e042d138e8332f3e97d20f8dd9",
+  "productTree": "66cea325e7bf0f292582be3f046392080c6cd3e4",
   "controlParentSha": "c371aa32c4a483a384907a7ceec9ae752ea4e08e",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
@@ -83,7 +83,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Work authenticated Shopper on RUN1815 same Hosting fingerprint: payment historical August 2 October, paid/pending filters, email validation without save, Shopper mail -> Soporte; verify PDF metadata in Firestore before changing Resource. Resume 31 Admin routes only after Shopper checkpoint. A09/B11 requires separate authorized same-revision HR reconciliation preflight. I3 HOLD.",
+  "nextExactAction": "Run existing I3 canonical source-proof lane with VRM280 eight-case exact session test and 21-module inventory; on PASS authorize a single scoped DEV materialization, verify exact served bytes and Work Shopper UAT. Preserve RUN1815 as predecessor; I3 HOLD, I4 not authorized.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -657,9 +657,9 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261022-V161.json",
-    "gitBlob": "9236277c6728f4b991120f69238ca15f56b3b2e6",
-    "sourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261022-V162.json",
+    "gitBlob": "b04844bad8f16d630504f95de7f19a215d81de3e",
+    "sourceSha": "7c8f5a09131403e042d138e8332f3e97d20f8dd9",
     "allModulesMatch": false,
     "phaseAComplete": false
   },
@@ -1231,7 +1231,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 39870391911,
     "runNumber": 1815,
     "sourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
@@ -1387,5 +1387,27 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/9c81f38ec663f7bf",
     "artifactDigest": "sha256:0808973bbcd1aa7dbf2a1863cb3b5d95261b71dc1c9022c89f35ac7406860af0",
     "production": false
+  },
+  "vrm280ExactShopperSourceSuccessor": {
+    "id": "VRM-280",
+    "classification": "FUNCTIONAL_DEFECT",
+    "sourceSha": "7c8f5a09131403e042d138e8332f3e97d20f8dd9",
+    "sourceTree": "66cea325e7bf0f292582be3f046392080c6cd3e4",
+    "predecessorSourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
+    "owner": "app/core/shoppers-store.js",
+    "ownerBlob": "22fc0902f4d87f779ca381feaf2977807c620c06",
+    "localQa": {
+      "passed": 8,
+      "failed": 0,
+      "scope": "VM_SYNTHETIC"
+    },
+    "ciRun1817": "RELEASE_COMPOSITION_FAILURE_UNDECLARED_SOURCE_ONLY",
+    "currentState": "SOURCE_FIXED_PENDING_CANONICAL_SOURCE_QA",
+    "devMaterialization": "RUN1815_PREDECESSOR_SERVING",
+    "liveShopperE2e": "NOT_VERIFIED",
+    "production": false,
+    "descriptorPath": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261022-V162.json",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V490_2026-10-22.json"
   }
 }
