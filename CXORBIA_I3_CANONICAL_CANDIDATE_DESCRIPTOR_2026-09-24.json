@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM283_ADMIN_HR_MODE_MISSING_REPRODUCED_IN_CHROME_POST_RUN1827__CANONICAL_SOURCE_QA_AND_NEW_DEV_MATERIALIZATION_REQUIRED__THREE_A09_B11_FIRESTORE_VISITS_STALE__DURABLE_PROVIDER_ACK_AND_CROSS_ROLE_E2E_PENDING",
+  "activeBlocker": "VRM283_SOURCE_QA_PASS_RUN1828__NEW_EXACT_DEV_MATERIALIZATION_REQUIRED__THREE_A09_B11_FIRESTORE_VISITS_STALE__DURABLE_PROVIDER_ACK_AND_CROSS_ROLE_E2E_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Verify VRM-282 canonical I3 source QA at f40d5d8b and then deploy only via the existing serial DEV materialization lane. RUN1823 is the predecessor until readback is sealed. In administrative DEV, verify exact actor, HR revision, prior hr-* receipts/effects, scope lock and three October rows before one explicitly human-confirmed idempotent reconciliation; HOLD on partial ACK. I3 HOLD; I4 and production not authorized.",
+  "exactNextAction": "VRM-283 code proof PASS RUN1828. Materialize only exact source 60b092d1 in the existing protected DEV lane; preserve RUN1827 as proven served predecessor until new readback. Then use authenticated administrative Chrome to confirm real control visibility and preflight; inspect existing hr-* receipts/effects, exact revision, scope lock and three October rows before any explicitly human-confirmed idempotent reconciliation. HOLD on partial ACK. I3 HOLD; I4 and production not authorized.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -13171,7 +13171,10 @@
     "qaOwner": "tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs",
     "qaBlob": "ba3fc7fef5001089c18d95ed20fc5ac410aacfbc",
     "localQa": {"focalPass": 6, "focalFail": 0},
-    "sourceProof": "PENDING",
+    "sourceProof": "PASS_RUN1828_SOURCE_ONLY",
+    "sourceProofRunId": 39999090361,
+    "sourceProofJobId": 120570334922,
+    "sourceProofControlHead": "02be9e414086e25fa2dbc7282cc94b728552d416",
     "devMaterialization": "PENDING_RUN1827_PREDECESSOR_SERVING",
     "actualReconciliation": "NOT_EXECUTED",
     "realProviderAck": "NOT_VERIFIED",
