@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM286_SOURCE_FIXED_PENDING_CI_DEV_CHROME",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -12769,7 +12769,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 40030971060,
     "runNumber": 1840,
     "sourceSha": "2c1c5951596a2dd260f02a744b21aa2cb46b17da",
@@ -13518,6 +13518,7 @@
     "officialSourceProof": "PENDING",
     "dev": "PENDING",
     "realChrome": "PENDING",
-    "i3": "HOLD"
+    "i3": "HOLD",
+    "controlCorrection": "RUN1842_RELEASE_COMPOSITION_FAILURE_POSTDEPLOY_SEAL_POINTER_RECONCILED"
   }
 }
