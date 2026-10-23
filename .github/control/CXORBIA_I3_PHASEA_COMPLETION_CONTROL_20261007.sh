@@ -72,7 +72,18 @@ preflight)
   node --test backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs | tee "$OUT/b1-oct07-source-test.log"
   node --test backend/runtime/hr-live-service/test/cxorbia-i3-oct08-b1-b3-source.test.mjs | tee "$OUT/oct08-b1-b3-source-test.log"
   PREDECESSOR_SOURCE="$(jq -r '.predecessorProductSourceSha' "$CANDIDATE_DESCRIPTOR")"
-  for protected in app/modules/visitas.js app/modules/visita-detalle.js; do test "$(git rev-parse "$PREDECESSOR_SOURCE:$protected")" = "$(git rev-parse "$PHASEA_SOURCE:$protected")"; done
+  # VRM-282/A09-B11: admit the one approved administrative HR command entrypoint
+  # only at its exact immutable source/blob. Preserve the predecessor freeze for
+  # visita-detalle and for all other source candidates (fail closed on drift).
+  for protected in app/modules/visitas.js app/modules/visita-detalle.js; do
+    if [[ "$protected" == "app/modules/visitas.js" && "$PHASEA_SOURCE" == "f40d5d8bc6aa45a9c7ac3f2bfb0bd0a197a52251" ]]; then
+      test "$(git rev-parse "$PHASEA_SOURCE:$protected")" = "8aea3a23e64dd186bee5d6639142859b7d53892f"
+      node --check "$protected"
+      node --test tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs
+    else
+      test "$(git rev-parse "$PREDECESSOR_SOURCE:$protected")" = "$(git rev-parse "$PHASEA_SOURCE:$protected")"
+    fi
+  done
   node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs > "$OUT/canonical-authority.json"
   jq -e '.moduleTruthReadback.sourceAligned==true and .moduleTruthReadback.domainCount==21 and .moduleBlobReadback.pass==true' "$OUT/canonical-authority.json" >/dev/null
   # Install the pre-existing Firebase CLI in the same approved runner before the one DEV build.

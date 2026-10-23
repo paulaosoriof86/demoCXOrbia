@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM282_CANONICAL_SOURCE_QA_AND_DEV_MATERIALIZATION_REQUIRED__RUN1823_PREDECESSOR_SERVING__THREE_A09_B11_FIRESTORE_VISITS_STALE__PRIOR_HR_RECEIPTS_SCOPE_LOCK_AND_DURABLE_PROVIDER_ACK_NOT_VERIFIED__CROSS_ROLE_E2E_AND_HUMAN_GATES_PENDING",
+  "activeBlocker": "VRM282_SOURCE_PROOF_PASS_RUN1826__PINNED_ADMIN_VISITAS_BLOB_REQUIRES_DEV_MATERIALIZATION__RUN1823_PREDECESSOR_SERVING__THREE_A09_B11_FIRESTORE_VISITS_STALE__PRIOR_HR_RECEIPTS_SCOPE_LOCK_AND_DURABLE_PROVIDER_ACK_NOT_VERIFIED__CROSS_ROLE_E2E_AND_HUMAN_GATES_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -13144,7 +13144,9 @@
     "previousLedgerBlob": "432254bd1976e7d704e990a0b5e50324eb5252f8",
     "previousMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V166.json",
     "previousMatrixBlob": "f7e75bf0692ece665e8526d99f1abd708e391f7f",
-    "sourceProof": "PENDING",
+    "sourceProof": "PASS_RUN1826_CUMULATIVE_SOURCE_PROOF",
+    "sourceProofRunId": 39995308215,
+    "sourceProofJobId": 120557315575,
     "devMaterialization": "PENDING_RUN1823_PREDECESSOR_SERVING",
     "actualReconciliation": "NOT_EXECUTED",
     "realProviderAck": "NOT_VERIFIED",
