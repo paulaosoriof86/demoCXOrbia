@@ -89,7 +89,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Certify same exact VRM286 source, materialize DEV and verify Projects badge; HR three-visits provider ACK and Shopper real E2E pending separately.",
+  "nextExactAction": "Execute exact single existing I3 Firebase DEV materialization for source aa54aaa; readback run/artifact/runtime/hosting/ruleset; authenticated Chrome Projects badge real E2E.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -2051,8 +2051,10 @@
     "production": false,
     "devMaterialization": "PENDING",
     "realChrome": "PENDING",
-    "sourceProof": "PENDING",
+    "sourceProof": "PASS_RUN1843_40036333085",
     "i3": "HOLD",
-    "controlCorrection": "RUN1842_RELEASE_COMPOSITION_FAILURE_POSTDEPLOY_SEAL_MATRIX_POINTER_AND_MODE_RECONCILED"
+    "controlCorrection": "RUN1842_RELEASE_COMPOSITION_FAILURE_POSTDEPLOY_SEAL_MATRIX_POINTER_AND_MODE_RECONCILED",
+    "pendingDevMaterialization": true,
+    "sourceProofArtifactDigest": "sha256:f340ac9aba00b8517ffb3ec9fea2ba8975be980740e614ae9a271b998b48b5a6"
   }
 }

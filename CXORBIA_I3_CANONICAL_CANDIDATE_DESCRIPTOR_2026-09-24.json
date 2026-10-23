@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -1219,10 +1219,13 @@
     "findingId": "VRM-286",
     "sourceSha": "aa54aaa4c67b8ce140485a1b18e9f3279392b97b",
     "sourceTree": "32eed06cab0635bec3243f68937625348fc2dc13",
-    "sourceProof": "PENDING",
+    "sourceProof": "PASS_RUN1843_40036333085",
     "dev": "PENDING",
     "production": false,
-    "predecessorDevRun": 1840
+    "predecessorDevRun": 1840,
+    "authorization": "PAULA_I3_FIREBASE_DEV_ONLY",
+    "request": "ONE_BUILD_ONE_RUNTIME_ONE_HOSTING_RULES_DEV_ONLY",
+    "i4": false
   },
   "lastVrm080Proof": {
     "runId": 36333245670,
@@ -13515,10 +13518,20 @@
     "sourceSha": "aa54aaa4c67b8ce140485a1b18e9f3279392b97b",
     "sourceTree": "32eed06cab0635bec3243f68937625348fc2dc13",
     "localQa5Of5": true,
-    "officialSourceProof": "PENDING",
+    "officialSourceProof": "PASS_RUN1843_40036333085",
     "dev": "PENDING",
     "realChrome": "PENDING",
     "i3": "HOLD",
     "controlCorrection": "RUN1842_RELEASE_COMPOSITION_FAILURE_POSTDEPLOY_SEAL_POINTER_RECONCILED"
+  },
+  "vrm286SourceProofRun1843": {
+    "runId": 40036333085,
+    "runNumber": 1843,
+    "conclusion": "success",
+    "sourceSha": "aa54aaa4c67b8ce140485a1b18e9f3279392b97b",
+    "sourceTree": "32eed06cab0635bec3243f68937625348fc2dc13",
+    "artifactId": 12537560515,
+    "artifactDigest": "sha256:f340ac9aba00b8517ffb3ec9fea2ba8975be980740e614ae9a271b998b48b5a6",
+    "production": false
   }
 }
