@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "cxorbia-i3-run1831-post-deploy-readback-v1",
+  "schemaVersion": "cxorbia.i3.run1831.postdeploy-consistency-seal.v1",
   "date": "2026-10-23",
   "iteration": "I3",
   "state": "HOLD",
@@ -46,7 +46,9 @@
     "sameArtifactLive": "ADMIN_AUTHENTICATED_44_OCT_VISITS_PROTECTED_BUTTON_PRESENT_BUT_HUMAN_MODAL_FAIL_30_3S",
     "humanAcceptance": "FAIL_MODAL_NOT_VISIBLE_AFTER_PREFLIGHT",
     "gate20": "HOLD",
-    "gate21": "HOLD"
+    "gate21": "HOLD",
+    "sourceArtifactDigest": "sha256:45c1b7550d0f24b373b8166ced1cb1c79d4c7054c7e851a4b3e5b741e4ac0ccc",
+    "sourceArtifact": "cxorbia-phasea-source.tar"
   },
   "devChromeReadOnly": {
     "url": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxProjectId=cinepolis&cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV",
@@ -85,12 +87,16 @@
   "providerAck": "NOT_VERIFIED",
   "hrCommandReceipts": "NOT_VERIFIED",
   "scopeLocks": "NOT_VERIFIED",
-  "findingLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V499_2026-10-23.json",
+  "findingLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V500_2026-10-23.json",
   "findingCountPreserved": 284,
   "nextFindingIdReserved": "VRM-285",
-  "moduleTruth": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V169.json",
+  "moduleTruth": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V170.json",
   "moduleCountPreserved": 21,
   "nextExactAction": "Recover read-only Admin browser visibility and capture transient preflight error/claims/provider result to discriminate AUTH_FAILURE, PROVIDER_FAILURE or late router rerender. Repair only proven owner within I3; run source proof and one protected DEV materialization for exact successor; then repeat modal preflight until stable. No hr.snapshot.reconcile writer until punctual authorization; continue independent Admin/Shopper UAT.",
   "requiredAuthorizationForNow": false,
-  "requiredBeforePersonalDataHrWriter": true
+  "requiredBeforePersonalDataHrWriter": true,
+  "source": {
+    "sha": "68bf2522458fb48144eaa370c1a0bac516d96870",
+    "tree": "b2f88e4f442bef33be2e25838447fe3c5cae5a57"
+  }
 }
