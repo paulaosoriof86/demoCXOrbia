@@ -329,11 +329,34 @@ CX.module('visitas', ({data,role,ui})=>{
         const digest=await window.crypto.subtle.digest('SHA-256',new window.TextEncoder().encode(idMaterial));
         const hex=Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,'0')).join('');
         const idempotencyKey='i3-a09-b11-hr-'+hex;
-        /* VRM-284: the authorized HR read publishes a new snapshot and queues
-           a route re-render, whose nav() closes all modals. Let that bounded
-           route update settle BEFORE opening the human confirmation. Recheck
-           the exact actor, project, and HR revision after the UI handoff. */
-        await new Promise(resolve=>setTimeout(resolve,350));
+        /* VRM-284: HR publication may trigger more than one asynchronous
+           same-route render. nav() closes every modal, so a fixed short sleep
+           cannot protect the human confirmation. Wait for the Visitas view
+           to remain unchanged for a bounded quiet window. Any continuing
+           churn fails closed rather than exposing a stale command. */
+        await new Promise((resolve,reject)=>{
+          const host=document.getElementById('view');
+          const quietMs=1800,limitMs=7500;
+          let idleTimer=null,limitTimer=null,observer=null,finished=false;
+          const finish=error=>{
+            if(finished)return;
+            finished=true;
+            if(observer)observer.disconnect();
+            clearTimeout(idleTimer);
+            clearTimeout(limitTimer);
+            if(error)reject(error);else resolve();
+          };
+          const schedule=()=>{
+            clearTimeout(idleTimer);
+            idleTimer=setTimeout(()=>finish(),quietMs);
+          };
+          if(host&&typeof MutationObserver==='function'){
+            observer=new MutationObserver(schedule);
+            observer.observe(host,{childList:true});
+          }
+          schedule();
+          limitTimer=setTimeout(()=>finish(new Error('HR_ADMIN_VISITS_RENDER_NOT_STABLE')),limitMs);
+        });
         const settledAuth=CX.backendAuth?.context?.();
         if(CX.session?.view!=='visitas'||CX.session?._visAll===true||
           String(data.currentProgramKey?.()||'')!==hrReconcileScope.projectId||
@@ -502,3 +525,4 @@ CX.module('visitas', ({data,role,ui})=>{
   },0);
   return html;
 });
+

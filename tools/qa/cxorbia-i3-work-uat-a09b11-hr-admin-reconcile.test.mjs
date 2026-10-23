@@ -14,6 +14,12 @@ class Node {
 }
 function harness({hostname='cxorbia-backend-dev.web.app',staffRole='admin',viewRole='admin',providerResult,authenticated=true,externalHr=true,programKey='cinepolis',lateRerenderMs=0}={}){
   let module;
+  const observers=[];
+  class FakeMutationObserver {
+    constructor(callback){this.callback=callback;this.active=false;observers.push(this);}
+    observe(){this.active=true;}
+    disconnect(){this.active=false;}
+  }
   const tasks=[],toasts=[],calls=[],reads=[],navs=[],nodes=new Map(),modal={};
   const elem=id=>{if(!nodes.has(id))nodes.set(id,new Node());return nodes.get(id);};
   const data={
@@ -55,7 +61,11 @@ function harness({hostname='cxorbia-backend-dev.web.app',staffRole='admin',viewR
     CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY:async reason=>{
       reads.push(reason);
       if(reason==='admin_visits_hr_command_preflight'&&lateRerenderMs>0){
-        setTimeout(()=>{navs.push('visitas');if(modal.title)modal.closed=true;},lateRerenderMs);
+        setTimeout(()=>{
+          navs.push('visitas');
+          if(modal.title)modal.closed=true;
+          for(const observer of observers)if(observer.active)observer.callback([{type:'childList'}]);
+        },lateRerenderMs);
       }
       return {ok:true};
     }
@@ -64,7 +74,7 @@ function harness({hostname='cxorbia-backend-dev.web.app',staffRole='admin',viewR
   vm.runInNewContext(script,{window,CX:cx,document:{
     getElementById:id=>id==='vReconcileHr'&&!html.includes('id="vReconcileHr"')?null:elem(id),
     querySelectorAll:()=>[]
-  },setTimeout:(fn,delay)=>delay>0?setTimeout(fn,delay):tasks.push(fn),Date,Uint8Array,console});
+  },setTimeout:(fn,delay)=>delay>0?setTimeout(fn,delay):tasks.push(fn),clearTimeout,MutationObserver:FakeMutationObserver,Date,Uint8Array,console});
   let html=module({data,role:viewRole,ui});
   for(const task of tasks)task();
   return {html,cx,data,modal,toasts,calls,reads,navs,node:elem,window};
@@ -100,9 +110,11 @@ test('VRM283 protects live Cinépolis HR when period metadata lacks external sou
   assert.match(h.html,/id="vRefreshHR"/,'read-only refresh remains available');
 });
 
-test('VRM284 modal opens after HR refresh rerender instead of being immediately closed by router',async()=>{
-  const h=harness({lateRerenderMs:55,externalHr:false});
+test('VRM284 modal survives the observed late HR rerender beyond the obsolete 350ms delay',async()=>{
+  const h=harness({lateRerenderMs:1200,externalHr:false});
+  const started=Date.now();
   await h.node('vReconcileHr').fire('click');
+  assert.ok(Date.now()-started>=2800,'the quiet-window observer waited after the late route render');
   assert.equal(h.reads[0],'admin_visits_hr_command_preflight');
   assert.ok(h.navs.includes('visitas'),'the delayed route rerender occurred');
   assert.equal(h.modal.closed,false,'the human confirmation remains visible after router nav');
@@ -162,3 +174,4 @@ test('A09/B11 revision drift between preflight and confirmation fails closed',as
   assert.equal(h.calls.length,0);
   assert.match(h.modal.nodes.get('#hrCommandStatus').textContent,/HR_ADMIN_SCOPE_OR_REVISION_CHANGED/);
 });
+
