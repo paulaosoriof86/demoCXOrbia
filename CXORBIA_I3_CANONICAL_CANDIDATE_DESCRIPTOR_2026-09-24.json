@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_DEV_MATERIALIZED_DURABLE_HR_ACK_AND_E2E_REQUIRED",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "4f59ba0da52f3bdcc2e063ed01510a6c63a49819",
-  "productTreeAuthority": "b633409844e29ba699199a528686cb498d3b6387",
-  "predecessorProductSourceSha": "7c8f5a09131403e042d138e8332f3e97d20f8dd9",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V496_2026-10-23.json",
-  "findingsLedgerExpectedGitBlob": "432254bd1976e7d704e990a0b5e50324eb5252f8",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V166.json",
+  "productSourceSha": "f40d5d8bc6aa45a9c7ac3f2bfb0bd0a197a52251",
+  "productTreeAuthority": "0d184194f0e4a5e81112a50a3306ce8e0cf2a7a6",
+  "predecessorProductSourceSha": "4f59ba0da52f3bdcc2e063ed01510a6c63a49819",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V497_2026-10-23.json",
+  "findingsLedgerExpectedGitBlob": "05c1a0917be491878480d197f2725d5e89d8eeaf",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V167.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM281_DEV_MATERIALIZATION_PASS_RUN1823_BUT_THREE_DURABLE_VISITS_STALE__A09_B11_EXACT_PRIOR_HR_RECEIPTS_EFFECTS_ACTOR_AND_WRITER_ACK_NOT_VERIFIED__U22_REAL_HISTORY_BENEFITS_E2E_PENDING__B09_B13_B05_B08_C02_C10_ADMIN_SHOPPER_E2E_PENDING__HUMAN_GATE20_GATE21_PENDING",
+  "activeBlocker": "VRM282_CANONICAL_SOURCE_QA_AND_DEV_MATERIALIZATION_REQUIRED__RUN1823_PREDECESSOR_SERVING__THREE_A09_B11_FIRESTORE_VISITS_STALE__PRIOR_HR_RECEIPTS_SCOPE_LOCK_AND_DURABLE_PROVIDER_ACK_NOT_VERIFIED__CROSS_ROLE_E2E_AND_HUMAN_GATES_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -39,7 +39,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-282",
+  "nextFindingId": "VRM-283",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN1823 exact DEV materialization PASS, but three A09/B11 October Firestore visits retain stale assignment fields. In READ-ONLY finish exact prior hr-* receipt/effect and actor/source-revision checks; do not invoke an HR writer or force repair without separately scoped authorization. Continue parallel Admin-Shopper role E2E where permitted. I3 HOLD; I4 not authorized.",
+  "exactNextAction": "Verify VRM-282 canonical I3 source QA at f40d5d8b and then deploy only via the existing serial DEV materialization lane. RUN1823 is the predecessor until readback is sealed. In administrative DEV, verify exact actor, HR revision, prior hr-* receipts/effects, scope lock and three October rows before one explicitly human-confirmed idempotent reconciliation; HOLD on partial ACK. I3 HOLD; I4 and production not authorized.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -784,7 +784,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "b633409844e29ba699199a528686cb498d3b6387",
+  "productSourceTree": "0d184194f0e4a5e81112a50a3306ce8e0cf2a7a6",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -2948,7 +2948,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "f7e75bf0692ece665e8526d99f1abd708e391f7f",
+  "moduleTruthExpectedGitBlob": "92e00d21e632e32c110807348b520b5a0bbffd68",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12769,7 +12769,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 39915614532,
     "runNumber": 1823,
     "sourceSha": "4f59ba0da52f3bdcc2e063ed01510a6c63a49819",
@@ -13125,6 +13125,32 @@
     "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V496_2026-10-23.json",
     "findingsLedgerBlob": "432254bd1976e7d704e990a0b5e50324eb5252f8",
     "gateI3": "HOLD",
+    "i4Authorized": false
+  },
+  "vrm282AdminHrReconcileSourceSuccessor": {
+    "findingId": "VRM-282",
+    "taskIds": ["A09", "B11"],
+    "classification": "FUNCTIONAL_DEFECT",
+    "sourceSha": "f40d5d8bc6aa45a9c7ac3f2bfb0bd0a197a52251",
+    "sourceTree": "0d184194f0e4a5e81112a50a3306ce8e0cf2a7a6",
+    "predecessorSourceSha": "4f59ba0da52f3bdcc2e063ed01510a6c63a49819",
+    "sourceCommitParentSha": "d0a59b5f17ea3d3f4fb48f98f4093aeb0c126d12",
+    "owner": "app/modules/visitas.js",
+    "ownerBlob": "8aea3a23e64dd186bee5d6639142859b7d53892f",
+    "qaOwner": "tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs",
+    "qaBlob": "c2b4a7678ddd74390dc6058205761ecd8717a9f3",
+    "localQa": {"focalPass": 4, "focalFail": 0, "cumulativeI3WorkUatSuitesPass": 7},
+    "previousLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V496_2026-10-23.json",
+    "previousLedgerBlob": "432254bd1976e7d704e990a0b5e50324eb5252f8",
+    "previousMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V166.json",
+    "previousMatrixBlob": "f7e75bf0692ece665e8526d99f1abd708e391f7f",
+    "sourceProof": "PENDING",
+    "devMaterialization": "PENDING_RUN1823_PREDECESSOR_SERVING",
+    "actualReconciliation": "NOT_EXECUTED",
+    "realProviderAck": "NOT_VERIFIED",
+    "humanCheckpoint": "PENDING",
+    "production": false,
+    "i3": "HOLD",
     "i4Authorized": false
   }
 }

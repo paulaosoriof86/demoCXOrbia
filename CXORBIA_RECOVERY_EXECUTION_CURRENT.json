@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "4f59ba0da52f3bdcc2e063ed01510a6c63a49819",
-  "productTree": "b633409844e29ba699199a528686cb498d3b6387",
+  "productSourceSha": "f40d5d8bc6aa45a9c7ac3f2bfb0bd0a197a52251",
+  "productTree": "0d184194f0e4a5e81112a50a3306ce8e0cf2a7a6",
   "controlParentSha": "c371aa32c4a483a384907a7ceec9ae752ea4e08e",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
@@ -67,7 +67,8 @@
     "B06": "RUN1637_R05_R06_OWNER_BLOBS_UNCHANGED_PASS_FOCAL__REMAINING_BUSINESS_ACTIONS_OPEN",
     "B07": "RUN1637_R05_R06_OWNER_BLOBS_UNCHANGED_PASS_FOCAL__CROSSROLE_ACK_OPEN",
     "VRM280": "SOURCE_PROVEN_RUN1819_DEV_MATERIALIZED_RUN1820_LIVE_SHOPPER_FOCAL_PASS_HUMAN_PENDING",
-    "VRM281": "SOURCE_PROVEN_RUN1822_G05_113_PASS_0_FAIL_DEV_MATERIALIZATION_PASS_RUN1823__THREE_DURABLE_ASSIGNMENT_ROWS_STALE__REAL_ACK_PENDING"
+    "VRM281": "SOURCE_PROVEN_RUN1822_G05_113_PASS_0_FAIL_DEV_MATERIALIZATION_PASS_RUN1823__THREE_DURABLE_ASSIGNMENT_ROWS_STALE__REAL_ACK_PENDING",
+    "VRM282": "SOURCE_FIXED_LOCAL_FOCAL_4_PASS_AND_SEVEN_I3_UAT_SUITES_PASS__CANONICAL_CI_AND_DEV_MATERIALIZATION_PENDING__RUN1823_PREDECESSOR_SERVING"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -85,7 +86,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "RUN1823 DEV materialization PASS and exact three October durable assignments still stale. Read exact prior hr-* receipts/intents/effects, actor, source revision and scope locks before adjudicating idempotent provider-ACK reconciliation; obtain separate scoped authorization before HR writer. Continue unrelated read-only cross-role E2E. I3 HOLD; no I4 or production.",
+  "nextExactAction": "Run canonical source QA for VRM282 source f40d5d8b, then if PASS request one existing serial DEV materialization and seal. Before one human-confirmed persistent HR reconciliation, prove exact staff claims/source revision/receipts/scope lock and three stale visits. I3 HOLD; I4 and production not authorized.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -660,9 +661,9 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V166.json",
-    "gitBlob": "f7e75bf0692ece665e8526d99f1abd708e391f7f",
-    "sourceSha": "4f59ba0da52f3bdcc2e063ed01510a6c63a49819",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V167.json",
+    "gitBlob": "92e00d21e632e32c110807348b520b5a0bbffd68",
+    "sourceSha": "f40d5d8bc6aa45a9c7ac3f2bfb0bd0a197a52251",
     "allModulesMatch": false,
     "phaseAComplete": false
   },
@@ -1234,7 +1235,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 39915614532,
     "runNumber": 1823,
     "sourceSha": "4f59ba0da52f3bdcc2e063ed01510a6c63a49819",
@@ -1582,6 +1583,31 @@
     "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V496_2026-10-23.json",
     "findingsLedgerBlob": "432254bd1976e7d704e990a0b5e50324eb5252f8",
     "gateI3": "HOLD",
+    "i4Authorized": false
+  },
+  "vrm282AdminHrReconcileSource": {
+    "findingId": "VRM-282",
+    "sourceSha": "f40d5d8bc6aa45a9c7ac3f2bfb0bd0a197a52251",
+    "sourceTree": "0d184194f0e4a5e81112a50a3306ce8e0cf2a7a6",
+    "predecessorSourceSha": "4f59ba0da52f3bdcc2e063ed01510a6c63a49819",
+    "owner": "app/modules/visitas.js",
+    "ownerBlob": "8aea3a23e64dd186bee5d6639142859b7d53892f",
+    "qaOwner": "tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs",
+    "qaBlob": "c2b4a7678ddd74390dc6058205761ecd8717a9f3",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V497_2026-10-23.json",
+    "ledgerGitBlob": "05c1a0917be491878480d197f2725d5e89d8eeaf",
+    "moduleTruth": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V167.json",
+    "moduleTruthGitBlob": "92e00d21e632e32c110807348b520b5a0bbffd68",
+    "localFocalCasesPass": 4,
+    "cumulativeI3WorkUatSuitesPass": 7,
+    "canonicalSourceQa": "PENDING",
+    "newDevMaterialization": "PENDING",
+    "liveServedSource": "RUN1823_PREDECESSOR",
+    "actualHrCommand": "NOT_EXECUTED",
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "production": false,
+    "i3": "HOLD",
     "i4Authorized": false
   }
 }
