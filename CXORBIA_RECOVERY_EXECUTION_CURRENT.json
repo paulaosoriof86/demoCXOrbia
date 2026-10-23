@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "2c1c5951596a2dd260f02a744b21aa2cb46b17da",
-  "productTree": "bb05206e1f74698c391e0bf39b1fe7b94006e4a2",
+  "productSourceSha": "aa54aaa4c67b8ce140485a1b18e9f3279392b97b",
+  "productTree": "32eed06cab0635bec3243f68937625348fc2dc13",
   "controlParentSha": "6b633086b0e16d547f7cea6f02c7354f0e65f1cc",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
@@ -30,17 +30,18 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_RUN1840_POST_DEPLOY_CONSISTENCY_SEAL_2026-10-23.json",
-    "kind": "RUN1840_SOURCE_2C1C_EXACT_DEV_VRM285_VIEWER_SHELL_PASS_PDF_CONTENT_UNVERIFIED",
-    "sourceSha": "2c1c5951596a2dd260f02a744b21aa2cb46b17da",
-    "sourceTree": "bb05206e1f74698c391e0bf39b1fe7b94006e4a2",
-    "servedSourceSha": "2c1c5951596a2dd260f02a744b21aa2cb46b17da",
-    "runId": 40030971060,
-    "runNumber": 1840,
-    "sourceChanges": 0,
-    "newFunctionalClosures": 0,
-    "scope": "VRM285_VIEWER_SHELL_READONLY",
-    "production": false
+    "kind": "VRM286_SOURCE_COMMIT_CREATED_NOT_REF_UPDATED_OR_DEPLOYED",
+    "findingId": "VRM-286",
+    "sourceSha": "aa54aaa4c67b8ce140485a1b18e9f3279392b97b",
+    "sourceTree": "32eed06cab0635bec3243f68937625348fc2dc13",
+    "expectedBranchHead": "88554b4168b28ce877185960277692f866c3999a",
+    "owner": "app/modules/proyectos.js",
+    "qaPass": 5,
+    "qaFail": 0,
+    "providerWrites": 0,
+    "production": false,
+    "devMaterialization": "PENDING",
+    "realChrome": "PENDING"
   },
   "taskProgress": {
     "G01": "IN_PROGRESS_COVERAGE_CUSTODIED_AUTHORITY_GAPS_RETAINED_IN_G03",
@@ -89,7 +90,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Investigate PDF embedded content and performance without assuming cause; inspect HR historic hr-* and scope locks; complete deep Admin/Shopper I3 read-only E2E; request punctual authorization before real reconciliation writer.",
+  "nextExactAction": "Certify same exact VRM286 source, materialize DEV and verify Projects badge; HR three-visits provider ACK and Shopper real E2E pending separately.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -2024,5 +2025,34 @@
     "pdfContent": "NOT_VERIFIED",
     "fullI3": "HOLD",
     "production": false
+  },
+  "previousExecutionReceiptBeforeVrm286": {
+    "path": "CXORBIA_I3_RUN1840_POST_DEPLOY_CONSISTENCY_SEAL_2026-10-23.json",
+    "kind": "RUN1840_SOURCE_2C1C_EXACT_DEV_VRM285_VIEWER_SHELL_PASS_PDF_CONTENT_UNVERIFIED",
+    "sourceSha": "2c1c5951596a2dd260f02a744b21aa2cb46b17da",
+    "sourceTree": "bb05206e1f74698c391e0bf39b1fe7b94006e4a2",
+    "servedSourceSha": "2c1c5951596a2dd260f02a744b21aa2cb46b17da",
+    "runId": 40030971060,
+    "runNumber": 1840,
+    "sourceChanges": 0,
+    "newFunctionalClosures": 0,
+    "scope": "VRM285_VIEWER_SHELL_READONLY",
+    "production": false
+  },
+  "vrm286ProjectsPeriodMapping": {
+    "kind": "VRM286_SOURCE_COMMIT_CREATED_NOT_REF_UPDATED_OR_DEPLOYED",
+    "findingId": "VRM-286",
+    "sourceSha": "aa54aaa4c67b8ce140485a1b18e9f3279392b97b",
+    "sourceTree": "32eed06cab0635bec3243f68937625348fc2dc13",
+    "expectedBranchHead": "88554b4168b28ce877185960277692f866c3999a",
+    "owner": "app/modules/proyectos.js",
+    "qaPass": 5,
+    "qaFail": 0,
+    "providerWrites": 0,
+    "production": false,
+    "devMaterialization": "PENDING",
+    "realChrome": "PENDING",
+    "sourceProof": "PENDING",
+    "i3": "HOLD"
   }
 }

@@ -1,15 +1,15 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZED",
+  "status": "HOLD_I3_VRM286_SOURCE_FIXED_PENDING_CI_DEV_CHROME",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "2c1c5951596a2dd260f02a744b21aa2cb46b17da",
-  "productTreeAuthority": "bb05206e1f74698c391e0bf39b1fe7b94006e4a2",
-  "predecessorProductSourceSha": "cf94910dc3742e797b63f26e93166be388544021",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V505_2026-10-23.json",
-  "findingsLedgerExpectedGitBlob": "00f096c14fce781b62898d746b8dc90da9df8e50",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V174.json",
+  "productSourceSha": "aa54aaa4c67b8ce140485a1b18e9f3279392b97b",
+  "productTreeAuthority": "32eed06cab0635bec3243f68937625348fc2dc13",
+  "predecessorProductSourceSha": "2c1c5951596a2dd260f02a744b21aa2cb46b17da",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V506_2026-10-23.json",
+  "findingsLedgerExpectedGitBlob": "6b5ca9162b1e13eedf62a9786b1b5b638ae4032d",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V175.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -39,7 +39,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-286",
+  "nextFindingId": "VRM-287",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Investigate PDF embedded content and performance without assuming cause; inspect HR historic hr-* and scope locks; complete deep Admin/Shopper I3 read-only E2E; request punctual authorization before real reconciliation writer.",
+  "exactNextAction": "Official source proof exact VRM286 source; DEV materialization same artifact; authenticated Chrome badge. No HR provider write or I4.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1216,14 +1216,13 @@
     "production": false
   },
   "pendingMaterialization": {
-    "sourceSha": "4f35c21bceaee6ec58390cdc1f3a8b11309c6bfb",
-    "sourceTree": "bcc2a0e98e6f65eb09430a091007e80a22427ab3",
-    "blockedBy": [
-      "A05",
-      "SCOPED_REAL_PROVIDER_AND_AUTHENTICATION_PROOF"
-    ],
-    "state": "SOURCE_ONLY_NO_DEV_REQUEST",
-    "production": false
+    "findingId": "VRM-286",
+    "sourceSha": "aa54aaa4c67b8ce140485a1b18e9f3279392b97b",
+    "sourceTree": "32eed06cab0635bec3243f68937625348fc2dc13",
+    "sourceProof": "PENDING",
+    "dev": "PENDING",
+    "production": false,
+    "predecessorDevRun": 1840
   },
   "lastVrm080Proof": {
     "runId": 36333245670,
@@ -2949,7 +2948,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "a0f7c8ea39b263b040ceae1ae5b8d6551b73267a",
+  "moduleTruthExpectedGitBlob": "8967449e7a42f6ab687121f938ab4af6f56521b3",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -11999,7 +11998,7 @@
     "proofTree": "1753d01aa909dd4181e3490c07d24287913d68a0",
     "decision": "PASS_FOCAL_SOURCE_ONLY_I3_HOLD"
   },
-  "lastUpdatedAt": "2026-10-17T15:06:24.791Z",
+  "lastUpdatedAt": "2026-10-23",
   "a05SourceProof": {
     "recordedAt": "2026-10-17T12:00:37.826Z",
     "productSourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
@@ -13501,5 +13500,24 @@
     "pdfContent": "NOT_VERIFIED",
     "fullI3": "HOLD",
     "production": false
+  },
+  "previousProductSourceBeforeVrm286": {
+    "sourceSha": "2c1c5951596a2dd260f02a744b21aa2cb46b17da",
+    "treeSha": "bb05206e1f74698c391e0bf39b1fe7b94006e4a2",
+    "servedRun": 1840
+  },
+  "vrm286ProjectsPeriodMapping": {
+    "findingId": "VRM-286",
+    "classification": "MAPPING_FAILURE",
+    "owner": "app/modules/proyectos.js",
+    "ownerBlob": "2bc43a770afb96866ecc087d15a21636b93b9b9a",
+    "qaBlob": "64095227319007e68f18513d034eda0e1657015a",
+    "sourceSha": "aa54aaa4c67b8ce140485a1b18e9f3279392b97b",
+    "sourceTree": "32eed06cab0635bec3243f68937625348fc2dc13",
+    "localQa5Of5": true,
+    "officialSourceProof": "PENDING",
+    "dev": "PENDING",
+    "realChrome": "PENDING",
+    "i3": "HOLD"
   }
 }
