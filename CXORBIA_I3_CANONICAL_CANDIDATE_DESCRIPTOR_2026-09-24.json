@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZED_VRM284_MODAL_FAIL",
+  "status": "HOLD_I3_VRM284_SOURCE_FIXED_LATE_RERENDER_CI_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "68bf2522458fb48144eaa370c1a0bac516d96870",
-  "productTreeAuthority": "b2f88e4f442bef33be2e25838447fe3c5cae5a57",
-  "predecessorProductSourceSha": "60b092d1f1a150e8e48c213695825dcbbaed7be4",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V500_2026-10-23.json",
-  "findingsLedgerExpectedGitBlob": "13ecec573a6c34a9cf47a2047203f4b02abd41e5",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V170.json",
+  "productSourceSha": "cf94910dc3742e797b63f26e93166be388544021",
+  "productTreeAuthority": "c69ddbb1c7424e932a667bfac62618452f6c9a17",
+  "predecessorProductSourceSha": "68bf2522458fb48144eaa370c1a0bac516d96870",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V501_2026-10-23.json",
+  "findingsLedgerExpectedGitBlob": "a595c968d3006d302616d5bd303e3568f76dfd31",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V171.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM284_RUN1831_EXACT_SOURCE_DEV_MATERIALIZED_BUT_CHROME_MODAL_FAIL__P0_AUTH_OR_PROVIDER_OR_LATE_RERENDER_CAUSE_NOT_YET_PROVEN__THREE_STALE_VISITS_AND_DEEP_UAT_OPEN",
+  "activeBlocker": "VRM284_MODAL_OPENS_AT_16_3S_AND_IS_CLOSED_BY_LATE_ROUTE_RERENDER_AT_17_5S__NEW_SOURCE_PROOF_AND_DEV_E2E_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Recover read-only Admin browser visibility and capture transient preflight error/claims/provider result to discriminate AUTH_FAILURE, PROVIDER_FAILURE or late router rerender. Repair only proven owner within I3; run source proof and one protected DEV materialization for exact successor; then repeat modal preflight until stable. No hr.snapshot.reconcile writer until punctual authorization; continue independent Admin/Shopper UAT.",
+  "exactNextAction": "Run official source proof for exact cf9491 source, update existing protected materializer allowlist after PASS, DEV deploy exact source, then read-only Chrome modal dwell and HR receipts. No data writer or I4.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2949,7 +2949,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "1f713e67479fe115204dc90a6394989bfbc0b731",
+  "moduleTruthExpectedGitBlob": "1c9ac99f1401f4c80deba044bad0d8f4e6b732f2",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12770,7 +12770,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 40015324877,
     "runNumber": 1831,
     "sourceSha": "68bf2522458fb48144eaa370c1a0bac516d96870",
@@ -13296,6 +13296,34 @@
     "humanAcceptance": "PENDING",
     "gate20": "PENDING",
     "gate21": "PENDING",
+    "production": false
+  },
+  "vrm284LateRouteRerenderSourceSuccessor": {
+    "findingId": "VRM-284",
+    "classification": "FUNCTIONAL_DEFECT",
+    "sourceSha": "cf94910dc3742e797b63f26e93166be388544021",
+    "sourceTree": "c69ddbb1c7424e932a667bfac62618452f6c9a17",
+    "parentControlSha": "6b633086b0e16d547f7cea6f02c7354f0e65f1cc",
+    "predecessorSourceSha": "68bf2522458fb48144eaa370c1a0bac516d96870",
+    "owner": "app/modules/visitas.js",
+    "ownerBlob": "c91bcd42c51b96ac266bb37967c2d2103735683b",
+    "qaOwner": "tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs",
+    "qaBlob": "6e79255dcd76fa9dedf9d4e35981c9de6fac2298",
+    "causalReadbackPath": "CXORBIA_I3_VRM284_LATE_RERENDER_CAUSAL_READBACK_2026-10-23.json",
+    "causalReadbackBlob": "70e95529a15ab3f640994a6147fc9832d9a946cb",
+    "rootCause": "second Visitas same-route render closes modal approximately 1173ms after initial display; fixed 350ms was insufficient",
+    "fix": "bounded DOM view quiescence window with MutationObserver; time bound 7500ms fail-closed; pre-execution guard unchanged",
+    "localQa": {
+      "pass": 7,
+      "fail": 0
+    },
+    "sourceProof": "PENDING",
+    "devMaterialization": "PENDING__RUN1831_SERVES_PREDECESSOR",
+    "liveE2e": "PENDING",
+    "writerCommand": "NOT_EXECUTED",
+    "hrAck": "NOT_VERIFIED",
+    "i3": "HOLD",
+    "i4Authorized": false,
     "production": false
   }
 }

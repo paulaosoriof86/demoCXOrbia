@@ -7,9 +7,9 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "68bf2522458fb48144eaa370c1a0bac516d96870",
-  "productTree": "b2f88e4f442bef33be2e25838447fe3c5cae5a57",
-  "controlParentSha": "085ee45f5616c0550972238e360015d7ec96e12d",
+  "productSourceSha": "cf94910dc3742e797b63f26e93166be388544021",
+  "productTree": "c69ddbb1c7424e932a667bfac62618452f6c9a17",
+  "controlParentSha": "6b633086b0e16d547f7cea6f02c7354f0e65f1cc",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
     "executed": [
@@ -88,7 +88,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Recover read-only Admin browser visibility and capture transient preflight error/claims/provider result to discriminate AUTH_FAILURE, PROVIDER_FAILURE or late router rerender. Repair only proven owner within I3; run source proof and one protected DEV materialization for exact successor; then repeat modal preflight until stable. No hr.snapshot.reconcile writer until punctual authorization; continue independent Admin/Shopper UAT.",
+  "nextExactAction": "Source proof exact VRM284 late-render fix; after PASS only existing protected DEV materializer; repeat authenticated preflight modal without command writer; then independent Admin/Shopper UAT.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -294,7 +294,7 @@
     }
   },
   "nextDiagnosisPath": null,
-  "nextUserAuthorizationRequired": "Only actual command which writes HR-derived shopper/visit identities and assignments to Firebase Auth/Firestore DEV, after preflight/receipts readback PASS.",
+  "nextUserAuthorizationRequired": "Only eventual hr.snapshot.reconcile write of HR-derived personal identity/visit/assignment data to Firebase DEV after preflight and receipts readback PASS.",
   "primaryExecutionRoute": "DIRECT_NATIVE_GITHUB_SINGLE_WRITER",
   "tinyFishRequiredForThisAction": false,
   "receiptControlParentSha": "5df72f867d8cc27a680e070865b27cc78eb3dae6",
@@ -664,9 +664,9 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V170.json",
-    "gitBlob": "1f713e67479fe115204dc90a6394989bfbc0b731",
-    "sourceSha": "68bf2522458fb48144eaa370c1a0bac516d96870",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V171.json",
+    "gitBlob": "1c9ac99f1401f4c80deba044bad0d8f4e6b732f2",
+    "sourceSha": "cf94910dc3742e797b63f26e93166be388544021",
     "allModulesMatch": false,
     "phaseAComplete": false
   },
@@ -1238,7 +1238,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 40015324877,
     "runNumber": 1831,
     "sourceSha": "68bf2522458fb48144eaa370c1a0bac516d96870",
@@ -1816,6 +1816,20 @@
     "humanAcceptance": "FAIL_CHROME_MODAL_RUN1831",
     "gate20": "HOLD",
     "gate21": "HOLD",
+    "production": false
+  },
+  "latestVrm284LateRenderSource": {
+    "sourceSha": "cf94910dc3742e797b63f26e93166be388544021",
+    "sourceTree": "c69ddbb1c7424e932a667bfac62618452f6c9a17",
+    "ownerBlobs": [
+      "c91bcd42c51b96ac266bb37967c2d2103735683b",
+      "6e79255dcd76fa9dedf9d4e35981c9de6fac2298"
+    ],
+    "causalReadback": "CXORBIA_I3_VRM284_LATE_RERENDER_CAUSAL_READBACK_2026-10-23.json",
+    "sourceProof": "PENDING",
+    "devMaterialization": "PENDING",
+    "run1831PredecessorServing": true,
+    "hrWrites": 0,
     "production": false
   }
 }
