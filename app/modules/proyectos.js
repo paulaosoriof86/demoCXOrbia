@@ -4,7 +4,10 @@ CX.module('proyectos', ({data,ui})=>{
   const groups = data.scopedProyectos().map(pg=>{
     const periods = data.periodosDe(pg.key);
     const rep = pg.sample;
-    const totalV = periods.reduce((a,p)=>a+data._visitas.filter(x=>x.projectId===p.id).length,0);
+    const totalV = periods.reduce((a,p)=>a+data._visitas.filter(x=>
+      (typeof data.recordPeriodId==='function'?data.recordPeriodId(x):(x.periodId||x.projectId))===p.id &&
+      (typeof data.inScope!=='function'||data.inScope(x.pais))
+    ).length,0);
     const activePeriod = periods.find(p=>p.id===data.currentPeriodId);
     const isActiveGroup = !!activePeriod;
     return `<div class="card hov card-p" data-pgkey="${pg.key}" style="cursor:pointer;${isActiveGroup?'border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light)':''}">
@@ -180,3 +183,4 @@ CX.module('proyectos', ({data,ui})=>{
   },0);
   return html;
 });
+
