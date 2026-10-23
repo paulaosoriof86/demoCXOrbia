@@ -130,7 +130,12 @@ export function createHrSnapshotReconciler({
       const current=await readSnapshot();
       const actual={tenantId:str(current?.snapshot?.tenantId||current?.snapshot?.projectConfig?.tenantId),projectId:str(current?.snapshot?.projectId||current?.snapshot?.projectConfig?.projectId)};
       if(!current?.snapshot||current.revision!==sourceRevision||actual.tenantId!==scope.tenantId||actual.projectId!==scope.projectId)return stop('HR_RECONCILIATION_SOURCE_CHANGED',{httpStatus:409});
-      const sourceConfig=current.snapshot.projectConfig?.operationalSource||current.snapshot.projectConfig?.routeSource||{};
+      // The HR snapshot is also served publicly and deliberately excludes provider
+      // configuration. Read source authority privately, scoped to the verified
+      // staff command, rather than weakening the public snapshot allowlist.
+      const projectSnap=await db.collection('tenants').doc(scope.tenantId).collection('projects').doc(scope.projectId).get();
+      const durableProject=projectSnap.exists?projectSnap.data()||{}:{};
+      const sourceConfig=durableProject.operationalSource||durableProject.routeSource||{};
       if(current.snapshot.sourceSafe!==true||current.snapshot.imported===true||Number(current.snapshot.firestoreWrites||0)!==0||
         sourceConfig.mode!=='external'||sourceConfig.readPolicy!=='external_live'||
         !str(sourceConfig.providerBindingId||sourceConfig.integrationSettingId||sourceConfig.providerRef)||!str(sourceConfig.mappingRef)){

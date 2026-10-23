@@ -120,8 +120,10 @@ async function setup(options={}){
   const {createHrSnapshotReconciler}=await import(pathToFileURL(path.join(root,'backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs')));
   const {stableShopperUid}=await import(pathToFileURL(path.join(root,'backend/runtime/cxorbia-shopper-command-provider-v1.mjs')));
   const db=new MemFirestore(),auth=new MemAuth(),revision='1'.repeat(64);
+  const projectPath='tenants/tenant-a/projects/project-a';
+  db.seed(projectPath,{tenantId:'tenant-a',projectId:'project-a',operationalSource:{mode:'external',readPolicy:'external_live',providerBindingId:'binding-a',mappingRef:'map-a'}});
   let calls=0,reads=0,clock=1000000;
-  let current={revision,snapshot:{sourceSafe:true,imported:false,firestoreWrites:0,tenantId:'tenant-a',projectId:'project-a',projectConfig:{operationalSource:{mode:'external',readPolicy:'external_live',providerBindingId:'binding-a',mappingRef:'map-a'}},currentPeriodId:'period-a',shoppers:[{id:'shopper_gt_abc123',nombre:'Persona Prueba',country:'GT',sourceSafe:true,piiProtected:true}],visits:[]}};
+  let current={revision,snapshot:{sourceSafe:true,imported:false,firestoreWrites:0,tenantId:'tenant-a',projectId:'project-a',projectConfig:{projectId:'project-a'},currentPeriodId:'period-a',shoppers:[{id:'shopper_gt_abc123',nombre:'Persona Prueba',country:'GT',sourceSafe:true,piiProtected:true}],visits:[]}};
   const shopperPolicy=()=>({schemaVersion:'cxorbia.shopper-command-provider-policy.v1',enabled:true,allowedTenantIds:['tenant-a'],allowedProjectIds:['project-a'],hrWrites:false,externalWrites:false,fuzzyMatching:false});
   const operationalPolicy=()=>({schemaVersion:'cxorbia.operational.provider-policy.v1',enabled:true,allowedTenantIds:['tenant-a'],allowedProjectIds:['project-a'],conflictPolicy:'review_no_silent_overwrite',hrWrites:false,makeCalls:false,geminiCalls:false,storageWrites:false,paymentWrites:false});
   const verifyPrincipal=async()=>{calls++;return {uid:'admin-1',role:'admin',namespace:'staff'};};
@@ -129,8 +131,22 @@ async function setup(options={}){
   const command=(key,patch={})=>({version:'cxorbia-command-adapter-v1',commandType:'hr.snapshot.reconcile',entityType:'hrSnapshot',entityId:current.revision,expectedVersion:current.revision,tenantId:'tenant-a',projectId:'project-a',requirePeriod:false,periodId:null,payload:{},idempotencyKey:key,...patch});
   const run=(key,patch={})=>reconcile({req:{headers:{}},command:command(key,patch)});
   const effects=()=>[...db.store].filter(([path])=>path.includes('/effects/')).map(([path,row])=>({path,...copy(row)}));
-  return {db,auth,run,effects,command,reconcile,uid:stableShopperUid('tenant-a','shopper_gt_abc123'),get current(){return current;},set current(value){current=value;},advance:ms=>{clock+=ms;},principalCalls:()=>calls,readCalls:()=>reads};
+  return {db,auth,projectPath,run,effects,command,reconcile,uid:stableShopperUid('tenant-a','shopper_gt_abc123'),get current(){return current;},set current(value){current=value;},advance:ms=>{clock+=ms;},principalCalls:()=>calls,readCalls:()=>reads};
 }
+test('G05 private durable HR source enables a sanitized public snapshot without leaking provider configuration',async()=>{
+  const f=await setup();f.current.snapshot.projectConfig={projectId:'project-a'};
+  const result=await f.run('g05-private-source-config-0001');
+  assert.equal(result.ok,true);assert.equal(result.readbackVerified,true);
+  assert.equal(f.current.snapshot.projectConfig.operationalSource,undefined);
+  assert.equal(JSON.stringify(result).includes('binding-a'),false);
+});
+test('G05 public snapshot cannot supply private authority when durable project config is absent',async()=>{
+  const f=await setup();f.db.store.delete(f.projectPath);
+  f.current.snapshot.projectConfig={operationalSource:{mode:'external',readPolicy:'external_live',providerBindingId:'untrusted-public-binding',mappingRef:'untrusted-public-map'}};
+  const result=await f.run('g05-private-source-missing-0001');
+  assert.equal(result.code,'HR_RECONCILIATION_LIVE_SOURCE_CONFIG_REQUIRED');
+  assert.equal(f.db.log.length,0);assert.equal(f.auth.log.length,0);
+});
 test('G05 initial shopper records Auth, claims and Firestore by entity without credential persistence',async()=>{
   const f=await setup(),result=await f.run('g05-initial-test-0001');
   assert.equal(result.ok,true);assert.equal(result.authWrites,2);assert.equal(result.firestoreWrites,3);assert.equal(result.providerWrites,5);assert.equal(result.readbackVerified,true);
@@ -221,8 +237,9 @@ for(const role of ['shopper','ops','client'])test('G05 verified '+role+' cannot 
 });
 for(const [name,alter] of [
  ['unsafe snapshot',f=>f.current.snapshot.sourceSafe=false],['imported snapshot',f=>f.current.snapshot.imported=true],['writer snapshot',f=>f.current.snapshot.firestoreWrites=1],
- ['wrong scope',f=>f.current.snapshot.projectId='project-b'],['internal project',f=>f.current.snapshot.projectConfig.operationalSource.mode='internal'],
- ['missing binding',f=>delete f.current.snapshot.projectConfig.operationalSource.providerBindingId]
+ ['wrong scope',f=>f.current.snapshot.projectId='project-b'],
+ ['internal project',f=>f.db.seed(f.projectPath,{...f.db.read(f.projectPath),operationalSource:{...f.db.read(f.projectPath).operationalSource,mode:'internal'}})],
+ ['missing binding',f=>{const project=f.db.read(f.projectPath);delete project.operationalSource.providerBindingId;f.db.seed(f.projectPath,project);}]
 ])test('G05 '+name+' cannot acquire a writer lease',async()=>{
   const f=await setup();alter(f);const result=await f.run('g05-source-gate-0001');assert.equal(result.ok,false);assert.equal(f.db.log.length,0);assert.equal(f.auth.log.length,0);
 });
