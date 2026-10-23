@@ -67,7 +67,7 @@
     "B06": "RUN1637_R05_R06_OWNER_BLOBS_UNCHANGED_PASS_FOCAL__REMAINING_BUSINESS_ACTIONS_OPEN",
     "B07": "RUN1637_R05_R06_OWNER_BLOBS_UNCHANGED_PASS_FOCAL__CROSSROLE_ACK_OPEN",
     "VRM280": "SOURCE_PROVEN_RUN1819_DEV_MATERIALIZED_RUN1820_LIVE_SHOPPER_FOCAL_PASS_HUMAN_PENDING",
-    "VRM281": "SOURCE_FIXED_LOCAL_FOCAL_102_PASS_CANONICAL_CI_PENDING_RUN1820_PREDECESSOR_SERVING"
+    "VRM281": "SOURCE_PROVEN_RUN1822_G05_113_PASS_0_FAIL_DEV_MATERIALIZATION_PENDING_RUN1820_PREDECESSOR_SERVING"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -85,7 +85,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Run canonical source QA on registered VRM-281 source 4f59ba0 without deploying; preserve RUN1820 as predecessor. Independently verify live HR revision, three durable visit rows, command receipts and exact scope lock before seeking separate bounded DEV reconciliation authorization; I3 HOLD.",
+  "nextExactAction": "Materialize only source-proven VRM-281 source 4f59ba0 through the existing single DEV runner; verify exact runtime/Hosting/rules/artifact. Then read independent live HR revision, three durable visit rows, receipts and scope lock without invoking HR writer; any bounded DEV reconcile requires separate scoped approval. I3 HOLD.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -1491,12 +1491,12 @@
     "ownerBlob": "d034ed56c3115ce5d86e4b03ee5fc41a6702b1d4",
     "qaOwner": "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs",
     "qaBlob": "888d52a1870664119e12bcfe9ac25c5a4ecbaf30",
-    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V493_2026-10-23.json",
-    "ledgerGitBlob": "0f683c44a373c539859fb60ba52638088e64c544",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V494_2026-10-23.json",
+    "ledgerGitBlob": "441158ebc4fe6723e26fbfc4977262033a68f0cf",
     "moduleTruth": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V165.json",
     "moduleTruthGitBlob": "525786978d13f3c1f0e45eeb82cd88d76b3332a1",
     "localSyntheticFocalAndNeighborQa": {"pass": 102, "fail": 0, "fullRepositorySuite": "NOT_VERIFIED"},
-    "canonicalSourceQa": "PENDING",
+    "canonicalSourceQa": "PASS_RUN1822_SOURCE_ONLY",
     "liveSource": "RUN1820_PREDECESSOR_SERVING",
     "independentHrRevisionAndDurableWriterAck": "NOT_VERIFIED",
     "firestoreAuthHrWrites": 0,
@@ -1504,5 +1504,21 @@
     "production": false,
     "i3": "HOLD",
     "i4Authorized": false
+  },
+  "vrm281Run1822CanonicalSourceProof": {
+    "runNumber": 1822,
+    "runId": 39912387953,
+    "controlHeadSha": "b30166ed1ab8840db3d9a4f967e0872c341f322b",
+    "result": "SUCCESS",
+    "sourceSha": "4f59ba0da52f3bdcc2e063ed01510a6c63a49819",
+    "sourceTree": "b633409844e29ba699199a528686cb498d3b6387",
+    "jobId": 120278223094,
+    "artifactId": 12483765789,
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "g05FocalPass": 113,
+    "g05FocalFail": 0,
+    "knownUnclosedLegacyGate7Cases": 5,
+    "scope": "SOURCE_ONLY_NO_DEV_NO_HR_DATA_WRITES_NO_PRODUCTION",
+    "production": false
   }
 }

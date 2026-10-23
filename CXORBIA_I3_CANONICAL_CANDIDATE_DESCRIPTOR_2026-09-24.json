@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "4f59ba0da52f3bdcc2e063ed01510a6c63a49819",
   "productTreeAuthority": "b633409844e29ba699199a528686cb498d3b6387",
   "predecessorProductSourceSha": "7c8f5a09131403e042d138e8332f3e97d20f8dd9",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V493_2026-10-23.json",
-  "findingsLedgerExpectedGitBlob": "0f683c44a373c539859fb60ba52638088e64c544",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V494_2026-10-23.json",
+  "findingsLedgerExpectedGitBlob": "441158ebc4fe6723e26fbfc4977262033a68f0cf",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V165.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM281_CANONICAL_CI_AND_DEV_MATERIALIZATION_REQUIRED__A09_B11_INDEPENDENT_HR_REVISION_DURABLE_COMMAND_ACK_NOT_VERIFIED__U22_REAL_HISTORY_BENEFITS_E2E_PENDING__B09_B13_B05_B08_C02_C10_ADMIN_SHOPPER_E2E_PENDING__HUMAN_GATE20_GATE21_PENDING",
+  "activeBlocker": "VRM281_CANONICAL_SOURCE_PROVEN_RUN1822_DEV_MATERIALIZATION_PENDING__A09_B11_INDEPENDENT_HR_REVISION_DURABLE_COMMAND_ACK_NOT_VERIFIED__U22_REAL_HISTORY_BENEFITS_E2E_PENDING__B09_B13_B05_B08_C02_C10_ADMIN_SHOPPER_E2E_PENDING__HUMAN_GATE20_GATE21_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run canonical source QA for VRM-281 on registered source 4f59ba0 without DEV deployment; RUN1820 continues serving previous source. Then independently verify HR revision, three Firestore rows, receipts and exact scope lock read-only before separately authorized bounded DEV reconciliation. I3 HOLD; I4 not authorized.",
+  "exactNextAction": "Materialize only source-proven VRM-281 source 4f59ba0 through the existing canonical DEV runner; verify exact build/runtime/Hosting/Firestore rules and source bytes before claiming live. After materialization, independently read live HR revision, three Firestore rows and exact receipt/scope lock without invoking the HR writer. Any bounded DEV reconciliation requires its own scoped authorization. I3 HOLD; I4 not authorized.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -13028,7 +13028,7 @@
     "qaOwner": "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs",
     "qaBlob": "888d52a1870664119e12bcfe9ac25c5a4ecbaf30",
     "localQa": {"pass": 102, "fail": 0, "synthetic": true, "fullRepositorySuite": "NOT_VERIFIED"},
-    "canonicalSourceQa": "PENDING",
+    "canonicalSourceQa": "PASS_RUN1822_SOURCE_ONLY",
     "runtime": "NOT_MATERIALIZED_RUN1820_PREDECESSOR_SERVING",
     "independentHrRevisionAndDurableAck": "NOT_VERIFIED",
     "prevLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V492_2026-10-22.json",
@@ -13038,6 +13038,28 @@
     "humanCheckpoint": "PENDING",
     "i3": "HOLD",
     "i4Authorized": false,
+    "production": false
+  },
+  "vrm281Run1822CanonicalSourceProof": {
+    "runNumber": 1822,
+    "runId": 39912387953,
+    "controlHeadSha": "b30166ed1ab8840db3d9a4f967e0872c341f322b",
+    "sourceSha": "4f59ba0da52f3bdcc2e063ed01510a6c63a49819",
+    "sourceTree": "b633409844e29ba699199a528686cb498d3b6387",
+    "sourceProofJobId": 120278223094,
+    "authorityJobId": 120278112856,
+    "artifactId": 12483765789,
+    "artifactDigest": "sha256:fdeae98da92356a4f589828d714abd545b2674cbadf51178b0aaf7b7be882ed7",
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "g05FocalPass": 113,
+    "g05FocalFail": 0,
+    "knownUnclosedLegacyGate7Cases": 5,
+    "scope": "FOCAL_SOURCE_CONTRACTS_ONLY",
+    "wholeProductPass": false,
+    "devMaterialization": "PENDING_EXISTING_RUNNER",
+    "currentServedRun": 1820,
+    "repositoryFirestoreRulesUnchangedSinceServedSource": true,
+    "hrWrites": 0,
     "production": false
   }
 }
