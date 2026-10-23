@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM285_SCOPED_RESOURCE_VIEWER_SOURCE_FIXED_OFFICIAL_PROOF_AND_NEW_DEV_LIVE_PENDING__VRM284_WRITER_ACK_3_VISITS_PENDING",
+  "activeBlocker": "VRM285_SOURCE_PROOF_RUN1839_PASS_DEV_MATERIALIZATION_PENDING__VRM284_WRITER_ACK_3_VISITS_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run canonical I3 source proof for source 2c1c5951; only then protected exact DEV materialization and authenticated Chrome PDF viewer dwell. No HR writer authorized.",
+  "exactNextAction": "Use existing [i3-phasea-dev-materialize] runner for exact source 2c1c5951596a2dd260f02a744b21aa2cb46b17da; then validate DEV Hosting/runtime artifact and authenticated Resources PDF dwell. No HR writer.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -13403,5 +13403,34 @@
     "previousDevRun": 1836,
     "newLiveE2e": "PENDING",
     "production": false
+  },
+  "i3PhaseAVRM285SourceProof": {
+    "runId": 40030495169,
+    "runNumber": 1839,
+    "jobId": 120677412215,
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "artifactId": 12534966571,
+    "sourceSha": "2c1c5951596a2dd260f02a744b21aa2cb46b17da",
+    "sourceTree": "bb05206e1f74698c391e0bf39b1fe7b94006e4a2",
+    "g05FocalPass": 113,
+    "g05FocalFail": 0,
+    "vrm285Tests": 4,
+    "vrm285Pass": 4,
+    "clickE2ERequired": true,
+    "devMaterialized": false,
+    "hrWrites": 0,
+    "production": false
+  },
+  "i3PhaseAVRM285DevRequest": {
+    "decision": "AUTHORIZED_SCOPED_DEV_MATERIALIZATION_AFTER_EXACT_SOURCE_PROOF",
+    "project": "cxorbia-backend-dev",
+    "sourceSha": "2c1c5951596a2dd260f02a744b21aa2cb46b17da",
+    "sourceTree": "bb05206e1f74698c391e0bf39b1fe7b94006e4a2",
+    "sourceProofRunId": 40030495169,
+    "sourceProofStatus": "PASS",
+    "production": false,
+    "hrWrites": 0,
+    "postDeployChromeE2E": "PENDING",
+    "adminWriter": "NOT_AUTHORIZED"
   }
 }

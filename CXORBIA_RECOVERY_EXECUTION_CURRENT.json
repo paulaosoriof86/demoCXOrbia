@@ -89,7 +89,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "CANONICAL_CONTROL_FIX_1838_NEXT_FINDING_AND_PREDECESSOR_SEAL; source proof exact 2c1c then DEV if PASS. No writer.",
+  "nextExactAction": "RUN1839 EXACT SOURCE PROOF PASS; TRIGGER CANONICAL [i3-phasea-dev-materialize] WITH 2c1c... ONLY, THEN READBACK + AUTHENTICATED CHROME VRM285 PDF DWELL; HR writer not authorized.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -1913,5 +1913,34 @@
     "sourceTree": "bb05206e1f74698c391e0bf39b1fe7b94006e4a2",
     "previousDevRun": 1836,
     "production": false
+  },
+  "i3PhaseAVRM285SourceProof": {
+    "runId": 40030495169,
+    "runNumber": 1839,
+    "jobId": 120677412215,
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "artifactId": 12534966571,
+    "sourceSha": "2c1c5951596a2dd260f02a744b21aa2cb46b17da",
+    "sourceTree": "bb05206e1f74698c391e0bf39b1fe7b94006e4a2",
+    "g05FocalPass": 113,
+    "g05FocalFail": 0,
+    "vrm285Tests": 4,
+    "vrm285Pass": 4,
+    "clickE2ERequired": true,
+    "devMaterialized": false,
+    "hrWrites": 0,
+    "production": false
+  },
+  "i3PhaseAVRM285DevRequest": {
+    "decision": "AUTHORIZED_SCOPED_DEV_MATERIALIZATION_AFTER_EXACT_SOURCE_PROOF",
+    "project": "cxorbia-backend-dev",
+    "sourceSha": "2c1c5951596a2dd260f02a744b21aa2cb46b17da",
+    "sourceTree": "bb05206e1f74698c391e0bf39b1fe7b94006e4a2",
+    "sourceProofRunId": 40030495169,
+    "sourceProofStatus": "PASS",
+    "production": false,
+    "hrWrites": 0,
+    "postDeployChromeE2E": "PENDING",
+    "adminWriter": "NOT_AUTHORIZED"
   }
 }
