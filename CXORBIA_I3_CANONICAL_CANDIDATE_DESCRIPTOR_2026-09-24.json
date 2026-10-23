@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM284_DEV_MATERIALIZED_MODAL_PREFLIGHT_PASS_WRITER_ACK_PENDING",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "cf94910dc3742e797b63f26e93166be388544021",
-  "productTreeAuthority": "c69ddbb1c7424e932a667bfac62618452f6c9a17",
-  "predecessorProductSourceSha": "68bf2522458fb48144eaa370c1a0bac516d96870",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V502_2026-10-23.json",
-  "findingsLedgerExpectedGitBlob": "0562745980706275c51b5001c509dcdb9bae4adf",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V172.json",
+  "productSourceSha": "2c1c5951596a2dd260f02a744b21aa2cb46b17da",
+  "productTreeAuthority": "bb05206e1f74698c391e0bf39b1fe7b94006e4a2",
+  "predecessorProductSourceSha": "cf94910dc3742e797b63f26e93166be388544021",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V503_2026-10-23.json",
+  "findingsLedgerExpectedGitBlob": "3cb73167a4ab8247375ffcbd824bc754230a673e",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V173.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM284_MODAL_OPENS_AT_16_3S_AND_IS_CLOSED_BY_LATE_ROUTE_RERENDER_AT_17_5S__NEW_SOURCE_PROOF_AND_DEV_E2E_PENDING",
+  "activeBlocker": "VRM285_SCOPED_RESOURCE_VIEWER_SOURCE_FIXED_OFFICIAL_PROOF_AND_NEW_DEV_LIVE_PENDING__VRM284_WRITER_ACK_3_VISITS_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -39,7 +39,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-285",
+  "nextFindingId": "VRM-286",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Continue read-only historical hr-* receipts and scope locks; three persisted stale Oct 2026 visits; deeper Admin/Shopper UAT. Obtain action-time personal-data writer approval only after confirming receipts; no I4.",
+  "exactNextAction": "Run canonical I3 source proof for source 2c1c5951; only then protected exact DEV materialization and authenticated Chrome PDF viewer dwell. No HR writer authorized.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -13390,6 +13390,18 @@
     "receipt": "CXORBIA_I3_RUN1836_POST_DEPLOY_CONSISTENCY_SEAL_2026-10-23.json",
     "ledgerVersion": "V502",
     "matrixVersion": "V172",
+    "production": false
+  },
+  "vrm285ResourceViewer": {
+    "state": "SOURCE_FIXED_LOCAL_4_PASS_OFFICIAL_PROOF_PENDING",
+    "sourceSha": "2c1c5951596a2dd260f02a744b21aa2cb46b17da",
+    "sourceTree": "bb05206e1f74698c391e0bf39b1fe7b94006e4a2",
+    "owner": "app/modules/documentos.js",
+    "ownerBlob": "c0eefe84d7d4f220c25dfd058e5712ec84556c42",
+    "qaOwner": "tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs",
+    "qaBlob": "dcc13d368923c11085e70de715e6d940f8395dc1",
+    "previousDevRun": 1836,
+    "newLiveE2e": "PENDING",
     "production": false
   }
 }

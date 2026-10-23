@@ -44,6 +44,13 @@ node --test tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs |
   node --test backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs | tee /tmp/i3-b1-oct07-source-test.log
   node --test backend/runtime/hr-live-service/test/cxorbia-i3-oct08-b1-b3-source.test.mjs | tee /tmp/i3-oct08-b1-b3-source-test.log
   jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" '{decision:"PASS_I3_B_CUMULATIVE_SOURCE_PROOF",sourceSha:$source,sourceTree:$tree,trueFunctionalDefects:0,scope:"FOCAL_SOURCE_CONTRACTS_ONLY",g05FocalPass:113,g05FocalFail:0,knownUnclosedLegacyGate7Cases:5,wholeProductPass:false,clickE2ERequired:true,deploys:0,production:false}' > /tmp/i3-phasea-completion-source-proof.json
+  # VRM-285 exact approved resources viewer owner + UI regression, no data writes.
+  if [[ "$FOCAL_SOURCE" == "2c1c5951596a2dd260f02a744b21aa2cb46b17da" ]]; then
+    test "$(git rev-parse "$FOCAL_SOURCE:app/modules/documentos.js")" = "c0eefe84d7d4f220c25dfd058e5712ec84556c42"
+    test "$(git rev-parse "$FOCAL_SOURCE:tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs")" = "dcc13d368923c11085e70de715e6d940f8395dc1"
+    node --check app/modules/documentos.js
+    node --test tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs
+  fi
   cat /tmp/i3-phasea-completion-source-proof.json
   ;;
 preflight)
@@ -99,6 +106,13 @@ preflight)
       test "$(git rev-parse "$PREDECESSOR_SOURCE:$protected")" = "$(git rev-parse "$PHASEA_SOURCE:$protected")"
     fi
   done
+  # VRM-285 exact approved resources viewer owner + UI regression, no data writes.
+  if [[ "$PHASEA_SOURCE" == "2c1c5951596a2dd260f02a744b21aa2cb46b17da" ]]; then
+    test "$(git rev-parse "$PHASEA_SOURCE:app/modules/documentos.js")" = "c0eefe84d7d4f220c25dfd058e5712ec84556c42"
+    test "$(git rev-parse "$PHASEA_SOURCE:tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs")" = "dcc13d368923c11085e70de715e6d940f8395dc1"
+    node --check app/modules/documentos.js
+    node --test tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs
+  fi
   node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs > "$OUT/canonical-authority.json"
   jq -e '.moduleTruthReadback.sourceAligned==true and .moduleTruthReadback.domainCount==21 and .moduleBlobReadback.pass==true' "$OUT/canonical-authority.json" >/dev/null
   # Install the pre-existing Firebase CLI in the same approved runner before the one DEV build.

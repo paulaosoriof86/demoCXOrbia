@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "cf94910dc3742e797b63f26e93166be388544021",
-  "productTree": "c69ddbb1c7424e932a667bfac62618452f6c9a17",
+  "productSourceSha": "2c1c5951596a2dd260f02a744b21aa2cb46b17da",
+  "productTree": "bb05206e1f74698c391e0bf39b1fe7b94006e4a2",
   "controlParentSha": "6b633086b0e16d547f7cea6f02c7354f0e65f1cc",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
@@ -89,7 +89,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Read-only inspection of hr-* commandReceipts/scope locks and 3 outdated October visits; cross-role Admin/Shopper UAT; writer only after specific approval.",
+  "nextExactAction": "Canonical source proof VRM285, then protected DEV materialization exact source, then authenticated PDF viewer Chrome E2E; all writes blocked.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -1905,6 +1905,13 @@
     "receiptPath": "CXORBIA_I3_RUN1836_POST_DEPLOY_CONSISTENCY_SEAL_2026-10-23.json",
     "sourceSha": "cf94910dc3742e797b63f26e93166be388544021",
     "modal": "PASS_READONLY_NO_WRITER",
+    "production": false
+  },
+  "vrm285ResourceViewer": {
+    "state": "SOURCE_FIXED_LOCAL_4_0_PROOF_PENDING",
+    "sourceSha": "2c1c5951596a2dd260f02a744b21aa2cb46b17da",
+    "sourceTree": "bb05206e1f74698c391e0bf39b1fe7b94006e4a2",
+    "previousDevRun": 1836,
     "production": false
   }
 }
