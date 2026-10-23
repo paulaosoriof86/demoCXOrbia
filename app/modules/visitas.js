@@ -203,16 +203,21 @@ CX.module('visitas', ({data,role,ui})=>{
   const estadoCanonBadge=(v)=>{const s=estadoCanon(v);return `<span class="bdg bdg-${s.tone}">${s.label}</span>`;};
   /* revisión operativa canónica del alcance (misma que Dashboard/reportes) */
   const sourceRevision=(CX.clienteData&&CX.clienteData.sourceRevision)?CX.clienteData.sourceRevision(p):(p&&p.sourceRevision)||'0';
-  const externalHrAuthority=String(p?.operationalSource?.mode||p?.routeSource||'').toLowerCase().includes('external');
-  /* I3 A09/B11: deliberate DEV-only admin command. Refreshing HR above is read-only;
-     only the existing authenticated command provider may reconcile durable Auth/Firestore. */
   const hrReconcileScope={tenantId:String(CX.BACKEND?.tenantId||''),projectId:String(CX.BACKEND?.defaultProjectId||'')};
-  const canOfferHrReconcile=externalHrAuthority&&!ALL&&['admin','super'].includes(role)&&
+  /* VRM-283: protected Cinépolis HR remains external even when a reconstructed
+     period lacks the optional operationalSource.mode marker. Never offer the
+     legacy local publish/edit controls for that exact authoritative DEV scope. */
+  const protectedCinepolisHrSource=!ALL&&String(data.currentProgramKey?.()||'')==='cinepolis'&&
     ['cxorbia-backend-dev.web.app','cxorbia-backend-dev.firebaseapp.com'].includes(String(window.location?.hostname||''))&&
     window.CX_PROTECTED_DEV_RUNTIME===true&&CX.BACKEND?.canonicalBackendProjectId==='cxorbia-backend-dev'&&
-    CX.BACKEND?.enableCommandWrites===true&&hrReconcileScope.tenantId==='tya'&&hrReconcileScope.projectId==='cinepolis'&&
-    CX.backendAuth?.context?.()?.authenticated===true&&CX.backendAuth?.context?.()?.authNamespace==='staff'&&
-    ['admin','super'].includes(CX.backendAuth?.context?.()?.role)&&typeof CX.commandAdapter?.execute==='function';
+    hrReconcileScope.tenantId==='tya'&&hrReconcileScope.projectId==='cinepolis';
+  const externalHrAuthority=String(p?.operationalSource?.mode||p?.routeSource||'').toLowerCase().includes('external')||protectedCinepolisHrSource;
+  /* I3 A09/B11: deliberate DEV-only admin command. Refreshing HR is read-only;
+     only the existing authenticated command provider may reconcile durable Auth/Firestore. */
+  // Discoverability is not authorization: display the protected control to the
+  // admin role, then validate the actual staff token/provider immediately on
+  // click. An unavailable session produces a HOLD rather than a silent absence.
+  const canOfferHrReconcile=protectedCinepolisHrSource&&['admin','super'].includes(role);
   /* P0-1: mismo criterio de disponibilidad canónica que en el marketplace del shopper. */
   const isAvailableAdmin=(v)=>{
     const f=typeof data.visitFacets==='function'?data.visitFacets(v):null;
@@ -304,7 +309,9 @@ CX.module('visitas', ({data,role,ui})=>{
       button.disabled=true;
       button.textContent='Verificando fuente y permisos…';
       try{
-        if(!canOfferHrReconcile||!window.crypto?.subtle||typeof window.TextEncoder!=='function')throw new Error('HR_ADMIN_DEV_GATE_UNAVAILABLE');
+        if(!canOfferHrReconcile||CX.BACKEND?.enableCommandWrites!==true||
+          typeof CX.commandAdapter?.execute!=='function'||!window.crypto?.subtle||
+          typeof window.TextEncoder!=='function')throw new Error('HR_ADMIN_DEV_GATE_UNAVAILABLE');
         const auth=CX.backendAuth?.context?.();
         const currentUser=window.firebase?.auth?.()?.currentUser;
         if(!currentUser||!auth?.authenticated||auth.authNamespace!=='staff'||!['admin','super'].includes(auth.role)||

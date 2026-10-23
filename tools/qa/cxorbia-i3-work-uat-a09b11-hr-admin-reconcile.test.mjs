@@ -12,15 +12,15 @@ class Node {
   addEventListener(type,handler){const arr=this.listeners.get(type)||[];arr.push(handler);this.listeners.set(type,arr);}
   async fire(type){for(const fn of this.listeners.get(type)||[])await fn({currentTarget:this});}
 }
-function harness({hostname='cxorbia-backend-dev.web.app',staffRole='admin',viewRole='admin',providerResult,authenticated=true}={}){
+function harness({hostname='cxorbia-backend-dev.web.app',staffRole='admin',viewRole='admin',providerResult,authenticated=true,externalHr=true,programKey='cinepolis'}={}){
   let module;
   const tasks=[],toasts=[],calls=[],reads=[],navs=[],nodes=new Map(),modal={};
   const elem=id=>{if(!nodes.has(id))nodes.set(id,new Node());return nodes.get(id);};
   const data={
-    previewMeta:{sourceRevision:REV},period:()=>({id:'cinepolis-2026-10',name:'Cinépolis octubre 2026',operationalSource:{mode:'external'}}),
+    previewMeta:{sourceRevision:REV},period:()=>({id:'cinepolis-2026-10',name:'Cinépolis octubre 2026',operationalSource:externalHr?{mode:'external'}:{}}),
     _visitas:[],visitas:()=>[],projects:[],scopedProyectos:()=>[],kpis:()=>({
       asignadas:{t:0},realizadas:{t:0},sinAsignar:{t:0},fueraRango:{t:0}
-    }),currentProgramKey:()=>'',visitFacets:()=>null,visitBucketFns:{
+    }),currentProgramKey:()=>programKey,visitFacets:()=>null,visitBucketFns:{
       asignadas:()=>false,realizadas:()=>false,sinAsignar:()=>false,fueraRango:()=>false
     }
   };
@@ -64,17 +64,34 @@ function harness({hostname='cxorbia-backend-dev.web.app',staffRole='admin',viewR
   return {html,cx,data,modal,toasts,calls,reads,navs,node:elem,window};
 }
 
-test('A09/B11 protected admin command stays hidden outside exact DEV/staff authorization',()=>{
+test('A09/B11 protected admin command stays hidden outside exact DEV/admin project scope',()=>{
   for(const opts of [
     {hostname:'cxorbia.example.org'},
-    {staffRole:'ops'},
     {viewRole:'ops'},
-    {authenticated:false}
+    {programKey:'other-project'}
   ]){
     const h=harness(opts);
     assert.doesNotMatch(h.html,/id="vReconcileHr"/);
     assert.match(h.html,/id="vRefreshHR"/,'read-only refresh remains available');
   }
+});
+
+test('VRM283 an admin can discover the action, but stale or unauthorized staff sessions cannot execute it',async()=>{
+  for(const opts of [{staffRole:'ops'},{authenticated:false}]){
+    const h=harness(opts);
+    assert.match(h.html,/id="vReconcileHr"/);
+    await h.node('vReconcileHr').fire('click');
+    assert.equal(h.calls.length,0);
+    assert.equal(h.modal.title,undefined);
+    assert.ok(h.toasts.some(t=>t.kind==='err'));
+  }
+});
+
+test('VRM283 protects live Cinépolis HR when period metadata lacks external source mode',()=>{
+  const h=harness({externalHr:false});
+  assert.match(h.html,/id="vReconcileHr"/,'authenticated DEV admin command must be discoverable');
+  assert.doesNotMatch(h.html,/id="addV"/,'legacy local creation must not masquerade as persistent HR creation');
+  assert.match(h.html,/id="vRefreshHR"/,'read-only refresh remains available');
 });
 
 test('A09/B11 human confirmation + command uses exact scoped revision with provider readback',async()=>{
