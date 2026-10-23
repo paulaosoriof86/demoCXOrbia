@@ -658,7 +658,7 @@
   },
   "moduleTruthAuthority": {
     "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261022-V162.json",
-    "gitBlob": "b04844bad8f16d630504f95de7f19a215d81de3e",
+    "gitBlob": "0aca8f2bf82ed6796f16f27d74b40fe06d1cde6b",
     "sourceSha": "7c8f5a09131403e042d138e8332f3e97d20f8dd9",
     "allModulesMatch": false,
     "phaseAComplete": false
