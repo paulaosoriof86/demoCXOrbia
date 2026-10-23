@@ -204,6 +204,15 @@ CX.module('visitas', ({data,role,ui})=>{
   /* revisión operativa canónica del alcance (misma que Dashboard/reportes) */
   const sourceRevision=(CX.clienteData&&CX.clienteData.sourceRevision)?CX.clienteData.sourceRevision(p):(p&&p.sourceRevision)||'0';
   const externalHrAuthority=String(p?.operationalSource?.mode||p?.routeSource||'').toLowerCase().includes('external');
+  /* I3 A09/B11: deliberate DEV-only admin command. Refreshing HR above is read-only;
+     only the existing authenticated command provider may reconcile durable Auth/Firestore. */
+  const hrReconcileScope={tenantId:String(CX.BACKEND?.tenantId||''),projectId:String(CX.BACKEND?.defaultProjectId||'')};
+  const canOfferHrReconcile=externalHrAuthority&&!ALL&&['admin','super'].includes(role)&&
+    ['cxorbia-backend-dev.web.app','cxorbia-backend-dev.firebaseapp.com'].includes(String(window.location?.hostname||''))&&
+    window.CX_PROTECTED_DEV_RUNTIME===true&&CX.BACKEND?.canonicalBackendProjectId==='cxorbia-backend-dev'&&
+    CX.BACKEND?.enableCommandWrites===true&&hrReconcileScope.tenantId==='tya'&&hrReconcileScope.projectId==='cinepolis'&&
+    CX.backendAuth?.context?.()?.authenticated===true&&CX.backendAuth?.context?.()?.authNamespace==='staff'&&
+    ['admin','super'].includes(CX.backendAuth?.context?.()?.role)&&typeof CX.commandAdapter?.execute==='function';
   /* P0-1: mismo criterio de disponibilidad canónica que en el marketplace del shopper. */
   const isAvailableAdmin=(v)=>{
     const f=typeof data.visitFacets==='function'?data.visitFacets(v):null;
@@ -228,6 +237,7 @@ CX.module('visitas', ({data,role,ui})=>{
     <div class="flex wrap" style="gap:8px;margin-bottom:12px">
       ${externalHrAuthority?'':`<button class="btn btn-green btn-sm" id="addV">＋ Publicar visita</button>`}
       <button class="btn btn-soft btn-sm" id="vRefreshHR">🔄 Actualizar desde HR</button>
+      ${canOfferHrReconcile?'<button class="btn btn-ghost btn-sm" id="vReconcileHr" title="Conciliación persistente mediante proveedor autenticado DEV">🔐 Conciliar HR/Firebase · DEV</button>':''}
       <button class="btn btn-ghost btn-sm" id="vExport">⤓ Exportar</button>
       <div class="spacer"></div>
       <input class="inp" id="vSearch" placeholder="🔎 Sucursal, shopper, ciudad…" style="max-width:240px">
@@ -289,6 +299,95 @@ CX.module('visitas', ({data,role,ui})=>{
     document.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>editor(all.find(z=>z.id===b.dataset.edit))));
     document.getElementById('addV')?.addEventListener('click',()=>editor(null));
     document.getElementById('vRefreshHR')?.addEventListener('click',async e=>{const b=e.currentTarget;b.disabled=true;b.textContent='Actualizando…';try{const r=await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_visits_manual_hr_refresh');if(!r?.ok)throw new Error(r?.error||r?.reason||'Lectura HR no confirmada');CX.ui.toast('HR viva actualizada','ok');CX.router.nav('visitas');}catch(error){CX.ui.toast('No se pudo actualizar HR · '+String(error?.message||error),'err',5200);}finally{b.disabled=false;b.textContent='🔄 Actualizar desde HR';}});
+    document.getElementById('vReconcileHr')?.addEventListener('click',async e=>{
+      const button=e.currentTarget;
+      button.disabled=true;
+      button.textContent='Verificando fuente y permisos…';
+      try{
+        if(!canOfferHrReconcile||!window.crypto?.subtle||typeof window.TextEncoder!=='function')throw new Error('HR_ADMIN_DEV_GATE_UNAVAILABLE');
+        const auth=CX.backendAuth?.context?.();
+        const currentUser=window.firebase?.auth?.()?.currentUser;
+        if(!currentUser||!auth?.authenticated||auth.authNamespace!=='staff'||!['admin','super'].includes(auth.role)||
+          auth.tenantId!==hrReconcileScope.tenantId)throw new Error('HR_ADMIN_PRINCIPAL_NOT_VERIFIED');
+        const token=await currentUser.getIdTokenResult(true);
+        const claims=token?.claims||{};
+        if(!['admin','super'].includes(claims.role)||claims.authNamespace!=='staff'||
+          !(claims.tenantId===hrReconcileScope.tenantId||Array.isArray(claims.tenants)&&claims.tenants.includes(hrReconcileScope.tenantId)||claims.role==='super'))
+          throw new Error('HR_ADMIN_STAFF_CLAIMS_DENIED');
+        const read=await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_visits_hr_command_preflight');
+        if(read?.ok!==true)throw new Error('HR_LIVE_PREFLIGHT_NOT_CONFIRMED');
+        const revision=String(CX.data?.previewMeta?.sourceRevision||'');
+        if(!/^[a-f0-9]{64}$/.test(revision))throw new Error('HR_CANONICAL_REVISION_UNAVAILABLE');
+        const idMaterial=[currentUser.uid,hrReconcileScope.tenantId,hrReconcileScope.projectId,revision].join('|');
+        const digest=await window.crypto.subtle.digest('SHA-256',new window.TextEncoder().encode(idMaterial));
+        const hex=Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,'0')).join('');
+        const idempotencyKey='i3-a09-b11-hr-'+hex;
+        ui.modal('🔐 Conciliación persistente HR/Firebase · DEV',`
+          <p style="font-size:12.5px;color:var(--t2)">Esta operación puede crear o actualizar datos de shoppers y visitas en <b>Firebase DEV</b>. No modifica la hoja de ruta HR ni producción.</p>
+          <div class="card card-p" style="margin:12px 0;font-size:12px">
+            <div><b>Alcance:</b> TyA / Cinépolis · ${hrReconcileScope.tenantId}/${hrReconcileScope.projectId}</div>
+            <div><b>Revisión HR:</b> ${revision.slice(0,16)}…</div>
+            <div><b>Control:</b> una ejecución idempotente, con recibo y readback obligatorios.</div>
+          </div>
+          <label style="display:flex;align-items:start;gap:8px;font-size:12px;margin:12px 0">
+            <input type="checkbox" id="hrCommandHumanConfirm">
+            Confirmo que deseo conciliar esta revisión HR con Firebase DEV y revisar el recibo del proveedor.
+          </label>
+          <p id="hrCommandStatus" style="font-size:12px;color:var(--t2)" role="status">Aún no se ha enviado ninguna escritura.</p>
+          <div class="flex" style="justify-content:flex-end;gap:8px">
+            <button class="btn btn-ghost btn-sm" id="hrCommandCancel">Cancelar</button>
+            <button class="btn btn-pr btn-sm" id="hrCommandExecute" disabled>Ejecutar conciliación DEV</button>
+          </div>`,{onMount:(overlay,close)=>{
+          const checkbox=overlay.querySelector('#hrCommandHumanConfirm');
+          const submit=overlay.querySelector('#hrCommandExecute');
+          const cancel=overlay.querySelector('#hrCommandCancel');
+          const status=overlay.querySelector('#hrCommandStatus');
+          checkbox.addEventListener('change',()=>{submit.disabled=!checkbox.checked;});
+          cancel.addEventListener('click',()=>close());
+          submit.addEventListener('click',async()=>{
+            submit.disabled=true;
+            checkbox.disabled=true;
+            cancel.disabled=true;
+            status.textContent='Enviando comando autenticado; espera el ACK y la lectura persistente…';
+            try{
+              const latest=CX.backendAuth?.context?.();
+              if(!latest?.authenticated||latest.authNamespace!=='staff'||!['admin','super'].includes(latest.role)||
+                String(CX.data?.previewMeta?.sourceRevision||'')!==revision)throw new Error('HR_ADMIN_SCOPE_OR_REVISION_CHANGED');
+              const result=await CX.commandAdapter.execute({
+                commandType:'hr.snapshot.reconcile',entityType:'hrSnapshot',entityId:revision,
+                tenantId:hrReconcileScope.tenantId,projectId:hrReconcileScope.projectId,
+                requirePeriod:false,periodId:null,expectedVersion:revision,
+                idempotencyKey,payload:{},source:'admin.visitas.protected-dev',
+                authorization:{providerEnforcementRequired:true},
+                reason:'i3-a09-b11-human-confirmed-admin-hr-snapshot-reconciliation'
+              });
+              if(result?.ok!==true||result.status!=='committed'||result.providerAck!==true||
+                result.readbackVerified!==true||!result.receiptPath||
+                result.unresolvedEffects!==0||result.unverifiedEffects!==0)
+                throw new Error(String(result?.code||result?.status||'HR_PROVIDER_ACK_READBACK_INCOMPLETE'));
+              status.textContent='ACK confirmado y recibo persistente: '+result.receiptPath+
+                ' · Auth: '+String(result.authWrites??'—')+' · Firestore: '+String(result.firestoreWrites??'—')+
+                (result.credentialAuthenticationPending?' · Credenciales aún requieren prueba de acceso.':'');
+              submit.textContent='Conciliación confirmada';
+              CX.ui.toast('Conciliación DEV confirmada por el proveedor; revisa las tres visitas y sus identidades.','ok',6000);
+              const updated=await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_visits_post_provider_readback');
+              if(updated?.ok===true)CX.router.nav('visitas');
+              else status.textContent+=' · Actualización visual pendiente: revisa el recibo antes de cualquier reintento.';
+            }catch(error){
+              status.textContent='HOLD · '+String(error?.message||error)+'. No reintentar automáticamente: comprobar recibo y bloqueo HR.';
+              CX.ui.toast('La conciliación no tiene ACK/readback completo. Revisar recibo del proveedor.','err',6000);
+            }finally{
+              cancel.disabled=false;
+            }
+          });
+        }});
+      }catch(error){
+        CX.ui.toast('Conciliación DEV bloqueada · '+String(error?.message||error),'err',6000);
+      }finally{
+        button.disabled=false;
+        button.textContent='🔐 Conciliar HR/Firebase · DEV';
+      }
+    });
     const assignModal=(v)=>{
       const shoppers=data.shoppersFor();
       ui.modal('Asignar visita · '+v.sucursal, `
