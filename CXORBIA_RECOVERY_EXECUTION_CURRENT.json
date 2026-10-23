@@ -9,7 +9,7 @@
   "authorizationI4": false,
   "productSourceSha": "68bf2522458fb48144eaa370c1a0bac516d96870",
   "productTree": "b2f88e4f442bef33be2e25838447fe3c5cae5a57",
-  "controlParentSha": "03c4b466e973b127ad323de8acf673486d71f6a1",
+  "controlParentSha": "085ee45f5616c0550972238e360015d7ec96e12d",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
     "executed": [
@@ -88,7 +88,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "VRM284 exact source proof for 68bf2522458fb48144eaa370c1a0bac516d96870 after control publication; only then DEV serial materialization, authenticated Admin read-only modal E2E, independent deep UAT. Three stale durable visits remain HOLD, separate scoped writer authorization. I4 not authorized.",
+  "nextExactAction": "RUN1830 PASS source proof for VRM284. Execute ONLY protected serial I3 DEV materialization exact source 68bf2522458fb48144eaa370c1a0bac516d96870 after allowlist readback; then authenticated Admin modal E2E preflight read-only. Durable 3 visits and shopper E2E remain HOLD. I4 not authorized.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -1644,10 +1644,25 @@
     "matrixBlob": "23d09e04e95885e68a04578a9959a0582424cca8",
     "latestServedRun": 1829,
     "latestServedSource": "60b092d1f1a150e8e48c213695825dcbbaed7be4",
-    "sourceProof": "PENDING",
-    "devMaterialization": "PENDING",
+    "sourceProof": "PASS_RUN1830",
+    "devMaterialization": "PENDING_EXACT_SOURCE",
     "ChromeAfterPatch": "NOT_EXECUTED",
     "i3": "HOLD",
+    "production": false
+  },
+  "lastSourceProofReceipt": {
+    "path": "CXORBIA_I3_VRM284_RUN1830_SOURCE_PROOF_2026-10-23.json",
+    "runId": 40014531783,
+    "runNumber": 1830,
+    "jobId": 120623224111,
+    "artifactId": 12527806718,
+    "sourceSha": "68bf2522458fb48144eaa370c1a0bac516d96870",
+    "sourceTree": "b2f88e4f442bef33be2e25838447fe3c5cae5a57",
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "g05FocalPass": 113,
+    "g05FocalFail": 0,
+    "knownUnclosedLegacyGate7Cases": 5,
+    "scope": "SOURCE_ONLY_NO_DEPLOY",
     "production": false
   }
 }

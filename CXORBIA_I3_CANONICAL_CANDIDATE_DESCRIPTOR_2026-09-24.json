@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM284_MODAL_CLOSED_BY_HR_RERENDER__SOURCE_FIXED_LOCAL_SYNTHETIC_7_PASS__CANONICAL_SOURCE_PROOF_DEV_CHROME_PENDING__A09_B11_THREE_ROWS_STALE_WRITER_ACK_NOT_VERIFIED",
+  "activeBlocker": "VRM284_SOURCE_PROOF_PASS_RUN1830_EXACT_SOURCE_DEV_MATERIALIZATION_REQUIRED__THREE_A09_B11_DURABLE_VISITS_STALE__WRITER_ACK_AND_CROSS_ROLE_E2E_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute existing canonical I3 source proof on exact VRM284 68bf2522458fb48144eaa370c1a0bac516d96870 / b2f88e4f442bef33be2e25838447fe3c5cae5a57 with V499/V169, then serial protected DEV materialization only after PASS; run authenticated Chrome admin read-only modal E2E. Do not execute writer until separate scoped consent. I3 HOLD, I4/production prohibited.",
+  "exactNextAction": "Materialize only source 68bf2522458fb48144eaa370c1a0bac516d96870 / b2f88e4f442bef33be2e25838447fe3c5cae5a57 in the existing I3 Phase A protected DEV lane with exact immutable VRM284 owner/QA blobs; no HR personal-data command. Then authenticated Admin Chrome modal read-only E2E, 44 visits, revision parity and stale rows. I3 HOLD, I4 not authorized.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -13210,13 +13210,15 @@
       "pass": 7,
       "fail": 0
     },
-    "certification": "PENDING",
-    "devMaterialization": "PENDING",
+    "certification": "PASS_RUN1830_SOURCE_PROOF_40014531783",
+    "devMaterialization": "PENDING_EXACT_SOURCE",
     "predecessorRun": 1829,
     "realChromeOutcome": "HUMAN_CONFIRMATION_DISAPPEARS_AFTER_RERENDER",
     "realWriter": "NOT_EXECUTED",
     "providerAck": "NOT_VERIFIED",
     "humanAcceptance": "PENDING",
-    "production": false
+    "production": false,
+    "sourceProofJobId": 120623224111,
+    "sourceProofArtifactId": 12527806718
   }
 }

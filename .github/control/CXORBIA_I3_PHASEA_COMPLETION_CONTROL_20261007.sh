@@ -72,11 +72,16 @@ preflight)
   node --test backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs | tee "$OUT/b1-oct07-source-test.log"
   node --test backend/runtime/hr-live-service/test/cxorbia-i3-oct08-b1-b3-source.test.mjs | tee "$OUT/oct08-b1-b3-source-test.log"
   PREDECESSOR_SOURCE="$(jq -r '.predecessorProductSourceSha' "$CANDIDATE_DESCRIPTOR")"
-  # VRM-282/283 A09-B11: admit only the approved administrative HR command
+  # VRM-282/283/284 A09-B11: admit only the approved administrative HR command
   # entrypoint at its exact immutable source/blob. Preserve the predecessor
   # freeze for visita-detalle and every other candidate (fail closed on drift).
   for protected in app/modules/visitas.js app/modules/visita-detalle.js; do
-    if [[ "$protected" == "app/modules/visitas.js" && "$PHASEA_SOURCE" == "60b092d1f1a150e8e48c213695825dcbbaed7be4" ]]; then
+    if [[ "$protected" == "app/modules/visitas.js" && "$PHASEA_SOURCE" == "68bf2522458fb48144eaa370c1a0bac516d96870" ]]; then
+      test "$(git rev-parse "$PHASEA_SOURCE:$protected")" = "0d3e9f097c34076634c24e28efe7a1671c49c1d5"
+      test "$(git rev-parse "$PHASEA_SOURCE:tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs")" = "6ff6ba738359375606251036c9e087e489d30db2"
+      node --check "$protected"
+      node --test tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs
+    elif [[ "$protected" == "app/modules/visitas.js" && "$PHASEA_SOURCE" == "60b092d1f1a150e8e48c213695825dcbbaed7be4" ]]; then
       test "$(git rev-parse "$PHASEA_SOURCE:$protected")" = "b193c11d708667be9bf4ab586d903f47e69ab8c3"
       test "$(git rev-parse "$PHASEA_SOURCE:tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs")" = "ba3fc7fef5001089c18d95ed20fc5ac410aacfbc"
       node --check "$protected"
