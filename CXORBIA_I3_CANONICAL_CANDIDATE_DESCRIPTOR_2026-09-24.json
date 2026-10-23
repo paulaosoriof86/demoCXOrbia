@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM284_SOURCE_FIXED_LATE_RERENDER_CI_PENDING",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run official source proof for exact cf9491 source, update existing protected materializer allowlist after PASS, DEV deploy exact source, then read-only Chrome modal dwell and HR receipts. No data writer or I4.",
+  "exactNextAction": "Run existing I3 official Phase-A cumulative source proof for VRM-284 late-render source cf94910dc3742e797b63f26e93166be388544021; following PASS dispatch one protected DEV materialization, then Chrome read-only modal proof. No writer / production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
