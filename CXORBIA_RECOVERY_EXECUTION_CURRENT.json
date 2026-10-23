@@ -2,13 +2,13 @@
   "schemaVersion": "cxorbia.recovery.execution-current.v1",
   "planLockPath": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
   "planId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
-  "asOf": "2026-10-22",
+  "asOf": "2026-10-23",
   "iteration": "I3",
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "7c8f5a09131403e042d138e8332f3e97d20f8dd9",
-  "productTree": "66cea325e7bf0f292582be3f046392080c6cd3e4",
+  "productSourceSha": "4f59ba0da52f3bdcc2e063ed01510a6c63a49819",
+  "productTree": "b633409844e29ba699199a528686cb498d3b6387",
   "controlParentSha": "c371aa32c4a483a384907a7ceec9ae752ea4e08e",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
@@ -66,7 +66,8 @@
     "E11": "OPEN_ADMIN_SHOPPER_ROLE_VIEW_ROUTE_E2E_DESKTOP_MOBILE",
     "B06": "RUN1637_R05_R06_OWNER_BLOBS_UNCHANGED_PASS_FOCAL__REMAINING_BUSINESS_ACTIONS_OPEN",
     "B07": "RUN1637_R05_R06_OWNER_BLOBS_UNCHANGED_PASS_FOCAL__CROSSROLE_ACK_OPEN",
-    "VRM280": "SOURCE_PROVEN_RUN1819_DEV_MATERIALIZED_RUN1820_LIVE_SHOPPER_FOCAL_PASS_HUMAN_PENDING"
+    "VRM280": "SOURCE_PROVEN_RUN1819_DEV_MATERIALIZED_RUN1820_LIVE_SHOPPER_FOCAL_PASS_HUMAN_PENDING",
+    "VRM281": "SOURCE_FIXED_LOCAL_FOCAL_102_PASS_CANONICAL_CI_PENDING_RUN1820_PREDECESSOR_SERVING"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -84,7 +85,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "A09/B11 independent current HR revision, three Firestore rows, command receipts stages/intents/effects and exact scope lock read-only preflight; then authorized DEV reconcile only if safe, same-artifact Shopper/Admin E2E. Preserve RUN1820; I3 HOLD.",
+  "nextExactAction": "Run canonical source QA on registered VRM-281 source 4f59ba0 without deploying; preserve RUN1820 as predecessor. Independently verify live HR revision, three durable visit rows, command receipts and exact scope lock before seeking separate bounded DEV reconciliation authorization; I3 HOLD.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -127,7 +128,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-10-22",
+  "lastUpdatedAt": "2026-10-23",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -658,9 +659,9 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261022-V164.json",
-    "gitBlob": "37aedc165e3e50b082fbbe6be72aa72462e54dc2",
-    "sourceSha": "7c8f5a09131403e042d138e8332f3e97d20f8dd9",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V165.json",
+    "gitBlob": "525786978d13f3c1f0e45eeb82cd88d76b3332a1",
+    "sourceSha": "4f59ba0da52f3bdcc2e063ed01510a6c63a49819",
     "allModulesMatch": false,
     "phaseAComplete": false
   },
@@ -1232,7 +1233,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 39890849861,
     "runNumber": 1820,
     "sourceSha": "7c8f5a09131403e042d138e8332f3e97d20f8dd9",
@@ -1479,5 +1480,29 @@
       "gate21": "PENDING"
     },
     "workFocal": "PASS_VRM280_EXACT_AUTHENTICATED_ZERO_VISIT_SHOPPER_FOCAL_POST_RUN1820"
+  },
+  "vrm281PrivateHrConfigSourceSuccessor": {
+    "findingId": "VRM-281",
+    "classification": "MAPPING_FAILURE",
+    "sourceSha": "4f59ba0da52f3bdcc2e063ed01510a6c63a49819",
+    "sourceTree": "b633409844e29ba699199a528686cb498d3b6387",
+    "predecessorSourceSha": "7c8f5a09131403e042d138e8332f3e97d20f8dd9",
+    "owner": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+    "ownerBlob": "d034ed56c3115ce5d86e4b03ee5fc41a6702b1d4",
+    "qaOwner": "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs",
+    "qaBlob": "888d52a1870664119e12bcfe9ac25c5a4ecbaf30",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V493_2026-10-23.json",
+    "ledgerGitBlob": "0f683c44a373c539859fb60ba52638088e64c544",
+    "moduleTruth": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V165.json",
+    "moduleTruthGitBlob": "525786978d13f3c1f0e45eeb82cd88d76b3332a1",
+    "localSyntheticFocalAndNeighborQa": {"pass": 102, "fail": 0, "fullRepositorySuite": "NOT_VERIFIED"},
+    "canonicalSourceQa": "PENDING",
+    "liveSource": "RUN1820_PREDECESSOR_SERVING",
+    "independentHrRevisionAndDurableWriterAck": "NOT_VERIFIED",
+    "firestoreAuthHrWrites": 0,
+    "devDeploys": 0,
+    "production": false,
+    "i3": "HOLD",
+    "i4Authorized": false
   }
 }

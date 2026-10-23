@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_RUN1820_DEV_MATERIALIZED_VRM280_FOCAL_LIVE_PASS_HUMAN_PENDING",
+  "status": "HOLD_I3_VRM281_SOURCE_QA_REQUIRED_RUN1820_PREDECESSOR_SERVING_HUMAN_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "7c8f5a09131403e042d138e8332f3e97d20f8dd9",
-  "productTreeAuthority": "66cea325e7bf0f292582be3f046392080c6cd3e4",
-  "predecessorProductSourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V492_2026-10-22.json",
-  "findingsLedgerExpectedGitBlob": "175c75fbaf3e12c3407ce1e5b6d96eb61322c71e",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261022-V164.json",
+  "productSourceSha": "4f59ba0da52f3bdcc2e063ed01510a6c63a49819",
+  "productTreeAuthority": "b633409844e29ba699199a528686cb498d3b6387",
+  "predecessorProductSourceSha": "7c8f5a09131403e042d138e8332f3e97d20f8dd9",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V493_2026-10-23.json",
+  "findingsLedgerExpectedGitBlob": "0f683c44a373c539859fb60ba52638088e64c544",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V165.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "A09_B11_INDEPENDENT_HR_REVISION_DURABLE_COMMAND_ACK_NOT_VERIFIED__U22_REAL_HISTORY_BENEFITS_E2E_PENDING__B09_B13_B05_B08_C02_C10_ADMIN_SHOPPER_E2E_PENDING__HUMAN_GATE20_GATE21_PENDING",
+  "activeBlocker": "VRM281_CANONICAL_CI_AND_DEV_MATERIALIZATION_REQUIRED__A09_B11_INDEPENDENT_HR_REVISION_DURABLE_COMMAND_ACK_NOT_VERIFIED__U22_REAL_HISTORY_BENEFITS_E2E_PENDING__B09_B13_B05_B08_C02_C10_ADMIN_SHOPPER_E2E_PENDING__HUMAN_GATE20_GATE21_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -39,7 +39,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-281",
+  "nextFindingId": "VRM-282",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "A09/B11 independent current HR revision, three Firestore rows, command receipts stages/intents/effects and exact scope lock read-only preflight; then authorized DEV reconcile only if safe, same-artifact Shopper/Admin E2E. Preserve RUN1820; I3 HOLD.",
+  "exactNextAction": "Run canonical source QA for VRM-281 on registered source 4f59ba0 without DEV deployment; RUN1820 continues serving previous source. Then independently verify HR revision, three Firestore rows, receipts and exact scope lock read-only before separately authorized bounded DEV reconciliation. I3 HOLD; I4 not authorized.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -783,7 +783,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "66cea325e7bf0f292582be3f046392080c6cd3e4",
+  "productSourceTree": "b633409844e29ba699199a528686cb498d3b6387",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -2947,7 +2947,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "37aedc165e3e50b082fbbe6be72aa72462e54dc2",
+  "moduleTruthExpectedGitBlob": "525786978d13f3c1f0e45eeb82cd88d76b3332a1",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12768,7 +12768,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 39890849861,
     "runNumber": 1820,
     "sourceSha": "7c8f5a09131403e042d138e8332f3e97d20f8dd9",
@@ -13015,5 +13015,29 @@
         "A09/B11 exact HR visits"
       ]
     }
+  },
+  "vrm281PrivateHrConfigSourceSuccessor": {
+    "findingId": "VRM-281",
+    "classification": "MAPPING_FAILURE",
+    "sourceSha": "4f59ba0da52f3bdcc2e063ed01510a6c63a49819",
+    "sourceTree": "b633409844e29ba699199a528686cb498d3b6387",
+    "predecessorSourceSha": "7c8f5a09131403e042d138e8332f3e97d20f8dd9",
+    "sourceCommitParentSha": "6d941b9ebd031813bb86487f9d01e24976e1ba62",
+    "owner": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+    "ownerBlob": "d034ed56c3115ce5d86e4b03ee5fc41a6702b1d4",
+    "qaOwner": "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs",
+    "qaBlob": "888d52a1870664119e12bcfe9ac25c5a4ecbaf30",
+    "localQa": {"pass": 102, "fail": 0, "synthetic": true, "fullRepositorySuite": "NOT_VERIFIED"},
+    "canonicalSourceQa": "PENDING",
+    "runtime": "NOT_MATERIALIZED_RUN1820_PREDECESSOR_SERVING",
+    "independentHrRevisionAndDurableAck": "NOT_VERIFIED",
+    "prevLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V492_2026-10-22.json",
+    "prevLedgerBlob": "175c75fbaf3e12c3407ce1e5b6d96eb61322c71e",
+    "prevMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261022-V164.json",
+    "prevMatrixBlob": "37aedc165e3e50b082fbbe6be72aa72462e54dc2",
+    "humanCheckpoint": "PENDING",
+    "i3": "HOLD",
+    "i4Authorized": false,
+    "production": false
   }
 }
