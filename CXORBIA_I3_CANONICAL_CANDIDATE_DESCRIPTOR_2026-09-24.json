@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "7c8f5a09131403e042d138e8332f3e97d20f8dd9",
   "productTreeAuthority": "66cea325e7bf0f292582be3f046392080c6cd3e4",
   "predecessorProductSourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V490_2026-10-22.json",
-  "findingsLedgerExpectedGitBlob": "de05aa99b77329ad93daa59c8dbae09579233e5d",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261022-V162.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V491_2026-10-22.json",
+  "findingsLedgerExpectedGitBlob": "4f793ff52ab7d2cd4b33a8596b3750e3852ff685",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261022-V163.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM280_EXACT_AUTH_SHOPPER_PROFILE_SOURCE_QA_PENDING__A09_B11_DURABLE_HR_REVISION_AND_RECEIPTS_UNVERIFIED__B09_B13_B05_B08_C02_C10_WORK_E2E_PENDING__RUN1815_PREDECESSOR_SERVING__I4_BLOCKED",
+  "activeBlocker": "VRM280_SOURCE_PROVEN_RUN1819_DEV_MATERIALIZATION_REQUIRED__RUN1815_PREDECESSOR_SERVING__A09_B11_HR_DURABLE_ACK_UNVERIFIED__U22_SHOPPER_E2E_PENDING__I4_BLOCKED",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing I3 canonical source-proof lane with VRM280 eight-case exact session test and 21-module inventory; on PASS authorize a single scoped DEV materialization, verify exact served bytes and Work Shopper UAT. Preserve RUN1815 as predecessor; I3 HOLD, I4 not authorized.",
+  "exactNextAction": "Execute exact existing single DEV i3-phasea-dev-materialize job for 7c8f5a0, source QA PASS RUN1819, verify health, Hosting served bytes and RUN/HR/rules fingerprints; remain HOLD until authenticated Shopper E2E.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2947,7 +2947,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "0aca8f2bf82ed6796f16f27d74b40fe06d1cde6b",
+  "moduleTruthExpectedGitBlob": "f0d7b91fd60a8c233035a4ef61ebd91f331c3426",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12914,9 +12914,31 @@
       "scope": "VM_SYNTHETIC"
     },
     "ciRun1817": "RELEASE_COMPOSITION_FAILURE_UNDECLARED_SOURCE_ONLY",
-    "currentState": "SOURCE_FIXED_PENDING_CANONICAL_SOURCE_QA",
+    "currentState": "SOURCE_PROVEN_RUN1819_DEV_MATERIALIZATION_PENDING",
     "devMaterialization": "RUN1815_PREDECESSOR_SERVING",
     "liveShopperE2e": "NOT_VERIFIED",
     "production": false
+  },
+  "vrm280Run1819SourceProof": {
+    "runNumber": 1819,
+    "runId": 39890530911,
+    "controlHeadSha": "f5e9f27b3003de06c7b419a1c8bc7ebdc45733f6",
+    "result": "SUCCESS",
+    "authorityGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+    "sourceQa": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "vrm280ExactVm": {
+      "tests": 8,
+      "pass": 8,
+      "fail": 0
+    },
+    "jobIds": {
+      "canonicalAuthority": 120209043494,
+      "sourceProof": 120209138906
+    },
+    "artifactId": 12474418258,
+    "artifactName": "cxorbia-i3-phasea-source-proof-39890530911",
+    "sourceSha": "7c8f5a09131403e042d138e8332f3e97d20f8dd9",
+    "sourceTree": "66cea325e7bf0f292582be3f046392080c6cd3e4",
+    "scope": "SOURCE_ONLY_NO_DEV_NO_HR_DATA_WRITES_NO_PRODUCTION"
   }
 }
