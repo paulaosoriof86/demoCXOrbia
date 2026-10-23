@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing I3 official Phase-A cumulative source proof for VRM-284 late-render source cf94910dc3742e797b63f26e93166be388544021; following PASS dispatch one protected DEV materialization, then Chrome read-only modal proof. No writer / production.",
+  "exactNextAction": "Single existing protected Phase-A DEV materialization [i3-phasea-dev-materialize] for exact certified source cf94910dc3742e797b63f26e93166be388544021; after physical readback inspect authenticated Chrome modal. No personal-data command writer or production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -13325,5 +13325,16 @@
     "i3": "HOLD",
     "i4Authorized": false,
     "production": false
+  },
+  "vrm284LateRouteRerenderSourceProof": {
+    "runId": 40026223893,
+    "status": "SUCCESS",
+    "artifactId": 12533395558,
+    "artifactName": "cxorbia-i3-phasea-source-proof-40026223893",
+    "sourceSha": "cf94910dc3742e797b63f26e93166be388544021",
+    "sourceTree": "c69ddbb1c7424e932a667bfac62618452f6c9a17",
+    "nodeTests": "7 PASS source + cumulative I3 contracts",
+    "production": false,
+    "writes": 0
   }
 }

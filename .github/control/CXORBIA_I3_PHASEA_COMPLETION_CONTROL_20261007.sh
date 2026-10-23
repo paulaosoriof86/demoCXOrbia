@@ -76,7 +76,12 @@ preflight)
   # entrypoint at its exact immutable source/blob. Preserve the predecessor
   # freeze for visita-detalle and every other candidate (fail closed on drift).
   for protected in app/modules/visitas.js app/modules/visita-detalle.js; do
-    if [[ "$protected" == "app/modules/visitas.js" && "$PHASEA_SOURCE" == "68bf2522458fb48144eaa370c1a0bac516d96870" ]]; then
+    if [[ "$protected" == "app/modules/visitas.js" && "$PHASEA_SOURCE" == "cf94910dc3742e797b63f26e93166be388544021" ]]; then
+      test "$(git rev-parse "$PHASEA_SOURCE:$protected")" = "c91bcd42c51b96ac266bb37967c2d2103735683b"
+      test "$(git rev-parse "$PHASEA_SOURCE:tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs")" = "6e79255dcd76fa9dedf9d4e35981c9de6fac2298"
+      node --check "$protected"
+      node --test tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs
+    elif [[ "$protected" == "app/modules/visitas.js" && "$PHASEA_SOURCE" == "68bf2522458fb48144eaa370c1a0bac516d96870" ]]; then
       test "$(git rev-parse "$PHASEA_SOURCE:$protected")" = "0d3e9f097c34076634c24e28efe7a1671c49c1d5"
       test "$(git rev-parse "$PHASEA_SOURCE:tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs")" = "6ff6ba738359375606251036c9e087e489d30db2"
       node --check "$protected"

@@ -88,7 +88,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Source proof exact VRM284 late-render fix; after PASS only existing protected DEV materializer; repeat authenticated preflight modal without command writer; then independent Admin/Shopper UAT.",
+  "nextExactAction": "Dispatch exactly one existing protected Phase-A DEV materialization for source cf94910d; readback artifact/runtime/hosting/rules and Chrome modal stability. No HR/Auth/Firestore writer or production.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -1830,6 +1830,14 @@
     "devMaterialization": "PENDING",
     "run1831PredecessorServing": true,
     "hrWrites": 0,
+    "production": false
+  },
+  "vrm284OfficialSourceProof": {
+    "runId": 40026223893,
+    "decision": "PASS_OFFICIAL_SOURCE_PROOF",
+    "artifactId": 12533395558,
+    "sourceSha": "cf94910dc3742e797b63f26e93166be388544021",
+    "status": "SOURCE_CERTIFIED_DEV_PENDING",
     "production": false
   }
 }
