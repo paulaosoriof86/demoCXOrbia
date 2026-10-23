@@ -39,7 +39,34 @@ window.CX = window.CX || {};
     return result;
   }
 
-  D.getShopper=function(id){return this.shoppers.find(s=>s.id===id)||null;};
+  /* I3 P0: an authenticated, platform-created Shopper can have no HR identity link or
+     assigned visit yet. Such a profile must remain out of global operational lists,
+     but its exact signed-in owner may still be resolved by existing Shopper modules.
+     The protected authority is published only after principal + membership validation.
+     Do not infer identity from names, logins, email, or a partial HR row. */
+  D.getShopper=function(id){
+    const requested=String(id==null?'':id).trim();
+    if(!requested)return null;
+    const listed=this.shoppers.find(s=>String(s?.id||s?.shopperId||'')===requested)||null;
+    if(listed)return listed;
+    const session=CX.session||{},profile=this.__sessionShopperProfile||null;
+    const authority=window.CX_PROTECTED_AUTH_HR_AUTHORITY||null;
+    let providerUid='';
+    try{providerUid=String(window.firebase?.auth?.().currentUser?.uid||'');}catch(_){}
+    if(session.role!=='shopper'||!providerUid||!profile||!authority||
+       authority.applied!==true||authority.exactSessionShopperReady!==true||
+       authority.shopperPrincipalClaimsVerified!==true||
+       providerUid!==String(authority.actorUid||'')||
+       requested!==String(authority.canonicalShopperId||'')||
+       requested!==String(session.user?.shopperId||'')||
+       requested!==String(profile.id||profile.shopperId||''))return null;
+    // Country is source-backed by the verified principal/readiness contract; the
+    // profile document itself can legitimately be sparse for a new Shopper.
+    const country=String(profile.pais||profile.country||authority.shopperCountry||'').trim();
+    return Object.assign({},profile,{id:requested,shopperId:requested,
+      pais:country,country:country||String(profile.country||'').trim(),
+      __exactAuthenticatedSessionProfile:true});
+  };
 
   /* Legacy mutators remain ONLY so the explicit demo can keep its historical behavior.
      Canonical/backend runtime fails closed here; cxorbia-cxdata-command-boundary-v1.js
