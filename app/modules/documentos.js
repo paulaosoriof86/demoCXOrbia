@@ -27,6 +27,19 @@ CX.module('documentos', ({data,role,ui})=>{
   const binaryReady=()=>storageState().authorized===true;
   const binaryHelp='La carga y sustitución de archivos todavía no está habilitada en este entorno. Puedes crear y editar recursos de texto, enlaces de video y referencias externas; los cambios autorizados se guardan en el proyecto.';
   const scope=()=>({projectId:data.currentProjectId,periodId:pid});
+  /* VRM-285: viewer state is ephemeral UI state, never resource truth. Bind it
+     to the authenticated Firebase identity plus tenant, role, project and period.
+     A router refresh may remount this module while the user is reading a PDF. */
+  const viewerScopeKey=()=>{
+    let uid='',tenant='';
+    try{uid=String(window.firebase?.auth?.().currentUser?.uid||'');}catch(_){}
+    if(connected()&&!uid)return '';
+    try{tenant=String(typeof CX.BACKEND?.tenantId==='function'?CX.BACKEND.tenantId():CX.BACKEND?.tenantId||'');}catch(_){}
+    return JSON.stringify([tenant,uid,String(CX.session?.effectiveRole?.()||role||''),String(data.currentProjectId||''),String(pid)]);
+  };
+  const closeViewer=()=>{
+    if(CX.docStore.activeViewer?.key===viewerScopeKey())CX.docStore.activeViewer=null;
+  };
   const committed=r=>r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true;
   const resourceDefaults=rec=>Object.assign({resourceType:'project_resource',projectId:data.currentProjectId,periodId:pid,visibleRoles:['super','admin','ops','coordinador','shopper'],targetAll:false},rec||{});
   const saveDurable=async(rec,options={})=>{
@@ -63,7 +76,7 @@ CX.module('documentos', ({data,role,ui})=>{
         <div class="flex" style="gap:8px">${d.url?`<a href="${d.url}" download="${d.n}" class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3);text-decoration:none">⤓ Descargar</a>`:''}<button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)" id="docPrint">🖨 PDF</button></div>
       </div>
       <div class="card card-p">${body}</div>`;
-    host.querySelector('#docBack').addEventListener('click',()=>draw());
+    host.querySelector('#docBack').addEventListener('click',()=>{closeViewer();draw();});
     host.querySelector('#docPrint')?.addEventListener('click',()=>window.print());
     /* render inline de Excel (SheetJS) y Word (Mammoth) — no descarga */
     if(isXls||isDocx){
@@ -83,6 +96,14 @@ CX.module('documentos', ({data,role,ui})=>{
 
   const draw=()=>{
     const docs=CX.docStore.list(pid);
+    const active=CX.docStore.activeViewer, viewerKey=viewerScopeKey();
+    /* A remote resources event and a router remount must retain a scoped reader.
+       An absent/deleted/revoked resource always closes the viewer fail-closed. */
+    if(viewerKey&&active?.key===viewerKey){
+      const current=docs.find(d=>String(d.id)===active.id);
+      if(current){viewer(current);return;}
+      CX.docStore.activeViewer=null;
+    }
     host.innerHTML=`
       ${ui.ph('Recursos del proyecto', p.name+' · documentos, videos, imágenes y checklists · se abren a pantalla completa')}
       <div class="between" style="margin-bottom:14px">${ui.bdg(docs.length+' recursos','n')}${canManage()?'<div class="flex" style="gap:8px"><button class="btn btn-soft btn-sm" id="docIA">📝 Generar borrador (heurística local)</button><button class="btn btn-pr btn-sm" id="docUp">＋ Agregar recurso</button></div>':''}</div>
@@ -102,7 +123,13 @@ CX.module('documentos', ({data,role,ui})=>{
       const state=document.createElement('div');state.className='card card-p';state.dataset.resourceBinaryState='disabled';state.style.marginBottom='14px';state.innerHTML=ui.degraded(binaryHelp,{title:'Archivos binarios no disponibles en este entorno'});
       host.querySelector('.between')?.insertAdjacentElement('afterend',state);
     }
-    host.querySelectorAll('[data-doc]').forEach(b=>b.addEventListener('click',()=>{const d=docs.find(x=>x.id===b.dataset.doc);if(d)viewer(d);}));
+    host.querySelectorAll('[data-doc]').forEach(b=>b.addEventListener('click',()=>{
+      const d=docs.find(x=>String(x.id)===String(b.dataset.doc));
+      if(!d)return;
+      const key=viewerScopeKey();
+      if(key)CX.docStore.activeViewer={key,id:String(d.id)};
+      viewer(d);
+    }));
     host.querySelectorAll('[data-editd]').forEach(b=>b.addEventListener('click',()=>{const d=docs.find(x=>x.id===b.dataset.editd);if(!d)return;
       if(!CX.permissions.gate('documento.edit',CX.permissions.ctx({entityType:'documento',entityId:d.id}),ui))return;
       ui.modal('✎ Editar documento · '+d.n,`
@@ -239,3 +266,4 @@ CX.module('documentos', ({data,role,ui})=>{
 });
 
 /* CXOrbia · Centro de Aprendizaje → modules/aprendizaje.js */
+
