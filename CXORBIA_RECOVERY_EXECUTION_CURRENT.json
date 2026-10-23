@@ -89,7 +89,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Canonical source proof VRM285, then protected DEV materialization exact source, then authenticated PDF viewer Chrome E2E; all writes blocked.",
+  "nextExactAction": "CANONICAL_CONTROL_FIX_1838_NEXT_FINDING_AND_PREDECESSOR_SEAL; source proof exact 2c1c then DEV if PASS. No writer.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -665,9 +665,9 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V172.json",
-    "gitBlob": "eb9a7dd13a599d863a5a37bed440afc78d3736d4",
-    "sourceSha": "cf94910dc3742e797b63f26e93166be388544021",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V173.json",
+    "gitBlob": "80611887f249d4d2215c58b0569a9eea784215e1",
+    "sourceSha": "2c1c5951596a2dd260f02a744b21aa2cb46b17da",
     "allModulesMatch": false,
     "phaseAComplete": false
   },
@@ -1239,7 +1239,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 40026555714,
     "runNumber": 1836,
     "sourceSha": "cf94910dc3742e797b63f26e93166be388544021",
