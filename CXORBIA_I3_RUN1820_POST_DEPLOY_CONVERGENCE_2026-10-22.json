@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "cxorbia.i3.run1820.postdeploy-control-convergence.20261022.v1",
+  "date": "2026-10-22",
+  "status": "HOLD",
+  "iteration": "I3",
+  "source": {
+    "sha": "7c8f5a09131403e042d138e8332f3e97d20f8dd9",
+    "tree": "66cea325e7bf0f292582be3f046392080c6cd3e4"
+  },
+  "materialization": {
+    "state": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "sourceSha": "7c8f5a09131403e042d138e8332f3e97d20f8dd9",
+    "sourceTree": "66cea325e7bf0f292582be3f046392080c6cd3e4",
+    "runId": 39890849861,
+    "runNumber": 1820,
+    "jobId": 120210070181,
+    "artifactId": 12474409096,
+    "artifactUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/39890849861/artifacts/12474409096",
+    "artifactDigest": "sha256:0d5756026c1ba444be464ab1e77038c3b6a214e676cded4728ae5107ae38784b",
+    "artifactDigestType": "SOURCE_TAR_SHA256",
+    "sourceArtifact": "cxorbia-phasea-source.tar",
+    "runtimeRevision": "cxorbia-live-hr-dev-00317-j5w",
+    "runtimeDigest": "sha256:51b54b6baeb9eb917d38c9324dbe1aab06fc4a13bb3eb70b00f82f982edf597c",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/b7d65a92826ae0bd",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792723437968000",
+    "hrRevision": "d19eb12ad8c1c5140b5711ea390deaae50b0edd35ff4f982a69bfdcabbc86dd2",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/fe1c7f11-7265-4d66-95ee-c03f4798d35e",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "firestoreRulesDeploys": 1,
+    "hrWrites": 0,
+    "production": false,
+    "sameArtifactSourceAssetReadback": "PASS_RUN1820_INCLUDES_CORE_SHOPPERS_STORE_JS_BYTE_EXACT",
+    "sameArtifactLive": "PASS_VRM280_ZERO_VISIT_SHOPPER_FOCAL_ONLY",
+    "humanAcceptance": "PENDING",
+    "gate20": "PENDING",
+    "gate21": "PENDING"
+  },
+  "proof": {
+    "runId": 39890849861,
+    "conclusion": "success",
+    "sourceQaRunId": 39890530911,
+    "sourceQaRunNumber": 1819,
+    "sourceQa": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF_VRM280_8_OF_8",
+    "preflight": "PASS",
+    "build": "PASS",
+    "deploy": "PASS",
+    "sourceTarShaVerified": true,
+    "artifactUploaded": true,
+    "proof": "PASS"
+  },
+  "workFocal": {
+    "role": "Shopper",
+    "fixture": "Shopper I3.8 DEV Validation",
+    "project": "cinepolis",
+    "period": "cinepolis-2026-10",
+    "liveSessionAfterDeploy": true,
+    "oldSidebar": "Shopper sin país asignado",
+    "newSidebar": "Shopper · 🇬🇹 Guatemala",
+    "country": "GT",
+    "misVisitas": {
+      "active": 0,
+      "history": 0,
+      "result": "PASS_FOCAL_VALID_EMPTY"
+    },
+    "misBeneficios": {
+      "current": 0,
+      "history": 0,
+      "result": "PASS_FOCAL_VALID_EMPTY"
+    },
+    "miPerfil": {
+      "canonicalVisits": 0,
+      "confirmedCountry": "GT",
+      "result": "PASS_FOCAL"
+    },
+    "reloadAuthenticatedHydrationMs": [
+      5707,
+      3518,
+      6214
+    ],
+    "meanHydrationMs": 5146,
+    "medianHydrationMs": 5707,
+    "performanceScope": "Browser observed from reload to authenticated country+Guard CX.data marker, three samples; not network/provider API latency decomposition",
+    "conclusion": "PASS_VRM280_EXACT_AUTHENTICATED_ZERO_VISIT_SHOPPER_FOCAL_POST_RUN1820",
+    "notProven": [
+      "Existing shopper paid historical records",
+      "cross-role notifications",
+      "switch Admin-to-Shopper logout",
+      "A09/B11 exact HR visits"
+    ]
+  },
+  "previousDev": {
+    "runNumber": 1815,
+    "sourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/9c81f38ec663f7bf",
+    "preservedHistoricalEvidence": true
+  },
+  "scope": {
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "periodId": "cinepolis-2026-10",
+    "firebaseProject": "cxorbia-backend-dev"
+  },
+  "changes": {
+    "shopperExactProfile": "Provider-verified session profile fallback in D.getShopper for platform-created Shopper absent from HR list; source-backed country on exact identity only"
+  },
+  "notIncluded": [
+    "HR snapshot reconciliation A09/B11",
+    "historical U22 benefits real-account replay",
+    "resource PDF open in Shopper",
+    "admin 31-route UAT",
+    "cross-role flow notification ACK",
+    "human visual approval",
+    "production I4"
+  ],
+  "safety": {
+    "firestoreDataWrites": 0,
+    "hrWrites": 0,
+    "paymentWrites": 0,
+    "authWrites": 0,
+    "production": false,
+    "noReimport": true
+  },
+  "nextExactAction": "Preserve RUN1820 as CURRENT_SOURCE_SERVING; continue Work focal existing Shopper cross-role/HR A09/B11 receipts and live same-revision reconciliation preflight. I3 HOLD, I4 blocked."
+}
