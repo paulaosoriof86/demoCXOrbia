@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
-  "productTree": "9013315b4de8ac941845c784dcc354d4bafdc501",
+  "productSourceSha": "81b3a028f94c7128d78cf565e87b10e3dbaf056c",
+  "productTree": "2f0d7fb5eabde8094f530d66c70d6450cb6b1163",
   "controlParentSha": "6b633086b0e16d547f7cea6f02c7354f0e65f1cc",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
@@ -89,7 +89,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "New explicit approval for one protected, idempotent HR/Firebase reconciliation in DEV tya/cinepolis at d19 revision on f283 runtime 00326; verify ACK/receipt/effects, three Firestore documents and role E2E. I3 remains HOLD; production I4 not authorized.",
+  "nextExactAction": "DEV only: canonical I3 A09/B11 Hosting-only frontend deployment from source 81b3a028f94c7128d78cf565e87b10e3dbaf056c; preserve Cloud Run 00326-z9j; exact HR rev gate d19; one protected reconciliation and durable readback. I3 HOLD, I4 blocked.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -668,8 +668,8 @@
   },
   "moduleTruthAuthority": {
     "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261024-V180.json",
-    "gitBlob": "c4d969e5fc70949f0e7f817f9ab5a971c2d5b4ba",
-    "sourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
+    "gitBlob": "a0f738d9ca2f3eaf5909ea776dda1f827ff2a7ab",
+    "sourceSha": "81b3a028f94c7128d78cf565e87b10e3dbaf056c",
     "allModulesMatch": false,
     "phaseAComplete": false
   },
@@ -1241,7 +1241,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 40121491485,
     "runNumber": 1852,
     "sourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
@@ -2325,5 +2325,14 @@
     "sourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
     "durableOperationalParity": "FAIL_3",
     "authorizationNext": "FRESH_SINGLE_DEV_HR_RECONCILIATION"
+  },
+  "i3A09B11FrontendIdempotencyP0_20261024": {
+    "sourceSha": "81b3a028f94c7128d78cf565e87b10e3dbaf056c",
+    "sourceTree": "2f0d7fb5eabde8094f530d66c70d6450cb6b1163",
+    "hosting": "PENDING",
+    "backendRevision": "cxorbia-live-hr-dev-00326-z9j",
+    "qa": "8_8_PASS",
+    "reconciliation": "PENDING_ONE_AUTHORIZED",
+    "production": false
   }
 }

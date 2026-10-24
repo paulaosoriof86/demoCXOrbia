@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v502",
   "frozenAt": "2026-10-24",
-  "status": "HOLD_I3_A09_B11_DURABLE_RECONCILIATION_AUTHORIZATION_PENDING",
+  "status": "HOLD_I3_A09_B11_FRONTEND_HOSTING_ONLY_AUTHORIZED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "I3-P0-HN-SHOPPER-READINESS-EXACT-PRINCIPAL-GATE",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
-    "sourceTree": "9013315b4de8ac941845c784dcc354d4bafdc501",
-    "predecessorSha": "cc5705be96dc72bdbb16714e15278f4ed09cf8e9",
+    "sourceSha": "81b3a028f94c7128d78cf565e87b10e3dbaf056c",
+    "sourceTree": "2f0d7fb5eabde8094f530d66c70d6450cb6b1163",
+    "predecessorSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
     "production": false,
-    "state": "SOURCE_ONLY_P0_MIRROR_LOCAL_4_4_PASS_PENDING_CI_RUN1848_PREDECESSOR_SERVING",
+    "state": "SOURCE_ONLY_I3_A09_B11_FRONTEND_IDEMPOTENCY_P0_CERTIFIED_PENDING_DEV_HOSTING",
     "proof": {
       "stage": "RUN1794_FOCAL_SOURCE_FAIL_CORRECTED_PENDING_CI",
       "sourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
@@ -34150,5 +34150,26 @@
     "freshReconcileAuthorization": "REQUIRED",
     "production": false,
     "record": "CXORBIA_I3_RUN1852_POST_DEPLOY_CONSISTENCY_SEAL_2026-10-24.json"
+  },
+  "i3A09B11FrontendIdempotency20261024": {
+    "status": "SOURCE_ONLY_APPROVED_DEV_HOSTING_PENDING",
+    "classification": "FUNCTIONAL_DEFECT",
+    "owner": "app/modules/visitas.js",
+    "ownerBlob": "b0ef51afb95e6ffbdfc5afba5d45ee935188a938",
+    "qa": "tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs",
+    "qaBlob": "0ee1beb9fcd997af4dcb8cb7964f0592072db469",
+    "sourceSha": "81b3a028f94c7128d78cf565e87b10e3dbaf056c",
+    "sourceTree": "2f0d7fb5eabde8094f530d66c70d6450cb6b1163",
+    "predecessorSourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
+    "tests": {
+      "count": 8,
+      "pass": 8,
+      "fail": 0
+    },
+    "scope": "ONE_NEW_IDEMPOTENCY_KEY_PER_HUMAN_APPROVED_DIALOG_BLOCK_DOUBLE_SUBMIT",
+    "devBackendPinned": "cxorbia-live-hr-dev-00326-z9j",
+    "devHosting": "PENDING",
+    "hrExternalWrites": 0,
+    "production": false
   }
 }

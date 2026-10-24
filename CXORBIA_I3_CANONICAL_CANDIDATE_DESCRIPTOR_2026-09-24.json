@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZED_A09_B11_HR_OPERATIONAL_MAPPING_P0_OPEN",
+  "status": "HOLD_I3_A09_B11_FRONTEND_HOSTING_ONLY_AUTHORIZED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
-  "productTreeAuthority": "9013315b4de8ac941845c784dcc354d4bafdc501",
-  "predecessorProductSourceSha": "cc5705be96dc72bdbb16714e15278f4ed09cf8e9",
+  "productSourceSha": "81b3a028f94c7128d78cf565e87b10e3dbaf056c",
+  "productTreeAuthority": "2f0d7fb5eabde8094f530d66c70d6450cb6b1163",
+  "predecessorProductSourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V511_2026-10-24.json",
-  "findingsLedgerExpectedGitBlob": "3b37756d86fc4c8a8210aeffdc4c26a176867744",
+  "findingsLedgerExpectedGitBlob": "ace65a91ded92ee35192a779b2d7efb07c0f429b",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261024-V180.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "A09_B11_SOURCE_PROOF_AND_DEV_PASS_BUT_THREE_PERSISTED_VISITS_REQUIRE_FRESH_AUTHORIZED_HR_RECONCILIATION",
+  "activeBlocker": "I3_A09_B11_DURABLE_HR_PARITY_THREE_VISITS; FOCAL_FRONTEND_HOSTING_AND_SINGLE_AUTHORIZED_DEV_RECONCILIATION_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "New explicit approval for one protected, idempotent HR/Firebase reconciliation in DEV tya/cinepolis at d19 revision on f283 runtime 00326; verify ACK/receipt/effects, three Firestore documents and role E2E. I3 remains HOLD; production I4 not authorized.",
+  "exactNextAction": "Run the canonical Hosting-only DEV job from this approved source, pin Cloud Run 00326-z9j, verify exact HR revision d19; then ONE protected HR/Firebase reconciliation in DEV and receipt/ACK/effects/readback. I3 HOLD and I4 NOT_AUTHORIZED.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -787,7 +787,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "9013315b4de8ac941845c784dcc354d4bafdc501",
+  "productSourceTree": "2f0d7fb5eabde8094f530d66c70d6450cb6b1163",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -2961,7 +2961,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "c4d969e5fc70949f0e7f817f9ab5a971c2d5b4ba",
+  "moduleTruthExpectedGitBlob": "a0f738d9ca2f3eaf5909ea776dda1f827ff2a7ab",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12782,7 +12782,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 40121491485,
     "runNumber": 1852,
     "sourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
@@ -13863,5 +13863,22 @@
     "sealBlob": "a19a74044770650bd2a0685f95a248c954793dc1",
     "firestoreParity": "FAIL_3_EXISTING_VISITS",
     "freshReconcileAuthorization": "REQUIRED"
+  },
+  "i3A09B11FrontendIdempotencyP0_20261024": {
+    "sourceSha": "81b3a028f94c7128d78cf565e87b10e3dbaf056c",
+    "sourceTree": "2f0d7fb5eabde8094f530d66c70d6450cb6b1163",
+    "predecessorSourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
+    "owner": "app/modules/visitas.js",
+    "ownerBlob": "b0ef51afb95e6ffbdfc5afba5d45ee935188a938",
+    "qa": "tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs",
+    "qaBlob": "0ee1beb9fcd997af4dcb8cb7964f0592072db469",
+    "tests": "8_8_PASS",
+    "qaDecision": "SOURCE_ONLY_PASS_HOSTING_PENDING",
+    "job": "i3-a09b11-hosting-only-dev",
+    "backendRevisionFrozen": "cxorbia-live-hr-dev-00326-z9j",
+    "hrRevisionGate": "d19eb12ad8c1c5140b5711ea390deaae50b0edd35ff4f982a69bfdcabbc86dd2",
+    "hostingDeploys": 0,
+    "reconciliationsExecuted": 0,
+    "production": false
   }
 }

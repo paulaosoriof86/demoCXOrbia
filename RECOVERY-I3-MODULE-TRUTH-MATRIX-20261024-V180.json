@@ -103,11 +103,11 @@
     }
   },
   "productSource": {
-    "sha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
-    "treeSha": "9013315b4de8ac941845c784dcc354d4bafdc501",
-    "predecessorProductSourceSha": "cc5705be96dc72bdbb16714e15278f4ed09cf8e9",
-    "message": "I3 A09/B11: full HR-managed operational visit field mirror with platform finance preservation",
-    "authorityState": "SOURCE_ONLY_P0_PROVEN_4_4_LOCAL_PENDING_CANONICAL_PROOF_RUN1848_PREDECESSOR_SERVING"
+    "sha": "81b3a028f94c7128d78cf565e87b10e3dbaf056c",
+    "treeSha": "2f0d7fb5eabde8094f530d66c70d6450cb6b1163",
+    "predecessorProductSourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
+    "message": "I3 A09/B11: Admin HR reconcile unique operation identity; stable during dialog retry",
+    "authorityState": "SOURCE_ONLY_TESTS_8_8_PASS_PENDING_FRONTEND_ONLY_DEV_HOSTING"
   },
   "controlHeadAtConstruction": "1ef58321f6ca54c2381177fd52ba0e657a96b386",
   "phaseAComplete": false,
@@ -2000,7 +2000,7 @@
       "currentCandidateTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
       "currentOwnerBlobs": {
         "app/adapters/tya-canonical-reservations-guard-v2.js": "ac12767b433dfa0debd3eb08cfc2b67271c3264e",
-        "app/modules/visitas.js": "c91bcd42c51b96ac266bb37967c2d2103735683b",
+        "app/modules/visitas.js": "b0ef51afb95e6ffbdfc5afba5d45ee935188a938",
         "app/modules/visita-detalle.js": "1f2178bbfa2c6aeb2b11f78b645f4922cfc32876",
         "app/modules/revision-admin.js": "41fcea495c1e23e7ecee43a637b45002124ea3c9",
         "app/modules/postulaciones.js": "bca634a11d64ab05e5ffb9f34ff1887f94bece0a",
@@ -4476,7 +4476,7 @@
       "f9ApprovedBlob": "d7c65650e4972d438f2641cbcaaff25486fb7f01",
       "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
       "latestApprovedBlob": "43f1aa36468340aa96ceec30b30f4816b13c6d2a",
-      "currentBlob": "c91bcd42c51b96ac266bb37967c2d2103735683b",
+      "currentBlob": "b0ef51afb95e6ffbdfc5afba5d45ee935188a938",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
@@ -13318,5 +13318,15 @@
     "freshReconcileAuthorization": "REQUIRED",
     "production": false,
     "record": "CXORBIA_I3_RUN1852_POST_DEPLOY_CONSISTENCY_SEAL_2026-10-24.json"
+  },
+  "i3A09B11FrontendIdempotency20261024": {
+    "sourceSha": "81b3a028f94c7128d78cf565e87b10e3dbaf056c",
+    "sourceTree": "2f0d7fb5eabde8094f530d66c70d6450cb6b1163",
+    "ownerBlob": "b0ef51afb95e6ffbdfc5afba5d45ee935188a938",
+    "qaBlob": "0ee1beb9fcd997af4dcb8cb7964f0592072db469",
+    "tests": "8_8_PASS",
+    "devHosting": "PENDING",
+    "runtimeRevisionPinned": "cxorbia-live-hr-dev-00326-z9j",
+    "production": false
   }
 }
