@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZED_VRM286_REAL_CHROME_FOCAL_PASS_OTHER_I3_CRITERIA_OPEN",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "aa54aaa4c67b8ce140485a1b18e9f3279392b97b",
-  "productTreeAuthority": "32eed06cab0635bec3243f68937625348fc2dc13",
-  "predecessorProductSourceSha": "2c1c5951596a2dd260f02a744b21aa2cb46b17da",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V507_2026-10-23.json",
-  "findingsLedgerExpectedGitBlob": "da6397f848715f8c168d9439d23e05948e6285f4",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261023-V176.json",
+  "productSourceSha": "cc5705be96dc72bdbb16714e15278f4ed09cf8e9",
+  "productTreeAuthority": "d376acca7b45d22a039d08734ca8f99d351f1904",
+  "predecessorProductSourceSha": "aa54aaa4c67b8ce140485a1b18e9f3279392b97b",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V508_2026-10-24.json",
+  "findingsLedgerExpectedGitBlob": "49fb0d3bf9ac035891c213595d8c70cb44507195",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261024-V177.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM285_PDF_CONTENT_UNVERIFIED_AFTER_VIEWER_SHELL_PERSISTENCE_PASS__VRM284_HR_WRITER_ACK_THREE_VISITS_PENDING__DEEP_I3_ADMIN_SHOPPER_E2E_PENDING",
+  "activeBlocker": "A09_B11_DURABLE_EXECUTION_PARITY_SOURCE_ONLY_PENDING_SOURCE_PROOF_AND_DEV_LIVE_VALIDATION_OTHER_I3_HOLD",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Complete mandatory I3 multi-role real E2E, 3 HR stale-row durable ACK, same-source Gate20/21 and human checkpoint; I4 remains unauthorized.",
+  "exactNextAction": "Run existing I3 canonical source proof on cc5705; then explicitly gate single DEV materialization, authenticated A09/B11 durable readback, two-role E2E, Gate20/21 and human checkpoint. Do not rerun HR reconciliation without authorization; I4 unauthorized.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -785,7 +785,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "0d184194f0e4a5e81112a50a3306ce8e0cf2a7a6",
+  "productSourceTree": "d376acca7b45d22a039d08734ca8f99d351f1904",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -1216,16 +1216,19 @@
     "production": false
   },
   "pendingMaterialization": {
-    "findingId": "VRM-286",
-    "sourceSha": "aa54aaa4c67b8ce140485a1b18e9f3279392b97b",
-    "sourceTree": "32eed06cab0635bec3243f68937625348fc2dc13",
-    "sourceProof": "PASS_RUN1843_40036333085",
-    "dev": "PENDING",
-    "production": false,
-    "predecessorDevRun": 1840,
-    "authorization": "PAULA_I3_FIREBASE_DEV_ONLY",
-    "request": "ONE_BUILD_ONE_RUNTIME_ONE_HOSTING_RULES_DEV_ONLY",
-    "i4": false
+    "state": "HOLD_SOURCE_PROOF_PENDING",
+    "projectId": "cinepolis",
+    "tenantId": "tya",
+    "sourceSha": "cc5705be96dc72bdbb16714e15278f4ed09cf8e9",
+    "sourceTree": "d376acca7b45d22a039d08734ca8f99d351f1904",
+    "predecessorDevRun": 1844,
+    "changedFiles": [
+      "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+      "tools/qa/cxorbia-i3-work-uat-a09b11-three-visit-assignment.test.mjs"
+    ],
+    "scope": "A09_B11_DURABLE_EXECUTION_HR_PARITY",
+    "trigger": "EXISTING_I3_CANONICAL_SOURCE_PROOF_THEN_SCOPED_DEV_DEPLOY",
+    "production": false
   },
   "lastVrm080Proof": {
     "runId": 36333245670,
@@ -2951,7 +2954,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "29f570831e00e50d8974e1573dcb9860c156526a",
+  "moduleTruthExpectedGitBlob": "4ce8b029ceed8335d3e9bdb479fd9c9689680005",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12001,7 +12004,7 @@
     "proofTree": "1753d01aa909dd4181e3490c07d24287913d68a0",
     "decision": "PASS_FOCAL_SOURCE_ONLY_I3_HOLD"
   },
-  "lastUpdatedAt": "2026-10-23",
+  "lastUpdatedAt": "2026-10-24",
   "a05SourceProof": {
     "recordedAt": "2026-10-17T12:00:37.826Z",
     "productSourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
@@ -12772,7 +12775,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 40036541158,
     "runNumber": 1844,
     "sourceSha": "aa54aaa4c67b8ce140485a1b18e9f3279392b97b",
@@ -13549,5 +13552,35 @@
     "gate20": "HOLD",
     "gate21": "HOLD",
     "production": false
+  },
+  "a09B11DurableExecution20261024": {
+    "scope": "I3_A09_B11_DURABLE_EXECUTION_HR_MANAGED_TOP_LEVEL_PARITY",
+    "date": "2026-10-24",
+    "classification": "MAPPING_FAILURE",
+    "sourceSha": "cc5705be96dc72bdbb16714e15278f4ed09cf8e9",
+    "sourceTree": "d376acca7b45d22a039d08734ca8f99d351f1904",
+    "predecessorSourceSha": "aa54aaa4c67b8ce140485a1b18e9f3279392b97b",
+    "correction": {
+      "provider": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+      "providerBlob": "ab727d06db178f83c695fa1f95065047ed431b30",
+      "qa": "tools/qa/cxorbia-i3-work-uat-a09b11-three-visit-assignment.test.mjs",
+      "qaBlob": "c2c6c959f6a17c1c7b517ff283e1b1b4316e6b90"
+    },
+    "proof": {
+      "localSynthetic": "3/3 PASS",
+      "ciBeforeAuthorityRepair": "42 focused tests PASS; guard failed expected source drift at RUN40116006397",
+      "canonicalSourceProof": "PENDING",
+      "devMaterialization": "NOT_RUN"
+    },
+    "serving": {
+      "sourceSha": "aa54aaa4c67b8ce140485a1b18e9f3279392b97b",
+      "runId": 40036541158,
+      "runNumber": 1844,
+      "mode": "PREDECESSOR_SERVING_PENDING_SOURCE"
+    },
+    "firebaseWritesThisSourceFix": 0,
+    "externalHrWrites": 0,
+    "productionWrites": 0,
+    "secondReconcileAuthorized": false
   }
 }
