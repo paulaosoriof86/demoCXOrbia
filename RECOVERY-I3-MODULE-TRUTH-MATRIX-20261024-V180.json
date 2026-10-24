@@ -13325,8 +13325,27 @@
     "ownerBlob": "b0ef51afb95e6ffbdfc5afba5d45ee935188a938",
     "qaBlob": "0ee1beb9fcd997af4dcb8cb7964f0592072db469",
     "tests": "8_8_PASS",
-    "devHosting": "PENDING",
+    "devHosting": "PASS_RUN1855_BYTE_IDENTICAL",
     "runtimeRevisionPinned": "cxorbia-live-hr-dev-00326-z9j",
-    "production": false
+    "production": false,
+    "materialization": {
+      "decision": "PASS_I3_A09_B11_DEV_HOSTING_ONLY_BYTE_IDENTICAL",
+      "sourceSha": "81b3a028f94c7128d78cf565e87b10e3dbaf056c",
+      "sourceTree": "2f0d7fb5eabde8094f530d66c70d6450cb6b1163",
+      "runId": 40139555761,
+      "runNumber": 1855,
+      "jobId": 121008284606,
+      "artifactId": 12578495545,
+      "artifactUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/40139555761/artifacts/12578495545",
+      "hostingSite": "cxorbia-backend-dev",
+      "frontendBlob": "b0ef51afb95e6ffbdfc5afba5d45ee935188a938",
+      "cloudRunRevisionStill": "cxorbia-live-hr-dev-00326-z9j",
+      "firestoreWrites": 0,
+      "externalHrWrites": 0,
+      "production": false,
+      "providerReconcile": "NOT_EXECUTED_PENDING_CHROME",
+      "i3": "HOLD",
+      "i4Authorized": false
+    }
   }
 }

@@ -89,7 +89,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "DEV only: canonical I3 A09/B11 Hosting-only frontend deployment from source 81b3a028f94c7128d78cf565e87b10e3dbaf056c; preserve Cloud Run 00326-z9j; exact HR rev gate d19; one protected reconciliation and durable readback. I3 HOLD, I4 blocked.",
+  "nextExactAction": "RUN1855 frontend delivered, Cloud Run 00326 unchanged; restore connected Admin browser and one authorized protected HR DEV reconcile only after exact d19 revision proof, then effects/readback.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -668,7 +668,7 @@
   },
   "moduleTruthAuthority": {
     "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261024-V180.json",
-    "gitBlob": "a0f738d9ca2f3eaf5909ea776dda1f827ff2a7ab",
+    "gitBlob": "d8626487756022c5cbd3c9b3ee1a85483c47f044",
     "sourceSha": "81b3a028f94c7128d78cf565e87b10e3dbaf056c",
     "allModulesMatch": false,
     "phaseAComplete": false
@@ -2329,10 +2329,26 @@
   "i3A09B11FrontendIdempotencyP0_20261024": {
     "sourceSha": "81b3a028f94c7128d78cf565e87b10e3dbaf056c",
     "sourceTree": "2f0d7fb5eabde8094f530d66c70d6450cb6b1163",
-    "hosting": "PENDING",
+    "hosting": "PASS_RUN1855_BYTE_IDENTICAL",
     "backendRevision": "cxorbia-live-hr-dev-00326-z9j",
     "qa": "8_8_PASS",
     "reconciliation": "PENDING_ONE_AUTHORIZED",
-    "production": false
+    "production": false,
+    "materialization": {
+      "decision": "PASS_I3_A09_B11_DEV_HOSTING_ONLY_BYTE_IDENTICAL",
+      "sourceSha": "81b3a028f94c7128d78cf565e87b10e3dbaf056c",
+      "sourceTree": "2f0d7fb5eabde8094f530d66c70d6450cb6b1163",
+      "runId": 40139555761,
+      "runNumber": 1855,
+      "jobId": 121008284606,
+      "artifactId": 12578495545,
+      "artifactUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/40139555761/artifacts/12578495545",
+      "devUrl": "https://cxorbia-backend-dev.web.app",
+      "frontendBlob": "b0ef51afb95e6ffbdfc5afba5d45ee935188a938",
+      "cloudRunRevisionStill": "cxorbia-live-hr-dev-00326-z9j",
+      "durableHrReconciliation": "NOT_EXECUTED",
+      "externalHrWrites": 0,
+      "production": false
+    }
   }
 }

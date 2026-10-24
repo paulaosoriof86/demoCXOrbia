@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_A09_B11_FRONTEND_HOSTING_ONLY_AUTHORIZED",
+  "status": "HOLD_I3_A09_B11_FRONTEND_HOSTING_PASS_RECONCILIATION_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,7 +8,7 @@
   "productTreeAuthority": "2f0d7fb5eabde8094f530d66c70d6450cb6b1163",
   "predecessorProductSourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V511_2026-10-24.json",
-  "findingsLedgerExpectedGitBlob": "ace65a91ded92ee35192a779b2d7efb07c0f429b",
+  "findingsLedgerExpectedGitBlob": "a55bd822867b704abf44f90365a65781de7abc79",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261024-V180.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the canonical Hosting-only DEV job from this approved source, pin Cloud Run 00326-z9j, verify exact HR revision d19; then ONE protected HR/Firebase reconciliation in DEV and receipt/ACK/effects/readback. I3 HOLD and I4 NOT_AUTHORIZED.",
+  "exactNextAction": "Use the signed-in Admin browser only: verify the exact snapshot revision d19eb12ad8c1c5140b5711ea390deaae50b0edd35ff4f982a69bfdcabbc86dd2 and Cloud Run 00326-z9j, execute ONE protected DEV HR reconcile, capture receipt ACK/effects and durable 3-visit readback. No new frontend deploy, no external HR writes, no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2961,7 +2961,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "a0f738d9ca2f3eaf5909ea776dda1f827ff2a7ab",
+  "moduleTruthExpectedGitBlob": "d8626487756022c5cbd3c9b3ee1a85483c47f044",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -13873,12 +13873,28 @@
     "qa": "tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs",
     "qaBlob": "0ee1beb9fcd997af4dcb8cb7964f0592072db469",
     "tests": "8_8_PASS",
-    "qaDecision": "SOURCE_ONLY_PASS_HOSTING_PENDING",
+    "qaDecision": "PASS_DEV_HOSTING_ONLY_READBACK_BYTE_IDENTICAL",
     "job": "i3-a09b11-hosting-only-dev",
     "backendRevisionFrozen": "cxorbia-live-hr-dev-00326-z9j",
     "hrRevisionGate": "d19eb12ad8c1c5140b5711ea390deaae50b0edd35ff4f982a69bfdcabbc86dd2",
-    "hostingDeploys": 0,
+    "hostingDeploys": 1,
     "reconciliationsExecuted": 0,
-    "production": false
+    "production": false,
+    "materialization": {
+      "decision": "PASS_I3_A09_B11_DEV_HOSTING_ONLY_BYTE_IDENTICAL",
+      "sourceSha": "81b3a028f94c7128d78cf565e87b10e3dbaf056c",
+      "sourceTree": "2f0d7fb5eabde8094f530d66c70d6450cb6b1163",
+      "runId": 40139555761,
+      "runNumber": 1855,
+      "jobId": 121008284606,
+      "artifactId": 12578495545,
+      "artifactUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/40139555761/artifacts/12578495545",
+      "devUrl": "https://cxorbia-backend-dev.web.app",
+      "frontendBlob": "b0ef51afb95e6ffbdfc5afba5d45ee935188a938",
+      "cloudRunRevisionStill": "cxorbia-live-hr-dev-00326-z9j",
+      "durableHrReconciliation": "NOT_EXECUTED",
+      "externalHrWrites": 0,
+      "production": false
+    }
   }
 }

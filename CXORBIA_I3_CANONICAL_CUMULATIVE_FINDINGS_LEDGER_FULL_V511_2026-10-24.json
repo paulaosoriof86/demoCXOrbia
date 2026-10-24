@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v502",
   "frozenAt": "2026-10-24",
-  "status": "HOLD_I3_A09_B11_FRONTEND_HOSTING_ONLY_AUTHORIZED",
+  "status": "HOLD_I3_A09_B11_FRONTEND_HOSTING_PASS_RECONCILIATION_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "I3-P0-HN-SHOPPER-READINESS-EXACT-PRINCIPAL-GATE",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -34152,7 +34152,7 @@
     "record": "CXORBIA_I3_RUN1852_POST_DEPLOY_CONSISTENCY_SEAL_2026-10-24.json"
   },
   "i3A09B11FrontendIdempotency20261024": {
-    "status": "SOURCE_ONLY_APPROVED_DEV_HOSTING_PENDING",
+    "status": "PASS_DEV_HOSTING_BYTE_IDENTICAL_AUTHORIZED_HR_RECONCILIATION_PENDING",
     "classification": "FUNCTIONAL_DEFECT",
     "owner": "app/modules/visitas.js",
     "ownerBlob": "b0ef51afb95e6ffbdfc5afba5d45ee935188a938",
@@ -34168,8 +34168,27 @@
     },
     "scope": "ONE_NEW_IDEMPOTENCY_KEY_PER_HUMAN_APPROVED_DIALOG_BLOCK_DOUBLE_SUBMIT",
     "devBackendPinned": "cxorbia-live-hr-dev-00326-z9j",
-    "devHosting": "PENDING",
+    "devHosting": "PASS_RUN1855",
     "hrExternalWrites": 0,
-    "production": false
+    "production": false,
+    "materialization": {
+      "decision": "PASS_I3_A09_B11_DEV_HOSTING_ONLY_BYTE_IDENTICAL",
+      "sourceSha": "81b3a028f94c7128d78cf565e87b10e3dbaf056c",
+      "sourceTree": "2f0d7fb5eabde8094f530d66c70d6450cb6b1163",
+      "runId": 40139555761,
+      "runNumber": 1855,
+      "jobId": 121008284606,
+      "artifactId": 12578495545,
+      "artifactUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/40139555761/artifacts/12578495545",
+      "hostingSite": "cxorbia-backend-dev",
+      "frontendBlob": "b0ef51afb95e6ffbdfc5afba5d45ee935188a938",
+      "cloudRunRevisionStill": "cxorbia-live-hr-dev-00326-z9j",
+      "firestoreWrites": 0,
+      "externalHrWrites": 0,
+      "production": false,
+      "providerReconcile": "NOT_EXECUTED_PENDING_CHROME",
+      "i3": "HOLD",
+      "i4Authorized": false
+    }
   }
 }
