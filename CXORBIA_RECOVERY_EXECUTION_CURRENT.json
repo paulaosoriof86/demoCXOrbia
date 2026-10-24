@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "cc5705be96dc72bdbb16714e15278f4ed09cf8e9",
-  "productTree": "d376acca7b45d22a039d08734ca8f99d351f1904",
+  "productSourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
+  "productTree": "9013315b4de8ac941845c784dcc354d4bafdc501",
   "controlParentSha": "6b633086b0e16d547f7cea6f02c7354f0e65f1cc",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
@@ -89,7 +89,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 P0_PROVEN A09/B11: mirror explicitly HR-owned operational status/date/questionnaire fields on existing visits, test 3 fixtures with platform-finance preservation, run canonical source proof, one DEV materialization, and independent Firestore readback. A second HR reconcile requires new express approval; production/I4 remain blocked.",
+  "nextExactAction": "Run existing I3 canonical source proof on f283 operational mirror; if PASS request single DEV materialization via existing workflow and verify 3 durable fields read-only; no second HR reconciliation without express scoped authorization; I4 HOLD.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -665,9 +665,9 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261024-V178.json",
-    "gitBlob": "d37d74644bd00afbc2be1ba9275ca7740ff0d0f9",
-    "sourceSha": "cc5705be96dc72bdbb16714e15278f4ed09cf8e9",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261024-V179.json",
+    "gitBlob": "b279ac91e5165b224d20717503118c194a9e80fc",
+    "sourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
     "allModulesMatch": false,
     "phaseAComplete": false
   },
@@ -1239,7 +1239,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 40117342787,
     "runNumber": 1848,
     "sourceSha": "cc5705be96dc72bdbb16714e15278f4ed09cf8e9",
@@ -2212,6 +2212,23 @@
       "secondReconcileAuthorized": false
     },
     "durableOperationalParity": "FAIL_3_PROVEN",
+    "production": false
+  },
+  "a09B11OperationalMirrorSource20261024": {
+    "sourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
+    "sourceTree": "9013315b4de8ac941845c784dcc354d4bafdc501",
+    "predecessorSourceSha": "cc5705be96dc72bdbb16714e15278f4ed09cf8e9",
+    "providerBlob": "5c625581b40e52daabc97f025ab959f44112e0e1",
+    "qaBlob": "f169cda50fa2a56b7deee5afff43d0c03c1c25ab",
+    "localTests": {
+      "total": 4,
+      "pass": 4,
+      "fail": 0
+    },
+    "scope": "I3_A09_B11_OPERATIONAL_HR_MANAGED_FIELDS_ONLY_PRESERVE_PLATFORM_FINANCE",
+    "devServing": "RUN1848_PREDECESSOR",
+    "sourceProof": "PENDING",
+    "secondReconciliationAuthorized": false,
     "production": false
   }
 }

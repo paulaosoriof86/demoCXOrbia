@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZED_A09_B11_HR_OPERATIONAL_MAPPING_P0_OPEN",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "cc5705be96dc72bdbb16714e15278f4ed09cf8e9",
-  "productTreeAuthority": "d376acca7b45d22a039d08734ca8f99d351f1904",
-  "predecessorProductSourceSha": "aa54aaa4c67b8ce140485a1b18e9f3279392b97b",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V509_2026-10-24.json",
-  "findingsLedgerExpectedGitBlob": "698af74bd54d7a3087bb5b11d7f316a569874c53",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261024-V178.json",
+  "productSourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
+  "productTreeAuthority": "9013315b4de8ac941845c784dcc354d4bafdc501",
+  "predecessorProductSourceSha": "cc5705be96dc72bdbb16714e15278f4ed09cf8e9",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V510_2026-10-24.json",
+  "findingsLedgerExpectedGitBlob": "fb263418ff7d72898c2663030258b9ab8a8df3cf",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261024-V179.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "P0_PROVEN_A09_B11_DURABLE_HR_OPERATIONAL_FIELDS_OUTER_STALE_WHILE_HRMANAGED_AND_UI_CORRECT",
+  "activeBlocker": "A09_B11_OPERATIONAL_HR_FIELDS_P0_SOURCE_FIX_LOCAL_PASS_OFFICIAL_CI_AND_DEV_READBACK_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 P0_PROVEN A09/B11: mirror explicitly HR-owned operational status/date/questionnaire fields on existing visits, test 3 fixtures with platform-finance preservation, run canonical source proof, one DEV materialization, and independent Firestore readback. A second HR reconcile requires new express approval; production/I4 remain blocked.",
+  "exactNextAction": "Run existing I3 canonical source proof on f283 operational mirror; if PASS request single DEV materialization via existing workflow and verify 3 durable fields read-only; no second HR reconciliation without express scoped authorization; I4 HOLD.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -785,7 +785,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "d376acca7b45d22a039d08734ca8f99d351f1904",
+  "productSourceTree": "9013315b4de8ac941845c784dcc354d4bafdc501",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -1216,23 +1216,18 @@
     "production": false
   },
   "pendingMaterialization": {
-    "state": "PASS_SOURCE_CC5705_RUN1848_DEV_MATERIALIZED",
+    "state": "HOLD_SOURCE_PROOF_PENDING",
     "projectId": "cinepolis",
     "tenantId": "tya",
-    "sourceSha": "cc5705be96dc72bdbb16714e15278f4ed09cf8e9",
-    "sourceTree": "d376acca7b45d22a039d08734ca8f99d351f1904",
-    "predecessorDevRun": 1844,
+    "sourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
+    "sourceTree": "9013315b4de8ac941845c784dcc354d4bafdc501",
+    "predecessorDevRun": 1848,
     "changedFiles": [
       "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
       "tools/qa/cxorbia-i3-work-uat-a09b11-three-visit-assignment.test.mjs"
     ],
-    "scope": "A09_B11_DURABLE_EXECUTION_HR_PARITY",
-    "trigger": "EXISTING_I3_CANONICAL_SOURCE_PROOF_THEN_SCOPED_DEV_DEPLOY",
-    "production": false,
-    "sourceProofRunId": 40116933535,
-    "sourceProofArtifactId": 12570260830,
-    "dev": "PASS_RUN1848",
-    "runId": 40117342787
+    "scope": "A09_B11_DURABLE_HR_OPERATIONAL_PARITY",
+    "production": false
   },
   "lastVrm080Proof": {
     "runId": 36333245670,
@@ -2958,7 +2953,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "d37d74644bd00afbc2be1ba9275ca7740ff0d0f9",
+  "moduleTruthExpectedGitBlob": "b279ac91e5165b224d20717503118c194a9e80fc",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12779,7 +12774,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 40117342787,
     "runNumber": 1848,
     "sourceSha": "cc5705be96dc72bdbb16714e15278f4ed09cf8e9",
@@ -13729,6 +13724,23 @@
     },
     "sourceGuard": "PASS_RUN1848",
     "durableOperationalParity": "FAIL_3_PROVEN",
+    "production": false
+  },
+  "a09B11OperationalMirrorSource20261024": {
+    "sourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
+    "sourceTree": "9013315b4de8ac941845c784dcc354d4bafdc501",
+    "predecessorSourceSha": "cc5705be96dc72bdbb16714e15278f4ed09cf8e9",
+    "providerBlob": "5c625581b40e52daabc97f025ab959f44112e0e1",
+    "qaBlob": "f169cda50fa2a56b7deee5afff43d0c03c1c25ab",
+    "localTests": {
+      "total": 4,
+      "pass": 4,
+      "fail": 0
+    },
+    "scope": "I3_A09_B11_OPERATIONAL_HR_MANAGED_FIELDS_ONLY_PRESERVE_PLATFORM_FINANCE",
+    "devServing": "RUN1848_PREDECESSOR",
+    "sourceProof": "PENDING",
+    "secondReconciliationAuthorized": false,
     "production": false
   }
 }
