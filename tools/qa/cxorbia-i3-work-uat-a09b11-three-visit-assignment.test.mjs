@@ -135,3 +135,38 @@ test('A09/B11 unassignment clears both nested and outer stale shopper state',asy
   assert.equal(stored.hrManaged.shopperId,null);
   assert.equal(stored.hrManaged.assignmentState,'unassigned');
 });
+
+test('I3 HR-owned visit execution dates remain coherent in durable Firestore read path',async()=>{
+  const row={...hrVisits()[2],executionState:'realized',realizada:'2026-10-08',submittedAt:'2026-10-13'};
+  const db=new MemoryDb();
+  db.seed(visitPath(row.hrRowId),{
+    id:row.hrRowId,visitId:row.hrRowId,hrRowId:row.hrRowId,
+    tenantId:'qa-tenant',projectId:'qa-project',periodId:row.periodId,
+    shopperId,estado:'asignada',status:'asignada',
+    executionState:'not_realized',realizada:null,submittedAt:null,
+    canonicalFacets:{assigned:true,available:false,realized:false,submitted:false},
+    hrManaged:{executionState:'not_realized',realizada:null,submittedAt:null},
+    platformInternalMemo:'preserve-non-hr-managed',version:8
+  });
+  const p=getProvider(db);
+  const first=await p.reconcileSnapshot(snapshot([row]),{sourceRevision:'qa-hr-execution-rev1'});
+  assert.equal(first.providerWrites,1);
+  const fixed=db.get(visitPath(row.hrRowId));
+  assert.equal(fixed.executionState,'realized');
+  assert.equal(fixed.realizada,'2026-10-08');
+  assert.equal(fixed.submittedAt,'2026-10-13');
+  assert.equal(fixed.hrManaged.executionState,'realized');
+  assert.equal(fixed.platformInternalMemo,'preserve-non-hr-managed');
+  const replay=await p.reconcileSnapshot(snapshot([row]),{sourceRevision:'qa-hr-execution-rev1'});
+  assert.equal(replay.providerWrites,0);
+
+  const correction={...row,estado:'agendada',status:'agendada',executionState:'pending_realization',realizada:null,submittedAt:null,
+    canonicalFacets:{assigned:true,available:false,realized:false,submitted:false}};
+  const next=await p.reconcileSnapshot(snapshot([correction]),{sourceRevision:'qa-hr-execution-rev2'});
+  assert.equal(next.providerWrites,1);
+  const corrected=db.get(visitPath(row.hrRowId));
+  assert.equal(corrected.executionState,'pending_realization');
+  assert.equal(corrected.realizada,null,'explicit HR null must clear stale realized date');
+  assert.equal(corrected.submittedAt,null,'explicit HR null must clear stale submit date');
+  assert.equal(corrected.platformInternalMemo,'preserve-non-hr-managed');
+});

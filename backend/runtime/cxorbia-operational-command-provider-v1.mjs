@@ -301,6 +301,11 @@ async function reconcileVisitDoc({db,policy,candidate,sourceRevision}){
       assignmentSource:candidate.assignmentSource||null,
       assignmentSyncStatus:candidate.assignmentSyncStatus||null,
       canonicalFacets:candidate.canonicalFacets,
+      // HR also owns these execution fields. Preserve platform-only data, but
+      // refresh explicitly supplied HR values (including null to clear staleness).
+      ...(Object.hasOwn(candidate,'executionState')?{executionState:candidate.executionState}:{}),
+      ...(Object.hasOwn(candidate,'realizada')?{realizada:candidate.realizada}:{}),
+      ...(Object.hasOwn(candidate,'submittedAt')?{submittedAt:candidate.submittedAt}:{}),
       hrManaged:candidate.hrManaged
     });
     const same=Object.entries(desired).every(([key,value])=>JSON.stringify(stable(existing[key]))===JSON.stringify(stable(value)));
