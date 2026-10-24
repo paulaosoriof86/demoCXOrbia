@@ -288,6 +288,19 @@ async function reconcileVisitDoc({db,policy,candidate,sourceRevision}){
     // not only shopperId/estado/canonicalFacets. Otherwise a normalized shopper
     // has the right owner but stale "unassigned" fields in that same document.
     const hrAssigned=candidate.canonicalFacets?.assigned===true;
+    // HR owns operational execution and questionnaire facts. On existing
+    // records the nested HR mirror was updated, but outer consumers kept old
+    // schedule/submission values. Only this explicit operational allowlist is
+    // mirrored; platform finance, payments and audit fields stay untouched.
+    const hrManaged=candidate.hrManaged&&typeof candidate.hrManaged==='object'?candidate.hrManaged:{};
+    const operationalHrFields=[
+      'agendada','controlDia','cuestFecha','executionState','realizada',
+      'schedulingState','questionnaireState','submissionState','submit',
+      'submittedAt','sourceSnapshotAt','boleto','comboAmt'
+    ];
+    const operationalHrPatch=Object.fromEntries(operationalHrFields
+      .filter(key=>Object.hasOwn(hrManaged,key)||Object.hasOwn(candidate,key))
+      .map(key=>[key,Object.hasOwn(hrManaged,key)?hrManaged[key]:candidate[key]]));
     const desired=clean({
       ...basePatch,...hrTemporal,
       estado:candidate.estado,status:candidate.status,
@@ -301,11 +314,9 @@ async function reconcileVisitDoc({db,policy,candidate,sourceRevision}){
       assignmentSource:candidate.assignmentSource||null,
       assignmentSyncStatus:candidate.assignmentSyncStatus||null,
       canonicalFacets:candidate.canonicalFacets,
-      // HR also owns these execution fields. Preserve platform-only data, but
-      // refresh explicitly supplied HR values (including null to clear staleness).
-      ...(Object.hasOwn(candidate,'executionState')?{executionState:candidate.executionState}:{}),
-      ...(Object.hasOwn(candidate,'realizada')?{realizada:candidate.realizada}:{}),
-      ...(Object.hasOwn(candidate,'submittedAt')?{submittedAt:candidate.submittedAt}:{}),
+      // Explicit null from HR clears stale dates; unrelated CX financial state
+      // is never inferred from a questionnaire or overwritten by this mirror.
+      ...operationalHrPatch,
       hrManaged:candidate.hrManaged
     });
     const same=Object.entries(desired).every(([key,value])=>JSON.stringify(stable(existing[key]))===JSON.stringify(stable(value)));
@@ -684,3 +695,4 @@ export function createOperationalCommandProvider({auth,db,policy}={}){
 }
 
 export default {VERSION,COMMAND_TYPES,OPERATOR_ROLES,APPLICATION_STATES,RESERVATION_STATES,validateProviderPolicy,validateCommand,createOperationalCommandProvider};
+

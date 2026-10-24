@@ -170,3 +170,70 @@ test('I3 HR-owned visit execution dates remain coherent in durable Firestore rea
   assert.equal(corrected.submittedAt,null,'explicit HR null must clear stale submit date');
   assert.equal(corrected.platformInternalMemo,'preserve-non-hr-managed');
 });
+
+test('I3 A09/B11 all three existing visits mirror HR schedule and questionnaire state without rewriting finances',async()=>{
+  const db=new MemoryDb();
+  const three=hrVisits().map((row,i)=>{
+    const operational=i===0
+      ?{controlDia:'OK',agendada:'2026-10-08',executionState:'realized',realizada:'2026-10-08',
+        cuestFecha:'2026-10-12',questionnaireState:'completed',submissionState:'confirmed_hr',
+        submit:true,submittedAt:'2026-10-13',schedulingState:'scheduled',
+        sourceSnapshotAt:'2026-10-24T16:54:00Z',boleto:52,comboAmt:118}
+      :{controlDia:'OK',agendada:i===1?'2026-10-24':'2026-10-25',executionState:'pending_realization',
+        realizada:null,cuestFecha:null,questionnaireState:'not_available',submissionState:'not_submitted',
+        submit:false,submittedAt:null,schedulingState:'scheduled',
+        sourceSnapshotAt:'2026-10-24T16:54:00Z',boleto:null,comboAmt:null};
+    const state=i===0?{estado:'submitida',status:'submitida',canonicalState:'submitted_complete',
+      operationalState:'submitted_complete',canonicalFacets:{...row.canonicalFacets,submitted:true,realized:true}}:{};
+    const candidate={...row,...state,hrManaged:{...row,...state,...operational},...operational};
+    db.seed(visitPath(row.hrRowId),{
+      tenantId:'qa-tenant',projectId:'qa-project',periodId:row.periodId,hrRowId:row.hrRowId,
+      shopperId,assignmentState:'assigned',hasShopper:true,
+      controlDia:'P x Asignar',executionState:'not_realized',realizada:null,
+      cuestFecha:null,questionnaireState:'not_available',submissionState:'not_submitted',
+      submit:false,submittedAt:null,schedulingState:'not_applicable',
+      sourceSnapshotAt:'2026-10-01T00:00:00Z',boleto:null,comboAmt:null,
+      paymentConfirmed:false,paymentState:'platform_not_paid',
+      liquidationState:'platform_not_liquidated',financeRecordId:'keep-platform-finance',
+      hrManaged:{...row,...operational},version:5
+    });
+    return candidate;
+  });
+  const provider=getProvider(db);
+  const previousConcurrency=process.env.CXORBIA_VISIT_RECONCILIATION_CONCURRENCY;
+  process.env.CXORBIA_VISIT_RECONCILIATION_CONCURRENCY='1';
+  try{
+  const receipt=await provider.reconcileSnapshot(snapshot(three),{sourceRevision:'qa-hr-run1848-full-operational-parity'});
+  assert.equal(receipt.ok,true);
+  assert.equal(receipt.providerWrites,3);
+  for(const candidate of three){
+    const persisted=db.get(visitPath(candidate.hrRowId));
+    for(const key of ['agendada','controlDia','cuestFecha','executionState','realizada',
+      'questionnaireState','schedulingState','submissionState','submit','submittedAt',
+      'sourceSnapshotAt','boleto','comboAmt']){
+      assert.deepEqual(persisted[key],candidate.hrManaged[key],`${candidate.hrRowId}:${key} must mirror HR`);
+    }
+    assert.equal(persisted.paymentState,'platform_not_paid');
+    assert.equal(persisted.liquidationState,'platform_not_liquidated');
+    assert.equal(persisted.financeRecordId,'keep-platform-finance');
+    assert.equal(persisted.paymentConfirmed,false);
+  }
+  const replay=await provider.reconcileSnapshot(snapshot(three),{sourceRevision:'qa-hr-run1848-full-operational-parity'});
+  assert.equal(replay.providerWrites,0,'idempotent replay must not duplicate writes');
+  assert.equal(replay.idempotentReplays,3);
+
+  const clearFields={executionState:'pending_realization',realizada:null,cuestFecha:null,
+    questionnaireState:'not_available',submissionState:'not_submitted',submit:false,submittedAt:null};
+  const cleared={...three[0],...clearFields,hrManaged:{...three[0].hrManaged,...clearFields}};
+  const correction=await provider.reconcileSnapshot(snapshot([cleared]),{sourceRevision:'qa-next-hr-null-correction'});
+  assert.equal(correction.providerWrites,1);
+  const doc=db.get(visitPath(cleared.hrRowId));
+  for(const key of ['realizada','cuestFecha','submittedAt'])assert.equal(doc[key],null);
+  assert.equal(doc.submit,false);
+  assert.equal(doc.paymentState,'platform_not_paid');
+  }finally{
+    if(previousConcurrency===undefined)delete process.env.CXORBIA_VISIT_RECONCILIATION_CONCURRENCY;
+    else process.env.CXORBIA_VISIT_RECONCILIATION_CONCURRENCY=previousConcurrency;
+  }
+});
+
