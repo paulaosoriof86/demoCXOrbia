@@ -311,6 +311,7 @@ CX.module('visitas', ({data,role,ui})=>{
       try{
         if(!canOfferHrReconcile||CX.BACKEND?.enableCommandWrites!==true||
           typeof CX.commandAdapter?.execute!=='function'||!window.crypto?.subtle||
+          typeof window.crypto?.getRandomValues!=='function'||
           typeof window.TextEncoder!=='function')throw new Error('HR_ADMIN_DEV_GATE_UNAVAILABLE');
         const auth=CX.backendAuth?.context?.();
         const currentUser=window.firebase?.auth?.()?.currentUser;
@@ -325,7 +326,14 @@ CX.module('visitas', ({data,role,ui})=>{
         if(read?.ok!==true)throw new Error('HR_LIVE_PREFLIGHT_NOT_CONFIRMED');
         const revision=String(CX.data?.previewMeta?.sourceRevision||'');
         if(!/^[a-f0-9]{64}$/.test(revision))throw new Error('HR_CANONICAL_REVISION_UNAVAILABLE');
-        const idMaterial=[currentUser.uid,hrReconcileScope.tenantId,hrReconcileScope.projectId,revision].join('|');
+        /* One human-approved reconciliation = one receipt identity. A previous
+           committed receipt for this same HR revision must not swallow an
+           explicitly authorized post-fix reconciliation as an old replay.
+           Keep this nonce bound to the confirmation dialog; never regenerate
+           it for transport retries or for multiple clicks on that dialog. */
+        const nonce=window.crypto.getRandomValues(new Uint8Array(16));
+        const attemptId=Array.from(nonce,v=>v.toString(16).padStart(2,'0')).join('');
+        const idMaterial=[currentUser.uid,hrReconcileScope.tenantId,hrReconcileScope.projectId,revision,attemptId].join('|');
         const digest=await window.crypto.subtle.digest('SHA-256',new window.TextEncoder().encode(idMaterial));
         const hex=Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,'0')).join('');
         const idempotencyKey='i3-a09-b11-hr-'+hex;
@@ -385,9 +393,12 @@ CX.module('visitas', ({data,role,ui})=>{
           const submit=overlay.querySelector('#hrCommandExecute');
           const cancel=overlay.querySelector('#hrCommandCancel');
           const status=overlay.querySelector('#hrCommandStatus');
+          let commandSent=false;
           checkbox.addEventListener('change',()=>{submit.disabled=!checkbox.checked;});
           cancel.addEventListener('click',()=>close());
           submit.addEventListener('click',async()=>{
+            if(commandSent)return;
+            commandSent=true;
             submit.disabled=true;
             checkbox.disabled=true;
             cancel.disabled=true;
@@ -525,4 +536,5 @@ CX.module('visitas', ({data,role,ui})=>{
   },0);
   return html;
 });
+
 

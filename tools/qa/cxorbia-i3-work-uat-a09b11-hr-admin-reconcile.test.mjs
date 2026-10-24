@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
-import {webcrypto} from 'node:crypto';
+import {webcrypto,createHash} from 'node:crypto';
 
 // I3 A09/B11: isolated browser-UI regression. Never contacts Firebase, Auth or HR.
 const script=readFileSync(new URL('../../app/modules/visitas.js',import.meta.url),'utf8');
@@ -144,12 +144,32 @@ test('A09/B11 human confirmation + command uses exact scoped revision with provi
   assert.equal(h.calls[0].requirePeriod,false);
   assert.equal(h.calls[0].periodId,null);
   assert.equal(h.calls[0].idempotencyKey.length,78);
+  const obsoleteKey='i3-a09-b11-hr-'+createHash('sha256').update(['admin-test','tya','cinepolis',REV].join('|')).digest('hex');
+  assert.notEqual(h.calls[0].idempotencyKey,obsoleteKey,'a fresh confirmed attempt must not replay the prior fixed-revision receipt');
   assert.equal(Object.keys(h.calls[0].payload).length,0);
   assert.equal(h.calls[0].authorization.providerEnforcementRequired,true);
   assert.match(h.modal.nodes.get('#hrCommandStatus').textContent,/ACK confirmado y recibo persistente/);
   assert.equal(h.reads.at(-1),'admin_visits_post_provider_readback');
   assert.deepEqual(h.navs,['visitas']);
   assert.ok(h.toasts.some(t=>t.kind==='ok'));
+  await h.modal.nodes.get('#hrCommandExecute').fire('click');
+  assert.equal(h.calls.length,1,'same confirmation dialog cannot submit twice');
+});
+
+test('A09/B11 a separate human-confirmed attempt has a different receipt key for the same actor, scope and HR revision',async()=>{
+  const commandKeys=[];
+  for(let attempt=0;attempt<2;attempt++){
+    const h=harness();
+    await h.node('vReconcileHr').fire('click');
+    assert.equal(h.calls.length,0,'opening a new dialog remains read-only');
+    const checkbox=h.modal.nodes.get('#hrCommandHumanConfirm');
+    checkbox.checked=true;await checkbox.fire('change');
+    await h.modal.nodes.get('#hrCommandExecute').fire('click');
+    assert.equal(h.calls.length,1);
+    assert.equal(h.calls[0].expectedVersion,REV);
+    commandKeys.push(h.calls[0].idempotencyKey);
+  }
+  assert.notEqual(commandKeys[0],commandKeys[1],'two separately authorized reconciliations cannot share a receipt');
 });
 
 test('A09/B11 no confirmation or partial ACK never reports success, never auto-retries',async()=>{
@@ -174,4 +194,5 @@ test('A09/B11 revision drift between preflight and confirmation fails closed',as
   assert.equal(h.calls.length,0);
   assert.match(h.modal.nodes.get('#hrCommandStatus').textContent,/HR_ADMIN_SCOPE_OR_REVISION_CHANGED/);
 });
+
 

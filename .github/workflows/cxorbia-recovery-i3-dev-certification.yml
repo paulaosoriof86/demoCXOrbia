@@ -7394,3 +7394,87 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
           compression-level: 0
+
+  # Focal I3 repair on the EXISTING certification lane; Hosting only, no Cloud Run rebuild.
+  i3-a09b11-hosting-only-dev:
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_A09_B11_FRONTEND_HOSTING_ONLY_AUTHORIZED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-a09b11-hosting-only]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      PINNED_BACKEND_SOURCE: f283e0f53057dcbb4cde008a67cfaf81f0001e29
+      PINNED_CLOUD_RUN_REVISION: cxorbia-live-hr-dev-00326-z9j
+      FOCAL_EVIDENCE: .tmp/i3-a09b11-hosting-only
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Certify exact source and non-backend scope
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$FOCAL_EVIDENCE"
+          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
+          test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
+          test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
+          git merge-base --is-ancestor "$PINNED_BACKEND_SOURCE" "$FOCAL_SOURCE"
+          git merge-base --is-ancestor "$FOCAL_SOURCE" HEAD
+          test "$(git diff --name-only "$PINNED_BACKEND_SOURCE" "$FOCAL_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)" = 'app/modules/visitas.js'
+          test -z "$(git diff --name-only "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)"
+          SOURCE_DIR="$(mktemp -d)"
+          git archive "$FOCAL_SOURCE" | tar -x -C "$SOURCE_DIR"
+          test -f "$SOURCE_DIR/firebase.json"
+          test -f "$SOURCE_DIR/app/modules/visitas.js"
+          echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
+          cd "$SOURCE_DIR"
+          node --check app/modules/visitas.js
+          node --test tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs
+          sha256sum app/modules/visitas.js > "$GITHUB_WORKSPACE/$FOCAL_EVIDENCE/frontend-sha256.txt"
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Verify exact DEV runtime and record Hosting predecessor
+        run: |
+          set -Eeuo pipefail
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$FOCAL_EVIDENCE/runtime-before.json"
+          jq -e --arg rev "$PINNED_CLOUD_RUN_REVISION" '.status.latestReadyRevisionName==$rev and ([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$FOCAL_EVIDENCE/runtime-before.json" >/dev/null
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$FOCAL_EVIDENCE/hosting-before.json"
+          jq -e '.release.version.name | length > 0' "$FOCAL_EVIDENCE/hosting-before.json" >/dev/null
+      - name: Publish ONLY the certified frontend artifact to DEV Hosting
+        run: |
+          set -Eeuo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest >/dev/null 2>&1
+          cd "$SOURCE_DIR"
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$FOCAL_EVIDENCE/hosting-deploy.log"
+      - name: Read back exact frontend bytes and unchanged Cloud Run
+        run: |
+          set -Eeuo pipefail
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$FOCAL_EVIDENCE/runtime-after.json"
+          jq -e --arg rev "$PINNED_CLOUD_RUN_REVISION" '.status.latestReadyRevisionName==$rev and ([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$FOCAL_EVIDENCE/runtime-after.json" >/dev/null
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$FOCAL_EVIDENCE/hosting-after.json"
+          HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$FOCAL_EVIDENCE/hosting-after.json")"
+          test -n "$HOSTING_VERSION"
+          test "$HOSTING_VERSION" != "$(jq -r '.release.version.name // empty' "$FOCAL_EVIDENCE/hosting-before.json")"
+          curl -fsS -H 'Cache-Control: no-cache' "${HOSTING_URL}/modules/visitas.js?cxI3A09B11=${GITHUB_RUN_ID}" > "$FOCAL_EVIDENCE/served-visitas.js"
+          cmp -s "$SOURCE_DIR/app/modules/visitas.js" "$FOCAL_EVIDENCE/served-visitas.js"
+          jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg rev "$PINNED_CLOUD_RUN_REVISION" --arg version "$HOSTING_VERSION" '{decision:"PASS_I3_A09_B11_DEV_HOSTING_ONLY",sourceSha:$source,sourceTree:$tree,cloudRunUnchanged:$rev,hostingVersion:$version,servedFrontendByteIdentical:true,hrExternalWrites:0,production:false}' > "$FOCAL_EVIDENCE/readback.json"
+      - name: Preserve auditable DEV-only evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-a09b11-dev-hosting-${{ github.run_id }}
+          path: .tmp/i3-a09b11-hosting-only/
+          if-no-files-found: warn
+          retention-days: 30
