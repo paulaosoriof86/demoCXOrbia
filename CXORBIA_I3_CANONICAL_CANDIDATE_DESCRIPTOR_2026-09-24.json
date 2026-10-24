@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "A09_B11_DURABLE_EXECUTION_PARITY_SOURCE_ONLY_PENDING_SOURCE_PROOF_AND_DEV_LIVE_VALIDATION_OTHER_I3_HOLD",
+  "activeBlocker": "A09_B11_DURABLE_EXECUTION_SOURCE_PROOF_PASS_DEV_MATERIALIZATION_REQUIRED_OTHER_I3_HOLD",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing I3 canonical source proof on cc5705; then explicitly gate single DEV materialization, authenticated A09/B11 durable readback, two-role E2E, Gate20/21 and human checkpoint. Do not rerun HR reconciliation without authorization; I4 unauthorized.",
+  "exactNextAction": "Execute the existing single DEV materialization for source cc5705 using [i3-phasea-dev-materialize] trigger; certify exact Cloud Run/Hosting/rules/HR identity, then readback A09/B11 before considering Gate20/21. No second HR reconciliation and no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1216,7 +1216,7 @@
     "production": false
   },
   "pendingMaterialization": {
-    "state": "HOLD_SOURCE_PROOF_PENDING",
+    "state": "PASS_SOURCE_PROOF_DEV_MATERIALIZATION_REQUESTED",
     "projectId": "cinepolis",
     "tenantId": "tya",
     "sourceSha": "cc5705be96dc72bdbb16714e15278f4ed09cf8e9",
@@ -1228,7 +1228,10 @@
     ],
     "scope": "A09_B11_DURABLE_EXECUTION_HR_PARITY",
     "trigger": "EXISTING_I3_CANONICAL_SOURCE_PROOF_THEN_SCOPED_DEV_DEPLOY",
-    "production": false
+    "production": false,
+    "sourceProofRunId": 40116933535,
+    "sourceProofArtifactId": 12570260830,
+    "dev": "PENDING"
   },
   "lastVrm080Proof": {
     "runId": 36333245670,
@@ -13582,5 +13585,22 @@
     "externalHrWrites": 0,
     "productionWrites": 0,
     "secondReconcileAuthorized": false
+  },
+  "i3A09B11SourceProof20261024": {
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "runId": 40116933535,
+    "runNumber": 1847,
+    "jobId": 120940118440,
+    "sourceSha": "cc5705be96dc72bdbb16714e15278f4ed09cf8e9",
+    "sourceTree": "d376acca7b45d22a039d08734ca8f99d351f1904",
+    "canonicalCandidateAuthority": "PASS",
+    "focusedSourceContracts": "PASS",
+    "g05FocalPass": 113,
+    "g05FocalFail": 0,
+    "artifactId": 12570260830,
+    "artifactUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/40116933535/artifacts/12570260830",
+    "wholeProductPass": false,
+    "liveDevMaterialized": false,
+    "production": false
   }
 }

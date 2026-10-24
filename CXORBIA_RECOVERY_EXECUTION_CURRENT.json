@@ -89,7 +89,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Run existing I3 canonical source proof on cc5705; then explicitly gate single DEV materialization, authenticated A09/B11 durable readback, two-role E2E, Gate20/21 and human checkpoint. Do not rerun HR reconciliation without authorization; I4 unauthorized.",
+  "nextExactAction": "Execute the existing single DEV materialization for source cc5705 using [i3-phasea-dev-materialize] trigger; certify exact Cloud Run/Hosting/rules/HR identity, then readback A09/B11 before considering Gate20/21. No second HR reconciliation and no production.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -2086,5 +2086,22 @@
     "externalHrWrites": 0,
     "productionWrites": 0,
     "secondReconcileAuthorized": false
+  },
+  "i3A09B11SourceProof20261024": {
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "runId": 40116933535,
+    "runNumber": 1847,
+    "jobId": 120940118440,
+    "sourceSha": "cc5705be96dc72bdbb16714e15278f4ed09cf8e9",
+    "sourceTree": "d376acca7b45d22a039d08734ca8f99d351f1904",
+    "canonicalCandidateAuthority": "PASS",
+    "focusedSourceContracts": "PASS",
+    "g05FocalPass": 113,
+    "g05FocalFail": 0,
+    "artifactId": 12570260830,
+    "artifactUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/40116933535/artifacts/12570260830",
+    "wholeProductPass": false,
+    "liveDevMaterialized": false,
+    "production": false
   }
 }
