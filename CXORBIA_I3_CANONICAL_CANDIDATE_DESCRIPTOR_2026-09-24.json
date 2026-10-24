@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "A09_B11_OPERATIONAL_HR_FIELDS_P0_SOURCE_FIX_LOCAL_PASS_OFFICIAL_CI_AND_DEV_READBACK_PENDING",
+  "activeBlocker": "A09_B11_HR_OPERATIONAL_MIRROR_SOURCE_PROOF_PASS_DEV_MATERIALIZATION_AND_DURABLE_RECONCILIATION_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing I3 canonical source proof on f283 operational mirror; if PASS request single DEV materialization via existing workflow and verify 3 durable fields read-only; no second HR reconciliation without express scoped authorization; I4 HOLD.",
+  "exactNextAction": "Execute existing single I3 DEV materialization for f283e0f; verify Cloud Run, Hosting, rules and HR revision; read-only Admin/Shopper UI and three persistent visit field readback. Do not run second HR/Firebase reconciliation without fresh exact approval. I3 HOLD, I4 not authorized.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1216,7 +1216,7 @@
     "production": false
   },
   "pendingMaterialization": {
-    "state": "HOLD_SOURCE_PROOF_PENDING",
+    "state": "PASS_SOURCE_PROOF_DEV_MATERIALIZATION_REQUESTED",
     "projectId": "cinepolis",
     "tenantId": "tya",
     "sourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
@@ -1227,7 +1227,11 @@
       "tools/qa/cxorbia-i3-work-uat-a09b11-three-visit-assignment.test.mjs"
     ],
     "scope": "A09_B11_DURABLE_HR_OPERATIONAL_PARITY",
-    "production": false
+    "production": false,
+    "sourceProofRunId": 40119159015,
+    "sourceProofDecision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "dev": "PENDING",
+    "reconciliationAuthorization": "CONSUMED_FIRST_ONLY"
   },
   "lastVrm080Proof": {
     "runId": 36333245670,
@@ -13742,5 +13746,22 @@
     "sourceProof": "PENDING",
     "secondReconciliationAuthorized": false,
     "production": false
+  },
+  "i3A09B11FullMirrorSourceProof20261024": {
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "runId": 40119159015,
+    "runNumber": 1851,
+    "jobId": 120946807781,
+    "sourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
+    "sourceTree": "9013315b4de8ac941845c784dcc354d4bafdc501",
+    "g05FocalPass": 113,
+    "g05FocalFail": 0,
+    "knownUnclosedLegacyGate7Cases": 5,
+    "scope": "FOCAL_SOURCE_CONTRACTS_ONLY",
+    "wholeProductPass": false,
+    "clickE2ERequired": true,
+    "deploys": 0,
+    "production": false,
+    "artifactId": 12570344291
   }
 }

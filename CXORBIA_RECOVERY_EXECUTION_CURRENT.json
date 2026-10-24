@@ -89,7 +89,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Run existing I3 canonical source proof on f283 operational mirror; if PASS request single DEV materialization via existing workflow and verify 3 durable fields read-only; no second HR reconciliation without express scoped authorization; I4 HOLD.",
+  "nextExactAction": "Execute existing single I3 DEV materialization for f283e0f; verify Cloud Run, Hosting, rules and HR revision; read-only Admin/Shopper UI and three persistent visit field readback. Do not run second HR/Firebase reconciliation without fresh exact approval. I3 HOLD, I4 not authorized.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -295,7 +295,7 @@
     }
   },
   "nextDiagnosisPath": null,
-  "nextUserAuthorizationRequired": "One previously authorized HR reconciliation was consumed. Any second protected HR/Firebase reconciliation in DEV requires a new explicit scoped authorization after new code is source-proven and materialized. No production authorization.",
+  "nextUserAuthorizationRequired": "First protected DEV reconciliation authorization consumed. After this source is LIVE in DEV and revision d19... reverified, request exactly one new scope-limited protected HR/Firebase reconciliation from Paula before any write.",
   "primaryExecutionRoute": "DIRECT_NATIVE_GITHUB_SINGLE_WRITER",
   "tinyFishRequiredForThisAction": false,
   "receiptControlParentSha": "5df72f867d8cc27a680e070865b27cc78eb3dae6",
@@ -2230,5 +2230,22 @@
     "sourceProof": "PENDING",
     "secondReconciliationAuthorized": false,
     "production": false
+  },
+  "i3A09B11FullMirrorSourceProof20261024": {
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "runId": 40119159015,
+    "runNumber": 1851,
+    "jobId": 120946807781,
+    "sourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
+    "sourceTree": "9013315b4de8ac941845c784dcc354d4bafdc501",
+    "g05FocalPass": 113,
+    "g05FocalFail": 0,
+    "knownUnclosedLegacyGate7Cases": 5,
+    "scope": "FOCAL_SOURCE_CONTRACTS_ONLY",
+    "wholeProductPass": false,
+    "clickE2ERequired": true,
+    "deploys": 0,
+    "production": false,
+    "artifactId": 12570344291
   }
 }
