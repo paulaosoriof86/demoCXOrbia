@@ -7396,6 +7396,119 @@ jobs:
       compression-level: 0
 
   # Focal I3 repair on the EXISTING certification lane; Hosting only, no Cloud Run rebuild.
+  i3-a09b11-backend-only-dev-materialization:
+   needs: canonical-candidate-authority
+   if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_A09_B11_REVIEW_FLAG_SOURCE_PROOF_PENDING' && github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-a09b11-backend-only-dev]') }}
+   runs-on: ubuntu-latest
+   timeout-minutes: 55
+   env:
+    FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+    FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+    EXPECTED_SOURCE: 317db03683cb7956e42b163c637602e879c7401c
+    EXPECTED_TREE: 4c7ef2d129196f5ed2f0f169498337151a39d832
+    PRIOR_RUNTIME_REVISION: cxorbia-live-hr-dev-00326-z9j
+    PRIOR_RUNTIME_DIGEST: sha256:38aa1c445a52402dcadb459976b820243f264edc476e027b0e47ba421232373b
+    PRODUCTION_URL: https://tya-plataforma.web.app
+    FOCAL_EVIDENCE: .tmp/i3-a09b11-backend-only-dev
+   steps:
+   - uses: actions/checkout@v4
+     with:
+      fetch-depth: 0
+   - uses: actions/setup-node@v4
+     with:
+      node-version: '24'
+   - name: Verify exact candidate, scope, and A09/B11 source tests
+     run: |
+      set -Eeuo pipefail
+      mkdir -p "$FOCAL_EVIDENCE"
+      test "$FOCAL_SOURCE" = "$EXPECTED_SOURCE"
+      test "$FOCAL_TREE" = "$EXPECTED_TREE"
+      test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_A09_B11_REVIEW_FLAG_SOURCE_PROOF_PENDING"
+      test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$EXPECTED_SOURCE"
+      test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$EXPECTED_TREE"
+      test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$EXPECTED_TREE"
+      git merge-base --is-ancestor "$FOCAL_SOURCE" HEAD
+      git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+      git show "$FOCAL_SOURCE:backend/runtime/hr-live-service/Dockerfile" | grep -Fq 'COPY backend/runtime/cxorbia-operational-command-provider-v1.mjs ./backend/runtime/cxorbia-operational-command-provider-v1.mjs'
+      SOURCE_DIR="$RUNNER_TEMP/cxorbia-i3-a09b11-backend-source"
+      rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
+      git archive "$FOCAL_SOURCE" | tar -x -C "$SOURCE_DIR"
+      cd "$SOURCE_DIR"
+      node --check backend/runtime/cxorbia-operational-command-provider-v1.mjs
+      node --test tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs | tee "$GITHUB_WORKSPACE/$FOCAL_EVIDENCE/hr-admin-reconcile-tests.log"
+      node --test tools/qa/cxorbia-i3-work-uat-a09b11-three-visit-assignment.test.mjs | tee "$GITHUB_WORKSPACE/$FOCAL_EVIDENCE/three-visit-assignment-tests.log"
+      sha256sum backend/runtime/cxorbia-operational-command-provider-v1.mjs > "$GITHUB_WORKSPACE/$FOCAL_EVIDENCE/backend-source-sha256.txt"
+      echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
+   - uses: google-github-actions/auth@v2
+     with:
+      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+   - uses: google-github-actions/setup-gcloud@v2
+     with:
+      project_id: ${{ env.PROJECT }}
+   - name: Read-only preflight for DEV runtime, DEV Hosting, and production
+     run: |
+      set -Eeuo pipefail
+      gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$FOCAL_EVIDENCE/runtime-before.json"
+      jq -e --arg rev "$PRIOR_RUNTIME_REVISION" '.status.latestReadyRevisionName==$rev and ([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$FOCAL_EVIDENCE/runtime-before.json" >/dev/null
+      gcloud run revisions describe "$PRIOR_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$FOCAL_EVIDENCE/runtime-revision-before.json"
+      RAW="$(jq -r '.status.imageDigest // empty' "$FOCAL_EVIDENCE/runtime-revision-before.json")"
+      if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else echo "prior DEV digest unresolved" >&2; exit 1; fi
+      test "$DIGEST" = "$PRIOR_RUNTIME_DIGEST"
+      RUNTIME_URL="$(jq -r '.status.url // empty' "$FOCAL_EVIDENCE/runtime-before.json")"
+      test -n "$RUNTIME_URL"
+      curl -fsS --retry 4 --retry-delay 2 "$RUNTIME_URL/health" > "$FOCAL_EVIDENCE/health-before.json"
+      jq -e '.ok==true and .production==false and .hrWrites==false' "$FOCAL_EVIDENCE/health-before.json" >/dev/null
+      TOKEN="$(gcloud auth print-access-token)"
+      curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$FOCAL_EVIDENCE/hosting-before.json"
+      HOSTING_VERSION_BEFORE="$(jq -r '.release.version.name // empty' "$FOCAL_EVIDENCE/hosting-before.json")"
+      test -n "$HOSTING_VERSION_BEFORE"
+      curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$PRODUCTION_URL/" -o "$FOCAL_EVIDENCE/production-before.html"
+      sha256sum "$FOCAL_EVIDENCE/production-before.html" | awk '{print $1}' > "$FOCAL_EVIDENCE/production-before.sha256"
+      printf '%s\n' "$HOSTING_VERSION_BEFORE" > "$FOCAL_EVIDENCE/hosting-version-before.txt"
+      printf '%s\n' "$RUNTIME_URL" > "$FOCAL_EVIDENCE/runtime-url.txt"
+   - name: Build exactly once from the pinned source archive
+     run: |
+      set -Eeuo pipefail
+      IMAGE_URI="gcr.io/$PROJECT/$SERVICE:i3-a09b11-$EXPECTED_SOURCE-${GITHUB_RUN_ID}"
+      printf '%s\n' "$IMAGE_URI" > "$FOCAL_EVIDENCE/image-uri.txt"
+      gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet 2>&1 | tee "$FOCAL_EVIDENCE/cloud-build.log"
+      printf '%s\n' "$IMAGE_URI" > "$GITHUB_ENV"
+      echo "IMAGE_URI=$IMAGE_URI" >> "$GITHUB_ENV"
+   - name: Deploy once to Cloud Run DEV without changing configuration or Hosting
+     run: |
+      set -Eeuo pipefail
+      gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --quiet
+   - name: Read back digest, active revision, health, Hosting, and production
+     run: |
+      set -Eeuo pipefail
+      gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$FOCAL_EVIDENCE/runtime-after.json"
+      DEV_REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$FOCAL_EVIDENCE/runtime-after.json")"
+      test -n "$DEV_REVISION"
+      test "$DEV_REVISION" != "$PRIOR_RUNTIME_REVISION"
+      test "$(jq -r --arg rev "$DEV_REVISION" '[.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length' "$FOCAL_EVIDENCE/runtime-after.json")" = "1"
+      gcloud run revisions describe "$DEV_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$FOCAL_EVIDENCE/runtime-revision-after.json"
+      test "$(jq -r '.spec.containers[0].image // empty' "$FOCAL_EVIDENCE/runtime-revision-after.json")" = "$IMAGE_URI"
+      RAW="$(jq -r '.status.imageDigest // empty' "$FOCAL_EVIDENCE/runtime-revision-after.json")"
+      if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else echo "new DEV digest unresolved" >&2; exit 1; fi
+      RUNTIME_URL="$(cat "$FOCAL_EVIDENCE/runtime-url.txt")"
+      curl -fsS --retry 12 --retry-delay 3 "$RUNTIME_URL/health" > "$FOCAL_EVIDENCE/health-after.json"
+      jq -e '.ok==true and .production==false and .hrWrites==false' "$FOCAL_EVIDENCE/health-after.json" >/dev/null
+      TOKEN="$(gcloud auth print-access-token)"
+      curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$FOCAL_EVIDENCE/hosting-after.json"
+      HOSTING_VERSION_AFTER="$(jq -r '.release.version.name // empty' "$FOCAL_EVIDENCE/hosting-after.json")"
+      test "$HOSTING_VERSION_AFTER" = "$(cat "$FOCAL_EVIDENCE/hosting-version-before.txt")"
+      curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$PRODUCTION_URL/" -o "$FOCAL_EVIDENCE/production-after.html"
+      sha256sum "$FOCAL_EVIDENCE/production-after.html" | awk '{print $1}' > "$FOCAL_EVIDENCE/production-after.sha256"
+      cmp -s "$FOCAL_EVIDENCE/production-before.sha256" "$FOCAL_EVIDENCE/production-after.sha256"
+      jq -n -S --arg source "$EXPECTED_SOURCE" --arg tree "$EXPECTED_TREE" --arg image "$IMAGE_URI" --arg revision "$DEV_REVISION" --arg digest "$DIGEST" --arg hosting "$HOSTING_VERSION_AFTER" --arg productionSha "$(cat "$FOCAL_EVIDENCE/production-after.sha256")" '{decision:"PASS_I3_A09_B11_BACKEND_ONLY_DEV_MATERIALIZATION",sourceSha:$source,sourceTree:$tree,image:$image,runtimeRevision:$revision,runtimeDigest:$digest,health:"PASS",hostingVersion:$hosting,hostingDeploys:0,productionIndexSha256:$productionSha,productionChanged:false,hrWrites:0,firestoreDirectWrites:0,authWrites:0,builds:1,runtimeDeploys:1,productionDeploys:0}' > "$FOCAL_EVIDENCE/result.json"
+   - name: Preserve backend-only materialization evidence
+     if: always()
+     uses: actions/upload-artifact@v4
+     with:
+      name: cxorbia-i3-a09b11-backend-only-dev-${{ github.run_id }}
+      path: .tmp/i3-a09b11-backend-only-dev/
+      if-no-files-found: warn
+      retention-days: 30
   i3-a09b11-hosting-only-dev:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_A09_B11_FRONTEND_HOSTING_ONLY_AUTHORIZED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-a09b11-hosting-only]') }}
