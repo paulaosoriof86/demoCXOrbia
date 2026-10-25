@@ -7433,10 +7433,9 @@ jobs:
       SOURCE_DIR="$RUNNER_TEMP/cxorbia-i3-a09b11-backend-source"
       rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
       git archive "$FOCAL_SOURCE" | tar -x -C "$SOURCE_DIR"
-      cd "$SOURCE_DIR"
-      node --check backend/runtime/cxorbia-operational-command-provider-v1.mjs
-      node --test tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs | tee "$GITHUB_WORKSPACE/$FOCAL_EVIDENCE/hr-admin-reconcile-tests.log"
-      node --test tools/qa/cxorbia-i3-work-uat-a09b11-three-visit-assignment.test.mjs | tee "$GITHUB_WORKSPACE/$FOCAL_EVIDENCE/three-visit-assignment-tests.log"
+      node --check "$SOURCE_DIR/backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      node --test tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs | tee "$FOCAL_EVIDENCE/hr-admin-reconcile-tests.log"
+      node --test tools/qa/cxorbia-i3-work-uat-a09b11-three-visit-assignment.test.mjs | tee "$FOCAL_EVIDENCE/three-visit-assignment-tests.log"
       sha256sum backend/runtime/cxorbia-operational-command-provider-v1.mjs > "$GITHUB_WORKSPACE/$FOCAL_EVIDENCE/backend-source-sha256.txt"
       echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
    - uses: google-github-actions/auth@v2
@@ -7472,7 +7471,6 @@ jobs:
       IMAGE_URI="gcr.io/$PROJECT/$SERVICE:i3-a09b11-$EXPECTED_SOURCE-${GITHUB_RUN_ID}"
       printf '%s\n' "$IMAGE_URI" > "$FOCAL_EVIDENCE/image-uri.txt"
       gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet 2>&1 | tee "$FOCAL_EVIDENCE/cloud-build.log"
-      printf '%s\n' "$IMAGE_URI" > "$GITHUB_ENV"
       echo "IMAGE_URI=$IMAGE_URI" >> "$GITHUB_ENV"
    - name: Deploy once to Cloud Run DEV without changing configuration or Hosting
      run: |
