@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "04933057fba928bcee9f9be7398c6aa29f8db791",
-  "productTree": "0e67168bd92990dfecad4c48f75836963b821a3a",
+  "productSourceSha": "74ea77ca56892cdead444ee546c1f1de86364fcc",
+  "productTree": "3c2267500f46634e6959737bf6a8fb99afb5d0ed",
   "controlParentSha": "b84af457dafe4fffa5048a2e2f68ce7a4da115bf",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
@@ -669,7 +669,7 @@
   },
   "moduleTruthAuthority": {
     "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261025-V182.json",
-    "gitBlob": "a05af468b2424f8e6ed4a3590b19ccfbf36ee8af",
+    "gitBlob": "74e4bddd5969760401e792f30427ad0adfc01f81",
     "sourceSha": "04933057fba928bcee9f9be7398c6aa29f8db791",
     "allModulesMatch": false,
     "phaseAComplete": false
@@ -2481,5 +2481,13 @@
       "embeddedPdf": "P0_OPEN",
       "production": false
     }
+  },
+  "vrm288AdminNavigationSourceFix": {
+    "state": "SOURCE_FIXED_PENDING_CANONICAL_QA",
+    "owner": "app/core/router.js",
+    "sourceSha": "74ea77ca56892cdead444ee546c1f1de86364fcc",
+    "production": false,
+    "devPublished": false,
+    "adminUat": "PENDING"
   }
 }
