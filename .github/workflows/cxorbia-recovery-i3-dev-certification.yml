@@ -7675,7 +7675,7 @@ jobs:
 
   vrm287-dev-two-visit-review-projection-repair:
    needs: canonical-candidate-authority
-   if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'ops(i3): approved VRM287 two-visit Firestore DEV repair' && needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_A09_B11_REVIEW_FLAG_SOURCE_PROOF_PENDING' }}
+   if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'ops-i3-approved-vrm287-two-visit-firestore-dev-repair' && needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_A09_B11_REVIEW_FLAG_SOURCE_PROOF_PENDING' }}
    runs-on: ubuntu-latest
    timeout-minutes: 15
    steps:
