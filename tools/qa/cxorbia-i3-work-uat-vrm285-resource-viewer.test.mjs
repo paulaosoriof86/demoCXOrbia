@@ -14,8 +14,8 @@ function fixture(){
     visibleRoles:['admin','shopper']}];
   let uid='admin-dev-uid';
   class Host {
-    constructor(){this.html='';this.buttons=[];this.back=null;}
-    set innerHTML(value){this.html=value;this.buttons=[];this.back=null;}
+    constructor(){this.html='';this.buttons=[];this.back=null;this.updates=0;this.isConnected=true;}
+    set innerHTML(value){this.html=value;this.buttons=[];this.back=null;this.updates++;}
     get innerHTML(){return this.html;}
     querySelector(selector){
       if(selector==='#docBack'&&this.html.includes('id="docBack"'))
@@ -31,7 +31,7 @@ function fixture(){
     }
   }
   const ui={el:()=>new Host(),ph:(...args)=>args.join(' '),bdg:(x)=>String(x),
-    aiBox:()=>'',degraded:()=>''};
+    aiBox:()=>'',degraded:(message,{title}={})=>String(title||'')+' '+String(message||'')};
   const data={currentProjectId:'cinepolis',currentPeriodId:'cinepolis-2026-10',
     _visitas:[],period(){return {id:this.currentPeriodId,name:'OCT 2026'};}};
   const firebase={auth:()=>({currentUser:uid?{uid}:null})};
@@ -53,8 +53,55 @@ function fixture(){
   const mount=()=>CX.render({data,role:CX.session.role,ui});
   const open=host=>{assert.ok(host.buttons.length,'resource action absent');
     host.buttons[0].click();assert.match(host.innerHTML,/id="docBack"/);};
-  return {CX,docs,data,mount,open,uid:(next)=>{uid=next;}};
+  return {CX,docs,data,window,mount,open,uid:(next)=>{uid=next;}};
 }
+
+test('VRM-288: identical Firestore resource notices preserve live controls and do not repaint the viewer',()=>{
+  const h=fixture(),host=h.mount();
+  h.open(host);
+  const afterOpen=host.updates;
+  h.CX.bus.emit('resources');
+  h.CX.bus.emit('resources');
+  assert.equal(host.updates,afterOpen,'unchanged notices must not replace active DOM controls');
+  h.window.CX_BACKEND_RESOURCES_STATUS={
+    status:'ready',tenantId:'tya',projectId:'cinepolis',periodId:'cinepolis-2026-10',at:'initial'
+  };
+  h.CX.bus.emit('resources');
+  const afterReady=host.updates;
+  assert.ok(afterReady>afterOpen,'a real provider status transition can repaint');
+  h.window.CX_BACKEND_RESOURCES_STATUS.at='retry-timestamp-only';
+  h.CX.bus.emit('resources');
+  assert.equal(host.updates,afterReady,'retry timestamps alone cannot detach the viewer');
+  assert.match(host.innerHTML,/id="docBack"/);
+});
+
+test('VRM-288: loading, denied and verified empty are three different states',()=>{
+  const h=fixture();
+  h.docs.splice(0,h.docs.length);
+  const host=h.mount();
+  assert.match(host.innerHTML,/Consultando recursos publicados/);
+  assert.doesNotMatch(host.innerHTML,/No hay recursos reales publicados/);
+  h.window.CX_BACKEND_RESOURCES_STATUS={
+    status:'blocked',reason:'RESOURCE_PROVIDER_READ_FAILED',
+    tenantId:'tya',projectId:'cinepolis',periodId:'cinepolis-2026-10'
+  };
+  h.CX.bus.emit('resources');
+  assert.match(host.innerHTML,/lectura sin confirmar/);
+  assert.doesNotMatch(host.innerHTML,/No hay recursos reales publicados/);
+  h.window.CX_BACKEND_RESOURCES_STATUS.status='ready';
+  h.window.CX_BACKEND_RESOURCES_STATUS.reason='';
+  h.CX.bus.emit('resources');
+  assert.match(host.innerHTML,/No hay recursos reales publicados/);
+});
+
+test('VRM-288: detached old module cannot be repeatedly rebuilt by provider notices',()=>{
+  const h=fixture(),host=h.mount();
+  const before=host.updates;
+  host.isConnected=false;
+  h.docs.push({...h.docs[0],id:'new'}); // unrelated detached host
+  h.CX.bus.emit('resources');
+  assert.equal(host.updates,before);
+});
 
 test('VRM-285: a late resources event and a router remount do not destroy the active PDF reader',()=>{
   const h=fixture(),first=h.mount();
@@ -65,6 +112,8 @@ test('VRM-285: a late resources event and a router remount do not destroy the ac
   assert.match(afterRouter.innerHTML,/id="docBack"/);
   assert.match(afterRouter.innerHTML,/Instructivo Shopper Cinépolis/);
   assert.match(afterRouter.innerHTML,/iframe/);
+  assert.match(afterRouter.innerHTML,/abre el PDF original en otra pestaña/);
+  assert.match(afterRouter.innerHTML,/rel="noopener noreferrer"/);
   afterRouter.back();
   assert.doesNotMatch(afterRouter.innerHTML,/id="docBack"/);
   assert.match(afterRouter.innerHTML,/data-doc="resource-pdf-1"/);
