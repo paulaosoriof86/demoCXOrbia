@@ -40,6 +40,16 @@ CX.module('documentos', ({data,role,ui})=>{
   const closeViewer=()=>{
     if(CX.docStore.activeViewer?.key===viewerScopeKey())CX.docStore.activeViewer=null;
   };
+  /* A provider read failure is not proof that the project has no resources.
+     Keep the loading, denied and genuinely empty states separate in DEV. */
+  const resourceReadStatus=()=>{
+    if(!connected())return 'demo';
+    const state=window.CX_BACKEND_RESOURCES_STATUS;
+    if(!state)return 'loading';
+    if(state.projectId&&String(state.projectId)!==String(data.currentProjectId))return 'loading';
+    if(state.periodId&&String(state.periodId)!==String(pid))return 'loading';
+    return state.status==='ready'?'ready':state.status==='blocked'?'blocked':'loading';
+  };
   const committed=r=>r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true;
   const resourceDefaults=rec=>Object.assign({resourceType:'project_resource',projectId:data.currentProjectId,periodId:pid,visibleRoles:['super','admin','ops','coordinador','shopper'],targetAll:false},rec||{});
   const saveDurable=async(rec,options={})=>{
@@ -59,7 +69,7 @@ CX.module('documentos', ({data,role,ui})=>{
     else if(d.tipo==='video'&&d.url) body=`<iframe src="${d.url}" style="width:100%;height:68vh;border:0;border-radius:12px" allowfullscreen></iframe>`;
     else if(d.tipo==='check') body=`<div style="max-width:760px">${(d.items||[]).map(it=>`<label class="flex" style="gap:10px;padding:11px 14px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;cursor:pointer;font-size:14px"><input type="checkbox"> ${it}</label>`).join('')}</div>`;
     else if(isImg) body=`<img src="${d.url}" style="max-width:100%;border-radius:12px">`;
-    else if(isPdf) body=`<iframe src="${d.url}" style="width:100%;height:72vh;border:0;border-radius:12px"></iframe>`;
+    else if(isPdf) body=`<div role="note" style="font-size:12px;color:var(--t3);padding:0 0 12px">Si el visor integrado aparece en blanco, <a href="${d.url}" target="_blank" rel="noopener noreferrer">abre el PDF original en otra pestaña ↗</a>. El archivo no se modifica.</div><iframe title="Vista previa PDF del proyecto" src="${d.url}" style="width:100%;height:72vh;border:0;border-radius:12px"></iframe>`;
     else if(d.url&&!d.body) body=`<div style="text-align:center;padding:40px"><div style="font-size:40px;margin-bottom:12px">${d.ic||'📄'}</div><a href="${d.url}" target="_blank" class="btn btn-pr btn-sm" style="text-decoration:none">Abrir en pestaña nueva ↗</a></div>`;
     else body=`<div class="acad-content" style="max-width:820px;font-size:14px;line-height:1.75">${(d.body||'Vista previa no disponible.').split('\n').map(l=>{
       if(l.startsWith('## ')) return `<h3 style="margin:14px 0 4px">${l.slice(3)}</h3>`;
@@ -97,6 +107,12 @@ CX.module('documentos', ({data,role,ui})=>{
   const draw=()=>{
     const docs=CX.docStore.list(pid);
     const active=CX.docStore.activeViewer, viewerKey=viewerScopeKey();
+    const readStatus=resourceReadStatus();
+    const emptyNotice=!connected()||docs.length?'':readStatus==='blocked'
+      ?ui.degraded('No se pudo consultar la fuente de recursos. Revisa conectividad o permisos; esto no significa que los documentos hayan sido eliminados.',{title:'Recursos · lectura sin confirmar'})
+      :readStatus==='ready'
+        ?ui.degraded('No hay recursos reales publicados para este proyecto/periodo. Los recursos de ejemplo no se muestran en la operación conectada.',{title:'Recursos · pendiente de fuente/publicación'})
+        :'<div role="status" style="color:var(--t3);padding:12px 0">Consultando recursos publicados…</div>';
     /* A remote resources event and a router remount must retain a scoped reader.
        An absent/deleted/revoked resource always closes the viewer fail-closed. */
     if(viewerKey&&active?.key===viewerKey){
@@ -107,7 +123,7 @@ CX.module('documentos', ({data,role,ui})=>{
     host.innerHTML=`
       ${ui.ph('Recursos del proyecto', p.name+' · documentos, videos, imágenes y checklists · se abren a pantalla completa')}
       <div class="between" style="margin-bottom:14px">${ui.bdg(docs.length+' recursos','n')}${canManage()?'<div class="flex" style="gap:8px"><button class="btn btn-soft btn-sm" id="docIA">📝 Generar borrador (heurística local)</button><button class="btn btn-pr btn-sm" id="docUp">＋ Agregar recurso</button></div>':''}</div>
-      ${connected()&&!docs.length?'<div class="card card-p" style="margin-bottom:14px">'+ui.degraded('No hay recursos reales publicados para este proyecto/periodo. Los recursos de ejemplo no se muestran en la operación conectada.',{title:'Recursos · pendiente de fuente/publicación'})+'</div>':''}
+      ${emptyNotice?'<div class="card card-p" style="margin-bottom:14px">'+emptyNotice+'</div>':''}
       <div class="grid g2">
         ${docs.map(d=>`<div class="card hov card-p flex" style="gap:13px">
           <div style="flex:1;display:flex;gap:13px;cursor:pointer" data-doc="${d.id}"><div style="font-size:26px">${d.ic}</div>
@@ -259,9 +275,26 @@ CX.module('documentos', ({data,role,ui})=>{
     }}));
   };
   draw();
-  CX.bus.on('docs',()=>draw());
-  CX.bus.on('resources',()=>draw());
-  if(connected()&&CX.backendResources?.load)CX.backendResources.load(scope()).then(()=>draw()).catch(()=>draw());
+  /* Firestore retries can emit identical resource snapshots repeatedly. A full
+     innerHTML repaint on each emission detaches active viewer/click controls.
+     Ignore unchanged provider evidence, including load timestamps. */
+  const renderSignature=()=>JSON.stringify([
+    CX.docStore.list(pid),
+    resourceReadStatus(),
+    window.CX_BACKEND_RESOURCES_STATUS?.reason||''
+  ]);
+  let lastRenderSignature=renderSignature(),wasAttached=host.isConnected===true;
+  const redrawOnChange=()=>{
+    if(host.isConnected===true)wasAttached=true;
+    if(wasAttached&&host.isConnected===false)return;
+    const next=renderSignature();
+    if(next===lastRenderSignature)return;
+    lastRenderSignature=next;
+    draw();
+  };
+  CX.bus.on('docs',redrawOnChange);
+  CX.bus.on('resources',redrawOnChange);
+  if(connected()&&CX.backendResources?.load)CX.backendResources.load(scope()).then(redrawOnChange).catch(redrawOnChange);
   return host;
 });
 
