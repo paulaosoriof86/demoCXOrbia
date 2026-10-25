@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm288.admin-resource-navigation.v1",
+  "recordedAt": "2026-10-25",
+  "iteration": "I3",
+  "state": "HOLD",
+  "sourceSha": "04933057fba928bcee9f9be7398c6aa29f8db791",
+  "devRun": 1875,
+  "tenant": "tya",
+  "project": "cinepolis",
+  "period": "cinepolis-2026-10",
+  "role": "Administración",
+  "url": "https://cxorbia-backend-dev.web.app/index-backend-dev.html",
+  "observations": [
+    "Admin authenticated on DEV existing browser tab",
+    "Capacitación & IA navigation heading toggles chevron on click",
+    "Recursos del proyecto exists in DOM as #nav-documentos but remains nonvisible",
+    "Computed CSS display:none on .nav-sec-items despite chevron expanded",
+    "Exact source CSS rule in app/styles/layout.css: .nav-sec-col .nav-sec-items{display:none}",
+    "No writes performed; Recursos Admin E2E not completed"
+  ],
+  "classification": "VISUAL_DEFECT_OR_NAVIGATION_FUNCTIONAL_DEFECT_P0_CANDIDATE_OWNER_PROVEN_CSS_ONLY_NOT_SOURCE_FIXED",
+  "owner": "app/styles/layout.css; nav group toggle implementation still to confirm",
+  "gate20": "PENDING",
+  "gate21": "PENDING",
+  "i4Authorization": false,
+  "nextAction": "Inspect exact nav accordion JS owner and correct demonstrated CSS/script interaction in existing I3 source lineage with tests, then same DEV UAT; no production."
+}
