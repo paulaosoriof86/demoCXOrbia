@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm288.admin-navigation-hosting-readback.v1",
+  "recordedAt": "2026-10-25",
+  "iteration": "I3",
+  "state": "HOLD",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "productSource": "74ea77ca56892cdead444ee546c1f1de86364fcc",
+  "productTree": "3c2267500f46634e6959737bf6a8fb99afb5d0ed",
+  "sourceControlCommit": "9876171148497c0a191152fbdaec923e57b9e621",
+  "workflowControlCommit": "b21bf4e117fd958b336d9362d01517e33f1e9849",
+  "sourceProof": {
+    "runNumber": 1877,
+    "runId": 40223568473,
+    "decision": "PASS_CANONICAL_CANDIDATE_AUTHORITY"
+  },
+  "devMaterialization": {
+    "runNumber": 1878,
+    "runId": 40223779433,
+    "jobId": 121260895177,
+    "artifactId": 12609944080,
+    "scope": "HOSTING_DEV_ONLY",
+    "sourceScopeCheck": "PASS_EXACT_DOCUMENTOS_AND_ROUTER_ONLY",
+    "runtimePreflight": "PASS",
+    "hostingDeploy": "PASS",
+    "servedFrontendBytesReadback": "PASS_BOTH_FILES",
+    "cloudRunUnchanged": "PASS",
+    "production": false,
+    "hrWrites": 0
+  },
+  "focalBrowserUat": {
+    "role": "Administración",
+    "attempted": true,
+    "result": "NOT_VERIFIED_BROWSER_EXTENSION_CDP_FOCUS_TIMEOUT_TWO_EXISTING_TABS",
+    "productFailureProven": false,
+    "manualWorkForPaulaRequired": false
+  },
+  "findingsConservation": "VRM_001_TO_288_NO_DELETION",
+  "phaseAComplete": false,
+  "allModulesMatch": false,
+  "gate20": "PENDING",
+  "gate21": "PENDING",
+  "authorizationI4": false,
+  "canonicalDescriptorStatus": "SOURCE_PROOF_PENDING_NOT_DEV_MATERIALIZED_STALE_RELATIVE_TO_THIS_RECEIPT",
+  "nextExactAction": "Resume Admin DOM click-through on same DEV after browser connection recovers; test collapsed/expanded Recursos, modal/PDF and reload; then reconcile descriptor materialization seal without recertifying old gates, continue I3 P0 E2E and Gate20/21."
+}
