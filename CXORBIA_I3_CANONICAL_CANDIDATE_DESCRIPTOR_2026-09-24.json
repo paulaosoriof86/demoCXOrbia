@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_A09_B11_REVIEW_FLAG_SOURCE_PROOF_PENDING",
+  "status": "HOLD_I3_VRM288_SOURCE_PROOF_PENDING_NOT_DEV_MATERIALIZED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "317db03683cb7956e42b163c637602e879c7401c",
-  "productTreeAuthority": "4c7ef2d129196f5ed2f0f169498337151a39d832",
-  "predecessorProductSourceSha": "81b3a028f94c7128d78cf565e87b10e3dbaf056c",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V512_2026-10-24.json",
-  "findingsLedgerExpectedGitBlob": "4837dd705170eda862f227463063dd8451c9341f",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261024-V181.json",
+  "productSourceSha": "04933057fba928bcee9f9be7398c6aa29f8db791",
+  "productTreeAuthority": "0e67168bd92990dfecad4c48f75836963b821a3a",
+  "predecessorProductSourceSha": "317db03683cb7956e42b163c637602e879c7401c",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V513_2026-10-25.json",
+  "findingsLedgerExpectedGitBlob": "de09e1a3eadab315c756636b0cf7c304a42f625a",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261025-V182.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "I3_A09_B11_TWO_VISIT_DURABLE_REPAIRED_ADMIN_SHOPPER_E2E_GATE20_GATE21_HOLD",
+  "activeBlocker": "VRM288_RESOURCE_READ_STABILITY_DEV_NOT_MATERIALIZED__VRM285_EMBEDDED_PDF_CONTENT_OPEN__OTHER_I3_E2E_HUMAN_GATE20_GATE21_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -39,7 +39,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-288",
+  "nextFindingId": "VRM-289",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "VRM287 two exact DEV visits were atomically repaired and independently read back in Firebase (RUN1869). Do not rerun reconciliation, repair, build, Cloud Run or Hosting deploy. Proceed with authenticated Admin and Shopper refresh against current DEV artifact, verify three reference rows and no duplicates, confirm their identity/functional states, close remaining I3 same-artifact E2E/21-module obligations and human checkpoint, then Gate20 and Gate21 only from the same certified artifact. Keep I3 HOLD and I4 NOT_AUTHORIZED until their existing gates pass.",
+  "exactNextAction": "Run canonical source proof against 04933057fba928bcee9f9be7398c6aa29f8db791 with module truth V182 and ledger V513; only PASS permits one DEV Hosting-only deploy and byte-exact readback, then authenticated Admin+Shopper UAT. No Cloud Run build/deploy, data writes or production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -787,7 +787,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "4c7ef2d129196f5ed2f0f169498337151a39d832",
+  "productSourceTree": "0e67168bd92990dfecad4c48f75836963b821a3a",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -2961,7 +2961,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "5ac96b34179d72eb22cc7c7aa8639dd43dde1c01",
+  "moduleTruthExpectedGitBlob": "a05af468b2424f8e6ed4a3590b19ccfbf36ee8af",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -14101,5 +14101,19 @@
       "classification": "DEV_DURABLE_REPAIR_PASS_NOT_I3_GO"
     }
   },
-  "previousActiveBlockerBeforeVrm287Repair": "VRM-287_DEV_BACKEND_MATERIALIZED_DURABLE_TOP_LEVEL_REVIEW_FLAGS_MISMATCH_HOLD"
+  "previousActiveBlockerBeforeVrm287Repair": "VRM-287_DEV_BACKEND_MATERIALIZED_DURABLE_TOP_LEVEL_REVIEW_FLAGS_MISMATCH_HOLD",
+  "vrm288SourceSuccessor20261025": {
+    "findingId": "VRM-288",
+    "sourceSha": "04933057fba928bcee9f9be7398c6aa29f8db791",
+    "sourceTree": "0e67168bd92990dfecad4c48f75836963b821a3a",
+    "predecessorSourceSha": "317db03683cb7956e42b163c637602e879c7401c",
+    "owner": "app/modules/documentos.js",
+    "ownerBlob": "07d957257810c0836cb136ddd414e4f8b57d089e",
+    "qaBlob": "af5aec87492d2b5a83ceae2114d601c62d869d4e",
+    "sourceTests": "LOCAL_7_OF_7_PASS",
+    "sourceProof": "PENDING_CI",
+    "dev": "NOT_DEPLOYED",
+    "pdfContent": "P0_OPEN",
+    "production": false
+  }
 }

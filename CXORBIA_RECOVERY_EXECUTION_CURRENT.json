@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "317db03683cb7956e42b163c637602e879c7401c",
-  "productTree": "4c7ef2d129196f5ed2f0f169498337151a39d832",
+  "productSourceSha": "04933057fba928bcee9f9be7398c6aa29f8db791",
+  "productTree": "0e67168bd92990dfecad4c48f75836963b821a3a",
   "controlParentSha": "b84af457dafe4fffa5048a2e2f68ce7a4da115bf",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
@@ -90,7 +90,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 HOLD: read-only preflight the canonical descriptor/ledger/module truth for 04933057fba928bcee9f9be7398c6aa29f8db791, then obtain authorization to register its source successor in existing authorities WITHOUT relaxing the RELEASE_COMPOSITION_FAILURE guard. After source proof and separate fresh exact-scope permission, one DEV Hosting-only deployment + served-byte readback + authenticated Resources/Admin/Shopper UAT. Embedded PDF remains open P0; no backend build, Cloud Run deploy, HR/Firestore/Auth/Storage writes, Gate20/21 or I4.",
+  "nextExactAction": "Run canonical source proof against 04933057fba928bcee9f9be7398c6aa29f8db791 with module truth V182 and ledger V513; only PASS permits one DEV Hosting-only deploy and byte-exact readback, then authenticated Admin+Shopper UAT. No Cloud Run build/deploy, data writes or production.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -296,7 +296,7 @@
     }
   },
   "nextDiagnosisPath": null,
-  "nextUserAuthorizationRequired": "The one authorized A09/B11 DEV build/deploy and VRM287 DEV repair are consumed. Future runtime/Hosting deploy, protected Firestore/HR/Auth write or I4 production release requires its own exact-scope authorization; source diagnostics and existing control continuity are permitted.",
+  "nextUserAuthorizationRequired": "Paula authorized one canonical VRM288 source succession and one conditional Hosting-only deployment to cxorbia-backend-dev after source proof PASS; further data writes, Cloud Run rebuild/redeploy or I4 production require separate exact-scope approval.",
   "primaryExecutionRoute": "DIRECT_NATIVE_GITHUB_SINGLE_WRITER",
   "tinyFishRequiredForThisAction": false,
   "receiptControlParentSha": "5df72f867d8cc27a680e070865b27cc78eb3dae6",
@@ -668,9 +668,9 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261024-V181.json",
-    "gitBlob": "5ac96b34179d72eb22cc7c7aa8639dd43dde1c01",
-    "sourceSha": "317db03683cb7956e42b163c637602e879c7401c",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261025-V182.json",
+    "gitBlob": "a05af468b2424f8e6ed4a3590b19ccfbf36ee8af",
+    "sourceSha": "04933057fba928bcee9f9be7398c6aa29f8db791",
     "allModulesMatch": false,
     "phaseAComplete": false
   },
@@ -2417,7 +2417,7 @@
       "FUNCTIONAL_DEFECT",
       "VISUAL_DEFECT"
     ],
-    "status": "SOURCE_COMMITTED_LOCAL_QA_PASS_DEV_NOT_MATERIALIZED",
+    "status": "CANONICAL_SUCCESSOR_REGISTERED_CI_PENDING_DEV_NOT_MATERIALIZED",
     "date": "2026-10-25",
     "expectedParentSha": "d09ed3496f4132746f23bc4a29eca84828cd2a71",
     "expectedParentTree": "ea458af902f26b257abf8b049f5f0c8ff8c5704d",
@@ -2459,7 +2459,7 @@
       "cloudRunRevision": "cxorbia-live-hr-dev-00327-xsc",
       "hostingUntouched": true
     },
-    "next": "Read-only prepare exact descriptor/ledger/module owner hash succession from new source; register using existing authority path only after exact-scoped approval, re-run source proof; request fresh exact-scope DEV Hosting-only materialization. No Cloud Run or production changes.",
+    "next": "Canonical source QA, then one authorized Hosting-only DEV materialization and served byte readback; authenticate Admin+Shopper for visible content. Other I3 controls unchanged.",
     "exactCanonicalGuardReadback": {
       "run": 40208748513,
       "qaTests": "47/47 PASS in canonical-candidate-authority job",
@@ -2467,6 +2467,19 @@
       "reason": "UNDECLARED_PRODUCT_DRIFT_AFTER_CANONICAL_CANDIDATE:app/modules/documentos.js",
       "remainingSourceAuthority": "Existing descriptor, findings ledger and module-truth must be made coherent with successor on same branch. Do not disable/relax guard, do not assert 21/21 MATCH.",
       "materializedDev": false
+    },
+    "candidateRegistration": {
+      "sourceSha": "04933057fba928bcee9f9be7398c6aa29f8db791",
+      "treeSha": "0e67168bd92990dfecad4c48f75836963b821a3a",
+      "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+      "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V513_2026-10-25.json",
+      "ledgerBlob": "de09e1a3eadab315c756636b0cf7c304a42f625a",
+      "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261025-V182.json",
+      "matrixBlob": "a05af468b2424f8e6ed4a3590b19ccfbf36ee8af",
+      "ci": "PENDING",
+      "dev": "NOT_DEPLOYED",
+      "embeddedPdf": "P0_OPEN",
+      "production": false
     }
   }
 }
