@@ -7,9 +7,9 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "81b3a028f94c7128d78cf565e87b10e3dbaf056c",
-  "productTree": "2f0d7fb5eabde8094f530d66c70d6450cb6b1163",
-  "controlParentSha": "6b633086b0e16d547f7cea6f02c7354f0e65f1cc",
+  "productSourceSha": "317db03683cb7956e42b163c637602e879c7401c",
+  "productTree": "4c7ef2d129196f5ed2f0f169498337151a39d832",
+  "controlParentSha": "b84af457dafe4fffa5048a2e2f68ce7a4da115bf",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
     "executed": [
@@ -58,7 +58,7 @@
     "D04": "SOURCE_PASS_RUN1795_DEV_RUN1796_NAME_ONLY_CONNECTED_E2E_PASS_RUN1797__HUMAN_AND_FULL_TASK_PENDING",
     "E04": "F12_CLIENT_SOURCE_ABSENT_LIVE_PASS_RUN1797__F09_NPS_NOTES_MEETINGS_DURABLE_OPEN__HUMAN_PENDING",
     "A09": "EXACT_AUTH_USER_AND_FIRESTORE_MEMBERSHIP_PASS__CLAIMS_PENDING",
-    "B11": "SOURCE_PROVEN_RUN1851_113_OF_113_DEV_MATERIALIZED_RUN1852_UI_THREE_VISITS_PASS_DURABLE_OUTER_HRMANAGED_PARITY_STALE_3_FRESH_RECONCILIATION_AUTHORIZATION_REQUIRED",
+    "B11": "SOURCE_FIXED_CANONICAL_SOURCE_PROOF_PENDING_DEV_RUNTIME_MATERIALIZATION_AND_DURABLE_READBACK",
     "B10": "SOURCE_PROVEN_RUN1799_6_OF_6__DEV_E2E_HUMAN_PENDING__TYaONLINE_LINK_PENDING",
     "B09": "OPEN_GPS_PHOTO_STORAGE_ACK_NEGATIVE_AND_POSITIVE_E2E_PENDING",
     "B13": "OPEN_CROSSROLE_NOTIFICATIONS_READ_RESOLVED_PROVIDER_ACK_PENDING",
@@ -667,9 +667,9 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261024-V180.json",
-    "gitBlob": "d8626487756022c5cbd3c9b3ee1a85483c47f044",
-    "sourceSha": "81b3a028f94c7128d78cf565e87b10e3dbaf056c",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261024-V181.json",
+    "gitBlob": "5ac96b34179d72eb22cc7c7aa8639dd43dde1c01",
+    "sourceSha": "317db03683cb7956e42b163c637602e879c7401c",
     "allModulesMatch": false,
     "phaseAComplete": false
   },
@@ -2350,5 +2350,38 @@
       "externalHrWrites": 0,
       "production": false
     }
+  },
+  "candidateRegistration20261024": {
+    "findingId": "VRM-287",
+    "sourceSha": "317db03683cb7956e42b163c637602e879c7401c",
+    "sourceTree": "4c7ef2d129196f5ed2f0f169498337151a39d832",
+    "predecessorSourceSha": "81b3a028f94c7128d78cf565e87b10e3dbaf056c",
+    "descriptorPath": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V512_2026-10-24.json",
+    "ledgerBlob": "4837dd705170eda862f227463063dd8451c9341f",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261024-V181.json",
+    "matrixBlob": "5ac96b34179d72eb22cc7c7aa8639dd43dde1c01",
+    "previousServedSourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
+    "previousServedRuntimeRevision": "cxorbia-live-hr-dev-00326-z9j",
+    "previousServedRuntimeDigest": "sha256:38aa1c445a52402dcadb459976b820243f264edc476e027b0e47ba421232373b",
+    "priorCertificationAttempts": [
+      {
+        "runId": 40150559994,
+        "runNumber": 1858,
+        "conclusion": "FAIL",
+        "reason": "UNDECLARED_PRODUCT_DRIFT_AFTER_CANONICAL_CANDIDATE"
+      },
+      {
+        "runId": 40151351006,
+        "runNumber": 1859,
+        "conclusion": "FAIL",
+        "reason": "POSTDEPLOY_SEAL_MISMATCH:productSource",
+        "cause": "canonical candidate pointer had not yet been advanced; predecessor seal retained accurately"
+      }
+    ],
+    "currentMaterializationUnchanged": true,
+    "state": "HOLD_SOURCE_PROOF_PENDING",
+    "i4Authorized": false,
+    "production": "DO_NOT_TOUCH"
   }
 }
