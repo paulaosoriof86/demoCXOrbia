@@ -178,11 +178,13 @@ test('I3 A09/B11 all three existing visits mirror HR schedule and questionnaire 
       ?{controlDia:'OK',agendada:'2026-10-08',executionState:'realized',realizada:'2026-10-08',
         cuestFecha:'2026-10-12',questionnaireState:'completed',submissionState:'confirmed_hr',
         submit:true,submittedAt:'2026-10-13',schedulingState:'scheduled',
-        sourceSnapshotAt:'2026-10-24T16:54:00Z',boleto:52,comboAmt:118}
+        sourceSnapshotAt:'2026-10-24T16:54:00Z',boleto:52,comboAmt:118,
+        reviewRequired:false,reviewReasons:[]}
       :{controlDia:'OK',agendada:i===1?'2026-10-24':'2026-10-25',executionState:'pending_realization',
         realizada:null,cuestFecha:null,questionnaireState:'not_available',submissionState:'not_submitted',
         submit:false,submittedAt:null,schedulingState:'scheduled',
-        sourceSnapshotAt:'2026-10-24T16:54:00Z',boleto:null,comboAmt:null};
+        sourceSnapshotAt:'2026-10-24T16:54:00Z',boleto:null,comboAmt:null,
+        reviewRequired:false,reviewReasons:[]};
     const state=i===0?{estado:'submitida',status:'submitida',canonicalState:'submitted_complete',
       operationalState:'submitted_complete',canonicalFacets:{...row.canonicalFacets,submitted:true,realized:true}}:{};
     const candidate={...row,...state,hrManaged:{...row,...state,...operational},...operational};
@@ -193,6 +195,7 @@ test('I3 A09/B11 all three existing visits mirror HR schedule and questionnaire 
       cuestFecha:null,questionnaireState:'not_available',submissionState:'not_submitted',
       submit:false,submittedAt:null,schedulingState:'not_applicable',
       sourceSnapshotAt:'2026-10-01T00:00:00Z',boleto:null,comboAmt:null,
+      reviewRequired:true,reviewReasons:['available_from_missing_for_unassigned_visit'],
       paymentConfirmed:false,paymentState:'platform_not_paid',
       liquidationState:'platform_not_liquidated',financeRecordId:'keep-platform-finance',
       hrManaged:{...row,...operational},version:5
@@ -210,7 +213,7 @@ test('I3 A09/B11 all three existing visits mirror HR schedule and questionnaire 
     const persisted=db.get(visitPath(candidate.hrRowId));
     for(const key of ['agendada','controlDia','cuestFecha','executionState','realizada',
       'questionnaireState','schedulingState','submissionState','submit','submittedAt',
-      'sourceSnapshotAt','boleto','comboAmt']){
+      'sourceSnapshotAt','boleto','comboAmt','reviewRequired','reviewReasons']){
       assert.deepEqual(persisted[key],candidate.hrManaged[key],`${candidate.hrRowId}:${key} must mirror HR`);
     }
     assert.equal(persisted.paymentState,'platform_not_paid');
