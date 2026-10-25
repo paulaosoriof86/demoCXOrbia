@@ -190,11 +190,14 @@ if(fs.existsSync('CXORBIA_I3_ANTI_BUCLE_CIERRE_EXECUTION_LOCK_2026-10-21.json'))
  same(ledgerDev?.sourceArtifactDigest||ledgerDev?.artifactDigest,s.artifactDigest,'ledgerArtifact');
  same(matrixDev?.sourceSha,s.sourceSha,'matrixServedSource');
  same(ledgerDev?.sourceSha,s.sourceSha,'ledgerServedSource');
+ // A negative status such as NOT_DEV_MATERIALIZED must not assert a live DEV release.
+ const status=String(d.status||'');
+ const currentDevDeclared=/(^|_)DEV_MATERIALIZED($|_)/.test(status)&&!/(^|_)NOT_DEV_MATERIALIZED($|_)/.test(status);
  if(s.mode==='CURRENT_SOURCE_SERVING'){
    same(s.sourceSha,d.productSourceSha,'servedSource');
    same(s.sourceTree,d.productTreeAuthority,'servedTree');
-   if(!String(d.status).includes('DEV_MATERIALIZED'))fail('RELEASE_COMPOSITION_FAILURE:FALSE_CURRENT_DEV_DECLARATION');
- }else if(String(d.status).includes('DEV_MATERIALIZED')||s.sourceSha===d.productSourceSha)fail('RELEASE_COMPOSITION_FAILURE:FALSE_PREDECESSOR_DEV_DECLARATION');
+   if(!currentDevDeclared)fail('RELEASE_COMPOSITION_FAILURE:FALSE_CURRENT_DEV_DECLARATION');
+ }else if(currentDevDeclared||s.sourceSha===d.productSourceSha)fail('RELEASE_COMPOSITION_FAILURE:FALSE_PREDECESSOR_DEV_DECLARATION');
  if(d.terminalCertificationAllowed!==false||p.authorizationI4===true||s.production!==false||receipt.materialization.production!==false)fail('RELEASE_COMPOSITION_FAILURE:PRODUCTION_PREMATURE');
  postDeploySealReadback={pass:true,runId:s.runId,runNumber:s.runNumber,mode:s.mode,sourceSha:s.sourceSha,hostingVersion:s.hostingVersion,artifactDigest:s.artifactDigest,terminalReady:false,production:false};
 }
