@@ -2,7 +2,7 @@
   "schemaVersion": "cxorbia.recovery.execution-current.v1",
   "planLockPath": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
   "planId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
-  "asOf": "2026-10-24",
+  "asOf": "2026-10-25",
   "iteration": "I3",
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
@@ -57,8 +57,8 @@
     "D03": "LIVE_E2E_PASS_RUN1778_FRESH_GENERATION_15Q_REPLAY_CLEANUP",
     "D04": "SOURCE_PASS_RUN1795_DEV_RUN1796_NAME_ONLY_CONNECTED_E2E_PASS_RUN1797__HUMAN_AND_FULL_TASK_PENDING",
     "E04": "F12_CLIENT_SOURCE_ABSENT_LIVE_PASS_RUN1797__F09_NPS_NOTES_MEETINGS_DURABLE_OPEN__HUMAN_PENDING",
-    "A09": "EXACT_AUTH_USER_AND_FIRESTORE_MEMBERSHIP_PASS__CLAIMS_PENDING",
-    "B11": "SOURCE_FIXED_CANONICAL_SOURCE_PROOF_PENDING_DEV_RUNTIME_MATERIALIZATION_AND_DURABLE_READBACK",
+    "A09": "RUN1869_DEV_REVIEW_FLAGS_TWO_VISITS_PASS__THREE_VISIT_UI_ADMIN_SHOPPER_FOCAL_PASS__FULL_E2E_PENDING",
+    "B11": "SOURCE_TESTS_8_OF_8_AND_4_OF_4_PASS__DEV_RUNTIME_00327_HEALTH_PASS_RUN1863__VRM287_DURABLE_2_VISITS_PASS_RUN1869__I3_E2E_PENDING",
     "B10": "SOURCE_PROVEN_RUN1799_6_OF_6__DEV_E2E_HUMAN_PENDING__TYaONLINE_LINK_PENDING",
     "B09": "OPEN_GPS_PHOTO_STORAGE_ACK_NEGATIVE_AND_POSITIVE_E2E_PENDING",
     "B13": "OPEN_CROSSROLE_NOTIFICATIONS_READ_RESOLVED_PROVIDER_ACK_PENDING",
@@ -71,7 +71,8 @@
     "VRM280": "SOURCE_PROVEN_RUN1819_DEV_MATERIALIZED_RUN1820_LIVE_SHOPPER_FOCAL_PASS_HUMAN_PENDING",
     "VRM281": "SOURCE_PROVEN_RUN1822_G05_113_PASS_0_FAIL_DEV_MATERIALIZATION_PASS_RUN1823__THREE_DURABLE_ASSIGNMENT_ROWS_STALE__REAL_ACK_PENDING",
     "VRM282": "SOURCE_QA_PASS_RUN1826_DEV_PASS_RUN1827__LIVE_ADMIN_BUTTON_HIDDEN_SUPERSEDED_BY_VRM283",
-    "VRM283": "SOURCE_QA_PASS_RUN1828_6_FOCAL_PASS__NEW_DEV_MATERIALIZATION_AND_LIVE_PROVIDER_ACK_PENDING"
+    "VRM283": "SOURCE_QA_PASS_RUN1828_6_FOCAL_PASS__NEW_DEV_MATERIALIZATION_AND_LIVE_PROVIDER_ACK_PENDING",
+    "VRM287": "RUN1869_DEV_ATOMIC_REPAIR_TWO_DOCUMENTS_READBACK_PASS__DO_NOT_REPEAT"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -89,7 +90,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "RUN1855 frontend delivered, Cloud Run 00326 unchanged; restore connected Admin browser and one authorized protected HR DEV reconcile only after exact d19 revision proof, then effects/readback.",
+  "nextExactAction": "I3: root-cause/QA of existing VRM285 Resources embedded PDF and download, Benefits comprobante CSV action, then isolated Mis Reportes export; follow with minimal P0-proven owner fixes and outstanding Admin+Shopper same-artifact E2E/21 modules. No repeat of A09/B11/VRM287, HR reconciliation or 00327 DEV deployment; Gate20/21 and I4 not authorized.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -132,7 +133,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-10-24",
+  "lastUpdatedAt": "2026-10-25",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -295,7 +296,7 @@
     }
   },
   "nextDiagnosisPath": null,
-  "nextUserAuthorizationRequired": "One first protected HR/Firebase DEV reconciliation was consumed. Fresh explicit authorization required for exactly one additional reconcile against revision d19 and source f283; no production.",
+  "nextUserAuthorizationRequired": "The one authorized A09/B11 DEV build/deploy and VRM287 DEV repair are consumed. Future runtime/Hosting deploy, protected Firestore/HR/Auth write or I4 production release requires its own exact-scope authorization; source diagnostics and existing control continuity are permitted.",
   "primaryExecutionRoute": "DIRECT_NATIVE_GITHUB_SINGLE_WRITER",
   "tinyFishRequiredForThisAction": false,
   "receiptControlParentSha": "5df72f867d8cc27a680e070865b27cc78eb3dae6",
@@ -2383,5 +2384,31 @@
     "state": "HOLD_SOURCE_PROOF_PENDING",
     "i4Authorized": false,
     "production": "DO_NOT_TOUCH"
+  },
+  "decisionFreeze20261025": {
+    "id": "CXORBIA-I3-FASTLANE-FROZEN-20261025",
+    "authority": "Paula: reiteracion explicita de congelar decisiones y proseguir agilmente, sin reabrir trabajo aprobado",
+    "lastVerifiedControlHead": "a501c4b811e25b432baf2727e51e3b77a1128708",
+    "productSource": "317db03683cb7956e42b163c637602e879c7401c",
+    "productTree": "4c7ef2d129196f5ed2f0f169498337151a39d832",
+    "devRuntime": "cxorbia-live-hr-dev-00327-xsc",
+    "certifiedMilestones": [
+      "A09/B11 8/8+4/4 focal source tests PASS; backend materialized DEV once and independently verified healthy RUN1863.",
+      "VRM287 exact two DEV visit review flags repaired atomically and read back RUN1869 PASS; do not rerun HR reconcile or repair.",
+      "Admin 44 visits and #708/#722/#723 visible once; Shopper and reports show three reference visits in focal UI; full 21-module E2E still open."
+    ],
+    "actionableFindings": [
+      "Resources/VRM285: in-app PDF iframe blank, direct Firebase Storage URL opens 7 pages; source app/modules/documentos.js; download semantics pending.",
+      "Benefits: button 'Descargar comprobante' produced no visible feedback; current app/modules/beneficios.js actually creates CSV summary, not bank receipt; runtime cause pending.",
+      "Shopper Mis Reportes PDF export NOT_VERIFIED because Chrome stalled; source app/modules/operacion-extra.js; avoid asserting product failure.",
+      "Certification bank published with 8 questions while legacy Cinépolis rule is 15; exact bank authority pending. Tablon 3 vs campana 0 requires feed/semantic verification."
+    ],
+    "executionRules": [
+      "No new project, branch, candidate, workflow, overlay or audit; retain 82 tasks / 274 VRM / 21 domains and accepted prior cases.",
+      "One writer; exact P0 owner proof -> minimal source fix -> focused QA -> digest/served-byte readback -> Admin+Shopper same-artifact E2E with provider ACK/reload/idempotency where authorized.",
+      "Do not repeat RUN1869, reconciliation, existing Cloud Run build or deployment. Read-only source/QA can proceed; additional DEV mutation/deploy needs proper fresh exact-scope authorization.",
+      "Only evidence-backed 21/21 MATCH and human acceptance can precede Gate20+Gate21 on one artifact. I3 remains HOLD; I4 unapproved; production DO_NOT_TOUCH.",
+      "I4 can deploy only same Gate20/Gate21-certified artifact following Paula's express release authorization and production lock."
+    ]
   }
 }
