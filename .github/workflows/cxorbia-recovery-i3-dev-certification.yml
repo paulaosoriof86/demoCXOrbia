@@ -7590,9 +7590,9 @@ jobs:
       path: .tmp/i3-a09b11-post-deploy-readback/
       if-no-files-found: warn
       retention-days: 30
-  i3-a09b11-hosting-only-dev:
+  i3-vrm288-hosting-only-dev:
    needs: canonical-candidate-authority
-   if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_A09_B11_FRONTEND_HOSTING_ONLY_AUTHORIZED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-a09b11-hosting-only]') }}
+   if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM288_SOURCE_PROOF_PENDING_NOT_DEV_MATERIALIZED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm288-hosting-only]') }}
    runs-on: ubuntu-latest
    timeout-minutes: 35
    permissions:
@@ -7601,9 +7601,9 @@ jobs:
    env:
     FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
     FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-    PINNED_BACKEND_SOURCE: f283e0f53057dcbb4cde008a67cfaf81f0001e29
-    PINNED_CLOUD_RUN_REVISION: cxorbia-live-hr-dev-00326-z9j
-    FOCAL_EVIDENCE: .tmp/i3-a09b11-hosting-only
+    PINNED_BACKEND_SOURCE: 317db03683cb7956e42b163c637602e879c7401c
+    PINNED_CLOUD_RUN_REVISION: cxorbia-live-hr-dev-00327-xsc
+    FOCAL_EVIDENCE: .tmp/i3-vrm288-hosting-only
    steps:
    - uses: actions/checkout@v4
      with:
@@ -7620,17 +7620,17 @@ jobs:
       test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
       git merge-base --is-ancestor "$PINNED_BACKEND_SOURCE" "$FOCAL_SOURCE"
       git merge-base --is-ancestor "$FOCAL_SOURCE" HEAD
-      test "$(git diff --name-only "$PINNED_BACKEND_SOURCE" "$FOCAL_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)" = 'app/modules/visitas.js'
+      test "$(git diff --name-only "$PINNED_BACKEND_SOURCE" "$FOCAL_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)" = 'app/modules/documentos.js'
       test -z "$(git diff --name-only "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)"
       SOURCE_DIR="$(mktemp -d)"
       git archive "$FOCAL_SOURCE" | tar -x -C "$SOURCE_DIR"
       test -f "$SOURCE_DIR/firebase.json"
-      test -f "$SOURCE_DIR/app/modules/visitas.js"
+      test -f "$SOURCE_DIR/app/modules/documentos.js"
       echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
       cd "$SOURCE_DIR"
-      node --check app/modules/visitas.js
-      node --test tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs
-      sha256sum app/modules/visitas.js > "$GITHUB_WORKSPACE/$FOCAL_EVIDENCE/frontend-sha256.txt"
+      node --check app/modules/documentos.js
+      node --test tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs
+      sha256sum app/modules/documentos.js > "$GITHUB_WORKSPACE/$FOCAL_EVIDENCE/frontend-sha256.txt"
    - uses: google-github-actions/auth@v2
      with:
       credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
@@ -7661,15 +7661,15 @@ jobs:
       HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$FOCAL_EVIDENCE/hosting-after.json")"
       test -n "$HOSTING_VERSION"
       test "$HOSTING_VERSION" != "$(jq -r '.release.version.name // empty' "$FOCAL_EVIDENCE/hosting-before.json")"
-      curl -fsS -H 'Cache-Control: no-cache' "${HOSTING_URL}/modules/visitas.js?cxI3A09B11=${GITHUB_RUN_ID}" > "$FOCAL_EVIDENCE/served-visitas.js"
-      cmp -s "$SOURCE_DIR/app/modules/visitas.js" "$FOCAL_EVIDENCE/served-visitas.js"
-      jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg rev "$PINNED_CLOUD_RUN_REVISION" --arg version "$HOSTING_VERSION" '{decision:"PASS_I3_A09_B11_DEV_HOSTING_ONLY",sourceSha:$source,sourceTree:$tree,cloudRunUnchanged:$rev,hostingVersion:$version,servedFrontendByteIdentical:true,hrExternalWrites:0,production:false}' > "$FOCAL_EVIDENCE/readback.json"
+      curl -fsS -H 'Cache-Control: no-cache' "${HOSTING_URL}/modules/documentos.js?cxI3VRM288=${GITHUB_RUN_ID}" > "$FOCAL_EVIDENCE/served-documentos.js"
+      cmp -s "$SOURCE_DIR/app/modules/documentos.js" "$FOCAL_EVIDENCE/served-documentos.js"
+      jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg rev "$PINNED_CLOUD_RUN_REVISION" --arg version "$HOSTING_VERSION" '{decision:"PASS_I3_VRM288_DEV_HOSTING_ONLY",sourceSha:$source,sourceTree:$tree,cloudRunUnchanged:$rev,hostingVersion:$version,servedFrontendByteIdentical:true,hrExternalWrites:0,production:false}' > "$FOCAL_EVIDENCE/readback.json"
    - name: Preserve auditable DEV-only evidence
      if: always()
      uses: actions/upload-artifact@v4
      with:
       name: cxorbia-i3-a09b11-dev-hosting-${{ github.run_id }}
-      path: .tmp/i3-a09b11-hosting-only/
+      path: .tmp/i3-vrm288-hosting-only/
       if-no-files-found: warn
       retention-days: 30
 
