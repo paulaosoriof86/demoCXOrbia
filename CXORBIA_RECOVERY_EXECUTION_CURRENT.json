@@ -90,7 +90,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3: root-cause/QA of existing VRM285 Resources embedded PDF and download, Benefits comprobante CSV action, then isolated Mis Reportes export; follow with minimal P0-proven owner fixes and outstanding Admin+Shopper same-artifact E2E/21 modules. No repeat of A09/B11/VRM287, HR reconciliation or 00327 DEV deployment; Gate20/21 and I4 not authorized.",
+  "nextExactAction": "I3: verify current canonical source successor and fix the existing candidate-authority source guard; request fresh exact-scope authorization before a single DEV Hosting-only materialization. Read back hosted app/modules/documentos.js bytes, retry authenticated Resources viewer and Admin+Shopper same-artifact UAT; embedded PDF still P0 open. No Cloud Run rebuild/deploy, HR reconcile, Firestore/Auth/Storage mutation, Gate20/21 or I4 promotion.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -2410,5 +2410,55 @@
       "Only evidence-backed 21/21 MATCH and human acceptance can precede Gate20+Gate21 on one artifact. I3 remains HOLD; I4 unapproved; production DO_NOT_TOUCH.",
       "I4 can deploy only same Gate20/Gate21-certified artifact following Paula's express release authorization and production lock."
     ]
+  },
+  "latestI3ResourcesRenderSourceCorrection20261025": {
+    "id": "CXORBIA-I3-RESOURCES-RENDER-FIX-20261025",
+    "classification": [
+      "FUNCTIONAL_DEFECT",
+      "VISUAL_DEFECT"
+    ],
+    "status": "SOURCE_COMMITTED_LOCAL_QA_PASS_DEV_NOT_MATERIALIZED",
+    "date": "2026-10-25",
+    "expectedParentSha": "d09ed3496f4132746f23bc4a29eca84828cd2a71",
+    "expectedParentTree": "ea458af902f26b257abf8b049f5f0c8ff8c5704d",
+    "sourceFixCommit": "1951a0a035f84faab684eea5f00326456936ab51",
+    "localQaProofCommit": "04933057fba928bcee9f9be7398c6aa29f8db791",
+    "sourceOwner": "app/modules/documentos.js",
+    "sourceBlob": "07d957257810c0836cb136ddd414e4f8b57d089e",
+    "testOwner": "tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs",
+    "testBlob": "af5aec87492d2b5a83ceae2114d601c62d869d4e",
+    "sha256": {
+      "source": "9ac5d352720f160bb93dd35cd2dcc1aade1f649586110b428162275aa283e3c6",
+      "test": "4fbb133659d6de349fe63fa228a669dbcf5cbeb2c647527f4fddc8cc032658ed"
+    },
+    "sourceBehaviorChanges": [
+      "Resource read status explicitly distinguishes loading, provider blocked and verified empty.",
+      "Identical Firestore resource events no longer replace the viewer DOM; source signature ignores load timestamps.",
+      "Detached old module cannot be redrawn by repeated resource notices.",
+      "Embedded PDF retains in-app iframe and adds explicit original-PDF fallback; in-app blank rendering itself remains open."
+    ],
+    "tests": {
+      "localNode": "7/7 PASS",
+      "syntax": "PASS",
+      "providerWrites": 0,
+      "backendBuilds": 0,
+      "deployments": 0,
+      "liveAuthenticatedE2E": "PENDING"
+    },
+    "githubPushWorkflows": {
+      "certificationRun": 40208748513,
+      "status": "FAILED_EARLY_NO_JOB_DEPLOY_CONFIRMED",
+      "hostingAndAuthWorkflows": [
+        40208747547,
+        40208746784,
+        40208746099
+      ]
+    },
+    "servedDevBaseline": {
+      "productSource": "317db03683cb7956e42b163c637602e879c7401c",
+      "cloudRunRevision": "cxorbia-live-hr-dev-00327-xsc",
+      "hostingUntouched": true
+    },
+    "next": "Obtain exact-scope permission to materialize this single source successor on existing DEV Hosting only, no Cloud Run rebuild/redeploy, then read back exact served file bytes and do authenticated Resource/Admin/Shopper UAT. In-app PDF remains a separate P0 until proven rendered; no I4."
   }
 }
