@@ -7592,18 +7592,18 @@ jobs:
       retention-days: 30
   i3-vrm288-hosting-only-dev:
    needs: canonical-candidate-authority
-   if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM288_SOURCE_PROOF_PENDING_NOT_DEV_MATERIALIZED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm288-hosting-only]') }}
+   if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM288_ADMIN_NAV_SOURCE_PROOF_PENDING_NOT_DEV_MATERIALIZED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm288-nav-hosting-only]') }}
    runs-on: ubuntu-latest
    timeout-minutes: 35
    permissions:
     contents: read
     id-token: write
    env:
-    FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
-    FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-    PINNED_BACKEND_SOURCE: 317db03683cb7956e42b163c637602e879c7401c
-    PINNED_CLOUD_RUN_REVISION: cxorbia-live-hr-dev-00327-xsc
-    FOCAL_EVIDENCE: .tmp/i3-vrm288-hosting-only
+    SRC: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+    TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+    BACKEND_SHA: 317db03683cb7956e42b163c637602e879c7401c
+    RUN_REV: cxorbia-live-hr-dev-00327-xsc
+    EV_DIR: .tmp/i3-vrm288-nav
    steps:
    - uses: actions/checkout@v4
      with:
@@ -7614,23 +7614,24 @@ jobs:
    - name: Certify exact source and non-backend scope
      run: |
       set -Eeuo pipefail
-      mkdir -p "$FOCAL_EVIDENCE"
-      test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
-      test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
-      test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
-      git merge-base --is-ancestor "$PINNED_BACKEND_SOURCE" "$FOCAL_SOURCE"
-      git merge-base --is-ancestor "$FOCAL_SOURCE" HEAD
-      test "$(git diff --name-only "$PINNED_BACKEND_SOURCE" "$FOCAL_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)" = 'app/modules/documentos.js'
-      test -z "$(git diff --name-only "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)"
+      mkdir -p "$EV_DIR"
+      test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$SRC"
+      test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$TREE"
+      test "$(git rev-parse "$SRC^{tree}")" = "$TREE"
+      git merge-base --is-ancestor "$BACKEND_SHA" "$SRC"
+      git merge-base --is-ancestor "$SRC" HEAD
+      test "$(git diff --name-only "$BACKEND_SHA" "$SRC" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)" = $'app/core/router.js\napp/modules/documentos.js'
+      test -z "$(git diff --name-only "$SRC" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)"
       SOURCE_DIR="$(mktemp -d)"
-      git archive "$FOCAL_SOURCE" | tar -x -C "$SOURCE_DIR"
+      git archive "$SRC" | tar -x -C "$SOURCE_DIR"
       test -f "$SOURCE_DIR/firebase.json"
       test -f "$SOURCE_DIR/app/modules/documentos.js"
       echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
       cd "$SOURCE_DIR"
+      node --check app/core/router.js
       node --check app/modules/documentos.js
       node --test tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs
-      sha256sum app/modules/documentos.js > "$GITHUB_WORKSPACE/$FOCAL_EVIDENCE/frontend-sha256.txt"
+      test -f app/core/router.js
    - uses: google-github-actions/auth@v2
      with:
       credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
@@ -7640,36 +7641,38 @@ jobs:
    - name: Verify exact DEV runtime and record Hosting predecessor
      run: |
       set -Eeuo pipefail
-      gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$FOCAL_EVIDENCE/runtime-before.json"
-      jq -e --arg rev "$PINNED_CLOUD_RUN_REVISION" '.status.latestReadyRevisionName==$rev and ([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$FOCAL_EVIDENCE/runtime-before.json" >/dev/null
+      gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$EV_DIR/runtime-before.json"
+      jq -e --arg rev "$RUN_REV" '.status.latestReadyRevisionName==$rev and ([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$EV_DIR/runtime-before.json" >/dev/null
       TOKEN="$(gcloud auth print-access-token)"
-      curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$FOCAL_EVIDENCE/hosting-before.json"
-      jq -e '.release.version.name | length > 0' "$FOCAL_EVIDENCE/hosting-before.json" >/dev/null
+      curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$EV_DIR/hosting-before.json"
+      jq -e '.release.version.name | length > 0' "$EV_DIR/hosting-before.json" >/dev/null
    - name: Publish ONLY the certified frontend artifact to DEV Hosting
      run: |
       set -Eeuo pipefail
       npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest >/dev/null 2>&1
       cd "$SOURCE_DIR"
-      "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$FOCAL_EVIDENCE/hosting-deploy.log"
+      "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$EV_DIR/hosting-deploy.log"
    - name: Read back exact frontend bytes and unchanged Cloud Run
      run: |
       set -Eeuo pipefail
-      gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$FOCAL_EVIDENCE/runtime-after.json"
-      jq -e --arg rev "$PINNED_CLOUD_RUN_REVISION" '.status.latestReadyRevisionName==$rev and ([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$FOCAL_EVIDENCE/runtime-after.json" >/dev/null
+      gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$EV_DIR/runtime-after.json"
+      jq -e --arg rev "$RUN_REV" '.status.latestReadyRevisionName==$rev and ([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$EV_DIR/runtime-after.json" >/dev/null
       TOKEN="$(gcloud auth print-access-token)"
-      curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$FOCAL_EVIDENCE/hosting-after.json"
-      HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$FOCAL_EVIDENCE/hosting-after.json")"
+      curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$EV_DIR/hosting-after.json"
+      HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$EV_DIR/hosting-after.json")"
       test -n "$HOSTING_VERSION"
-      test "$HOSTING_VERSION" != "$(jq -r '.release.version.name // empty' "$FOCAL_EVIDENCE/hosting-before.json")"
-      curl -fsS -H 'Cache-Control: no-cache' "${HOSTING_URL}/modules/documentos.js?cxI3VRM288=${GITHUB_RUN_ID}" > "$FOCAL_EVIDENCE/served-documentos.js"
-      cmp -s "$SOURCE_DIR/app/modules/documentos.js" "$FOCAL_EVIDENCE/served-documentos.js"
-      jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg rev "$PINNED_CLOUD_RUN_REVISION" --arg version "$HOSTING_VERSION" '{decision:"PASS_I3_VRM288_DEV_HOSTING_ONLY",sourceSha:$source,sourceTree:$tree,cloudRunUnchanged:$rev,hostingVersion:$version,servedFrontendByteIdentical:true,hrExternalWrites:0,production:false}' > "$FOCAL_EVIDENCE/readback.json"
+      test "$HOSTING_VERSION" != "$(jq -r '.release.version.name // empty' "$EV_DIR/hosting-before.json")"
+      curl -fsS -H 'Cache-Control: no-cache' "${HOSTING_URL}/modules/documentos.js?cxI3VRM288=${GITHUB_RUN_ID}" > "$EV_DIR/served-documentos.js"
+      cmp -s "$SOURCE_DIR/app/modules/documentos.js" "$EV_DIR/served-documentos.js"
+      curl -fsS -H 'Cache-Control: no-cache' "${HOSTING_URL}/core/router.js?cxI3VRM288=${GITHUB_RUN_ID}" > "$EV_DIR/served-router.js"
+      cmp -s "$SOURCE_DIR/app/core/router.js" "$EV_DIR/served-router.js"
+      jq -n -S --arg source "$SRC" --arg tree "$TREE" --arg rev "$RUN_REV" --arg version "$HOSTING_VERSION" '{decision:"PASS_I3_VRM288_DEV_HOSTING_ONLY",sourceSha:$source,sourceTree:$tree,cloudRunUnchanged:$rev,hostingVersion:$version,servedFrontendByteIdentical:true,hrExternalWrites:0,production:false}' > "$EV_DIR/readback.json"
    - name: Preserve auditable DEV-only evidence
      if: always()
      uses: actions/upload-artifact@v4
      with:
-      name: cxorbia-i3-a09b11-dev-hosting-${{ github.run_id }}
-      path: .tmp/i3-vrm288-hosting-only/
+      name: cxorbia-i3-vrm288-nav-${{ github.run_id }}
+      path: .tmp/i3-vrm288-nav/
       if-no-files-found: warn
       retention-days: 30
 
