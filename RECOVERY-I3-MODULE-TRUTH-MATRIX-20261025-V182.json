@@ -103,11 +103,11 @@
     }
   },
   "productSource": {
-    "sha": "04933057fba928bcee9f9be7398c6aa29f8db791",
-    "treeSha": "0e67168bd92990dfecad4c48f75836963b821a3a",
-    "predecessorProductSourceSha": "317db03683cb7956e42b163c637602e879c7401c",
-    "message": "fix(i3): stabilize resource notifications and explicit read states; add PDF original fallback",
-    "authorityState": "SOURCE_FIXED_PENDING_CI_AND_DEV_ONLY"
+    "sha": "74ea77ca56892cdead444ee546c1f1de86364fcc",
+    "treeSha": "3c2267500f46634e6959737bf6a8fb99afb5d0ed",
+    "predecessorProductSourceSha": "04933057fba928bcee9f9be7398c6aa29f8db791",
+    "message": "fix(cxorbia-i3): restore collapsed navigation groups with explicit visible display",
+    "authorityState": "SOURCE_FIXED_PENDING_CANONICAL_CI_AND_DEV"
   },
   "controlHeadAtConstruction": "3ce8d451e11a2d62c175000b0e6b72f53071af46",
   "phaseAComplete": false,
@@ -750,7 +750,7 @@
       "currentCandidateTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
       "currentOwnerBlobs": {
         "app/core/config.js": "5446270196c99f01715f60d1ad65892d12a070db",
-        "app/core/router.js": "8be484f8281a706fde86fbd5f9edc9804a18b994",
+        "app/core/router.js": "8651bc40ec5fabfd6978fe579b89b047b7592458",
         "app/core/permissions.js": "070dfd2a7dbdaf0268d568dc7622e974a18fd383",
         "app/core/data.js": "f28e6f48c03536d97345d6e2734e874f624419b9",
         "app/core/data-source.js": "cea2af688a7d60d58eec6b4a5d89cac9b3965db3",
@@ -4242,7 +4242,7 @@
       "f9ApprovedBlob": "fdd3c91c1428d49413fb305ed464dffdc6ea3e13",
       "latestApprovedSource": "4aeb41ca6dffb6e5b8324ca50531587539f5058e",
       "latestApprovedBlob": "64f130c722f14261dde52d6d7384b35e35a263ac",
-      "currentBlob": "8be484f8281a706fde86fbd5f9edc9804a18b994",
+      "currentBlob": "8651bc40ec5fabfd6978fe579b89b047b7592458",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "TRUE_FUNCTIONAL_DEFECT",
@@ -13392,6 +13392,17 @@
     "localQa": "PASS_7_OF_7",
     "liveE2E": "PENDING",
     "moduleTruthWholePhaseA": false,
+    "production": false
+  },
+  "vrm288AdminNavigationSourceFix": {
+    "sourceSha": "74ea77ca56892cdead444ee546c1f1de86364fcc",
+    "sourceTree": "3c2267500f46634e6959737bf6a8fb99afb5d0ed",
+    "owner": "app/core/router.js",
+    "oldBlob": "8be484f8281a706fde86fbd5f9edc9804a18b994",
+    "newBlob": "8651bc40ec5fabfd6978fe579b89b047b7592458",
+    "trigger": "ADMIN_RESOURCES_SIDEBAR_HIDDEN_CSS",
+    "readback": "SOURCE_ONLY_NOT_DEV_MATERIALIZED",
+    "adminE2e": "PENDING",
     "production": false
   }
 }
