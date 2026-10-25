@@ -270,7 +270,7 @@ CX.router = {
       if(wrap.dataset.alwaysOpen==='1')return;
       const key=sec.dataset.sec;
       const isNowCollapsed = items.style.display!=='none';
-      items.style.display = isNowCollapsed ? 'none' : '';
+      items.style.display = isNowCollapsed ? 'none' : 'block';
       sec.querySelector('span:last-child').textContent = isNowCollapsed ? '›' : '⌄';
       try{const cl=JSON.parse(localStorage.getItem('cx_rail_col')||'{}');cl[key]=isNowCollapsed;localStorage.setItem('cx_rail_col',JSON.stringify(cl));}catch(e){}
     }));
