@@ -90,7 +90,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3: verify current canonical source successor and fix the existing candidate-authority source guard; request fresh exact-scope authorization before a single DEV Hosting-only materialization. Read back hosted app/modules/documentos.js bytes, retry authenticated Resources viewer and Admin+Shopper same-artifact UAT; embedded PDF still P0 open. No Cloud Run rebuild/deploy, HR reconcile, Firestore/Auth/Storage mutation, Gate20/21 or I4 promotion.",
+  "nextExactAction": "I3 HOLD: read-only preflight the canonical descriptor/ledger/module truth for 04933057fba928bcee9f9be7398c6aa29f8db791, then obtain authorization to register its source successor in existing authorities WITHOUT relaxing the RELEASE_COMPOSITION_FAILURE guard. After source proof and separate fresh exact-scope permission, one DEV Hosting-only deployment + served-byte readback + authenticated Resources/Admin/Shopper UAT. Embedded PDF remains open P0; no backend build, Cloud Run deploy, HR/Firestore/Auth/Storage writes, Gate20/21 or I4.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -2459,6 +2459,14 @@
       "cloudRunRevision": "cxorbia-live-hr-dev-00327-xsc",
       "hostingUntouched": true
     },
-    "next": "Obtain exact-scope permission to materialize this single source successor on existing DEV Hosting only, no Cloud Run rebuild/redeploy, then read back exact served file bytes and do authenticated Resource/Admin/Shopper UAT. In-app PDF remains a separate P0 until proven rendered; no I4."
+    "next": "Read-only prepare exact descriptor/ledger/module owner hash succession from new source; register using existing authority path only after exact-scoped approval, re-run source proof; request fresh exact-scope DEV Hosting-only materialization. No Cloud Run or production changes.",
+    "exactCanonicalGuardReadback": {
+      "run": 40208748513,
+      "qaTests": "47/47 PASS in canonical-candidate-authority job",
+      "status": "RELEASE_COMPOSITION_FAILURE",
+      "reason": "UNDECLARED_PRODUCT_DRIFT_AFTER_CANONICAL_CANDIDATE:app/modules/documentos.js",
+      "remainingSourceAuthority": "Existing descriptor, findings ledger and module-truth must be made coherent with successor on same branch. Do not disable/relax guard, do not assert 21/21 MATCH.",
+      "materializedDev": false
+    }
   }
 }
