@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_A09_B11_FRONTEND_HOSTING_PASS_RECONCILIATION_PENDING",
+  "status": "HOLD_I3_A09_B11_REVIEW_FLAG_SOURCE_PROOF_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "81b3a028f94c7128d78cf565e87b10e3dbaf056c",
-  "productTreeAuthority": "2f0d7fb5eabde8094f530d66c70d6450cb6b1163",
-  "predecessorProductSourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V511_2026-10-24.json",
-  "findingsLedgerExpectedGitBlob": "a55bd822867b704abf44f90365a65781de7abc79",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261024-V180.json",
+  "productSourceSha": "317db03683cb7956e42b163c637602e879c7401c",
+  "productTreeAuthority": "4c7ef2d129196f5ed2f0f169498337151a39d832",
+  "predecessorProductSourceSha": "81b3a028f94c7128d78cf565e87b10e3dbaf056c",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V512_2026-10-24.json",
+  "findingsLedgerExpectedGitBlob": "4837dd705170eda862f227463063dd8451c9341f",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261024-V181.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "I3_A09_B11_DURABLE_HR_PARITY_THREE_VISITS; FOCAL_FRONTEND_HOSTING_AND_SINGLE_AUTHORIZED_DEV_RECONCILIATION_PENDING",
+  "activeBlocker": "VRM-287_SOURCE_PROOF_PENDING_DEV_RUNTIME_MATERIALIZATION_AND_DURABLE_THREE_VISIT_READBACK",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -39,7 +39,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-287",
+  "nextFindingId": "VRM-288",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Use the signed-in Admin browser only: verify the exact snapshot revision d19eb12ad8c1c5140b5711ea390deaae50b0edd35ff4f982a69bfdcabbc86dd2 and Cloud Run 00326-z9j, execute ONE protected DEV HR reconcile, capture receipt ACK/effects and durable 3-visit readback. No new frontend deploy, no external HR writes, no production.",
+  "exactNextAction": "Run the existing canonical I3 DEV certification against the registered source successor. If PASS and the existing DEV authorization remains valid, use only the backend runtime materialization lane; preserve Hosting and production, then read back the three exact visits and Admin view.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -787,7 +787,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "2f0d7fb5eabde8094f530d66c70d6450cb6b1163",
+  "productSourceTree": "4c7ef2d129196f5ed2f0f169498337151a39d832",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -2961,7 +2961,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "d8626487756022c5cbd3c9b3ee1a85483c47f044",
+  "moduleTruthExpectedGitBlob": "5ac96b34179d72eb22cc7c7aa8639dd43dde1c01",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -13896,5 +13896,34 @@
       "externalHrWrites": 0,
       "production": false
     }
+  },
+  "a09B11ReviewFlagSourceSuccessor20261024": {
+    "findingId": "VRM-287",
+    "classification": "MAPPING_FAILURE",
+    "sourceSha": "317db03683cb7956e42b163c637602e879c7401c",
+    "sourceTree": "4c7ef2d129196f5ed2f0f169498337151a39d832",
+    "predecessorProductSourceSha": "81b3a028f94c7128d78cf565e87b10e3dbaf056c",
+    "codeCommit": "317db03683cb7956e42b163c637602e879c7401c",
+    "controlHeadAtRegistration": "3ce8d451e11a2d62c175000b0e6b72f53071af46",
+    "owner": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+    "ownerBlob": "1747a810b8854f871a5bf10db745ea1d92c0d900",
+    "qaCommit": "3ce8d451e11a2d62c175000b0e6b72f53071af46",
+    "qaOwner": "tools/qa/cxorbia-i3-work-uat-a09b11-three-visit-assignment.test.mjs",
+    "qaBlob": "7a8a61cbcba7dcab1341146ceed82acbd58ca25a",
+    "focusedRegressionTests": "4/4 reported local synthetic PASS",
+    "priorReconcileReceipt": "hr-ce909b376b02d3c3a18f88fd43ca1e862b6e01409fcd3c1be81c80b74d08d020",
+    "hrRevision": "d19eb12ad8c1c5140b5711ea390deaae50b0edd35ff4f982a69bfdcabbc86dd2",
+    "runtimeBeforeDeploy": "cxorbia-live-hr-dev-00326-z9j",
+    "canonicalRun1858": {
+      "runId": 40150559994,
+      "runNumber": 1858,
+      "conclusion": "FAIL",
+      "reason": "RELEASE_COMPOSITION_FAILURE:UNDECLARED_PRODUCT_DRIFT_AFTER_CANONICAL_CANDIDATE"
+    },
+    "state": "SOURCE_FIXED_CANONICAL_SOURCE_PROOF_PENDING",
+    "materialization": "NOT_RUN",
+    "production": "DO_NOT_TOUCH",
+    "i3": "HOLD",
+    "i4Authorized": false
   }
 }
