@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-287_SOURCE_PROOF_PENDING_DEV_RUNTIME_MATERIALIZATION_AND_DURABLE_THREE_VISIT_READBACK",
+  "activeBlocker": "VRM-287_DEV_BACKEND_MATERIALIZED_DURABLE_TOP_LEVEL_REVIEW_FLAGS_MISMATCH_HOLD",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the existing canonical I3 DEV certification against the registered source successor. If PASS and the existing DEV authorization remains valid, use only the backend runtime materialization lane; preserve Hosting and production, then read back the three exact visits and Admin view.",
+  "exactNextAction": "A09/B11: Cloud Run DEV materialization/readback already PASS (RUN1862/RUN1863); do not build, redeploy or repeat HR reconciliation. Firestore exact documents OCTUBRE 26!19 and !20 still have top-level reviewRequired=true/reviewReasons=['available_from_missing_for_unassigned_visit'] while hrManaged.reviewRequired=false, assignmentState=assigned and availableFrom=2026-10-24. Determine/authorize only an exact, idempotent per-document provider-backed repair with before/after preconditions, then verify Admin/Shopper reload, canonical shopper/crosswalk, duplications and full I3 same-artifact E2E. Preserve Gate20/Gate21, I3 HOLD, I4 not authorized.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -13929,10 +13929,122 @@
       "conclusion": "FAIL",
       "reason": "RELEASE_COMPOSITION_FAILURE:UNDECLARED_PRODUCT_DRIFT_AFTER_CANONICAL_CANDIDATE"
     },
-    "state": "SOURCE_FIXED_CANONICAL_SOURCE_PROOF_PENDING",
-    "materialization": "NOT_RUN",
+    "state": "SOURCE_FIXED_SOURCE_LINEAGE_QA_PASS_DEV_RUNTIME_MATERIALIZED_DURABLE_READBACK_MISMATCH",
+    "materialization": {
+      "decision": "PASS_I3_A09_B11_BACKEND_ONLY_DEV_READBACK_WITH_RECORDED_POST_DEPLOY_ASSERTION_FAILURE",
+      "sourceSha": "317db03683cb7956e42b163c637602e879c7401c",
+      "sourceTree": "4c7ef2d129196f5ed2f0f169498337151a39d832",
+      "run1862": {
+        "runId": 40154645333,
+        "conclusion": "failure",
+        "explanation": "postdeploy tagged-image assertion; service actually updated to digest image",
+        "cloudBuildId": "43612978-0c57-4ff5-8845-8ac79f77691c",
+        "builds": 1,
+        "runtimeDeploys": 1
+      },
+      "run1863": {
+        "runId": 40155093053,
+        "conclusion": "success",
+        "job": "i3-a09b11-post-deploy-readback-only",
+        "decision": "PASS_I3_A09_B11_POST_DEPLOY_READBACK_ONLY",
+        "builds": 0,
+        "runtimeDeploys": 0
+      },
+      "runtimeRevision": "cxorbia-live-hr-dev-00327-xsc",
+      "runtimeDigest": "sha256:b8edc27018eef8b2a49ff2a149db63e9ac2972bb7bb3d3bb159291cd4dc9c70a",
+      "trafficPercent": 100,
+      "health": "PASS",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/e8712adf9b42b038",
+      "hostingDeploys": 0,
+      "productionIndexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+      "productionDeploys": 0,
+      "externalHrWrites": 0,
+      "firestoreDirectWrites": 0,
+      "authWrites": 0
+    },
     "production": "DO_NOT_TOUCH",
     "i3": "HOLD",
-    "i4Authorized": false
+    "i4Authorized": false,
+    "durableReadback": {
+      "observedAtLocal": "2026-10-24",
+      "mode": "READ_ONLY_FIREBASE_CONSOLE_CHROME",
+      "firebaseProject": "cxorbia-backend-dev",
+      "tenant": "tya",
+      "projectId": "cinepolis",
+      "periodId": "cinepolis-2026-10",
+      "hrRevision": "d19eb12ad8c1c5140b5711ea390deaae50b0edd35ff4f982a69bfdcabbc86dd2",
+      "priorCommittedReceipt": "hr-ce909b376b02d3c3a18f88fd43ca1e862b6e01409fcd3c1be81c80b74d08d020",
+      "receiptStatus": "committed",
+      "receiptAck": true,
+      "receiptCreatedVisits": 0,
+      "receiptConflicts": 0,
+      "visits": [
+        {
+          "id": "OCTUBRE 26!5",
+          "shopperId": "shopper_gt_319cd82eaf",
+          "canonicalState": "submitted_complete",
+          "topLevelReviewRequired": false,
+          "hrManagedReviewRequired": false,
+          "topLevelAssignmentSyncStatus": "synced",
+          "hrManagedAssignmentSyncStatus": "assigned_from_hr_pending_platform_sync",
+          "updatedAt": "2026-10-25T00:55:54.874Z",
+          "classification": "REVIEW_FLAG_MATCH_SYNC_SEMANTICS_UNADJUDICATED"
+        },
+        {
+          "id": "OCTUBRE 26!19",
+          "shopperId": "shopper_gt_319cd82eaf",
+          "assignmentState": "assigned",
+          "availableFrom": "2026-10-24",
+          "canonicalState": "pending_realization",
+          "topLevelReviewRequired": true,
+          "topLevelReviewReasons": [
+            "available_from_missing_for_unassigned_visit"
+          ],
+          "hrManagedReviewRequired": false,
+          "topLevelAssignmentSyncStatus": "synced",
+          "hrManagedAssignmentSyncStatus": "assigned_from_hr_pending_platform_sync",
+          "updatedAt": "2026-10-25T00:55:54.215Z",
+          "classification": "FAIL_STALE_DURABLE_TOP_LEVEL_REVIEW_PROJECTION"
+        },
+        {
+          "id": "OCTUBRE 26!20",
+          "shopperId": "shopper_gt_319cd82eaf",
+          "assignmentState": "assigned",
+          "availableFrom": "2026-10-24",
+          "canonicalState": "pending_realization",
+          "topLevelReviewRequired": true,
+          "topLevelReviewReasons": [
+            "available_from_missing_for_unassigned_visit"
+          ],
+          "hrManagedReviewRequired": false,
+          "topLevelAssignmentSyncStatus": "synced",
+          "hrManagedAssignmentSyncStatus": "assigned_from_hr_pending_platform_sync",
+          "updatedAt": "2026-10-25T00:55:54.251Z",
+          "classification": "FAIL_STALE_DURABLE_TOP_LEVEL_REVIEW_PROJECTION"
+        }
+      ],
+      "shopper": {
+        "id": "shopper_gt_319cd82eaf",
+        "status": "active",
+        "country": "GT",
+        "visibleLogin": "stiven.lopez.7685",
+        "hrRevision": "d19eb12ad8c1c5140b5711ea390deaae50b0edd35ff4f982a69bfdcabbc86dd2"
+      },
+      "crosswalk": {
+        "id": "shopper_gt_319cd82eaf",
+        "identityMode": "stable_hr_shopper_id",
+        "fuzzyMatching": false
+      },
+      "adminReadback": "NOT_VERIFIED_NEW_TAB_SHOWED_SIGN_IN; PREEXISTING_PREVIEW_TAB_OWNED_BY_OTHER_SESSION",
+      "globalDuplicateScan": "NOT_VERIFIED",
+      "qaState": "I3_HOLD_GATE20_GATE21_NOT_CERTIFIED_I4_NOT_AUTHORIZED",
+      "decisionFreeze": [
+        "ONE_CANONICAL_BRANCH_AND_CANDIDATE",
+        "NO_REPEAT_HR_RECONCILIATION",
+        "NO_DIRECT_FIRESTORE_AUTH_EXTERNAL_HR_PRODUCTION_WRITES",
+        "NO_REBUILD_OR_REDEPLOY_FOR_THIS_READBACK",
+        "COMPLETE_FUNCTIONAL_E2E_BEFORE_GATE20_GATE21"
+      ]
+    }
   }
 }
