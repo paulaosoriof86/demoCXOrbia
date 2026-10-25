@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-287_DEV_BACKEND_MATERIALIZED_DURABLE_TOP_LEVEL_REVIEW_FLAGS_MISMATCH_HOLD",
+  "activeBlocker": "I3_A09_B11_TWO_VISIT_DURABLE_REPAIRED_ADMIN_SHOPPER_E2E_GATE20_GATE21_HOLD",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "A09/B11: Cloud Run DEV materialization/readback already PASS (RUN1862/RUN1863); do not build, redeploy or repeat HR reconciliation. Firestore exact documents OCTUBRE 26!19 and !20 still have top-level reviewRequired=true/reviewReasons=['available_from_missing_for_unassigned_visit'] while hrManaged.reviewRequired=false, assignmentState=assigned and availableFrom=2026-10-24. Determine/authorize only an exact, idempotent per-document provider-backed repair with before/after preconditions, then verify Admin/Shopper reload, canonical shopper/crosswalk, duplications and full I3 same-artifact E2E. Preserve Gate20/Gate21, I3 HOLD, I4 not authorized.",
+  "exactNextAction": "VRM287 two exact DEV visits were atomically repaired and independently read back in Firebase (RUN1869). Do not rerun reconciliation, repair, build, Cloud Run or Hosting deploy. Proceed with authenticated Admin and Shopper refresh against current DEV artifact, verify three reference rows and no duplicates, confirm their identity/functional states, close remaining I3 same-artifact E2E/21-module obligations and human checkpoint, then Gate20 and Gate21 only from the same certified artifact. Keep I3 HOLD and I4 NOT_AUTHORIZED until their existing gates pass.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -13929,7 +13929,7 @@
       "conclusion": "FAIL",
       "reason": "RELEASE_COMPOSITION_FAILURE:UNDECLARED_PRODUCT_DRIFT_AFTER_CANONICAL_CANDIDATE"
     },
-    "state": "SOURCE_FIXED_SOURCE_LINEAGE_QA_PASS_DEV_RUNTIME_MATERIALIZED_DURABLE_READBACK_MISMATCH",
+    "state": "SOURCE_FIXED_RUNTIME_MATERIALIZED_VRM287_TWO_VISIT_DURABLE_READBACK_PASS_I3_GATE_PENDING",
     "materialization": {
       "decision": "PASS_I3_A09_B11_BACKEND_ONLY_DEV_READBACK_WITH_RECORDED_POST_DEPLOY_ASSERTION_FAILURE",
       "sourceSha": "317db03683cb7956e42b163c637602e879c7401c",
@@ -14045,6 +14045,61 @@
         "NO_REBUILD_OR_REDEPLOY_FOR_THIS_READBACK",
         "COMPLETE_FUNCTIONAL_E2E_BEFORE_GATE20_GATE21"
       ]
+    },
+    "vrm287TwoVisitDevRepair": {
+      "findingId": "VRM-287",
+      "authorization": "Paula expressly authorized exact two-visit Firebase DEV regularization in conversation on 2026-10-24 America/Guatemala",
+      "sourceSha": "317db03683cb7956e42b163c637602e879c7401c",
+      "sourceTree": "4c7ef2d129196f5ed2f0f169498337151a39d832",
+      "environment": "cxorbia-backend-dev",
+      "tenantId": "tya",
+      "projectId": "cinepolis",
+      "periodId": "cinepolis-2026-10",
+      "sourceRevision": "d19eb12ad8c1c5140b5711ea390deaae50b0edd35ff4f982a69bfdcabbc86dd2",
+      "workflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      "controlScript": ".github/control/vrm287-dev-two-visit.cjs",
+      "runId": 40159834109,
+      "runNumber": 1869,
+      "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/40159834109",
+      "jobId": 121068965414,
+      "controlHead": "0476876f688e140b59dfc3456fbc8d9c10754d89",
+      "outcome": "PASS_VRM287_TWO_DOC_DEV_DURABLE_READBACK",
+      "action": "TWO_DOCUMENT_ATOMIC_TRANSACTION",
+      "updatedAt": "2026-10-25T03:53:37.707Z",
+      "documents": [
+        {
+          "path": "tenants/tya/projects/cinepolis/visits/OCTUBRE 26!19",
+          "previousVersion": 24,
+          "currentVersion": 25,
+          "reviewRequired": false,
+          "reviewReasons": [],
+          "unrelatedFieldsIntact": true,
+          "independentFirebaseConsoleReadback": true
+        },
+        {
+          "path": "tenants/tya/projects/cinepolis/visits/OCTUBRE 26!20",
+          "previousVersion": 24,
+          "currentVersion": 25,
+          "reviewRequired": false,
+          "reviewReasons": [],
+          "unrelatedFieldsIntact": true,
+          "independentFirebaseConsoleReadback": true
+        }
+      ],
+      "immutableConstraints": [
+        "NO_NEW_RECONCILIATION",
+        "NO_AUTH_WRITES",
+        "NO_EXTERNAL_HR_WRITES",
+        "NO_HOSTING_DEPLOY",
+        "NO_CLOUD_RUN_DEPLOY",
+        "NO_PRODUCTION_DEPLOY",
+        "I3_HOLD",
+        "GATE20_GATE21_NOT_CERTIFIED",
+        "I4_NOT_AUTHORIZED"
+      ],
+      "remaining": "ADMIN_SHOPPER_SAME_ARTIFACT_RELOAD_GLOBAL_DUPLICATE_AND_E2E_GATE20_GATE21",
+      "classification": "DEV_DURABLE_REPAIR_PASS_NOT_I3_GO"
     }
-  }
+  },
+  "previousActiveBlockerBeforeVrm287Repair": "VRM-287_DEV_BACKEND_MATERIALIZED_DURABLE_TOP_LEVEL_REVIEW_FLAGS_MISMATCH_HOLD"
 }
