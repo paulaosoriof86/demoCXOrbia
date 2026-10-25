@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM288_SOURCE_PROOF_PENDING_NOT_DEV_MATERIALIZED",
+  "status": "HOLD_I3_VRM288_ADMIN_NAV_SOURCE_PROOF_PENDING_NOT_DEV_MATERIALIZED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "04933057fba928bcee9f9be7398c6aa29f8db791",
-  "productTreeAuthority": "0e67168bd92990dfecad4c48f75836963b821a3a",
-  "predecessorProductSourceSha": "317db03683cb7956e42b163c637602e879c7401c",
+  "productSourceSha": "74ea77ca56892cdead444ee546c1f1de86364fcc",
+  "productTreeAuthority": "3c2267500f46634e6959737bf6a8fb99afb5d0ed",
+  "predecessorProductSourceSha": "04933057fba928bcee9f9be7398c6aa29f8db791",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V513_2026-10-25.json",
-  "findingsLedgerExpectedGitBlob": "de09e1a3eadab315c756636b0cf7c304a42f625a",
+  "findingsLedgerExpectedGitBlob": "666b759442c0f81ed6bd10db7548a43805aad7c4",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261025-V182.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -2961,7 +2961,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "a05af468b2424f8e6ed4a3590b19ccfbf36ee8af",
+  "moduleTruthExpectedGitBlob": "74e4bddd5969760401e792f30427ad0adfc01f81",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -14114,6 +14114,17 @@
     "sourceProof": "PENDING_CI",
     "dev": "NOT_DEPLOYED",
     "pdfContent": "P0_OPEN",
+    "production": false
+  },
+  "vrm288AdminNavigationSourceFix": {
+    "state": "SOURCE_FIXED_PENDING_CANONICAL_QA",
+    "sourceSha": "74ea77ca56892cdead444ee546c1f1de86364fcc",
+    "sourceTree": "3c2267500f46634e6959737bf6a8fb99afb5d0ed",
+    "owner": "app/core/router.js",
+    "ownerBlob": "8651bc40ec5fabfd6978fe579b89b047b7592458",
+    "devMaterialized": false,
+    "adminE2e": "PENDING",
+    "humanPass": false,
     "production": false
   }
 }
