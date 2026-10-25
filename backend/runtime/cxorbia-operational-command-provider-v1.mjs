@@ -296,7 +296,10 @@ async function reconcileVisitDoc({db,policy,candidate,sourceRevision}){
     const operationalHrFields=[
       'agendada','controlDia','cuestFecha','executionState','realizada',
       'schedulingState','questionnaireState','submissionState','submit',
-      'submittedAt','sourceSnapshotAt','boleto','comboAmt'
+      'submittedAt','sourceSnapshotAt','boleto','comboAmt',
+      // The HR snapshot owns these validation flags. Leaving their old outer
+      // values while refreshing hrManaged creates false reviews on assigned rows.
+      'reviewRequired','reviewReasons'
     ];
     const operationalHrPatch=Object.fromEntries(operationalHrFields
       .filter(key=>Object.hasOwn(hrManaged,key)||Object.hasOwn(candidate,key))
