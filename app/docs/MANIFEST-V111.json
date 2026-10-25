@@ -1,0 +1,729 @@
+{
+  "package": "CORRECCION-V111-CXORBIA-20260714",
+  "project": "Prototype development request (CXOrbia)",
+  "baseline": "app/ (V110 + P0-1 periodo canónico + P0-2 marca/país + P0-3 shoppers protegidos + Academia, paquete 20260714)",
+  "generatedAt": "2026-07-14T01:55:26.528Z",
+  "fileCount": 141,
+  "aggregateSha256": "45fda8585a807ad784c28dafce8067c8683dc9c4f63d6001ca4ece57593a7892",
+  "exclusionesDeclaradas": [
+    {
+      "path": "docs/MANIFEST-V111.json",
+      "razon": "el propio manifest — referencia circular"
+    },
+    {
+      "path": "core/build-lock.js",
+      "razon": "declara el aggregate calculado sobre el resto; incluirse a sí mismo crearía una referencia circular"
+    },
+    {
+      "path": "docs/verify-manifest.mjs",
+      "razon": "el propio verificador"
+    }
+  ],
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "6004b8acd375deead28b62d7fed0db3e38283689d571039a3aaf0a94b21cb5af",
+      "size": 301
+    },
+    {
+      "path": "README.md",
+      "sha256": "46a31f5075e6d3ae4d7394ed1bb47cc07944e7b6f8a1e723cd7d53b43142a422",
+      "size": 5022
+    },
+    {
+      "path": "app.js",
+      "sha256": "277fdcea8742d877b70ad8eb66ab91737fda58fe0e0d164a443dce7efd3636c4",
+      "size": 24611
+    },
+    {
+      "path": "core/automations.js",
+      "sha256": "ffd77ab131b5a7a978cfa3b1e941917ec0c881e3045bdf2ee586f04fc948e0ba",
+      "size": 20845
+    },
+    {
+      "path": "core/cliente-data.js",
+      "sha256": "6d4fc902c4473fe3bae98910fed42139dad0cae9616aa395c9aced6b21d2e3c4",
+      "size": 17216
+    },
+    {
+      "path": "core/config.js",
+      "sha256": "16e57576f09b720d7a65954a9c9be28cced31e4a5d37e970b7e39033e98af2dc",
+      "size": 28295
+    },
+    {
+      "path": "core/costos.js",
+      "sha256": "93533d54cc16a71ff76cc462daf54a1a3fdf720eaaf8cc13a9bd186d8b3de3a8",
+      "size": 4953
+    },
+    {
+      "path": "core/data-source.js",
+      "sha256": "f84a4314dadedd9e87f4ace4be44d7e3fc1760870956c7ca3dae10f0a4e97666",
+      "size": 7597
+    },
+    {
+      "path": "core/data.js",
+      "sha256": "8ad3644d9a1d265af138c6ef417b46e559379e4ca731d384a79a692755d7d8da",
+      "size": 33758
+    },
+    {
+      "path": "core/dedupe.js",
+      "sha256": "ca4c8edbf57a4a33d6f49fda8d02a0e3fff3b1827cc6c2b4e8d5ff374d0da0bc",
+      "size": 1608
+    },
+    {
+      "path": "core/finanzas-core.js",
+      "sha256": "8fe50ee569c4a68f82ca55b15c42c9e0c64561b871b7993374b3d34617decad8",
+      "size": 10114
+    },
+    {
+      "path": "core/geo.js",
+      "sha256": "51115e4d47baf849daebb4cb1a9097fe0c9e6bca3eba620fe9ad0a44ac25bcbc",
+      "size": 7650
+    },
+    {
+      "path": "core/hr.js",
+      "sha256": "4a9bb1d2c1c166e818de3884bf9080b78ee84161832310daedbfc5c874a88d6f",
+      "size": 7005
+    },
+    {
+      "path": "core/importador.js",
+      "sha256": "86616404ee47ae4ad813dff2b0295e5403b7343571b6ec4d2654c76131c58699",
+      "size": 9315
+    },
+    {
+      "path": "core/liquidacion.js",
+      "sha256": "d49670d640d9f78dca514d29e46e4afba2691a31a895b5cde67ce68e183a5faa",
+      "size": 4605
+    },
+    {
+      "path": "core/manuales-data.js",
+      "sha256": "aba4f03ab9a6611f85495711ad7d062d9693b34784c4af8e0df546ac2049ab6c",
+      "size": 47900
+    },
+    {
+      "path": "core/notif.js",
+      "sha256": "24d6a209d7a7a53f96c04049761adac9284b2d6f852f4f534fab43a90d146e36",
+      "size": 2808
+    },
+    {
+      "path": "core/permissions.js",
+      "sha256": "5e3a51f2a34b98aca3fa7476efae3630915fea70f2a89218545b72b19eb28575",
+      "size": 11695
+    },
+    {
+      "path": "core/programa.js",
+      "sha256": "bca3dc6e7ddc5ace05d29d13232d1abcc8ebc82a2f794494926e58afe8791fae",
+      "size": 8361
+    },
+    {
+      "path": "core/pwa.js",
+      "sha256": "68caab966f043462c54cecffbe23aa41ff890bda0e44fedbe71bfb99cbb048b4",
+      "size": 12721
+    },
+    {
+      "path": "core/router.js",
+      "sha256": "a14d4ccc119490e09f4712ffadf1e6d3e2401218ef88896cac3e6bed271a9e60",
+      "size": 14164
+    },
+    {
+      "path": "core/shoppers-store.js",
+      "sha256": "153f73f9e54ff9b336e5ecdf4b4902689934ce3eff23c2930f1d49ffab4f6cf3",
+      "size": 6744
+    },
+    {
+      "path": "core/store.js",
+      "sha256": "b7f2c04fcbe18c90f3c71c74b41856127d780573888850d6d1c888e9ba12a866",
+      "size": 2487
+    },
+    {
+      "path": "core/topbar.js",
+      "sha256": "55e4cc77b69fd93eda53a6aed8201e91d38bd28247b970c471c62906cb4d75c8",
+      "size": 12333
+    },
+    {
+      "path": "core/ui.js",
+      "sha256": "0aa51fedfe203b30222cb4bc2d522efe33dc2743498d80cbe24ae82a20753c2e",
+      "size": 9819
+    },
+    {
+      "path": "demo/index.html",
+      "sha256": "feb3dbc4c33bc97a2b432216387964c28254f882883d5cbece078f45580070cd",
+      "size": 254293
+    },
+    {
+      "path": "docs/ADDENDUM-V82-PHASE-A.md",
+      "sha256": "ab1b05e3ad6bcbf0b02cd8a45968f3bff7c4bdff4fddc20c3df27ee0615a6ee7",
+      "size": 2880
+    },
+    {
+      "path": "docs/ADDENDUM-V87-PHASE-A.md",
+      "sha256": "73563b122a5397f93ea70452294e1aba6b9e8bf0038d9a7d62cccfac31b2e110",
+      "size": 2882
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "sha256": "8188e999e85fa970f4d36e90d43605a1b1e6a56c44140438d8854a104531373c",
+      "size": 4133
+    },
+    {
+      "path": "docs/AUDITORIA-ENTREGA-CLAUDE.md",
+      "sha256": "5e905ca96a8f758af98d71bec040040f4ab954982668de53c6479340ad888dfb",
+      "size": 3441
+    },
+    {
+      "path": "docs/AUDITORIA-SINCRONIAS-FLUJOS.md",
+      "sha256": "43fbbf7c2da596b7a0a11b7a3a961d53c26627cfcc581cd715a1fce88d3bb7ab",
+      "size": 1556
+    },
+    {
+      "path": "docs/AUDITORIA-Y-CONFIG-TENANT-V58.md",
+      "sha256": "7d198aca8e3b3d4d1dc437e80b00f0b7d790e9cb2a98f48c27a6268f18827d07",
+      "size": 3820
+    },
+    {
+      "path": "docs/CAMBIOS-CLAUDE-CANDIDATE-COMPLETO-POST-SYNTHETIC-COVERAGE-20260708.md",
+      "sha256": "3832ed9acd2d089aebdbaa6846521a0956d50df6c01e83f5af0db60c8c384917",
+      "size": 79635
+    },
+    {
+      "path": "docs/CAMBIOS-PROTOTIPO.md",
+      "sha256": "d1655bb5b24566483f038e43e32dcbd0d91ec953bd96f0bd58a939100a19dbee",
+      "size": 25405
+    },
+    {
+      "path": "docs/CAPACITACION-TECNICA-INTERNA.md",
+      "sha256": "0c2a30bf0e7799ce008cc8a89c5beee68c3663e6d7f239053c8903e8b550aeb9",
+      "size": 7420
+    },
+    {
+      "path": "docs/CHECKLIST-CLAUDE-V109-COMPLETADO.md",
+      "sha256": "30916dd32a7fd9afa7754995236c917173940c1292df5f5b9c2d8145e0dd68b3",
+      "size": 3808
+    },
+    {
+      "path": "docs/CHECKLIST-V110-COMPLETADO.md",
+      "sha256": "089fe78df26b6380ff578c985ac7894af479a39c3f47fc583d509077f196b2bb",
+      "size": 3651
+    },
+    {
+      "path": "docs/CHECKLIST-V111-COMPLETADO.md",
+      "sha256": "c398ffee3c270fdaeeadb49872c93e18a615d92773f31be0bc5b57461230890d",
+      "size": 6504
+    },
+    {
+      "path": "docs/CHECKLIST-VALIDACION-PROTOTIPO.md",
+      "sha256": "934442a7fb621ab5ffac7224ec28ecf01bfd4e851b0edd1ed46ac39b8b8ef8c5",
+      "size": 3417
+    },
+    {
+      "path": "docs/DATA-MODEL.md",
+      "sha256": "7ed64ada4c60ba3c6c7a03ab0fb5930aaf6012c71cfbd737e286a5e734df5859",
+      "size": 4078
+    },
+    {
+      "path": "docs/ECOSISTEMA.md",
+      "sha256": "b730eb2d52d9d369b3ef5ecd8f435e1834c46cd8b583396e81703056bda6879f",
+      "size": 9014
+    },
+    {
+      "path": "docs/GUION-DEMO-Y-VENTAJAS.md",
+      "sha256": "936d65593f95bf1a9de062a14366e410bad01a8e88346eca374bffc5eccae94b",
+      "size": 6078
+    },
+    {
+      "path": "docs/GUION-HEYGEN-POR-MODULO.md",
+      "sha256": "22aef8a8ef3976bac347097fb5231ec2363745a5f8c2e571300b7382839c7479",
+      "size": 7490
+    },
+    {
+      "path": "docs/HANDOFF-DESARROLLO.md",
+      "sha256": "8a4e06f93d3727b7b390d6cbde6c37d6ab2700d20dcefccb45c2e99bb834a9b6",
+      "size": 9461
+    },
+    {
+      "path": "docs/INSTRUCCIONES-FIJAS-PROYECTO.md",
+      "sha256": "679187b7b62a0083106e7d243bdcbfd5b2941391cd690805fb76736bdc2f7d94",
+      "size": 1502
+    },
+    {
+      "path": "docs/INSTRUCCIONES-MIGRACION-TYA.md",
+      "sha256": "f44b90639f16d3bb529c91bf4c93755176ec5fcb78d4bdd7dd9e997751996720",
+      "size": 9036
+    },
+    {
+      "path": "docs/INTEGRACIONES.md",
+      "sha256": "81d0fc859e07c61da070a5bb20a0cc07bb05640099b0d8b04cd207ab0ba43a68",
+      "size": 3301
+    },
+    {
+      "path": "docs/LOGICA-NEGOCIO.md",
+      "sha256": "dc641436f711b38a4e73a6630c4a3363ea5f546061184fcc279fca95c2d0f9fc",
+      "size": 7800
+    },
+    {
+      "path": "docs/MIGRACION.md",
+      "sha256": "eadb161ebec66883354fdfa9dbb16463808cad5c5099e320aa100914b3373493",
+      "size": 3080
+    },
+    {
+      "path": "docs/MODULES.md",
+      "sha256": "db1b35d57a2f6739cbf59f6e5d558ece1054451f1f374e805b44846c45d97902",
+      "size": 4441
+    },
+    {
+      "path": "docs/NOTAS-V66-PARA-PAULA.md",
+      "sha256": "1229bf30ffe138f6fc62d89b6708687ad20cabc6eb8e5befa7992f6cc79644f7",
+      "size": 1717
+    },
+    {
+      "path": "docs/PENDIENTES-PROTOTIPO.md",
+      "sha256": "7a8c4712e7c702f3550905bf3fd4d74b45bc6d7f9281e92c9f0825860eafc6d5",
+      "size": 5950
+    },
+    {
+      "path": "docs/PLAN-DE-TRABAJO.md",
+      "sha256": "538281fafed71a04e6806f39a713cf4ef434b4bd22a9a5b7a8245341108c568f",
+      "size": 73825
+    },
+    {
+      "path": "docs/PROMPT-HEYGEN.md",
+      "sha256": "08b66aff597084ce02a3b9ecfec6f62ae497be0aeac63623cb7c3ff9b95b5227",
+      "size": 3021
+    },
+    {
+      "path": "docs/REPORTE-CORRECCION-V100-20260711.md",
+      "sha256": "45e3ded9ed5705d09881896e158a00ed7f7834cb0530b6ecf15c88d94bc46ff7",
+      "size": 13566
+    },
+    {
+      "path": "docs/REPORTE-CORRECCION-V101-20260711.md",
+      "sha256": "e057b612ede37a2c0f8ffd25fe3312b4e7ca7d804dbdc2a62a7e45ea751fa1f7",
+      "size": 16280
+    },
+    {
+      "path": "docs/REPORTE-CORRECCION-V103-20260711.md",
+      "sha256": "e72482dd660d638ad119d608cce3948865ae4870c07cfeb18e171d28af7213c8",
+      "size": 14161
+    },
+    {
+      "path": "docs/REPORTE-CORRECCION-V104-FRONTEND-20260711.md",
+      "sha256": "0c15131dcf1a457637ff923d320355ada448c38b23a8dc6a517640966d0bafd2",
+      "size": 10055
+    },
+    {
+      "path": "docs/REPORTE-CORRECCION-V105-20260711.md",
+      "sha256": "428435cc79cc27c4055fa4503d22d56058ef098450ad45268f96243f34c583a2",
+      "size": 6797
+    },
+    {
+      "path": "docs/REPORTE-CORRECCION-V107-20260711.md",
+      "sha256": "0088845a38a12031a31fdc4f346d08c2b657258f7ce90eeebab5bebd2a5d5d8a",
+      "size": 7597
+    },
+    {
+      "path": "docs/REPORTE-CORRECCION-V109.md",
+      "sha256": "46f10df2766077bc03812bc9d775f7f881dedfc303e8a16477aa3544d0949c42",
+      "size": 12763
+    },
+    {
+      "path": "docs/REPORTE-CORRECCION-V110.md",
+      "sha256": "eee8921032eddb6d39cb3dfe98c3044cc00d8441915f8ee03eca01e3cb878ac1",
+      "size": 9571
+    },
+    {
+      "path": "docs/REPORTE-CORRECCION-V111.md",
+      "sha256": "2e0527afb443d91a1cc701ba045bf4affaa2c4af28750ebb14dfbe68c0a921b8",
+      "size": 10224
+    },
+    {
+      "path": "docs/REPORTE-FORENSE-PAQUETE-GENERICO-20260711.md",
+      "sha256": "558e45bc45554fcc8e0ac53987f15b66cd12623b11c9b5265c4c4278aabd0e67",
+      "size": 15803
+    },
+    {
+      "path": "docs/REPORTE-V98-CORRECCION-20260710.md",
+      "sha256": "8338073c2012c7e74af425e27ed2af48bbd2392a10b0ccc10e440f3410f73337",
+      "size": 17251
+    },
+    {
+      "path": "docs/RESUMEN-PARA-CHATGPT-BACKEND.md",
+      "sha256": "f21a742534e4dd97ebb3c9d77576b48fdcf6917c3398132911feea4ca21db96f",
+      "size": 3081
+    },
+    {
+      "path": "docs/RESUMEN-PARA-CLAUDE.md",
+      "sha256": "864c6e31e52f7e4c8efdd814b65b4857a3564861c094c25666d4525437b9ba71",
+      "size": 1899
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "sha256": "0ac96bfe65f5b363e1cf5bd47555c15383f4a56ce0b85b6a7f2eef8e7c6ab160",
+      "size": 2855
+    },
+    {
+      "path": "docs/SECURITY.md",
+      "sha256": "f94d70620a8c77a1f1e4e5e7c5d78634327a0977cdc3978bb468488bc2ba9037",
+      "size": 3090
+    },
+    {
+      "path": "docs/SINCRONIA.md",
+      "sha256": "b51b6c2b12ca9e8fec8be54989176b59f74f3c3e76e715d10c8a5578f53fd04d",
+      "size": 3726
+    },
+    {
+      "path": "docs/migration/sample-fields.js",
+      "sha256": "aef74cc9f9492bd2e0b239207972ba3341ab92190fb7f8e7d153094117f91b78",
+      "size": 1909
+    },
+    {
+      "path": "docs/smoke-v100/01-desktop.png",
+      "sha256": "81d827d4d6ac7dc9ce106fd1386c3fa8f98b844e2b8f3305c6ec2d09d83fa312",
+      "size": 24493
+    },
+    {
+      "path": "docs/smoke-v100/02-desktop.png",
+      "sha256": "701aac8efae55981dcee8111e49f95ac33b40575932167cd1d959405f79e013b",
+      "size": 24886
+    },
+    {
+      "path": "docs/smoke-v100/03-desktop.png",
+      "sha256": "400c9daca5d6a97698bb4c02a4f81de73af525e4ed385cfa2714179368d4cb3e",
+      "size": 25153
+    },
+    {
+      "path": "docs/smoke-v100/04-desktop.png",
+      "sha256": "09b056d2be3aa27041b3e5f66bdd2472ae62cb4d4af82ee369e70af30d7e0416",
+      "size": 34015
+    },
+    {
+      "path": "docs/smoke-v100/05-desktop.png",
+      "sha256": "1f1e82042d966ec8924d5ec6cfd19b22f704c6c8ddeb291d79c25fb76bb97663",
+      "size": 34018
+    },
+    {
+      "path": "docs/smoke-v100/06-desktop.png",
+      "sha256": "a106f79248b3a73ab20d3ebce20117e5bb6f7f9947dcddb685f886c608875db0",
+      "size": 34131
+    },
+    {
+      "path": "docs/smoke-v100/mobile-shopper.png",
+      "sha256": "a1fa7b04697346d3e7ac838580d37a5042516bb77bc541e625ed8767631ced9f",
+      "size": 33415
+    },
+    {
+      "path": "docs/smoke-v106/01-dashboard.png",
+      "sha256": "45154d8e114c0454c53b55ae62d1448e1260fa29d167e571cc7c159d4b0ff9c3",
+      "size": 29914
+    },
+    {
+      "path": "docs/smoke-v106/02-visitas-detalle-historial.png",
+      "sha256": "04618a86435e674780e8a36f3e77f63d809a590b9ad11827e9b094c07fef5ff8",
+      "size": 18974
+    },
+    {
+      "path": "docs/smoke-v106/03-lotes.png",
+      "sha256": "4e430771bc65e5d78242a7dfbb189bb5f9f5de3f7f879a39b69b133511874962",
+      "size": 23815
+    },
+    {
+      "path": "docs/smoke-v106/LOG-SMOKE-V106.md",
+      "sha256": "776bd429b6579d46ffa2d2c9d631029da4f9cf2386f8a23e9a67bfd4bbe27fac",
+      "size": 1965
+    },
+    {
+      "path": "docs/smoke-v107/SMOKE-MULTIVIEWPORT-PROXY-20260711.json",
+      "sha256": "befd02b4b5c18e090d8c81e372f2a04dfd251160d64acbf378ec807e3e6afb9d",
+      "size": 3841
+    },
+    {
+      "path": "docs/smoke-v108/SMOKE-MOVIL-V108-VIEWPORT-REAL-20260712.json",
+      "sha256": "080e5830a8536d6706b189238294a5029c21aedb5064048d4d6bc92d7ad1a5e9",
+      "size": 2905
+    },
+    {
+      "path": "docs/smoke-v108/mobile-harness.html",
+      "sha256": "00423601139713c20c9506476830f2d57cf62ddb4e79b1a87cee1a0d529477c6",
+      "size": 2597
+    },
+    {
+      "path": "docs/smoke-v109/01-portal-cliente-panorama.png",
+      "sha256": "8921f54c38696e099ee8c91facb8c842115907551e1eadf08a690fd24aa5edb1",
+      "size": 28066
+    },
+    {
+      "path": "docs/smoke-v109/02-academia-shopper.png",
+      "sha256": "2d88ff3cb3849ee56c799d8a6d2a0a81e13593709ad01ca19b62c1d12f03178d",
+      "size": 26676
+    },
+    {
+      "path": "docs/smoke-v109/03-academia-admin.png",
+      "sha256": "ba75b1f7c82fcf817bc27fa79f033184a8c5fd364a7766cd53777c245d202a01",
+      "size": 29006
+    },
+    {
+      "path": "docs/smoke-v109/04-finanzas-lotes.png",
+      "sha256": "3d4e829e0fa604165b70e6bdba76ce66f8e0dbfd2bfe2feb429084cbeb9cf0ca",
+      "size": 23759
+    },
+    {
+      "path": "docs/smoke-v109/SMOKE-FUNCIONAL-V109.json",
+      "sha256": "1c8082011395d8d649e9a1c329ca236a140bcbc4396d8cd32176e2727148c7b6",
+      "size": 5825
+    },
+    {
+      "path": "docs/smoke-v110/SMOKE-CRITICOS-V110.json",
+      "sha256": "8d9a5a97346727900b2e3017e400ceba0d9bb9ba834bce0013a4eb8732ec8f04",
+      "size": 4089
+    },
+    {
+      "path": "docs/smoke-v111/SMOKE-V111.json",
+      "sha256": "e6096181fc1ef0fce4e83f075d9f18fc32ebfc6a5564e4a6105368ebad266cb1",
+      "size": 3658
+    },
+    {
+      "path": "docs/smoke/01-01-desktop.png",
+      "sha256": "c57c3dca9d6628db5c257f75066ce7e4a0c9a7b64a81841d641f61c3743c5939",
+      "size": 23971
+    },
+    {
+      "path": "docs/smoke/02-01-desktop.png",
+      "sha256": "4e3fb224285aad77e249edde37f22f09e3082602c83035b787bb9f1f2e20b03d",
+      "size": 27709
+    },
+    {
+      "path": "docs/smoke/03-01-desktop.png",
+      "sha256": "e04d6c2f8592e61818b112fd1b04de538cf4dba4e678a9791d22afab29dfe99f",
+      "size": 25598
+    },
+    {
+      "path": "docs/smoke/04-01-desktop.png",
+      "sha256": "d62320ea11d68e6e4aff8c771fe08607b9597715b4744210add0b372380298f5",
+      "size": 33033
+    },
+    {
+      "path": "index.html",
+      "sha256": "1579aea2ab174a6643ec11cddfbea8ef6c5b52bb641e87440606e25f570d3c70",
+      "size": 5378
+    },
+    {
+      "path": "manifest.webmanifest",
+      "sha256": "cb3196c4c901360f35010172610f1b30b449ecc3a78230747b8606bd840de4ee",
+      "size": 510
+    },
+    {
+      "path": "modules/academia.js",
+      "sha256": "574b192c3f73d07dcbbbfab85c5e180a4e0a4c0a555834b3ff07ef09ded17bfe",
+      "size": 299998
+    },
+    {
+      "path": "modules/administrabilidad.js",
+      "sha256": "92e0108afa8ca36e25e5654edd67d030e7322cb3c53859c3fafb0cc865248b9c",
+      "size": 16938
+    },
+    {
+      "path": "modules/automatizaciones.js",
+      "sha256": "1fccb5b6d5b44cf081356bb2493192355291af5fe6e73f81b4083f3c413aee3c",
+      "size": 14552
+    },
+    {
+      "path": "modules/beneficios.js",
+      "sha256": "a93fafff493540db7f19f6802c6d840b12ce6f0cf0ab830bfa46d1a2b2721bb4",
+      "size": 7187
+    },
+    {
+      "path": "modules/cert.js",
+      "sha256": "4b4ce17cf1ad1fb37ecf80bcbb24900582cf7f574d30d35e492cfc73ad67cb4d",
+      "size": 27096
+    },
+    {
+      "path": "modules/cliente-extra.js",
+      "sha256": "fd119bd8659cf8fc16e6181373af7d99b19f5c6c8788d0b380b115a06f17d240",
+      "size": 14707
+    },
+    {
+      "path": "modules/cliente-insights.js",
+      "sha256": "e4da9baec91444efb5a0c5d97456e95f465fdd070c865633fec446eb35068da2",
+      "size": 13937
+    },
+    {
+      "path": "modules/cliente.js",
+      "sha256": "813923df3a35cb09687375221e8de0852df5bfd92bd6650ee9df84d5dcbe67ce",
+      "size": 34431
+    },
+    {
+      "path": "modules/clientes.js",
+      "sha256": "b23c5480c2ee1e93ffeb49098942eeab58ec6867df378479559a771df2fb378d",
+      "size": 18257
+    },
+    {
+      "path": "modules/comercial.js",
+      "sha256": "aecde3f762095b30e215338c94be235efd50214b58996138b5257be7171a5a35",
+      "size": 19118
+    },
+    {
+      "path": "modules/configuracion.js",
+      "sha256": "ed508050338b8083a20a29aecbd7afe9516ffb6fddebed5722bcec3288652550",
+      "size": 56625
+    },
+    {
+      "path": "modules/correo.js",
+      "sha256": "d047313e2a0e0a150c376761b3dd9a1217fd5ff7da40a03c7d1de82395af0eff",
+      "size": 27652
+    },
+    {
+      "path": "modules/crm.js",
+      "sha256": "6ad5b2cc7fa46b6a84f8bf4144137cc2a0f96267b04b458b7da7c9781dcd611a",
+      "size": 69997
+    },
+    {
+      "path": "modules/cuestionario-shopper.js",
+      "sha256": "335e012df4c7755bd997a98c50b3a2589c4b426625cae876b967002e2f816a9e",
+      "size": 9217
+    },
+    {
+      "path": "modules/dashboard.js",
+      "sha256": "e7072f7b0556a1b2b6e5986bda1ff912bbdc255c3372c31ca02f3f722290a6aa",
+      "size": 39611
+    },
+    {
+      "path": "modules/diagnostico.js",
+      "sha256": "c0582680e76018b2c936643de364d89c26b14d1c5dd506ac45cd5283ac375f36",
+      "size": 30133
+    },
+    {
+      "path": "modules/documentos.js",
+      "sha256": "6e664055ccb85c592104b11bbc1fc38260b1875932abb42f9a95640671f83e87",
+      "size": 18745
+    },
+    {
+      "path": "modules/finanzas.js",
+      "sha256": "8519da843257c2f3a16b666b50dd7c04b27ad756be65777bb6b37be795e81b7b",
+      "size": 73277
+    },
+    {
+      "path": "modules/historico.js",
+      "sha256": "a6ea06b2d54a2f74388bd8f459b97daed3391913f6da65c3693bbe902398d0ab",
+      "size": 7683
+    },
+    {
+      "path": "modules/hr-source.js",
+      "sha256": "e1a5e0ff68bdb4020a91c4ba11b80ff08abd89c329a4fe670cc3837f8baae71a",
+      "size": 19396
+    },
+    {
+      "path": "modules/importador.js",
+      "sha256": "61c375c97eee82b05da02db93eecdec48e6735b8b59a36fdd8038239639f9dfb",
+      "size": 36616
+    },
+    {
+      "path": "modules/integraciones.js",
+      "sha256": "2ea95968a941d137f75fcd6dd779cd5ad739b8e6e49a753a6f12d8a3d48a6378",
+      "size": 21223
+    },
+    {
+      "path": "modules/marca.js",
+      "sha256": "552610c7fea98277ef0725dd46cf1ee1218c637bfab79597169c2832cebe61ee",
+      "size": 14900
+    },
+    {
+      "path": "modules/marketing.js",
+      "sha256": "1ebc814e7943c07d88613657cee47a5a2682cafa6a393c93f7c68916687c52d0",
+      "size": 19639
+    },
+    {
+      "path": "modules/midia.js",
+      "sha256": "07ba09bc4217b942263d02dcbc5acfcab5bb3225a7ea5114fefbc64b19b4af30",
+      "size": 14499
+    },
+    {
+      "path": "modules/misvisitas.js",
+      "sha256": "09c027781d33025b8fad38e8f6d15c2ebb346ecb2c32e3480ef28cb327fda37d",
+      "size": 13241
+    },
+    {
+      "path": "modules/novedades.js",
+      "sha256": "b95d27d83ae6010ebe5da2ede91f0bf820d64ff26c583b21dc1d44d0140a9ff6",
+      "size": 7856
+    },
+    {
+      "path": "modules/operacion-extra.js",
+      "sha256": "64384875d824474ab874d0ab707af807e26d4e533e29cfd4ced291f546897c74",
+      "size": 31853
+    },
+    {
+      "path": "modules/periodos.js",
+      "sha256": "eecec91e65d954b6032b6b78b31894e1293993fb02daa33215a24e31ed98216d",
+      "size": 6785
+    },
+    {
+      "path": "modules/postulaciones.js",
+      "sha256": "0c43b1dbf6f13c78a711481baa12d4775fa5518fac69470edc2d387d77396737",
+      "size": 36708
+    },
+    {
+      "path": "modules/proyecto-wizard.js",
+      "sha256": "f97d10d4b28fb1076ab9b435a303f12e613e3561fb05172b3b37aef75b6d4236",
+      "size": 16150
+    },
+    {
+      "path": "modules/proyectos.js",
+      "sha256": "c6b2fd3ba26e44fe9ebda04c303297510193fcdabfc138b68e434c8735253e23",
+      "size": 16719
+    },
+    {
+      "path": "modules/reservas.js",
+      "sha256": "e800f44a17d5e18355005f1613dffc429492400b2f1f29776a5c068d53e415ef",
+      "size": 18741
+    },
+    {
+      "path": "modules/revision-admin.js",
+      "sha256": "efdca7ae77d923e796588452e94edae73c9af1df8b757bdae6ae69e4073281f0",
+      "size": 6773
+    },
+    {
+      "path": "modules/saas-console.js",
+      "sha256": "35cf1d78a581dac061d4ccac7246bdf475faf49bed0c13c66610d09b3226c397",
+      "size": 9006
+    },
+    {
+      "path": "modules/shoppers.js",
+      "sha256": "4f42193956662c420cc05e5671a2ae9f9ec52a6b846c08b988245e2373ba590d",
+      "size": 23332
+    },
+    {
+      "path": "modules/soporte.js",
+      "sha256": "2427eae1366812ae52ae0738f950cca9b18b1e28d77b1dc0c20225288890e4e1",
+      "size": 15574
+    },
+    {
+      "path": "modules/tablon.js",
+      "sha256": "ee32633748298ca3c7a76be87a50ac36ac2e9640e368595ee56446a504aed144",
+      "size": 7965
+    },
+    {
+      "path": "modules/visita-detalle.js",
+      "sha256": "b147d3fc6b5fd354827a3088ac3f30f4b0e3c4fa648bca4b9e899ced68e1029d",
+      "size": 7572
+    },
+    {
+      "path": "modules/visitas.js",
+      "sha256": "ca271c17102b9e7870c2fd4fa89d7a17cd894444f2b78dc0ec1fbaa1ef0802ce",
+      "size": 20766
+    },
+    {
+      "path": "styles/layout.css",
+      "sha256": "0b311b7cae0d33702ee10806f780c69e5f42904c10959048f3e5811ff17595c1",
+      "size": 24376
+    },
+    {
+      "path": "styles/theme.css",
+      "sha256": "9ff569467fcb562312cc50d25f140ef149f6580aa6adccd62de2126ec798e3c4",
+      "size": 11273
+    },
+    {
+      "path": "sw.js",
+      "sha256": "de3751081f9ac43129501f902e796224b89d5f72217f3ce20f77317596acf866",
+      "size": 2642
+    }
+  ]
+}

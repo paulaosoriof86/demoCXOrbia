@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "cxorbia.i3.identity-roll-forward-source-evidence.v1",
+  "generatedAt": "2026-08-17T16:15:00-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "headBefore": "7bb0f023bd786a38a1e924388d65b0633e1b1951",
+  "headAfterFunctionalSource": "387319b86fcb9591e2d584cc87b7ea5e3b321eb9",
+  "decision": "PASS_I3_5C_1_PERIOD_INDEPENDENT_IDENTITY_ROLL_FORWARD_SOURCE_IMPLEMENTED",
+  "files": {
+    "adapter": "app/adapters/cxorbia-identity-roll-forward-v1.js",
+    "contract": "backend/contracts/cxorbia-identity-roll-forward-v1.json",
+    "gate": "tools/qa/cxorbia-identity-roll-forward-gate.mjs",
+    "protectedDevLoader": "app/core/backend-config-preview-dev.js"
+  },
+  "commits": [
+    "454bbfe637b7c06634937ca802fe4e767902ea08",
+    "f207f4a289bf341d678dacbce4252a7e09c224fb",
+    "b0d9e0efeda3d803116d2953e000673b2d95c483",
+    "83f1440e1863702a9c07aae5e17842544146eb4f",
+    "387319b86fcb9591e2d584cc87b7ea5e3b321eb9"
+  ],
+  "localSourceValidation": {
+    "adapterNodeCheck": "PASS",
+    "protectedDevLoaderNodeCheck": "PASS",
+    "gateNodeCheck": "PASS",
+    "gateDecision": "PASS_CXORBIA_IDENTITY_ROLL_FORWARD_PERIOD_INDEPENDENT"
+  },
+  "periodTests": ["2026-08", "2026-09", "2027-01"],
+  "invariantsProvenBySourceGate": {
+    "periodIndependent": true,
+    "tenantIsolation": true,
+    "projectSpecificScopeIsolation": true,
+    "tenantWideScopeSupported": true,
+    "futurePeriodReuse": true,
+    "periodScopedIdentityLinksRejected": true,
+    "nameOnlyIdentityRejected": true,
+    "providerAckAuthorityRequired": true,
+    "multiTenant": true,
+    "multiProject": true,
+    "monthHardcode": false,
+    "tenantNameHardcodeInReusableContract": false,
+    "projectNameHardcodeInReusableContract": false
+  },
+  "runtimeDesign": {
+    "linkPath": "tenants/{tenantId}/shopperIdentityLinks/{identityLinkId}",
+    "periodInLinkPath": false,
+    "resolverOrder": ["project-scoped authoritative link", "tenant-wide authoritative link", "review required"],
+    "trustedAuthorities": ["provider_exact", "tenant_adjudication", "platform_created", "migrated_exact"],
+    "protectedLaneReadOnly": true,
+    "composerBridge": "authoritative persisted link injects canonical profileId before existing exact composer",
+    "newShopperPlatformRule": "create Auth+claims+membership+profile+period-independent identity link+provider ACK"
+  },
+  "currentAugustTarget": {
+    "status": "NOT_MATERIALIZED_YET",
+    "reason": "I3.5B proved no independent provider authority and zero existing shopperIdentityLinks",
+    "automaticWriteAllowed": false,
+    "nextRequiredAuthority": "one explicit tenant adjudication or new independent exact provider authority"
+  },
+  "safety": {
+    "historicalShopperReprocessed": false,
+    "historicalShopperCredentialAccess": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "identityLinkWrites": 0,
+    "hrWrites": 0,
+    "financeWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false
+  }
+}

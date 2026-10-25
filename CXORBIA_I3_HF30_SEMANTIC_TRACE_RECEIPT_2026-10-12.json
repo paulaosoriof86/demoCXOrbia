@@ -1,0 +1,1054 @@
+{
+  "schemaVersion": "cxorbia.i3.hf30.semantic-reconciliation.control-receipt.v1",
+  "date": "2026-10-12",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlParentSha": "08bec277b269fa852ca837051386593cefc6222d",
+  "productSourceSha": "6814d1335ff7490976bf77164cee5b45333f1e50",
+  "productTree": "611f3baf1594765db71688065157142a7dfe7d12",
+  "ledgerV369Blob": "193af29b8c2004e49069a6326a12c8e5160db3a2",
+  "ledgerV370Blob": "6f21f6bceb745380842f93c29d64dd2444b5cc34",
+  "assertions": {
+    "preservedPriorVRMs": 274,
+    "exactPreviousEntriesUnchanged": true,
+    "human12Ids": 30,
+    "human12Complete": true,
+    "human06ReferenceCount": 45,
+    "human08ReferenceCount": 18,
+    "newVrmsAllocated": 0,
+    "nextVrmId": "VRM-275",
+    "semanticLinksAreNotClosureEvidence": true
+  },
+  "findings": [
+    {
+      "humanId": "HF-20261012-01",
+      "block": "B2",
+      "class": "VISUAL_DEFECT",
+      "semanticDisposition": "EXISTING_OPEN_VISUAL_SCOPE",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-145",
+          "relationship": "RELATED_PREVIOUS_OPEN_VISUAL",
+          "previousState": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
+          "oldStatusPreserved": true
+        },
+        {
+          "vrmId": "VRM-131",
+          "relationship": "RELATED_PREVIOUS_OPEN_VISUAL",
+          "previousState": "OPEN_NON_BLOCKING_HUMAN_VISUAL_RETEST",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Mi Perfil identity/contact/access/payment remains oversized multi-card grid, sensitive details not scoped to compact dedicated modal",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "HUMAN_SCREENSHOT_PLUS_CODE",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/styles/layout.css"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Preserve protected masking, KPI first, all fields and exact owner; use section-specific modal",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-02",
+      "block": "B2",
+      "class": "FUNCTIONAL_DEFECT",
+      "semanticDisposition": "HUMAN_CRITERION_SUPERSESSION",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-146",
+          "relationship": "HUMAN_ACCEPTANCE_CRITERION_SUPERSESSION",
+          "previousState": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Mi Perfil visit history oldest-to-newest unlike approved Benefits newest-first",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "SOURCE_PROVEN_ASCENDING_SORT",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/adapters/tya-canonical-shopper-portal-v2.js"
+      ],
+      "ownerProven": "SOURCE_LINE_PROVEN_SUBSCOPE_ONLY",
+      "causalProof": "ASCENDING_SORT_IN_CANONICAL_PROFILE_ADAPTER",
+      "requiredCorrection": "Reverse sort by canonical visit date; stable tie-break, parity with Benefits",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-03",
+      "block": "B2/B3/B7",
+      "class": "MAPPING_FAILURE",
+      "semanticDisposition": "EXACT_REVISION_PARITY_NOT_PROVEN",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-168",
+          "relationship": "RELATED_SCHEDULING_PROOF",
+          "previousState": "FIXED_PROVEN_FOCAL_RUN906_TRANSVERSAL_BLOCKED_BY_VRM181",
+          "oldStatusPreserved": true
+        },
+        {
+          "vrmId": "VRM-271",
+          "relationship": "RELATED_PROFILE_READ_MODEL",
+          "previousState": "DEV_FOCAL_UI_E2E_PROVEN_HUMAN_AND_FULL_POPULATION_PENDING",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Oct visit same shopper shows differing scheduled dates in Mi Perfil and Mis Visitas; must compare exact HR source revision and durable visit",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "HUMAN_CROSS_SCREENSHOT_DIFFERENCE__NOT_SAME_REVISION_PROVEN",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/modules/misvisitas.js",
+        "app/adapters/tya-cumulative-read-model-v2.js"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Do not overwrite HR, first read exact visitId/hrRowId sourceRevision and pendingReschedule",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-04",
+      "block": "B2",
+      "class": "FUNCTIONAL_DEFECT",
+      "semanticDisposition": "SOURCE_PROVEN_NEW_ADMIN_PATCH_FAILURE",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-175",
+          "relationship": "RELATED_SHOPPER_ADMIN",
+          "previousState": "PASS_CURRENT_ARTIFACT_RUN1152",
+          "oldStatusPreserved": true
+        },
+        {
+          "vrmId": "VRM-273",
+          "relationship": "RELATED_SELF_DISPLAY_ONLY",
+          "previousState": "DEV_REPRESENTATIVE_E2E_PASS_PENDING_FOCAL_DISPLAY_ACK_AND_HUMAN",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Admin shopper edit of HR-managed firstName/lastName rejects entire form with SHOPPER_HR_MANAGED_FIELDS_IMMUTABLE",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "SOURCE_PROVEN_PATCH_AND_SCREENSHOT_ERROR",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/modules/shoppers.js",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+      ],
+      "ownerProven": "SOURCE_LINE_PROVEN_SUBSCOPE_ONLY",
+      "causalProof": "ADMIN_PATCH_INCLUDES_HR_MANAGED_NAMES_WHILE_PROVIDER_FAILS_CLOSED",
+      "requiredCorrection": "Separate authorized display correction from HR-managed fields, exact identity/username Auth contract with ACK; never change login silently",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-05",
+      "block": "B2",
+      "class": "AUTH_FAILURE",
+      "semanticDisposition": "RELATED_PREVIOUS_SCOPE_DISTINCT_DETAIL_PENDING_OWNER_PROOF",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-217",
+          "relationship": "RELATED_CREDENTIAL_READINESS",
+          "previousState": "POST_SWEEP_READBACK_PASS_RUN1083_NO_MORE_CREDENTIAL_SWEEP",
+          "oldStatusPreserved": true
+        },
+        {
+          "vrmId": "VRM-221",
+          "relationship": "RELATED_IDENTITY_GOVERNANCE",
+          "previousState": "PASS_CURRENT_ARTIFACT_RUN1119",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Username correction needs durable exact principal, visibleLogin, membership/Auth and no duplicate",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "REQUIREMENT_PROVEN__OWNER_IMPLEMENTATION_UNPROVEN",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/core/shopper-credential-rule.js",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Prove authorized safe rename/reset path without changing HR source or second principal",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-06",
+      "block": "B3",
+      "class": "VISUAL_DEFECT",
+      "semanticDisposition": "RELATED_PREVIOUS_SCOPE_DISTINCT_DETAIL_PENDING_OWNER_PROOF",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-155",
+          "relationship": "RELATED_PRIOR_VISUAL",
+          "previousState": "HUMAN_VISUAL_FAIL_SUPERSEDED_BY_VRM165",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Mis Visitas card height excessive, nine step chips dominate primary visit actions",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "HUMAN_SCREENSHOT",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/modules/misvisitas.js",
+        "app/styles/layout.css"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Compact vertical spacing only; preserve all steps, scheduler/cancel/check-in, no hidden actions",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-07",
+      "block": "B3",
+      "class": "FUNCTIONAL_DEFECT",
+      "semanticDisposition": "RELATED_PREVIOUS_SCOPE_DISTINCT_DETAIL_PENDING_OWNER_PROOF",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-168",
+          "relationship": "RELATED_SCHEDULING_BUT_DIFFERENT_STATE",
+          "previousState": "FIXED_PROVEN_FOCAL_RUN906_TRANSVERSAL_BLOCKED_BY_VRM181",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Shopper current visit shows actionable complete while reschedule and cancel requests pending; validate state and date before any mutation",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "HUMAN_SCREENSHOT__EXECUTION_NOT_PROVEN",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/modules/misvisitas.js"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Verify exact provider status and no conflicting transitions; fail closed if pending conflicts",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-08",
+      "block": "B4",
+      "class": "PROVIDER_FAILURE",
+      "semanticDisposition": "PROVIDER_RESPONSE_ROOT_CAUSE_NOT_YET_PROVEN",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-148",
+          "relationship": "RELATED_AI_CERT_VALIDATION_DIFFERENT_FAILURE",
+          "previousState": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Create certification with AI failed AI_PROVIDER_RESPONSE_INVALID despite instructional source and 15 questions",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "SCREENSHOT_CODE_PROVES_VALIDATION_GATE_NOT_RAW_ROOT_CAUSE",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/modules/cert.js",
+        "backend/runtime/hr-live-service/certification-runtime.mjs"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Capture sanitized Vertex response shape and per-question validation reason, preserve approved bank/content, don't fabricate questions",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-09",
+      "block": "B4",
+      "class": "VISUAL_DEFECT",
+      "semanticDisposition": "RELATED_PREVIOUS_SCOPE_DISTINCT_DETAIL_PENDING_OWNER_PROOF",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-136",
+          "relationship": "RELATED_EMPTY_STATE_DIFFERENT_SCOPE",
+          "previousState": "SOURCE_FIX_PENDING_DEV_LIVE_REPROOF",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Project Resources briefly shows empty before authenticated provider hydration",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "HUMAN_OBSERVATION__OWNER_TENTATIVE",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/modules/documentos.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Render loading state until scoped provider ready, then empty only if confirmed; no duplicate refresh",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-10",
+      "block": "B5",
+      "class": "VISUAL_DEFECT",
+      "semanticDisposition": "RELATED_PREVIOUS_SCOPE_DISTINCT_DETAIL_PENDING_OWNER_PROOF",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-084",
+          "relationship": "RELATED_BENEFITS_LABEL_DIFFERENT_PRESENTATION",
+          "previousState": "FIXED_PROVEN_RUN572",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Tu beneficio total como evaluador summary lacks readability, typography hierarchy and useful zero-period experience",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "SCREENSHOT_AND_SOURCE",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/modules/beneficios.js",
+        "app/styles/layout.css"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Preserve financial authority and current/historical separation; improve contrast and layout",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-11",
+      "block": "B5",
+      "class": "MATCH",
+      "semanticDisposition": "PRESERVE_APPROVED",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-257",
+          "relationship": "PROTECTED_PAID_BENEFITS_PASS",
+          "previousState": "FIXED_PROVEN_RUN1243_BENEFITS_PASS",
+          "oldStatusPreserved": true
+        },
+        {
+          "vrmId": "VRM-174",
+          "relationship": "PROTECTED_HISTORICAL_PAYMENT_PASS",
+          "previousState": "PASS_CURRENT_ARTIFACT_RUN1233",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Benefits historical rows newest-to-oldest and seven confirmed payments visually accepted",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "HUMAN_ACCEPTED_SCREENSHOT",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/modules/beneficios.js"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "PRESERVE_NO_REGRESSION; still reconcile real independent finance source before numerical certification",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "PRESERVE",
+      "status": "PRESERVE_ACCEPTED_NO_REGRESSION",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-12",
+      "block": "B7",
+      "class": "VISUAL_DEFECT",
+      "semanticDisposition": "RELATED_PREVIOUS_SCOPE_DISTINCT_DETAIL_PENDING_OWNER_PROOF",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-260",
+          "relationship": "RELATED_APPROVED_DASHBOARD_SURFACE",
+          "previousState": "FIXED_PROVEN_RUN1357",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Dashboard context action modal and all status-row tables visually flat and lack approved contrast/hierarchy",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "HUMAN_SCREENSHOT",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/modules/dashboard.js",
+        "app/styles/layout.css"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Preserve direct modal actions, selections, provider command paths, improve scoped style",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-13",
+      "block": "B7",
+      "class": "FUNCTIONAL_DEFECT",
+      "semanticDisposition": "RELATED_PREVIOUS_SCOPE_DISTINCT_DETAIL_PENDING_OWNER_PROOF",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-193",
+          "relationship": "RELATED_COMMUNICATION_PROVIDER_UNCLOSED",
+          "previousState": "OPEN_BLOCKER_CURRENT_CANDIDATE",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Dashboard per-visit WhatsApp button only logs prepared event and shows toast, not open/send confirmation",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "SOURCE_PROVEN_DATA_WA_HANDLER",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/modules/dashboard.js",
+        "app/core/automations.js"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Provide actual wa.me draft when number verified or durable provider ACK for send; no false sent claims",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-14",
+      "block": "B7",
+      "class": "VISUAL_DEFECT",
+      "semanticDisposition": "DISTINCT_HUMAN_OBSERVATION_NO_EQUIVALENT_CONFIRMED",
+      "priorVrmLinks": [],
+      "observed": "Comparativo histórico large plain table/scroll and weak differentiation across 17 periods",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "HUMAN_SCREENSHOT",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/modules/dashboard.js",
+        "app/styles/layout.css"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Preserve exact HR metrics; sticky axes, contrast, responsive readable cells and drill",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-15",
+      "block": "B7",
+      "class": "RELEASE_COMPOSITION_FAILURE",
+      "semanticDisposition": "APPROVED_FRONTEND_COMPOSITION_NOT_PROVEN",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-260",
+          "relationship": "RELATED_RELEASE_COMPOSITION_DIFFERENT_MODULE",
+          "previousState": "FIXED_PROVEN_RUN1357",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Gestion de Postulaciones main surface is not the latest approved frontend; assignment row list lacks per-row action",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "SCREENSHOT+SOURCE_ASSIGNED_ROWS_ONLY_FIVE_COLUMNS",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/modules/postulaciones.js"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Recover only approved visual/grouped/action presentation, preserve durable provider logic and HR vs platform origin",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-16",
+      "block": "B7",
+      "class": "MAPPING_FAILURE",
+      "semanticDisposition": "RECURRENCE_OF_PREVIOUSLY_PROVEN_FIX_DRIFT_TO_VERIFY",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-259",
+          "relationship": "EXACT_SEMANTIC_REOCCURRENCE_PROOF_DRIFT_PENDING",
+          "previousState": "FIXED_PROVEN_RUN1261_SAME_ARTIFACT_PASS",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Sidebar Postulaciones badge shows 10 while in-module currently pending count 0",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "SCREENSHOT_PROVEN_DIFFERENCE__BADGE_OWNER_UNPROVEN",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/modules/postulaciones.js",
+        "app/core/router.js"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Trace badge source and active period lifecycle, verify after reload and exact HR revision",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-17",
+      "block": "B7",
+      "class": "MAPPING_FAILURE",
+      "semanticDisposition": "CROSS_VIEW_SOURCE_PARITY_NOT_PROVEN",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-167",
+          "relationship": "RELATED_CROSS_VIEW_KPI_DIFFERENT_FORMULA",
+          "previousState": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Dashboard GT+HN scheduled stage appears 18+6=24, Postulaciones Agendamientos 18; cross-view KPI disagreement",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "HUMAN_CROSS_SCREENSHOT_DIFFERENCE__SOURCE_REVISION_UNPROVEN",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/modules/dashboard.js",
+        "app/modules/postulaciones.js"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Compare both projections to same exact HR revision and canonical facets, do not fit number manually",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-18",
+      "block": "B7",
+      "class": "FUNCTIONAL_DEFECT",
+      "semanticDisposition": "RELATED_PREVIOUS_SCOPE_DISTINCT_DETAIL_PENDING_OWNER_PROOF",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-147",
+          "relationship": "RELATED_RESERVATION_CUT_DIFFERENT_FUTURE_WINDOW",
+          "previousState": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
+          "oldStatusPreserved": true
+        },
+        {
+          "vrmId": "VRM-180",
+          "relationship": "RELATED_RESERVATION_E2E",
+          "previousState": "DEV_MATERIALIZED_PENDING_LIVE_E2E",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Reservations in October cannot publish November slots because current selected period equality filters future windows",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "SOURCE_PROVEN_CURRENT_PERIOD_FILTER",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/modules/reservas.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Separate publication/reservation target period from operational current period; source future scenario slots explicitly, future_only configurable; no fictitious HR visits",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-19",
+      "block": "B7",
+      "class": "VISUAL_DEFECT",
+      "semanticDisposition": "RELATED_PREVIOUS_SCOPE_DISTINCT_DETAIL_PENDING_OWNER_PROOF",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-125",
+          "relationship": "RELATED_STATE_TERMINOLOGY_NOT_SAME_FAILURE",
+          "previousState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Stage pending submit group displays rows with Pend. cuestionario labels, potentially ambiguous semantics",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "SCREENSHOT_VISIBLE__SEMANTIC_OWNER_PENDING",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/modules/dashboard.js",
+        "app/adapters/tya-canonical-state-semantics-v2.js"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Confirm real facets then fix human label without mutating canonical status",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-20",
+      "block": "B7",
+      "class": "VISUAL_DEFECT",
+      "semanticDisposition": "DISTINCT_HUMAN_OBSERVATION_NO_EQUIVALENT_CONFIRMED",
+      "priorVrmLinks": [],
+      "observed": "Multiple Admin modal layouts lack consistent typography and high-contrast hierarchy",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "MULTIPLE_HUMAN_SCREENSHOTS",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/styles/layout.css",
+        "app/modules/dashboard.js",
+        "app/modules/postulaciones.js"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Use approved style baseline; modal owner unchanged and styles focused",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-21",
+      "block": "B8",
+      "class": "VISUAL_DEFECT",
+      "semanticDisposition": "RELATED_PREVIOUS_SCOPE_DISTINCT_DETAIL_PENDING_OWNER_PROOF",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-132",
+          "relationship": "RELATED_FINANCE_UI_NOT_SAME_DURABILITY",
+          "previousState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Dashboard Financiero low contrast and oversized Pending source strings obscure country financial KPIs",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "HUMAN_SCREENSHOT",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/modules/finanzas.js",
+        "app/styles/layout.css"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Use distinct financial states and human copy, preserve no inferred amounts, GTQ vs HNL",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-22",
+      "block": "B8",
+      "class": "FUNCTIONAL_DEFECT",
+      "semanticDisposition": "RELATED_PREVIOUS_SCOPE_DISTINCT_DETAIL_PENDING_OWNER_PROOF",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-132",
+          "relationship": "RELATED_FINANCE_CONCILIATION_NOT_SAME_REMOTE_CODE",
+          "previousState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "User cannot reconcile six October financial review rows; generic toast masks command error",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "USER_ACTION_FAILED__COMMAND_EXISTS",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/modules/finanzas.js",
+        "backend/runtime/cxorbia-finance-command-provider-v1.mjs"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Read exact blocked provider code, response and exact finance source; don't mark paid or reconcile without ACK",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-23",
+      "block": "B8",
+      "class": "VISUAL_DEFECT",
+      "semanticDisposition": "RELATED_PREVIOUS_SCOPE_DISTINCT_DETAIL_PENDING_OWNER_PROOF",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-132",
+          "relationship": "RELATED_FINANCE_STATE_SEMANTICS",
+          "previousState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Revisiones financieras lacks explanation of pending source vs review vs paid and eligibility; misleading empty missing-field columns",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "HUMAN_SCREENSHOT",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/modules/finanzas.js"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Separate obligation, source completeness, reconciliation, payment, and banking confirmation",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-24",
+      "block": "B8",
+      "class": "FUNCTIONAL_DEFECT",
+      "semanticDisposition": "HISTORICAL_PASS_VALID_NEW_MONTH_SCOPE_NOT_PROVEN",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-179",
+          "relationship": "HISTORICAL_E2E_PASS_NO_AUTOMATIC_REOPEN",
+          "previousState": "PASS_RUN1209_CURRENT_ARTIFACT",
+          "oldStatusPreserved": true
+        },
+        {
+          "vrmId": "VRM-132",
+          "relationship": "RELATED_DURABLE_FINANCE",
+          "previousState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Movimientos financial CRUD, CxP/CxC and monthly drill need independent live creation/readback/reload proof",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "CODE_SUPPORT_EXISTS_BUT_REAL_MONTHLY_E2E_NOT_PROVEN",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/modules/finanzas.js",
+        "backend/runtime/cxorbia-finance-command-provider-v1.mjs"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Test isolated tenant/project/period with fixtures and cleanup, independently from finance dashboard tile",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-25",
+      "block": "B8",
+      "class": "VISUAL_DEFECT",
+      "semanticDisposition": "RELATED_PREVIOUS_SCOPE_DISTINCT_DETAIL_PENDING_OWNER_PROOF",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-132",
+          "relationship": "RELATED_FINANCE_MONTH_SCOPE_NOT_SAME_FEATURE",
+          "previousState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "CxP and CxC lack full monthly management view; embedded within Movimientos only",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "SCREENSHOT_AND_SOURCE",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/modules/finanzas.js"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Expose full monthly drill/list/actions within existing finance navigation, no parallel ledger",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-26",
+      "block": "B8",
+      "class": "PERSISTENCE_FAILURE",
+      "semanticDisposition": "RELATED_PREVIOUS_SCOPE_DISTINCT_DETAIL_PENDING_OWNER_PROOF",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-132",
+          "relationship": "RELATED_FINANCE_DURABILITY_BUDGET_DISTINCT",
+          "previousState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Monthly budget save/delete uses in-memory finStore._presM without provider ACK",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "SOURCE_PROVEN_MEMORY_ONLY",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/modules/finanzas.js",
+        "app/core/finanzas-core.js"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Do not accept real budget entry; implement existing durable financial contract exact owner and country/currency/month",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-27",
+      "block": "B8",
+      "class": "FUNCTIONAL_DEFECT",
+      "semanticDisposition": "RELATED_PREVIOUS_SCOPE_DISTINCT_DETAIL_PENDING_OWNER_PROOF",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-132",
+          "relationship": "RELATED_FINANCE_ACTION_SURFACE",
+          "previousState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Liquidaciones visible rows lack primary actionable affordances and explain readiness; eye-only in visible area",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "HUMAN_SCREENSHOT__CODE_HAS_ACTIONS_BEYOND_VISIBLE_ROWS",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/modules/finanzas.js"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Recover approved per-row pay/reconcile/detail and batch selection while retaining eligibility gates",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-28",
+      "block": "B7/B8",
+      "class": "VISUAL_DEFECT",
+      "semanticDisposition": "EXISTING_OPEN_SCOPE_EXTENSION",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-193",
+          "relationship": "EXISTING_OPEN_AUTOMATIONS_PROVIDER_SCOPE",
+          "previousState": "OPEN_BLOCKER_CURRENT_CANDIDATE",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Communication event templates locally editable in Automatizaciones but no durable shared tenant config or WhatsApp provider activation",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "SOURCE_PROVEN_CONFIG_IN_BROWSER",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/modules/automatizaciones.js",
+        "app/core/automations.js"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Current UI Admin -> Automatizaciones & Integraciones, templates editable only as local prototype; require scoped durable config and verified channel before real sending",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-29",
+      "block": "TRANSVERSAL",
+      "class": "ENVIRONMENT_FAILURE",
+      "semanticDisposition": "EXISTING_OPEN_SCOPE_EXTENSION",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-134",
+          "relationship": "EXISTING_OPEN_REFRESH_LATENCY_SCOPE",
+          "previousState": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "HR change appears only after minutes and manual reload; refresh watcher polls 20s and protected reconciliation waits additional readiness",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "SOURCE_PROVEN_POLL+LIVE_META_TIMINGS; USER_DELAY_NOT_MEASURED",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/adapters/tya-live-source-refresh-watch-v2.js",
+        "backend/runtime/hr-live-service/server.mjs",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Instrument change-to-read, reconcile, protected UI apply, render without reload; target reactive near-real-time not promise instant",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    },
+    {
+      "humanId": "HF-20261012-30",
+      "block": "B2/B5/B7",
+      "class": "MAPPING_FAILURE",
+      "semanticDisposition": "EVIDENCE_PARITY_NOT_PROVEN",
+      "priorVrmLinks": [
+        {
+          "vrmId": "VRM-061",
+          "relationship": "RELATED_PREVIOUS_FRESH_HR_REPROOF_NOT_SAME_SNAPSHOT",
+          "previousState": "PASS_LIVE_PROVEN_RUN472",
+          "oldStatusPreserved": true
+        }
+      ],
+      "observed": "Human screenshots taken after original run HR revision; live revision changed; dates/KPIs cannot be certified across timestamps",
+      "evidence": {
+        "checkpointBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+        "evidenceScope": "LIVE_HR_REVISION_CHANGED",
+        "predecessorLedgerBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2"
+      },
+      "ownerCandidates": [
+        "app/adapters/tya-cumulative-read-model-v2.js",
+        "app/adapters/tya-canonical-finance-read-model-v2.js"
+      ],
+      "ownerProven": "NOT_YET_PROVEN_EXACT_OWNER",
+      "causalProof": "DO_NOT_ASSERT_ROOT_CAUSE_BEFORE_FOCAL_PROOF",
+      "requiredCorrection": "Reprove against same new external HR revision and exact Firestore visit docs before declaring true data defect",
+      "correctionApplied": false,
+      "sourceTest": "NOT_RUN_AFTER_FIX",
+      "devSameArtifactE2E": "NOT_RUN_AFTER_FIX",
+      "acceptance": "HOLD",
+      "status": "OPEN_NOT_CLOSED",
+      "changesToProd": false
+    }
+  ],
+  "summary": {
+    "open": 29,
+    "preserve": 1,
+    "exactReoccurrence": [
+      "HF-20261012-16",
+      "VRM-259"
+    ],
+    "humanSupersession": [
+      "HF-20261012-02",
+      "VRM-146"
+    ],
+    "newUnprovenNotSilentlyMinted": true
+  },
+  "nextAction": "Apply B2 exact-owner package using current frozen handoff, then B7 approved frontend delta recovery; each requires source blob tests, same-artifact DEV, human acceptance. Do not assert module GO before material proof.",
+  "production": "DO_NOT_TOUCH",
+  "productMutated": false
+}

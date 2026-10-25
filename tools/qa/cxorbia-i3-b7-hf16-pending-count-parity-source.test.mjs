@@ -1,0 +1,117 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const src=readFileSync('app/modules/postulaciones.js','utf8');
+const dataSource=readFileSync('app/core/data.js','utf8');
+const routerSource=readFileSync('app/core/router.js','utf8');
+const dashboardSource=readFileSync('app/modules/dashboard.js','utf8');
+const consistencyBridge=readFileSync('app/adapters/tya-c6-domain-consistency-bridge.js','utf8');
+
+const input=[
+  {id:'status',status:'pendiente',periodId:'oct',pais:'GT'},
+  {id:'case',estado:'Pendiente',periodId:'oct',pais:'HN'},
+  {id:'old',estado:'pendiente',periodId:'sep',pais:'GT'},
+  {id:'assigned',estado:'pendiente',periodId:'oct',pais:'GT',postulationLifecycle:'transitioned_to_assignment'},
+  {id:'archived',estado:'pendiente',periodId:'oct',_archived:true},
+  {id:'standby',estado:'standby',periodId:'oct'}
+];
+const active=()=>input.filter(x=>x.periodId==='oct'&&x?._archived!==true&&x?.active!==false&&x?.postulationLifecycle!=='transitioned_to_assignment');
+function moduleCount(){
+  const line=src.split('\n').find(x=>x.trim().startsWith('const c=(s)=>activePosts.filter('));
+  assert.ok(line,'module count function not found');
+  return new Function('activePosts',line+'return c("pendiente");')(active());
+}
+test('HF16 derives active postulations from shared data authority',()=>{
+  assert.match(src,/const activePosts=typeof data\.activePosts==='function'\?data\.activePosts\(\):/);
+  assert.match(dataSource,/activePosts\(\)\{return this\.posts\(\)\.filter/);
+  assert.match(routerSource,/const n=Number\(CX\.data\?\.kpis\?\.\(\)\?\.postPend\|\|0\)/);
+});
+test('HF16 state and status fallback/casing agree with rail canonical count',()=>{
+  const expected=active().filter(x=>String(x.estado||x.status||'').toLowerCase()==='pendiente').length;
+  assert.equal(expected,2);assert.equal(moduleCount(),expected);
+});
+test('HF16 history, assignment transitions and archived never inflate count',()=>{
+  assert.deepEqual(active().map(x=>x.id),['status','case','standby']);
+  assert.equal(moduleCount(),2);
+  assert.match(src,/const syncPendingRailBadge=\(\)=>\{/);
+  assert.match(src,/setTimeout\(syncPendingRailBadge,0\)/);
+});
+test('HF17 retains cumulative stage and active-agenda distinction until exact HR parity',()=>{
+  assert.match(dashboardSource,/scheduled=n\(x=>f\(x\)\.scheduled&&!f\(x\)\.cancelled\)/);
+  assert.match(src,/const agendadas=operationalAssignments\.filter\(v=>\{const f=data\.visitFacets/);
+  assert.match(src,/f\?f\.scheduled===true&&f\.realized!==true/);
+  assert.match(dashboardSource,/\$\{cell\('Con fecha',f\.agend,'amber','agend'\)\}/);
+  assert.match(src,/ui\.kpi\('Agendamientos activos',agendadas\.length,'n'\)/);
+  assert.match(src,/Agendamientos pendientes de realizar/);
+});
+
+test('VRM259 late consistency bridge cannot override period scoped canonical pending count',()=>{
+  assert.match(consistencyBridge,/postPend:typeof this\.activePosts==='function'\?this\.activePosts\(\)\.filter/);
+  assert.doesNotMatch(consistencyBridge,/postPend:arr\(this\._posts\)\.filter/);
+  const activePending=active().filter(p=>String(p.estado||p.status||'').toLowerCase()==='pendiente').length;
+  assert.equal(activePending,2);
+  assert.notEqual(input.filter(p=>String(p.estado||p.status||'').toLowerCase()==='pendiente'&&!p._archived).length,activePending);
+});
+
+test('HUMAN 2026-10-13: assigned visits expose approved quick actions, no single generic Manage bottleneck',()=>{
+  for(const action of ['request','agenda','reassign','cancel'])assert.match(src,new RegExp('data-cx-po-action="[^"]*'+action+''));
+  assert.match(src,/document\.querySelectorAll\('\[data-cx-po-action\]'\)/);
+  assert.match(src,/openRequest\?/);
+  assert.match(src,/openAgenda\?/);
+  assert.match(src,/openAssign\?/);
+  assert.match(src,/openCancellation\?/);
+});
+test('HUMAN 2026-10-13: shared contrast and type sizes are protected in actual source',()=>{
+  const style=readFileSync('app/styles/theme.css','utf8');
+  assert.match(style,/--t3:#53657e/);
+  assert.match(style,/\.tbl th\{[^\n]*font-size:12\.5px/);
+  assert.match(style,/\.lbl\{font-size:12\.5px/);
+  assert.match(style,/\.btn-sm\{[^\n]*font-size:13px/);
+  assert.match(style,/\.poQuickActions/);
+});
+
+test('B7 reschedule rejection survives error and ACK needs exact refreshed visit',()=>{
+  assert.ok(src.includes('CX.adminPostulacionesActions.rescheduleFailure='));
+  assert.ok(src.includes('b.dataset.providerResultCode=diagnostic.code'));
+  assert.ok(src.includes('result?.providerAck===true'));
+  assert.ok(src.includes('CX.backend?.refresh?.()'));
+  assert.ok(src.includes('readback=String(exact?.rescheduleRequest?.status'));
+  assert.ok(!src.includes("ui.toast('Nueva fecha guardada correctamente'"));
+});
+
+test('B7 actionable 7-KPI owner derives each operational count from current visit and durable request, never post.reprog',()=>{
+  assert.match(src,/const reprog=requestByVisit;/);
+  assert.doesNotMatch(src,/activePosts\.filter\(x=>x\.reprog/);
+  assert.match(src,/const operationalAssignments=data\.visitas\(\)\.filter/);
+  assert.match(src,/const cancellationRequests=operationalAssignments\.filter/);
+  assert.match(src,/const agendadas=operationalAssignments\.filter/);
+  for(const key of ['pend','assign','reprog','cancel','agenda','aprob','todas'])
+    assert.match(src,new RegExp('data-k="'+key+'"'));
+  assert.match(src,/repeat\(auto-fit,minmax\(155px,1fr\)\)/);
+});
+test('B7 KPI drilldown delegates to existing role-scoped provider owners, not a generic postulation modal',()=>{
+  assert.match(src,/const openOperationalKpi=\(title,rows,kind\)=>/);
+  assert.match(src,/openAgenda\?\.\(\{data,ui,visitIds:\[id\]\}\)/);
+  assert.match(src,/openContext\?\.\(\{data,ui,visitId:id\}\)/);
+  assert.match(src,/data-po-cancel-outcome/);
+  assert.match(src,/btn\.click\(\)/);
+  assert.match(src,/if\(operationalKpis\[key\]\)/);
+  assert.doesNotMatch(src,/reprog:\['Reprogramaciones',reprog\]/);
+});
+
+test('B7 expired shopper proposal is blocked in both Admin entrypoints without attempting provider approval',()=>{
+  const vm=requireNoopVm();
+  assert.equal(vm.adminPostulacionesActions.rescheduleReadiness({rescheduleRequest:{newDate:'2026-10-10'}},{period:()=>({timeZone:'America/Guatemala'})},new Date('2026-10-14T12:00:00Z')).eligible,false);
+  assert.equal(vm.adminPostulacionesActions.rescheduleReadiness({rescheduleRequest:{newDate:'2026-10-22'}},{period:()=>({timeZone:'America/Guatemala'})},new Date('2026-10-14T12:00:00Z')).eligible,true);
+  assert.match(src,/data-date-renew/);
+  assert.match(src,/data-reprog-renew/);
+  assert.match(src,/const readiness=CX\.adminPostulacionesActions\.rescheduleReadiness\(visit,data\)/);
+  assert.match(src,/const readiness=CX\.adminPostulacionesActions\.rescheduleReadiness\(x,data\)/);
+});
+function requireNoopVm(){
+  const source=src;
+  const instance={adminPostulacionesActions:{},module:()=>{}};
+  const run=new Function('CX','window','document','setTimeout',source);
+  run(instance,{},null,()=>{});
+  return instance;
+}

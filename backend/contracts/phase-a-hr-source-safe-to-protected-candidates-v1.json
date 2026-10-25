@@ -1,0 +1,114 @@
+{
+  "contractId": "phase-a-hr-source-safe-to-protected-candidates-v1",
+  "status": "draft_safe_dry_run_only",
+  "generatedAt": "2026-07-09",
+  "purpose": "Convert an HR/source-safe payload into protected import/read candidates for shopper profiles, certifications, liquidations, payment batches, audit events and reviewQueue without writing Firestore or exposing sensitive data.",
+  "safeState": {
+    "readsLiveHr": false,
+    "usesSourceSafeInputOnly": true,
+    "firestoreConnected": false,
+    "authConnected": false,
+    "writesEnabled": false,
+    "importsEnabled": false,
+    "productionEnabled": false,
+    "containsSensitiveData": false,
+    "containsSecrets": false
+  },
+  "input": {
+    "acceptedPayloads": [
+      "window.CX_TYA_HR_SOURCE_SAFE style source-safe JS payload",
+      "source-safe JSON export from HR live builder",
+      "future generic tenant/project source-safe payload"
+    ],
+    "requiredTopLevelKeys": ["tenantId", "projectId", "periods", "visits", "shoppers", "sourceSafe"],
+    "requiredSafeFlags": {
+      "sourceSafe": true,
+      "production": false
+    }
+  },
+  "outputCandidateGroups": {
+    "shopperPublicRefs": {
+      "pathPattern": "tenants/{tenantId}/shopperPublicRefs/{shopperRefId}",
+      "writeStatus": "not_written",
+      "notes": "Public/source-safe refs only; no complete shopper profile."
+    },
+    "shopperIdentityLinkCandidates": {
+      "pathPattern": "tenants/{tenantId}/shopperIdentityLinks/{identityLinkId}",
+      "writeStatus": "not_written",
+      "notes": "Candidate identity links for later human review or protected import."
+    },
+    "certificationCarryoverCandidates": {
+      "pathPattern": "tenants/{tenantId}/projects/{projectId}/certificationCarryovers/{carryoverId}",
+      "writeStatus": "not_written",
+      "notes": "Preserve already presented certifications as candidates before requesting retake."
+    },
+    "protectedLiquidationCandidates": {
+      "pathPattern": "tenants/{tenantId}/projects/{projectId}/protectedLiquidations/{liquidationId}",
+      "writeStatus": "not_written",
+      "notes": "Payment-control candidates only; no payment execution and no raw banking data."
+    },
+    "protectedPaymentBatchCandidates": {
+      "pathPattern": "tenants/{tenantId}/projects/{projectId}/protectedPaymentBatches/{paymentBatchId}",
+      "writeStatus": "not_written",
+      "notes": "Prepared batch candidates for finance review, not real payment."
+    },
+    "reviewQueueCandidates": {
+      "pathPattern": "tenants/{tenantId}/reviewQueue/{reviewId}",
+      "writeStatus": "not_written",
+      "notes": "Conflicts and ambiguity candidates; no silent overwrite."
+    },
+    "auditEventCandidates": {
+      "pathPattern": "tenants/{tenantId}/audit/protectedReads/{auditId}",
+      "writeStatus": "not_written",
+      "notes": "Source-safe audit candidates for dry-run/import planning."
+    }
+  },
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "periodKey",
+    "country",
+    "shopperRefId",
+    "visitId",
+    "hrRowId",
+    "assignmentSource",
+    "assignmentSyncStatus"
+  ],
+  "forbiddenFields": [
+    "rawName",
+    "fullName",
+    "email",
+    "phone",
+    "dpi",
+    "idDocumentRaw",
+    "bankAccountRaw",
+    "accountNumber",
+    "signedNdaRaw",
+    "privateSourceUrl",
+    "workbookRaw",
+    "paymentReceiptBase64",
+    "providerToken",
+    "refreshToken",
+    "password"
+  ],
+  "gates": {
+    "candidateGeneration": "allowed_source_safe_only",
+    "candidateReview": "allowed_manual_review_no_writes",
+    "firestoreWrite": "blocked_until_explicit_GO_dry_run_reviewQueue_rollback",
+    "authProtectedRead": "blocked_until_Auth_DEV_configured",
+    "productionImport": "blocked"
+  },
+  "claudePrototypeImpact": {
+    "required": true,
+    "notes": "Prototype must represent generic source-safe to protected-candidate flow without hardcoding a tenant/project or exposing private data."
+  },
+  "academiaImpact": {
+    "required": true,
+    "topics": [
+      "source-safe preview vs protected candidates",
+      "why source-safe candidates are not production imports",
+      "how reviewQueue prevents silent overwrite",
+      "how certifications and liquidations are preserved without exposing PII"
+    ]
+  }
+}

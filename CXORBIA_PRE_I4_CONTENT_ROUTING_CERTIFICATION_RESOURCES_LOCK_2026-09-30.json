@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "cxorbia.prei4.content-routing-certification-resources-lock.v1",
+  "frozenAt": "2026-09-30",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "status": "FROZEN_ACTIVE",
+  "authority": "Paula explicit functional clarification 2026-09-30 + Recovery contracts",
+  "production": "DO_NOT_TOUCH",
+  "antiRegression": {
+    "oneCumulativeCandidate": true,
+    "noParallelCandidate": true,
+    "noReimport": true,
+    "noGlobalHardcodes": true,
+    "noLocalStorageTruth": true,
+    "eachPromotionRequiresSourceGuardAndLiveGuard": true
+  },
+  "devHumanEntrypoint": {
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "projectSelectionMustBeExplicit": true,
+    "canonicalPath": "/index-backend-dev.html?cxProjectId=cinepolis",
+    "bareRootIsNotSufficientEvidenceOfSourceFailure": true,
+    "note": "The DEV entrypoint intentionally has no global project default; source resolution is project-scoped."
+  },
+  "questionnaireRouting": {
+    "projectScoped": true,
+    "modes": [
+      "internal",
+      "external_general",
+      "external_visit"
+    ],
+    "externalGeneral": {
+      "requirement": "Project configuration durably stores/resolves the questionnaire route for that project; shopper questionnaire action opens that route only when the visit flow reaches questionnaire."
+    },
+    "externalVisit": {
+      "requirement": "Visit-specific questionnaire route comes from that exact visit's HR/configured mapping; no global fallback may send a shopper to another visit's questionnaire."
+    },
+    "shopperFlow": {
+      "progressiveStageActivation": true,
+      "instructivoBeforeExecution": true,
+      "questionnaireAfterRealized": true
+    },
+    "noHardcodedProviderOrUrl": true
+  },
+  "certification": {
+    "legacyCarryoverPolicy": {
+      "requirement": "An exact-identity historical approved Cinépolis certification remains satisfied until an authorized admin explicitly requests recertification.",
+      "noFuzzyMatching": true,
+      "noReimport": true,
+      "sourceEvidenceMustRemainTraceable": true
+    },
+    "recertification": {
+      "explicitAdminActionRequired": true,
+      "durable": true,
+      "scope": [
+        "project_all_certified",
+        "single_shopper"
+      ],
+      "reasonAndDeadlineRequired": true
+    },
+    "bank": {
+      "generatedFromProjectInstruction": true,
+      "adminEmphasisGuidance": true,
+      "realAIProviderRequired": true,
+      "humanReviewBeforePublish": true,
+      "durable": true,
+      "versioned": true
+    },
+    "attempts": {
+      "durable": true,
+      "shopperScoped": true,
+      "scoreAndOutcomePersisted": true,
+      "reloadReadbackRequired": true
+    }
+  },
+  "projectResources": {
+    "metadataDurable": true,
+    "binaryPersistenceRequired": true,
+    "shopperAuthorizedRead": true,
+    "fullScreenInPlatformViewer": true,
+    "downloadRequired": true,
+    "projectAndRoleScoped": true,
+    "falseUploadControlsForbidden": true
+  },
+  "currentFindings": [
+    {
+      "id": "PREI4-CONTENT-001",
+      "classification": "FUNCTIONAL_DEFECT",
+      "title": "External general questionnaire mode lacks a durable project-level route field in the current project configuration UI."
+    },
+    {
+      "id": "PREI4-CONTENT-002",
+      "classification": "MAPPING_FAILURE",
+      "title": "Visit-specific questionnaire route is consumed by shopper UI but is not yet proven mapped from a configurable HR column in the current live provider."
+    },
+    {
+      "id": "PREI4-CERT-001",
+      "classification": "FUNCTIONAL_DEFECT",
+      "title": "Certification bank is durable but current generation is heuristic-local, not real AI, and certification attempts/recertification are not yet durable."
+    },
+    {
+      "id": "PREI4-CERT-002",
+      "classification": "FUNCTIONAL_DEFECT",
+      "title": "Historical exact approved certification evidence is preserved but current policy does not yet satisfy the newly frozen carryover-until-recertification rule."
+    },
+    {
+      "id": "PREI4-RES-001",
+      "classification": "PROVIDER_FAILURE",
+      "title": "Document metadata is durable and viewer is full-screen, but binary Storage remains intentionally disabled in the certified DEV lane."
+    }
+  ]
+}

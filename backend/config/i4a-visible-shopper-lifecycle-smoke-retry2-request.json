@@ -1,0 +1,11 @@
+{
+  "schemaVersion":"cxorbia.i4a.visible-shopper-lifecycle-smoke-retry2.request.v1",
+  "gateId":"NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY2__STABLE_SURFACE_SELECTORS__NO_SW",
+  "requestId":"cxorbia-i4a-visible-shopper-lifecycle-smoke-retry2-20260819-01",
+  "repository":"paulaosoriof86/demoCXOrbia","branch":"docs-tya-v6-v71-audit","pullRequest":7,"firebaseProjectId":"cxorbia-backend-dev","tenantId":"tya","projectId":"cinepolis",
+  "enabled":false,"consumed":true,"status":"hold_consumed_harness_global_guard_no_product_defect","authorizedBy":"Paula","providerExecutionsConsumed":1,"allowedProviderExecutions":1,"preflightAttempts":1,"preflightFailureRunId":32281707735,"preflightProviderAccess":false,
+  "executionResult":{"workflowRunId":32282049566,"workflowCommitSha":"37531d8714488f3e384319e03a740b6e65e0a643","decision":"HOLD_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY2_PHASE_FAILURE","failurePhase":"auth","classification":"PIPELINE_MECHANISM_FAILURE__HARNESS_UNDECLARED_WINDOW_GLOBAL__NO_PRODUCT_DEFECT_PROVEN","productDefectProven":false},
+  "loginAttemptsActual":1,"authPasswordUpdatesActual":1,"automaticRetryAllowed":false,
+  "safety":{"historicalShopperAccess":false,"otherIdentitiesModified":0,"authCreates":0,"authClaimsWrites":0,"authDeletes":0,"firestoreWrites":0,"postulationSubmits":0,"certificationSubmits":0,"reservationWrites":0,"hrWrites":0,"rulesWrites":0,"storageWrites":0,"makeCalls":0,"geminiCalls":0,"paymentWrites":0,"hostingDeploys":0,"cloudRunDeploys":0,"merge":false,"production":false},
+  "nextGate":"NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY3__SAFE_GLOBAL_GUARDS__STABLE_SURFACES"
+}

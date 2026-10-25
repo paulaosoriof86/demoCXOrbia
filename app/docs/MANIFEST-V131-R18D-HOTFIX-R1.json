@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "1.0.0",
+  "package": "CXORBIA-V131-R18D-HOTFIX-R1",
+  "project": "CXOrbia",
+  "baselineVersion": "V131",
+  "baselineManifest": "docs/MANIFEST-V131-EMPALME-RUNTIME-R1.json",
+  "baselineAggregateSha256": "077f366fc17953a46be7927f416ed8b05531b96ae0c55ff958f4dff3dd4645bc",
+  "generatedAt": "2026-07-15",
+  "sourceCandidate": "Prototype development request CXOrbia V131 fix.zip",
+  "sourceCandidateSha256": "788a32a6d44e0686b0627a47e4e4e038fdbe7d3befd3dde2651ff542706918bb",
+  "sourceCandidateInternalVersion": "V132",
+  "promotionMode": "reconciled_single_file_hotfix",
+  "runtimePatchCommit": "593cdb9cc815cfa14d257968026bf3de886efba1",
+  "validationHead": "3b14bc775170e9525c2deff6bb72a1bf785b2db6",
+  "r18dWorkflowRun": 29437465036,
+  "decision": "PASS_R18D_VISIBLE_OVERLAYS",
+  "parentFileCount": 71,
+  "effectiveRuntimeFileCount": 71,
+  "derivedAggregateAlgorithm": "sha256(parentAggregate + NUL + path + NUL + newSha256 + LF)",
+  "derivedAggregateSha256": "6e833331f5aa9ba9458ef0724756e72747352add3f8c6cc1fa327c96fadec348",
+  "changedRuntimeFiles": [
+    {
+      "path": "core/finanzas-core.js",
+      "previousSha256": "8fe50ee569c4a68f82ca55b15c42c9e0c64561b871b7993374b3d34617decad8",
+      "newSha256": "ce657ea2d3716679f152f13621c720739139ac75ae109a2d9720f620716e4d9e",
+      "newSize": 10128,
+      "decision": "preserve data.project() in porPais and add period() only to the local serieMensual adapter"
+    }
+  ],
+  "candidateFilesNotPromoted": [
+    {
+      "path": "core/build-lock.js",
+      "reason": "candidate lock referenced prototype-only MANIFEST-V132 and would replace the active V131 union lock"
+    },
+    {
+      "path": "docs/MANIFEST-V132.json",
+      "reason": "candidate manifest covered the prototype package, not the active empalmed union runtime"
+    },
+    {
+      "path": "docs/REPORTE-CORRECCION-V132-R18D-HOTFIX.md",
+      "reason": "preserved as transport evidence only; repository closure is recorded in Phase A documentation"
+    }
+  ],
+  "validation": {
+    "candidateVsOriginalPrototypeChanges": 4,
+    "activeBranchFunctionalDeltaFiles": 1,
+    "activeBranchCiDeltaFiles": 1,
+    "syntax": "PASS",
+    "financeModuleRendered": true,
+    "consoleErrors": 0,
+    "pageErrors": 0,
+    "periods": 14,
+    "visits": 616,
+    "currentPeriodVisits": 44,
+    "shoppers": 216,
+    "financialExactLinks": 196,
+    "financialReviewQueue": 92,
+    "certificationHoldShoppers": 216,
+    "paidConfirmed": 0,
+    "paymentLotsCreated": 0,
+    "certificationCarryoverConfirmed": 0,
+    "writes": false,
+    "imports": false,
+    "deploy": false,
+    "production": false
+  }
+}

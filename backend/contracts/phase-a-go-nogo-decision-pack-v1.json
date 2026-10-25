@@ -1,0 +1,153 @@
+{
+  "contractId": "phase-a-go-nogo-decision-pack-v1",
+  "project": "CXOrbia TyA",
+  "date": "2026-07-09",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pr": 7,
+  "purpose": "Define the decision rules for RC Phase A controlled GO/NO-GO after a future authorized human smoke, without confusing smoke success with runtime, import, deploy or production authorization.",
+  "status": "documented_only_not_executed",
+  "decisionStates": {
+    "GO": {
+      "meaning": "Future human smoke found no critical blockers for the next controlled RC preparation step.",
+      "allows": [
+        "prepare_next_documented_rc_step",
+        "prepare_explicit_authorization_request_if_needed",
+        "continue_backend_safe_documentation",
+        "continue_claude_pending_documentation"
+      ],
+      "doesNotAllow": [
+        "merge",
+        "deploy",
+        "production",
+        "runtime_switch",
+        "firestore_auth_storage_writes",
+        "hr_writes",
+        "make_live",
+        "gemini_live",
+        "imports",
+        "payments",
+        "raw_sensitive_data_commit"
+      ]
+    },
+    "GO_WITH_WARNINGS": {
+      "meaning": "Future human smoke found no hard blocker, but warnings remain and must be documented before the next controlled step.",
+      "allows": [
+        "document_warnings",
+        "continue_only_non_destructive_preparation",
+        "create_targeted_claude_or_backend_followup"
+      ],
+      "doesNotAllow": [
+        "merge",
+        "deploy",
+        "production",
+        "runtime_switch",
+        "real_integrations",
+        "imports",
+        "payments"
+      ]
+    },
+    "NO_GO": {
+      "meaning": "Future human smoke found at least one critical blocker. Do not advance RC. Fix only root cause and re-run the relevant gate/check.",
+      "allows": [
+        "root_cause_documentation",
+        "minimal_targeted_fix_only_when_authorized",
+        "repeat_relevant_gate_or_smoke_after_fix"
+      ],
+      "doesNotAllow": [
+        "broad_refactor",
+        "repeating_level_0_1_without_documented_cause",
+        "merge",
+        "deploy",
+        "production",
+        "runtime_switch",
+        "imports",
+        "writes",
+        "payments"
+      ]
+    },
+    "HOLD": {
+      "meaning": "Decision cannot be made because required future evidence is missing, ambiguous or not source-safe.",
+      "allows": [
+        "request_only_the_missing_non_private_evidence_or_authorization",
+        "continue_safe_documentation"
+      ],
+      "doesNotAllow": [
+        "guessing_go",
+        "claiming_validation_done",
+        "merge",
+        "deploy",
+        "production",
+        "runtime_switch"
+      ]
+    }
+  },
+  "evidenceRequiredForFutureDecision": [
+    "human_smoke_result_shape_completed",
+    "critical_routes_statuses",
+    "console_critical_errors_count_or_human_note",
+    "copy_honesty_review",
+    "sensitive_data_check_note",
+    "academia_admin_visibility_note",
+    "readiness_gate_off_note",
+    "liquidaciones_pagos_no_real_payment_claim_note",
+    "cinépolis_not_global_hardcode_note"
+  ],
+  "hardStops": [
+    "white_screen",
+    "critical_js_error_blocking_navigation",
+    "critical_route_blocked",
+    "copy_claims_real_integration_or_payment_when_gate_off",
+    "sensitive_data_exposed",
+    "attempted_provider_activation_without_go",
+    "junio_as_pending_visits_instead_of_liquidaciones_pagos",
+    "cinépolis_as_global_hardcode",
+    "missing_or_unsafe_evidence"
+  ],
+  "decisionOutputShape": {
+    "decision": "GO | GO_WITH_WARNINGS | NO_GO | HOLD",
+    "decidedAt": "ISO-8601 timestamp",
+    "basis": "human_smoke | documented_blocker | missing_evidence | authorized_review",
+    "summary": "string",
+    "blockers": [],
+    "warnings": [],
+    "allowedNextStep": "string",
+    "stillForbidden": [
+      "merge_without_explicit_paula_go",
+      "deploy_without_explicit_paula_go",
+      "production_without_explicit_paula_go",
+      "runtime_switch_without_explicit_paula_go",
+      "imports_without_explicit_paula_go",
+      "writes_without_explicit_paula_go",
+      "make_gemini_live_without_explicit_paula_go",
+      "payments_without_explicit_paula_go"
+    ],
+    "requiresPaula": "none | human_smoke | explicit_go | missing_non_private_input"
+  },
+  "antiReprocessRules": [
+    "Do not repeat Level 0/1 unless a new documented root cause requires it.",
+    "Do not ask Paula for HR/reglas/shoppers/certificaciones already documented.",
+    "Do not treat fixture, demo or tmp output as real source.",
+    "Do not broaden a NO_GO into a full redesign or unrelated refactor.",
+    "Do not ask for PowerShell unless the next step truly requires a local validation."
+  ],
+  "safeState": {
+    "documentOnly": true,
+    "humanSmokeExecuted": false,
+    "runtimeConnected": false,
+    "adapterEnabled": false,
+    "builderExecuted": false,
+    "importsExecuted": false,
+    "firestoreWrites": false,
+    "authWrites": false,
+    "storageWrites": false,
+    "hrWrites": false,
+    "makeLive": false,
+    "geminiLive": false,
+    "realEmailWhatsapp": false,
+    "realPayments": false,
+    "deploy": false,
+    "production": false,
+    "rawSensitiveDataInRepo": false
+  }
+}

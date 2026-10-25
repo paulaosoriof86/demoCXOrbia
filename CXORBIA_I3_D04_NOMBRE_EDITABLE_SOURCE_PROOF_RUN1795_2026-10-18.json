@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "cxorbia.i3.d04-editable-name.source-proof.v1",
+  "recordedAt": "2026-10-18",
+  "iteration": "I3",
+  "status": "SOURCE_PROVEN_DEV_PENDING",
+  "source": {
+    "sha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
+    "tree": "ccb73184906e3cfb8a582f882aef0a7863f3dfd5",
+    "predecessor": "4fd4e4cbfc41f99425c839179f029c12d2ec1419",
+    "ownerFile": "app/modules/cert.js",
+    "qaFile": "tools/qa/cxorbia-i3-d04-versioned-bank-review.test.mjs"
+  },
+  "evidence": {
+    "run": 1795,
+    "id": 39171726936,
+    "conclusion": "success",
+    "authorityJobId": 117806014994,
+    "sourceProofJobId": 117806124784,
+    "focalD04F12": {
+      "passed": 9,
+      "total": 9,
+      "failed": 0
+    },
+    "adminClientQA": {
+      "passed": 4,
+      "total": 4,
+      "failed": 0
+    },
+    "priorFailedRun": 1794,
+    "priorFailedCaseCorrected": true,
+    "sourceProofDecision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "newDevBuilds": 0,
+    "hrWrites": 0,
+    "production": false
+  },
+  "scopedChange": "Editable certification name on AI creation; name-only or question+name pending-review CAS with remote title ACK and history; preserves stable bankId, 15 questions and publish gate",
+  "protected": {
+    "tasks": 82,
+    "VRM": 274,
+    "F01toF16": true,
+    "domains": 21,
+    "humanPreviewRun1791": "PASS_FOCAL_ADMIN_CLIENT_SHOPPER_RUN1792_PENDING_HUMAN",
+    "D03Run1778": "PRESERVED",
+    "D04Run1788": "PRESERVED",
+    "F09": "OPEN",
+    "production": "DO_NOT_TOUCH"
+  },
+  "nextExactAction": "Single deterministic DEV materialization of source 273b8afb... via existing I3 canonical workflow, then focal D04 live QA name-only edit + ACK/reload/no duplicates; no production or second candidate."
+}

@@ -1,0 +1,39 @@
+{
+  "contract": "evidence-storage-routing-phase-a-tya",
+  "date": "2026-07-06",
+  "status": "draft_contract_no_runtime",
+  "phase": "Phase A",
+  "runtimeEnabled": false,
+  "storageEnabled": false,
+  "productionAllowed": false,
+  "realDataAllowed": false,
+  "purpose": "Define evidence routing by tenant, project, visit, shopper and evidence type before real Storage.",
+  "identity": {
+    "tenantId": "required",
+    "projectId": "required",
+    "visitId": "required",
+    "shopperId": "required",
+    "hrRowId": "optional"
+  },
+  "evidenceTypes": ["photo", "video", "audio", "document", "external_link", "receipt", "other"],
+  "storageModes": ["not_configured", "placeholder", "external_reference_only", "ready_for_storage", "controlled_enabled"],
+  "metadata": {
+    "captureDate": "optional",
+    "uploadedAt": "optional",
+    "uploadedBy": "optional",
+    "mimeType": "optional",
+    "sizeBytes": "optional",
+    "checksum": "optional",
+    "externalFolderRef": "optional",
+    "reviewStatus": ["pending", "accepted", "rejected", "needs_review"]
+  },
+  "securityPolicy": {
+    "sensitiveDataAllowed": false,
+    "tenantIsolationRequired": true,
+    "projectIsolationRequired": true
+  },
+  "notes": [
+    "Contract only. No Storage write.",
+    "Does not authorize source lock, production, import, deploy, merge, or providers."
+  ]
+}

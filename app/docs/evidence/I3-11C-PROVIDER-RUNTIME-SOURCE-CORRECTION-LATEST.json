@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "cxorbia.i3.11c.provider-runtime-source-correction.evidence.v1",
+  "syncEpoch": "CXORBIA-20260818-I3-11C-RUNTIME-SOURCE-CORRECTION-04",
+  "generatedAt": "2026-08-18T13:20:00-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "sourceHeadBeforeCorrection": "4fe172c0604da03b5bcfab85647e80ba7fe7d4ba",
+  "rootCause": "PROVEN_RUNTIME_CONTRACT_DRIFT__LEGACY_PROVIDER_IDENTITY_LINK_APPLICABILITY_FILTER",
+  "sourceCorrection": {
+    "file": "app/adapters/cxorbia-provider-identity-link-runtime-v1.js",
+    "preservedVersion": "cxorbia-provider-identity-link-runtime-v1",
+    "canonicalContract": "cxorbia-identity-roll-forward-v1",
+    "changes": [
+      "Replace exact status=active/providerAck=true gate with canonical authoritative status and authority semantics.",
+      "Accept active, confirmed, approved and materialized states in lockstep with cxorbia-identity-roll-forward-v1.",
+      "Trust only provider_exact, tenant_adjudication, platform_created and migrated_exact authorities with an authority reference.",
+      "Reject period-scoped links and sourceSafe=false links.",
+      "Preserve tenant/project isolation, exact technical identity and zero fuzzy/name/email/phone matching.",
+      "Delegate to CX_IDENTITY_ROLL_FORWARD_CONTRACT.normalizeLink when that canonical contract is present; otherwise use a canonical-equivalent fallback predicate.",
+      "Expand exact technical source aliases to sourceAliases/sourceIdentityAliases/identityAliases/exactAliases/aliases without enabling human-field matching.",
+      "Expose a read-only provider identity link contract surface for parity QA while preserving the existing runtime bridge API."
+    ],
+    "targetExpectedAfterCorrection": {
+      "status": "materialized",
+      "authorityType": "tenant_adjudication",
+      "sourceIdentityKey": "shp-57d2e3769946",
+      "canonicalShopperId": "TYA_GT_0C0BA8856E",
+      "applicable": true
+    }
+  },
+  "qa": {
+    "file": "tools/qa/cxorbia-provider-identity-runtime-contract-parity-gate.mjs",
+    "created": true,
+    "covers": [
+      "accepted-state parity",
+      "trusted-authority parity",
+      "I3.11C materialized target applicability",
+      "tenant/project isolation",
+      "period-scope rejection",
+      "sourceSafe rejection",
+      "untrusted authority rejection",
+      "exact source token requirement",
+      "name/email-only fuzzy rejection"
+    ],
+    "executionStatus": "NOT_EXECUTED_IN_CONNECTOR_ONLY_SOURCE_CORRECTION_BLOCK",
+    "runtimeGateWillExerciseActualBrowserPath": true
+  },
+  "scope": {
+    "appModulesWrites": 0,
+    "appCoreWrites": 0,
+    "cxDataInterfaceChanges": 0,
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreDataWrites": 0,
+    "rulesDeploys": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "hrWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "historicalShopperAccess": 0,
+    "merge": false,
+    "production": false
+  },
+  "classification": {
+    "reusableCXOrbia": true,
+    "exclusiveTenant": false,
+    "exclusiveProject": false,
+    "claudePrototype": "NO_UI_PATCH_REQUIRED",
+    "academia": "NO_USER_FLOW_CHANGE_CONFIRMED_YET"
+  },
+  "decision": "SOURCE_CORRECTION_PREPARED_AND_ATOMICALLY_APPLIED__LIVE_RUNTIME_READONLY_PROOF_REQUIRED",
+  "nextFrontier": "NEW_AUTH_REQUIRED_I3_11C_STAFF_RUNTIME_CANONICAL_IDENTITY_CLOSE_READONLY_NO_WRITES",
+  "requiredRuntimePass": {
+    "targetResolution": "shp-57d2e3769946 -> TYA_GT_0C0BA8856E",
+    "augustCanonicalVisits": 2,
+    "augustResidualLiveVisits": 0,
+    "duplicateVisitKeys": 0,
+    "duplicateShopperIds": 0
+  }
+}

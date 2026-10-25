@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "cxorbia.c6.shopper-identity-source-safe-resolution-hold.v1",
+  "generatedAt": "2026-08-05T23:20:48.110Z",
+  "decision": "HOLD_C6_SHOPPER_IDENTITY_RESOLUTION_REVIEW",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "sourceStatic": {
+    "decision": "PASS_READONLY_POST_GATES",
+    "compositionDecision": "PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS",
+    "labDecision": "PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT",
+    "runId": 31055889684,
+    "jobId": 92473179280,
+    "artifactId": 8950210279,
+    "artifactDigest": "sha256:7d78d480b15b836ab98ded284a2bfca2b0ebe2517531c36825bc77159de915dd"
+  },
+  "review": {
+    "runId": 31056005286,
+    "jobId": 92473531087,
+    "artifactId": 8950260575,
+    "artifactDigest": "sha256:28bcefd758c53efa4357d0d4766488662c3b0701ce2ccfce551816c92d7edb88",
+    "profilesReviewed": 340,
+    "credentialRecordsReviewed": 109,
+    "hrImportDocsReviewed": 1,
+    "visitsReviewed": 616,
+    "latestPeriod": "2026-07",
+    "credentialsMapped": 101,
+    "credentialsUnmapped": 8,
+    "baselineReconciliation": {
+      "missingAuth": 21,
+      "mappedMissingAuth": 13,
+      "unmappedCredentials": 8,
+      "loginExceptionsCurrentScope": 16,
+      "mappedLoginExceptions": 8,
+      "passwordExceptionsCurrentScope": 18,
+      "mappedPasswordExceptions": 10
+    },
+    "resolution": {
+      "remainingAuthCollisions": 1,
+      "resolverNameIncompleteHolds": 109,
+      "unresolvedProfiles": 110,
+      "paulaStaffCandidates": 1,
+      "paulaShopperCandidates": 2,
+      "paulaResolution": "UNRESOLVED"
+    },
+    "nonOverlappingPlan": {
+      "rows": 340,
+      "CREATE_AUTH": 22,
+      "UPDATE_AUTH": 8,
+      "NO_OP": 73,
+      "HOLD": 110,
+      "PRESERVE_NO_AUTH": 127,
+      "subchangeEmail": 1,
+      "subchangePassword": 8,
+      "subchangeClaims": 1,
+      "planDigest": "901b43183721cb49218224d096b49612675d1c92f1bca9936da61c7eb09ac8c4"
+    },
+    "rollbackDryRun": {
+      "createAuth": "delete only UIDs created under the exact plan digest and only before downstream writes",
+      "updateAuth": "restore prior email, disabled state and claims from provider snapshot",
+      "password": "old password cannot be recovered; compensation is disable plus controlled reset to the canonical contract",
+      "memberships": "not applicable; zero membership writes"
+    }
+  },
+  "diagnosis": {
+    "code": "RESOLVER_CANONICAL_NAME_BASIS_TOO_RESTRICTIVE",
+    "detail": "The resolver bound identity through shopperId and technical relations, but then allowed surname derivation only from explicit surname fields or an already linked credential. It did not use the exact bound profile's own full-name or technical-login fields, producing 109 false canonical_name_incomplete holds.",
+    "baselineBridge": "The 21 missing Auth identities reconcile exactly as 13 mapped profiles without Auth plus 8 unmapped credentials. The former 30/28 and current 16/18 exception counts use different mapping sets; 13 credentials moved from unmapped to technically mapped, so the comparison must be by set membership rather than immutable totals."
+  },
+  "stopRetry": {
+    "applied": true,
+    "requestConsumed": true,
+    "automaticRetry": false,
+    "authRepairBlocked": true,
+    "deployBlocked": true
+  },
+  "safety": {
+    "providerReads": true,
+    "providerWrites": false,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "membershipWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "rawNamesExported": false,
+    "rawLoginsExported": false,
+    "rawPasswordsExported": false,
+    "uidsExported": false,
+    "merge": false,
+    "production": false
+  },
+  "nextExactBlock": "Correct the resolver source-only to derive the canonical surname from the exact shopper profile's own full-name or technical-login fields only after shopperId binding; add source-safe technical summaries for Paula's two Shopper candidates; bridge old and current baseline sets explicitly; repin the resolver and dispatcher, execute source/static and run one new read-only resolution review. Stop again before every provider write or deploy."
+}

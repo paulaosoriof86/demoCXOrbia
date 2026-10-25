@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm245.review-only-population-semantics-lock.v1",
+  "lockId": "CXORBIA-I3-VRM245-REVIEW-ONLY-POPULATION-SEMANTICS-20261004",
+  "status": "FROZEN",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "classification": "MAPPING_FAILURE",
+  "severity": "P0_CONTROL",
+  "cause": "VRM215 v1 conflated active membership universe with authentication-eligible population and also reclassified preserved historical visit versions/aliases as active operational defects despite VRM043/VRM238/VRM239 frozen semantics.",
+  "frozenAuthorities": {
+    "noInventedHumanIdentity": "VRM-043 DO_NOT_INVENT_HUMAN_IDENTITY",
+    "reviewOnlyDisposition": "VRM-239 EXCLUDE_FROM_AUTH_ELIGIBLE_POPULATION_PRESERVE_REVIEW_ONLY",
+    "historicalVisitSemantics": "VRM-238 separates historical rows from authoritative current rows",
+    "authoritativeVisitRemap": "VRM-243 Run1131 remapped 127 authoritative rows and preserved 122 historical alias rows"
+  },
+  "currentEvidence": {
+    "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+    "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+    "materializationRunId": 37208163415,
+    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "run1131": {
+      "runId": 37245792720,
+      "artifactId": 11319310864,
+      "membershipUniverse": 379,
+      "credentialHolds": 1,
+      "authoritativeAliasRows": 0,
+      "historicalAliasRows": 122,
+      "ambiguousAuthorityGroups": 0,
+      "nonVisitOperationalAliasReferences": 0
+    }
+  },
+  "afterRule": {
+    "membershipUniverse": "all current active shopper memberships",
+    "authEligiblePopulation": "membership universe minus only exact HR-managed SHOPPER_CREDENTIAL_NAME_INCOMPLETE review-only identities",
+    "reviewOnlyCardinalityForFrozenHrRevision": 1,
+    "expectedAuthEligiblePopulation": 378,
+    "reviewOnlyMustRemainInHrAssignmentIntegrity": true,
+    "reviewOnlyAuthenticationRequired": false,
+    "reviewOnlyHumanNameMayBeInvented": false,
+    "historicalVisitRowsMayBeRewritten": false,
+    "canonicalVisitAuthorityGate": "VRM217_219 root diagnostic",
+    "browserProof": "every auth-eligible shopper authenticates and passes self-scope plus required route contract",
+    "browserConcurrency": 6,
+    "coverageReduced": false
+  },
+  "protectedInvariants": {
+    "productChanged": false,
+    "rebuild": false,
+    "deploy": false,
+    "hrWrites": 0,
+    "externalWrites": 0,
+    "production": false
+  },
+  "nextAction": "Execute VRM215 v2 on unchanged Run1112 artifact, then run same-artifact multimodule sweep if PASS."
+}

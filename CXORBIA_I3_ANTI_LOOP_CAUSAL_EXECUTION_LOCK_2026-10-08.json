@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "cxorbia.i3.anti-loop-causal-execution-lock.v1",
+  "dateLocal": "2026-10-08",
+  "state": "FROZEN",
+  "iteration": "I3",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "observedParentHead": "c5411ecb6496b2d5a91344793df241ce9b9c3da4",
+  "observedParentTree": "8448986855187375f3c5480cfd2343e0bd1eda6a",
+  "productSourceSha": "4050e8afc952183131d48600b84260024ed78ac5",
+  "currentDevRun": 1421,
+  "lastFailedHumanGateRun": 1423,
+  "documentPath": "CXORBIA_I3_ANTI_LOOP_CAUSAL_EXECUTION_LOCK_2026-10-08.md",
+  "documentSha256": "96a1bc1c12ecd61ca2ca65bd77789ec9b59935f21b1f2015396b9d4678c5b387",
+  "evidenceAuthority": {
+    "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V350_2026-10-08.json",
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V48.json",
+    "humanOct06Count": 45,
+    "humanOct08Count": 18,
+    "vrmCount": 272,
+    "modules": 21
+  },
+  "mechanicalRootCauses": [
+    "CONTROL_AUTHORITY_DRIFT",
+    "HOLD_PASS_WEAKER_THAN_MODULE_INTEGRITY",
+    "HISTORICAL_WORKFLOW_POINTER",
+    "EFFECTIVE_OWNER_SHADOWING"
+  ],
+  "lastRunP0s": {
+    "gtSixIdNameMismatches": "ROOT_OWNER_NOT_PROVEN",
+    "hnLogin": "CONTROL_VS_PRODUCT_NOT_PROVEN"
+  },
+  "steps": [
+    "E1_LOCK",
+    "E2_SIX_IDS_AND_HN_EXACT_OWNER",
+    "E3_GUARD_AND_AUTH_CONTROL",
+    "E4_EFFECTIVE_FRONTEND_AND_HUMAN_FINDINGS",
+    "E5_DEV_SAME_ARTIFACT_E2E_GATE20_GATE21",
+    "E6_I4_ONLY_AFTER_GO_AND_APPROVAL"
+  ],
+  "changes": {
+    "product": 0,
+    "hr": 0,
+    "firestore": 0,
+    "auth": 0,
+    "storage": 0,
+    "bank": 0,
+    "production": 0
+  },
+  "noProduction": true,
+  "authorizationRequiredNow": false,
+  "authorizationRequiredForI4": true
+}

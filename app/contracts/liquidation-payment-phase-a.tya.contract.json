@@ -1,0 +1,110 @@
+{
+  "contract": "liquidation-payment-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "paymentProviderAllowed": false,
+  "hrWriteAllowed": false,
+  "purpose": "Define Phase A liquidation and payment readiness for shopper honorarium, reimbursement, June cutoff, historical pending payments and multi-project operation without executing real payments.",
+  "collections": {
+    "liquidations": "tenants/{tenantId}/projects/{projectId}/liquidations/{liquidationId}",
+    "paymentBatches": "tenants/{tenantId}/projects/{projectId}/paymentBatches/{batchId}",
+    "paymentItems": "tenants/{tenantId}/projects/{projectId}/paymentItems/{paymentItemId}",
+    "shopperBenefits": "tenants/{tenantId}/shoppers/{shopperId}/benefits/{benefitId}",
+    "financialAuditEvents": "tenants/{tenantId}/financialAuditEvents/{eventId}"
+  },
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "visitId",
+    "hrRowId",
+    "assignmentId",
+    "shopperId",
+    "liquidationId",
+    "paymentItemId",
+    "batchId",
+    "country",
+    "currency",
+    "periodId",
+    "quincena",
+    "honorariumAmount",
+    "reimbursementAmount",
+    "liquidationStatus",
+    "paymentStatus",
+    "submitidoStatus",
+    "reviewStatus"
+  ],
+  "liquidationStatuses": [
+    "not_eligible",
+    "candidate_pending_review",
+    "candidate_pending_submitido",
+    "candidate_ready",
+    "approved_for_payment",
+    "held_for_conflict",
+    "held_for_missing_data",
+    "cancelled",
+    "paid",
+    "reprogrammed_payment"
+  ],
+  "paymentStatuses": [
+    "not_scheduled",
+    "scheduled",
+    "pending_payment",
+    "paid",
+    "payment_reprogrammed",
+    "payment_failed_future",
+    "manual_review_required",
+    "cancelled"
+  ],
+  "amountSources": [
+    "hr_mapped_dynamic",
+    "project_config_by_country",
+    "project_config_default",
+    "manual_admin_override",
+    "historical_import_preview"
+  ],
+  "eligibilityRules": [
+    "Visit performed alone does not make liquidation eligible.",
+    "Questionnaire completed alone does not make liquidation eligible.",
+    "Submitido/review policy must be satisfied before candidate_ready unless explicit admin exception exists.",
+    "June visits already executed should be handled as payment/liquidation pending, not as visits pending execution.",
+    "Historical pending payments must remain importable into payment batches without duplicating new visits.",
+    "Multi-project and multi-country amounts must use project/country/currency configuration or HR mapped values.",
+    "Honorarium and reimbursement are separate amounts. Reimbursement may be zero/not applicable."
+  ],
+  "batchRules": [
+    "A payment batch can include items from same cutoff and may allow later additions if not closed.",
+    "Items from previous months can be included if pending.",
+    "Future-month items must remain separate unless admin intentionally adds them according to policy.",
+    "Batch must preserve createdBy, approvedBy, paidBy future/manual, dates and auditTrail.",
+    "No real money movement is executed by this contract."
+  ],
+  "shopperVisibleRules": [
+    "Shopper may see honorarium, reimbursement, expected/payment status and relevant history.",
+    "Shopper must not see internal audit notes, bank data or sensitive admin comments.",
+    "Mis beneficios should separate earned, pending, scheduled and paid amounts."
+  ],
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "shopper", "consultant_partner"],
+    "manualsToUpdate": ["Liquidations", "Payments", "Shopper benefits", "Payment batches", "June cutoff"],
+    "coursesToUpdate": ["Admin liquidations", "Shopper benefits and payments", "Ops payment follow-up"],
+    "newLessons": [
+      "Difference between performed, questionnaire completed, submitido, liquidation and payment",
+      "How honorarium and reimbursement work",
+      "How June executed visits become payment pending",
+      "How payment batches work",
+      "What shoppers can see in Mis beneficios"
+    ]
+  },
+  "hardStops": [
+    "Do not execute real payments from this contract.",
+    "Do not write Firestore from this contract.",
+    "Do not write HR from this contract.",
+    "Do not expose bank data in shopper-visible views.",
+    "Do not mark paid without explicit future/manual payment confirmation.",
+    "Do not treat questionnaire completed as payable without submitido/review policy."
+  ]
+}

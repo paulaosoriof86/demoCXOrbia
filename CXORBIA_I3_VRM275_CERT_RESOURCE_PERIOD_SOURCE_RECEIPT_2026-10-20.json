@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm275.cert-resource-period-source-repair.20261020.v1",
+  "observedLocalDate": "2026-10-20",
+  "iteration": "I3",
+  "state": "HOLD",
+  "findingId": "VRM-275",
+  "classification": "FUNCTIONAL_DEFECT",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedParentSha": "1ef58321f6ca54c2381177fd52ba0e657a96b386",
+  "previousSourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
+  "sourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+  "sourceTree": "15d6b9b376069b27317e03a91b96cb74cd3c9877",
+  "devRunServed": 1809,
+  "devServedSourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
+  "workReadback": {
+    "records": "tenants/tya/commandReceipts",
+    "hrReceiptQueryCount": 0,
+    "scopeLockInCommandReceipts": "NOT_FOUND",
+    "operationActionLocksHrScope": "NOT_FOUND",
+    "externalHrRevision": "4aa7dc7ab2fee95e1c605faed5bb43cf5d29abe089e31617416531da01b12dd5",
+    "threeVisitsPersistedRevision": "5d369d8955ff899095aa113d094dccea5a1c94e8849b455906cd4f154bf28e48",
+    "visits": [
+      "OCTUBRE 26!5",
+      "OCTUBRE 26!19",
+      "OCTUBRE 26!20"
+    ],
+    "shopperThreeVisitReport": "PASS_BRANCH_DATE",
+    "certResources": {
+      "projectId": "cinepolis",
+      "total": 6,
+      "certificationBanks": 4,
+      "octoberPublishedId": "certbank-cinepolis-cinepolis-2026-10",
+      "octoberPublishedVersion": 2,
+      "octoberPublishedQuestions": 8,
+      "octoberVisibleRoles": [
+        "super",
+        "admin",
+        "ops",
+        "coordinador",
+        "shopper"
+      ]
+    },
+    "shopperCertUi": "NOT_AVAILABLE",
+    "adminCertUi": "NOT_VERIFIED"
+  },
+  "ownerRootCause": "backend-resources.js only listened for HR ready via CX.bus, whereas protected HR authority sends DOM CustomEvent; cache was populated under old September period. Router did not re-render on resource-ready. Exact source isolated RED and patched GREEN prove this path, not a live authenticated fix.",
+  "changedProductOwners": [
+    {
+      "path": "app/core/backend-resources.js",
+      "blob": "9c9303b03cc06f40b59179ff6d8696f91d24f157"
+    },
+    {
+      "path": "app/core/router.js",
+      "blob": "8be484f8281a706fde86fbd5f9edc9804a18b994"
+    }
+  ],
+  "qa": {
+    "path": "tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs",
+    "blob": "820846437cbcb09350d3a882ffc22e5281710ded",
+    "scenarios": [
+      "live HR Sep-to-Oct event reload",
+      "discard stale late September result",
+      "cross-project isolation",
+      "failed provider read surfaces blocked"
+    ],
+    "sourceExactRed": true,
+    "patchedIsolatedGreen": true,
+    "canonicalCI": "PENDING",
+    "sameSourceDevE2E": "PENDING"
+  },
+  "matrix": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261020-V158.json",
+    "blob": "355d04da873481b6f219aa058423e47b8530587e",
+    "domains": 21,
+    "sourceFiles": 150
+  },
+  "ledger": {
+    "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V486_2026-10-20.json",
+    "blob": "4cfe4e96c64a33f41d01b093f6c184d087857cfc",
+    "findings": 275,
+    "previousFindings": 274
+  },
+  "boundaries": {
+    "githubProductSourceCommittedObject": true,
+    "githubControlRefPromotion": "PENDING",
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "bankWrites": 0,
+    "deploys": 0,
+    "production": false
+  },
+  "nextExactAction": "Canonical I3 source guard CI on VRM-275 source + indexed 21-domain matrix, then one serial DEV-only source materialization and Admin/Shopper live bank October readback. In parallel HR commandReceipts no hr-* observed; control reconciliation requires authorized staff, same HR revision, explicit scoped command, provider ACK and receipt readback; no uncontrolled writes. I3 HOLD / I4 BLOCKED."
+}

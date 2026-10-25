@@ -1,0 +1,47 @@
+name: CXOrbia Phase A Period History Integrity
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'app/core/tya-phase-a-period-history-integrity.js'
+      - 'backend/contracts/phase-a-period-history-integrity-v1.json'
+      - 'backend/config/phase-a-period-history-integrity-tya.source-safe.json'
+      - 'backend/config/phase-a-period-history-integrity-snapshot.source-safe.json'
+      - 'tools/release/tya-phase-a-period-history-integrity-validate.mjs'
+      - '.github/workflows/cxorbia-phase-a-period-history-integrity.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'app/core/tya-phase-a-period-history-integrity.js'
+      - 'backend/contracts/phase-a-period-history-integrity-v1.json'
+      - 'backend/config/phase-a-period-history-integrity-tya.source-safe.json'
+      - 'backend/config/phase-a-period-history-integrity-snapshot.source-safe.json'
+      - 'tools/release/tya-phase-a-period-history-integrity-validate.mjs'
+      - '.github/workflows/cxorbia-phase-a-period-history-integrity.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate period and historical separation
+        run: node tools/release/tya-phase-a-period-history-integrity-validate.mjs --out .tmp/period-history-integrity
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-a-period-history-integrity-report
+          path: .tmp/period-history-integrity
+          if-no-files-found: error
+          retention-days: 14

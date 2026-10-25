@@ -1,0 +1,115 @@
+{
+  "contract": "synthetic-input-pack-preview-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "storageWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "emailSendAllowed": false,
+  "whatsappSendAllowed": false,
+  "geminiAllowed": false,
+  "importRealDataAllowed": false,
+  "deployAllowed": false,
+  "mergeAllowed": false,
+  "purpose": "Define a safe synthetic input pack so local preview validators can run with mock or sanitized fixtures only, without real HR, payment, CRM, document, message or provider sources.",
+  "sourceSafety": {
+    "requiresSyntheticOrSanitizedInput": true,
+    "forbidsRawSensitiveData": true,
+    "requiredPackMetadata": [
+      "sourceSafe=true",
+      "containsRawSensitiveData=false",
+      "isSyntheticOrSanitized=true",
+      "realDataProhibited=true"
+    ],
+    "realOperationalDataAllowed": false,
+    "realContactDataAllowed": false,
+    "realPaymentDataAllowed": false,
+    "realDocumentContentAllowed": false
+  },
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "syntheticPackId",
+    "syntheticPackVersion",
+    "fixtureId",
+    "fixtureType",
+    "fixturePath",
+    "validatorId",
+    "validatorScript",
+    "validatorInputPath",
+    "expectedOutcome",
+    "packStatus",
+    "runPlanId",
+    "createdByRef",
+    "reviewedByRef",
+    "createdAt",
+    "updatedAt"
+  ],
+  "fixtureTypes": [
+    "assignment_sync_conflict_preview",
+    "visit_lifecycle_reservation_preview",
+    "postulation_dynamic_form_preview",
+    "notification_outbox_preview",
+    "email_user_mailbox_preview",
+    "crm_external_folder_refs_preview",
+    "shopper_communication_history_preview",
+    "shopper_ranking_scoring_preview",
+    "project_tenant_rule_versioning_preview",
+    "rule_change_changelog_notification_preview",
+    "release_readiness_snapshot_preview",
+    "liquidation_payment_preview"
+  ],
+  "packStatuses": [
+    "draft_preview",
+    "ready_for_local_validation",
+    "manual_review_required",
+    "blocked_sensitive_payload",
+    "blocked_missing_fixture",
+    "blocked_real_data_detected",
+    "archived_preview"
+  ],
+  "previewInputShape": {
+    "sourceSafe": true,
+    "containsRawSensitiveData": false,
+    "isSyntheticOrSanitized": true,
+    "realDataProhibited": true,
+    "syntheticPack": {},
+    "fixtures": [],
+    "runPlan": []
+  },
+  "requiredPackFields": ["tenantId", "syntheticPackId", "syntheticPackVersion", "packStatus", "createdByRef"],
+  "requiredFixtureFields": ["tenantId", "syntheticPackId", "fixtureId", "fixtureType", "fixturePath", "sourceSafe", "containsRawSensitiveData", "isSyntheticOrSanitized"],
+  "requiredRunPlanFields": ["tenantId", "syntheticPackId", "runPlanId", "validatorId", "validatorScript", "validatorInputPath", "expectedOutcome"],
+  "rules": [
+    "Synthetic input pack is not an importer and cannot write data.",
+    "Every fixture must be synthetic or sanitized and source-safe.",
+    "Fixture paths must be local relative paths under allowed preview fixture folders.",
+    "Do not include real HR rows, real shopper contact data, bank data, document contents, message bodies or private links.",
+    "Runner may print commands and safe summaries, but must not call providers or production services.",
+    "Missing fixtures block execution for that validator only; they do not block continued backend documentation work.",
+    "Expected outcomes must be preview outcomes, not production success states."
+  ],
+  "previewOutcomes": [
+    "synthetic_pack_preview_ready",
+    "synthetic_pack_ready_for_local_validation",
+    "synthetic_pack_blocked_sensitive_payload",
+    "synthetic_pack_blocked_missing_fixture",
+    "synthetic_pack_blocked_real_data_detected",
+    "synthetic_pack_manual_review_required"
+  ],
+  "claudePrototypeImpact": [
+    "Prototype should not expose synthetic fixtures as real data.",
+    "Readiness UI may show missing input vs validator ready, but must not say real import executed.",
+    "Academia must explain synthetic fixtures, preview validation and why synthetic input differs from real migration."
+  ],
+  "hardStops": [
+    "Do not include real data in synthetic pack.",
+    "Do not run production import, deploy, merge or provider calls from this runner.",
+    "Do not treat synthetic validation as proof that real data is clean.",
+    "Do not commit raw source exports to repo."
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "sourceSafe": true,
+  "containsRawSensitiveData": false,
+  "isSyntheticOrSanitized": true,
+  "snapshot": {
+    "tenantId": "tya",
+    "snapshotId": "release-snapshot-preview-001",
+    "snapshotPeriodId": "2026-07-phase-a-preview",
+    "baselineRef": "latest-audited-baseline-continuity-preview",
+    "prototypeAuditRef": "AUDITORIA-REVALIDACION-CANDIDATA-ACTUAL-CLAUDE-20260705",
+    "backendBranchRef": "docs-tya-v6-v71-audit",
+    "pullRequestRef": "PR-7-draft-open",
+    "createdByRef": "user-ref-paula-preview",
+    "status": "ready_for_review"
+  },
+  "readinessItems": [
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "snapshotId": "release-snapshot-preview-001",
+      "readinessArea": "prototype_audit",
+      "readinessStatus": "blocked_prototype_pending",
+      "gateStatus": "manual_review_required",
+      "validatorId": "auditoria-revalidacion-candidata-actual-claude-20260705",
+      "blockingReason": "P0 visible copy still promises sent or synchronized states while gates are off"
+    },
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "snapshotId": "release-snapshot-preview-001",
+      "readinessArea": "assignment_sync",
+      "readinessStatus": "preview_ready",
+      "gateStatus": "off_verified",
+      "validatorId": "tya-assignment-sync-conflict-preview-validator"
+    },
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "snapshotId": "release-snapshot-preview-001",
+      "readinessArea": "notification_outbox",
+      "readinessStatus": "preview_ready",
+      "gateStatus": "off_verified",
+      "validatorId": "tya-notification-outbox-preview-validator"
+    },
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "snapshotId": "release-snapshot-preview-001",
+      "readinessArea": "release_governance",
+      "readinessStatus": "blocked_real_gate_off",
+      "gateStatus": "off_required",
+      "validatorId": "tya-release-readiness-snapshot-preview-validator",
+      "blockingReason": "Production, deploy, merge, import and provider gates remain off by rule"
+    }
+  ]
+}

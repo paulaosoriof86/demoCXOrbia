@@ -1,0 +1,71 @@
+{
+  "metodologia": "Runtime real: CX.app.selectRole(role) real + CX.data.getShopper() real para resolver país de shopper + CX.data.payVisits() real (no mock) para los 2 P0. Navegación real (CX.router.nav) por los 48 módulos, para Admin/Cliente/Shopper. Captura window.onerror durante toda la ejecución.",
+  "fecha": "2026-07-12",
+  "build": "V110",
+  "moduleCount": 48,
+  "roles": {
+    "admin": { "navErrorsCount": 0, "navErrors": [], "newConsoleErrors": [] },
+    "cliente": { "navErrorsCount": 0, "navErrors": [], "newConsoleErrors": [] },
+    "shopper": { "navErrorsCount": 0, "navErrors": [], "newConsoleErrors": [] }
+  },
+  "pruebas_p0_1_academia_pais_real": {
+    "shopper_gt_ve_gt_no_hn": {
+      "desc": "Shopper real (CX.data.getShopper) con pais:'GT' -> ctx().paises=['GT']. Curso scope.pais:['GT'] visible, curso scope.pais:['HN'] NO visible.",
+      "resultado": "PASS",
+      "evidencia": {"gtSeesGT": true, "gtSeesHN": false}
+    },
+    "shopper_hn_ve_hn_no_gt": {
+      "desc": "Shopper real con pais:'HN' -> ctx().paises=['HN']. Simétrico al caso GT.",
+      "resultado": "PASS",
+      "evidencia": {"hnSeesHN": true, "hnSeesGT": false}
+    },
+    "shopper_sin_pais_no_ve_restringido": {
+      "desc": "shopperId no resoluble -> ctx().paises=[] (fail-closed). Curso restringido por país no se confirma visible.",
+      "resultado": "PASS",
+      "evidencia": {"noPaisSeesGT": false}
+    },
+    "contenido_global_sigue_visible": {
+      "desc": "Curso scope:{} (sin eje país) es visible tanto para shopper sin país resoluble como para shopper GT.",
+      "resultado": "PASS",
+      "evidencia": {"noPaisSeesGlobal": true, "gtSeesGlobal": true}
+    },
+    "no_usa_project_countries_shopper": {
+      "desc": "Revisado CX.acadData.ctx(): para rol==='shopper' ya NO existe rama que caiga a project.countries; solo shopper.pais real o [] fail-closed.",
+      "resultado": "PASS"
+    },
+    "admin_ve_catalogo_completo": {
+      "desc": "canManageTop (admin/super con permiso de gestión) sigue usando 'courses' sin filtrar por ctx() -- mecanismo de V109 sin cambios, no reabierto.",
+      "resultado": "PASS"
+    }
+  },
+  "pruebas_p0_2_finanzas_validacion_previa": {
+    "batch_mixto_10_ids": {
+      "desc": "payVisits() con 1 sin país, 1 sin moneda, 1 sin ambos, 1 monto NaN, 1 monto Infinity, 1 monto negativo, 1 id inexistente, 1 id null, 1 GT/GTQ válida, 1 HN/HNL válida -- en UNA sola llamada.",
+      "resultado": "PASS",
+      "evidencia": {
+        "pagadas": 2,
+        "reviewRequiredCount": 8,
+        "estadosInvalidos": "los 6 registros con datos (sin país/moneda/ambos/NaN/Infinity/negativo) permanecen en 'cuestionario', sin loteId",
+        "movDelta": 2
+      }
+    },
+    "nan_no_se_lava_a_cero": {
+      "desc": "Bug encontrado y corregido en esta misma ronda: (v.honorario||0) evalúa NaN||0 -> 0 (finito, colaba como válido). Corregido validando Number.isFinite por componente ANTES de sumar. Re-probado tras el fix: NaN e Infinity SIEMPRE van a reviewRequired.",
+      "resultado": "PASS"
+    },
+    "determinismo_preservado": {
+      "desc": "Mismo par GT/HN válido, pagado dos veces tras resetear estado -> mismo loteId en ambas corridas reales.",
+      "resultado": "PASS"
+    },
+    "gt_hn_no_mezclados": {
+      "desc": "En el mismo batch mixto, la visita GT/GTQ válida y la HN/HNL válida reciben loteId distintos.",
+      "resultado": "PASS",
+      "evidencia": {"sameLoteMixed": false}
+    },
+    "ui_no_presenta_revision_como_pagado": {
+      "desc": "modules/finanzas.js: ambos sitios que llaman payVisits() ahora muestran un segmento explícito de reviewRequired con tono warn cuando aplica, nunca mezclado con 'pagadas'.",
+      "resultado": "PASS"
+    }
+  },
+  "limitacion_honesta": "docs/verify-manifest.mjs está escrito para Node y este entorno no tiene terminal/runtime Node para invocarlo literalmente. Se ejecutó la misma lógica SHA-256+aggregate directamente sobre los archivos reales del manifest -- 0 diffs, aggregate recalculado idéntico al declarado. La ejecución literal vía Node no se hizo en esta ronda."
+}

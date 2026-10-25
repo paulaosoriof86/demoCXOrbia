@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
+import {getAuth} from 'firebase-admin/auth';
+import {getFirestore} from 'firebase-admin/firestore';
+import ShopperCredentialRule from '../../app/core/shopper-credential-rule.js';
+const PROJECT=String(process.env.PROJECT||'cxorbia-backend-dev').trim(),TENANT=String(process.env.TENANT_ID||'tya').trim(),PROGRAM=String(process.env.PROJECT_ID||'cinepolis').trim(),TARGET='TYA_GT_0C0BA8856E',OUT=String(process.env.VRM241_OUT||'.tmp/i3-vrm241-login-collision').trim();
+const str=v=>String(v??'').trim(),norm=v=>str(v).toLowerCase(),sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
+const internalEmail=login=>sha(TENANT+'\0shopper\0'+norm(login)).slice(0,48)+'@auth.cxorbia.invalid',collision=(base,n)=>base+'.'+sha(TENANT+'\0'+TARGET).slice(0,n);
+fs.mkdirSync(OUT,{recursive:true});const result={schemaVersion:'cxorbia.i3.vrm241.login-collision-diagnostic.v1',decision:'HOLD',targetShopperId:TARGET,baseLogin:null,baseHolder:null,suffixes:[],selectedLogin:null,writes:0,production:false};const save=()=>fs.writeFileSync(OUT+'/result.json',JSON.stringify(result,null,2)+'\n','utf8');
+const fail=(classification,code,extra={})=>{Object.assign(result,{decision:'FAIL_VRM241_LOGIN_COLLISION_DIAGNOSTIC',classification,code,...extra});save();console.log(JSON.stringify(result,null,2));process.exit(2);};const need=(ok,c,k,e={})=>{if(!ok)fail(c,k,e);};
+if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(TENANT),users=tenant.collection('users'),profiles=tenant.collection('shoppers');
+const profileSnap=await profiles.doc(TARGET).get();need(profileSnap.exists,'MAPPING_FAILURE','VRM241_TARGET_PROFILE_MISSING');const profile=profileSnap.data()||{},rule=ShopperCredentialRule.shopperCredentialRule(profile);need(rule.ok===true,'MAPPING_FAILURE','VRM241_TARGET_CREDENTIAL_RULE',{reason:rule.reason});result.baseLogin=rule.login;
+const members=(await users.where('shopperId','==',TARGET).get()).docs.map(d=>({id:d.id,...(d.data()||{})})).filter(m=>m.active===true&&norm(m.role)==='shopper'&&norm(m.authNamespace)==='shopper');need(members.length===1,'MAPPING_FAILURE','VRM241_TARGET_MEMBER_CARDINALITY',{count:members.length});const targetUid=members[0].id,targetAuth=await auth.getUser(targetUid);
+async function byLogin(login){try{return await auth.getUserByEmail(internalEmail(login));}catch(e){if(str(e?.code)==='auth/user-not-found')return null;throw e;}}
+const base=await byLogin(rule.login);need(base&&base.uid!==targetUid,'AUTH_FAILURE','VRM241_BASE_COLLISION_NOT_REPRODUCED');
+const bc=base.customClaims||{},baseMemberSnap=await users.doc(base.uid).get(),baseMember=baseMemberSnap.exists?(baseMemberSnap.data()||{}):null;baseMember&&await profiles.doc(str(baseMember.shopperId)).get();
+const baseTrusted=!!baseMember&&baseMember.active===true&&str(baseMember.tenantId)===TENANT&&norm(baseMember.role)==='shopper'&&norm(baseMember.authNamespace)==='shopper'&&str(bc.tenantId)===TENANT&&norm(bc.role)==='shopper'&&norm(bc.authNamespace)==='shopper'&&str(bc.shopperId)===str(baseMember.shopperId)&&base.disabled!==true;
+result.baseHolder={uidFingerprint:sha(base.uid).slice(0,20),shopperId:str(bc.shopperId||baseMember?.shopperId),trustedExactShopperPrincipal:baseTrusted,disabled:base.disabled===true,claims:{tenantId:str(bc.tenantId),role:norm(bc.role),authNamespace:norm(bc.authNamespace),shopperId:str(bc.shopperId),projectIds:Array.isArray(bc.projectIds)?bc.projectIds.map(str):[]},membership:baseMember?{active:baseMember.active===true,tenantId:str(baseMember.tenantId),role:norm(baseMember.role),authNamespace:norm(baseMember.authNamespace),shopperId:str(baseMember.shopperId)}:null};
+need(baseTrusted,'AUTH_FAILURE','VRM241_BASE_HOLDER_UNTRUSTED',{baseHolder:result.baseHolder});
+for(const n of [4,6,8]){const login=collision(rule.login,n),u=await byLogin(login);const c=u?.customClaims||{};result.suffixes.push({length:n,login,occupied:!!u,uidFingerprint:u?sha(u.uid).slice(0,20):null,shopperId:u?str(c.shopperId):null,targetOwned:u?.uid===targetUid});}
+const selected=result.suffixes.find(x=>!x.occupied||x.targetOwned);need(selected,'AUTH_FAILURE','VRM241_NO_APPROVED_SUFFIX_AVAILABLE',{suffixes:result.suffixes});result.selectedLogin=selected.login;
+const ta=targetAuth.customClaims||{};result.target={uidFingerprint:sha(targetUid).slice(0,20),currentEmailFingerprint:sha(norm(targetAuth.email)).slice(0,20),currentVisibleLogin:norm(members[0].visibleLogin||profile.visibleLogin||profile.username||profile.user),claims:{tenantId:str(ta.tenantId),role:norm(ta.role),authNamespace:norm(ta.authNamespace),shopperId:str(ta.shopperId),projectIds:Array.isArray(ta.projectIds)?ta.projectIds.map(str):[]}};
+result.decision='PASS_VRM241_LOGIN_COLLISION_DIAGNOSTIC';save();console.log(JSON.stringify(result,null,2));

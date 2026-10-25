@@ -1,0 +1,21 @@
+{
+  "state": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+  "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+  "sourceSha": "9dee84dd31a0eff2cfa2de9ed0313af75e02769a",
+  "sourceTree": "768fb9ccc1f3ff49ff6bd94df092ea0fb772da8c",
+  "runId": 37620528432,
+  "runNumber": 1307,
+  "jobId": 112789478335,
+  "artifactId": 11481328350,
+  "artifactDigest": "sha256:a6ab5c8f5a48add3dc1a71a9fcb749d6210d63181356c9653ef42d0aee3c1769",
+  "runtimeRevision": "cxorbia-live-hr-dev-00273-6p9",
+  "runtimeDigest": "sha256:0d4ee89f75e759fa96e0f6e2a706aac3c7b73b7162e93da30653b47a0ee7bfc1",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/2c8d2a20dd7a3f4b",
+  "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791375830285000",
+  "hrRevision": "44c8a38a45800606ddb7db5c8ab902324bd7daf588fe8653165fd5e1b7e1a285",
+  "builds": 0,
+  "runtimeDeploys": 0,
+  "hostingDeploys": 1,
+  "hrWrites": 0,
+  "production": false
+}

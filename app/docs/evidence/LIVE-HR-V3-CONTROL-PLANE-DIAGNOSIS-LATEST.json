@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "cxorbia.live-hr-v3-control-plane-diagnosis.v1",
+  "generatedAt": "2026-08-06T11:40:00-06:00",
+  "decision": "STOP_RETRY_PROVIDER_BOUNDARY_NOT_PROVEN_REACHED",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "requestCommit": "d62dbae9b10b0650c2940f4b2bf7d456cb34fc83",
+  "sourceCommit": "18ea2e6ab9b15480c851c7ba34cae8e8fbcae026",
+  "authorizationId": "chat-20260806-live-hr-authority-current-period-v3-02",
+  "diagnosticScope": "GITHUB_ACTIONS_CONTROL_PLANE_READ_ONLY_NO_TRIGGER_NO_PROVIDER",
+  "requestProof": {
+    "exactCommitFetched": true,
+    "exactWatchedPathChanged": true,
+    "watchedPath": ".github/cxorbia-firebase-requests/live-hr-current-reconcile.json",
+    "expectedEvent": "push",
+    "expectedBranch": "docs-tya-v6-v71-audit",
+    "commitCreatedAt": "2026-08-06T17:29:52Z"
+  },
+  "workflowOrderProof": {
+    "firstCheckpoint": "WORKFLOW_STARTED_PROVIDER_READS_0",
+    "firstCheckpointOccursBeforeRequestValidation": true,
+    "providerBoundaryCheckpoint": "PROVIDER_READ_BOUNDARY_ENTERED_MAX1",
+    "providerBoundaryOccursBeforeProviderAccess": true
+  },
+  "observations": {
+    "commitStatusesObserved": 0,
+    "firstCheckpointObserved": false,
+    "providerBoundaryCheckpointObserved": false,
+    "providerSequenceCheckpointObserved": false,
+    "finalCheckpointObserved": false,
+    "evidenceCommitObserved": false,
+    "workflowGeneratedBranchAdvanceObserved": false,
+    "prFilteredWorkflowRunsObserved": 0,
+    "prFilteredRunListingAuthoritativeForPush": false,
+    "generalPushRunEndpointAvailableInConnector": false,
+    "checkSuiteEndpointAvailableInConnector": false,
+    "runIdRecovered": false,
+    "jobIdRecovered": false,
+    "artifactIdRecovered": false
+  },
+  "controlSample": {
+    "commit": "790d4d514b8e7b4630063ebf2aebba5997e3ec26",
+    "knownStatusRecovered": true,
+    "context": "cxorbia/corte6-credential-continuity-hosting/PREPARED_C6_SINGLE_LOGIN_HOSTING_NO_EXECUTE",
+    "meaning": "commit status retrieval is operational for statuses that exist"
+  },
+  "conclusion": {
+    "workflowRunLocated": false,
+    "checkSuiteLocated": false,
+    "jobLocated": false,
+    "providerBoundaryProvenReached": false,
+    "providerBoundaryObservableEvidence": "NONE",
+    "providerReadConsumption": "UNKNOWN_NO_CHECKPOINT_EVIDENCE",
+    "diagnosisCertainty": "INCONCLUSIVE_RUN_EXISTENCE__REPRODUCIBLE_NO_PROVIDER_BOUNDARY_EVIDENCE",
+    "retryExecuted": false,
+    "stopRetry": true
+  },
+  "prohibitedInference": [
+    "do_not_claim_workflow_run_absent",
+    "do_not_claim_provider_reads_zero",
+    "do_not_claim_provider_read_consumed",
+    "do_not_claim_2026_08_pass_or_fail",
+    "do_not_emit_second_trigger"
+  ],
+  "safety": {
+    "requestModified": false,
+    "newTrigger": 0,
+    "providerReadsExecutedByDiagnostic": 0,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "merge": false,
+    "production": false
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "cxorbia.c6.live-hr-domain-readonly-audit.v7",
+  "generatedAt": "2026-08-02T04:08:37.864Z",
+  "decision": "PASS_C6_LIVE_HR_DYNAMIC_CANONICAL_STATE",
+  "engineVersion": "c6-canonical-domain-composer-v2+actionable-state-v2",
+  "staticGates": {
+    "unified": "PASS_C6_UNIFIED_CUMULATIVE_RUNTIME_STATIC_GATE_WITH_DOCUMENTED_FRONTEND_WARNINGS",
+    "domain": "PASS_C6_CANONICAL_DOMAIN_CONSISTENCY",
+    "finance": "PASS_C6_CANONICAL_FINANCE_LIQUIDATION_COMPLETENESS",
+    "shopperPortal": "PASS_C6_CANONICAL_SHOPPER_PORTAL_CONTRACT",
+    "reservations": "PASS_C6_CANONICAL_RESERVATIONS_SOURCE_GUARD"
+  },
+  "source": {
+    "runtimeRead": true,
+    "sourceSafe": true,
+    "revision": "8aa9dece269b987d83f2a598020ff5efb3ed03eddb1f836e2506a3abf4b5dffb",
+    "periods": 14,
+    "visits": 616,
+    "shoppers": 208,
+    "firstPeriod": "2025-06",
+    "latestPeriod": "2026-07"
+  },
+  "dynamicContract": {
+    "frozenOperationalCounts": false,
+    "allDetectedPeriodsRequired": true,
+    "allRevisionVisitsRequired": true,
+    "completeUniqueVisitKeysRequired": true,
+    "everyVisitBelongsToDetectedPeriod": true,
+    "canonicalStateOrderingRequired": true
+  },
+  "observedLatestPeriod": {
+    "periodKey": "2026-07",
+    "total": 44,
+    "available": 0,
+    "assigned": 44,
+    "scheduled": 44,
+    "realized": 43,
+    "questionnaireCompleted": 41,
+    "submitted": 37,
+    "liquidationCandidates": 37,
+    "liquidationConfirmed": 0,
+    "paymentConfirmed": 0,
+    "outOfRange": 1,
+    "outOfRangeEvidence": 44,
+    "reviewRequired": 0,
+    "byCountry": {
+      "GT": 34,
+      "HN": 10
+    }
+  },
+  "assertions": {
+    "runtimeRead": true,
+    "sourceSafe": true,
+    "periodsNonEmpty": true,
+    "visitsNonEmpty": true,
+    "periodKeysComplete": true,
+    "periodKeysUnique": true,
+    "visitKeysComplete": true,
+    "visitKeysUnique": true,
+    "everyVisitBelongsToDetectedPeriod": true,
+    "shopperIdsUnique": true,
+    "summariesCoverDetectedPeriods": true,
+    "latestPeriodPresent": true
+  },
+  "periodInvariantFailures": [],
+  "failedAssertions": [],
+  "failedGates": [],
+  "safety": {
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesDeploys": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "merge": false,
+    "production": false
+  }
+}

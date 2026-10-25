@@ -1,0 +1,223 @@
+{
+  "schemaVersion": "cxorbia.c6.shopper-deterministic-suffix.v2.2",
+  "status": "tenant_authorized_readonly_planning_contract",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "firebaseProjectId": "cxorbia-backend-dev",
+  "visibleLoginPolicy": {
+    "default": "nombre.apellido",
+    "exception": "DETERMINISTIC_TECHNICAL_SUFFIX",
+    "scope": "distinct_active_people_sharing_same_visible_login_only",
+    "preserveUnsuffixedWhen": "one_unique_technical_holder_exists",
+    "suffixDerivation": "sha256(tenantId + NUL + shopperId)",
+    "suffixLengths": [
+      4,
+      6,
+      8
+    ],
+    "suffixContainsPii": false,
+    "separator": "."
+  },
+  "technicalSurnameCompletion": {
+    "allowedSources": [
+      "explicit profile surname",
+      "explicit linked technical surname",
+      "exact legacy credential login",
+      "multi-source full-name consensus"
+    ],
+    "singlePositionOnlyInferenceAllowed": false,
+    "conflictPolicy": "HOLD",
+    "diagnosticContract": {
+      "preConsensusIncompleteActiveProfiles": "active incomplete before consensus",
+      "completedByConsensus": "completed only by multi-source consensus",
+      "remainingIncompleteActiveProfiles": "active incomplete after all allowed methods",
+      "metricIdentity": "preConsensusIncompleteActiveProfiles = completedByConsensus + remainingIncompleteActiveProfiles",
+      "holdVector": {
+        "first": [
+          "complete",
+          "candidateCount",
+          "basisCount"
+        ],
+        "surname": [
+          "complete",
+          "explicitCandidateCount",
+          "technicalLoginCandidateCount",
+          "consensusCandidateCount",
+          "basisCount",
+          "conflict"
+        ],
+        "passwordSeed": [
+          "complete",
+          "candidateCount",
+          "basisCount"
+        ]
+      },
+      "zeroEvidenceClassification": "AUTHORITATIVE_SURNAME_SOURCE_ENRICHMENT_REQUIRED",
+      "minimumNonOperationalEvidence": [
+        "explicit surname linked by exact shopperId or strong technical anchor",
+        "exact mapped credential login",
+        "two independent linked full-name sources with matching surname token",
+        "explicit tenant adjudication recorded against a source-safe profile fingerprint"
+      ],
+      "rawValuesAllowed": false
+    }
+  },
+  "multiAuthResolution": {
+    "signals": [
+      "exact custom claims",
+      "shopperId claim",
+      "exact target email",
+      "exact credential email",
+      "password compatibility",
+      "enabled state",
+      "provider metadata"
+    ],
+    "tiePolicy": "STOP_RETRY",
+    "diagnosticVector": {
+      "candidateOrdinalOnly": true,
+      "fields": [
+        "score",
+        "exactClaims",
+        "shopperIdClaim",
+        "targetEmailMatch",
+        "baseEmailMatch",
+        "credentialEmailMatch",
+        "passwordCompatible",
+        "enabled",
+        "emailVerified",
+        "providerCreationMetadataPresent",
+        "candidateFingerprint"
+      ],
+      "scoreMarginRequired": true,
+      "uidAllowed": false,
+      "emailAllowed": false,
+      "rawPiiAllowed": false,
+      "candidateFingerprintNamespace": "shopper-auth-candidate-v1"
+    },
+    "exactTieClassification": "SOURCE_SAFE_ACCOUNT_ADJUDICATION_REQUIRED",
+    "automaticSelectionAllowed": false,
+    "forbiddenSelectors": [
+      "creationTime",
+      "candidateOrdinal",
+      "firstReturned",
+      "enabledStateAlone",
+      "emailVerifiedAlone"
+    ],
+    "minimumNonOperationalDiscriminator": [
+      "exact canonical claims unique to one candidate",
+      "exact credential or target-email anchor unique to one candidate",
+      "password compatibility unique to one candidate",
+      "explicit tenant adjudication against stable candidate fingerprints"
+    ]
+  },
+  "plan": {
+    "rows": 340,
+    "onePrimaryOperationPerProfile": true,
+    "operations": [
+      "CREATE_AUTH",
+      "UPDATE_AUTH",
+      "NO_OP",
+      "HOLD",
+      "PRESERVE_NO_AUTH"
+    ],
+    "executable": false,
+    "diagnosticContractVersion": "v2.2"
+  },
+  "privacy": {
+    "rawNamesInRepositoryOrEvidence": false,
+    "rawVisibleLoginsInEvidence": false,
+    "rawEmailsInEvidence": false,
+    "rawPasswordsInEvidence": false,
+    "uidsInEvidence": false,
+    "sourceSafeMemberFingerprintsAllowed": true,
+    "sourceSafeCandidateFingerprintsAllowed": true,
+    "suffixIsSourceSafe": true
+  },
+  "safeState": {
+    "providerReads": true,
+    "providerWrites": false,
+    "authWrites": false,
+    "passwordChanges": false,
+    "membershipWrites": false,
+    "firestoreWrites": false,
+    "rulesWrites": false,
+    "storageWrites": false,
+    "hrWrites": false,
+    "deploy": false,
+    "payments": false,
+    "merge": false,
+    "production": false
+  },
+  "collisionReconciliation": {
+    "groupFingerprintNamespace": "shopper-visible-login-group-v1",
+    "memberFingerprintNamespace": "shopper-collision-member-v1",
+    "basis": "normalized visible base login",
+    "policy": "fingerprint_set_membership_not_rigid_aggregate_equality",
+    "outputs": [
+      "added",
+      "removed",
+      "unchangedCount",
+      "exactMatch"
+    ],
+    "rigidExpectedGroupCountAllowed": false,
+    "sameUniverseRequired": true,
+    "referenceUniverse": "post_consensus_active_complete_equivalent_v1",
+    "plannerUniverse": "post_consensus_active_complete_equivalent_v1",
+    "currentUniverseClassification": "EQUIVALENT_UNIVERSE_CONTRACT_INTEGRATED_SOURCE_ONLY",
+    "exactAddedGroupCause": "PENDING_EQUIVALENT_UNIVERSE_PROVIDER_REVALIDATION",
+    "suffixAlgorithmDefectProven": false,
+    "diagnosticComparatorDefect": true,
+    "memberProvenanceVector": {
+      "fields": [
+        "memberFingerprint",
+        "active",
+        "preConsensusComplete",
+        "postConsensusComplete",
+        "completedByConsensus",
+        "sourceSafeSurnameBasis",
+        "surnameBasisCount",
+        "keeper",
+        "suffixApplied",
+        "suffixLength",
+        "inReferenceSet",
+        "inPlannerSet",
+        "referenceEligibility",
+        "plannerEligibility",
+        "linkedSourceResolutionMode"
+      ],
+      "allowedSurnameBasis": [
+        "explicit_or_technical",
+        "multi_source_full_name_consensus",
+        "unresolved"
+      ],
+      "allowedSuffixLengths": [
+        0,
+        4,
+        6,
+        8
+      ],
+      "allowedLinkModes": [
+        "profile_only",
+        "linked_source",
+        "direct_shopper_id",
+        "exact_technical_anchor"
+      ],
+      "rawIdentityAllowed": false,
+      "requiredForAddedOrRemovedGroups": true
+    },
+    "classificationRules": {
+      "legitimateConsensusChange": "all added-group members are planner-eligible, reference-ineligible only because preConsensusComplete=false, postConsensusComplete=true and completedByConsensus=true",
+      "differenceOfUniverse": "reference and planner use different completeness, activity or linking eligibility predicates",
+      "algorithmDefect": "set drift remains after equivalent universes and complete member provenance vectors"
+    },
+    "equivalentUniverseVersion": "shopper-equivalent-universe-v1",
+    "populationPredicate": "same_tenant_shopper_snapshot",
+    "activityPredicate": "equivalentActive_v1",
+    "linkingPredicate": "direct_shopper_id_or_exact_unique_technical_anchor",
+    "completenessPredicate": "post_consensus_active_complete",
+    "priorComparatorDefect": "REFERENCE_UNIVERSE_MISMATCH_PROVEN",
+    "diagnosticComparatorDefectFixedSourceOnly": true,
+    "providerRevalidationPending": true,
+    "deltaOnlyMemberProvenanceExport": true
+  }
+}

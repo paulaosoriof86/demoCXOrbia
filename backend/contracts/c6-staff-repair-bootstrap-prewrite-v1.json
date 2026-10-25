@@ -1,0 +1,172 @@
+{
+  "schemaVersion": "cxorbia.c6.staff-repair-bootstrap-prewrite.v1",
+  "generatedAt": "2026-08-11",
+  "tenantId": "tya",
+  "authNamespace": "staff",
+  "purpose": "Prepare one focal, source-safe provider snapshot/prewrite for the canonical staff repair plus the additional operations bootstrap without reopening the frozen 340-identity plan.",
+  "prerequisites": {
+    "authUsersFrozenBaseline": 228,
+    "activation": "PASS",
+    "readback": "PASS",
+    "rollbackDryRun": "PASS",
+    "skip13": "CLOSED_13_OF_13",
+    "multiAuth": "CLOSED",
+    "hashConfig": "PASS",
+    "m4StaffTargets": "COMPLETE",
+    "liveUserAdminStaticGate": "PASS_C6_LIVE_USER_ADMIN_STATIC_SOURCE_GATE_TERMINAL"
+  },
+  "inputs": {
+    "staffTargets": "backend/config/c6-staff-bootstrap-targets-v1.json",
+    "legacyRepairPlan": "app/docs/C6-AUTH-DUPLICATE-CANONICAL-REPLACEMENT-REPAIR-PLAN-SOURCE-ONLY-20260810.md",
+    "staticGateEvidence": "app/docs/evidence/C6-LIVE-USER-ADMIN-STATIC-GATE-LATEST.json"
+  },
+  "staffBootstrapTargets": [
+    {
+      "targetAlias": "A",
+      "role": "super",
+      "entitlementMode": "TYA_COMPLETE",
+      "projectIdsSource": "staffTargets.A.projectIds",
+      "strategy": "REUSE_EXISTING_CANONICAL_ONLY_IF_INDEPENDENT_OWNER_BINDING_AND_EXACT_CLAIMS_MATCH_ELSE_CREATE_NEW_EPHEMERAL",
+      "legacyRepairGroup": "R1_SUPER",
+      "providerSnapshotRequired": true
+    },
+    {
+      "targetAlias": "B",
+      "role": "admin",
+      "entitlementMode": "TYA_COMPLETE",
+      "projectIdsSource": "staffTargets.B.projectIds",
+      "strategy": "CREATE_NEW_EPHEMERAL_AT_SEPARATELY_AUTHORIZED_EXECUTION",
+      "legacyRepairGroup": "R2_ADMIN",
+      "providerSnapshotRequired": true
+    },
+    {
+      "targetAlias": "C",
+      "role": "ops",
+      "entitlementMode": "TYA_COMPLETE",
+      "projectIdsSource": "staffTargets.C.projectIds",
+      "strategy": "CREATE_NEW_EPHEMERAL_AT_SEPARATELY_AUTHORIZED_EXECUTION",
+      "legacyRepairGroup": "R3_OPS",
+      "providerSnapshotRequired": true
+    },
+    {
+      "targetAlias": "D",
+      "role": "ops",
+      "entitlementMode": "TYA_COMPLETE",
+      "projectIdsSource": "staffTargets.D.projectIds",
+      "strategy": "CREATE_NEW_EPHEMERAL_AT_SEPARATELY_AUTHORIZED_EXECUTION",
+      "legacyRepairGroup": null,
+      "providerSnapshotRequired": true,
+      "note": "This is the additional operations staff target and is not the historical client duplicate group."
+    }
+  ],
+  "legacyRepairGroups": [
+    {
+      "repairAlias": "R1_SUPER",
+      "groupFingerprint": "1acdcb3782b7cf351056",
+      "targetAlias": "A",
+      "legacyPrincipalFingerprints": ["6dee7f31c738218ce63a", "b561d9c46660715e214f"],
+      "retirementMode": "DISABLE_ONLY_NO_DELETE",
+      "retireOnlyAfterCanonicalReadback": true
+    },
+    {
+      "repairAlias": "R2_ADMIN",
+      "groupFingerprint": "2c4d19f2b066835473d3",
+      "targetAlias": "B",
+      "legacyPrincipalFingerprints": ["aa5cbada6c5388ee1d8b", "f8405e17df357c121ccc"],
+      "retirementMode": "DISABLE_ONLY_NO_DELETE",
+      "retireOnlyAfterCanonicalReadback": true
+    },
+    {
+      "repairAlias": "R3_OPS",
+      "groupFingerprint": "54225792eeb65f6739c0",
+      "targetAlias": "C",
+      "legacyPrincipalFingerprints": ["ce178298b2df136541d4", "19937aedc77af3404bdc"],
+      "retirementMode": "DISABLE_ONLY_NO_DELETE",
+      "retireOnlyAfterCanonicalReadback": true
+    },
+    {
+      "repairAlias": "R4_CLIENT_HISTORICAL",
+      "groupFingerprint": "ae2f920fe6d9ce1fdd82",
+      "targetAlias": null,
+      "historicalPrincipalFingerprints": ["ca9e2f644334833ab572", "360af509dcdcd1880f04"],
+      "validatedCanonicalFingerprint": "6a74d2b7c77f7b3f026b9ad0bef86183bc4e028b67f429ee36ab772587e5953c",
+      "canonicalMutation": "FORBIDDEN",
+      "retirementMode": "DISABLE_ONLY_NO_DELETE",
+      "retireOnlyAfterCanonicalReadback": true,
+      "note": "Historical client repair is distinct from staff target D."
+    }
+  ],
+  "providerSnapshotContract": {
+    "mode": "READ_ONLY_SOURCE_SAFE",
+    "singleObservation": true,
+    "expectedAuthPopulation": 228,
+    "failOnPopulationDrift": true,
+    "required": [
+      "all focal historical principals present by fingerprint",
+      "disabled state per focal principal",
+      "claims digest and structural role/authNamespace/tenant/project scope",
+      "R4 validated client canonical present and exact",
+      "A existing canonical candidate association checked without role-only inference",
+      "A-D expected claims digests equal staff target contract",
+      "technical identifier collision check performed only from transient runtime input",
+      "no raw login/email/uid/password/name emitted"
+    ],
+    "transientRuntimeInputs": {
+      "visibleLoginRequiredForCollisionCheck": true,
+      "passwordRequired": false,
+      "allowedPersistence": "MEMORY_OR_PRIVATE_EPHEMERAL_FILE_ONLY",
+      "repo": false,
+      "artifact": false,
+      "log": false
+    },
+    "passDecision": "PASS_C6_STAFF_REPAIR_BOOTSTRAP_PREWRITE",
+    "failDecision": "STOP_RETRY_C6_STAFF_REPAIR_BOOTSTRAP_PREWRITE"
+  },
+  "executionPlanning": {
+    "providerWritesAuthorizedByThisContract": false,
+    "repairExecutedByThisContract": false,
+    "previousAuthWriteHardCap14Reusable": false,
+    "reasonPreviousCapSuperseded": "The prior 14-write cap excluded the additional operations staff target and predates the live tenant user document/audit contract.",
+    "finalWriteBudgetStatus": "FREEZE_ONLY_AFTER_PROVIDER_SNAPSHOT_PASS",
+    "authWriteWorstCaseBeforeSnapshot": 16,
+    "authWriteWorstCaseExplanation": "R1/R2/R3 up to 4 each (create + claims + two retirements), new staff D up to 2, historical client R4 up to 2; exact cap may decrease after read-only snapshot.",
+    "authDeletes": 0,
+    "legacyDeletes": 0,
+    "production": false
+  },
+  "rollbackContract": {
+    "snapshotBeforeAnyWrite": true,
+    "dryRunBeforeAnyWrite": true,
+    "createdCanonicalInverse": "DISABLE_NO_DELETE",
+    "retiredHistoricalInverse": "REENABLE_ONLY_IF_ENABLED_IN_PRE_SNAPSHOT",
+    "validatedClientCanonicalInverse": "NO_MUTATION",
+    "everyMutationRequiresUniqueInverse": true
+  },
+  "antiLoop": {
+    "reopen340IdentityPlan": false,
+    "reopenSkip13": false,
+    "reopenMultiAuth": false,
+    "repeatGeneralPrewriteActivation": false,
+    "repeatHrMapping": false,
+    "newBranch": false,
+    "newPullRequest": false,
+    "newWorkflow": false
+  },
+  "sourceSafe": {
+    "rawNames": false,
+    "rawEmails": false,
+    "rawLogins": false,
+    "rawUids": false,
+    "rawPasswords": false,
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false
+  }
+}

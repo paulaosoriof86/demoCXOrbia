@@ -1,0 +1,84 @@
+{
+  "contractId": "tya-corte3-financial-r20-delta-review-v1",
+  "schemaVersion": "1.0.0",
+  "createdAt": "2026-07-23",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "reviewMode": "source_safe_technical_review",
+  "instructionContext": "Continue Phase A Corte 3 without manual steps for Paula; no payment approval or data writes.",
+  "sourceWorkbookSha256": "b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+  "baseline": {
+    "exactAcceptedLinks": 196,
+    "reviewQueue": 92
+  },
+  "reviewedFreshResult": {
+    "hrVisits": 616,
+    "financialLiquidationRows": 247,
+    "exactAcceptedLinks": 209,
+    "reviewQueue": 79,
+    "canonicalHrRowIdentityChanges": 0,
+    "newFinancialRecords": 0,
+    "missingFinancialRecords": 0
+  },
+  "approvedNewExactLinks": [
+    "finliq_4596b2c9540166fdca94",
+    "finliq_263cc247ff733fd03d0d",
+    "finliq_926c7c389e2000bca48b",
+    "finliq_3143ee55c4d91bc59b28",
+    "finliq_924f40a2439e78044631",
+    "finliq_4a563ddbf36b40071155",
+    "finliq_447cbdbc2bdf0fa06cb3",
+    "finliq_a1095807c4f6175ab47c",
+    "finliq_1d83a0107fe6d1957710",
+    "finliq_31c5dc6d0c73c200d334",
+    "finliq_02162f444c5c0f6eecbc",
+    "finliq_767845696ec8b0e8e0eb",
+    "finliq_e8de637be7606e39597b",
+    "finliq_14a4bf00a45fdfd32fdb",
+    "finliq_101fbf8fba8417ca5a05"
+  ],
+  "approvalCriteria": {
+    "matchStatus": "exact_protected_operational_linked",
+    "matchMethod": "period_country_shopper_ref_location_ref_boleto_combo",
+    "candidateCount": 1,
+    "hrRowIdRequired": true,
+    "stableVisitIdentityRequired": true,
+    "reviewRequired": false,
+    "sourceSafe": true,
+    "imported": false,
+    "production": false
+  },
+  "retainedForOperationalReview": {
+    "lostPriorExactLinks": [
+      "finliq_5b54ec13d62e7dae5bbf",
+      "finliq_ba5671dcdafe030efa0c"
+    ],
+    "statusChangedButStillReviewRequired": [
+      "finliq_517582445cce56fe6279"
+    ],
+    "rules": [
+      "No retained-review record may have visitId, hrRowId or paymentItemId assigned.",
+      "The two lost links remain candidate_amount_or_hr_detail_mismatch with one candidate each.",
+      "The status-changed record remains candidate_shopper_ref_mismatch with one candidate.",
+      "No payment state is inferred from any reconciliation result."
+    ]
+  },
+  "derivedIdentityMigration": {
+    "legacyAcceptedLinksWithStableHrRow": 194,
+    "canonicalHrRowChangesAllowed": 0,
+    "legacyVisitIdDriftIsNotFinancialEvidence": true,
+    "targetIdentityVersion": "tya-stable-visit-id-r20-row-identity-v1"
+  },
+  "safeState": {
+    "containsPii": false,
+    "containsSecrets": false,
+    "paymentApproval": false,
+    "paymentsExecuted": false,
+    "imports": false,
+    "dataWrites": false,
+    "repositoryRuntimeWrites": false,
+    "deploy": false,
+    "merge": false,
+    "production": false
+  }
+}

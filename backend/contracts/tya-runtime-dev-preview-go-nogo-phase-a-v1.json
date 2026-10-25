@@ -1,0 +1,132 @@
+{
+  "contractId": "tya-runtime-dev-preview-go-nogo-phase-a-v1",
+  "status": "draft_gate_not_authorized",
+  "generatedAt": "2026-07-09",
+  "purpose": "Define the final GO/NO-GO checklist before requesting Paula approval to connect TyA/Cinepolis Level 2 sanitized operational preview to CX.data runtime DEV through a single controlled point.",
+  "scope": "DEV preview only. Not production, not import, not Firestore write, not HR writeback, not payment execution.",
+  "safeState": {
+    "runtimeSwitchAuthorized": false,
+    "frontendModified": false,
+    "modulesModified": false,
+    "firestoreWrites": false,
+    "importsExecuted": false,
+    "hrWrites": false,
+    "oldDatabaseConnected": false,
+    "makeDispatch": false,
+    "geminiPublish": false,
+    "paymentExecution": false,
+    "productionEnabled": false,
+    "containsSecrets": false,
+    "containsRawPii": false
+  },
+  "requiredReportsBeforeRequestingGo": [
+    {
+      "id": "localRealdataPreflight",
+      "expectedVerdict": "GO_LOCAL_PREFLIGHT_COMPLETED_NO_RUNTIME",
+      "expectedPayloads": {
+        "level0": true,
+        "level1": true,
+        "level2": true
+      },
+      "requiredHardFails": 0
+    },
+    {
+      "id": "level2SanitizedOperationalValidation",
+      "expectedVerdict": "GO_LEVEL2_SANITIZED_OPERATIONAL_SAFE_NO_RUNTIME",
+      "requiredHardFails": 0
+    },
+    {
+      "id": "bridgeValidation",
+      "expectedVerdict": "GO_SAFE_BRIDGE_NOT_CONNECTED",
+      "requiredHardFails": 0
+    },
+    {
+      "id": "runtimeSwitchGateValidation",
+      "allowedVerdicts": [
+        "GO_GATE_READY_SWITCH_NOT_AUTHORIZED",
+        "GO_RUNTIME_SWITCH_PRECONDITIONS_MET"
+      ],
+      "requiredHardFails": 0
+    },
+    {
+      "id": "rollbackSmokePlanValidation",
+      "expectedVerdict": "GO_ROLLBACK_SMOKE_PLAN_READY_NO_SWITCH",
+      "requiredHardFails": 0
+    }
+  ],
+  "requiredBeforeAskingPaulaGo": [
+    "Level 2 payload exists and validates with zero hard fails",
+    "Bridge validates and remains not connected",
+    "Runtime switch gate validates and remains blocked unless explicitly requested",
+    "Rollback/smoke plan validates",
+    "Single connection point is identified",
+    "Touched file list is limited and documented",
+    "No UI modules are modified",
+    "No PII/secrets/base vieja are present",
+    "No Firestore/Auth/Storage/Make/Gemini/HR/payments are active",
+    "Cinepolis remains normal configurable project",
+    "June is payment/liquidation control, not pending visits",
+    "Certifications already presented are preserved or review_required",
+    "Paula receives explicit GO request wording before any runtime change"
+  ],
+  "singleConnectionPoint": {
+    "preferred": "app/core/data.js",
+    "alternative": "one preloaded adapter before modules under explicit approval",
+    "forbidden": [
+      "app/modules/**",
+      "module-specific hacks",
+      "hardcoded Cinepolis UI module logic",
+      "provider calls from UI modules"
+    ]
+  },
+  "paulaGoRequestMustInclude": [
+    "What will be touched",
+    "What will not be touched",
+    "Exact rollback path",
+    "Expected DEV URL or local preview mode",
+    "Smoke checklist",
+    "NO-GO triggers",
+    "Confirmation that no production/import/payment/provider action will run"
+  ],
+  "devRuntimeNoGoImmediate": [
+    "Level 2 payload missing",
+    "Any hard fail in reports",
+    "Raw PII/secrets detected",
+    "Old database dump connected or copied",
+    "UI modules need changes to make data work",
+    "Cinepolis hardcoded globally",
+    "Shopper dedupe relies on visual name only",
+    "Certifications already presented are forced to retake without rule",
+    "Payments marked paid without evidence/audit",
+    "June shown as pending visits instead of payment control",
+    "Rollback not executable",
+    "Smoke not documented",
+    "Paula GO missing"
+  ],
+  "postSwitchDevSmokeRequired": [
+    "App opens without blank screen",
+    "Admin navigation opens",
+    "CX.data exists and keeps same interface",
+    "Cinepolis appears as configurable project",
+    "Level indicator is visible or documented as preview",
+    "Visits shown are sanitized and source-safe",
+    "No dashboards become visits",
+    "JUNIO 26 HN remains review_required",
+    "Shoppers appear sanitized/opaque when unresolved",
+    "Certifications preserved are not requested again without rule",
+    "Liquidations show control/candidate state, not paid final",
+    "No provider action is active",
+    "No critical console errors"
+  ],
+  "productionGate": {
+    "status": "blocked",
+    "requirements": [
+      "DEV runtime preview executed and smoke GO",
+      "Verified URL",
+      "Rollback executable",
+      "No demo final source",
+      "No critical NO-GO",
+      "Paula production GO"
+    ]
+  }
+}

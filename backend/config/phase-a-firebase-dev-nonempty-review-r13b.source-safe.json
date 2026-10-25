@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "phase-a-firebase-dev-nonempty-review-r13b-v1",
+  "decision": "REVIEW_QUEUE_INFRA_GATE_CREATED",
+  "reviewItems": [
+    {
+      "reviewId": "review_fbc5ec1eedd58db18254db1e",
+      "tenantId": "tya",
+      "projectId": "cinepolis",
+      "environment": "DEV",
+      "conflictType": "firebase_dev_not_clean",
+      "severity": "P0_INFRA_GATE",
+      "entityType": "firebase_project",
+      "entityRef": "firebase_project:cxorbia-backend-dev",
+      "status": "blocked",
+      "reason": "Sanitized read-only verification found existing Auth users and Firestore content in the DEV target, so the project cannot be treated as the required new empty base.",
+      "evidence": {
+        "authUserCount": 17,
+        "firestoreRootCollectionCount": 1,
+        "firestoreAnyDocumentDetected": true,
+        "rulesReleaseCount": 1,
+        "storageCheck": "NOT_FOUND_OR_API_NOT_INITIALIZED",
+        "functionsCheck": "PERMISSION_DENIED",
+        "firestoreDatabaseCheck": "HTTP_400"
+      },
+      "allowedActions": [
+        "identify whether cxorbia-backend-dev is the intended new clean project",
+        "attach approved ownership/provenance evidence",
+        "provision a different brand-new empty Firebase DEV project",
+        "perform a new sanitized read-only verification after project decision"
+      ],
+      "blockedActions": [
+        "delete_existing_users_or_documents",
+        "reuse_unknown_or_preexisting_data",
+        "connect_cx_data_adapter",
+        "materialize_phase_a_data",
+        "deploy_rules_or_hosting",
+        "enable_providers",
+        "write_firestore_auth_storage",
+        "touch_production"
+      ],
+      "impact": {
+        "backendActivation": "hold",
+        "cxDataAdapter": "hold",
+        "materialization": "hold",
+        "production": "hold",
+        "frontendV110": "no_regression"
+      },
+      "sourceSafe": true,
+      "piiIncluded": false,
+      "createdAt": "2026-07-13T03:33:27.055Z"
+    }
+  ],
+  "safeState": {
+    "providerCalls": false,
+    "writes": false,
+    "imports": false,
+    "deploy": false,
+    "production": false
+  }
+}

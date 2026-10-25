@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "cxorbia.i3.d03.live-provider.receipt.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "task": "D03",
+  "runId": 39060264839,
+  "runNumber": 1764,
+  "workflow": "CXOrbia Recovery I3 DEV Certification",
+  "headSha": "1a01137cee7a80943548904b713728b9bb9c7ff2",
+  "productSourceSha": "197ec4c84d8d2b0625885afcea6c4a7b43773985",
+  "classification": "AUTH_FAILURE",
+  "code": "AUTH_FAILURE:D03_DRIVE_SOURCE_ACCESS_403",
+  "documentId": "122rCkfD-vNgs39LwT7jGfYBVLg57ur82",
+  "serviceAccountEmail": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com",
+  "verified": {
+    "canonicalAuthority": "PASS",
+    "devRuntimeHosting": "PASS_BEFORE_D03",
+    "r20HrGate": "DEFERRED_INDEPENDENT_SOURCE_DRIFT",
+    "d03DriveApiAccess": "HTTP_403",
+    "vertexInvoked": false,
+    "providerWrites": 0,
+    "deploys": 0,
+    "production": false
+  },
+  "permissionMetadataPreviousRead": {
+    "serviceAccount": "writer",
+    "generalAccess": "anyone_reader",
+    "note": "metadata alone does not establish API read permission"
+  },
+  "nextExactAction": "Read-only differentiate Google Drive API permission/token/scope/API policy and file visibility for exact service account; do not retry same live writer probe or modify production before cause established.",
+  "noAutomatedRetry": true
+}

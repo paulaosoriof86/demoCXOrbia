@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "tya.hr-country-tab-consistency.v2",
+  "generatedAt": "2026-07-31T00:11:19.790Z",
+  "sourceSafe": true,
+  "pii": false,
+  "providerWrites": 0,
+  "providerTabRegistryObservedAt": "2026-07-30T23:58:00Z",
+  "results": [
+    {
+      "title": "AGOSTO 26",
+      "expectedCountry": "GT",
+      "tabExists": false,
+      "visitRows": 0,
+      "countryValidation": "NOT_APPLICABLE_TAB_MISSING"
+    },
+    {
+      "title": "AGOSTO 26 HN",
+      "expectedCountry": "HN",
+      "tabExists": false,
+      "visitRows": 0,
+      "countryValidation": "NOT_APPLICABLE_TAB_MISSING"
+    }
+  ],
+  "decision": "HOLD_REQUIRED_AUGUST_PROVIDER_TABS_MISSING",
+  "safety": {
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "hostingDeploys": 0,
+    "production": false,
+    "merge": false
+  }
+}

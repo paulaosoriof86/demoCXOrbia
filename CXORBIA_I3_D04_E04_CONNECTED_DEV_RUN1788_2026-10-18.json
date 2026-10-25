@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "cxorbia.i3.d04-e04.same-artifact.connected.v1",
+  "recordedAt": "2026-10-18",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "officialState": "HOLD",
+  "run": {
+    "number": 1788,
+    "id": 39163128539,
+    "conclusion": "success",
+    "url": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/39163128539",
+    "artifactId": 12149731991,
+    "evidenceFile": "d04-e04/result.json"
+  },
+  "source": {
+    "sha": "330d220882a314b6599372e21f126aaab49cf30b",
+    "treeSha": "dc64ea105fbe059d7986a5b99f3740fa38062102",
+    "artifactsIdenticalToRun1782": true,
+    "runtimeRevision": "cxorbia-live-hr-dev-00311-jxp",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/eb563d12644201cd",
+    "artifactDigest": "sha256:8da5df255f485a30e7b44e4ffd037eeff651fdfacb15e8f058a63dbb9a9f182e",
+    "newBuilds": 0,
+    "newRuntimeDeploys": 0,
+    "newHostingDeploys": 0,
+    "servedOwnerBlobMatch": [
+      "app/modules/cert.js",
+      "app/modules/cliente-insights.js"
+    ]
+  },
+  "scope": {
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "periodId": "cinepolis-2026-10",
+    "roles": [
+      "Admin",
+      "Cliente"
+    ],
+    "historicalRun1782HrRevision": "5f0b3ef79ccc6d15eb5fdbd5bdc1618e049166131ebe36baba4dd515e4a8d4c1",
+    "currentHrRevision": "2895f9fa413dd88378c5a82372ab98aeb00274942aa9252a949dddeaafb65e78",
+    "revisionChangedSinceRun1782": true,
+    "proofScope": "D04/E04 focal, not global HR Gate PASS"
+  },
+  "result": {
+    "D04": {
+      "questionReviewE2E": "PASS",
+      "providerAck": true,
+      "committed": true,
+      "questionCount": 15,
+      "versionBefore": 1,
+      "versionAfter": 2,
+      "readbackVersioned": true,
+      "reloadPassed": true,
+      "historyCount": 1,
+      "stillPendingReview": true,
+      "autoPublication": false,
+      "existingBanksUnchanged": true,
+      "qaResourceRemoved": true,
+      "generatedBankNameEditable": false,
+      "wholeTask": "HOLD_NAME_EDIT_P0",
+      "owner": [
+        "app/modules/cert.js",
+        "backend/runtime/hr-live-service/certification-runtime.mjs"
+      ],
+      "next": "Focal UI generated/reviewer certificationName with stable bankId, CAS version, ACK/reload tests; do not modify verified versioned question flow"
+    },
+    "E04": {
+      "f12BrowserClientRole": "PASS",
+      "f12SourceStatus": "absent",
+      "noInventedBenchmark": true,
+      "pendingSourceMessageVisible": true,
+      "servedBytesMatched": true,
+      "sourceAwareUi": "LIVE_E2E_PASS_FOCAL",
+      "humanVisual": "PENDING",
+      "f09DurableNpsNotesMeetings": "OPEN",
+      "wholeTask": "HOLD_F09_DURABLE_COLLABORATION",
+      "owner": [
+        "app/modules/cliente-insights.js"
+      ]
+    }
+  },
+  "stages": {
+    "d04e04SourceTests": {
+      "passed": 6,
+      "total": 6
+    },
+    "devMaterialization": {
+      "passed": 2,
+      "total": 2
+    },
+    "connectedFocalE2E": {
+      "passed": 2,
+      "total": 2
+    },
+    "humanApprovals": {
+      "passed": 0,
+      "total": 2
+    },
+    "newWholeI3TasksClosed": 0,
+    "sourceProvenI3Tasks": {
+      "numerator": 8,
+      "denominator": 63
+    }
+  },
+  "preserved": {
+    "tasksOriginal": 82,
+    "vrmIds": 274,
+    "frozenF01toF16": true,
+    "humanObservationsPreserved": true,
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V468_2026-10-18.json",
+    "moduleMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V139.json",
+    "matrixClassificationUnchanged": "Whole modules still not MATCH; F09/D04 name and other P0 pending",
+    "priorMaterializationReceipt": "CXORBIA_I3_D04_E04_DEV_MATERIALIZATION_RUN1782_2026-10-18.json",
+    "sourceFilesChanged": 0,
+    "hrWrites": 0,
+    "realBankChanges": 0,
+    "productionTouched": false
+  },
+  "readyForHuman": {
+    "f12Only": true,
+    "d04Complete": false,
+    "previewUrl": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV",
+    "route": "Cliente > Insights & Benchmark",
+    "reviewChecklist": [
+      "Referencia sectorial pendiente sin números inventados",
+      "Presentación y legibilidad de score, benchmark, comparaciones y estado pendiente",
+      "No confundir NPS, anotaciones o reuniones con funcionalidades durables: F09 sigue abierta"
+    ],
+    "userApproval": "NOT_RECEIVED"
+  },
+  "nextExactAction": "D04 exact P0 name edit for AI generation and pending-review rename using app/modules/cert.js; add focused tests, source proof, single successor DEV certification; retain F12 focal PASS and F09 open. Then B10/B09/B13 and A09/B11/A07 exact HR identity; C02-C10 and other A/B/C/D/E; V01-V05 Gate20 Gate21; I4 only on GO and express authorization.",
+  "i4Authorized": false,
+  "production": "DO_NOT_TOUCH"
+}

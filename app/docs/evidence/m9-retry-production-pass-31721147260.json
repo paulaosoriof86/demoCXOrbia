@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "cxorbia.m9.retry-production-pass.durable-evidence.v1",
+  "generatedAt": "2026-08-13T16:33:33.383Z",
+  "milestone": "M9",
+  "decision": "PASS_M9_RETRY_AFTER_HOSTING_ENTRY_PARITY_PASS",
+  "phaseA": {
+    "entryPercent": 96,
+    "m9Points": 3,
+    "certifiedPercent": 99,
+    "remainingPercent": 1
+  },
+  "execution": {
+    "requestId": "m9-retry-after-hosting-entry-parity-pass-20260813-01",
+    "requestCommitSha": "db1d5fa3bac836e1981c10dc49cec4f85af6eb90",
+    "workflowRunId": 31721147260,
+    "jobId": 94518159616,
+    "artifactId": 9189392132,
+    "artifactDigest": "sha256:fd878f783c5d47fa68598090ecf67262a194aea6fae1c2b9cf7db88461a9fe1e",
+    "productionPromotions": 1,
+    "conditionalRollbacks": 0
+  },
+  "build": {
+    "testedTargetHeadSha": "62edaf552c2a62a8964671f691d600a417ae63f8",
+    "buildId": "ecc725866acc3eb8",
+    "aggregateSha256": "ecc725866acc3eb8aab292000be3ec31d1c46b5c14a53c8889fa7d6716a997e2",
+    "hostingEntrySourceGate": "PASS_M9_PRODUCTION_HOSTING_ENTRY_PARITY_SOURCE_GATE",
+    "rootRedirectCertified": true,
+    "tenantRewriteCertified": true,
+    "liveHrRewriteCertified": true,
+    "runtimeAppDriftAfterM8": []
+  },
+  "immediateProductionSmoke": {
+    "decision": "PASS_M8_HUMAN_BROWSER_LIVE_HR_RECONCILIATION_READONLY",
+    "root": "https://cxorbia-backend-dev.web.app",
+    "principal": {
+      "role": "admin",
+      "namespace": "staff",
+      "tenantId": "tya",
+      "projectId": "cinepolis",
+      "membershipVerified": true
+    },
+    "confidentialityGate": {
+      "status": "EXPECTED_HUMAN_CONSENT_GATE",
+      "consentRecordedByQa": false,
+      "navCount": 34
+    },
+    "liveHr": {
+      "periods": 15,
+      "visits": 660,
+      "dataShoppers": 197,
+      "authorityShoppers": 211,
+      "firstPeriod": "2025-06",
+      "latestPeriod": "2026-08",
+      "duplicateVisitKeys": 0,
+      "duplicateShopperIds": 0
+    },
+    "requiredRoutesPassed": [
+      "dashboard",
+      "proyectos",
+      "visitas",
+      "postulaciones",
+      "cert",
+      "financiero",
+      "aprendizaje"
+    ],
+    "freshHrReconciliations": 2,
+    "reconciliationVisitCounts": [660, 660],
+    "reconciliationAddedVisitKeys": [0, 0],
+    "reconciliationRemovedVisitKeys": [0, 0],
+    "consoleErrors": 0,
+    "pageErrors": 0,
+    "sameOriginHttpErrors": 0,
+    "sameOriginRequestFailures": 0
+  },
+  "safety": {
+    "cloudRunDeploys": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "merge": false,
+    "credentialsExposed": false,
+    "tokensExposed": false
+  },
+  "next": "M10_POST_CUTOVER_SMOKE_FREEZE_FINAL"
+}

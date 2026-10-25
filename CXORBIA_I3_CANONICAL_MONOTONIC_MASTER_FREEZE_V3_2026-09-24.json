@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "cxorbia.i3.canonical-monotonic-master-freeze.v3",
+  "frozenAt": "2026-09-24",
+  "status": "FROZEN_PREVALENT_ACTIVE",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadAtFreeze": "22851d6372948407e8a2d5ae6f4365cadc2ba4f2",
+  "canonicalFunctionalSource": "8913a30e3bd1bd3e851d9736ff87e1bae51c30ff",
+  "canonicalFunctionalPredecessor": "d8aad982ae4b47e66bf949d906b6c7ede8866f84",
+  "planVersion": "V3",
+  "ledgerVersion": "V4",
+  "findingCoverage": "VRM-001..VRM-042",
+  "nextFindingId": "VRM-043",
+  "c0": "CLOSED",
+  "c1": "CLOSED",
+  "c2_1_vrm037_042": "FIXED_SOURCE_PROVEN_NO_DEPLOY",
+  "c2_2_vrm036": "ACTIVE",
+  "c2_3_vrm039": "ACTIVE",
+  "run351Proof": {
+    "runId": 36038277262,
+    "artifactId": 10825625581,
+    "digest": "sha256:229e235b9a3918194b5a656b235305acf89ec199635ac35eaee8d6104ca9b2d0",
+    "decision": "PASS_PRE_I4_VRM037_042_LIVE_SOURCE_PROOF"
+  },
+  "frozenBlobs": {
+    "PLAN_COMPLEMENTARIO_CXORBIA_I3_CANONICAL_MONOTONIC_CLOSURE_V3_2026-09-24_FROZEN.md": "967a88c12c8d96557f368d64f77333d351f396a3",
+    "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V4_2026-09-24.json": "9a3f8f88366cbf24491c8292be0efb2bb2ae06c1",
+    "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json": "d1739d377965596adb24a1aec0f702a28c7d6e8a",
+    "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-24_CANONICAL_MONOTONIC_COMPOSITION_ROOT_CAUSE_FROZEN.md": "d404ef9604a4e50438a7fa7546cb2920945362c0",
+    "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-24_SEMANTIC_OWNER_SHADOWING_FROZEN.md": "7915df0775958cba5b81da1c04dcfd56caeb7b93",
+    "CXORBIA_I3_SINGLE_AUTHORITY_ENFORCEMENT_LOCK_2026-09-24.json": "9801ae6b900ee7f4d46a635c8cbca11cba6cb0e3"
+  },
+  "production": "DO_NOT_TOUCH",
+  "authorizationRequired": false,
+  "exactNextAction": "VRM036_EXACT_CERTIFICATION_EVIDENCE_PROJECTION_THEN_VRM039_RESOURCE_FINANCE_LIVE_PROOF"
+}

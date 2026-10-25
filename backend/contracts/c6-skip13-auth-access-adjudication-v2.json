@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "cxorbia.c6.skip13-auth-access-adjudication.contract.v2",
+  "purpose": "Determine source-safe whether any of the 13 SKIP_AUTH_REPAIR_PRESERVE_HISTORY profiles retains effective unplanned Auth access under the current versioned tenant/project rules contract, with explicit non-interchangeable fingerprint namespaces.",
+  "target": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "docs-tya-v6-v71-audit",
+    "pullRequest": 7
+  },
+  "fingerprintContract": {
+    "profileFingerprintNamespace": "deterministic-suffix-plan-profile",
+    "profileFingerprintAlgorithm": "sha256(namespace + NUL + shopperDocumentId).slice(0,20)",
+    "profileJoinSource": "Firestore shopper document ID only",
+    "authCandidateFingerprintNamespace": "shopper-auth-candidate-v1",
+    "multiAuthProfileFingerprintNamespace": "multi-auth-profile-v1",
+    "memberProvenanceFingerprintNamespace": "shopper-collision-member-v1",
+    "forbiddenProfileJoinNamespaces": [
+      "shopper-collision-member-v1",
+      "multi-auth-profile-v1"
+    ],
+    "crossNamespaceEqualityAllowed": false
+  },
+  "authorizedReadDomains": [
+    "Auth user state needed to identify candidates tied to the 13 target shopper IDs/fingerprints",
+    "Auth custom claims for matched candidates",
+    "tenant membership documents for matched candidate UIDs",
+    "Firestore shopper document IDs only for deterministic-suffix-plan-profile fingerprint resolution"
+  ],
+  "forbiddenReadDomains": [
+    "HR imports",
+    "visits",
+    "certifications",
+    "liquidations",
+    "Storage",
+    "legacy credential bundle"
+  ],
+  "effectiveAccessContract": {
+    "source": "firestore.rules",
+    "shopperProjectRead": [
+      "enabled password Auth principal",
+      "role=shopper",
+      "tenantId/tenants permits tya",
+      "projectIds/projectId permits cinepolis"
+    ],
+    "ownShopperReadAdditional": [
+      "shopperId claim matches the target shopper profile document ID"
+    ],
+    "membershipRequiredForProjectRead": false
+  },
+  "gates": {
+    "exactTargetProfileResolutionRequired": "13/13",
+    "blockingCandidateFingerprintSetMustMatch": true,
+    "crossNamespaceSelfTestRequired": true,
+    "providerRetryAfterFailureAllowed": false
+  },
+  "sourceSafeOutputOnly": true,
+  "rawUidExported": false,
+  "rawShopperIdExported": false,
+  "rawEmailExported": false,
+  "rawClaimsExported": false,
+  "writesAuthorized": false,
+  "deployAuthorized": false,
+  "mergeAuthorized": false,
+  "productionAuthorized": false
+}

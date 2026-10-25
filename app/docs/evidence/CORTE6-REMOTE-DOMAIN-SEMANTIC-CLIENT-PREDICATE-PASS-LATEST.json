@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "cxorbia.c6.remote-domain-semantic-client-predicate-pass.v1",
+  "generatedAt": "2026-08-05T17:45:30.000Z",
+  "decision": "PASS_C6_REMOTE_DOMAIN_SEMANTIC_CLIENT_PREDICATE",
+  "runnerDecision": "PASS_READONLY_POST_GATES",
+  "semanticDecision": "PASS_PHASE_A_REMOTE_DOMAIN_FINANCE_PORTALS_RESERVATIONS_DYNAMIC",
+  "requestId": "c6-remote-domain-semantic-client-predicate-rerun-20260805-01",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "targetHeadSha": "fb2251ebf53603990e09bdd513aa51990418839f",
+  "requestCommitSha": "a98c8cb52c08ade9d8d2c012eb95c0a906985eed",
+  "workflow": {
+    "runId": 31025221503,
+    "jobId": 92392748352,
+    "artifactId": 8940832844,
+    "artifactDigest": "sha256:787116945227cef56422a33988692b485988ee3f64e11bb8b444b590665c454b",
+    "jobConclusion": "success",
+    "gateExitCode": 0,
+    "repositoryUnchanged": true
+  },
+  "predicate": {
+    "version": "session-view-canonical-render-v1",
+    "removedDependency": "#nav-cli_dashboard.active",
+    "required": [
+      "session.view=cli_dashboard",
+      "#view exists",
+      "#view .ph exists",
+      "#view text non-empty",
+      "renderException=null"
+    ]
+  },
+  "client": {
+    "authenticated": true,
+    "projectScope": "cinepolis",
+    "routeId": "cli_dashboard",
+    "routeAccepted": true,
+    "viewExists": true,
+    "pageHeaderExists": true,
+    "viewTextLength": 690,
+    "renderException": null,
+    "panoramaVisible": true,
+    "blocked": false,
+    "heading": "Panorama de Cinépolis"
+  },
+  "shopper": {
+    "authenticated": true,
+    "exactIdentity": true,
+    "ownVisits": 1,
+    "fullHistory": true,
+    "certificationVisible": true
+  },
+  "finance": {
+    "model": "delegado",
+    "localBilling": false,
+    "royaltyPct": 0,
+    "shopperHonorariumUsedAsIncomeFallback": false,
+    "valuesInvented": false
+  },
+  "reservations": {
+    "source": "protected_canonical_or_empty",
+    "browserLocalStorageAsSource": false,
+    "mutationsEnabled": false
+  },
+  "source": {
+    "periods": 15,
+    "visits": 660,
+    "shoppers": 209,
+    "firstPeriod": "2025-06",
+    "latestPeriod": "2026-08",
+    "latestPeriodTotalVisits": 44,
+    "revisionDynamic": true
+  },
+  "safety": {
+    "hostingDeploysThisBlock": 0,
+    "hostingDeploysTotal": 2,
+    "additionalDeploysAuthorized": 0,
+    "cloudRunDeploys": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "credentialsExposed": false,
+    "tokensExposed": false,
+    "merge": false,
+    "production": false
+  },
+  "telemetry": {
+    "commitStatusPublished": true,
+    "artifactUploaded": true,
+    "optionalPrComment": "HTTP_403_RESOURCE_NOT_ACCESSIBLE_BY_INTEGRATION_NON_GATING",
+    "manualPrMetadataUpdateRequired": true
+  },
+  "conclusion": {
+    "clientRouteWaitBlockerClosed": true,
+    "productChangeRequired": false,
+    "runtimeChangeRequired": false,
+    "hostingDeployRequired": false,
+    "nextExactAction": "Human visual validation and freeze on the existing DEV release; no deploy, merge or production."
+  }
+}

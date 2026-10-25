@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "cxorbia.pre-go-live.human-shopper-post-fix-audit.v1",
+  "observedAt": "2026-08-13T15:40:00-06:00",
+  "environment": "cxorbia-backend-dev",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "auditedHeadBeforeDocumentation": "bd8b10598bb5868f8a89b26c622d1ecc8da8a629",
+  "deployedFixSourceCommit": "d435d33fbf548b8021ad5604acc4b2686f75d6b5",
+  "decision": "P0_PROVEN_SHOPPER_AUTHENTICATED_SOURCE_HANDOFF_STILL_FAILS_AFTER_IDENTITY_FIX",
+  "ownerAcceptance": "REJECTED",
+  "visualEvidence": {
+    "loginScreen": {
+      "sourceLabel": "hr-live-authority + firestore-authenticated-overlay",
+      "auth": "pending",
+      "currentProject": "cinepolis",
+      "displayedProjects": 14,
+      "displayedVisits": 616,
+      "displayedShoppers": 210,
+      "displayedPostulations": 42,
+      "displayedPeriod": "cinepolis::2026-07"
+    },
+    "authenticatedShopper": {
+      "loginSucceeded": true,
+      "shopperNavigationRendered": true,
+      "sidebarProject": "Cinépolis",
+      "sidebarPeriod": "AGO 2026",
+      "profileMessage": "La identidad de esta sesión no está vinculada al read model canónico.",
+      "statusSource": "firestore",
+      "displayedProjects": 1,
+      "displayedVisits": 0,
+      "displayedShoppers": 1,
+      "displayedPostulations": 0,
+      "guardVisits": 0,
+      "guardCountries": "s/pais"
+    }
+  },
+  "canonicalCurrentHrEvidence": {
+    "periods": 15,
+    "visits": 660,
+    "firstPeriod": "2025-06",
+    "latestPeriod": "2026-08",
+    "duplicateVisitKeys": 0,
+    "source": "m10-final-phase-a-freeze-31721769360 plus prior human-Shopper P0 evidence"
+  },
+  "sourceFindings": {
+    "projects14IsNotFourteenBusinessProjects": true,
+    "reasonProjects14": "tya-live-source-inplace-apply maps each HR period into CX.data.projects for compatibility; backend-preview-status labels CX.data.projects.length as Proyectos",
+    "preLoginCountsAreStaleAgainstCurrentHr": true,
+    "staleDifference": "14 periods/616 visits through 2026-07 versus current 15 periods/660 visits through 2026-08",
+    "firestoreIntermediateSliceMatchesScreenshot": true,
+    "firestoreGlobalSwap": "backend-firebase.applyData replaces global CX.data projects/shoppers/visits/posts with the authenticated provider slice before HR authority composition",
+    "expectedFinalAuthority": "HR live all detected periods plus Firestore exact protected overlay",
+    "shopperFixApiMismatch": {
+      "file": "app/adapters/tya-canonical-shopper-portal-v2.js",
+      "observedReference": "window.CX_BACKEND_AUTH?.currentContext?.()",
+      "canonicalExport": "CX.backendAuth.context()",
+      "impact": "authorityPending can evaluate false while HR authority is still pending, causing Mi Perfil to render the terminal identity lock instead of waiting/scheduling canonical reconciliation"
+    },
+    "diagnosticPillStalenessRisk": "backend-preview-status listens to backend bus events but not cx:protected-auth-hr-authority-ready, so its source/counts can remain on the provider slice after later canonical composition",
+    "systemicBlastRadius": "global CX.data replacement creates a cross-module timing risk; only the human Shopper route is currently reproduced as failing, so other roles/modules require focused regression validation rather than being declared failed"
+  },
+  "classification": {
+    "P0": [
+      "Authenticated Shopper still reaches a Firestore-only/intermediate CX.data state and Mi Perfil fails to bind to canonical HR authority after the deployed identity fix",
+      "The post-fix authority wait path references a non-canonical auth API and can prematurely classify a pending source handoff as a final identity failure"
+    ],
+    "P1": [
+      "DEV diagnostic labels HR period records as projects",
+      "DEV diagnostic can display stale source/counts after authority-ready",
+      "Live documentation/checkpoint is inconsistent with the post-fix deployed state and this new visual failure"
+    ]
+  },
+  "safety": {
+    "runtimeCodeChangedByThisAudit": false,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "deploys": 0,
+    "merge": false,
+    "realTyACutover": false
+  },
+  "nextExactBlock": "SOURCE_ONLY_CORRECT_SHOPPER_AUTHORITY_WAIT_AND_GLOBAL_SOURCE_HANDOFF_GATES_THEN_CROSS_ROLE_REGRESSION_BEFORE_ANY_NEW_DEV_DEPLOY"
+}

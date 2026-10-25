@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.0.0",
+  "planId": "phasea_e2f248c15355824a",
+  "baseline": "CXOrbia V103 Phase A R5",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "sourceSha256": "e2f248c15355824a5ddd8fda1ee25f9cec8618de9cc9182ccd2cc5611335aa0a",
+  "planSha256": "27ce1785f6913e37d34b6331e134207ff142535278f63af5a3f1c529f150d292",
+  "operationPathsSha256": "303bc7546a124873d8a32d6d699a170ce800d7dd7f0883c84e31755bf13f9d4d",
+  "counts": {
+    "operations": 1418,
+    "batches": 4,
+    "byDomain": {
+      "tenant": 1,
+      "project": 1,
+      "hrImport": 1,
+      "period": 14,
+      "shopper": 213,
+      "visit": 616,
+      "liquidation": 572
+    }
+  },
+  "batchOperationCounts": [400, 400, 400, 218],
+  "blockedDomains": {
+    "payments": "pending_financial_source",
+    "paymentLots": "blocked_until_item_level_payment_match",
+    "certifications": "pending_certification_source"
+  },
+  "verification": {
+    "ok": true,
+    "duplicatePaths": 0,
+    "sensitiveFields": 0,
+    "paidWithoutConfirmedSource": 0,
+    "lotEligibleWithoutConfirmedSource": 0,
+    "invalidVisitPeriodLinks": 0,
+    "invalidLiquidationVisitLinks": 0
+  },
+  "safeState": {
+    "dryRun": true,
+    "writes": false,
+    "imported": false,
+    "production": false,
+    "providers": false,
+    "paymentsExecuted": false
+  }
+}

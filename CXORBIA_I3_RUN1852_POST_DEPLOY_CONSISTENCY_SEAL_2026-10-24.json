@@ -1,0 +1,192 @@
+{
+  "schemaVersion": "cxorbia.i3.run1852.postdeploy-consistency-seal.v1",
+  "date": "2026-10-24",
+  "iteration": "I3",
+  "state": "HOLD",
+  "production": false,
+  "authorizationI4": false,
+  "sourceProof": {
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "runId": 40119159015,
+    "runNumber": 1851,
+    "jobId": 120946807781,
+    "sourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
+    "sourceTree": "9013315b4de8ac941845c784dcc354d4bafdc501",
+    "artifactId": 12570344291,
+    "g05FocalPass": 113,
+    "g05FocalFail": 0,
+    "scope": "FOCAL_SOURCE_CONTRACTS_ONLY",
+    "wholeProductPass": false,
+    "production": false
+  },
+  "materialization": {
+    "state": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "sourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
+    "sourceTree": "9013315b4de8ac941845c784dcc354d4bafdc501",
+    "controlHeadAtDeploy": "8102655f1f6ec987ecd98f1928e2c4c806d98875",
+    "runId": 40121491485,
+    "runNumber": 1852,
+    "jobId": 120953943392,
+    "artifactId": 12571073721,
+    "artifactUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/40121491485/artifacts/12571073721",
+    "artifactDigest": "sha256:fd0c445996eefe1ab8a3a3ae25e91dbea8f0052b2e12b41948343d4f44cd19de",
+    "artifactDigestType": "SOURCE_TAR_SHA256",
+    "archiveZipDigest": "sha256:276b1e5674ddf7ab1d721f302c2989e6261144f3b78edf842e15a996668bf3e8",
+    "cloudBuildId": "bc1b1d1b-61b5-4d20-8fc6-056d1437335e",
+    "imageUri": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-phasea-f283e0f53057-40121491485",
+    "runtimeRevision": "cxorbia-live-hr-dev-00326-z9j",
+    "runtimeDigest": "sha256:38aa1c445a52402dcadb459976b820243f264edc476e027b0e47ba421232373b",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/2173f55c2468bcbb",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792867209886000",
+    "hrRevision": "d19eb12ad8c1c5140b5711ea390deaae50b0edd35ff4f982a69bfdcabbc86dd2",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/fe1c7f11-7265-4d66-95ee-c03f4798d35e",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "firestoreRulesDeploys": 1,
+    "hrWrites": 0,
+    "production": false,
+    "sameArtifactLive": "PASS_CLOUD_RUN_HOSTING_RULESET_REVISION_ADMIN_44_VISITS_THREE_MODAL_UI;FAIL_EXISTING_DURABLE_HR_OPERATIONAL_PARITY",
+    "humanAcceptance": "PARTIAL_ADMIN_FOCAL_I3_HOLD_DURABLE_MAPPING_P0_OPEN",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "sourceArtifactDigest": "sha256:fd0c445996eefe1ab8a3a3ae25e91dbea8f0052b2e12b41948343d4f44cd19de",
+    "sourceArtifact": "cxorbia-phasea-source.tar"
+  },
+  "devChromeReadOnly": {
+    "url": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxProjectId=cinepolis&cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV",
+    "roleVisible": "Administración",
+    "project": "cinepolis",
+    "period": "cinepolis-2026-10",
+    "visits": 44,
+    "assigned": 43,
+    "realized": 24,
+    "unassigned": 1,
+    "threeVisitUiDetails": "PASS_STIVEN_PORTALES_SUBMITTED_MIRAFLORES_OAKLAND_AGENDADAS",
+    "performance": "NOT_TIMED_THIS_FOCAL",
+    "hrWrites": 0,
+    "production": false
+  },
+  "firestoreBrowserReadback": {
+    "project": "cxorbia-backend-dev",
+    "identity": "aysseguros2009@gmail.com",
+    "path": "tenants/tya/projects/cinepolis/visits",
+    "readonly": true,
+    "liveDataAuthority": "NO_SECOND_RECONCILIATION_WAS_RUN",
+    "portales": {
+      "id": "OCTUBRE 26!5",
+      "ui": "Submitida",
+      "outerExecution": "not_realized",
+      "hrManagedExecution": "realized",
+      "outerSubmission": "not_submitted",
+      "hrManagedSubmission": "confirmed_hr"
+    },
+    "miraflores": {
+      "id": "OCTUBRE 26!19",
+      "ui": "Agendada 2026-10-24",
+      "outerControlDia": "P x Asignar",
+      "hrManagedControlDia": "OK",
+      "outerExecution": "not_realized",
+      "hrManagedExecution": "pending_realization"
+    },
+    "oaklandMall": {
+      "id": "OCTUBRE 26!20",
+      "ui": "Agendada 2026-10-25",
+      "outerControlDia": "P x Asignar",
+      "hrManagedControlDia": "OK",
+      "outerExecution": "not_realized",
+      "hrManagedExecution": "pending_realization"
+    }
+  },
+  "durableHrOperationalParityCount": 3,
+  "durableHrOperationalParity": {
+    "date": "2026-10-24",
+    "role": "Administración",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "periodId": "cinepolis-2026-10",
+    "observedVisits": 44,
+    "assigned": 43,
+    "unassigned": 1,
+    "realized": 24,
+    "exact": [
+      {
+        "id": "OCTUBRE 26!5",
+        "branch": "Portales",
+        "ui": "Submitida",
+        "shopper": "Stiven López",
+        "durableConflict": [
+          "executionState",
+          "realizada",
+          "submittedAt",
+          "submissionState",
+          "submit",
+          "questionnaireState",
+          "cuestFecha",
+          "controlDia",
+          "schedulingState"
+        ]
+      },
+      {
+        "id": "OCTUBRE 26!19",
+        "branch": "Miraflores",
+        "ui": "Agendada 2026-10-24",
+        "shopper": "Stiven López",
+        "durableConflict": [
+          "agendada",
+          "controlDia",
+          "executionState",
+          "schedulingState"
+        ]
+      },
+      {
+        "id": "OCTUBRE 26!20",
+        "branch": "Oakland Mall",
+        "ui": "Agendada 2026-10-25",
+        "shopper": "Stiven López",
+        "durableConflict": [
+          "agendada",
+          "controlDia",
+          "executionState",
+          "schedulingState"
+        ]
+      }
+    ],
+    "conclusion": "MAPPING_FAILURE_SOURCE_CORRECTED_BUT_THREE_EXISTING_FIRESTORE_VISITS_REQUIRE_NEW_PROTECTED_RECONCILIATION",
+    "status": "P0_PROVEN_I3_HOLD",
+    "production": false,
+    "secondReconcileAuthorized": false
+  },
+  "sourceFix": {
+    "sha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
+    "scope": "13_HR_MANAGED_OPERATIONAL_FIELDS_MIRRORED_WITH_PLATFORM_FINANCE_PRESERVED",
+    "qa": "4_OF_4_SOURCE_TESTS_PASS",
+    "sourceProofRun": 1851,
+    "servedDevRun": 1852
+  },
+  "hrCommandReceipts": {
+    "priorAuthorizedReconciliationReceiptPath": "tenants/tya/commandReceipts/hr-68f82a183be74365b9089bd039cc7fb9e9c754d4c51424613f446a1eb1500369",
+    "priorProviderAck": true,
+    "priorUnresolvedEffects": 0,
+    "newReconciliationExecuted": false,
+    "newAuthorizationRequired": true
+  },
+  "scopeLocks": "NO_HR_EXTERNAL_WRITES_NO_NEW_FIRESTORE_RECONCILIATION_IN_RUN1852",
+  "findingLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V511_2026-10-24.json",
+  "findingLedgerBlob": "3b37756d86fc4c8a8210aeffdc4c26a176867744",
+  "findingCountPreserved": 286,
+  "nextFindingIdReserved": "VRM-287",
+  "moduleTruth": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261024-V180.json",
+  "moduleTruthBlob": "c4d969e5fc70949f0e7f817f9ab5a971c2d5b4ba",
+  "moduleCountPreserved": 21,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "nextExactAction": "Obtain new scoped authorization for exactly one protected DEV tya/cinepolis revision d19... HR/Firebase reconciliation on runtime 00326; execute ACK/effects/idempotent readback only if source/revision match; then continue Admin and Shopper role E2E and I3 closure; production remains blocked.",
+  "requiredAuthorizationForNow": true,
+  "requiredBeforePersonalDataHrWriter": true,
+  "source": {
+    "sha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
+    "tree": "9013315b4de8ac941845c784dcc354d4bafdc501"
+  }
+}

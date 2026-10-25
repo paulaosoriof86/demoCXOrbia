@@ -1,0 +1,92 @@
+{
+  "receiptId": "CXORBIA-I3-A04-A05-C01-G05-LIVE-BLOCK-PASS-20261017",
+  "recordedAt": "2026-10-17T12:48:43.608Z",
+  "iteration": "I3",
+  "officialState": "HOLD",
+  "tasks": [
+    "A04",
+    "A05",
+    "C01",
+    "G05"
+  ],
+  "result": "LIVE_E2E_PASS_HUMAN_PREVIEW_READY",
+  "sourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
+  "sourceTree": "861f9d545ba997e2e04d9f94671c888a6aed53d1",
+  "currentMaterialization": {
+    "state": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "sourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
+    "sourceTree": "861f9d545ba997e2e04d9f94671c888a6aed53d1",
+    "runId": 39030902293,
+    "runNumber": 1740,
+    "artifactId": 12099439494,
+    "artifactDigest": "sha256:067fe09681e164e583a644f46c87a7cb6f30468c36a967b45c9d4761e48a4e81",
+    "runtimeRevision": "cxorbia-live-hr-dev-00306-js4",
+    "runtimeDigest": "sha256:87de8f0f555148c5fbd1dd55b77aa66fecee6ee20431539fd66233656cfe03e3",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/d5df0ad10d3312ec",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792238667158000",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/e9070ca6-234c-4a16-acf2-5ab3372eadb3",
+    "hrRevision": "5d369d8955ff899095aa113d094dccea5a1c94e8849b455906cd4f154bf28e48",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "firestoreRulesDeploys": 1,
+    "hrWrites": 0,
+    "production": false
+  },
+  "liveReadOnlyProof": {
+    "runId": 39031675862,
+    "runNumber": 1742,
+    "artifactId": 12100324076,
+    "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+    "sourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
+    "sourceTree": "861f9d545ba997e2e04d9f94671c888a6aed53d1",
+    "hrRevision": "5d369d8955ff899095aa113d094dccea5a1c94e8849b455906cd4f154bf28e48",
+    "representatives": [
+      "Julissa Flores",
+      "Priscila López",
+      "Paula Osorio",
+      "Admin"
+    ],
+    "authorityReadyMs": {
+      "julissa": 6827,
+      "priscila": 7189,
+      "paula": 6971,
+      "admin": 9780
+    },
+    "writes": {
+      "auth": 0,
+      "hr": 0,
+      "provider": 0
+    },
+    "deploys": 0,
+    "production": false
+  },
+  "c01ProviderProof": {
+    "runId": 39033804891,
+    "runNumber": 1746,
+    "artifactId": 12100809824,
+    "artifactZipSha256": "9da6a40efc3cffe9854851f64f525b1a2101cbf7b3b1c0146b08f16a8e191ebe",
+    "decision": "PASS_PREI4_FINAL_FOCAL_FINANCE",
+    "cumulativeDecision": "PASS_PREI4_ADMIN_004_CUMULATIVE_LIVE",
+    "sourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
+    "periodId": "cinepolis-2026-09",
+    "hrSourceRevision": "5d369d8955ff899095aa113d094dccea5a1c94e8849b455906cd4f154bf28e48",
+    "projectFinanceConfigSourceRevision": "0b2f989af18f15ee429a504a4d628cb12b34153fce23bd730c8c74c8228d7877",
+    "externalPaymentWrites": 0,
+    "bankWrites": 0,
+    "hrWrites": 0,
+    "production": false
+  },
+  "preview": {
+    "url": "https://cxorbia-backend-dev.web.app",
+    "scope": "A04/A05/C01/G05 only",
+    "humanApproval": "PENDING"
+  },
+  "findingsPreserved": 274,
+  "domains": 21,
+  "sourceFiles": 149,
+  "production": false,
+  "i4Authorized": false,
+  "nextExactAction": "Offer the exact RUN1740 DEV artifact at https://cxorbia-backend-dev.web.app for scoped human review of A04/A05/C01/G05 while preserving all other approvals. In parallel continue D02 only: parser-first DOCX/PDF extraction with extraction_quality and manual fallback, using the already-proven D02 owners; no OCR unless necessary, no new provider/workflow, no product-wide audit, no production."
+}

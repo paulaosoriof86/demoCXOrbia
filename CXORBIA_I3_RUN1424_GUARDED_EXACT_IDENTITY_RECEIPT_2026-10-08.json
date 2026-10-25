@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "cxorbia.i3.run1424.current-owner-readback.v1",
+  "iteration": "I3",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlBeforeHead": "8de0791eb3527f199e475a0458a3066295e56dfd",
+  "source": "4050e8afc952183131d48600b84260024ed78ac5",
+  "run1424": {
+    "id": 37879459116,
+    "status": "FAIL_HUMAN",
+    "representative": "PASS",
+    "hrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+    "identityGtCount": 6,
+    "hnHistoryLogin": "FAIL",
+    "adminShoppers": 203,
+    "hrShoppers": 201,
+    "platformOnly": 2,
+    "duplicateShopperIds": 0,
+    "screenshots": 80
+  },
+  "cases": [
+    {
+      "sourceShopperId": "shopper_gt_3106d9d44b",
+      "targetShopperId": "shp-0780f6f085b1",
+      "authority": "mapped_canonical_id",
+      "tenantAdjudicationVisible": false,
+      "targetFoundInProtectedHr": false,
+      "sourceHistoricalVisitCount": 1,
+      "action": "READ_ONLY_EXACT_LINK_OR_HUMAN_ADJUDICATION_NO_AUTOMERGE"
+    },
+    {
+      "sourceShopperId": "shopper_gt_3426ec3ff3",
+      "targetShopperId": "shopper_gt_5eb6ba4913",
+      "authority": "mapped_canonical_id",
+      "tenantAdjudicationVisible": false,
+      "targetFoundInProtectedHr": true,
+      "sourceHistoricalVisitCount": 2,
+      "action": "READ_ONLY_EXACT_LINK_OR_HUMAN_ADJUDICATION_NO_AUTOMERGE"
+    },
+    {
+      "sourceShopperId": "shopper_gt_5f3d6952c5",
+      "targetShopperId": "shopper_gt_338ec57592",
+      "authority": "mapped_canonical_id",
+      "tenantAdjudicationVisible": false,
+      "targetFoundInProtectedHr": true,
+      "sourceHistoricalVisitCount": 1,
+      "action": "READ_ONLY_EXACT_LINK_OR_HUMAN_ADJUDICATION_NO_AUTOMERGE"
+    },
+    {
+      "sourceShopperId": "shopper_gt_d5ebad6b6c",
+      "targetShopperId": "shopper_gt_2e8200a26e",
+      "authority": "mapped_canonical_id",
+      "tenantAdjudicationVisible": false,
+      "targetFoundInProtectedHr": true,
+      "sourceHistoricalVisitCount": 1,
+      "action": "READ_ONLY_EXACT_LINK_OR_HUMAN_ADJUDICATION_NO_AUTOMERGE"
+    },
+    {
+      "sourceShopperId": "shopper_gt_f65cbc6391",
+      "targetShopperId": "shp-58a449f10a07",
+      "authority": "mapped_canonical_id",
+      "tenantAdjudicationVisible": false,
+      "targetFoundInProtectedHr": false,
+      "sourceHistoricalVisitCount": 1,
+      "action": "READ_ONLY_EXACT_LINK_OR_HUMAN_ADJUDICATION_NO_AUTOMERGE"
+    },
+    {
+      "sourceShopperId": "shopper_gt_fc5d6fb927",
+      "targetShopperId": "shopper_gt_2e8200a26e",
+      "authority": "mapped_canonical_id",
+      "tenantAdjudicationVisible": false,
+      "targetFoundInProtectedHr": true,
+      "sourceHistoricalVisitCount": 1,
+      "action": "READ_ONLY_EXACT_LINK_OR_HUMAN_ADJUDICATION_NO_AUTOMERGE"
+    }
+  ],
+  "matrix": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V49.json",
+    "expectedBlob": "0e3d6c5523c81e40a49889a208fbbc167876bf7e",
+    "domains": 21,
+    "ownerBlobs": 95,
+    "sourceFiles": 148,
+    "phaseAComplete": false,
+    "allModulesMatch": false
+  },
+  "controlOnly": true,
+  "production": "DO_NOT_TOUCH",
+  "ciOnThisCommit": "SKIP_CI_NO_CLAIM_OF_RUN_PROOF",
+  "humanApproval": "PENDING",
+  "next": "Resolve six exact HR identity aliases by source/target/profile/tenant adjudication; do not auto-merge. Separately prove HN signed-claims login/boot. Fix P0 B2 editable display name without HR/Auth owner change. Same DEV source and 45+18 human findings, Gate20/21 only after I3 PASS. No I4."
+}

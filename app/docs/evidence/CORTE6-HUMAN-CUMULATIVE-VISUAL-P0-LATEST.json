@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "cxorbia.c6.human-cumulative-visual-p0.v1",
+  "generatedAt": "2026-07-31T18:43:00-06:00",
+  "decision": "FAIL_C6_HUMAN_CUMULATIVE_VISUAL_P0",
+  "environment": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "hostingSite": "cxorbia-backend-dev",
+    "hostingTarget": "cxorbia-dev",
+    "production": false
+  },
+  "observed": {
+    "dashboardStableTopLevel": {
+      "period": "2026-07",
+      "visits": 44,
+      "gt": 34,
+      "hn": 10,
+      "realizedTile": 40
+    },
+    "stateContradiction": {
+      "flowRealizedGT": 5,
+      "flowRealizedHN": 2,
+      "topRealized": 40,
+      "reason": "dashboard phase flow used a second obsolete literal-state machine instead of canonicalFacets"
+    },
+    "comparative": "previous periods displayed without source although canonical 14-period history exists",
+    "refresh": "visible jump upward and back downward; sidebar position also moved",
+    "shoppers": {
+      "sourceBadge": 210,
+      "pageCount": 219,
+      "duplicateDisplayIdentities": true,
+      "falseCompleteProfiles": true,
+      "missingCredentials": true,
+      "missingWhatsapp": true,
+      "historySplitAcrossRows": true,
+      "certificationNotVisibleToAdmin": true
+    },
+    "periodContext": "sidebar/internal selectors could display MAY while finance/liquidation content remained JUL",
+    "shopperPortal": {
+      "adminHistoryExample": 6,
+      "portalActiveExample": 1,
+      "portalHistoryExample": 0,
+      "benefitsEmpty": true
+    },
+    "finance": {
+      "historicalDashboardMayVisible": true,
+      "movementsMayZero": true,
+      "liquidationsPeriodMismatch": true,
+      "liquidationDetailsIncomplete": true
+    }
+  },
+  "rootCauses": [
+    "Remote smoke checked asset parity and synthetic idempotence but did not validate cross-module semantic equality in the human browser.",
+    "The previous composer appended unmatched protected profiles to the operational HR shopper list, creating split identities without a technical crosswalk.",
+    "Dashboard, phase flow, finance and shopper portal retained independent literal-state interpretations instead of one canonicalFacets authority.",
+    "The watcher restored DOM select values separately from CX.data.currentPeriodId and captured the wrong scroll containers, producing period-model divergence and visible jumps.",
+    "Profile completeness trusted stored flags instead of actual minimum contact and credential fields.",
+    "Mis Visitas selected at most one visit per literal state and treated only liquidated/cancelled as history.",
+    "Canonical finance snapshots and payment history were not projected consistently into Movimientos, Liquidaciones and Beneficios."
+  ],
+  "safety": {
+    "hostingDeploysInThisAudit": 0,
+    "cloudRunDeploys": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesDeploys": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "merge": false,
+    "production": false
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "cxorbia.i3.run1321.action-findings-freeze.v1",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "controlParentHead": "060160c38271e83eda927549d56aa3546a85b480",
+  "productSourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
+  "productSourceTree": "9985bfac4d3188abf2bddb21eee541336aff2222",
+  "run1321": {
+    "runId": 37649334166,
+    "runNumber": 1321,
+    "jobId": 112888347381,
+    "artifactId": 11495203364,
+    "artifactDigest": "sha256:a99665041162e47c0053dd672b5dcab88e462de5da5743c92a0fb7c56e9dbb4f",
+    "decision": "HOLD_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL_ACTION_FINDINGS",
+    "sourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
+    "sourceTree": "9985bfac4d3188abf2bddb21eee541336aff2222",
+    "materializationRunId": 37641062754,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/f9f23f610214eac2",
+    "hrRevision": "44c8a38a45800606ddb7db5c8ab902324bd7daf588fe8653165fd5e1b7e1a285",
+    "production": false
+  },
+  "findings": {
+    "VRM-261": {
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "title": "Reservation action remains enabled when shopper has zero eligible branches",
+      "owner": [
+        "app/modules/reservas.js"
+      ],
+      "rootCauseStatus": "PROVEN_SOURCE"
+    },
+    "VRM-262": {
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "title": "Mis Beneficios receipt download control is rendered without an action owner",
+      "owner": [
+        "app/modules/beneficios.js"
+      ],
+      "rootCauseStatus": "PROVEN_SOURCE"
+    },
+    "VRM-263": {
+      "classification": "PERSISTENCE_FAILURE",
+      "severity": "P0",
+      "title": "Shopper support tickets are browser-memory only and disappear after reload",
+      "owner": [
+        "app/modules/soporte.js",
+        "app/core/backend-bulletins.js"
+      ],
+      "rootCauseStatus": "PROVEN_SOURCE"
+    },
+    "VRM-264": {
+      "classification": "PERSISTENCE_FAILURE",
+      "severity": "P0",
+      "title": "Novedades read receipts use browser localStorage instead of durable bulletinReads",
+      "owner": [
+        "app/modules/novedades.js",
+        "app/core/backend-bulletins.js"
+      ],
+      "rootCauseStatus": "PROVEN_SOURCE"
+    }
+  },
+  "tinyFishHumanAttempt": {
+    "classification": "AUTH_FAILURE",
+    "productDefect": false,
+    "runId": "2fef6770-1abd-40d5-8f95-f3681561cfbf",
+    "profileId": "prof_67673ed0a9194322",
+    "result": "LOGIN_SCREEN_SESSION_NOT_PRESENT",
+    "consequence": "Human-like reproduction deferred; CI/source findings remain valid and product correction may proceed. Do not attribute this AUTH_FAILURE to CXOrbia product behavior.",
+    "production": false
+  },
+  "production": false
+}

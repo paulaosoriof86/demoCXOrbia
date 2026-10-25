@@ -1,0 +1,286 @@
+{
+  "schemaVersion": "cxorbia.i3.delivery-blocks.human-checkpoint.20261012.v2",
+  "status": "HOLD_HUMAN_VISUAL_P0_UNCLOSED",
+  "date": "2026-10-12",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "iteration": "I3",
+  "production": "DO_NOT_TOUCH",
+  "sourceSha": "aa435fa9e0bfee37c118747637a266581b853fe8",
+  "sourceTree": "b71fd011706686f40e75f8313045d950a2916e5a",
+  "controlHeadBefore": "2f42f0ae9045557ccedb78acd13b43dd085925c0",
+  "latestAccreditedDev": {
+    "run": 1454,
+    "sourceSha": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/ab9a6c808233d128",
+    "runtimeRevision": "cxorbia-live-hr-dev-00283-kc5"
+  },
+  "routes": {
+    "admin": [
+      "midia",
+      "dashboard",
+      "visitas",
+      "postulaciones",
+      "reservas",
+      "shoppers",
+      "informes",
+      "clientes",
+      "proyectos",
+      "periodos",
+      "historico",
+      "rutas",
+      "hrsource",
+      "cuestionarios",
+      "importador",
+      "aprendizaje",
+      "cert",
+      "documentos",
+      "soporte",
+      "novedades",
+      "financiero",
+      "movimientos",
+      "liquidaciones",
+      "lotes",
+      "costos",
+      "crm",
+      "marketing",
+      "config",
+      "administrabilidad",
+      "usuarios",
+      "automatizaciones",
+      "integraciones",
+      "correo",
+      "marca"
+    ],
+    "shopper": [
+      "midia",
+      "miperfil",
+      "visitas",
+      "reservas",
+      "misvisitas",
+      "aprendizaje",
+      "cert",
+      "documentos",
+      "soporte",
+      "novedades",
+      "beneficios",
+      "mireportes"
+    ],
+    "client": [
+      "cli_dashboard",
+      "cli_sucursales",
+      "cli_acciones",
+      "cli_insights",
+      "cli_capacitacion",
+      "aprendizaje",
+      "cli_reportes",
+      "cli_programa",
+      "cli_market",
+      "novedades"
+    ],
+    "warning": "Declared routes are not HUMAN_PASS or release approval"
+  },
+  "blocks": [
+    {
+      "id": "B1",
+      "title": "Autenticación real y Mi Día",
+      "status": "VISUAL_MIDIA_PASS_AUTH_HOLD",
+      "exit": "Contraseña humana sin reload: tiempo Auth, claims, Firestore, HR, Mi Día; GT/HN y Admin.",
+      "humanCheckpointOct12": {
+        "findingIds": [],
+        "state": "PRESERVE_PREVIOUS_APPROVAL",
+        "humanReacceptance": false
+      }
+    },
+    {
+      "id": "B2",
+      "title": "Mi Perfil, Shoppers e identidad",
+      "status": "HOLD_HUMAN_VISUAL_P0",
+      "exit": "Edición de identidad display-only, fuente HR inmutable, country, banca por RBAC, provider ACK, readback/reload y adjudicaciones exactas.",
+      "humanCheckpointOct12": {
+        "findingIds": [
+          "HF-20261012-01",
+          "HF-20261012-02",
+          "HF-20261012-03",
+          "HF-20261012-04",
+          "HF-20261012-05",
+          "HF-20261012-30"
+        ],
+        "state": "HOLD_HUMAN_P0_SCOPE_OPEN",
+        "humanReacceptance": false
+      }
+    },
+    {
+      "id": "B3",
+      "title": "Mis Visitas, agendar, cancelar y check-in",
+      "status": "HOLD_HUMAN_VISUAL_P0",
+      "exit": "Quincena/franja, cancelación con motivo, pending visible, cámara/GPS/timestamp/visitId/Storage ACK; ajustar sólo altura tarjeta.",
+      "humanCheckpointOct12": {
+        "findingIds": [
+          "HF-20261012-03",
+          "HF-20261012-06",
+          "HF-20261012-07"
+        ],
+        "state": "HOLD_HUMAN_P0_SCOPE_OPEN",
+        "humanReacceptance": false
+      }
+    },
+    {
+      "id": "B4",
+      "title": "Academia, Certificaciones, Recursos, Cuestionarios",
+      "status": "HOLD_HUMAN_VISUAL_P0",
+      "exit": "Preservar banco/diseño aprobado, crear y aprobar con provider, exact question count, recertificación, evidencia/descargas E2E.",
+      "humanCheckpointOct12": {
+        "findingIds": [
+          "HF-20261012-08",
+          "HF-20261012-09"
+        ],
+        "state": "HOLD_HUMAN_P0_SCOPE_OPEN",
+        "humanReacceptance": false
+      }
+    },
+    {
+      "id": "B5",
+      "title": "Mis Beneficios y pagos históricos",
+      "status": "HOLD_HUMAN_VISUAL_P0",
+      "exit": "Corte financiero histórico y paridad con Finance/Profile; KPIs, drill, tabla newest first, acciones por fila.",
+      "humanCheckpointOct12": {
+        "findingIds": [
+          "HF-20261012-10",
+          "HF-20261012-11",
+          "HF-20261012-30"
+        ],
+        "state": "HOLD_HUMAN_P0_SCOPE_OPEN",
+        "humanReacceptance": false
+      }
+    },
+    {
+      "id": "B6",
+      "title": "Soporte, Novedades, Mis Reportes, Histórico",
+      "status": "MATCH_SUBSET_REVALIDATE",
+      "exit": "Persistencia y no reaparición/cross-shopper leakage; informes por proyecto/country/revision.",
+      "humanCheckpointOct12": {
+        "findingIds": [],
+        "state": "PRESERVE_PREVIOUS_APPROVAL",
+        "humanReacceptance": false
+      }
+    },
+    {
+      "id": "B7",
+      "title": "Postulaciones, asignaciones HR, Reservas y Dashboard Operativo",
+      "status": "HOLD_HUMAN_VISUAL_P0",
+      "exit": "Postulaciones web + asignaciones HR en gestión, estados y origen separados, acciones/modales contextuales Dashboard, agendar/cuestionario/reprog/cancel/assign, provider ACK/idempotencia.",
+      "humanCheckpointOct12": {
+        "findingIds": [
+          "HF-20261012-03",
+          "HF-20261012-12",
+          "HF-20261012-13",
+          "HF-20261012-14",
+          "HF-20261012-15",
+          "HF-20261012-16",
+          "HF-20261012-17",
+          "HF-20261012-18",
+          "HF-20261012-19",
+          "HF-20261012-20",
+          "HF-20261012-28",
+          "HF-20261012-30"
+        ],
+        "state": "HOLD_HUMAN_P0_SCOPE_OPEN",
+        "humanReacceptance": false
+      }
+    },
+    {
+      "id": "B8",
+      "title": "Finanzas Admin, Movimientos, Liquidaciones, Lotes, CxP/CxC",
+      "status": "HOLD_HUMAN_VISUAL_P0",
+      "exit": "Pagos individuales y lote parcial, soporte Storage, fecha/referencia, conciliación; misma verdad durable en Beneficios.",
+      "humanCheckpointOct12": {
+        "findingIds": [
+          "HF-20261012-21",
+          "HF-20261012-22",
+          "HF-20261012-23",
+          "HF-20261012-24",
+          "HF-20261012-25",
+          "HF-20261012-26",
+          "HF-20261012-27",
+          "HF-20261012-28"
+        ],
+        "state": "HOLD_HUMAN_P0_SCOPE_OPEN",
+        "humanReacceptance": false
+      }
+    },
+    {
+      "id": "B9",
+      "title": "Proyectos, configuración transversal y Portal Cliente",
+      "status": "HOLD_FINAL",
+      "exit": "Tenant/proyecto/periodo/country/currency/routing, aislamiento, 21 dominios MATCH, mismo artifact, Gate20 y Gate21.",
+      "humanCheckpointOct12": {
+        "findingIds": [],
+        "state": "PRESERVE_PREVIOUS_APPROVAL",
+        "humanReacceptance": false
+      }
+    }
+  ],
+  "accepted": {
+    "midia": {
+      "humanVisual": "PASS_VISUAL_SURFACE_ONLY",
+      "date": "2026-10-08",
+      "keep": true,
+      "redoOnlyOnProvenDrift": true
+    },
+    "academia": "PRESERVE_APPROVED_VISUAL_AND_CONTENT",
+    "misvisitas": "PRESERVE_UI; CARD_HEIGHT_ONLY_IF_NO_ACTION_LOSS",
+    "miperfil": "PRESERVE_PROGRESS; FINAL_DRILL_AND_ACK_PENDING",
+    "dashboard": "PRESERVE_APPROVED_PRIMARY_ACTIONS_AND_MODALS",
+    "finance": "PRESERVE_PROVEN_IMPLEMENTATION; HISTORICAL_PARITY_PENDING",
+    "benefitsHistoricalOrder": {
+      "status": "PRESERVE_ACCEPTED_NEWEST_FIRST",
+      "noReorder": true
+    }
+  },
+  "findings": {
+    "original45": "RECOVERY-I3-HUMAN-VISUAL-FAIL-OBSERVATION-MAP-20261006.json",
+    "oct08": "CXORBIA_I3_HUMAN_VISUAL_CHECKPOINT_2026-10-08_B1_B2_B3_B5_B7_B8.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V366_2026-10-10.json",
+    "count": 274,
+    "nextId": "VRM-275",
+    "moduleTruth": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261010-V57.json",
+    "domainCount": 21,
+    "sourceMatch": 10,
+    "notClosed": 11
+  },
+  "reviewRule": {
+    "visualBlocks": "Paula requests incremental guided review after focal P0 E2E on same certified DEV candidate, freeze per-block acceptance",
+    "sameArtifact": true,
+    "noParallelCandidate": true,
+    "noRebuildPerBlock": true,
+    "finalCumulativeGate20Gate21": true,
+    "smallDefects": "Exact owner fix in current cumulative source; independently proven blocks continue; no forgotten findings",
+    "predecessorReviewOverride": "2026-10-06 single human checkpoint cadence only; no override of I3 technical gates or I4 authorisation"
+  },
+  "postulaciones": {
+    "platform": "Application created by shopper, provider ACK, visible immediately in Gestión and after reload, update/delete/no reappearance.",
+    "hr": "HR assigned visits appear in management with their source and workflow distinct from platform applications; no duplicate/invented HR writes.",
+    "dashboard": "Primary operational dashboard contextual actions & modals by actionable visit state: solicitar agendamiento, cuestionario, reasignar, cancelar, revisar solicitudes; do not bury in alternate drill-down.",
+    "crossRole": "Admin/Shopper durable notifications with target RBAC/ACK/readback, period/project/tenant exact."
+  },
+  "newProject": {
+    "status": "P1_POST_GO_LIVE_EXCEPT_P0_DEPENDENCY",
+    "requirement": "Project onboarding/configurable routeSource internal|external/provider, currency/country/period; no global Cinépolis hardcode; preserve already-built wizard"
+  },
+  "nextExactAction": "Codex owner B2 exact; preserve and carry all Oct12 findings and prior 274. No user review re-request until P0 source+DEV proof.",
+  "targetDate": "2026-10-12_CONDITIONAL_ON_I3_GO",
+  "i4Authorization": false,
+  "supersedes": {
+    "path": "CXORBIA_I3_ENTREGAS_BLOQUES_Y_P0_2026-10-11.json",
+    "gitBlob": "412c8476c0497ab536e943339a6bf8b3049b658b"
+  },
+  "cumulativeLedger": {
+    "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V370_2026-10-12.json",
+    "gitBlob": "6f21f6bceb745380842f93c29d64dd2444b5cc34",
+    "vrms": 274,
+    "humanRecordsOct06": 45,
+    "humanRecordsOct08": 18,
+    "humanRecordsOct12": 30
+  }
+}

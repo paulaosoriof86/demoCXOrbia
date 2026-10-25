@@ -1,0 +1,138 @@
+{
+  "schemaVersion": "cxorbia.legal-publication-snapshot.v1",
+  "status": "source_only_contract_prepared_no_provider_materialization",
+  "purpose": "Freeze resolved public tenant/project legal configuration into an immutable publication version before computing the legal content digest, preserving no-code editability without mutable legal text.",
+  "invariants": {
+    "mutableTenantProfileIsNotPublishedLegalAuthority": true,
+    "unresolvedPlaceholdersMayBePublished": false,
+    "resolvedValuesFrozenBeforeDigest": true,
+    "contentDigestComputedAfterRendering": true,
+    "publishedVersionImmutable": true,
+    "laterProfileChangeMutatesPublishedVersion": false,
+    "restrictedRegisteredDomicileMayEnterPublicSnapshotAutomatically": false,
+    "onlyApprovedPublicAddressMayRender": true,
+    "disabledProviderMayRenderAsCurrentRecipient": false,
+    "historicalAcceptanceReceiptsRemainBoundToOriginalVersionAndDigest": true,
+    "automaticAcceptance": false,
+    "rebrandDoesNotRewriteHistoricalVersion": true
+  },
+  "inputs": {
+    "template": {
+      "templateId": "required",
+      "templateVersion": "required",
+      "canonicalEncoding": "UTF-8",
+      "canonicalLineEndings": "LF"
+    },
+    "tenantLegalProfile": {
+      "providerPath": "tenants/{tenantId}/legalProfile/current",
+      "revisionRequired": true
+    },
+    "providerRegistry": {
+      "providerPath": "tenants/{tenantId}/legalProviders/{providerKey}",
+      "includeOnlyTechnicalActiveStateTrue": true
+    },
+    "projectEvidencePolicy": {
+      "providerPath": "tenants/{tenantId}/projects/{projectId}/evidencePolicy/current",
+      "requiredWhenPublicationScopeProject": true
+    }
+  },
+  "publicationSnapshot": {
+    "providerPath": "tenants/{tenantId}/legalContents/{legalContentId}/versions/{legalVersion}",
+    "requiredMetadata": [
+      "tenantId",
+      "legalContentId",
+      "legalVersion",
+      "templateId",
+      "templateVersion",
+      "sourceTenantLegalProfileRevision",
+      "resolvedAt",
+      "active",
+      "scopeMode",
+      "roleApplicability",
+      "contentDigest",
+      "renderedContentEncoding",
+      "renderedContentLineEndings"
+    ],
+    "resolvedPublicSections": [
+      "operatorPublicIdentity",
+      "publicLegalAddress",
+      "publicContacts",
+      "platformDisplayName",
+      "platformTrademarkStatus",
+      "platformLicensorPublicIdentity",
+      "retentionPublicSummary",
+      "disputePublicSummary",
+      "activeProviderRecipients",
+      "countryAnnexes"
+    ],
+    "restrictedFieldsForbidden": [
+      "registeredLegalDomicileRestricted",
+      "rawBankAccount",
+      "rawIdentityDocument",
+      "password",
+      "token",
+      "secret",
+      "providerCredential"
+    ],
+    "activeProviderRecipientsRule": "snapshot_only_providers_with_system_derived_technicalActiveState_true_and_approved_legal_metadata",
+    "templateResolutionRule": "all_required_public_placeholders_resolved_before_publish",
+    "canonicalRenderedContentRule": "render template using the frozen resolved public sections, normalize UTF-8 and LF, then compute SHA-256",
+    "contentDigest": "sha256(canonicalRenderedContentBytes)",
+    "sourceRevisionAudit": true,
+    "createOnly": true
+  },
+  "changeImpact": {
+    "nonMaterialExamples": [
+      "cosmetic_ui_only_change_not_in_rendered_legal_content"
+    ],
+    "requiresReview": [
+      "operator_identity",
+      "contracting_person_or_entity",
+      "country_scope",
+      "public_legal_address",
+      "privacy_or_legal_contact",
+      "material_retention_change",
+      "active_provider_data_flow",
+      "dispute_policy",
+      "platform_licensor",
+      "evidence_processing_scope",
+      "legal_text_change"
+    ],
+    "materialChangeAction": "publish_new_immutable_legalVersion_after_human_review",
+    "reacceptance": "evaluate_and_require_when_material_policy_requires"
+  },
+  "acceptanceBinding": {
+    "receiptReferences": [
+      "tenantId",
+      "scopeMode",
+      "projectId_when_applicable",
+      "actorUid",
+      "role",
+      "legalContentId",
+      "legalVersion",
+      "contentDigest"
+    ],
+    "laterMutableProfileRevisionDoesNotChangeReceiptMeaning": true,
+    "providerAckRequired": true
+  },
+  "safetyForThisBlock": {
+    "providerCredentials": 0,
+    "providerReads": 0,
+    "providerWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "legalContentWrites": 0,
+    "legalAcceptanceWrites": 0,
+    "historicalCredentialAccess": 0,
+    "passwordResets": 0,
+    "hrWrites": 0,
+    "storageWrites": 0,
+    "rulesWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false
+  },
+  "nextGate": "COUNSEL_REVIEW_AND_HUMAN_APPROVAL_BEFORE_PROVIDER_MATERIALIZATION"
+}

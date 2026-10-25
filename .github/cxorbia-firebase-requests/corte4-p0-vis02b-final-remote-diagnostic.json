@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "cxorbia.corte4-p0-vis02b-final-remote-diagnostic.v1",
+  "enabled": true,
+  "scope": "REMOTE_READ_ONLY_DIAGNOSTIC_NO_PROVIDER_WRITES",
+  "authorizationRef": "c4-p0-vis02b-final-20260729-01",
+  "deployedSourceCommit": "e9b7441fab4370ba455a77791b79b6e167cd33ac",
+  "triggerNonce": 1,
+  "production": false,
+  "providerWrites": 0
+}

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm168.successor-source-reproof.v1",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "state": "PASS_SOURCE_STATIC_REPROOF_PENDING_DEV_MATERIALIZATION",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "finding": "VRM-168",
+  "classification": "MAPPING_FAILURE",
+  "severity": "P0",
+  "predecessorProductSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+  "sourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+  "sourceTreeAuthority": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
+  "productDelta": [
+    "app/adapters/tya-cumulative-read-model-v2.js"
+  ],
+  "qaDelta": [
+    "tools/qa/tya-cumulative-read-model-regression-gate.mjs"
+  ],
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "focalRegression": {
+    "missingTransientIdentityMapsTo": "shopper_gt_1440137b73",
+    "existingHrIdentityConflictRemainsFailClosed": true,
+    "conflictReason": "hr_platform_assignment_conflict"
+  },
+  "latestFailedLiveReproof": {
+    "runId": 37080258505,
+    "jobId": 111079052603,
+    "artifactId": 11258119220,
+    "artifactDigest": "sha256:49e9efd7db62b8935bb1d16378bd3090a7828c6d660f1fe97b72928af54c07e2",
+    "hrRowId": "OCTUBRE 26!6",
+    "authenticatedShopperId": "shopper_gt_1440137b73",
+    "projectedBrowserShopperId": "s3",
+    "cardFound": false,
+    "scheduleButtonFound": false,
+    "providerAuthHealthy": true
+  },
+  "decision": "PASS_VRM168_SUCCESSOR_SOURCE_STATIC_REPROOF",
+  "production": "DO_NOT_TOUCH"
+}

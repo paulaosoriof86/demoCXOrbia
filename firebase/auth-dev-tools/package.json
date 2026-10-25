@@ -1,0 +1,14 @@
+{
+  "name": "cxorbia-auth-dev-tools",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Herramientas locales para crear usuarios DEV ficticios y claims en Firebase DEV.",
+  "license": "UNLICENSED",
+  "type": "commonjs",
+  "scripts": {
+    "create-dev-users": "node create-dev-users-and-claims.cjs"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.4.0"
+  }
+}

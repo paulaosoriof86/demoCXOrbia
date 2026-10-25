@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "cxorbia.m8.durable-evidence.v1",
+  "generatedAt": "2026-08-13T11:20:48.819Z",
+  "milestone": "M8",
+  "decision": "PASS_M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY",
+  "phaseA": {
+    "entryPercent": 93,
+    "m8Points": 3,
+    "certifiedPercent": 96,
+    "remainingPercent": 4
+  },
+  "execution": {
+    "requestId": "m8-human-validation-rollback-ready-20260813-08",
+    "requestCommitSha": "098cc860ce497a1e1017528ef6072ef218753fa0",
+    "targetHeadSha": "62edaf552c2a62a8964671f691d600a417ae63f8",
+    "workflowRunId": 31694998731,
+    "jobId": 94430661554,
+    "artifactId": 9178957729,
+    "artifactDigest": "sha256:296a404470dc692d2b01679550d2e19b3429ca281f7c9333655ebf3bb8b1f85b"
+  },
+  "runtime": {
+    "decision": "PASS_M8_HUMAN_BROWSER_LIVE_HR_RECONCILIATION_READONLY",
+    "principal": {
+      "role": "admin",
+      "authNamespace": "staff",
+      "tenantId": "tya",
+      "projectId": "cinepolis",
+      "membershipVerified": true
+    },
+    "runtimeSourceMode": "live_hr_runtime",
+    "liveHr": {
+      "periods": 15,
+      "visits": 660,
+      "protectedProfiles": 197,
+      "identityMapSize": 211,
+      "firstPeriod": "2025-06",
+      "latestPeriod": "2026-08",
+      "duplicateVisitKeys": 0,
+      "duplicateShopperIds": 0
+    },
+    "requiredRoutesPassed": [
+      "dashboard",
+      "proyectos",
+      "visitas",
+      "postulaciones",
+      "cert",
+      "financiero",
+      "aprendizaje"
+    ],
+    "freshHrReconciliations": 2,
+    "reconciliationVisitCounts": [660, 660],
+    "reconciliationAddedVisitKeys": [0, 0],
+    "reconciliationRemovedVisitKeys": [0, 0],
+    "financeBenefitsRoleSplit": {
+      "adminFinanceVisible": true,
+      "adminShopperBenefitsVisible": false,
+      "shopperBenefitsRoleDeclared": true
+    },
+    "diagnostics": {
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "sameOriginHttpErrors": 0,
+      "sameOriginRequestFailures": 0
+    }
+  },
+  "confidentialityGate": {
+    "status": "EXPECTED_HUMAN_CONSENT_GATE",
+    "acceptanceLocalOnlyProven": true,
+    "consentRecordedByQa": false,
+    "browserLocalStorageWritesByQa": 0,
+    "postGateQaMethod": "non_consent_post_gate_qa_router_continuation",
+    "navCountObserved": 34
+  },
+  "rollbackReadiness": {
+    "decision": "PASS_M8_ROLLBACK_READINESS_SOURCE_GATE",
+    "status": "READY_FAIL_CLOSED_FOR_M9_PROVIDER_CAPTURE",
+    "runtimeAppParityWithM7Deployed": true,
+    "runtimeAppChanges": [],
+    "currentProductionReleaseCaptured": false,
+    "rollbackExecutionAuthorized": false,
+    "next": "M9 provider pre-cutover release capture and rollback-capability read, then explicit production promotion gate"
+  },
+  "sourceLock": {
+    "buildId": "ecc725866acc3eb8",
+    "manifestFile": "docs/MANIFEST-V7-2-P0F1-RESPONSIVE-20260804.json",
+    "aggregateSha256": "ecc725866acc3eb8aab292000be3ec31d1c46b5c14a53c8889fa7d6716a997e2",
+    "candidateId": "CLOUD-V7-2-P0F1-RESPONSIVE",
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "docs-tya-v6-v71-audit",
+    "pullRequest": 7,
+    "production": false
+  },
+  "safety": {
+    "providerWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "merge": false,
+    "production": false,
+    "credentialsExposed": false,
+    "tokensExposed": false
+  }
+}

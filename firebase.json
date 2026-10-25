@@ -1,0 +1,119 @@
+{
+  "hosting": {
+    "target": "cxorbia-dev",
+    "public": "app",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "redirects": [
+      {
+        "source": "/",
+        "destination": "/index-backend-dev.html",
+        "type": 302
+      }
+    ],
+    "rewrites": [
+      {
+        "source": "/api/tenants/**",
+        "run": {
+          "serviceId": "cxorbia-live-hr-dev",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "/api/tya/cinepolis/hr-live",
+        "run": {
+          "serviceId": "cxorbia-live-hr-dev",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "/v1/cxorbia/commands",
+        "run": {
+          "serviceId": "cxorbia-live-hr-dev",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "**",
+        "destination": "/index-backend-dev.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**/*.html",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "text/html; charset=utf-8"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "no-store, no-cache, max-age=0, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "**/*.js",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "application/javascript; charset=utf-8"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "no-store, no-cache, max-age=0, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "**/*.css",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "text/css; charset=utf-8"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "no-store, no-cache, max-age=0, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "**/*.json",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=utf-8"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "no-store, no-cache, max-age=0, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "**/*.webmanifest",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "application/manifest+json; charset=utf-8"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "no-store, no-cache, max-age=0, must-revalidate"
+          }
+        ]
+      }
+    ]
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  }
+}

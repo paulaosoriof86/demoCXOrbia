@@ -1,0 +1,123 @@
+{
+  "contract": "postulation-management-decision-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "whatsappApiAllowed": false,
+  "purpose": "Define admin/ops postulation management queues, grouping, approval decisions, date adjustment requests, confirmation requests, reschedule requests and notification fallback strategy.",
+  "groupingViews": [
+    "by_branch",
+    "by_shopper",
+    "by_project",
+    "by_quincena_or_period",
+    "by_status",
+    "by_date_requested",
+    "by_restriction_conflict",
+    "by_ops_owner"
+  ],
+  "decisionSupport": {
+    "branchView": [
+      "show all postulations for the same branch/visit",
+      "show Q1/Q2 or period split when relevant",
+      "show proposed dates",
+      "show restriction warnings",
+      "show shopper history for branch/project",
+      "show available slots or duplicate risks"
+    ],
+    "shopperView": [
+      "show all postulations from same shopper",
+      "show if shopper applied to multiple visits",
+      "show where there are fewer applicants",
+      "show frequency/last visit conflicts",
+      "show score/ranking placeholder when available",
+      "show current assignments"
+    ]
+  },
+  "postulationStatuses": [
+    "pending_review",
+    "date_adjustment_requested",
+    "date_confirmation_requested",
+    "approved_pending_schedule",
+    "approved_with_date",
+    "not_selected_soft",
+    "rejected_ineligible",
+    "withdrawn",
+    "expired",
+    "manual_review_required",
+    "conflict_review_required"
+  ],
+  "adminOpsActions": {
+    "approveWithRequestedDate": {
+      "writesAllowedNow": false,
+      "requires": ["tenantId", "projectId", "visitId", "postulationId", "shopperId", "approvedBy", "approvedAt"],
+      "effects": ["assign_visit", "remove_from_available", "notify_shopper", "prevent_duplicate_approval"]
+    },
+    "approveForDifferentPeriodOrVisit": {
+      "writesAllowedNow": false,
+      "requires": ["tenantId", "projectId", "targetVisitId", "postulationId", "shopperId", "approvedBy", "reason"],
+      "notes": "Example: approve one shopper for Q1 and another for Q2 when project rules allow."
+    },
+    "requestDateAdjustment": {
+      "writesAllowedNow": false,
+      "requires": ["tenantId", "projectId", "visitId", "postulationId", "shopperId", "requestedBy", "reason", "suggestedWindow"],
+      "effects": ["notify_shopper", "keep_postulation_open", "record_reason"]
+    },
+    "requestDateConfirmation": {
+      "writesAllowedNow": false,
+      "requires": ["tenantId", "projectId", "visitId", "assignmentId", "shopperId", "requestedBy", "reason"],
+      "effects": ["notify_shopper", "record_followup", "keep_assignment_active"]
+    },
+    "requestRescheduleFromOps": {
+      "writesAllowedNow": false,
+      "requires": ["tenantId", "projectId", "visitId", "assignmentId", "shopperId", "requestedBy", "reason"],
+      "effects": ["notify_shopper", "record_followup", "set_reschedule_requested"]
+    },
+    "softNotSelected": {
+      "writesAllowedNow": false,
+      "requires": ["tenantId", "projectId", "visitId", "postulationId", "shopperId", "decidedBy"],
+      "messageTone": "soft_non_rejection",
+      "notes": "Do not send harsh rejected wording when the shopper was simply not selected this time."
+    }
+  },
+  "notificationStrategy": {
+    "channels": ["in_app", "whatsapp_web", "make_messaging_future", "email_future"],
+    "fallbackOrder": ["make_messaging_future_when_authorized", "whatsapp_web", "in_app"],
+    "rules": [
+      "When Make/API messaging is disabled, prepare WhatsApp Web message and in-app notification.",
+      "All notifications must record intended channel and delivery status when runtime is enabled later.",
+      "Approval notification must include who approved internally for audit, not necessarily visible to shopper unless configured.",
+      "Not-selected messaging must be soft and encourage applying to other visits when appropriate.",
+      "Request date adjustment and confirmation must include clear reason and requested action."
+    ]
+  },
+  "duplicatePrevention": [
+    "Once a postulation is approved and active assignment exists, the visit must leave available/approval queue for other ops users.",
+    "Other pending postulations for same visit must be marked not_selected_soft or pending alternate period/manual review according to admin decision.",
+    "Do not allow two ops users to approve the same visit silently.",
+    "Use visitId/hrRowId/assignmentId, not branch name only."
+  ],
+  "academyImpact": {
+    "roles": ["admin", "ops", "shopper", "super", "consultant_partner"],
+    "manualsToUpdate": ["Postulation management", "Approval decisions", "Date adjustment requests", "Soft not selected messaging", "WhatsApp fallback"],
+    "coursesToUpdate": ["Ops postulation queue", "Admin approval strategy", "Shopper postulation outcomes"],
+    "newLessons": [
+      "How to compare postulations by branch",
+      "How to compare postulations by shopper",
+      "How to request a date adjustment",
+      "How to ask for date confirmation",
+      "How to approve without duplicate work",
+      "How to send soft not-selected messages"
+    ]
+  },
+  "hardStops": [
+    "Do not send real WhatsApp API from this contract.",
+    "Do not call Make from this contract.",
+    "Do not write Firestore from this contract.",
+    "Do not use harsh rejection wording for not selected shoppers unless true ineligible/rejected case.",
+    "Do not allow duplicate approval for the same visit."
+  ]
+}

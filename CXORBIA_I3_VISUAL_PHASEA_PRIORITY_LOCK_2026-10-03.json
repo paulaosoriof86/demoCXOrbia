@@ -1,0 +1,137 @@
+{
+  "schemaVersion": "cxorbia.i3.visual-phasea-priority-lock.v1",
+  "frozenAt": "2026-10-03T19:25:00Z",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "status": "HOLD_HUMAN_VISUAL_CHECKPOINT_REQUIRED_BEFORE_FURTHER_PRODUCT_MUTATION",
+  "production": "DO_NOT_TOUCH",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadBeforeFreeze": "784885a7bb38c0c3320a3add49966b415512cff7",
+  "productSourceSha": "a62d4e5b49fce4464987ca55112221604647933c",
+  "productTree": "6d3dd5abd351586d018be83c2b144ff49d4a94d3",
+  "accumulatedSourcePasses": {
+    "VRM-188": {
+      "run": 956
+    },
+    "VRM-189": {
+      "run": 961
+    },
+    "VRM-190": {
+      "run": 964
+    },
+    "VRM-191": {
+      "run": 968
+    },
+    "VRM-192": {
+      "run": 971
+    }
+  },
+  "visualCheckpoint": {
+    "requiredNow": true,
+    "beforeNextProductMutation": true,
+    "paulaExplicitApprovalRequired": true,
+    "sourcePassDoesNotEqualVisualApproval": true,
+    "oneCumulativeDevMaterialization": true,
+    "oneCanonicalCandidate": true,
+    "production": false
+  },
+  "priorityAfterVisualApproval": [
+    "PHASE_A_OPERATIONAL_AND_SHOPPER_ADMIN_P0",
+    "FINANCE_END_TO_END_P0",
+    "CERTIFICATIONS_ADMIN_AND_SHOPPER",
+    "TENANT_PROJECT_ADMINISTRABILITY_VRM194_P0",
+    "AUXILIARY_ADMIN_VRM193_P1"
+  ],
+  "phaseAPriorityDomains": [
+    "mi_dia",
+    "postulaciones_y_asignaciones",
+    "reservas",
+    "visitas",
+    "shoppers",
+    "mi_perfil",
+    "mis_visitas",
+    "beneficios",
+    "reportes_shopper",
+    "dashboard",
+    "project_period_source_config"
+  ],
+  "financePriority": {
+    "required": true,
+    "domains": [
+      "movimientos",
+      "dashboard_financiero",
+      "liquidaciones",
+      "cuentas_por_pagar_cobrar",
+      "beneficios_pagos",
+      "reconciliacion_historica"
+    ],
+    "sameDurableAuthorityRequired": true,
+    "countriesCurrenciesIndependent": true,
+    "paidItemsCannotRemainPendingWhenDurablePaymentAuthorityConfirms": true,
+    "augustPaidAndSeptemberPartialPayments": "VALIDATE_AGAINST_DURABLE_PAYMENT_SOURCE_NOT_CHAT_MEMORY"
+  },
+  "certificationPriority": {
+    "adminSelfAdministration": true,
+    "shopperMultipleCertificationSelection": true,
+    "scope": [
+      "tenantId",
+      "projectId",
+      "certificationId",
+      "periodOrVersionWhenApplicable"
+    ],
+    "noSingleGlobalCertification": true
+  },
+  "postulationsAssignments": {
+    "targetName": "Gestión de Postulaciones y Asignaciones",
+    "includePlatformApplications": true,
+    "includeHrAssignments": true,
+    "includePlatformAssignments": true,
+    "noDuplicates": true,
+    "originAndSyncVisible": true
+  },
+  "shopperTransversality": {
+    "appliesToAllCanonicalShoppers": true,
+    "focalUsersAreFixturesOnly": true,
+    "noPerPersonCodeExceptions": true,
+    "dataDrivenPopulationInvariants": true
+  },
+  "multiproject": {
+    "required": true,
+    "cinepolisSpecificRulesProjectScoped": true,
+    "noGlobalHardcodeAuthority": true,
+    "projectAdminMustOwn": [
+      "providerBinding",
+      "mapping",
+      "links",
+      "documents",
+      "periods",
+      "executionCuts",
+      "rules",
+      "countries",
+      "currency",
+      "questionnaires",
+      "certifications",
+      "financialParameters",
+      "operationalParameters"
+    ]
+  },
+  "antiRegression": {
+    "approvedModuleFingerprintLock": true,
+    "singleIncrementalCumulativeArtifact": true,
+    "moduleTruthMatrixRequired": true,
+    "focalCorrectionOnlyAfterApproval": true
+  },
+  "exactNextAction": [
+    "Revalidate current source/tree and pending source proofs needed for visual truthfulness.",
+    "Materialize exactly one cumulative DEV preview of the current canonical candidate.",
+    "Run same-artifact live Admin + Shopper + HR + Finance focal readback.",
+    "Give Paula the DEV link and a short review route.",
+    "Stop for Paula explicit visual approval before any further product mutation.",
+    "After approval, continue Phase A/Finance/Certifications/VRM194 before VRM193."
+  ],
+  "authorization": {
+    "devPreparationAndMaterialization": false,
+    "paulaVisualDecision": true,
+    "productionDeploy": true
+  }
+}

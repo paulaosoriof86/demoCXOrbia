@@ -1,0 +1,201 @@
+{
+  "contract": "shopper-communication-history-preview-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "storageWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "emailReadAllowed": false,
+  "emailSendAllowed": false,
+  "whatsappSendAllowed": false,
+  "externalProviderReadAllowed": false,
+  "externalProviderWriteAllowed": false,
+  "importRealDataAllowed": false,
+  "dependsOn": [
+    "sensitive-data-policy-phase-a-tya",
+    "notification-outbox-preview-phase-a-tya",
+    "email-user-mailbox-preview-phase-a-tya",
+    "crm-external-folder-refs-preview-phase-a-tya",
+    "assignment-sync-conflict-preview-phase-a-tya",
+    "visit-lifecycle-reservation-preview-phase-a-tya"
+  ],
+  "purpose": "Define source-safe preview validation for shopper communication history across in-app, WhatsApp fallback, email draft/manual log, support notes and CRM refs without sending, reading or importing real communications.",
+  "sourceSafety": {
+    "requiresSyntheticOrSanitizedInput": true,
+    "forbidsRawSensitiveData": true,
+    "requiredInputMetadata": [
+      "sourceSafe=true",
+      "containsRawSensitiveData=false",
+      "isSyntheticOrSanitized=true"
+    ],
+    "rawBodiesAllowed": false,
+    "rawAttachmentsAllowed": false,
+    "rawPhonesAllowed": false,
+    "rawEmailsAllowed": false,
+    "providerMessageIdsAllowedOnlyAsOpaqueRefs": true,
+    "manualReviewForAmbiguousThread": true
+  },
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "communicationId",
+    "threadId",
+    "participantRef",
+    "participantRole",
+    "shopperId",
+    "visitId",
+    "hrRowId",
+    "sourceVisitRef",
+    "postulationId",
+    "assignmentId",
+    "reservationId",
+    "notificationId",
+    "mailActionId",
+    "crmEntityId",
+    "externalFolderRefId",
+    "channel",
+    "direction",
+    "interactionType",
+    "communicationStatus",
+    "manualConfirmationStatus",
+    "sourceSafeRef",
+    "createdAt",
+    "updatedAt"
+  ],
+  "channels": [
+    "in_app_preview",
+    "notification_outbox_ref",
+    "whatsapp_web_fallback_manual",
+    "whatsapp_provider_pending",
+    "email_draft_preview",
+    "email_manual_log",
+    "support_note_preview",
+    "crm_folder_ref",
+    "phone_call_manual_note",
+    "make_pending",
+    "legacy_import_sanitized_preview"
+  ],
+  "directions": [
+    "inbound_manual_log",
+    "outbound_manual_log",
+    "outbound_draft_preview",
+    "system_preview",
+    "provider_pending",
+    "legacy_sanitized"
+  ],
+  "interactionTypes": [
+    "postulation_followup",
+    "assignment_update",
+    "schedule_confirmation",
+    "reschedule_request",
+    "cancel_visit",
+    "visit_performed_followup",
+    "questionnaire_pending",
+    "questionnaire_completed",
+    "review_request",
+    "correction_request",
+    "liquidation_notice",
+    "payment_status_notice",
+    "academy_notice",
+    "support_case_note",
+    "manual_general_note"
+  ],
+  "communicationStatuses": [
+    "recorded_preview",
+    "draft_preview_ready",
+    "manual_log_ready",
+    "manual_action_required",
+    "manual_confirmation_required",
+    "provider_configuration_required",
+    "pending_backend",
+    "blocked_sensitive_payload",
+    "blocked_missing_refs",
+    "conflict_review_required",
+    "cancelled",
+    "archived_preview"
+  ],
+  "manualConfirmationStatuses": [
+    "not_required",
+    "pending_user_confirmation",
+    "confirmed_externally_by_user",
+    "user_marked_not_sent",
+    "review_required"
+  ],
+  "previewInputShape": {
+    "sourceSafe": true,
+    "containsRawSensitiveData": false,
+    "isSyntheticOrSanitized": true,
+    "communications": []
+  },
+  "requiredCommunicationFields": [
+    "tenantId",
+    "projectId",
+    "communicationId",
+    "threadId",
+    "participantRef",
+    "participantRole",
+    "channel",
+    "direction",
+    "interactionType",
+    "communicationStatus"
+  ],
+  "historyRules": [
+    "Communication history stores safe events, summaries and refs, not raw conversations.",
+    "Every communication must be linked to participantRef and role, not raw phone or raw email.",
+    "Shopper-related history should link to shopperId and, when applicable, visitId/hrRowId/sourceVisitRef, postulationId or assignmentId.",
+    "WhatsApp Web fallback is manual and must require manual confirmation before any externally-sent label.",
+    "Email draft preview and email manual log are not provider proof.",
+    "Provider message IDs may only be stored as opaque refs once future gates permit it.",
+    "Legacy communications are allowed only as sanitized preview summaries and must not include raw bodies, attachments or contact data.",
+    "Financial/payment communications must not include bank details or account numbers."
+  ],
+  "previewOutcomes": [
+    "communication_history_preview_ready",
+    "manual_log_ready",
+    "draft_preview_ready",
+    "manual_confirmation_required",
+    "provider_configuration_required",
+    "blocked_sensitive_payload",
+    "blocked_missing_refs",
+    "conflict_review_required",
+    "manual_review_required"
+  ],
+  "claudePrototypeImpact": [
+    "Shopper history UI must not display raw WhatsApp/email bodies, phones, emails or attachments.",
+    "Show communication states: preview, draft, manual log, pending backend, manual confirmation, provider pending and blocked sensitive payload.",
+    "Separate in-app notifications from external communication logs.",
+    "Link history to stable entities such as shopperId, visitId, postulationId, assignmentId, notificationId, mailActionId and crmEntityId.",
+    "Do not say message sent, synced or delivered unless explicit manual confirmation exists or future provider gates are active."
+  ],
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "finance", "shopper", "client", "consultant_partner"],
+    "manualsToUpdate": ["Shopper communication history", "Manual communication logs", "WhatsApp fallback traceability", "Email draft/manual log", "Sensitive data in communications", "Support case notes"],
+    "coursesToUpdate": ["Ops communication follow-up", "Admin communication audit", "Shopper privacy", "Finance payment notices", "Superadmin provider gates"],
+    "newLessons": [
+      "What communication history stores",
+      "Why raw messages are blocked",
+      "How manual confirmation works",
+      "How communications link to visits and postulaciones",
+      "How to separate notification, draft, manual log and provider pending"
+    ],
+    "interactiveChecklists": [
+      "Before logging a shopper communication",
+      "Before confirming an external send",
+      "Before linking a communication to a visit",
+      "Before including payment information in a message"
+    ]
+  },
+  "hardStops": [
+    "Do not read real email or WhatsApp from this preview.",
+    "Do not send email or WhatsApp from this preview.",
+    "Do not call Make from this preview.",
+    "Do not write Firestore or Storage from this preview.",
+    "Do not store raw message bodies, phone numbers, email addresses or attachments.",
+    "Do not mark sent/synced/delivered without explicit manual confirmation or future provider gate.",
+    "Do not import legacy communications unless sanitized and source-safe."
+  ]
+}

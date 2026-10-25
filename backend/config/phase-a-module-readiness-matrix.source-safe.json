@@ -1,0 +1,114 @@
+{
+  "configId": "phase-a-module-readiness-matrix-source-safe",
+  "status": "source_safe_preview",
+  "tenantTemplate": "tya_phase_a_configurable_without_pii",
+  "sourceSafe": true,
+  "production": false,
+  "modules": {
+    "tenantProjectPeriod": {
+      "tyaImpact": "prevents period-as-project regression and supports new project creation",
+      "reusableCxOrbia": true,
+      "claudePrototypeImpact": true,
+      "academyImpact": true,
+      "checks": ["tenantConfig", "projectConfig", "periodModel", "projectPeriodSeparation", "creationFlow"]
+    },
+    "hrSource": {
+      "tyaImpact": "prevents broken HR reads and maps hoja de ruta before real connection",
+      "reusableCxOrbia": true,
+      "claudePrototypeImpact": true,
+      "academyImpact": true,
+      "checks": ["sourceType", "maskedSource", "tabsDetected", "lastReadAt", "sourceSafePayload", "routeSheetMapping"]
+    },
+    "usersRolesScopes": {
+      "tyaImpact": "prepares representatives, coordinators, franchise, client, finance, certification and shoppers",
+      "reusableCxOrbia": true,
+      "claudePrototypeImpact": true,
+      "academyImpact": true,
+      "checks": ["personaTypes", "technicalRoles", "scopes", "claimsSeed", "authGate"]
+    },
+    "shoppersProtectedProfiles": {
+      "tyaImpact": "allows full shopper data only through protected access while public preview stays source-safe",
+      "reusableCxOrbia": true,
+      "claudePrototypeImpact": true,
+      "academyImpact": true,
+      "checks": ["publicRefs", "protectedProfile", "identityLinks", "piiPolicy", "readAdapter"]
+    },
+    "visitsAssignments": {
+      "tyaImpact": "prevents duplicated assignments between platform and HR and keeps visits out of available once assigned",
+      "reusableCxOrbia": true,
+      "claudePrototypeImpact": true,
+      "academyImpact": false,
+      "checks": ["stableVisitKeys", "hrRowId", "assignmentSource", "syncStatus", "conflictPolicy"]
+    },
+    "applicationsScheduling": {
+      "tyaImpact": "keeps postulation, scheduling, reprogramming, cancellation and shopper flow coherent",
+      "reusableCxOrbia": true,
+      "claudePrototypeImpact": true,
+      "academyImpact": true,
+      "checks": ["applicationStates", "scheduleRules", "rescheduleRules", "cancelRules", "shopperFlow"]
+    },
+    "academyCoursesManuals": {
+      "tyaImpact": "prevents courses, manuals and role routes from being recreated manually after connection",
+      "reusableCxOrbia": true,
+      "claudePrototypeImpact": true,
+      "academyImpact": true,
+      "checks": ["roleRoutes", "courseConfig", "manuals", "checklists", "glossary", "adminActions"]
+    },
+    "certificationsCarryover": {
+      "tyaImpact": "preserves already presented certifications and avoids asking shoppers to repeat them",
+      "reusableCxOrbia": true,
+      "claudePrototypeImpact": true,
+      "academyImpact": true,
+      "checks": ["questionBanks", "attempts", "carryover", "humanReview", "geminiGate"]
+    },
+    "liquidationsPayments": {
+      "tyaImpact": "keeps June and later payment states controlled without executing real payments",
+      "reusableCxOrbia": true,
+      "claudePrototypeImpact": true,
+      "academyImpact": true,
+      "checks": ["liquidationPreview", "paymentBatchPreview", "paymentStatusAudit", "financeGate", "noPaymentExecution"]
+    },
+    "notificationsOutbox": {
+      "tyaImpact": "prepares notifications without real send until Make/WhatsApp/Outlook gates are active",
+      "reusableCxOrbia": true,
+      "claudePrototypeImpact": true,
+      "academyImpact": false,
+      "checks": ["preparedMessages", "providerGate", "templates", "audit", "noRealSend"]
+    },
+    "reviewQueueConflicts": {
+      "tyaImpact": "prevents silent overwrite of identity, assignment, certification and payment conflicts",
+      "reusableCxOrbia": true,
+      "claudePrototypeImpact": true,
+      "academyImpact": true,
+      "checks": ["identityConflicts", "assignmentConflicts", "certificationConflicts", "paymentConflicts", "humanDecision"]
+    },
+    "auditEvents": {
+      "tyaImpact": "documents protected reads, role changes, payment changes, source imports and critical actions",
+      "reusableCxOrbia": true,
+      "claudePrototypeImpact": true,
+      "academyImpact": true,
+      "checks": ["protectedReads", "roleChanges", "paymentStateChanges", "sourceImports", "criticalActions"]
+    },
+    "integrationsGates": {
+      "tyaImpact": "prevents Make, Gemini, Storage, payment or HR writeback from being assumed live",
+      "reusableCxOrbia": true,
+      "claudePrototypeImpact": true,
+      "academyImpact": true,
+      "checks": ["makeGate", "geminiGate", "storageGate", "paymentGate", "hrWritebackGate"]
+    },
+    "brandingPwa": {
+      "tyaImpact": "keeps client branding configurable without locking the prototype to TyA",
+      "reusableCxOrbia": true,
+      "claudePrototypeImpact": true,
+      "academyImpact": false,
+      "checks": ["brandConfig", "favicon", "manifest", "icons", "installCta"]
+    },
+    "cxDataBackendSwitch": {
+      "tyaImpact": "ensures modules continue using CX.data while backend adapter changes behind facade",
+      "reusableCxOrbia": true,
+      "claudePrototypeImpact": true,
+      "academyImpact": false,
+      "checks": ["sameInterface", "adapterBehindFacade", "rollback", "readOnlyGate", "writeGate"]
+    }
+  }
+}

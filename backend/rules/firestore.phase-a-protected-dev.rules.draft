@@ -1,0 +1,136 @@
+rules_version = '2';
+
+// CXOrbia Phase A protected Firestore rules DEV draft.
+// Draft only: do not deploy from this file.
+// Scope: public source-safe refs + protected shopper/certification/liquidation/reviewQueue reads.
+// Writes remain blocked until explicit GO, rollback plan, audit plan and Auth DEV review.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function roleIs(roleName) {
+      return signedIn() && request.auth.token.role == roleName;
+    }
+
+    function roleIn(roles) {
+      return signedIn() && request.auth.token.role in roles;
+    }
+
+    function hasTenant(tenantId) {
+      return signedIn() && request.auth.token.tenantId == tenantId;
+    }
+
+    function hasProject(projectId) {
+      return signedIn() && (
+        request.auth.token.projectId == projectId ||
+        (request.auth.token.projectIds is list && projectId in request.auth.token.projectIds)
+      );
+    }
+
+    function tenantAdmin(tenantId) {
+      return hasTenant(tenantId) && roleIs('tenantAdmin');
+    }
+
+    function projectRole(tenantId, projectId, roles) {
+      return hasTenant(tenantId) && hasProject(projectId) && roleIn(roles);
+    }
+
+    function shopperSelf(tenantId, shopperId) {
+      return hasTenant(tenantId) && roleIs('shopper') && request.auth.token.shopperId == shopperId;
+    }
+
+    function noForbiddenKeys(data) {
+      return !data.keys().hasAny([
+        'password', 'privateKey', 'providerToken', 'refreshToken', 'privateWebhookUrl',
+        'rawIdDocument', 'idDocumentRaw', 'dpiRaw', 'rawBankAccount', 'bankAccountRaw',
+        'rawAccountNumber', 'signedNdaRaw', 'workbookRaw', 'privateSourceUrl',
+        'paymentReceiptBase64'
+      ]);
+    }
+
+    function publicShopperRefKeysOnly(data) {
+      return data.keys().hasOnly([
+        'tenantId', 'shopperRefId', 'country', 'projectCounts', 'periodCounts',
+        'statusBucket', 'certificationBucket', 'paymentEligibilityBucket',
+        'publicSourceSafe', 'updatedAt'
+      ]);
+    }
+
+    function publicShopperRefDoc(tenantId) {
+      return resource.data.tenantId == tenantId &&
+        resource.data.publicSourceSafe == true &&
+        publicShopperRefKeysOnly(resource.data) &&
+        noForbiddenKeys(resource.data);
+    }
+
+    function protectedReadAuditShape(data, tenantId) {
+      return data.tenantId == tenantId &&
+        data.keys().hasAll(['tenantId', 'actorUserId', 'role', 'reason', 'entityType', 'entityId', 'timestamp', 'source']) &&
+        noForbiddenKeys(data);
+    }
+
+    match /tenants/{tenantId} {
+      allow read: if tenantAdmin(tenantId);
+      allow create, update, delete: if false;
+
+      match /shopperPublicRefs/{shopperRefId} {
+        allow get, list: if publicShopperRefDoc(tenantId);
+        allow create, update, delete: if false;
+      }
+
+      match /shoppers/{shopperId}/protected/{docId} {
+        allow get, list: if tenantAdmin(tenantId) || shopperSelf(tenantId, shopperId);
+        allow create, update, delete: if false;
+      }
+
+      match /shopperIdentityLinks/{identityLinkId} {
+        allow get, list: if tenantAdmin(tenantId);
+        allow create, update, delete: if false;
+      }
+
+      match /reviewQueue/{reviewId} {
+        allow get, list: if tenantAdmin(tenantId);
+        allow create, update, delete: if false;
+      }
+
+      match /audit/protectedReads/{auditId} {
+        allow get, list: if tenantAdmin(tenantId);
+        allow create, update, delete: if false;
+      }
+
+      match /projects/{projectId} {
+        allow read: if tenantAdmin(tenantId) || projectRole(tenantId, projectId, ['projectAdmin', 'financeAdmin', 'certificationAdmin']);
+        allow create, update, delete: if false;
+
+        match /certificationAttempts/{attemptId} {
+          allow get, list: if tenantAdmin(tenantId) ||
+            projectRole(tenantId, projectId, ['projectAdmin', 'certificationAdmin']) ||
+            (roleIs('shopper') && resource.data.tenantId == tenantId && resource.data.projectId == projectId && resource.data.shopperId == request.auth.token.shopperId);
+          allow create, update, delete: if false;
+        }
+
+        match /certificationCarryovers/{carryoverId} {
+          allow get, list: if tenantAdmin(tenantId) ||
+            projectRole(tenantId, projectId, ['projectAdmin', 'certificationAdmin']) ||
+            (roleIs('shopper') && resource.data.tenantId == tenantId && resource.data.projectId == projectId && resource.data.shopperId == request.auth.token.shopperId);
+          allow create, update, delete: if false;
+        }
+
+        match /protectedLiquidations/{liquidationId} {
+          allow get, list: if tenantAdmin(tenantId) ||
+            projectRole(tenantId, projectId, ['projectAdmin', 'financeAdmin']) ||
+            (roleIs('shopper') && resource.data.tenantId == tenantId && resource.data.projectId == projectId && resource.data.shopperId == request.auth.token.shopperId);
+          allow create, update, delete: if false;
+        }
+
+        match /protectedPaymentBatches/{paymentBatchId} {
+          allow get, list: if tenantAdmin(tenantId) || projectRole(tenantId, projectId, ['projectAdmin', 'financeAdmin']);
+          allow create, update, delete: if false;
+        }
+      }
+    }
+  }
+}

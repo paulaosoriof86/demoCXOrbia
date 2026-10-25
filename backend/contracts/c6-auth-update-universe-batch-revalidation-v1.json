@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "cxorbia.c6.auth-update-universe-batch-revalidation.contract.v1",
+  "generatedAt": "2026-08-07T20:50:00-06:00",
+  "target": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "docs-tya-v6-v71-audit",
+    "pullRequest": 7,
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "projectId": "cinepolis"
+  },
+  "inputPlan": {
+    "schemaVersion": "cxorbia.c6.shopper-auth-final-plan.v3",
+    "artifactRunId": 31234681163,
+    "artifactId": 9014970238,
+    "rows": 340,
+    "uniqueRows": 340,
+    "updateRows": 45,
+    "hold": 0,
+    "digest": "7b92fa73946e74ec4058bcdcbcfca25fe90e0504db6b6b22e797fbad066bd749"
+  },
+  "systemicRisk": {
+    "classification": "SYSTEMIC_SUFFIXED_UPDATE_SHARED_BASELOGIN_ALIAS_RISK",
+    "evidencePath": "app/docs/evidence/C6-AUTH-ACTIVATION-V2-PREWRITE-SYSTEMIC-SUFFIX-COLLISION-RISK-20260807.json",
+    "requiredRiskRows": 36,
+    "baseLoginSharedIsCollisionSignalOnly": true,
+    "baseLoginSharedForbiddenAsIndependentAuthSelector": true
+  },
+  "batch": {
+    "classifyAllUpdateRowsBeforeMutation": true,
+    "requiredRows": 45,
+    "candidateCountClasses": ["0", "1", ">1"],
+    "targetSpecificAnchors": [
+      "exact current shopperId claim",
+      "mapped credential derived internal email after exact technical crosswalk",
+      "reconstructed unique targetLogin internal email"
+    ],
+    "globalPrincipalUniquenessRequired": true,
+    "globalCandidateFingerprintUniquenessRequired": true,
+    "crossRowAssociationDetectionRequired": true,
+    "passwordMaterialInspectionBeforeFinalUpdateSet": false,
+    "passwordSignInProbeAllowed": false
+  },
+  "rebuild": {
+    "schemaVersion": "cxorbia.c6.shopper-auth-final-plan.v4",
+    "zeroCandidateTransition": "CREATE_AUTH",
+    "oneCandidateTransition": "RECALCULATE_EMAIL_AND_CLAIMS_THEN_UPDATE_OR_NO_OP",
+    "oneCandidatePasswordFlagBasis": "PRESERVE_V3_PASSWORD_CHANGE_FLAG_FOR_SAME_UNIQUE_TARGET_WITHOUT_PASSWORD_PROBE",
+    "multiCandidateOrCrossRowOrTargetCollisionTransition": "HOLD",
+    "rebuildExactlyOnceAfterCompleteClassification": true,
+    "recalculateCounts": true,
+    "recalculateSubchangeCounts": true,
+    "recalculateExpectedAuthPopulation": true,
+    "recalculateDigest": true,
+    "freezeBeforeAnyFutureAuthWrite": true
+  },
+  "provider": {
+    "attemptsMaximum": 1,
+    "readOnly": true,
+    "authDirectoryPagesMaximum": 1,
+    "shopperPopulationExpected": 340,
+    "credentialCrosswalkExpectedMapped": 101,
+    "credentialCrosswalkExpectedUnmapped": 8
+  },
+  "prohibited": {
+    "authWrites": true,
+    "providerWrites": true,
+    "firestoreWrites": true,
+    "hrWrites": true,
+    "visitsWrites": true,
+    "certificationsWrites": true,
+    "liquidationsWrites": true,
+    "rulesWrites": true,
+    "storageWrites": true,
+    "passwordHashInspection": true,
+    "passwordSaltInspection": true,
+    "passwordSignInProbe": true,
+    "cloudBuild": true,
+    "cloudRun": true,
+    "hosting": true,
+    "make": true,
+    "gemini": true,
+    "payments": true,
+    "merge": true,
+    "production": true
+  }
+}

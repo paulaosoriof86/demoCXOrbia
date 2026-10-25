@@ -1,0 +1,99 @@
+{
+  "contractId": "cxorbia-identity-roll-forward-v1",
+  "status": "source_ready_provider_write_gated",
+  "scope": "reusable_cxorbia_multi_tenant_multi_project",
+  "purpose": "Persist an authoritative source-to-canonical shopper identity link once and reuse it across all later periods without reprocessing authentication or historical identity.",
+  "invariants": {
+    "periodIndependent": true,
+    "tenantIsolated": true,
+    "projectAware": true,
+    "multiProject": true,
+    "noMonthHardcode": true,
+    "noProjectNameHardcode": true,
+    "noTenantNameHardcode": true,
+    "historicalAuthReprocessingRequired": false,
+    "historicalShopperResetRequired": false,
+    "localStorageTruthAllowed": false
+  },
+  "persistence": {
+    "pathPattern": "tenants/{tenantId}/shopperIdentityLinks/{identityLinkId}",
+    "periodInPath": false,
+    "requiredFields": [
+      "tenantId",
+      "canonicalShopperId",
+      "sourceSystem",
+      "sourceIdentityKey",
+      "status",
+      "authorityType",
+      "authorityRef"
+    ],
+    "optionalFields": [
+      "projectScope",
+      "sourceIdentityAliases",
+      "createdAt",
+      "updatedAt",
+      "createdBy",
+      "providerAckRef"
+    ],
+    "projectScopeSemantics": {
+      "tenantWide": "*",
+      "projectSpecific": "exact projectId",
+      "rule": "Use tenant-wide only when the upstream source identity is tenant-wide. Otherwise persist the exact project scope."
+    }
+  },
+  "trustedAuthorityTypes": [
+    "provider_exact",
+    "tenant_adjudication",
+    "platform_created",
+    "migrated_exact"
+  ],
+  "forbiddenSoleAuthority": [
+    "name",
+    "displayName",
+    "email",
+    "phone",
+    "whatsapp",
+    "username",
+    "shopperCode",
+    "human-text-derived hash without an authoritative persisted link"
+  ],
+  "resolution": {
+    "input": "source-safe shopper/visit identity plus runtime tenantId/projectId/sourceSystem",
+    "order": [
+      "exact project-scoped authoritative link",
+      "tenant-wide authoritative link",
+      "otherwise review required"
+    ],
+    "periodKeyUsedForMatching": false,
+    "futurePeriodBehavior": "The same authoritative link resolves the same source identity in August, September and any later period without a new identity decision.",
+    "conflictBehavior": "fail_closed_review_required"
+  },
+  "newShopperFromPlatform": {
+    "required": true,
+    "sequence": [
+      "Auth principal",
+      "claims",
+      "membership",
+      "profile/shopper",
+      "authoritative identity link with authorityType=platform_created",
+      "provider ACK/readback"
+    ],
+    "periodIndependent": true
+  },
+  "newSourceIdentityFromExternalSource": {
+    "automaticMappingAllowed": false,
+    "rule": "If no authoritative link exists, create or reuse one review item keyed independently of period. After one exact tenant adjudication or independent exact provider authority, persist the link and reuse it forever unless explicitly revoked."
+  },
+  "providerWrites": {
+    "enabledByThisContract": false,
+    "requiresExplicitGate": true,
+    "idempotentUpsertRequired": true,
+    "providerAckReadbackRequired": true
+  },
+  "classification": {
+    "reusableCXOrbia": true,
+    "exclusiveClientLogic": false,
+    "claudePrototypeImpact": "No UI redesign. Any identity review UI must expose project/source scope and never periodize the canonical identity link.",
+    "academiaImpact": "Teach period-independent identity authority, tenant/project scoping and one-time adjudication with future-period reuse."
+  }
+}

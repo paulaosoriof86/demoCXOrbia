@@ -1,0 +1,149 @@
+name: CXOrbia Corte 4 Protected CX.data Smoke Temp Operator
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/cxorbia-firebase-requests/corte4-protected-smoke-temp-operator.json'
+      - 'tools/release/cxorbia-corte4-protected-smoke-temp-operator.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  statuses: write
+
+concurrency:
+  group: cxorbia-corte4-protected-smoke-temp-operator
+  cancel-in-progress: false
+
+env:
+  CXORBIA_REQUEST_PATH: .github/cxorbia-firebase-requests/corte4-protected-smoke-temp-operator.json
+  CXORBIA_EXECUTOR_PATH: tools/release/cxorbia-corte4-protected-smoke-temp-operator.mjs
+  CXORBIA_OUT_DIR: .tmp/corte4-protected-smoke
+  CXORBIA_PRIVATE_DIR: .tmp/corte4-protected-smoke-private
+
+jobs:
+  protected-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+
+    steps:
+      - name: Checkout live branch
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate exact current-conversation authorization
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync(process.env.CXORBIA_REQUEST_PATH,'utf8'));
+          const exact={schemaVersion:'cxorbia.corte4-protected-smoke-temp-operator.v1',enabled:true,authorizationSource:'current_conversation',authorizationText:'Autorizo operador DEV temporal para smoke protegido de Corte 4',repository:'paulaosoriof86/demoCXOrbia',branch:'docs-tya-v6-v71-audit',pullRequest:7,targetProjectId:'cxorbia-tya-dev-260729-c4',targetDisplayName:'CXOrbia TyA DEV Clean Corte 4',tenantId:'tya',temporaryRole:'admin',mode:'EXECUTE_PROTECTED_CXDATA_SMOKE_WITH_REVERSIBLE_TEMP_AUTH',hostingDeploy:false,functions:false,make:false,gemini:false,merge:false,production:false};
+          for(const [k,v] of Object.entries(exact)) if(r[k]!==v) throw new Error(`Request mismatch: ${k}`);
+          if(r.allowedAuthUserWrites?.createTemporaryUser!==1||r.allowedAuthUserWrites?.setTemporaryClaims!==1||r.allowedAuthUserWrites?.deleteTemporaryUser!==1||r.allowedAuthUserWrites?.permanentUsers!==0) throw new Error('Auth user scope mismatch');
+          if(Object.values(r.allowedDataWrites||{}).some(v=>Number(v)!==0)) throw new Error('Data write scope mismatch');
+          console.log('Exact protected-smoke authorization validated.');
+          NODE
+
+      - name: Static executor syntax gate
+        run: node --check "$CXORBIA_EXECUTOR_PATH"
+
+      - name: Load existing service account credential without exposing it
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$CXORBIA_PRIVATE_DIR" "$CXORBIA_OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs');
+          const p=process.env.CXORBIA_PRIVATE_DIR+'/credentials.json';
+          const raw=process.env.EXISTING_DEV_JSON||'';
+          let parsed=null;try{parsed=JSON.parse(raw);}catch{}
+          const valid=Boolean(parsed&&parsed.type==='service_account'&&parsed.client_email&&parsed.private_key&&parsed.token_uri);
+          if(!valid) process.exit(2);
+          fs.writeFileSync(p,raw,{mode:0o600});
+          NODE
+
+      - name: Execute authorized reversible protected smoke
+        env:
+          CXORBIA_CONFIRM: EXECUTE_CORTE4_PROTECTED_SMOKE_TEMP_OPERATOR
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/${{ env.CXORBIA_PRIVATE_DIR }}/credentials.json
+        run: |
+          set -euo pipefail
+          node "$CXORBIA_EXECUTOR_PATH" --out "$CXORBIA_OUT_DIR" --private "$CXORBIA_PRIVATE_DIR"
+
+      - name: Enforce cleanup even after smoke failure
+        if: always()
+        env:
+          CXORBIA_CONFIRM: EXECUTE_CORTE4_PROTECTED_SMOKE_TEMP_OPERATOR
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/${{ env.CXORBIA_PRIVATE_DIR }}/credentials.json
+        run: |
+          set -euo pipefail
+          if [ -f "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
+            node "$CXORBIA_EXECUTOR_PATH" --cleanup-only --out "$CXORBIA_OUT_DIR" --private "$CXORBIA_PRIVATE_DIR"
+          fi
+
+      - name: Publish sanitized evidence
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$CXORBIA_OUT_DIR"
+          node <<'NODE' > "$CXORBIA_OUT_DIR/status.env"
+          const fs=require('fs');const out=process.env.CXORBIA_OUT_DIR;
+          let main={decision:'BLOCKED_BEFORE_EXECUTOR',errorCategory:'EXECUTOR_NOT_REACHED',browserSmoke:{},cleanup:{},preflight:{},writes:{}};let cleanup={decision:'CLEANUP_EVIDENCE_UNAVAILABLE',cleanup:{}};
+          try{main=JSON.parse(fs.readFileSync(out+'/protected-smoke.source-safe.json','utf8'));}catch{}
+          try{cleanup=JSON.parse(fs.readFileSync(out+'/cleanup.source-safe.json','utf8'));}catch{}
+          const cleanupVerified=cleanup.decision==='CLEANUP_VERIFIED_C4'||main.cleanup?.complete===true;
+          const pass=main.decision==='PASS_CORTE4_PROTECTED_CXDATA_SMOKE_TEMP_OPERATOR_CLEANED'&&cleanupVerified;
+          const safe=s=>String(s||'UNKNOWN').replace(/[^A-Z0-9_.-]/gi,'_').slice(0,62);
+          console.log(`STATE=${pass?'success':'error'}`);console.log(`DECISION=${safe(main.decision)}`);console.log(`ERROR=${safe(main.errorCategory||'NONE')}`);console.log(`CLEANUP=${safe(cleanup.decision==='CLEANUP_VERIFIED_C4'?cleanup.decision:(main.cleanup?.complete?'CLEANUP_VERIFIED_IN_MAIN_C4':cleanup.decision))}`);console.log(`SOURCE=${safe(main.browserSmoke?.source)}`);console.log(`EMPTY=${main.browserSmoke?.empty===true}`);console.log(`FALLBACK=${main.browserSmoke?.fallbackUsed===true}`);console.log(`READONLY=${main.browserSmoke?.readOnly===true}`);console.log(`IFACE=${main.browserSmoke?.interfacePreserved===true}`);console.log(`CLAIMS=${main.browserSmoke?.claimsVerified===true}`);console.log(`BROWSER=${safe(main.preflight?.browserRuntime||'none')}`);console.log(`USERS_AFTER=${Number(cleanup.cleanup?.authUsersAfter ?? main.cleanup?.authUsersAfter ?? -1)}`);console.log(`EMAIL_AFTER=${Boolean(cleanup.cleanup?.emailEnabledAfter ?? main.cleanup?.emailEnabledAfter)}`);
+          NODE
+          source "$CXORBIA_OUT_DIR/status.env"
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/corte4-protected-cxdata-smoke' -f description="C4 smoke: ${DECISION}" >/dev/null
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/c4smoke-error-${ERROR}" -f description="Sanitized failure category; browser=${BROWSER}" >/dev/null
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/c4smoke-src${SOURCE}-e${EMPTY}-fb${FALLBACK}-ro${READONLY}" -f description='Sanitized protected CX.data smoke evidence' >/dev/null
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/c4cleanup-u${USERS_AFTER}-email${EMAIL_AFTER}" -f description="Cleanup: ${CLEANUP}" >/dev/null
+          body=$(cat <<EOF
+          ## Corte 4 · protected CX.data smoke · operador DEV temporal
+
+          - Decision: \`$DECISION\`
+          - Failure category: \`$ERROR\`
+          - Browser runtime: \`$BROWSER\`
+          - Browser source: \`$SOURCE\`
+          - Empty Firestore observed: \`$EMPTY\`
+          - Fallback used: \`$FALLBACK\`
+          - Read-only: \`$READONLY\`
+          - CX.data interface preserved: \`$IFACE\`
+          - Auth claims verified: \`$CLAIMS\`
+          - Cleanup: \`$CLEANUP\`
+          - Auth users after cleanup: \`$USERS_AFTER\`
+          - Email/Password enabled after cleanup: \`$EMAIL_AFTER\`
+          - Firestore document writes: \`0\`
+          - Storage/Hosting deploy/Functions/imports/HR/Make/Gemini/payments/merge/production: \`0\`
+          EOF
+          )
+          gh issue comment 7 --repo "$GITHUB_REPOSITORY" --body "$body" >/dev/null
+          printf '%s\n' "$body" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload sanitized evidence only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-corte4-protected-smoke-temp-operator
+          path: |
+            .tmp/corte4-protected-smoke/protected-smoke.source-safe.json
+            .tmp/corte4-protected-smoke/cleanup.source-safe.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Cleanup credential and private smoke material
+        if: always()
+        run: rm -rf "$CXORBIA_PRIVATE_DIR"

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "cxorbia.recovery.control-tree-composition-guard.v1",
+  "frozenAt": "2026-09-30",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "status": "FROZEN_FIXED_PROVEN",
+  "findingId": "VRM-108",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "lastGoodProductSource": "c1c4e748b39c5632e8648023433a00c15d57191b",
+  "lastGoodProductTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
+  "restoredControlHead": "a26e2cc0ed75c536870c9327c5c6cfa8a3e3a79f",
+  "restoredFullTree": "b1fa5f1201c2ca86eea2b3f25181d25a42cba4b8",
+  "preventionContract": [
+    "Never derive create_tree base_tree_sha from an optional or absent fetch_commit tree field.",
+    "For every control-only composition, use an explicitly proven full canonical tree SHA.",
+    "Before moving the branch, create a detached probe commit and compare it against the last known-good control commit.",
+    "Require byte-parity readback of workflow, .firebaserc, AGENTS.md and relevant product owners; reject any unexpected removed file."
+  ],
+  "allowedCurrentControlDelta": [
+    "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
+    "CXORBIA_PRE_I4_RUN736_CUMULATIVE_DEV_LIVE_CLOSURE_2026-09-30.json",
+    "CXORBIA_I3_CONTROL_TREE_COMPOSITION_GUARD_2026-09-30.json"
+  ],
+  "production": "DO_NOT_TOUCH"
+}

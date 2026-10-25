@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "cxorbia.i3.postdeploy-consistency-receipt.v1",
+  "date": "2026-10-23",
+  "decision": "PASS_RUN1827_EXACT_DEV_MATERIALIZATION_WITH_VRM283_LIVE_UI_DEFECT",
+  "source": {
+    "sha": "f40d5d8bc6aa45a9c7ac3f2bfb0bd0a197a52251",
+    "tree": "0d184194f0e4a5e81112a50a3306ce8e0cf2a7a6"
+  },
+  "materialization": {
+    "runId": 39996392187,
+    "runNumber": 1827,
+    "sourceSha": "f40d5d8bc6aa45a9c7ac3f2bfb0bd0a197a52251",
+    "sourceTree": "0d184194f0e4a5e81112a50a3306ce8e0cf2a7a6",
+    "artifactDigest": "sha256:697f6da4cdf165a5341c400215db923b01e152ee9a118f151eff83d2c1dd0ff3",
+    "runtimeRevision": "cxorbia-live-hr-dev-00319-m5f",
+    "runtimeDigest": "sha256:76af70ab230277aa46cc1166454594767d797ed06a640915e882ab1f6b770c7c",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/99ff910e272d94a3",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792777177907000",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/fe1c7f11-7265-4d66-95ee-c03f4798d35e",
+    "hrRevision": "d19eb12ad8c1c5140b5711ea390deaae50b0edd35ff4f982a69bfdcabbc86dd2",
+    "jobId": 120561055167,
+    "artifactId": 12520546152,
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "firestoreRulesDeploys": 1,
+    "hrWrites": 0,
+    "production": false
+  },
+  "workReadback": {
+    "surface": "authenticated Chrome admin DEV, Cinépolis, October 2026",
+    "visibleVisits": 44,
+    "newReconcileButton": "ABSENT_AFTER_RUN1827_RELOAD",
+    "legacyLocalPublishButton": "VISIBLE",
+    "rootCause": "period may lack optional operationalSource.mode external marker, which hid guarded admin reconcile action and exposed legacy local editing",
+    "findingId": "VRM-283",
+    "realProviderCommand": "NOT_EXECUTED",
+    "durableThreeRowReadback": "NOT_REPROVED_POST_RUN1827",
+    "humanAcceptance": "PENDING"
+  },
+  "state": "I3_HOLD_PRE_I4",
+  "i4Authorized": false,
+  "production": false
+}

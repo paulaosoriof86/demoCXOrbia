@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "cxorbia.live-hr-sharing-revalidation.v1",
+  "generatedAt": "2026-07-31T02:27:30Z",
+  "decision": "HOLD_CANONICAL_HR_STILL_PUBLIC_WRITER",
+  "canonicalHr": {
+    "title": "HR Guatemala - Sincronizacion Google Sheets",
+    "spreadsheetIdMasked": "1h307t...8vU4",
+    "totalTabs": 30,
+    "monthlyTabs": 28,
+    "latestMonthlyTab": "JULIO 26 HN",
+    "publicAnyoneWriter": true,
+    "serviceAccountReaderPreserved": true
+  },
+  "sameTitleDuplicateDetected": {
+    "present": true,
+    "distinguishingStructure": "single-tab file with only Hoja 1",
+    "restricted": true,
+    "note": "Do not use the same-title single-tab file as the canonical HR source."
+  },
+  "provider": {
+    "googleSheetsApiEnabled": true,
+    "canonicalHrReadableByServiceAccount": true
+  },
+  "safety": {
+    "providerReads": true,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "production": false,
+    "merge": false,
+    "pii": false,
+    "secrets": false
+  }
+}

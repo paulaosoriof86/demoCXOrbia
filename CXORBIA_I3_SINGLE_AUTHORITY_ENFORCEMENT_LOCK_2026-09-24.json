@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "cxorbia.i3.single-authority-enforcement-lock.v1",
+  "frozenAt": "2026-09-24",
+  "status": "C1_ENFORCED",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "production": "DO_NOT_TOUCH",
+  "canonicalFunctionalSource": "d8aad982ae4b47e66bf949d906b6c7ede8866f84",
+  "descriptor": {
+    "path": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "gitBlob": "ff5bece2580fd92a2c6bbe70967706fa6521808f"
+  },
+  "workflow": {
+    "path": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "gitBlob": "db97829172c576efa1c33bd257eadb02d7f49beb",
+    "controlCommit": "329669ce3ea69f8faf95a66eaf2ecdecb4fe21de"
+  },
+  "guard": {
+    "path": "tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs",
+    "gitBlob": "a3c305bf635d8e408fc12c0b5f8e88f935f4bb5f",
+    "appendOnlyRevisionCommit": "bedb077a73b16a9e4cc1e21cd71c0452ec3875b1"
+  },
+  "ledger": {
+    "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V2_2026-09-24.json",
+    "gitBlob": "4fe256267c1505e2845768937b958d34c1f2a20b",
+    "coverage": "VRM-001..VRM-042",
+    "nextFindingId": "VRM-043"
+  },
+  "semanticOwnerShadowingAddendum": {
+    "path": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-24_SEMANTIC_OWNER_SHADOWING_FROZEN.md",
+    "gitBlob": "7915df0775958cba5b81da1c04dcfd56caeb7b93"
+  },
+  "proof": {
+    "runId": 36006594469,
+    "runNumber": 347,
+    "canonicalAuthorityJobId": 107656220415,
+    "canonicalAuthorityJobConclusion": "success",
+    "historicalOneShotJobs": "disabled_and_skipped",
+    "terminalCertify": "blocked_while_descriptor_HOLD",
+    "gate21": "blocked_while_descriptor_HOLD"
+  },
+  "invariants": [
+    "no top-level hardcoded I3 product source/tree",
+    "eight historical PRE-I4 one-shot jobs disabled",
+    "terminal certification derives source/tree from canonical authority job",
+    "VRM037 diagnostic derives source from canonical authority job",
+    "findings ledger is contiguous append-only and descriptor blob-bound"
+  ],
+  "next": "C2_VRM037_VRM042_DYNAMIC_PROOF_AND_SINGLE_SEMANTIC_OWNER_FIX"
+}

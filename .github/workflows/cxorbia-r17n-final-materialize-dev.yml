@@ -1,0 +1,17 @@
+name: CXOrbia R17N Final DEV Materialization — CONSUMED
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  statuses: write
+
+jobs:
+  consumed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authorization consumed
+        run: |
+          echo 'R17N final DEV materialization authorization r17n-final-dev-20260730-01 was consumed successfully.'
+          echo 'No provider write is permitted from this workflow after the PASS evidence was recorded.'

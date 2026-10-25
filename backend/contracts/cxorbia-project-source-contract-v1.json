@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "cxorbia.project-operational-source.v1",
+  "status": "ACTIVE_SOURCE_CONTRACT",
+  "scope": "reusable_multi_tenant_multi_project",
+  "principles": {
+    "projectChoosesOperationalSource": true,
+    "sourceMayBeInternalOrExternal": true,
+    "cinépolisIsNotGlobalLogic": true,
+    "noProviderHardcodeInModules": true,
+    "noSourceUrlOrCredentialInRepo": true,
+    "stableIdentityRequired": true,
+    "dedupeByNameForbidden": true,
+    "externalSourceDoesNotOwnPlatformApplications": true,
+    "providerAckRequiredForWrites": true
+  },
+  "projectSource": {
+    "required": ["mode", "providerType", "authority", "mappingRef", "readPolicy", "writePolicy"],
+    "mode": ["internal", "external"],
+    "providerType": [
+      "internal_firestore",
+      "google_sheets",
+      "excel_import",
+      "external_api",
+      "external_platform",
+      "custom_adapter"
+    ],
+    "authority": {
+      "internal": {
+        "periods": "platform",
+        "visits": "platform",
+        "observedOperationalMilestones": "platform"
+      },
+      "external": {
+        "periods": "external_source",
+        "visits": "external_source",
+        "observedOperationalMilestones": "external_source"
+      },
+      "alwaysPlatformOwned": [
+        "applications",
+        "applicationDecisions",
+        "users",
+        "profiles",
+        "certifications",
+        "protectedIdentityCrosswalks",
+        "auditTrail"
+      ]
+    },
+    "readPolicy": {
+      "allowed": ["internal_live", "external_live", "external_snapshot_import"],
+      "freshReadSupported": true,
+      "periodDiscovery": ["provider_auto", "configured", "internal_native"],
+      "cachePolicyMustBeExplicit": true
+    },
+    "writePolicy": {
+      "allowed": ["platform_only", "external_read_only", "bidirectional_gated"],
+      "default": "external_read_only",
+      "externalWritesRequireProviderGate": true,
+      "conflictPolicy": "review_no_silent_overwrite"
+    },
+    "mapping": {
+      "mappingRefRequired": true,
+      "repoMayContainMappingSchema": true,
+      "repoMustNotContainPrivateWorkbookUrl": true,
+      "visitStableKeys": ["tenantId", "projectId", "visitId", "hrRowId"],
+      "shopperStableKeys": ["shopperId", "protectedCrosswalkId"],
+      "periodKeyRequired": true
+    },
+    "providerRef": {
+      "requiredForExternalLive": true,
+      "mustBeIndirectReference": true,
+      "examples": ["integrationSettingId", "providerBindingId", "secretRef"],
+      "rawCredentialForbidden": true
+    },
+    "questionnaire": {
+      "independentFromOperationalSource": true,
+      "modes": ["internal", "external_general_link", "external_per_visit_link", "external_platform"],
+      "perVisitLinkFieldConfigurable": true
+    }
+  },
+  "legacyCompatibility": {
+    "hrFuente.origen=nativa": "mode=internal/providerType=internal_firestore",
+    "hrFuente.etiqueta=Google Sheets (online)": "mode=external/providerType=google_sheets",
+    "hrFuente.etiqueta=Excel importado": "mode=external/providerType=excel_import",
+    "legacyFieldsArePresentationOnly": true,
+    "canonicalProjectSourceRequiredBeforeNewProductionProject": true
+  },
+  "gates": {
+    "newProjectCreation": [
+      "PROJECT_CONFIG_VALID",
+      "PROJECT_SOURCE_BINDING_VALID",
+      "PROJECT_MAPPING_VALID",
+      "PROJECT_PROVIDER_CAPABILITIES_VALID",
+      "PROJECT_COMMAND_PROVIDER_ACK_READY"
+    ],
+    "externalLiveActivation": [
+      "EXTERNAL_PROVIDER_READ_GATE",
+      "STABLE_ROW_ID_GATE",
+      "SOURCE_SAFE_GATE",
+      "AUTO_PERIOD_DISCOVERY_OR_CONFIG_GATE"
+    ],
+    "bidirectionalActivation": [
+      "EXTERNAL_PROVIDER_WRITE_GATE",
+      "IDEMPOTENCY_GATE",
+      "CONFLICT_REVIEW_GATE",
+      "ACK_READBACK_GATE"
+    ]
+  }
+}

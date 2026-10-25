@@ -1,0 +1,143 @@
+name: CXOrbia Existing Hosting DEV Corte 6 Post-Deploy Gate
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/config/phase-a-hosting-dev-execution-request-v1.json'
+      - 'tools/qa/cxorbia-corte6-hosting-iam-diagnostic.mjs'
+      - '.github/workflows/cxorbia-phase-a-r15g-dev-root-deploy.yml'
+
+permissions:
+  contents: write
+  statuses: write
+
+concurrency:
+  group: cxorbia-existing-hosting-dev-corte6-postdeploy
+  cancel-in-progress: false
+
+jobs:
+  post-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout active branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate consumed one-shot state
+        id: gate
+        run: |
+          set -euo pipefail
+          node <<'NODE' >> "$GITHUB_OUTPUT"
+          const r=require('./backend/config/phase-a-hosting-dev-execution-request-v1.json');
+          if(r.schemaVersion!=='cxorbia.c5-existing-hosting-dev-visual.v1') throw new Error('bad_schema');
+          if(r.requestId!=='c5-existing-hosting-dev-visual-20260730-01'||r.authorizedBy!=='Paula'||r.authorizationSource!=='current_conversation_2026-07-30') throw new Error('bad_authorization_identity');
+          if(r.targetProject!=='cxorbia-backend-dev'||r.hostingTarget!=='cxorbia-dev'||r.existingHostingRootUrl!=='https://cxorbia-backend-dev.web.app') throw new Error('bad_target');
+          if(r.enabled!==false||r.consumed!==true||r.hostingDeployExecutions!==1) throw new Error('hosting_one_shot_not_consumed');
+          if(r.firestoreWrites!==0||r.authWrites!==0||r.storageWrites!==0||r.hrWrites!==0||r.legacyWrites!==0||r.paymentsWrites!==0||r.functionsDeploy!==false||r.rulesDeploy!==false||r.merge!==false||r.production!==false) throw new Error('unsafe_scope');
+          const diagnose=r.status==='deployed_remote_validation_hold';
+          const waiting=r.status==='deployed_waiting_human_auth_visual_direct_entrypoint';
+          if(!diagnose&&!waiting) throw new Error('unknown_postdeploy_state:'+String(r.status||''));
+          console.log('diagnose='+(diagnose?'true':'false'));
+          console.log('waiting='+(waiting?'true':'false'));
+          NODE
+
+      - name: Load canonical DEV credential
+        id: credential
+        if: steps.gate.outputs.diagnose == 'true'
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/corte6-hosting-private
+          node <<'NODE'
+          const fs=require('fs');
+          const raw=process.env.EXISTING_DEV_JSON||'';
+          let p=null; try{p=JSON.parse(raw);}catch{}
+          if(!(p&&p.type==='service_account'&&p.project_id&&p.client_email&&p.private_key)) throw new Error('credential_invalid');
+          if(p.project_id!=='cxorbia-backend-dev') throw new Error('wrong_service_account_project:'+p.project_id);
+          fs.writeFileSync('.tmp/corte6-hosting-private/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.tmp/corte6-hosting-private/credentials.json" >> "$GITHUB_ENV"
+
+      - name: Install transient Firebase Admin
+        id: tooling
+        if: steps.gate.outputs.diagnose == 'true'
+        run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
+
+      - name: Read-only remote Hosting diagnosis
+        id: diag
+        if: steps.gate.outputs.diagnose == 'true'
+        env:
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_EXPECTED_SITE: cxorbia-backend-dev
+          CXORBIA_HOSTING_IAM_REPORT: app/docs/evidence/CORTE6-HOSTING-IAM-DIAGNOSTIC-LATEST.json
+        run: |
+          set -euo pipefail
+          node --check tools/qa/cxorbia-corte6-hosting-iam-diagnostic.mjs
+          node tools/qa/cxorbia-corte6-hosting-iam-diagnostic.mjs
+          node <<'NODE' >> "$GITHUB_OUTPUT"
+          const r=require('./app/docs/evidence/CORTE6-HOSTING-IAM-DIAGNOSTIC-LATEST.json');
+          const x=r.providerReads||{};
+          const latest=x.releasesList?.latest?.[0]||{};
+          const latestVersion=x.versionsList?.latest?.[0]||{};
+          const code=[
+            'SITE'+String(x.hostingSite?.status||0),
+            'REL'+String(x.releasesList?.status||0),
+            'VER'+String(x.versionsList?.status||0),
+            'PRF'+(x.remoteCorte6Proof?.isCorte6Proof?'1':'0'),
+            'ENT'+(r.remoteStaticChecks?.entrypointPreviewTitle&&r.remoteStaticChecks?.entrypointLoadsBrowserAuth?'1':'0'),
+            'ROOT'+(r.remoteStaticChecks?.rootPreviewTitle&&r.remoteStaticChecks?.rootLoadsBrowserAuth?'1':'0'),
+            'VST'+String(latestVersion.status||'NONE').replace(/[^A-Z0-9]/gi,'').slice(0,12),
+            'RT'+(latest.releaseTime?'1':'0')
+          ].join('_');
+          console.log('code='+code);
+          NODE
+
+      - name: Persist sanitized post-deploy diagnostic
+        id: persist
+        if: steps.gate.outputs.diagnose == 'true' && steps.diag.outcome == 'success'
+        run: |
+          set -euo pipefail
+          cp app/docs/evidence/CORTE6-HOSTING-IAM-DIAGNOSTIC-LATEST.json /tmp/c6-hosting-iam.json
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          mkdir -p app/docs/evidence
+          cp /tmp/c6-hosting-iam.json app/docs/evidence/CORTE6-HOSTING-IAM-DIAGNOSTIC-LATEST.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/docs/evidence/CORTE6-HOSTING-IAM-DIAGNOSTIC-LATEST.json
+          if git diff --cached --quiet; then echo 'No diagnostic evidence delta'; else git commit -m 'evidence: persist post-deploy Corte 6 Hosting diagnostic'; git push origin HEAD:docs-tya-v6-v71-audit; fi
+
+      - name: Publish post-deploy status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          STATE=success
+          DESC='PASS_C6_HOSTING_WAITING_HUMAN_VISUAL'
+          if [ '${{ steps.gate.outputs.diagnose }}' = 'true' ] && [ '${{ steps.diag.outcome }}' = 'success' ]; then DESC='DIAG_C6_HOSTING_POSTDEPLOY_${{ steps.diag.outputs.code }}'; fi
+          if [ '${{ job.status }}' != 'success' ]; then
+            STATE=error
+            DESC='FAIL_C6_HOSTING_POSTDEPLOY_GATE'
+            if [ '${{ steps.gate.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_POSTDEPLOY_STATE';
+            elif [ '${{ steps.credential.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_POSTDEPLOY_CREDENTIAL';
+            elif [ '${{ steps.tooling.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_POSTDEPLOY_TOOLING';
+            elif [ '${{ steps.diag.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_POSTDEPLOY_REMOTE_READ';
+            elif [ '${{ steps.persist.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_POSTDEPLOY_PERSIST'; fi
+          fi
+          CONTEXT="cxorbia/existing-hosting-dev/${DESC}"
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="$CONTEXT" -f description="$DESC" >/dev/null
+
+      - name: Cleanup credential
+        if: always()
+        run: rm -rf .tmp/corte6-hosting-private

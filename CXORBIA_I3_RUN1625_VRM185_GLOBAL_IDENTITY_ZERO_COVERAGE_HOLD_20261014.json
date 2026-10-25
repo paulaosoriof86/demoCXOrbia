@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "cxorbia.i3.run1625.global-identity-readonly-coverage.v1",
+  "dateLocal": "2026-10-14",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "decision": "HOLD_R03_GLOBAL_IDENTITY_ZERO_EVALUABLE_PAIRS_NOT_HUMAN_PASS",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "canonicalRepo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceSha": "5b13468fc3999f0c8e49982954a8733cf2728e96",
+  "sourceTree": "1ea0ad04afe1e6e760668ca8cb9206217735b6a1",
+  "controlHeadDuringRun": "7e206c062a1cb2f17200ab41812a848d490add7a",
+  "priorHumanR03": "MULTIPLE_PASSWORD_PROOF_PRINCIPALS_JOSE_SARAT",
+  "observedRun": {
+    "runId": 38658544865,
+    "runNumber": 1625,
+    "canonicalAuthorityJob": 116174023557,
+    "globalIdentityJobId": 116174139401,
+    "githubConclusion": "success",
+    "jobDecision": "PASS_VRM185_GLOBAL_IDENTITY_CONSOLIDATION_PLAN",
+    "googleCloudAuth": "PASS",
+    "readOnly": true,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "deploys": 0,
+    "production": false,
+    "hrRevision": "2e3b2aaff2b1ac7a9323c9a69a16d2ad97beb25648c642e1464d72e36917ad70"
+  },
+  "resultSummary": {
+    "activeTenantAdjudicationLinks": 65,
+    "safePlanCount": 0,
+    "reviewRequiredCount": 0,
+    "alreadyConvergedCount": 0,
+    "evaluablePairsProven": 0
+  },
+  "codeOwner": "tools/qa/cxorbia-i3-vrm185-global-identity-consolidation-plan.mjs",
+  "proof": {
+    "existingGate": "result.decision = result.reviewRequired.length===0 ? PASS : HOLD",
+    "missingCoverageGate": "No positive proof of non-empty matched exact HR/current crosswalk/eligible active principal pairs; an empty candidate set becomes PASS",
+    "exactCandidateSelection": "active tenant adjudication link -> exact source token matching HR shopper IDs -> source crosswalk == current and sourceType == hr_external -> principal/membership verification",
+    "undercoverage": "65 active links returned but none produced a safe/review/already-converged classification. Cannot infer whether current HR IDs, crosswalk joins or eligibility filters are the reason without instrumenting per-stage counts.",
+    "noJoseSaratTopology": "The execution artifact did not prove which Auth UID, keeper login, membership, or historical dependency corresponds to José Sarat."
+  },
+  "mandatedExit": "Owner-scoped Codex fix only after recording per-stage counts; require non-vacuous coverage and exact José Sarat targeted UID/member/password-principal/historical dependence readback. Zero evaluable pairs must yield HOLD, never PASS. No speculative merge; then controlled DEV + E2E with checked human keeper.",
+  "statusOfOtherFindings": {
+    "R01": "SOURCE_QA_PASS_DEV_PENDING",
+    "R07": "SOURCE_QA_PASS_DEV_E2E_PENDING",
+    "R08": "SAFE_DIAGNOSTIC_QA_PASS_VERTEX_REAL_FAILURE_PENDING",
+    "R22": "SOURCE_QA_PASS_FIRESTORE_E2E_PENDING",
+    "VRM134": "OPEN_P0",
+    "finance": "R09-R18/R24 OPEN",
+    "HR_R23": "OPEN"
+  },
+  "priorLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V429_2026-10-14.json",
+  "originalFindings": 274,
+  "humanReviewFrozen": "CXORBIA_I3_HUMAN_REVIEW_20261014_P0_CUMULATIVE_FROZEN.json",
+  "phaseADomains": 21,
+  "noProductWrites": true,
+  "noProduction": true,
+  "authorizationRequiredNow": false
+}

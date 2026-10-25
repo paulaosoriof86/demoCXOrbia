@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "cxorbia.dev-visual-acceptance.clarification.v1",
+  "generatedAt": "2026-08-13T17:18:00-06:00",
+  "decision": "DEV_TECHNICAL_PASS_OWNER_VISUAL_PENDING",
+  "dev": {
+    "projectId": "cxorbia-backend-dev",
+    "hostingTarget": "cxorbia-dev",
+    "rootUrl": "https://cxorbia-backend-dev.web.app/",
+    "buildId": "ecc725866acc3eb8",
+    "technicalQualificationPercent": 100
+  },
+  "ownerCorrection": {
+    "currentTyAPlatformReplaced": false,
+    "realCutoverDone": false,
+    "ownerVisibleDevAcceptancePending": true
+  },
+  "nextChecks": [
+    "synthetic_dev_e2e",
+    "live_hr_readonly",
+    "tenant_and_modules",
+    "shoppers",
+    "available_visits"
+  ],
+  "merge": false
+}

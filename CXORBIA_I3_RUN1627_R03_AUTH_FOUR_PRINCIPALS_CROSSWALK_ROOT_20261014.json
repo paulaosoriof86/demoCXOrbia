@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "cxorbia.i3.r03.run1627.auth-crosswalk-causal-readback.v1",
+  "dateLocal": "2026-10-14",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "status": "HOLD_R03_P0_PROVEN_AUTH_QUADRUPLE_PRINCIPALS_CROSSWALK_OWNER",
+  "sourceSha": "5b13468fc3999f0c8e49982954a8733cf2728e96",
+  "sourceTree": "1ea0ad04afe1e6e760668ca8cb9206217735b6a1",
+  "controlParent": "0edae83603a2995b69b2c6a90398f696efc3da83",
+  "provenance": {
+    "runId": 38659461076,
+    "runNumber": 1627,
+    "globalJobId": 116177098522,
+    "canonicalJobId": 116177010765,
+    "source": "Google Auth+Firestore DEV+HR revision read-only",
+    "jobOutcome": "FAIL_COVERAGE_GATE_EXPECTED",
+    "decision": "HOLD_VRM185_ZERO_EVALUABLE_PAIRS",
+    "readOnly": true,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "deploys": 0,
+    "production": false
+  },
+  "hrRevision": "2e3b2aaff2b1ac7a9323c9a69a16d2ad97beb25648c642e1464d72e36917ad70",
+  "stageCounts": {
+    "hrShoppers": 229,
+    "authPrincipals": 470,
+    "activeTenantAdjudicationLinks": 65,
+    "linksWithHrCandidate": 62,
+    "hrCandidateTokens": 82,
+    "crosswalkEligiblePairs": 0,
+    "crosswalkMismatchCombinedPredicate": 82,
+    "profilePairsInspected": 0,
+    "principalPairsEvaluated": 0,
+    "noHrIntersection": 3
+  },
+  "exactNamedCase": {
+    "referenceName": "José Sarat",
+    "exactProfileCount": 4,
+    "activeMembershipCountPerProfile": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "activeVerifiedAuthCountPerProfile": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strongPasswordProofCountPerProfile": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "authRetirements": 0,
+    "merges": 0
+  },
+  "causeProof": {
+    "qaOwner": "tools/qa/cxorbia-i3-vrm185-global-identity-consolidation-plan.mjs",
+    "qaOwnerBeforeBlob": "74ee1c73cd319fea44303b41fbb3ddf5d8698c09",
+    "qaOwnerCurrentBlob": "7d8b7fb723924a7ad817e2cf757652ba3503ce1b",
+    "diagnosticPredicate": "crosswalk.shopperId === HR current shopperId AND sourceType === hr_external",
+    "productContractSource": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+    "productCodeLine1093": "Alias exact crosswalk may legitimately set shopperId=canonicalShopperId with sourceStableKey=alias ID and identityMode=provider_exact_identity_link",
+    "conclusion": "DIAGNOSTIC_MAPPING_INCOMPATIBILITY_PROVEN_SOURCE_SEMANTICS; 82 joint-predicate misses, the particular predicate element not yet separately measured",
+    "notProven": "All 82 misses are caused exclusively by canonical alias mapping; provider state of historical 65 links cannot be inferred without exact row readback"
+  },
+  "classification": "MAPPING_FAILURE",
+  "risk": "Four active credential-proven profiles must not be auto-merged on equal name; Admin chooses keeper with exact UID membership and rollback + independent E2E",
+  "nextOwnerAction": "Codex I3 P0_PROVEN only: on exact runner QA owner split mismatch counters (missing crosswalk, shopperId canonical mismatch, sourceType mismatch, trusted alias relation), require coverage of exact Auth case and durable domain dependencies; fix only mapping semantics with verified trusted links. Never alter product/Auth/HR in diagnostic run. After source proof, same cumulative DEV E2E Admin+Shopper with human-selectable verified keeper; no partial visuals.",
+  "preserved": {
+    "ledgerPriorCount": 274,
+    "humanFindingsR01toR25": 25,
+    "phaseADomains": 21,
+    "R01": "SOURCE_QA_PASS_DEV_PENDING",
+    "R07": "SOURCE_QA_PASS_DEV_PENDING",
+    "R08": "SAFE_DIAGNOSTICS_SOURCE_QA_PASS_VERTEX_PENDING",
+    "R22": "SOURCE_QA_PASS_DEV_PENDING",
+    "financeR09toR18": "OPEN_AS_FROZEN",
+    "VRM134": "OPEN"
+  },
+  "lastDev": {
+    "run": 1605,
+    "source": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+    "hosting": "sites/cxorbia-backend-dev/versions/0b20ba1c5df7295f",
+    "runtime": "cxorbia-live-hr-dev-00294-ftx"
+  },
+  "authorizationNeededNow": false
+}

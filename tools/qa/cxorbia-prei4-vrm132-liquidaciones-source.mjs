@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+const file='app/modules/finanzas.js';
+const text=fs.readFileSync(file,'utf8');
+const start=text.indexOf("CX.module('liquidaciones'");
+const end=text.indexOf("CX.module('lotes'",start);
+if(start<0||end<0)throw new Error('SOURCE_FAILURE:LIQUIDACIONES_MODULE_BOUNDS');
+const body=text.slice(start,end);
+const tests=[];
+const add=(id,ok)=>tests.push({id,pass:!!ok});
+add('LIQ_LOCAL_CXP_DECLARATION',body.includes("const cxpAccounts=connectedFinance()?accountKind('cxp'):CX.finStore.cxp(p.id);"));
+add('LIQ_LOCAL_CONNECTED_FINANCE',body.includes("const connectedFinance=()=>CX.BACKEND?.enabled===true&&!_showFixturesLiq;"));
+add('LIQ_LOCAL_DURABLE_ACCOUNTS',body.includes("let durableAccounts=Array.isArray(data.__financeAccounts)?data.__financeAccounts:[];"));
+add('LIQ_LOCAL_ACCOUNT_REFRESH',body.includes("const refreshDurableFinance=async(force=false)=>")&&body.includes("data.getFinanceAccounts({projectId:canonicalProjectId(),periodId:canonicalPeriodId()})"));
+add('LIQ_PROVIDER_ORIGIN_COMPAT',body.includes("String(r?.origin||r?.origen||'').toLowerCase()==='liquidacion'"));
+add('LIQ_INITIAL_ASYNC_READ',body.includes("if(connectedFinance())refreshDurableFinance(false).then(ok=>{if(ok)draw();}).catch(()=>{});"));
+add('LIQ_FINANCE_EVENT_REFRESH',body.includes("CX.bus.on('finance-durable-ready'"));
+const firstUse=body.indexOf('cxpAccounts');
+const decl=body.indexOf("const cxpAccounts=");
+add('LIQ_NO_FREE_CXP_BEFORE_DECL',decl>=0&&firstUse===decl+'const '.length);
+const pass=tests.every(x=>x.pass);
+const result={schemaVersion:'cxorbia.prei4.vrm132.liquidaciones.source.v1',decision:pass?'PASS_PREI4_VRM132_LIQUIDACIONES_SOURCE':'FAIL_PREI4_VRM132_LIQUIDACIONES_SOURCE',tests,production:false,writes:0,deploys:0};
+fs.mkdirSync('.tmp/prei4-vrm132-liquidaciones-source',{recursive:true});
+fs.writeFileSync('.tmp/prei4-vrm132-liquidaciones-source/result.json',JSON.stringify(result,null,2)+'\n');
+console.log(JSON.stringify(result,null,2));
+if(!pass)process.exit(1);

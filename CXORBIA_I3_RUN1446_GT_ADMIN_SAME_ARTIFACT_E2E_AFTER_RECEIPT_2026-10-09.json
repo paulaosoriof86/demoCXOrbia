@@ -1,0 +1,183 @@
+{
+  "schemaVersion": "cxorbia.i3.run1446.gt-admin.same-artifact.after.v1",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "state": "HOLD",
+  "classificationOfClosedControlFailure": "RELEASE_COMPOSITION_FAILURE",
+  "statusBefore": "HOLD_I3_GT_E2E",
+  "statusAfter": "HOLD_I3_B2_SIGNED_ACK_RELOAD_REQUIRED",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedParentSha": "65b254d2c945d003486a81200a14ca93bc802a99",
+  "expectedParentTree": "8052bb6d8d07e0e4d20571eda34e53ee4c7c5532",
+  "sourceSha": "797050085d1e3347b6d56322f003a3a293790710",
+  "sourceTree": "607196f740203d538df8e22e424874fe547b3d59",
+  "run": {
+    "runId": 37986699215,
+    "runNumber": 1446,
+    "runHeadSha": "65b254d2c945d003486a81200a14ca93bc802a99",
+    "jobId": 114010447016,
+    "jobName": "phasea-representative-same-artifact-live-reproof",
+    "runStatus": "completed",
+    "runConclusion": "success",
+    "jobConclusion": "success",
+    "artifactId": 11643930750,
+    "artifactUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/37986699215/artifacts/11643930750",
+    "evidenceZipSha256": "5422fa2da513fffdc695d0bedae486957d58dfc41f869ae2a6d96b601ddf80b6",
+    "scriptDecision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+    "scope": "REPRESENTATIVE_GT_ADMIN_E2E_ONLY_NOT_FULL_I3_CERTIFICATION"
+  },
+  "dev": {
+    "materializationRunId": 37958395380,
+    "materializedArtifactDigest": "sha256:42445d6e62ce0bab1e95fdb86b592d422a2cee5db221e1c4c3abfece281503ee",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/0609acbc6f0dace6",
+    "runtimeRevision": "cxorbia-live-hr-dev-00283-kc5",
+    "runtimeDigest": "sha256:3bdb7ca745abcc51ae8a93aa9e4a83c631af58eb891c0c34b644d578969e586a",
+    "buildsDuringGt": 0,
+    "hostingDeploysDuringGt": 0,
+    "production": false
+  },
+  "hr": {
+    "revision": "abe41d26a5729e48d92c7754217abd5111f1eacf9fecec5ad53ed25973d25b0c",
+    "metaReads": 2,
+    "stable": true,
+    "sourceSafe": true,
+    "shopperReconciliationAck": true,
+    "visitReconciliationAck": true,
+    "periodId": "cinepolis-2026-10",
+    "periodVisits": 44,
+    "assignedHrVisits": 33,
+    "unresolvedMemberships": 0,
+    "duplicateActivePrincipals": 0,
+    "unresolvedAssignedVisits": 0,
+    "duplicateHrVisitKeys": 0
+  },
+  "representatives": [
+    {
+      "name": "Julissa Flores",
+      "shopperId": "shopper_gt_0c198c1055",
+      "ownVisits": 9,
+      "uniqueOwnVisits": 9,
+      "currentVisits": 1,
+      "activeVisits": 1,
+      "identityExact": true,
+      "profileVisible": true,
+      "miDia": true,
+      "miVisitas": true,
+      "certRoute": true,
+      "benefitsRoute": true,
+      "academy": true,
+      "adjudicatedAlias": "shopper_gt_86254c4228",
+      "result": "PASS",
+      "dataCompletenessObservation": {
+        "missingProtectedFields": [
+          "email",
+          "depto",
+          "edad",
+          "sexo",
+          "dpi",
+          "banco",
+          "ctaTipo",
+          "ctaNum",
+          "ctaTitular",
+          "ctaMoneda"
+        ],
+        "findingNotAutomaticallyClassifiedAsCodeDefect": true
+      }
+    },
+    {
+      "name": "Priscila López",
+      "shopperId": "shopper_gt_4b32215b4e",
+      "ownVisits": 1,
+      "uniqueOwnVisits": 1,
+      "currentVisits": 1,
+      "activeVisits": 1,
+      "identityExact": true,
+      "profileVisible": true,
+      "miDia": true,
+      "miVisitas": true,
+      "certRoute": true,
+      "benefitsRoute": true,
+      "academy": true,
+      "result": "PASS",
+      "dataCompletenessObservation": {
+        "missingProtectedFields": [
+          "email",
+          "ciudad",
+          "depto",
+          "edad",
+          "sexo",
+          "dpi",
+          "banco",
+          "ctaTipo",
+          "ctaNum",
+          "ctaTitular",
+          "ctaMoneda"
+        ],
+        "findingNotAutomaticallyClassifiedAsCodeDefect": true
+      }
+    },
+    {
+      "name": "Paula Osorio",
+      "shopperId": "shopper_gt_1440137b73",
+      "ownVisits": 8,
+      "uniqueOwnVisits": 8,
+      "currentVisits": 1,
+      "activeVisits": 1,
+      "identityExact": true,
+      "profileVisible": true,
+      "miDia": true,
+      "miVisitas": true,
+      "certRoute": true,
+      "benefitsRoute": true,
+      "academy": true,
+      "result": "PASS",
+      "sameNameAnotherIndependentPrincipalObserved": true,
+      "independentPrincipalWasNotMerged": true,
+      "dataCompletenessObservation": {
+        "missingProtectedFields": [
+          "depto"
+        ],
+        "findingNotAutomaticallyClassifiedAsCodeDefect": true
+      }
+    }
+  ],
+  "admin": {
+    "result": "PASS",
+    "visibleCanonicalJulissaFlores": true,
+    "aliasIllescasSeparateRow": false,
+    "aliasMappedToCanonical": true,
+    "identityActionsPresent": true,
+    "postulationsPending": 0,
+    "assigned": 33,
+    "visits": 44,
+    "uniqueVisitKeys": 44,
+    "hrVisitsParity": true
+  },
+  "writesReportedByRepresentativeHarness": {
+    "auth": 0,
+    "hr": 0,
+    "provider": 0,
+    "deploys": 0,
+    "production": false
+  },
+  "downstreamWriteCapableTests": "NOT_EXECUTED_BY_DESIGN_GT_ONLY_EARLY_EXIT",
+  "priorHN": {
+    "runId": 37979785997,
+    "jobId": 113989505595,
+    "decision": "PASS_VRM215_HN_TARGET_EXACT_SHOPPER_READINESS",
+    "sourceUnchanged": true
+  },
+  "pending": [
+    "B2 signed display-only shopper profile provider ACK and reload not run",
+    "Six protected historical GT identity adjudications not resolved or merged",
+    "Some source/profile data fields unpopulated; exact protected source ownership pending, no synthetic fill",
+    "MODULE_TRUTH_MATRIX:21 domains, phaseAComplete=false, allModulesMatch=false",
+    "Human B1-B8 approval and G20/G21 pending"
+  ],
+  "noProjectWritesByAssistant": true,
+  "noHRImport": true,
+  "noAuthMutationByAssistant": true,
+  "noProduction": true,
+  "productionAuthorizationRequired": true,
+  "nextExactAction": "After confirmed same-artifact GT representative E2E PASS run 1446 and HN PASS run 1444, next focal I3 action is B2 shopper profile signed display-only provider ACK, remote readback and reload with exact owner, while keeping six GT protected crosswalk cases and human approvals open. No new artifact or production. Only P0_PROVEN owner writes."
+}

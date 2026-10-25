@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "cxorbia.i3.r03.admin-selected-keeper.source.v1",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "finding": "R03",
+  "classification": "AUTH_FAILURE",
+  "humanDecision": "Admin authorized to select canonical shopper profile and exact credential keeper",
+  "sourcePredecessor": "bf160c4f1bfc9fd0ce4550ec3cf072d8dc01927e",
+  "sourceSha": "1126a7820d6b036139e24da710f4df440373d891",
+  "sourceTree": "44e8ea8663f84768bb9eb4222ebc7d82af2d4738",
+  "ownerBlobs": {
+    "backend/runtime/cxorbia-shopper-command-provider-v1.mjs": "620bc0908249d49663f4aa3f83e817f34647bffa",
+    "app/adapters/cxorbia-shopper-admin-command-contract-v1.js": "f08d8ce0f099b499754209326ec1a08ff35290bc",
+    "app/adapters/cxorbia-cxdata-command-boundary-v1.js": "2adf6e6815b79ca57179a397b9ba0ee1cd27dd8b",
+    "app/modules/shoppers.js": "2ea1e68a229cdcfeaf55784d6ac9cc9bd863ccb9",
+    "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs": "52fcccf6b54e10698b602b79778964027781ca0c"
+  },
+  "before": "Multiple strong password-principals without unique canonical visible login fail SHOPPER_IDENTITY_MULTIPLE_PASSWORD_PROOF_PRINCIPALS",
+  "after": "Admin may optionally choose exact identity-bound credential keeper; provider requires human keeper confirmation, verified scope, one active Auth UID, strong password proof; ambiguous unset input retains historical fail-closed path",
+  "preserved": [
+    "VRM197 auto selection when exact canonical login remains unique",
+    "no fuzzy merge",
+    "Auth claims verification",
+    "dependent records plan",
+    "Auth rollback before durable commit",
+    "readback and idempotency",
+    "HR external read only"
+  ],
+  "newTest": "existing VRM185 dual-principal test extended for out-of-scope denial and exact admin-selected keeper confirmation, plus historical VRM197 regression",
+  "sourceSyntax": "PASS owner app/backend after stripping node import/shebang",
+  "ci": "PENDING_CANONICAL_RUN",
+  "dev": "NOT_MATERIALIZED",
+  "human": "PENDING",
+  "production": "DO_NOT_TOUCH",
+  "noRealAuthWrites": true,
+  "noHrWrites": true,
+  "next": "Run source CI incl R03 VRM185/197 and R07/R08; handle exact owner fail within I3; provider topology and real DEV E2E still mandatory."
+}

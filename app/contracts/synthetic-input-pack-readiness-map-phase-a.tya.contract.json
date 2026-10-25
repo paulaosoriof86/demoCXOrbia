@@ -1,0 +1,95 @@
+{
+  "schemaName": "synthetic-input-pack-readiness-map-phase-a.tya.contract",
+  "schemaVersion": "2026-07-05",
+  "tenantId": "tya",
+  "projectScope": "phase-a-preview",
+  "purpose": "Map synthetic input pack preview runner output into release readiness preview states without enabling production or external providers.",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "deployAllowed": false,
+  "mergeAllowed": false,
+  "firestoreWritesAllowed": false,
+  "storageWritesAllowed": false,
+  "hrWriteAllowed": false,
+  "makeWriteAllowed": false,
+  "geminiAllowed": false,
+  "emailSendAllowed": false,
+  "whatsappSendAllowed": false,
+  "paymentProviderAllowed": false,
+  "importRealDataAllowed": false,
+  "allowedSourceRunner": "tya-synthetic-input-pack-preview-runner",
+  "allowedSourceStatuses": [
+    "synthetic_input_pack_preview_ready",
+    "review_required",
+    "error"
+  ],
+  "readinessStates": [
+    "synthetic_preview_ready",
+    "preview_review_required",
+    "blocked_sensitive_or_raw_field_key",
+    "blocked_missing_input_or_fixture",
+    "blocked_real_action_flag",
+    "blocked_runner_error"
+  ],
+  "requiredReportFields": [
+    "runner",
+    "status",
+    "executeMode",
+    "runtimeEnabled",
+    "productionAllowed",
+    "firestoreWritesAllowed",
+    "storageWritesAllowed",
+    "makeWriteAllowed",
+    "emailSendAllowed",
+    "whatsappSendAllowed",
+    "geminiAllowed",
+    "importRealDataAllowed",
+    "deployAllowed",
+    "mergeAllowed"
+  ],
+  "requiredOutputFields": [
+    "mapper",
+    "status",
+    "sourceRunner",
+    "sourceStatus",
+    "executeMode",
+    "productionDecision",
+    "safeGateSummary",
+    "blockingReasons",
+    "reviewReasons",
+    "nextSafeSteps"
+  ],
+  "statusPriority": [
+    {
+      "whenContains": "sensitive_or_raw_field_keys_detected",
+      "readinessState": "blocked_sensitive_or_raw_field_key"
+    },
+    {
+      "whenContains": "real_action_flags_not_allowed",
+      "readinessState": "blocked_real_action_flag"
+    },
+    {
+      "whenContains": "missing",
+      "readinessState": "blocked_missing_input_or_fixture"
+    },
+    {
+      "whenSourceStatus": "error",
+      "readinessState": "blocked_runner_error"
+    },
+    {
+      "whenIssuesPresent": true,
+      "readinessState": "preview_review_required"
+    },
+    {
+      "whenSourceStatus": "synthetic_input_pack_preview_ready",
+      "readinessState": "synthetic_preview_ready"
+    }
+  ],
+  "nonProductionDecision": "synthetic validation only; not source lock; not production readiness",
+  "hardStops": [
+    "Do not run on real source data.",
+    "Do not enable external providers.",
+    "Do not infer production readiness from synthetic preview readiness.",
+    "Do not write Firestore, Storage, HR, payments or provider records from this mapper."
+  ]
+}

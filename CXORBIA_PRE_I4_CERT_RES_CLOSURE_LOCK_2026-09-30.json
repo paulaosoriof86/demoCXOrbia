@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "cxorbia.recovery.pre-i4-cert-res.closure.v1",
+  "frozenAt": "2026-09-30T23:56:56Z",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "state": "PASS_CERT_RES_LIVE",
+  "productSourceSha": "f769041ddd6adacb5bb16b0eeddab7d08b47a7e8",
+  "productSourceTree": "d83f57ed07ef684cd274d4b1db3a52d91f4ff400",
+  "evidence": {
+    "runId": 36793188546,
+    "jobId": 110150611836,
+    "artifactId": 11132452994,
+    "artifactDigest": "sha256:c8a5f876188cad8cf566496ebf96b7fb199e7197a6d0b799c832ebd3b97095c9",
+    "decision": "PASS_PREI4_CERT_RES_RUNTIME_ONLY_CLOSURE",
+    "runtimeRevision": "cxorbia-live-hr-dev-00236-fps",
+    "runtimeDigest": "sha256:e560ce1303bc4c3e157c1e7cca1a2c8c28cfca0d0c9ed4eda90251ee6309f7d6",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/a0054d58a85a7d43",
+    "hrRevision": "3be75731eff64aa9bb8eb795ea73ae2dad140cb789cbaa15659c67ea02ce33d0",
+    "cert001": "PASS_LIVE",
+    "cert002": "PASS_LIVE",
+    "res001": "PASS_LIVE",
+    "shopperAttemptScore": 100,
+    "shopperAttemptPass": true,
+    "recertificationState": "recertification_required",
+    "resourceOrphanBinary": false,
+    "fixtureCleanup": {
+      "attempt": true,
+      "recert": true,
+      "bank": true,
+      "resource": true,
+      "binary": true
+    },
+    "hrWrites": 0,
+    "production": false
+  },
+  "before": {
+    "blocker": "PREI4_CERT_RES_RUNTIME_ONLY_REMATERIALIZATION_REQUIRED",
+    "i3": "HOLD"
+  },
+  "after": {
+    "blocker": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
+    "i3": "HOLD",
+    "certResP0": "PASS",
+    "humanVisualAcceptance": "REQUIRED",
+    "i4": "BLOCKED"
+  },
+  "nextAction": "Fresh Paula visual inspection of the existing DEV candidate. No rebuild/deploy before that inspection.",
+  "production": "DO_NOT_TOUCH"
+}

@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "cxorbia.i3.r05-r06.run1637.live-e2e.v1",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "status": "R05_R06_DEV_E2E_PASS_HUMAN_PENDING",
+  "dateLocal": "2026-10-14",
+  "runId": 38664958627,
+  "runNumber": 1637,
+  "jobId": 116194746106,
+  "artifactId": 11940384445,
+  "artifactDigest": "sha256:0efb0507a77d226f8a9f0e1c54036ba28b2701659cbeeabf1115772df5c62e7a",
+  "sourceSha": "516f26ee75b644ad10d3a1d6093f24b91d347736",
+  "sourceTree": "9dbc266db267e70247e04386c549715ed4bd5882",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/9363c293c019a2b2",
+  "runtimeRevision": "cxorbia-live-hr-dev-00296-mc7",
+  "hrRevision": "2e3b2aaff2b1ac7a9323c9a69a16d2ad97beb25648c642e1464d72e36917ad70",
+  "oneArtifact": true,
+  "noRebuild": true,
+  "production": false,
+  "r05": {
+    "finding": "R05",
+    "owner": "app/modules/postulaciones.js",
+    "firstModalCount": 1,
+    "secondModalCount": 1,
+    "decision": "PASS_SINGLE_ACTIVE_POSTULACIONES_MODAL"
+  },
+  "r06": {
+    "finding": "R06",
+    "initialAssignmentCards": 41,
+    "query": "Oakland",
+    "matchedVisible": 4,
+    "invalidVisible": 0,
+    "unmatchedQueryVisible": 0,
+    "restored": 41,
+    "decision": "PASS_EXACT_ASSIGNMENT_FILTER"
+  },
+  "sameArtifactRegression": {
+    "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+    "exhaustiveVisual": "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL",
+    "clickCount": 42,
+    "adminPostulations": "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+    "finance": "PASS_PREI4_FINAL_FOCAL_FINANCE",
+    "certifications": "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE"
+  },
+  "humanAcceptance": "PENDING",
+  "otherP0StillOpen": [
+    "R03",
+    "R07",
+    "R08",
+    "R09",
+    "R10",
+    "R11",
+    "R12",
+    "R13",
+    "R14",
+    "R15",
+    "R16",
+    "R17",
+    "R20",
+    "R22",
+    "R23"
+  ]
+}

@@ -1,0 +1,635 @@
+{
+  "schemaVersion": "cxorbia.i3.human-visual-focal-checkpoint.20261012.v1",
+  "date": "2026-10-12",
+  "status": "HOLD_HUMAN_VISUAL_AND_P0_SCOPE_PROVEN_PENDING_OWNER_FIX",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlBefore": "cbc6e6cdc60e646957fd45f9eaf52082b146819c",
+  "product": {
+    "sourceSha": "6814d1335ff7490976bf77164cee5b45333f1e50",
+    "treeSha": "611f3baf1594765db71688065157142a7dfe7d12",
+    "devMaterialization": {
+      "state": "PASS_I3_B7_EXACT_DEV_MATERIALIZATION",
+      "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
+      "sourceSha": "6814d1335ff7490976bf77164cee5b45333f1e50",
+      "sourceTree": "611f3baf1594765db71688065157142a7dfe7d12",
+      "runId": 38198616540,
+      "runNumber": 1475,
+      "jobId": 114646821675,
+      "artifactId": 11724497887,
+      "artifactName": "cxorbia-vrm154-156-dev-materialization-38198616540",
+      "artifactDigest": "sha256:23f169569c212ebc424fcf9605608990c959dca0a355e31adac0af32eface4f6",
+      "runtimeRevision": "cxorbia-live-hr-dev-00284-fqs",
+      "runtimeDigest": "sha256:93b2ad7815f69c418c89e5e2e843446fbd5e383049334999ae86601b77232617",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/98b6aad81d31d1a2",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791774719559000",
+      "hrRevision": "912efa46062b3f0d43cffc57a64400e3af2a2212c25d2b200f33ddbdb555741b",
+      "builds": 1,
+      "runtimeDeploys": 1,
+      "hostingDeploys": 1,
+      "storageRulesDeploys": 0,
+      "sameSourceTree": true,
+      "runtimeRevisionReadback": true,
+      "runtimeDigestReadback": true,
+      "hostingVersionFinalized": true,
+      "hrExactRevisionReadback": true,
+      "hrSourceSafe": true,
+      "hrWrites": 0,
+      "production": false
+    },
+    "liveRun": 38199840679
+  },
+  "evidence": {
+    "screenshotCount": 20,
+    "humanStatements": 30,
+    "independentLiveHRMeta": {
+      "observedDate": "2026-10-12",
+      "revision": "c7c03bbf6578843a30cb29a3d31c3876418cb437889ae53f3336ab5f2e1a2994",
+      "periods": 17,
+      "visits": 748,
+      "sourceSafe": true,
+      "refreshDurationMs": 4943,
+      "visitReconciliationDurationMs": 12613,
+      "providerAckShopper": true,
+      "providerAckVisit": true,
+      "hrWrites": false,
+      "production": false
+    },
+    "priorCertifiedHRRevision": "912efa46062b3f0d43cffc57a64400e3af2a2212c25d2b200f33ddbdb555741b",
+    "exactHRRevisionParityForScreenshot": "NOT_PROVEN",
+    "B7FinanceLiveRun1478Technical": "PASS_WITH_LIMITED_COVERAGE_NOT_HUMAN_APPROVAL"
+  },
+  "carryforward": {
+    "existingLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V369_2026-10-11.json",
+    "existingLedgerEntries": 274,
+    "nextVrMID": "VRM-275",
+    "moduleTruth": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261011-V59.json",
+    "domainCount": 21,
+    "prior45": "RECOVERY-I3-HUMAN-VISUAL-FAIL-OBSERVATION-MAP-20261006.json",
+    "prior18": "CXORBIA_I3_HUMAN_VISUAL_CHECKPOINT_2026-10-08_B1_B2_B3_B5_B7_B8.json",
+    "noRenumber": true
+  },
+  "preserve": [
+    "Mi Día visual acceptance 2026-10-08; don't re-open without drift",
+    "Approved Academy and existing certification bank/content; do not wholesale rebuild",
+    "Mis Visitas feature set including agenda/reprogram/cancel/check-in and all stage chips; compact height only",
+    "Benefits historical newest-first and payment confirmation source authority",
+    "Dashboard direct contextual actions and scoped provider ACK, multi-select, KPI drill",
+    "Postulations durable create/approve/delete/no-reappearance and HR-vs-platform origin",
+    "Finance validated provider ACK/idempotency/Storage and GTQ-HNL isolation",
+    "Source/DEV/Hosting aligned artifact run1475; do not rebuild/redeploy until scoped fixes proven"
+  ],
+  "proposedOwnerOrder": [
+    {
+      "priority": 1,
+      "domain": "B2",
+      "owners": [
+        "app/modules/shoppers.js",
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+      ],
+      "goal": "Correct user/display identity safely plus fix historical sort/visual with fixed source"
+    },
+    {
+      "priority": 2,
+      "domain": "B7",
+      "owners": [
+        "app/modules/postulaciones.js",
+        "app/modules/dashboard.js",
+        "app/styles/layout.css",
+        "app/core/automations.js"
+      ],
+      "goal": "Restore approved operational cards and per-row actions, badge exact, WhatsApp functional draft and controlled templates"
+    },
+    {
+      "priority": 3,
+      "domain": "B4",
+      "owners": [
+        "app/modules/cert.js",
+        "backend/runtime/hr-live-service/certification-runtime.mjs"
+      ],
+      "goal": "Determine exact sanitized AI response validation failure; preserve existing certification bank"
+    },
+    {
+      "priority": 4,
+      "domain": "B8",
+      "owners": [
+        "app/modules/finanzas.js",
+        "app/core/finanzas-core.js",
+        "backend/runtime/cxorbia-finance-command-provider-v1.mjs"
+      ],
+      "goal": "Diagnose exact reconcile error, durable budget, month-view CxP/CxC and approved finance visual"
+    },
+    {
+      "priority": 5,
+      "domain": "B3/B5",
+      "owners": [
+        "app/modules/misvisitas.js",
+        "app/modules/beneficios.js",
+        "app/styles/layout.css"
+      ],
+      "goal": "Reduce Mis Visitas height and improve Benefits hero preserving all functions"
+    },
+    {
+      "priority": 6,
+      "domain": "TRANSVERSAL",
+      "owners": [
+        "app/adapters/tya-live-source-refresh-watch-v2.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "backend/runtime/hr-live-service/server.mjs"
+      ],
+      "goal": "Instrument source-to-UI refresh race; provider revision exact, no manual reload"
+    }
+  ],
+  "reservationBusiness": "Publish November future rounds/slots independently from selected October operations, with selected project, future period, executionCut, configurable reservationWindowMode; requires proven provider source, avoid synthetic HR visits.",
+  "controlGuard": {
+    "oneWriter": "Codex for I3 P0_PROVEN exact owners when dispatched; read-only auditor otherwise",
+    "newBranch": false,
+    "newCandidate": false,
+    "newWorkflow": false,
+    "doNotAlterLegacyProduction": true,
+    "noReimport": true,
+    "noLocalStorageTruth": true,
+    "sourceAndRuntimeChanged": false,
+    "productionAuthorised": false
+  },
+  "findings": [
+    {
+      "id": "HF-20261012-01",
+      "block": "B2",
+      "classification": "VISUAL_DEFECT",
+      "observed": "Mi Perfil identity/contact/access/payment remains oversized multi-card grid, sensitive details not scoped to compact dedicated modal",
+      "ownerCandidates": [
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/styles/layout.css"
+      ],
+      "evidenceScope": "HUMAN_SCREENSHOT_PLUS_CODE",
+      "exitCriterion": "Preserve protected masking, KPI first, all fields and exact owner; use section-specific modal",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-02",
+      "block": "B2",
+      "classification": "FUNCTIONAL_DEFECT",
+      "observed": "Mi Perfil visit history oldest-to-newest unlike approved Benefits newest-first",
+      "ownerCandidates": [
+        "app/adapters/tya-canonical-shopper-portal-v2.js"
+      ],
+      "evidenceScope": "SOURCE_PROVEN_ASCENDING_SORT",
+      "exitCriterion": "Reverse sort by canonical visit date; stable tie-break, parity with Benefits",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-03",
+      "block": "B2/B3/B7",
+      "classification": "MAPPING_FAILURE",
+      "observed": "Oct visit same shopper shows differing scheduled dates in Mi Perfil and Mis Visitas; must compare exact HR source revision and durable visit",
+      "ownerCandidates": [
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/modules/misvisitas.js",
+        "app/adapters/tya-cumulative-read-model-v2.js"
+      ],
+      "evidenceScope": "HUMAN_CROSS_SCREENSHOT_DIFFERENCE__NOT_SAME_REVISION_PROVEN",
+      "exitCriterion": "Do not overwrite HR, first read exact visitId/hrRowId sourceRevision and pendingReschedule",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-04",
+      "block": "B2",
+      "classification": "FUNCTIONAL_DEFECT",
+      "observed": "Admin shopper edit of HR-managed firstName/lastName rejects entire form with SHOPPER_HR_MANAGED_FIELDS_IMMUTABLE",
+      "ownerCandidates": [
+        "app/modules/shoppers.js",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+      ],
+      "evidenceScope": "SOURCE_PROVEN_PATCH_AND_SCREENSHOT_ERROR",
+      "exitCriterion": "Separate authorized display correction from HR-managed fields, exact identity/username Auth contract with ACK; never change login silently",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-05",
+      "block": "B2",
+      "classification": "AUTH_FAILURE",
+      "observed": "Username correction needs durable exact principal, visibleLogin, membership/Auth and no duplicate",
+      "ownerCandidates": [
+        "app/core/shopper-credential-rule.js",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+      ],
+      "evidenceScope": "REQUIREMENT_PROVEN__OWNER_IMPLEMENTATION_UNPROVEN",
+      "exitCriterion": "Prove authorized safe rename/reset path without changing HR source or second principal",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-06",
+      "block": "B3",
+      "classification": "VISUAL_DEFECT",
+      "observed": "Mis Visitas card height excessive, nine step chips dominate primary visit actions",
+      "ownerCandidates": [
+        "app/modules/misvisitas.js",
+        "app/styles/layout.css"
+      ],
+      "evidenceScope": "HUMAN_SCREENSHOT",
+      "exitCriterion": "Compact vertical spacing only; preserve all steps, scheduler/cancel/check-in, no hidden actions",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-07",
+      "block": "B3",
+      "classification": "FUNCTIONAL_DEFECT",
+      "observed": "Shopper current visit shows actionable complete while reschedule and cancel requests pending; validate state and date before any mutation",
+      "ownerCandidates": [
+        "app/modules/misvisitas.js"
+      ],
+      "evidenceScope": "HUMAN_SCREENSHOT__EXECUTION_NOT_PROVEN",
+      "exitCriterion": "Verify exact provider status and no conflicting transitions; fail closed if pending conflicts",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-08",
+      "block": "B4",
+      "classification": "PROVIDER_FAILURE",
+      "observed": "Create certification with AI failed AI_PROVIDER_RESPONSE_INVALID despite instructional source and 15 questions",
+      "ownerCandidates": [
+        "app/modules/cert.js",
+        "backend/runtime/hr-live-service/certification-runtime.mjs"
+      ],
+      "evidenceScope": "SCREENSHOT_CODE_PROVES_VALIDATION_GATE_NOT_RAW_ROOT_CAUSE",
+      "exitCriterion": "Capture sanitized Vertex response shape and per-question validation reason, preserve approved bank/content, don't fabricate questions",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-09",
+      "block": "B4",
+      "classification": "VISUAL_DEFECT",
+      "observed": "Project Resources briefly shows empty before authenticated provider hydration",
+      "ownerCandidates": [
+        "app/modules/documentos.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+      ],
+      "evidenceScope": "HUMAN_OBSERVATION__OWNER_TENTATIVE",
+      "exitCriterion": "Render loading state until scoped provider ready, then empty only if confirmed; no duplicate refresh",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-10",
+      "block": "B5",
+      "classification": "VISUAL_DEFECT",
+      "observed": "Tu beneficio total como evaluador summary lacks readability, typography hierarchy and useful zero-period experience",
+      "ownerCandidates": [
+        "app/modules/beneficios.js",
+        "app/styles/layout.css"
+      ],
+      "evidenceScope": "SCREENSHOT_AND_SOURCE",
+      "exitCriterion": "Preserve financial authority and current/historical separation; improve contrast and layout",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-11",
+      "block": "B5",
+      "classification": "MATCH",
+      "observed": "Benefits historical rows newest-to-oldest and seven confirmed payments visually accepted",
+      "ownerCandidates": [
+        "app/modules/beneficios.js"
+      ],
+      "evidenceScope": "HUMAN_ACCEPTED_SCREENSHOT",
+      "exitCriterion": "PRESERVE_NO_REGRESSION; still reconcile real independent finance source before numerical certification",
+      "humanDecision": "PRESERVE",
+      "state": "PRESERVE_ACCEPTED",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-12",
+      "block": "B7",
+      "classification": "VISUAL_DEFECT",
+      "observed": "Dashboard context action modal and all status-row tables visually flat and lack approved contrast/hierarchy",
+      "ownerCandidates": [
+        "app/modules/dashboard.js",
+        "app/styles/layout.css"
+      ],
+      "evidenceScope": "HUMAN_SCREENSHOT",
+      "exitCriterion": "Preserve direct modal actions, selections, provider command paths, improve scoped style",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-13",
+      "block": "B7",
+      "classification": "FUNCTIONAL_DEFECT",
+      "observed": "Dashboard per-visit WhatsApp button only logs prepared event and shows toast, not open/send confirmation",
+      "ownerCandidates": [
+        "app/modules/dashboard.js",
+        "app/core/automations.js"
+      ],
+      "evidenceScope": "SOURCE_PROVEN_DATA_WA_HANDLER",
+      "exitCriterion": "Provide actual wa.me draft when number verified or durable provider ACK for send; no false sent claims",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-14",
+      "block": "B7",
+      "classification": "VISUAL_DEFECT",
+      "observed": "Comparativo histórico large plain table/scroll and weak differentiation across 17 periods",
+      "ownerCandidates": [
+        "app/modules/dashboard.js",
+        "app/styles/layout.css"
+      ],
+      "evidenceScope": "HUMAN_SCREENSHOT",
+      "exitCriterion": "Preserve exact HR metrics; sticky axes, contrast, responsive readable cells and drill",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-15",
+      "block": "B7",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "observed": "Gestion de Postulaciones main surface is not the latest approved frontend; assignment row list lacks per-row action",
+      "ownerCandidates": [
+        "app/modules/postulaciones.js"
+      ],
+      "evidenceScope": "SCREENSHOT+SOURCE_ASSIGNED_ROWS_ONLY_FIVE_COLUMNS",
+      "exitCriterion": "Recover only approved visual/grouped/action presentation, preserve durable provider logic and HR vs platform origin",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-16",
+      "block": "B7",
+      "classification": "MAPPING_FAILURE",
+      "observed": "Sidebar Postulaciones badge shows 10 while in-module currently pending count 0",
+      "ownerCandidates": [
+        "app/modules/postulaciones.js",
+        "app/core/router.js"
+      ],
+      "evidenceScope": "SCREENSHOT_PROVEN_DIFFERENCE__BADGE_OWNER_UNPROVEN",
+      "exitCriterion": "Trace badge source and active period lifecycle, verify after reload and exact HR revision",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-17",
+      "block": "B7",
+      "classification": "MAPPING_FAILURE",
+      "observed": "Dashboard GT+HN scheduled stage appears 18+6=24, Postulaciones Agendamientos 18; cross-view KPI disagreement",
+      "ownerCandidates": [
+        "app/modules/dashboard.js",
+        "app/modules/postulaciones.js"
+      ],
+      "evidenceScope": "HUMAN_CROSS_SCREENSHOT_DIFFERENCE__SOURCE_REVISION_UNPROVEN",
+      "exitCriterion": "Compare both projections to same exact HR revision and canonical facets, do not fit number manually",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-18",
+      "block": "B7",
+      "classification": "FUNCTIONAL_DEFECT",
+      "observed": "Reservations in October cannot publish November slots because current selected period equality filters future windows",
+      "ownerCandidates": [
+        "app/modules/reservas.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
+      "evidenceScope": "SOURCE_PROVEN_CURRENT_PERIOD_FILTER",
+      "exitCriterion": "Separate publication/reservation target period from operational current period; source future scenario slots explicitly, future_only configurable; no fictitious HR visits",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-19",
+      "block": "B7",
+      "classification": "VISUAL_DEFECT",
+      "observed": "Stage pending submit group displays rows with Pend. cuestionario labels, potentially ambiguous semantics",
+      "ownerCandidates": [
+        "app/modules/dashboard.js",
+        "app/adapters/tya-canonical-state-semantics-v2.js"
+      ],
+      "evidenceScope": "SCREENSHOT_VISIBLE__SEMANTIC_OWNER_PENDING",
+      "exitCriterion": "Confirm real facets then fix human label without mutating canonical status",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-20",
+      "block": "B7",
+      "classification": "VISUAL_DEFECT",
+      "observed": "Multiple Admin modal layouts lack consistent typography and high-contrast hierarchy",
+      "ownerCandidates": [
+        "app/styles/layout.css",
+        "app/modules/dashboard.js",
+        "app/modules/postulaciones.js"
+      ],
+      "evidenceScope": "MULTIPLE_HUMAN_SCREENSHOTS",
+      "exitCriterion": "Use approved style baseline; modal owner unchanged and styles focused",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-21",
+      "block": "B8",
+      "classification": "VISUAL_DEFECT",
+      "observed": "Dashboard Financiero low contrast and oversized Pending source strings obscure country financial KPIs",
+      "ownerCandidates": [
+        "app/modules/finanzas.js",
+        "app/styles/layout.css"
+      ],
+      "evidenceScope": "HUMAN_SCREENSHOT",
+      "exitCriterion": "Use distinct financial states and human copy, preserve no inferred amounts, GTQ vs HNL",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-22",
+      "block": "B8",
+      "classification": "FUNCTIONAL_DEFECT",
+      "observed": "User cannot reconcile six October financial review rows; generic toast masks command error",
+      "ownerCandidates": [
+        "app/modules/finanzas.js",
+        "backend/runtime/cxorbia-finance-command-provider-v1.mjs"
+      ],
+      "evidenceScope": "USER_ACTION_FAILED__COMMAND_EXISTS",
+      "exitCriterion": "Read exact blocked provider code, response and exact finance source; don't mark paid or reconcile without ACK",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-23",
+      "block": "B8",
+      "classification": "VISUAL_DEFECT",
+      "observed": "Revisiones financieras lacks explanation of pending source vs review vs paid and eligibility; misleading empty missing-field columns",
+      "ownerCandidates": [
+        "app/modules/finanzas.js"
+      ],
+      "evidenceScope": "HUMAN_SCREENSHOT",
+      "exitCriterion": "Separate obligation, source completeness, reconciliation, payment, and banking confirmation",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-24",
+      "block": "B8",
+      "classification": "FUNCTIONAL_DEFECT",
+      "observed": "Movimientos financial CRUD, CxP/CxC and monthly drill need independent live creation/readback/reload proof",
+      "ownerCandidates": [
+        "app/modules/finanzas.js",
+        "backend/runtime/cxorbia-finance-command-provider-v1.mjs"
+      ],
+      "evidenceScope": "CODE_SUPPORT_EXISTS_BUT_REAL_MONTHLY_E2E_NOT_PROVEN",
+      "exitCriterion": "Test isolated tenant/project/period with fixtures and cleanup, independently from finance dashboard tile",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-25",
+      "block": "B8",
+      "classification": "VISUAL_DEFECT",
+      "observed": "CxP and CxC lack full monthly management view; embedded within Movimientos only",
+      "ownerCandidates": [
+        "app/modules/finanzas.js"
+      ],
+      "evidenceScope": "SCREENSHOT_AND_SOURCE",
+      "exitCriterion": "Expose full monthly drill/list/actions within existing finance navigation, no parallel ledger",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-26",
+      "block": "B8",
+      "classification": "PERSISTENCE_FAILURE",
+      "observed": "Monthly budget save/delete uses in-memory finStore._presM without provider ACK",
+      "ownerCandidates": [
+        "app/modules/finanzas.js",
+        "app/core/finanzas-core.js"
+      ],
+      "evidenceScope": "SOURCE_PROVEN_MEMORY_ONLY",
+      "exitCriterion": "Do not accept real budget entry; implement existing durable financial contract exact owner and country/currency/month",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-27",
+      "block": "B8",
+      "classification": "FUNCTIONAL_DEFECT",
+      "observed": "Liquidaciones visible rows lack primary actionable affordances and explain readiness; eye-only in visible area",
+      "ownerCandidates": [
+        "app/modules/finanzas.js"
+      ],
+      "evidenceScope": "HUMAN_SCREENSHOT__CODE_HAS_ACTIONS_BEYOND_VISIBLE_ROWS",
+      "exitCriterion": "Recover approved per-row pay/reconcile/detail and batch selection while retaining eligibility gates",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-28",
+      "block": "B7/B8",
+      "classification": "VISUAL_DEFECT",
+      "observed": "Communication event templates locally editable in Automatizaciones but no durable shared tenant config or WhatsApp provider activation",
+      "ownerCandidates": [
+        "app/modules/automatizaciones.js",
+        "app/core/automations.js"
+      ],
+      "evidenceScope": "SOURCE_PROVEN_CONFIG_IN_BROWSER",
+      "exitCriterion": "Current UI Admin -> Automatizaciones & Integraciones, templates editable only as local prototype; require scoped durable config and verified channel before real sending",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-29",
+      "block": "TRANSVERSAL",
+      "classification": "ENVIRONMENT_FAILURE",
+      "observed": "HR change appears only after minutes and manual reload; refresh watcher polls 20s and protected reconciliation waits additional readiness",
+      "ownerCandidates": [
+        "app/adapters/tya-live-source-refresh-watch-v2.js",
+        "backend/runtime/hr-live-service/server.mjs",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+      ],
+      "evidenceScope": "SOURCE_PROVEN_POLL+LIVE_META_TIMINGS; USER_DELAY_NOT_MEASURED",
+      "exitCriterion": "Instrument change-to-read, reconcile, protected UI apply, render without reload; target reactive near-real-time not promise instant",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    },
+    {
+      "id": "HF-20261012-30",
+      "block": "B2/B5/B7",
+      "classification": "MAPPING_FAILURE",
+      "observed": "Human screenshots taken after original run HR revision; live revision changed; dates/KPIs cannot be certified across timestamps",
+      "ownerCandidates": [
+        "app/adapters/tya-cumulative-read-model-v2.js",
+        "app/adapters/tya-canonical-finance-read-model-v2.js"
+      ],
+      "evidenceScope": "LIVE_HR_REVISION_CHANGED",
+      "exitCriterion": "Reprove against same new external HR revision and exact Firestore visit docs before declaring true data defect",
+      "humanDecision": "HOLD",
+      "state": "OPEN_SCOPE_NEEDS_OWNER_PROOF",
+      "productFixApplied": false,
+      "liveE2EAfterFix": false
+    }
+  ]
+}

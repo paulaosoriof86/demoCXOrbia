@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "cxorbia.corte6.profile-full-v2-chunk-manifest.v1",
+  "generatedAt": "2026-07-31T12:45:52.735Z",
+  "sourceFile": "CXORBIA-CORTE6-PROFILE-FULL-BUNDLE-ENCRYPTED-V2.json",
+  "partCount": 17,
+  "partFiles": [
+    "part-000.txt",
+    "part-001.txt",
+    "part-002.txt",
+    "part-003.txt",
+    "part-004.txt",
+    "part-005.txt",
+    "part-006.txt",
+    "part-007.txt",
+    "part-008.txt",
+    "part-009.txt",
+    "part-010.txt",
+    "part-011.txt",
+    "part-012.txt",
+    "part-013.txt",
+    "part-014.txt",
+    "part-015.txt",
+    "part-016.txt"
+  ],
+  "totalChars": 192144,
+  "sourceSha256": "80a95a523fb3db925b90ff829d7d6939a9c1166dd443b245d82d84350b7214ed",
+  "targetProjectId": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "retryReason": "exact_part_007_blob_restored_after_pre_provider_sha_gate_failure",
+  "safety": {
+    "encryptedOnly": true,
+    "plaintextProfileValues": false,
+    "plaintextPasswords": false,
+    "providerWrites": 0
+  }
+}

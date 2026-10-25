@@ -1,0 +1,127 @@
+name: CXOrbia R24 New Empty Firebase DEV
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/workflows/cxorbia-r24-new-empty-firebase-dev.yml'
+      - '.github/cxorbia-firebase-requests/corte4-new-empty.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  statuses: write
+
+concurrency:
+  group: cxorbia-r24-new-empty-firebase-dev
+  cancel-in-progress: true
+
+env:
+  CXORBIA_NEW_PROJECT_ID: cxorbia-tya-dev-260729-c4
+  CXORBIA_NEW_PROJECT_NAME: CXOrbia TyA DEV Clean Corte 4
+
+jobs:
+  atomic-create-new-empty-dev:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate exact Corte 4 creation request
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const p='.github/cxorbia-firebase-requests/corte4-new-empty.json';
+          const r=JSON.parse(fs.readFileSync(p,'utf8'));
+          const exact={schemaVersion:'cxorbia.firebase-new-empty-request.v1',enabled:true,repository:'paulaosoriof86/demoCXOrbia',branch:'docs-tya-v6-v71-audit',pullRequest:7,targetProjectId:process.env.CXORBIA_NEW_PROJECT_ID,targetDisplayName:process.env.CXORBIA_NEW_PROJECT_NAME,confirmation:'CREATE_NEW_EMPTY_FIREBASE_DEV',production:false,reuseExistingProject:false,connectLegacyDatabase:false,copyLegacyDatabase:false};
+          for(const [k,v] of Object.entries(exact)) if(r[k]!==v) throw new Error(`request mismatch:${k}`);
+          if(r.allowedProviderWrites?.projectCreate!==true||r.allowedProviderWrites?.firebaseAdd!==true)throw new Error('atomic create scope missing');
+          for(const k of ['billingLink','authWrites','firestoreWrites','storageWrites','rulesDeploy','hostingDeploy','functionsDeploy','imports','dataMigration'])if(r.allowedProviderWrites?.[k]!==false)throw new Error(`forbidden write:${k}`);
+          NODE
+
+      - name: Publish creation gate start
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method POST -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state='pending' -f context='cxorbia/corte4-atomic-new-firebase' \
+            -f description='Atomic new Firebase DEV creation gate running' >/dev/null
+
+      - name: Select first structurally valid project credential
+        env:
+          DEDICATED_CREATOR_JSON: ${{ secrets.CXORBIA_GCP_PROJECT_CREATOR_JSON }}
+          ALT_CREATOR_JSON: ${{ secrets.GOOGLE_CLOUD_PROJECT_CREATOR_JSON }}
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/corte4-create-private .tmp/corte4-create
+          node <<'NODE'
+          const fs=require('fs');
+          const candidates=[['dedicated_project_creator',process.env.DEDICATED_CREATOR_JSON||''],['alternate_project_creator',process.env.ALT_CREATOR_JSON||''],['existing_dev_service_account',process.env.EXISTING_DEV_JSON||'']];
+          let selected=null;const inspected=[];
+          for(const [route,raw] of candidates){let c=null;try{c=raw?JSON.parse(raw):null;}catch{}const valid=Boolean(c&&c.type==='service_account'&&c.project_id&&c.client_email&&c.private_key&&c.token_uri);inspected.push({route,present:Boolean(raw),shapeValid:valid});if(!selected&&valid)selected={route,raw};}
+          fs.writeFileSync('.tmp/corte4-create/credential-route.source-safe.json',JSON.stringify({route:selected?.route||'none',credentialAvailable:Boolean(selected),inspected,secretValuesOutput:false},null,2)+'\n');
+          if(selected)fs.writeFileSync('.tmp/corte4-create-private/credentials.json',selected.raw,{mode:0o600});
+          NODE
+
+      - name: Execute atomic create/addFirebase only
+        if: always()
+        env:
+          CXORBIA_CONFIRM: CREATE_NEW_EMPTY_FIREBASE_DEV
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/corte4-create-private/credentials.json
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/corte4-create
+          if [ ! -s "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
+            node -e "const fs=require('fs');fs.writeFileSync('.tmp/corte4-create/firebase-new-empty-r15b-report.source-safe.json',JSON.stringify({decision:'BLOCKED_NO_VALID_PROJECT_CREDENTIAL',target:{projectId:process.env.CXORBIA_NEW_PROJECT_ID},summary:{projectCreated:false,firebaseAdded:false},safeState:{providerWrites:false,production:false}},null,2)+'\n')"
+          else
+            set +e
+            timeout --signal=TERM --kill-after=10s 150s node tools/release/tya-create-new-empty-firebase-dev-r15b.mjs --out .tmp/corte4-create
+            code=$?
+            set -e
+            if { [ "$code" -eq 124 ] || [ "$code" -eq 137 ]; } && [ ! -f .tmp/corte4-create/firebase-new-empty-r15b-report.source-safe.json ]; then
+              node -e "const fs=require('fs');fs.writeFileSync('.tmp/corte4-create/firebase-new-empty-r15b-report.source-safe.json',JSON.stringify({decision:'BLOCKED_ATOMIC_CREATION_PROCESS_TIMEOUT',target:{projectId:process.env.CXORBIA_NEW_PROJECT_ID},summary:{projectCreated:false,firebaseAdded:false},safeState:{providerWrites:false,production:false}},null,2)+'\n')"
+            fi
+          fi
+
+      - name: Publish sanitized creation decision
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          report='.tmp/corte4-create/firebase-new-empty-r15b-report.source-safe.json'
+          route_report='.tmp/corte4-create/credential-route.source-safe.json'
+          if [ ! -f "$report" ]; then echo '{"decision":"BLOCKED_CREATION_REPORT_MISSING","summary":{"projectCreated":false,"firebaseAdded":false},"safeState":{"providerWrites":false,"production":false}}' > "$report"; fi
+          node - "$report" "$route_report" <<'NODE' > .tmp/corte4-create/status.env
+          const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));const route=fs.existsSync(process.argv[3])?JSON.parse(fs.readFileSync(process.argv[3],'utf8')):{route:'unknown'};
+          const pass=['NEW_FIREBASE_DEV_CREATED_PENDING_INDEPENDENT_EMPTY_VERIFICATION','NEW_EMPTY_FIREBASE_DEV_VERIFIED'].includes(r.decision);
+          const d=String(r.decision||'UNKNOWN').replace(/[^A-Z0-9_.-]/gi,'_').slice(0,58);const rt=String(route.route||'unknown').replace(/[^a-z0-9_-]/gi,'_').slice(0,36);
+          console.log([`STATE=${pass?'success':'error'}`,`DECISION=${d}`,`ROUTE=${rt}`,`CREATED=${Boolean(r.summary?.projectCreated)}`,`FIREBASE=${Boolean(r.summary?.firebaseAdded)}`,`CONTEXT=cxorbia/corte4-atomic-${rt}-${d}`].join('\n'));
+          NODE
+          source .tmp/corte4-create/status.env
+          gh api --method POST -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="$STATE" -f context="$CONTEXT" -f description="Atomic Firebase DEV: $DECISION" >/dev/null
+          gh api --method POST -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="$STATE" -f context='cxorbia/corte4-atomic-new-firebase' -f description="Atomic Firebase DEV: $DECISION" >/dev/null
+          gh issue comment 7 --repo "$GITHUB_REPOSITORY" --body "## Corte 4 · creación atómica Firebase DEV\n\n- Decision: \`$DECISION\`\n- Ruta: \`$ROUTE\`\n- Proyecto creado: \`$CREATED\`\n- Firebase agregado: \`$FIREBASE\`\n- Base existente reutilizada: \`false\`\n- Firestore/Auth/Storage/Rules/Hosting writes: \`0\`\n- Producción: \`false\`" >/dev/null
+
+      - name: Cleanup and upload sanitized evidence
+        if: always()
+        run: rm -rf .tmp/corte4-create-private
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-corte4-atomic-new-firebase-dev
+          path: .tmp/corte4-create
+          if-no-files-found: error
+          retention-days: 14

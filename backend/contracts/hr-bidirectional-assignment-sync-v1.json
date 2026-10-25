@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "cxorbia.hr-bidirectional-assignment-sync.v1",
+  "status": "source_ready_provider_writes_blocked",
+  "scope": "multi_tenant_multi_project",
+  "requiredIdentity": ["tenantId", "projectId", "visitId", "hrRowId", "shopperId"],
+  "metadata": ["assignmentSource", "assignmentSyncStatus", "lastSyncedAt"],
+  "assignmentSources": ["platform", "hr"],
+  "syncStatuses": ["pending_hr", "pending_platform", "synced", "conflict", "legacy_observed"],
+  "flows": {
+    "platformToHr": {
+      "source": "platform",
+      "requiredBeforeDispatch": ["tenantId", "projectId", "visitId", "hrRowId", "shopperId"],
+      "preparedChannel": "hrSync",
+      "dispatchProvider": "Make",
+      "initialStatus": "pending_hr",
+      "reflectionRule": "same stable visit identity plus same shopperId confirms sync; never create a duplicate assignment",
+      "successStatus": "synced"
+    },
+    "hrToPlatform": {
+      "source": "hr",
+      "requiredBeforeMutation": ["tenantId", "projectId", "visitId", "hrRowId", "shopperId", "shopperExistsInPlatform"],
+      "platformCommand": "visit.assign",
+      "initialStatus": "pending_platform",
+      "removeFromAvailable": true,
+      "reflectionRule": "if the same assignment already originated in platform, treat HR observation as reflection rather than a new assignment"
+    }
+  },
+  "conflicts": {
+    "reviewRequired": true,
+    "automaticOverwrite": false,
+    "dedupeByName": false,
+    "codes": [
+      "scope_mismatch",
+      "stable_identity_missing",
+      "stable_identity_mismatch",
+      "shopper_mismatch",
+      "hr_reflection_missing",
+      "shopper_missing_in_platform"
+    ]
+  },
+  "safety": {
+    "frontendWrites": 0,
+    "providerCalls": 0,
+    "hrWrites": 0,
+    "makeCalls": 0,
+    "authWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "paymentWrites": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false,
+    "secretsInRepo": false
+  },
+  "integration": {
+    "reusesVisitLifecycleProvider": true,
+    "reusesMakeOutboxAdapter": "backend/adapters/make-outbox-adapter.preview.mjs",
+    "sourceAdapter": "backend/adapters/hr-bidirectional-sync-adapter.preview.mjs",
+    "liveMakeBindingPresent": false,
+    "hrWriteGateRequired": true
+  }
+}

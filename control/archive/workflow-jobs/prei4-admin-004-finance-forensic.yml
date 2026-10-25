@@ -1,0 +1,47 @@
+# Archived verbatim from canonical workflow on 2026-10-05 before replacing it with current finance focal reproof.
+# Historical evidence only; not an executable parallel workflow.
+  prei4-admin-004-finance-forensic:
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_RUNNING' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-004-diagnostic]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PREI4_004_OUT: .tmp/prei4-admin-004-finance
+      PREI4_004_ROOT: https://cxorbia-backend-dev.web.app
+      PREI4_004_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      PREI4_004_HR_REVISION: f22aa2412d4251b5ce8a2bf84a4b6385fbd8be97dc3213987d7f366104ab9c52
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: step
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$PREI4_004_OUT"
+          test "$PREI4_004_SOURCE" = "c487449e5187d7219033c54fa1ac3db5fb6c822e"
+          git diff --quiet "$PREI4_004_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source
+          node --check tools/qa/cxorbia-prei4-admin004-finance-forensic-readonly.mjs
+      - name: step
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+      - name: step
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: step
+        run: |
+          set -Eeuo pipefail
+          node tools/qa/cxorbia-prei4-admin004-finance-forensic-readonly.mjs | tee "$PREI4_004_OUT/console.log"
+          test "$(jq -r '.decision' "$PREI4_004_OUT/result.json")" = "PASS_PREI4_ADMIN_004_ROOT_CAUSE_PROVEN"
+          test "$(jq -r '.readOnly' "$PREI4_004_OUT/result.json")" = "true"
+          test "$(jq -r '.writes' "$PREI4_004_OUT/result.json")" = "0"
+          test "$(jq -r '.deploys' "$PREI4_004_OUT/result.json")" = "0"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-prei4-admin-004-finance-forensic-${{ github.run_id }}
+          path: ${{ env.PREI4_004_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+          include-hidden-files: true

@@ -1,0 +1,63 @@
+{
+  "receiptId": "CXORBIA-I3-B1-PRE-HUMAN-READY-20261006",
+  "status": "HOLD_B1_HUMAN_PASS_REQUIRED",
+  "iteration": "I3",
+  "block": "B1",
+  "observedLocalAt": "2026-10-06T18:54:50-06:00",
+  "timezone": "America/Guatemala",
+  "sourceProof": {
+    "runId": 37531710035,
+    "runNumber": 1275,
+    "decision": "PASS_B1_CANONICAL_VISIBLE_IDENTITY_SOURCE_PROOF"
+  },
+  "devMaterialization": {
+    "runId": 37536234515,
+    "runNumber": 1278,
+    "decision": "PASS_B1_EXACT_DEV_HOSTING_MATERIALIZATION",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/c4823c13c2679fae",
+    "runtimeRevision": "cxorbia-live-hr-dev-00273-6p9",
+    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305"
+  },
+  "technicalE2E": {
+    "runId": 37536774581,
+    "runNumber": 1280,
+    "jobId": 112519775541,
+    "artifactId": 11446603436,
+    "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF"
+  },
+  "julissa": {
+    "name": "Julissa Flores",
+    "visibleLogin": "julissa.flores",
+    "currentVisits": 1,
+    "activeVisits": 1,
+    "nextVisit": "C. Miraflores",
+    "historicalVisitsPreserved": true
+  },
+  "noRegression": {
+    "paulaIdentityPreserved": true,
+    "priscilaIdentityPreserved": true,
+    "duplicateActivePrincipals": 0,
+    "duplicateHrVisitKeys": 0
+  },
+  "writes": {
+    "auth": 0,
+    "hr": 0,
+    "provider": 0
+  },
+  "tinyFish": {
+    "runId": "a8f43379-e5ca-42dd-89d8-f4e6c3a63d70",
+    "profileId": "prof_67673ed0a9194322",
+    "classification": "ENVIRONMENT_FAILURE",
+    "pass": false,
+    "productDefect": false,
+    "reason": "saved Firebase browser state was not restored in a new TinyFish automation"
+  },
+  "humanVisualEvidence": {
+    "status": "PRESENT_NOT_YET_PASS",
+    "observed": "Julissa Flores / Hola, Julissa / OCT 2026 / C. Miraflores / Q60 / Agendar / Instructivo / Reprogramar / progress route"
+  },
+  "nextAction": "PAULA_REVIEW_B1_EXACT_DEV_AND_RETURN_PASS_OR_FAIL",
+  "humanDecision": "PENDING",
+  "productChanged": false,
+  "production": false
+}

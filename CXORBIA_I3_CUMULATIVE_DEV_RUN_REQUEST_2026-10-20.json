@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "cxorbia.i3.dev-cumulative-materialization-request.20261020.v1",
+  "asOf": "2026-10-20",
+  "iteration": "I3",
+  "state": "HOLD",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlExpectedParent": "520226a4a6cd000bff64300a15a9334286ed13a0",
+  "sourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
+  "sourceTree": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
+  "originDevRun": 1796,
+  "gates": {
+    "B10": {
+      "run": 1799,
+      "sourceProof": "PASS",
+      "liveE2e": false
+    },
+    "finance": {
+      "run": 1800,
+      "sourceProof": "PASS",
+      "liveE2e": false
+    },
+    "reservations": {
+      "run": 1801,
+      "sourceProof": "PASS",
+      "liveE2e": false
+    },
+    "A09B11": {
+      "run": 1804,
+      "sourceProof": "PASS_2_OF_2",
+      "liveE2e": false
+    },
+    "projectWizard": {
+      "run": 1808,
+      "sourceProof": "PASS_3_OF_3",
+      "liveE2e": false
+    },
+    "canonicalGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY"
+  },
+  "deploymentRoute": {
+    "existingScript": ".github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh",
+    "existingJob": "b1-canonical-visible-identity-dev-materialization",
+    "trigger": "[i3-phasea-dev-materialize]",
+    "allowProject": "cxorbia-backend-dev",
+    "service": "cxorbia-live-hr-dev",
+    "hosting": "cxorbia-backend-dev",
+    "firebaseTarget": "cxorbia-dev",
+    "oneSourceTar": true,
+    "oneImageBuild": true,
+    "oneRuntimeDeploy": true,
+    "oneRulesDeploy": true,
+    "oneHostingDeploy": true,
+    "productionUrl": "DO_NOT_TOUCH"
+  },
+  "proofAugmentation": {
+    "source": "existing script ASSETS list",
+    "additionalStaticAssets": [
+      "modules/proyecto-wizard.js",
+      "modules/cuestionario-shopper.js",
+      "adapters/tya-live-source-inplace-apply.js"
+    ],
+    "purpose": "verify served bytes for same source B10 plus project creation UX, no new build or workflow"
+  },
+  "safety": {
+    "noNewRepo": true,
+    "noNewBranch": true,
+    "noNewCandidate": true,
+    "noNewWorkflow": true,
+    "noLegacyDatabaseCopy": true,
+    "noHRImport": true,
+    "noManualFirestoreWrites": true,
+    "noAuthWrites": true,
+    "noProduction": true,
+    "devOnly": true
+  },
+  "ifFail": "Classify solely as SOURCE_FAILURE, MAPPING_FAILURE, PROVIDER_FAILURE, PERSISTENCE_FAILURE, AUTH_FAILURE, FUNCTIONAL_DEFECT, VISUAL_DEFECT, RELEASE_COMPOSITION_FAILURE or ENVIRONMENT_FAILURE and stop; no overlay/rebuild retry loop.",
+  "nextExactAction": "Run existing I3 Phase A DEV materialization preflight and proof once. On success read RUN metadata, runtime revision/digest, hosting version, exact source assets, Firestore ruleset, HR sourceRevision, then Work Admin/Shopper scoped E2E. I3 stays HOLD and production untouched."
+}

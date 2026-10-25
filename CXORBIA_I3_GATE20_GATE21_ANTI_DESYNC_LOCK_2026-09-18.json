@@ -1,0 +1,42 @@
+{
+  "lockId": "CXORBIA-I3-GATE20-GATE21-ANTI-DESYNC-LOCK-2026-09-18",
+  "status": "FROZEN",
+  "iteration": "I3",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "observedHeadBeforeMechanicalFix": "e3190c9a3eb2a3bc29cc2374affd6526eca43e67",
+  "observedTreeBeforeMechanicalFix": "6ba022ac6802fa9296b7ceea0e2d97c17277b5d1",
+  "currentProductSource": "6d4dbdc098348500ba62161d8136458e8b1016ad",
+  "currentProductTree": "669a1c8c12e8eef24e26ba410b8d50d0bf58fb97",
+  "rootCause": "RELEASE_COMPOSITION_FAILURE_BY_DUPLICATED_SOURCE_AUTHORITY",
+  "historicalEvidence": {
+    "releaseIntegrityLock20260916": "historical_only",
+    "terminalGoCheckpoint20260917": "historical_exact_release_only_superseded_for_current_state_by_20260918_drift",
+    "terminalGoLock20260917": "historical_exact_release_only_not_current_i4_authority",
+    "gate20BaselineSource": "bd2a519db5ebd08f17d47827997056db795c8c09",
+    "gate20BaselineAuthority": "HISTORICAL_PASS_BASELINE_ONLY_NOT_RELEASE_SOURCE"
+  },
+  "mechanicalInvariants": {
+    "certificationSourceDefinedOnceBeforeBuild": true,
+    "gate21SourceInputsForbidden": true,
+    "gate21HardcodedSourceForbidden": true,
+    "sameRunCertificationManifestIsSoleGate21Handoff": true,
+    "gate21DerivesSourceTreeAndControlFromManifest": true,
+    "gate21VerifiesVisualGate20EvidenceHash": true,
+    "gate21VerifiesSemanticGate20EvidenceHash": true,
+    "gate21VerifiesCertifiedTarSha256": true,
+    "gate21Rebuilds": 0,
+    "gate21Redeploys": 0,
+    "mismatchClassification": "RELEASE_COMPOSITION_FAILURE",
+    "pointerResyncAsFixForbidden": true
+  },
+  "currentStateAuthority": [
+    "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-18_I3_CANONICAL_CONVERGENCE_FROZEN.md",
+    "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-18_I3_GATE20_GATE21_ANTI_DESYNC_FROZEN.md",
+    "live canonical GitHub evidence"
+  ],
+  "frozenDocument": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-18_I3_GATE20_GATE21_ANTI_DESYNC_FROZEN.md",
+  "frozenDocumentSha256": "e1b88423d5982904bcf156429197bcbcb0e9c4fe48ee0464c20ad3db5446c469",
+  "productionTouched": false,
+  "supersessionPolicy": "Never edit frozen files; supersede only with a later dated addendum/lock carrying BEFORE/AFTER, cause, evidence and hash."
+}

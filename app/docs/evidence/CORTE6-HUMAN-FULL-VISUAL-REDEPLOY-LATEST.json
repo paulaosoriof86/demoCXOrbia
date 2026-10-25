@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "cxorbia.corte6.human-full-visual-redeploy-evidence.v1",
+  "generatedAt": "2026-07-31T18:32:32.343Z",
+  "decision": "PASS_EXISTING_DEV_CLOUD_RUN_HOSTING_NO_CREDENTIAL_FULL_VISUAL_REMOTE_READY",
+  "authorizationId": "chat-20260731-corte6-human-full-visual-no-credential-01",
+  "requestId": "corte6-human-full-visual-no-credential-20260731-01",
+  "projectId": "cxorbia-backend-dev",
+  "cloudRunService": "cxorbia-live-hr-dev",
+  "hostingSite": "cxorbia-backend-dev",
+  "hostingTarget": "cxorbia-dev",
+  "cloudRunDeployExecutions": 1,
+  "hostingDeployExecutions": 1,
+  "remote": {
+    "fullVisualEndpoint": true,
+    "authorizationFailClosed": true,
+    "fullVisualAdapter": true,
+    "prototypeAutoEntryPreserved": true,
+    "humanFirebaseCredentialPromptRequired": false,
+    "shopperDevPicker": true,
+    "sourceSafeDefaultPreserved": true
+  },
+  "visualSession": {
+    "rawTokenCommitted": false,
+    "expiresAt": "2026-08-02T00:29:13Z"
+  },
+  "safety": {
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "authResets": 0,
+    "rulesDeploys": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "legacyWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "newFirebaseProjects": 0,
+    "newHostingSites": 0,
+    "production": false,
+    "merge": false
+  }
+}

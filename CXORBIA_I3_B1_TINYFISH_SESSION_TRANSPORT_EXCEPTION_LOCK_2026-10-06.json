@@ -1,0 +1,20 @@
+{
+  "lockId": "CXORBIA-I3-B1-TINYFISH-SESSION-TRANSPORT-EXCEPTION-20261006",
+  "status": "FROZEN",
+  "iteration": "I3",
+  "block": "B1",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedParentSha": "666e72c979840d81d47f221b75980197f0b1b581",
+  "productSourceSha": "6232caedfcfd1e0136b5ece5f55bfaa0c1b3934a",
+  "productTree": "5ab902bad55e52ef3a06953fbe27eeb70c263fc6",
+  "addendumPath": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-10-06_B1_TINYFISH_SESSION_TRANSPORT_EXCEPTION_FROZEN.md",
+  "addendumSha256": "b5421c335cffe9ca9ff817519ea03604f8777da42e68f5f311037228d4321639",
+  "classification": "ENVIRONMENT_FAILURE",
+  "effect": "ALLOW_B1_HUMAN_CHECKPOINT_WITHOUT_RECLASSIFYING_TINYFISH_AS_PASS",
+  "scope": "B1_ONLY",
+  "observedLocalAt": "2026-10-06T18:54:50-06:00",
+  "timezone": "America/Guatemala",
+  "productChanged": false,
+  "production": false
+}

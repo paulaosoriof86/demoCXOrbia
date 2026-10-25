@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm153.paula-authorized-dev-41-durable-receipt.v1",
+  "state": "FROZEN_DEV_DURABLE_PASS_I3_HOLD",
+  "dateLocal": "2026-10-08",
+  "iteration": "I3",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceSha": "d9915f330a8d6e5fc2b4f2019872a4b03eaf7ced",
+  "sourceTree": "edf38a46ee4630d2bf0f31520cecc1c77f3b9835",
+  "approvedScope": {
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "approval": "Paula explicit DEV-only scoped 41 historical reconciliation authorization",
+    "counts": {
+      "augustGT": 34,
+      "augustHN": 3,
+      "septemberGT": 3,
+      "septemberHN": 1,
+      "total": 41
+    },
+    "augustPaymentDate": "2026-10-02",
+    "septemberDefaultStatus": "pending",
+    "exclusions": [
+      "production",
+      "HR external writes",
+      "bank/payment provider transfers",
+      "financialMovements",
+      "new Firebase or repo",
+      "reimport",
+      "September paid without exact individual proof"
+    ]
+  },
+  "proof": {
+    "runId": 37867180444,
+    "runNumber": 1415,
+    "runConclusion": "success",
+    "artifactId": 11589185208,
+    "artifactZipSha256": "cb7d1492b39bd5e57c68a39767dbaae8c730dc8f1d4378f9e251147f4ed71569",
+    "hrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+    "preReadback": {
+      "records": 602,
+      "paid": 562,
+      "pending": 40,
+      "missingExact": 41
+    },
+    "postReadback": {
+      "records": 643,
+      "uniqueVisits": 643,
+      "paid": 599,
+      "pending": 44,
+      "amountReviewRequired": 5,
+      "missingExact": 0,
+      "unexpectedScope": 0,
+      "activeDuplicate": 0,
+      "statusMismatches": 0
+    },
+    "groups": [
+      {
+        "period": "2026-08",
+        "country": "GT",
+        "count": 34,
+        "status": "paid",
+        "priorAuditPreserved": true,
+        "priorAuditSuperseded": true,
+        "receiptAck": true,
+        "durableReadback": true,
+        "idempotentReplay": true
+      },
+      {
+        "period": "2026-08",
+        "country": "HN",
+        "count": 3,
+        "status": "paid",
+        "paidAt": "2026-10-02",
+        "receiptAck": true,
+        "durableReadback": true,
+        "idempotentReplay": true
+      },
+      {
+        "period": "2026-09",
+        "country": "GT",
+        "count": 3,
+        "status": "pending",
+        "receiptAck": true,
+        "durableReadback": true,
+        "idempotentReplay": true
+      },
+      {
+        "period": "2026-09",
+        "country": "HN",
+        "count": 1,
+        "status": "pending",
+        "receiptAck": true,
+        "durableReadback": true,
+        "idempotentReplay": true
+      }
+    ],
+    "sourceProofRun": 37866478830,
+    "sourceTests": {
+      "tests": 23,
+      "pass": 23,
+      "fail": 0
+    },
+    "providerAck": true,
+    "durableReadback": true,
+    "idempotentReplay": true,
+    "financialMovementsBefore": 0,
+    "financialMovementsAfter": 0,
+    "bankWrites": 0,
+    "hrWrites": 0,
+    "externalPaymentWrites": 0,
+    "production": false,
+    "builds": 0,
+    "devRuntimeDeploys": 0,
+    "devHostingDeploys": 0,
+    "productionDeploys": 0
+  },
+  "caveat": "Original run1415 result.json realCommitCount=0 is a non-authoritative QA counter bug: receipts have idempotentReplay=true indicating successful replay, not zero initial writes. Corrected the control source without modifying the immutable artifact; authority is four provider ACK receipts plus independently reconciled 602->643 before/after.",
+  "cumulativePreservation": {
+    "findingIds": 271,
+    "originalHumanObservations": 45,
+    "additionalHumanObservations": 18,
+    "modules": 21,
+    "vrm271State": "DEV_FOCAL_UI_E2E_PROVEN_HUMAN_AND_FULL_POPULATION_PENDING"
+  },
+  "releaseDecision": {
+    "i3": "HOLD",
+    "i4": "NOT_AUTHORIZED",
+    "production": "DO_NOT_TOUCH",
+    "next": "Materialize current cumulative source once to DEV using existing I3 lane, run authenticated Admin+Shopper B2/B5/B8 finance E2E and TinyFish, obtain Paula incremental visual acceptance before Gate20/Gate21"
+  }
+}

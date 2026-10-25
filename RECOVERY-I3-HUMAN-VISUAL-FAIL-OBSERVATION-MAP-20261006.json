@@ -1,0 +1,415 @@
+{
+  "schemaVersion": "cxorbia.i3.human-visual-fail-observation-map.v1",
+  "observedAt": "2026-10-06",
+  "iteration": "I3",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "productSource": "be4e54e92285cef24f4b4c5442383a8076df6664",
+  "productTree": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
+  "checkpoint": "FAIL",
+  "evidenceScreenshots": 17,
+  "observationCount": 45,
+  "nextFindingIdBefore": "VRM-260",
+  "nextFindingIdAfter": "VRM-260",
+  "vrm260Consumed": false,
+  "rule": "Map to existing root causes first. New VRM only after exact owner/root cause proves a truly new finding.",
+  "observations": [
+    {
+      "id": 1,
+      "observation": "Login Julissa shows Paula Osorio in sidebar",
+      "existingFindings": [
+        "VRM-197",
+        "VRM-258"
+      ],
+      "disposition": "REOPEN_EXISTING_ROOT_PENDING_EXACT_IDENTITY_READBACK"
+    },
+    {
+      "id": 2,
+      "observation": "Mi Día greets Paula while C. Miraflores belongs to Julissa",
+      "existingFindings": [
+        "VRM-197",
+        "VRM-258"
+      ],
+      "disposition": "REOPEN_EXISTING_ROOT_PENDING_EXACT_IDENTITY_READBACK"
+    },
+    {
+      "id": 3,
+      "observation": "Julissa Illescas/Flores is one human; Flores is canonical",
+      "existingFindings": [
+        "VRM-207",
+        "VRM-211",
+        "VRM-213",
+        "VRM-243",
+        "VRM-258"
+      ],
+      "disposition": "PRESERVE_HUMAN_ADJUDICATION"
+    },
+    {
+      "id": 4,
+      "observation": "Illescas still displayed transversally",
+      "existingFindings": [
+        "VRM-258"
+      ],
+      "disposition": "REOPEN_DISPLAY_PROJECTION"
+    },
+    {
+      "id": 5,
+      "observation": "Shopper may self-correct first/last name; HR name retained as alias evidence",
+      "existingFindings": [
+        "VRM-054",
+        "VRM-099"
+      ],
+      "disposition": "NEW_ACCEPTANCE_RULE_ATTACH_EXISTING_PROFILE_OWNER__NO_NEW_VRM_YET"
+    },
+    {
+      "id": 6,
+      "observation": "Mi Perfil must edit first/last name",
+      "existingFindings": [
+        "VRM-054",
+        "VRM-099"
+      ],
+      "disposition": "EXTEND_EXISTING_PROFILE_OWNER"
+    },
+    {
+      "id": 7,
+      "observation": "Country required in Profile/Admin and Shoppers country filter",
+      "existingFindings": [
+        "VRM-133"
+      ],
+      "disposition": "EXTEND_EXISTING_GEOGRAPHY_CONTRACT"
+    },
+    {
+      "id": 8,
+      "observation": "Authorized Admin needs full shopper profile incl banking",
+      "existingFindings": [
+        "VRM-099"
+      ],
+      "disposition": "REOPEN_ADMIN_PROFILE_ACCEPTANCE"
+    },
+    {
+      "id": 9,
+      "observation": "Mi Día visual hierarchy inferior to Mis Visitas",
+      "existingFindings": [
+        "VRM-144",
+        "VRM-165"
+      ],
+      "disposition": "REOPEN_VISUAL_ACCEPTANCE"
+    },
+    {
+      "id": 10,
+      "observation": "Mi Día operational home must surface relevant next actions",
+      "existingFindings": [
+        "VRM-097",
+        "VRM-144",
+        "VRM-165"
+      ],
+      "disposition": "REOPEN_EXISTING_ROOT"
+    },
+    {
+      "id": 11,
+      "observation": "Agendar failed in human test",
+      "existingFindings": [
+        "VRM-125",
+        "VRM-168"
+      ],
+      "disposition": "REOPEN_EXACT_E2E_REQUIRED"
+    },
+    {
+      "id": 12,
+      "observation": "Preserve current Mis Visitas direction; improve contrast/hierarchy only",
+      "existingFindings": [
+        "VRM-155",
+        "VRM-165"
+      ],
+      "disposition": "PRESERVE_POSITIVE_VISUAL_AUTHORITY"
+    },
+    {
+      "id": 13,
+      "observation": "Check-in should open camera if possible and bind photo+GPS+timestamp+visitId with ACK",
+      "existingFindings": [
+        "VRM-169"
+      ],
+      "disposition": "REFINE_EXISTING_CHECKIN_FINDING"
+    },
+    {
+      "id": 14,
+      "observation": "Certification vigente contradicts certification module empty/pending state",
+      "existingFindings": [
+        "VRM-036",
+        "VRM-171"
+      ],
+      "disposition": "REOPEN_CERTIFICATION_AUTHORITY_CONTRADICTION"
+    },
+    {
+      "id": 15,
+      "observation": "Existing Cinépolis certification must be recovered before recreation",
+      "existingFindings": [
+        "VRM-036",
+        "VRM-171"
+      ],
+      "disposition": "APPROVED_AUTHORITY_LOOKUP_REQUIRED"
+    },
+    {
+      "id": 16,
+      "observation": "Multiple certifications/recertification and selector required",
+      "existingFindings": [
+        "VRM-112",
+        "VRM-119",
+        "VRM-173"
+      ],
+      "disposition": "EXTEND_EXISTING_CERTIFICATION_CATALOG"
+    },
+    {
+      "id": 17,
+      "observation": "Create certification with IA returns AI_PROVIDER_RESPONSE_INVALID",
+      "existingFindings": [
+        "VRM-111",
+        "VRM-148"
+      ],
+      "disposition": "REOPEN_PROVIDER_RESPONSE_E2E"
+    },
+    {
+      "id": 18,
+      "observation": "Benefits cards visual hierarchy regressed",
+      "existingFindings": [
+        "VRM-165"
+      ],
+      "disposition": "ATTACH_CUMULATIVE_FRONTEND_COMPOSITION_ROOT"
+    },
+    {
+      "id": 19,
+      "observation": "Benefits historical table visual design regressed",
+      "existingFindings": [
+        "VRM-101",
+        "VRM-165"
+      ],
+      "disposition": "ATTACH_CUMULATIVE_FRONTEND_COMPOSITION_ROOT"
+    },
+    {
+      "id": 20,
+      "observation": "Benefits states need unambiguous human headings",
+      "existingFindings": [
+        "VRM-084",
+        "VRM-165"
+      ],
+      "disposition": "REOPEN_HUMAN_LABEL_ACCEPTANCE"
+    },
+    {
+      "id": 21,
+      "observation": "Benefits history still shows Illescas",
+      "existingFindings": [
+        "VRM-258"
+      ],
+      "disposition": "REOPEN_CANONICAL_DISPLAY_PROJECTION"
+    },
+    {
+      "id": 22,
+      "observation": "Approved frontend regressed transversally",
+      "existingFindings": [],
+      "disposition": "CUMULATIVE_RELEASE_COMPOSITION_ROOT__NO_NEW_VRM_UNTIL_OWNER_DIFF"
+    },
+    {
+      "id": 23,
+      "observation": "Preserve Academia, improved Profile direction, current Mis Visitas direction",
+      "existingFindings": [],
+      "disposition": "POSITIVE_AUTHORITY_FREEZE"
+    },
+    {
+      "id": 24,
+      "observation": "Future visual deltas require BEFORE/AFTER and scope",
+      "existingFindings": [],
+      "disposition": "GOVERNANCE_RULE"
+    },
+    {
+      "id": 25,
+      "observation": "Dashboard lost multi-select/bulk/WA/email/schedule/context/detail actions",
+      "existingFindings": [
+        "VRM-177"
+      ],
+      "disposition": "APPROVED_NOT_COMPOSED_ACTION_INVENTORY"
+    },
+    {
+      "id": 26,
+      "observation": "Dashboard shows Illescas for C. Miraflores",
+      "existingFindings": [
+        "VRM-258"
+      ],
+      "disposition": "REOPEN_CANONICAL_DISPLAY_PROJECTION"
+    },
+    {
+      "id": 27,
+      "observation": "Visit detail sparse, technical label, wrong name, incomplete history",
+      "existingFindings": [
+        "VRM-038",
+        "VRM-258"
+      ],
+      "disposition": "APPROVED_NOT_COMPOSED_PLUS_HUMAN_LABEL_DEFECT"
+    },
+    {
+      "id": 28,
+      "observation": "VRM-259 badge remains closed unless exact drift",
+      "existingFindings": [
+        "VRM-259"
+      ],
+      "disposition": "PRESERVE_CLOSED"
+    },
+    {
+      "id": 29,
+      "observation": "Postulations/Assignments management UI/actions degraded",
+      "existingFindings": [
+        "VRM-092"
+      ],
+      "disposition": "REOPEN_HUMAN_FAIL"
+    },
+    {
+      "id": 30,
+      "observation": "Pedir acción al shopper lacks expected applicable targets",
+      "existingFindings": [
+        "VRM-092",
+        "VRM-129",
+        "VRM-167"
+      ],
+      "disposition": "REOPEN_TARGET_SET_DEFECT"
+    },
+    {
+      "id": 31,
+      "observation": "Postulations must not become another Visits list",
+      "existingFindings": [
+        "VRM-092"
+      ],
+      "disposition": "PRESERVE_FUNCTIONAL_BOUNDARY"
+    },
+    {
+      "id": 32,
+      "observation": "Restore full postulation/assignment action contract with durable readback",
+      "existingFindings": [
+        "VRM-092",
+        "VRM-123",
+        "VRM-125"
+      ],
+      "disposition": "REOPEN_EXISTING_ACTION_CONTRACT"
+    },
+    {
+      "id": 33,
+      "observation": "Identity merge function appears working",
+      "existingFindings": [
+        "VRM-221",
+        "VRM-243"
+      ],
+      "disposition": "PRESERVE_CLOSED_FUNCTIONALITY"
+    },
+    {
+      "id": 34,
+      "observation": "Merge modal visually degraded",
+      "existingFindings": [
+        "VRM-221"
+      ],
+      "disposition": "ATTACH_VISUAL_ACCEPTANCE"
+    },
+    {
+      "id": 35,
+      "observation": "No fuzzy/name automatic merges",
+      "existingFindings": [
+        "VRM-207",
+        "VRM-213",
+        "VRM-243"
+      ],
+      "disposition": "PRESERVE_IDENTITY_GOVERNANCE"
+    },
+    {
+      "id": 36,
+      "observation": "Finance dashboard mostly pending source/configuration and visually unusable",
+      "existingFindings": [
+        "VRM-039",
+        "VRM-094",
+        "VRM-132"
+      ],
+      "disposition": "REOPEN_FRONTEND_SOURCE_PROJECTION"
+    },
+    {
+      "id": 37,
+      "observation": "Sep liquidations lack useful row/bulk actions and pay action",
+      "existingFindings": [
+        "VRM-094",
+        "VRM-132",
+        "VRM-179"
+      ],
+      "disposition": "REOPEN_PAYMENT_UI_ACCEPTANCE"
+    },
+    {
+      "id": 38,
+      "observation": "Individual and batch payment flows required",
+      "existingFindings": [
+        "VRM-132",
+        "VRM-151",
+        "VRM-179"
+      ],
+      "disposition": "EXTEND_EXISTING_FINANCE_OWNER"
+    },
+    {
+      "id": 39,
+      "observation": "Payment support upload/storage/mapping required; no WhatsApp dependency",
+      "existingFindings": [
+        "VRM-132",
+        "VRM-151"
+      ],
+      "disposition": "EXTEND_EXISTING_FINANCE_OWNER__NO_NEW_VRM_YET"
+    },
+    {
+      "id": 40,
+      "observation": "Reconciliation must be human-clear",
+      "existingFindings": [
+        "VRM-132",
+        "VRM-151"
+      ],
+      "disposition": "REOPEN_HUMAN_RECONCILIATION_UI"
+    },
+    {
+      "id": 41,
+      "observation": "Historical finance cut: through Jul paid; Aug+some Sep paid Oct 2; Oct live start",
+      "existingFindings": [
+        "VRM-151",
+        "VRM-174",
+        "VRM-183"
+      ],
+      "disposition": "HUMAN_AUTHORITY_FREEZE__NO_INFERENCE_OF_SEP_ROWS"
+    },
+    {
+      "id": 42,
+      "observation": "Prove Movements/AP/AR/Liquidations/Batches/Reconciliation/Support/individual+bulk payments",
+      "existingFindings": [
+        "VRM-132",
+        "VRM-179"
+      ],
+      "disposition": "SAME_ARTIFACT_E2E_REQUIRED"
+    },
+    {
+      "id": 43,
+      "observation": "Human labels for AP/AR",
+      "existingFindings": [
+        "VRM-094",
+        "VRM-132"
+      ],
+      "disposition": "REOPEN_HUMAN_LABEL_ACCEPTANCE"
+    },
+    {
+      "id": 44,
+      "observation": "Evaluate embedded/live HR Sheet view/edit with provider authority",
+      "existingFindings": [
+        "VRM-078",
+        "VRM-191"
+      ],
+      "disposition": "CLASSIFY_P1_UNLESS_EXISTING_PHASEA_CONTRACT_REQUIRES"
+    },
+    {
+      "id": 45,
+      "observation": "Critical acceptance must execute real flows with ACK/readback/persistence/no duplicates/no technical labels",
+      "existingFindings": [
+        "VRM-035",
+        "VRM-196"
+      ],
+      "disposition": "GLOBAL_ACCEPTANCE_INTEGRITY_RULE"
+    }
+  ],
+  "production": false
+}

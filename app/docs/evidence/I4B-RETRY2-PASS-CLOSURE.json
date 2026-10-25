@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "cxorbia.i4b.retry2.pass-closure.v1",
+  "syncEpoch": "CXORBIA-20260819-I4B-RETRY2-PASS-I4C-FRONTIER-31",
+  "generatedAt": "2026-08-19T15:50:00-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "formalProgressPercent": 60,
+  "formalRemainingPercent": 40,
+  "workflowRunId": 32305790197,
+  "workflowCommitSha": "e02a558a3848cb2a9637d9037f8f7c16b68b4a12",
+  "resultCommitSha": "fafa26a5f091012fe422ffc0464ced699279914b",
+  "decision": "PASS_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E__SYNTHETIC_VISIT_ONLY",
+  "provider": {
+    "commandCalls": 11,
+    "committedCalls": 10,
+    "writesReported": 28,
+    "idempotentReplayChecks": 1,
+    "versionConflictChecks": 1,
+    "receiptDocsObserved": 9,
+    "auditDocsObserved": 9,
+    "errors": []
+  },
+  "fixture": {
+    "syntheticVisitOnly": true,
+    "syntheticFixtureCreates": 1,
+    "syntheticFixtureDeletes": 2,
+    "syntheticVisitRemoved": true,
+    "syntheticApplicationRemoved": true,
+    "realVisitsUnchanged": true,
+    "realPostulationsUnchanged": true
+  },
+  "safety": {
+    "historicalShopperAccess": false,
+    "realHrVisitMutation": false,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "merge": false,
+    "production": false
+  },
+  "gate": {
+    "enabled": false,
+    "consumed": true,
+    "executionsConsumed": 1,
+    "status": "pass_consumed_provider_verified",
+    "automaticRetryAllowed": false
+  },
+  "i4bStatus": "PASS_CLOSED_NO_RERUN",
+  "nextFrontier": "I4C_HR_BIDIRECTIONAL_SYNC_READINESS_SOURCE_IMPLEMENTATION"
+}

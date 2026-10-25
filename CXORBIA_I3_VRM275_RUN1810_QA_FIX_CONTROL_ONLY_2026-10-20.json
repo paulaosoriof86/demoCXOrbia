@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm275.qa-fixture-control-correction.20261020.v1",
+  "date": "2026-10-20",
+  "state": "HOLD",
+  "classification": "MAPPING_FAILURE",
+  "run": "RUN1810",
+  "runId": 39531661487,
+  "error": "new QA harness Query.where used objects, Query.snapshot destructured tuples; existing source owner not implicated",
+  "firstFailedTest": "D/Cert published October bank reloads",
+  "existingPassed": 16,
+  "existingFailed": 3,
+  "beforeQaBlob": "820846437cbcb09350d3a882ffc22e5281710ded",
+  "afterQaBlob": "5d0fedab3575142ca077d517ade70c2163e68d82",
+  "qaOwner": "tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs",
+  "productSourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+  "productOwnerChanges": 0,
+  "devDeploys": 0,
+  "realFirestoreWrites": 0,
+  "hrWrites": 0,
+  "production": false,
+  "nextExactAction": "Re-run existing canonical source guard on same product source; classify source guard PASS only after readback, then DEV materialization separately."
+}

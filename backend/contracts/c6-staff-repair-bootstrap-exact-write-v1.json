@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "cxorbia.c6.staff-repair-bootstrap.exact-write.v1",
+  "generatedAt": "2026-08-11",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "firebaseProjectId": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "snapshotAuthority": {
+    "workflowRunId": 31518927950,
+    "decision": "PASS_C6_STAFF_REPAIR_BOOTSTRAP_PREWRITE",
+    "expectedAuthPopulationBefore": 228,
+    "evidence": "app/docs/evidence/C6-STAFF-REPAIR-BOOTSTRAP-PROVIDER-SNAPSHOT-LATEST.json"
+  },
+  "forwardWriteBudget": {
+    "authCreates": 3,
+    "customClaimsWrites": 3,
+    "authDisableWrites": 8,
+    "authWritesMax": 14,
+    "tenantUserWrites": 4,
+    "auditLogWrites": 12,
+    "firestoreWritesMax": 16,
+    "authDeletes": 0,
+    "firestoreDeletes": 0
+  },
+  "targetPolicy": {
+    "A": "reuse existing canonical; no Auth create, password mutation or claims mutation; create exact tenant user document only",
+    "B": "create one canonical principal and apply exact claims",
+    "C": "create one canonical principal and apply exact claims",
+    "D": "create one canonical principal and apply exact claims",
+    "historicalRetirement": "disable-only/no-delete after the corresponding canonical readback PASS",
+    "R4CanonicalClient": "verify exact and never mutate"
+  },
+  "credentialPrivacy": {
+    "requiredBeforeFirstProviderWrite": true,
+    "allowedMaterialization": "memory-only from already encrypted protected credential source",
+    "rawPasswordMaterializationRequired": false,
+    "rawPasswordInRepo": false,
+    "rawPasswordInArtifact": false,
+    "rawPasswordInLog": false,
+    "passwordHashInRepoOutput": false,
+    "passwordHashInArtifact": false,
+    "passwordHashInLog": false,
+    "rawVisibleLoginInRepoOutput": false,
+    "rawVisibleLoginInArtifact": false,
+    "rawVisibleLoginInLog": false,
+    "stopBeforeFirstWriteIfUnresolvedOrAmbiguous": true
+  },
+  "execution": {
+    "createBeforeRetire": true,
+    "idempotencyRequired": true,
+    "canonicalReadbackBeforeHistoricalDisable": true,
+    "cumulativeReadbackRequired": true,
+    "rollbackSnapshotsInMemory": true,
+    "rollbackContract": "app/docs/SOURCE-LOCK-C6-STAFF-PROVIDER-SNAPSHOT-PASS-20260811.md",
+    "stopRetry": true,
+    "secondAttemptAllowed": false
+  },
+  "forbidden": {
+    "hrWrites": true,
+    "rulesWrites": true,
+    "storageWrites": true,
+    "makeWrites": true,
+    "geminiCalls": true,
+    "paymentsWrites": true,
+    "deploy": true,
+    "merge": true,
+    "production": true,
+    "authDeletes": true,
+    "firestoreDeletes": true
+  }
+}

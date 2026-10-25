@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "cxorbia.recovery.pre-i4-cert-res-iam-reconciliation.v1",
+  "frozenAt": "2026-09-30",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "status": "PASS_IAM_EFFECTIVE_READY_PROVIDER_ACTIVATION",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadBefore": "85ddd91a625318dddb64e3d26fed0488b796c35e",
+  "controlTreeBefore": "c897de38f7bc91694e1c283e673f755057cd7c4a",
+  "detachedParityProbe": "edf98109d62648befa3f643e246963c1aa7aba0c",
+  "productSourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
+  "productSourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
+  "principal": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com",
+  "evidence": {
+    "runId": 36780871571,
+    "postAuthorizationJobId": 110124056442,
+    "permissionProbeHttp": 200,
+    "granted": [
+      "serviceusage.services.enable",
+      "firebasestorage.defaultBucket.create",
+      "firebaserules.releases.create",
+      "firebaserules.rulesets.create",
+      "aiplatform.endpoints.predict",
+      "storage.buckets.create",
+      "storage.objects.create",
+      "storage.objects.get"
+    ]
+  },
+  "conclusion": {
+    "authFailureClosed": true,
+    "duplicateIamRolesAddedByRecovery": false,
+    "nextAction": "Activate only missing DEV APIs and default Firebase Storage bucket; then remediate PREI4-CERT-001, PREI4-CERT-002 and PREI4-RES-001."
+  },
+  "production": "DO_NOT_TOUCH"
+}

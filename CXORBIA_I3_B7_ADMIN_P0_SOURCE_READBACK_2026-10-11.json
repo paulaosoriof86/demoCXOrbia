@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "cxorbia.i3.b7.admin-p0.source-fix.20261011.v1",
+  "date": "2026-10-11",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "status": "SOURCE_COMMITTED_READBACK_PASS__CI_DEV_E2E_HOLD",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceCommit": "100ce7cd0d9328c8c11e6e728d5a7b34411f4fa4",
+  "sourceTree": "8bf1757815e76c89c8f08623a4f9e57dfd939618",
+  "sourceParent": "e81996ff34eed9cdca657dac829f1b0888d61135",
+  "productPredecessor": "aa435fa9e0bfee37c118747637a266581b853fe8",
+  "p0": {
+    "A": {
+      "classification": "PERSISTENCE_FAILURE",
+      "owner": "app/modules/dashboard.js::bdSave",
+      "beforeBlob": "c309a2e720781c087612269fcc9f550687be2860",
+      "afterBlob": "43537728af84236c1a31d9670c6a742eadfc7f33",
+      "sourceFix": "await data.setVisitState ackAware with providerAck/status/successUiAllowed, protected readback and fail-closed toast",
+      "liveProof": "PENDING"
+    },
+    "B": {
+      "classification": "FUNCTIONAL_DEFECT",
+      "owner": "app/modules/dashboard.js::handoff/bdCtx",
+      "state": "OPEN_OWNER_REUSE_P0_PROVEN",
+      "sourceFix": "NOT_ATTEMPTED",
+      "reason": "Do not introduce parallel dashboard action owner; require approved shared modal command contract."
+    },
+    "C": {
+      "classification": "PERSISTENCE_FAILURE",
+      "owner": "app/modules/postulaciones.js::aprAdjust",
+      "beforeBlob": "46ace903ec6aa8dd92dd17dc36fb8ce53651d45e",
+      "afterBlob": "5da49c5698c00f5e3b5b23c4ceee7679e8f412bb",
+      "sourceFix": "Use pushDurable scoped exact shopper/visit/idempotent action; require provider ACK; remove unaudited auto fire",
+      "shopperReadback": "PENDING"
+    },
+    "D": {
+      "classification": "FUNCTIONAL_DEFECT",
+      "owner": "app/modules/postulaciones.js::GestionAgendamientos.pendingCount",
+      "sourceFix": "derive count and human text from requestByVisit where rescheduleRequest.status=pending_review, excluding HR reference dates and initial postulation proposals",
+      "readback": "SOURCE_ONLY"
+    }
+  },
+  "sourceReadback": {
+    "branchHead": "100ce7cd0d9328c8c11e6e728d5a7b34411f4fa4",
+    "blobsMatch": true,
+    "filesChanged": 2,
+    "sourceLinter": "NOT_RUN",
+    "tests": "NOT_RUN",
+    "deploys": 0,
+    "productionWrites": 0
+  },
+  "preserved": [
+    "Mi Día human visual PASS",
+    "Academia approved",
+    "Mis Visitas approved design",
+    "Mi Perfil increment",
+    "Finance B8 approved source",
+    "single cumulative candidate"
+  ],
+  "nextExactAction": "Run existing source-only JS syntax/focal contract gates; implement P0-B only with approved modal shared owner; materialize one aligned Cloud Run+Hosting DEV and run Admin+Shopper E2E. B8 finance tests independently.",
+  "dependencies": [
+    "CXORBIA_I3_ENTREGAS_BLOQUES_Y_P0_2026-10-11.json",
+    "CXORBIA_I3_B7_B8_PARALLEL_FOCAL_OWNER_RECEIPT_2026-10-11.json",
+    "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261010-V57.json",
+    "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V366_2026-10-10.json"
+  ],
+  "preservesFindingsCount": 274,
+  "production": "DO_NOT_TOUCH",
+  "authorizationRequired": "NONE_FOR_SOURCE_ONLY; EXPRESS_AUTHORIZATION_FOR_I4"
+}

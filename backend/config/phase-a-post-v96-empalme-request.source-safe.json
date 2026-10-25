@@ -1,0 +1,19 @@
+{
+  "kind": "cxorbia.phaseA.postV96RuntimeEmpalmeRequest",
+  "version": 1,
+  "requestedAt": "2026-07-10",
+  "authorizedBy": "Paula",
+  "authorization": "EMPALME_RUNTIME_POST_V96",
+  "sourceLock": "post-v96",
+  "sourceLockSha256": "80feb7c7809d28657b5eec243aa187f678c023ecd471a9f9404e52d285bd2663",
+  "targetBranch": "docs-tya-v6-v71-audit",
+  "safeState": {
+    "deploy": false,
+    "production": false,
+    "providers": false,
+    "databaseWrites": false,
+    "imports": false,
+    "authActivation": false,
+    "firestoreActivation": false
+  }
+}

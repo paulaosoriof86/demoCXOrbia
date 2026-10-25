@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "cxorbia.recovery.pre-i4-cert-res.dev-materialization.v1",
+  "frozenAt": "2026-09-30",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "status": "DEV_MATERIALIZED_PENDING_LIVE_PROOF",
+  "sourceSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
+  "sourceTree": "6175786674fd02e454ccc3674b492a29ab1ed482",
+  "runId": 36791149390,
+  "runtime": {
+    "revision": "cxorbia-live-hr-dev-00235-57l",
+    "digest": "sha256:71199bc92526864af7120c59298d002997792db467bb04936c10c26c02f5d06a",
+    "image": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-prei4-cert-res-f6c3bb6c038a-36791149390",
+    "ready": true
+  },
+  "hosting": {
+    "version": "sites/cxorbia-backend-dev/versions/a0054d58a85a7d43",
+    "release": "sites/cxorbia-backend-dev/channels/live/releases/1790810984892000",
+    "finalized": true
+  },
+  "aiSetting": {
+    "id": "certification-primary",
+    "provider": "vertex-ai",
+    "model": "gemini-2.5-flash",
+    "serverProxy": true,
+    "idempotentReadback": true,
+    "writesThisRun": 0
+  },
+  "rules": {
+    "authorityRunId": 36789283777,
+    "reused": true,
+    "byteIdentical": true,
+    "deploysThisRun": 0
+  },
+  "hrFirstRead": {
+    "revision": "3be75731eff64aa9bb8eb795ea73ae2dad140cb789cbaa15659c67ea02ce33d0",
+    "periods": 16,
+    "visits": 704,
+    "sourceSafe": true,
+    "refreshError": null,
+    "shopperReconciliation": null,
+    "visitReconciliation": null
+  },
+  "finding": "VRM-117",
+  "nextAction": "No-deploy wait for durable reconciliation ACK, then authenticated CERT/RES live proof and cleanup.",
+  "production": "DO_NOT_TOUCH"
+}

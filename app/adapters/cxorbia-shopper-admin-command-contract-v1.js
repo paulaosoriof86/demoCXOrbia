@@ -1,0 +1,124 @@
+/* CXOrbia — reusable Shopper admin command contract v1.
+   Defines durable create/update semantics without executing provider writes.
+
+   Production intent:
+   Admin -> exact validation -> Auth principal -> claims -> membership -> profile/shopper
+   -> exact crosswalk -> provider ACK -> UI refresh.
+
+   Password/token creation is intentionally absent from browser payloads. Credential reset is
+   a separate protected server operation. No localStorage persistence is allowed here.
+*/
+(function(root){
+  'use strict';
+  root.CX=root.CX||{};
+  const VERSION='cxorbia-shopper-admin-command-contract-v1';
+  const str=v=>String(v==null?'':v).trim();
+  const arr=v=>Array.isArray(v)?v:[];
+  const uniq=v=>[...new Set(arr(v).map(str).filter(Boolean))];
+  const exactKeys=()=>Array.isArray(root.CX_EXACT_IDENTITY_CONTRACT?.technicalKeys)?root.CX_EXACT_IDENTITY_CONTRACT.technicalKeys.slice():['shopperId','legacyShopperId','legacyId','externalShopperId','externalId','sourceId','sourceKey','hrRowId','personId','profileId','shopperDocId'];
+  const PUBLIC_PROFILE_FIELDS=['firstName','lastName','nombre','displayFirstName','displayLastName','email','whatsapp','pais','country','depto','ciudad','sexo','edad','estado','sourceRef','sourceType','perfilCompleto','honorarioPref','createdVia'];
+  const PROTECTED_PROFILE_FIELDS=['dpi','documentId','banco','ctaTipo','ctaNum','ctaTitular','ctaMoneda','cuentaPago','ndaStatus'];
+
+  function pick(input,keys){const out={};keys.forEach(key=>{if(input&&input[key]!==undefined)out[key]=input[key];});return out;}
+  function safeProfile(input){return pick(input||{},PUBLIC_PROFILE_FIELDS);}
+  function protectedProfile(input){return pick(input||{},PROTECTED_PROFILE_FIELDS);}
+  function exactAnchors(input){
+    const out={};exactKeys().forEach(key=>{const value=input&&input[key];if(Array.isArray(value)){const values=uniq(value);if(values.length)out[key]=values;}else if(str(value))out[key]=str(value);});return out;
+  }
+  function validateBase(input){
+    const errors=[];
+    if(!str(input?.tenantId))errors.push('missing-tenantId');
+    if(!uniq(input?.projectIds).length)errors.push('missing-projectIds');
+    if(!str(input?.periodId))errors.push('missing-periodId');
+    if(!str(input?.idempotencyKey))errors.push('missing-idempotencyKey');
+    if(input?.expectedVersion===undefined||input?.expectedVersion===null||input?.expectedVersion==='')errors.push('missing-expectedVersion');
+    if(!str(input?.actorRole))errors.push('missing-actorRole');
+    return errors;
+  }
+  function persistenceContract(){return{profileRequired:true,crosswalkRequired:true,providerAckRequired:true,localStorageAllowed:false};}
+  function protectionContract(){return{serverProtected:true,encryptAtRestRequired:true,browserPersistenceAllowed:false,auditRedactionRequired:true,plainRepoStorageAllowed:false};}
+
+  function create(input){
+    input=input||{};const errors=validateBase(input),profile=safeProfile(input.profile||input),protectedData=protectedProfile(input.profile||input);
+    if(!str(profile.firstName||profile.nombre))errors.push('missing-shopper-name');
+    return {ok:errors.length===0,errors,command:{
+      commandType:'shopper.create',entityType:'shopper',entityId:null,tenantId:str(input.tenantId),projectId:str(input.projectId||uniq(input.projectIds)[0]),periodId:str(input.periodId),
+      actor:{actorId:str(input.actorId||''),role:str(input.actorRole),projectIds:uniq(input.projectIds)},expectedVersion:input.expectedVersion,idempotencyKey:str(input.idempotencyKey),
+      payload:{periodId:str(input.periodId),projectIds:uniq(input.projectIds),profile,protectedProfile:protectedData,protectedProfilePolicy:protectionContract(),exactIdentityAnchors:exactAnchors(input.identity||input),
+        auth:{namespace:'shopper',principalRequired:true,claimsRequired:true,membershipRequired:true,credentialMode:'server_generated_or_protected_reset_flow',browserPasswordAllowed:false,browserTokenAllowed:false},
+        persistence:persistenceContract(),sourceType:str(input.sourceType||profile.sourceType||'platform'),sourceRef:str(input.sourceRef||profile.sourceRef||'')||null},
+      source:'admin-shopper-flow',authorization:{providerEnforcementRequired:true,permission:'shopper.create'}
+    }};
+  }
+  function update(input){
+    input=input||{};const errors=validateBase(input),shopperId=str(input.shopperId||input.entityId),patch=input.patch||{};
+    if(!shopperId)errors.push('missing-shopperId');
+    return {ok:errors.length===0,errors,command:{
+      commandType:'shopper.update',entityType:'shopper',entityId:shopperId||null,tenantId:str(input.tenantId),projectId:str(input.projectId||uniq(input.projectIds)[0]),periodId:str(input.periodId),
+      actor:{actorId:str(input.actorId||''),role:str(input.actorRole),projectIds:uniq(input.projectIds)},expectedVersion:input.expectedVersion,idempotencyKey:str(input.idempotencyKey),
+      payload:{periodId:str(input.periodId),shopperId:shopperId||null,projectIds:uniq(input.projectIds),patch:safeProfile(patch),protectedPatch:protectedProfile(patch),protectedProfilePolicy:protectionContract(),exactIdentityAnchors:exactAnchors(input.identity||input),persistence:persistenceContract()},
+      source:'admin-shopper-flow',authorization:{providerEnforcementRequired:true,permission:'shopper.update'}
+    }};
+  }
+  function identityAdjudicate(input){
+    input=input||{};
+    const canonicalShopperId=str(input.canonicalShopperId||input.shopperId||input.entityId);
+    const aliasShopperIds=uniq(input.aliasShopperIds).filter(id=>id&&id!==canonicalShopperId);
+    const errors=validateBase(input);
+    if(!canonicalShopperId)errors.push('missing-canonicalShopperId');
+    if(!aliasShopperIds.length)errors.push('missing-aliasShopperIds');
+    if(input.humanConfirmed!==true)errors.push('human-confirmation-required');
+    if(input.keeperShopperId&&input.keeperAccessConfirmed!==true)errors.push('keeper-access-confirmation-required');
+    return {ok:errors.length===0,errors,command:{
+      commandType:'shopper.identity.adjudicate',entityType:'shopper',entityId:canonicalShopperId||null,
+      tenantId:str(input.tenantId),projectId:str(input.projectId||uniq(input.projectIds)[0]),periodId:str(input.periodId),
+      actor:{actorId:str(input.actorId||''),role:str(input.actorRole),projectIds:uniq(input.projectIds)},
+      expectedVersion:input.expectedVersion==null?'provider-current':input.expectedVersion,
+      idempotencyKey:str(input.idempotencyKey),
+      payload:{canonicalShopperId,aliasShopperIds,humanConfirmed:true,keeperShopperId:str(input.keeperShopperId),keeperAccessConfirmed:input.keeperAccessConfirmed===true,reason:str(input.reason||'admin_confirmed_same_human'),periodIndependent:true,fuzzyMatching:false,preserveHistoricalVisitRows:input.preserveHistoricalVisitRows===true,authoritativeVisitIds:uniq(input.authoritativeVisitIds)},
+      source:'admin-shopper-identity-adjudication',
+      authorization:{providerEnforcementRequired:true,permission:'shopper.identity.adjudicate',humanAdjudicationRequired:true}
+    }};
+  }
+
+
+  function identityReviewResolve(input){
+    input=input||{};const shopperIds=uniq(input.shopperIds||input.candidateShopperIds),errors=validateBase(input);
+    if(shopperIds.length<2)errors.push('missing-shopperIds');
+    if(input.humanConfirmed!==true)errors.push('human-confirmation-required');
+    if(!str(input.reason))errors.push('missing-reason');
+    return {ok:errors.length===0,errors,command:{
+      commandType:'shopper.identity.review.resolve',entityType:'shopperIdentityReview',entityId:shopperIds[0]||null,
+      tenantId:str(input.tenantId),projectId:str(input.projectId||uniq(input.projectIds)[0]),periodId:str(input.periodId),
+      actor:{actorId:str(input.actorId||''),role:str(input.actorRole),projectIds:uniq(input.projectIds)},
+      expectedVersion:input.expectedVersion==null?'provider-current':input.expectedVersion,idempotencyKey:str(input.idempotencyKey),
+      payload:{shopperIds,resolution:'distinct',humanConfirmed:true,reason:str(input.reason),evidence:str(input.evidence||''),identityRemap:false,periodIndependent:true,fuzzyMatching:false},
+      source:'admin-shopper-identity-review-resolution',
+      authorization:{providerEnforcementRequired:true,permission:'shopper.identity.review.resolve',humanAdjudicationRequired:true}
+    }};
+  }
+  function deleteShopper(input){
+    input=input||{};const shopperId=str(input.shopperId||input.entityId),errors=validateBase(input);
+    if(!shopperId)errors.push('missing-shopperId');
+    if(input.humanConfirmed!==true)errors.push('human-confirmation-required');
+    if(!str(input.reason))errors.push('missing-reason');
+    return {ok:errors.length===0,errors,command:{
+      commandType:'shopper.delete',entityType:'shopper',entityId:shopperId||null,
+      tenantId:str(input.tenantId),projectId:str(input.projectId||uniq(input.projectIds)[0]),periodId:str(input.periodId),
+      actor:{actorId:str(input.actorId||''),role:str(input.actorRole),projectIds:uniq(input.projectIds)},
+      expectedVersion:input.expectedVersion==null?'provider-current':input.expectedVersion,idempotencyKey:str(input.idempotencyKey),
+      payload:{shopperId,humanConfirmed:true,reason:str(input.reason),dependencyPreviewRequired:true,physicalDelete:false,preserveHistory:true,preserveHr:true},
+      source:'admin-shopper-safe-retire',
+      authorization:{providerEnforcementRequired:true,permission:'shopper.delete',humanAdjudicationRequired:true}
+    }};
+  }
+
+  function credentialReset(input){
+    input=input||{};const shopperId=str(input.shopperId);const errors=[!str(input.tenantId)?'missing-tenantId':null,!str(input.projectId)?'missing-projectId':null,!str(input.periodId)?'missing-periodId':null,!shopperId?'missing-shopperId':null,!str(input.idempotencyKey)?'missing-idempotencyKey':null,!str(input.actorRole)?'missing-actorRole':null].filter(Boolean);
+    return {ok:errors.length===0,errors,command:{commandType:'shopper.credential.reset',entityType:'shopper',entityId:shopperId||null,tenantId:str(input.tenantId),projectId:str(input.projectId),periodId:str(input.periodId),
+      actor:{actorId:str(input.actorId||''),role:str(input.actorRole),projectIds:uniq(input.projectIds)},expectedVersion:input.expectedVersion==null?'provider-current':input.expectedVersion,idempotencyKey:str(input.idempotencyKey),
+      payload:{periodId:str(input.periodId),shopperId,serverOnly:true,browserPasswordAllowed:false,browserTokenAllowed:false},source:'admin-shopper-credential-reset',authorization:{providerEnforcementRequired:true,permission:'shopper.credential.reset'}}};
+  }
+
+  CX.shopperAdminCommandContract=Object.freeze({version:VERSION,create,update,identityAdjudicate,identityReviewResolve,deleteShopper,credentialReset,exactIdentityKeys:exactKeys(),protectedFields:PROTECTED_PROFILE_FIELDS.slice(),browserCredentialStorageAllowed:false,localStoragePersistenceAllowed:false,successRequiresProviderAck:true,protectedDataRequiresEncryption:true});
+})(typeof window!=='undefined'?window:globalThis);

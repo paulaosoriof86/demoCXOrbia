@@ -1,0 +1,496 @@
+/* ============================================================
+   CXOrbia · Core configuration (white-label + navigation)
+   Everything tenant-specific lives here. Re-theme and re-label
+   the whole product without touching module code.
+   ============================================================ */
+window.CX = window.CX || {};
+
+/* ---------- Brand / white-label ---------- */
+CX.BRAND = {
+  // id único del tenant (consultora/instancia). Persistente; no se regenera si ya existe.
+  id: (function(){ const rt=window.CX_TENANT_RUNTIME_CONFIG; if(rt&&rt.tenantId)return String(rt.tenantId); try{ let v=localStorage.getItem('cx_tenant_id'); if(!v){ v='tenant-'+Date.now().toString(36); localStorage.setItem('cx_tenant_id', v); } return v; }catch(e){ return 'tenant-demo'; } })(),
+  name: 'CXOrbia',
+  tagline: 'Field Operations Platform',
+  // "Plataforma desarrollada para <client>" en el login. Vacío = marca propia.
+  clientName: '',
+  logoText: 'CX',     // fallback cuando no hay imagen de logo
+  logoUrl: '',        // data-URL o ruta de imagen del cliente
+  theme: 'cxorbia',   // id de CX.THEMES
+  demoMode: true,
+  showAITag: true,
+  // países explícitos del tenant/franquicia (vacío = se derivan de los proyectos reales, ver app.js)
+  countries: [],
+  // colors se sincroniza desde el tema activo (no editar a mano)
+  colors: {},
+};
+CX.canonicalTenantAuthority = function(){
+  const rt=window.CX_TENANT_RUNTIME_CONFIG;
+  return !!(rt&&rt.tenantId&&rt.localStorageTruth===false);
+};
+
+
+/* Recovery PRE-I4: authoritative tenant runtime configuration wins over browser-local brand state.
+   Tenant-specific values live in deployment config/runtime.js; module code stays generic. */
+CX.applyTenantRuntimeConfig = function(){
+  const cfg = window.CX_TENANT_RUNTIME_CONFIG;
+  if(!cfg || !cfg.tenantId) return false;
+  const b = cfg.branding || {};
+  const logo = b.logoUrl || b.logo || '';
+  Object.assign(CX.BRAND, {
+    id: String(cfg.tenantId),
+    name: b.displayName || cfg.tenantName || CX.BRAND.name,
+    clientName: b.displayName || cfg.tenantName || CX.BRAND.clientName,
+    clientTag: b.clientTag || CX.BRAND.clientTag || '',
+    logo: logo,
+    logoUrl: logo,
+    theme: b.theme || CX.BRAND.theme,
+    demoMode: false,
+    countries: Array.isArray(cfg.countries) ? cfg.countries.slice() : CX.BRAND.countries
+  });
+  CX.tenantProfile = Object.assign({}, CX.tenantProfile || {}, {
+    tenantId: String(cfg.tenantId),
+    countries: Array.isArray(cfg.countries) ? cfg.countries.slice() : [],
+    activeProjectIds: Array.isArray(cfg.activeProjectIds) ? cfg.activeProjectIds.slice() : [],
+    defaultProjectId: cfg.defaultProjectId || null,
+    brandingSource: cfg.sourceAuthority || 'tenant_runtime_config'
+  });
+  return true;
+};
+
+/* ---------- Temas (plantillas de marca seleccionables) ----------
+   Cada cliente puede partir de una plantilla y ajustarla. "Corporativo claro"
+   reproduce un estilo corporativo clásico (Segoe UI, azul/rojo, sidebar claro). */
+CX.THEMES = {
+  cxorbia: {
+    label: 'CXOrbia (oscuro)', font: "'Manrope', system-ui, sans-serif", railStyle:'dark',
+    colors:{ brand:'#2196d3', brandDark:'#1565a8', brandMid:'#4ab4e6', brandLight:'#e8f4fd',
+             navy:'#0d2740', navy2:'#123553', accent:'#c8232c' },
+  },
+  corporate_light: {
+    label: 'Corporativo claro (Segoe UI)', font: "'Segoe UI', Tahoma, system-ui, sans-serif", railStyle:'light',
+    colors:{ brand:'#2196d3', brandDark:'#1565a8', brandMid:'#4ab4e6', brandLight:'#e8f4fd',
+             navy:'#ffffff', navy2:'#fafbfd', accent:'#c8232c' },
+  },
+  esmeralda: {
+    label: 'Esmeralda (banca)', font: "'Manrope', system-ui, sans-serif", railStyle:'dark',
+    colors:{ brand:'#0e9c6e', brandDark:'#0a7050', brandMid:'#3fbf93', brandLight:'#e2f7ef',
+             navy:'#0c2a22', navy2:'#123a30', accent:'#d97706' },
+  },
+  violeta: {
+    label: 'Violeta (retail/food)', font: "'Manrope', system-ui, sans-serif", railStyle:'dark',
+    colors:{ brand:'#7c3aed', brandDark:'#5b21b6', brandMid:'#a78bfa', brandLight:'#f3eeff',
+             navy:'#1e1530', navy2:'#2a1f42', accent:'#ec4899' },
+  },
+  grisOscuro: {
+    label: 'Corporativo gris oscuro', font: "'Manrope', system-ui, sans-serif", railStyle:'graydark',
+    colors:{ brand:'#2196d3', brandDark:'#1565a8', brandMid:'#4ab4e6', brandLight:'#e8f4fd',
+             navy:'#2b2f36', navy2:'#363b44', accent:'#c8232c' },
+  },
+  grisClaro: {
+    label: 'Corporativo gris claro', font: "'Manrope', system-ui, sans-serif", railStyle:'graylight',
+    colors:{ brand:'#2196d3', brandDark:'#1565a8', brandMid:'#4ab4e6', brandLight:'#e8f4fd',
+             navy:'#e4e7ec', navy2:'#d8dce3', accent:'#c8232c' },
+  },
+  indigo: {
+    label: 'Índigo (consultoría)', font: "'Manrope', system-ui, sans-serif", railStyle:'dark',
+    colors:{ brand:'#4f46e5', brandDark:'#3730a3', brandMid:'#818cf8', brandLight:'#eef0ff',
+             navy:'#161a36', navy2:'#1f244a', accent:'#f59e0b' },
+  },
+  teal: {
+    label: 'Teal (salud/servicios)', font: "'Manrope', system-ui, sans-serif", railStyle:'dark',
+    colors:{ brand:'#0d9488', brandDark:'#0a6e66', brandMid:'#2dd4bf', brandLight:'#e0f5f2',
+             navy:'#0c2522', navy2:'#123733', accent:'#f97316' },
+  },
+};
+
+/* Aplica un tema completo (colores + tipografía + estilo de sidebar) */
+CX.applyTheme = function(id){
+  const t = CX.THEMES[id] || CX.THEMES.cxorbia;
+  CX.BRAND.theme = id; CX.BRAND.colors = Object.assign({}, t.colors);
+  const r = document.documentElement.style, c = t.colors;
+  r.setProperty('--brand', c.brand);
+  r.setProperty('--brand-dark', c.brandDark);
+  r.setProperty('--brand-mid', c.brandMid);
+  r.setProperty('--brand-light', c.brandLight);
+  r.setProperty('--navy', c.navy);
+  r.setProperty('--navy-2', c.navy2);
+  r.setProperty('--accent', c.accent);
+  r.setProperty('--ui', t.font);
+  r.setProperty('--disp', t.font);
+  document.documentElement.setAttribute('data-rail', t.railStyle);
+  try{ localStorage.setItem('cx_theme', id); }catch(e){}
+};
+
+/* Compat: applyBrand reaplica el tema activo */
+CX.applyBrand = function(){
+  let id = CX.BRAND.theme;
+  try{ const saved = localStorage.getItem('cx_theme'); if(saved && CX.THEMES[saved]) id = saved; }catch(e){}
+  CX.applyTheme(id);
+  try{ const ten = JSON.parse(localStorage.getItem('cx_tenant')||'null'); if(ten){ Object.assign(CX.BRAND, ten); CX.applyTheme(CX.BRAND.theme); } }catch(e){}
+  /* modo demo configurable (cx_demo_mode: 'off' → modo cliente/piloto, sin banner de datos ficticios) */
+  try{ const dm = localStorage.getItem('cx_demo_mode'); if(dm==='off') CX.BRAND.demoMode=false; else if(dm==='on') CX.BRAND.demoMode=true; }catch(e){}
+  /* leer identidad guardada por módulo Marca (cx_brand_identity) */
+  try{ const b = JSON.parse(localStorage.getItem('cx_brand_identity')||'null');
+    if(b){ Object.assign(CX.BRAND, b);
+      if(b.theme) CX.applyTheme(b.theme);
+    }
+  }catch(e){}
+  /* PRE-I4: localStorage is never branding truth on a canonical tenant runtime. */
+  try{
+    if(CX.applyTenantRuntimeConfig()){
+      const t = window.CX_TENANT_RUNTIME_CONFIG && window.CX_TENANT_RUNTIME_CONFIG.branding && window.CX_TENANT_RUNTIME_CONFIG.branding.theme;
+      if(t && CX.THEMES[t]) CX.applyTheme(t);
+    }
+  }catch(e){}
+  /* Manifest PWA dinámico: name/short_name/theme_color/background_color/icons según marca (Fase 4) */
+  try{ CX.applyManifest(); }catch(e){}
+};
+
+/* genera y aplica un manifest.webmanifest en memoria a partir de CX.BRAND — nunca usa el estático fijo */
+CX.applyManifest = function(){
+  const b = CX.BRAND||{};
+  const name = b.appName || b.name || 'CXOrbia';
+  const short = (b.shortName || name).slice(0,12);
+  const theme = (b.colors&&b.colors.brand) || '#2196d3';
+  const bg = (b.colors&&b.colors.bg) || '#ffffff';
+  const iconHref = document.querySelector('link[rel="icon"]');
+  const icon = (iconHref && iconHref.href) || '';
+  const manifest = {
+    name, short_name: short, start_url: '.', display: 'standalone',
+    theme_color: theme, background_color: bg,
+    icons: icon ? [{ src: icon, sizes: '192x192', type: icon.startsWith('data:image/svg')?'image/svg+xml':'image/png', purpose:'any' }] : [],
+  };
+  const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+  const url = URL.createObjectURL(blob);
+  let link = document.querySelector('link[rel="manifest"]');
+  if(!link){ link = document.createElement('link'); link.rel='manifest'; document.head.appendChild(link); }
+  if(link._cxManifestUrl) try{ URL.revokeObjectURL(link._cxManifestUrl); }catch(e){}
+  link.href = url; link._cxManifestUrl = url;
+  let themeMeta = document.querySelector('meta[name="theme-color"]');
+  if(!themeMeta){ themeMeta=document.createElement('meta'); themeMeta.name='theme-color'; document.head.appendChild(themeMeta); }
+  themeMeta.content = theme;
+};
+CX.tenantModules = function(){
+  if(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority()) return null;
+  try{ const s = JSON.parse(localStorage.getItem('cx_modules')||'null'); if(s) return s; }catch(e){}
+  return null;
+};
+CX.moduleEnabled = function(id){
+  /* módulos de administración/configuración: SIEMPRE activos para admin, ignorando el mapa de plan guardado */
+  const adminAlways=['cuestionarios','usuarios','config','automatizaciones','integraciones','correo','marca',
+    'clientes','proyectos','financiero','movimientos','liquidaciones','lotes','costos','crm','marketing',
+    'informes','soporte','tablon','documentos','aprendizaje','cert','rutas','postulaciones','shoppers',
+    'visitas','reservas','shoppers','dashboard','midia'];
+  if(adminAlways.includes(id)) return true;
+  const s = CX.tenantModules(); return !s || s[id] !== false;
+};
+/* ---------- Gobierno de acceso por rol (matriz de permisos) ---------- */
+/* mapea cada módulo a su categoría de permiso (op/fin/prj/cap/cfg/sh/com) */
+CX.MOD_CAT = {
+  midia:'op', dashboard:'op', visitas:'op', postulaciones:'op', reservas:'op', shoppers:'op', tablon:'op',
+  financiero:'fin', movimientos:'fin', liquidaciones:'fin', lotes:'fin',
+  proyectos:'prj', periodos:'prj', historico:'prj', clientes:'prj', cuestionarios:'prj', rutas:'prj', importador:'prj', hrsource:'prj',
+  aprendizaje:'cap', cert:'cap', documentos:'cap', soporte:'cap', novedades:'cap',
+  config:'cfg', usuarios:'cfg', marca:'cfg', automatizaciones:'cfg', integraciones:'cfg', correo:'cfg', saas:'cfg', diagnostico:'cfg', administrabilidad:'cfg',
+  costos:'com', crm:'com', marketing:'com', informes:'com',
+  miperfil:'sh', misvisitas:'sh', beneficios:'sh', mireportes:'sh',
+};
+/* super y admin: acceso pleno. Otros roles: gobernados por la matriz guardada (cx_perm).
+   Fail-closed (V95/V96 reauditoría): un rol sin matriz configurada NO obtiene acceso total —
+   solo un set mínimo seguro (Capacitación/Academia) hasta que un admin defina su matriz
+   explícitamente en Usuarios & Permisos. Un módulo sin categoría en MOD_CAT tampoco obtiene
+   acceso total — se trata como categoría 'cfg' (la más restringida), nunca como `true` abierto. */
+CX.roleCanAccess = function(role, id){
+  if(role==='super'||role==='admin'||role==='shopper'||role==='cliente') return true;
+  const cat=CX.MOD_CAT[id] || 'cfg';
+  if(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority()){
+    const canonical={ops:['op','prj','cap'],coordinador:['op','prj','cap'],aliado:['op','prj','cap']};
+    const allowed=canonical[role]||[];
+    return allowed.includes(cat);
+  }
+  let perm=null; try{ perm=JSON.parse(localStorage.getItem('cx_perm')||'null'); }catch(e){}
+  if(!perm||!perm[role]) return cat==='cap';
+  return perm[role].includes(cat);
+};
+CX.setModuleEnabled = function(id, on){
+  if(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority()) return {ok:false,authoritative:false,reason:'TENANT_MODULE_PROVIDER_REQUIRED'};
+  const s = CX.tenantModules() || {}; s[id] = on;
+  try{ localStorage.setItem('cx_modules', JSON.stringify(s)); }catch(e){}
+  return {ok:true,authoritative:false,preferenceOnly:true};
+};
+
+/* R21: helper único y genérico para módulos cuya visibilidad depende del perfil del tenant
+   (CX.tenantProfile), además de rol/plan. Hoy solo gobierna Academia para el rol Cliente —
+   sin perfil configurado (entorno sin adapter) se mantiene visible, como ya viene operando. */
+CX.moduleVisibleForProfile = function(id, role){
+  if(id==='aprendizaje' && role==='cliente'){
+    const tp = CX.tenantProfile;
+    const ac = tp && tp.academy;
+    if(!ac) return true;
+    const cliente = ac.cliente, portal = ac.client_portal;
+    if(cliente===true || portal===true) return true;
+    if(cliente===false || portal===false) return false;
+    return true;
+  }
+  return true;
+};
+
+/* ---------- Module registry metadata ----------
+   status: 'ready'  -> fully built
+           'beta'   -> functional, being deepened
+           'soon'   -> scaffold placeholder
+   The render fn is attached by each file in /app/modules via CX.module(id, fn).
+*/
+CX.MODULES = {
+  // Operación (admin + shopper)
+  midia:         { icon:'☀️', label:'Mi Día',              roles:['admin','shopper'], status:'ready' },
+  dashboard:     { icon:'📊', label:'Dashboard Operativo',  roles:['admin'],           status:'ready' },
+  clientes:      { icon:'🏢', label:'Clientes',             roles:['admin'],           status:'ready' },
+  hrsource:      { icon:'🔗', label:'Fuente de HR',         roles:['admin'],           status:'ready' },
+  importador:    { icon:'📥', label:'Importador',           roles:['admin'],           status:'ready' },
+  proyectos:     { icon:'🗂️', label:'Proyectos',            roles:['admin'],           status:'ready' },
+  periodos:      { icon:'🗓️', label:'Periodos',             roles:['admin'],           status:'ready' },
+  historico:     { icon:'📜', label:'Histórico',            roles:['admin'],           status:'ready' },
+  /* R19 Gate 5 (20260715): un solo label estático se usaba para dos vistas distintas de este
+     mismo id — la del shopper SÍ lista solo postulables (oportunidades), pero la del admin es la
+     base operativa completa (todos los estados, edita/asigna/publica) — llamarla "Visitas
+     Disponibles" para el admin era engañoso (evidencia: título interno ya decía "Visitas", el nav
+     decía "Visitas Disponibles"). label ahora puede ser función (role)=>string; ver uso en
+     router.js (nav y breadcrumb). */
+  visitas:       { icon:'📋', label:(role)=>role==='shopper'?'Visitas Disponibles':'Visitas',  roles:['admin','shopper'], status:'ready' },
+  postulaciones: { icon:'📩', label:'Postulaciones',        roles:['admin'], badge:true, status:'ready' },
+  reservas:      { icon:'🙋', label:'Reservas & Asignación', roles:['admin','shopper'], status:'ready' },
+  misvisitas:    { icon:'🧭', label:'Mis Visitas',          roles:['shopper'],         status:'ready' },
+  shoppers:      { icon:'👥', label:'Shoppers',             roles:['admin'],           status:'ready' },
+  miperfil:      { icon:'👤', label:'Mi Perfil',            roles:['shopper'],         status:'ready' },
+  rutas:         { icon:'🗺️', label:'Hojas de Ruta',        roles:['admin'],           status:'ready' },
+  documentos:    { icon:'📎', label:'Recursos del proyecto', roles:['admin','shopper'], status:'ready' },
+  aprendizaje:   { icon:'📚', label:'Academia',          roles:['admin','shopper','cliente'], status:'ready' },
+  cert:          { icon:'🏆', label:'Certificación',        roles:['admin','shopper'], status:'ready' },
+  tablon:        { icon:'📢', label:'Tablón / Novedades',   roles:['admin','shopper'], badgeNotif:true, status:'ready' },
+  soporte:       { icon:'🤖', label:'Soporte IA',           roles:['admin','shopper'], status:'ready' },
+  informes:      { icon:'📑', label:'Reportes & KPIs',      roles:['admin'],           status:'ready' },
+  // Finanzas (admin)
+  financiero:    { icon:'💹', label:'Dashboard Financiero', roles:['admin'],           status:'ready' },
+  movimientos:   { icon:'🧾', label:'Movimientos',          roles:['admin'],           status:'ready' },
+  liquidaciones: { icon:'💸', label:'Liquidaciones',        roles:['admin'],           status:'ready' },
+  lotes:         { icon:'📦', label:'Lotes de Pago',        roles:['admin'],           status:'ready' },
+  beneficios:    { icon:'💰', label:'Mis Beneficios',       roles:['shopper'],         status:'ready' },
+  mireportes:    { icon:'📑', label:'Mis Reportes',         roles:['shopper'],         status:'ready' },
+  // Configuración (admin)
+  cuestionarios: { icon:'🧩', label:'Cuestionarios',        roles:['admin'],           status:'ready' },
+  usuarios:      { icon:'🔐', label:'Usuarios & Permisos',  roles:['admin'],           status:'ready' },
+  config:        { icon:'⚙️', label:'Configuración',         roles:['admin'],           status:'ready' },
+  saas:          { icon:'🌐', label:'Consola SaaS',         roles:['admin'],           status:'ready', superOnly:true },
+  diagnostico:   { icon:'🧪', label:'Diagnóstico & Readiness',roles:['admin'],          status:'ready', superOnly:true },
+  administrabilidad: { icon:'⚙️', label:'Administrabilidad',   roles:['admin'],           status:'ready' },
+  automatizaciones: { icon:'⚡', label:'Automatizaciones',     roles:['admin'],           status:'ready' },
+  integraciones: { icon:'🔌', label:'Integraciones & Add-ons',roles:['admin'],           status:'ready' },
+  correo:        { icon:'✉️',  label:'Correo integrado',     roles:['admin'],           status:'ready' },
+  marca:         { icon:'🎨',  label:'Identidad de Marca',   roles:['admin'],           status:'ready' },
+  // Comercial / consultora (CRM + marketing) — roadmap del ecosistema
+  costos:        { icon:'🧮', label:'Costos & Propuestas',  roles:['admin'],           status:'ready' },
+  crm:           { icon:'🤝', label:'CRM Comercial',         roles:['admin'],           status:'ready' },
+  marketing:     { icon:'📣', label:'Marketing & Contenidos',roles:['admin'],           status:'ready' },
+  // Portal Estratégico del Cliente final (marca evaluada)
+  cli_dashboard:   { icon:'📈', label:'Panorama',             roles:['cliente'], status:'ready' },
+  cli_sucursales:  { icon:'🏬', label:'Sucursales & Score',   roles:['cliente'], status:'ready' },
+  cli_acciones:    { icon:'🎯', label:'Planes de Acción',     roles:['cliente'], status:'ready' },
+  cli_capacitacion:{ icon:'🎓', label:'Capacitación',         roles:['cliente'], status:'ready' },
+  cli_reportes:    { icon:'📤', label:'Reportes',             roles:['cliente'], status:'ready' },
+  cli_programa:    { icon:'🧮', label:'Mi Programa',          roles:['cliente'], status:'ready' },
+  cli_market:      { icon:'✨', label:'Servicios & Add-ons',  roles:['cliente'], status:'ready' },
+  cli_insights:    { icon:'📊', label:'Insights & Benchmark', roles:['cliente'], status:'ready' },
+  novedades:       { icon:'📣', label:'Novedades',            roles:['admin','shopper','cliente'], status:'ready' },
+};
+
+/* ---------- Navigation layout per role ---------- */
+CX.NAV = {
+  admin: [
+    { sec:'Operación', items:['midia','dashboard','visitas','postulaciones','reservas','shoppers','informes'] },
+    { sec:'Admin del Proyecto', items:['clientes','proyectos','periodos','historico','rutas','hrsource','cuestionarios','importador'] },
+    { sec:'Capacitación & IA', items:['aprendizaje','cert','documentos','soporte','novedades'] },
+    { sec:'Finanzas',  items:['financiero','movimientos','liquidaciones','lotes'] },
+    { sec:'Comercial', items:['costos','crm','marketing'] },
+    { sec:'Configuración', items:['config','administrabilidad','usuarios','automatizaciones','integraciones','correo','marca'] },
+  ],
+  shopper: [
+    { sec:'Operación', items:['midia','miperfil','visitas','reservas','misvisitas'] },
+    { sec:'Capacitación & IA', items:['aprendizaje','cert','documentos','soporte','novedades'] },
+    { sec:'Mis Beneficios', items:['beneficios','mireportes'], alwaysExpanded:true },
+  ],
+  cliente: [
+    { sec:'Estrategia',  items:['cli_dashboard','cli_sucursales','cli_acciones','cli_insights'] },
+    { sec:'Desarrollo',  items:['cli_capacitacion','aprendizaje','cli_reportes','cli_programa'] },
+    { sec:'Crecimiento', items:['cli_market','novedades'] },
+  ],
+};
+
+/* ---------- Roles del Portal del Cliente (scope de datos) ---------- */
+CX.CLIENTE_ROLES = [
+  { id:'director', label:'Director / C-level',        scope:'all',      desc:'Toda la marca' },
+  { id:'regional', label:'Gerente Regional',          scope:'region',   desc:'Su región' },
+  { id:'sucursal', label:'Responsable de Sucursal',   scope:'sucursal', desc:'Su sucursal' },
+];
+
+/* ---------- Catálogo de rubros/industrias (compartido: Clientes, Proyectos, CRM) ---------- */
+CX.RUBROS = ['Retail · Cadena de tiendas','Banca · Red de agencias','Restaurantes · Multimarca','Salud · Clínicas','Telecomunicaciones','Automotriz · Concesionarios','Seguros','Combustibles · Estaciones','Hotelería','Educación','Supermercados','Farmacias','Belleza & Cuidado personal','Electrodomésticos','Moda & Calzado','Aerolíneas & Turismo','Inmobiliario','Gimnasios & Fitness','Entretenimiento','Otra'];
+
+/* ---------- Catálogo de países + moneda (lista larga, no limitar) ---------- */
+CX.COUNTRIES = [
+  {c:'GT',n:'Guatemala',cur:'Q'},   {c:'HN',n:'Honduras',cur:'L'},
+  {c:'SV',n:'El Salvador',cur:'$'}, {c:'NI',n:'Nicaragua',cur:'C$'},
+  {c:'CR',n:'Costa Rica',cur:'₡'},  {c:'PA',n:'Panamá',cur:'B/.'},
+  {c:'MX',n:'México',cur:'$'},      {c:'CO',n:'Colombia',cur:'$'},
+  {c:'PE',n:'Perú',cur:'S/'},       {c:'EC',n:'Ecuador',cur:'$'},
+  {c:'CL',n:'Chile',cur:'$'},       {c:'AR',n:'Argentina',cur:'$'},
+  {c:'DO',n:'Rep. Dominicana',cur:'RD$'}, {c:'US',n:'Estados Unidos',cur:'US$'},
+  {c:'ES',n:'España',cur:'€'},
+];
+/* etiqueta de país genérica (bandera emoji desde el código ISO + nombre) — funciona para cualquier país */
+CX.paisName = function(c){ const f=CX.COUNTRIES.find(x=>x.c===c); return f?f.n:c; };
+CX.paisFlag = function(c){ if(!c||c.length!==2) return '🏳️'; try{return String.fromCodePoint(...[...c.toUpperCase()].map(ch=>0x1F1E6+ch.charCodeAt(0)-65));}catch(e){return '🏳️';} };
+CX.paisLabel = function(c){ return CX.paisFlag(c)+' '+CX.paisName(c); };
+CX.moneda = function(p,c){ return (p.currency&&p.currency[c]) || (CX.COUNTRIES.find(x=>x.c===c)||{}).cur || '$'; };
+
+/* ---------- Catálogo de tipografías seleccionables ---------- */
+CX.FONTS = [
+  { id:'segoe',   label:'Segoe UI (corporativa)', stack:"'Segoe UI', Tahoma, system-ui, sans-serif" },
+  { id:'manrope', label:'Manrope',                stack:"'Manrope', system-ui, sans-serif" },
+  { id:'inter',   label:'Inter',                  stack:"'Inter', system-ui, sans-serif" },
+  { id:'system',  label:'Sistema',                stack:"system-ui, -apple-system, sans-serif" },
+  { id:'georgia', label:'Georgia (serif)',        stack:"Georgia, 'Times New Roman', serif" },
+];
+CX.applyFont = function(id){
+  const f=CX.FONTS.find(x=>x.id===id); if(!f)return;
+  document.documentElement.style.setProperty('--ui', f.stack);
+  document.documentElement.style.setProperty('--disp', f.stack);
+  CX.BRAND.font=id; try{localStorage.setItem('cx_font',id);}catch(e){}
+};
+
+/* ---------- Patrón de credenciales (configurable por el cliente) ----------
+   Tokens disponibles en los patrones:
+     {nombre} {apellido}     → minúsculas sin tildes ni espacios
+     {Nombre} {Apellido}     → capitalizado
+     {inicial}               → primera letra del nombre (minúscula)
+   Por defecto: usuario = nombre.apellido · contraseña = Nombre123*  */
+CX.CREDS = {
+  userPattern: '{nombre}.{apellido}',
+  passPattern: '{Nombre}123*',
+  load(){ if(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority())return; try{ const s=JSON.parse(localStorage.getItem('cx_creds')||'null'); if(s){ this.userPattern=s.userPattern||this.userPattern; this.passPattern=s.passPattern||this.passPattern; } }catch(e){} },
+  save(){ if(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority())return {ok:false,reason:'CREDENTIAL_POLICY_PROVIDER_REQUIRED'}; try{ localStorage.setItem('cx_creds',JSON.stringify({userPattern:this.userPattern,passPattern:this.passPattern})); return {ok:true,preferenceOnly:true}; }catch(e){return {ok:false};} },
+  _slug(s){ return (s||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,''); },
+  _cap(s){ const t=this._slug(s); return t.charAt(0).toUpperCase()+t.slice(1); },
+  _fill(pattern, nombre, apellido){
+    return (pattern||'')
+      .replace(/\{Nombre\}/g, this._cap(nombre))
+      .replace(/\{Apellido\}/g, this._cap(apellido))
+      .replace(/\{nombre\}/g, this._slug(nombre))
+      .replace(/\{apellido\}/g, this._slug(apellido))
+      .replace(/\{inicial\}/g, this._slug(nombre).charAt(0));
+  },
+  user(nombre, apellido){ return this._fill(this.userPattern, nombre, apellido) || 'usuario'; },
+  pass(nombre, apellido){ return this._fill(this.passPattern, nombre, apellido) || 'Cambiar123*'; },
+  /* descripción legible del patrón para la UI */
+  userExample(){ return this.user('Nombre','Apellido'); },
+  passExample(){ return this.pass('Nombre','Apellido'); },
+};
+try{ CX.CREDS.load(); }catch(e){}
+
+/* ---------- Planes comerciales (preconfiguran el tenant) ---------- */
+CX.PLANS = {
+  basico:    { label:'Básico',     temas:['cxorbia','corporate_light'], integraciones:['whatsapp_web','sheets_import'],
+               modulos:['midia','dashboard','proyectos','visitas','postulaciones','shoppers','misvisitas','miperfil','documentos','tablon','soporte','beneficios'] },
+  estandar:  { label:'Estándar',   temas:['cxorbia','corporate_light','esmeralda','violeta'], integraciones:['whatsapp_web','sheets','excel_online','gmail'],
+               modulos:'+aprendizaje,cert,rutas,informes' },
+  pro:       { label:'Pro',        temas:'all', integraciones:['make','whatsapp_api','sheets','excel_online','gmail','outlook','mailchimp'],
+               modulos:'+financiero,movimientos,liquidaciones,lotes,cuestionarios' },
+  enterprise:{ label:'Enterprise', temas:'all', integraciones:'all', modulos:'all' },
+};
+/* devuelve la lista de módulos habilitados por un plan */
+CX.planModules = function(planId){
+  const order=Object.keys(CX.PLANS), idx=order.indexOf(planId);
+  if(planId==='enterprise') return Object.keys(CX.MODULES);
+  let set=new Set(CX.PLANS.basico.modulos);
+  for(let i=1;i<=idx;i++){ const m=CX.PLANS[order[i]].modulos;
+    if(m==='all'){return Object.keys(CX.MODULES);}
+    if(typeof m==='string'&&m[0]==='+'){ m.slice(1).split(',').forEach(x=>set.add(x)); }
+  }
+  return [...set];
+};
+CX.applyPlan = function(planId){
+  if(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority()) return {ok:false,authoritative:false,reason:'TENANT_PLAN_PROVIDER_REQUIRED'};
+  const mods=CX.planModules(planId), all=Object.keys(CX.MODULES), map={};
+  /* Módulos de administración/configuración: SIEMPRE disponibles para admin, independiente del plan */
+  const adminAlways=['cuestionarios','usuarios','config','automatizaciones','integraciones','correo','marca','clientes','proyectos','financiero','movimientos','liquidaciones','lotes','costos','crm','marketing','informes','soporte','tablon','documentos','aprendizaje','cert'];
+  all.forEach(id=>map[id]=mods.includes(id)||adminAlways.includes(id));
+  try{localStorage.setItem('cx_modules',JSON.stringify(map));localStorage.setItem('cx_plan',planId);}catch(e){}
+  CX.BRAND.plan=planId;
+  return {ok:true,authoritative:false,preferenceOnly:true};
+};
+
+/* ---------- Roles (for Usuarios module) ---------- */
+CX.ROLES = [
+  { id:'super',  label:'Super Admin',     desc:'Acceso total a toda la plataforma' },
+  { id:'admin',  label:'Equipo administrativo', desc:'Operación + finanzas' },
+  { id:'ops',    label:'Equipo operativo', desc:'Solo operación' },
+  { id:'coordinador', label:'Coordinador / Representante', desc:'Administra proyectos y HR de su(s) país(es) asignado(s)', scopeCountry:true },
+  { id:'aliado', label:'Aliado / Franquiciado', desc:'Opera proyectos regionales delegados · su país y sus shoppers', scopeCountry:true },
+  { id:'shopper',label:'Shopper / Evaluador', desc:'Portal móvil' },
+];
+
+/* Semilla de matriz de permisos (V95 reauditoría): roleCanAccess es fail-closed sin matriz,
+   así que los roles estándar (ops/coordinador/aliado) necesitan un default explícito desde
+   el arranque — no solo al visitar Usuarios & Permisos. Roles personalizados NO se siembran
+   aquí: exigen configuración explícita del admin (comportamiento fail-closed intencional).
+   BACKFILL, no skip-if-exists: si ya hay un cx_perm guardado (de una sesión anterior a que
+   existieran coordinador/aliado, por ejemplo), se completan SOLO las llaves de rol que falten
+   — nunca se sobre-escribe una personalización ya hecha por el admin en super/admin/ops/shopper. */
+(function _seedDefaultPerm(){
+  try{
+    if(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority()) return;
+    const DEFAULTS = {
+      super:['op','fin','prj','cap','cfg','sh','com'], admin:['op','fin','prj','cap','com'],
+      ops:['op','prj','cap'], coordinador:['op','prj','cap'], aliado:['op','prj','cap'], shopper:['sh','cap'],
+    };
+    let stored=null; try{ stored=JSON.parse(localStorage.getItem('cx_perm')||'null'); }catch(e){}
+    if(!stored){ localStorage.setItem('cx_perm', JSON.stringify(DEFAULTS)); }
+    else {
+      let changed=false;
+      Object.keys(DEFAULTS).forEach(role=>{ if(!stored[role]){ stored[role]=DEFAULTS[role]; changed=true; } });
+      if(changed) localStorage.setItem('cx_perm', JSON.stringify(stored));
+    }
+  }catch(e){}
+})();
+
+/* ---------- P0-3 (20260710): Personas operativas ----------
+   Taxonomía de PERSONA visible, separada del rol técnico (CX.ROLES) y del
+   scope. No son custom claims nuevos — cada persona se mapea a un rol
+   técnico + tipo de scope ya existentes; solo da un nombre de negocio
+   más preciso que el rol genérico al invitar/mostrar usuarios.
+   Modelo conceptual (referencia, no todo vive en localStorage):
+     persona (esta lista) · rolTecnico (CX.ROLES) · scope (paisIds/proyectoIds)
+     · tenantId (CX.BRAND.id) · projectIds · countryIds · permissionsVersion
+     · IDs opacos (u.id, no nombre) para todo cruce entre módulos.
+   ---------------------------------------------------------------- */
+CX.PERSONAS = [
+  { id:'tenantOwner',           label:'Dueño de tenant',            rol:'super', scope:'ninguno',  desc:'Dueño de la instancia/consultora completa' },
+  { id:'franchiseOwner',        label:'Dueño de franquicia',        rol:'aliado', scope:'pais',     desc:'Dueño de la operación delegada en su país' },
+  { id:'countryRepresentative', label:'Representante de país',      rol:'coordinador', scope:'pais', desc:'Representa y administra un país específico' },
+  { id:'operationsCoordinator', label:'Coordinador de operaciones', rol:'ops',   scope:'proyecto',   desc:'Coordina operación diaria a nivel proyecto' },
+  { id:'projectCoordinator',    label:'Coordinador de proyecto',    rol:'admin', scope:'proyecto',   desc:'Responsable de un proyecto/periodo específico' },
+  { id:'fieldRepresentative',   label:'Representante de campo',     rol:'ops',   scope:'pais',       desc:'Presencia operativa local · sucursales/visitas' },
+  { id:'financeOperator',       label:'Operador de finanzas',       rol:'admin', scope:'proyecto',   desc:'Liquidaciones, pagos, CxC/CxP — sin banco crudo' },
+  { id:'certificationOperator', label:'Operador de certificación',  rol:'admin', scope:'proyecto',   desc:'Gestiona certificaciones y carryover de shoppers' },
+  { id:'clientBrandAdmin',      label:'Admin de marca (cliente)',   rol:'cliente', scope:'proyecto', desc:'Portal del cliente con permisos de administración' },
+  { id:'clientBrandViewer',     label:'Visor de marca (cliente)',   rol:'cliente', scope:'proyecto', desc:'Portal del cliente solo lectura' },
+  { id:'shopperEvaluator',      label:'Shopper evaluador',          rol:'shopper', scope:'ninguno',  desc:'Evaluador de campo · solo su propio perfil/visitas' },
+];
+
+/* ---------- Firebase (optional) ----------
+   Leave blank to run fully on local mock data. Fill keys to connect
+   a real backend; the data layer auto-detects and switches.
+*/
+CX.FIREBASE = {
+  apiKey: '', authDomain: '', databaseURL: '', projectId: '', storageBucket: '', appId: ''
+};

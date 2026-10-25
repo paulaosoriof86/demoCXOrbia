@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "cxorbia.i3.d03.provider-failure-readonly.v1",
+  "state": "HOLD",
+  "task": "D03",
+  "runId": 39064166079,
+  "runNumber": 1768,
+  "classification": "PROVIDER_FAILURE",
+  "code": "AI_PROVIDER_HTTP_502",
+  "sourceSha": "a4434a1f223dd6da1468890c99db7339808c1cab",
+  "runtimeRevision": "cxorbia-live-hr-dev-00309-kvp",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/65d249a7779f270d",
+  "sourceAccess": "PASS_HTTP_200_EXACT_PDF_SHA",
+  "parser": "PASS_PDFJS_7_PAGES",
+  "providerWrites": 0,
+  "production": false,
+  "nextExactAction": "RUN1768 returned AI_PROVIDER_HTTP_502. Read sanitized Vertex runtime diagnostic logs in exact 19:51-19:53 UTC window with existing CI, no new provider calls; classify and correct exact failure."
+}

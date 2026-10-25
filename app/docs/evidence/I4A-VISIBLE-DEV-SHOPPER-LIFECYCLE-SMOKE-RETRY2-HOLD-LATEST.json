@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "cxorbia.i4a.visible-shopper-lifecycle-smoke-retry2.adjudicated.v1",
+  "syncEpoch": "CXORBIA-20260819-I4A-RETRY2-HARNESS-GLOBAL-GUARD-HOLD-24",
+  "generatedAt": "2026-08-19T11:34:00-06:00",
+  "gateId": "NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY2__STABLE_SURFACE_SELECTORS__NO_SW",
+  "preflightFailure": {"runId":32281707735,"providerAccess":false,"decision":"FAIL_SOURCE_TRUTH_SYNC","onlyError":"FRONTIER:RESUMEN-PARA-CLAUDE.md","correctedBeforeProvider":true},
+  "providerRun": {"workflowRunId":32282049566,"workflowCommitSha":"37531d8714488f3e384319e03a740b6e65e0a643","sourceHeadSha":"28851db0fa2cbce1769ece812164239dbe428b23","decision":"HOLD_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY2_PHASE_FAILURE","failurePhase":"auth"},
+  "checkpoints": {"page_ready":true,"firebase_user":true,"shopper_auth_context":true,"membership_verified":true,"app_entered":true,"hr_authority_ready":false},
+  "classification": "PIPELINE_MECHANISM_FAILURE__HARNESS_UNDECLARED_WINDOW_GLOBAL__NO_PRODUCT_DEFECT_PROVEN",
+  "rootCause": "The harness predicate referenced CX_PROTECTED_AUTH_HR_AUTHORITY as an undeclared identifier before the runtime created the window property. Optional chaining does not protect an undeclared identifier. The product runtime was not proven defective; the harness must use window.CX_PROTECTED_AUTH_HR_AUTHORITY and equivalent guarded window globals.",
+  "productDefectProven": false,
+  "safety": {"providerReads":1,"firestoreProviderReads":4,"authPasswordUpdates":1,"loginAttempts":1,"historicalShopperAccess":false,"otherIdentitiesModified":0,"authCreates":0,"authClaimsWrites":0,"authDeletes":0,"firestoreWrites":0,"postulationSubmits":0,"certificationSubmits":0,"reservationWrites":0,"hrWrites":0,"rulesWrites":0,"storageWrites":0,"makeCalls":0,"geminiCalls":0,"paymentWrites":0,"hostingDeploys":0,"cloudRunDeploys":0,"merge":false,"production":false,"credentialsExported":false},
+  "rawEvidence": "app/docs/evidence/I4A-VISIBLE-SMOKE-RETRY2-RUNTIME-OBSERVED.json",
+  "nextGate": "NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY3__SAFE_GLOBAL_GUARDS__STABLE_SURFACES",
+  "nextGateAuthorized": true,
+  "authorizationBasis": "Paula explicitly authorized proceeding and all necessary bounded correctives in the current turn to avoid repeated authorization loops."
+}

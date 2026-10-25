@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "gravicentra.cx.postprod.financial-architecture-lock.v1",
+  "id": "GRAVICENTRA-CX-POSTPROD-FINANCIAL-SETTLEMENTS-20260928",
+  "date": "2026-09-28",
+  "status": "FROZEN_POSTPRODUCTION_NON_BLOCKING_PHASE_A",
+  "productName": "Gravicentra CX",
+  "historicalTechnicalName": "CXOrbia",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "auditedProductSourceSha": "b168955f405cd82630a8caad04de0b1766b26fc8",
+  "auditedProductSourceTree": "7ee35f25dd6a1c1b6f6a562ed770e9ba80cceeeb",
+  "phasePlacement": "POST_PRODUCTION_PHASE_B_FINANCIAL_HARDENING",
+  "recoveryImpact": {
+    "createsI5": false,
+    "reopensI3": false,
+    "blocksI4": false,
+    "productionTouched": false,
+    "realPaymentsExecuted": false,
+    "fiscalAutomationActivated": false
+  },
+  "preserve": [
+    "shopperBenefits",
+    "paymentLots",
+    "financialMovements",
+    "reconciliations",
+    "Admin Finanzas",
+    "Liquidaciones",
+    "Shopper Mis Beneficios",
+    "entityAuditTrail"
+  ],
+  "canonicalEconomicRule": {
+    "separateComponents": [
+      "HONORARIUM",
+      "REIMBURSEMENT",
+      "AUTHORIZED_ADJUSTMENT"
+    ],
+    "oneTransferPerLiquidation": true
+  },
+  "documentAuthority": {
+    "financial": "Gravicentra CX backend/Firebase",
+    "binaryEvidence": "Gravicentra CX Storage after activation/certification",
+    "notAuthority": [
+      "WhatsApp",
+      "Drive",
+      "localStorage"
+    ]
+  },
+  "futureDisabledByDefault": [
+    "fiscal automation",
+    "SPECIAL_INVOICE",
+    "automatic withholding",
+    "NET_SHOPPER_GUARANTEED_GROSS_UP",
+    "real bank payment execution"
+  ],
+  "plannedBlocks": [
+    "B-FIN-0",
+    "B-FIN-1",
+    "B-FIN-2",
+    "B-FIN-3",
+    "B-FIN-4",
+    "B-FIN-5",
+    "B-FIN-6"
+  ],
+  "addendumFile": "ADDENDUM_POSTPRODUCCION_GRAVICENTRA_CX_2026-09-28_LIQUIDACIONES_PAGOS_FISCAL_FROZEN.md",
+  "addendumSha256": "585dde22769905c4a6af84eb99cbf3c14b4664dc3a5b4a702a5f21c1c25db391",
+  "production": false
+}

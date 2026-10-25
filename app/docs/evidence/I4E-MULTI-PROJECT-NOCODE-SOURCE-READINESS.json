@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "cxorbia.i4e.multi-project-nocode-source-readiness.v1",
+  "syncEpoch": "CXORBIA-20260819-I4E-REUSE-PASS-I4F-ACTIVE-36",
+  "generatedAt": "2026-08-19T17:37:00-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "decision": "PASS_I4E_MULTI_PROJECT_NO_CODE_REUSE_AND_CONTRACT_ALIGNMENT",
+  "existingImplementationReused": {
+    "projectWizard": "app/modules/proyecto-wizard.js",
+    "projectAdmin": "app/modules/proyectos.js",
+    "projectCertification": "app/modules/cert.js",
+    "projectDocuments": "app/modules/documentos.js",
+    "projectSchedulingReservations": "app/modules/reservas.js",
+    "operationalStateMachine": "backend/contracts/phase-a-operational-state-machine-v1.json",
+    "frontendRewriteRequired": false
+  },
+  "contractAlignment": {
+    "contract": "backend/contracts/phase-a-tenant-project-config-from-platform-v1.json",
+    "tenantProjectScopeRequired": true,
+    "countryCurrency": true,
+    "hrOriginAndMapping": true,
+    "questionnaireOriginAndLinkMode": true,
+    "documents": true,
+    "rules": true,
+    "certification": true,
+    "scheduling": true,
+    "rescheduling": true,
+    "cancellation": true,
+    "payments": true,
+    "integrations": true,
+    "cinepolisIsNormalConfigurableProject": true
+  },
+  "newWorkInThisBlock": {
+    "frontendModulesCreated": 0,
+    "frontendModulesModified": 0,
+    "backendContractAligned": 1,
+    "reason": "The no-code/multi-project UI and operational structures already existed. Only the backend project configuration contract was stale/incomplete against the current Phase A master requirements."
+  },
+  "safety": {
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "authWrites": 0,
+    "storageWrites": 0,
+    "paymentExecution": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false
+  },
+  "nextFrontier": "I4F_ACADEMIA_PHASE_A_ALIGNMENT_REUSE_AUDIT"
+}

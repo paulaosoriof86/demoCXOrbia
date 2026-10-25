@@ -1,0 +1,126 @@
+{
+  "contractId": "tya-phase-a-core-operations-shopper-release-slice-v1",
+  "schemaVersion": "1.0.0",
+  "tenantId": "tya",
+  "releaseStrategy": "core_operations_and_shopper_first",
+  "purpose": "Permit an initial Phase A production decision for Admin/Operations and Shopper without allowing the Client portal to keep blocking the operational cutover.",
+  "requiredPersonas": [
+    "admin_operations",
+    "shopper"
+  ],
+  "deferredPersona": {
+    "id": "client",
+    "blocksInitialCutover": false,
+    "reason": "Client portal is valuable but not required to begin live HR, visit, application and shopper operations. It remains a parallel release slice and cannot be represented as complete until separately validated."
+  },
+  "requiredOperationalCapabilities": [
+    {
+      "id": "live_hr_roadmap",
+      "modules": ["dashboard", "historico", "periodos"],
+      "criteria": [
+        "live HR authority is dynamic",
+        "current and historical periods remain visible",
+        "visit identities are stable and deduplicated",
+        "no frozen visit count or month invariant"
+      ]
+    },
+    {
+      "id": "visit_operations",
+      "modules": ["visitas", "reservas"],
+      "criteria": [
+        "visits are listed from the canonical source",
+        "available visits and assigned visits are separated correctly",
+        "reservation or assignment mutations remain fail-closed unless their canonical write path is authorized",
+        "reload and new-tab context remain stable"
+      ]
+    },
+    {
+      "id": "applications",
+      "modules": ["postulaciones"],
+      "criteria": [
+        "applications list and application detail are usable",
+        "approval, rejection and standby controls are observable",
+        "no duplicate assignment is created",
+        "role and project scope remain effective"
+      ]
+    },
+    {
+      "id": "shopper_management",
+      "modules": ["shoppers", "miperfil", "misvisitas", "visitas", "reservas", "aprendizaje", "cert", "mireportes"],
+      "criteria": [
+        "exact shopper identity is used",
+        "historical visits and certifications remain visible",
+        "available visits, own visits and profile are consistent",
+        "sensitive fields remain masked or permission-gated",
+        "three reloads and a new tab preserve context"
+      ]
+    },
+    {
+      "id": "operational_dashboard",
+      "modules": ["dashboard", "midia"],
+      "criteria": [
+        "KPIs reconcile with the same visit authority",
+        "current period is derived from live HR",
+        "no invented values or demo fallback in connected mode"
+      ]
+    },
+    {
+      "id": "finance_phase_a",
+      "modules": ["financiero", "movimientos", "liquidaciones", "lotes", "mireportes", "beneficios"],
+      "criteria": [
+        "delegated coordination model remains configured by project",
+        "royalty and income values are not invented",
+        "June settlement/payment status and prior paid history remain source-backed",
+        "payment execution remains outside this release unless separately authorized"
+      ]
+    }
+  ],
+  "requiredInPlatformScenarioProfiles": [
+    "CORE_OPERATIONS_ADMIN",
+    "SHOPPER_FULL_CYCLE",
+    "CROSS_MODULE_CONSISTENCY",
+    "RELOAD_NEW_TAB_STABILITY",
+    "EXPORTS_AND_VISIBLE_EVIDENCE"
+  ],
+  "scenarioDataPolicy": {
+    "environment": "DEV",
+    "prefix": "AUDIT-",
+    "realisticButSynthetic": true,
+    "createdThroughVisibleProductFlows": true,
+    "directCodeInsertionAsNormalOperation": false,
+    "preFingerprintRequired": true,
+    "postFingerprintRequired": true,
+    "exactCleanupRequired": true,
+    "baselineRestoredAfterCleanupRequired": true,
+    "productionDataUse": false,
+    "legacyDatabaseConnection": false
+  },
+  "releaseBlockingP0": [
+    "application does not start",
+    "Admin/Operations or Shopper cannot authenticate with an authorized identity",
+    "live HR authority is unavailable or materially inconsistent",
+    "essential route is missing",
+    "critical data loss, corruption or cross-tenant leakage",
+    "secret or sensitive information exposure",
+    "unapproved provider write or deploy",
+    "Phase A operational flow cannot be completed"
+  ],
+  "nonBlockingForInitialCutover": [
+    "Client portal not yet validated",
+    "navigation highlight delay when route and view are valid",
+    "PDF chart omission",
+    "basic Excel formatting",
+    "noncritical responsive P1 or P2",
+    "documentation telemetry delay"
+  ],
+  "releaseDecisionRule": "Initial production can be proposed only after the core Admin/Operations and Shopper slice passes source/static, unified read-only runtime, controlled in-platform scenario tests with exact cleanup, and human visual checkpoint. Client remains explicitly deferred and cannot silently broaden the release scope.",
+  "safety": {
+    "deploy": false,
+    "merge": false,
+    "production": false,
+    "providerWritesAuthorizedByThisContract": false,
+    "paymentsAuthorized": false,
+    "makeAuthorized": false,
+    "geminiAuthorized": false
+  }
+}

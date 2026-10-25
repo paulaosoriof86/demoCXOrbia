@@ -1,0 +1,145 @@
+{
+  "contractId": "phase-a-runtime-dev-go-request-gate-v1",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "mode": "request_gate_only_no_runtime_switch",
+  "createdAt": "2026-07-09",
+  "purpose": "Definir el gate previo a solicitar GO explicito de Paula para runtime DEV preview, sin activar runtime, writes, imports, deploy, HR writes, Make/Gemini ni pagos reales.",
+  "requestPrinciples": {
+    "requestOnly": true,
+    "runtimeSwitchAllowedByThisGate": false,
+    "paulaExplicitGoRequired": true,
+    "goCannotBeInferredFromGreenValidators": true,
+    "allPriorGatesMustBeClean": true,
+    "doNotRepeatLevel0Level1": true,
+    "noSyntheticFixtureAsRealEvidence": true,
+    "noDerivedTmpOutputAsOriginalEvidence": true,
+    "noProtectedUiChangesFromBackend": true,
+    "noWritesBeforeRuntimeSwitchGate": true,
+    "rollbackPlanRequired": true,
+    "manualSmokeRequiredAfterDevRuntimeOnly": true
+  },
+  "requiredBeforeRequest": [
+    {
+      "checkId": "accumulated_readiness_gate_present",
+      "file": "backend/contracts/phase-a-accumulated-readiness-gate-v1.json",
+      "validator": "tools/contracts/tya-phase-a-accumulated-readiness-gate.mjs",
+      "required": true
+    },
+    {
+      "checkId": "operational_continuity_gate_present",
+      "file": "backend/contracts/phase-a-operational-continuity-gate-v1.json",
+      "validator": "tools/contracts/tya-phase-a-operational-continuity-gate.mjs",
+      "required": true
+    },
+    {
+      "checkId": "state_machine_present",
+      "file": "backend/contracts/phase-a-operational-state-machine-v1.json",
+      "validator": "tools/contracts/tya-phase-a-operational-state-machine-validate.mjs",
+      "required": true
+    },
+    {
+      "checkId": "admin_actions_audit_present",
+      "file": "backend/contracts/phase-a-admin-actions-audit-contract-v1.json",
+      "validator": "tools/contracts/tya-phase-a-admin-actions-audit-validate.mjs",
+      "required": true
+    },
+    {
+      "checkId": "operational_queues_present",
+      "file": "backend/contracts/phase-a-operational-queues-contract-v1.json",
+      "validator": "tools/contracts/tya-phase-a-operational-queues-validate.mjs",
+      "required": true
+    },
+    {
+      "checkId": "realdata_preview_preflight_present",
+      "file": "app/docs/CHECKPOINT-OPERATIVO-REALDATA-PREVIEW-TYA-20260709.md",
+      "validator": "tools/contracts/tya-local-realdata-preview-preflight.mjs",
+      "required": true
+    },
+    {
+      "checkId": "runtime_gonogo_validator_present",
+      "file": null,
+      "validator": "tools/contracts/tya-runtime-dev-preview-go-nogo-validate.mjs",
+      "required": true
+    },
+    {
+      "checkId": "rollback_smoke_plan_present",
+      "file": null,
+      "validator": "tools/contracts/tya-runtime-switch-rollback-smoke-plan.mjs",
+      "required": false,
+      "fallbackAllowed": "documented_rollback_smoke_validation_from_preflight"
+    },
+    {
+      "checkId": "claude_addendum_present",
+      "file": "app/docs/CLAUDE-PROTOTIPO-ADDENDUM-PHASE-A-OPERATIVO-AUDITABLE-TYA-20260709.md",
+      "validator": null,
+      "required": true
+    },
+    {
+      "checkId": "prototype_pending_present",
+      "file": "app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-PHASE-A-COLAS-AUDITABLES-TYA-20260709.md",
+      "validator": null,
+      "required": true
+    }
+  ],
+  "mustRemainFalseBeforeRequest": {
+    "runtimeConnected": false,
+    "firestoreWrites": false,
+    "hrWrites": false,
+    "importsExecuted": false,
+    "deploy": false,
+    "production": false,
+    "makeWebhookLive": false,
+    "geminiLive": false,
+    "paymentProviderLive": false,
+    "realPayments": false,
+    "rawSensitiveDataInRepo": false,
+    "protectedUiFilesModifiedByBackend": false
+  },
+  "requestOutputsExpected": [
+    "clear summary of clean gates",
+    "explicit list of remaining blocks",
+    "safe state confirmation",
+    "rollback plan reference",
+    "manual smoke checklist reference",
+    "exact wording asking Paula for GO",
+    "statement that no runtime switch occurs automatically"
+  ],
+  "paulaGoPhraseRequired": "Autorizo GO runtime DEV preview Phase A TyA",
+  "hardStops": [
+    "missingAccumulatedReadinessGate",
+    "missingOperationalContract",
+    "missingRuntimeGoNoGoValidator",
+    "level0Level1ReopenedWithoutCause",
+    "syntheticFixtureEvidence",
+    "derivedTmpEvidence",
+    "rawSensitiveData",
+    "protectedUiModuleChange",
+    "runtimeAlreadyConnected",
+    "writesAlreadyEnabled",
+    "missingRollbackPlan",
+    "missingManualSmokeChecklist",
+    "paulaGoMissing",
+    "paulaGoAmbiguous"
+  ],
+  "allowedVerdicts": [
+    "NO_GO_RUNTIME_DEV_REQUEST_BLOCKED",
+    "READY_TO_ASK_PAULA_GO_NO_RUNTIME_SWITCH",
+    "PAULA_GO_RECORDED_READY_FOR_SEPARATE_RUNTIME_SWITCH_PR"
+  ],
+  "safeStateExpected": {
+    "runtimeConnected": false,
+    "firestoreWrites": false,
+    "hrWrites": false,
+    "importsExecuted": false,
+    "deploy": false,
+    "production": false,
+    "makeWebhookLive": false,
+    "geminiLive": false,
+    "paymentProviderLive": false,
+    "realPayments": false,
+    "rawSensitiveDataInRepo": false,
+    "uiModulesModified": false,
+    "appCoreModified": false
+  }
+}

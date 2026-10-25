@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "cxorbia.i3.human-visual-rejection-lock.v1",
+  "frozenAt": "2026-10-03T21:03:00Z",
+  "status": "FROZEN_HOLD_HUMAN_VISUAL_REJECTION_P0_REMEDIATION_REQUIRED",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "production": "DO_NOT_TOUCH",
+  "productSourceSha": "c5c4d002ab783391f915eaf7f41d69dc1005f215",
+  "productTree": "7909233675f6bed3021f90810edb3d1c696aaf2b",
+  "rejectedCheckpoint": {
+    "runtimeRevision": "cxorbia-live-hr-dev-00257-7rh",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/e5adfc75a24a3717",
+    "priorReadbackRunId": 37151968414
+  },
+  "frozenFindings": {
+    "new": [
+      "VRM-196",
+      "VRM-197"
+    ],
+    "reopened": [
+      "VRM-092",
+      "VRM-128",
+      "VRM-134",
+      "VRM-165",
+      "VRM-167",
+      "VRM-170",
+      "VRM-171",
+      "VRM-174",
+      "VRM-175",
+      "VRM-178"
+    ]
+  },
+  "userTruth": {
+    "sameHumanIdentity": [
+      "Julissa Flores",
+      "Julissa Illescas"
+    ],
+    "academyRequirement": "distinct solid colors by course; no repeated blue and no gradients",
+    "financeTruth": "historical payments confirmed by Paula must project as paid; rows older than the confirmed-paid cutoff may not remain pending without explicit contrary evidence"
+  },
+  "antiLoop": {
+    "newBranch": false,
+    "newCandidateParallel": false,
+    "overlay": false,
+    "reimport": false,
+    "generalAudit": false,
+    "rebuildBeforeSourceProof": false,
+    "productionTouched": false
+  },
+  "nextAction": "Do not rebuild or redeploy yet. Execute one bounded forensic/remediation block inside I3 against the proven owners already identified: canonical shopper identity across all shopper surfaces (including Julissa), Admin identity adjudication/merge discoverability, Postulaciones count/lifecycle coherence, instructive-certification-scheduling progression, durable payment projection, and the rejected Mi Perfil/Academia visual language. Reuse the same cumulative candidate lineage; no new branch, overlay, reimport or general audit. After source proofs, materialize one cumulative DEV candidate and repeat representative Admin + at least three shopper identities including Julissa, Priscila and Paula before asking for visual approval again.",
+  "changePolicy": "Frozen; supersede only with later explicit evidence."
+}

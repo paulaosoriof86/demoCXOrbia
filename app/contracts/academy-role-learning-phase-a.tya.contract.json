@@ -1,0 +1,229 @@
+{
+  "contract": "academy-role-learning-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A plus Phase B continuity",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "authRealAllowed": false,
+  "geminiRealAllowed": false,
+  "storageRealAllowed": false,
+  "purpose": "Define role-based Academy learning routes, onboarding, self-training, training requests and commercial education requirements without changing frontend runtime.",
+  "principles": [
+    "Academy is a strategic module, not a superficial help page.",
+    "Every role must understand what the platform does, how to operate it, why it saves time and what value it adds.",
+    "Training must be role-based and module-aware.",
+    "The platform should reduce the need for long manual onboarding, while still allowing users to request live training by topic.",
+    "Academy content must support internal operations, shoppers, consultants/franchisees/partners and final clients.",
+    "Academy must also support commercial education and cross-sell of additional modules, services, integrations and packages."
+  ],
+  "canonicalRoles": {
+    "super": {
+      "label": "Superadmin",
+      "routeType": "full_platform_governance",
+      "mustLearn": [
+        "platform_value_proposition",
+        "mystery_shopping_business_context",
+        "tenant_project_setup",
+        "users_roles_permissions",
+        "project_wizard",
+        "hr_source",
+        "shoppers",
+        "postulations_assignments",
+        "visits_scheduling_rescheduling_cancellations",
+        "certifications",
+        "questionnaires",
+        "admin_review_submitido",
+        "liquidations_payments",
+        "client_portal",
+        "reports_dashboard",
+        "notifications_automations",
+        "integrations_gates",
+        "academy_management",
+        "commercial_packages"
+      ]
+    },
+    "admin": {
+      "label": "Administrador",
+      "routeType": "administrative_operations",
+      "mustLearn": [
+        "platform_value_proposition",
+        "mystery_shopping_business_context",
+        "project_operations",
+        "hr_source_reading",
+        "shopper_management",
+        "postulations_assignments",
+        "visits_flow",
+        "certifications",
+        "questionnaire_flow",
+        "review_submitido",
+        "liquidations_payments",
+        "client_followup",
+        "notifications_automations",
+        "support_escalation"
+      ]
+    },
+    "ops": {
+      "label": "Operativo / Coordinador",
+      "routeType": "field_operations_execution",
+      "mustLearn": [
+        "mystery_shopping_basics",
+        "hr_route_sheet_concepts",
+        "available_visits",
+        "shopper_postulations",
+        "assignment_rules",
+        "scheduling_rules",
+        "reschedule_cancel_rules",
+        "notifications_templates",
+        "questionnaire_status",
+        "evidence_followup",
+        "admin_review_status",
+        "conflicts_and_escalation",
+        "client_followup"
+      ]
+    },
+    "shopper": {
+      "label": "Shopper",
+      "routeType": "shopper_professionalization",
+      "mustLearn": [
+        "what_is_mystery_shopping",
+        "shopper_role_ethics",
+        "scenario_meaning",
+        "route_sheet_and_visit_assignment",
+        "how_to_apply_to_visits",
+        "how_to_schedule",
+        "how_to_reschedule_or_cancel",
+        "how_to_perform_visit",
+        "evidence_rules",
+        "questionnaire_detail_quality",
+        "how_to_mark_questionnaire_completed",
+        "common_mistakes",
+        "payments_and_benefits",
+        "professional_growth"
+      ]
+    },
+    "client": {
+      "label": "Cliente final",
+      "routeType": "client_value_and_reporting",
+      "mustLearn": [
+        "platform_value_for_client",
+        "how_to_read_dashboard",
+        "how_to_read_reports",
+        "visit_statuses",
+        "evidence_and_findings",
+        "service_requests",
+        "additional_services",
+        "integrations_and_automations_value",
+        "support_and_training_request"
+      ]
+    },
+    "consultant_partner": {
+      "label": "Consultora / representante / franquiciado / aliado / socio",
+      "routeType": "business_operation_and_commercial_growth",
+      "mustLearn": [
+        "consulting_business_model",
+        "franchise_or_representative_model",
+        "project_setup_and_delivery",
+        "client_onboarding",
+        "operations_management",
+        "shopper_network_management",
+        "quality_control",
+        "commercial_packages",
+        "cross_sell_and_upsell",
+        "automation_and_integrations_packages",
+        "academy_for_their_teams_and_clients"
+      ]
+    }
+  },
+  "academyEntities": {
+    "learningPaths": "tenants/{tenantId}/academy/learningPaths/{pathId}",
+    "learningModules": "tenants/{tenantId}/academy/modules/{moduleId}",
+    "lessons": "tenants/{tenantId}/academy/lessons/{lessonId}",
+    "roleAssignments": "tenants/{tenantId}/academy/roleAssignments/{assignmentId}",
+    "progress": "tenants/{tenantId}/academy/progress/{progressId}",
+    "trainingRequests": "tenants/{tenantId}/academy/trainingRequests/{requestId}",
+    "commercialTopics": "tenants/{tenantId}/academy/commercialTopics/{topicId}",
+    "knowledgeGlossary": "tenants/{tenantId}/academy/glossary/{termId}"
+  },
+  "requiredLearningContentDepth": {
+    "perModule": [
+      "what_it_is",
+      "who_uses_it",
+      "why_it_matters",
+      "business_value",
+      "step_by_step_operation",
+      "buttons_and_actions",
+      "data_inputs_outputs",
+      "common_mistakes",
+      "quality_criteria",
+      "related_modules",
+      "when_to_request_help",
+      "commercial_value_or_upsell_if_applicable"
+    ],
+    "perLesson": [
+      "objective",
+      "context",
+      "steps",
+      "examples",
+      "expected_result",
+      "validation_checklist",
+      "frequent_errors",
+      "support_or_training_request_cta"
+    ]
+  },
+  "trainingRequest": {
+    "requiredFields": [
+      "tenantId",
+      "requestId",
+      "userId",
+      "role",
+      "topicId",
+      "topicLabel",
+      "priority",
+      "requestedAt",
+      "status"
+    ],
+    "optionalFields": [
+      "projectId",
+      "moduleId",
+      "preferredDate",
+      "notes",
+      "contactChannel",
+      "assignedTrainerId",
+      "resolvedAt",
+      "followUpRequired"
+    ],
+    "statuses": [
+      "requested",
+      "scheduled",
+      "in_progress",
+      "completed",
+      "cancelled",
+      "needs_follow_up"
+    ]
+  },
+  "phasePriority": {
+    "phaseA": [
+      "shopper onboarding and certification route",
+      "ops/admin operational route for postulations, assignments, visits, review and payments",
+      "client basic dashboard/reporting route",
+      "training request feature documented and prepared"
+    ],
+    "phaseB": [
+      "full commercial package education",
+      "advanced consultant/franchisee route",
+      "academy analytics",
+      "AI-assisted content draft with human review",
+      "full in-app guided tours by module"
+    ]
+  },
+  "hardStops": [
+    "Do not activate Gemini real for Academy content without human review.",
+    "Do not write Firestore from this contract.",
+    "Do not require all roles to see all training content; filter by role and permissions.",
+    "Do not turn Academy into generic static help only.",
+    "Do not mix insurance/Orbit business logic into CXOrbia Academy unless explicitly authorized."
+  ]
+}

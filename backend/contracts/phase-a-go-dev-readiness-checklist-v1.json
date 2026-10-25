@@ -1,0 +1,76 @@
+{
+  "contractId": "phase-a-go-dev-readiness-checklist-v1",
+  "project": "CXOrbia TyA",
+  "date": "2026-07-09",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pr": 7,
+  "status": "documented_only",
+  "purpose": "Define the minimum readiness checklist before asking Paula for explicit GO DEV to connect the clean backend path.",
+  "lane": "D_GO_DEV_backend_real",
+  "currentSafeState": {
+    "runtimeActive": false,
+    "devConnectionActive": false,
+    "imports": false,
+    "writes": false,
+    "hrWrites": false,
+    "providerLive": false,
+    "payments": false,
+    "deploy": false,
+    "production": false,
+    "sensitiveDataInRepo": false
+  },
+  "doNotReopen": [
+    "cx_data_adapter_plan",
+    "domain_mapping_source_safe",
+    "readiness_pack",
+    "builder_future_command",
+    "smoke_precheck",
+    "go_nogo_pack",
+    "dev_conditions",
+    "rollback_audit",
+    "review_queue_conflicts"
+  ],
+  "requiredBeforeGoDev": [
+    "pr_7_state_confirmed_open_draft_no_merge",
+    "human_smoke_or_equivalent_evidence_available_if_needed",
+    "clean_database_target_confirmed",
+    "secrets_out_of_repo_plan_confirmed",
+    "single_cx_data_switch_point_confirmed",
+    "adapter_interface_compatibility_confirmed",
+    "source_safe_tya_input_path_confirmed",
+    "dry_run_import_plan_confirmed",
+    "review_queue_and_audit_plan_confirmed",
+    "rollback_disable_path_confirmed",
+    "claude_copy_pending_documented",
+    "academia_impact_documented",
+    "go_dev_explicit_from_paula"
+  ],
+  "hardStops": [
+    "old_database_dependency",
+    "missing_clean_database",
+    "missing_single_cx_data_switch",
+    "unreviewed_sensitive_payload",
+    "demo_data_as_final_source",
+    "silent_conflict_resolution",
+    "frontend_module_rewrite_required",
+    "make_gemini_storage_auth_live_without_gate",
+    "production_or_deploy_requested_as_dev_go"
+  ],
+  "allowedAfterGoDevOnly": [
+    "create_clean_dev_backend_resources",
+    "wire_adapter_in_controlled_dev_mode",
+    "run_source_safe_dry_run_import",
+    "write_dev_only_test_records_if_gate_allows",
+    "register_audit_events",
+    "populate_review_queue_dev_only"
+  ],
+  "notAllowedEvenWithGoDev": [
+    "production_deploy",
+    "real_payments",
+    "copy_old_database",
+    "commit_raw_sensitive_data",
+    "silent_hr_overwrite",
+    "hardcode_cinepolis_as_global_logic"
+  ]
+}

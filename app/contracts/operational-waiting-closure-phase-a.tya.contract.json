@@ -1,0 +1,43 @@
+{
+  "contract": "operational-waiting-closure-phase-a-tya",
+  "date": "2026-07-05",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "storageWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "emailSendAllowed": false,
+  "whatsappSendAllowed": false,
+  "geminiAllowed": false,
+  "importRealDataAllowed": false,
+  "deployAllowed": false,
+  "mergeAllowed": false,
+  "safeWhileWaiting": [
+    "documentation_indexing",
+    "contract_review",
+    "local_preview_readiness",
+    "synthetic_fixture_review",
+    "decision_templates",
+    "continuity_updates"
+  ],
+  "doNotTouch": [
+    "frontend_modules_without_claude_candidate",
+    "app_core_without_explicit_reason",
+    "production_gates",
+    "firebase_config",
+    "real_imports",
+    "real_provider_calls",
+    "payments"
+  ],
+  "requestPaulaWhen": [
+    "new_claude_zip_available",
+    "local_repo_execution_needed",
+    "real_credentials_or_provider_config_needed",
+    "production_decision_requested",
+    "ambiguous_business_rule_not_documented"
+  ],
+  "purpose": "Define what can continue safely while waiting for Claude or local execution, and what must remain blocked."
+}

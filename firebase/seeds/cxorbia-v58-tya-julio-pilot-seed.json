@@ -1,0 +1,119 @@
+{
+  "seedId": "cxorbia-v58-julio-pilot-ficticio",
+  "seedType": "dev-no-real-data",
+  "tenantId": "tya",
+  "documents": [
+    {
+      "path": "tenants/tya",
+      "data": {
+        "tenantId": "tya",
+        "name": "TyA DEV",
+        "status": "dev-active",
+        "createdAt": "2026-07-01T00:00:00.000Z",
+        "updatedAt": "2026-07-01T00:00:00.000Z"
+      }
+    },
+    {
+      "path": "tenants/tya/projects/julio-pilot",
+      "data": {
+        "projectId": "julio-pilot",
+        "tenantId": "tya",
+        "name": "Proyecto Julio Pilot Ficticio",
+        "clientId": "cliente-pilot",
+        "status": "dev-active",
+        "countries": ["GT", "HN"],
+        "currencies": { "GT": "GTQ", "HN": "HNL" },
+        "activePeriodId": "2026-07",
+        "restrictions": {
+          "requiresTimeBand": true,
+          "requiresProposedDate": true,
+          "requiresAdminApprovalForApplication": true,
+          "requiresAdminApprovalForDate": true
+        },
+        "createdAt": "2026-07-01T00:00:00.000Z",
+        "updatedAt": "2026-07-01T00:00:00.000Z"
+      }
+    },
+    {
+      "path": "tenants/tya/projects/julio-pilot/periods/2026-07",
+      "data": {
+        "periodId": "2026-07",
+        "projectId": "julio-pilot",
+        "tenantId": "tya",
+        "label": "Julio 2026",
+        "year": 2026,
+        "month": 7,
+        "countries": ["GT", "HN"],
+        "status": "dev-open",
+        "hrSources": [
+          { "country": "GT", "sourceType": "pending-real-hr", "status": "not-loaded" },
+          { "country": "HN", "sourceType": "pending-real-hr", "status": "not-loaded" }
+        ],
+        "createdAt": "2026-07-01T00:00:00.000Z",
+        "updatedAt": "2026-07-01T00:00:00.000Z"
+      }
+    },
+    {
+      "path": "tenants/tya/projects/julio-pilot/visits/visit-lab-001",
+      "data": {
+        "visitId": "visit-lab-001",
+        "projectId": "julio-pilot",
+        "periodId": "2026-07",
+        "country": "GT",
+        "branchId": "branch-lab-001",
+        "hrRef": { "importId": "hr-lab", "rowId": "row-lab-001" },
+        "status": "disponible",
+        "quincena": 1,
+        "franja": "WK",
+        "availableFrom": "2026-07-01",
+        "scenario": "Visita piloto ficticia",
+        "fee": { "amount": 60, "currency": "GTQ" },
+        "reimbursements": [],
+        "responsibleUid": "admin-tya-dev",
+        "lastManagedBy": "admin-tya-dev",
+        "createdAt": "2026-07-01T00:00:00.000Z",
+        "updatedAt": "2026-07-01T00:00:00.000Z"
+      }
+    },
+    {
+      "path": "tenants/tya/projects/julio-pilot/applications/app-lab-001",
+      "data": {
+        "applicationId": "app-lab-001",
+        "visitId": "visit-lab-001",
+        "shopperId": "shopper-lab-001",
+        "status": "pendiente",
+        "proposedDate": "2026-07-05",
+        "proposedTimeBand": "tarde",
+        "reason": "Postulacion piloto ficticia",
+        "responsibleUid": "admin-tya-dev",
+        "createdAt": "2026-07-01T00:00:00.000Z",
+        "updatedAt": "2026-07-01T00:00:00.000Z"
+      }
+    },
+    {
+      "path": "tenants/tya/shoppers/shopper-lab-001",
+      "data": {
+        "shopperId": "shopper-lab-001",
+        "tenantId": "tya",
+        "name": "Shopper Lab 001",
+        "countries": ["GT"],
+        "cities": ["Ciudad Lab"],
+        "status": "dev-active",
+        "score": 90,
+        "stats": { "completedVisits": 0, "onTimeRate": 1, "qualityRate": 1 },
+        "createdAt": "2026-07-01T00:00:00.000Z",
+        "updatedAt": "2026-07-01T00:00:00.000Z"
+      }
+    },
+    {
+      "path": "tenants/tya/shopperStats/shopper-lab-001",
+      "data": {
+        "shopperId": "shopper-lab-001",
+        "score": 90,
+        "criteria": { "punctuality": 30, "questionnaireTime": 25, "quality": 25, "reliability": 20 },
+        "history": [],
+        "updatedAt": "2026-07-01T00:00:00.000Z"
+      }
+    }
+  ]
+}

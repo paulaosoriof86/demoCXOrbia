@@ -1,0 +1,182 @@
+{
+  "schemaVersion": "cxorbia.i3.b1.human-fail.v1",
+  "receiptId": "CXORBIA-I3-B1-HUMAN-FAIL-20261006",
+  "observedLocalAt": "2026-10-06T19:42:00-06:00",
+  "timezone": "America/Guatemala",
+  "iteration": "I3",
+  "block": "B1",
+  "decision": "FAIL",
+  "currentProductSourceSha": "6232caedfcfd1e0136b5ece5f55bfaa0c1b3934a",
+  "currentProductTree": "5ab902bad55e52ef3a06953fbe27eeb70c263fc6",
+  "technicalEvidence": {
+    "sourceProof": {
+      "runId": 37531710035,
+      "runNumber": 1275,
+      "decision": "PASS_B1_CANONICAL_VISIBLE_IDENTITY_SOURCE_PROOF"
+    },
+    "devMaterialization": {
+      "runId": 37536234515,
+      "runNumber": 1278,
+      "decision": "PASS_B1_EXACT_DEV_HOSTING_MATERIALIZATION"
+    },
+    "representativeRun": {
+      "runId": 37536774581,
+      "runNumber": 1280,
+      "scope": "REPRESENTATIVE_READ_ONLY_NOT_ACTION_E2E",
+      "overclaimCorrected": true
+    }
+  },
+  "findings": [
+    {
+      "id": "B1-HF-01",
+      "classification": "FUNCTIONAL_DEFECT",
+      "existingAuthority": [
+        "OBS-09",
+        "OBS-10",
+        "VRM-144",
+        "VRM-165"
+      ],
+      "scope": "B1",
+      "owner": [
+        "app/modules/midia.js"
+      ],
+      "proof": "Mi Día Agendar/Instructivo/Reprogramar all render data-cgo=misvisitas and the generic binder only calls router.nav(), so three distinct actions collapse to one navigation for every shopper.",
+      "action": "Replace navigation-only placeholders with state-aware action handoff/reuse of canonical Mis Visitas action owner; no duplicate business logic."
+    },
+    {
+      "id": "B1-HF-02",
+      "classification": "FUNCTIONAL_DEFECT",
+      "existingAuthority": [
+        "OBS-11",
+        "VRM-125",
+        "VRM-168"
+      ],
+      "scope": "B3_RETAINED_BLOCKS_B1_ACCEPTANCE",
+      "owner": [
+        "app/modules/misvisitas.js",
+        "app/modules/documentos.js",
+        "app/core/backend-resources.js"
+      ],
+      "proof": "Instructivo lookup reads backendResources.list synchronously; when cache is not ready it returns no document and routes to Recursos. Reading is only persisted by the explicit 'Confirmo que lo he leído' ACK flow inside Mis Visitas; merely opening/closing Recursos cannot set instructiveReadAt. Julissa Agendar stays disabled while instructiveReadAt/cert state is incomplete.",
+      "action": "Make resource readiness deterministic, expose explicit read-ACK path, and real action E2E across representative shoppers."
+    },
+    {
+      "id": "B1-HF-03",
+      "classification": "FUNCTIONAL_DEFECT",
+      "existingAuthority": [
+        "OBS-11",
+        "VRM-168"
+      ],
+      "scope": "B3_RETAINED_BLOCKS_B1_ACCEPTANCE",
+      "owner": [
+        "app/modules/misvisitas.js",
+        "app/modules/midia.js"
+      ],
+      "proof": "Scheduled state in Mis Visitas exposes Marcar realizada immediately and Mi Día does not show scheduled date nor switch its primary action by state. HR/platform scheduled date must be visible and Agendar must not remain the primary action once scheduled.",
+      "action": "Derive state/date from canonical visit facets; show scheduled date; use Reprogramar as applicable action; gate 'Visita realizada' by configured execution window/date rather than merely scheduled status."
+    },
+    {
+      "id": "B1-HF-04",
+      "classification": "FUNCTIONAL_DEFECT",
+      "existingAuthority": [
+        "OBS-14",
+        "OBS-15",
+        "VRM-036",
+        "VRM-171"
+      ],
+      "scope": "B4_RETAINED",
+      "owner": [
+        "app/modules/cert.js",
+        "app/data/tya-certification-carryover-source-safe.js"
+      ],
+      "proof": "Julissa renders historical carryover as vigente while Priscila renders no published bank/no validated certification. This may be identity-specific evidence, but the UI wording and authority must be proven per shopper/project; no global Julissa assumption is allowed.",
+      "action": "Reprove carryover and bank authority for multiple shoppers, including Priscila, before declaring cross-shopper certification behavior."
+    },
+    {
+      "id": "B1-HF-05",
+      "classification": "VISUAL_DEFECT",
+      "existingAuthority": [
+        "OBS-18",
+        "OBS-19",
+        "OBS-20",
+        "VRM-165",
+        "VRM-174"
+      ],
+      "scope": "B5_RETAINED",
+      "owner": [
+        "app/modules/beneficios.js"
+      ],
+      "proof": "Human checkpoint still shows weak hierarchy versus approved direction; historical rows are static and not drillable; deterministic oldest-to-newest ordering is not explicitly enforced.",
+      "action": "Recover approved benefits hierarchy, deterministic chronological ordering, and row detail drilldown."
+    },
+    {
+      "id": "B1-HF-06",
+      "classification": "FUNCTIONAL_DEFECT",
+      "existingAuthority": [
+        "OBS-41",
+        "VRM-151",
+        "VRM-174"
+      ],
+      "scope": "B5_B8_RETAINED",
+      "owner": [
+        "app/modules/beneficios.js",
+        "app/adapters/tya-canonical-finance-read-model-v2.js",
+        "app/adapters/tya-financial-canonical-source-safe-adapter.js"
+      ],
+      "proof": "Human evidence shows rows at or before July 2026 still rendered pending/pendiente submitir and August 2026 pending, contradicting frozen historical financial cut.",
+      "action": "Apply frozen historical cut only from durable evidence; through Jul paid/conciled, Aug paid 2026-10-02, Sep only proven paid subset, Oct+ live."
+    },
+    {
+      "id": "B1-HF-07",
+      "classification": "VISUAL_DEFECT",
+      "existingAuthority": [
+        "OBS-05",
+        "OBS-06",
+        "OBS-23",
+        "VRM-054",
+        "VRM-099",
+        "VRM-165"
+      ],
+      "scope": "B2_RETAINED",
+      "owner": [
+        "app/modules/operacion-extra.js",
+        "app/modules/shoppers.js"
+      ],
+      "proof": "Mi Perfil remains the simpler grid/card implementation rather than the requested recovered hierarchy/direction; historical records/detail behavior is not consistently drillable across shopper/admin.",
+      "action": "Recover approved profile hierarchy while preserving editable identity/country/banking governance; make applicable historical records open detail."
+    },
+    {
+      "id": "B1-HF-08",
+      "classification": "FUNCTIONAL_DEFECT",
+      "existingAuthority": [
+        "OBS-45",
+        "VRM-168"
+      ],
+      "scope": "TRANSVERSAL",
+      "owner": [
+        "tools/qa/cxorbia-i3-phasea-representative-live-reproof.mjs"
+      ],
+      "proof": "Run1280 was representative/read-only: it sampled Julissa, Priscila, Paula and Admin but did not click/commit Agendar, Instructivo read ACK, Reprogramar, resource open/read, or verify post-action reload. It was over-described as full E2E.",
+      "action": "Replace acceptance wording and add real action E2E with provider ACK/readback/reload/cleanup on multiple shopper identities."
+    },
+    {
+      "id": "B1-HF-09",
+      "classification": "FUNCTIONAL_DEFECT",
+      "existingAuthority": [
+        "OBS-45"
+      ],
+      "scope": "TRANSVERSAL_PERFORMANCE",
+      "owner": [
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "app/adapters/tya-live-source-refresh-watch-v2.js"
+      ],
+      "proof": "Protected HR bridge can retry up to BOOT_MAX_ATTEMPTS=180 with delays capped at 2s, and backend.refresh invalidates authority then schedules full HR recomposition. Human checkpoint repeatedly remained on synchronization for many seconds/minutes.",
+      "action": "Bound and instrument revalidation, avoid unnecessary full recomposition after writes, preserve fail-closed semantics and exact HR authority."
+    }
+  ],
+  "nextFindingIdPreserved": "VRM-260",
+  "vrm260Consumed": false,
+  "productChanged": false,
+  "production": false,
+  "nextAction": "FIX_B1_TRANSVERSAL_MI_DIA_ACTION_SEMANTICS_AND_SYNC_GUARD__REAL_MULTI_SHOPPER_ACTION_E2E"
+}

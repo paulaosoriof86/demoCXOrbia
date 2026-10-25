@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "cxorbia.i3.b1.cold-login.user-observation-and-source-fix.20261010.v1",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "status": "HOLD",
+  "block": "B1",
+  "finding": "HF-20261008-01",
+  "classification": "FUNCTIONAL_DEFECT",
+  "observationDateLocal": "2026-10-10",
+  "timezone": "America/Guatemala",
+  "sourceBefore": "797050085d1e3347b6d56322f003a3a293790710",
+  "sourceAfter": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
+  "treeAfter": "4d9054d5fb394579e35b32415584e5dd1b87ffd2",
+  "ownerFiles": [
+    "app/core/backend-firebase.js"
+  ],
+  "qa": [
+    "tools/qa/cxorbia-i3-b1-cold-login-parallel-source.test.mjs"
+  ],
+  "causeProven": "Independent authorized Firestore query families serialized before the authority gate: three shopper visit queries, visits/posts/reservations and periods/project data. Previous representative E2E timed authenticated reload rather than cold first entry.",
+  "limits": "Actual 50+ second user observation was not timed independently by telemetry. The observed delay could also include provider/network cold start. No live first-login claim until same-artifact E2E.",
+  "userReported": {
+    "firstCesarCastilloLoginSyncSeconds": "greater_than_50",
+    "firstPaulaOsorioLoginSyncSeconds": "greater_than_50",
+    "refreshAfterStallSeconds": "approximately_5",
+    "reloadWasNeeded": true
+  },
+  "screenshots": [
+    {
+      "file": "image(20261010-144904).png",
+      "sha256": "7ccd5a387156f9695100d420b6764320845b98b75f97680ea67d66ce0b235352",
+      "observation": "blocked Sincronizando operacion / Validando fuente operacional"
+    },
+    {
+      "file": "image(20261010-145041).png",
+      "sha256": "e23ba43778a32236b7493941a49b601c8c571dea87d30ceea4f8cbc30bee4789",
+      "observation": "Cesar Castillo shopper, 2 active, 37 history, card too tall"
+    },
+    {
+      "file": "image(20261010-150008).png",
+      "sha256": "43b8c120ac7f132fd41d7113d27640ee52591b4c69554afb28491039fc2a8d58",
+      "observation": "Paula Osorio shopper, 2 active, scheduled 2026-10-09, both reschedule and cancellation pending, screenshot alone does not establish duplicate writes"
+    }
+  ],
+  "visual": {
+    "miDiaPreviouslyApprovedSurface": "PRESERVED_NOT_REOPENED_UNLESS_DRIFT",
+    "b3CardHeight": "HUMAN_PREFERENCE_MID_SIZE_IF_SAFE_ONLY",
+    "b3CardCodeModified": false
+  },
+  "checkin": {
+    "currentCode": "camera file input capture=environment plus GPS capturedAt, Storage ACK and provider ACK",
+    "photoTimestampOverlayValidated": false,
+    "androidIosCameraE2E": false,
+    "plannedB3": "original photo + trusted server receipt + client capture timestamp and GPS + optional visibly stamped derivative, scoped exact visit"
+  },
+  "human": {
+    "decision": "FAIL_B1_COLD_FIRST_LOGIN",
+    "blockLocked": false,
+    "B2": "PENDING_SIGNED_PROVIDER_ACK",
+    "admin": "TECHNICAL_PARTIAL_PREVIOUSLY_MATERIALIZED_NOT_HUMAN_ACCEPTED"
+  },
+  "requiredProof": [
+    "new source CI test PASS",
+    "same artifact DEV Hosting and runtime readback",
+    "first login after credential submit WITHOUT reload under a bounded human threshold",
+    "two independent shoppers and admin cold first login",
+    "no identity bleed and exact HR revision",
+    "TinyFish precheck or pre-existing B1 session-transport exception exact scope",
+    "Paula PASS before block lock"
+  ],
+  "production": "DO_NOT_TOUCH",
+  "actions": {
+    "dataWrites": 0,
+    "hrWrites": 0,
+    "authWrites": 0,
+    "storageWrites": 0,
+    "productionDeploys": 0,
+    "devDeploys": 0
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "cxorbia.recovery.pre-i4-cert-res.prematerialization.v1",
+  "frozenAt": "2026-09-30",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "status": "READY_EXACT_CERT_RES_DEV_MATERIALIZATION",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "productSourceSha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
+  "productSourceTree": "3db14440c7125e832fffd772a6e1a7230ae31453",
+  "predecessorProductSourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
+  "iam": {
+    "state": "PASS_EFFECTIVE",
+    "runId": 36780871571,
+    "postAuthorizationJobId": 110124056442,
+    "serviceEnable": true,
+    "firebaseDefaultBucketCreate": true,
+    "storageBucketCreate": true,
+    "rulesetCreate": true,
+    "rulesReleaseCreate": true,
+    "vertexPredict": true
+  },
+  "providerActivation": {
+    "state": "PASS",
+    "runId": 36785517322,
+    "jobId": 110125866463,
+    "servicesEnabledThisRun": 2,
+    "defaultFirebaseStorageBucket": {
+      "name": "projects/cxorbia-backend-dev/buckets/cxorbia-backend-dev.firebasestorage.app",
+      "location": "US-CENTRAL1",
+      "createdThisRun": true
+    }
+  },
+  "runtimeVertex": {
+    "state": "PASS",
+    "runId": 36786189987,
+    "jobId": 110128043019,
+    "sameIdentity": true,
+    "runtimeServiceAccount": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com",
+    "vertexGenerateContentHttp": "200"
+  },
+  "sourceProof": {
+    "state": "PASS",
+    "runId": 36788133836,
+    "jobId": 110134359753,
+    "artifactId": 11129824152,
+    "artifactDigest": "sha256:8cf103507690fa2b3e7d4b3130e7431570dad0d04c959deca9544136b255335c",
+    "decision": "PASS_PREI4_CERT_RES_SOURCE_CONTRACT",
+    "productFiles": [
+      "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "app/core/backend-ai.js",
+      "app/core/backend-certifications.js",
+      "app/core/backend-protected-dev-mode.js",
+      "app/core/backend-resources.js",
+      "app/index-backend-dev.html",
+      "app/modules/cert.js",
+      "app/modules/documentos.js",
+      "backend/runtime/hr-live-service/certification-runtime.mjs",
+      "backend/runtime/hr-live-service/server.mjs",
+      "firestore.rules",
+      "storage.rules"
+    ]
+  },
+  "p0": {
+    "PREI4-CERT-001": "SOURCE_PROVEN_PENDING_DEV_LIVE",
+    "PREI4-CERT-002": "SOURCE_PROVEN_PENDING_DEV_LIVE",
+    "PREI4-RES-001": "SOURCE_PROVEN_PENDING_DEV_LIVE"
+  },
+  "materializationContract": {
+    "exactSourceOnly": true,
+    "rebuildAfterMaterialization": false,
+    "maxBuilds": 1,
+    "maxRuntimeDeploys": 1,
+    "maxHostingDeploys": 1,
+    "maxFirestoreRulesDeploys": 1,
+    "maxStorageRulesDeploys": 1,
+    "devAiSettingWritesMax": 1,
+    "hrWrites": 0,
+    "production": false
+  },
+  "production": "DO_NOT_TOUCH"
+}

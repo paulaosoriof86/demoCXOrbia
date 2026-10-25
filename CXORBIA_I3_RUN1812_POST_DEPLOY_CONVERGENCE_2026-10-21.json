@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "cxorbia.i3.run1812.postdeploy-control-convergence.20261021.v1",
+  "state": "HOLD",
+  "iteration": "I3",
+  "operation": "CONTROL_ONLY_POST_DEPLOY_READBACK_CONVERGENCE",
+  "authority": "CXORBIA-I3-EXIT-DISCIPLINE-20261021",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "asOf": "2026-10-21",
+  "source": {
+    "sha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+    "tree": "15d6b9b376069b27317e03a91b96cb74cd3c9877"
+  },
+  "materialization": {
+    "state": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "sourceSha": "b7a45f4e574bd04bce8ecc6532c78fdcbea9ca15",
+    "sourceTree": "15d6b9b376069b27317e03a91b96cb74cd3c9877",
+    "runId": 39532274529,
+    "runNumber": 1812,
+    "jobId": 119000790575,
+    "artifactId": 12316195646,
+    "artifactUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/39532274529/artifacts/12316195646",
+    "artifactDigest": "sha256:6d2cba1d31e8f8ebfb2a1d98d959f484e8822ee526659b59a724ca16f4bb6d06",
+    "artifactDigestType": "SOURCE_TAR_SHA256",
+    "runtimeRevision": "cxorbia-live-hr-dev-00315-v8f",
+    "runtimeDigest": "sha256:f4adf10f9527545b68c9beaf3ec74fab8d77d3a0cce149b8b4cbaaf289db5548",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/853b349a4aec1e17",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792549309225000",
+    "hrRevision": "4aa7dc7ab2fee95e1c605faed5bb43cf5d29abe089e31617416531da01b12dd5",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/fe1c7f11-7265-4d66-95ee-c03f4798d35e",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "firestoreRulesDeploys": 1,
+    "hrWrites": 0,
+    "production": false,
+    "sameArtifactSourceAssetReadback": "PASS_RUN1812",
+    "sameArtifactLive": "PENDING_WORK_ROLE_AUTHENTICATED_E2E",
+    "humanAcceptance": "PENDING",
+    "gate20": "PENDING",
+    "gate21": "PENDING"
+  },
+  "provenance": {
+    "githubRun": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/39532274529",
+    "runStatus": "completed",
+    "runConclusion": "success",
+    "preflight": "success",
+    "sourceProofRun": 1811,
+    "sourceProofRunId": 39531872686,
+    "controlParentSha": "888f050a965c9964967fe150d4e1626a15fc6c4e"
+  },
+  "before": {
+    "pointerCurrentDev": 1809,
+    "descriptorCurrentDev": 1796,
+    "matrixV159BlobPreparedButNotLinked": true,
+    "ledgerV487BlobPreparedButNotLinked": true
+  },
+  "after": {
+    "pointerCurrentDev": 1812,
+    "descriptorCurrentDev": 1812,
+    "selectedMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261020-V159.json",
+    "selectedLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V487_2026-10-20.json",
+    "guard": "EXACT_POST_DEPLOY_CROSS_AUTHORITY_CHECK"
+  },
+  "focal": {
+    "finding": "VRM-275",
+    "classification": "FUNCTIONAL_DEFECT",
+    "stage": "DEV_MATERIALIZED_PENDING_LIVE_E2E",
+    "publishedOctoberBank": "certbank-cinepolis-cinepolis-2026-10",
+    "questions": 8,
+    "shopperOctLiveAfterRun1812": "NOT_VERIFIED",
+    "adminLiveAfterRun1812": "NOT_VERIFIED"
+  },
+  "hrPersisted": {
+    "owner": "A09/B11",
+    "classification": "PERSISTENCE_FAILURE",
+    "liveRevision": "4aa7dc7ab2fee95e1c605faed5bb43cf5d29abe089e31617416531da01b12dd5",
+    "stalePersistedRevision": "5d369d8955ff899095aa113d094dccea5a1c94e8849b455906cd4f154bf28e48",
+    "readbackReceipts": "NO_HR_COMMAND_RECEIPTS_FOUND_BY_WORK",
+    "reconciliationExecutedThisBlock": false
+  },
+  "preview": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxProjectId=cinepolis&cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV",
+  "safety": {
+    "productFilesChanged": 0,
+    "devDeploysThisControlUpdate": 0,
+    "realFirestoreDataWritesThisControlUpdate": 0,
+    "hrWritesThisControlUpdate": 0,
+    "prodWrites": 0,
+    "production": false,
+    "noNewCandidate": true,
+    "noReimport": true
+  },
+  "nextExactAction": "Work LIVE READ-ONLY on same RUN1812 DEV: October published 8-question bank visible on Shopper and Admin, period selector and session reloading. Return expected/observed and timing. Separately, technical owner preflight A09/B11 receipts and authorized same-revision reconcile; no blind writes."
+}

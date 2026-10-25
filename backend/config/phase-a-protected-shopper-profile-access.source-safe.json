@@ -1,0 +1,59 @@
+{
+  "configId": "phase-a-protected-shopper-profile-access-source-safe",
+  "date": "2026-07-09",
+  "status": "source_safe_config_only",
+  "scope": "reusableTenantProject",
+  "description": "Source-safe access map for protected shopper profile readiness. Does not contain real shoppers, emails, phones, IDs, bank data, HR URLs or raw workbook data.",
+  "publicPreview": {
+    "mode": "sourceSafeOnly",
+    "fields": [
+      "shopperRef",
+      "country",
+      "projectScopedCounters",
+      "periodScopedCounters",
+      "certificationStatusBucket",
+      "paymentEligibilityBucket"
+    ],
+    "forbiddenFields": [
+      "fullName",
+      "email",
+      "phone",
+      "idDocumentRaw",
+      "bankAccountRaw",
+      "signedNdaRaw",
+      "privateHrUrl",
+      "workbookRaw"
+    ]
+  },
+  "protectedViews": {
+    "tenantAdmin": {
+      "scope": "tenant",
+      "canSee": ["fullName", "contact", "projectHistory", "certificationHistory", "assignmentHistory", "liquidationSummary", "reviewQueueFlags", "auditTrailSummary"]
+    },
+    "projectAdmin": {
+      "scope": "tenantProject",
+      "canSee": ["fullName", "projectScopedContact", "visitHistory", "certificationStatus", "assignmentStatus", "liquidationSummary"]
+    },
+    "financeAdmin": {
+      "scope": "tenantProjectFinance",
+      "canSee": ["fullName", "paymentEligibility", "liquidationLines", "paymentBatchStatus", "auditRefs"],
+      "cannotSee": ["rawBankAccount", "idDocumentRaw"]
+    },
+    "certificationAdmin": {
+      "scope": "tenantProjectCertification",
+      "canSee": ["fullName", "certificationAttempts", "questionBankVersion", "status", "reviewNotes"]
+    },
+    "shopper": {
+      "scope": "ownProfileOnly",
+      "canSee": ["ownProfile", "ownVisits", "ownCertifications", "ownBenefits", "ownPaymentStatus"]
+    }
+  },
+  "rules": {
+    "tenantProjectScopeRequired": true,
+    "auditProtectedRead": true,
+    "reviewQueueForAmbiguity": true,
+    "noSilentMerge": true,
+    "newTenantReusable": true,
+    "newProjectReusable": true
+  }
+}

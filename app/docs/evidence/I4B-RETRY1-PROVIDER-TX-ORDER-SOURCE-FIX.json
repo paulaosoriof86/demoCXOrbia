@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "cxorbia.i4b.retry1.provider-tx-order-source-fix.v1",
+  "syncEpoch": "CXORBIA-20260819-I4B-RETRY1-PROVIDER-TX-ORDER-HOLD-29",
+  "generatedAt": "2026-08-19T14:24:00-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "formalProgressPercent": 60,
+  "formalRemainingPercent": 40,
+  "runtimeEvidence": {
+    "workflowRunId": 32297736022,
+    "decision": "HOLD_I4B_RETRY1__Firestore_transactions_require_all_reads_to_be_executed_before_all_writes_",
+    "providerCommandCalls": 3,
+    "providerCommittedCalls": 2,
+    "providerWritesReported": 3,
+    "idempotentReplayChecks": 1,
+    "syntheticFixtureCreates": 1,
+    "syntheticFixtureDeletes": 2,
+    "realVisitsUnchanged": true,
+    "realPostulationsUnchanged": true,
+    "historicalShopperAccess": false
+  },
+  "rootCause": {
+    "classification": "PROVIDER_SOURCE_DEFECT_FIRESTORE_TRANSACTION_ORDERING",
+    "command": "application.status.update",
+    "detail": "The transaction wrote the application document and only afterwards read the visit document when approving an application. Firestore requires transaction reads before transaction writes."
+  },
+  "sourceFix": {
+    "providerPath": "backend/runtime/cxorbia-visit-lifecycle-command-provider-v1.mjs",
+    "providerFixCommit": "1bde86e5e5b6c2084fe5c711b7a8c06d089f12f4",
+    "change": "Read and validate both application and visit before any tx.set; preserve existing command, scope, ACK, audit and write semantics.",
+    "sourceVerifierPath": "tools/verify-cxorbia-i4b-visit-provider-source.mjs",
+    "sourceVerifierGuard": "FIRESTORE_TRANSACTION_READ_AFTER_WRITE_REGRESSION",
+    "sourceVerifierCommit": "e1f62c8425d0fffc62b2ba92ccdd6141b60f3be6",
+    "providerBackedRetestExecutedAfterFix": false
+  },
+  "gateState": {
+    "retry1Consumed": true,
+    "retry1ExecutionsConsumed": 1,
+    "retry1AutomaticRetryAllowed": false,
+    "newAuthorizationRequiredForProviderBackedRetest": true
+  },
+  "safety": {
+    "syntheticVisitRemoved": true,
+    "syntheticApplicationRemoved": true,
+    "realHrVisitMutation": false,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "merge": false,
+    "production": false
+  },
+  "nextFrontier": "NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY2__PROVIDER_TX_READ_ORDER_FIXED__SYNTHETIC_VISIT_ONLY"
+}

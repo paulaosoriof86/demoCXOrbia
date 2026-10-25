@@ -1,0 +1,126 @@
+{
+  "schemaVersion": "cxorbia.c6.live-user-admin-runtime-proof.durable.v1",
+  "generatedAt": "2026-08-12T17:41:00-06:00",
+  "request": {
+    "requestId": "c6-live-user-admin-membership-runtime-proof-20260812-09",
+    "requestCommitSha": "f94bf1f60b8d1fb12bddde7006ef1415bdc2ebd6",
+    "targetHeadSha": "9b33bfbe6d1807fbfa917360d6e37ecd5c33dce4",
+    "action": "C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF",
+    "mode": "HOSTING_RUNTIME_ONCE"
+  },
+  "run": {
+    "runId": 31651410812,
+    "jobId": 94296350609,
+    "artifactId": 9162751195,
+    "artifactDigest": "sha256:16970fb360a1fc54d3b94f7a6ff87138afa959ac6b6fa31f7299b78dfeee48d8",
+    "workflowConclusion": "success",
+    "artifactDecision": "FAIL_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME",
+    "artifactDecisionPrecedence": true
+  },
+  "preflight": {
+    "decision": "PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT",
+    "schemaVersion": "cxorbia.c6.staff-lane-source-preflight.v3",
+    "hostingExecuteBashSyntax": true,
+    "hostingExecuteNestedHeredocAbsent": true,
+    "canonicalKeyboardSubmit": true,
+    "productCanonicalSubmitBinding": true,
+    "actionExplicitAndFailClosed": true
+  },
+  "provider": {
+    "googleCloudAuth": "PASS",
+    "staffCredentialSelection": "PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY",
+    "staffRole": "coordinador",
+    "shopperSelection": false,
+    "clientSelection": false
+  },
+  "hosting": {
+    "deployAttempted": true,
+    "deployPhysicallySucceeded": true,
+    "hostingDeploysThisRun": 1,
+    "hostingAllowanceConsumed": "1/1",
+    "remoteParityDecision": "PASS_C6_DEV_ROOT_ENTRYPOINT_REMOTE_PARITY",
+    "remoteParityExact": true,
+    "rootHttpStatus": 302,
+    "canonicalHttpStatus": 200
+  },
+  "runtime": {
+    "decision": "FAIL_C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF",
+    "staffHumanDecision": "FAIL_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY",
+    "authenticationSubmitted": true,
+    "canonicalRole": "coordinador",
+    "authNamespace": "staff",
+    "tenantId": "tya",
+    "projectIds": ["cinepolis"],
+    "authorityApplied": true,
+    "periods": 15,
+    "visits": 660,
+    "shoppers": 211,
+    "currentProjectId": "cinepolis",
+    "currentPeriodId": "cinepolis-2026-08",
+    "firstPeriod": "2025-06",
+    "latestPeriod": "2026-08",
+    "duplicateVisitKeys": 0,
+    "duplicateShopperIds": 0,
+    "dataStatus": "ready",
+    "canonicalLane": "authenticated-human-canonical",
+    "canonicalProtected": true,
+    "technicalAuth": false,
+    "legacyCredentialStepVisible": false,
+    "technicalFormVisible": false,
+    "appOn": false,
+    "loginHidden": false,
+    "backendEmpty": true,
+    "rootCause": "C6_POST_AUTH_HR_AUTHORITY_FRONTEND_ENTRY_HANDOFF_GAP__STALE_FIRESTORE_EMPTY_STATE",
+    "rootCauseDetail": "The canonical Staff form submitted successfully and the authenticated context plus live HR authority reached 15 periods, 660 visits and 211 shoppers. The final product shell did not enter: app remained off, login remained visible and the earlier Firestore empty marker remained true. Source inspection showed backend-browser-auth enters on backend-ready, while the live HR authority bridge completes later with cx:protected-auth-hr-authority-ready and does not itself finalize the product entry. The stale empty marker can also keep the Corte 4 empty-state guard inconsistent with the now-populated HR authority.",
+    "authFailureDemonstrated": false,
+    "claimsFailureDemonstrated": false,
+    "membershipFailureDemonstrated": false,
+    "hrFailureDemonstrated": false,
+    "frontendHandoffFailureDemonstrated": true
+  },
+  "sourceOnlyRepairAfterStopRetry": {
+    "membershipFrontendHandoffCommit": "a89ec134fe1b3b9cd0a8f014b39133d7a72ccd5a",
+    "staffSmokeCommit": "87bcddebeb74147dc0862ff3115186795978f058",
+    "preflightV4Commit": "84e736b064d66bf7f7bde3d54955d98fb0f0a9a9",
+    "repair": "On cx:protected-auth-hr-authority-ready, Staff now fail-closed re-verifies canonical membership, reconciles stale Firestore/Corte4 empty markers to the populated canonical HR+Firestore source, and reuses CX.app.enter() rather than directly mutating UI. QA now requires membershipVerified, handoff entered, stale-empty cleared, appOn/loginHidden, three reloads and new-tab. Preflight v4 checks this contract before provider.",
+    "productModulesChanged": false,
+    "directUiMutationAdded": false,
+    "providerCallsAfterStopRetry": 0,
+    "hostingDeploysAfterStopRetry": 0,
+    "secondRuntimeAttempt": 0
+  },
+  "sourceOnlyValidation": {
+    "githubReadback": "PASS",
+    "localRawMirrorAttempt": "UNAVAILABLE_DNS_RAW_GITHUB",
+    "impact": "No provider/runtime retry was attempted. The next authorized run must execute preflight v4 before provider and will fail closed if the source repair is syntactically or contractually invalid."
+  },
+  "safety": {
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "secondExactWrite": 0,
+    "credentialsExposed": false,
+    "tokensExposed": false,
+    "merge": false,
+    "production": false
+  },
+  "phaseA": {
+    "certifiedPercent": 88,
+    "remainingPercent": 12,
+    "certifiedDeltaThisRun": 0,
+    "milestones": "M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1"
+  },
+  "stopRetry": {
+    "applied": true,
+    "rerun": false,
+    "secondRequest": false,
+    "secondHosting": false,
+    "newAuthorizationRequiredForNextProviderRuntime": true
+  },
+  "nextGate": "NEW_EXPLICIT_HOSTING_RUNTIME_ONCE_AUTHORIZATION_REQUIRED_ON_REPAIRED_HEAD_WITH_PREFLIGHT_V4"
+}

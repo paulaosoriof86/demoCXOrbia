@@ -1,0 +1,190 @@
+{
+  "schemaVersion": "cxorbia.i3.20261009.hr-cross-authority-focal-forensic.v1",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "state": "HOLD",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "observedControlHead": "32b99870212cb6f74dfa23ebb9e89930fa9d4c15",
+  "currentProductSource": "9b87e479a1fb9825a22abf935eebff171ed720c4",
+  "currentProductTree": "f2a384386e22028ffc4bf830adb1ec7e11e19696",
+  "dev": {
+    "materializationRun": 1426,
+    "representativeSameArtifactRun": 1427,
+    "runtimeRevision": "cxorbia-live-hr-dev-00283-kc5",
+    "production": false
+  },
+  "sourceEvidence": {
+    "type": "INDEPENDENT_LIVE_HR_READONLY",
+    "endpoint": "https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live",
+    "sourceRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+    "revisionStable": true,
+    "asObservedDate": "2026-10-09",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "periodsAvailable": 17,
+    "totalHistoricalVisits": 748,
+    "shopperSourceRows": 226
+  },
+  "periodContrast": {
+    "2026-09": {
+      "visits": 44,
+      "GT": 34,
+      "HN": 10,
+      "assigned": 44,
+      "available": 0,
+      "duplicateHrRowIds": 0,
+      "missingHrShopperReferences": 0,
+      "visitVersusHrProfileNamesMismatched": 0
+    },
+    "2026-10": {
+      "visits": 44,
+      "GT": 34,
+      "HN": 10,
+      "assigned": 28,
+      "available": 16,
+      "duplicateHrRowIds": 0,
+      "missingHrShopperReferences": 0,
+      "visitVersusHrProfileNamesMismatched": 0
+    }
+  },
+  "gtSixHistoricalCrosswalkCases": [
+    {
+      "sourceShopperId": "shopper_gt_3106d9d44b",
+      "mappedCanonicalShopperId": "shp-0780f6f085b1",
+      "targetExistsAsIndependentHrShopper": false,
+      "normalizedHrNamesEqual": null,
+      "periods": [
+        "2025-07"
+      ],
+      "hrRowIds": [
+        "JULIO 25!18"
+      ],
+      "decision": "HOLD_NO_AUTOMERGE_OWNER_AUTHORITY_NOT_YET_PROVEN"
+    },
+    {
+      "sourceShopperId": "shopper_gt_3426ec3ff3",
+      "mappedCanonicalShopperId": "shopper_gt_5eb6ba4913",
+      "targetExistsAsIndependentHrShopper": true,
+      "normalizedHrNamesEqual": false,
+      "periods": [
+        "2025-06",
+        "2026-02"
+      ],
+      "hrRowIds": [
+        "JUNIO 25!31",
+        "FEBRERO 26!30"
+      ],
+      "decision": "HOLD_NO_AUTOMERGE_OWNER_AUTHORITY_NOT_YET_PROVEN"
+    },
+    {
+      "sourceShopperId": "shopper_gt_5f3d6952c5",
+      "mappedCanonicalShopperId": "shopper_gt_338ec57592",
+      "targetExistsAsIndependentHrShopper": true,
+      "normalizedHrNamesEqual": false,
+      "periods": [
+        "2025-11"
+      ],
+      "hrRowIds": [
+        "NOVIEMBRE 25!8"
+      ],
+      "decision": "HOLD_NO_AUTOMERGE_OWNER_AUTHORITY_NOT_YET_PROVEN"
+    },
+    {
+      "sourceShopperId": "shopper_gt_d5ebad6b6c",
+      "mappedCanonicalShopperId": "shopper_gt_2e8200a26e",
+      "targetExistsAsIndependentHrShopper": true,
+      "normalizedHrNamesEqual": false,
+      "periods": [
+        "2025-07"
+      ],
+      "hrRowIds": [
+        "JULIO 25!16"
+      ],
+      "decision": "HOLD_NO_AUTOMERGE_OWNER_AUTHORITY_NOT_YET_PROVEN"
+    },
+    {
+      "sourceShopperId": "shopper_gt_f65cbc6391",
+      "mappedCanonicalShopperId": "shp-58a449f10a07",
+      "targetExistsAsIndependentHrShopper": false,
+      "normalizedHrNamesEqual": null,
+      "periods": [
+        "2026-09"
+      ],
+      "hrRowIds": [
+        "SEPTIEMBRE 26!3"
+      ],
+      "decision": "HOLD_NO_AUTOMERGE_OWNER_AUTHORITY_NOT_YET_PROVEN"
+    },
+    {
+      "sourceShopperId": "shopper_gt_fc5d6fb927",
+      "mappedCanonicalShopperId": "shopper_gt_2e8200a26e",
+      "targetExistsAsIndependentHrShopper": true,
+      "normalizedHrNamesEqual": false,
+      "periods": [
+        "2026-02"
+      ],
+      "hrRowIds": [
+        "FEBRERO 26!33"
+      ],
+      "decision": "HOLD_NO_AUTOMERGE_OWNER_AUTHORITY_NOT_YET_PROVEN"
+    }
+  ],
+  "gtConclusion": "Four target identities also exist in the external HR with different display labels; two targets are not separate HR identities. Different labels do not prove different humans. Five source identities have no October visits; one has a September visit. Do not merge or remap without exact durable authority readback.",
+  "hnEvidence": {
+    "priorRun": 1424,
+    "priorArtifactId": 11594074053,
+    "code": "HISTORY_SHOPPER_VISIBLE_LOGIN_OR_BOOT_FAIL",
+    "underlyingFailure": "ENVIRONMENT_FAILURE:VISIBLE_LOGIN_NOT_SETTLED",
+    "observedAuthContextAuthenticated": true,
+    "observedFirebaseUserPresent": true,
+    "visibleShellState": "NO_COUNTRY_AND_NO_PERIOD_AVAILABLE_DESPITE_HR_HISTORY",
+    "hrCandidate": {
+      "sourceShopperId": "shopper_hn_1691aecc2c",
+      "HRcountry": "HN",
+      "sourceHistoryCount": 16,
+      "octoberHrRowId": "OCTUBRE 26 HN!2",
+      "octoberVisitStatus": "agendada"
+    },
+    "identityUidToHrCandidateExactProof": "PENDING_PROTECTED_READBACK",
+    "classification": "AUTH_FAILURE"
+  },
+  "postsEvidence": {
+    "priorRun": 1424,
+    "durableProviderPostulations": 17,
+    "uiDurablePostulations": 17,
+    "syntheticHrDerivedPostulations": 0,
+    "runDecision": "PASS_I3_ATOMIC_FUNCTIONAL_PROBES",
+    "octoberActivePending": 0,
+    "octoberOperationalAssignments": 28
+  },
+  "knownEffectiveOwners": [
+    "backend/runtime/hr-live-service/server.mjs",
+    "app/adapters/tya-cumulative-read-model-v2.js",
+    "app/adapters/cxorbia-provider-identity-link-runtime-v1.js",
+    "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+    ".github/control/RECOVERY-I3-BROWSER-AUTH-LIFECYCLE-20260919.mjs"
+  ],
+  "classification": [
+    "MAPPING_FAILURE",
+    "AUTH_FAILURE"
+  ],
+  "notYetProven": [
+    "exact per-case crosswalk record mode/status/ACK/ref and adjudication",
+    "source-to-target protected profile identity and Auth owner",
+    "HN signed claims versus HR canonical and reconciliation-gate diagnostics",
+    "B2 exact signed shopper display-only ACK/reload",
+    "Paula incremental HUMAN_PASS",
+    "Gate20 and Gate21 same artifact"
+  ],
+  "nextExactAction": "READ_ONLY protected per-case crosswalk/identityLinks/member/HR owner proof for six GT and HN; discriminate stale provider mapping versus approved exact adjudication, then fix only proven owner in same candidate, execute focused existing-gate tests/readback. B2 ACK/reload and human approval remain separate. No full rebuild, no new workflow, no I4.",
+  "writes": {
+    "product": 0,
+    "HR": 0,
+    "Firestore": 0,
+    "Auth": 0,
+    "Storage": 0,
+    "production": 0
+  },
+  "humanAuthorizationRequiredNow": false,
+  "authorizationRequiredForI4": true
+}

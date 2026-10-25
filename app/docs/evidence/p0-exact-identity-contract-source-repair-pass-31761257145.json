@@ -1,0 +1,140 @@
+{
+  "schemaVersion": "cxorbia.p0.exact-identity-contract-source-repair-pass.v1",
+  "generatedAt": "2026-08-13T19:20:00-06:00",
+  "decision": "PASS_P0_EXACT_IDENTITY_CONTRACT_SOURCE_REPAIR",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "sourceHeadSha": "cc9353f04f650f91204ff48c23ba718fa7713aa2",
+  "workflow": {
+    "name": "CXOrbia Phase A Visual Smoke",
+    "runId": 31761257145,
+    "jobId": 94647914674,
+    "conclusion": "success",
+    "artifactId": 9204689215,
+    "artifactDigest": "sha256:0ec1c5fb23c894d89b6c80838303a2befb7f0e58c0fac9f774df407fc75d4402",
+    "artifactFileCount": 8,
+    "artifactSizeBytes": 6818323
+  },
+  "identityContract": {
+    "path": "app/adapters/cxorbia-exact-identity-contract-v1.js",
+    "version": "cxorbia-exact-identity-contract-v1",
+    "technicalKeys": [
+      "shopperId",
+      "legacyShopperId",
+      "legacyId",
+      "externalShopperId",
+      "externalId",
+      "sourceId",
+      "sourceKey",
+      "hrRowId",
+      "personId",
+      "profileId",
+      "shopperDocId"
+    ],
+    "authActivationTechnicalKeyUniverseEquivalent": true,
+    "similarityMatchingForbidden": true,
+    "forbiddenSelectorsInclude": ["nombre", "email", "phone", "username"],
+    "ambiguousExactAnchorDisposition": "fail_closed_review_required",
+    "tenantReusable": true,
+    "projectReusable": true
+  },
+  "runtimeRepair": {
+    "composer": {
+      "path": "app/adapters/tya-cumulative-read-model-v2.js",
+      "usesSharedIdentityContract": true,
+      "surfacesContractDiagnostics": true
+    },
+    "shopperPortal": {
+      "path": "app/adapters/tya-canonical-shopper-portal-v2.js",
+      "usesSharedIdentityContract": true,
+      "nameEmailSimilarityMatch": false
+    },
+    "humanEntrypoint": {
+      "path": "app/index-backend-dev.html",
+      "preAuthOperationalData": "none",
+      "bundledHrSnapshotScriptRemoved": "data/tya-hr-source-safe-periods.js",
+      "sourceSafePreviewMutatorRemoved": "core/tya-phase-a-source-safe-preview.js",
+      "sourceSafeFilesDeleted": false,
+      "laboratorySourceSafePreserved": true,
+      "identityContractLoadedBeforeComposer": true
+    },
+    "liveHrWatcher": {
+      "path": "app/adapters/tya-live-source-refresh-watch-v2.js",
+      "authenticatedHumanRuntimeRequiresAuthBeforeHrRead": true,
+      "rechecksOnBackendAuthReady": true
+    }
+  },
+  "gates": {
+    "exactIdentitySource": {
+      "decision": "PASS_P0_EXACT_IDENTITY_CONTRACT_SOURCE",
+      "hardFails": 0,
+      "providerReads": 0,
+      "writes": 0,
+      "deploys": 0
+    },
+    "realShopperAuthE2ESource": {
+      "tool": "tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs",
+      "decision": "PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE",
+      "realExecution": false,
+      "prototypeRoleEntry": false,
+      "requiresVisibleCredentialForm": true,
+      "requiresCanonicalAuthContext": true,
+      "requiresFinalHrAuthority": true,
+      "requiresExactIdentity": true,
+      "checksIdentityReviewQueue": true,
+      "requiresHistoryByDefault": true,
+      "explicitExecutionGateRequired": true,
+      "providerWrites": 0,
+      "deploys": 0
+    },
+    "localVisualSmoke": {
+      "decision": "GO_WITH_WARNINGS_VISUAL_SMOKE_POST_V96",
+      "hardFails": 0,
+      "warnings": ["custom:custom_role_visible_nav_items:1"],
+      "rolesShellPass": ["admin", "coordinador", "aliado", "custom", "cliente", "shopper"],
+      "realFirebaseShopperCertified": false
+    }
+  },
+  "knownHarnessIncidentsBeforeAuthoritativePass": [
+    {
+      "runId": 31760905131,
+      "classification": "SOURCE_GATE_SELF_REFERENCE_FALSE_POSITIVE",
+      "providerReads": 0,
+      "writes": 0,
+      "deploys": 0
+    },
+    {
+      "runId": 31761151928,
+      "classification": "SOURCE_GATE_LITERAL_SYNTAX_FALSE_POSITIVE",
+      "providerReads": 0,
+      "writes": 0,
+      "deploys": 0
+    }
+  ],
+  "limitations": {
+    "currentlyDeployedDevContainsThisRepair": false,
+    "humanShopperPostRepairValidated": false,
+    "currentAuthUniverseToHrCrosswalkValidated": false,
+    "allEffectiveShopperAuthPrincipalsUniquelyMapped": false,
+    "goLiveUnblocked": false,
+    "reason": "Source semantics and gate coverage are repaired, but the real provider universe and a real authenticated Shopper must be revalidated read-only before any deploy or acceptance claim."
+  },
+  "safety": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "merge": false,
+    "production": false
+  },
+  "nextGate": "ONE_DEV_READ_ONLY_IDENTITY_UNIVERSE_REVALIDATION_PLUS_REAL_FIREBASE_SHOPPER_AUTH_TO_HR_E2E"
+}

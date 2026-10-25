@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "phase-a-live-hr-runtime-read-v1",
+  "status": "prepared_not_deployed",
+  "scope": {
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "sourceType": "google_sheets_live_multitab",
+    "environment": "DEV"
+  },
+  "objective": "Read the current HR source at runtime so KPI, detail lists, history and reports reflect the same live source-safe snapshot instead of a build-time frozen copy.",
+  "requirements": {
+    "serverSideRead": true,
+    "browserMustNotReceiveRawWorkbook": true,
+    "googleScope": "https://www.googleapis.com/auth/spreadsheets.readonly",
+    "writesToHr": false,
+    "writesToFirestore": false,
+    "imports": false,
+    "payments": false,
+    "production": false,
+    "sourceSafeProjectionOnly": true,
+    "singleCanonicalSnapshotPerRefresh": true,
+    "singleVisitFacetFunction": true,
+    "noFixedOperationalCounts": true,
+    "noBuildTimeSnapshotAsRuntimeTruth": true
+  },
+  "freshness": {
+    "readOnInitialLoad": true,
+    "refreshOnWindowFocus": true,
+    "pollSeconds": 60,
+    "maxAcceptedAgeSeconds": 180,
+    "cacheControl": "no-store",
+    "staleBehavior": "retain_last_good_snapshot_with_visible_stale_warning",
+    "silentFallbackToFrozenSnapshot": false
+  },
+  "identity": {
+    "visitKey": ["tenantId", "projectId", "periodKey", "hrRowId"],
+    "assignmentKey": ["tenantId", "projectId", "visitId", "shopperId"],
+    "neverDedupeByName": true
+  },
+  "canonicalFacets": [
+    "assigned",
+    "scheduled",
+    "realized",
+    "questionnaire",
+    "submitted",
+    "liquidationCandidate",
+    "liquidationConfirmed",
+    "paymentConfirmed",
+    "outOfRange",
+    "cancelled"
+  ],
+  "consumerRules": {
+    "kpiAndDetailUseSameSnapshotRevision": true,
+    "kpiAndDetailUseSameBucketFunctions": true,
+    "periodChangeReprojectsAllViews": true,
+    "reportsDeriveAtRequestTime": true,
+    "exportUsesReportProjectionNotBrowserPage": true
+  },
+  "gates": {
+    "providerReadProbeRequired": true,
+    "liveEndpointDeployRequiresSeparatePaulaAuthorization": true,
+    "hostingRedeployRequiresSeparatePaulaAuthorization": true,
+    "freezeCorte1BlockedUntilLiveVisualPass": true
+  },
+  "classification": {
+    "reusableCXOrbia": true,
+    "exclusiveClient": ["TyA HR tab mapping", "Cinepolis source configuration"],
+    "claudePrototype": ["visible stale state", "report branding and report builder UX"],
+    "academia": ["live source freshness", "difference between live read, snapshot and synchronization"],
+    "safeState": "No deployment or writes authorized by this contract."
+  }
+}

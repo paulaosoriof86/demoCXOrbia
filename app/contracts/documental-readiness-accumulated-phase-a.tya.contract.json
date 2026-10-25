@@ -1,0 +1,29 @@
+{
+  "contract": "documental-readiness-accumulated-phase-a-tya",
+  "date": "2026-07-05",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "storageWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "emailSendAllowed": false,
+  "whatsappSendAllowed": false,
+  "geminiAllowed": false,
+  "importRealDataAllowed": false,
+  "deployAllowed": false,
+  "mergeAllowed": false,
+  "sections": [
+    "executive_status",
+    "backend_preview_ready",
+    "backend_local_pending",
+    "frontend_p0_blocker",
+    "claude_package",
+    "academia_later",
+    "production_blocked",
+    "next_steps"
+  ],
+  "purpose": "Consolidate documentary readiness for Phase A into one report without enabling production or replacing local validation."
+}

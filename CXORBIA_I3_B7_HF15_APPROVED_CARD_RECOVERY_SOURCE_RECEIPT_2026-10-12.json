@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "cxorbia.i3.b7.hf15.approved-card-recovery.source-receipt.v1",
+  "date": "2026-10-12",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "status": "SOURCE_FIXED_PARTIAL__CI_DEV_HUMAN_HOLD",
+  "finding": "HF-20261012-15",
+  "baseline": {
+    "approvedFrontend": "V174 exact Postulaciones grouped cards",
+    "approvedBaselineGitBlob": "f38593885c245841710934971dd335ee5eddf1da",
+    "conclusion": "Existing postulation cards matched approved grouped pattern; operationalAssignments table added later remained a flat presentation"
+  },
+  "source": {
+    "old": "782817615073f163358e1b52808d8ff45c6950c2",
+    "new": "8aee6b1d9c131f435ba11c80567ea9686ceaf5cb",
+    "tree": "bf3986a5b5fe03cd0cf8074597a0bdc4a6bd73e1",
+    "path": "app/modules/postulaciones.js",
+    "oldBlob": "c1dfd826090d33b6269136d1e6110ae6e845832e",
+    "newBlob": "95caeb16aa9214d8795289e92b4a15a2275e435a"
+  },
+  "tests": {
+    "path": "tools/qa/cxorbia-i3-b7-hf15-assignment-actions-source.test.mjs",
+    "blob": "5d407db78a74e6a304d2d95077ebcc878bcbacf1",
+    "syntax": "PASS",
+    "focalCases": 5,
+    "pass": 5,
+    "fail": 0,
+    "scope": "ISOLATED_SOURCE_JS_EMULATION",
+    "canonicalWorkflow": "PENDING",
+    "liveAdminE2E": "NOT_RUN",
+    "liveShopperE2E": "NOT_RUN",
+    "humanVisualAcceptance": "PENDING"
+  },
+  "change": "Replace only secondary assignment flat table with grouped country+branch cards, preserving exact HR/platform origin and same existing per-row context owner",
+  "invariants": [
+    "Platform postulations remain separate durable entities",
+    "No derived false postulations from HR assignments",
+    "No change to owner of provider write/readback or routeSource",
+    "No real HR/Auth/Firestore/Storage writes",
+    "No replay of prior paid financial events",
+    "No B2/B8 regression authorized",
+    "No production deployment"
+  ],
+  "pending": [
+    "HF-15 visual human approval, same-artifact DEV Admin+Shopper E2E",
+    "HF-12/14/19/20 visual Dashboard",
+    "HF-16 exact pending rail badge parity",
+    "HF-17 exact same-revision scheduled KPI parity",
+    "HF-18 future reservation windows",
+    "B2 name and HR-managed protection",
+    "B8 eight financial human observations including memory-only budget"
+  ],
+  "production": "DO_NOT_TOUCH"
+}

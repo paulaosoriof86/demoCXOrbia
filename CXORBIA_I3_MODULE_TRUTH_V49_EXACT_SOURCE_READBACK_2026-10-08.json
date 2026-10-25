@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "cxorbia.i3.module-truth.exact-git-tree-readback.v49",
+  "iteration": "I3",
+  "state": "PREPARED_NOT_ACTIVE_POINTER",
+  "dateLocal": "2026-10-08",
+  "expectedParent": "a648d191f2e9aaa3d60f6f13c8c53c18bd10f2cb",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "oldMatrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V48.json",
+  "oldMatrixBlob": "516a53763b151e353a16a45bf1ffd27969806481",
+  "newMatrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V49.json",
+  "productSourceSha": "4050e8afc952183131d48600b84260024ed78ac5",
+  "productTreeSha": "c3a58c3425d35a43c013de555d4e7f13fac7639b",
+  "domains": 21,
+  "ownerFiles": 95,
+  "sourceFiles": 148,
+  "ownerBlobsMatched": 95,
+  "sourceFileBlobsMatched": 148,
+  "distinctChangedPaths": [
+    "app/adapters/tya-cumulative-read-model-v2.js",
+    "app/modules/clientes.js",
+    "backend/runtime/cxorbia-finance-command-provider-v1.mjs"
+  ],
+  "sourceOnlyProof": true,
+  "ciRun1424": "IN_PROGRESS_AT_PREPARATION",
+  "blockAcceptanceUnchanged": true,
+  "phaseAComplete": false,
+  "allModulesMatch": false,
+  "productionTouched": false,
+  "realWrites": 0,
+  "descriptorPointerStillV48": true,
+  "nextAction": "Once run1424 terminal, commit descriptor pointer V49 + finish control false positive cleanup only if source/readback compatible. No new build/deploy for a control-only update."
+}

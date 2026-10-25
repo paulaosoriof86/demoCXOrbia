@@ -1,0 +1,62 @@
+{
+  "decision": "PASS_I3_B_CUMULATIVE_SOURCE_DECLARATION",
+  "productSourceSha": "daedb5d51f0e5391ee4fe7e74a0b5f385a986b61",
+  "productTree": "6c390799bae5e3d734c02b9f8bc484ff56369468",
+  "predecessorProductSourceSha": "29d645447c6c24bdacf903e035b7f7083e236890",
+  "deltas": [
+    {
+      "domain": "shoppers-mi-visitas-profile",
+      "files": [
+        {
+          "path": "app/adapters/tya-canonical-shopper-portal-v2.js",
+          "blob": "4306cdd897c088615c268f09d2335454804965ff"
+        },
+        {
+          "path": "app/modules/misvisitas.js",
+          "blob": "b4f95db57538e49e4483839601d0e62734967d23"
+        }
+      ],
+      "evidence": [
+        "report-like profile hierarchy",
+        "history row detail",
+        "tenant-local completion date gate"
+      ],
+      "state": "SOURCE_FIXED_PARTIAL"
+    },
+    {
+      "domain": "certifications",
+      "files": [
+        {
+          "path": "app/modules/cert.js",
+          "blob": "e99bea35c882810f2a1323119b40fd859a2fea3c"
+        }
+      ],
+      "evidence": [
+        "human fail-closed certification copy",
+        "no fabricated completion from HR schedule"
+      ],
+      "state": "SOURCE_FIXED_PARTIAL"
+    },
+    {
+      "domain": "finance-core-liquidation-costs",
+      "files": [
+        {
+          "path": "app/data/tya-payment-history-source-safe.js",
+          "blob": "a8d8461222c01f6450d7677675734c33b75b4ed2"
+        },
+        {
+          "path": "app/adapters/tya-financial-canonical-source-safe-adapter.js",
+          "blob": "9d2d1a9a541c74a6234353a44f0bfaa43bc1fb79"
+        }
+      ],
+      "evidence": [
+        "frozen historical cut through Jul",
+        "Aug paid 2026-10-02",
+        "Sep explicit-only no inference"
+      ],
+      "state": "SOURCE_FIXED_PARTIAL"
+    }
+  ],
+  "deploys": 0,
+  "production": false
+}

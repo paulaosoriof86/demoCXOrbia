@@ -1,0 +1,229 @@
+{
+  "schemaVersion": "cxorbia.i3.b1.shopper-human-fail-followup.20261007.v1",
+  "receiptType": "HUMAN_FAIL_EVIDENCE_CONTROL_ONLY",
+  "observedLocalDate": "2026-10-07",
+  "timezone": "America/Guatemala",
+  "observedTimeWindow": "18:32-18:53",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "headBefore": "491f8ecfd46b03229d18b8d265bcf6166c899902",
+  "productSourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
+  "productTreeSha": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
+  "observedDev": "cxorbia-backend-dev.web.app/index-backend-dev.html",
+  "humanDecision": "FAIL",
+  "statusByBlock": {
+    "B1": {
+      "technical": "PRIOR_RUN1357_PASS_NOT_HUMAN_ACCEPTANCE",
+      "tinyFish": "ENVIRONMENT_FAILURE_SESSION_RESTORE_FROZEN_EXCEPTION",
+      "human": "FAIL_20261007",
+      "blockLocked": false
+    },
+    "B2": {
+      "technical": "UNADJUDICATED_IN_THIS_HUMAN_FOLLOWUP",
+      "tinyFish": "NOT_RUN",
+      "human": "VISUAL_FINDINGS_RETAINED_NO_FULL_BLOCK_DECISION",
+      "blockLocked": false
+    },
+    "B3": {
+      "technical": "PRIOR_RUNS_NOT_SUFFICIENT_FOR_CURRENT_HUMAN_WORKFLOW",
+      "tinyFish": "NOT_RUN_AUTHENTICATED",
+      "human": "FUNCTIONAL_FINDINGS_RETAINED_NO_BLOCK_LOCK",
+      "blockLocked": false
+    },
+    "B4_to_B9": {
+      "human": "NOT_ACCEPTED_BY_THIS_RECEIPT",
+      "blockLocked": false
+    }
+  },
+  "humanObservations": [
+    {
+      "id": "HF-20261007-01",
+      "scope": "B1",
+      "classification": "PERFORMANCE_UX",
+      "observation": "Opening protected operation took approximately 12 seconds, with a synchronization screen",
+      "references": [
+        "B1-HF-09",
+        "VRM-134"
+      ],
+      "status": "FAIL"
+    },
+    {
+      "id": "HF-20261007-02",
+      "scope": "B1/B3",
+      "classification": "ACTION_FEEDBACK_DEFECT",
+      "observation": "Scheduling required approximately 7–10 seconds and the submit button did not communicate saving/loading state",
+      "references": [
+        "OBS-11",
+        "B1-HF-01",
+        "B1-HF-03",
+        "VRM-125",
+        "VRM-168"
+      ],
+      "status": "FAIL"
+    },
+    {
+      "id": "HF-20261007-03",
+      "scope": "B1/B3",
+      "classification": "MODAL_STACK_LIFECYCLE_DEFECT",
+      "observation": "Scheduling success appeared while dialog remained open; user had to close multiple layered backdrops, and navigation originated in Mi Dia but ended in Mis Visitas",
+      "references": [
+        "OBS-09",
+        "OBS-11",
+        "OBS-22",
+        "VRM-165"
+      ],
+      "status": "FAIL"
+    },
+    {
+      "id": "HF-20261007-04",
+      "scope": "B1/B3",
+      "classification": "OPERATIONAL_STATE_INCONSISTENCY",
+      "observation": "After schedule-confirmed toast, date was absent, Agendar remained enabled and Reprogramar absent, despite progress indicator moving forward; user also reported editing HR followed by refresh without a visible date",
+      "references": [
+        "OBS-10",
+        "OBS-11",
+        "B1-HF-03",
+        "VRM-125",
+        "VRM-168"
+      ],
+      "status": "FAIL"
+    },
+    {
+      "id": "HF-20261007-05",
+      "scope": "B1/B2/B3",
+      "classification": "VISUAL_DEFECT",
+      "observation": "Small low-contrast text on location/scenario/date, pale progress labels, flat date dialog, weak buttons, flat profile facts, insufficient visual hierarchy",
+      "references": [
+        "OBS-09",
+        "OBS-12",
+        "OBS-22",
+        "OBS-23",
+        "OBS-24",
+        "VRM-131",
+        "VRM-144",
+        "VRM-145",
+        "VRM-155",
+        "VRM-165"
+      ],
+      "status": "FAIL"
+    },
+    {
+      "id": "HF-20261007-06",
+      "scope": "B2",
+      "classification": "PROGRESSIVE_DISCLOSURE_DEFECT",
+      "observation": "Profile metric cards are somewhat improved, but all detailed personal/performance information is always expanded instead of disclosed by selection in a proper full-screen view or rich modal",
+      "references": [
+        "OBS-06",
+        "OBS-08",
+        "B1-HF-07",
+        "VRM-099",
+        "VRM-145"
+      ],
+      "status": "RETAIN_FOR_B2"
+    },
+    {
+      "id": "HF-20261007-07",
+      "scope": "B3",
+      "classification": "POSITIVE_ACTION_RETAIN",
+      "observation": "Instructivo opened from Mi Dia; Abrir en Recursos reached the resource; reading confirmation navigated to Mis Visitas and displayed read confirmation",
+      "references": [
+        "B1-HF-02",
+        "VRM-170"
+      ],
+      "status": "OBSERVED_POSITIVE_REQUIRES_DURABLE_RECEIPT_CHECK"
+    },
+    {
+      "id": "HF-20261007-08",
+      "scope": "B3/B9",
+      "classification": "PRESERVE_APPROVED_VISUAL_AUTHORITY",
+      "observation": "Visitas Disponibles and the postulation detail are still the premium/approved CXOrbia visual quality references. Do not degrade their layout or rebuild them",
+      "references": [
+        "OBS-12",
+        "OBS-22",
+        "OBS-23",
+        "OBS-24"
+      ],
+      "status": "DO_NOT_REGRESS"
+    }
+  ],
+  "forensicSourceFindings": [
+    {
+      "classification": "PROVEN_SOURCE",
+      "owner": "app/modules/misvisitas.js",
+      "lines": "47-63,200",
+      "cause": "withCommand disables the confirm button without changing its visible label; after provider ACK it awaits backend.refresh and CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY before close and notification"
+    },
+    {
+      "classification": "PROVEN_SOURCE",
+      "owner": "app/core/ui.js",
+      "lines": "127-150",
+      "cause": "modal appends a new .cx-ov to document.body; close() removes only its own overlay; no common modal stack lifecycle or route-wide cleanup"
+    },
+    {
+      "classification": "PROVEN_SOURCE",
+      "owner": "app/styles/layout.css",
+      "lines": "423-449,475-480",
+      "cause": "11.5px secondary location text, 10.5px progress explanatory labels and 11.5px profile labels coupled to low-contrast var(--t3)"
+    },
+    {
+      "classification": "PROVEN_SOURCE",
+      "owner": "app/styles/theme.css",
+      "lines": "25,181-186",
+      "cause": "var(--t3)=#8fa3bc on white/pale surfaces; generic compact modal shell without approved page-specific hierarchy"
+    },
+    {
+      "classification": "PROVEN_SOURCE",
+      "owner": "app/adapters/tya-cumulative-read-model-v2.js",
+      "lines": "230-266",
+      "cause": "HR-managed base visit's agendada/scheduled field remains authoritative; exact protected visit overlay only promotes allowed independent shopper-owned evidence, not scheduling date"
+    },
+    {
+      "classification": "PROVEN_SOURCE",
+      "owner": "app/modules/operacion-extra.js",
+      "lines": "115-185",
+      "cause": "Profile data and detail facts are rendered expanded, with small labels and generic flat groups"
+    }
+  ],
+  "hrReadOnlyObservation": {
+    "sheet": "HR Guatemala - Sincronizacion Google Sheets",
+    "tab": "OCTUBRE 26",
+    "row": 6,
+    "branch": "C. Paseo Cayala",
+    "scheduledDate": "BLANK_IN_LAST_DIRECT_READ",
+    "controlState": "P x Agendar",
+    "interpretation": "DISCREPANCY_REQUIRES_EXACT_REVISION_AND_PROVIDER_READBACK; NOT_USER_FAULT_OR_PARSER_FAILURE_BY_ASSUMPTION",
+    "doNotInvoke": "/api/tya/cinepolis/hr-live?format=json&fresh=1"
+  },
+  "referenceDesign": {
+    "cxorbiaProtectedSurfaces": [
+      "Visitas Disponibles",
+      "Ficha de postulacion"
+    ],
+    "externalMethodOnly": "POWS D-068 protects owner-approved typography, contrast separately on complete surfaces, and human accepts each changed surface; do not copy PWOS colors or brand"
+  },
+  "mandatoryNextGate": [
+    "EXACT_OWNER_ROOT_CAUSE",
+    "VISUAL_BEFORE_AFTER_USING_APPROVED_CXORBIA_REFERENCE",
+    "ONE_MODAL_ONLY_NO_STACK",
+    "SAVING_PROGRESS_VISIBLE",
+    "OPERATIONAL_SCHEDULE_ACK_READBACK_RELOAD_COHERENCE",
+    "INSTRUCTIVO_ACK_RELOAD",
+    "NO_MICROTYPOGRAPHY_CONTRAST",
+    "EXACT_DEV_SAME_ARTIFACT_ACTION_E2E",
+    "HUMAN_REVIEW_PASS_OR_FAIL_WITH_CHECKLIST",
+    "B1_RECEIPT_ONLY_AFTER_PAULA_PASS"
+  ],
+  "noNewVrmWithoutExactRoot": true,
+  "security": {
+    "githubProductSourceChanged": false,
+    "hostingDeploy": false,
+    "production": "DO_NOT_TOUCH",
+    "hrWrite": false,
+    "firestoreWrite": false,
+    "authWrite": false,
+    "storageWrite": false,
+    "payments": false,
+    "tinyFishResult": "ENVIRONMENT_FAILURE_SESSION_RESTORE_NOT_PRODUCT_FAIL"
+  },
+  "nextExactBlock": "B1_REMEDIATE_MODAL_LIFECYCLE_SCHEDULE_READBACK_AND_APPROVED_VISUAL_STYLE__CROSS_B3_RETENTION__SAME_CUMULATIVE_SOURCE__BEFORE_AFTER__E2E__PAULA_REVIEW"
+}

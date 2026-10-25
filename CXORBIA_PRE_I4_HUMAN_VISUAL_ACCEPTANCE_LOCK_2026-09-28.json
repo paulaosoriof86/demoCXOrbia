@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "cxorbia.recovery.pre-i4-human-visual-acceptance.v1",
+  "frozenAt": "2026-09-28T21:50:00Z",
+  "authority": "EXPLICIT_PAULA_PRE_I4_VISUAL_ACCEPTANCE_REQUIREMENT",
+  "i3TechnicalState": "GO",
+  "i4EntryBlocked": true,
+  "production": "DO_NOT_TOUCH",
+  "productSourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
+  "certifiedArtifactSha256": "d36beacdbb9d3dfcc4d034ffaa154c329e8f2184987450c59c9075ec5274fe9a",
+  "gate21ManifestSha256": "7f6fa1ad85dc11d8f295f5782cd4d3b5a556fb1b6cff004f2a0506c4a7b7d507",
+  "rule": "No production replacement may begin until Paula visually inspects the DEV candidate in Admin and Shopper roles, screenshot evidence is critically reviewed against contracts and fresh HR, all discovered inconsistencies are classified and closed, and PRE_I4_HUMAN_VISUAL_ACCEPTANCE is PASS.",
+  "reviewUrl": "https://cxorbia-backend-dev.web.app",
+  "adminExpectedRouteCount": 34,
+  "shopperExpectedRouteCount": 12,
+  "freshHrAtCaptureTimeRequired": true,
+  "reviewBeyondUserComments": true,
+  "preserveEveryFindingUntilClosed": true,
+  "passCondition": "Fresh HR runtime truth must first be restored and August/September KPIs revalidated; then all frozen Admin findings must be closed automatically. Paula is not required to repeat the lost Admin screenshot journey.",
+  "state": "HOLD",
+  "adminForensicAuditPath": "CXORBIA_PRE_I4_ADMIN_FORENSIC_AUDIT_2026-09-28.json",
+  "openAdminFindings": [
+    "PREI4-ADMIN-002",
+    "PREI4-ADMIN-003",
+    "PREI4-ADMIN-004",
+    "PREI4-ADMIN-005",
+    "PREI4-ADMIN-006",
+    "PREI4-ADMIN-007",
+    "PREI4-ADMIN-008"
+  ],
+  "liveHrState": "HOLD_MAPPING_FAILURE_STALE_RUNTIME_SNAPSHOT",
+  "liveHrDriftLock": "CXORBIA_PRE_I4_LIVE_HR_DRIFT_LOCK_2026-09-28.json"
+}

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "cxorbia.i3.b2.in-memory-signed-self-update.source-test.v1",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "status": "HOLD",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "parent": "f254b02afb39b9e403a6e47538931b5f3bfd8f8a",
+  "tree": "21202885f8ad52c7a6a44955c2f2b34597796742",
+  "productSourceSha": "797050085d1e3347b6d56322f003a3a293790710",
+  "productTree": "607196f740203d538df8e22e424874fe547b3d59",
+  "finding": "VRM-273",
+  "linkedObservation": "HF-20261008-03",
+  "testKind": "IN_MEMORY_ONLY_NO_REAL_FIRESTORE_AUTH_HR_MUTATIONS",
+  "codeOwner": "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs",
+  "ciOwner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml::canonical-candidate-authority",
+  "verification": "PENDING_CI_RUN",
+  "assertions": [
+    "signed self-scoped shopper.update ACK",
+    "fresh readback",
+    "idempotent replay providerWrites=0",
+    "HR original name/id/country invariant",
+    "Auth UID/login/claims invariant",
+    "fresh composer rehydrate renders corrected display",
+    "cross-owner denied",
+    "HR-managed name edit denied",
+    "no real user writes"
+  ],
+  "workflowBytes": 511993,
+  "productFilesChanged": 0,
+  "remoteAck": "PENDING_ISOLATED_DEV_FIXTURE",
+  "humanVisual": "NOT_YET_REQUIRED",
+  "nextExactAction": "Verify CI source test; then prove signed DEV fixture ACK, fresh protected readback and cleanup without real shopper data changes, before requesting a single human visual checkpoint."
+}

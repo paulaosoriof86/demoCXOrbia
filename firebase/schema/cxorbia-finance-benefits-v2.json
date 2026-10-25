@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "cxorbia-finance-benefits-v2",
+  "status": "draft-no-write",
+  "purpose": "Modelo financiero profundo para beneficios shopper, lotes de pago, movimientos reales, conciliacion y Mis Beneficios.",
+  "principles": [
+    "Beneficio calculado no es lo mismo que pago real.",
+    "Reembolso de boleto y combo se separa de honorario.",
+    "Pago shopper se confirma con lote o movimiento financiero.",
+    "Reembolso de cliente/franquicia hacia la consultora se modela separado.",
+    "Mis Beneficios debe filtrar siempre por shopperId autenticado.",
+    "GT y HN pueden tener moneda y honorario distintos."
+  ],
+  "collections": {
+    "shopperBenefits": {
+      "path": "tenants/{tenantId}/shopperBenefits/{benefitId}",
+      "purpose": "Beneficio calculado por visita para un shopper.",
+      "fields": {
+        "tenantId": "string",
+        "benefitId": "string",
+        "projectId": "string",
+        "visitId": "string",
+        "shopperId": "string",
+        "country": "GT|HN|OTHER",
+        "currency": "GTQ|HNL|USD|OTHER",
+        "honorariumAmount": "number",
+        "ticketReimbursementAmount": "number",
+        "comboReimbursementAmount": "number",
+        "otherReimbursementAmount": "number",
+        "totalCalculated": "number",
+        "status": "calculated|pendingValidation|scheduled|partiallyPaid|paid|observed|cancelled",
+        "source": "hr|manual|import|adjustment",
+        "sourceVisitId": "string|null",
+        "paymentLotId": "string|null",
+        "financialMovementId": "string|null",
+        "createdAt": "timestamp",
+        "updatedAt": "timestamp"
+      }
+    },
+    "paymentLots": {
+      "path": "tenants/{tenantId}/paymentLots/{paymentLotId}",
+      "purpose": "Lote de pago a shoppers o proveedores operativos.",
+      "fields": {
+        "tenantId": "string",
+        "paymentLotId": "string",
+        "country": "GT|HN|OTHER",
+        "currency": "GTQ|HNL|USD|OTHER",
+        "status": "draft|scheduled|paid|partiallyPaid|cancelled|observed",
+        "benefitIds": "array",
+        "totalAmount": "number",
+        "scheduledDate": "timestamp|null",
+        "paidDate": "timestamp|null",
+        "createdAt": "timestamp",
+        "createdBy": "uid|string"
+      }
+    },
+    "financialMovements": {
+      "path": "tenants/{tenantId}/financialMovements/{movementId}",
+      "purpose": "Movimiento financiero real importado o registrado.",
+      "fields": {
+        "tenantId": "string",
+        "movementId": "string",
+        "country": "GT|HN|OTHER",
+        "currency": "GTQ|HNL|USD|OTHER",
+        "date": "timestamp|string",
+        "amount": "number",
+        "direction": "income|expense",
+        "category": "shopperPayment|clientReimbursement|bankFee|tax|other",
+        "counterparty": "string|null",
+        "status": "imported|classified|matched|reconciled|ignored|observed",
+        "source": "excel|bank|manual|import",
+        "createdAt": "timestamp"
+      }
+    },
+    "reconciliations": {
+      "path": "tenants/{tenantId}/reconciliations/{reconciliationId}",
+      "purpose": "Conciliacion entre beneficios/lotes y movimientos reales.",
+      "fields": {
+        "tenantId": "string",
+        "reconciliationId": "string",
+        "entityType": "shopperBenefit|paymentLot|financialMovement|clientReimbursement",
+        "entityId": "string",
+        "matchedMovementIds": "array",
+        "status": "unmatched|suggested|matched|reconciled|dismissed|needsReview",
+        "confidence": "number",
+        "createdAt": "timestamp",
+        "createdBy": "uid|string"
+      }
+    },
+    "franchiseReimbursements": {
+      "path": "tenants/{tenantId}/franchiseReimbursements/{reimbursementId}",
+      "purpose": "Reembolso del cliente/franquicia hacia la consultora, separado de pagos shopper.",
+      "fields": {
+        "tenantId": "string",
+        "reimbursementId": "string",
+        "projectId": "string",
+        "country": "GT|HN|OTHER",
+        "currency": "GTQ|HNL|USD|OTHER",
+        "periodId": "string",
+        "expectedAmount": "number",
+        "receivedAmount": "number",
+        "status": "expected|partial|received|observed|cancelled",
+        "movementIds": "array",
+        "createdAt": "timestamp"
+      }
+    }
+  },
+  "countryDefaults": {
+    "GT": { "currency": "GTQ", "honorariumAmount": 60 },
+    "HN": { "currency": "HNL", "honorariumAmount": 200 }
+  },
+  "frontendContract": {
+    "misBeneficios": "Debe leer shopperBenefits filtrando por shopperId autenticado. Si no hay shopperId o no hay beneficios, mostrar vacio; nunca mostrar todo.",
+    "finanzas": "Debe separar beneficio calculado, lote, movimiento real y conciliacion."
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "contractId": "phase-a-human-review-conflict-queue-plan-v1",
+  "project": "CXOrbia TyA",
+  "date": "2026-07-09",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pr": 7,
+  "status": "documented_only",
+  "purpose": "Define the human review and conflict queue plan for Phase A TyA before future DEV/import/write steps.",
+  "scope": {
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "phase": "Phase A",
+    "source": "HR operational source plus source-safe TyA inputs"
+  },
+  "currentSafeState": {
+    "runtimeActive": false,
+    "imports": false,
+    "writes": false,
+    "hrWrites": false,
+    "providerLive": false,
+    "payments": false,
+    "production": false,
+    "sensitiveDataInRepo": false
+  },
+  "conflictTypes": [
+    "shopper_identity_conflict",
+    "shopper_missing_from_platform_but_assigned_in_hr",
+    "assignment_platform_vs_hr_conflict",
+    "visit_duplicate_candidate",
+    "certification_already_submitted_vs_missing_platform_record",
+    "liquidation_or_payment_status_conflict",
+    "questionnaire_source_conflict",
+    "project_config_conflict",
+    "source_recency_or_source_lock_conflict"
+  ],
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "visitId_or_hrRowId",
+    "shopperId_or_provisionalShopperRef",
+    "assignmentSource",
+    "assignmentSyncStatus",
+    "lastSyncedAt_or_sourceSnapshotAt"
+  ],
+  "reviewItemShape": {
+    "reviewId": "string",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "conflictType": "string",
+    "severity": "P0 | P1 | P2",
+    "entityType": "shopper | visit | assignment | certification | liquidation | payment_control | project_config",
+    "entityRef": "opaque reference",
+    "sourceARef": "opaque reference",
+    "sourceBRef": "opaque reference or null",
+    "recommendedAction": "approve_hr | approve_platform | create_missing_shopper | preserve_certification | hold_payment_control | merge_after_review | block | needs_input",
+    "allowedActions": [],
+    "blockedActions": [],
+    "reason": "string",
+    "status": "open | in_review | resolved | blocked | deferred",
+    "createdAt": "ISO-8601",
+    "resolvedAt": "ISO-8601 or null"
+  },
+  "rules": [
+    "Do not deduplicate by visual name only.",
+    "Do not overwrite HR or platform assignment silently.",
+    "Do not recreate historical shoppers if stable identity can be resolved or reviewed.",
+    "Do not ask for certifications already submitted again.",
+    "Do not treat June as pending visits; it is liquidation/payment control.",
+    "Do not mark real payment executed from review queue alone.",
+    "Do not log raw sensitive data; use opaque refs."
+  ],
+  "notAuthorizedHere": [
+    "create_or_update_real_records",
+    "real_import",
+    "hr_write",
+    "payment_run",
+    "provider_live",
+    "deploy",
+    "production",
+    "rewrite_app_modules_or_core"
+  ],
+  "claudeImpact": [
+    "show_conflicts_as_review_required",
+    "show_missing_hr_assigned_shopper_as_review_or_create_missing_pending",
+    "show_certification_preservation",
+    "show_liquidation_payment_control_without_real_payment",
+    "do_not_hide_conflicts_or_resolve_by_name"
+  ],
+  "academiaImpact": [
+    "explain_review_queue",
+    "explain_stable_keys",
+    "explain_assignment_sources",
+    "explain_certification_preservation",
+    "explain_june_liquidation_payment_control",
+    "explain_no_private_data_in_review_logs"
+  ]
+}

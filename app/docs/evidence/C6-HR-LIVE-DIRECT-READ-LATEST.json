@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "cxorbia.c6.hr-live-direct-read.evidence.v1",
+  "decision": "PASS_C6_HR_LIVE_DIRECT_READ_CURRENT_SOURCE",
+  "capturedAt": "2026-08-11",
+  "source": {
+    "type": "google_sheets_shared_live",
+    "title": "HR Guatemala - Sincronizacion Google Sheets",
+    "sourceIdSha256": "796d2ae2b7d3f948efce7d799ddb7c81684b94e274116c24322d5f742136b90e",
+    "rawSourceIdStored": false,
+    "rawSourceUrlStored": false,
+    "shared": true,
+    "modifiedAt": "2026-08-10T17:42:27.338Z",
+    "timeZone": "America/Guatemala"
+  },
+  "currentPeriod": {
+    "periodKey": "2026-08",
+    "countryTabs": [
+      {
+        "country": "GT",
+        "tabFingerprintLabel": "AUGUST_CURRENT_GT",
+        "visitRows": 34,
+        "countryColumnValidation": "PASS_GUATEMALA"
+      },
+      {
+        "country": "HN",
+        "tabFingerprintLabel": "AUGUST_CURRENT_HN",
+        "visitRows": 10,
+        "countryColumnValidation": "PASS_HONDURAS"
+      }
+    ],
+    "totalVisitRows": 44,
+    "expectedTyAOperationalCount": 44,
+    "countMatch": true
+  },
+  "liveRead": {
+    "metadataRead": true,
+    "gtCurrentRangeRead": true,
+    "hnCurrentRangeRead": true,
+    "providerReadsLogical": 3,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false
+  },
+  "classification": {
+    "hrSourceMapped": true,
+    "hrSourceLive": true,
+    "currentPeriodReadable": true,
+    "countrySplitCurrent": true,
+    "hrRemappingRequired": false,
+    "newHrProviderWorkflowRequired": false,
+    "remainingRuntimeVerificationBelongsTo": "M7_FINAL_ACCUMULATIVE_MULTIROLE_SMOKE"
+  },
+  "privacy": {
+    "rawNamesStored": false,
+    "rawPhonesStored": false,
+    "rawEmailsStored": false,
+    "rawRowsStored": false
+  }
+}

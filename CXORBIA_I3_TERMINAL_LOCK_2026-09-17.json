@@ -1,0 +1,65 @@
+{
+  "lockId": "CXORBIA-I3-TERMINAL-LOCK-2026-09-17",
+  "status": "GO",
+  "iteration": "I3",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "productSource": {
+    "sha": "b94911a4748c03c2e604415e8a97ee091da96218",
+    "treeSha": "e3efd4afa9ffcb973e66e40e08798eba4e6c0f34"
+  },
+  "controlPlane": {
+    "headSha": "c26bfed49a8716dc23feb871d2951683b6341b53",
+    "treeSha": "a6850721d7fed03b659ab7f166c3f66c139bc4c3"
+  },
+  "terminalRun": {
+    "runId": 35247813214,
+    "conclusion": "success"
+  },
+  "certifiedArtifact": {
+    "artifactId": 10508358915,
+    "name": "cxorbia-recovery-i3-single-source-certification-35247813214",
+    "githubDigest": "sha256:c8369fae797689bb5935307524975bc5dba08747e09e49d5c125c3c548de84c9",
+    "sourceTarSha256": "5e223800ccc37225047f476ca442773ad8cc36d36940f309bce9446dc4715bef",
+    "buildCount": 1,
+    "rebuildAfterCertification": false
+  },
+  "gate20": {
+    "decision": "PASS_GATE20_FOCAL_VISUAL_DRIFT",
+    "sourceSha": "b94911a4748c03c2e604415e8a97ee091da96218",
+    "evidenceSha256": "9e7e4416e9e3b0d1d5da1a6878c8dc2a08f2e45d170bcc4b285b08f9c2ef33e3"
+  },
+  "gate21": {
+    "verdict": "PASS_GATE21_ARTIFACT_FINGERPRINT",
+    "artifactId": 10508334142,
+    "artifactName": "cxorbia-recovery-i3-gate21-35247813214",
+    "githubDigest": "sha256:1de0ba79506213fc3bff5c1450c5a751bcedd2744dc8d018565c587b29f7c83b",
+    "manifestSha256": "9b1e2d2f6913b8f05a892dbee72e30659f6fe5efc12114a94eed70751baced6a"
+  },
+  "devCertified": {
+    "hostingReleaseName": "sites/cxorbia-backend-dev/channels/live/releases/1789663300009000",
+    "hostingVersionName": "sites/cxorbia-backend-dev/versions/6f0e31acf1493733",
+    "hostingReleaseTime": "2026-09-17T16:41:40.009Z",
+    "runtimeRevision": "cxorbia-live-hr-dev-00075-8dt",
+    "runtimeImageDigest": "sha256:c65d65cf8fb428af3d711e2e88a2bbff49e5919d6b03af01138a2b9af67deb9b",
+    "immutableRuntimeImage": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:c65d65cf8fb428af3d711e2e88a2bbff49e5919d6b03af01138a2b9af67deb9b"
+  },
+  "promotionContract": {
+    "nextIteration": "I4",
+    "target": "https://tya-plataforma.web.app/",
+    "exactCertifiedArtifactRequired": true,
+    "noRebuild": true,
+    "noRecomposition": true,
+    "productionAuthorizationRequired": true
+  },
+  "continuity": {
+    "i0Closed": true,
+    "i1Closed": true,
+    "i2Closed": true,
+    "i3Closed": true,
+    "reopenOnlyOnConcreteReproducibleDrift": true,
+    "chatIsNotAuthority": true,
+    "checkpoint": "CHECKPOINT_I3_TERMINAL_GO_2026-09-17.md"
+  },
+  "productionTouched": false
+}

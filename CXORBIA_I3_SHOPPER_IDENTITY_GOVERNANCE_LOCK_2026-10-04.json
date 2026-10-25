@@ -1,0 +1,127 @@
+{
+  "lockId": "CXORBIA-I3-SHOPPER-IDENTITY-GOVERNANCE-2026-10-04",
+  "status": "FROZEN_USER_ACCEPTANCE_UNTIL_I3_GO_OR_EXPLICIT_SUPERSESSION",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadBeforeFreeze": "a8946513de16de9ac0b76d0a06872b97b84ffe43",
+  "production": "DO_NOT_TOUCH",
+  "authority": "Explicit Admin acceptance requirement from Paula: the platform must let Admin identify, select and resolve shopper profiles requiring merge or deletion; system deduplication/normalization remains mandatory and cannot be replaced by manual work.",
+  "currentProductObservation": {
+    "productSourceSha": "784bc45c29795f35ffaeef019883a41ca872939b",
+    "productTree": "7b35abbebc254009b8a114c927b03b5b52d65ee7",
+    "existingCapabilities": [
+      "Admin shopper profile already exposes Revisar / fusionar identidad",
+      "manualIdentityAdjudication already supports selecting one or more related profiles and choosing the canonical profile",
+      "provider shopper.identity.adjudicate already requires Admin human confirmation, provider ACK and durable readback",
+      "identity review badges/queue normalization already exist"
+    ],
+    "missingAcceptanceCapabilities": [
+      "No first-class Shoppers filter/queue for every profile requiring identity decision or review",
+      "No list-level selection mode for resolving multiple profiles without opening profiles one by one",
+      "No provider-backed Admin delete/safe-retire action exposed from Shoppers",
+      "No durable Admin resolution option for confirming candidates are distinct and clearing the review without merging"
+    ]
+  },
+  "frozenRequirements": {
+    "reviewFilter": {
+      "label": "Requieren revisión / decisión",
+      "sourceOfTruth": "durable provider identity review state + exact alias/identity hold state; never chat memory or QA-only local state",
+      "mustInclude": [
+        "identity review queue",
+        "exact alias candidates",
+        "identity/mapping/Auth holds requiring human decision"
+      ],
+      "mustPersistAcrossReload": true,
+      "naturalLanguageUi": true
+    },
+    "selection": {
+      "listLevelMultiSelect": true,
+      "allowSingleAndMultipleProfiles": true,
+      "mergeRequiresAtLeastTwo": true,
+      "showSelectedCount": true,
+      "preserveCurrentSearchAndFilters": true
+    },
+    "actions": [
+      {
+        "uiAction": "Fusionar identidades",
+        "providerCommand": "shopper.identity.adjudicate",
+        "rules": [
+          "Admin chooses canonical explicitly",
+          "Admin confirms same human explicitly",
+          "preview impacted visits/certifications/postulations/reservations/liquidations/finance/Auth before commit",
+          "preserve HR authority and historical visit rows",
+          "provider ACK + exact idempotent replay + durable readback required"
+        ]
+      },
+      {
+        "uiAction": "Mantener separadas / No son la misma persona",
+        "providerCommand": "shopper.identity.review.resolve",
+        "rules": [
+          "durable resolution reason/evidence required",
+          "must remove resolved review from active queue",
+          "must re-open only on new contradictory exact evidence",
+          "no identity remap"
+        ]
+      },
+      {
+        "uiAction": "Eliminar perfil",
+        "providerCommand": "shopper.delete",
+        "rules": [
+          "Admin confirmation + reason required",
+          "dependency preview required",
+          "current HR-authoritative canonical identity or active HR assignment cannot be blindly deleted",
+          "if active authoritative dependencies exist, block delete and offer merge/keep-separate resolution",
+          "disable/remove active Auth and membership only when safe",
+          "remove from active shopper read model",
+          "preserve immutable audit/tombstone and required historical/financial/legal references",
+          "never delete external HR rows",
+          "provider ACK + idempotent replay + durable readback required"
+        ]
+      }
+    ],
+    "systemResponsibility": {
+      "automatedDeduplicationRequired": true,
+      "automatedNormalizationRequired": true,
+      "exactTechnicalEvidenceMayBeResolvedAutomaticallyOnlyWhenContractDeterministic": true,
+      "fuzzyOrNameOnlyAutoMergeForbidden": true,
+      "ambiguousCasesMustEnterReviewQueue": true,
+      "userManualResolutionDoesNotReplacePopulationDedupProof": true
+    },
+    "audit": {
+      "adminOnly": true,
+      "actorRequired": true,
+      "reasonRequired": true,
+      "beforeAfterRequired": true,
+      "sourceRevisionRequired": true,
+      "providerReceiptRequired": true,
+      "rawTechnicalIdsNotPrimaryUi": true
+    }
+  },
+  "acceptanceGates": [
+    "review filter count equals durable unresolved review population",
+    "list-level multi-select works with search/filter state",
+    "merge from Admin succeeds with ACK/replay/readback and no duplicate operational references",
+    "keep-separate resolution persists and does not reappear after reload without new evidence",
+    "delete action is available, safe, audited and blocks destructive deletion of HR-authoritative/currently referenced identities",
+    "safe deleted/retired profile disappears from active Admin shopper list and cannot authenticate",
+    "system population dedup/normalization still runs and unresolved ambiguous cases route to review",
+    "VRM-215 population-wide shopper proof reruns after fixes and must pass",
+    "representative Admin and Shopper live E2E remain PASS",
+    "production remains untouched until I3 GO and explicit I4 authorization"
+  ],
+  "executionOrder": [
+    "Finish current VRM-218 exact owner diagnostic for 13 population holds + unresolved HR identity",
+    "Implement VRM-221 in the same bounded Shopper owner block; no parallel branch/workflow/candidate",
+    "Run source tests for merge/distinct/delete/review queue + existing shopper provider regressions",
+    "Materialize once in DEV",
+    "Run Admin browser E2E for filter, selection and all allowed resolution alternatives",
+    "Run VRM-215 population-wide shopper proof on the same artifact",
+    "Only after all Shopper P0 are PASS continue terminal I3 gates"
+  ],
+  "noNewMethodology": true,
+  "noNewBranch": true,
+  "noNewCandidate": true,
+  "noReimport": true,
+  "productionTouched": false
+}

@@ -1,0 +1,61 @@
+{
+  "decision": "PASS_I3_B_CUMULATIVE_APPROVED_NOT_COMPOSED_SOURCE_PROOF",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "observedAt": "2026-10-07T03:53:24Z",
+  "productSourceSha": "29d645447c6c24bdacf903e035b7f7083e236890",
+  "productTree": "03fcfc8d3c16c9ed4e983e9961022c3a5f6ae5cf",
+  "predecessorProductSourceSha": "17373b4f79a68fed4155fed67aa23d3306fda2e2",
+  "productFilesChanged": [
+    "app/modules/beneficios.js",
+    "app/modules/dashboard.js",
+    "app/modules/postulaciones.js"
+  ],
+  "syntaxChecks": {
+    "beneficios": true,
+    "dashboard": true,
+    "postulaciones": true
+  },
+  "shellSemanticProof": {
+    "approvedAuthorityCommit": "751d01397bcd85903456e5cb78e3e5ce41161b17",
+    "approvedLayoutSelectorCount": 283,
+    "missingApprovedLayoutSelectors": 0,
+    "laterP0AdditionsPreserved": true,
+    "wholeFileRevert": false
+  },
+  "benefits": {
+    "hierarchyRecovered": true,
+    "chronologicalOldestToNewest": true,
+    "rowDrilldown": true,
+    "canonicalFinanceAuthorityPreserved": true
+  },
+  "dashboard": {
+    "primarySurfaceMultiSelect": true,
+    "rowDetail": true,
+    "contextActions": true,
+    "bulkWhatsApp": true,
+    "bulkEmail": true,
+    "requestAction": true,
+    "agendaAction": true,
+    "canonicalOwnerHandoff": true
+  },
+  "postulations": {
+    "operationalAssignmentsIncludedAsRequestTargets": true,
+    "durableNotificationOwnerPreserved": true,
+    "dashboardHandoffConsumer": true
+  },
+  "b1LiveFoundation": {
+    "runId": 37566071161,
+    "runNumber": 1292,
+    "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+    "identityRepresentatives": [
+      "Julissa Flores",
+      "Priscila López",
+      "Paula Osorio"
+    ],
+    "duplicateActivePrincipals": 0,
+    "unresolvedAssignedVisits": 0
+  },
+  "deploys": 0,
+  "production": false
+}

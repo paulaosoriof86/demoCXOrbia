@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "cxorbia.canonical-backend-readonly-inventory.request.v1",
+  "enabled": true,
+  "authorizationSource": "current_conversation_corte6_auth_rbac_readonly_status_proof",
+  "mode": "READ_ONLY_CANONICAL_BACKEND_INVENTORY",
+  "targetProjectId": "cxorbia-backend-dev",
+  "classification": "CXORBIA_DEV_BACKEND_TENANT_TYA_NOT_LEGACY_PLATFORM",
+  "providerWrites": 0,
+  "production": false,
+  "merge": false,
+  "sensitiveValuesExported": false,
+  "triggerNonce": 9
+}

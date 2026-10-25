@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "cxorbia.recovery.pre-i4-cert-res.runtime-only-materialization.v1",
+  "frozenAt": "2026-09-30",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "status": "SOURCE_PROVEN_READY_RUNTIME_ONLY",
+  "sourceSha": "f769041ddd6adacb5bb16b0eeddab7d08b47a7e8",
+  "sourceTree": "d83f57ed07ef684cd274d4b1db3a52d91f4ff400",
+  "sourceProof": {
+    "runId": 36792808797,
+    "jobId": 110149369214,
+    "artifactId": 11132915262,
+    "artifactDigest": "sha256:a24d3d1227dec87aeb6fbec71178c12d7a3752714f6633bc141beba30309dc52"
+  },
+  "immutableHosting": "sites/cxorbia-backend-dev/versions/a0054d58a85a7d43",
+  "rulesAuthorityRunId": 36789283777,
+  "materialization": {
+    "maxBuilds": 1,
+    "maxRuntimeDeploys": 1,
+    "maxHostingDeploys": 0,
+    "maxRulesDeploys": 0
+  },
+  "liveAlreadyProven": {
+    "cert001": true,
+    "shopperAttempt100Ack": true
+  },
+  "remainingP0": [
+    "PREI4-CERT-002",
+    "PREI4-RES-001"
+  ],
+  "production": "DO_NOT_TOUCH"
+}

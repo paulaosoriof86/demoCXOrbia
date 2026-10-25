@@ -1,0 +1,47 @@
+{
+  "lockId": "CXORBIA-I3-MICRO-ITERATION-PLAN-LOCK-2026-09-17",
+  "status": "FROZEN",
+  "iteration": "I3",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedParentSha": "b7a892a149905c6f616c13d5f69de27963c9ebf7",
+  "expectedParentTree": "a346b58c632b573444ed2d0ba298368f883e40bc",
+  "i3CertificationSourceSha": "b7a892a149905c6f616c13d5f69de27963c9ebf7",
+  "i3CertificationSourceTree": "a346b58c632b573444ed2d0ba298368f883e40bc",
+  "classification": "AUTH_FAILURE",
+  "oneSourceOneBuildOneArtifact": true,
+  "executionEngine": "GITHUB_ACTIONS_SERVER_SIDE",
+  "chatIsAuthority": false,
+  "resumeAuthority": [
+    "branchHead",
+    "workflowRunId",
+    "jobs",
+    "artifacts",
+    "gate21Manifest",
+    "terminalLock"
+  ],
+  "microIterations": [
+    "MI3.1_SOURCE_LOCK",
+    "MI3.2_CONTROL_PLANE_BINDING",
+    "MI3.3_SERVER_CERTIFICATION",
+    "MI3.4_GATE21_INTEGRITY",
+    "MI3.5_I3_TERMINAL_LOCK",
+    "MI4.1_IMMUTABLE_PRODUCTION_REPLACEMENT"
+  ],
+  "gate21MustConsumeSameCertificationArtifact": true,
+  "gate21RebuildAllowed": false,
+  "gate21DeployAllowed": false,
+  "historicalProductShaAllowedAsReleaseSource": false,
+  "productionTouched": false,
+  "cinepolisP0Priority": true,
+  "nextAction": "SERVER_SIDE_CERTIFICATION_THEN_LIVE_HUMAN_ACCEPTANCE",
+  "productionAuthorizationRequired": true,
+  "frozenDocument": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-17_I3_MICRO_ITERATIONS_FROZEN.md",
+  "ownerCredentialRule": {
+    "username": "nombre.apellido",
+    "password": "Nombre123*",
+    "version": "tya-shopper-nombre-apellido-v1",
+    "plaintextPersistence": false,
+    "profileRenameKeepsCredentialInvariant": true
+  }
+}

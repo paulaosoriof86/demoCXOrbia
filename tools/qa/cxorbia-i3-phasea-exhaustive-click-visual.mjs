@@ -1,0 +1,541 @@
+import fs from 'node:fs';
+import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
+import {getAuth} from 'firebase-admin/auth';
+import {getFirestore} from 'firebase-admin/firestore';
+import {chromium} from 'playwright';
+
+const OUT=String(process.env.PHASEA_CLICK_OUT||''),ROOT=String(process.env.HOSTING_URL||'').replace(/\/$/,''),EXPECTED_HR=String(process.env.EXPECTED_HR_REVISION||'');
+const FULL_SCOPE=JSON.parse(fs.readFileSync('CXORBIA_I3_FULL_MODULE_EXHAUSTIVE_SCOPE_2026-10-07.json','utf8'));
+if(!OUT||!ROOT||!EXPECTED_HR)throw new Error('ENVIRONMENT_FAILURE:CLICK_E2E_ENV');
+fs.mkdirSync(OUT,{recursive:true});
+const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[],norm=v=>str(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim(),slug=v=>norm(v).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const tenantId='tya',projectId='cinepolis',PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV';
+const URL=ROOT+'/index-backend-dev.html?cxBackendPreview='+PREVIEW+'&cxProjectId='+projectId+'&cxProtectedRuntime='+PROTECTED+'&phaseaclick='+Date.now();
+if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
+const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(tenantId);
+const [metaRes,bodyRes]=await Promise.all([
+ fetch(ROOT+'/api/'+tenantId+'/'+projectId+'/hr-live?format=meta&click='+Date.now(),{headers:{'Cache-Control':'no-cache'},signal:AbortSignal.timeout(120000)}),
+ fetch(ROOT+'/api/'+tenantId+'/'+projectId+'/hr-live?format=json&click='+Date.now(),{headers:{'Cache-Control':'no-cache'},signal:AbortSignal.timeout(120000)})
+]);
+if(!metaRes.ok||!bodyRes.ok)throw new Error('PROVIDER_FAILURE:CLICK_HR_HTTP');
+const meta=await metaRes.json(),body=await bodyRes.json(),snap=body.snapshot||body.data||body,revision=str(meta.revision||body.revision||snap.sourceRevision);
+if(revision!==EXPECTED_HR||meta.ok!==true||meta.revisionStable!==true)throw new Error('PROVIDER_FAILURE:CLICK_HR_REVISION');
+const periodKey=str(snap.source?.currentCalendarPeriodKey||body.currentCalendarPeriodKey||''),pm=arr(snap.periods).find(p=>str(p.key)===periodKey),periodId=str(pm?.id||('cinepolis-'+periodKey));
+const [ms,ps,cs]=await Promise.all([tenant.collection('users').get(),tenant.collection('shoppers').get(),tenant.collection('shopperIdentityCrosswalk').get()]);
+const members=ms.docs.map(d=>({id:d.id,...(d.data()||{})})),profiles=ps.docs.map(d=>({id:d.id,...(d.data()||{})})),cross=cs.docs.map(d=>({id:d.id,...(d.data()||{})}));
+const alias=new Map();for(const p of profiles)for(const a of new Set([p.id,p.shopperId,...arr(p.sourceShopperIds),...arr(p.exactAliases),...arr(p.legacyLiveShopperIds)].map(str).filter(Boolean)))if(!alias.has(a))alias.set(a,p.id);for(const c of cross){const x=str(c.shopperId||c.canonicalShopperId);if(x)alias.set(str(c.id),x);}
+const resolve=x=>{let cur=str(x);for(let i=0;i<8;i++){const n=str(alias.get(cur)||cur);if(n===cur)return cur;cur=n;}return cur;},profileById=new Map(profiles.map(p=>[p.id,p])),pname=p=>str(p?.nombre||p?.displayName||[p?.firstName,p?.lastName].filter(Boolean).join(' '));
+const exists=async id=>{try{await auth.getUser(id);return true;}catch(e){if(str(e?.code)==='auth/user-not-found')return false;throw e;}};
+async function target(name){const list=[];for(const m of members.filter(x=>x.active===true&&str(x.role).toLowerCase()==='shopper')){const p=profileById.get(resolve(m.shopperId));if(p&&norm(pname(p))===norm(name)&&await exists(m.id))list.push({member:m,profile:p});}if(name==='Paula Osorio'){const x=list.find(v=>str(v.member.visibleLogin||v.member.username).toLowerCase()==='paula.osorio'&&str(v.profile.id)==='shopper_gt_1440137b73');if(x)return x;}if(list.length!==1)throw new Error('MAPPING_FAILURE:CLICK_TARGET_'+slug(name)+':'+list.length);return list[0];}
+let admin=null;for(const m of members.filter(x=>x.active===true&&['admin','super'].includes(str(x.role).toLowerCase())&&str(x.authNamespace).toLowerCase()!=='shopper'))if(await exists(m.id)){admin=m;break;}if(!admin)throw new Error('AUTH_FAILURE:CLICK_ADMIN');
+const targets=[];for(const n of ['Julissa Flores','Priscila López','Paula Osorio'])targets.push(await target(n));
+let client=null;for(const m of members.filter(x=>x.active!==false&&['cliente','client'].includes(str(x.role).toLowerCase())&&str(x.authNamespace).toLowerCase()==='staff'))if(await exists(m.id)){client=m;break;}
+const browser=await chromium.launch({headless:true});
+const result={schemaVersion:'cxorbia.i3.phasea.exhaustive-click-visual.v3',decision:'HOLD',hrRevision:revision,periodId,shopper:{},admin:{},client:{},routeInventory:{},globalControls:{},shopperActionCoverage:{},actionFindings:[],screenshots:[],clickCount:0,writes:{auth:0,hr:0,provider:0},production:false};
+const finding=(classification,code,detail={})=>result.actionFindings.push({classification,code,...detail});
+const shot=async(page,name)=>{const file=name+'.png';try{await page.screenshot({path:OUT+'/'+file,fullPage:true,timeout:15000,animations:'disabled'});}catch(first){try{await page.screenshot({path:OUT+'/'+file,fullPage:false,timeout:15000,animations:'disabled'});}catch(second){throw new Error('ENVIRONMENT_FAILURE:CLICK_SCREENSHOT:'+name+':'+str(second?.message||first?.message||second||first));}}result.screenshots.push(file);};
+const overlay=async page=>page.locator('.cx-ov:visible').last().innerText().catch(()=>'');
+const visual=async(page,label)=>{const v=await page.evaluate(()=>{const t=String(document.body?.innerText||'');return{technical:/AUTH_READY|CLAIMS_READY|HRROWID|FINANCIALSOURCESTATUS|sourceSafe\s*[:=]|providerAck\s*[:=]|máquina canónica HR/i.test(t),blocked:t.includes('Fuente de datos no disponible'),body:t.slice(0,5000)};});if(v.technical||v.blocked)throw new Error('VISUAL_DEFECT:'+label+':'+JSON.stringify({technical:v.technical,blocked:v.blocked}));/* Human visual acceptance guard: rendered styles and per-assignment quick actions
+   are mandatory and fail closed even when route navigation + clicks pass. */
+if(['dashboard','postulaciones','reservas','financiero','movimientos','liquidaciones','miperfil','misvisitas','beneficios'].includes(label)){
+ const metrics=await page.evaluate(()=>{
+   const root=document.querySelector('#view')||document,style=getComputedStyle(document.documentElement);
+   const visible=e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e);return r.width>0&&r.height>0&&s.display!=='none'&&s.visibility!=='hidden';};
+   const minFont=sel=>{const xs=[...root.querySelectorAll(sel)].filter(visible);return {count:xs.length,minPx:xs.length?Math.min(...xs.map(e=>parseFloat(getComputedStyle(e).fontSize)||0)):null};};
+   const hex=style.getPropertyValue('--t3').trim(),h=hex.match(/^#([0-9a-f]{6})$/i);
+   const rgb=h?h[1].match(/../g).map(c=>parseInt(c,16)/255):null;
+   const l=rgb?rgb.map(x=>x<=.04045?x/12.92:Math.pow((x+.055)/1.055,2.4)).reduce((acc,x,i)=>acc+x*[.2126,.7152,.0722][i],0):null;
+   const cards=[...root.querySelectorAll('[data-cx-assignment-card]')].filter(visible);
+   return {mutedContrastOnWhite:l===null?null:1.05/(l+.05),tableHeaders:minFont('table.tbl th'),labels:minFont('.lbl'),quickActionCards:cards.length,missingQuickActions:cards.filter(c=>!c.querySelector('[data-cx-po-action="request"]')||!c.querySelector('[data-cx-po-action="agenda"],[data-cx-po-action="agenda-review"]')||!c.querySelector('[data-cx-po-action="reassign"]')||!c.querySelector('[data-cx-po-action="cancel"]')).length};
+ });
+ result.visualAcceptanceEvidence??={};result.visualAcceptanceEvidence[label]=metrics;
+ if(metrics.mutedContrastOnWhite!==null&&metrics.mutedContrastOnWhite<4.5)finding('VISUAL_DEFECT','HUMAN_OCT13_TEXT_CONTRAST_FAIL',{route:label,observed:metrics.mutedContrastOnWhite,required:4.5});
+ if(metrics.tableHeaders.count&&metrics.tableHeaders.minPx<12.5)finding('VISUAL_DEFECT','HUMAN_OCT13_TABLE_FONT_FAIL',{route:label,observed:metrics.tableHeaders.minPx,required:12.5});
+ if(metrics.labels.count&&metrics.labels.minPx<12.5)finding('VISUAL_DEFECT','HUMAN_OCT13_LABEL_FONT_FAIL',{route:label,observed:metrics.labels.minPx,required:12.5});
+ if(label==='postulaciones'&&metrics.missingQuickActions>0)finding('VISUAL_DEFECT','HUMAN_OCT13_ASSIGNMENT_ACTIONS_MISSING',{totalCards:metrics.quickActionCards,missing:metrics.missingQuickActions});
+}
+return v;};
+async function signed(member,role){
+ const ctx=await browser.newContext({viewport:{width:1440,height:980}});
+ const page=await ctx.newPage(),errs=[];
+ page.on('pageerror',e=>errs.push(str(e?.message||e)));
+ let settled=false,lastError='';
+ for(let attempt=1;attempt<=5&&!settled;attempt++){
+  await page.goto(URL+'&signinattempt='+attempt+'&ts='+Date.now(),{waitUntil:'domcontentloaded',timeout:90000});
+  await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
+  const token=await auth.createCustomToken(member.id);
+  try{
+   await page.evaluate(async t=>{const fb=window.firebase;await fb.auth().setPersistence(fb.auth.Auth.Persistence.LOCAL);await fb.auth().signInWithCustomToken(t);},token);
+  }catch(e){lastError=str(e?.message||e);}
+  await page.waitForLoadState('domcontentloaded',{timeout:90000}).catch(()=>{});
+  const uid=await page.evaluate(()=>String(window.firebase?.auth?.().currentUser?.uid||'')).catch(()=>'');
+  if(uid===String(member.id))settled=true;
+  else if(attempt<5)await page.waitForTimeout(800*attempt);
+ }
+ if(!settled)throw new Error('AUTH_FAILURE:CLICK_BROWSER_SESSION:'+member.id+':'+lastError);
+ await page.goto('about:blank');
+ const authorityStartedAt=Date.now();
+ await page.goto(URL+'&settled='+Date.now(),{waitUntil:'domcontentloaded',timeout:90000});
+ await page.waitForFunction(uid=>String(window.firebase?.auth?.().currentUser?.uid||'')===uid,String(member.id),{timeout:90000});
+ await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
+ await page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});
+ await page.waitForFunction(({role,rev,periodId})=>{const c=window.CX?.backendAuth?.context?.()||{},r=String(c.role||'').toLowerCase(),g=window.CX_C6_HR_AUTHORITY_GATE||{};const roleOk=role==='shopper'?r==='shopper':role==='client'?['cliente','client'].includes(r):(r!=='shopper'&&!['cliente','client'].includes(r));return c.authenticated===true&&roleOk&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&g.blocked!==true&&String(window.CX?.data?.previewMeta?.sourceRevision||'')===rev&&String(window.CX?.data?.currentPeriodId||'')===periodId;},{role,rev:revision,periodId},{timeout:120000});
+ const authorityReadyMs=Date.now()-authorityStartedAt;
+ if(authorityReadyMs>60000)throw new Error('ENVIRONMENT_FAILURE:CLICK_AUTHORITY_SYNC_EXCEEDED_60S_'+authorityReadyMs);
+ if(errs.length)throw new Error('FUNCTIONAL_DEFECT:CLICK_PAGEERROR:'+role+':'+JSON.stringify(errs));
+ return{ctx,page,authorityReadyMs};
+}
+async function dismissOverlays(page){
+ for(let i=0;i<4;i++){
+  const ov=page.locator('.cx-ov:visible').last();
+  if(!await ov.count())break;
+  const explicit=ov.locator('[data-x],[data-x4],[data-close],button[aria-label="Cerrar"],.cx-close').last();
+  if(await explicit.count())await explicit.click({timeout:2500}).catch(()=>{});
+  else await page.keyboard.press('Escape').catch(()=>{});
+  await page.waitForTimeout(120);
+  if(await ov.count()&&await ov.isVisible().catch(()=>false))await page.keyboard.press('Escape').catch(()=>{});
+  await page.waitForTimeout(120);
+ }
+}
+async function nav(page,route){await dismissOverlays(page);await page.evaluate(r=>CX.router.nav(r,{history:false}),route);await page.waitForFunction(r=>String(CX?.session?.view||'')===r,route,{timeout:45000});await page.waitForTimeout(450);await visual(page,route);}
+async function click(page,sel){const l=page.locator(sel).first();if(!await l.count())return false;await l.click({timeout:10000});result.clickCount++;return true;}
+
+async function inventoryRoute(page,role,routeId,tag){
+  await nav(page,routeId);
+  const data=await page.evaluate(({role,routeId})=>{
+    const root=document.querySelector('#view')||document.querySelector('main.content')||document.body;
+    const nodes=[...root.querySelectorAll('button,select,input,textarea,a[href],[role="button"],[tabindex="0"]')].filter(el=>{
+      const r=el.getBoundingClientRect(),s=getComputedStyle(el);return r.width>0&&r.height>0&&s.visibility!=='hidden'&&s.display!=='none';
+    });
+    const controls=nodes.map((el,i)=>({
+      i,tag:el.tagName.toLowerCase(),id:String(el.id||''),type:String(el.getAttribute('type')||''),
+      text:String((el.innerText||el.getAttribute('aria-label')||el.getAttribute('title')||el.value||'')).trim().replace(/\s+/g,' ').slice(0,180),
+      disabled:!!el.disabled||el.getAttribute('aria-disabled')==='true',
+      href:el.tagName==='A'?String(el.getAttribute('href')||'').replace(/^https?:\/\/[^/]+/,''):null,
+      dataset:Object.fromEntries(Object.entries(el.dataset||{}).filter(([k])=>/action|jump|kpi|rk|id|tab|go|doc|cert|sched|reprog|cancel|done|quest|geo|pay|detail|edit|del|save|create|add|new|export|filter|search|select|request|assign/i.test(k)))
+    }));
+    return {role,routeId,title:String(root.querySelector('h1,h2,.page-title,.ph-title,.card-t')?.textContent||'').trim(),controlCount:controls.length,controls};
+  },{role,routeId});
+  result.routeInventory[role]??={};result.routeInventory[role][routeId]=data;
+  await shot(page,'full-'+tag+'-'+role+'-'+routeId);
+  return data;
+}
+async function globalControlInventory(page,role){
+  const g=await page.evaluate(role=>{
+    const one=id=>{const el=document.getElementById(id);if(!el)return null;const r=el.getBoundingClientRect();return{present:true,visible:r.width>0&&r.height>0,disabled:!!el.disabled||el.getAttribute('aria-disabled')==='true',text:String(el.innerText||el.getAttribute('aria-label')||'').trim().replace(/\s+/g,' ').slice(0,120)}};
+    return{role,projectSelector:one('projSel'),periodSelector:one('periodSel'),notifications:one('tbBell'),mail:one('tbMail'),support:one('tbSupport'),logout:one('logoutBtn'),roleIdentity:one('tbRoleIdentity'),sidebarSections:document.querySelectorAll('.nav-sec-wrap').length};
+  },role);result.globalControls[role]=g;return g;
+}
+
+async function waitReadyAfterReload(page,member,role){
+  await page.reload({waitUntil:'domcontentloaded',timeout:90000});
+  await page.waitForFunction(uid=>String(window.firebase?.auth?.().currentUser?.uid||'')===uid,String(member.id),{timeout:90000});
+  await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
+  await page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});
+  await page.waitForFunction(({role,rev,periodId})=>{const c=window.CX?.backendAuth?.context?.()||{},r=String(c.role||'').toLowerCase(),g=window.CX_C6_HR_AUTHORITY_GATE||{};return c.authenticated===true&&(role==='shopper'?r==='shopper':true)&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&g.blocked!==true&&String(window.CX?.data?.previewMeta?.sourceRevision||'')===rev&&String(window.CX?.data?.currentPeriodId||'')===periodId;},{role,rev:revision,periodId},{timeout:120000});
+}
+async function deepShopperActions(page,target,key){
+  const cov={};
+  await nav(page,'miperfil');
+  cov.profileSummaryOpens=await click(page,'[data-profile-jump="identity"]');
+  cov.profileEditModal=await click(page,'[data-profile-edit]');
+  if(cov.profileEditModal){
+    await page.waitForTimeout(180);
+    cov.profileFields=await page.locator('.cx-ov:visible #sp_save').count()>0&&await page.locator('.cx-ov:visible #sp_wa').count()>0&&await page.locator('.cx-ov:visible #sp_banco').count()>0;
+    if(!cov.profileFields)finding('FUNCTIONAL_DEFECT','SHOPPER_PROFILE_EDIT_FIELDS_MISSING',{shopper:key});
+    await dismissOverlays(page);
+  }
+
+  await nav(page,'visitas');
+  cov.availableFilters=0;
+  for(const sel of ['#vdQ','#vdEsc','#vdCan']){const loc=page.locator(sel);if(await loc.count()){const opts=await loc.locator('option').count();if(opts>1){await loc.selectOption({index:1});await page.waitForTimeout(100);await loc.selectOption({index:0});cov.availableFilters++;}}}
+  cov.availableDetail=await click(page,'[data-vd]');
+  if(cov.availableDetail){await page.waitForTimeout(180);if(!/detalle|sucursal|visita/i.test(await overlay(page)))finding('FUNCTIONAL_DEFECT','SHOPPER_AVAILABLE_VISIT_DETAIL_FAIL',{shopper:key});await dismissOverlays(page);}
+
+  await nav(page,'reservas');
+  const resState=await page.evaluate(()=>({eligible:Array.isArray(window.CX?.reservas?.sucursales?.())?window.CX.reservas.sucursales().length:0,button:!!document.querySelector('#rNew'),buttonDisabled:document.querySelector('#rNew')?.disabled===true||document.querySelector('#rNew')?.getAttribute('aria-disabled')==='true',emptyText:/sin (?:sucursales|visitas).*disponible|no hay.*disponible/i.test(String((document.querySelector('#view')||document.body).innerText||''))}));
+  cov.reservations=resState;
+  if(resState.eligible===0&&resState.button&&!resState.buttonDisabled)finding('FUNCTIONAL_DEFECT','RESERVATION_EMPTY_ELIGIBILITY_ACTION_EXPOSED',{shopper:key,resState});
+
+  await nav(page,'misvisitas');
+  cov.instructive=await click(page,'[data-doc]');
+  if(cov.instructive){await page.waitForTimeout(200);cov.instructiveAckButton=await page.locator('.cx-ov:visible #docReadAck').count()>0;await dismissOverlays(page);}
+  cov.scheduleButton=await page.locator('[data-sched]').count()>0;
+  cov.rescheduleButton=await page.locator('[data-reprog]').count()>0;
+  cov.cancelButton=await page.locator('[data-cancel]').count()>0;
+  cov.completeButton=await page.locator('[data-done]').count()>0;
+  cov.questionnaireButton=await page.locator('[data-quest]').count()>0;
+  cov.geoButton=await page.locator('[data-geo]').count()>0;
+
+  await nav(page,'aprendizaje');
+  cov.academyFilters=0;
+  for(const sel of ['#acadFilter','#acadCat']){const loc=page.locator(sel);if(await loc.count()){const opts=await loc.locator('option').count();if(opts>1){await loc.selectOption({index:1});await page.waitForTimeout(100);await loc.selectOption({index:0});cov.academyFilters++;}}}
+
+  await nav(page,'cert');
+  cov.certRendered=await page.locator('#view').count()>0;
+  cov.certControls=await page.locator('#view button,#view select,#view input').count();
+
+  await nav(page,'documentos');
+  cov.resourceOpen=await click(page,'[data-opend],.docOpen,[data-open]');
+  if(cov.resourceOpen){await page.waitForTimeout(160);await dismissOverlays(page);}
+
+  await nav(page,'beneficios');
+  cov.benefitFilterExercises=0;
+  for(const sel of ['#benStatus','#benCountry','#benCurrency']){const loc=page.locator(sel);if(await loc.count()){const opts=await loc.locator('option').count();if(opts>1){await loc.selectOption({index:1});await page.waitForTimeout(100);await loc.selectOption({index:0});cov.benefitFilterExercises++;}}}
+  const originalBenefitPeriod=await page.locator('#periodSel').inputValue().catch(()=>'');
+  let benefitRows=await page.locator('#benCurrentTable tbody tr[data-ben-status]').count();
+  let exercisedPeriod=originalBenefitPeriod;
+  if(benefitRows===0&&await page.locator('#periodSel').count()){
+    const options=await page.locator('#periodSel option').evaluateAll(opts=>opts.map(o=>({value:String(o.value||''),label:String(o.textContent||'')})));
+    for(const opt of options.slice().reverse()){
+      if(!opt.value||opt.value===originalBenefitPeriod)continue;
+      await page.locator('#periodSel').selectOption(opt.value);await page.waitForTimeout(650);
+      benefitRows=await page.locator('#benCurrentTable tbody tr[data-ben-status]').count();
+      if(benefitRows>0){exercisedPeriod=opt.value;break;}
+    }
+  }
+  let receipt=page.getByRole('button',{name:/Descargar comprobante/i});
+  if(await receipt.count()){
+    const disabled=await receipt.isDisabled().catch(()=>false);
+    if(benefitRows>0){
+      let downloaded=false,fileName='';
+      try{
+        const [dl]=await Promise.all([page.waitForEvent('download',{timeout:6000}),receipt.click({timeout:6000})]);
+        result.clickCount++;downloaded=true;fileName=dl.suggestedFilename();
+      }catch(_){}
+      cov.benefitReceipt={present:true,periodId:exercisedPeriod,rowCount:benefitRows,downloaded,fileName,disabled};
+      if(!downloaded)finding('FUNCTIONAL_DEFECT','BENEFITS_RECEIPT_DOWNLOAD_INERT',{shopper:key,periodId:exercisedPeriod,rowCount:benefitRows});
+    }else{
+      let honestEmpty=disabled;
+      if(!disabled){
+        await receipt.click({timeout:5000});result.clickCount++;
+        honestEmpty=await page.locator('#cx-toasts .toast').filter({hasText:/No hay beneficios del periodo para descargar/i}).count()>0;
+      }
+      cov.benefitReceipt={present:true,periodId:exercisedPeriod,rowCount:0,downloaded:false,disabled,honestEmpty};
+      if(!honestEmpty)finding('FUNCTIONAL_DEFECT','BENEFITS_RECEIPT_EMPTY_STATE_NOT_FAIL_CLOSED',{shopper:key,periodId:exercisedPeriod});
+    }
+  }else cov.benefitReceipt={present:false,periodId:exercisedPeriod,rowCount:benefitRows};
+  if(originalBenefitPeriod&&exercisedPeriod!==originalBenefitPeriod&&await page.locator('#periodSel').count()){
+    await page.locator('#periodSel').selectOption(originalBenefitPeriod);await page.waitForTimeout(500);
+  }
+
+  await nav(page,'soporte');
+  const supportSubject='QA I3 SUPPORT '+String(process.env.GITHUB_RUN_ID||Date.now());
+  const newTab=page.locator('[data-tab="nueva"]');
+  if(await newTab.count()){
+    await newTab.click();result.clickCount++;
+    await page.locator('#spAsunto').fill(supportSubject);
+    await page.locator('#spDet').fill('Prueba acotada de persistencia I3 · eliminar al finalizar').catch(()=>{});
+    await page.locator('#spSend').click();result.clickCount++;
+    cov.supportCreated=await page.waitForFunction(s=>window.CX?.supportStore?.list?.().some(x=>String(x?.asunto||'')===s),supportSubject,{timeout:20000}).then(()=>true).catch(()=>false);
+    if(!cov.supportCreated){
+      const toast=await page.locator('#cx-toasts .toast').last().innerText().catch(()=>'');
+      finding('PERSISTENCE_FAILURE','SUPPORT_TICKET_PROVIDER_ACK_NOT_OBSERVED',{shopper:key,toast});
+    }else{
+      await waitReadyAfterReload(page,target.member,'shopper');
+      await nav(page,'soporte');
+      cov.supportPersistsReload=await page.waitForFunction(s=>window.CX?.supportStore?.list?.().some(x=>String(x?.asunto||'')===s),supportSubject,{timeout:20000}).then(()=>true).catch(()=>false);
+      if(!cov.supportPersistsReload)finding('PERSISTENCE_FAILURE','SUPPORT_TICKET_NOT_DURABLE_AFTER_RELOAD',{shopper:key});
+    }
+    const qs=await tenant.collection('bulletins').where('title','==','Nueva solicitud de soporte').get().catch(()=>null);
+    if(qs){const batch=db.batch();let n=0;for(const doc of qs.docs){const row=doc.data()||{};if(String(row.body||'').includes(supportSubject)){batch.delete(doc.ref);n++;}}if(n)await batch.commit();}
+  }else cov.supportCreated='NOT_APPLICABLE_WITH_REASON:no new request control';
+
+  await nav(page,'novedades');
+  const unread=page.locator('.novRead').first();
+  if(await unread.count()){
+    const bulletinId=await unread.getAttribute('data-id');
+    await unread.click();result.clickCount++;
+    cov.newsMarkedRead=await page.waitForFunction(id=>window.CX?.novedades?.isRead?.(id)===true,bulletinId,{timeout:15000}).then(()=>true).catch(()=>false);
+    if(!cov.newsMarkedRead)finding('PERSISTENCE_FAILURE','NOVEDADES_READ_ACK_NOT_OBSERVED',{shopper:key,bulletinId});
+    const second=await signed(target.member,'shopper');
+    await nav(second.page,'novedades');
+    cov.newsDurableNewContext=await second.page.waitForFunction(id=>window.CX?.novedades?.isRead?.(id)===true,bulletinId,{timeout:15000}).then(()=>true).catch(()=>false);
+    await second.ctx.close();
+    if(cov.newsMarkedRead&&!cov.newsDurableNewContext)finding('PERSISTENCE_FAILURE','NOVEDADES_READ_STATE_BROWSER_LOCAL_ONLY',{shopper:key,bulletinId});
+    const readId=String(target.member.id)+'_'+String(bulletinId||'');
+    await tenant.collection('bulletinReads').doc(readId).delete().catch(()=>{});
+  }else cov.newsMarkedRead='NOT_APPLICABLE_WITH_REASON:no unread item';
+
+  await nav(page,'mireportes');
+  cov.reportsRendered=await page.locator('#view').count()>0;
+  result.shopperActionCoverage[key]=cov;
+}
+
+
+try{
+ for(const t of targets){
+  const {ctx,page}=await signed(t.member,'shopper'),key=slug(pname(t.profile)),e={};
+  await nav(page,'midia');await shot(page,'shopper-'+key+'-midia');
+  e.instructive=await click(page,'[data-visit-action="instructive"]');if(e.instructive){await page.waitForTimeout(900);const ov=await overlay(page),view=await page.evaluate(()=>String(CX?.session?.view||''));if(!/instruct|recurso/i.test(ov)&&!['misvisitas','documentos'].includes(view))throw new Error('FUNCTIONAL_DEFECT:CLICK_INSTRUCTIVE_'+key);await shot(page,'shopper-'+key+'-instructive');}
+  await nav(page,'miperfil');e.profileJump=await click(page,'[data-profile-jump="history"]');e.profileRow=await click(page,'[data-profile-visit-row]');if(e.profileRow){await page.waitForTimeout(250);if(!/visita|periodo|estado/i.test(await overlay(page)))throw new Error('FUNCTIONAL_DEFECT:PROFILE_HISTORY_MODAL_'+key);}await shot(page,'shopper-'+key+'-profile');
+  await nav(page,'beneficios');const dates=await page.locator('#benHistoryCard tbody tr[data-ben-row] td:nth-child(2)').allInnerTexts().catch(()=>[]);if(dates.length>1){const clean=dates.map(str).filter(Boolean),sorted=clean.slice().sort().reverse();if(JSON.stringify(clean)!==JSON.stringify(sorted))throw new Error('FUNCTIONAL_DEFECT:BENEFITS_ORDER_'+key+':'+JSON.stringify(clean));}e.benefitRow=await click(page,'#benHistoryCard [data-ben-row]');if(e.benefitRow){await page.waitForTimeout(250);if(!/honorario|reembolso|detalle/i.test(await overlay(page)))throw new Error('FUNCTIONAL_DEFECT:BENEFIT_DETAIL_'+key);}await shot(page,'shopper-'+key+'-benefits');
+  await nav(page,'misvisitas');const rep=page.locator('[data-reprog]').first();if(await rep.count()&&await rep.isDisabled()){const note=String(await page.locator('.cx-visit-request-note').first().innerText().catch(()=>''));if(!/pendiente de (autorización|revisión)/i.test(note))throw new Error('FUNCTIONAL_DEFECT:DISABLED_REPROGRAM_WITHOUT_PENDING_STATUS_'+key);e.reprogram='DURABLE_REQUEST_PENDING_NO_DUPLICATE';}else{e.reprogram=await click(page,'[data-reprog]');if(e.reprogram){await page.waitForTimeout(250);if(!/Solicitar reprogramación/i.test(await overlay(page)))throw new Error('FUNCTIONAL_DEFECT:REPROGRAM_MODAL_'+key);}}await shot(page,'shopper-'+key+'-visits');
+  await nav(page,'cert');e.certSelector=await click(page,'select');await shot(page,'shopper-'+key+'-cert');
+  await nav(page,'novedades');const nt=await page.locator('body').innerText();if(/providerAck|sourceSafe|hrRowId|financialSourceStatus/i.test(nt))throw new Error('VISUAL_DEFECT:NEWS_TECHNICAL_COPY_'+key);await shot(page,'shopper-'+key+'-news');
+  await globalControlInventory(page,'shopper');for(const rid of FULL_SCOPE.roles.shopper)await inventoryRoute(page,'shopper',rid,key);if(key==='julissa-flores')await deepShopperActions(page,t,key);result.shopper[pname(t.profile)]=e;await ctx.close();
+ }
+ const {ctx,page}=await signed(admin,'admin'),a={};
+ await nav(page,'dashboard');
+
+ /* R01: authorized exact contact mapping. Diagnostic only; do not log phone numbers. */
+ const waBrowser=await page.evaluate(()=>{
+  const d=window.CX?.data||{},vs=(typeof d.visitas==='function'?d.visitas():[]);
+  const asDigits=x=>{const a=String(x||'').trim();if(!/^\+?[\d\s().-]+$/.test(a))return false;return /^[1-9]\d{8,14}$/.test(a.replace(/\D/g,''));};
+  const rows=vs.filter(v=>/miraflores|oakland/i.test(String(v.sucursal||''))).slice(0,18);
+  return rows.map(v=>{const id=String(v.shopperId||''),p=d.getShopper?.(id)||d.shoppers?.find(x=>String(x.id||'')===id)||null;
+    return {id,hasExactProfile:!!p&&String(p.id||p.shopperId)===id,visitValid:asDigits(v.shopperWa||v.whatsapp),projectedProfileValid:asDigits(p?.whatsapp||p?.phone||p?.telefono)};});
+ });
+ const r01Buckets={sampled:waBrowser.length,firestoreProfileValid:0,projectedProfileValid:0,visitContactValid:0,providerValidButProjectionMissing:0,profileNotFound:0};
+ for(const r of waBrowser){
+  const stored=profileById.get(r.id),raw=stored?.whatsapp||stored?.phone||stored?.telefono||'';
+  const digits=String(raw).replace(/\D/g,'');
+  const providerValid=/^[1-9]\d{8,14}$/.test(digits);
+  if(providerValid)r01Buckets.firestoreProfileValid++;
+  if(r.projectedProfileValid)r01Buckets.projectedProfileValid++;
+  if(r.visitValid)r01Buckets.visitContactValid++;
+  if(providerValid&&!r.visitValid&&!r.projectedProfileValid)r01Buckets.providerValidButProjectionMissing++;
+  if(!r.hasExactProfile)r01Buckets.profileNotFound++;
+ }
+ a.r01WaExactAuthorizedContactReadback={...r01Buckets,decision:r01Buckets.providerValidButProjectionMissing?'HOLD_R01_CONTACT_MAPPING_PROVEN':'READ_ONLY_NO_PROJECTION_MISMATCH_PROVEN',phoneValuesLogged:0,providerWrites:0};
+
+ /* R01 real click on exact rendered row: an actual browser popup, with its wa.me
+    request intercepted locally so no external messaging or phone disclosure occurs.
+    This complements (does not replace) independent Firestore contact readback. */
+ const r01Candidate=await page.evaluate(()=>{
+   const d=window.CX?.data||{},visits=typeof d.visitas==='function'?d.visitas():[];
+   const normalize=raw=>{
+     const input=String(raw??'').trim();
+     if(!/^\+?[\d\s().-]+$/.test(input))return null;
+     const digits=input.replace(/\D/g,'');
+     return /^[1-9]\d{8,14}$/.test(digits)?digits:null;
+   };
+   const buttons=[...document.querySelectorAll('#estadoBoard [data-wa][data-vid]')];
+   for(let index=0;index<buttons.length;index++){
+     const id=String(buttons[index].dataset.vid||''),v=visits.find(x=>String(x.id)===id);
+     if(!v?.shopper)continue;
+     const phones=new Set();
+     for(const pid of new Set([v.shopperId,v.canonicalShopperId].map(x=>String(x||'').trim()).filter(Boolean))){
+       const candidate=typeof d.getShopper==='function'?d.getShopper(pid):null;
+       const profile=candidate&&String(candidate.id||candidate.shopperId||'')===pid
+         ?candidate:(Array.isArray(d.shoppers)?d.shoppers:[]).find(x=>String(x?.id||x?.shopperId||'')===pid);
+       const phone=normalize(profile?.whatsapp||profile?.phone||profile?.telefono);
+       if(phone)phones.add(phone);
+     }
+     const direct=normalize(v.shopperWa||v.whatsapp),exact=phones.size===1?[...phones][0]:null;
+     if(direct&&exact&&direct!==exact)continue;
+     const recipient=direct||exact;
+     if(!recipient)continue;
+     return{index,visitId:id,shopperId:String(v.shopperId||''),recipient,
+       expectedText:'Hola '+(v.shopper||'Evaluador')+', sobre tu visita en '+(v.sucursal||'la sucursal')+'.'};
+   }
+   return null;
+ });
+ a.r01IndividualWhatsAppBrowser={
+   decision:r01Candidate?'PENDING_BROWSER_POPUP':'PENDING_NO_ELIGIBLE_BOARD_ROW',
+   checkedExactRow:!!r01Candidate,externalMessageSent:false,phoneValuesLogged:0
+ };
+ if(r01Candidate){
+   const waContext=page.context();
+   await waContext.route('https://wa.me/**',route=>route.fulfill({
+     status:200,contentType:'text/html',body:'<!doctype html><title>Draft handoff check, no message sent</title>'
+   }));
+   try{
+     const popPromise=page.waitForEvent('popup',{timeout:12000});
+     await page.locator('#estadoBoard [data-wa][data-vid]').nth(r01Candidate.index).click({timeout:12000});
+     result.clickCount++;
+     const popup=await popPromise;
+     try{
+       await popup.waitForLoadState('domcontentloaded',{timeout:12000});
+       const uri=new globalThis.URL(popup.url());
+       if(uri.hostname!=='wa.me'||uri.pathname!=='/'+r01Candidate.recipient||
+          uri.searchParams.get('text')!==r01Candidate.expectedText)
+         throw new Error('FUNCTIONAL_DEFECT:R01_EXACT_MANUAL_WA_DRAFT_TARGET_OR_BODY');
+       a.r01IndividualWhatsAppBrowser={
+         decision:'PASS_R01_EXACT_ROW_REAL_BROWSER_POPUP_LOCAL_NETWORK_INTERCEPT',
+         checkedExactRow:true,recipientExact:true,bodyExact:true,
+         externalMessageSent:false,phoneValuesLogged:0
+       };
+     }finally{await popup.close().catch(()=>{});}
+   }finally{await waContext.unroute('https://wa.me/**');}
+ }
+ a.dashboardSelect=await click(page,'.bdSel');
+ if(a.dashboardSelect&&!/[1-9]/.test(await page.locator('#bdSelectedCount').innerText()))throw new Error('FUNCTIONAL_DEFECT:DASHBOARD_SELECTION_COUNT');
+ a.dashboardContext=await click(page,'.bdCtx');
+ if(!a.dashboardContext)a.dashboardContext=await click(page,'#bdBulkRequest');
+ if(a.dashboardContext){
+   await page.waitForTimeout(450);
+   const view=await page.evaluate(()=>String(CX?.session?.view||''));
+   if(view!=='dashboard')throw new Error('FUNCTIONAL_DEFECT:DASHBOARD_DIRECT_ACTION_LEFT_SURFACE:'+view);
+   const ov=page.locator('.cx-ov:visible').last();
+   const options=await ov.locator('[data-cx-admin-action]').evaluateAll(nodes=>nodes.map(n=>String(n.dataset.cxAdminAction||'')));
+   const allowed=new Set(['request','agenda','assign','reassign','cancel','approveCancel','rejectCancel']);
+   if(options.length){
+     if(options.some(x=>!allowed.has(x)))throw new Error('FUNCTIONAL_DEFECT:DASHBOARD_CONTEXT_UNKNOWN_ACTION:'+options.join(','));
+     const chosen=options.includes('request')?'request':options.includes('assign')?'assign':options.includes('agenda')?'agenda':options[0];
+     await ov.locator('[data-cx-admin-action="'+chosen+'"]').first().click();
+     await page.waitForTimeout(300);
+     if(await page.evaluate(()=>String(CX?.session?.view||''))!=='dashboard')throw new Error('FUNCTIONAL_DEFECT:DASHBOARD_CONTEXT_ACTION_NAVIGATED');
+     const next=page.locator('.cx-ov:visible').last();
+     const selector=chosen==='request'?'#rqSend':chosen==='assign'||chosen==='reassign'?'#cxDashShopper':chosen==='cancel'||chosen==='approveCancel'||chosen==='rejectCancel'?'#cxDashCancelOk':null;
+     if(selector&&!(await next.locator(selector).count()))throw new Error('FUNCTIONAL_DEFECT:DASHBOARD_CONTEXT_MODAL_MISSING:'+chosen);
+     if(chosen==='agenda'&&!/Gestión de agendamientos/i.test(await overlay(page)))throw new Error('FUNCTIONAL_DEFECT:DASHBOARD_AGENDA_MODAL_MISSING');
+     a.dashboardDirectAction=chosen;
+   }else if(!(await ov.locator('#rqSend').count()))throw new Error('FUNCTIONAL_DEFECT:DASHBOARD_DIRECT_CONTEXT_MODAL_MISSING');
+ }
+ await shot(page,'admin-dashboard');
+ await nav(page,'postulaciones');
+
+ /* R05 + R06 same-artifact browser E2E (read only; no command submits). */
+ const poSearch=page.locator('#pSearch');
+ if(!(await poSearch.count()))throw new Error('FUNCTIONAL_DEFECT:R06_POSTULATION_SEARCH_MISSING');
+ const assignmentCount=await page.locator('#poAssignedGroups [data-cx-assignment-card]').count();
+ await poSearch.fill('Oakland');
+ const oakland=await page.evaluate(()=>{
+  const data=window.CX?.data||{},visits=typeof data.visitas==='function'?data.visitas():[];
+  const cards=[...document.querySelectorAll('#poAssignedGroups [data-cx-assignment-card]')];
+  const visible=cards.filter(x=>x.style.display!=='none');
+  const invalid=visible.filter(el=>{
+    const v=visits.find(x=>String(x.id||x.visitId)===String(el.dataset.visitRef||''))||{};
+    return ![v.shopper,v.shopperCode,v.sucursal,v.ciudad,v.pais,v.escenario,v.code].map(String).join(' ').toLowerCase().includes('oakland');
+  });
+  return {total:cards.length,visible:visible.length,invalid:invalid.length,hasOakland:visible.length>0};
+ });
+ if(oakland.invalid)throw new Error('FUNCTIONAL_DEFECT:R06_OAKLAND_FILTER:'+JSON.stringify(oakland));
+ await poSearch.fill('R06_UNMATCHABLE_CXORBIA_NONCE');
+ const nonmatching=await page.locator('#poAssignedGroups [data-cx-assignment-card]:visible').count();
+ if(nonmatching)throw new Error('FUNCTIONAL_DEFECT:R06_NONMATCHING_CARD_VISIBLE');
+ await poSearch.fill('');
+ const restored=await page.locator('#poAssignedGroups [data-cx-assignment-card]:visible').count();
+ if(restored!==assignmentCount)throw new Error('FUNCTIONAL_DEFECT:R06_FILTER_RESET_CARD_LOSS');
+ a.r06Browser={oakland,nonmatching,restored,decision:'PASS_EXACT_ASSIGNMENT_FILTER'};
+
+ const agenda=page.locator('#poAssignedGroups [data-cx-po-action="agenda"],#poAssignedGroups [data-cx-po-action="agenda-review"]');
+ if(!(await agenda.count()))throw new Error('FUNCTIONAL_DEFECT:R05_NO_EXACT_ASSIGNMENT_ACTION');
+ await agenda.first().click();result.clickCount++;
+ const firstModalCount=await page.locator('.cx-ov:visible').count();
+ if(firstModalCount!==1)throw new Error('VISUAL_DEFECT:R05_FIRST_DIALOG_STACK:'+firstModalCount);
+ await page.evaluate(()=>{
+   const b=document.querySelector('#poAssignedGroups [data-cx-po-action="agenda"],#poAssignedGroups [data-cx-po-action="agenda-review"]');
+   if(!b)throw new Error('R05_DIALOG_OWNER_LOST');b.click();
+ });
+ result.clickCount++;
+ await page.waitForTimeout(180);
+ const secondModalCount=await page.locator('.cx-ov:visible').count();
+ if(secondModalCount!==1)throw new Error('VISUAL_DEFECT:R05_STACKED_DIALOGS:'+secondModalCount);
+ a.r05Browser={firstModalCount,secondModalCount,decision:'PASS_SINGLE_ACTIVE_POSTULACIONES_MODAL'};
+ await dismissOverlays(page);
+ /* I3 VRM-259 read-only hydrated badge parity: preserve current DEV artifact; no mutation. */
+ const postulationBadgeProbe=async(label)=>page.evaluate(label=>{
+   const data=window.CX?.data,active=typeof data?.activePosts==='function'?data.activePosts():null;
+   const expected=Number(data?.kpis?.()?.postPend||0),badge=document.querySelector('#nav-postulaciones .n-badge');
+   const text=badge?String(badge.textContent||'').trim():'',visible=!!badge&&getComputedStyle(badge).display!=='none';
+   const observed=text&&visible?Number(text):0;
+   const activePending=Array.isArray(active)?active.filter(p=>String(p?.estado||p?.status||'').toLowerCase()==='pendiente').length:null;
+   return {label,route:String(window.CX?.session?.view||''),periodId:String(data?.currentPeriodId||''),expected,observed,rawBadge:text,visible,activePending,activeCount:Array.isArray(active)?active.length:null,match:!!badge&&Number.isFinite(observed)&&observed===expected&&(activePending===null||activePending===expected)};
+ },label);
+ a.postulationBadgeParity={afterNavigation:await postulationBadgeProbe('after_navigation_450ms')};
+ await page.waitForTimeout(900);
+ a.postulationBadgeParity.afterSettled=await postulationBadgeProbe('after_settled_1350ms');
+ if(!a.postulationBadgeParity.afterSettled.match)
+   finding('FUNCTIONAL_DEFECT','VRM259_POSTULATION_BADGE_HYDRATED_PARITY',a.postulationBadgeParity);
+
+ /* I3 B7: independent HR revision vs current protected Admin KPI counters and actions. */
+ const hrOct=arr(snap.visits).filter(v=>str(v.periodKey)===periodKey);
+ const hrCount=(fn)=>hrOct.filter(fn).length;
+ const hrAssigned=hrCount(v=>v.canonicalFacets?.assigned===true&&v.canonicalFacets?.cancelled!==true);
+ const hrAgenda=hrCount(v=>v.canonicalFacets?.scheduled===true&&v.canonicalFacets?.realized!==true&&v.canonicalFacets?.cancelled!==true);
+ const kpi=await page.evaluate(()=>{
+   const d=window.CX?.data||{},v=typeof d.visitas==='function'?d.visitas():[],f=x=>d.visitFacets?.(x)||x.canonicalFacets||{};
+   const assigned=v.filter(x=>f(x).assigned===true&&f(x).cancelled!==true),posts=typeof d.activePosts==='function'?d.activePosts():[];
+   const countState=s=>posts.filter(x=>String(x.estado||x.status||'').toLowerCase()===s).length;
+   const expected={pend:countState('pendiente'),aprob:countState('aprobada'),todas:posts.length,assign:assigned.length,
+     reprog:assigned.filter(x=>x.rescheduleRequest?.status==='pending_review').length,
+     cancel:assigned.filter(x=>x.cancelRequest?.status==='pending_review').length,
+     agenda:assigned.filter(x=>f(x).scheduled===true&&f(x).realized!==true).length};
+   const cards=Array.from(document.querySelectorAll('#poKpis [data-k]')).map(x=>({id:x.dataset.k,count:Number(x.querySelector('.k-v')?.textContent||NaN),visible:x.getBoundingClientRect().width>0}));
+   return {revision:String(d.previewMeta?.sourceRevision||''),periodId:String(d.currentPeriodId||''),visits:v.length,expected,cards};
+ });
+ a.b7KpiEvidence={hrRevision:revision,hrTotal:hrOct.length,hrAssigned,hrAgenda,protected:kpi};
+ if(kpi.revision!==revision||kpi.periodId!==periodId||kpi.visits!==hrOct.length||kpi.expected.assign!==hrAssigned||kpi.expected.agenda!==hrAgenda)
+   throw new Error('MAPPING_FAILURE:B7_SAME_HR_REVISION_COUNTS:'+JSON.stringify(a.b7KpiEvidence));
+ const keys=['pend','assign','reprog','cancel','agenda','aprob','todas'];
+ if(kpi.cards.length!==7||kpi.cards.some(x=>!keys.includes(x.id)||!x.visible||!Number.isFinite(x.count)||x.count!==kpi.expected[x.id]))
+   throw new Error('FUNCTIONAL_DEFECT:B7_ACTIONABLE_KPI_COUNTERS:'+JSON.stringify(a.b7KpiEvidence));
+ a.b7KpiActions={};
+ for(const key of ['assign','reprog','cancel','agenda']){
+   await page.locator('#poKpis [data-k="'+key+'"]').click({timeout:10000});result.clickCount++;
+   const modal=page.locator('.cx-ov:visible').last();
+   if(!await modal.count())throw new Error('FUNCTIONAL_DEFECT:B7_KPI_MODAL_MISSING:'+key);
+   const n=await modal.locator('[data-po-kpi-action="'+key+'"]').count();
+   a.b7KpiActions[key]={expected:kpi.expected[key],buttons:n};
+   if(n!==kpi.expected[key])throw new Error('FUNCTIONAL_DEFECT:B7_KPI_ACTION_COUNT:'+key+':'+n);
+   if(n>0&&(key==='assign'||key==='agenda'||key==='reprog')){
+      await modal.locator('[data-po-kpi-action="'+key+'"]').first().click({timeout:10000});result.clickCount++;
+      if(!/Acciones|Gestión de agendamientos/i.test(await overlay(page)))throw new Error('FUNCTIONAL_DEFECT:B7_KPI_OWNER_MODAL:'+key);
+      a.b7KpiActions[key].ownerOpen=true;
+   }
+   await dismissOverlays(page);
+ }
+ const originalSize=page.viewportSize()||{width:1440,height:980};a.b7Responsive={};
+ for(const width of [390,320]){
+   await page.setViewportSize({width,height:900});
+   const sizes=await page.locator('#poKpis [data-k]').evaluateAll(nodes=>nodes.map(x=>({w:x.getBoundingClientRect().width,scroll:x.scrollWidth,client:x.clientWidth})));
+   a.b7Responsive[width]={count:sizes.length,pass:sizes.length===7&&sizes.every(x=>x.w>0&&x.scroll<=x.client+3)};
+   if(!a.b7Responsive[width].pass)throw new Error('VISUAL_DEFECT:B7_KPI_RESPONSIVE:'+width+':'+JSON.stringify(sizes));
+   await shot(page,'admin-b7-kpi-'+width);
+ }
+ await page.setViewportSize(originalSize);
+
+ /* B7 expired-proposal read-only browser acceptance: this is independent of provider
+    fake fixtures and never submits a write. The served Admin route must prevent
+    confirming a stale proposal and show a usable alternative. */
+ const expiredProof=await page.evaluate(()=>{
+   const d=window.CX?.data||{},vis=typeof d.visitas==='function'?d.visitas():[],
+   records=Array.isArray(d.__backendAllProjectRecords)?d.__backendAllProjectRecords:[],
+   cfg=records.find(p=>String(p.id||p.projectId)===String(d.currentProjectId))||d.period?.()||{},
+   zone=String(cfg.timeZone||cfg.timezone||'America/Guatemala');
+   const fmt=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
+   const today=fmt.year+'-'+fmt.month+'-'+fmt.day;
+   const pending=vis.filter(v=>v.rescheduleRequest?.status==='pending_review').map(v=>({
+     id:String(v.id||v.visitId||''),proposed:String(v.rescheduleRequest.newDate||'').slice(0,10),
+     current:String(v.agendada||'').slice(0,10),period:String(v.periodId||'')
+   }));
+   return {today,zone,pendingCount:pending.length,expired:pending.filter(v=>v.proposed&&v.proposed<today)};
+ });
+ a.b7ExpiredProposal={...expiredProof,decision:'PENDING_BROWSER_ASSERTIONS'};
+ if(expiredProof.expired.length){
+   const visit=expiredProof.expired[0],reviewId='visit-request:'+visit.id;
+   const review=page.locator('[data-revpost]').filter({visible:true});
+   const button=page.locator('[data-revpost="'+reviewId.replace(/"/g,'\\"')+'"]').first();
+   if(!await button.count())throw new Error('FUNCTIONAL_DEFECT:B7_EXPIRED_REVIEW_NOT_VISIBLE:'+visit.id);
+   const approve=page.locator('[data-authfecha="'+reviewId.replace(/"/g,'\\"')+'"]');
+   const renew=page.locator('[data-reprog-renew="'+reviewId.replace(/"/g,'\\"')+'"]');
+   if(await approve.count()||!await renew.count())
+     throw new Error('FUNCTIONAL_DEFECT:B7_EXPIRED_MAIN_ACTION_INCORRECT:'+visit.id);
+   await button.click({timeout:12000});result.clickCount++;
+   const modal=page.locator('.cx-ov:visible').last();
+   if(!(await modal.count())||await modal.locator('[data-date-decision="approved"]').count())
+     throw new Error('FUNCTIONAL_DEFECT:B7_EXPIRED_APPROVAL_EXPOSED:'+visit.id);
+   if(!await modal.locator('[data-date-renew]').count()||!await modal.locator('[data-date-decision="rejected"]').count())
+     throw new Error('FUNCTIONAL_DEFECT:B7_EXPIRED_ALTERNATIVES_MISSING:'+visit.id);
+   a.b7ExpiredProposal.decision='PASS_EXPIRED_APPROVAL_BLOCKED_AND_ALTERNATIVES_VISIBLE';
+   await shot(page,'admin-b7-expired-proposal-guard');
+   await dismissOverlays(page);
+ }else{
+   a.b7ExpiredProposal.decision='NOT_APPLICABLE_CURRENT_FIXTURE_NO_EXPIRED_REQUEST';
+ }
+ a.requestShopper=await click(page,'#reqShopper');if(a.requestShopper){await page.waitForTimeout(250);const opts=await page.locator('.cx-ov:visible #rqSh option').allInnerTexts().catch(()=>[]);if(!opts.some(x=>/asignación vigente/i.test(x)))throw new Error('FUNCTIONAL_DEFECT:ADMIN_REQUEST_HR_TARGETS');}await shot(page,'admin-postulations');
+ await nav(page,'shoppers');a.shopperProfile=await click(page,'#shBody [data-sid]');if(a.shopperProfile&&!/banco|pago|cuenta|perfil/i.test(await overlay(page)))throw new Error('VISUAL_DEFECT:ADMIN_SHOPPER_PROFILE_BANKING');await shot(page,'admin-shopper-profile');
+ const finPeriod=await page.evaluate(()=>{const d=CX.data,orig=d.currentPeriodId;for(const p of (d.projects||[]).slice().reverse()){try{d.setProject(p.id);if((CX.liq?.forProject?.(d)||[]).length)return{id:p.id,orig};}catch(_){}}d.setProject(orig);return{id:orig,orig};});
+ await nav(page,'liquidaciones');a.liqSelectAll=await click(page,'#liqSelectAll');a.liqDetail=await click(page,'[data-ldetail]');if(a.liqDetail){await page.waitForTimeout(250);if(!/Detalle financiero/i.test(await overlay(page)))throw new Error('FUNCTIONAL_DEFECT:LIQ_DETAIL_MODAL');}await nav(page,'liquidaciones');a.individualPay=await click(page,'[data-payone]');if(a.individualPay){await page.waitForTimeout(250);if(!await page.locator('.cx-ov:visible #onePaySupport').count())throw new Error('FUNCTIONAL_DEFECT:INDIVIDUAL_PAYMENT_SUPPORT_UI');}await nav(page,'liquidaciones');await click(page,'#liqSelectAll');const pay=page.locator('#payDraft');if(await pay.count()&&await pay.isEnabled()){await pay.click();result.clickCount++;a.batchPay=true;await page.waitForTimeout(250);if(!await page.locator('.cx-ov:visible #batchPaySupport').count())throw new Error('FUNCTIONAL_DEFECT:BATCH_PAYMENT_SUPPORT_UI');}else a.batchPay=false;await shot(page,'admin-liquidations');
+ await nav(page,'movimientos');a.cxc=await click(page,'[data-cuenta="cxc"]');if(a.cxc&&!/cuenta por cobrar/i.test(await overlay(page)))throw new Error('FUNCTIONAL_DEFECT:CXC_MODAL');await nav(page,'movimientos');a.cxp=await click(page,'[data-cuenta="cxp"]');if(a.cxp&&!/cuenta por pagar/i.test(await overlay(page)))throw new Error('FUNCTIONAL_DEFECT:CXP_MODAL');await shot(page,'admin-movements');
+ await nav(page,'cert');a.certImport=await click(page,'#certImp');if(a.certImport&&!/Importar banco/i.test(await overlay(page)))throw new Error('FUNCTIONAL_DEFECT:CERT_IMPORT_MODAL');await shot(page,'admin-cert');
+ await nav(page,'reservas');a.reservationAssign=await click(page,'#aAsignar');if(a.reservationAssign){await page.waitForTimeout(250);if(!/Asignar sucursal a shopper/i.test(await overlay(page)))throw new Error('FUNCTIONAL_DEFECT:RESERVATION_ASSIGN_MODAL');}await shot(page,'admin-reservations');
+ await globalControlInventory(page,'admin');for(const rid of FULL_SCOPE.roles.admin)await inventoryRoute(page,'admin',rid,'admin');
+ result.admin=a;result.admin.financePeriod=finPeriod;await ctx.close();
+ if(client){const s=await signed(client,'client');await globalControlInventory(s.page,'client');for(const rid of FULL_SCOPE.roles.cliente)await inventoryRoute(s.page,'client',rid,'client');result.client={memberId:client.id,routeCount:FULL_SCOPE.roles.cliente.length};await s.ctx.close();}else{throw new Error('AUTH_FAILURE:FULL_EXHAUSTIVE_CLIENT_MISSING');}
+ const counts={admin:Object.keys(result.routeInventory.admin||{}).length,shopper:Object.keys(result.routeInventory.shopper||{}).length,client:Object.keys(result.routeInventory.client||{}).length};
+ if(counts.admin!==FULL_SCOPE.counts.admin||counts.shopper!==FULL_SCOPE.counts.shopper||counts.client!==FULL_SCOPE.counts.cliente)throw new Error('RELEASE_COMPOSITION_FAILURE:FULL_ROUTE_INVENTORY_INCOMPLETE:'+JSON.stringify(counts));
+ await browser.close();result.coverage={counts,expected:FULL_SCOPE.counts,shopperModules:FULL_SCOPE.shopperModules,benefitsIncluded:FULL_SCOPE.shopperModules.includes('beneficios'),globalControls:FULL_SCOPE.globalControls};if(result.actionFindings.length){result.decision='HOLD_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL_ACTION_FINDINGS';fs.writeFileSync(OUT+'/result.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));process.exitCode=2;}else{result.decision='PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL';fs.writeFileSync(OUT+'/result.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));}
+}catch(error){result.decision='FAIL_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL';result.error=str(error?.stack||error);fs.writeFileSync(OUT+'/result.json',JSON.stringify(result,null,2)+'\n');await browser.close().catch(()=>{});console.log(JSON.stringify(result,null,2));process.exitCode=2;}

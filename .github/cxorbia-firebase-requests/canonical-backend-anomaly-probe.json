@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "cxorbia.canonical-backend-anomaly-probe.request.v1",
+  "enabled": true,
+  "mode": "READ_ONLY_TWO_OVERAGE_PROBE",
+  "targetProjectId": "cxorbia-backend-dev",
+  "providerWrites": 0,
+  "production": false,
+  "merge": false,
+  "triggerNonce": 2
+}

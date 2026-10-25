@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "cxorbia-firestore-hr-finance-v1",
+  "status": "draft-no-write",
+  "tenantScope": "tenants/{tenantId}",
+  "notes": [
+    "Documento de contrato backend. No ejecuta migraciones.",
+    "TyA/Cinepolis es caso inicial, no logica fija.",
+    "Todo dato operativo debe estar segmentado por tenantId y projectId.",
+    "Datos bancarios/NDA requieren proteccion adicional y no se modelan en claro aqui."
+  ],
+  "collections": {
+    "projects": {
+      "path": "tenants/{tenantId}/projects/{projectId}",
+      "requiredFields": ["tenantId", "clientId", "name", "countries", "currency", "hrConfig", "financeConfig"],
+      "fieldGroups": {
+        "hrConfig": {
+          "sourceType": "googleSheets|excelOnline|native|upload|none",
+          "sourceUrl": "string|null",
+          "sourceFileRef": "string|null",
+          "ownerType": "own|client|ally|external",
+          "syncMode": "manual|scheduled|incremental|initialOnly",
+          "writeBackEnabled": "boolean",
+          "countrySheets": { "GT": ["string"], "HN": ["string"] },
+          "periodMapping": { "type": "month|round|custom", "field": "sheetName|column|manual" },
+          "columnMapping": "object",
+          "validationRules": "object",
+          "lastSyncAt": "timestamp|null",
+          "lastSyncStatus": "never|ok|warning|error"
+        },
+        "financeConfig": {
+          "mode": "direct|delegated|franchise",
+          "currenciesByCountry": "object",
+          "honorariumPaidByCountry": "object",
+          "honorariumReceivedByCountry": "object",
+          "reimbursements": "object",
+          "paymentRules": "object",
+          "financialImport": "object"
+        }
+      }
+    },
+    "visits": {
+      "path": "tenants/{tenantId}/projects/{projectId}/visits/{visitId}",
+      "requiredFields": ["tenantId", "projectId", "country", "status", "naturalKey"],
+      "importantFields": ["extId", "sourceRowRef", "sourceSheet", "periodId", "shopperId", "scheduledDate", "completedDate", "questionnaireDate", "submittedDate", "audit"]
+    },
+    "hrImportBatches": {
+      "path": "tenants/{tenantId}/projects/{projectId}/hrImportBatches/{batchId}",
+      "requiredFields": ["tenantId", "projectId", "mode", "status", "sourceType", "createdAt", "createdBy"],
+      "statusValues": ["draft", "previewed", "applied", "failed", "cancelled"],
+      "modeValues": ["dryRun", "write"]
+    },
+    "hrSyncRuns": {
+      "path": "tenants/{tenantId}/projects/{projectId}/hrSyncRuns/{syncRunId}",
+      "requiredFields": ["tenantId", "projectId", "type", "status", "startedAt"],
+      "statusValues": ["running", "ok", "warning", "error"]
+    },
+    "hrWriteBackJobs": {
+      "path": "tenants/{tenantId}/projects/{projectId}/hrWriteBackJobs/{jobId}",
+      "requiredFields": ["tenantId", "projectId", "visitId", "status", "payload", "createdAt"],
+      "statusValues": ["queued", "sent", "failed", "skipped"]
+    },
+    "shopperBenefits": {
+      "path": "tenants/{tenantId}/projects/{projectId}/shopperBenefits/{benefitId}",
+      "requiredFields": ["tenantId", "projectId", "visitId", "shopperId", "country", "currency", "periodId", "totalBenefit", "status"],
+      "statusValues": ["calculated", "pendingQuestionnaire", "pendingSubmit", "readyForPayment", "inLot", "scheduled", "paid", "observed", "reconciled"],
+      "moneyFields": ["honorarium", "ticketReimbursement", "comboReimbursement", "totalBenefit"],
+      "rule": "beneficio calculado, no pago real"
+    },
+    "paymentLots": {
+      "path": "tenants/{tenantId}/projects/{projectId}/paymentLots/{lotId}",
+      "requiredFields": ["tenantId", "projectId", "country", "currency", "periodId", "amount", "status", "benefitIds"],
+      "statusValues": ["draft", "scheduled", "paid", "partiallyPaid", "cancelled", "imported"],
+      "rule": "agrupa pagos a shoppers; no reemplaza movimientos financieros reales"
+    },
+    "financialMovements": {
+      "path": "tenants/{tenantId}/projects/{projectId}/financialMovements/{movementId}",
+      "requiredFields": ["tenantId", "projectId", "date", "periodId", "country", "currency", "amount", "direction", "category", "status"],
+      "directionValues": ["income", "expense"],
+      "categoryValues": ["honorariumPayment", "reimbursementIn", "reimbursementOut", "remittanceIn", "income", "operatingExpense", "other"],
+      "statusValues": ["imported", "reviewed", "reconciled", "ignored", "pending"],
+      "rule": "movimiento real importado/capturado; no usar para beneficio calculado"
+    },
+    "reconciliations": {
+      "path": "tenants/{tenantId}/projects/{projectId}/reconciliations/{reconciliationId}",
+      "requiredFields": ["tenantId", "projectId", "status", "benefitIds", "financialMovementIds", "createdAt"],
+      "statusValues": ["matched", "partial", "conflict", "manualOverride", "matchedCandidate", "multipleCandidates"]
+    },
+    "collaborators": {
+      "path": "tenants/{tenantId}/projects/{projectId}/collaborators/{userId}",
+      "requiredFields": ["uid", "email", "role", "countries", "permissions", "status"],
+      "roleValues": ["admin", "coordinator", "representative", "ally", "clientViewer", "finance", "ops"],
+      "rule": "controla colaboracion por proyecto/pais/modulo"
+    },
+    "shopperAliases": {
+      "path": "tenants/{tenantId}/shoppers/{shopperId}/aliases/{aliasId}",
+      "requiredFields": ["rawName", "nameKey", "source", "firstSeenAt"],
+      "sourceValues": ["hr", "finance", "manual", "import"]
+    }
+  },
+  "writeGates": [
+    "dryRunGenerated",
+    "issuesReviewed",
+    "shopperAliasesResolved",
+    "noPersonalDataConfirmed",
+    "totalsApprovedByPaula",
+    "explicitFirestoreDevAuthorization"
+  ]
+}

@@ -1,0 +1,208 @@
+{
+  "contract": "liquidation-cinepolis-source-safe-preview-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "projectScope": "multi-project; Cinepolis rules only when projectConfig.projectKey == cinepolis",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "paymentProviderAllowed": false,
+  "hrWriteAllowed": false,
+  "makeEnabled": false,
+  "geminiEnabled": false,
+  "emailEnabled": false,
+  "purpose": "Define a safe preview validator and source-safe mapping rules for June liquidations, Cinepolis Boleto/Combo reimbursements, payment batches, individual movements and historical payment reconciliation without reading raw real files or executing writes.",
+  "dependsOn": [
+    "liquidation-payment-phase-a-tya",
+    "cinepolis-reimbursements-payment-batch-phase-a-tya",
+    "submitido-hr-driven-phase-a-tya",
+    "admin-review-phase-a-tya"
+  ],
+  "sourceSafety": {
+    "requiresSyntheticOrSanitizedInput": true,
+    "forbidsRawSensitiveData": true,
+    "manualReviewForAmbiguousMapping": true,
+    "requiresSourceSafeMetadata": [
+      "sourceSafe=true",
+      "containsRawSensitiveData=false",
+      "isSyntheticOrSanitized=true"
+    ],
+    "forbiddenSensitiveFields": [
+      "DPI",
+      "documentIdRaw",
+      "bankAccount",
+      "bankName",
+      "accountNumber",
+      "NDA",
+      "rawAttachment",
+      "rawEmailBody",
+      "rawPhone",
+      "rawAddress"
+    ],
+    "allowedSourceRefs": [
+      "sourceRowRef",
+      "sourceVisitRef",
+      "sourcePaymentRef",
+      "sourceLockRef"
+    ],
+    "rawSourceFilesAllowed": false,
+    "rawHrWritesAllowed": false,
+    "rawPaymentsAllowed": false
+  },
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "projectKey",
+    "visitId",
+    "hrRowId",
+    "sourceVisitRef",
+    "assignmentId",
+    "shopperId",
+    "periodId",
+    "quincena",
+    "country",
+    "currency",
+    "honorariumAmount",
+    "boletoAmount",
+    "comboAmount",
+    "reimbursementTotal",
+    "liquidationId",
+    "paymentStatus",
+    "batchId",
+    "paymentItemId",
+    "movementId",
+    "sourcePaymentRef",
+    "sourceLockRef"
+  ],
+  "safePreviewInputShape": {
+    "sourceSafe": true,
+    "containsRawSensitiveData": false,
+    "isSyntheticOrSanitized": true,
+    "rows": [
+      {
+        "tenantId": "tya",
+        "projectId": "project_ref",
+        "projectKey": "cinepolis",
+        "shopperId": "shopper_ref",
+        "visitId": "visit_ref_optional",
+        "hrRowId": "hr_row_ref_optional",
+        "periodId": "2026-06",
+        "quincena": "Q1_or_Q2",
+        "country": "GT_or_HN",
+        "currency": "GTQ_or_configured_currency",
+        "visitPerformed": true,
+        "questionnaireCompleted": true,
+        "submitidoStatus": "submitido_registered_or_pending",
+        "reviewStatus": "approved_for_submitido_or_pending",
+        "honorariumAmount": 0,
+        "boletoAmount": 0,
+        "comboAmount": 0,
+        "selectedForBatch": false,
+        "historicalPaymentRef": "source_payment_ref_optional"
+      }
+    ]
+  },
+  "mappingRules": [
+    "June visits already executed are payment/liquidation preview rows, not pending visit execution rows.",
+    "Visit performed alone does not create payable status.",
+    "Questionnaire completed alone does not create payable status.",
+    "Submitido/review policy must be satisfied before candidate_ready unless a documented admin exception exists.",
+    "Cinepolis Boleto maps to boletoAmount only for Cinepolis project configuration.",
+    "Cinepolis Combo maps to comboAmount only for Cinepolis project configuration.",
+    "reimbursementTotal = boletoAmount + comboAmount unless project/country override exists with audit note.",
+    "Honorarium stays separate from reimbursementTotal.",
+    "If visitId/hrRowId/sourceVisitRef is missing, route to manual_review_required.",
+    "If a paid row lacks historicalPaymentRef or manualPaymentConfirmationRef, route to held_for_conflict/manual_review_required.",
+    "Historical May/July payments must reconcile before closing new June batches.",
+    "No visual-only dedupe is allowed; ambiguous matches require manual review."
+  ],
+  "previewClassifications": {
+    "liquidationStatus": [
+      "not_eligible",
+      "candidate_pending_submitido",
+      "candidate_ready",
+      "approved_for_payment",
+      "held_for_conflict",
+      "manual_review_required",
+      "paid"
+    ],
+    "paymentStatus": [
+      "not_scheduled",
+      "pending_payment",
+      "scheduled",
+      "paid",
+      "manual_review_required"
+    ],
+    "movementStatus": [
+      "draft_preview",
+      "pending_batch_payment",
+      "paid_manual_confirmed",
+      "paid_historical_confirmed",
+      "conflict_review_required"
+    ]
+  },
+  "outputRules": [
+    "Validator prints JSON report only; it must not write output files by default.",
+    "Report may include mappedRows only from synthetic/sanitized input.",
+    "Report must include manualReviewCount and warnings for empty/no June preview input.",
+    "Report must keep runtimeEnabled, productionAllowed, firestoreWritesAllowed, hrWriteAllowed and paymentProviderAllowed false."
+  ],
+  "backendNextBlocks": [
+    "Add assignment sync conflict preview validator.",
+    "Add visit lifecycle/reservation preview validator.",
+    "Add sensitive data policy for bank, DPI, NDA, correo and attachments before real import.",
+    "Prepare Make payload draft without activation after mapping validators are stable."
+  ],
+  "claudePrototypeImpact": [
+    "Admin financial UI must show source-safe preview/review states, not real payment execution.",
+    "Mis beneficios must separate honorarium, Boleto, Combo, total, pending, scheduled and paid without bank data.",
+    "Payment batch UI must allow selected items and preserve individual movements.",
+    "Ambiguous rows must show manual review, not auto-deduped or auto-paid.",
+    "Texts must not promise HR sync, payment, email, Make or real automation while gates are off."
+  ],
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "shopper", "consultant_partner"],
+    "manualsToUpdate": [
+      "Liquidations",
+      "Payments",
+      "June cutoff",
+      "Cinepolis reimbursements",
+      "Payment batches",
+      "Individual movements",
+      "Mis beneficios",
+      "Manual review and conflicts"
+    ],
+    "coursesToUpdate": [
+      "Admin payment cutoff preview",
+      "Ops payment reconciliation",
+      "Shopper benefits and payment states",
+      "Financial audit without sensitive data"
+    ],
+    "newLessons": [
+      "How source-safe preview works before real import",
+      "Why June visits are executed but payment pending",
+      "How Boleto and Combo map safely",
+      "Why paid needs a stable payment reference",
+      "How manual review protects against duplicated payments",
+      "What shoppers can see without bank data"
+    ],
+    "interactiveChecklists": [
+      "Before preparing a June payment batch",
+      "Before marking a payment as paid",
+      "Before reconciling historical May/July payments",
+      "Before publishing shopper-visible benefits"
+    ]
+  },
+  "hardStops": [
+    "Do not read raw real HR/liquidation/payment files with this validator.",
+    "Do not write Firestore from this validator.",
+    "Do not write HR from this validator.",
+    "Do not execute real payments from this validator.",
+    "Do not store or display bank, DPI, NDA or raw attachments.",
+    "Do not auto-dedupe by shopper name or visual similarity.",
+    "Do not mark paid without historicalPaymentRef or manualPaymentConfirmationRef.",
+    "Do not treat questionnaire completed as submitido or paid."
+  ]
+}

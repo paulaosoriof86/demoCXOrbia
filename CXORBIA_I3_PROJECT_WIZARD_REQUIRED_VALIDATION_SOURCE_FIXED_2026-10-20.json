@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "cxorbia.i3.project-wizard.required-validation.source-repair.v1",
+  "date": "2026-10-20",
+  "iteration": "I3",
+  "state": "HOLD",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
+  "sourceTree": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
+  "predecessorSource": "c9e5c5313883adc905f2d061219bc121c3b4af7e",
+  "owner": "app/modules/proyecto-wizard.js",
+  "ownerBlob": "b32f6277df9bcfca5324c5f67cc9db14e00875f1",
+  "priorBlob": "6c2096675ced3502611b81c8d42408b7023597af",
+  "observedWorkUat": {
+    "cases": [
+      "PROJECT-WIZARD-01",
+      "PROJECT-WIZARD-02"
+    ],
+    "finding": "Step1 Next enabled without project name/country; fifth step Create appeared enabled despite missing scope; provider create guard only stopped after progress.",
+    "classification": "VISUAL_DEFECT",
+    "providerWrites": 0
+  },
+  "red": {
+    "number": 1805,
+    "id": 39437765112,
+    "jobId": 118679230850,
+    "tests": 3,
+    "failed": 2,
+    "passed": 1
+  },
+  "repair": {
+    "requiredNameTrimmed": true,
+    "atLeastOneCountry": true,
+    "buttonDisabledUntilComplete": true,
+    "instantInputsSync": true,
+    "forcedClickFailClosed": true,
+    "providerCreateGuardPreserved": true,
+    "noAdditionalProjectCreated": true,
+    "noGlobalProjectHardcode": true
+  },
+  "green": {
+    "status": "PENDING_EXISTING_CANONICAL_CI"
+  },
+  "preserved": {
+    "B10": "SOURCE_PROVEN_RUN1799",
+    "A09B11": "SOURCE_PROVEN_RUN1804_2_OF_2",
+    "finance": "SOURCE_PROVEN_RUN1800",
+    "reservations": "SOURCE_PROVEN_RUN1801",
+    "vrm": 274,
+    "domains": 21,
+    "sourceFiles": 150
+  },
+  "noWrites": {
+    "HR": true,
+    "Firestore": true,
+    "Auth": true,
+    "finance": true,
+    "devDeploy": true,
+    "production": true
+  },
+  "next": "Prove RUN1807 three wizard synthetic UI tests PASS and source guard. Client/Admin live project create/reload/tenant scoped ACK E2E remains pending in DEV. Other B09/B13/B05-B08/C02-C10 E2E remain independent."
+}

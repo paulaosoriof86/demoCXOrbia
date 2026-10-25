@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "cxorbia.i3.gt.same-artifact.after-hn-run1444.before-gt.v1",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "state": "HOLD",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "controlRepo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedParentSha": "49ad4b48e2ed215a3e449f744e6236c4d7dcdc11",
+  "expectedParentTree": "ad118f4e1a3d91d986f22b5bbdc3910d2195084c",
+  "sourceSha": "797050085d1e3347b6d56322f003a3a293790710",
+  "sourceTree": "607196f740203d538df8e22e424874fe547b3d59",
+  "prevStatus": "HOLD_VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED",
+  "newStatus": "HOLD_I3_GT_E2E",
+  "prevBlocker": "VRM274_DEV_MATERIALIZED_HN_EXACT_POPULATION_E2E_REQUIRED",
+  "newBlocker": "I3_GT_REPRESENTATIVE_SAME_ARTIFACT_E2E_REQUIRED_AFTER_HN_RUN1444_PASS",
+  "hnProof": {
+    "runId": 37979785997,
+    "runNumber": 1444,
+    "jobId": 113989505595,
+    "result": "PASS_VRM215_HN_TARGET_EXACT_SHOPPER_READINESS",
+    "assignedUnresolved": 0,
+    "shopperId": "shopper_hn_1691aecc2c",
+    "historyVisits": 16,
+    "authorizedPeriods": 13,
+    "liveHrRevision": "abe41d26a5729e48d92c7754217abd5111f1eacf9fecec5ad53ed25973d25b0c",
+    "signedClaims": true
+  },
+  "immutableDev": {
+    "sourceSha": "797050085d1e3347b6d56322f003a3a293790710",
+    "artifactId": 11630071023,
+    "artifactDigest": "sha256:42445d6e62ce0bab1e95fdb86b592d422a2cee5db221e1c4c3abfece281503ee",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/0609acbc6f0dace6",
+    "runtimeRevision": "cxorbia-live-hr-dev-00283-kc5",
+    "runtimeDigest": "sha256:3bdb7ca745abcc51ae8a93aa9e4a83c631af58eb891c0c34b644d578969e586a",
+    "historicalMaterializationHrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef"
+  },
+  "workflowControl": {
+    "path": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "owner": "phasea-representative-same-artifact-live-reproof",
+    "detectedDefect": "GT skipped because current descriptor HOLD state not in job if; GT preflight stale historical HR revision",
+    "fix": "Add exclusive GT HOLD status, fail-closed two current-HR meta reads and provider/tenant/project ACK, keep exact runtime/hosting fingerprints, skip downstream write-capable probes for GT-only state",
+    "sizeBefore": 511959,
+    "sizeAfter": 511890,
+    "maxBytes": 512000,
+    "productFilesChanged": 0,
+    "oldGTJobSkipCause": true
+  },
+  "allowedFiles": [
+    ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "CXORBIA_I3_GT_SAME_ARTIFACT_RUN1444_HANDOFF_CONTROL_BEFORE_2026-10-09.json"
+  ],
+  "knownOutstanding": [
+    "Six historical GT identity owner adjudications",
+    "B2 shopper name display signed provider ACK and reload",
+    "Phase A module truth 21 modules not all MATCH",
+    "Human visual incremental acceptance B1-B8 and Gate20/21"
+  ],
+  "noHRReimport": true,
+  "noDirectProviderWrites": true,
+  "noNewArtifact": true,
+  "noProduction": true,
+  "authorizationForProduction": false,
+  "nextExactAction": "After commit readback, observe existing GitHub Actions push-triggered GT job; verify same source/Hosting/Cloud Run and live HR pin; classify result. If PASS, persist AFTER receipt and proceed to next protected ID/B2 P0 without opening another workflow/candidate."
+}

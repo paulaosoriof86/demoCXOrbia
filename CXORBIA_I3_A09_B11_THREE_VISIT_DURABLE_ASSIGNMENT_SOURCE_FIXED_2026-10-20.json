@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "cxorbia.i3.a09b11.three-visit-owner-source-repair.v1",
+  "date": "2026-10-20",
+  "iteration": "I3",
+  "state": "HOLD",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceSha": "c9e5c5313883adc905f2d061219bc121c3b4af7e",
+  "sourceTree": "a2e7398db7c7df94da2fdd9391ea8865a54bb2dd",
+  "predecessorSource": "c242e6bf5fc43844ba2f7fba1690f6eb63403c01",
+  "rootCause": "Existing durable visit reconciler only updated shopperId, estado/status and canonicalFacets, preserving old assignmentState, hasShopper and hrManaged after source HR changed. General bug not identity-specific.",
+  "classification": "MAPPING_FAILURE",
+  "owner": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+  "priorBlob": "1d9f5565876906997e525c8d051232efa593ce70",
+  "repairedBlob": "3873cbf444aecd727351b494ae41600f9ddc4c48",
+  "otherProductOwnersChanged": 0,
+  "fixture": {
+    "type": "isolated-in-memory-three-visit-test",
+    "hrRows": [
+      "OCTUBRE 26!5",
+      "OCTUBRE 26!19",
+      "OCTUBRE 26!20"
+    ],
+    "country": "GT",
+    "projectId": "qa-project",
+    "period": "qa-project-2026-10",
+    "shopperId": "qa-stable-exact-shopper",
+    "piiExcluded": true,
+    "realDataReads": 0,
+    "realDataWrites": 0
+  },
+  "red": {
+    "runNumber": 1802,
+    "runId": 39435553779,
+    "jobId": 118671495615,
+    "conclusion": "failure",
+    "tests": 2,
+    "failures": 2,
+    "first": "assignmentState remained unassigned despite HR assigned",
+    "second": "hasShopper remained true after HR unassignment"
+  },
+  "green": {
+    "status": "PENDING_CANONICAL_CI",
+    "runNumber": null,
+    "tests": null,
+    "failed": null
+  },
+  "changed": {
+    "productFiles": [
+      "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+    ],
+    "qaFiles": [
+      "tools/qa/cxorbia-i3-work-uat-a09b11-three-visit-assignment.test.mjs"
+    ],
+    "newBranches": 0,
+    "newWorkflow": 0,
+    "hrWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "devDeploys": 0,
+    "production": false
+  },
+  "authority": {
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V481_2026-10-20.json",
+    "ledgerBlob": "655da8e85ddd16a030321c5c6a187d9f546acf46",
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261020-V153.json",
+    "matrixBlob": "f2eea04b077a75f7789ec62359751c4bf78f1c9b",
+    "modules": 21,
+    "sourceInventory": 150,
+    "vrm": 274,
+    "previousPassesPreserved": true
+  },
+  "boundaries": {
+    "exactFirebaseAuthAndMembership": "PASS_WORK_READONLY",
+    "threeFirestoreVisitsShopperScope": "PASS_WORK_READONLY",
+    "firebaseAuthClaims": "NOT_VERIFIED",
+    "externalHrCurrentRevision": "NOT_VERIFIED",
+    "actualShopperSessionThreeVisits": "NOT_VERIFIED",
+    "realDocumentsMutated": false,
+    "periodConfigMutated": false
+  },
+  "nextExactAction": "Prove GREEN in existing canonical CI (two focal tests), then continue exact current HR revision + Shopper session E2E and independent B09/B13/B05-B08/C02-C10 Work/QA; do not write real data. Single cumulative DEV artifact later, I4 explicit production authorization required."
+}

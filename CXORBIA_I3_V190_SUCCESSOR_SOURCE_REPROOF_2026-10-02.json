@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "cxorbia.i3.v190.successor-source-reproof.v1",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "state": "PASS_SOURCE_STATIC_REPROOF_PENDING_DEV_MATERIALIZATION",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+  "sourceTreeAuthority": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+  "parentSha": "d97f6ce80b89cf6a36e046ff15cb25a046189a97",
+  "predecessorProductSourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
+  "exactDeltaFiles": [
+    "app/adapters/cxorbia-command-adapter-v1.js",
+    "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+    "app/adapters/tya-canonical-finance-read-model-v2.js",
+    "app/adapters/tya-canonical-shopper-portal-v2.js",
+    "app/adapters/tya-cumulative-read-model-v2.js",
+    "app/core/backend-bulletins.js",
+    "app/core/backend-certifications.js",
+    "app/core/backend-resources.js",
+    "app/core/data.js",
+    "app/core/notif.js",
+    "app/modules/academia.js",
+    "app/modules/cert.js",
+    "app/modules/midia.js",
+    "app/modules/misvisitas.js",
+    "app/modules/shoppers.js",
+    "app/styles/layout.css",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+    "storage.rules"
+  ],
+  "checks": {
+    "total": 34,
+    "passed": 34,
+    "failed": 0
+  },
+  "decision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
+  "production": "DO_NOT_TOUCH"
+}

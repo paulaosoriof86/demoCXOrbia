@@ -1,0 +1,15 @@
+name: CXOrbia Corte 4 P0 VIS-01 Diagnostic — closed
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    name: HOLD · P0 VIS-01 diagnostic closed after PASS
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'P0-C4-VIS-01 diagnostic completed; no automatic rerun permitted.'

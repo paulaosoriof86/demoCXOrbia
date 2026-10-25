@@ -1,0 +1,75 @@
+{
+  "contractName": "phase-a-readiness-gates",
+  "version": "1.0.0",
+  "status": "draft_no_runtime_no_writes",
+  "scope": "Phase A controlled operational readiness while Claude fixes V79",
+  "safety": {
+    "frontendChanges": false,
+    "runtimeConnected": false,
+    "firestoreWrites": false,
+    "deploy": false,
+    "production": false,
+    "realImport": false
+  },
+  "gates": [
+    {
+      "id": "frontend_v79_p0",
+      "status": "blocked_waiting_claude",
+      "requiredBefore": ["source_lock", "runtime_connection", "production_cutover"],
+      "notes": "V79 needs P0 fixes before backend is empalmed operationally."
+    },
+    {
+      "id": "phase_a_firestore_schema",
+      "status": "ready_documental",
+      "requiredBefore": ["dev_write_review"],
+      "notes": "Schema and adapter route contracts exist."
+    },
+    {
+      "id": "shopper_reference_review",
+      "status": "review_required",
+      "requiredBefore": ["real_import", "production_identity_merge", "auth_activation"],
+      "counts": {
+        "referenceReviewRows": 661,
+        "candidateRows": 276,
+        "canonicalRows": 276,
+        "strictBlockers": 661
+      }
+    },
+    {
+      "id": "comm_review",
+      "status": "next_gate",
+      "requiredBefore": ["communications_history_import", "notification_replay_policy"],
+      "notes": "Continue historical communications review; no active notifications."
+    },
+    {
+      "id": "hr_complete",
+      "status": "use_existing_documentation",
+      "requiredBefore": ["phase_a_cutover"],
+      "notes": "Do not ask again unless source is unavailable."
+    },
+    {
+      "id": "certifications_existing",
+      "status": "preserve_required",
+      "requiredBefore": ["shopper_login_phase_a"],
+      "notes": "Previously approved shoppers must not be forced to retake certification."
+    },
+    {
+      "id": "liquidations_june",
+      "status": "phase_a_required",
+      "requiredBefore": ["shopper_payment_visibility"],
+      "notes": "June payment status must distinguish executed visits from pending payments."
+    },
+    {
+      "id": "make_sync",
+      "status": "gate_future_access_needed",
+      "requiredBefore": ["assignment_writeback_real"],
+      "notes": "Ask Paula for Make access only when reaching real integration block."
+    },
+    {
+      "id": "gemini_certification_bank",
+      "status": "gate_future_access_needed",
+      "requiredBefore": ["question_bank_generation_real"],
+      "notes": "Human review required before activating bank."
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0.0",
+  "reportId": "tya-shopper-reference-history-recovery-r11b",
+  "generatedAt": "2026-07-12T21:36:00.663012+00:00",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "decision": "HOLD_NO_213_REFERENCE_SET_IN_REACHABLE_GIT_OBJECTS",
+  "current": {
+    "shopperCount": 210,
+    "visitCount": 616,
+    "periodCount": 14,
+    "referenceSetSha256": "39805fba4c918821703406d4cc876fddb19733e9d02462161296a4a9baa513b9"
+  },
+  "recoveredHistorical": null,
+  "comparison": {
+    "stableCount": 0,
+    "historicalOnlyCount": 0,
+    "currentOnlyCount": 0,
+    "historicalOnlyRefs": [],
+    "currentOnlyRefs": []
+  },
+  "search": {
+    "reachableGitObjectsWithShopperRefs": 0,
+    "exact213Candidates": 0,
+    "rankedCandidates": []
+  },
+  "policy": {
+    "sourceSafeOnly": true,
+    "noRawNames": true,
+    "noNameMatching": true,
+    "noAutomaticMerge": true,
+    "noAutomaticDelete": true,
+    "noFixtureBackfill": true,
+    "materializationHold": true
+  },
+  "safeState": {
+    "writes": false,
+    "imported": false,
+    "production": false,
+    "providers": false,
+    "paymentsExecuted": false
+  }
+}

@@ -1,0 +1,252 @@
+{
+  "contractId": "phase-a-operational-state-machine-v1",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "mode": "source_safe_contract_only_no_runtime",
+  "createdAt": "2026-07-09",
+  "purpose": "Definir la maquina de estados operacional Phase A para asignaciones, sincronizacion HR/plataforma, certificaciones preservadas y liquidaciones/pagos, sin tocar UI ni activar runtime.",
+  "stableKeysRequired": [
+    "tenantId",
+    "projectId",
+    "visitId",
+    "hrRowId",
+    "shopperId",
+    "assignmentSource",
+    "assignmentSyncStatus",
+    "lastSyncedAt"
+  ],
+  "globalRules": {
+    "multiProjectFromStart": true,
+    "cinepolisIsProjectNotGlobalLogic": true,
+    "hrIsOperationalSourceForPhaseA": true,
+    "doNotDeduplicateByVisualMatch": true,
+    "doNotOverwriteConflictsSilently": true,
+    "certificationsAlreadyPresentedMustBePreserved": true,
+    "juneVisitsExecutedJunePendingIsPaymentControl": true,
+    "questionnaireRoutingConfigurableByProjectOrVisit": true,
+    "adminActionsRequireAudit": true,
+    "runtimeSwitchRequiresExplicitPaulaGo": true
+  },
+  "assignmentStates": [
+    {
+      "state": "available",
+      "meaning": "Visita disponible para postulacion/asignacion dentro del proyecto.",
+      "source": "HR_or_platform_preview",
+      "allowedTransitions": ["application_pending", "assigned_from_platform_pending_hr_sync", "assigned_from_hr_pending_platform_sync", "sync_conflict_review"],
+      "blocksDuplicateAssignment": false
+    },
+    {
+      "state": "application_pending",
+      "meaning": "Shopper se postulo; admin debe aprobar/rechazar antes de asignar.",
+      "source": "platform",
+      "allowedTransitions": ["assigned_from_platform_pending_hr_sync", "application_rejected", "sync_conflict_review"],
+      "blocksDuplicateAssignment": false
+    },
+    {
+      "state": "application_rejected",
+      "meaning": "Postulacion rechazada sin borrar trazabilidad.",
+      "source": "platform_admin",
+      "allowedTransitions": ["available"],
+      "blocksDuplicateAssignment": false
+    },
+    {
+      "state": "assigned_from_platform_pending_hr_sync",
+      "meaning": "Asignacion aprobada en plataforma; Make/bridge debe reflejar HR antes de considerarla sincronizada.",
+      "source": "platform",
+      "allowedTransitions": ["assigned_synced", "sync_conflict_review", "assignment_cancelled"],
+      "blocksDuplicateAssignment": true
+    },
+    {
+      "state": "assigned_from_hr_pending_platform_sync",
+      "meaning": "Asignacion detectada desde HR; plataforma debe reflejarla y sacar visita de disponibles sin duplicar.",
+      "source": "hr",
+      "allowedTransitions": ["assigned_synced", "sync_conflict_review", "assignment_cancelled"],
+      "blocksDuplicateAssignment": true
+    },
+    {
+      "state": "assigned_synced",
+      "meaning": "Asignacion sincronizada entre HR y plataforma con stable keys.",
+      "source": "hr_platform_reconciled",
+      "allowedTransitions": ["scheduled", "sync_conflict_review", "assignment_cancelled"],
+      "blocksDuplicateAssignment": true
+    },
+    {
+      "state": "sync_conflict_review",
+      "meaning": "Conflicto de asignacion/fuente/identidad/estado; requiere revision humana, no sobrescritura automatica.",
+      "source": "conflict_detector",
+      "allowedTransitions": ["assigned_synced", "available", "assignment_cancelled"],
+      "blocksDuplicateAssignment": true
+    },
+    {
+      "state": "scheduled",
+      "meaning": "Visita agendada dentro de reglas de franja/quincena.",
+      "source": "platform_or_hr",
+      "allowedTransitions": ["reschedule_requested", "completed", "sync_conflict_review"],
+      "blocksDuplicateAssignment": true
+    },
+    {
+      "state": "reschedule_requested",
+      "meaning": "Reprogramacion pendiente de validacion por reglas de franja/quincena.",
+      "source": "shopper_or_admin",
+      "allowedTransitions": ["scheduled", "sync_conflict_review", "assignment_cancelled"],
+      "blocksDuplicateAssignment": true
+    },
+    {
+      "state": "completed",
+      "meaning": "Visita marcada realizada; cuestionario aun puede estar pendiente.",
+      "source": "shopper_or_hr",
+      "allowedTransitions": ["questionnaire_completed", "sync_conflict_review"],
+      "blocksDuplicateAssignment": true
+    },
+    {
+      "state": "questionnaire_completed",
+      "meaning": "Cuestionario completado o marcado como realizado; falta submitido/revision TyA si aplica.",
+      "source": "tya_online_or_hr_or_external_route",
+      "allowedTransitions": ["submitted_by_tya", "sync_conflict_review"],
+      "blocksDuplicateAssignment": true
+    },
+    {
+      "state": "submitted_by_tya",
+      "meaning": "Submitido confirmado por TyA/HR; habilita control de liquidacion segun reglas.",
+      "source": "hr",
+      "allowedTransitions": ["liquidation_candidate", "sync_conflict_review"],
+      "blocksDuplicateAssignment": true
+    },
+    {
+      "state": "liquidation_candidate",
+      "meaning": "Candidato a liquidacion/pago; requiere cruce financiero antes de pago confirmado.",
+      "source": "hr_finance_preview",
+      "allowedTransitions": ["payment_review", "sync_conflict_review"],
+      "blocksDuplicateAssignment": true
+    },
+    {
+      "state": "payment_review",
+      "meaning": "Control de pago en revision; no equivale a pago real.",
+      "source": "admin_finance_control",
+      "allowedTransitions": ["payment_scheduled", "payment_confirmed_external", "sync_conflict_review"],
+      "blocksDuplicateAssignment": true
+    },
+    {
+      "state": "payment_scheduled",
+      "meaning": "Pago programado/reprogramado para control interno; no ejecuta transferencia.",
+      "source": "admin_finance_control",
+      "allowedTransitions": ["payment_confirmed_external", "sync_conflict_review"],
+      "blocksDuplicateAssignment": true
+    },
+    {
+      "state": "payment_confirmed_external",
+      "meaning": "Pago marcado como confirmado externamente con auditoria; no implica pago ejecutado por CXOrbia.",
+      "source": "admin_finance_control",
+      "allowedTransitions": ["sync_conflict_review"],
+      "blocksDuplicateAssignment": true
+    }
+  ],
+  "certificationStates": [
+    {
+      "state": "preserved_already_presented",
+      "meaning": "Certificacion ya presentada se conserva y no se pide de nuevo al shopper.",
+      "requiresHumanReview": false
+    },
+    {
+      "state": "required_new_or_expired",
+      "meaning": "Certificacion requerida porque no hay evidencia preservada o aplica nueva regla.",
+      "requiresHumanReview": true
+    },
+    {
+      "state": "passed",
+      "meaning": "Aprobada segun reglas del proyecto.",
+      "requiresHumanReview": false
+    },
+    {
+      "state": "review_required",
+      "meaning": "Coincidencia incompleta, intento fallido o evidencia insuficiente; no bloquear automaticamente si ya habia preservacion documentada.",
+      "requiresHumanReview": true
+    }
+  ],
+  "questionnaireRoutingModes": [
+    "cxorbia",
+    "tya_online",
+    "external_platform",
+    "general_link",
+    "hr_visit_link"
+  ],
+  "conflictTypes": [
+    {
+      "code": "assignment_source_conflict",
+      "severity": "blocker",
+      "resolution": "human_review_required"
+    },
+    {
+      "code": "shopper_identity_review_required",
+      "severity": "blocker",
+      "resolution": "do_not_merge_by_name"
+    },
+    {
+      "code": "visit_key_collision",
+      "severity": "blocker",
+      "resolution": "stable_key_review"
+    },
+    {
+      "code": "payment_status_conflict",
+      "severity": "warning_or_blocker",
+      "resolution": "finance_crosscheck_required"
+    },
+    {
+      "code": "certification_preservation_mismatch",
+      "severity": "warning_or_blocker",
+      "resolution": "do_not_request_again_until_reviewed"
+    }
+  ],
+  "futureAdminActions": [
+    {
+      "action": "approve_application",
+      "allowedInPhaseA": true,
+      "requiresAudit": true,
+      "writesAllowedNow": false
+    },
+    {
+      "action": "reflect_hr_assignment",
+      "allowedInPhaseA": true,
+      "requiresAudit": true,
+      "writesAllowedNow": false
+    },
+    {
+      "action": "resolve_sync_conflict",
+      "allowedInPhaseA": true,
+      "requiresAudit": true,
+      "writesAllowedNow": false
+    },
+    {
+      "action": "preserve_certification",
+      "allowedInPhaseA": true,
+      "requiresAudit": true,
+      "writesAllowedNow": false
+    },
+    {
+      "action": "mark_payment_control_status",
+      "allowedInPhaseA": true,
+      "requiresAudit": true,
+      "writesAllowedNow": false
+    }
+  ],
+  "hardStops": [
+    "missingStableKey",
+    "duplicateAssignmentWithoutConflict",
+    "visualNameOnlyDeduplication",
+    "certificationAlreadyPresentedRequestedAgainWithoutReview",
+    "paymentMarkedRealWithoutExternalConfirmation",
+    "runtimeSwitchWithoutPaulaGo",
+    "firebaseWritesBeforeGate",
+    "hrWritesBeforeGate"
+  ],
+  "safeStateExpected": {
+    "runtimeConnected": false,
+    "firestoreWrites": false,
+    "hrWrites": false,
+    "importsExecuted": false,
+    "deploy": false,
+    "production": false,
+    "realPayments": false,
+    "providerCalls": false
+  }
+}

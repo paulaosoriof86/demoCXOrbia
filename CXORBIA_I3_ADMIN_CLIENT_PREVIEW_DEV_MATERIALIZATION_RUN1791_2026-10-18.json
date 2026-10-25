@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "cxorbia.i3.admin-client-preview.dev-materialization.v1",
+  "recordedAt": "2026-10-18",
+  "iteration": "I3",
+  "officialState": "HOLD",
+  "sourceProof": {
+    "runId": 39168448796,
+    "runNumber": 1790,
+    "tests": {
+      "pass": 4,
+      "total": 4,
+      "fail": 0
+    }
+  },
+  "materialization": {
+    "state": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "sourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
+    "sourceTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
+    "runId": 39169125996,
+    "runNumber": 1791,
+    "artifactId": 12151637199,
+    "artifactDigest": "sha256:c0f043bf26e03d08fb687593520cbe991845145502b28220d8fd0a52888f1b75",
+    "artifactDigestType": "SOURCE_TAR_SHA256",
+    "artifactUploadZipSha256": "f45a10945022712ce63ed347c58dfbd6fa0959cd0edd17379da73a70a5048bb8",
+    "runtimeRevision": "cxorbia-live-hr-dev-00312-5g2",
+    "runtimeDigest": "sha256:3815369c5af1736b06935b5fa58e74bd5321aa049dae0c7513978752253913b8",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/8ddb953e7f239c50",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792360031288000",
+    "hrRevision": "2895f9fa413dd88378c5a82372ab98aeb00274942aa9252a949dddeaafb65e78",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/e9070ca6-234c-4a16-acf2-5ab3372eadb3",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "firestoreRulesDeploys": 1,
+    "hrWrites": 0,
+    "production": false,
+    "sameArtifactLive": "PENDING",
+    "humanAcceptance": "PENDING",
+    "gate20": "PENDING",
+    "gate21": "PENDING"
+  },
+  "nextExactAction": "Run only scoped real Admin -> Client readonly preview -> Admin, Client F12 and Shopper login on the exact RUN1791 materialized source and SAME current HR revision, without new build. Human visual only after E2E PASS; D04 name/F09 remain open.",
+  "scope": {
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "roles": [
+      "Admin",
+      "Cliente",
+      "Shopper"
+    ]
+  },
+  "preserved": {
+    "tasks": 82,
+    "vrm": 274,
+    "domains": 21,
+    "prod": "DO_NOT_TOUCH",
+    "predecessorFocalD04F12PassRun": 1788
+  },
+  "liveE2e": "PENDING",
+  "humanApproval": "PENDING"
+}

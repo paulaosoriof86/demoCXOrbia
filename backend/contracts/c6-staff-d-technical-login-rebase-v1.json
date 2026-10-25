@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "cxorbia.c6.staff-d-technical-login-rebase.v1",
+  "generatedAt": "2026-08-11",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "tenantId": "tya",
+  "authNamespace": "staff",
+  "targetAlias": "D",
+  "authority": {
+    "providerSnapshotRunId": 31518927950,
+    "privateRecoverySourceLock": "app/docs/SOURCE-LOCK-C6-STAFF-TARGET-PRIVATE-IDENTITY-RECOVERY-STOP-D-20260811.md",
+    "historicalVisibleLoginDeclaredUnrecoverable": true,
+    "exactWriteRequestReused": false,
+    "providerSnapshotRepeated": false
+  },
+  "preserveExactly": [
+    "ownerIdentityAnchor",
+    "ownerRoleBindingDigest",
+    "role",
+    "entitlementMode",
+    "projectIds",
+    "expectedClaimsDigest"
+  ],
+  "canonicalVisibleLoginDerivation": {
+    "version": "cxorbia-canonical-visible-login-v1",
+    "inputs": [
+      "tenantId",
+      "authNamespace",
+      "targetAlias",
+      "ownerIdentityAnchor",
+      "ownerRoleBindingDigest",
+      "role"
+    ],
+    "seed": "sha256(version + NUL + tenantId + NUL + authNamespace + NUL + targetAlias + NUL + ownerIdentityAnchor + NUL + ownerRoleBindingDigest + NUL + role)",
+    "transientVisibleLogin": "cxu- + seed[0:24]",
+    "normalization": "trim+lowercase",
+    "rawVisibleLoginPersisted": false,
+    "rawVisibleLoginLogged": false,
+    "rawVisibleLoginArtifact": false,
+    "regenerableWithoutHistoricalReference": true
+  },
+  "replacement": {
+    "technicalLoginDigest": "9673243ee85a119f8f830d59846659b81d9068fc49a4647e16da08801e6d804a",
+    "ownerTechnicalBindingDigest": "3e6506f4496872b9c04cfc52f9ac4a466cfc512583754af23fed363e2f49d5ee",
+    "mechanicallyDerivedProviderEmailSha256": "f43ca1ac46438f8df109eb4d32f2498cf10fa429ebfe213af1ff66490cb6fc2e"
+  },
+  "sourceSafeCollisionValidation": {
+    "technicalLoginDigestCollisionsAgainstABC": 0,
+    "technicalLoginDigestCollisionAgainstSupersededD": false,
+    "providerEmailDigestCollisionsAgainstABC": 0,
+    "providerEmailDigestCollisionAgainstSupersededD": false,
+    "ownerTechnicalBindingDigestCollisionsAgainstABC": 0,
+    "ownerTechnicalBindingDigestCollisionAgainstSupersededD": false,
+    "providerReadRequiredForThisValidation": false,
+    "decision": "PASS_SOURCE_SAFE_ZERO_COLLISION"
+  },
+  "derivedFieldPolicy": {
+    "providerEmailSha256IsIndependentIdentityDecision": false,
+    "providerEmailSha256MustBeRecomputedMechanicallyFromTechnicalLoginDigest": true,
+    "reason": "Existing provider collision contract defines provider internal email from technicalLoginDigest[0:48]; keeping the old derived fingerprint would make the config internally inconsistent."
+  },
+  "credentialPolicy": {
+    "sourceOnlyCredentialRequired": false,
+    "targetCredentialStrategyPreserved": "NEW_EPHEMERAL_AT_SEPARATELY_AUTHORIZED_EXECUTION",
+    "rawPasswordPersisted": false,
+    "passwordHashPersisted": false,
+    "credentialWriteAuthorized": false
+  },
+  "safety": {
+    "rawLoginPersisted": false,
+    "contactEmailPersisted": false,
+    "uidPersisted": false,
+    "passwordPersisted": false,
+    "passwordHashPersisted": false,
+    "rawNamePersisted": false,
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "deletes": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false
+  }
+}

@@ -1,0 +1,154 @@
+{
+  "schemaVersion": "cxorbia-legal-consents-v1",
+  "status": "draft-no-write",
+  "purpose": "Modelo para documentos legales versionados y aceptaciones persistentes por tenant, pais, rol y relacion.",
+  "countries": ["CO", "GT"],
+  "documentTypes": [
+    "termsOfUse",
+    "privacyNotice",
+    "dataProcessingAuthorization",
+    "confidentialityAgreement",
+    "nda",
+    "softwareProtectionAgreement",
+    "partnerAgreementAddendum",
+    "clientPortalTerms",
+    "shopperOperationalNda",
+    "supplierConfidentiality"
+  ],
+  "subjectTypes": [
+    "superAdmin",
+    "admin",
+    "ops",
+    "coordinador",
+    "aliado",
+    "shopper",
+    "clientUser",
+    "financeUser",
+    "supportUser",
+    "externalSupplier",
+    "strategicPartner",
+    "franchisee",
+    "businessPartner"
+  ],
+  "collections": {
+    "legalTemplates": {
+      "path": "tenants/{tenantId}/legalTemplates/{templateId}",
+      "purpose": "Plantillas por pais, idioma, rol y tipo de documento.",
+      "fields": {
+        "tenantId": "string",
+        "templateId": "string",
+        "documentType": "string",
+        "country": "CO|GT|GLOBAL",
+        "language": "es|en",
+        "subjectTypes": "array",
+        "status": "draft|published|archived",
+        "requiresLegalReview": "boolean",
+        "updatedAt": "timestamp",
+        "updatedBy": "uid"
+      }
+    },
+    "legalDocuments": {
+      "path": "tenants/{tenantId}/legalDocuments/{documentId}",
+      "purpose": "Documento legal versionado publicado o imprimible.",
+      "fields": {
+        "tenantId": "string",
+        "documentId": "string",
+        "templateId": "string|null",
+        "documentType": "string",
+        "country": "CO|GT|GLOBAL",
+        "version": "string",
+        "title": "string",
+        "status": "draft|published|archived|replaced",
+        "effectiveFrom": "timestamp|null",
+        "effectiveTo": "timestamp|null",
+        "documentHash": "string",
+        "printableHtml": "string|null",
+        "fileAssetId": "string|null",
+        "requiresAcceptance": "boolean",
+        "requiresReacceptanceOnChange": "boolean",
+        "createdAt": "timestamp",
+        "createdBy": "uid"
+      }
+    },
+    "legalAcceptanceRequirements": {
+      "path": "tenants/{tenantId}/legalAcceptanceRequirements/{requirementId}",
+      "purpose": "Reglas que indican que documento debe aceptar cada sujeto.",
+      "fields": {
+        "tenantId": "string",
+        "requirementId": "string",
+        "documentType": "string",
+        "documentId": "string",
+        "country": "CO|GT|GLOBAL",
+        "subjectTypes": "array",
+        "roles": "array",
+        "projectScope": "array|null",
+        "required": "boolean",
+        "blocking": "boolean",
+        "active": "boolean",
+        "updatedAt": "timestamp",
+        "updatedBy": "uid"
+      }
+    },
+    "legalAcceptances": {
+      "path": "tenants/{tenantId}/legalAcceptances/{acceptanceId}",
+      "purpose": "Aceptacion digital persistente de un documento legal versionado.",
+      "fields": {
+        "tenantId": "string",
+        "acceptanceId": "string",
+        "userId": "uid|string",
+        "subjectType": "string",
+        "role": "string",
+        "country": "CO|GT|GLOBAL",
+        "documentId": "string",
+        "documentType": "string",
+        "version": "string",
+        "documentHash": "string",
+        "acceptedAt": "timestamp",
+        "acceptedFrom": "login|settings|clientPortal|adminInvite|manualBackfill",
+        "language": "string",
+        "status": "accepted|rejected|revoked|replaced",
+        "evidence": "object"
+      }
+    },
+    "legalPrintJobs": {
+      "path": "tenants/{tenantId}/legalPrintJobs/{printJobId}",
+      "purpose": "Registro de impresion o descarga de documento legal.",
+      "fields": {
+        "tenantId": "string",
+        "printJobId": "string",
+        "documentId": "string",
+        "acceptanceId": "string|null",
+        "format": "html|pdf",
+        "status": "requested|generated|downloaded|failed",
+        "fileAssetId": "string|null",
+        "createdAt": "timestamp",
+        "createdBy": "uid|string"
+      }
+    },
+    "legalAuditLogs": {
+      "path": "tenants/{tenantId}/legalAuditLogs/{auditId}",
+      "purpose": "Auditoria de publicacion, aceptacion, reemplazo y descarga legal.",
+      "fields": {
+        "tenantId": "string",
+        "auditId": "string",
+        "area": "template|document|requirement|acceptance|print",
+        "entityId": "string",
+        "action": "create|publish|accept|reject|replace|archive|print|download",
+        "createdAt": "timestamp",
+        "createdBy": "uid|string",
+        "payloadSanitized": "object"
+      }
+    }
+  },
+  "loginGate": {
+    "rule": "Si falta una aceptacion obligatoria y bloqueante, el usuario no entra al dashboard.",
+    "steps": ["auth", "resolveRequirements", "checkAcceptances", "showLegalScreen", "saveAcceptance", "allowOrBlock"]
+  },
+  "writeGates": [
+    "legalTextReviewed",
+    "versionPublished",
+    "hashCalculated",
+    "acceptanceEvidenceSaved",
+    "printableVersionAvailable"
+  ]
+}

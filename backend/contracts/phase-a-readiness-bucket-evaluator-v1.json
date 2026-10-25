@@ -1,0 +1,87 @@
+{
+  "contractId": "phase-a-readiness-bucket-evaluator-v1",
+  "status": "draft_safe_not_connected",
+  "date": "2026-07-10",
+  "purpose": "Evaluate Phase A module readiness into GO_READY, WARNING_READY and NO_GO_BLOCKER buckets before any real TyA connection, import, Auth activation, Firestore write, provider writeback or production deployment.",
+  "safeState": {
+    "realDatabaseConnected": false,
+    "firestoreWritesEnabled": false,
+    "authEnabled": false,
+    "importsEnabled": false,
+    "productionEnabled": false,
+    "containsSecrets": false,
+    "containsSensitiveData": false,
+    "providerWritebackEnabled": false
+  },
+  "inputs": {
+    "moduleReadinessMatrix": "backend/config/phase-a-module-readiness-matrix.source-safe.json",
+    "realConnectionReadinessMap": "backend/config/phase-a-real-connection-readiness-map.source-safe.json",
+    "claudeForensicChecklist": "backend/config/phase-a-claude-candidate-forensic-audit-checklist.source-safe.json",
+    "postPackageBackendBlocks": [
+      "phase-a-role-taxonomy-org-scope-v1",
+      "phase-a-auth-dev-claims-taxonomy-seed-v2",
+      "phase-a-protected-read-access-adapter-v1",
+      "phase-a-hr-source-safe-to-protected-candidates-v1",
+      "phase-a-real-connection-readiness-gate-v1",
+      "phase-a-module-readiness-matrix-v1",
+      "phase-a-claude-candidate-forensic-audit-readiness-v1"
+    ]
+  },
+  "bucketDefinitions": {
+    "GO_READY": "Prepared enough for the next dry-run or gated step. It still does not mean production or write permission.",
+    "WARNING_READY": "Partially ready. May continue only in dry-run or documentation/prototype work, but must not connect real data yet.",
+    "NO_GO_BLOCKER": "Blocks real connection/import/Auth/writeback/production until fixed.",
+    "CLAUDE_REQUIRED": "Requires prototype/UI change by Claude because backend must not patch app/modules or app/core.",
+    "BACKEND_PREPARED": "Backend contract/adapter/gate exists. Claude should represent it honestly but not rebuild it."
+  },
+  "criticalAxes": [
+    "tenantProjectPeriod",
+    "hrSource",
+    "usersRolesScopes",
+    "academyCoursesManuals",
+    "certificationsCarryover",
+    "shoppersProtectedProfiles",
+    "visitsAssignments",
+    "applicationsScheduling",
+    "liquidationsPayments",
+    "notificationsOutbox",
+    "reviewQueueConflicts",
+    "auditEvents",
+    "integrationsGates",
+    "pwaBranding",
+    "cxDataSwitch"
+  ],
+  "mustBlockRealConnectionIf": [
+    "projectAndPeriodAreMerged",
+    "hrSourceCannotProduceSourceSafePayload",
+    "usersRolesScopesMissing",
+    "protectedDataShownPublicly",
+    "certificationCarryoverMissing",
+    "liquidationPreviewReviewMissing",
+    "reviewQueueMissingForConflicts",
+    "auditEventsMissingForProtectedReadsOrCriticalChanges",
+    "writeOrProviderGateEnabledWithoutExplicitGO",
+    "prototypeClaimsRealIntegrationWithoutGate"
+  ],
+  "claudeAuditUse": {
+    "useAfterCandidateDelivery": true,
+    "compareAgainstCurrentCandidate": true,
+    "compareAgainstFullClaudePackage": true,
+    "includePostPackageBackendBlocks": true,
+    "avoidReaskingWhatBackendAlreadyPrepared": true,
+    "prioritizeWhileClaudeHasCapacity": ["P0BlockerAskClaudeNow", "P1ShouldFixWhileCapacityExists"]
+  },
+  "forbiddenInRepoOrPreview": [
+    "rawWorkbook",
+    "privateSourceUrl",
+    "fullName",
+    "email",
+    "phone",
+    "idDocumentRaw",
+    "bankAccountRaw",
+    "signedNdaRaw",
+    "password",
+    "providerToken",
+    "privateWebhookUrl"
+  ]
+}

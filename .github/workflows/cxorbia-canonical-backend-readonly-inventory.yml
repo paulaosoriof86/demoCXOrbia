@@ -1,0 +1,109 @@
+name: CXOrbia Canonical Backend Readonly Inventory
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/cxorbia-firebase-requests/canonical-backend-readonly-inventory.json'
+
+permissions:
+  contents: write
+  statuses: write
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate request
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const r=require('./.github/cxorbia-firebase-requests/canonical-backend-readonly-inventory.json');
+          if(r.enabled!==true) process.exit(1);
+          if(r.mode!=='READ_ONLY_CANONICAL_BACKEND_INVENTORY') process.exit(1);
+          if(r.targetProjectId!=='cxorbia-backend-dev') process.exit(1);
+          if(r.providerWrites!==0||r.production!==false||r.merge!==false) process.exit(1);
+          NODE
+
+      - name: Load canonical DEV credential
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/canonical-backend-inventory-private
+          node <<'NODE'
+          const fs=require('fs');
+          const raw=process.env.EXISTING_DEV_JSON||'';
+          let p=null; try{p=JSON.parse(raw);}catch{}
+          if(!(p&&p.type==='service_account'&&p.project_id&&p.client_email&&p.private_key)) process.exit(1);
+          if(p.project_id!=='cxorbia-backend-dev') { console.error('wrong_service_account_project:'+p.project_id); process.exit(1); }
+          fs.writeFileSync('.tmp/canonical-backend-inventory-private/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.tmp/canonical-backend-inventory-private/credentials.json" >> "$GITHUB_ENV"
+
+      - name: Install transient Firebase Admin
+        run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
+
+      - name: Run read-only inventory
+        env:
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_INVENTORY_JSON: app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.json
+          CXORBIA_INVENTORY_MD: app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.md
+        run: node tools/qa/cxorbia-canonical-backend-readonly-inventory.mjs
+
+      - name: Reconcile Corte 6 Auth/RBAC readiness read-only
+        env:
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_AUTH_RBAC_JSON: app/docs/evidence/CORTE6-AUTH-RBAC-READONLY-RECONCILIATION-LATEST.json
+          CXORBIA_AUTH_RBAC_MD: app/docs/evidence/CORTE6-AUTH-RBAC-READONLY-RECONCILIATION-LATEST.md
+        run: node tools/qa/cxorbia-auth-rbac-readonly-reconcile.mjs
+
+      - name: Commit sanitized evidence on latest branch head
+        run: |
+          set -euo pipefail
+          cp app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.json /tmp/cxorbia-inventory.json
+          cp app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.md /tmp/cxorbia-inventory.md
+          cp app/docs/evidence/CORTE6-AUTH-RBAC-READONLY-RECONCILIATION-LATEST.json /tmp/cxorbia-auth-rbac.json
+          cp app/docs/evidence/CORTE6-AUTH-RBAC-READONLY-RECONCILIATION-LATEST.md /tmp/cxorbia-auth-rbac.md
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          mkdir -p app/docs/evidence
+          cp /tmp/cxorbia-inventory.json app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.json
+          cp /tmp/cxorbia-inventory.md app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.md
+          cp /tmp/cxorbia-auth-rbac.json app/docs/evidence/CORTE6-AUTH-RBAC-READONLY-RECONCILIATION-LATEST.json
+          cp /tmp/cxorbia-auth-rbac.md app/docs/evidence/CORTE6-AUTH-RBAC-READONLY-RECONCILIATION-LATEST.md
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.json app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.md app/docs/evidence/CORTE6-AUTH-RBAC-READONLY-RECONCILIATION-LATEST.json app/docs/evidence/CORTE6-AUTH-RBAC-READONLY-RECONCILIATION-LATEST.md
+          if git diff --cached --quiet; then
+            echo 'No evidence delta'
+          else
+            git commit -m 'evidence: refresh canonical backend and Corte 6 auth readiness'
+            git push origin HEAD:docs-tya-v6-v71-audit
+          fi
+
+      - name: Publish status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          STATE=success
+          DESC='PASS_CANONICAL_BACKEND_READONLY_INVENTORY'
+          test -f app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.json || { STATE=error; DESC='HOLD_CANONICAL_BACKEND_INVENTORY_FAILED'; }
+          test -f app/docs/evidence/CORTE6-AUTH-RBAC-READONLY-RECONCILIATION-LATEST.json || { STATE=error; DESC='HOLD_CORTE6_AUTH_RECONCILIATION_FAILED'; }
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/canonical-backend-readonly-inventory' -f description="$DESC" >/dev/null
+
+      - name: Cleanup credential
+        if: always()
+        run: rm -rf .tmp/canonical-backend-inventory-private

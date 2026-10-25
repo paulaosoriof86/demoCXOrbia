@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "cxorbia.c6.staff-target-private-identity-recovery.source-only.v1",
+  "generatedAt": "2026-08-11T16:53:00-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "tenantId": "tya",
+  "decision": "STOP_C6_STAFF_TARGET_PRIVATE_IDENTITY_RECOVERY__ABC_EXACT__D_VISIBLE_LOGIN_UNRESOLVED__NO_PROVIDER",
+  "authority": {
+    "previousExactWriteRun": 31534505451,
+    "providerSnapshotRun": 31518927950,
+    "exactWriteRequestReused": false,
+    "providerSnapshotRepeated": false
+  },
+  "sourcesExamined": {
+    "previouslySuppliedPrivateFileLibrary": true,
+    "previouslyDeliveredUserReferences": true,
+    "privateGmailRead": true,
+    "privateGoogleContactsRead": true,
+    "legacyDatabaseConnected": false,
+    "providerRead": false
+  },
+  "targets": {
+    "A": {
+      "ownerAnchorMatch": true,
+      "ownerRoleBindingMatch": true,
+      "technicalLoginDigestMatch": true,
+      "ownerTechnicalBindingMatch": true,
+      "exactVisibleLoginRecovered": true
+    },
+    "B": {
+      "ownerAnchorMatch": true,
+      "ownerRoleBindingMatch": true,
+      "technicalLoginDigestMatch": true,
+      "ownerTechnicalBindingMatch": true,
+      "exactVisibleLoginRecovered": true
+    },
+    "C": {
+      "ownerAnchorMatch": true,
+      "ownerRoleBindingMatch": true,
+      "technicalLoginDigestMatch": true,
+      "ownerTechnicalBindingMatch": true,
+      "exactVisibleLoginRecovered": true
+    },
+    "D": {
+      "ownerAnchorMatch": true,
+      "ownerRoleBindingMatch": true,
+      "technicalLoginDigestMatch": false,
+      "ownerTechnicalBindingMatch": false,
+      "exactVisibleLoginRecovered": false,
+      "uniquePreviouslySuppliedPrivateCandidatesChecked": 4
+    }
+  },
+  "minimumMissing": {
+    "targetAlias": "D",
+    "fieldClass": "EXACT_VISIBLE_LOGIN_REFERENCE",
+    "ownerUnknown": false,
+    "roleUnknown": false,
+    "scopeUnknown": false,
+    "projectIdsUnknown": false,
+    "credentialSecretRequested": false,
+    "inferenceAllowed": false
+  },
+  "privacy": {
+    "rawLoginEmitted": false,
+    "rawLoginPersisted": false,
+    "emailEmitted": false,
+    "emailPersisted": false,
+    "uidEmitted": false,
+    "uidPersisted": false,
+    "passwordEmitted": false,
+    "passwordPersisted": false,
+    "passwordHashEmitted": false,
+    "passwordHashPersisted": false,
+    "rawNameEmitted": false,
+    "rawNamePersisted": false,
+    "newDigestPersisted": false
+  },
+  "writes": {
+    "provider": 0,
+    "auth": 0,
+    "firestore": 0,
+    "hr": 0,
+    "rules": 0,
+    "storage": 0,
+    "make": 0,
+    "gemini": 0,
+    "payments": 0,
+    "deletes": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false
+  },
+  "progress": {
+    "phaseA": 84,
+    "remaining": 16,
+    "m5": "4/8",
+    "newWeightedCredit": 0
+  },
+  "nextGate": "HUMAN_PRIVATE_D_VISIBLE_LOGIN_REFERENCE_REQUIRED"
+}

@@ -1,0 +1,178 @@
+{
+  "contractId": "phase-a-operational-queues-contract-v1",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "mode": "source_safe_contract_only_no_writes",
+  "createdAt": "2026-07-09",
+  "purpose": "Definir colas operativas Phase A para conflictos, sync HR/plataforma, certificaciones, liquidaciones/pagos y cuestionarios, sin writes reales ni runtime.",
+  "principles": {
+    "queueItemsAreSourceSafe": true,
+    "queueItemsAreTenantProjectScoped": true,
+    "queueItemsRequireStableKeys": true,
+    "queueResolutionRequiresAudit": true,
+    "queueResolutionWritesAllowedNow": false,
+    "noRawSensitiveData": true,
+    "noSilentOverwrite": true,
+    "noVisualDeduplication": true,
+    "noSyntheticFixtureAsRealEvidence": true,
+    "noDerivedTmpOutputAsOriginalEvidence": true,
+    "humanReviewForBlockers": true
+  },
+  "queueItemRequiredFields": [
+    "queueItemId",
+    "tenantId",
+    "projectId",
+    "queueType",
+    "severity",
+    "status",
+    "entityType",
+    "entityId",
+    "stableKeys",
+    "reasonCode",
+    "source",
+    "sourceRef",
+    "createdAt",
+    "updatedAt",
+    "gateStatus"
+  ],
+  "queueItemOptionalSafeFields": [
+    "visitId",
+    "hrRowId",
+    "shopperId",
+    "assignmentSource",
+    "assignmentSyncStatus",
+    "lastSyncedAt",
+    "periodId",
+    "country",
+    "currency",
+    "amountExpectedSafe",
+    "questionnaireRouteMode",
+    "certificationId",
+    "liquidationId",
+    "paymentControlId",
+    "notesSafe"
+  ],
+  "forbiddenQueueFields": [
+    "rawDpi",
+    "dpi",
+    "rawBankAccount",
+    "bankAccount",
+    "rawPhone",
+    "phone",
+    "rawEmail",
+    "email",
+    "rawShopperName",
+    "serviceAccountJson",
+    "makeWebhookUrl",
+    "geminiApiKey",
+    "paymentProviderToken",
+    "rawEvidence",
+    "base64Evidence",
+    "rawHrRow",
+    "rawCsv",
+    "rawWorkbook"
+  ],
+  "queueTypes": [
+    {
+      "queueType": "sync_conflicts",
+      "purpose": "Conflictos de asignacion o estado entre HR y plataforma.",
+      "allowedStatuses": ["open", "in_review", "resolved_preview", "blocked", "annulled_logical"],
+      "allowedSeverities": ["blocker", "warning"],
+      "requiredStableKeys": ["tenantId", "projectId", "visitId", "hrRowId"],
+      "resolutionActions": ["resolve_sync_conflict", "reflect_platform_assignment_to_hr", "reflect_hr_assignment_to_platform"],
+      "autoResolveAllowed": false,
+      "writesAllowedNow": false
+    },
+    {
+      "queueType": "hr_platform_sync_pending",
+      "purpose": "Asignaciones que deben reflejarse de una fuente a la otra sin duplicar.",
+      "allowedStatuses": ["open", "waiting_gate", "ready_for_sync_preview", "blocked", "resolved_preview"],
+      "allowedSeverities": ["warning", "blocker"],
+      "requiredStableKeys": ["tenantId", "projectId", "visitId", "hrRowId", "shopperId", "assignmentSource", "assignmentSyncStatus"],
+      "resolutionActions": ["reflect_platform_assignment_to_hr", "reflect_hr_assignment_to_platform"],
+      "autoResolveAllowed": false,
+      "writesAllowedNow": false
+    },
+    {
+      "queueType": "certification_preservation_review",
+      "purpose": "Certificaciones ya presentadas que deben conservarse o revisarse antes de pedir repetir.",
+      "allowedStatuses": ["open", "preserved_preview", "review_required", "blocked", "resolved_preview"],
+      "allowedSeverities": ["warning", "blocker"],
+      "requiredStableKeys": ["tenantId", "projectId", "shopperId"],
+      "resolutionActions": ["preserve_certification", "mark_certification_review_required"],
+      "autoResolveAllowed": false,
+      "writesAllowedNow": false
+    },
+    {
+      "queueType": "june_liquidation_payment_control",
+      "purpose": "Liquidaciones y pagos de junio como control administrativo, no pago real.",
+      "allowedStatuses": ["open", "payment_review", "payment_scheduled_preview", "external_payment_confirmed_preview", "blocked", "resolved_preview"],
+      "allowedSeverities": ["info", "warning", "blocker"],
+      "requiredStableKeys": ["tenantId", "projectId", "visitId", "hrRowId", "shopperId"],
+      "resolutionActions": ["create_liquidation_candidate", "mark_payment_review", "schedule_payment_control", "confirm_external_payment"],
+      "autoResolveAllowed": false,
+      "writesAllowedNow": false
+    },
+    {
+      "queueType": "questionnaire_route_review",
+      "purpose": "Visitas con ruta de cuestionario pendiente, externa o dependiente de HR/link por visita.",
+      "allowedStatuses": ["open", "route_configured_preview", "blocked", "resolved_preview"],
+      "allowedSeverities": ["info", "warning", "blocker"],
+      "requiredStableKeys": ["tenantId", "projectId", "visitId", "hrRowId"],
+      "resolutionActions": ["mark_questionnaire_completed", "mark_submitted_by_tya"],
+      "autoResolveAllowed": false,
+      "writesAllowedNow": false
+    },
+    {
+      "queueType": "admin_corrections_review",
+      "purpose": "Anulaciones/correcciones logicas con before/after y razon obligatoria.",
+      "allowedStatuses": ["open", "in_review", "corrected_preview", "annulled_logical", "blocked"],
+      "allowedSeverities": ["warning", "blocker"],
+      "requiredStableKeys": ["tenantId", "projectId", "entityId"],
+      "resolutionActions": ["annul_or_correct_admin_state"],
+      "autoResolveAllowed": false,
+      "writesAllowedNow": false
+    }
+  ],
+  "prioritizationRules": [
+    {
+      "rule": "blocker_first",
+      "description": "Blockers se revisan antes que warnings e info."
+    },
+    {
+      "rule": "assignment_conflicts_before_payments",
+      "description": "Conflictos de asignacion se resuelven antes de liquidaciones/pagos."
+    },
+    {
+      "rule": "certification_preservation_before_re_request",
+      "description": "Preservacion/revision de certificacion ocurre antes de pedir repetir."
+    },
+    {
+      "rule": "june_payment_control_after_submitted",
+      "description": "Control de pago junio solo se habilita si existe submitido/candidato valido."
+    },
+    {
+      "rule": "no_queue_item_without_stable_keys",
+      "description": "No se crea item de cola sin llaves estables minimas."
+    }
+  ],
+  "futureUiExpectationsForClaude": [
+    "Tablero de colas por tipo, severidad, estado, pais/proyecto y sourceRef opaca.",
+    "Drill por item con llaves estables no sensibles, razon, estado, accion sugerida y auditoria.",
+    "Botones preparados/deshabilitados si gate esta apagado.",
+    "Mensajes honestos: preview/preparado/no write/no envio/no pago/no sync real.",
+    "Bitacora de decisiones administrativas con before/after y razon."
+  ],
+  "safeStateExpected": {
+    "runtimeConnected": false,
+    "firestoreWrites": false,
+    "hrWrites": false,
+    "importsExecuted": false,
+    "deploy": false,
+    "production": false,
+    "makeWebhookLive": false,
+    "geminiLive": false,
+    "paymentProviderLive": false,
+    "rawSensitiveDataInRepo": false
+  }
+}

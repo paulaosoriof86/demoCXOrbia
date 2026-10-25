@@ -1,0 +1,140 @@
+{
+  "schemaVersion": "cxorbia.corte6.profile-full-handoff-readonly.v2",
+  "generatedAt": "2026-07-31T14:02:40.761Z",
+  "target": {
+    "projectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "canonicalProjectId": "cinepolis"
+  },
+  "encryptedSource": {
+    "records": 151,
+    "keyFingerprintSha256": "c767f9d0413ff7547f5a2e95ae6d210f4fd1cc0ea34484c62320681ce9fb0ecd",
+    "sourceContainer": "root.tya_shoppers_extra",
+    "plaintextPersisted": false,
+    "passwordIncludedEncrypted": true,
+    "piiIncludedEncrypted": true
+  },
+  "matching": {
+    "stableKey": "legacyShopperId exact",
+    "nameMatchAllowed": false,
+    "phoneMatchAllowed": false,
+    "emailMatchAllowed": false,
+    "exact": 120,
+    "missingCanonical": 31,
+    "ambiguousCanonical": 0,
+    "badRecord": 0
+  },
+  "sourceMerge": {
+    "conflictGroups": 83,
+    "conflictFields": 134,
+    "duplicatePolicy": "merge_same_stable_id_keyed_source_priority_then_completeness"
+  },
+  "profileCounts": {
+    "sourcePresent": {
+      "name": 151,
+      "username": 142,
+      "password": 149,
+      "phone": 150,
+      "email": 47,
+      "country": 151,
+      "city": 151,
+      "department": 2,
+      "document": 25,
+      "address": 1,
+      "birthDate": 2,
+      "acceptedTerms": 100,
+      "accountApproval": 2,
+      "registrationOrigin": 2
+    },
+    "alreadySame": {
+      "name": 120,
+      "username": 0,
+      "password": 0,
+      "phone": 119,
+      "email": 35,
+      "country": 120,
+      "city": 120,
+      "department": 0,
+      "document": 0,
+      "address": 0,
+      "birthDate": 0,
+      "acceptedTerms": 0,
+      "accountApproval": 0,
+      "registrationOrigin": 0
+    },
+    "plannedSetOrRefresh": {
+      "name": 0,
+      "username": 113,
+      "password": 118,
+      "phone": 0,
+      "email": 0,
+      "country": 0,
+      "city": 0,
+      "department": 2,
+      "document": 17,
+      "address": 1,
+      "birthDate": 2,
+      "acceptedTerms": 72,
+      "accountApproval": 2,
+      "registrationOrigin": 2
+    },
+    "currentPresent": {
+      "name": 120,
+      "username": 0,
+      "password": 0,
+      "phone": 119,
+      "email": 35,
+      "country": 120,
+      "city": 120,
+      "department": 0,
+      "document": 0,
+      "address": 0,
+      "birthDate": 0,
+      "acceptedTerms": 0,
+      "accountApproval": 0,
+      "registrationOrigin": 0
+    }
+  },
+  "totals": {
+    "docsWithPlannedChanges": 120,
+    "fieldWritesPlanned": 329,
+    "passwordProfilesPresent": 149,
+    "sensitiveProfilesPresent": 27
+  },
+  "decision": "READY_PROFILE_FULL_WRITE_PLAN_EXACT_MATCH_WITH_SEPARATE_FIRESTORE_AUTHORIZATION",
+  "policy": {
+    "profileSourceOfTruth": "current legacy export for profile fields",
+    "sourceWinsOnProfileFieldDifference": true,
+    "canonicalHistoryPreserved": true,
+    "legacyProfileCurrentStored": true,
+    "legacyHistoryFieldsNotOverwritingCanonical": [
+      "certs",
+      "histCerts",
+      "visitas",
+      "activo",
+      "rating"
+    ],
+    "passwordStoredInProtectedShopperProfileForCurrentOperationalParity": true,
+    "passwordNeverWrittenToRepoLogsOrEvidence": true,
+    "sensitiveFieldsAllowedForOperatorReadPerCurrentUserAuthorization": true
+  },
+  "safety": {
+    "providerReads": true,
+    "providerWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "rulesDeploys": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "legacyWrites": 0,
+    "production": false,
+    "merge": false,
+    "piiExported": false,
+    "passwordValuesExported": false,
+    "profileValuesExported": false,
+    "secretsExported": false
+  }
+}

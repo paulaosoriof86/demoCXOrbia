@@ -1,0 +1,134 @@
+{
+  "schemaVersion": "cxorbia.c6.auth-plan-v4-prewrite-stop-retry.evidence.v1",
+  "generatedAt": "2026-08-07T22:52:00-06:00",
+  "state": "C6_AUTH_PLAN_V4_PREWRITE_STOP_HASH_CONFIG_REQUEST_SHAPE__ZERO_AUTH_WRITES__NO_SECOND_PROVIDER_ATTEMPT__NO_PRODUCTION",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "target": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "projectId": "cinepolis"
+  },
+  "input": {
+    "freeze": "backend/config/c6-shopper-auth-final-freeze-v4.json",
+    "planSchemaVersion": "cxorbia.c6.shopper-auth-final-plan.v4",
+    "rows": 340,
+    "createRows": 118,
+    "updateRows": 9,
+    "noOpRows": 81,
+    "holdRows": 0,
+    "preserveNoAuthRows": 132,
+    "emailChanges": 2,
+    "passwordChanges": 8,
+    "claimsChanges": 1,
+    "expectedAuthUsersBefore": 110,
+    "expectedAuthUsersAfter": 228,
+    "planDigest": "c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4"
+  },
+  "authorization": {
+    "requestId": "c6-auth-plan-v4-activation-dev-20260807-01",
+    "requestCommit": "d5453fceefdee1bd026e059cdb6187486d75a918",
+    "providerAttemptsMaximum": 1,
+    "executeAuthOnlyAfterPrewritePass": true,
+    "requestConsumedAfterTerminal": true,
+    "secondProviderAttemptAuthorized": false
+  },
+  "execution": {
+    "runId": 31240353678,
+    "jobId": 93060168241,
+    "artifactId": 9016808823,
+    "artifactDigest": "sha256:1f4a22df9448b873838f3de6480bcaa954916cf148c40c5ec9f2cdd01e9dec4f",
+    "workflowJobConclusion": "success_controlled_stop_retry",
+    "terminalDecision": "STOP_RETRY_C6_AUTH_PLAN_V4_PREWRITE",
+    "errorCode": "HASH_CONFIG_HTTP_400",
+    "errorFingerprint": "9a3b817f725d9b53b23e097b",
+    "providerAttempts": 1,
+    "secondProviderAttempt": false
+  },
+  "prewrite": {
+    "pass": false,
+    "writeBoundaryEntered": false,
+    "passwordMaterialInspectedRows": 0,
+    "passwordHashReads": 0,
+    "passwordSaltReads": 0,
+    "encryptedSnapshotProduced": false,
+    "rollbackDryRunProduced": false,
+    "controlFlowGatesPassedBeforeHashConfig": {
+      "evidenceClass": "SOURCE_CODE_CONTROL_FLOW_PLUS_TERMINAL_ERROR_POSITION_NOT_SEPARATELY_EXPORTED_RUNTIME_COUNTERS",
+      "gates": [
+        "FREEZE_V4_AND_PLAN_V4_DIGEST_AND_COUNTS_VALIDATED",
+        "AUTH_POPULATION_110_VALIDATED",
+        "SHOPPER_POPULATION_340_VALIDATED",
+        "CREDENTIAL_CROSSWALK_101_MAPPED_8_UNMAPPED_VALIDATED",
+        "ALL_127_CREATE_UPDATE_TARGETS_RECONSTRUCTED_BEFORE_HASH_CONFIG",
+        "118_CREATE_TARGETS_REQUIRE_CANDIDATE_COUNT_0_AND_ZERO_TARGET_EMAIL_COLLISION",
+        "9_UPDATE_TARGETS_REQUIRE_CANDIDATE_COUNT_1",
+        "GLOBAL_SELECTED_UID_AND_CANDIDATE_UNIQUENESS_CHECKED",
+        "TARGET_EMAIL_UNIQUENESS_AND_UPDATE_COLLISION_CHECKED",
+        "EMAIL_AND_CLAIMS_CHANGE_FLAGS_VALIDATED_AGAINST_PROVIDER",
+        "UPDATE_CARDINALITY_9_CREATE_CARDINALITY_118_PASSWORD_FLAG_CARDINALITY_8_VALIDATED",
+        "9_UPDATE_PASSWORD_COMPATIBILITY_PROBES_COMPLETE_WITH_PLAN_FLAGS_REQUIRED",
+        "TENANT_ADJUDICATED_DUPLICATE_PAIR_RESOLVED_AND_ENABLED"
+      ]
+    }
+  },
+  "rootCauseDiagnosis": {
+    "classification": "GET_CONFIG_QUERY_MASK_UNSUPPORTED_OR_MALFORMED_REQUEST_SHAPE",
+    "confidence": "HIGH_SOURCE_ONLY_DIAGNOSIS_NO_PROVIDER_RETEST",
+    "observedRequestShape": "GET /admin/v2/projects/{projectId}/config?mask=hashConfig",
+    "officialGetConfigShape": "GET /admin/v2/{name=projects/*/config}",
+    "officialGetConfigRequestBody": "EMPTY",
+    "documentedGetConfigQueryMask": false,
+    "documentedUpdateConfigMask": "PATCH updateConfig uses updateMask; it is not a GET getConfig query parameter",
+    "meaning": "HTTP_400_IS_CONSISTENT_WITH_MALFORMED_GET_CONFIG_REQUEST_SHAPE_AND_DOES_NOT_INVALIDATE_PLAN_V4_IDENTITY_CLASSIFICATION",
+    "providerRetestPerformed": false
+  },
+  "sourceSafeVerifier": {
+    "structuralVerifierPassed": true,
+    "numericOrBooleanEmailCountKeysAccepted": true,
+    "rawUidExported": false,
+    "rawEmailExported": false,
+    "rawShopperIdExported": false,
+    "rawClaimsExported": false,
+    "rawPasswordExported": false,
+    "rawPasswordHashExported": false,
+    "rawPasswordSaltExported": false
+  },
+  "writes": {
+    "authCreates": 0,
+    "authUpdates": 0,
+    "duplicateDisables": 0,
+    "providerWriteCalls": 0,
+    "firestoreWrites": 0,
+    "membershipWrites": 0,
+    "hrWrites": 0,
+    "visitsWrites": 0,
+    "certificationsWrites": 0,
+    "liquidationsWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "cloudBuild": 0,
+    "cloudRun": 0,
+    "hosting": 0,
+    "make": 0,
+    "gemini": 0,
+    "payments": 0,
+    "merge": false,
+    "production": false
+  },
+  "preserved": {
+    "planV4DigestUnchanged": true,
+    "authExecuted": false,
+    "skip13Closed": true,
+    "multiAuthAdjudicationClosed": true,
+    "ac93LineageClosed": true,
+    "frontendUntouched": true,
+    "phaseAPreserved": true
+  },
+  "nextGate": {
+    "requiresFreshAuthorization": true,
+    "action": "SOURCE_ONLY_HASH_CONFIG_GET_SHAPE_REPAIR_THEN_ONE_FRESH_PLAN_V4_PREWRITE_ATTEMPT",
+    "doNotReopenIdentityUniverse": true
+  }
+}

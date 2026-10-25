@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cxorbia-resources-v1",
+  "title": "CXOrbia Resources and Evidence Metadata",
+  "type": "object",
+  "required": ["tenantId", "storagePath", "kind", "status", "createdAt"],
+  "properties": {
+    "id": {"type": "string"},
+    "tenantId": {"type": "string"},
+    "projectId": {"type": "string"},
+    "visitId": {"type": "string"},
+    "shopperId": {"type": "string"},
+    "kind": {"type": "string", "enum": ["brand", "resource", "manual", "academy", "evidence", "questionnaire", "document"]},
+    "title": {"type": "string"},
+    "description": {"type": "string"},
+    "fileName": {"type": "string"},
+    "mimeType": {"type": "string"},
+    "sizeBytes": {"type": "number"},
+    "storagePath": {"type": "string"},
+    "downloadUrl": {"type": "string"},
+    "visibleRoles": {"type": "array", "items": {"type": "string"}},
+    "visibleCountries": {"type": "array", "items": {"type": "string"}},
+    "status": {"type": "string", "enum": ["active", "draft", "archived", "deleted"]},
+    "createdAt": {"type": "string"},
+    "createdByUid": {"type": "string"},
+    "updatedAt": {"type": "string"},
+    "updatedByUid": {"type": "string"}
+  },
+  "additionalProperties": true
+}

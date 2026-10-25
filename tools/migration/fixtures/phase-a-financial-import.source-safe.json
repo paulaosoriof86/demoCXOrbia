@@ -1,0 +1,9 @@
+{
+  "payments": [
+    {"visitId":"hr_2025-05_gt_1","batchId":"BATCH-GT-MAY-01","periodKey":"2025-05","country":"GT","currency":"Q","total":225,"paymentState":"paid","paidAt":"2025-06-20","paymentSource":"sanitized:financial-export:gt:2025-06","sourceRecordId":"gt-001","confirmedBy":"system:source-export","bankAccount":"SECRET-NOT-OUTPUT"},
+    {"visitId":"hr_2025-05_gt_1","batchId":"BATCH-GT-MAY-01","periodKey":"2025-05","country":"GT","currency":"Q","total":225,"paymentState":"paid","paidAt":"2025-06-20","paymentSource":"sanitized:financial-export:gt:2025-06","sourceRecordId":"gt-001","confirmedBy":"system:source-export"},
+    {"visitId":"hr_2025-05_hn_1","batchId":"BATCH-HN-MAY-01","periodKey":"2025-05","country":"HN","currency":"L","total":390,"paymentState":"paid","paidAt":"2025-06-21","paymentSource":"sanitized:financial-export:hn:2025-06","sourceRecordId":"hn-001","confirmedBy":"system:source-export"},
+    {"visitId":"unknown_visit","batchId":"BATCH-GT-MAY-01","periodKey":"2025-05","country":"GT","currency":"Q","total":200,"paymentState":"paid","paidAt":"2025-06-20","paymentSource":"sanitized:financial-export:gt:2025-06","sourceRecordId":"gt-unknown","confirmedBy":"system:source-export"},
+    {"visitId":"hr_2026-06_gt_1","batchId":"BATCH-GT-JUN-01","periodKey":"2026-06","country":"GT","currency":"Q","total":245,"paymentState":"paid","paidAt":"2026-07-10","paymentSource":"sanitized:financial-export:gt:2026-07","sourceRecordId":"gt-jun-001"}
+  ]
+}

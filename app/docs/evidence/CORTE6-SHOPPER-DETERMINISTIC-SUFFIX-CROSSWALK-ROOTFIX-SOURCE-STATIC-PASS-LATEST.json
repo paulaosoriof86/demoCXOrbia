@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "cxorbia.c6.shopper-deterministic-suffix-crosswalk-rootfix-source-static.v1",
+  "generatedAt": "2026-08-06T02:34:47.327Z",
+  "decision": "PASS_C6_DETERMINISTIC_SUFFIX_CROSSWALK_ROOTFIX_SOURCE_STATIC",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "requestId": "c6-shopper-deterministic-suffix-crosswalk-rootfix-source-only-known-lane-20260805-01",
+  "requestCommitSha": "8b1ee44906f6c46a751d97548cbc2542a3935ca2",
+  "targetHeadSha": "15f8d3f0cd0aeb9468b3613634e494711cfa3f4b",
+  "sourceSha256": "3200b8833b3af10a27e0493df992836f99d3e78668f2265269d2bd0c74640568",
+  "rootFix": {
+    "linkedSourceTechKeysPropagated": true,
+    "linkedSourceBasisPreserved": true,
+    "stableCredentialsMapped": 101,
+    "stableCredentialsUnmapped": 8,
+    "credentialDriftHardStop": true,
+    "readyRequiresCrosswalkParity": true,
+    "expectedPlanRows": 340,
+    "suffixLengths": [
+      4,
+      6,
+      8
+    ]
+  },
+  "checks": [
+    "PASS_NODE_SYNTAX",
+    "PASS_LINKED_SOURCE_TECH_KEYS_PROPAGATED",
+    "PASS_LINKED_SOURCE_BASIS_PRESERVED",
+    "PASS_CREDENTIAL_CROSSWALK_FIXTURE",
+    "PASS_STABLE_CREDENTIAL_REFERENCE_101_8",
+    "PASS_CREDENTIAL_DRIFT_HARD_STOP",
+    "PASS_READY_REQUIRES_CROSSWALK_PARITY",
+    "PASS_PLAN_340_SCHEMA_PRESERVED",
+    "PASS_SUFFIX_POLICY_4_6_8_PRESERVED",
+    "PASS_PROVIDER_READS_ZERO"
+  ],
+  "safety": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "membershipWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "merge": false,
+    "production": false
+  },
+  "nextGate": "NEW_EXPLICIT_PROVIDER_READONLY_AUTHORIZATION_REQUIRED"
+}

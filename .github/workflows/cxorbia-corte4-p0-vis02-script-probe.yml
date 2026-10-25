@@ -1,0 +1,43 @@
+name: CXOrbia Corte 4 P0 VIS-02 Remote Script Probe
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/cxorbia-firebase-requests/corte4-p0-vis02-script-probe.json'
+
+permissions:
+  contents: read
+  statuses: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Probe every deployed script response without browser or writes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const {execFileSync}=require('child_process');
+          const base='https://cxorbia-tya-dev-260729-c4.web.app/';
+          const htmlUrl=base+'index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&p0vis02=548e5f89c5d077686611d1904f4166d3188a2ccd&probe='+Date.now();
+          const post=(state,context,description)=>execFileSync('gh',['api','--method','POST','-H','Accept: application/vnd.github+json',`/repos/${process.env.GITHUB_REPOSITORY}/statuses/${process.env.GITHUB_SHA}`,'-f',`state=${state}`,'-f',`context=${context}`,'-f',`description=${description.slice(0,140)}`],{stdio:'inherit'});
+          (async()=>{
+            const hr=await fetch(htmlUrl,{headers:{'Cache-Control':'no-cache'}}); const html=await hr.text();
+            const srcs=[...html.matchAll(/<script[^>]+src=["']([^"']+)["']/gi)].map(m=>m[1]).filter(s=>!/^https?:\/\//i.test(s));
+            const bad=[];
+            for(const src of [...new Set(srcs)]){
+              const u=new URL(src,base); u.searchParams.set('probe',Date.now().toString());
+              let status=0,ct='',first=''; try{const r=await fetch(u,{headers:{'Cache-Control':'no-cache'}});status=r.status;ct=String(r.headers.get('content-type')||'');const t=await r.text();first=t.trimStart().slice(0,24).replace(/\s+/g,' ');if(!r.ok||first.startsWith('<')||!/javascript|ecmascript/i.test(ct))bad.push({src,status,ct:ct.split(';')[0]||'none',first:first.slice(0,12)});}catch(e){bad.push({src,status:'FETCH',ct:'',first:String(e.message||e).slice(0,24)});}
+            }
+            post(bad.length?'error':'success','cxorbia/c4p0vis02-script-summary',bad.length?`BAD_SCRIPT_COUNT_${bad.length}`:'PASS_ALL_RELATIVE_SCRIPTS_JS');
+            bad.slice(0,12).forEach((x,i)=>{const name=x.src.replace(/[^A-Za-z0-9_.-]/g,'_').slice(-75);post('error',`cxorbia/c4p0vis02-badscript${i+1}-${name}`,`${x.src} :: ${x.status} :: ${x.ct} :: ${x.first}`);});
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE

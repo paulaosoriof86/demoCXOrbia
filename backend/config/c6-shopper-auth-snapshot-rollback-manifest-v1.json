@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "cxorbia.c6.shopper-auth-snapshot-rollback-manifest.v1",
+  "generatedAt": "2026-08-06T13:52:00-06:00",
+  "authorizationId": "chat-20260806-c6-auth-smoke-final-source-only-01",
+  "sourceHead": "df65bb45629588b7906b957551108a3a5c71b763",
+  "planDigestSha256": "6060f406a33d4ba926c982871513f8e86ba2b10f44c2da00ab43bd2a409f721b",
+  "idempotencyKey": "d3b2cbade967281a42b77fbdb2a6e87801e92c45223ef361003fafdf081148f6",
+  "mode": "SOURCE_ONLY_MANIFEST_NO_SNAPSHOT_CAPTURED",
+  "snapshotRequiredBeforeAnyWrite": true,
+  "snapshotScope": {
+    "authExistingTargets": {
+      "expectedMaximum": 46,
+      "fields": [
+        "uid",
+        "email",
+        "emailVerified",
+        "disabled",
+        "customClaims",
+        "providerData",
+        "tenantBindings",
+        "projectBindings"
+      ],
+      "passwordRollbackRequirement": "PASSWORD_HASH_AND_SALT_EXPORT_MUST_BE_AVAILABLE_AND_AUTHORIZED_OR_PASSWORD_CHANGES_MUST_STOP"
+    },
+    "authCreates": {
+      "expectedMaximum": 81,
+      "preExistingCollisionCheckRequired": true
+    },
+    "membershipDocuments": {
+      "pathPattern": "tenants/tya/users/{uid}",
+      "captureBeforeState": true,
+      "includeMissingMarker": true
+    },
+    "shopperProfiles": {
+      "writesExpected": 0,
+      "snapshotRequired": false
+    },
+    "sensitiveData": {
+      "storeOutsideRepository": true,
+      "encryptAtRest": true,
+      "rawValuesInGitForbidden": true
+    }
+  },
+  "preWriteCircuitBreakers": [
+    "PLAN_DIGEST_MISMATCH",
+    "SOURCE_HEAD_DRIFT_WITHOUT_EXPLICIT_REBASE",
+    "SKIPPED_IDENTITY_EFFECTIVE_ACCESS_UNRESOLVED",
+    "TARGET_EMAIL_COLLISION",
+    "UID_COLLISION",
+    "PASSWORD_ROLLBACK_UNAVAILABLE_FOR_ANY_PASSWORD_CHANGE",
+    "MEMBERSHIP_TARGET_AMBIGUOUS",
+    "PRODUCTION_CUTOVER_NOT_SEPARATELY_AUTHORIZED"
+  ],
+  "rollbackPlan": {
+    "CREATE_AUTH": "DELETE_ONLY_UIDS_CREATED_BY_SAME_IDEMPOTENCY_KEY_AFTER_READBACK_FAILURE_OR_EXPLICIT_ROLLBACK",
+    "UPDATE_AUTH": "RESTORE_EMAIL_EMAILVERIFIED_DISABLED_CUSTOMCLAIMS_PROVIDER_BINDINGS_AND_PASSWORD_HASH_IF_CAPTURED",
+    "MEMBERSHIP_CREATE": "DELETE_ONLY_DOCUMENTS_CREATED_BY_SAME_IDEMPOTENCY_KEY",
+    "MEMBERSHIP_UPDATE": "RESTORE_EXACT_PREWRITE_DOCUMENT_OR_MISSING_MARKER",
+    "NO_OP": "NO_ACTION",
+    "PRESERVE_NO_AUTH": "NO_ACTION"
+  },
+  "executionJournal": {
+    "required": true,
+    "appendOnly": true,
+    "checkpoints": [
+      "SNAPSHOT_STARTED",
+      "SNAPSHOT_COMPLETE",
+      "PREWRITE_GATE_PASS",
+      "WRITE_BOUNDARY_ENTERED",
+      "AUTH_WRITE_COMPLETE",
+      "MEMBERSHIP_WRITE_COMPLETE",
+      "READBACK_PASS",
+      "SMOKE_READY",
+      "ROLLBACK_READY",
+      "FINAL"
+    ]
+  },
+  "currentStatus": {
+    "snapshotCaptured": false,
+    "rollbackPayloadCaptured": false,
+    "writesAuthorized": false,
+    "executable": false,
+    "decision": "PREPARED_NOT_EXECUTABLE"
+  },
+  "safeState": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "merge": false,
+    "production": false
+  }
+}

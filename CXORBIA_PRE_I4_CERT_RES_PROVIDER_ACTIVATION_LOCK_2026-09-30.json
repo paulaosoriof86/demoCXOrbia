@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "cxorbia.recovery.pre-i4-cert-res-provider-activation.v1",
+  "frozenAt": "2026-09-30",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "status": "PASS_DEV_PROVIDER_ACTIVATED_RUNTIME_READINESS_REQUIRED",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHead": "0c5642f27b45ab5271ddefbcae7501e51a2d88c6",
+  "controlTree": "641afb1e29a7217f8f2bc690f88b627ab449c438",
+  "productSourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
+  "productSourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
+  "run744": {
+    "runId": 36785517322,
+    "jobId": 110125866463,
+    "decision": "PASS_PREI4_CERT_RES_DEV_PROVIDER_ACTIVATED",
+    "servicesEnabledThisRun": 2,
+    "defaultFirebaseStorageBucket": {
+      "name": "projects/cxorbia-backend-dev/buckets/cxorbia-backend-dev.firebasestorage.app",
+      "location": "US-CENTRAL1",
+      "createdThisRun": true
+    }
+  },
+  "nextAction": "Prove Cloud Run runtime identity and real Vertex generateContent before PREI4-CERT-001 implementation.",
+  "production": "DO_NOT_TOUCH"
+}

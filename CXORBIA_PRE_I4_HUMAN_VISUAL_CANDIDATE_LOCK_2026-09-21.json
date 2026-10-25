@@ -1,0 +1,124 @@
+{
+  "schemaVersion": "cxorbia.pre-i4.human-visual-candidate-lock.v1",
+  "frozenAt": "2026-09-21T18:52:04-06:00",
+  "iteration": "PRE-I4_HUMAN_VISUAL_ACCEPTANCE",
+  "technicalState": "GO_FOR_HUMAN_VISUAL_REVIEW",
+  "promotionState": "HOLD",
+  "production": "DO_NOT_TOUCH",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "baseI3Run": {
+    "runNumber": 299,
+    "runId": 35556165139,
+    "productSource": "77bf74f807d254637f0b2cde4b1d1668017a0c8a",
+    "technicalState": "GO"
+  },
+  "focalSuccessor": {
+    "sourceSha": "83429d21ee9f6d9dc5cd46fcbb9a3b598e07dcc4",
+    "sourceTree": "4f7bf2c6cd7d79bc8aaab119f7970fd6f29220f9",
+    "appArtifactSha256": "0174cd95e8b7e4d92f39843b65bdcc78929101a3e8108784211a0673ff7638fc",
+    "buildCount": 0
+  },
+  "devMaterialization": {
+    "runId": 35673312222,
+    "hostingDeployCount": 1,
+    "production": false,
+    "artifactId": 10672072559,
+    "artifactDigest": "sha256:7523ff268f9172080a358c42a0126678da96cb312c4a1a7fc9965d8d7d593388",
+    "remoteByteParity": "PASS_PRE_I4_HOSTING_REMOTE_BYTE_PARITY"
+  },
+  "postdeployReadback": {
+    "runId": 35673599693,
+    "conclusion": "success",
+    "hostingDeploysThisRun": 0,
+    "artifactId": 10672225569,
+    "artifactDigest": "sha256:b8769df7d13d3afb95b464de7e06eaffe4aaf3fb3408ff91041c3fdad3e544b3",
+    "decision": "PASS_PRE_I4_POSTDEPLOY_READBACK",
+    "remoteByteParity": "PASS_PRE_I4_POSTDEPLOY_REMOTE_BYTE_PARITY",
+    "focalBrowser": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
+  },
+  "humanEntrypoint": {
+    "url": "https://cxorbia-backend-dev.web.app/",
+    "canonicalLane": "authenticated-human-canonical",
+    "tenantId": "tya",
+    "tenantName": "T&A Consultores",
+    "logoUrl": "https://tyaconsultores.com/wp-content/uploads/2023/05/logo.png",
+    "logoLoaded": true,
+    "debugVisible": false,
+    "scenarioLabVisible": false,
+    "sourceBlocked": false,
+    "staleRetailVisible": false,
+    "prematureGravicentraCxVisible": false
+  },
+  "focalBrowser": {
+    "admin": {
+      "route": "dashboard",
+      "projectId": "cinepolis",
+      "periodId": "cinepolis-2026-09",
+      "refreshPreserved": true
+    },
+    "shopperPaula": {
+      "route": "miperfil",
+      "projectId": "cinepolis",
+      "periodId": "cinepolis-2026-09",
+      "historyTotal": 7,
+      "refreshPreserved": true
+    },
+    "mobile": {
+      "viewportWidth": 390,
+      "scrollWidth": 390,
+      "logoVisible": true
+    }
+  },
+  "hrLive": {
+    "generatedAt": "2026-09-22T00:01:10.499Z",
+    "sourceRevision": "5112cb66a3f7f9afcb5e5845ce298c99e3c04dd890817dce8f019659b91c04ce",
+    "currentPeriodKey": "2026-09",
+    "currentPeriodId": "cinepolis-2026-09",
+    "projectId": "cinepolis",
+    "projectName": "Cinépolis",
+    "tabs": {
+      "GT": "SEPTIEMBRE 26",
+      "HN": "SEPTIEMBRE 26 HN"
+    },
+    "GT": {
+      "total": 34,
+      "availableUnassigned": 6,
+      "assigned": 28,
+      "scheduled": 21,
+      "realized": 16,
+      "submitted": 9,
+      "outOfRange": 2,
+      "reviewRequired": 0,
+      "uniqueAssignedShoppers": 21
+    },
+    "HN": {
+      "total": 10,
+      "availableUnassigned": 3,
+      "assigned": 7,
+      "scheduled": 7,
+      "realized": 6,
+      "submitted": 6,
+      "outOfRange": 1,
+      "reviewRequired": 1,
+      "uniqueAssignedShoppers": 7
+    }
+  },
+  "safety": {
+    "authWrites": 0,
+    "hrWrites": 0,
+    "providerWrites": 0,
+    "productionDeploys": 0,
+    "reimports": 0,
+    "newFirebaseProjects": 0,
+    "newBranches": 0,
+    "newRepos": 0
+  },
+  "invariants": [
+    "Do not rebuild, redeploy, recompose, or replace the focal successor before Paula human visual review.",
+    "Do not touch tya-plataforma.web.app before explicit human visual acceptance and a fresh I4 production authorization.",
+    "A human rejection must be repaired only at the exact proven owner inside the same PRE-I4 lane; it does not reopen global I3.",
+    "Production promotion must use the exact human-accepted static app artifact or a formally superseding focal artifact with its own lock."
+  ],
+  "nextExactAction": "Paula performs short human visual review on the locked DEV URL. If accepted, record explicit visual acceptance and then require fresh I4 production authorization."
+}

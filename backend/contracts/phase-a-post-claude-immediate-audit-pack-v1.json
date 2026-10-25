@@ -1,0 +1,64 @@
+{
+  "contractId": "phase-a-post-claude-immediate-audit-pack-v1",
+  "status": "draft_safe_not_connected",
+  "date": "2026-07-10",
+  "purpose": "Prepare a granular, immediate post-Claude audit pack for the next CXOrbia prototype candidate, comparing against the current candidate, packages sent to Claude, accumulated backend work after the package, Phase A TyA needs and reusable CXOrbia requirements.",
+  "safeState": {
+    "auditsNewCandidateNow": false,
+    "touchesFrontend": false,
+    "deploy": false,
+    "production": false,
+    "readsPrivateData": false,
+    "writesData": false,
+    "containsSensitiveData": false
+  },
+  "auditInputs": [
+    "currentCandidateOrLiveBaseline",
+    "newClaudeCandidate",
+    "fullGenericClaudePackage",
+    "v92DeepReaudit",
+    "postPackageBackendContractsAndDocs",
+    "phaseATyAOperationalRequirements",
+    "reusableCxorbiaPrototypeRequirements"
+  ],
+  "requiredAuditAxes": [
+    "fileDeltaAddedModifiedDeleted",
+    "semanticDeltaByModule",
+    "prototypeVsBackendBoundary",
+    "projectPeriodSeparation",
+    "tenantProjectConfigurability",
+    "hrSourceSafeAndMaskedSource",
+    "rolesPersonasScopes",
+    "authProtectedDataGates",
+    "academiaCoursesManualsByRole",
+    "certificationCarryover",
+    "shopperProtectedProfile",
+    "visitsAssignmentsScheduling",
+    "liquidationsPaymentsReview",
+    "reviewQueueAuditEvents",
+    "makeGeminiProviderGates",
+    "brandingPwaDynamicManifest",
+    "cxDataBackendSwitch",
+    "tyaSpecificVsReusable",
+    "regressionsAgainstV92AndEarlierFindings",
+    "claudeCapacityAskNow"
+  ],
+  "responseBuckets": [
+    "PreserveDoneWell",
+    "P0AskClaudeNow",
+    "P1AskIfCapacity",
+    "BackendPreparedRepresentOnly",
+    "DoNotAskClaude",
+    "TyAConfigOnly",
+    "ReusablePrototypePattern",
+    "NeedsBackendLater"
+  ],
+  "hardRules": [
+    "Do not mark missing without checking files and semantic behavior.",
+    "Do not only compare visually.",
+    "Do not audit only against current candidate; also compare against full package and post-package work.",
+    "Do not ask Claude to redo backend-prepared work; ask only for prototype representation when needed.",
+    "Do not hardcode TyA-specific configuration into generic prototype.",
+    "Preserve useful Claude changes and only ask to correct gaps/regressions."
+  ]
+}

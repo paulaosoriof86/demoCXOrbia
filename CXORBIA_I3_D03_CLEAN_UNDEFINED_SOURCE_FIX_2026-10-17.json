@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "cxorbia.i3.d03.exact-p0-source-fix.v1",
+  "iteration": "I3",
+  "status": "SOURCE_FIXED_PENDING_QA",
+  "sourceSha": "a4434a1f223dd6da1468890c99db7339808c1cab",
+  "sourceTree": "c790126bcf347d7de6b8d632ea58a24a10253fcd",
+  "predecessorProductSource": "197ec4c84d8d2b0625885afcea6c4a7b43773985",
+  "classification": "FUNCTIONAL_DEFECT",
+  "cause": "ReferenceError: clean is not defined in generationInput",
+  "owner": "backend/runtime/hr-live-service/certification-runtime.mjs",
+  "ownerBlob": "793f539509eec88c4f5da165a9fee7a1b1c5f53e",
+  "qaTest": "backend/runtime/hr-live-service/test/cxorbia-i3-d03-document-source-metadata.test.mjs",
+  "qaBlob": "7f3f2af1ddc7ad290cd16139eb559a370e4d50ac",
+  "sourceProof": "PENDING",
+  "devMaterialization": "PENDING",
+  "liveVertex15Questions": "PENDING",
+  "production": false
+}

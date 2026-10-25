@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "cxorbia.canonical-plan-refresh-offline.v4",
+  "generatedAt": "2026-07-30T03:14:14.994Z",
+  "source": "CURRENT_HR_THROUGH_JULY",
+  "providerCalls": 0,
+  "writes": 0,
+  "production": false,
+  "merge": false,
+  "basePlanId": "phasea_7f2b22f496df4623",
+  "basePlanSha256": "143595c44691ce648204a005421a7ae6c6e9f259ab624db5f1a22f525dae350a",
+  "counts": {
+    "operations": 1413,
+    "tenants": 1,
+    "projects": 1,
+    "hrImports": 1,
+    "periods": 14,
+    "shoppers": 208,
+    "visits": 616,
+    "liquidations": 572,
+    "certifications": 0,
+    "payments": 0
+  },
+  "financialOverlayEvidence": {
+    "rows": 247,
+    "exactStableVisitLinks": 196,
+    "reviewRows": 51,
+    "appliedInThisGate": false,
+    "reason": "R14C contract fixed shopper count 210 is stale; preserve financial source evidence for later exact execution by visitId"
+  },
+  "canonicalShape": {
+    "parentProjectPath": "tenants/tya/projects/cinepolis",
+    "parentProjectPresentInPlan": true,
+    "periodPaths": 14,
+    "visitPaths": 616
+  },
+  "safety": {
+    "writes": false,
+    "imports": false,
+    "providerCalls": false,
+    "pii": false
+  }
+}

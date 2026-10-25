@@ -1,0 +1,111 @@
+{
+  "contractId": "phase-a-accumulated-continuity-checkpoint-v1",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "mode": "continuity_checkpoint_documentation_only_no_execution",
+  "createdAt": "2026-07-09",
+  "purpose": "Conservar continuidad completa de Phase A backend TyA para evitar perdida de contexto, metodologia, estado, fuente viva, guardrails, avances, pendientes y siguiente bloque exacto.",
+  "repoState": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "docs-tya-v6-v71-audit",
+    "base": "release/cxorbia-tya-rc-20260630",
+    "pr": "#7 draft abierto, sin merge",
+    "production": false,
+    "deploy": false,
+    "runtime": false
+  },
+  "phaseAFocus": {
+    "continuePhaseA": true,
+    "realTyaDataPriority": true,
+    "hrOperationalSource": true,
+    "juneVisitsExecutedPaymentsPending": true,
+    "preserveHistoricalShoppers": true,
+    "preserveAlreadyPresentedCertifications": true,
+    "cinepolisConfigurableProject": true,
+    "multiProjectRequired": true,
+    "doNotCopyOldDatabase": true,
+    "doNotUseDemoAsReal": true
+  },
+  "goldenRules": [
+    "No tocar /app/modules ni /app/core desde backend.",
+    "No parchar UI desde backend; documentar para Claude.",
+    "Mantener CX.data con interfaz exacta y un unico punto futuro de switch.",
+    "No conectar base vieja; base nueva limpia siempre.",
+    "No subir datos sensibles ni HR cruda al repo.",
+    "No repetir Level 0/1 sin causa real.",
+    "Si no esta documentado, no se hizo."
+  ],
+  "completedBlocksInOrder": [
+    "checkpoint_no_reversion_level0_level1",
+    "checkpoint_realdata_preview_no_reprocess",
+    "phase_a_operational_continuity_gate",
+    "phase_a_operational_state_machine",
+    "phase_a_admin_actions_audit",
+    "phase_a_operational_queues",
+    "phase_a_accumulated_readiness_gate",
+    "phase_a_runtime_dev_go_request_gate",
+    "phase_a_runtime_dev_switch_plan",
+    "phase_a_cxdata_dev_adapter_contract",
+    "phase_a_source_safe_domain_mapping",
+    "phase_a_realdata_domain_readiness_pack",
+    "phase_a_source_safe_input_builder_contract",
+    "phase_a_local_builder_execution_control",
+    "phase_a_future_single_command_pack"
+  ],
+  "latestSafeState": {
+    "appModulesModified": false,
+    "appCoreModified": false,
+    "runtimeConnected": false,
+    "adapterEnabled": false,
+    "builderExecuted": false,
+    "commandSentToPaula": false,
+    "localOutputCommitted": false,
+    "firestoreWrites": false,
+    "hrWrites": false,
+    "importsExecuted": false,
+    "deploy": false,
+    "production": false,
+    "makeWebhookLive": false,
+    "geminiLive": false,
+    "paymentProviderLive": false,
+    "realPayments": false,
+    "rawSensitiveDataInRepo": false
+  },
+  "claudeDocumentationStatus": {
+    "backendReplicableDocumented": true,
+    "prototypePendingDocumented": true,
+    "honestCopyRequired": true,
+    "academyImpactDocumented": true,
+    "sourceLockRequiredBeforeUiChanges": true,
+    "doNotAssumeRuntimeActive": true
+  },
+  "nextExactBlock": {
+    "blockId": "phase_a_continuity_prompt_and_pr_summary",
+    "description": "Preparar prompt/documento de continuidad operativo para nueva conversacion si se requiere, y resumen PR acumulado para no perder estado ni metodologia.",
+    "executeNowAllowed": true,
+    "shouldNotRequestLocalExecution": true,
+    "shouldNotAskPrivateData": true
+  },
+  "blockedUntilExplicitNeed": [
+    "runtime_dev_go",
+    "runtime_switch_execution",
+    "builder_local_execution",
+    "source_safe_input_from_paula",
+    "firestore_or_hr_writes",
+    "make_gemini_live",
+    "real_payments",
+    "deploy_or_production"
+  ],
+  "hardStops": [
+    "conversation_context_lost_without_checkpoint",
+    "phase_a_restarted",
+    "level0_level1_reprocessed_without_cause",
+    "private_data_requested_in_chat",
+    "ui_modules_modified_from_backend",
+    "old_database_connected",
+    "fixture_or_tmp_used_as_real_source",
+    "june_marked_pending_visit_when_payment_only",
+    "certification_re_requested_without_review",
+    "runtime_or_write_enabled_without_paula_go"
+  ]
+}

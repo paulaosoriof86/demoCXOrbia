@@ -1,0 +1,109 @@
+name: CXOrbia Corte 4 Probe Firebase Project Identity
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/workflows/cxorbia-corte4-probe-firebase-project-identity.yml'
+      - '.github/cxorbia-firebase-requests/corte4-probe-project-identity.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  statuses: write
+
+concurrency:
+  group: cxorbia-corte4-probe-firebase-project-identity
+  cancel-in-progress: true
+
+env:
+  CXORBIA_NEW_PROJECT_ID: cxorbia-tya-dev-260729-c4
+  CXORBIA_NEW_PROJECT_NAME: CXOrbia TyA DEV Clean Corte 4
+
+jobs:
+  probe-project-identity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate exact request
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync('.github/cxorbia-firebase-requests/corte4-probe-project-identity.json','utf8'));
+          const expected={schemaVersion:'cxorbia.firebase-project-identity-probe-request.v1',enabled:true,repository:'paulaosoriof86/demoCXOrbia',branch:'docs-tya-v6-v71-audit',pullRequest:7,providerWrites:false,production:false};
+          for(const [k,v] of Object.entries(expected)) if(r[k]!==v) throw new Error(`request mismatch:${k}`);
+          NODE
+
+      - name: Select first structurally valid credential
+        env:
+          DEDICATED_CREATOR_JSON: ${{ secrets.CXORBIA_GCP_PROJECT_CREATOR_JSON }}
+          ALT_CREATOR_JSON: ${{ secrets.GOOGLE_CLOUD_PROJECT_CREATOR_JSON }}
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/corte4-probe-private .tmp/corte4-probe
+          node <<'NODE'
+          const fs=require('fs');
+          const candidates=[['dedicated_project_creator',process.env.DEDICATED_CREATOR_JSON||''],['alternate_project_creator',process.env.ALT_CREATOR_JSON||''],['existing_dev_service_account',process.env.EXISTING_DEV_JSON||'']];
+          let selected=null;const inspected=[];
+          for(const [route,raw] of candidates){let c=null;try{c=raw?JSON.parse(raw):null;}catch{}const valid=Boolean(c&&c.type==='service_account'&&c.client_email&&c.private_key&&c.token_uri);inspected.push({route,present:Boolean(raw),shapeValid:valid});if(!selected&&valid)selected={route,raw};}
+          fs.writeFileSync('.tmp/corte4-probe/credential-route.source-safe.json',JSON.stringify({route:selected?.route||'none',credentialAvailable:Boolean(selected),inspected,secretValuesOutput:false},null,2)+'\n');
+          if(selected)fs.writeFileSync('.tmp/corte4-probe-private/credentials.json',selected.raw,{mode:0o600});
+          NODE
+
+      - name: Run fast identity probe
+        if: always()
+        env:
+          CXORBIA_CONFIRM: PROBE_FIREBASE_PROJECT_IDENTITY_READ_ONLY
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/corte4-probe-private/credentials.json
+        run: |
+          set -euo pipefail
+          if [ ! -s "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
+            node -e "const fs=require('fs');fs.writeFileSync('.tmp/corte4-probe/identity-probe.source-safe.json',JSON.stringify({decision:'BLOCKED_NO_VALID_CREDENTIAL',target:{projectId:process.env.CXORBIA_NEW_PROJECT_ID},safeState:{providerReads:false,providerWrites:false,production:false}},null,2)+'\n')"
+          else
+            timeout --signal=TERM --kill-after=5s 30s node tools/release/cxorbia-probe-firebase-project-identity-corte4.mjs --out .tmp/corte4-probe || true
+          fi
+
+      - name: Publish final identity decision
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          report='.tmp/corte4-probe/identity-probe.source-safe.json'
+          route_report='.tmp/corte4-probe/credential-route.source-safe.json'
+          if [ ! -f "$report" ]; then echo '{"decision":"BLOCKED_IDENTITY_PROBE_REPORT_MISSING","target":{"projectId":"cxorbia-tya-dev-260729-c4"},"safeState":{"providerReads":false,"providerWrites":false,"production":false}}' > "$report"; fi
+          node - "$report" "$route_report" <<'NODE' > .tmp/corte4-probe/status.env
+          const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));const route=fs.existsSync(process.argv[3])?JSON.parse(fs.readFileSync(process.argv[3],'utf8')):{route:'unknown'};
+          const success=r.decision==='TARGET_PROJECT_IDENTITY_VERIFIED_C4';
+          const safeDecision=String(r.decision||'UNKNOWN').replace(/[^A-Z0-9_.-]/gi,'_').slice(0,60);
+          const safeRoute=String(route.route||'unknown').replace(/[^a-z0-9_-]/gi,'_').slice(0,36);
+          console.log([`STATE=${success?'success':'error'}`,`DECISION=${safeDecision}`,`ROUTE=${safeRoute}`,`CONTEXT=cxorbia/corte4-project-identity-${safeRoute}-${safeDecision}`].join('\n'));
+          NODE
+          source .tmp/corte4-probe/status.env
+          gh api --method POST -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="$STATE" -f context="$CONTEXT" -f description="Corte 4 project identity: $DECISION" >/dev/null
+          gh api --method POST -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="$STATE" -f context='cxorbia/corte4-project-identity' -f description="Corte 4 project identity: $DECISION" >/dev/null
+          gh issue comment 7 --repo "$GITHUB_REPOSITORY" --body "## Corte 4 · identidad Firebase DEV\n\n- Decision: \`$DECISION\`\n- Ruta: \`$ROUTE\`\n- Provider writes: \`0\`\n- Base existente reutilizada: \`false\`\n- Producción: \`false\`" >/dev/null
+
+      - name: Cleanup and upload evidence
+        if: always()
+        run: rm -rf .tmp/corte4-probe-private
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-corte4-project-identity-probe
+          path: .tmp/corte4-probe
+          if-no-files-found: error
+          retention-days: 14

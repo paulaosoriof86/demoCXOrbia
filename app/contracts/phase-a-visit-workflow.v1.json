@@ -1,0 +1,80 @@
+{
+  "contractName": "phase-a-visit-workflow",
+  "version": "1.0.0",
+  "status": "draft_contract_no_runtime",
+  "scope": "Phase A shopper-admin visit lifecycle",
+  "safety": {
+    "frontendChanges": false,
+    "runtimeConnected": false,
+    "firestoreWrites": false,
+    "deploy": false,
+    "production": false
+  },
+  "states": [
+    "available",
+    "postulated",
+    "assigned_without_date",
+    "scheduled",
+    "reschedule_requested",
+    "cancel_requested",
+    "completed_visit",
+    "questionnaire_open",
+    "questionnaire_completed",
+    "review_pending",
+    "review_completed",
+    "submitted_external_or_hr",
+    "liquidation_pending",
+    "liquidation_paid",
+    "conflict_review"
+  ],
+  "buttonActivationRules": {
+    "apply": "available",
+    "schedule": ["assigned_without_date"],
+    "reschedule": ["scheduled", "completed_visit"],
+    "cancel": ["scheduled", "reschedule_requested"],
+    "markVisitCompleted": ["scheduled"],
+    "openQuestionnaire": ["completed_visit", "questionnaire_open"],
+    "markQuestionnaireCompleted": ["questionnaire_open"],
+    "review": ["questionnaire_completed"],
+    "liquidation": ["questionnaire_completed", "review_completed", "submitted_external_or_hr"]
+  },
+  "events": {
+    "postulationApproved": {
+      "sets": ["assigned_without_date", "scheduled"],
+      "hrSync": "make_gate",
+      "notes": "If shopper proposed date at application and admin approves, visit can become scheduled immediately."
+    },
+    "hrAssignmentDetected": {
+      "sets": ["assigned_without_date", "scheduled"],
+      "dedupeKey": ["tenantId", "projectId", "visitId_or_hrRowId", "shopperId", "assignmentSource"]
+    },
+    "visitCompleted": {
+      "sets": ["completed_visit", "questionnaire_open"],
+      "records": ["completedAt"],
+      "shows": ["questionnaireAccess", "evidenceWhatsAppContact"]
+    },
+    "questionnaireCompleted": {
+      "sets": ["questionnaire_completed"],
+      "records": ["questionnaireCompletedAt"],
+      "next": ["review_pending", "liquidation_pending"]
+    },
+    "reviewCompleted": {
+      "sets": ["review_completed"],
+      "records": ["reviewedAt"],
+      "hrSync": "make_gate",
+      "next": ["submitted_external_or_hr", "liquidation_pending"]
+    },
+    "submittedFromHr": {
+      "sets": ["submitted_external_or_hr"],
+      "records": ["submittedAtFromHr"]
+    }
+  },
+  "conflictRules": [
+    "same_visit_different_shopper",
+    "hr_platform_date_mismatch",
+    "missing_stable_hr_row_key",
+    "shopper_not_found",
+    "project_mismatch",
+    "unclear_assignment_dedupe"
+  ]
+}

@@ -1,0 +1,23 @@
+import fs from 'node:fs';
+import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
+import {getFirestore} from 'firebase-admin/firestore';
+const OUT=process.env.V27_OUT||'.tmp/i3-v27-duplicate-owner';
+const URL=process.env.V27_HR_URL||'https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live?format=json&v27=dup';
+if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
+const db=getFirestore(),project=db.collection('tenants').doc('tya').collection('projects').doc('cinepolis');
+const docs=(await project.collection('visits').get()).docs.map(d=>({docId:d.id,...(d.data()||{})}));
+const current=docs.filter(x=>String(x.periodId||'')==='cinepolis-2026-09');
+const groups=new Map();
+for(const v of current){const k=String(v.hrRowId||'');if(!groups.has(k))groups.set(k,[]);groups.get(k).push(v);}
+const slim=v=>({docId:v.docId,id:String(v.id||''),visitId:String(v.visitId||''),hrRowId:String(v.hrRowId||''),sourceTab:String(v.sourceTab||''),sourceRow:String(v.sourceRow||''),shopperId:String(v.shopperId||''),estado:String(v.estado||v.status||''),canonicalState:String(v.canonicalState||''),assignmentState:String(v.assignmentState||''),schedulingState:String(v.schedulingState||''),agendada:String(v.agendada||''),realizada:String(v.realizada||''),disponibleDesde:String(v.disponibleDesde||''),hrSourceRevision:String(v.hrSourceRevision||v.sourceRevision||''),assignmentSource:String(v.assignmentSource||''),assignmentSyncStatus:String(v.assignmentSyncStatus||''),version:v.version??null,updatedAt:String(v.updatedAt||'')});
+const duplicates=[...groups.entries()].filter(([k,v])=>k&&v.length>1).map(([hrRowId,rows])=>({hrRowId,count:rows.length,rows:rows.map(slim)})).sort((a,b)=>a.hrRowId.localeCompare(b.hrRowId));
+const res=await fetch(URL,{headers:{'cache-control':'no-cache,no-store,max-age=0'}});if(!res.ok)throw new Error('ENVIRONMENT_FAILURE:HR_HTTP_'+res.status);
+const hr=await res.json(),hrCurrent=(hr.visits||[]).filter(v=>String(v.periodKey||'')==='2026-09');
+const hmap=new Map(hrCurrent.map(v=>[String(v.hrRowId||''),v]));
+const sourceForDuplicates=duplicates.map(g=>({hrRowId:g.hrRowId,source:(()=>{const v=hmap.get(g.hrRowId);return v?{id:String(v.id||''),hrRowId:String(v.hrRowId||''),sourceTab:String(v.sourceTab||''),sourceRow:v.sourceRow??null,shopperId:String(v.shopperId||''),estado:String(v.estado||''),canonicalState:String(v.canonicalState||''),assignmentState:String(v.assignmentState||''),schedulingState:String(v.schedulingState||''),agendada:String(v.agendada||''),realizada:String(v.realizada||''),disponibleDesde:String(v.disponibleDesde||''),honorario:Number.isFinite(v.honorario)?v.honorario:null}:null})()}));
+const reviews=(await db.collection('tenants').doc('tya').collection('reviewQueue').get()).docs.map(d=>({id:d.id,...(d.data()||{})}));
+const relevantReviews=reviews.filter(r=>duplicates.some(g=>g.rows.some(v=>String(v.visitId||v.id)===String(r.entityId||'')))||String(r.reviewType||'').includes('assignment')).map(r=>({id:r.id,entityId:String(r.entityId||''),reviewType:String(r.reviewType||''),status:String(r.status||''),reason:String(r.reason||''),platformShopperId:String(r.platformShopperId||''),observedHrShopperId:String(r.observedHrShopperId||''),sourceRevision:String(r.sourceRevision||''),updatedAt:String(r.updatedAt||'')}));
+const targetRows=['SEPTIEMBRE 26 HN!5','SEPTIEMBRE 26!18','SEPTIEMBRE 26!35'].map(id=>({hrRowId:id,source:(()=>{const v=hmap.get(id);return v?{id:String(v.id||''),shopperId:String(v.shopperId||''),estado:String(v.estado||''),canonicalState:String(v.canonicalState||''),assignmentState:String(v.assignmentState||''),schedulingState:String(v.schedulingState||''),agendada:String(v.agendada||''),realizada:String(v.realizada||'')}:null})(),firestore:(groups.get(id)||[]).map(slim)}));
+const out={schemaVersion:'cxorbia.i3.v27.duplicate-owner-proof.v1',decision:'PASS_READ_ONLY_OWNER_PROOF',generatedAt:new Date().toISOString(),production:false,writes:0,hrRevision:String(hr.revision||''),hrStable:hr.revisionStable===true,hrCount:hrCurrent.length,firestoreCount:current.length,uniqueHrRowIds:groups.size,duplicateGroupCount:duplicates.length,duplicates,sourceForDuplicates,relevantReviews,targetRows};
+fs.mkdirSync(OUT,{recursive:true});fs.writeFileSync(OUT+'/v27-duplicate-owner-proof.json',JSON.stringify(out,null,2)+'\n');
+console.log(JSON.stringify(out,null,2));

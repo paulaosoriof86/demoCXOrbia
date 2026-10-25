@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "phase-a-source-safe-runtime-guard-v1",
+  "purpose": "Prevent demo notification and reservation seeds from appearing in the TyA source-safe runtime.",
+  "activation": {
+    "previewFlag": "CX_TYA_PHASE_A_PREVIEW",
+    "requiresSourceSafeMeta": true,
+    "genericDemoAffected": false
+  },
+  "notifications": {
+    "state": "pending_backend_event_source",
+    "demoSeedsAllowed": false,
+    "replacementEventsInvented": false
+  },
+  "reservations": {
+    "state": "pending_backend_reservation_source",
+    "demoSeedsAllowed": false,
+    "localDemoCachesAllowed": false,
+    "replacementReservationsInvented": false
+  },
+  "safeState": {
+    "sourceSafe": true,
+    "imported": false,
+    "production": false,
+    "writes": false,
+    "providers": false,
+    "deploy": false
+  }
+}

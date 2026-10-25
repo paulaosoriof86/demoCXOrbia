@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "cxorbia.corte6-auth-claims-normalization.v1",
+  "generatedAt": "2026-07-30T16:55:19.887Z",
+  "projectId": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "canonicalProjectId": "cinepolis",
+  "mode": "EXECUTED",
+  "selected": {
+    "clients": 2,
+    "shoppers": 3,
+    "total": 5
+  },
+  "expected": {
+    "clients": 2,
+    "shoppers": 3,
+    "total": 5
+  },
+  "changes": [
+    {
+      "principalHash": "71d78efe5033da4f",
+      "kind": "client",
+      "role": "cliente",
+      "beforeProjectIds": [
+        "tya"
+      ],
+      "afterProjectIds": [
+        "cinepolis"
+      ],
+      "executed": true
+    },
+    {
+      "principalHash": "862a82dec2992156",
+      "kind": "shopper",
+      "role": "shopper",
+      "beforeProjectIds": [
+        "tya"
+      ],
+      "afterProjectIds": [
+        "cinepolis"
+      ],
+      "executed": true
+    },
+    {
+      "principalHash": "236bf3ab0eb3fd51",
+      "kind": "client",
+      "role": "cliente",
+      "beforeProjectIds": [
+        "tya-piloto"
+      ],
+      "afterProjectIds": [
+        "cinepolis"
+      ],
+      "executed": true
+    },
+    {
+      "principalHash": "0bddcbfcc5413f21",
+      "kind": "shopper",
+      "role": "shopper",
+      "beforeProjectIds": [
+        "tya-piloto"
+      ],
+      "afterProjectIds": [
+        "cinepolis"
+      ],
+      "executed": true
+    },
+    {
+      "principalHash": "d637e510b108c142",
+      "kind": "shopper",
+      "role": "shopper",
+      "beforeProjectIds": [
+        "tya-piloto"
+      ],
+      "afterProjectIds": [
+        "cinepolis"
+      ],
+      "executed": true
+    }
+  ],
+  "safety": {
+    "newUsers": 0,
+    "passwordChanges": 0,
+    "deletes": 0,
+    "firestoreWrites": 0,
+    "hostingDeploys": 0,
+    "production": false,
+    "merge": false,
+    "piiExported": false
+  }
+}

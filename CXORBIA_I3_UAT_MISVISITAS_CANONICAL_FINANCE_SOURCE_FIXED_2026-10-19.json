@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "cxorbia.i3.work-uat.misvisitas-canonical-finance-source-fix.v1",
+  "localDate": "2026-10-19",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "officialState": "HOLD",
+  "relatedFindings": [
+    "VRM-271",
+    "VRM-257",
+    "VRM-174"
+  ],
+  "workEvidence": "CXORBIA_I3_UAT_WORK_TECHNICAL_ADJUDICATION_2026-10-19.json",
+  "rootCause": "Mis Visitas historical, stage and action labels read HR-owned visitContract.paymentState while Mi Perfil/Mis Beneficios use canonical finance liquidation with source-confirmed payments.",
+  "owner": "app/modules/misvisitas.js",
+  "ownerBlob": "de7e10c0509aabcf96f3834ee8a5496be297b2b3",
+  "qaFile": "tools/qa/cxorbia-i3-work-uat-misvisitas-payment-source.test.mjs",
+  "qaBlob": "3d7489b2623a9760a0fed786824cbe2dcb8ad5a8",
+  "beforeSourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+  "afterSourceSha": "2c6ad7c0466101398e6b1c60ba067f44c9ab6c21",
+  "afterTree": "0ea3f58771047688a0e5744ee098b268aad223df",
+  "sourceCommitParent": "38ded57b17fb899254ed2acc26aca1e35532db75",
+  "sourceProof": {
+    "method": "isolated mocked module behavior with exact original and corrected owner source Git blobs",
+    "redBaseline": {
+      "passed": 2,
+      "failed": 2,
+      "total": 4
+    },
+    "greenSource": {
+      "passed": 4,
+      "failed": 0,
+      "total": 4
+    },
+    "remoteCi": "PENDING",
+    "liveE2E": "PENDING",
+    "newHumanApproval": 0
+  },
+  "authority": {
+    "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V477_2026-10-19.json",
+    "ledgerBlob": "e89f0a197551a1b5afbc4296eea9a0f3496bc35f",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261019-V149.json",
+    "matrixBlob": "1d5416dd1a8055421e5ba4d88ae807260007b1bd",
+    "legacyFindingsPreserved": 274,
+    "sourceProvenHistoricalCount": 9,
+    "i3Tasks": 63
+  },
+  "scope": "SOURCE_FIXED_ONLY_NO_FINANCIAL_PROVIDER_MUTATION_NO_BANK_TRUTH_INFERRED",
+  "newDevMaterialization": false,
+  "newProductionArtifact": false,
+  "currentDev": {
+    "runNumber": 1796,
+    "hosting": "sites/cxorbia-backend-dev/versions/3ee9104ddb9f6e9c",
+    "runtime": "cxorbia-live-hr-dev-00313-hrk",
+    "sourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927"
+  },
+  "safety": {
+    "productOwnerFilesChanged": 1,
+    "qaFilesAdded": 1,
+    "existingWorkflowFileChanged": 1,
+    "newWorkflows": 0,
+    "newBranches": 0,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "financeWrites": 0,
+    "firestoreWrites": 0,
+    "storageWrites": 0,
+    "deploys": 0,
+    "production": false
+  },
+  "next": "Check exact canonical CI source guard + regression, then target existing DEV same-artifact review via Work; independently inspect reservations rules without deployed-rule assumptions. I3 HOLD."
+}

@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "cxorbia.i3.project-wizard.source-proof-run1808.v1",
+  "date": "2026-10-20",
+  "iteration": "I3",
+  "state": "HOLD",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceSha": "81593bfb586023d96cdba21beaeac330119a7ead",
+  "sourceTree": "d25e52103ad5e6cecbc74daaabe3653657a56d61",
+  "owner": "app/modules/proyecto-wizard.js",
+  "ownerBlob": "b32f6277df9bcfca5324c5f67cc9db14e00875f1",
+  "qa": "tools/qa/cxorbia-i3-work-uat-project-wizard-required-fields.test.mjs",
+  "qaBlob": "fcc40b669fa40d64bae783549a6a6a46cecbfd43",
+  "red": {
+    "runNumber": 1805,
+    "id": 39437765112,
+    "failed": 2,
+    "passed": 1,
+    "testCount": 3,
+    "issue": "blank name/country allowed Step 1"
+  },
+  "qaRepair": {
+    "runNumber": 1807,
+    "id": 39438327372,
+    "classification": "SOURCE_FAILURE_QA_HARNESS_ONLY",
+    "cause": "test mock regex did not match new required/aria-required HTML input attributes",
+    "productChanges": 0
+  },
+  "green": {
+    "runNumber": 1808,
+    "id": 39438585245,
+    "jobId": 118682099425,
+    "conclusion": "success",
+    "caseCount": 3,
+    "passed": 3,
+    "failed": 0,
+    "combinedTestCount": 15,
+    "combinedPass": 15,
+    "canonicalGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY"
+  },
+  "boundedScope": {
+    "productWrites": 0,
+    "hrWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "financeWrites": 0,
+    "storageWrites": 0,
+    "devDeploys": 0,
+    "production": false,
+    "projectCreated": false,
+    "existingProjectModified": false,
+    "allPriorModulePassPreserved": true
+  },
+  "preserved": {
+    "vrm": 274,
+    "domains": 21,
+    "B10": "SOURCE_PROVEN_RUN1799",
+    "finance": "SOURCE_PROVEN_RUN1800",
+    "reservations": "SOURCE_PROVEN_RUN1801",
+    "A09B11": "SOURCE_PROVEN_RUN1804"
+  },
+  "nextExactAction": "I3 source GREEN; validate project-create/period/tenant isolation in serial DEV later, do not claim real new project created. Continue B09/B13/B05-B08/C02-C10 provider E2E on scoped authorized QA, and A09/B11 claims HR revision/Shopper. I4 blocked."
+}

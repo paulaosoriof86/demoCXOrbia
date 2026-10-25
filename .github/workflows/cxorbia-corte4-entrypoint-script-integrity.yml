@@ -1,0 +1,30 @@
+name: CXOrbia Corte 4 Entrypoint Script Integrity
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/cxorbia-firebase-requests/corte4-entrypoint-script-integrity.json'
+
+permissions:
+  contents: read
+  statuses: write
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify every local script reference resolves
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if node tools/qa/cxorbia-corte4-entrypoint-script-integrity.mjs; then STATE=success; DESC='PASS_C4_ENTRYPOINT_ALL_LOCAL_SCRIPTS_RESOLVE'; else STATE=error; DESC='FAIL_C4_ENTRYPOINT_DANGLING_SCRIPT_REFERENCE'; fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/c4-entrypoint-script-integrity' -f description="$DESC" >/dev/null
+          [ "$STATE" = success ]

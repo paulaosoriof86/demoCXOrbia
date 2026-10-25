@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "cxorbia.i4a.visible-shopper-lifecycle-smoke.adjudicated-evidence.v1",
+  "syncEpoch": "CXORBIA-20260819-I4A-VISIBLE-SMOKE-MECHANISM-HOLD-22",
+  "generatedAt": "2026-08-19T10:59:00-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "gateId": "NEW_AUTH_REQUIRED_I4A_SINGLE_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE",
+  "requestId": "cxorbia-i4a-visible-shopper-lifecycle-smoke-20260819-01",
+  "sourceHeadSha": "1915faeb4ba5657a977fb384b88e9591b98fd35e",
+  "workflowCommitSha": "b63488970816146c2c1f793f162d610559d1bb2f",
+  "run": {
+    "workflowRunId": 32278013553,
+    "jobId": 96149872897,
+    "artifactId": 9374808032,
+    "artifactDigest": "sha256:b91f3bd3b1ce05303e426a45e98bd13372e6933499fc2548a98db8daa9a47437",
+    "rawDecision": "HOLD_I4A_VISIBLE_SHOPPER_LIFECYCLE_SMOKE_MECHANISM_OR_RUNTIME_FAILURE",
+    "rawError": "page.waitForFunction: Timeout 30000ms exceeded."
+  },
+  "preloginVerification": {
+    "decision": "PASS_I4A_DEDICATED_IDENTITY_PRELOGIN_EXACT",
+    "providerReads": 1,
+    "firestoreReads": 4,
+    "authPasswordUpdates": 1,
+    "claimsExact": true,
+    "profileExact": true,
+    "membershipExact": true,
+    "crosswalkExact": true,
+    "providerAck": true,
+    "explicitProvenanceExact": true,
+    "historicalShopperAccess": false,
+    "otherIdentitiesModified": 0
+  },
+  "browserExecution": {
+    "loginAttempts": 1,
+    "visibleSurfacesReached": false,
+    "surfaces": {},
+    "pageErrors": [],
+    "backendWriteAttemptsObserved": 0,
+    "failurePoint": "post_visible_login_waiting_for_authenticated_shopper_membership_state"
+  },
+  "adjudication": {
+    "classification": "PIPELINE_MECHANISM_FAILURE_PRIMARY__NO_PRODUCT_DEFECT_PROVEN",
+    "productDefectProven": false,
+    "visibleLifecycleDefectProven": false,
+    "gatePass": false,
+    "formalI4PointsAwarded": 0,
+    "automaticRetryAllowed": false,
+    "leadingMechanism": {
+      "name": "SERVICE_WORKER_STABILIZATION_GAP_IN_SMOKE_HARNESS",
+      "status": "SOURCE_SUPPORTED_HYPOTHESIS_NOT_DIRECT_EVENT_CAPTURE",
+      "support": [
+        "The frozen I3 visible Shopper E2E uses Playwright browser contexts with serviceWorkers:'block'.",
+        "The I4-A smoke browser context did not block service workers.",
+        "app/app.js registers sw.js and reloads once on service-worker controllerchange.",
+        "app/sw.js calls skipWaiting() and clients.claim(), so a fresh context can acquire a controller during the first interaction.",
+        "The I4-A run completed exact prelogin provider verification, performed exactly one login attempt, then timed out before any visible surface evidence and emitted no page errors."
+      ],
+      "notProven": "The workflow did not capture a controllerchange/reload event directly, so the service-worker race is not asserted as a fully reproduced product root cause."
+    }
+  },
+  "safety": {
+    "historicalShopperAccess": false,
+    "otherIdentitiesModified": 0,
+    "authCreates": 0,
+    "authClaimsWrites": 0,
+    "authDeletes": 0,
+    "authPasswordUpdates": 1,
+    "firestoreWrites": 0,
+    "postulationSubmits": 0,
+    "certificationSubmits": 0,
+    "reservationWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "merge": false,
+    "production": false,
+    "credentialsExported": false
+  },
+  "nextGate": "NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY__SERVICE_WORKER_STABILIZED_HARNESS"
+}

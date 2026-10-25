@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "cxorbia.i3.b7.hf13.whatsapp-draft-source-receipt.v1",
+  "date": "2026-10-12",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "state": "SOURCE_FIXED_PARTIAL_PENDING_CANONICAL_CI_DEV_E2E_HUMAN",
+  "findingIds": [
+    "HF-20261012-13"
+  ],
+  "classification": "FUNCTIONAL_DEFECT",
+  "sourcePredecessor": "b1f45e2a8b5abaee1a082d3315f6d52473c22d9e",
+  "sourceCommit": "782817615073f163358e1b52808d8ff45c6950c2",
+  "sourceTree": "feeda3969a66123d69eac951eb751818718e8115",
+  "owner": {
+    "product": "app/modules/dashboard.js",
+    "beforeBlob": "4d97a31d6432bb73ecfe5220b9b4f064ac415d29",
+    "afterBlob": "a436cddb93687eae7066f23bffc85d87c34ed307"
+  },
+  "tests": {
+    "file": "tools/qa/cxorbia-i3-b7-hf13-whatsapp-draft-source.test.mjs",
+    "blob": "5cbded4e4877a8623519a19c91077a5916f5f193",
+    "isolatedTests": 4,
+    "isolatedPass": 4,
+    "isolatedFail": 0,
+    "syntax": "PASS",
+    "runByExistingCanonicalCI": "NOT_PROVEN",
+    "liveAdminE2E": "NOT_RUN",
+    "realExternalSend": "NOT_PERFORMED",
+    "humanAcceptance": "PENDING"
+  },
+  "behavior": "All three individual Dashboard WhatsApp contexts open wa.me?text draft only after exact visit shopper + explicitly international 9-15 digit recipient; blocked/no number fails closed; cannot claim sent, does not route through local audit log as provider ACK.",
+  "scopeLimits": [
+    "No automatic Whatsapp send",
+    "No fallback to local 8-digit prefix; country codes must come from contact authority",
+    "No change to provider, backend, data, HR, CxP/CxC, finance, identity",
+    "Bulk/template-provider integration still separate HF28",
+    "Do not close HF13 or B7 until same-artifact DEV live and human PASS"
+  ],
+  "preserve": [
+    "B2 pending handoff",
+    "B7 HF15 prior source action",
+    "B7 HF16/17 same revision parity pending",
+    "B7 reservation future window pending",
+    "B8 eight financial HF pending",
+    "Mi Día human visual PASS",
+    "HR/project/period/country scope and finances"
+  ],
+  "sourceOnly": true,
+  "production": "DO_NOT_TOUCH"
+}

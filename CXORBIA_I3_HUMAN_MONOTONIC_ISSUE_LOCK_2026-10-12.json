@@ -1,0 +1,194 @@
+{
+  "schemaVersion": "cxorbia.i3.human-monotonic-issue-lock.20261012.v1",
+  "date": "2026-10-12",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "state": "HOLD_P0_PROVEN_CODEX_OWNER_PENDING",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceSha": "6814d1335ff7490976bf77164cee5b45333f1e50",
+  "sourceTree": "611f3baf1594765db71688065157142a7dfe7d12",
+  "authority": {
+    "ledger": {
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V370_2026-10-12.json",
+      "gitBlob": "6f21f6bceb745380842f93c29d64dd2444b5cc34",
+      "vrms": 274,
+      "unchangedPrevious274": true,
+      "nextVrmId": "VRM-275"
+    },
+    "human06": {
+      "path": "RECOVERY-I3-HUMAN-VISUAL-FAIL-OBSERVATION-MAP-20261006.json",
+      "gitBlob": "3145e068f06eb69b5976a31fa76f7f87a7e9b6bc",
+      "count": 45
+    },
+    "human08": {
+      "path": "CXORBIA_I3_HUMAN_VISUAL_CHECKPOINT_2026-10-08_B1_B2_B3_B5_B7_B8.json",
+      "gitBlob": "74c5cb7931e0e28f852d731e4331468f04573947",
+      "count": 18
+    },
+    "human12": {
+      "path": "CXORBIA_I3_HUMAN_FOCAL_VISUAL_CHECKPOINT_2026-10-12.json",
+      "gitBlob": "bd77d99966e4c4929af0e126e540e5e79d799b40",
+      "count": 30
+    },
+    "blocks": {
+      "path": "CXORBIA_I3_ENTREGAS_BLOQUES_Y_P0_2026-10-12.json",
+      "gitBlob": "fe4617e6fc80f59fe25a880741418b5174a0a67d",
+      "count": 9
+    },
+    "B2ExactCodexHandoff": {
+      "path": "CXORBIA_I3_B2_P0_PROVEN_OWNER_CODEX_HANDOFF_2026-10-12.md",
+      "gitBlob": "e3ee62712a57e99570f95ca2985c7cd79c03096a"
+    },
+    "lastTechnicalProof": {
+      "runId": 38199840679,
+      "sourceSha": "6814d1335ff7490976bf77164cee5b45333f1e50",
+      "scope": "TECHNICAL_PASS_HUMAN_REVIEW_LATER_FAIL"
+    }
+  },
+  "humanIds": [
+    "HF-20261012-01",
+    "HF-20261012-02",
+    "HF-20261012-03",
+    "HF-20261012-04",
+    "HF-20261012-05",
+    "HF-20261012-06",
+    "HF-20261012-07",
+    "HF-20261012-08",
+    "HF-20261012-09",
+    "HF-20261012-10",
+    "HF-20261012-11",
+    "HF-20261012-12",
+    "HF-20261012-13",
+    "HF-20261012-14",
+    "HF-20261012-15",
+    "HF-20261012-16",
+    "HF-20261012-17",
+    "HF-20261012-18",
+    "HF-20261012-19",
+    "HF-20261012-20",
+    "HF-20261012-21",
+    "HF-20261012-22",
+    "HF-20261012-23",
+    "HF-20261012-24",
+    "HF-20261012-25",
+    "HF-20261012-26",
+    "HF-20261012-27",
+    "HF-20261012-28",
+    "HF-20261012-29",
+    "HF-20261012-30"
+  ],
+  "preserveAccepted": [
+    "Mi Dia previously visual PASS",
+    "Beneficios newest-first history",
+    "B4 Academy approved scope",
+    "Mis Visitas durable commands and status history",
+    "Dashboard direct contextual actions",
+    "Finance source GT/HN separate",
+    "No imported or seeded real data"
+  ],
+  "humanOpenCount": 29,
+  "notUniqueDefectsCount": 30,
+  "vrmIdsConsumed": 0,
+  "screenshotFingerprints": [
+    {
+      "filename": "image(20261012-155223).png",
+      "sha256": "a6f04de3ab6a851787457840efad1b55f9a3ebb5bb5b9c1e33099b9f868bb76d"
+    },
+    {
+      "filename": "image(20261012-155700).png",
+      "sha256": "f7f1de91d73e40a01203341d0ea0624a83307cc1cf2efa7d6ded0bdbc9727ef2"
+    },
+    {
+      "filename": "image(20261012-160024).png",
+      "sha256": "ed106201e1b4018457f0ef5197a4e4f786e6c98b092fbf5b4dbeccae1e6d0ba4"
+    },
+    {
+      "filename": "image(20261012-160153).png",
+      "sha256": "041207cf5a5d9cef60779c78041fc3fd9d62394d7b600a89adfef989bd990ad3"
+    },
+    {
+      "filename": "image(20261012-160235).png",
+      "sha256": "853b7d2ae37a0fae4d96378a343bedf1ef68d9d364711dfd651e80007f77a23b"
+    },
+    {
+      "filename": "image(20261012-163154).png",
+      "sha256": "c9460a739090b78ca2ec572c1db5137bdd68eda18dd38bb0f4b33087d3bdf314"
+    },
+    {
+      "filename": "image(20261012-163246).png",
+      "sha256": "288e84f11172de70e4e9873204144eb02be88663d744c16cf72b9c0906a1c6a9"
+    },
+    {
+      "filename": "image(20261012-163337).png",
+      "sha256": "9b058fbe84e105f5f0ef10c8f5335806b4467b63cbb6d8fc73d535860d03904d"
+    },
+    {
+      "filename": "image(20261012-163528).png",
+      "sha256": "44e42ed97df0235d471dd3574644a71781d83e10cbc0f8906cbcbe4114eef8e8"
+    },
+    {
+      "filename": "image(20261012-163546).png",
+      "sha256": "9d36db04333fcf60faa4ab86a55d32ebb0da3f5ffcb1b61638c2edee9fedeb67"
+    },
+    {
+      "filename": "image(20261012-163621).png",
+      "sha256": "f8e00dcc9fbbbacd3b085bc17c7b1e3f2509cc4624f5dd81341e7efcf92e1eb4"
+    },
+    {
+      "filename": "image(20261012-163632).png",
+      "sha256": "53493a3d4a8a54d83c2ee2e7c28785a60bf6f7bb439fb83e27a2ef4486ecd636"
+    },
+    {
+      "filename": "image(20261012-163754).png",
+      "sha256": "799d8165e86b7ed251963f90bc0d38a88a115c6208d6026ebec41ed1d41682f9"
+    },
+    {
+      "filename": "image(20261012-163920).png",
+      "sha256": "ada15845a47f6f9375533637b0c18cb2b8e71d980eb5a5460805e29d776fc229"
+    },
+    {
+      "filename": "image(20261012-164250).png",
+      "sha256": "eb7a375a4a06b7155f1097433578bf1d24144f4280ebb30934870eb34ca57f7b"
+    },
+    {
+      "filename": "image(20261012-164613).png",
+      "sha256": "e7c65cf62d73c21e629638e2078d74e7f8b4207face149f35e59e8c22170ec4f"
+    },
+    {
+      "filename": "image(20261012-164708).png",
+      "sha256": "616707b785ca981d46f968a28491da78db79727098e874ad8be63c677e7b6132"
+    },
+    {
+      "filename": "image(20261012-164807).png",
+      "sha256": "2cea127a2c732593617514873eebb2c95a39164a2389fcfb9eeb4061b3d642a0"
+    },
+    {
+      "filename": "image(20261012-164933).png",
+      "sha256": "5b59661659a42451aa02326d8d7ebc57248a3a18693a295d9864e85af8962195"
+    },
+    {
+      "filename": "image(20261012-165023).png",
+      "sha256": "3893739fc51b789030578d5bcc072f9da61d387c6fbbdebfeca20bec2fb8462b"
+    }
+  ],
+  "screenshotStorageDisclosure": "Only file fingerprints in GitHub. Screenshot bytes are conversation attachments and were not copied to repo (may contain personal data); all actionable written findings are self-contained in checkpoint/ledger.",
+  "rules": [
+    "No omit any VRM or HF ID from successor ledger/locks",
+    "No new VRM ID until root cause dedup",
+    "No PASS by source/CI alone when human found defect",
+    "No global visual rewrite, overlay, repo, branch, parallel candidate or workflow",
+    "Only Codex writes product for P0_PROVEN exact owner; no writes by reviewer",
+    "All approved scope preserved unless precise reproducible drift",
+    "Production remains DO_NOT_TOUCH until I3=GO and explicit I4 authorization"
+  ],
+  "nextExactAction": {
+    "owner": "B2 shopper admin identity and Mi Perfil",
+    "package": "CXORBIA_I3_B2_P0_PROVEN_OWNER_CODEX_HANDOFF_2026-10-12.md",
+    "scope": "exact approved P0",
+    "needsAuthorization": false,
+    "writer": "Codex",
+    "codeChanged": false,
+    "devChanged": false,
+    "productionChanged": false
+  }
+}
