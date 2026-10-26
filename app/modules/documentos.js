@@ -52,6 +52,57 @@ CX.module('documentos', ({data,role,ui})=>{
   };
   const committed=r=>r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true;
   const resourceDefaults=rec=>Object.assign({resourceType:'project_resource',projectId:data.currentProjectId,periodId:pid,visibleRoles:['super','admin','ops','coordinador','shopper'],targetAll:false},rec||{});
+  /* El plugin PDF nativo de Chrome puede devolver un iframe completamente
+     blanco aun cuando el PDF original abre bien. Renderizar páginas en un
+     canvas evita depender del visor de terceros dentro del iframe. */
+  const pdfJsVersion='3.11.174';
+  const pdfScriptId='cxAttachmentPdfJs_'+pdfJsVersion.replace(/\./g,'_');
+  const loadPdfJs=()=>new Promise((resolve,reject)=>{
+    const ready=()=>{
+      const lib=window.pdfjsLib;
+      if(!lib?.getDocument){reject(new Error('PDF_RENDERER_UNAVAILABLE'));return;}
+      lib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/'+pdfJsVersion+'/pdf.worker.min.js';
+      resolve(lib);
+    };
+    if(window.pdfjsLib?.getDocument){ready();return;}
+    const script=document.getElementById(pdfScriptId)||document.createElement('script');
+    let settled=false;
+    const finish=fn=>{if(settled)return;settled=true;clearTimeout(timeout);fn();};
+    const timeout=setTimeout(()=>finish(()=>reject(new Error('PDF_RENDERER_TIMEOUT'))),15000);
+    script.addEventListener('load',()=>finish(ready),{once:true});
+    script.addEventListener('error',()=>finish(()=>reject(new Error('PDF_RENDERER_NETWORK_ERROR'))),{once:true});
+    if(!script.id){script.id=pdfScriptId;script.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/'+pdfJsVersion+'/pdf.min.js';script.async=true;script.crossOrigin='anonymous';document.head.appendChild(script);}
+  });
+  const renderPdf=async(slot,url)=>{
+    const status=slot.querySelector('[data-pdf-status]'),canvas=slot.querySelector('canvas'),prev=slot.querySelector('[data-pdf-prev]'),next=slot.querySelector('[data-pdf-next]'),position=slot.querySelector('[data-pdf-page]');
+    if(!status||!canvas||!prev||!next||!position)return;
+    const live=()=>slot.isConnected&&host.contains(slot);
+    let pdf=null,rendering=false,pageNumber=1;
+    try{
+      const lib=await loadPdfJs();if(!live())return;
+      const isInline=/^data:application\/pdf(?:;base64)?,/i.test(url);
+      const source=isInline?{data:Uint8Array.from(atob(String(url).split(',')[1]||''),x=>x.charCodeAt(0))}:{url:String(url),withCredentials:false};
+      pdf=await lib.getDocument(source).promise;if(!live()){await pdf.destroy?.();return;}
+      const drawPage=async()=>{
+        if(!live()||rendering)return;
+        rendering=true;prev.disabled=true;next.disabled=true;
+        try{
+          const page=await pdf.getPage(pageNumber),scale=Math.min(1.6,Math.max(0.7,(slot.clientWidth-24)/(page.getViewport({scale:1}).width||700)));
+          if(!live())return;
+          const viewport=page.getViewport({scale}),ratio=Math.min(window.devicePixelRatio||1,2);
+          canvas.width=Math.ceil(viewport.width*ratio);canvas.height=Math.ceil(viewport.height*ratio);
+          canvas.style.width=viewport.width+'px';canvas.style.height=viewport.height+'px';
+          const context=canvas.getContext('2d');
+          await page.render({canvasContext:context,viewport,transform:ratio===1?undefined:[ratio,0,0,ratio,0,0]}).promise;
+          if(live()){position.textContent='Página '+pageNumber+' de '+pdf.numPages;status.textContent='PDF visible en la plataforma';status.dataset.pdfStatus='ready';}
+        }finally{rendering=false;if(live()){prev.disabled=pageNumber<=1;next.disabled=pageNumber>=pdf.numPages;}}
+      };
+      prev.addEventListener('click',()=>{if(!rendering&&pageNumber>1){pageNumber--;drawPage().catch(fail);}});
+      next.addEventListener('click',()=>{if(!rendering&&pageNumber<pdf.numPages){pageNumber++;drawPage().catch(fail);}});
+      await drawPage();
+    }catch(error){fail(error);}
+    function fail(error){if(!live())return;status.dataset.pdfStatus='failed';status.textContent='No fue posible mostrar este PDF dentro de la plataforma. Puedes abrir el original desde el enlace superior.';console.warn('[CX.documentos PDF]',String(error?.message||error));}
+  };
   const saveDurable=async(rec,options={})=>{
     if(!connected()){CX.docStore.add(pid,rec);return {ok:true,status:'committed',providerAck:true,successUiAllowed:true,demo:true};}
     if(!CX.backendResources?.saveMetadata)return {ok:false,status:'blocked',providerAck:false,successUiAllowed:false,code:'RESOURCE_BACKEND_UNAVAILABLE'};
@@ -60,7 +111,7 @@ CX.module('documentos', ({data,role,ui})=>{
 
   /* visor a PANTALLA COMPLETA en el área del módulo (no modal) */
   const viewer=(d)=>{
-    const isPdf = d.url && (/^data:application\/pdf/i.test(d.url) || /\.pdf($|\?)/i.test(d.url));
+    const isPdf = d.url && (d.tipo==='pdf' || /^data:application\/pdf/i.test(d.url) || /\.pdf($|[?#])/i.test(d.url));
     const isImg = (d.tipo==='image'&&d.url) || (d.url&&/^data:image\//i.test(d.url));
     const isXls = d.url && (/^data:application\/(vnd\.openxmlformats-officedocument\.spreadsheetml|vnd\.ms-excel)/i.test(d.url) || /\.(xlsx|xls)$/i.test(d.meta||''));
     const isDocx = d.url && (/^data:application\/vnd\.openxmlformats-officedocument\.wordprocessingml/i.test(d.url) || /\.docx$/i.test(d.meta||''));
@@ -69,7 +120,7 @@ CX.module('documentos', ({data,role,ui})=>{
     else if(d.tipo==='video'&&d.url) body=`<iframe src="${d.url}" style="width:100%;height:68vh;border:0;border-radius:12px" allowfullscreen></iframe>`;
     else if(d.tipo==='check') body=`<div style="max-width:760px">${(d.items||[]).map(it=>`<label class="flex" style="gap:10px;padding:11px 14px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;cursor:pointer;font-size:14px"><input type="checkbox"> ${it}</label>`).join('')}</div>`;
     else if(isImg) body=`<img src="${d.url}" style="max-width:100%;border-radius:12px">`;
-    else if(isPdf) body=`<div role="note" style="font-size:12px;color:var(--t3);padding:0 0 12px">Si el visor integrado aparece en blanco, <a href="${d.url}" target="_blank" rel="noopener noreferrer">abre el PDF original en otra pestaña ↗</a>. El archivo no se modifica.</div><iframe title="Vista previa PDF del proyecto" src="${d.url}" style="width:100%;height:72vh;border:0;border-radius:12px"></iframe>`;
+    else if(isPdf) body=`<div role="note" style="font-size:12px;color:var(--t3);padding:0 0 12px">Si el visor no carga, <a href="${d.url}" target="_blank" rel="noopener noreferrer">abre el PDF original en otra pestaña ↗</a>. El archivo no se modifica.</div><section data-pdf-viewer style="min-height:200px;text-align:center"><div data-pdf-status="loading" role="status" style="padding:12px;color:var(--t3)">Preparando vista previa del PDF…</div><canvas aria-label="Página del documento PDF" style="max-width:100%;display:block;margin:auto"></canvas><div class="flex" style="justify-content:center;align-items:center;gap:12px;margin-top:12px"><button type="button" class="btn btn-sm" data-pdf-prev disabled>← Anterior</button><span data-pdf-page>Página pendiente</span><button type="button" class="btn btn-sm" data-pdf-next disabled>Siguiente →</button></div></section>`;
     else if(d.url&&!d.body) body=`<div style="text-align:center;padding:40px"><div style="font-size:40px;margin-bottom:12px">${d.ic||'📄'}</div><a href="${d.url}" target="_blank" class="btn btn-pr btn-sm" style="text-decoration:none">Abrir en pestaña nueva ↗</a></div>`;
     else body=`<div class="acad-content" style="max-width:820px;font-size:14px;line-height:1.75">${(d.body||'Vista previa no disponible.').split('\n').map(l=>{
       if(l.startsWith('## ')) return `<h3 style="margin:14px 0 4px">${l.slice(3)}</h3>`;
@@ -88,6 +139,7 @@ CX.module('documentos', ({data,role,ui})=>{
       <div class="card card-p">${body}</div>`;
     host.querySelector('#docBack').addEventListener('click',()=>{closeViewer();draw();});
     host.querySelector('#docPrint')?.addEventListener('click',()=>window.print());
+    if(isPdf){const slot=host.querySelector('[data-pdf-viewer]');if(slot)renderPdf(slot,d.url);}
     /* render inline de Excel (SheetJS) y Word (Mammoth) — no descarga */
     if(isXls||isDocx){
       const slot=host.querySelector('#docEmbed');

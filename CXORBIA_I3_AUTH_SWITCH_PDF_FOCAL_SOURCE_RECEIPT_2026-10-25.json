@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "cxorbia.i3.auth-switch-pdf.focal-source.v1",
+  "recordedAtLocal": "2026-10-25",
+  "timezone": "America/Guatemala",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "iteration": "I3",
+  "gate": "HOLD",
+  "humanAcceptance": "PENDING",
+  "i4Authorized": false,
+  "production": "DO_NOT_TOUCH",
+  "expectedParentSha": "0c74a65d1d945525df86aff0f0526a7ec1ab5eb8",
+  "expectedParentTree": "ba8059c93e82cc39d098e7e8233c839efeb22c3f",
+  "predecessorProductSource": "5c7104d42520f408a3753cf8c4adb26f56781a01",
+  "predecessorHostingVersion": "sites/cxorbia-backend-dev/versions/a72e1b7bdce815a1",
+  "predecessorCloudRunRevision": "cxorbia-live-hr-dev-00327-xsc",
+  "focalCause": {
+    "observed": "Admin->Shopper first login held at HR authority gate for more than sixty seconds; one reload then displayed the correct shopper within about nineteen seconds.",
+    "sourceRoot": "backend-firebase.authContext preferred the cached initial principal over the current browser-auth principal after same-tab sign-out/sign-in; browser-auth could enter from the previous principal's CX_BACKEND_AUTHORIZED_STATE.",
+    "classification": "AUTH_FAILURE",
+    "securityImpactMitigated": "Different Firebase UID/role/tenant/shopper/project snapshots must never be published as the new actor's authorized state."
+  },
+  "pdfFinding": {
+    "observed": "Original seven-page PDF opened directly but embedded iframe appeared blank/black in both Admin and Shopper.",
+    "classification": "VISUAL_DEFECT",
+    "correction": "Render authorized PDF pages inside the module through PDF.js canvas, with page controls, clear loading/error status and original-link fallback.",
+    "liveInlineProof": "PENDING_DEV_E2E"
+  },
+  "sourceFixedOwners": [
+    {"path": "app/core/backend-firebase.js", "sha256": "14a96ec636c02bbb8fbb8d2ff342ed9749c7e174c1a75b80d38ef163f9b496a1"},
+    {"path": "app/core/backend-browser-auth.js", "sha256": "3c6f1add83c63d341073727a28ef8ae088b9eed8525157dd647915689ab3d924"},
+    {"path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js", "sha256": "286a4f572efc8655d6c8a6f865d3bf5ad8d95b57d1e53b6193af445f8ae164a1"},
+    {"path": "app/modules/documentos.js", "sha256": "0fd63aab1268abc880fe2a397a10c7cc486fd9058581b590c9c15697242b7e2e"}
+  ],
+  "qaFile": "tools/qa/cxorbia-i3-d04e03-shopper-relogin-pdf-source.test.mjs",
+  "qaSha256": "592fffaf99e5cd05e3337cd9d94ee939e0d12fd49d415c962fd53f8ea456e329",
+  "focalTests": [
+    "AUTH_CURRENT_PRINCIPAL_SWITCH_WITHOUT_RELOAD_PASS",
+    "AUTH_OLD_ADMIN_SNAPSHOT_DENIED_TO_SHOPPER_PASS",
+    "AUTH_SAME_ACTOR_SCOPED_READBACK_REQUIRED_PASS",
+    "PDF_CANVAS_VIEWER_AND_FALLBACK_SOURCE_PASS",
+    "A05_ATOMIC_SESSION_PUBLICATION_EXISTING_PASS",
+    "CERT_RESOURCE_PERIOD_EXISTING_PASS",
+    "R20_SHOPPER_AUTH_EXISTING_PASS",
+    "NODE_JS_SYNTAX_FOUR_OWNERS_PASS",
+    "GIT_DIFF_CHECK_PASS"
+  ],
+  "notYetPassed": [
+    "REMOTE_CI_SOURCE_PROOF",
+    "EXACT_DEV_HOSTING_MATERIALIZATION",
+    "DEV_PDF_INLINE_PAGE_RENDERING",
+    "DEV_ADMIN_TO_SHOPPER_FRESH_LOGIN_NO_RELOAD",
+    "FULL_PHASE_A_ADMIN_SHOPPER_CLIENT_CROSSROLE_E2E",
+    "GATE20",
+    "GATE21",
+    "HUMAN_PASS",
+    "I3_GO",
+    "I4_EXPLICIT_PRODUCTION_APPROVAL"
+  ],
+  "legacyStaticGateNote": "Three wider historical source-static scripts showed unrelated baseline failures against pre-existing untouched contracts; not certified as PASS and not used to waive Phase A gates.",
+  "declaredNonChanges": {
+    "otherProductModules": "UNCHANGED",
+    "cloudRun": "UNCHANGED",
+    "firestore": "NO_BUSINESS_WRITES_BY_THIS_SOURCE_INTERVENTION",
+    "auth": "NO_PROVIDER_WRITES_BY_THIS_SOURCE_INTERVENTION",
+    "hr": "UNCHANGED",
+    "production": "UNCHANGED",
+    "gate": "I3_HOLD"
+  },
+  "nextExactAction": "Commit CAS on the existing branch; run source verification and exact DEV Hosting-only release guard; then authenticate Admin and Shopper on the same served artifact to verify first login, PDF canvas pages, scoped data, notifications and full outstanding Phase A controls before Gate20/21 and Paula's human acceptance. Do not deploy production without I3 GO and specific I4 authorization."
+}

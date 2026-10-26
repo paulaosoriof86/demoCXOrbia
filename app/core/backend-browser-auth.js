@@ -29,6 +29,8 @@ window.CX = window.CX || {};
   let clientPreviewRequested=false;
   let sessionCredential = null;
   let restorePending = true;
+  let backendHydratedInThisTab = false;
+  let enteredPrincipalStamp = '';
 
   function list(value){
     if(Array.isArray(value)) return value.map(String).map(function(x){return x.trim();}).filter(Boolean);
@@ -120,6 +122,19 @@ window.CX = window.CX || {};
 
   function projectsOf(claims){
     return Array.from(new Set(list(claims.projectIds)));
+  }
+
+  function backendSnapshotMatchesLivePrincipal(ctx){
+    const state=window.CX_BACKEND_AUTHORIZED_STATE||{},p=state.principal||{};
+    const uid=String(auth?.currentUser?.uid||'');
+    const expectedProjects=list(ctx?.projectIds).sort().join('|');
+    return !!(ctx?.authenticated===true&&uid&&String(p.actorUid||'')===uid
+      &&String(state.tenantId||'')===String(ctx.tenantId||'')
+      &&String(p.tenantId||'')===String(ctx.tenantId||'')
+      &&String(p.role||'')===String(ctx.role||'')
+      &&String(p.authNamespace||'')===String(ctx.authNamespace||'')
+      &&String(p.shopperId||'')===String(ctx.shopperId||'')
+      &&list(p.projectIds).sort().join('|')===expectedProjects);
   }
 
   function expectedNamespaceForRole(role){
@@ -420,11 +435,18 @@ window.CX = window.CX || {};
     visible.submit.disabled = true;
     visible.submit.textContent = 'Validando...';
     try{
-      await signIn(login, password, namespace, role);
+      const ctx=await signIn(login, password, namespace, role);
       visible.password.value = '';
       visible.login.value = '';
-      if(window.CX_BACKEND_AUTHORIZED_STATE){enterAfterBackendReady();visible.submit.textContent='Ingresar';}
-      else visible.submit.textContent = 'Cargando...';
+      // A previous Admin/Shopper readback may still exist in this tab. Never
+      // enter on that old slice; rehydrate Firestore for the new Auth principal.
+      if(backendHydratedInThisTab){
+        visible.submit.textContent='Sincronizando...';
+        if(!CX.backend||typeof CX.backend.refresh!=='function')throw new Error('AUTH_BACKEND_REFRESH_REQUIRED');
+        await CX.backend.refresh();
+      }else if(backendSnapshotMatchesLivePrincipal(ctx))enterAfterBackendReady();
+      else visible.submit.textContent='Cargando...';
+      if(backendSnapshotMatchesLivePrincipal(ctx))visible.submit.textContent='Ingresar';
     }catch(e){
       visible.password.value = '';
       setCredentialError(authErrorMessage(e));
@@ -493,9 +515,14 @@ window.CX = window.CX || {};
 
   function enterAfterBackendReady(){
     if(!currentContext || !CX.app || typeof CX.app.enter !== 'function') return;
+    if(!backendSnapshotMatchesLivePrincipal(currentContext))return;
+    backendHydratedInThisTab=true;
+    const stamp=[String(auth?.currentUser?.uid||''),String(currentContext.role||''),String(currentContext.authNamespace||''),String(currentContext.shopperId||''),String(currentContext.tenantId||''),list(currentContext.projectIds).sort().join(',')].join('|');
+    if(enteredPrincipalStamp===stamp&&CX.session?.role)return;
     applyCxSession(currentContext);
     removeLegacyCredentialOverlay();
     CX.app.enter();
+    enteredPrincipalStamp=stamp;
   }
 
   function protectedLoginEnabled(){
@@ -545,6 +572,7 @@ window.CX = window.CX || {};
         try{ ensureFirebase(); await auth.signOut(); }catch(_){ }
         currentContext = null;
         readyPromise = null;
+        enteredPrincipalStamp = '';
         resolveInteractive = null;
         rejectInteractive = null;
         selectedRole = '';
@@ -604,6 +632,7 @@ window.CX = window.CX || {};
       await auth.signOut();
       currentContext = null;
       readyPromise = null;
+      enteredPrincipalStamp = '';
       resolveInteractive = null;
       rejectInteractive = null;
       selectedRole = '';

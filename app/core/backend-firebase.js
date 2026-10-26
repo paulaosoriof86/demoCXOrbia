@@ -267,9 +267,11 @@ window.CX = window.CX || {};
   }
 
   function authContext(){
-    if(principal) return principal;
+    // The initial principal is only a bootstrap fallback. After logout/login in
+    // the same tab it belongs to the OLD account; the browser Auth context is
+    // authoritative even when it is temporarily null during sign-out.
     if(CX.backendAuth && typeof CX.backendAuth.context === 'function') return CX.backendAuth.context();
-    return null;
+    return principal;
   }
   function roleOf(ctx){ return ctx && ctx.role ? String(ctx.role) : ''; }
   function publishAuthorizedState(state){
@@ -277,7 +279,7 @@ window.CX = window.CX || {};
     window.CX_BACKEND_AUTHORIZED_STATE=clean({
       version:'cxorbia-backend-authorized-state-v1',
       tenantId:tenantId(),
-      principal:{role:roleOf(ctx),tenantId:String(ctx.tenantId||tenantId()),authNamespace:String(ctx.authNamespace||''),shopperId:String(ctx.shopperId||''),projectIds:toList(ctx.projectIds)},
+      principal:{role:roleOf(ctx),tenantId:String(ctx.tenantId||tenantId()),authNamespace:String(ctx.authNamespace||''),shopperId:String(ctx.shopperId||''),projectIds:toList(ctx.projectIds),actorUid:String(app?.auth?.()?.currentUser?.uid||'')},
       projects:(state&&state.projects)||[],allProjects:(state&&state.allProjects)||[],periods:(state&&state.periods)||[],
       shoppers:(state&&state.shoppers)||[],visits:(state&&state.visits)||[],posts:(state&&state.posts)||[],reservations:(state&&state.reservations)||[],
       capturedAt:now(),source:'firestore-authorized'
@@ -506,7 +508,19 @@ window.CX = window.CX || {};
     D.__firebaseWrapped = true;
   }
 
-  async function refresh(){ if(!db) throw new Error('Firebase backend no inicializado'); const state = await loadTenantData(); applyData(state); return state; }
+  function authReadIdentity(){
+    const ctx=authContext()||{},uid=String(app?.auth?.()?.currentUser?.uid||'');
+    return JSON.stringify([uid,String(ctx.tenantId||''),String(ctx.role||''),String(ctx.authNamespace||''),String(ctx.shopperId||''),toList(ctx.projectIds).sort()]);
+  }
+  async function refresh(){
+    if(!db) throw new Error('Firebase backend no inicializado');
+    const before=authReadIdentity(),state=await loadTenantData();
+    // Do not publish a Firestore slice fetched under a principal that signed out
+    // or changed while the async read was in flight.
+    if(before!==authReadIdentity())throw new Error('AUTH_SESSION_CHANGED_DURING_BACKEND_READ');
+    applyData(state);
+    return state;
+  }
 
   async function start(){
     if(started) return CX.backend;
