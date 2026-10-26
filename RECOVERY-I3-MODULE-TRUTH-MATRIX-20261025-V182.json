@@ -107,7 +107,7 @@
     "treeSha": "3a179915fd83d30328a25d6827c490f3545539f4",
     "predecessorProductSourceSha": "74ea77ca56892cdead444ee546c1f1de86364fcc",
     "message": "fix(cxorbia-i3): distinguish certification bank lifecycle from shopper validity",
-    "authorityState": "SOURCE_FIXED_PENDING_CANONICAL_CI_AND_DEV"
+    "authorityState": "SOURCE_PROOF_PASS_RUN1879_PENDING_DEV_HOSTING_AUTHORIZATION"
   },
   "controlHeadAtConstruction": "3ce8d451e11a2d62c175000b0e6b72f53071af46",
   "phaseAComplete": false,
@@ -13418,11 +13418,29 @@
     "currentBlob": "c2dcd4dba3cdf09dc4c97952cbb079a6211aeab6",
     "qaOwner": "tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs",
     "qaBlob": "ca992f821a93159cc85ae7610553037e4815fa80",
-    "sourceQa": "LOCAL_5_OF_5_AND_I3_FOCAL_9_SUITES_PASS",
-    "devMaterialization": "PENDING",
+    "sourceQa": "PASS_LOCAL_9_OF_9_AND_CANONICAL_RUN1879",
+    "devMaterialization": "NOT_DEPLOYED_PENDING_EXACT_AUTHORIZATION",
     "adminShopperSameArtifact": "PENDING",
     "humanAcceptance": "PENDING",
     "phaseAComplete": false,
-    "production": false
+    "production": false,
+    "sourceProofCI": {
+      "state": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+      "runId": 40253360974,
+      "runNumber": 1879,
+      "jobId": 121349839321,
+      "conclusion": "success",
+      "verifiedSourceSha": "5c7104d42520f408a3753cf8c4adb26f56781a01",
+      "sourceTree": "3a179915fd83d30328a25d6827c490f3545539f4",
+      "domainCount": 21,
+      "ownerCount": 99,
+      "sourceFileCount": 150,
+      "ownerMismatches": 0,
+      "sourceFileMismatches": 0,
+      "localWorkUatSuites": "9_OF_9_PASS",
+      "devMaterialized": false,
+      "terminalReleaseEligible": false,
+      "production": false
+    }
   }
 }

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_D04_E03_BANK_STATUS_SOURCE_PROOF_PENDING_NOT_DEV_MATERIALIZED",
+  "status": "HOLD_I3_D04_E03_SOURCE_PROOF_PASS_RUN1879_PENDING_DEV_HOSTING_AUTHORIZATION",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,7 +8,7 @@
   "productTreeAuthority": "3a179915fd83d30328a25d6827c490f3545539f4",
   "predecessorProductSourceSha": "74ea77ca56892cdead444ee546c1f1de86364fcc",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V513_2026-10-25.json",
-  "findingsLedgerExpectedGitBlob": "b9fd998f8de9075ca066f2fe52077a5d9616ab5b",
+  "findingsLedgerExpectedGitBlob": "fb9ff4e2da118c5a6adc57d981876e9e5344f186",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261025-V182.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -2961,7 +2961,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "f8fe73180b908a751caf76a9db56f952645e3576",
+  "moduleTruthExpectedGitBlob": "f2f4f5bd81d68265f699abecc5529f5e2bdf7bec",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -14128,7 +14128,7 @@
     "production": false
   },
   "d04E03AdminBankStatus20261025": {
-    "status": "SOURCE_FIXED_PENDING_CANONICAL_QA_AND_DEV",
+    "status": "SOURCE_PROOF_PASS_RUN1879_PENDING_DEV",
     "tasks": [
       "D04",
       "E03"
@@ -14139,10 +14139,28 @@
     "ownerBlob": "c2dcd4dba3cdf09dc4c97952cbb079a6211aeab6",
     "qaOwner": "tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs",
     "qaBlob": "ca992f821a93159cc85ae7610553037e4815fa80",
-    "localSourceQa": "PASS_5_OF_5_AND_NINE_I3_SUITES",
+    "localSourceQa": "PASS_9_OF_9_AND_CANONICAL_GUARD_RUN1879",
     "publishedBankMutations": 0,
     "devMaterialized": false,
     "humanPass": false,
-    "production": false
+    "production": false,
+    "sourceProofCI": {
+      "state": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+      "runId": 40253360974,
+      "runNumber": 1879,
+      "jobId": 121349839321,
+      "conclusion": "success",
+      "verifiedSourceSha": "5c7104d42520f408a3753cf8c4adb26f56781a01",
+      "sourceTree": "3a179915fd83d30328a25d6827c490f3545539f4",
+      "domainCount": 21,
+      "ownerCount": 99,
+      "sourceFileCount": 150,
+      "ownerMismatches": 0,
+      "sourceFileMismatches": 0,
+      "localWorkUatSuites": "9_OF_9_PASS",
+      "devMaterialized": false,
+      "terminalReleaseEligible": false,
+      "production": false
+    }
   }
 }

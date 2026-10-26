@@ -18,7 +18,7 @@
     "sourceTree": "3a179915fd83d30328a25d6827c490f3545539f4",
     "predecessorSha": "04933057fba928bcee9f9be7398c6aa29f8db791",
     "production": false,
-    "state": "SOURCE_FIXED_VRM288_ADMIN_NAV_QA_PENDING_DEV_NOT_MATERIALIZED",
+    "state": "SOURCE_PROOF_PASS_RUN1879_D04_E03_DEV_NOT_MATERIALIZED",
     "proof": {
       "stage": "RUN1794_FOCAL_SOURCE_FAIL_CORRECTED_PENDING_CI",
       "sourceSha": "273b8afb4b2ab0c5851c8cc82235639b44165927",
@@ -34368,9 +34368,27 @@
     "currentBlob": "c2dcd4dba3cdf09dc4c97952cbb079a6211aeab6",
     "qaOwner": "tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs",
     "qaBlob": "ca992f821a93159cc85ae7610553037e4815fa80",
-    "sourceQa": "LOCAL_PASS_FOCAL_5_AND_NINE_SUITES",
-    "dev": "NOT_DEPLOYED",
+    "sourceQa": "PASS_LOCAL_9_OF_9_AND_CANONICAL_RUN1879",
+    "dev": "NOT_DEPLOYED_PENDING_EXACT_AUTHORIZATION",
     "humanAcceptance": "PENDING",
-    "production": false
+    "production": false,
+    "sourceProofCI": {
+      "state": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+      "runId": 40253360974,
+      "runNumber": 1879,
+      "jobId": 121349839321,
+      "conclusion": "success",
+      "verifiedSourceSha": "5c7104d42520f408a3753cf8c4adb26f56781a01",
+      "sourceTree": "3a179915fd83d30328a25d6827c490f3545539f4",
+      "domainCount": 21,
+      "ownerCount": 99,
+      "sourceFileCount": 150,
+      "ownerMismatches": 0,
+      "sourceFileMismatches": 0,
+      "localWorkUatSuites": "9_OF_9_PASS",
+      "devMaterialized": false,
+      "terminalReleaseEligible": false,
+      "production": false
+    }
   }
 }
