@@ -14,11 +14,27 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "798964d72710aa2ca099a77d72e3739000cf7940",
-    "sourceTree": "0be94499d7d304e5b102970dbbc8fd8927885b0d",
-    "predecessorSha": "5c7104d42520f408a3753cf8c4adb26f56781a01",
+    "sourceSha": "92e42a61eace003a1e518ac71bf4309517aa89d9",
+    "sourceTree": "d1f21d2c8ea22f15000924d145d4582eddd8a97b",
+    "predecessorSha": "798964d72710aa2ca099a77d72e3739000cf7940",
     "production": false,
-    "state": "FOCAL_AUTH_SWITCH_PDF_LOCAL_SOURCE_TESTS_PASS_DEV_NOT_MATERIALIZED",
+    "state": "VRM289_REPORT_PROJECTION_WIRING_SOURCE_PENDING_CANONICAL_REPROOF_DEV_NOT_MATERIALIZED",
+    "focalSuccessor20261026": {
+      "sourceCommit": "92e42a61eace003a1e518ac71bf4309517aa89d9",
+      "sourceTree": "d1f21d2c8ea22f15000924d145d4582eddd8a97b",
+      "predecessor": "798964d72710aa2ca099a77d72e3739000cf7940",
+      "changedSourceOwners": ["app/index-backend-dev.html"],
+      "exactChange": "Load existing Corte1 report projection before async authenticated HR publication; no source bypass or invented rows",
+      "firstCanonicalGuardRunId": 40351502488,
+      "firstCanonicalGuardFailure": "UNDECLARED_PRODUCT_DRIFT_AFTER_CANONICAL_CANDIDATE",
+      "newLocalRegressionTestsPass": 3,
+      "canonicalSourceProof": "PENDING_CONTROL_RECONCILIATION",
+      "devMaterialization": "NOT_RUN",
+      "humanVisualAcceptance": "PENDING",
+      "gate20": "HOLD",
+      "gate21": "HOLD",
+      "production": false
+    },
     "focalSuccessor20261025": {
       "repositoryBranchUnchanged": true,
       "predecessorProductSource": "5c7104d42520f408a3753cf8c4adb26f56781a01",
@@ -19887,6 +19903,35 @@
         "i4Authorized": false
       },
       "disposition": "KEEP_OPEN_UNTIL_SOURCE_PROOF_EXACT_DEV_HOSTING_BYTE_READBACK_AND_AUTHENTICATED_ADMIN_SHOPPER_E2E_PDF_CONTENT"
+    },
+    "VRM-289": {
+      "id": "VRM-289",
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "taskIds": ["E01", "E04"],
+      "title": "Client Portal operational reports blocked because verified Corte1 projection is absent from authenticated DEV entrypoint",
+      "firstObservedAt": "2026-10-26",
+      "observed": "Authenticated Admin switched to Client Portal. Panorama reflected 44 visits / 24 performed / 23 questionnaires, but Reports displayed 'La fuente operativa verificada aún no está conectada' and disabled PDF, Excel and PPT exports.",
+      "rootCause": "app/adapters/tya-corte1-report-projection-live.js existed and app/adapters/tya-live-source-inplace-apply.js already invoked its builder after protected HR publication, but app/index-backend-dev.html omitted the adapter script.",
+      "expected": "Authorized Client Reportes consumes the same verified source-safe HR snapshot for operational report categories, scoped to project/period/country/branch, with unverified scorecards still blocked. No writes, synthetic business data or credential exposure.",
+      "owner": ["app/index-backend-dev.html"],
+      "qaOwner": "tools/qa/cxorbia-i3-vrm289-client-report-projection-wiring.test.mjs",
+      "state": "SOURCE_FIXED_LOCAL_REGRESSION_PASS_CANONICAL_PROOF_AND_DEV_UAT_PENDING",
+      "sourceFix": {
+        "sourceSha": "92e42a61eace003a1e518ac71bf4309517aa89d9",
+        "sourceTree": "d1f21d2c8ea22f15000924d145d4582eddd8a97b",
+        "predecessorSourceSha": "798964d72710aa2ca099a77d72e3739000cf7940",
+        "ownerBlob": "075b494e084e47759eeeabd7cb82d7600a3c3b8d",
+        "localRegressionTests": {"pass": 3, "fail": 0, "scope": "NODE_VM_ISOLATED_SYNTHETIC_NO_PROVIDER"},
+        "firstGuardRunId": 40351502488,
+        "firstGuardFailure": "RELEASE_COMPOSITION_FAILURE:UNDECLARED_PRODUCT_DRIFT_AFTER_CANONICAL_CANDIDATE",
+        "sourceReconciliation": "IN_PROGRESS",
+        "devHostingMaterialization": "NOT_RUN",
+        "liveAuthenticatedClientReproof": "PENDING",
+        "production": false
+      },
+      "safeguards": {"liveWrites": 0, "newCloudRunBuilds": 0, "production": false, "i4Authorized": false},
+      "disposition": "KEEP_OPEN_UNTIL_CANONICAL_SOURCE_PASS_SAME_ARTIFACT_DEV_HOSTING_BYTE_PROOF_AND_REAL_AUTHORIZED_CLIENT_REPORTS_E2E"
     }
   },
   "latestEvidenceOverrides": {
@@ -20592,11 +20637,12 @@
       "VRM-285",
       "VRM-286",
       "VRM-287",
-      "VRM-288"
+      "VRM-288",
+      "VRM-289"
     ],
-    "findingCount": 288,
-    "expectedCurrentRange": "VRM-001..VRM-288",
-    "nextFindingId": "VRM-289",
+    "findingCount": 289,
+    "expectedCurrentRange": "VRM-001..VRM-289",
+    "nextFindingId": "VRM-290",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_I3_REMAINING_E2E_HUMAN_GATE_AFTER_VRM153_DEV_DURABLE_PASS",
@@ -20977,7 +21023,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-289",
+  "nextFindingId": "VRM-290",
   "lastControlFailure": {
     "id": "RUN1238_NEXT_FINDING_ID_GOVERNANCE_DESYNC",
     "classification": "MAPPING_FAILURE",

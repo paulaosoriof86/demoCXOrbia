@@ -1,19 +1,34 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_AUTH_SWITCH_PDF_LOCAL_PASS_PENDING_DEV",
+  "status": "HOLD_I3_VRM289_REPORTS_SOURCE_PROOF_PENDING_DEV",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "798964d72710aa2ca099a77d72e3739000cf7940",
-  "productTreeAuthority": "0be94499d7d304e5b102970dbbc8fd8927885b0d",
-  "predecessorProductSourceSha": "5c7104d42520f408a3753cf8c4adb26f56781a01",
+  "productSourceSha": "92e42a61eace003a1e518ac71bf4309517aa89d9",
+  "productTreeAuthority": "d1f21d2c8ea22f15000924d145d4582eddd8a97b",
+  "predecessorProductSourceSha": "798964d72710aa2ca099a77d72e3739000cf7940",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V514_2026-10-25.json",
-  "findingsLedgerExpectedGitBlob": "cd1637880d97347a56646bc386bf5a71d7ca8722",
+  "findingsLedgerExpectedGitBlob": "aa2907a53484e9137f493dd4503dacb6fff447d4",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261025-V182.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "NEW_AUTH_SWITCH_PDF_SOURCE_NOT_YET_MATERIALIZED_DEV__OTHER_I3_CROSSROLE_E2E_HUMAN_GATE20_GATE21_PENDING",
+  "activeBlocker": "VRM289_CLIENT_REPORTS_SOURCE_NOT_YET_CERTIFIED_OR_MATERIALIZED_DEV__PDF_CROSSROLE_E2E_HUMAN_GATE20_GATE21_PENDING",
+  "focalSuccessor20261026": {
+    "findingId": "VRM-289",
+    "sourceSha": "92e42a61eace003a1e518ac71bf4309517aa89d9",
+    "sourceTree": "d1f21d2c8ea22f15000924d145d4582eddd8a97b",
+    "predecessor": "798964d72710aa2ca099a77d72e3739000cf7940",
+    "productFiles": ["app/index-backend-dev.html"],
+    "qaFiles": ["tools/qa/cxorbia-i3-vrm289-client-report-projection-wiring.test.mjs"],
+    "localRegressionTests": {"pass": 3, "fail": 0},
+    "canonicalSourceProof": "PENDING",
+    "devMaterialization": "NOT_RUN",
+    "humanAcceptance": "PENDING",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": false
+  },
   "focalSuccessor20261025": {
     "sourceSha": "798964d72710aa2ca099a77d72e3739000cf7940",
     "sourceTree": "0be94499d7d304e5b102970dbbc8fd8927885b0d",
@@ -52,7 +67,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-289",
+  "nextFindingId": "VRM-290",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -64,7 +79,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run canonical source proof for successor 798964d72710aa2ca099a77d72e3739000cf7940 against frozen V514 and historical module matrix V182 (still HOLD); only PASS permits one DEV Hosting-only deployment with exact served-byte readback, then Admin/Shopper cross-role and PDF verification. Gate20/Gate21 and Paula approval remain open; no Cloud Run, data or production writes.",
+  "exactNextAction": "Run existing canonical source proof for the exact VRM-289 successor 92e42a61eace003a1e518ac71bf4309517aa89d9 against cumulative V514 plus appended VRM-289 and historical module matrix V182 (still HOLD). Only PASS permits one DEV Hosting-only release with exact served-byte readback and authenticated Client Reportes, Admin/Shopper, and PDF reproof. Gate20/Gate21 and Paula approval remain open; no unproved Cloud Run/data/production writes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
