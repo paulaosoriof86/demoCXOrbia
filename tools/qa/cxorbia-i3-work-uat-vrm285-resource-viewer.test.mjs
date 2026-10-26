@@ -111,7 +111,11 @@ test('VRM-285: a late resources event and a router remount do not destroy the ac
   const afterRouter=h.mount();
   assert.match(afterRouter.innerHTML,/id="docBack"/);
   assert.match(afterRouter.innerHTML,/Instructivo Shopper Cinépolis/);
-  assert.match(afterRouter.innerHTML,/iframe/);
+  assert.match(afterRouter.innerHTML,/data-pdf-viewer/);
+  assert.match(afterRouter.innerHTML,/<canvas\b/);
+  assert.match(afterRouter.innerHTML,/data-pdf-prev/);
+  assert.match(afterRouter.innerHTML,/data-pdf-next/);
+  assert.doesNotMatch(afterRouter.innerHTML,/<iframe\b/,'PDF must not fall back to the previously blank native iframe');
   assert.match(afterRouter.innerHTML,/abre el PDF original en otra pestaña/);
   assert.match(afterRouter.innerHTML,/rel="noopener noreferrer"/);
   afterRouter.back();
