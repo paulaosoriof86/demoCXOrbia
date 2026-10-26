@@ -14,8 +14,8 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "74ea77ca56892cdead444ee546c1f1de86364fcc",
-    "sourceTree": "3c2267500f46634e6959737bf6a8fb99afb5d0ed",
+    "sourceSha": "5c7104d42520f408a3753cf8c4adb26f56781a01",
+    "sourceTree": "3a179915fd83d30328a25d6827c490f3545539f4",
     "predecessorSha": "04933057fba928bcee9f9be7398c6aa29f8db791",
     "production": false,
     "state": "SOURCE_FIXED_VRM288_ADMIN_NAV_QA_PENDING_DEV_NOT_MATERIALIZED",
@@ -34353,6 +34353,24 @@
       "guard": "HOLD_UNDECLARED_DRIFT_BEFORE_AUTHORITY_ALIGN"
     },
     "adminE2e": "NOT_VERIFIED_AFTER_FIX",
+    "production": false
+  },
+  "d04E03AdminBankStatus20261025": {
+    "classification": "FUNCTIONAL_DEFECT_INACCURATE_ADMIN_STATUS",
+    "tasks": [
+      "D04",
+      "E03"
+    ],
+    "sourceSha": "5c7104d42520f408a3753cf8c4adb26f56781a01",
+    "sourceTree": "3a179915fd83d30328a25d6827c490f3545539f4",
+    "owner": "app/modules/cert.js",
+    "previousBlob": "a624916f7955717936faf4b6466d1eb4332d7dfa",
+    "currentBlob": "c2dcd4dba3cdf09dc4c97952cbb079a6211aeab6",
+    "qaOwner": "tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs",
+    "qaBlob": "ca992f821a93159cc85ae7610553037e4815fa80",
+    "sourceQa": "LOCAL_PASS_FOCAL_5_AND_NINE_SUITES",
+    "dev": "NOT_DEPLOYED",
+    "humanAcceptance": "PENDING",
     "production": false
   }
 }

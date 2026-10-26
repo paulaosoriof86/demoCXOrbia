@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM288_ADMIN_NAV_SOURCE_PROOF_PENDING_NOT_DEV_MATERIALIZED",
+  "status": "HOLD_I3_D04_E03_BANK_STATUS_SOURCE_PROOF_PENDING_NOT_DEV_MATERIALIZED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "74ea77ca56892cdead444ee546c1f1de86364fcc",
-  "productTreeAuthority": "3c2267500f46634e6959737bf6a8fb99afb5d0ed",
-  "predecessorProductSourceSha": "04933057fba928bcee9f9be7398c6aa29f8db791",
+  "productSourceSha": "5c7104d42520f408a3753cf8c4adb26f56781a01",
+  "productTreeAuthority": "3a179915fd83d30328a25d6827c490f3545539f4",
+  "predecessorProductSourceSha": "74ea77ca56892cdead444ee546c1f1de86364fcc",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V513_2026-10-25.json",
-  "findingsLedgerExpectedGitBlob": "666b759442c0f81ed6bd10db7548a43805aad7c4",
+  "findingsLedgerExpectedGitBlob": "b9fd998f8de9075ca066f2fe52077a5d9616ab5b",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261025-V182.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -2961,7 +2961,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "74e4bddd5969760401e792f30427ad0adfc01f81",
+  "moduleTruthExpectedGitBlob": "f8fe73180b908a751caf76a9db56f952645e3576",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -14124,6 +14124,24 @@
     "ownerBlob": "8651bc40ec5fabfd6978fe579b89b047b7592458",
     "devMaterialized": false,
     "adminE2e": "PENDING",
+    "humanPass": false,
+    "production": false
+  },
+  "d04E03AdminBankStatus20261025": {
+    "status": "SOURCE_FIXED_PENDING_CANONICAL_QA_AND_DEV",
+    "tasks": [
+      "D04",
+      "E03"
+    ],
+    "sourceSha": "5c7104d42520f408a3753cf8c4adb26f56781a01",
+    "sourceTree": "3a179915fd83d30328a25d6827c490f3545539f4",
+    "owner": "app/modules/cert.js",
+    "ownerBlob": "c2dcd4dba3cdf09dc4c97952cbb079a6211aeab6",
+    "qaOwner": "tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs",
+    "qaBlob": "ca992f821a93159cc85ae7610553037e4815fa80",
+    "localSourceQa": "PASS_5_OF_5_AND_NINE_I3_SUITES",
+    "publishedBankMutations": 0,
+    "devMaterialized": false,
     "humanPass": false,
     "production": false
   }

@@ -103,10 +103,10 @@
     }
   },
   "productSource": {
-    "sha": "74ea77ca56892cdead444ee546c1f1de86364fcc",
-    "treeSha": "3c2267500f46634e6959737bf6a8fb99afb5d0ed",
-    "predecessorProductSourceSha": "04933057fba928bcee9f9be7398c6aa29f8db791",
-    "message": "fix(cxorbia-i3): restore collapsed navigation groups with explicit visible display",
+    "sha": "5c7104d42520f408a3753cf8c4adb26f56781a01",
+    "treeSha": "3a179915fd83d30328a25d6827c490f3545539f4",
+    "predecessorProductSourceSha": "74ea77ca56892cdead444ee546c1f1de86364fcc",
+    "message": "fix(cxorbia-i3): distinguish certification bank lifecycle from shopper validity",
     "authorityState": "SOURCE_FIXED_PENDING_CANONICAL_CI_AND_DEV"
   },
   "controlHeadAtConstruction": "3ce8d451e11a2d62c175000b0e6b72f53071af46",
@@ -581,7 +581,7 @@
       "currentCandidateTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
       "currentOwnerBlobs": {
         "app/modules/academia.js": "5ba399295367cb2f5e2ea6fd9de706e6d4fb1323",
-        "app/modules/cert.js": "a624916f7955717936faf4b6466d1eb4332d7dfa",
+        "app/modules/cert.js": "c2dcd4dba3cdf09dc4c97952cbb079a6211aeab6",
         "app/data/tya-certification-carryover-source-safe.js": "8f987530e24ebe433e7f1c73a6036a37e563f074",
         "backend/runtime/hr-live-service/certification-runtime.mjs": "f13f39c43e8a7d12f9c90a1dc1218f8735be3a3b"
       },
@@ -4804,7 +4804,7 @@
       "f9ApprovedBlob": "5532109dec5c942c2fa6d520ad0a7e0b7b104034",
       "latestApprovedSource": "61cf7120603aeff110e97632bb6c69f5c4809d62",
       "latestApprovedBlob": "a0bd7a3f0989712eece0dbb95bfa47a79e4dfe35",
-      "currentBlob": "a624916f7955717936faf4b6466d1eb4332d7dfa",
+      "currentBlob": "c2dcd4dba3cdf09dc4c97952cbb079a6211aeab6",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
@@ -13403,6 +13403,26 @@
     "trigger": "ADMIN_RESOURCES_SIDEBAR_HIDDEN_CSS",
     "readback": "SOURCE_ONLY_NOT_DEV_MATERIALIZED",
     "adminE2e": "PENDING",
+    "production": false
+  },
+  "d04E03AdminBankStatus20261025": {
+    "classification": "FUNCTIONAL_DEFECT_INACCURATE_ADMIN_STATUS",
+    "tasks": [
+      "D04",
+      "E03"
+    ],
+    "sourceSha": "5c7104d42520f408a3753cf8c4adb26f56781a01",
+    "sourceTree": "3a179915fd83d30328a25d6827c490f3545539f4",
+    "owner": "app/modules/cert.js",
+    "previousBlob": "a624916f7955717936faf4b6466d1eb4332d7dfa",
+    "currentBlob": "c2dcd4dba3cdf09dc4c97952cbb079a6211aeab6",
+    "qaOwner": "tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs",
+    "qaBlob": "ca992f821a93159cc85ae7610553037e4815fa80",
+    "sourceQa": "LOCAL_5_OF_5_AND_I3_FOCAL_9_SUITES_PASS",
+    "devMaterialization": "PENDING",
+    "adminShopperSameArtifact": "PENDING",
+    "humanAcceptance": "PENDING",
+    "phaseAComplete": false,
     "production": false
   }
 }
