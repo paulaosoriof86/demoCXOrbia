@@ -7631,6 +7631,7 @@ jobs:
       cd "$SOURCE_DIR"
       node --check app/modules/cert.js
       node --test tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs
+      cd "$GITHUB_WORKSPACE"
       node --test tools/qa/cxorbia-i3-{d04e03-shopper-relogin-pdf-source,work-uat-vrm285-resource-viewer}.test.mjs
    - uses: google-github-actions/auth@v2
      with:
