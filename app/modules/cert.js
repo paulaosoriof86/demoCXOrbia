@@ -266,6 +266,19 @@ CX.module('cert', ({role,data,ui})=>{
   }
   const _showFixtures = CX.dataSource ? CX.dataSource.showFixtures() : true;
   const bank = selectedBank();
+  /* D04/E03: el estado del banco no equivale a la certificación de una persona.
+     Un banco published/confirmed habilita intentos; la vigencia individual se
+     acredita únicamente con un intento durable o carryover válido del proyecto. */
+  const bankNotice=()=>{
+    const state=String(bank?.estado||'').toLowerCase();
+    if(['published','confirmed'].includes(state))return `<div role="status" style="border-left:4px solid var(--green);padding:9px 12px;background:var(--green-bg);border-radius:7px">
+      <b style="color:var(--t1)">✓ ${state==='published'?'Banco de preguntas publicado':'Banco confirmado para certificación'}</b>
+      <div style="font-size:12px;color:var(--t2);margin-top:5px">${(bank.preguntas||[]).length} pregunta(s) disponibles · mínimo ${bank.gate||80}%. La vigencia individual de cada shopper se verifica por separado mediante su intento confirmado o certificación histórica válida del mismo proyecto.</div>
+    </div>`;
+    if(state==='approved_preview')return ui.degraded('Banco revisado por '+(bank.revisadoPor||'—')+' y disponible para práctica. La publicación oficial sigue pendiente.',{title:'Certificación · práctica disponible · publicación pendiente'});
+    if(state==='pending_review')return ui.degraded('El banco seleccionado sigue pendiente de revisión y publicación. Las aprobaciones históricas del mismo proyecto conservan su vigencia mientras no exista vencimiento o re-certificación solicitada.',{title:'Banco pendiente de revisión'});
+    return ui.degraded('No se ha verificado un banco de preguntas publicado para esta selección. El historial individual no sustituye esa publicación.',{title:'Banco no publicado · verificación pendiente'});
+  };
   const html=`
     ${phCert( p.name+' · banco de preguntas, requisito mínimo y reporte de vacíos')}
       <button class="btn btn-pr btn-sm" id="certIA">🤖 Crear certificación con IA (desde instructivo)</button>
@@ -297,7 +310,7 @@ CX.module('cert', ({role,data,ui})=>{
     </div>
     <div class="card card-p">
       <div style="font-size:12px;color:var(--t2);line-height:1.65;margin-bottom:10px"><b>Evidencia histórica exacta:</b> ${all.length} registro(s), ${approved} aprobado(s) legacy${failed?' y '+failed+' no aprobado(s)':''}. Una aprobación del mismo proyecto permanece vigente salvo vencimiento explícito o solicitud durable de re-certificación.</div>
-      ${bank&&bank.estado==='approved_preview'?ui.degraded('Banco revisado por '+(bank.revisadoPor||'—')+' y disponible para práctica. La publicación oficial sigue pendiente.',{title:'Certificación · práctica disponible · publicación pendiente'}):ui.degraded('La certificación vigente continúa pendiente de una fuente/revisión autorizada. El historial del mismo proyecto conserva vigencia salvo vencimiento o re-certificación requerida; otros proyectos permanecen separados.', {title:'Certificación vigente · pendiente de validación'})}
+      ${bankNotice()}
     </div>`;})()}`}`;
   setTimeout(()=>{
     const ckData={

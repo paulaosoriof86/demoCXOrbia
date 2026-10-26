@@ -66,3 +66,39 @@ test('D/Cert: provider read error is fail-closed, not an unverified empty-bank P
  assert.equal(h.win.CX_BACKEND_RESOURCES_STATUS.reason,'RESOURCE_PROVIDER_READ_FAILED');
  assert.equal(h.banks(SEP).length,0);
 });
+
+test('D04/E03: Admin reports the selected bank state without granting shopper certification',()=>{
+ const certSource=fs.readFileSync(new URL('../../app/modules/cert.js',import.meta.url),'utf8');
+ const render=(estado)=>{
+  const data={currentProjectId:'cinepolis',currentPeriodId:OCT,shoppers:[],
+   period(){return {id:OCT,name:'OCT 2026'};}};
+  const bank={estado,certificationId:'main',certificationName:'Cinépolis',gate:80,
+   preguntas:new Array(8).fill({q:'fixture'}),revisadoPor:'QA'};
+  const cx={BACKEND:{enabled:true},data,dataSource:{showFixtures:()=>false},
+   session:{role:'admin',effectiveRole(){return this.role;}},
+   backendResources:{list:({projectId,periodId,resourceType})=>
+    projectId==='cinepolis'&&periodId===OCT&&resourceType==='certification_bank'?
+      [{id:'certbank-cinepolis-'+OCT,bank,version:1}]:[]},
+   module(_name,fn){this.render=fn;}};
+  vm.runInNewContext(certSource,{CX:cx,window:{},console,setTimeout:()=>0});
+  const ui={ph:()=>'',bdg:x=>String(x),kpi:(label,value)=>label+' '+value,
+   degraded:(message,{title}={})=>String(title||'')+' '+String(message||'')};
+  return cx.render({data,role:'admin',ui});
+ };
+ for(const state of ['published','confirmed']){
+  const html=render(state);
+  assert.match(html,state==='published'?/Banco de preguntas publicado/:/Banco confirmado para certificación/);
+  assert.match(html,/8 pregunta\(s\) disponibles · mínimo 80%/);
+  assert.match(html,/vigencia individual de cada shopper se verifica por separado/);
+  assert.doesNotMatch(html,/Certificación vigente · pendiente de validación/);
+ }
+ const pending=render('pending_review');
+ assert.match(pending,/Banco pendiente de revisión/);
+ assert.doesNotMatch(pending,/Banco de preguntas publicado/);
+ const practice=render('approved_preview');
+ assert.match(practice,/práctica disponible · publicación pendiente/);
+ assert.doesNotMatch(practice,/Banco de preguntas publicado/);
+ const draft=render('draft');
+ assert.match(draft,/Banco no publicado · verificación pendiente/);
+ assert.doesNotMatch(draft,/Banco de preguntas publicado/);
+});
