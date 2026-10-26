@@ -1,0 +1,134 @@
+{
+  "schemaVersion": "cxorbia.i3.run1882.shopper-crossrole-focal-uat.v1",
+  "recordedAtLocal": "2026-10-25",
+  "timezone": "America/Guatemala",
+  "iteration": "I3",
+  "gate": "HOLD",
+  "humanAcceptance": "PENDING",
+  "authorizationI4": false,
+  "production": "DO_NOT_TOUCH",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceSha": "5c7104d42520f408a3753cf8c4adb26f56781a01",
+  "hostingControlRun": 1882,
+  "hostingRunId": 40255436112,
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/a72e1b7bdce815a1",
+  "cloudRunRevision": "cxorbia-live-hr-dev-00327-xsc",
+  "scope": {
+    "environment": "cxorbia-backend-dev",
+    "tenant": "tya",
+    "project": "cinepolis",
+    "period": "2026-10",
+    "shopper": "Stiven López, canonical profile TYA_GT_319CD82EAF",
+    "businessDataWritesByTesting": 0,
+    "submittedForms": 0,
+    "certificationAttemptsSent": 0,
+    "paymentsTriggered": 0,
+    "HRUpdatesTriggered": 0
+  },
+  "sessionFlow": {
+    "adminSignOut": "PASS_ACTUAL_LOGIN_SCREEN",
+    "shopperLogin": "PASS_AUTHENTICATED_REAL_SHOPPER_AFTER_RELOAD",
+    "firstLoginInitialRender": "FAIL_HR_AUTHORITY_GATE_OVER_60_SECONDS_WITH_NO_MODULES",
+    "reloadRecovery": "PASS_SHOPPER_HOME_WITHIN_APPROX_19_SECONDS",
+    "secondReload": "PASS_SHOPPER_HOME_WITHIN_APPROX_22_SECONDS",
+    "shopperSignOut": "PASS_ACTUAL_LOGIN_SCREEN",
+    "browserFinalState": "LOGGED_OUT_NEUTRAL_LOGIN",
+    "adminSessionRestored": false
+  },
+  "crossrole": {
+    "adminProfileVisits": 9,
+    "shopperProfileVisits": 9,
+    "shopperProfile": {
+      "visits": 9,
+      "completed": 7,
+      "submitted": 7,
+      "paidConfirmed": 5,
+      "activeFilter": 3,
+      "paidFilter": 5,
+      "allFilter": 9,
+      "allFilterPass": true
+    },
+    "shopperMisVisitas": {
+      "activeScheduled": 2,
+      "history": 7,
+      "submittedOct": 1,
+      "consistentWithNineTotal": true
+    },
+    "shopperCertification": {
+      "publishedBank": "main",
+      "questions": 8,
+      "answersVisible": 32,
+      "passThresholdPercent": 80,
+      "submitControlPresent": true,
+      "submitted": false,
+      "pendingReview": "BLOCKED_FOR_SHOPPER_WITH_EXPLICIT_UNPUBLISHED_WARNING",
+      "adminPublishedBankPreviouslyGreen": true
+    },
+    "resource": {
+      "count": 1,
+      "pdf": "Instructivo Shopper Cinépolis",
+      "embeddedViewer": "FAIL_WHITE_OR_BLACK_BLANK",
+      "originalPdf": "PASS_DIRECT_OPEN_7_PAGES_FROM_ADMIN_READBACK",
+      "clicksDetachedDuringInlinePdf": "REPRODUCED",
+      "singleReloadResolvedNavigation": true
+    },
+    "availableVisits": {
+      "count": 1,
+      "detailsModal": "PASS_READ_ONLY",
+      "applicationSubmitted": false
+    },
+    "reservations": {
+      "pendingRequests": 0,
+      "reservableSites": 0,
+      "scopeDifferenceVsAvailableVisits": "NOT_ADJUDICATED"
+    },
+    "benefits": {
+      "periodEntries": 1,
+      "historicalEntries": 7,
+      "paidConfirmed": 5,
+      "pendingConfirmation": 2,
+      "currentHonorariumGTQ": 60,
+      "currentReimbursementGTQ": 170,
+      "currentReceivableGTQ": 230,
+      "paidCurrentGTQ": 0
+    },
+    "reports": {
+      "currentPeriodVisits": 3,
+      "currentPeriodLiquidations": 1,
+      "historicalVisits": 9,
+      "historicalBenefits": 7
+    },
+    "academy": {
+      "courses": 7,
+      "lessons": 27,
+      "completedProgress": 0
+    },
+    "notifications": {
+      "context": "cinepolis/shopper",
+      "unreadCountVisible": 0,
+      "content": "Sin novedades por ahora",
+      "deliveryAndCrossroleAck": "NOT_TESTED"
+    },
+    "workflowModals": {
+      "reschedule": "PASS_MODAL_SOURCE_DATE_REQUIRES_NEW_DATE_AND_REASON",
+      "cancel": "PASS_MODAL_EXPLAINS_ADMIN_APPROVAL_REQUIRED",
+      "formsSubmitted": false
+    },
+    "geolocatedCheckIn": "NOT_TESTED_PERMISSION_AND_PROVIDER_WRITE_NOT_AUTHORIZED"
+  },
+  "diagnosis": {
+    "suspectedAuthHrBootstrapRace": "INFERENCE_NOT_PROVEN",
+    "observedReleaseGate": "C6 requires exact shopper principal claims and live HR authority same revision before mounting",
+    "sourceFile": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+    "remainingUnverifiedPredicates": "NOT_ACCESSIBLE_TO_BROWSER_READONLY_DIAGNOSTICS",
+    "performanceAndPdf": "PRODUCT_P0_CANDIDATES_REQUIRE_FOCAL_SOURCE_FIX_AND_FRESH_HOSTING_ONLY_UAT"
+  },
+  "frozenHistory": {
+    "findingsThroughVRM288": "PRESERVED_UNCHANGED",
+    "noGeneralReaudit": true,
+    "priorRun1882AdminReceipt": "CXORBIA_I3_D04_E03_RUN1882_HOSTING_DEV_ADMIN_READBACK_2026-10-25.json",
+    "VRM289": "CANDIDATE_NO_LEDGER_NUMBER_ADVANCED"
+  },
+  "nextExactAction": "Fix first-login Auth/Firestore/HR authority handoff and embedded PDF renderer on same I3 source lane, prove single source and no scope drift, then fresh DEV Hosting-only materialization if explicitly approved and same-artifact shopper/admin crossrole regression; test real notifications and provider ACK with isolated synthetic fixtures only if specifically authorized; complete Gate20/Gate21 human acceptance before any I4 or production."
+}
