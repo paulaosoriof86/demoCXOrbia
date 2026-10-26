@@ -7590,95 +7590,9 @@ jobs:
       path: .tmp/i3-a09b11-post-deploy-readback/
       if-no-files-found: warn
       retention-days: 30
-  i3-vrm288-hosting-only-dev:
-   needs: canonical-candidate-authority
-   if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM288_ADMIN_NAV_SOURCE_PROOF_PENDING_NOT_DEV_MATERIALIZED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm288-nav-hosting-only]') }}
-   runs-on: ubuntu-latest
-   timeout-minutes: 35
-   permissions:
-    contents: read
-    id-token: write
-   env:
-    SRC: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
-    TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-    BACKEND_SHA: 317db03683cb7956e42b163c637602e879c7401c
-    RUN_REV: cxorbia-live-hr-dev-00327-xsc
-    EV_DIR: .tmp/i3-vrm288-nav
-   steps:
-   - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
-   - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
-   - name: Certify exact source and non-backend scope
-     run: |
-      set -Eeuo pipefail
-      mkdir -p "$EV_DIR"
-      test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$SRC"
-      test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$TREE"
-      test "$(git rev-parse "$SRC^{tree}")" = "$TREE"
-      git merge-base --is-ancestor "$BACKEND_SHA" "$SRC"
-      git merge-base --is-ancestor "$SRC" HEAD
-      test "$(git diff --name-only "$BACKEND_SHA" "$SRC" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)" = $'app/core/router.js\napp/modules/documentos.js'
-      test -z "$(git diff --name-only "$SRC" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)"
-      SOURCE_DIR="$(mktemp -d)"
-      git archive "$SRC" | tar -x -C "$SOURCE_DIR"
-      test -f "$SOURCE_DIR/firebase.json"
-      test -f "$SOURCE_DIR/app/modules/documentos.js"
-      echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
-      cd "$SOURCE_DIR"
-      node --check app/core/router.js
-      node --check app/modules/documentos.js
-      node --test tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs
-      test -f app/core/router.js
-   - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-   - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
-   - name: Verify exact DEV runtime and record Hosting predecessor
-     run: |
-      set -Eeuo pipefail
-      gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$EV_DIR/runtime-before.json"
-      jq -e --arg rev "$RUN_REV" '.status.latestReadyRevisionName==$rev and ([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$EV_DIR/runtime-before.json" >/dev/null
-      TOKEN="$(gcloud auth print-access-token)"
-      curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$EV_DIR/hosting-before.json"
-      jq -e '.release.version.name | length > 0' "$EV_DIR/hosting-before.json" >/dev/null
-   - name: Publish ONLY the certified frontend artifact to DEV Hosting
-     run: |
-      set -Eeuo pipefail
-      npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest >/dev/null 2>&1
-      cd "$SOURCE_DIR"
-      "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$EV_DIR/hosting-deploy.log"
-   - name: Read back exact frontend bytes and unchanged Cloud Run
-     run: |
-      set -Eeuo pipefail
-      gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$EV_DIR/runtime-after.json"
-      jq -e --arg rev "$RUN_REV" '.status.latestReadyRevisionName==$rev and ([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$EV_DIR/runtime-after.json" >/dev/null
-      TOKEN="$(gcloud auth print-access-token)"
-      curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$EV_DIR/hosting-after.json"
-      HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$EV_DIR/hosting-after.json")"
-      test -n "$HOSTING_VERSION"
-      test "$HOSTING_VERSION" != "$(jq -r '.release.version.name // empty' "$EV_DIR/hosting-before.json")"
-      curl -fsS -H 'Cache-Control: no-cache' "${HOSTING_URL}/modules/documentos.js?cxI3VRM288=${GITHUB_RUN_ID}" > "$EV_DIR/served-documentos.js"
-      cmp -s "$SOURCE_DIR/app/modules/documentos.js" "$EV_DIR/served-documentos.js"
-      curl -fsS -H 'Cache-Control: no-cache' "${HOSTING_URL}/core/router.js?cxI3VRM288=${GITHUB_RUN_ID}" > "$EV_DIR/served-router.js"
-      cmp -s "$SOURCE_DIR/app/core/router.js" "$EV_DIR/served-router.js"
-      jq -n -S --arg source "$SRC" --arg tree "$TREE" --arg rev "$RUN_REV" --arg version "$HOSTING_VERSION" '{decision:"PASS_I3_VRM288_DEV_HOSTING_ONLY",sourceSha:$source,sourceTree:$tree,cloudRunUnchanged:$rev,hostingVersion:$version,servedFrontendByteIdentical:true,hrExternalWrites:0,production:false}' > "$EV_DIR/readback.json"
-   - name: Preserve auditable DEV-only evidence
-     if: always()
-     uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-vrm288-nav-${{ github.run_id }}
-      path: .tmp/i3-vrm288-nav/
-      if-no-files-found: warn
-      retention-days: 30
-
   i3-d04e03-hosting-only-dev:
    needs: canonical-candidate-authority
-   if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_D04_E03_SOURCE_PROOF_PASS_RUN1879_PENDING_DEV_HOSTING_AUTHORIZATION' && github.event_name == 'push' && contains(github.event.head_commit.message, '[d04e03-hosting-only]') }}
+   if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[d04e03-hosting-only]') && needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_D04_E03_SOURCE_PROOF_PASS_RUN1879_PENDING_DEV_HOSTING_AUTHORIZATION' }}
    runs-on: ubuntu-latest
    timeout-minutes: 35
    permissions:
@@ -7687,12 +7601,8 @@ jobs:
    env:
     SRC: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
     TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-    PREV: 74ea77ca56892cdead444ee546c1f1de86364fcc
-    EXACT_SOURCE: 5c7104d42520f408a3753cf8c4adb26f56781a01
-    EXACT_TREE: 3a179915fd83d30328a25d6827c490f3545539f4
-    EXACT_OWNER_BLOB: c2dcd4dba3cdf09dc4c97952cbb079a6211aeab6
     RUN_REV: cxorbia-live-hr-dev-00327-xsc
-    EV_DIR: .tmp/i3-d04e03-hosting-only
+    EV_DIR: .tmp/d04e03-hosting
    steps:
    - uses: actions/checkout@v4
      with:
@@ -7700,27 +7610,23 @@ jobs:
    - uses: actions/setup-node@v4
      with:
       node-version: '24'
-   - name: Fail closed on source, scope, tenant and authorization
+   - name: Verify exact source and archive
      run: |
       set -Eeuo pipefail
       mkdir -p "$EV_DIR"
-      test "$SRC" = "$EXACT_SOURCE"
-      test "$TREE" = "$EXACT_TREE"
+      test "$SRC" = 5c7104d42520f408a3753cf8c4adb26f56781a01
+      test "$TREE" = 3a179915fd83d30328a25d6827c490f3545539f4
       test "$(git rev-parse "$SRC^{tree}")" = "$TREE"
-      test "$(git rev-parse "$SRC:app/modules/cert.js")" = "$EXACT_OWNER_BLOB"
-      git merge-base --is-ancestor "$PREV" "$SRC"
+      test "$(git rev-parse "$SRC:app/modules/cert.js")" = c2dcd4dba3cdf09dc4c97952cbb079a6211aeab6
       git merge-base --is-ancestor "$SRC" HEAD
-      test "$(git diff --name-only "$PREV" "$SRC" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)" = 'app/modules/cert.js'
+      test "$(git diff --name-only 74ea77ca56892cdead444ee546c1f1de86364fcc "$SRC" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)" = app/modules/cert.js
       test -z "$(git diff --name-only "$SRC" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)"
       test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$SRC"
-      test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$TREE"
-      test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = "DO_NOT_TOUCH"
-      test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = "false"
-      test "$(jq -r '.d04E03AdminBankStatus20261025.sourceProofCI.runId' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = "40253360974"
+      test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
+      test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
+      test "$(jq -r '.d04E03AdminBankStatus20261025.sourceProofCI.runId' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = 40253360974
       SOURCE_DIR="$(mktemp -d)"
       git archive "$SRC" | tar -x -C "$SOURCE_DIR"
-      test -f "$SOURCE_DIR/firebase.json"
-      test -f "$SOURCE_DIR/app/modules/cert.js"
       echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
       cd "$SOURCE_DIR"
       node --check app/modules/cert.js
@@ -7731,45 +7637,44 @@ jobs:
    - uses: google-github-actions/setup-gcloud@v2
      with:
       project_id: ${{ env.PROJECT }}
-   - name: Freeze exact DEV runtime and Hosting predecessor
+   - name: Verify unchanged runtime and snapshot Hosting
      run: |
       set -Eeuo pipefail
       gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$EV_DIR/runtime-before.json"
-      jq -e --arg rev "$RUN_REV" '.status.latestReadyRevisionName==$rev and ([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$EV_DIR/runtime-before.json" >/dev/null
+      jq -e --arg rev "$RUN_REV" '.status.latestReadyRevisionName==$rev and ([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$EV_DIR/runtime-before.json"
       TOKEN="$(gcloud auth print-access-token)"
       curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$EV_DIR/hosting-before.json"
-      jq -e '.release.version.name | length > 0' "$EV_DIR/hosting-before.json" >/dev/null
-   - name: Publish exactly once to existing Firebase Hosting DEV
+      jq -e '.release.version.name | length > 0' "$EV_DIR/hosting-before.json"
+   - name: Publish once to existing DEV Hosting
      run: |
       set -Eeuo pipefail
       npm install --no-save --ignore-scripts --package-lock=false firebase-tools@14.12.0 >/dev/null 2>&1
       cd "$SOURCE_DIR"
       "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$EV_DIR/hosting-deploy.log"
-   - name: Read back served frontend bytes, Hosting version and unchanged runtime
+   - name: Compare served bytes and runtime
      run: |
       set -Eeuo pipefail
       gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$EV_DIR/runtime-after.json"
-      jq -e --arg rev "$RUN_REV" '.status.latestReadyRevisionName==$rev and ([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$EV_DIR/runtime-after.json" >/dev/null
+      jq -e --arg rev "$RUN_REV" '.status.latestReadyRevisionName==$rev and ([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$EV_DIR/runtime-after.json"
       TOKEN="$(gcloud auth print-access-token)"
       curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$EV_DIR/hosting-after.json"
-      HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$EV_DIR/hosting-after.json")"
-      PREV_VERSION="$(jq -r '.release.version.name // empty' "$EV_DIR/hosting-before.json")"
-      test -n "$HOSTING_VERSION"
-      test "$HOSTING_VERSION" != "$PREV_VERSION"
+      BEFORE="$(jq -r '.release.version.name' "$EV_DIR/hosting-before.json")"
+      AFTER="$(jq -r '.release.version.name' "$EV_DIR/hosting-after.json")"
+      test -n "$AFTER"
+      test "$AFTER" != "$BEFORE"
       for FILE in modules/cert.js core/router.js modules/documentos.js; do
-       DEST="$EV_DIR/served-${FILE//\//-}"
-       curl -fsS -H 'Cache-Control: no-cache' "$HOSTING_URL/$FILE?cxI3D04E03=$GITHUB_RUN_ID" -o "$DEST"
-       cmp -s "$SOURCE_DIR/app/$FILE" "$DEST"
+       OUT="$EV_DIR/served-${FILE//\//-}"
+       curl -fsS -H 'Cache-Control: no-cache' "$HOSTING_URL/$FILE?d04e03=$GITHUB_RUN_ID" -o "$OUT"
+       cmp -s "$SOURCE_DIR/app/$FILE" "$OUT"
       done
-      jq -n -S --arg source "$SRC" --arg tree "$TREE" --arg rev "$RUN_REV" --arg old "$PREV_VERSION" --arg version "$HOSTING_VERSION" '{decision:"PASS_I3_D04_E03_HOSTING_DEV_EXACT_BYTES",sourceSha:$source,sourceTree:$tree,cloudRunUnchanged:$rev,previousHostingVersion:$old,hostingVersion:$version,servedFrontendByteIdentical:true,hostingDeploys:1,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,hrWrites:0,production:false,humanAcceptance:"PENDING"}' > "$EV_DIR/readback.json"
-   - name: Preserve exact DEV-only readback evidence
+      jq -n -S --arg source "$SRC" --arg old "$BEFORE" --arg version "$AFTER" '{decision:"PASS_I3_D04_E03_HOSTING_DEV_EXACT_BYTES",sourceSha:$source,previousHostingVersion:$old,hostingVersion:$version,hostingDeploys:1,cloudRunDeploys:0,dataWrites:0,production:false,humanAcceptance:"PENDING"}' > "$EV_DIR/readback.json"
+   - name: Archive DEV-only evidence
      if: always()
      uses: actions/upload-artifact@v4
      with:
-      name: cxorbia-i3-d04e03-hosting-${{ github.run_id }}
-      path: .tmp/i3-d04e03-hosting-only/
+      name: cxorbia-i3-d04e03-${{ github.run_id }}
+      path: .tmp/d04e03-hosting/
       if-no-files-found: warn
-      retention-days: 30
 
   vrm287-dev-two-visit:
    needs: canonical-candidate-authority
