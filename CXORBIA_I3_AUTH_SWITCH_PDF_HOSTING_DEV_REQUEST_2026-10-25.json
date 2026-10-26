@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "cxorbia.i3.focal-hosting-only-request.v1",
+  "recordedAtLocal": "2026-10-25",
+  "timezone": "America/Guatemala",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceSha": "798964d72710aa2ca099a77d72e3739000cf7940",
+  "sourceTree": "0be94499d7d304e5b102970dbbc8fd8927885b0d",
+  "parentControlHead": "36a375c4cc17fee230060cfe115722b8253fdade",
+  "canonicalSourceProof": {
+    "status": "PASS",
+    "runId": 40262463946,
+    "scope": "SOURCE_LINEAGE_AND_CONTROL_ONLY_NOT_LIVE_E2E",
+    "workflow": "cxorbia-recovery-i3-dev-certification.yml"
+  },
+  "target": {
+    "firebaseProject": "cxorbia-backend-dev",
+    "hostingSite": "cxorbia-backend-dev",
+    "hostingTarget": "cxorbia-dev",
+    "expectedCurrentHostingVersion": "sites/cxorbia-backend-dev/versions/a72e1b7bdce815a1",
+    "expectedCloudRunRevisionUnchanged": "cxorbia-live-hr-dev-00327-xsc",
+    "tenant": "tya",
+    "project": "cinepolis"
+  },
+  "permission": {
+    "scope": "ONE_EXISTING_DEV_HOSTING_ONLY",
+    "dataWrites": false,
+    "cloudRunBuilds": false,
+    "cloudRunDeploys": false,
+    "firebaseAuthChanges": false,
+    "rulesChanges": false,
+    "hrReconciliation": false,
+    "production": "DO_NOT_TOUCH"
+  },
+  "requiredReadback": [
+    "PREDEPLOY_CLOUD_RUN_AND_HOSTING_IDENTITY",
+    "EXACT_SIX_SERVED_OWNER_BYTES",
+    "POSTDEPLOY_CLOUD_RUN_UNCHANGED",
+    "NEW_DEV_HOSTING_VERSION",
+    "ADMIN_SHOPPER_SWITCH_REAL_E2E",
+    "PDF_CANVAS_RENDER_REAL_E2E"
+  ],
+  "gate": "I3_HOLD",
+  "humanAcceptance": "PENDING",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false,
+  "productionDeployAuthorized": false
+}

@@ -7646,6 +7646,7 @@ jobs:
       TOKEN="$(gcloud auth print-access-token)"
       curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$EV_DIR/hosting-before.json"
       jq -e '.release.version.name | length > 0' "$EV_DIR/hosting-before.json"
+      test "$(jq -r '.release.version.name' "$EV_DIR/hosting-before.json")" = sites/cxorbia-backend-dev/versions/a72e1b7bdce815a1
    - name: Publish DEV Hosting
      run: |
       set -Eeuo pipefail
