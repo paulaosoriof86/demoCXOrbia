@@ -1,19 +1,32 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_D04_E03_SOURCE_PROOF_PASS_RUN1879_PENDING_DEV_HOSTING_AUTHORIZATION",
+  "status": "HOLD_I3_AUTH_SWITCH_PDF_LOCAL_PASS_PENDING_DEV",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "5c7104d42520f408a3753cf8c4adb26f56781a01",
-  "productTreeAuthority": "3a179915fd83d30328a25d6827c490f3545539f4",
-  "predecessorProductSourceSha": "74ea77ca56892cdead444ee546c1f1de86364fcc",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V513_2026-10-25.json",
-  "findingsLedgerExpectedGitBlob": "fb9ff4e2da118c5a6adc57d981876e9e5344f186",
+  "productSourceSha": "798964d72710aa2ca099a77d72e3739000cf7940",
+  "productTreeAuthority": "0be94499d7d304e5b102970dbbc8fd8927885b0d",
+  "predecessorProductSourceSha": "5c7104d42520f408a3753cf8c4adb26f56781a01",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V514_2026-10-25.json",
+  "findingsLedgerExpectedGitBlob": "cd1637880d97347a56646bc386bf5a71d7ca8722",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261025-V182.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM288_RESOURCE_READ_STABILITY_DEV_NOT_MATERIALIZED__VRM285_EMBEDDED_PDF_CONTENT_OPEN__OTHER_I3_E2E_HUMAN_GATE20_GATE21_PENDING",
+  "activeBlocker": "NEW_AUTH_SWITCH_PDF_SOURCE_NOT_YET_MATERIALIZED_DEV__OTHER_I3_CROSSROLE_E2E_HUMAN_GATE20_GATE21_PENDING",
+  "focalSuccessor20261025": {
+    "sourceSha": "798964d72710aa2ca099a77d72e3739000cf7940",
+    "sourceTree": "0be94499d7d304e5b102970dbbc8fd8927885b0d",
+    "predecessor": "5c7104d42520f408a3753cf8c4adb26f56781a01",
+    "sourceReceipt": "CXORBIA_I3_AUTH_SWITCH_PDF_FOCAL_SOURCE_RECEIPT_2026-10-25.json",
+    "scope": "FOUR_SOURCE_OWNERS_LOGIN_SWITCH_PDF_ONLY",
+    "evidence": "LOCAL_FOCAL_AND_EXISTING_WORK_UAT_PASS_REMOTE_CANONICAL_PROOF_PENDING",
+    "devMaterialization": "PENDING",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "humanAcceptance": "PENDING",
+    "production": false
+  },
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +64,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run canonical source proof against 04933057fba928bcee9f9be7398c6aa29f8db791 with module truth V182 and ledger V513; only PASS permits one DEV Hosting-only deploy and byte-exact readback, then authenticated Admin+Shopper UAT. No Cloud Run build/deploy, data writes or production.",
+  "exactNextAction": "Run canonical source proof for successor 798964d72710aa2ca099a77d72e3739000cf7940 against frozen V514 and historical module matrix V182 (still HOLD); only PASS permits one DEV Hosting-only deployment with exact served-byte readback, then Admin/Shopper cross-role and PDF verification. Gate20/Gate21 and Paula approval remain open; no Cloud Run, data or production writes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",

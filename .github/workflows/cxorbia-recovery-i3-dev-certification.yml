@@ -7592,7 +7592,7 @@ jobs:
       retention-days: 30
   i3-d04e03-hosting-only-dev:
    needs: canonical-candidate-authority
-   if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[d04e03-hosting-only]') && needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_D04_E03_SOURCE_PROOF_PASS_RUN1879_PENDING_DEV_HOSTING_AUTHORIZATION' }}
+   if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[d04e03-hosting-only]') && needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_AUTH_SWITCH_PDF_LOCAL_PASS_PENDING_DEV' }}
    runs-on: ubuntu-latest
    timeout-minutes: 35
    permissions:
@@ -7614,23 +7614,27 @@ jobs:
      run: |
       set -Eeuo pipefail
       mkdir -p "$EV_DIR"
-      test "$SRC" = 5c7104d42520f408a3753cf8c4adb26f56781a01
-      test "$TREE" = 3a179915fd83d30328a25d6827c490f3545539f4
+      test "$SRC" = 798964d72710aa2ca099a77d72e3739000cf7940
+      test "$TREE" = 0be94499d7d304e5b102970dbbc8fd8927885b0d
       test "$(git rev-parse "$SRC^{tree}")" = "$TREE"
       test "$(git rev-parse "$SRC:app/modules/cert.js")" = c2dcd4dba3cdf09dc4c97952cbb079a6211aeab6
       git merge-base --is-ancestor "$SRC" HEAD
-      test "$(git diff --name-only 74ea77ca56892cdead444ee546c1f1de86364fcc "$SRC" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)" = app/modules/cert.js
+      SOURCE_CHANGES="$(git diff --name-only 5c7104d42520f408a3753cf8c4adb26f56781a01 "$SRC" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)"
+      EXPECTED_CHANGES="$(printf '%s\n' app/adapters/tya-protected-auth-hr-authority-bridge-v2.js app/core/backend-browser-auth.js app/core/backend-firebase.js app/modules/documentos.js)"
+      test "$SOURCE_CHANGES" = "$EXPECTED_CHANGES"
       test -z "$(git diff --name-only "$SRC" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)"
       test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$SRC"
       test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
       test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
-      test "$(jq -r '.d04E03AdminBankStatus20261025.sourceProofCI.runId' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = 40253360974
+      test "$(jq -r '.expectedParentSha' CXORBIA_I3_AUTH_SWITCH_PDF_FOCAL_SOURCE_RECEIPT_2026-10-25.json)" = 0c74a65d1d945525df86aff0f0526a7ec1ab5eb8
+      test "$(jq -r '.i4Authorized' CXORBIA_I3_AUTH_SWITCH_PDF_FOCAL_SOURCE_RECEIPT_2026-10-25.json)" = false
       SOURCE_DIR="$(mktemp -d)"
       git archive "$SRC" | tar -x -C "$SOURCE_DIR"
       echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
       cd "$SOURCE_DIR"
       node --check app/modules/cert.js
       node --test tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs
+      node --test tools/qa/cxorbia-i3-d04e03-shopper-relogin-pdf-source.test.mjs tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs
    - uses: google-github-actions/auth@v2
      with:
       credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
@@ -7662,7 +7666,7 @@ jobs:
       AFTER="$(jq -r '.release.version.name' "$EV_DIR/hosting-after.json")"
       test -n "$AFTER"
       test "$AFTER" != "$BEFORE"
-      for FILE in modules/cert.js core/router.js modules/documentos.js; do
+      for FILE in modules/cert.js core/router.js modules/documentos.js core/backend-firebase.js core/backend-browser-auth.js adapters/tya-protected-auth-hr-authority-bridge-v2.js; do
        OUT="$EV_DIR/served-${FILE//\//-}"
        curl -fsS -H 'Cache-Control: no-cache' "$HOSTING_URL/$FILE?d04e03=$GITHUB_RUN_ID" -o "$OUT"
        cmp -s "$SOURCE_DIR/app/$FILE" "$OUT"
