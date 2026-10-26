@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm289.hosting-client-report-readback.v1",
+  "dateGuatemala": "2026-10-26",
+  "gate": "I3_HOLD_PRE_I4",
+  "scope": "DEV_HOSTING_ONLY_AND_READ_ONLY_ADMIN_CLIENT_PREVIEW",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "productSourceSha": "92e42a61eace003a1e518ac71bf4309517aa89d9",
+  "productSourceTree": "d1f21d2c8ea22f15000924d145d4582eddd8a97b",
+  "canonicalSourceProof": {
+    "decision": "PASS",
+    "runId": 40353484486,
+    "controlHead": "b60bff41f3c0d6bea3442e65e04e40be6b168541"
+  },
+  "hostingDevMaterialization": {
+    "decision": "PASS_I3_VRM289_REPORTS_HOSTING_ONLY_DEV_EXACT_BYTES",
+    "runId": 40354986626,
+    "controlHead": "3032c0662010a38f506585d3b48f425556f39f14",
+    "artifactId": 12664483491,
+    "artifactDigest": "sha256:51b1a9096a2ee3e95c1966c571cabc0efa507e73acbfea3a19b8e5b693bae8ad",
+    "project": "cxorbia-backend-dev",
+    "hosting": "https://cxorbia-backend-dev.web.app",
+    "exactServedFileByteMatches": 4,
+    "hostingDeploys": 1,
+    "cloudRunBuilds": 0,
+    "cloudRunDeploys": 0,
+    "firebaseDataWrites": 0,
+    "authWrites": 0,
+    "productionChanged": false
+  },
+  "authenticatedAdminClientPreview": {
+    "identityKind": "ADMIN_CONSULTATION_NOT_INDEPENDENT_CLIENT_LOGIN",
+    "tenant": "tya",
+    "project": "cinepolis",
+    "period": "2026-10",
+    "panoramaVisits": 44,
+    "performed": 24,
+    "withQuestionnaire": 23,
+    "countryVisits": {"GT": 34, "HN": 10},
+    "operationalReportsAvailable": ["Resumen ejecutivo operativo", "Estado operativo por sucursal", "Cobertura por país", "Tendencia operativa por periodo"],
+    "unverifiedReportsDisabled": ["Planes de acción", "Brechas y capacitación", "Scorecard de marca"],
+    "countryFilterHNSelectable": true,
+    "adminConsultationExportAttempt": "BLOCKED_BY_READ_ONLY_CONSULTATION_TOAST_EXPECTED",
+    "independentClientAccess": "NOT_TESTED",
+    "clientExportPDFExcelPPT": "NOT_VERIFIED",
+    "realCountryBranchSecurityIsolation": "NOT_VERIFIED"
+  },
+  "remaining": ["Real Client role and country-branch-scoped export", "Shopper PDF and certification role E2E", "Cross-role notifications and durable finance/provider ACK", "21-domain module truth matrix", "Gate20 and Gate21 same-artifact", "Paula visual acceptance", "Express I4 production authorization"],
+  "decision": "VRM289_SOURCE_AND_HOSTING_CLOSED_TECHNICALLY_REAL_CLIENT_EXPORT_OPEN_I3_HOLD",
+  "production": "DO_NOT_TOUCH",
+  "humanAcceptance": "PENDING"
+}

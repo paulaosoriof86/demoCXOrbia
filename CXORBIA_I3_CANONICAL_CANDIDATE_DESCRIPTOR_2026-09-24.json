@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM289_REPORTS_SOURCE_PROOF_PENDING_DEV",
+  "status": "HOLD_I3_VRM289_HOSTING_DEV_PASS_REAL_CLIENT_E2E_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "d1f21d2c8ea22f15000924d145d4582eddd8a97b",
   "predecessorProductSourceSha": "798964d72710aa2ca099a77d72e3739000cf7940",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V514_2026-10-25.json",
-  "findingsLedgerExpectedGitBlob": "aa2907a53484e9137f493dd4503dacb6fff447d4",
+  "findingsLedgerExpectedGitBlob": "515876ff45631ae7cd58a60bebd2eb9f360eeecb",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261025-V182.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM289_CLIENT_REPORTS_SOURCE_NOT_YET_CERTIFIED_OR_MATERIALIZED_DEV__PDF_CROSSROLE_E2E_HUMAN_GATE20_GATE21_PENDING",
+  "activeBlocker": "VRM289_DEV_HOSTING_AND_ADMIN_CLIENT_PREVIEW_PASS__REAL_CLIENT_ROLE_EXPORT_PDF_CROSSROLE_MODULE_MATRIX_HUMAN_GATE20_GATE21_PENDING",
   "focalSuccessor20261026": {
     "findingId": "VRM-289",
     "sourceSha": "92e42a61eace003a1e518ac71bf4309517aa89d9",
@@ -22,8 +22,11 @@
     "productFiles": ["app/index-backend-dev.html"],
     "qaFiles": ["tools/qa/cxorbia-i3-vrm289-client-report-projection-wiring.test.mjs"],
     "localRegressionTests": {"pass": 3, "fail": 0},
-    "canonicalSourceProof": "PENDING",
-    "devMaterialization": "NOT_RUN",
+    "canonicalSourceProof": "PASS_GITHUB_RUN40353484486",
+    "devMaterialization": "PASS_HOSTING_ONLY_RUN40354986626_EXACT_SERVING_BYTES_NO_CLOUDRUN_NO_DATA_NO_PRODUCTION",
+    "hostingEvidenceArtifactId": 12664483491,
+    "adminClientPreviewReproof": "PASS_4_OPERATIONAL_REPORT_CATEGORIES_AVAILABLE_3_UNVERIFIED_CATEGORIES_FAIL_CLOSED_20261026",
+    "realClientRoleExportReproof": "PENDING_NOT_ESTABLISHED_BY_ADMIN_PREVIEW",
     "humanAcceptance": "PENDING",
     "gate20": "HOLD",
     "gate21": "HOLD",
@@ -79,7 +82,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing canonical source proof for the exact VRM-289 successor 92e42a61eace003a1e518ac71bf4309517aa89d9 against cumulative V514 plus appended VRM-289 and historical module matrix V182 (still HOLD). Only PASS permits one DEV Hosting-only release with exact served-byte readback and authenticated Client Reportes, Admin/Shopper, and PDF reproof. Gate20/Gate21 and Paula approval remain open; no unproved Cloud Run/data/production writes.",
+  "exactNextAction": "DO_NOT_REPEAT VRM289 SOURCE OR HOSTING DEPLOY: canonical source proof PASS RUN40353484486 and DEV Hosting-only exact-byte PASS RUN40354986626. Admin-authenticated Client Preview shows four safe operational report categories, three unsupported categories correctly withheld; exporting is blocked by consultation mode. Next one focused independent real Client role login plus source-scoped PDF/Excel/PPT, GT/HN/branch isolation and Shopper/Admin notifications/PDF UAT. Reconcile 21-module truth and Gate20/Gate21 against exact artifact, then Paula human acceptance. No new build, Cloud Run/data/production writes without distinct authority.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",

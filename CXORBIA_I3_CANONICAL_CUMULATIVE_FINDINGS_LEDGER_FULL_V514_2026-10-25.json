@@ -19916,7 +19916,7 @@
       "expected": "Authorized Client Reportes consumes the same verified source-safe HR snapshot for operational report categories, scoped to project/period/country/branch, with unverified scorecards still blocked. No writes, synthetic business data or credential exposure.",
       "owner": ["app/index-backend-dev.html"],
       "qaOwner": "tools/qa/cxorbia-i3-vrm289-client-report-projection-wiring.test.mjs",
-      "state": "SOURCE_FIXED_LOCAL_REGRESSION_PASS_CANONICAL_PROOF_AND_DEV_UAT_PENDING",
+      "state": "SOURCE_AND_CANONICAL_CI_PASS_HOSTING_DEV_PASS_ADMIN_CLIENT_PREVIEW_PASS_REAL_CLIENT_E2E_PENDING",
       "sourceFix": {
         "sourceSha": "92e42a61eace003a1e518ac71bf4309517aa89d9",
         "sourceTree": "d1f21d2c8ea22f15000924d145d4582eddd8a97b",
@@ -19925,13 +19925,23 @@
         "localRegressionTests": {"pass": 3, "fail": 0, "scope": "NODE_VM_ISOLATED_SYNTHETIC_NO_PROVIDER"},
         "firstGuardRunId": 40351502488,
         "firstGuardFailure": "RELEASE_COMPOSITION_FAILURE:UNDECLARED_PRODUCT_DRIFT_AFTER_CANONICAL_CANDIDATE",
-        "sourceReconciliation": "IN_PROGRESS",
-        "devHostingMaterialization": "NOT_RUN",
-        "liveAuthenticatedClientReproof": "PENDING",
+        "sourceReconciliation": "PASS_CANONICAL_SOURCE_GUARD_RUN40353484486",
+        "devHostingMaterialization": {
+          "decision": "PASS_I3_VRM289_REPORTS_HOSTING_ONLY_DEV_EXACT_BYTES",
+          "runId": 40354986626,
+          "controlHead": "3032c0662010a38f506585d3b48f425556f39f14",
+          "artifactId": 12664483491,
+          "artifactDigest": "sha256:51b1a9096a2ee3e95c1966c571cabc0efa507e73acbfea3a19b8e5b693bae8ad",
+          "hostingDeploys": 1,
+          "runtimeDeploys": 0,
+          "dataWrites": 0,
+          "productionChanged": false
+        },
+        "liveAuthenticatedClientReproof": "ADMIN_AUTHENTICATED_CLIENT_PREVIEW_ONLY_4_OPERATIONAL_REPORTS_AVAILABLE_3_UNVERIFIED_REPORTS_DISABLED_REAL_CLIENT_ROLE_EXPORT_PENDING",
         "production": false
       },
       "safeguards": {"liveWrites": 0, "newCloudRunBuilds": 0, "production": false, "i4Authorized": false},
-      "disposition": "KEEP_OPEN_UNTIL_CANONICAL_SOURCE_PASS_SAME_ARTIFACT_DEV_HOSTING_BYTE_PROOF_AND_REAL_AUTHORIZED_CLIENT_REPORTS_E2E"
+      "disposition": "KEEP_OPEN_UNTIL_INDEPENDENT_CLIENT_AUTH_REAL_EXPORT_COUNTRY_BRANCH_SCOPE_AND_CROSSROLE_E2E"
     }
   },
   "latestEvidenceOverrides": {
