@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "cxorbia.i3.shopper.live-dev-uat.v1",
+  "recordedAtUtc": "2026-10-26T03:45:47.834Z",
+  "recordedAtLocalDate": "2026-10-25",
+  "timezone": "America/Guatemala",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "predecessorControlHead": "8a80be9defec6b0d7a09516f09dba7f599fd9f48",
+  "productSourceSha": "798964d72710aa2ca099a77d72e3739000cf7940",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/f4d674f2e8825f33",
+  "cloudRunRevision": "cxorbia-live-hr-dev-00327-xsc",
+  "environment": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "periodId": "cinepolis-2026-10",
+  "testActor": "Stiven Lopez",
+  "testActorLogin": "stiven.lopez.7685",
+  "credentialIncluded": false,
+  "scope": "AUTHENTICATED_SHOPPER_READ_ONLY_UAT_AFTER_RUN40262895465",
+  "browserEvidence": {
+    "shopperLogin": {
+      "decision": "PASS_WITH_TRANSIENT_ERROR_FLICKER",
+      "firstInterimErrorText": "No fue posible validar el acceso",
+      "laterActualRole": "shopper",
+      "laterActualName": "Stiven López",
+      "firstLoginTimeBracketMs": [
+        13358,
+        29170
+      ],
+      "freshTabPersistedSessionReadyByMs": 17098,
+      "strictExactLoginTimeMs": null
+    },
+    "myDay": {
+      "decision": "PASS_SCOPED_READ",
+      "project": "cinepolis",
+      "period": "2026-10",
+      "nextVisit": "C. Miraflores",
+      "notifications": "Sin notificaciones"
+    },
+    "visits": {
+      "decision": "PASS_SCOPED_READ",
+      "activeCount": 2,
+      "historyCount": 7,
+      "currentPeriodReportsCount": 3,
+      "historicalSubmittedCount": 7,
+      "paidConfirmedCount": 5,
+      "unconfirmedPaymentsCount": 2,
+      "activeLocations": [
+        "C. Miraflores",
+        "C. Oakland Mall"
+      ],
+      "historicalCurrentPeriodLocation": "C. Portales",
+      "writes": 0
+    },
+    "profile": {
+      "decision": "PASS_SCOPED_READ",
+      "canonicalVisitCount": 9,
+      "realizedCount": 7,
+      "submittedCount": 7,
+      "paidCount": 5,
+      "note": "Profile filter label 'Activas 3' includes 3 current-period rows while Mis Visitas shows 2 actually active; verify semantic label."
+    },
+    "certification": {
+      "decision": "PASS_UI_WITH_CONTRACT_REVIEW_REQUIRED",
+      "publishedBank": "main",
+      "publishedQuestionCount": 8,
+      "passingThresholdPercent": 80,
+      "pendingReviewBankNotAvailableForCertification": true,
+      "pendingReviewTechnicalLabelVisibleToShopper": true,
+      "legacyContractQuestionCount": 15,
+      "sourceOfDiscrepancy": "NEEDS_APPROVED_PROJECT_BANK_CONTRAST",
+      "noAnswersSubmitted": true
+    },
+    "resourcePdf": {
+      "decision": "FAIL_LIVE_INLINE_RENDER",
+      "resourceCount": 1,
+      "resource": "Instructivo Shopper Cinépolis",
+      "observedStatus": "loading_over_120s",
+      "canvasReady": false,
+      "consoleFailure": "[CX.documentos PDF] Failed to fetch",
+      "observedCodePath": "app/modules/documentos.js loadPdfJs()/pdfjsLib.getDocument(url)",
+      "fallbackOriginalLinkVisible": true,
+      "fallbackOriginalLinkOpened": false,
+      "crossOriginOrNetworkRootCause": "NOT_YET_DISAMBIGUATED",
+      "remoteTokenIncluded": false
+    },
+    "reports": {
+      "decision": "PASS_PREVIEW_PDF_EXPORT_NOT_VERIFIED",
+      "shopperCurrentPeriodVisitsRows": 3,
+      "observedRows": [
+        "C. Portales",
+        "C. Miraflores",
+        "C. Oakland Mall"
+      ],
+      "pdfExportImplementation": "CX.reportKit.exportPDF -> window.print()",
+      "browserNativePrintFlowNotAutomated": true,
+      "directDownloadEvent": false,
+      "otherFormatsNotTested": true
+    },
+    "warnings": {
+      "categories": [
+        "Firestore permission warnings on bulletins",
+        "Firestore permission warnings on resources",
+        "Firestore permission warnings on AI",
+        "Firestore permission warnings on automations"
+      ],
+      "implication": "not a proven authorized-data bug until role and Firestore rules contrasted"
+    }
+  },
+  "pending": [
+    "PDF_INLINE_FETCH_FAILURE",
+    "TRANSIENT_AUTH_ERROR_WHILE_STILL_LOADING",
+    "CERT_MAIN_8_VS_LEGACY_15_AUTHORITY_CONTRAST",
+    "PROFILE_ACTIVE_LABEL_SEMANTICS",
+    "ADMIN_TO_SHOPPER_SAME_TAB_REAL_UAT",
+    "CROSSROLE_NOTIFICATION_AND_FINANCE_E2E",
+    "MODULE_TRUTH_21/21_MATCH",
+    "HUMAN_ACCEPTANCE",
+    "GATE20",
+    "GATE21",
+    "I3_GO",
+    "EXPLICIT_I4_APPROVAL"
+  ],
+  "changesToData": 0,
+  "changesToProduct": 0,
+  "production": "DO_NOT_TOUCH",
+  "i3": "HOLD",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false,
+  "decision": "HOLD_SHOPPER_UAT_MORE_EVIDENCE_REQUIRED",
+  "note": "This factual receipt is additive and does not supersede prior closed findings or approve release."
+}
