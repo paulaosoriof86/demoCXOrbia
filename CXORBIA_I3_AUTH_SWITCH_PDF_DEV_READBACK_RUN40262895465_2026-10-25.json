@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "cxorbia.i3.auth-switch-pdf.hosting-dev-readback.v1",
+  "recordedAtLocal": "2026-10-25",
+  "timezone": "America/Guatemala",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "gate": "I3_HOLD",
+  "source": {
+    "sha": "798964d72710aa2ca099a77d72e3739000cf7940",
+    "tree": "0be94499d7d304e5b102970dbbc8fd8927885b0d",
+    "sourceFixCommit": "798964d72710aa2ca099a77d72e3739000cf7940",
+    "qaCompatCommit": "f8530e849f3f4c5f368fbe2556469473dde9b2a7"
+  },
+  "canonicalControlProof": {
+    "decision": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+    "runId": 40262463946,
+    "proofScope": "SOURCE_LINEAGE_ONLY_NOT_TERMINAL",
+    "findingsPreserved": 288,
+    "nextFindingId": "VRM-289"
+  },
+  "materialization": {
+    "decision": "PASS_I3_D04_E03_HOSTING_DEV_EXACT_BYTES",
+    "runId": 40262895465,
+    "jobId": 121378983414,
+    "artifactId": 12625595911,
+    "artifactDigest": "sha256:15854c810dd506a5a66d2b39a60def05eb4caab9fb6221f916429ef14cbec2b7",
+    "previousHostingVersion": "sites/cxorbia-backend-dev/versions/a72e1b7bdce815a1",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/f4d674f2e8825f33",
+    "hostingDeploys": 1,
+    "servedBytesSixOwners": "PASS_CMP_EXACT",
+    "cloudRunRevision": "cxorbia-live-hr-dev-00327-xsc",
+    "cloudRunTrafficPercent": 100,
+    "cloudRunDeploys": 0,
+    "dataWrites": 0,
+    "production": false
+  },
+  "browserReadback": {
+    "url": "https://cxorbia-backend-dev.web.app/index-backend-dev.html",
+    "anonymousLoginVisible": true,
+    "observedReloadToLoginSnapshotMs": 1802,
+    "authenticationPerformedAfterDeployment": false,
+    "adminShopperSwitchNoReload": "PENDING_REAL_CREDENTIAL_UAT",
+    "pdfCanvasSevenPages": "PENDING_REAL_AUTHENTICATED_UAT",
+    "notificationAndAutomationPermissions": "UNVERIFIED_LOGGED_OUT_WARNINGS",
+    "noRealBusinessFormsSubmitted": true
+  },
+  "outstanding": [
+    "DEV_REAL_ADMIN_SHOPPER_SAME_TAB_SWITCH",
+    "DEV_INLINE_PDF_RENDER_AND_PAGING",
+    "DEV_CROSSROLE_NOTIFICATION_AND_FINANCE_FLOW",
+    "SOURCE_ALIGNED_MODULE_TRUTH_21_DOMAINS",
+    "FULL_PHASE_A_ADMIN_SHOPPER_CLIENT_E2E",
+    "GATE20",
+    "GATE21",
+    "PAULA_HUMAN_ACCEPTANCE",
+    "I3_GO_AND_EXPLICIT_I4_APPROVAL"
+  ],
+  "terminalCertificationAllowed": false,
+  "i4Authorized": false,
+  "production": "DO_NOT_TOUCH"
+}
