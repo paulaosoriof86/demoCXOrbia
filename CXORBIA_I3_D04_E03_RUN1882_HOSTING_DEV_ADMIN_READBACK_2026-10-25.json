@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "cxorbia.i3.d04-e03.run1882.hosting-dev-admin-readback.v1",
+  "recordedAtLocal": "2026-10-25",
+  "timezone": "America/Guatemala",
+  "iteration": "I3",
+  "gate": "HOLD",
+  "humanAcceptance": "PENDING",
+  "authorizationI4": false,
+  "production": "DO_NOT_TOUCH",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "productSourceSha": "5c7104d42520f408a3753cf8c4adb26f56781a01",
+  "productTree": "3a179915fd83d30328a25d6827c490f3545539f4",
+  "deployControlCommit": "462d681ff7ac5ed9e1cd67ab97d85853fb988010",
+  "deployment": {
+    "runId": 40255436112,
+    "runNumber": 1882,
+    "jobId": 121356274568,
+    "artifactId": 12622098475,
+    "decision": "PASS_I3_D04_E03_HOSTING_DEV_EXACT_BYTES",
+    "scope": "EXISTING_DEV_HOSTING_ONLY",
+    "priorHostingVersion": "sites/cxorbia-backend-dev/versions/8ce2b4d2a469ee94",
+    "servedHostingVersion": "sites/cxorbia-backend-dev/versions/a72e1b7bdce815a1",
+    "hostingDeploys": 1,
+    "cloudRunDeploys": 0,
+    "dataWrites": 0,
+    "production": false,
+    "runtimeRevision": "cxorbia-live-hr-dev-00327-xsc",
+    "runtimeSnapshotsIdentical": true,
+    "servedByteParity": [
+      "/modules/cert.js",
+      "/core/router.js",
+      "/modules/documentos.js"
+    ],
+    "artifactReadbackFile": "readback.json"
+  },
+  "focalUat": {
+    "environment": "cxorbia-backend-dev",
+    "tenant": "tya",
+    "project": "cinepolis",
+    "period": "2026-10",
+    "role": "Administración",
+    "authSession": "REUSED_EXISTING",
+    "certification": {
+      "publishedBank": "main",
+      "published": "PASS_GREEN_BANK_PUBLISHED_8_QUESTIONS_MIN_80",
+      "pendingReviewBank": "Banco IA pendiente de revisión",
+      "pendingReview": "PASS_PENDING_REVIEW_DISTINCT_WARNING",
+      "historicalEvidence": 5,
+      "historicalApprovedLegacy": 4,
+      "shopperLinked": 3
+    },
+    "resources": {
+      "count": 1,
+      "resource": "Instructivo Shopper Cinépolis",
+      "embeddedViewer": "FAIL_BLACK_INLINE_IFRAME",
+      "fallback": "PASS_ORIGINAL_PDF_OPENS_IN_NEW_TAB",
+      "documentPageCount": 7
+    },
+    "moduleReadOnlySmoke": {
+      "Postulaciones": "VIEW_PASS_43_ASSIGNMENTS_14_AGENDAMIENTOS_ZERO_PENDING_POSTULATIONS",
+      "DashboardFinanciero": "VIEW_PASS_FINANCIAL_SOURCE_PENDING_GTQ_OBLIGATIONS_NOT_PAYMENTS",
+      "Proyectos": "VIEW_PASS_1_PROJECT_17_PERIODS_5_STEP_CREATION_WIZARD_OPENED_AND_CLOSED_NO_WRITE",
+      "Configuracion": "VIEW_PASS_CONNECTED_SYNC_ACTIVE_ONE_WARNING",
+      "Movimientos": "VIEW_PASS_ZERO_CONFIRMED_MOVEMENTS_COUNTRY_CURRENCIES_NOT_SUMMED",
+      "Liquidaciones": "VIEW_PASS_24_IN_FINANCIAL_REVIEW_ZERO_PAYABLE_ZERO_PAID",
+      "LotesDePago": "VIEW_PASS_SOURCE_PENDING_ZERO_PAID_LOTS"
+    },
+    "reloadPerformance": {
+      "first": "SYNC_GATE_OBSERVED_NOT_READY_AT_25S_LATER_RECOVERED",
+      "second": "SYNC_GATE_AT_8S_READY_BY_28_6S",
+      "metricQualification": "Observation window, not exact browser performance timing; investigate operational source sync"
+    },
+    "shopper": "NOT_TESTED_NO_INDEPENDENT_SHOPPER_SESSION",
+    "noDataMutations": true
+  },
+  "frozenPriorEvidence": {
+    "findingsThroughVRM288": "RETAINED",
+    "previousProofs": "RETAINED_NO_REPRODUCTION",
+    "testSource": "NINE_OF_NINE_SOURCE_SUITES_PASS",
+    "run1879and1880": "PASS"
+  },
+  "limitations": [
+    "REAL_SHOPPER_CROSSROLE_UAT_PENDING",
+    "EMBEDDED_PDF_VIEWER_BLACK",
+    "SLOW_HR_AUTHORITY_SYNC_AFTER_RELOAD",
+    "FINANCE_SOURCE_PENDING",
+    "I3_GATE20_21_AND_HUMAN_GO_PENDING"
+  ],
+  "nextExactAction": "Resume from RUN1882 and this receipt; finish real Shopper/Admin same-artifact tests with safe session isolation, investigate sync latency and inline PDF renderer; preserve frozen I3 scope, verify all P0 and Gates 20/21; no production or I4 without separate authorization."
+}
