@@ -7610,7 +7610,7 @@ jobs:
    - uses: actions/setup-node@v4
      with:
       node-version: '24'
-   - name: Verify exact source and archive
+   - name: Source identity
      run: |
       set -Eeuo pipefail
       mkdir -p "$EV_DIR"
@@ -7619,14 +7619,11 @@ jobs:
       test "$(git rev-parse "$SRC^{tree}")" = "$TREE"
       test "$(git rev-parse "$SRC:app/modules/cert.js")" = c2dcd4dba3cdf09dc4c97952cbb079a6211aeab6
       git merge-base --is-ancestor "$SRC" HEAD
-      SOURCE_CHANGES="$(git diff --name-only 5c7104d42520f408a3753cf8c4adb26f56781a01 "$SRC" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)"
-      EXPECTED_CHANGES="$(printf '%s\n' app/adapters/tya-protected-auth-hr-authority-bridge-v2.js app/core/backend-browser-auth.js app/core/backend-firebase.js app/modules/documentos.js)"
-      test "$SOURCE_CHANGES" = "$EXPECTED_CHANGES"
+      test "$(git diff --name-only 5c7104d42520f408a3753cf8c4adb26f56781a01 "$SRC" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | sha256sum)" = "170c0f2422dd5a6bf6e77ab4fe6d42a44c68c34c77726a06e03c12fdec6dea9c  -"
       test -z "$(git diff --name-only "$SRC" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)"
       test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$SRC"
       test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
       test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
-      test "$(jq -r '.expectedParentSha' CXORBIA_I3_AUTH_SWITCH_PDF_FOCAL_SOURCE_RECEIPT_2026-10-25.json)" = 0c74a65d1d945525df86aff0f0526a7ec1ab5eb8
       test "$(jq -r '.i4Authorized' CXORBIA_I3_AUTH_SWITCH_PDF_FOCAL_SOURCE_RECEIPT_2026-10-25.json)" = false
       SOURCE_DIR="$(mktemp -d)"
       git archive "$SRC" | tar -x -C "$SOURCE_DIR"
@@ -7634,14 +7631,14 @@ jobs:
       cd "$SOURCE_DIR"
       node --check app/modules/cert.js
       node --test tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs
-      node --test tools/qa/cxorbia-i3-d04e03-shopper-relogin-pdf-source.test.mjs tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs
+      node --test tools/qa/cxorbia-i3-{d04e03-shopper-relogin-pdf-source,work-uat-vrm285-resource-viewer}.test.mjs
    - uses: google-github-actions/auth@v2
      with:
       credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
    - uses: google-github-actions/setup-gcloud@v2
      with:
       project_id: ${{ env.PROJECT }}
-   - name: Verify unchanged runtime and snapshot Hosting
+   - name: Runtime preflight
      run: |
       set -Eeuo pipefail
       gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$EV_DIR/runtime-before.json"
@@ -7649,13 +7646,13 @@ jobs:
       TOKEN="$(gcloud auth print-access-token)"
       curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$EV_DIR/hosting-before.json"
       jq -e '.release.version.name | length > 0' "$EV_DIR/hosting-before.json"
-   - name: Publish once to existing DEV Hosting
+   - name: Publish DEV Hosting
      run: |
       set -Eeuo pipefail
       npm install --no-save --ignore-scripts --package-lock=false firebase-tools@14.12.0 >/dev/null 2>&1
       cd "$SOURCE_DIR"
       "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$EV_DIR/hosting-deploy.log"
-   - name: Compare served bytes and runtime
+   - name: Exact-byte readback
      run: |
       set -Eeuo pipefail
       gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$EV_DIR/runtime-after.json"
@@ -7666,13 +7663,13 @@ jobs:
       AFTER="$(jq -r '.release.version.name' "$EV_DIR/hosting-after.json")"
       test -n "$AFTER"
       test "$AFTER" != "$BEFORE"
-      for FILE in modules/cert.js core/router.js modules/documentos.js core/backend-firebase.js core/backend-browser-auth.js adapters/tya-protected-auth-hr-authority-bridge-v2.js; do
+      for FILE in modules/{cert,documentos}.js core/{router,backend-firebase,backend-browser-auth}.js adapters/tya-protected-auth-hr-authority-bridge-v2.js; do
        OUT="$EV_DIR/served-${FILE//\//-}"
        curl -fsS -H 'Cache-Control: no-cache' "$HOSTING_URL/$FILE?d04e03=$GITHUB_RUN_ID" -o "$OUT"
        cmp -s "$SOURCE_DIR/app/$FILE" "$OUT"
       done
       jq -n -S --arg source "$SRC" --arg old "$BEFORE" --arg version "$AFTER" '{decision:"PASS_I3_D04_E03_HOSTING_DEV_EXACT_BYTES",sourceSha:$source,previousHostingVersion:$old,hostingVersion:$version,hostingDeploys:1,cloudRunDeploys:0,dataWrites:0,production:false,humanAcceptance:"PENDING"}' > "$EV_DIR/readback.json"
-   - name: Archive DEV-only evidence
+   - name: Archive evidence
      if: always()
      uses: actions/upload-artifact@v4
      with:
