@@ -1,4 +1,5 @@
-name: CXOrbia I3 VRM289 Reports Hosting-only DEV
+name: CXOrbia I3 Serial Hosting-only DEV - D07
+# Sequential reuse of VRM289 Hosting-only workflow. No parallel workflow or additional deploy path.
 on:
   push:
     branches:
@@ -20,18 +21,19 @@ env:
   HOSTING_SITE: cxorbia-backend-dev
   FIREBASE_HOSTING_TARGET: cxorbia-dev
 jobs:
-  deploy-vrm289-hosting-dev:
-   if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm289-hosting-only]') }}
+  serial-hosting-only-dev:
+   if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[d07-hosting-only]') }}
    runs-on: ubuntu-latest
    timeout-minutes: 35
    permissions:
     contents: read
     id-token: write
    env:
-    SRC: 92e42a61eace003a1e518ac71bf4309517aa89d9
-    TREE: d1f21d2c8ea22f15000924d145d4582eddd8a97b
+    SRC: ab5fbfb0f70c0f1ddcbd0148385ff78506902874
+    PREDECESSOR_SRC: 92e42a61eace003a1e518ac71bf4309517aa89d9
+    TREE: e5136b39ee35ca7e979221dfba11aee58aadef52
     EXPECTED_RUNTIME_REV: cxorbia-live-hr-dev-00327-xsc
-    FOCAL_DIR: .tmp/i3-vrm289-reports-hosting
+    FOCAL_DIR: .tmp/i3-d07-pdf-hosting-only
     PROD_URL: https://tya-plataforma.web.app
    steps:
    - uses: actions/checkout@v4
@@ -40,28 +42,35 @@ jobs:
    - uses: actions/setup-node@v4
      with:
       node-version: '24'
-   - name: Verify frozen source, ownership, and safe report projection
+   - name: Verify exact D07 source and secure PDF contracts
      run: |
       set -Eeuo pipefail
       mkdir -p "$FOCAL_DIR"
       node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs | tee "$FOCAL_DIR/authority.json"
       jq -e --arg source "$SRC" --arg tree "$TREE" '.decision=="PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY" and .productSourceSha==$source and .productSourceTree==$tree and .terminalReleaseEligible==false' "$FOCAL_DIR/authority.json"
-      test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = HOLD_I3_VRM289_REPORTS_SOURCE_PROOF_PENDING_DEV
-      test "$SRC" = 92e42a61eace003a1e518ac71bf4309517aa89d9
-      test "$TREE" = d1f21d2c8ea22f15000924d145d4582eddd8a97b
+      test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = HOLD_I3_D07_SOURCE_FIXED_PENDING_REMOTE_QA
+      test "$SRC" = ab5fbfb0f70c0f1ddcbd0148385ff78506902874
+      test "$TREE" = e5136b39ee35ca7e979221dfba11aee58aadef52
       test "$(git rev-parse "$SRC^{tree}")" = "$TREE"
-      test "$(git rev-parse "$SRC:app/index-backend-dev.html")" = 075b494e084e47759eeeabd7cb82d7600a3c3b8d
+      test "$(git rev-parse "$SRC:app/core/backend-resources.js")" = 7a467b84754457010fa58ddac9fbbceff5b6b2de
+      test "$(git rev-parse "$SRC:app/modules/documentos.js")" = d955d299c939851ed0c90876fe47680cf86b1c1c
+      git merge-base --is-ancestor "$PREDECESSOR_SRC" "$SRC"
+      test "$(git diff --name-only "$PREDECESSOR_SRC" "$SRC" -- app | LC_ALL=C sort)" = "$(printf '%s\n' app/core/backend-resources.js app/modules/documentos.js | LC_ALL=C sort)"
+      test -z "$(git diff --name-only "$PREDECESSOR_SRC" "$SRC" -- backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)"
       git merge-base --is-ancestor "$SRC" HEAD
       test -z "$(git diff --name-only "$SRC" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)"
       test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$SRC"
       test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
       test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
       test "$(jq -r '.nextFindingId' "$CANDIDATE_DESCRIPTOR")" = VRM-290
-      node tools/qa/cxorbia-i3-vrm289-client-report-projection-wiring.test.mjs
+      node --check app/core/backend-resources.js
+      node --check app/modules/documentos.js
+      node --test tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs
       SOURCE_DIR="$(mktemp -d)"
       git archive "$SRC" | tar -x -C "$SOURCE_DIR"
       echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
-      cmp -s "$SOURCE_DIR/app/index-backend-dev.html" app/index-backend-dev.html
+      cmp -s "$SOURCE_DIR/app/modules/documentos.js" app/modules/documentos.js
+      cmp -s "$SOURCE_DIR/app/core/backend-resources.js" app/core/backend-resources.js
    - uses: google-github-actions/auth@v2
      with:
       credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
@@ -76,9 +85,17 @@ jobs:
       TOKEN="$(gcloud auth print-access-token)"
       curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$FOCAL_DIR/hosting-before.json"
       jq -e '.release.version.name | length > 0' "$FOCAL_DIR/hosting-before.json"
+      # Do not overwrite an unexpected Hosting release; verify prior exact source bytes.
+      for FILE in core/backend-resources.js modules/documentos.js index-backend-dev.html modules/cert.js; do
+        SAFE_FILE="$(printf '%s' "$FILE" | tr '/' '-')"
+        OUT="$FOCAL_DIR/before-$SAFE_FILE"
+        curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$FILE?d07Before=$GITHUB_RUN_ID" -o "$OUT"
+        test "$(git hash-object "$OUT")" = "$(git rev-parse "$PREDECESSOR_SRC:app/$FILE")" || { echo "RELEASE_COMPOSITION_FAILURE:D07_PRE_DEPLOY_SERVING_DRIFT:$FILE"; exit 1; }
+      done
+      curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" > "$FOCAL_DIR/firestore-release-before.json"
       curl -fsS -H 'Cache-Control: no-cache' "$PROD_URL/" -o "$FOCAL_DIR/production-before.html"
       sha256sum "$FOCAL_DIR/production-before.html" | awk '{print $1}' > "$FOCAL_DIR/production-before.sha256"
-   - name: Publish precisely one Hosting-only change to Firebase DEV
+   - name: Publish exact immutable source to Firebase Hosting DEV only
      run: |
       set -Eeuo pipefail
       npm install --no-save --ignore-scripts --package-lock=false firebase-tools@14.12.0 >/dev/null 2>&1
@@ -95,21 +112,23 @@ jobs:
       AFTER="$(jq -r '.release.version.name' "$FOCAL_DIR/hosting-after.json")"
       test -n "$AFTER"
       test "$AFTER" != "$BEFORE"
-      for FILE in index-backend-dev.html adapters/tya-corte1-report-projection-live.js adapters/tya-live-source-inplace-apply.js modules/cliente-extra.js; do
+      curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" > "$FOCAL_DIR/firestore-release-after.json"
+      test "$(jq -r '.rulesetName' "$FOCAL_DIR/firestore-release-after.json")" = "$(jq -r '.rulesetName' "$FOCAL_DIR/firestore-release-before.json")"
+      for FILE in core/backend-resources.js modules/documentos.js index-backend-dev.html modules/cert.js; do
        OUT="$FOCAL_DIR/served-${FILE//\//-}"
-       curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$FILE?vrm289=$GITHUB_RUN_ID" -o "$OUT"
+       curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$FILE?d07After=$GITHUB_RUN_ID" -o "$OUT"
        cmp -s "$SOURCE_DIR/app/$FILE" "$OUT"
       done
       curl -fsS -H 'Cache-Control: no-cache' "$PROD_URL/" -o "$FOCAL_DIR/production-after.html"
       sha256sum "$FOCAL_DIR/production-after.html" | awk '{print $1}' > "$FOCAL_DIR/production-after.sha256"
       cmp -s "$FOCAL_DIR/production-before.sha256" "$FOCAL_DIR/production-after.sha256"
-      jq -n -S --arg source "$SRC" --arg tree "$TREE" --arg old "$BEFORE" --arg version "$AFTER" --arg revision "$EXPECTED_RUNTIME_REV" --arg prodSha "$(cat "$FOCAL_DIR/production-after.sha256")" '{decision:"PASS_I3_VRM289_REPORTS_HOSTING_ONLY_DEV_EXACT_BYTES",sourceSha:$source,sourceTree:$tree,previousHostingVersion:$old,hostingVersion:$version,runtimeRevision:$revision,runtimeDeploys:0,hostingDeploys:1,firestoreWrites:0,authWrites:0,productionIndexSha256:$prodSha,productionChanged:false,humanAcceptance:"PENDING",terminalEligible:false}' > "$FOCAL_DIR/result.json"
+      jq -n -S --arg source "$SRC" --arg tree "$TREE" --arg old "$BEFORE" --arg version "$AFTER" --arg revision "$EXPECTED_RUNTIME_REV" --arg rules "$(jq -r .rulesetName "$FOCAL_DIR/firestore-release-after.json")" --arg prodSha "$(cat "$FOCAL_DIR/production-after.sha256")" '{decision:"PASS_I3_D07_HOSTING_ONLY_DEV_EXACT_BYTES",sourceSha:$source,sourceTree:$tree,previousHostingVersion:$old,hostingVersion:$version,runtimeRevision:$revision,firestoreRuleset:$rules,verifiedServedAssetCount:4,cloudRunBuilds:0,runtimeDeploys:0,hostingDeploys:1,firestoreRulesDeploys:0,storageRulesDeploys:0,firestoreWrites:0,authWrites:0,hrWrites:0,productionIndexSha256:$prodSha,productionChanged:false,pdfLiveE2e:"NOT_VERIFIED",shopperE2e:"NOT_VERIFIED",humanAcceptance:"PENDING",gate20:"HOLD",gate21:"HOLD",terminalEligible:false,production:false}' > "$FOCAL_DIR/result.json"
    - name: Archive focal DEV deployment evidence
      if: always()
      uses: actions/upload-artifact@v4
      with:
-      name: cxorbia-i3-vrm289-reports-dev-${{ github.run_id }}
-      path: .tmp/i3-vrm289-reports-hosting/
+      name: cxorbia-i3-d07-hosting-dev-${{ github.run_id }}
+      path: .tmp/i3-d07-pdf-hosting-only/
       if-no-files-found: warn
       retention-days: 30
 

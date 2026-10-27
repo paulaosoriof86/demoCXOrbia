@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "cxorbia.i3.d07.serial-hosting-only-dev-request.v1",
+  "dateLocalGuatemala": "2026-10-27",
+  "iteration": "I3",
+  "officialState": "HOLD",
+  "authorization": "Paula D07 scope authorization (authenticated PDF fix, source QA and DEV validation); no Storage Rules/IAM/HR/production writes",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedParentSha": "1e76a8e94b0b1a9653eea22be9186f92650fe436",
+  "sourceSha": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
+  "sourceTree": "e5136b39ee35ca7e979221dfba11aee58aadef52",
+  "predecessorSourceSha": "92e42a61eace003a1e518ac71bf4309517aa89d9",
+  "findingId": "VRM-285",
+  "taskId": "D07",
+  "existingWorkflowPath": ".github/workflows/cxorbia-i3-vrm289-reports-hosting-dev.yml",
+  "priorWorkflowBlob": "e38b7f2e8e714bfeb87bf2ab5324dc99ffc436a8",
+  "newWorkflowBlob": "f9ab4b26bbc9b20bc7714ddda4bd10e78320e86c",
+  "before": "Historical serial VRM289 Hosting-only runner pinned to 92e42a source, not applicable to D07 without exact scope update",
+  "after": "Same existing file/job adapted sequentially for exact D07 source, trigger [d07-hosting-only], prior LIVE byte guard and isolated Hosting DEV publish",
+  "sourceQa": {
+    "runId": 40555161050,
+    "runNumber": 1894,
+    "decision": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+    "syntheticD07TestsPass": 8,
+    "workUatTestsPass": 56
+  },
+  "writeAllowlist": [
+    ".github/workflows/cxorbia-i3-vrm289-reports-hosting-dev.yml",
+    "CXORBIA_I3_D07_SERIAL_HOSTING_ONLY_REQUEST_2026-10-27.json"
+  ],
+  "deployAllowlist": [
+    "Firebase Hosting cxorbia-backend-dev"
+  ],
+  "disallowedWrites": [
+    "Cloud Run",
+    "Firestore Rules",
+    "Storage Rules",
+    "Auth",
+    "Firestore",
+    "HR",
+    "production"
+  ],
+  "preflight": "Must match predecessor served owner hashes exactly; mismatch stops before Firebase deployment",
+  "materialization": "REQUESTED_NOT_YET_VERIFIED",
+  "goLive": "NOT_AUTHORIZED",
+  "state": "HOLD_I3_D07_DEV_MATERIALIZATION_PENDING",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "next": "Read back workflow run and exact served Hosting bytes; if PASS, seal descriptor, execution pointer, matrix/ledger and repeat authenticated Admin/Shopper PDF E2E. If FAIL, classify exact failure and do not retry blindly.",
+  "production": false
+}
