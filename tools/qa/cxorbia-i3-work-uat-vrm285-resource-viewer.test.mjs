@@ -1,3 +1,4 @@
+import './cxorbia-i3-d07-authenticated-pdf-resource.test.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';

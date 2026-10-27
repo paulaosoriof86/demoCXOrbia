@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "cxorbia.i3.d07-authenticated-pdf-source-patch.v1",
+  "dateLocal": "2026-10-27",
+  "iteration": "I3",
+  "state": "HOLD",
+  "taskId": "D07",
+  "findingId": "VRM-285",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedParentSha": "8f7089b7f1af4d1b6109cd5f3c97218b249c8407",
+  "expectedParentTree": "5f2e902b44c85665fb7ad7a65a67042d11bba9be",
+  "productSourceSha": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
+  "productTree": "e5136b39ee35ca7e979221dfba11aee58aadef52",
+  "predecessorSourceSha": "92e42a61eace003a1e518ac71bf4309517aa89d9",
+  "changes": {
+    "files": [
+      "app/core/backend-resources.js",
+      "app/modules/documentos.js"
+    ],
+    "qaFiles": [
+      "tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs",
+      "tools/qa/cxorbia-i3-d07-authenticated-pdf-resource.test.mjs"
+    ],
+    "otherProductOwners": 0,
+    "storageRules": 0,
+    "backendRuntime": 0,
+    "firestore": 0
+  },
+  "observed": {
+    "firebaseBucket": "cxorbia-backend-dev.firebasestorage.app",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "periodId": "cinepolis-2026-10",
+    "pdfPresent": true,
+    "tokenLink403": true,
+    "shopperInlinePdfFailed": true,
+    "claims": "NOT_VERIFIED",
+    "authenticatedGetBytes": "NOT_VERIFIED"
+  },
+  "fixedSourceBehavior": "Scope-checked authenticated Firebase Storage REST read, verified %PDF bytes, PDF.js inline bytes and download available only after validated fetch; no public token fallback, fail-closed on missing auth/provider denial.",
+  "tests": {
+    "sourceSyntax": "PASS",
+    "qa": "PENDING_REMOTE_CANONICAL_CI",
+    "expectedSyntheticCases": 8,
+    "actualProviderE2E": "NOT_EXECUTED",
+    "pdfPageContent": "NOT_VERIFIED",
+    "adminShopper": "NOT_VERIFIED"
+  },
+  "governedFiles": {
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V515_2026-10-27.json",
+    "ledgerBlob": "f908f7c955dc053a5028a1bc78c58b2f84a4f0ea",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261027-V183.json",
+    "matrixBlob": "6ee24c6c16a9fcb42298e7a852cba2df109de4b2"
+  },
+  "production": false,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "next": "Remote source guard + regression, Hosting-only DEV (after PASS), Admin/Shopper PDF E2E; other I3 P0 remain.",
+  "readback": "PENDING_BRANCH_CAS_AND_COMMIT_PROOF"
+}

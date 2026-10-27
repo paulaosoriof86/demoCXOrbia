@@ -1,27 +1,34 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM289_HOSTING_DEV_PASS_REAL_CLIENT_E2E_PENDING",
+  "status": "HOLD_I3_D07_SOURCE_FIXED_PENDING_REMOTE_QA",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "92e42a61eace003a1e518ac71bf4309517aa89d9",
-  "productTreeAuthority": "d1f21d2c8ea22f15000924d145d4582eddd8a97b",
-  "predecessorProductSourceSha": "798964d72710aa2ca099a77d72e3739000cf7940",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V514_2026-10-25.json",
-  "findingsLedgerExpectedGitBlob": "515876ff45631ae7cd58a60bebd2eb9f360eeecb",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261025-V182.json",
+  "productSourceSha": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
+  "productTreeAuthority": "e5136b39ee35ca7e979221dfba11aee58aadef52",
+  "predecessorProductSourceSha": "92e42a61eace003a1e518ac71bf4309517aa89d9",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V515_2026-10-27.json",
+  "findingsLedgerExpectedGitBlob": "f908f7c955dc053a5028a1bc78c58b2f84a4f0ea",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261027-V183.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM289_DEV_HOSTING_AND_ADMIN_CLIENT_PREVIEW_PASS__REAL_CLIENT_ROLE_EXPORT_PDF_CROSSROLE_MODULE_MATRIX_HUMAN_GATE20_GATE21_PENDING",
+  "activeBlocker": "D07_AUTH_PDF_SOURCE_NEEDS_REMOTE_QA_AND_REAL_SHOPPER_ADMIN_E2E__OTHER_I3_UNCLOSED",
   "focalSuccessor20261026": {
     "findingId": "VRM-289",
     "sourceSha": "92e42a61eace003a1e518ac71bf4309517aa89d9",
     "sourceTree": "d1f21d2c8ea22f15000924d145d4582eddd8a97b",
     "predecessor": "798964d72710aa2ca099a77d72e3739000cf7940",
-    "productFiles": ["app/index-backend-dev.html"],
-    "qaFiles": ["tools/qa/cxorbia-i3-vrm289-client-report-projection-wiring.test.mjs"],
-    "localRegressionTests": {"pass": 3, "fail": 0},
+    "productFiles": [
+      "app/index-backend-dev.html"
+    ],
+    "qaFiles": [
+      "tools/qa/cxorbia-i3-vrm289-client-report-projection-wiring.test.mjs"
+    ],
+    "localRegressionTests": {
+      "pass": 3,
+      "fail": 0
+    },
     "canonicalSourceProof": "PASS_GITHUB_RUN40353484486",
     "devMaterialization": "PASS_HOSTING_ONLY_RUN40354986626_EXACT_SERVING_BYTES_NO_CLOUDRUN_NO_DATA_NO_PRODUCTION",
     "hostingEvidenceArtifactId": 12664483491,
@@ -82,7 +89,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "DO_NOT_REPEAT VRM289 SOURCE OR HOSTING DEPLOY: canonical source proof PASS RUN40353484486 and DEV Hosting-only exact-byte PASS RUN40354986626. Admin-authenticated Client Preview shows four safe operational report categories, three unsupported categories correctly withheld; exporting is blocked by consultation mode. Next one focused independent real Client role login plus source-scoped PDF/Excel/PPT, GT/HN/branch isolation and Shopper/Admin notifications/PDF UAT. Reconcile 21-module truth and Gate20/Gate21 against exact artifact, then Paula human acceptance. No new build, Cloud Run/data/production writes without distinct authority.",
+  "exactNextAction": "D07 existing canonical CI source proof with 8 authenticated PDF tests plus VRM285 regression. If source proof PASS, a single authorized Hosting-only DEV materialization and exact served-byte readback; then real Admin/Shopper PDF page navigation and download. Never claim provider 403 resolved before authenticated E2E. Preserve unrelated tests and I3 HOLD.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2992,7 +2999,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "f2f4f5bd81d68265f699abecc5529f5e2bdf7bec",
+  "moduleTruthExpectedGitBlob": "6ee24c6c16a9fcb42298e7a852cba2df109de4b2",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -14193,5 +14200,34 @@
       "terminalReleaseEligible": false,
       "production": false
     }
+  },
+  "focalSuccessor20261027": {
+    "taskId": "D07",
+    "findingId": "VRM-285",
+    "classification": "FUNCTIONAL_DEFECT",
+    "sourceSha": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
+    "sourceTree": "e5136b39ee35ca7e979221dfba11aee58aadef52",
+    "predecessorSourceSha": "92e42a61eace003a1e518ac71bf4309517aa89d9",
+    "sourceOwners": {
+      "app/core/backend-resources.js": "7a467b84754457010fa58ddac9fbbceff5b6b2de",
+      "app/modules/documentos.js": "d955d299c939851ed0c90876fe47680cf86b1c1c"
+    },
+    "qaOwners": {
+      "tools/qa/cxorbia-i3-d07-authenticated-pdf-resource.test.mjs": "719f149e130b7484339561fd1e932e698efb5187",
+      "tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs": "ff721edc55690a4d3a5ea6da134ee1967651d4d6"
+    },
+    "localSourceSyntax": "PASS_2_SOURCE_FILES",
+    "sourceProof": "PENDING_GITHUB_CI",
+    "devMaterialized": false,
+    "realPdfContent": "NOT_VERIFIED",
+    "browserAuthClaims": "NOT_VERIFIED",
+    "cloudRunChanges": 0,
+    "storageRulesChanges": 0,
+    "dataWrites": 0,
+    "externalHrWrites": 0,
+    "production": false,
+    "humanAcceptance": "PENDING",
+    "gate20": "HOLD",
+    "gate21": "HOLD"
   }
 }
