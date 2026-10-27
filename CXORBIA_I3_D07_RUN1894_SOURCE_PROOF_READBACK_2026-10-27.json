@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "cxorbia.i3.d07-run1894-source-qa-readback.v1",
+  "dateLocalGuatemala": "2026-10-27",
+  "status": "SOURCE_PROVEN_FOCAL_NOT_DEV_MATERIALIZED",
+  "iteration": "I3",
+  "taskId": "D07",
+  "findingId": "VRM-285",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadAtProof": "0fbfc8ea6a4180d44f5a38d54d5006c321dbae82",
+  "productSourceSha": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
+  "productSourceTree": "e5136b39ee35ca7e979221dfba11aee58aadef52",
+  "runId": 40555161050,
+  "runNumber": 1894,
+  "workflow": "CXOrbia Recovery I3 DEV Certification",
+  "jobId": 122369145618,
+  "decision": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+  "tests": {
+    "d07AuthenticatedPdfSynthetic": {
+      "pass": 8,
+      "fail": 0
+    },
+    "workUatCombined": {
+      "pass": 56,
+      "fail": 0
+    }
+  },
+  "moduleTruth": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261027-V183.json",
+    "domainCount": 21,
+    "sourceAligned": true,
+    "allModulesMatch": false,
+    "ownerMismatches": [
+      "app/core/backend-browser-auth.js",
+      "app/core/backend-firebase.js",
+      "app/index-backend-dev.html",
+      "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+    ],
+    "ownerMismatchesD07": 0
+  },
+  "findings": {
+    "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V515_2026-10-27.json",
+    "total": 289,
+    "nextFindingId": "VRM-290"
+  },
+  "CI": "PASS_FOCAL_SOURCE_LINEAGE_ONLY_NOT_ALL_MODULES_PASS",
+  "liveE2e": {
+    "authenticatedShopperPdf": "NOT_EXECUTED",
+    "authenticatedAdminPdf": "NOT_EXECUTED",
+    "pdfPages": "NOT_VERIFIED",
+    "download": "NOT_VERIFIED"
+  },
+  "storageRulesChanged": false,
+  "corsChanged": false,
+  "firestoreWrites": 0,
+  "authWrites": 0,
+  "hrWrites": 0,
+  "cloudRunDeploys": 0,
+  "hostingDeploys": 0,
+  "production": false,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false,
+  "nextExactAction": "Provider-authenticated DEV read and positive PDF bytes before materializing a single Hosting-only DEV candidate; no production."
+}
