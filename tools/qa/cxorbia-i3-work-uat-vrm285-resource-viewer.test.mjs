@@ -116,8 +116,9 @@ test('VRM-285: a late resources event and a router remount do not destroy the ac
   assert.match(afterRouter.innerHTML,/data-pdf-prev/);
   assert.match(afterRouter.innerHTML,/data-pdf-next/);
   assert.doesNotMatch(afterRouter.innerHTML,/<iframe\b/,'PDF must not fall back to the previously blank native iframe');
-  assert.match(afterRouter.innerHTML,/abre el PDF original en otra pestaña/);
-  assert.match(afterRouter.innerHTML,/rel="noopener noreferrer"/);
+  assert.match(afterRouter.innerHTML,/la descarga se habilita tras validar el PDF/);
+  assert.match(afterRouter.innerHTML,/data-pdf-download disabled/);
+  assert.doesNotMatch(afterRouter.innerHTML,/href="https:\/\/fixture.invalid\/instructivo.pdf"/);
   afterRouter.back();
   assert.doesNotMatch(afterRouter.innerHTML,/id="docBack"/);
   assert.match(afterRouter.innerHTML,/data-doc="resource-pdf-1"/);

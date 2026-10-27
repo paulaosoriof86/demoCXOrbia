@@ -170,6 +170,54 @@ window.CX=window.CX||{};
     try{await firebase.storage().ref(path).delete();return ack({storagePath:path,status:'deleted'},{storage:true,storageProviderAck:true});}
     catch(error){if(String(error?.code||'').includes('object-not-found'))return ack({storagePath:path,status:'already_absent'},{storage:true,storageProviderAck:true,idempotentReplay:true});throw error;}
   };
+
+  // I3/D07: binary reads are restricted to an active, visible Firestore resource.
+  // Storage's public token URL is not an authenticated read. No download tokens or ID
+  // tokens are persisted, embedded in markup, or used as query parameters here.
+  api.readPublishedPdf=async function(item={},options={}){
+    if(!connected())return blocked('RESOURCE_READ_CONNECTED_REQUIRED');
+    const scope=currentScope(options),rid=str(item.id),path=str(item.storagePath);
+    if(!scope.tenantId||!scope.projectId||!scope.periodId||!rid||!path)return blocked('RESOURCE_READ_SCOPE_REQUIRED');
+    const prefix=['tenants',scope.tenantId,'projects',scope.projectId,'periods',scope.periodId,'resources'].join('/')+'/';
+    const suffix=path.startsWith(prefix)?path.slice(prefix.length):'';
+    if(!/^[-a-zA-Z0-9_]+\/[-a-zA-Z0-9_.]+\.pdf$/i.test(suffix)||suffix.includes('..'))
+      return blocked('RESOURCE_READ_STORAGE_SCOPE_MISMATCH');
+    const isCurrent=()=>arr(api.items).some(row=>str(row.id)===rid&&str(row.storagePath)===path&&
+      str(row.tenantId)===scope.tenantId&&str(row.projectId)===scope.projectId&&
+      str(row.periodId)===scope.periodId&&str(row.tipo).toLowerCase()==='pdf'&&visible(row,scope));
+    if(!isCurrent()||str(item.tenantId)!==scope.tenantId||str(item.projectId)!==scope.projectId||
+      str(item.periodId)!==scope.periodId||str(item.tipo).toLowerCase()!=='pdf')
+      return blocked('RESOURCE_READ_NOT_PUBLISHED_FOR_ROLE');
+    const fb=window.firebase,auth=fb?.auth?.(),user=auth?.currentUser;
+    if(!user?.uid||!user.getIdToken)return blocked('RESOURCE_READ_AUTH_REQUIRED');
+    const initialUid=str(user.uid),initialKey=cacheKey(scope);
+    const bucket=str(fb?.app?.().options?.storageBucket||'');
+    if(!/^[a-z0-9][a-z0-9.-]+$/i.test(bucket))return blocked('RESOURCE_READ_BUCKET_UNAVAILABLE');
+    try{
+      const jwt=await user.getIdToken();
+      if(!jwt||str(auth.currentUser?.uid)!==initialUid||cacheKey(currentScope())!==initialKey||!isCurrent())
+        return blocked('RESOURCE_READ_AUTH_SCOPE_CHANGED');
+      const endpoint='https://firebasestorage.googleapis.com/v0/b/'+encodeURIComponent(bucket)+
+        '/o/'+encodeURIComponent(path)+'?alt=media';
+      const response=await fetch(endpoint,{method:'GET',cache:'no-store',credentials:'omit',
+        headers:{Authorization:'Firebase '+jwt},signal:options.signal});
+      if(!response.ok)return blocked('RESOURCE_READ_PROVIDER_DENIED',{httpStatus:Number(response.status)||0});
+      const maximum=25*1024*1024;
+      const declared=Number(response.headers?.get?.('content-length')||0);
+      if(declared>maximum)return blocked('RESOURCE_READ_SIZE_EXCEEDED');
+      const bytes=new Uint8Array(await response.arrayBuffer());
+      if(bytes.byteLength<5||bytes.byteLength>maximum||bytes[0]!==37||bytes[1]!==80||
+        bytes[2]!==68||bytes[3]!==70||bytes[4]!==45)
+        return blocked('RESOURCE_READ_INVALID_PDF');
+      if(str(auth.currentUser?.uid)!==initialUid||cacheKey(currentScope())!==initialKey||!isCurrent())
+        return blocked('RESOURCE_READ_AUTH_SCOPE_CHANGED');
+      return {ok:true,status:'read',source:'firebase-storage-authenticated',bytes,
+        resourceId:rid,storagePath:path,mimeType:'application/pdf',size:bytes.byteLength};
+    }catch(_){
+      return blocked('RESOURCE_READ_PROVIDER_UNAVAILABLE');
+    }
+  };
+
   api.downloadUrl=async function(storagePath){
     const st=api.storageStatus();if(!st.authorized)return blocked('RESOURCE_STORAGE_NOT_AUTHORIZED',{storage:st});
     const path=str(storagePath);if(!path)return blocked('RESOURCE_STORAGE_PATH_REQUIRED');

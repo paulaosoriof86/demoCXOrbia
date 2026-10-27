@@ -73,15 +73,40 @@ CX.module('documentos', ({data,role,ui})=>{
     script.addEventListener('error',()=>finish(()=>reject(new Error('PDF_RENDERER_NETWORK_ERROR'))),{once:true});
     if(!script.id){script.id=pdfScriptId;script.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/'+pdfJsVersion+'/pdf.min.js';script.async=true;script.crossOrigin='anonymous';document.head.appendChild(script);}
   });
-  const renderPdf=async(slot,url)=>{
+  const renderPdf=async(slot,resource)=>{
     const status=slot.querySelector('[data-pdf-status]'),canvas=slot.querySelector('canvas'),prev=slot.querySelector('[data-pdf-prev]'),next=slot.querySelector('[data-pdf-next]'),position=slot.querySelector('[data-pdf-page]');
     if(!status||!canvas||!prev||!next||!position)return;
     const live=()=>slot.isConnected&&host.contains(slot);
     let pdf=null,rendering=false,pageNumber=1;
     try{
+      let authenticatedBytes=null;
+      if(connected()){
+        const result=await CX.backendResources?.readPublishedPdf?.(resource,scope());
+        if(!live())return;
+        if(result?.ok!==true||!result.bytes)throw new Error(result?.code||'RESOURCE_PDF_AUTH_READ_FAILED');
+        authenticatedBytes=result.bytes;
+        const download=host.querySelector('[data-pdf-download]');
+        if(download){
+          const readerKey=viewerScopeKey();
+          download.disabled=false;
+          download.addEventListener('click',()=>{
+            if(!live()||readerKey!==viewerScopeKey())return;
+            const blob=new Blob([authenticatedBytes],{type:'application/pdf'});
+            const objectUrl=URL.createObjectURL(blob);
+            const link=document.createElement('a');
+            link.href=objectUrl;
+            link.download=String(resource.meta||resource.n||'recurso.pdf').replace(/[^a-zA-Z0-9._ -]/g,'_');
+            document.body.appendChild(link);link.click();link.remove();
+            setTimeout(()=>URL.revokeObjectURL(objectUrl),30000);
+          });
+        }
+      }
       const lib=await loadPdfJs();if(!live())return;
+      const url=String(resource.url||'');
       const isInline=/^data:application\/pdf(?:;base64)?,/i.test(url);
-      const source=isInline?{data:Uint8Array.from(atob(String(url).split(',')[1]||''),x=>x.charCodeAt(0))}:{url:String(url),withCredentials:false};
+      const source=authenticatedBytes?{data:authenticatedBytes}:
+        isInline?{data:Uint8Array.from(atob(url.split(',')[1]||''),x=>x.charCodeAt(0))}:
+        {url,withCredentials:false};
       pdf=await lib.getDocument(source).promise;if(!live()){await pdf.destroy?.();return;}
       const drawPage=async()=>{
         if(!live()||rendering)return;
@@ -111,16 +136,19 @@ CX.module('documentos', ({data,role,ui})=>{
 
   /* visor a PANTALLA COMPLETA en el área del módulo (no modal) */
   const viewer=(d)=>{
-    const isPdf = d.url && (d.tipo==='pdf' || /^data:application\/pdf/i.test(d.url) || /\.pdf($|[?#])/i.test(d.url));
+    const isPdf = (d.url||d.storagePath) && (d.tipo==='pdf' || /^data:application\/pdf/i.test(d.url||'') || /\.pdf($|[?#])/i.test(d.url||''));
     const isImg = (d.tipo==='image'&&d.url) || (d.url&&/^data:image\//i.test(d.url));
     const isXls = d.url && (/^data:application\/(vnd\.openxmlformats-officedocument\.spreadsheetml|vnd\.ms-excel)/i.test(d.url) || /\.(xlsx|xls)$/i.test(d.meta||''));
     const isDocx = d.url && (/^data:application\/vnd\.openxmlformats-officedocument\.wordprocessingml/i.test(d.url) || /\.docx$/i.test(d.meta||''));
+    const pdfNote=connected()
+      ?'<div role="note" style="font-size:12px;color:var(--t3);padding:0 0 12px">Lectura protegida: la descarga se habilita tras validar el PDF con tu sesión.</div>'
+      :'<div role="note" style="font-size:12px;color:var(--t3);padding:0 0 12px">Archivo de demostración.</div>';
     let body;
     if(isXls||isDocx) body=`<div id="docEmbed" class="acad-content" style="max-width:900px;font-size:14px;line-height:1.7"><div style="color:var(--t3);padding:20px">Cargando vista del documento…</div></div>`;
     else if(d.tipo==='video'&&d.url) body=`<iframe src="${d.url}" style="width:100%;height:68vh;border:0;border-radius:12px" allowfullscreen></iframe>`;
     else if(d.tipo==='check') body=`<div style="max-width:760px">${(d.items||[]).map(it=>`<label class="flex" style="gap:10px;padding:11px 14px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;cursor:pointer;font-size:14px"><input type="checkbox"> ${it}</label>`).join('')}</div>`;
     else if(isImg) body=`<img src="${d.url}" style="max-width:100%;border-radius:12px">`;
-    else if(isPdf) body=`<div role="note" style="font-size:12px;color:var(--t3);padding:0 0 12px">Si el visor no carga, <a href="${d.url}" target="_blank" rel="noopener noreferrer">abre el PDF original en otra pestaña ↗</a>. El archivo no se modifica.</div><section data-pdf-viewer style="min-height:200px;text-align:center"><div data-pdf-status="loading" role="status" style="padding:12px;color:var(--t3)">Preparando vista previa del PDF…</div><canvas aria-label="Página del documento PDF" style="max-width:100%;display:block;margin:auto"></canvas><div class="flex" style="justify-content:center;align-items:center;gap:12px;margin-top:12px"><button type="button" class="btn btn-sm" data-pdf-prev disabled>← Anterior</button><span data-pdf-page>Página pendiente</span><button type="button" class="btn btn-sm" data-pdf-next disabled>Siguiente →</button></div></section>`;
+    else if(isPdf) body=`${pdfNote}<section data-pdf-viewer style="min-height:200px;text-align:center"><div data-pdf-status="loading" role="status" style="padding:12px;color:var(--t3)">Preparando vista previa del PDF…</div><canvas aria-label="Página del documento PDF" style="max-width:100%;display:block;margin:auto"></canvas><div class="flex" style="justify-content:center;align-items:center;gap:12px;margin-top:12px"><button type="button" class="btn btn-sm" data-pdf-prev disabled>← Anterior</button><span data-pdf-page>Página pendiente</span><button type="button" class="btn btn-sm" data-pdf-next disabled>Siguiente →</button></div></section>`;
     else if(d.url&&!d.body) body=`<div style="text-align:center;padding:40px"><div style="font-size:40px;margin-bottom:12px">${d.ic||'📄'}</div><a href="${d.url}" target="_blank" class="btn btn-pr btn-sm" style="text-decoration:none">Abrir en pestaña nueva ↗</a></div>`;
     else body=`<div class="acad-content" style="max-width:820px;font-size:14px;line-height:1.75">${(d.body||'Vista previa no disponible.').split('\n').map(l=>{
       if(l.startsWith('## ')) return `<h3 style="margin:14px 0 4px">${l.slice(3)}</h3>`;
@@ -134,12 +162,12 @@ CX.module('documentos', ({data,role,ui})=>{
           <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)" id="docBack">← Volver</button>
           <div><div style="font-size:15px;font-weight:800;color:#fff">${d.ic||'📄'} ${d.n}</div><div style="font-size:11px;color:#94a3b8">${d.meta||''}</div></div>
         </div>
-        <div class="flex" style="gap:8px">${d.url?`<a href="${d.url}" download="${d.n}" class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3);text-decoration:none">⤓ Descargar</a>`:''}<button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)" id="docPrint">🖨 PDF</button></div>
+        <div class="flex" style="gap:8px">${isPdf&&connected()?`<button type="button" class="btn btn-sm" data-pdf-download disabled style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)">⤓ Descargar PDF</button>`:d.url?`<a href="${d.url}" download="${d.n}" class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3);text-decoration:none">⤓ Descargar</a>`:''}<button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)" id="docPrint">🖨 PDF</button></div>
       </div>
       <div class="card card-p">${body}</div>`;
     host.querySelector('#docBack').addEventListener('click',()=>{closeViewer();draw();});
     host.querySelector('#docPrint')?.addEventListener('click',()=>window.print());
-    if(isPdf){const slot=host.querySelector('[data-pdf-viewer]');if(slot)renderPdf(slot,d.url);}
+    if(isPdf){const slot=host.querySelector('[data-pdf-viewer]');if(slot)renderPdf(slot,d);}
     /* render inline de Excel (SheetJS) y Word (Mammoth) — no descarga */
     if(isXls||isDocx){
       const slot=host.querySelector('#docEmbed');
