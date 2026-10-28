@@ -4,18 +4,21 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "db56b89a1221d26f5cc4466585cda7eaa7360ddd",
-  "productTreeAuthority": "7b157bdf187ed712256eacfe86c1ff016b40c44e",
-  "predecessorProductSourceSha": "19ac62bb9cd6828b736f6347371183b42b518b5e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V521_2026-10-28.json",
-  "findingsLedgerExpectedGitBlob": "c628eeecec562fc95b0a65514bcd143fabc67927",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V189.json",
+  "productSourceSha": "6839a6693da7002712bca1ccabdbe1e9d461725c",
+  "productTreeAuthority": "5f1860868ba09f1700b7b396a314b36fbe52d40f",
+  "predecessorProductSourceSha": "db56b89a1221d26f5cc4466585cda7eaa7360ddd",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V522_2026-10-28.json",
+  "findingsLedgerExpectedGitBlob": "79b44e18ad4b2884710cacb0d90dcf210d4c0d39",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V190.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "I3_PHASE_A_HR_ACK_OPERATIONS_FINANZAS_CERTIFICATIONS_3_FUNCTIONAL_DEFECTS_2_NOT_DEPLOYED_10_SOURCE_FIXED_PROOF_GAPS_VRM290_HR_UI_SOURCE_PENDING_CI_DEV_D07_ONE_SMOKE",
   "i3P0CountryScope20261028": {
-    "linkedHistoricalFindings": ["VRM-081", "VRM-128"],
+    "linkedHistoricalFindings": [
+      "VRM-081",
+      "VRM-128"
+    ],
     "sourceSha": "db56b89a1221d26f5cc4466585cda7eaa7360ddd",
     "sourceTree": "7b157bdf187ed712256eacfe86c1ff016b40c44e",
     "predecessorSha": "19ac62bb9cd6828b736f6347371183b42b518b5e",
@@ -3025,7 +3028,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "e7ae9424dcc42380fdfbdef52afb6d953ce2426a",
+  "moduleTruthExpectedGitBlob": "52e3b6077385dd53ae99346bb71d0837dd23a896",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -14396,5 +14399,27 @@
     "id": "CXORBIA-I3-SHOCK-MONOTONIC-CLOSURE-20261028",
     "path": "CXORBIA_I3_PLAN_CHOQUE_CIERRE_MONOTONICO_FROZEN_2026-10-28.md",
     "gitBlob": "879313bfbced75baa8d764d9678f5efcc489c944"
+  },
+  "g03SourceAuthorityAlignment20261028": {
+    "state": "CONTROL_POINTER_SYNC_PENDING_GITHUB_CI",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "expectedControlParentSha": "2bcd69ee45b24ed96899cf8932cac6a30c309b16",
+    "productSourceSha": "6839a6693da7002712bca1ccabdbe1e9d461725c",
+    "productTree": "5f1860868ba09f1700b7b396a314b36fbe52d40f",
+    "previousProductSourceSha": "db56b89a1221d26f5cc4466585cda7eaa7360ddd",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V190.json",
+    "matrixBlob": "52e3b6077385dd53ae99346bb71d0837dd23a896",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V522_2026-10-28.json",
+    "ledgerBlob": "79b44e18ad4b2884710cacb0d90dcf210d4c0d39",
+    "changedOwnerBlobs": [
+      "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "app/core/backend-firebase.js",
+      "app/core/shoppers-store.js"
+    ],
+    "changedProductCode": 0,
+    "matrixDomainCount": 21,
+    "moduleClassificationPreserved": true,
+    "remainingG03": "F9_SOURCE_VISUAL_LINEAGE_12_OWNER_CROSSWALK_WITH_PROOF_AND_REAL_HN_IDENTITY_E2E",
+    "production": false
   }
 }

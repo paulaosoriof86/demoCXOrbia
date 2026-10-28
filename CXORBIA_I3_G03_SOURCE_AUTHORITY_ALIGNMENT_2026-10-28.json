@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "cxorbia.i3.g03.source-authority-alignment.v1",
+  "observedAt": "2026-10-28",
+  "iteration": "I3",
+  "status": "HOLD",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedParentSha": "2bcd69ee45b24ed96899cf8932cac6a30c309b16",
+  "previousProductSourceSha": "db56b89a1221d26f5cc4466585cda7eaa7360ddd",
+  "productSourceSha": "6839a6693da7002712bca1ccabdbe1e9d461725c",
+  "productTree": "5f1860868ba09f1700b7b396a314b36fbe52d40f",
+  "sourceLineage": "6839a669 IS 22 COMMITS AHEAD OF db56b89; 2bcd69e IS 3 CONTROL/TEST COMMITS AHEAD OF 6839a669",
+  "previousMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V189.json",
+  "previousMatrixBlob": "e7ae9424dcc42380fdfbdef52afb6d953ce2426a",
+  "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V190.json",
+  "matrixBlob": "52e3b6077385dd53ae99346bb71d0837dd23a896",
+  "domainCount": 21,
+  "classificationCounts": {
+    "COMPOSED_NOT_DEPLOYED": 2,
+    "MATCH": 5,
+    "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN": 2,
+    "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 3,
+    "SOURCE_FIXED_PENDING_CI_AND_DEV_FOCAL": 1,
+    "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN": 4,
+    "SOURCE_INSTRUMENTATION_DEV_MATERIALIZED_PENDING_ADMIN_LIVE_E2E": 1,
+    "TRUE_FUNCTIONAL_DEFECT": 3
+  },
+  "previousLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V521_2026-10-28.json",
+  "previousLedgerBlob": "c628eeecec562fc95b0a65514bcd143fabc67927",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V522_2026-10-28.json",
+  "findingsLedgerBlob": "79b44e18ad4b2884710cacb0d90dcf210d4c0d39",
+  "findingsPreserved": 290,
+  "ownerBlobTransitions": {
+    "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js": {
+      "previousBlob": "fc707ab753fc6badf8a21b3e952a81886ab7196c",
+      "sourceBlob": "4e9cfc368ec47b31929e6dff36c5768fcd7226cf"
+    },
+    "app/core/backend-firebase.js": {
+      "previousBlob": "783858ccad28078caa8580f7725e0886583874e9",
+      "sourceBlob": "b6e1ad084cc3a7dc4bc1e9618766bf680540fb8a"
+    },
+    "app/core/shoppers-store.js": {
+      "previousBlob": "22fc0902f4d87f779ca381feaf2977807c620c06",
+      "sourceBlob": "16d1abd55c3ab166f4c10c08220985e7a54f53ba"
+    }
+  },
+  "functionalCodeChanges": 0,
+  "authWrites": 0,
+  "firestoreWrites": 0,
+  "hrWrites": 0,
+  "devBuilds": 0,
+  "devDeploys": 0,
+  "productionDeploys": 0,
+  "outcome": "CONTROL_AUTHORITIES_PREPARED_FOR_CANONICAL_CI_NOT_PHASE_A_APPROVAL",
+  "openP0": [
+    "HN_CASE_01 9 HR visits vs 0 in authenticated profile",
+    "HN_CASE_02 17 HR visits vs 0 in authenticated profile",
+    "G03 owner coverage and F9/visual approval provenance",
+    "Full real E2E of application, assignment, scheduling, ACK, finance and certifications"
+  ],
+  "identityMergeExecuted": false,
+  "identityMergeAuthorization": "REQUIRED_FOR_EXACT_UID_CANONICAL_HR_PAIR",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false,
+  "production": "DO_NOT_TOUCH"
+}

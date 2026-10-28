@@ -7,16 +7,27 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "db56b89a1221d26f5cc4466585cda7eaa7360ddd",
-  "productTree": "7b157bdf187ed712256eacfe86c1ff016b40c44e",
+  "productSourceSha": "6839a6693da7002712bca1ccabdbe1e9d461725c",
+  "productTree": "5f1860868ba09f1700b7b396a314b36fbe52d40f",
   "i3P0CountryScope20261028": {
     "sourceSha": "db56b89a1221d26f5cc4466585cda7eaa7360ddd",
     "sourceTree": "7b157bdf187ed712256eacfe86c1ff016b40c44e",
     "predecessorSourceSha": "19ac62bb9cd6828b736f6347371183b42b518b5e",
-    "affectedRoles": ["Shopper HN", "Shopper GT control", "Admin HN"],
-    "changedOwners": ["app/core/backend-browser-auth.js", "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"],
+    "affectedRoles": [
+      "Shopper HN",
+      "Shopper GT control",
+      "Admin HN"
+    ],
+    "changedOwners": [
+      "app/core/backend-browser-auth.js",
+      "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+    ],
     "newQaOwner": "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs",
-    "localTests": {"pass": 75, "fail": 0, "scope": "SOURCE_ONLY"},
+    "localTests": {
+      "pass": 75,
+      "fail": 0,
+      "scope": "SOURCE_ONLY"
+    },
     "devSourceGate": "PENDING_CANONICAL_CI",
     "devMaterialization": "PENDING",
     "realShopperAdminE2e": "PENDING",
@@ -78,7 +89,7 @@
   "taskProgress": {
     "G01": "IN_PROGRESS_COVERAGE_CUSTODIED_AUTHORITY_GAPS_RETAINED_IN_G03",
     "G02": "DIRECT_NATIVE_GITHUB_WRITE_READBACK_AND_EXISTING_CI_PROVEN_NO_TINYFISH_REQUIRED",
-    "G03": "PENDING_NO_NEW_GENERAL_AUDIT",
+    "G03": "SOURCE_POINTER_BLOB_ALIGNMENT_PREPARED__F9_SCOPE_AND_IDENTITY_E2E_PENDING",
     "G04": "RUN1792_ADMIN_CLIENT_SHOPPER_SAME_ARTIFACT_LIVE_PASS__RUN1797_OWNER_PARITY_PRESERVED__HUMAN_PENDING",
     "G05": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
     "G06": "IN_PROGRESS_FROZEN_QUEUE_SINGLE_WRITER",
@@ -701,9 +712,9 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V189.json",
-    "gitBlob": "e7ae9424dcc42380fdfbdef52afb6d953ce2426a",
-    "sourceSha": "db56b89a1221d26f5cc4466585cda7eaa7360ddd",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V190.json",
+    "gitBlob": "52e3b6077385dd53ae99346bb71d0837dd23a896",
+    "sourceSha": "6839a6693da7002712bca1ccabdbe1e9d461725c",
     "allModulesMatch": false,
     "phaseAComplete": false
   },
@@ -2738,9 +2749,9 @@
     "gitBlob": "879313bfbced75baa8d764d9678f5efcc489c944"
   },
   "activeShockModuleTruth": {
-    "sourceSha": "db56b89a1221d26f5cc4466585cda7eaa7360ddd",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V189.json",
-    "matrixBlob": "e7ae9424dcc42380fdfbdef52afb6d953ce2426a",
+    "sourceSha": "6839a6693da7002712bca1ccabdbe1e9d461725c",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V190.json",
+    "matrixBlob": "52e3b6077385dd53ae99346bb71d0837dd23a896",
     "classificationCounts": {
       "COMPOSED_NOT_DEPLOYED": 2,
       "MATCH": 5,
@@ -2804,6 +2815,18 @@
     "materializedDev": false,
     "freshExternalHrRevision": "NOT_RECHECKED",
     "liveAdminShopperE2e": "PENDING",
+    "production": "DO_NOT_TOUCH"
+  },
+  "g03SourceAuthorityAlignment20261028": {
+    "state": "CONTROL_POINTER_SYNC_PENDING_GITHUB_CI",
+    "sourceSha": "6839a6693da7002712bca1ccabdbe1e9d461725c",
+    "sourceTree": "5f1860868ba09f1700b7b396a314b36fbe52d40f",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V190.json",
+    "matrixBlob": "52e3b6077385dd53ae99346bb71d0837dd23a896",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V522_2026-10-28.json",
+    "ledgerBlob": "79b44e18ad4b2884710cacb0d90dcf210d4c0d39",
+    "expectedControlParentSha": "2bcd69ee45b24ed96899cf8932cac6a30c309b16",
+    "blockedFunctionalClaims": true,
     "production": "DO_NOT_TOUCH"
   }
 }
