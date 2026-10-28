@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-gt-hn-postdev-e2e.v1",
+  "dateLocal": "2026-10-28",
+  "timezone": "America/Guatemala",
+  "iteration": "I3-P0-GT-HN-DEV-POSTDEPLOY-E2E-01",
+  "decision": "NO_GO",
+  "scope": "DEV_ONLY",
+  "status": "HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL",
+  "sourceAuthority": {
+    "sourceSha": "db56b89a1221d26f5cc4466585cda7eaa7360ddd",
+    "sourceTree": "7b157bdf187ed712256eacfe86c1ff016b40c44e",
+    "shopperProviderSyntheticTestsPassed": 45,
+    "shopperProviderSyntheticTestsFailed": 0
+  },
+  "devMaterialization": {
+    "runId": 40763741865,
+    "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/40763741865",
+    "result": "PASS_I3_P0_GT_HN_EXACT_DEV_MATERIALIZATION",
+    "runtimeRevision": "cxorbia-live-hr-dev-00328-r69",
+    "runtimeDigest": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:9a6d741b0e3729650b3a701aa7e636033275c3718d88c0063671b038ecf961cf",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/bb25faef426017d9",
+    "servedBrowserAuthMatchesPinnedSource": true,
+    "productionIndexUnchangedByBeforeAfterSHA256": true,
+    "productionDeploys": 0,
+    "hrWrites": 0,
+    "authWrites": 0
+  },
+  "independentLiveHrRead": {
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "sourceRevision": "4fc8def718fd1504f5d76a1fbc80b6901cbf711ec2b89f4dfc3a81ecbbca517a",
+    "sourceReadAtUTC": "2026-10-28T20:34:01.124Z",
+    "sourceAccessMode": "public_gviz_csv_cache_busted",
+    "cacheOrigin": "runtime_refresh",
+    "runtimeRead": true,
+    "refreshError": null,
+    "providerLastHumanEditNotEstablished": true
+  },
+  "adminBrowserEvidence": {
+    "project": "cinepolis",
+    "period": "2026-10",
+    "hrVisibleRows": 44,
+    "gtRows": 34,
+    "hnRows": 10,
+    "hondurasShopperCase": "HN_CASE_01",
+    "hondurasShopperProfileVisits": 9,
+    "hondurasShopperCanonicalIdPrefix": "TYA_HN_",
+    "identityPIIRedactedFromReceipt": true,
+    "hrOriginScreenSemanticDiscrepancy": "Admin HR table labels rows Plataforma/Sincronizado despite independent external provider read; do not treat labels as fresh remote ACK."
+  },
+  "shopperBrowserEvidence": {
+    "shopperCase": "HN_CASE_01",
+    "shownCountry": "GT",
+    "expectedCountryPerExactAdminHrIdentity": "HN",
+    "historicalVisitsShown": 0,
+    "historicalVisitsExpectedFromAdminCanonicalProfile": 9,
+    "availableVisitsShown": 3,
+    "availableVisitCountryShown": "GT",
+    "countryIsolationResult": "FAIL",
+    "historicalIdentityBindingResult": "FAIL"
+  },
+  "interpretation": {
+    "materialization": "PASS",
+    "hrFreshRead": "PASS_FOR_LATEST_OBSERVED_SOURCE_REVISION",
+    "shopperCountryAndHistoricalBinding": "P0_PROVEN",
+    "suspectedRoot": "Signed-in shopper principal resolves a different protected/canonical identity or country scope than the exact HR/HN profile; source fallback alone did not resolve this observed session.",
+    "rootCausalityConfirmed": false,
+    "notAnExcelFreshnessFailure": true,
+    "readOnlyAdminShopperE2ePerformed": true,
+    "exactPrincipalLinkAndAuthClaimsNotYetReadBack": true
+  },
+  "blockedActions": [
+    "No automatic identity merge based on display name, phone or email.",
+    "No HR, Firebase Auth, or Firestore identity mutation without two exact technical IDs, trusted authority, provider ACK, idempotency and readback.",
+    "No production deploy or I4 authorization.",
+    "No GO declaration for Phase A."
+  ],
+  "nextExactAction": "Read-only adjudication of signed-in Auth uid/shopperId/country against canonical HN_CASE_01, exact duplicate or orphan profile and live HR identityMap. Then one P0_PROVEN owner-scoped identity-link remedy with DEV roundtrip for GT/HN admin and shopper; only after readback revisit Gate20/Gate21.",
+  "requiresAdditionalAuthorization": "Any actual profile/Auth/Firestore merge, remap or delete must be authorized for the exact two record IDs and expected effects before execution.",
+  "production": "DO_NOT_TOUCH"
+}
