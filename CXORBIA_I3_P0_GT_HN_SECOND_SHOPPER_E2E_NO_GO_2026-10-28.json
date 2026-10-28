@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-gt-hn-second-shopper-e2e.v1",
+  "dateLocal": "2026-10-28",
+  "timezone": "America/Guatemala",
+  "iteration": "I3-P0-GT-HN-DEV-POSTDEPLOY-E2E-02",
+  "decision": "NO_GO",
+  "scope": "DEV_ONLY",
+  "predecessorReceipt": "CXORBIA_I3_P0_GT_HN_POSTDEV_E2E_NO_GO_2026-10-28.json",
+  "devHostingVersion": "sites/cxorbia-backend-dev/versions/bb25faef426017d9",
+  "devRuntimeRevision": "cxorbia-live-hr-dev-00328-r69",
+  "providerLiveHrRevision": "4fc8def718fd1504f5d76a1fbc80b6901cbf711ec2b89f4dfc3a81ecbbca517a",
+  "secondShopperCase": {
+    "caseId": "HN_CASE_02",
+    "authenticatedDevShopper": true,
+    "adminHrCountry": "HN",
+    "adminHumanProfileHistoricalVisitsObserved": 17,
+    "shopperSessionCountry": "GT",
+    "shopperProfileHistoricalVisits": 0,
+    "shopperAvailableVisits": 3,
+    "shopperAvailableVisitCountry": "GT",
+    "shopperAvailableBranchesCountryCheck": "GT_ONLY_THREE",
+    "identityAndCountryIsolation": "FAIL",
+    "piiRemoved": true
+  },
+  "crossCaseInference": {
+    "independentHondurasShopperAccountsTested": 2,
+    "bothShowGuatemalaCountry": true,
+    "bothShowNoHistoricalVisits": true,
+    "bothShowThreeGuatemalaOpportunities": true,
+    "classification": "P0_PROVEN_REPRODUCIBLE_ACROSS_TWO_HN_PRINCIPALS",
+    "rootCauseStillRequiresReadOnlyAuthMembershipClaimTrace": true,
+    "automaticMergeAuthorized": false
+  },
+  "controls": {
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "identityMerges": 0,
+    "productionDeploys": 0,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": "DO_NOT_TOUCH"
+  },
+  "nextExactAction": "Run tightly scoped read-only Auth claims/Firestore member/crosswalk/live-HR trace for both HN sign-ins; identify exact owner before further P0_PROVEN fix; certify independent GT/HN shopper and admin roundtrip before considering Gate20/Gate21."
+}

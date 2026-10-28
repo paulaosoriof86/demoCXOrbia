@@ -1,0 +1,49 @@
+name: CXOrbia I3 P0 Two HN Auth Read-only One-Shot
+on:
+  push:
+    branches: [recovery/cxorbia-phase-a-20260831]
+    paths:
+      - .github/workflows/cxorbia-i3-p0-two-hn-auth-readonly-once.yml
+      - firebase/auth-dev-tools/cxorbia-i3-p0-hn-two-shopper-auth-readonly.mjs
+permissions:
+  contents: read
+concurrency:
+  group: cxorbia-i3-p0-hn-auth-readonly-once
+  cancel-in-progress: false
+jobs:
+  auth-firestore-hr-targeted-readonly:
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-HN-TWO-AUTH-READONLY-ONCE' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Exact DEV-only and no-source-drift guards
+        run: |
+          set -Eeuo pipefail
+          test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
+          test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
+          git merge-base --is-ancestor db56b89a1221d26f5cc4466585cda7eaa7360ddd HEAD
+          git diff --quiet db56b89a1221d26f5cc4466585cda7eaa7360ddd HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules
+          node --check firebase/auth-dev-tools/cxorbia-i3-p0-hn-two-shopper-auth-readonly.mjs
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Read only two exact DEV authentication principals and current HR
+        env:
+          CX_DIAG_OUT: .tmp/i3-p0-hn-two-shopper
+        run: |
+          set -Eeuo pipefail
+          npm install --prefix firebase/auth-dev-tools --no-save --no-package-lock --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
+          node firebase/auth-dev-tools/cxorbia-i3-p0-hn-two-shopper-auth-readonly.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-p0-hn-auth-readonly-${{ github.run_id }}
+          path: .tmp/i3-p0-hn-two-shopper/
+          if-no-files-found: warn
+          retention-days: 30
