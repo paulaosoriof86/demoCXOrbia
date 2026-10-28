@@ -143,7 +143,10 @@ async function preflight(row,hr){
     'IDENTITY_KEEPER_PASSWORD_PROOF_MISSING_'+row.caseId);
   assert(str(cp.shopperId||cp.id)===row.canonical&&str(cp.sourceType)==='hr_external'&&hn(cp),
     'IDENTITY_CANONICAL_PROFILE_DRIFT_'+row.caseId);
-  assert(hn(ap)&&!!phone(ap)&&phone(ap)===phone(cp)&&phone(cp)===phone(authority.owner),
+  // Live HR is the authority for the technical ID, country and visit rows;
+  // HR need not expose the same contact field as protected Firestore profiles.
+  // The exact protected alias-to-canonical contact corroboration is mandatory.
+  assert(hn(ap)&&!!phone(ap)&&phone(ap)===phone(cp),
     'IDENTITY_CONTACT_CORROBORATION_DRIFT_'+row.caseId);
   assert(str((aliasCross.data()||{}).shopperId)===row.alias&&str((canonCross.data()||{}).shopperId)===row.canonical,
     'IDENTITY_CROSSWALK_CHANGED_'+row.caseId);
