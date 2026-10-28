@@ -33,7 +33,7 @@ env:
   PRODUCTION_URL: https://tya-plataforma.web.app
 jobs:
   country-source-dev-only:
-    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-HN-SCOPE-DEV-ONCE-V4' }}
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-HN-SCOPE-DEV-ONCE-V5' }}
     runs-on: ubuntu-latest
     timeout-minutes: 65
     steps:
@@ -60,8 +60,11 @@ jobs:
           git merge-base --is-ancestor "$PINNED_SOURCE" HEAD
           git merge-base --is-ancestor "$PRIOR_CERTIFIED_SOURCE" "$PINNED_SOURCE"
           git diff --quiet "$PINNED_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-          node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs > "$EVIDENCE_DIR/canonical-guard.json"
-          jq -e --arg s "$PRIOR_CERTIFIED_SOURCE" --arg t "$PRIOR_CERTIFIED_TREE" '.productSourceSha==$s and .productSourceTree==$t' "$EVIDENCE_DIR/canonical-guard.json" >/dev/null
+          # The frozen historical certificate must be verified at its own exact
+          # source, not reinterpreted as a certificate for this one-file P0.
+          git worktree add --detach "$RUNNER_TEMP/i3-prior-certified" "$PRIOR_CERTIFIED_SOURCE" >/dev/null
+          (cd "$RUNNER_TEMP/i3-prior-certified" && node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs > "$GITHUB_WORKSPACE/$EVIDENCE_DIR/prior-canonical-guard.json")
+          jq -e --arg s "$PRIOR_CERTIFIED_SOURCE" --arg t "$PRIOR_CERTIFIED_TREE" '.productSourceSha==$s and .productSourceTree==$t' "$EVIDENCE_DIR/prior-canonical-guard.json" >/dev/null
           git diff --name-only "$PRIOR_CERTIFIED_SOURCE" "$PINNED_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source > "$EVIDENCE_DIR/source-diff.txt"
           test "$(wc -l < "$EVIDENCE_DIR/source-diff.txt")" = 1
           grep -Fxq app/adapters/tya-protected-auth-hr-authority-bridge-v2.js "$EVIDENCE_DIR/source-diff.txt"
