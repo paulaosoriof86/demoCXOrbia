@@ -108,7 +108,7 @@ test('VRM-039 canonical finance read model preserves explicit zero honorarium as
 
 test('VRM-039 finance human surfaces render missing monetary authority as pending source, never fabricated zero',()=>{
   const src=fs.readFileSync(root+'app/modules/finanzas.js','utf8');
-  assert.match(src,/Honorarios devengados',moneyOrPending\(d,d\.honorarioDevengado,'Pendiente de fuente'\)/);
+  assert.match(src,/Honorarios devengados',cxFinanceKpiValue\(d,d\.honorarioDevengado,\{state:'obligation_unpaid'/);
   assert.match(src,/honKnown\?ui\.money\(p\.currency\[c\],hon\):pending/);
   assert.doesNotMatch(src,/honorarioDevengado\.toLocaleString\(\)/);
   assert.doesNotMatch(src,/Math\.round\(d\.honorarioDevengado\)/);

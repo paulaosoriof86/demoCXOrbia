@@ -79,7 +79,12 @@ const hrSnapshot=()=>({
   tenantId:'tenant-a',
   projectId:'project-a',
   currentPeriodId:'period-a',
-  visits:[{id:'visit-a',visitId:'visit-a',tenantId:'tenant-a',projectId:'period-a',periodId:'period-a',hrRowId:'HR!2',sourceTab:'HR',sourceRow:2,estado:'disponible',status:'disponible',sucursal:'HR Sucursal',ciudad:'Ciudad',pais:'GT',canonicalFacets:{available:true,assigned:false}}]
+  visits:[{id:'visit-a',visitId:'visit-a',tenantId:'tenant-a',projectId:'period-a',periodId:'period-a',hrRowId:'HR!2',sourceTab:'HR',sourceRow:2,estado:'disponible',status:'disponible',sucursal:'HR Sucursal',ciudad:'Ciudad',pais:'GT',
+    periodKey:'2026-09',disponibleDesde:null,availableFrom:null,availabilityState:'eligible_unassigned',availabilityDependency:null,
+    shopper:null,shopperCode:null,hasShopper:false,canonicalState:'available',operationalState:'available',
+    assignmentState:'unassigned',schedulingState:'not_applicable',executionState:'not_realized',questionnaireState:'not_available',submissionState:'not_submitted',
+    agendada:null,controlDia:null,cuestFecha:null,realizada:null,submit:false,submittedAt:null,boleto:0,comboAmt:0,sourceSnapshotAt:null,reviewRequired:false,reviewReasons:[],
+    canonicalFacets:{available:true,assigned:false}}]
 });
 
 test('PRE-I4 VRM-134 / bounded visit workers settle all writes before reporting a failure',async()=>{
@@ -114,8 +119,8 @@ test('Gate 7 / visit HR reconciliation creates durable visits idempotently by re
   assert.equal(first.visitCount,1);
   assert.equal(first.createdVisits,1);
   assert.equal(first.providerWrites,1);
-  assert.equal(db.get(visitPath('visit-a')).hrRowId,'HR!2');
-  assert.equal(db.get(visitPath('visit-a')).periodId,'period-a');
+  assert.equal(db.get(visitPath('HR!2')).hrRowId,'HR!2');
+  assert.equal(db.get(visitPath('HR!2')).periodId,'period-a');
 
   const before=db.paths();
   const replay=await provider(db).reconcileSnapshot(hrSnapshot(),{sourceRevision:'hr-rev-1'});
@@ -132,44 +137,44 @@ test('Gate 7 / HR reconciliation updates durable operational state across revisi
   assigned.visits[0]={...assigned.visits[0],estado:'asignada',status:'asignada',shopperId:'shopper-hr',canonicalFacets:{available:false,assigned:true}};
   const second=await provider(db).reconcileSnapshot(assigned,{sourceRevision:'hr-rev-2'});
   assert.equal(second.providerWrites,1);
-  assert.equal(db.get(visitPath('visit-a')).estado,'asignada');
-  assert.equal(db.get(visitPath('visit-a')).shopperId,'shopper-hr');
-  assert.equal(db.get(visitPath('visit-a')).assignmentSource,'hr');
-  assert.equal(db.get(visitPath('visit-a')).assignmentSyncStatus,'synced');
-  assert.equal(db.get(visitPath('visit-a')).canonicalFacets.available,false);
+  assert.equal(db.get(visitPath('HR!2')).estado,'asignada');
+  assert.equal(db.get(visitPath('HR!2')).shopperId,'shopper-hr');
+  assert.equal(db.get(visitPath('HR!2')).assignmentSource,'hr');
+  assert.equal(db.get(visitPath('HR!2')).assignmentSyncStatus,'synced');
+  assert.equal(db.get(visitPath('HR!2')).canonicalFacets.available,false);
 
   const available=hrSnapshot();
   const third=await provider(db).reconcileSnapshot(available,{sourceRevision:'hr-rev-3'});
   assert.equal(third.providerWrites,1);
-  assert.equal(db.get(visitPath('visit-a')).estado,'disponible');
-  assert.equal(db.get(visitPath('visit-a')).shopperId,null);
-  assert.equal(db.get(visitPath('visit-a')).assignmentSource,null);
-  assert.equal(db.get(visitPath('visit-a')).assignmentSyncStatus,null);
-  assert.equal(db.get(visitPath('visit-a')).canonicalFacets.available,true);
+  assert.equal(db.get(visitPath('HR!2')).estado,'disponible');
+  assert.equal(db.get(visitPath('HR!2')).shopperId,null);
+  assert.equal(db.get(visitPath('HR!2')).assignmentSource,null);
+  assert.equal(db.get(visitPath('HR!2')).assignmentSyncStatus,null);
+  assert.equal(db.get(visitPath('HR!2')).canonicalFacets.available,true);
 
-  db.seed(visitPath('visit-a'),{...db.get(visitPath('visit-a')),estado:'realizada',status:'realizada',shopperId:'shopper-stale',assignmentSource:'hr',assignmentSyncStatus:'synced'});
+  db.seed(visitPath('HR!2'),{...db.get(visitPath('HR!2')),estado:'realizada',status:'realizada',shopperId:'shopper-stale',assignmentSource:'hr',assignmentSyncStatus:'synced'});
   const repaired=await provider(db).reconcileSnapshot(available,{sourceRevision:'hr-rev-3'});
   assert.equal(repaired.providerWrites,1);
-  assert.equal(db.get(visitPath('visit-a')).estado,'disponible');
-  assert.equal(db.get(visitPath('visit-a')).shopperId,null);
+  assert.equal(db.get(visitPath('HR!2')).estado,'disponible');
+  assert.equal(db.get(visitPath('HR!2')).shopperId,null);
 });
 
-test('Gate 7 / HR reconciliation preserves platform-pending assignment until HR reflects or conflicts',async()=>{
+test('Gate 7 / HR reconciliation gives HR authority until external reflection is confirmed',async()=>{
   const db=new FakeFirestore();
-  db.seed(visitPath('visit-a'),{id:'visit-a',visitId:'visit-a',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',hrRowId:'HR!2',estado:'asignada',status:'asignada',shopperId:'shopper-platform',assignmentSource:'platform',assignmentSyncStatus:'pending_hr',version:4});
+  db.seed(visitPath('HR!2'),{id:'visit-a',visitId:'visit-a',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',hrRowId:'HR!2',estado:'asignada',status:'asignada',shopperId:'shopper-platform',assignmentSource:'platform',assignmentSyncStatus:'pending_hr',version:4});
   const waiting=await provider(db).reconcileSnapshot(hrSnapshot(),{sourceRevision:'hr-rev-wait'});
   assert.equal(waiting.providerWrites,1);
-  assert.equal(db.get(visitPath('visit-a')).shopperId,'shopper-platform');
-  assert.equal(db.get(visitPath('visit-a')).assignmentSource,'platform');
-  assert.equal(db.get(visitPath('visit-a')).assignmentSyncStatus,'pending_hr');
+  assert.equal(db.get(visitPath('HR!2')).shopperId,null);
+  assert.equal(db.get(visitPath('HR!2')).assignmentSource,null);
+  assert.equal(db.get(visitPath('HR!2')).assignmentSyncStatus,null);
 
   const reflected=hrSnapshot();
   reflected.visits[0]={...reflected.visits[0],estado:'asignada',status:'asignada',shopperId:'shopper-platform',canonicalFacets:{available:false,assigned:true}};
   const synced=await provider(db).reconcileSnapshot(reflected,{sourceRevision:'hr-rev-synced'});
   assert.equal(synced.providerWrites,1);
-  assert.equal(db.get(visitPath('visit-a')).shopperId,'shopper-platform');
-  assert.equal(db.get(visitPath('visit-a')).assignmentSource,'platform');
-  assert.equal(db.get(visitPath('visit-a')).assignmentSyncStatus,'synced');
+  assert.equal(db.get(visitPath('HR!2')).shopperId,'shopper-platform');
+  assert.equal(db.get(visitPath('HR!2')).assignmentSource,'hr');
+  assert.equal(db.get(visitPath('HR!2')).assignmentSyncStatus,'synced');
 });
 
 test('Gate 7 / composer overlays durable platform pending assignment without taking HR-managed fields',()=>{
@@ -302,18 +307,31 @@ test('PRE-I4 VRM-013 / canonical provider reschedule decision is durable and ide
   const db=new FakeFirestore();
   db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'admin',authNamespace:'staff',projectIds:['project-a']});
   db.seed(visitPath('visit-s'),{id:'visit-s',visitId:'visit-s',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',estado:'asignada',status:'asignada',shopperId:'shopper-a',version:2});
-  const command={version:'cxorbia-command-adapter-v1',commandType:'visit.reschedule',entityType:'visit',entityId:'visit-s',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',expectedVersion:2,idempotencyKey:'prei4-reschedule-1',payload:{visitId:'visit-s',newDate:'2026-09-26',decision:'approved',franjaCode:'AM 8–12h'},authorization:{providerEnforcementRequired:true}};
-  const first=await provider(db).execute('token',command);assert.equal(first.providerAck,true);assert.equal(db.get(visitPath('visit-s')).agendada,'2026-09-26');
+  const futureDate=new Date(Date.now()+14*86400000).toISOString().slice(0,10);
+  const command={version:'cxorbia-command-adapter-v1',commandType:'visit.reschedule',entityType:'visit',entityId:'visit-s',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',expectedVersion:2,idempotencyKey:'prei4-reschedule-1',payload:{visitId:'visit-s',newDate:futureDate,decision:'approved',franjaCode:'AM 8–12h'},authorization:{providerEnforcementRequired:true}};
+  const first=await provider(db).execute('token',command);assert.equal(first.providerAck,true);assert.equal(db.get(visitPath('visit-s')).agendada,futureDate);
   const replay=await provider(db).execute('token',command);assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);
 });
 
-test('PRE-I4 VRM-013 / canonical provider cancel releases visit to availability only after ACK',async()=>{
+test('PRE-I4 VRM-013 / internal-owned cancellation releases only after provider ACK',async()=>{
   const db=new FakeFirestore();
   db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'admin',authNamespace:'staff',projectIds:['project-a']});
+  db.seed('tenants/tenant-a/projects/project-a',{operationalSource:{mode:'internal'}});
   db.seed(visitPath('visit-c'),{id:'visit-c',visitId:'visit-c',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',estado:'agendada',status:'agendada',shopperId:'shopper-a',shopper:'Shopper A',agendada:'2026-09-26',version:3,canonicalFacets:{available:false,assigned:true,scheduled:true}});
   const command={version:'cxorbia-command-adapter-v1',commandType:'visit.cancel',entityType:'visit',entityId:'visit-c',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',expectedVersion:3,idempotencyKey:'prei4-cancel-1',payload:{visitId:'visit-c',releaseToAvailable:true,reason:'admin_cancel_release'},authorization:{providerEnforcementRequired:true}};
   const result=await provider(db).execute('token',command);assert.equal(result.providerAck,true);
   const row=db.get(visitPath('visit-c'));assert.equal(row.estado,'disponible');assert.equal(row.shopperId,null);assert.equal(row.agendada,null);assert.equal(row.canonicalFacets.available,true);assert.equal(row.assignmentSyncStatus,'pending_hr');
+});
+
+test('PRE-I4 VRM-013 / external-HR cancellation cannot fabricate availability without HR ACK',async()=>{
+  const db=new FakeFirestore();
+  db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'admin',authNamespace:'staff',projectIds:['project-a']});
+  db.seed('tenants/tenant-a/projects/project-a',{operationalSource:{mode:'external'}});
+  db.seed(visitPath('visit-ext'),{id:'visit-ext',visitId:'visit-ext',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',hrRowId:'HR!9',estado:'agendada',status:'agendada',shopperId:'shopper-a',agendada:'2026-09-26',version:3,canonicalFacets:{available:false,assigned:true,scheduled:true}});
+  const command={version:'cxorbia-command-adapter-v1',commandType:'visit.cancel',entityType:'visit',entityId:'visit-ext',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',expectedVersion:3,idempotencyKey:'prei4-external-cancel-ack-block',payload:{visitId:'visit-ext',releaseToAvailable:true,reason:'admin_cancel_release'},authorization:{providerEnforcementRequired:true}};
+  const result=await provider(db).execute('token',command);
+  assert.equal(result.ok,false);assert.equal(result.providerAck,false);assert.equal(result.code,'OPS_CANCEL_EXTERNAL_HR_ACK_REQUIRED');
+  assert.equal(db.get(visitPath('visit-ext')).estado,'agendada');assert.equal(db.get(visitPath('visit-ext')).shopperId,'shopper-a');
 });
 
 test('PRE-I4 VRM-013 / Postulaciones has no local-first edit reassign cancel or reprogram success paths',()=>{
