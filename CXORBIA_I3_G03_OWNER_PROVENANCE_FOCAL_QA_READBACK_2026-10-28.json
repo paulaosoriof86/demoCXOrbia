@@ -1,0 +1,347 @@
+{
+  "schemaVersion": "cxorbia.i3.g03.owner-provenance-focal-qa.v1",
+  "id": "CXORBIA-I3-G03-OWNER-PROVENANCE-FOCAL-QA-20261028",
+  "iteration": "I3",
+  "observedDate": "2026-10-28",
+  "classification": "MAPPING_FAILURE",
+  "decision": "HOLD_G03_PENDING_DOMAIN_MAPPING_PROVIDER_DEPENDENCY_AND_SAME_ARTIFACT_LIVE_E2E",
+  "scope": "APPEND_ONLY_CONTROL_RECEIPT_NOT_TERMINAL_CERTIFICATION",
+  "source": {
+    "repo": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "productSourceSha": "77fd283349ce46033a95235fd2fae632e856fe35",
+    "productTree": "9e3c446c829edbcb7cc5d2f6ab179ddacb246248",
+    "referenceReceipt": "CXORBIA_I3_G03_PHASE_A_SCOPE_CROSSWALK_READBACK_2026-10-28.json",
+    "historicalRun1357SourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08"
+  },
+  "reconciliation": {
+    "ownerPathsExamined": 12,
+    "identicalToHistoricalRun1357": 7,
+    "changedSinceHistoricalRun1357": 5,
+    "notInCurrentMatrixSourceInventory": [
+      "app/core/backend-ai.js",
+      "app/modules/rutas.js"
+    ],
+    "matrixModulesClassification": "UNCHANGED",
+    "sourceInventoryStatus": "METADATA_GAP_NOT_TWELVE_FUNCTIONAL_BUGS",
+    "paths": [
+      {
+        "path": "app/core/automations.js",
+        "currentGitBlob": "1bf04186e2461340e2852a7608b98d1d510a71a0",
+        "historicalRun1357GitBlob": "f6d6e4779d0b2068d5b35ee380bc2f9c132ac382",
+        "exactCodeParityWithRun1357": false,
+        "planReferences": [
+          {
+            "kind": "critical_function",
+            "ref": "readAttachment",
+            "taskIds": "D02"
+          }
+        ],
+        "sourceInventoryPresence": true,
+        "classification": "CHANGED_WITH_SOURCE_QA_AND_OLDER_LIVE_PARSER_PROOF_CURRENT_ARTIFACT_PENDING",
+        "evidence": [
+          "RUN1749_D02_5_OF_5",
+          "RUN1753_D02_LIVE_PDF_DOCX_PARSER_SMOKE"
+        ],
+        "proposedScopeOwner": "certifications/D02"
+      },
+      {
+        "path": "app/core/backend-ai.js",
+        "currentGitBlob": "45b05a50b058ed66d98aa41db6abdbceec1f399f",
+        "historicalRun1357GitBlob": "07dd141a978bd1278afff1d8fdf83f3364e9d3f4",
+        "exactCodeParityWithRun1357": false,
+        "planReferences": [
+          {
+            "kind": "critical_function",
+            "ref": "patch",
+            "taskIds": "D03,E08"
+          }
+        ],
+        "sourceInventoryPresence": false,
+        "classification": "CHANGED_WITH_SOURCE_QA_AND_OLDER_LIVE_PROVIDER_PROOF_CURRENT_ARTIFACT_PENDING",
+        "evidence": [
+          "RUN1759_D03_5_OF_5",
+          "RUN1778_D03_REAL_15_QUESTIONS_PENDING_REVIEW_IDEMPOTENT"
+        ],
+        "proposedScopeOwner": "certifications/D03"
+      },
+      {
+        "path": "app/core/topbar.js",
+        "currentGitBlob": "823fe9af94cdf1a83b3d3b733a5c306b5af2155d",
+        "historicalRun1357GitBlob": "e59210e95e99a9e568f976dcd13c6f98b963464f",
+        "exactCodeParityWithRun1357": false,
+        "planReferences": [
+          {
+            "kind": "critical_function",
+            "ref": "_noticeTarget",
+            "taskIds": "B13,A08"
+          }
+        ],
+        "sourceInventoryPresence": true,
+        "classification": "CHANGED_SOURCE_QA_PASS_BUT_LIVE_SHOPPER_REPROOF_FAIL",
+        "evidence": [
+          "RUN1814_U22_25_OF_25",
+          "RUN1815_DEV",
+          "U22_FILTER_SELECTIONS_FAIL_MAIL_VALIDATION_FAIL_SHOPPER_MAIL_FAIL"
+        ],
+        "proposedScopeOwner": "base-router-shell-cache+shoppers-mi-visitas-profile/B13"
+      },
+      {
+        "path": "app/modules/automatizaciones.js",
+        "currentGitBlob": "a28a2354bd4a0132cd788abfa3842a796005be32",
+        "historicalRun1357GitBlob": "ac456dfb309de43cbc5a25bee3ecf48076a168db",
+        "exactCodeParityWithRun1357": false,
+        "planReferences": [
+          {
+            "kind": "route_role",
+            "ref": "admin/automatizaciones",
+            "taskIds": "E08"
+          }
+        ],
+        "sourceInventoryPresence": true,
+        "classification": "CHANGED_TENANT_DURABLE_SOURCE_PATCH_PENDING_REAL_TWO_ADMIN_SESSION_ACK",
+        "evidence": [
+          "HF28_OCT13_SOURCE_PATCH",
+          "PRIOR_RUN1513_LEGACY_CHANNEL_VALIDATION_FAIL"
+        ],
+        "proposedScopeOwner": "phase-a-supporting-core/E08"
+      },
+      {
+        "path": "app/modules/clientes.js",
+        "currentGitBlob": "6bd4c34e80766e3cc108119cb12d78160ff7e773",
+        "historicalRun1357GitBlob": "d4279080b2eee3e2e97bd132de5789202016df38",
+        "exactCodeParityWithRun1357": false,
+        "planReferences": [
+          {
+            "kind": "route_role",
+            "ref": "admin/clientes",
+            "taskIds": "E06,A08"
+          }
+        ],
+        "sourceInventoryPresence": true,
+        "classification": "CHANGED_SOURCE_FIX_WITH_LOCAL_MOCKED_COMMERCIAL_QA_PENDING_LIVE",
+        "evidence": [
+          "4050e8af_RUN1418_SOURCE_FIX",
+          "LOCAL_5_OF_5_TEST_AFTER_ASSERTION_RECTIFICATION"
+        ],
+        "proposedScopeOwner": "client-portal-reportkit/E06"
+      },
+      {
+        "path": "app/modules/comercial.js",
+        "currentGitBlob": "61aaee6432e4a4206b07f8633d158b8d2b2c2271",
+        "historicalRun1357GitBlob": "61aaee6432e4a4206b07f8633d158b8d2b2c2271",
+        "exactCodeParityWithRun1357": true,
+        "planReferences": [
+          {
+            "kind": "route_role",
+            "ref": "admin/costos",
+            "taskIds": "E06,E07"
+          }
+        ],
+        "sourceInventoryPresence": true,
+        "classification": "HISTORICAL_SOURCE_BLOB_PARITY_ONLY_DEPENDENCIES_AND_E2E_PENDING",
+        "evidence": [
+          "RUN1357_SOURCE_BLOB_IDENTICAL"
+        ],
+        "proposedScopeOwner": null
+      },
+      {
+        "path": "app/modules/correo.js",
+        "currentGitBlob": "be3cbf808498de86265410682625a45e57541b97",
+        "historicalRun1357GitBlob": "be3cbf808498de86265410682625a45e57541b97",
+        "exactCodeParityWithRun1357": true,
+        "planReferences": [
+          {
+            "kind": "route_role",
+            "ref": "admin/correo",
+            "taskIds": "E08"
+          }
+        ],
+        "sourceInventoryPresence": true,
+        "classification": "HISTORICAL_SOURCE_BLOB_PARITY_ONLY_DEPENDENCIES_AND_E2E_PENDING",
+        "evidence": [
+          "RUN1357_SOURCE_BLOB_IDENTICAL"
+        ],
+        "proposedScopeOwner": null
+      },
+      {
+        "path": "app/modules/crm.js",
+        "currentGitBlob": "07732668ea2bd700dffe5fbff8df8e473575be05",
+        "historicalRun1357GitBlob": "07732668ea2bd700dffe5fbff8df8e473575be05",
+        "exactCodeParityWithRun1357": true,
+        "planReferences": [
+          {
+            "kind": "route_role",
+            "ref": "admin/crm",
+            "taskIds": "E06"
+          }
+        ],
+        "sourceInventoryPresence": true,
+        "classification": "HISTORICAL_SOURCE_BLOB_PARITY_ONLY_DEPENDENCIES_AND_E2E_PENDING",
+        "evidence": [
+          "RUN1357_SOURCE_BLOB_IDENTICAL"
+        ],
+        "proposedScopeOwner": null
+      },
+      {
+        "path": "app/modules/importador.js",
+        "currentGitBlob": "ad4f6b4621a69aa2cb303f026be6113e8f158ca2",
+        "historicalRun1357GitBlob": "ad4f6b4621a69aa2cb303f026be6113e8f158ca2",
+        "exactCodeParityWithRun1357": true,
+        "planReferences": [
+          {
+            "kind": "route_role",
+            "ref": "admin/importador",
+            "taskIds": "E10"
+          }
+        ],
+        "sourceInventoryPresence": true,
+        "classification": "HISTORICAL_SOURCE_BLOB_PARITY_ONLY_DEPENDENCIES_AND_E2E_PENDING",
+        "evidence": [
+          "RUN1357_SOURCE_BLOB_IDENTICAL"
+        ],
+        "proposedScopeOwner": null
+      },
+      {
+        "path": "app/modules/integraciones.js",
+        "currentGitBlob": "a71fc5bf83ff54df83c90339d0a3c0940167d75a",
+        "historicalRun1357GitBlob": "a71fc5bf83ff54df83c90339d0a3c0940167d75a",
+        "exactCodeParityWithRun1357": true,
+        "planReferences": [
+          {
+            "kind": "critical_function",
+            "ref": "connectionRef",
+            "taskIds": "E08"
+          },
+          {
+            "kind": "route_role",
+            "ref": "admin/integraciones",
+            "taskIds": "B03,B09,E08"
+          }
+        ],
+        "sourceInventoryPresence": true,
+        "classification": "HISTORICAL_SOURCE_BLOB_PARITY_ONLY_DEPENDENCIES_AND_E2E_PENDING",
+        "evidence": [
+          "RUN1357_SOURCE_BLOB_IDENTICAL"
+        ],
+        "proposedScopeOwner": null
+      },
+      {
+        "path": "app/modules/marketing.js",
+        "currentGitBlob": "6bfe1b4e3dbed12ead8a88404cdb495dbf1b8e83",
+        "historicalRun1357GitBlob": "6bfe1b4e3dbed12ead8a88404cdb495dbf1b8e83",
+        "exactCodeParityWithRun1357": true,
+        "planReferences": [
+          {
+            "kind": "route_role",
+            "ref": "admin/marketing",
+            "taskIds": "E09,E08"
+          }
+        ],
+        "sourceInventoryPresence": true,
+        "classification": "HISTORICAL_SOURCE_BLOB_PARITY_ONLY_DEPENDENCIES_AND_E2E_PENDING",
+        "evidence": [
+          "RUN1357_SOURCE_BLOB_IDENTICAL"
+        ],
+        "proposedScopeOwner": null
+      },
+      {
+        "path": "app/modules/rutas.js",
+        "currentGitBlob": "5ad69a8bad0dc02b58ca8b06145a74f0a4ddd51e",
+        "historicalRun1357GitBlob": "5ad69a8bad0dc02b58ca8b06145a74f0a4ddd51e",
+        "exactCodeParityWithRun1357": true,
+        "planReferences": [
+          {
+            "kind": "route_role",
+            "ref": "admin/rutas",
+            "taskIds": "B01,B05,B12,B14"
+          }
+        ],
+        "sourceInventoryPresence": false,
+        "classification": "HISTORICAL_SOURCE_BLOB_PARITY_ONLY_DEPENDENCIES_AND_E2E_PENDING",
+        "evidence": [
+          "RUN1357_SOURCE_BLOB_IDENTICAL"
+        ],
+        "proposedScopeOwner": null
+      }
+    ],
+    "conflictNotSilentlyReclassified": "matrix phaseBPreservation list includes crm/clientes/comercial/marketing while frozen plan E06-E10 still has I3 P0 contract requirements; scope must be reconciled without excluding mandatory Phase A functions",
+    "evidenceRule": "Exact code parity does not prove dependencies, provider/config, identity, permission, currently served artifact or human E2E. Historical PASS scope remains preserved, not transferred indiscriminately."
+  },
+  "focalSourceQA": {
+    "execution": "LOCAL_TEMPORARY_CHECKOUT_NOT_OFFICIAL_GITHUB_ACTION",
+    "testFiles": [
+      {
+        "path": "tools/qa/cxorbia-i3-d02-document-extraction-source.test.mjs",
+        "casesPassed": 5
+      },
+      {
+        "path": "tools/qa/cxorbia-i3-d03-ai-generation-source.test.mjs",
+        "casesPassed": 5
+      },
+      {
+        "path": "tools/qa/cxorbia-i3-work-uat-u22-shopper-controls.test.mjs",
+        "casesPassed": 6
+      },
+      {
+        "path": "tools/qa/cxorbia-i3-admin-client-readonly-preview.test.mjs",
+        "casesPassed": 4
+      },
+      {
+        "path": "backend/runtime/hr-live-service/test/cxorbia-commercial-command-provider-v1.test.mjs",
+        "casesPassed": 5
+      },
+      {
+        "path": "backend/runtime/hr-live-service/test/cxorbia-hr-source-admin-provider-v1.test.mjs",
+        "casesPassed": 6
+      },
+      {
+        "path": "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
+        "casesPassed": 41
+      },
+      {
+        "path": "backend/runtime/hr-live-service/test/cxorbia-i3-d03-document-source-metadata.test.mjs",
+        "casesPassed": 1
+      },
+      {
+        "path": "tools/qa/cxorbia-i3-vrm289-client-report-projection-wiring.test.mjs",
+        "casesPassed": 3
+      }
+    ],
+    "caseCount": 76,
+    "testFileCount": 9,
+    "result": "PASS_AFTER_TEST_ASSERTION_DRIFT_RECTIFICATION",
+    "originalFailure": {
+      "file": "backend/runtime/hr-live-service/test/cxorbia-commercial-command-provider-v1.test.mjs",
+      "case": "VRM-189 source removes browser-local authority and exposes durable readback",
+      "failure": "Old assertion expected __commercialState=clone(...) but actual atomic dataPatch object assigns __commercialState:clone(...); no runtime failure shown by this assertion alone.",
+      "classification": "MAPPING_FAILURE_TEST_ASSERTION_DRIFT_NOT_PROVEN_PRODUCT_DEFECT"
+    },
+    "correction": {
+      "path": "backend/runtime/hr-live-service/test/cxorbia-commercial-command-provider-v1.test.mjs",
+      "change": "Match current __commercialState: clone(...) property and assert atomic dataPatch is forwarded to CX_TYA_PUBLISH_LIVE_SNAPSHOT_CANDIDATE.",
+      "scope": "TEST_ONLY_NOT_PRODUCT_RUNTIME",
+      "providerWrites": 0,
+      "externalHrWrites": 0,
+      "productionWrites": 0
+    },
+    "canonicalGithubActions": "PENDING_NEXT_CONTROL_COMMIT_AND_READBACK",
+    "limitations": "In-memory mocked provider and static source tests; no live HR, real bank payment, external WhatsApp ACK or authenticated Admin/Shopper acceptance certified."
+  },
+  "browser": {
+    "attempted": "EXISTING_AUTHENTICATED_CHROME_DEV_TAB",
+    "result": "BROWSER_CONTROL_TIMEOUT_BEFORE_CURRENT_READBACK",
+    "freshExternalHrSourceRevision": "NOT_VERIFIED_IN_THIS_ITERATION",
+    "lastSealedHistoricalRevision": "d19eb12ad8c1c5140b5711ea390deaae50b0edd35ff4f982a69bfdcabbc86dd2",
+    "production": "DO_NOT_TOUCH"
+  },
+  "goNoGo": {
+    "i3": "HOLD",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "production": "DO_NOT_TOUCH",
+    "phaseAComplete": false
+  },
+  "exactNextAction": "Commit control/test-only drift correction with source parent lease and readback; obtain canonical source guard and proof. Then G03 bind all 12 paths to 21 domains/dependency scopes without inventing PASS; live HR fresh revision and same-artifact Admin+Shopper visits, finance, certification verification on DEV when connected Chrome is operable."
+}

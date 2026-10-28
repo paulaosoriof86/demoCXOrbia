@@ -2762,5 +2762,19 @@
     "historicalApprovedPassPreserved": true,
     "productSourceUnchanged": "77fd283349ce46033a95235fd2fae632e856fe35",
     "production": "DO_NOT_TOUCH"
+  },
+  "g03OwnerProvenanceReconciliation20261028": {
+    "receiptPath": "CXORBIA_I3_G03_OWNER_PROVENANCE_FOCAL_QA_READBACK_2026-10-28.json",
+    "receiptGitBlob": "607780a149c48f4cd7681d712d232a95d08d075e",
+    "classification": "MAPPING_FAILURE_TEST_ASSERTION_DRIFT_NOT_PRODUCT_REGRESSION",
+    "historicalExactBlobParity": 7,
+    "postHistoricalChangedOwnerPaths": 5,
+    "focalTestFiles": 9,
+    "focalTestsPassedAfterLocalAssertionCorrection": 76,
+    "liveHumanExternalHrRevision": "NOT_REVERIFIED_2026-10-28",
+    "phaseAComplete": false,
+    "matrixClassificationUnchanged": true,
+    "productSourceUnchanged": "77fd283349ce46033a95235fd2fae632e856fe35",
+    "production": "DO_NOT_TOUCH"
   }
 }

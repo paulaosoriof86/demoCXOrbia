@@ -49,6 +49,7 @@ test('VRM-189 source removes browser-local authority and exposes durable readbac
   assert.equal(/\blocalStorage\b/.test(clients),false);assert.equal(/\blocalStorage\b/.test(crm),false);
   assert.match(clients,/readbackVerified===true/);assert.match(crm,/readbackVerified===true/);
   assert.match(boundary,/requireProject:false,requirePeriod:false/);assert.match(boundary,/CX\.commercialCommandBoundary/);
-  assert.match(bridge,/__commercialState=clone\(protectedState\?\.commercial\|\|\{\}\)/);
+  assert.match(bridge,/__commercialState:\s*clone\(protectedState\?\.commercial\|\|\{\}\)/);
+  assert.match(bridge,/CX_TYA_PUBLISH_LIVE_SNAPSHOT_CANDIDATE\(candidate\.baseCandidate,\{[^\n]*dataPatch:candidate\.dataPatch/);
   assert.match(server,/firestore_tenant_commercial/);assert.match(server,/crmOpportunities/);
 });
