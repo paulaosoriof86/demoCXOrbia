@@ -1,0 +1,35 @@
+name: CXOrbia I3 VRM290 DEV Hosting - canonical caller only
+on:
+  workflow_call:
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  vrm290-dev-hosting:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify exact source, prior served bytes, and fresh HR revision
+        run: bash .github/control/CXORBIA_I3_VRM290_DEV_HOSTING_ONLY_20261028.sh preflight
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: cxorbia-backend-dev
+      - name: Materialize DEV Hosting only and read back exact bytes
+        run: bash .github/control/CXORBIA_I3_VRM290_DEV_HOSTING_ONLY_20261028.sh materialize
+      - name: Preserve immutable DEV readback evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-vrm290-hosting-dev-${{ github.run_id }}
+          path: .tmp/i3-vrm290-dev-hosting/
+          if-no-files-found: warn
+          retention-days: 30

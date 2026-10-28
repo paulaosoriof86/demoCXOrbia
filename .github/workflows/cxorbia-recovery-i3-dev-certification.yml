@@ -7395,7 +7395,7 @@ jobs:
       retention-days: 30
       compression-level: 0
 
-  # Focal I3 repair on the EXISTING certification lane; Hosting only, no Cloud Run rebuild.
+  # Focal I3 backend-only DEV lane.
   i3-a09b11-backend-only-dev-materialization:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_A09_B11_REVIEW_FLAG_SOURCE_PROOF_PENDING' && github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-a09b11-backend-only-dev]') }}
@@ -7500,14 +7500,9 @@ jobs:
       sha256sum "$FOCAL_EVIDENCE/production-after.html" | awk '{print $1}' > "$FOCAL_EVIDENCE/production-after.sha256"
       cmp -s "$FOCAL_EVIDENCE/production-before.sha256" "$FOCAL_EVIDENCE/production-after.sha256"
       jq -n -S --arg source "$EXPECTED_SOURCE" --arg tree "$EXPECTED_TREE" --arg image "$IMAGE_URI" --arg revision "$DEV_REVISION" --arg digest "$DIGEST" --arg hosting "$HOSTING_VERSION_AFTER" --arg productionSha "$(cat "$FOCAL_EVIDENCE/production-after.sha256")" '{decision:"PASS_I3_A09_B11_BACKEND_ONLY_DEV_MATERIALIZATION",sourceSha:$source,sourceTree:$tree,image:$image,runtimeRevision:$revision,runtimeDigest:$digest,health:"PASS",hostingVersion:$hosting,hostingDeploys:0,productionIndexSha256:$productionSha,productionChanged:false,hrWrites:0,firestoreDirectWrites:0,authWrites:0,builds:1,runtimeDeploys:1,productionDeploys:0}' > "$FOCAL_EVIDENCE/result.json"
-   - name: Preserve backend-only materialization evidence
+   - uses: actions/upload-artifact@v4
      if: always()
-     uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-a09b11-backend-only-dev-${{ github.run_id }}
-      path: .tmp/i3-a09b11-backend-only-dev/
-      if-no-files-found: warn
-      retention-days: 30
+     with: {name: "cxorbia-i3-a09b11-backend-only-dev-${{ github.run_id }}", path: .tmp/i3-a09b11-backend-only-dev/, if-no-files-found: warn, retention-days: 30}
   i3-a09b11-post-deploy-readback-only:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_A09_B11_REVIEW_FLAG_SOURCE_PROOF_PENDING' && github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-a09b11-readback-only]') }}
@@ -7582,14 +7577,9 @@ jobs:
       PRODUCTION_SHA="$(sha256sum "$READBACK_EVIDENCE/production.html" | awk '{print $1}')"
       test "$PRODUCTION_SHA" = "$(cat "$BASELINE/production-before.sha256")"
       jq -n -S --arg source "$EXPECTED_SOURCE" --arg tree "$EXPECTED_TREE" --arg revision "$EXPECTED_RUNTIME_REVISION" --arg digest "$DIGEST" --arg hosting "$HOSTING_VERSION" --arg prodSha "$PRODUCTION_SHA" '{decision:"PASS_I3_A09_B11_POST_DEPLOY_READBACK_ONLY",sourceSha:$source,sourceTree:$tree,runtimeRevision:$revision,runtimeDigest:$digest,trafficPercent:100,health:"PASS",hostingVersion:$hosting,hostingUnchanged:true,productionIndexSha256:$prodSha,productionUnchanged:true,builds:0,runtimeDeploys:0,hostingDeploys:0,hrWrites:0,firestoreDirectWrites:0,authWrites:0,productionDeploys:0}' > "$READBACK_EVIDENCE/result.json"
-   - name: Preserve read-only post-deploy evidence
+   - uses: actions/upload-artifact@v4
      if: always()
-     uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-a09b11-readback-only-${{ github.run_id }}
-      path: .tmp/i3-a09b11-post-deploy-readback/
-      if-no-files-found: warn
-      retention-days: 30
+     with: {name: "cxorbia-i3-a09b11-readback-only-${{ github.run_id }}", path: .tmp/i3-a09b11-post-deploy-readback/, if-no-files-found: warn, retention-days: 30}
   i3-d04e03-hosting-only-dev:
    needs: canonical-candidate-authority
    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[d04e03-hosting-only]') && needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_AUTH_SWITCH_PDF_LOCAL_PASS_PENDING_DEV' }}
@@ -7671,13 +7661,9 @@ jobs:
        cmp -s "$SOURCE_DIR/app/$FILE" "$OUT"
       done
       jq -n -S --arg source "$SRC" --arg old "$BEFORE" --arg version "$AFTER" '{decision:"PASS_I3_D04_E03_HOSTING_DEV_EXACT_BYTES",sourceSha:$source,previousHostingVersion:$old,hostingVersion:$version,hostingDeploys:1,cloudRunDeploys:0,dataWrites:0,production:false,humanAcceptance:"PENDING"}' > "$EV_DIR/readback.json"
-   - name: Archive evidence
+   - uses: actions/upload-artifact@v4
      if: always()
-     uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-d04e03-${{ github.run_id }}
-      path: .tmp/d04e03-hosting/
-      if-no-files-found: warn
+     with: {name: "cxorbia-i3-d04e03-${{ github.run_id }}", path: .tmp/d04e03-hosting/, if-no-files-found: warn}
 
   vrm287-dev-two-visit:
    needs: canonical-candidate-authority
@@ -7692,3 +7678,9 @@ jobs:
      with:
       credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 && node .github/control/vrm287-dev-two-visit.cjs
+
+  vrm290-dev-hosting:
+   needs: canonical-candidate-authority
+   if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'VRM290-DEV-HOSTING' }}
+   uses: ./.github/workflows/cxorbia-i3-vrm290-invoked-hosting-dev.yml
+   secrets: inherit
