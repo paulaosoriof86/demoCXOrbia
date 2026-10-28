@@ -7,13 +7,13 @@
   "productSourceSha": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
   "productTreeAuthority": "e5136b39ee35ca7e979221dfba11aee58aadef52",
   "predecessorProductSourceSha": "92e42a61eace003a1e518ac71bf4309517aa89d9",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V516_2026-10-27.json",
-  "findingsLedgerExpectedGitBlob": "69d9e40c9c3323c182a6b5aae4b8255626a49e58",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261027-V184.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V517_2026-10-27.json",
+  "findingsLedgerExpectedGitBlob": "7562aaadbdc8d71b2646e4731bafefc51ead10fb",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261027-V185.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D07_AUTHENTICATED_SHOPPER_AND_ADMIN_PDF_READ_E2E_PENDING_PLUS_OTHER_I3_OBLIGATIONS",
+  "activeBlocker": "D07_ADMIN_AUTHENTICATED_FETCH_UNKNOWN_TOKEN_CORS_NETWORK_STAGE__G03_LAST_APPROVED_OWNER_PARITY_AND_I3_E2E_PENDING",
   "focalSuccessor20261026": {
     "findingId": "VRM-289",
     "sourceSha": "92e42a61eace003a1e518ac71bf4309517aa89d9",
@@ -89,7 +89,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "D07 Hosting-only PASS RUN40605785526, source ab5fbfb0, hosting version ce348d093ac2b5e5. Work real Admin+independent Shopper PDF page navigation/download and role boundaries, then report. Preserve four preexisting owner mismatches and remaining I3 tasks, Gate20/Gate21 HOLD.",
+  "exactNextAction": "Using Work authenticated Chrome DEV, capture sanitized Admin D07 fetch stage and browser CORS/OPTIONS/GET status, no credentials. Bucket CORS not to be changed without explicit Paula authorization. G03 source hashes now reflect exact current source, but approved-blob, HR and human checks remain HOLD; Shopper independent and Client E2E pending. I4 forbidden.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2999,7 +2999,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "7ca16b6271e34190b21cd81895389ce90862e863",
+  "moduleTruthExpectedGitBlob": "5cd73af923907618179d33e20c254e81c96135d6",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -14280,6 +14280,25 @@
     "gate20": "HOLD",
     "gate21": "HOLD",
     "i4Authorized": false,
+    "production": false
+  },
+  "g03MatrixIntegrity20261027": {
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "readback": "SOURCE_BLOBS_RECONCILED_NOT_LATEST_APPROVAL",
+    "staleMatrixSchemaBefore": "cxorbia.i3.module-truth-matrix.20261025.v182",
+    "correctedMatrixSchema": "cxorbia.i3.module-truth-matrix.20261027.v185",
+    "updatedSourceHashPaths": [
+      "app/core/backend-browser-auth.js",
+      "app/core/backend-firebase.js",
+      "app/index-backend-dev.html",
+      "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+    ],
+    "changedProductFiles": 0,
+    "sourceSha": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
+    "approvedBlobParity": "PENDING_INDEPENDENT_APPROVAL_PROOF",
+    "allModulesMatch": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
     "production": false
   }
 }

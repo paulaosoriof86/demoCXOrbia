@@ -109,7 +109,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "On DEV Hosting ce348d093ac2b5e5 run Admin+Shopper independently authenticated D07 read/pdf pages/download cross-scope deny; preserve existing source and runtime. Then Client E2E, notifications, 4 non-D07 owner blob mismatches, same-artifact Gate20/21 and Paula approval. I3 HOLD; I4 unauthorized.",
+  "nextExactAction": "D07 source and Hosting-only DEV PASS; Admin now FAIL with RESOURCE_READ_PROVIDER_UNAVAILABLE BEFORE PDF.js. Request Work read-only CORS preflight/auth token stage/GET network evidence without secrets, then exact single remediation with authorization if CORS/Rules/IAM; once fixed confirm Admin and separate Shopper PDF E2E. G03 metadata readback V185 corrected, latest approved lineage verification pending; Gate20/21 HOLD I4 NO.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -687,8 +687,8 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261027-V184.json",
-    "gitBlob": "7ca16b6271e34190b21cd81895389ce90862e863",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261027-V185.json",
+    "gitBlob": "5cd73af923907618179d33e20c254e81c96135d6",
     "sourceSha": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
     "allModulesMatch": false,
     "phaseAComplete": false
@@ -2633,6 +2633,25 @@
     "gate20": "HOLD",
     "gate21": "HOLD",
     "i4Authorized": false,
+    "production": false
+  },
+  "g03MatrixIntegrity20261027": {
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "readback": "SOURCE_BLOBS_RECONCILED_NOT_LATEST_APPROVAL",
+    "staleMatrixSchemaBefore": "cxorbia.i3.module-truth-matrix.20261025.v182",
+    "correctedMatrixSchema": "cxorbia.i3.module-truth-matrix.20261027.v185",
+    "updatedSourceHashPaths": [
+      "app/core/backend-browser-auth.js",
+      "app/core/backend-firebase.js",
+      "app/index-backend-dev.html",
+      "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+    ],
+    "changedProductFiles": 0,
+    "sourceSha": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
+    "approvedBlobParity": "PENDING_INDEPENDENT_APPROVAL_PROOF",
+    "allModulesMatch": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
     "production": false
   }
 }
