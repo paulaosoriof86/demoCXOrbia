@@ -48,21 +48,24 @@ window.CX = window.CX || {};
     const requested=String(id==null?'':id).trim();
     if(!requested)return null;
     const listed=this.shoppers.find(s=>String(s?.id||s?.shopperId||'')===requested)||null;
-    if(listed)return listed;
     const session=CX.session||{},profile=this.__sessionShopperProfile||null;
     const authority=window.CX_PROTECTED_AUTH_HR_AUTHORITY||null;
     let providerUid='';
     try{providerUid=String(window.firebase?.auth?.().currentUser?.uid||'');}catch(_){}
-    if(session.role!=='shopper'||!providerUid||!profile||!authority||
+    const principalVerified=!(session.role!=='shopper'||!providerUid||!profile||!authority||
        authority.applied!==true||authority.exactSessionShopperReady!==true||
        authority.shopperPrincipalClaimsVerified!==true||
        providerUid!==String(authority.actorUid||'')||
        requested!==String(authority.canonicalShopperId||'')||
        requested!==String(session.user?.shopperId||'')||
-       requested!==String(profile.id||profile.shopperId||''))return null;
+       requested!==String(profile.id||profile.shopperId||''));
+    // Current HR source ownership takes precedence. An authenticated legacy
+    // ID absent from the current HR source uses its exact protected profile,
+    // even when a composed display-only row also has that technical ID.
+    if(!principalVerified||(listed&&(!Array.isArray(this.__liveHrShopperIds)||this.__liveHrShopperIds.includes(requested))))return listed;
     // Country is source-backed by the verified principal/readiness contract; the
     // profile document itself can legitimately be sparse for a new Shopper.
-    const country=String(profile.pais||profile.country||authority.shopperCountry||'').trim();
+    const country=String(authority.shopperCountry||profile.pais||profile.country||'').trim();
     return Object.assign({},profile,{id:requested,shopperId:requested,
       pais:country,country:country||String(profile.country||'').trim(),
       __exactAuthenticatedSessionProfile:true});
