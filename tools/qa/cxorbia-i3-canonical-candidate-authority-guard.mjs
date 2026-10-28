@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
+import {validateShockContinuity} from './cxorbia-i3-shock-continuity-guard.mjs';
 
 const DESCRIPTOR='CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json';
 const WORKFLOW='.github/workflows/cxorbia-recovery-i3-dev-certification.yml';
@@ -49,6 +50,11 @@ if(l.canonicalFunctionalCandidate?.sourceSha!==d.productSourceSha)fail('RELEASE_
 const moduleTruthPath=String(d.moduleTruthPath||'');
 if(!moduleTruthPath)fail('RELEASE_COMPOSITION_FAILURE:MODULE_TRUTH_POINTER_EMPTY');
 const mt=readJson(moduleTruthPath);
+const continuityReadback=validateShockContinuity({
+  descriptor:d, pointer:readJson('CXORBIA_RECOVERY_EXECUTION_CURRENT.json'), matrix:mt,
+  gitBlob:p=>{try{return git('rev-parse','HEAD:'+p);}catch{return '';}}
+});
+if(!continuityReadback.pass)fail('MAPPING_FAILURE:SHOCK_CONTINUITY',continuityReadback.failures.join(','));
 const mtSource=String(mt?.productSource?.sha||mt?.productSourceSha||'');
 const modules=Array.isArray(mt?.modules)?mt.modules:[];
 const domains=modules.map(x=>String(x?.domain||'')).filter(Boolean);
@@ -212,6 +218,7 @@ const result={
   postCandidateProductDrift:false,
   historicalSourceSpecificJobsDisabled:historicalDisabled.length,
   proofScope:'CANONICAL_SOURCE_LINEAGE_ONLY_NOT_MODULE_OR_ARTIFACT_CERTIFICATION',
+  continuityReadback,
   moduleTruthReadback,moduleRegistryReadback,moduleBlobReadback,workflowLedgerReadback,postDeploySealReadback,
   terminalReleaseEligible:terminalLike&&moduleTruthReadback.sourceAligned&&moduleTruthReadback.phaseAComplete&&
     moduleTruthReadback.allModulesMatch&&moduleBlobReadback.pass&&moduleRegistryReadback.historicalSubsetValid&&
