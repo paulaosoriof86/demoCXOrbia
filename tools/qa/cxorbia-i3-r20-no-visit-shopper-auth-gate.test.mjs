@@ -4,11 +4,17 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 const bridge=fs.readFileSync(new URL('../../app/adapters/tya-protected-auth-hr-authority-bridge-v2.js',import.meta.url),'utf8');
 const human=fs.readFileSync(new URL('../../app/adapters/tya-c6-unified-human-runtime-v1.js',import.meta.url),'utf8');
+const countryStart=bridge.indexOf('function countryCode(');
+const countryEnd=bridge.indexOf('\n',countryStart);
 const start=bridge.indexOf('function shopperReadiness(');
 const end=bridge.indexOf('\nfunction buildCompositionCandidate(',start);
+assert.ok(countryStart>=0&&countryEnd>countryStart,'real countryCode helper source must exist');
 assert.ok(start>=0&&end>start,'shopperReadiness source boundaries must exist');
 const chunk=bridge.slice(start,end);
-const fn=vm.runInNewContext(chunk+'\n shopperReadiness;', {str:v=>String(v??'').trim(),arr:v=>Array.isArray(v)?v:[],Set});
+// Evaluate the exact helper used by the production bridge; the isolated
+// fixture must not turn a valid HN branch into an undefined-function failure.
+const countryChunk=bridge.slice(countryStart,countryEnd);
+const fn=vm.runInNewContext(countryChunk+'\n'+chunk+'\n shopperReadiness;', {str:v=>String(v??'').trim(),arr:v=>Array.isArray(v)?v:[],Set});
 test('R20 authenticated exact shopper with zero assigned visits remains eligible',()=>{
  const profile={ok:true,profile:{id:'canonical-shopper',pais:'GT'},canonicalShopperId:'canonical-shopper'};
  const got=fn(profile,{visits:[]},{country:'GT'});
