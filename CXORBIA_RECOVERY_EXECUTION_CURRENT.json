@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "77fd283349ce46033a95235fd2fae632e856fe35",
-  "productTree": "9e3c446c829edbcb7cc5d2f6ab179ddacb246248",
+  "productSourceSha": "19ac62bb9cd6828b736f6347371183b42b518b5e",
+  "productTree": "9bc6f9df8a10a83959fde1abbf6554ac5cb86e9c",
   "vrm289ClientReportProjectionSource20261026": {
     "findingId": "VRM-289",
     "sourceSha": "92e42a61eace003a1e518ac71bf4309517aa89d9",
@@ -687,9 +687,9 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V187.json",
-    "gitBlob": "c7a2eac63037bf73859b5ddf0c1494a53dc4536c",
-    "sourceSha": "77fd283349ce46033a95235fd2fae632e856fe35",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V188.json",
+    "gitBlob": "7561c8e57d7e3dd79d3f93ca903557a9c14ed8b1",
+    "sourceSha": "19ac62bb9cd6828b736f6347371183b42b518b5e",
     "allModulesMatch": false,
     "phaseAComplete": false
   },
@@ -2724,9 +2724,9 @@
     "gitBlob": "879313bfbced75baa8d764d9678f5efcc489c944"
   },
   "activeShockModuleTruth": {
-    "sourceSha": "77fd283349ce46033a95235fd2fae632e856fe35",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V187.json",
-    "matrixBlob": "c7a2eac63037bf73859b5ddf0c1494a53dc4536c",
+    "sourceSha": "19ac62bb9cd6828b736f6347371183b42b518b5e",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V188.json",
+    "matrixBlob": "7561c8e57d7e3dd79d3f93ca903557a9c14ed8b1",
     "classificationCounts": {
       "COMPOSED_NOT_DEPLOYED": 2,
       "MATCH": 5,
@@ -2775,6 +2775,21 @@
     "phaseAComplete": false,
     "matrixClassificationUnchanged": true,
     "productSourceUnchanged": "77fd283349ce46033a95235fd2fae632e856fe35",
+    "production": "DO_NOT_TOUCH"
+  },
+  "vrm290EffectiveHrRouteSource20261028": {
+    "findingId": "VRM-290",
+    "classification": "FUNCTIONAL_DEFECT",
+    "owner": "app/modules/operacion-extra.js",
+    "qaOwner": "tools/qa/cxorbia-i3-g03-rutas-effective-hr-source-truth.test.mjs",
+    "productSourceSha": "19ac62bb9cd6828b736f6347371183b42b518b5e",
+    "productTree": "9bc6f9df8a10a83959fde1abbf6554ac5cb86e9c",
+    "ownerBlob": "796b1454fdbff75011eaa9664306988e45fad161",
+    "historicalReportsPassPreserved": true,
+    "sourceProof": "LOCAL_3_OF_3_PASS_PENDING_CANONICAL_CI",
+    "materializedDev": false,
+    "freshExternalHrRevision": "NOT_RECHECKED",
+    "liveAdminShopperE2e": "PENDING",
     "production": "DO_NOT_TOUCH"
   }
 }
