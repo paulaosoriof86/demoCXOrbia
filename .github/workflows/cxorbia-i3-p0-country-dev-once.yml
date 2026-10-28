@@ -36,7 +36,7 @@ env:
   PRODUCTION_URL: https://tya-plataforma.web.app
 jobs:
   country-source-dev-only:
-    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-HN-SCOPE-DEV-ONCE-V7' }}
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-HN-SCOPE-DEV-ONCE-V8' }}
     runs-on: ubuntu-latest
     timeout-minutes: 65
     steps:
@@ -77,7 +77,7 @@ jobs:
           node backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs > "$EVIDENCE_DIR/tests.log"
           grep -Fq 'pass 45' "$EVIDENCE_DIR/tests.log"
           node --test tools/qa/cxorbia-i3-p0-hn-shopper-country-source.test.mjs tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs tools/qa/cxorbia-i3-vrm280-exact-shopper-session-fallback.test.mjs tools/qa/cxorbia-i3-work-uat-u22-shopper-controls.test.mjs > "$EVIDENCE_DIR/scope-tests.log"
-          grep -Fq 'pass 4' "$EVIDENCE_DIR/scope-tests.log"
+          grep -Fq 'pass 24' "$EVIDENCE_DIR/scope-tests.log"
           node --check app/core/backend-browser-auth.js
           node --check app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
           node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
