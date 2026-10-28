@@ -88,3 +88,49 @@ test('D07 rejects response over bounded size and protects existing binary-write 
   assert.equal(result.ok,false);assert.equal(result.code,'RESOURCE_READ_SIZE_EXCEEDED');
   assert.equal(h.CX.backendResources.storageStatus().authorized,false,'upload restriction must remain unchanged');
 });
+
+test('D07 diagnostic separates ID-token acquisition failure without attempting GET',async()=>{
+  const h=fixture();
+  h.setUser({uid:'shopper-test-uid',getIdToken:async()=>{throw Object.assign(new Error('SECRET_JWT_SHOULD_NOT_LEAK'),{name:'FirebaseError'});}});
+  const r=await h.CX.backendResources.readPublishedPdf(h.resource,h.scope);
+  assert.equal(r.ok,false);assert.equal(r.code,'RESOURCE_READ_TOKEN_FAILED');
+  assert.equal(r.diagnostic.stage,'TOKEN');assert.equal(r.diagnostic.tokenObtained,false);
+  assert.equal(r.diagnostic.httpStatus,null);assert.equal(r.diagnostic.errorType,'FirebaseError');
+  assert.equal(h.calls.length,0);
+  assert.doesNotMatch(JSON.stringify(r),/SECRET_JWT_SHOULD_NOT_LEAK|SYNTHETIC_TOKEN_NOT_REAL/);
+});
+test('D07 diagnostic separates transport rejection without inventing HTTP 403',async()=>{
+  const h=fixture();
+  const badResponse={then(_resolve,reject){reject(Object.assign(new Error('PRIVATE_RESPONSE_SHOULD_NOT_LEAK'),{name:'TypeError'}));}};
+  h.setResponse(badResponse);
+  const r=await h.CX.backendResources.readPublishedPdf(h.resource,h.scope);
+  assert.equal(r.ok,false);assert.equal(r.code,'RESOURCE_READ_GET_FAILED');
+  assert.equal(r.diagnostic.stage,'GET');assert.equal(r.diagnostic.tokenObtained,true);
+  assert.equal(r.diagnostic.httpStatus,null);assert.equal(r.diagnostic.errorType,'TypeError');
+  assert.doesNotMatch(JSON.stringify(r),/PRIVATE_RESPONSE_SHOULD_NOT_LEAK/);
+});
+test('D07 diagnostic distinguishes valid HTTP GET from rejected PDF body read',async()=>{
+  const h=fixture();
+  h.setResponse({ok:true,status:200,headers:{get:()=>String(h.PDF.byteLength)},
+    arrayBuffer:async()=>{throw Object.assign(new Error('PRIVATE_PDF_SHOULD_NOT_LEAK'),{name:'AbortError'});}});
+  const r=await h.CX.backendResources.readPublishedPdf(h.resource,h.scope);
+  assert.equal(r.ok,false);assert.equal(r.code,'RESOURCE_READ_BYTES_FAILED');
+  assert.equal(r.diagnostic.stage,'BYTES');assert.equal(r.diagnostic.tokenObtained,true);
+  assert.equal(r.diagnostic.httpStatus,200);assert.equal(r.diagnostic.bytesRead,false);
+  assert.equal(r.diagnostic.errorType,'AbortError');
+  assert.doesNotMatch(JSON.stringify(r),/PRIVATE_PDF_SHOULD_NOT_LEAK/);
+});
+test('D07 diagnostic returns HTTP 403 as a response and never mislabels it as transport error',async()=>{
+  const h=fixture();h.setResponse({ok:false,status:403,headers:{get:()=>''}});
+  const r=await h.CX.backendResources.readPublishedPdf(h.resource,h.scope);
+  assert.equal(r.code,'RESOURCE_READ_PROVIDER_DENIED');
+  assert.equal(r.diagnostic.stage,'GET_HTTP');assert.equal(r.diagnostic.httpStatus,403);
+  assert.equal(r.diagnostic.tokenObtained,true);
+});
+test('D07 positive PDF records metadata only and retains authenticated bytes for caller',async()=>{
+  const h=fixture();const r=await h.CX.backendResources.readPublishedPdf(h.resource,h.scope);
+  assert.equal(r.ok,true);assert.equal(r.diagnostic.stage,'COMPLETE');
+  assert.equal(r.diagnostic.tokenObtained,true);assert.equal(r.diagnostic.httpStatus,200);
+  assert.equal(r.diagnostic.bytesRead,true);assert.equal(r.diagnostic.bytesLength,h.PDF.byteLength);
+  assert.doesNotMatch(JSON.stringify(r.diagnostic),/SYNTHETIC_TOKEN_NOT_REAL|res-18gkwuj/);
+});

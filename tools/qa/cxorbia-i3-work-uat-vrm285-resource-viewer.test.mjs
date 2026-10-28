@@ -158,3 +158,14 @@ test('VRM-285: viewer state is session-scoped presentation state, never localSto
   assert.match(source,/firebase\?\.auth/);
   assert.match(source,/CX\.docStore\.activeViewer/);
 });
+
+test('D07 Admin-only diagnostic UI exposes safe stage metadata without JWT, UID or path',()=>{
+  assert.match(source,/status\.dataset\.d07Stage=stage/);
+  assert.match(source,/status\.dataset\.d07Code=safeCode/);
+  assert.match(source,/\['super','admin'\]\.includes/);
+  assert.match(source,/Diagnóstico D07:/);
+  assert.match(source,/diag\.tokenObtained===true/);
+  assert.match(source,/HTTP '\+http/);
+  assert.doesNotMatch(source,/console\.warn\('\[CX\.documentos PDF\]',String\(error\?\.message/);
+  assert.doesNotMatch(source,/localStorage/);
+});

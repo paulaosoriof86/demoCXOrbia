@@ -77,13 +77,17 @@ CX.module('documentos', ({data,role,ui})=>{
     const status=slot.querySelector('[data-pdf-status]'),canvas=slot.querySelector('canvas'),prev=slot.querySelector('[data-pdf-prev]'),next=slot.querySelector('[data-pdf-next]'),position=slot.querySelector('[data-pdf-page]');
     if(!status||!canvas||!prev||!next||!position)return;
     const live=()=>slot.isConnected&&host.contains(slot);
-    let pdf=null,rendering=false,pageNumber=1;
+    let pdf=null,rendering=false,pageNumber=1,renderStage='RESOURCE_READ';
     try{
       let authenticatedBytes=null;
       if(connected()){
         const result=await CX.backendResources?.readPublishedPdf?.(resource,scope());
         if(!live())return;
-        if(result?.ok!==true||!result.bytes)throw new Error(result?.code||'RESOURCE_PDF_AUTH_READ_FAILED');
+        if(result?.ok!==true||!result.bytes){
+          const error=new Error(result?.code||'RESOURCE_PDF_AUTH_READ_FAILED');
+          if(result?.diagnostic)error.diagnostic=result.diagnostic;
+          throw error;
+        }
         authenticatedBytes=result.bytes;
         const download=host.querySelector('[data-pdf-download]');
         if(download){
@@ -101,16 +105,19 @@ CX.module('documentos', ({data,role,ui})=>{
           });
         }
       }
+      renderStage='PDF_JS_LOAD';
       const lib=await loadPdfJs();if(!live())return;
       const url=String(resource.url||'');
       const isInline=/^data:application\/pdf(?:;base64)?,/i.test(url);
       const source=authenticatedBytes?{data:authenticatedBytes}:
         isInline?{data:Uint8Array.from(atob(url.split(',')[1]||''),x=>x.charCodeAt(0))}:
         {url,withCredentials:false};
+      renderStage='PDF_JS_DOCUMENT';
       pdf=await lib.getDocument(source).promise;if(!live()){await pdf.destroy?.();return;}
       const drawPage=async()=>{
         if(!live()||rendering)return;
         rendering=true;prev.disabled=true;next.disabled=true;
+        renderStage='PDF_JS_RENDER';
         try{
           const page=await pdf.getPage(pageNumber),scale=Math.min(1.6,Math.max(0.7,(slot.clientWidth-24)/(page.getViewport({scale:1}).width||700)));
           if(!live())return;
@@ -126,7 +133,32 @@ CX.module('documentos', ({data,role,ui})=>{
       next.addEventListener('click',()=>{if(!rendering&&pageNumber<pdf.numPages){pageNumber++;drawPage().catch(fail);}});
       await drawPage();
     }catch(error){fail(error);}
-    function fail(error){if(!live())return;status.dataset.pdfStatus='failed';status.textContent='No fue posible mostrar este PDF dentro de la plataforma. Puedes abrir el original desde el enlace superior.';console.warn('[CX.documentos PDF]',String(error?.message||error));}
+    function fail(error){
+      if(!live())return;
+      const general='No fue posible mostrar este PDF dentro de la plataforma. Puedes abrir el original desde el enlace superior.';
+      const diag=error?.diagnostic||{},rawCode=String(error?.message||'');
+      const safeCode=/^RESOURCE_(?:READ|PDF)_[A-Z0-9_]{3,80}$/.test(rawCode)?rawCode:'RESOURCE_PDF_RENDER_FAILED';
+      const stageOptions=['TOKEN','GET','GET_HTTP','BYTES','COMPLETE','PDF_JS_LOAD','PDF_JS_DOCUMENT','PDF_JS_RENDER','RESOURCE_READ'];
+      const stage=stageOptions.includes(diag.stage)?diag.stage:renderStage;
+      const errorTypes=['TypeError','AbortError','NetworkError','TimeoutError','FirebaseError','InvalidStateError','OtherError'];
+      const type=errorTypes.includes(diag.errorType)?diag.errorType:'NONE';
+      const http=Number.isInteger(diag.httpStatus)&&diag.httpStatus>=100&&diag.httpStatus<=599?String(diag.httpStatus):'NO_RESPONSE';
+      status.dataset.pdfStatus='failed';
+      const isAdmin=['super','admin'].includes(String(CX.session?.effectiveRole?.()||role||'').toLowerCase());
+      if(isAdmin&&connected()){
+        // Admin-safe diagnostic is intentionally DOM-readable without DevTools.
+        // Never print messages, JWT, response bodies, resource IDs or Storage paths.
+        status.dataset.d07Stage=stage;
+        status.dataset.d07Code=safeCode;
+        status.textContent=general+' Diagnóstico D07: '+safeCode+
+          ' | etapa '+stage+' | token '+(diag.tokenObtained===true?'SI':'NO')+
+          ' | HTTP '+http+' | bytes '+(diag.bytesRead===true?'SI':'NO')+
+          ' | tipo '+type+'.';
+      }else{
+        status.textContent=general;
+      }
+      console.warn('[CX.documentos PDF]',safeCode,stage,http,type);
+    }
   };
   const saveDurable=async(rec,options={})=>{
     if(!connected()){CX.docStore.add(pid,rec);return {ok:true,status:'committed',providerAck:true,successUiAllowed:true,demo:true};}

@@ -193,28 +193,48 @@ window.CX=window.CX||{};
     const initialUid=str(user.uid),initialKey=cacheKey(scope);
     const bucket=str(fb?.app?.().options?.storageBucket||'');
     if(!/^[a-z0-9][a-z0-9.-]+$/i.test(bucket))return blocked('RESOURCE_READ_BUCKET_UNAVAILABLE');
+    // D07 diagnostic-only: no token/path/UID/provider response body is retained
+    // in the diagnostic. Storage Auth, roles, claims and fail-closed gates are unchanged.
+    let stage='TOKEN',tokenObtained=false,httpStatus=null,bytesRead=false,bytesLength=0;
+    const diagnostic=(stageOverride,errorType)=>({
+      stage:stageOverride||stage,tokenObtained,httpStatus,bytesRead,bytesLength,
+      errorType:errorType||null
+    });
     try{
       const jwt=await user.getIdToken();
       if(!jwt||str(auth.currentUser?.uid)!==initialUid||cacheKey(currentScope())!==initialKey||!isCurrent())
-        return blocked('RESOURCE_READ_AUTH_SCOPE_CHANGED');
+        return blocked('RESOURCE_READ_AUTH_SCOPE_CHANGED',{diagnostic:diagnostic('TOKEN')});
+      tokenObtained=true;
       const endpoint='https://firebasestorage.googleapis.com/v0/b/'+encodeURIComponent(bucket)+
         '/o/'+encodeURIComponent(path)+'?alt=media';
+      stage='GET';
       const response=await fetch(endpoint,{method:'GET',cache:'no-store',credentials:'omit',
         headers:{Authorization:'Firebase '+jwt},signal:options.signal});
-      if(!response.ok)return blocked('RESOURCE_READ_PROVIDER_DENIED',{httpStatus:Number(response.status)||0});
+      httpStatus=Number(response.status)||0;
+      if(!response.ok)return blocked('RESOURCE_READ_PROVIDER_DENIED',{
+        httpStatus,diagnostic:diagnostic('GET_HTTP')
+      });
+      stage='BYTES';
       const maximum=25*1024*1024;
       const declared=Number(response.headers?.get?.('content-length')||0);
-      if(declared>maximum)return blocked('RESOURCE_READ_SIZE_EXCEEDED');
+      if(declared>maximum)return blocked('RESOURCE_READ_SIZE_EXCEEDED',{diagnostic:diagnostic()});
       const bytes=new Uint8Array(await response.arrayBuffer());
+      bytesRead=true;bytesLength=bytes.byteLength;
       if(bytes.byteLength<5||bytes.byteLength>maximum||bytes[0]!==37||bytes[1]!==80||
         bytes[2]!==68||bytes[3]!==70||bytes[4]!==45)
-        return blocked('RESOURCE_READ_INVALID_PDF');
+        return blocked('RESOURCE_READ_INVALID_PDF',{diagnostic:diagnostic()});
       if(str(auth.currentUser?.uid)!==initialUid||cacheKey(currentScope())!==initialKey||!isCurrent())
-        return blocked('RESOURCE_READ_AUTH_SCOPE_CHANGED');
+        return blocked('RESOURCE_READ_AUTH_SCOPE_CHANGED',{diagnostic:diagnostic()});
       return {ok:true,status:'read',source:'firebase-storage-authenticated',bytes,
-        resourceId:rid,storagePath:path,mimeType:'application/pdf',size:bytes.byteLength};
-    }catch(_){
-      return blocked('RESOURCE_READ_PROVIDER_UNAVAILABLE');
+        resourceId:rid,storagePath:path,mimeType:'application/pdf',size:bytes.byteLength,
+        diagnostic:diagnostic('COMPLETE')};
+    }catch(error){
+      const errorName=String(error?.name||'');
+      const safeName=['TypeError','AbortError','NetworkError','TimeoutError',
+        'FirebaseError','InvalidStateError'].includes(errorName)?errorName:'OtherError';
+      const code=stage==='TOKEN'?'RESOURCE_READ_TOKEN_FAILED':
+        stage==='GET'?'RESOURCE_READ_GET_FAILED':'RESOURCE_READ_BYTES_FAILED';
+      return blocked(code,{diagnostic:diagnostic(stage,safeName)});
     }
   };
 
