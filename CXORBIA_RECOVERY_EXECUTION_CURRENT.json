@@ -109,7 +109,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "RUN1894 canonical source guard PASS and D07 QA 8/8 synthetic PASS, work-UAT 56/56 PASS. Must verify authenticated PDF resource read in real scoped DEV; if provider fails, isolate Storage claims/CORS, no change without causal proof; then only approved Hosting-only DEV and served bytes readback. Existing four other owner blob mismatches remain G03 HOLD, 21 modules not certified; Gate20/21 HOLD, I4 NOT_AUTHORIZED.",
+  "nextExactAction": "On DEV Hosting ce348d093ac2b5e5 run Admin+Shopper independently authenticated D07 read/pdf pages/download cross-scope deny; preserve existing source and runtime. Then Client E2E, notifications, 4 non-D07 owner blob mismatches, same-artifact Gate20/21 and Paula approval. I3 HOLD; I4 unauthorized.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -315,7 +315,7 @@
     }
   },
   "nextDiagnosisPath": null,
-  "nextUserAuthorizationRequired": "Previous explicit D07 authorization covers scoped source/QA/DEV validation, but any CORS/Storage rules/IAM/data write or production still needs distinct authorization.",
+  "nextUserAuthorizationRequired": "No new authorization for read-only UAT Work. No Storage Rules, CORS, IAM, Auth, Firestore or production writes authorized by this DEV Hosting-only PASS.",
   "primaryExecutionRoute": "DIRECT_NATIVE_GITHUB_SINGLE_WRITER",
   "tinyFishRequiredForThisAction": false,
   "receiptControlParentSha": "5df72f867d8cc27a680e070865b27cc78eb3dae6",
@@ -687,8 +687,8 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261027-V183.json",
-    "gitBlob": "6ee24c6c16a9fcb42298e7a852cba2df109de4b2",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261027-V184.json",
+    "gitBlob": "7ca16b6271e34190b21cd81895389ce90862e863",
     "sourceSha": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
     "allModulesMatch": false,
     "phaseAComplete": false
@@ -2562,7 +2562,7 @@
     "sourceSyntax": "PASS",
     "remoteCanonicalQa": "PASS_RUN1894_40555161050",
     "storageAuthProviderAck": "NOT_VERIFIED",
-    "newDevMaterialization": false,
+    "newDevMaterialization": true,
     "prodWrites": 0,
     "firestoreAuthStorageRulesWrites": 0,
     "production": false,
@@ -2581,7 +2581,58 @@
     ],
     "allModulesMatch": false,
     "terminalEligible": false,
-    "newlyDevMaterialized": false,
-    "realPdfContent": "NOT_VERIFIED"
+    "newlyDevMaterialized": true,
+    "realPdfContent": "PENDING_AUTHENTICATED_E2E",
+    "devMaterialization": "PASS_HOSTING_ONLY_RUN40605785526",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/ce348d093ac2b5e5",
+    "runtimeRevision": "cxorbia-live-hr-dev-00327-xsc"
+  },
+  "d07HostingOnlyDevReadback": {
+    "decision": "PASS_I3_D07_HOSTING_ONLY_DEV_EXACT_BYTES",
+    "materializationRunId": 40605785526,
+    "runNumber": 2,
+    "jobId": 122544814265,
+    "sourceSha": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
+    "sourceTree": "e5136b39ee35ca7e979221dfba11aee58aadef52",
+    "previousHostingVersion": "sites/cxorbia-backend-dev/versions/9eef4f5992f2db35",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/ce348d093ac2b5e5",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1793145610499000",
+    "runtimeRevision": "cxorbia-live-hr-dev-00327-xsc",
+    "runtimeDigest": "sha256:b8edc27018eef8b2a49ff2a149db63e9ac2972bb7bb3d3bb159291cd4dc9c70a",
+    "runtimeDigestProvenance": "Previously verified RUN1863 exact revision; unchanged in D07 Hosting-only job",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/fe1c7f11-7265-4d66-95ee-c03f4798d35e",
+    "hrRevisionInherited": "d19eb12ad8c1c5140b5711ea390deaae50b0edd35ff4f982a69bfdcabbc86dd2",
+    "hrRevisionFresh": "NOT_RECHECKED",
+    "artifactId": 12780881660,
+    "artifactName": "cxorbia-i3-d07-hosting-dev-40605785526",
+    "artifactSha256": "5796ca2b8937b3bae30811d25251d42ce190a9e3681684958c1ff4c562a5cabd",
+    "served": {
+      "files": [
+        "core/backend-resources.js",
+        "modules/documentos.js",
+        "index-backend-dev.html",
+        "modules/cert.js"
+      ],
+      "allByteIdentical": true
+    },
+    "deploymentEffects": {
+      "hostingDeploys": 1,
+      "cloudRunBuilds": 0,
+      "cloudRunDeploys": 0,
+      "firestoreRulesDeploys": 0,
+      "storageRulesDeploys": 0,
+      "authWrites": 0,
+      "firestoreWrites": 0,
+      "hrWrites": 0,
+      "productionChanged": false
+    },
+    "prodIndexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+    "scope": "D07_HOSTING_ONLY_PREVIEW_NOT_FULL_RUNTIME_CERTIFICATION",
+    "adminShopperPdfE2e": "PENDING",
+    "humanApproval": "PENDING",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "production": false
   }
 }

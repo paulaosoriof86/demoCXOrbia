@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "cxorbia.i3.d07.serial-dev-hosting-readback.v1",
+  "dateLocalGuatemala": "2026-10-27",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "iteration": "I3",
+  "state": "HOLD",
+  "materialization": {
+    "decision": "PASS_I3_D07_HOSTING_ONLY_DEV_EXACT_BYTES",
+    "materializationRunId": 40605785526,
+    "runNumber": 2,
+    "jobId": 122544814265,
+    "sourceSha": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
+    "sourceTree": "e5136b39ee35ca7e979221dfba11aee58aadef52",
+    "previousHostingVersion": "sites/cxorbia-backend-dev/versions/9eef4f5992f2db35",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/ce348d093ac2b5e5",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1793145610499000",
+    "runtimeRevision": "cxorbia-live-hr-dev-00327-xsc",
+    "runtimeDigest": "sha256:b8edc27018eef8b2a49ff2a149db63e9ac2972bb7bb3d3bb159291cd4dc9c70a",
+    "runtimeDigestProvenance": "Previously verified RUN1863 exact revision; unchanged in D07 Hosting-only job",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/fe1c7f11-7265-4d66-95ee-c03f4798d35e",
+    "hrRevisionInherited": "d19eb12ad8c1c5140b5711ea390deaae50b0edd35ff4f982a69bfdcabbc86dd2",
+    "hrRevisionFresh": "NOT_RECHECKED",
+    "artifactId": 12780881660,
+    "artifactName": "cxorbia-i3-d07-hosting-dev-40605785526",
+    "artifactSha256": "5796ca2b8937b3bae30811d25251d42ce190a9e3681684958c1ff4c562a5cabd",
+    "served": {
+      "files": [
+        "core/backend-resources.js",
+        "modules/documentos.js",
+        "index-backend-dev.html",
+        "modules/cert.js"
+      ],
+      "allByteIdentical": true
+    },
+    "deploymentEffects": {
+      "hostingDeploys": 1,
+      "cloudRunBuilds": 0,
+      "cloudRunDeploys": 0,
+      "firestoreRulesDeploys": 0,
+      "storageRulesDeploys": 0,
+      "authWrites": 0,
+      "firestoreWrites": 0,
+      "hrWrites": 0,
+      "productionChanged": false
+    },
+    "prodIndexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+    "scope": "D07_HOSTING_ONLY_PREVIEW_NOT_FULL_RUNTIME_CERTIFICATION",
+    "adminShopperPdfE2e": "PENDING",
+    "humanApproval": "PENDING",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "production": false
+  },
+  "previousFullReleaseSealPreserved": {
+    "runId": 40121491485,
+    "sourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
+    "scope": "LAST_UNIFIED_CLOUDRUN_HOSTING_FIRESTORE_DEPLOY_SEAL_NOT_OVERRIDDEN"
+  },
+  "focalResource": {
+    "ownerBlobs": {
+      "app/core/backend-resources.js": "7a467b84754457010fa58ddac9fbbceff5b6b2de",
+      "app/modules/documentos.js": "d955d299c939851ed0c90876fe47680cf86b1c1c"
+    },
+    "adminPdf": "NOT_VERIFIED_ON_NEW_DEV",
+    "shopperPdf": "NOT_VERIFIED_ON_NEW_DEV",
+    "previousWorkPdf": "FAIL_ON_PREDECESSOR"
+  },
+  "authorities": {
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261027-V184.json",
+    "matrixGitBlob": "7ca16b6271e34190b21cd81895389ce90862e863",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V516_2026-10-27.json",
+    "ledgerGitBlob": "69d9e40c9c3323c182a6b5aae4b8255626a49e58",
+    "domains": 21,
+    "findings": 289,
+    "remainingNonD07Mismatches": 4
+  },
+  "requestedWorkUAT": {
+    "site": "https://cxorbia-backend-dev.web.app",
+    "project": "cinepolis",
+    "tenant": "tya",
+    "period": "cinepolis-2026-10",
+    "roles": [
+      "Admin",
+      "Shopper"
+    ],
+    "exactSource": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
+    "runId": 40605785526
+  },
+  "goLive": false,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false,
+  "production": false
+}

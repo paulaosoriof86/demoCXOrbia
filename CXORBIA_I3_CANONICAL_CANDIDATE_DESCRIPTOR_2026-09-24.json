@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_D07_SOURCE_FIXED_PENDING_REMOTE_QA",
+  "status": "HOLD_I3_D07_HOSTING_ONLY_PASS_PDF_E2E_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
   "productTreeAuthority": "e5136b39ee35ca7e979221dfba11aee58aadef52",
   "predecessorProductSourceSha": "92e42a61eace003a1e518ac71bf4309517aa89d9",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V515_2026-10-27.json",
-  "findingsLedgerExpectedGitBlob": "f908f7c955dc053a5028a1bc78c58b2f84a4f0ea",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261027-V183.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V516_2026-10-27.json",
+  "findingsLedgerExpectedGitBlob": "69d9e40c9c3323c182a6b5aae4b8255626a49e58",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261027-V184.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D07_AUTH_PDF_SOURCE_NEEDS_REMOTE_QA_AND_REAL_SHOPPER_ADMIN_E2E__OTHER_I3_UNCLOSED",
+  "activeBlocker": "D07_AUTHENTICATED_SHOPPER_AND_ADMIN_PDF_READ_E2E_PENDING_PLUS_OTHER_I3_OBLIGATIONS",
   "focalSuccessor20261026": {
     "findingId": "VRM-289",
     "sourceSha": "92e42a61eace003a1e518ac71bf4309517aa89d9",
@@ -89,7 +89,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "D07 existing canonical CI source proof with 8 authenticated PDF tests plus VRM285 regression. If source proof PASS, a single authorized Hosting-only DEV materialization and exact served-byte readback; then real Admin/Shopper PDF page navigation and download. Never claim provider 403 resolved before authenticated E2E. Preserve unrelated tests and I3 HOLD.",
+  "exactNextAction": "D07 Hosting-only PASS RUN40605785526, source ab5fbfb0, hosting version ce348d093ac2b5e5. Work real Admin+independent Shopper PDF page navigation/download and role boundaries, then report. Preserve four preexisting owner mismatches and remaining I3 tasks, Gate20/Gate21 HOLD.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2999,7 +2999,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "6ee24c6c16a9fcb42298e7a852cba2df109de4b2",
+  "moduleTruthExpectedGitBlob": "7ca16b6271e34190b21cd81895389ce90862e863",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -14218,7 +14218,7 @@
     },
     "localSourceSyntax": "PASS_2_SOURCE_FILES",
     "sourceProof": "PENDING_GITHUB_CI",
-    "devMaterialized": false,
+    "devMaterialized": true,
     "realPdfContent": "NOT_VERIFIED",
     "browserAuthClaims": "NOT_VERIFIED",
     "cloudRunChanges": 0,
@@ -14228,6 +14228,58 @@
     "production": false,
     "humanAcceptance": "PENDING",
     "gate20": "HOLD",
-    "gate21": "HOLD"
+    "gate21": "HOLD",
+    "hostingOnlyRunId": 40605785526,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/ce348d093ac2b5e5",
+    "livePdf": "NOT_VERIFIED",
+    "adminShopperE2e": "PENDING"
+  },
+  "d07HostingOnlyDevReadback": {
+    "decision": "PASS_I3_D07_HOSTING_ONLY_DEV_EXACT_BYTES",
+    "materializationRunId": 40605785526,
+    "runNumber": 2,
+    "jobId": 122544814265,
+    "sourceSha": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
+    "sourceTree": "e5136b39ee35ca7e979221dfba11aee58aadef52",
+    "previousHostingVersion": "sites/cxorbia-backend-dev/versions/9eef4f5992f2db35",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/ce348d093ac2b5e5",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1793145610499000",
+    "runtimeRevision": "cxorbia-live-hr-dev-00327-xsc",
+    "runtimeDigest": "sha256:b8edc27018eef8b2a49ff2a149db63e9ac2972bb7bb3d3bb159291cd4dc9c70a",
+    "runtimeDigestProvenance": "Previously verified RUN1863 exact revision; unchanged in D07 Hosting-only job",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/fe1c7f11-7265-4d66-95ee-c03f4798d35e",
+    "hrRevisionInherited": "d19eb12ad8c1c5140b5711ea390deaae50b0edd35ff4f982a69bfdcabbc86dd2",
+    "hrRevisionFresh": "NOT_RECHECKED",
+    "artifactId": 12780881660,
+    "artifactName": "cxorbia-i3-d07-hosting-dev-40605785526",
+    "artifactSha256": "5796ca2b8937b3bae30811d25251d42ce190a9e3681684958c1ff4c562a5cabd",
+    "served": {
+      "files": [
+        "core/backend-resources.js",
+        "modules/documentos.js",
+        "index-backend-dev.html",
+        "modules/cert.js"
+      ],
+      "allByteIdentical": true
+    },
+    "deploymentEffects": {
+      "hostingDeploys": 1,
+      "cloudRunBuilds": 0,
+      "cloudRunDeploys": 0,
+      "firestoreRulesDeploys": 0,
+      "storageRulesDeploys": 0,
+      "authWrites": 0,
+      "firestoreWrites": 0,
+      "hrWrites": 0,
+      "productionChanged": false
+    },
+    "prodIndexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+    "scope": "D07_HOSTING_ONLY_PREVIEW_NOT_FULL_RUNTIME_CERTIFICATION",
+    "adminShopperPdfE2e": "PENDING",
+    "humanApproval": "PENDING",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "production": false
   }
 }
