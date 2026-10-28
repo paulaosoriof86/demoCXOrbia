@@ -67,7 +67,14 @@ try {
     const memberMatchesLogin = members.filter(m => sha(norm(m.visibleLogin || m.username || m.user)).slice(0,24) === target.loginFingerprint);
     const durableProfileMatchesName = profiles.filter(p => nameFp(displayName(p)) === target.exactNameFingerprint);
     const memberMatchesProfile = members.filter(m => durableProfileMatchesName.some(p => p.id === value(m.shopperId)));
-    const candidateUids = new Set([...authMatchesByEmail.map(a => a.uid),...memberMatchesLogin.map(m => m.uid),...memberMatchesProfile.map(m => m.uid)]);
+    // Choose the strongest *unique technical* selector. Never union weaker
+    // display-name matches: historical duplicate profiles are not proof of
+    // authenticated account ownership or permission to merge.
+    const candidateUids = new Set(authMatchesByEmail.length===1
+      ? authMatchesByEmail.map(a => a.uid)
+      : memberMatchesLogin.length===1
+        ? memberMatchesLogin.map(m => m.uid)
+        : []);
     const authMatches = allAuth.filter(a => candidateUids.has(a.uid));
     const sourceMatches = hrProfiles.filter(p => nameFp(displayName(p)) === target.exactNameFingerprint);
     const sourceHN = sourceMatches.filter(p => normalizedCountry(p) === 'HN');
