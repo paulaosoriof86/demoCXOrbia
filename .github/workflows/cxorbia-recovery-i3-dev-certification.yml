@@ -81,6 +81,8 @@ jobs:
       node --test tools/qa/cxorbia-i3-r22-tablon-provider-ack-source.test.mjs
       node --test tools/qa/cxorbia-i3-r20-pwa-auth-no-interrupt.test.mjs
       node --test tools/qa/cxorbia-i3-work-uat-*.test.mjs
+      node tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs
+      node tools/qa/cxorbia-i3-shock-continuity-guard.mjs
       node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs | tee .tmp/canonical-candidate-authority/result.json
       SOURCE="$(jq -r '.productSourceSha' .tmp/canonical-candidate-authority/result.json)"
       TREE="$(jq -r '.productSourceTree' .tmp/canonical-candidate-authority/result.json)"

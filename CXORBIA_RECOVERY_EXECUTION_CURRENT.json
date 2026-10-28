@@ -109,7 +109,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "In Admin authenticated Chrome DEV reload Recursos Cinépolis OCT 2026 and open Instructivo Shopper once. Read only visible Diagnóstico D07 code/stage/token/HTTP/bytes; then technical fix exact owner. No new deployment until failure owner proven.",
+  "nextExactAction": "I3 G03: reconcile 21 domains preserving owner-scoped approved PASS and exact source/DEV artifacts; parallel read-only HR freshness/ACK, Admin/Shopper operations, finanzas, certificaciones and visual proof. D07 one bounded Admin+Shopper smoke only; fix only P0_PROVEN with one serial writer and cumulative candidate, then Gate20/Gate21. No production.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -152,7 +152,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-10-27",
+  "lastUpdatedAt": "2026-10-28",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -2717,5 +2717,33 @@
     "gate21": "HOLD",
     "i4Authorized": false,
     "production": false
+  },
+  "activeShockControl": {
+    "id": "CXORBIA-I3-SHOCK-MONOTONIC-CLOSURE-20261028",
+    "path": "CXORBIA_I3_PLAN_CHOQUE_CIERRE_MONOTONICO_FROZEN_2026-10-28.md",
+    "gitBlob": "879313bfbced75baa8d764d9678f5efcc489c944"
+  },
+  "activeShockModuleTruth": {
+    "sourceSha": "77fd283349ce46033a95235fd2fae632e856fe35",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V187.json",
+    "matrixBlob": "c7a2eac63037bf73859b5ddf0c1494a53dc4536c",
+    "classificationCounts": {
+      "COMPOSED_NOT_DEPLOYED": 2,
+      "MATCH": 5,
+      "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN": 2,
+      "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 3,
+      "SOURCE_FIXED_PENDING_CI_AND_DEV_FOCAL": 1,
+      "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN": 4,
+      "SOURCE_INSTRUMENTATION_DEV_MATERIALIZED_PENDING_ADMIN_LIVE_E2E": 1,
+      "TRUE_FUNCTIONAL_DEFECT": 3
+    },
+    "derivedAt": "2026-10-28",
+    "meaning": "LIVE_CONTROL_CLASSIFICATIONS_NOT_PROGRESS_PERCENTAGE"
+  },
+  "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
+  "activeMethodologyGuard": {
+    "path": "tools/qa/cxorbia-i3-shock-continuity-guard.mjs",
+    "tests": "tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs",
+    "scope": "CONTROL_ONLY_FAIL_CLOSED_NO_PRODUCTION"
   }
 }

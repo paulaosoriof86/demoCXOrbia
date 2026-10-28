@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_D07_DIAGNOSTIC_HOSTING_ONLY_PASS_ADMIN_E2E_PENDING",
+  "status": "HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D07_PDF_CAUSAL_CODE_PENDING_LIVE_ADMIN_READ_FROM_HOSTING_a1cd7ecc__SHOPPER_E2E_AND_OTHER_I3_OPEN",
+  "activeBlocker": "I3_PHASE_A_HR_ACK_OPERATIONS_FINANZAS_CERTIFICATIONS_3_FUNCTIONAL_DEFECTS_2_NOT_DEPLOYED_10_SOURCE_FIXED_PROOF_GAPS_D07_ONE_SMOKE",
   "focalSuccessor20261026": {
     "findingId": "VRM-289",
     "sourceSha": "92e42a61eace003a1e518ac71bf4309517aa89d9",
@@ -89,7 +89,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "In Admin authenticated Chrome DEV reload Recursos Cinépolis OCT 2026 and open Instructivo Shopper once. Read only visible Diagnóstico D07 code/stage/token/HTTP/bytes; then technical fix exact owner. No new deployment until failure owner proven.",
+  "exactNextAction": "I3 G03: reconcile 21 domains preserving owner-scoped approved PASS and exact source/DEV artifacts; parallel read-only HR freshness/ACK, Admin/Shopper operations, finanzas, certificaciones and visual proof. D07 one bounded Admin+Shopper smoke only; fix only P0_PROVEN with one serial writer and cumulative candidate, then Gate20/Gate21. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -14365,5 +14365,10 @@
     "gate21": "HOLD",
     "i4Authorized": false,
     "production": false
+  },
+  "activeShockControl": {
+    "id": "CXORBIA-I3-SHOCK-MONOTONIC-CLOSURE-20261028",
+    "path": "CXORBIA_I3_PLAN_CHOQUE_CIERRE_MONOTONICO_FROZEN_2026-10-28.md",
+    "gitBlob": "879313bfbced75baa8d764d9678f5efcc489c944"
   }
 }
