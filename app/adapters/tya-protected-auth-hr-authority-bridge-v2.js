@@ -109,7 +109,9 @@ function sessionProfile(state,c,result,hrShoppers){
   // retain full source authority. No name-based matching or alias creation.
   const currentHrOwnsCanonical=arr(hrShoppers).some(row=>str(row?.id||row?.shopperId)===canonical);
   if(!currentHrOwnsCanonical){
-    const principalProtected=protectedRows.filter(row=>str(row?.id||row?.shopperId)===sid);
+    // The Firestore document ID and its member-authenticated shopperId may
+    // legitimately differ. Compare both exact technical keys; never use name.
+    const principalProtected=protectedRows.filter(row=>str(row?.id)===sid||str(row?.shopperId)===sid);
     if(principalProtected.length>1)return {ok:false,reason:'multiple_exact_protected_principal_profiles',rawShopperId:sid};
     if(principalProtected.length===1){
       const raw=str(principalProtected[0].pais||principalProtected[0].country),verifiedCountry=countryCode(raw);

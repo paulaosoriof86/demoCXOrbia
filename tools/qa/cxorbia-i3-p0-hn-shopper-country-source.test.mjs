@@ -59,7 +59,9 @@ test('I3 P0 canonical country is atomically published into authenticated shopper
 
 test('I3 P0 exact signed-in legacy protected country defeats unrelated GT composed row', () => {
   const c = {role: 'shopper', shopperId: 'signed-hn-legacy', tenantId: 'tya'};
-  const state = {shoppers: [{id: 'signed-hn-legacy', shopperId: 'signed-hn-legacy', pais: 'Honduras'}]};
+  // Real DEV legacy shape: Firestore document ID is not the shopperId field
+  // verified in the authenticated membership. The exact shopperId must win.
+  const state = {shoppers: [{id: 'firestore-document-opaque', shopperId: 'signed-hn-legacy', pais: 'Honduras'}]};
   const result = {identityMap: {}, shoppers: [{id: 'signed-hn-legacy', shopperId: 'signed-hn-legacy', pais: 'GT'}]};
   const p = sessionProfile(state, c, result, [{id: 'another-exact-hr-source', pais: 'HN'}]);
   assert.equal(p.ok, true);
