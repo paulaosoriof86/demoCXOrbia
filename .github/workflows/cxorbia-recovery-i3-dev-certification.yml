@@ -7684,3 +7684,119 @@ jobs:
    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'VRM290-DEV-HOSTING' }}
    uses: ./.github/workflows/cxorbia-i3-vrm290-invoked-hosting-dev.yml
    secrets: inherit
+
+  # One-shot P0 GT/HN source successor on the same I3 lane, DEV only.
+  i3-p0-country-dev-once:
+   needs: canonical-candidate-authority
+   if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-GT-HN-DEV-ONCE' && needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL' }}
+   runs-on: ubuntu-latest
+   timeout-minutes: 65
+   env:
+    PINNED_SOURCE: db56b89a1221d26f5cc4466585cda7eaa7360ddd
+    PINNED_TREE: 7b157bdf187ed712256eacfe86c1ff016b40c44e
+    EXPECTED_OLD_REVISION: cxorbia-live-hr-dev-00327-xsc
+    EXPECTED_OLD_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/a72e1b7bdce815a1
+    EVIDENCE_DIR: .tmp/i3-p0-country-dev
+    PRODUCTION_URL: https://tya-plataforma.web.app
+   steps:
+   - uses: actions/checkout@v4
+     with:
+      fetch-depth: 0
+   - uses: actions/setup-node@v4
+     with:
+      node-version: '24'
+   - name: Pinned source and 45 identity tests, no writes
+     run: |
+      set -Eeuo pipefail
+      mkdir -p "$EVIDENCE_DIR"
+      test "$PROJECT" = cxorbia-backend-dev
+      test "$SERVICE" = cxorbia-live-hr-dev
+      test "$FIREBASE_HOSTING_TARGET" = cxorbia-dev
+      test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
+      test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
+      test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$PINNED_SOURCE"
+      test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$PINNED_TREE"
+      test "$(git rev-parse "$PINNED_SOURCE^{tree}")" = "$PINNED_TREE"
+      git merge-base --is-ancestor "$PINNED_SOURCE" HEAD
+      git diff --quiet "$PINNED_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+      git diff --name-only 19ac62bb9cd6828b736f6347371183b42b518b5e "$PINNED_SOURCE" -- app backend > "$EVIDENCE_DIR/source-diff.txt"
+      test "$(wc -l < "$EVIDENCE_DIR/source-diff.txt")" = 3
+      grep -Fxq app/core/backend-browser-auth.js "$EVIDENCE_DIR/source-diff.txt"
+      grep -Fxq backend/runtime/cxorbia-shopper-command-provider-v1.mjs "$EVIDENCE_DIR/source-diff.txt"
+      grep -Fxq backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs "$EVIDENCE_DIR/source-diff.txt"
+      node backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs > "$EVIDENCE_DIR/tests.log"
+      grep -Fq 'pass 45' "$EVIDENCE_DIR/tests.log"
+      node --check app/core/backend-browser-auth.js
+      node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
+      grep -Fq 'COPY backend/runtime/cxorbia-shopper-command-provider-v1.mjs' backend/runtime/hr-live-service/Dockerfile
+      mkdir -p "$RUNNER_TEMP/i3-country-source"
+      git archive "$PINNED_SOURCE" | tar -x -C "$RUNNER_TEMP/i3-country-source"
+      echo "EXACT_SOURCE_DIR=$RUNNER_TEMP/i3-country-source" >> "$GITHUB_ENV"
+   - uses: google-github-actions/auth@v2
+     with:
+      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+   - uses: google-github-actions/setup-gcloud@v2
+     with:
+      project_id: cxorbia-backend-dev
+   - name: Fail-closed before-build DEV and production readback
+     run: |
+      set -Eeuo pipefail
+      gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$EVIDENCE_DIR/runtime-before.json"
+      jq -e --arg rev "$EXPECTED_OLD_REVISION" '.status.latestReadyRevisionName==$rev and ([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$EVIDENCE_DIR/runtime-before.json" >/dev/null
+      RUNTIME_URL="$(jq -r '.status.url // empty' "$EVIDENCE_DIR/runtime-before.json")"
+      test -n "$RUNTIME_URL"
+      curl -fsS "$RUNTIME_URL/health" > "$EVIDENCE_DIR/health-before.json"
+      jq -e '.ok==true and .production==false and .hrWrites==false' "$EVIDENCE_DIR/health-before.json" >/dev/null
+      TOKEN="$(gcloud auth print-access-token)"
+      curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$EVIDENCE_DIR/hosting-before.json"
+      jq -e '.release.version.name | length>0' "$EVIDENCE_DIR/hosting-before.json" >/dev/null
+      test "$(jq -r '.release.version.name' "$EVIDENCE_DIR/hosting-before.json")" = "$EXPECTED_OLD_HOSTING_VERSION"
+      curl -fsS -H 'Cache-Control: no-cache' "$PRODUCTION_URL/" -o "$EVIDENCE_DIR/production-before.html"
+      sha256sum "$EVIDENCE_DIR/production-before.html" | awk '{print $1}' > "$EVIDENCE_DIR/production-before.sha256"
+      echo "RUNTIME_URL=$RUNTIME_URL" >> "$GITHUB_ENV"
+   - name: Exactly one Cloud Run DEV build and image update
+     run: |
+      set -Eeuo pipefail
+      IMAGE_URI="gcr.io/$PROJECT/$SERVICE:i3-p0-country-$PINNED_SOURCE-$GITHUB_RUN_ID"
+      gcloud builds submit "$EXACT_SOURCE_DIR" --project "$PROJECT" --config "$EXACT_SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
+      gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --quiet
+      echo "IMAGE_URI=$IMAGE_URI" >> "$GITHUB_ENV"
+      curl -fsS --retry 10 --retry-delay 3 "$RUNTIME_URL/health" > "$EVIDENCE_DIR/health-after.json"
+      jq -e '.ok==true and .production==false and .hrWrites==false' "$EVIDENCE_DIR/health-after.json" >/dev/null
+   - name: Exactly one Hosting DEV release, same source tree
+     run: |
+      set -Eeuo pipefail
+      npm install --no-save --ignore-scripts --package-lock=false firebase-tools@14.12.0 >/dev/null 2>&1
+      cd "$EXACT_SOURCE_DIR"
+      "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive
+   - name: Exact live bytes and immutable production readback
+     run: |
+      set -Eeuo pipefail
+      gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$EVIDENCE_DIR/runtime-after.json"
+      NEW_REV="$(jq -r '.status.latestReadyRevisionName // empty' "$EVIDENCE_DIR/runtime-after.json")"
+      test -n "$NEW_REV"
+      test "$NEW_REV" != "$EXPECTED_OLD_REVISION"
+      jq -e --arg rev "$NEW_REV" '([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$EVIDENCE_DIR/runtime-after.json" >/dev/null
+      gcloud run revisions describe "$NEW_REV" --project "$PROJECT" --region "$REGION" --format=json > "$EVIDENCE_DIR/runtime-revision.json"
+      DIGEST="$(jq -r '.status.imageDigest // empty' "$EVIDENCE_DIR/runtime-revision.json")"
+      [[ "$DIGEST" == sha256:* || "$DIGEST" == *@sha256:* ]]
+      TOKEN="$(gcloud auth print-access-token)"
+      curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$EVIDENCE_DIR/hosting-after.json"
+      BEFORE="$(jq -r '.release.version.name // empty' "$EVIDENCE_DIR/hosting-before.json")"
+      AFTER="$(jq -r '.release.version.name // empty' "$EVIDENCE_DIR/hosting-after.json")"
+      test -n "$AFTER"
+      test "$AFTER" != "$BEFORE"
+      curl -fsS -H 'Cache-Control: no-cache' "$HOSTING_URL/core/backend-browser-auth.js?i3country=$GITHUB_RUN_ID" -o "$EVIDENCE_DIR/served-auth.js"
+      cmp -s "$EXACT_SOURCE_DIR/app/core/backend-browser-auth.js" "$EVIDENCE_DIR/served-auth.js"
+      grep -Fq SHOPPER_COUNTRY_SCOPE_CONFLICT "$EVIDENCE_DIR/served-auth.js"
+      curl -fsS -H 'Cache-Control: no-cache' "$PRODUCTION_URL/" -o "$EVIDENCE_DIR/production-after.html"
+      sha256sum "$EVIDENCE_DIR/production-after.html" | awk '{print $1}' > "$EVIDENCE_DIR/production-after.sha256"
+      cmp -s "$EVIDENCE_DIR/production-before.sha256" "$EVIDENCE_DIR/production-after.sha256"
+      jq -n -S --arg source "$PINNED_SOURCE" --arg tree "$PINNED_TREE" --arg runtime "$NEW_REV" --arg digest "$DIGEST" --arg hosting "$AFTER" '{decision:"PASS_I3_P0_GT_HN_EXACT_DEV_MATERIALIZATION",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,builds:1,runtimeDeploys:1,hostingDeploys:1,hrWrites:0,authWrites:0,productionDeploys:0,productionChanged:false,adminShopperE2e:"PENDING_INDEPENDENT_BROWSER",gate20:"HOLD",gate21:"HOLD"}' > "$EVIDENCE_DIR/result.json"
+   - uses: actions/upload-artifact@v4
+     if: always()
+     with:
+      name: cxorbia-i3-p0-country-dev-${{ github.run_id }}
+      path: .tmp/i3-p0-country-dev/
+      if-no-files-found: warn
+      retention-days: 30
