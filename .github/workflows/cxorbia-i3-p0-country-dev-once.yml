@@ -24,19 +24,20 @@ env:
   HISTORICAL_CONTROL_SHA: d4ba88a70e62b535cf07709eb89c1b56c33a9bf7
   HISTORICAL_PRODUCT_SOURCE: db56b89a1221d26f5cc4466585cda7eaa7360ddd
   HISTORICAL_PRODUCT_TREE: 7b157bdf187ed712256eacfe86c1ff016b40c44e
-  PRIOR_DEV_SOURCE: db56b89a1221d26f5cc4466585cda7eaa7360ddd
-  PRIOR_DEV_TREE: 7b157bdf187ed712256eacfe86c1ff016b40c44e
-  PINNED_SOURCE: 0127d0c0785e37563390fa0a8dc98c8ed56a22b5
-  PINNED_TREE: 9c0ec86b9acf894c653aa75a17ca9d9850de3a9f
+  PRIOR_DEV_SOURCE: 0127d0c0785e37563390fa0a8dc98c8ed56a22b5
+  PRIOR_DEV_TREE: 9c0ec86b9acf894c653aa75a17ca9d9850de3a9f
+  PINNED_SOURCE: 02ea8466aa487bb34b708d57db925721ee8bfda0
+  PINNED_TREE: cf947d934c66614f2c35382a36affe9383ad8cfe
   EXPECTED_OLD_REVISION: cxorbia-live-hr-dev-00328-r69
-  EXPECTED_OLD_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/bb25faef426017d9
+  EXPECTED_OLD_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/471b1a141fe8c28e
   EXPECTED_OLD_AUTH_SHA256: caa74dad682936e3cd5f40bb91bb7104d27eda9aa18fde40f5c1aac9444a38c8
-  EXPECTED_OLD_BRIDGE_SHA256: 286a4f572efc8655d6c8a6f865d3bf5ad8d95b57d1e53b6193af445f8ae164a1
+  EXPECTED_OLD_BRIDGE_SHA256: 0ffad0c15943ec0c178b4e63df4d70ce1716fbef355695d466ff3a638a02b0b8
+  EXPECTED_OLD_SHOPPERS_STORE_SHA256: fb08773d2ffcf5245dce300fefc33c915198032e79f62467e68443dd3c75086b
   EVIDENCE_DIR: .tmp/i3-p0-country-dev
   PRODUCTION_URL: https://tya-plataforma.web.app
 jobs:
   country-source-dev-only:
-    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-HN-SCOPE-DEV-ONCE-V8' }}
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-HN-SCOPE-DEV-ONCE-V9' }}
     runs-on: ubuntu-latest
     timeout-minutes: 65
     steps:
@@ -72,14 +73,16 @@ jobs:
           (cd "$RUNNER_TEMP/i3-historical-control" && node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs > "$GITHUB_WORKSPACE/$EVIDENCE_DIR/historical-canonical-guard.json")
           jq -e --arg s "$HISTORICAL_PRODUCT_SOURCE" --arg t "$HISTORICAL_PRODUCT_TREE" '.productSourceSha==$s and .productSourceTree==$t' "$EVIDENCE_DIR/historical-canonical-guard.json" >/dev/null
           git diff --name-only "$PRIOR_DEV_SOURCE" "$PINNED_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source > "$EVIDENCE_DIR/source-diff.txt"
-          test "$(wc -l < "$EVIDENCE_DIR/source-diff.txt")" = 1
+          test "$(wc -l < "$EVIDENCE_DIR/source-diff.txt")" = 2
           grep -Fxq app/adapters/tya-protected-auth-hr-authority-bridge-v2.js "$EVIDENCE_DIR/source-diff.txt"
+          grep -Fxq app/core/shoppers-store.js "$EVIDENCE_DIR/source-diff.txt"
           node backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs > "$EVIDENCE_DIR/tests.log"
           grep -Fq 'pass 45' "$EVIDENCE_DIR/tests.log"
-          node --test tools/qa/cxorbia-i3-p0-hn-shopper-country-source.test.mjs tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs tools/qa/cxorbia-i3-vrm280-exact-shopper-session-fallback.test.mjs tools/qa/cxorbia-i3-work-uat-u22-shopper-controls.test.mjs > "$EVIDENCE_DIR/scope-tests.log"
-          grep -Fq 'pass 24' "$EVIDENCE_DIR/scope-tests.log"
+          node --test --test-isolation=none tools/qa/cxorbia-i3-p0-hn-shopper-country-source.test.mjs tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs tools/qa/cxorbia-i3-vrm280-exact-shopper-session-fallback.test.mjs tools/qa/cxorbia-i3-work-uat-u22-shopper-controls.test.mjs > "$EVIDENCE_DIR/scope-tests.log"
+          grep -Fq 'pass 27' "$EVIDENCE_DIR/scope-tests.log"
           node --check app/core/backend-browser-auth.js
           node --check app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
+          node --check app/core/shoppers-store.js
           node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
           grep -Fq 'COPY backend/runtime/cxorbia-shopper-command-provider-v1.mjs' backend/runtime/hr-live-service/Dockerfile
           mkdir -p "$RUNNER_TEMP/i3-country-source"
@@ -107,6 +110,8 @@ jobs:
           test "$(sha256sum "$EVIDENCE_DIR/auth-before.js" | awk '{print $1}')" = "$EXPECTED_OLD_AUTH_SHA256"
           curl -fsS -H 'Cache-Control: no-cache' "$HOSTING_URL/adapters/tya-protected-auth-hr-authority-bridge-v2.js?i3country=pre-$GITHUB_RUN_ID" -o "$EVIDENCE_DIR/bridge-before.js"
           test "$(sha256sum "$EVIDENCE_DIR/bridge-before.js" | awk '{print $1}')" = "$EXPECTED_OLD_BRIDGE_SHA256"
+          curl -fsS -H 'Cache-Control: no-cache' "$HOSTING_URL/core/shoppers-store.js?i3country=pre-$GITHUB_RUN_ID" -o "$EVIDENCE_DIR/shoppers-store-before.js"
+          test "$(sha256sum "$EVIDENCE_DIR/shoppers-store-before.js" | awk '{print $1}')" = "$EXPECTED_OLD_SHOPPERS_STORE_SHA256"
           for f in index-backend-dev.html core/backend-firebase.js core/router.js modules/dashboard.js modules/shoppers.js modules/misvisitas.js modules/visitas.js modules/finanzas.js modules/postulaciones.js modules/documentos.js modules/cert.js adapters/tya-canonical-shopper-portal-v2.js; do
             curl -fsS -H 'Cache-Control: no-cache' "$HOSTING_URL/$f?i3country=pre-$GITHUB_RUN_ID" -o "$EVIDENCE_DIR/probed-$(basename "$f")"
             cmp -s "$EXACT_SOURCE_DIR/app/$f" "$EVIDENCE_DIR/probed-$(basename "$f")"
@@ -145,6 +150,10 @@ jobs:
           curl -fsS -H 'Cache-Control: no-cache' "$HOSTING_URL/adapters/tya-protected-auth-hr-authority-bridge-v2.js?i3country=$GITHUB_RUN_ID" -o "$EVIDENCE_DIR/served-bridge.js"
           cmp -s "$EXACT_SOURCE_DIR/app/adapters/tya-protected-auth-hr-authority-bridge-v2.js" "$EVIDENCE_DIR/served-bridge.js"
           grep -Fq 'scopePaises:[shopperReady.country]' "$EVIDENCE_DIR/served-bridge.js"
+          grep -Fq 'shopperReadiness(profileInfo,result,liveReadModel,claims)' "$EVIDENCE_DIR/served-bridge.js"
+          curl -fsS -H 'Cache-Control: no-cache' "$HOSTING_URL/core/shoppers-store.js?i3country=$GITHUB_RUN_ID" -o "$EVIDENCE_DIR/served-shoppers-store.js"
+          cmp -s "$EXACT_SOURCE_DIR/app/core/shoppers-store.js" "$EVIDENCE_DIR/served-shoppers-store.js"
+          grep -Fq '__liveHrShopperIds' "$EVIDENCE_DIR/served-shoppers-store.js"
           curl -fsS -H 'Cache-Control: no-cache' "$PRODUCTION_URL/" -o "$EVIDENCE_DIR/production-after.html"
           sha256sum "$EVIDENCE_DIR/production-after.html" | awk '{print $1}' > "$EVIDENCE_DIR/production-after.sha256"
           cmp -s "$EVIDENCE_DIR/production-before.sha256" "$EVIDENCE_DIR/production-after.sha256"
