@@ -24,12 +24,13 @@ env:
   PINNED_SOURCE: db56b89a1221d26f5cc4466585cda7eaa7360ddd
   PINNED_TREE: 7b157bdf187ed712256eacfe86c1ff016b40c44e
   EXPECTED_OLD_REVISION: cxorbia-live-hr-dev-00327-xsc
-  EXPECTED_OLD_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/a72e1b7bdce815a1
+  EXPECTED_OLD_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/1fb034ec88dc5e49
+  EXPECTED_OLD_AUTH_SHA256: 3c6f1add83c63d341073727a28ef8ae088b9eed8525157dd647915689ab3d924
   EVIDENCE_DIR: .tmp/i3-p0-country-dev
   PRODUCTION_URL: https://tya-plataforma.web.app
 jobs:
   country-source-dev-only:
-    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-GT-HN-DEV-ONCE-V2' }}
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-GT-HN-DEV-ONCE-V3' }}
     runs-on: ubuntu-latest
     timeout-minutes: 65
     steps:
@@ -87,6 +88,12 @@ jobs:
           TOKEN="$(gcloud auth print-access-token)"
           curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$EVIDENCE_DIR/hosting-before.json"
           test "$(jq -r '.release.version.name' "$EVIDENCE_DIR/hosting-before.json")" = "$EXPECTED_OLD_HOSTING_VERSION"
+          curl -fsS -H 'Cache-Control: no-cache' "$HOSTING_URL/core/backend-browser-auth.js?i3country=pre-$GITHUB_RUN_ID" -o "$EVIDENCE_DIR/auth-before.js"
+          test "$(sha256sum "$EVIDENCE_DIR/auth-before.js" | awk '{print $1}')" = "$EXPECTED_OLD_AUTH_SHA256"
+          for f in index-backend-dev.html core/backend-firebase.js core/router.js modules/dashboard.js modules/shoppers.js modules/misvisitas.js modules/visitas.js modules/finanzas.js modules/postulaciones.js modules/documentos.js modules/cert.js adapters/tya-canonical-shopper-portal-v2.js; do
+            curl -fsS -H 'Cache-Control: no-cache' "$HOSTING_URL/$f?i3country=pre-$GITHUB_RUN_ID" -o "$EVIDENCE_DIR/probed-$(basename "$f")"
+            cmp -s "$EXACT_SOURCE_DIR/app/$f" "$EVIDENCE_DIR/probed-$(basename "$f")"
+          done
           curl -fsS -H 'Cache-Control: no-cache' "$PRODUCTION_URL/" -o "$EVIDENCE_DIR/production-before.html"
           sha256sum "$EVIDENCE_DIR/production-before.html" | awk '{print $1}' > "$EVIDENCE_DIR/production-before.sha256"
           echo "RUNTIME_URL=$RUNTIME_URL" >> "$GITHUB_ENV"
