@@ -55,8 +55,8 @@ try {
   const tenant = db.collection('tenants').doc(TENANT);
   const members = (await tenant.collection('users').get()).docs.map(d => ({uid:d.id,...d.data()}));
   const memberByUid = new Map(members.map(m => [m.uid,m]));
-  const profiles = (await tenant.collection('shoppers').get()).docs.map(d => ({id:d.id,...d.data()}));
-  const profileById = new Map(profiles.map(p => [p.id,p]));
+  const profiles = (await tenant.collection('shoppers').get()).docs.map(d => ({...d.data(), _firestoreDocumentId:d.id}));
+  const profileById = new Map(profiles.map(p => [p._firestoreDocumentId,p]));
   const crosswalk = (await tenant.collection('shopperIdentityCrosswalk').get()).docs.map(d => ({id:d.id,...d.data()}));
   const crossById = new Map(crosswalk.map(x => [x.id,x]));
   const links = (await tenant.collection('shopperIdentityLinks').get()).docs.map(d => ({id:d.id,...d.data()}));
@@ -68,7 +68,7 @@ try {
     const authMatchesByEmail = allAuth.filter(a => value(a.email).toLowerCase() === email);
     const memberMatchesLogin = members.filter(m => sha(norm(m.visibleLogin || m.username || m.user)).slice(0,24) === target.loginFingerprint);
     const durableProfileMatchesName = profiles.filter(p => nameFp(displayName(p)) === target.exactNameFingerprint);
-    const memberMatchesProfile = members.filter(m => durableProfileMatchesName.some(p => p.id === value(m.shopperId)));
+    const memberMatchesProfile = members.filter(m => durableProfileMatchesName.some(p => [p._firestoreDocumentId,p.shopperId,p.id].map(value).includes(value(m.shopperId))));
     // Choose the strongest *unique technical* selector. Never union weaker
     // display-name matches: historical duplicate profiles are not proof of
     // authenticated account ownership or permission to merge.
@@ -97,12 +97,24 @@ try {
     const directSourceHNIds = directSourceIds.filter(t => normalizedCountry(hrIds.get(t)) === 'HN');
     const claimsCountry = value(claims.country).toUpperCase();
     const namedDurableCandidates = durableProfileMatchesName.map(candidate => {
-      const candidateId = sid(candidate);
-      const directHrVisits = hrVisits.filter(v => sid(v) === candidateId).length;
-      const hasSource = hrIds.has(candidateId);
+      const candidateId = value(candidate._firestoreDocumentId);
+      const fieldShopperId = value(candidate.shopperId);
+      const fieldId = value(candidate.id);
+      const technicalIds = [...new Set([candidateId,fieldShopperId,fieldId].filter(Boolean))];
+      const exactHrRowsById = technicalIds.map(id => ({id, count:hrVisits.filter(v => sid(v) === id).length,source:hrIds.has(id)}));
+      const sourceOwner = exactHrRowsById.filter(row => row.source && row.count === target.adminHistoricalCount);
+      const directHrVisits = Math.max(0,...exactHrRowsById.map(x => x.count));
+      const hasSource = exactHrRowsById.some(x => x.source);
       const activeMembers = members.filter(row => row.active === true && value(row.shopperId) === candidateId).length;
       return {
         candidateId, candidateIdClass: sidClass(candidateId), candidateIdFingerprint: fp(`sid:${candidateId}`),
+        declaredIdClass: sidClass(fieldId), declaredShopperIdClass: sidClass(fieldShopperId),
+        documentIdMatchesDeclaredId: candidateId === fieldId,
+        documentIdMatchesShopperId: candidateId === fieldShopperId,
+        exactTechnicalSourceKeys: exactHrRowsById.filter(x => x.source).length,
+        exactHistoricalSourceOwnerKeys: sourceOwner.length,
+        sourceOwnerClass: sourceOwner.length===1 ? sidClass(sourceOwner[0].id) : 'UNPROVEN',
+        sourceOwnerFingerprint: sourceOwner.length===1 ? fp(`sid:${sourceOwner[0].id}`) : null,
         profileCountry: normalizedCountry(candidate), directHrVisits, exactCurrentHrSource: hasSource,
         authMemberCount: activeMembers, sourceType: value(candidate.sourceType),
         sourceRevisionMatchesCurrent: value(candidate.hrSourceRevision) === report.hrRevision,
@@ -112,9 +124,12 @@ try {
       };
     });
     const canonicalCandidates = namedDurableCandidates.filter(row =>
-      row.candidateIdClass === 'HN_STABLE' && row.profileCountry === 'HN' &&
-      row.exactCurrentHrSource && row.directHrVisits === target.adminHistoricalCount &&
-      (!target.adminCanonicalFingerprint || row.candidateIdFingerprint === target.adminCanonicalFingerprint));
+      row.profileCountry === 'HN' && row.exactCurrentHrSource &&
+      row.exactHistoricalSourceOwnerKeys === 1 && row.directHrVisits === target.adminHistoricalCount &&
+      row.contactPhoneMatchesActivePrincipal &&
+      (!target.adminCanonicalFingerprint ||
+        row.candidateIdFingerprint === target.adminCanonicalFingerprint ||
+        row.sourceOwnerFingerprint === target.adminCanonicalFingerprint));
     const exactHN = canonicalCandidates.length === 1 ? canonicalCandidates[0] : null;
     report.cases.push({
       caseId: target.caseId, authCandidates: authMatches.length, authSelector: authMatchesByEmail.length===1?'EXACT_INTERNAL_EMAIL':memberMatchesLogin.length===1?'MEMBER_VISIBLE_LOGIN':memberMatchesProfile.length===1?'DURABLE_NAME_DIAGNOSTIC_ONLY':'NOT_UNIQUE',
@@ -142,8 +157,7 @@ try {
       exactCanonicalHistVisits: exactHN?.directHrVisits ?? null,
       principalAndHnProfileSharePhone: exactHN?.contactPhoneMatchesActivePrincipal || false,
       canonicalRepairPreflight: !exactHN ? 'HOLD_CANONICAL_NOT_UNIQUELY_PROVEN' :
-        exactHN.contactPhoneMatchesActivePrincipal ? 'CONTACT_CORROBORATED_BUT_AUTHORITY_LINK_STILL_REQUIRED' :
-          'NO_CONTACT_CORROBORATION_AUTHORITY_LINK_REQUIRED',
+        'UNIQUE_SOURCE_CONTACT_CORROBORATION_ONLY__HUMAN_AUTHORITY_LINK_STILL_REQUIRED',
       note: 'Ninguna identidad se fusiona ni se infiere por nombre; la coincidencia de nombre es solo un selector de diagnóstico.'
     });
   }
