@@ -122,7 +122,7 @@ window.CX = window.CX || {};
   function normalizeShopper(s){
     if(!s || typeof s !== 'object') return s;
     const id = s.id || s.shopperId;
-    const country = s.pais || firstArrayValue(s.countries, 'GT');
+    const country = s.pais || s.country || firstArrayValue(s.countries, 'GT');
     const whatsapp = s.whatsapp || s.phone || s.telefono || s.telefonoWhatsapp || s.mobile || '';
     const email = s.email || s.correo || s.mail || s.contactEmail || '';
     const username = s.username || s.user || s.login || s.visibleLogin || '';

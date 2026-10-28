@@ -20,6 +20,19 @@ const sessionProfile = new Function('arr', 'str', 'clone',
 )(v => Array.isArray(v) ? v : [], v => String(v ?? '').trim(), v => JSON.parse(JSON.stringify(v)));
 const profileInfo = (pais, id = 'HN_EXACT_CLAIM_ID') => ({ok: true, canonicalShopperId: id, profile: {id, shopperId: id, pais}});
 const data = {visitsForShopper: id => [{shopperId: id, periodId: 'period-oct'}], recordPeriodId: v => v.periodId};
+const backend = fs.readFileSync('app/core/backend-firebase.js', 'utf8');
+const normalizeStart = backend.indexOf('function normalizeShopper(');
+const normalizeEnd = backend.indexOf('function normalizeVisit(', normalizeStart);
+assert.ok(normalizeStart >= 0 && normalizeEnd > normalizeStart);
+const normalizeShopper = new Function('firstArrayValue',
+  `${backend.slice(normalizeStart, normalizeEnd)}\nreturn normalizeShopper;`
+)((value, fallback) => Array.isArray(value) && value.length ? value[0] : fallback);
+
+test('I3 P0 authorized backend preserves HN when Firestore stores country without pais', () => {
+  const own = normalizeShopper({id: 'signed-hn-legacy', country: 'HN', ciudad: 'Tegucigalpa'});
+  assert.equal(own.pais, 'HN');
+  assert.equal(own.country, 'HN');
+});
 
 test('I3 P0 authenticated HN profile normalizes to HN and retains exact visit history', () => {
   const actual = readiness(profileInfo('Honduras'), {visits: []}, data, {country: ''});
