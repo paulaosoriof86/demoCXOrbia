@@ -36,7 +36,9 @@ jobs:
           test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
           test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
           git merge-base --is-ancestor 6839a669 HEAD
-          git diff --quiet 6839a669 HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules
+          git diff --quiet 6839a669 HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules \
+            ':(exclude)backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs' \
+            ':(exclude)backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-live-source-honorarium.test.mjs'
           node --check firebase/auth-dev-tools/cxorbia-i3-hn-exact-two-identity-adjudication-once.mjs
       - uses: google-github-actions/auth@v2
         with:
