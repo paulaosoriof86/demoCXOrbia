@@ -7,8 +7,22 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "19ac62bb9cd6828b736f6347371183b42b518b5e",
-  "productTree": "9bc6f9df8a10a83959fde1abbf6554ac5cb86e9c",
+  "productSourceSha": "db56b89a1221d26f5cc4466585cda7eaa7360ddd",
+  "productTree": "7b157bdf187ed712256eacfe86c1ff016b40c44e",
+  "i3P0CountryScope20261028": {
+    "sourceSha": "db56b89a1221d26f5cc4466585cda7eaa7360ddd",
+    "sourceTree": "7b157bdf187ed712256eacfe86c1ff016b40c44e",
+    "predecessorSourceSha": "19ac62bb9cd6828b736f6347371183b42b518b5e",
+    "affectedRoles": ["Shopper HN", "Shopper GT control", "Admin HN"],
+    "changedOwners": ["app/core/backend-browser-auth.js", "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"],
+    "newQaOwner": "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs",
+    "localTests": {"pass": 75, "fail": 0, "scope": "SOURCE_ONLY"},
+    "devSourceGate": "PENDING_CANONICAL_CI",
+    "devMaterialization": "PENDING",
+    "realShopperAdminE2e": "PENDING",
+    "hrAndAccountWrites": 0,
+    "production": false
+  },
   "vrm289ClientReportProjectionSource20261026": {
     "findingId": "VRM-289",
     "sourceSha": "92e42a61eace003a1e518ac71bf4309517aa89d9",
@@ -687,9 +701,9 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V188.json",
-    "gitBlob": "7561c8e57d7e3dd79d3f93ca903557a9c14ed8b1",
-    "sourceSha": "19ac62bb9cd6828b736f6347371183b42b518b5e",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V189.json",
+    "gitBlob": "e7ae9424dcc42380fdfbdef52afb6d953ce2426a",
+    "sourceSha": "db56b89a1221d26f5cc4466585cda7eaa7360ddd",
     "allModulesMatch": false,
     "phaseAComplete": false
   },
@@ -2724,9 +2738,9 @@
     "gitBlob": "879313bfbced75baa8d764d9678f5efcc489c944"
   },
   "activeShockModuleTruth": {
-    "sourceSha": "19ac62bb9cd6828b736f6347371183b42b518b5e",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V188.json",
-    "matrixBlob": "7561c8e57d7e3dd79d3f93ca903557a9c14ed8b1",
+    "sourceSha": "db56b89a1221d26f5cc4466585cda7eaa7360ddd",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V189.json",
+    "matrixBlob": "e7ae9424dcc42380fdfbdef52afb6d953ce2426a",
     "classificationCounts": {
       "COMPOSED_NOT_DEPLOYED": 2,
       "MATCH": 5,
