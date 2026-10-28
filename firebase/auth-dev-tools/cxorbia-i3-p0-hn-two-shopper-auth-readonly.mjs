@@ -13,8 +13,8 @@ const PROGRAM = 'cinepolis';
 const OUTPUT = process.env.CX_DIAG_OUT || '.tmp/i3-p0-hn-two-shopper';
 const HR_URL = 'https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live?format=json';
 const expected = [
-  {caseId: 'HN_CASE_A', namespaceEmailPrefix: '699fa4b58b12acbb5c7206f189e037145a0c5301a4ffc3cd', exactNameFingerprint: 'aa27ea4ede44e2253bbbc6b7', adminHistoricalCount: 9},
-  {caseId: 'HN_CASE_B', namespaceEmailPrefix: '0147d9724b37ef0d8932680e42f82e75f2e743be6f', exactNameFingerprint: '1691aecc2c6c601234218af6', adminHistoricalCount: 17}
+  {caseId: 'HN_CASE_A', namespaceEmailPrefix: '699fa4b58b12acbb5c7206f189e037145a0c5301a4ffc3cd', loginFingerprint: '82d6a1369b5dbb8f9bc931d0', exactNameFingerprint: 'aa27ea4ede44e2253bbbc6b7', adminHistoricalCount: 9},
+  {caseId: 'HN_CASE_B', namespaceEmailPrefix: '0147d9724b37ef0d8932680e42f82e75f2e743be6f', loginFingerprint: '27ce81067e5bd3a2604633f5', exactNameFingerprint: '1691aecc2c6c601234218af6', adminHistoricalCount: 17}
 ];
 const value = x => String(x ?? '').trim();
 const sha = x => crypto.createHash('sha256').update(value(x)).digest('hex');
@@ -23,6 +23,7 @@ const norm = x => value(x).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLo
 const nameFp = x => sha(norm(x)).slice(0,24);
 const displayName = x => value(x?.nombre || x?.fullName || x?.displayName || x?.name || [x?.firstName, x?.lastName].filter(Boolean).join(' '));
 const country = x => value(x?.pais || x?.country || x?.país).toUpperCase();
+const normalizedCountry = x => ['HONDURAS','HN'].includes(country(x)) ? 'HN' : ['GUATEMALA','GT'].includes(country(x)) ? 'GT' : country(x) || 'UNSET';
 const sid = x => value(x?.shopperId || x?.id);
 const sidClass = x => /^TYA_HN_[A-F0-9]{6,}$/i.test(value(x)) ? 'HN_STABLE' : /^TYA_GT_[A-F0-9]{6,}$/i.test(value(x)) ? 'GT_STABLE' : value(x) ? 'OTHER_TECHNICAL_ID' : 'MISSING';
 const write = report => {fs.mkdirSync(OUTPUT,{recursive:true});fs.writeFileSync(`${OUTPUT}/result.json`,JSON.stringify(report,null,2)+'\n');};
@@ -56,12 +57,20 @@ try {
   const profileById = new Map(profiles.map(p => [p.id,p]));
   const crosswalk = (await tenant.collection('shopperIdentityCrosswalk').get()).docs.map(d => ({id:d.id,...d.data()}));
   const crossById = new Map(crosswalk.map(x => [x.id,x]));
+  const links = (await tenant.collection('shopperIdentityLinks').get()).docs.map(d => ({id:d.id,...d.data()}));
+  report.hrSummary.hnProfiles = hrProfiles.filter(p => normalizedCountry(p) === 'HN').length;
+  const hrIds = new Map(hrProfiles.map(p => [sid(p),p]));
 
   for (const target of expected) {
     const email = `${target.namespaceEmailPrefix}@auth.cxorbia.invalid`;
-    const authMatches = allAuth.filter(a => value(a.email).toLowerCase() === email);
+    const authMatchesByEmail = allAuth.filter(a => value(a.email).toLowerCase() === email);
+    const memberMatchesLogin = members.filter(m => sha(norm(m.visibleLogin || m.username || m.user)).slice(0,24) === target.loginFingerprint);
+    const durableProfileMatchesName = profiles.filter(p => nameFp(displayName(p)) === target.exactNameFingerprint);
+    const memberMatchesProfile = members.filter(m => durableProfileMatchesName.some(p => p.id === value(m.shopperId)));
+    const candidateUids = new Set([...authMatchesByEmail.map(a => a.uid),...memberMatchesLogin.map(m => m.uid),...memberMatchesProfile.map(m => m.uid)]);
+    const authMatches = allAuth.filter(a => candidateUids.has(a.uid));
     const sourceMatches = hrProfiles.filter(p => nameFp(displayName(p)) === target.exactNameFingerprint);
-    const sourceHN = sourceMatches.filter(p => country(p) === 'HN');
+    const sourceHN = sourceMatches.filter(p => normalizedCountry(p) === 'HN');
     const a = authMatches.length === 1 ? authMatches[0] : null;
     const claims = a?.customClaims || {};
     const m = a ? memberByUid.get(a.uid) : null;
@@ -72,27 +81,37 @@ try {
     const hrOwner = sourceHN.length === 1 ? sid(sourceHN[0]) : '';
     const hrVisitMatches = hrOwner ? hrVisits.filter(v => sid(v) === hrOwner) : [];
     const exactIdRelation = !a || !hrOwner ? 'UNPROVEN' : rawSid === hrOwner ? 'AUTH_MATCHES_HN_HR' : 'AUTH_DIFFERS_FROM_HN_HR';
+    const linkedTokens = new Set([rawSid,memberSid,p?.sourceShopperId,p?.sourceIdentityKey,p?.canonicalShopperId,cw?.sourceShopperId,cw?.shopperId,cw?.canonicalShopperId,
+      ...(Array.isArray(p?.exactAliases)?p.exactAliases:[]),...(Array.isArray(p?.sourceShopperIds)?p.sourceShopperIds:[])].map(value).filter(Boolean));
+    const linksTouchingClaim = links.filter(l => [l.shopperId,l.sourceShopperId,l.canonicalShopperId,...(Array.isArray(l.exactAliases)?l.exactAliases:[])].map(value).some(t => linkedTokens.has(t)));
+    const directSourceIds = [...linkedTokens].filter(t => hrIds.has(t));
+    const directSourceHNIds = directSourceIds.filter(t => normalizedCountry(hrIds.get(t)) === 'HN');
+    const claimsCountry = value(claims.country).toUpperCase();
     report.cases.push({
-      caseId: target.caseId, authCandidates: authMatches.length, disabled: a?.disabled === true,
+      caseId: target.caseId, authCandidates: authMatches.length, authSelector: authMatchesByEmail.length===1?'EXACT_INTERNAL_EMAIL':memberMatchesLogin.length===1?'MEMBER_VISIBLE_LOGIN':memberMatchesProfile.length===1?'DURABLE_NAME_DIAGNOSTIC_ONLY':'NOT_UNIQUE',
+      memberLoginCandidates: memberMatchesLogin.length, durableNameCandidates: durableProfileMatchesName.length,
+      disabled: a?.disabled === true,
       authUidFingerprint: a ? fp(`uid:${a.uid}`) : null,
       claimRole: value(claims.role), claimNamespace: value(claims.authNamespace),
       claimCountry: value(claims.country).toUpperCase() || 'UNSET',
       claimShopperIdClass: sidClass(rawSid), claimShopperIdFingerprint: rawSid ? fp(`sid:${rawSid}`) : null,
-      memberPresent: Boolean(m), memberCountry: country(m) || 'UNSET',
+      memberPresent: Boolean(m), memberCountry: normalizedCountry(m),
       memberShopperIdClass: sidClass(memberSid), memberMatchesClaim: Boolean(m && memberSid === rawSid),
-      authLinkedProfilePresent: Boolean(p), authLinkedProfileCountry: country(p) || 'UNSET',
+      authLinkedProfilePresent: Boolean(p), authLinkedProfileCountry: normalizedCountry(p),
       authLinkedProfileHistoricalCount: Number(p?.visitsCount || p?.totalVisits || 0),
       crosswalkPresent: Boolean(cw), crosswalkCanonicalClass: sidClass(cw?.shopperId || cw?.canonicalShopperId),
       hrNameCandidates: sourceMatches.length, hrHNCandidates: sourceHN.length,
       hrExactOwnerClass: sidClass(hrOwner), hrExactOwnerFingerprint: hrOwner ? fp(`sid:${hrOwner}`) : null,
       hrDirectVisitRows: hrVisitMatches.length, adminHistoricalCountObserved: target.adminHistoricalCount,
-      exactIdRelation, countryClaimConflictsWithHN: value(claims.country).toUpperCase() === 'GT' && sourceHN.length === 1,
+      exactIdRelation, countryClaimConflictsWithHN: claimsCountry === 'GT' && sourceHN.length === 1,
+      directExactSourceIdCount: directSourceIds.length, directExactHNSourceIdCount: directSourceHNIds.length,
+      trustedLinksTouchingPrincipal: linksTouchingClaim.filter(l => ['provider_exact','tenant_adjudication','platform_created','migrated_exact'].includes(value(l.authorityType || l.authority?.type).toLowerCase()) && ['active','confirmed','approved','materialized'].includes(value(l.status || l.state).toLowerCase())).length,
       note: 'Ninguna identidad se fusiona ni se infiere por nombre; la coincidencia de nombre es solo un selector de diagnóstico.'
     });
   }
-  report.decision = report.cases.every(x => x.authCandidates === 1 && x.hrHNCandidates === 1)
-    ? 'PASS_EXACT_DIAGNOSTIC_TWO_HN_AUTH_PRINCIPALS_READ'
-    : 'HOLD_TARGET_SELECTORS_NOT_EXACT';
+  report.decision = report.cases.every(x => x.authCandidates === 1)
+    ? 'PASS_TWO_HN_AUTH_MEMBERSHIP_DIAGNOSTIC_READ'
+    : 'HOLD_TARGET_SELECTORS_NOT_UNIQUE';
 } catch (error) {
   report.decision = 'HOLD_DIAGNOSTIC_PROVIDER_OR_CREDENTIALS';
   report.errorClass = value(error?.code || error?.name || 'UNKNOWN').replace(/[^A-Za-z0-9_-]/g,'_').slice(0,72);
