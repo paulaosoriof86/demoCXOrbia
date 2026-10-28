@@ -24,20 +24,21 @@ env:
   HISTORICAL_CONTROL_SHA: d4ba88a70e62b535cf07709eb89c1b56c33a9bf7
   HISTORICAL_PRODUCT_SOURCE: db56b89a1221d26f5cc4466585cda7eaa7360ddd
   HISTORICAL_PRODUCT_TREE: 7b157bdf187ed712256eacfe86c1ff016b40c44e
-  PRIOR_DEV_SOURCE: 02ea8466aa487bb34b708d57db925721ee8bfda0
-  PRIOR_DEV_TREE: cf947d934c66614f2c35382a36affe9383ad8cfe
-  PINNED_SOURCE: dd890ba4539ba36274b856edea091273c58b1385
-  PINNED_TREE: 59c2b8922b7fe10a9594a9f61b93013bb803e887
+  PRIOR_DEV_SOURCE: dd890ba4539ba36274b856edea091273c58b1385
+  PRIOR_DEV_TREE: 59c2b8922b7fe10a9594a9f61b93013bb803e887
+  PINNED_SOURCE: 6839a6693da7002712bca1ccabdbe1e9d461725c
+  PINNED_TREE: 5f1860868ba09f1700b7b396a314b36fbe52d40f
   EXPECTED_OLD_REVISION: cxorbia-live-hr-dev-00328-r69
-  EXPECTED_OLD_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/2d89ca4a3e6e1e4e
+  EXPECTED_OLD_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/d3c37b7a3b5d264e
   EXPECTED_OLD_AUTH_SHA256: caa74dad682936e3cd5f40bb91bb7104d27eda9aa18fde40f5c1aac9444a38c8
-  EXPECTED_OLD_BRIDGE_SHA256: a4b37583fcd2b96baf83b6104c2b7ddac984cd2a107d676dc22bbadb0874a552
+  EXPECTED_OLD_BRIDGE_SHA256: 43e79e43cbd27393e4ba5f9f76a8a5e6aa0e861c1c8f702a1ddc0fbce69843e4
   EXPECTED_OLD_SHOPPERS_STORE_SHA256: 7ab00f52e29c3d6081f20f996683bc4a538f51969a54664b84f5c7a84f72194a
+  EXPECTED_OLD_BACKEND_FIREBASE_SHA256: 14a96ec636c02bbb8fbb8d2ff342ed9749c7e174c1a75b80d38ef163f9b496a1
   EVIDENCE_DIR: .tmp/i3-p0-country-dev
   PRODUCTION_URL: https://tya-plataforma.web.app
 jobs:
   country-source-dev-only:
-    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-HN-SCOPE-DEV-ONCE-V10' }}
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-HN-SCOPE-DEV-ONCE-V11' }}
     runs-on: ubuntu-latest
     timeout-minutes: 65
     steps:
@@ -74,12 +75,13 @@ jobs:
           jq -e --arg s "$HISTORICAL_PRODUCT_SOURCE" --arg t "$HISTORICAL_PRODUCT_TREE" '.productSourceSha==$s and .productSourceTree==$t' "$EVIDENCE_DIR/historical-canonical-guard.json" >/dev/null
           git diff --name-only "$PRIOR_DEV_SOURCE" "$PINNED_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source > "$EVIDENCE_DIR/source-diff.txt"
           test "$(wc -l < "$EVIDENCE_DIR/source-diff.txt")" = 1
-          grep -Fxq app/adapters/tya-protected-auth-hr-authority-bridge-v2.js "$EVIDENCE_DIR/source-diff.txt"
+          grep -Fxq app/core/backend-firebase.js "$EVIDENCE_DIR/source-diff.txt"
+          ! grep -Fxq app/adapters/tya-protected-auth-hr-authority-bridge-v2.js "$EVIDENCE_DIR/source-diff.txt"
           ! grep -Fxq app/core/shoppers-store.js "$EVIDENCE_DIR/source-diff.txt"
           node backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs > "$EVIDENCE_DIR/tests.log"
           grep -Fq 'pass 45' "$EVIDENCE_DIR/tests.log"
           node --test --test-isolation=none tools/qa/cxorbia-i3-p0-hn-shopper-country-source.test.mjs tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs tools/qa/cxorbia-i3-vrm280-exact-shopper-session-fallback.test.mjs tools/qa/cxorbia-i3-work-uat-u22-shopper-controls.test.mjs > "$EVIDENCE_DIR/scope-tests.log"
-          grep -Fq 'pass 27' "$EVIDENCE_DIR/scope-tests.log"
+          grep -Fq 'pass 28' "$EVIDENCE_DIR/scope-tests.log"
           node --check app/core/backend-browser-auth.js
           node --check app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
           node --check app/core/shoppers-store.js
@@ -112,6 +114,8 @@ jobs:
           test "$(sha256sum "$EVIDENCE_DIR/bridge-before.js" | awk '{print $1}')" = "$EXPECTED_OLD_BRIDGE_SHA256"
           curl -fsS -H 'Cache-Control: no-cache' "$HOSTING_URL/core/shoppers-store.js?i3country=pre-$GITHUB_RUN_ID" -o "$EVIDENCE_DIR/shoppers-store-before.js"
           test "$(sha256sum "$EVIDENCE_DIR/shoppers-store-before.js" | awk '{print $1}')" = "$EXPECTED_OLD_SHOPPERS_STORE_SHA256"
+          curl -fsS -H 'Cache-Control: no-cache' "$HOSTING_URL/core/backend-firebase.js?i3country=pre-$GITHUB_RUN_ID" -o "$EVIDENCE_DIR/backend-firebase-before.js"
+          test "$(sha256sum "$EVIDENCE_DIR/backend-firebase-before.js" | awk '{print $1}')" = "$EXPECTED_OLD_BACKEND_FIREBASE_SHA256"
           for f in index-backend-dev.html core/backend-firebase.js core/router.js modules/dashboard.js modules/shoppers.js modules/misvisitas.js modules/visitas.js modules/finanzas.js modules/postulaciones.js modules/documentos.js modules/cert.js adapters/tya-canonical-shopper-portal-v2.js; do
             curl -fsS -H 'Cache-Control: no-cache' "$HOSTING_URL/$f?i3country=pre-$GITHUB_RUN_ID" -o "$EVIDENCE_DIR/probed-$(basename "$f")"
             cmp -s "$EXACT_SOURCE_DIR/app/$f" "$EVIDENCE_DIR/probed-$(basename "$f")"
@@ -155,6 +159,9 @@ jobs:
           curl -fsS -H 'Cache-Control: no-cache' "$HOSTING_URL/core/shoppers-store.js?i3country=$GITHUB_RUN_ID" -o "$EVIDENCE_DIR/served-shoppers-store.js"
           cmp -s "$EXACT_SOURCE_DIR/app/core/shoppers-store.js" "$EVIDENCE_DIR/served-shoppers-store.js"
           grep -Fq '__liveHrShopperIds' "$EVIDENCE_DIR/served-shoppers-store.js"
+          curl -fsS -H 'Cache-Control: no-cache' "$HOSTING_URL/core/backend-firebase.js?i3country=$GITHUB_RUN_ID" -o "$EVIDENCE_DIR/served-backend-firebase.js"
+          cmp -s "$EXACT_SOURCE_DIR/app/core/backend-firebase.js" "$EVIDENCE_DIR/served-backend-firebase.js"
+          grep -Fq "s.pais || s.country || firstArrayValue" "$EVIDENCE_DIR/served-backend-firebase.js"
           curl -fsS -H 'Cache-Control: no-cache' "$PRODUCTION_URL/" -o "$EVIDENCE_DIR/production-after.html"
           sha256sum "$EVIDENCE_DIR/production-after.html" | awk '{print $1}' > "$EVIDENCE_DIR/production-after.sha256"
           cmp -s "$EVIDENCE_DIR/production-before.sha256" "$EVIDENCE_DIR/production-after.sha256"
