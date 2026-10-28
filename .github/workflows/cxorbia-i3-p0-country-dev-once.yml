@@ -21,9 +21,9 @@ env:
   HOSTING_SITE: cxorbia-backend-dev
   FIREBASE_HOSTING_TARGET: cxorbia-dev
   CANDIDATE_DESCRIPTOR: CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-  HISTORICAL_CONTROL_SHA: 89b22433133d2bacfaa8d2a8bba04d7a858ec2d4
-  HISTORICAL_PRODUCT_SOURCE: 19ac62bb9cd6828b736f6347371183b42b518b5e
-  HISTORICAL_PRODUCT_TREE: 9bc6f9df8a10a83959fde1abbf6554ac5cb86e9c
+  HISTORICAL_CONTROL_SHA: d4ba88a70e62b535cf07709eb89c1b56c33a9bf7
+  HISTORICAL_PRODUCT_SOURCE: db56b89a1221d26f5cc4466585cda7eaa7360ddd
+  HISTORICAL_PRODUCT_TREE: 7b157bdf187ed712256eacfe86c1ff016b40c44e
   PRIOR_DEV_SOURCE: db56b89a1221d26f5cc4466585cda7eaa7360ddd
   PRIOR_DEV_TREE: 7b157bdf187ed712256eacfe86c1ff016b40c44e
   PINNED_SOURCE: 0127d0c0785e37563390fa0a8dc98c8ed56a22b5
@@ -36,7 +36,7 @@ env:
   PRODUCTION_URL: https://tya-plataforma.web.app
 jobs:
   country-source-dev-only:
-    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-HN-SCOPE-DEV-ONCE-V6' }}
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-HN-SCOPE-DEV-ONCE-V7' }}
     runs-on: ubuntu-latest
     timeout-minutes: 65
     steps:
@@ -62,7 +62,8 @@ jobs:
           test "$(git rev-parse "$PRIOR_DEV_SOURCE^{tree}")" = "$PRIOR_DEV_TREE"
           test "$(git rev-parse "$HISTORICAL_PRODUCT_SOURCE^{tree}")" = "$HISTORICAL_PRODUCT_TREE"
           git merge-base --is-ancestor "$PINNED_SOURCE" HEAD
-          git merge-base --is-ancestor "$HISTORICAL_CONTROL_SHA" "$PRIOR_DEV_SOURCE"
+          git merge-base --is-ancestor "$HISTORICAL_PRODUCT_SOURCE" "$HISTORICAL_CONTROL_SHA"
+          git merge-base --is-ancestor "$HISTORICAL_CONTROL_SHA" "$PINNED_SOURCE"
           git merge-base --is-ancestor "$PRIOR_DEV_SOURCE" "$PINNED_SOURCE"
           git diff --quiet "$PINNED_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           # Compare the historical candidate in its unmodified control HEAD;
