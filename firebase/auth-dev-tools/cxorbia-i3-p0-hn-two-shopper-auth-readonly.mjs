@@ -100,6 +100,7 @@ try {
       const candidateId = value(candidate._firestoreDocumentId);
       const fieldShopperId = value(candidate.shopperId);
       const fieldId = value(candidate.id);
+      const shopperCode = value(candidate.shopperCode || candidate.code);
       const technicalIds = [...new Set([candidateId,fieldShopperId,fieldId].filter(Boolean))];
       const exactHrRowsById = technicalIds.map(id => ({id, count:hrVisits.filter(v => sid(v) === id).length,source:hrIds.has(id)}));
       const sourceOwner = exactHrRowsById.filter(row => row.source && row.count === target.adminHistoricalCount);
@@ -111,6 +112,7 @@ try {
         declaredIdClass: sidClass(fieldId), declaredShopperIdClass: sidClass(fieldShopperId),
         documentIdMatchesDeclaredId: candidateId === fieldId,
         documentIdMatchesShopperId: candidateId === fieldShopperId,
+        adminObservedIdentifierMatchesShopperCode: Boolean(target.adminCanonicalFingerprint && shopperCode && fp(`sid:${shopperCode}`) === target.adminCanonicalFingerprint),
         exactTechnicalSourceKeys: exactHrRowsById.filter(x => x.source).length,
         exactHistoricalSourceOwnerKeys: sourceOwner.length,
         sourceOwnerClass: sourceOwner.length===1 ? sidClass(sourceOwner[0].id) : 'UNPROVEN',
@@ -129,7 +131,8 @@ try {
       row.contactPhoneMatchesActivePrincipal &&
       (!target.adminCanonicalFingerprint ||
         row.candidateIdFingerprint === target.adminCanonicalFingerprint ||
-        row.sourceOwnerFingerprint === target.adminCanonicalFingerprint));
+        row.sourceOwnerFingerprint === target.adminCanonicalFingerprint ||
+        row.adminObservedIdentifierMatchesShopperCode));
     const exactHN = canonicalCandidates.length === 1 ? canonicalCandidates[0] : null;
     report.cases.push({
       caseId: target.caseId, authCandidates: authMatches.length, authSelector: authMatchesByEmail.length===1?'EXACT_INTERNAL_EMAIL':memberMatchesLogin.length===1?'MEMBER_VISIBLE_LOGIN':memberMatchesProfile.length===1?'DURABLE_NAME_DIAGNOSTIC_ONLY':'NOT_UNIQUE',
