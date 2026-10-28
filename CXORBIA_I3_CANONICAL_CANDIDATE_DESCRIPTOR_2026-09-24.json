@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_D07_HOSTING_ONLY_PASS_PDF_E2E_REQUIRED",
+  "status": "HOLD_I3_D07_DIAGNOSTIC_SOURCE_FIXED_PENDING_DEV",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
-  "productTreeAuthority": "e5136b39ee35ca7e979221dfba11aee58aadef52",
-  "predecessorProductSourceSha": "92e42a61eace003a1e518ac71bf4309517aa89d9",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V517_2026-10-27.json",
-  "findingsLedgerExpectedGitBlob": "7562aaadbdc8d71b2646e4731bafefc51ead10fb",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261027-V185.json",
+  "productSourceSha": "77fd283349ce46033a95235fd2fae632e856fe35",
+  "productTreeAuthority": "9e3c446c829edbcb7cc5d2f6ab179ddacb246248",
+  "predecessorProductSourceSha": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V518_2026-10-28.json",
+  "findingsLedgerExpectedGitBlob": "3dc38adaa9f83b5cc602e3af0de29d5eee12252e",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V186.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D07_ADMIN_AUTHENTICATED_FETCH_UNKNOWN_TOKEN_CORS_NETWORK_STAGE__G03_LAST_APPROVED_OWNER_PARITY_AND_I3_E2E_PENDING",
+  "activeBlocker": "D07_SOURCE_DIAGNOSTIC_PENDING_CI_DEV_AND_ADMIN_E2E",
   "focalSuccessor20261026": {
     "findingId": "VRM-289",
     "sourceSha": "92e42a61eace003a1e518ac71bf4309517aa89d9",
@@ -89,7 +89,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Using Work authenticated Chrome DEV, capture sanitized Admin D07 fetch stage and browser CORS/OPTIONS/GET status, no credentials. Bucket CORS not to be changed without explicit Paula authorization. G03 source hashes now reflect exact current source, but approved-blob, HR and human checks remain HOLD; Shopper independent and Client E2E pending. I4 forbidden.",
+  "exactNextAction": "Remote canonical source QA then serial existing Hosting-only DEV of 77fd2833; real Admin PDF safe-stage diagnosis. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -825,7 +825,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "0e67168bd92990dfecad4c48f75836963b821a3a",
+  "productSourceTree": "9e3c446c829edbcb7cc5d2f6ab179ddacb246248",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -2999,7 +2999,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "5cd73af923907618179d33e20c254e81c96135d6",
+  "moduleTruthExpectedGitBlob": "865e4e3f7e2bd3be07010d190fdcc0fde4f5e254",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -14297,6 +14297,27 @@
     "sourceSha": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
     "approvedBlobParity": "PENDING_INDEPENDENT_APPROVAL_PROOF",
     "allModulesMatch": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": false
+  },
+  "d07DiagnosticInstrumentation20261028": {
+    "sourceSha": "77fd283349ce46033a95235fd2fae632e856fe35",
+    "sourceTree": "9e3c446c829edbcb7cc5d2f6ab179ddacb246248",
+    "predecessorSource": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
+    "productOwners": {
+      "app/core/backend-resources.js": "58b2504f2a02b96bd4155e2f8c45e9409fdeedc3",
+      "app/modules/documentos.js": "e32ae18d4c047a95590aa137587589d5f9a46aed"
+    },
+    "qaOwners": {
+      "tools/qa/cxorbia-i3-d07-authenticated-pdf-resource.test.mjs": "a7c64a94ecf13293b38cf706426f983daf065752",
+      "tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs": "e0811cb5fa7774f4ec64888ac04dab40d0ec44e6"
+    },
+    "scope": "ONE_FOCAL_INSTRUMENTATION_ONLY",
+    "adminSafeStageDisplay": true,
+    "readsOnly": true,
+    "devMaterialized": false,
+    "previousHostingVersion": "sites/cxorbia-backend-dev/versions/ce348d093ac2b5e5",
     "gate20": "HOLD",
     "gate21": "HOLD",
     "production": false

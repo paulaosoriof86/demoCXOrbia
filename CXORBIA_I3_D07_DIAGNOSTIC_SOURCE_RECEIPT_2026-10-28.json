@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "cxorbia.i3.d07.instrumentation-source.v1",
+  "dateGuatemala": "2026-10-28",
+  "iteration": "I3",
+  "state": "HOLD",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "productSourceSha": "77fd283349ce46033a95235fd2fae632e856fe35",
+  "productTree": "9e3c446c829edbcb7cc5d2f6ab179ddacb246248",
+  "predecessorProductSourceSha": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
+  "ownerBlobs": {
+    "app/core/backend-resources.js": "58b2504f2a02b96bd4155e2f8c45e9409fdeedc3",
+    "app/modules/documentos.js": "e32ae18d4c047a95590aa137587589d5f9a46aed"
+  },
+  "qaBlobs": {
+    "tools/qa/cxorbia-i3-d07-authenticated-pdf-resource.test.mjs": "a7c64a94ecf13293b38cf706426f983daf065752",
+    "tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs": "e0811cb5fa7774f4ec64888ac04dab40d0ec44e6"
+  },
+  "intent": "D07 stage-isolated safe Admin PDF read instrumentation ONLY; no authentication changes",
+  "requestAuthorization": "Paula explicitly approved focal D07 DEV instrumentation",
+  "previousHostingRun": 40605785526,
+  "previousHostingVersion": "sites/cxorbia-backend-dev/versions/ce348d093ac2b5e5",
+  "sourceTests": "PENDING_CANONICAL_REMOTE_QA",
+  "nextDeploy": "EXISTING_SERIAL_HOSTING_ONLY_AFTER_CI_PASS",
+  "devMaterialized": false,
+  "newSourceReleaseNotPublished": true,
+  "stages": [
+    "TOKEN",
+    "GET",
+    "GET_HTTP",
+    "BYTES",
+    "PDF_JS_LOAD",
+    "PDF_JS_DOCUMENT",
+    "PDF_JS_RENDER"
+  ],
+  "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V186.json",
+  "matrixBlob": "865e4e3f7e2bd3be07010d190fdcc0fde4f5e254",
+  "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V518_2026-10-28.json",
+  "ledgerBlob": "3dc38adaa9f83b5cc602e3af0de29d5eee12252e",
+  "before": "Single resource error RESOURCE_READ_PROVIDER_UNAVAILABLE masks three distinct throw stages",
+  "after": "TOKEN, GET and BYTES errors produce separate safe stages and Admin-only DOM diagnostic; authorization and Storage behavior unchanged",
+  "prod": false,
+  "production": "DO_NOT_TOUCH",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false
+}

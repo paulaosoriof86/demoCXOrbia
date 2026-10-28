@@ -2,13 +2,13 @@
   "schemaVersion": "cxorbia.recovery.execution-current.v1",
   "planLockPath": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
   "planId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
-  "asOf": "2026-10-27",
+  "asOf": "2026-10-28",
   "iteration": "I3",
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
-  "productTree": "e5136b39ee35ca7e979221dfba11aee58aadef52",
+  "productSourceSha": "77fd283349ce46033a95235fd2fae632e856fe35",
+  "productTree": "9e3c446c829edbcb7cc5d2f6ab179ddacb246248",
   "vrm289ClientReportProjectionSource20261026": {
     "findingId": "VRM-289",
     "sourceSha": "92e42a61eace003a1e518ac71bf4309517aa89d9",
@@ -109,7 +109,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "D07 source and Hosting-only DEV PASS; Admin now FAIL with RESOURCE_READ_PROVIDER_UNAVAILABLE BEFORE PDF.js. Request Work read-only CORS preflight/auth token stage/GET network evidence without secrets, then exact single remediation with authorization if CORS/Rules/IAM; once fixed confirm Admin and separate Shopper PDF E2E. G03 metadata readback V185 corrected, latest approved lineage verification pending; Gate20/21 HOLD I4 NO.",
+  "nextExactAction": "D07 diagnostic source 77fd2833 not yet served: complete remote source QA, then retarget same existing Hosting-only DEV lane with exact scoped source/byte guard; show safe Admin diagnostic once. No terminal gates or production.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -687,9 +687,9 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261027-V185.json",
-    "gitBlob": "5cd73af923907618179d33e20c254e81c96135d6",
-    "sourceSha": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V186.json",
+    "gitBlob": "865e4e3f7e2bd3be07010d190fdcc0fde4f5e254",
+    "sourceSha": "77fd283349ce46033a95235fd2fae632e856fe35",
     "allModulesMatch": false,
     "phaseAComplete": false
   },
@@ -2653,5 +2653,24 @@
     "gate20": "HOLD",
     "gate21": "HOLD",
     "production": false
+  },
+  "predecessorProductSourceSha": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
+  "d07DiagnosticInstrumentation20261028": {
+    "sourceSha": "77fd283349ce46033a95235fd2fae632e856fe35",
+    "sourceTree": "9e3c446c829edbcb7cc5d2f6ab179ddacb246248",
+    "predecessorSource": "ab5fbfb0f70c0f1ddcbd0148385ff78506902874",
+    "scope": "TOKEN_GET_BODY_STAGE_DIAGNOSTIC_ONLY",
+    "newDevMaterialization": false,
+    "priorHostingVersion": "sites/cxorbia-backend-dev/versions/ce348d093ac2b5e5",
+    "codeWrites": 2,
+    "qaWrites": 2,
+    "cloudRunWrites": 0,
+    "authWrites": 0,
+    "storageRulesWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "production": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD"
   }
 }
