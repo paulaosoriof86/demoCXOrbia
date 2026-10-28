@@ -13,7 +13,7 @@ const PROGRAM = 'cinepolis';
 const OUTPUT = process.env.CX_DIAG_OUT || '.tmp/i3-p0-hn-two-shopper';
 const HR_URL = 'https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live?format=json';
 const expected = [
-  {caseId: 'HN_CASE_A', namespaceEmailPrefix: '699fa4b58b12acbb5c7206f189e037145a0c5301a4ffc3cd', loginFingerprint: '82d6a1369b5dbb8f9bc931d0', exactNameFingerprint: 'aa27ea4ede44e2253bbbc6b7', adminHistoricalCount: 9},
+  {caseId: 'HN_CASE_A', namespaceEmailPrefix: '699fa4b58b12acbb5c7206f189e037145a0c5301a4ffc3cd', loginFingerprint: '82d6a1369b5dbb8f9bc931d0', exactNameFingerprint: 'aa27ea4ede44e2253bbbc6b7', adminHistoricalCount: 9, adminCanonicalFingerprint: 'a7f9e320a5675ee9a6c6'},
   {caseId: 'HN_CASE_B', namespaceEmailPrefix: '0147d9724b37ef0d8932680e42f82e75f2e743be6f', loginFingerprint: '27ce81067e5bd3a2604633f5', exactNameFingerprint: '1691aecc2c6c601234218af6', adminHistoricalCount: 17}
 ];
 const value = x => String(x ?? '').trim();
@@ -26,6 +26,8 @@ const country = x => value(x?.pais || x?.country || x?.país).toUpperCase();
 const normalizedCountry = x => ['HONDURAS','HN'].includes(country(x)) ? 'HN' : ['GUATEMALA','GT'].includes(country(x)) ? 'GT' : country(x) || 'UNSET';
 const sid = x => value(x?.shopperId || x?.id);
 const sidClass = x => /^TYA_HN_[A-F0-9]{6,}$/i.test(value(x)) ? 'HN_STABLE' : /^TYA_GT_[A-F0-9]{6,}$/i.test(value(x)) ? 'GT_STABLE' : value(x) ? 'OTHER_TECHNICAL_ID' : 'MISSING';
+const digits = x => value(x).replace(/[^0-9]/g,'');
+const phone = x => digits(x?.whatsapp || x?.phone || x?.telefono);
 const write = report => {fs.mkdirSync(OUTPUT,{recursive:true});fs.writeFileSync(`${OUTPUT}/result.json`,JSON.stringify(report,null,2)+'\n');};
 
 const report = {schemaVersion: 'cxorbia.i3.p0.hn-two-shopper-auth-readonly.v1',
@@ -94,6 +96,26 @@ try {
     const directSourceIds = [...linkedTokens].filter(t => hrIds.has(t));
     const directSourceHNIds = directSourceIds.filter(t => normalizedCountry(hrIds.get(t)) === 'HN');
     const claimsCountry = value(claims.country).toUpperCase();
+    const namedDurableCandidates = durableProfileMatchesName.map(candidate => {
+      const candidateId = sid(candidate);
+      const directHrVisits = hrVisits.filter(v => sid(v) === candidateId).length;
+      const hasSource = hrIds.has(candidateId);
+      const activeMembers = members.filter(row => row.active === true && value(row.shopperId) === candidateId).length;
+      return {
+        candidateId, candidateIdClass: sidClass(candidateId), candidateIdFingerprint: fp(`sid:${candidateId}`),
+        profileCountry: normalizedCountry(candidate), directHrVisits, exactCurrentHrSource: hasSource,
+        authMemberCount: activeMembers, sourceType: value(candidate.sourceType),
+        sourceRevisionMatchesCurrent: value(candidate.hrSourceRevision) === report.hrRevision,
+        contactPhoneMatchesActivePrincipal: Boolean(phone(candidate) && phone(p) && phone(candidate) === phone(p)),
+        crosswalkCanonicalSelf: value(crossById.get(candidateId)?.shopperId || crossById.get(candidateId)?.canonicalShopperId) === candidateId,
+        identityState: value(candidate.identityState || candidate.status).toUpperCase() || 'UNSET'
+      };
+    });
+    const canonicalCandidates = namedDurableCandidates.filter(row =>
+      row.candidateIdClass === 'HN_STABLE' && row.profileCountry === 'HN' &&
+      row.exactCurrentHrSource && row.directHrVisits === target.adminHistoricalCount &&
+      (!target.adminCanonicalFingerprint || row.candidateIdFingerprint === target.adminCanonicalFingerprint));
+    const exactHN = canonicalCandidates.length === 1 ? canonicalCandidates[0] : null;
     report.cases.push({
       caseId: target.caseId, authCandidates: authMatches.length, authSelector: authMatchesByEmail.length===1?'EXACT_INTERNAL_EMAIL':memberMatchesLogin.length===1?'MEMBER_VISIBLE_LOGIN':memberMatchesProfile.length===1?'DURABLE_NAME_DIAGNOSTIC_ONLY':'NOT_UNIQUE',
       memberLoginCandidates: memberMatchesLogin.length, durableNameCandidates: durableProfileMatchesName.length,
@@ -113,6 +135,15 @@ try {
       exactIdRelation, countryClaimConflictsWithHN: claimsCountry === 'GT' && sourceHN.length === 1,
       directExactSourceIdCount: directSourceIds.length, directExactHNSourceIdCount: directSourceHNIds.length,
       trustedLinksTouchingPrincipal: linksTouchingClaim.filter(l => ['provider_exact','tenant_adjudication','platform_created','migrated_exact'].includes(value(l.authorityType || l.authority?.type).toLowerCase()) && ['active','confirmed','approved','materialized'].includes(value(l.status || l.state).toLowerCase())).length,
+      namedDurableCandidateProfiles: namedDurableCandidates.map(({candidateId, ...safe}) => safe),
+      exactCanonicalHNCandidateCount: canonicalCandidates.length,
+      exactCanonicalHNFingerprint: exactHN?.candidateIdFingerprint || null,
+      exactCanonicalCountry: exactHN?.profileCountry || null,
+      exactCanonicalHistVisits: exactHN?.directHrVisits ?? null,
+      principalAndHnProfileSharePhone: exactHN?.contactPhoneMatchesActivePrincipal || false,
+      canonicalRepairPreflight: !exactHN ? 'HOLD_CANONICAL_NOT_UNIQUELY_PROVEN' :
+        exactHN.contactPhoneMatchesActivePrincipal ? 'CONTACT_CORROBORATED_BUT_AUTHORITY_LINK_STILL_REQUIRED' :
+          'NO_CONTACT_CORROBORATION_AUTHORITY_LINK_REQUIRED',
       note: 'Ninguna identidad se fusiona ni se infiere por nombre; la coincidencia de nombre es solo un selector de diagnóstico.'
     });
   }
