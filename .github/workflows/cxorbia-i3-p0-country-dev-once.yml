@@ -38,7 +38,7 @@ env:
   PRODUCTION_URL: https://tya-plataforma.web.app
 jobs:
   country-source-dev-only:
-    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-HN-SCOPE-DEV-ONCE-V11' }}
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-HN-SCOPE-DEV-ONCE-V11B' }}
     runs-on: ubuntu-latest
     timeout-minutes: 65
     steps:
@@ -116,7 +116,7 @@ jobs:
           test "$(sha256sum "$EVIDENCE_DIR/shoppers-store-before.js" | awk '{print $1}')" = "$EXPECTED_OLD_SHOPPERS_STORE_SHA256"
           curl -fsS -H 'Cache-Control: no-cache' "$HOSTING_URL/core/backend-firebase.js?i3country=pre-$GITHUB_RUN_ID" -o "$EVIDENCE_DIR/backend-firebase-before.js"
           test "$(sha256sum "$EVIDENCE_DIR/backend-firebase-before.js" | awk '{print $1}')" = "$EXPECTED_OLD_BACKEND_FIREBASE_SHA256"
-          for f in index-backend-dev.html core/backend-firebase.js core/router.js modules/dashboard.js modules/shoppers.js modules/misvisitas.js modules/visitas.js modules/finanzas.js modules/postulaciones.js modules/documentos.js modules/cert.js adapters/tya-canonical-shopper-portal-v2.js; do
+          for f in index-backend-dev.html core/router.js modules/dashboard.js modules/shoppers.js modules/misvisitas.js modules/visitas.js modules/finanzas.js modules/postulaciones.js modules/documentos.js modules/cert.js adapters/tya-canonical-shopper-portal-v2.js; do
             curl -fsS -H 'Cache-Control: no-cache' "$HOSTING_URL/$f?i3country=pre-$GITHUB_RUN_ID" -o "$EVIDENCE_DIR/probed-$(basename "$f")"
             cmp -s "$EXACT_SOURCE_DIR/app/$f" "$EVIDENCE_DIR/probed-$(basename "$f")"
           done
