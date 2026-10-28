@@ -1,0 +1,250 @@
+{
+  "schemaVersion": "cxorbia.i3.g03.scope-readback.v1",
+  "id": "CXORBIA-I3-G03-PHASEA-SCOPE-CROSSWALK-20261028",
+  "observedAt": "2026-10-28",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "decision": "HOLD_G03_MAPPING_COVERAGE_GAPS_PROVEN_NOT_FUNCTIONAL_REGRESSION",
+  "classification": "MAPPING_FAILURE",
+  "scope": "READ_ONLY_EXECUTION_RECEIPT_NOT_NEW_PLAN_NOT_APPROVAL_NOT_I3_CERTIFICATION",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "productSourceSha": "77fd283349ce46033a95235fd2fae632e856fe35",
+  "productTree": "9e3c446c829edbcb7cc5d2f6ab179ddacb246248",
+  "authority": {
+    "frozenPlanId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
+    "frozenPlanSha256": "83e8f2c0a6b190bab1d9dea32bf99158116f3164f419ae72e051fd791fd8576c",
+    "frozenBundleSha256": "4ef4124040ba8a81f71f4291b5ddefbc2183ffffb24b52079b5137664e9cc44c",
+    "frozenPlanHashesVerifiedLocally": true,
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V187.json",
+    "matrixGitBlob": "c7a2eac63037bf73859b5ddf0c1494a53dc4536c",
+    "historicalModuleRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
+    "historicalBaselineRun": {
+      "runNumber": 1357,
+      "sourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
+      "artifactDigest": "sha256:78ac1e5c89cc175381adef69aa370ae3953a5edaecacb2619dd05db0ffb69fa2",
+      "roleCoverage": {
+        "shopper": "12/12",
+        "admin": "34/34",
+        "client": "10/10",
+        "clickCount": 34,
+        "actionFindings": []
+      },
+      "scope": "HISTORICAL_PASS_NOT_CURRENT_CANDIDATE_CERTIFICATION"
+    },
+    "continuityRun": {
+      "runNumber": 1901,
+      "decision": "PASS_SOURCE_LINEAGE_AND_SHOCK_CONTROL_ONLY"
+    }
+  },
+  "crosswalk": {
+    "planCriticalFunctions": 42,
+    "planRoleRoutes": 56,
+    "activeModuleDomains": 21,
+    "historicalRegistryDomains": 20,
+    "historicalDomainAbsentFromRegistry": [
+      "tenant-admin-config-branding"
+    ],
+    "matrixOwnerPaths": 99,
+    "matrixSourceFilePaths": 150,
+    "uncoveredOwnerPaths": [
+      {
+        "path": "app/core/automations.js",
+        "exactProductGitBlob": "1bf04186e2461340e2852a7608b98d1d510a71a0",
+        "inMatrixSourceInventory": true,
+        "referencedBy": [
+          {
+            "kind": "critical_function",
+            "ref": "readAttachment",
+            "taskIds": "D02"
+          }
+        ]
+      },
+      {
+        "path": "app/core/backend-ai.js",
+        "exactProductGitBlob": "45b05a50b058ed66d98aa41db6abdbceec1f399f",
+        "inMatrixSourceInventory": false,
+        "referencedBy": [
+          {
+            "kind": "critical_function",
+            "ref": "patch",
+            "taskIds": "D03,E08"
+          }
+        ]
+      },
+      {
+        "path": "app/core/topbar.js",
+        "exactProductGitBlob": "823fe9af94cdf1a83b3d3b733a5c306b5af2155d",
+        "inMatrixSourceInventory": true,
+        "referencedBy": [
+          {
+            "kind": "critical_function",
+            "ref": "_noticeTarget",
+            "taskIds": "B13,A08"
+          }
+        ]
+      },
+      {
+        "path": "app/modules/automatizaciones.js",
+        "exactProductGitBlob": "a28a2354bd4a0132cd788abfa3842a796005be32",
+        "inMatrixSourceInventory": true,
+        "referencedBy": [
+          {
+            "kind": "route_role",
+            "ref": "admin/automatizaciones",
+            "taskIds": "E08"
+          }
+        ]
+      },
+      {
+        "path": "app/modules/clientes.js",
+        "exactProductGitBlob": "6bd4c34e80766e3cc108119cb12d78160ff7e773",
+        "inMatrixSourceInventory": true,
+        "referencedBy": [
+          {
+            "kind": "route_role",
+            "ref": "admin/clientes",
+            "taskIds": "E06,A08"
+          }
+        ]
+      },
+      {
+        "path": "app/modules/comercial.js",
+        "exactProductGitBlob": "61aaee6432e4a4206b07f8633d158b8d2b2c2271",
+        "inMatrixSourceInventory": true,
+        "referencedBy": [
+          {
+            "kind": "route_role",
+            "ref": "admin/costos",
+            "taskIds": "E06,E07"
+          }
+        ]
+      },
+      {
+        "path": "app/modules/correo.js",
+        "exactProductGitBlob": "be3cbf808498de86265410682625a45e57541b97",
+        "inMatrixSourceInventory": true,
+        "referencedBy": [
+          {
+            "kind": "route_role",
+            "ref": "admin/correo",
+            "taskIds": "E08"
+          }
+        ]
+      },
+      {
+        "path": "app/modules/crm.js",
+        "exactProductGitBlob": "07732668ea2bd700dffe5fbff8df8e473575be05",
+        "inMatrixSourceInventory": true,
+        "referencedBy": [
+          {
+            "kind": "route_role",
+            "ref": "admin/crm",
+            "taskIds": "E06"
+          }
+        ]
+      },
+      {
+        "path": "app/modules/importador.js",
+        "exactProductGitBlob": "ad4f6b4621a69aa2cb303f026be6113e8f158ca2",
+        "inMatrixSourceInventory": true,
+        "referencedBy": [
+          {
+            "kind": "route_role",
+            "ref": "admin/importador",
+            "taskIds": "E10"
+          }
+        ]
+      },
+      {
+        "path": "app/modules/integraciones.js",
+        "exactProductGitBlob": "a71fc5bf83ff54df83c90339d0a3c0940167d75a",
+        "inMatrixSourceInventory": true,
+        "referencedBy": [
+          {
+            "kind": "critical_function",
+            "ref": "connectionRef",
+            "taskIds": "E08"
+          },
+          {
+            "kind": "route_role",
+            "ref": "admin/integraciones",
+            "taskIds": "B03,B09,E08"
+          }
+        ]
+      },
+      {
+        "path": "app/modules/marketing.js",
+        "exactProductGitBlob": "6bfe1b4e3dbed12ead8a88404cdb495dbf1b8e83",
+        "inMatrixSourceInventory": true,
+        "referencedBy": [
+          {
+            "kind": "route_role",
+            "ref": "admin/marketing",
+            "taskIds": "E09,E08"
+          }
+        ]
+      },
+      {
+        "path": "app/modules/rutas.js",
+        "exactProductGitBlob": "5ad69a8bad0dc02b58ca8b06145a74f0a4ddd51e",
+        "inMatrixSourceInventory": false,
+        "referencedBy": [
+          {
+            "kind": "route_role",
+            "ref": "admin/rutas",
+            "taskIds": "B01,B05,B12,B14"
+          }
+        ]
+      }
+    ],
+    "notInSourceFileInventory": [
+      "app/core/backend-ai.js",
+      "app/modules/rutas.js"
+    ],
+    "coverageJudgment": "EXACT_OWNER_COVERAGE_INCOMPLETE__NO_AUTOMATIC_PASS_DEMOTION",
+    "approvalJudgment": "HISTORICAL_PASS_CARRY_FORWARD_ONLY_WITH_EXACT_OWNER_DEPENDENCY_PROVIDER_CONFIG_PARITY"
+  },
+  "currentDevObservations": {
+    "observedInExistingAuthenticatedAdminChrome": true,
+    "readOnly": true,
+    "project": "cinepolis",
+    "period": "2026-10",
+    "routeRows": 44,
+    "visitsRows": 44,
+    "visitAssignedDisplayed": 44,
+    "visitRealizedDisplayed": 37,
+    "hrSourcePageConnectedLabel": true,
+    "hrSourcePageLastRead": "NOT_SHOWN",
+    "routeSourceSelectorDisplayed": "Hoja creada en plataforma",
+    "externalProviderRevisionFresh": "NOT_VERIFIED",
+    "notEvidenceOfExternalDisconnect": true,
+    "financeGTAndHNSeparated": true,
+    "financeReviewPendingRowsDisplayed": 37,
+    "financePaidConfirmation": "NOT_PROVEN",
+    "certificationsBankOptionsDisplayed": 2,
+    "certificationHistoricalRecordsDisplayed": 5,
+    "certificationHistoricalApprovalsDisplayed": 4,
+    "pendingBankQuestionEditorOpened": true,
+    "pendingBankQuestionsDisplayed": 15,
+    "savePersistenceAndPublication": "NOT_TESTED",
+    "servingRuntimeLastSealedSource": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
+    "lastSealedHrRevision": "d19eb12ad8c1c5140b5711ea390deaae50b0edd35ff4f982a69bfdcabbc86dd2",
+    "runtimeSameAsLatestProductSource": false,
+    "hostingOnlyLatestSourceInDev": true,
+    "externalHrWrites": 0,
+    "firestoreWrites": 0,
+    "productionWrites": 0
+  },
+  "preservation": {
+    "matrixModuleClassificationsUnchanged": true,
+    "historyNotOverwritten": true,
+    "productFilesChanged": 0,
+    "deploys": 0,
+    "production": "DO_NOT_TOUCH",
+    "i3": "HOLD",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false
+  },
+  "exactNextAction": "G03 map 12 uncovered owner paths to existing 21 domains with approval provenance, especially 2 absent source inventory paths; reconcile original F9/visual owner proof. Parallel independent HR fresh provider revision + Admin/Shopper same-artifact E2E, finance C02, cert D04. Fix only confirmed P0; I3 HOLD; no production."
+}

@@ -2745,5 +2745,22 @@
     "path": "tools/qa/cxorbia-i3-shock-continuity-guard.mjs",
     "tests": "tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs",
     "scope": "CONTROL_ONLY_FAIL_CLOSED_NO_PRODUCTION"
+  },
+  "g03ScopeCoverageReadback20261028": {
+    "receiptPath": "CXORBIA_I3_G03_PHASE_A_SCOPE_CROSSWALK_READBACK_2026-10-28.json",
+    "receiptGitBlob": "90aeac41d4fe7cff4bdc9670842387d333325aa4",
+    "scope": "SOURCE_AND_PLAN_OBLIGATION_CROSSWALK_NOT_HUMAN_APPROVAL",
+    "decision": "HOLD_G03_MAPPING_COVERAGE_GAPS_PROVEN_NOT_FUNCTIONAL_REGRESSION",
+    "frozenCriticalFunctions": 42,
+    "frozenRoleRoutes": 56,
+    "moduleDomains": 21,
+    "uncoveredOwnerPaths": 12,
+    "notInSourceInventoryPaths": [
+      "app/core/backend-ai.js",
+      "app/modules/rutas.js"
+    ],
+    "historicalApprovedPassPreserved": true,
+    "productSourceUnchanged": "77fd283349ce46033a95235fd2fae632e856fe35",
+    "production": "DO_NOT_TOUCH"
   }
 }
