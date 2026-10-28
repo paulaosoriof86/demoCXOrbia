@@ -13,7 +13,7 @@ concurrency:
 jobs:
   exactly-two-hn-provider-adjudications:
     if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-HN-EXACT-TWO-ADJUDICATION-DEV-ONCE' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
       CLOUDSDK_CORE_PROJECT: cxorbia-backend-dev
