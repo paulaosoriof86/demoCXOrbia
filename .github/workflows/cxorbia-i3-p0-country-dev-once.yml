@@ -21,8 +21,11 @@ env:
   HOSTING_SITE: cxorbia-backend-dev
   FIREBASE_HOSTING_TARGET: cxorbia-dev
   CANDIDATE_DESCRIPTOR: CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-  PRIOR_CERTIFIED_SOURCE: db56b89a1221d26f5cc4466585cda7eaa7360ddd
-  PRIOR_CERTIFIED_TREE: 7b157bdf187ed712256eacfe86c1ff016b40c44e
+  HISTORICAL_CONTROL_SHA: 89b22433133d2bacfaa8d2a8bba04d7a858ec2d4
+  HISTORICAL_PRODUCT_SOURCE: 19ac62bb9cd6828b736f6347371183b42b518b5e
+  HISTORICAL_PRODUCT_TREE: 9bc6f9df8a10a83959fde1abbf6554ac5cb86e9c
+  PRIOR_DEV_SOURCE: db56b89a1221d26f5cc4466585cda7eaa7360ddd
+  PRIOR_DEV_TREE: 7b157bdf187ed712256eacfe86c1ff016b40c44e
   PINNED_SOURCE: 0127d0c0785e37563390fa0a8dc98c8ed56a22b5
   PINNED_TREE: 9c0ec86b9acf894c653aa75a17ca9d9850de3a9f
   EXPECTED_OLD_REVISION: cxorbia-live-hr-dev-00328-r69
@@ -33,7 +36,7 @@ env:
   PRODUCTION_URL: https://tya-plataforma.web.app
 jobs:
   country-source-dev-only:
-    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-HN-SCOPE-DEV-ONCE-V5' }}
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-HN-SCOPE-DEV-ONCE-V6' }}
     runs-on: ubuntu-latest
     timeout-minutes: 65
     steps:
@@ -53,19 +56,21 @@ jobs:
           test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
           test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
           test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL
-          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$PRIOR_CERTIFIED_SOURCE"
-          test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$PRIOR_CERTIFIED_TREE"
+          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$HISTORICAL_PRODUCT_SOURCE"
+          test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$HISTORICAL_PRODUCT_TREE"
           test "$(git rev-parse "$PINNED_SOURCE^{tree}")" = "$PINNED_TREE"
-          test "$(git rev-parse "$PRIOR_CERTIFIED_SOURCE^{tree}")" = "$PRIOR_CERTIFIED_TREE"
+          test "$(git rev-parse "$PRIOR_DEV_SOURCE^{tree}")" = "$PRIOR_DEV_TREE"
+          test "$(git rev-parse "$HISTORICAL_PRODUCT_SOURCE^{tree}")" = "$HISTORICAL_PRODUCT_TREE"
           git merge-base --is-ancestor "$PINNED_SOURCE" HEAD
-          git merge-base --is-ancestor "$PRIOR_CERTIFIED_SOURCE" "$PINNED_SOURCE"
+          git merge-base --is-ancestor "$HISTORICAL_CONTROL_SHA" "$PRIOR_DEV_SOURCE"
+          git merge-base --is-ancestor "$PRIOR_DEV_SOURCE" "$PINNED_SOURCE"
           git diff --quiet "$PINNED_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-          # The frozen historical certificate must be verified at its own exact
-          # source, not reinterpreted as a certificate for this one-file P0.
-          git worktree add --detach "$RUNNER_TEMP/i3-prior-certified" "$PRIOR_CERTIFIED_SOURCE" >/dev/null
-          (cd "$RUNNER_TEMP/i3-prior-certified" && node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs > "$GITHUB_WORKSPACE/$EVIDENCE_DIR/prior-canonical-guard.json")
-          jq -e --arg s "$PRIOR_CERTIFIED_SOURCE" --arg t "$PRIOR_CERTIFIED_TREE" '.productSourceSha==$s and .productSourceTree==$t' "$EVIDENCE_DIR/prior-canonical-guard.json" >/dev/null
-          git diff --name-only "$PRIOR_CERTIFIED_SOURCE" "$PINNED_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source > "$EVIDENCE_DIR/source-diff.txt"
+          # Compare the historical candidate in its unmodified control HEAD;
+          # prior DEV P0 fixes are separate evidence, never a retroactive GO.
+          git worktree add --detach "$RUNNER_TEMP/i3-historical-control" "$HISTORICAL_CONTROL_SHA" >/dev/null
+          (cd "$RUNNER_TEMP/i3-historical-control" && node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs > "$GITHUB_WORKSPACE/$EVIDENCE_DIR/historical-canonical-guard.json")
+          jq -e --arg s "$HISTORICAL_PRODUCT_SOURCE" --arg t "$HISTORICAL_PRODUCT_TREE" '.productSourceSha==$s and .productSourceTree==$t' "$EVIDENCE_DIR/historical-canonical-guard.json" >/dev/null
+          git diff --name-only "$PRIOR_DEV_SOURCE" "$PINNED_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source > "$EVIDENCE_DIR/source-diff.txt"
           test "$(wc -l < "$EVIDENCE_DIR/source-diff.txt")" = 1
           grep -Fxq app/adapters/tya-protected-auth-hr-authority-bridge-v2.js "$EVIDENCE_DIR/source-diff.txt"
           node backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs > "$EVIDENCE_DIR/tests.log"
@@ -142,7 +147,7 @@ jobs:
           curl -fsS -H 'Cache-Control: no-cache' "$PRODUCTION_URL/" -o "$EVIDENCE_DIR/production-after.html"
           sha256sum "$EVIDENCE_DIR/production-after.html" | awk '{print $1}' > "$EVIDENCE_DIR/production-after.sha256"
           cmp -s "$EVIDENCE_DIR/production-before.sha256" "$EVIDENCE_DIR/production-after.sha256"
-          jq -n -S --arg source "$PINNED_SOURCE" --arg tree "$PINNED_TREE" --arg prior "$PRIOR_CERTIFIED_SOURCE" --arg runtime "$NEW_REV" --arg digest "$DIGEST" --arg hosting "$AFTER" '{decision:"PASS_I3_P0_HN_COUNTRY_SCOPE_HOSTING_DEV_ONLY",sourceSha:$source,sourceTree:$tree,previousCertifiedSourceSha:$prior,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,builds:0,runtimeDeploys:0,hostingDeploys:1,hrWrites:0,authWrites:0,productionDeploys:0,productionChanged:false,adminShopperE2e:"PENDING_INDEPENDENT_BROWSER",gate20:"HOLD",gate21:"HOLD"}' > "$EVIDENCE_DIR/result.json"
+          jq -n -S --arg source "$PINNED_SOURCE" --arg tree "$PINNED_TREE" --arg historical "$HISTORICAL_PRODUCT_SOURCE" --arg prior "$PRIOR_DEV_SOURCE" --arg runtime "$NEW_REV" --arg digest "$DIGEST" --arg hosting "$AFTER" '{decision:"PASS_I3_P0_HN_COUNTRY_SCOPE_HOSTING_DEV_ONLY",sourceSha:$source,sourceTree:$tree,historicalDescriptorProductSourceSha:$historical,priorDevSourceSha:$prior,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,builds:0,runtimeDeploys:0,hostingDeploys:1,hrWrites:0,authWrites:0,productionDeploys:0,productionChanged:false,adminShopperE2e:"PENDING_INDEPENDENT_BROWSER",gate20:"HOLD",gate21:"HOLD"}' > "$EVIDENCE_DIR/result.json"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
