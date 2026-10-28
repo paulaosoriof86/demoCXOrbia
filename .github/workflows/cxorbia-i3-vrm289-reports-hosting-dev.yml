@@ -1,4 +1,4 @@
-name: CXOrbia I3 Serial Hosting-only DEV - D07
+name: CXOrbia I3 Serial Hosting-only DEV - D07 diagnostic
 # Sequential reuse of VRM289 Hosting-only workflow. No parallel workflow or additional deploy path.
 on:
   push:
@@ -22,18 +22,18 @@ env:
   FIREBASE_HOSTING_TARGET: cxorbia-dev
 jobs:
   serial-hosting-only-dev:
-   if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[d07-hosting-only]') }}
+   if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[d07-diagnostic-hosting-only]') }}
    runs-on: ubuntu-latest
    timeout-minutes: 35
    permissions:
     contents: read
     id-token: write
    env:
-    SRC: ab5fbfb0f70c0f1ddcbd0148385ff78506902874
-    PREDECESSOR_SRC: 92e42a61eace003a1e518ac71bf4309517aa89d9
-    TREE: e5136b39ee35ca7e979221dfba11aee58aadef52
+    SRC: 77fd283349ce46033a95235fd2fae632e856fe35
+    PREDECESSOR_SRC: ab5fbfb0f70c0f1ddcbd0148385ff78506902874
+    TREE: 9e3c446c829edbcb7cc5d2f6ab179ddacb246248
     EXPECTED_RUNTIME_REV: cxorbia-live-hr-dev-00327-xsc
-    FOCAL_DIR: .tmp/i3-d07-pdf-hosting-only
+    FOCAL_DIR: .tmp/i3-d07-diagnostic-hosting-only
     PROD_URL: https://tya-plataforma.web.app
    steps:
    - uses: actions/checkout@v4
@@ -42,18 +42,18 @@ jobs:
    - uses: actions/setup-node@v4
      with:
       node-version: '24'
-   - name: Verify exact D07 source and secure PDF contracts
+   - name: Verify exact D07 instrumentation source and safe diagnostic QA
      run: |
       set -Eeuo pipefail
       mkdir -p "$FOCAL_DIR"
       node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs | tee "$FOCAL_DIR/authority.json"
       jq -e --arg source "$SRC" --arg tree "$TREE" '.decision=="PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY" and .productSourceSha==$source and .productSourceTree==$tree and .terminalReleaseEligible==false' "$FOCAL_DIR/authority.json"
-      test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = HOLD_I3_D07_SOURCE_FIXED_PENDING_REMOTE_QA
-      test "$SRC" = ab5fbfb0f70c0f1ddcbd0148385ff78506902874
-      test "$TREE" = e5136b39ee35ca7e979221dfba11aee58aadef52
+      test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = HOLD_I3_D07_DIAGNOSTIC_SOURCE_FIXED_PENDING_DEV
+      test "$SRC" = 77fd283349ce46033a95235fd2fae632e856fe35
+      test "$TREE" = 9e3c446c829edbcb7cc5d2f6ab179ddacb246248
       test "$(git rev-parse "$SRC^{tree}")" = "$TREE"
-      test "$(git rev-parse "$SRC:app/core/backend-resources.js")" = 7a467b84754457010fa58ddac9fbbceff5b6b2de
-      test "$(git rev-parse "$SRC:app/modules/documentos.js")" = d955d299c939851ed0c90876fe47680cf86b1c1c
+      test "$(git rev-parse "$SRC:app/core/backend-resources.js")" = 58b2504f2a02b96bd4155e2f8c45e9409fdeedc3
+      test "$(git rev-parse "$SRC:app/modules/documentos.js")" = e32ae18d4c047a95590aa137587589d5f9a46aed
       git merge-base --is-ancestor "$PREDECESSOR_SRC" "$SRC"
       test "$(git diff --name-only "$PREDECESSOR_SRC" "$SRC" -- app | LC_ALL=C sort)" = "$(printf '%s\n' app/core/backend-resources.js app/modules/documentos.js | LC_ALL=C sort)"
       test -z "$(git diff --name-only "$PREDECESSOR_SRC" "$SRC" -- backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)"
@@ -63,6 +63,8 @@ jobs:
       test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
       test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
       test "$(jq -r '.nextFindingId' "$CANDIDATE_DESCRIPTOR")" = VRM-290
+      test "$(git rev-parse "$SRC:tools/qa/cxorbia-i3-d07-authenticated-pdf-resource.test.mjs")" = a7c64a94ecf13293b38cf706426f983daf065752
+      test "$(git rev-parse "$SRC:tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs")" = e0811cb5fa7774f4ec64888ac04dab40d0ec44e6
       node --check app/core/backend-resources.js
       node --check app/modules/documentos.js
       node --test tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs
@@ -122,13 +124,13 @@ jobs:
       curl -fsS -H 'Cache-Control: no-cache' "$PROD_URL/" -o "$FOCAL_DIR/production-after.html"
       sha256sum "$FOCAL_DIR/production-after.html" | awk '{print $1}' > "$FOCAL_DIR/production-after.sha256"
       cmp -s "$FOCAL_DIR/production-before.sha256" "$FOCAL_DIR/production-after.sha256"
-      jq -n -S --arg source "$SRC" --arg tree "$TREE" --arg old "$BEFORE" --arg version "$AFTER" --arg revision "$EXPECTED_RUNTIME_REV" --arg rules "$(jq -r .rulesetName "$FOCAL_DIR/firestore-release-after.json")" --arg prodSha "$(cat "$FOCAL_DIR/production-after.sha256")" '{decision:"PASS_I3_D07_HOSTING_ONLY_DEV_EXACT_BYTES",sourceSha:$source,sourceTree:$tree,previousHostingVersion:$old,hostingVersion:$version,runtimeRevision:$revision,firestoreRuleset:$rules,verifiedServedAssetCount:4,cloudRunBuilds:0,runtimeDeploys:0,hostingDeploys:1,firestoreRulesDeploys:0,storageRulesDeploys:0,firestoreWrites:0,authWrites:0,hrWrites:0,productionIndexSha256:$prodSha,productionChanged:false,pdfLiveE2e:"NOT_VERIFIED",shopperE2e:"NOT_VERIFIED",humanAcceptance:"PENDING",gate20:"HOLD",gate21:"HOLD",terminalEligible:false,production:false}' > "$FOCAL_DIR/result.json"
+      jq -n -S --arg source "$SRC" --arg tree "$TREE" --arg old "$BEFORE" --arg version "$AFTER" --arg revision "$EXPECTED_RUNTIME_REV" --arg rules "$(jq -r .rulesetName "$FOCAL_DIR/firestore-release-after.json")" --arg prodSha "$(cat "$FOCAL_DIR/production-after.sha256")" '{decision:"PASS_I3_D07_DIAGNOSTIC_HOSTING_ONLY_DEV_EXACT_BYTES",sourceSha:$source,sourceTree:$tree,previousHostingVersion:$old,hostingVersion:$version,runtimeRevision:$revision,firestoreRuleset:$rules,verifiedServedAssetCount:4,cloudRunBuilds:0,runtimeDeploys:0,hostingDeploys:1,firestoreRulesDeploys:0,storageRulesDeploys:0,firestoreWrites:0,authWrites:0,hrWrites:0,productionIndexSha256:$prodSha,productionChanged:false,diagnosisCodeVisibleToAdmin:true,providerCause:"NOT_VERIFIED",pdfLiveE2e:"NOT_VERIFIED",shopperE2e:"NOT_VERIFIED",humanAcceptance:"PENDING",gate20:"HOLD",gate21:"HOLD",terminalEligible:false,production:false}' > "$FOCAL_DIR/result.json"
    - name: Archive focal DEV deployment evidence
      if: always()
      uses: actions/upload-artifact@v4
      with:
-      name: cxorbia-i3-d07-hosting-dev-${{ github.run_id }}
-      path: .tmp/i3-d07-pdf-hosting-only/
+      name: cxorbia-i3-d07-diagnostic-hosting-dev-${{ github.run_id }}
+      path: .tmp/i3-d07-diagnostic-hosting-only/
       if-no-files-found: warn
       retention-days: 30
 
