@@ -112,6 +112,29 @@ test('Gate 6 / 1 initial HR shopper creates one durable identity',async()=>{
   assert.equal(db.get(`${pp.users}/${uid}`).shopperId,id);assert.equal(db.get(pp.cross).providerUidFingerprint,providerUidFingerprint(uid));
 });
 
+test('I3 P0 / country-scoped HR shopper claims preserve Honduras and Guatemala',async()=>{
+  for(const country of ['HN','GT']){
+    const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+    const id=`TYA_${country}_1691AECC2C`;
+    const result=await p.reconcileSnapshot(snapshot({revisionCountry:country,shopperId:id,shopperCode:id}),{sourceRevision:`rev-${country}`});
+    assert.equal(result.ok,true);
+    const user=await auth.getUser(stableShopperUid('tenant-a',id));
+    assert.equal(user.customClaims.country,country);
+    const profile=db.get(paths(id).profile);
+    assert.equal(profile.country,country);
+    const replay=await p.reconcileSnapshot(snapshot({revisionCountry:country,shopperId:id,shopperCode:id}),{sourceRevision:`rev-${country}`});
+    assert.equal(replay.providerWrites,0);
+    assert.equal(auth.created,1);
+  }
+});
+
+test('I3 P0 / conflicting HR country cannot silently relabel a stable shopper ID',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),id='TYA_HN_1691AECC2C';
+  await assert.rejects(()=>p.reconcileSnapshot(snapshot({revisionCountry:'GT',shopperId:id,shopperCode:id}),{sourceRevision:'rev-cross-country'}),/SHOPPER_HR_COUNTRY_ID_CONFLICT/);
+  assert.equal(auth.created,0);
+  assert.equal(db.get(paths(id).profile),undefined);
+});
+
 // 2. Replay: la misma revisión no crea otro Auth, perfil, membership ni crosswalk.
 test('Gate 6 / 2 exact replay is idempotent and creates no duplicate',async()=>{
   const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),id='shopper_gt_abc123';

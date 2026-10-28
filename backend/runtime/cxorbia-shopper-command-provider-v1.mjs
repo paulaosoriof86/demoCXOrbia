@@ -38,7 +38,8 @@ const SELF_MANAGED_PROTECTED_FIELDS=Object.freeze(['dpi','documentId','banco','c
 export const providerUidFingerprint=uid=>sha(`cxorbia-provider-uid-v1\0${str(uid)}`);
 export const stableShopperUid=(tenantId,shopperId)=>`cx-sh-${sha(`${str(tenantId)}\0shopper\0${str(shopperId)}`).slice(0,28)}`;
 const internalEmail=(tenantId,visibleLogin)=>`${sha(`${str(tenantId)}\0shopper\0${str(visibleLogin).toLowerCase()}`).slice(0,48)}@auth.cxorbia.invalid`;
-const canonicalClaims=(shopperId,tenantId,projectIds)=>({authNamespace:'shopper',projectIds:uniq(projectIds),role:'shopper',shopperId:str(shopperId),tenantId:str(tenantId)});
+const stableHrCountry=shopperId=>/^TYA_(GT|HN)_[A-F0-9]{6,}$/i.exec(str(shopperId))?.[1]?.toUpperCase()||'';
+const canonicalClaims=(shopperId,tenantId,projectIds)=>({authNamespace:'shopper',projectIds:uniq(projectIds),role:'shopper',shopperId:str(shopperId),tenantId:str(tenantId),...(stableHrCountry(shopperId)?{country:stableHrCountry(shopperId)}:{})});
 const claimsDigest=claims=>sha(canonicalClaims(claims?.shopperId,claims?.tenantId,claims?.projectIds));
 const pick=(input,keys)=>Object.fromEntries(keys.filter(key=>input&&input[key]!==undefined).map(key=>[key,input[key]]));
 const publicProfile=input=>clean(pick(input||{},PUBLIC_PROFILE_FIELDS));
@@ -463,6 +464,8 @@ function snapshotCollisionPolicies({shoppers,exactIdentityMap,authUsers,tenantId
 async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers,collisionPolicy=null,aliasPolicy=null,repairStaleTenantAdjudicationCrosswalk=false}){
   const tenantId=str(candidate.tenantId),projectId=str(candidate.projectId),shopperId=str(candidate.shopperId),sourceShopperId=str(candidate.sourceShopperId||candidate.shopperId);
   if(!tenantId||!projectId||!shopperId||!sourceShopperId||!str(sourceRevision))throw new Error('SHOPPER_DURABLE_KEYS_REQUIRED');
+  const hrCountry=str(candidate.pais||candidate.country).toUpperCase(),idCountry=stableHrCountry(shopperId);
+  if(idCountry&&hrCountry&&idCountry!==hrCountry)throw new Error('SHOPPER_HR_COUNTRY_ID_CONFLICT');
   if(!scopeAllowed(policy,tenantId,projectId))throw new Error('SHOPPER_PROVIDER_SCOPE_DENIED');
   const tenant=db.collection('tenants').doc(tenantId),users=tenant.collection('users');
   const profileRef=tenant.collection('shoppers').doc(shopperId),crossRef=tenant.collection('shopperIdentityCrosswalk').doc(sourceShopperId);

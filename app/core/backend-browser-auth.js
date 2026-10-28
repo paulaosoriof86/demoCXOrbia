@@ -161,13 +161,19 @@ window.CX = window.CX || {};
     if((role === 'cliente' || role === 'client' || role === 'shopper') && !projectIds.length) throw new Error('PROJECT_SCOPE_REQUIRED');
     const shopperId = typeof claims.shopperId === 'string' ? claims.shopperId.trim() : '';
     if(role === 'shopper' && !shopperId) throw new Error('SHOPPER_SCOPE_REQUIRED');
+    // Historical HR IDs are country-scoped authority. Older Auth principals
+    // lack a `country` custom claim; never silently treat an HN identity as GT.
+    const stableHrCountry = /^TYA_(GT|HN)_[A-F0-9]{6,}$/i.exec(shopperId)?.[1]?.toUpperCase() || '';
+    const claimCountry = typeof claims.country === 'string' ? claims.country.trim().toUpperCase() : '';
+    if(role === 'shopper' && claimCountry && !['GT','HN'].includes(claimCountry)) throw new Error('SHOPPER_COUNTRY_SCOPE_INVALID');
+    if(role === 'shopper' && claimCountry && stableHrCountry && claimCountry !== stableHrCountry) throw new Error('SHOPPER_COUNTRY_SCOPE_CONFLICT');
 
     return {
       role: role,
       tenantId: cfg.tenantId || 'tya',
       projectIds: projectIds,
       shopperId: shopperId || null,
-      country: typeof claims.country === 'string' ? claims.country : null,
+      country: role === 'shopper' ? (claimCountry || stableHrCountry || null) : (claimCountry || null),
       authNamespace: claimNamespace || expectedNamespace,
       clientPreviewTenantAllowed: claims.tenantId === (cfg.tenantId || 'tya') || list(claims.tenants).includes(cfg.tenantId || 'tya'),
       authenticated: true,
