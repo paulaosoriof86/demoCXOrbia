@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "cxorbia.i3.hosting-preview-only.request.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "approval": "Paula autorizo 2026-10-29 actualizar exclusivamente el control del flujo DEV existente para publicar el commit focal en un nuevo canal aislado de Hosting Preview y verificar sus bytes y UAT",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceSha": "c8d2a790df29208c07eafea49d1d62d2d93b09e6",
+  "sourceTree": "3d5857300bed575916fa7dee35ae4363953f35b4",
+  "expectedParentSha": "5957646a71140448ddc59d26766773d79cf6d943",
+  "focalTasks": ["B11", "B12", "E06"],
+  "exactSourceBlobs": {
+    "app/core/data.js": "c22c4e7962046890bb7d062fac35ed8ec9a58b91",
+    "app/modules/clientes.js": "28afb209ff3b882f322d2ba9a3f40c18997effef",
+    "app/modules/historico.js": "727b1f51a18c2bced3d98df39efe106455fa188c",
+    "app/modules/proyectos.js": "31006e2f0a7dd4527be4d4fb6b1f1dcdfe2d2dc3",
+    "tools/qa/cxorbia-i3-period-project-client-parity.test.mjs": "4206640395f73f5f6b62e896252747c6871a2209",
+    "docs/checkpoints/CXORBIA_I3_PERIOD_PROJECT_CLIENT_PARITY_SOURCE_RECEIPT_2026-10-29.md": "00ac25e3598c80517e2fe76700e21c8a2f08ea17"
+  },
+  "firebaseProject": "cxorbia-backend-dev",
+  "hostingTarget": "cxorbia-dev",
+  "hostingSite": "cxorbia-backend-dev",
+  "channelPrefix": "i3-parity-c8d2",
+  "channelExpiry": "7d",
+  "allowedWrites": ["one isolated Firebase Hosting Preview channel"],
+  "forbiddenWrites": ["Hosting DEV live", "Cloud Run", "Firestore", "Firebase Auth", "Rules", "Storage", "HR", "production"],
+  "production": "DO_NOT_TOUCH",
+  "authorizationI4": false,
+  "humanApproval": "PENDING_LIVE_E2E",
+  "gate20": "HOLD",
+  "gate21": "HOLD"
+}

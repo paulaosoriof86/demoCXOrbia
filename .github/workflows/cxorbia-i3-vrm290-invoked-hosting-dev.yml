@@ -12,12 +12,13 @@ on:
       - .github/workflows/cxorbia-i3-vrm290-invoked-hosting-dev.yml
       - .github/control/CXORBIA_I3_A2BE_DEV_REQUEST_20261029.json
       - .github/control/CXORBIA_I3_A2BE_TWIN_DEV_TRANSPORT_20261029.sh
+      - .github/control/CXORBIA_I3_C8D2_HOSTING_PREVIEW_REQUEST_20261029.json
 permissions:
   contents: read
   id-token: write
 jobs:
   vrm290-dev-hosting:
-    if: ${{ inputs.legacy_caller == true }}
+    if: ${{ github.event_name == 'workflow_call' && inputs.legacy_caller == true }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
@@ -73,5 +74,142 @@ jobs:
         with:
           name: cxorbia-i3-a2be-twin-dev-${{ github.run_id }}
           path: .tmp/i3-a2be-twin-dev/
+          if-no-files-found: warn
+          retention-days: 30
+
+  # Serial successor in the existing I3 transport: Hosting Preview only.
+  # No Cloud Run build/traffic, no Hosting live, no Firebase/HR data writes.
+  i3-c8d2-hosting-preview:
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-C8D2-HOSTING-PREVIEW-ONLY' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    concurrency:
+      group: cxorbia-i3-hosting-preview-only
+      cancel-in-progress: false
+    env:
+      REQUEST: .github/control/CXORBIA_I3_C8D2_HOSTING_PREVIEW_REQUEST_20261029.json
+      SOURCE: c8d2a790df29208c07eafea49d1d62d2d93b09e6
+      TREE: 3d5857300bed575916fa7dee35ae4363953f35b4
+      PROJECT: cxorbia-backend-dev
+      SITE: cxorbia-backend-dev
+      TARGET: cxorbia-dev
+      REGION: us-central1
+      SERVICE: cxorbia-live-hr-dev
+      PROD_URL: https://tya-plataforma.web.app/
+      OUT: .tmp/i3-c8d2-hosting-preview
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Prove exact parent, source, owners, transport-only successor and tests
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$OUT"
+          test "$GITHUB_REF_NAME" = 'recovery/cxorbia-phase-a-20260831'
+          test "$(jq -r '.sourceSha' "$REQUEST")" = "$SOURCE"
+          test "$(jq -r '.sourceTree' "$REQUEST")" = "$TREE"
+          test "$(jq -r '.firebaseProject' "$REQUEST")" = "$PROJECT"
+          test "$(jq -r '.hostingTarget' "$REQUEST")" = "$TARGET"
+          test "$(jq -r '.hostingSite' "$REQUEST")" = "$SITE"
+          test "$(jq -r '.channelPrefix' "$REQUEST")" = i3-parity-c8d2
+          test "$(jq -r '.production' "$REQUEST")" = DO_NOT_TOUCH
+          test "$(jq -r '.authorizationI4' "$REQUEST")" = false
+          test "$(git rev-parse "$SOURCE^{tree}")" = "$TREE"
+          test "$(git rev-parse "$SOURCE^")" = "$(jq -r '.expectedParentSha' "$REQUEST")"
+          git merge-base --is-ancestor "$SOURCE" "$GITHUB_SHA"
+          test -z "$(git diff --name-only "$SOURCE" "$GITHUB_SHA" -- app backend tools firebase.json .firebaserc firestore.rules storage.rules)"
+          test "$(git diff --name-only "$SOURCE" "$GITHUB_SHA" | LC_ALL=C sort)" = "$(printf '%s\n' .github/control/CXORBIA_I3_C8D2_HOSTING_PREVIEW_REQUEST_20261029.json .github/workflows/cxorbia-i3-vrm290-invoked-hosting-dev.yml | LC_ALL=C sort)"
+          test "$(jq -r '.hosting.target' firebase.json)" = "$TARGET"
+          test "$(jq -r '.projects.default' .firebaserc)" = "$PROJECT"
+          jq -r '.exactSourceBlobs | to_entries[] | [.key,.value] | @tsv' "$REQUEST" |
+            while IFS=$'\t' read -r file expected; do
+              test "$(git rev-parse "$SOURCE:$file")" = "$expected"
+            done
+          node --check app/core/data.js
+          node --check app/modules/clientes.js
+          node --check app/modules/historico.js
+          node --check app/modules/proyectos.js
+          node --test \
+            tools/qa/cxorbia-i3-period-project-client-parity.test.mjs \
+            tools/qa/cxorbia-i3-vrm289-client-report-projection-wiring.test.mjs \
+            tools/qa/cxorbia-i3-g03-rutas-effective-hr-source-truth.test.mjs \
+            tools/qa/cxorbia-i3-work-uat-vrm286-project-period-visit-count.test.mjs \
+            > "$OUT/focal-tests.log"
+          SOURCE_DIR="$(mktemp -d)"
+          git archive "$SOURCE" | tar -x -C "$SOURCE_DIR"
+          cmp -s "$SOURCE_DIR/app/core/data.js" app/core/data.js
+          cmp -s "$SOURCE_DIR/app/modules/historico.js" app/modules/historico.js
+          echo "CX_C8_SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
+          jq -n --arg source "$SOURCE" --arg tree "$TREE" \
+            '{decision:"PASS_I3_C8D2_EXACT_SOURCE_PREFLIGHT",sourceSha:$source,sourceTree:$tree,production:false,hostingLiveWrites:0,cloudRunWrites:0,firestoreWrites:0,authWrites:0,rulesWrites:0,hrWrites:0}' > "$OUT/preflight.json"
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: cxorbia-backend-dev
+      - name: Read only isolation baseline
+        run: |
+          set -Eeuo pipefail
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" \
+            "https://firebasehosting.googleapis.com/v1beta1/sites/$SITE/channels/live" -o "$OUT/hosting-live-before.json"
+          jq -e '.release.version.name | length > 0' "$OUT/hosting-live-before.json"
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-before.json"
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" \
+            "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" -o "$OUT/rules-before.json"
+          curl -fsS --max-time 45 -H 'Cache-Control: no-cache' "$PROD_URL" -o "$OUT/production-before.html"
+          sha256sum "$OUT/production-before.html" | awk '{print $1}' > "$OUT/production-before.sha256"
+      - name: Publish only exact source to isolated Hosting Preview
+        run: |
+          set -Eeuo pipefail
+          test -s "$OUT/preflight.json"
+          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@14.12.0 > "$OUT/firebase-tools-install.log" 2>&1
+          CHANNEL="i3-parity-c8d2-$GITHUB_RUN_ID"
+          echo "CX_C8_CHANNEL=$CHANNEL" >> "$GITHUB_ENV"
+          (cd "$CX_C8_SOURCE_DIR" && "$GITHUB_WORKSPACE/node_modules/.bin/firebase" hosting:channel:deploy \
+            "$CHANNEL" --only "$TARGET" --project "$PROJECT" --expires 7d --non-interactive --json) \
+            > "$OUT/preview-deploy.json"
+      - name: Read back served bytes, Hosting live, runtime, rules and production
+        run: |
+          set -Eeuo pipefail
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" \
+            "https://firebasehosting.googleapis.com/v1beta1/sites/$SITE/channels/$CX_C8_CHANNEL" -o "$OUT/hosting-preview-channel.json"
+          PREVIEW_URL="$(jq -r '.url // empty' "$OUT/hosting-preview-channel.json")"
+          PREVIEW_VERSION="$(jq -r '.release.version.name // empty' "$OUT/hosting-preview-channel.json")"
+          case "$PREVIEW_URL" in https://cxorbia-backend-dev--*.web.app) ;; *) exit 1;; esac
+          test -n "$PREVIEW_VERSION"
+          for file in index-backend-dev.html core/data.js modules/clientes.js modules/historico.js modules/proyectos.js; do
+            safe="$(echo "$file" | tr '/' '-')"
+            curl -fsS --retry 5 --retry-delay 2 --max-time 60 -H 'Cache-Control: no-store' \
+              "$PREVIEW_URL/$file?i3c8=$GITHUB_RUN_ID" -o "$OUT/served-$safe"
+            cmp -s "$CX_C8_SOURCE_DIR/app/$file" "$OUT/served-$safe"
+          done
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" \
+            "https://firebasehosting.googleapis.com/v1beta1/sites/$SITE/channels/live" -o "$OUT/hosting-live-after.json"
+          test "$(jq -r '.release.version.name' "$OUT/hosting-live-before.json")" = "$(jq -r '.release.version.name' "$OUT/hosting-live-after.json")"
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-after.json"
+          cmp -s <(jq -S '{latestReady:.status.latestReadyRevisionName,traffic:.status.traffic}' "$OUT/runtime-before.json") \
+                 <(jq -S '{latestReady:.status.latestReadyRevisionName,traffic:.status.traffic}' "$OUT/runtime-after.json")
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" \
+            "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" -o "$OUT/rules-after.json"
+          test "$(jq -r '.rulesetName' "$OUT/rules-before.json")" = "$(jq -r '.rulesetName' "$OUT/rules-after.json")"
+          curl -fsS --max-time 45 -H 'Cache-Control: no-cache' "$PROD_URL" -o "$OUT/production-after.html"
+          sha256sum "$OUT/production-after.html" | awk '{print $1}' > "$OUT/production-after.sha256"
+          cmp -s "$OUT/production-before.sha256" "$OUT/production-after.sha256"
+          jq -n --arg source "$SOURCE" --arg tree "$TREE" --arg url "$PREVIEW_URL" \
+            --arg version "$PREVIEW_VERSION" --arg channel "$CX_C8_CHANNEL" \
+            '{decision:"PASS_I3_C8D2_HOSTING_PREVIEW_EXACT_BYTES_AND_ISOLATION",sourceSha:$source,sourceTree:$tree,previewUrl:$url,hostingVersion:$version,channel:$channel,servedFilesMatch:5,hostingPreviewDeploys:1,hostingLiveWrites:0,cloudRunBuilds:0,cloudRunTrafficWrites:0,firestoreWrites:0,authWrites:0,rulesWrites:0,storageWrites:0,hrWrites:0,production:false,liveE2e:"PENDING",humanApproval:"PENDING",gate20:"HOLD",gate21:"HOLD"}' > "$OUT/result.json"
+          echo "### CXOrbia I3 C8D2 Hosting Preview" >> "$GITHUB_STEP_SUMMARY"
+          echo "$PREVIEW_URL" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-c8d2-hosting-preview-${{ github.run_id }}
+          path: .tmp/i3-c8d2-hosting-preview/
           if-no-files-found: warn
           retention-days: 30
