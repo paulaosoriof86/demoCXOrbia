@@ -138,6 +138,18 @@ try{
   const canonical=canonicalDoc.id,alias=aliasDoc.id,hrMatches=hr.shoppers.filter(row=>sid(row)===canonical),
     hrAliasMatches=hr.shoppers.filter(row=>sid(row)===alias),cp=canonicalDoc.data()||{},ap=aliasDoc.data()||{};
   assert(canonical!==alias&&hrMatches.length===1&&hrAliasMatches.length===0,'F001_HR_IDENTITIES_DRIFT');
+  result.sourceConsistency={
+    canonicalProfileSourceTypeExternal:val(cp.sourceType)==='hr_external',
+    canonicalCountry:country(cp),aliasCountry:country(ap),hrCountry:country(hrMatches[0]),
+    profileNamesAgreeNormalized:name(cp)===name(ap),
+    hrNamePresent:!!name(hrMatches[0]),hrMatchesCanonicalName:name(cp)===name(hrMatches[0]),
+    hrSourceFields:{nombre:Object.prototype.hasOwnProperty.call(hrMatches[0],'nombre'),
+      displayName:Object.prototype.hasOwnProperty.call(hrMatches[0],'displayName'),
+      fullName:Object.prototype.hasOwnProperty.call(hrMatches[0],'fullName'),
+      firstName:Object.prototype.hasOwnProperty.call(hrMatches[0],'firstName'),
+      pais:Object.prototype.hasOwnProperty.call(hrMatches[0],'pais'),
+      country:Object.prototype.hasOwnProperty.call(hrMatches[0],'country')}
+  };save();
   assert(val(cp.sourceType)==='hr_external'&&country(cp)==='GT'&&country(ap)==='GT'&&
     country(hrMatches[0])==='GT'&&name(cp)===name(ap)&&name(ap)===name(hrMatches[0]),'F001_NAME_COUNTRY_AUTHORITY_MISMATCH');
   assert(phone(cp)&&phone(cp)===phone(ap),'F001_STRONG_CONTACT_CORROBORATION_DRIFT');
