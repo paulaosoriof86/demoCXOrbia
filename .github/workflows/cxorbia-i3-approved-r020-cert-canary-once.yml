@@ -43,17 +43,27 @@ jobs:
           git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules \
             ':(exclude)app/core/router.js' \
             ':(exclude)app/adapters/tya-cumulative-read-model-v2.js' \
+            ':(exclude)app/adapters/tya-c6-domain-consistency-bridge.js' \
             ':(exclude)app/modules/visitas.js' \
             ':(exclude)app/modules/dashboard.js' \
             ':(exclude)app/modules/postulaciones.js' \
             ':(exclude)backend/runtime/cxorbia-shopper-command-provider-v1.mjs' \
-            ':(exclude)backend/runtime/hr-live-service/test/**'
+            ':(exclude)backend/runtime/hr-live-service/test/cxorbia-i3-project-period-contract.test.mjs' \
+            ':(exclude)backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs'
           test "$(git hash-object app/core/router.js)" = '05f3b943d667814ae151556ee7281abbfe7bc6e5'
           test "$(git hash-object app/adapters/tya-cumulative-read-model-v2.js)" = 'ab2abe6660d53d623e725f754d41b69710a8f612'
+          test "$(git hash-object app/adapters/tya-c6-domain-consistency-bridge.js)" = '0a551989ea82eac52eea3b1440965812d83d4f17'
           test "$(git hash-object app/modules/visitas.js)" = '1605e94b94ab2b99fd7f6348b287b58f36099ede'
           test "$(git hash-object app/modules/dashboard.js)" = 'c48d1c63d0628c637c4257bef1725dc4349b8668'
           test "$(git hash-object app/modules/postulaciones.js)" = 'bbd8a57bf836e7e55e260cf9d22d655317358418'
           test "$(git hash-object backend/runtime/cxorbia-shopper-command-provider-v1.mjs)" = '0d3a5cc6c7b3f7ceff906b4ef70dc045e096e16b'
+          test "$(git hash-object backend/runtime/hr-live-service/test/cxorbia-i3-project-period-contract.test.mjs)" = 'd627273f67458bf4096c1ce602aa237dda7aac22'
+          test "$(git hash-object backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs)" = '291c816a45a127418ee5cab50e2f156b3828009d'
+          test "$(git hash-object tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs)" = '1c842eef3bfaa5237300167024f4ae17c812e0cd'
+          test "$(git hash-object tools/qa/cxorbia-i3-postulaciones-country-options-unified.test.mjs)" = '0bb2ae4d8d51679a2d8024e64b3399435643d336'
+          test "$(git hash-object tools/qa/cxorbia-i3-postulaciones-manual-availability-guard.test.mjs)" = 'caee10f2a0552df2653cb87b6a62df9e5dee7af9'
+          test "$(git hash-object tools/qa/cxorbia-i3-shoppers-bridge-authority.test.mjs)" = 'ab1d0ac3d57902ad20d3c974395b946fb34fb0c8'
+          test "$(git hash-object tools/qa/cxorbia-i3-visitas-effective-availability.test.mjs)" = '31b97ec75076594f9e0e3bee061ae59976a6dcb4'
           node --check firebase/auth-dev-tools/cxorbia-i3-approved-r020-cert-canary-once.mjs
       - name: Verify protected provider regressions before any write
         run: |
@@ -62,6 +72,11 @@ jobs:
           node backend/runtime/hr-live-service/test/cxorbia-i3-project-period-contract.test.mjs
           node tools/qa/cxorbia-i3-shopper-name-collision-normalization.test.mjs
           node tools/qa/cxorbia-i3-shopper-identity-review-rail-notice.test.mjs
+          node tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs
+          node tools/qa/cxorbia-i3-postulaciones-country-options-unified.test.mjs
+          node tools/qa/cxorbia-i3-postulaciones-manual-availability-guard.test.mjs
+          node tools/qa/cxorbia-i3-shoppers-bridge-authority.test.mjs
+          node tools/qa/cxorbia-i3-visitas-effective-availability.test.mjs
       - uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
