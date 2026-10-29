@@ -85,3 +85,4 @@ jobs:
 # I3 availability P0: source-only active-period/country empty-state explanation; exact blob guard and 4 regression cases.
 
 # Post-pass independent 83-group readback after 21/21 exact DEV strong provider and UI passes in run 40813627623.
+# F046 exact one-visit/one-cert protected DEV canary 40817081883: independent 139/83 READ-ONLY postflight; no data changes.
