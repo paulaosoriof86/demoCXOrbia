@@ -220,7 +220,8 @@ const normalizeIdentityCountry=value=>{
 async function assertNoUnlinkedManualDuplicate({db,command,shopperId,profile}){
   const humanName=normalizeHumanName(profile?.nombre||[profile?.firstName,profile?.lastName].filter(Boolean).join(' '));
   const digits=normalizeIdentityPhone(profile?.whatsapp||profile?.phone||profile?.telefono);
-  if(humanName.split(' ').filter(Boolean).length<2||digits.length<8)return;
+  const hasName=humanName.split(' ').filter(Boolean).length>=2,hasPhone=digits.length>=8;
+  if(!hasName&&!hasPhone)return;
   const wantedCountry=normalizeIdentityCountry(profile?.pais||profile?.country);
   const profiles=db.collection('tenants').doc(command.tenantId).collection('shoppers');
   const snapshot=await profiles.get();
@@ -230,11 +231,21 @@ async function assertNoUnlinkedManualDuplicate({db,command,shopperId,profile}){
     if(str(existing.tenantId||command.tenantId)!==str(command.tenantId))continue;
     const source=str(existing.sourceType).toLowerCase();
     if(source!=='hr_external'&&source!=='platform')continue;
+    const existingCountry=normalizeIdentityCountry(existing.pais||existing.country);
+    if(wantedCountry&&existingCountry&&wantedCountry!==existingCountry)continue;
     const existingName=normalizeHumanName(existing.nombre||[existing.firstName,existing.lastName].filter(Boolean).join(' '));
     const existingDigits=normalizeIdentityPhone(existing.whatsapp||existing.phone||existing.telefono);
-    const existingCountry=normalizeIdentityCountry(existing.pais||existing.country);
-    if(existingName===humanName&&existingDigits===digits&&(!wantedCountry||!existingCountry||wantedCountry===existingCountry)){
-      throw new Error('SHOPPER_CREATE_EXISTING_IDENTITY_REVIEW_REQUIRED');
+    const sameName=hasName&&existingName===humanName;
+    const samePhone=hasPhone&&existingDigits.length>=8&&existingDigits===digits;
+    if(sameName&&samePhone)throw new Error('SHOPPER_CREATE_EXISTING_IDENTITY_REVIEW_REQUIRED');
+    if(sameName||samePhone){
+      const error=new Error('SHOPPER_CREATE_POSSIBLE_IDENTITY_REVIEW_REQUIRED');
+      error.dependencyPreview={requiresHumanAdjudication:true,autoMerge:false,
+        matchedNormalizedName:sameName,matchedPhone:samePhone,
+        existingShopperFingerprint:sha('identity-candidate:'+doc.id).slice(0,20),
+        attemptedShopperFingerprint:sha('identity-candidate:'+shopperId).slice(0,20),
+        resolution:'CONFIRM_SAME_OR_DISTINCT_PERSON_BEFORE_NEW_ACCOUNT'};
+      throw error;
     }
   }
 }
