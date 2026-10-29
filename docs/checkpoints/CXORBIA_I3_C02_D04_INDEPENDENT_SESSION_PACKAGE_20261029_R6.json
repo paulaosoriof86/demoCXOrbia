@@ -1,0 +1,199 @@
+{
+  "schemaVersion": "cxorbia.i3.c02-d04.independent-session-package.v1",
+  "id": "CXORBIA-I3-D07-ADMIN-SHOPPER-READ-ONLY-20261029-R6",
+  "asOf": "2026-10-29",
+  "iteration": "I3",
+  "state": "PREPARED_NOT_EXECUTED",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedControlParentSha": "79fe75142144a6dba96218b07957ebffad2e3e01",
+  "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+  "sourceTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
+  "production": false,
+  "reason": "After sealed R5 C02/D04 evidence, execute only the exact existing published PDF read/render/download in independent Admin and approved Shopper contexts. Diagnose actual Storage binding before any binary GET; use the current upload contract with one safe Storage folder independent of the document ID. No C02 calls, D04 fixtures, resource CRUD, new accounts or rules/CORS/service-worker changes.",
+  "authorizationBasis": [
+    "Paula's frozen I3 plan V1.1 and shock plan: execute bounded DEV functional QA, preserve proven PASS and one writer.",
+    "Current user instruction: continúa y agiliza por favor, necesitamos hoy sin falta salir.",
+    "Existing authenticated DEV QA identities and fixture workflow; no new account, claims, permission or production deployment."
+  ],
+  "preview": {
+    "runId": 40973709501,
+    "artifactId": 12940989138,
+    "artifactZipSha256": "7b027f5807befb5c8cc6f83c9e70664a7487661865ac0e8d01d1ddaefeb90b61",
+    "channel": "i3-recovery-1029-40973709501",
+    "origin": "https://cxorbia-backend-dev--i3-recovery-1029-40973709501-011nk50h.web.app",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/bd065678b1af6c14",
+    "runtimeRevision": "cxorbia-live-hr-dev-00330-fim",
+    "runtimeDigest": "sha256:bba5ebbf19c203954ec0be6c2c3ef01a057e7ce3f98fb7e5eeac2d889bd0a500",
+    "runtimeSourceSha": "a2be5a77a4c0008ec374c17f42d5da27070e1ed6",
+    "priorIdentityReceiptPath": "docs/checkpoints/CXORBIA_I3_RUNTIME_ARTIFACT_IDENTITY_RECOVERY_20261029.json",
+    "priorIdentityReceiptGitBlob": "27e8a3994d1c9621d282fc6158c5ad3a09b70656",
+    "controlSha": "2c63dcf489806d65fe4927a225daa94853ec2ac3",
+    "transportRequestPath": ".github/control/CXORBIA_I3_CROSSFRONT_1029_DEV_PREVIEW_REQUEST.json",
+    "transportRequestGitBlob": "c55ba03834c125b0c6d9de418955c013f30bfbd0",
+    "transportDecision": "PASS_I3_CROSSFRONT_1029_DEV_HOSTING_PREVIEW_EXACT_BYTES_ISOLATED",
+    "servedFilesMatch": 8,
+    "hostingLiveWrites": 0,
+    "cloudRunTrafficWrites": 0,
+    "rulesWrites": 0,
+    "hrWrites": 0,
+    "authWrites": 0,
+    "production": false
+  },
+  "actor": {
+    "uid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "role": "admin",
+    "createUser": false,
+    "changeClaims": false
+  },
+  "c02": {
+    "execute": false,
+    "replayReconciliation": false,
+    "commands": 0
+  },
+  "d04": {
+    "execute": false,
+    "fixtureSeeds": 0,
+    "contentEdits": 0,
+    "fixtureDeletes": 0
+  },
+  "scope": {
+    "financeWrites": 0,
+    "authMutations": 0,
+    "hrWrites": 0,
+    "resourceWrites": 0,
+    "storageWrites": 0,
+    "qaFixtureWrites": 0,
+    "deploys": 0,
+    "production": false,
+    "newWorkflow": 0,
+    "newMaterializer": 0,
+    "newCandidate": 0
+  },
+  "preserved": {
+    "productSource": true,
+    "lastExecutionReceipt": true,
+    "currentDevMaterialization": true,
+    "postDeployRunSeal": true,
+    "ledger": true,
+    "moduleTruthMatrix": true,
+    "sourceProofRun1954": {
+      "tests": 303,
+      "pass": 303,
+      "fail": 0
+    },
+    "identityVerifiedGroups": 29,
+    "c02IndependentAppReadback": {
+      "path": "docs/checkpoints/CXORBIA_I3_C02_INDEPENDENT_APP_READBACK_RUN1957_20261029.json",
+      "gitBlob": "b09815e4ce430f405c37ffaef8e5173c29d8db28",
+      "decision": "PASS_C02_INDEPENDENT_APP_READBACK",
+      "fullTaskClosed": false
+    },
+    "productSourceScope": "R5 changes QA/control only; S946c3c remains the exact already-published preview source. e753 approvals remain linked to original evidence and unchanged owners/dependencies.",
+    "c02D04Run1962": {
+      "packagePath": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R5.json",
+      "packageGitBlob": "12d9fd51c11ad3058cbb14f42daf8bcc770ae540",
+      "controlSha": "cb723a5c250650ef7ff71fedeec6c694c193136e",
+      "runId": 40974429136,
+      "runNumber": 1962,
+      "jobId": 123799366836,
+      "decision": "PASS_C02_D04_INDEPENDENT_SESSIONS",
+      "artifactId": 12941758269,
+      "artifactZipSha256": "d2efe95460f2f5428d897837746979592ab2a82cfb37359270a5f6ed7d5c67e2",
+      "c02DurableFieldsUnchanged": 24,
+      "d04ProviderAckVersion2HistoryReloadTwoContextsCleanup": true,
+      "d07OptionalDecision": "NOT_PROVEN_EXACT_STORAGE_PATH_MISSING_OR_MISMATCH",
+      "d07OptionalBinaryGetAttempted": false,
+      "d07Interpretation": "The old helper reached the path predicate after exact catalog/document scope/version/path readback; its folder-equals-docId assumption exceeds the current upload contract. Actual failed subpredicate was not isolated."
+    }
+  },
+  "acceptance": [
+    "Both existing authorized identities authenticate in separate fresh CI contexts and pass the exact current HR/Auth gate without claims/account mutation.",
+    "The same published October PDF is uniquely visible in both role catalogs and both DOMs; its exact SDK metadata and current Storage path bind before any binary GET.",
+    "One real UI open and one reused-bytes download per role; authenticated GET observed once with HTTP 200, actual PDF.js rendered nonblank page, approved PDF signature, size and SHA256.",
+    "Keep the actual SW, PDF.js, CORS and Storage Rules behavior; no fulfill/bypass, altered flags, retries, hidden role or period impersonation.",
+    "Resource metadata and updateTime remain unchanged; no C02 command, no D04 fixture and no resource cleanup mutation.",
+    "A binding or provider failure yields bounded diagnostic and HOLD; no complete D07, I3, Gate20/Gate21 or Mi Día eligibility claim."
+  ],
+  "d07": {
+    "roles": [
+      "admin",
+      "shopper"
+    ],
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "periodId": "cinepolis-2026-10",
+    "shopperId": "TYA_GT_393371F88D10F7A8",
+    "shopperUidFingerprint": "a6e3ff21498bd79cbc4078ec47b7b5760a6534e43803614e997bb2294d77ee98",
+    "bucket": "cxorbia-backend-dev.firebasestorage.app",
+    "approvedName": "Instructivo Shopper.pdf",
+    "approvedSize": 162335,
+    "approvedSha256": "3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454",
+    "binaryGetsPerRole": 1,
+    "downloadsPerRole": 1,
+    "resourceCrud": false,
+    "storageRuleChanges": false,
+    "corsChanges": false,
+    "serviceWorkerChanges": false,
+    "bindingBeforeGet": "Exact visible resource in both October role catalogs, exact SDK document/path/version, approved basename/size and one safe Storage folder; folder ID need not equal document ID.",
+    "noFallbackToOtherPeriod": true,
+    "fullTaskClosed": false,
+    "helperSha256": "7f2022b6fec89ddc8ab964a1aa74aedeaa5482e3bfa667285e4a5caf547b05ff"
+  },
+  "attemptNumber": 6,
+  "previousAttempt": {
+    "packagePath": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R5.json",
+    "packageGitBlob": "12d9fd51c11ad3058cbb14f42daf8bcc770ae540",
+    "controlSha": "cb723a5c250650ef7ff71fedeec6c694c193136e",
+    "runId": 40974429136,
+    "runNumber": 1962,
+    "jobId": 123799366836,
+    "decision": "PASS_C02_D04_INDEPENDENT_SESSIONS",
+    "artifactId": 12941758269,
+    "artifactZipSha256": "d2efe95460f2f5428d897837746979592ab2a82cfb37359270a5f6ed7d5c67e2",
+    "c02DurableFieldsUnchanged": 24,
+    "d04ProviderAckVersion2HistoryReloadTwoContextsCleanup": true,
+    "d07OptionalDecision": "NOT_PROVEN_EXACT_STORAGE_PATH_MISSING_OR_MISMATCH",
+    "d07OptionalBinaryGetAttempted": false,
+    "d07Interpretation": "The old helper reached the path predicate after exact catalog/document scope/version/path readback; its folder-equals-docId assumption exceeds the current upload contract. Actual failed subpredicate was not isolated."
+  },
+  "retryDelta": [
+    "Mode R6D07_READ_ONLY only; current workflow/job/marker/runner and exact S/RUN10/runtime pins retained.",
+    "Add documents.js to the existing served-owner preflight (12 total) and bind the helper to the exact preflight.",
+    "Replace the overstrict storage-folder-equals-document-ID assumption with the current published-resource contract and record safe binding diagnostics before GET.",
+    "R5 evidence and its code path remain preserved; no D04/C02 replay."
+  ],
+  "runnerEnvironment": {
+    "runsOn": "ubuntu-24.04",
+    "nodeVersion": "24",
+    "dependencies": {
+      "firebase-admin": "13.4.0",
+      "playwright": "1.56.1",
+      "google-auth-library": "9.15.1",
+      "pdfjs-dist": "3.11.174"
+    },
+    "knownSuccessfulSameOsAndDependencyPins": {
+      "runId": 39172645706,
+      "runNumber": 1797,
+      "jobId": 117808812241
+    },
+    "scope": "EXISTING_LIVE_JOB_ONLY"
+  },
+  "sourceRepair": {
+    "path": "docs/checkpoints/CXORBIA_I3_D04_EXACT_SERVER_READBACK_REPAIR_20261029.json",
+    "gitBlob": "87d53c006e247bec3b8ddde4599ce945fb6f48e8",
+    "predecessorSourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1"
+  },
+  "sourceProof": {
+    "runId": 40972993436,
+    "headSha": "bf186670f1ffaf2e523b3dc201701b3a16aa2e25",
+    "jobId": 123794263200,
+    "jobName": "phasea-rejected-checkpoint-source-proof",
+    "workflowPath": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "artifactId": 12940219630,
+    "artifactDigest": "sha256:872799ac1f14cc76097d3ee909e88beeaa35377809d5e756304439ec6934f5f6",
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF"
+  },
+  "mode": "R6D07_READ_ONLY"
+}

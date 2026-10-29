@@ -28,9 +28,23 @@ session-source-proof|session-preflight|session-proof)
   test "$(jq -r .productTreeAuthority "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
   test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
   git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-  # R5 is QA/control only, after the exact successor preview has been published.
-  test "$(jq -r .id "$SESSION_PACKAGE")" = CXORBIA-I3-C02-D04-INDEPENDENT-SESSION-20261029-R5
-  test "$(jq -r .attemptNumber "$SESSION_PACKAGE")" = 5
+  # The active immutable package selects exactly one existing QA mode.
+  SESSION_MODE="$(jq -r '.mode // "C02_D04_INDEPENDENT_SESSION"' "$SESSION_PACKAGE")"
+  case "$SESSION_MODE" in
+    C02_D04_INDEPENDENT_SESSION)
+      test "$(jq -r .id "$SESSION_PACKAGE")" = CXORBIA-I3-C02-D04-INDEPENDENT-SESSION-20261029-R5
+      test "$(jq -r .attemptNumber "$SESSION_PACKAGE")" = 5
+      SESSION_PREFLIGHT_DECISION=PASS_C02_D04_EXISTING_PREVIEW_PREFLIGHT
+      SESSION_SOURCE_DECISION=PASS_C02_D04_SESSION_PACKAGE_SOURCE_GUARD
+      ;;
+    R6D07_READ_ONLY)
+      test "$(jq -r .id "$SESSION_PACKAGE")" = CXORBIA-I3-D07-ADMIN-SHOPPER-READ-ONLY-20261029-R6
+      test "$(jq -r .attemptNumber "$SESSION_PACKAGE")" = 6
+      SESSION_PREFLIGHT_DECISION=PASS_D07_EXISTING_PREVIEW_PREFLIGHT
+      SESSION_SOURCE_DECISION=PASS_D07_READ_ONLY_SESSION_PACKAGE_SOURCE_GUARD
+      ;;
+    *) echo SESSION_MODE_NOT_AUTHORIZED >&2; exit 1;;
+  esac
   SESSION_REPAIR=docs/checkpoints/CXORBIA_I3_D04_EXACT_SERVER_READBACK_REPAIR_20261029.json
   test "$(jq -r .sourceRepair.path "$SESSION_PACKAGE")" = "$SESSION_REPAIR"
   test "$(jq -r .sourceRepair.gitBlob "$SESSION_PACKAGE")" = 87d53c006e247bec3b8ddde4599ce945fb6f48e8
@@ -61,8 +75,12 @@ session-source-proof|session-preflight|session-proof)
   test "$SESSION_PREVIEW_RUN" = '40973709501'
   test "$SESSION_PREVIEW_RUN" != 40901257714
   jq -e '.preview.transportDecision=="PASS_I3_CROSSFRONT_1029_DEV_HOSTING_PREVIEW_EXACT_BYTES_ISOLATED" and .preview.servedFilesMatch==8 and .preview.production==false and .preview.hostingLiveWrites==0 and .preview.cloudRunTrafficWrites==0 and .preview.rulesWrites==0 and .preview.hrWrites==0 and .preview.authWrites==0 and .c02.replayReconciliation==false and .actor.createUser==false and .actor.changeClaims==false' "$SESSION_PACKAGE" >/dev/null
+  if [[ "$SESSION_MODE" == R6D07_READ_ONLY ]];then
+    jq -e '.production==false and .actor.uid=="NkcIVM4AnSU1gI9cGKHI5P12YqC3" and .actor.tenantId=="tya" and .actor.projectId=="cinepolis" and .actor.role=="admin" and .c02.execute==false and .c02.replayReconciliation==false and .d04.execute==false and .d04.fixtureSeeds==0 and .d04.contentEdits==0 and .d04.fixtureDeletes==0 and .scope.financeWrites==0 and .scope.authMutations==0 and .scope.hrWrites==0 and .scope.resourceWrites==0 and .scope.storageWrites==0 and .scope.qaFixtureWrites==0 and .scope.deploys==0 and .scope.production==false and .d07.roles==["admin","shopper"] and .d07.tenantId=="tya" and .d07.projectId=="cinepolis" and .d07.periodId=="cinepolis-2026-10" and .d07.shopperId=="TYA_GT_393371F88D10F7A8" and .d07.shopperUidFingerprint=="a6e3ff21498bd79cbc4078ec47b7b5760a6534e43803614e997bb2294d77ee98" and .d07.approvedName=="Instructivo Shopper.pdf" and .d07.approvedSize==162335 and .d07.approvedSha256=="3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454" and .d07.bucket=="cxorbia-backend-dev.firebasestorage.app" and .d07.binaryGetsPerRole==1 and .d07.downloadsPerRole==1 and .d07.resourceCrud==false and .d07.storageRuleChanges==false and .d07.corsChanges==false and .d07.serviceWorkerChanges==false' "$SESSION_PACKAGE" >/dev/null
+  else
   jq -e '.production==false and .actor.uid=="NkcIVM4AnSU1gI9cGKHI5P12YqC3" and .actor.tenantId=="tya" and .actor.projectId=="cinepolis" and .actor.role=="admin" and .c02.uiVisitId=="hr_2026-10_gt_2_97b3975c30" and .c02.durableVisitId=="OCTUBRE 26!2" and .c02.periodId=="cinepolis-2026-10" and .c02.priorReceiptPath=="docs/checkpoints/CXORBIA_I3_C02_DURABLE_RECEIPT_READBACK_20261029.json" and .c02.priorReceiptGitBlob=="5a18cab354ac9fbb216c0c9ff03a8460065f40db" and .d04.fixturePrefix=="qa-i3-d04-session-" and .d04.questions==15 and .d04.edits==1 and .d04.publish==false and .d04.cleanup==true and .scope.financeWrites==0 and .scope.authMutations==0 and .scope.hrWrites==0 and .scope.deploys==0 and .scope.production==false' "$SESSION_PACKAGE" >/dev/null
   test "$(git rev-parse "HEAD:$(jq -r .c02.priorReceiptPath "$SESSION_PACKAGE")")" = "$(jq -r .c02.priorReceiptGitBlob "$SESSION_PACKAGE")"
+  fi
   test "$(jq -r .preview.channel "$SESSION_PACKAGE")" = "i3-recovery-1029-$SESSION_PREVIEW_RUN"
   SESSION_EXPECTED_ROOT="$(jq -r .preview.origin "$SESSION_PACKAGE")"
   SESSION_EXPECTED_HOSTING="$(jq -r .preview.hostingVersion "$SESSION_PACKAGE")"
@@ -83,18 +101,23 @@ session-source-proof|session-preflight|session-proof)
   SESSION_PACKAGE_BLOB="$(git rev-parse "HEAD:$SESSION_PACKAGE")"
   SESSION_CONTROL="$(git rev-parse HEAD)"
   if [[ "$MODE" == session-source-proof ]];then
-    jq -n -S --arg control "$SESSION_CONTROL" --arg package "$SESSION_PACKAGE_BLOB" --arg source "$FOCAL_SOURCE" '{decision:"PASS_C02_D04_SESSION_PACKAGE_SOURCE_GUARD",controlSha:$control,packageBlob:$package,sourceSha:$source,cloudAccess:false,writes:0,production:false}' > "$SESSION_OUT/package-source-guard.json"
+    jq -n -S --arg control "$SESSION_CONTROL" --arg package "$SESSION_PACKAGE_BLOB" --arg source "$FOCAL_SOURCE" --arg decision "$SESSION_SOURCE_DECISION" --arg mode "$SESSION_MODE" '{decision:$decision,mode:$mode,controlSha:$control,packageBlob:$package,sourceSha:$source,cloudAccess:false,writes:0,production:false}' > "$SESSION_OUT/package-source-guard.json"
     exit 0
   fi
   if [[ "$MODE" == session-proof ]];then
-    jq -e --arg control "$SESSION_CONTROL" --arg package "$SESSION_PACKAGE_BLOB" --arg run "$GITHUB_RUN_ID" '.decision=="PASS_C02_D04_EXISTING_PREVIEW_PREFLIGHT" and .controlSha==$control and .packageBlob==$package and .runId==$run and .production==false' "$SESSION_OUT/preflight.json" >/dev/null
+    jq -e --arg control "$SESSION_CONTROL" --arg package "$SESSION_PACKAGE_BLOB" --arg run "$GITHUB_RUN_ID" --arg decision "$SESSION_PREFLIGHT_DECISION" --arg mode "$SESSION_MODE" '.decision==$decision and .mode==$mode and .controlSha==$control and .packageBlob==$package and .runId==$run and .production==false' "$SESSION_OUT/preflight.json" >/dev/null
     export HOSTING_URL="$(jq -r .preview.origin "$SESSION_PACKAGE")"
     export EXPECTED_HR_REVISION="$(jq -r .hrRevision "$SESSION_OUT/preflight.json")"
     export CXORBIA_I3_INDEPENDENT_SESSION_PROOF=YES_PAULA_20261029_DEV
     export CXORBIA_I3_SESSION_PACKAGE="$SESSION_PACKAGE"
     export CXORBIA_I3_SESSION_PREFLIGHT="$SESSION_OUT/preflight.json"
+    export CXORBIA_I3_SESSION_MODE="$SESSION_MODE"
     node tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs | tee "$SESSION_OUT/session-proof-console.log"
+    if [[ "$SESSION_MODE" == R6D07_READ_ONLY ]];then
+      jq -e '.decision=="PASS_D07_ADMIN_SHOPPER_REAL_PDF_READ_ONLY_CLAUSE" and .mode=="R6D07_READ_ONLY" and .d07.metadataAndUpdateTimeUnchanged==true and .d07.admin.decision=="PASS_EXACT_APPROVED_PDF_READ_RENDER_DOWNLOAD_FOR_ROLE" and .d07.shopper.decision=="PASS_EXACT_APPROVED_PDF_READ_RENDER_DOWNLOAD_FOR_ROLE" and .contextGuardsPass==true and .c02.executed==false and .d04.executed==false and .writes.auth==0 and .writes.hr==0 and .writes.resource==0 and .writes.financeCommands==0 and .cleanup.browserClosed==true and .production==false' "$PHASEA_LIVE_OUT/d07-readonly/result.json" >/dev/null
+    else
     jq -e '.decision=="PASS_C02_D04_INDEPENDENT_SESSIONS" and .c02.independentApplicationSession==true and .d04.independentApplicationSession==true and .cleanup.qaAbsentAfter==true and .writes.auth==0 and .writes.hr==0 and .writes.finance==0 and .writes.otherBanks==0 and .production==false' "$PHASEA_LIVE_OUT/d04-e04/result.json" >/dev/null
+    fi
     exit 0
   fi
   SESSION_ROOT="$(jq -r .preview.origin "$SESSION_PACKAGE")"
@@ -110,16 +133,21 @@ session-source-proof|session-preflight|session-proof)
   curl -fsS -H "Authorization: Bearer $SESSION_TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/$(jq -r .preview.channel "$SESSION_PACKAGE")" > "$SESSION_OUT/hosting-preview.json"
   unset SESSION_TOKEN
   jq -e --arg version "$(jq -r .preview.hostingVersion "$SESSION_PACKAGE")" --arg root "$SESSION_ROOT" '.release.version.name==$version and .release.version.status=="FINALIZED" and .url==$root' "$SESSION_OUT/hosting-preview.json" >/dev/null
-  for SESSION_ASSET in index-backend-dev.html core/backend-browser-auth.js core/backend-protected-dev-mode.js core/backend-protected-dev-session-continuity.js core/backend-resources.js core/backend-certifications.js modules/cert.js modules/finanzas.js adapters/tya-financial-canonical-source-safe-adapter.js core/backend-cxdata-finance-read.js core/backend-finance-benefits.js;do
+  SESSION_ASSETS=(index-backend-dev.html core/backend-browser-auth.js core/backend-protected-dev-mode.js core/backend-protected-dev-session-continuity.js core/backend-resources.js core/backend-certifications.js modules/cert.js modules/finanzas.js adapters/tya-financial-canonical-source-safe-adapter.js core/backend-cxdata-finance-read.js core/backend-finance-benefits.js)
+  if [[ "$SESSION_MODE" == R6D07_READ_ONLY ]];then SESSION_ASSETS+=(modules/documentos.js);fi
+  SESSION_OWNER_BLOBS='{}'
+  for SESSION_ASSET in "${SESSION_ASSETS[@]}";do
     SESSION_FILE="$SESSION_OUT/served-${SESSION_ASSET//\//_}"
     curl -fsSL -H 'Cache-Control: no-cache, no-store, max-age=0' "$SESSION_ROOT/$SESSION_ASSET?sessionproof=$GITHUB_RUN_ID" -o "$SESSION_FILE"
     test "$(git hash-object "$SESSION_FILE")" = "$(git rev-parse "$FOCAL_SOURCE:app/$SESSION_ASSET")"
+    SESSION_ASSET_BLOB="$(git hash-object "$SESSION_FILE")"
+    SESSION_OWNER_BLOBS="$(jq -c --arg path "app/$SESSION_ASSET" --arg blob "$SESSION_ASSET_BLOB" '.+{($path):$blob}' <<< "$SESSION_OWNER_BLOBS")"
   done
   curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$SESSION_ROOT/api/tya/cinepolis/hr-live?format=meta&phaseapreflight=readback-20261029&sessionproof=$GITHUB_RUN_ID" > "$SESSION_OUT/hr-meta.json"
   jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .hrWrites==false and .production==false' "$SESSION_OUT/hr-meta.json" >/dev/null
   SESSION_HR="$(jq -r '.revision // empty' "$SESSION_OUT/hr-meta.json")"
   [[ "$SESSION_HR" =~ ^[0-9a-f]{64}$ ]]
-  jq -n -S --arg control "$SESSION_CONTROL" --arg package "$SESSION_PACKAGE_BLOB" --arg run "$GITHUB_RUN_ID" --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg hr "$SESSION_HR" --arg root "$SESSION_ROOT" --arg hosting "$(jq -r .preview.hostingVersion "$SESSION_PACKAGE")" --arg revision "$SESSION_REVISION" --arg digest "$SESSION_DIGEST" --arg previewControl "$SESSION_PREVIEW_CONTROL" --argjson previewRun "$SESSION_PREVIEW_RUN" --argjson previewArtifact "$SESSION_PREVIEW_ARTIFACT" --arg previewZip "$SESSION_PREVIEW_ZIP" '{decision:"PASS_C02_D04_EXISTING_PREVIEW_PREFLIGHT",controlSha:$control,packageBlob:$package,runId:$run,sourceSha:$source,sourceTree:$tree,hrRevision:$hr,previewOrigin:$root,hostingVersion:$hosting,runtimeRevision:$revision,runtimeDigest:$digest,previewControlSha:$previewControl,previewRunId:$previewRun,previewArtifactId:$previewArtifact,previewArtifactZipSha256:$previewZip,servedOwnerCount:11,deploys:0,writes:0,production:false}' > "$SESSION_OUT/preflight.json"
+  jq -n -S --arg control "$SESSION_CONTROL" --arg package "$SESSION_PACKAGE_BLOB" --arg run "$GITHUB_RUN_ID" --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg hr "$SESSION_HR" --arg root "$SESSION_ROOT" --arg hosting "$(jq -r .preview.hostingVersion "$SESSION_PACKAGE")" --arg revision "$SESSION_REVISION" --arg digest "$SESSION_DIGEST" --arg previewControl "$SESSION_PREVIEW_CONTROL" --argjson previewRun "$SESSION_PREVIEW_RUN" --argjson previewArtifact "$SESSION_PREVIEW_ARTIFACT" --arg previewZip "$SESSION_PREVIEW_ZIP" --arg decision "$SESSION_PREFLIGHT_DECISION" --arg mode "$SESSION_MODE" --argjson servedOwners "$SESSION_OWNER_BLOBS" --argjson servedCount "${#SESSION_ASSETS[@]}" '{decision:$decision,mode:$mode,controlSha:$control,packageBlob:$package,runId:$run,sourceSha:$source,sourceTree:$tree,hrRevision:$hr,previewOrigin:$root,hostingVersion:$hosting,runtimeRevision:$revision,runtimeDigest:$digest,previewControlSha:$previewControl,previewRunId:$previewRun,previewArtifactId:$previewArtifact,previewArtifactZipSha256:$previewZip,servedOwnerCount:$servedCount,servedOwnerBlobs:$servedOwners,sourceIdentityVerified:true,deploys:0,writes:0,production:false}' > "$SESSION_OUT/preflight.json"
   ;;
 source-proof)
   STATUS="$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")"

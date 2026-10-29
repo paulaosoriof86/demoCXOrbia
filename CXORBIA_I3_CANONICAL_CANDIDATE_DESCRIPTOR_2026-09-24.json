@@ -12087,7 +12087,7 @@
     "proofTree": "1753d01aa909dd4181e3490c07d24287913d68a0",
     "decision": "PASS_FOCAL_SOURCE_ONLY_I3_HOLD"
   },
-  "lastUpdatedAt": "2026-10-29T23:53:00Z",
+  "lastUpdatedAt": "2026-10-29T23:55:00Z",
   "a05SourceProof": {
     "recordedAt": "2026-10-17T12:00:37.826Z",
     "productSourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
@@ -14539,28 +14539,54 @@
     "production": false
   },
   "i3D07BoundedSingleFlight20261029": {
-    "date": "2026-10-29",
-    "iteration": "I3",
-    "findingIds": [
-      "VRM-285"
+    "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R6.json",
+    "gitBlob": "daa51dcb2bde4e1209053512b7f5e028b5781480",
+    "state": "READY_FOR_BOUNDED_READ_ONLY_PROOF",
+    "expectedControlParentSha": "79fe75142144a6dba96218b07957ebffad2e3e01",
+    "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+    "sourceTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
+    "previewRunId": 40973709501,
+    "tasks": [
+      "D07"
     ],
-    "sourceSha": "8e2bda6c19b1b9411d98ccda8248f66553a1c8b2",
-    "sourceTree": "456be8c852fa995fa1431536af29b09155009a0e",
-    "predecessorSourceSha": "8f02e305be6d3c4a5ec4890c47d80cb34300f137",
-    "owners": [
-      "app/core/backend-resources.js",
-      "app/modules/documentos.js",
-      "tools/qa/cxorbia-i3-d07-authenticated-pdf-resource.test.mjs",
-      "tools/qa/cxorbia-i3-d07-viewer-single-flight.test.mjs"
-    ],
-    "localQaFilesPassed": 4,
-    "localQaFilesFailed": 0,
-    "authenticatedBrowserPredecessor": "FAIL_PDF_GET_NO_RESPONSE_TYPEERROR_RETRY_BURST_AND_SPINNER",
-    "newAuthenticatedDev": "NOT_YET_MATERIALIZED",
-    "nextGate": "CANONICAL_SOURCE_QA_AND_ONE_EXACT_DEV_AUTHENTICATED_ADMIN_SHOPPER_E2E",
-    "gate20": "HOLD",
-    "gate21": "HOLD",
-    "production": false
+    "supplementalReadOnlyDiagnostic": "D07_BINDING_BEFORE_BINARY",
+    "existingWorkflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "existingJob": "phasea-representative-same-artifact-live-reproof",
+    "existingRunner": "tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs",
+    "triggerMarker": "[i3-c02-d04-session-proof]",
+    "userChromeSessionPreserved": true,
+    "production": false,
+    "sourceChanges": 0,
+    "newWorkflow": 0,
+    "newMaterializer": 0,
+    "liveResult": "PENDING",
+    "attemptNumber": 6,
+    "priorAttemptRunId": 40974429136,
+    "runnerOs": "ubuntu-24.04",
+    "mode": "R6D07_READ_ONLY",
+    "scope": "EXACT_APPROVED_PDF_ADMIN_SHOPPER_READ_RENDER_DOWNLOAD",
+    "preservedC02D04Receipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_C02_D04_SCOPED_PASS_RUN1962_20261029.json",
+      "gitBlob": "80cbc5a2a1c09402227ee3b0ac179d2cc707727c",
+      "runId": 40974429136,
+      "runNumber": 1962,
+      "jobId": 123799366836,
+      "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+      "sourceTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
+      "artifactId": 12941758269,
+      "artifactZipSha256": "d2efe95460f2f5428d897837746979592ab2a82cfb37359270a5f6ed7d5c67e2",
+      "decision": "PASS_D04_EXACT_SERVER_READBACK_AND_C02_INDEPENDENT_SESSION_CLAUSES",
+      "fullTaskClosed": false,
+      "humanAcceptance": "PENDING",
+      "production": false
+    },
+    "retries": 0,
+    "resourceCrud": false,
+    "storageRuleChanges": false,
+    "corsChanges": false,
+    "serviceWorkerChanges": false,
+    "ordinaryPasswordLoginProven": false,
+    "fullTaskClosed": false
   },
   "g03CanonicalControlAlignment20261029": {
     "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
@@ -14786,5 +14812,29 @@
     "exactFailingSubpredicateNotCaptured": true,
     "storageOrCorsDefectProven": false,
     "next": "One bounded R6 Admin+Shopper read-only PDF smoke after exact metadata/safe-path binding; no source or Rules workaround inferred."
+  },
+  "previousD07BoundedSingleFlightBeforeR6": {
+    "date": "2026-10-29",
+    "iteration": "I3",
+    "findingIds": [
+      "VRM-285"
+    ],
+    "sourceSha": "8e2bda6c19b1b9411d98ccda8248f66553a1c8b2",
+    "sourceTree": "456be8c852fa995fa1431536af29b09155009a0e",
+    "predecessorSourceSha": "8f02e305be6d3c4a5ec4890c47d80cb34300f137",
+    "owners": [
+      "app/core/backend-resources.js",
+      "app/modules/documentos.js",
+      "tools/qa/cxorbia-i3-d07-authenticated-pdf-resource.test.mjs",
+      "tools/qa/cxorbia-i3-d07-viewer-single-flight.test.mjs"
+    ],
+    "localQaFilesPassed": 4,
+    "localQaFilesFailed": 0,
+    "authenticatedBrowserPredecessor": "FAIL_PDF_GET_NO_RESPONSE_TYPEERROR_RETRY_BURST_AND_SPINNER",
+    "newAuthenticatedDev": "NOT_YET_MATERIALIZED",
+    "nextGate": "CANONICAL_SOURCE_QA_AND_ONE_EXACT_DEV_AUTHENTICATED_ADMIN_SHOPPER_E2E",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": false
   }
 }

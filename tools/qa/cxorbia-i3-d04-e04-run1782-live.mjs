@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
+import {isDeepStrictEqual} from 'node:util';
 import {initializeApp,applicationDefault,getApps} from 'firebase-admin/app';
 import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
@@ -10,8 +11,9 @@ const ROOT=String(process.env.HOSTING_URL||'').replace(/\/$/,'');
 const SRC=String(process.env.FOCAL_SOURCE||'');
 const HR=String(process.env.EXPECTED_HR_REVISION||'');
 const RUN=String(process.env.GITHUB_RUN_ID||'');
-const OUT=String(process.env.PHASEA_LIVE_OUT||'')+'/d04-e04';
 const SESSION_PROOF_MODE=process.env.CXORBIA_I3_INDEPENDENT_SESSION_PROOF==='YES_PAULA_20261029_DEV';
+const D07_READ_ONLY_MODE=SESSION_PROOF_MODE&&process.env.CXORBIA_I3_SESSION_MODE==='R6D07_READ_ONLY';
+const OUT=String(process.env.PHASEA_LIVE_OUT||'')+(D07_READ_ONLY_MODE?'/d07-readonly':'/d04-e04');
 const descriptor=JSON.parse(fs.readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8'));
 if(!ROOT||!SRC||!HR||!/^\d+$/.test(RUN))throw Error('ENVIRONMENT_FAILURE:D04_E04_ENV');
 assert.equal(descriptor.productSourceSha,SRC);
@@ -32,8 +34,42 @@ if(SESSION_PROOF_MODE){
   assert.equal(sessionPackage.schemaVersion,'cxorbia.i3.c02-d04.independent-session-package.v1');
   assert.equal(sessionPackage.sourceSha,SRC);
   assert.equal(sessionPackage.sourceTree,descriptor.productTreeAuthority);
-  assert.equal(sessionPackage.id,'CXORBIA-I3-C02-D04-INDEPENDENT-SESSION-20261029-R5');
-  assert.equal(sessionPackage.attemptNumber,5);
+  if(D07_READ_ONLY_MODE){
+    assert.equal(sessionPackage.mode,'R6D07_READ_ONLY');
+    assert.equal(sessionPackage.id,'CXORBIA-I3-D07-ADMIN-SHOPPER-READ-ONLY-20261029-R6');
+    assert.equal(sessionPackage.attemptNumber,6);
+    assert.equal(sessionPackage.c02.execute,false);
+    assert.equal(sessionPackage.d04.execute,false);
+    assert.equal(sessionPackage.d04.fixtureSeeds,0);
+    assert.equal(sessionPackage.d04.contentEdits,0);
+    assert.equal(sessionPackage.d04.fixtureDeletes,0);
+    assert.equal(sessionPackage.scope.qaFixtureWrites,0);
+    assert.equal(sessionPackage.scope.resourceWrites,0);
+    assert.equal(sessionPackage.scope.storageWrites,0);
+    assert.equal(sessionPackage.d07.shopperId,'TYA_GT_393371F88D10F7A8');
+    assert.equal(sessionPackage.d07.shopperUidFingerprint,'a6e3ff21498bd79cbc4078ec47b7b5760a6534e43803614e997bb2294d77ee98');
+    assert.deepEqual(sessionPackage.d07.roles,['admin','shopper']);
+    assert.equal(sessionPackage.d07.tenantId,'tya');
+    assert.equal(sessionPackage.d07.projectId,'cinepolis');
+    assert.equal(sessionPackage.d07.periodId,'cinepolis-2026-10');
+    assert.equal(sessionPackage.d07.approvedName,'Instructivo Shopper.pdf');
+    assert.equal(sessionPackage.d07.approvedSize,162335);
+    assert.equal(sessionPackage.d07.approvedSha256,'3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454');
+    assert.equal(sessionPackage.d07.binaryGetsPerRole,1);
+    assert.equal(sessionPackage.d07.downloadsPerRole,1);
+    assert.equal(sessionPackage.d07.resourceCrud,false);
+    assert.equal(sessionPackage.d07.corsChanges,false);
+    assert.equal(sessionPackage.d07.serviceWorkerChanges,false);
+    assert.equal(sessionPreflight.mode,'R6D07_READ_ONLY');
+    assert.equal(sessionPreflight.sourceIdentityVerified,true);
+    assert.equal(sessionPreflight.servedOwnerCount,12);
+    assert.equal(sessionPreflight.servedOwnerBlobs?.['app/core/backend-resources.js'],'d3073758c85f0184cdd38fd9f88882ecc212c30c');
+    assert.equal(sessionPreflight.servedOwnerBlobs?.['app/modules/documentos.js'],'db994135c9e38854000b13606e7fdd3872ab7e1b');
+  }else{
+    assert.ok(!sessionPackage.mode||sessionPackage.mode==='C02_D04_INDEPENDENT_SESSION');
+    assert.equal(sessionPackage.id,'CXORBIA-I3-C02-D04-INDEPENDENT-SESSION-20261029-R5');
+    assert.equal(sessionPackage.attemptNumber,5);
+  }
   assert.equal(sessionPackage.c02.replayReconciliation,false);
   assert.equal(sessionPackage.actor.createUser,false);
   assert.equal(sessionPackage.actor.changeClaims,false);
@@ -66,7 +102,7 @@ if(SESSION_PROOF_MODE){
   assert.match(ROOT,/^https:\/\/cxorbia-backend-dev--i3-recovery-1029-[1-9][0-9]*-[a-z0-9]+\.web\.app$/);
   assert.ok(ROOT.startsWith('https://cxorbia-backend-dev--'+sessionPackage.preview.channel+'-'));
   assert.match(sessionPackage.preview.hostingVersion,/^sites\/cxorbia-backend-dev\/versions\/[a-f0-9]+$/);
-  assert.equal(sessionPreflight.decision,'PASS_C02_D04_EXISTING_PREVIEW_PREFLIGHT');
+  assert.equal(sessionPreflight.decision,D07_READ_ONLY_MODE?'PASS_D07_EXISTING_PREVIEW_PREFLIGHT':'PASS_C02_D04_EXISTING_PREVIEW_PREFLIGHT');
   assert.equal(sessionPreflight.sourceSha,SRC);
   assert.equal(sessionPreflight.sourceTree,descriptor.productTreeAuthority);
   assert.equal(sessionPreflight.packageBlob,packageBlob);
@@ -132,6 +168,7 @@ async function member(role){
  throw Error('AUTH_FAILURE:'+role.toUpperCase()+'_SCOPED_MEMBER_UNAVAILABLE');
 }
 async function sign(m,role){
+ if(D07_READ_ONLY_MODE)return signD07Role(m,role);
  const ctx=await browser.newContext({viewport:{width:1400,height:940}}),page=await ctx.newPage();
  await page.goto(url+'&pre='+Date.now(),{waitUntil:'domcontentloaded',timeout:90000});
  await page.waitForFunction(()=>!!window.firebase?.auth&&window.firebase.apps?.length>0,null,{timeout:90000});
@@ -725,6 +762,428 @@ async function d04VerifyPostSession(fixture) {
   assert.deepEqual(await d04OtherBankHeads(fixture.rid), d04SessionBaseline);
 }
 
+// Integration proposal only. Append helpers to the existing D04 runner; no new entrypoint.
+// No provider call is made by importing this file. Caller supplies two isolated, authenticated pages.
+
+const D07 = Object.freeze({
+  sourceSha:'946c3cb8eff6a043693b10ed628d2ebc860508e1',
+  sourceTree:'4afcecfd4b41ac697995a1164115a23a46db44c7',
+  resourceOwnerBlob:'d3073758c85f0184cdd38fd9f88882ecc212c30c',
+  viewerOwnerBlob:'db994135c9e38854000b13606e7fdd3872ab7e1b',
+  tenantId:'tya',projectId:'cinepolis',periodId:'cinepolis-2026-10',
+  bucket:'cxorbia-backend-dev.firebasestorage.app',
+  shopperId:'TYA_GT_393371F88D10F7A8',
+  shopperUidFingerprint:'a6e3ff21498bd79cbc4078ec47b7b5760a6534e43803614e997bb2294d77ee98',
+  approvedName:'Instructivo Shopper.pdf',approvedSize:162335,
+  approvedSha256:'3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454',
+});
+const sha=value=>createHash('sha256').update(value).digest('hex');
+const norm=value=>String(value||'').replace(/_/g,' ').replace(/\s+/g,' ').trim().toLowerCase();
+const uidFingerprint=uid=>sha('cxorbia-provider-uid-v1\0'+uid);
+const fail=code=>{throw new Error('D07_'+code);};
+const check=(condition,code)=>{if(!condition)fail(code);};
+async function bounded(operation,ms,code){
+  let timer;
+  try{return await Promise.race([operation,new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('D07_'+code)),ms);})]);}
+  catch(error){if(/^D07_[A-Z0-9_]+$/.test(String(error?.message||'')))throw error;fail(code+'_FAILED');}
+  finally{clearTimeout(timer);}
+}
+
+async function resolveD07ExistingShopper({tenant,auth}){
+  // Exactly one bounded membership query. Never list Auth or pick the first of multiple matches.
+  let found;
+  try{found=await bounded(tenant.collection('users').where('shopperId','==',D07.shopperId).limit(2).get(),10000,'SHOPPER_MEMBERSHIP_TIMEOUT');}
+  catch{fail('SHOPPER_MEMBERSHIP_READ_UNPROVEN');}
+  check(found.size===1,'SHOPPER_MEMBERSHIP_NOT_UNIQUE');
+  const doc=found.docs[0],m=doc.data()||{},uid=doc.id;
+  check(uidFingerprint(uid)===D07.shopperUidFingerprint,'SHOPPER_UID_FINGERPRINT_MISMATCH');
+  check(m.active===true&&m.role==='shopper'&&m.authNamespace==='shopper'&&m.shopperId===D07.shopperId,'SHOPPER_MEMBERSHIP_SCOPE_MISMATCH');
+  check(m.tenantId===D07.tenantId&&Array.isArray(m.projectIds)&&m.projectIds.includes(D07.projectId),'SHOPPER_MEMBERSHIP_PROJECT_MISMATCH');
+  check(m.status!=='inactive'&&(m.providerUidFingerprint==null||m.providerUidFingerprint===D07.shopperUidFingerprint),'SHOPPER_MEMBERSHIP_FINGERPRINT_OR_STATUS_MISMATCH');
+  let user;
+  try{user=await bounded(auth.getUser(uid),10000,'SHOPPER_AUTH_TIMEOUT');}
+  catch{fail('SHOPPER_AUTH_READ_UNPROVEN');}
+  const c=user.customClaims||{};
+  check(user.uid===uid&&user.disabled===false,'SHOPPER_AUTH_DISABLED_OR_DIFFERENT');
+  check(c.role==='shopper'&&c.authNamespace==='shopper'&&c.shopperId===D07.shopperId,'SHOPPER_CLAIMS_IDENTITY_MISMATCH');
+  check(c.tenantId===D07.tenantId&&Array.isArray(c.projectIds)&&c.projectIds.includes(D07.projectId),'SHOPPER_CLAIMS_SCOPE_MISMATCH');
+  check(c.country==null||c.country==='GT','SHOPPER_CLAIMS_COUNTRY_CONFLICT');
+  // UID stays only in runner memory. Public receipt uses the approved fingerprint.
+  return {id:uid,role:'shopper',shopperId:D07.shopperId,uidFingerprint:D07.shopperUidFingerprint};
+}
+
+function inspectD07StorageBinding({id,storagePath}){
+  const value=String(storagePath||'');
+  const prefix='tenants/'+D07.tenantId+'/projects/'+D07.projectId+'/periods/'+D07.periodId+'/resources/';
+  const parentScopeMatches=value.startsWith(prefix),suffix=parentScopeMatches?value.slice(prefix.length):'';
+  const match=/^([-a-zA-Z0-9_]+)\/([-a-zA-Z0-9_.]+\.pdf)$/i.exec(suffix);
+  const segments=value.split('/'),file=segments[segments.length-1]||'';
+  const folder=match?.[1]||null;
+  return {resourceId:id,pathSha256:sha(value),pathLength:value.length,segmentCount:segments.length,
+    scope:{tenantId:D07.tenantId,projectId:D07.projectId,periodId:D07.periodId},parentScopeMatches,
+    safeSingleFolderAndPdfBasename:!!match&&!suffix.includes('..'),storageFolderId:folder,
+    storageFolderEqualsDocumentId:folder===id,basenameSha256:sha(file),basenameLength:file.length,
+    approvedBasenameMatches:norm(file)===norm(D07.approvedName)};
+}
+function bindingFailure(code,diagnostic){
+  const error=new Error('D07_'+code);error.d07BindingDiagnostic=diagnostic;throw error;
+}
+
+async function readD07LoadedBinding(page,{role,uid,onDiagnostic=()=>{}}){
+  check(['admin','shopper'].includes(role),'UNSUPPORTED_ROLE');
+  // Scope is selected through the existing UI before this call. No hidden period mutation.
+  await page.waitForFunction(expected=>{
+    const s=window.CX_BACKEND_RESOURCES_STATUS||{};
+    return s.status==='ready'&&s.tenantId===expected.tenantId&&s.projectId===expected.projectId&&s.periodId===expected.periodId;
+  },D07,{timeout:30000});
+  const row=await bounded(page.evaluate(({expected,role,uid})=>{
+    const cx=window.CX,c=cx?.backendAuth?.context?.()||{},s=window.CX_BACKEND_RESOURCES_STATUS||{};
+    const actualRole=String(cx?.session?.effectiveRole?.()||c.role||'');
+    if(window.firebase?.auth?.().currentUser?.uid!==uid||c.authenticated!==true||c.tenantId!==expected.tenantId||
+      (role==='admin'?!['admin','super'].includes(actualRole):actualRole!=='shopper')||
+      c.authNamespace!==(role==='admin'?'staff':'shopper')||
+      cx?.data?.currentProjectId!==expected.projectId||cx?.data?.currentPeriodId!==expected.periodId||
+      s.status!=='ready'||s.projectId!==expected.projectId||s.periodId!==expected.periodId)return null;
+    if(role==='shopper'&&(c.shopperId!==expected.shopperId||!Array.isArray(c.projectIds)||!c.projectIds.includes(expected.projectId)))return null;
+    const normalize=v=>String(v||'').replace(/_/g,' ').replace(/\s+/g,' ').trim().toLowerCase();
+    const items=cx.backendResources?.list?.({projectId:expected.projectId,periodId:expected.periodId,resourceType:'project_resource'})||[];
+    const matches=items.filter(x=>x.status==='active'&&x.tenantId===expected.tenantId&&x.projectId===expected.projectId&&
+      x.periodId===expected.periodId&&x.tipo==='pdf'&&[x.n,x.meta].some(v=>normalize(v)===normalize(expected.approvedName))&&
+      (!x.mimeType||x.mimeType==='application/pdf'));
+    if(matches.length!==1)return null;
+    const x=matches[0];
+    return {id:String(x.id||''),storagePath:String(x.storagePath||''),version:x.version??null,
+      size:x.size??null,bucket:String(window.firebase.app().options.storageBucket||''),role:actualRole,
+      visibleForRole:x.targetAll===true||(Array.isArray(x.visibleRoles)&&x.visibleRoles.includes(actualRole))};
+  },{expected:D07,role,uid}),10000,'LOADED_BINDING_TIMEOUT');
+  check(row,'LOADED_EXACT_RESOURCE_MISSING_AMBIGUOUS_OR_WRONG_SCOPE');
+  check(/^[-a-zA-Z0-9_]+$/.test(row.id)&&row.bucket===D07.bucket,'RESOURCE_ID_OR_BUCKET_MISMATCH');
+  if(role==='shopper')check(row.visibleForRole===true,'RESOURCE_NOT_VISIBLE_FOR_SHOPPER');
+  const diagnostic={stage:'catalog-'+role,version:row.version,size:row.size,role:row.role,...inspectD07StorageBinding(row)};
+  onDiagnostic(diagnostic);
+  if(!diagnostic.parentScopeMatches||!diagnostic.safeSingleFolderAndPdfBasename||!diagnostic.approvedBasenameMatches)
+    bindingFailure('STORAGE_PATH_SCOPE_MISMATCH',diagnostic);
+  // The upload folder and Firestore document ID are independent identifiers by the current product contract.
+  return {...row,pathDiagnostic:diagnostic};
+}
+
+async function bindD07BeforeReads({adminPage,shopperPage,adminUid,shopperUid,db,preflight,onDiagnostic=()=>{}}){
+  check(preflight?.sourceSha===D07.sourceSha&&preflight?.sourceTree===D07.sourceTree&&
+    preflight?.previewRunId===40973709501&&preflight?.sourceIdentityVerified===true&&
+    preflight?.servedOwnerBlobs?.['app/core/backend-resources.js']===D07.resourceOwnerBlob&&
+    preflight?.servedOwnerBlobs?.['app/modules/documentos.js']===D07.viewerOwnerBlob,'SOURCE_PREFLIGHT_UNBOUND');
+  check(/^https:\/\/cxorbia-backend-dev--[-a-z0-9]+\.web\.app$/.test(preflight.previewOrigin||'')&&
+    new URL(adminPage.url()).origin===preflight.previewOrigin&&new URL(shopperPage.url()).origin===preflight.previewOrigin,'PREVIEW_ORIGIN_MISMATCH');
+  check(typeof preflight.hostingVersion==='string'&&/^sites\/cxorbia-backend-dev\/versions\/[0-9a-f]+$/.test(preflight.hostingVersion),'HOSTING_VERSION_UNBOUND');
+  // Both role catalogs must expose the same exact resource before either binary GET.
+  const a=await readD07LoadedBinding(adminPage,{role:'admin',uid:adminUid,onDiagnostic});
+  const s=await readD07LoadedBinding(shopperPage,{role:'shopper',uid:shopperUid,onDiagnostic});
+  for(const field of ['id','storagePath','version','bucket'])check(a[field]===s[field],'ROLE_RESOURCE_BINDING_MISMATCH');
+  const ref=db.doc('tenants/'+D07.tenantId+'/resources/'+a.id);
+  const before=await bounded(ref.get(),10000,'EXACT_METADATA_TIMEOUT');
+  const d=before.exists?(before.data()||{}):{};
+  const checks={exists:before.exists===true,documentIdMatches:before.id===a.id,storedIdMatches:d.id==null||d.id===a.id,
+    publishedPdf:d.status==='active'&&d.resourceType==='project_resource'&&d.tipo==='pdf',
+    scopeMatches:d.tenantId===D07.tenantId&&d.projectId===D07.projectId&&d.periodId===D07.periodId,
+    exactStoragePathMatches:d.storagePath===a.storagePath&&d.storagePath===s.storagePath,
+    versionMatches:(d.version??null)===a.version&&(d.version??null)===s.version,
+    approvedMetadataNameMatches:[d.n,d.meta].some(v=>norm(v)===norm(D07.approvedName)),
+    shopperPublished:d.targetAll===true||(Array.isArray(d.visibleRoles)&&d.visibleRoles.includes('shopper')),
+    approvedSizeMatchesIfDeclared:d.size==null||d.size===D07.approvedSize};
+  const metadataDiagnostic={stage:'exact-sdk-document',resourceId:a.id,version:d.version??null,size:d.size??null,
+    scope:{tenantId:d.tenantId??null,projectId:d.projectId??null,periodId:d.periodId??null},checks,
+    storagePathSha256:sha(String(d.storagePath||'')),storageFolderEqualsDocumentId:a.pathDiagnostic.storageFolderEqualsDocumentId,
+    updateTime:before.updateTime?{seconds:before.updateTime.seconds,nanoseconds:before.updateTime.nanoseconds}:null};
+  onDiagnostic(metadataDiagnostic);
+  if(!Object.values(checks).every(Boolean))bindingFailure('EXACT_METADATA_BINDING_MISMATCH',metadataDiagnostic);
+  const endpoint='https://firebasestorage.googleapis.com/v0/b/'+encodeURIComponent(a.bucket)+'/o/'+encodeURIComponent(a.storagePath)+'?alt=media';
+  return {id:a.id,storagePath:a.storagePath,version:a.version,bucket:a.bucket,endpoint,ref,before,
+    sourceProof:{sourceSha:preflight.sourceSha,sourceTree:preflight.sourceTree,previewRunId:preflight.previewRunId,previewOrigin:preflight.previewOrigin,hostingVersion:preflight.hostingVersion,servedOwnerBlobs:preflight.servedOwnerBlobs},
+    safe:{resourceId:a.id,version:a.version,storagePathSha256:sha(a.storagePath),approvedSha256:D07.approvedSha256,approvedSize:D07.approvedSize,
+      bothRoleCatalogsVisible:true,exactMetadataBound:true,pathDiagnostic:a.pathDiagnostic,metadataDiagnostic}};
+}
+
+// Pure request classification. POST alone is not evidence of a mutation.
+function classifyD07Request({url,method,endpoint,getCount=0}){
+  const u=new URL(url),verb=String(method).toUpperCase(),readMethod=['GET','HEAD','OPTIONS'].includes(verb);
+  const storage=['firebasestorage.googleapis.com','storage.googleapis.com'].includes(u.hostname);
+  const command=!readMethod&&u.pathname==='/v1/cxorbia/commands';
+  const firestore=u.hostname==='firestore.googleapis.com';
+  const knownReadRpc=/:(?:batchGet|runQuery|runAggregationQuery|partitionQuery|beginTransaction|rollback)$/.test(u.pathname);
+  const firestoreWrite=firestore&&!readMethod&&(
+    /\/Write\/channel$/.test(u.pathname)||/:(?:commit|batchWrite|write)$/.test(u.pathname)||
+    ['PATCH','DELETE','PUT'].includes(verb)||
+    (verb==='POST'&&/\/documents(?:\/|$)/.test(u.pathname)&&!knownReadRpc));
+  const storageMutation=storage&&!readMethod;
+  const authMutation=!readMethod&&u.hostname==='identitytoolkit.googleapis.com'&&
+    /accounts:(?:update|delete|signUp|batchDelete|upload|sendOobCode|resetPassword)$/.test(u.pathname);
+  const unexpectedRead=storage&&['GET','HEAD'].includes(verb)&&(url!==endpoint||(verb==='GET'&&getCount>=1));
+  return {mutating:command||firestoreWrite||storageMutation||authMutation,unexpectedRead,
+    exactPdfGet:storage&&verb==='GET'&&url===endpoint&&!unexpectedRead};
+}
+
+async function installD07ReadOnlyContextGuard(context){
+  // Install before goto/Auth. Listener reads, token exchange and account lookup remain allowed.
+  // No Storage binary read is allowed until both catalogs and the exact SDK document are bound.
+  const pattern=/^https?:\/\//;
+  const evidence={installedBeforeNavigation:true,bindingSet:false,blockedWriteRequests:0,
+    blockedUnexpectedStorageReads:0,storageGetsOutsideRoleGuard:0};
+  let endpoint=null;
+  const handler=async route=>{
+    const request=route.request();
+    const kind=classifyD07Request({url:request.url(),method:request.method(),endpoint});
+    if(kind.mutating){evidence.blockedWriteRequests++;await route.abort('blockedbyclient');}
+    else if(kind.unexpectedRead){evidence.blockedUnexpectedStorageReads++;await route.abort('blockedbyclient');}
+    else{if(kind.exactPdfGet)evidence.storageGetsOutsideRoleGuard++;await route.continue();}
+  };
+  await context.route(pattern,handler);
+  return {evidence,setBinding(binding){
+    check(!evidence.bindingSet&&binding?.safe?.bothRoleCatalogsVisible===true&&binding?.safe?.exactMetadataBound===true&&
+      binding?.sourceProof?.sourceSha===D07.sourceSha&&typeof binding?.endpoint==='string','CONTEXT_BINDING_UNPROVEN');
+    endpoint=binding.endpoint;evidence.bindingSet=true;
+  },stop:()=>context.unroute(pattern,handler)};
+}
+
+async function readD07RolePdf({page,role,uid,binding,outDir}){
+  const result={role,decision:'HOLD',openClicks:0,binaryGetCount:0,blockedUnexpectedRequests:0,
+    downloadCount:0,rendered:false,writesObserved:false,blockedWriteRequests:0,httpStatus:null,networkError:null,diagnostic:null};
+  const pending=[],guardPattern=/^https?:\/\//;let guardInstalled=false;
+  const observeResponse=response=>{if(response.url()===binding.endpoint&&response.request().method()==='GET')result.httpStatus=response.status();};
+  const observeFailure=request=>{if(request.url()===binding.endpoint){const code=String(request.failure()?.errorText||'');result.networkError=/^net::ERR_[A-Z0-9_]+$/.test(code)?code:'OTHER_NETWORK_ERROR';}};
+  page.on('response',observeResponse);page.on('requestfailed',observeFailure);
+  const guard=async route=>{
+    const request=route.request();
+    const kind=classifyD07Request({url:request.url(),method:request.method(),endpoint:binding.endpoint,getCount:result.binaryGetCount});
+    if(kind.mutating||kind.unexpectedRead){
+      result.blockedUnexpectedRequests++;result.writesObserved||=kind.mutating;
+      if(kind.mutating)result.blockedWriteRequests++;
+      await route.abort('blockedbyclient');return;
+    }
+    if(kind.exactPdfGet){
+      result.binaryGetCount++;
+      pending.push(request.headerValue('authorization').then(value=>{result.authenticatedGetHeaderPresent=typeof value==='string'&&/^Firebase .+/.test(value);}).catch(()=>{result.authenticatedGetHeaderPresent=false;}));
+    }
+    await route.continue();
+  };
+  try{
+    await page.route(guardPattern,guard);guardInstalled=true;
+    // Only the app router is invoked; the binary read must result from this exact visible button click.
+    await bounded(page.evaluate(()=>window.CX.router.nav('documentos',{history:false})),10000,'RESOURCES_NAVIGATION_TIMEOUT');
+    const open=page.locator('button[data-doc="'+binding.id+'"]');
+    await open.waitFor({state:'visible',timeout:15000});
+    check(await open.count()===1,'EXACT_OPEN_BUTTON_NOT_UNIQUE');
+    if(role==='shopper'){
+      check(await page.locator('#docUp').count()===0,'SHOPPER_CREATE_CONTROL_VISIBLE');
+      check(await page.locator('[data-editd],[data-deld]').count()===0,'SHOPPER_MUTATION_CONTROL_VISIBLE');
+    }
+    result.openClicks=1;await open.click({timeout:10000});
+    await page.waitForFunction(()=>['ready','failed'].includes(document.querySelector('[data-pdf-status]')?.dataset.pdfStatus),null,{timeout:45000});
+    result.diagnostic=await bounded(page.locator('[data-pdf-status]').evaluate(node=>({
+      status:node.dataset.pdfStatus,stage:node.dataset.d07Stage||null,code:node.dataset.d07Code||null,
+      text:String(node.innerText||'').replace(/\s+/g,' ').trim().slice(0,700),
+    })),10000,'VISIBLE_DIAGNOSTIC_TIMEOUT');
+    if(result.diagnostic.status!=='ready')fail('PDF_VISIBLE_FAILURE');
+    check(result.diagnostic.text==='PDF visible en la plataforma','PDF_READY_TEXT_MISMATCH');
+    const canvas=await bounded(page.locator('[data-pdf-viewer] canvas').evaluate(node=>{
+      const w=node.width,h=node.height,ctx=node.getContext('2d');
+      if(!w||!h||!ctx)return {width:w,height:h,inkPixels:0};
+      const data=ctx.getImageData(0,0,w,h).data;let ink=0;
+      for(let i=0;i<data.length;i+=4)if(data[i+3]>0&&(data[i]<245||data[i+1]<245||data[i+2]<245)){if(++ink>=16)break;}
+      return {width:w,height:h,inkPixels:ink};
+    }),10000,'CANVAS_OBSERVATION_TIMEOUT');
+    check(canvas.width>100&&canvas.height>100&&canvas.inkPixels>=16,'PDF_CANVAS_BLANK');
+    result.rendered=true;result.canvas=canvas;
+    const position=(await page.locator('[data-pdf-page]').innerText()).trim();
+    const match=/^Página 1 de ([1-9]\d*)$/.exec(position);check(match,'PDF_PAGE_COUNT_UNPROVEN');
+    result.pageCount=Number(match[1]);
+    await page.locator('[data-pdf-viewer]').screenshot({path:outDir+'/d07-'+role+'-pdf-page1.png',timeout:10000});
+    const downloadButton=page.locator('[data-pdf-download]');
+    check(await downloadButton.isEnabled(),'PDF_DOWNLOAD_NOT_ENABLED');
+    // The app reuses the authenticated bytes. Download must not start a second provider GET.
+    const [download]=await Promise.all([page.waitForEvent('download',{timeout:15000}),downloadButton.click({timeout:10000})]);
+    result.downloadCount=1;
+    check(norm(download.suggestedFilename())===norm(D07.approvedName),'DOWNLOAD_NAME_MISMATCH');
+    const stream=await bounded(download.createReadStream(),15000,'DOWNLOAD_STREAM_TIMEOUT');check(stream,'DOWNLOAD_STREAM_MISSING');
+    const content=await bounded((async()=>{
+      const digest=createHash('sha256');let size=0,signature=Buffer.alloc(0);
+      for await(const chunk of stream){
+        size+=chunk.length;check(size<=D07.approvedSize,'DOWNLOAD_EXCEEDS_APPROVED_SIZE');
+        if(signature.length<5)signature=Buffer.concat([signature,chunk]).subarray(0,5);
+        digest.update(chunk);
+      }
+      return {size,sha256:digest.digest('hex'),pdfSignature:signature.equals(Buffer.from('%PDF-'))};
+    })(),15000,'DOWNLOAD_BYTES_TIMEOUT');
+    check(content.pdfSignature&&content.size===D07.approvedSize&&content.sha256===D07.approvedSha256,'DOWNLOAD_NOT_APPROVED_PDF_BYTES');
+    result.download=content;
+    if(result.pageCount>1){
+      await page.locator('[data-pdf-next]').click({timeout:10000});
+      await page.waitForFunction(()=>/^Página 2 de /.test(document.querySelector('[data-pdf-page]')?.textContent||''),null,{timeout:10000});
+      await page.locator('[data-pdf-prev]').click({timeout:10000});
+      await page.waitForFunction(()=>/^Página 1 de /.test(document.querySelector('[data-pdf-page]')?.textContent||''),null,{timeout:10000});
+      result.pageNavigation='PASS_1_2_1';
+    }else result.pageNavigation='SINGLE_PAGE';
+    await page.locator('#docBack').click({timeout:10000});
+    await open.waitFor({state:'visible',timeout:10000});result.backToCatalog=true;
+    const after=await readD07LoadedBinding(page,{role,uid});
+    for(const field of ['id','storagePath','version','bucket'])check(after[field]===binding[field],'RESOURCE_CHANGED_DURING_READ');
+    await Promise.all(pending);
+    check(result.binaryGetCount===1&&result.authenticatedGetHeaderPresent===true&&result.httpStatus===200,'EXACT_AUTHENTICATED_GET_NOT_PROVEN');
+    check(result.blockedUnexpectedRequests===0&&!result.writesObserved,'UNEXPECTED_REQUEST_DURING_READ');
+    result.decision='PASS_EXACT_APPROVED_PDF_READ_RENDER_DOWNLOAD_FOR_ROLE';
+  }catch(error){
+    result.error=/^D07_[A-Z0-9_]+$/.test(String(error?.message||''))?error.message:'D07_BOUNDED_UI_OR_PROVIDER_FAILURE';
+    // Do not log raw URLs, credentials, Auth records, Storage paths, or response bodies.
+    if(!result.diagnostic)result.diagnostic=await bounded(page.locator('[data-pdf-status]').evaluate(node=>({
+      status:node.dataset.pdfStatus,stage:node.dataset.d07Stage||null,code:node.dataset.d07Code||null,
+      text:String(node.innerText||'').replace(/\s+/g,' ').trim().slice(0,700),
+    })),10000,'FAILURE_DIAGNOSTIC_TIMEOUT').catch(()=>null);
+    await page.locator('#view').screenshot({path:outDir+'/d07-'+role+'-failure.png',timeout:10000}).catch(()=>{});
+  }finally{
+    page.off('response',observeResponse);page.off('requestfailed',observeFailure);
+    if(guardInstalled)await page.unroute(guardPattern,guard);
+    await Promise.allSettled(pending);
+  }
+  return result;
+}
+
+async function finishD07ReadOnly({binding,admin,shopper}){
+  const after=await bounded(binding.ref.get(),10000,'FINAL_METADATA_TIMEOUT');
+  check(after.exists,'RESOURCE_REMOVED_DURING_READ');
+  check(isDeepStrictEqual(after.data(),binding.before.data()),'RESOURCE_METADATA_CHANGED');
+  check(after.updateTime?.isEqual(binding.before.updateTime)===true,'RESOURCE_UPDATE_TIME_CHANGED');
+  const passed=[admin,shopper].every(x=>x?.decision==='PASS_EXACT_APPROVED_PDF_READ_RENDER_DOWNLOAD_FOR_ROLE');
+  return {decision:passed?'PASS_D07_ADMIN_SHOPPER_REAL_PDF_READ_ONLY_CLAUSE':'HOLD_D07_REAL_PDF_READ_ONLY_CLAUSE',
+    fullTaskClosed:false,sourceProof:binding.sourceProof,resource:binding.safe,admin,shopper,
+    metadataAndUpdateTimeUnchanged:true,scope:'EXACT_APPROVED_PROJECT_PERIOD_PDF_READ_RENDER_DOWNLOAD',
+    testScopeOnly:true,resourceWrites:passed?0:null,observedBlockedWriteRequests:Number(admin?.blockedWriteRequests||0)+Number(shopper?.blockedWriteRequests||0),
+    authAccountMutationsIssuedByHelper:0,hrCommandsIssuedByHelper:0,financeCommandsIssuedByHelper:0,production:false,
+    remainingFrozenClauses:['PDF alta/metadatos/version y no binario huerfano','documento ajeno denegado','vinculo a visita y revision','retiro seguro'],
+    existingTxtCoveragePreserved:true,miDiaEligibilityProven:false};
+}
+
+async function signD07Role(m,role){
+ check(D07_READ_ONLY_MODE&&['admin','shopper'].includes(role),'SESSION_MODE_OR_ROLE_UNAUTHORIZED');
+ if(role==='admin')check(m.id===sessionPackage.actor.uid,'ADMIN_UID_MISMATCH');
+ else check(m.shopperId===D07.shopperId&&m.uidFingerprint===D07.shopperUidFingerprint&&uidFingerprint(m.id)===D07.shopperUidFingerprint,'SHOPPER_UID_MISMATCH');
+ const ctx=await browser.newContext({viewport:{width:1400,height:940}});
+ const guard=await installD07ReadOnlyContextGuard(ctx);
+ d07Contexts.push({ctx,guard,role});
+ const page=await ctx.newPage();
+ await page.goto(url+'&pre='+Date.now(),{waitUntil:'domcontentloaded',timeout:90000});
+ await page.waitForFunction(()=>!!window.firebase?.auth&&window.firebase.apps?.length>0,null,{timeout:90000});
+ const empty=await bounded(page.evaluate(async()=>{
+   const a=window.firebase.auth();let unsub=null,timer;
+   try{return await new Promise((resolve,reject)=>{timer=setTimeout(()=>reject(Error('AUTH_INITIAL_STATE_TIMEOUT')),30000);unsub=a.onAuthStateChanged(u=>resolve(u===null),reject);});}
+   finally{clearTimeout(timer);if(unsub)unsub();}
+ }),35000,'INITIAL_AUTH_STATE_TIMEOUT');
+ check(empty===true,'NEW_CONTEXT_NOT_EMPTY');
+ const token=await bounded(auth.createCustomToken(m.id),15000,'EXISTING_IDENTITY_TOKEN_TIMEOUT');
+ await bounded(page.evaluate(async t=>{const a=window.firebase.auth();await a.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);await a.signInWithCustomToken(t);},token),45000,'EXISTING_IDENTITY_SIGNIN_TIMEOUT');
+ await page.goto('about:blank');
+ await page.goto(url+'&signed='+Date.now(),{waitUntil:'domcontentloaded',timeout:90000});
+ await page.waitForFunction(id=>window.firebase?.auth?.().currentUser?.uid===id,m.id,{timeout:90000});
+ await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
+ await bounded(page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();}),45000,'APPLICATION_AUTH_TIMEOUT');
+ await page.waitForFunction(input=>{
+   const c=window.CX?.backendAuth?.context?.()||{},g=window.CX_C6_HR_AUTHORITY_GATE||{};
+   const role=String(c.role||'').toLowerCase(),rev=String(window.CX?.data?.previewMeta?.sourceRevision||'');
+   return c.authenticated===true&&window.firebase?.auth?.().currentUser?.uid===input.uid&&
+     c.tenantId==='tya'&&c.authNamespace===(input.role==='admin'?'staff':'shopper')&&
+     (input.role==='admin'?['admin','super'].includes(role):role==='shopper'&&c.shopperId===input.shopperId&&Array.isArray(c.projectIds)&&c.projectIds.includes('cinepolis'))&&
+     window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&g.blocked!==true&&/^[0-9a-f]{64}$/.test(rev);
+ },{uid:m.id,role,shopperId:role==='shopper'?D07.shopperId:null},{timeout:45000});
+ const observed=await bounded(page.evaluate(()=>{const c=window.CX.backendAuth.context();return {uid:window.firebase.auth().currentUser.uid,role:c.role,tenantId:c.tenantId,authNamespace:c.authNamespace,shopperId:c.shopperId||null,revision:String(window.CX.data.previewMeta.sourceRevision||'')};}),10000,'AUTH_SCOPE_READ_TIMEOUT');
+ check(observed.uid===m.id&&observed.tenantId==='tya'&&observed.revision===HR,'AUTH_OR_HR_REVISION_MISMATCH');
+ if(res.hrRevisionLive)check(res.hrRevisionLive===observed.revision,'TWO_ROLE_HR_REVISION_MISMATCH');
+ else res.hrRevisionLive=observed.revision;
+ const sessionBoundary={newBrowserContext:true,authNullBeforeSignIn:true,role:observed.role,tenantId:observed.tenantId,
+  authNamespace:observed.authNamespace,uidFingerprint:uidFingerprint(m.id),
+  shopperId:role==='shopper'?D07.shopperId:null,applicationAuthAndHrGatePassed:true,hrRevision:observed.revision,
+  mechanism:'existing_ci_custom_token_in_memory',ordinaryPasswordLoginProven:false,tokenLogged:false};
+ return {ctx,page,guard,sessionBoundary};
+}
+async function selectD07UiScope(page){
+ const current=await bounded(page.evaluate(()=>({project:String(window.CX?.data?.currentProjectId||''),period:String(window.CX?.data?.currentPeriodId||'')})),10000,'INITIAL_UI_SCOPE_TIMEOUT');
+ if(current.project!==D07.projectId){
+   await page.locator('#projSel').waitFor({state:'visible',timeout:15000});
+   check(await page.locator('#projSel option[value="cinepolis"]').count()===1,'PROJECT_OPTION_UNAVAILABLE');
+   await page.locator('#projSel').selectOption(D07.projectId,{timeout:15000});
+ }
+ await page.waitForFunction(()=>String(window.CX?.data?.currentProjectId||'')==='cinepolis',null,{timeout:30000});
+ const period=await bounded(page.evaluate(()=>String(window.CX?.data?.currentPeriodId||'')),10000,'PERIOD_READ_TIMEOUT');
+ if(period!==D07.periodId){
+   await page.locator('#periodSel').waitFor({state:'visible',timeout:15000});
+   check(await page.locator('#periodSel option[value="cinepolis-2026-10"]').count()===1,'OCTOBER_OPTION_UNAVAILABLE');
+   await page.locator('#periodSel').selectOption(D07.periodId,{timeout:15000});
+ }
+ await page.waitForFunction(()=>String(window.CX?.data?.currentProjectId||'')==='cinepolis'&&String(window.CX?.data?.currentPeriodId||'')==='cinepolis-2026-10',null,{timeout:30000});
+ await bounded(page.evaluate(()=>window.CX.router.nav('documentos',{history:false})),15000,'CATALOG_NAVIGATION_TIMEOUT');
+}
+const d07Contexts=[];
+async function runD07ReadOnly(){
+ res.version='cxorbia.i3.d07.admin-shopper-readonly.v1';res.mode='R6D07_READ_ONLY';
+ res.scope={tenant:'tya',project:'cinepolis',period:'cinepolis-2026-10',taskIds:['D07'],roles:['admin','shopper'],testRunOnly:true};
+ res.c02={executed:false,commandCount:0};res.d04={executed:false,fixtureSeeds:0,contentEdits:0,fixtureDeletes:0};
+ res.e04={executed:false};res.d07={decision:'HOLD_D07_REAL_PDF_READ_ONLY_CLAUSE',fullTaskClosed:false};
+ res.writes={auth:0,hr:0,resource:0,financeCommands:0,production:0};
+ res.bindingDiagnostics=[];res.cleanup={resourceCleanupPerformed:false,browserClosed:false};res.contextGuardsPass=false;
+ let binding,adminSession,shopperSession;
+ try{
+  const exactAdmin=await bounded(exactSessionProofAdmin(),15000,'ADMIN_IDENTITY_READ_TIMEOUT');
+  const exactShopper=await resolveD07ExistingShopper({tenant,auth});
+  res.actor={admin:{uidFingerprint:uidFingerprint(exactAdmin.id),exactConfiguredUidVerified:true},
+   shopper:{uidFingerprint:exactShopper.uidFingerprint,shopperId:exactShopper.shopperId,existingIdentityVerified:true},
+   accountCreated:false,claimsChanged:false};
+  browser=await chromium.launch({headless:true});
+  adminSession=await sign(exactAdmin,'admin');res.sessions={admin:adminSession.sessionBoundary};
+  await selectD07UiScope(adminSession.page);
+  shopperSession=await sign(exactShopper,'shopper');res.sessions.shopper=shopperSession.sessionBoundary;
+  check(adminSession.ctx!==shopperSession.ctx,'ROLE_CONTEXT_REUSED');res.sessions.distinctContexts=true;
+  await selectD07UiScope(shopperSession.page);
+  binding=await bindD07BeforeReads({adminPage:adminSession.page,shopperPage:shopperSession.page,adminUid:exactAdmin.id,shopperUid:exactShopper.id,db,preflight:sessionPreflight,
+    onDiagnostic:safe=>{res.bindingDiagnostics.push(safe);record();}});
+  res.binding=binding.safe;
+  for(const entry of [{page:adminSession.page,role:'admin'},{page:shopperSession.page,role:'shopper'}]){
+    const button=entry.page.locator('button[data-doc="'+binding.id+'"]');
+    await button.waitFor({state:'visible',timeout:15000});check(await button.count()===1,'ROLE_VISIBLE_RESOURCE_NOT_UNIQUE');
+    if(entry.role==='shopper'){
+      check(await entry.page.locator('#docUp').count()===0,'SHOPPER_CREATE_CONTROL_VISIBLE');
+      check(await entry.page.locator('[data-editd],[data-deld]').count()===0,'SHOPPER_MUTATION_CONTROL_VISIBLE');
+    }
+  }
+  res.binding.bothRoleOpenButtonsVisible=true;
+  for(const entry of d07Contexts){
+    check(entry.guard.evidence.blockedWriteRequests===0&&entry.guard.evidence.blockedUnexpectedStorageReads===0&&entry.guard.evidence.storageGetsOutsideRoleGuard===0,'UNEXPECTED_REQUEST_BEFORE_BOUND_READ');
+    entry.guard.setBinding(binding);
+  }
+  const admin=await readD07RolePdf({page:adminSession.page,role:'admin',uid:exactAdmin.id,binding,outDir:OUT});
+  res.d07.admin=admin;record();
+  const shopper=await readD07RolePdf({page:shopperSession.page,role:'shopper',uid:exactShopper.id,binding,outDir:OUT});
+  res.d07.shopper=shopper;record();
+  res.d07=await finishD07ReadOnly({binding,admin,shopper});res.decision=res.d07.decision;
+ }catch(error){
+  if(error?.d07BindingDiagnostic)res.bindingDiagnostics.push(error.d07BindingDiagnostic);
+  res.decision='HOLD_D07_REAL_PDF_READ_ONLY_CLAUSE';
+  res.error={classification:'D07_READ_ONLY_UNPROVEN',code:/^D07_[A-Z0-9_]+$/.test(String(error?.message||''))?error.message:'D07_AUTH_UI_OR_PROVIDER_FAILURE'};
+  record();
+ }finally{
+  // Keep route guards installed until the browser is closed. No resource cleanup/write.
+  if(browser){
+    try{await bounded(browser.close(),20000,'BROWSER_CLOSE_TIMEOUT');res.cleanup.browserClosed=true;}
+    catch{res.cleanup.browserClosed=false;res.decision='HOLD_D07_BROWSER_CLEANUP';}
+  }else res.cleanup.browserClosed=true;
+  res.contextGuards=d07Contexts.map(x=>({role:x.role,...x.guard.evidence}));
+  res.contextGuardsPass=res.contextGuards.length===2&&res.contextGuards.every(x=>x.installedBeforeNavigation===true&&x.bindingSet===true&&x.blockedWriteRequests===0&&x.blockedUnexpectedStorageReads===0&&x.storageGetsOutsideRoleGuard===0);
+  if(!res.contextGuardsPass&&res.decision==='PASS_D07_ADMIN_SHOPPER_REAL_PDF_READ_ONLY_CLAUSE')res.decision='HOLD_D07_NETWORK_SCOPE_UNPROVEN';
+  record();
+ }
+ console.log(JSON.stringify({decision:res.decision,mode:res.mode,d07:res.d07,contextGuards:res.contextGuards,cleanup:res.cleanup,error:res.error||null,production:false}));
+ if(res.decision!=='PASS_D07_ADMIN_SHOPPER_REAL_PDF_READ_ONLY_CLAUSE')process.exitCode=1;
+}
+
+if(D07_READ_ONLY_MODE){
+ await runD07ReadOnly();
+}else{
 try{
  browser=await chromium.launch({headless:true});
  if(SESSION_PROOF_MODE){
@@ -911,3 +1370,4 @@ finally{
 console.log(JSON.stringify({decision:res.decision,c02:SESSION_PROOF_MODE?{independentApplicationSession:res.c02?.independentApplicationSession,durableUnchanged:res.c02?.durable?.unchanged}:undefined,d04:res.d04,e04:res.e04,cleanup:res.cleanup,error:res.error||null,production:false}));
 const expectedDecision=SESSION_PROOF_MODE?'PASS_C02_D04_INDEPENDENT_SESSIONS':'PASS_D04_E04_CONNECTED_DEV_QA_NO_HUMAN_APPROVAL';
 if(res.decision!==expectedDecision)process.exitCode=1;
+}
