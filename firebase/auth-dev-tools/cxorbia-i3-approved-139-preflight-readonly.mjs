@@ -169,6 +169,7 @@ async function livePreflight({db,auth,hr}){
     const aliases=new Set([...group.accounts].filter(id=>!group.hrs.has(id)));
     const code=group.hrs.size>1?'HOLD_MULTIPLE_HR_CANONICAL':keeperDecision(group,byMember,profiles,authByUid);
     let status=code;
+    const operationalCounts=Object.fromEntries(domain.map(d=>[d.name,d.rows.filter(row=>countOwners(row,aliases)).length]));
     if(status==='KEEPER_VERIFIED'){
       if([...aliases].some(id=>{const target=val(cross.get(id)?.shopperId||cross.get(id)?.canonicalShopperId);return target&&target!==id;}))status='HOLD_ALIAS_CROSSWALK_ALREADY_CHANGED';
       if(links.some(link=>{
@@ -176,16 +177,21 @@ async function livePreflight({db,auth,hr}){
         return ['active','confirmed','approved','materialized'].includes(val(link.status||link.state).toLowerCase())&&
           tokens.some(t=>aliases.has(t))&&!group.hrs.has(val(link.canonicalShopperId));
       }))status='HOLD_PRIOR_TRUSTED_LINK_CONFLICT';
-      if(domain.find(d=>d.name==='visits').rows.some(row=>countOwners(row,aliases)))status='HOLD_ALIAS_OWNED_VISITS';
-      if(domain.reduce((sum,d)=>sum+d.rows.filter(row=>countOwners(row,aliases)).length,0)>70)status='HOLD_DOMAIN_WRITE_BUDGET';
+      if(operationalCounts.visits>0)status='HOLD_ALIAS_OWNED_VISITS';
+      if(Object.values(operationalCounts).reduce((sum,n)=>sum+n,0)>70)status='HOLD_DOMAIN_WRITE_BUDGET';
     }
-    results.push({caseCount:group.cases.length,hrCount:group.hrs.size,technicalCount:group.accounts.size,
-      country:[...group.countries][0],status});
+    results.push({caseCodes:[...group.cases].sort(),caseCount:group.cases.length,
+      hrCount:group.hrs.size,technicalCount:group.accounts.size,country:[...group.countries][0],
+      aliasOwnedVisits:operationalCounts.visits,aliasOwnedOtherDomainRows:
+        Object.entries(operationalCounts).filter(([key])=>key!=='visits').reduce((sum,[,n])=>sum+n,0),status});
   }
   return {groups:groups.length,strongCases:66,weakCases:73,hrWithSeveralSourceRecords:results.filter(x=>x.hrCount>1).length,
     singleHrGroups:results.filter(x=>x.hrCount===1).length,
     byStatus:Object.fromEntries([...results.reduce((map,x)=>(map.set(x.status,(map.get(x.status)||0)+1),map),new Map())].sort()),
     byCountry:Object.fromEntries(['GT','HN'].map(c=>[c,results.filter(x=>x.country===c).length])),
+    // Case labels alone allow private follow-up against Paula's workbook without
+    // leaking personal names, logins, source IDs, phones, or authentication UIDs.
+    groupStatuses:results.sort((a,b)=>a.caseCodes[0].localeCompare(b.caseCodes[0])),
     approvedWorkbookPairDigest:EXPECTED_PAIR_DIGEST,readOnly:true};
 }
 

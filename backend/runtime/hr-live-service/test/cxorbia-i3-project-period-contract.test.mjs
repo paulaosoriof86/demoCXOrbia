@@ -79,7 +79,7 @@ test('I3 Shopper HR boot never requires an exact Firestore profile before consul
   assert.match(backend,/emit\('backend-ready',[\s\S]*empty:true[\s\S]*counts:counts/);
   assert.match(bridge,/const user=window\.firebase\?\.auth\?\.\(\)\.currentUser;return c\.authenticated===true&&!!user/);
   assert.doesNotMatch(bridge,/arr\(CX\.data\.shoppers\)\.some\(x=>str\(x\?\.id\|\|x\?\.shopperId\)===sid\)/);
-  assert.match(bridge,/sessionProfile\(state,c,result\)/);
+  assert.match(bridge,/sessionProfile\(projectedState,c,result,hr\.shoppers\)/);
   assert.match(bridge,/arr\(result\?\.shoppers\)/);
   assert.match(bridge,/result\?\.identityMap/);
 });
