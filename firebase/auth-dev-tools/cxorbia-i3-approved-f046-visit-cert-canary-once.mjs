@@ -203,6 +203,12 @@ try{
     findProfileByFp(profiles,CANON_FP),findProfileByFp(profiles,ALIAS_FP),liveHr()]);
   const canonical=canonicalDoc.id,alias=aliasDoc.id,hrMatches=hr.shoppers.filter(row=>sid(row)===canonical),
     hrAliasMatches=hr.shoppers.filter(row=>sid(row)===alias),cp=canonicalDoc.data()||{},ap=aliasDoc.data()||{};
+  result.identityAuthorityPreflight={exactCanonicalHrMatches:hrMatches.length,
+    exactAliasHrMatches:hrAliasMatches.length,canonicalSourceIsHr:val(cp.sourceType)==='hr_external',
+    aliasSourceTypePlatform:val(ap.sourceType)!=='hr_external',
+    currentHrShopperRows:hr.shoppers.length,
+    canonicalFingerprintMatched:fp('sid',canonical)===CANON_FP,
+    aliasFingerprintMatched:fp('sid',alias)===ALIAS_FP};save();
   assert(canonical!==alias&&hrMatches.length===1&&hrAliasMatches.length===0,'F046_HR_IDENTITIES_DRIFT');
   result.sourceConsistency={
     canonicalProfileSourceTypeExternal:val(cp.sourceType)==='hr_external',
