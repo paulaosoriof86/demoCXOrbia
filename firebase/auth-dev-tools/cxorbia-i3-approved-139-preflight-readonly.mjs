@@ -12,7 +12,10 @@ import {getFirestore} from 'firebase-admin/firestore';
 import ShopperCredentialRule from '../../app/core/shopper-credential-rule.js';
 
 const PROJECT='cxorbia-backend-dev',TENANT='tya',PROGRAM='cinepolis';
-const HR_URL='https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live?format=json';
+// The plain HR representation deliberately masks shopper display names.
+// Compare against the app's source-safe, display-name-only DEV operational
+// view; require its explicit authority bit or fail closed before adjudication.
+const HR_URL='https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live?format=json&view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV';
 const EXPECTED_REV='4fc8def718fd1504f5d76a1fbc80b6901cbf711ec2b89f4dfc3a81ecbbca517a';
 const EXPECTED_PAIR_DIGEST='ac3e15184316d62aa53942359e857f2c34dec486a2ca41057e529a39f062d872';
 const AUTHORIZATION='PAULA_CONFIRMED_2026_10_28_139_EXACT_COHORT_PAIRS_READONLY_PREFLIGHT';
@@ -41,6 +44,8 @@ async function readCurrentHr(){
   const body=await response.json(),snapshot=body.snapshot||body.data||body;
   const revision=val(body.revision||body._runtime?.revision||snapshot.sourceRevision);
   assert(revision===EXPECTED_REV,'HR_SOURCE_REVISION_DRIFT');
+  assert(body._runtime?.operationalView===true&&snapshot.operationalIdentityPreview===true,
+    'HR_OPERATIONAL_DISPLAY_IDENTITY_VIEW_NOT_PROVEN');
   assert(arr(snapshot.shoppers).length>0&&arr(snapshot.visits).length>0,'HR_EMPTY');
   return {shoppers:snapshot.shoppers,visits:snapshot.visits,revision,
     currentPeriodId:val(snapshot.currentPeriodId||snapshot.currentPeriodKey),
