@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "6839a6693da7002712bca1ccabdbe1e9d461725c",
-  "productTree": "5f1860868ba09f1700b7b396a314b36fbe52d40f",
+  "productSourceSha": "308c69e3756e3e80577856009901934ce5f52fba",
+  "productTree": "1494670df647dba402bd052cd4783da9ff933cc5",
   "i3P0CountryScope20261028": {
     "sourceSha": "db56b89a1221d26f5cc4466585cda7eaa7360ddd",
     "sourceTree": "7b157bdf187ed712256eacfe86c1ff016b40c44e",
@@ -712,9 +712,9 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V190.json",
-    "gitBlob": "52e3b6077385dd53ae99346bb71d0837dd23a896",
-    "sourceSha": "6839a6693da7002712bca1ccabdbe1e9d461725c",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V191.json",
+    "gitBlob": "56ac3f887cfeef627dd3f067c2afa72a095e28c4",
+    "sourceSha": "308c69e3756e3e80577856009901934ce5f52fba",
     "allModulesMatch": false,
     "phaseAComplete": false
   },
@@ -2749,9 +2749,9 @@
     "gitBlob": "879313bfbced75baa8d764d9678f5efcc489c944"
   },
   "activeShockModuleTruth": {
-    "sourceSha": "6839a6693da7002712bca1ccabdbe1e9d461725c",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V190.json",
-    "matrixBlob": "52e3b6077385dd53ae99346bb71d0837dd23a896",
+    "sourceSha": "308c69e3756e3e80577856009901934ce5f52fba",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V191.json",
+    "matrixBlob": "56ac3f887cfeef627dd3f067c2afa72a095e28c4",
     "classificationCounts": {
       "COMPOSED_NOT_DEPLOYED": 2,
       "MATCH": 5,
@@ -2827,6 +2827,22 @@
     "ledgerBlob": "79b44e18ad4b2884710cacb0d90dcf210d4c0d39",
     "expectedControlParentSha": "2bcd69ee45b24ed96899cf8932cac6a30c309b16",
     "blockedFunctionalClaims": true,
+    "production": "DO_NOT_TOUCH"
+  },
+  "i3GeneralShopperIdentityGuard20261028": {
+    "findingId": "VRM-291",
+    "state": "SOURCE_QA_49_PASS_DEV_NOT_DEPLOYED",
+    "sourceSha": "308c69e3756e3e80577856009901934ce5f52fba",
+    "sourceTree": "1494670df647dba402bd052cd4783da9ff933cc5",
+    "sourceProviderBlob": "6e8b5ee440e2f82dda02359772560ecc982e9f5b",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261028-V191.json",
+    "matrixBlob": "56ac3f887cfeef627dd3f067c2afa72a095e28c4",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V523_2026-10-28.json",
+    "ledgerBlob": "0aab77fd4de70744c951fa096e7d5bc1ad7a8022",
+    "readOnlyCohortRunId": 40791193873,
+    "activeMembershipsAudited": 380,
+    "corroboratedCasesForHumanReview": 66,
+    "automaticMerges": 0,
     "production": "DO_NOT_TOUCH"
   }
 }
