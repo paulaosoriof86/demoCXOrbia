@@ -242,23 +242,44 @@ CX.app = {
       };
       ov.querySelector('#rgFirst').addEventListener('input',upd);
       ov.querySelector('#rgLast').addEventListener('input',upd);
-      ov.querySelector('#rgSave').addEventListener('click',()=>{
+      ov.querySelector('#rgSave').addEventListener('click',async()=>{
+        const btn=ov.querySelector('#rgSave');
+        if(btn.disabled)return;
         const first=(ov.querySelector('#rgFirst').value||'').trim();
         const last =(ov.querySelector('#rgLast').value||'').trim();
         const wa   =(ov.querySelector('#rgWa').value||'').trim();
         if(!first||!last||!wa){ CX.ui.toast('Completa nombre, apellido y WhatsApp','err'); return; }
         const geo=CX.geo.read(ov, ids);
         if(!geo.pais||!geo.municipio||!geo.ciudad){ CX.ui.toast('Completa país, municipio y ciudad','err'); return; }
-        const s=CX.data.addShopper({
-          via:'registro', estado:'Pendiente',
-          firstName:first, lastName:last, whatsapp:wa,
-          pais:geo.pais, country:geo.pais, depto:geo.depto, municipio:geo.municipio, ciudad:geo.ciudad,
-          email:(ov.querySelector('#rgMail').value||'').trim(),
-          edad:(ov.querySelector('#rgEdad').value||'').trim(),
-          sexo:ov.querySelector('#rgSexo').value||'',
-        });
-        close();
-        this.afterRegister(s);
+        btn.disabled=true;btn.textContent='Verificando registro…';
+        try{
+          const created=await CX.data.addShopper({
+            via:'registro', estado:'Pendiente',
+            firstName:first, lastName:last, whatsapp:wa,
+            pais:geo.pais, country:geo.pais, depto:geo.depto, municipio:geo.municipio, ciudad:geo.ciudad,
+            email:(ov.querySelector('#rgMail').value||'').trim(),
+            edad:(ov.querySelector('#rgEdad').value||'').trim(),
+            sexo:ov.querySelector('#rgSexo').value||'',
+            __commandMeta:{ackAware:true,reason:'shopper-registration-provider-confirmation'},
+          });
+          const shopperId=String(created?.entityId||'').trim();
+          const confirmed=created?.ok===true&&created?.status==='committed'&&created?.providerAck===true&&created?.successUiAllowed===true&&created?.commandType==='shopper.create'&&shopperId;
+          if(!confirmed){
+            const mayAlreadyExist=created?.code==='SHOPPER_CREATE_EXISTING_IDENTITY_REVIEW_REQUIRED';
+            CX.ui.toast(mayAlreadyExist
+              ?'Encontramos un posible expediente existente. El equipo administrador debe confirmar tu identidad; no se creó otra cuenta.'
+              :'Tu registro no fue confirmado. Contacta al equipo de Operaciones para verificar tu acceso.',mayAlreadyExist?'warn':'err',6200);
+            return;
+          }
+          const profile=CX.data.getShopper?.(shopperId)||{};
+          const credential=window.CX_SHOPPER_CREDENTIAL_RULE?.shopperCredentialRule?.({firstName:first,lastName:last,nombre:first+' '+last});
+          close();
+          this.afterRegister({id:shopperId,firstName:profile.firstName||first,user:profile.user||profile.visibleLogin||(credential?.ok?credential.login:CX.CREDS.user(first,last))});
+        }catch(_){
+          CX.ui.toast('No se pudo confirmar tu registro. Conservamos los datos del formulario para que puedas intentarlo de nuevo.','err',6200);
+        }finally{
+          btn.disabled=false;btn.textContent='Crear mi cuenta';
+        }
       });
     }});
   },

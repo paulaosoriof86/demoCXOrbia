@@ -212,7 +212,15 @@ function stableShopperId(command){
 // only a fail-closed *review* signal: matching names/phones never adjudicate,
 // migrate, disable, or merge identities. The protected source still owns identity.
 const normalizeHumanName=value=>str(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ');
-const normalizeIdentityPhone=value=>str(value).replace(/\D/g,'');
+const normalizeIdentityPhone=value=>{
+  const digits=str(value).replace(/\D/g,'');
+  // Formato internacional 00+E.164: sólo los cuatro países TyA con 8 dígitos
+  // nacionales. No recortar prefijos de teléfonos con longitudes desconocidas.
+  return /^00(?:502|503|504|505)\d{8}$/.test(digits)?digits.slice(2):digits;
+};
+const sameIdentityPhone=(a,b)=>a===b||
+  (a.length===8&&/^(?:502|503|504|505)\d{8}$/.test(b)&&a===b.slice(3))||
+  (b.length===8&&/^(?:502|503|504|505)\d{8}$/.test(a)&&b===a.slice(3));
 const normalizeIdentityCountry=value=>{
   const c=normalizeHumanName(value);
   return c==='guatemala'||c==='gt'?'GT':c==='honduras'||c==='hn'?'HN':c==='nicaragua'||c==='ni'?'NI':c==='el salvador'||c==='sv'?'SV':c.toUpperCase();
@@ -236,7 +244,7 @@ async function assertNoUnlinkedManualDuplicate({db,command,shopperId,profile}){
     const existingName=normalizeHumanName(existing.nombre||[existing.firstName,existing.lastName].filter(Boolean).join(' '));
     const existingDigits=normalizeIdentityPhone(existing.whatsapp||existing.phone||existing.telefono);
     const sameName=hasName&&existingName===humanName;
-    const samePhone=hasPhone&&existingDigits.length>=8&&existingDigits===digits;
+    const samePhone=hasPhone&&existingDigits.length>=8&&sameIdentityPhone(existingDigits,digits);
     if(sameName&&samePhone)throw new Error('SHOPPER_CREATE_EXISTING_IDENTITY_REVIEW_REQUIRED');
     if(sameName||samePhone){
       const error=new Error('SHOPPER_CREATE_POSSIBLE_IDENTITY_REVIEW_REQUIRED');
