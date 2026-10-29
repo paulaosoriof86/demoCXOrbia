@@ -12,22 +12,32 @@ CX.module('historico', ({data,ui})=>{
   let fEstado='sinActivo';
   /* projectId es el proyecto de negocio; periodId identifica la ronda. */
   const periodVisits=id=>data._visitas.filter(v=>data.recordPeriodId(v)===id);
+  const visitCountry=v=>String(v.pais||v.country||'').trim().toUpperCase();
+  const isRealized=v=>data.visitBucketFns?.realizadas?.(v)===true;
 
   const draw=()=>{
     const key=data.currentProgramKey();
     const programa=(data.programs().find(pg=>pg.key===key)||{}).name||'—';
     const periods=data.periodsForProgram(key);
     /* histórico = periodos NO activos (cerrados/archivados) + estadísticas por periodo */
+    const paisesAll=[...new Set(periods.flatMap(p=>periodVisits(p.id).map(visitCountry)).filter(Boolean))];
     const rows=periods.map(p=>{
-      const st=data.periodState(p.id); const s=data.periodStats(p.id);
-      const vs=periodVisits(p.id);
-      const paises=[...new Set(vs.map(v=>v.pais).filter(Boolean))];
+      const st=data.periodState(p.id);
+      const vs=periodVisits(p.id).filter(v=>fPais==='all'||visitCountry(v)===fPais);
+      /* El filtro de país modifica el universo de visitas, no sólo la etiqueta
+         del período. Conserva la estadística canónica del período completo
+         cuando se consultan todos los países. */
+      const s=fPais==='all'?data.periodStats(p.id):{
+        total:vs.length,
+        done:vs.filter(isRealized).length,
+        pct:vs.length?Math.round(vs.filter(isRealized).length/vs.length*100):0
+      };
+      const paises=[...new Set(vs.map(visitCountry).filter(Boolean))];
       const scored=vs.filter(v=>v.score!=null);
       const score=scored.length?Math.round(scored.reduce((a,v)=>a+v.score,0)/scored.length):null;
       return {p,st,...s,paises,score,pagadas:vs.filter(v=>{const vc=data.visitContract?data.visitContract(v):null;return vc&&vc.paymentState==='confirmado';}).length};
     });
-    const paisesAll=[...new Set(rows.flatMap(r=>r.paises))];
-    const filtered=rows.filter(r=>(fPais==='all'||r.paises.includes(fPais))&&(fEstado==='all'?true:fEstado==='sinActivo'?r.st!=='activo':r.st===fEstado));
+    const filtered=rows.filter(r=>(fPais==='all'||r.total>0)&&(fEstado==='all'?true:fEstado==='sinActivo'?r.st!=='activo':r.st===fEstado));
     const activo=data.currentPeriodId;
 
     host.innerHTML=`
@@ -83,7 +93,7 @@ CX.module('historico', ({data,ui})=>{
     host.querySelector('#hPpt').addEventListener('click',()=>{if(CX.reportKit.exportPPT(hSpec('pptx')))ui.toast('PowerPoint generado','ok');});
     host.querySelectorAll('.hVer').forEach(b=>b.addEventListener('click',()=>{
       const r=rows.find(x=>x.p.id===b.dataset.id); if(!r)return;
-      const vs=periodVisits(r.p.id);
+      const vs=periodVisits(r.p.id).filter(v=>fPais==='all'||visitCountry(v)===fPais);
       const porEstado={}; vs.forEach(v=>{porEstado[v.estado]=(porEstado[v.estado]||0)+1;});
       ui.modal('🗓️ '+(r.p.periodo||r.p.name)+' · '+r.st,`
         <div style="font-size:12.5px;line-height:1.9;color:var(--t2);margin-bottom:10px">
