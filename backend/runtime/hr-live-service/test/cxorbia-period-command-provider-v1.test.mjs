@@ -112,7 +112,8 @@ test('VRM-190 frontend requires provider ACK/readback before period success UI a
   assert.match(periods,/await Promise\.resolve\(data\.closePeriod/);
   assert.match(periods,/await Promise\.resolve\(data\.archivePeriod/);
   assert.match(periods,/await Promise\.resolve\(data\.reopenPeriod/);
-  assert.match(bridge,/__protectedPeriods=clone\(protectedState\?\.periods\|\|\[\]\)/);
+  // A05 now composes an immutable dataPatch before atomically publishing it.
+  assert.match(bridge,/__protectedPeriods:clone\(protectedState\?\.periods\|\|\[\]\)/);
   assert.match(server,/projectRef\.collection\('periods'\)/);
 });
 
