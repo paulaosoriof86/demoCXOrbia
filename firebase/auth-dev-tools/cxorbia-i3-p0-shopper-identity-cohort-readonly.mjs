@@ -11,6 +11,7 @@ import crypto from 'node:crypto';
 import {applicationDefault,getApps,initializeApp} from 'firebase-admin/app';
 import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
+import ShopperCredentialRule from '../../app/core/shopper-credential-rule.js';
 
 const PROJECT='cxorbia-backend-dev',TENANT='tya',PROGRAM='cinepolis';
 const SOURCE='https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live?format=json';
@@ -158,6 +159,43 @@ try{
     canonicalOwnerWithoutActiveAuth:corroborated.filter(r=>(directActiveCounts.get(r._candidateCanonicalId)||0)===0).length,
     noIdentityMergesAuthorizedFromSimilarity:true,authWrites:0,firestoreWrites:0
   };
+  // Preflight-only classification. The adjudicator retires every non-keeper Auth
+  // principal: a technical keeper preference is NOT a same-human confirmation.
+  // Do not include names, raw IDs, passwords, logins or telephone numbers here.
+  const memberById=new Map(members.map(m=>[val(m.shopperId),m]));
+  const hrAliasCounts=new Map(),keeperCounts={};
+  const inc=key=>{keeperCounts[key]=(keeperCounts[key]||0)+1;};
+  for(const row of corroborated){
+    const aliasId=row._shopperId,canonicalId=row._candidateCanonicalId;
+    hrAliasCounts.set(canonicalId,(hrAliasCounts.get(canonicalId)||0)+1);
+    const alias=memberById.get(aliasId),owner=memberById.get(canonicalId);
+    const aliasProfile=profiles.get(aliasId)||{},ownerProfile=profiles.get(canonicalId)||{};
+    if(!alias||!owner){inc('missingExactMembership');continue;}
+    const proof=m=>val(m?.credentialPasswordProofVersion)===ShopperCredentialRule.CREDENTIAL_PASSWORD_PROOF_VERSION;
+    const proofAlias=proof(alias)||proof(aliasProfile),proofOwner=proof(owner)||proof(ownerProfile);
+    inc(proofAlias&&proofOwner?'bothPasswordProof':proofAlias?'aliasOnlyPasswordProof':proofOwner?'ownerOnlyPasswordProof':'neitherPasswordProof');
+    const strong=[proofAlias?{type:'alias',m:alias,p:aliasProfile}:null,proofOwner?{type:'owner',m:owner,p:ownerProfile}:null].filter(Boolean);
+    const credential=ShopperCredentialRule.shopperCredentialRule(ownerProfile);
+    const desired=credential?.ok?val(credential.login).toLowerCase():'';
+    // Compare login internally; never emit the login or its proof metadata.
+    const canonicalLoginStrong=strong.filter(x=>desired&&val(x.m.visibleLogin||x.p.visibleLogin||x.p.username||x.p.user).toLowerCase()===desired);
+    const picked=strong.length===1?strong[0]:strong.length>1&&canonicalLoginStrong.length===1?canonicalLoginStrong[0]:null;
+    if(picked){inc('providerDeterministicKeeper');inc(picked.type==='owner'?'providerKeeperWouldBeHrOwner':'providerKeeperWouldBeAlias');}
+    else inc('providerKeeperAmbiguousWithoutAdminSelection');
+    if(row.candidateHistoryCount>0)inc('candidateWithHistoricalVisits');
+    else inc('candidateWithoutHistoricalVisits');
+  }
+  report.keeperPreflight={
+    schemaVersion:'cxorbia.i3.p0.shopper-keeper-preflight-readonly.v1',
+    corroboratedPairCount:corroborated.length,
+    distinctHrCanonicalTargets:hrAliasCounts.size,
+    hrCanonicalWithMultipleAliases:[...hrAliasCounts.values()].filter(n=>n>1).length,
+    ...keeperCounts,
+    actionPermitted:'NONE_READONLY',
+    humanConfirmationStillRequired:true,
+    autoDisableOrMergeAuthorized:false,
+    authWrites:0,firestoreWrites:0
+  };
   const buckets=new Map(),countries=new Map();
   for(const x of rows){buckets.set(x.category,(buckets.get(x.category)||0)+1);
     const key=x.profileCountry;countries.set(key,(countries.get(key)||0)+1);}
@@ -188,6 +226,7 @@ console.log(JSON.stringify({decision:report.decision,hrRevision:report.hrRevisio
   classification:report.classification,flaggedCount:report.flaggedCount,
   unlinkedWithUniqueNameAndPhoneCandidate:report.unlinkedWithUniqueNameAndPhoneCandidate,
   technicalIdentityEvidence:report.technicalIdentityEvidence,
+  keeperPreflight:report.keeperPreflight,
   unlinkedNameOnlyNotSafeToMerge:report.unlinkedNameOnlyNotSafeToMerge,
   production:false,writes:0,errorCode:report.errorCode||null}));
 if(report.decision!=='PASS_DEV_SHOPPER_IDENTITY_COHORT_READONLY')process.exitCode=2;
