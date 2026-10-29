@@ -39,12 +39,15 @@ save();
 let browser;
 
 async function liveHr(){
-  const r=await fetch(`${ROOT}/api/${TENANT}/${PROGRAM}/hr-live?format=json&f001=${Date.now()}`,{
+  const r=await fetch(`${ROOT}/api/${TENANT}/${PROGRAM}/hr-live?format=json`+
+    `&view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV&f001=${Date.now()}`,{
     headers:{'cache-control':'no-cache, no-store'},signal:AbortSignal.timeout(120000)});
   assert(r.ok,'HR_PROVIDER_HTTP_'+r.status);
   const body=await r.json(),data=body.snapshot||body.data||body;
   const rev=val(body.revision||body._runtime?.revision||data.sourceRevision);
   assert(rev===HR_REV,'HR_SOURCE_REVISION_DRIFT');
+  assert(body._runtime?.operationalView===true&&data.operationalIdentityPreview===true,
+    'HR_OPERATIONAL_NAME_VIEW_NOT_PROVEN');
   return {shoppers:arr(data.shoppers),visits:arr(data.visits),rev};
 }
 async function findProfileByFp(col,hash){
@@ -113,16 +116,32 @@ async function readShopperUi(browser,auth,uid,expectedCountry,hrVisitCount){
     await page.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&
       window.CX_PROTECTED_AUTH_HR_AUTHORITY?.role==='shopper',null,{timeout:120000});
     const data=await page.evaluate(()=>{const a=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{},d=window.CX?.data||{};
+      const visits=Array.isArray(d._visitas)?d._visitas:[],scopeId=String(d.currentPeriodId||''),
+        scopedCountry=String(a.shopperCountry||''),programKey=v=>{
+          try{return String(d.programKeyOfVisit?.(v)||d.programKey?.(v)||v?.rootProjectId||v?.projectId||'');}
+          catch{return String(v?.rootProjectId||v?.projectId||'');}
+        };
+      const projects=window.CX?.router?.resolveVisibleProjects?.('shopper')||[],
+        allowed=new Set(projects.map(p=>{try{return String(d.programKey(p));}catch{return String(p?.program||p?.projectId||'');}}));
+      const periodOf=v=>String(d.recordPeriodId?.(v)||v?.periodId||v?.periodKey||''),
+        available=v=>{const f=d.visitFacets?.(v);return f&&typeof f.available==='boolean'
+          ?f.available===true&&f.eligibilityBlocked!==true:String(v?.estado)==='disponible'&&!v?.shopperId;};
+      const current=visits.filter(v=>periodOf(v)===scopeId),inCountry=current.filter(v=>
+        String(v.pais||v.country||'')===scopedCountry),inProgram=inCountry.filter(v=>allowed.has(programKey(v)));
       return {ready:a.exactSessionShopperReady===true,country:a.shopperCountry||'',
         ownVisits:Number(a.ownVisits||0),periods:Number(a.authorizedPeriods||0),
         hrVisits:Number(a.hrVisits||0),sourceRevision:String(a.sourceRevision||''),
         profilePreserved:a.sessionProfilePreserved===true,
-        dataVisits:Array.isArray(d._visitas)?d._visitas.length:0};});
+        dataVisits:visits.length,marketplace:{currentPeriodId:scopeId,visibleProjectPeriods:projects.length,
+          scopeCountry:scopedCountry,sourceAvailableAll:visits.filter(available).length,
+          currentPeriodRows:current.length,currentPeriodAvailable:current.filter(available).length,
+          countryAvailable:inCountry.filter(available).length,
+          authorizedProgramRows:inProgram.length,authorizedProgramAvailable:inProgram.filter(available).length}};});
     assert(data.ready&&data.country===expectedCountry&&data.sourceRevision===HR_REV&&
       data.profilePreserved&&data.ownVisits===hrVisitCount,'F001_SHOPPER_UI_EXACT_HR_AUTHORITY_NOT_READY');
     return {ok:true,principalAuthenticated:true,country:data.country,ownVisits:data.ownVisits,
       authorizedPeriods:data.periods,hrVisits:data.hrVisits,dataVisits:data.dataVisits,
-      sourceRevisionVerified:true,rawCredentialNotPrinted:true};
+      marketplace:data.marketplace,sourceRevisionVerified:true,rawCredentialNotPrinted:true};
   }finally{await context.close();}
 }
 
