@@ -4,9 +4,9 @@ import {readFileSync} from 'node:fs';
 const source=readFileSync(new URL('../../app/modules/postulaciones.js',import.meta.url),'utf8');
 
 function groupMarkup(visits){
-  const begin=source.indexOf('  const assignmentGroupHTML=(()=>{');
+  const begin=source.indexOf('  const escapeAssignment=(value)=>');
   const end=source.indexOf('  const html=',begin);
-  assert.ok(begin>0 && end>begin,'assignment group helper is absent');
+  assert.ok(begin>0 && end>begin,'assignment grouping and escaping helpers are absent');
   const safe=x=>String(x??'—');
   const ui={bdg:(label)=>'<b>'+label+'</b>',empty:(_icon,msg)=>'<div>'+msg+'</div>'};
   const data={visitFacets:v=>({realized:!!v.realizada,scheduled:!!v.agendada})};

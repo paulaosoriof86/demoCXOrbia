@@ -581,13 +581,14 @@ test('HF-20261012-23 independent source, obligation, internal ledger and externa
   const blocked=classify({financialSourceStatus:'pending_or_review',moneda:'Q',total:null},['monto total']);
   assert.equal(blocked.sourceComplete,false);
   assert.equal(blocked.state,'Datos incompletos');
-  assert.equal(blocked.obligation,'Obligación no cuantificable aún');
+  assert.equal(blocked.obligation,'Importe pendiente de fuente');
   assert.equal(blocked.payment,'Sin pago confirmado');
   const pending=classify({financialSourceStatus:'pending_financial_source',moneda:'L',total:100},[]);
   assert.equal(pending.state,'Requiere conciliar');assert.equal(pending.paid,false);
+  assert.equal(pending.obligation,'Monto operativo conocido · pendiente validación financiera');
   const reconciled=classify({financialSourceStatus:'reconciled_exact',moneda:'Q',total:200,paymentState:'not_scheduled'},[]);
   assert.equal(reconciled.exact,true);assert.equal(reconciled.payment,'Sin pago confirmado');
-  assert.equal(reconciled.obligation,'Fuente apta · obligación por revisar');
+  assert.equal(reconciled.obligation,'Fuente conciliada · revisar pago');
   const platform=classify({financialSourceStatus:'reconciled_exact',moneda:'Q',total:200,paymentState:'platform_recorded_pending_external_reconciliation',paymentConfirmed:true},[]);
   assert.equal(platform.recorded,true);assert.equal(platform.paid,false);
   assert.equal(platform.payment,'Registro interno · falta confirmación externa');

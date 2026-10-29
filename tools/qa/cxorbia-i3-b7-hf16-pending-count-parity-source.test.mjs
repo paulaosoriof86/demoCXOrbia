@@ -64,9 +64,9 @@ test('HUMAN 2026-10-13: assigned visits expose approved quick actions, no single
 test('HUMAN 2026-10-13: shared contrast and type sizes are protected in actual source',()=>{
   const style=readFileSync('app/styles/theme.css','utf8');
   assert.match(style,/--t3:#53657e/);
-  assert.match(style,/\.tbl th\{[^\n]*font-size:12\.5px/);
-  assert.match(style,/\.lbl\{font-size:12\.5px/);
-  assert.match(style,/\.btn-sm\{[^\n]*font-size:13px/);
+  assert.match(style,/\.tbl th\{[^\n]*font-size:13px/);
+  assert.match(style,/\.lbl\{font-size:13px/);
+  assert.match(style,/\.btn-sm\{[^\n]*font-size:13\.5px/);
   assert.match(style,/\.poQuickActions/);
 });
 
