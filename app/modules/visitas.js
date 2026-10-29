@@ -69,10 +69,28 @@ CX.module('visitas', ({data,role,ui})=>{
     const periodIdOf=(v)=>data.recordPeriodId?data.recordPeriodId(v):(v.periodId||v.projectId);
     // La oferta operativa se limita a la revisión/periodo activo. El histórico multi-periodo
     // permanece en Mis Visitas; una fila vieja no reaparece por faltar fecha de submitido.
-    const scopePool=data._visitas.filter(v=>(!data.inScope||data.inScope(v.pais)) && allowedProgramKeys.has(progKeyOf(v)) && periodIdOf(v)===data.currentPeriodId);
+    const scopedProjectPool=data._visitas.filter(v=>(!data.inScope||data.inScope(v.pais)) && allowedProgramKeys.has(progKeyOf(v)));
+    const scopePool=scopedProjectPool.filter(v=>periodIdOf(v)===data.currentPeriodId);
     const list=(typeof data.availableVisits==='function')
       ? data.availableVisits(scopePool)
       : scopePool.filter(isAvailable);
+    // Las HR pueden tener filas 'disponibles' de otros periodos; no son postulables hoy.
+    // Diagnosticar sin ampliar la oferta, sin revelar otros países y sin modificar la HR.
+    const otherPeriodPool=scopedProjectPool.filter(v=>periodIdOf(v)!==data.currentPeriodId);
+    const historicalAvailable=(typeof data.availableVisits==='function'
+      ? data.availableVisits(otherPeriodPool)
+      : otherPeriodPool.filter(isAvailable)).length>0;
+    const countryScope=typeof data.scopePaises==='function'?data.scopePaises():null;
+    const pendingCountry=Array.isArray(countryScope)&&countryScope.length===0;
+    const emptyReason=pendingCountry
+      ? 'No pudimos confirmar el país de tu expediente. Administración u Operaciones debe revisar la identidad para habilitar las oportunidades correctas.'
+      : allowedProgramKeys.size===0
+        ? 'No hay proyectos activos autorizados para tu perfil. Consulta con Operaciones.'
+        : !data.currentPeriodId
+          ? 'Todavía no hay un período operativo seleccionado.'
+          : historicalAvailable
+            ? 'Existen visitas marcadas disponibles en otros períodos, pero no son postulables en el período activo. Tu histórico se conserva en Mis visitas.'
+            : 'No hay visitas postulables para tu país, proyectos autorizados y período activo.';
     const allProjects=[...new Map(list.map(v=>[progKeyOf(v),{key:progKeyOf(v),name:projName(v.projectId)}])).values()];
     const escEmoji=(s)=>{const t=(s||'').toLowerCase();
       if(t.includes('fin de semana')||t.includes('estreno'))return '🎉';
@@ -108,8 +126,9 @@ CX.module('visitas', ({data,role,ui})=>{
         <select class="sel" id="fEsc" style="width:auto"><option value="">🎯 Todo escenario</option>${[...new Set(list.map(v=>v.escenario))].map(s=>`<option>${s}</option>`).join('')}</select>
         <select class="sel" id="fCanal" style="width:auto"><option value="">📲 Todo canal</option>${[...new Set(list.map(v=>v.canal).filter(Boolean))].map(s=>`<option>${s}</option>`).join('')}</select>
       </div>
-      ${ui.aiBox('Ahora ves la oferta de <b>todos los proyectos</b> a la vez. Filtra por proyecto, quincena, escenario o canal. Las visitas se derivan de cada hoja de ruta (online, importada o creada en la plataforma).','Toda la oferta ✨')}
-      <div id="vList" style="margin-top:14px">${list.length?`<div class="grid g3">${list.map(card).join('')}</div>`:ui.empty('🔍','Sin visitas disponibles')}</div>`;
+      ${ui.aiBox('Se muestran las visitas postulables del <b>período activo</b> para tu país y proyectos autorizados. La hoja de ruta también conserva visitas de otros períodos y países, que no se ofrecen aquí.','Oferta del período ✨')}
+      <div id="vList" style="margin-top:14px">${list.length?`<div class="grid g3">${list.map(card).join('')}</div>`:ui.empty('🔍','Sin visitas disponibles')}</div>
+      ${list.length?'':`<div id="cx-available-empty-reason" role="status" style="font-size:12px;line-height:1.55;color:var(--t2);margin-top:9px;padding:10px 13px;background:rgba(100,116,139,.07);border-radius:9px">${emptyReason}</div>`}`;
     /* P0-3 (V160): resolver el periodo/proyecto REAL de la visita en vez de caer al proyecto
        actualmente seleccionado. Prioridad: 1) v.periodId exacto; 2) v.projectId exacto (id de
        periodo); 3) programKey de la visita + periodo activo/compatible de ESE programa;
