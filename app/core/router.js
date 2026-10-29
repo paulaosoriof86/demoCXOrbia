@@ -10,6 +10,29 @@ CX.router = {
   navRole(role){ role=role||CX.session.role; return (CX.NAV[role]?role:'admin'); },
   navGroups(role){ return CX.NAV[this.navRole(role)]||CX.NAV.admin||[]; },
 
+  /* I3 P0 — actionable, read-only identity review alert for protected staff.
+     The underlying source/technical ID remains authoritative. This never
+     equates or merges people by a lowercased/accent-free display name. */
+  pendingShopperIdentityReviewCount(role){
+    const auth=CX.backendAuth?.context?.()||{};
+    const staff=['super','admin','ops','operaciones'].includes(String(auth.role||'').toLowerCase());
+    if(!staff||auth.authenticated!==true||auth.authNamespace!=='staff'||role==='shopper'||role==='cliente')return 0;
+    const rows=Array.isArray(CX.data?.__identityReviewQueue)?CX.data.__identityReviewQueue:[],
+      currentProject=String(CX.data?.currentProjectId||'').trim(),unique=new Set();
+    for(const item of rows){
+      if(!item||['resolved','resolved_merged','resolved_distinct','superseded','closed'].includes(String(item.status||'active').toLowerCase()))continue;
+      const scope=String(item.projectScope||item.projectId||'').trim();
+      if(scope&&scope!=='*'&&scope!=='tenant'&&currentProject&&scope!==currentProject)continue;
+      const ids=[item.shopperId,item.sourceShopperId,item.canonicalShopperId,item.liveShopperId,
+        ...(Array.isArray(item.shopperIds)?item.shopperIds:[]),
+        ...(Array.isArray(item.candidateShopperIds)?item.candidateShopperIds:[]),
+        ...(Array.isArray(item.candidates)?item.candidates:[])].map(x=>String(x||'').trim()).filter(Boolean);
+      const key=[...new Set(ids)].sort().join('|')||String(item.reviewId||item.id||'').trim();
+      if(key)unique.add(key);
+    }
+    return unique.size;
+  },
+
   mount(){
     const role=CX.session.role;
     document.body.classList.toggle('role-shopper',role==='shopper');
@@ -198,12 +221,21 @@ CX.router = {
     const _ctx = CX.data.ctx ? CX.data.ctx() : null;
     const _ctxTip = _ctx ? ` · tenant: ${_ctx.tenantId||'—'}${_ctx.countryScope?(' · alcance: '+_ctx.countryScope.join('/')):''}` : '';
     if(CX.session?.hasTechAccess?.()===true) projBlock += `<div class="rail-src" title="Trazabilidad de fuente${_src.mode?(' · '+_src.mode):''}${_ctxTip}" style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:10px;color:var(--t3)"><span style="width:7px;height:7px;border-radius:50%;background:${_src.c}"></span>Fuente: ${_src.t}</div>`;
+    const identityReviewCount=this.pendingShopperIdentityReviewCount(role);
+    if(identityReviewCount){
+      const canOpen=!!CX.moduleEnabled?.('shoppers')&&!!CX.roleCanAccess?.(CX.session.testRole||role,'shoppers')&&
+        !!CX.moduleVisibleForProfile?.('shoppers',role);
+      projBlock += `<button type="button" id="cxIdentityReviewAlert" aria-label="Revisar ${identityReviewCount} identidades pendientes" ${canOpen?'':'disabled'}
+        style="display:block;width:100%;margin-top:9px;padding:10px;border:1px solid #e5a23d;border-radius:9px;background:#fff2da;color:#6e4416;text-align:left;font-size:11px;line-height:1.4;cursor:${canOpen?'pointer':'default'}">
+        ⚠️ <b>${identityReviewCount} identidad(es) por confirmar</b><span style="display:block">¿Son la misma persona? Revisa la evidencia antes de vincular, fusionar o mantener separadas.</span></button>`;
+    }
 
     const collapsed = (()=>{try{return JSON.parse(localStorage.getItem('cx_rail_col')||'{}')}catch(e){return {};}})();
     const nav=this.navGroups(role).map(group=>{
       const items=group.items.filter(id=>CX.moduleEnabled(id)&&CX.roleCanAccess(CX.session.testRole||role,id)&&CX.moduleVisibleForProfile(id,role)).map(id=>{
         const m=CX.MODULES[id]; if(!m)return '';
-        const badge = (m.badge && role==='admin') ? `<span class="n-badge">${d.kpis().postPend||''}</span>`
+        const badge = id==='shoppers'&&identityReviewCount ? `<span class="n-badge" aria-label="${identityReviewCount} identidades por revisar">${identityReviewCount}</span>`
+          : (m.badge && role==='admin') ? `<span class="n-badge">${d.kpis().postPend||''}</span>`
           : (m.badgeNotif && CX.notif && CX.notif.unread(role)) ? `<span class="n-badge">${CX.notif.unread(role)}</span>` : '';
         const soon  = m.status==='soon' ? `<span class="n-soon">pronto</span>` : '';
         const lbl = typeof m.label==='function' ? m.label(role) : m.label;
@@ -259,6 +291,7 @@ CX.router = {
       n.addEventListener('click',()=>this.nav(n.dataset.id));
       n.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); this.nav(n.dataset.id); } });
     });
+    rail.querySelector('#cxIdentityReviewAlert')?.addEventListener('click',()=>this.nav('shoppers'));
     rail.querySelector('#cxEnterClientPreview')?.addEventListener('click',()=>CX.backendAuth?.enterClientPreview?.());
     rail.querySelector('#cxLeaveClientPreview')?.addEventListener('click',()=>CX.backendAuth?.leaveClientPreview?.());
     /* logo del cliente en topbar blanco */
