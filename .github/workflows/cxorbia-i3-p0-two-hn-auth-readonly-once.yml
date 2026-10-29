@@ -92,3 +92,52 @@ jobs:
           path: .tmp/i3-shopper-identity-cohort/
           if-no-files-found: warn
           retention-days: 30
+
+  i3-p0-general-shopper-source-qa:
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-GENERAL-SHOPPER-SOURCE-QA-ONCE' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Exact G03 source authority and no DEV writes
+        run: |
+          set -Eeuo pipefail
+          test "${GITHUB_REF_NAME}" = 'recovery/cxorbia-phase-a-20260831'
+          test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
+          test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
+          SOURCE="$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          TREE="$(jq -r '.productTreeAuthority' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          test "$SOURCE" = '308c69e3756e3e80577856009901934ce5f52fba'
+          test "$(git rev-parse "$SOURCE^{tree}")" = "$TREE"
+          git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules \
+            ':(exclude)backend/runtime/hr-live-service/test/**'
+          node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
+          node --check backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
+      - name: Focused protected identity provider and shopper regressions
+        run: |
+          set -Eeuo pipefail
+          mkdir -p .tmp/i3-general-shopper-source-qa
+          node backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs \
+            | tee .tmp/i3-general-shopper-source-qa/provider-tests.log
+          grep -F 'ℹ tests 49' .tmp/i3-general-shopper-source-qa/provider-tests.log
+          grep -F 'ℹ fail 0' .tmp/i3-general-shopper-source-qa/provider-tests.log
+          node --test \
+            backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs \
+            tools/qa/cxorbia-i3-vrm185-global-identity-consolidation-plan.test.mjs \
+            tools/qa/cxorbia-i3-p0-hn-shopper-country-source.test.mjs \
+            | tee .tmp/i3-general-shopper-source-qa/related-regressions.log
+          grep -F 'ℹ fail 0' .tmp/i3-general-shopper-source-qa/related-regressions.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-general-shopper-source-qa-${{ github.run_id }}
+          path: .tmp/i3-general-shopper-source-qa/
+          if-no-files-found: warn
+          retention-days: 30
