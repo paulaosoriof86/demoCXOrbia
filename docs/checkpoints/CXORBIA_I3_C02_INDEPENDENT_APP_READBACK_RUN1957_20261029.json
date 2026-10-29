@@ -1,0 +1,149 @@
+{
+  "schemaVersion": "cxorbia.i3.c02.independent-app-readback-adjudication.v1",
+  "id": "CXORBIA-I3-C02-INDEPENDENT-APP-READBACK-RUN1957-20261029",
+  "asOf": "2026-10-29",
+  "decision": "PASS_C02_INDEPENDENT_APP_READBACK",
+  "scope": "ONE_C02_ACCEPTANCE_CLAUSE_ONLY",
+  "taskId": "C02",
+  "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+  "sourceTree": "be0ad639a652439200ef4043bb08d5d4b709f266",
+  "production": false,
+  "fullTaskClosed": false,
+  "i3": "HOLD",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false,
+  "meaning": "The original reconciled visit is correctly visible in the first isolated CI browser context of RUN1957, authenticated from empty state and independent of the original human Chrome session. The combined runner remains HOLD after a later D04 observation failure.",
+  "execution": {
+    "runId": 40968841388,
+    "runNumber": 1957,
+    "jobId": 123780749427,
+    "controlSha": "499a09f1657920eca0d285854d6a87efe414d511",
+    "combinedDecision": "HOLD",
+    "artifactId": 12939112176,
+    "artifactZipSha256": "f42043b349384943e3f99324118b0f279ea258079b2891299976858292d10f45",
+    "authorityJob": "SUCCESS",
+    "sourceProofJob": "SUCCESS",
+    "livePreflight": "PASS_C02_D04_EXISTING_PREVIEW_PREFLIGHT"
+  },
+  "preview": {
+    "origin": "https://cxorbia-backend-dev--i3-recovery-1029-40901257714-yxqv51l2.web.app",
+    "runId": 40901257714,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/8f3502960bcb878e",
+    "runtimeRevision": "cxorbia-live-hr-dev-00330-fim",
+    "runtimeDigest": "sha256:bba5ebbf19c203954ec0be6c2c3ef01a057e7ce3f98fb7e5eeac2d889bd0a500"
+  },
+  "hrRevision": "6fd4beb82cc85e61c26f54992fc60fd28d49f9b1c832654dba6fd3204571bcbf",
+  "session": {
+    "independentOfOriginalHumanChrome": true,
+    "provenSession": "sessions.first",
+    "newBrowserContext": true,
+    "authNullBeforeSignIn": true,
+    "expectedActorUid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+    "mechanism": "existing_ci_custom_token_in_memory",
+    "ordinaryPasswordLoginProven": false,
+    "tokenLogged": false,
+    "principal": {
+      "uid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+      "role": "admin",
+      "tenantId": "tya",
+      "authNamespace": "staff"
+    },
+    "authenticatedActorUid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+    "applicationAuthAndHrGatePassed": true,
+    "secondCiContextExecuted": false
+  },
+  "priorReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_C02_DURABLE_RECEIPT_READBACK_20261029.json",
+    "gitBlob": "5a18cab354ac9fbb216c0c9ff03a8460065f40db"
+  },
+  "readback": {
+    "visitId": "hr_2026-10_gt_2_97b3975c30",
+    "durableVisitId": "OCTUBRE 26!2",
+    "uniqueRowCount": 1,
+    "financialMatchParityFields": 24,
+    "threeDocumentsMatchOriginalReceipt": true,
+    "visitVersion": 25,
+    "cells": [
+      "▶ Mover a lote",
+      "Julissa Flores",
+      "C. Miraflores",
+      "2026-10-14",
+      "Validada · lista para lote",
+      "✅",
+      "Q 60",
+      "Q 145",
+      "Q 205",
+      "—",
+      "👁 💳 Registrar pago ＋ lote"
+    ],
+    "detail": {
+      "Visita": "C. Miraflores",
+      "Estado": "Validada · lista para lote",
+      "Honorario": "Q 60",
+      "Reembolso": "Q 145",
+      "Total": "Q 205",
+      "Pago externo": "No confirmado",
+      "Referencia de fuente": "Pendiente de fuente"
+    },
+    "observedMutationRequests": [],
+    "reconcileClicks": 0,
+    "paymentClicks": 0,
+    "batchClicks": 0,
+    "scopeOfZeroClicksAndObservedRequests": "Only the completed C02 read block; not a claim of zero financial writes over the whole run."
+  },
+  "originalResultPreserved": {
+    "decision": "HOLD",
+    "c02IndependentApplicationSession": false,
+    "secondCiContext": null,
+    "writesFinance": null,
+    "durableAfterPresent": false,
+    "d04ProviderEditCountNotEstablished": true,
+    "reason": "The original boolean is assigned only after the second CI context. That additional sequence was not reached; neither the boolean nor the original result is rewritten."
+  },
+  "evidence": [
+    {
+      "path": "docs/checkpoints/evidence/CXORBIA_I3_RUN1957_C02_D04_RESULT_ORIGINAL_20261029.json",
+      "sha": "92dfcfdd09467c4b71c7d4dfac6fc21ab3728a4c",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "docs/checkpoints/evidence/CXORBIA_I3_RUN1957_PREFLIGHT_ORIGINAL_20261029.json",
+      "sha": "57aaac143727166ce0a442d541c5184f978b32a5",
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "docs/checkpoints/evidence/CXORBIA_I3_C02_INDEPENDENT_SESSION_RUN1957_20261029.png",
+      "sha": "4e7c4ad685d04cff0c752ccc60bb9314cd352339",
+      "mode": "100644",
+      "type": "blob"
+    }
+  ],
+  "independentQa": {
+    "reviewer": "carril_sesion_ci",
+    "status": "PASS_SCOPED_ADJUDICATION",
+    "checks": [
+      "ZIP SHA-256 and entry bytes",
+      "Exact source, preview, HR and original visit",
+      "First context starts auth-null and signs in exact existing Admin",
+      "Three financialMatch documents equal original 24 fields",
+      "Visible DOM and screenshot agree; no reconciliation/payment/batch clicks"
+    ]
+  },
+  "remaining": [
+    "Original transient client ACK was not directly observed; durable server ACK remains proven.",
+    "Second CI context and after-snapshot required by the combined QA sequence were not reached.",
+    "Ordinary password login is not covered by CI custom-token authentication.",
+    "Human acceptance and other frozen C02 clauses are not declared complete."
+  ],
+  "preserved": {
+    "lastExecutionReceipt": true,
+    "currentDevMaterialization": true,
+    "postDeployRunSeal": true,
+    "productUnchanged": true,
+    "sourceProofRun1954_303Of303": true,
+    "financeReconciliationNotReplayed": true
+  }
+}

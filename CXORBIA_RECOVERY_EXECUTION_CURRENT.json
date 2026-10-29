@@ -116,7 +116,8 @@
     "VRM281": "SOURCE_PROVEN_RUN1822_G05_113_PASS_0_FAIL_DEV_MATERIALIZATION_PASS_RUN1823__THREE_DURABLE_ASSIGNMENT_ROWS_STALE__REAL_ACK_PENDING",
     "VRM282": "SOURCE_QA_PASS_RUN1826_DEV_PASS_RUN1827__LIVE_ADMIN_BUTTON_HIDDEN_SUPERSEDED_BY_VRM283",
     "VRM283": "SOURCE_QA_PASS_RUN1828_6_FOCAL_PASS__NEW_DEV_MATERIALIZATION_AND_LIVE_PROVIDER_ACK_PENDING",
-    "VRM287": "RUN1869_DEV_ATOMIC_REPAIR_TWO_DOCUMENTS_READBACK_PASS__DO_NOT_REPEAT"
+    "VRM287": "RUN1869_DEV_ATOMIC_REPAIR_TWO_DOCUMENTS_READBACK_PASS__DO_NOT_REPEAT",
+    "C02": "DURABLE_RECEIPT_AUDIT_VISIT_24_FIELD_PARITY_PASS__RUN1957_FRESH_ISOLATED_APP_READBACK_Q205_PASS__ORIGINAL_CLICK_NOT_REPLAYED__HUMAN_AND_REMAINING_CLAUSES_PENDING"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -493,9 +494,9 @@
   ],
   "coverageGuard": "Do not declare all finance, HR, Shopper, Client, Certification or Phase A PASS solely from source tests or an inherited PASS. Apply task-specific provider/readback/human proof and preserve historical VRM PASS without reproducible drift; no skipped findings.",
   "continuityHandoff": {
-    "path": "docs/checkpoints/CXORBIA_I3_C02_DURABLE_RECEIPT_READBACK_20261029.json",
-    "blobSha": "5a18cab354ac9fbb216c0c9ff03a8460065f40db",
-    "kind": "C02_READ_ONLY_EVIDENCE_APPEND_ONLY_NOT_NEW_PLAN",
+    "path": "docs/checkpoints/CXORBIA_I3_C02_INDEPENDENT_APP_READBACK_RUN1957_20261029.json",
+    "blobSha": "b09815e4ce430f405c37ffaef8e5173c29d8db28",
+    "kind": "C02_INDEPENDENT_READ_ACCEPTANCE_APPEND_ONLY_NOT_NEW_PLAN",
     "asOf": "2026-10-29",
     "frozenPlanId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
     "productSourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
@@ -507,7 +508,7 @@
       "D04",
       "D07"
     ],
-    "immediateAction": "Execute and read back the current R3 C02/D04 session package in the existing canonical CI live job. RUN1956 proves npm installation succeeded and Playwright rejected ubuntu26.04-x64 before Auth or live writes. Pin this job to the previously working ubuntu-24.04 with all dependency versions and logs preserved. Keep exact e753/preview/runtime guard, C02 no-replay and D04 cleanup.",
+    "immediateAction": "Preserve the adjudicated C02 fresh authenticated session read from RUN1957; do not replay reconciliation. Continue the existing R4 C02/D04 runner with the exact ACK observation armed before the single D04 edit click and bounded diagnostics. RUN1957 passed runtime/preview/HR/served-owner identity and C02; D04 cause remains unproven after missing its toast. Read R4 artifact and cleanup before any further attempt.",
     "noProductChanges": true,
     "noProduction": true,
     "receiptPointerField": "currentExecutionReceipt",
@@ -531,13 +532,13 @@
       "scope": "Only the exact DEV visit, existing reconciliation receipt and matching audit."
     },
     "resolvedAccessBlockPath": "docs/checkpoints/CXORBIA_I3_C02_RECEIPT_READ_ACCESS_BLOCK_20261029.json",
-    "acceptanceRemaining": "C02 independent application read; D04 edited bank/content/version in an independently authenticated context; human acceptance and remaining frozen plan stay open.",
+    "acceptanceRemaining": "D04 edited bank/content/version in an independent session with ACK/readback/reload; C02 human acceptance and remaining frozen clauses, plus other frozen-plan tasks. C02 independent read from the human Chrome session is proven and must not be reopened.",
     "currentSessionProofPackage": {
-      "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R3.json",
-      "gitBlob": "bdbc0155064ec8912a22dbf1b768394aa1bd9b53"
+      "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R4.json",
+      "gitBlob": "7940fcf71a58b38ee0809f3fc129865cac06d6b7"
     },
     "browserSessionFinding": "Protected DEV session-continuity wraps Firebase SESSION into LOCAL. A normal second Chrome tab shares authentication; it is not a separate session. Keep Chrome logged in.",
-    "resumeRule": "Inspect the latest tagged run for package R3 before any further attempt. R1/R2 are pre-Auth environment failures, not functional failures. Preserve their records and do not repeat reconciliation."
+    "resumeRule": "Inspect the latest tagged run for R4 before launching anything. Keep the original RUN1957 HOLD and immutable result; use the separate adjudication for the C02 clause. Do not infer zero D04 edits from the old counter or replay the financial command."
   },
   "previousExecutionReceiptBeforeRun1788": {
     "path": "CXORBIA_I3_D04_E04_DEV_MATERIALIZATION_RUN1782_2026-10-18.json",
@@ -3031,41 +3032,33 @@
     "scope": "LOCAL_ISOLATED_SOURCE_CONTRACTS_ONLY_NOT_I3_CERTIFICATION"
   },
   "currentExecutionReceipt": {
-    "path": "docs/checkpoints/CXORBIA_I3_C02_DURABLE_RECEIPT_READBACK_20261029.json",
-    "gitBlob": "5a18cab354ac9fbb216c0c9ff03a8460065f40db",
-    "kind": "C02_DURABLE_RECEIPT_AUDIT_VISIT_PARITY_NOT_TERMINAL_CERTIFICATION",
+    "path": "docs/checkpoints/CXORBIA_I3_C02_INDEPENDENT_APP_READBACK_RUN1957_20261029.json",
+    "gitBlob": "b09815e4ce430f405c37ffaef8e5173c29d8db28",
+    "kind": "C02_INDEPENDENT_APP_READBACK_SINGLE_ACCEPTANCE_CLAUSE",
     "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
     "sourceTree": "be0ad639a652439200ef4043bb08d5d4b709f266",
+    "runId": 40968841388,
+    "runNumber": 1957,
+    "runHeadSha": "499a09f1657920eca0d285854d6a87efe414d511",
+    "artifactId": 12939112176,
+    "artifactZipSha256": "f42043b349384943e3f99324118b0f279ea258079b2891299976858292d10f45",
     "sourceChanges": 0,
-    "newFunctionalClosures": 0,
-    "scope": "AUTHORIZED_READ_ONLY_EXISTING_C02_RECEIPT_AUDIT_AND_VISIT",
+    "newFullTaskClosures": 0,
+    "newFocalAcceptanceClauses": 1,
+    "combinedRunDecision": "HOLD",
+    "scope": "C02_READ_OF_EXISTING_RECONCILED_VISIT_IN_A_NEW_ISOLATED_CI_SESSION",
     "production": false,
-    "runId": 40943351882,
-    "runNumber": 1954,
-    "runHeadSha": "d820c6039539d891dd6426ed85f1532c1fe79e27",
-    "artifactId": 12927943149,
-    "tests": 303,
-    "pass": 303,
-    "fail": 0,
-    "sourceProofRerunThisReadback": false,
     "financeAttempt": {
       "originalClickCount": 1,
       "newClickCount": 0,
       "visitId": "hr_2026-10_gt_2_97b3975c30",
-      "visiblePersistence": "PASS_FRESH_PAGE_AND_EXPLICIT_RELOAD_PRESERVED",
+      "independentOfOriginalHumanChrome": true,
+      "provenSession": "sessions.first",
+      "ordinaryPasswordLoginProven": false,
       "serverProviderAck": true,
-      "serverCommit": "committed",
-      "receiptRead": true,
-      "auditRead": true,
-      "persistedVisitRead": true,
       "financialMatchParityFields": 24,
-      "originalClientAckResponseObserved": false,
-      "receiptId": "1c1fe3d3e9c8982e59577c9b41cb0b72b4996486",
-      "auditId": "finance-f652be05bb1506688e59ba5fac06616dccebbd61",
-      "independentApplicationSession": false,
       "fullTaskClosed": false
     },
-    "priorConsoleAccessBlock": "RESOLVED_BY_EXPLICIT_USER_AUTHORIZATION_AND_COMPLETED_READ",
     "state": "I3_HOLD"
   },
   "lastExecutionReceiptSemantics": "SEALED_POSTDEPLOY_SNAPSHOT_NOT_CURRENT_CONTROL_HANDOFF",
@@ -3242,10 +3235,10 @@
     "resumeAfterAuthorizedReceiptRead": "C02: read the receipt/audit and committed HR revision of the existing single attempt without replay; retain fresh-page and explicit-reload persistence proof. Continue D04/D05/D06 and bounded D07 evidence on the same e753 candidate, preserving passed owners."
   },
   "currentSessionProofPackage": {
-    "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R3.json",
-    "gitBlob": "bdbc0155064ec8912a22dbf1b768394aa1bd9b53",
-    "state": "READY_FOR_FOCAL_RETRY_ON_SUPPORTED_OS",
-    "expectedControlParentSha": "e0f73e983af6a9b19dc6a5f39769cfe6c10b72bc",
+    "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R4.json",
+    "gitBlob": "7940fcf71a58b38ee0809f3fc129865cac06d6b7",
+    "state": "READY_FOR_FOCAL_D04_ACK_OBSERVATION_RETRY",
+    "expectedControlParentSha": "499a09f1657920eca0d285854d6a87efe414d511",
     "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
     "previewRunId": 40901257714,
     "tasks": [
@@ -3263,8 +3256,8 @@
     "newWorkflow": 0,
     "newMaterializer": 0,
     "liveResult": "PENDING",
-    "attemptNumber": 3,
-    "priorAttemptRunId": 40968280905,
+    "attemptNumber": 4,
+    "priorAttemptRunId": 40968841388,
     "runnerOs": "ubuntu-24.04"
   },
   "d04CarryForwardRecovered20261029": {
@@ -3401,6 +3394,87 @@
       "fixtureWrites": 0,
       "financeWrites": 0,
       "exactError": "Error: ERROR: Playwright does not support chromium on ubuntu26.04-x64"
+    },
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R3.json",
+      "gitBlob": "bdbc0155064ec8912a22dbf1b768394aa1bd9b53",
+      "state": "HOLD_D04_EXACT_ACK_TOAST_NOT_OBSERVED",
+      "expectedControlParentSha": "e0f73e983af6a9b19dc6a5f39769cfe6c10b72bc",
+      "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+      "previewRunId": 40901257714,
+      "tasks": [
+        "C02",
+        "D04"
+      ],
+      "supplementalReadOnlyDiagnostic": "D07_OPTIONS_ONLY",
+      "existingWorkflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      "existingJob": "phasea-representative-same-artifact-live-reproof",
+      "existingRunner": "tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs",
+      "triggerMarker": "[i3-c02-d04-session-proof]",
+      "userChromeSessionPreserved": true,
+      "production": false,
+      "sourceChanges": 0,
+      "newWorkflow": 0,
+      "newMaterializer": 0,
+      "liveResult": "PENDING",
+      "attemptNumber": 3,
+      "priorAttemptRunId": 40968280905,
+      "runnerOs": "ubuntu-24.04",
+      "runId": 40968841388,
+      "runNumber": 1957,
+      "jobId": 123780749427,
+      "preflight": "PASS",
+      "c02IndependentFromHumanChrome": "PASS_SEPARATE_ADJUDICATION",
+      "c02FullTaskClosed": false,
+      "d04Cause": "NOT_ESTABLISHED",
+      "fixtureRemoved": true,
+      "existingBanksUnchanged": true
     }
-  ]
+  ],
+  "previousCurrentExecutionReceiptBeforeRun1957Adjudication": {
+    "path": "docs/checkpoints/CXORBIA_I3_C02_DURABLE_RECEIPT_READBACK_20261029.json",
+    "gitBlob": "5a18cab354ac9fbb216c0c9ff03a8460065f40db",
+    "kind": "C02_DURABLE_RECEIPT_AUDIT_VISIT_PARITY_NOT_TERMINAL_CERTIFICATION",
+    "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+    "sourceTree": "be0ad639a652439200ef4043bb08d5d4b709f266",
+    "sourceChanges": 0,
+    "newFunctionalClosures": 0,
+    "scope": "AUTHORIZED_READ_ONLY_EXISTING_C02_RECEIPT_AUDIT_AND_VISIT",
+    "production": false,
+    "runId": 40943351882,
+    "runNumber": 1954,
+    "runHeadSha": "d820c6039539d891dd6426ed85f1532c1fe79e27",
+    "artifactId": 12927943149,
+    "tests": 303,
+    "pass": 303,
+    "fail": 0,
+    "sourceProofRerunThisReadback": false,
+    "financeAttempt": {
+      "originalClickCount": 1,
+      "newClickCount": 0,
+      "visitId": "hr_2026-10_gt_2_97b3975c30",
+      "visiblePersistence": "PASS_FRESH_PAGE_AND_EXPLICIT_RELOAD_PRESERVED",
+      "serverProviderAck": true,
+      "serverCommit": "committed",
+      "receiptRead": true,
+      "auditRead": true,
+      "persistedVisitRead": true,
+      "financialMatchParityFields": 24,
+      "originalClientAckResponseObserved": false,
+      "receiptId": "1c1fe3d3e9c8982e59577c9b41cb0b72b4996486",
+      "auditId": "finance-f652be05bb1506688e59ba5fac06616dccebbd61",
+      "independentApplicationSession": false,
+      "fullTaskClosed": false
+    },
+    "priorConsoleAccessBlock": "RESOLVED_BY_EXPLICIT_USER_AUTHORIZATION_AND_COMPLETED_READ",
+    "state": "I3_HOLD"
+  },
+  "c02IndependentSessionAdjudication20261029": {
+    "path": "docs/checkpoints/CXORBIA_I3_C02_INDEPENDENT_APP_READBACK_RUN1957_20261029.json",
+    "gitBlob": "b09815e4ce430f405c37ffaef8e5173c29d8db28",
+    "decision": "PASS_C02_INDEPENDENT_APP_READBACK",
+    "independentOfOriginalHumanChrome": true,
+    "originalCombinedResultPreserved": true,
+    "fullTaskClosed": false
+  }
 }

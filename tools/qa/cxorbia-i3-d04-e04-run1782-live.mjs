@@ -586,12 +586,54 @@ async function d04PrepareSessionFixture(page) {
   await page.locator('#certReviewPreview').click();
   assert.match(await page.locator('#certReviewDiff').innerText(), /Preguntas modificadas: 1\b/);
   assert.equal(await page.locator('#certReviewSave').isEnabled(), true);
-  await page.locator('#certReviewSave').click(); // The only content-edit command.
-  await page.waitForFunction(id => window.CX.backendResources.items.some(x => x.id === id && x.version === 2), rid, {timeout: 45000});
-  await page.locator('#certReviewSave').waitFor({state: 'detached', timeout: 15000});
   const ackText = 'Revisión guardada en servidor · publicación pendiente.';
-  await page.getByText(ackText, {exact: true}).waitFor({state: 'visible', timeout: 10000});
-  await page.screenshot({path: OUT + '/d04-save-ack.png', fullPage: true});
+  res.d04Attempt={bankId:rid,certificationId:certId,seedVersion:1,editClickCount:0,
+    expectedQuestion:editedQuestion,expectedFirstQuestion:{...questions[0],q:editedQuestion},
+    localVersion2Observed:false,editorDetached:false,ackUiObserved:false};
+  res.d04Diagnostics={safeReviewErrors:[]};
+  page.on('console',message=>{
+    const value=message.text();
+    if(value.startsWith('CXORBIA_CERT_REVIEW_SAFE_ERROR '))
+      res.d04Diagnostics.safeReviewErrors.push(value.slice(0,180));
+  });
+  await evaluatePage(page,()=>{
+    const state={startedAt:Date.now(),events:[]},seen=new WeakMap();
+    const capture=()=>{
+      for(const el of document.querySelectorAll('#cx-toasts .toast')){
+        const text=String(el.textContent||'');
+        if(text!=='Revisión guardada en servidor · publicación pendiente.'&&!text.startsWith('No se pudo guardar la revisión.'))continue;
+        const style=getComputedStyle(el),box=el.getBoundingClientRect();
+        const entry={at:Date.now(),text,className:el.className,display:style.display,visibility:style.visibility,
+          opacity:style.opacity,width:box.width,height:box.height,connected:el.isConnected};
+        const fingerprint=JSON.stringify({...entry,at:0});
+        if(seen.get(el)!==fingerprint&&state.events.length<24){state.events.push(entry);seen.set(el,fingerprint);}
+      }
+    };
+    const observer=new MutationObserver(capture);
+    observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style']});
+    const timer=setTimeout(()=>observer.disconnect(),15000);
+    state.stop=()=>{observer.disconnect();clearTimeout(timer);};
+    window.__cxI3D04ToastObservation=state;
+    return true;
+  });
+  // Observe the unchanged required ACK before the click, so a short-lived toast is not missed.
+  const ackObserved=page.getByText(ackText,{exact:true}).waitFor({state:'visible',timeout:10000})
+    .then(async()=>{
+      res.d04Attempt.ackUiObserved=true;
+      await page.screenshot({path:OUT+'/d04-save-ack.png',fullPage:true,timeout:10000});
+    });
+  res.d04Attempt.editClickCount=1;
+  res.writes.qaResourceEdit=null; // Unknown until exact durable readback; never infer zero from a missed toast.
+  res.d04Attempt.clickedAt=Date.now();
+  await Promise.all([ackObserved,page.locator('#certReviewSave').click()]); // One content-edit command.
+  res.d04Diagnostics.toastObservation=await evaluatePage(page,()=>{
+    const state=window.__cxI3D04ToastObservation;state?.stop?.();
+    return state?{startedAt:state.startedAt,events:state.events}:null;
+  });
+  await page.waitForFunction(id => window.CX.backendResources.items.some(x => x.id === id && x.version === 2), rid, {timeout: 45000});
+  res.d04Attempt.localVersion2Observed=true;
+  await page.locator('#certReviewSave').waitFor({state: 'detached', timeout: 15000});
+  res.d04Attempt.editorDetached=true;
   const stored = (await qaRef.get()).data();
   const expectedQuestions = questions.map((q, i) => i === 0 ? {...q, q: editedQuestion} : q);
   assert.equal(stored.version, 2);
@@ -763,7 +805,34 @@ try{
  await client.ctx.close();
  res.decision='PASS_D04_E04_CONNECTED_DEV_QA_NO_HUMAN_APPROVAL';
  }
-}catch(e){res.error={classification:String(e?.message||e).split(':')[0],detail:String(e?.message||e).slice(0,820)};}
+}catch(e){
+ res.error={classification:String(e?.message||e).split(':')[0],detail:String(e?.message||e).slice(0,820)};
+ if(SESSION_PROOF_MODE&&browser){
+  res.failureUi=[];
+  for(const page of browser.contexts().flatMap(context=>context.pages()).slice(0,2)){
+   try{
+    const visible=await evaluatePage(page,rid=>{
+     const item=(window.CX?.backendResources?.items||[]).find(row=>row.id===rid);
+     const observation=window.__cxI3D04ToastObservation;observation?.stop?.();
+     return {
+      toastObservation:observation?{startedAt:observation.startedAt,events:observation.events}:null,
+      toasts:[...document.querySelectorAll('#cx-toasts .toast')].map(el=>String(el.innerText||'').slice(0,240)),
+      editorPresent:!!document.querySelector('#certReviewQuestions'),
+      savePresent:!!document.querySelector('#certReviewSave'),
+      saveDisabled:document.querySelector('#certReviewSave')?.disabled??null,
+      loadedQaBank:item?{id:item.id,version:item.version,estado:item.bank?.estado,
+        firstQuestion:item.bank?.preguntas?.[0],firstQuestionKeys:Object.keys(item.bank?.preguntas?.[0]||{}),
+        historyEntries:item.bank?.reviewHistory?.length||0}:null
+     };
+    },res.d04Attempt?.bankId||'');
+    const screenshot='session-failure-'+res.failureUi.length+'.png';
+    const entry={...visible,screenshot};res.failureUi.push(entry);
+    try{await page.screenshot({path:OUT+'/'+screenshot,fullPage:true,timeout:10000});}
+    catch(screenshotError){entry.screenshotError=String(screenshotError?.message||screenshotError).slice(0,180);}
+   }catch(captureError){res.failureUi.push({captureError:String(captureError?.message||captureError).slice(0,180)});}
+  }
+ }
+}
 finally{
  if(SESSION_PROOF_MODE&&browser)await browser.close().catch(()=>{});
  if(qaRef)try{
@@ -773,6 +842,14 @@ finally{
     const expectedId='qa-i3-d04-session-'+RUN+'-'+String(process.env.GITHUB_RUN_ATTEMPT||'1');
     assert.equal(x.data()?.bank?.certificationId,expectedId,'QA_CLEANUP_OWNERSHIP_MISMATCH');
     assert.equal(x.data()?.bank?.documentSource?.name,'Fixture QA de sesión independiente','QA_CLEANUP_SOURCE_MISMATCH');
+    const data=x.data();
+    res.d04FixtureBeforeCleanup={id:qaRef.id,version:data.version,status:data.status,
+      certificationId:data.bank.certificationId,estado:data.bank.estado,
+      contentRevision:data.bank.contentRevision,questionCount:data.bank.preguntas?.length,
+      firstQuestion:data.bank.preguntas?.[0]?.q,firstQuestionFields:data.bank.preguntas?.[0],
+      firstQuestionKeys:Object.keys(data.bank.preguntas?.[0]||{}),historyEntries:data.bank.reviewHistory?.length||0,
+      history:data.bank.reviewHistory||[],updateTime:{seconds:x.updateTime.seconds,nanoseconds:x.updateTime.nanoseconds}};
+    if(data.version===2&&data.bank.reviewHistory?.length===1)res.writes.qaResourceEdit=1;
    }
    await qaRef.delete();
    if(SESSION_PROOF_MODE)res.writes.qaResourceCleanup=1;
