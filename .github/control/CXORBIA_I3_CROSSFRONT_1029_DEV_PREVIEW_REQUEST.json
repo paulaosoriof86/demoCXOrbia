@@ -39,7 +39,7 @@
   "gate21": "HOLD",
   "expectedProductPredecessorSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
   "expectedSourceParentSha": "25eb1cbcc8327a8d1cac62537af0fd9831c1881f",
-  "expectedControlParentSha": "bf186670f1ffaf2e523b3dc201701b3a16aa2e25",
+  "expectedControlParentSha": "3c43202bbdfe1bbfcee9e9469220d75ea76a0262",
   "sourceProof": {
     "runId": 40972993436,
     "headSha": "bf186670f1ffaf2e523b3dc201701b3a16aa2e25",
@@ -63,5 +63,20 @@
     "core/backend-resources.js",
     "modules/cert.js",
     "core/backend-certifications.js"
-  ]
+  ],
+  "inheritedSourceOnlyQa": {
+    "path": "backend/runtime/hr-live-service/test/cxorbia-b1-canonical-visible-identity.test.mjs",
+    "gitBlob": "4769e3fff97fff88d64d191ae7ccc93ecc72af84",
+    "productionCode": false,
+    "sourceProofRunId": 40972993436
+  },
+  "priorTransportAttempt": {
+    "runId": 40973455119,
+    "jobId": 123795635305,
+    "controlSha": "3c43202bbdfe1bbfcee9e9469220d75ea76a0262",
+    "state": "PREFLIGHT_BACKEND_DIFF_INCLUDED_PREEXISTING_SOURCE_ONLY_QA",
+    "cloudAuthExecuted": false,
+    "deploys": 0,
+    "production": false
+  }
 }

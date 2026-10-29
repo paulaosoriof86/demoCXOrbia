@@ -87,6 +87,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           mkdir -p "$OUT"
+          trap 'rc=$?; printf "PREFLIGHT_FAILURE_LINE=%s EXIT_CODE=%s\n" "$LINENO" "$rc" >&2; exit "$rc"' ERR
           test "$GITHUB_REPOSITORY" = 'paulaosoriof86/demoCXOrbia'
           test "$GITHUB_REF_NAME" = 'recovery/cxorbia-phase-a-20260831'
           jq -e '.schemaVersion=="cxorbia.i3.exact-source-isolated-dev-preview-request.v1" and .intent=="I3_CROSSFRONT_1029_HOSTING_ONLY" and .branch=="recovery/cxorbia-phase-a-20260831" and .transport=="FIREBASE_HOSTING_PREVIEW_ONLY" and .production=="DO_NOT_TOUCH" and .authorizationI4==false and .gate20=="HOLD" and .gate21=="HOLD"' "$REQUEST" >/dev/null
@@ -106,7 +107,10 @@ jobs:
           git merge-base --is-ancestor "$SOURCE" "$GITHUB_SHA"
           test "$(git diff --name-only "$SOURCE_PARENT" "$SOURCE" | LC_ALL=C sort)" = "$(printf '%s\n' app/core/backend-resources.js app/modules/cert.js tools/qa/cxorbia-i3-d04-versioned-bank-review.test.mjs | LC_ALL=C sort)"
           test "$(git diff --name-only "$PREDECESSOR_SOURCE" "$SOURCE" -- app | LC_ALL=C sort)" = "$(printf '%s\n' app/core/backend-resources.js app/modules/cert.js | LC_ALL=C sort)"
-          git diff --quiet "$PREDECESSOR_SOURCE" "$SOURCE" -- backend firebase.json .firebaserc firestore.rules storage.rules
+          # The existing source-only B1 harness was repaired before this product successor.
+          # Pin that one QA blob; all executable backend/config/rules bytes must still match.
+          test "$(git rev-parse "$SOURCE:backend/runtime/hr-live-service/test/cxorbia-b1-canonical-visible-identity.test.mjs")" = 4769e3fff97fff88d64d191ae7ccc93ecc72af84
+          git diff --quiet "$PREDECESSOR_SOURCE" "$SOURCE" -- backend firebase.json .firebaserc firestore.rules storage.rules ':(exclude)backend/runtime/hr-live-service/test/cxorbia-b1-canonical-visible-identity.test.mjs'
           git diff --quiet "$SOURCE" "$GITHUB_SHA" -- app backend tools firebase.json .firebaserc firestore.rules storage.rules
           CONTROL_PARENT="$(jq -r '.expectedControlParentSha' "$REQUEST")"
           [[ "$CONTROL_PARENT" =~ ^[a-f0-9]{40}$ ]]
