@@ -80,3 +80,8 @@ test('source-proof accepts shock without weakening materialization guards or rep
   assert.ok(adminInstall >= 0 && adminInstall < source.indexOf('node tools/qa/'), 'the pinned Admin SDK must be available before source tests import it');
 });
 
+test('the canonical workflow remains within the enforced 500 KB file limit', () => {
+  const bytes = fs.statSync(new URL('../../.github/workflows/cxorbia-recovery-i3-dev-certification.yml', import.meta.url)).size;
+  assert.ok(bytes <= 500 * 1024, `workflow is ${bytes} bytes; GitHub rejects it before any job above 512000 bytes`);
+});
+

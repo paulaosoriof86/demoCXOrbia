@@ -70,8 +70,7 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      id: authority
      run: |
@@ -141,11 +140,9 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - run: |
       set -Eeuo pipefail
       mkdir -p "$FOCAL_OUT"
@@ -201,11 +198,9 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - run: |
       set -Eeuo pipefail
       mkdir -p "$FOCAL_OUT"
@@ -312,11 +307,9 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - run: |
       set -Eeuo pipefail
       mkdir -p "$DRY_OUT"
@@ -366,11 +359,9 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - run: |
       set -Eeuo pipefail
       mkdir -p "$DIAG_OUT"
@@ -413,11 +404,9 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - run: |
       set -Eeuo pipefail
       mkdir -p "$OWNER_OUT"
@@ -460,11 +449,9 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - run: |
       set -Eeuo pipefail
       mkdir -p "$EXC_OUT"
@@ -509,11 +496,9 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - run: |
       set -Eeuo pipefail
       mkdir -p "$ELIG_OUT"
@@ -551,11 +536,9 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - run: |
       set -Eeuo pipefail
       mkdir -p "$VRM151_OUT"
@@ -618,11 +601,9 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -718,11 +699,9 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -775,11 +754,9 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      env:
       SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
@@ -2295,11 +2272,9 @@ jobs:
    timeout-minutes: 10
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -2393,11 +2368,9 @@ jobs:
     EXPECTED_RUNTIME_DIGEST: sha256:b34be533f545c6dda7dc9f6c4a1cb0af517aad2aff1d79005412b4a2433d7ecd
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -2520,11 +2493,9 @@ jobs:
     EXPECTED_RUNTIME_DIGEST: sha256:b34be533f545c6dda7dc9f6c4a1cb0af517aad2aff1d79005412b4a2433d7ecd
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -2656,11 +2627,9 @@ jobs:
     EXPECTED_RUNTIME_DIGEST: sha256:b34be533f545c6dda7dc9f6c4a1cb0af517aad2aff1d79005412b4a2433d7ecd
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -2963,11 +2932,9 @@ jobs:
     EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -3063,8 +3030,7 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -3106,8 +3072,7 @@ jobs:
       credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
    - name: step
      uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: cxorbia-backend-dev
+     with: {project_id: cxorbia-backend-dev}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -3194,12 +3159,10 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      uses: google-github-actions/auth@v2
      with:
@@ -3247,12 +3210,10 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      uses: google-github-actions/auth@v2
      with:
@@ -3379,12 +3340,10 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      env:
       GH_TOKEN: ${{ github.token }}
@@ -3633,11 +3592,9 @@ jobs:
     I3_CERTIFICATION_SOURCE_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -3696,8 +3653,7 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -3706,8 +3662,7 @@ jobs:
       }
    - name: step
      uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      uses: google-github-actions/auth@v2
      with:
@@ -3770,8 +3725,7 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -3784,8 +3738,7 @@ jobs:
       jq -n -S --arg source "$CANONICAL_SOURCE" --arg predecessor "$PREDECESSOR"             '{decision:"PASS_PRE_I4_VRM036_SOURCE_SCOPE",sourceSha:$source,predecessorSha:$predecessor,productFiles:3,runtimeBuilds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,dataWrites:0,production:false}' > "$PROOF_OUT/authorization.json"
    - name: step
      uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -3912,8 +3865,7 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -3928,8 +3880,7 @@ jobs:
       jq -n -S --arg source "$CANONICAL_SOURCE" --arg predecessor "$PREDECESSOR"             '{decision:"PASS_PRE_I4_VRM037_042_SOURCE_SCOPE",sourceSha:$source,predecessorSha:$predecessor,productFiles:5,runtimeBuilds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,dataWrites:0,production:false}' > "$PROOF_OUT/authorization.json"
    - name: step
      uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -4016,8 +3967,7 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -4026,8 +3976,7 @@ jobs:
       jq -n -S --arg source "$CANONICAL_SOURCE" '{decision:"PASS_PRE_I4_VRM037_DIAGNOSTIC_SCOPE",servedFunctionalSource:$source,runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,hostingDeploysThisRun:0,rulesDeploysThisRun:0,dataWritesThisRun:0,production:false}' > "$DIAG_OUT/authorization.json"
    - name: step
      uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      uses: google-github-actions/auth@v2
      with:
@@ -4149,8 +4098,7 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -4163,8 +4111,7 @@ jobs:
       jq -n -S --arg source "$VRM044_SOURCE" --arg tree "$VRM044_TREE"             '{decision:"PASS_VRM044_EXACT_FOCAL_SCOPE",sourceSha:$source,sourceTree:$tree,productFiles:2,testFiles:2,runtimeDeploys:0,hostingDeploys:0,production:false}'             > "$VRM044_OUT/scope.json"
    - name: step
      uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -4198,8 +4145,7 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -4216,8 +4162,7 @@ jobs:
       test "$(jq -r '.terminalResume.maxHostingDeploys' "$CANDIDATE_DESCRIPTOR")" = "1"
    - name: step
      uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest >/dev/null 2>&1
    - name: step
@@ -4317,8 +4262,7 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -4335,8 +4279,7 @@ jobs:
       test "$(jq -r '.currentRemediationCandidate.changedRules' "$CANDIDATE_DESCRIPTOR")" = "false"
    - name: step
      uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -4456,8 +4399,7 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -4471,8 +4413,7 @@ jobs:
       jq -n -S '{decision:"PASS_V21_READBACK_ONLY_SCOPE",builds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,production:false}' > "$V21_OUT/scope.json"
    - name: step
      uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
@@ -4547,17 +4488,14 @@ jobs:
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PAULA_SECOND_VISUAL_REVIEW_DEFECTS_FOUND'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[v25-visual-forensic]') }}
    runs-on: ubuntu-latest
    timeout-minutes: 20
-   env:
-    V25_OUT: .tmp/i3-v25-visual-forensic
+   env: {V25_OUT: .tmp/i3-v25-visual-forensic}
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - name: step
@@ -4596,12 +4534,10 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - name: step
@@ -4673,8 +4609,7 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -4688,8 +4623,7 @@ jobs:
       jq -n -S --arg source "$V28_SOURCE" --arg tree "$V28_TREE" '{decision:"PASS_I3_V28_SOURCE_SCOPE",sourceSha:$source,sourceTree:$tree,production:false}' > "$V28_OUT/source-scope.json"
    - name: step
      uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -4798,8 +4732,7 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -4813,8 +4746,7 @@ jobs:
       jq -n -S '{decision:"PASS_I3_V28_RESUME_SCOPE",builds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,production:false}' > "$V28_OUT/scope.json"
    - name: step
      uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
@@ -4893,8 +4825,7 @@ jobs:
     EXPECTED_RUNTIME_DIGEST: sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -4911,8 +4842,7 @@ jobs:
       test "$(git diff --name-only 37d6985588cec0d335736c17b974841b92c52e83 "$V33_SOURCE" -- app | wc -l | tr -d ' ')" = "1"
       git diff --name-only 37d6985588cec0d335736c17b974841b92c52e83 "$V33_SOURCE" -- app | grep -qx 'app/adapters/tya-c6-unified-human-runtime-v1.js'
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -4996,8 +4926,7 @@ jobs:
     EXPECTED_RUNTIME_DIGEST: sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -5007,8 +4936,7 @@ jobs:
       test "$(git rev-parse "$V41_SOURCE^{tree}")" = "$V41_TREE"
       test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_SECOND_REVIEW_CUMULATIVE_REPROOF_REQUIRED"
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
@@ -5067,8 +4995,7 @@ jobs:
     V42_ROOT: https://cxorbia-backend-dev.web.app
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -5078,8 +5005,7 @@ jobs:
       test "$(git rev-parse "$V42_SOURCE^{tree}")" = "$V42_TREE"
       test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_VRM055_DURABLE_MILTON_DIAGNOSTIC_REQUIRED"
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - name: step
@@ -5114,8 +5040,7 @@ jobs:
     V43_OUT: .tmp/i3-v43-milton-repair
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -5125,8 +5050,7 @@ jobs:
       test "$(git rev-parse "$V43_SOURCE^{tree}")" = "$V43_TREE"
       test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_VRM055_DURABLE_REPAIR_READY"
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - name: step
@@ -5167,8 +5091,7 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      uses: google-github-actions/auth@v2
      with:
@@ -5256,8 +5179,7 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      uses: google-github-actions/auth@v2
      with:
@@ -5283,8 +5205,7 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      uses: google-github-actions/setup-gcloud@v2
      with:
@@ -5312,8 +5233,7 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      uses: google-github-actions/auth@v2
      with:
@@ -5340,8 +5260,7 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      uses: google-github-actions/auth@v2
      with:
@@ -5371,8 +5290,7 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -5454,8 +5372,7 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -5474,8 +5391,7 @@ jobs:
       jq -n -S --arg source "$CERT_RES_SOURCE" --arg tree "$CERT_RES_TREE" '{decision:"PASS_PREI4_CERT_RES_EXACT_MATERIALIZATION_SCOPE",sourceSha:$source,sourceTree:$tree,production:false}' > "$CERT_RES_MAT_OUT/scope.json"
    - name: step
      uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
@@ -5598,8 +5514,7 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -5613,8 +5528,7 @@ jobs:
       git diff --quiet "$CERT_RES_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
    - name: step
      uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
@@ -5694,12 +5608,10 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
@@ -5737,11 +5649,9 @@ jobs:
    steps:
    - name: step
      uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -5806,11 +5716,9 @@ jobs:
     VRM153_HR_URL: https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live?format=json&vrm153=${{ github.run_id }}
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -5857,11 +5765,9 @@ jobs:
     FOCAL_OUT: .tmp/vrm154-156-frontend-source-reproof
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -5984,11 +5890,9 @@ jobs:
     ACTIVE_STATUS: ${{ needs.canonical-candidate-authority.outputs.status }}
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -6116,11 +6020,9 @@ jobs:
     VRM185_ADMIN_OUT: .tmp/vrm185-admin-live-adjudication
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -6191,11 +6093,9 @@ jobs:
     ACTIVE_STATUS: ${{ needs.canonical-candidate-authority.outputs.status }}
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
@@ -6367,11 +6267,9 @@ jobs:
     PAULA_SECOND_PRINCIPAL_ID: shp-cdbf95dccaa6
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -6419,11 +6317,9 @@ jobs:
     R03_TARGET_NAME: José Sarat
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -6457,15 +6353,12 @@ jobs:
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM185_ADMIN_PROVIDER_SOURCE_TEST_REQUIRED' }}
    runs-on: ubuntu-latest
    timeout-minutes: 15
-   env:
-    VRM185_SOURCE_OUT: .tmp/vrm185-admin-provider-source-test
+   env: {VRM185_SOURCE_OUT: .tmp/vrm185-admin-provider-source-test}
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -6575,11 +6468,9 @@ jobs:
     PAULA_EXACT_HR_ID: shopper_gt_1440137b73
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      shell: bash
      run: |
@@ -6730,8 +6621,7 @@ jobs:
     VRM267_OUT: .tmp/i3-vrm267-support-focal-live
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - name: step
      run: |
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
@@ -6777,11 +6667,9 @@ jobs:
     JULISSA_OUT: .tmp/i3-julissa-topology
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      shell: bash
      run: |
@@ -6825,11 +6713,9 @@ jobs:
     JULISSA_WRITE_OUT: .tmp/i3-vrm214-julissa-adjudication
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      shell: bash
      run: |
@@ -6907,11 +6793,9 @@ jobs:
     VRM215_PROOF_MODE: HN_TARGET
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      shell: bash
      run: |
@@ -7020,11 +6904,9 @@ jobs:
     SWEEP_OUT: .tmp/i3-vrm217-sweep
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      shell: bash
      run: |
@@ -7086,11 +6968,9 @@ jobs:
     VRM219_INPUT: .tmp/i3-vrm219-input
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -7206,11 +7086,9 @@ jobs:
     VRM226_OUT: .tmp/i3-vrm226-human-identity-topology
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      shell: bash
      run: |
@@ -7255,11 +7133,9 @@ jobs:
     ADMIN_A_POST_OUT: .tmp/i3-admin-cluster-a-postulations
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      shell: bash
      run: |
@@ -7340,11 +7216,9 @@ jobs:
     VRM249_OUT: .tmp/i3-vrm249-source
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: node control/qa/cxorbia-vrm249-reservations-read-model-source-reproof.mjs
    - if: always()
@@ -7368,11 +7242,9 @@ jobs:
     B1_VISUAL_OUT: .tmp/b1-oct07-readonly
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -7389,8 +7261,7 @@ jobs:
      with:
       credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: cxorbia-backend-dev
+     with: {project_id: cxorbia-backend-dev}
    - name: step
      run: |
       set -Eeuo pipefail
@@ -7423,11 +7294,9 @@ jobs:
     FOCAL_EVIDENCE: .tmp/i3-a09b11-backend-only-dev
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: Verify exact candidate, scope, and A09/B11 source tests
      run: |
       set -Eeuo pipefail
@@ -7531,11 +7400,9 @@ jobs:
     READBACK_EVIDENCE: .tmp/i3-a09b11-post-deploy-readback
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: Verify candidate and retrieve original pre-deploy baseline
      run: |
       set -Eeuo pipefail
@@ -7606,11 +7473,9 @@ jobs:
     EV_DIR: .tmp/d04e03-hosting
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
-     with:
-      node-version: '24'
+     with: {node-version: '24'}
    - name: Source identity
      run: |
       set -Eeuo pipefail
@@ -7683,8 +7548,7 @@ jobs:
    timeout-minutes: 15
    steps:
    - uses: actions/checkout@v4
-     with:
-      fetch-depth: 0
+     with: {fetch-depth: 0}
    - uses: google-github-actions/auth@v2
      with:
       credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
