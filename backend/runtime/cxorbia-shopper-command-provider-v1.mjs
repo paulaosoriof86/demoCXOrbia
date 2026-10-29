@@ -207,6 +207,37 @@ function stableShopperId(command){
   }
   return '';
 }
+// I3 P0: a manual registration must not silently mint an unrelated Auth principal
+// for a person already represented by an exact protected shopper profile. This is
+// only a fail-closed *review* signal: matching names/phones never adjudicate,
+// migrate, disable, or merge identities. The protected source still owns identity.
+const normalizeHumanName=value=>str(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ');
+const normalizeIdentityPhone=value=>str(value).replace(/\D/g,'');
+const normalizeIdentityCountry=value=>{
+  const c=normalizeHumanName(value);
+  return c==='guatemala'||c==='gt'?'GT':c==='honduras'||c==='hn'?'HN':c==='nicaragua'||c==='ni'?'NI':c==='el salvador'||c==='sv'?'SV':c.toUpperCase();
+};
+async function assertNoUnlinkedManualDuplicate({db,command,shopperId,profile}){
+  const humanName=normalizeHumanName(profile?.nombre||[profile?.firstName,profile?.lastName].filter(Boolean).join(' '));
+  const digits=normalizeIdentityPhone(profile?.whatsapp||profile?.phone||profile?.telefono);
+  if(humanName.split(' ').filter(Boolean).length<2||digits.length<8)return;
+  const wantedCountry=normalizeIdentityCountry(profile?.pais||profile?.country);
+  const profiles=db.collection('tenants').doc(command.tenantId).collection('shoppers');
+  const snapshot=await profiles.get();
+  for(const doc of arr(snapshot?.docs)){
+    if(str(doc.id)===shopperId)continue; // Retry of the same technical identity.
+    const existing=doc.data()||{};
+    if(str(existing.tenantId||command.tenantId)!==str(command.tenantId))continue;
+    const source=str(existing.sourceType).toLowerCase();
+    if(source!=='hr_external'&&source!=='platform')continue;
+    const existingName=normalizeHumanName(existing.nombre||[existing.firstName,existing.lastName].filter(Boolean).join(' '));
+    const existingDigits=normalizeIdentityPhone(existing.whatsapp||existing.phone||existing.telefono);
+    const existingCountry=normalizeIdentityCountry(existing.pais||existing.country);
+    if(existingName===humanName&&existingDigits===digits&&(!wantedCountry||!existingCountry||wantedCountry===existingCountry)){
+      throw new Error('SHOPPER_CREATE_EXISTING_IDENTITY_REVIEW_REQUIRED');
+    }
+  }
+}
 function technicalIdentityLabel(value,shopperId=''){
   const s=str(value),sid=str(shopperId);
   if(!s)return false;
@@ -1496,6 +1527,7 @@ export function createShopperCommandProvider({auth,db,policy,hrSnapshot=null,hrR
         }
         const profile=command.payload?.profile||command.payload||{};
         const nombre=str(profile.nombre||[profile.firstName,profile.lastName].filter(Boolean).join(' '));
+        await assertNoUnlinkedManualDuplicate({db,command,shopperId,profile:{...profile,nombre}});
         const candidate={...sourceCandidate({...profile,nombre,shopperId},{tenantId:command.tenantId,projectId:command.projectId}),shopperId,tenantId:command.tenantId,projectId:command.projectId};
         const sourceRevision=str(command.payload?.sourceRevision||command.payload?.hrSourceRevision||`command:${command.idempotencyKey}`);
         const result=await durableUpsert({auth,db,policy,candidate,sourceRevision});

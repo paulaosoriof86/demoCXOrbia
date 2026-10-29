@@ -701,6 +701,78 @@ test('VRM-044 shopper.create closes Auth membership profile crosswalk and platfo
   assert.equal(db.paths().filter(x=>x.includes('/shopperIdentityLinks/')).length,1);
 });
 
+test('I3 P0 cohort / manual registration detects existing HR-owned identity before any new Auth or write',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'super',authNamespace:'staff',projectIds:['project-a']});
+  db.seed('tenants/tenant-a/shoppers/TYA_HN_ABCD1234',{
+    shopperId:'TYA_HN_ABCD1234',tenantId:'tenant-a',sourceType:'hr_external',
+    nombre:'Héctor Sánchez',whatsapp:'+504 9999-1234',pais:'Honduras'
+  });
+  const command={version:'cxorbia-command-adapter-v1',commandType:'shopper.create',tenantId:'tenant-a',projectId:'project-a',
+    periodId:'project-a-2026-10',entityId:'manual-new-hn-1',idempotencyKey:'cohort-hn-block-1',
+    authorization:{providerEnforcementRequired:true,permission:'shopper.create'},
+    payload:{profile:{firstName:'Hector',lastName:'Sanchez',whatsapp:'50499991234',pais:'HN'}}};
+  const before=db.paths(),out=await p.execute('staff-token',command);
+  assert.equal(out.ok,false);assert.equal(out.code,'SHOPPER_CREATE_EXISTING_IDENTITY_REVIEW_REQUIRED');
+  assert.equal(out.providerAck,false);assert.equal(out.providerWrites,0);
+  assert.equal(auth.created,0);assert.equal(auth.claimWrites,0);assert.deepEqual(db.paths(),before);
+  assert.equal(db.get('tenants/tenant-a/shoppers/manual-new-hn-1'),undefined);
+  assert.equal(db.paths().filter(x=>x.includes('commandReceipts')).length,0);
+});
+
+test('I3 P0 cohort / manual registration with no country still blocks an exact name-and-phone collision',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'super',authNamespace:'staff',projectIds:['project-a']});
+  db.seed('tenants/tenant-a/shoppers/TYA_GT_Q1',{
+    shopperId:'TYA_GT_Q1',tenantId:'tenant-a',sourceType:'hr_external',
+    nombre:'Julissa Flores',phone:'50255559999',country:'GT'
+  });
+  const command={version:'cxorbia-command-adapter-v1',commandType:'shopper.create',tenantId:'tenant-a',projectId:'project-a',
+    periodId:'project-a-2026-10',entityId:'manual-new-gt-1',idempotencyKey:'cohort-gt-no-country',
+    authorization:{providerEnforcementRequired:true,permission:'shopper.create'},
+    payload:{profile:{firstName:'Julissa',lastName:'Flores',whatsapp:'502 5555 9999'}}};
+  const out=await p.execute('staff-token',command);
+  assert.equal(out.code,'SHOPPER_CREATE_EXISTING_IDENTITY_REVIEW_REQUIRED');
+  assert.equal(auth.created,0);assert.equal(db.get('tenants/tenant-a/shoppers/manual-new-gt-1'),undefined);
+});
+
+test('I3 P0 cohort / same name with distinct phone or explicit different country is not silently treated as same person',async()=>{
+  for(const variation of [
+    {phone:'50498887654',country:'HN'},
+    {phone:'50499991234',country:'GT'}
+  ]){
+    const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+    db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'super',authNamespace:'staff',projectIds:['project-a']});
+    db.seed('tenants/tenant-a/shoppers/TYA_HN_ABCD1234',{
+      shopperId:'TYA_HN_ABCD1234',tenantId:'tenant-a',sourceType:'hr_external',
+      nombre:'Héctor Sánchez',whatsapp:'50499991234',pais:'HN'
+    });
+    const command={version:'cxorbia-command-adapter-v1',commandType:'shopper.create',tenantId:'tenant-a',projectId:'project-a',
+      periodId:'project-a-2026-10',entityId:'manual-distinct',idempotencyKey:'cohort-distinct-'+variation.country+'-'+variation.phone,
+      authorization:{providerEnforcementRequired:true,permission:'shopper.create'},
+      payload:{profile:{firstName:'Héctor',lastName:'Sánchez',whatsapp:variation.phone,pais:variation.country}}};
+    const out=await p.execute('staff-token',command);
+    assert.equal(out.ok,true);assert.equal(out.providerAck,true);assert.equal(auth.created,1);
+    assert.equal(db.get('tenants/tenant-a/shoppers/manual-distinct').sourceType,'platform');
+  }
+});
+
+test('I3 P0 cohort / duplicate of existing platform-created principal requires review',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'super',authNamespace:'staff',projectIds:['project-a']});
+  db.seed('tenants/tenant-a/shoppers/platform-old',{
+    shopperId:'platform-old',tenantId:'tenant-a',sourceType:'platform',
+    firstName:'Ana',lastName:'Pérez',phone:'50255550000',pais:'GT'
+  });
+  const command={version:'cxorbia-command-adapter-v1',commandType:'shopper.create',tenantId:'tenant-a',projectId:'project-a',
+    periodId:'project-a-2026-10',entityId:'platform-second',idempotencyKey:'cohort-manual-second',
+    authorization:{providerEnforcementRequired:true,permission:'shopper.create'},
+    payload:{profile:{nombre:'Ana Perez',phone:'50255550000',country:'Guatemala'}}};
+  const before=db.paths(),out=await p.execute('staff-token',command);
+  assert.equal(out.code,'SHOPPER_CREATE_EXISTING_IDENTITY_REVIEW_REQUIRED');
+  assert.equal(auth.created,0);assert.deepEqual(db.paths(),before);
+});
+
 
 test('PRE-I4 ADMIN-003 tenant-adjudicated canonical name survives fresh exact HR alias reconciliation',async()=>{
   const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
