@@ -1,0 +1,147 @@
+{
+  "schemaVersion": "cxorbia.i3.d04.exact-server-readback-repair.v1",
+  "id": "CXORBIA-I3-D04-EXACT-SERVER-READBACK-REPAIR-20261029",
+  "asOf": "2026-10-29",
+  "taskId": "D04",
+  "finding": "F11_EXISTING_FROZEN_PLAN",
+  "state": "P0_PROVEN_SOURCE_FIXED_LOCAL_QA_PASS_PENDING_CANONICAL_CI_DEV_E2E",
+  "production": false,
+  "fullTaskClosed": false,
+  "i3": "HOLD",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false,
+  "predecessorSource": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+  "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+  "sourceTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
+  "controlParentSha": "25eb1cbcc8327a8d1cac62537af0fd9831c1881f",
+  "evidence": {
+    "runId": 40970286585,
+    "runNumber": 1958,
+    "jobId": 123785624748,
+    "controlSha": "25eb1cbcc8327a8d1cac62537af0fd9831c1881f",
+    "artifactId": 12940506016,
+    "artifactZipSha256": "a04da5cb96bc8701ab60ec94e3e2a9b24aca9d9253a182377921b60cc4d17395",
+    "originalDecision": "HOLD",
+    "files": [
+      {
+        "path": "docs/checkpoints/evidence/CXORBIA_I3_RUN1958_D04_RESULT_ORIGINAL_20261029.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f925ac4c30b14723a5c2036ca917f4cff4c4418f"
+      },
+      {
+        "path": "docs/checkpoints/evidence/CXORBIA_I3_RUN1958_PREFLIGHT_ORIGINAL_20261029.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "65e839a8958ffb45d005188793a47595b02c86f2"
+      },
+      {
+        "path": "docs/checkpoints/evidence/CXORBIA_I3_D04_FALSE_FAILURE_RUN1958_20261029.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "57f8e11b10d4cd9b0881f8d21938f3d477112df3"
+      }
+    ]
+  },
+  "observed": {
+    "errorCode": "CERT_REVIEW_REMOTE_READBACK_MISMATCH",
+    "warningText": "No se pudo guardar la revisión. Comprueba tu sesión y vuelve a cargar el banco si alguien lo modificó.",
+    "warningVisible": true,
+    "ackSuccessToastObserved": false,
+    "oneEditClick": true,
+    "version": 2,
+    "questionCount": 15,
+    "editedQuestionMatchesRequested": true,
+    "historyEntries": 1,
+    "reviewerUid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+    "browserAndServerQuestionSemanticallyEqual": true,
+    "browserAndServerMapKeyOrderDifferent": true,
+    "fixtureRemoved": true,
+    "existingBanksUnchanged": true,
+    "exactFailingComparisonPredicate": "NOT_CAPTURED_AT_THROW; no sole cache-versus-key-order cause is asserted."
+  },
+  "repair": {
+    "owners": [
+      {
+        "path": "app/core/backend-resources.js",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d3073758c85f0184cdd38fd9f88882ecc212c30c"
+      },
+      {
+        "path": "app/modules/cert.js",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c6552631231639c4aadcf96b8db6e7e265465426"
+      }
+    ],
+    "test": {
+      "path": "tools/qa/cxorbia-i3-d04-versioned-bank-review.test.mjs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8c96f06f62a95aa8cb8993e6ec911afee3e64455"
+    },
+    "behavior": [
+      "Optional exact document read after the existing transaction, source server, no pending writes/cache, exact tenant/project/period/id/status/version/idempotency.",
+      "Review accepts only explicit confirmed server readback and all existing seven value predicates; it does not use the mutable presentation catalog as commit proof.",
+      "Question maps compare by keys and values; array order, field/type/content differences, sparse arrays and opaque values still fail.",
+      "No duplicate write or fallback when exact readback fails; existing resource operations without opt-in make no extra document GET."
+    ]
+  },
+  "localQa": {
+    "method": "Both actual product owners executed with separate in-memory durable document, exact snapshot and presentation cache; no Firebase/network/Auth.",
+    "previousSourceSameCases": {
+      "tests": 38,
+      "pass": 8,
+      "fail": 30
+    },
+    "repairedSource": {
+      "tests": 38,
+      "pass": 38,
+      "fail": 0
+    },
+    "previousSevenTestsPreserved": true,
+    "rootDirectNodeRun": {
+      "tests": 38,
+      "pass": 38,
+      "fail": 0
+    },
+    "canonicalCi": "PENDING",
+    "liveE2e": "PENDING",
+    "providerWrites": 0
+  },
+  "affectedScopes": {
+    "direct": [
+      "D04 review save/readback"
+    ],
+    "sharedProvider": [
+      "D05 and D07 share backend-resources; default path unchanged and tested, no full task closure inferred."
+    ],
+    "unchanged": [
+      "runtime",
+      "rules",
+      "Auth",
+      "HR",
+      "finance",
+      "Hosting config",
+      "C02 owners"
+    ]
+  },
+  "preserved": {
+    "c02IndependentReadback": {
+      "path": "docs/checkpoints/CXORBIA_I3_C02_INDEPENDENT_APP_READBACK_RUN1957_20261029.json",
+      "gitBlob": "b09815e4ce430f405c37ffaef8e5173c29d8db28",
+      "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1"
+    },
+    "historicalD04Runs": [
+      1788,
+      1797
+    ],
+    "originalRun1958Result": true,
+    "historicalSeals": true,
+    "identityVerifiedGroups": 29,
+    "legalAndPhoneNotGlobalBlockers": true
+  },
+  "next": "Canonical authority and existing source-proof job for this exact successor, then existing Hosting-only DEV preview transport, exact served-byte readback and bounded D04 independent-session proof. No replay on the defective predecessor."
+}

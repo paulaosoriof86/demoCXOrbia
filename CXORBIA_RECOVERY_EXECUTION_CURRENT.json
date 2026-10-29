@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
-  "productTree": "be0ad639a652439200ef4043bb08d5d4b709f266",
+  "productSourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+  "productTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
   "i3P0CountryScope20261028": {
     "sourceSha": "db56b89a1221d26f5cc4466585cda7eaa7360ddd",
     "sourceTree": "7b157bdf187ed712256eacfe86c1ff016b40c44e",
@@ -99,7 +99,7 @@
     "D02": "PASS_LIVE_PARSER_RUN1753",
     "D01": "PASS_AUTHORIZED_DOCUMENT_SOURCE",
     "D03": "LIVE_E2E_PASS_RUN1778_FRESH_GENERATION_15Q_REPLAY_CLEANUP",
-    "D04": "RUN1788_CONTENT_EDIT_ACK_VERSION_HISTORY_RELOAD_AND_RUN1797_NAME_STABLE_ID_PASS_PRESERVED__OWNER_PARITY_E753__INDEPENDENT_SESSION_AND_HUMAN_PENDING",
+    "D04": "RUN1788_CONTENT_AND_RUN1797_NAME_ACK_VERSION_HISTORY_RELOAD_PASS_PRESERVED__RUN1958_POSTCOMMIT_FALSE_UI_FAILURE_PROVEN__SUCCESSOR_946C3CB_EXACT_SERVER_READBACK_LOCAL_38_PASS__CANONICAL_CI_DEV_INDEPENDENT_SESSION_HUMAN_PENDING",
     "E04": "F12_CLIENT_SOURCE_ABSENT_LIVE_PASS_RUN1797__F09_NPS_NOTES_MEETINGS_DURABLE_OPEN__HUMAN_PENDING",
     "A09": "RUN1869_DEV_REVIEW_FLAGS_TWO_VISITS_PASS__THREE_VISIT_UI_ADMIN_SHOPPER_FOCAL_PASS__FULL_E2E_PENDING",
     "B11": "SOURCE_TESTS_8_OF_8_AND_4_OF_4_PASS__DEV_RUNTIME_00327_HEALTH_PASS_RUN1863__VRM287_DURABLE_2_VISITS_PASS_RUN1869__I3_E2E_PENDING",
@@ -494,22 +494,22 @@
   ],
   "coverageGuard": "Do not declare all finance, HR, Shopper, Client, Certification or Phase A PASS solely from source tests or an inherited PASS. Apply task-specific provider/readback/human proof and preserve historical VRM PASS without reproducible drift; no skipped findings.",
   "continuityHandoff": {
-    "path": "docs/checkpoints/CXORBIA_I3_C02_INDEPENDENT_APP_READBACK_RUN1957_20261029.json",
-    "blobSha": "b09815e4ce430f405c37ffaef8e5173c29d8db28",
-    "kind": "C02_INDEPENDENT_READ_ACCEPTANCE_APPEND_ONLY_NOT_NEW_PLAN",
+    "path": "docs/checkpoints/CXORBIA_I3_D04_EXACT_SERVER_READBACK_REPAIR_20261029.json",
+    "blobSha": "87d53c006e247bec3b8ddde4599ce945fb6f48e8",
+    "kind": "D04_PROVEN_DEFECT_SERIAL_SOURCE_REPAIR_NOT_NEW_PLAN",
     "asOf": "2026-10-29",
     "frozenPlanId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
-    "productSourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
-    "reviewedHeadBeforeHandoff": "83ce1cceb2d1cea0bd1ff2b46ff35ea8aaeeed5d",
+    "productSourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+    "reviewedHeadBeforeHandoff": "25eb1cbcc8327a8d1cac62537af0fd9831c1881f",
     "nextTaskIds": [
       "G03",
       "G04",
-      "C02",
       "D04",
+      "C02",
       "D07"
     ],
-    "immediateAction": "Preserve the adjudicated C02 fresh authenticated session read from RUN1957; do not replay reconciliation. Continue the existing R4 C02/D04 runner with the exact ACK observation armed before the single D04 edit click and bounded diagnostics. RUN1957 passed runtime/preview/HR/served-owner identity and C02; D04 cause remains unproven after missing its toast. Read R4 artifact and cleanup before any further attempt.",
-    "noProductChanges": true,
+    "immediateAction": "Run existing canonical authority and source-proof jobs for exact successor 946c3cb8eff6a043693b10ed628d2ebc860508e1/4afcecfd4b41ac697995a1164115a23a46db44c7. After PASS use only existing Hosting-preview transport with exact source-proof binding, then pin observed preview bytes/version for bounded D04 reproof in fresh Admin contexts. Do not rerun R4/e753; preserve C02 RUN1957 independent read without financial replay.",
+    "noProductChanges": false,
     "noProduction": true,
     "receiptPointerField": "currentExecutionReceipt",
     "sealedHistoricalFields": [
@@ -532,13 +532,15 @@
       "scope": "Only the exact DEV visit, existing reconciliation receipt and matching audit."
     },
     "resolvedAccessBlockPath": "docs/checkpoints/CXORBIA_I3_C02_RECEIPT_READ_ACCESS_BLOCK_20261029.json",
-    "acceptanceRemaining": "D04 edited bank/content/version in an independent session with ACK/readback/reload; C02 human acceptance and remaining frozen clauses, plus other frozen-plan tasks. C02 independent read from the human Chrome session is proven and must not be reopened.",
+    "acceptanceRemaining": "D04 successor ACK, exact server questions/version/history, reload and independent fresh session; human acceptance and remaining frozen-plan tasks. Preserved C02 independent read is not reopened.",
     "currentSessionProofPackage": {
       "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R4.json",
-      "gitBlob": "7940fcf71a58b38ee0809f3fc129865cac06d6b7"
+      "gitBlob": "7940fcf71a58b38ee0809f3fc129865cac06d6b7",
+      "state": "EXECUTED_HOLD_CONFIRMED_D04_FALSE_UI_FAILURE"
     },
     "browserSessionFinding": "Protected DEV session-continuity wraps Firebase SESSION into LOCAL. A normal second Chrome tab shares authentication; it is not a separate session. Keep Chrome logged in.",
-    "resumeRule": "Inspect the latest tagged run for R4 before launching anything. Keep the original RUN1957 HOLD and immutable result; use the separate adjudication for the C02 clause. Do not infer zero D04 edits from the old counter or replay the financial command."
+    "resumeRule": "Inspect current source QA and preview receipts before triggering. Preserve original RUN1957/1958 HOLD results and sealed RUN1852 fields. Never replay Q205 reconciliation or recreate Q7300; only one synthetic D04 fixture with exact cleanup after successor preview identity passes.",
+    "sourceProofForCurrentSuccessor": "PENDING"
   },
   "previousExecutionReceiptBeforeRun1788": {
     "path": "CXORBIA_I3_D04_E04_DEV_MATERIALIZATION_RUN1782_2026-10-18.json",
@@ -744,9 +746,9 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V194.json",
-    "gitBlob": "b8adb29e0513f06a441fd4209ef96912268e1646",
-    "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V195.json",
+    "gitBlob": "5f440b395eaf4d82abffe3d489cde0592f9b81f3",
+    "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
     "allModulesMatch": false,
     "phaseAComplete": false
   },
@@ -2714,7 +2716,7 @@
     "gate21": "HOLD",
     "production": false
   },
-  "predecessorProductSourceSha": "8e2bda6c19b1b9411d98ccda8248f66553a1c8b2",
+  "predecessorProductSourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
   "d07DiagnosticInstrumentation20261028": {
     "sourceSha": "77fd283349ce46033a95235fd2fae632e856fe35",
     "sourceTree": "9e3c446c829edbcb7cc5d2f6ab179ddacb246248",
@@ -2784,17 +2786,17 @@
     "gitBlob": "879313bfbced75baa8d764d9678f5efcc489c944"
   },
   "activeShockModuleTruth": {
-    "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V194.json",
-    "matrixBlob": "b8adb29e0513f06a441fd4209ef96912268e1646",
+    "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V195.json",
+    "matrixBlob": "5f440b395eaf4d82abffe3d489cde0592f9b81f3",
     "classificationCounts": {
       "COMPOSED_NOT_DEPLOYED": 2,
       "MATCH": 5,
       "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN": 2,
       "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 3,
       "SOURCE_FIXED_PENDING_CI_AND_DEV_FOCAL": 1,
+      "SOURCE_FIXED_PENDING_DEV_E2E_HUMAN": 1,
       "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN": 4,
-      "SOURCE_INSTRUMENTATION_DEV_MATERIALIZED_PENDING_ADMIN_LIVE_E2E": 1,
       "TRUE_FUNCTIONAL_DEFECT": 3
     },
     "derivedAt": "2026-10-29",
@@ -3032,33 +3034,28 @@
     "scope": "LOCAL_ISOLATED_SOURCE_CONTRACTS_ONLY_NOT_I3_CERTIFICATION"
   },
   "currentExecutionReceipt": {
-    "path": "docs/checkpoints/CXORBIA_I3_C02_INDEPENDENT_APP_READBACK_RUN1957_20261029.json",
-    "gitBlob": "b09815e4ce430f405c37ffaef8e5173c29d8db28",
-    "kind": "C02_INDEPENDENT_APP_READBACK_SINGLE_ACCEPTANCE_CLAUSE",
-    "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
-    "sourceTree": "be0ad639a652439200ef4043bb08d5d4b709f266",
-    "runId": 40968841388,
-    "runNumber": 1957,
-    "runHeadSha": "499a09f1657920eca0d285854d6a87efe414d511",
-    "artifactId": 12939112176,
-    "artifactZipSha256": "f42043b349384943e3f99324118b0f279ea258079b2891299976858292d10f45",
-    "sourceChanges": 0,
-    "newFullTaskClosures": 0,
-    "newFocalAcceptanceClauses": 1,
-    "combinedRunDecision": "HOLD",
-    "scope": "C02_READ_OF_EXISTING_RECONCILED_VISIT_IN_A_NEW_ISOLATED_CI_SESSION",
-    "production": false,
-    "financeAttempt": {
-      "originalClickCount": 1,
-      "newClickCount": 0,
-      "visitId": "hr_2026-10_gt_2_97b3975c30",
-      "independentOfOriginalHumanChrome": true,
-      "provenSession": "sessions.first",
-      "ordinaryPasswordLoginProven": false,
-      "serverProviderAck": true,
-      "financialMatchParityFields": 24,
-      "fullTaskClosed": false
+    "path": "docs/checkpoints/CXORBIA_I3_D04_EXACT_SERVER_READBACK_REPAIR_20261029.json",
+    "gitBlob": "87d53c006e247bec3b8ddde4599ce945fb6f48e8",
+    "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+    "sourceTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
+    "predecessorSourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+    "localTests": {
+      "tests": 38,
+      "pass": 38,
+      "fail": 0
     },
+    "canonicalCi": "PENDING",
+    "devMaterialization": "PENDING_SUCCESSOR_HOSTING_PREVIEW",
+    "liveE2e": "PENDING",
+    "fullTaskClosed": false,
+    "production": false,
+    "kind": "D04_PROVEN_FALSE_FAILURE_SOURCE_REPAIR_LOCAL_QA_ONLY",
+    "controlParentSha": "25eb1cbcc8327a8d1cac62537af0fd9831c1881f",
+    "sourceCommitParentSha": "25eb1cbcc8327a8d1cac62537af0fd9831c1881f",
+    "sourceChangedProductOwners": 2,
+    "sourceChangedQaFiles": 1,
+    "newFullTaskClosures": 0,
+    "run1958OriginalDecision": "HOLD",
     "state": "I3_HOLD"
   },
   "lastExecutionReceiptSemantics": "SEALED_POSTDEPLOY_SNAPSHOT_NOT_CURRENT_CONTROL_HANDOFF",
@@ -3237,7 +3234,7 @@
   "currentSessionProofPackage": {
     "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R4.json",
     "gitBlob": "7940fcf71a58b38ee0809f3fc129865cac06d6b7",
-    "state": "READY_FOR_FOCAL_D04_ACK_OBSERVATION_RETRY",
+    "state": "EXECUTED_HOLD_CONFIRMED_D04_FALSE_UI_FAILURE",
     "expectedControlParentSha": "499a09f1657920eca0d285854d6a87efe414d511",
     "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
     "previewRunId": 40901257714,
@@ -3255,10 +3252,24 @@
     "sourceChanges": 0,
     "newWorkflow": 0,
     "newMaterializer": 0,
-    "liveResult": "PENDING",
+    "liveResult": "HOLD",
     "attemptNumber": 4,
     "priorAttemptRunId": 40968841388,
-    "runnerOs": "ubuntu-24.04"
+    "runnerOs": "ubuntu-24.04",
+    "runId": 40970286585,
+    "runNumber": 1958,
+    "jobId": 123785624748,
+    "controlSha": "25eb1cbcc8327a8d1cac62537af0fd9831c1881f",
+    "artifactId": 12940506016,
+    "artifactZipSha256": "a04da5cb96bc8701ab60ec94e3e2a9b24aca9d9253a182377921b60cc4d17395",
+    "exactError": "CERT_REVIEW_REMOTE_READBACK_MISMATCH",
+    "serverVersion": 2,
+    "historyEntries": 1,
+    "questionCount": 15,
+    "fixtureRemoved": true,
+    "existingBanksUnchanged": true,
+    "nextAttemptOnSameSourceAllowed": false,
+    "reason": "Actual postcommit UI false failure proven; successor source repair required before another focal attempt."
   },
   "d04CarryForwardRecovered20261029": {
     "status": "PRIOR_FOCAL_PASS_PRESERVED_INDEPENDENT_SESSION_AND_HUMAN_PENDING",
@@ -3429,6 +3440,46 @@
       "d04Cause": "NOT_ESTABLISHED",
       "fixtureRemoved": true,
       "existingBanksUnchanged": true
+    },
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R4.json",
+      "gitBlob": "7940fcf71a58b38ee0809f3fc129865cac06d6b7",
+      "state": "EXECUTED_HOLD_CONFIRMED_D04_FALSE_UI_FAILURE",
+      "expectedControlParentSha": "499a09f1657920eca0d285854d6a87efe414d511",
+      "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+      "previewRunId": 40901257714,
+      "tasks": [
+        "C02",
+        "D04"
+      ],
+      "supplementalReadOnlyDiagnostic": "D07_OPTIONS_ONLY",
+      "existingWorkflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      "existingJob": "phasea-representative-same-artifact-live-reproof",
+      "existingRunner": "tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs",
+      "triggerMarker": "[i3-c02-d04-session-proof]",
+      "userChromeSessionPreserved": true,
+      "production": false,
+      "sourceChanges": 0,
+      "newWorkflow": 0,
+      "newMaterializer": 0,
+      "liveResult": "HOLD",
+      "attemptNumber": 4,
+      "priorAttemptRunId": 40968841388,
+      "runnerOs": "ubuntu-24.04",
+      "runId": 40970286585,
+      "runNumber": 1958,
+      "jobId": 123785624748,
+      "controlSha": "25eb1cbcc8327a8d1cac62537af0fd9831c1881f",
+      "artifactId": 12940506016,
+      "artifactZipSha256": "a04da5cb96bc8701ab60ec94e3e2a9b24aca9d9253a182377921b60cc4d17395",
+      "exactError": "CERT_REVIEW_REMOTE_READBACK_MISMATCH",
+      "serverVersion": 2,
+      "historyEntries": 1,
+      "questionCount": 15,
+      "fixtureRemoved": true,
+      "existingBanksUnchanged": true,
+      "nextAttemptOnSameSourceAllowed": false,
+      "reason": "Actual postcommit UI false failure proven; successor source repair required before another focal attempt."
     }
   ],
   "previousCurrentExecutionReceiptBeforeRun1957Adjudication": {
@@ -3476,5 +3527,103 @@
     "independentOfOriginalHumanChrome": true,
     "originalCombinedResultPreserved": true,
     "fullTaskClosed": false
+  },
+  "previousProductSourceBeforeD04ExactReadback20261029": {
+    "sha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+    "tree": "be0ad639a652439200ef4043bb08d5d4b709f266"
+  },
+  "previousCurrentExecutionReceiptBeforeD04ExactReadback20261029": {
+    "path": "docs/checkpoints/CXORBIA_I3_C02_INDEPENDENT_APP_READBACK_RUN1957_20261029.json",
+    "gitBlob": "b09815e4ce430f405c37ffaef8e5173c29d8db28",
+    "kind": "C02_INDEPENDENT_APP_READBACK_SINGLE_ACCEPTANCE_CLAUSE",
+    "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+    "sourceTree": "be0ad639a652439200ef4043bb08d5d4b709f266",
+    "runId": 40968841388,
+    "runNumber": 1957,
+    "runHeadSha": "499a09f1657920eca0d285854d6a87efe414d511",
+    "artifactId": 12939112176,
+    "artifactZipSha256": "f42043b349384943e3f99324118b0f279ea258079b2891299976858292d10f45",
+    "sourceChanges": 0,
+    "newFullTaskClosures": 0,
+    "newFocalAcceptanceClauses": 1,
+    "combinedRunDecision": "HOLD",
+    "scope": "C02_READ_OF_EXISTING_RECONCILED_VISIT_IN_A_NEW_ISOLATED_CI_SESSION",
+    "production": false,
+    "financeAttempt": {
+      "originalClickCount": 1,
+      "newClickCount": 0,
+      "visitId": "hr_2026-10_gt_2_97b3975c30",
+      "independentOfOriginalHumanChrome": true,
+      "provenSession": "sessions.first",
+      "ordinaryPasswordLoginProven": false,
+      "serverProviderAck": true,
+      "financialMatchParityFields": 24,
+      "fullTaskClosed": false
+    },
+    "state": "I3_HOLD"
+  },
+  "d04ExactServerReadbackRepair20261029": {
+    "path": "docs/checkpoints/CXORBIA_I3_D04_EXACT_SERVER_READBACK_REPAIR_20261029.json",
+    "gitBlob": "87d53c006e247bec3b8ddde4599ce945fb6f48e8",
+    "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+    "sourceTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
+    "predecessorSourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+    "localTests": {
+      "tests": 38,
+      "pass": 38,
+      "fail": 0
+    },
+    "canonicalCi": "PENDING",
+    "devMaterialization": "PENDING_SUCCESSOR_HOSTING_PREVIEW",
+    "liveE2e": "PENDING",
+    "fullTaskClosed": false,
+    "production": false
+  },
+  "previousContinuityHandoffBeforeD04ExactReadback20261029": {
+    "path": "docs/checkpoints/CXORBIA_I3_C02_INDEPENDENT_APP_READBACK_RUN1957_20261029.json",
+    "blobSha": "b09815e4ce430f405c37ffaef8e5173c29d8db28",
+    "kind": "C02_INDEPENDENT_READ_ACCEPTANCE_APPEND_ONLY_NOT_NEW_PLAN",
+    "asOf": "2026-10-29",
+    "frozenPlanId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
+    "productSourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+    "reviewedHeadBeforeHandoff": "83ce1cceb2d1cea0bd1ff2b46ff35ea8aaeeed5d",
+    "nextTaskIds": [
+      "G03",
+      "G04",
+      "C02",
+      "D04",
+      "D07"
+    ],
+    "immediateAction": "Preserve the adjudicated C02 fresh authenticated session read from RUN1957; do not replay reconciliation. Continue the existing R4 C02/D04 runner with the exact ACK observation armed before the single D04 edit click and bounded diagnostics. RUN1957 passed runtime/preview/HR/served-owner identity and C02; D04 cause remains unproven after missing its toast. Read R4 artifact and cleanup before any further attempt.",
+    "noProductChanges": true,
+    "noProduction": true,
+    "receiptPointerField": "currentExecutionReceipt",
+    "sealedHistoricalFields": [
+      "lastExecutionReceipt",
+      "currentDevMaterialization",
+      "postDeployRunSeal"
+    ],
+    "preservedSourceProof": {
+      "runId": 40943351882,
+      "runNumber": 1954,
+      "tests": 303,
+      "pass": 303,
+      "fail": 0
+    },
+    "doNotRepeatFinanceVisitId": "hr_2026-10_gt_2_97b3975c30",
+    "consoleReadScopeAuthorization": {
+      "status": "GRANTED_AND_EXECUTED",
+      "userMessage": "autorizo",
+      "date": "2026-10-29",
+      "scope": "Only the exact DEV visit, existing reconciliation receipt and matching audit."
+    },
+    "resolvedAccessBlockPath": "docs/checkpoints/CXORBIA_I3_C02_RECEIPT_READ_ACCESS_BLOCK_20261029.json",
+    "acceptanceRemaining": "D04 edited bank/content/version in an independent session with ACK/readback/reload; C02 human acceptance and remaining frozen clauses, plus other frozen-plan tasks. C02 independent read from the human Chrome session is proven and must not be reopened.",
+    "currentSessionProofPackage": {
+      "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R4.json",
+      "gitBlob": "7940fcf71a58b38ee0809f3fc129865cac06d6b7"
+    },
+    "browserSessionFinding": "Protected DEV session-continuity wraps Firebase SESSION into LOCAL. A normal second Chrome tab shares authentication; it is not a separate session. Keep Chrome logged in.",
+    "resumeRule": "Inspect the latest tagged run for R4 before launching anything. Keep the original RUN1957 HOLD and immutable result; use the separate adjudication for the C02 clause. Do not infer zero D04 edits from the old counter or replay the financial command."
   }
 }

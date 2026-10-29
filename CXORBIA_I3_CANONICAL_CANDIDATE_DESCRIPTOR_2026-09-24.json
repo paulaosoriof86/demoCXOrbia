@@ -4,12 +4,12 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
-  "productTreeAuthority": "be0ad639a652439200ef4043bb08d5d4b709f266",
-  "predecessorProductSourceSha": "8e2bda6c19b1b9411d98ccda8248f66553a1c8b2",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V526_2026-10-29.json",
-  "findingsLedgerExpectedGitBlob": "e9118fb912899f19790411f2de09f94a11753dec",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V194.json",
+  "productSourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+  "productTreeAuthority": "4afcecfd4b41ac697995a1164115a23a46db44c7",
+  "predecessorProductSourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V527_2026-10-29.json",
+  "findingsLedgerExpectedGitBlob": "9f6fa8ab137d9a3d160c85f246f15e94ec047cd4",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V195.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -854,7 +854,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "456be8c852fa995fa1431536af29b09155009a0e",
+  "productSourceTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -3028,7 +3028,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "b8adb29e0513f06a441fd4209ef96912268e1646",
+  "moduleTruthExpectedGitBlob": "5f440b395eaf4d82abffe3d489cde0592f9b81f3",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -14563,6 +14563,45 @@
     "production": false
   },
   "g03CanonicalControlAlignment20261029": {
+    "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+    "sourceTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
+    "controlParentSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+    "previousControlHeadSha": "25eb1cbcc8327a8d1cac62537af0fd9831c1881f",
+    "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V195.json",
+    "moduleTruthBlob": "5f440b395eaf4d82abffe3d489cde0592f9b81f3",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V527_2026-10-29.json",
+    "ledgerBlob": "9f6fa8ab137d9a3d160c85f246f15e94ec047cd4",
+    "previewRunId": null,
+    "hostingOnly": true,
+    "servedBytes": "PENDING_SUCCESSOR_PREVIEW",
+    "authenticatedNewPreview": "PENDING",
+    "preservedMatchDomains": [
+      "historical",
+      "identity-membership-roll-forward",
+      "phase-a-supporting-core",
+      "reports-admin-shopper",
+      "tenant-admin-config-branding"
+    ],
+    "production": false
+  },
+  "previousNextExactActionBeforeContinuity20261029": "D04 real versioned name-only E2E on exact RUN1796 DEV: Admin user, 15-question QA bank, name rename without question change, ACK/reload/version+history, no publication, no other bank change, cleanup; Client F12 same HR. Preserve Run1792 Admin/Shopper proof unchanged owner hashes.",
+  "controlContinuityAuthority": {
+    "path": "CXORBIA_RECOVERY_EXECUTION_CURRENT.json",
+    "currentReceiptField": "currentExecutionReceipt",
+    "handoffField": "continuityHandoff",
+    "sealedHistoricalReceiptField": "lastExecutionReceipt",
+    "semantics": "CURRENT_CONTROL_QA_IS_SEPARATE_FROM_LAST_SEALED_POSTDEPLOY"
+  },
+  "previousProductSourceBeforeD04ExactReadback20261029": {
+    "sha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+    "tree": "be0ad639a652439200ef4043bb08d5d4b709f266",
+    "legacyProductSourceTreeAlias": "456be8c852fa995fa1431536af29b09155009a0e",
+    "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V194.json",
+    "moduleTruthBlob": "b8adb29e0513f06a441fd4209ef96912268e1646",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V526_2026-10-29.json",
+    "ledgerBlob": "e9118fb912899f19790411f2de09f94a11753dec"
+  },
+  "previousG03CanonicalControlAlignmentBeforeD04ExactReadback20261029": {
     "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
     "sourceTree": "be0ad639a652439200ef4043bb08d5d4b709f266",
     "controlParentSha": "b2a6c62b525f52efc086e1b1603aff08a55d028e",
@@ -14583,12 +14622,21 @@
     ],
     "production": false
   },
-  "previousNextExactActionBeforeContinuity20261029": "D04 real versioned name-only E2E on exact RUN1796 DEV: Admin user, 15-question QA bank, name rename without question change, ACK/reload/version+history, no publication, no other bank change, cleanup; Client F12 same HR. Preserve Run1792 Admin/Shopper proof unchanged owner hashes.",
-  "controlContinuityAuthority": {
-    "path": "CXORBIA_RECOVERY_EXECUTION_CURRENT.json",
-    "currentReceiptField": "currentExecutionReceipt",
-    "handoffField": "continuityHandoff",
-    "sealedHistoricalReceiptField": "lastExecutionReceipt",
-    "semantics": "CURRENT_CONTROL_QA_IS_SEPARATE_FROM_LAST_SEALED_POSTDEPLOY"
+  "d04ExactServerReadbackRepair20261029": {
+    "path": "docs/checkpoints/CXORBIA_I3_D04_EXACT_SERVER_READBACK_REPAIR_20261029.json",
+    "gitBlob": "87d53c006e247bec3b8ddde4599ce945fb6f48e8",
+    "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+    "sourceTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
+    "predecessorSourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+    "localTests": {
+      "tests": 38,
+      "pass": 38,
+      "fail": 0
+    },
+    "canonicalCi": "PENDING",
+    "devMaterialization": "PENDING_SUCCESSOR_HOSTING_PREVIEW",
+    "liveE2e": "PENDING",
+    "fullTaskClosed": false,
+    "production": false
   }
 }

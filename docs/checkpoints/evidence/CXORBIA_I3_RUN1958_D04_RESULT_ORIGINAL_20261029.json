@@ -1,0 +1,407 @@
+{
+  "decision": "HOLD",
+  "version": "cxorbia.i3.c02-d04.independent-sessions.v1",
+  "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+  "sourceTree": "be0ad639a652439200ef4043bb08d5d4b709f266",
+  "materializationRunId": 40901257714,
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/8f3502960bcb878e",
+  "runtimeRevision": "cxorbia-live-hr-dev-00330-fim",
+  "hrRevision": "6fd4beb82cc85e61c26f54992fc60fd28d49f9b1c832654dba6fd3204571bcbf",
+  "scope": {
+    "tenant": "tya",
+    "project": "cinepolis",
+    "period": "cinepolis-2026-10",
+    "taskIds": [
+      "C02",
+      "D04"
+    ]
+  },
+  "d04": {},
+  "e04": {},
+  "cleanup": {
+    "qaAbsentAfter": true,
+    "existingBanksUnchanged": true
+  },
+  "writes": {
+    "auth": 0,
+    "hr": 0,
+    "otherBanks": 0,
+    "production": 0,
+    "finance": null,
+    "qaResourceSeed": 1,
+    "qaResourceEdit": 1,
+    "qaResourceCleanup": 1
+  },
+  "production": false,
+  "preview": {
+    "origin": "https://cxorbia-backend-dev--i3-recovery-1029-40901257714-yxqv51l2.web.app",
+    "runId": 40901257714,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/8f3502960bcb878e",
+    "runtimeRevision": "cxorbia-live-hr-dev-00330-fim",
+    "runtimeDigest": "sha256:bba5ebbf19c203954ec0be6c2c3ef01a057e7ce3f98fb7e5eeac2d889bd0a500"
+  },
+  "packageBlob": "7940fcf71a58b38ee0809f3fc129865cac06d6b7",
+  "controlSha": "25eb1cbcc8327a8d1cac62537af0fd9831c1881f",
+  "deploys": 0,
+  "i3": "HOLD",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false,
+  "actor": {
+    "uid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+    "role": "admin",
+    "authNamespace": "staff",
+    "tenantId": "tya",
+    "existingUser": true,
+    "membershipDocumentPresent": true,
+    "claimsChanged": false,
+    "createdUser": false
+  },
+  "c02": {
+    "durable": {
+      "before": {
+        "receipt": {
+          "path": "tenants/tya/commandReceipts/1c1fe3d3e9c8982e59577c9b41cb0b72b4996486",
+          "updateTime": {
+            "seconds": 1793304456,
+            "nanoseconds": 585075000
+          },
+          "financialMatch": {
+            "status": "reconciled_exact",
+            "authority": "project_country_config",
+            "projectConfigVersion": 4,
+            "sourceRevision": "6fd4beb82cc85e61c26f54992fc60fd28d49f9b1c832654dba6fd3204571bcbf",
+            "visitId": "hr_2026-10_gt_2_97b3975c30",
+            "durableVisitId": "OCTUBRE 26!2",
+            "hrRowId": "OCTUBRE 26!2",
+            "country": "GT",
+            "pais": "GT",
+            "currency": "Q",
+            "moneda": "Q",
+            "honorario": 60,
+            "honorarioSource": "project_country_config",
+            "boleto": 33,
+            "combo": 112,
+            "reembolso": 145,
+            "total": 205,
+            "estado": "validada",
+            "liquidationState": "validated_financial_source",
+            "paymentState": "not_scheduled",
+            "externalPaymentConfirmed": false,
+            "paymentSourceRef": null,
+            "reconciledAt": "2026-10-29T20:07:36.274Z",
+            "reconciledBy": "NkcIVM4AnSU1gI9cGKHI5P12YqC3"
+          },
+          "header": {
+            "commandType": "finance.reconcile.visit",
+            "entityId": "OCTUBRE 26!2",
+            "actorUid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+            "providerAck": true,
+            "status": "committed",
+            "updatedAt": "2026-10-29T20:07:36.275Z",
+            "commandDigest": "105da7149063d5e430e3488ca91421c009fb8a398d8e0594142db2b5c43dc8df"
+          }
+        },
+        "audit": {
+          "path": "tenants/tya/entityAuditTrail/finance-f652be05bb1506688e59ba5fac06616dccebbd61",
+          "updateTime": {
+            "seconds": 1793304456,
+            "nanoseconds": 585075000
+          },
+          "financialMatch": {
+            "status": "reconciled_exact",
+            "authority": "project_country_config",
+            "projectConfigVersion": 4,
+            "sourceRevision": "6fd4beb82cc85e61c26f54992fc60fd28d49f9b1c832654dba6fd3204571bcbf",
+            "visitId": "hr_2026-10_gt_2_97b3975c30",
+            "durableVisitId": "OCTUBRE 26!2",
+            "hrRowId": "OCTUBRE 26!2",
+            "country": "GT",
+            "pais": "GT",
+            "currency": "Q",
+            "moneda": "Q",
+            "honorario": 60,
+            "honorarioSource": "project_country_config",
+            "boleto": 33,
+            "combo": 112,
+            "reembolso": 145,
+            "total": 205,
+            "estado": "validada",
+            "liquidationState": "validated_financial_source",
+            "paymentState": "not_scheduled",
+            "externalPaymentConfirmed": false,
+            "paymentSourceRef": null,
+            "reconciledAt": "2026-10-29T20:07:36.274Z",
+            "reconciledBy": "NkcIVM4AnSU1gI9cGKHI5P12YqC3"
+          },
+          "header": {
+            "commandType": "finance.reconcile.visit",
+            "entityId": "OCTUBRE 26!2",
+            "entityType": "financeReconciliation",
+            "actorUid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+            "actorRole": "admin",
+            "tenantId": "tya",
+            "projectId": "cinepolis",
+            "periodId": "cinepolis-2026-10",
+            "externalPaymentConfirmed": false,
+            "createdAt": "2026-10-29T20:07:36.275Z",
+            "idempotencyKey": "finance.reconcile.visit:19vve9y"
+          }
+        },
+        "visit": {
+          "path": "tenants/tya/projects/cinepolis/visits/OCTUBRE 26!2",
+          "updateTime": {
+            "seconds": 1793304456,
+            "nanoseconds": 585075000
+          },
+          "financialMatch": {
+            "country": "GT",
+            "estado": "validada",
+            "hrRowId": "OCTUBRE 26!2",
+            "projectConfigVersion": 4,
+            "externalPaymentConfirmed": false,
+            "boleto": 33,
+            "reconciledAt": "2026-10-29T20:07:36.274Z",
+            "combo": 112,
+            "reconciledBy": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+            "durableVisitId": "OCTUBRE 26!2",
+            "pais": "GT",
+            "total": 205,
+            "visitId": "hr_2026-10_gt_2_97b3975c30",
+            "honorarioSource": "project_country_config",
+            "authority": "project_country_config",
+            "paymentSourceRef": null,
+            "moneda": "Q",
+            "sourceRevision": "6fd4beb82cc85e61c26f54992fc60fd28d49f9b1c832654dba6fd3204571bcbf",
+            "currency": "Q",
+            "honorario": 60,
+            "liquidationState": "validated_financial_source",
+            "paymentState": "not_scheduled",
+            "reembolso": 145,
+            "status": "reconciled_exact"
+          },
+          "header": {
+            "financialSourceStatus": "reconciled_exact",
+            "financialReviewRequired": false,
+            "version": 25,
+            "updatedAt": "2026-10-29T20:07:36.275Z"
+          }
+        }
+      }
+    },
+    "independentApplicationSession": false,
+    "fullTaskClosed": false,
+    "baseline": {
+      "label": "baseline",
+      "method": "VISIBLE_DOM_READ_ONLY",
+      "projectId": "cinepolis",
+      "periodId": "cinepolis-2026-10",
+      "uiVisitId": "hr_2026-10_gt_2_97b3975c30",
+      "uniqueRowCount": 1,
+      "cells": [
+        "▶ Mover a lote",
+        "Julissa Flores",
+        "C. Miraflores",
+        "2026-10-14",
+        "Validada · lista para lote",
+        "✅",
+        "Q 60",
+        "Q 145",
+        "Q 205",
+        "—",
+        "👁 💳 Registrar pago ＋ lote"
+      ],
+      "detail": {
+        "Visita": "C. Miraflores",
+        "Estado": "Validada · lista para lote",
+        "Honorario": "Q 60",
+        "Reembolso": "Q 145",
+        "Total": "Q 205",
+        "Pago externo": "No confirmado",
+        "Referencia de fuente": "Pendiente de fuente"
+      },
+      "screenshot": "c02-baseline.png",
+      "mutationRequests": [],
+      "reconcileClicks": 0,
+      "paymentClicks": 0,
+      "batchClicks": 0
+    }
+  },
+  "hrRevisionLive": "6fd4beb82cc85e61c26f54992fc60fd28d49f9b1c832654dba6fd3204571bcbf",
+  "hrRevisionChangedSinceMaterialization": false,
+  "sessions": {
+    "first": {
+      "newBrowserContext": true,
+      "authNullBeforeSignIn": true,
+      "expectedActorUid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+      "mechanism": "existing_ci_custom_token_in_memory",
+      "ordinaryPasswordLoginProven": false,
+      "tokenLogged": false,
+      "principal": {
+        "uid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+        "role": "admin",
+        "tenantId": "tya",
+        "authNamespace": "staff"
+      },
+      "authenticatedActorUid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+      "applicationAuthAndHrGatePassed": true
+    },
+    "independent": null
+  },
+  "d04Attempt": {
+    "bankId": "certbank-cinepolis-cinepolis-2026-10-qa-i3-d04-session-40970286585-1",
+    "certificationId": "qa-i3-d04-session-40970286585-1",
+    "seedVersion": 1,
+    "editClickCount": 1,
+    "expectedQuestion": "Pregunta QA revisada para sesión independiente 40970286585-1",
+    "expectedFirstQuestion": {
+      "q": "Pregunta QA revisada para sesión independiente 40970286585-1",
+      "ops": [
+        "Primera",
+        "Segunda",
+        "Tercera",
+        "Cuarta"
+      ],
+      "correcta": "Primera",
+      "exp": "Explicación QA",
+      "fuente": "[Página 1]"
+    },
+    "localVersion2Observed": false,
+    "editorDetached": false,
+    "ackUiObserved": false,
+    "clickedAt": 1793315098844
+  },
+  "d04Diagnostics": {
+    "safeReviewErrors": [
+      "CXORBIA_CERT_REVIEW_SAFE_ERROR CERT_REVIEW_REMOTE_READBACK_MISMATCH"
+    ]
+  },
+  "error": {
+    "classification": "locator.waitFor",
+    "detail": "locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n  - waiting for getByText('Revisión guardada en servidor · publicación pendiente.', { exact: true }) to be visible\n"
+  },
+  "failureUi": [
+    {
+      "toastObservation": {
+        "startedAt": 1793315098843,
+        "events": [
+          {
+            "at": 1793315099476,
+            "text": "No se pudo guardar la revisión. Comprueba tu sesión y vuelve a cargar el banco si alguien lo modificó.",
+            "className": "toast warn",
+            "display": "flex",
+            "visibility": "visible",
+            "opacity": "1",
+            "width": 340,
+            "height": 84.421875,
+            "connected": true
+          }
+        ]
+      },
+      "toasts": [],
+      "editorPresent": false,
+      "savePresent": false,
+      "saveDisabled": null,
+      "loadedQaBank": {
+        "id": "certbank-cinepolis-cinepolis-2026-10-qa-i3-d04-session-40970286585-1",
+        "version": 2,
+        "estado": "pending_review",
+        "firstQuestion": {
+          "fuente": "[Página 1]",
+          "ops": [
+            "Primera",
+            "Segunda",
+            "Tercera",
+            "Cuarta"
+          ],
+          "correcta": "Primera",
+          "exp": "Explicación QA",
+          "q": "Pregunta QA revisada para sesión independiente 40970286585-1"
+        },
+        "firstQuestionKeys": [
+          "fuente",
+          "ops",
+          "correcta",
+          "exp",
+          "q"
+        ],
+        "historyEntries": 1
+      },
+      "screenshot": "session-failure-0.png"
+    }
+  ],
+  "d04FixtureBeforeCleanup": {
+    "id": "certbank-cinepolis-cinepolis-2026-10-qa-i3-d04-session-40970286585-1",
+    "version": 2,
+    "status": "active",
+    "certificationId": "qa-i3-d04-session-40970286585-1",
+    "estado": "pending_review",
+    "contentRevision": "d4f2b056beb4bd796d74091cf71a74fac8bf41a66da13e7c915f8451d4293617",
+    "questionCount": 15,
+    "firstQuestion": "Pregunta QA revisada para sesión independiente 40970286585-1",
+    "firstQuestionFields": {
+      "exp": "Explicación QA",
+      "q": "Pregunta QA revisada para sesión independiente 40970286585-1",
+      "correcta": "Primera",
+      "ops": [
+        "Primera",
+        "Segunda",
+        "Tercera",
+        "Cuarta"
+      ],
+      "fuente": "[Página 1]"
+    },
+    "firstQuestionKeys": [
+      "exp",
+      "q",
+      "correcta",
+      "ops",
+      "fuente"
+    ],
+    "historyEntries": 1,
+    "history": [
+      {
+        "at": "2026-10-29T23:04:58.936Z",
+        "reviewerUid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+        "fromVersion": 1,
+        "toVersion": 2,
+        "previousContentRevision": "qa-session-40970286585-1",
+        "contentRevision": "d4f2b056beb4bd796d74091cf71a74fac8bf41a66da13e7c915f8451d4293617",
+        "changes": [
+          {
+            "index": 1,
+            "before": {
+              "exp": "Explicación QA",
+              "q": "Pregunta QA 1",
+              "correcta": "Primera",
+              "ops": [
+                "Primera",
+                "Segunda",
+                "Tercera",
+                "Cuarta"
+              ],
+              "fuente": "[Página 1]"
+            },
+            "after": {
+              "exp": "Explicación QA",
+              "q": "Pregunta QA revisada para sesión independiente 40970286585-1",
+              "correcta": "Primera",
+              "ops": [
+                "Primera",
+                "Segunda",
+                "Tercera",
+                "Cuarta"
+              ],
+              "fuente": "[Página 1]"
+            }
+          }
+        ],
+        "nameChange": null
+      }
+    ],
+    "updateTime": {
+      "seconds": 1793315099,
+      "nanoseconds": 202011000
+    }
+  }
+}
