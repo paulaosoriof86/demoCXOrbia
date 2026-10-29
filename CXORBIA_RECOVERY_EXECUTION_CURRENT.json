@@ -493,13 +493,13 @@
   ],
   "coverageGuard": "Do not declare all finance, HR, Shopper, Client, Certification or Phase A PASS solely from source tests or an inherited PASS. Apply task-specific provider/readback/human proof and preserve historical VRM PASS without reproducible drift; no skipped findings.",
   "continuityHandoff": {
-    "path": "docs/checkpoints/CXORBIA_I3_RUN1954_LIVE_CONTINUITY_20261029.json",
-    "blobSha": "23b74def6c1bde6a0428027f1f25ad2af86c9095",
-    "kind": "CONTROL_AND_FOCAL_QA_APPEND_ONLY_NOT_NEW_PLAN",
+    "path": "docs/checkpoints/CXORBIA_I3_C02_DURABLE_RECEIPT_READBACK_20261029.json",
+    "blobSha": "5a18cab354ac9fbb216c0c9ff03a8460065f40db",
+    "kind": "C02_READ_ONLY_EVIDENCE_APPEND_ONLY_NOT_NEW_PLAN",
     "asOf": "2026-10-29",
     "frozenPlanId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
     "productSourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
-    "reviewedHeadBeforeHandoff": "d820c6039539d891dd6426ed85f1532c1fe79e27",
+    "reviewedHeadBeforeHandoff": "83ce1cceb2d1cea0bd1ff2b46ff35ea8aaeeed5d",
     "nextTaskIds": [
       "G03",
       "G04",
@@ -507,7 +507,7 @@
       "D04",
       "D07"
     ],
-    "immediateAction": "C02 existing receipt/audit read is blocked by automatic origin approval: obtain explicit read-only authorization for the private DEV Firebase console and this exact case before attempting it again. Preserve the verified fresh-page/reload Q205 result and do not repeat reconciliation. D04/D05/D06, bounded D07 and other frozen-plan application QA retain their existing scope.",
+    "immediateAction": "Read the same October visit in an independent authorized CXOrbia application session on the same canonical preview and verify Q60+Q145=Q205, validated financial source, and external payment not confirmed. Do not replay reconciliation. Preserve the 303/303 source proof and all prior owner-scoped PASS; then continue D04/D05/D06 and bounded D07 under the frozen plan.",
     "noProductChanges": true,
     "noProduction": true,
     "receiptPointerField": "currentExecutionReceipt",
@@ -524,14 +524,14 @@
       "fail": 0
     },
     "doNotRepeatFinanceVisitId": "hr_2026-10_gt_2_97b3975c30",
-    "currentBrowserObservation": "Same authorized Admin session; fresh-page and explicit-reload financial readback preserved; independent-session/receipt proof remains.",
-    "additionalAccessEvidence": {
-      "path": "docs/checkpoints/CXORBIA_I3_C02_RECEIPT_READ_ACCESS_BLOCK_20261029.json",
-      "gitBlob": "c78948e977480ac6c1900fa12fcef8890480a868",
-      "decision": "BLOCKED_BY_AUTOMATIC_APPROVAL_REVIEW_PENDING_EXPLICIT_SCOPE_AUTHORIZATION",
-      "authorizationScope": "Read-only access in Chrome to the private Firebase/Firestore console of cxorbia-backend-dev, limited to this DEV visit and the existing finance.reconcile.visit receipt/audit. No data modification, payment, replay, or production access."
+    "consoleReadScopeAuthorization": {
+      "status": "GRANTED_AND_EXECUTED",
+      "userMessage": "autorizo",
+      "date": "2026-10-29",
+      "scope": "Only the exact DEV visit, existing reconciliation receipt and matching audit."
     },
-    "resumeAfterAuthorizedReceiptRead": "C02: read the receipt/audit and committed HR revision of the existing single attempt without replay; retain fresh-page and explicit-reload persistence proof. Continue D04/D05/D06 and bounded D07 evidence on the same e753 candidate, preserving passed owners."
+    "resolvedAccessBlockPath": "docs/checkpoints/CXORBIA_I3_C02_RECEIPT_READ_ACCESS_BLOCK_20261029.json",
+    "acceptanceRemaining": "Read the same exact financial row in another independent authenticated CXOrbia application session. Firebase console and a new tab in the existing app session do not meet this criterion."
   },
   "previousExecutionReceiptBeforeRun1788": {
     "path": "CXORBIA_I3_D04_E04_DEV_MATERIALIZATION_RUN1782_2026-10-18.json",
@@ -3025,14 +3025,14 @@
     "scope": "LOCAL_ISOLATED_SOURCE_CONTRACTS_ONLY_NOT_I3_CERTIFICATION"
   },
   "currentExecutionReceipt": {
-    "path": "docs/checkpoints/CXORBIA_I3_RUN1954_LIVE_CONTINUITY_20261029.json",
-    "gitBlob": "23b74def6c1bde6a0428027f1f25ad2af86c9095",
-    "kind": "SOURCE_PROOF_PASS_AND_FOCAL_LIVE_PROGRESS_NOT_TERMINAL_CERTIFICATION",
+    "path": "docs/checkpoints/CXORBIA_I3_C02_DURABLE_RECEIPT_READBACK_20261029.json",
+    "gitBlob": "5a18cab354ac9fbb216c0c9ff03a8460065f40db",
+    "kind": "C02_DURABLE_RECEIPT_AUDIT_VISIT_PARITY_NOT_TERMINAL_CERTIFICATION",
     "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
     "sourceTree": "be0ad639a652439200ef4043bb08d5d4b709f266",
     "sourceChanges": 0,
     "newFunctionalClosures": 0,
-    "scope": "SOURCE_QA_HR_READBACK_C02_VISIBLE_PERSISTENCE_D04_EDITOR_DIFF",
+    "scope": "AUTHORIZED_READ_ONLY_EXISTING_C02_RECEIPT_AUDIT_AND_VISIT",
     "production": false,
     "runId": 40943351882,
     "runNumber": 1954,
@@ -3041,21 +3041,26 @@
     "tests": 303,
     "pass": 303,
     "fail": 0,
-    "cloudAfterCommit": "OBSERVED_SUCCESS_RUN1954_AT_D820_CONTROL_HEAD",
+    "sourceProofRerunThisReadback": false,
     "financeAttempt": {
-      "clickCount": 1,
+      "originalClickCount": 1,
+      "newClickCount": 0,
       "visitId": "hr_2026-10_gt_2_97b3975c30",
-      "visiblePersistence": "PASS_FRESH_PAGE_AND_EXPLICIT_RELOAD",
-      "providerAck": "NOT_OBSERVED",
+      "visiblePersistence": "PASS_FRESH_PAGE_AND_EXPLICIT_RELOAD_PRESERVED",
+      "serverProviderAck": true,
+      "serverCommit": "committed",
+      "receiptRead": true,
+      "auditRead": true,
+      "persistedVisitRead": true,
+      "financialMatchParityFields": 24,
+      "originalClientAckResponseObserved": false,
+      "receiptId": "1c1fe3d3e9c8982e59577c9b41cb0b72b4996486",
+      "auditId": "finance-f652be05bb1506688e59ba5fac06616dccebbd61",
+      "independentApplicationSession": false,
       "fullTaskClosed": false
     },
-    "state": "I3_HOLD",
-    "additionalAccessEvidence": {
-      "path": "docs/checkpoints/CXORBIA_I3_C02_RECEIPT_READ_ACCESS_BLOCK_20261029.json",
-      "gitBlob": "c78948e977480ac6c1900fa12fcef8890480a868",
-      "decision": "BLOCKED_BY_AUTOMATIC_APPROVAL_REVIEW_PENDING_EXPLICIT_SCOPE_AUTHORIZATION",
-      "authorizationScope": "Read-only access in Chrome to the private Firebase/Firestore console of cxorbia-backend-dev, limited to this DEV visit and the existing finance.reconcile.visit receipt/audit. No data modification, payment, replay, or production access."
-    }
+    "priorConsoleAccessBlock": "RESOLVED_BY_EXPLICIT_USER_AUTHORIZATION_AND_COMPLETED_READ",
+    "state": "I3_HOLD"
   },
   "lastExecutionReceiptSemantics": "SEALED_POSTDEPLOY_SNAPSHOT_NOT_CURRENT_CONTROL_HANDOFF",
   "currentExecutionReceiptSemantics": "LATEST_CONTROL_AND_QA_RECEIPT_NOT_A_POSTDEPLOY_SEAL",
@@ -3155,5 +3160,79 @@
     },
     "doNotRepeatFinanceVisitId": "hr_2026-10_gt_2_97b3975c30",
     "currentBrowserObservation": "Same authorized Admin session; fresh-page and explicit-reload financial readback preserved; independent-session/receipt proof remains."
+  },
+  "previousCurrentExecutionReceiptBeforeC02AuthorizedRead20261029": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN1954_LIVE_CONTINUITY_20261029.json",
+    "gitBlob": "23b74def6c1bde6a0428027f1f25ad2af86c9095",
+    "kind": "SOURCE_PROOF_PASS_AND_FOCAL_LIVE_PROGRESS_NOT_TERMINAL_CERTIFICATION",
+    "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+    "sourceTree": "be0ad639a652439200ef4043bb08d5d4b709f266",
+    "sourceChanges": 0,
+    "newFunctionalClosures": 0,
+    "scope": "SOURCE_QA_HR_READBACK_C02_VISIBLE_PERSISTENCE_D04_EDITOR_DIFF",
+    "production": false,
+    "runId": 40943351882,
+    "runNumber": 1954,
+    "runHeadSha": "d820c6039539d891dd6426ed85f1532c1fe79e27",
+    "artifactId": 12927943149,
+    "tests": 303,
+    "pass": 303,
+    "fail": 0,
+    "cloudAfterCommit": "OBSERVED_SUCCESS_RUN1954_AT_D820_CONTROL_HEAD",
+    "financeAttempt": {
+      "clickCount": 1,
+      "visitId": "hr_2026-10_gt_2_97b3975c30",
+      "visiblePersistence": "PASS_FRESH_PAGE_AND_EXPLICIT_RELOAD",
+      "providerAck": "NOT_OBSERVED",
+      "fullTaskClosed": false
+    },
+    "state": "I3_HOLD",
+    "additionalAccessEvidence": {
+      "path": "docs/checkpoints/CXORBIA_I3_C02_RECEIPT_READ_ACCESS_BLOCK_20261029.json",
+      "gitBlob": "c78948e977480ac6c1900fa12fcef8890480a868",
+      "decision": "BLOCKED_BY_AUTOMATIC_APPROVAL_REVIEW_PENDING_EXPLICIT_SCOPE_AUTHORIZATION",
+      "authorizationScope": "Read-only access in Chrome to the private Firebase/Firestore console of cxorbia-backend-dev, limited to this DEV visit and the existing finance.reconcile.visit receipt/audit. No data modification, payment, replay, or production access."
+    }
+  },
+  "previousContinuityHandoffBeforeC02AuthorizedRead20261029": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN1954_LIVE_CONTINUITY_20261029.json",
+    "blobSha": "23b74def6c1bde6a0428027f1f25ad2af86c9095",
+    "kind": "CONTROL_AND_FOCAL_QA_APPEND_ONLY_NOT_NEW_PLAN",
+    "asOf": "2026-10-29",
+    "frozenPlanId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
+    "productSourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+    "reviewedHeadBeforeHandoff": "d820c6039539d891dd6426ed85f1532c1fe79e27",
+    "nextTaskIds": [
+      "G03",
+      "G04",
+      "C02",
+      "D04",
+      "D07"
+    ],
+    "immediateAction": "C02 existing receipt/audit read is blocked by automatic origin approval: obtain explicit read-only authorization for the private DEV Firebase console and this exact case before attempting it again. Preserve the verified fresh-page/reload Q205 result and do not repeat reconciliation. D04/D05/D06, bounded D07 and other frozen-plan application QA retain their existing scope.",
+    "noProductChanges": true,
+    "noProduction": true,
+    "receiptPointerField": "currentExecutionReceipt",
+    "sealedHistoricalFields": [
+      "lastExecutionReceipt",
+      "currentDevMaterialization",
+      "postDeployRunSeal"
+    ],
+    "preservedSourceProof": {
+      "runId": 40943351882,
+      "runNumber": 1954,
+      "tests": 303,
+      "pass": 303,
+      "fail": 0
+    },
+    "doNotRepeatFinanceVisitId": "hr_2026-10_gt_2_97b3975c30",
+    "currentBrowserObservation": "Same authorized Admin session; fresh-page and explicit-reload financial readback preserved; independent-session/receipt proof remains.",
+    "additionalAccessEvidence": {
+      "path": "docs/checkpoints/CXORBIA_I3_C02_RECEIPT_READ_ACCESS_BLOCK_20261029.json",
+      "gitBlob": "c78948e977480ac6c1900fa12fcef8890480a868",
+      "decision": "BLOCKED_BY_AUTOMATIC_APPROVAL_REVIEW_PENDING_EXPLICIT_SCOPE_AUTHORIZATION",
+      "authorizationScope": "Read-only access in Chrome to the private Firebase/Firestore console of cxorbia-backend-dev, limited to this DEV visit and the existing finance.reconcile.visit receipt/audit. No data modification, payment, replay, or production access."
+    },
+    "resumeAfterAuthorizedReceiptRead": "C02: read the receipt/audit and committed HR revision of the existing single attempt without replay; retain fresh-page and explicit-reload persistence proof. Continue D04/D05/D06 and bounded D07 evidence on the same e753 candidate, preserving passed owners."
   }
 }
