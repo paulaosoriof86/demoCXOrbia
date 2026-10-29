@@ -4,16 +4,16 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "8f02e305be6d3c4a5ec4890c47d80cb34300f137",
-  "productTreeAuthority": "fc5fdd2fdb78a5f9a8e6bde0afb27d0c86c87f71",
-  "predecessorProductSourceSha": "a2be5a77a4c0008ec374c17f42d5da27070e1ed6",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V524_2026-10-29.json",
-  "findingsLedgerExpectedGitBlob": "8bd2798bc4f0a7130a131b0763b9204dcad0e262",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V192.json",
+  "productSourceSha": "8e2bda6c19b1b9411d98ccda8248f66553a1c8b2",
+  "productTreeAuthority": "456be8c852fa995fa1431536af29b09155009a0e",
+  "predecessorProductSourceSha": "8f02e305be6d3c4a5ec4890c47d80cb34300f137",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V525_2026-10-29.json",
+  "findingsLedgerExpectedGitBlob": "b6700a8ef3ebc8ed40480843bf45c0a5f889e6d6",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V193.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "I3_PHASE_A_HR_ACK_OPERATIONS_FINANZAS_CERTIFICATIONS_3_FUNCTIONAL_DEFECTS_2_NOT_DEPLOYED_10_SOURCE_FIXED_PROOF_GAPS_VRM290_HR_UI_SOURCE_PENDING_CI_DEV_D07_ONE_SMOKE",
+  "activeBlocker": "I3_G03_21_DOMAINS_3_TRUE_DEFECTS_2_NOT_DEPLOYED_D07_P0_SOURCE_ONLY_PENDING_CANONICAL_QA_DEV_AUTHENTICATED_REPROOF_FINANCE_HR_CERTIFICATIONS_VISUAL_GATE20_21_HOLD",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -854,7 +854,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "fc5fdd2fdb78a5f9a8e6bde0afb27d0c86c87f71",
+  "productSourceTree": "456be8c852fa995fa1431536af29b09155009a0e",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -3028,7 +3028,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "9ee1655ef475ac32135aefc038090d4c0869d121",
+  "moduleTruthExpectedGitBlob": "71552fc620569755313ceb36a9e54e23a084220f",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -14534,6 +14534,30 @@
       "settledPaymentsClaimed": false
     },
     "sourceVsServed": "SOURCE_ONLY_NOT_CURRENT_DEV",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": false
+  },
+  "i3D07BoundedSingleFlight20261029": {
+    "date": "2026-10-29",
+    "iteration": "I3",
+    "findingIds": [
+      "VRM-285"
+    ],
+    "sourceSha": "8e2bda6c19b1b9411d98ccda8248f66553a1c8b2",
+    "sourceTree": "456be8c852fa995fa1431536af29b09155009a0e",
+    "predecessorSourceSha": "8f02e305be6d3c4a5ec4890c47d80cb34300f137",
+    "owners": [
+      "app/core/backend-resources.js",
+      "app/modules/documentos.js",
+      "tools/qa/cxorbia-i3-d07-authenticated-pdf-resource.test.mjs",
+      "tools/qa/cxorbia-i3-d07-viewer-single-flight.test.mjs"
+    ],
+    "localQaFilesPassed": 4,
+    "localQaFilesFailed": 0,
+    "authenticatedBrowserPredecessor": "FAIL_PDF_GET_NO_RESPONSE_TYPEERROR_RETRY_BURST_AND_SPINNER",
+    "newAuthenticatedDev": "NOT_YET_MATERIALIZED",
+    "nextGate": "CANONICAL_SOURCE_QA_AND_ONE_EXACT_DEV_AUTHENTICATED_ADMIN_SHOPPER_E2E",
     "gate20": "HOLD",
     "gate21": "HOLD",
     "production": false
