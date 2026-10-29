@@ -18,7 +18,9 @@ const PROJECT='cxorbia-backend-dev',TENANT='tya',PROGRAM='cinepolis',PERIOD='cin
 const ROOT='https://cxorbia-backend-dev.web.app';
 const HR_REV='4fc8def718fd1504f5d76a1fbc80b6901cbf711ec2b89f4dfc3a81ecbbca517a';
 const PAIR_DIGEST='ac3e15184316d62aa53942359e857f2c34dec486a2ca41057e529a39f062d872';
-const CANON_FP='c443168513fb6cec0ca3',ALIAS_FP='b6d64a7fb14f2e916388';
+// The workbook's Traceability D = HR canonical, E = technical account.
+// Prefixes are NOT semantic. These hashes are exact approved IDs, not names.
+const CANON_FP='b6d64a7fb14f2e916388',ALIAS_FP='c443168513fb6cec0ca3';
 const EXECUTION='PAULA_I3_2026_10_28_APPROVED_F046_DEV_CANARY_ONLY';
 const OUT=String(process.env.CX_F046_CANARY_OUT||'.tmp/cxorbia-i3-f046-canary');
 const val=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[],uniq=xs=>[...new Set(arr(xs).map(val).filter(Boolean))];
@@ -270,6 +272,27 @@ try{
     aliasCertificationFingerprint:protectedCertification.docFingerprint,
     certificationOwnerFieldNames:protectedCertification.ownerKeys,
     secondaryActivePrincipals:secondaries.length,sourceRevisionVerified:true};save();
+  if(process.env.CX_F046_PREFLIGHT_ONLY==='YES'){
+    const fresh=await liveHr();
+    assert(fresh.rev===hr.rev&&fresh.visits.filter(v=>sid(v)===canonical).length===historical.length,
+      'F046_READONLY_SOURCE_DRIFT');
+    const [newVisit,newCert]=await Promise.all([
+      aliasHistoricalVisit(tenant,alias,canonical,fresh),
+      aliasHistoricalCertification(tenant,alias,canonical)]);
+    assert(newVisit.id===protectedHistory.id&&newCert.id===protectedCertification.id&&
+      newCert.oldContentFingerprint===protectedCertification.oldContentFingerprint,
+      'F046_READONLY_DOMAIN_DRIFT');
+    result.readOnly=true;result.keeperSelection='TECHNICAL_APPROVED';
+    result.protectedDomainTopologyVerified=true;
+    result.certificationContentFingerprintPreserved=true;
+    result.decision='PASS_F046_EXACT_READONLY_PREFLIGHT';save();
+    console.log(JSON.stringify({decision:result.decision,caseCode:'F-046',
+      canonicalMatches:result.identityAuthorityPreflight.exactCanonicalHrMatches,
+      aliasMatches:result.identityAuthorityPreflight.exactAliasHrMatches,
+      aliasOwnedDomainRows:refs,keeperSelection:result.keeperSelection,
+      providerWrites:0,production:false}));
+    process.exit(0);
+  }
 
   // An exact second source read is mandatory immediately before protected writes.
   const preCommit=await liveHr();
