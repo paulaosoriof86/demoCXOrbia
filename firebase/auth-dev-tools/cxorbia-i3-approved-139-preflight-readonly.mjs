@@ -222,11 +222,18 @@ async function livePreflight({db,auth,hr}){
   for(const visit of hr.visits){
     const periodId=val(visit?.periodId||visit?.periodKey||visit?.periodo)||'UNSET';
     const row=availabilityByPeriod.get(periodId)||{periodId,visits:0,availableByState:0,availableByFlag:0,
-      byCountry:{GT:{visits:0,availableByState:0},HN:{visits:0,availableByState:0},OTHER:{visits:0,availableByState:0}}};
+      availableAndUnassigned:0,availableButAssigned:0,availableButArchived:0,
+      byCountry:{GT:{visits:0,availableByState:0,availableAndUnassigned:0},HN:{visits:0,availableByState:0,availableAndUnassigned:0},OTHER:{visits:0,availableByState:0,availableAndUnassigned:0}}};
     const state=norm(visit?.estado||visit?.status),isAvailable=state==='disponible',flag=visit?.available===true;
     const c=country(visit),countryKey=c==='GT'||c==='HN'?c:'OTHER';
+    const assigned=!!val(visit?.shopperId),archived=visit?._archived===true||
+      ['cancelada','cancelled','archivada'].includes(state);
     row.visits++;if(isAvailable)row.availableByState++;if(flag)row.availableByFlag++;
+    if(isAvailable&&assigned)row.availableButAssigned++;
+    if(isAvailable&&archived)row.availableButArchived++;
+    if(isAvailable&&!assigned&&!archived)row.availableAndUnassigned++;
     row.byCountry[countryKey].visits++;if(isAvailable)row.byCountry[countryKey].availableByState++;
+    if(isAvailable&&!assigned&&!archived)row.byCountry[countryKey].availableAndUnassigned++;
     availabilityByPeriod.set(periodId,row);
   }
   return {groups:groups.length,strongCases:66,weakCases:73,hrWithSeveralSourceRecords:results.filter(x=>x.hrCount>1).length,
