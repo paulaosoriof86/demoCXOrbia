@@ -52,6 +52,10 @@ jobs:
   # materializer and no production, Cloud Run, Firestore, Auth or HR mutations.
   i3-crossfront-1029-hosting-preview:
     if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-CROSSFRONT-1029-DEV-PREVIEW-ONLY' }}
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
     runs-on: ubuntu-latest
     timeout-minutes: 45
     concurrency:
@@ -59,13 +63,17 @@ jobs:
       cancel-in-progress: false
     env:
       REQUEST: .github/control/CXORBIA_I3_CROSSFRONT_1029_DEV_PREVIEW_REQUEST.json
-      SOURCE: e753c418fb797a506f6dce3b2b51de405c9b33f1
-      TREE: be0ad639a652439200ef4043bb08d5d4b709f266
+      SOURCE: 946c3cb8eff6a043693b10ed628d2ebc860508e1
+      TREE: 4afcecfd4b41ac697995a1164115a23a46db44c7
+      PREDECESSOR_SOURCE: e753c418fb797a506f6dce3b2b51de405c9b33f1
+      SOURCE_PARENT: 25eb1cbcc8327a8d1cac62537af0fd9831c1881f
       PROJECT: cxorbia-backend-dev
       SITE: cxorbia-backend-dev
       TARGET: cxorbia-dev
       REGION: us-central1
       SERVICE: cxorbia-live-hr-dev
+      RUNTIME_REVISION: cxorbia-live-hr-dev-00330-fim
+      RUNTIME_DIGEST: sha256:bba5ebbf19c203954ec0be6c2c3ef01a057e7ce3f98fb7e5eeac2d889bd0a500
       PROD_URL: https://tya-plataforma.web.app/
       OUT: .tmp/i3-crossfront-1029-hosting-preview
     steps:
@@ -73,49 +81,133 @@ jobs:
         with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: '24'}
-      - name: Prove exact cumulative source and read-only DEV transport boundary
+      - name: Prove exact cumulative source, approved source QA and DEV transport boundary
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -Eeuo pipefail
           mkdir -p "$OUT"
+          test "$GITHUB_REPOSITORY" = 'paulaosoriof86/demoCXOrbia'
           test "$GITHUB_REF_NAME" = 'recovery/cxorbia-phase-a-20260831'
+          jq -e '.schemaVersion=="cxorbia.i3.exact-source-isolated-dev-preview-request.v1" and .intent=="I3_CROSSFRONT_1029_HOSTING_ONLY" and .branch=="recovery/cxorbia-phase-a-20260831" and .transport=="FIREBASE_HOSTING_PREVIEW_ONLY" and .production=="DO_NOT_TOUCH" and .authorizationI4==false and .gate20=="HOLD" and .gate21=="HOLD"' "$REQUEST" >/dev/null
           test "$(jq -r '.sourceSha' "$REQUEST")" = "$SOURCE"
           test "$(jq -r '.sourceTree' "$REQUEST")" = "$TREE"
+          test "$(jq -r '.expectedProductPredecessorSha' "$REQUEST")" = "$PREDECESSOR_SOURCE"
+          test "$(jq -r '.expectedSourceParentSha' "$REQUEST")" = "$SOURCE_PARENT"
           test "$(jq -r '.firebaseProject' "$REQUEST")" = "$PROJECT"
           test "$(jq -r '.hostingTarget' "$REQUEST")" = "$TARGET"
           test "$(jq -r '.hostingSite' "$REQUEST")" = "$SITE"
           test "$(jq -r '.channelPrefix' "$REQUEST")" = 'i3-recovery-1029'
-          test "$(jq -r '.production' "$REQUEST")" = 'DO_NOT_TOUCH'
-          test "$(jq -r '.authorizationI4' "$REQUEST")" = 'false'
+          test "$(jq -r '.expectedRuntime.revision' "$REQUEST")" = "$RUNTIME_REVISION"
+          test "$(jq -r '.expectedRuntime.digest' "$REQUEST")" = "$RUNTIME_DIGEST"
           test "$(git rev-parse "$SOURCE^{tree}")" = "$TREE"
+          test "$(git rev-parse "$SOURCE^")" = "$SOURCE_PARENT"
+          git merge-base --is-ancestor "$PREDECESSOR_SOURCE" "$SOURCE"
           git merge-base --is-ancestor "$SOURCE" "$GITHUB_SHA"
-          test -z "$(git diff --name-only "$SOURCE" "$GITHUB_SHA" -- app backend tools firebase.json .firebaserc firestore.rules storage.rules)"
-          test "$(git diff --name-only "$SOURCE" "$GITHUB_SHA" | LC_ALL=C sort)" = "$(printf '%s\n' .github/control/CXORBIA_I3_CROSSFRONT_1029_DEV_PREVIEW_REQUEST.json .github/workflows/cxorbia-i3-vrm290-invoked-hosting-dev.yml | LC_ALL=C sort)"
+          test "$(git diff --name-only "$SOURCE_PARENT" "$SOURCE" | LC_ALL=C sort)" = "$(printf '%s\n' app/core/backend-resources.js app/modules/cert.js tools/qa/cxorbia-i3-d04-versioned-bank-review.test.mjs | LC_ALL=C sort)"
+          test "$(git diff --name-only "$PREDECESSOR_SOURCE" "$SOURCE" -- app | LC_ALL=C sort)" = "$(printf '%s\n' app/core/backend-resources.js app/modules/cert.js | LC_ALL=C sort)"
+          git diff --quiet "$PREDECESSOR_SOURCE" "$SOURCE" -- backend firebase.json .firebaserc firestore.rules storage.rules
+          git diff --quiet "$SOURCE" "$GITHUB_SHA" -- app backend tools firebase.json .firebaserc firestore.rules storage.rules
+          CONTROL_PARENT="$(jq -r '.expectedControlParentSha' "$REQUEST")"
+          [[ "$CONTROL_PARENT" =~ ^[a-f0-9]{40}$ ]]
+          test "$(git rev-parse "$GITHUB_SHA^")" = "$CONTROL_PARENT"
+          test "$(git diff --name-only "$CONTROL_PARENT" "$GITHUB_SHA" | LC_ALL=C sort)" = "$(printf '%s\n' .github/control/CXORBIA_I3_CROSSFRONT_1029_DEV_PREVIEW_REQUEST.json .github/workflows/cxorbia-i3-vrm290-invoked-hosting-dev.yml | LC_ALL=C sort)"
           jq -r '.exactSourceBlobs | to_entries[] | [.key,.value] | @tsv' "$REQUEST" |
             while IFS=$'\t' read -r file expected; do
               test "$(git rev-parse "$SOURCE:$file")" = "$expected"
             done
+          jq -e '.servedAssets==["index-backend-dev.html","core/data.js","modules/clientes.js","modules/historico.js","modules/proyectos.js","core/backend-resources.js","modules/cert.js","core/backend-certifications.js"]' "$REQUEST" >/dev/null
           test "$(jq -r '.hosting.target' firebase.json)" = "$TARGET"
           test "$(jq -r '.projects.default' .firebaserc)" = "$PROJECT"
+          DESCRIPTOR=CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
+          test "$(jq -r '.status' "$DESCRIPTOR")" = HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL
+          test "$(jq -r '.productSourceSha' "$DESCRIPTOR")" = "$SOURCE"
+          test "$(jq -r '.productTreeAuthority' "$DESCRIPTOR")" = "$TREE"
+          test "$(jq -r '.predecessorProductSourceSha' "$DESCRIPTOR")" = "$PREDECESSOR_SOURCE"
+          node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs > "$OUT/canonical-authority.json"
+          jq -e --arg source "$SOURCE" --arg tree "$TREE" '.decision=="PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY" and .productSourceSha==$source and .productSourceTree==$tree and .postCandidateProductDrift==false and .continuityReadback.pass==true and .moduleTruthReadback.sourceAligned==true and .moduleTruthReadback.domainCount==21 and .moduleTruthReadback.uniqueDomainCount==21 and .moduleBlobReadback.pass==true and .postDeploySealReadback.pass==true and .production==false' "$OUT/canonical-authority.json" >/dev/null
+          PROOF_RUN="$(jq -r '.sourceProof.runId' "$REQUEST")"
+          PROOF_HEAD="$(jq -r '.sourceProof.headSha' "$REQUEST")"
+          PROOF_JOB="$(jq -r '.sourceProof.jobId' "$REQUEST")"
+          PROOF_ARTIFACT="$(jq -r '.sourceProof.artifactId' "$REQUEST")"
+          PROOF_DIGEST="$(jq -r '.sourceProof.artifactDigest' "$REQUEST")"
+          [[ "$PROOF_RUN" =~ ^[1-9][0-9]*$ ]]
+          [[ "$PROOF_JOB" =~ ^[1-9][0-9]*$ ]]
+          [[ "$PROOF_ARTIFACT" =~ ^[1-9][0-9]*$ ]]
+          [[ "$PROOF_HEAD" =~ ^[a-f0-9]{40}$ ]]
+          [[ "$PROOF_DIGEST" =~ ^sha256:[a-f0-9]{64}$ ]]
+          jq -e '.sourceProof.workflowPath==".github/workflows/cxorbia-recovery-i3-dev-certification.yml" and .sourceProof.jobName=="phasea-rejected-checkpoint-source-proof" and .sourceProof.decision=="PASS_I3_B_CUMULATIVE_SOURCE_PROOF"' "$REQUEST" >/dev/null
+          git merge-base --is-ancestor "$SOURCE" "$PROOF_HEAD"
+          git merge-base --is-ancestor "$PROOF_HEAD" "$CONTROL_PARENT"
+          git diff --quiet "$PROOF_HEAD" "$GITHUB_SHA" -- app backend tools firebase.json .firebaserc firestore.rules storage.rules
+          git show "$PROOF_HEAD:$DESCRIPTOR" | jq -e --arg source "$SOURCE" --arg tree "$TREE" '.productSourceSha==$source and .productTreeAuthority==$tree and .status=="HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL" and .production=="DO_NOT_TOUCH"' >/dev/null
+          github_get() {
+            curl -fsS --retry 2 --max-time 45 -H 'Accept: application/vnd.github+json' -H 'X-GitHub-Api-Version: 2022-11-28' -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/repos/$GITHUB_REPOSITORY/$1" -o "$2"
+          }
+          github_get "actions/runs/$PROOF_RUN" "$OUT/source-proof-run.json"
+          jq -e --argjson run "$PROOF_RUN" --arg head "$PROOF_HEAD" --arg repo "$GITHUB_REPOSITORY" '.id==$run and .head_sha==$head and .head_branch=="recovery/cxorbia-phase-a-20260831" and .event=="push" and .status=="completed" and .path==".github/workflows/cxorbia-recovery-i3-dev-certification.yml" and .repository.full_name==$repo and .head_repository.full_name==$repo' "$OUT/source-proof-run.json" >/dev/null
+          github_get "actions/jobs/$PROOF_JOB" "$OUT/source-proof-job.json"
+          jq -e --argjson job "$PROOF_JOB" --argjson run "$PROOF_RUN" --arg head "$PROOF_HEAD" '.id==$job and .run_id==$run and .head_sha==$head and .name=="phasea-rejected-checkpoint-source-proof" and .status=="completed" and .conclusion=="success"' "$OUT/source-proof-job.json" >/dev/null
+          github_get "actions/artifacts/$PROOF_ARTIFACT" "$OUT/source-proof-artifact.json"
+          jq -e --argjson artifact "$PROOF_ARTIFACT" --argjson run "$PROOF_RUN" --arg head "$PROOF_HEAD" --arg digest "$PROOF_DIGEST" --arg name "cxorbia-i3-phasea-source-proof-$PROOF_RUN" '.id==$artifact and .name==$name and .expired==false and .digest==$digest and .workflow_run.id==$run and .workflow_run.head_sha==$head and .workflow_run.head_branch=="recovery/cxorbia-phase-a-20260831"' "$OUT/source-proof-artifact.json" >/dev/null
+          curl -fsSL --retry 2 --max-time 90 -H 'Accept: application/vnd.github+json' -H 'X-GitHub-Api-Version: 2022-11-28' -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/$PROOF_ARTIFACT/zip" -o "$OUT/source-proof-artifact.zip"
+          PROOF_ZIP_SHA="$(printf '%s' "$PROOF_DIGEST" | cut -d: -f2)"
+          test "$(sha256sum "$OUT/source-proof-artifact.zip" | awk '{print $1}')" = "$PROOF_ZIP_SHA"
+          python3 - <<'PY'
+          import json, os, pathlib, zipfile
+          out = pathlib.Path(os.environ["OUT"])
+          with zipfile.ZipFile(out / "source-proof-artifact.zip") as archive:
+              names = [n for n in archive.namelist() if pathlib.PurePosixPath(n).name == "i3-phasea-completion-source-proof.json"]
+              if len(names) != 1:
+                  raise SystemExit("SOURCE_QA_RECEIPT_NOT_UNIQUE")
+              raw = archive.read(names[0])
+          receipt = json.loads(raw)
+          expected = {
+              "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+              "sourceSha": os.environ["SOURCE"],
+              "sourceTree": os.environ["TREE"],
+              "status": "HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL",
+              "scope": "SOURCE_CONTRACTS_ONLY_NOT_I3_CERTIFICATION",
+              "wholeProductPass": False,
+              "liveE2e": "NOT_RUN",
+              "moduleMatchPromotions": 0,
+              "deploys": 0,
+              "production": False,
+          }
+          failed = [key for key, value in expected.items() if key not in receipt or type(receipt[key]) is not type(value) or receipt[key] != value]
+          if failed:
+              raise SystemExit("SOURCE_QA_RECEIPT_MISMATCH:" + ",".join(failed))
+          (out / "source-proof-receipt.json").write_bytes(raw)
+          PY
           node --check app/modules/historico.js
           node --check app/core/data.js
+          node --check app/core/backend-resources.js
+          node --check app/modules/cert.js
+          node --test tools/qa/cxorbia-i3-d04-versioned-bank-review.test.mjs tools/qa/cxorbia-i3-e04-benchmark-source.test.mjs > "$OUT/d04-source-tests.log"
           node --test tools/qa/cxorbia-i3-period-imported-provider-reconciliation.test.mjs tools/qa/cxorbia-i3-historico-country-totals-owner.test.mjs tools/qa/cxorbia-i3-period-project-client-parity.test.mjs tools/qa/cxorbia-i3-available-visits-active-period-scope.test.mjs > "$OUT/source-tests.log"
           node --test backend/runtime/hr-live-service/test/cxorbia-period-command-provider-v1.test.mjs backend/runtime/hr-live-service/test/cxorbia-shopper-admin-repair.test.mjs > "$OUT/provider-tests.log"
           SOURCE_DIR="$(mktemp -d)"
           git archive "$SOURCE" | tar -x -C "$SOURCE_DIR"
           echo "CX_I3_SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
-          jq -n --arg source "$SOURCE" --arg tree "$TREE" '{decision:"PASS_I3_CROSSFRONT_1029_SOURCE_PREFLIGHT",sourceSha:$source,sourceTree:$tree,production:false,liveWrites:0,cloudRunWrites:0,firestoreWrites:0,authWrites:0,hrWrites:0}' > "$OUT/preflight.json"
+          jq -n --arg source "$SOURCE" --arg tree "$TREE" --arg parent "$CONTROL_PARENT" --argjson proof "$(jq -c '.sourceProof' "$REQUEST")" '{decision:"PASS_I3_CROSSFRONT_1029_SOURCE_PREFLIGHT",sourceSha:$source,sourceTree:$tree,controlParentSha:$parent,sourceProof:$proof,canonicalAuthority:"PASS",servedAssetCount:8,production:false,liveWrites:0,cloudRunWrites:0,firestoreWrites:0,authWrites:0,hrWrites:0}' > "$OUT/preflight.json"
       - uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
       - uses: google-github-actions/setup-gcloud@v2
         with: {project_id: cxorbia-backend-dev}
-      - name: Read isolation baseline
+      - name: Read isolation baseline and pin existing runtime
         run: |
           set -Eeuo pipefail
           TOKEN="$(gcloud auth print-access-token)"
           curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$SITE/channels/live" -o "$OUT/hosting-live-before.json"
+          jq -e '.release.version.name | type=="string" and length>0' "$OUT/hosting-live-before.json" >/dev/null
           gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-before.json"
+          jq -e --arg revision "$RUNTIME_REVISION" '.status.latestReadyRevisionName==$revision and ([.status.traffic[] | select(.revisionName==$revision) | (.percent // 0)] | add)==100' "$OUT/runtime-before.json" >/dev/null
+          gcloud run revisions describe "$RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-revision-before.json"
+          OBSERVED_RUNTIME_DIGEST="$(jq -r '.status.imageDigest // empty' "$OUT/runtime-revision-before.json" | awk -F@ '{print $NF}')"
+          test "$OBSERVED_RUNTIME_DIGEST" = "$RUNTIME_DIGEST"
           curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" -o "$OUT/rules-before.json"
+          jq -e '.rulesetName | type=="string" and length>0' "$OUT/rules-before.json" >/dev/null
           curl -fsS --max-time 45 -H 'Cache-Control: no-cache' "$PROD_URL" -o "$OUT/production-before.html"
           sha256sum "$OUT/production-before.html" | awk '{print $1}' > "$OUT/production-before.sha256"
       - name: Deploy exact source to isolated Firebase Hosting Preview only
@@ -126,16 +218,17 @@ jobs:
           CHANNEL="i3-recovery-1029-$GITHUB_RUN_ID"
           echo "CX_I3_CHANNEL=$CHANNEL" >> "$GITHUB_ENV"
           (cd "$CX_I3_SOURCE_DIR" && "$GITHUB_WORKSPACE/node_modules/.bin/firebase" hosting:channel:deploy "$CHANNEL" --only "$TARGET" --project "$PROJECT" --expires 7d --non-interactive --json) > "$OUT/preview-deploy.json"
-      - name: Readback source bytes and prove LIVE isolation
+      - name: Readback eight source assets and prove LIVE isolation
         run: |
           set -Eeuo pipefail
           TOKEN="$(gcloud auth print-access-token)"
           curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$SITE/channels/$CX_I3_CHANNEL" -o "$OUT/preview-channel.json"
+          jq -e --arg name "sites/$SITE/channels/$CX_I3_CHANNEL" '.name==$name and .release.version.status=="FINALIZED"' "$OUT/preview-channel.json" >/dev/null
           PREVIEW_URL="$(jq -r '.url // empty' "$OUT/preview-channel.json")"
           PREVIEW_VERSION="$(jq -r '.release.version.name // empty' "$OUT/preview-channel.json")"
-          case "$PREVIEW_URL" in https://cxorbia-backend-dev--*.web.app) ;; *) exit 1;; esac
-          test -n "$PREVIEW_VERSION"
-          for file in index-backend-dev.html core/data.js modules/clientes.js modules/historico.js modules/proyectos.js; do
+          case "$PREVIEW_URL" in https://cxorbia-backend-dev--"$CX_I3_CHANNEL"-*.web.app) ;; *) exit 1;; esac
+          case "$PREVIEW_VERSION" in sites/cxorbia-backend-dev/versions/*) ;; *) exit 1;; esac
+          for file in index-backend-dev.html core/data.js modules/clientes.js modules/historico.js modules/proyectos.js core/backend-resources.js modules/cert.js core/backend-certifications.js; do
             safe="$(echo "$file" | tr '/' '-')"
             curl -fsS --retry 5 --retry-delay 2 --max-time 60 -H 'Cache-Control: no-store' "$PREVIEW_URL/$file?i3cross=$GITHUB_RUN_ID" -o "$OUT/served-$safe"
             cmp -s "$CX_I3_SOURCE_DIR/app/$file" "$OUT/served-$safe"
@@ -149,7 +242,7 @@ jobs:
           curl -fsS --max-time 45 -H 'Cache-Control: no-cache' "$PROD_URL" -o "$OUT/production-after.html"
           sha256sum "$OUT/production-after.html" | awk '{print $1}' > "$OUT/production-after.sha256"
           cmp -s "$OUT/production-before.sha256" "$OUT/production-after.sha256"
-          jq -n --arg source "$SOURCE" --arg tree "$TREE" --arg url "$PREVIEW_URL" --arg version "$PREVIEW_VERSION" --arg channel "$CX_I3_CHANNEL" '{decision:"PASS_I3_CROSSFRONT_1029_DEV_HOSTING_PREVIEW_EXACT_BYTES_ISOLATED",sourceSha:$source,sourceTree:$tree,previewUrl:$url,hostingVersion:$version,channel:$channel,servedFilesMatch:5,hostingLiveWrites:0,cloudRunTrafficWrites:0,firestoreWrites:0,authWrites:0,rulesWrites:0,storageWrites:0,hrWrites:0,production:false,liveE2e:"PENDING",gate20:"HOLD",gate21:"HOLD"}' > "$OUT/result.json"
+          jq -n --arg source "$SOURCE" --arg tree "$TREE" --arg url "$PREVIEW_URL" --arg version "$PREVIEW_VERSION" --arg channel "$CX_I3_CHANNEL" --arg runtime "$RUNTIME_REVISION" --arg digest "$RUNTIME_DIGEST" --argjson proof "$(jq -c '.sourceProof' "$REQUEST")" '{decision:"PASS_I3_CROSSFRONT_1029_DEV_HOSTING_PREVIEW_EXACT_BYTES_ISOLATED",sourceSha:$source,sourceTree:$tree,sourceProof:$proof,previewUrl:$url,hostingVersion:$version,channel:$channel,servedFilesMatch:8,runtimeRevision:$runtime,runtimeDigest:$digest,hostingPreviewDeploys:1,hostingLiveWrites:0,cloudRunBuilds:0,cloudRunTrafficWrites:0,firestoreWrites:0,authWrites:0,rulesWrites:0,storageWrites:0,hrWrites:0,production:false,liveE2e:"PENDING",gate20:"HOLD",gate21:"HOLD"}' > "$OUT/result.json"
           echo "### CXOrbia I3 crossfront 1029 DEV preview" >> "$GITHUB_STEP_SUMMARY"
           echo "$PREVIEW_URL" >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
