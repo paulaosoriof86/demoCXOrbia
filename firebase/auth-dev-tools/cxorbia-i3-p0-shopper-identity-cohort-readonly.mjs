@@ -57,6 +57,27 @@ function exactTarget(cross,memberShopperId,hrById){
   // insufficient evidence to merge two distinct credential-bearing humans.
   return {id:target,status:target===memberShopperId?'HR_SELF_CROSSWALK':'HR_EXACT_CROSSWALK'};
 }
+function approvedTechnicalLinks(snapshot,hrById){
+  const map=new Map();let eligible=0,conflicted=0;
+  for(const doc of arr(snapshot?.docs)){
+    const r=doc.data()||{},authority=val(r.authorityType||r.authority?.type).toLowerCase();
+    const status=val(r.status||r.state).toLowerCase(),source=val(r.sourceSystem).toLowerCase();
+    const scope=val(r.projectScope||r.projectId||'*'),owner=val(r.canonicalShopperId);
+    if(val(r.tenantId)!==TENANT||!['active','confirmed','approved','materialized'].includes(status)||
+      !['provider_exact','tenant_adjudication','migrated_exact'].includes(authority)||!source.includes('hr')||
+      !val(r.authorityRef)||!owner||!hrById.has(owner)||
+      !['*','tenant',PROGRAM].includes(scope)||r.periodId||r.periodKey||r.periodScope)continue;
+    if(authority==='tenant_adjudication'&&r.humanConfirmed!==true)continue;
+    eligible++;
+    const tokens=[r.sourceIdentityKey,...arr(r.exactAliases),...arr(r.sourceAliases),
+      ...arr(r.identityAliases),...arr(r.aliases),r.sourceShopperId,r.shopperId];
+    for(const token of tokens.map(val).filter(Boolean)){
+      const targets=map.get(token)||new Set();targets.add(owner);map.set(token,targets);
+      if(targets.size>1)conflicted++;
+    }
+  }
+  return {map,eligible,conflicted};
+}
 function classify({m,auth,hrById,hrVisitCounts,profiles,cross}){
   const mId=val(m.shopperId),rawCountry=country(m),profile=profiles.get(mId)||null;
   const claims=auth?.customClaims||{},claimsId=val(claims.shopperId);
@@ -89,6 +110,7 @@ function classify({m,auth,hrById,hrVisitCounts,profiles,cross}){
   const candidate=corroborated.length===1?corroborated[0]:null;
   return {category,rawCountry,profileCountry:aliasCountry,authHealthy:valid,
     directHrOwner:direct,crossStatus:crossTarget.status,canonical,historyCount:count,
+    _shopperId:mId,_candidateCanonicalId:candidate?.id||'',
     corroboratedCandidateCount:corroborated.length,nameOnlyCandidateCount:named.filter(c=>!c.samePhone).length,
     candidateFingerprint:candidate?fp('sid:'+candidate.id):null,
     candidateHistoryCount:candidate?.count||0,
@@ -106,12 +128,12 @@ try{
   report.hrRevision=hr.revision;
   const hrById=new Map(),hrVisitCounts=new Map();
   for(const row of hr.shoppers){const id=sid(row);assert(id&&!hrById.has(id),'HR_SHOPPER_UNIQUE_KEY_CONFLICT');hrById.set(id,row);}
-  for(const row of hr.visits){const id=sid(row);if(id)hrVisitCounts.set(id,(hrVisitCounts.get(id)||0)+1);}
+  for(const row of hr.visits){const id=val(row?.shopperId);if(id&&hrById.has(id))hrVisitCounts.set(id,(hrVisitCounts.get(id)||0)+1);}
   report.hrSummary={shoppers:hr.shoppers.length,visits:hr.visits.length,
     profilesWithHistory:[...hrVisitCounts].filter(([,count])=>count>0).length,
     byCountry:Object.fromEntries(['GT','HN'].map(c=>[c,hr.shoppers.filter(x=>country(x)===c).length]))};
-  const [memberSnap,profileSnap,crossSnap]=await Promise.all([
-    tenant.collection('users').get(),tenant.collection('shoppers').get(),tenant.collection('shopperIdentityCrosswalk').get()]);
+  const [memberSnap,profileSnap,crossSnap,linkSnap]=await Promise.all([
+    tenant.collection('users').get(),tenant.collection('shoppers').get(),tenant.collection('shopperIdentityCrosswalk').get(),tenant.collection('shopperIdentityLinks').get()]);
   const members=memberSnap.docs.map(d=>({uid:d.id,...(d.data()||{})})).filter(m=>
     m.active===true&&val(m.tenantId)===TENANT&&val(m.role)==='shopper'&&
     val(m.authNamespace)==='shopper'&&arr(m.projectIds).includes(PROGRAM));
@@ -121,6 +143,21 @@ try{
   do{const page=await auth.listUsers(1000,token);allAuth.push(...page.users);token=page.pageToken;}while(token);
   const authByUid=new Map(allAuth.map(u=>[u.uid,u]));
   const rows=members.map(m=>classify({m,auth:authByUid.get(m.uid),hrById,hrVisitCounts,profiles,cross}));
+  const approved=approvedTechnicalLinks(linkSnap,hrById);
+  const directActiveCounts=new Map();for(const r of rows)if(r.directHrOwner&&r.authHealthy)
+    directActiveCounts.set(r.canonical,(directActiveCounts.get(r.canonical)||0)+1);
+  const corroborated=rows.filter(r=>!r.canonical&&r.corroboratedCandidateCount===1&&r._candidateCanonicalId);
+  const approvedMatches=corroborated.filter(r=>approved.map.get(r._shopperId)?.has(r._candidateCanonicalId));
+  const conflictingLinks=corroborated.filter(r=>(approved.map.get(r._shopperId)?.size||0)>1);
+  report.technicalIdentityEvidence={
+    eligibleApprovedLinkDocuments:approved.eligible,conflictingTechnicalTokens:approved.conflicted,
+    corroboratedCases:corroborated.length,approvedExactLinkToCorroboratedCandidate:approvedMatches.length,
+    noApprovedExactLinkToCorroboratedCandidate:corroborated.length-approvedMatches.length,
+    approvedLinkConflicts:conflictingLinks.length,
+    canonicalOwnerAlsoHasActiveAuth:corroborated.filter(r=>(directActiveCounts.get(r._candidateCanonicalId)||0)>0).length,
+    canonicalOwnerWithoutActiveAuth:corroborated.filter(r=>(directActiveCounts.get(r._candidateCanonicalId)||0)===0).length,
+    noIdentityMergesAuthorizedFromSimilarity:true,authWrites:0,firestoreWrites:0
+  };
   const buckets=new Map(),countries=new Map();
   for(const x of rows){buckets.set(x.category,(buckets.get(x.category)||0)+1);
     const key=x.profileCountry;countries.set(key,(countries.get(key)||0)+1);}
@@ -138,7 +175,7 @@ try{
   report.duplicateActiveMembershipsForExactHrOwner=[...duplicateMembers.values()].filter(n=>n>1).length;
   const flagged=rows.filter(x=>!['HR_DIRECT_WITH_HISTORY','HR_DIRECT_ZERO_HISTORY','HR_EXACT_CROSSWALK_WITH_HISTORY','HR_EXACT_CROSSWALK_ZERO_HISTORY'].includes(x.category)||x.corroboratedCandidateCount>0);
   report.flaggedCount=flagged.length;
-  report.cases=flagged.slice(0,80).map(({canonical,...x})=>({...x,canonicalFingerprint:canonical?fp('sid:'+canonical):null}));
+  report.cases=flagged.slice(0,80).map(({canonical,_shopperId,_candidateCanonicalId,...x})=>({...x,canonicalFingerprint:canonical?fp('sid:'+canonical):null}));
   report.casesTruncated=flagged.length>report.cases.length;
   const after=await currentHr('after');
   assert(after.revision===hr.revision,'HR_CHANGED_DURING_COHORT_READ');
@@ -150,6 +187,7 @@ console.log(JSON.stringify({decision:report.decision,hrRevision:report.hrRevisio
   totalActiveCredentialMemberships:report.totalActiveCredentialMemberships,
   classification:report.classification,flaggedCount:report.flaggedCount,
   unlinkedWithUniqueNameAndPhoneCandidate:report.unlinkedWithUniqueNameAndPhoneCandidate,
+  technicalIdentityEvidence:report.technicalIdentityEvidence,
   unlinkedNameOnlyNotSafeToMerge:report.unlinkedNameOnlyNotSafeToMerge,
   production:false,writes:0,errorCode:report.errorCode||null}));
 if(report.decision!=='PASS_DEV_SHOPPER_IDENTITY_COHORT_READONLY')process.exitCode=2;

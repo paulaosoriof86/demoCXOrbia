@@ -71,10 +71,12 @@ jobs:
           test "${GITHUB_REF_NAME}" = 'recovery/cxorbia-phase-a-20260831'
           test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
           test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
-          git merge-base --is-ancestor 6839a669 HEAD
-          git diff --quiet 6839a669 HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules \
-            ':(exclude)backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs' \
-            ':(exclude)backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-live-source-honorarium.test.mjs'
+          SOURCE="$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          TREE="$(jq -r '.productTreeAuthority' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          test "$SOURCE" = '308c69e3756e3e80577856009901934ce5f52fba'
+          test "$(git rev-parse "$SOURCE^{tree}")" = "$TREE"
+          git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules \
+            ':(exclude)backend/runtime/hr-live-service/test/**'
           node --check firebase/auth-dev-tools/cxorbia-i3-p0-shopper-identity-cohort-readonly.mjs
       - uses: google-github-actions/auth@v2
         with:
