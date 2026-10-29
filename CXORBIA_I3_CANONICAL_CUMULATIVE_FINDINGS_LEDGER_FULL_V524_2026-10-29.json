@@ -14,9 +14,9 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "a2be5a77a4c0008ec374c17f42d5da27070e1ed6",
-    "sourceTree": "eb8734a450c14d510a9a9924b39cb826caacf510",
-    "predecessorSha": "308c69e3756e3e80577856009901934ce5f52fba",
+    "sourceSha": "8f02e305be6d3c4a5ec4890c47d80cb34300f137",
+    "sourceTree": "fc5fdd2fdb78a5f9a8e6bde0afb27d0c86c87f71",
+    "predecessorSha": "a2be5a77a4c0008ec374c17f42d5da27070e1ed6",
     "production": false,
     "state": "SOURCE_ONLY_G03_PENDING_CANONICAL_CI_AND_DEV_E2E",
     "i3P0CountryScope20261028": {
@@ -34992,6 +34992,51 @@
     "deploys": 0,
     "liveE2E": "PENDING",
     "humanAcceptance": "PENDING",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": false
+  },
+  "i3P0PdfTransversalFinance20261029": {
+    "date": "2026-10-29",
+    "sourceSha": "8f02e305be6d3c4a5ec4890c47d80cb34300f137",
+    "sourceTree": "fc5fdd2fdb78a5f9a8e6bde0afb27d0c86c87f71",
+    "predecessorSourceSha": "a2be5a77a4c0008ec374c17f42d5da27070e1ed6",
+    "iteration": "I3",
+    "state": "SOURCE_ONLY_PENDING_CANONICAL_CI_AND_DEV_AUTHENTICATED_REPROOF",
+    "productOwners": [
+      "app/modules/postulaciones.js",
+      "app/modules/documentos.js",
+      "app/modules/finanzas.js",
+      "app/styles/layout.css",
+      "app/styles/theme.css",
+      "app/sw.js"
+    ],
+    "sourceFocalTests": {
+      "testFilesPassed": 7,
+      "failed": 0,
+      "limitations": "Synthetic/source tests, not protected Admin/Shopper end-to-end in DEV"
+    },
+    "pdf": {
+      "priorDirectPdf": "PASS_7_PAGES_HISTORICAL",
+      "priorA2beViewer": "FAIL_GET_NO_RESPONSE_TYPEERROR_WITH_RETRY_LOOP",
+      "storagePreflight": "PASS_HTTP_200_CORS_CORRECT_DEV_BUCKET",
+      "unauthenticatedGet": "HTTP_403_EXPECTED_PROTECTED",
+      "fix": "Do not intercept cross-origin Storage requests with SW; do not refetch unchanged viewer after status event",
+      "status": "P0_PROVEN_SOURCE_PENDING_AUTHENTICATED_DEV_PROOF"
+    },
+    "transversal": {
+      "scope": "ALL_PHASE_A_ROLES_AND_DOMAINS",
+      "firstSourcePass": "Shared typography and contrast tokens, tables, forms, sidebar, labels, buttons and mobile",
+      "remaining": "Full 21-domain browser visual proof including Shopper, Client, certifications, finance and responsive",
+      "approval": "HOLD_HUMAN"
+    },
+    "finance": {
+      "fix": "Show known operational amounts honestly, omit raw shopper code, use professional copy",
+      "paymentEligibilityUnchanged": true,
+      "externalReconciliation": "HOLD",
+      "settledPaymentsClaimed": false
+    },
+    "sourceVsServed": "SOURCE_ONLY_NOT_CURRENT_DEV",
     "gate20": "HOLD",
     "gate21": "HOLD",
     "production": false

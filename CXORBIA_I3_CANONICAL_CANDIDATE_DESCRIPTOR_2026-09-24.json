@@ -4,11 +4,11 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "a2be5a77a4c0008ec374c17f42d5da27070e1ed6",
-  "productTreeAuthority": "eb8734a450c14d510a9a9924b39cb826caacf510",
-  "predecessorProductSourceSha": "308c69e3756e3e80577856009901934ce5f52fba",
+  "productSourceSha": "8f02e305be6d3c4a5ec4890c47d80cb34300f137",
+  "productTreeAuthority": "fc5fdd2fdb78a5f9a8e6bde0afb27d0c86c87f71",
+  "predecessorProductSourceSha": "a2be5a77a4c0008ec374c17f42d5da27070e1ed6",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V524_2026-10-29.json",
-  "findingsLedgerExpectedGitBlob": "2e63eb97308b9379eff34bc0fc8316e6e0e778e4",
+  "findingsLedgerExpectedGitBlob": "8bd2798bc4f0a7130a131b0763b9204dcad0e262",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V192.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -854,7 +854,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "9e3c446c829edbcb7cc5d2f6ab179ddacb246248",
+  "productSourceTree": "fc5fdd2fdb78a5f9a8e6bde0afb27d0c86c87f71",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -3028,7 +3028,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "7099f57085285f5e5343810d807795c03faabc9c",
+  "moduleTruthExpectedGitBlob": "9ee1655ef475ac32135aefc038090d4c0869d121",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -14489,6 +14489,51 @@
     "sourceProof": "PENDING_CANONICAL_CI",
     "newMatchesClaimed": 0,
     "devMaterialization": "PENDING",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": false
+  },
+  "i3P0PdfTransversalFinance20261029": {
+    "date": "2026-10-29",
+    "sourceSha": "8f02e305be6d3c4a5ec4890c47d80cb34300f137",
+    "sourceTree": "fc5fdd2fdb78a5f9a8e6bde0afb27d0c86c87f71",
+    "predecessorSourceSha": "a2be5a77a4c0008ec374c17f42d5da27070e1ed6",
+    "iteration": "I3",
+    "state": "SOURCE_ONLY_PENDING_CANONICAL_CI_AND_DEV_AUTHENTICATED_REPROOF",
+    "productOwners": [
+      "app/modules/postulaciones.js",
+      "app/modules/documentos.js",
+      "app/modules/finanzas.js",
+      "app/styles/layout.css",
+      "app/styles/theme.css",
+      "app/sw.js"
+    ],
+    "sourceFocalTests": {
+      "testFilesPassed": 7,
+      "failed": 0,
+      "limitations": "Synthetic/source tests, not protected Admin/Shopper end-to-end in DEV"
+    },
+    "pdf": {
+      "priorDirectPdf": "PASS_7_PAGES_HISTORICAL",
+      "priorA2beViewer": "FAIL_GET_NO_RESPONSE_TYPEERROR_WITH_RETRY_LOOP",
+      "storagePreflight": "PASS_HTTP_200_CORS_CORRECT_DEV_BUCKET",
+      "unauthenticatedGet": "HTTP_403_EXPECTED_PROTECTED",
+      "fix": "Do not intercept cross-origin Storage requests with SW; do not refetch unchanged viewer after status event",
+      "status": "P0_PROVEN_SOURCE_PENDING_AUTHENTICATED_DEV_PROOF"
+    },
+    "transversal": {
+      "scope": "ALL_PHASE_A_ROLES_AND_DOMAINS",
+      "firstSourcePass": "Shared typography and contrast tokens, tables, forms, sidebar, labels, buttons and mobile",
+      "remaining": "Full 21-domain browser visual proof including Shopper, Client, certifications, finance and responsive",
+      "approval": "HOLD_HUMAN"
+    },
+    "finance": {
+      "fix": "Show known operational amounts honestly, omit raw shopper code, use professional copy",
+      "paymentEligibilityUnchanged": true,
+      "externalReconciliation": "HOLD",
+      "settledPaymentsClaimed": false
+    },
+    "sourceVsServed": "SOURCE_ONLY_NOT_CURRENT_DEV",
     "gate20": "HOLD",
     "gate21": "HOLD",
     "production": false
