@@ -1,4 +1,4 @@
-name: CXOrbia I3 F057 Two-Certification DEV Exact Readonly
+name: CXOrbia I3 F057 Two-Certification DEV Protected Canary
 on:
   push:
     branches: [recovery/cxorbia-phase-a-20260831]
@@ -11,8 +11,8 @@ concurrency:
   group: cxorbia-i3-approved-identity-adjudications-dev
   cancel-in-progress: false
 jobs:
-  f057-two-certifications-no-alias-visits-readonly:
-    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-APPROVED-F057-TWO-CERT-READONLY' }}
+  f057-two-certifications-no-alias-visits-protected-canary:
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-APPROVED-F057-TWO-CERT-DEV-CANARY-ONCE' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
@@ -21,7 +21,7 @@ jobs:
       CX_F057_EXECUTION: PAULA_I3_2026_10_28_APPROVED_F057_HN_DEV_CANARY_ONLY
       CX_F057_APPROVED_DIGEST: ac3e15184316d62aa53942359e857f2c34dec486a2ca41057e529a39f062d872
       CX_F057_CANARY_OUT: .tmp/cxorbia-i3-f057-canary
-      CX_F057_PREFLIGHT_ONLY: 'YES'
+      CX_F057_PREFLIGHT_ONLY: 'NO'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -67,6 +67,7 @@ jobs:
           test "$(git hash-object tools/qa/cxorbia-i3-postulaciones-manual-availability-guard.test.mjs)" = 'caee10f2a0552df2653cb87b6a62df9e5dee7af9'
           test "$(git hash-object tools/qa/cxorbia-i3-shoppers-bridge-authority.test.mjs)" = 'ab1d0ac3d57902ad20d3c974395b946fb34fb0c8'
           test "$(git hash-object tools/qa/cxorbia-i3-visitas-effective-availability.test.mjs)" = '31b97ec75076594f9e0e3bee061ae59976a6dcb4'
+          test "$(git hash-object firebase/auth-dev-tools/cxorbia-i3-approved-f057-two-cert-canary-once.mjs)" = 'a8243df4e8d650ae70883d22d43b7971c6a36fd4'
           node --check firebase/auth-dev-tools/cxorbia-i3-approved-f057-two-cert-canary-once.mjs
       - name: Verify protected provider regressions before any write
         run: |
@@ -89,22 +90,23 @@ jobs:
           set -Eeuo pipefail
           npm install --prefix firebase/auth-dev-tools --no-save --no-package-lock --ignore-scripts firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
           ./firebase/auth-dev-tools/node_modules/.bin/playwright install chromium
-      - name: Exact F057 keeper and two certifications READ-ONLY preflight
+      - name: One F057 protected identity adjudication and two-cert readback
         run: |
           set -Eeuo pipefail
           node firebase/auth-dev-tools/cxorbia-i3-approved-f057-two-cert-canary-once.mjs
-          jq -e '.decision=="PASS_F057_EXACT_READONLY_PREFLIGHT" and .production==false and
-            .readOnly==true and .protectedDomainTopologyVerified==true and
-            .before.hrHistoricalVisits==1 and .before.aliasOwnedDomainRows.certifications==2 and
-            .before.aliasOwnedDomainRows.visits==0 and .before.keeperCredentialProof==true and
-            .sourceConsistency.contact.hnLocalEquivalent==true and
-            .providerWrites==0 and .hrWrites==0 and
+          jq -e '.decision=="PASS_F057_CANARY_PROVIDER_AND_SHOPPER_UI" and .production==false and
+            .providerAck==true and .identityConsolidated==true and .readback==true and
+            .shopperUiVerified==true and .after.domainVisitWrites==0 and
+            .after.hrOneHistoricalVisitPreserved==true and .after.aliasVisitRowsAfter==0 and
+            .after.domainCertificationWrites==2 and .after.certificationOwnersCanonical==true and
+            .after.certificationIdsPreserved==true and
+            .sourceConsistency.contact.hnLocalEquivalent==true and .hrWrites==0 and
             .directAuthWrites==0 and .directFirestoreWrites==0 and
             .deployments==0' "$CX_F057_CANARY_OUT/result.json" >/dev/null
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cxorbia-i3-f057-two-cert-dev-readonly-${{ github.run_id }}
+          name: cxorbia-i3-f057-two-cert-protected-canary-${{ github.run_id }}
           path: .tmp/cxorbia-i3-f057-canary/result.json
           if-no-files-found: warn
           retention-days: 30
