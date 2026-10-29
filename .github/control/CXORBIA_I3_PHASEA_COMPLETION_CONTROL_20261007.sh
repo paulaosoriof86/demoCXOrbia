@@ -5,6 +5,86 @@ OUT=".tmp/i3-phasea-completion"
 ROOT="https://cxorbia-backend-dev.web.app"
 ASSETS=(core/backend-browser-auth.js core/shoppers-store.js core/topbar.js modules/beneficios.js modules/dashboard.js modules/postulaciones.js modules/finanzas.js modules/cert.js modules/misvisitas.js modules/reservas.js modules/soporte.js modules/novedades.js core/backend-bulletins.js adapters/cxorbia-command-adapter-v1.js adapters/cxorbia-cxdata-command-boundary-v1.js adapters/tya-canonical-shopper-portal-v2.js adapters/tya-c6-domain-consistency-bridge.js adapters/tya-protected-auth-hr-authority-bridge-v2.js adapters/tya-c6-unified-human-runtime-v1.js adapters/tya-canonical-reservations-guard-v2.js data/tya-payment-history-source-safe.js adapters/tya-financial-canonical-source-safe-adapter.js styles/layout.css core/backend-firebase.js core/cliente-data.js modules/cliente.js core/ui.js core/router.js adapters/tya-cumulative-read-model-v2.js modules/midia.js modules/visitas.js modules/visita-detalle.js styles/theme.css modules/proyecto-wizard.js modules/cuestionario-shopper.js adapters/tya-live-source-inplace-apply.js index-backend-dev.html core/automations.js modules/automatizaciones.js core/backend-cxdata-finance-read.js core/backend-finance-benefits.js)
 case "$MODE" in
+session-source-proof|session-preflight|session-proof)
+  # Focal opt-in in this existing control lane; no materialization and no seal rewrite.
+  test "${I3_SESSION_PROOF:-}" = true
+  test "${GITHUB_EVENT_NAME:-}" = push
+  test "${GITHUB_REF:-}" = refs/heads/recovery/cxorbia-phase-a-20260831
+  jq -e '.head_commit.message | contains("[i3-c02-d04-session-proof]")' "$GITHUB_EVENT_PATH" >/dev/null
+  test "$(jq -r .status "$CANDIDATE_DESCRIPTOR")" = HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL
+  test "$(jq -r .production "$CANDIDATE_DESCRIPTOR")" = DO_NOT_TOUCH
+  SESSION_POINTER=CXORBIA_RECOVERY_EXECUTION_CURRENT.json
+  SESSION_PACKAGE=docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029.json
+  test "$(jq -r .currentSessionProofPackage.path "$SESSION_POINTER")" = "$SESSION_PACKAGE"
+  test "$(git rev-parse "HEAD:$SESSION_PACKAGE")" = "$(jq -r .currentSessionProofPackage.gitBlob "$SESSION_POINTER")"
+  test "$(jq -r .schemaVersion "$SESSION_PACKAGE")" = cxorbia.i3.c02-d04.independent-session-package.v1
+  test "$(jq -r .branch "$SESSION_PACKAGE")" = recovery/cxorbia-phase-a-20260831
+  test "$(git rev-parse HEAD^)" = "$(jq -r .expectedControlParentSha "$SESSION_PACKAGE")"
+  test "$(jq -r .sourceSha "$SESSION_PACKAGE")" = e753c418fb797a506f6dce3b2b51de405c9b33f1
+  test "$(jq -r .sourceTree "$SESSION_PACKAGE")" = be0ad639a652439200ef4043bb08d5d4b709f266
+  test "$(jq -r .sourceSha "$SESSION_PACKAGE")" = "$FOCAL_SOURCE"
+  test "$(jq -r .sourceTree "$SESSION_PACKAGE")" = "$FOCAL_TREE"
+  test "$(jq -r .productSourceSha "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
+  test "$(jq -r .productTreeAuthority "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
+  test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
+  git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+  test "$(jq -r .g03CanonicalControlAlignment20261029.previewRunId "$CANDIDATE_DESCRIPTOR")" = 40901257714
+  jq -e '.production==false and .preview.runId==40901257714 and .actor.uid=="NkcIVM4AnSU1gI9cGKHI5P12YqC3" and .actor.tenantId=="tya" and .actor.projectId=="cinepolis" and .actor.role=="admin" and .c02.uiVisitId=="hr_2026-10_gt_2_97b3975c30" and .c02.durableVisitId=="OCTUBRE 26!2" and .c02.periodId=="cinepolis-2026-10" and .c02.priorReceiptPath=="docs/checkpoints/CXORBIA_I3_C02_DURABLE_RECEIPT_READBACK_20261029.json" and .c02.priorReceiptGitBlob=="5a18cab354ac9fbb216c0c9ff03a8460065f40db" and .d04.fixturePrefix=="qa-i3-d04-session-" and .d04.questions==15 and .d04.edits==1 and .d04.publish==false and .d04.cleanup==true and .scope.financeWrites==0 and .scope.authMutations==0 and .scope.hrWrites==0 and .scope.deploys==0 and .scope.production==false' "$SESSION_PACKAGE" >/dev/null
+  test "$(git rev-parse "HEAD:$(jq -r .c02.priorReceiptPath "$SESSION_PACKAGE")")" = "$(jq -r .c02.priorReceiptGitBlob "$SESSION_PACKAGE")"
+  test "$(jq -r .preview.channel "$SESSION_PACKAGE")" = i3-recovery-1029-40901257714
+  test "$(jq -r .preview.origin "$SESSION_PACKAGE")" = https://cxorbia-backend-dev--i3-recovery-1029-40901257714-yxqv51l2.web.app
+  test "$(jq -r .preview.hostingVersion "$SESSION_PACKAGE")" = sites/cxorbia-backend-dev/versions/8f3502960bcb878e
+  test "$(jq -r .preview.runtimeRevision "$SESSION_PACKAGE")" = cxorbia-live-hr-dev-00330-fim
+  test "$(jq -r .preview.runtimeDigest "$SESSION_PACKAGE")" = sha256:bba5ebbf19c203954ec0be6c2c3ef01a057e7ce3f98fb7e5eeac2d889bd0a500
+  test "$PROJECT" = cxorbia-backend-dev
+  test "$SERVICE" = cxorbia-live-hr-dev
+  test "$HOSTING_SITE" = cxorbia-backend-dev
+  test "$TENANT_ID" = tya
+  test "$PROJECT_ID" = cinepolis
+  node --check tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs
+  SESSION_OUT="${PHASEA_LIVE_OUT:?}/session-proof"
+  mkdir -p "$SESSION_OUT"
+  SESSION_PACKAGE_BLOB="$(git rev-parse "HEAD:$SESSION_PACKAGE")"
+  SESSION_CONTROL="$(git rev-parse HEAD)"
+  if [[ "$MODE" == session-source-proof ]];then
+    jq -n -S --arg control "$SESSION_CONTROL" --arg package "$SESSION_PACKAGE_BLOB" --arg source "$FOCAL_SOURCE" '{decision:"PASS_C02_D04_SESSION_PACKAGE_SOURCE_GUARD",controlSha:$control,packageBlob:$package,sourceSha:$source,cloudAccess:false,writes:0,production:false}' > "$SESSION_OUT/package-source-guard.json"
+    exit 0
+  fi
+  if [[ "$MODE" == session-proof ]];then
+    jq -e --arg control "$SESSION_CONTROL" --arg package "$SESSION_PACKAGE_BLOB" --arg run "$GITHUB_RUN_ID" '.decision=="PASS_C02_D04_EXISTING_PREVIEW_PREFLIGHT" and .controlSha==$control and .packageBlob==$package and .runId==$run and .production==false' "$SESSION_OUT/preflight.json" >/dev/null
+    export HOSTING_URL="$(jq -r .preview.origin "$SESSION_PACKAGE")"
+    export EXPECTED_HR_REVISION="$(jq -r .hrRevision "$SESSION_OUT/preflight.json")"
+    export CXORBIA_I3_INDEPENDENT_SESSION_PROOF=YES_PAULA_20261029_DEV
+    export CXORBIA_I3_SESSION_PACKAGE="$SESSION_PACKAGE"
+    export CXORBIA_I3_SESSION_PREFLIGHT="$SESSION_OUT/preflight.json"
+    node tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs | tee "$SESSION_OUT/session-proof-console.log"
+    jq -e '.decision=="PASS_C02_D04_INDEPENDENT_SESSIONS" and .c02.independentApplicationSession==true and .d04.independentApplicationSession==true and .cleanup.qaAbsentAfter==true and .writes.auth==0 and .writes.hr==0 and .writes.finance==0 and .writes.otherBanks==0 and .production==false' "$PHASEA_LIVE_OUT/d04-e04/result.json" >/dev/null
+    exit 0
+  fi
+  SESSION_ROOT="$(jq -r .preview.origin "$SESSION_PACKAGE")"
+  SESSION_REVISION="$(jq -r .preview.runtimeRevision "$SESSION_PACKAGE")"
+  SESSION_DIGEST="$(jq -r .preview.runtimeDigest "$SESSION_PACKAGE")"
+  gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$SESSION_OUT/runtime.json"
+  jq -e --arg revision "$SESSION_REVISION" '.status.latestReadyRevisionName==$revision and ([.status.traffic[] | select(.revisionName==$revision) | (.percent // 0)] | add)==100' "$SESSION_OUT/runtime.json" >/dev/null
+  gcloud run revisions describe "$SESSION_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$SESSION_OUT/revision.json"
+  SESSION_RAW="$(jq -r '.status.imageDigest // empty' "$SESSION_OUT/revision.json")"
+  case "$SESSION_RAW" in sha256:*) SESSION_OBSERVED_DIGEST="$SESSION_RAW";; *@sha256:*) SESSION_OBSERVED_DIGEST="sha256:${SESSION_RAW##*@sha256:}";; *) exit 1;; esac
+  test "$SESSION_OBSERVED_DIGEST" = "$SESSION_DIGEST"
+  SESSION_TOKEN="$(gcloud auth print-access-token)"
+  curl -fsS -H "Authorization: Bearer $SESSION_TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/$(jq -r .preview.channel "$SESSION_PACKAGE")" > "$SESSION_OUT/hosting-preview.json"
+  unset SESSION_TOKEN
+  jq -e --arg version "$(jq -r .preview.hostingVersion "$SESSION_PACKAGE")" --arg root "$SESSION_ROOT" '.release.version.name==$version and .release.version.status=="FINALIZED" and .url==$root' "$SESSION_OUT/hosting-preview.json" >/dev/null
+  for SESSION_ASSET in index-backend-dev.html core/backend-browser-auth.js core/backend-protected-dev-mode.js core/backend-protected-dev-session-continuity.js core/backend-resources.js core/backend-certifications.js modules/cert.js modules/finanzas.js adapters/tya-financial-canonical-source-safe-adapter.js core/backend-cxdata-finance-read.js core/backend-finance-benefits.js;do
+    SESSION_FILE="$SESSION_OUT/served-${SESSION_ASSET//\//_}"
+    curl -fsSL -H 'Cache-Control: no-cache, no-store, max-age=0' "$SESSION_ROOT/$SESSION_ASSET?sessionproof=$GITHUB_RUN_ID" -o "$SESSION_FILE"
+    test "$(git hash-object "$SESSION_FILE")" = "$(git rev-parse "$FOCAL_SOURCE:app/$SESSION_ASSET")"
+  done
+  curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$SESSION_ROOT/api/tya/cinepolis/hr-live?format=meta&phaseapreflight=readback-20261029&sessionproof=$GITHUB_RUN_ID" > "$SESSION_OUT/hr-meta.json"
+  jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .hrWrites==false and .production==false' "$SESSION_OUT/hr-meta.json" >/dev/null
+  SESSION_HR="$(jq -r '.revision // empty' "$SESSION_OUT/hr-meta.json")"
+  [[ "$SESSION_HR" =~ ^[0-9a-f]{64}$ ]]
+  jq -n -S --arg control "$SESSION_CONTROL" --arg package "$SESSION_PACKAGE_BLOB" --arg run "$GITHUB_RUN_ID" --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg hr "$SESSION_HR" --arg root "$SESSION_ROOT" --arg hosting "$(jq -r .preview.hostingVersion "$SESSION_PACKAGE")" --arg revision "$SESSION_REVISION" --arg digest "$SESSION_DIGEST" '{decision:"PASS_C02_D04_EXISTING_PREVIEW_PREFLIGHT",controlSha:$control,packageBlob:$package,runId:$run,sourceSha:$source,sourceTree:$tree,hrRevision:$hr,previewOrigin:$root,hostingVersion:$hosting,runtimeRevision:$revision,runtimeDigest:$digest,servedOwnerCount:11,deploys:0,writes:0,production:false}' > "$SESSION_OUT/preflight.json"
+  ;;
 source-proof)
   STATUS="$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")"
   case "$STATUS" in

@@ -99,7 +99,7 @@
     "D02": "PASS_LIVE_PARSER_RUN1753",
     "D01": "PASS_AUTHORIZED_DOCUMENT_SOURCE",
     "D03": "LIVE_E2E_PASS_RUN1778_FRESH_GENERATION_15Q_REPLAY_CLEANUP",
-    "D04": "SOURCE_PASS_RUN1795_DEV_RUN1796_NAME_ONLY_CONNECTED_E2E_PASS_RUN1797__HUMAN_AND_FULL_TASK_PENDING",
+    "D04": "RUN1788_CONTENT_EDIT_ACK_VERSION_HISTORY_RELOAD_AND_RUN1797_NAME_STABLE_ID_PASS_PRESERVED__OWNER_PARITY_E753__INDEPENDENT_SESSION_AND_HUMAN_PENDING",
     "E04": "F12_CLIENT_SOURCE_ABSENT_LIVE_PASS_RUN1797__F09_NPS_NOTES_MEETINGS_DURABLE_OPEN__HUMAN_PENDING",
     "A09": "RUN1869_DEV_REVIEW_FLAGS_TWO_VISITS_PASS__THREE_VISIT_UI_ADMIN_SHOPPER_FOCAL_PASS__FULL_E2E_PENDING",
     "B11": "SOURCE_TESTS_8_OF_8_AND_4_OF_4_PASS__DEV_RUNTIME_00327_HEALTH_PASS_RUN1863__VRM287_DURABLE_2_VISITS_PASS_RUN1869__I3_E2E_PENDING",
@@ -507,7 +507,7 @@
       "D04",
       "D07"
     ],
-    "immediateAction": "Read the same October visit in an independent authorized CXOrbia application session on the same canonical preview and verify Q60+Q145=Q205, validated financial source, and external payment not confirmed. Do not replay reconciliation. Preserve the 303/303 source proof and all prior owner-scoped PASS; then continue D04/D05/D06 and bounded D07 under the frozen plan.",
+    "immediateAction": "Execute and read back the opt-in C02/D04 independent-session case in the existing canonical CI live job, bound to e753 and preview40901257714. Preserve the human Chrome Admin session, 303/303 source proof, C02 durable receipt, RUN1788 question-edit and RUN1797 name-edit PASS. Do not repeat reconciliation. After the run, read its exact artifact and cleanup result before closing either focal acceptance.",
     "noProductChanges": true,
     "noProduction": true,
     "receiptPointerField": "currentExecutionReceipt",
@@ -531,7 +531,13 @@
       "scope": "Only the exact DEV visit, existing reconciliation receipt and matching audit."
     },
     "resolvedAccessBlockPath": "docs/checkpoints/CXORBIA_I3_C02_RECEIPT_READ_ACCESS_BLOCK_20261029.json",
-    "acceptanceRemaining": "Read the same exact financial row in another independent authenticated CXOrbia application session. Firebase console and a new tab in the existing app session do not meet this criterion."
+    "acceptanceRemaining": "C02 independent application read; D04 edited bank/content/version in an independently authenticated context; human acceptance and remaining frozen plan stay open.",
+    "currentSessionProofPackage": {
+      "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029.json",
+      "gitBlob": "d20d624fa0c1b47bbc81a1fdaec8f63ef9fa97b8"
+    },
+    "browserSessionFinding": "Protected DEV session-continuity wraps Firebase SESSION into LOCAL. A normal second Chrome tab shares authentication; it is not a separate session. Keep Chrome logged in.",
+    "resumeRule": "If a matching tagged run exists, inspect its jobs/artifact first; do not launch another copy or repeat the finance command."
   },
   "previousExecutionReceiptBeforeRun1788": {
     "path": "CXORBIA_I3_D04_E04_DEV_MATERIALIZATION_RUN1782_2026-10-18.json",
@@ -3234,5 +3240,100 @@
       "authorizationScope": "Read-only access in Chrome to the private Firebase/Firestore console of cxorbia-backend-dev, limited to this DEV visit and the existing finance.reconcile.visit receipt/audit. No data modification, payment, replay, or production access."
     },
     "resumeAfterAuthorizedReceiptRead": "C02: read the receipt/audit and committed HR revision of the existing single attempt without replay; retain fresh-page and explicit-reload persistence proof. Continue D04/D05/D06 and bounded D07 evidence on the same e753 candidate, preserving passed owners."
+  },
+  "currentSessionProofPackage": {
+    "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029.json",
+    "gitBlob": "d20d624fa0c1b47bbc81a1fdaec8f63ef9fa97b8",
+    "state": "READY_FOR_EXISTING_CANONICAL_CI_NOT_EXECUTED",
+    "expectedControlParentSha": "336e3cfe64ec4a0e94e7c9663e6d05d05da1fb06",
+    "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+    "previewRunId": 40901257714,
+    "tasks": [
+      "C02",
+      "D04"
+    ],
+    "supplementalReadOnlyDiagnostic": "D07_OPTIONS_ONLY",
+    "existingWorkflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "existingJob": "phasea-representative-same-artifact-live-reproof",
+    "existingRunner": "tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs",
+    "triggerMarker": "[i3-c02-d04-session-proof]",
+    "userChromeSessionPreserved": true,
+    "production": false,
+    "sourceChanges": 0,
+    "newWorkflow": 0,
+    "newMaterializer": 0,
+    "liveResult": "PENDING"
+  },
+  "d04CarryForwardRecovered20261029": {
+    "status": "PRIOR_FOCAL_PASS_PRESERVED_INDEPENDENT_SESSION_AND_HUMAN_PENDING",
+    "originalLogsReRead": true,
+    "contentEdit": {
+      "runId": 39163128539,
+      "runNumber": 1788,
+      "jobId": 117780494376,
+      "decision": "PASS_15_QUESTION_REVIEW_PROVIDER_ACK_VERSION_HISTORY_RELOAD",
+      "questions": 15,
+      "versionBefore": 1,
+      "versionAfter": 2,
+      "fixtureCleaned": true
+    },
+    "nameEdit": {
+      "runId": 39172645706,
+      "runNumber": 1797,
+      "jobId": 117808812241,
+      "decision": "PASS_D04_PENDING_NAME_EDIT_PROVIDER_ACK_VERSION_HISTORY_RELOAD",
+      "stableId": true,
+      "fixtureCleaned": true
+    },
+    "ownerParity": {
+      "runtimeBlob": "f13f39c43e8a7d12f9c90a1dc1218f8735be3a3b",
+      "saveReviewAndEditorUnchangedBetweenRun1797AndE753": true,
+      "metadataWriterUnchangedBetweenRun1788AndE753": true,
+      "resourceScopeReaderChanged": true
+    },
+    "remaining": "The exact edited bank must be read in an independent authenticated context; the cleaned historic fixtures cannot satisfy that remaining clause retroactively. Human acceptance remains pending.",
+    "fullTaskClosed": false,
+    "moduleMatchPromotion": false
+  },
+  "previousContinuityHandoffBeforeSessionProofPackage20261029": {
+    "path": "docs/checkpoints/CXORBIA_I3_C02_DURABLE_RECEIPT_READBACK_20261029.json",
+    "blobSha": "5a18cab354ac9fbb216c0c9ff03a8460065f40db",
+    "kind": "C02_READ_ONLY_EVIDENCE_APPEND_ONLY_NOT_NEW_PLAN",
+    "asOf": "2026-10-29",
+    "frozenPlanId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
+    "productSourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+    "reviewedHeadBeforeHandoff": "83ce1cceb2d1cea0bd1ff2b46ff35ea8aaeeed5d",
+    "nextTaskIds": [
+      "G03",
+      "G04",
+      "C02",
+      "D04",
+      "D07"
+    ],
+    "immediateAction": "Read the same October visit in an independent authorized CXOrbia application session on the same canonical preview and verify Q60+Q145=Q205, validated financial source, and external payment not confirmed. Do not replay reconciliation. Preserve the 303/303 source proof and all prior owner-scoped PASS; then continue D04/D05/D06 and bounded D07 under the frozen plan.",
+    "noProductChanges": true,
+    "noProduction": true,
+    "receiptPointerField": "currentExecutionReceipt",
+    "sealedHistoricalFields": [
+      "lastExecutionReceipt",
+      "currentDevMaterialization",
+      "postDeployRunSeal"
+    ],
+    "preservedSourceProof": {
+      "runId": 40943351882,
+      "runNumber": 1954,
+      "tests": 303,
+      "pass": 303,
+      "fail": 0
+    },
+    "doNotRepeatFinanceVisitId": "hr_2026-10_gt_2_97b3975c30",
+    "consoleReadScopeAuthorization": {
+      "status": "GRANTED_AND_EXECUTED",
+      "userMessage": "autorizo",
+      "date": "2026-10-29",
+      "scope": "Only the exact DEV visit, existing reconciliation receipt and matching audit."
+    },
+    "resolvedAccessBlockPath": "docs/checkpoints/CXORBIA_I3_C02_RECEIPT_READ_ACCESS_BLOCK_20261029.json",
+    "acceptanceRemaining": "Read the same exact financial row in another independent authenticated CXOrbia application session. Firebase console and a new tab in the existing app session do not meet this criterion."
   }
 }
