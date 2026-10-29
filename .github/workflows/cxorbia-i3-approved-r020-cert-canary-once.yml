@@ -1,0 +1,92 @@
+name: CXOrbia I3 R020 Certification-only DEV Canary
+on:
+  push:
+    branches: [recovery/cxorbia-phase-a-20260831]
+    paths:
+      - .github/workflows/cxorbia-i3-approved-r020-cert-canary-once.yml
+      - firebase/auth-dev-tools/cxorbia-i3-approved-r020-cert-canary-once.mjs
+permissions:
+  contents: read
+concurrency:
+  group: cxorbia-i3-approved-identity-adjudications-dev
+  cancel-in-progress: false
+jobs:
+  r020-one-certification-no-alias-visits-protected-canary:
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-APPROVED-R020-CERT-DEV-CANARY-ONCE' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GCLOUD_PROJECT: cxorbia-backend-dev
+      GOOGLE_CLOUD_PROJECT: cxorbia-backend-dev
+      CX_R020_EXECUTION: PAULA_I3_2026_10_28_APPROVED_R020_DEV_CANARY_ONLY
+      CX_R020_APPROVED_DIGEST: ac3e15184316d62aa53942359e857f2c34dec486a2ca41057e529a39f062d872
+      CX_R020_CANARY_OUT: .tmp/cxorbia-i3-r020-canary
+      CX_R020_PREFLIGHT_ONLY: 'NO'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Assert frozen Phase A source, exact branch and DEV-only target
+        run: |
+          set -Eeuo pipefail
+          test "$GITHUB_REF_NAME" = 'recovery/cxorbia-phase-a-20260831'
+          test "$GITHUB_EVENT_NAME" = push
+          test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
+          test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
+          SOURCE="$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          TREE="$(jq -r '.productTreeAuthority' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          test "$SOURCE" = '308c69e3756e3e80577856009901934ce5f52fba'
+          test "$(git rev-parse "$SOURCE^{tree}")" = "$TREE"
+          git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules \
+            ':(exclude)app/core/router.js' \
+            ':(exclude)app/adapters/tya-cumulative-read-model-v2.js' \
+            ':(exclude)app/modules/visitas.js' \
+            ':(exclude)app/modules/dashboard.js' \
+            ':(exclude)app/modules/postulaciones.js' \
+            ':(exclude)backend/runtime/cxorbia-shopper-command-provider-v1.mjs' \
+            ':(exclude)backend/runtime/hr-live-service/test/**'
+          test "$(git hash-object app/core/router.js)" = '05f3b943d667814ae151556ee7281abbfe7bc6e5'
+          test "$(git hash-object app/adapters/tya-cumulative-read-model-v2.js)" = 'ab2abe6660d53d623e725f754d41b69710a8f612'
+          test "$(git hash-object app/modules/visitas.js)" = '1605e94b94ab2b99fd7f6348b287b58f36099ede'
+          test "$(git hash-object app/modules/dashboard.js)" = 'c48d1c63d0628c637c4257bef1725dc4349b8668'
+          test "$(git hash-object app/modules/postulaciones.js)" = 'bbd8a57bf836e7e55e260cf9d22d655317358418'
+          test "$(git hash-object backend/runtime/cxorbia-shopper-command-provider-v1.mjs)" = '0d3a5cc6c7b3f7ceff906b4ef70dc045e096e16b'
+          node --check firebase/auth-dev-tools/cxorbia-i3-approved-r020-cert-canary-once.mjs
+      - name: Verify protected provider regressions before any write
+        run: |
+          set -Eeuo pipefail
+          node backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
+          node backend/runtime/hr-live-service/test/cxorbia-i3-project-period-contract.test.mjs
+          node tools/qa/cxorbia-i3-shopper-name-collision-normalization.test.mjs
+          node tools/qa/cxorbia-i3-shopper-identity-review-rail-notice.test.mjs
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Install DEV-only authenticated QA dependencies
+        run: |
+          set -Eeuo pipefail
+          npm install --prefix firebase/auth-dev-tools --no-save --no-package-lock --ignore-scripts firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          ./firebase/auth-dev-tools/node_modules/.bin/playwright install chromium
+      - name: Protected R020 keeper and certification adjudication with independent readback
+        run: |
+          set -Eeuo pipefail
+          node firebase/auth-dev-tools/cxorbia-i3-approved-r020-cert-canary-once.mjs
+          jq -e '.decision=="PASS_R020_CANARY_PROVIDER_AND_SHOPPER_UI" and .production==false and
+            .providerAck==true and .identityConsolidated==true and .readback==true and
+            .shopperUiVerified==true and .after.domainVisitWrites==0 and
+            .after.hrTwoHistoricalVisitsPreserved==true and .after.aliasVisitRowsAfter==0 and
+            .after.domainCertificationWrites==1 and
+            .after.certificationOwnerCanonical==true and .after.certificationIdPreserved==true and
+            .sourceConsistency.contact.gtLocalEquivalent==true and
+            .hrWrites==0 and .directAuthWrites==0 and .directFirestoreWrites==0 and
+            .deployments==0' "$CX_R020_CANARY_OUT/result.json" >/dev/null
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-r020-cert-only-dev-canary-${{ github.run_id }}
+          path: .tmp/cxorbia-i3-r020-canary/result.json
+          if-no-files-found: warn
+          retention-days: 30
