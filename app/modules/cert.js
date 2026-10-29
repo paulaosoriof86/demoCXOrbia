@@ -10,6 +10,22 @@ CX.certStore = CX.certStore || {
     if(name.length<3||name.length>120)throw new Error('CERT_BANK_NAME_INVALID');
     return name;
   },
+  equalReviewValue(left,right){
+    if(left===right)return true;
+    if(left===null||right===null||typeof left!=='object'||typeof right!=='object')return false;
+    if(Array.isArray(left)||Array.isArray(right)){
+      if(!Array.isArray(left)||!Array.isArray(right)||left.length!==right.length)return false;
+      for(let index=0;index<left.length;index++)
+        if(!Object.prototype.hasOwnProperty.call(left,index)||!Object.prototype.hasOwnProperty.call(right,index)
+          ||!this.equalReviewValue(left[index],right[index]))return false;
+      return true;
+    }
+    const isMap=value=>{const proto=Object.getPrototypeOf(value);return Object.prototype.toString.call(value)==='[object Object]'&&(proto===null||Object.getPrototypeOf(proto)===null);};
+    if(!isMap(left)||!isMap(right))return false;
+    const keys=Object.keys(left);
+    return keys.length===Object.keys(right).length
+      &&keys.every(key=>Object.prototype.hasOwnProperty.call(right,key)&&this.equalReviewValue(left[key],right[key]));
+  },
   resourceId(pid,certificationId='main'){
     const projectId=String(CX.data?.currentProjectId||'project'),base=('certbank-'+projectId+'-'+String(pid||'period')).replace(/[^a-zA-Z0-9_-]+/g,'-'),cid=this.safeId(certificationId);
     return cid==='main'?base:(base+'-'+cid);
@@ -34,18 +50,19 @@ CX.certStore = CX.certStore || {
     delete bank.__resourceId;delete bank.__resourceVersion;
     if(!this.connected()){this._demo[pid]=this._demo[pid]||{};this._demo[pid][cid]=bank;CX.bus&&CX.bus.emit('cert');return {ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,demo:true,item:bank};}
     if(!CX.backendResources?.saveMetadata)return {ok:false,status:'blocked',providerAck:false,successUiAllowed:false,code:'CERT_DURABLE_BACKEND_UNAVAILABLE'};
-    const id=this.resourceId(pid,cid);
+    const id=this.resourceId(pid,cid),projectId=CX.data.currentProjectId;
     if(options.expectedResourceId&&options.expectedResourceId!==id)throw new Error('CERT_REVIEW_RESOURCE_ID_MISMATCH');
     const result=await CX.backendResources.saveMetadata({
-      id,resourceType:'certification_bank',projectId:CX.data.currentProjectId,periodId:pid,
+      id,resourceType:'certification_bank',projectId,periodId:pid,
       n:bank.certificationName||bank.name||'Banco de certificación',tipo:'certification_bank',bank,
       visibleRoles:['super','admin','ops','coordinador','shopper'],targetAll:false
-    },{projectId:CX.data.currentProjectId,periodId:pid,expectedVersion:options.expectedVersion,
+    },{projectId,periodId:pid,expectedVersion:options.expectedVersion,requireReadback:options.requireReadback===true,
       idempotencyKey:'certbank.save:'+id+':'+String(bank.contentRevision||bank.updatedAt||bank.generatedAt||'current')});
     if(options.requireReadback&&result?.providerAck===true){
-      const stored=(CX.backendResources?.items||[]).find(x=>x.id===id&&x.projectId===CX.data.currentProjectId&&x.periodId===pid);
-      if(!stored||String(stored.version)!==String(result.item?.version)||String(stored.bank?.contentRevision)!==String(bank.contentRevision)
-        ||String(stored.bank?.estado)!==String(bank.estado)||JSON.stringify(stored.bank?.preguntas||[])!==JSON.stringify(bank.preguntas||[])
+      const proof=result.readback,stored=proof?.confirmed===true&&proof.source==='firestore-server'?proof.item:null;
+      if(!stored||stored.id!==id||stored.projectId!==projectId||projectId!==CX.data.currentProjectId||stored.periodId!==pid
+        ||String(stored.version)!==String(result.item?.version)||String(stored.bank?.contentRevision)!==String(bank.contentRevision)
+        ||String(stored.bank?.estado)!==String(bank.estado)||!this.equalReviewValue(stored.bank?.preguntas||[],bank.preguntas||[])
         ||String(stored.bank?.certificationName||'')!==String(bank.certificationName||'')||String(stored.n||'')!==String(bank.certificationName||bank.name||'Banco de certificación'))
         throw new Error('CERT_REVIEW_REMOTE_READBACK_MISMATCH');
     }

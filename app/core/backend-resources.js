@@ -87,9 +87,10 @@ window.CX=window.CX||{};
     const idem=str(options.idempotencyKey||item.idempotencyKey||('resource:'+hash([scope.tenantId,scope.projectId,scope.periodId,clean(item)])));
     const rid=str(item.id)||('res-'+hash(idem));
     if(/^data:/i.test(str(item.url)))return blocked('RESOURCE_DATA_URL_FORBIDDEN');
+    const ref=c.doc(rid);
     let output=null,replay=false;
     await db().runTransaction(async tx=>{
-      const ref=c.doc(rid),snap=await tx.get(ref),prior=snap.exists?(snap.data()||{}):null;
+      const snap=await tx.get(ref),prior=snap.exists?(snap.data()||{}):null;
       if(prior&&prior.lastIdempotencyKey===idem){output=Object.assign({id:rid},prior);replay=true;return;}
       const expected=options.expectedVersion;
       if(expected!==undefined&&expected!==null&&(!prior||String(prior.version||0)!==String(expected)))throw new Error('RESOURCE_EXPECTED_VERSION_CONFLICT');
@@ -102,8 +103,22 @@ window.CX=window.CX||{};
       delete payload.idempotencyKey;
       tx.set(ref,payload,{merge:false});output=payload;
     });
+    let readback=null;
+    if(options.requireReadback===true){
+      const snapshot=await ref.get({source:'server'});
+      if(!snapshot.exists)throw new Error('RESOURCE_READBACK_MISSING');
+      if(snapshot.metadata?.fromCache!==false||snapshot.metadata?.hasPendingWrites!==false)
+        throw new Error('RESOURCE_READBACK_NOT_SERVER_CONFIRMED');
+      const actual=snapshot.data()||{};
+      if(snapshot.id!==rid||actual.id!==rid||actual.tenantId!==scope.tenantId||actual.projectId!==scope.projectId
+        ||actual.periodId!==(scope.periodId||null)||actual.status!=='active')
+        throw new Error('RESOURCE_READBACK_SCOPE_MISMATCH');
+      if(String(actual.version)!==String(output?.version)||actual.lastIdempotencyKey!==idem)
+        throw new Error('RESOURCE_READBACK_VERSION_MISMATCH');
+      readback={confirmed:true,source:'firestore-server',item:actual};
+    }
     await api.load(scope);
-    return ack(output,{idempotencyKey:idem,idempotentReplay:replay});
+    return ack(output,Object.assign({idempotencyKey:idem,idempotentReplay:replay},readback?{readback}:{}));
   };
   api.deleteMetadata=async function(resourceId,options={}){
     if(!connected())return blocked('RESOURCE_CONNECTED_AUTHORITY_DISABLED');
