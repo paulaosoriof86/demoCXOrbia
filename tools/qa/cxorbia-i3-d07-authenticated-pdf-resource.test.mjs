@@ -22,6 +22,7 @@ function fixture(){
       currentPeriodId:scope.periodId,ctx:()=>({projectId:scope.projectId,periodId:scope.periodId})},
     session:{role:'shopper',effectiveRole(){return this.role;}},bus:{on(){}}};
   const context={window:{firebase,CX},CX,firebase,console,Date,Uint8Array,
+    AbortController,setTimeout,clearTimeout,
     document:{readyState:'loading',addEventListener(){}},
     fetch:async(url,options)=>{calls.push({url,options});return response;}};
   vm.runInNewContext(source,context);
@@ -133,4 +134,29 @@ test('D07 positive PDF records metadata only and retains authenticated bytes for
   assert.equal(r.diagnostic.tokenObtained,true);assert.equal(r.diagnostic.httpStatus,200);
   assert.equal(r.diagnostic.bytesRead,true);assert.equal(r.diagnostic.bytesLength,h.PDF.byteLength);
   assert.doesNotMatch(JSON.stringify(r.diagnostic),/SYNTHETIC_TOKEN_NOT_REAL|res-18gkwuj/);
+});
+
+test('D07 bounded read fails closed if Firebase ID token never resolves',async()=>{
+  const h=fixture();
+  h.setUser({uid:'shopper-test-uid',getIdToken:()=>new Promise(()=>{})});
+  const r=await h.CX.backendResources.readPublishedPdf(h.resource,{...h.scope,timeoutMs:25});
+  assert.equal(r.code,'RESOURCE_READ_TOKEN_FAILED');
+  assert.equal(r.diagnostic.stage,'TOKEN');
+  assert.equal(r.diagnostic.errorType,'TimeoutError');
+  assert.equal(r.diagnostic.tokenObtained,false);
+  assert.equal(h.calls.length,0);
+});
+
+test('D07 bounded read aborts a hanging GET and reports its stage without revealing a token',async()=>{
+  const h=fixture();
+  h.setResponse(new Promise(()=>{}));
+  const r=await h.CX.backendResources.readPublishedPdf(h.resource,{...h.scope,timeoutMs:25});
+  assert.equal(r.code,'RESOURCE_READ_GET_FAILED');
+  assert.equal(r.diagnostic.stage,'GET');
+  assert.equal(r.diagnostic.errorType,'TimeoutError');
+  assert.equal(r.diagnostic.tokenObtained,true);
+  assert.equal(r.diagnostic.httpStatus,null);
+  assert.equal(h.calls.length,1);
+  assert.equal(h.calls[0].options.signal.aborted,true);
+  assert.doesNotMatch(JSON.stringify(r),/SYNTHETIC_TOKEN_NOT_REAL/);
 });

@@ -196,20 +196,40 @@ window.CX=window.CX||{};
     // D07 diagnostic-only: no token/path/UID/provider response body is retained
     // in the diagnostic. Storage Auth, roles, claims and fail-closed gates are unchanged.
     let stage='TOKEN',tokenObtained=false,httpStatus=null,bytesRead=false,bytesLength=0;
+    // D07 P0: an unresolved token/GET/body promise must never leave the protected
+    // viewer spinning indefinitely. Bound the complete read, not only fetch().
+    const requestedTimeout=Number(options.timeoutMs);
+    const timeoutMs=Number.isFinite(requestedTimeout)&&requestedTimeout>0
+      ?Math.min(15000,Math.max(25,requestedTimeout)):15000;
+    const controller=typeof AbortController==='function'?new AbortController():null;
+    const upstreamSignal=options.signal;
+    const onUpstreamAbort=()=>controller?.abort();
+    if(upstreamSignal?.aborted)onUpstreamAbort();
+    else upstreamSignal?.addEventListener?.('abort',onUpstreamAbort,{once:true});
+    let timedOut=false;
+    let timer=null;
+    const deadline=new Promise((_,reject)=>{
+      timer=setTimeout(()=>{
+        timedOut=true;
+        controller?.abort();
+        reject(Object.assign(new Error('RESOURCE_READ_TIMEOUT'),{name:'TimeoutError'}));
+      },timeoutMs);
+    });
+    const bounded=promise=>Promise.race([promise,deadline]);
     const diagnostic=(stageOverride,errorType)=>({
       stage:stageOverride||stage,tokenObtained,httpStatus,bytesRead,bytesLength,
       errorType:errorType||null
     });
     try{
-      const jwt=await user.getIdToken();
+      const jwt=await bounded(user.getIdToken());
       if(!jwt||str(auth.currentUser?.uid)!==initialUid||cacheKey(currentScope())!==initialKey||!isCurrent())
         return blocked('RESOURCE_READ_AUTH_SCOPE_CHANGED',{diagnostic:diagnostic('TOKEN')});
       tokenObtained=true;
       const endpoint='https://firebasestorage.googleapis.com/v0/b/'+encodeURIComponent(bucket)+
         '/o/'+encodeURIComponent(path)+'?alt=media';
       stage='GET';
-      const response=await fetch(endpoint,{method:'GET',cache:'no-store',credentials:'omit',
-        headers:{Authorization:'Firebase '+jwt},signal:options.signal});
+      const response=await bounded(fetch(endpoint,{method:'GET',cache:'no-store',credentials:'omit',
+        headers:{Authorization:'Firebase '+jwt},signal:controller?.signal||upstreamSignal}));
       httpStatus=Number(response.status)||0;
       if(!response.ok)return blocked('RESOURCE_READ_PROVIDER_DENIED',{
         httpStatus,diagnostic:diagnostic('GET_HTTP')
@@ -218,7 +238,7 @@ window.CX=window.CX||{};
       const maximum=25*1024*1024;
       const declared=Number(response.headers?.get?.('content-length')||0);
       if(declared>maximum)return blocked('RESOURCE_READ_SIZE_EXCEEDED',{diagnostic:diagnostic()});
-      const bytes=new Uint8Array(await response.arrayBuffer());
+      const bytes=new Uint8Array(await bounded(response.arrayBuffer()));
       bytesRead=true;bytesLength=bytes.byteLength;
       if(bytes.byteLength<5||bytes.byteLength>maximum||bytes[0]!==37||bytes[1]!==80||
         bytes[2]!==68||bytes[3]!==70||bytes[4]!==45)
@@ -230,11 +250,15 @@ window.CX=window.CX||{};
         diagnostic:diagnostic('COMPLETE')};
     }catch(error){
       const errorName=String(error?.name||'');
-      const safeName=['TypeError','AbortError','NetworkError','TimeoutError',
+      const safeName=timedOut?'TimeoutError':
+        ['TypeError','AbortError','NetworkError','TimeoutError',
         'FirebaseError','InvalidStateError'].includes(errorName)?errorName:'OtherError';
       const code=stage==='TOKEN'?'RESOURCE_READ_TOKEN_FAILED':
         stage==='GET'?'RESOURCE_READ_GET_FAILED':'RESOURCE_READ_BYTES_FAILED';
       return blocked(code,{diagnostic:diagnostic(stage,safeName)});
+    }finally{
+      clearTimeout(timer);
+      upstreamSignal?.removeEventListener?.('abort',onUpstreamAbort);
     }
   };
 

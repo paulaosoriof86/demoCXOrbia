@@ -56,6 +56,30 @@ CX.module('documentos', ({data,role,ui})=>{
     d?.id,d?.version,d?.status,d?.tipo,d?.n,d?.meta,d?.storagePath,d?.url,
     d?.body,d?.visitaId,d?.projectId,d?.periodId,d?.targetAll,d?.visibleRoles
   ]);
+  // D07 P0: the same protected resource may be mounted again by the router
+  // while its Firebase read is pending. Share that read across mounts and keep
+  // a failed result until an explicit retry; never retain PDF bytes or tokens.
+  const pdfReads=CX.docStore.pdfReadAttempts||new Map();
+  CX.docStore.pdfReadAttempts=pdfReads;
+  const pdfWarnings=CX.docStore.pdfWarnedKeys||new Set();
+  CX.docStore.pdfWarnedKeys=pdfWarnings;
+  const pdfReadKey=resource=>viewerScopeKey()+'|'+viewerResourceFingerprint(resource);
+  const readPdfSingleFlight=resource=>{
+    const key=pdfReadKey(resource);
+    if(pdfReads.has(key))return pdfReads.get(key);
+    const pending=Promise.resolve().then(()=>CX.backendResources?.readPublishedPdf?.(resource,scope()));
+    pdfReads.set(key,pending);
+    // This is ephemeral presentation state, bounded even across tenant changes.
+    if(pdfReads.size>12)pdfReads.delete(pdfReads.keys().next().value);
+    return pending.then(result=>{
+      if(result?.ok===true&&pdfReads.get(key)===pending)pdfReads.delete(key);
+      return result;
+    },()=>{
+      const failed={ok:false,code:'RESOURCE_PDF_AUTH_READ_FAILED'};
+      pdfReads.set(key,Promise.resolve(failed));
+      return failed;
+    });
+  };
   /* El plugin PDF nativo de Chrome puede devolver un iframe completamente
      blanco aun cuando el PDF original abre bien. Renderizar páginas en un
      canvas evita depender del visor de terceros dentro del iframe. */
@@ -85,7 +109,7 @@ CX.module('documentos', ({data,role,ui})=>{
     try{
       let authenticatedBytes=null;
       if(connected()){
-        const result=await CX.backendResources?.readPublishedPdf?.(resource,scope());
+        const result=await readPdfSingleFlight(resource);
         if(!live())return;
         if(result?.ok!==true||!result.bytes){
           const error=new Error(result?.code||'RESOURCE_PDF_AUTH_READ_FAILED');
@@ -163,7 +187,27 @@ CX.module('documentos', ({data,role,ui})=>{
       }else{
         status.textContent=general;
       }
-      console.warn('[CX.documentos PDF]',safeCode,stage,http,type);
+      if(connected()){
+        const key=pdfReadKey(resource);
+        // A decoder failure must also stop remount-triggered automatic retries.
+        if(!pdfReads.has(key))pdfReads.set(key,Promise.resolve({ok:false,code:safeCode,diagnostic:diag}));
+        const retry=document.createElement('button');
+        retry.type='button';retry.className='btn btn-sm';retry.dataset.pdfRetry='';
+        retry.textContent='Reintentar lectura';retry.style.margin='12px auto 0';
+        retry.addEventListener('click',()=>{
+          if(!live())return;
+          pdfReads.delete(key);pdfWarnings.delete(key);
+          status.textContent='Preparando vista previa del PDF…';
+          status.dataset.pdfStatus='loading';
+          renderPdf(slot,resource);
+        });
+        status.appendChild(retry);
+        if(!pdfWarnings.has(key)){
+          pdfWarnings.add(key);
+          if(pdfWarnings.size>24)pdfWarnings.delete(pdfWarnings.values().next().value);
+          console.warn('[CX.documentos PDF]',safeCode,stage,http,type);
+        }
+      }else console.warn('[CX.documentos PDF]',safeCode,stage,http,type);
     }
   };
   const saveDurable=async(rec,options={})=>{
