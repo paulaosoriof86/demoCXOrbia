@@ -7,6 +7,7 @@ on:
       - firebase/auth-dev-tools/cxorbia-i3-approved-r020-cert-readonly.mjs
       - firebase/auth-dev-tools/cxorbia-i3-approved-r026-keeper-readonly.mjs
       - firebase/auth-dev-tools/cxorbia-i3-s1-gt-marketplace-readonly.mjs
+      - firebase/auth-dev-tools/cxorbia-i3-d07-pdf-get-readonly.mjs
 permissions:
   contents: read
 concurrency:
@@ -175,5 +176,60 @@ jobs:
         with:
           name: cxorbia-i3-s1-gt-shopper-marketplace-${{ github.run_id }}
           path: .tmp/cxorbia-i3-s1-shopper-marketplace/result.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  d07-pdf-shopper-one-get-readonly:
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-D07-PDF-AUTH-GET-READONLY' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      GOOGLE_CLOUD_PROJECT: cxorbia-backend-dev
+      GCLOUD_PROJECT: cxorbia-backend-dev
+      CX_D07_GET_READONLY: PAULA_I3_D07_PDF_SHOPPER_ONE_GET_READONLY_20261029
+      CX_D07_SOURCE_SHA: a2be5a77a4c0008ec374c17f42d5da27070e1ed6
+      CX_D07_SOURCE_TREE: eb8734a450c14d510a9a9924b39cb826caacf510
+      CX_D07_OUT: .tmp/cxorbia-i3-d07-pdf-get-readonly
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Pin exact source and prevent any LIVE/I4 or product drift
+        run: |
+          set -Eeuo pipefail
+          test "$GITHUB_REF_NAME" = 'recovery/cxorbia-phase-a-20260831'
+          test "$GITHUB_EVENT_NAME" = push
+          test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
+          test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
+          test "$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = a2be5a77a4c0008ec374c17f42d5da27070e1ed6
+          test "$(jq -r '.productTreeAuthority' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = eb8734a450c14d510a9a9924b39cb826caacf510
+          test "$(git rev-parse a2be5a77a4c0008ec374c17f42d5da27070e1ed6^{tree})" = eb8734a450c14d510a9a9924b39cb826caacf510
+          git diff --quiet a2be5a77a4c0008ec374c17f42d5da27070e1ed6 HEAD -- app backend tools firebase.json .firebaserc firestore.rules storage.rules
+          node --check firebase/auth-dev-tools/cxorbia-i3-d07-pdf-get-readonly.mjs
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Install isolated read-only DEV PDF diagnosis dependencies
+        run: |
+          set -Eeuo pipefail
+          npm install --prefix firebase/auth-dev-tools --no-save --no-package-lock --ignore-scripts firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          ./firebase/auth-dev-tools/node_modules/.bin/playwright install chromium
+      - name: Do exactly one authenticated GET of active published shopper PDF
+        run: |
+          set -Eeuo pipefail
+          node firebase/auth-dev-tools/cxorbia-i3-d07-pdf-get-readonly.mjs
+          jq -e '.decision=="PASS_DEV_D07_AUTHENTICATED_PDF_GET_READONLY" and
+            .resourceUniquelyResolved==true and .resourcePublishedForShopper==true and
+            .sourceServedMatches==true and .principalAuthenticated==true and
+            .getStarted==true and .getCount==1 and .httpStatus==200 and
+            .tokenObtained==true and .bytesRead==true and .pdfSignatureVerified==true and
+            .firestoreWrites==0 and .authWrites==0 and .storageWrites==0 and
+            .hrWrites==0 and .deployments==0 and .production==false' "$CX_D07_OUT/result.json" >/dev/null
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-d07-pdf-auth-get-readonly-${{ github.run_id }}
+          path: .tmp/cxorbia-i3-d07-pdf-get-readonly/result.json
           if-no-files-found: warn
           retention-days: 30
