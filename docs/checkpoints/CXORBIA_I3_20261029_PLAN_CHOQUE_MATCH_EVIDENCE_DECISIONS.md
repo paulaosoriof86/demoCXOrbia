@@ -65,3 +65,36 @@ Las reglas de normalización telefónica y revisión humana ya están presentes 
 6. Promover a LIVE solo con autorización explícita vigente y gates correspondientes. La presión horaria no altera protección de datos ni trazabilidad.
 
 Estado de esta acta: **checkpoint de decisiones y evidencia**, no un nuevo MATCH ni una aprobación de producción.
+
+## Continuidad acumulativa posterior — 29-oct-2026, cierre de la conversación anterior
+
+Este apartado **amplía el mismo checkpoint** y no crea plan, rama, candidata o release paralelo. Leer junto con las autoridades de cabecera, la matriz V192, ledger V524, descriptor y pointer vivos. Los resultados R026/S1/D07 anteriores **no se repiten ni se cuentan dos veces**.
+
+### Nuevos readbacks y protección contra falsa certificación
+
+1. **R053:** el preflight protegido [#40836089673](https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/40836089673) devolvió `HOLD_R053_GT_HR_KEEPER_READONLY` / `R053_HR_REVISION_DRIFT`. No hubo fusiones, cambios de credenciales ni escrituras en HR/Auth/Firestore/producción. No asumir que R053 está fusionado: requiere nueva lectura de la misma revisión HR y reconfirmación del expediente antes de operar.
+2. **D07:** [#40835846457](https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/40835846457) y el navegador Admin A2BE reproducen `RESOURCE_READ_GET_FAILED`, etapa `GET`, `TypeError`, `httpStatus=null`; un solo GET protegido, sin bytes de PDF. La consola observó `[CX.documentos PDF] RESOURCE_READ_GET_FAILED GET NO_RESPONSE TypeError`. CORS/red es hipótesis, no causa certificada. No tocar Rules/Storage ni declarar PDF cerrado.
+3. **Postulaciones Admin P0 reproducido:** en la Preview A2BE el navegador emitió `ReferenceError: escapeAssignment is not defined` en `modules/postulaciones.js:528:185`. La causa exacta era una función de escape de HTML encerrada en un IIFE que luego se invocaba fuera de su alcance al representar las opciones de país GT/HN. Se corrigió exclusivamente el alcance léxico y se añadió prueba VM del render real. Antes del parche la prueba fallaba con ese mismo `ReferenceError`; después pasaron 3 pruebas del render, 4 pruebas vecinas R05/R06, 3 de guard de disponibilidad, `node --check` y `git diff --check`.
+4. **Commit focal productivo solo en SOURCE, NO servido:** [2eb8e091fca77624b53e2ef1a34eac797a9a1001](https://github.com/paulaosoriof86/demoCXOrbia/commit/2eb8e091fca77624b53e2ef1a34eac797a9a1001), padre `7098b4ab0807772fdb9bc256291d0341f39b8b8f`; cambia únicamente `app/modules/postulaciones.js` (blob `13acd6982be68e945733f0048c1aa8a911bdc219`) y `tools/qa/cxorbia-i3-postulaciones-country-options-unified.test.mjs` (blob `2bcf2559b35d7eeced8b9aa95bc854b20ccda367`). **No se debe anunciar este fix como DEV**: A2BE aún tiene el bug.
+5. El CI automático posterior [#40838545607](https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/40838545607) falló en `canonical-candidate-authority` con `RELEASE_COMPOSITION_FAILURE:UNDECLARED_PRODUCT_DRIFT_AFTER_CANONICAL_CANDIDATE:app/modules/postulaciones.js`. **Es una protección esperada**: el descriptor continúa señalando la fuente `a2be5a77...` y el parche todavía no está incluido en un sucesor canónico. No eliminar/desactivar el guard ni sustituir el source SHA por `github.sha`.
+
+### Conteos y frentes que siguen abiertos
+
+| Frente dentro del único plan de 82 tareas | Última prueba | Qué falta para cierre |
+|---|---|---|
+| Producto/DEV y autoridad de composición | A2BE [#40833285318](https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/40833285318) PASS; sucesor 2eb8 source-only | Empalme canónico monotónico y nueva materialización certificable del patch, byte readback y Admin E2E |
+| Identidad/fusiones | R026 [#40833855942](https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/40833855942) PASS; 32/83 provisional; R053 HOLD | Reconciliar cohorte maestra, revision HR fresca, continuar solo casos confirmados con ACK y 7 dominios |
+| Shopper/visitas/postulaciones | S1 [#40834869606](https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/40834869606) PASS focal: 1 elegible y 1 tarjeta, no cero; 3 facetas iniciales | Explicar por qué 2 no pasan filtros, recuperar S2 con telemetría, GT/HN, flujo de postulación/reserva/visita y revalidar Admin con parche servido |
+| PDF, recursos y certificaciones | D07 GET HOLD; certificaciones dominio TRUE_FUNCTIONAL_DEFECT | Corregir transporte PDF con causa probada; E2E recurso, certificación/recertificación y notificaciones |
+| Finanzas y liquidaciones | 36 candidatos visibles Admin (26 GT/Q, 10 HN/L), cero lote listo sin evidencia financiera; dominio TRUE_FUNCTIONAL_DEFECT | Fuente financiera independiente, ACK, historial/beneficios, liquidación y casos reales GT/HN sin generar pagos ficticios |
+| HR/adaptadores y consistencia transversal | `canonical-hr-state-adapters` TRUE_FUNCTIONAL_DEFECT; R053 drift | Mismo HR externo vivo para elegibilidad y KPIs; idempotencia, estados, reportes, navegación, roles y 21 dominios |
+
+La vista Admin mostró 270 elementos pendientes de revisión de identidad; **no equivalen a 270 parejas fusionables ni sustituyen la cohorte 83**. La sesión Chrome Admin llegó a volver a pantalla de ingreso durante la revisión; no se declara por ello un defecto de logout sin aislar expiración/hidratación. Ningún cambio productivo nuevo se ejecutó por esta observación.
+
+### Siguiente acción única ejecutable
+
+1. Incorporar el fix probado de Postulaciones a la **misma línea de candidata canónica** mediante el mecanismo de composición/autoridad del Plan Rector. Proteger la fuente A2BE y el recibo que ya pasaron; actualizar descriptor/pointer/matriz/ledger **solo en la medida exigida por sus invariantes y evidencia real**. No tratar el commit fuente 2eb8 como materialización, no relajar el guard y no aumentar 5/21 sin E2E.
+2. Ejecutar el transporte único de nueva fuente a Preview DEV con mismo artefacto backend/Hosting y readback. Probar Postulaciones Admin con GT/HN, más S1 y S2 sobre la candidata nueva; consolidar evidencia por dominio, con owners y clasificación de fallo. Mantener el A2BE anterior como recibo histórico, no como segunda candidata a promover.
+3. En el mismo trabajo I3 seguir R053 fresco, D07 transporte, conciliación elegibilidad, certificaciones, Finanzas y QA completo Admin/Shopper/GT/HN; cerrar Gate20 y Gate21 únicamente si todas las pruebas requeridas pasan. Después, y solo después, solicitar autorización expresa de Paula para I4 y reemplazo de `tya-plataforma.web.app`.
+
+**Cierre de este añadido:** I3 `HOLD`, Gate20 `HOLD`, Gate21 `HOLD`, I4 no autorizada, producción intacta; fuente corregida pero aún no compuesta ni servida. Mantener política telefónica opcional y revisión de datos en el primer ingreso; no detener al Shopper por ausencia/diferencia de celular. Los 82 ítems originales, el ledger acumulativo, matriz, locks y recibos de RUNs anteriores mantienen sus propias fuentes de verdad.
