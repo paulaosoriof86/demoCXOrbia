@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-10-29T20:19:55Z",
+  "decision": "PASS_VISIBLE_PERSISTENCE_AFTER_SINGLE_ATTEMPT_ACK_RECEIPT_NOT_OBSERVED",
+  "taskId": "C02",
+  "fullTaskClosed": false,
+  "moduleMatchPromotion": false,
+  "environment": "DEV",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "periodKey": "2026-10",
+  "productSourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+  "previewRunId": 40901257714,
+  "previewOrigin": "https://cxorbia-backend-dev--i3-recovery-1029-40901257714-yxqv51l2.web.app",
+  "case": {
+    "uiVisitId": "hr_2026-10_gt_2_97b3975c30",
+    "hrNaturalRow": "OCTUBRE 26!2",
+    "shopper": "Julissa Flores",
+    "branch": "C. Miraflores",
+    "performedAt": "2026-10-14",
+    "country": "GT",
+    "currency": "GTQ",
+    "honorarium": 60,
+    "reimbursement": 145,
+    "total": 205,
+    "submitted": true
+  },
+  "preflight": {
+    "uniqueRenderedTargetCount": 1,
+    "sourceRevision": "6fd4beb82cc85e61c26f54992fc60fd28d49f9b1c832654dba6fd3204571bcbf",
+    "status": "Pend. cruce financiero",
+    "externalPayment": "No confirmado",
+    "reconcileButton": "Conciliar fuente",
+    "financialReviews": 36,
+    "batchCandidates": 0
+  },
+  "attempt": {
+    "action": "Conciliar fuente",
+    "commandType": "finance.reconcile.visit",
+    "clickCount": 1,
+    "firstObservedResponse": "Conciliando…",
+    "exactClickWallTimeCaptured": false,
+    "timeBounds": {
+      "after": "2026-10-29T20:02:50.566Z",
+      "before": "2026-10-29T20:11:42Z"
+    },
+    "completionObserver": "BROWSER_WAIT_TIMED_OUT_THEN_ORIGINAL_TAB_HANDLE_LOST",
+    "providerAck": "NOT_OBSERVED",
+    "commandReceipt": "NOT_READ",
+    "entityAuditTrail": "NOT_READ",
+    "remoteWriteCount": "NOT_INDEPENDENTLY_READ",
+    "retryIssued": false
+  },
+  "recoveredReadback": {
+    "method": "NEW_PAGE_LOAD_SAME_AUTHENTICATED_CHROME_ADMIN_SESSION",
+    "authenticationSessionIndependent": false,
+    "observationWindow": {
+      "after": "2026-10-29T20:14:06Z",
+      "before": "2026-10-29T20:17:02Z"
+    },
+    "uniqueRenderedTargetCount": 1,
+    "renderedVisitId": "hr_2026-10_gt_2_97b3975c30",
+    "status": "Validada · lista para lote",
+    "honorarium": 60,
+    "reimbursement": 145,
+    "total": 205,
+    "externalPayment": "No confirmado",
+    "referenceOfSource": "Pendiente de fuente",
+    "financialReviews": 35,
+    "batchCandidates": 1,
+    "paidConfirmed": 0,
+    "projectTreasury": {
+      "derivedPayableGTQ": 205,
+      "derivationLabel": "GT · validada · fuente exacta, pago pendiente",
+      "storedPayableAccountsVisible": 0,
+      "movementRowsVisible": 0,
+      "incomeGTQ": 0,
+      "expenseGTQ": 0,
+      "receivableGTQ": 0,
+      "remittancesGTQ": 0,
+      "otherReviewLiquidationsExcludedFromPayables": 35
+    },
+    "globalTreasury": {
+      "movementRowsVisible": 0,
+      "payableGTQ": 0,
+      "payableHNL": 0,
+      "incomeGTQ": 0,
+      "incomeHNL": 0,
+      "expensesGTQ": 0,
+      "expensesHNL": 0
+    },
+    "batchesView": "Todavía no hay liquidaciones pagadas en este proyecto — los lotes se listan aquí cuando en Liquidaciones se paga un lote real.",
+    "paymentOrBatchActionClicked": false,
+    "sourceRevisionOfCommittedFinancialMatch": "NOT_EXPOSED_IN_OBSERVED_UI"
+  },
+  "sourceInterpretation": {
+    "reviewedOwner": "app/modules/finanzas.js",
+    "referenceOfSourceExpression": "l.paymentSourceRef || l.reconciliationSourceRef || 'Pendiente de fuente'",
+    "referenceOfSourceIsNotCommandReceipt": true,
+    "providerSource": "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+    "sourceExpectedWritesOnCommit": [
+      "visit.financialMatch and financialSourceStatus",
+      "entityAuditTrail",
+      "commandReceipts"
+    ],
+    "expectedWriteCountOnCommit": 3,
+    "sourceDoesNotCreate": [
+      "payment",
+      "batch",
+      "movement",
+      "HR write",
+      "bank transfer"
+    ],
+    "expectedWriteCountIsSourceContractNotIndependentDatabaseObservation": true
+  },
+  "screenshot": {
+    "path": "docs/checkpoints/evidence/CXORBIA_I3_C02_FRESH_PAGE_READBACK_20261029.png",
+    "gitBlob": "33d883e8bd8a73f48564a8907522620e7e4b9ba2",
+    "sha256": "56e96486ae19c9b42b692641bde9a4710f59b2fe1e6d57b6a5016c40fa364f82",
+    "bytes": 41022
+  },
+  "nextAction": "Read the existing finance.reconcile.visit receipt/audit and committed source revision for this exact case through an authorized competent read surface. Do not repeat reconciliation, create payment, or create batch. Preserve this visible persistence result.",
+  "production": false,
+  "hrWriteAttempted": false,
+  "paymentAttempted": false,
+  "limitations": [
+    "The original transient success/error code was not captured.",
+    "A fresh page under the same authentication session is not an independent role/session test.",
+    "No direct Firestore receipt/audit read capability or verified UI exposing this command receipt was available.",
+    "No whole C02 or finance domain closure is claimed."
+  ],
+  "explicitReloadReadback": {
+    "completedBefore": "2026-10-29T20:19:55Z",
+    "uniqueRenderedTargetCount": 1,
+    "renderedVisitId": "hr_2026-10_gt_2_97b3975c30",
+    "status": "Validada · lista para lote",
+    "honorarium": 60,
+    "reimbursement": 145,
+    "total": 205,
+    "externalPayment": "No confirmado",
+    "referenceOfSource": "Pendiente de fuente",
+    "sameAuthenticationSession": true,
+    "passed": true
+  }
+}

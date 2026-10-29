@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-10-29",
+  "decision": "PASS_EDITOR_DIFF_UI_WITHOUT_SAVE_NOT_FULL_D04",
+  "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+  "previewRunId": 40901257714,
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "periodKey": "2026-10",
+  "role": "Admin",
+  "observedBanks": [
+    {
+      "name": "main",
+      "status": "Publicado",
+      "questions": 8,
+      "minimumPercent": 80
+    },
+    {
+      "name": "Banco IA pendiente de revisión",
+      "status": "Pendiente de revisión",
+      "questions": 15
+    }
+  ],
+  "pendingBankEditor": {
+    "title": "Revisión versionada del banco",
+    "version": 1,
+    "sourceName": "Instructivo Shopper.pdf",
+    "sourceSha256": "3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454",
+    "groups": 15,
+    "fieldsPerQuestion": [
+      "enunciado",
+      "4 opciones",
+      "respuesta correcta",
+      "explicación",
+      "página fuente"
+    ]
+  },
+  "observations": [
+    {
+      "step": "open",
+      "saveEnabled": false
+    },
+    {
+      "step": "append local QA marker to first question and compare",
+      "visibleResult": "Preguntas modificadas: 1",
+      "saveEnabled": true
+    },
+    {
+      "step": "restore exact original first question and compare",
+      "visibleResult": "No hay cambios para guardar.",
+      "saveEnabled": false
+    },
+    {
+      "step": "close without Save or Publish",
+      "remoteMutationRequested": false
+    }
+  ],
+  "sourceMarker": " [QA de comparación sin guardar]",
+  "saveClicks": 0,
+  "publishClicks": 0,
+  "versionChanged": false,
+  "fullTaskClosed": false,
+  "moduleMatchPromotion": false,
+  "preservedPriorPass": "RUN1797 name-only ACK/version/reload remains valid; this observation does not replace its evidence.",
+  "nextAction": "Complete the existing D04 content-edit acceptance case on an approved fresh DEV fixture, with provider ACK, version increment, and reload. Then continue D05/D06 publication and Shopper consumption according to the frozen plan.",
+  "production": false
+}
