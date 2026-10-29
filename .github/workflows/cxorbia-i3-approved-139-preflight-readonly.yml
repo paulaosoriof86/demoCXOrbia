@@ -38,7 +38,11 @@ jobs:
           test "$SOURCE" = '308c69e3756e3e80577856009901934ce5f52fba'
           test "$(git rev-parse "$SOURCE^{tree}")" = "$TREE"
           git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules \
+            ':(exclude)app/core/router.js' \
+            ':(exclude)app/adapters/tya-cumulative-read-model-v2.js' \
             ':(exclude)backend/runtime/hr-live-service/test/**'
+          test "$(git hash-object app/core/router.js)" = '05f3b943d667814ae151556ee7281abbfe7bc6e5'
+          test "$(git hash-object app/adapters/tya-cumulative-read-model-v2.js)" = 'ab2abe6660d53d623e725f754d41b69710a8f612'
           node --check firebase/auth-dev-tools/cxorbia-i3-approved-139-preflight-readonly.mjs
       - uses: google-github-actions/auth@v2
         with:
@@ -67,4 +71,7 @@ jobs:
         with:
           node-version: '24'
       - name: Protected shopper provider regression
-        run: node backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
+        run: |
+          node backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
+          node tools/qa/cxorbia-i3-shopper-name-collision-normalization.test.mjs
+          node tools/qa/cxorbia-i3-shopper-identity-review-rail-notice.test.mjs
