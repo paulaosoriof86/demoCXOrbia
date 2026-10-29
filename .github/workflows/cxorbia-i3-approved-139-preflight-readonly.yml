@@ -75,3 +75,4 @@ jobs:
           node backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
           node tools/qa/cxorbia-i3-shopper-name-collision-normalization.test.mjs
           node tools/qa/cxorbia-i3-shopper-identity-review-rail-notice.test.mjs
+# I3 approved strong-five sequential readback 40812539393: rerun exact 139-pair preflight, no writes.
