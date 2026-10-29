@@ -464,11 +464,12 @@ CX.module('postulaciones', ({data,ui})=>{
 
 
   /* HF-20261012-15: reuse approved branch-grouped cards for operational assignments,
-     keeping HR assignments distinct from durable platform postulations. */
+     keeping HR assignments distinct from durable platform postulations.
+     Country selector uses the same helper, so it must outlive this IIFE. */
+  const escapeAssignment=(value)=>safe(value).replace(/[&<>"']/g,ch=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[ch]));
   const assignmentGroupHTML=(()=>{
-    const escapeAssignment=(value)=>safe(value).replace(/[&<>"']/g,ch=>({
-      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-    }[ch]));
     const byBranch=new Map();
     operationalAssignments.forEach(v=>{
       const country=String(v.pais||''), branch=String(v.sucursal||'Sucursal no informada');
