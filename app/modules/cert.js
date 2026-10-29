@@ -125,6 +125,12 @@ CX.certStore = CX.certStore || {
 };
 CX.module('cert', ({role,data,ui})=>{
   const p=data.period();
+  // Etiquetas humanas únicamente: el estado técnico sigue intacto para permisos,
+  // aprobación, elegibilidad, guardado y readback del proveedor.
+  const bankStateLabel=value=>({
+    draft:'Borrador',pending_review:'Pendiente de revisión',approved_preview:'Disponible para práctica',
+    confirmed:'Confirmado',published:'Publicado',withdrawn:'Retirado'
+  })[String(value||'').trim().toLowerCase()]||(value?'Estado por verificar':'Sin banco');
   const selectedCertId=()=>String(window.CX_CERT_SELECTED_ID||'');
   const bankList=()=>CX.certStore.banks(p.id);
   const selectedBank=()=>CX.certStore.bank(p.id,selectedCertId());
@@ -132,7 +138,7 @@ CX.module('cert', ({role,data,ui})=>{
   const certFilters=()=>{
     const programs=projectPrograms(),banks=bankList();
     const project=programs.length>1?`<div><label class="lbl">Proyecto</label><select class="sel" onchange="if(CX.data.setCurrentProject(this.value)){window.CX_CERT_SELECTED_ID='';CX.router.nav('cert')}">${programs.map(x=>`<option value="${x.key}" ${String(x.key)===String(data.currentProjectId)?'selected':''}>${x.name||x.key}</option>`).join('')}</select></div>`:'';
-    const bankSel=banks.length>1?`<div><label class="lbl">Certificación</label><select class="sel" onchange="window.CX_CERT_SELECTED_ID=this.value;CX.router.nav('cert')"><option value="">Selecciona certificación</option>${banks.map(b=>`<option value="${b.certificationId}" ${String(b.certificationId)===selectedCertId()?'selected':''}>${b.certificationName||b.name||b.certificationId} · ${b.estado||'borrador'}</option>`).join('')}</select></div>`:'';
+    const bankSel=banks.length>1?`<div><label class="lbl">Certificación</label><select class="sel" onchange="window.CX_CERT_SELECTED_ID=this.value;CX.router.nav('cert')"><option value="">Selecciona certificación</option>${banks.map(b=>`<option value="${b.certificationId}" ${String(b.certificationId)===selectedCertId()?'selected':''}>${b.certificationName||b.name||b.certificationId} · ${bankStateLabel(b.estado)}</option>`).join('')}</select></div>`:'';
     return project||bankSel?`<div class="grid g2" style="gap:10px;margin-bottom:14px">${project}${bankSel}</div>`:'';
   };
   const phCert=subtitle=>ui.ph('Certificación',subtitle)+certFilters();
@@ -168,7 +174,7 @@ CX.module('cert', ({role,data,ui})=>{
     const bankTakeable = bank && bank.preguntas && bank.preguntas.length && ['approved_preview','confirmed','published'].includes(bank.estado);
     if(bank && bank.preguntas && bank.preguntas.length && !bankTakeable){
       return `${phCert( p.name+' · banco en revisión')}
-        <div class="card card-p">${ui.degraded('Hay un banco de preguntas en preparación ('+(bank.estado||'borrador')+') todavía no revisado/aprobado — no está disponible para certificarte. Vuelve a intentarlo cuando el equipo lo publique.',{title:'Certificación · banco no publicado'})}</div>`;
+        <div class="card card-p">${ui.degraded('Hay un banco de preguntas en preparación ('+bankStateLabel(bank.estado)+') todavía no revisado/aprobado — no está disponible para certificarte. Vuelve a intentarlo cuando el equipo lo publique.',{title:'Certificación · banco no publicado'})}</div>`;
     }
     if(bankTakeable){
       const host=ui.el('div'); const answers={};
@@ -286,7 +292,7 @@ CX.module('cert', ({role,data,ui})=>{
       <button class="btn btn-soft btn-sm" id="certRecert">🔄 Solicitar re-certificación</button>
       <button class="btn btn-ghost btn-sm" id="certGate">⚙️ Requisito y % mínimo</button>
     </div>
-    <div class="card card-p" style="margin-bottom:14px"><div class="between"><div><div class="card-t">Certificaciones del proyecto</div><div style="font-size:11px;color:var(--t3);margin-top:3px">${bankList().length} banco(s) en este periodo · selecciona proyecto/certificación arriba para administrarlos.</div></div><span class="bdg bdg-n">${bank?.estado||'sin banco'}</span></div></div>
+    <div class="card card-p" style="margin-bottom:14px"><div class="between"><div><div class="card-t">Certificaciones del proyecto</div><div style="font-size:11px;color:var(--t3);margin-top:3px">${bankList().length} banco(s) en este periodo · selecciona proyecto/certificación arriba para administrarlos.</div></div><span class="bdg bdg-n">${bankStateLabel(bank?.estado)}</span></div></div>
     ${_showFixtures ? `
     <div class="grid g4" style="margin-bottom:16px" id="certKpis">
       <div data-ck="cert" style="cursor:pointer">${ui.kpi('Certificados (demo)',18,'g')}</div>
