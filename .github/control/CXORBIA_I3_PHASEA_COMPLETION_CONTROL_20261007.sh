@@ -20,20 +20,56 @@ session-source-proof|session-preflight|session-proof)
   test "$(jq -r .schemaVersion "$SESSION_PACKAGE")" = cxorbia.i3.c02-d04.independent-session-package.v1
   test "$(jq -r .branch "$SESSION_PACKAGE")" = recovery/cxorbia-phase-a-20260831
   test "$(git rev-parse HEAD^)" = "$(jq -r .expectedControlParentSha "$SESSION_PACKAGE")"
-  test "$(jq -r .sourceSha "$SESSION_PACKAGE")" = e753c418fb797a506f6dce3b2b51de405c9b33f1
-  test "$(jq -r .sourceTree "$SESSION_PACKAGE")" = be0ad639a652439200ef4043bb08d5d4b709f266
+  test "$(jq -r .sourceSha "$SESSION_PACKAGE")" = 946c3cb8eff6a043693b10ed628d2ebc860508e1
+  test "$(jq -r .sourceTree "$SESSION_PACKAGE")" = 4afcecfd4b41ac697995a1164115a23a46db44c7
   test "$(jq -r .sourceSha "$SESSION_PACKAGE")" = "$FOCAL_SOURCE"
   test "$(jq -r .sourceTree "$SESSION_PACKAGE")" = "$FOCAL_TREE"
   test "$(jq -r .productSourceSha "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
   test "$(jq -r .productTreeAuthority "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
   test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
   git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-  test "$(jq -r .g03CanonicalControlAlignment20261029.previewRunId "$CANDIDATE_DESCRIPTOR")" = 40901257714
-  jq -e '.production==false and .preview.runId==40901257714 and .actor.uid=="NkcIVM4AnSU1gI9cGKHI5P12YqC3" and .actor.tenantId=="tya" and .actor.projectId=="cinepolis" and .actor.role=="admin" and .c02.uiVisitId=="hr_2026-10_gt_2_97b3975c30" and .c02.durableVisitId=="OCTUBRE 26!2" and .c02.periodId=="cinepolis-2026-10" and .c02.priorReceiptPath=="docs/checkpoints/CXORBIA_I3_C02_DURABLE_RECEIPT_READBACK_20261029.json" and .c02.priorReceiptGitBlob=="5a18cab354ac9fbb216c0c9ff03a8460065f40db" and .d04.fixturePrefix=="qa-i3-d04-session-" and .d04.questions==15 and .d04.edits==1 and .d04.publish==false and .d04.cleanup==true and .scope.financeWrites==0 and .scope.authMutations==0 and .scope.hrWrites==0 and .scope.deploys==0 and .scope.production==false' "$SESSION_PACKAGE" >/dev/null
+  # R5 is QA/control only, after the exact successor preview has been published.
+  test "$(jq -r .id "$SESSION_PACKAGE")" = CXORBIA-I3-C02-D04-INDEPENDENT-SESSION-20261029-R5
+  test "$(jq -r .attemptNumber "$SESSION_PACKAGE")" = 5
+  SESSION_REPAIR=docs/checkpoints/CXORBIA_I3_D04_EXACT_SERVER_READBACK_REPAIR_20261029.json
+  test "$(jq -r .sourceRepair.path "$SESSION_PACKAGE")" = "$SESSION_REPAIR"
+  test "$(jq -r .sourceRepair.gitBlob "$SESSION_PACKAGE")" = 87d53c006e247bec3b8ddde4599ce945fb6f48e8
+  test "$(git rev-parse "HEAD:$SESSION_REPAIR")" = 87d53c006e247bec3b8ddde4599ce945fb6f48e8
+  jq -e --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" '.d04ExactServerReadbackRepair20261029.sourceSha==$source and .d04ExactServerReadbackRepair20261029.sourceTree==$tree and .d04ExactServerReadbackRepair20261029.path=="docs/checkpoints/CXORBIA_I3_D04_EXACT_SERVER_READBACK_REPAIR_20261029.json" and .d04ExactServerReadbackRepair20261029.gitBlob=="87d53c006e247bec3b8ddde4599ce945fb6f48e8"' "$CANDIDATE_DESCRIPTOR" >/dev/null
+  SESSION_PREVIEW_CONTROL="$(jq -r .preview.controlSha "$SESSION_PACKAGE")"
+  SESSION_PREVIEW_REQUEST=.github/control/CXORBIA_I3_CROSSFRONT_1029_DEV_PREVIEW_REQUEST.json
+  SESSION_PREVIEW_WORKFLOW=.github/workflows/cxorbia-i3-vrm290-invoked-hosting-dev.yml
+  [[ "$SESSION_PREVIEW_CONTROL" =~ ^[a-f0-9]{40}$ ]]
+  test "$(jq -r .preview.transportRequestPath "$SESSION_PACKAGE")" = "$SESSION_PREVIEW_REQUEST"
+  test "$(git log -1 --pretty=%B "$SESSION_PREVIEW_CONTROL")" = I3-CROSSFRONT-1029-DEV-PREVIEW-ONLY
+  git merge-base --is-ancestor "$FOCAL_SOURCE" "$SESSION_PREVIEW_CONTROL"
+  git merge-base --is-ancestor "$SESSION_PREVIEW_CONTROL" HEAD^
+  test "$(git rev-parse "$SESSION_PREVIEW_CONTROL^")" = "$(jq -r .expectedControlParentSha "$SESSION_PREVIEW_REQUEST")"
+  test "$(git rev-parse "$SESSION_PREVIEW_CONTROL:$SESSION_PREVIEW_REQUEST")" = "$(jq -r .preview.transportRequestGitBlob "$SESSION_PACKAGE")"
+  test "$(git rev-parse "HEAD:$SESSION_PREVIEW_REQUEST")" = "$(jq -r .preview.transportRequestGitBlob "$SESSION_PACKAGE")"
+  git diff --quiet "$SESSION_PREVIEW_CONTROL" HEAD -- "$SESSION_PREVIEW_REQUEST" "$SESSION_PREVIEW_WORKFLOW"
+  git diff --quiet "$FOCAL_SOURCE" "$SESSION_PREVIEW_CONTROL" -- app backend tools firebase.json .firebaserc firestore.rules storage.rules
+  test "$(git diff --name-only "$FOCAL_SOURCE" HEAD -- tools)" = tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs
+  jq -e --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" '.sourceSha==$source and .sourceTree==$tree and .expectedProductPredecessorSha=="e753c418fb797a506f6dce3b2b51de405c9b33f1" and .transport=="FIREBASE_HOSTING_PREVIEW_ONLY" and .production=="DO_NOT_TOUCH" and .authorizationI4==false' "$SESSION_PREVIEW_REQUEST" >/dev/null
+  test "$(jq -cS .sourceProof "$SESSION_PACKAGE")" = "$(jq -cS .sourceProof "$SESSION_PREVIEW_REQUEST")"
+  SESSION_PREVIEW_RUN="$(jq -r .preview.runId "$SESSION_PACKAGE")"
+  SESSION_PREVIEW_ARTIFACT="$(jq -r .preview.artifactId "$SESSION_PACKAGE")"
+  SESSION_PREVIEW_ZIP="$(jq -r .preview.artifactZipSha256 "$SESSION_PACKAGE")"
+  [[ "$SESSION_PREVIEW_RUN" =~ ^[1-9][0-9]*$ ]]
+  [[ "$SESSION_PREVIEW_ARTIFACT" =~ ^[1-9][0-9]*$ ]]
+  [[ "$SESSION_PREVIEW_ZIP" =~ ^[a-f0-9]{64}$ ]]
+  test "$SESSION_PREVIEW_RUN" = '40973709501'
+  test "$SESSION_PREVIEW_RUN" != 40901257714
+  jq -e '.preview.transportDecision=="PASS_I3_CROSSFRONT_1029_DEV_HOSTING_PREVIEW_EXACT_BYTES_ISOLATED" and .preview.servedFilesMatch==8 and .preview.production==false and .preview.hostingLiveWrites==0 and .preview.cloudRunTrafficWrites==0 and .preview.rulesWrites==0 and .preview.hrWrites==0 and .preview.authWrites==0 and .c02.replayReconciliation==false and .actor.createUser==false and .actor.changeClaims==false' "$SESSION_PACKAGE" >/dev/null
+  jq -e '.production==false and .actor.uid=="NkcIVM4AnSU1gI9cGKHI5P12YqC3" and .actor.tenantId=="tya" and .actor.projectId=="cinepolis" and .actor.role=="admin" and .c02.uiVisitId=="hr_2026-10_gt_2_97b3975c30" and .c02.durableVisitId=="OCTUBRE 26!2" and .c02.periodId=="cinepolis-2026-10" and .c02.priorReceiptPath=="docs/checkpoints/CXORBIA_I3_C02_DURABLE_RECEIPT_READBACK_20261029.json" and .c02.priorReceiptGitBlob=="5a18cab354ac9fbb216c0c9ff03a8460065f40db" and .d04.fixturePrefix=="qa-i3-d04-session-" and .d04.questions==15 and .d04.edits==1 and .d04.publish==false and .d04.cleanup==true and .scope.financeWrites==0 and .scope.authMutations==0 and .scope.hrWrites==0 and .scope.deploys==0 and .scope.production==false' "$SESSION_PACKAGE" >/dev/null
   test "$(git rev-parse "HEAD:$(jq -r .c02.priorReceiptPath "$SESSION_PACKAGE")")" = "$(jq -r .c02.priorReceiptGitBlob "$SESSION_PACKAGE")"
-  test "$(jq -r .preview.channel "$SESSION_PACKAGE")" = i3-recovery-1029-40901257714
-  test "$(jq -r .preview.origin "$SESSION_PACKAGE")" = https://cxorbia-backend-dev--i3-recovery-1029-40901257714-yxqv51l2.web.app
-  test "$(jq -r .preview.hostingVersion "$SESSION_PACKAGE")" = sites/cxorbia-backend-dev/versions/8f3502960bcb878e
+  test "$(jq -r .preview.channel "$SESSION_PACKAGE")" = "i3-recovery-1029-$SESSION_PREVIEW_RUN"
+  SESSION_EXPECTED_ROOT="$(jq -r .preview.origin "$SESSION_PACKAGE")"
+  SESSION_EXPECTED_HOSTING="$(jq -r .preview.hostingVersion "$SESSION_PACKAGE")"
+  test "$SESSION_EXPECTED_ROOT" = 'https://cxorbia-backend-dev--i3-recovery-1029-40973709501-011nk50h.web.app'
+  test "$SESSION_EXPECTED_HOSTING" = 'sites/cxorbia-backend-dev/versions/bd065678b1af6c14'
+  [[ "$SESSION_EXPECTED_ROOT" =~ ^https://cxorbia-backend-dev--i3-recovery-1029-$SESSION_PREVIEW_RUN-[a-z0-9]+\.web\.app$ ]]
+  [[ "$SESSION_EXPECTED_HOSTING" =~ ^sites/cxorbia-backend-dev/versions/[a-f0-9]+$ ]]
   test "$(jq -r .preview.runtimeRevision "$SESSION_PACKAGE")" = cxorbia-live-hr-dev-00330-fim
   test "$(jq -r .preview.runtimeDigest "$SESSION_PACKAGE")" = sha256:bba5ebbf19c203954ec0be6c2c3ef01a057e7ce3f98fb7e5eeac2d889bd0a500
   test "$PROJECT" = cxorbia-backend-dev
@@ -83,7 +119,7 @@ session-source-proof|session-preflight|session-proof)
   jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .hrWrites==false and .production==false' "$SESSION_OUT/hr-meta.json" >/dev/null
   SESSION_HR="$(jq -r '.revision // empty' "$SESSION_OUT/hr-meta.json")"
   [[ "$SESSION_HR" =~ ^[0-9a-f]{64}$ ]]
-  jq -n -S --arg control "$SESSION_CONTROL" --arg package "$SESSION_PACKAGE_BLOB" --arg run "$GITHUB_RUN_ID" --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg hr "$SESSION_HR" --arg root "$SESSION_ROOT" --arg hosting "$(jq -r .preview.hostingVersion "$SESSION_PACKAGE")" --arg revision "$SESSION_REVISION" --arg digest "$SESSION_DIGEST" '{decision:"PASS_C02_D04_EXISTING_PREVIEW_PREFLIGHT",controlSha:$control,packageBlob:$package,runId:$run,sourceSha:$source,sourceTree:$tree,hrRevision:$hr,previewOrigin:$root,hostingVersion:$hosting,runtimeRevision:$revision,runtimeDigest:$digest,servedOwnerCount:11,deploys:0,writes:0,production:false}' > "$SESSION_OUT/preflight.json"
+  jq -n -S --arg control "$SESSION_CONTROL" --arg package "$SESSION_PACKAGE_BLOB" --arg run "$GITHUB_RUN_ID" --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg hr "$SESSION_HR" --arg root "$SESSION_ROOT" --arg hosting "$(jq -r .preview.hostingVersion "$SESSION_PACKAGE")" --arg revision "$SESSION_REVISION" --arg digest "$SESSION_DIGEST" --arg previewControl "$SESSION_PREVIEW_CONTROL" --argjson previewRun "$SESSION_PREVIEW_RUN" --argjson previewArtifact "$SESSION_PREVIEW_ARTIFACT" --arg previewZip "$SESSION_PREVIEW_ZIP" '{decision:"PASS_C02_D04_EXISTING_PREVIEW_PREFLIGHT",controlSha:$control,packageBlob:$package,runId:$run,sourceSha:$source,sourceTree:$tree,hrRevision:$hr,previewOrigin:$root,hostingVersion:$hosting,runtimeRevision:$revision,runtimeDigest:$digest,previewControlSha:$previewControl,previewRunId:$previewRun,previewArtifactId:$previewArtifact,previewArtifactZipSha256:$previewZip,servedOwnerCount:11,deploys:0,writes:0,production:false}' > "$SESSION_OUT/preflight.json"
   ;;
 source-proof)
   STATUS="$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")"

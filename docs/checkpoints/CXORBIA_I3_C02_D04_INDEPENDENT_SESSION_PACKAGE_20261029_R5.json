@@ -1,0 +1,304 @@
+{
+  "schemaVersion": "cxorbia.i3.c02-d04.independent-session-package.v1",
+  "id": "CXORBIA-I3-C02-D04-INDEPENDENT-SESSION-20261029-R5",
+  "asOf": "2026-10-29",
+  "iteration": "I3",
+  "state": "PREPARED_NOT_EXECUTED",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedControlParentSha": "2c63dcf489806d65fe4927a225daa94853ec2ac3",
+  "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+  "sourceTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
+  "production": false,
+  "reason": "R5 verifies the one canonical successor after the proven RUN1958 D04 remote-readback false failure. Reuse the R4 exact ACK observer and bounded failure diagnostics, one synthetic 15-question fixture, one UI edit, same-session reload and a second independently authenticated context. C02 remains a read of the existing Q205 receipt/audit/visit without replay; the prior e753 independent-read acceptance remains historical evidence.",
+  "authorizationBasis": [
+    "Paula's frozen I3 plan V1.1 and shock plan: execute bounded DEV functional QA, preserve proven PASS and one writer.",
+    "Current user instruction: continúa y agiliza por favor, necesitamos hoy sin falta salir.",
+    "Existing authenticated DEV QA identities and fixture workflow; no new account, claims, permission or production deployment."
+  ],
+  "preview": {
+    "runId": 40973709501,
+    "artifactId": 12940989138,
+    "artifactZipSha256": "7b027f5807befb5c8cc6f83c9e70664a7487661865ac0e8d01d1ddaefeb90b61",
+    "channel": "i3-recovery-1029-40973709501",
+    "origin": "https://cxorbia-backend-dev--i3-recovery-1029-40973709501-011nk50h.web.app",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/bd065678b1af6c14",
+    "runtimeRevision": "cxorbia-live-hr-dev-00330-fim",
+    "runtimeDigest": "sha256:bba5ebbf19c203954ec0be6c2c3ef01a057e7ce3f98fb7e5eeac2d889bd0a500",
+    "runtimeSourceSha": "a2be5a77a4c0008ec374c17f42d5da27070e1ed6",
+    "priorIdentityReceiptPath": "docs/checkpoints/CXORBIA_I3_RUNTIME_ARTIFACT_IDENTITY_RECOVERY_20261029.json",
+    "priorIdentityReceiptGitBlob": "27e8a3994d1c9621d282fc6158c5ad3a09b70656",
+    "controlSha": "2c63dcf489806d65fe4927a225daa94853ec2ac3",
+    "transportRequestPath": ".github/control/CXORBIA_I3_CROSSFRONT_1029_DEV_PREVIEW_REQUEST.json",
+    "transportRequestGitBlob": "c55ba03834c125b0c6d9de418955c013f30bfbd0",
+    "transportDecision": "PASS_I3_CROSSFRONT_1029_DEV_HOSTING_PREVIEW_EXACT_BYTES_ISOLATED",
+    "servedFilesMatch": 8,
+    "hostingLiveWrites": 0,
+    "cloudRunTrafficWrites": 0,
+    "rulesWrites": 0,
+    "hrWrites": 0,
+    "authWrites": 0,
+    "production": false
+  },
+  "actor": {
+    "uid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "role": "admin",
+    "createUser": false,
+    "changeClaims": false
+  },
+  "c02": {
+    "uiVisitId": "hr_2026-10_gt_2_97b3975c30",
+    "durableVisitId": "OCTUBRE 26!2",
+    "periodId": "cinepolis-2026-10",
+    "priorReceiptPath": "docs/checkpoints/CXORBIA_I3_C02_DURABLE_RECEIPT_READBACK_20261029.json",
+    "priorReceiptGitBlob": "5a18cab354ac9fbb216c0c9ff03a8460065f40db",
+    "commandReceiptId": "1c1fe3d3e9c8982e59577c9b41cb0b72b4996486",
+    "auditId": "finance-f652be05bb1506688e59ba5fac06616dccebbd61",
+    "expected": {
+      "currency": "Q",
+      "honorario": 60,
+      "reembolso": 145,
+      "total": 205,
+      "status": "reconciled_exact",
+      "externalPaymentConfirmed": false,
+      "paymentState": "not_scheduled",
+      "version": 25
+    },
+    "replayReconciliation": false,
+    "expectedFinancialMatchFields": 24,
+    "originalClientAckResponseObserved": false
+  },
+  "d04": {
+    "fixturePrefix": "qa-i3-d04-session-",
+    "questions": 15,
+    "edits": 1,
+    "publish": false,
+    "cleanup": true,
+    "purpose": "One synthetic pending-review fixture to link a real UI content edit and its version/history to a second independently authenticated browser context.",
+    "carryForward": [
+      {
+        "runId": 39163128539,
+        "runNumber": 1788,
+        "jobId": 117780494376,
+        "scope": "15-question content edit, provider ACK, version 1→2, history and same-session reload; fixture removed."
+      },
+      {
+        "runId": 39172645706,
+        "runNumber": 1797,
+        "jobId": 117808812241,
+        "scope": "Name edit, stable certificationId, provider ACK/version/history/reload; fixture removed."
+      }
+    ],
+    "existingPublishedOrPendingBanks": "READ_ONLY_UNCHANGED",
+    "humanAcceptance": "PENDING"
+  },
+  "scope": {
+    "financeWrites": 0,
+    "authMutations": 0,
+    "hrWrites": 0,
+    "deploys": 0,
+    "production": false,
+    "allowedFixtureCollections": [
+      "tenants/tya/resources"
+    ],
+    "newWorkflow": 0,
+    "newMaterializer": 0,
+    "newCandidate": 0
+  },
+  "preserved": {
+    "productSource": true,
+    "lastExecutionReceipt": true,
+    "currentDevMaterialization": true,
+    "postDeployRunSeal": true,
+    "ledger": true,
+    "moduleTruthMatrix": true,
+    "sourceProofRun1954": {
+      "tests": 303,
+      "pass": 303,
+      "fail": 0
+    },
+    "identityVerifiedGroups": 29,
+    "c02IndependentAppReadback": {
+      "path": "docs/checkpoints/CXORBIA_I3_C02_INDEPENDENT_APP_READBACK_RUN1957_20261029.json",
+      "gitBlob": "b09815e4ce430f405c37ffaef8e5173c29d8db28",
+      "decision": "PASS_C02_INDEPENDENT_APP_READBACK",
+      "fullTaskClosed": false
+    },
+    "productSourceScope": "R5 changes QA/control only; S946c3c remains the exact already-published preview source. e753 approvals remain linked to original evidence and unchanged owners/dependencies."
+  },
+  "acceptance": [
+    "Fresh isolated browser contexts start without an authenticated Firebase principal; both authenticate the existing authorized Admin without exporting credentials.",
+    "C02 DOM and exact existing receipt/audit/visit agree on the same Q205 row; no reconciliation or payment command is sent.",
+    "D04 one real question edit persists with provider ACK, version 2 and history; same content/version is visible after reload and in the second isolated session.",
+    "Cleanup removes only the unique current-run D04 QA fixture and verifies all existing certification banks unchanged.",
+    "No whole-domain MATCH, Gate20/Gate21, human acceptance or I3 GO is inferred from these focal results."
+  ],
+  "d07": {
+    "scope": "OPTIONAL_READ_ONLY_STORAGE_CORS_DIAGNOSTIC",
+    "resourceName": "Instructivo Shopper.pdf",
+    "resourceSource": "Only the uniquely matching current authenticated resource catalog already loaded for D04; exact document readback required.",
+    "methods": [
+      "OPTIONS"
+    ],
+    "origins": [
+      "https://cxorbia-backend-dev--i3-recovery-1029-40973709501-011nk50h.web.app",
+      "https://cxorbia-backend-dev.web.app"
+    ],
+    "binaryGet": false,
+    "tokenUsed": false,
+    "bodyRead": false,
+    "writes": 0,
+    "blocksC02D04": false,
+    "fullTaskClosed": false
+  },
+  "attemptNumber": 5,
+  "previousAttempt": {
+    "packagePath": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R4.json",
+    "packageGitBlob": "7940fcf71a58b38ee0809f3fc129865cac06d6b7",
+    "controlSha": "25eb1cbcc8327a8d1cac62537af0fd9831c1881f",
+    "runId": 40970286585,
+    "runNumber": 1958,
+    "jobId": 123785624748,
+    "authorityJob": "SUCCESS",
+    "sourceProofJob": "SUCCESS",
+    "existingPreviewPreflight": "PASS",
+    "decision": "HOLD",
+    "errorCode": "CERT_REVIEW_REMOTE_READBACK_MISMATCH",
+    "scope": "Original R4 HOLD remains immutable; one edit committed version 2/history 1, but the UI showed the readback failure.",
+    "ackSuccessToastObserved": false,
+    "originalDecisionPreserved": true,
+    "durableVersion": 2,
+    "historyEntries": 1,
+    "fixtureRemoved": true,
+    "existingBanksUnchanged": true,
+    "exactFailingComparisonPredicate": "NOT_CAPTURED_AT_THROW",
+    "artifact": {
+      "id": 12940506016,
+      "sha256": "a04da5cb96bc8701ab60ec94e3e2a9b24aca9d9253a182377921b60cc4d17395"
+    },
+    "diagnosticReceipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_D04_EXACT_SERVER_READBACK_REPAIR_20261029.json",
+      "gitBlob": "87d53c006e247bec3b8ddde4599ce945fb6f48e8"
+    },
+    "priorAttemptReference": {
+      "packagePath": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R3.json",
+      "packageGitBlob": "bdbc0155064ec8912a22dbf1b768394aa1bd9b53",
+      "controlSha": "499a09f1657920eca0d285854d6a87efe414d511",
+      "runId": 40968841388,
+      "runNumber": 1957,
+      "jobId": 123780749427,
+      "authorityJob": "SUCCESS",
+      "sourceProofJob": "SUCCESS",
+      "dependencyInstall": "SUCCESS",
+      "existingPreviewPreflight": "PASS",
+      "decision": "HOLD_D04_EXACT_ACK_TOAST_NOT_OBSERVED",
+      "observed": "One D04 edit click, browser resource version 2, save button detached; exact success toast not observed by the later wait. Actual post-edit durable snapshot and error console were not captured.",
+      "cause": "NOT_YET_ESTABLISHED",
+      "originalQaResourceEditCounter": 0,
+      "originalQaResourceEditCounterIsEvidenceOfNoEdit": false,
+      "c02ScopedIndependentReadback": "PASS_SEPARATE_ADJUDICATION",
+      "fixtureRemoved": true,
+      "existingBanksUnchanged": true,
+      "financeGlobalWriteCount": null,
+      "deploys": 0,
+      "production": false,
+      "artifact": {
+        "id": 12939112176,
+        "name": "cxorbia-phasea-representative-live-40968841388",
+        "sha256": "f42043b349384943e3f99324118b0f279ea258079b2891299976858292d10f45"
+      },
+      "priorAttemptReference": {
+        "packagePath": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R2.json",
+        "packageGitBlob": "cc65b4f2e56b77622168d58c89d5d4b3199ffeab",
+        "controlSha": "e0f73e983af6a9b19dc6a5f39769cfe6c10b72bc",
+        "runId": 40968280905,
+        "runNumber": 1956,
+        "jobId": 123778857174,
+        "authorityJob": "SUCCESS",
+        "sourceProofJob": "SUCCESS",
+        "packageSourceGuard": "PASS",
+        "npmInstall": "SUCCESS_214_PACKAGES",
+        "decision": "CHROMIUM_INSTALL_UNSUPPORTED_UBUNTU_26_04",
+        "exactError": "Error: ERROR: Playwright does not support chromium on ubuntu26.04-x64",
+        "failedAtUtc": "2026-10-29T22:47:42.7114785Z",
+        "exitCode": 1,
+        "liveCaseExecuted": false,
+        "fixtureWrites": 0,
+        "financeWrites": 0,
+        "deploys": 0,
+        "production": false,
+        "artifact": {
+          "id": 12939515681,
+          "name": "cxorbia-phasea-representative-live-40968280905",
+          "sizeBytes": 2692,
+          "sha256": "3642402d536e1b3f06bcdc8966f772e37f02c1a6b4acc1be64c2d23461a7129b"
+        },
+        "priorAttemptReference": {
+          "packagePath": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029.json",
+          "packageGitBlob": "d20d624fa0c1b47bbc81a1fdaec8f63ef9fa97b8",
+          "controlSha": "97cb459867e47bc4ea9d25e37558a0b17823394f",
+          "runId": 40967136380,
+          "runNumber": 1955,
+          "jobId": 123774996658,
+          "authorityJob": "SUCCESS",
+          "sourceProofJob": "SUCCESS",
+          "packageSourceGuard": "PASS",
+          "decision": "DEPENDENCY_SETUP_FAILED_BEFORE_AUTH_AND_LIVE_TESTS",
+          "failedAtUtc": "2026-10-29T22:38:12.4170111Z",
+          "exitCode": 1,
+          "diagnosticLimit": "Inherited npm and Playwright install commands discarded stdout and stderr. Exact failing command and dependency error were not observed.",
+          "liveCaseExecuted": false,
+          "fixtureWrites": 0,
+          "financeWrites": 0,
+          "deploys": 0,
+          "production": false,
+          "artifact": {
+            "id": 12937449341,
+            "name": "cxorbia-phasea-representative-live-40967136380",
+            "sizeBytes": 496,
+            "sha256": "0380d33cc22b0fe398ee58aad252de004f2dbf452b526c3554cbd47cf64fe834"
+          }
+        }
+      }
+    }
+  },
+  "retryDelta": [
+    "Use the exact S946c3c/T4afcec successor and its independently observed finalized DEV preview, after canonical source QA and preview readback.",
+    "Only focal runner/control pins and package provenance change; R4 ACK observer, 10-second exact toast criterion, error DOM/safe-code/server diagnostics and cleanup logic remain byte-for-byte identical.",
+    "C02 reads the same exact existing Q205 receipt/audit/visit before and after; no reconciliation or payment click is introduced.",
+    "D04 keeps one synthetic 15-question fixture, one content-edit click, original provider ACK/version/history acceptance, reload, second isolated context and verified cleanup.",
+    "Historical e753/RUN1957/RUN1958 evidence and RUN1852 seals remain unchanged; the R5 package does not promote I3/Gate20/Gate21 or whole tasks."
+  ],
+  "runnerEnvironment": {
+    "runsOn": "ubuntu-24.04",
+    "nodeVersion": "24",
+    "dependencies": {
+      "firebase-admin": "13.4.0",
+      "playwright": "1.56.1",
+      "google-auth-library": "9.15.1",
+      "pdfjs-dist": "3.11.174"
+    },
+    "knownSuccessfulSameOsAndDependencyPins": {
+      "runId": 39172645706,
+      "runNumber": 1797,
+      "jobId": 117808812241
+    },
+    "scope": "EXISTING_LIVE_JOB_ONLY"
+  },
+  "sourceRepair": {
+    "path": "docs/checkpoints/CXORBIA_I3_D04_EXACT_SERVER_READBACK_REPAIR_20261029.json",
+    "gitBlob": "87d53c006e247bec3b8ddde4599ce945fb6f48e8",
+    "predecessorSourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1"
+  },
+  "sourceProof": {
+    "runId": 40972993436,
+    "headSha": "bf186670f1ffaf2e523b3dc201701b3a16aa2e25",
+    "jobId": 123794263200,
+    "jobName": "phasea-rejected-checkpoint-source-proof",
+    "workflowPath": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "artifactId": 12940219630,
+    "artifactDigest": "sha256:872799ac1f14cc76097d3ee909e88beeaa35377809d5e756304439ec6934f5f6",
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF"
+  }
+}

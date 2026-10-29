@@ -14571,10 +14571,10 @@
     "moduleTruthBlob": "5f440b395eaf4d82abffe3d489cde0592f9b81f3",
     "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V527_2026-10-29.json",
     "ledgerBlob": "9f6fa8ab137d9a3d160c85f246f15e94ec047cd4",
-    "previewRunId": null,
+    "previewRunId": 40973709501,
     "hostingOnly": true,
-    "servedBytes": "PENDING_SUCCESSOR_PREVIEW",
-    "authenticatedNewPreview": "PENDING",
+    "servedBytes": "PASS_8_OF_8",
+    "authenticatedNewPreview": "PENDING_R5",
     "preservedMatchDomains": [
       "historical",
       "identity-membership-roll-forward",
@@ -14582,7 +14582,10 @@
       "reports-admin-shopper",
       "tenant-admin-config-branding"
     ],
-    "production": false
+    "production": false,
+    "previewControlSha": "2c63dcf489806d65fe4927a225daa94853ec2ac3",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/bd065678b1af6c14",
+    "previewOrigin": "https://cxorbia-backend-dev--i3-recovery-1029-40973709501-011nk50h.web.app"
   },
   "previousNextExactActionBeforeContinuity20261029": "D04 real versioned name-only E2E on exact RUN1796 DEV: Admin user, 15-question QA bank, name rename without question change, ACK/reload/version+history, no publication, no other bank change, cleanup; Client F12 same HR. Preserve Run1792 Admin/Shopper proof unchanged owner hashes.",
   "controlContinuityAuthority": {
@@ -14633,9 +14636,57 @@
       "pass": 38,
       "fail": 0
     },
-    "canonicalCi": "PENDING",
-    "devMaterialization": "PENDING_SUCCESSOR_HOSTING_PREVIEW",
-    "liveE2e": "PENDING",
+    "canonicalCi": "PASS_RUN1959",
+    "devMaterialization": "PASS_ISOLATED_HOSTING_PREVIEW_RUN10",
+    "liveE2e": "PENDING_R5",
+    "fullTaskClosed": false,
+    "production": false,
+    "sourceDevReceipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_D04_SUCCESSOR_DEV_PREVIEW_RUN10_20261029.json",
+      "gitBlob": "0892ff67324d72ed3964895161d72d6838d905ad"
+    }
+  },
+  "d04SuccessorSourceDevReadback20261029": {
+    "path": "docs/checkpoints/CXORBIA_I3_D04_SUCCESSOR_DEV_PREVIEW_RUN10_20261029.json",
+    "gitBlob": "0892ff67324d72ed3964895161d72d6838d905ad",
+    "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+    "sourceTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
+    "sourceProof": {
+      "runId": 40972993436,
+      "headSha": "bf186670f1ffaf2e523b3dc201701b3a16aa2e25",
+      "jobId": 123794263200,
+      "jobName": "phasea-rejected-checkpoint-source-proof",
+      "workflowPath": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      "artifactId": 12940219630,
+      "artifactDigest": "sha256:872799ac1f14cc76097d3ee909e88beeaa35377809d5e756304439ec6934f5f6",
+      "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+      "runNumber": 1959
+    },
+    "preview": {
+      "runId": 40973709501,
+      "artifactId": 12940989138,
+      "artifactZipSha256": "7b027f5807befb5c8cc6f83c9e70664a7487661865ac0e8d01d1ddaefeb90b61",
+      "channel": "i3-recovery-1029-40973709501",
+      "origin": "https://cxorbia-backend-dev--i3-recovery-1029-40973709501-011nk50h.web.app",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/bd065678b1af6c14",
+      "runtimeRevision": "cxorbia-live-hr-dev-00330-fim",
+      "runtimeDigest": "sha256:bba5ebbf19c203954ec0be6c2c3ef01a057e7ce3f98fb7e5eeac2d889bd0a500",
+      "runtimeSourceSha": "a2be5a77a4c0008ec374c17f42d5da27070e1ed6",
+      "priorIdentityReceiptPath": "docs/checkpoints/CXORBIA_I3_RUNTIME_ARTIFACT_IDENTITY_RECOVERY_20261029.json",
+      "priorIdentityReceiptGitBlob": "27e8a3994d1c9621d282fc6158c5ad3a09b70656",
+      "controlSha": "2c63dcf489806d65fe4927a225daa94853ec2ac3",
+      "transportRequestPath": ".github/control/CXORBIA_I3_CROSSFRONT_1029_DEV_PREVIEW_REQUEST.json",
+      "transportRequestGitBlob": "c55ba03834c125b0c6d9de418955c013f30bfbd0",
+      "transportDecision": "PASS_I3_CROSSFRONT_1029_DEV_HOSTING_PREVIEW_EXACT_BYTES_ISOLATED",
+      "servedFilesMatch": 8,
+      "hostingLiveWrites": 0,
+      "cloudRunTrafficWrites": 0,
+      "rulesWrites": 0,
+      "hrWrites": 0,
+      "authWrites": 0,
+      "production": false
+    },
+    "kind": "SOURCE_QA_AND_EXACT_HOSTING_PREVIEW_NOT_E2E",
     "fullTaskClosed": false,
     "production": false
   }
