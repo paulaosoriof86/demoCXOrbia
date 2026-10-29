@@ -569,7 +569,9 @@ CX.data = {
     CX.bus&&CX.bus.emit('project');return p||row;
   },
   periodState(id){ return this._periodMeta()[id] || 'activo'; },
-  periodStats(id){ const vs=this._visitas.filter(v=>this.recordPeriodId(v)===id); const done=vs.filter(v=>['realizada','cuestionario','validada','liquidada'].includes(v.estado)).length;
+  /* El mismo bucket canónico que usa Dashboard: la HR puede confirmar realización
+     mediante fecha/facets aunque el estado textual todavía sea "asignada". */
+  periodStats(id){ const vs=this._visitas.filter(v=>this.recordPeriodId(v)===id); const done=vs.filter(v=>this.visitBucketFns.realizadas(v)).length;
     return { total:vs.length, done, pct: vs.length? Math.round(done/vs.length*100):0 }; },
   setPeriodState(id,st){
     if(this._periodCanonical()){const row=this._periodProviderRows().find(x=>String(x.periodId||x.id)===String(id));return this._periodCommand('period.state.update',id,{projectId:(this.projects.find(p=>p.id===id)||{}).projectId||this.currentProjectId,state:st},row?.version??'source-current');}

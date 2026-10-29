@@ -50,7 +50,7 @@ CX.module('proyectos', ({data,ui})=>{
       if(!data.setProgram) return; data.setProgram(c.dataset.pgkey); ui.toast('Plataforma adaptada a: '+data.period().name,'ok');
     }));
     document.querySelectorAll('[data-cfg]').forEach(b=>b.addEventListener('click',(e)=>{ e.stopPropagation(); const pr=data.projects.find(x=>x.id===b.dataset.cfg); if(!pr)return; projConfig(pr); }));
-    const projConfig=(pr)=>{ const v=data._visitas.filter(x=>x.projectId===pr.id);
+    const projConfig=(pr)=>{ const v=data._visitas.filter(x=>data.recordPeriodId(x)===pr.id);
       const INDS=['Retail · Cadena de tiendas','Banca · Red de agencias','Restaurantes · Multimarca','Salud · Clínicas','Telecomunicaciones','Automotriz · Concesionarios','Seguros','Combustibles · Estaciones','Hotelería','Educación','Supermercados','Farmacias','Otra'];
       const indOpts=INDS.map(o=>`<option ${o===pr.industry?'selected':''}>${o}</option>`).join('')+(INDS.includes(pr.industry)?'':`<option selected>${pr.industry||''}</option>`);
       const RONDAS=['Mensual','Bimensual','Trimestral','Semestral','Anual','Quincenal','Por campaña'];

@@ -33,14 +33,27 @@ window.CX = window.CX || {};
   D.clients=refreshClients();
   D.getClient=function(id){refreshClients();return this.clients.find(c=>c.id===id)||null;};
   D.projectsForClient=function(id){return this.projects.filter(p=>p.clientId===id);};
+  /* projectsForClient retorna rondas internas; la cifra visible de proyectos
+     debe agrupar por programa, preservando los periodos y sus visitas. */
+  D.businessProjectsForClient=function(id){
+    const groups=new Map();
+    this.projectsForClient(id).forEach(p=>{
+      const key=this.programKey(p);
+      if(!groups.has(key))groups.set(key,{key,name:this.programBase(p),sample:p,periods:[]});
+      const group=groups.get(key);
+      group.periods.push(p);
+      if(p.id===this.currentPeriodId)group.sample=p;
+    });
+    return [...groups.values()];
+  };
   D.clientStats=function(id){
-    const pids=this.projectsForClient(id).map(p=>p.id),vis=this._visitas.filter(v=>pids.includes(v.projectId));
-    const real=vis.filter(v=>['realizada','cuestionario','liquidada'].includes(v.estado)),liq=vis.filter(v=>v.estado==='liquidada');
+    const pids=new Set(this.projectsForClient(id).map(p=>p.id)),vis=this._visitas.filter(v=>pids.has(this.recordPeriodId(v)));
+    const real=vis.filter(v=>this.visitBucketFns.realizadas(v)),liq=vis.filter(v=>this.visitBucketFns.liquidadas(v));
     const cumpl=vis.length?Math.round(real.length/vis.length*100):0,scored=real.filter(v=>typeof v.score==='number');
     const score=scored.length?Math.round(scored.reduce((a,v)=>a+v.score,0)/scored.length):(()=>{const ids=[...new Set(vis.map(v=>v.shopperId).filter(Boolean))],rs=ids.map(i=>{const s=this.getShopper&&this.getShopper(i);return s&&s.rating;}).filter(Boolean);return rs.length?Math.round(rs.reduce((a,b)=>a+b,0)/rs.length*20):0;})();
-    const fechas=vis.map(v=>v.realizada||v.agendada||v.disponibleDesde).filter(Boolean).sort(),bySuc={};vis.forEach(v=>{const k=v.sucursal,s=bySuc[k]=bySuc[k]||{t:0,r:0,suc:k,pais:v.pais};s.t++;if(['realizada','cuestionario','liquidada'].includes(v.estado))s.r++;});
+    const fechas=vis.map(v=>v.realizada||v.agendada||v.disponibleDesde).filter(Boolean).sort(),bySuc={};vis.forEach(v=>{const k=v.sucursal,s=bySuc[k]=bySuc[k]||{t:0,r:0,suc:k,pais:v.pais};s.t++;if(this.visitBucketFns.realizadas(v))s.r++;});
     const ranking=Object.values(bySuc).map(s=>({...s,pct:s.t?Math.round(s.r/s.t*100):0})).sort((a,b)=>b.pct-a.pct);
-    return {visitas:vis.length,realizadas:real.length,liquidadas:liq.length,cumpl,score,ranking,ultima:fechas[fechas.length-1]||null,proyectos:pids.length};
+    return {visitas:vis.length,realizadas:real.length,liquidadas:liq.length,cumpl,score,ranking,ultima:fechas[fechas.length-1]||null,proyectos:this.businessProjectsForClient(id).length};
   };
   const contactKey=(clientId,ct)=>'ctlink-'+clientId+'-'+slug(ct.email||ct.nombre||'sin-nombre');
   function syncContactsDemo(clientId,contactos){
@@ -81,7 +94,7 @@ CX.module('clientes', ({data,ui})=>{
   const countryLabel=c=>c&&c.pais?CX.paisLabel(c.pais):'—';
   const stateLabel=c=>c&&c.estado?c.estado:'Sin estado';
 
-  const row=(c)=>{ const projs=data.projectsForClient(c.id); const st=data.clientStats?data.clientStats(c.id):{visitas:0,cumpl:0,score:0};
+  const row=(c)=>{ const projs=data.businessProjectsForClient(c.id); const st=data.clientStats?data.clientStats(c.id):{visitas:0,cumpl:0,score:0};
     return `<tr data-cid="${c.id}" style="cursor:pointer">
       <td><div class="flex"><div class="rail-av" style="width:30px;height:30px;font-size:11px;background:linear-gradient(135deg,var(--brand),var(--brand-dark))">${(c.name||'?').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase()}</div>
         <div><b>${c.name}</b><div style="font-size:11px;color:var(--t3)">${c.industry||'—'}</div></div></div></td>
@@ -126,7 +139,7 @@ CX.module('clientes', ({data,ui})=>{
   };
 
   const detail=(c)=>{
-    const projs=data.projectsForClient(c.id);
+    const projs=data.businessProjectsForClient(c.id);
     const st=data.clientStats(c.id);
     ui.modal(c.name, `
       <div class="between" style="margin-bottom:14px;flex-wrap:wrap;gap:10px">
@@ -146,8 +159,8 @@ CX.module('clientes', ({data,ui})=>{
         ${st.ranking.slice(0,8).map((s,i)=>`<tr><td style="font-family:var(--disp);color:var(--t3)">${i+1}</td><td><b>${s.suc}</b> <span class="muted">${CX.paisFlag(s.pais)}</span></td><td style="font-size:12px">${s.r}/${s.t}</td><td>${ui.bdg(s.pct+'%',s.pct>=80?'g':s.pct>=50?'a':'r')}</td></tr>`).join('')}
         </tbody></table></div>`:''}
       <div class="card-t" style="font-size:13px;margin-bottom:8px">Proyectos del cliente</div>
-      ${projs.length?projs.map(p=>`<div class="card hov between" data-goproj="${p.id}" style="padding:10px 12px;cursor:pointer;margin-bottom:8px">
-        <div><b style="font-size:13px">${p.name}</b><div style="font-size:11px;color:var(--t3)">${p.industry||''}</div></div>
+      ${projs.length?projs.map(p=>`<div class="card hov between" data-goproj="${p.sample.id}" style="padding:10px 12px;cursor:pointer;margin-bottom:8px">
+        <div><b style="font-size:13px">${p.name}</b><div style="font-size:11px;color:var(--t3)">${p.sample.industry||''} · ${p.periods.length} periodo(s)</div></div>
         <span class="bdg bdg-b">Abrir →</span></div>`).join(''):ui.empty('🗂️','Sin proyectos. Créalos desde Proyectos.')}
       <div class="card-t" style="font-size:13px;margin:16px 0 8px">Contactos</div>
       <div id="cl_contacts">${(c.contactos||[]).length?c.contactos.map(contactRow).join(''):'<div style="font-size:12.5px;color:var(--t3)">Sin contactos registrados.</div>'}</div>
@@ -211,7 +224,7 @@ CX.module('clientes', ({data,ui})=>{
       total:['Todos los clientes',L,c=>row(c)],
       activos:['Clientes activos',L.filter(c=>c.estado==='Activo'),c=>row(c)],
       prospectos:['Prospectos',L.filter(c=>c.estado==='Prospecto'),c=>row(c)],
-      proyectos:['Proyectos por cliente',L,c=>`<div class="between" style="padding:8px 0;border-bottom:1px solid var(--border-2)"><b style="font-size:13px">${c.name}</b><span class="bdg bdg-b">${data.projectsForClient(c.id).length} proyectos</span></div>`],
+      proyectos:['Proyectos por cliente',L,c=>`<div class="between" style="padding:8px 0;border-bottom:1px solid var(--border-2)"><b style="font-size:13px">${c.name}</b><span class="bdg bdg-b">${data.businessProjectsForClient(c.id).length} proyectos</span></div>`],
     };
     document.querySelectorAll('#clKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{const d=kp[el.dataset.k];ui.modal(d[0],`<table class="tbl"><tbody>${d[1].map(d[2]).join('')}</tbody></table>`);
       // re-enlazar filas dentro del drill
@@ -232,7 +245,7 @@ CX.module('clientes', ({data,ui})=>{
       <div data-k="total" style="cursor:pointer">${ui.kpi('Clientes',L.length,'b')}</div>
       <div data-k="activos" style="cursor:pointer">${ui.kpi('Activos',L.filter(c=>c.estado==='Activo').length,'g')}</div>
       <div data-k="prospectos" style="cursor:pointer">${ui.kpi('Prospectos',L.filter(c=>c.estado==='Prospecto').length,'a')}</div>
-      <div data-k="proyectos" style="cursor:pointer">${ui.kpi('Proyectos activos',data.projects.length,'p')}</div>
+      <div data-k="proyectos" style="cursor:pointer">${ui.kpi('Proyectos',data.programs().length,'p')}</div>
     </div>
     <div class="card card-p">
       <div class="card-h"><div class="card-t">Cartera de clientes</div>

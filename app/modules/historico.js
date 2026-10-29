@@ -10,6 +10,8 @@ CX.module('historico', ({data,ui})=>{
      requiere que el usuario elija "Incluir periodo activo" a propósito. Sin cantidades ni nombres
      de periodo hardcodeados — todo sale de data.periodsForProgram(key)/data.periodState(p.id). */
   let fEstado='sinActivo';
+  /* projectId es el proyecto de negocio; periodId identifica la ronda. */
+  const periodVisits=id=>data._visitas.filter(v=>data.recordPeriodId(v)===id);
 
   const draw=()=>{
     const key=data.currentProgramKey();
@@ -18,7 +20,7 @@ CX.module('historico', ({data,ui})=>{
     /* histórico = periodos NO activos (cerrados/archivados) + estadísticas por periodo */
     const rows=periods.map(p=>{
       const st=data.periodState(p.id); const s=data.periodStats(p.id);
-      const vs=data._visitas.filter(v=>v.projectId===p.id);
+      const vs=periodVisits(p.id);
       const paises=[...new Set(vs.map(v=>v.pais).filter(Boolean))];
       const scored=vs.filter(v=>v.score!=null);
       const score=scored.length?Math.round(scored.reduce((a,v)=>a+v.score,0)/scored.length):null;
@@ -81,7 +83,7 @@ CX.module('historico', ({data,ui})=>{
     host.querySelector('#hPpt').addEventListener('click',()=>{if(CX.reportKit.exportPPT(hSpec('pptx')))ui.toast('PowerPoint generado','ok');});
     host.querySelectorAll('.hVer').forEach(b=>b.addEventListener('click',()=>{
       const r=rows.find(x=>x.p.id===b.dataset.id); if(!r)return;
-      const vs=data._visitas.filter(v=>v.projectId===r.p.id);
+      const vs=periodVisits(r.p.id);
       const porEstado={}; vs.forEach(v=>{porEstado[v.estado]=(porEstado[v.estado]||0)+1;});
       ui.modal('🗓️ '+(r.p.periodo||r.p.name)+' · '+r.st,`
         <div style="font-size:12.5px;line-height:1.9;color:var(--t2);margin-bottom:10px">
