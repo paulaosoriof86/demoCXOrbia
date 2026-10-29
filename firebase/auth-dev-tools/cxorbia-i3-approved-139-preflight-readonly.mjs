@@ -166,18 +166,29 @@ async function livePreflight({db,auth,hr}){
     'ownerShopperId','targetShopperId','beneficiaryShopperId','liquidationShopperId','reservationShopperId'];
   const arrays=['shopperIds','candidateShopperIds'];
   const countOwners=(row,ids)=>scalar.some(f=>ids.has(val(row[f])))||arrays.some(f=>arr(row[f]).some(x=>ids.has(val(x))));
-  const results=[];
+  const results=[],hrNameRelations=[];
   for(const group of groups){
     const aliases=new Set([...group.accounts].filter(id=>!group.hrs.has(id)));
     const code=group.hrs.size>1?'HOLD_MULTIPLE_HR_CANONICAL':keeperDecision(group,byMember,profiles,authByUid);
     let status=code;
-    const sourceConsistency={hrNameDrifts:0,hrCountryDrifts:0,hrNameMissing:0,hrCountryMissing:0};
+    const sourceConsistency={hrNameDrifts:0,hrCountryDrifts:0,hrNameMissing:0,hrCountryMissing:0,
+      nameRelations:[]};
     for(const id of group.hrs){
       const live=hrById.get(id)||{},protectedSource=profiles.get(id)||{};
       const liveName=name(live),protectedName=name(protectedSource);
       const liveCountry=country(live),protectedCountry=country(protectedSource);
       if(!liveName||!protectedName)sourceConsistency.hrNameMissing++;
       else if(liveName!==protectedName)sourceConsistency.hrNameDrifts++;
+      const hrTokens=liveName.split(' ').filter(Boolean),profileTokens=protectedName.split(' ').filter(Boolean);
+      const intersection=hrTokens.filter(t=>profileTokens.includes(t)).length;
+      const relation=!liveName||!protectedName?'MISSING':liveName===protectedName?'EQUAL':
+        liveName.includes(protectedName)?'HR_CONTAINS_PROFILE':
+          protectedName.includes(liveName)?'PROFILE_CONTAINS_HR':intersection?'TOKEN_OVERLAP':'DISJOINT';
+      const relationProof={relation,hrTokenCount:hrTokens.length,profileTokenCount:profileTokens.length,
+        overlapTokenCount:intersection,firstTokenEqual:!!hrTokens.length&&hrTokens[0]===profileTokens[0],
+        lastTokenEqual:!!hrTokens.length&&hrTokens.at(-1)===profileTokens.at(-1)};
+      sourceConsistency.nameRelations.push(relationProof);
+      hrNameRelations.push(relationProof);
       if(liveCountry==='UNSET'||protectedCountry==='UNSET')sourceConsistency.hrCountryMissing++;
       else if(liveCountry!==protectedCountry)sourceConsistency.hrCountryDrifts++;
     }
@@ -220,6 +231,8 @@ async function livePreflight({db,auth,hr}){
     // Case labels alone allow private follow-up against Paula's workbook without
     // leaking personal names, logins, source IDs, phones, or authentication UIDs.
     groupStatuses:results.sort((a,b)=>a.caseCodes[0].localeCompare(b.caseCodes[0])),
+    liveHrNameRelationDistribution:Object.fromEntries([...new Set(hrNameRelations.map(x=>x.relation))].sort().map(k=>
+      [k,hrNameRelations.filter(x=>x.relation===k).length])),
     liveHrAvailability:{periodCount:hr.periodCount,currentPeriodId:hr.currentPeriodId,
       totalVisits:hr.visits.length,periods:[...availabilityByPeriod.values()].sort((a,b)=>a.periodId.localeCompare(b.periodId))},
     approvedWorkbookPairDigest:EXPECTED_PAIR_DIGEST,readOnly:true};
