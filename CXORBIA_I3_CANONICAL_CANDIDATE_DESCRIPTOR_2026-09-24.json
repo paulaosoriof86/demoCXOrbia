@@ -7,13 +7,13 @@
   "productSourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
   "productTreeAuthority": "4afcecfd4b41ac697995a1164115a23a46db44c7",
   "predecessorProductSourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V527_2026-10-29.json",
-  "findingsLedgerExpectedGitBlob": "9f6fa8ab137d9a3d160c85f246f15e94ec047cd4",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V195.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V528_2026-10-29.json",
+  "findingsLedgerExpectedGitBlob": "7ad406296e4527d3ae67c508cc243ffcbab052e7",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V196.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "I3_G03_21_DOMAINS_3_TRUE_DEFECTS_2_NOT_DEPLOYED_D07_P0_SOURCE_ONLY_PENDING_CANONICAL_QA_DEV_AUTHENTICATED_REPROOF_FINANCE_HR_CERTIFICATIONS_VISUAL_GATE20_21_HOLD",
+  "activeBlocker": "I3_G03_C02_D04_SCOPED_LIVE_PASS_PRESERVED_D07_BOUNDED_PDF_PROOF_C04_GLOBAL_AUTHORIZED_DURABILITY_HR_CERTIFICATION_AUTHORITY_VISUAL_GATE20_21_HOLD",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -3028,7 +3028,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "5f440b395eaf4d82abffe3d489cde0592f9b81f3",
+  "moduleTruthExpectedGitBlob": "a5c8817999e2cf5e2940405c317620aad409a009",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12087,7 +12087,7 @@
     "proofTree": "1753d01aa909dd4181e3490c07d24287913d68a0",
     "decision": "PASS_FOCAL_SOURCE_ONLY_I3_HOLD"
   },
-  "lastUpdatedAt": "2026-10-29",
+  "lastUpdatedAt": "2026-10-29T23:53:00Z",
   "a05SourceProof": {
     "recordedAt": "2026-10-17T12:00:37.826Z",
     "productSourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
@@ -14565,16 +14565,16 @@
   "g03CanonicalControlAlignment20261029": {
     "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
     "sourceTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
-    "controlParentSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+    "controlParentSha": "cb723a5c250650ef7ff71fedeec6c694c193136e",
     "previousControlHeadSha": "25eb1cbcc8327a8d1cac62537af0fd9831c1881f",
-    "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V195.json",
-    "moduleTruthBlob": "5f440b395eaf4d82abffe3d489cde0592f9b81f3",
-    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V527_2026-10-29.json",
-    "ledgerBlob": "9f6fa8ab137d9a3d160c85f246f15e94ec047cd4",
+    "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V196.json",
+    "moduleTruthBlob": "a5c8817999e2cf5e2940405c317620aad409a009",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V528_2026-10-29.json",
+    "ledgerBlob": "7ad406296e4527d3ae67c508cc243ffcbab052e7",
     "previewRunId": 40973709501,
     "hostingOnly": true,
     "servedBytes": "PASS_8_OF_8",
-    "authenticatedNewPreview": "PENDING_R5",
+    "authenticatedNewPreview": "PASS_C02_D04_FOCAL_RUN1962_NOT_WHOLE_PRODUCT",
     "preservedMatchDomains": [
       "historical",
       "identity-membership-roll-forward",
@@ -14585,7 +14585,24 @@
     "production": false,
     "previewControlSha": "2c63dcf489806d65fe4927a225daa94853ec2ac3",
     "hostingVersion": "sites/cxorbia-backend-dev/versions/bd065678b1af6c14",
-    "previewOrigin": "https://cxorbia-backend-dev--i3-recovery-1029-40973709501-011nk50h.web.app"
+    "previewOrigin": "https://cxorbia-backend-dev--i3-recovery-1029-40973709501-011nk50h.web.app",
+    "liveReceipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_C02_D04_SCOPED_PASS_RUN1962_20261029.json",
+      "gitBlob": "80cbc5a2a1c09402227ee3b0ac179d2cc707727c",
+      "runId": 40974429136,
+      "runNumber": 1962,
+      "jobId": 123799366836,
+      "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+      "sourceTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
+      "artifactId": 12941758269,
+      "artifactZipSha256": "d2efe95460f2f5428d897837746979592ab2a82cfb37359270a5f6ed7d5c67e2",
+      "decision": "PASS_D04_EXACT_SERVER_READBACK_AND_C02_INDEPENDENT_SESSION_CLAUSES",
+      "fullTaskClosed": false,
+      "humanAcceptance": "PENDING",
+      "production": false
+    },
+    "gate20": "HOLD",
+    "gate21": "HOLD"
   },
   "previousNextExactActionBeforeContinuity20261029": "D04 real versioned name-only E2E on exact RUN1796 DEV: Admin user, 15-question QA bank, name rename without question change, ACK/reload/version+history, no publication, no other bank change, cleanup; Client F12 same HR. Preserve Run1792 Admin/Shopper proof unchanged owner hashes.",
   "controlContinuityAuthority": {
@@ -14638,12 +14655,27 @@
     },
     "canonicalCi": "PASS_RUN1959",
     "devMaterialization": "PASS_ISOLATED_HOSTING_PREVIEW_RUN10",
-    "liveE2e": "PENDING_R5",
+    "liveE2e": "PASS_SCOPED_RUN1962_ACK_DURABLE_READBACK_RELOAD_INDEPENDENT_CONTEXT",
     "fullTaskClosed": false,
     "production": false,
     "sourceDevReceipt": {
       "path": "docs/checkpoints/CXORBIA_I3_D04_SUCCESSOR_DEV_PREVIEW_RUN10_20261029.json",
       "gitBlob": "0892ff67324d72ed3964895161d72d6838d905ad"
+    },
+    "liveReceipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_C02_D04_SCOPED_PASS_RUN1962_20261029.json",
+      "gitBlob": "80cbc5a2a1c09402227ee3b0ac179d2cc707727c",
+      "runId": 40974429136,
+      "runNumber": 1962,
+      "jobId": 123799366836,
+      "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+      "sourceTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
+      "artifactId": 12941758269,
+      "artifactZipSha256": "d2efe95460f2f5428d897837746979592ab2a82cfb37359270a5f6ed7d5c67e2",
+      "decision": "PASS_D04_EXACT_SERVER_READBACK_AND_C02_INDEPENDENT_SESSION_CLAUSES",
+      "fullTaskClosed": false,
+      "humanAcceptance": "PENDING",
+      "production": false
     }
   },
   "d04SuccessorSourceDevReadback20261029": {
@@ -14689,5 +14721,70 @@
     "kind": "SOURCE_QA_AND_EXACT_HOSTING_PREVIEW_NOT_E2E",
     "fullTaskClosed": false,
     "production": false
+  },
+  "c02D04ScopedLivePassRun1962": {
+    "path": "docs/checkpoints/CXORBIA_I3_C02_D04_SCOPED_PASS_RUN1962_20261029.json",
+    "gitBlob": "80cbc5a2a1c09402227ee3b0ac179d2cc707727c",
+    "runId": 40974429136,
+    "runNumber": 1962,
+    "jobId": 123799366836,
+    "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+    "sourceTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
+    "artifactId": 12941758269,
+    "artifactZipSha256": "d2efe95460f2f5428d897837746979592ab2a82cfb37359270a5f6ed7d5c67e2",
+    "decision": "PASS_D04_EXACT_SERVER_READBACK_AND_C02_INDEPENDENT_SESSION_CLAUSES",
+    "fullTaskClosed": false,
+    "humanAcceptance": "PENDING",
+    "production": false
+  },
+  "previousG03CanonicalControlAlignmentBeforeRun1962": {
+    "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+    "sourceTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
+    "controlParentSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+    "previousControlHeadSha": "25eb1cbcc8327a8d1cac62537af0fd9831c1881f",
+    "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V195.json",
+    "moduleTruthBlob": "5f440b395eaf4d82abffe3d489cde0592f9b81f3",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V527_2026-10-29.json",
+    "ledgerBlob": "9f6fa8ab137d9a3d160c85f246f15e94ec047cd4",
+    "previewRunId": 40973709501,
+    "hostingOnly": true,
+    "servedBytes": "PASS_8_OF_8",
+    "authenticatedNewPreview": "PENDING_R5",
+    "preservedMatchDomains": [
+      "historical",
+      "identity-membership-roll-forward",
+      "phase-a-supporting-core",
+      "reports-admin-shopper",
+      "tenant-admin-config-branding"
+    ],
+    "production": false,
+    "previewControlSha": "2c63dcf489806d65fe4927a225daa94853ec2ac3",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/bd065678b1af6c14",
+    "previewOrigin": "https://cxorbia-backend-dev--i3-recovery-1029-40973709501-011nk50h.web.app"
+  },
+  "d07Run1962ReadOnlyBindingObservation": {
+    "receipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_C02_D04_SCOPED_PASS_RUN1962_20261029.json",
+      "gitBlob": "80cbc5a2a1c09402227ee3b0ac179d2cc707727c",
+      "runId": 40974429136,
+      "runNumber": 1962,
+      "jobId": 123799366836,
+      "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+      "sourceTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
+      "artifactId": 12941758269,
+      "artifactZipSha256": "d2efe95460f2f5428d897837746979592ab2a82cfb37359270a5f6ed7d5c67e2",
+      "decision": "PASS_D04_EXACT_SERVER_READBACK_AND_C02_INDEPENDENT_SESSION_CLAUSES",
+      "fullTaskClosed": false,
+      "humanAcceptance": "PENDING",
+      "production": false
+    },
+    "actualDecision": "NOT_PROVEN_EXACT_STORAGE_PATH_MISSING_OR_MISMATCH",
+    "uniqueCatalogAndFirestoreMetadataReached": true,
+    "storageGetIssued": false,
+    "optionsIssued": false,
+    "sourceProvesQaFolderEqualsDocumentIdIsNotContract": true,
+    "exactFailingSubpredicateNotCaptured": true,
+    "storageOrCorsDefectProven": false,
+    "next": "One bounded R6 Admin+Shopper read-only PDF smoke after exact metadata/safe-path binding; no source or Rules workaround inferred."
   }
 }

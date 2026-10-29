@@ -1,0 +1,625 @@
+{
+  "decision": "PASS_C02_D04_INDEPENDENT_SESSIONS",
+  "version": "cxorbia.i3.c02-d04.independent-sessions.v1",
+  "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+  "sourceTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
+  "materializationRunId": 40973709501,
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/bd065678b1af6c14",
+  "runtimeRevision": "cxorbia-live-hr-dev-00330-fim",
+  "hrRevision": "6fd4beb82cc85e61c26f54992fc60fd28d49f9b1c832654dba6fd3204571bcbf",
+  "scope": {
+    "tenant": "tya",
+    "project": "cinepolis",
+    "period": "cinepolis-2026-10",
+    "taskIds": [
+      "C02",
+      "D04"
+    ]
+  },
+  "d04": {
+    "scope": "D04_INDEPENDENT_SESSION_CLAUSE_ONLY",
+    "bankId": "certbank-cinepolis-cinepolis-2026-10-qa-i3-d04-session-40974429136-1",
+    "certificationId": "qa-i3-d04-session-40974429136-1",
+    "syntheticQaFixture": true,
+    "versionBefore": 1,
+    "versionAfter": 2,
+    "contentEditClicks": 1,
+    "nameEdits": 0,
+    "providerAck": true,
+    "committed": true,
+    "durableReadback": true,
+    "ackUiText": "Revisión guardada en servidor · publicación pendiente.",
+    "ackScreenshot": "d04-save-ack.png",
+    "historyEntries": 1,
+    "autoPublished": false,
+    "existingBanksUnchanged": true,
+    "reload": {
+      "backendLoad": true,
+      "uiEditorRead": true,
+      "role": "admin",
+      "projectId": "cinepolis",
+      "periodId": "cinepolis-2026-10",
+      "bankId": "certbank-cinepolis-cinepolis-2026-10-qa-i3-d04-session-40974429136-1",
+      "certificationId": "qa-i3-d04-session-40974429136-1",
+      "version": 2,
+      "questions": 15,
+      "contentMatched": true,
+      "historyMatched": true,
+      "sourceMatched": true,
+      "pendingReview": true,
+      "saveDisabled": true,
+      "screenshot": "d04-reload.png",
+      "writes": 0
+    },
+    "independentSession": {
+      "backendLoad": true,
+      "uiEditorRead": true,
+      "role": "admin",
+      "projectId": "cinepolis",
+      "periodId": "cinepolis-2026-10",
+      "bankId": "certbank-cinepolis-cinepolis-2026-10-qa-i3-d04-session-40974429136-1",
+      "certificationId": "qa-i3-d04-session-40974429136-1",
+      "version": 2,
+      "questions": 15,
+      "contentMatched": true,
+      "historyMatched": true,
+      "sourceMatched": true,
+      "pendingReview": true,
+      "saveDisabled": true,
+      "screenshot": "d04-independent.png",
+      "writes": 0
+    },
+    "humanAcceptance": "PENDING",
+    "fullTaskClosed": false,
+    "independentApplicationSession": true,
+    "priorPassesPreserved": [
+      "RUN1788_QUESTION_EDIT",
+      "RUN1797_NAME_EDIT"
+    ]
+  },
+  "e04": {
+    "retested": false,
+    "priorRun1797Preserved": true
+  },
+  "cleanup": {
+    "qaAbsentAfter": true,
+    "existingBanksUnchanged": true
+  },
+  "writes": {
+    "auth": 0,
+    "hr": 0,
+    "otherBanks": 0,
+    "production": 0,
+    "finance": 0,
+    "qaResourceSeed": 1,
+    "qaResourceEdit": 1,
+    "qaResourceCleanup": 1
+  },
+  "production": false,
+  "preview": {
+    "origin": "https://cxorbia-backend-dev--i3-recovery-1029-40973709501-011nk50h.web.app",
+    "runId": 40973709501,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/bd065678b1af6c14",
+    "runtimeRevision": "cxorbia-live-hr-dev-00330-fim",
+    "runtimeDigest": "sha256:bba5ebbf19c203954ec0be6c2c3ef01a057e7ce3f98fb7e5eeac2d889bd0a500"
+  },
+  "packageBlob": "12d9fd51c11ad3058cbb14f42daf8bcc770ae540",
+  "controlSha": "cb723a5c250650ef7ff71fedeec6c694c193136e",
+  "deploys": 0,
+  "i3": "HOLD",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false,
+  "actor": {
+    "uid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+    "role": "admin",
+    "authNamespace": "staff",
+    "tenantId": "tya",
+    "existingUser": true,
+    "membershipDocumentPresent": true,
+    "claimsChanged": false,
+    "createdUser": false
+  },
+  "c02": {
+    "durable": {
+      "before": {
+        "receipt": {
+          "path": "tenants/tya/commandReceipts/1c1fe3d3e9c8982e59577c9b41cb0b72b4996486",
+          "updateTime": {
+            "seconds": 1793304456,
+            "nanoseconds": 585075000
+          },
+          "financialMatch": {
+            "status": "reconciled_exact",
+            "authority": "project_country_config",
+            "projectConfigVersion": 4,
+            "sourceRevision": "6fd4beb82cc85e61c26f54992fc60fd28d49f9b1c832654dba6fd3204571bcbf",
+            "visitId": "hr_2026-10_gt_2_97b3975c30",
+            "durableVisitId": "OCTUBRE 26!2",
+            "hrRowId": "OCTUBRE 26!2",
+            "country": "GT",
+            "pais": "GT",
+            "currency": "Q",
+            "moneda": "Q",
+            "honorario": 60,
+            "honorarioSource": "project_country_config",
+            "boleto": 33,
+            "combo": 112,
+            "reembolso": 145,
+            "total": 205,
+            "estado": "validada",
+            "liquidationState": "validated_financial_source",
+            "paymentState": "not_scheduled",
+            "externalPaymentConfirmed": false,
+            "paymentSourceRef": null,
+            "reconciledAt": "2026-10-29T20:07:36.274Z",
+            "reconciledBy": "NkcIVM4AnSU1gI9cGKHI5P12YqC3"
+          },
+          "header": {
+            "commandType": "finance.reconcile.visit",
+            "entityId": "OCTUBRE 26!2",
+            "actorUid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+            "providerAck": true,
+            "status": "committed",
+            "updatedAt": "2026-10-29T20:07:36.275Z",
+            "commandDigest": "105da7149063d5e430e3488ca91421c009fb8a398d8e0594142db2b5c43dc8df"
+          }
+        },
+        "audit": {
+          "path": "tenants/tya/entityAuditTrail/finance-f652be05bb1506688e59ba5fac06616dccebbd61",
+          "updateTime": {
+            "seconds": 1793304456,
+            "nanoseconds": 585075000
+          },
+          "financialMatch": {
+            "status": "reconciled_exact",
+            "authority": "project_country_config",
+            "projectConfigVersion": 4,
+            "sourceRevision": "6fd4beb82cc85e61c26f54992fc60fd28d49f9b1c832654dba6fd3204571bcbf",
+            "visitId": "hr_2026-10_gt_2_97b3975c30",
+            "durableVisitId": "OCTUBRE 26!2",
+            "hrRowId": "OCTUBRE 26!2",
+            "country": "GT",
+            "pais": "GT",
+            "currency": "Q",
+            "moneda": "Q",
+            "honorario": 60,
+            "honorarioSource": "project_country_config",
+            "boleto": 33,
+            "combo": 112,
+            "reembolso": 145,
+            "total": 205,
+            "estado": "validada",
+            "liquidationState": "validated_financial_source",
+            "paymentState": "not_scheduled",
+            "externalPaymentConfirmed": false,
+            "paymentSourceRef": null,
+            "reconciledAt": "2026-10-29T20:07:36.274Z",
+            "reconciledBy": "NkcIVM4AnSU1gI9cGKHI5P12YqC3"
+          },
+          "header": {
+            "commandType": "finance.reconcile.visit",
+            "entityId": "OCTUBRE 26!2",
+            "entityType": "financeReconciliation",
+            "actorUid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+            "actorRole": "admin",
+            "tenantId": "tya",
+            "projectId": "cinepolis",
+            "periodId": "cinepolis-2026-10",
+            "externalPaymentConfirmed": false,
+            "createdAt": "2026-10-29T20:07:36.275Z",
+            "idempotencyKey": "finance.reconcile.visit:19vve9y"
+          }
+        },
+        "visit": {
+          "path": "tenants/tya/projects/cinepolis/visits/OCTUBRE 26!2",
+          "updateTime": {
+            "seconds": 1793304456,
+            "nanoseconds": 585075000
+          },
+          "financialMatch": {
+            "country": "GT",
+            "estado": "validada",
+            "hrRowId": "OCTUBRE 26!2",
+            "projectConfigVersion": 4,
+            "externalPaymentConfirmed": false,
+            "boleto": 33,
+            "reconciledAt": "2026-10-29T20:07:36.274Z",
+            "combo": 112,
+            "reconciledBy": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+            "durableVisitId": "OCTUBRE 26!2",
+            "pais": "GT",
+            "total": 205,
+            "visitId": "hr_2026-10_gt_2_97b3975c30",
+            "honorarioSource": "project_country_config",
+            "authority": "project_country_config",
+            "paymentSourceRef": null,
+            "moneda": "Q",
+            "sourceRevision": "6fd4beb82cc85e61c26f54992fc60fd28d49f9b1c832654dba6fd3204571bcbf",
+            "currency": "Q",
+            "honorario": 60,
+            "liquidationState": "validated_financial_source",
+            "paymentState": "not_scheduled",
+            "reembolso": 145,
+            "status": "reconciled_exact"
+          },
+          "header": {
+            "financialSourceStatus": "reconciled_exact",
+            "financialReviewRequired": false,
+            "version": 25,
+            "updatedAt": "2026-10-29T20:07:36.275Z"
+          }
+        }
+      },
+      "after": {
+        "receipt": {
+          "path": "tenants/tya/commandReceipts/1c1fe3d3e9c8982e59577c9b41cb0b72b4996486",
+          "updateTime": {
+            "seconds": 1793304456,
+            "nanoseconds": 585075000
+          },
+          "financialMatch": {
+            "status": "reconciled_exact",
+            "authority": "project_country_config",
+            "projectConfigVersion": 4,
+            "sourceRevision": "6fd4beb82cc85e61c26f54992fc60fd28d49f9b1c832654dba6fd3204571bcbf",
+            "visitId": "hr_2026-10_gt_2_97b3975c30",
+            "durableVisitId": "OCTUBRE 26!2",
+            "hrRowId": "OCTUBRE 26!2",
+            "country": "GT",
+            "pais": "GT",
+            "currency": "Q",
+            "moneda": "Q",
+            "honorario": 60,
+            "honorarioSource": "project_country_config",
+            "boleto": 33,
+            "combo": 112,
+            "reembolso": 145,
+            "total": 205,
+            "estado": "validada",
+            "liquidationState": "validated_financial_source",
+            "paymentState": "not_scheduled",
+            "externalPaymentConfirmed": false,
+            "paymentSourceRef": null,
+            "reconciledAt": "2026-10-29T20:07:36.274Z",
+            "reconciledBy": "NkcIVM4AnSU1gI9cGKHI5P12YqC3"
+          },
+          "header": {
+            "commandType": "finance.reconcile.visit",
+            "entityId": "OCTUBRE 26!2",
+            "actorUid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+            "providerAck": true,
+            "status": "committed",
+            "updatedAt": "2026-10-29T20:07:36.275Z",
+            "commandDigest": "105da7149063d5e430e3488ca91421c009fb8a398d8e0594142db2b5c43dc8df"
+          }
+        },
+        "audit": {
+          "path": "tenants/tya/entityAuditTrail/finance-f652be05bb1506688e59ba5fac06616dccebbd61",
+          "updateTime": {
+            "seconds": 1793304456,
+            "nanoseconds": 585075000
+          },
+          "financialMatch": {
+            "status": "reconciled_exact",
+            "authority": "project_country_config",
+            "projectConfigVersion": 4,
+            "sourceRevision": "6fd4beb82cc85e61c26f54992fc60fd28d49f9b1c832654dba6fd3204571bcbf",
+            "visitId": "hr_2026-10_gt_2_97b3975c30",
+            "durableVisitId": "OCTUBRE 26!2",
+            "hrRowId": "OCTUBRE 26!2",
+            "country": "GT",
+            "pais": "GT",
+            "currency": "Q",
+            "moneda": "Q",
+            "honorario": 60,
+            "honorarioSource": "project_country_config",
+            "boleto": 33,
+            "combo": 112,
+            "reembolso": 145,
+            "total": 205,
+            "estado": "validada",
+            "liquidationState": "validated_financial_source",
+            "paymentState": "not_scheduled",
+            "externalPaymentConfirmed": false,
+            "paymentSourceRef": null,
+            "reconciledAt": "2026-10-29T20:07:36.274Z",
+            "reconciledBy": "NkcIVM4AnSU1gI9cGKHI5P12YqC3"
+          },
+          "header": {
+            "commandType": "finance.reconcile.visit",
+            "entityId": "OCTUBRE 26!2",
+            "entityType": "financeReconciliation",
+            "actorUid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+            "actorRole": "admin",
+            "tenantId": "tya",
+            "projectId": "cinepolis",
+            "periodId": "cinepolis-2026-10",
+            "externalPaymentConfirmed": false,
+            "createdAt": "2026-10-29T20:07:36.275Z",
+            "idempotencyKey": "finance.reconcile.visit:19vve9y"
+          }
+        },
+        "visit": {
+          "path": "tenants/tya/projects/cinepolis/visits/OCTUBRE 26!2",
+          "updateTime": {
+            "seconds": 1793304456,
+            "nanoseconds": 585075000
+          },
+          "financialMatch": {
+            "country": "GT",
+            "estado": "validada",
+            "hrRowId": "OCTUBRE 26!2",
+            "projectConfigVersion": 4,
+            "externalPaymentConfirmed": false,
+            "boleto": 33,
+            "reconciledAt": "2026-10-29T20:07:36.274Z",
+            "combo": 112,
+            "reconciledBy": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+            "durableVisitId": "OCTUBRE 26!2",
+            "pais": "GT",
+            "total": 205,
+            "visitId": "hr_2026-10_gt_2_97b3975c30",
+            "honorarioSource": "project_country_config",
+            "authority": "project_country_config",
+            "paymentSourceRef": null,
+            "moneda": "Q",
+            "sourceRevision": "6fd4beb82cc85e61c26f54992fc60fd28d49f9b1c832654dba6fd3204571bcbf",
+            "currency": "Q",
+            "honorario": 60,
+            "liquidationState": "validated_financial_source",
+            "paymentState": "not_scheduled",
+            "reembolso": 145,
+            "status": "reconciled_exact"
+          },
+          "header": {
+            "financialSourceStatus": "reconciled_exact",
+            "financialReviewRequired": false,
+            "version": 25,
+            "updatedAt": "2026-10-29T20:07:36.275Z"
+          }
+        }
+      },
+      "financialMatchFields": 24,
+      "unchanged": true
+    },
+    "independentApplicationSession": true,
+    "fullTaskClosed": false,
+    "baseline": {
+      "label": "baseline",
+      "method": "VISIBLE_DOM_READ_ONLY",
+      "projectId": "cinepolis",
+      "periodId": "cinepolis-2026-10",
+      "uiVisitId": "hr_2026-10_gt_2_97b3975c30",
+      "uniqueRowCount": 1,
+      "cells": [
+        "▶ Mover a lote",
+        "Julissa Flores",
+        "C. Miraflores",
+        "2026-10-14",
+        "Validada · lista para lote",
+        "✅",
+        "Q 60",
+        "Q 145",
+        "Q 205",
+        "—",
+        "👁 💳 Registrar pago ＋ lote"
+      ],
+      "detail": {
+        "Visita": "C. Miraflores",
+        "Estado": "Validada · lista para lote",
+        "Honorario": "Q 60",
+        "Reembolso": "Q 145",
+        "Total": "Q 205",
+        "Pago externo": "No confirmado",
+        "Referencia de fuente": "Pendiente de fuente"
+      },
+      "screenshot": "c02-baseline.png",
+      "mutationRequests": [],
+      "reconcileClicks": 0,
+      "paymentClicks": 0,
+      "batchClicks": 0
+    },
+    "independent": {
+      "label": "independent",
+      "method": "VISIBLE_DOM_READ_ONLY",
+      "projectId": "cinepolis",
+      "periodId": "cinepolis-2026-10",
+      "uiVisitId": "hr_2026-10_gt_2_97b3975c30",
+      "uniqueRowCount": 1,
+      "cells": [
+        "▶ Mover a lote",
+        "Julissa Flores",
+        "C. Miraflores",
+        "2026-10-14",
+        "Validada · lista para lote",
+        "✅",
+        "Q 60",
+        "Q 145",
+        "Q 205",
+        "—",
+        "👁 💳 Registrar pago ＋ lote"
+      ],
+      "detail": {
+        "Visita": "C. Miraflores",
+        "Estado": "Validada · lista para lote",
+        "Honorario": "Q 60",
+        "Reembolso": "Q 145",
+        "Total": "Q 205",
+        "Pago externo": "No confirmado",
+        "Referencia de fuente": "Pendiente de fuente"
+      },
+      "screenshot": "c02-independent.png",
+      "mutationRequests": [],
+      "reconcileClicks": 0,
+      "paymentClicks": 0,
+      "batchClicks": 0
+    },
+    "reconcileClicks": 0,
+    "paymentClicks": 0,
+    "originalClientAckResponseObserved": false,
+    "negativeSourceProofPreserved": "RUN1954_C01_03_C01_04_C01_07"
+  },
+  "hrRevisionLive": "6fd4beb82cc85e61c26f54992fc60fd28d49f9b1c832654dba6fd3204571bcbf",
+  "hrRevisionChangedSinceMaterialization": false,
+  "sessions": {
+    "first": {
+      "newBrowserContext": true,
+      "authNullBeforeSignIn": true,
+      "expectedActorUid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+      "mechanism": "existing_ci_custom_token_in_memory",
+      "ordinaryPasswordLoginProven": false,
+      "tokenLogged": false,
+      "principal": {
+        "uid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+        "role": "admin",
+        "tenantId": "tya",
+        "authNamespace": "staff"
+      },
+      "authenticatedActorUid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+      "applicationAuthAndHrGatePassed": true
+    },
+    "independent": {
+      "newBrowserContext": true,
+      "authNullBeforeSignIn": true,
+      "expectedActorUid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+      "mechanism": "existing_ci_custom_token_in_memory",
+      "ordinaryPasswordLoginProven": false,
+      "tokenLogged": false,
+      "principal": {
+        "uid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+        "role": "admin",
+        "tenantId": "tya",
+        "authNamespace": "staff"
+      },
+      "authenticatedActorUid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+      "applicationAuthAndHrGatePassed": true
+    },
+    "distinctContexts": true
+  },
+  "d04Attempt": {
+    "bankId": "certbank-cinepolis-cinepolis-2026-10-qa-i3-d04-session-40974429136-1",
+    "certificationId": "qa-i3-d04-session-40974429136-1",
+    "seedVersion": 1,
+    "editClickCount": 1,
+    "expectedQuestion": "Pregunta QA revisada para sesión independiente 40974429136-1",
+    "expectedFirstQuestion": {
+      "q": "Pregunta QA revisada para sesión independiente 40974429136-1",
+      "ops": [
+        "Primera",
+        "Segunda",
+        "Tercera",
+        "Cuarta"
+      ],
+      "correcta": "Primera",
+      "exp": "Explicación QA",
+      "fuente": "[Página 1]"
+    },
+    "localVersion2Observed": true,
+    "editorDetached": true,
+    "ackUiObserved": true,
+    "clickedAt": 1793317224627
+  },
+  "d04Diagnostics": {
+    "safeReviewErrors": [],
+    "toastObservation": {
+      "startedAt": 1793317224626,
+      "events": [
+        {
+          "at": 1793317225070,
+          "text": "Revisión guardada en servidor · publicación pendiente.",
+          "className": "toast ok",
+          "display": "flex",
+          "visibility": "visible",
+          "opacity": "1",
+          "width": 340,
+          "height": 64.28125,
+          "connected": true
+        }
+      ]
+    }
+  },
+  "d07Preflight": {
+    "decision": "NOT_PROVEN_EXACT_STORAGE_PATH_MISSING_OR_MISMATCH",
+    "scope": "ONE_ALREADY_LOADED_AUTHORIZED_PDF_OPTIONS_ONLY",
+    "binaryGetAttempted": false,
+    "tokenUsed": false,
+    "writes": 0,
+    "metadataBinding": "MISSING",
+    "probes": {}
+  },
+  "d04FixtureBeforeCleanup": {
+    "id": "certbank-cinepolis-cinepolis-2026-10-qa-i3-d04-session-40974429136-1",
+    "version": 2,
+    "status": "active",
+    "certificationId": "qa-i3-d04-session-40974429136-1",
+    "estado": "pending_review",
+    "contentRevision": "a0f464feff7413cbb7ade0505074531b5d309dab38d4ca1f950d2e1f20e85472",
+    "questionCount": 15,
+    "firstQuestion": "Pregunta QA revisada para sesión independiente 40974429136-1",
+    "firstQuestionFields": {
+      "q": "Pregunta QA revisada para sesión independiente 40974429136-1",
+      "exp": "Explicación QA",
+      "ops": [
+        "Primera",
+        "Segunda",
+        "Tercera",
+        "Cuarta"
+      ],
+      "fuente": "[Página 1]",
+      "correcta": "Primera"
+    },
+    "firstQuestionKeys": [
+      "q",
+      "exp",
+      "ops",
+      "fuente",
+      "correcta"
+    ],
+    "historyEntries": 1,
+    "history": [
+      {
+        "at": "2026-10-29T23:40:24.687Z",
+        "reviewerUid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+        "fromVersion": 1,
+        "toVersion": 2,
+        "previousContentRevision": "qa-session-40974429136-1",
+        "contentRevision": "a0f464feff7413cbb7ade0505074531b5d309dab38d4ca1f950d2e1f20e85472",
+        "changes": [
+          {
+            "index": 1,
+            "before": {
+              "q": "Pregunta QA 1",
+              "exp": "Explicación QA",
+              "ops": [
+                "Primera",
+                "Segunda",
+                "Tercera",
+                "Cuarta"
+              ],
+              "fuente": "[Página 1]",
+              "correcta": "Primera"
+            },
+            "after": {
+              "q": "Pregunta QA revisada para sesión independiente 40974429136-1",
+              "exp": "Explicación QA",
+              "ops": [
+                "Primera",
+                "Segunda",
+                "Tercera",
+                "Cuarta"
+              ],
+              "fuente": "[Página 1]",
+              "correcta": "Primera"
+            }
+          }
+        ],
+        "nameChange": null
+      }
+    ],
+    "updateTime": {
+      "seconds": 1793317224,
+      "nanoseconds": 844458000
+    }
+  }
+}
