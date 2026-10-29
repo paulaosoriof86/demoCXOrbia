@@ -44,6 +44,7 @@ jobs:
             ':(exclude)app/modules/visitas.js' \
             ':(exclude)app/modules/dashboard.js' \
             ':(exclude)app/modules/postulaciones.js' \
+            ':(exclude)app/modules/cert.js' \
             ':(exclude)backend/runtime/cxorbia-shopper-command-provider-v1.mjs' \
             ':(exclude)backend/runtime/hr-live-service/test/cxorbia-i3-project-period-contract.test.mjs' \
             ':(exclude)backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs'
@@ -54,6 +55,8 @@ jobs:
           test "$(git hash-object app/adapters/tya-c6-domain-consistency-bridge.js)" = '0a551989ea82eac52eea3b1440965812d83d4f17'
           test "$(git hash-object app/modules/dashboard.js)" = 'c48d1c63d0628c637c4257bef1725dc4349b8668'
           test "$(git hash-object app/modules/postulaciones.js)" = 'bbd8a57bf836e7e55e260cf9d22d655317358418'
+          test "$(git hash-object app/modules/cert.js)" = '3ef8111ced3b208b718b47891b91a3624a2d4896'
+          test "$(git hash-object tools/qa/cxorbia-i3-cert-bank-human-state-labels.test.mjs)" = '30c99263da5a15b70fc8eae64f31a5ee39a0421d'
           test "$(git hash-object backend/runtime/hr-live-service/test/cxorbia-i3-project-period-contract.test.mjs)" = 'd627273f67458bf4096c1ce602aa237dda7aac22'
           test "$(git hash-object backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs)" = '291c816a45a127418ee5cab50e2f156b3828009d'
           test "$(git hash-object tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs)" = '1c842eef3bfaa5237300167024f4ae17c812e0cd'
@@ -99,6 +102,7 @@ jobs:
           node tools/qa/cxorbia-i3-postulaciones-manual-availability-guard.test.mjs
           node tools/qa/cxorbia-i3-shoppers-bridge-authority.test.mjs
           node tools/qa/cxorbia-i3-visitas-effective-availability.test.mjs
+          node tools/qa/cxorbia-i3-cert-bank-human-state-labels.test.mjs
 # I3 approved strong-five sequential readback 40812539393: rerun exact 139-pair preflight, no writes.
 # I3 P0 prevention: source-only fail-closed manual identity review; protected provider blob checked above.
 # I3 availability P0: source-only active-period/country empty-state explanation; exact blob guard and 4 regression cases.
@@ -107,3 +111,5 @@ jobs:
 # F046 exact one-visit/one-cert protected DEV canary 40817081883: independent 139/83 READ-ONLY postflight; no data changes.
 
 # R020 canary outcome 40818810388: independent exact 139/83 DEV postflight, zero writes.
+
+# F057 exact two-cert HN protected DEV canary 40819941606: independent 139/83 readback; zero writes.
