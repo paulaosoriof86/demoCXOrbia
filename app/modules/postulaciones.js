@@ -3,6 +3,25 @@
 /* R05 P0_PROVEN: only Postulaciones manages exclusive dialogs. */
 const poExclusiveModal=(ui,title,body,opts={})=>ui['modal'](title,body,{...opts,replaceExisting:true});
 CX.adminPostulacionesActions=CX.adminPostulacionesActions||{};
+/* Los filtros de gestión aplican tanto a postulaciones como a asignaciones HR.
+   Una postulación sin país nunca debe crear una opción vacía ni ocultar GT. */
+CX.adminPostulacionesActions.countryFilterValues=(postulations=[],assignments=[])=>
+  [...new Set([...postulations,...assignments].map(x=>String(x?.pais||'').trim()).filter(Boolean))]
+    .sort((a,b)=>a.localeCompare(b,'es'));
+/* A stale `canonicalFacets.available` is insufficient for manual assignment.
+   Use the same fail-closed status/date/owner contract as Visitas, and verify
+   again when the operator confirms, before creating a new shopper. */
+CX.adminPostulacionesActions.isManualAssignmentCandidate=(v,data)=>{
+  if(!v||typeof v!=='object')return false;
+  const status=String(v.estado||'').trim().toLowerCase();
+  const terminal=['asignada','agendada','realizada','cuestionario','submitida','liquidada','pagada','fuera_rango','cancelada','cancelled','archivada'].includes(status);
+  if(terminal||v.shopperId||v.agendada||v.realizada||v.cuestFecha||v.submit||v.submittedAt||v._archived||v.outOfRange===true||v.cancelled===true)return false;
+  const f=typeof data?.visitFacets==='function'?data.visitFacets(v):null;
+  if(f&&typeof f.available==='boolean'){
+    return f.available===true&&f.eligibilityBlocked!==true&&!f.assigned&&!f.scheduled&&!f.realized&&!f.questionnaire&&!f.submitted&&!f.outOfRange&&!f.cancelled&&!f.liquidationConfirmed&&!f.paymentConfirmed;
+  }
+  return status==='disponible';
+};
 /* B7 reason: keep provider value intact, convert only presentation to human text. */
 CX.adminPostulacionesActions.cancelReasonForUi=(request)=>{
   const raw=String(request?.reason||'').trim();
@@ -506,7 +525,7 @@ CX.module('postulaciones', ({data,ui})=>{
   <div class="flex wrap" style="gap:8px;margin-bottom:12px">
     <input class="inp" id="pSearch" placeholder="🔎 Buscar shopper, sucursal…" style="flex:1;min-width:200px">
     <select class="sel" id="pProj" style="width:auto"><option value="">🗂️ Todos los proyectos</option>${[...new Set(posts.map(x=>x.projectId))].map(id=>`<option value="${id}">${projName(id)}</option>`).join('')}</select>
-    <select class="sel" id="pPais" style="width:auto"><option value="">Todos los países</option>${[...new Set(posts.map(x=>x.pais))].map(c=>`<option>${c}</option>`).join('')}</select>
+    <select class="sel" id="pPais" style="width:auto"><option value="">Todos los países</option>${CX.adminPostulacionesActions.countryFilterValues(posts,operationalAssignments).map(c=>`<option value="${escapeAssignment(c)}">${escapeAssignment(c)}</option>`).join('')}</select>
     <select class="sel" id="pEst" style="width:auto"><option value="">Todos los estados</option><option value="pendiente">Pendiente</option><option value="aprobada">Aprobada</option><option value="standby">Standby</option></select>
     <label class="flex" style="font-size:12px;color:var(--t2);gap:6px"><input type="checkbox" id="pHist"> Ver históricas</label>
   </div>
@@ -958,7 +977,7 @@ CX.module('postulaciones', ({data,ui})=>{
     if(shr)shr.addEventListener('click',async()=>{shr.disabled=true;shr.textContent='Actualizando HR…';try{const before=String(CX.data?.previewMeta?.sourceRevision||'');const result=await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_postulations_manual_hr_refresh');const after=String(CX.data?.previewMeta?.sourceRevision||'');if(!result?.ok)throw new Error(result?.error||result?.reason||'No fue posible leer la HR viva');ui.toast('HR viva actualizada'+(after&&after!==before?' · revisión nueva confirmada':''),'ok',3600);CX.router.nav('postulaciones');}catch(error){ui.toast('No se pudo actualizar HR · '+String(error?.message||error),'err',5200);}finally{shr.disabled=false;shr.textContent='🔄 Sincronizar HR';}});
     if(am)am.addEventListener('click',()=>{
       const projName=(id)=>{const pr=data.projects.find(x=>x.id===id);return pr?pr.name:'';};
-      const disp=data.visitas().filter(v=>{const f=data.visitFacets?data.visitFacets(v):null;return f?f.available===true&&f.assigned!==true&&f.cancelled!==true:(v.estado==='disponible'&&!v.shopperId);});
+      const disp=data.visitas().filter(v=>CX.adminPostulacionesActions.isManualAssignmentCandidate(v,data));
       const cands=data.shoppersFor();
       poExclusiveModal(ui,'Asignar visita manual',`
         <p style="font-size:12px;color:var(--t2);margin-bottom:12px">Busca la visita y el shopper (no tienes que recorrer toda la lista). Si el shopper no existe, créalo aquí mismo.</p>
@@ -986,6 +1005,8 @@ CX.module('postulaciones', ({data,ui})=>{
         ov.querySelector('#amOk').addEventListener('click',async()=>{
           const btn=ov.querySelector('#amOk'),vid=ov.querySelector('#amV').value;if(!vid){ui.toast('Elige una visita','warn');return;}btn.disabled=true;btn.textContent='Asignando…';let sid=null,s=null;
           try{
+            const latest=data.visitas().find(v=>String(v.id||v.visitId)===String(vid));
+            if(!CX.adminPostulacionesActions.isManualAssignmentCandidate(latest,data))throw new Error('Esta visita ya no está disponible. Actualiza la Hoja de Ruta.');
             if(nw.checked){const f=(ov.querySelector('#amF').value||'').trim(),l=(ov.querySelector('#amL').value||'').trim(),w=(ov.querySelector('#amW').value||'').trim();if(!f||!l||!w)throw new Error('Nombre, apellido y WhatsApp son obligatorios');const created=await data.addShopper({via:'asignacion_manual',createdVia:'manual',firstName:f,lastName:l,nombre:(f+' '+l).trim(),whatsapp:w,perfilCompleto:false,sourceType:'platform',__commandMeta:{ackAware:true,reason:'postulations-manual-assignment-create-shopper'}});if(!(created&&created.ok===true&&created.status==='committed'&&created.providerAck===true))throw new Error(created?.code||'Shopper no confirmado');sid=created.entityId;s=data.getShopper?.(sid)||{id:sid,nombre:(f+' '+l).trim()};}
             else{sid=ov.querySelector('#amS').value;s=data.getShopper(sid);}if(!sid)throw new Error('Selecciona un shopper');
             const assigned=await data.assignVisit(vid,sid,{ackAware:true,assignmentSource:'platform',reason:'postulations-manual-assignment'});if(!(assigned&&assigned.ok===true&&assigned.status==='committed'&&assigned.providerAck===true&&assigned.successUiAllowed===true))throw new Error(assigned?.code||'Asignación no confirmada');

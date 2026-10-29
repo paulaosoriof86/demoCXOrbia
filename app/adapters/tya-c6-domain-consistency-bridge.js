@@ -172,7 +172,9 @@
   function wrapModules(){
     if(!CX.modules)return;
     const dash=CX.modules.dashboard;if(typeof dash==='function'&&!dash.__c6wrapped){const w=args=>{const out=dash(args);setTimeout(()=>{installCanonicalDataFacade();patchDashboard();},80);return out;};w.__c6wrapped=true;CX.modules.dashboard=w;}
-    const shoppers=CX.modules.shoppers;if(typeof shoppers==='function'&&!shoppers.__c6wrapped){const w=args=>{const out=shoppers(args);setTimeout(()=>{installCanonicalDataFacade();patchShoppers();},50);return out;};w.__c6wrapped=true;CX.modules.shoppers=w;}
+    // El módulo Shoppers es dueño de sus columnas: el parche legado escribía
+    // "Completo" en VISITAS y una certificación en PERFIL después del render.
+    const shoppers=CX.modules.shoppers;if(typeof shoppers==='function'&&!shoppers.__c6wrapped){const w=args=>{const out=shoppers(args);setTimeout(()=>{installCanonicalDataFacade();},50);return out;};w.__c6wrapped=true;CX.modules.shoppers=w;}
     for(const id of ['financiero','movimientos','liquidaciones','lotes','beneficios']){const original=CX.modules[id];if(typeof original==='function'&&!original.__c6wrapped){const w=args=>{installCanonicalDataFacade();installFinanceFacade();return original(args);};w.__c6wrapped=true;CX.modules[id]=w;}}
   }
   function activate(reason){installCanonicalDataFacade();installFinanceFacade();wrapModules();window.CX_TYA_C6_DOMAIN_CONSISTENCY_READY={ready:true,reason:reason||'activate',visitStateAuthority:'canonicalFacets',periodAuthority:'CX.data.currentPeriodId',unmatchedProfilesExcluded:true,providerWrites:0,production:false};}

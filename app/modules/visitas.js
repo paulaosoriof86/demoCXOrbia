@@ -1,6 +1,19 @@
 /* CXOrbia · Visitas (admin: tabla operativa editable · shopper: marketplace) */
 CX.module('visitas', ({data,role,ui})=>{
   const p=data.period();
+  /* Shared P0 offer contract: a stale canonical `available` flag may coexist
+     with a completed/out-of-range visit. Never offer or assign that record. */
+  const effectiveAvailable=(v)=>{
+    if(!v||typeof v!=='object')return false;
+    const status=String(v.estado||'').trim().toLowerCase();
+    const terminal=['asignada','agendada','realizada','cuestionario','submitida','liquidada','pagada','fuera_rango','cancelada','cancelled','archivada'].includes(status);
+    if(terminal||v.shopperId||v.agendada||v.realizada||v.cuestFecha||v.submit||v.submittedAt||v._archived||v.outOfRange===true||v.cancelled===true)return false;
+    const f=typeof data.visitFacets==='function'?data.visitFacets(v):null;
+    if(f&&typeof f.available==='boolean'){
+      return f.available===true&&f.eligibilityBlocked!==true&&!f.assigned&&!f.scheduled&&!f.realized&&!f.questionnaire&&!f.submitted&&!f.outOfRange&&!f.cancelled&&!f.liquidationConfirmed&&!f.paymentConfirmed;
+    }
+    return status==='disponible';
+  };
 
   /* ---------------- SHOPPER: marketplace de oportunidades (TODOS los proyectos) ---------------- */
   if(role==='shopper'){
@@ -34,14 +47,7 @@ CX.module('visitas', ({data,role,ui})=>{
       if(cat==='weekend') return 'Sábado o domingo';
       return 'Pendiente de validación';
     };
-    /* P0-1: available solo es canónico cuando visitFacets() lo expone como boolean explícito
-       (contrato R21). Sin ese contrato (adapter no cargado), preserva el criterio anterior
-       (v.estado==='disponible') — nunca tratar la sola existencia del objeto como disponibilidad. */
-    const isAvailable=(v)=>{
-      const f=typeof data.visitFacets==='function'?data.visitFacets(v):null;
-      const hasCanonical=!!f&&typeof f.available==='boolean';
-      return hasCanonical ? (f.available===true && f.eligibilityBlocked!==true) : v.estado==='disponible';
-    };
+    /* The exact same offer predicate applies to Admin, Shopper and actions. */
     /* P0-2 (V160): el marketplace debe limitarse a los proyectos ACTIVOS/AUTORIZADOS del shopper,
        no solo al país. Reusa la misma regla del router (resolveVisibleProjects) que ya respeta
        CX.tenantProfile.activeProjectIds/inactiveProjectIds; si no existe, cae a projectsFor('shopper')
@@ -71,15 +77,16 @@ CX.module('visitas', ({data,role,ui})=>{
     // permanece en Mis Visitas; una fila vieja no reaparece por faltar fecha de submitido.
     const scopedProjectPool=data._visitas.filter(v=>(!data.inScope||data.inScope(v.pais)) && allowedProgramKeys.has(progKeyOf(v)));
     const scopePool=scopedProjectPool.filter(v=>periodIdOf(v)===data.currentPeriodId);
-    const list=(typeof data.availableVisits==='function')
-      ? data.availableVisits(scopePool)
-      : scopePool.filter(isAvailable);
-    // Las HR pueden tener filas 'disponibles' de otros periodos; no son postulables hoy.
-    // Diagnosticar sin ampliar la oferta, sin revelar otros países y sin modificar la HR.
+    const providerCandidates=(typeof data.availableVisits==='function')?data.availableVisits(scopePool):scopePool;
+    // Even an injected selector cannot reintroduce a completed visit or leak
+    // a different country/program/period into the shopper marketplace.
+    const list=Array.isArray(providerCandidates)?providerCandidates.filter(v=>
+      v&&(!data.inScope||data.inScope(v.pais))&&allowedProgramKeys.has(progKeyOf(v))&&
+      periodIdOf(v)===data.currentPeriodId&&effectiveAvailable(v)):[];
+    // La hoja de ruta puede tener visitas disponibles de otros períodos. Explicar
+    // el cero sin habilitar una oferta histórica ni revelar datos de otro país.
     const otherPeriodPool=scopedProjectPool.filter(v=>periodIdOf(v)!==data.currentPeriodId);
-    const historicalAvailable=(typeof data.availableVisits==='function'
-      ? data.availableVisits(otherPeriodPool)
-      : otherPeriodPool.filter(isAvailable)).length>0;
+    const historicalAvailable=otherPeriodPool.some(effectiveAvailable);
     const countryScope=typeof data.scopePaises==='function'?data.scopePaises():null;
     const pendingCountry=Array.isArray(countryScope)&&countryScope.length===0;
     const emptyReason=pendingCountry
@@ -216,8 +223,8 @@ CX.module('visitas', ({data,role,ui})=>{
     if(f.realized) return {key:'realizada', label:'Realizada', tone:'g'};
     if(f.scheduled) return {key:'agendada', label:'Agendada', tone:'t'};
     if(f.assigned) return {key:'asignada', label:'Asignada', tone:'b'};
-    if(typeof f.available==='boolean'&&f.available) return {key:'disponible', label:'Disponible', tone:'b'};
-    return {key:(v.estado||'sin_asignar'), label:(v.estado==='disponible'?'Disponible':'Sin asignar'), tone:'a'};
+    if(effectiveAvailable(v)) return {key:'disponible', label:'Disponible', tone:'b'};
+    return {key:(v.estado||'sin_asignar'), label:(v.estado==='disponible'?'Pendiente de validación':'Sin asignar'), tone:'a'};
   };
   const estadoCanonBadge=(v)=>{const s=estadoCanon(v);return `<span class="bdg bdg-${s.tone}">${s.label}</span>`;};
   /* revisión operativa canónica del alcance (misma que Dashboard/reportes) */
@@ -237,12 +244,8 @@ CX.module('visitas', ({data,role,ui})=>{
   // admin role, then validate the actual staff token/provider immediately on
   // click. An unavailable session produces a HOLD rather than a silent absence.
   const canOfferHrReconcile=protectedCinepolisHrSource&&['admin','super'].includes(role);
-  /* P0-1: mismo criterio de disponibilidad canónica que en el marketplace del shopper. */
-  const isAvailableAdmin=(v)=>{
-    const f=typeof data.visitFacets==='function'?data.visitFacets(v):null;
-    const hasCanonical=!!f&&typeof f.available==='boolean';
-    return hasCanonical ? (f.available===true && f.eligibilityBlocked!==true) : v.estado==='disponible';
-  };
+  /* Admin KPI and drill use the exact same fail-closed offer rule as Shopper. */
+  const isAvailableAdmin=effectiveAvailable;
   const k=data.kpis();
   const row=(v)=>`<tr data-vid="${v.id}">
     <td><b style="color:var(--brand)">#${v.num}</b>${ALL?`<div style="font-size:9px;color:var(--t3)">${projName(v.projectId)}</div>`:''}</td>
@@ -253,7 +256,7 @@ CX.module('visitas', ({data,role,ui})=>{
     <td>${estadoCanonBadge(v)}</td>
     <td style="font-size:12px">${v.agendada||'<span class="muted">—</span>'}</td>
     <td style="font-size:12px;font-weight:600;color:var(--green)">${v.honorario!=null?ui.money(v.currency,v.honorario):'<span class="muted" title="Sin honorario en la fuente">Pendiente de fuente</span>'}</td>
-    <td style="text-align:right"><button class="btn btn-ghost btn-sm" data-vdetail="${v.id}" title="Ver detalle completo">🔍</button> ${!v.shopper&&v.estado!=='fuera_rango'?`<button class="btn btn-soft btn-sm" data-assign="${v.id}">Asignar</button> `:''}${externalHrAuthority?'':`<button class="btn btn-ghost btn-sm" data-edit="${v.id}">✏️</button>`}</td>
+    <td style="text-align:right"><button class="btn btn-ghost btn-sm" data-vdetail="${v.id}" title="Ver detalle completo">🔍</button> ${effectiveAvailable(v)?`<button class="btn btn-soft btn-sm" data-assign="${v.id}">Asignar</button> `:''}${externalHrAuthority?'':`<button class="btn btn-ghost btn-sm" data-edit="${v.id}">✏️</button>`}</td>
   </tr>`;
   const html=`
     <div class="between" style="margin-bottom:6px"><div>${ui.ph('Visitas', (ALL?('Todos los proyectos · '+all.length+' visitas'):(p.name+' · base operativa'))+' · publica, asigna y edita cada visita')}</div>
@@ -464,6 +467,7 @@ CX.module('visitas', ({data,role,ui})=>{
       }
     });
     const assignModal=(v)=>{
+      if(!effectiveAvailable(v)){ui.toast('Esta visita no está disponible para asignación. Actualiza la fuente antes de continuar.','warn',5200);return;}
       const shoppers=data.shoppersFor();
       ui.modal('Asignar visita · '+v.sucursal, `
         <div style="background:var(--brand-light);border-radius:10px;padding:9px 12px;font-size:12px;color:var(--brand-dark);margin-bottom:12px">${v.escenario} · ${v.ciudad} · ${ui.money(v.currency,v.honorario)} · ${v.quincena}</div>
@@ -480,6 +484,7 @@ CX.module('visitas', ({data,role,ui})=>{
       `, {onMount:(ov,close)=>{
         const commandSucceeded=(result)=>result&&result.ok===true&&result.status==='committed'&&result.providerAck===true&&result.successUiAllowed===true;
         const functionalError=(result,fallback)=>String(result&&result.code||result&&result.error||fallback||'Acción no confirmada por el proveedor.');
+        const stillAvailable=()=>effectiveAvailable((data._visitas||[]).find(x=>x.id===v.id));
         const platformShopperId=()=>('shp-platform-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8));
         const renderList=(q)=>{ const f=shoppers.filter(s=>!q||s.nombre.toLowerCase().includes(q.toLowerCase()));
           ov.querySelector('#asgList').innerHTML=f.length?f.map(s=>`<button class="btn btn-ghost btn-sm asgPick" data-id="${s.id}" style="width:100%;justify-content:space-between;margin-bottom:6px">${s.nombre}<span class="bdg bdg-n">${s.ciudad||CX.paisName(s.pais)}</span></button>`).join(''):ui.empty('🔍','Sin shoppers en este país. Crea uno nuevo.');
@@ -487,6 +492,7 @@ CX.module('visitas', ({data,role,ui})=>{
             b.disabled=true;
             const shopper=data.getShopper?data.getShopper(b.dataset.id):null;
             try{
+              if(!stillAvailable()){ui.toast('La visita dejó de estar disponible. Actualiza antes de asignar.','warn',5200);return;}
               const result=await data.assignVisit(v.id,b.dataset.id,{ackAware:true,assignmentSource:'platform',reason:'admin_assign_existing_shopper'});
               if(!commandSucceeded(result)){ui.toast('Asignación no confirmada: '+functionalError(result),'err',5200);return;}
               close();ui.toast('Visita asignada a '+(shopper&&shopper.nombre||'shopper confirmado'),'ok');CX.router.nav('visitas');
@@ -499,6 +505,7 @@ CX.module('visitas', ({data,role,ui})=>{
         ov.querySelectorAll('.asgTab').forEach(b=>b.addEventListener('click',()=>{ ov.querySelectorAll('.asgTab').forEach(x=>x.classList.replace('btn-pr','btn-ghost')); b.classList.replace('btn-ghost','btn-pr'); ov.querySelector('#asgExist').style.display=b.dataset.t==='exist'?'':'none'; ov.querySelector('#asgNew').style.display=b.dataset.t==='new'?'':'none'; }));
         ov.querySelector('#an_save').addEventListener('click',async()=>{ const btn=ov.querySelector('#an_save'),f=ov.querySelector('#an_f').value.trim(),l=ov.querySelector('#an_l').value.trim(),w=ov.querySelector('#an_w').value.trim(); if(!f||!l||!w){ui.toast('Nombre, apellido y WhatsApp','err');return;} btn.disabled=true; const shopperId=platformShopperId();
           try{
+            if(!stillAvailable()){ui.toast('La visita dejó de estar disponible. Actualiza antes de crear un shopper.','warn',5200);return;}
             const createResult=await data.addShopper({shopperId,id:shopperId,via:'asignacion',estado:'Pendiente',firstName:f,lastName:l,nombre:(f+' '+l).trim(),whatsapp:w,pais:v.pais,country:v.pais,ciudad:v.ciudad,sourceType:'platform',sourceRef:'admin-visit-assignment',__commandMeta:{ackAware:true,reason:'admin_create_shopper_for_assignment'}});
             if(!commandSucceeded(createResult)){ui.toast('Shopper no confirmado: '+functionalError(createResult),'err',5200);return;}
             const durableShopperId=createResult.entityId||shopperId;

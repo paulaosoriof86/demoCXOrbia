@@ -339,7 +339,9 @@ CX.module('dashboard', ({data,ui})=>{
     const realPend=all.filter(v=>v.estado==='realizada');
     const submitPend=all.filter(v=>v.estado==='cuestionario');
     const porProgramar=all.filter(v=>v.estado==='asignada'&&!v.agendada);
-    const porAsignar=all.filter(v=>!v.shopperId&&v.estado!=='fuera_rango'&&v.estado!=='liquidada');
+    // Use the same canonical facets as the dashboard KPI. A realized visit
+    // without an assigned shopper is a data-review case, not a pending offer.
+    const porAsignar=all.filter(BF.sinAsignar);
     const board=document.getElementById('estadoBoard');
     board.innerHTML=`<div class="card-h"><div><div class="card-t">🗂️ Estado operativo de visitas</div><div class="muted" style="font-size:11px;margin-top:3px">Selecciona visitas y actúa desde esta superficie; las acciones conservan su owner canónico.</div></div><span class="muted" style="font-size:11px">por etapa · acciones contextuales por estado</span></div>
       <div class="flex wrap" style="gap:8px;align-items:center;margin-bottom:12px;padding:10px 12px;background:var(--brand-light);border-radius:10px" data-dashboard-actions>
