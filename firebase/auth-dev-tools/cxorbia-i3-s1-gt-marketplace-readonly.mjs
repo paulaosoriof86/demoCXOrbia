@@ -83,12 +83,40 @@ try{
     const eligible=Array.isArray(candidate)?candidate.filter(v=>v&&
       (!d.inScope||d.inScope(v.pais))&&allowed.has(programKeyOf(v))&&
       d.recordPeriodId(v)===d.currentPeriodId&&effectiveAvailable(v)):[];
+    // Source facet `available=true` is only a first-level signal. Explain why
+    // records do not meet the complete anti-duplicate/terminal offer predicate,
+    // without disclosing individual visit identifiers, addresses or shoppers.
+    const initiallyAvailable=scoped.filter(v=>{const f=d.visitFacets?.(v);
+      return f&&typeof f.available==='boolean'
+        ?f.available===true&&f.eligibilityBlocked!==true
+        :String(v?.estado||'').toLowerCase()==='disponible'&&!v?.shopperId;});
+    const exclusionReasons=initiallyAvailable.filter(v=>!effectiveAvailable(v)).map(v=>{
+      const f=d.visitFacets?.(v)||{},r=[];
+      const terminal=['asignada','agendada','realizada','cuestionario','submitida',
+        'liquidada','pagada','fuera_rango','cancelada','cancelled','archivada'];
+      if(terminal.includes(String(v.estado||'').trim().toLowerCase()))r.push('terminal_status');
+      if(v.shopperId)r.push('raw_shopper_assigned');
+      if(v.agendada)r.push('raw_scheduled');
+      if(v.realizada)r.push('raw_realized');
+      if(v.cuestFecha)r.push('raw_questionnaire');
+      if(v.submit||v.submittedAt)r.push('raw_submitted');
+      if(v._archived||v.cancelled===true)r.push('raw_cancelled');
+      if(v.outOfRange===true)r.push('raw_out_of_range');
+      for(const key of ['assigned','scheduled','realized','questionnaire','submitted',
+        'outOfRange','cancelled','liquidationConfirmed','paymentConfirmed']){
+        if(f[key]===true)r.push('facet_'+key);
+      }
+      if(f.eligibilityBlocked===true)r.push('facet_eligibility_blocked');
+      return r.length?r:['unexplained_status_facet_conflict'];
+    });
     const vList=document.querySelector('#vList'),cards=vList?.querySelectorAll('.card.hov')?.length??-1;
     const text=document.body.innerText,match=text.match(/(\d+) oportunidades en (\d+) proyecto\(s\)/);
     return {sessionRole:window.CX.session.role,sourceRevision:window.CX_PROTECTED_AUTH_HR_AUTHORITY.sourceRevision,
       country:window.CX_PROTECTED_AUTH_HR_AUTHORITY.shopperCountry||'',
       period:d.currentPeriodId,totalHrVisits:raw.length,authorizedPrograms:allowed.size,
       scopeRows:scoped.length,providerCandidates:Array.isArray(candidate)?candidate.length:null,
+      initiallyAvailableSourceRows:initiallyAvailable.length,
+      excludedInitialRows:exclusionReasons.length,exclusionReasons,
       eligibleSourceRows:eligible.length,renderedOpportunityCards:cards,
       headingVisible:text.includes('Visitas Disponibles'),displayedOpportunityCount:match?Number(match[1]):null,
       emptyMessageVisible:!!vList?.innerText?.includes('Sin visitas disponibles'),
