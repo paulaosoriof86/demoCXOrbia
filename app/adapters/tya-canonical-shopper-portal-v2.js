@@ -251,5 +251,76 @@
     draw();return host;
   }
   function install(){if(!CX.modules)return;CX.modules.miperfil=render;window.CX_TYA_CANONICAL_SHOPPER_PORTAL={ready:true,version:'canonical-shopper-portal-v2-p0-session-credential-operational',exactIdentityOnly:true,identityContractVersion:window.CX_EXACT_IDENTITY_CONTRACT?.version||'legacy-fallback',fullHistory:true,certificationVisible:true,providerWrites:0,production:false,resolveExactSessionShopper:resolveSessionShopper,currentAuthContext:authContext,currentAuthenticatedEmail:authenticatedEmail,currentSessionCredentialState:()=>{const c=currentSessionCredential();return {available:c.available===true,usernamePresent:!!str(c.username),passwordPresent:!!str(c.password),source:str(c.source)};},isAuthorityPending:authorityPending};}
+  // I3: el primer ingreso autenticado solicita revisar los datos reales, sin
+  // condicionar el acceso ni exigir teléfono. La edición durable ya pertenece al
+  // formulario Mi Perfil: updateShopper + ACK/readback; este aviso nunca escribe.
+  const PROFILE_NOTICE_ID='cxShopperFirstLoginProfileNotice';
+  const profileNoticeSeen=new Set();
+  const profileNoticeCompleted=new Set();
+  let activeNoticeSessionKey='';
+  function removeProfileNotice(){document.getElementById(PROFILE_NOTICE_ID)?.remove();}
+  function resetProfileNoticeSession(){
+    profileNoticeSeen.clear();activeNoticeSessionKey='';removeProfileNotice();
+  }
+  function askFirstLoginProfileReview(){
+    const authority=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{},uid=str(window.firebase?.auth?.()?.currentUser?.uid),context=authContext();
+    if(CX.session?.role!=='shopper'||context?.role!=='shopper'||context?.authenticated!==true||
+      authority.applied!==true||authority.shopperPrincipalClaimsVerified!==true||authority.exactSessionShopperReady!==true||
+      !uid||str(authority.actorUid)!==uid){
+      if(CX.session?.role!=='shopper'||!uid||context?.authenticated!==true)resetProfileNoticeSession();
+      else removeProfileNotice(); // transient authority refresh must not re-prompt
+      return false;
+    }
+    const identity=resolveSessionShopper(CX.data);
+    if(!identity.ok||!str(identity.canonical))return false;
+    const key=uid+'|'+str(identity.canonical);
+    if(activeNoticeSessionKey&&activeNoticeSessionKey!==key){
+      profileNoticeSeen.delete(activeNoticeSessionKey);removeProfileNotice();
+    }
+    activeNoticeSessionKey=key;
+    if(profileNoticeSeen.has(key)||profileNoticeCompleted.has(key)||document.getElementById(PROFILE_NOTICE_ID))return false;
+    const host=document.querySelector('#app .content'),view=document.getElementById('view');
+    if(!host||!view)return false;
+    const box=document.createElement('section');box.id=PROFILE_NOTICE_ID;
+    box.setAttribute('role','status');box.setAttribute('aria-live','polite');
+    box.style.cssText='background:var(--panel,#fff);border:1px solid var(--border);border-left:4px solid var(--brand);border-radius:10px;padding:12px 14px;margin-bottom:14px;color:var(--t1)';
+    const title=document.createElement('div');title.style.cssText='font-size:13px;font-weight:800;margin-bottom:4px';
+    title.textContent='Bienvenido: revisa los datos de tu perfil';
+    const detail=document.createElement('div');detail.style.cssText='font-size:12px;color:var(--t2);line-height:1.5';
+    detail.textContent='Tu expediente actual se conserva. Confirma o actualiza tus datos personales, contacto y pago. Puedes ingresar aunque no tengas teléfono registrado; los datos faltantes se pueden completar después.';
+    const actions=document.createElement('div');actions.style.cssText='display:flex;flex-wrap:wrap;gap:8px;margin-top:10px';
+    const go=document.createElement('button');go.type='button';go.className='btn btn-pr btn-sm';
+    go.textContent='Revisar mis datos';go.addEventListener('click',()=>{
+      removeProfileNotice();CX.router?.nav?.('miperfil');
+      setTimeout(()=>{
+        const edit=document.querySelector('#view [data-profile-edit]');
+        if(edit)edit.click();
+        else CX.ui?.toast?.('En Mi Perfil puedes seleccionar “Editar mis datos”.','ok',3600);
+      },0);
+    });
+    const later=document.createElement('button');later.type='button';later.className='btn btn-soft btn-sm';
+    later.textContent='Ahora no';later.addEventListener('click',removeProfileNotice);
+    actions.append(go,later);box.append(title,detail,actions);host.insertBefore(box,view);
+    profileNoticeSeen.add(key);return true;
+  }
+  for(const event of ['cx:protected-auth-hr-authority-ready','cx:live-source-updated']){
+    window.addEventListener(event,()=>setTimeout(askFirstLoginProfileReview,0));
+  }
+  // El bloqueo de autoridad cierra esa sesión lógica. Al revalidarse, debe
+  // volver a solicitar revisión si no hubo actualización confirmada.
+  window.addEventListener('cx:protected-auth-hr-authority-blocked',resetProfileNoticeSession);
+  CX.bus?.on?.('command-committed',result=>{
+    if(result?.commandType!=='shopper.update'||!commandOk(result)||CX.session?.role!=='shopper')return;
+    const uid=str(window.firebase?.auth?.()?.currentUser?.uid),key=uid+'|'+str(result.entityId);
+    if(uid&&key===activeNoticeSessionKey){profileNoticeCompleted.add(key);removeProfileNotice();}
+  });
+  function bindLogoutReset(){
+    if(!CX.app||typeof CX.app.logout!=='function'||CX.app.__shopperProfileReviewLogoutBound)return;
+    const original=CX.app.logout;
+    CX.app.logout=function(...args){resetProfileNoticeSession();return original.apply(this,args);};
+    CX.app.__shopperProfileReviewLogoutBound=true;
+  }
+  window.CX_SHOPPER_FIRST_LOGIN_PROFILE_REVIEW=Object.freeze({version:'i3-v1',refresh:askFirstLoginProfileReview});
   install();document.addEventListener('DOMContentLoaded',install,{once:true});window.addEventListener('cx:full-visual-ready',install);
+  document.addEventListener('DOMContentLoaded',()=>{bindLogoutReset();setTimeout(askFirstLoginProfileReview,0);},{once:true});
 })();

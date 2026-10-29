@@ -225,6 +225,33 @@ const normalizeIdentityCountry=value=>{
   const c=normalizeHumanName(value);
   return c==='guatemala'||c==='gt'?'GT':c==='honduras'||c==='hn'?'HN':c==='nicaragua'||c==='ni'?'NI':c==='el salvador'||c==='sv'?'SV':c.toUpperCase();
 };
+// This comparison key is a review signal only, never an identity authority.
+// A local eight-digit number is equivalent to its OWN country's dial prefix;
+// ambiguous or foreign numbering plans are intentionally not guessed.
+const HR_IDENTITY_DIAL=Object.freeze({GT:'502',HN:'504',NI:'505',SV:'503'});
+function hrIdentityReviewKey(source){
+  const hrManaged=source?.hrManaged||{};
+  const country=normalizeIdentityCountry(source?.pais||source?.country||hrManaged.pais||hrManaged.country),dial=HR_IDENTITY_DIAL[country];
+  const name=normalizeHumanName(source?.nombre||[source?.firstName,source?.lastName].filter(Boolean).join(' '));
+  const digits=normalizeIdentityPhone(source?.whatsapp||source?.phone||source?.telefono||hrManaged.whatsapp||hrManaged.phone);
+  if(!dial||name.split(' ').filter(Boolean).length<2)return null;
+  const local=digits.length===8?digits:(digits.length===11&&digits.startsWith(dial)?digits.slice(3):'');
+  return local?{country,key:`${country}\0${name}\0${local}`}:null;
+}
+// Three or more complete name tokens in the same country are a *review*
+// candidate even when contacts differ or are missing. Two-token homonyms with
+// different contacts retain the older distinct-person behavior. Neither key
+// supplies authority for an automatic identity merge.
+function hrStrongNameReviewKey(source){
+  const hrManaged=source?.hrManaged||{};
+  const country=normalizeIdentityCountry(source?.pais||source?.country||hrManaged.pais||hrManaged.country);
+  const name=normalizeHumanName(source?.nombre||[source?.firstName,source?.lastName].filter(Boolean).join(' '));
+  if(!HR_IDENTITY_DIAL[country]||name.split(' ').filter(Boolean).length<3)return null;
+  const digits=normalizeIdentityPhone(source?.whatsapp||source?.phone||source?.telefono||hrManaged.whatsapp||hrManaged.phone);
+  const dial=HR_IDENTITY_DIAL[country];
+  const local=digits.length===8?digits:(digits.length===11&&digits.startsWith(dial)?digits.slice(3):'');
+  return {country,key:`${country}\0${name}`,local};
+}
 async function assertNoUnlinkedManualDuplicate({db,command,shopperId,profile}){
   const humanName=normalizeHumanName(profile?.nombre||[profile?.firstName,profile?.lastName].filter(Boolean).join(' '));
   const digits=normalizeIdentityPhone(profile?.whatsapp||profile?.phone||profile?.telefono);
@@ -949,11 +976,97 @@ const ADJUDICATION_PROFILE_IDENTITY_FIELDS=new Set([
   'sourceShopperIds','exactAliases','identityAliases','aliases','legacyLiveShopperIds','canonicalLegacyIds'
 ]);
 const emptyProfileValue=v=>v==null||v===''||(Array.isArray(v)&&v.length===0);
-function adjudicationProfilePatch(canonical,aliases,keeperMember,authorityRef,canonicalShopperId,aliasIds,projectIds){
+const ADJUDICATION_CONTACT_FIELDS=new Set([
+  'phone','whatsapp','telefono','primaryPhone','alternatePhones','contactPhoneEvidence',
+  'contactPhoneUnparsed','phoneVerificationRequired','contactReviewAtFirstLogin'
+]);
+const normalizeAdjudicationPhone=(value,country)=>{
+  const dial=HR_IDENTITY_DIAL[normalizeIdentityCountry(country)];
+  if(!dial)return '';
+  const digits=normalizeIdentityPhone(value);
+  if(digits.length===8)return `+${dial}${digits}`;
+  return digits.length===11&&digits.startsWith(dial)?`+${digits}`:'';
+};
+// One vote per real profile/source for each normalized contact, even if both
+// 'phone' and 'whatsapp' repeat it. Previous provenance is re-used on later
+// adjudications without inventing another vote for the elected canonical phone.
+export function adjudicationContactSelection(canonical,aliases,keeperMember,canonicalShopperId,aliasIds,canonicalSourceId=canonicalShopperId){
+  const entries=new Map(),unparsed=new Map();
+  const canonicalCountry=normalizeIdentityCountry(canonical?.pais||canonical?.country||canonical?.hrManaged?.pais||canonical?.hrManaged?.country||stableHrCountry(canonicalShopperId));
+  const add=(phone,sourceId,sourceType,fields,rawValues)=>{
+    const key=`${sourceId}\0${phone}`;
+    const found=entries.get(key)||{phone,shopperId:sourceId,sourceType,fields:[],rawValues:[]};
+    found.fields=uniq([...found.fields,...fields]);
+    found.rawValues=uniq([...found.rawValues,...rawValues]);
+    entries.set(key,found);
+  };
+  const ingest=(profile,sourceId)=>{
+    const country=normalizeIdentityCountry(profile?.pais||profile?.country||profile?.hrManaged?.pais||profile?.hrManaged?.country||stableHrCountry(sourceId)||canonicalCountry);
+    const sourceType=str(profile?.sourceType||'shopper_profile');
+    const prior=arr(profile?.contactPhoneEvidence);
+    if(prior.length){
+      for(const group of prior){
+        const phone=normalizeAdjudicationPhone(group?.phone,country);
+        if(!phone)continue;
+        for(const source of arr(group?.sources)){
+          const id=str(source?.shopperId);
+          if(id)add(phone,id,str(source?.sourceType||sourceType),arr(source?.fields),arr(source?.rawValues));
+        }
+      }
+    }else{
+      // Preserve an independent HR/profile vote only before the first fusion.
+      for(const [field,raw] of [
+        ['phone',profile?.phone],['whatsapp',profile?.whatsapp],['telefono',profile?.telefono],
+        ['hrManaged.phone',profile?.hrManaged?.phone],['hrManaged.whatsapp',profile?.hrManaged?.whatsapp]
+      ]){
+        const value=str(raw);
+        if(!value)continue;
+        const phone=normalizeAdjudicationPhone(value,country);
+        if(phone)add(phone,sourceId,sourceType,[field],[value]);
+        else{
+          const record=unparsed.get(sourceId)||{shopperId:sourceId,sourceType,fields:[],rawValues:[]};
+          record.fields=uniq([...record.fields,field]);record.rawValues=uniq([...record.rawValues,value]);
+          unparsed.set(sourceId,record);
+        }
+      }
+    }
+    // Retain prior unrecognized values so the first-login review can clarify.
+    for(const row of arr(profile?.contactPhoneUnparsed)){
+      const id=str(row?.shopperId||sourceId),record=unparsed.get(id)||{shopperId:id,sourceType:str(row?.sourceType||sourceType),fields:[],rawValues:[]};
+      record.fields=uniq([...record.fields,...arr(row?.fields)]);
+      record.rawValues=uniq([...record.rawValues,...arr(row?.rawValues)]);
+      unparsed.set(id,record);
+    }
+  };
+  // A recovered canonical document can be seeded from an existing alias. It
+  // must not be counted as an extra independent phone source.
+  const authoritativeCanonicalSourceId=str(canonicalSourceId||canonicalShopperId);
+  ingest(canonical||{},authoritativeCanonicalSourceId);
+  arr(aliases).forEach((profile,i)=>ingest(profile||{},str(arr(aliasIds)[i])));
+  const byPhone=new Map();
+  for(const row of entries.values()){
+    const group=byPhone.get(row.phone)||[];group.push(row);byPhone.set(row.phone,group);
+  }
+  const keeperId=str(keeperMember?.shopperId);
+  const ranked=[...byPhone].map(([phone,sources])=>({phone,sourceCount:sources.length,
+    canonicalVote:sources.some(row=>row.shopperId===authoritativeCanonicalSourceId),
+    keeperVote:sources.some(row=>row.shopperId===keeperId),
+    sources:sources.sort((a,b)=>a.shopperId.localeCompare(b.shopperId))})).sort((a,b)=>
+    b.sourceCount-a.sourceCount||Number(b.canonicalVote)-Number(a.canonicalVote)||
+    Number(b.keeperVote)-Number(a.keeperVote)||a.phone.localeCompare(b.phone));
+  const primaryPhone=ranked[0]?.phone||null;
+  const alternatePhones=ranked.slice(1).map(row=>row.phone);
+  const contactPhoneEvidence=ranked.map(({phone,sourceCount,sources})=>({phone,sourceCount,sources}));
+  const contactPhoneUnparsed=[...unparsed.values()].sort((a,b)=>a.shopperId.localeCompare(b.shopperId));
+  const phoneVerificationRequired=!primaryPhone||alternatePhones.length>0||contactPhoneUnparsed.length>0;
+  return {primaryPhone,alternatePhones,contactPhoneEvidence,contactPhoneUnparsed,
+    phoneVerificationRequired,contactReviewAtFirstLogin:true};
+}
+function adjudicationProfilePatch(canonical,aliases,keeperMember,authorityRef,canonicalShopperId,aliasIds,projectIds,canonicalSourceId=canonicalShopperId){
   const patch={};
   for(const alias of aliases){
     for(const [key,value] of Object.entries(alias||{})){
-      if(ADJUDICATION_PROFILE_IDENTITY_FIELDS.has(key)||HR_MANAGED_PROFILE_FIELDS.includes(key))continue;
+      if(ADJUDICATION_PROFILE_IDENTITY_FIELDS.has(key)||ADJUDICATION_CONTACT_FIELDS.has(key)||HR_MANAGED_PROFILE_FIELDS.includes(key))continue;
       if(Array.isArray(value)){
         if(!value.length)continue;
         if(Array.isArray(canonical?.[key]))patch[key]=uniq([...(patch[key]||canonical[key]),...value]);
@@ -965,6 +1078,12 @@ function adjudicationProfilePatch(canonical,aliases,keeperMember,authorityRef,ca
   if(keeperLogin){patch.visibleLogin=keeperLogin;patch.username=keeperLogin;patch.user=keeperLogin;}
   for(const key of ['credentialState','credentialVersion','credentialRuleVersion','credentialSweepVersion','credentialPasswordProofVersion','credentialPasswordRuleVersion']){
     const value=keeperMember?.[key];if(value!==undefined&&value!==null&&value!=='')patch[key]=value;
+  }
+  Object.assign(patch,adjudicationContactSelection(canonical,aliases,keeperMember,canonicalShopperId,aliasIds,canonicalSourceId));
+  if(patch.primaryPhone){
+    // Keep the long-standing 11-digit transport shape used by the shopper UI;
+    // primaryPhone and evidence retain the explicit international + notation.
+    patch.phone=patch.primaryPhone.slice(1);patch.whatsapp=patch.primaryPhone.slice(1);
   }
   patch.id=canonicalShopperId;patch.shopperId=canonicalShopperId;patch.tenantId=str(canonical?.tenantId);patch.projectIds=uniq(projectIds);
   patch.sourceShopperIds=uniq([...(canonical?.sourceShopperIds||[]),...aliasIds]);
@@ -1105,7 +1224,7 @@ async function durableIdentityAdjudication({auth,db,command,actor,canonicalShopp
     return {identityLinkId:linkId,canonicalShopperId,exactAliases:aliases,providerWrites:1,authorityType:'tenant_adjudication',identityConsolidated:false,retiredPrincipalCount:0,domainWrites:{}};
   }
   const unionProjects=uniq([projectId,...principalRows.flatMap(x=>arr(x.member.projectIds)),...arr(canonical.projectIds),...aliasProfiles.flatMap(x=>arr(x.projectIds))]);
-  const canonicalPatch=clean({...canonicalRecoverySeed,...adjudicationProfilePatch(canonical,aliasProfiles,keeper.member,authorityRef,canonicalShopperId,aliases,unionProjects)});
+  const canonicalPatch=clean({...canonicalRecoverySeed,...adjudicationProfilePatch(canonical,aliasProfiles,keeper.member,authorityRef,canonicalShopperId,aliases,unionProjects,canonicalProfileRecovered?canonicalProfileRecoveredFromAliasId:canonicalShopperId)});
   canonicalPatch.tenantId=tenantId;
   if(canonicalProfileRecovered){canonicalPatch.identityRecoveryAuthority='trusted_exact_identity_link';canonicalPatch.identityRecoveryAuthorityRef=canonicalRecoveryAuthorityRef;canonicalPatch.identityRecoveredFromShopperId=canonicalProfileRecoveredFromAliasId;canonicalPatch.identityRecoveredAt=stamp;}
   const keeperClaims=canonicalClaims(canonicalShopperId,tenantId,unionProjects),keeperUid=keeper.doc.id,keeperFingerprint=providerUidFingerprint(keeperUid);
@@ -1446,7 +1565,98 @@ export function createShopperCommandProvider({auth,db,policy,hrSnapshot=null,hrR
         'SHOPPER_VISIBLE_LOGIN_COLLISION','SHOPPER_AUTH_EMAIL_CONFLICT','SHOPPER_CREDENTIAL_NAME_INCOMPLETE',
         'SHOPPER_VISIBLE_LOGIN_OCCUPANT_UNTRUSTED','SHOPPER_VISIBLE_LOGIN_SUFFIX_COLLISION'
       ]);
+      // P0: compare the WHOLE new HR cohort AND prior canonical profiles before
+      // durableUpsert creates Auth. Exact, audited links take precedence. A
+      // previous HR revision can have introduced a canonical profile that is
+      // absent from this snapshot: it still prevents an unlinked second one.
+      // Existing anchored profiles are never held by this new-candidate gate.
+      const heldIdentityShopperIds=new Set(),cohortIdentityGroups=new Map();
       for(const source of orderedShoppers){
+        const identity=hrIdentityReviewKey(source);if(!identity)continue;
+        const canonicalShopperId=exactIdentityMap.get(source.shopperId)||source.shopperId;
+        if(!cohortIdentityGroups.has(identity.key))cohortIdentityGroups.set(identity.key,[]);
+        cohortIdentityGroups.get(identity.key).push({sourceShopperId:source.shopperId,canonicalShopperId,country:identity.country,identityKey:identity.key});
+      }
+      let existingProfilesSnapshot=null;
+      if(cohortIdentityGroups.size){
+        // Exactly one snapshot read for all preflight candidate groups; no
+        // Firestore/Auth mutation precedes the full ambiguity assessment.
+        const existingProfiles=await db.collection('tenants').doc(scope.tenantId).collection('shoppers').get();
+        existingProfilesSnapshot=existingProfiles;
+        const anchoredIds=new Set(arr(existingProfiles?.docs).map(doc=>str(doc.id)).filter(Boolean));
+        const anchoredByIdentityKey=new Map();
+        for(const doc of arr(existingProfiles?.docs)){
+          const profile=doc.data()||{},id=str(doc.id);
+          if(!id||str(profile.tenantId||scope.tenantId)!==scope.tenantId)continue;
+          if(str(profile.supersededByShopperId)||['superseded','retired','deleted','tombstoned'].includes(str(profile.status||profile.identityState).toLowerCase()))continue;
+          const identity=hrIdentityReviewKey(profile);
+          if(!identity||!cohortIdentityGroups.has(identity.key))continue;
+          if(!anchoredByIdentityKey.has(identity.key))anchoredByIdentityKey.set(identity.key,[]);
+          anchoredByIdentityKey.get(identity.key).push({sourceShopperId:id,canonicalShopperId:id,country:identity.country,identityKey:identity.key});
+        }
+        for(const [identityKey,cohortGroup] of cohortIdentityGroups){
+          const group=[...cohortGroup,...(anchoredByIdentityKey.get(identityKey)||[])];
+          if(new Set(group.map(row=>row.canonicalShopperId)).size<2)continue;
+          const newcomers=cohortGroup.filter(row=>!anchoredIds.has(row.sourceShopperId)&&!anchoredIds.has(row.canonicalShopperId));
+          if(!newcomers.length)continue;
+          const ids=uniq(group.map(row=>row.sourceShopperId));
+          const reviewRow={
+            shopperIds:ids,candidateShopperIds:ids,country:group[0].country,
+            reason:'SHOPPER_HR_NORM_NAME_PHONE_CANDIDATES_REVIEW_REQUIRED',
+            credentialFingerprint:sha(`${scope.tenantId}\0${scope.projectId}\0${identityKey}`).slice(0,24),
+            requiresHumanAdjudication:true
+          };
+          const durableReview=await persistIdentityReview({db,tenantId:scope.tenantId,projectId:scope.projectId,sourceRevision,row:reviewRow});
+          // A prior exact human 'distinct' resolution is a durable exception;
+          // resemblance alone must never overwrite that decision.
+          if(durableReview.suppressed)continue;
+          identityReviewWrites+=Number(durableReview.writes||0);writes+=Number(durableReview.writes||0);
+          identityReviewQueue.push(durableReview.row);
+          newcomers.forEach(row=>heldIdentityShopperIds.add(row.sourceShopperId));
+        }
+      }
+      // A stronger full-name review closes the gap where new HR source IDs
+      // disagree on mobile numbers. No inference can create an Auth principal
+      // or identity link while Admin/Operations has not resolved the pair.
+      const strongNameGroups=new Map();
+      for(const source of orderedShoppers){
+        const identity=hrStrongNameReviewKey(source);if(!identity)continue;
+        const row={sourceShopperId:source.shopperId,canonicalShopperId:exactIdentityMap.get(source.shopperId)||source.shopperId,
+          ...identity,cohort:true};
+        if(!strongNameGroups.has(identity.key))strongNameGroups.set(identity.key,[]);
+        strongNameGroups.get(identity.key).push(row);
+      }
+      if(strongNameGroups.size){
+        const existingProfiles=existingProfilesSnapshot||await db.collection('tenants').doc(scope.tenantId).collection('shoppers').get();
+        const anchoredIds=new Set(arr(existingProfiles?.docs).map(doc=>str(doc.id)).filter(Boolean));
+        for(const doc of arr(existingProfiles?.docs)){
+          const profile=doc.data()||{},id=str(doc.id);
+          if(!id||str(profile.tenantId||scope.tenantId)!==scope.tenantId)continue;
+          if(str(profile.supersededByShopperId)||['superseded','retired','deleted','tombstoned'].includes(str(profile.status||profile.identityState).toLowerCase()))continue;
+          const identity=hrStrongNameReviewKey(profile);if(!identity||!strongNameGroups.has(identity.key))continue;
+          strongNameGroups.get(identity.key).push({sourceShopperId:id,canonicalShopperId:id,...identity,cohort:false});
+        }
+        for(const [identityKey,group] of strongNameGroups){
+          if(new Set(group.map(row=>row.canonicalShopperId)).size<2)continue;
+          // An already-covered exact phone match keeps its historic fingerprint.
+          if(group.every(row=>row.local&&row.local===group[0].local))continue;
+          const newcomers=group.filter(row=>row.cohort&&!anchoredIds.has(row.sourceShopperId)&&
+            !anchoredIds.has(row.canonicalShopperId)&&!heldIdentityShopperIds.has(row.sourceShopperId));
+          if(!newcomers.length)continue;
+          const ids=uniq(group.map(row=>row.sourceShopperId));
+          const reviewRow={shopperIds:ids,candidateShopperIds:ids,country:group[0].country,
+            reason:'SHOPPER_HR_STRONG_NAME_CONTACT_REVIEW_REQUIRED',
+            credentialFingerprint:sha(`${scope.tenantId}\0${scope.projectId}\0${identityKey}`).slice(0,24),
+            requiresHumanAdjudication:true};
+          const durableReview=await persistIdentityReview({db,tenantId:scope.tenantId,projectId:scope.projectId,sourceRevision,row:reviewRow});
+          if(durableReview.suppressed)continue; // Human 'distinct' remains authoritative.
+          identityReviewWrites+=Number(durableReview.writes||0);writes+=Number(durableReview.writes||0);
+          identityReviewQueue.push(durableReview.row);
+          newcomers.forEach(row=>heldIdentityShopperIds.add(row.sourceShopperId));
+        }
+      }
+      for(const source of orderedShoppers){
+        if(heldIdentityShopperIds.has(source.shopperId))continue;
         const canonicalShopperId=exactIdentityMap.get(source.shopperId)||source.shopperId;
         let result;
         try{
@@ -1467,6 +1677,7 @@ export function createShopperCommandProvider({auth,db,policy,hrSnapshot=null,hrR
           const durableReview=await persistIdentityReview({db,tenantId:scope.tenantId,projectId:scope.projectId,sourceRevision,row:reviewRow});
           identityReviewWrites+=Number(durableReview.writes||0);writes+=Number(durableReview.writes||0);
           if(!durableReview.suppressed)identityReviewQueue.push(durableReview.row);
+          heldIdentityShopperIds.add(source.shopperId);
           continue;
         }
         if(result.authCreated)created++;
@@ -1484,7 +1695,8 @@ export function createShopperCommandProvider({auth,db,policy,hrSnapshot=null,hrR
         providerAck:true,
         sourceRevision,tenantId:scope.tenantId,projectId:scope.projectId,
         shopperCount:shoppers.length,
-        reconciledShopperCount:shoppers.length-identityReviewQueue.length-identityMigrationQueue.length,
+        reconciledShopperCount:shoppers.length-heldIdentityShopperIds.size-identityMigrationQueue.length,
+        identityHeldShopperCount:heldIdentityShopperIds.size,
         identityReviewRequired:identityReviewQueue.length>0,
         identityReviewCount:identityReviewQueue.length,
         identityReviewQueue,

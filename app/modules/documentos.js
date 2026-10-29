@@ -135,7 +135,9 @@ CX.module('documentos', ({data,role,ui})=>{
     }catch(error){fail(error);}
     function fail(error){
       if(!live())return;
-      const general='No fue posible mostrar este PDF dentro de la plataforma. Puedes abrir el original desde el enlace superior.';
+      // A protected PDF has no public fallback link. Do not promise a link that
+      // does not exist when authenticated Storage read fails closed.
+      const general='No fue posible mostrar este PDF dentro de la plataforma. La descarga protegida no está disponible; solicita a Administración que verifique el acceso al recurso.';
       const diag=error?.diagnostic||{},rawCode=String(error?.message||'');
       const safeCode=/^RESOURCE_(?:READ|PDF)_[A-Z0-9_]{3,80}$/.test(rawCode)?rawCode:'RESOURCE_PDF_RENDER_FAILED';
       const stageOptions=['TOKEN','GET','GET_HTTP','BYTES','COMPLETE','PDF_JS_LOAD','PDF_JS_DOCUMENT','PDF_JS_RENDER','RESOURCE_READ'];

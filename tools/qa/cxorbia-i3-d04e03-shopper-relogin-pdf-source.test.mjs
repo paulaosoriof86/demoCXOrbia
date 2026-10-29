@@ -63,6 +63,7 @@ test('I3 source: PDF viewer renders pages inside scoped module, never a blank PD
   assert.match(documents,/page\.render\(\{canvasContext:context,viewport/);
   assert.match(documents,/slot\.isConnected&&host\.contains\(slot\)/);
   assert.match(documents,/data-pdf-status="failed"|status\.dataset\.pdfStatus='failed'/);
-  assert.match(documents,/abre el PDF original en otra pestaña/);
+  assert.match(documents,/La descarga protegida no está disponible; solicita a Administración/);
+  assert.doesNotMatch(documents,/Puedes abrir el original desde el enlace superior/);
   assert.doesNotMatch(documents,/<iframe title="Vista previa PDF del proyecto"/);
 });
