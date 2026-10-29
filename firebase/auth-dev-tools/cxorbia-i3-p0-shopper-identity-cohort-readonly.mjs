@@ -24,6 +24,8 @@ const norm=v=>val(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase
 const country=v=>{const c=norm(v?.pais||v?.country||v?.país);return c==='honduras'||c==='hn'?'HN':c==='guatemala'||c==='gt'?'GT':c?'OTHER':'UNSET';};
 const name=v=>norm(v?.nombre||v?.displayName||v?.fullName||v?.name||[v?.firstName,v?.lastName].filter(Boolean).join(' '));
 const phone=v=>val(v?.whatsapp||v?.phone||v?.telefono).replace(/[^0-9]/g,'');
+const displayName=v=>val(v?.nombre||v?.displayName||v?.fullName||v?.name||[v?.firstName,v?.lastName].filter(Boolean).join(' '));
+const phoneMask=v=>{const p=phone(v);return p?'•••• '+p.slice(-4):'Sin dato';};
 const sid=v=>val(v?.shopperId||v?.id);
 const assert=(yes,code)=>{if(!yes)throw new Error(code);};
 const report={schemaVersion:'cxorbia.i3.p0.shopper-identity-cohort-readonly.v1',
@@ -33,6 +35,23 @@ const report={schemaVersion:'cxorbia.i3.p0.shopper-identity-cohort-readonly.v1',
 fs.mkdirSync(OUT,{recursive:true});
 const save=()=>fs.writeFileSync(OUT+'/result.json',JSON.stringify(report,null,2)+'\n','utf8');
 save();
+
+function writeSealedPrivateReview(publicKey64,rows){
+  assert(!!publicKey64,'REVIEW_PUBLIC_KEY_MISSING');
+  const pem=Buffer.from(publicKey64,'base64').toString('utf8');
+  assert(pem.includes('BEGIN PUBLIC KEY'),'REVIEW_PUBLIC_KEY_INVALID');
+  const sessionKey=crypto.randomBytes(32),nonce=crypto.randomBytes(12);
+  const cipher=crypto.createCipheriv('aes-256-gcm',sessionKey,nonce);
+  const plaintext=Buffer.from(JSON.stringify(rows),'utf8');
+  const encrypted=Buffer.concat([cipher.update(plaintext),cipher.final()]);
+  const wrapped=crypto.publicEncrypt({key:pem,padding:crypto.constants.RSA_PKCS1_OAEP_PADDING,oaepHash:'sha256'},sessionKey);
+  const sealed={schemaVersion:'cxorbia.i3.p0.private-review.sealed.v1',algorithm:'RSA-OAEP-SHA256+AES-256-GCM',
+    strongCount:rows.strong.length,weakCount:rows.weak.length,
+    wrappedKey:wrapped.toString('base64'),nonce:nonce.toString('base64'),
+    tag:cipher.getAuthTag().toString('base64'),ciphertext:encrypted.toString('base64')};
+  fs.writeFileSync(OUT+'/private-review.sealed.json',JSON.stringify(sealed)+'\n','utf8');
+  sessionKey.fill(0);plaintext.fill(0);
+}
 
 async function currentHr(tag){
   const response=await fetch(SOURCE+'&cohort='+encodeURIComponent(tag)+'-'+Date.now(),{
@@ -217,6 +236,49 @@ try{
   report.casesTruncated=flagged.length>report.cases.length;
   const after=await currentHr('after');
   assert(after.revision===hr.revision,'HR_CHANGED_DURING_COHORT_READ');
+  if(process.env.CX_SHOPPER_REVIEW_PUBKEY_B64){
+    const memberById=new Map(members.map(m=>[val(m.shopperId),m]));
+    const displayPair=(aliasId,ownerId,classification)=>{
+      const alias=profiles.get(aliasId)||{},owner=profiles.get(ownerId)||{};
+      const aliasMember=memberById.get(aliasId),ownerMember=memberById.get(ownerId);
+      const proof=m=>val(m?.credentialPasswordProofVersion)===ShopperCredentialRule.CREDENTIAL_PASSWORD_PROOF_VERSION;
+      const strong=[proof(aliasMember)||proof(alias)?{type:'Técnica',m:aliasMember,p:alias}:null,
+        proof(ownerMember)||proof(owner)?{type:'HR',m:ownerMember,p:owner}:null].filter(Boolean);
+      const rule=ShopperCredentialRule.shopperCredentialRule(owner);
+      const desired=rule?.ok?val(rule.login).toLowerCase():'';
+      const canonicalLogin=strong.filter(x=>desired&&val(x.m?.visibleLogin||x.p.visibleLogin||x.p.username||x.p.user).toLowerCase()===desired);
+      const keeper=strong.length===1?strong[0]:strong.length>1&&canonicalLogin.length===1?canonicalLogin[0]:null;
+      return {caseKey:fp('pair:'+aliasId+'\0'+ownerId),classification,
+        aliasShopperId:aliasId,hrShopperId:ownerId,
+        technicalName:displayName(alias),hrName:displayName(owner),
+        country:country(owner),technicalPhoneMasked:phoneMask(alias),hrPhoneMasked:phoneMask(owner),
+        phoneExactMatch:!!phone(alias)&&phone(alias)===phone(owner),
+        hrVisitCount:hrVisitCounts.get(ownerId)||0,
+        principalCount:Number(!!aliasMember)+Number(!!ownerMember),
+        proposedKeeper:keeper?.type||'Requiere decisión',
+        proposalReason:keeper?'Acceso con prueba técnica de credencial y login canónico':'Sin cuenta principal técnica única',
+        sameHumanDecision:'',reviewerNotes:''};
+    };
+    const strong=corroborated.map(r=>displayPair(r._shopperId,r._candidateCanonicalId,'Nombre + teléfono + país'));
+    const weak=[];
+    for(const row of rows.filter(r=>!r.canonical&&r.corroboratedCandidateCount===0&&r.nameOnlyCandidateCount>0)){
+      const alias=profiles.get(row._shopperId)||{},aliasName=name(alias),aliasCountry=country(alias);
+      for(const [hrId] of hrById){
+        const owner=profiles.get(hrId)||{};
+        if(val(owner.sourceType)!=='hr_external'||aliasCountry==='UNSET'||country(owner)!==aliasCountry||name(owner)!==aliasName||(!!phone(alias)&&phone(owner)===phone(alias)))continue;
+        weak.push(displayPair(row._shopperId,hrId,'Solo nombre + país (teléfono diferente)'));
+      }
+    }
+    const order=(a,b)=>a.country.localeCompare(b.country)||a.hrName.localeCompare(b.hrName,'es')||a.aliasShopperId.localeCompare(b.aliasShopperId);
+    strong.sort(order);weak.sort(order);
+    assert(strong.length===corroborated.length,'REVIEW_STRONG_CASE_COUNT_MISMATCH');
+    writeSealedPrivateReview(process.env.CX_SHOPPER_REVIEW_PUBKEY_B64,{
+      schemaVersion:'cxorbia.i3.p0.private-review.v1',sourceRevision:hr.revision,
+      sourceRun:'DEV_READONLY',production:false,authWrites:0,firestoreWrites:0,hrWrites:0,
+      columnsEditability:{sameHumanDecision:'Paula',reviewerNotes:'Paula',otherFields:'no editar'},strong,weak});
+    report.privateReview={sealed:true,plaintextWrittenToDisk:false,encryptedCount:strong.length+weak.length,
+      strongCount:strong.length,weakCount:weak.length,decisionColumnsDefaultBlank:true,authWrites:0,firestoreWrites:0};
+  }
   report.decision='PASS_DEV_SHOPPER_IDENTITY_COHORT_READONLY';
   report.systemicFinding=report.flaggedCount>0?'P0_REAL_IDENTITY_LINKS_REQUIRE_EXACT_RESOLUTION':'NO_UNRESOLVED_ACTIVE_AUTH_MEMBERSHIPS';
 }catch(error){report.decision='HOLD_COHORT_READONLY';report.errorCode=val(error?.message||error).replace(/[^a-zA-Z0-9_:-]/g,'_').slice(0,90);}
@@ -227,6 +289,7 @@ console.log(JSON.stringify({decision:report.decision,hrRevision:report.hrRevisio
   unlinkedWithUniqueNameAndPhoneCandidate:report.unlinkedWithUniqueNameAndPhoneCandidate,
   technicalIdentityEvidence:report.technicalIdentityEvidence,
   keeperPreflight:report.keeperPreflight,
+  privateReview:report.privateReview,
   unlinkedNameOnlyNotSafeToMerge:report.unlinkedNameOnlyNotSafeToMerge,
   production:false,writes:0,errorCode:report.errorCode||null}));
 if(report.decision!=='PASS_DEV_SHOPPER_IDENTITY_COHORT_READONLY')process.exitCode=2;

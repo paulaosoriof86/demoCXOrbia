@@ -58,6 +58,7 @@ jobs:
       GOOGLE_CLOUD_PROJECT: cxorbia-backend-dev
       CX_SHOPPER_COHORT_EXECUTION: PAULA_APPROVED_2026-10-28_GENERAL_SHOPPER_IDENTITY_DIAG_READONLY
       CX_SHOPPER_COHORT_OUT: .tmp/i3-shopper-identity-cohort
+      CX_SHOPPER_REVIEW_PUBKEY_B64: 'LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQm9qQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FZOEFNSUlCaWdLQ0FZRUF2QUNKMWtrelF1Q2pZaTliNU1QZwoyUXNaZnQxTzZWcGFNaUtuc0JJZmVZR0ZSejV6aXhPWGovTUZHWnVOS0RWVy83Tk05SnBoSjN5UWY2cjJxQnFvCitNYUI5OGhVSFpCbHNmZXpPVm8xWnN0Z3ZHZnl6Rnlsc3BYZlZBUzhDK3V0Kzc0Q1dRZWdiVWNkN3NaUTVWQTQKRy91cWYyVE54WFJ6TUFsT1RBcU14dzBkTjZrZHNLbDFmMlBYcHlMZm90Z3g3eDNLbTdBbmZTcmhKaXpHakRobApTeWRicTVEMXM1UFBPNjRJWmt4M0ZOVlB1WFE5aTQ3a0xsQktWOVhNYmMrUjYrT1N0TlcraWhhR2d4SVJ0MFFwClkxUkdZb3hwZEdDRTBjQUVEam9qM0VpWkd2YU14YjVzYTVLYWkvdXlXcWR2UEV5RzhuZ2JVNGdlRDhOemUvMTkKYnNjQS9JelNHVlNBdkdhUFBMWWtJdDN3TmZ6WVkxdndmd3hJVDVQQng5Q2ZTbjBQWEdoVEdyT2syUUowSnNwVwpXUXJRcHdKNWlHb2N3cmlhWkhhdjZRUnp1MmV2dno5WkQ4MUZpZElGdlFxZjNCWEpsR0hTRVBaUUo4c21OMHYxCldMalJ1U2FibU9XS25pV2VKQkVDYXhPY01qWmUxWlF5V2Z6a0QxNE9OLysxQWdNQkFBRT0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg=='
     steps:
       - uses: actions/checkout@v4
         with:
@@ -93,7 +94,7 @@ jobs:
           name: cxorbia-i3-p0-shopper-identity-cohort-${{ github.run_id }}
           path: .tmp/i3-shopper-identity-cohort/
           if-no-files-found: warn
-          retention-days: 30
+          retention-days: 1
 
   i3-p0-general-shopper-source-qa:
     if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-GENERAL-SHOPPER-SOURCE-QA-ONCE' }}
