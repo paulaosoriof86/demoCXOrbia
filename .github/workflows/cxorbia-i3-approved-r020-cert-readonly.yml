@@ -8,6 +8,7 @@ on:
       - firebase/auth-dev-tools/cxorbia-i3-approved-r026-keeper-readonly.mjs
       - firebase/auth-dev-tools/cxorbia-i3-s1-gt-marketplace-readonly.mjs
       - firebase/auth-dev-tools/cxorbia-i3-d07-pdf-get-readonly.mjs
+      - firebase/auth-dev-tools/cxorbia-i3-approved-r053-hr-keeper-readonly.mjs
 permissions:
   contents: read
 concurrency:
@@ -231,5 +232,59 @@ jobs:
         with:
           name: cxorbia-i3-d07-pdf-auth-get-readonly-${{ github.run_id }}
           path: .tmp/cxorbia-i3-d07-pdf-get-readonly/result.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  r053-hr-keeper-readonly:
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-R053-GT-KEEPER-READONLY' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      GOOGLE_CLOUD_PROJECT: cxorbia-backend-dev
+      GCLOUD_PROJECT: cxorbia-backend-dev
+      CX_R053_READONLY_AUTH: PAULA_I3_2026_10_29_R053_GT_HR_KEEPER_READONLY
+      CX_R053_APPROVED_DIGEST: ac3e15184316d62aa53942359e857f2c34dec486a2ca41057e529a39f062d872
+      CX_R053_READONLY_OUT: .tmp/cxorbia-i3-r053-hr-keeper-readonly
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Pin exact approved-139 pair authority, branch and DEV-only scope
+        run: |
+          set -Eeuo pipefail
+          test "$GITHUB_REF_NAME" = 'recovery/cxorbia-phase-a-20260831'
+          test "$GITHUB_EVENT_NAME" = push
+          test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
+          test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
+          test "$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = a2be5a77a4c0008ec374c17f42d5da27070e1ed6
+          test "$(jq -r '.productTreeAuthority' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = eb8734a450c14d510a9a9924b39cb826caacf510
+          test "$(git rev-parse a2be5a77a4c0008ec374c17f42d5da27070e1ed6^{tree})" = eb8734a450c14d510a9a9924b39cb826caacf510
+          git diff --quiet a2be5a77a4c0008ec374c17f42d5da27070e1ed6 HEAD -- app backend tools firebase.json .firebaserc firestore.rules storage.rules
+          test "$(sha256sum firebase/auth-dev-tools/cxorbia-i3-approved-r053-hr-keeper-readonly.mjs | cut -d ' ' -f 1)" = f5c4c7149b798108f54bfc15442a01e55a74187adcd5f691d940c9a922af6fbd
+          node --check firebase/auth-dev-tools/cxorbia-i3-approved-r053-hr-keeper-readonly.mjs
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Check R053 HR keeper, credentials, seven domains and contact review without writes
+        run: |
+          set -Eeuo pipefail
+          npm install --prefix firebase/auth-dev-tools --no-save --no-package-lock --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
+          node firebase/auth-dev-tools/cxorbia-i3-approved-r053-hr-keeper-readonly.mjs
+          jq -e '.decision=="PASS_R053_GT_HR_KEEPER_READONLY_PREFLIGHT" and
+            .readOnly==true and .production==false and .noWritesVerified==true and
+            .keeperHRVerified==true and .phoneNeverMergeGate==true and
+            .authorizationForCanary==false and .identity.canonicalHrRowCount==1 and
+            .identity.aliasHrRowCount==0 and .identity.country=="GT" and
+            .access.keeperPasswordProof==true and .access.canonicalCrosswalkSelfOwned==true and
+            .access.aliasCrosswalkSelfOwned==true and .access.secondaryRecentSignIn==false and
+            .domains.aliasOwnedTotal==0 and
+            .authWrites==0 and .firestoreWrites==0 and .hrWrites==0 and
+            .externalWrites==0 and .deployments==0 and .merges==0 and .credentialResets==0' "$CX_R053_READONLY_OUT/result.json" >/dev/null
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-r053-hr-keeper-readonly-${{ github.run_id }}
+          path: .tmp/cxorbia-i3-r053-hr-keeper-readonly/result.json
           if-no-files-found: warn
           retention-days: 30
