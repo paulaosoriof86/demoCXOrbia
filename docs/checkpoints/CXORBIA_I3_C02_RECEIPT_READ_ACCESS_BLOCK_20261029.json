@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-10-29 20:27:21 UTC",
+  "decision": "BLOCKED_BY_AUTOMATIC_APPROVAL_REVIEW_PENDING_EXPLICIT_SCOPE_AUTHORIZATION",
+  "taskId": "C02",
+  "environment": "DEV",
+  "projectId": "cxorbia-backend-dev",
+  "priorVerifiedCommit": "4986b0c79dcfea5973fb11547da5d9f02e5bcc1f",
+  "priorCheckpoint": "docs/checkpoints/CXORBIA_I3_RUN1954_LIVE_CONTINUITY_20261029.json",
+  "attemptedAction": {
+    "kind": "OPEN_PRIVATE_FIREBASE_CONSOLE_FOR_READ_ONLY_EXISTING_RECEIPT",
+    "url": "https://console.firebase.google.com/project/cxorbia-backend-dev/firestore",
+    "browser": "Chrome",
+    "attemptCount": 1,
+    "originApprovalGranted": false
+  },
+  "review": {
+    "automatic": true,
+    "manualUserRejection": false,
+    "reason": "Verified authorization covers QA in the DEV application and one reconciliation, but not direct access to the private Firebase console and its private data.",
+    "risk": "Direct console access exposes private database records outside the already authorized application UI."
+  },
+  "target": {
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "periodKey": "2026-10",
+    "uiVisitId": "hr_2026-10_gt_2_97b3975c30",
+    "commandType": "finance.reconcile.visit",
+    "amountGTQ": 205,
+    "commandReceiptPathPrefix": "tenants/tya/commandReceipts",
+    "auditPathPrefix": "tenants/tya/entityAuditTrail",
+    "visitPathPrefix": "tenants/tya/projects/cinepolis/visits",
+    "actualDurableVisitDocumentId": "NOT_ASSUMED_FROM_UI_ID",
+    "receiptId": "NOT_OBSERVED"
+  },
+  "intendedReadScope": [
+    "Find existing receipt for the single reconciliation attempt",
+    "Read its corresponding audit and persisted financialMatch/sourceRevision",
+    "Verify actor/time/status/amounts for the exact October case"
+  ],
+  "mutationRequested": false,
+  "productionAccessRequested": false,
+  "newReconcileRequested": false,
+  "privateConsoleReadCompleted": false,
+  "bypassAttempted": false,
+  "preservedEvidence": {
+    "sourceProof": {
+      "runId": 40943351882,
+      "runNumber": 1954,
+      "pass": 303,
+      "fail": 0
+    },
+    "financialFreshPageAndReloadPersistence": "PASS_SAME_AUTH_SESSION",
+    "financeReceiptObserved": false,
+    "fullC02Closed": false,
+    "i3": "HOLD",
+    "moduleMatchPromotions": 0
+  },
+  "explicitAuthorizationNeeded": "Read-only access in Chrome to the private Firebase/Firestore console of cxorbia-backend-dev, limited to this DEV visit and the existing finance.reconcile.visit receipt/audit. No data modification, payment, replay, or production access.",
+  "nextAction": "Request the specific scope authorization above. Until granted, preserve the existing UI persistence proof and do not attempt another console, API, CLI, account, or browser route to retrieve the blocked private data.",
+  "unaffectedAuthorizedWork": "Previously approved source evidence, application DEV QA and the remaining frozen-plan cases retain their own existing scope.",
+  "production": false
+}
