@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-29",
+  "iteration": "I3",
+  "decision": "HOLD",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedParent": "6394d5d8957e05892bc185e02c1813f16d37d6ab",
+  "productSourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+  "productTreeAuthority": "be0ad639a652439200ef4043bb08d5d4b709f266",
+  "owner": "tools/qa/cxorbia-i3-a04-c01-focal.test.cjs",
+  "classification": "MAPPING_FAILURE_TEST_HARNESS",
+  "observedFailure": {
+    "runId": 40926136536,
+    "jobId": 123632337380,
+    "artifactId": 12921265158,
+    "tests": 19,
+    "pass": 14,
+    "fail": 5,
+    "error": "countryCode is not defined"
+  },
+  "cause": "The VM extracted sessionProfile without its real lexical countryCode helper from the same approved product source.",
+  "change": "Evaluate the exact source countryCode and sessionProfile together; preserve all 19 previous tests and add 3 country/HR-authority regressions.",
+  "validation": {
+    "localTests": 22,
+    "pass": 22,
+    "fail": 0,
+    "scope": "ISOLATED_SYNTHETIC_SOURCE_CONTRACTS_NO_NETWORK_NO_PROVIDER",
+    "cloudRun": "PENDING_AUTOMATIC_RUN_AFTER_COMMIT",
+    "relatedHarnessesMechanismReview": "G05 observation, writer, sync and A05 do not share this partial extraction mechanism; not a functional PASS assertion."
+  },
+  "preserved": {
+    "productSource": true,
+    "allHistoricalPass": true,
+    "countryAuthority": true,
+    "wholeProductPass": false,
+    "moduleMatchPromotions": 0,
+    "production": "DO_NOT_TOUCH",
+    "deploys": 0,
+    "remoteDataWrites": 0
+  },
+  "nextExactAction": "Observe the automatic canonical source-proof run after this commit. Record actual PASS/FAIL and preserve full receipt/log. Continue existing G03/G04 shock plan; no new I3 certification or I4 authorization implied."
+}
