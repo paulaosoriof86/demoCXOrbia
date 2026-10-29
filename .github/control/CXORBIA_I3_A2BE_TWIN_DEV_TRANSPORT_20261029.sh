@@ -109,8 +109,13 @@ materialize() {
   test "$new_rev" != "$OLD_REV"
   gcloud run revisions describe "$new_rev" --project "$PROJECT" --region "$REGION" \
     --format=json > "$OUT/new-revision.json"
-  jq -e --arg image "$image_uri" \
-    '.spec.containers[0].image==$image and (.status.imageDigest|length)>0' \
+  # Cloud Run resolves a successfully deployed image tag into its immutable
+  # `@sha256:` reference. Verify the deployed registry and exact resolved
+  # digest; comparing this field with the original mutable `:tag` is invalid.
+  jq -e --arg registry "gcr.io/$PROJECT/$SERVICE@sha256:" \
+    '(.spec.containers[0].image|startswith($registry)) and
+     .status.imageDigest==.spec.containers[0].image and
+     any(.status.conditions[]?; .type=="Ready" and .status=="True")' \
     "$OUT/new-revision.json" >/dev/null
 
   # The tagged zero-traffic revision MUST prove health before any shared DEV
@@ -118,8 +123,17 @@ materialize() {
   tag_url="$(jq -r --arg tag "$CHANNEL" \
     '[.status.traffic[]|select(.tag==$tag)|.url][0] // empty' "$OUT/runtime-no-traffic.json")"
   [[ "$tag_url" == https://* ]]
-  curl -fsS --retry 4 --retry-delay 2 --max-time 50 \
-    "$tag_url/health" -o "$OUT/tagged-revision-health.json"
+  if ! curl -fsS --retry 2 --retry-delay 2 --max-time 50 \
+    "$tag_url/health" -o "$OUT/tagged-revision-health.json"; then
+    # IAM-protected Cloud Run may require an audience-bound ID token, even
+    # when the revision is healthy and the service accepts Hosting rewrites.
+    local health_token
+    health_token="$(gcloud auth print-identity-token --audiences="$tag_url")"
+    test -n "$health_token"
+    curl -fsS --retry 2 --retry-delay 2 --max-time 50 \
+      -H "Authorization: Bearer $health_token" \
+      "$tag_url/health" -o "$OUT/tagged-revision-health.json"
+  fi
   jq -e '.ok==true and .production==false and .hrWrites==false' \
     "$OUT/tagged-revision-health.json" >/dev/null
 

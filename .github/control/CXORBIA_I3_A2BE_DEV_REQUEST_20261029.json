@@ -11,9 +11,9 @@
   "devHostingPreviewOnly": true,
   "devRuntimeTrafficMayChangeOnlyOnSeparateApproval": true,
   "sourceProductChanged": false,
-  "status": "PAULA_APPROVED_ONE_SHOT_A2BE_TWIN_DEV_MATERIALIZE_20261029",
+  "status": "PAULA_APPROVED_ONE_SHOT_A2BE_DEV_RETRY_AFTER_NO_TRAFFIC_FAILURE",
   "requestedAction": "I3-A2BE-DEV-MATERIALIZE",
-  "requestReason": "Paula 2026-10-29 autoriza agilizar Fase A tras preflight PASS 40832241567; UNICO despliegue DEV: Cloud Run revisión tagged, Hosting preview; comparte DEV temporalmente solo después de health/bytes y valida readback. LIVE/Auth/HR/Rules no autorizados.",
+  "requestReason": "El intento 40832567443 construyó 00329 pero falló antes de cambiar tráfico, al comparar tag con digest de imagen normalizado por Cloud Run. Artefacto 12879586018 prueba 00328 al 100%, Hosting live sin cambio. Reintento de la misma autorización y misma fuente, solo DEV, con guard de digest y salud.",
   "priorFailureRunId": 40831618801,
   "baselineEvidenceRunId": 40774124229,
   "verifiedActiveDevRuntime": "cxorbia-live-hr-dev-00328-r69",
@@ -21,5 +21,10 @@
   "authorizedPreflightRunId": 40832241567,
   "authorizedPreflightCommitSha": "fc7fd8f808b404b105a7ae9ecba2ed2f3eb08f8b",
   "approvalRecordedAtLocalDate": "2026-10-29",
-  "oneShot": true
+  "oneShot": true,
+  "priorMaterializationRunId": 40832567443,
+  "priorMaterializationArtifactId": 12879586018,
+  "priorCreatedUntraffickedRevision": "cxorbia-live-hr-dev-00329-xac",
+  "retryBudget": 1,
+  "retryCause": "IMAGE_TAG_TO_IMMUTABLE_DIGEST_GUARD"
 }
