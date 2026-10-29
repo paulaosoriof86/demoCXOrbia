@@ -1,4 +1,4 @@
-name: CXOrbia I3 F046 Visit and Certification DEV Readonly Gate
+name: CXOrbia I3 F046 Visit and Certification DEV Canary
 on:
   push:
     branches: [recovery/cxorbia-phase-a-20260831]
@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   f046-one-visit-one-certification-protected-canary:
-    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-APPROVED-F046-VISIT-CERT-READONLY-PREFLIGHT' }}
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-APPROVED-F046-VISIT-CERT-DEV-CANARY-ONCE' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
@@ -21,7 +21,7 @@ jobs:
       CX_F046_EXECUTION: PAULA_I3_2026_10_28_APPROVED_F046_DEV_CANARY_ONLY
       CX_F046_APPROVED_DIGEST: ac3e15184316d62aa53942359e857f2c34dec486a2ca41057e529a39f062d872
       CX_F046_CANARY_OUT: .tmp/cxorbia-i3-f046-canary
-      CX_F046_PREFLIGHT_ONLY: 'YES'
+      CX_F046_PREFLIGHT_ONLY: 'NO'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -66,16 +66,15 @@ jobs:
           set -Eeuo pipefail
           npm install --prefix firebase/auth-dev-tools --no-save --no-package-lock --ignore-scripts firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
           ./firebase/auth-dev-tools/node_modules/.bin/playwright install chromium
-      - name: Read-only F046 exact keeper, visit and certification preflight
+      - name: Protected F046 keeper, visit and certification adjudication with independent readback
         run: |
           set -Eeuo pipefail
           node firebase/auth-dev-tools/cxorbia-i3-approved-f046-visit-cert-canary-once.mjs
-          jq -e '.decision=="PASS_F046_EXACT_READONLY_PREFLIGHT" and .production==false and
-            .providerAck==false and .identityConsolidated==false and .readback==false and
-            .readOnly==true and .keeperSelection=="TECHNICAL_APPROVED" and
-            .protectedDomainTopologyVerified==true and
-            .before.aliasOwnedDomainRows.visits==1 and
-            .before.aliasOwnedDomainRows.certifications==1 and
+          jq -e '.decision=="PASS_F046_CANARY_PROVIDER_AND_SHOPPER_UI" and .production==false and
+            .providerAck==true and .identityConsolidated==true and .readback==true and
+            .shopperUiVerified==true and .after.domainVisitWrites==1 and
+            .after.domainCertificationWrites==1 and .after.historicalVisitOwnerCanonical==true and
+            .after.certificationOwnerCanonical==true and .after.certificationIdPreserved==true and
             .hrWrites==0 and .directAuthWrites==0 and .directFirestoreWrites==0 and
             .deployments==0' "$CX_F046_CANARY_OUT/result.json" >/dev/null
       - uses: actions/upload-artifact@v4
