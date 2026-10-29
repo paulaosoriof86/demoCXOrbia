@@ -547,8 +547,22 @@ CX.data = {
   /* ---- #230 Gestión de Periodos (estado por periodo, persistente) ---- */
   _periodCanonical(){ return CX.cxDataCommandBoundary?.canonicalMode?.()===true; },
   _periodProviderRows(){ return Array.isArray(this.__protectedPeriods)?this.__protectedPeriods.filter(x=>x&&x.deleted!==true):[]; },
+  /* R17N imported periods use Firestore ids like "2025-06", while live HR
+     projects/visits use "cinepolis-2025-06". Preserve the provider identity for
+     commands, but resolve that exact documented shape for UI readback. */
+  _periodDisplayId(row){
+    const raw=String(row?.periodId||row?.id||'').trim(),project=String(row?.projectId||'').trim();
+    return project&&/^\d{4}-(0[1-9]|1[0-2])$/.test(raw)?project+'-'+raw:raw;
+  },
+  _periodDisplayState(raw){
+    const states={active:'activo',activo:'activo',closed:'cerrado',cerrado:'cerrado',archived:'archivado',archivado:'archivado'};
+    return states[String(raw||'').trim().toLowerCase()]||null;
+  },
   _periodMeta(){
-    if(this._periodCanonical()){ const out={};this._periodProviderRows().forEach(p=>{if(p.periodId||p.id)out[p.periodId||p.id]=p.state||'activo';});return out; }
+    if(this._periodCanonical()){ const out={};this._periodProviderRows().forEach(p=>{
+      const id=this._periodDisplayId(p),state=this._periodDisplayState(p.state);
+      if(id&&state)out[id]=state;
+    });return out; }
     try{ return JSON.parse(localStorage.getItem('cx_period_meta')||'{}'); }catch(e){ return {}; }
   },
   _savePeriodMeta(m){ if(this._periodCanonical())return false;try{localStorage.setItem('cx_period_meta',JSON.stringify(m));}catch(e){}CX.bus&&CX.bus.emit('project');return true; },
@@ -560,9 +574,9 @@ CX.data = {
     return CX.commandAdapter.execute({version:'cxorbia-period-lifecycle-v1',commandType:type,entityType:'period',entityId:periodId||null,tenantId:String(scope.tenantId||''),projectId,periodId:periodId||null,requireProject:true,requirePeriod:!create,actor:{actorId:String(scope.actorId||''),role:String(scope.role||''),projectIds:Array.isArray(scope.projectIds)?scope.projectIds.slice():[]},expectedVersion,idempotencyKey:type+':'+this._periodCommandHash([scope.tenantId,projectId,periodId||'',expectedVersion,body]),payload:body,source:'periodos-ui',authorization:{providerEnforcementRequired:true,permission:type==='period.create'?'period.create':'period.state.update'}});
   },
   applyPeriodReadback(row){
-    if(!row)return null;const periodId=String(row.periodId||row.id||'');if(!periodId)return null;
+    if(!row)return null;const periodId=this._periodDisplayId(row);if(!periodId)return null;
     this.__protectedPeriods=Array.isArray(this.__protectedPeriods)?this.__protectedPeriods:[];
-    const i=this.__protectedPeriods.findIndex(x=>String(x.periodId||x.id)===periodId);if(i>=0)this.__protectedPeriods[i]=Object.assign({},row);else this.__protectedPeriods.push(Object.assign({},row));
+    const i=this.__protectedPeriods.findIndex(x=>this._periodDisplayId(x)===periodId);if(i>=0)this.__protectedPeriods[i]=Object.assign({},row);else this.__protectedPeriods.push(Object.assign({},row));
     let p=this.projects.find(x=>String(x.id)===periodId);
     if(!p&&row.providerManagedShell===true){p=Object.assign({},row,{id:periodId,periodId,rootProjectId:row.projectId,projectId:row.projectId,program:row.program||row.projectId,nVisitas:0});this.projects.push(p);}
     else if(p)Object.assign(p,row,{id:periodId,periodId});
@@ -574,7 +588,12 @@ CX.data = {
   periodStats(id){ const vs=this._visitas.filter(v=>this.recordPeriodId(v)===id); const done=vs.filter(v=>this.visitBucketFns.realizadas(v)).length;
     return { total:vs.length, done, pct: vs.length? Math.round(done/vs.length*100):0 }; },
   setPeriodState(id,st){
-    if(this._periodCanonical()){const row=this._periodProviderRows().find(x=>String(x.periodId||x.id)===String(id));return this._periodCommand('period.state.update',id,{projectId:(this.projects.find(p=>p.id===id)||{}).projectId||this.currentProjectId,state:st},row?.version??'source-current');}
+    if(this._periodCanonical()){
+      const row=this._periodProviderRows().find(x=>this._periodDisplayId(x)===String(id));
+      const providerId=row?String(row.periodId||row.id):id;
+      const project=this.projects.find(p=>p.id===id);
+      return this._periodCommand('period.state.update',providerId,{projectId:row?.projectId||project?.projectId||this.currentProjectId,state:st},row?(row.version??0):'source-current');
+    }
     const m=this._periodMeta();m[id]=st;this._savePeriodMeta(m);return {ok:true,status:'preview'};
   },
   closePeriod(id){ return this.setPeriodState(id,'cerrado'); },
