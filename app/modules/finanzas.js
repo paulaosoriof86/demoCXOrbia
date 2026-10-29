@@ -54,7 +54,7 @@ function cxFinanceReviewState(l,missingFields=[]){
   const recorded=String(l?.paymentState||'')==='platform_recorded_pending_external_reconciliation';
   const paid=Boolean(l?.paymentConfirmed===true&&l?.externalPaymentConfirmed===true&&String(l?.paymentSourceRef||'').trim());
   const state=!sourceComplete?'Datos incompletos':exact?'Conciliación exacta':'Requiere conciliar';
-  const obligation=exact&&sourceComplete?'Fuente apta · obligación por revisar':'Obligación no cuantificable aún';
+  const obligation=exact&&sourceComplete?'Fuente conciliada · revisar pago':hasAmount&&hasCurrency?'Monto operativo conocido · pendiente validación financiera':'Importe pendiente de fuente';
   const payment=paid?'Pago externo confirmado por fuente':recorded?'Registro interno · falta confirmación externa':'Sin pago confirmado';
   return {state,obligation,payment,sourceComplete,exact,recorded,paid};
 }
@@ -337,7 +337,7 @@ CX.module('financiero', ({data,ui})=>{
   })()}
 
   <div class="card card-p" style="margin-bottom:16px;border-color:#e3d9f5">
-    <div class="card-h"><div class="card-t">🧠 Análisis crítico determinístico</div><span class="bdg bdg-n">Reglas locales sobre los datos visibles</span></div>
+    <div class="card-h"><div class="card-t">🧭 Lectura financiera</div><span class="bdg bdg-n">Solo datos comprobados</span></div>
     <div class="grid g2" style="gap:10px">
       ${analizar().map(h=>`<div style="display:flex;gap:10px;padding:11px 12px;background:var(--${h.tono}-bg);border-radius:10px">
         <div style="font-size:17px;line-height:1">${h.icon}</div>
@@ -345,7 +345,7 @@ CX.module('financiero', ({data,ui})=>{
         <div style="font-size:11.5px;color:var(--t2);margin-top:3px">${h.txt}</div>
         <button class="btn btn-ghost btn-sm" style="margin-top:7px;padding:3px 9px;font-size:11px">${h.accion} →</button></div></div>`).join('')}
     </div>
-    <div style="margin-top:10px">${ui.aiBox('Análisis determinístico: reglas locales sobre los datos visibles (márgenes por país, cobranza CxC, financiamientos — que NO cuento como ingreso operativo — y presupuesto vs real). Gemini no conectado.','Reglas locales, sin inferencias')}</div>
+    <div style="margin-top:10px">${ui.aiBox('Interpretación de las operaciones visibles. Los financiamientos no se consideran ingresos operativos y los márgenes permanecen pendientes cuando no existe una fuente financiera validada.','Análisis orientativo')}</div>
   </div>
 
   <div class="card card-p" id="presAvance" style="margin-bottom:16px">
@@ -1125,7 +1125,7 @@ CX.module('liquidaciones', ({data,ui})=>{
     const lrow=(l,i)=>{const lb=CX.liq.label(l.estado); const inD=draft.includes(l.visitaId),elig=cxFinanceLiquidationEligibility(l,_liqCur(l));
       const primaryAction=elig.canBatch?(inD?`<button class="btn btn-soft btn-sm" data-rm="${l.visitaId}" style="padding:3px 9px;color:var(--red)">✕ Retirar</button>`:`<button class="btn btn-pr btn-sm" data-add="${l.visitaId}" style="padding:3px 10px">▶ Mover a lote</button>`):l.estado==='pendiente_cuestionario'?ui.bdg('espera shopper','n'):l.estado==='pagada'?ui.bdg('✓ pagada','g'):l.estado==='pagada_preview'?ui.bdg('◐ pago pendiente de confirmación','a'):(elig.reason?`<span class="bdg bdg-a" data-blockreason="${elig.reason}" title="${elig.reason}" style="font-size:9px">Bloqueada</span>`:ui.bdg('—','n'));
       return `<tr data-li="${i}" style="${inD?'background:var(--brand-light)':''}"><td style="position:sticky;left:0;background:${inD?'#eaf4fc':'var(--panel)'};z-index:1">${primaryAction}</td>
-        <td style="position:sticky;left:96px;background:${inD?'#eaf4fc':'var(--panel)'};z-index:1"><b>${l.shopper||'—'}</b><div style="font-size:10px;color:var(--t3)">${l.shopperCode||''}</div></td>
+        <td style="position:sticky;left:96px;background:${inD?'#eaf4fc':'var(--panel)'};z-index:1"><b>${l.shopper||'—'}</b></td>
         <td style="font-size:12px">${l.sucursal}</td><td style="font-size:12px">${l.freal||'—'}</td>
         <td>${inD?ui.bdg('● en lote','p'):ui.bdg(lb[0],lb[1])}</td><td>${l.submit?'✅':'—'}</td>
         <td>${_liqMoney(l,l.honorario)}</td><td>${l.reembolso?_liqMoney(l,l.reembolso):'—'}</td>

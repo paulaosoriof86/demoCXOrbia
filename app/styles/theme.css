@@ -49,7 +49,7 @@ a{color:inherit;text-decoration:none}
 
 /* ---------- Buttons ---------- */
 .btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:10px;border:1px solid transparent;
-  font-family:var(--ui);font-size:13px;font-weight:600;cursor:pointer;transition:.15s;white-space:nowrap}
+  font-family:var(--ui);font-size:14px;font-weight:600;cursor:pointer;transition:.15s;white-space:nowrap}
 .btn:active{transform:translateY(1px)}
 .btn-pr{background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;box-shadow:var(--sh-sm)}
 .btn-pr:hover{box-shadow:var(--sh);transform:translateY(-1px)}
@@ -58,7 +58,7 @@ a{color:inherit;text-decoration:none}
 .btn-soft{background:var(--brand-light);color:var(--brand-dark)}
 .btn-soft:hover{background:#d9edfb}
 .btn-green{background:linear-gradient(135deg,var(--green),#0d7040);color:#fff}
-.btn-sm{padding:7px 12px;font-size:13px;border-radius:8px}
+.btn-sm{padding:7px 12px;font-size:13.5px;border-radius:8px}
 .btn-icon{padding:0;width:34px;height:34px;justify-content:center;border-radius:9px}
 
 /* ---------- Cards ---------- */
@@ -67,7 +67,7 @@ a{color:inherit;text-decoration:none}
 .card.hov{transition:.16s}
 .card.hov:hover{box-shadow:var(--sh);transform:translateY(-2px);border-color:#d4e2f0}
 .card-h{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-.card-t{font-size:14px;font-weight:700;font-family:var(--disp);color:var(--t1)}
+.card-t{font-size:15px;font-weight:700;font-family:var(--disp);color:var(--t1)}
 
 /* ---------- Grid ---------- */
 .grid{display:grid;gap:16px}
@@ -98,15 +98,15 @@ a{color:inherit;text-decoration:none}
   .kpi .k-v{font-size:20px}
   /* filtros y barras de acción se apilan */
   .flex.wrap{gap:6px}
-  .btn{font-size:12px}
+  .btn{font-size:13.5px}
 }
 
 /* ---------- KPI tiles ---------- */
 .kpi{background:#fff;border:1px solid var(--border);border-left-width:3px;border-radius:12px;padding:14px 16px;cursor:default;transition:.16s;box-shadow:var(--sh-sm)}
 .kpi:hover{box-shadow:var(--sh);transform:translateY(-1px)}
-.kpi .k-l{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--t3);margin-bottom:6px}
+.kpi .k-l{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.45px;color:var(--t2);margin-bottom:6px}
 .kpi .k-v{font-family:var(--disp);font-size:27px;font-weight:800;line-height:1}
-.kpi .k-s{font-size:11px;color:var(--t3);margin-top:3px}
+.kpi .k-s{font-size:12px;color:var(--t2);margin-top:4px;line-height:1.45}
 .kpi.b{border-left-color:var(--brand)} .kpi.b .k-v{color:var(--brand-dark)}
 .kpi.g{border-left-color:var(--green)} .kpi.g .k-v{color:var(--green)}
 .kpi.a{border-left-color:var(--amber)} .kpi.a .k-v{color:var(--amber)}
@@ -115,7 +115,7 @@ a{color:inherit;text-decoration:none}
 .kpi.n{border-left-color:var(--t3)}    .kpi.n .k-v{color:var(--t1)}
 
 /* ---------- Badges / tags ---------- */
-.bdg{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.2px;white-space:nowrap}
+.bdg{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:.2px;white-space:nowrap}
 .bdg-b{background:var(--brand-light);color:var(--brand-dark)}
 .bdg-g{background:var(--green-bg);color:var(--green)}
 .bdg-a{background:var(--amber-bg);color:var(--amber)}
@@ -130,8 +130,8 @@ a{color:inherit;text-decoration:none}
 
 /* ---------- Tables ---------- */
 .tbl{width:100%;border-collapse:separate;border-spacing:0;font-size:13px;background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--sh-sm)}
-.tbl th{background:#f6f9fc;text-align:left;padding:11px 15px;font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--t1);border-bottom:1px solid var(--border)}
-.tbl td{padding:12px 15px;border-bottom:1px solid var(--border-2);color:var(--t2);vertical-align:middle}
+.tbl th{background:#f6f9fc;text-align:left;padding:11px 15px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--t1);border-bottom:1px solid var(--border)}
+.tbl td{padding:12px 15px;border-bottom:1px solid var(--border-2);font-size:14px;line-height:1.5;color:var(--t2);vertical-align:middle}
 .tbl tr:last-child td{border-bottom:none}
 .tbl tbody tr:hover{background:#eef6ff}
 .tbl tbody tr:nth-child(even){background:#f8fafc}
@@ -141,12 +141,12 @@ a{color:inherit;text-decoration:none}
 .ph{margin-bottom:20px}
 .ph-acc{height:3px;width:46px;border-radius:2px;background:linear-gradient(90deg,var(--brand),var(--red),var(--amber));margin-bottom:10px}
 .ph-t{font-size:25px;font-weight:800;font-family:var(--disp);color:var(--t1);letter-spacing:-.02em}
-.ph-s{font-size:13px;color:var(--t3);margin-top:3px}
+.ph-s{font-size:14px;color:var(--t2);margin-top:4px;line-height:1.5}
 
 /* ---------- Inputs ---------- */
-.inp,.sel{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:var(--ui);font-size:13px;color:var(--t1);background:#fff}
+.inp,.sel{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:var(--ui);font-size:14px;color:var(--t1);background:#fff}
 .inp:focus,.sel:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-light)}
-.lbl{font-size:12.5px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:block}
+.lbl{font-size:13px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.45px;margin-bottom:6px;display:block}
 
 /* Ítem 14 (accesibilidad — paquete genérico 20260711): anillo de foco visible para navegación
    por teclado en CUALQUIER elemento interactivo (botones, enlaces, tarjetas clicables, checkboxes)

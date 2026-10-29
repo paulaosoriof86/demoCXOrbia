@@ -51,6 +51,14 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
 
+  /* I3/D07 P0: do not proxy or persist third-party requests from this origin.
+     In particular a Firebase Storage GET carries the user's ID token and its
+     PDF bytes must never enter this PWA's CacheStorage. Let the browser perform
+     the native authenticated CORS transaction without a service-worker hop. */
+  try {
+    if (new URL(e.request.url).origin !== self.location.origin) return;
+  } catch (_) { return; }
+
   /* I3 legal P0: estas rutas participan en la construcción de una aceptación
      durable. Si la red falla deben fallar cerradas, nunca ejecutar un builder,
      caller o entrypoint obsoleto recuperado de CacheStorage. */

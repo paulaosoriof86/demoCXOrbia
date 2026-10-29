@@ -52,6 +52,10 @@ CX.module('documentos', ({data,role,ui})=>{
   };
   const committed=r=>r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true;
   const resourceDefaults=rec=>Object.assign({resourceType:'project_resource',projectId:data.currentProjectId,periodId:pid,visibleRoles:['super','admin','ops','coordinador','shopper'],targetAll:false},rec||{});
+  const viewerResourceFingerprint=d=>JSON.stringify([
+    d?.id,d?.version,d?.status,d?.tipo,d?.n,d?.meta,d?.storagePath,d?.url,
+    d?.body,d?.visitaId,d?.projectId,d?.periodId,d?.targetAll,d?.visibleRoles
+  ]);
   /* El plugin PDF nativo de Chrome puede devolver un iframe completamente
      blanco aun cuando el PDF original abre bien. Renderizar páginas en un
      canvas evita depender del visor de terceros dentro del iframe. */
@@ -231,7 +235,15 @@ CX.module('documentos', ({data,role,ui})=>{
        An absent/deleted/revoked resource always closes the viewer fail-closed. */
     if(viewerKey&&active?.key===viewerKey){
       const current=docs.find(d=>String(d.id)===active.id);
-      if(current){viewer(current);return;}
+      if(current){
+        const fingerprint=viewerResourceFingerprint(current);
+        // D07: a provider status/refetch notice must not remount the same PDF
+        // or start another authenticated GET. A changed resource or a fresh
+        // router host still renders; removal/revocation remains fail-closed.
+        if(active.resourceFingerprint===fingerprint&&host.querySelector('[data-pdf-viewer]'))return;
+        active.resourceFingerprint=fingerprint;
+        viewer(current);return;
+      }
       CX.docStore.activeViewer=null;
     }
     host.innerHTML=`
@@ -257,7 +269,7 @@ CX.module('documentos', ({data,role,ui})=>{
       const d=docs.find(x=>String(x.id)===String(b.dataset.doc));
       if(!d)return;
       const key=viewerScopeKey();
-      if(key)CX.docStore.activeViewer={key,id:String(d.id)};
+      if(key)CX.docStore.activeViewer={key,id:String(d.id),resourceFingerprint:viewerResourceFingerprint(d)};
       viewer(d);
     }));
     host.querySelectorAll('[data-editd]').forEach(b=>b.addEventListener('click',()=>{const d=docs.find(x=>x.id===b.dataset.editd);if(!d)return;

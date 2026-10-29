@@ -21,6 +21,8 @@ function fixture(){
     querySelector(selector){
       if(selector==='#docBack'&&this.html.includes('id="docBack"'))
         return {addEventListener:(_ev,fn)=>{this.back=fn;}};
+      if(selector==='[data-pdf-viewer]'&&this.html.includes('data-pdf-viewer'))
+        return {isConnected:true,querySelector:()=>null};
       return null;
     }
     querySelectorAll(selector){
@@ -69,10 +71,13 @@ test('VRM-288: identical Firestore resource notices preserve live controls and d
   };
   h.CX.bus.emit('resources');
   const afterReady=host.updates;
-  assert.ok(afterReady>afterOpen,'a real provider status transition can repaint');
+  assert.equal(afterReady,afterOpen,'provider status refresh must not restart an unchanged PDF download');
   h.window.CX_BACKEND_RESOURCES_STATUS.at='retry-timestamp-only';
   h.CX.bus.emit('resources');
   assert.equal(host.updates,afterReady,'retry timestamps alone cannot detach the viewer');
+  h.docs[0]={...h.docs[0],version:2,meta:'instructivo-actualizado.pdf'};
+  h.CX.bus.emit('resources');
+  assert.ok(host.updates>afterReady,'a changed resource version must safely refresh the viewer');
   assert.match(host.innerHTML,/id="docBack"/);
 });
 
