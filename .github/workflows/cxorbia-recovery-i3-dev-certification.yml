@@ -77,6 +77,7 @@ jobs:
      run: |
       set -Eeuo pipefail
       mkdir -p .tmp/canonical-candidate-authority
+      node --test tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs
       node --test tools/qa/cxorbia-i3-r22-alias-notice-scope-transversal.test.mjs
       node --test tools/qa/cxorbia-i3-r22-tablon-provider-ack-source.test.mjs
       node --test tools/qa/cxorbia-i3-r20-pwa-auth-no-interrupt.test.mjs
@@ -6496,7 +6497,8 @@ jobs:
 
   phasea-rejected-checkpoint-source-proof:
    needs: canonical-candidate-authority
-   if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED' }}
+   if: ${{ contains(fromJSON('["HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED","HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL"]'), needs.canonical-candidate-authority.outputs.status) }}
+   permissions: {contents: read}
    runs-on: ubuntu-latest
    timeout-minutes: 12
    env: {FOCAL_SOURCE: "${{ needs.canonical-candidate-authority.outputs.source_sha }}", FOCAL_TREE: "${{ needs.canonical-candidate-authority.outputs.source_tree }}"}
@@ -6505,10 +6507,19 @@ jobs:
      with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
      with: {node-version: '24'}
-   - run: bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh source-proof
+   - run: |
+      set -o pipefail
+      bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh source-proof 2>&1 | tee /tmp/i3-phasea-completion-source-full.log
    - uses: actions/upload-artifact@v4
      if: always()
-     with: {name: "cxorbia-i3-phasea-source-proof-${{ github.run_id }}", path: /tmp/i3-phasea-completion-source-proof.json, if-no-files-found: warn, retention-days: 30, compression-level: 0}
+     with:
+      name: "cxorbia-i3-phasea-source-proof-${{ github.run_id }}"
+      path: |
+       /tmp/i3-phasea-completion-source-proof.json
+       /tmp/i3-phasea-completion-source-full.log
+      if-no-files-found: warn
+      retention-days: 30
+      compression-level: 0
 
   b1-canonical-visible-identity-source-proof:
    needs: canonical-candidate-authority
@@ -7684,3 +7695,4 @@ jobs:
    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'VRM290-DEV-HOSTING' }}
    uses: ./.github/workflows/cxorbia-i3-vrm290-invoked-hosting-dev.yml
    secrets: inherit
+

@@ -6,11 +6,19 @@ ROOT="https://cxorbia-backend-dev.web.app"
 ASSETS=(core/backend-browser-auth.js core/shoppers-store.js core/topbar.js modules/beneficios.js modules/dashboard.js modules/postulaciones.js modules/finanzas.js modules/cert.js modules/misvisitas.js modules/reservas.js modules/soporte.js modules/novedades.js core/backend-bulletins.js adapters/cxorbia-command-adapter-v1.js adapters/cxorbia-cxdata-command-boundary-v1.js adapters/tya-canonical-shopper-portal-v2.js adapters/tya-c6-domain-consistency-bridge.js adapters/tya-protected-auth-hr-authority-bridge-v2.js adapters/tya-c6-unified-human-runtime-v1.js adapters/tya-canonical-reservations-guard-v2.js data/tya-payment-history-source-safe.js adapters/tya-financial-canonical-source-safe-adapter.js styles/layout.css core/backend-firebase.js core/cliente-data.js modules/cliente.js core/ui.js core/router.js adapters/tya-cumulative-read-model-v2.js modules/midia.js modules/visitas.js modules/visita-detalle.js styles/theme.css modules/proyecto-wizard.js modules/cuestionario-shopper.js adapters/tya-live-source-inplace-apply.js index-backend-dev.html core/automations.js modules/automatizaciones.js core/backend-cxdata-finance-read.js core/backend-finance-benefits.js)
 case "$MODE" in
 source-proof)
-  test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED"
+  STATUS="$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")"
+  case "$STATUS" in
+    HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED|HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL) ;;
+    *) echo "PHASEA_SOURCE_PROOF_UNAUTHORIZED_STATUS:$STATUS" >&2; exit 1 ;;
+  esac
+  # A failed source gate must leave an honest receipt and preserve its log.
+  trap 'source_rc=$?; jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --argjson exitCode "$source_rc" '\''{decision:"FAIL_I3_CUMULATIVE_SOURCE_PROOF",sourceSha:$source,sourceTree:$tree,exitCode:$exitCode,scope:"SOURCE_CONTRACTS_ONLY_NOT_I3_CERTIFICATION",wholeProductPass:false,liveE2e:"NOT_RUN",moduleMatchPromotions:0,deploys:0,production:false}'\'' > /tmp/i3-phasea-completion-source-proof.json; exit "$source_rc"' ERR
   test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
   test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
   test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
   git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+  # Same pinned SDK as the existing runtime; source fixtures never use remote credentials.
+  npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0
   for f in app/modules/beneficios.js app/modules/dashboard.js app/modules/postulaciones.js app/modules/finanzas.js app/modules/cert.js app/modules/misvisitas.js app/adapters/tya-canonical-shopper-portal-v2.js app/adapters/tya-c6-domain-consistency-bridge.js app/adapters/tya-protected-auth-hr-authority-bridge-v2.js app/adapters/tya-c6-unified-human-runtime-v1.js app/adapters/tya-canonical-reservations-guard-v2.js app/adapters/tya-financial-canonical-source-safe-adapter.js; do node --check "$f"; done
   # G04: execute the exact sealed A04/C01 regressions in this existing source-only lane.
   node tools/qa/cxorbia-i3-a04-c01-focal.test.cjs . | tee /tmp/i3-a04-c01-focal-source-test.log
@@ -43,7 +51,6 @@ node --test tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs |
   node --test backend/runtime/hr-live-service/test/cxorbia-vrm268-269-source-contract.test.mjs | tee /tmp/i3-vrm268-269-source-test.log
   node --test backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs | tee /tmp/i3-b1-oct07-source-test.log
   node --test backend/runtime/hr-live-service/test/cxorbia-i3-oct08-b1-b3-source.test.mjs | tee /tmp/i3-oct08-b1-b3-source-test.log
-  jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" '{decision:"PASS_I3_B_CUMULATIVE_SOURCE_PROOF",sourceSha:$source,sourceTree:$tree,trueFunctionalDefects:0,scope:"FOCAL_SOURCE_CONTRACTS_ONLY",g05FocalPass:113,g05FocalFail:0,knownUnclosedLegacyGate7Cases:5,wholeProductPass:false,clickE2ERequired:true,deploys:0,production:false}' > /tmp/i3-phasea-completion-source-proof.json
   # VRM-285 exact approved resources viewer owner + UI regression, no data writes.
   if [[ "$FOCAL_SOURCE" == "2c1c5951596a2dd260f02a744b21aa2cb46b17da" ]]; then
     test "$(git rev-parse "$FOCAL_SOURCE:app/modules/documentos.js")" = "c0eefe84d7d4f220c25dfd058e5712ec84556c42"
@@ -51,6 +58,10 @@ node --test tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs |
     node --check app/modules/documentos.js
     node --test tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs
   fi
+  MATRIX="$(jq -r '.moduleTruthPath' "$CANDIDATE_DESCRIPTOR")"
+  COUNTS="$(jq -c '[.modules[].classification] | group_by(.) | map({key:.[0],value:length}) | from_entries' "$MATRIX")"
+  jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg status "$STATUS" --argjson counts "$COUNTS" '{decision:"PASS_I3_B_CUMULATIVE_SOURCE_PROOF",sourceSha:$source,sourceTree:$tree,status:$status,scope:"SOURCE_CONTRACTS_ONLY_NOT_I3_CERTIFICATION",recordedModuleClassificationCounts:$counts,wholeProductPass:false,liveE2e:"NOT_RUN",moduleMatchPromotions:0,clickE2ERequired:true,deploys:0,production:false}' > /tmp/i3-phasea-completion-source-proof.json
+  trap - ERR
   cat /tmp/i3-phasea-completion-source-proof.json
   ;;
 preflight)
@@ -211,3 +222,4 @@ proof)
   ;;
 *) exit 2;;
 esac
+

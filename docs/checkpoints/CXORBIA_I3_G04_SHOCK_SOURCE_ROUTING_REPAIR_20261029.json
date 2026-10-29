@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "cxorbia.i3.g04.shock-source-routing-repair.v1",
+  "asOf": "2026-10-29",
+  "timezone": "America/Guatemala",
+  "iteration": "I3",
+  "state": "HOLD",
+  "tasks": ["G02", "G03", "G04", "G06", "V01"],
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "rootCause": "CURRENT_SHOCK_STATUS_HAS_NO_FUNCTIONAL_JOB_ROUTE",
+  "expectedParentSha": "c2bfdd0b371846c41768326564582e252f373654",
+  "expectedParentTree": "d51708efb42916f246d6b657c3972c09d13afdf7",
+  "productSourceShaUnchanged": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+  "productTreeUnchanged": "be0ad639a652439200ef4043bb08d5d4b709f266",
+  "observedRun": {
+    "id": 40906334577,
+    "runNumber": 1949,
+    "jobs": 102,
+    "success": 1,
+    "skipped": 101,
+    "artifacts": 0,
+    "scope": "CONTROL_AND_SOURCE_CHECKS_NOT_LIVE_E2E_OR_CERTIFICATION"
+  },
+  "repair": {
+    "existingWorkflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "existingJob": "phasea-rejected-checkpoint-source-proof",
+    "acceptedStatusAdded": "HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL",
+    "existingControlMode": ".github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh source-proof",
+    "jobPermissions": {"contents": "read"},
+    "scope": "SOURCE_AND_LOCAL_EMULATOR_ONLY",
+    "productFilesChanged": 0,
+    "newWorkflow": false,
+    "newCandidate": false,
+    "sourceTreeChecksPreserved": true,
+    "materializationAndTerminalConditionsUnchanged": true,
+    "hardcodedSuccessCountsRemoved": true,
+    "sourceFailureReceiptAndFullLogPreserved": true
+  },
+  "localVerification": {
+    "before": {"testsPassed": 5, "testsFailed": 2},
+    "after": {"testsPassed": 7, "testsFailed": 0},
+    "bashSyntax": "PASS",
+    "yamlParseAndJobCount": "PASS_102_JOBS",
+    "canonicalCi": "PENDING_AFTER_CONTROL_COMMIT"
+  },
+  "authenticatedAdminReadback": {
+    "previewRunId": 40901257714,
+    "role": "Admin",
+    "tenant": "tya",
+    "project": "cinepolis",
+    "period": "2026-10",
+    "periods": {"total": 17, "closed": 13, "active": 4, "archived": 0},
+    "pdf": {"state": "FAIL", "code": "RESOURCE_READ_GET_FAILED", "stage": "GET", "tokenPresent": true, "http": "NO_RESPONSE", "bytes": false, "type": "TypeError"},
+    "shopperThisReceipt": "NOT_TESTED",
+    "writesPerformed": 0,
+    "wholeProductPass": false
+  },
+  "preservedProgress": {
+    "moduleMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V194.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V526_2026-10-29.json",
+    "findings": 291,
+    "domains": 21,
+    "match": 5,
+    "intermediate": 11,
+    "recordedTrueFunctionalDefects": 3,
+    "composedNotDeployed": 2,
+    "newFunctionalClosures": 0,
+    "humanApprovalsInvented": 0,
+    "identityGroupsVerified": 29,
+    "identityGroupsTotal": 83
+  },
+  "remaining": [
+    "Read source-proof result and correct only any proven causal owner failure",
+    "Read exact runtime revision/digest from successful A2BE transport artifact 12879617256 or live readback; operational backend code unchanged between A2BE and e753",
+    "Reconcile latest valid owner receipts with matrix action text without repeating historical PASS",
+    "Close protected HR and Admin/Shopper operating-cycle ACK/readback, finance, certification/resources and visual acceptance",
+    "Gate20 and Gate21 on the same immutable final artifact before I4"
+  ],
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false,
+  "production": "DO_NOT_TOUCH"
+}
