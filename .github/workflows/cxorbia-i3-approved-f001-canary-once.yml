@@ -6,6 +6,7 @@ on:
       - .github/workflows/cxorbia-i3-approved-f001-canary-once.yml
       - firebase/auth-dev-tools/cxorbia-i3-approved-f001-canary-once.mjs
       - firebase/auth-dev-tools/cxorbia-i3-approved-f048-history-canary-once.mjs
+      - firebase/auth-dev-tools/cxorbia-i3-approved-strong5-sequential-once.mjs
 permissions:
   contents: read
 concurrency:
@@ -136,5 +137,73 @@ jobs:
         with:
           name: cxorbia-i3-f048-historical-dev-canary-${{ github.run_id }}
           path: .tmp/cxorbia-i3-f048-canary/result.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  strong-five-zero-domain-sequential:
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-APPROVED-FIVE-STRONG-CANARY-SEQUENTIAL-ONCE' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      GCLOUD_PROJECT: cxorbia-backend-dev
+      GOOGLE_CLOUD_PROJECT: cxorbia-backend-dev
+      CX_I3_BATCH_EXECUTION: PAULA_I3_2026_10_28_APPROVED_STRONG_FIVE_DEV_SEQUENTIAL
+      CX_I3_BATCH_APPROVED_DIGEST: ac3e15184316d62aa53942359e857f2c34dec486a2ca41057e529a39f062d872
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Guard approved source and only DEV before sequential protected writes
+        run: |
+          set -Eeuo pipefail
+          test "$GITHUB_REF_NAME" = 'recovery/cxorbia-phase-a-20260831'
+          test "$GITHUB_EVENT_NAME" = push
+          test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
+          test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
+          SOURCE="$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          TREE="$(jq -r '.productTreeAuthority' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          test "$SOURCE" = '308c69e3756e3e80577856009901934ce5f52fba'
+          test "$(git rev-parse "$SOURCE^{tree}")" = "$TREE"
+          git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules \
+            ':(exclude)app/core/router.js' \
+            ':(exclude)app/adapters/tya-cumulative-read-model-v2.js' \
+            ':(exclude)backend/runtime/hr-live-service/test/**'
+          test "$(git hash-object app/core/router.js)" = '05f3b943d667814ae151556ee7281abbfe7bc6e5'
+          test "$(git hash-object app/adapters/tya-cumulative-read-model-v2.js)" = 'ab2abe6660d53d623e725f754d41b69710a8f612'
+          node --check firebase/auth-dev-tools/cxorbia-i3-approved-strong5-sequential-once.mjs
+      - name: Regression for protected adjudication and staff identity review
+        run: |
+          set -Eeuo pipefail
+          node backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
+          node backend/runtime/hr-live-service/test/cxorbia-i3-project-period-contract.test.mjs
+          node tools/qa/cxorbia-i3-shopper-name-collision-normalization.test.mjs
+          node tools/qa/cxorbia-i3-shopper-identity-review-rail-notice.test.mjs
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Install DEV-only authenticated browser dependencies
+        run: |
+          set -Eeuo pipefail
+          npm install --prefix firebase/auth-dev-tools --no-save --no-package-lock --ignore-scripts firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          ./firebase/auth-dev-tools/node_modules/.bin/playwright install chromium
+      - name: Sequential exact five approved zero-domain adjudications with independent UI readback
+        run: |
+          set -Eeuo pipefail
+          for CASE in F-003 F-004 F-006 F-007 F-008; do
+            CX_I3_BATCH_CASE="$CASE" CX_I3_BATCH_OUT=".tmp/cxorbia-i3-strong5/$CASE" \
+              node firebase/auth-dev-tools/cxorbia-i3-approved-strong5-sequential-once.mjs
+            jq -e '.decision=="PASS_BATCH_CANARY_PROVIDER_AND_SHOPPER_UI" and .production==false and
+              .providerAck==true and .identityConsolidated==true and .readback==true and
+              .shopperUiVerified==true and .hrWrites==0 and .directAuthWrites==0 and
+              .directFirestoreWrites==0 and .deployments==0' ".tmp/cxorbia-i3-strong5/$CASE/result.json" >/dev/null
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-approved-strong5-dev-sequential-${{ github.run_id }}
+          path: .tmp/cxorbia-i3-strong5/*/result.json
           if-no-files-found: warn
           retention-days: 30
