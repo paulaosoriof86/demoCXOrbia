@@ -40,9 +40,11 @@ jobs:
           git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules \
             ':(exclude)app/core/router.js' \
             ':(exclude)app/adapters/tya-cumulative-read-model-v2.js' \
+            ':(exclude)backend/runtime/cxorbia-shopper-command-provider-v1.mjs' \
             ':(exclude)backend/runtime/hr-live-service/test/**'
           test "$(git hash-object app/core/router.js)" = '05f3b943d667814ae151556ee7281abbfe7bc6e5'
           test "$(git hash-object app/adapters/tya-cumulative-read-model-v2.js)" = 'ab2abe6660d53d623e725f754d41b69710a8f612'
+          test "$(git hash-object backend/runtime/cxorbia-shopper-command-provider-v1.mjs)" = '0d3a5cc6c7b3f7ceff906b4ef70dc045e096e16b'
           node --check firebase/auth-dev-tools/cxorbia-i3-approved-139-preflight-readonly.mjs
       - uses: google-github-actions/auth@v2
         with:
@@ -76,3 +78,4 @@ jobs:
           node tools/qa/cxorbia-i3-shopper-name-collision-normalization.test.mjs
           node tools/qa/cxorbia-i3-shopper-identity-review-rail-notice.test.mjs
 # I3 approved strong-five sequential readback 40812539393: rerun exact 139-pair preflight, no writes.
+# I3 P0 prevention: source-only fail-closed manual identity review; protected provider blob checked above.
