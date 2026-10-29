@@ -93,7 +93,7 @@ materialize() {
   assert_old_traffic "$OUT/runtime-immediately-before.json"
   test "$(jq -r '.release.version.name' "$OUT/hosting-immediately-before.json")" = "$OLD_HOSTING"
 
-  local image_uri new_rev result_token preview_url preview_version
+  local image_uri new_rev result_token preview_url preview_version tag_url
   image_uri="gcr.io/$PROJECT/$SERVICE:i3-a2be-$GITHUB_RUN_ID"
   gcloud builds submit "$CX_A2BE_SOURCE_DIR" --project "$PROJECT" \
     --config "$CX_A2BE_SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" \
@@ -111,17 +111,18 @@ materialize() {
     '.spec.containers[0].image==$image and (.status.imageDigest|length)>0' \
     "$OUT/new-revision.json" >/dev/null
 
-  # Same-DEV-site rewrite targets the service's traffic; route it only after a
-  # no-traffic revision with exact image/digest has been independently read back.
-  # An ERR after routing attempts traffic rollback; a preview is never promoted.
-  rollback_on_failure() {
-    gcloud run services update-traffic "$SERVICE" --project "$PROJECT" --region "$REGION" \
-      --to-revisions "$OLD_REV=100" --quiet \
-      > "$OUT/rollback-traffic.log" 2>&1 || true
-  }
-  trap rollback_on_failure ERR
-  gcloud run services update-traffic "$SERVICE" --project "$PROJECT" --region "$REGION" \
-    --to-revisions "$new_rev=100" --quiet > "$OUT/dev-traffic.log" 2>&1
+  # The tagged zero-traffic revision MUST prove health before any shared DEV
+  # traffic changes. Refuse promotion if it cannot be reached independently.
+  tag_url="$(jq -r --arg tag "$CHANNEL" \
+    '[.status.traffic[]|select(.tag==$tag)|.url][0] // empty' "$OUT/runtime-no-traffic.json")"
+  [[ "$tag_url" == https://* ]]
+  curl -fsS --retry 4 --retry-delay 2 --max-time 50 \
+    "$tag_url/health" -o "$OUT/tagged-revision-health.json"
+  jq -e '.ok==true and .production==false and .hrWrites==false' \
+    "$OUT/tagged-revision-health.json" >/dev/null
+
+  # Static Hosting Preview is created and byte-checked while the existing DEV
+  # provider still has 100% of default traffic. This URL is NEVER I4 LIVE.
   npm install --no-save --ignore-scripts --package-lock=false firebase-tools@14.12.0 \
     > "$OUT/firebase-tools-install.log" 2>&1
   (cd "$CX_A2BE_SOURCE_DIR" && "$ROOT/node_modules/.bin/firebase" hosting:channel:deploy \
@@ -141,6 +142,31 @@ materialize() {
       "$preview_url/$file?a2be=$GITHUB_RUN_ID" -o "$OUT/served-$(echo "$file" | tr / -)"
     cmp -s "$CX_A2BE_SOURCE_DIR/app/$file" "$OUT/served-$(echo "$file" | tr / -)"
   done
+
+  # The existing Hosting rewrite is service-scoped, so protected E2E through
+  # Preview requires a *separately approved* brief switch of shared DEV only.
+  # Rollback is attempted on ERR and read back; no rollback is ever claimed on
+  # failed verification. Runner termination remains a documented residual risk.
+  rollback_on_failure() {
+    local rc=0
+    gcloud run services update-traffic "$SERVICE" --project "$PROJECT" --region "$REGION" \
+      --to-revisions "$OLD_REV=100" --quiet > "$OUT/rollback-traffic.log" 2>&1 || rc=$?
+    service_state "$OUT/rollback-runtime.json" || rc=$?
+    assert_old_traffic "$OUT/rollback-runtime.json" || rc=$?
+    if test "$rc" -ne 0; then
+      echo 'CRITICAL_HOLD_DEV_TRAFFIC_ROLLBACK_UNVERIFIED' >&2
+      return "$rc"
+    fi
+    echo 'PASS_DEV_TRAFFIC_ROLLBACK_READBACK' > "$OUT/rollback-readback.txt"
+  }
+  trap rollback_on_failure ERR
+  gcloud run services update-traffic "$SERVICE" --project "$PROJECT" --region "$REGION" \
+    --to-revisions "$new_rev=100" --quiet > "$OUT/dev-traffic.log" 2>&1
+  curl -fsS --retry 5 --retry-delay 2 --max-time 60 \
+    "$preview_url/api/tya/cinepolis/hr-live?format=meta&fresh=1&a2be=$GITHUB_RUN_ID" \
+    -o "$OUT/preview-provider-meta.json"
+  jq -e '.ok==true and .production==false and .hrWrites==false and .revisionStable==true' \
+    "$OUT/preview-provider-meta.json" >/dev/null
   service_state "$OUT/runtime-after.json"
   hosting_state "$OUT/hosting-live-after.json"
   jq -e --arg rev "$new_rev" \

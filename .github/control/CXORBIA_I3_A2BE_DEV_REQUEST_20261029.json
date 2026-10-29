@@ -11,5 +11,7 @@
   "devHostingPreviewOnly": true,
   "devRuntimeTrafficMayChangeOnlyOnSeparateApproval": true,
   "sourceProductChanged": false,
-  "status": "PREPARED_SOURCE_ONLY_WAITING_READONLY_PREFLIGHT_AND_SEPARATE_DEV_MATERIALIZATION_AUTHORIZATION"
+  "status": "READ_ONLY_PREFLIGHT_REQUESTED_NO_DEPLOY",
+  "requestedAction": "I3-A2BE-DEV-PREFLIGHT",
+  "requestReason": "Exact pinned A2BE source+G03, shared DEV pre-state, source QA; zero deploy."
 }
