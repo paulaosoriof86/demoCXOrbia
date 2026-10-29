@@ -18,7 +18,7 @@ const PROJECT='cxorbia-backend-dev',TENANT='tya',PROGRAM='cinepolis';
 const HR_URL='https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live?format=json&view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV';
 const EXPECTED_REV='4fc8def718fd1504f5d76a1fbc80b6901cbf711ec2b89f4dfc3a81ecbbca517a';
 const EXPECTED_PAIR_DIGEST='ac3e15184316d62aa53942359e857f2c34dec486a2ca41057e529a39f062d872';
-const COMPLETED_F001={canonicalFingerprint:'beb305ad4221176cba74',aliasFingerprint:'961fca86a69197b0c7d2'};
+const approvedCompletionReason=/^paula_confirmed_exact_same_human_[fr]\d{3}_2026_10_28$/;
 const AUTHORIZATION='PAULA_CONFIRMED_2026_10_28_139_EXACT_COHORT_PAIRS_READONLY_PREFLIGHT';
 const OUT=String(process.env.CX_APPROVED_COHORT_PREFLIGHT_OUT||'.tmp/i3-approved-cohort-preflight');
 const val=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
@@ -85,22 +85,28 @@ function makePairs({members,profiles,hrById,cross,links,authByUid}){
     if(exact.length===1){strong.push({hrId:exact[0].id,accountId,country:c,hrName:displayName(profiles.get(exact[0].id))});continue;}
     if(exact.length===0)for(const x of matches){weak.push({hrId:x.id,accountId,country:c,hrName:displayName(profiles.get(x.id))});}
   }
-  // A verified merge removes its alias from the active-membership cohort.
-  // Keep the original approved workbook pair in the 139-case digest ONLY if
-  // its exact provider link, crosswalk and superseded profile prove completion.
+  // Approved completions disappear from active memberships after a protected
+  // merge. Rebuild each approved *pair* from its exact, human-confirmed provider
+  // link and independent profile/crosswalk readback, never from name similarity.
+  // The immutable 139-case workbook digest below still fails closed on drift.
   const completed=links.filter(l=>val(l.authorityType)==='tenant_adjudication'&&
+    approvedCompletionReason.test(val(l.reason))&&l.humanConfirmed===true&&
     ['active','approved','confirmed'].includes(val(l.status||l.state).toLowerCase()));
-  const canonicalId=[...hrById.keys()].find(id=>hash('sid:'+id).slice(0,20)===COMPLETED_F001.canonicalFingerprint);
-  const aliasId=[...profiles.keys()].find(id=>hash('sid:'+id).slice(0,20)===COMPLETED_F001.aliasFingerprint);
-  const f001AlreadyPresent=strong.some(x=>x.hrId===canonicalId&&x.accountId===aliasId);
-  if(!f001AlreadyPresent){
-    const cp=profiles.get(canonicalId),ap=profiles.get(aliasId),cw=cross.get(aliasId)||{};
-    const exactLink=completed.find(l=>val(l.canonicalShopperId)===canonicalId&&arr(l.exactAliases).map(val).includes(aliasId));
-    assert(canonicalId&&aliasId&&cp&&ap&&exactLink&&
-      val(ap.supersededByShopperId)===canonicalId&&val(cw.shopperId)===canonicalId&&
-      name(cp)===name(ap)&&phone(cp)===phone(ap)&&country(cp)==='GT'&&
-      !active.some(m=>val(m.shopperId)===aliasId),'F001_COMPLETED_LINK_READBACK_DRIFT');
-    strong.push({hrId:canonicalId,accountId:aliasId,country:'GT',hrName:displayName(cp),alreadyConsolidated:true});
+  for(const link of completed){
+    const canonicalId=val(link.canonicalShopperId),cp=profiles.get(canonicalId);
+    if(!hrById.has(canonicalId)||!cp||val(cp.sourceType)!=='hr_external')continue;
+    const c=country(cp);
+    for(const aliasId of uniq(link.exactAliases||[])){
+      const ap=profiles.get(aliasId),cw=cross.get(aliasId)||{},sameName=!!ap&&name(cp)===name(ap);
+      assert(aliasId!==canonicalId&&ap&&sameName&&c!=='UNSET'&&c===country(ap)&&
+        val(ap.supersededByShopperId)===canonicalId&&val(cw.shopperId)===canonicalId&&
+        !active.some(m=>val(m.shopperId)===aliasId),'APPROVED_COMPLETED_LINK_READBACK_DRIFT');
+      if(strong.some(x=>x.hrId===canonicalId&&x.accountId===aliasId)||
+        weak.some(x=>x.hrId===canonicalId&&x.accountId===aliasId))continue;
+      const matchingPhone=!!phone(cp)&&phone(cp)===phone(ap);
+      (matchingPhone?strong:weak).push({hrId:canonicalId,accountId:aliasId,country:c,
+        hrName:displayName(cp),alreadyConsolidated:true});
+    }
   }
   const sorter=(a,b)=>a.country.localeCompare(b.country)||a.hrName.localeCompare(b.hrName,'es')||a.accountId.localeCompare(b.accountId);
   strong.sort(sorter);weak.sort(sorter);
@@ -169,6 +175,9 @@ async function livePreflight({db,auth,hr}){
   const profiles=new Map(profilesSnap.docs.map(d=>[d.id,d.data()||{}]));
   const cross=new Map(crossSnap.docs.map(d=>[d.id,d.data()||{}]));
   const links=linksSnap.docs.map(d=>d.data()||{});
+  const completed=links.filter(l=>val(l.authorityType)==='tenant_adjudication'&&
+    approvedCompletionReason.test(val(l.reason))&&l.humanConfirmed===true&&
+    ['active','approved','confirmed'].includes(val(l.status||l.state).toLowerCase()));
   const hrById=new Map();
   for(const row of hr.shoppers){const id=sid(row);assert(id&&!hrById.has(id),'HR_DUPLICATE_ID');hrById.set(id,row);}
   const authUsers=[];let token;
@@ -216,16 +225,15 @@ async function livePreflight({db,auth,hr}){
       else if(liveCountry!==protectedCountry)sourceConsistency.hrCountryDrifts++;
     }
     const operationalCounts=Object.fromEntries(domain.map(d=>[d.name,d.rows.filter(row=>countOwners(row,aliases)).length]));
-    const exactCompleted=group.cases.length===1&&group.cases[0]==='F-001'&&
-      links.some(l=>val(l.authorityType)==='tenant_adjudication'&&
-        val(l.canonicalShopperId)===[...group.hrs][0]&&
-        [...group.accounts].every(id=>arr(l.exactAliases).map(val).includes(id))&&
-        ['active','approved','confirmed'].includes(val(l.status||l.state).toLowerCase()));
+    const exactCompleted=group.hrs.size===1&&[...group.accounts].every(id=>
+      completed.some(l=>val(l.canonicalShopperId)===[...group.hrs][0]&&
+        arr(l.exactAliases).map(val).includes(id)));
     if(status==='KEEPER_VERIFIED'&&exactCompleted){
-      const aliasId=[...group.accounts][0],hrId=[...group.hrs][0];
-      assert(val(cross.get(aliasId)?.shopperId)===hrId&&
-        val(profiles.get(aliasId)?.supersededByShopperId)===hrId&&
-        operationalCounts.visits===0,'F001_COMPLETED_DOMAIN_OR_LINK_READBACK_DRIFT');
+      const hrId=[...group.hrs][0];
+      assert([...group.accounts].every(id=>val(cross.get(id)?.shopperId)===hrId&&
+        val(profiles.get(id)?.supersededByShopperId)===hrId)&&
+        Object.values(operationalCounts).every(n=>n===0),
+        'APPROVED_COMPLETED_DOMAIN_OR_LINK_READBACK_DRIFT');
       status='ALREADY_CONSOLIDATED_AND_VERIFIED';
     }
     if(status==='KEEPER_VERIFIED'){
