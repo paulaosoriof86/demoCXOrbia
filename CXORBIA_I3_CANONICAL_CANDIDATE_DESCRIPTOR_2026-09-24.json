@@ -14583,5 +14583,12 @@
     ],
     "production": false
   },
-  "previousNextExactActionBeforeContinuity20261029": "D04 real versioned name-only E2E on exact RUN1796 DEV: Admin user, 15-question QA bank, name rename without question change, ACK/reload/version+history, no publication, no other bank change, cleanup; Client F12 same HR. Preserve Run1792 Admin/Shopper proof unchanged owner hashes."
+  "previousNextExactActionBeforeContinuity20261029": "D04 real versioned name-only E2E on exact RUN1796 DEV: Admin user, 15-question QA bank, name rename without question change, ACK/reload/version+history, no publication, no other bank change, cleanup; Client F12 same HR. Preserve Run1792 Admin/Shopper proof unchanged owner hashes.",
+  "controlContinuityAuthority": {
+    "path": "CXORBIA_RECOVERY_EXECUTION_CURRENT.json",
+    "currentReceiptField": "currentExecutionReceipt",
+    "handoffField": "continuityHandoff",
+    "sealedHistoricalReceiptField": "lastExecutionReceipt",
+    "semantics": "CURRENT_CONTROL_QA_IS_SEPARATE_FROM_LAST_SEALED_POSTDEPLOY"
+  }
 }

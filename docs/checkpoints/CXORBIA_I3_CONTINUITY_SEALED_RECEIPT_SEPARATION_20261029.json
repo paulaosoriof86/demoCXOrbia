@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-10-29",
+  "iteration": "I3",
+  "state": "HOLD",
+  "kind": "CONTROL_RECEIPT_SEPARATED_FROM_SEALED_POSTDEPLOY_RECEIPT",
+  "expectedParent": "569c53fbe8c29d44e8a689d3a4df7310750e63de",
+  "productSourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+  "productTree": "be0ad639a652439200ef4043bb08d5d4b709f266",
+  "observedFailure": {
+    "runId": 40942890348,
+    "jobId": 123690586768,
+    "error": "RELEASE_COMPOSITION_FAILURE:POSTDEPLOY_SEAL_MISMATCH:lastReceiptPath",
+    "cause": "Control receipt was placed in a field contractually sealed to RUN1852 by the canonical authority guard."
+  },
+  "correction": {
+    "lastExecutionReceipt": "Restore exact historical RUN1852 object from preserved prior receipt.",
+    "currentExecutionReceipt": "Use explicit latest control/QA pointer.",
+    "continuityHandoff": "Keep current and reference currentExecutionReceipt.",
+    "guardModified": false,
+    "postDeploySealModified": false,
+    "currentDevMaterializationModified": false
+  },
+  "priorControlReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_B1_HARNESS_AND_CONTINUITY_REPAIR_20261029.json",
+    "gitBlob": "feaaa103a1f773dfafa8f21b2c630f207bb3f99f"
+  },
+  "b1TestRepair": {
+    "commit": "569c53fbe8c29d44e8a689d3a4df7310750e63de",
+    "pass": 7,
+    "fail": 0,
+    "scope": "LOCAL_SOURCE_CONTRACTS_PENDING_CANONICAL_CLOUD_RUN"
+  },
+  "relatedSourcePreflight": {
+    "tests": 158,
+    "pass": 158,
+    "fail": 0,
+    "scope": "LOCAL_SOURCE_CONTRACTS_ONLY"
+  },
+  "sourceChanges": 0,
+  "newFunctionalClosures": 0,
+  "deploys": 0,
+  "businessWrites": 0,
+  "production": "DO_NOT_TOUCH",
+  "terminalCertificationAllowed": false,
+  "nextExactAction": "I3 G03: reconcile 21 domains preserving owner-scoped approved PASS and exact source/DEV artifacts; parallel read-only HR freshness/ACK, Admin/Shopper operations, finanzas, certificaciones and visual proof. D07 one bounded Admin+Shopper smoke only; fix only P0_PROVEN with one serial writer and cumulative candidate, then Gate20/Gate21. No production.",
+  "immediateAction": "Observe the new automatic canonical run after this correction. Do not reinterpret historical sealed materialization as current control work or as terminal I3 certification."
+}

@@ -74,17 +74,17 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "docs/checkpoints/CXORBIA_I3_B1_HARNESS_AND_CONTINUITY_REPAIR_20261029.json",
-    "gitBlob": "feaaa103a1f773dfafa8f21b2c630f207bb3f99f",
-    "kind": "B1_TEST_HARNESS_AND_CONTINUITY_POINTER_REPAIR_PENDING_CLOUD",
-    "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
-    "sourceTree": "be0ad639a652439200ef4043bb08d5d4b709f266",
-    "sourceChanges": 0,
+    "path": "CXORBIA_I3_RUN1852_POST_DEPLOY_CONSISTENCY_SEAL_2026-10-24.json",
+    "kind": "RUN1852_SOURCE_F283_DEV_PASS_ADMIN_THREE_VISIT_UI_PASS_DURABLE_HR_OPERATIONAL_PARITY_P0_OPEN",
+    "sourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
+    "sourceTree": "9013315b4de8ac941845c784dcc354d4bafdc501",
+    "servedSourceSha": "f283e0f53057dcbb4cde008a67cfaf81f0001e29",
+    "runId": 40121491485,
+    "runNumber": 1852,
+    "sourceChanges": 2,
     "newFunctionalClosures": 0,
-    "scope": "SOURCE_QA_AND_CURRENT_POINTER_CONTINUITY",
-    "production": false,
-    "cloudAfterCommit": "PENDING_AUTOMATIC_RUN",
-    "observedPriorRunId": 40927184139
+    "scope": "A09_B11_DURABLE_HR_OPERATIONAL_PARITY",
+    "production": false
   },
   "taskProgress": {
     "G01": "IN_PROGRESS_COVERAGE_CUSTODIED_AUTHORITY_GAPS_RETAINED_IN_G03",
@@ -493,20 +493,26 @@
   ],
   "coverageGuard": "Do not declare all finance, HR, Shopper, Client, Certification or Phase A PASS solely from source tests or an inherited PASS. Apply task-specific provider/readback/human proof and preserve historical VRM PASS without reproducible drift; no skipped findings.",
   "continuityHandoff": {
-    "path": "docs/checkpoints/CXORBIA_I3_B1_HARNESS_AND_CONTINUITY_REPAIR_20261029.json",
-    "blobSha": "feaaa103a1f773dfafa8f21b2c630f207bb3f99f",
+    "path": "docs/checkpoints/CXORBIA_I3_CONTINUITY_SEALED_RECEIPT_SEPARATION_20261029.json",
+    "blobSha": "be08c6dc3e03da06473407571abd94b7edb8d6c1",
     "kind": "CONTROL_ONLY_APPEND_ONLY_NOT_NEW_PLAN",
     "asOf": "2026-10-29",
     "frozenPlanId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
     "productSourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
-    "reviewedHeadBeforeHandoff": "692deef58f93766724a5f5f8e33ad116813181b5",
+    "reviewedHeadBeforeHandoff": "569c53fbe8c29d44e8a689d3a4df7310750e63de",
     "nextTaskIds": [
       "G03",
       "G04"
     ],
-    "immediateAction": "Observe the automatic canonical source-proof run for this commit; record its actual result and complete log, then resume the existing cross-functional G03/G04 queue without repeating approved focal PASS.",
+    "immediateAction": "Observe the new automatic canonical run after this correction. Do not reinterpret historical sealed materialization as current control work or as terminal I3 certification.",
     "noProductChanges": true,
-    "noProduction": true
+    "noProduction": true,
+    "receiptPointerField": "currentExecutionReceipt",
+    "sealedHistoricalFields": [
+      "lastExecutionReceipt",
+      "currentDevMaterialization",
+      "postDeployRunSeal"
+    ]
   },
   "previousExecutionReceiptBeforeRun1788": {
     "path": "CXORBIA_I3_D04_E04_DEV_MATERIALIZATION_RUN1782_2026-10-18.json",
@@ -2995,5 +3001,33 @@
     "pass": 158,
     "fail": 0,
     "scope": "LOCAL_ISOLATED_SOURCE_CONTRACTS_ONLY_NOT_I3_CERTIFICATION"
+  },
+  "currentExecutionReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_CONTINUITY_SEALED_RECEIPT_SEPARATION_20261029.json",
+    "gitBlob": "be08c6dc3e03da06473407571abd94b7edb8d6c1",
+    "kind": "CONTROL_RECEIPT_SEPARATED_FROM_SEALED_POSTDEPLOY_RECEIPT",
+    "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+    "sourceTree": "be0ad639a652439200ef4043bb08d5d4b709f266",
+    "sourceChanges": 0,
+    "newFunctionalClosures": 0,
+    "scope": "SOURCE_QA_AND_CURRENT_POINTER_CONTINUITY",
+    "production": false,
+    "cloudAfterCommit": "PENDING_AUTOMATIC_RUN",
+    "observedPriorRunId": 40942890348
+  },
+  "lastExecutionReceiptSemantics": "SEALED_POSTDEPLOY_SNAPSHOT_NOT_CURRENT_CONTROL_HANDOFF",
+  "currentExecutionReceiptSemantics": "LATEST_CONTROL_AND_QA_RECEIPT_NOT_A_POSTDEPLOY_SEAL",
+  "previousCurrentExecutionReceiptBeforeSealRepair20261029": {
+    "path": "docs/checkpoints/CXORBIA_I3_B1_HARNESS_AND_CONTINUITY_REPAIR_20261029.json",
+    "gitBlob": "feaaa103a1f773dfafa8f21b2c630f207bb3f99f",
+    "kind": "B1_TEST_HARNESS_AND_CONTINUITY_POINTER_REPAIR_PENDING_CLOUD",
+    "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+    "sourceTree": "be0ad639a652439200ef4043bb08d5d4b709f266",
+    "sourceChanges": 0,
+    "newFunctionalClosures": 0,
+    "scope": "SOURCE_QA_AND_CURRENT_POINTER_CONTINUITY",
+    "production": false,
+    "cloudAfterCommit": "PENDING_AUTOMATIC_RUN",
+    "observedPriorRunId": 40927184139
   }
 }
