@@ -13,8 +13,10 @@ PROJECT="cxorbia-backend-dev"
 SERVICE="cxorbia-live-hr-dev"
 REGION="us-central1"
 SITE="cxorbia-backend-dev"
-OLD_REV="cxorbia-live-hr-dev-00327-xsc"
-OLD_HOSTING="sites/cxorbia-backend-dev/versions/a1cd7ecc1a12db34"
+# Fresh baseline attested by GT/HN DEV One-Shot 40774124229 and read-only
+# A2BE preflight 40831618801. Older 00327/a1cd pins are superseded.
+OLD_REV="cxorbia-live-hr-dev-00328-r69"
+OLD_HOSTING="sites/cxorbia-backend-dev/versions/9e78deaeeed72481"
 CHANNEL="i3-a2be-${GITHUB_RUN_ID:?}"
 OUT=".tmp/i3-a2be-twin-dev"
 mkdir -p "$OUT"

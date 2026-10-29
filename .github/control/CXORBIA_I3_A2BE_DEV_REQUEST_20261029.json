@@ -11,7 +11,11 @@
   "devHostingPreviewOnly": true,
   "devRuntimeTrafficMayChangeOnlyOnSeparateApproval": true,
   "sourceProductChanged": false,
-  "status": "READ_ONLY_PREFLIGHT_REQUESTED_NO_DEPLOY",
+  "status": "READ_ONLY_PREFLIGHT_RETRY_AFTER_VERIFIED_DEV_BASELINE_DRIFT",
   "requestedAction": "I3-A2BE-DEV-PREFLIGHT",
-  "requestReason": "Exact pinned A2BE source+G03, shared DEV pre-state, source QA; zero deploy."
+  "requestReason": "Exact pinned A2BE source+G03, shared DEV pre-state, source QA; zero deploy.",
+  "priorFailureRunId": 40831618801,
+  "baselineEvidenceRunId": 40774124229,
+  "verifiedActiveDevRuntime": "cxorbia-live-hr-dev-00328-r69",
+  "verifiedHostingVersion": "sites/cxorbia-backend-dev/versions/9e78deaeeed72481"
 }
