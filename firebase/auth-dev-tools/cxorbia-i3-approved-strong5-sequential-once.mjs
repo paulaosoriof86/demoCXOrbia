@@ -252,7 +252,8 @@ try{
   result.providerWrites=Number(ack.providerWrites||0);save();
   assert(result.providerAck&&result.identityConsolidated&&val(ack.canonicalShopperId||ack.entityId)===canonical&&
     JSON.stringify(uniq(ack.exactAliases))===JSON.stringify([alias])&&ack.historicalVisitRowsPreserved===true&&
-    Number(ack.authoritativeVisitCount)===historical.length&&Number(ack.hrWrites||0)===0&&Number(ack.externalWrites||0)===0,
+    Number(ack.authoritativeVisitCount)===1&&Number(ack.domainWrites?.visits||0)===0&&
+    Number(ack.hrWrites||0)===0&&Number(ack.externalWrites||0)===0,
     'BATCH_PROTECTED_PROVIDER_ACK_FAILED');
   assert(replay.ok===true&&replay.providerAck===true&&replay.idempotentReplay===true&&
     Number(replay.providerWrites||0)===0,'BATCH_IDEMPOTENCY_FAILED');
