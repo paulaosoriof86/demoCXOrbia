@@ -1,0 +1,212 @@
+{
+  "schemaVersion": "cxorbia.i3.c02-d04.independent-session-package.v1",
+  "id": "CXORBIA-I3-C02-D04-INDEPENDENT-SESSION-20261029-R3",
+  "asOf": "2026-10-29",
+  "iteration": "I3",
+  "state": "PREPARED_NOT_EXECUTED",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedControlParentSha": "e0f73e983af6a9b19dc6a5f39769cfe6c10b72bc",
+  "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+  "sourceTree": "be0ad639a652439200ef4043bb08d5d4b709f266",
+  "production": false,
+  "reason": "Close only the remaining C02 and D04 independent authenticated application-session evidence. Protected preview intentionally uses shared LOCAL persistence; preserve human Chrome Admin and use isolated contexts in the existing CI live job. R3 corrects the confirmed incompatible automatic runner OS migration, without changing application or dependency versions.",
+  "authorizationBasis": [
+    "Paula's frozen I3 plan V1.1 and shock plan: execute bounded DEV functional QA, preserve proven PASS and one writer.",
+    "Current user instruction: continúa y agiliza por favor, necesitamos hoy sin falta salir.",
+    "Existing authenticated DEV QA identities and fixture workflow; no new account, claims, permission or production deployment."
+  ],
+  "preview": {
+    "runId": 40901257714,
+    "artifactId": 12907814907,
+    "artifactZipSha256": "229dad2d5432b011ae98f758234f93766cc0198f5e3fe9f24bb98e1cb4f109ff",
+    "channel": "i3-recovery-1029-40901257714",
+    "origin": "https://cxorbia-backend-dev--i3-recovery-1029-40901257714-yxqv51l2.web.app",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/8f3502960bcb878e",
+    "runtimeRevision": "cxorbia-live-hr-dev-00330-fim",
+    "runtimeDigest": "sha256:bba5ebbf19c203954ec0be6c2c3ef01a057e7ce3f98fb7e5eeac2d889bd0a500",
+    "runtimeSourceSha": "a2be5a77a4c0008ec374c17f42d5da27070e1ed6",
+    "priorIdentityReceiptPath": "docs/checkpoints/CXORBIA_I3_RUNTIME_ARTIFACT_IDENTITY_RECOVERY_20261029.json",
+    "priorIdentityReceiptGitBlob": "27e8a3994d1c9621d282fc6158c5ad3a09b70656"
+  },
+  "actor": {
+    "uid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "role": "admin",
+    "createUser": false,
+    "changeClaims": false
+  },
+  "c02": {
+    "uiVisitId": "hr_2026-10_gt_2_97b3975c30",
+    "durableVisitId": "OCTUBRE 26!2",
+    "periodId": "cinepolis-2026-10",
+    "priorReceiptPath": "docs/checkpoints/CXORBIA_I3_C02_DURABLE_RECEIPT_READBACK_20261029.json",
+    "priorReceiptGitBlob": "5a18cab354ac9fbb216c0c9ff03a8460065f40db",
+    "commandReceiptId": "1c1fe3d3e9c8982e59577c9b41cb0b72b4996486",
+    "auditId": "finance-f652be05bb1506688e59ba5fac06616dccebbd61",
+    "expected": {
+      "currency": "Q",
+      "honorario": 60,
+      "reembolso": 145,
+      "total": 205,
+      "status": "reconciled_exact",
+      "externalPaymentConfirmed": false,
+      "paymentState": "not_scheduled",
+      "version": 25
+    },
+    "replayReconciliation": false,
+    "expectedFinancialMatchFields": 24,
+    "originalClientAckResponseObserved": false
+  },
+  "d04": {
+    "fixturePrefix": "qa-i3-d04-session-",
+    "questions": 15,
+    "edits": 1,
+    "publish": false,
+    "cleanup": true,
+    "purpose": "One synthetic pending-review fixture to link a real UI content edit and its version/history to a second independently authenticated browser context.",
+    "carryForward": [
+      {
+        "runId": 39163128539,
+        "runNumber": 1788,
+        "jobId": 117780494376,
+        "scope": "15-question content edit, provider ACK, version 1→2, history and same-session reload; fixture removed."
+      },
+      {
+        "runId": 39172645706,
+        "runNumber": 1797,
+        "jobId": 117808812241,
+        "scope": "Name edit, stable certificationId, provider ACK/version/history/reload; fixture removed."
+      }
+    ],
+    "existingPublishedOrPendingBanks": "READ_ONLY_UNCHANGED",
+    "humanAcceptance": "PENDING"
+  },
+  "scope": {
+    "financeWrites": 0,
+    "authMutations": 0,
+    "hrWrites": 0,
+    "deploys": 0,
+    "production": false,
+    "allowedFixtureCollections": [
+      "tenants/tya/resources"
+    ],
+    "newWorkflow": 0,
+    "newMaterializer": 0,
+    "newCandidate": 0
+  },
+  "preserved": {
+    "productSource": true,
+    "lastExecutionReceipt": true,
+    "currentDevMaterialization": true,
+    "postDeployRunSeal": true,
+    "ledger": true,
+    "moduleTruthMatrix": true,
+    "sourceProofRun1954": {
+      "tests": 303,
+      "pass": 303,
+      "fail": 0
+    },
+    "identityVerifiedGroups": 29
+  },
+  "acceptance": [
+    "Fresh isolated browser contexts start without an authenticated Firebase principal; both authenticate the existing authorized Admin without exporting credentials.",
+    "C02 DOM and exact existing receipt/audit/visit agree on the same Q205 row; no reconciliation or payment command is sent.",
+    "D04 one real question edit persists with provider ACK, version 2 and history; same content/version is visible after reload and in the second isolated session.",
+    "Cleanup removes only the unique current-run D04 QA fixture and verifies all existing certification banks unchanged.",
+    "No whole-domain MATCH, Gate20/Gate21, human acceptance or I3 GO is inferred from these focal results."
+  ],
+  "d07": {
+    "scope": "OPTIONAL_READ_ONLY_STORAGE_CORS_DIAGNOSTIC",
+    "resourceName": "Instructivo Shopper.pdf",
+    "resourceSource": "Only the uniquely matching current authenticated resource catalog already loaded for D04; exact document readback required.",
+    "methods": [
+      "OPTIONS"
+    ],
+    "origins": [
+      "https://cxorbia-backend-dev--i3-recovery-1029-40901257714-yxqv51l2.web.app",
+      "https://cxorbia-backend-dev.web.app"
+    ],
+    "binaryGet": false,
+    "tokenUsed": false,
+    "bodyRead": false,
+    "writes": 0,
+    "blocksC02D04": false,
+    "fullTaskClosed": false
+  },
+  "attemptNumber": 3,
+  "previousAttempt": {
+    "packagePath": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R2.json",
+    "packageGitBlob": "cc65b4f2e56b77622168d58c89d5d4b3199ffeab",
+    "controlSha": "e0f73e983af6a9b19dc6a5f39769cfe6c10b72bc",
+    "runId": 40968280905,
+    "runNumber": 1956,
+    "jobId": 123778857174,
+    "authorityJob": "SUCCESS",
+    "sourceProofJob": "SUCCESS",
+    "packageSourceGuard": "PASS",
+    "npmInstall": "SUCCESS_214_PACKAGES",
+    "decision": "CHROMIUM_INSTALL_UNSUPPORTED_UBUNTU_26_04",
+    "exactError": "Error: ERROR: Playwright does not support chromium on ubuntu26.04-x64",
+    "failedAtUtc": "2026-10-29T22:47:42.7114785Z",
+    "exitCode": 1,
+    "liveCaseExecuted": false,
+    "fixtureWrites": 0,
+    "financeWrites": 0,
+    "deploys": 0,
+    "production": false,
+    "artifact": {
+      "id": 12939515681,
+      "name": "cxorbia-phasea-representative-live-40968280905",
+      "sizeBytes": 2692,
+      "sha256": "3642402d536e1b3f06bcdc8966f772e37f02c1a6b4acc1be64c2d23461a7129b"
+    },
+    "priorAttemptReference": {
+      "packagePath": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029.json",
+      "packageGitBlob": "d20d624fa0c1b47bbc81a1fdaec8f63ef9fa97b8",
+      "controlSha": "97cb459867e47bc4ea9d25e37558a0b17823394f",
+      "runId": 40967136380,
+      "runNumber": 1955,
+      "jobId": 123774996658,
+      "authorityJob": "SUCCESS",
+      "sourceProofJob": "SUCCESS",
+      "packageSourceGuard": "PASS",
+      "decision": "DEPENDENCY_SETUP_FAILED_BEFORE_AUTH_AND_LIVE_TESTS",
+      "failedAtUtc": "2026-10-29T22:38:12.4170111Z",
+      "exitCode": 1,
+      "diagnosticLimit": "Inherited npm and Playwright install commands discarded stdout and stderr. Exact failing command and dependency error were not observed.",
+      "liveCaseExecuted": false,
+      "fixtureWrites": 0,
+      "financeWrites": 0,
+      "deploys": 0,
+      "production": false,
+      "artifact": {
+        "id": 12937449341,
+        "name": "cxorbia-phasea-representative-live-40967136380",
+        "sizeBytes": 496,
+        "sha256": "0380d33cc22b0fe398ee58aad252de004f2dbf452b526c3554cbd47cf64fe834"
+      }
+    }
+  },
+  "retryDelta": [
+    "Pin only the existing focal live job from ubuntu-latest to ubuntu-24.04, the OS that passed the same four dependency versions in RUN1797.",
+    "Preserve visible npm/Chromium installation logs and exact dependency pins; no application or Auth changes.",
+    "Use an immutable R3 package with exact e0f73e9 control parent; preserve R1/R2 records and all seals."
+  ],
+  "runnerEnvironment": {
+    "runsOn": "ubuntu-24.04",
+    "nodeVersion": "24",
+    "dependencies": {
+      "firebase-admin": "13.4.0",
+      "playwright": "1.56.1",
+      "google-auth-library": "9.15.1",
+      "pdfjs-dist": "3.11.174"
+    },
+    "knownSuccessfulSameOsAndDependencyPins": {
+      "runId": 39172645706,
+      "runNumber": 1797,
+      "jobId": 117808812241
+    },
+    "scope": "EXISTING_LIVE_JOB_ONLY"
+  }
+}

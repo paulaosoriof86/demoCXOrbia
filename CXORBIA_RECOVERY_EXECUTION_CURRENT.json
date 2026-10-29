@@ -507,7 +507,7 @@
       "D04",
       "D07"
     ],
-    "immediateAction": "Execute and read back the next tagged C02/D04 independent-session case in the existing canonical CI live job. RUN1955 passed authority/source/package guards but stopped at dependency installation before Auth, preflight or live writes; stdout/stderr were discarded. R2 captures both installation stages without changing pinned versions. Preserve original package and prior PASS; no reconciliation replay.",
+    "immediateAction": "Execute and read back the current R3 C02/D04 session package in the existing canonical CI live job. RUN1956 proves npm installation succeeded and Playwright rejected ubuntu26.04-x64 before Auth or live writes. Pin this job to the previously working ubuntu-24.04 with all dependency versions and logs preserved. Keep exact e753/preview/runtime guard, C02 no-replay and D04 cleanup.",
     "noProductChanges": true,
     "noProduction": true,
     "receiptPointerField": "currentExecutionReceipt",
@@ -533,11 +533,11 @@
     "resolvedAccessBlockPath": "docs/checkpoints/CXORBIA_I3_C02_RECEIPT_READ_ACCESS_BLOCK_20261029.json",
     "acceptanceRemaining": "C02 independent application read; D04 edited bank/content/version in an independently authenticated context; human acceptance and remaining frozen plan stay open.",
     "currentSessionProofPackage": {
-      "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R2.json",
-      "gitBlob": "cc65b4f2e56b77622168d58c89d5d4b3199ffeab"
+      "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R3.json",
+      "gitBlob": "bdbc0155064ec8912a22dbf1b768394aa1bd9b53"
     },
     "browserSessionFinding": "Protected DEV session-continuity wraps Firebase SESSION into LOCAL. A normal second Chrome tab shares authentication; it is not a separate session. Keep Chrome logged in.",
-    "resumeRule": "Inspect the latest tagged run and its logs/artifact for the current package before launching another attempt. RUN1955 is a setup failure, not a C02/D04 functional failure. Do not relaunch the same opaque install step or repeat the finance command."
+    "resumeRule": "Inspect the latest tagged run for package R3 before any further attempt. R1/R2 are pre-Auth environment failures, not functional failures. Preserve their records and do not repeat reconciliation."
   },
   "previousExecutionReceiptBeforeRun1788": {
     "path": "CXORBIA_I3_D04_E04_DEV_MATERIALIZATION_RUN1782_2026-10-18.json",
@@ -3242,10 +3242,10 @@
     "resumeAfterAuthorizedReceiptRead": "C02: read the receipt/audit and committed HR revision of the existing single attempt without replay; retain fresh-page and explicit-reload persistence proof. Continue D04/D05/D06 and bounded D07 evidence on the same e753 candidate, preserving passed owners."
   },
   "currentSessionProofPackage": {
-    "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R2.json",
-    "gitBlob": "cc65b4f2e56b77622168d58c89d5d4b3199ffeab",
-    "state": "READY_FOR_FOCAL_RETRY_AFTER_DEPENDENCY_SETUP_FAILURE",
-    "expectedControlParentSha": "97cb459867e47bc4ea9d25e37558a0b17823394f",
+    "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R3.json",
+    "gitBlob": "bdbc0155064ec8912a22dbf1b768394aa1bd9b53",
+    "state": "READY_FOR_FOCAL_RETRY_ON_SUPPORTED_OS",
+    "expectedControlParentSha": "e0f73e983af6a9b19dc6a5f39769cfe6c10b72bc",
     "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
     "previewRunId": 40901257714,
     "tasks": [
@@ -3263,8 +3263,9 @@
     "newWorkflow": 0,
     "newMaterializer": 0,
     "liveResult": "PENDING",
-    "attemptNumber": 2,
-    "priorAttemptRunId": 40967136380
+    "attemptNumber": 3,
+    "priorAttemptRunId": 40968280905,
+    "runnerOs": "ubuntu-24.04"
   },
   "d04CarryForwardRecovered20261029": {
     "status": "PRIOR_FOCAL_PASS_PRESERVED_INDEPENDENT_SESSION_AND_HUMAN_PENDING",
@@ -3368,6 +3369,38 @@
       "fixtureWrites": 0,
       "financeWrites": 0,
       "diagnosticLimit": "Inherited npm and Playwright install commands discarded stdout and stderr. Exact failing command and dependency error were not observed."
+    },
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R2.json",
+      "gitBlob": "cc65b4f2e56b77622168d58c89d5d4b3199ffeab",
+      "state": "CHROMIUM_INSTALL_UNSUPPORTED_UBUNTU_26_04",
+      "expectedControlParentSha": "97cb459867e47bc4ea9d25e37558a0b17823394f",
+      "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+      "previewRunId": 40901257714,
+      "tasks": [
+        "C02",
+        "D04"
+      ],
+      "supplementalReadOnlyDiagnostic": "D07_OPTIONS_ONLY",
+      "existingWorkflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      "existingJob": "phasea-representative-same-artifact-live-reproof",
+      "existingRunner": "tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs",
+      "triggerMarker": "[i3-c02-d04-session-proof]",
+      "userChromeSessionPreserved": true,
+      "production": false,
+      "sourceChanges": 0,
+      "newWorkflow": 0,
+      "newMaterializer": 0,
+      "liveResult": "PENDING",
+      "attemptNumber": 2,
+      "priorAttemptRunId": 40967136380,
+      "runId": 40968280905,
+      "runNumber": 1956,
+      "jobId": 123778857174,
+      "liveCaseExecuted": false,
+      "fixtureWrites": 0,
+      "financeWrites": 0,
+      "exactError": "Error: ERROR: Playwright does not support chromium on ubuntu26.04-x64"
     }
   ]
 }
