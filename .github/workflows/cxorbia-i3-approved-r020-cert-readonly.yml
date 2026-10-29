@@ -1,5 +1,13 @@
 name: CXOrbia I3 R020 Exact Certification Identity Readonly
 on:
+  workflow_dispatch:
+    inputs:
+      case_id:
+        description: 'Exact read-only R-026 technical keeper preflight'
+        type: choice
+        required: true
+        default: none
+        options: [none, r026]
   push:
     branches: [recovery/cxorbia-phase-a-20260831]
     paths:
@@ -69,3 +77,58 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 # R020 prewrite source recheck after cumulative product-only commit b6a1b923. No data writes.
+
+  r026-technical-keeper-readonly-preflight:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.case_id == 'r026' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      GCLOUD_PROJECT: cxorbia-backend-dev
+      GOOGLE_CLOUD_PROJECT: cxorbia-backend-dev
+      CX_R026_READONLY_AUTH: PAULA_I3_2026_10_28_APPROVED_R026_GT_TECHNICAL_KEEPER_READONLY
+      CX_R026_APPROVED_DIGEST: ac3e15184316d62aa53942359e857f2c34dec486a2ca41057e529a39f062d872
+      CX_R026_READONLY_OUT: .tmp/cxorbia-i3-r026-keeper-readonly
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Assert exact R-026 approved case, current candidate and zero product drift
+        run: |
+          set -Eeuo pipefail
+          test "$GITHUB_REF_NAME" = 'recovery/cxorbia-phase-a-20260831'
+          test "$GITHUB_EVENT_NAME" = workflow_dispatch
+          test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
+          test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
+          SOURCE="$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          TREE="$(jq -r '.productTreeAuthority' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          test "$SOURCE" = a2be5a77a4c0008ec374c17f42d5da27070e1ed6
+          test "$TREE" = eb8734a450c14d510a9a9924b39cb826caacf510
+          test "$(git rev-parse "$SOURCE^{tree}")" = "$TREE"
+          git merge-base --is-ancestor "$SOURCE" HEAD
+          git diff --quiet "$SOURCE" HEAD -- app backend tools firebase.json .firebaserc firestore.rules storage.rules
+          node --check firebase/auth-dev-tools/cxorbia-i3-approved-r026-keeper-readonly.mjs
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Inspect exact protected technical keeper, HR, visits and aliases without writes
+        run: |
+          set -Eeuo pipefail
+          npm install --prefix firebase/auth-dev-tools --no-save --no-package-lock --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
+          node firebase/auth-dev-tools/cxorbia-i3-approved-r026-keeper-readonly.mjs
+          jq -e '.decision=="PASS_R026_TECHNICAL_KEEPER_READONLY_PREFLIGHT" and
+            .production==false and .readOnly==true and .keeperTechnicalVerified==true and
+            .phoneDiscrepancyAcceptedAsNonGate==true and
+            .authority.canonicalHrRowCount==1 and .authority.hrHistoricalVisits==5 and
+            .access.technicalPasswordProof==true and
+            .access.canonicalSecondaryRecentSignIn==false and
+            ([.domain.aliasOwned[]] | all(.==0)) and
+            .providerWrites==0 and .authWrites==0 and .firestoreWrites==0 and
+            .hrWrites==0 and .externalWrites==0 and .deployments==0 and .merges==0' "$CX_R026_READONLY_OUT/result.json" >/dev/null
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-r026-keeper-readonly-${{ github.run_id }}
+          path: .tmp/cxorbia-i3-r026-keeper-readonly/result.json
+          if-no-files-found: warn
+          retention-days: 14
