@@ -4,12 +4,12 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "8e2bda6c19b1b9411d98ccda8248f66553a1c8b2",
-  "productTreeAuthority": "456be8c852fa995fa1431536af29b09155009a0e",
-  "predecessorProductSourceSha": "8f02e305be6d3c4a5ec4890c47d80cb34300f137",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V525_2026-10-29.json",
-  "findingsLedgerExpectedGitBlob": "b6700a8ef3ebc8ed40480843bf45c0a5f889e6d6",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V193.json",
+  "productSourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+  "productTreeAuthority": "be0ad639a652439200ef4043bb08d5d4b709f266",
+  "predecessorProductSourceSha": "8e2bda6c19b1b9411d98ccda8248f66553a1c8b2",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V526_2026-10-29.json",
+  "findingsLedgerExpectedGitBlob": "e9118fb912899f19790411f2de09f94a11753dec",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V194.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -3028,7 +3028,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "71552fc620569755313ceb36a9e54e23a084220f",
+  "moduleTruthExpectedGitBlob": "b8adb29e0513f06a441fd4209ef96912268e1646",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -14560,6 +14560,27 @@
     "nextGate": "CANONICAL_SOURCE_QA_AND_ONE_EXACT_DEV_AUTHENTICATED_ADMIN_SHOPPER_E2E",
     "gate20": "HOLD",
     "gate21": "HOLD",
+    "production": false
+  },
+  "g03CanonicalControlAlignment20261029": {
+    "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+    "sourceTree": "be0ad639a652439200ef4043bb08d5d4b709f266",
+    "controlParentSha": "b2a6c62b525f52efc086e1b1603aff08a55d028e",
+    "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V194.json",
+    "moduleTruthBlob": "b8adb29e0513f06a441fd4209ef96912268e1646",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V526_2026-10-29.json",
+    "ledgerBlob": "e9118fb912899f19790411f2de09f94a11753dec",
+    "previewRunId": 40901257714,
+    "hostingOnly": true,
+    "servedBytes": "PASS_5_OF_5",
+    "authenticatedNewPreview": "PENDING",
+    "preservedMatchDomains": [
+      "historical",
+      "identity-membership-roll-forward",
+      "phase-a-supporting-core",
+      "reports-admin-shopper",
+      "tenant-admin-config-branding"
+    ],
     "production": false
   }
 }
