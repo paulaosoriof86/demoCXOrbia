@@ -6396,8 +6396,9 @@ jobs:
       if [[ "$I3_SESSION_PROOF" == true ]];then bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh session-source-proof;fi
    - name: step
      run: |
-      npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 google-auth-library@9.15.1 pdfjs-dist@3.11.174 >/dev/null 2>&1
-      npx playwright install chromium >/dev/null 2>&1
+      set -Eeuo pipefail
+      npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 google-auth-library@9.15.1 pdfjs-dist@3.11.174 2>&1 | tee "$PHASEA_LIVE_OUT/npm-install.log"
+      npx --no-install playwright install chromium 2>&1 | tee "$PHASEA_LIVE_OUT/chromium-install.log"
    - uses: google-github-actions/auth@v2
      with:
       credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'

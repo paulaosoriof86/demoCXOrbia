@@ -14,8 +14,8 @@ session-source-proof|session-preflight|session-proof)
   test "$(jq -r .status "$CANDIDATE_DESCRIPTOR")" = HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL
   test "$(jq -r .production "$CANDIDATE_DESCRIPTOR")" = DO_NOT_TOUCH
   SESSION_POINTER=CXORBIA_RECOVERY_EXECUTION_CURRENT.json
-  SESSION_PACKAGE=docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029.json
-  test "$(jq -r .currentSessionProofPackage.path "$SESSION_POINTER")" = "$SESSION_PACKAGE"
+  SESSION_PACKAGE="$(jq -r .currentSessionProofPackage.path "$SESSION_POINTER")"
+  [[ "$SESSION_PACKAGE" =~ ^docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029(_R[1-9][0-9]*)?\.json$ ]]
   test "$(git rev-parse "HEAD:$SESSION_PACKAGE")" = "$(jq -r .currentSessionProofPackage.gitBlob "$SESSION_POINTER")"
   test "$(jq -r .schemaVersion "$SESSION_PACKAGE")" = cxorbia.i3.c02-d04.independent-session-package.v1
   test "$(jq -r .branch "$SESSION_PACKAGE")" = recovery/cxorbia-phase-a-20260831

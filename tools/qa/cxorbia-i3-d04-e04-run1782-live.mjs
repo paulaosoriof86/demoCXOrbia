@@ -20,8 +20,8 @@ if(SESSION_PROOF_MODE){
   assert.equal(descriptor.status,'HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL');
   assert.equal(SRC,'e753c418fb797a506f6dce3b2b51de405c9b33f1');
   assert.equal(descriptor.productTreeAuthority,'be0ad639a652439200ef4043bb08d5d4b709f266');
-  const packagePath='docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029.json';
-  assert.equal(process.env.CXORBIA_I3_SESSION_PACKAGE,packagePath);
+  const packagePath=process.env.CXORBIA_I3_SESSION_PACKAGE||'';
+  assert.match(packagePath,/^docs\/checkpoints\/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029(?:_R[1-9][0-9]*)?\.json$/);
   const packageBytes=fs.readFileSync(packagePath);
   const packageBlob=createHash('sha1').update(Buffer.from('blob '+packageBytes.length+'\0')).update(packageBytes).digest('hex');
   const execution=JSON.parse(fs.readFileSync('CXORBIA_RECOVERY_EXECUTION_CURRENT.json','utf8'));
