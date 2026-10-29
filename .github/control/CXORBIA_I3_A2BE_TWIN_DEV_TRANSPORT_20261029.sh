@@ -38,7 +38,10 @@ assert_old_traffic() {
 
 preflight() {
   test "${GITHUB_REF_NAME:-}" = 'recovery/cxorbia-phase-a-20260831'
-  test "${GITHUB_EVENT_NAME:-}" = workflow_dispatch
+  test "${GITHUB_EVENT_NAME:-}" = push
+  test "$(jq -r '.preflightAuthorized' .github/control/CXORBIA_I3_A2BE_DEV_REQUEST_20261029.json)" = true
+  test "$(jq -r '.sourceSha' .github/control/CXORBIA_I3_A2BE_DEV_REQUEST_20261029.json)" = "$SOURCE"
+  test "$(jq -r '.sourceTree' .github/control/CXORBIA_I3_A2BE_DEV_REQUEST_20261029.json)" = "$TREE"
   test "$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = "$SOURCE"
   test "$(jq -r '.productTreeAuthority' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = "$TREE"
   test "$(jq -r '.status' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL
@@ -82,7 +85,8 @@ preflight() {
 materialize() {
   test "${CX_A2BE_SOURCE_DIR:-}" != ''
   test -s "$OUT/preflight.json"
-  test "${GITHUB_EVENT_NAME:-}" = workflow_dispatch
+  test "${GITHUB_EVENT_NAME:-}" = push
+  test "$(jq -r '.materializeAuthorized' .github/control/CXORBIA_I3_A2BE_DEV_REQUEST_20261029.json)" = true
   test "${CX_A2BE_EXPLICIT_DEV_APPROVAL:-}" = 'PAULA_APPROVED_A2BE_PAIR_DEV_ONLY'
   service_state "$OUT/runtime-immediately-before.json"
   hosting_state "$OUT/hosting-immediately-before.json"

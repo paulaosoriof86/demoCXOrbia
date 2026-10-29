@@ -1,18 +1,11 @@
 name: CXOrbia I3 R020 Exact Certification Identity Readonly
 on:
-  workflow_dispatch:
-    inputs:
-      case_id:
-        description: 'Exact read-only R-026 technical keeper preflight'
-        type: choice
-        required: true
-        default: none
-        options: [none, r026]
   push:
     branches: [recovery/cxorbia-phase-a-20260831]
     paths:
       - .github/workflows/cxorbia-i3-approved-r020-cert-readonly.yml
       - firebase/auth-dev-tools/cxorbia-i3-approved-r020-cert-readonly.mjs
+      - firebase/auth-dev-tools/cxorbia-i3-approved-r026-keeper-readonly.mjs
 permissions:
   contents: read
 concurrency:
@@ -79,7 +72,7 @@ jobs:
 # R020 prewrite source recheck after cumulative product-only commit b6a1b923. No data writes.
 
   r026-technical-keeper-readonly-preflight:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.case_id == 'r026' }}
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-APPROVED-R026-KEEPER-READONLY-PREFLIGHT' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     env:
@@ -97,7 +90,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           test "$GITHUB_REF_NAME" = 'recovery/cxorbia-phase-a-20260831'
-          test "$GITHUB_EVENT_NAME" = workflow_dispatch
+          test "$GITHUB_EVENT_NAME" = push
           test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
           test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
           SOURCE="$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"

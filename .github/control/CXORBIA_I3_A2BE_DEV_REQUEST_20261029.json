@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "cxorbia.i3.a2be.dev-pair.request.v1",
+  "operation": "PINNED_DEV_TWIN_TRANSPORT",
+  "sourceSha": "a2be5a77a4c0008ec374c17f42d5da27070e1ed6",
+  "sourceTree": "eb8734a450c14d510a9a9924b39cb826caacf510",
+  "preflightAuthorized": true,
+  "materializeAuthorized": false,
+  "productionAuthorized": false,
+  "immutableProductionSite": "tya-plataforma.web.app",
+  "devProject": "cxorbia-backend-dev",
+  "devHostingPreviewOnly": true,
+  "devRuntimeTrafficMayChangeOnlyOnSeparateApproval": true,
+  "sourceProductChanged": false,
+  "status": "PREPARED_SOURCE_ONLY_WAITING_READONLY_PREFLIGHT_AND_SEPARATE_DEV_MATERIALIZATION_AUTHORIZATION"
+}

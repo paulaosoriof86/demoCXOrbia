@@ -21,21 +21,6 @@ on:
    - firebase.json
    - .firebaserc
   workflow_dispatch:
-   inputs:
-    i3_a2be_action:
-     description: 'Prepared canonical DEV candidate: read-only preflight or separately approved twin materialization'
-     type: choice
-     required: true
-     default: none
-     options:
-      - none
-      - preflight
-      - materialize
-    i3_a2be_explicit_dev_approval:
-     description: 'Materialize only after separate Paula authorization: PAULA_APPROVED_A2BE_PAIR_DEV_ONLY'
-     type: string
-     required: false
-     default: ''
 permissions:
   contents: read
   actions: read
@@ -7699,39 +7684,3 @@ jobs:
    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'VRM290-DEV-HOSTING' }}
    uses: ./.github/workflows/cxorbia-i3-vrm290-invoked-hosting-dev.yml
    secrets: inherit
-
-  i3-a2be-twin-dev-transport:
-   needs: canonical-candidate-authority
-   if: ${{ github.event_name == 'workflow_dispatch' && (inputs.i3_a2be_action == 'preflight' || (inputs.i3_a2be_action == 'materialize' && inputs.i3_a2be_explicit_dev_approval == 'PAULA_APPROVED_A2BE_PAIR_DEV_ONLY')) && needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL' }}
-   runs-on: ubuntu-latest
-   timeout-minutes: 60
-   permissions:
-    contents: read
-    actions: read
-    id-token: write
-   env:
-    CX_A2BE_EXPLICIT_DEV_APPROVAL: ${{ inputs.i3_a2be_explicit_dev_approval }}
-   steps:
-    - uses: actions/checkout@v4
-      with: {fetch-depth: 0}
-    - uses: actions/setup-node@v4
-      with: {node-version: '24'}
-    - uses: google-github-actions/auth@v2
-      with:
-       credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-    - uses: google-github-actions/setup-gcloud@v2
-      with:
-       project_id: cxorbia-backend-dev
-    - name: Pinned source/tree, G03 state and exact current DEV preflight
-      run: bash .github/control/CXORBIA_I3_A2BE_TWIN_DEV_TRANSPORT_20261029.sh preflight
-    - name: Separately authorized DEV revision plus Hosting Preview, never LIVE
-      if: ${{ inputs.i3_a2be_action == 'materialize' }}
-      run: bash .github/control/CXORBIA_I3_A2BE_TWIN_DEV_TRANSPORT_20261029.sh materialize
-    - name: Preserve preflight, revision, digest, served bytes, rollback evidence
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-       name: cxorbia-i3-a2be-twin-dev-${{ github.run_id }}
-       path: .tmp/i3-a2be-twin-dev/
-       if-no-files-found: warn
-       retention-days: 30

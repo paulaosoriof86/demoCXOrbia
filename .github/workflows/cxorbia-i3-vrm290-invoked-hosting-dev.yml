@@ -1,11 +1,23 @@
-name: CXOrbia I3 VRM290 DEV Hosting - canonical caller only
+name: CXOrbia I3 DEV Transport (historical VRM290 + pinned A2BE)
 on:
   workflow_call:
+    inputs:
+      legacy_caller:
+        required: false
+        type: boolean
+        default: true
+  push:
+    branches: [recovery/cxorbia-phase-a-20260831]
+    paths:
+      - .github/workflows/cxorbia-i3-vrm290-invoked-hosting-dev.yml
+      - .github/control/CXORBIA_I3_A2BE_DEV_REQUEST_20261029.json
+      - .github/control/CXORBIA_I3_A2BE_TWIN_DEV_TRANSPORT_20261029.sh
 permissions:
   contents: read
   id-token: write
 jobs:
   vrm290-dev-hosting:
+    if: ${{ inputs.legacy_caller == true }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
@@ -31,5 +43,35 @@ jobs:
         with:
           name: cxorbia-i3-vrm290-hosting-dev-${{ github.run_id }}
           path: .tmp/i3-vrm290-dev-hosting/
+          if-no-files-found: warn
+          retention-days: 30
+  i3-a2be-dev-twin:
+    if: ${{ github.event_name == 'push' && (github.event.head_commit.message == 'I3-A2BE-DEV-PREFLIGHT' || github.event.head_commit.message == 'I3-A2BE-DEV-MATERIALIZE') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Prove canonical product source and G03 authority
+        run: node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+        with: {project_id: cxorbia-backend-dev}
+      - name: Source/tree pin, current DEV, no forbidden writes, focal tests
+        run: bash .github/control/CXORBIA_I3_A2BE_TWIN_DEV_TRANSPORT_20261029.sh preflight
+      - name: Materialize only after separate Paula authorization
+        if: ${{ github.event.head_commit.message == 'I3-A2BE-DEV-MATERIALIZE' }}
+        env:
+          CX_A2BE_EXPLICIT_DEV_APPROVAL: PAULA_APPROVED_A2BE_PAIR_DEV_ONLY
+        run: bash .github/control/CXORBIA_I3_A2BE_TWIN_DEV_TRANSPORT_20261029.sh materialize
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-a2be-twin-dev-${{ github.run_id }}
+          path: .tmp/i3-a2be-twin-dev/
           if-no-files-found: warn
           retention-days: 30
