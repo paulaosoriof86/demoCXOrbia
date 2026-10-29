@@ -1259,8 +1259,8 @@
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
         "cumulativeFocalRunId": 35953230892
       },
-      "currentCandidateSource": "a2be5a77a4c0008ec374c17f42d5da27070e1ed6",
-      "currentCandidateTree": "eb8734a450c14d510a9a9924b39cb826caacf510",
+      "currentCandidateSource": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+      "currentCandidateTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
       "currentOwnerBlobs": {
         "app/modules/historico.js": "bf259b28e871bc6cea991f14ce5560323ef55f9e"
       },
@@ -1418,8 +1418,8 @@
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
         "cumulativeFocalRunId": 35953230892
       },
-      "currentCandidateSource": "a2be5a77a4c0008ec374c17f42d5da27070e1ed6",
-      "currentCandidateTree": "eb8734a450c14d510a9a9924b39cb826caacf510",
+      "currentCandidateSource": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+      "currentCandidateTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
       "currentOwnerBlobs": {
         "app/adapters/cxorbia-exact-identity-contract-v1.js": "9b2d465dfe4d77a0a30786b0d540903b0f014c32",
         "app/adapters/cxorbia-identity-roll-forward-v1.js": "89d1de9535ac4537c0309c8bf24483cceebc08e5",
@@ -1652,8 +1652,8 @@
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
         "cumulativeFocalRunId": 35953230892
       },
-      "currentCandidateSource": "a2be5a77a4c0008ec374c17f42d5da27070e1ed6",
-      "currentCandidateTree": "eb8734a450c14d510a9a9924b39cb826caacf510",
+      "currentCandidateSource": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+      "currentCandidateTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
       "currentOwnerBlobs": {
         "app/adapters/tya-canonical-finance-read-model-v2.js": "4997010949dd8a126b058f720041fe5eeb04f1bd",
         "backend/runtime/hr-live-service/Dockerfile": "5e8be5aa3c277384a796a0f2e484567e14926bb3",
@@ -1808,8 +1808,8 @@
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
         "cumulativeFocalRunId": 35953230892
       },
-      "currentCandidateSource": "a2be5a77a4c0008ec374c17f42d5da27070e1ed6",
-      "currentCandidateTree": "eb8734a450c14d510a9a9924b39cb826caacf510",
+      "currentCandidateSource": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+      "currentCandidateTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
       "currentOwnerBlobs": {
         "app/modules/operacion-extra.js": "796b1454fdbff75011eaa9664306988e45fad161"
       },
@@ -2335,8 +2335,8 @@
         "app/modules/marca.js"
       ],
       "latestApprovedAuthority": "VRM-080 connected administration contract + VRM-194 fail-closed correction",
-      "currentCandidateSource": "a2be5a77a4c0008ec374c17f42d5da27070e1ed6",
-      "currentCandidateTree": "eb8734a450c14d510a9a9924b39cb826caacf510",
+      "currentCandidateSource": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+      "currentCandidateTree": "6cd64e3523cbc8aed0febc0a5326d164a2c9181b",
       "roles": [
         "Admin"
       ],

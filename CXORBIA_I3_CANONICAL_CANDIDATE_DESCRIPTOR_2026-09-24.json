@@ -8,7 +8,7 @@
   "productTreeAuthority": "eb8734a450c14d510a9a9924b39cb826caacf510",
   "predecessorProductSourceSha": "308c69e3756e3e80577856009901934ce5f52fba",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V524_2026-10-29.json",
-  "findingsLedgerExpectedGitBlob": "bffd3c7b2c438365d389c95248c2ba5503a1421c",
+  "findingsLedgerExpectedGitBlob": "2e63eb97308b9379eff34bc0fc8316e6e0e778e4",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V192.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -3028,7 +3028,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "31188070a750b727f462f13241deebe273a0cb9f",
+  "moduleTruthExpectedGitBlob": "7099f57085285f5e5343810d807795c03faabc9c",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -14446,9 +14446,9 @@
     "sourceTree": "eb8734a450c14d510a9a9924b39cb826caacf510",
     "predecessorSha": "308c69e3756e3e80577856009901934ce5f52fba",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V192.json",
-    "matrixBlob": "31188070a750b727f462f13241deebe273a0cb9f",
+    "matrixBlob": "7099f57085285f5e5343810d807795c03faabc9c",
     "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V524_2026-10-29.json",
-    "ledgerBlob": "bffd3c7b2c438365d389c95248c2ba5503a1421c",
+    "ledgerBlob": "2e63eb97308b9379eff34bc0fc8316e6e0e778e4",
     "changedProductOwners": [
       "app/adapters/cxorbia-admin-identity-review-notice-v1.js",
       "app/adapters/tya-c6-domain-consistency-bridge.js",

@@ -713,7 +713,7 @@
   },
   "moduleTruthAuthority": {
     "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V192.json",
-    "gitBlob": "31188070a750b727f462f13241deebe273a0cb9f",
+    "gitBlob": "7099f57085285f5e5343810d807795c03faabc9c",
     "sourceSha": "a2be5a77a4c0008ec374c17f42d5da27070e1ed6",
     "allModulesMatch": false,
     "phaseAComplete": false
@@ -2751,7 +2751,7 @@
   "activeShockModuleTruth": {
     "sourceSha": "a2be5a77a4c0008ec374c17f42d5da27070e1ed6",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261029-V192.json",
-    "matrixBlob": "31188070a750b727f462f13241deebe273a0cb9f",
+    "matrixBlob": "7099f57085285f5e5343810d807795c03faabc9c",
     "classificationCounts": {
       "COMPOSED_NOT_DEPLOYED": 2,
       "MATCH": 5,
