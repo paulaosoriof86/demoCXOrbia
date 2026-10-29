@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-10-29",
+  "recordedAtUtc": "2026-10-29T19:30:16Z",
+  "iteration": "I3",
+  "state": "HOLD",
+  "kind": "B1_TEST_HARNESS_AND_CONTINUITY_POINTER_REPAIR_PENDING_CLOUD",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedParent": "692deef58f93766724a5f5f8e33ad116813181b5",
+  "productSourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+  "productTree": "be0ad639a652439200ef4043bb08d5d4b709f266",
+  "priorCloudEvidence": {
+    "runId": 40927184139,
+    "jobId": 123635991387,
+    "artifactId": 12921990103,
+    "artifactSha256": "997f6de7f160322ee51a8359b8db72152d4a28e271b24651299f6fd35e2744ed",
+    "a04c01": {
+      "pass": 22,
+      "fail": 0
+    },
+    "b1": {
+      "pass": 5,
+      "fail": 2
+    }
+  },
+  "b1Repair": {
+    "owner": "backend/runtime/hr-live-service/test/cxorbia-b1-canonical-visible-identity.test.mjs",
+    "classification": "MAPPING_FAILURE_TEST_HARNESS",
+    "changes": [
+      "Extract exact source countryCode helper with sessionProfile in VM.",
+      "Require exact current shopperReadiness(profileInfo,result,liveReadModel,claims) call."
+    ],
+    "originalAssertionsPreserved": true,
+    "local": {
+      "tests": 7,
+      "pass": 7,
+      "fail": 0,
+      "skipped": 0,
+      "sha256": "4b2c34cdce25893cd1667d118fe6ca1c50fad7871ef12c47612a6c5c8dcc2574"
+    },
+    "cloudAfterCommit": "PENDING_AUTOMATIC_RUN"
+  },
+  "continuityRepair": {
+    "preserveHistoricalReceiptAndHandoff": true,
+    "synchronizeDescriptorBothNextActionsAndExecutionNextAction": true,
+    "previousLastExecutionReceipt": "RUN1852_2026-10-24",
+    "previousContinuityHandoff": "2026-10-18_D04_E04",
+    "doNotTreatOldCurrentDevMaterializationAsLive": true
+  },
+  "preserved": {
+    "sourceChanges": 0,
+    "newFunctionalClosures": 0,
+    "moduleMatchPromotions": 0,
+    "deploys": 0,
+    "remoteBusinessWrites": 0,
+    "production": "DO_NOT_TOUCH",
+    "terminalCertificationAllowed": false,
+    "historicalPass": "PRESERVED_BY_OWNER_AND_DEPENDENCIES"
+  },
+  "nextExactAction": "I3 G03: reconcile 21 domains preserving owner-scoped approved PASS and exact source/DEV artifacts; parallel read-only HR freshness/ACK, Admin/Shopper operations, finanzas, certificaciones and visual proof. D07 one bounded Admin+Shopper smoke only; fix only P0_PROVEN with one serial writer and cumulative candidate, then Gate20/Gate21. No production.",
+  "immediateAction": "Observe the automatic canonical source-proof run for this commit; record its actual result and complete log, then resume the existing cross-functional G03/G04 queue without repeating approved focal PASS.",
+  "limitations": [
+    "Source assertions do not certify live writes or whole product.",
+    "No current runtime revision/digest readback claimed by this receipt.",
+    "I3 remains HOLD and I4 is not authorized."
+  ]
+}

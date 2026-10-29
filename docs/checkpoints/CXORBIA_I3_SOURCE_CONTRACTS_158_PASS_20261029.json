@@ -1,0 +1,394 @@
+{
+  "sourceSha": "e753c418fb797a506f6dce3b2b51de405c9b33f1",
+  "sourceAcquisition": "Exact paths via GitHub raw connector at sourceSha",
+  "controlFiles": "Copied current working workflow/script; individual hashes listed",
+  "scope": "LOCAL_ISOLATED_SOURCE_CONTRACTS_ONLY_NOT_I3_CERTIFICATION",
+  "node": "v24.22.1",
+  "suites": 9,
+  "tests": 158,
+  "pass": 158,
+  "fail": 0,
+  "remoteProviderCalls": 0,
+  "businessDataWrites": 0,
+  "repoChanges": 0,
+  "production": false,
+  "files": [
+    {
+      "path": ".github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh",
+      "bytes": 21920,
+      "gitBlob": "5b7d2d1a1730a1dee323a8e09307068ae92ae148",
+      "sha256": "359c9ff9b306d410db99bb54931d31893074bfedf4b537f373673ef6760548b7"
+    },
+    {
+      "path": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      "bytes": 511786,
+      "gitBlob": "dc111321b42434c5e61eb60ba2edcb071b63645f",
+      "sha256": "d90b396728b32f5fc13f1982fedf89a87a943de7ca6a4fd428bcffc96ff78c8b"
+    },
+    {
+      "path": "app/adapters/cxorbia-command-adapter-v1.js",
+      "bytes": 10138,
+      "gitBlob": "aa6522b76a5958aece332c6346c312086d803500",
+      "sha256": "d6222749a1c3a9a885012c6a6631d1311aae628f93f743ae541b87cf15de7cd0"
+    },
+    {
+      "path": "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+      "bytes": 32387,
+      "gitBlob": "2adf6e6815b79ca57179a397b9ba0ee1cd27dd8b",
+      "sha256": "8d0689e59e24f967432c614658ddfccc06ed7a83c416267116704dd6ece0be2d"
+    },
+    {
+      "path": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+      "bytes": 22535,
+      "gitBlob": "630cb1ac7bff4124cae28c281ae8186ee7c7c28a",
+      "sha256": "9100474b3e638f1648a2cf5e73b779299375031fb76e7533555524460a4a8d76"
+    },
+    {
+      "path": "app/adapters/tya-canonical-shopper-portal-v2.js",
+      "bytes": 31874,
+      "gitBlob": "99bde07ca213541bdec920606303621bdfeb406c",
+      "sha256": "b3a741a88a89ac3776de639b2cc960334ecbaaff6a65bd1a52c802d69833e31c"
+    },
+    {
+      "path": "app/adapters/tya-financial-canonical-source-safe-adapter.js",
+      "bytes": 17391,
+      "gitBlob": "9d2d1a9a541c74a6234353a44f0bfaa43bc1fb79",
+      "sha256": "fb6647732b5f3fb7f926a2184e56cac890143e12a0cc0673330c1d6e882ff23d"
+    },
+    {
+      "path": "app/adapters/tya-live-source-inplace-apply.js",
+      "bytes": 17729,
+      "gitBlob": "45e1cd1b8c01d6276be2c256d5b99baa93e90252",
+      "sha256": "f39f4d5d47f07d6c5ae5fa22e48d314af0a57478c0e9e78dbfe74a26b5082ad8"
+    },
+    {
+      "path": "app/adapters/tya-live-source-refresh-watch-v2.js",
+      "bytes": 14918,
+      "gitBlob": "08ae9f9ca73d41c6c431e0234a9d209eb6fa2a16",
+      "sha256": "74f2ea84d67a7220af6fb525b670f6ed1269a23ce82d6809b1d1b964ee19d995"
+    },
+    {
+      "path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "bytes": 40618,
+      "gitBlob": "4e9cfc368ec47b31929e6dff36c5768fcd7226cf",
+      "sha256": "43e79e43cbd27393e4ba5f9f76a8a5e6aa0e861c1c8f702a1ddc0fbce69843e4"
+    },
+    {
+      "path": "app/core/automations.js",
+      "bytes": 34838,
+      "gitBlob": "1bf04186e2461340e2852a7608b98d1d510a71a0",
+      "sha256": "0c7816dd32884c179744e1261514aed7279f426e1aa5cac2cd03bf9163debc35"
+    },
+    {
+      "path": "app/core/backend-ai.js",
+      "bytes": 3544,
+      "gitBlob": "f8e6450ef2250059f99fa2be6b84a9c7e25a7e69",
+      "sha256": "decbb154363da538dbb459c96f0deda2b27321ae2c805dbb64ee33660586c34c"
+    },
+    {
+      "path": "app/core/backend-certifications.js",
+      "bytes": 4957,
+      "gitBlob": "f6f569563efeff44b6adf7e9327e10f21651223b",
+      "sha256": "2eebcd8b127dbe8cc5817eafd53ed01ccbfcd38df70010ce54fd5437311e5efc"
+    },
+    {
+      "path": "app/core/backend-hr-source-bridge.js",
+      "bytes": 16189,
+      "gitBlob": "e86d0564e75d8e1dcfe941854b0d7154ca4d9e6c",
+      "sha256": "a34cb57831c3ea8f73463c1108ed3daa1d25aaef58e4cf2653b97b3b863b8850"
+    },
+    {
+      "path": "app/core/shopper-credential-rule.js",
+      "bytes": 3206,
+      "gitBlob": "723abba57c5fed73c1fab933150943e39ebb76e3",
+      "sha256": "6f407f7e0a4bca4cdff8a3e176fed73b238e5f4cd8ccdd024655e18d9c8d1aad"
+    },
+    {
+      "path": "app/core/topbar.js",
+      "bytes": 17837,
+      "gitBlob": "823fe9af94cdf1a83b3d3b733a5c306b5af2155d",
+      "sha256": "e6ad30a4621c9dc0ae8f1ed6786c52e3ebbbf88d96eed2413cc60c052868f463"
+    },
+    {
+      "path": "app/data/tya-payment-history-source-safe.js",
+      "bytes": 5249,
+      "gitBlob": "a8d8461222c01f6450d7677675734c33b75b4ed2",
+      "sha256": "9d5d9b5f79be10765e126156ea4413aab27807cafdf167161175913d4b35fbc8"
+    },
+    {
+      "path": "app/modules/beneficios.js",
+      "bytes": 20826,
+      "gitBlob": "c7060562558f307b9b037e929a6fa7e179db1826",
+      "sha256": "2c1763b65ef055eecd56e3622033d53c9946f679e758d06be797b7e854b6b419"
+    },
+    {
+      "path": "app/modules/cert.js",
+      "bytes": 58547,
+      "gitBlob": "3ef8111ced3b208b718b47891b91a3624a2d4896",
+      "sha256": "0d65e05ccf76b5d1cfcb710a86f2e348d20ab05f6e2b261386ae5750e7e4b6ab"
+    },
+    {
+      "path": "app/modules/cliente-insights.js",
+      "bytes": 15631,
+      "gitBlob": "4fca3b9c25231ef025c2d421c9ce07f2c2124a30",
+      "sha256": "b08726114d913dba3eb471371805bdd25c68752bcf34e734cabf5bbebf19f41d"
+    },
+    {
+      "path": "app/modules/cuestionario-shopper.js",
+      "bytes": 11858,
+      "gitBlob": "5f5609aa91fe3d0c3682e1dc13a1d69443bed00b",
+      "sha256": "576272660a6b7cf96055587de39ee172df6ebc9147711a5cf0f17d0a8c943388"
+    },
+    {
+      "path": "app/modules/dashboard.js",
+      "bytes": 53898,
+      "gitBlob": "c48d1c63d0628c637c4257bef1725dc4349b8668",
+      "sha256": "44060d8d043cfaa57ad7f55618b1de217c4eb8e195111caf33ed82e6fa2cd81c"
+    },
+    {
+      "path": "app/modules/finanzas.js",
+      "bytes": 154803,
+      "gitBlob": "eb5af6344109bbf4908bae098a668f924c43b57e",
+      "sha256": "4f7a43c7e14447411358d59fcb1f522c47d3a1f4b3de0948d8a02eae14fcedd0"
+    },
+    {
+      "path": "app/modules/hr-source.js",
+      "bytes": 29363,
+      "gitBlob": "c59440efb4d66238a1cbce09d7bf45a8cc2e4751",
+      "sha256": "019faec336ec59047a90fa4b51a55715b6cfbc19ba4345f68584b6b5f5100dec"
+    },
+    {
+      "path": "app/modules/misvisitas.js",
+      "bytes": 41082,
+      "gitBlob": "de7e10c0509aabcf96f3834ee8a5496be297b2b3",
+      "sha256": "aca98b825dc517ed1e64d3dd94b729748be97e46d0f17c3bdac30c2a95d1215b"
+    },
+    {
+      "path": "app/modules/postulaciones.js",
+      "bytes": 105663,
+      "gitBlob": "13acd6982be68e945733f0048c1aa8a911bdc219",
+      "sha256": "382a966129f31ab3b99c7df8f9c2b5a3735e3db5b76688fe4f7b0813b9da779e"
+    },
+    {
+      "path": "app/modules/reservas.js",
+      "bytes": 23934,
+      "gitBlob": "37e4305161c93cbdae0fd5cbe20a55216f59206b",
+      "sha256": "9dd37415eb2ea5c4052645dd9bd701af6bb0581a981d13e43f79e6817a768853"
+    },
+    {
+      "path": "app/modules/shoppers.js",
+      "bytes": 68884,
+      "gitBlob": "2ea1e68a229cdcfeaf55784d6ac9cc9bd863ccb9",
+      "sha256": "fe2bd79b9ebaccd786a1b8cf219c948d3e05ba89c1e139d4cf0797dd5396cc20"
+    },
+    {
+      "path": "backend/runtime/cxorbia-academy-command-provider-v1.mjs",
+      "bytes": 15241,
+      "gitBlob": "c5a6536a95c4806e5eb3dcf11b146627d72080c1",
+      "sha256": "3056b6dcf89875bd16844132cc75b13451f21a772f7601f78114f2d292d53fbc"
+    },
+    {
+      "path": "backend/runtime/cxorbia-commercial-command-provider-v1.mjs",
+      "bytes": 11438,
+      "gitBlob": "1fb37bb68bf0a7faeb8ed58e916d6346d8acb31f",
+      "sha256": "affcef9d20152e63447c52b91e905b553e2ba84f30eb6a72e7599a7e81bddd8b"
+    },
+    {
+      "path": "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+      "bytes": 56887,
+      "gitBlob": "180c6fd99c3d73045335d6e1d0cb3bb135af0a35",
+      "sha256": "424e284d7be9e86c8cea89083d425189f7bd6c52daa4cb59e434c3a5055e7b95"
+    },
+    {
+      "path": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+      "bytes": 59575,
+      "gitBlob": "1747a810b8854f871a5bf10db745ea1d92c0d900",
+      "sha256": "2ee98c48a549835af32ea76c3e92c897c9e4b826e201f9d35c4f0092a7140730"
+    },
+    {
+      "path": "backend/runtime/cxorbia-project-command-provider-v1.mjs",
+      "bytes": 16707,
+      "gitBlob": "bfd59b4b91dcd2337d944223c6cd5c48ca5f0e76",
+      "sha256": "711416aba69cd590fc3d38a9497859c368ee04fe0f7fb47026ba09d982908eca"
+    },
+    {
+      "path": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+      "bytes": 139439,
+      "gitBlob": "2cbe2ac0ca615aed6bfd965286288d760381cc28",
+      "sha256": "7e316807a84f965241cfb0f7eaa4ba73c0fc267a0e7db48f351e7e282a620fc1"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/certification-runtime.mjs",
+      "bytes": 28265,
+      "gitBlob": "f13f39c43e8a7d12f9c90a1dc1218f8735be3a3b",
+      "sha256": "90a4ef96af65308384c1da0a4cd841b9c37f63f644ab22949260fbe0fc86067a"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+      "bytes": 29428,
+      "gitBlob": "d034ed56c3115ce5d86e4b03ee5fc41a6702b1d4",
+      "sha256": "ab55356a3d14053d872801a5634540a2d5620f70ad49993cff1cbda7dda17ce9"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/dev-visual.mjs",
+      "bytes": 7415,
+      "gitBlob": "da410a6ba5665fbdf0f421f424fdd47a96c230ca",
+      "sha256": "bb193e73429c46a0c827cd370399a838f21b9f2013b0ee0841c60ade50681607"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/server.mjs",
+      "bytes": 32457,
+      "gitBlob": "53dd638527c5a68585034a6200f0881c76cdaede",
+      "sha256": "da9d8568408c840af0e88ea9710777fddf103a64504c39bc192f8e705c22b890"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/test/cxorbia-i3-phasea-completion-source-contract.test.mjs",
+      "bytes": 7662,
+      "gitBlob": "b6070e6d5bdf0e06f64ab01d76da4c168a353963",
+      "sha256": "84708e101968fb4728da0bac41eff27d29e6da073582a27ab4d53613d46c4733"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs",
+      "bytes": 2795,
+      "gitBlob": "f3fceac3a02165d4aff465754b7f1171adef9fa6",
+      "sha256": "9ce2d3ca5f13fbd91c98741be12b06ad98d74468203cf21a0174534a6bbe6188"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-b10-external-provider-routing.test.mjs",
+      "bytes": 4070,
+      "gitBlob": "66a7a165db3104b6de992751437624afef01d02a",
+      "sha256": "718e7d8a60f7632b8a47d94555aa5ee91ce55e2eb894547be4b2471d0052e219"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-d02-document-extraction-source.test.mjs",
+      "bytes": 2622,
+      "gitBlob": "65b6fca14beb4fb766067cfa5e88a5a522d069b6",
+      "sha256": "3dd4f840c8ae2e114f398b9d5f4b89fac09ef6eff5491b2ba609c60f804914ea"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-d03-ai-generation-source.test.mjs",
+      "bytes": 2881,
+      "gitBlob": "31852b3cd26a8ca94bbd7976abb1458185a459f9",
+      "sha256": "bb5f2e3909c6afd6aa3cec4c5e89f95cd9188178f2328d9967414a9fae93f8a4"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-d04-versioned-bank-review.test.mjs",
+      "bytes": 7750,
+      "gitBlob": "c09c95ff87c51225d800d5be7b5b7ef924b406f7",
+      "sha256": "00ec2f48362417bab3abc80bd1a5f315245d0c04d24c3e51910c6e8b637458ef"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-e04-benchmark-source.test.mjs",
+      "bytes": 2040,
+      "gitBlob": "c97f2a9d4d14c4760bb9d41219d1f35618d2f472",
+      "sha256": "61da65e5419a5be9c52d6db9c7cd198f547ce9279e1398fb8304db3ca0710ed8"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-g05-observation-no-writes.test.cjs",
+      "bytes": 7732,
+      "gitBlob": "0ae1acacebe7f9a37deb5cbb24ef4a33d46c445b",
+      "sha256": "cee25d768445077f79c7d972c9604c8d5ef8442f844c271630670466515db9d7"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-g05-sync-command-ui.test.cjs",
+      "bytes": 13214,
+      "gitBlob": "99fde9d4e76d1bb1c187a4695744008d122d6110",
+      "sha256": "e62fda935de1ff03a76724b52e66428df74dc43b9b37a69e1d41b76db70e7b24"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs",
+      "bytes": 25710,
+      "gitBlob": "888d52a1870664119e12bcfe9ac25c5a4ecbaf30",
+      "sha256": "d2f00ca9b50e3de63bd5273ee2a81bac4f13eedd598b28c5e65a2c030327dcd3"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-r22-notification-route-ack-source.test.mjs",
+      "bytes": 1898,
+      "gitBlob": "e5bf0513d490577b09895bd045656dd5ec29b6db",
+      "sha256": "4f78b7d4e9a0ba11e245e3175394f506715cd39aabb85a8328a80f9a1f3cd7f9"
+    }
+  ],
+  "results": [
+    {
+      "path": "tools/qa/cxorbia-i3-g05-observation-no-writes.test.cjs",
+      "exit": 0,
+      "summary": [
+        "ℹ tests 35",
+        "ℹ pass 35",
+        "ℹ fail 0"
+      ]
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs",
+      "exit": 0,
+      "summary": [
+        "ℹ tests 37",
+        "ℹ pass 37",
+        "ℹ fail 0"
+      ]
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-g05-sync-command-ui.test.cjs",
+      "exit": 0,
+      "summary": [
+        "ℹ tests 42",
+        "ℹ pass 42",
+        "ℹ fail 0"
+      ]
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs",
+      "exit": 0,
+      "summary": [
+        "ℹ tests 5",
+        "ℹ pass 5",
+        "ℹ fail 0"
+      ]
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-d02-document-extraction-source.test.mjs",
+      "exit": 0,
+      "summary": [
+        "ℹ tests 5",
+        "ℹ pass 5",
+        "ℹ fail 0"
+      ]
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-d03-ai-generation-source.test.mjs",
+      "exit": 0,
+      "summary": [
+        "ℹ tests 5",
+        "ℹ pass 5",
+        "ℹ fail 0"
+      ]
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-d04-versioned-bank-review.test.mjs",
+      "exit": 0,
+      "summary": [
+        "ℹ tests 7",
+        "ℹ pass 7",
+        "ℹ fail 0"
+      ]
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-e04-benchmark-source.test.mjs",
+      "exit": 0,
+      "summary": [
+        "ℹ tests 2",
+        "ℹ pass 2",
+        "ℹ fail 0"
+      ]
+    },
+    {
+      "path": "backend/runtime/hr-live-service/test/cxorbia-i3-phasea-completion-source-contract.test.mjs",
+      "exit": 0,
+      "summary": [
+        "ℹ tests 20",
+        "ℹ pass 20",
+        "ℹ fail 0"
+      ]
+    }
+  ]
+}

@@ -50,7 +50,7 @@ test('I3 P0 HN shopper readiness requires exact profile and country, not an exis
   assert.doesNotMatch(gate,/arr\(authority\.authorizedPeriodIds\)\.length>0/);
   assert.match(bridge,/shopper_ready_without_assigned_visits/);
   assert.match(bridge,/SHOPPER_EXACT_HR_PROFILE_COUNTRY_PERIOD_REQUIRED/);
-  assert.match(bridge,/shopperReadiness\(profileInfo,result,claims\)/);
+  assert.match(bridge,/shopperReadiness\(profileInfo,result,liveReadModel,claims\)/);
   assert.match(gate,/authority\?\.atomicPublication===true/);
   assert.match(bridge,/shopperCountry:shopperReady\.country/);
   assert.match(bridge,/authorizedPeriodIds:clone\(shopperReady\.authorizedPeriodIds\|\|\[\]\)/);
@@ -79,7 +79,7 @@ test('I3 P0 HN exact identity ambiguity is blocked without fuzzy merge or global
   const bridge=read('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js');
   assert.match(bridge,/ambiguous_exact_identity/);
   assert.match(bridge,/no_exact_identity/);
-  const code=bridge.slice(bridge.indexOf('function sessionProfile('),bridge.indexOf('function validateShopperPrincipal('));
+  const code=bridge.slice(bridge.indexOf('function countryCode('),bridge.indexOf('function projectRecord('))+'\n'+bridge.slice(bridge.indexOf('function sessionProfile('),bridge.indexOf('function validateShopperPrincipal('));
   const resolve=vm.runInNewContext(code+'\n sessionProfile;',{
     str:v=>String(v??'').trim(),arr:v=>Array.isArray(v)?v:[],clone:v=>JSON.parse(JSON.stringify(v))
   });
