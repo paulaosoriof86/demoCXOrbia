@@ -254,6 +254,9 @@ async function livePreflight({db,auth,hr}){
       hrCount:group.hrs.size,technicalCount:group.accounts.size,country:[...group.countries][0],
       aliasOwnedVisits:operationalCounts.visits,aliasOwnedOtherDomainRows:
         Object.entries(operationalCounts).filter(([key])=>key!=='visits').reduce((sum,[,n])=>sum+n,0),
+      // Counts only, not source identifiers or PII. Required to select a safe
+      // transactional migration canary for alias-owned histories by collection.
+      aliasOwnedByDomain:operationalCounts,
       sourceConsistency,status});
   }
   const availabilityByPeriod=new Map();
