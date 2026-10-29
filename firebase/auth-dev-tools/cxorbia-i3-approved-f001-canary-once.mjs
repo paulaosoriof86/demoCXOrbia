@@ -266,5 +266,6 @@ try{
 }catch(error){result.decision=result.identityConsolidated?'HOLD_F001_CANARY_AFTER_POSSIBLE_WRITE':'HOLD_F001_CANARY_PREWRITE';
   result.errorCode=val(error?.message||error).replace(/[^A-Z0-9_:-]/gi,'_').slice(0,130);
   save();console.error(JSON.stringify({decision:result.decision,code:result.errorCode,
+    sourceConsistency:result.sourceConsistency||null,
     providerAck:result.providerAck,readback:result.readback,production:false}));process.exitCode=2;
 }finally{try{if(browser)await browser.close();}catch{}}
