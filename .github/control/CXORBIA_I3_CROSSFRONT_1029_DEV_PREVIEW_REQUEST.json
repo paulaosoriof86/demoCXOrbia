@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "cxorbia.i3.exact-source-isolated-dev-preview-request.v1",
+  "intent": "I3_CROSSFRONT_1029_HOSTING_ONLY",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceSha": "c2f8a00b3acb4b069ff254b266beb6008cfb0b3b",
+  "sourceTree": "dedb1766036748f336dd3c7c90814ddc25066a0c",
+  "sourceHistory": ["c8d2a790df29208c07eafea49d1d62d2d93b09e6", "236b5f64e3a2c3016f278333e1bc20902fd71e28", "c2f8a00b3acb4b069ff254b266beb6008cfb0b3b"],
+  "exactSourceBlobs": {
+    "app/modules/historico.js": "842df3520ffa05d27e04b10c8fc225f023e4f304",
+    "tools/qa/cxorbia-i3-historico-country-totals-owner.test.mjs": "87950d852502edddb99ae346a7d2d065ca53de6b",
+    "backend/runtime/hr-live-service/test/cxorbia-period-command-provider-v1.test.mjs": "661ffacd41f81ac172bae4f05fa22c123e8b25a4",
+    "backend/runtime/hr-live-service/test/cxorbia-shopper-admin-repair.test.mjs": "c8818ed6a48d73fe93adfceae87faa414c7f58c3"
+  },
+  "firebaseProject": "cxorbia-backend-dev",
+  "hostingTarget": "cxorbia-dev",
+  "hostingSite": "cxorbia-backend-dev",
+  "channelPrefix": "i3-recovery-1029",
+  "transport": "FIREBASE_HOSTING_PREVIEW_ONLY",
+  "production": "DO_NOT_TOUCH",
+  "authorizationI4": false,
+  "liveE2e": "PENDING",
+  "humanApproval": "PENDING",
+  "gate20": "HOLD",
+  "gate21": "HOLD"
+}
