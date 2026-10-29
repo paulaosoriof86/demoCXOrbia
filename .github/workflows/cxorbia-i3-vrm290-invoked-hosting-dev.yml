@@ -59,8 +59,8 @@ jobs:
       cancel-in-progress: false
     env:
       REQUEST: .github/control/CXORBIA_I3_CROSSFRONT_1029_DEV_PREVIEW_REQUEST.json
-      SOURCE: c2f8a00b3acb4b069ff254b266beb6008cfb0b3b
-      TREE: dedb1766036748f336dd3c7c90814ddc25066a0c
+      SOURCE: e753c418fb797a506f6dce3b2b51de405c9b33f1
+      TREE: be0ad639a652439200ef4043bb08d5d4b709f266
       PROJECT: cxorbia-backend-dev
       SITE: cxorbia-backend-dev
       TARGET: cxorbia-dev
@@ -97,7 +97,8 @@ jobs:
           test "$(jq -r '.hosting.target' firebase.json)" = "$TARGET"
           test "$(jq -r '.projects.default' .firebaserc)" = "$PROJECT"
           node --check app/modules/historico.js
-          node --test tools/qa/cxorbia-i3-historico-country-totals-owner.test.mjs tools/qa/cxorbia-i3-period-project-client-parity.test.mjs tools/qa/cxorbia-i3-available-visits-active-period-scope.test.mjs > "$OUT/source-tests.log"
+          node --check app/core/data.js
+          node --test tools/qa/cxorbia-i3-period-imported-provider-reconciliation.test.mjs tools/qa/cxorbia-i3-historico-country-totals-owner.test.mjs tools/qa/cxorbia-i3-period-project-client-parity.test.mjs tools/qa/cxorbia-i3-available-visits-active-period-scope.test.mjs > "$OUT/source-tests.log"
           node --test backend/runtime/hr-live-service/test/cxorbia-period-command-provider-v1.test.mjs backend/runtime/hr-live-service/test/cxorbia-shopper-admin-repair.test.mjs > "$OUT/provider-tests.log"
           SOURCE_DIR="$(mktemp -d)"
           git archive "$SOURCE" | tar -x -C "$SOURCE_DIR"
