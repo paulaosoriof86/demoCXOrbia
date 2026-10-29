@@ -42,7 +42,9 @@ async function readCurrentHr(){
   const revision=val(body.revision||body._runtime?.revision||snapshot.sourceRevision);
   assert(revision===EXPECTED_REV,'HR_SOURCE_REVISION_DRIFT');
   assert(arr(snapshot.shoppers).length>0&&arr(snapshot.visits).length>0,'HR_EMPTY');
-  return {shoppers:snapshot.shoppers,visits:snapshot.visits,revision};
+  return {shoppers:snapshot.shoppers,visits:snapshot.visits,revision,
+    currentPeriodId:val(snapshot.currentPeriodId||snapshot.currentPeriodKey),
+    periodCount:arr(snapshot.periods).length};
 }
 function authValid(member,user){
   const claims=user?.customClaims||{};
@@ -169,6 +171,16 @@ async function livePreflight({db,auth,hr}){
     const aliases=new Set([...group.accounts].filter(id=>!group.hrs.has(id)));
     const code=group.hrs.size>1?'HOLD_MULTIPLE_HR_CANONICAL':keeperDecision(group,byMember,profiles,authByUid);
     let status=code;
+    const sourceConsistency={hrNameDrifts:0,hrCountryDrifts:0,hrNameMissing:0,hrCountryMissing:0};
+    for(const id of group.hrs){
+      const live=hrById.get(id)||{},protectedSource=profiles.get(id)||{};
+      const liveName=name(live),protectedName=name(protectedSource);
+      const liveCountry=country(live),protectedCountry=country(protectedSource);
+      if(!liveName||!protectedName)sourceConsistency.hrNameMissing++;
+      else if(liveName!==protectedName)sourceConsistency.hrNameDrifts++;
+      if(liveCountry==='UNSET'||protectedCountry==='UNSET')sourceConsistency.hrCountryMissing++;
+      else if(liveCountry!==protectedCountry)sourceConsistency.hrCountryDrifts++;
+    }
     const operationalCounts=Object.fromEntries(domain.map(d=>[d.name,d.rows.filter(row=>countOwners(row,aliases)).length]));
     if(status==='KEEPER_VERIFIED'){
       if([...aliases].some(id=>{const target=val(cross.get(id)?.shopperId||cross.get(id)?.canonicalShopperId);return target&&target!==id;}))status='HOLD_ALIAS_CROSSWALK_ALREADY_CHANGED';
@@ -179,11 +191,27 @@ async function livePreflight({db,auth,hr}){
       }))status='HOLD_PRIOR_TRUSTED_LINK_CONFLICT';
       if(operationalCounts.visits>0)status='HOLD_ALIAS_OWNED_VISITS';
       if(Object.values(operationalCounts).reduce((sum,n)=>sum+n,0)>70)status='HOLD_DOMAIN_WRITE_BUDGET';
+      if(status==='KEEPER_VERIFIED'&&sourceConsistency.hrNameMissing)status='HOLD_LIVE_HR_NAME_MISSING';
+      if(status==='KEEPER_VERIFIED'&&sourceConsistency.hrCountryMissing)status='HOLD_LIVE_HR_COUNTRY_MISSING';
+      if(status==='KEEPER_VERIFIED'&&sourceConsistency.hrNameDrifts)status='HOLD_LIVE_HR_NAME_DRIFT';
+      if(status==='KEEPER_VERIFIED'&&sourceConsistency.hrCountryDrifts)status='HOLD_LIVE_HR_COUNTRY_DRIFT';
     }
     results.push({caseCodes:[...group.cases].sort(),caseCount:group.cases.length,
       hrCount:group.hrs.size,technicalCount:group.accounts.size,country:[...group.countries][0],
       aliasOwnedVisits:operationalCounts.visits,aliasOwnedOtherDomainRows:
-        Object.entries(operationalCounts).filter(([key])=>key!=='visits').reduce((sum,[,n])=>sum+n,0),status});
+        Object.entries(operationalCounts).filter(([key])=>key!=='visits').reduce((sum,[,n])=>sum+n,0),
+      sourceConsistency,status});
+  }
+  const availabilityByPeriod=new Map();
+  for(const visit of hr.visits){
+    const periodId=val(visit?.periodId||visit?.periodKey||visit?.periodo)||'UNSET';
+    const row=availabilityByPeriod.get(periodId)||{periodId,visits:0,availableByState:0,availableByFlag:0,
+      byCountry:{GT:{visits:0,availableByState:0},HN:{visits:0,availableByState:0},OTHER:{visits:0,availableByState:0}}};
+    const state=norm(visit?.estado||visit?.status),isAvailable=state==='disponible',flag=visit?.available===true;
+    const c=country(visit),countryKey=c==='GT'||c==='HN'?c:'OTHER';
+    row.visits++;if(isAvailable)row.availableByState++;if(flag)row.availableByFlag++;
+    row.byCountry[countryKey].visits++;if(isAvailable)row.byCountry[countryKey].availableByState++;
+    availabilityByPeriod.set(periodId,row);
   }
   return {groups:groups.length,strongCases:66,weakCases:73,hrWithSeveralSourceRecords:results.filter(x=>x.hrCount>1).length,
     singleHrGroups:results.filter(x=>x.hrCount===1).length,
@@ -192,6 +220,8 @@ async function livePreflight({db,auth,hr}){
     // Case labels alone allow private follow-up against Paula's workbook without
     // leaking personal names, logins, source IDs, phones, or authentication UIDs.
     groupStatuses:results.sort((a,b)=>a.caseCodes[0].localeCompare(b.caseCodes[0])),
+    liveHrAvailability:{periodCount:hr.periodCount,currentPeriodId:hr.currentPeriodId,
+      totalVisits:hr.visits.length,periods:[...availabilityByPeriod.values()].sort((a,b)=>a.periodId.localeCompare(b.periodId))},
     approvedWorkbookPairDigest:EXPECTED_PAIR_DIGEST,readOnly:true};
 }
 
