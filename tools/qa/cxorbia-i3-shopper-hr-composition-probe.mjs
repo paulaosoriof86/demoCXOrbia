@@ -94,13 +94,21 @@ try{
       const allowed=new Set((projects||[]).map(pr=>d.programKey?d.programKey(pr):pr.id));
       const projByAny=id=>{let pr=(d.projects||[]).find(x=>x.id===id);if(!pr)pr=(d.projects||[]).find(x=>(d.programKey?d.programKey(x):x.id)===id);return pr;};
       const progKeyOf=v=>{const pr=projByAny(v.projectId);return pr?(d.programKey?d.programKey(pr):pr.id):v.projectId;};
-      const pool=(d._visitas||[]).filter(v=>(!d.inScope||d.inScope(v.pais))&&allowed.has(progKeyOf(v)));
+      const periodId=String(d.currentPeriodId||'');
+      const periodIdOf=v=>d.recordPeriodId?d.recordPeriodId(v):(v.periodId||v.projectId);
+      const countryScope=typeof d.scopePaises==='function'?d.scopePaises():null;
+      const scoped=(d._visitas||[]).filter(v=>(!d.inScope||d.inScope(v.pais))&&allowed.has(progKeyOf(v)));
+      // MISMA frontera operativa que app/modules/visitas.js: país + proyecto autorizado + período activo.
+      const pool=scoped.filter(v=>String(periodIdOf(v)||'')===periodId);
       const expected=(typeof d.availableVisits==='function')?d.availableVisits(pool):pool.filter(v=>v.estado==='disponible');
       const projectCount=new Set(expected.map(progKeyOf)).size;
+      const otherPeriodPool=scoped.filter(v=>String(periodIdOf(v)||'')!==periodId);
+      const otherPeriodAvailable=(typeof d.availableVisits==='function'?d.availableVisits(otherPeriodPool):otherPeriodPool.filter(v=>v.estado==='disponible')).length;
       window.CX?.router?.nav?.('visitas'); await new Promise(r=>setTimeout(r,150));
       const view=document.querySelector('#view'),text=String(view?.innerText||''),cards=view?.querySelectorAll?.('[data-detail]')?.length||0;
       const m=text.match(/(\d+) oportunidades en (\d+) proyecto\(s\) para tu perfil/i);
-      return {expectedCount:expected.length,expectedProjectCount:projectCount,renderedCount:m?Number(m[1]):-1,renderedProjectCount:m?Number(m[2]):-1,detailCards:cards,headerPresent:!!m,emptyShown:/Sin visitas disponibles/i.test(text),pendingMarker:/slice transitorio|Periodos HR:\s*pendiente/i.test(text)};
+      const reason=view?.querySelector('#cx-available-empty-reason')||null;
+      return {periodId,scopeCountries:Array.isArray(countryScope)?countryScope.length:null,otherPeriodAvailable,expectedCount:expected.length,expectedProjectCount:projectCount,renderedCount:m?Number(m[1]):-1,renderedProjectCount:m?Number(m[2]):-1,detailCards:cards,headerPresent:!!m,emptyShown:/Sin visitas disponibles/i.test(text),emptyReasonVisible:!!reason&&reason.getAttribute('role')==='status'&&String(reason.innerText||'').trim().length>20,pendingMarker:/slice transitorio|Periodos HR:\s*pendiente/i.test(text)};
     });
 
     observed={live,liveValidation,before,second,after,profileUi,availableUi,pageErrors,legalReadback:{currentTenantLegalContentCount:legal.length,currentReceiptPresent:matching.length>0,currentReceiptCount:matching.length}};
@@ -108,7 +116,7 @@ try{
 
   const a=observed.after.authority||{},b=observed.before,live=observed.liveValidation||{},id=observed.after.identity||{},profile=observed.after.sessionProfile||{},pf=observed.profileUi||{},av=observed.availableUi||{};
   const profileExact=pf.source&&pf.ui&&pf.ui.profileComplete===pf.source.profileComplete&&pf.ui.usernameMatches&&pf.ui.phoneMatches&&pf.ui.emailMatches&&pf.ui.certificationVisible&&pf.ui.visitCountVisible&&!pf.ui.pendingMarker&&!pf.ui.identityBlocked&&pf.source.visitCount===pf.source.statsTotal;
-  const availableExact=av.headerPresent===true&&av.renderedCount===av.expectedCount&&av.renderedProjectCount===av.expectedProjectCount&&av.detailCards===av.expectedCount&&!av.pendingMarker&&((av.expectedCount===0&&av.emptyShown===true)||(av.expectedCount>0&&av.emptyShown===false));
+  const availableExact=av.headerPresent===true&&av.renderedCount===av.expectedCount&&av.renderedProjectCount===av.expectedProjectCount&&av.detailCards===av.expectedCount&&!av.pendingMarker&&((av.expectedCount===0&&av.emptyShown===true&&av.emptyReasonVisible===true)||(av.expectedCount>0&&av.emptyShown===false&&av.emptyReasonVisible===false));
   const checks={humanAuth:b.context?.authenticated===true&&b.context?.role==='shopper'&&b.context?.shopperId===SHOPPER_ID,hrHttp200:observed.live.httpStatus===200,validateSnapshot:live.ok===true,authorityApplied:a.applied===true,hrVisitsMatch:Number(a.hrVisits)===Number(live.visits),hrShoppersMatch:Number(a.hrShoppers)===Number(live.shoppers),protectedSliceStable:Number(a.protectedProfiles)===1,sessionProfilePreserved:a.sessionProfilePreserved===true&&profile.present===true&&profile.id===SHOPPER_ID,identityResolved:id.ok===true&&id.raw===SHOPPER_ID&&id.canonical===SHOPPER_ID,secondReconcileApplied:observed.second.ok===true&&observed.second.resultApplied===true,legalReceiptDurable:observed.legalReadback.currentReceiptPresent===true&&!b.legalModalVisible,noPageErrors:observed.pageErrors.length===0,notTransient:b.counts.projects>0&&b.counts.visits>0&&b.counts.shoppers>1,profileFullExact:profileExact,availableVisitsExact:availableExact};
   const pass=Object.values(checks).every(Boolean);
   const environmentOnly=!pass&&(observed.live.httpStatus===0||observed.live.httpStatus===429||observed.live.httpStatus>=500||observed.liveValidation?.ok!==true&&/^HR_LIVE_(HTTP|NON_JSON|UNAVAILABLE)/.test(str(observed.live.error)));
