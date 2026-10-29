@@ -414,7 +414,7 @@
       return {id:p.id,nombre:p.nombre,exactAliases:p.exactAliases,projectIds:uniq(p.projectIds),presentedToAuthorizedStaff:presented,reason:presented?'authoritative_exact_identity_link':'no_exact_hr_crosswalk'};
     });
     const platformOnlyProfilesCrossProjectExcluded=platformOnlyAllProfiles.filter(p=>!platformOnlyPresentedIds.has(str(p.id))).length;
-    const nameGroups=new Map();for(const s of composedShoppers){const n=lower(s.nombre).normalize('NFD').replace(/[\u0300-\u036f]/g,'');if(!n)continue;if(!nameGroups.has(n))nameGroups.set(n,[]);nameGroups.get(n).push(s.id);}
+    const nameGroups=new Map();for(const s of composedShoppers){const n=lower(s.nombre).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim();if(!n)continue;if(!nameGroups.has(n))nameGroups.set(n,[]);nameGroups.get(n).push(s.id);}
     const sameDisplayNameGroups=[...nameGroups.entries()].filter(([,ids])=>ids.length>1).map(([normalizedName,ids])=>({normalizedName,shopperIds:ids.sort(),reason:'display_name_collision_not_auto_merged'}));
     const uniqueVisitKeys=new Set(composedVisits.map(visitKey).filter(Boolean)),uniqueShopperIds=new Set(composedShoppers.map(s=>str(s.id)).filter(Boolean));
     const summaries=periodSummary(composedVisits);
