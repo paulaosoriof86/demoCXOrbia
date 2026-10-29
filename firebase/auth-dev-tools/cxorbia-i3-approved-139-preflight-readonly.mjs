@@ -219,6 +219,8 @@ async function livePreflight({db,auth,hr}){
       sourceConsistency,status});
   }
   const availabilityByPeriod=new Map();
+  // Diagnosis is source-scoped and read-only: distinguish 'disponible' from
+  // genuinely unassigned/uncancelled vacancies before interpreting UI zeros.
   for(const visit of hr.visits){
     const periodId=val(visit?.periodId||visit?.periodKey||visit?.periodo)||'UNSET';
     const row=availabilityByPeriod.get(periodId)||{periodId,visits:0,availableByState:0,availableByFlag:0,
