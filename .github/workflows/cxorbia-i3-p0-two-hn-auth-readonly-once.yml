@@ -5,6 +5,7 @@ on:
     paths:
       - .github/workflows/cxorbia-i3-p0-two-hn-auth-readonly-once.yml
       - firebase/auth-dev-tools/cxorbia-i3-p0-hn-two-shopper-auth-readonly.mjs
+      - firebase/auth-dev-tools/cxorbia-i3-p0-shopper-identity-cohort-readonly.mjs
 permissions:
   contents: read
 concurrency:
@@ -45,5 +46,49 @@ jobs:
         with:
           name: cxorbia-i3-p0-hn-auth-readonly-${{ github.run_id }}
           path: .tmp/i3-p0-hn-two-shopper/
+          if-no-files-found: warn
+          retention-days: 30
+
+  all-active-shoppers-hr-identity-readonly:
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-SHOPPER-IDENTITY-COHORT-READONLY' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      GCLOUD_PROJECT: cxorbia-backend-dev
+      GOOGLE_CLOUD_PROJECT: cxorbia-backend-dev
+      CX_SHOPPER_COHORT_EXECUTION: PAULA_APPROVED_2026-10-28_GENERAL_SHOPPER_IDENTITY_DIAG_READONLY
+      CX_SHOPPER_COHORT_OUT: .tmp/i3-shopper-identity-cohort
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: DEV-only frozen-source no-write guard
+        run: |
+          set -Eeuo pipefail
+          test "${GITHUB_REF_NAME}" = 'recovery/cxorbia-phase-a-20260831'
+          test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
+          test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
+          git merge-base --is-ancestor 6839a669 HEAD
+          git diff --quiet 6839a669 HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules \
+            ':(exclude)backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs' \
+            ':(exclude)backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-live-source-honorarium.test.mjs'
+          node --check firebase/auth-dev-tools/cxorbia-i3-p0-shopper-identity-cohort-readonly.mjs
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Read whole active shopper cohort, claims, HR source and exact crosswalks
+        run: |
+          set -Eeuo pipefail
+          npm install --prefix firebase/auth-dev-tools --no-save --no-package-lock --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
+          node firebase/auth-dev-tools/cxorbia-i3-p0-shopper-identity-cohort-readonly.mjs
+          jq -e '.decision=="PASS_DEV_SHOPPER_IDENTITY_COHORT_READONLY" and .production==false and .authWrites==0 and .firestoreWrites==0 and .hrWrites==0 and .merges==0' "$CX_SHOPPER_COHORT_OUT/result.json" >/dev/null
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-p0-shopper-identity-cohort-${{ github.run_id }}
+          path: .tmp/i3-shopper-identity-cohort/
           if-no-files-found: warn
           retention-days: 30
