@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "cxorbia.i3.r9-control-hold.v1",
+  "id": "CXORBIA-I3-R9-CONTROL-HOLD-RUN1975",
+  "iteration": "I3",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadSha": "0d8eccf2712f1f55fa221a3d10349d9a285cefbe",
+  "productSourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+  "productTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+  "runId": 40991186739,
+  "runNumber": 1975,
+  "sourceProofDecision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+  "jobId": 123854248298,
+  "artifactId": 12948838466,
+  "artifactDigest": "sha256:95f5dcef71928ec300fe1cb534f9b50ba8c56d5beb954734899c3f98063a4942",
+  "decision": "HOLD_R7_BOUNDED_SESSION_RESULT_GUARD",
+  "classification": "MAPPING_FAILURE",
+  "code": "RUNNER_PACKAGE_PATH_STALE_R7",
+  "storageCors": {
+    "bucket": "cxorbia-backend-dev.firebasestorage.app",
+    "origin": "https://cxorbia-backend-dev.web.app",
+    "method": [
+      "GET",
+      "HEAD"
+    ],
+    "responseHeader": [
+      "Authorization",
+      "Content-Type"
+    ],
+    "maxAgeSeconds": 3600,
+    "beforeRuleCount": 1,
+    "afterRuleCount": 2,
+    "changed": true,
+    "expectedRulePresent": true,
+    "production": false
+  },
+  "providerConfigWrites": 1,
+  "dataWrites": 0,
+  "deploys": 0,
+  "e2eExecuted": false,
+  "productSourceChanged": false,
+  "productionTouched": false,
+  "remediation": "Remove stale R7 path assertion; keep package pointer immutable and retry same proof with CORS already read back."
+}
