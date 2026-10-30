@@ -1,0 +1,12 @@
+{
+  "decision": "FAIL_I3_CUMULATIVE_SOURCE_PROOF",
+  "deploys": 0,
+  "exitCode": 1,
+  "liveE2e": "NOT_RUN",
+  "moduleMatchPromotions": 0,
+  "production": false,
+  "scope": "SOURCE_CONTRACTS_ONLY_NOT_I3_CERTIFICATION",
+  "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+  "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+  "wholeProductPass": false
+}

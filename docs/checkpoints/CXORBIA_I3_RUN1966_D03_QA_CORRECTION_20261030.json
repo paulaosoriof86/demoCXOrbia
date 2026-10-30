@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "cxorbia.i3.canonical-source-qa-correction.v1",
+  "id": "CXORBIA-I3-RUN1966-D03-QA-CORRECTION-20261030",
+  "asOf": "2026-10-30",
+  "decision": "QA_SCOPE_FALSE_POSITIVE_CORRECTED_PENDING_CANONICAL_CI",
+  "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+  "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+  "failedRun": {
+    "runId": 40982453191,
+    "runNumber": 1966,
+    "controlSha": "64742d44ca9b7abfe3c9e2d95cca130a28919148",
+    "authorityJobId": 123825511661,
+    "authority": "PASS",
+    "sourceJobId": 123825671855,
+    "source": "FAIL",
+    "artifactId": 12945551474,
+    "artifactZipSha256": "22c7327aa90f0b1e686024c89cf3ea301d35edfb169859baf4d279f9bbdfb337",
+    "original": {
+      "path": "docs/checkpoints/evidence/CXORBIA_I3_RUN1966_SOURCE_PROOF_ORIGINAL_20261030.json",
+      "gitBlob": "444297b7de1628e2290773e9e2257814bcc822f2"
+    }
+  },
+  "cause": {
+    "classification": "QA_SCOPE_FALSE_POSITIVE",
+    "owner": "tools/qa/cxorbia-i3-d03-ai-generation-source.test.mjs",
+    "assertion": "assert.doesNotMatch(runtime,/estado:'published'.*ai-generate/s)",
+    "mechanism": "The whole-file regex spans the newly authorized D05 publish function and the later ai-generate branch; it does not show the AI generation path publishing a bank.",
+    "productDefectProven": false
+  },
+  "correction": {
+    "path": "tools/qa/cxorbia-i3-d03-ai-generation-source.test.mjs",
+    "baseGitBlob": "31852b3cd26a8ca94bbd7976abb1458185a459f9",
+    "gitBlob": "0baa74bd8c42c137fe0f6501f5b970fd2ca95e8b",
+    "productFilesChanged": 0,
+    "sourceCandidateChanged": false,
+    "newWorkflow": false,
+    "contract": "Execute the real persistGeneratedDraft against an in-memory provider; require durable pending_review, 15 questions, exact actor/receipt/ID and zero-write idempotent replay. Mutation of both generation writer and readback to publish must be rejected by the same proof."
+  },
+  "localQa": {
+    "base": {
+      "tests": 5,
+      "pass": 4,
+      "fail": 1
+    },
+    "corrected": {
+      "tests": 6,
+      "pass": 6,
+      "fail": 0
+    },
+    "evidence": {
+      "path": "docs/checkpoints/evidence/CXORBIA_I3_D03_GENERATION_QA_CORRECTION_LOCAL_20261030.tap",
+      "gitBlob": "93c0a4a75ab51d24dfe0cb4cf20c9604419b5282",
+      "sha256": "3687500627bb4fa51177ed85ca4221b270d24a1f53f9fea551484c118f97957a"
+    },
+    "scope": "Synthetic source QA only"
+  },
+  "canonicalCi": "PENDING",
+  "devMaterialization": "NOT_RUN",
+  "liveE2e": "NOT_RUN",
+  "fullTaskClosed": false,
+  "humanAcceptance": "PENDING",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "production": false,
+  "next": "Re-run existing canonical source gate with this QA-only correction on the unchanged S485 product; bind its exact PASS artifact before the existing DEV materializer."
+}

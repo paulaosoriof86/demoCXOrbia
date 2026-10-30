@@ -53,7 +53,7 @@
     "gate20": "HOLD",
     "gate21": "HOLD"
   },
-  "controlParentSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+  "controlParentSha": "64742d44ca9b7abfe3c9e2d95cca130a28919148",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
     "executed": [
@@ -613,14 +613,14 @@
   ],
   "coverageGuard": "Do not declare all finance, HR, Shopper, Client, Certification or Phase A PASS solely from source tests or an inherited PASS. Apply task-specific provider/readback/human proof and preserve historical VRM PASS without reproducible drift; no skipped findings.",
   "continuityHandoff": {
-    "path": "docs/checkpoints/CXORBIA_I3_D05_CUMULATIVE_SOURCE_REPAIR_20261030.json",
-    "blobSha": "1002fe5dfe57b27104da3ecb2e369378f2dbf4e3",
-    "kind": "CUMULATIVE_D05_SOURCE_LOCAL_PASS_PENDING_CANONICAL_CI_DEV_E2E",
+    "path": "docs/checkpoints/CXORBIA_I3_RUN1966_D03_QA_CORRECTION_20261030.json",
+    "blobSha": "c76e5e640884562b93ef5627bdbed36e47e47d70",
+    "kind": "SOURCE_QA_CORRECTION_PENDING_CANONICAL_CI",
     "asOf": "2026-10-30",
     "frozenPlanId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
     "productSourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
     "productSourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
-    "reviewedHeadBeforeHandoff": "f15ba2e632f32a51ec9e17a78d66222fc0782111",
+    "reviewedHeadBeforeHandoff": "64742d44ca9b7abfe3c9e2d95cca130a28919148",
     "nextTaskIds": [
       "G03",
       "G04",
@@ -633,7 +633,7 @@
       "E03",
       "E11"
     ],
-    "immediateAction": "Run canonical source CI for exact D05 cumulative successor, inspect immutable artifact and bind currentSourceProof. Then one existing DEV runtime/Rules/Hosting materialization and exact readback. Execute R7 D07/C04/C05 in isolated guarded contexts. D05 own-fixture lifecycle proposal is separate; D06 remains HOLD until an exact existing QA actor and no-message scope are demonstrated. No new source change without proven cause.",
+    "immediateAction": "Inspect the canonical source run after the D03 behavior-based QA correction on unchanged S485. Require its exact PASS artifact and bind currentSourceProof before one existing DEV materialization. Read back the three newly included resource/certification browser owners as well. Continue bounded R7 and isolated D05 preparation; no production.",
     "noProduction": true,
     "receiptPointerField": "currentExecutionReceipt",
     "sealedHistoricalFields": [
@@ -672,17 +672,15 @@
       "production": false
     },
     "sourceQa": {
-      "path": "docs/checkpoints/CXORBIA_I3_D05_CUMULATIVE_SOURCE_REPAIR_20261030.json",
-      "gitBlob": "1002fe5dfe57b27104da3ecb2e369378f2dbf4e3",
+      "path": "docs/checkpoints/CXORBIA_I3_RUN1966_D03_QA_CORRECTION_20261030.json",
+      "gitBlob": "c76e5e640884562b93ef5627bdbed36e47e47d70",
       "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
       "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
-      "predecessorProductSourceSha": "512111715ad13722281426c7add724fc5e7d39c0",
-      "decision": "LOCAL_SOURCE_AND_COMPOSED_RULES_PASS_PENDING_CANONICAL_CI_AND_EXACT_DEV_E2E",
-      "canonicalCi": "PENDING",
-      "devMaterialization": "PENDING",
-      "liveE2e": "PENDING",
-      "humanAcceptance": "PENDING",
-      "fullTaskClosed": false,
+      "decision": "QA_SCOPE_FALSE_POSITIVE_CORRECTED_PENDING_CANONICAL_CI",
+      "failedRunId": 40982453191,
+      "qaPath": "tools/qa/cxorbia-i3-d03-ai-generation-source.test.mjs",
+      "qaGitBlob": "0baa74bd8c42c137fe0f6501f5b970fd2ca95e8b",
+      "productChanges": 0,
       "production": false
     },
     "previousPreviewIsHistorical": true,
@@ -3237,21 +3235,19 @@
     "scope": "LOCAL_ISOLATED_SOURCE_CONTRACTS_ONLY_NOT_I3_CERTIFICATION"
   },
   "currentExecutionReceipt": {
-    "path": "docs/checkpoints/CXORBIA_I3_D05_CUMULATIVE_SOURCE_REPAIR_20261030.json",
-    "gitBlob": "1002fe5dfe57b27104da3ecb2e369378f2dbf4e3",
+    "path": "docs/checkpoints/CXORBIA_I3_RUN1966_D03_QA_CORRECTION_20261030.json",
+    "gitBlob": "c76e5e640884562b93ef5627bdbed36e47e47d70",
     "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
     "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
-    "predecessorProductSourceSha": "512111715ad13722281426c7add724fc5e7d39c0",
-    "decision": "LOCAL_SOURCE_AND_COMPOSED_RULES_PASS_PENDING_CANONICAL_CI_AND_EXACT_DEV_E2E",
-    "canonicalCi": "PENDING",
-    "devMaterialization": "PENDING",
-    "liveE2e": "PENDING",
-    "humanAcceptance": "PENDING",
-    "fullTaskClosed": false,
+    "decision": "QA_SCOPE_FALSE_POSITIVE_CORRECTED_PENDING_CANONICAL_CI",
+    "failedRunId": 40982453191,
+    "qaPath": "tools/qa/cxorbia-i3-d03-ai-generation-source.test.mjs",
+    "qaGitBlob": "0baa74bd8c42c137fe0f6501f5b970fd2ca95e8b",
+    "productChanges": 0,
     "production": false,
-    "kind": "CUMULATIVE_D05_SOURCE_LOCAL_QA_PASS_CI_DEV_LIVE_PENDING",
-    "newFullTaskClosures": 0,
-    "state": "I3_HOLD"
+    "kind": "CANONICAL_SOURCE_QA_CORRECTION_NO_PRODUCT_CHANGE",
+    "state": "I3_HOLD",
+    "fullTaskClosed": false
   },
   "lastExecutionReceiptSemantics": "SEALED_POSTDEPLOY_SNAPSHOT_NOT_CURRENT_CONTROL_HANDOFF",
   "currentExecutionReceiptSemantics": "LATEST_CONTROL_AND_QA_RECEIPT_NOT_A_POSTDEPLOY_SEAL",
@@ -4775,7 +4771,63 @@
   "currentSourceProof": {
     "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
     "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
-    "decision": "PENDING_CANONICAL_CI",
+    "decision": "PENDING_CANONICAL_CI_AFTER_QA_CORRECTION",
+    "qaCorrection": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN1966_D03_QA_CORRECTION_20261030.json",
+      "gitBlob": "c76e5e640884562b93ef5627bdbed36e47e47d70",
+      "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+      "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+      "decision": "QA_SCOPE_FALSE_POSITIVE_CORRECTED_PENDING_CANONICAL_CI",
+      "failedRunId": 40982453191,
+      "qaPath": "tools/qa/cxorbia-i3-d03-ai-generation-source.test.mjs",
+      "qaGitBlob": "0baa74bd8c42c137fe0f6501f5b970fd2ca95e8b",
+      "productChanges": 0,
+      "production": false
+    },
     "production": false
+  },
+  "currentControlQaCorrection": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN1966_D03_QA_CORRECTION_20261030.json",
+    "gitBlob": "c76e5e640884562b93ef5627bdbed36e47e47d70",
+    "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+    "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+    "decision": "QA_SCOPE_FALSE_POSITIVE_CORRECTED_PENDING_CANONICAL_CI",
+    "failedRunId": 40982453191,
+    "qaPath": "tools/qa/cxorbia-i3-d03-ai-generation-source.test.mjs",
+    "qaGitBlob": "0baa74bd8c42c137fe0f6501f5b970fd2ca95e8b",
+    "productChanges": 0,
+    "production": false
+  },
+  "lastFailedCanonicalSourceProof": {
+    "runId": 40982453191,
+    "runNumber": 1966,
+    "controlSha": "64742d44ca9b7abfe3c9e2d95cca130a28919148",
+    "authorityJobId": 123825511661,
+    "authority": "PASS",
+    "sourceJobId": 123825671855,
+    "source": "FAIL",
+    "artifactId": 12945551474,
+    "artifactZipSha256": "22c7327aa90f0b1e686024c89cf3ea301d35edfb169859baf4d279f9bbdfb337",
+    "original": {
+      "path": "docs/checkpoints/evidence/CXORBIA_I3_RUN1966_SOURCE_PROOF_ORIGINAL_20261030.json",
+      "gitBlob": "444297b7de1628e2290773e9e2257814bcc822f2"
+    }
+  },
+  "previousCurrentExecutionReceiptBeforeRun1966Qa": {
+    "path": "docs/checkpoints/CXORBIA_I3_D05_CUMULATIVE_SOURCE_REPAIR_20261030.json",
+    "gitBlob": "1002fe5dfe57b27104da3ecb2e369378f2dbf4e3",
+    "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+    "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+    "predecessorProductSourceSha": "512111715ad13722281426c7add724fc5e7d39c0",
+    "decision": "LOCAL_SOURCE_AND_COMPOSED_RULES_PASS_PENDING_CANONICAL_CI_AND_EXACT_DEV_E2E",
+    "canonicalCi": "PENDING",
+    "devMaterialization": "PENDING",
+    "liveE2e": "PENDING",
+    "humanAcceptance": "PENDING",
+    "fullTaskClosed": false,
+    "production": false,
+    "kind": "CUMULATIVE_D05_SOURCE_LOCAL_QA_PASS_CI_DEV_LIVE_PENDING",
+    "newFullTaskClosures": 0,
+    "state": "I3_HOLD"
   }
 }

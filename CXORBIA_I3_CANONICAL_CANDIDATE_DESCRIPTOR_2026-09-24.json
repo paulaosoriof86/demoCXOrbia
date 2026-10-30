@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "I3_G03_C04_D05_D07_E03_CUMULATIVE_LOCAL_PASS_PENDING_CANONICAL_CI_DEV_AND_FROZEN_LIVE_HUMAN_GATES",
+  "activeBlocker": "I3_G03_CUMULATIVE_SOURCE_QA_CORRECTED_PENDING_CANONICAL_CI_DEV_AND_FROZEN_LIVE_HUMAN_GATES",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -3943,7 +3943,19 @@
   "currentSourceProof": {
     "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
     "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
-    "decision": "PENDING_CANONICAL_CI",
+    "decision": "PENDING_CANONICAL_CI_AFTER_QA_CORRECTION",
+    "qaCorrection": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN1966_D03_QA_CORRECTION_20261030.json",
+      "gitBlob": "c76e5e640884562b93ef5627bdbed36e47e47d70",
+      "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+      "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+      "decision": "QA_SCOPE_FALSE_POSITIVE_CORRECTED_PENDING_CANONICAL_CI",
+      "failedRunId": 40982453191,
+      "qaPath": "tools/qa/cxorbia-i3-d03-ai-generation-source.test.mjs",
+      "qaGitBlob": "0baa74bd8c42c137fe0f6501f5b970fd2ca95e8b",
+      "productChanges": 0,
+      "production": false
+    },
     "production": false
   },
   "openFindingsClosureMatrixPath": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
@@ -14968,5 +14980,32 @@
     "gate20": "HOLD",
     "gate21": "HOLD",
     "production": false
+  },
+  "currentControlQaCorrection": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN1966_D03_QA_CORRECTION_20261030.json",
+    "gitBlob": "c76e5e640884562b93ef5627bdbed36e47e47d70",
+    "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+    "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+    "decision": "QA_SCOPE_FALSE_POSITIVE_CORRECTED_PENDING_CANONICAL_CI",
+    "failedRunId": 40982453191,
+    "qaPath": "tools/qa/cxorbia-i3-d03-ai-generation-source.test.mjs",
+    "qaGitBlob": "0baa74bd8c42c137fe0f6501f5b970fd2ca95e8b",
+    "productChanges": 0,
+    "production": false
+  },
+  "lastFailedCanonicalSourceProof": {
+    "runId": 40982453191,
+    "runNumber": 1966,
+    "controlSha": "64742d44ca9b7abfe3c9e2d95cca130a28919148",
+    "authorityJobId": 123825511661,
+    "authority": "PASS",
+    "sourceJobId": 123825671855,
+    "source": "FAIL",
+    "artifactId": 12945551474,
+    "artifactZipSha256": "22c7327aa90f0b1e686024c89cf3ea301d35edfb169859baf4d279f9bbdfb337",
+    "original": {
+      "path": "docs/checkpoints/evidence/CXORBIA_I3_RUN1966_SOURCE_PROOF_ORIGINAL_20261030.json",
+      "gitBlob": "444297b7de1628e2290773e9e2257814bcc822f2"
+    }
   }
 }

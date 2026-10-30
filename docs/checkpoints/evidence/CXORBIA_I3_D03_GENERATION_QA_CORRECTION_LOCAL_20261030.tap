@@ -1,0 +1,46 @@
+TAP version 13
+# Subtest: D03 requires exactly grounded source-referenced questions
+ok 1 - D03 requires exactly grounded source-referenced questions
+  ---
+  duration_ms: 3.430235
+  type: 'test'
+  ...
+# Subtest: D03 backend persists only pending_review with receipt and readback
+ok 2 - D03 backend persists only pending_review with receipt and readback
+  ---
+  duration_ms: 5.18135
+  type: 'test'
+  ...
+# Subtest: D03 persistence proof rejects automatic publication even if its readback accepts published state
+ok 3 - D03 persistence proof rejects automatic publication even if its readback accepts published state
+  ---
+  duration_ms: 12.348881
+  type: 'test'
+  ...
+# Subtest: D03 provider prompt and validation require source reference
+ok 4 - D03 provider prompt and validation require source reference
+  ---
+  duration_ms: 0.340908
+  type: 'test'
+  ...
+# Subtest: D03 browser uses existing secure route and does not perform a second certStore save
+ok 5 - D03 browser uses existing secure route and does not perform a second certStore save
+  ---
+  duration_ms: 0.5274
+  type: 'test'
+  ...
+# Subtest: D03 input, provider and persistence failures remain distinguishable
+ok 6 - D03 input, provider and persistence failures remain distinguishable
+  ---
+  duration_ms: 0.161132
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 72.505305
