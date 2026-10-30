@@ -1,0 +1,657 @@
+{
+  "schemaVersion": "cxorbia.i3.run1992.bounded-control-serialization.v1",
+  "id": "CXORBIA-I3-RUN1992-C04-C05-CONTROL-SERIALIZATION-20261030",
+  "iteration": "I3",
+  "state": "HOLD",
+  "blockResult": "PASS_BOUNDED_CONTROL_EVIDENCE_SERIALIZATION_NOT_I3_GO",
+  "expectedControlParentSha": "72439986e46b54a465228ecdc1192688a855f02a",
+  "expectedControlParentTree": "c5adddaa2b805d2459b446c30a1c8f874244b0c3",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+  "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
+  "executedAttempt": {
+    "runId": 41124697399,
+    "runNumber": 1992,
+    "attempt": 1,
+    "controlSha": "72439986e46b54a465228ecdc1192688a855f02a",
+    "controlParentSha": "6a238c98bffdce85081b3084a696f4affdf044c8",
+    "workflowPath": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "id": 124300033827,
+        "name": "canonical-candidate-authority",
+        "conclusion": "success"
+      },
+      {
+        "id": 124300173417,
+        "name": "phasea-representative-same-artifact-live-reproof",
+        "conclusion": "success"
+      }
+    ],
+    "package": {
+      "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R12.json",
+      "gitBlob": "14955ede2c956284a0a11d0e6e5faaebad40fc31",
+      "expectedControlParentSha": "6a238c98bffdce85081b3084a696f4affdf044c8"
+    }
+  },
+  "evidenceArtifact": {
+    "id": 13010072681,
+    "name": "cxorbia-phasea-representative-live-41124697399",
+    "kind": "FOCAL_EVIDENCE_ZIP_NOT_PRODUCT_ARTIFACT",
+    "sha256": "0269dc512dfc206908d2955a762e103fada743466d5e9558738b4c003f4a7412",
+    "members": {
+      "r7-d07-c04-c05/result.json": {
+        "sha256": "f0d25548eb1af2ab04a145552132a691eac9e4ffbf0c32569387f77a21c0a11c",
+        "bytes": 21878
+      },
+      "r7-d07-c04-c05/c04-c05/c04-c05-bounded-result.json": {
+        "sha256": "05371de0f594a0ec1734f8aa55da92363afc0045f43ff14008ac515924d4dee8",
+        "bytes": 15030
+      },
+      "session-proof/preflight.json": {
+        "sha256": "d3da5e702528d9be2be606e991a15df421d0ff1e108ce0b0635b6ae3f2243848",
+        "bytes": 12829
+      },
+      "session-proof/session-proof-guard.json": {
+        "sha256": "c729afb26f98d33a571d75b9c98de8f4a629c0d0e2c61b4b19c71f41e496ad5a",
+        "bytes": 358
+      }
+    }
+  },
+  "aggregateDecision": "PASS_R7_C04_C05_ONLY_D07_CARRIED_FORWARD",
+  "financeDecision": "PASS_C04_C05_BOUNDED_FINANCE",
+  "fullTasksClosed": false,
+  "closedOnly": {
+    "selectorBlocker": {
+      "classification": "MAPPING_FAILURE",
+      "state": "CLOSED_PROVEN_RUN1992",
+      "owner": "tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs",
+      "rootCauseReceipt": {
+        "path": "docs/checkpoints/CXORBIA_I3_RUN1991_C04_FALSE_HOLD_ROOT_CAUSE_20261030.json",
+        "gitBlob": "1ef38f278244b9439c52df485bcb7aadedac4794"
+      }
+    },
+    "boundedFinancialClauses": [
+      "Four approved synthetic UI commands with provider ACK/receipt/audit/remote readback",
+      "Two exact idempotent replays without new writes",
+      "Q/L DOM and independent Admin session",
+      "Conditional cleanup of the same thirteen linked documents and scoped baseline unchanged"
+    ]
+  },
+  "finance": {
+    "decision": "PASS_C04_C05_BOUNDED_FINANCE",
+    "fullTaskClosed": false,
+    "commands": [
+      {
+        "kind": "create-cxc",
+        "commandType": "finance.account.create",
+        "commandSha256": "752828c2e5a7b0c28aa10483e698f98d162e4dde902ac1bb83168fa8ac91900b",
+        "idempotencyKeySha256": "cb9514874be29706ad91fc65b5970bc36f3b54e6bf244023320297f778c6b53d",
+        "entityId": "acct-930330a8b8d00d3d80f1295c082b",
+        "providerWrites": 3,
+        "strictAck": true,
+        "serverReceiptAuditAndRows": true,
+        "sourceRefs": [
+          "tenants/tya/commandReceipts/45de1b45eb0ca10b91a1ee006c52bfe368091b46",
+          "tenants/tya/entityAuditTrail/finance-300b03d7386a048dd31d7cecd1b22d47b747ce35"
+        ],
+        "visibleAck": true
+      },
+      {
+        "kind": "apply-cxc",
+        "commandType": "finance.account.apply",
+        "commandSha256": "b990cd9f926dfd38d1e222060116b1f794d6fb3e9404e04b61943c12905f19f0",
+        "idempotencyKeySha256": "415603913653059ea1ff8718e20d6f690fd65d38d109886b3f9db006d8ec1406",
+        "entityId": "acct-930330a8b8d00d3d80f1295c082b",
+        "providerWrites": 4,
+        "strictAck": true,
+        "serverReceiptAuditAndRows": true,
+        "sourceRefs": [
+          "tenants/tya/commandReceipts/f1e950ede6a2ab2819cc0ca5d5ca09ebd26c101f",
+          "tenants/tya/entityAuditTrail/finance-f067f5cbd9d9f6448afa259bc322d5e4a530998f"
+        ],
+        "visibleAck": true
+      },
+      {
+        "kind": "create-financing",
+        "commandType": "finance.movement.create",
+        "commandSha256": "8ff6fab044596c302a45f630672282c10e1a26e2da3900ba87ca4ac0c146b6cd",
+        "idempotencyKeySha256": "655693e62fd79bee24df836cdcdd44cf91b0ddbeba9f7ea279b5229ea5e99bf6",
+        "entityId": "mov-837ab1c90448317285d2eaa59807",
+        "providerWrites": 4,
+        "strictAck": true,
+        "serverReceiptAuditAndRows": true,
+        "sourceRefs": [
+          "tenants/tya/commandReceipts/837ab1c90448317285d2eaa59807dd156fa958df",
+          "tenants/tya/entityAuditTrail/finance-fa3c5b1d516ae196571adac42340f5720d0aaa1e"
+        ],
+        "visibleAck": true
+      },
+      {
+        "kind": "apply-cxp",
+        "commandType": "finance.account.apply",
+        "commandSha256": "2e76b1b91b3ee9a0ea0ae88d6c8eb02eca00a16fdbb34a652dec2e3d31102531",
+        "idempotencyKeySha256": "a2a77c01260e8f40da38318703833d7a71c7d39eeff14bc09b1779f45932cdec",
+        "entityId": "fin-ae6ee0d57aaab0fd1d082c8c4087",
+        "providerWrites": 4,
+        "strictAck": true,
+        "serverReceiptAuditAndRows": true,
+        "sourceRefs": [
+          "tenants/tya/commandReceipts/c99434f712c7d0bee0c46391893cf35248eb02fc",
+          "tenants/tya/entityAuditTrail/finance-56c31a70f5d43088665c0dbd12965a76d17f96f4"
+        ],
+        "visibleAck": true
+      }
+    ],
+    "providerWrites": 15,
+    "linkedDocuments": [
+      {
+        "collection": "commandReceipts",
+        "id": "45de1b45eb0ca10b91a1ee006c52bfe368091b46",
+        "sha256": "a3d806e630ade432fff4c5bf99978cf4d52654b491e1595bf9ef55753452d870",
+        "updateTime": {
+          "seconds": 1793392751,
+          "nanoseconds": 683157000
+        }
+      },
+      {
+        "collection": "entityAuditTrail",
+        "id": "finance-300b03d7386a048dd31d7cecd1b22d47b747ce35",
+        "sha256": "c4d1dd77fe1863d404645e02e33e187645b8ac84e4a7f03a2ae8726c96f8fcb4",
+        "updateTime": {
+          "seconds": 1793392751,
+          "nanoseconds": 683157000
+        }
+      },
+      {
+        "collection": "financeAccounts",
+        "id": "acct-930330a8b8d00d3d80f1295c082b",
+        "sha256": "ad4387517fe9cea51ac6cd2c5682ff348676250e38965f07fae3337c3b6f42a4",
+        "updateTime": {
+          "seconds": 1793392752,
+          "nanoseconds": 715362000
+        }
+      },
+      {
+        "collection": "commandReceipts",
+        "id": "f1e950ede6a2ab2819cc0ca5d5ca09ebd26c101f",
+        "sha256": "73f15940e81330d43074e6a56ce0179c66bcd12142d3a0622a2123cf8b8c7eaa",
+        "updateTime": {
+          "seconds": 1793392752,
+          "nanoseconds": 715362000
+        }
+      },
+      {
+        "collection": "entityAuditTrail",
+        "id": "finance-f067f5cbd9d9f6448afa259bc322d5e4a530998f",
+        "sha256": "502360fc881afc83cea971eecbe01565d93ec521363c70cb721267e1385e6c2c",
+        "updateTime": {
+          "seconds": 1793392752,
+          "nanoseconds": 715362000
+        }
+      },
+      {
+        "collection": "financialMovements",
+        "id": "acct-be1f7dce2795616f434f2952f79e62",
+        "sha256": "3bb837f190fe94ccaa940c8b9a4b9e5e999754aea62d41f0e7d1ce557e6ecc07",
+        "updateTime": {
+          "seconds": 1793392752,
+          "nanoseconds": 715362000
+        }
+      },
+      {
+        "collection": "commandReceipts",
+        "id": "837ab1c90448317285d2eaa59807dd156fa958df",
+        "sha256": "08fe10dfb28cd841ac39af96e1c87e2a1839e6ba78014676fa80d5dfe0c55fd3",
+        "updateTime": {
+          "seconds": 1793392754,
+          "nanoseconds": 719313000
+        }
+      },
+      {
+        "collection": "entityAuditTrail",
+        "id": "finance-fa3c5b1d516ae196571adac42340f5720d0aaa1e",
+        "sha256": "b868a838916fb03a44fa1cc3a00ca38d94bab75c9c51a124c8441702ef94a782",
+        "updateTime": {
+          "seconds": 1793392754,
+          "nanoseconds": 719313000
+        }
+      },
+      {
+        "collection": "financeAccounts",
+        "id": "fin-ae6ee0d57aaab0fd1d082c8c4087",
+        "sha256": "20d0062bac7674d1160b3dc1cb19e9097e05cdb4a86618289b6b9c19a9ca9efb",
+        "updateTime": {
+          "seconds": 1793392757,
+          "nanoseconds": 112948000
+        }
+      },
+      {
+        "collection": "financialMovements",
+        "id": "mov-837ab1c90448317285d2eaa59807",
+        "sha256": "cc0d19079c92012edb2d2d05c799b1b1f2a22c0442aeef22a66f5c6ec92d33db",
+        "updateTime": {
+          "seconds": 1793392754,
+          "nanoseconds": 719313000
+        }
+      },
+      {
+        "collection": "commandReceipts",
+        "id": "c99434f712c7d0bee0c46391893cf35248eb02fc",
+        "sha256": "dd8bdc1754101b0adfb6b0323d6c23ee92c5bb1d17e01543c03bc0a445090a81",
+        "updateTime": {
+          "seconds": 1793392757,
+          "nanoseconds": 112948000
+        }
+      },
+      {
+        "collection": "entityAuditTrail",
+        "id": "finance-56c31a70f5d43088665c0dbd12965a76d17f96f4",
+        "sha256": "777d67c43c5c332d4acf13254fbcc10f5e3294439865a085721f006982b2bc6e",
+        "updateTime": {
+          "seconds": 1793392757,
+          "nanoseconds": 112948000
+        }
+      },
+      {
+        "collection": "financialMovements",
+        "id": "acct-94f3a47ee29042308492599f6b8a7a",
+        "sha256": "a180673f591b23869de4b807e21aceb0ce381324c0280177d39656301b14c045",
+        "updateTime": {
+          "seconds": 1793392757,
+          "nanoseconds": 112948000
+        }
+      }
+    ],
+    "replays": [
+      {
+        "commandType": "finance.account.apply",
+        "entityId": "acct-930330a8b8d00d3d80f1295c082b",
+        "exactCommand": true,
+        "idempotentReplay": true,
+        "providerWrites": 0,
+        "allLinkedDataAndUpdateTimesUnchanged": true,
+        "scopedLedgerUnchanged": true
+      },
+      {
+        "commandType": "finance.movement.create",
+        "entityId": "mov-837ab1c90448317285d2eaa59807",
+        "exactCommand": true,
+        "idempotentReplay": true,
+        "providerWrites": 0,
+        "allLinkedDataAndUpdateTimesUnchanged": true,
+        "scopedLedgerUnchanged": true
+      }
+    ],
+    "cleanup": {
+      "decision": "PASS_EXACT_CONDITIONAL_CLEANUP",
+      "count": 13,
+      "allAbsent": true,
+      "blindDeletes": false,
+      "otherScopedRecordsUnchanged": true
+    },
+    "otherScopedRecords": {
+      "unchanged": true,
+      "beforeSha256": "d5ea4ed1964f83a19bb6b67be49cf3e74116e5f873a69fd9c32a13ccd141e7c6",
+      "afterSha256": "d5ea4ed1964f83a19bb6b67be49cf3e74116e5f873a69fd9c32a13ccd141e7c6",
+      "count": 3,
+      "noClaimAboutConcurrentExternalWriters": true
+    },
+    "primaryDom": {
+      "accountRows": [
+        {
+          "id": "acct-930330a8b8d00d3d80f1295c082b",
+          "unique": true,
+          "visible": true,
+          "marker": true,
+          "country": true,
+          "money": true,
+          "textSha256": "429da713cddd2a589e747b8fac790b2e4c184adb4ae2df39d4c3a4384ef0cfb7"
+        },
+        {
+          "id": "fin-ae6ee0d57aaab0fd1d082c8c4087",
+          "unique": true,
+          "visible": true,
+          "marker": true,
+          "country": true,
+          "money": true,
+          "textSha256": "b3562a8584d725e2671e8811a0e5e95567677c07d1452f7c4179d6e2b92fc9cb"
+        }
+      ],
+      "movementRows": [
+        {
+          "id": "acct-be1f7dce2795616f434f2952f79e62",
+          "unique": true,
+          "visible": true,
+          "marker": true,
+          "country": true,
+          "money": true,
+          "textSha256": "72eff14a9417a9bd4cd3d8b020cf6c90a032ee4124cc6424727729caf0d34dc9"
+        },
+        {
+          "id": "mov-837ab1c90448317285d2eaa59807",
+          "unique": true,
+          "visible": true,
+          "marker": true,
+          "country": true,
+          "money": true,
+          "textSha256": "121dfa7efcff260bc425595d8997e5a1fb22544e4824b3de0bcbb21f6b4c5c5f"
+        },
+        {
+          "id": "acct-94f3a47ee29042308492599f6b8a7a",
+          "unique": true,
+          "visible": true,
+          "marker": true,
+          "country": true,
+          "money": true,
+          "textSha256": "7ad770338573a4ede71773e06248b7a4575045316dc125ca6808c05766adcea5"
+        }
+      ],
+      "kpis": [
+        {
+          "currency": "Q",
+          "unique": true,
+          "visible": true,
+          "unchanged": true
+        },
+        {
+          "currency": "L",
+          "unique": true,
+          "visible": true,
+          "unchanged": true
+        }
+      ],
+      "globalSelected": true,
+      "screenshot": "c04-primary.png"
+    },
+    "independentDom": {
+      "accountRows": [
+        {
+          "id": "acct-930330a8b8d00d3d80f1295c082b",
+          "unique": true,
+          "visible": true,
+          "marker": true,
+          "country": true,
+          "money": true,
+          "textSha256": "429da713cddd2a589e747b8fac790b2e4c184adb4ae2df39d4c3a4384ef0cfb7"
+        },
+        {
+          "id": "fin-ae6ee0d57aaab0fd1d082c8c4087",
+          "unique": true,
+          "visible": true,
+          "marker": true,
+          "country": true,
+          "money": true,
+          "textSha256": "b3562a8584d725e2671e8811a0e5e95567677c07d1452f7c4179d6e2b92fc9cb"
+        }
+      ],
+      "movementRows": [
+        {
+          "id": "acct-be1f7dce2795616f434f2952f79e62",
+          "unique": true,
+          "visible": true,
+          "marker": true,
+          "country": true,
+          "money": true,
+          "textSha256": "72eff14a9417a9bd4cd3d8b020cf6c90a032ee4124cc6424727729caf0d34dc9"
+        },
+        {
+          "id": "mov-837ab1c90448317285d2eaa59807",
+          "unique": true,
+          "visible": true,
+          "marker": true,
+          "country": true,
+          "money": true,
+          "textSha256": "121dfa7efcff260bc425595d8997e5a1fb22544e4824b3de0bcbb21f6b4c5c5f"
+        },
+        {
+          "id": "acct-94f3a47ee29042308492599f6b8a7a",
+          "unique": true,
+          "visible": true,
+          "marker": true,
+          "country": true,
+          "money": true,
+          "textSha256": "7ad770338573a4ede71773e06248b7a4575045316dc125ca6808c05766adcea5"
+        }
+      ],
+      "kpis": [
+        {
+          "currency": "Q",
+          "unique": true,
+          "visible": true,
+          "unchanged": true
+        },
+        {
+          "currency": "L",
+          "unique": true,
+          "visible": true,
+          "unchanged": true
+        }
+      ],
+      "globalSelected": true,
+      "screenshot": "c04-independent.png"
+    },
+    "sessions": [
+      {
+        "label": "primary",
+        "newBrowserContext": true,
+        "authNullBeforeSignIn": true,
+        "mechanism": "existing_ci_custom_token_in_memory",
+        "ordinaryPasswordLoginProven": false,
+        "scope": {
+          "role": "admin",
+          "tenantId": "tya",
+          "projectId": "cinepolis",
+          "periodId": "cinepolis-2026-10",
+          "hrRevision": "ad25ad68f7d08c4dd3617c9de49df909d26ab73e69a1e40f2800b947a4dde79a",
+          "fixtures": false
+        }
+      },
+      {
+        "label": "independent",
+        "newBrowserContext": true,
+        "authNullBeforeSignIn": true,
+        "mechanism": "existing_ci_custom_token_in_memory",
+        "ordinaryPasswordLoginProven": false,
+        "scope": {
+          "role": "admin",
+          "tenantId": "tya",
+          "projectId": "cinepolis",
+          "periodId": "cinepolis-2026-10",
+          "hrRevision": "ad25ad68f7d08c4dd3617c9de49df909d26ab73e69a1e40f2800b947a4dde79a",
+          "fixtures": false
+        }
+      }
+    ],
+    "sessionsClosed": true,
+    "writes": {
+      "authAccountsIssued": 0,
+      "claimsIssued": 0,
+      "membershipIssued": 0,
+      "hrIssued": 0,
+      "productionIssued": 0,
+      "bankIssued": 0,
+      "externalPaymentIssued": 0,
+      "financeProvider": 15,
+      "preflightR11CleanupDeletes": 0,
+      "cleanupDeletes": 13
+    },
+    "observationalLimit": "Three financial baseline records in the authorized scope and exact membership readback; not an audit of all data or concurrent external writers."
+  },
+  "d07": {
+    "executed": false,
+    "decision": "NOT_EXECUTED_PASS_CARRIED_FORWARD",
+    "carryForward": {
+      "decision": "PASS_D07_CARRY_FORWARD_SOURCE_BINDING",
+      "executed": false,
+      "originRunId": 41000990873,
+      "originControlSha": "7d064f67a394d87c3cc1dc732f528c3c017fd279",
+      "artifactId": 12953531530,
+      "artifactZipSha256": "0b2179f9c40929e714b5bc402bba90049c997962f08b603f47a8bbba0ac82118",
+      "historicalDecision": "PASS_D07_ADMIN_SHOPPER_REAL_PDF_READ_ONLY_CLAUSE",
+      "d07EvidenceSha256": "57e15abbf9b052097521550f464175d090af17fb24ca212a7c562676dcb18b37",
+      "preflightEvidenceSha256": "b2d834d2207cb88a92cb3bb4ec0e59ece894745f17089b192bbcf6fefdbadef0",
+      "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+      "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
+      "materializationRunId": 40998569643,
+      "fullTaskClosed": false,
+      "remainingFrozenClauses": [
+        "PDF alta/metadatos/version y no binario huerfano",
+        "documento ajeno denegado",
+        "vinculo a visita y revision",
+        "retiro seguro"
+      ],
+      "production": false
+    },
+    "fullTaskClosed": false,
+    "historicalEvidenceLink": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN1991_D07_CARRY_FORWARD_EVIDENCE_20261030.json",
+      "gitBlob": "a2293870ee1db51adfcbb702059e4ba2be928242",
+      "sha256": "847e3c74504f37e67150e6eee587661ff3023063201688a0f29919757babe84d"
+    },
+    "newBinaryGets": 0,
+    "newDownloads": 0,
+    "newBrowserCreated": false
+  },
+  "materializationPreserved": {
+    "deliveryKind": "DEV_LIVE_MATERIALIZATION",
+    "origin": "https://cxorbia-backend-dev.web.app",
+    "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
+    "sourceArtifactDigest": "sha256:92a2ff5695ad2980b36776c95df203feb537ea3d8b432d8956b307d5fecf1efd",
+    "runtimeSourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "materializationRunId": 40998569643,
+    "controlSha": "3265b7c9874b2b5f89d10c998dfd61392e15c0a3",
+    "runtimeRevision": "cxorbia-live-hr-dev-00331-2xq",
+    "runtimeDigest": "sha256:e56826df529bd132d2413a0913c557743dbeb78945724e1073665e8bc388ca65",
+    "builtImageDigest": "sha256:e56826df529bd132d2413a0913c557743dbeb78945724e1073665e8bc388ca65",
+    "hrRevision": "ad25ad68f7d08c4dd3617c9de49df909d26ab73e69a1e40f2800b947a4dde79a",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/0ae801f3a01e249f",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1793331763784000",
+    "rulesRelease": "projects/cxorbia-backend-dev/releases/cloud.firestore",
+    "rulesetName": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
+    "rulesGitBlob": "540240ddbbb078ebcd14611dd2cc39375472ea66",
+    "production": false,
+    "receipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_419_DEV_MATERIALIZATION_RUN1983_20261030.json",
+      "gitBlob": "0f7a9e2da03ca3758f85bf22153923f7f8670f16"
+    },
+    "owners": {
+      "app/index-backend-dev.html": "eec56cf5e4afc7624c1a6f73841bb28d18617280",
+      "app/adapters/tya-financial-canonical-source-safe-adapter.js": "9d2d1a9a541c74a6234353a44f0bfaa43bc1fb79",
+      "app/core/backend-browser-auth.js": "1274e67e69a73fd619d81b0d01687e72894901e6",
+      "app/core/backend-certifications.js": "178ce391af835a8ebe2dfccf68a590110d0466cd",
+      "app/core/backend-cxdata-finance-read.js": "2a7cd3ffbd2bf0999b149b3095218b7d3d09276b",
+      "app/core/backend-finance-benefits.js": "66856002901be88aefb38acc0aaab635a8872c2b",
+      "app/core/backend-protected-dev-mode.js": "3924d7d02ea21f589e6be6d451dff740c884300a",
+      "app/core/backend-protected-dev-session-continuity.js": "00f2b3d1e92ad6154853282a8881163cf9e6ca5d",
+      "app/core/backend-resources.js": "f12a2325948bf25133b5f7e5cff68061e0521d60",
+      "app/modules/cert.js": "78c9630fd627daa015aff5919d34565260240d74",
+      "app/modules/documentos.js": "7572b99223222f052824bdf075e76a5e7f53fea0",
+      "app/modules/finanzas.js": "f1545f0439863090e04b4729e8483616f7d209cf",
+      "app/adapters/cxorbia-cxdata-command-boundary-v1.js": "d345acb084d63c7f74847eef5be03c05cd70d458",
+      "app/adapters/cxorbia-command-adapter-v1.js": "aa6522b76a5958aece332c6346c312086d803500"
+    },
+    "cloudBuildId": "fd31f154-af59-4745-9d1d-67c65b78a3b4",
+    "imageUri": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-phasea-4190089d813b-40998569643",
+    "artifactRole": "PRODUCT_SOURCE_AND_DEV_MATERIALIZATION_RUN1983_UNCHANGED"
+  },
+  "preflight": {
+    "decision": "PASS_R7_DEV_LIVE_MATERIALIZATION_PREFLIGHT",
+    "providerConfigWrites": 0,
+    "corsChanges": false,
+    "deploys": 0,
+    "sourceAndRuntimeAndHostingAndRulesAndHrPinsVerified": true
+  },
+  "thisSerialization": {
+    "scope": "CONTROL_EVIDENCE_ONLY",
+    "newDevOperations": 0,
+    "newProviderWrites": 0,
+    "newBuilds": 0,
+    "newDeploys": 0,
+    "newFunctionalRunsAuthorized": 0,
+    "newHumanApproval": false,
+    "extraEmulatorSuite": "NOT_EXECUTED_MISSING_LOCAL_DEPENDENCY_NOT_PASS",
+    "workflowUnchanged": true,
+    "guardsUnchanged": true,
+    "runnersUnchanged": true,
+    "testsUnchanged": true,
+    "r12Unchanged": true
+  },
+  "pending": {
+    "c04c05FullTaskClosed": false,
+    "financeFullDomainClosed": false,
+    "resourcesFullDomainClosed": false,
+    "d07RemainingFrozenClauses": [
+      "PDF alta/metadatos/version y no binario huerfano",
+      "documento ajeno denegado",
+      "vinculo a visita y revision",
+      "retiro seguro"
+    ],
+    "humanAcceptance": "PENDING_NO_NEW_APPROVAL",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i3": "HOLD",
+    "i4Authorized": false
+  },
+  "controlRouting": {
+    "previousStatus": "HOLD_I3_DEV_MATERIALIZED_D04_E04_LIVE_E2E_REQUIRED",
+    "selectedStatus": "HOLD_I3_DEV_MATERIALIZED_SAME_ARTIFACT__E2E_HUMAN_PENDING",
+    "supportedHistoricalStatus": {
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V394_2026-10-13.json",
+      "gitBlob": "9ccf8ce276f9940161edd2e806dd04dbcbfb5220"
+    },
+    "shockStatusRejected": {
+      "status": "HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL",
+      "guardFailure": "RELEASE_COMPOSITION_FAILURE:FALSE_CURRENT_DEV_DECLARATION",
+      "reason": "CURRENT_SOURCE_SERVING seal requires DEV_MATERIALIZED status; seal/source must not be falsified."
+    },
+    "commitMessageActivationMarkers": false
+  },
+  "priorAuthorities": {
+    "matrix": {
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V200.json",
+      "gitBlob": "a8b440ddbe8823ccbbd8b1b73744bcfe98e0c386"
+    },
+    "ledger": {
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V532_2026-10-30.json",
+      "gitBlob": "dbbe8db05b58340fe059454cc4aa6c791c5bffe9"
+    }
+  },
+  "serializationTargets": {
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V201.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V533_2026-10-30.json",
+    "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "pointer": "CXORBIA_RECOVERY_EXECUTION_CURRENT.json"
+  },
+  "nextBlock": {
+    "taskId": "G03",
+    "plan": "PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+    "owner": "Orquestación y QA read-only",
+    "exactPending": "Completar el crosswalk de última autoridad aprobada por owner y función para los 12 owners documentados y resolver las omisiones de inventario app/core/backend-ai.js y app/modules/rutas.js, contrastando los blobs de la source 419; no inferir aprobación desde HEAD ni desde tests.",
+    "evidenceAlreadyAvailable": [
+      {
+        "path": "CXORBIA_I3_G03_PHASE_A_SCOPE_CROSSWALK_READBACK_2026-10-28.json",
+        "gitBlob": "90aeac41d4fe7cff4bdc9670842387d333325aa4",
+        "scope": "HISTORICAL_G03_GAPS_12_OWNERS_42_FUNCTIONS_56_ROUTES_NOT_NEW_APPROVAL"
+      },
+      {
+        "path": "CXORBIA_I3_G03_OWNER_PROVENANCE_FOCAL_QA_READBACK_2026-10-28.json",
+        "gitBlob": "607780a149c48f4cd7681d712d232a95d08d075e",
+        "scope": "HISTORICAL_7_EXACT_5_CHANGED_OWNERS_SOURCE_QA_NOT_FRESH_HUMAN_OR_HR"
+      },
+      {
+        "runId": 41124697399,
+        "artifactId": 13010072681,
+        "scope": "BOUNDED_C04_C05_PASS_D07_CARRY_FORWARD_ONLY"
+      }
+    ],
+    "relatedOpenDependency": "HR/identidad HN y demás cláusulas Phase A requieren su evidencia específica; no quedan probadas por RUN1992.",
+    "startedByThisCommit": false
+  },
+  "exactNextAction": "I3 G03 continuidad: completar la reconciliación de autoridad F9/última aprobación por owner para los 21 dominios, incluidos los 12 owners y dos omisiones de inventario documentados; conservar HR, operación, finanzas y D07 por sus revisiones/evidencias exactas. RUN1992 cierra sólo el selector y el caso financiero acotado; no repetir C04/C05 ni el PDF D07 preservados. Persisten cláusulas funcionales y aceptación humana; Gate20/Gate21 HOLD, producción DO_NOT_TOUCH e I4 no autorizada. No se inicia ese bloque en esta serialización.",
+  "production": "DO_NOT_TOUCH",
+  "i4Authorized": false
+}

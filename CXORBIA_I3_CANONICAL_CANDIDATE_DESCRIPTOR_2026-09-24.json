@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_DEV_MATERIALIZED_D04_E04_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_DEV_MATERIALIZED_SAME_ARTIFACT__E2E_HUMAN_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
   "productTreeAuthority": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
   "predecessorProductSourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V532_2026-10-30.json",
-  "findingsLedgerExpectedGitBlob": "dbbe8db05b58340fe059454cc4aa6c791c5bffe9",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V200.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V533_2026-10-30.json",
+  "findingsLedgerExpectedGitBlob": "38148ca78881d522db1e8479546b43e30e799378",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V201.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "C04_C05_ONLY_LIVE_REPROOF_PENDING_D07_CARRY_FORWARD",
+  "activeBlocker": "G03_OWNER_AUTHORITY_CROSSWALK_AND_REMAINING_PHASE_A_CLAUSES_PENDING",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 G03: finanzas C04/C05-only, una sola corrida en el workflow existente sobre RUN1983 sin rebuild ni deploy, con revisión HR enlazada conservada; transportar la cláusula PDF D07 de RUN1991 por hashes verificados, executed:false y fullTaskClosed:false. Preservar residuos ajenos, cero PATCH CORS. I3/Gate20/Gate21 HOLD; producción DO_NOT_TOUCH; I4 no autorizada.",
+  "exactNextAction": "I3 G03 continuidad: completar la reconciliación de autoridad F9/última aprobación por owner para los 21 dominios, incluidos los 12 owners y dos omisiones de inventario documentados; conservar HR, operación, finanzas y D07 por sus revisiones/evidencias exactas. RUN1992 cierra sólo el selector y el caso financiero acotado; no repetir C04/C05 ni el PDF D07 preservados. Persisten cláusulas funcionales y aceptación humana; Gate20/Gate21 HOLD, producción DO_NOT_TOUCH e I4 no autorizada. No se inicia ese bloque en esta serialización.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "a8b440ddbe8823ccbbd8b1b73744bcfe98e0c386",
+  "moduleTruthExpectedGitBlob": "e8f08acd8ba428e80c1304c03f2589225914276d",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12086,7 +12086,7 @@
     "proofTree": "1753d01aa909dd4181e3490c07d24287913d68a0",
     "decision": "PASS_FOCAL_SOURCE_ONLY_I3_HOLD"
   },
-  "lastUpdatedAt": "2026-10-29T23:55:00Z",
+  "lastUpdatedAt": "2026-10-30",
   "a05SourceProof": {
     "recordedAt": "2026-10-17T12:00:37.826Z",
     "productSourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
@@ -12394,7 +12394,7 @@
     "artifactUnchanged": true,
     "production": false
   },
-  "nextExactAction": "I3 G03: finanzas C04/C05-only, una sola corrida en el workflow existente sobre RUN1983 sin rebuild ni deploy, con revisión HR enlazada conservada; transportar la cláusula PDF D07 de RUN1991 por hashes verificados, executed:false y fullTaskClosed:false. Preservar residuos ajenos, cero PATCH CORS. I3/Gate20/Gate21 HOLD; producción DO_NOT_TOUCH; I4 no autorizada.",
+  "nextExactAction": "I3 G03 continuidad: completar la reconciliación de autoridad F9/última aprobación por owner para los 21 dominios, incluidos los 12 owners y dos omisiones de inventario documentados; conservar HR, operación, finanzas y D07 por sus revisiones/evidencias exactas. RUN1992 cierra sólo el selector y el caso financiero acotado; no repetir C04/C05 ni el PDF D07 preservados. Persisten cláusulas funcionales y aceptación humana; Gate20/Gate21 HOLD, producción DO_NOT_TOUCH e I4 no autorizada. No se inicia ese bloque en esta serialización.",
   "adminClientPreview20261018": {
     "sourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
     "sourceTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
@@ -15047,22 +15047,15 @@
     }
   },
   "currentExecutionReceipt": {
-    "path": "docs/checkpoints/CXORBIA_I3_S485_DEV_MATERIALIZATION_RUN1972_20261030.json",
-    "gitBlob": "734fadab265d042eadf874ecf57af5e8f7d3258f",
-    "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
-    "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
-    "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
-    "controlSha": "1f536ea7e3df80b08c70d7fc12b985abae0438c2",
-    "materializationRunId": 40984272542,
-    "readbackRunId": 40988379125,
-    "runNumber": 1972,
-    "artifactId": 12947908043,
-    "artifactZipSha256": "ef4008d2d3f4de017031bc819968403e6518775d547a68826b8e9479be9aef84",
-    "runtimeRevision": "cxorbia-live-hr-dev-00331-2xq",
-    "runtimeDigest": "sha256:e56826df529bd132d2413a0913c557743dbeb78945724e1073665e8bc388ca65",
-    "trafficPercent": 100,
-    "fullTaskClosed": false,
-    "humanAcceptance": "PENDING",
+    "path": "docs/checkpoints/CXORBIA_I3_RUN1992_C04_C05_BOUNDED_CONTROL_SERIALIZATION_20261030.json",
+    "gitBlob": "65ff8cf5f6bac9daec5691a79f3cc4067aae4474",
+    "sha256": "316b5fb0d5a4bf9f9a4dca85d233b507f6db0fdde88a52037020bb2305222e5d",
+    "decision": "PASS_R7_C04_C05_ONLY_D07_CARRIED_FORWARD",
+    "runId": 41124697399,
+    "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
+    "kind": "FOCAL_EVIDENCE_RECEIPT_NOT_MATERIALIZATION",
+    "fullTasksClosed": false,
     "production": false
   },
   "currentSuccessorDevMaterializationRequest": {
@@ -15532,7 +15525,7 @@
   "currentSessionProofRequest": {
     "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R12.json",
     "gitBlob": "14955ede2c956284a0a11d0e6e5faaebad40fc31",
-    "state": "READY_R12_C04_C05_ONLY_D07_RUN1991_CARRY_FORWARD",
+    "state": "EXECUTED_RUN1992_BOUNDED_PASS_FULL_TASKS_OPEN",
     "expectedControlParentSha": "6a238c98bffdce85081b3084a696f4affdf044c8",
     "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
     "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
@@ -15557,12 +15550,12 @@
       "runNumber": 1976,
       "decision": "HOLD_R7_D07_C04_C05_BOUNDED"
     },
-    "focusAction": "I3 G03: finanzas C04/C05-only, una sola corrida en el workflow existente sobre RUN1983 sin rebuild ni deploy, con revisión HR enlazada conservada; transportar la cláusula PDF D07 de RUN1991 por hashes verificados, executed:false y fullTaskClosed:false. Preservar residuos ajenos, cero PATCH CORS. I3/Gate20/Gate21 HOLD; producción DO_NOT_TOUCH; I4 no autorizada.",
+    "focusAction": "Executed once on RUN1992 / commit 72439986e; preserved as historical attempt, not a new activation request.",
     "production": false,
     "sourceChanges": 0,
     "newWorkflow": 0,
     "newMaterializer": 0,
-    "liveResult": "PENDING",
+    "liveResult": "PASS_R7_C04_C05_ONLY_D07_CARRIED_FORWARD",
     "attemptNumber": 12,
     "mode": "R7_D07_C04_C05_BOUNDED",
     "focus": "C04_C05_ONLY_D07_RUN1991_CARRY_FORWARD",
@@ -15570,6 +15563,12 @@
       "path": "docs/checkpoints/CXORBIA_I3_RUN1991_D07_CARRY_FORWARD_EVIDENCE_20261030.json",
       "gitBlob": "a2293870ee1db51adfcbb702059e4ba2be928242",
       "sha256": "847e3c74504f37e67150e6eee587661ff3023063201688a0f29919757babe84d"
+    },
+    "executedControlSha": "72439986e46b54a465228ecdc1192688a855f02a",
+    "resultReceipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN1992_C04_C05_BOUNDED_CONTROL_SERIALIZATION_20261030.json",
+      "gitBlob": "65ff8cf5f6bac9daec5691a79f3cc4067aae4474",
+      "sha256": "316b5fb0d5a4bf9f9a4dca85d233b507f6db0fdde88a52037020bb2305222e5d"
     }
   },
   "previousCurrentSourceProofBefore419": {
@@ -15661,12 +15660,18 @@
       "gitBlob": "a2293870ee1db51adfcbb702059e4ba2be928242",
       "sha256": "847e3c74504f37e67150e6eee587661ff3023063201688a0f29919757babe84d"
     },
-    "liveC04C05": "PENDING",
+    "liveC04C05": "PASS_C04_C05_BOUNDED_FINANCE",
     "fullTaskClosed": false,
     "production": false,
     "runnerGitBlob": "aa5f5f9581db9d6de9b4d00923a300e5bf78d92e",
     "helperSha256": "b8a583213ea9f077a3ca1431233f944a924c64323a94d80b338c18f9b6bc8de4",
-    "helperHashScope": "R7_FINANCE_IIFE_UTF8_FROM_DECLARATION_THROUGH_NULL_NO_TRAILING_NEWLINE"
+    "helperHashScope": "R7_FINANCE_IIFE_UTF8_FROM_DECLARATION_THROUGH_NULL_NO_TRAILING_NEWLINE",
+    "selectorBlocker": "CLOSED_PROVEN_RUN1992",
+    "resultReceipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN1992_C04_C05_BOUNDED_CONTROL_SERIALIZATION_20261030.json",
+      "gitBlob": "65ff8cf5f6bac9daec5691a79f3cc4067aae4474",
+      "sha256": "316b5fb0d5a4bf9f9a4dca85d233b507f6db0fdde88a52037020bb2305222e5d"
+    }
   },
   "previousSessionProofRequestBeforeC04C05Only": {
     "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R7.json",
@@ -15713,7 +15718,101 @@
     "historicalDecision": "PASS_D07_ADMIN_SHOPPER_REAL_PDF_READ_ONLY_CLAUSE",
     "fullTaskClosed": false,
     "remainingClausesSource": "rawEvidence.d07.remainingFrozenClauses",
-    "matrixAndLedgerSerialization": "PENDING_NOT_DOMAIN_CLOSURE",
+    "matrixAndLedgerSerialization": "SERIALIZED_IN_V201_V533",
+    "production": false,
+    "resultReceipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN1992_C04_C05_BOUNDED_CONTROL_SERIALIZATION_20261030.json",
+      "gitBlob": "65ff8cf5f6bac9daec5691a79f3cc4067aae4474",
+      "sha256": "316b5fb0d5a4bf9f9a4dca85d233b507f6db0fdde88a52037020bb2305222e5d"
+    }
+  },
+  "previousRoutingBeforeRun1992Serialization": {
+    "status": "HOLD_I3_DEV_MATERIALIZED_D04_E04_LIVE_E2E_REQUIRED",
+    "activeBlocker": "C04_C05_ONLY_LIVE_REPROOF_PENDING_D07_CARRY_FORWARD",
+    "exactNextAction": "I3 G03: finanzas C04/C05-only, una sola corrida en el workflow existente sobre RUN1983 sin rebuild ni deploy, con revisión HR enlazada conservada; transportar la cláusula PDF D07 de RUN1991 por hashes verificados, executed:false y fullTaskClosed:false. Preservar residuos ajenos, cero PATCH CORS. I3/Gate20/Gate21 HOLD; producción DO_NOT_TOUCH; I4 no autorizada."
+  },
+  "run1992BoundedControlSerialization": {
+    "runId": 41124697399,
+    "runNumber": 1992,
+    "controlSha": "72439986e46b54a465228ecdc1192688a855f02a",
+    "receipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN1992_C04_C05_BOUNDED_CONTROL_SERIALIZATION_20261030.json",
+      "gitBlob": "65ff8cf5f6bac9daec5691a79f3cc4067aae4474",
+      "sha256": "316b5fb0d5a4bf9f9a4dca85d233b507f6db0fdde88a52037020bb2305222e5d"
+    },
+    "evidenceArtifact": {
+      "id": 13010072681,
+      "name": "cxorbia-phasea-representative-live-41124697399",
+      "kind": "FOCAL_EVIDENCE_ZIP_NOT_PRODUCT_ARTIFACT",
+      "sha256": "0269dc512dfc206908d2955a762e103fada743466d5e9558738b4c003f4a7412",
+      "members": {
+        "r7-d07-c04-c05/result.json": {
+          "sha256": "f0d25548eb1af2ab04a145552132a691eac9e4ffbf0c32569387f77a21c0a11c",
+          "bytes": 21878
+        },
+        "r7-d07-c04-c05/c04-c05/c04-c05-bounded-result.json": {
+          "sha256": "05371de0f594a0ec1734f8aa55da92363afc0045f43ff14008ac515924d4dee8",
+          "bytes": 15030
+        },
+        "session-proof/preflight.json": {
+          "sha256": "d3da5e702528d9be2be606e991a15df421d0ff1e108ce0b0635b6ae3f2243848",
+          "bytes": 12829
+        },
+        "session-proof/session-proof-guard.json": {
+          "sha256": "c729afb26f98d33a571d75b9c98de8f4a629c0d0e2c61b4b19c71f41e496ad5a",
+          "bytes": 358
+        }
+      }
+    },
+    "aggregateDecision": "PASS_R7_C04_C05_ONLY_D07_CARRIED_FORWARD",
+    "financeDecision": "PASS_C04_C05_BOUNDED_FINANCE",
+    "fullTasksClosed": false,
+    "fullTaskClosed": false,
+    "humanAcceptance": "PENDING",
+    "production": false
+  },
+  "nextPlannedBlock": {
+    "taskId": "G03",
+    "plan": "PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+    "owner": "Orquestación y QA read-only",
+    "exactPending": "Completar el crosswalk de última autoridad aprobada por owner y función para los 12 owners documentados y resolver las omisiones de inventario app/core/backend-ai.js y app/modules/rutas.js, contrastando los blobs de la source 419; no inferir aprobación desde HEAD ni desde tests.",
+    "evidenceAlreadyAvailable": [
+      {
+        "path": "CXORBIA_I3_G03_PHASE_A_SCOPE_CROSSWALK_READBACK_2026-10-28.json",
+        "gitBlob": "90aeac41d4fe7cff4bdc9670842387d333325aa4",
+        "scope": "HISTORICAL_G03_GAPS_12_OWNERS_42_FUNCTIONS_56_ROUTES_NOT_NEW_APPROVAL"
+      },
+      {
+        "path": "CXORBIA_I3_G03_OWNER_PROVENANCE_FOCAL_QA_READBACK_2026-10-28.json",
+        "gitBlob": "607780a149c48f4cd7681d712d232a95d08d075e",
+        "scope": "HISTORICAL_7_EXACT_5_CHANGED_OWNERS_SOURCE_QA_NOT_FRESH_HUMAN_OR_HR"
+      },
+      {
+        "runId": 41124697399,
+        "artifactId": 13010072681,
+        "scope": "BOUNDED_C04_C05_PASS_D07_CARRY_FORWARD_ONLY"
+      }
+    ],
+    "relatedOpenDependency": "HR/identidad HN y demás cláusulas Phase A requieren su evidencia específica; no quedan probadas por RUN1992.",
+    "startedByThisCommit": false
+  },
+  "previousExecutionReceiptBeforeRun1992Serialization": {
+    "path": "docs/checkpoints/CXORBIA_I3_S485_DEV_MATERIALIZATION_RUN1972_20261030.json",
+    "gitBlob": "734fadab265d042eadf874ecf57af5e8f7d3258f",
+    "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+    "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+    "controlSha": "1f536ea7e3df80b08c70d7fc12b985abae0438c2",
+    "materializationRunId": 40984272542,
+    "readbackRunId": 40988379125,
+    "runNumber": 1972,
+    "artifactId": 12947908043,
+    "artifactZipSha256": "ef4008d2d3f4de017031bc819968403e6518775d547a68826b8e9479be9aef84",
+    "runtimeRevision": "cxorbia-live-hr-dev-00331-2xq",
+    "runtimeDigest": "sha256:e56826df529bd132d2413a0913c557743dbeb78945724e1073665e8bc388ca65",
+    "trafficPercent": 100,
+    "fullTaskClosed": false,
+    "humanAcceptance": "PENDING",
     "production": false
   }
 }
