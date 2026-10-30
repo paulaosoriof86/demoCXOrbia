@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "cxorbia.i3.run1991.c04-false-hold-root-cause.v1",
+  "id": "CXORBIA-I3-RUN1991-C04-FALSE-HOLD-ROOT-CAUSE-20261030",
+  "date": "2026-10-30",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "state": "HOLD",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedControlParentSha": "1f5d5ac9dfb398807912a382a089d234f9bf0153",
+  "expectedControlParentTree": "7edf72cac79a3318f8516421bfaea972ebba9d75",
+  "productSourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+  "productSourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
+  "productSourceChanged": false,
+  "devMaterializationChanged": false,
+  "productionTouched": false,
+  "i4Authorized": false,
+  "run1991": {
+    "runId": 41000990873,
+    "controlSha": "7d064f67a394d87c3cc1dc732f528c3c017fd279",
+    "workflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "runnerPath": "tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs",
+    "runnerBlob": "29911bf029c873cc387cda9666c70ecf50d89ccc",
+    "decision": "HOLD_R7_D07_C04_C05_BOUNDED",
+    "reportedError": "C04_VISIBLE_CURRENCY_OR_DOUBLE_REVENUE_MISMATCH"
+  },
+  "preservedPasses": {
+    "d07ExactAdminShopperPdf": "PASS",
+    "financeCommands": 4,
+    "financeProviderWrites": 15,
+    "strictProviderAckAndReadback": true,
+    "exactIdempotentReplays": 2,
+    "replayProviderWrites": 0,
+    "conditionalCleanupDeletes": 13,
+    "cleanupAllAbsent": true,
+    "unexpectedMutationBlocked": 0,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "productionWrites": 0
+  },
+  "classification": {
+    "primary": "MAPPING_FAILURE",
+    "subtype": "HARNESS_RENDERED_TEXT_CASE_TRANSFORM",
+    "notProductDefect": true,
+    "notProviderFailure": true,
+    "notPersistenceFailure": true,
+    "notReleaseCompositionFailure": true
+  },
+  "causalProof": {
+    "runnerSemanticLookup": {
+      "textReader": "String(node?.innerText||'').replace(/\\s+/g,' ').trim()",
+      "headingPredicate": "text(node) === 'Moneda ' + currency",
+      "kpiLabelPredicate": "text(node.querySelector('.k-l')) === 'Ingresos oper.'"
+    },
+    "renderedUi": {
+      "currencyHeadings": [
+        "MONEDA L",
+        "MONEDA Q"
+      ],
+      "kpiLabel": "INGRESOS OPER.",
+      "visibleValues": {
+        "L": "L 0",
+        "Q": "Q 0"
+      },
+      "financialMeaning": "Cobro interno CxC y financiamiento permanecen excluidos de ingreso operativo."
+    },
+    "isolatedChromiumProbe": {
+      "browser": "144.0.7559.96",
+      "headingInnerText": "MONEDA L",
+      "headingTextContent": "Moneda L",
+      "labelInnerText": "INGRESOS OPER.",
+      "labelTextContent": "Ingresos oper.",
+      "valueInnerText": "L 0",
+      "oldSelector": {
+        "headings": 0,
+        "tiles": 0
+      },
+      "correctedSelector": {
+        "headings": 1,
+        "tiles": 1
+      },
+      "writes": 0
+    },
+    "conclusion": "CSS text-transform changes innerText to uppercase. The harness compared rendered uppercase text against mixed-case semantic literals, selected zero heading/KPI nodes and emitted a false HOLD before comparing the visible KPI values."
+  },
+  "artifactEvidence": {
+    "c04Result": {
+      "sha256": "a00ce7aa52ca2445258b6ce39cb5f5aad78308cd18b5da4fe0197dd1722f1c37",
+      "bytes": 7004
+    },
+    "c04FailureScreenshot": {
+      "sha256": "1c82c5bf2834417039eaf7e83f8fbbdbe0dd4b62fdcb210669a6a731a831bde3",
+      "bytes": 303680
+    },
+    "combinedResult": {
+      "sha256": "959b9d5de31d4b2ef31f7c19f8a4af9f2a26d39bdd8b0b025279f17551c6b79c",
+      "bytes": 36773
+    }
+  },
+  "minimalCorrection": {
+    "owner": "tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs",
+    "scope": "visibleFinanceRows only",
+    "change": [
+      "Add semanticText(node) based on textContent with whitespace normalization.",
+      "Use semanticText for currency-heading and KPI-label identification.",
+      "Keep innerText normalization for visible amounts, row content and visibility assertions."
+    ],
+    "forbiddenChanges": [
+      "Do not modify app/modules/finanzas.js.",
+      "Do not modify finance providers or durable data.",
+      "Do not rebuild or rematerialize DEV for this harness-only correction.",
+      "Do not rerun D07.",
+      "Do not touch production."
+    ]
+  },
+  "nextExactAction": {
+    "step": "Apply one minimal harness-only patch, run its local regression proof, then repeat only C04/C05 against the same RUN1983 DEV artifact and source 4190089d.",
+    "expectedResult": "The semantic selectors find one currency heading and one Ingresos oper. tile for Q and L; durable PASS evidence remains unchanged.",
+    "authorizationRequired": false
+  }
+}
