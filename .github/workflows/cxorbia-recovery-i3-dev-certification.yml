@@ -6367,7 +6367,7 @@ jobs:
 
   phasea-representative-same-artifact-live-reproof:
    needs: [canonical-candidate-authority, phasea-rejected-checkpoint-source-proof]
-   if: ${{ !cancelled() && needs.canonical-candidate-authority.result=='success' && (contains(fromJSON('["HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED","HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED","HOLD_B1_IDENTITY_LIVE_READBACK_REQUIRED","HOLD_B1_LIVE_E2E_REQUIRED","HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED","HOLD_I3_B7_TWO_ROLE_DECISION_LIVE_DEV_REQUIRED","HOLD_I3_GT_E2E","HOLD_I3_D03_LIVE_PROVIDER_REQUIRED","HOLD_I3_D04_E04_LIVE_E2E_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status) || (github.event_name=='push' && contains(github.event.head_commit.message,'[i3-c02-d04-session-proof]') && needs.canonical-candidate-authority.outputs.status=='HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL' && needs.phasea-rejected-checkpoint-source-proof.result=='success')) }}
+   if: ${{ !cancelled() && needs.canonical-candidate-authority.result=='success' && (contains(fromJSON('["HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED","HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED","HOLD_B1_IDENTITY_LIVE_READBACK_REQUIRED","HOLD_B1_LIVE_E2E_REQUIRED","HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED","HOLD_I3_B7_TWO_ROLE_DECISION_LIVE_DEV_REQUIRED","HOLD_I3_GT_E2E","HOLD_I3_D03_LIVE_PROVIDER_REQUIRED","HOLD_I3_DEV_MATERIALIZED_D04_E04_LIVE_E2E_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status) || (github.event_name=='push' && contains(github.event.head_commit.message,'[i3-c02-d04-session-proof]') && needs.canonical-candidate-authority.outputs.status=='HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL' && needs.phasea-rejected-checkpoint-source-proof.result=='success')) }}
    runs-on: ubuntu-24.04
    timeout-minutes: 35
    env:
@@ -6475,7 +6475,7 @@ jobs:
         test "$(jq -r '.decision' "$P/b7/result.json")" = "PASS_I3_B7_TWO_ROLE_DECISION_LIVE_DEV"
         exit 0
       fi
-      if [ "$(jq -r .status "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_D04_E04_LIVE_E2E_REQUIRED" ]; then
+      if [ "$(jq -r .status "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_DEV_MATERIALIZED_D04_E04_LIVE_E2E_REQUIRED" ]; then
         node --check tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs
         mkdir -p "$P/d04-e04/served"
         for ASSET in modules/cert.js modules/cliente-insights.js; do

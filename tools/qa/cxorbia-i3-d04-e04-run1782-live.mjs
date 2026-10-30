@@ -22,10 +22,11 @@ if(!ROOT||!SRC||!HR||!/^\d+$/.test(RUN))throw Error('ENVIRONMENT_FAILURE:D04_E04
 assert.equal(descriptor.productSourceSha,SRC);
 let sessionPackage=null, sessionPreflight=null;
 if(R7_MODE){
-// Inserted as the R7-only branch before the unchanged R5/R6 session guard.
-assert.equal(descriptor.status,'HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL');
-assert.equal(SRC,'4854a4e289bf76d08f3ffe3ecddd09168ba501af');
-assert.equal(descriptor.productTreeAuthority,'7e55c5fefee821b2d9dd1d7c6e575592b8534be4');
+// R11 and R12 share this bounded runner; R12 binds the same DEV RUN1983 source receipt.
+const IS_R12=(process.env.CXORBIA_I3_SESSION_PACKAGE||'').endsWith('_R12.json');
+assert.equal(descriptor.status,IS_R12?'HOLD_I3_DEV_MATERIALIZED_D04_E04_LIVE_E2E_REQUIRED':'HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL');
+assert.equal(SRC,IS_R12?'4190089d813bd23948ac7f4f75b772b6727f3923':'4854a4e289bf76d08f3ffe3ecddd09168ba501af');
+assert.equal(descriptor.productTreeAuthority,IS_R12?'c13f89de52ea483f4d58cbb8b015c94f2d2ab751':'7e55c5fefee821b2d9dd1d7c6e575592b8534be4');
 assert.equal(ROOT,'https://cxorbia-backend-dev.web.app');
 const r7Git=(...args)=>execFileSync('git',args,{encoding:'utf8',timeout:10000,maxBuffer:1024*1024}).trim();
 const r7Blob=bytes=>createHash('sha1').update(Buffer.from('blob '+bytes.length+'\0')).update(bytes).digest('hex');
@@ -48,7 +49,7 @@ assert.equal(r7Git('rev-parse','HEAD:'+packagePath),packageBlob);
 sessionPackage=JSON.parse(packageBytes);
 sessionPreflight=JSON.parse(fs.readFileSync(process.env.CXORBIA_I3_SESSION_PREFLIGHT,'utf8'));
 assert.equal(sessionPackage.schemaVersion,'cxorbia.i3.c02-d04.independent-session-package.v1');
-assert.equal(sessionPackage.id,'CXORBIA-I3-D07-C04-C05-BOUNDED-20261029-R'+sessionPackage.attemptNumber);
+assert.equal(sessionPackage.id,IS_R12?'CXORBIA-I3-D07-C04-C05-BOUNDED-20261030-R12':'CXORBIA-I3-D07-C04-C05-BOUNDED-20261029-R'+sessionPackage.attemptNumber);
 assert.equal(sessionPackage.mode,'R7_D07_C04_C05_BOUNDED');
 assert.ok(Number.isSafeInteger(sessionPackage.attemptNumber)&&sessionPackage.attemptNumber>=10);assert.equal(sessionPackage.attemptNumber,execution.currentSessionProofPackage?.attemptNumber);
 assert.equal(sessionPackage.expectedControlParentSha,r7Git('rev-parse','HEAD^'));

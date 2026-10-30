@@ -546,7 +546,7 @@ session-source-proof|session-preflight|session-proof)
   test "${GITHUB_EVENT_NAME:-}" = push
   test "${GITHUB_REF:-}" = refs/heads/recovery/cxorbia-phase-a-20260831
   jq -e '.head_commit.message | contains("[i3-c02-d04-session-proof]")' "$GITHUB_EVENT_PATH" >/dev/null
-  test "$(jq -r .status "$CANDIDATE_DESCRIPTOR")" = HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL
+  [[ "$(jq -r .status "$CANDIDATE_DESCRIPTOR")" == HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL || "$(jq -r .status "$CANDIDATE_DESCRIPTOR")" == HOLD_I3_DEV_MATERIALIZED_D04_E04_LIVE_E2E_REQUIRED ]]
   test "$(jq -r .production "$CANDIDATE_DESCRIPTOR")" = DO_NOT_TOUCH
   SESSION_POINTER=CXORBIA_RECOVERY_EXECUTION_CURRENT.json
   SESSION_PACKAGE="$(jq -r .currentSessionProofPackage.path "$SESSION_POINTER")"
@@ -565,7 +565,7 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {execFileSync,spawnSync} from 'node:child_process';
 
-const CONTRACT = {
+const R11_CONTRACT = {
   "mode": "R7_D07_C04_C05_BOUNDED",
   "packagePath": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R11.json",
   "packageSchema": "cxorbia.i3.c02-d04.independent-session-package.v1",
@@ -656,21 +656,37 @@ const CONTRACT = {
   "runtimeBindingPath": "docs/checkpoints/CXORBIA_I3_S485_RUNTIME_BUILD_REVISION_BINDING_20261030.json",
   "sourceArtifactDigest": "sha256:f3509fc74a7a5c46c1a8bf1e018ebae8e363b2897d1f06c85bbac34379316fa4"
 };
+
 const [mode,packagePath,out]=process.argv.slice(2);
+const IS_R12=packagePath.endsWith('_R12.json');
+const R12_CONTRACT_OVERRIDES={
+ packagePath:'docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R12.json',
+ packageId:'CXORBIA-I3-D07-C04-C05-BOUNDED-20261030-R12',
+ packageSchema:'cxorbia.i3.c02-d04.independent-session-package.v1',
+ mode:'R7_D07_C04_C05_BOUNDED',
+ attemptNumber:12,
+ sourceSha:'4190089d813bd23948ac7f4f75b772b6727f3923',
+ sourceTree:'c13f89de52ea483f4d58cbb8b015c94f2d2ab751',
+ sourceRepair:{path:'docs/checkpoints/CXORBIA_I3_D07_C04_C05_SOURCE_SUCCESSOR_20261030.json',gitBlob:'9462c55e9e66338fd86f162bcb441dff3b7a98e0'},
+ ownerPaths:["app/index-backend-dev.html","app/adapters/tya-financial-canonical-source-safe-adapter.js","app/core/backend-browser-auth.js","app/core/backend-certifications.js","app/core/backend-cxdata-finance-read.js","app/core/backend-finance-benefits.js","app/core/backend-protected-dev-mode.js","app/core/backend-protected-dev-session-continuity.js","app/core/backend-resources.js","app/modules/cert.js","app/modules/documentos.js","app/modules/finanzas.js","app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/cxorbia-command-adapter-v1.js"],
+ runtimeBindingPath:'docs/checkpoints/CXORBIA_I3_419_DEV_MATERIALIZATION_RUN1983_20261030.json',
+ sourceArtifactDigest:'sha256:92a2ff5695ad2980b36776c95df203feb537ea3d8b432d8956b307d5fecf1efd'
+};
+const CONTRACT=IS_R12?{...R11_CONTRACT,...R12_CONTRACT_OVERRIDES}:R11_CONTRACT;
 const SRC=CONTRACT.sourceSha,TREE=CONTRACT.sourceTree,ROOT=CONTRACT.origin;
 const RUN=String(process.env.GITHUB_RUN_ID||'');
 const RUNNER='tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs';
-const TOOL_BLOBS={
+const TOOL_BLOBS=IS_R12?{'tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs':'29911bf029c873cc387cda9666c70ecf50d89ccc'}:{
   'tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs':'b07cd8c59032f5b2f5d65e7d1f5a7cdd33b1508b',
   'tools/qa/cxorbia-i3-d03-ai-generation-source.test.mjs':'0baa74bd8c42c137fe0f6501f5b970fd2ca95e8b'
 };
 const PIN_FIELDS=['sourceSha','sourceTree','runtimeSourceSha','runtimeRevision','runtimeDigest','hrRevision','hostingVersion','hostingRelease','rulesRelease','rulesetName','rulesGitBlob','deliveryKind','origin','materializationRunId','production'];
 const PROTECTED=['app','backend','firebase.json','.firebaserc','firestore.rules','storage.rules','tools/hr-source'];
-const CONTROL_QA_EXCEPTION={"path":"backend/runtime/hr-live-service/test/cxorbia-i3-phasea-completion-source-contract.test.mjs","sourceGitBlob":"b6070e6d5bdf0e06f64ab01d76da4c168a353963","controlGitBlob":"fda8d43d25556d61c88f65e87460b5d6a0566e22"};
+const CONTROL_QA_EXCEPTION=IS_R12?{"path":"backend/runtime/hr-live-service/test/cxorbia-i3-phasea-completion-source-contract.test.mjs","sourceGitBlob":"fda8d43d25556d61c88f65e87460b5d6a0566e22","controlGitBlob":"fda8d43d25556d61c88f65e87460b5d6a0566e22"}:{"path":"backend/runtime/hr-live-service/test/cxorbia-i3-phasea-completion-source-contract.test.mjs","sourceGitBlob":"b6070e6d5bdf0e06f64ab01d76da4c168a353963","controlGitBlob":"fda8d43d25556d61c88f65e87460b5d6a0566e22"};
 const PROTECTED_WITH_QA_EXCLUSION=[...PROTECTED,':(exclude,literal)'+CONTROL_QA_EXCEPTION.path];
 let stage='SOURCE_ENVIRONMENT',sourcePassed=false,cloudAccess=false,preflightStarted=false;
 let pkg=null,target=null,runtimeBinding=null,packageBlob=null,controlSha=null;
-const RUNTIME_BINDING_LABEL='LINKED_SOURCE_TAR_CLOUD_BUILD_IMAGE_REVISION_RECEIPT_AND_OBSERVED_DIGEST';
+const RUNTIME_BINDING_LABEL=IS_R12?'LINKED_RUN1983_SOURCE_ARTIFACT_RUNTIME_HOSTING_RULES_HR_RECEIPT':'LINKED_SOURCE_TAR_CLOUD_BUILD_IMAGE_REVISION_RECEIPT_AND_OBSERVED_DIGEST';
 const write=(name,value)=>fs.writeFileSync(path.join(out,name),JSON.stringify(value,null,2)+'\n');
 const bytesBlob=bytes=>createHash('sha1').update(Buffer.from('blob '+bytes.length+'\0')).update(bytes).digest('hex');
 const invoke=(file,args,options={})=>execFileSync(file,args,{encoding:'utf8',timeout:30000,maxBuffer:4*1024*1024,stdio:['pipe','pipe','pipe'],...options});
@@ -702,7 +718,7 @@ try{
   controlSha=git('rev-parse','HEAD');assert.equal(controlSha,process.env.GITHUB_SHA);
   assert.match(controlSha,/^[a-f0-9]{40}$/);
   const descriptor=json(process.env.CANDIDATE_DESCRIPTOR);
-  assert.equal(descriptor.status,'HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL');assert.equal(descriptor.production,'DO_NOT_TOUCH');
+  assert.equal(descriptor.status,IS_R12?'HOLD_I3_DEV_MATERIALIZED_D04_E04_LIVE_E2E_REQUIRED':'HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL');assert.equal(descriptor.production,'DO_NOT_TOUCH');
   assert.equal(descriptor.productSourceSha,SRC);assert.equal(descriptor.productTreeAuthority,TREE);
   assert.equal(git('rev-parse',SRC+'^{tree}'),TREE);
   checkpoint('SOURCE_PACKAGE');
@@ -710,7 +726,7 @@ try{
   const execution=json('CXORBIA_RECOVERY_EXECUTION_CURRENT.json');
   assert.equal(execution.currentSessionProofPackage?.path,packagePath);assert.equal(execution.currentSessionProofPackage?.gitBlob,packageBlob);
   assert.equal(git('rev-parse','HEAD:'+packagePath),packageBlob);
-  assert.equal(pkg.schemaVersion,CONTRACT.packageSchema);assert.equal(pkg.id,CONTRACT.packageId);assert.equal(pkg.mode,CONTRACT.mode);assert.equal(pkg.attemptNumber,11);
+  assert.equal(pkg.schemaVersion,CONTRACT.packageSchema);assert.equal(pkg.id,CONTRACT.packageId);assert.equal(pkg.mode,CONTRACT.mode);assert.equal(pkg.attemptNumber,CONTRACT.attemptNumber||11);
   assert.equal(pkg.branch,'recovery/cxorbia-phase-a-20260831');
   assert.equal(pkg.expectedControlParentSha,git('rev-parse','HEAD^'));
   assert.equal(pkg.sourceSha,SRC);assert.equal(pkg.sourceTree,TREE);assert.equal(pkg.production,false);
@@ -766,7 +782,13 @@ function validateR8RuntimeBindingReceipt(binding,pkg,target){
   assert.equal(target.sourceArtifactDigest,CONTRACT.sourceArtifactDigest);
   assert.equal(pkg.runtimeBinding?.path,CONTRACT.runtimeBindingPath);
   runtimeBinding=readLinked(pkg.runtimeBinding);
-  validateR8RuntimeBindingReceipt(runtimeBinding,pkg,target);
+  if(IS_R12){
+    assert.equal(pkg.runtimeBinding.path,target.receipt.path);assert.equal(pkg.runtimeBinding.gitBlob,target.receipt.gitBlob);
+    assert.equal(runtimeBinding.decision,'PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION');
+    for(const field of ['sourceSha','sourceTree','runtimeSourceSha','sourceArtifactDigest','runtimeRevision','runtimeDigest','builtImageDigest','hrRevision','hostingVersion','hostingRelease','rulesRelease','rulesetName','rulesGitBlob','materializationRunId','controlSha','cloudBuildId','imageUri','production'])
+      assert.equal(runtimeBinding[field],target[field],`RUN1983 materialization receipt field ${field}`);
+    assert.equal(runtimeBinding.sourceIdentityVerified,true);assert.equal(runtimeBinding.runtimeSourceVerified,true);
+  }else validateR8RuntimeBindingReceipt(runtimeBinding,pkg,target);
   git('merge-base','--is-ancestor',target.controlSha,runtimeBinding.controlSha);
   git('merge-base','--is-ancestor',runtimeBinding.controlSha,pkg.expectedControlParentSha);
   checkpoint('SOURCE_GRAPH_AND_PRODUCT_DRIFT');

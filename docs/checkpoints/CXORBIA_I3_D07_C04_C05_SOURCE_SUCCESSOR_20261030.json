@@ -55,9 +55,9 @@
   },
   "authorityAlignment": {
     "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V532_2026-10-30.json",
-    "ledgerBlob": "246df914d2820afcea6a631d7490a773a67fe234",
+    "ledgerBlob": "dbbe8db05b58340fe059454cc4aa6c791c5bffe9",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V200.json",
-    "matrixBlob": "7bc7befdc8db47c7f1cae253de93b93a404c3f82",
+    "matrixBlob": "a8b440ddbe8823ccbbd8b1b73744bcfe98e0c386",
     "descriptorPath": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "executionPointerPath": "CXORBIA_RECOVERY_EXECUTION_CURRENT.json"
   },
@@ -142,6 +142,14 @@
       "materialized": false,
       "deployed": false,
       "production": false
+    },
+    {
+      "runId": 40998389106,
+      "runNumber": 1982,
+      "decision": "HOLD_PHASEA_UNAUTHORIZED_STATUS_PREFLIGHT",
+      "materialized": false,
+      "deployed": false,
+      "production": false
     }
   ],
   "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
@@ -152,5 +160,18 @@
   "artifactId": 12952500545,
   "artifactZipSha256": "611ec970e46d48d4dfedb329dc551de232adcfaa7275681957c39f92289ddce4",
   "controlSha": "425dd862b379f0aa554c09993b4232d17c711ff9",
-  "continuationState": "PENDING_SINGLE_DEV_MATERIALIZATION_419_C13"
+  "continuationState": "PASS_SOURCE_AND_DEV_MATERIALIZATION_PENDING_D07_C04_C05",
+  "materializationReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_419_DEV_MATERIALIZATION_RUN1983_20261030.json",
+    "gitBlob": "0f7a9e2da03ca3758f85bf22153923f7f8670f16",
+    "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "runId": 40998569643,
+    "runNumber": 1983,
+    "artifactId": 12952795864,
+    "artifactDigest": "sha256:92a2ff5695ad2980b36776c95df203feb537ea3d8b432d8956b307d5fecf1efd",
+    "artifactZipSha256": "53158047aaaa083f6c5c70572fd85c079a39db48fae2400c0b55b4e962ad7d8b",
+    "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
+    "production": false
+  }
 }
