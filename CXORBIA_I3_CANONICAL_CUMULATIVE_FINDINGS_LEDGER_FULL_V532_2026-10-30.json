@@ -21074,11 +21074,12 @@
       "VRM-288",
       "VRM-289",
       "VRM-290",
-      "VRM-291"
+      "VRM-291",
+      "VRM-292"
     ],
-    "findingCount": 291,
+    "findingCount": 292,
     "expectedCurrentRange": "VRM-001..VRM-291",
-    "nextFindingId": "VRM-292",
+    "nextFindingId": "VRM-293",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_I3_REMAINING_E2E_HUMAN_GATE_AFTER_VRM153_DEV_DURABLE_PASS",
@@ -35490,6 +35491,19 @@
     "classification": "RELEASE_COMPOSITION_FAILURE",
     "sourceProof": "PENDING",
     "devMaterialization": "NOT_STARTED",
-    "production": false
+    "production": false,
+    "authorityGuardRun1979": {
+      "runId": 40997591889,
+      "runNumber": 1979,
+      "decision": "MAPPING_FAILURE_NEXT_FINDING_ID",
+      "observed": {
+        "ledgerGovernanceNextFindingId": "VRM-292",
+        "descriptorNextFindingId": "VRM-293",
+        "expected": "VRM-293"
+      },
+      "materialized": false,
+      "deployed": false,
+      "production": false
+    }
   }
 }

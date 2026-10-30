@@ -4880,19 +4880,14 @@
     "production": false
   },
   "lastFailedCanonicalSourceProof": {
-    "runId": 40982453191,
-    "runNumber": 1966,
-    "controlSha": "64742d44ca9b7abfe3c9e2d95cca130a28919148",
-    "authorityJobId": 123825511661,
-    "authority": "PASS",
-    "sourceJobId": 123825671855,
-    "source": "FAIL",
-    "artifactId": 12945551474,
-    "artifactZipSha256": "22c7327aa90f0b1e686024c89cf3ea301d35edfb169859baf4d279f9bbdfb337",
-    "original": {
-      "path": "docs/checkpoints/evidence/CXORBIA_I3_RUN1966_SOURCE_PROOF_ORIGINAL_20261030.json",
-      "gitBlob": "444297b7de1628e2290773e9e2257814bcc822f2"
-    }
+    "runId": 40997591889,
+    "runNumber": 1979,
+    "decision": "MAPPING_FAILURE_NEXT_FINDING_ID",
+    "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
+    "materialized": false,
+    "deployed": false,
+    "production": false
   },
   "previousCurrentExecutionReceiptBeforeRun1966Qa": {
     "path": "docs/checkpoints/CXORBIA_I3_D05_CUMULATIVE_SOURCE_REPAIR_20261030.json",
@@ -5388,7 +5383,7 @@
   },
   "currentControlAlignmentReceipt": {
     "path": "docs/checkpoints/CXORBIA_I3_D07_C04_C05_SOURCE_SUCCESSOR_20261030.json",
-    "gitBlob": "a35f12261b822eb31f16fad08bfc696abbdf0a1b",
+    "gitBlob": "5b4d2c0e6a09d884d2d2c620005239c1c3d205b9",
     "decision": "CONTROL_ALIGNMENT_PENDING_CANONICAL_SOURCE_PROOF",
     "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
     "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751"
