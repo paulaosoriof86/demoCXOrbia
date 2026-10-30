@@ -53,7 +53,7 @@
     "gate20": "HOLD",
     "gate21": "HOLD"
   },
-  "controlParentSha": "64742d44ca9b7abfe3c9e2d95cca130a28919148",
+  "controlParentSha": "7175fd3ce27de0e74cc2a18cc23d054b6b39ec01",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
     "executed": [
@@ -460,7 +460,7 @@
     }
   },
   "nextDiagnosisPath": null,
-  "nextUserAuthorizationRequired": "No new authorization for read-only UAT Work. No Storage Rules, CORS, IAM, Auth, Firestore or production writes authorized by this DEV Hosting-only PASS.",
+  "nextUserAuthorizationRequired": "Existing DEV authorization covers the single cumulative DEV build/runtime/Hosting/Firestore Rules materialization and bounded scoped QA. Production remains DO_NOT_TOUCH; I4 and human acceptance are not granted.",
   "primaryExecutionRoute": "DIRECT_NATIVE_GITHUB_SINGLE_WRITER",
   "tinyFishRequiredForThisAction": false,
   "receiptControlParentSha": "5df72f867d8cc27a680e070865b27cc78eb3dae6",
@@ -3235,19 +3235,43 @@
     "scope": "LOCAL_ISOLATED_SOURCE_CONTRACTS_ONLY_NOT_I3_CERTIFICATION"
   },
   "currentExecutionReceipt": {
-    "path": "docs/checkpoints/CXORBIA_I3_RUN1966_D03_QA_CORRECTION_20261030.json",
-    "gitBlob": "c76e5e640884562b93ef5627bdbed36e47e47d70",
+    "kind": "SINGLE_CUMULATIVE_DEV_MATERIALIZATION_REQUEST",
+    "state": "REQUESTED_NOT_EXECUTED",
     "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
     "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
-    "decision": "QA_SCOPE_FALSE_POSITIVE_CORRECTED_PENDING_CANONICAL_CI",
-    "failedRunId": 40982453191,
-    "qaPath": "tools/qa/cxorbia-i3-d03-ai-generation-source.test.mjs",
-    "qaGitBlob": "0baa74bd8c42c137fe0f6501f5b970fd2ca95e8b",
-    "productChanges": 0,
-    "production": false,
-    "kind": "CANONICAL_SOURCE_QA_CORRECTION_NO_PRODUCT_CHANGE",
-    "state": "I3_HOLD",
-    "fullTaskClosed": false
+    "sourceProof": {
+      "path": "docs/checkpoints/CXORBIA_I3_CUMULATIVE_SOURCE_PROOF_RUN1967_20261030.json",
+      "gitBlob": "e19e7966f896a6ba920344fcc71259e097986abd",
+      "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+      "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+      "controlSha": "7175fd3ce27de0e74cc2a18cc23d054b6b39ec01",
+      "runId": 40983126884,
+      "runNumber": 1967,
+      "sourceJobId": 123827903809,
+      "artifactId": 12945078520,
+      "artifactZipSha256": "75ac9e16364a7b93a62c23a4b749d2b303c3801f4ba979551b879ac61f774086",
+      "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+      "production": false
+    },
+    "project": "cxorbia-backend-dev",
+    "service": "cxorbia-live-hr-dev",
+    "hostingSite": "cxorbia-backend-dev",
+    "workflowPath": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "jobName": "b1-canonical-visible-identity-dev-materialization",
+    "controlScriptGitBlob": "0539f8663ec733445674fb7afd77003ed1374e49",
+    "planned": {
+      "builds": 1,
+      "runtimeDeploys": 1,
+      "hostingDeploys": 1,
+      "firestoreRulesDeploys": 1,
+      "storageRulesDeploys": 0
+    },
+    "executed": false,
+    "authMutations": 0,
+    "hrWrites": 0,
+    "financeWrites": 0,
+    "fullTaskClosed": false,
+    "production": false
   },
   "lastExecutionReceiptSemantics": "SEALED_POSTDEPLOY_SNAPSHOT_NOT_CURRENT_CONTROL_HANDOFF",
   "currentExecutionReceiptSemantics": "LATEST_CONTROL_AND_QA_RECEIPT_NOT_A_POSTDEPLOY_SEAL",
@@ -4769,21 +4793,17 @@
     "production": false
   },
   "currentSourceProof": {
+    "path": "docs/checkpoints/CXORBIA_I3_CUMULATIVE_SOURCE_PROOF_RUN1967_20261030.json",
+    "gitBlob": "e19e7966f896a6ba920344fcc71259e097986abd",
     "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
     "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
-    "decision": "PENDING_CANONICAL_CI_AFTER_QA_CORRECTION",
-    "qaCorrection": {
-      "path": "docs/checkpoints/CXORBIA_I3_RUN1966_D03_QA_CORRECTION_20261030.json",
-      "gitBlob": "c76e5e640884562b93ef5627bdbed36e47e47d70",
-      "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
-      "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
-      "decision": "QA_SCOPE_FALSE_POSITIVE_CORRECTED_PENDING_CANONICAL_CI",
-      "failedRunId": 40982453191,
-      "qaPath": "tools/qa/cxorbia-i3-d03-ai-generation-source.test.mjs",
-      "qaGitBlob": "0baa74bd8c42c137fe0f6501f5b970fd2ca95e8b",
-      "productChanges": 0,
-      "production": false
-    },
+    "controlSha": "7175fd3ce27de0e74cc2a18cc23d054b6b39ec01",
+    "runId": 40983126884,
+    "runNumber": 1967,
+    "sourceJobId": 123827903809,
+    "artifactId": 12945078520,
+    "artifactZipSha256": "75ac9e16364a7b93a62c23a4b749d2b303c3801f4ba979551b879ac61f774086",
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
     "production": false
   },
   "currentControlQaCorrection": {
@@ -4829,5 +4849,59 @@
     "kind": "CUMULATIVE_D05_SOURCE_LOCAL_QA_PASS_CI_DEV_LIVE_PENDING",
     "newFullTaskClosures": 0,
     "state": "I3_HOLD"
+  },
+  "currentSuccessorDevMaterializationRequest": {
+    "kind": "SINGLE_CUMULATIVE_DEV_MATERIALIZATION_REQUEST",
+    "state": "REQUESTED_NOT_EXECUTED",
+    "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+    "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+    "sourceProof": {
+      "path": "docs/checkpoints/CXORBIA_I3_CUMULATIVE_SOURCE_PROOF_RUN1967_20261030.json",
+      "gitBlob": "e19e7966f896a6ba920344fcc71259e097986abd",
+      "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+      "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+      "controlSha": "7175fd3ce27de0e74cc2a18cc23d054b6b39ec01",
+      "runId": 40983126884,
+      "runNumber": 1967,
+      "sourceJobId": 123827903809,
+      "artifactId": 12945078520,
+      "artifactZipSha256": "75ac9e16364a7b93a62c23a4b749d2b303c3801f4ba979551b879ac61f774086",
+      "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+      "production": false
+    },
+    "project": "cxorbia-backend-dev",
+    "service": "cxorbia-live-hr-dev",
+    "hostingSite": "cxorbia-backend-dev",
+    "workflowPath": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "jobName": "b1-canonical-visible-identity-dev-materialization",
+    "controlScriptGitBlob": "0539f8663ec733445674fb7afd77003ed1374e49",
+    "planned": {
+      "builds": 1,
+      "runtimeDeploys": 1,
+      "hostingDeploys": 1,
+      "firestoreRulesDeploys": 1,
+      "storageRulesDeploys": 0
+    },
+    "executed": false,
+    "authMutations": 0,
+    "hrWrites": 0,
+    "financeWrites": 0,
+    "fullTaskClosed": false,
+    "production": false
+  },
+  "previousAuthorizationStatementBeforeRun1967": "No new authorization for read-only UAT Work. No Storage Rules, CORS, IAM, Auth, Firestore or production writes authorized by this DEV Hosting-only PASS.",
+  "currentCanonicalControl": {
+    "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "matrix": {
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V199.json",
+      "gitBlob": "34891fa9f99130bceb392458f7f2596bcdc4f4ad"
+    },
+    "ledger": {
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V531_2026-10-30.json",
+      "gitBlob": "c03c4cfaad740c44d9e6c33bc9283f41c27140e7"
+    },
+    "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+    "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+    "production": false
   }
 }

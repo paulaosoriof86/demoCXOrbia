@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "cxorbia.i3.cumulative-source-proof-adjudication.v1",
+  "observedAt": "2026-10-30",
+  "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+  "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+  "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+  "controlSha": "7175fd3ce27de0e74cc2a18cc23d054b6b39ec01",
+  "runId": 40983126884,
+  "runNumber": 1967,
+  "authorityJobId": 123827738188,
+  "sourceJobId": 123827903809,
+  "workflowPath": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+  "jobName": "phasea-rejected-checkpoint-source-proof",
+  "artifactId": 12945078520,
+  "artifactName": "cxorbia-i3-phasea-source-proof-40983126884",
+  "artifactZipSha256": "75ac9e16364a7b93a62c23a4b749d2b303c3801f4ba979551b879ac61f774086",
+  "originalReceipt": {
+    "path": "docs/checkpoints/evidence/CXORBIA_I3_RUN1967_SOURCE_PROOF_ORIGINAL_20261030.json",
+    "gitBlob": "1225ddc23809f512e452f754ba9bb201df4d1e34",
+    "sha256": "6156d3e3c2d294df6f5d15fa2d505e392fc7abfbf456efcdfba726f225896b5e"
+  },
+  "verification": {
+    "artifactZipDigest": "MATCH_GITHUB_METADATA",
+    "sourceAndTree": "MATCH_CANONICAL_S485",
+    "sourceJobConclusion": "success",
+    "authorityJobConclusion": "success",
+    "nodeTestAssertions": {
+      "tests": 597,
+      "pass": 597,
+      "fail": 0
+    },
+    "moduleMatchPromotions": 0
+  },
+  "qaCorrection": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN1966_D03_QA_CORRECTION_20261030.json",
+    "gitBlob": "c76e5e640884562b93ef5627bdbed36e47e47d70",
+    "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+    "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+    "decision": "QA_SCOPE_FALSE_POSITIVE_CORRECTED_PENDING_CANONICAL_CI",
+    "failedRunId": 40982453191,
+    "qaPath": "tools/qa/cxorbia-i3-d03-ai-generation-source.test.mjs",
+    "qaGitBlob": "0baa74bd8c42c137fe0f6501f5b970fd2ca95e8b",
+    "productChanges": 0,
+    "production": false
+  },
+  "scope": "SOURCE_CONTRACTS_ONLY_NOT_I3_CERTIFICATION",
+  "wholeProductPass": false,
+  "fullTaskClosed": false,
+  "devMaterialization": "NOT_RUN",
+  "liveE2e": "NOT_RUN",
+  "humanAcceptance": "PENDING",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "deploys": 0,
+  "production": false
+}
