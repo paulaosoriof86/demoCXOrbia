@@ -1,0 +1,167 @@
+{
+  "schemaVersion": "cxorbia.i3.cumulative-source-repair.v1",
+  "id": "CXORBIA-I3-D05-CUMULATIVE-SOURCE-20261030",
+  "asOf": "2026-10-30",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "decision": "LOCAL_SOURCE_AND_COMPOSED_RULES_PASS_PENDING_CANONICAL_CI_AND_EXACT_DEV_E2E",
+  "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+  "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+  "predecessorProductSourceSha": "512111715ad13722281426c7add724fc5e7d39c0",
+  "controlParentSha": "f15ba2e632f32a51ec9e17a78d66222fc0782111",
+  "changedFiles": [
+    {
+      "path": "backend/runtime/hr-live-service/certification-runtime.mjs",
+      "sha": "4137a22d1d2780fbc5daf053504ce924fa832410",
+      "sha256": "8cd1369ef2c997e3c2bc29f5b3bd9582fd090adf76d866ddb200d9334c1ae385",
+      "bytes": 40964,
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "app/core/backend-certifications.js",
+      "sha": "178ce391af835a8ebe2dfccf68a590110d0466cd",
+      "sha256": "75f7bf79d718589212222be1aecfecd756a2802c4380f28d401595aa8c92d833",
+      "bytes": 7609,
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "app/modules/cert.js",
+      "sha": "78c9630fd627daa015aff5919d34565260240d74",
+      "sha256": "3c5ffc135ccbb9d7bc04be4aaec5aa49d63071d52f5b9bdbe58172692e4d3838",
+      "bytes": 63437,
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "firestore.rules",
+      "sha": "540240ddbbb078ebcd14611dd2cc39375472ea66",
+      "sha256": "97f53440599e44484508c4075413c828a0050a73a5d50590a8497f4178c74f58",
+      "bytes": 25419,
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/test/cxorbia-prei4-cert-res-contract.test.mjs",
+      "sha": "bf41110b03ab0b1d47eb738f9fb84dcd7941a1fc",
+      "sha256": "6d9a32fb3eb31ef0b41f7b04cc11ab8db4d386e5fe4fd80e10a2672f03d0cf07",
+      "bytes": 17424,
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-d04-versioned-bank-review.test.mjs",
+      "sha": "46acb739dac0506a70f168a14db80d5945fc691d",
+      "sha256": "778b90969ec8975dad34596b5be8ef423858087a17a2c1da66a1a750c41f3a08",
+      "bytes": 30688,
+      "mode": "100644",
+      "type": "blob"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-d05-certification-authority-rules.test.mjs",
+      "sha": "2e2e6c71f5ffb37f3a3e79247400b387bdc3f9fb",
+      "sha256": "a9dae6473244299996146bcd128b15ecc97161fb2ab33467a66a9314fa718622",
+      "bytes": 11923,
+      "mode": "100644",
+      "type": "blob"
+    }
+  ],
+  "productFileCount": 4,
+  "qaFileCount": 3,
+  "scope": {
+    "tasks": [
+      "D05",
+      "A08",
+      "D04",
+      "E03"
+    ],
+    "runtime": "Existing certification runtime handles publish/configure/retire through verified token and durable current membership, exact project/period policy, expected version/content revision, idempotency, complete receipt and post-commit readback.",
+    "policy": "Retain existing authorized_admin default; enforce configured maker_checker/distinct_reviewer/two_person at exact period or project authority; reject unknown/contradictory or ambiguous configuration.",
+    "rules": "Only a current authorized Admin/Super can create a pending draft and append a bounded immutable review; direct publication, configuration, retirement, deletion and retyping bypasses are denied. Existing non-bank resource behavior and C04 membership restrictions preserved.",
+    "retirement": "Retire leaves bank/questions/history and existing attempts intact. A later generation with new idempotency cannot overwrite a retired resource with the same deterministic ID.",
+    "client": "Uses runtime routes and stable operation idempotency; verifies exact result and receipt, actor/tenant/project/period/version/content before UI success. Preserves single-mount fix and D07 resource owner."
+  },
+  "independentNegativeReview": {
+    "fixed": [
+      "Require staff namespace even when token and membership otherwise agree",
+      "Separate persisted resource ID from snapshot ID",
+      "Compare complete durable receipt to the committed transaction receipt before ACK",
+      "Reject generation overwrite of a retired bank tombstone"
+    ],
+    "localSourceTestsOnly": true
+  },
+  "localQa": {
+    "runtimeCore": {
+      "tests": 40,
+      "pass": 40,
+      "fail": 0
+    },
+    "clientD04Visual": {
+      "tests": 60,
+      "pass": 60,
+      "fail": 0
+    },
+    "combinedRuntimeClientResource": {
+      "tests": 130,
+      "pass": 130,
+      "fail": 0
+    },
+    "composedC04D05Rules": {
+      "tests": 91,
+      "pass": 91,
+      "fail": 0,
+      "c04": 60,
+      "d05": 31,
+      "emulator": "1.19.8",
+      "syntheticOnly": true
+    },
+    "evidence": [
+      {
+        "path": "docs/checkpoints/evidence/CXORBIA_I3_D05_D04_D07_COMPOSED_LOCAL_20261030.tap",
+        "gitBlob": "e3904428e9077c34174a16bd99aa1e12a614fc83",
+        "sha256": "d5c43b7bcd2e64a816843861779a8ad41b1fce961a8ff18ae944065698c6b10f"
+      },
+      {
+        "path": "docs/checkpoints/evidence/CXORBIA_I3_C04_D05_RULES_COMPOSED_LOCAL_20261030.tap",
+        "gitBlob": "9ea1a2839e09bd2bf658135ffe41cf691cf8e70b",
+        "sha256": "3f7ecb43c2e768e03470249bdaebdb041e29ec57904524d80af7dcbcdb6411a3"
+      }
+    ],
+    "environmentCorrection": "Combined local Rules gate initially stopped before test assertions because a standalone emulator had single-project flags enabled; documented multi-project startup corrected it. No product relaxation."
+  },
+  "preserved": {
+    "previousSourceProof": {
+      "path": "docs/checkpoints/CXORBIA_I3_CUMULATIVE_SOURCE_PROOF_RUN1965_20261030.json",
+      "gitBlob": "319f88233dc2286fb738829cb76f8b2606934c28",
+      "runId": 40979308308,
+      "sourceSha": "512111715ad13722281426c7add724fc5e7d39c0",
+      "artifactId": 12944610538,
+      "artifactZipSha256": "a0368f59e45985f292f23fad695110f92a4c91dd2c8f71dec434b807fe22c05b"
+    },
+    "c04ProductOwners": "UNCHANGED_FROM_S512",
+    "resourceOwner": "f12a2325948bf25133b5f7e5cff68061e0521d60",
+    "singleMountFix": "PRESERVED_IN_CERT_SUCCESSOR",
+    "c04RulesOutsideResources": "BYTE_IDENTICAL_TO_e2328170214ad08b8de2034ddfbc0ad53b487f5e",
+    "run1962ScopedProof": "RETAINED_AT_EXACT_PRIOR_SOURCE",
+    "historicalSeals": "RUN1852_FIELDS_UNCHANGED",
+    "verifiedIdentityGroups": 29
+  },
+  "canonicalCi": "PENDING",
+  "devMaterialization": "PENDING",
+  "liveE2e": "PENDING",
+  "fullTaskClosed": false,
+  "humanAcceptance": "PENDING",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "production": false,
+  "noEffects": {
+    "authWrites": 0,
+    "hrWrites": 0,
+    "realResourceWrites": 0,
+    "financeWrites": 0,
+    "builds": 0,
+    "deploys": 0,
+    "productionWrites": 0
+  },
+  "next": "Canonical source proof for this exact cumulative successor; then the existing single DEV runtime/Rules/Hosting materializer. Bounded D07/C04/C05 and D05/D06 proposals must use this exact artifact, retain original failure evidence, and preserve unrelated data."
+}

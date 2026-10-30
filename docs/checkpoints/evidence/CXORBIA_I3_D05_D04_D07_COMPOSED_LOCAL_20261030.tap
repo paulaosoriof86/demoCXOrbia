@@ -1,0 +1,793 @@
+{"decision":"PASS_PREI4_CERT_RES_CONTRACT","attemptScore":100,"carryover":"valid_reusable","production":false}
+TAP version 13
+# Subtest: D05 default policy allows same authorized author; explicit aliases require distinct reviewer
+ok 1 - D05 default policy allows same authorized author; explicit aliases require distinct reviewer
+  ---
+  duration_ms: 5.33614
+  type: 'test'
+  ...
+# Subtest: D05 exact period aliases follow the existing UI mapping
+ok 2 - D05 exact period aliases follow the existing UI mapping
+  ---
+  duration_ms: 1.050753
+  type: 'test'
+  ...
+# Subtest: D05 publication sets authenticated reviewer, preserves author/questions and confirms exact readback
+ok 3 - D05 publication sets authenticated reviewer, preserves author/questions and confirms exact readback
+  ---
+  duration_ms: 3.93339
+  type: 'test'
+  ...
+# Subtest: D05 default does not impose global maker-checker
+ok 4 - D05 default does not impose global maker-checker
+  ---
+  duration_ms: 1.083812
+  type: 'test'
+  ...
+# Subtest: D05 enforces distinct reviewer from project certificationReviewPolicy, including legacy month document
+ok 5 - D05 enforces distinct reviewer from project certificationReviewPolicy, including legacy month document
+  ---
+  duration_ms: 0.874732
+  type: 'test'
+  ...
+# Subtest: D05 enforces distinct reviewer from project certReviewPolicy, including legacy month document
+ok 6 - D05 enforces distinct reviewer from project certReviewPolicy, including legacy month document
+  ---
+  duration_ms: 0.53357
+  type: 'test'
+  ...
+# Subtest: D05 enforces distinct reviewer from period certificationReviewPolicy, including legacy month document
+ok 7 - D05 enforces distinct reviewer from period certificationReviewPolicy, including legacy month document
+  ---
+  duration_ms: 0.596222
+  type: 'test'
+  ...
+# Subtest: D05 enforces distinct reviewer from period certReviewPolicy, including legacy month document
+ok 8 - D05 enforces distinct reviewer from period certReviewPolicy, including legacy month document
+  ---
+  duration_ms: 0.466362
+  type: 'test'
+  ...
+# Subtest: D05 denies publication role ops, without writes
+ok 9 - D05 denies publication role ops, without writes
+  ---
+  duration_ms: 0.442158
+  type: 'test'
+  ...
+# Subtest: D05 denies publication role coordinador, without writes
+ok 10 - D05 denies publication role coordinador, without writes
+  ---
+  duration_ms: 0.45393
+  type: 'test'
+  ...
+# Subtest: D05 denies publication role shopper, without writes
+ok 11 - D05 denies publication role shopper, without writes
+  ---
+  duration_ms: 0.794053
+  type: 'test'
+  ...
+# Subtest: D05 denies publication role cliente, without writes
+ok 12 - D05 denies publication role cliente, without writes
+  ---
+  duration_ms: 0.166677
+  type: 'test'
+  ...
+# Subtest: D05 transaction rechecks inactive membership
+ok 13 - D05 transaction rechecks inactive membership
+  ---
+  duration_ms: 1.980002
+  type: 'test'
+  ...
+# Subtest: D05 transaction rechecks role mismatch membership
+ok 14 - D05 transaction rechecks role mismatch membership
+  ---
+  duration_ms: 0.369418
+  type: 'test'
+  ...
+# Subtest: D05 transaction rechecks wrong namespace membership
+ok 15 - D05 transaction rechecks wrong namespace membership
+  ---
+  duration_ms: 0.242057
+  type: 'test'
+  ...
+# Subtest: D05 transaction rechecks other project membership
+ok 16 - D05 transaction rechecks other project membership
+  ---
+  duration_ms: 0.298049
+  type: 'test'
+  ...
+# Subtest: D05 transaction rechecks other tenant membership
+ok 17 - D05 transaction rechecks other tenant membership
+  ---
+  duration_ms: 0.229381
+  type: 'test'
+  ...
+# Subtest: D05 rejects forged reviewer in publication payload
+ok 18 - D05 rejects forged reviewer in publication payload
+  ---
+  duration_ms: 0.223336
+  type: 'test'
+  ...
+# Subtest: D05 rejects forged author in publication payload
+ok 19 - D05 rejects forged author in publication payload
+  ---
+  duration_ms: 0.097106
+  type: 'test'
+  ...
+# Subtest: D05 rejects caller policy in publication payload
+ok 20 - D05 rejects caller policy in publication payload
+  ---
+  duration_ms: 0.064177
+  type: 'test'
+  ...
+# Subtest: D05 rejects whole replacement bank in publication payload
+ok 21 - D05 rejects whole replacement bank in publication payload
+  ---
+  duration_ms: 0.067406
+  type: 'test'
+  ...
+# Subtest: D05 stale version and source revision fail without a write
+ok 22 - D05 stale version and source revision fail without a write
+  ---
+  duration_ms: 0.593392
+  type: 'test'
+  ...
+# Subtest: D05 replay returns the same receipt with no second write and rejects changed command
+ok 23 - D05 replay returns the same receipt with no second write and rejects changed command
+  ---
+  duration_ms: 1.121102
+  type: 'test'
+  ...
+# Subtest: D05 duplicate period authorities and explicit unknown policies fail closed
+ok 24 - D05 duplicate period authorities and explicit unknown policies fail closed
+  ---
+  duration_ms: 1.058932
+  type: 'test'
+  ...
+# Subtest: D05 other project/period/type cannot be published through a resource ID
+ok 25 - D05 other project/period/type cannot be published through a resource ID
+  ---
+  duration_ms: 1.988274
+  type: 'test'
+  ...
+# Subtest: D05 committed state is never reported successful after corrupt exact readback
+ok 26 - D05 committed state is never reported successful after corrupt exact readback
+  ---
+  duration_ms: 4.419114
+  type: 'test'
+  ...
+# Subtest: D05 configuration changes only the authorized requirement and records a new revision
+ok 27 - D05 configuration changes only the authorized requirement and records a new revision
+  ---
+  duration_ms: 1.046155
+  type: 'test'
+  ...
+# Subtest: D05 retirement preserves the complete bank and existing attempts; no physical delete
+ok 28 - D05 retirement preserves the complete bank and existing attempts; no physical delete
+  ---
+  duration_ms: 0.65071
+  type: 'test'
+  ...
+# Subtest: D05 refuses successful ACK when stored ID differs in exact readback
+ok 29 - D05 refuses successful ACK when stored ID differs in exact readback
+  ---
+  duration_ms: 0.557263
+  type: 'test'
+  ...
+# Subtest: D05 refuses successful ACK when stored ID missing in exact readback
+ok 30 - D05 refuses successful ACK when stored ID missing in exact readback
+  ---
+  duration_ms: 1.446468
+  type: 'test'
+  ...
+# Subtest: D05 refuses successful ACK when receipt status differs in exact readback
+ok 31 - D05 refuses successful ACK when receipt status differs in exact readback
+  ---
+  duration_ms: 0.643275
+  type: 'test'
+  ...
+# Subtest: D05 refuses successful ACK when receipt provider ACK differs in exact readback
+ok 32 - D05 refuses successful ACK when receipt provider ACK differs in exact readback
+  ---
+  duration_ms: 0.661327
+  type: 'test'
+  ...
+# Subtest: D05 refuses successful ACK when receipt actor differs in exact readback
+ok 33 - D05 refuses successful ACK when receipt actor differs in exact readback
+  ---
+  duration_ms: 0.440615
+  type: 'test'
+  ...
+# Subtest: D05 refuses successful ACK when receipt project differs in exact readback
+ok 34 - D05 refuses successful ACK when receipt project differs in exact readback
+  ---
+  duration_ms: 0.580825
+  type: 'test'
+  ...
+# Subtest: D05 refuses successful ACK when receipt entity differs in exact readback
+ok 35 - D05 refuses successful ACK when receipt entity differs in exact readback
+  ---
+  duration_ms: 0.51449
+  type: 'test'
+  ...
+# Subtest: D05 refuses successful ACK when receipt version differs in exact readback
+ok 36 - D05 refuses successful ACK when receipt version differs in exact readback
+  ---
+  duration_ms: 0.612907
+  type: 'test'
+  ...
+# Subtest: D05 requires staff namespace even when Admin/Super token and member agree otherwise
+ok 37 - D05 requires staff namespace even when Admin/Super token and member agree otherwise
+  ---
+  duration_ms: 0.699394
+  type: 'test'
+  ...
+# Subtest: D05 preserves the previous bank when generation targets real-retirement
+ok 38 - D05 preserves the previous bank when generation targets real-retirement
+  ---
+  duration_ms: 1.768906
+  type: 'test'
+  ...
+# Subtest: D05 preserves the previous bank when generation targets deleted-only
+ok 39 - D05 preserves the previous bank when generation targets deleted-only
+  ---
+  duration_ms: 0.320182
+  type: 'test'
+  ...
+# Subtest: D05 preserves the previous bank when generation targets withdrawn-only
+ok 40 - D05 preserves the previous bank when generation targets withdrawn-only
+  ---
+  duration_ms: 0.560213
+  type: 'test'
+  ...
+# Subtest: D04 reviews fifteen questions with version guard, source provenance and durable readback
+ok 41 - D04 reviews fifteen questions with version guard, source provenance and durable readback
+  ---
+  duration_ms: 28.49968
+  type: 'test'
+  ...
+# Subtest: D04 rejects invalid source, same-author maker-checker, missing version and empty edits
+ok 42 - D04 rejects invalid source, same-author maker-checker, missing version and empty edits
+  ---
+  duration_ms: 1.736404
+  type: 'test'
+  ...
+# Subtest: D04 role gate and complete question validation fail closed
+ok 43 - D04 role gate and complete question validation fail closed
+  ---
+  duration_ms: 1.06974
+  type: 'test'
+  ...
+# Subtest: D04 modal edit button, diff preview and CAS-backed save exist without auto-publication
+ok 44 - D04 modal edit button, diff preview and CAS-backed save exist without auto-publication
+  ---
+  duration_ms: 0.530537
+  type: 'test'
+  ...
+# Subtest: D04 name-only review keeps bank identity and question content, with versioned durable metadata ACK
+ok 45 - D04 name-only review keeps bank identity and question content, with versioned durable metadata ACK
+  ---
+  duration_ms: 3.603333
+  type: 'test'
+  ...
+# Subtest: D04 rejects blank, unsafe and overly long names without writing provider
+ok 46 - D04 rejects blank, unsafe and overly long names without writing provider
+  ---
+  duration_ms: 1.251492
+  type: 'test'
+  ...
+# Subtest: D04 generation and pending-review both expose editable names with full ACK readback
+ok 47 - D04 generation and pending-review both expose editable names with full ACK readback
+  ---
+  duration_ms: 0.241784
+  type: 'test'
+  ...
+# Subtest: D04 exact server document confirms edit while presentation cache remains old
+ok 48 - D04 exact server document confirms edit while presentation cache remains old
+  ---
+  duration_ms: 7.184329
+  type: 'test'
+  ...
+# Subtest: D04 accepts reordered map keys at every depth without changing arrays
+ok 49 - D04 accepts reordered map keys at every depth without changing arrays
+  ---
+  duration_ms: 4.362078
+  type: 'test'
+  ...
+# Subtest: D04 rejects incorrect exact document even when presentation cache appears correct
+    # Subtest: content revision
+    ok 1 - content revision
+      ---
+      duration_ms: 5.256961
+      type: 'test'
+      ...
+    # Subtest: publication state
+    ok 2 - publication state
+      ---
+      duration_ms: 2.843263
+      type: 'test'
+      ...
+    # Subtest: question value
+    ok 3 - question value
+      ---
+      duration_ms: 3.576458
+      type: 'test'
+      ...
+    # Subtest: bank name
+    ok 4 - bank name
+      ---
+      duration_ms: 3.220334
+      type: 'test'
+      ...
+    # Subtest: metadata name
+    ok 5 - metadata name
+      ---
+      duration_ms: 2.669612
+      type: 'test'
+      ...
+    # Subtest: option order
+    ok 6 - option order
+      ---
+      duration_ms: 2.843068
+      type: 'test'
+      ...
+    # Subtest: question order
+    ok 7 - question order
+      ---
+      duration_ms: 4.168962
+      type: 'test'
+      ...
+    # Subtest: missing question field
+    ok 8 - missing question field
+      ---
+      duration_ms: 2.915403
+      type: 'test'
+      ...
+    # Subtest: additional question field
+    ok 9 - additional question field
+      ---
+      duration_ms: 2.468463
+      type: 'test'
+      ...
+    # Subtest: question field type
+    ok 10 - question field type
+      ---
+      duration_ms: 2.387359
+      type: 'test'
+      ...
+    1..10
+ok 50 - D04 rejects incorrect exact document even when presentation cache appears correct
+  ---
+  duration_ms: 34.442666
+  type: 'test'
+  ...
+# Subtest: D04 rejects missing, cached, pending or out-of-scope exact reads after one commit
+    # Subtest: missing document
+    ok 1 - missing document
+      ---
+      duration_ms: 2.482203
+      type: 'test'
+      ...
+    # Subtest: cached snapshot
+    ok 2 - cached snapshot
+      ---
+      duration_ms: 2.754965
+      type: 'test'
+      ...
+    # Subtest: pending writes
+    ok 3 - pending writes
+      ---
+      duration_ms: 2.945208
+      type: 'test'
+      ...
+    # Subtest: unconfirmed metadata
+    ok 4 - unconfirmed metadata
+      ---
+      duration_ms: 4.749151
+      type: 'test'
+      ...
+    # Subtest: wrong snapshot id
+    ok 5 - wrong snapshot id
+      ---
+      duration_ms: 4.163666
+      type: 'test'
+      ...
+    # Subtest: wrong id
+    ok 6 - wrong id
+      ---
+      duration_ms: 10.865692
+      type: 'test'
+      ...
+    # Subtest: wrong tenantId
+    ok 7 - wrong tenantId
+      ---
+      duration_ms: 2.578276
+      type: 'test'
+      ...
+    # Subtest: wrong projectId
+    ok 8 - wrong projectId
+      ---
+      duration_ms: 3.293739
+      type: 'test'
+      ...
+    # Subtest: wrong periodId
+    ok 9 - wrong periodId
+      ---
+      duration_ms: 3.832158
+      type: 'test'
+      ...
+    # Subtest: wrong status
+    ok 10 - wrong status
+      ---
+      duration_ms: 3.545244
+      type: 'test'
+      ...
+    # Subtest: later version
+    ok 11 - later version
+      ---
+      duration_ms: 2.086737
+      type: 'test'
+      ...
+    # Subtest: other operation
+    ok 12 - other operation
+      ---
+      duration_ms: 1.945444
+      type: 'test'
+      ...
+    1..12
+ok 51 - D04 rejects missing, cached, pending or out-of-scope exact reads after one commit
+  ---
+  duration_ms: 47.697921
+  type: 'test'
+  ...
+# Subtest: D04 server-read error does not fall back to payload/cache or repeat the commit
+ok 52 - D04 server-read error does not fall back to payload/cache or repeat the commit
+  ---
+  duration_ms: 2.087566
+  type: 'test'
+  ...
+# Subtest: D04 preserves project guard when active context changes during exact readback
+ok 53 - D04 preserves project guard when active context changes during exact readback
+  ---
+  duration_ms: 4.703543
+  type: 'test'
+  ...
+# Subtest: D04 does not accept ACK payload or cache without explicit confirmed server readback
+ok 54 - D04 does not accept ACK payload or cache without explicit confirmed server readback
+  ---
+  duration_ms: 5.526375
+  type: 'test'
+  ...
+# Subtest: D04 map comparison does not equate opaque objects or sparse arrays to valid values
+ok 55 - D04 map comparison does not equate opaque objects or sparse arrays to valid values
+  ---
+  duration_ms: 0.790963
+  type: 'test'
+  ...
+# Subtest: Resource writes without opt-in keep the existing flow and do not add an exact server read
+ok 56 - Resource writes without opt-in keep the existing flow and do not add an exact server read
+  ---
+  duration_ms: 2.031942
+  type: 'test'
+  ...
+# Subtest: E03/E11 rapid certification rerenders mount each action and listener exactly once
+ok 57 - E03/E11 rapid certification rerenders mount each action and listener exactly once
+  ---
+  duration_ms: 7.552121
+  type: 'test'
+  ...
+# Subtest: E03/E11 navigating away before deferred mount performs no stale DOM mutation
+ok 58 - E03/E11 navigating away before deferred mount performs no stale DOM mutation
+  ---
+  duration_ms: 1.181041
+  type: 'test'
+  ...
+# Subtest: E03/E11 a later complete render keeps the current review action functional
+ok 59 - E03/E11 a later complete render keeps the current review action functional
+  ---
+  duration_ms: 1.612733
+  type: 'test'
+  ...
+# Subtest: D05 client uses protected publication route with source version, revision and no caller reviewer
+ok 60 - D05 client uses protected publication route with source version, revision and no caller reviewer
+  ---
+  duration_ms: 6.022567
+  type: 'test'
+  ...
+# Subtest: D05 client configuration and withdrawal use server routes and never the generic SDK delete
+ok 61 - D05 client configuration and withdrawal use server routes and never the generic SDK delete
+  ---
+  duration_ms: 3.83186
+  type: 'test'
+  ...
+# Subtest: D05 client retry derives the same idempotency key from the same exact operation
+ok 62 - D05 client retry derives the same idempotency key from the same exact operation
+  ---
+  duration_ms: 7.144774
+  type: 'test'
+  ...
+# Subtest: D05 client rejects unverified readback without refreshing into a success state
+ok 63 - D05 client rejects unverified readback without refreshing into a success state
+  ---
+  duration_ms: 1.973661
+  type: 'test'
+  ...
+# Subtest: D05 client rejects wrong version without refreshing into a success state
+ok 64 - D05 client rejects wrong version without refreshing into a success state
+  ---
+  duration_ms: 2.04878
+  type: 'test'
+  ...
+# Subtest: D05 client rejects wrong reviewer without refreshing into a success state
+ok 65 - D05 client rejects wrong reviewer without refreshing into a success state
+  ---
+  duration_ms: 1.376176
+  type: 'test'
+  ...
+# Subtest: D05 client rejects wrong author without refreshing into a success state
+ok 66 - D05 client rejects wrong author without refreshing into a success state
+  ---
+  duration_ms: 3.58485
+  type: 'test'
+  ...
+# Subtest: D05 client rejects changed question without refreshing into a success state
+ok 67 - D05 client rejects changed question without refreshing into a success state
+  ---
+  duration_ms: 1.987398
+  type: 'test'
+  ...
+# Subtest: D05 client rejects wrong scope without refreshing into a success state
+ok 68 - D05 client rejects wrong scope without refreshing into a success state
+  ---
+  duration_ms: 1.576845
+  type: 'test'
+  ...
+# Subtest: D05 client rejects wrong tenant without refreshing into a success state
+ok 69 - D05 client rejects wrong tenant without refreshing into a success state
+  ---
+  duration_ms: 1.914754
+  type: 'test'
+  ...
+# Subtest: D05 client rejects wrong receipt tenant without refreshing into a success state
+ok 70 - D05 client rejects wrong receipt tenant without refreshing into a success state
+  ---
+  duration_ms: 1.257185
+  type: 'test'
+  ...
+# Subtest: D05 client rejects forged receipt actor without refreshing into a success state
+ok 71 - D05 client rejects forged receipt actor without refreshing into a success state
+  ---
+  duration_ms: 1.311062
+  type: 'test'
+  ...
+# Subtest: D05 client rejects missing receipt without refreshing into a success state
+ok 72 - D05 client rejects missing receipt without refreshing into a success state
+  ---
+  duration_ms: 1.304053
+  type: 'test'
+  ...
+# Subtest: D05 client rejects new active project without refreshing into a success state
+ok 73 - D05 client rejects new active project without refreshing into a success state
+  ---
+  duration_ms: 1.42795
+  type: 'test'
+  ...
+# Subtest: D05 client rejects new active tenant without refreshing into a success state
+ok 74 - D05 client rejects new active tenant without refreshing into a success state
+  ---
+  duration_ms: 2.565965
+  type: 'test'
+  ...
+# Subtest: D05 client rejects new active principal without refreshing into a success state
+ok 75 - D05 client rejects new active principal without refreshing into a success state
+  ---
+  duration_ms: 2.460687
+  type: 'test'
+  ...
+# Subtest: D05 client rejects missing exact bank/version before any request
+ok 76 - D05 client rejects missing exact bank/version before any request
+  ---
+  duration_ms: 1.091999
+  type: 'test'
+  ...
+# Subtest: D05 UI policy uses durable project, exact period alias and existing default
+ok 77 - D05 UI policy uses durable project, exact period alias and existing default
+  ---
+  duration_ms: 1.968233
+  type: 'test'
+  ...
+# Subtest: D05 UI policy does not treat normalized stale cache and current exact period as duplicate documents
+ok 78 - D05 UI policy does not treat normalized stale cache and current exact period as duplicate documents
+  ---
+  duration_ms: 1.773615
+  type: 'test'
+  ...
+# Subtest: D07 authenticates a single role-scoped PDF read without public download tokens
+ok 79 - D07 authenticates a single role-scoped PDF read without public download tokens
+  ---
+  duration_ms: 4.03431
+  type: 'test'
+  ...
+# Subtest: D07 never accesses Storage when Firebase Auth is absent
+ok 80 - D07 never accesses Storage when Firebase Auth is absent
+  ---
+  duration_ms: 1.513204
+  type: 'test'
+  ...
+# Subtest: D07 rejects cross-project or other period Storage paths before requesting bytes
+ok 81 - D07 rejects cross-project or other period Storage paths before requesting bytes
+  ---
+  duration_ms: 2.226565
+  type: 'test'
+  ...
+# Subtest: D07 does not read a withdrawn/unpublished resource even when URL metadata survives
+ok 82 - D07 does not read a withdrawn/unpublished resource even when URL metadata survives
+  ---
+  duration_ms: 1.31638
+  type: 'test'
+  ...
+# Subtest: D07 returns provider-denied without public token fallback on HTTP 403
+ok 83 - D07 returns provider-denied without public token fallback on HTTP 403
+  ---
+  duration_ms: 1.445565
+  type: 'test'
+  ...
+# Subtest: D07 rejects non-PDF responses without ever rendering provider error HTML
+ok 84 - D07 rejects non-PDF responses without ever rendering provider error HTML
+  ---
+  duration_ms: 1.776718
+  type: 'test'
+  ...
+# Subtest: D07 fails closed when identity changes during an in-flight download
+ok 85 - D07 fails closed when identity changes during an in-flight download
+  ---
+  duration_ms: 1.0955
+  type: 'test'
+  ...
+# Subtest: D07 rejects response over bounded size and protects existing binary-write gate
+ok 86 - D07 rejects response over bounded size and protects existing binary-write gate
+  ---
+  duration_ms: 1.579796
+  type: 'test'
+  ...
+# Subtest: D07 diagnostic separates ID-token acquisition failure without attempting GET
+ok 87 - D07 diagnostic separates ID-token acquisition failure without attempting GET
+  ---
+  duration_ms: 2.399644
+  type: 'test'
+  ...
+# Subtest: D07 diagnostic separates transport rejection without inventing HTTP 403
+ok 88 - D07 diagnostic separates transport rejection without inventing HTTP 403
+  ---
+  duration_ms: 1.716722
+  type: 'test'
+  ...
+# Subtest: D07 diagnostic distinguishes valid HTTP GET from rejected PDF body read
+ok 89 - D07 diagnostic distinguishes valid HTTP GET from rejected PDF body read
+  ---
+  duration_ms: 2.193589
+  type: 'test'
+  ...
+# Subtest: D07 diagnostic returns HTTP 403 as a response and never mislabels it as transport error
+ok 90 - D07 diagnostic returns HTTP 403 as a response and never mislabels it as transport error
+  ---
+  duration_ms: 1.081538
+  type: 'test'
+  ...
+# Subtest: D07 positive PDF records metadata only and retains authenticated bytes for caller
+ok 91 - D07 positive PDF records metadata only and retains authenticated bytes for caller
+  ---
+  duration_ms: 1.305344
+  type: 'test'
+  ...
+# Subtest: D07 bounded read fails closed if Firebase ID token never resolves
+ok 92 - D07 bounded read fails closed if Firebase ID token never resolves
+  ---
+  duration_ms: 26.314842
+  type: 'test'
+  ...
+# Subtest: D07 bounded read aborts a hanging GET and reports its stage without revealing a token
+ok 93 - D07 bounded read aborts a hanging GET and reports its stage without revealing a token
+  ---
+  duration_ms: 27.517736
+  type: 'test'
+  ...
+# Subtest: D/Cert: published October bank reloads after the protected HR authority changes period
+ok 94 - D/Cert: published October bank reloads after the protected HR authority changes period
+  ---
+  duration_ms: 3.017458
+  type: 'test'
+  ...
+# Subtest: D/Cert: later stale September response never replaces the current October bank
+ok 95 - D/Cert: later stale September response never replaces the current October bank
+  ---
+  duration_ms: 1.910581
+  type: 'test'
+  ...
+# Subtest: D/Cert: project change never retains another project or period in cache
+ok 96 - D/Cert: project change never retains another project or period in cache
+  ---
+  duration_ms: 1.993955
+  type: 'test'
+  ...
+# Subtest: D/Cert: provider read error is fail-closed, not an unverified empty-bank PASS
+ok 97 - D/Cert: provider read error is fail-closed, not an unverified empty-bank PASS
+  ---
+  duration_ms: 0.951796
+  type: 'test'
+  ...
+# Subtest: D04/E03: Admin reports the selected bank state without granting shopper certification
+ok 98 - D04/E03: Admin reports the selected bank state without granting shopper certification
+  ---
+  duration_ms: 4.827986
+  type: 'test'
+  ...
+# Subtest: VRM-288: identical Firestore resource notices preserve live controls and do not repaint the viewer
+ok 99 - VRM-288: identical Firestore resource notices preserve live controls and do not repaint the viewer
+  ---
+  duration_ms: 5.974647
+  type: 'test'
+  ...
+# Subtest: VRM-288: loading, denied and verified empty are three different states
+ok 100 - VRM-288: loading, denied and verified empty are three different states
+  ---
+  duration_ms: 1.656892
+  type: 'test'
+  ...
+# Subtest: VRM-288: detached old module cannot be repeatedly rebuilt by provider notices
+ok 101 - VRM-288: detached old module cannot be repeatedly rebuilt by provider notices
+  ---
+  duration_ms: 4.465947
+  type: 'test'
+  ...
+# Subtest: VRM-285: a late resources event and a router remount do not destroy the active PDF reader
+ok 102 - VRM-285: a late resources event and a router remount do not destroy the active PDF reader
+  ---
+  duration_ms: 3.056763
+  type: 'test'
+  ...
+# Subtest: VRM-285: different auth UID, role, project and period never inherit an old PDF reader
+ok 103 - VRM-285: different auth UID, role, project and period never inherit an old PDF reader
+  ---
+  duration_ms: 1.937217
+  type: 'test'
+  ...
+# Subtest: VRM-285: revoked/deleted resource closes the open reader fail-closed
+ok 104 - VRM-285: revoked/deleted resource closes the open reader fail-closed
+  ---
+  duration_ms: 1.267297
+  type: 'test'
+  ...
+# Subtest: VRM-285: viewer state is session-scoped presentation state, never localStorage truth
+ok 105 - VRM-285: viewer state is session-scoped presentation state, never localStorage truth
+  ---
+  duration_ms: 0.152711
+  type: 'test'
+  ...
+# Subtest: D07 Admin-only diagnostic UI exposes safe stage metadata without JWT, UID or path
+ok 106 - D07 Admin-only diagnostic UI exposes safe stage metadata without JWT, UID or path
+  ---
+  duration_ms: 0.191982
+  type: 'test'
+  ...
+# Subtest: D07 admin identical resource loads settle without hiding remote updates, errors or identity changes
+ok 107 - D07 admin identical resource loads settle without hiding remote updates, errors or identity changes
+  ---
+  duration_ms: 14.485695
+  type: 'test'
+  ...
+# Subtest: D07 shopper identical resource loads settle without hiding remote updates, errors or identity changes
+ok 108 - D07 shopper identical resource loads settle without hiding remote updates, errors or identity changes
+  ---
+  duration_ms: 3.886572
+  type: 'test'
+  ...
+1..108
+# tests 130
+# suites 0
+# pass 130
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 420.469265

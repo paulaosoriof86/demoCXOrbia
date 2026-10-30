@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "cxorbia.i3.canonical-source-proof-adjudication.v1",
+  "id": "CXORBIA-I3-C04-D07-E03-SOURCE-PROOF-RUN1965",
+  "asOf": "2026-10-30",
+  "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+  "sourceSha": "512111715ad13722281426c7add724fc5e7d39c0",
+  "sourceTree": "c0f55f97b541bb62d3ec34c1af24a46dcd0c99a6",
+  "controlSha": "f15ba2e632f32a51ec9e17a78d66222fc0782111",
+  "runId": 40979308308,
+  "runNumber": 1965,
+  "authorityJobId": 123815066526,
+  "sourceJobId": 123815247224,
+  "artifactId": 12944610538,
+  "artifactZipSha256": "a0368f59e45985f292f23fad695110f92a4c91dd2c8f71dec434b807fe22c05b",
+  "originalReceipt": {
+    "path": "docs/checkpoints/evidence/CXORBIA_I3_RUN1965_SOURCE_PROOF_ORIGINAL_20261030.json",
+    "gitBlob": "db7716967a5c2e8f35c4560ce919c084e03fed5d"
+  },
+  "sourceRepair": {
+    "path": "docs/checkpoints/CXORBIA_I3_C04_D07_E03_CUMULATIVE_SOURCE_REPAIR_20261030.json",
+    "gitBlob": "f2243ae97621c1122684c0b3822965e9c6b1c6ca",
+    "sourceSha": "512111715ad13722281426c7add724fc5e7d39c0",
+    "sourceTree": "c0f55f97b541bb62d3ec34c1af24a46dcd0c99a6",
+    "predecessorProductSourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+    "decision": "LOCAL_SOURCE_AND_RULES_PASS_PENDING_CANONICAL_CI_AND_EXACT_DEV_E2E",
+    "canonicalCi": "PENDING",
+    "devMaterialization": "PENDING",
+    "liveE2e": "PENDING",
+    "humanAcceptance": "PENDING",
+    "fullTaskClosed": false,
+    "production": false
+  },
+  "authority": {
+    "modules": 21,
+    "uniqueOwners": 101,
+    "sourceInventory": 151,
+    "exactBlobsMatch": true
+  },
+  "scope": "Exact canonical source contracts and local Firestore emulator, no live commands or DEV deploy.",
+  "wholeProductPass": false,
+  "fullTaskClosed": false,
+  "moduleMatchPromotions": 0,
+  "liveE2e": "NOT_RUN",
+  "humanAcceptance": "PENDING",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "production": false
+}

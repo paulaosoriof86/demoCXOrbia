@@ -1,0 +1,722 @@
+TAP version 13
+# Subtest: Global exact get and catalog query: complete allowed
+ok 1 - Global exact get and catalog query: complete allowed
+  ---
+  duration_ms: 5039.308095
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: complete-no-ns-claim allowed
+ok 2 - Global exact get and catalog query: complete-no-ns-claim allowed
+  ---
+  duration_ms: 118.652366
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: super allowed
+ok 3 - Global exact get and catalog query: super allowed
+  ---
+  duration_ms: 108.8587
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: specific denied
+ok 4 - Global exact get and catalog query: specific denied
+  ---
+  duration_ms: 92.735211
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: missing-entitlement denied
+ok 5 - Global exact get and catalog query: missing-entitlement denied
+  ---
+  duration_ms: 79.596061
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: ops denied
+ok 6 - Global exact get and catalog query: ops denied
+  ---
+  duration_ms: 55.824926
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: coordinator denied
+ok 7 - Global exact get and catalog query: coordinator denied
+  ---
+  duration_ms: 52.084322
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: client denied
+ok 8 - Global exact get and catalog query: client denied
+  ---
+  duration_ms: 38.825044
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: shopper denied
+ok 9 - Global exact get and catalog query: shopper denied
+  ---
+  duration_ms: 42.584008
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: no-member denied
+ok 10 - Global exact get and catalog query: no-member denied
+  ---
+  duration_ms: 76.26984
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: inactive denied
+ok 11 - Global exact get and catalog query: inactive denied
+  ---
+  duration_ms: 65.571545
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: member-tenant-mismatch denied
+ok 12 - Global exact get and catalog query: member-tenant-mismatch denied
+  ---
+  duration_ms: 50.352405
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: member-role-mismatch denied
+ok 13 - Global exact get and catalog query: member-role-mismatch denied
+  ---
+  duration_ms: 50.465766
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: member-namespace-mismatch denied
+ok 14 - Global exact get and catalog query: member-namespace-mismatch denied
+  ---
+  duration_ms: 82.824755
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: claim-namespace-mismatch denied
+ok 15 - Global exact get and catalog query: claim-namespace-mismatch denied
+  ---
+  duration_ms: 50.64983
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: other-tenant denied
+ok 16 - Global exact get and catalog query: other-tenant denied
+  ---
+  duration_ms: 64.79573
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: other-tenant-list denied
+ok 17 - Global exact get and catalog query: other-tenant-list denied
+  ---
+  duration_ms: 41.791234
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: super-no-member denied
+ok 18 - Global exact get and catalog query: super-no-member denied
+  ---
+  duration_ms: 78.386887
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: super-other-tenant denied
+ok 19 - Global exact get and catalog query: super-other-tenant denied
+  ---
+  duration_ms: 51.830605
+  type: 'test'
+  ...
+# Subtest: Anonymous Global get and query denied
+ok 20 - Anonymous Global get and query denied
+  ---
+  duration_ms: 35.476706
+  type: 'test'
+  ...
+# Subtest: Preserve exact legacy and project reads: specific
+ok 21 - Preserve exact legacy and project reads: specific
+  ---
+  duration_ms: 70.948369
+  type: 'test'
+  ...
+# Subtest: Preserve current project catalog query: specific
+ok 22 - Preserve current project catalog query: specific
+  ---
+  duration_ms: 35.040019
+  type: 'test'
+  ...
+# Subtest: Preserve project+period+country/status/kind queries: specific
+ok 23 - Preserve project+period+country/status/kind queries: specific
+  ---
+  duration_ms: 87.740345
+  type: 'test'
+  ...
+# Subtest: Unfiltered collection never serves Global to specific
+ok 24 - Unfiltered collection never serves Global to specific
+  ---
+  duration_ms: 50.969086
+  type: 'test'
+  ...
+# Subtest: Preserve exact legacy and project reads: missing-entitlement
+ok 25 - Preserve exact legacy and project reads: missing-entitlement
+  ---
+  duration_ms: 84.25055
+  type: 'test'
+  ...
+# Subtest: Preserve current project catalog query: missing-entitlement
+ok 26 - Preserve current project catalog query: missing-entitlement
+  ---
+  duration_ms: 42.028929
+  type: 'test'
+  ...
+# Subtest: Preserve project+period+country/status/kind queries: missing-entitlement
+ok 27 - Preserve project+period+country/status/kind queries: missing-entitlement
+  ---
+  duration_ms: 87.716899
+  type: 'test'
+  ...
+# Subtest: Unfiltered collection never serves Global to missing-entitlement
+ok 28 - Unfiltered collection never serves Global to missing-entitlement
+  ---
+  duration_ms: 29.442053
+  type: 'test'
+  ...
+# Subtest: Preserve exact legacy and project reads: ops
+ok 29 - Preserve exact legacy and project reads: ops
+  ---
+  duration_ms: 62.328133
+  type: 'test'
+  ...
+# Subtest: Preserve current project catalog query: ops
+ok 30 - Preserve current project catalog query: ops
+  ---
+  duration_ms: 35.617305
+  type: 'test'
+  ...
+# Subtest: Preserve project+period+country/status/kind queries: ops
+ok 31 - Preserve project+period+country/status/kind queries: ops
+  ---
+  duration_ms: 76.62955
+  type: 'test'
+  ...
+# Subtest: Unfiltered collection never serves Global to ops
+ok 32 - Unfiltered collection never serves Global to ops
+  ---
+  duration_ms: 33.832888
+  type: 'test'
+  ...
+# Subtest: Preserve exact legacy and project reads: coordinator
+ok 33 - Preserve exact legacy and project reads: coordinator
+  ---
+  duration_ms: 63.054691
+  type: 'test'
+  ...
+# Subtest: Preserve current project catalog query: coordinator
+ok 34 - Preserve current project catalog query: coordinator
+  ---
+  duration_ms: 26.123213
+  type: 'test'
+  ...
+# Subtest: Preserve project+period+country/status/kind queries: coordinator
+ok 35 - Preserve project+period+country/status/kind queries: coordinator
+  ---
+  duration_ms: 67.984598
+  type: 'test'
+  ...
+# Subtest: Unfiltered collection never serves Global to coordinator
+ok 36 - Unfiltered collection never serves Global to coordinator
+  ---
+  duration_ms: 35.730582
+  type: 'test'
+  ...
+[2026-10-30T00:29:56.651Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea297 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L434, false for 'update' @ L187, false for 'update' @ L434
+[2026-10-30T00:29:56.670Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea298 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, false for 'update' @ L434
+[2026-10-30T00:29:56.677Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea299 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'delete' @ L187, false for 'delete' @ L434
+[2026-10-30T00:29:56.685Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea29a error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L446, false for 'update' @ L187, false for 'update' @ L446
+[2026-10-30T00:29:56.693Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea29b error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, false for 'update' @ L446
+[2026-10-30T00:29:56.699Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea29c error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'delete' @ L187, false for 'delete' @ L446
+[2026-10-30T00:29:56.715Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea29d error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L434, false for 'update' @ L187, false for 'update' @ L434
+[2026-10-30T00:29:56.723Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea29e error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, false for 'update' @ L434
+[2026-10-30T00:29:56.729Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea29f error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'delete' @ L187, false for 'delete' @ L434
+[2026-10-30T00:29:56.735Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2a0 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L446, false for 'update' @ L187, false for 'update' @ L446
+[2026-10-30T00:29:56.742Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2a1 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, false for 'update' @ L446
+[2026-10-30T00:29:56.749Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2a2 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'delete' @ L187, false for 'delete' @ L446
+# Subtest: Client SDK Global writes stay denied even to exact complete Admin and Super
+ok 37 - Client SDK Global writes stay denied even to exact complete Admin and Super
+  ---
+  duration_ms: 129.710441
+  type: 'test'
+  ...
+# Subtest: Global audit values obey same entitlement: complete
+ok 38 - Global audit values obey same entitlement: complete
+  ---
+  duration_ms: 56.852455
+  type: 'test'
+  ...
+# Subtest: Preserve project audit and operational entity query: complete
+ok 39 - Preserve project audit and operational entity query: complete
+  ---
+  duration_ms: 29.473569
+  type: 'test'
+  ...
+# Subtest: Receipts containing Global entity/linkedAccount remain SDK-denied: complete
+ok 40 - Receipts containing Global entity/linkedAccount remain SDK-denied: complete
+  ---
+  duration_ms: 36.375322
+  type: 'test'
+  ...
+# Subtest: Global audit values obey same entitlement: super
+ok 41 - Global audit values obey same entitlement: super
+  ---
+  duration_ms: 57.397744
+  type: 'test'
+  ...
+# Subtest: Preserve project audit and operational entity query: super
+ok 42 - Preserve project audit and operational entity query: super
+  ---
+  duration_ms: 38.039155
+  type: 'test'
+  ...
+# Subtest: Receipts containing Global entity/linkedAccount remain SDK-denied: super
+ok 43 - Receipts containing Global entity/linkedAccount remain SDK-denied: super
+  ---
+  duration_ms: 47.860878
+  type: 'test'
+  ...
+# Subtest: Global audit values obey same entitlement: specific
+ok 44 - Global audit values obey same entitlement: specific
+  ---
+  duration_ms: 54.927382
+  type: 'test'
+  ...
+# Subtest: Preserve project audit and operational entity query: specific
+ok 45 - Preserve project audit and operational entity query: specific
+  ---
+  duration_ms: 32.328051
+  type: 'test'
+  ...
+# Subtest: Receipts containing Global entity/linkedAccount remain SDK-denied: specific
+ok 46 - Receipts containing Global entity/linkedAccount remain SDK-denied: specific
+  ---
+  duration_ms: 22.458255
+  type: 'test'
+  ...
+# Subtest: Global audit values obey same entitlement: missing-entitlement
+ok 47 - Global audit values obey same entitlement: missing-entitlement
+  ---
+  duration_ms: 54.759269
+  type: 'test'
+  ...
+# Subtest: Preserve project audit and operational entity query: missing-entitlement
+ok 48 - Preserve project audit and operational entity query: missing-entitlement
+  ---
+  duration_ms: 33.783908
+  type: 'test'
+  ...
+# Subtest: Receipts containing Global entity/linkedAccount remain SDK-denied: missing-entitlement
+ok 49 - Receipts containing Global entity/linkedAccount remain SDK-denied: missing-entitlement
+  ---
+  duration_ms: 27.163358
+  type: 'test'
+  ...
+# Subtest: Global audit values obey same entitlement: ops
+ok 50 - Global audit values obey same entitlement: ops
+  ---
+  duration_ms: 53.287879
+  type: 'test'
+  ...
+# Subtest: Preserve project audit and operational entity query: ops
+ok 51 - Preserve project audit and operational entity query: ops
+  ---
+  duration_ms: 36.388393
+  type: 'test'
+  ...
+# Subtest: Receipts containing Global entity/linkedAccount remain SDK-denied: ops
+ok 52 - Receipts containing Global entity/linkedAccount remain SDK-denied: ops
+  ---
+  duration_ms: 20.080539
+  type: 'test'
+  ...
+# Subtest: Global audit values obey same entitlement: coordinator
+ok 53 - Global audit values obey same entitlement: coordinator
+  ---
+  duration_ms: 62.193543
+  type: 'test'
+  ...
+# Subtest: Preserve project audit and operational entity query: coordinator
+ok 54 - Preserve project audit and operational entity query: coordinator
+  ---
+  duration_ms: 43.069289
+  type: 'test'
+  ...
+# Subtest: Receipts containing Global entity/linkedAccount remain SDK-denied: coordinator
+ok 55 - Receipts containing Global entity/linkedAccount remain SDK-denied: coordinator
+  ---
+  duration_ms: 23.726734
+  type: 'test'
+  ...
+[2026-10-30T00:29:57.502Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2b5 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L408, false for 'update' @ L187, false for 'update' @ L410
+[2026-10-30T00:29:57.527Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2b7 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L408, false for 'update' @ L187, false for 'update' @ L410
+[2026-10-30T00:29:57.553Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2b9 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L408, false for 'update' @ L187, false for 'update' @ L410
+[2026-10-30T00:29:57.592Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2bb error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L408, false for 'update' @ L187, false for 'update' @ L410
+# Subtest: Global finance audit creation is provider-only; legacy operational creation stays allowed
+ok 56 - Global finance audit creation is provider-only; legacy operational creation stays allowed
+  ---
+  duration_ms: 120.560928
+  type: 'test'
+  ...
+[2026-10-30T00:29:57.631Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2bd error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:29:57.640Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2be error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:29:57.649Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2bf error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:29:57.660Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2c0 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:29:57.675Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2c1 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:29:57.687Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2c2 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:29:57.699Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2c3 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:29:57.706Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2c4 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'delete' @ L187, false for 'delete' @ L197
+[2026-10-30T00:29:57.721Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2c5 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L197, false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'create' @ L187, false for 'create' @ L197
+# Subtest: Admin cannot mutate membership authority or delete/recreate: specific
+ok 57 - Admin cannot mutate membership authority or delete/recreate: specific
+  ---
+  duration_ms: 136.272728
+  type: 'test'
+  ...
+[2026-10-30T00:29:57.757Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2c8 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:29:57.765Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2c9 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:29:57.773Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2ca error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:29:57.782Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2cb error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:29:57.794Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2cc error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:29:57.802Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2cd error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:29:57.811Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2ce error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:29:57.817Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2cf error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'delete' @ L187, false for 'delete' @ L197
+[2026-10-30T00:29:57.827Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2d0 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L197, false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'create' @ L187, false for 'create' @ L197
+# Subtest: Admin cannot mutate membership authority or delete/recreate: complete
+ok 58 - Admin cannot mutate membership authority or delete/recreate: complete
+  ---
+  duration_ms: 111.5099
+  type: 'test'
+  ...
+# Subtest: Existing Super user administration can create, change scope and delete synthetic member
+ok 59 - Existing Super user administration can create, change scope and delete synthetic member
+  ---
+  duration_ms: 44.635569
+  type: 'test'
+  ...
+# Subtest: Super provider Admin SDK write mechanism is unaffected by client Rules
+ok 60 - Super provider Admin SDK write mechanism is unaffected by client Rules
+  ---
+  duration_ms: 46.519736
+  type: 'test'
+  ...
+[2026-10-30T00:29:58.008Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2d8 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, false for 'update' @ L379
+[2026-10-30T00:29:58.040Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2d9 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'create' @ L187, false for 'create' @ L377
+[2026-10-30T00:29:58.072Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2da error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'create' @ L187, false for 'create' @ L377
+# Subtest: D05 Rules allow only a new pending draft with authenticated author
+ok 61 - D05 Rules allow only a new pending draft with authenticated author
+  ---
+  duration_ms: 131.229186
+  type: 'test'
+  ...
+[2026-10-30T00:29:58.160Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2db error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, false for 'update' @ L379
+[2026-10-30T00:29:58.176Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2dd error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+[2026-10-30T00:29:58.185Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2de error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'delete' @ L187, evaluation error at L384:26 for 'delete' @ L384, false for 'delete' @ L187, false for 'delete' @ L384
+# Subtest: D05 Rules preserve ordinary resources but reject bank writes for ops
+ok 62 - D05 Rules preserve ordinary resources but reject bank writes for ops
+  ---
+  duration_ms: 129.73966
+  type: 'test'
+  ...
+[2026-10-30T00:29:58.258Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2e0 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, false for 'update' @ L379
+[2026-10-30T00:29:58.269Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2e2 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+[2026-10-30T00:29:58.278Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2e3 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'delete' @ L187, evaluation error at L384:26 for 'delete' @ L384, false for 'delete' @ L187, false for 'delete' @ L384
+# Subtest: D05 Rules preserve ordinary resources but reject bank writes for coordinador
+ok 63 - D05 Rules preserve ordinary resources but reject bank writes for coordinador
+  ---
+  duration_ms: 99.625123
+  type: 'test'
+  ...
+# Subtest: D05 Rules allow current pending review with exact actor/version/history and preserve default same-author review
+ok 64 - D05 Rules allow current pending review with exact actor/version/history and preserve default same-author review
+  ---
+  duration_ms: 273.949294
+  type: 'test'
+  ...
+[2026-10-30T00:29:58.625Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2ed error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+[2026-10-30T00:29:58.659Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2ee error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+[2026-10-30T00:29:58.686Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2ef error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+[2026-10-30T00:29:58.709Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2f0 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+[2026-10-30T00:29:58.724Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2f1 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'delete' @ L187, evaluation error at L384:26 for 'delete' @ L384, false for 'delete' @ L187, false for 'delete' @ L384
+[2026-10-30T00:29:58.780Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2f4 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 Rules deny direct publish, configuration, retire and delete of a published bank
+ok 65 - D05 Rules deny direct publish, configuration, retire and delete of a published bank
+  ---
+  duration_ms: 203.933498
+  type: 'test'
+  ...
+[2026-10-30T00:29:58.840Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2f6 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 Rules reject modified author outside the review transition
+ok 66 - D05 Rules reject modified author outside the review transition
+  ---
+  duration_ms: 77.10799
+  type: 'test'
+  ...
+[2026-10-30T00:29:58.928Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2f9 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 Rules reject modified reviewer outside the review transition
+ok 67 - D05 Rules reject modified reviewer outside the review transition
+  ---
+  duration_ms: 86.957441
+  type: 'test'
+  ...
+[2026-10-30T00:29:58.996Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2fc error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 Rules reject modified created author outside the review transition
+ok 68 - D05 Rules reject modified created author outside the review transition
+  ---
+  duration_ms: 65.393758
+  type: 'test'
+  ...
+[2026-10-30T00:29:59.067Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea2ff error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 Rules reject modified project outside the review transition
+ok 69 - D05 Rules reject modified project outside the review transition
+  ---
+  duration_ms: 75.290142
+  type: 'test'
+  ...
+[2026-10-30T00:29:59.138Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea302 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 Rules reject modified period outside the review transition
+ok 70 - D05 Rules reject modified period outside the review transition
+  ---
+  duration_ms: 79.59382
+  type: 'test'
+  ...
+[2026-10-30T00:29:59.214Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea305 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 Rules reject modified version outside the review transition
+ok 71 - D05 Rules reject modified version outside the review transition
+  ---
+  duration_ms: 63.032768
+  type: 'test'
+  ...
+[2026-10-30T00:29:59.273Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea308 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 Rules reject modified history reviewer outside the review transition
+ok 72 - D05 Rules reject modified history reviewer outside the review transition
+  ---
+  duration_ms: 60.933741
+  type: 'test'
+  ...
+[2026-10-30T00:29:59.340Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea30b error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 Rules reject modified source outside the review transition
+ok 73 - D05 Rules reject modified source outside the review transition
+  ---
+  duration_ms: 68.068973
+  type: 'test'
+  ...
+[2026-10-30T00:29:59.422Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea30e error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 Rules reject modified retype outside the review transition
+ok 74 - D05 Rules reject modified retype outside the review transition
+  ---
+  duration_ms: 83.369255
+  type: 'test'
+  ...
+[2026-10-30T00:29:59.495Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea311 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 Rules reject modified question count outside the review transition
+ok 75 - D05 Rules reject modified question count outside the review transition
+  ---
+  duration_ms: 70.016759
+  type: 'test'
+  ...
+[2026-10-30T00:29:59.558Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea314 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, evaluation error at L377:26 for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 Rules do not allow ordinary resources to become banks through update
+ok 76 - D05 Rules do not allow ordinary resources to become banks through update
+  ---
+  duration_ms: 47.145065
+  type: 'test'
+  ...
+[2026-10-30T00:29:59.608Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea316 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 Rules enforce durable membership for qa-inactive
+ok 77 - D05 Rules enforce durable membership for qa-inactive
+  ---
+  duration_ms: 50.149027
+  type: 'test'
+  ...
+[2026-10-30T00:29:59.664Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea318 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 Rules enforce durable membership for qa-other-project
+ok 78 - D05 Rules enforce durable membership for qa-other-project
+  ---
+  duration_ms: 56.095132
+  type: 'test'
+  ...
+[2026-10-30T00:29:59.713Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea31a error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 Rules enforce durable membership for qa-mismatch
+ok 79 - D05 Rules enforce durable membership for qa-mismatch
+  ---
+  duration_ms: 49.029475
+  type: 'test'
+  ...
+[2026-10-30T00:29:59.760Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea31c error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 Rules enforce durable membership for qa-missing
+ok 80 - D05 Rules enforce durable membership for qa-missing
+  ---
+  duration_ms: 46.453177
+  type: 'test'
+  ...
+[2026-10-30T00:29:59.800Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea31e error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, false for 'update' @ L379
+[2026-10-30T00:29:59.818Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea31f error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 Rules reject anonymous and other-tenant principals
+ok 81 - D05 Rules reject anonymous and other-tenant principals
+  ---
+  duration_ms: 58.558987
+  type: 'test'
+  ...
+[2026-10-30T00:29:59.897Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea322 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 Rules enforce project certificationReviewPolicy with exact legacy period alias
+ok 82 - D05 Rules enforce project certificationReviewPolicy with exact legacy period alias
+  ---
+  duration_ms: 150.303634
+  type: 'test'
+  ...
+[2026-10-30T00:30:00.036Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea327 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 Rules enforce project certReviewPolicy with exact legacy period alias
+ok 83 - D05 Rules enforce project certReviewPolicy with exact legacy period alias
+  ---
+  duration_ms: 118.309246
+  type: 'test'
+  ...
+[2026-10-30T00:30:00.177Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea32c error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 Rules enforce period certificationReviewPolicy with exact legacy period alias
+ok 84 - D05 Rules enforce period certificationReviewPolicy with exact legacy period alias
+  ---
+  duration_ms: 141.001387
+  type: 'test'
+  ...
+[2026-10-30T00:30:00.287Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea331 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 Rules enforce period certReviewPolicy with exact legacy period alias
+ok 85 - D05 Rules enforce period certReviewPolicy with exact legacy period alias
+  ---
+  duration_ms: 125.417995
+  type: 'test'
+  ...
+[2026-10-30T00:30:00.541Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea336 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+[2026-10-30T00:30:00.624Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea338 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+[2026-10-30T00:30:00.682Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea33a error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+[2026-10-30T00:30:00.757Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea33d error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 Rules reject unknown/contradictory policy and duplicate exact period documents
+ok 86 - D05 Rules reject unknown/contradictory policy and duplicate exact period documents
+  ---
+  duration_ms: 421.525705
+  type: 'test'
+  ...
+[2026-10-30T00:30:00.830Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea340 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+[2026-10-30T00:30:00.892Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea343 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'delete' @ L187, false for 'delete' @ L533
+# Subtest: D05 Rules reject changing previous review history and preserve attempt documents
+ok 87 - D05 Rules reject changing previous review history and preserve attempt documents
+  ---
+  duration_ms: 132.294905
+  type: 'test'
+  ...
+[2026-10-30T00:30:00.946Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea346 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:30:00.997Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea349 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 composed Rules prevent Admin self-granting another project before a bank review
+ok 88 - D05 composed Rules prevent Admin self-granting another project before a bank review
+  ---
+  duration_ms: 105.951966
+  type: 'test'
+  ...
+[2026-10-30T00:30:01.071Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea34d error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 composed Rules require staff namespace even when claim and membership agree otherwise
+ok 89 - D05 composed Rules require staff namespace even when claim and membership agree otherwise
+  ---
+  duration_ms: 57.534445
+  type: 'test'
+  ...
+[2026-10-30T00:30:01.150Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea350 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+[2026-10-30T00:30:01.207Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea352 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+[2026-10-30T00:30:01.269Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea354 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 composed Rules reject a policy document declaring another period or tenant
+ok 90 - D05 composed Rules reject a policy document declaring another period or tenant
+  ---
+  duration_ms: 216.330115
+  type: 'test'
+  ...
+[2026-10-30T00:30:01.487Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x475ea359 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L377, false for 'update' @ L187, evaluation error at L379:26 for 'update' @ L379, false for 'update' @ L187, false for 'update' @ L379
+# Subtest: D05 Rules preserve the complete history at the existing 25-review bound
+ok 91 - D05 Rules preserve the complete history at the existing 25-review bound
+  ---
+  duration_ms: 216.86921
+  type: 'test'
+  ...
+1..91
+# tests 91
+# suites 0
+# pass 91
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 12546.163254

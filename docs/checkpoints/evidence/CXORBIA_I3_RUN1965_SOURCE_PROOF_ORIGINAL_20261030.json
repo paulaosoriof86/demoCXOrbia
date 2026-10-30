@@ -1,0 +1,22 @@
+{
+  "clickE2ERequired": true,
+  "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+  "deploys": 0,
+  "liveE2e": "NOT_RUN",
+  "moduleMatchPromotions": 0,
+  "production": false,
+  "recordedModuleClassificationCounts": {
+    "COMPOSED_NOT_DEPLOYED": 2,
+    "MATCH": 5,
+    "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN": 2,
+    "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 3,
+    "SOURCE_FIXED_PENDING_CI_AND_DEV_FOCAL": 2,
+    "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN": 4,
+    "TRUE_FUNCTIONAL_DEFECT": 3
+  },
+  "scope": "SOURCE_CONTRACTS_ONLY_NOT_I3_CERTIFICATION",
+  "sourceSha": "512111715ad13722281426c7add724fc5e7d39c0",
+  "sourceTree": "c0f55f97b541bb62d3ec34c1af24a46dcd0c99a6",
+  "status": "HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL",
+  "wholeProductPass": false
+}
