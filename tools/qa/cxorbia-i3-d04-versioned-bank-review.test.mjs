@@ -373,3 +373,96 @@ test('E03/E11 a later complete render keeps the current review action functional
   await h.button('certReviewEdit').click();
   assert.equal(h.modals.length,1);assert.equal(h.gates[0].entityId,'cinepolis-2026-10');
 });
+
+const certificationClientSource=fs.readFileSync('app/core/backend-certifications.js','utf8');
+function lifecycleClientHarness(transform){
+  const uid='qa-admin',projectId='cinepolis',period='cinepolis-2026-10',cid='qa-lifecycle';
+  const id='certbank-'+projectId+'-'+period+'-'+cid;
+  const original={certificationId:cid,certificationName:'QA lifecycle',estado:'pending_review',generadoPorUid:'qa-author',
+    contentRevision:'revision-3',preguntas:clone(questions),__resourceId:id,__resourceVersion:3};
+  const calls=[],loads=[],events=[];
+  const data={currentProjectId:projectId,currentPeriodId:period,
+    __backendAllProjectRecords:[{id:projectId,projectId,tenantId:'tya'}],__backendPeriods:[],__protectedPeriods:[],
+    ctx:()=>({tenantId:'tya',projectId:data.currentProjectId,periodId:data.currentPeriodId})};
+  const CX={BACKEND:{enabled:true,tenantId:'tya'},data,session:{role:'admin',user:{role:'admin'}},
+    backendResources:{list:()=>[{id,version:3,bank:clone(original)}],load:async scope=>loads.push(scope),
+      deleteMetadata:async()=>{throw new Error('LEGACY_SDK_RETIRE_FORBIDDEN');}},bus:{emit:ev=>events.push(ev)},module(){}};
+  const firebase={auth:()=>({currentUser:{uid,getIdToken:async()=> 'synthetic-token'}})},window={CX,firebase};
+  const fetch=async(url,options)=>{
+    const action=url.split('/').at(-1),body=JSON.parse(options.body);calls.push({url,options,body});
+    const state=action==='publish'?'published':action==='retire'?'withdrawn':original.estado;
+    const bank={...clone(original),estado:state};delete bank.__resourceId;delete bank.__resourceVersion;
+    if(action==='publish')bank.revisadoPorUid=uid;
+    if(action==='configure')Object.assign(bank,{gate:body.gate,required:body.required,contentRevision:'configured-revision'});
+    const reply={ok:true,committed:true,providerAck:true,readbackVerified:true,item:{id,tenantId:'tya',projectId,periodId:period,version:4,status:action==='retire'?'deleted':'active',bank},
+      receipt:{id:'qa-receipt',status:'committed',providerAck:true,commandType:'certification.'+action,actorUid:uid,authorUid:'qa-author',tenantId:'tya',projectId,
+        periodId:period,entityId:id,fromVersion:3,entityVersion:4,toState:state}};
+    if(transform)transform(reply,CX);
+    return {ok:true,status:200,json:async()=>reply};
+  };
+  const context={CX,window,firebase,fetch,crypto:webcrypto,TextEncoder,console,Date,setTimeout};
+  vm.runInNewContext(certificationClientSource,context);vm.runInNewContext(source,context);
+  return {CX,original,period,calls,loads,events};
+}
+
+test('D05 client uses protected publication route with source version, revision and no caller reviewer',async()=>{
+  const h=lifecycleClientHarness(),result=await h.CX.certStore.lifecycle('publish',h.period,h.original);
+  assert.equal(result.item.bank.estado,'published');assert.equal(h.calls.length,1);assert.equal(h.loads.length,1);
+  const call=h.calls[0];assert.equal(call.url,'/api/tenants/tya/projects/cinepolis/certifications/publish');
+  assert.equal(call.options.method,'POST');assert.equal(call.options.headers.Authorization,'Bearer synthetic-token');
+  assert.equal(call.body.expectedVersion,3);assert.equal(call.body.expectedContentRevision,'revision-3');
+  assert.match(call.body.idempotencyKey,/^certbank\.publish:[a-f0-9]{64}$/);
+  for(const key of ['bank','authorUid','generadoPorUid','reviewerUid','revisadoPorUid','policy'])assert.equal(Object.hasOwn(call.body,key),false);
+  assert.deepEqual(h.events,['cert']);
+});
+test('D05 client configuration and withdrawal use server routes and never the generic SDK delete',async()=>{
+  for(const action of ['configure','retire']){
+    const h=lifecycleClientHarness();
+    const result=action==='retire'?await h.CX.certStore.clear(h.period,h.original.certificationId):
+      await h.CX.certStore.lifecycle('configure',h.period,h.original,{gate:90,required:false});
+    assert.equal(h.calls.length,1);assert.ok(h.calls[0].url.endsWith('/'+action));assert.equal(result.providerAck,true);
+    assert.equal(h.loads.length,1);
+  }
+});
+test('D05 client retry derives the same idempotency key from the same exact operation',async()=>{
+  const h=lifecycleClientHarness();await h.CX.certStore.lifecycle('publish',h.period,h.original);await h.CX.certStore.lifecycle('publish',h.period,h.original);
+  assert.equal(h.calls[0].body.idempotencyKey,h.calls[1].body.idempotencyKey);
+});
+for(const [name,transform] of [
+  ['unverified readback',r=>{r.readbackVerified=false;}],['wrong version',r=>{r.item.version=9;}],
+  ['wrong reviewer',r=>{r.item.bank.revisadoPorUid='forged';}],['wrong author',r=>{r.item.bank.generadoPorUid='forged';}],
+  ['changed question',r=>{r.item.bank.preguntas[0].q='wrong';}],['wrong scope',r=>{r.item.projectId='other';}],
+  ['wrong tenant',r=>{r.item.tenantId='other';}],['wrong receipt tenant',r=>{r.receipt.tenantId='other';}],
+  ['forged receipt actor',r=>{r.receipt.actorUid='forged';}],['missing receipt',r=>{delete r.receipt;}],
+  ['new active project',(_r,CX)=>{CX.data.currentProjectId='other';}]
+  ,['new active tenant',(_r,CX)=>{CX.data.ctx=()=>({tenantId:'other',projectId:'cinepolis',periodId:'cinepolis-2026-10'});}]
+  ,['new active principal',(_r,CX)=>{CX.backendCertifications.currentUid=()=> 'other-principal';}]
+])test('D05 client rejects '+name+' without refreshing into a success state',async()=>{
+  const h=lifecycleClientHarness(transform);await assert.rejects(()=>h.CX.certStore.lifecycle('publish',h.period,h.original),/DURABLE_READBACK_MISMATCH/);
+  assert.equal(h.loads.length,0);assert.equal(h.events.length,0);
+});
+test('D05 client rejects missing exact bank/version before any request',async()=>{
+  const h=lifecycleClientHarness();
+  for(const original of [{...h.original,__resourceId:'other'},{...h.original,__resourceVersion:undefined},{...h.original,contentRevision:''}]){
+    await assert.rejects(()=>h.CX.certStore.lifecycle('publish',h.period,original),/EXACT_SOURCE_REQUIRED/);
+  }
+  assert.equal(h.calls.length,0);
+});
+test('D05 UI policy uses durable project, exact period alias and existing default',()=>{
+  const h=lifecycleClientHarness(),data=h.CX.data,policy=()=>h.CX.backendCertifications.reviewPolicy({id:h.period});
+  assert.equal(policy(),'authorized_admin');
+  data.__backendAllProjectRecords[0].certificationReviewPolicy='maker_checker';assert.equal(policy(),'distinct_reviewer');
+  data.__protectedPeriods=[{id:'2026-10',projectId:'cinepolis',periodId:'2026-10',certReviewPolicy:'authorized_admin'}];assert.equal(policy(),'authorized_admin');
+  data.__protectedPeriods[0].certReviewPolicy='new_policy';assert.throws(policy,/POLICY_INVALID/);
+  data.__protectedPeriods[0].certReviewPolicy='maker_checker';data.__backendAllProjectRecords[0].certificationReviewPolicy=true;assert.throws(policy,/POLICY_INVALID/);
+  data.__backendAllProjectRecords[0].certificationReviewPolicy='authorized_admin';
+  data.__protectedPeriods.push({id:h.period,periodId:h.period,projectId:'cinepolis'});assert.throws(policy,/PERIOD_AMBIGUOUS/);
+});
+test('D05 UI policy does not treat normalized stale cache and current exact period as duplicate documents',()=>{
+  const h=lifecycleClientHarness(),data=h.CX.data;
+  data.__backendPeriods=[{id:h.period,periodId:h.period,projectId:'cinepolis',certReviewPolicy:'authorized_admin'}];
+  data.__protectedPeriods=[{id:'2026-10',periodId:h.period,projectId:'cinepolis',certReviewPolicy:'maker_checker'}];
+  assert.equal(h.CX.backendCertifications.reviewPolicy({id:h.period}),'distinct_reviewer');
+  delete data.__protectedPeriods;
+  assert.equal(h.CX.backendCertifications.reviewPolicy({id:h.period}),'authorized_admin');
+});

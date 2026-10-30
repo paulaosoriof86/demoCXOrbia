@@ -8,7 +8,7 @@ const sha=v=>crypto.createHash('sha256').update(typeof v==='string'?v:JSON.strin
 const iso=()=>new Date().toISOString();
 
 export function certificationRouteScope(pathname){
-  const m=str(pathname).match(/^\/api\/tenants\/([^/]+)\/projects\/([^/]+)\/certifications\/(ai-generate|attempt|recertify)$/);
+  const m=str(pathname).match(/^\/api\/tenants\/([^/]+)\/projects\/([^/]+)\/certifications\/(ai-generate|attempt|recertify|publish|configure|retire)$/);
   return m?{tenantId:decodeURIComponent(m[1]),projectId:decodeURIComponent(m[2]),action:m[3]}:null;
 }
 export function isCertificationRuntimePath(pathname){return !!certificationRouteScope(pathname);}
@@ -220,7 +220,7 @@ async function generationReplay(db,scope,body,input,idem){
  if(str(bank.estado)!=='pending_review'||str(bank.documentSource?.source_sha256)!==input.sourceSha256)throw new Error('AI_PERSISTENCE_READBACK_MISMATCH');
  return {item,idempotentReplay:true,providerWrites:0,receipt:{id:snap.id,...receipt}};
 }
-async function persistGeneratedDraft(db,scope,principal,body,input,generated,idem){
+export async function persistGeneratedDraft(db,scope,principal,body,input,generated,idem){
  if(!idem)throw new Error('AI_PERSISTENCE_IDEMPOTENCY_REQUIRED');
  const id=generatedDraftId(scope,body,input),ref=resourcesCol(db,scope).doc(id),receiptRef=generationReceipt(db,scope,idem),digest=generationDigest(scope,body,input),createdAt=iso();
  let replay=false,providerWrites=0,receiptId=receiptRef.id;
@@ -232,6 +232,7 @@ async function persistGeneratedDraft(db,scope,principal,body,input,generated,ide
    if(str(p.status)==='committed'){replay=true;return;}
   }
   const current=await tx.get(ref),existing=current.exists?(current.data()||{}):{},existingBank=existing.bank||{};
+  if(str(existing.status).toLowerCase()==='deleted'||str(existingBank.estado).toLowerCase()==='withdrawn')throw new Error('AI_PERSISTENCE_DRAFT_RETIRED');
   if(['published','confirmed'].includes(str(existingBank.estado).toLowerCase()))throw new Error('AI_PERSISTENCE_DRAFT_ALREADY_PUBLISHED');
   const version=Math.max(0,Number(existing.version||0))+1,certificationId=str(existingBank.certificationId)||('ai-'+input.sourceSha256.slice(0,12));
   const bank={certificationId,certificationName:str(body.certificationName)||'Banco IA pendiente de revisión',preguntas:generated.preguntas,requestedQuestionCount:generated.requestedQuestionCount,gate:generated.gate,fecha:createdAt.slice(0,10),generadoPorUid:str(principal.uid),estado:'pending_review',provider:generated.provider,model:generated.model,providerAck:true,contentRevision:generated.contentRevision,generatedAt:createdAt,generationAttempts:generated.generationAttempts,documentSource:{...input.documentSource,name:input.sourceTitle,source_sha256:input.sourceSha256,ocrExecuted:input.documentSource?.ocrExecuted===true}};
@@ -337,7 +338,171 @@ async function saveRecertification(db,scope,principal,body,idem){
   });
   return {item:withDocumentId(docId,item),idempotentReplay:replay};
 }
+
+// D05: the existing certification runtime owns publication, configuration and withdrawal.
+// Policy aliases are stored by the existing project/period provider; no browser matrix
+// or caller-supplied author/reviewer is an authorization source.
+const CERT_BANK_LIFECYCLE_ACTIONS=new Set(['publish','configure','retire']);
+const CERT_REVIEW_POLICIES=new Set(['authorized_admin','maker_checker','distinct_reviewer','two_person']);
+const stableBankValue=value=>Array.isArray(value)?value.map(stableBankValue):
+  value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(key=>[key,stableBankValue(value[key])])):value;
+const lifecycleDigest=value=>sha(stableBankValue(value));
+function explicitCertificationPolicy(row={},authority){
+  const configured=['certificationReviewPolicy','certReviewPolicy'].filter(key=>Object.hasOwn(row,key));
+  if(!configured.length)return null;
+  const values=configured.map(key=>{
+    if(typeof row[key]!=='string')throw new Error('CERT_REVIEW_POLICY_INVALID');
+    const value=row[key].trim().toLowerCase();
+    if(!CERT_REVIEW_POLICIES.has(value))throw new Error('CERT_REVIEW_POLICY_INVALID');
+    return value==='authorized_admin'?'authorized_admin':'distinct_reviewer';
+  });
+  if(new Set(values).size!==1)throw new Error('CERT_REVIEW_POLICY_ALIAS_CONFLICT');
+  return {mode:values[0],requiresDistinctReviewer:values[0]==='distinct_reviewer',authority,
+    fields:configured,version:row.version??null};
+}
+export function resolveCertificationReviewPolicy(project={},period=null){
+  // Validate every explicit value, even when an exact period has an override.
+  const inherited=explicitCertificationPolicy(project,'firestore_project');
+  const specific=period?explicitCertificationPolicy(period,'firestore_period'):null;
+  return specific||inherited||{mode:'authorized_admin',requiresDistinctReviewer:false,
+    authority:'existing_default_authorized_admin',fields:[],version:null};
+}
+export function certificationPeriodDocumentIds(projectId,periodId){
+  const project=str(projectId),period=str(periodId);
+  if(!project||!period||project.includes('/')||period.includes('/'))throw new Error('CERT_BANK_SCOPE_INVALID');
+  // Exact legacy alias documented by CX.data._periodDisplayId; no fuzzy lookup.
+  const month=/^\d{4}-(0[1-9]|1[0-2])$/;
+  if(month.test(period))return [period,project+'-'+period];
+  const suffix=period.startsWith(project+'-')?period.slice(project.length+1):'';
+  return month.test(suffix)?[period,suffix]:[period];
+}
+function certificationPeriodDisplayId(projectId,row,documentId){
+  const id=str(row?.periodId||row?.id||documentId);
+  return /^\d{4}-(0[1-9]|1[0-2])$/.test(id)?projectId+'-'+id:id;
+}
+function lifecycleReadbackValue(item){
+  return {id:item.id,tenantId:item.tenantId??null,projectId:item.projectId,periodId:item.periodId,
+    resourceType:item.resourceType,tipo:item.tipo,status:item.status,version:item.version,n:item.n,
+    bank:item.bank,createdByUid:item.createdByUid??null,updatedByUid:item.updatedByUid,
+    lastIdempotencyKey:item.lastIdempotencyKey};
+}
+function validateBankForPublication(bank){
+  const questions=arr(bank.preguntas);
+  if(!questions.length)throw new Error('CERT_BANK_EMPTY');
+  if(bank.requestedQuestionCount!==undefined&&questions.length!==Number(bank.requestedQuestionCount))
+    throw new Error('CERT_BANK_QUESTION_COUNT_MISMATCH');
+  if(!str(bank.generadoPorUid)||!str(bank.contentRevision))throw new Error('CERT_BANK_AUTHOR_AND_REVISION_REQUIRED');
+  if(!Number.isFinite(Number(bank.gate))||Number(bank.gate)<1||Number(bank.gate)>100)throw new Error('CERT_BANK_GATE_INVALID');
+  for(const q of questions){
+    if(!q||typeof q.q!=='string'||!q.q.trim()||!Array.isArray(q.ops)||q.ops.length<2
+      ||q.ops.some(option=>typeof option!=='string'||!option.trim())||!q.ops.includes(q.correcta))
+      throw new Error('CERT_BANK_QUESTION_INVALID');
+  }
+}
+export async function saveCertificationBankLifecycle(db,scope,principal,body,action,idem){
+  if(!CERT_BANK_LIFECYCLE_ACTIONS.has(action))throw new Error('CERT_BANK_ACTION_INVALID');
+  if(!['super','admin'].includes(str(principal?.role))||!str(principal?.uid)||str(principal?.namespace)!=='staff')
+    throw new Error('AUTH_FAILURE:CERT_BANK_AUTHORIZED_ADMIN_REQUIRED');
+  const allowed=new Set(['bankResourceId','periodId','expectedVersion','expectedContentRevision','idempotencyKey',
+    ...(action==='configure'?['gate','required']:[])]);
+  if(!body||typeof body!=='object'||Array.isArray(body)||Object.keys(body).some(key=>!allowed.has(key)))
+    throw new Error('CERT_BANK_PAYLOAD_INVALID');
+  const rid=str(body.bankResourceId),periodId=str(body.periodId),expectedVersion=body.expectedVersion,
+    expectedContentRevision=str(body.expectedContentRevision),actorUid=str(principal.uid);
+  if(!rid||rid.includes('/')||rid.length>180||!Number.isInteger(expectedVersion)||expectedVersion<1
+    ||!expectedContentRevision||!idem)throw new Error('CERT_BANK_EXPECTED_VERSION_AND_IDEMPOTENCY_REQUIRED');
+  const periodIds=certificationPeriodDocumentIds(scope.projectId,periodId);
+  if(action==='configure'&&(!Number.isInteger(body.gate)||body.gate<1||body.gate>100||typeof body.required!=='boolean'))
+    throw new Error('CERT_BANK_CONFIGURATION_INVALID');
+  const tenant=db.collection('tenants').doc(scope.tenantId),project=projectRef(db,scope),ref=resourcesCol(db,scope).doc(rid);
+  const receiptRef=tenant.collection('commandReceipts').doc('cert-bank-'+sha([scope.tenantId,scope.projectId,actorUid,idem]).slice(0,32));
+  const digest=lifecycleDigest({scope:{tenantId:scope.tenantId,projectId:scope.projectId},action,actorUid,rid,periodId,
+    expectedVersion,expectedContentRevision,...(action==='configure'?{gate:body.gate,required:body.required}:{})});
+  let replay=false,receipt=null;
+  await db.runTransaction(async tx=>{
+    const prior=await tx.get(receiptRef),current=await tx.get(ref),projectSnap=await tx.get(project);
+    const memberSnap=await tx.get(tenant.collection('users').doc(actorUid));
+    const periodSnaps=[];for(const id of periodIds)periodSnaps.push(await tx.get(project.collection('periods').doc(id)));
+    if(!memberSnap.exists)throw new Error('AUTH_FAILURE:CERT_BANK_MEMBERSHIP_REQUIRED');
+    const member=memberSnap.data()||{};
+    if(member.active===false||str(member.status||'active').toLowerCase()==='inactive'
+      ||str(member.role).toLowerCase()!==str(principal.role)
+      ||str(member.authNamespace).toLowerCase()!==str(principal.namespace)
+      ||(member.tenantId!==undefined&&str(member.tenantId)!==scope.tenantId)
+      ||(principal.role!=='super'&&!arr(member.projectIds).map(str).includes(scope.projectId)))
+      throw new Error('AUTH_FAILURE:CERT_BANK_PROJECT_MEMBERSHIP_DENIED');
+    if(!projectSnap.exists)throw new Error('CERT_BANK_PROJECT_NOT_FOUND');
+    const projectData=projectSnap.data()||{};
+    if((projectData.tenantId!==undefined&&str(projectData.tenantId)!==scope.tenantId)
+      ||(projectData.projectId!==undefined&&str(projectData.projectId)!==scope.projectId))
+      throw new Error('CERT_BANK_PROJECT_SCOPE_MISMATCH');
+    const foundPeriods=periodSnaps.filter(snap=>snap.exists);
+    if(foundPeriods.length>1)throw new Error('CERT_REVIEW_POLICY_PERIOD_AMBIGUOUS');
+    const periodSnap=foundPeriods[0]||null,periodData=periodSnap?.data()||null;
+    if(periodData&&((periodData.tenantId!==undefined&&str(periodData.tenantId)!==scope.tenantId)
+      ||(periodData.projectId!==undefined&&str(periodData.projectId)!==scope.projectId)
+      ||certificationPeriodDisplayId(scope.projectId,periodData,periodSnap.id)!==certificationPeriodDisplayId(scope.projectId,{},periodId)))
+      throw new Error('CERT_REVIEW_POLICY_PERIOD_SCOPE_MISMATCH');
+    const policy=resolveCertificationReviewPolicy(projectData,periodData);
+    if(!current.exists)throw new Error('CERT_BANK_NOT_FOUND');
+    const value=current.data()||{},bank=value.bank||{};
+    if((value.id!==undefined&&str(value.id)!==rid)||(value.tenantId!==undefined&&str(value.tenantId)!==scope.tenantId)
+      ||value.resourceType!=='certification_bank'||value.tipo!=='certification_bank'
+      ||str(value.projectId)!==scope.projectId||str(value.periodId)!==periodId)
+      throw new Error('CERT_BANK_SCOPE_MISMATCH');
+    if(prior.exists){
+      const saved=prior.data()||{};
+      if(saved.commandDigest!==digest)throw new Error('CERT_BANK_IDEMPOTENCY_REUSE_DIFFERENT_PAYLOAD');
+      if(saved.status!=='committed')throw new Error('CERT_BANK_RECEIPT_INCOMPLETE');
+      receipt=saved;replay=true;return;
+    }
+    if(value.version!==expectedVersion||str(bank.contentRevision)!==expectedContentRevision)
+      throw new Error('CERT_BANK_EXPECTED_VERSION_CONFLICT');
+    if(value.status!=='active'||!['pending_review','published','confirmed'].includes(str(bank.estado)))
+      throw new Error('CERT_BANK_ACTIVE_STATE_REQUIRED');
+    if(action==='publish'&&bank.estado!=='pending_review')throw new Error('CERT_BANK_PENDING_REVIEW_REQUIRED');
+    if(action!=='retire'){
+      validateBankForPublication(bank);
+      if(policy.requiresDistinctReviewer&&str(bank.generadoPorUid)===actorUid)
+        throw new Error('CERT_REVIEW_DISTINCT_REVIEWER_REQUIRED');
+    }
+    const at=iso(),version=expectedVersion+1,nextBank={...bank};
+    if(action==='publish')Object.assign(nextBank,{estado:'published',revisadoPorUid:actorUid,revisadoPor:actorUid,publishedAt:at});
+    if(action==='configure')Object.assign(nextBank,{gate:body.gate,required:body.required,previousContentRevision:bank.contentRevision,
+      contentRevision:lifecycleDigest({previous:bank.contentRevision,gate:body.gate,required:body.required,questions:bank.preguntas}),
+      configuredAt:at,configuredByUid:actorUid});
+    if(action==='retire')Object.assign(nextBank,{estado:'withdrawn',withdrawnAt:at,withdrawnByUid:actorUid});
+    if(action==='publish'||(action==='configure'&&['published','confirmed'].includes(bank.estado))){
+      nextBank.publicationAuthority={schemaVersion:'cxorbia.certification-publication.v1',action,authorUid:str(bank.generadoPorUid),
+        reviewerUid:actorUid,actorRole:principal.role,policy,sourceVersion:expectedVersion,
+        sourceContentRevision:expectedContentRevision,contentRevision:nextBank.contentRevision,receiptId:receiptRef.id};
+    }
+    const next={...value,id:rid,tenantId:scope.tenantId,bank:nextBank,version,status:action==='retire'?'deleted':'active',
+      updatedAt:at,updatedByUid:actorUid,lastIdempotencyKey:idem};
+    if(action==='retire')Object.assign(next,{deletedAt:at,deletedByUid:actorUid});
+    receipt={status:'committed',commandType:'certification.'+action,commandDigest:digest,tenantId:scope.tenantId,
+      projectId:scope.projectId,periodId,entityType:'certification_bank',entityId:rid,entityVersion:version,
+      fromVersion:expectedVersion,fromState:bank.estado,toState:nextBank.estado,authorUid:str(bank.generadoPorUid),
+      actorUid,actorRole:principal.role,reviewPolicy:policy,contentRevision:nextBank.contentRevision,
+      readbackDigest:lifecycleDigest(lifecycleReadbackValue(next)),providerAck:true,attemptWrites:0,hrWrites:0,updatedAt:at};
+    tx.set(ref,next,{merge:false});tx.set(receiptRef,receipt,{merge:false});
+  });
+  const readback=await ref.get(),receiptReadback=await receiptRef.get();
+  if(!readback.exists||!receiptReadback.exists)throw new Error('CERT_BANK_DURABLE_READBACK_MISSING');
+  const raw=readback.data()||{},savedReceipt=receiptReadback.data()||{};
+  if(raw.id!==readback.id)throw new Error('CERT_BANK_DURABLE_READBACK_MISMATCH');
+  const item={...raw,id:readback.id};
+  if(item.version!==receipt.entityVersion||savedReceipt.commandDigest!==digest
+    ||lifecycleDigest(savedReceipt)!==lifecycleDigest(receipt)||lifecycleDigest(lifecycleReadbackValue(item))!==receipt.readbackDigest)
+    throw new Error('CERT_BANK_DURABLE_READBACK_MISMATCH');
+  return {item,readbackVerified:true,idempotentReplay:replay,providerWrites:replay?0:2,
+    attemptWrites:0,hrWrites:0,receipt:{id:receiptRef.id,...savedReceipt}};
+}
+
 function errorStatus(message){
+  if(/CERT_BANK_EXPECTED_VERSION_CONFLICT|CERT_BANK_IDEMPOTENCY_REUSE|AI_PERSISTENCE_DRAFT_RETIRED/.test(message))return 409;
+  if(/CERT_REVIEW_DISTINCT_REVIEWER_REQUIRED/.test(message))return 403;
+  if(/CERT_REVIEW_POLICY_/.test(message))return 400;
   if(/AUTH_FAILURE|OPERATOR_REQUIRED|SHOPPER_REQUIRED/.test(message))return 403;
   if(/NOT_FOUND/.test(message))return 404;
   if(/AI_INPUT_|INVALID|INCOMPLETE|EMPTY|MISMATCH|NOT_PUBLISHED|TOO_LARGE|NOT_CONFIGURED|REQUIRED/.test(message))return 400;
@@ -350,6 +515,10 @@ export async function maybeHandleCertificationRuntimeRequest(req,res,url,{ensure
   if(req.method!=='POST'){sendJson(res,405,{ok:false,error:'method_not_allowed',production:false});return true;}
   try{
     const principal=await verifyPrincipal(req,scope),{db}=ensureAdmin(),body=await readJson(req),idem=requestId(req,body);
+    if(CERT_BANK_LIFECYCLE_ACTIONS.has(scope.action)){
+      const saved=await saveCertificationBankLifecycle(db,scope,principal,body,scope.action,idem);
+      sendJson(res,200,{ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,...saved,production:false});return true;
+    }
     if(scope.action==='ai-generate'){
       if(!OPERATOR_ROLES.has(str(principal.role)))throw new Error('AI_OPERATOR_REQUIRED');
       const input=generationInput(body);

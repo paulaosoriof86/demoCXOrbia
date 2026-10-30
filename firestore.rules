@@ -283,6 +283,90 @@ service cloud.firestore {
       }
 
       match /resources/{resourceId} {
+        function certificationBank(data) {
+          return data.get('resourceType', '') == 'certification_bank' || data.get('tipo', '') == 'certification_bank';
+        }
+        function certificationWriter(data) {
+          let memberPath = /databases/$(database)/documents/tenants/$(tenantId)/users/$(request.auth.uid);
+          let member = get(memberPath).data;
+          return request.auth.token.role in ['super', 'admin'] && request.auth.token.get('tenantId', '') == tenantId &&
+            exists(memberPath) && member.get('active', true) != false && member.get('status', 'active').lower() != 'inactive' &&
+            member.get('role', '') == request.auth.token.role && member.get('authNamespace', '') == 'staff' && request.auth.token.get('authNamespace', '') == 'staff' &&
+            member.get('tenantId', tenantId) == tenantId &&
+            (request.auth.token.role == 'super' || member.get('projectIds', []) is list && data.projectId in member.get('projectIds', [])) &&
+            exists(/databases/$(database)/documents/tenants/$(tenantId)/projects/$(data.projectId));
+        }
+        function validCertificationPolicy(data) {
+          let a = data.get('certificationReviewPolicy', 'authorized_admin');
+          let b = data.get('certReviewPolicy', 'authorized_admin');
+          let values = ['authorized_admin', 'maker_checker', 'distinct_reviewer', 'two_person'];
+          return a is string && b is string && a.trim().lower() in values && b.trim().lower() in values &&
+            (!('certificationReviewPolicy' in data) || !('certReviewPolicy' in data) ||
+             (a.trim().lower() == 'authorized_admin') == (b.trim().lower() == 'authorized_admin'));
+        }
+        function configuredCertificationPolicy(data) {
+          return 'certificationReviewPolicy' in data || 'certReviewPolicy' in data;
+        }
+        function distinctCertificationPolicy(data) {
+          return data.get('certificationReviewPolicy', data.get('certReviewPolicy', 'authorized_admin')).trim().lower() != 'authorized_admin';
+        }
+        function certificationPeriodAlias(data) {
+          let period = data.periodId;
+          let project = data.projectId;
+          let month = '[0-9]{4}-(0[1-9]|1[0-2])';
+          return period.matches('^' + month + '$') ? project + '-' + period :
+            (project.matches('^[a-zA-Z0-9_-]+$') && period.matches('^' + project + '-' + month + '$') ? period.replace('^' + project + '-', '') : period);
+        }
+        function certificationReviewAuthorized(data) {
+          let projectPath = /databases/$(database)/documents/tenants/$(tenantId)/projects/$(data.projectId);
+          let exactPath = /databases/$(database)/documents/tenants/$(tenantId)/projects/$(data.projectId)/periods/$(data.periodId);
+          let alias = certificationPeriodAlias(data);
+          let aliasPath = /databases/$(database)/documents/tenants/$(tenantId)/projects/$(data.projectId)/periods/$(alias);
+          let exactExists = exists(exactPath);
+          let aliasExists = alias != data.periodId && exists(aliasPath);
+          let project = get(projectPath).data;
+          let period = exactExists ? get(exactPath).data : (aliasExists ? get(aliasPath).data : {});
+          let effective = configuredCertificationPolicy(period) ? period : project;
+          return !(exactExists && aliasExists) && validCertificationPolicy(project) && validCertificationPolicy(period) &&
+            project.get('tenantId', tenantId) == tenantId && project.get('projectId', data.projectId) == data.projectId &&
+            period.get('tenantId', tenantId) == tenantId && period.get('projectId', data.projectId) == data.projectId &&
+            period.get('periodId', data.periodId) in [data.periodId, alias] && period.get('id', data.periodId) in [data.periodId, alias] &&
+            (!distinctCertificationPolicy(effective) || data.bank.generadoPorUid != request.auth.uid);
+        }
+        function validCertificationDraft(data) {
+          return data.get('id', resourceId) == resourceId && data.get('tenantId', tenantId) == tenantId &&
+            data.resourceType == 'certification_bank' && data.tipo == 'certification_bank' &&
+            data.projectId is string && data.projectId.size() > 0 && data.periodId is string && data.periodId.size() > 0 &&
+            data.status == 'active' && data.bank is map && data.bank.estado == 'pending_review' &&
+            data.bank.generadoPorUid is string && data.bank.generadoPorUid.size() > 0 &&
+            data.bank.contentRevision is string && data.bank.contentRevision.size() > 0 &&
+            data.bank.preguntas is list && data.bank.preguntas.size() > 0 && data.version is int && data.version > 0;
+        }
+        function createCertificationDraft(data) {
+          return validCertificationDraft(data) && certificationWriter(data) && data.version == 1 &&
+            data.createdByUid == request.auth.uid && data.updatedByUid == request.auth.uid &&
+            data.bank.generadoPorUid == request.auth.uid && data.bank.get('reviewHistory', []) == [] &&
+            !data.bank.keys().hasAny(['publicationAuthority', 'publishedAt', 'revisadoPorUid', 'revisadoPor', 'ultimaRevisionPorUid']);
+        }
+        function updateCertificationDraft(before, after) {
+          let history = before.bank.get('reviewHistory', []);
+          let nextHistory = after.bank.get('reviewHistory', []);
+          let last = nextHistory[nextHistory.size() - 1];
+          return before.resourceType == 'certification_bank' && before.tipo == 'certification_bank' && before.status == 'active' && before.bank.estado == 'pending_review' &&
+            validCertificationDraft(after) && certificationWriter(after) &&
+            certificationReviewAuthorized(before) && after.id == resourceId && after.tenantId == tenantId &&
+            after.projectId == before.projectId && after.periodId == before.periodId && after.version == before.version + 1 &&
+            after.createdAt == before.createdAt && after.createdByUid == before.createdByUid && after.updatedByUid == request.auth.uid &&
+            after.diff(before).affectedKeys().hasOnly(['id', 'tenantId', 'n', 'bank', 'version', 'updatedAt', 'updatedByUid', 'lastIdempotencyKey']) &&
+            after.bank.diff(before.bank).affectedKeys().hasOnly(['certificationName', 'preguntas', 'contentRevision', 'previousContentRevision', 'reviewHistory', 'reviewVersion', 'ultimaRevisionPorUid', 'ultimaRevisionAt']) &&
+            after.bank.preguntas.size() == before.bank.preguntas.size() && after.bank.generadoPorUid == before.bank.generadoPorUid &&
+            after.bank.contentRevision != before.bank.contentRevision && after.bank.previousContentRevision == before.bank.contentRevision &&
+            after.bank.ultimaRevisionPorUid == request.auth.uid && after.bank.reviewVersion == after.version &&
+            history is list && nextHistory is list && history.size() < 25 && nextHistory.size() == history.size() + 1 &&
+            nextHistory == history.concat([last]) && last.reviewerUid == request.auth.uid &&
+            last.fromVersion == before.version && last.toVersion == after.version &&
+            last.previousContentRevision == before.bank.contentRevision && last.contentRevision == after.bank.contentRevision;
+        }
         allow read: if tenantAllowed(tenantId) && (
           isOperator() ||
           isShopperRole() &&
@@ -290,7 +374,14 @@ service cloud.firestore {
           resource.data.projectId in request.auth.token.projectIds &&
           role() in resource.data.visibleRoles
         );
-        allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
+        allow create: if tenantAllowed(tenantId) && isOperator() &&
+          (!certificationBank(request.resource.data) || createCertificationDraft(request.resource.data));
+        allow update: if tenantAllowed(tenantId) && isOperator() &&
+          ((!certificationBank(resource.data) && !certificationBank(request.resource.data)) ||
+           (certificationBank(resource.data) && certificationBank(request.resource.data) && updateCertificationDraft(resource.data, request.resource.data)));
+        // Publication/configuration/retirement are validated in the existing runtime.
+        // Physical deletion of a bank is forbidden; attempts keep their exact source link.
+        allow delete: if tenantAllowed(tenantId) && isOperator() && !certificationBank(resource.data);
       }
 
       match /auditLogs/{logId} {

@@ -27,6 +27,42 @@ window.CX=window.CX||{};
     }
     return body;
   }
+  function explicitReviewPolicy(row){
+    if(!row||typeof row!=='object')return null;
+    const fields=['certificationReviewPolicy','certReviewPolicy'].filter(key=>Object.prototype.hasOwnProperty.call(row,key));
+    if(!fields.length)return null;
+    const values=fields.map(key=>{
+      if(typeof row[key]!=='string')throw new Error('CERT_REVIEW_POLICY_INVALID');
+      const value=row[key].trim().toLowerCase();
+      if(!['authorized_admin','maker_checker','distinct_reviewer','two_person'].includes(value))throw new Error('CERT_REVIEW_POLICY_INVALID');
+      return value==='authorized_admin'?'authorized_admin':'distinct_reviewer';
+    });
+    if(new Set(values).size!==1)throw new Error('CERT_REVIEW_POLICY_ALIAS_CONFLICT');
+    return values[0];
+  }
+  function reviewPolicy(period={}){
+    if(CX.BACKEND?.enabled!==true)return explicitReviewPolicy(period)||'authorized_admin';
+    const current=scope(),displayId=row=>{
+      const raw=str(row?.periodId||row?.id),project=str(row?.projectId||current.projectId);
+      return /^\d{4}-(0[1-9]|1[0-2])$/.test(raw)?project+'-'+raw:raw;
+    };
+    const roots=arr(CX.data?.__backendAllProjectRecords).filter(row=>str(row?.id||row?.projectId)===current.projectId);
+    if(roots.length>1)throw new Error('CERT_REVIEW_POLICY_PROJECT_AMBIGUOUS');
+    const root=roots[0]||{},byId=new Map(),target=displayId({...period,projectId:current.projectId});
+    // The protected snapshot supersedes the initial backend read. Do not combine
+    // two representations of one period whose normalized IDs can differ.
+    const periods=Array.isArray(CX.data?.__protectedPeriods)?CX.data.__protectedPeriods:arr(CX.data?.__backendPeriods);
+    for(const row of periods){
+      if(str(row?.projectId)!==current.projectId||displayId(row)!==target)continue;
+      byId.set(str(row.id||row.periodId),row);
+    }
+    if(byId.size>1)throw new Error('CERT_REVIEW_POLICY_PERIOD_AMBIGUOUS');
+    const exact=[...byId.values()][0]||null;
+    if((root.tenantId!==undefined&&str(root.tenantId)!==current.tenantId)
+      ||(exact?.tenantId!==undefined&&str(exact.tenantId)!==current.tenantId))throw new Error('CERT_REVIEW_POLICY_SCOPE_MISMATCH');
+    const inherited=explicitReviewPolicy(root),specific=explicitReviewPolicy(exact);
+    return specific||inherited||'authorized_admin';
+  }
   function currentUid(){try{return str(firebase.auth().currentUser?.uid);}catch(_){return'';}}
   function newId(prefix){return prefix+':'+Date.now().toString(36)+':'+Math.random().toString(36).slice(2,10);}
   function applicableRecertifications(shopperId){
@@ -72,6 +108,10 @@ window.CX=window.CX||{};
     submitAttempt:payload=>call('attempt',Object.assign({idempotencyKey:newId('cert.attempt')},payload||{})),
     requestRecertification:payload=>call('recertify',Object.assign({idempotencyKey:newId('cert.recert')},payload||{})),
     generateBank:payload=>call('ai-generate',Object.assign({idempotencyKey:newId('cert.generate')},payload||{})),
+    reviewPolicy,
+    publishBank:payload=>call('publish',Object.assign({idempotencyKey:newId('cert.publish')},payload||{})),
+    configureBank:payload=>call('configure',Object.assign({idempotencyKey:newId('cert.configure')},payload||{})),
+    retireBank:payload=>call('retire',Object.assign({idempotencyKey:newId('cert.retire')},payload||{})),
     currentUid,durableCurrent,carryoverDecision,applicableRecertifications
   };
 })();

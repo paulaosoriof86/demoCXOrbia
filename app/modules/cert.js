@@ -120,10 +120,44 @@ CX.certStore = CX.certStore || {
       expectedVersion:version,expectedResourceId:original.__resourceId,requireReadback:true
     });
   },
+  async lifecycle(action,pid,original,changes={}){
+    if(!this.connected())throw new Error('CERT_BANK_CONNECTED_PROVIDER_REQUIRED');
+    if(!['publish','configure','retire'].includes(action))throw new Error('CERT_BANK_ACTION_INVALID');
+    const uid=String(CX.backendCertifications?.currentUid?.()||''),projectId=String(CX.data.currentProjectId||'');
+    const tenantId=String(CX.data?.ctx?.().tenantId||CX.BACKEND?.tenantId||CX.session?.user?.tenantId||'');
+    const version=Number(original?.__resourceVersion),rid=String(original?.__resourceId||'');
+    if(!uid||!tenantId||!rid||!Number.isInteger(version)||version<1||!original?.contentRevision
+      ||rid!==this.resourceId(pid,original.certificationId))throw new Error('CERT_BANK_EXACT_SOURCE_REQUIRED');
+    const method={publish:'publishBank',configure:'configureBank',retire:'retireBank'}[action];
+    if(typeof CX.backendCertifications?.[method]!=='function')throw new Error('CERT_BANK_RUNTIME_REQUIRED');
+    const payload={bankResourceId:rid,periodId:pid,expectedVersion:version,expectedContentRevision:String(original.contentRevision)};
+    if(action==='configure')Object.assign(payload,{gate:changes.gate,required:changes.required});
+    const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify({uid,projectId,action,...payload})));
+    payload.idempotencyKey='certbank.'+action+':'+Array.from(new Uint8Array(digest)).map(x=>x.toString(16).padStart(2,'0')).join('');
+    const result=await CX.backendCertifications[method](payload),stored=result?.item,bank=stored?.bank,receipt=result?.receipt;
+    const expectedState=action==='publish'?'published':action==='retire'?'withdrawn':original.estado;
+    if(!(result?.providerAck===true&&result?.committed===true&&result?.readbackVerified===true)
+      ||projectId!==String(CX.data.currentProjectId||'')||uid!==String(CX.backendCertifications?.currentUid?.()||'')
+      ||tenantId!==String(CX.data?.ctx?.().tenantId||CX.BACKEND?.tenantId||CX.session?.user?.tenantId||'')
+      ||!stored||stored.id!==rid||stored.tenantId!==tenantId||stored.projectId!==projectId||stored.periodId!==pid
+      ||stored.version!==version+1||stored.status!==(action==='retire'?'deleted':'active')||bank?.estado!==expectedState
+      ||bank?.generadoPorUid!==original.generadoPorUid||bank?.certificationId!==original.certificationId
+      ||!receipt||receipt.status!=='committed'||receipt.providerAck!==true||receipt.commandType!=='certification.'+action
+      ||receipt.actorUid!==uid||receipt.authorUid!==original.generadoPorUid||receipt.tenantId!==tenantId||receipt.projectId!==projectId||receipt.periodId!==pid
+      ||receipt.entityId!==rid||receipt.fromVersion!==version||receipt.entityVersion!==stored.version||receipt.toState!==expectedState
+      ||!this.equalReviewValue(bank?.preguntas,original.preguntas)||!this.equalReviewValue(bank?.documentSource,original.documentSource)
+      ||(action==='publish'&&(bank.revisadoPorUid!==uid||bank.contentRevision!==original.contentRevision))
+      ||(action==='configure'&&(bank.gate!==changes.gate||bank.required!==changes.required||bank.contentRevision===original.contentRevision)))
+      throw new Error('CERT_BANK_DURABLE_READBACK_MISMATCH');
+    await CX.backendResources?.load?.({projectId,periodId:pid});
+    CX.bus&&CX.bus.emit('cert');return result;
+  },
   async clear(pid,certificationId='main'){
     const cid=this.safeId(certificationId),id=this.resourceId(pid,cid);
     if(!this.connected()){if(this._demo[pid])delete this._demo[pid][cid];return {ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,demo:true};}
-    return CX.backendResources?.deleteMetadata?.(id,{projectId:CX.data.currentProjectId,periodId:pid,idempotencyKey:'certbank.delete:'+id});
+    const original=this.banks(pid).find(bank=>this.safeId(bank.certificationId)===cid);
+    if(!original)throw new Error('CERT_BANK_EXACT_SOURCE_REQUIRED');
+    return this.lifecycle('retire',pid,original);
   },
   /* parsea el texto/JSON de la IA a preguntas estructuradas [{q,ops:[],correcta,exp}] */
   parse(raw){
@@ -405,7 +439,9 @@ CX.module('cert', ({role,data,ui})=>{
       const edit=document.createElement('button');edit.className='btn btn-soft btn-sm';edit.id='certReviewEdit';edit.textContent='Revisar y editar preguntas';ia.insertAdjacentElement('afterend',edit);
       edit.addEventListener('click',()=>{
         if(!CX.permissions.gate('certification.publish',CX.permissions.ctx({entityType:'certification_bank',entityId:p.id}),ui))return;
-        const policy=String(p.certificationReviewPolicy||p.certReviewPolicy||'authorized_admin').toLowerCase();
+        let policy;
+        try{policy=CX.backendCertifications?.reviewPolicy?.(p)||String(p.certificationReviewPolicy||p.certReviewPolicy||'authorized_admin').toLowerCase();}
+        catch(_){ui.toast('No se pudo validar la política de revisión del proyecto. Vuelve a cargar la configuración.','warn');return;}
         const uid=String(CX.backendCertifications?.currentUid?.()||'');
         if(!uid){ui.toast('Sesión autenticada requerida.','warn');return;}
         if(['maker_checker','distinct_reviewer','two_person'].includes(policy)&&String(bank.generadoPorUid||'')===uid){
@@ -482,18 +518,19 @@ CX.module('cert', ({role,data,ui})=>{
       });
       const publish=document.createElement('button');publish.className='btn btn-green btn-sm';publish.id='certPublish';publish.textContent='✓ Revisar y publicar banco';ia.insertAdjacentElement('afterend',publish);
       publish.addEventListener('click',async()=>{
-        const uid=CX.backendCertifications?.currentUid?.()||'';
-        if(!uid){ui.toast('Sesión autenticada requerida.','warn');return;}
-        const reviewPolicy=String(p.certificationReviewPolicy||p.certReviewPolicy||'authorized_admin').toLowerCase();
-        const distinctReviewerRequired=['maker_checker','distinct_reviewer','two_person'].includes(reviewPolicy);
-        if(distinctReviewerRequired&&String(bank.generadoPorUid||'')===uid){ui.toast('Este proyecto exige revisión por una persona distinta a quien generó el banco.','warn',4800);return;}
         if(!CX.permissions.gate('certification.publish',CX.permissions.ctx({entityType:'certification_bank',entityId:p.id}),ui))return;
-        const reviewer=CX.session?.user?.name||uid;
-        const next=Object.assign({},bank,{estado:'published',revisadoPor:reviewer,revisadoPorUid:uid,publishedAt:new Date().toISOString()});
-        delete next.__resourceId;delete next.__resourceVersion;
-        const saved=await CX.certStore.save(p.id,next,bank.certificationId||selectedCertId()||'main');
-        if(!(saved?.providerAck===true&&saved?.committed===true)){ui.toast('No fue posible confirmar la publicación.','warn',4200);return;}
-        ui.toast('Banco revisado y publicado con ACK remoto.','ok',4200);CX.router?.nav?.('cert');
+        publish.disabled=true;
+        try{
+          await CX.certStore.lifecycle('publish',p.id,bank);
+          ui.toast('Banco revisado y publicado con confirmación del servidor.','ok',4200);CX.router?.nav?.('cert');
+        }catch(error){
+          const code=String(error?.message||'');
+          const message=code.includes('DISTINCT_REVIEWER_REQUIRED')?'Este proyecto exige una persona revisora distinta a quien generó el banco.':
+            code.includes('POLICY')?'No se pudo validar la política de revisión del proyecto. Vuelve a cargar la configuración.':
+            code.includes('VERSION_CONFLICT')?'El banco cambió. Vuelve a cargarlo y revisa la versión actual antes de publicar.':
+            'No se pudo confirmar la publicación. Comprueba tu sesión y vuelve a cargar el banco.';
+          ui.toast(message,'warn',4800);
+        }finally{publish.disabled=false;}
       });
     }
     const imp=document.getElementById('certImp');
@@ -513,7 +550,7 @@ CX.module('cert', ({role,data,ui})=>{
           if(!preguntas)preguntas=raw.split(/\r?\n/).map(line=>line.trim()).filter(Boolean).map(line=>{const p=line.split('|').map(x=>x.trim()).filter(Boolean);return p.length>=3?{q:p[0],correcta:p[1],ops:[p[1],...p.slice(2)].filter((x,i,a)=>a.indexOf(x)===i),exp:''}:null;}).filter(Boolean);
           preguntas=(preguntas||[]).filter(q=>q?.q&&Array.isArray(q.ops)&&q.ops.length>=2&&q.correcta&&q.ops.includes(q.correcta));if(!preguntas.length)throw new Error('NO_VALID_QUESTIONS');
           const cid=CX.certStore.safeId(name),gate=Math.max(1,Math.min(100,+ov.querySelector('#ciGate').value||80)),revision='manual-'+Date.now().toString(36)+'-'+preguntas.length;
-          const saved=await CX.certStore.save(p.id,{certificationId:cid,certificationName:name,preguntas,gate,required:true,estado:'pending_review',contentRevision:revision,generatedAt:new Date().toISOString(),provider:'manual_import'},cid);
+          const saved=await CX.certStore.save(p.id,{certificationId:cid,certificationName:name,preguntas,gate,required:true,estado:'pending_review',contentRevision:revision,generatedAt:new Date().toISOString(),generadoPorUid:String(CX.backendCertifications?.currentUid?.()||''),provider:'manual_import'},cid);
           if(!(saved?.providerAck===true&&saved?.committed===true))throw new Error('CERT_BANK_DURABLE_ACK_REQUIRED');
           window.CX_CERT_SELECTED_ID=cid;close();ui.toast('Banco importado y guardado · pendiente de revisión.','ok',4200);CX.router.nav('cert');
         }catch(error){btn.disabled=false;btn.textContent='Importar y guardar';ui.toast('No se importó el banco: '+String(error?.message||error),'warn',4800);}
@@ -568,7 +605,7 @@ CX.module('cert', ({role,data,ui})=>{
       `,{onMount:(ov,close)=>{
         ov.querySelector('#gtSave').addEventListener('click',async()=>{
           const btn=ov.querySelector('#gtSave'),next=Object.assign({},bank,{gate:Math.max(1,Math.min(100,+ov.querySelector('#gtMin').value||80)),required:ov.querySelector('#gtReq').checked,updatedAt:new Date().toISOString()});delete next.__resourceId;delete next.__resourceVersion;
-          btn.disabled=true;try{const saved=await CX.certStore.save(p.id,next,bank.certificationId);if(!(saved?.providerAck===true&&saved?.committed===true))throw new Error('CERT_GATE_ACK_REQUIRED');close();ui.toast('Requisito guardado con ACK remoto.','ok');CX.router.nav('cert');}catch(error){btn.disabled=false;ui.toast('No se guardó el requisito.','warn');}
+          btn.disabled=true;try{const saved=CX.certStore.connected()?await CX.certStore.lifecycle('configure',p.id,bank,{gate:next.gate,required:next.required}):await CX.certStore.save(p.id,next,bank.certificationId);if(!(saved?.providerAck===true&&saved?.committed===true))throw new Error('CERT_GATE_ACK_REQUIRED');close();ui.toast('Requisito guardado con ACK remoto.','ok');CX.router.nav('cert');}catch(error){btn.disabled=false;ui.toast('No se guardó el requisito.','warn');}
         });
         ov.querySelector('#gtWithdraw').addEventListener('click',async()=>{
           if(!confirm('¿Retirar este banco? Los intentos históricos se conservan.'))return;const btn=ov.querySelector('#gtWithdraw');btn.disabled=true;
