@@ -1,0 +1,671 @@
+{
+  "schemaVersion": "cxorbia.i3.g03.owner-authority-crosswalk-readback.v1",
+  "id": "CXORBIA-I3-G03-OWNER-AUTHORITY-CROSSWALK-READBACK-20261030",
+  "observedAtLocalDate": "2026-10-30",
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "scope": "CONTROL_EVIDENCE_ONLY__TASK_SCOPED_MAPPING_NOT_APPROVAL_OR_DOMAIN_CLOSURE",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadBefore": "7afa126823ebdc5d381ea1b8ef6bf33887c64419",
+  "productSource": {
+    "sha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "treeSha": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751"
+  },
+  "evidence": {
+    "previousCrosswalk": {
+      "path": "CXORBIA_I3_G03_PHASE_A_SCOPE_CROSSWALK_READBACK_2026-10-28.json",
+      "gitBlob": "90aeac41d4fe7cff4bdc9670842387d333325aa4",
+      "decision": "HOLD_G03_MAPPING_COVERAGE_GAPS_PROVEN_NOT_FUNCTIONAL_REGRESSION"
+    },
+    "previousOwnerQa": {
+      "path": "CXORBIA_I3_G03_OWNER_PROVENANCE_FOCAL_QA_READBACK_2026-10-28.json",
+      "gitBlob": "607780a149c48f4cd7681d712d232a95d08d075e",
+      "decision": "HOLD_G03_PENDING_DOMAIN_MAPPING_PROVIDER_DEPENDENCY_AND_SAME_ARTIFACT_LIVE_E2E"
+    },
+    "historicalBaselineRun": {
+      "runNumber": 1357,
+      "sourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
+      "artifactDigest": "sha256:78ac1e5c89cc175381adef69aa370ae3953a5edaecacb2619dd05db0ffb69fa2",
+      "roleCoverage": {
+        "shopper": "12/12",
+        "admin": "34/34",
+        "client": "10/10",
+        "clickCount": 34,
+        "actionFindings": []
+      },
+      "scope": "HISTORICAL_PASS_NOT_CURRENT_CANDIDATE_CERTIFICATION"
+    }
+  },
+  "reconciliation": {
+    "uncoveredOwnerPathsBefore": 12,
+    "mappedToExisting21DomainsByTaskDependency": 12,
+    "currentProductBlobsReadFromTree": true,
+    "inMatrixSourceFilesInventoryBefore": 10,
+    "supplementalInventoryEntriesAdded": 2,
+    "sourceFilesInventoryAfter": 153,
+    "exactHistoricalRun1357BlobParity": 7,
+    "currentSourceEqualsMatrixLatestApprovedBlob": 5,
+    "sourceFilesRecordsClassifiedMatchButBlobDoesNotMatchApproval": [
+      "app/core/automations.js",
+      "app/modules/automatizaciones.js",
+      "app/modules/clientes.js",
+      "app/modules/crm.js"
+    ],
+    "directOwnerMembershipIn21DomainOwners": 0,
+    "approvalProvenanceComplete": false,
+    "currentArtifactHumanApproval": false
+  },
+  "ownerRows": [
+    {
+      "path": "app/core/automations.js",
+      "source419GitBlob": "1bf04186e2461340e2852a7608b98d1d510a71a0",
+      "directOwnerInMatrixModules": false,
+      "inSourceFilesInventoryBefore": true,
+      "sourceFilesInventoryAuthority": {
+        "domain": "base-router-shell-cache",
+        "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "latestApprovedBlob": "940ece14951719114401891697f303fab88b0f36",
+        "currentBlob": "1bf04186e2461340e2852a7608b98d1d510a71a0",
+        "fileClassification": "MATCH",
+        "currentMatchesLatestApprovedBlob": false
+      },
+      "historicalRun1357GitBlob": "f6d6e4779d0b2068d5b35ee380bc2f9c132ac382",
+      "currentBlobInOct28Qa": "1bf04186e2461340e2852a7608b98d1d510a71a0",
+      "source419MatchesRun1357": false,
+      "source419MatchesOct28QaCurrent": true,
+      "historicalQaClassification": "CHANGED_WITH_SOURCE_QA_AND_OLDER_LIVE_PARSER_PROOF_CURRENT_ARTIFACT_PENDING",
+      "existingEvidence": [
+        "RUN1749_D02_5_OF_5",
+        "RUN1753_D02_LIVE_PDF_DOCX_PARSER_SMOKE"
+      ],
+      "taskReferences": [
+        {
+          "kind": "critical_function",
+          "ref": "readAttachment",
+          "taskIds": "D02"
+        }
+      ],
+      "proposedDomainMap": {
+        "domain": "certifications",
+        "taskIds": [
+          "D02"
+        ],
+        "functionRefs": [
+          "readAttachment"
+        ],
+        "mapBasis": "existing G03 provenance QA proposedScopeOwner"
+      },
+      "inEntrypoint": true,
+      "inAppJs": false,
+      "inRouterJs": false,
+      "routeNavigationInProjectsModule": null
+    },
+    {
+      "path": "app/core/backend-ai.js",
+      "source419GitBlob": "45b05a50b058ed66d98aa41db6abdbceec1f399f",
+      "directOwnerInMatrixModules": false,
+      "inSourceFilesInventoryBefore": false,
+      "sourceFilesInventoryAuthority": {
+        "status": "NOT_IN_MATRIX_SOURCE_INVENTORY"
+      },
+      "historicalRun1357GitBlob": "07dd141a978bd1278afff1d8fdf83f3364e9d3f4",
+      "currentBlobInOct28Qa": "45b05a50b058ed66d98aa41db6abdbceec1f399f",
+      "source419MatchesRun1357": false,
+      "source419MatchesOct28QaCurrent": true,
+      "historicalQaClassification": "CHANGED_WITH_SOURCE_QA_AND_OLDER_LIVE_PROVIDER_PROOF_CURRENT_ARTIFACT_PENDING",
+      "existingEvidence": [
+        "RUN1759_D03_5_OF_5",
+        "RUN1778_D03_REAL_15_QUESTIONS_PENDING_REVIEW_IDEMPOTENT"
+      ],
+      "taskReferences": [
+        {
+          "kind": "critical_function",
+          "ref": "patch",
+          "taskIds": "D03,E08"
+        }
+      ],
+      "proposedDomainMap": {
+        "domain": "certifications",
+        "taskIds": [
+          "D03",
+          "E08"
+        ],
+        "functionRefs": [
+          "patch"
+        ],
+        "mapBasis": "existing G03 provenance QA proposedScopeOwner"
+      },
+      "inEntrypoint": true,
+      "inAppJs": false,
+      "inRouterJs": false,
+      "routeNavigationInProjectsModule": null
+    },
+    {
+      "path": "app/core/topbar.js",
+      "source419GitBlob": "823fe9af94cdf1a83b3d3b733a5c306b5af2155d",
+      "directOwnerInMatrixModules": false,
+      "inSourceFilesInventoryBefore": true,
+      "sourceFilesInventoryAuthority": {
+        "domain": "base-router-shell-cache",
+        "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "latestApprovedBlob": "e59210e95e99a9e568f976dcd13c6f98b963464f",
+        "currentBlob": "823fe9af94cdf1a83b3d3b733a5c306b5af2155d",
+        "fileClassification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
+        "currentMatchesLatestApprovedBlob": false
+      },
+      "historicalRun1357GitBlob": "e59210e95e99a9e568f976dcd13c6f98b963464f",
+      "currentBlobInOct28Qa": "823fe9af94cdf1a83b3d3b733a5c306b5af2155d",
+      "source419MatchesRun1357": false,
+      "source419MatchesOct28QaCurrent": true,
+      "historicalQaClassification": "CHANGED_SOURCE_QA_PASS_BUT_LIVE_SHOPPER_REPROOF_FAIL",
+      "existingEvidence": [
+        "RUN1814_U22_25_OF_25",
+        "RUN1815_DEV",
+        "U22_FILTER_SELECTIONS_FAIL_MAIL_VALIDATION_FAIL_SHOPPER_MAIL_FAIL"
+      ],
+      "taskReferences": [
+        {
+          "kind": "critical_function",
+          "ref": "_noticeTarget",
+          "taskIds": "B13,A08"
+        }
+      ],
+      "proposedDomainMap": {
+        "domain": "base-router-shell-cache",
+        "taskIds": [
+          "B13",
+          "A08"
+        ],
+        "functionRefs": [
+          "_noticeTarget"
+        ],
+        "mapBasis": "existing G03 provenance QA proposedScopeOwner; shopper-profile dependency retained"
+      },
+      "inEntrypoint": true,
+      "inAppJs": false,
+      "inRouterJs": false,
+      "routeNavigationInProjectsModule": null
+    },
+    {
+      "path": "app/modules/automatizaciones.js",
+      "source419GitBlob": "a28a2354bd4a0132cd788abfa3842a796005be32",
+      "directOwnerInMatrixModules": false,
+      "inSourceFilesInventoryBefore": true,
+      "sourceFilesInventoryAuthority": {
+        "domain": "base-router-shell-cache",
+        "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "latestApprovedBlob": "ac456dfb309de43cbc5a25bee3ecf48076a168db",
+        "currentBlob": "a28a2354bd4a0132cd788abfa3842a796005be32",
+        "fileClassification": "MATCH",
+        "currentMatchesLatestApprovedBlob": false
+      },
+      "historicalRun1357GitBlob": "ac456dfb309de43cbc5a25bee3ecf48076a168db",
+      "currentBlobInOct28Qa": "a28a2354bd4a0132cd788abfa3842a796005be32",
+      "source419MatchesRun1357": false,
+      "source419MatchesOct28QaCurrent": true,
+      "historicalQaClassification": "CHANGED_TENANT_DURABLE_SOURCE_PATCH_PENDING_REAL_TWO_ADMIN_SESSION_ACK",
+      "existingEvidence": [
+        "HF28_OCT13_SOURCE_PATCH",
+        "PRIOR_RUN1513_LEGACY_CHANNEL_VALIDATION_FAIL"
+      ],
+      "taskReferences": [
+        {
+          "kind": "route_role",
+          "ref": "admin/automatizaciones",
+          "taskIds": "E08"
+        }
+      ],
+      "proposedDomainMap": {
+        "domain": "phase-a-supporting-core",
+        "taskIds": [
+          "E08"
+        ],
+        "functionRefs": [
+          "admin/automatizaciones"
+        ],
+        "mapBasis": "existing G03 provenance QA proposedScopeOwner"
+      },
+      "inEntrypoint": true,
+      "inAppJs": false,
+      "inRouterJs": false,
+      "routeNavigationInProjectsModule": null
+    },
+    {
+      "path": "app/modules/clientes.js",
+      "source419GitBlob": "28afb209ff3b882f322d2ba9a3f40c18997effef",
+      "directOwnerInMatrixModules": false,
+      "inSourceFilesInventoryBefore": true,
+      "sourceFilesInventoryAuthority": {
+        "domain": "client-portal",
+        "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "latestApprovedBlob": "9c3c98605f4fb2e22d66b241607c9dd70c45d159",
+        "currentBlob": "28afb209ff3b882f322d2ba9a3f40c18997effef",
+        "fileClassification": "MATCH",
+        "currentMatchesLatestApprovedBlob": false
+      },
+      "historicalRun1357GitBlob": "d4279080b2eee3e2e97bd132de5789202016df38",
+      "currentBlobInOct28Qa": "6bd4c34e80766e3cc108119cb12d78160ff7e773",
+      "source419MatchesRun1357": false,
+      "source419MatchesOct28QaCurrent": false,
+      "historicalQaClassification": "CHANGED_SOURCE_FIX_WITH_LOCAL_MOCKED_COMMERCIAL_QA_PENDING_LIVE",
+      "existingEvidence": [
+        "4050e8af_RUN1418_SOURCE_FIX",
+        "LOCAL_5_OF_5_TEST_AFTER_ASSERTION_RECTIFICATION"
+      ],
+      "taskReferences": [
+        {
+          "kind": "route_role",
+          "ref": "admin/clientes",
+          "taskIds": "E06,A08"
+        }
+      ],
+      "proposedDomainMap": {
+        "domain": "client-portal-reportkit",
+        "taskIds": [
+          "E06",
+          "A08"
+        ],
+        "functionRefs": [
+          "admin/clientes"
+        ],
+        "mapBasis": "existing G03 provenance QA proposedScopeOwner"
+      },
+      "inEntrypoint": true,
+      "inAppJs": false,
+      "inRouterJs": false,
+      "routeNavigationInProjectsModule": null
+    },
+    {
+      "path": "app/modules/comercial.js",
+      "source419GitBlob": "61aaee6432e4a4206b07f8633d158b8d2b2c2271",
+      "directOwnerInMatrixModules": false,
+      "inSourceFilesInventoryBefore": true,
+      "sourceFilesInventoryAuthority": {
+        "domain": "base-router-shell-cache",
+        "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "latestApprovedBlob": "61aaee6432e4a4206b07f8633d158b8d2b2c2271",
+        "currentBlob": "61aaee6432e4a4206b07f8633d158b8d2b2c2271",
+        "fileClassification": "MATCH",
+        "currentMatchesLatestApprovedBlob": true
+      },
+      "historicalRun1357GitBlob": "61aaee6432e4a4206b07f8633d158b8d2b2c2271",
+      "currentBlobInOct28Qa": "61aaee6432e4a4206b07f8633d158b8d2b2c2271",
+      "source419MatchesRun1357": true,
+      "source419MatchesOct28QaCurrent": true,
+      "historicalQaClassification": "HISTORICAL_SOURCE_BLOB_PARITY_ONLY_DEPENDENCIES_AND_E2E_PENDING",
+      "existingEvidence": [
+        "RUN1357_SOURCE_BLOB_IDENTICAL"
+      ],
+      "taskReferences": [
+        {
+          "kind": "route_role",
+          "ref": "admin/costos",
+          "taskIds": "E06,E07"
+        }
+      ],
+      "proposedDomainMap": {
+        "domain": "phase-a-supporting-core",
+        "taskIds": [
+          "E06",
+          "E07"
+        ],
+        "functionRefs": [
+          "admin/costos"
+        ],
+        "mapBasis": "frozen-plan task references; historical QA had no proposedScopeOwner"
+      },
+      "inEntrypoint": true,
+      "inAppJs": false,
+      "inRouterJs": false,
+      "routeNavigationInProjectsModule": null
+    },
+    {
+      "path": "app/modules/correo.js",
+      "source419GitBlob": "be3cbf808498de86265410682625a45e57541b97",
+      "directOwnerInMatrixModules": false,
+      "inSourceFilesInventoryBefore": true,
+      "sourceFilesInventoryAuthority": {
+        "domain": "base-router-shell-cache",
+        "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "latestApprovedBlob": "be3cbf808498de86265410682625a45e57541b97",
+        "currentBlob": "be3cbf808498de86265410682625a45e57541b97",
+        "fileClassification": "MATCH",
+        "currentMatchesLatestApprovedBlob": true
+      },
+      "historicalRun1357GitBlob": "be3cbf808498de86265410682625a45e57541b97",
+      "currentBlobInOct28Qa": "be3cbf808498de86265410682625a45e57541b97",
+      "source419MatchesRun1357": true,
+      "source419MatchesOct28QaCurrent": true,
+      "historicalQaClassification": "HISTORICAL_SOURCE_BLOB_PARITY_ONLY_DEPENDENCIES_AND_E2E_PENDING",
+      "existingEvidence": [
+        "RUN1357_SOURCE_BLOB_IDENTICAL"
+      ],
+      "taskReferences": [
+        {
+          "kind": "route_role",
+          "ref": "admin/correo",
+          "taskIds": "E08"
+        }
+      ],
+      "proposedDomainMap": {
+        "domain": "phase-a-supporting-core",
+        "taskIds": [
+          "E08"
+        ],
+        "functionRefs": [
+          "admin/correo"
+        ],
+        "mapBasis": "frozen-plan task references; historical QA had no proposedScopeOwner"
+      },
+      "inEntrypoint": true,
+      "inAppJs": false,
+      "inRouterJs": false,
+      "routeNavigationInProjectsModule": null
+    },
+    {
+      "path": "app/modules/crm.js",
+      "source419GitBlob": "07732668ea2bd700dffe5fbff8df8e473575be05",
+      "directOwnerInMatrixModules": false,
+      "inSourceFilesInventoryBefore": true,
+      "sourceFilesInventoryAuthority": {
+        "domain": "base-router-shell-cache",
+        "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "latestApprovedBlob": "6a6ff1c964eff4f25ecaf33b028335bfc62810ee",
+        "currentBlob": "07732668ea2bd700dffe5fbff8df8e473575be05",
+        "fileClassification": "MATCH",
+        "currentMatchesLatestApprovedBlob": false
+      },
+      "historicalRun1357GitBlob": "07732668ea2bd700dffe5fbff8df8e473575be05",
+      "currentBlobInOct28Qa": "07732668ea2bd700dffe5fbff8df8e473575be05",
+      "source419MatchesRun1357": true,
+      "source419MatchesOct28QaCurrent": true,
+      "historicalQaClassification": "HISTORICAL_SOURCE_BLOB_PARITY_ONLY_DEPENDENCIES_AND_E2E_PENDING",
+      "existingEvidence": [
+        "RUN1357_SOURCE_BLOB_IDENTICAL"
+      ],
+      "taskReferences": [
+        {
+          "kind": "route_role",
+          "ref": "admin/crm",
+          "taskIds": "E06"
+        }
+      ],
+      "proposedDomainMap": {
+        "domain": "client-portal-reportkit",
+        "taskIds": [
+          "E06"
+        ],
+        "functionRefs": [
+          "admin/crm"
+        ],
+        "mapBasis": "frozen-plan task references; historical QA had no proposedScopeOwner"
+      },
+      "inEntrypoint": true,
+      "inAppJs": false,
+      "inRouterJs": false,
+      "routeNavigationInProjectsModule": null
+    },
+    {
+      "path": "app/modules/importador.js",
+      "source419GitBlob": "ad4f6b4621a69aa2cb303f026be6113e8f158ca2",
+      "directOwnerInMatrixModules": false,
+      "inSourceFilesInventoryBefore": true,
+      "sourceFilesInventoryAuthority": {
+        "domain": "base-router-shell-cache",
+        "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "latestApprovedBlob": "ad4f6b4621a69aa2cb303f026be6113e8f158ca2",
+        "currentBlob": "ad4f6b4621a69aa2cb303f026be6113e8f158ca2",
+        "fileClassification": "MATCH",
+        "currentMatchesLatestApprovedBlob": true
+      },
+      "historicalRun1357GitBlob": "ad4f6b4621a69aa2cb303f026be6113e8f158ca2",
+      "currentBlobInOct28Qa": "ad4f6b4621a69aa2cb303f026be6113e8f158ca2",
+      "source419MatchesRun1357": true,
+      "source419MatchesOct28QaCurrent": true,
+      "historicalQaClassification": "HISTORICAL_SOURCE_BLOB_PARITY_ONLY_DEPENDENCIES_AND_E2E_PENDING",
+      "existingEvidence": [
+        "RUN1357_SOURCE_BLOB_IDENTICAL"
+      ],
+      "taskReferences": [
+        {
+          "kind": "route_role",
+          "ref": "admin/importador",
+          "taskIds": "E10"
+        }
+      ],
+      "proposedDomainMap": {
+        "domain": "phase-a-supporting-core",
+        "taskIds": [
+          "E10"
+        ],
+        "functionRefs": [
+          "admin/importador"
+        ],
+        "mapBasis": "frozen-plan task references; historical QA had no proposedScopeOwner"
+      },
+      "inEntrypoint": true,
+      "inAppJs": false,
+      "inRouterJs": false,
+      "routeNavigationInProjectsModule": null
+    },
+    {
+      "path": "app/modules/integraciones.js",
+      "source419GitBlob": "a71fc5bf83ff54df83c90339d0a3c0940167d75a",
+      "directOwnerInMatrixModules": false,
+      "inSourceFilesInventoryBefore": true,
+      "sourceFilesInventoryAuthority": {
+        "domain": "base-router-shell-cache",
+        "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "latestApprovedBlob": "a71fc5bf83ff54df83c90339d0a3c0940167d75a",
+        "currentBlob": "a71fc5bf83ff54df83c90339d0a3c0940167d75a",
+        "fileClassification": "MATCH",
+        "currentMatchesLatestApprovedBlob": true
+      },
+      "historicalRun1357GitBlob": "a71fc5bf83ff54df83c90339d0a3c0940167d75a",
+      "currentBlobInOct28Qa": "a71fc5bf83ff54df83c90339d0a3c0940167d75a",
+      "source419MatchesRun1357": true,
+      "source419MatchesOct28QaCurrent": true,
+      "historicalQaClassification": "HISTORICAL_SOURCE_BLOB_PARITY_ONLY_DEPENDENCIES_AND_E2E_PENDING",
+      "existingEvidence": [
+        "RUN1357_SOURCE_BLOB_IDENTICAL"
+      ],
+      "taskReferences": [
+        {
+          "kind": "critical_function",
+          "ref": "connectionRef",
+          "taskIds": "E08"
+        },
+        {
+          "kind": "route_role",
+          "ref": "admin/integraciones",
+          "taskIds": "B03,B09,E08"
+        }
+      ],
+      "proposedDomainMap": {
+        "domain": "phase-a-supporting-core",
+        "taskIds": [
+          "B03",
+          "B09",
+          "E08"
+        ],
+        "functionRefs": [
+          "connectionRef",
+          "admin/integraciones"
+        ],
+        "mapBasis": "frozen-plan task references; historical QA had no proposedScopeOwner"
+      },
+      "inEntrypoint": true,
+      "inAppJs": false,
+      "inRouterJs": false,
+      "routeNavigationInProjectsModule": null
+    },
+    {
+      "path": "app/modules/marketing.js",
+      "source419GitBlob": "6bfe1b4e3dbed12ead8a88404cdb495dbf1b8e83",
+      "directOwnerInMatrixModules": false,
+      "inSourceFilesInventoryBefore": true,
+      "sourceFilesInventoryAuthority": {
+        "domain": "base-router-shell-cache",
+        "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "latestApprovedBlob": "6bfe1b4e3dbed12ead8a88404cdb495dbf1b8e83",
+        "currentBlob": "6bfe1b4e3dbed12ead8a88404cdb495dbf1b8e83",
+        "fileClassification": "MATCH",
+        "currentMatchesLatestApprovedBlob": true
+      },
+      "historicalRun1357GitBlob": "6bfe1b4e3dbed12ead8a88404cdb495dbf1b8e83",
+      "currentBlobInOct28Qa": "6bfe1b4e3dbed12ead8a88404cdb495dbf1b8e83",
+      "source419MatchesRun1357": true,
+      "source419MatchesOct28QaCurrent": true,
+      "historicalQaClassification": "HISTORICAL_SOURCE_BLOB_PARITY_ONLY_DEPENDENCIES_AND_E2E_PENDING",
+      "existingEvidence": [
+        "RUN1357_SOURCE_BLOB_IDENTICAL"
+      ],
+      "taskReferences": [
+        {
+          "kind": "route_role",
+          "ref": "admin/marketing",
+          "taskIds": "E09,E08"
+        }
+      ],
+      "proposedDomainMap": {
+        "domain": "phase-a-supporting-core",
+        "taskIds": [
+          "E08",
+          "E09"
+        ],
+        "functionRefs": [
+          "admin/marketing"
+        ],
+        "mapBasis": "frozen-plan task references; historical QA had no proposedScopeOwner"
+      },
+      "inEntrypoint": true,
+      "inAppJs": false,
+      "inRouterJs": false,
+      "routeNavigationInProjectsModule": null
+    },
+    {
+      "path": "app/modules/rutas.js",
+      "source419GitBlob": "5ad69a8bad0dc02b58ca8b06145a74f0a4ddd51e",
+      "directOwnerInMatrixModules": false,
+      "inSourceFilesInventoryBefore": false,
+      "sourceFilesInventoryAuthority": {
+        "status": "NOT_IN_MATRIX_SOURCE_INVENTORY"
+      },
+      "historicalRun1357GitBlob": "5ad69a8bad0dc02b58ca8b06145a74f0a4ddd51e",
+      "currentBlobInOct28Qa": "5ad69a8bad0dc02b58ca8b06145a74f0a4ddd51e",
+      "source419MatchesRun1357": true,
+      "source419MatchesOct28QaCurrent": true,
+      "historicalQaClassification": "HISTORICAL_SOURCE_BLOB_PARITY_ONLY_DEPENDENCIES_AND_E2E_PENDING",
+      "existingEvidence": [
+        "RUN1357_SOURCE_BLOB_IDENTICAL"
+      ],
+      "taskReferences": [
+        {
+          "kind": "route_role",
+          "ref": "admin/rutas",
+          "taskIds": "B01,B05,B12,B14"
+        }
+      ],
+      "proposedDomainMap": {
+        "domain": "projects-periods-hr-source-wizard-multiproject",
+        "taskIds": [
+          "B01",
+          "B05",
+          "B12",
+          "B14"
+        ],
+        "functionRefs": [
+          "admin/rutas"
+        ],
+        "mapBasis": "frozen-plan task references; historical QA had no proposedScopeOwner"
+      },
+      "inEntrypoint": false,
+      "inAppJs": false,
+      "inRouterJs": false,
+      "routeNavigationInProjectsModule": true
+    }
+  ],
+  "sourceCompositionFinding": {
+    "path": "app/modules/rutas.js",
+    "sourceBlob": "5ad69a8bad0dc02b58ca8b06145a74f0a4ddd51e",
+    "entrypoint": "app/index-backend-dev.html",
+    "entrypointGitBlob": "eec56cf5e4afc7624c1a6f73841bb28d18617280",
+    "entrypointReferencesModule": false,
+    "appJsReferencesModule": false,
+    "routerReferencesModule": false,
+    "callerPath": "app/modules/proyectos.js",
+    "callerGitBlob": "31006e2f0a7dd4527be4d4fb6b1f1dcdfe2d2dc3",
+    "callerNavigatesToRutas": true,
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "scopeLimit": "Static load-order evidence; not a browser E2E execution. Keep the module and task obligations open."
+  },
+  "metadataContradictions": {
+    "count": 4,
+    "paths": [
+      "app/core/automations.js",
+      "app/modules/automatizaciones.js",
+      "app/modules/clientes.js",
+      "app/modules/crm.js"
+    ],
+    "status": "SOURCE_AUTHORITY_METADATA_CONTRADICTION",
+    "note": "These are per-file sourceFiles records. They do not change the 21-domain classificationCounts and are not reclassified automatically."
+  },
+  "preserved": {
+    "moduleDomainCount": 21,
+    "classificationCounts": {
+      "COMPOSED_NOT_DEPLOYED": 2,
+      "MATCH": 5,
+      "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN": 2,
+      "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 4,
+      "SOURCE_FIXED_PENDING_CI_AND_DEV_FOCAL": 1,
+      "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN": 4,
+      "TRUE_FUNCTIONAL_DEFECT": 3
+    },
+    "classificationCountSum": 21,
+    "run1992SelectorClosed": true,
+    "run1992C04C05FullTaskClosed": false,
+    "run1992AggregateFullTasksClosed": false,
+    "d07ExecutedInRun1992": false,
+    "d07HistoricalPassFromRun1991Preserved": true,
+    "d07RemainingClauses": 4,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i3": "HOLD",
+    "production": "DO_NOT_TOUCH",
+    "i4Authorized": false
+  },
+  "nonExecution": {
+    "productFilesChanged": 0,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "devOperations": 0,
+    "builds": 0,
+    "deploys": 0,
+    "productionWrites": 0,
+    "c04C05Reexecuted": false,
+    "d07Reexecuted": false,
+    "r12Changed": false,
+    "workflowChanged": false
+  },
+  "nextExactAction": "I3 G03: completar autoridad F9/última aprobación por owner para los 21 dominios; reconciliar los 12 owners y las dos omisiones de inventario (backend-ai.js, rutas.js) contra evidencia aprobada, y resolver composición de carga de rutas. Conservar HR/identidad, operación, finanzas y D07 sólo según sus evidencias exactas; RUN1992 cierra selector y Finanzas C04/C05 acotado, no tareas completas. Mantener I3/Gate20/Gate21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
+  "controlArtifacts": {
+    "matrix": {
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V202.json",
+      "version": "V202",
+      "gitBlob": "4a5854d6e49db89c6c2a80d3b1b2ac42d410487c",
+      "sha256": "431c5d9397c71a24f02b528bde001acfd5a66e642348a412b3af5e66c8e5a98c",
+      "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923"
+    },
+    "ledger": {
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V534_2026-10-30.json",
+      "version": "V534",
+      "gitBlob": "68658b952bb5aabec00dea456a4c34ac5c10d524",
+      "sha256": "fd686faf2a7e1bdfe5528d64094ad794b65416d3b8de3cae40946cbb02b416b9"
+    }
+  },
+  "readbackReceiptPath": "docs/checkpoints/CXORBIA_I3_G03_OWNER_AUTHORITY_CROSSWALK_READBACK_20261030.json"
+}

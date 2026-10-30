@@ -1,15 +1,15 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_DEV_MATERIALIZED_SAME_ARTIFACT__E2E_HUMAN_PENDING",
+  "status": "HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
   "productTreeAuthority": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
   "predecessorProductSourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V533_2026-10-30.json",
-  "findingsLedgerExpectedGitBlob": "38148ca78881d522db1e8479546b43e30e799378",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V201.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V534_2026-10-30.json",
+  "findingsLedgerExpectedGitBlob": "68658b952bb5aabec00dea456a4c34ac5c10d524",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V202.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 G03 continuidad: completar la reconciliación de autoridad F9/última aprobación por owner para los 21 dominios, incluidos los 12 owners y dos omisiones de inventario documentados; conservar HR, operación, finanzas y D07 por sus revisiones/evidencias exactas. RUN1992 cierra sólo el selector y el caso financiero acotado; no repetir C04/C05 ni el PDF D07 preservados. Persisten cláusulas funcionales y aceptación humana; Gate20/Gate21 HOLD, producción DO_NOT_TOUCH e I4 no autorizada. No se inicia ese bloque en esta serialización.",
+  "exactNextAction": "I3 G03: completar autoridad F9/última aprobación por owner para los 21 dominios; reconciliar los 12 owners y las dos omisiones de inventario (backend-ai.js, rutas.js) contra evidencia aprobada, y resolver composición de carga de rutas. Conservar HR/identidad, operación, finanzas y D07 sólo según sus evidencias exactas; RUN1992 cierra selector y Finanzas C04/C05 acotado, no tareas completas. Mantener I3/Gate20/Gate21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "e8f08acd8ba428e80c1304c03f2589225914276d",
+  "moduleTruthExpectedGitBlob": "4a5854d6e49db89c6c2a80d3b1b2ac42d410487c",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12394,7 +12394,6 @@
     "artifactUnchanged": true,
     "production": false
   },
-  "nextExactAction": "I3 G03 continuidad: completar la reconciliación de autoridad F9/última aprobación por owner para los 21 dominios, incluidos los 12 owners y dos omisiones de inventario documentados; conservar HR, operación, finanzas y D07 por sus revisiones/evidencias exactas. RUN1992 cierra sólo el selector y el caso financiero acotado; no repetir C04/C05 ni el PDF D07 preservados. Persisten cláusulas funcionales y aceptación humana; Gate20/Gate21 HOLD, producción DO_NOT_TOUCH e I4 no autorizada. No se inicia ese bloque en esta serialización.",
   "adminClientPreview20261018": {
     "sourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
     "sourceTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
@@ -15047,15 +15046,15 @@
     }
   },
   "currentExecutionReceipt": {
-    "path": "docs/checkpoints/CXORBIA_I3_RUN1992_C04_C05_BOUNDED_CONTROL_SERIALIZATION_20261030.json",
-    "gitBlob": "65ff8cf5f6bac9daec5691a79f3cc4067aae4474",
-    "sha256": "316b5fb0d5a4bf9f9a4dca85d233b507f6db0fdde88a52037020bb2305222e5d",
-    "decision": "PASS_R7_C04_C05_ONLY_D07_CARRIED_FORWARD",
-    "runId": 41124697399,
-    "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
-    "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
-    "kind": "FOCAL_EVIDENCE_RECEIPT_NOT_MATERIALIZATION",
-    "fullTasksClosed": false,
+    "path": "docs/checkpoints/CXORBIA_I3_G03_OWNER_AUTHORITY_CROSSWALK_READBACK_20261030.json",
+    "gitBlob": "6b6b26d5b4a58d82045fdec18c9cc2a837923439",
+    "sha256": "838e473978ada98711c040773c9b16d85daffdae2c32418c104dc027f9c9b454",
+    "kind": "G03_OWNER_AUTHORITY_CROSSWALK_CONTROL_READBACK",
+    "decision": "RELEASE_COMPOSITION_FAILURE",
+    "productSourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "productSourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
+    "controlHeadBefore": "7afa126823ebdc5d381ea1b8ef6bf33887c64419",
+    "fullTaskClosed": false,
     "production": false
   },
   "currentSuccessorDevMaterializationRequest": {
@@ -15775,7 +15774,7 @@
     "taskId": "G03",
     "plan": "PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
     "owner": "Orquestación y QA read-only",
-    "exactPending": "Completar el crosswalk de última autoridad aprobada por owner y función para los 12 owners documentados y resolver las omisiones de inventario app/core/backend-ai.js y app/modules/rutas.js, contrastando los blobs de la source 419; no inferir aprobación desde HEAD ni desde tests.",
+    "exactPending": "I3 G03: completar autoridad F9/última aprobación por owner para los 21 dominios; reconciliar los 12 owners y las dos omisiones de inventario (backend-ai.js, rutas.js) contra evidencia aprobada, y resolver composición de carga de rutas. Conservar HR/identidad, operación, finanzas y D07 sólo según sus evidencias exactas; RUN1992 cierra selector y Finanzas C04/C05 acotado, no tareas completas. Mantener I3/Gate20/Gate21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
     "evidenceAlreadyAvailable": [
       {
         "path": "CXORBIA_I3_G03_PHASE_A_SCOPE_CROSSWALK_READBACK_2026-10-28.json",
@@ -15814,5 +15813,14 @@
     "fullTaskClosed": false,
     "humanAcceptance": "PENDING",
     "production": false
+  },
+  "g03OwnerAuthorityCrosswalk20261030": {
+    "path": "docs/checkpoints/CXORBIA_I3_G03_OWNER_AUTHORITY_CROSSWALK_READBACK_20261030.json",
+    "gitBlob": "6b6b26d5b4a58d82045fdec18c9cc2a837923439",
+    "sha256": "838e473978ada98711c040773c9b16d85daffdae2c32418c104dc027f9c9b454",
+    "decision": "RELEASE_COMPOSITION_FAILURE",
+    "readbackId": "CXORBIA-I3-G03-OWNER-AUTHORITY-CROSSWALK-READBACK-20261030",
+    "scope": "CONTROL_EVIDENCE_ONLY__TASK_SCOPED_MAPPING_NOT_APPROVAL_OR_DOMAIN_CLOSURE",
+    "productSourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923"
   }
 }
