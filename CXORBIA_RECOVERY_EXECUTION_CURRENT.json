@@ -2999,13 +2999,13 @@
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V200.json",
     "matrixBlob": "1dc960b6dd93f26a37466917ccad78289cb32e4c",
     "classificationCounts": {
-      "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN": 2,
-      "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN": 5,
-      "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 3,
-      "TRUE_FUNCTIONAL_DEFECT": 3,
-      "SOURCE_FIXED_PENDING_CI_AND_DEV_FOCAL": 1,
+      "COMPOSED_NOT_DEPLOYED": 2,
       "MATCH": 5,
-      "COMPOSED_NOT_DEPLOYED": 2
+      "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN": 2,
+      "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 3,
+      "SOURCE_FIXED_PENDING_CI_AND_DEV_FOCAL": 1,
+      "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN": 5,
+      "TRUE_FUNCTIONAL_DEFECT": 3
     },
     "derivedAt": "2026-10-30",
     "meaning": "LIVE_CONTROL_CLASSIFICATIONS_NOT_PROGRESS_PERCENTAGE"
@@ -4880,9 +4880,9 @@
     "production": false
   },
   "lastFailedCanonicalSourceProof": {
-    "runId": 40997591889,
-    "runNumber": 1979,
-    "decision": "MAPPING_FAILURE_NEXT_FINDING_ID",
+    "runId": 40997882994,
+    "runNumber": 1980,
+    "decision": "MAPPING_FAILURE_CLASSIFICATION_COUNTS_STALE",
     "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
     "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
     "materialized": false,
@@ -5383,7 +5383,7 @@
   },
   "currentControlAlignmentReceipt": {
     "path": "docs/checkpoints/CXORBIA_I3_D07_C04_C05_SOURCE_SUCCESSOR_20261030.json",
-    "gitBlob": "5b4d2c0e6a09d884d2d2c620005239c1c3d205b9",
+    "gitBlob": "660e6762ddff6209dbba6d9e8ee3a341e18caeac",
     "decision": "CONTROL_ALIGNMENT_PENDING_CANONICAL_SOURCE_PROOF",
     "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
     "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751"

@@ -55,7 +55,7 @@
   },
   "authorityAlignment": {
     "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V532_2026-10-30.json",
-    "ledgerBlob": "d85c3f829f1ae4f05e395702816671c93278c306",
+    "ledgerBlob": "9c97307b4859e9f678743903d71673334f81918c",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V200.json",
     "matrixBlob": "1dc960b6dd93f26a37466917ccad78289cb32e4c",
     "descriptorPath": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
@@ -114,5 +114,23 @@
     "materialized": false,
     "deployed": false,
     "production": false
-  }
+  },
+  "controlAlignmentCorrectionAttempts": [
+    {
+      "runId": 40997591889,
+      "runNumber": 1979,
+      "decision": "MAPPING_FAILURE_NEXT_FINDING_ID",
+      "materialized": false,
+      "deployed": false,
+      "production": false
+    },
+    {
+      "runId": 40997882994,
+      "runNumber": 1980,
+      "decision": "MAPPING_FAILURE_CLASSIFICATION_COUNTS_STALE",
+      "materialized": false,
+      "deployed": false,
+      "production": false
+    }
+  ]
 }

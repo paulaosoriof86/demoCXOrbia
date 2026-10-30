@@ -21078,7 +21078,7 @@
       "VRM-292"
     ],
     "findingCount": 292,
-    "expectedCurrentRange": "VRM-001..VRM-291",
+    "expectedCurrentRange": "VRM-001..VRM-292",
     "nextFindingId": "VRM-293",
     "appendOnly": true,
     "omissionNeverCloses": true,
@@ -35501,6 +35501,15 @@
         "descriptorNextFindingId": "VRM-293",
         "expected": "VRM-293"
       },
+      "materialized": false,
+      "deployed": false,
+      "production": false
+    },
+    "authorityGuardRun1980": {
+      "runId": 40997882994,
+      "runNumber": 1980,
+      "decision": "MAPPING_FAILURE_CLASSIFICATION_COUNTS_STALE",
+      "observed": "activeShockModuleTruth classificationCounts key order differed from the sorted canonical matrix classificationCounts; values and 21-domain classifications were unchanged",
       "materialized": false,
       "deployed": false,
       "production": false
