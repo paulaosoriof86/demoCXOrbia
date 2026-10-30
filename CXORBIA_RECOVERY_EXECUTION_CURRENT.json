@@ -53,7 +53,7 @@
     "gate20": "HOLD",
     "gate21": "HOLD"
   },
-  "controlParentSha": "7175fd3ce27de0e74cc2a18cc23d054b6b39ec01",
+  "controlParentSha": "2d5a95a19c9e168019a5b8fb531d8212081bc739",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
     "executed": [
@@ -912,8 +912,8 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V198.json",
-    "gitBlob": "bcf680f20b52344d9c672518049ad5b3c8aaab32",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V199.json",
+    "gitBlob": "34891fa9f99130bceb392458f7f2596bcdc4f4ad",
     "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
     "allModulesMatch": false,
     "phaseAComplete": false
@@ -2953,8 +2953,8 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V198.json",
-    "matrixBlob": "bcf680f20b52344d9c672518049ad5b3c8aaab32",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V199.json",
+    "matrixBlob": "34891fa9f99130bceb392458f7f2596bcdc4f4ad",
     "classificationCounts": {
       "COMPOSED_NOT_DEPLOYED": 2,
       "MATCH": 5,
@@ -2964,7 +2964,7 @@
       "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN": 4,
       "TRUE_FUNCTIONAL_DEFECT": 3
     },
-    "derivedAt": "2026-10-29",
+    "derivedAt": "2026-10-30",
     "meaning": "LIVE_CONTROL_CLASSIFICATIONS_NOT_PROGRESS_PERCENTAGE"
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
@@ -3171,20 +3171,34 @@
   "g03CanonicalControlAlignment20261029": {
     "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
     "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
-    "controlParentSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
-    "previousControlHeadSha": "f15ba2e632f32a51ec9e17a78d66222fc0782111",
-    "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V198.json",
-    "moduleTruthBlob": "bcf680f20b52344d9c672518049ad5b3c8aaab32",
-    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V530_2026-10-30.json",
-    "ledgerBlob": "40fae6ac5f5f106c0331adc334715fc620d65f19",
-    "state": "EXACT_SOURCE_ALIGNED_NOT_DEV_MATERIALIZED",
+    "controlParentSha": "2d5a95a19c9e168019a5b8fb531d8212081bc739",
+    "previousControlHeadSha": "7175fd3ce27de0e74cc2a18cc23d054b6b39ec01",
+    "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V199.json",
+    "moduleTruthBlob": "34891fa9f99130bceb392458f7f2596bcdc4f4ad",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V531_2026-10-30.json",
+    "ledgerBlob": "c03c4cfaad740c44d9e6c33bc9283f41c27140e7",
+    "state": "SOURCE_CI_PASS_EXACT_DEV_REQUESTED",
     "preservedMatchDomains": 5,
-    "sourceProof": "PENDING_CANONICAL_CI",
+    "sourceProof": "PASS_RUN1967_EXACT_S485",
     "exactDevSuccessor": "PENDING_RUNTIME_RULES_HOSTING",
     "hostingOnly": false,
     "gate20": "HOLD",
     "gate21": "HOLD",
-    "production": false
+    "production": false,
+    "sourceProofReceipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_CUMULATIVE_SOURCE_PROOF_RUN1967_20261030.json",
+      "gitBlob": "e19e7966f896a6ba920344fcc71259e097986abd",
+      "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+      "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+      "controlSha": "7175fd3ce27de0e74cc2a18cc23d054b6b39ec01",
+      "runId": 40983126884,
+      "runNumber": 1967,
+      "sourceJobId": 123827903809,
+      "artifactId": 12945078520,
+      "artifactZipSha256": "75ac9e16364a7b93a62c23a4b749d2b303c3801f4ba979551b879ac61f774086",
+      "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+      "production": false
+    }
   },
   "previousExecutionReceiptBeforeContinuity20261029": {
     "path": "CXORBIA_I3_RUN1852_POST_DEPLOY_CONSISTENCY_SEAL_2026-10-24.json",
@@ -4902,6 +4916,22 @@
     },
     "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
     "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+    "production": false
+  },
+  "currentControlCorrection": {
+    "runId": 40984083454,
+    "runNumber": 1968,
+    "controlSha": "2d5a95a19c9e168019a5b8fb531d8212081bc739",
+    "authorityJobId": 123830848745,
+    "authorityConclusion": "failure",
+    "failureCode": "MAPPING_FAILURE:SHOCK_CONTINUITY:MATRIX_PATH_DESYNC,MATRIX_BLOB_DESYNC,CLASSIFICATION_SNAPSHOT_AUTHORITY",
+    "materializationJobId": 123830989645,
+    "materializationConclusion": "skipped",
+    "classification": "CONTROL_POINTER_UPDATE_INCOMPLETE",
+    "correction": "Align execution matrix authority, classification snapshot and G03 matrix/ledger links to M199/L531; no product or guard change.",
+    "builds": 0,
+    "deploys": 0,
+    "providerWrites": 0,
     "production": false
   }
 }

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "cxorbia.i3.control-pointer-correction.v1",
+  "runId": 40984083454,
+  "runNumber": 1968,
+  "controlSha": "2d5a95a19c9e168019a5b8fb531d8212081bc739",
+  "authorityJobId": 123830848745,
+  "authorityConclusion": "failure",
+  "failureCode": "MAPPING_FAILURE:SHOCK_CONTINUITY:MATRIX_PATH_DESYNC,MATRIX_BLOB_DESYNC,CLASSIFICATION_SNAPSHOT_AUTHORITY",
+  "materializationJobId": 123830989645,
+  "materializationConclusion": "skipped",
+  "classification": "CONTROL_POINTER_UPDATE_INCOMPLETE",
+  "correction": "Align execution matrix authority, classification snapshot and G03 matrix/ledger links to M199/L531; no product or guard change.",
+  "builds": 0,
+  "deploys": 0,
+  "providerWrites": 0,
+  "production": false,
+  "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+  "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+  "localContinuityReadback": {
+    "pass": true,
+    "failures": [],
+    "domainCount": 21,
+    "preservedMatchDomains": 5
+  },
+  "authorityJobUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/40984083454/job/123830848745",
+  "fullTaskClosed": false
+}
