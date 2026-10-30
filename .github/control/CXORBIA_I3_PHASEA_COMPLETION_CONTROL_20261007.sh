@@ -4,6 +4,541 @@ MODE="${1:-}"
 OUT=".tmp/i3-phasea-completion"
 ROOT="https://cxorbia-backend-dev.web.app"
 ASSETS=(core/backend-browser-auth.js core/shoppers-store.js core/topbar.js modules/beneficios.js modules/dashboard.js modules/postulaciones.js modules/finanzas.js modules/cert.js modules/misvisitas.js modules/reservas.js modules/soporte.js modules/novedades.js core/backend-bulletins.js adapters/cxorbia-command-adapter-v1.js adapters/cxorbia-cxdata-command-boundary-v1.js adapters/tya-canonical-shopper-portal-v2.js adapters/tya-c6-domain-consistency-bridge.js adapters/tya-protected-auth-hr-authority-bridge-v2.js adapters/tya-c6-unified-human-runtime-v1.js adapters/tya-canonical-reservations-guard-v2.js data/tya-payment-history-source-safe.js adapters/tya-financial-canonical-source-safe-adapter.js styles/layout.css core/backend-firebase.js core/cliente-data.js modules/cliente.js core/ui.js core/router.js adapters/tya-cumulative-read-model-v2.js modules/midia.js modules/visitas.js modules/visita-detalle.js styles/theme.css modules/proyecto-wizard.js modules/cuestionario-shopper.js adapters/tya-live-source-inplace-apply.js index-backend-dev.html core/automations.js modules/automatizaciones.js core/backend-cxdata-finance-read.js core/backend-finance-benefits.js core/backend-resources.js core/backend-certifications.js modules/documentos.js)
+# BEGIN_EXISTING_IMAGE_TRAFFIC_ACTIVATION_HELPERS
+phasea_activation_guard() {
+  test "${GITHUB_EVENT_NAME:-}" = push
+  test "${GITHUB_REF:-}" = refs/heads/recovery/cxorbia-phase-a-20260831
+  jq -e '.head_commit.message | contains("[i3-phasea-dev-materialize]") and (contains("[i3-phasea-dev-readback]")|not)' "$GITHUB_EVENT_PATH" >/dev/null
+  test "$(jq -r .status "$CANDIDATE_DESCRIPTOR")" = HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED
+  test "$(jq -r .production "$CANDIDATE_DESCRIPTOR")" = DO_NOT_TOUCH
+  test "$PROJECT" = cxorbia-backend-dev
+  test "$SERVICE" = cxorbia-live-hr-dev
+  test "$REGION" = us-central1
+  test "$HOSTING_SITE" = cxorbia-backend-dev
+  test "$FIREBASE_HOSTING_TARGET" = cxorbia-dev
+  test "$TENANT_ID" = tya
+  test "$PROJECT_ID" = cinepolis
+  test "$PHASEA_SOURCE" = 4854a4e289bf76d08f3ffe3ecddd09168ba501af
+  test "$PHASEA_TREE" = 7e55c5fefee821b2d9dd1d7c6e575592b8534be4
+  test "$(git rev-parse "$PHASEA_SOURCE^{tree}")" = "$PHASEA_TREE"
+  mkdir -p "$OUT"
+  ACT_TMP="$RUNNER_TEMP/cxorbia-s485-existing-image-activation"
+  mkdir -p "$ACT_TMP"
+  ACT_TARGET="$OUT/materialization-target.json"
+  python3 - "$CANDIDATE_DESCRIPTOR" "$ACT_TARGET" <<'ACTIVATION_TARGET_PY'
+import json, sys
+from pathlib import Path
+expected = {'sourceSha': '4854a4e289bf76d08f3ffe3ecddd09168ba501af', 'sourceTree': '7e55c5fefee821b2d9dd1d7c6e575592b8534be4', 'project': 'cxorbia-backend-dev', 'materializationRunId': 40984272542, 'cloudBuildId': '968bd3aa-8c78-4652-9018-9ad2f7edc026', 'cloudBuildSource': {'bucket': 'cxorbia-backend-dev_cloudbuild', 'object': 'source/1793322732.959441-20242ed1a5ab437fb3ee3ed2f5d1ef31.tgz', 'generation': '1793322764003720'}, 'cloudBuildSourceArchiveSha256': 'cacc3d42c4303b1a568f2a1480ed7ff8bbd3bf68dc6ef845f764b59f4f611507', 'imageUri': 'gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-phasea-4854a4e289bf-40984272542', 'runtimeRevision': 'cxorbia-live-hr-dev-00331-2xq', 'runtimeDigest': 'sha256:e56826df529bd132d2413a0913c557743dbeb78945724e1073665e8bc388ca65', 'expectedCurrentRuntimeRevision': 'cxorbia-live-hr-dev-00330-fim', 'expectedCurrentRuntimeDigest': 'sha256:bba5ebbf19c203954ec0be6c2c3ef01a057e7ce3f98fb7e5eeac2d889bd0a500', 'expectedCurrentServiceGeneration': 332, 'expectedCurrentServiceResourceVersion': 'AAZfBIQl06U', 'expectedTrafficTags': [{'tag': 'i3-a2be-40832567443', 'revisionName': 'cxorbia-live-hr-dev-00329-xac'}, {'tag': 'i3-a2be-40833285318', 'revisionName': 'cxorbia-live-hr-dev-00330-fim'}], 'expectedHrRevision': 'ad25ad68f7d08c4dd3617c9de49df909d26ab73e69a1e40f2800b947a4dde79a', 'hostingVersion': 'sites/cxorbia-backend-dev/versions/eeef27f0aca1d6e5', 'hostingRelease': 'sites/cxorbia-backend-dev/channels/live/releases/1793322873249000', 'firestoreRuleset': 'projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62', 'sourceArtifactDigest': 'sha256:f3509fc74a7a5c46c1a8bf1e018ebae8e363b2897d1f06c85bbac34379316fa4', 'existingImageTrafficActivation': True, 'diagnosticOnly': False, 'requireBuildImageRuntimeDigestBinding': True, 'observedRuntimeIsNotSourceBinding': False, 'production': False}
+descriptor = json.loads(Path(sys.argv[1]).read_text())
+target = descriptor['i3PhaseADevReadbackTarget']
+assert all(type(target.get(k)) is type(v) and target[k] == v for k,v in expected.items()), 'EXISTING_IMAGE_ACTIVATION_TARGET_DRIFT'
+assert descriptor['productSourceSha'] == expected['sourceSha']
+assert descriptor['productTreeAuthority'] == expected['sourceTree']
+Path(sys.argv[2]).write_text(json.dumps(target, indent=2, sort_keys=True) + '\n')
+ACTIVATION_TARGET_PY
+  ACT_REV=cxorbia-live-hr-dev-00331-2xq
+  ACT_OLD_REV=cxorbia-live-hr-dev-00330-fim
+  ACT_DIGEST=sha256:e56826df529bd132d2413a0913c557743dbeb78945724e1073665e8bc388ca65
+  ACT_GCS='gs://cxorbia-backend-dev_cloudbuild/source/1793322732.959441-20242ed1a5ab437fb3ee3ed2f5d1ef31.tgz#1793322764003720'
+}
+
+phasea_activation_hold() {
+  local activation_rc="$1"
+  trap - ERR
+  unset ACT_TOKEN
+  jq -n -S --arg stage "${ACT_STAGE:-UNKNOWN}" --argjson exitCode "$activation_rc" --argjson attempted "${ACT_ATTEMPTED:-0}" --argjson completed "${ACT_COMPLETED:-0}" '{decision:"HOLD_I3_PHASEA_EXISTING_IMAGE_TRAFFIC_ACTIVATION",stage:$stage,exitCode:$exitCode,trafficUpdatesAttempted:$attempted,trafficUpdatesCompleted:$completed,providerWriteOutcomeUnknown:($attempted>$completed),builds:0,runtimeDeploys:0,hostingDeploys:0,firestoreRulesDeploys:0,authWrites:0,hrWrites:0,production:false}' > "$OUT/result.json"
+  exit "$activation_rc"
+}
+
+phasea_activation_capture_runtime() {
+  local activation_phase="$1"
+  gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$ACT_TMP/service-$activation_phase.json"
+  gcloud run revisions describe "$ACT_REV" --project "$PROJECT" --region "$REGION" --format=json > "$ACT_TMP/desired-$activation_phase.json"
+  gcloud run revisions describe "$ACT_OLD_REV" --project "$PROJECT" --region "$REGION" --format=json > "$ACT_TMP/previous-$activation_phase.json"
+  jq '{metadata:{name:.metadata.name,generation:.metadata.generation,resourceVersion:.metadata.resourceVersion},spec:{traffic:.spec.traffic,template:{spec:{containers:[.spec.template.spec.containers[]? | {name,image,ports,envNames:[.env[]?.name]}]}}},status}' "$ACT_TMP/service-$activation_phase.json" > "$OUT/runtime-$activation_phase.json"
+  jq '{metadata:{name:.metadata.name,generation:.metadata.generation,resourceVersion:.metadata.resourceVersion},spec:{containers:[.spec.containers[]? | {name,image,ports,envNames:[.env[]?.name]}]},status}' "$ACT_TMP/desired-$activation_phase.json" > "$OUT/revision-$activation_phase.json"
+}
+
+phasea_activation_state_guard() {
+  local activation_phase="$1" activation_original="$2"
+  python3 - "$activation_phase" "$ACT_TARGET" "$ACT_TMP/service-$activation_phase.json" "$ACT_TMP/desired-$activation_phase.json" "$ACT_TMP/previous-$activation_phase.json" "$activation_original" "$OUT/state-$activation_phase.json" <<'ACTIVATION_STATE_PY'
+#!/usr/bin/env python3
+"""Pure local state guard, embedded into the existing control; no provider calls."""
+import json
+import sys
+from pathlib import Path
+
+def read(path):
+    return json.loads(Path(path).read_text())
+
+def require(condition, reason):
+    if not condition:
+        raise ValueError(reason)
+
+def digest(value):
+    text = str(value or '')
+    return text.rsplit('@', 1)[-1] if '@' in text else text
+
+def ready(obj):
+    return any(c.get('type') == 'Ready' and c.get('status') == 'True' for c in obj.get('status', {}).get('conditions', []))
+
+def percentages(entries):
+    result = {}
+    for entry in entries:
+        value = entry.get('percent', 0)
+        require(type(value) is int and 0 <= value <= 100, 'TRAFFIC_PERCENT_INVALID')
+        require(not entry.get('latestRevision'), 'TRAFFIC_NOT_REVISION_PINNED')
+        if value:
+            name = entry.get('revisionName')
+            require(isinstance(name, str) and name, 'TRAFFIC_REVISION_MISSING')
+            result[name] = result.get(name, 0) + value
+    return result
+
+def tags(entries):
+    pairs = [(v['tag'], v.get('revisionName')) for v in entries if v.get('tag')]
+    require(len({v[0] for v in pairs}) == len(pairs), 'TRAFFIC_TAG_DUPLICATE')
+    return sorted(pairs)
+
+def verify(stage, target, service, desired, previous, original=None):
+    expected = target['runtimeRevision']
+    old = target['expectedCurrentRuntimeRevision']
+    expected_digest = target['runtimeDigest']
+    spec, status = service['spec'], service['status']
+    require(service['metadata']['name'] == 'cxorbia-live-hr-dev', 'SERVICE_NAME_DRIFT')
+    require(status.get('latestCreatedRevisionName') == expected, 'LATEST_CREATED_DRIFT')
+    require(status.get('observedGeneration') == service['metadata'].get('generation'), 'SERVICE_GENERATION_NOT_OBSERVED')
+    require(ready(service), 'SERVICE_NOT_READY')
+    containers = spec['template']['spec']['containers']
+    require(len(containers) == 1 and containers[0].get('image') == target['imageUri'], 'SERVICE_TEMPLATE_IMAGE_DRIFT')
+    require(desired['metadata']['name'] == expected, 'DESIRED_REVISION_NAME_DRIFT')
+    require(ready(desired), 'DESIRED_REVISION_NOT_READY')
+    require(digest(desired['status'].get('imageDigest')) == expected_digest, 'DESIRED_REVISION_DIGEST_DRIFT')
+    revision_containers = desired['spec']['containers']
+    expected_image = 'gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@' + expected_digest
+    require(len(revision_containers) == 1 and revision_containers[0].get('image') == expected_image, 'DESIRED_REVISION_IMAGE_DRIFT')
+    expected_tags = sorted((v['tag'], v['revisionName']) for v in target['expectedTrafficTags'])
+    require(tags(spec['traffic']) == expected_tags, 'SPEC_TAG_DRIFT')
+    require(tags(status['traffic']) == expected_tags, 'OBSERVED_TAG_DRIFT')
+    spec_traffic = percentages(spec['traffic'])
+    actual_traffic = percentages(status['traffic'])
+    require(spec_traffic == actual_traffic, 'TRAFFIC_NOT_CONVERGED')
+    if actual_traffic == {old: 100} and stage in ('before', 'cas'):
+        require(status.get('latestReadyRevisionName') == old, 'PREVIOUS_READY_REVISION_DRIFT')
+        require(service['metadata'].get('generation') == target['expectedCurrentServiceGeneration'], 'PREVIOUS_GENERATION_DRIFT')
+        require(service['metadata'].get('resourceVersion') == target['expectedCurrentServiceResourceVersion'], 'PREVIOUS_RESOURCE_VERSION_DRIFT')
+        require(previous['metadata']['name'] == old and ready(previous), 'PREVIOUS_REVISION_NOT_READY')
+        require(digest(previous['status'].get('imageDigest')) == target['expectedCurrentRuntimeDigest'], 'PREVIOUS_REVISION_DIGEST_DRIFT')
+        action = 'ACTIVATE_EXISTING_REVISION'
+    elif actual_traffic == {expected: 100}:
+        require(status.get('latestReadyRevisionName') == expected, 'ACTIVE_READY_REVISION_DRIFT')
+        require(any(c.get('type') == 'Active' and c.get('status') == 'True' for c in desired['status'].get('conditions', [])), 'DESIRED_REVISION_NOT_ACTIVE')
+        action = 'ALREADY_ACTIVE'
+    else:
+        raise ValueError('TRAFFIC_CAS_PRECONDITION_FAILED')
+    if original is not None:
+        before_spec = dict(original['spec'])
+        after_spec = dict(spec)
+        before_spec.pop('traffic', None)
+        after_spec.pop('traffic', None)
+        require(before_spec == after_spec, 'NON_TRAFFIC_SERVICE_CONFIGURATION_DRIFT')
+        if stage == 'cas':
+            require(service['metadata'].get('resourceVersion') == original['metadata'].get('resourceVersion'), 'REREAD_RESOURCE_VERSION_DRIFT')
+            require(service['metadata'].get('generation') == original['metadata'].get('generation'), 'REREAD_GENERATION_DRIFT')
+            require(spec['traffic'] == original['spec']['traffic'], 'REREAD_TRAFFIC_DRIFT')
+    return {'decision': 'PASS_EXISTING_IMAGE_ACTIVATION_STATE_GUARD', 'stage': stage, 'action': action, 'runtimeRevision': expected, 'runtimeDigest': expected_digest, 'observedTraffic': actual_traffic, 'serviceGeneration': service['metadata']['generation'], 'serviceResourceVersion': service['metadata']['resourceVersion'], 'tagsPreserved': True, 'configurationUnchanged': original is not None, 'production': False}
+
+if __name__ == '__main__':
+    stage, target_path, service_path, desired_path, previous_path, original_path, output_path = sys.argv[1:]
+    try:
+        output = verify(stage, read(target_path), read(service_path), read(desired_path), read(previous_path), read(original_path) if original_path != '-' else None)
+    except Exception as error:
+        output = {'decision': 'HOLD_EXISTING_IMAGE_ACTIVATION_STATE_GUARD', 'stage': stage, 'reason': str(error), 'production': False}
+        Path(output_path).write_text(json.dumps(output, indent=2, sort_keys=True) + '\n')
+        raise SystemExit(1)
+    Path(output_path).write_text(json.dumps(output, indent=2, sort_keys=True) + '\n')
+ACTIVATION_STATE_PY
+}
+
+phasea_activation_read_hosting_rules_hr() {
+  local activation_phase="$1"
+  ACT_TOKEN="$(gcloud auth print-access-token)"
+  curl -fsS -H "Authorization: Bearer $ACT_TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$OUT/hosting-$activation_phase.json"
+  curl -fsS -H "Authorization: Bearer $ACT_TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" > "$OUT/firestore-release-$activation_phase.json"
+  local activation_ruleset
+  activation_ruleset="$(jq -r .firestoreRuleset "$ACT_TARGET")"
+  curl -fsS -H "Authorization: Bearer $ACT_TOKEN" "https://firebaserules.googleapis.com/v1/$activation_ruleset" > "$OUT/firestore-ruleset-$activation_phase.json"
+  unset ACT_TOKEN
+  jq -e --slurpfile t "$ACT_TARGET" '.release.version.name==$t[0].hostingVersion and .release.name==$t[0].hostingRelease and .release.version.status=="FINALIZED" and .url=="https://cxorbia-backend-dev.web.app"' "$OUT/hosting-$activation_phase.json" >/dev/null
+  jq -e --slurpfile t "$ACT_TARGET" '.name=="projects/cxorbia-backend-dev/releases/cloud.firestore" and .rulesetName==$t[0].firestoreRuleset' "$OUT/firestore-release-$activation_phase.json" >/dev/null
+  jq -e '[.source.files[] | select(.name=="firestore.rules")]|length==1' "$OUT/firestore-ruleset-$activation_phase.json" >/dev/null
+  jq -j '[.source.files[] | select(.name=="firestore.rules") | .content][0]' "$OUT/firestore-ruleset-$activation_phase.json" > "$OUT/firestore-remote-$activation_phase.rules"
+  cmp "$OUT/firestore-remote-$activation_phase.rules" "$PHASEA_SOURCE_DIR/firestore.rules"
+  test "$(git hash-object "$OUT/firestore-remote-$activation_phase.rules")" = 540240ddbbb078ebcd14611dd2cc39375472ea66
+  curl -fsS --retry 3 -H 'Cache-Control: no-cache, no-store, max-age=0' "$ROOT/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&i3trafficactivation=$GITHUB_RUN_ID-$activation_phase" > "$OUT/hr-meta-$activation_phase.json"
+  jq -e --slurpfile t "$ACT_TARGET" '.ok==true and .revision==$t[0].expectedHrRevision and .revisionStable==true and .sourceSafe==true and .hrWrites==false and .production==false' "$OUT/hr-meta-$activation_phase.json" >/dev/null
+}
+
+phasea_activate_existing_image() {
+  phasea_activation_guard
+  ACT_STAGE=CANONICAL_SOURCE_TAR
+  ACT_ATTEMPTED=0
+  ACT_COMPLETED=0
+  trap 'phasea_activation_hold $?' ERR
+  jq -n '{decision:"HOLD_I3_PHASEA_EXISTING_IMAGE_TRAFFIC_ACTIVATION",stage:"STARTED",trafficUpdatesAttempted:0,trafficUpdatesCompleted:0,production:false}' > "$OUT/result.json"
+  sha256sum -c "$OUT/cxorbia-phasea-source.tar.sha256"
+  test "$(cut -d' ' -f1 "$OUT/cxorbia-phasea-source.tar.sha256")" = f3509fc74a7a5c46c1a8bf1e018ebae8e363b2897d1f06c85bbac34379316fa4
+  ACT_STAGE=EXISTING_BUILD_AND_REMOTE_INPUTS
+  gcloud builds describe 968bd3aa-8c78-4652-9018-9ad2f7edc026 --project "$PROJECT" --format=json > "$ACT_TMP/build.json"
+  jq '{id,projectId,status,source,sourceProvenance,images,substitutions:{_IMAGE:.substitutions._IMAGE},steps:[.steps[]? | {name,dir,entrypoint,args:[.args[]? | if test("^(build|-t|-f|\\.|backend/|gcr\\.io/)$|^(backend/|gcr\\.io/)") then . else "REDACTED_OR_UNEXPECTED_ARGUMENT" end],envNames:[.env[]? | split("=")[0]],secretEnvNames:.secretEnv}],results:{images:.results.images},options:{sourceProvenanceHash:.options.sourceProvenanceHash}}' "$ACT_TMP/build.json" > "$OUT/build-existing.json"
+  jq -e --slurpfile t "$ACT_TARGET" '.status=="SUCCESS" and .id==$t[0].cloudBuildId and .projectId==$t[0].project and .source.storageSource==$t[0].cloudBuildSource and .sourceProvenance.resolvedStorageSource==$t[0].cloudBuildSource and .substitutions._IMAGE==$t[0].imageUri and .images==[$t[0].imageUri] and ([.results.images[] | select(.name==$t[0].imageUri and .digest==$t[0].runtimeDigest)]|length)==1 and (.results.images|length)==1' "$ACT_TMP/build.json" >/dev/null
+  gcloud storage cp "$ACT_GCS" "$ACT_TMP/build-source.tgz" --quiet
+  python3 - "$PHASEA_SOURCE_DIR" "$RUNNER_TEMP/cxorbia-phasea-readback-source.tar" "$ACT_TMP/build-source.tgz" "$ACT_TMP/build.json" "$OUT/build-inputs-proof.json" <<'ACTIVATION_INPUTS_PY'
+#!/usr/bin/env python3
+"""Read-only build-input binding. CLI pins are frozen; tests may call verify().
+
+Usage: python - SOURCE_DIR CANONICAL_TAR GCS_SOURCE_TGZ BUILD_JSON OUTPUT_JSON
+No extraction, subprocess, network, provider mutation or repository writes.
+"""
+import base64
+import hashlib
+import json
+import os
+from pathlib import Path, PurePosixPath
+import shlex
+import sys
+import tarfile
+
+PINS = {
+    'sourceSha': '4854a4e289bf76d08f3ffe3ecddd09168ba501af',
+    'sourceTree': '7e55c5fefee821b2d9dd1d7c6e575592b8534be4',
+    'sourceArtifactDigest': 'sha256:f3509fc74a7a5c46c1a8bf1e018ebae8e363b2897d1f06c85bbac34379316fa4',
+    'projectId': 'cxorbia-backend-dev',
+    'cloudBuildId': '968bd3aa-8c78-4652-9018-9ad2f7edc026',
+    'cloudBuildSource': {
+        'bucket': 'cxorbia-backend-dev_cloudbuild',
+        'object': 'source/1793322732.959441-20242ed1a5ab437fb3ee3ed2f5d1ef31.tgz',
+        'generation': '1793322764003720',
+    },
+    'gcsArchiveSha256': 'cacc3d42c4303b1a568f2a1480ed7ff8bbd3bf68dc6ef845f764b59f4f611507',
+    'imageUri': 'gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-phasea-4854a4e289bf-40984272542',
+    'builtImageDigest': 'sha256:e56826df529bd132d2413a0913c557743dbeb78945724e1073665e8bc388ca65',
+    'materializationRunId': 40984272542,
+}
+DOCKERFILE = 'backend/runtime/hr-live-service/Dockerfile'
+CLOUDBUILD = 'backend/runtime/hr-live-service/cloudbuild.yaml'
+IGNORE_FILES = ['.dockerignore', DOCKERFILE + '.dockerignore']
+CAPTURE = {DOCKERFILE, CLOUDBUILD, *IGNORE_FILES}
+EXPECTED_YAML = '''steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -f
+      - backend/runtime/hr-live-service/Dockerfile
+      - -t
+      - ${_IMAGE}
+      - .
+images:
+  - ${_IMAGE}
+options:
+  logging: CLOUD_LOGGING_ONLY
+'''
+
+class VerificationError(Exception):
+    pass
+
+def require(condition, code):
+    if not condition:
+        raise VerificationError(code)
+
+def file_sha256(file):
+    h = hashlib.sha256()
+    with open(file, 'rb') as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b''):
+            h.update(chunk)
+    return h.hexdigest()
+
+def normalize_name(name):
+    require(isinstance(name, str) and '\x00' not in name and '\\' not in name, 'ARCHIVE_PATH_INVALID')
+    require(not name.startswith('/') and '..' not in PurePosixPath(name).parts, 'ARCHIVE_PATH_ESCAPE')
+    while name.startswith('./'):
+        name = name[2:]
+    name = name.rstrip('/')
+    return '' if name == '.' else name
+
+def archive_manifest(file, mode):
+    """One sequential archive pass; only two small control files retain bytes."""
+    entries, directories, captured, seen = {}, set(), {}, set()
+    with tarfile.open(file, mode=mode) as archive:
+        for member in archive:
+            name = normalize_name(member.name)
+            if not name:
+                require(member.isdir(), 'ARCHIVE_ROOT_NOT_DIRECTORY')
+                continue
+            require(name not in seen, 'ARCHIVE_DUPLICATE_PATH')
+            seen.add(name)
+            if member.isdir():
+                directories.add(name)
+                continue
+            if not member.isfile():
+                entries[name] = {'kind': 'unsupported_link_or_special'}
+                continue
+            require(member.size >= 0, 'ARCHIVE_FILE_SIZE_INVALID')
+            reader = archive.extractfile(member)
+            require(reader is not None, 'ARCHIVE_FILE_UNREADABLE')
+            digest, size, pieces = hashlib.sha256(), 0, []
+            with reader:
+                for chunk in iter(lambda: reader.read(1024 * 1024), b''):
+                    digest.update(chunk)
+                    size += len(chunk)
+                    if name in CAPTURE:
+                        require(size <= 4 * 1024 * 1024, 'BUILD_CONTROL_FILE_TOO_LARGE')
+                        pieces.append(chunk)
+            require(size == member.size, 'ARCHIVE_FILE_TRUNCATED')
+            entries[name] = {'kind': 'file', 'size': size, 'sha256': digest.hexdigest(),
+                             'executable': bool(member.mode & 0o111)}
+            if name in CAPTURE:
+                captured[name] = b''.join(pieces)
+    return entries, directories, captured
+
+def copy_commands(dockerfile):
+    commands, logical = [], ''
+    for physical in dockerfile.decode('utf-8').splitlines():
+        text = physical.strip()
+        if not logical and (not text or text.startswith('#')):
+            continue
+        if text.endswith('\\'):
+            logical += text[:-1] + ' '
+            continue
+        logical += text
+        parts = logical.split(None, 1)
+        logical = ''
+        op = parts[0].upper()
+        require(op != 'ADD', 'DOCKER_ADD_UNSUPPORTED')
+        if op != 'COPY':
+            continue
+        require(len(parts) == 2, 'DOCKER_COPY_INVALID')
+        args = json.loads(parts[1]) if parts[1].startswith('[') else shlex.split(parts[1])
+        require(isinstance(args, list) and len(args) >= 2 and all(isinstance(x, str) for x in args), 'DOCKER_COPY_INVALID')
+        require(not any(x.startswith('--') for x in args), 'DOCKER_COPY_FLAGS_UNSUPPORTED')
+        for raw in args[:-1]:
+            require(not any(x in raw for x in '$*?[]'), 'DOCKER_COPY_PATTERN_UNSUPPORTED')
+            source = normalize_name(raw)
+            require(bool(source), 'DOCKER_COPY_ROOT_UNSUPPORTED')
+            commands.append({'source': source, 'destination': args[-1]})
+    require(not logical and bool(commands), 'DOCKER_COPY_LIST_EMPTY_OR_INCOMPLETE')
+    return commands
+
+def selected_paths(entries, directories, source):
+    if source in entries:
+        require(entries[source]['kind'] == 'file', 'DOCKER_COPY_LINK_OR_SPECIAL')
+        return [source], False
+    prefix = source + '/'
+    selected = sorted(p for p in entries if p.startswith(prefix))
+    require(source in directories or selected, 'DOCKER_COPY_SOURCE_MISSING')
+    require(selected, 'DOCKER_COPY_DIRECTORY_EMPTY')
+    require(all(entries[p]['kind'] == 'file' for p in selected), 'DOCKER_COPY_LINK_OR_SPECIAL')
+    return selected, True
+
+def verify_local_file(root, rel, expected):
+    path = root / rel
+    current = path
+    while current != root:
+        require(not current.is_symlink(), 'CANONICAL_SOURCE_DIR_SYMLINK')
+        current = current.parent
+    require(path.is_file() and path.resolve().is_relative_to(root), 'CANONICAL_SOURCE_DIR_FILE_MISSING')
+    require(path.stat().st_size == expected['size'] and file_sha256(path) == expected['sha256'], 'CANONICAL_SOURCE_DIR_BYTES_MISMATCH')
+    require(bool(path.stat().st_mode & 0o111) == expected['executable'], 'CANONICAL_SOURCE_DIR_EXECUTABLE_MISMATCH')
+
+def verify(source_dir, canonical_tar, gcs_tgz, build, pins=PINS):
+    require('sha256:' + file_sha256(canonical_tar) == pins['sourceArtifactDigest'], 'CANONICAL_SOURCE_TAR_DIGEST_MISMATCH')
+    source = pins['cloudBuildSource']
+    require(build.get('id') == pins['cloudBuildId'] and build.get('projectId') == pins['projectId'], 'CLOUD_BUILD_IDENTITY_MISMATCH')
+    require(build.get('status') == 'SUCCESS', 'CLOUD_BUILD_NOT_SUCCESS')
+    require(build.get('source', {}).get('storageSource') == source, 'CLOUD_BUILD_SOURCE_GENERATION_MISMATCH')
+    provenance = build.get('sourceProvenance', {})
+    require(provenance.get('resolvedStorageSource') == source, 'RESOLVED_SOURCE_GENERATION_MISMATCH')
+    source_uri = 'gs://' + source['bucket'] + '/' + source['object'] + '#' + source['generation']
+    hashes = provenance.get('fileHashes', {})
+    require(set(hashes) == {source_uri}, 'SOURCE_PROVENANCE_OBJECT_MISMATCH')
+    sha_rows = [r for r in hashes[source_uri].get('fileHash', []) if r.get('type') == 'SHA256']
+    require(len(sha_rows) == 1, 'SOURCE_PROVENANCE_SHA256_MISSING_OR_AMBIGUOUS')
+    try:
+        declared_sha = base64.b64decode(sha_rows[0]['value'], altchars=b'-_', validate=True)
+    except (ValueError, KeyError, TypeError):
+        raise VerificationError('SOURCE_PROVENANCE_SHA256_INVALID')
+    require(len(declared_sha) == 32, 'SOURCE_PROVENANCE_SHA256_INVALID')
+    gcs_sha = file_sha256(gcs_tgz)
+    require(gcs_sha == declared_sha.hex() == pins['gcsArchiveSha256'], 'DOWNLOADED_GCS_SOURCE_DIGEST_MISMATCH')
+    image = pins['imageUri']
+    require(build.get('images') == [image] and build.get('substitutions', {}).get('_IMAGE') == image, 'BUILD_IMAGE_SUBSTITUTION_MISMATCH')
+    steps = build.get('steps')
+    require(isinstance(steps, list) and len(steps) == 1, 'BUILD_STEPS_MISMATCH')
+    step = steps[0]
+    require(step.get('name') == 'gcr.io/cloud-builders/docker', 'BUILD_BUILDER_MISMATCH')
+    require(step.get('args') == ['build', '-f', DOCKERFILE, '-t', image, '.'], 'BUILD_DOCKER_ARGUMENTS_MISMATCH')
+    require(step.get('dir') in (None, '', '.') and step.get('entrypoint') in (None, ''), 'BUILD_CONTEXT_OR_ENTRYPOINT_MISMATCH')
+    require(not step.get('env') and not step.get('secretEnv') and not step.get('envNames') and not step.get('secretEnvNames'), 'BUILD_ENVIRONMENT_OVERRIDE_UNEXPECTED')
+    images = build.get('results', {}).get('images')
+    require(isinstance(images, list) and len(images) == 1 and images[0].get('name') == image
+            and images[0].get('digest') == pins['builtImageDigest'], 'BUILD_RESULT_IMAGE_DIGEST_MISMATCH')
+    canonical, canonical_dirs, canonical_bytes = archive_manifest(canonical_tar, 'r|')
+    uploaded, uploaded_dirs, uploaded_bytes = archive_manifest(gcs_tgz, 'r|gz')
+    for rel in [DOCKERFILE, CLOUDBUILD]:
+        require(rel in canonical_bytes and rel in uploaded_bytes and uploaded_bytes[rel] == canonical_bytes[rel], 'BUILD_CONTROL_SOURCE_BYTES_MISMATCH')
+    require(not any(p in canonical or p in uploaded for p in IGNORE_FILES), 'DOCKER_IGNORE_RULES_UNSUPPORTED')
+    require(canonical_bytes[CLOUDBUILD].decode('utf-8').strip() == EXPECTED_YAML.strip(), 'CLOUDBUILD_SOURCE_CONFIGURATION_UNEXPECTED')
+    copies = copy_commands(canonical_bytes[DOCKERFILE])
+    selected = {DOCKERFILE, CLOUDBUILD}
+    copy_records = []
+    root = Path(source_dir).resolve(strict=True)
+    require(root.is_dir() and not Path(source_dir).is_symlink(), 'CANONICAL_SOURCE_DIR_INVALID')
+    for instruction in copies:
+        left, recursive = selected_paths(canonical, canonical_dirs, instruction['source'])
+        right, remote_recursive = selected_paths(uploaded, uploaded_dirs, instruction['source'])
+        require(left == right and recursive == remote_recursive, 'RECURSIVE_COPY_MANIFEST_MISMATCH')
+        for rel in left:
+            require(canonical[rel] == uploaded[rel], 'COPY_INPUT_BYTES_OR_EXECUTABLE_MISMATCH')
+        if recursive:
+            local = root / instruction['source']
+            require(local.is_dir() and not local.is_symlink(), 'CANONICAL_COPY_DIRECTORY_INVALID')
+            local_files = sorted(p.relative_to(root).as_posix() for p in local.rglob('*') if p.is_file() or p.is_symlink())
+            require(local_files == left, 'CANONICAL_SOURCE_DIR_RECURSIVE_MANIFEST_MISMATCH')
+            source_path = instruction['source']
+            prefix = source_path + '/'
+            implicit_dirs = {source_path}
+            for rel in left:
+                implicit_dirs.update(str(p) for p in PurePosixPath(rel).parents
+                                     if str(p) == source_path or str(p).startswith(prefix))
+            copy_dirs = implicit_dirs | {p for p in canonical_dirs if p == source_path or p.startswith(prefix)}
+            remote_dirs = implicit_dirs | {p for p in uploaded_dirs if p == source_path or p.startswith(prefix)}
+            require(copy_dirs == remote_dirs, 'RECURSIVE_COPY_DIRECTORY_MANIFEST_MISMATCH')
+            local_dirs = {source_path} | {p.relative_to(root).as_posix() for p in local.rglob('*') if p.is_dir()}
+            require(local_dirs == copy_dirs, 'CANONICAL_SOURCE_DIR_DIRECTORY_MANIFEST_MISMATCH')
+        selected.update(left)
+        copy_records.append({**instruction, 'recursive': recursive, 'fileCount': len(left),
+                             'directories': sorted(copy_dirs) if recursive else []})
+    manifest = [{'path': rel, **canonical[rel]} for rel in sorted(selected)]
+    for row in manifest:
+        verify_local_file(root, row['path'], row)
+    manifest_sha = hashlib.sha256(json.dumps(manifest, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+    return {'decision': 'PASS_EXACT_SOURCE_BUILD_INPUTS_BINDING', 'sourceSha': pins['sourceSha'], 'sourceTree': pins['sourceTree'],
+            'sourceArtifactDigest': pins['sourceArtifactDigest'], 'localCanonicalSourceTarVerified': True,
+            'cloudBuildId': pins['cloudBuildId'], 'cloudBuildSource': source, 'gcsSourceGenerationUri': source_uri,
+            'downloadedSourceSha256': gcs_sha, 'sourceProvenanceSha256': declared_sha.hex(),
+            'remoteBuildSourceContentVerified': True, 'imageUri': image, 'builtImageDigest': pins['builtImageDigest'],
+            'materializationRunId': pins['materializationRunId'], 'dockerfileSha256': canonical[DOCKERFILE]['sha256'],
+            'cloudbuildSha256': canonical[CLOUDBUILD]['sha256'], 'dockerCopies': copy_records,
+            'verifiedInputCount': len(manifest), 'inputManifestSha256': manifest_sha, 'inputs': manifest,
+            'archivePasses': {'canonicalTar': 1, 'gcsTgzDecompressions': 1},
+            'runtimeRevisionVerified': False, 'trafficChanged': False, 'providerReads': 0, 'providerWrites': 0, 'production': False}
+
+def main(argv):
+    require(len(argv) == 5, 'VERIFIER_ARGUMENT_COUNT')
+    source_dir, canonical_tar, gcs_tgz, build_json, output_json = argv
+    report = {'decision': 'HOLD_EXACT_SOURCE_BUILD_INPUTS_BINDING', 'sourceSha': PINS['sourceSha'],
+              'sourceTree': PINS['sourceTree'], 'runtimeRevisionVerified': False, 'providerWrites': 0, 'production': False}
+    status = 1
+    try:
+        with open(build_json, encoding='utf-8') as stream:
+            build = json.load(stream)
+        report = verify(source_dir, canonical_tar, gcs_tgz, build)
+        status = 0
+    except VerificationError as error:
+        report['reasonCode'] = str(error)
+    except Exception:
+        report['reasonCode'] = 'BUILD_INPUT_VERIFIER_FAILURE'
+    output = Path(output_json)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    temporary = output.with_name(output.name + '.tmp')
+    temporary.write_text(json.dumps(report, indent=2) + '\n')
+    os.chmod(temporary, 0o600)
+    temporary.replace(output)
+    print(json.dumps({k: report[k] for k in ['decision', 'reasonCode', 'verifiedInputCount', 'inputManifestSha256'] if k in report}))
+    return status
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv[1:]))
+ACTIVATION_INPUTS_PY
+  jq -e '.decision=="PASS_EXACT_SOURCE_BUILD_INPUTS_BINDING"' "$OUT/build-inputs-proof.json" >/dev/null
+  ACT_STAGE=OBSERVE_EXISTING_RUNTIME
+  phasea_activation_capture_runtime before
+  phasea_activation_state_guard before -
+  ACT_STAGE=HOSTING_RULES_HR_PRECONDITION
+  phasea_activation_read_hosting_rules_hr before
+  ACT_STAGE=IMMEDIATE_RUNTIME_REREAD
+  phasea_activation_capture_runtime cas
+  phasea_activation_state_guard cas "$ACT_TMP/service-before.json"
+  ACT_ACTION="$(jq -r .action "$OUT/state-cas.json")"
+  if [[ "$ACT_ACTION" == ACTIVATE_EXISTING_REVISION ]]; then
+    ACT_STAGE=ACTIVATE_EXACT_EXISTING_REVISION
+    ACT_ATTEMPTED=1
+    # The only provider mutation in this branch; no image/configuration/tag changes.
+    gcloud run services update-traffic "$SERVICE" --project "$PROJECT" --region "$REGION" --to-revisions=cxorbia-live-hr-dev-00331-2xq=100 --quiet
+    ACT_COMPLETED=1
+  else
+    test "$ACT_ACTION" = ALREADY_ACTIVE
+  fi
+  ACT_STAGE=RUNTIME_POST_ACTIVATION
+  phasea_activation_capture_runtime after
+  phasea_activation_state_guard after "$ACT_TMP/service-before.json"
+  ACT_URL="$(jq -r .status.url "$ACT_TMP/service-after.json")"
+  test "$ACT_URL" = https://cxorbia-live-hr-dev-mzgge2pnia-uc.a.run.app
+  curl -fsS --retry 8 "$ACT_URL/health" > "$OUT/health.json"
+  jq -e '.ok==true and .production==false and .hrWrites==false' "$OUT/health.json" >/dev/null
+  ACT_STAGE=HOSTING_RULES_HR_POST_ACTIVATION
+  phasea_activation_read_hosting_rules_hr after
+  jq -n -S --argjson attempted "$ACT_ATTEMPTED" --argjson completed "$ACT_COMPLETED" '{decision:"PASS_EXISTING_IMAGE_TRAFFIC_ACTIVATION_MUTATION_STEP",trafficUpdatesAttempted:$attempted,trafficUpdatesCompleted:$completed,production:false}' > "$OUT/activation-step.json"
+  echo "PHASEA_RUNTIME=$ACT_REV" >> "$GITHUB_ENV"
+  echo "PHASEA_DIGEST=$ACT_DIGEST" >> "$GITHUB_ENV"
+  echo "PHASEA_RULESET=$(jq -r .firestoreRuleset "$ACT_TARGET")" >> "$GITHUB_ENV"
+  echo "PHASEA_HOSTING_VERSION=$(jq -r .hostingVersion "$ACT_TARGET")" >> "$GITHUB_ENV"
+  echo "PHASEA_HOSTING_RELEASE=$(jq -r .hostingRelease "$ACT_TARGET")" >> "$GITHUB_ENV"
+  trap - ERR
+}
+
+phasea_prove_existing_image_activation() {
+  phasea_activation_guard
+  ACT_STAGE=PROOF_INPUTS
+  ACT_ATTEMPTED="$(jq -r .trafficUpdatesAttempted "$OUT/activation-step.json")"
+  ACT_COMPLETED="$(jq -r .trafficUpdatesCompleted "$OUT/activation-step.json")"
+  trap 'phasea_activation_hold $?' ERR
+  jq -e '.decision=="PASS_EXISTING_IMAGE_TRAFFIC_ACTIVATION_MUTATION_STEP" and (.trafficUpdatesCompleted==0 or .trafficUpdatesCompleted==1) and .trafficUpdatesCompleted==.trafficUpdatesAttempted and .production==false' "$OUT/activation-step.json" >/dev/null
+  sha256sum -c "$OUT/cxorbia-phasea-source.tar.sha256"
+  jq -e '.decision=="PASS_EXACT_SOURCE_BUILD_INPUTS_BINDING"' "$OUT/build-inputs-proof.json" >/dev/null
+  ACT_STAGE=FINAL_RUNTIME_IDENTITY
+  phasea_activation_capture_runtime final
+  phasea_activation_state_guard final "$ACT_TMP/service-before.json"
+  ACT_STAGE=FINAL_HOSTING_RULES_HR
+  phasea_activation_read_hosting_rules_hr final
+  ACT_STAGE=EXACT_SERVED_ASSETS
+  test "${#ASSETS[@]}" = 44
+  echo '{}' > "$OUT/served-owner-blobs.json"
+  for p in "${ASSETS[@]}"; do
+    remote="$OUT/remote-${p//\//_}"
+    curl -fsSL --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$ROOT/$p?trafficactivation=$GITHUB_RUN_ID-$(date +%s%N)" -o "$remote"
+    actual_blob="$(git hash-object "$remote")"
+    test "$actual_blob" = "$(git rev-parse "$PHASEA_SOURCE:app/$p")"
+    jq --arg path "app/$p" --arg blob "$actual_blob" '.+{($path):$blob}' "$OUT/served-owner-blobs.json" > "$ACT_TMP/served-next.json"
+    cp "$ACT_TMP/served-next.json" "$OUT/served-owner-blobs.json"
+  done
+  ACT_STAGE=FINAL_BOUND_RECEIPT
+  python3 - "$OUT" "$GITHUB_RUN_ID" "$(git rev-parse HEAD)" <<'ACTIVATION_RECEIPT_PY'
+import hashlib, json, sys
+from pathlib import Path
+out = Path(sys.argv[1])
+def load(name): return json.loads((out/name).read_text())
+def save(name,obj): (out/name).write_text(json.dumps(obj, indent=2, sort_keys=True) + '\n')
+t, inputs, state, step, owners = [load(p) for p in ['materialization-target.json','build-inputs-proof.json','state-final.json','activation-step.json','served-owner-blobs.json']]
+binding = {'decision':'PASS_EXACT_SOURCE_BUILD_IMAGE_REVISION_BINDING','sourceSha':t['sourceSha'],'sourceTree':t['sourceTree'],'sourceArtifactDigest':t['sourceArtifactDigest'],'cloudBuildId':t['cloudBuildId'],'cloudBuildSource':t['cloudBuildSource'],'cloudBuildSourceArchiveSha256':t['cloudBuildSourceArchiveSha256'],'imageUri':t['imageUri'],'builtImageDigest':t['runtimeDigest'],'runtimeRevision':t['runtimeRevision'],'runtimeDigest':t['runtimeDigest'],'trafficPercent':100,'materializationRunId':t['materializationRunId'],'readbackRunId':int(sys.argv[2]),'controlSha':sys.argv[3],'remoteBuildInputsVerified':True,'buildInputsProof':inputs,'buildInputsProofSha256':hashlib.sha256((out/'build-inputs-proof.json').read_bytes()).hexdigest(),'sourceIdentityVerified':True,'runtimeSourceVerified':True,'configurationUnchanged':state['configurationUnchanged'],'tagsPreserved':state['tagsPreserved'],'trafficUpdates':step['trafficUpdatesCompleted'],'production':False}
+save('runtime-binding-proof.json',binding)
+result = {'decision':'PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION','operation':'EXISTING_IMAGE_TRAFFIC_ACTIVATION','sourceSha':t['sourceSha'],'sourceTree':t['sourceTree'],'runtimeSourceSha':t['sourceSha'],'artifactDigest':t['sourceArtifactDigest'],'sourceArtifactDigest':t['sourceArtifactDigest'],'sourceArtifactRetainedInUpload':False,'materializationRunId':t['materializationRunId'],'readbackRunId':int(sys.argv[2]),'controlSha':sys.argv[3],'cloudBuildId':t['cloudBuildId'],'runtimeRevision':t['runtimeRevision'],'runtimeDigest':t['runtimeDigest'],'hostingVersion':t['hostingVersion'],'hostingRelease':t['hostingRelease'],'firestoreRuleset':t['firestoreRuleset'],'rulesGitBlob':'540240ddbbb078ebcd14611dd2cc39375472ea66','hrRevision':t['expectedHrRevision'],'servedAssetCount':len(owners),'servedOwnerBlobs':owners,'sourceIdentityVerified':True,'remoteBuildInputsVerified':True,'runtimeSourceVerified':True,'trafficPercent':100,'runtimeBindingProof':'runtime-binding-proof.json','runtimeBindingProofSha256':hashlib.sha256((out/'runtime-binding-proof.json').read_bytes()).hexdigest(),'builds':0,'runtimeDeploys':0,'hostingDeploys':0,'firestoreRulesDeploys':0,'trafficUpdates':step['trafficUpdatesCompleted'],'configurationUnchanged':True,'tagsPreserved':True,'authWrites':0,'hrWrites':0,'fullTasksClosed':False,'production':False}
+save('result.json',result)
+ACTIVATION_RECEIPT_PY
+  trap - ERR
+  cat "$OUT/result.json"
+}
+# END_EXISTING_IMAGE_TRAFFIC_ACTIVATION_HELPERS
+
 case "$MODE" in
 session-source-proof|session-preflight|session-proof)
   # Focal opt-in in this existing control lane; no materialization and no seal rewrite.
@@ -284,8 +819,12 @@ preflight)
   node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs > "$OUT/canonical-authority.json"
   jq -e '.moduleTruthReadback.sourceAligned==true and .moduleTruthReadback.domainCount==21 and .moduleBlobReadback.pass==true' "$OUT/canonical-authority.json" >/dev/null
   # Install the pre-existing Firebase CLI in the same approved runner before the one DEV build.
+  # Existing-image activation needs no Firebase publish CLI.
+  if [[ "$(jq -r '.i3PhaseADevReadbackTarget.existingImageTrafficActivation // false' "$CANDIDATE_DESCRIPTOR")" != true ]]; then
   npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest >/dev/null 2>&1
-  if [[ "$STATUS" == HOLD_I3_PHASEA_CUMULATIVE_DEV_READBACK_ONLY_REQUIRED && "$(jq -r '.i3PhaseADevReadbackTarget.diagnosticOnly // false' "$CANDIDATE_DESCRIPTOR")" == true ]]; then
+  fi
+  if [[ "$STATUS" == HOLD_I3_PHASEA_CUMULATIVE_DEV_READBACK_ONLY_REQUIRED && "$(jq -r '.i3PhaseADevReadbackTarget.diagnosticOnly // false' "$CANDIDATE_DESCRIPTOR")" == true ]] || [[ "$STATUS" == HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED && "$(jq -r '.i3PhaseADevReadbackTarget.existingImageTrafficActivation // false' "$CANDIDATE_DESCRIPTOR")" == true ]]; then
+    if [[ "$(jq -r '.i3PhaseADevReadbackTarget.existingImageTrafficActivation // false' "$CANDIDATE_DESCRIPTOR")" == true ]]; then phasea_activation_guard; fi
     SOURCE_ARCHIVE="$RUNNER_TEMP/cxorbia-phasea-readback-source.tar"
     git archive --format=tar "$PHASEA_SOURCE" > "$SOURCE_ARCHIVE"
     sha256sum "$SOURCE_ARCHIVE" > "$OUT/cxorbia-phasea-source.tar.sha256"
@@ -300,6 +839,12 @@ preflight)
   echo "PHASEA_SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
   ;;
 materialize)
+  # BEGIN_EXISTING_IMAGE_TRAFFIC_ACTIVATION_MATERIALIZE
+  if [[ "$(jq -r '.i3PhaseADevReadbackTarget.existingImageTrafficActivation // false' "$CANDIDATE_DESCRIPTOR")" == true ]]; then
+    phasea_activate_existing_image
+    exit 0
+  fi
+  # END_EXISTING_IMAGE_TRAFFIC_ACTIVATION_MATERIALIZE
   # One existing Phase A runner: one build, one runtime, one Hosting + Firestore rules publish. DEV only.
   test "$PROJECT" = "cxorbia-backend-dev"
   test "$SERVICE" = "cxorbia-live-hr-dev"
@@ -423,6 +968,12 @@ readback)
   ;;
 
 proof)
+  # BEGIN_EXISTING_IMAGE_TRAFFIC_ACTIVATION_PROOF
+  if [[ "$(jq -r '.i3PhaseADevReadbackTarget.existingImageTrafficActivation // false' "$CANDIDATE_DESCRIPTOR")" == true ]]; then
+    phasea_prove_existing_image_activation
+    exit 0
+  fi
+  # END_EXISTING_IMAGE_TRAFFIC_ACTIVATION_PROOF
   sha256sum -c "$OUT/cxorbia-phasea-source.tar.sha256"
   gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-final.json"
   test "$(jq -r '.status.latestReadyRevisionName // empty' "$OUT/runtime-final.json")" = "$PHASEA_RUNTIME"

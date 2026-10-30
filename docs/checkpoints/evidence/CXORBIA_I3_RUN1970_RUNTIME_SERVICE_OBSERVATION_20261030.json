@@ -1,0 +1,107 @@
+{
+  "metadata": {
+    "name": "cxorbia-live-hr-dev",
+    "generation": 332,
+    "resourceVersion": "AAZfBIQl06U"
+  },
+  "spec": {
+    "traffic": [
+      {
+        "percent": 100,
+        "revisionName": "cxorbia-live-hr-dev-00330-fim"
+      },
+      {
+        "revisionName": "cxorbia-live-hr-dev-00329-xac",
+        "tag": "i3-a2be-40832567443"
+      },
+      {
+        "revisionName": "cxorbia-live-hr-dev-00330-fim",
+        "tag": "i3-a2be-40833285318"
+      }
+    ],
+    "template": {
+      "metadata": {
+        "name": null,
+        "userImage": null
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": null,
+            "image": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-phasea-4854a4e289bf-40984272542",
+            "ports": [
+              {
+                "containerPort": 8080,
+                "name": "http1"
+              }
+            ],
+            "envNames": [
+              "CXORBIA_LIVE_HR_CACHE_MS",
+              "CXORBIA_HR_LIVE_MAX_ROW",
+              "CXORBIA_HR_LIVE_MAX_COL",
+              "CXORBIA_HR_EARLIEST_PERIOD",
+              "CXORBIA_DEV_OPERATIONAL_NAMES",
+              "CXORBIA_DEV_VISUAL_PROFILE_TOKEN_SHA256",
+              "CXORBIA_DEV_VISUAL_PROFILE_TOKEN_EXPIRES_AT",
+              "CXORBIA_G2B_SYNTHETIC_WRITE_ENABLED",
+              "CXORBIA_G2B_SYNTHETIC_WRITE_GATE",
+              "CXORBIA_G2B_SYNTHETIC_REQUEST_ID",
+              "CXORBIA_F5_SYNTHETIC_AUTHORIZATION_ID",
+              "CXORBIA_F5_SYNTHETIC_EXPIRES_AT",
+              "CXORBIA_RECOVERY_SOURCE_SHA",
+              "CXORBIA_ENVIRONMENT",
+              "CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_ENABLED",
+              "CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_GATE",
+              "CXORBIA_VISIT_RECONCILIATION_CONCURRENCY"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "status": {
+    "address": {
+      "url": "https://cxorbia-live-hr-dev-mzgge2pnia-uc.a.run.app"
+    },
+    "conditions": [
+      {
+        "lastTransitionTime": "2026-10-30T01:14:21.686883Z",
+        "status": "True",
+        "type": "Ready"
+      },
+      {
+        "severity": "Info",
+        "status": "True",
+        "type": "BaseImageValidated"
+      },
+      {
+        "lastTransitionTime": "2026-10-30T01:14:21.790667Z",
+        "reason": "Retired",
+        "status": "True",
+        "type": "ConfigurationsReady"
+      },
+      {
+        "lastTransitionTime": "2026-10-29T07:09:16.217954Z",
+        "status": "True",
+        "type": "RoutesReady"
+      }
+    ],
+    "latestCreatedRevisionName": "cxorbia-live-hr-dev-00331-2xq",
+    "latestReadyRevisionName": "cxorbia-live-hr-dev-00330-fim",
+    "observedGeneration": 332,
+    "traffic": [
+      {
+        "revisionName": "cxorbia-live-hr-dev-00329-xac",
+        "tag": "i3-a2be-40832567443",
+        "url": "https://i3-a2be-40832567443---cxorbia-live-hr-dev-mzgge2pnia-uc.a.run.app"
+      },
+      {
+        "percent": 100,
+        "revisionName": "cxorbia-live-hr-dev-00330-fim",
+        "tag": "i3-a2be-40833285318",
+        "url": "https://i3-a2be-40833285318---cxorbia-live-hr-dev-mzgge2pnia-uc.a.run.app"
+      }
+    ],
+    "url": "https://cxorbia-live-hr-dev-mzgge2pnia-uc.a.run.app"
+  }
+}

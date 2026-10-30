@@ -1,0 +1,125 @@
+{
+  "decision": "HOLD_READONLY_RUNTIME_BINDING_DIAGNOSTIC",
+  "diagnosticOnly": true,
+  "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+  "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+  "sourceArtifactDigest": "sha256:f3509fc74a7a5c46c1a8bf1e018ebae8e363b2897d1f06c85bbac34379316fa4",
+  "localCanonicalSourceTarVerified": true,
+  "runtimeSourceSha": null,
+  "sourceIdentityVerified": false,
+  "remoteBuildSourceContentVerified": false,
+  "cloudBuildId": "968bd3aa-8c78-4652-9018-9ad2f7edc026",
+  "buildStatus": "SUCCESS",
+  "expectedImageUri": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-phasea-4854a4e289bf-40984272542",
+  "buildDeclaredImages": [
+    "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-phasea-4854a4e289bf-40984272542"
+  ],
+  "buildImageResults": [
+    {
+      "artifactRegistryPackage": "projects/cxorbia-backend-dev/locations/us/repositories/gcr.io/packages/cxorbia-live-hr-dev/versions/sha256:e56826df529bd132d2413a0913c557743dbeb78945724e1073665e8bc388ca65",
+      "digest": "sha256:e56826df529bd132d2413a0913c557743dbeb78945724e1073665e8bc388ca65",
+      "name": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-phasea-4854a4e289bf-40984272542",
+      "pushTiming": {
+        "endTime": "2026-10-30T01:13:52.745437521Z",
+        "startTime": "2026-10-30T01:13:41.862959465Z"
+      }
+    }
+  ],
+  "buildImageDigest": "sha256:e56826df529bd132d2413a0913c557743dbeb78945724e1073665e8bc388ca65",
+  "serviceTemplateImage": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-phasea-4854a4e289bf-40984272542",
+  "latestCreatedRevision": "cxorbia-live-hr-dev-00331-2xq",
+  "latestReadyRevision": "cxorbia-live-hr-dev-00330-fim",
+  "readyRevisionDigest": "sha256:bba5ebbf19c203954ec0be6c2c3ef01a057e7ce3f98fb7e5eeac2d889bd0a500",
+  "buildRuntimeDigestBound": false,
+  "readyRevisionTrafficPercent": 100,
+  "totalTrafficPercent": 100,
+  "specTraffic": [
+    {
+      "percent": 100,
+      "revisionName": "cxorbia-live-hr-dev-00330-fim"
+    },
+    {
+      "revisionName": "cxorbia-live-hr-dev-00329-xac",
+      "tag": "i3-a2be-40832567443"
+    },
+    {
+      "revisionName": "cxorbia-live-hr-dev-00330-fim",
+      "tag": "i3-a2be-40833285318"
+    }
+  ],
+  "observedTraffic": [
+    {
+      "revisionName": "cxorbia-live-hr-dev-00329-xac",
+      "tag": "i3-a2be-40832567443",
+      "url": "https://i3-a2be-40832567443---cxorbia-live-hr-dev-mzgge2pnia-uc.a.run.app"
+    },
+    {
+      "percent": 100,
+      "revisionName": "cxorbia-live-hr-dev-00330-fim",
+      "tag": "i3-a2be-40833285318",
+      "url": "https://i3-a2be-40833285318---cxorbia-live-hr-dev-mzgge2pnia-uc.a.run.app"
+    }
+  ],
+  "serviceConditions": [
+    {
+      "lastTransitionTime": "2026-10-30T01:14:21.686883Z",
+      "status": "True",
+      "type": "Ready"
+    },
+    {
+      "severity": "Info",
+      "status": "True",
+      "type": "BaseImageValidated"
+    },
+    {
+      "lastTransitionTime": "2026-10-30T01:14:21.790667Z",
+      "reason": "Retired",
+      "status": "True",
+      "type": "ConfigurationsReady"
+    },
+    {
+      "lastTransitionTime": "2026-10-29T07:09:16.217954Z",
+      "status": "True",
+      "type": "RoutesReady"
+    }
+  ],
+  "serviceGeneration": 332,
+  "serviceObservedGeneration": 332,
+  "cloudBuildSource": {
+    "storageSource": {
+      "bucket": "cxorbia-backend-dev_cloudbuild",
+      "generation": "1793322764003720",
+      "object": "source/1793322732.959441-20242ed1a5ab437fb3ee3ed2f5d1ef31.tgz"
+    }
+  },
+  "cloudBuildSourceProvenance": {
+    "fileHashes": {
+      "gs://cxorbia-backend-dev_cloudbuild/source/1793322732.959441-20242ed1a5ab437fb3ee3ed2f5d1ef31.tgz#1793322764003720": {
+        "fileHash": [
+          {
+            "type": "MD5",
+            "value": "-4TesXEYJ9x0yL5iUpdW6g=="
+          },
+          {
+            "type": "SHA256",
+            "value": "ysw9QsQwOxpWjyoUgO1_-LvTv2jcbvhF92S1n09hFQc="
+          }
+        ]
+      }
+    },
+    "resolvedStorageSource": {
+      "bucket": "cxorbia-backend-dev_cloudbuild",
+      "generation": "1793322764003720",
+      "object": "source/1793322732.959441-20242ed1a5ab437fb3ee3ed2f5d1ef31.tgz"
+    }
+  },
+  "reasonCodes": [
+    "LATEST_CREATED_NOT_READY_OR_ROLLOUT_INCOMPLETE",
+    "BUILD_RUNTIME_DIGEST_MISMATCH",
+    "REMOTE_BUILD_SOURCE_CONTENT_NOT_VERIFIED"
+  ],
+  "builds": 0,
+  "deploys": 0,
+  "providerWrites": 0,
+  "production": false
+}

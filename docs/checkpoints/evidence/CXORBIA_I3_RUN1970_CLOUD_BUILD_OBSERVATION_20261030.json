@@ -1,0 +1,81 @@
+{
+  "id": "968bd3aa-8c78-4652-9018-9ad2f7edc026",
+  "projectId": "cxorbia-backend-dev",
+  "status": "SUCCESS",
+  "createTime": "2026-10-30T01:12:44.308688560Z",
+  "startTime": "2026-10-30T01:12:45.051344214Z",
+  "finishTime": "2026-10-30T01:13:52.926909Z",
+  "source": {
+    "storageSource": {
+      "bucket": "cxorbia-backend-dev_cloudbuild",
+      "generation": "1793322764003720",
+      "object": "source/1793322732.959441-20242ed1a5ab437fb3ee3ed2f5d1ef31.tgz"
+    }
+  },
+  "sourceProvenance": {
+    "fileHashes": {
+      "gs://cxorbia-backend-dev_cloudbuild/source/1793322732.959441-20242ed1a5ab437fb3ee3ed2f5d1ef31.tgz#1793322764003720": {
+        "fileHash": [
+          {
+            "type": "MD5",
+            "value": "-4TesXEYJ9x0yL5iUpdW6g=="
+          },
+          {
+            "type": "SHA256",
+            "value": "ysw9QsQwOxpWjyoUgO1_-LvTv2jcbvhF92S1n09hFQc="
+          }
+        ]
+      }
+    },
+    "resolvedStorageSource": {
+      "bucket": "cxorbia-backend-dev_cloudbuild",
+      "generation": "1793322764003720",
+      "object": "source/1793322732.959441-20242ed1a5ab437fb3ee3ed2f5d1ef31.tgz"
+    }
+  },
+  "images": [
+    "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-phasea-4854a4e289bf-40984272542"
+  ],
+  "substitutions": {
+    "_IMAGE": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-phasea-4854a4e289bf-40984272542"
+  },
+  "steps": [
+    {
+      "name": "gcr.io/cloud-builders/docker",
+      "id": null,
+      "dir": null,
+      "entrypoint": null,
+      "args": [
+        "build",
+        "-f",
+        "backend/runtime/hr-live-service/Dockerfile",
+        "-t",
+        "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-phasea-4854a4e289bf-40984272542",
+        "."
+      ],
+      "envNames": [],
+      "secretEnvNames": null
+    }
+  ],
+  "results": {
+    "images": [
+      {
+        "artifactRegistryPackage": "projects/cxorbia-backend-dev/locations/us/repositories/gcr.io/packages/cxorbia-live-hr-dev/versions/sha256:e56826df529bd132d2413a0913c557743dbeb78945724e1073665e8bc388ca65",
+        "digest": "sha256:e56826df529bd132d2413a0913c557743dbeb78945724e1073665e8bc388ca65",
+        "name": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-phasea-4854a4e289bf-40984272542",
+        "pushTiming": {
+          "endTime": "2026-10-30T01:13:52.745437521Z",
+          "startTime": "2026-10-30T01:13:41.862959465Z"
+        }
+      }
+    ],
+    "buildStepImages": [
+      "sha256:f772ab459889c67835bd959c2b9e9351f2c0752c4f989710ecda20c229f0733e"
+    ]
+  },
+  "options": {
+    "sourceProvenanceHash": null,
+    "requestedVerifyOption": null,
+    "logging": "CLOUD_LOGGING_ONLY"
+  }
+}

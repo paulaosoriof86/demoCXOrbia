@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "cxorbia.i3.runtime-traffic-diagnostic-adjudication.v1",
+  "observedAt": "2026-10-30",
+  "decision": "P0_PROVEN_DEV_TRAFFIC_PINNED_TO_PREDECESSOR",
+  "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+  "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+  "sourceArtifactDigest": "sha256:f3509fc74a7a5c46c1a8bf1e018ebae8e363b2897d1f06c85bbac34379316fa4",
+  "controlSha": "6c29d887c3ab6aaa320be02e524c6d55e8334e7f",
+  "runId": 40985965528,
+  "runNumber": 1970,
+  "authorityJobId": 123836942137,
+  "readbackJobId": 123837108280,
+  "jobConclusion": "failure",
+  "failureMeaning": "EXPECTED_DIAGNOSTIC_HOLD_NO_MATERIALIZATION_PASS_WRITER",
+  "artifact": {
+    "id": 12947460767,
+    "name": "cxorbia-i3-phasea-materialization-40985965528",
+    "zipBytes": 38101,
+    "zipSha256": "0812efa3cbfdcc711f6a02e01b6dad74bee6e972e72c3a12095f9630ceceedba",
+    "locallyRehashed": true
+  },
+  "evidenceFiles": [
+    {
+      "path": "docs/checkpoints/evidence/CXORBIA_I3_RUN1970_RUNTIME_BINDING_DIAGNOSTIC_20261030.json",
+      "gitBlob": "fbcdfa0c15820f5b1f04cfa948a14ffa14b0c731"
+    },
+    {
+      "path": "docs/checkpoints/evidence/CXORBIA_I3_RUN1970_CLOUD_BUILD_OBSERVATION_20261030.json",
+      "gitBlob": "1945bf58de57e3c403e3904a403dde104af3e8d0"
+    },
+    {
+      "path": "docs/checkpoints/evidence/CXORBIA_I3_RUN1970_RUNTIME_SERVICE_OBSERVATION_20261030.json",
+      "gitBlob": "75d4bf79ec6341e93c97f3f31319786edf80079b"
+    },
+    {
+      "path": "docs/checkpoints/evidence/CXORBIA_I3_RUN1970_RUNTIME_REVISIONS_OBSERVATION_20261030.json",
+      "gitBlob": "416160ecfe84d0d840415627b962ba60b3032ea9"
+    }
+  ],
+  "cloudBuildId": "968bd3aa-8c78-4652-9018-9ad2f7edc026",
+  "builtImageDigest": "sha256:e56826df529bd132d2413a0913c557743dbeb78945724e1073665e8bc388ca65",
+  "newRevision": "cxorbia-live-hr-dev-00331-2xq",
+  "newRevisionImageDigest": "sha256:e56826df529bd132d2413a0913c557743dbeb78945724e1073665e8bc388ca65",
+  "newRevisionReady": true,
+  "newRevisionActive": false,
+  "newRevisionReason": "Retired",
+  "currentServingRevision": "cxorbia-live-hr-dev-00330-fim",
+  "currentServingDigest": "sha256:bba5ebbf19c203954ec0be6c2c3ef01a057e7ce3f98fb7e5eeac2d889bd0a500",
+  "currentServingTrafficPercent": 100,
+  "serviceTemplateImage": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-phasea-4854a4e289bf-40984272542",
+  "sourceBuildArtifact": {
+    "bucket": "cxorbia-backend-dev_cloudbuild",
+    "generation": "1793322764003720",
+    "object": "source/1793322732.959441-20242ed1a5ab437fb3ee3ed2f5d1ef31.tgz"
+  },
+  "sourceBuildArtifactSha256": "cacc3d42c4303b1a568f2a1480ed7ff8bbd3bf68dc6ef845f764b59f4f611507",
+  "rootCause": "Service spec traffic remains explicitly pinned at 100% to revision 00330. Building and creating revision 00331 did not change the traffic assignment. The old materializer did not join built-image digest to the serving revision.",
+  "sourceInputsToImageBinding": "PENDING_EXACT_DOCKER_INPUT_COMPARISON_WITH_RESOLVED_BUILD_SOURCE_OBJECT",
+  "nextAction": "VERIFY_EXACT_EXISTING_BUILD_INPUTS_THEN_ACTIVATE_ONLY_EXISTING_REVISION_00331_WITH_POST_READBACK",
+  "repairBudget": {
+    "cloudBuilds": 0,
+    "newRuntimeRevisions": 0,
+    "imageChanges": 0,
+    "hostingDeploys": 0,
+    "firestoreRulesDeploys": 0,
+    "trafficUpdates": 1,
+    "authMutations": 0,
+    "hrWrites": 0,
+    "financeWrites": 0
+  },
+  "builds": 0,
+  "deploys": 0,
+  "providerWrites": 0,
+  "fullTaskClosed": false,
+  "production": false,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "authorizationI4": false
+}
