@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "cxorbia.i3.r10-hold.v1",
+  "id": "CXORBIA-I3-R10-D07-C04-C05-HOLD-RUN1976",
+  "iteration": "I3",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadSha": "1a49f7414d4443ab1be4b5e709d0042c277faf67",
+  "productSourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+  "productTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+  "runId": 40991623755,
+  "runNumber": 1976,
+  "jobId": 123855711205,
+  "artifactId": 12949033715,
+  "artifactDigest": "sha256:420bd83ee3ce430fa384a1aaf23fca3803b684f28ec3333bbc79cb1f186ca036",
+  "sourceProofDecision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+  "decision": "HOLD_R7_D07_C04_C05_BOUNDED",
+  "d07": {
+    "classification": "MAPPING_FAILURE_PENDING_BYTE_READBACK",
+    "httpStatusAdmin": 200,
+    "httpStatusShopper": 200,
+    "renderedAdmin": true,
+    "renderedShopper": true,
+    "pageCountAdmin": 7,
+    "pageCountShopper": 7,
+    "downloadCountAdmin": 1,
+    "downloadCountShopper": 1,
+    "failureStage": "HASH_DOWNLOADED_BYTES",
+    "code": "D07_DOWNLOAD_NOT_APPROVED_PDF_BYTES",
+    "writes": 0
+  },
+  "c04c05": {
+    "classification": "MAPPING_FAILURE",
+    "actorScopePass": true,
+    "countryScopePass": true,
+    "baselineRecords": 3,
+    "phase": "prepare_create-cxc",
+    "code": "C04_COMMAND_ACTOR_OR_IDEMPOTENCY_DENIED",
+    "commandsIssued": 0,
+    "providerWrites": 0,
+    "fixturesStarted": false,
+    "cleanupDeletes": 0
+  },
+  "storageCors": {
+    "bucket": "cxorbia-backend-dev.firebasestorage.app",
+    "origin": "https://cxorbia-backend-dev.web.app",
+    "expectedRulePresent": true,
+    "changed": false,
+    "production": false
+  },
+  "productSourceChanged": false,
+  "productionTouched": false
+}

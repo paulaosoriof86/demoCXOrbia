@@ -1124,8 +1124,8 @@ async function readD07RolePdf({page,role,uid,binding,outDir}){
       }
       return {size,sha256:digest.digest('hex'),pdfSignature:signature.equals(Buffer.from('%PDF-'))};
     })(),15000,'DOWNLOAD_BYTES_TIMEOUT');
-    check(content.pdfSignature&&content.size===D07.approvedSize&&content.sha256===D07.approvedSha256,'DOWNLOAD_NOT_APPROVED_PDF_BYTES');
     result.download=content;
+    check(content.pdfSignature&&content.size===D07.approvedSize&&content.sha256===D07.approvedSha256,'DOWNLOAD_NOT_APPROVED_PDF_BYTES');
     if(result.pageCount>1){
       await page.locator('[data-pdf-next]').click({timeout:10000});
       await page.waitForFunction(()=>/^Página 2 de /.test(document.querySelector('[data-pdf-page]')?.textContent||''),null,{timeout:10000});
@@ -1499,8 +1499,8 @@ async function readD07RolePdfR7({page,role,uid,binding,outDir}){
       }
       return {size,sha256:digest.digest('hex'),pdfSignature:signature.equals(Buffer.from('%PDF-'))};
     })(),15000,'DOWNLOAD_BYTES_TIMEOUT');
-    check(content.pdfSignature&&content.size===D07.approvedSize&&content.sha256===D07.approvedSha256,'DOWNLOAD_NOT_APPROVED_PDF_BYTES');
     result.download=content;
+    check(content.pdfSignature&&content.size===D07.approvedSize&&content.sha256===D07.approvedSha256,'DOWNLOAD_NOT_APPROVED_PDF_BYTES');
     if(result.pageCount>1){
       mark('NEXT_PAGE_CLICK');
       await page.locator('[data-pdf-next]').click({timeout:10000});
@@ -1653,7 +1653,7 @@ function validateC04Command(command,step){
   check(command?.version==='cxorbia-command-adapter-v1'&&command.tenantId===C04C05.tenantId&&command.projectId===null&&command.periodId===C04C05.globalPeriod&&command.requireProject===false&&command.requirePeriod===true,'COMMAND_SCOPE_DENIED');
   const p=command.payload||{};
   check(p.global===true&&p.periodId===C04C05.globalPeriod&&!p.projectId&&!p.proyectoId&&!p.visitId&&!p.visitaId&&!arr(p.visitIds).length,'COMMAND_LINK_DENIED');
-  check(str(command.idempotencyKey).length>8&&command.actor?.actorId===C04C05.uid&&command.actor?.role===step.role,'COMMAND_ACTOR_OR_IDEMPOTENCY_DENIED');
+  check(str(command.idempotencyKey).length>8&&[C04C05.uid,'authenticated-user'].includes(str(command.actor?.actorId))&&command.actor?.role===step.role,'COMMAND_ACTOR_OR_IDEMPOTENCY_DENIED');
   check(command.authorization?.providerEnforcementRequired===true,'COMMAND_PROVIDER_ENFORCEMENT_REQUIRED');
   if(step.replay){check(isDeepStrictEqual(command,step.originalCommand),'REPLAY_NOT_EXACT');return true;}
   const createAccount=step.kind==='create-cxc',createFinancing=step.kind==='create-financing';

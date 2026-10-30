@@ -3513,10 +3513,10 @@
     "resumeAfterAuthorizedReceiptRead": "C02: read the receipt/audit and committed HR revision of the existing single attempt without replay; retain fresh-page and explicit-reload persistence proof. Continue D04/D05/D06 and bounded D07 evidence on the same e753 candidate, preserving passed owners."
   },
   "currentSessionProofPackage": {
-    "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R10.json",
-    "gitBlob": "c4f69951cf9f86a52a9cb8bd086f7d7d88887c36",
-    "state": "READY_R10_D07_C04_C05_REPROOF_WITH_DEV_CORS_PRESENT",
-    "expectedControlParentSha": "0d8eccf2712f1f55fa221a3d10349d9a285cefbe",
+    "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R11.json",
+    "gitBlob": "dae57be5c4e52b03fabf5816d0ef4cddeef80a83",
+    "state": "READY_R11_BYTE_INTEGRITY_DIAGNOSTIC_AND_PROVIDER_ALIGNED_FINANCE_REPROOF",
+    "expectedControlParentSha": "1a49f7414d4443ab1be4b5e709d0042c277faf67",
     "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
     "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
     "materialization": {
@@ -3537,15 +3537,15 @@
     "existingRunner": "tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs",
     "triggerMarker": "[i3-c02-d04-session-proof]",
     "priorAttempt": {
-      "runId": 40991186739,
-      "runNumber": 1975,
-      "jobId": 123854248298,
-      "artifactId": 12948838466,
-      "receiptPath": "docs/checkpoints/CXORBIA_I3_R9_CONTROL_HOLD_RUN1975_20261030.json",
-      "receiptGitBlob": "08cea32eabceae9c519c70ea7494266de315fbde",
-      "decision": "HOLD_RUNNER_PACKAGE_PATH_STALE_R7"
+      "runId": 40991623755,
+      "runNumber": 1976,
+      "jobId": 123855711205,
+      "artifactId": 12949033715,
+      "receiptPath": "docs/checkpoints/CXORBIA_I3_R10_D07_C04_C05_HOLD_RUN1976_20261030.json",
+      "receiptGitBlob": "f81464373bde9785d6dc1baccdd00cd805212922",
+      "decision": "HOLD_R7_D07_C04_C05_BOUNDED"
     },
-    "focusAction": "R10: repeat D07 Admin+Shopper PDF and C04/C05 bounded Global finance on same 4854a4e artifact; DEV CORS already present and must read back without additional provider change.",
+    "focusAction": "R11: preserve actual D07 download hash/size before comparison and re-run C04/C05 with provider-aligned client actor-hint validation; same 4854a4e artifact; CORS readback-only.",
     "providerRemediation": "DEV Storage CORS exact-origin merge/readback; max one provider-config write",
     "qaRemediation": "countries normalization aligned to canonical finance provider; zero Auth/membership mutation",
     "userChromeSessionPreserved": true,
@@ -3554,7 +3554,7 @@
     "newWorkflow": 0,
     "newMaterializer": 0,
     "liveResult": "PENDING",
-    "attemptNumber": 10,
+    "attemptNumber": 11,
     "mode": "R7_D07_C04_C05_BOUNDED"
   },
   "d04CarryForwardRecovered20261029": {
