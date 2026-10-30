@@ -1,0 +1,1393 @@
+{
+  "buildInputsProof": {
+    "archivePasses": {
+      "canonicalTar": 1,
+      "gcsTgzDecompressions": 1
+    },
+    "builtImageDigest": "sha256:e56826df529bd132d2413a0913c557743dbeb78945724e1073665e8bc388ca65",
+    "cloudBuildId": "968bd3aa-8c78-4652-9018-9ad2f7edc026",
+    "cloudBuildSource": {
+      "bucket": "cxorbia-backend-dev_cloudbuild",
+      "generation": "1793322764003720",
+      "object": "source/1793322732.959441-20242ed1a5ab437fb3ee3ed2f5d1ef31.tgz"
+    },
+    "cloudbuildSha256": "fbd0bcff9edbb4a2ce0525123a0ba352cf4539fdd0cc41ccb2f7ab514645cafe",
+    "decision": "PASS_EXACT_SOURCE_BUILD_INPUTS_BINDING",
+    "dockerCopies": [
+      {
+        "destination": "./backend/runtime/hr-live-service/package.json",
+        "directories": [],
+        "fileCount": 1,
+        "recursive": false,
+        "source": "backend/runtime/hr-live-service/package.json"
+      },
+      {
+        "destination": "./backend/runtime/hr-live-service/server.mjs",
+        "directories": [],
+        "fileCount": 1,
+        "recursive": false,
+        "source": "backend/runtime/hr-live-service/server.mjs"
+      },
+      {
+        "destination": "./backend/runtime/hr-live-service/certification-runtime.mjs",
+        "directories": [],
+        "fileCount": 1,
+        "recursive": false,
+        "source": "backend/runtime/hr-live-service/certification-runtime.mjs"
+      },
+      {
+        "destination": "./backend/runtime/hr-live-service/dev-visual.mjs",
+        "directories": [],
+        "fileCount": 1,
+        "recursive": false,
+        "source": "backend/runtime/hr-live-service/dev-visual.mjs"
+      },
+      {
+        "destination": "./backend/runtime/hr-live-service/user-admin.mjs",
+        "directories": [],
+        "fileCount": 1,
+        "recursive": false,
+        "source": "backend/runtime/hr-live-service/user-admin.mjs"
+      },
+      {
+        "destination": "./backend/runtime/hr-live-service/legal-runtime.mjs",
+        "directories": [],
+        "fileCount": 1,
+        "recursive": false,
+        "source": "backend/runtime/hr-live-service/legal-runtime.mjs"
+      },
+      {
+        "destination": "./backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+        "directories": [],
+        "fileCount": 1,
+        "recursive": false,
+        "source": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+      },
+      {
+        "destination": "./backend/runtime/cxorbia-legal-acceptance-provider-v1.mjs",
+        "directories": [],
+        "fileCount": 1,
+        "recursive": false,
+        "source": "backend/runtime/cxorbia-legal-acceptance-provider-v1.mjs"
+      },
+      {
+        "destination": "./backend/runtime/cxorbia-project-command-provider-v1.mjs",
+        "directories": [],
+        "fileCount": 1,
+        "recursive": false,
+        "source": "backend/runtime/cxorbia-project-command-provider-v1.mjs"
+      },
+      {
+        "destination": "./backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "directories": [],
+        "fileCount": 1,
+        "recursive": false,
+        "source": "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      },
+      {
+        "destination": "./backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+        "directories": [],
+        "fileCount": 1,
+        "recursive": false,
+        "source": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+      },
+      {
+        "destination": "./app/core/shopper-credential-rule.js",
+        "directories": [],
+        "fileCount": 1,
+        "recursive": false,
+        "source": "app/core/shopper-credential-rule.js"
+      },
+      {
+        "destination": "./backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+        "directories": [],
+        "fileCount": 1,
+        "recursive": false,
+        "source": "backend/runtime/cxorbia-finance-command-provider-v1.mjs"
+      },
+      {
+        "destination": "./backend/runtime/cxorbia-commercial-command-provider-v1.mjs",
+        "directories": [],
+        "fileCount": 1,
+        "recursive": false,
+        "source": "backend/runtime/cxorbia-commercial-command-provider-v1.mjs"
+      },
+      {
+        "destination": "./backend/runtime/cxorbia-academy-command-provider-v1.mjs",
+        "directories": [],
+        "fileCount": 1,
+        "recursive": false,
+        "source": "backend/runtime/cxorbia-academy-command-provider-v1.mjs"
+      },
+      {
+        "destination": "./backend/contracts",
+        "directories": [
+          "backend/contracts"
+        ],
+        "fileCount": 125,
+        "recursive": true,
+        "source": "backend/contracts"
+      },
+      {
+        "destination": "./backend/config/tya-live-hr-tab-registry.source-safe.json",
+        "directories": [],
+        "fileCount": 1,
+        "recursive": false,
+        "source": "backend/config/tya-live-hr-tab-registry.source-safe.json"
+      },
+      {
+        "destination": "./tools/hr-source",
+        "directories": [
+          "tools/hr-source"
+        ],
+        "fileCount": 26,
+        "recursive": true,
+        "source": "tools/hr-source"
+      },
+      {
+        "destination": "./tools/qa/tya-live-hr-read-probe-gate.mjs",
+        "directories": [],
+        "fileCount": 1,
+        "recursive": false,
+        "source": "tools/qa/tya-live-hr-read-probe-gate.mjs"
+      }
+    ],
+    "dockerfileSha256": "d7efb4ab8b202acc99e899deabeaef1a6f645c8ded178da014b922fad63f31fc",
+    "downloadedSourceSha256": "cacc3d42c4303b1a568f2a1480ed7ff8bbd3bf68dc6ef845f764b59f4f611507",
+    "gcsSourceGenerationUri": "gs://cxorbia-backend-dev_cloudbuild/source/1793322732.959441-20242ed1a5ab437fb3ee3ed2f5d1ef31.tgz#1793322764003720",
+    "imageUri": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-phasea-4854a4e289bf-40984272542",
+    "inputManifestSha256": "f7c08abd118094b6a5294517375ca329946b2599fa7c66bd0586b342bfb2d261",
+    "inputs": [
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "app/core/shopper-credential-rule.js",
+        "sha256": "6f407f7e0a4bca4cdff8a3e176fed73b238e5f4cd8ccdd024655e18d9c8d1aad",
+        "size": 3206
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/config/tya-live-hr-tab-registry.source-safe.json",
+        "sha256": "aaef2312e69fd8526ecdd084589a50379634ad7779b363adaf5dbabbd71adb34",
+        "size": 984
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/auth-rbac-phase-a-v1.json",
+        "sha256": "1f54e0be67bfcb67cbd41d3d786e528e8ded14a0c4d0722fe268dd545a91ed87",
+        "size": 6004
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-auth-activation-dev-v1.json",
+        "sha256": "b48eca01f2cd82248f9733089ea66b0f0c7d0a0678b082947d4dcb3574d35392",
+        "size": 3696
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-auth-activation-dev-v2.json",
+        "sha256": "313eddf544c975bd63a7639adf540a8d15b10c060b3186d6c5fbea82a63af28d",
+        "size": 4817
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-auth-plan-v4-activation-dev-v1.json",
+        "sha256": "0e1356c32efd9ecf0df5275fb37303e94897484d6f11c5e43d8cede465777ea0",
+        "size": 4961
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-auth-target-anchor-lineage-provider-minimum-v1.json",
+        "sha256": "edd24ddee43ffef6b68e27cc7498854f55b518782a05cfe5724903cc754c3a11",
+        "size": 5351
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-auth-update-universe-batch-revalidation-v1.json",
+        "sha256": "c22addc311530465810af07ddf56e04e89fef2df3bd6361b621707cbe54deca8",
+        "size": 3063
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-direct-runner-runtime-identity-decision-v1.json",
+        "sha256": "5cf2a573afbb6a5e8b9a7dd708837202f4d30e7abaf238bbf576322064ea88d0",
+        "size": 2229
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-direct-trusted-runner-dev-v1.json",
+        "sha256": "50bde3b61ec3f823247cb673ff4236358d62c21e0bee43787b73a40aa2e252c8",
+        "size": 2648
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-direct-trusted-runner-dev-v2.json",
+        "sha256": "d7a3e4ce26336671edecd87c0e68a3627d89a1d175b5598685343809d120fc3a",
+        "size": 3823
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-execution-control-plane-v2.json",
+        "sha256": "b387d9106f6dbdb1aed1f9a027a9b37d6d1c95000e17fdb5677844f66184e255",
+        "size": 3048
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-live-user-admin-v1.json",
+        "sha256": "f399bd880455c75a0c74474ad2eb1fbd343fdf72b3726b3b37aab572f8823cf9",
+        "size": 7996
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-multi-auth-final-discriminator-readonly-v1.json",
+        "sha256": "cd9f63a2effac1cfc89b4b37c6f205465ea69452c92b1aed8df58ddd7f2beb13",
+        "size": 6604
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-runtime-identity-isolated-final-v2.json",
+        "sha256": "27ab42a08b5f2b70f23bbdeb4eb6a192183a93e2c62beb84953b159a50b8a177",
+        "size": 2035
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-runtime-identity-postcreate-verification-v1.json",
+        "sha256": "0b25ced0c44c6edf618168d395b62b9f4bc3685ae0698a33a768ead0a6beeeb6",
+        "size": 2279
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-shopper-deterministic-suffix-v1.json",
+        "sha256": "ff5fc0392d616e46be3251920cd778081abb50c140bd5ab2fb87fc96dc6d6d93",
+        "size": 7496
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-shopper-identity-canonicalization-v1.json",
+        "sha256": "42dbf525256db1e90912f8d4293c3a0bbaea3848a83ac575d9a360f9c7170434",
+        "size": 2505
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-skip13-auth-access-adjudication-v1.json",
+        "sha256": "d9b86b44bde741b71ae83b02fc53a6c8cfc4580f31f19ad3ff0dce90380b9e49",
+        "size": 1561
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-skip13-auth-access-adjudication-v2.json",
+        "sha256": "596b99ba7ab56ed7f6859511ef3a319c1d05959955ee503ca6fac7334defb71b",
+        "size": 2596
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-staff-d-rebase-prewrite-v1.json",
+        "sha256": "7854fd8cdda1525a4542cad0f38220656273b0b4af24342526a815e79a3412fd",
+        "size": 4804
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-staff-d-technical-login-rebase-v1.json",
+        "sha256": "f855c714f79f749630757c6a6d3ec5c4e9810801212635929121b3e1f7cd3374",
+        "size": 3345
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-staff-private-execution-handoff-v1.json",
+        "sha256": "6e4d1ffb43bbb2ab5767adad79c55077c09d1ec81baa6cfc1317bcf86dc762f2",
+        "size": 3910
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-staff-provider-snapshot-runner-v1.json",
+        "sha256": "411499e18207a8c02fdc380316b694701feed8b0291a69e1f1d96ecf2f6ddb16",
+        "size": 2242
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-staff-repair-bootstrap-exact-write-v1.json",
+        "sha256": "4018b0570e584616020b6e772eccd49bbd40f729e9972bb250f57ce0ec7695c3",
+        "size": 2570
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-staff-repair-bootstrap-exact-write-v2.json",
+        "sha256": "e73e5d745d5700135c38555758c3890bd35aa215c4ee3fc99a4c08c078c978ac",
+        "size": 5140
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/c6-staff-repair-bootstrap-prewrite-v1.json",
+        "sha256": "ee3b1232140805591e3a82f622e366da479f13bce80fe28253dfd75679278575",
+        "size": 6736
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/cx-data-portable-adapter-v1.json",
+        "sha256": "0f11ba5148c6a0f77075e693e6e6523c786bea38d5f4b7486285ba886f5b3135",
+        "size": 2150
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/cxdata-firestore-phase-a-v1.json",
+        "sha256": "374394a4da59df2c9eca6209822501ae72b1af279471b74897f261cb22c450c7",
+        "size": 4356
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/cxdata-firestore-readonly-corte4-v1.json",
+        "sha256": "68c5a3d5fea9488d153b7daacb0436c13125297a764d317dc2019d14a2a6c818",
+        "size": 11621
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/cxdata-realdata-preview-bridge-phase-a-v1.json",
+        "sha256": "b106adb952242cb20cd5909e09e8a476c9ea41d2047f0c5155a97fc11d374157",
+        "size": 5527
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/cxdata-runtime-switch-gate-phase-a-v1.json",
+        "sha256": "16cee832f1404594a9a803731b0ddca0b0911a3b58bd3539dc9608a554f2ece3",
+        "size": 4943
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/cxorbia-active-runtime-control-plane-v1.json",
+        "sha256": "1888ad8e5175d55b2a1c3fdfbe551dbec4a1a9d8d2cf00715eec37db48c6260f",
+        "size": 3278
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/cxorbia-controlled-runners-v1.json",
+        "sha256": "6e976f5590d94521904bb87d221093a3b5656c328b24430e96666680e3b0cc9a",
+        "size": 10458
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/cxorbia-identity-roll-forward-v1.json",
+        "sha256": "9dcdb70047852fd4057053ca996fdb9bfa38f0bb9d37de8d8c070a02850911d8",
+        "size": 3495
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/cxorbia-legal-acceptance-durable-v1.json",
+        "sha256": "64d2a4461899bd142be07f96ab9a6849ddc5b94dc3a327d8e0ec568f4d6488ba",
+        "size": 7258
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/cxorbia-legal-publication-snapshot-v1.json",
+        "sha256": "542d9feaac392ec22dd7c76d181b4b0b1ff61aeb1db769c4d201fe21c1d0318b",
+        "size": 4717
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/cxorbia-legal-v04-interim-materialization-v1.json",
+        "sha256": "b039859f94a65d2e45f473868eb181a3d27c95516bbc31a2075a2e3a13a52f4f",
+        "size": 3207
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/cxorbia-project-source-contract-v1.json",
+        "sha256": "aa3ea62d02fe400143981b2ff2fa11b6ebda6fe0fd23ef05605130691143c0fb",
+        "size": 3694
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json",
+        "sha256": "cd0bf2607d8c4ef762c9bcc3764190d63a3f267321e5e7c7866bf54c12b8a9e3",
+        "size": 9140
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/hr-bidirectional-assignment-sync-v1.json",
+        "sha256": "a1f6662221331eea21b84d7d315ff4dc6b63faf6a0c39fb4750a66e616013e04",
+        "size": 2231
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/hr-canonical-staging-source-safe-phase-a-v1.json",
+        "sha256": "0394b54857a434f43e59ecd465f6cd247e39286cc2c24e2069ab308b8425a3dd",
+        "size": 4828
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/hr-import-control-phase-a-v1.json",
+        "sha256": "cabfd6aca0fab74a9e3a76cb2acaa3c04ae5035a3e30f6f11a94c77b8fcfb27c",
+        "size": 7736
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/i4b-visit-lifecycle-provider-command-v1.json",
+        "sha256": "e30b9324ae3e659074124a09388177e519830c660c42eb9eff5a951ce819ff77",
+        "size": 2284
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/integration-lane-architecture-lock-v1.json",
+        "sha256": "1b6a1d08095343d4062e5ca4fbf03503eba4e6d998cbba3b2e2d6130c20fb7f2",
+        "size": 3725
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/liquidations-payments-phase-a-v1.json",
+        "sha256": "36acae20e846a29acf838afdb07840fde7d978df41e072c7b68ccde3759f0aef",
+        "size": 7728
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/m8-human-validation-rollback-readiness-v1.json",
+        "sha256": "1733507398a995f2211e61933200f2501aef5880a8cf8d2116fcaa35f8dd5dcf",
+        "size": 3094
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/m9-provider-precutover-readiness-v1.json",
+        "sha256": "b9b7c1ff25a4ae93bc48b8f8565f53218d507c538da0eb05e7b4cb8eabfc7db9",
+        "size": 3251
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/make-outbox-phase-a-v1.json",
+        "sha256": "b16587259d30d289bb06b6aff5f439774c4b79ac6e9a9e53391044a3016fb9fe",
+        "size": 6815
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-accumulated-continuity-checkpoint-v1.json",
+        "sha256": "336f7d12500fe334be0327dc2e0214a1b6898239d8d126a4b5f2939b82709736",
+        "size": 4038
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-accumulated-readiness-gate-v1.json",
+        "sha256": "0476fa8d72c93970ec2240c2b9445f89445ccc50c747c8da4ec690a144c39dfb",
+        "size": 6298
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-admin-actions-audit-contract-v1.json",
+        "sha256": "f73d8ccf934ee4ee74402945da77ef415fe95b4cb438dfab0ee8f149101d04a6",
+        "size": 11649
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-anti-regreso-desvio-guardrail-v1.json",
+        "sha256": "380b2cdcc3e461cf42ccc49686d7e6b14a9cc03c79a3c0c509317d4bec9ebd5b",
+        "size": 2513
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-auth-dev-claims-seed-readiness-v1.json",
+        "sha256": "a3854346216afbbc5d574a2bc9972be5a7993b249860936ee17b1e2c3cac6d5e",
+        "size": 4264
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-auth-dev-claims-taxonomy-seed-v2.json",
+        "sha256": "f7006de50c7dafcf2f973a1118ea2b3baac5ae0410bb038210c1468b13995018",
+        "size": 3586
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-auth-preactivation-route-action-v1.json",
+        "sha256": "9d0f880959bc460369b3301a7916eab7d18c354c17553d89fe3dd5274a1683d9",
+        "size": 9580
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-canonical-materialization-dry-run-r16-v1.json",
+        "sha256": "aeb0c210d730e0a63887576a22e68535b75376eee27b2626e4173f9424dcc38b",
+        "size": 3063
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-canonical-materialization-provider-compare-r16e-v1.json",
+        "sha256": "acbee2ce3f69b8cbe8982317d64a31726124f88dea42d577a2865b5ef9b09a4e",
+        "size": 2162
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-canonical-materialization-source-alignment-r16c-v1.json",
+        "sha256": "54648a99537c2cf363b4c99f7050710eed39d522ed2bc74e524b16556f703b10",
+        "size": 1948
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-certification-carryover-control-v1.json",
+        "sha256": "38e8d7e19d99120d6539c69d8b6dc3a2febf8923833ba16be9573bc7e6a8a2dc",
+        "size": 2115
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-certification-carryover-import-source-safe-v1.json",
+        "sha256": "cd99e6fbf325befc03916132f5c5a84b7782656c0eddae55aefa9f204269f5cb",
+        "size": 1472
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-certification-carryover-source-safe-projection-v1.json",
+        "sha256": "c6cbae52bfe027975be648afe72547c609266ddf27f94f8008ec98e3c217ca5d",
+        "size": 1057
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-claude-candidate-forensic-audit-readiness-v1.json",
+        "sha256": "1d8d5d6ddf10f53915dc32724ac9ae994327d784b9aa78b22c7c9906dc11b7f3",
+        "size": 1601
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-corte1-context-history-reports-v1.json",
+        "sha256": "a90410aa4392731b6567008907299f320193eb27fddf38d762ed52a149230ab0",
+        "size": 3837
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-corte1-report-frontend-consumer-v1.json",
+        "sha256": "70121af2fcc9ca907df245f04d6cef4d083a409a7afbee4ad305c23f3505d4b9",
+        "size": 4546
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-corte2a-shopper-operation-canonical-v1.json",
+        "sha256": "e68148dce2093a595519d5670635dfdbebe468a4da36698eee1044c6a87bd273",
+        "size": 4287
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-cxdata-dev-adapter-contract-v1.json",
+        "sha256": "ae00ea7b86235a9886a059b5bc19caf88211f20b9c2e5d70b32831d13b29879f",
+        "size": 6674
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-dev-auth-firestore-activation-readiness-post-v96-v1.json",
+        "sha256": "569a818c68797072d4ed40d3f859f3b1e2de6bdf8349d2bf604037eff49496bc",
+        "size": 8746
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-dev-conditions-v1.json",
+        "sha256": "445beb8a2c28ab31bb9af37db2f292875d9fc5df12b6ce6d535a405b4666610f",
+        "size": 2411
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-dev-rollback-audit-plan-v1.json",
+        "sha256": "dd12b3aeab9608457867ab38e6f83d8b69e60e85562aa5f65682e9cd42cb466d",
+        "size": 2794
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-financial-payment-import-source-safe-v1.json",
+        "sha256": "c434c0af6575a75700db10ef848ace81b2172e0a0a4ddfbe29459ff72359a3f5",
+        "size": 1494
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-firebase-dev-clean-state-read-only-gate-v1.json",
+        "sha256": "0568aa68b9f8f926c802ada631f41ea35f9420ede808890224204733ad93861c",
+        "size": 6409
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-firestore-materialization-executor-v1.json",
+        "sha256": "11acd077ddc78e8f5b05107d3f932ad3ae80f0513c05b0374c1590a3834e4fed",
+        "size": 1522
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-firestore-materialization-plan-v1.json",
+        "sha256": "1cc3f5950d3548d6533824daf93752ed02e67f57f20cfbc0013f5b77dfdd01fa",
+        "size": 1390
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-future-single-command-pack-v1.json",
+        "sha256": "04cddbfce82f8c3bc4234e61a6467260b8c48d87bf3d84c0e118cb9ecf670462",
+        "size": 4625
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-go-dev-conditional-request-package-v1.json",
+        "sha256": "5621fb8ff1057c50c8055e9867d77c7554c39a1a14ab03a7862df91909b30414",
+        "size": 2294
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-go-dev-decision-package-v1.json",
+        "sha256": "15e8833afa3d70b3efb2c0ab6cea4d06d21581fc09fea9a80f967bd9c6f65d05",
+        "size": 2333
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-go-dev-decision-status-matrix-v1.json",
+        "sha256": "76da4e7ad88d8a1f15696b3817373a573cec41e42e0d36613a8a1a8a3fd00ee2",
+        "size": 2927
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-go-dev-readiness-checklist-v1.json",
+        "sha256": "8c234940f20672bd6f6566bb108e6050bac0b06d1e50356aeffa87d86b48e8fb",
+        "size": 2363
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-go-nogo-decision-pack-v1.json",
+        "sha256": "eb9147a78effc3ada6c5ad576e84c756aaf69eba03cfa98771a725f8f97ec666",
+        "size": 5167
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-hr-canonical-visit-state-r20-v1.json",
+        "sha256": "b8133ee731ff7eafdfd9b7a3bcb4ce3e7da4fef5f3cc2bda08d049e21de5206f",
+        "size": 3518
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-hr-source-safe-to-protected-candidates-v1.json",
+        "sha256": "63440ebc02096c0ea764f81cac88aaf54279e2fd14d174f5991bd1f4b69ea8cd",
+        "size": 4202
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-human-review-conflict-queue-plan-v1.json",
+        "sha256": "a21b3bc39908af178050045f95bc5a9fee65b0eabf87a3675fd43ad4a9c32f18",
+        "size": 3389
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-human-smoke-precheck-pack-v1.json",
+        "sha256": "855b960c8e1cb5e7bdbab8957a11e7df185a88a09a4f3fc410d492f7e3da53be",
+        "size": 5887
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-human-smoke-single-run-package-v1.json",
+        "sha256": "5e4e693162ede1b0ca804b567be2a143dc9e35a0953996276faf27c00f3f7ad9",
+        "size": 2556
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-liquidation-payment-control-v1.json",
+        "sha256": "f69df5a153549d5d0f756560caf4bbdc6217354fb19c5dab91849905f49299a0",
+        "size": 2310
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-liquidation-payment-source-safe-projection-v1.json",
+        "sha256": "aca4ecd0627fcb0cc08a08fbf7b4f8f2f28caf1b70f296e72745be86743c9de0",
+        "size": 1607
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-live-execution-checkpoint-v1.json",
+        "sha256": "0c6b90b135e5f86ffdbc205683089a37d980000d819a7f67fbde69e0760547c0",
+        "size": 7497
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-live-hr-runtime-read-v1.json",
+        "sha256": "d5fa35d04d2e24896442455d04fe1da745e751f71b6ddc6f4342b09159eac154",
+        "size": 2567
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-local-builder-execution-control-v1.json",
+        "sha256": "adfbbf26fdecae488099415adeadaf73d4fbcdc9a397eab3e50a84ec2db25a5f",
+        "size": 6122
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-module-readiness-matrix-v1.json",
+        "sha256": "2fc2e8c39f0d7011395f2a79cee68fc8b56635a312d0e6677ba85d903447f202",
+        "size": 3234
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-operational-continuity-gate-v1.json",
+        "sha256": "46c1634e62a57cc63e461c5da345b6e935c2a5e14446605ec1970cac590a115a",
+        "size": 4093
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-operational-queues-contract-v1.json",
+        "sha256": "1e8c33a3be9ad007435cedde724c0637e534618ce1a85b11230ea420fa2b5769",
+        "size": 6827
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-operational-readiness-r9-v1.json",
+        "sha256": "28dfe5f5b5c2b5119b62af0da897549b1b6192c76af1ef0e5e95240df4f268f1",
+        "size": 2452
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-operational-state-machine-v1.json",
+        "sha256": "b29560ed10ec848ffa62f9323880628ddf070b03b495788f464a99f2dd0ead64",
+        "size": 9069
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-period-history-integrity-v1.json",
+        "sha256": "1a6288653b47df6e292c84958cb28d9bdcb63073b8b747b398d909eba0a9a8db",
+        "size": 857
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-post-claude-immediate-audit-pack-v1.json",
+        "sha256": "3a5e5062b302dc7fbb687e15c2b8382f75c6e384139ff1d9f2442d751f9fda54",
+        "size": 2309
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-postulation-eligibility-r21-v1.json",
+        "sha256": "79ba0862ad6b1ebe2242d3cb78bf6f140036db7673130310bd7716cb0ae00b09",
+        "size": 3173
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-protected-firestore-rules-dev-draft-v1.json",
+        "sha256": "9f0e1b0906c61ca9a598bd1281eb68b60aaf7e805423839e95c5573492510803",
+        "size": 4562
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-protected-firestore-schema-dev-readiness-v1.json",
+        "sha256": "e8cd508560fc289ef20591714a67b3e25ab220402cb1c7804fb5722e7a521605",
+        "size": 7342
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-protected-read-access-adapter-v1.json",
+        "sha256": "ab5069c7ad58404f23478ec59f14924143da4b3289fed4168abc0646aa4b4c82",
+        "size": 4773
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-protected-shopper-profile-dev-readiness-v1.json",
+        "sha256": "28b58604ed1398c4438933faa5249f2f4cca70b93aab4abd23a7c40aa1235d1c",
+        "size": 3504
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-r14c-financial-overlay-review-plan-r16d-v1.json",
+        "sha256": "a9114f7b3cbf707c80d88333ac0083aaa1c1c2a799d62a12dd4afea5bdf87dbd",
+        "size": 2186
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-readiness-bucket-evaluator-v1.json",
+        "sha256": "f6eecd5e3f300bf1ef6ec427d4d3f074685698bfb319728bf96933152ac8fd4b",
+        "size": 3459
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-real-connection-readiness-gate-v1.json",
+        "sha256": "a40f5e479f6b2d84724e516c2e4b7c9cc840692d17b9dfb50e7b6ab263863c68",
+        "size": 3536
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-realdata-domain-readiness-pack-v1.json",
+        "sha256": "d2afda28701f2ffe1bf893e6db818aad11f82949cd7beb1f5a9abc00f5c55663",
+        "size": 7963
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-role-taxonomy-org-scope-v1.json",
+        "sha256": "41e28df4b2bcbef86722b039d16b0e0a0ed0e78b61217118c02f464477e95d85",
+        "size": 8819
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-runtime-dev-go-request-gate-v1.json",
+        "sha256": "56eca29def96e60cc681136faf5fac0a9399ab7e6c9cb843e93c8b7067354751",
+        "size": 5113
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-runtime-dev-switch-plan-v1.json",
+        "sha256": "1e5f3f70e21c9dd5f3caf5424d5f24d03fd70bdff3b560e0e367046844129dbb",
+        "size": 5598
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-source-safe-domain-mapping-v1.json",
+        "sha256": "f30f75de57ff08e44812cd9180a377867cc38efd69abc3adcdffb9cdbf846aca",
+        "size": 9960
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-source-safe-input-builder-contract-v1.json",
+        "sha256": "576542e8d0e1ee3a59e6fce53e1578190f2842a6a1f7f8e90d197a870e4f5161",
+        "size": 7415
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-source-safe-runtime-guard-v1.json",
+        "sha256": "9f07f48a6a8e3f3fa947d0370ee901d64713e1a229ecccbda1ddc80e85c47fb1",
+        "size": 824
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/phase-a-tenant-project-config-from-platform-v1.json",
+        "sha256": "fe0f94c03edfbd84261025d26483c2afdbb9cf6f63c86b9ed6a39ad5a1910777",
+        "size": 6471
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/prototype-baseline-registry-v1.json",
+        "sha256": "d47a9020cb683cb5d019ee13f09ff60c8695e170711e320256cc1180f316ebd0",
+        "size": 3918
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/storage-evidence-phase-a-v1.json",
+        "sha256": "112bc9d2f47b43167e24d1ee71c272c7ea0264b978d4a5ea55dca6e1b5fdbe0e",
+        "size": 5732
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/tya-cinepolis-cinema-identity-r20-v1.json",
+        "sha256": "095fd2da87523fe9a2bc62675d90ba04639e0a3e6089334352437b5bed136c7f",
+        "size": 873
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/tya-corte3-financial-r20-delta-review-v1.json",
+        "sha256": "843bfc6b5c29fba0e750dd74123fe3116dcb1878832bef6ce46b09edc936a83b",
+        "size": 2812
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/tya-dev-scenario-lab-evidence-schema-v1.json",
+        "sha256": "c45da08721a99da09cb8a2ee2095786498e555366b0cdab3db131aeb7201da43",
+        "size": 6578
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/tya-dev-scenario-lab-runner-v1.json",
+        "sha256": "abb99df067511217075307d606e4538fda9f2c1696afe894349af0deb182831d",
+        "size": 6216
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/tya-hr-column-map-r20-v1.json",
+        "sha256": "b5dbc5490f1e1ad0dad3099a67bddafcf5dab827c7fa53a477e475a6386a79de",
+        "size": 7054
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/tya-hr-tab-inventory-r20-v1.json",
+        "sha256": "93e1a9c36df8ed55f00384fe03b11958c9d31bd858e9cb73d413cae7d41dfe17",
+        "size": 3162
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/tya-level1-sanitized-visits-phase-a-v1.json",
+        "sha256": "5f04876b8459c794ddf3b909ec7454d6a3ae01706be2faf705defc972da44dff",
+        "size": 4436
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/tya-level2-sanitized-operational-phase-a-v1.json",
+        "sha256": "8be4027059f2ab3d0f1c2dc5481109cb52888bb266395696555593e0edce169f",
+        "size": 5460
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/tya-minimal-sanitized-input-phase-a-v1.json",
+        "sha256": "959e360133519b89e0369be4d35f26fcb140af0eba9de2bbb42a94567de0f92a",
+        "size": 7336
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/tya-payment-history-source-safe-v1.json",
+        "sha256": "b878530d2e653dbc935c7af6f05585de771b60439d4bee2868f5ff989326bd85",
+        "size": 1788
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/tya-phase-a-core-operations-shopper-release-slice-v1.json",
+        "sha256": "138bce3b7f431186103a3633b2e7be1cf2fa3be5c97a0f6ab060c8d125810819",
+        "size": 5015
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/contracts/tya-runtime-dev-preview-go-nogo-phase-a-v1.json",
+        "sha256": "94ce99b672fb786bfeff2e6daa3b9451891cc506bb9ffcbd021d394d329c6881",
+        "size": 4740
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/runtime/cxorbia-academy-command-provider-v1.mjs",
+        "sha256": "3056b6dcf89875bd16844132cc75b13451f21a772f7601f78114f2d292d53fbc",
+        "size": 15241
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/runtime/cxorbia-commercial-command-provider-v1.mjs",
+        "sha256": "affcef9d20152e63447c52b91e905b553e2ba84f30eb6a72e7599a7e81bddd8b",
+        "size": 11438
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+        "sha256": "79f4f18f6d684d58b97fa0c5295448afe5cf20dbd162001b015b95b6bd2852f4",
+        "size": 60470
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/runtime/cxorbia-legal-acceptance-provider-v1.mjs",
+        "sha256": "343eecf660b6a3b02a5940b7e6d6ad1ef0e924f593e006765b58f50056bdb1fa",
+        "size": 15163
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "sha256": "2ee98c48a549835af32ea76c3e92c897c9e4b826e201f9d35c4f0092a7140730",
+        "size": 59575
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/runtime/cxorbia-project-command-provider-v1.mjs",
+        "sha256": "711416aba69cd590fc3d38a9497859c368ee04fe0f7fb47026ba09d982908eca",
+        "size": 16707
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+        "sha256": "7e316807a84f965241cfb0f7eaa4ba73c0fc267a0e7db48f351e7e282a620fc1",
+        "size": 139439
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/runtime/hr-live-service/Dockerfile",
+        "sha256": "d7efb4ab8b202acc99e899deabeaef1a6f645c8ded178da014b922fad63f31fc",
+        "size": 2356
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/runtime/hr-live-service/certification-runtime.mjs",
+        "sha256": "8cd1369ef2c997e3c2bc29f5b3bd9582fd090adf76d866ddb200d9334c1ae385",
+        "size": 40964
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/runtime/hr-live-service/cloudbuild.yaml",
+        "sha256": "fbd0bcff9edbb4a2ce0525123a0ba352cf4539fdd0cc41ccb2f7ab514645cafe",
+        "size": 232
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+        "sha256": "ab55356a3d14053d872801a5634540a2d5620f70ad49993cff1cbda7dda17ce9",
+        "size": 29428
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/runtime/hr-live-service/dev-visual.mjs",
+        "sha256": "bb193e73429c46a0c827cd370399a838f21b9f2013b0ee0841c60ade50681607",
+        "size": 7415
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/runtime/hr-live-service/legal-runtime.mjs",
+        "sha256": "3356bab29da3830a95868803d1914a175f7d4fccad1267fd67d95522dd0adb66",
+        "size": 12139
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/runtime/hr-live-service/package.json",
+        "sha256": "93082d721c7ef6e0536dca1668ac86cf73145df6ce1d802eb74bb080701e9c8b",
+        "size": 255
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/runtime/hr-live-service/server.mjs",
+        "sha256": "da9d8568408c840af0e88ea9710777fddf103a64504c39bc192f8e705c22b890",
+        "size": 32457
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "backend/runtime/hr-live-service/user-admin.mjs",
+        "sha256": "fb6bfdff1eea20fdd474a9f2e36bc4266856db6eb307c68a43fb98a3550bff83",
+        "size": 16706
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/run-tya-hr-source-open-preview.ps1",
+        "sha256": "27eb363715703ab1080fa0237be0d6b9669f9d78ca10089cf0a6f5cfd5b25d2e",
+        "size": 3632
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/run-tya-hr-source-private-flow-check.ps1",
+        "sha256": "4381881dd209be170dd0a2cd4834e671297ea75cb18e339c567d7039ada34895",
+        "size": 3400
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/run-tya-hr-source-private-full-flow.ps1",
+        "sha256": "a0466c77e47f9e976d53a0188e7fe247c8996c924886159d3261119ad735b901",
+        "size": 3678
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/tya-build-live-hr-source-safe-r15g.mjs",
+        "sha256": "25e1c57dd04b770a86c51e2758f391c341c85287f8a1eb9394c454c9ea867697",
+        "size": 358
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs",
+        "sha256": "092a119f050520ed200fe0b95477683b56d2712947a79f38e05cdc3e9e0cbbd5",
+        "size": 23631
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+        "sha256": "4b03545e827c5f7a819c9b11948607bca60092354ec4db56432e518b1357cc27",
+        "size": 32830
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/tya-build-live-hr-source-safe-static.mjs",
+        "sha256": "7f5befa2eef950c501e70d1448a39bed468dcdcded06e39f5c967244c5e87cbb",
+        "size": 19627
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/tya-canonical-visit-state-r20.mjs",
+        "sha256": "86f295c2f6f46849a4241ba1d95c94d02011ade12600bc65950b6d908d48bcd0",
+        "size": 12884
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/tya-canonical-visit-state-r20.test.mjs",
+        "sha256": "d9d4d59aa66ad6b314105307bb5923c9af7d9f68fcde864fae8228a57644330a",
+        "size": 2915
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs",
+        "sha256": "0ae1b7d74596a024e49d4d215595388eca72b0f11862550dea1a35b7bf9f7fc6",
+        "size": 18906
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/tya-enforce-live-tab-registry.mjs",
+        "sha256": "9af50b5ae95d125ca9b99aa1e91a77f20b4caddba748b184d3dab0ec0bee1d0a",
+        "size": 9124
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs",
+        "sha256": "c1a7875f2decadad387b39b54705acfc118a1261361f1ad5f7847130b31aad08",
+        "size": 9451
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/tya-hr-source-dev-full-check.mjs",
+        "sha256": "f4ab10e2399dd87c641e4dc715796e79d1ac60648cf4f57954a0e23a9045a176",
+        "size": 5168
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/tya-hr-source-dev-server.mjs",
+        "sha256": "39e6e66dbf282173a124ce1a741e37ea709ba5b8c76cc730f562c85df4ac4f18",
+        "size": 17002
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/tya-hr-source-dev-smoke.mjs",
+        "sha256": "ec140198a51bbfce4393cf81da8076e4e87a0bc4df0dd597095cb9449691be96",
+        "size": 1818
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/tya-hr-source-live-check.mjs",
+        "sha256": "53210fdf0bb9302bb6b835978696aa04150d1da2ce10bbe4a561dc679a8e9932",
+        "size": 5613
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/tya-hr-source-multitab-preview.mjs",
+        "sha256": "8b56a92f6015ffef19816034e702ed41763b1adbd1a612f5998cb7dbcc0a0299",
+        "size": 4273
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/tya-hr-source-private-flow-check.mjs",
+        "sha256": "b59c39df7c16997966fc1422f1b5e69e906da59091706b3f497a2ef6cd01493f",
+        "size": 6538
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/tya-hr-source-private-full-flow.mjs",
+        "sha256": "a0238899926a38840b9c4a082fdf98090b0c98d95b0d6275a520f8edeceb07d7",
+        "size": 9200
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/tya-hr-source-private-registry.mjs",
+        "sha256": "5ab88f4e7280f3702ddf293270125bf9bb93761a416d908d19f8fffa40d1aeb7",
+        "size": 5254
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/tya-hr-source-register-private.mjs",
+        "sha256": "bbf551039aefaf581c2c6f2618ed4ed73c16089828441f533621480924759a89",
+        "size": 1236
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/tya-hr-source-xlsx-lite.mjs",
+        "sha256": "50a1e7e41ee5450fc7b3379d84e3996e9f2538b94d38973294071f6930f4f836",
+        "size": 5757
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+        "sha256": "e17f75fc18b445b473a1cbc8bdfa657cacc1893c4252accdbfcbe2729f33bd8e",
+        "size": 10190
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/tya-reapply-canonical-state-r20.mjs",
+        "sha256": "bb727112621caa1b264596b691451979406e694d9af38e3e5fd02b1d7519191b",
+        "size": 10963
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/tya-stabilize-source-safe-visit-ids-r20.mjs",
+        "sha256": "16dd9a7f0e061bb7d68c8d1b19414a4e47f12155c39f76eacdc54c2fb6fd9fc9",
+        "size": 6130
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/hr-source/tya-stable-visit-id-r20.mjs",
+        "sha256": "f301976125f0f4d64e3bceb783762b9321953bb0d22713e3e6c3917483ad9b15",
+        "size": 1216
+      },
+      {
+        "executable": false,
+        "kind": "file",
+        "path": "tools/qa/tya-live-hr-read-probe-gate.mjs",
+        "sha256": "8223642380c2ef8b6cde0897da2b89f95e01c401aff6311ec126f244b2f73ab8",
+        "size": 5873
+      }
+    ],
+    "localCanonicalSourceTarVerified": true,
+    "materializationRunId": 40984272542,
+    "production": false,
+    "providerReads": 0,
+    "providerWrites": 0,
+    "remoteBuildSourceContentVerified": true,
+    "runtimeRevisionVerified": false,
+    "sourceArtifactDigest": "sha256:f3509fc74a7a5c46c1a8bf1e018ebae8e363b2897d1f06c85bbac34379316fa4",
+    "sourceProvenanceSha256": "cacc3d42c4303b1a568f2a1480ed7ff8bbd3bf68dc6ef845f764b59f4f611507",
+    "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+    "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+    "trafficChanged": false,
+    "verifiedInputCount": 170
+  },
+  "buildInputsProofSha256": "2ac011c1d50cb18bfd257e9e4a7d3370fc294b7ad74d2bd53735c475c20b95bf",
+  "builtImageDigest": "sha256:e56826df529bd132d2413a0913c557743dbeb78945724e1073665e8bc388ca65",
+  "cloudBuildId": "968bd3aa-8c78-4652-9018-9ad2f7edc026",
+  "cloudBuildSource": {
+    "bucket": "cxorbia-backend-dev_cloudbuild",
+    "generation": "1793322764003720",
+    "object": "source/1793322732.959441-20242ed1a5ab437fb3ee3ed2f5d1ef31.tgz"
+  },
+  "cloudBuildSourceArchiveSha256": "cacc3d42c4303b1a568f2a1480ed7ff8bbd3bf68dc6ef845f764b59f4f611507",
+  "configurationUnchanged": true,
+  "controlSha": "1f536ea7e3df80b08c70d7fc12b985abae0438c2",
+  "decision": "PASS_EXACT_SOURCE_BUILD_IMAGE_REVISION_BINDING",
+  "imageUri": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-phasea-4854a4e289bf-40984272542",
+  "materializationRunId": 40984272542,
+  "production": false,
+  "readbackRunId": 40988379125,
+  "remoteBuildInputsVerified": true,
+  "runtimeDigest": "sha256:e56826df529bd132d2413a0913c557743dbeb78945724e1073665e8bc388ca65",
+  "runtimeRevision": "cxorbia-live-hr-dev-00331-2xq",
+  "runtimeSourceVerified": true,
+  "sourceArtifactDigest": "sha256:f3509fc74a7a5c46c1a8bf1e018ebae8e363b2897d1f06c85bbac34379316fa4",
+  "sourceIdentityVerified": true,
+  "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+  "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+  "tagsPreserved": true,
+  "trafficPercent": 100,
+  "trafficUpdates": 1
+}

@@ -555,6 +555,337 @@ session-source-proof|session-preflight|session-proof)
   test "$(jq -r .schemaVersion "$SESSION_PACKAGE")" = cxorbia.i3.c02-d04.independent-session-package.v1
   test "$(jq -r .branch "$SESSION_PACKAGE")" = recovery/cxorbia-phase-a-20260831
   test "$(git rev-parse HEAD^)" = "$(jq -r .expectedControlParentSha "$SESSION_PACKAGE")"
+  # R7 uses a linked source/build/runtime receipt before any bounded live proof.
+  if [[ "$(jq -r .mode "$SESSION_PACKAGE")" == R7_D07_C04_C05_BOUNDED ]]; then
+    SESSION_OUT="${PHASEA_LIVE_OUT:?}/session-proof"
+    node --input-type=module - "$MODE" "$SESSION_PACKAGE" "$SESSION_OUT" <<'R7_SESSION_CONTROL_NODE'
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
+import {execFileSync,spawnSync} from 'node:child_process';
+
+const CONTRACT = {
+  "mode": "R7_D07_C04_C05_BOUNDED",
+  "packagePath": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R7.json",
+  "packageSchema": "cxorbia.i3.c02-d04.independent-session-package.v1",
+  "packageId": "CXORBIA-I3-D07-C04-C05-BOUNDED-20261029-R7",
+  "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+  "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+  "origin": "https://cxorbia-backend-dev.web.app",
+  "sourceRepair": {
+    "path": "docs/checkpoints/CXORBIA_I3_D05_CUMULATIVE_SOURCE_REPAIR_20261030.json",
+    "gitBlob": "1002fe5dfe57b27104da3ecb2e369378f2dbf4e3"
+  },
+  "actor": {
+    "uid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+    "role": "admin",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "createUser": false,
+    "changeClaims": false
+  },
+  "c02": {
+    "execute": false,
+    "replayReconciliation": false
+  },
+  "d04": {
+    "execute": false,
+    "fixtureSeeds": 0,
+    "contentEdits": 0,
+    "fixtureDeletes": 0
+  },
+  "scope": {
+    "authMutations": 0,
+    "hrWrites": 0,
+    "resourceWrites": 0,
+    "storageWrites": 0,
+    "deploys": 0,
+    "financeCommands": 4,
+    "financeReplays": 2,
+    "financeProviderWrites": 15,
+    "cleanupDeletes": 13,
+    "production": false
+  },
+  "d07": {
+    "execute": true,
+    "roles": [
+      "admin",
+      "shopper"
+    ],
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "periodId": "cinepolis-2026-10",
+    "shopperId": "TYA_GT_393371F88D10F7A8",
+    "shopperUidFingerprint": "a6e3ff21498bd79cbc4078ec47b7b5760a6534e43803614e997bb2294d77ee98",
+    "bucket": "cxorbia-backend-dev.firebasestorage.app",
+    "approvedName": "Instructivo Shopper.pdf",
+    "approvedSize": 162335,
+    "approvedSha256": "3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454",
+    "binaryGetsPerRole": 1,
+    "downloadsPerRole": 1,
+    "resourceCrud": false,
+    "storageRuleChanges": false,
+    "corsChanges": false,
+    "serviceWorkerChanges": false
+  },
+  "c04c05": {
+    "execute": true,
+    "commands": 4,
+    "replays": 2,
+    "maxLinkedDocuments": 13,
+    "helperSha256": "aec21d3231eb895ee7c873ab22ab8bf74125c37457b915a5e95ca0059d3aed3b"
+  },
+  "ownerPaths": [
+    "app/index-backend-dev.html",
+    "app/adapters/tya-financial-canonical-source-safe-adapter.js",
+    "app/core/backend-browser-auth.js",
+    "app/core/backend-certifications.js",
+    "app/core/backend-cxdata-finance-read.js",
+    "app/core/backend-finance-benefits.js",
+    "app/core/backend-protected-dev-mode.js",
+    "app/core/backend-protected-dev-session-continuity.js",
+    "app/core/backend-resources.js",
+    "app/modules/cert.js",
+    "app/modules/documentos.js",
+    "app/modules/finanzas.js",
+    "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+    "app/adapters/cxorbia-command-adapter-v1.js"
+  ],
+  "runtimeBindingPath": "docs/checkpoints/CXORBIA_I3_S485_RUNTIME_BUILD_REVISION_BINDING_20261030.json",
+  "sourceArtifactDigest": "sha256:f3509fc74a7a5c46c1a8bf1e018ebae8e363b2897d1f06c85bbac34379316fa4"
+};
+const [mode,packagePath,out]=process.argv.slice(2);
+const SRC=CONTRACT.sourceSha,TREE=CONTRACT.sourceTree,ROOT=CONTRACT.origin;
+const RUN=String(process.env.GITHUB_RUN_ID||'');
+const RUNNER='tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs';
+const TOOL_BLOBS={
+  'tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs':'36ab65da6f62e5d0225cd47481e04a64fa6b183a',
+  'tools/qa/cxorbia-i3-d03-ai-generation-source.test.mjs':'0baa74bd8c42c137fe0f6501f5b970fd2ca95e8b'
+};
+const PIN_FIELDS=['sourceSha','sourceTree','runtimeSourceSha','runtimeRevision','runtimeDigest','hrRevision','hostingVersion','hostingRelease','rulesRelease','rulesetName','rulesGitBlob','deliveryKind','origin','materializationRunId','production'];
+const PROTECTED=['app','backend','firebase.json','.firebaserc','firestore.rules','storage.rules','tools/hr-source'];
+const CONTROL_QA_EXCEPTION={"path":"backend/runtime/hr-live-service/test/cxorbia-i3-phasea-completion-source-contract.test.mjs","sourceGitBlob":"b6070e6d5bdf0e06f64ab01d76da4c168a353963","controlGitBlob":"fda8d43d25556d61c88f65e87460b5d6a0566e22"};
+const PROTECTED_WITH_QA_EXCLUSION=[...PROTECTED,':(exclude,literal)'+CONTROL_QA_EXCEPTION.path];
+let stage='SOURCE_ENVIRONMENT',sourcePassed=false,cloudAccess=false,preflightStarted=false;
+let pkg=null,target=null,runtimeBinding=null,packageBlob=null,controlSha=null;
+const RUNTIME_BINDING_LABEL='LINKED_SOURCE_TAR_CLOUD_BUILD_IMAGE_REVISION_RECEIPT_AND_OBSERVED_DIGEST';
+const write=(name,value)=>fs.writeFileSync(path.join(out,name),JSON.stringify(value,null,2)+'\n');
+const bytesBlob=bytes=>createHash('sha1').update(Buffer.from('blob '+bytes.length+'\0')).update(bytes).digest('hex');
+const invoke=(file,args,options={})=>execFileSync(file,args,{encoding:'utf8',timeout:30000,maxBuffer:4*1024*1024,stdio:['pipe','pipe','pipe'],...options});
+const git=(...args)=>invoke('git',args).trim();
+const json=(file)=>JSON.parse(fs.readFileSync(file,'utf8'));
+const readLinked=link=>{
+  assert.match(link?.path||'',/^docs\/checkpoints\/[A-Z0-9_]+\.json$/);
+  assert.match(link?.gitBlob||'',/^[a-f0-9]{40}$/);
+  const bytes=fs.readFileSync(link.path);
+  assert.equal(bytesBlob(bytes),link.gitBlob);
+  assert.equal(git('rev-parse','HEAD:'+link.path),link.gitBlob);
+  return JSON.parse(bytes);
+};
+const sourceResult=(decision,extra={})=>({decision,mode:CONTRACT.mode,controlSha,packageBlob,sourceSha:SRC,sourceTree:TREE,sourceRepair:pkg?.sourceRepair||null,sourceProof:pkg?.sourceProof||null,materializationReceipt:target?.receipt||null,runtimeBinding:pkg?.runtimeBinding||null,sourceArtifactDigest:target?.sourceArtifactDigest||null,runtimeSourceVerified:false,cloudAccess:false,writes:0,deploys:0,production:false,...extra});
+const preflightBase=()=>({decision:'HOLD_R7_DEV_LIVE_MATERIALIZATION_PREFLIGHT',mode:CONTRACT.mode,controlSha,packageBlob,runId:RUN,sourceRepair:pkg.sourceRepair,sourceProof:pkg.sourceProof,materializationReceipt:target.receipt,materializationControlSha:target.controlSha,runtimeBinding:pkg.runtimeBinding,runtimeBindingReceipt:runtimeBinding,sourceArtifactDigest:target.sourceArtifactDigest,runtimeBindingVerified:false,runtimeSourceVerified:false,runtimeSourceBinding:null,...Object.fromEntries(PIN_FIELDS.map(field=>[field,target[field]])),proofObservedAt:null,sourceIdentityVerified:false,runtimeIdentityVerified:false,hostingReleaseVerified:false,rulesReleaseVerified:false,servedOwnerCount:0,servedOwnerBlobs:{},cloudAccess:false,deploys:0,writes:0});
+let proof=null;
+const savePreflight=()=>write('preflight.json',proof);
+const checkpoint=next=>{stage=next;if(preflightStarted){proof.stage=stage;proof.cloudAccess=cloudAccess;savePreflight();}};
+
+try{
+  fs.mkdirSync(out,{recursive:true});
+  write('package-source-guard.json',sourceResult('HOLD_R7_SESSION_PACKAGE_SOURCE_GUARD',{failureStage:stage}));
+  assert.ok(['session-source-proof','session-preflight','session-proof'].includes(mode));
+  assert.equal(packagePath,CONTRACT.packagePath);
+  assert.equal(process.env.FOCAL_SOURCE,SRC);assert.equal(process.env.FOCAL_TREE,TREE);
+  for(const [key,value] of Object.entries({PROJECT:'cxorbia-backend-dev',SERVICE:'cxorbia-live-hr-dev',HOSTING_SITE:'cxorbia-backend-dev',TENANT_ID:'tya',PROJECT_ID:'cinepolis'}))assert.equal(process.env[key],value);
+  assert.match(process.env.REGION||'',/^[a-z]+-[a-z]+[0-9]+$/);
+  assert.match(RUN,/^[1-9][0-9]*$/);
+  controlSha=git('rev-parse','HEAD');assert.equal(controlSha,process.env.GITHUB_SHA);
+  assert.match(controlSha,/^[a-f0-9]{40}$/);
+  const descriptor=json(process.env.CANDIDATE_DESCRIPTOR);
+  assert.equal(descriptor.status,'HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL');assert.equal(descriptor.production,'DO_NOT_TOUCH');
+  assert.equal(descriptor.productSourceSha,SRC);assert.equal(descriptor.productTreeAuthority,TREE);
+  assert.equal(git('rev-parse',SRC+'^{tree}'),TREE);
+  checkpoint('SOURCE_PACKAGE');
+  const packageBytes=fs.readFileSync(packagePath);packageBlob=bytesBlob(packageBytes);pkg=JSON.parse(packageBytes);
+  const execution=json('CXORBIA_RECOVERY_EXECUTION_CURRENT.json');
+  assert.equal(execution.currentSessionProofPackage?.path,packagePath);assert.equal(execution.currentSessionProofPackage?.gitBlob,packageBlob);
+  assert.equal(git('rev-parse','HEAD:'+packagePath),packageBlob);
+  assert.equal(pkg.schemaVersion,CONTRACT.packageSchema);assert.equal(pkg.id,CONTRACT.packageId);assert.equal(pkg.mode,CONTRACT.mode);assert.equal(pkg.attemptNumber,7);
+  assert.equal(pkg.branch,'recovery/cxorbia-phase-a-20260831');
+  assert.equal(pkg.expectedControlParentSha,git('rev-parse','HEAD^'));
+  assert.equal(pkg.sourceSha,SRC);assert.equal(pkg.sourceTree,TREE);assert.equal(pkg.production,false);
+  for(const key of ['actor','c02','d04','scope','d07','c04c05'])assert.deepEqual(pkg[key],CONTRACT[key]);
+  checkpoint('SOURCE_REPAIR_AND_CI_RECEIPT');
+  assert.deepEqual(pkg.sourceRepair,CONTRACT.sourceRepair);
+  const repair=readLinked(pkg.sourceRepair);assert.equal(repair.sourceSha,SRC);assert.equal(repair.sourceTree,TREE);
+  assert.equal(pkg.sourceProof?.decision,'PASS_I3_B_CUMULATIVE_SOURCE_PROOF');
+  assert.equal(pkg.sourceProof?.workflowPath,'.github/workflows/cxorbia-recovery-i3-dev-certification.yml');
+  assert.equal(pkg.sourceProof?.jobName,'phasea-rejected-checkpoint-source-proof');
+  for(const field of ['runId','jobId','artifactId'])assert.ok(Number.isSafeInteger(pkg.sourceProof[field])&&pkg.sourceProof[field]>0);
+  assert.match(pkg.sourceProof.headSha,/^[a-f0-9]{40}$/);assert.match(pkg.sourceProof.artifactDigest,/^sha256:[a-f0-9]{64}$/);
+  const ci=readLinked(pkg.sourceProof.receipt);
+  assert.equal(ci.decision,pkg.sourceProof.decision);assert.equal(ci.sourceSha,SRC);assert.equal(ci.sourceTree,TREE);assert.equal(ci.production,false);
+  for(const [receiptField,packageField] of [['runId','runId'],['sourceJobId','jobId'],['artifactId','artifactId'],['controlSha','headSha']])assert.equal(ci[receiptField],pkg.sourceProof[packageField]);
+  assert.equal('sha256:'+ci.artifactZipSha256,pkg.sourceProof.artifactDigest);
+  checkpoint('SOURCE_MATERIALIZATION_RECEIPT');
+  target=pkg.materialization;
+  assert.equal(target.deliveryKind,'DEV_LIVE_MATERIALIZATION');assert.equal(target.origin,ROOT);
+  assert.equal(target.sourceSha,SRC);assert.equal(target.sourceTree,TREE);assert.equal(target.runtimeSourceSha,SRC);assert.equal(target.production,false);
+  assert.ok(Number.isSafeInteger(target.materializationRunId)&&target.materializationRunId>0);
+  assert.match(target.controlSha,/^[a-f0-9]{40}$/);assert.match(target.hrRevision,/^[a-f0-9]{64}$/);
+  assert.match(target.runtimeRevision,/^cxorbia-live-hr-dev-[a-z0-9-]+$/);assert.match(target.runtimeDigest,/^sha256:[a-f0-9]{64}$/);
+  assert.match(target.hostingVersion,/^sites\/cxorbia-backend-dev\/versions\/[a-z0-9]+$/);
+  assert.match(target.hostingRelease,/^sites\/cxorbia-backend-dev\/channels\/live\/releases\/[a-zA-Z0-9_-]+$/);
+  assert.equal(target.rulesRelease,'projects/cxorbia-backend-dev/releases/cloud.firestore');
+  assert.match(target.rulesetName,/^projects\/cxorbia-backend-dev\/rulesets\/[a-zA-Z0-9-]+$/);
+  assert.equal(target.rulesGitBlob,git('rev-parse',SRC+':firestore.rules'));
+  const materialization=readLinked(target.receipt);
+  assert.equal(materialization.decision,'PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION');
+  for(const field of [...PIN_FIELDS,'controlSha'])assert.equal(materialization[field],target[field]);
+function validateR8RuntimeBindingReceipt(binding,pkg,target){
+  assert.equal(binding?.decision,'PASS_EXACT_SOURCE_BUILD_IMAGE_REVISION_BINDING');assert.equal(binding.production,false);
+  assert.equal(binding.sourceSha,pkg.sourceSha);assert.equal(binding.sourceSha,target.sourceSha);
+  assert.equal(binding.sourceTree,pkg.sourceTree);assert.equal(binding.sourceTree,target.sourceTree);
+  assert.equal(target.sourceArtifactDigest,'sha256:f3509fc74a7a5c46c1a8bf1e018ebae8e363b2897d1f06c85bbac34379316fa4');
+  assert.equal(binding.sourceArtifactDigest,target.sourceArtifactDigest);
+  assert.match(binding.cloudBuildId||'',/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/);
+  assert.deepEqual(Object.keys(binding.cloudBuildSource||{}).sort(),['bucket','object','generation'].sort());
+  assert.match(binding.cloudBuildSource.bucket,/^[a-z0-9][a-z0-9._-]{1,220}$/);
+  assert.ok(typeof binding.cloudBuildSource.object==='string'&&binding.cloudBuildSource.object.length>0&&!/\s/.test(binding.cloudBuildSource.object));
+  assert.equal(typeof binding.cloudBuildSource.generation,'string');assert.match(binding.cloudBuildSource.generation,/^[1-9][0-9]*$/);
+  assert.equal(binding.imageUri,'gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-phasea-'+pkg.sourceSha.slice(0,12)+'-'+target.materializationRunId);
+  assert.match(binding.builtImageDigest||'',/^sha256:[a-f0-9]{64}$/);
+  assert.equal(binding.builtImageDigest,binding.runtimeDigest);assert.equal(binding.runtimeDigest,target.runtimeDigest);
+  assert.equal(binding.runtimeRevision,target.runtimeRevision);assert.equal(binding.trafficPercent,100);
+  assert.equal(binding.materializationRunId,target.materializationRunId);
+  assert.ok(Number.isSafeInteger(binding.readbackRunId)&&binding.readbackRunId>0);
+  assert.match(binding.controlSha||'',/^[a-f0-9]{40}$/);
+  return true;
+}
+  checkpoint('SOURCE_RUNTIME_BINDING_RECEIPT');
+  assert.equal(target.sourceArtifactDigest,CONTRACT.sourceArtifactDigest);
+  assert.equal(pkg.runtimeBinding?.path,CONTRACT.runtimeBindingPath);
+  runtimeBinding=readLinked(pkg.runtimeBinding);
+  validateR8RuntimeBindingReceipt(runtimeBinding,pkg,target);
+  git('merge-base','--is-ancestor',target.controlSha,runtimeBinding.controlSha);
+  git('merge-base','--is-ancestor',runtimeBinding.controlSha,pkg.expectedControlParentSha);
+  checkpoint('SOURCE_GRAPH_AND_PRODUCT_DRIFT');
+  git('merge-base','--is-ancestor',SRC,pkg.sourceProof.headSha);
+  git('merge-base','--is-ancestor',pkg.sourceProof.headSha,target.controlSha);
+  git('merge-base','--is-ancestor',target.controlSha,pkg.expectedControlParentSha);
+  assert.equal(git('rev-parse',SRC+':'+CONTROL_QA_EXCEPTION.path),CONTROL_QA_EXCEPTION.sourceGitBlob);
+  assert.equal(git('rev-parse','HEAD:'+CONTROL_QA_EXCEPTION.path),CONTROL_QA_EXCEPTION.controlGitBlob);
+  assert.equal(bytesBlob(fs.readFileSync(CONTROL_QA_EXCEPTION.path)),CONTROL_QA_EXCEPTION.controlGitBlob);
+  git('diff','--quiet',SRC,'HEAD','--',...PROTECTED_WITH_QA_EXCLUSION);
+  git('diff','--quiet','HEAD','--',...PROTECTED_WITH_QA_EXCLUSION);
+  const changedTools=git('diff','--name-only',SRC,'HEAD','--','tools').split('\n').filter(Boolean).sort();
+  assert.deepEqual(changedTools,Object.keys(TOOL_BLOBS).sort());
+  for(const [file,blob] of Object.entries(TOOL_BLOBS)){
+    assert.equal(git('rev-parse','HEAD:'+file),blob);assert.equal(bytesBlob(fs.readFileSync(file)),blob);
+  }
+  checkpoint('SOURCE_OWNER_BLOBS');
+  assert.deepEqual(Object.keys(target.owners||{}).sort(),CONTRACT.ownerPaths.slice().sort());
+  for(const owner of CONTRACT.ownerPaths)assert.equal(target.owners[owner],git('rev-parse',SRC+':'+owner));
+  invoke(process.execPath,['--check',RUNNER]);
+  sourcePassed=true;
+  write('package-source-guard.json',sourceResult('PASS_R7_SESSION_PACKAGE_SOURCE_GUARD',{expectedControlParentSha:pkg.expectedControlParentSha,sourceIdentityVerified:true,linkedReceiptsVerified:true,runtimeBindingReceiptVerified:true,productDrift:false,toolBlobs:TOOL_BLOBS,controlQaException:CONTROL_QA_EXCEPTION,ownerCount:CONTRACT.ownerPaths.length,ownerBlobs:target.owners,liveIdentityVerified:false,liveE2e:'NOT_RUN'}));
+  if(mode==='session-source-proof')process.exit(0);
+
+  if(mode==='session-preflight'){
+    proof=preflightBase();preflightStarted=true;savePreflight();
+    const cloudJson=(args)=>{cloudAccess=true;return JSON.parse(invoke('gcloud',args));};
+    const curl=(url,token=null)=>{
+      cloudAccess=true;
+      const args=['--fail','--silent','--show-error','--proto','=https','--connect-timeout','10','--max-time','45','--header','Cache-Control: no-cache, no-store, max-age=0'];
+      if(token){assert.match(token,/^[A-Za-z0-9._~+\/-]+$/);args.push('--config','-');}
+      args.push(url);
+      return invoke('curl',args,{encoding:null,timeout:50000,maxBuffer:8*1024*1024,...(token?{input:'header = "Authorization: Bearer '+token+'"\n'}:{})});
+    };
+    checkpoint('PREFLIGHT_RUNTIME');
+    const runtime=cloudJson(['run','services','describe',process.env.SERVICE,'--project',process.env.PROJECT,'--region',process.env.REGION,'--format=json']);
+    assert.equal(runtime.metadata?.name,process.env.SERVICE);assert.equal(runtime.status?.latestReadyRevisionName,target.runtimeRevision);
+    assert.ok(runtime.status.conditions?.some(x=>x.type==='Ready'&&x.status==='True'));
+    const traffic=runtime.status.traffic;assert.ok(Array.isArray(traffic)&&traffic.length>0);
+    assert.ok(traffic.every(x=>Number.isInteger(x.percent||0)&&(x.percent||0)>=0&&(x.percent||0)<=100));
+    assert.equal(traffic.reduce((total,x)=>total+(x.percent||0),0),100);
+    assert.equal(traffic.filter(x=>x.revisionName===target.runtimeRevision).reduce((total,x)=>total+(x.percent||0),0),100);
+    const revision=cloudJson(['run','revisions','describe',target.runtimeRevision,'--project',process.env.PROJECT,'--region',process.env.REGION,'--format=json']);
+    assert.equal(revision.metadata?.name,target.runtimeRevision);assert.ok(revision.status?.conditions?.some(x=>x.type==='Ready'&&x.status==='True'));
+    const raw=String(revision.status.imageDigest||''),match=raw.match(/(?:^|@)(sha256:[a-f0-9]{64})$/);assert.ok(match);assert.equal(match[1],target.runtimeDigest);
+    assert.equal(match[1],runtimeBinding.builtImageDigest);assert.equal(revision.metadata.name,runtimeBinding.runtimeRevision);
+    proof.runtimeIdentityVerified=true;proof.runtimeSourceVerified=true;proof.runtimeBindingVerified=true;proof.runtimeSourceBinding=RUNTIME_BINDING_LABEL;
+    write('runtime-readback.json',{service:runtime.metadata.name,runtimeRevision:revision.metadata.name,runtimeDigest:match[1],ready:true,traffic:traffic.map(x=>({revisionName:x.revisionName,percent:x.percent||0})),sourceBinding:RUNTIME_BINDING_LABEL,runtimeBinding:pkg.runtimeBinding});
+    checkpoint('PREFLIGHT_HOSTING_LIVE');
+    let token=invoke('gcloud',['auth','print-access-token']).trim();
+    try{
+      const hosting=JSON.parse(curl('https://firebasehosting.googleapis.com/v1beta1/sites/cxorbia-backend-dev/channels/live',token));
+      assert.equal(hosting.name,'sites/cxorbia-backend-dev/channels/live');assert.equal(hosting.url,ROOT);
+      assert.equal(hosting.release?.name,target.hostingRelease);assert.equal(hosting.release?.version?.name,target.hostingVersion);assert.equal(hosting.release?.version?.status,'FINALIZED');
+      proof.hostingReleaseVerified=true;
+      write('hosting-live-readback.json',{name:hosting.name,origin:hosting.url,hostingVersion:hosting.release.version.name,hostingRelease:hosting.release.name,status:hosting.release.version.status});
+      checkpoint('PREFLIGHT_RULES_RELEASE');
+      const release=JSON.parse(curl('https://firebaserules.googleapis.com/v1/'+target.rulesRelease,token));
+      assert.equal(release.name,target.rulesRelease);assert.equal(release.rulesetName,target.rulesetName);
+      const ruleset=JSON.parse(curl('https://firebaserules.googleapis.com/v1/'+target.rulesetName,token));
+      assert.equal(ruleset.name,target.rulesetName);
+      const files=ruleset.source?.files;assert.ok(Array.isArray(files));assert.equal(files.length,1);
+      const rules=files.filter(x=>x.name==='firestore.rules');assert.equal(rules.length,1);assert.equal(typeof rules[0].content,'string');
+      const served=Buffer.from(rules[0].content,'utf8'),canonical=invoke('git',['show',SRC+':firestore.rules'],{encoding:null});
+      assert.equal(bytesBlob(served),target.rulesGitBlob);assert.deepEqual(served,canonical);
+      proof.rulesReleaseVerified=true;
+      write('rules-readback.json',{rulesRelease:release.name,rulesetName:ruleset.name,rulesGitBlob:bytesBlob(served),exactSourceBytes:true});
+    }finally{token=null;}
+    checkpoint('PREFLIGHT_SERVED_OWNERS');
+    for(const owner of CONTRACT.ownerPaths){
+      const served=curl(ROOT+'/'+owner.slice(4)+'?r7preflight='+RUN);
+      const blob=bytesBlob(served);assert.equal(blob,target.owners[owner]);
+      proof.servedOwnerBlobs[owner]=blob;proof.servedOwnerCount=Object.keys(proof.servedOwnerBlobs).length;savePreflight();
+    }
+    assert.equal(proof.servedOwnerCount,14);
+    checkpoint('PREFLIGHT_HR');
+    const hr=JSON.parse(curl(ROOT+'/api/tya/cinepolis/hr-live?format=meta&r7preflight='+RUN));
+    assert.equal(hr.ok,true);assert.equal(hr.sourceSafe,true);assert.equal(hr.revisionStable,true);assert.equal(hr.hrWrites,false);assert.equal(hr.production,false);assert.equal(hr.revision,target.hrRevision);
+    write('hr-meta-readback.json',{ok:hr.ok,sourceSafe:hr.sourceSafe,revisionStable:hr.revisionStable,hrWrites:hr.hrWrites,production:hr.production,revision:hr.revision});
+    proof.sourceIdentityVerified=true;proof.cloudAccess=true;proof.proofObservedAt=new Date().toISOString();proof.stage='COMPLETE';proof.decision='PASS_R7_DEV_LIVE_MATERIALIZATION_PREFLIGHT';savePreflight();
+    process.exit(0);
+  }
+
+  checkpoint('PROOF_PREFLIGHT_BINDING');
+  const preflight=json(path.join(out,'preflight.json'));
+  assert.equal(preflight.decision,'PASS_R7_DEV_LIVE_MATERIALIZATION_PREFLIGHT');assert.equal(preflight.mode,CONTRACT.mode);
+  assert.equal(preflight.controlSha,controlSha);assert.equal(preflight.runId,RUN);assert.equal(preflight.packageBlob,packageBlob);
+  assert.deepEqual(preflight.sourceRepair,pkg.sourceRepair);assert.deepEqual(preflight.sourceProof,pkg.sourceProof);assert.deepEqual(preflight.materializationReceipt,target.receipt);
+  assert.equal(preflight.materializationControlSha,target.controlSha);
+  assert.deepEqual(preflight.runtimeBinding,pkg.runtimeBinding);assert.deepEqual(preflight.runtimeBindingReceipt,runtimeBinding);
+  assert.equal(preflight.sourceArtifactDigest,target.sourceArtifactDigest);
+  assert.equal(preflight.runtimeBindingVerified,true);assert.equal(preflight.runtimeSourceVerified,true);assert.equal(preflight.runtimeSourceBinding,RUNTIME_BINDING_LABEL);
+  for(const field of PIN_FIELDS)assert.equal(preflight[field],target[field]);
+  for(const field of ['sourceIdentityVerified','runtimeIdentityVerified','hostingReleaseVerified','rulesReleaseVerified'])assert.equal(preflight[field],true);
+  assert.equal(preflight.servedOwnerCount,14);assert.deepEqual(preflight.servedOwnerBlobs,target.owners);assert.equal(preflight.deploys,0);assert.equal(preflight.writes,0);
+  assert.match(preflight.proofObservedAt||'',/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/);
+  const observedAt=Date.parse(preflight.proofObservedAt);
+  assert.ok(Number.isFinite(observedAt)&&observedAt<=Date.now()+30000&&Date.now()-observedAt<=600000);
+  checkpoint('PROOF_RUNNER');
+  const result=spawnSync(process.execPath,[RUNNER],{env:{...process.env,ROOT,HOSTING_URL:ROOT,EXPECTED_HR_REVISION:target.hrRevision,CXORBIA_I3_INDEPENDENT_SESSION_PROOF:'YES_PAULA_20261029_DEV',CXORBIA_I3_SESSION_PACKAGE:packagePath,CXORBIA_I3_SESSION_PREFLIGHT:path.join(out,'preflight.json'),CXORBIA_I3_SESSION_MODE:CONTRACT.mode},stdio:'inherit'});
+  assert.equal(result.error,undefined);assert.equal(result.signal,null);assert.equal(result.status,0);
+  checkpoint('PROOF_AGGREGATE_RESULT');
+  const aggregate=json(path.join(process.env.PHASEA_LIVE_OUT,'r7-d07-c04-c05','result.json'));
+  assert.equal(aggregate.mode,CONTRACT.mode);assert.equal(aggregate.decision,'PASS_R7_D07_C04_C05_BOUNDED');assert.equal(aggregate.production,false);assert.equal(aggregate.fullTasksClosed,false);
+  assert.equal(aggregate.d07.executed,true);assert.equal(aggregate.d07.decision,'PASS_D07_ADMIN_SHOPPER_REAL_PDF_READ_ONLY_CLAUSE');assert.equal(aggregate.d07.contextGuardsPass,true);assert.equal(aggregate.d07.cleanup.browserClosed,true);
+  assert.equal(aggregate.c04c05.decision,'PASS_C04_C05_BOUNDED_FINANCE');assert.equal(aggregate.c04c05.sessionsClosed,true);assert.equal(aggregate.c04c05.browserClosed,true);
+  assert.equal(aggregate.cleanup.d07BrowserClosed,true);assert.equal(aggregate.cleanup.financeBrowserClosed,true);
+  assert.equal(aggregate.c02.executed,false);assert.equal(aggregate.c04c05.executed,true);assert.equal(aggregate.d04.executed,false);assert.equal(aggregate.e04.executed,false);
+  for(const field of ['authAccountsIssued','claimsIssued','membershipIssued','hrIssued','resourceIssued','storageIssued','productionIssued'])assert.equal(aggregate.writes[field],0);
+  write('session-proof-guard.json',{decision:'PASS_R7_BOUNDED_SESSION_RESULT_GUARD',mode:CONTRACT.mode,controlSha,packageBlob,runId:RUN,aggregateDecision:aggregate.decision,fullTasksClosed:false,production:false});
+}catch(error){
+  // Child errors may contain command arguments. Record only a fixed stage code.
+  if(!sourcePassed)write('package-source-guard.json',sourceResult('HOLD_R7_SESSION_PACKAGE_SOURCE_GUARD',{failureStage:stage}));
+  else if(preflightStarted){proof.decision='HOLD_R7_DEV_LIVE_MATERIALIZATION_PREFLIGHT';proof.failureStage=stage;proof.cloudAccess=cloudAccess;savePreflight();}
+  else if(mode==='session-proof')write('session-proof-guard.json',{decision:'HOLD_R7_BOUNDED_SESSION_RESULT_GUARD',mode:CONTRACT.mode,controlSha,packageBlob,runId:RUN,failureStage:stage,production:false});
+  process.stderr.write('R7_CONTROL_HOLD:'+stage+'\n');process.exitCode=1;
+}
+R7_SESSION_CONTROL_NODE
+    exit 0
+  fi
   test "$(jq -r .sourceSha "$SESSION_PACKAGE")" = 946c3cb8eff6a043693b10ed628d2ebc860508e1
   test "$(jq -r .sourceTree "$SESSION_PACKAGE")" = 4afcecfd4b41ac697995a1164115a23a46db44c7
   test "$(jq -r .sourceSha "$SESSION_PACKAGE")" = "$FOCAL_SOURCE"

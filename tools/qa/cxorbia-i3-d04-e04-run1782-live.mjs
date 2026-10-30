@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {createHash} from 'node:crypto';
+import {createHash,randomBytes} from 'node:crypto';
+import path from 'node:path';
+import {execFileSync} from 'node:child_process';
 import {isDeepStrictEqual} from 'node:util';
 import {initializeApp,applicationDefault,getApps} from 'firebase-admin/app';
 import {getAuth} from 'firebase-admin/auth';
@@ -12,13 +14,116 @@ const SRC=String(process.env.FOCAL_SOURCE||'');
 const HR=String(process.env.EXPECTED_HR_REVISION||'');
 const RUN=String(process.env.GITHUB_RUN_ID||'');
 const SESSION_PROOF_MODE=process.env.CXORBIA_I3_INDEPENDENT_SESSION_PROOF==='YES_PAULA_20261029_DEV';
+const R7_MODE=SESSION_PROOF_MODE&&process.env.CXORBIA_I3_SESSION_MODE==='R7_D07_C04_C05_BOUNDED';
 const D07_READ_ONLY_MODE=SESSION_PROOF_MODE&&process.env.CXORBIA_I3_SESSION_MODE==='R6D07_READ_ONLY';
-const OUT=String(process.env.PHASEA_LIVE_OUT||'')+(D07_READ_ONLY_MODE?'/d07-readonly':'/d04-e04');
+const OUT=String(process.env.PHASEA_LIVE_OUT||'')+(R7_MODE?'/r7-d07-c04-c05':D07_READ_ONLY_MODE?'/d07-readonly':'/d04-e04');
 const descriptor=JSON.parse(fs.readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8'));
 if(!ROOT||!SRC||!HR||!/^\d+$/.test(RUN))throw Error('ENVIRONMENT_FAILURE:D04_E04_ENV');
 assert.equal(descriptor.productSourceSha,SRC);
 let sessionPackage=null, sessionPreflight=null;
-if(SESSION_PROOF_MODE){
+if(R7_MODE){
+// Inserted as the R7-only branch before the unchanged R5/R6 session guard.
+assert.equal(descriptor.status,'HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL');
+assert.equal(SRC,'4854a4e289bf76d08f3ffe3ecddd09168ba501af');
+assert.equal(descriptor.productTreeAuthority,'7e55c5fefee821b2d9dd1d7c6e575592b8534be4');
+assert.equal(ROOT,'https://cxorbia-backend-dev.web.app');
+const r7Git=(...args)=>execFileSync('git',args,{encoding:'utf8',timeout:10000,maxBuffer:1024*1024}).trim();
+const r7Blob=bytes=>createHash('sha1').update(Buffer.from('blob '+bytes.length+'\0')).update(bytes).digest('hex');
+const r7ReadLinked=link=>{
+  assert.match(link?.path||'',/^docs\/checkpoints\/[A-Z0-9_]+\.json$/);
+  assert.match(link?.gitBlob||'',/^[a-f0-9]{40}$/);
+  const bytes=fs.readFileSync(link.path);assert.equal(r7Blob(bytes),link.gitBlob);
+  assert.equal(r7Git('rev-parse','HEAD:'+link.path),link.gitBlob);
+  return JSON.parse(bytes);
+};
+assert.equal(r7Git('rev-parse','HEAD'),process.env.GITHUB_SHA);
+assert.equal(r7Git('rev-parse',SRC+'^{tree}'),descriptor.productTreeAuthority);
+const packagePath=process.env.CXORBIA_I3_SESSION_PACKAGE||'';
+assert.equal(packagePath,'docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R7.json');
+const packageBytes=fs.readFileSync(packagePath),packageBlob=r7Blob(packageBytes);
+const execution=JSON.parse(fs.readFileSync('CXORBIA_RECOVERY_EXECUTION_CURRENT.json','utf8'));
+assert.equal(execution.currentSessionProofPackage?.path,packagePath);
+assert.equal(execution.currentSessionProofPackage?.gitBlob,packageBlob);
+assert.equal(r7Git('rev-parse','HEAD:'+packagePath),packageBlob);
+sessionPackage=JSON.parse(packageBytes);
+sessionPreflight=JSON.parse(fs.readFileSync(process.env.CXORBIA_I3_SESSION_PREFLIGHT,'utf8'));
+assert.equal(sessionPackage.schemaVersion,'cxorbia.i3.c02-d04.independent-session-package.v1');
+assert.equal(sessionPackage.id,'CXORBIA-I3-D07-C04-C05-BOUNDED-20261029-R7');
+assert.equal(sessionPackage.mode,'R7_D07_C04_C05_BOUNDED');
+assert.equal(sessionPackage.attemptNumber,7);
+assert.equal(sessionPackage.expectedControlParentSha,r7Git('rev-parse','HEAD^'));
+assert.equal(sessionPackage.sourceSha,SRC);assert.equal(sessionPackage.sourceTree,descriptor.productTreeAuthority);
+assert.equal(sessionPackage.production,false);
+assert.equal(sessionPackage.actor.uid,'NkcIVM4AnSU1gI9cGKHI5P12YqC3');
+assert.equal(sessionPackage.actor.tenantId,'tya');assert.equal(sessionPackage.actor.projectId,'cinepolis');assert.equal(sessionPackage.actor.role,'admin');
+assert.equal(sessionPackage.actor.createUser,false);assert.equal(sessionPackage.actor.changeClaims,false);
+assert.equal(sessionPackage.c02.execute,false);assert.equal(sessionPackage.c02.replayReconciliation,false);
+assert.equal(sessionPackage.d04.execute,false);
+for(const key of ['fixtureSeeds','contentEdits','fixtureDeletes'])assert.equal(sessionPackage.d04[key],0);
+for(const key of ['authMutations','hrWrites','resourceWrites','storageWrites','deploys'])assert.equal(sessionPackage.scope[key],0);
+assert.equal(sessionPackage.scope.production,false);
+assert.equal(sessionPackage.d07.execute,true);assert.deepEqual(sessionPackage.d07.roles,['admin','shopper']);
+assert.equal(sessionPackage.d07.tenantId,'tya');assert.equal(sessionPackage.d07.projectId,'cinepolis');
+assert.equal(sessionPackage.d07.periodId,'cinepolis-2026-10');
+assert.equal(sessionPackage.d07.shopperId,'TYA_GT_393371F88D10F7A8');
+assert.equal(sessionPackage.d07.shopperUidFingerprint,'a6e3ff21498bd79cbc4078ec47b7b5760a6534e43803614e997bb2294d77ee98');
+assert.equal(sessionPackage.d07.bucket,'cxorbia-backend-dev.firebasestorage.app');
+assert.equal(sessionPackage.d07.approvedName,'Instructivo Shopper.pdf');assert.equal(sessionPackage.d07.approvedSize,162335);
+assert.equal(sessionPackage.d07.approvedSha256,'3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454');
+assert.equal(sessionPackage.d07.binaryGetsPerRole,1);assert.equal(sessionPackage.d07.downloadsPerRole,1);
+for(const key of ['resourceCrud','storageRuleChanges','corsChanges','serviceWorkerChanges'])assert.equal(sessionPackage.d07[key],false);
+assert.equal(sessionPackage.c04c05.execute,true);assert.equal(sessionPackage.c04c05.commands,4);
+assert.equal(sessionPackage.c04c05.replays,2);assert.equal(sessionPackage.c04c05.maxLinkedDocuments,13);
+assert.equal(sessionPackage.c04c05.helperSha256,'aec21d3231eb895ee7c873ab22ab8bf74125c37457b915a5e95ca0059d3aed3b');
+assert.equal(sessionPackage.scope.financeCommands,4);assert.equal(sessionPackage.scope.financeReplays,2);
+assert.equal(sessionPackage.scope.financeProviderWrites,15);assert.equal(sessionPackage.scope.cleanupDeletes,13);
+assert.equal(sessionPackage.sourceProof?.decision,'PASS_I3_B_CUMULATIVE_SOURCE_PROOF');
+assert.equal(sessionPackage.sourceProof?.workflowPath,'.github/workflows/cxorbia-recovery-i3-dev-certification.yml');
+assert.equal(sessionPackage.sourceProof?.jobName,'phasea-rejected-checkpoint-source-proof');
+for(const field of ['runId','jobId','artifactId'])assert.ok(Number.isSafeInteger(sessionPackage.sourceProof[field])&&sessionPackage.sourceProof[field]>0);
+assert.match(sessionPackage.sourceProof.headSha,/^[a-f0-9]{40}$/);
+assert.match(sessionPackage.sourceProof.artifactDigest,/^sha256:[a-f0-9]{64}$/);
+const ciReceipt=r7ReadLinked(sessionPackage.sourceProof.receipt);
+assert.equal(ciReceipt.decision,'PASS_I3_B_CUMULATIVE_SOURCE_PROOF');assert.equal(ciReceipt.sourceSha,SRC);assert.equal(ciReceipt.sourceTree,descriptor.productTreeAuthority);assert.equal(ciReceipt.production,false);
+for(const [receiptField,packageField] of [['runId','runId'],['sourceJobId','jobId'],['artifactId','artifactId'],['controlSha','headSha']])assert.equal(ciReceipt[receiptField],sessionPackage.sourceProof[packageField],'R7_SOURCE_PROOF_RECEIPT:'+receiptField);
+assert.equal('sha256:'+ciReceipt.artifactZipSha256,sessionPackage.sourceProof.artifactDigest);
+const repair=r7ReadLinked(sessionPackage.sourceRepair);
+assert.equal(repair.sourceSha,SRC);assert.equal(repair.sourceTree,descriptor.productTreeAuthority);
+const target=sessionPackage.materialization;
+assert.equal(target.deliveryKind,'DEV_LIVE_MATERIALIZATION');assert.equal(target.origin,ROOT);
+assert.equal(target.sourceSha,SRC);assert.equal(target.sourceTree,descriptor.productTreeAuthority);
+assert.equal(target.runtimeSourceSha,SRC);assert.equal(target.hrRevision,HR);assert.equal(target.production,false);
+assert.ok(Number.isSafeInteger(target.materializationRunId)&&target.materializationRunId>0);
+assert.match(target.controlSha,/^[a-f0-9]{40}$/);
+assert.match(target.runtimeRevision,/^cxorbia-live-hr-dev-[a-z0-9-]+$/);
+assert.match(target.runtimeDigest,/^sha256:[a-f0-9]{64}$/);
+assert.match(target.hostingVersion,/^sites\/cxorbia-backend-dev\/versions\/[a-z0-9]+$/);
+assert.match(target.hostingRelease,/^sites\/cxorbia-backend-dev\/channels\/live\/releases\/[a-zA-Z0-9_-]+$/);
+assert.equal(target.rulesRelease,'projects/cxorbia-backend-dev/releases/cloud.firestore');
+assert.match(target.rulesetName,/^projects\/cxorbia-backend-dev\/rulesets\/[a-zA-Z0-9-]+$/);
+assert.equal(target.rulesGitBlob,r7Git('rev-parse',SRC+':firestore.rules'));
+const receipt=r7ReadLinked(target.receipt);
+assert.equal(receipt.decision,'PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION');
+for(const field of ['sourceSha','sourceTree','runtimeSourceSha','runtimeRevision','runtimeDigest','hrRevision','hostingVersion','hostingRelease','rulesRelease','rulesetName','rulesGitBlob','deliveryKind','origin','materializationRunId','controlSha','production'])assert.equal(receipt[field],target[field],'R7_MATERIALIZATION_RECEIPT:'+field);
+assert.equal(sessionPreflight.decision,'PASS_R7_DEV_LIVE_MATERIALIZATION_PREFLIGHT');
+assert.equal(sessionPreflight.mode,sessionPackage.mode);assert.equal(sessionPreflight.packageBlob,packageBlob);
+assert.equal(sessionPreflight.controlSha,process.env.GITHUB_SHA);assert.equal(sessionPreflight.runId,RUN);
+assert.deepEqual(sessionPreflight.materializationReceipt,target.receipt);
+assert.deepEqual(sessionPreflight.sourceRepair,sessionPackage.sourceRepair);
+assert.deepEqual(sessionPreflight.sourceProof,sessionPackage.sourceProof);
+assert.equal(sessionPreflight.materializationControlSha,target.controlSha);
+for(const field of ['sourceSha','sourceTree','runtimeSourceSha','runtimeRevision','runtimeDigest','hrRevision','hostingVersion','hostingRelease','rulesRelease','rulesetName','rulesGitBlob','deliveryKind','origin','materializationRunId','production'])assert.equal(sessionPreflight[field],target[field],'R7_PREFLIGHT_PIN:'+field);
+for(const field of ['sourceIdentityVerified','runtimeIdentityVerified','hostingReleaseVerified','rulesReleaseVerified'])assert.equal(sessionPreflight[field],true);
+const owners=['app/index-backend-dev.html','app/adapters/tya-financial-canonical-source-safe-adapter.js',
+  'app/core/backend-browser-auth.js','app/core/backend-certifications.js','app/core/backend-cxdata-finance-read.js',
+  'app/core/backend-finance-benefits.js','app/core/backend-protected-dev-mode.js','app/core/backend-protected-dev-session-continuity.js',
+  'app/core/backend-resources.js','app/modules/cert.js','app/modules/documentos.js','app/modules/finanzas.js',
+  'app/adapters/cxorbia-cxdata-command-boundary-v1.js','app/adapters/cxorbia-command-adapter-v1.js'];
+assert.deepEqual(Object.keys(sessionPreflight.servedOwnerBlobs||{}).sort(),owners.slice().sort());
+assert.deepEqual(Object.keys(target.owners||{}).sort(),owners.slice().sort());assert.equal(sessionPreflight.servedOwnerCount,owners.length);
+for(const owner of owners){const canonical=r7Git('rev-parse',SRC+':'+owner);assert.equal(target.owners[owner],canonical);assert.equal(sessionPreflight.servedOwnerBlobs[owner],canonical);}
+assert.equal(sessionPreflight.deploys,0);assert.equal(sessionPreflight.writes,0);
+}else if(SESSION_PROOF_MODE){
   assert.equal(descriptor.status,'HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL');
   assert.equal(SRC,'946c3cb8eff6a043693b10ed628d2ebc860508e1');
   assert.equal(descriptor.productTreeAuthority,'4afcecfd4b41ac697995a1164115a23a46db44c7');
@@ -129,9 +234,13 @@ fs.mkdirSync(OUT,{recursive:true});
 if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
 const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc('tya');
 const str=x=>String(x??'').trim();
-const materialization=SESSION_PROOF_MODE?{runId:sessionPackage.preview.runId,...sessionPackage.preview}:descriptor.currentMaterialization;
+const materialization=R7_MODE?{runId:sessionPackage.materialization.materializationRunId,...sessionPackage.materialization}:SESSION_PROOF_MODE?{runId:sessionPackage.preview.runId,...sessionPackage.preview}:descriptor.currentMaterialization;
 const res={decision:'HOLD',version:'cxorbia.i3.d04-e04.name-edit.connected.v2',sourceSha:SRC,sourceTree:descriptor.productTreeAuthority,materializationRunId:materialization.runId,hostingVersion:materialization.hostingVersion,runtimeRevision:materialization.runtimeRevision,hrRevision:HR,scope:{tenant:'tya',project:'cinepolis'},d04:{},e04:{},cleanup:{},writes:{auth:0,hr:0,otherBanks:0,production:0},production:false};
-if(SESSION_PROOF_MODE){
+if(R7_MODE){
+  res.packageBlob=sessionPreflight.packageBlob;res.controlSha=sessionPreflight.controlSha;
+  res.materialization={...sessionPackage.materialization};res.deploys=0;
+  res.i3='HOLD';res.gate20='HOLD';res.gate21='HOLD';res.i4Authorized=false;
+}else if(SESSION_PROOF_MODE){
   res.version='cxorbia.i3.c02-d04.independent-sessions.v1';
   res.scope={tenant:'tya',project:'cinepolis',period:'cinepolis-2026-10',taskIds:['C02','D04']};
   res.preview={origin:ROOT,runId:sessionPackage.preview.runId,hostingVersion:sessionPackage.preview.hostingVersion,
@@ -765,7 +874,9 @@ async function d04VerifyPostSession(fixture) {
 // Integration proposal only. Append helpers to the existing D04 runner; no new entrypoint.
 // No provider call is made by importing this file. Caller supplies two isolated, authenticated pages.
 
-const D07 = Object.freeze({
+const D07 = R7_MODE?Object.freeze({...sessionPackage.d07,sourceSha:SRC,sourceTree:descriptor.productTreeAuthority,
+  resourceOwnerBlob:sessionPreflight.servedOwnerBlobs['app/core/backend-resources.js'],
+  viewerOwnerBlob:sessionPreflight.servedOwnerBlobs['app/modules/documentos.js']}):Object.freeze({
   sourceSha:'946c3cb8eff6a043693b10ed628d2ebc860508e1',
   sourceTree:'4afcecfd4b41ac697995a1164115a23a46db44c7',
   resourceOwnerBlob:'d3073758c85f0184cdd38fd9f88882ecc212c30c',
@@ -1181,7 +1292,1057 @@ async function runD07ReadOnly(){
  if(res.decision!=='PASS_D07_ADMIN_SHOPPER_REAL_PDF_READ_ONLY_CLAUSE')process.exitCode=1;
 }
 
-if(D07_READ_ONLY_MODE){
+// R7-only additions. The preceding R5/R6 implementations remain intact.
+async function bindD07BeforeReadsR7({adminPage,shopperPage,adminUid,shopperUid,db,preflight,onDiagnostic=()=>{}}){
+  check(preflight?.sourceSha===D07.sourceSha&&preflight?.sourceTree===D07.sourceTree&&
+    preflight?.materializationRunId===sessionPackage.materialization.materializationRunId&&preflight?.sourceIdentityVerified===true&&
+    preflight?.servedOwnerBlobs?.['app/core/backend-resources.js']===D07.resourceOwnerBlob&&
+    preflight?.servedOwnerBlobs?.['app/modules/documentos.js']===D07.viewerOwnerBlob,'SOURCE_PREFLIGHT_UNBOUND');
+  check(preflight.deliveryKind==='DEV_LIVE_MATERIALIZATION'&&preflight.origin==='https://cxorbia-backend-dev.web.app'&&
+    new URL(adminPage.url()).origin===preflight.origin&&new URL(shopperPage.url()).origin===preflight.origin,'DEV_LIVE_ORIGIN_MISMATCH');
+  check(typeof preflight.hostingVersion==='string'&&/^sites\/cxorbia-backend-dev\/versions\/[0-9a-f]+$/.test(preflight.hostingVersion),'HOSTING_VERSION_UNBOUND');
+  // Both role catalogs must expose the same exact resource before either binary GET.
+  const a=await readD07LoadedBinding(adminPage,{role:'admin',uid:adminUid,onDiagnostic});
+  const s=await readD07LoadedBinding(shopperPage,{role:'shopper',uid:shopperUid,onDiagnostic});
+  for(const field of ['id','storagePath','version','bucket'])check(a[field]===s[field],'ROLE_RESOURCE_BINDING_MISMATCH');
+  const ref=db.doc('tenants/'+D07.tenantId+'/resources/'+a.id);
+  const before=await bounded(ref.get(),10000,'EXACT_METADATA_TIMEOUT');
+  const d=before.exists?(before.data()||{}):{};
+  const checks={exists:before.exists===true,documentIdMatches:before.id===a.id,storedIdMatches:d.id==null||d.id===a.id,
+    publishedPdf:d.status==='active'&&d.resourceType==='project_resource'&&d.tipo==='pdf',
+    scopeMatches:d.tenantId===D07.tenantId&&d.projectId===D07.projectId&&d.periodId===D07.periodId,
+    exactStoragePathMatches:d.storagePath===a.storagePath&&d.storagePath===s.storagePath,
+    versionMatches:(d.version??null)===a.version&&(d.version??null)===s.version,
+    approvedMetadataNameMatches:[d.n,d.meta].some(v=>norm(v)===norm(D07.approvedName)),
+    shopperPublished:d.targetAll===true||(Array.isArray(d.visibleRoles)&&d.visibleRoles.includes('shopper')),
+    approvedSizeMatchesIfDeclared:d.size==null||d.size===D07.approvedSize};
+  const metadataDiagnostic={stage:'exact-sdk-document',resourceId:a.id,version:d.version??null,size:d.size??null,
+    scope:{tenantId:d.tenantId??null,projectId:d.projectId??null,periodId:d.periodId??null},checks,
+    storagePathSha256:sha(String(d.storagePath||'')),storageFolderEqualsDocumentId:a.pathDiagnostic.storageFolderEqualsDocumentId,
+    updateTime:before.updateTime?{seconds:before.updateTime.seconds,nanoseconds:before.updateTime.nanoseconds}:null};
+  onDiagnostic(metadataDiagnostic);
+  if(!Object.values(checks).every(Boolean))bindingFailure('EXACT_METADATA_BINDING_MISMATCH',metadataDiagnostic);
+  const endpoint='https://firebasestorage.googleapis.com/v0/b/'+encodeURIComponent(a.bucket)+'/o/'+encodeURIComponent(a.storagePath)+'?alt=media';
+  return {id:a.id,storagePath:a.storagePath,version:a.version,bucket:a.bucket,endpoint,ref,before,
+    sourceProof:{sourceSha:preflight.sourceSha,sourceTree:preflight.sourceTree,deliveryKind:preflight.deliveryKind,materializationRunId:preflight.materializationRunId,origin:preflight.origin,hostingVersion:preflight.hostingVersion,servedOwnerBlobs:preflight.servedOwnerBlobs},
+    safe:{resourceId:a.id,version:a.version,storagePathSha256:sha(a.storagePath),approvedSha256:D07.approvedSha256,approvedSize:D07.approvedSize,
+      bothRoleCatalogsVisible:true,exactMetadataBound:true,pathDiagnostic:a.pathDiagnostic,metadataDiagnostic}};
+}
+
+// Proposed R7-only strengthening; legacy classifiers remain byte-identical.
+// The existing exact PDF GET/path/count contract is preserved.
+function classifyD07RequestR7(input){
+  const base=classifyD07Request(input),u=new URL(input.url),verb=String(input.method).toUpperCase();
+  if(['GET','HEAD','OPTIONS'].includes(verb))return base;
+  const firestoreRead=verb==='POST'&&u.hostname==='firestore.googleapis.com'&&
+    /\/Listen\/channel$|:(?:batchGet|runQuery|runAggregationQuery|partitionQuery|beginTransaction|rollback)$|\/(?:BatchGetDocuments|GetDocument|ListDocuments|ListCollectionIds|RunQuery|RunAggregationQuery|PartitionQuery|BeginTransaction|Rollback)$/.test(u.pathname);
+  const authRead=verb==='POST'&&(
+    u.hostname==='identitytoolkit.googleapis.com'&&/\/accounts:(?:signInWithCustomToken|signInWithPassword|lookup)$/.test(u.pathname)||
+    u.hostname==='securetoken.googleapis.com'&&/\/token$/.test(u.pathname));
+  return {...base,mutating:base.mutating||!(firestoreRead||authRead)};
+}
+
+async function installD07ReadOnlyContextGuardR7(context){
+  // Install before goto/Auth. Listener reads, token exchange and account lookup remain allowed.
+  // No Storage binary read is allowed until both catalogs and the exact SDK document are bound.
+  const pattern=/^https?:\/\//;
+  const evidence={strictReadOnlyPolicy:'R7_EXPLICIT_READ_ONLY_POST_WHITELIST',installedBeforeNavigation:true,bindingSet:false,blockedWriteRequests:0,
+    blockedUnexpectedStorageReads:0,storageGetsOutsideRoleGuard:0};
+  let endpoint=null;
+  const handler=async route=>{
+    const request=route.request();
+    const kind=classifyD07RequestR7({url:request.url(),method:request.method(),endpoint});
+    if(kind.mutating){evidence.blockedWriteRequests++;await route.abort('blockedbyclient');}
+    else if(kind.unexpectedRead){evidence.blockedUnexpectedStorageReads++;await route.abort('blockedbyclient');}
+    else{if(kind.exactPdfGet)evidence.storageGetsOutsideRoleGuard++;await route.continue();}
+  };
+  await context.route(pattern,handler);
+  return {evidence,setBinding(binding){
+    check(!evidence.bindingSet&&binding?.safe?.bothRoleCatalogsVisible===true&&binding?.safe?.exactMetadataBound===true&&
+      binding?.sourceProof?.sourceSha===D07.sourceSha&&typeof binding?.endpoint==='string','CONTEXT_BINDING_UNPROVEN');
+    endpoint=binding.endpoint;evidence.bindingSet=true;
+  },stop:()=>context.unroute(pattern,handler)};
+}
+
+
+async function readD07RolePdfR7({page,role,uid,binding,outDir}){
+  const result={role,decision:'HOLD',stage:'START',stages:[],clickAttempted:false,clickCompleted:false,clickTimeout:false,
+    openClicks:0,binaryGetCount:0,blockedUnexpectedRequests:0,
+    downloadCount:0,rendered:false,writesObserved:false,blockedWriteRequests:0,httpStatus:null,networkError:null,diagnostic:null};
+  const pending=[],guardPattern=/^https?:\/\//;let guardInstalled=false;
+  const startedAt=Date.now();let domObserver=null;
+  result.dom={beforeClick:null,afterClick:null,failure:null,observation:null};result.pageErrors=[];
+  const mark=stage=>{result.stage=stage;result.stages.push({stage,elapsedMs:Date.now()-startedAt});};
+  const errorType=error=>['Error','TimeoutError','AssertionError','TypeError','ReferenceError','SyntaxError','RangeError','AbortError','NetworkError','FirebaseError','InvalidStateError'].includes(error?.name)?error.name:'OTHER';
+  const observePageError=error=>{if(result.pageErrors.length<12)result.pageErrors.push({stage:result.stage,type:errorType(error),elapsedMs:Date.now()-startedAt});};
+  const readSafeDom=async()=>{
+    const dom=await bounded(page.evaluate(id=>{
+      const exact=[...document.querySelectorAll('button[data-doc]')].filter(n=>n.dataset.doc===id),button=exact[0]||null;
+      const visible=node=>!!node?.isConnected&&node.getClientRects().length>0&&getComputedStyle(node).visibility!=='hidden'&&getComputedStyle(node).display!=='none';
+      const rect=button?.getBoundingClientRect(),x=rect?rect.left+rect.width/2:-1,y=rect?rect.top+rect.height/2:-1;
+      const inside=x>=0&&y>=0&&x<innerWidth&&y<innerHeight,hit=inside?document.elementFromPoint(x,y):null;
+      const tags=['BUTTON','DIV','SPAN','A','CANVAS','SECTION','MAIN','BODY','HTML','INPUT','SVG','PATH'];
+      const statuses=[...document.querySelectorAll('[data-pdf-status]')],status=statuses[0]||null,viewer=document.querySelector('[data-pdf-viewer]');
+      const stages=['TOKEN','GET','GET_HTTP','BYTES','COMPLETE','PDF_JS_LOAD','PDF_JS_DOCUMENT','PDF_JS_RENDER','RESOURCE_READ'];
+      const rawStatus=status?.dataset.pdfStatus,rawStage=status?.dataset.d07Stage,rawCode=status?.dataset.d07Code;
+      return {viewPresent:!!document.querySelector('#view'),catalogOpenButtonCount:document.querySelectorAll('button[data-doc]').length,
+        exactOpenButtonCount:exact.length,exactOpenButtonConnected:button?.isConnected===true,exactOpenButtonVisible:visible(button),
+        exactOpenButtonEnabled:button?button.disabled===false:null,centerInViewport:inside,centerHitsExactButton:!!button&&!!hit&&(hit===button||button.contains(hit)),
+        centerHitTag:hit?(tags.includes(hit.tagName)?hit.tagName:'OTHER'):null,
+        viewerCount:document.querySelectorAll('[data-pdf-viewer]').length,viewerVisible:visible(viewer),statusCount:statuses.length,
+        pdfStatus:status?(['loading','ready','failed'].includes(rawStatus)?rawStatus:'OTHER'):null,
+        pdfStage:stages.includes(rawStage)?rawStage:null,pdfCode:/^RESOURCE_(?:READ|PDF)_[A-Z0-9_]{3,80}$/.test(rawCode||'')?rawCode:null,
+        canvasCount:document.querySelectorAll('[data-pdf-viewer] canvas').length,backButtonPresent:!!document.querySelector('#docBack'),
+        downloadButtonPresent:!!document.querySelector('[data-pdf-download]'),downloadButtonEnabled:document.querySelector('[data-pdf-download]')?.disabled===false,
+        retryButtonCount:document.querySelectorAll('[data-pdf-retry]').length};
+    },binding.id),5000,'SAFE_DOM_TIMEOUT');
+    if(domObserver)dom.observation=await bounded(domObserver.evaluate(state=>state.read()),5000,'DOM_OBSERVER_READ_TIMEOUT');
+    return dom;
+  };
+  page.on('pageerror',observePageError);
+  const observeResponse=response=>{if(response.url()===binding.endpoint&&response.request().method()==='GET')result.httpStatus=response.status();};
+  const observeFailure=request=>{if(request.url()===binding.endpoint){const code=String(request.failure()?.errorText||'');result.networkError=/^net::ERR_[A-Z0-9_]+$/.test(code)?code:'OTHER_NETWORK_ERROR';}};
+  page.on('response',observeResponse);page.on('requestfailed',observeFailure);
+  const guard=async route=>{
+    const request=route.request();
+    const kind=classifyD07RequestR7({url:request.url(),method:request.method(),endpoint:binding.endpoint,getCount:result.binaryGetCount});
+    if(kind.mutating||kind.unexpectedRead){
+      result.blockedUnexpectedRequests++;result.writesObserved||=kind.mutating;
+      if(kind.mutating)result.blockedWriteRequests++;
+      await route.abort('blockedbyclient');return;
+    }
+    if(kind.exactPdfGet){
+      result.binaryGetCount++;
+      pending.push(request.headerValue('authorization').then(value=>{result.authenticatedGetHeaderPresent=typeof value==='string'&&/^Firebase .+/.test(value);}).catch(()=>{result.authenticatedGetHeaderPresent=false;}));
+    }
+    await route.continue();
+  };
+  try{
+    mark('INSTALL_ROLE_GUARD');
+    await page.route(guardPattern,guard);guardInstalled=true;
+    // Only the app router is invoked; the binary read must result from this exact visible button click.
+    mark('NAVIGATE_CATALOG');
+    await bounded(page.evaluate(()=>window.CX.router.nav('documentos',{history:false})),10000,'RESOURCES_NAVIGATION_TIMEOUT');
+    const open=page.locator('button[data-doc="'+binding.id+'"]');
+    mark('WAIT_EXACT_OPEN_BUTTON');
+    await open.waitFor({state:'visible',timeout:15000});
+    check(await open.count()===1,'EXACT_OPEN_BUTTON_NOT_UNIQUE');
+    if(role==='shopper'){
+      check(await page.locator('#docUp').count()===0,'SHOPPER_CREATE_CONTROL_VISIBLE');
+      check(await page.locator('[data-editd],[data-deld]').count()===0,'SHOPPER_MUTATION_CONTROL_VISIBLE');
+    }
+    mark('INSTALL_PASSIVE_DOM_OBSERVER');
+    domObserver=await bounded(page.evaluateHandle(id=>{
+      const find=()=>[...document.querySelectorAll('button[data-doc]')].find(node=>node.dataset.doc===id)||null;
+      const initial=find(),began=performance.now();let current=initial,callbacks=0,replacements=0,detachments=0;
+      const transitions=[];
+      const read=()=>({callbacks,openButtonReplacements:replacements,openButtonDetachments:detachments,
+        initialButtonStillConnected:initial?.isConnected===true,transitions:transitions.slice()});
+      const observer=new MutationObserver(()=>{
+        callbacks++;const next=find();
+        if(next!==current){
+          replacements++;if(current&&!current.isConnected)detachments++;current=next;
+          if(transitions.length<16)transitions.push({elapsedMs:Math.round(performance.now()-began),openButtonPresent:!!next,initialButtonStillConnected:initial?.isConnected===true});
+        }
+      });
+      observer.observe(document.documentElement,{childList:true,subtree:true});
+      return {read,stop:()=>{observer.disconnect();return read();}};
+    },binding.id),5000,'DOM_OBSERVER_INSTALL_TIMEOUT');
+    mark('DOM_BEFORE_OPEN_CLICK');result.dom.beforeClick=await readSafeDom();
+    mark('OPEN_CLICK');result.clickAttempted=true;
+    await open.click({timeout:10000});
+    result.clickCompleted=true;result.openClicks=1;
+    mark('DOM_AFTER_OPEN_CLICK');result.dom.afterClick=await readSafeDom();
+    mark('WAIT_PDF_TERMINAL_STATUS');
+    await page.waitForFunction(()=>['ready','failed'].includes(document.querySelector('[data-pdf-status]')?.dataset.pdfStatus),null,{timeout:45000});
+    mark('READ_PDF_STATUS');
+    result.diagnostic=await bounded(page.locator('[data-pdf-status]').evaluate(node=>({
+      status:node.dataset.pdfStatus,stage:node.dataset.d07Stage||null,code:node.dataset.d07Code||null,
+      text:String(node.innerText||'').replace(/\s+/g,' ').trim().slice(0,700),
+    })),10000,'VISIBLE_DIAGNOSTIC_TIMEOUT');
+    if(result.diagnostic.status!=='ready')fail('PDF_VISIBLE_FAILURE');
+    check(result.diagnostic.text==='PDF visible en la plataforma','PDF_READY_TEXT_MISMATCH');
+    mark('OBSERVE_RENDERED_CANVAS');
+    const canvas=await bounded(page.locator('[data-pdf-viewer] canvas').evaluate(node=>{
+      const w=node.width,h=node.height,ctx=node.getContext('2d');
+      if(!w||!h||!ctx)return {width:w,height:h,inkPixels:0};
+      const data=ctx.getImageData(0,0,w,h).data;let ink=0;
+      for(let i=0;i<data.length;i+=4)if(data[i+3]>0&&(data[i]<245||data[i+1]<245||data[i+2]<245)){if(++ink>=16)break;}
+      return {width:w,height:h,inkPixels:ink};
+    }),10000,'CANVAS_OBSERVATION_TIMEOUT');
+    check(canvas.width>100&&canvas.height>100&&canvas.inkPixels>=16,'PDF_CANVAS_BLANK');
+    result.rendered=true;result.canvas=canvas;
+    mark('READ_PAGE_COUNT');
+    const position=(await page.locator('[data-pdf-page]').innerText()).trim();
+    const match=/^Página 1 de ([1-9]\d*)$/.exec(position);check(match,'PDF_PAGE_COUNT_UNPROVEN');
+    result.pageCount=Number(match[1]);
+    mark('CAPTURE_RENDERED_PDF');
+    await page.locator('[data-pdf-viewer]').screenshot({path:outDir+'/d07-'+role+'-pdf-page1.png',timeout:10000});
+    mark('CHECK_DOWNLOAD_BUTTON');
+    const downloadButton=page.locator('[data-pdf-download]');
+    check(await downloadButton.isEnabled(),'PDF_DOWNLOAD_NOT_ENABLED');
+    // The app reuses the authenticated bytes. Download must not start a second provider GET.
+    mark('DOWNLOAD_CLICK_AND_EVENT');
+    const [download]=await Promise.all([page.waitForEvent('download',{timeout:15000}),downloadButton.click({timeout:10000})]);
+    result.downloadCount=1;
+    check(norm(download.suggestedFilename())===norm(D07.approvedName),'DOWNLOAD_NAME_MISMATCH');
+    mark('READ_DOWNLOAD_STREAM');
+    const stream=await bounded(download.createReadStream(),15000,'DOWNLOAD_STREAM_TIMEOUT');check(stream,'DOWNLOAD_STREAM_MISSING');
+    mark('HASH_DOWNLOADED_BYTES');
+    const content=await bounded((async()=>{
+      const digest=createHash('sha256');let size=0,signature=Buffer.alloc(0);
+      for await(const chunk of stream){
+        size+=chunk.length;check(size<=D07.approvedSize,'DOWNLOAD_EXCEEDS_APPROVED_SIZE');
+        if(signature.length<5)signature=Buffer.concat([signature,chunk]).subarray(0,5);
+        digest.update(chunk);
+      }
+      return {size,sha256:digest.digest('hex'),pdfSignature:signature.equals(Buffer.from('%PDF-'))};
+    })(),15000,'DOWNLOAD_BYTES_TIMEOUT');
+    check(content.pdfSignature&&content.size===D07.approvedSize&&content.sha256===D07.approvedSha256,'DOWNLOAD_NOT_APPROVED_PDF_BYTES');
+    result.download=content;
+    if(result.pageCount>1){
+      mark('NEXT_PAGE_CLICK');
+      await page.locator('[data-pdf-next]').click({timeout:10000});
+      mark('WAIT_SECOND_PAGE');
+      await page.waitForFunction(()=>/^Página 2 de /.test(document.querySelector('[data-pdf-page]')?.textContent||''),null,{timeout:10000});
+      mark('PREVIOUS_PAGE_CLICK');
+      await page.locator('[data-pdf-prev]').click({timeout:10000});
+      mark('WAIT_FIRST_PAGE_AGAIN');
+      await page.waitForFunction(()=>/^Página 1 de /.test(document.querySelector('[data-pdf-page]')?.textContent||''),null,{timeout:10000});
+      result.pageNavigation='PASS_1_2_1';
+    }else result.pageNavigation='SINGLE_PAGE';
+    mark('RETURN_TO_CATALOG_CLICK');
+    await page.locator('#docBack').click({timeout:10000});
+    mark('WAIT_CATALOG_RETURN');
+    await open.waitFor({state:'visible',timeout:10000});result.backToCatalog=true;
+    mark('VERIFY_CATALOG_BINDING_UNCHANGED');
+    const after=await readD07LoadedBinding(page,{role,uid});
+    for(const field of ['id','storagePath','version','bucket'])check(after[field]===binding[field],'RESOURCE_CHANGED_DURING_READ');
+    mark('VERIFY_EXACT_READ_FOOTPRINT');
+    await Promise.all(pending);
+    check(result.binaryGetCount===1&&result.authenticatedGetHeaderPresent===true&&result.httpStatus===200,'EXACT_AUTHENTICATED_GET_NOT_PROVEN');
+    check(result.blockedUnexpectedRequests===0&&!result.writesObserved,'UNEXPECTED_REQUEST_DURING_READ');
+    mark('COMPLETE');
+    result.decision='PASS_EXACT_APPROVED_PDF_READ_RENDER_DOWNLOAD_FOR_ROLE';
+  }catch(error){
+    result.failureStage=result.stage;result.errorType=errorType(error);
+    result.clickTimeout=result.stage==='OPEN_CLICK'&&result.clickAttempted&&!result.clickCompleted&&result.errorType==='TimeoutError';
+    result.failureElapsedMs=Date.now()-startedAt;
+    result.dom.failure=await readSafeDom().catch(()=>({available:false,code:'D07_SAFE_DOM_UNAVAILABLE'}));
+    result.error=/^D07_[A-Z0-9_]+$/.test(String(error?.message||''))?error.message:'D07_BOUNDED_UI_OR_PROVIDER_FAILURE';
+    // Do not log raw URLs, credentials, Auth records, Storage paths, or response bodies.
+    if(!result.diagnostic)result.diagnostic=await bounded(page.locator('[data-pdf-status]').evaluate(node=>({
+      status:node.dataset.pdfStatus,stage:node.dataset.d07Stage||null,code:node.dataset.d07Code||null,
+      text:String(node.innerText||'').replace(/\s+/g,' ').trim().slice(0,700),
+    })),10000,'FAILURE_DIAGNOSTIC_TIMEOUT').catch(()=>null);
+    result.failureScreenshot={attempted:true,saved:false};
+    await page.locator('#view').screenshot({path:outDir+'/d07-'+role+'-failure.png',timeout:10000}).then(()=>{result.failureScreenshot.saved=true;},()=>{});
+  }finally{
+    page.off('pageerror',observePageError);
+    if(domObserver){
+      result.dom.observation=await bounded(domObserver.evaluate(state=>state.stop()),5000,'DOM_OBSERVER_STOP_TIMEOUT').catch(()=>({available:false,code:'D07_DOM_OBSERVER_STOP_UNAVAILABLE'}));
+      await bounded(domObserver.dispose(),5000,'DOM_OBSERVER_DISPOSE_TIMEOUT').catch(()=>{});
+    }
+    page.off('response',observeResponse);page.off('requestfailed',observeFailure);
+    if(guardInstalled)await page.unroute(guardPattern,guard);
+    await Promise.allSettled(pending);
+  }
+  return result;
+}
+
+
+const R7Finance=R7_MODE?(()=>{
+
+// Proposal for the existing CI runner only. Importing this file performs no I/O.
+// Four approved UI commands, two exact synthetic replays, thirteen linked docs.
+const C04C05=Object.freeze({
+  schema:'cxorbia.i3.c04-c05.bounded-finance.v1',
+  uid:'NkcIVM4AnSU1gI9cGKHI5P12YqC3',tenantId:'tya',projectId:'cinepolis',
+  projectPeriod:'cinepolis-2026-10',globalPeriod:'2026-10',
+  commandPath:'/v1/cxorbia/commands',maxRowsPerScopedQuery:500,
+  commands:4,replays:2,maxLinkedDocuments:13,
+  cxc:{country:'GT',currency:'Q',amount:1,apply:0.4,balance:0.6},
+  financing:{country:'HN',currency:'L',amount:2,apply:0.5,balance:1.5}
+});
+const OWNER_PATHS=['app/modules/finanzas.js','app/core/backend-finance-benefits.js',
+  'app/core/backend-cxdata-finance-read.js','app/adapters/cxorbia-cxdata-command-boundary-v1.js',
+  'app/adapters/cxorbia-command-adapter-v1.js'];
+const str=value=>String(value??'');
+const arr=value=>Array.isArray(value)?value:[];
+const uniq=value=>[...new Set(arr(value).map(str))].sort();
+const sha=value=>createHash('sha256').update(typeof value==='string'?value:JSON.stringify(stable(value))).digest('hex');
+function stable(value){
+  if(Array.isArray(value))return value.map(stable);
+  if(value&&typeof value==='object'){
+    if(typeof value.toJSON==='function')return stable(value.toJSON());
+    return Object.fromEntries(Object.keys(value).sort().filter(k=>value[k]!==undefined).map(k=>[k,stable(value[k])]));
+  }
+  return value;
+}
+const check=(ok,code)=>{if(!ok)throw new Error('C04_'+code);};
+const timeOf=snap=>snap?.updateTime?{seconds:snap.updateTime.seconds,nanoseconds:snap.updateTime.nanoseconds}:null;
+const head=snap=>({id:snap.id,exists:snap.exists===true,hash:snap.exists?sha(snap.data()):null,updateTime:timeOf(snap)});
+const versionOf=row=>row?.version??row?.updatedAt??row?.lastSyncedAt??row?.hrRevision??row?.sourceRevision??'source-current';
+const cents=value=>Math.round(Number(value)*100);
+const rowScope=row=>row?.tenantId===C04C05.tenantId&&row?.projectId===null&&row?.global===true&&row?.periodId===C04C05.globalPeriod;
+const safeError=error=>/^C04_[A-Z0-9_]+$/.test(str(error?.message))?error.message:
+  error?.name==='TimeoutError'?'C04_UI_TIMEOUT':'C04_BOUNDED_CASE_FAILURE';
+async function bounded(promise,ms,code){
+  let timer;
+  try{return await Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('C04_'+code)),ms);})]);}
+  finally{clearTimeout(timer);}
+}
+function getAll(db,refs){return bounded(db.getAll(...refs),15000,'EXACT_SERVER_READ_TIMEOUT');}
+
+function validateC04Pins(pins,proof){
+  for(const field of ['sourceSha','sourceTree','rulesGitBlob'])check(/^[a-f0-9]{40}$/.test(str(pins?.[field])),'PIN_MISSING');
+  check(/^sha256:[a-f0-9]{64}$/.test(str(pins.runtimeDigest))&&/^cxorbia-live-hr-dev-[a-z0-9-]+$/.test(str(pins.runtimeRevision)),'RUNTIME_PIN_MISSING');
+  check(/^[a-f0-9]{64}$/.test(str(pins.hrRevision)),'HR_PIN_MISSING');
+  check(pins.deliveryKind==='DEV_LIVE_MATERIALIZATION'&&Number.isSafeInteger(pins.materializationRunId)&&pins.materializationRunId>0,'DEV_MATERIALIZATION_PIN_MISSING');
+  check(pins.origin==='https://cxorbia-backend-dev.web.app','DEV_ORIGIN_DENIED');
+  check(/^sites\/cxorbia-backend-dev\/versions\/[a-z0-9]+$/.test(str(pins.hostingVersion)),'HOSTING_PIN_MISSING');
+  check(pins.rulesRelease==='projects/cxorbia-backend-dev/releases/cloud.firestore'&&/^projects\/cxorbia-backend-dev\/rulesets\/[a-zA-Z0-9-]+$/.test(str(pins.rulesetName)),'RULES_RELEASE_PIN_MISSING');
+  check(proof?.sourceIdentityVerified===true&&proof?.rulesReleaseVerified===true,'MATERIALIZATION_NOT_PROVEN');
+  for(const field of ['sourceSha','sourceTree','rulesGitBlob','runtimeRevision','runtimeDigest','hrRevision','deliveryKind','materializationRunId','origin','hostingVersion','rulesRelease','rulesetName'])check(proof[field]===pins[field],'MATERIALIZATION_PIN_MISMATCH');
+  for(const owner of OWNER_PATHS)check(/^[a-f0-9]{40}$/.test(str(pins.owners?.[owner]))&&proof.servedOwnerBlobs?.[owner]===pins.owners[owner],'FINANCE_OWNER_NOT_PROVEN');
+  return true;
+}
+
+function validateC04Actor(member,user){
+  check(member?.id===C04C05.uid&&member.active===true&&member.tenantId===C04C05.tenantId&&member.authNamespace==='staff','EXACT_ADMIN_MEMBERSHIP_INVALID');
+  check(['admin','super'].includes(member.role),'EXACT_ADMIN_ROLE_INVALID');
+  check(member.role==='super'||member.entitlementMode==='TYA_COMPLETE','GLOBAL_ENTITLEMENT_REQUIRED');
+  check(Array.isArray(member.projectIds)&&member.projectIds.includes(C04C05.projectId),'EXACT_ADMIN_PROJECT_DENIED');
+  check(Array.isArray(member.countries),'COUNTRY_SCOPE_NOT_PROVEN');
+  check(member.role==='super'||member.countries.length===0||['GT','HN'].every(c=>member.countries.includes(c)),'GT_HN_SCOPE_DENIED');
+  const claims=user?.customClaims||{};
+  check(user?.uid===C04C05.uid&&user.disabled===false&&claims.role===member.role&&claims.tenantId===C04C05.tenantId&&claims.authNamespace==='staff','EXACT_ADMIN_CLAIMS_INVALID');
+  check(isDeepStrictEqual(uniq(claims.projectIds),uniq(member.projectIds)),'EXACT_ADMIN_CLAIMS_SCOPE_MISMATCH');
+  return {uidFingerprint:sha('cxorbia-provider-uid-v1\0'+C04C05.uid),role:member.role,
+    tenantId:member.tenantId,authNamespace:member.authNamespace,active:member.active,
+    entitlementMode:member.entitlementMode??null,projectIds:uniq(member.projectIds),countries:uniq(member.countries),
+    countryScopeRule:member.role==='super'?'super':member.countries.length?'explicit_countries':'provider_empty_list_means_unrestricted',
+    memberRead:'exact_document',authRead:'exact_getUser',accountCreated:false,claimsChanged:false};
+}
+
+function c04ExpectedReferences(command){
+  const prefix='tenants/'+C04C05.tenantId+'/',type=command.commandType;
+  const rootKey=`${command.tenantId}\0${command.projectId}\0${command.periodId}\0${command.idempotencyKey}`;
+  const receipt=prefix+'commandReceipts/'+sha(rootKey).slice(0,40);
+  const audit=prefix+'entityAuditTrail/finance-'+sha(command.idempotencyKey+'\0'+type).slice(0,40);
+  const result={receipt,audit,created:[receipt,audit],changed:[]};
+  if(type==='finance.account.create'){
+    result.accountId=command.entityId||'acct-'+sha(`${command.tenantId}\0${command.projectId}\0${command.periodId}\0${command.payload.kind}\0${command.idempotencyKey}`).slice(0,28);
+    result.account=prefix+'financeAccounts/'+result.accountId;result.created.push(result.account);
+  }else if(type==='finance.movement.create'){
+    result.movementId=command.entityId||'mov-'+sha(rootKey).slice(0,28);
+    result.movement=prefix+'financialMovements/'+result.movementId;result.created.push(result.movement);
+    result.accountId='fin-'+sha(result.movementId+'\0cxp').slice(0,28);
+    result.account=prefix+'financeAccounts/'+result.accountId;result.created.push(result.account);
+  }else if(type==='finance.account.apply'){
+    result.accountId=command.entityId;
+    result.account=prefix+'financeAccounts/'+result.accountId;result.changed.push(result.account);
+    result.movementId='acct-'+sha(result.accountId+'\0'+command.idempotencyKey).slice(0,30);
+    result.movement=prefix+'financialMovements/'+result.movementId;result.created.push(result.movement);
+  }else check(false,'COMMAND_TYPE_DENIED');
+  return result;
+}
+
+function validateC04Command(command,step){
+  check(command?.version==='cxorbia-command-adapter-v1'&&command.tenantId===C04C05.tenantId&&command.projectId===null&&command.periodId===C04C05.globalPeriod&&command.requireProject===false&&command.requirePeriod===true,'COMMAND_SCOPE_DENIED');
+  const p=command.payload||{};
+  check(p.global===true&&p.periodId===C04C05.globalPeriod&&!p.projectId&&!p.proyectoId&&!p.visitId&&!p.visitaId&&!arr(p.visitIds).length,'COMMAND_LINK_DENIED');
+  check(str(command.idempotencyKey).length>8&&command.actor?.actorId===C04C05.uid&&command.actor?.role===step.role,'COMMAND_ACTOR_OR_IDEMPOTENCY_DENIED');
+  check(command.authorization?.providerEnforcementRequired===true,'COMMAND_PROVIDER_ENFORCEMENT_REQUIRED');
+  if(step.replay){check(isDeepStrictEqual(command,step.originalCommand),'REPLAY_NOT_EXACT');return true;}
+  const createAccount=step.kind==='create-cxc',createFinancing=step.kind==='create-financing';
+  const type=createAccount?'finance.account.create':createFinancing?'finance.movement.create':'finance.account.apply';
+  const permission=createAccount?'finance.account.write':createFinancing?'finance.movement.write':'finance.account.apply';
+  check(command.commandType===type&&command.authorization.permission===permission,'COMMAND_TYPE_DENIED');
+  check(command.entityType===(createFinancing?'financialMovement':'financeAccount'),'COMMAND_ENTITY_TYPE_DENIED');
+  if(createAccount||createFinancing){
+    check(command.entityId===null&&command.expectedVersion==='absent','CREATE_ID_OR_VERSION_DENIED');
+    const expected=createAccount?C04C05.cxc:C04C05.financing;
+    check(p.country===expected.country&&p.pais===expected.country&&p.currency===expected.currency&&p.moneda===expected.currency&&p.amount===expected.amount&&p.monto===expected.amount,'CREATE_MONEY_DENIED');
+    check(p.concepto===step.marker,'QA_MARKER_MISSING');
+    if(createAccount)check(p.kind==='cxc'&&p.origin==='manual','CXC_KIND_DENIED');
+    if(createFinancing)check(p.tipo==='ingreso'&&p.tipoIngreso==='financiamiento'&&p.cat===step.marker&&p.beneficiario===step.marker,'FINANCING_CLASSIFICATION_DENIED');
+  }else{
+    check(command.entityId===step.accountId&&p.accountId===step.accountId&&p.amount===step.amount,'QA_ACCOUNT_APPLY_DENIED');
+    check(str(command.expectedVersion)===str(step.expectedVersion)&&str(command.expectedVersion)!=='source-current','ACCOUNT_VERSION_DENIED');
+  }
+  if(!createAccount)check(/^2026-10-(?:0[1-9]|[12][0-9]|3[01])$/.test(str(p.fecha)),'COMMAND_DATE_DENIED');
+  return true;
+}
+
+function classifyC04Request({url,method,origin}){
+  const u=new URL(url),m=str(method).toUpperCase(),p=u.pathname;
+  if(p===C04C05.commandPath)return u.origin===origin&&m==='POST'?'command':'deny';
+  if(['GET','HEAD','OPTIONS'].includes(m))return 'read';
+  if(/(^|\.)firestore\.googleapis\.com$/.test(u.hostname)){
+    if(m!=='POST')return 'deny';
+    return /\/Listen\/channel$|:(?:batchGet|runQuery|runAggregationQuery|partitionQuery|beginTransaction|rollback)$|\/(?:BatchGetDocuments|GetDocument|ListDocuments|ListCollectionIds|RunQuery|RunAggregationQuery|PartitionQuery|BeginTransaction|Rollback)$/.test(p)?'read':'deny';
+  }
+  if(/(?:firebasestorage\.googleapis\.com|storage\.googleapis\.com)$/.test(u.hostname))return 'deny';
+  if(/(?:identitytoolkit|securetoken)\.googleapis\.com$/.test(u.hostname)){
+    return m==='POST'&&/accounts:(?:signInWithCustomToken|signInWithPassword|lookup)$|\/token$/.test(p)?'read':'deny';
+  }
+  return 'deny';
+}
+
+function createCommandGuard({db,pins,onPlanned,knownHeads}){
+  let context,active=null,stopped=false;
+  const routePattern=/^https?:\/\//;
+  const pendingResponses=new Set(),requests=new Map();
+  const evidence={installedBeforeNavigation:false,commandsIssued:0,replaysIssued:0,unexpectedMutationBlocked:0,validationFailures:[],requestCount:0};
+  async function beforeCommand(command,step){
+    validateC04Command(command,step);
+    const refs=c04ExpectedReferences(command);
+    if(step.replay){
+      check(refs.receipt===step.originalRefs.receipt&&refs.audit===step.originalRefs.audit,'REPLAY_REFERENCE_MISMATCH');
+    }else{
+      const all=[...refs.created,...refs.changed],snaps=await getAll(db,all.map(p=>db.doc(p)));
+      for(let i=0;i<all.length;i++){
+        if(refs.created.includes(all[i]))check(!snaps[i].exists,'QA_ID_COLLISION_DO_NOT_TOUCH');
+        else check(knownHeads.has(all[i])&&isDeepStrictEqual(head(snaps[i]),knownHeads.get(all[i])),'QA_ACCOUNT_CHANGED_BEFORE_COMMAND');
+      }
+      onPlanned({command,refs,step});
+    }
+    return refs;
+  }
+  const handler=async route=>{
+    const req=route.request(),kind=classifyC04Request({url:req.url(),method:req.method(),origin:pins.origin});
+    evidence.requestCount++;
+    if(kind==='deny'){
+      evidence.unexpectedMutationBlocked++;
+      await route.abort('blockedbyclient');return;
+    }
+    if(kind!=='command'){await route.continue();return;}
+    const item=active;
+    if(!item||item.claimed){evidence.unexpectedMutationBlocked++;await route.abort('blockedbyclient');return;}
+    item.claimed=true;
+    try{
+      const command=req.postDataJSON();
+      const refs=await beforeCommand(command,item.step);
+      item.command=command;item.refs=refs;requests.set(req,item);
+      if(item.step.replay)evidence.replaysIssued++;else evidence.commandsIssued++;
+      item.continued=true;
+      await route.continue();
+    }catch(error){
+      const code=safeError(error);evidence.validationFailures.push(code);item.reject(Error(code));
+      await route.abort('blockedbyclient').catch(()=>{});
+    }
+  };
+  const responseHandler=response=>{
+    const item=requests.get(response.request());if(!item)return;
+    const task=(async()=>{
+      try{
+        const body=await bounded(response.json(),15000,'COMMAND_RESPONSE_TIMEOUT');
+        item.resolve({command:item.command,refs:item.refs,step:item.step,httpStatus:response.status(),body});
+      }catch(error){item.reject(Error(safeError(error)));}
+    })();
+    pendingResponses.add(task);task.finally(()=>pendingResponses.delete(task));
+  };
+  const failedHandler=request=>{const item=requests.get(request);if(item)item.reject(Error('C04_COMMAND_NETWORK_FAILURE'));};
+  return {
+    evidence,
+    get context(){return context;},
+    async install(ctx){
+      check(!context&&ctx.pages().length===0,'GUARD_MUST_PRECEDE_PAGE');context=ctx;
+      await ctx.route(routePattern,handler);ctx.on('response',responseHandler);ctx.on('requestfailed',failedHandler);
+      evidence.installedBeforeNavigation=true;
+    },
+    arm(step){
+      check(!active,'COMMAND_ALREADY_ARMED');
+      let resolve,reject;const observed=new Promise((yes,no)=>{resolve=yes;reject=no;});
+      // Attach the rejection handler immediately, before the UI event can fail.
+      observed.catch(()=>{});
+      const item={step,resolve,reject,claimed:false,continued:false};active=item;
+      return {observed,finish(){check(active===item,'COMMAND_ARM_CHANGED');active=null;},item};
+    },
+    async stop(){
+      if(stopped)return;stopped=true;
+      if(context){context.off('response',responseHandler);context.off('requestfailed',failedHandler);await context.unroute(routePattern,handler);}
+      await Promise.allSettled([...pendingResponses]);
+    }
+  };
+}
+
+async function readScope(page,pins,role){
+  const state=await bounded(page.evaluate(()=>{
+    const c=window.CX?.backendAuth?.context?.()||{};
+    return {uid:window.firebase?.auth?.().currentUser?.uid||'',role:c.role,tenantId:c.tenantId,authNamespace:c.authNamespace,
+      projectId:window.CX?.data?.currentProjectId,periodId:window.CX?.data?.currentPeriodId,
+      hrRevision:window.CX?.data?.previewMeta?.sourceRevision,backendEnabled:window.CX?.BACKEND?.enabled===true,
+      fixtures:typeof window.CX?.dataSource?.showFixtures==='function'?window.CX.dataSource.showFixtures():null,
+      effectiveRole:window.CX?.session?.effectiveRole?.(),testRole:window.CX?.session?.testRole||null};
+  }),10000,'APP_SCOPE_READ_TIMEOUT');
+  check(new URL(page.url()).origin===pins.origin,'APP_ORIGIN_MISMATCH');
+  check(state.uid===C04C05.uid&&state.role===role&&state.effectiveRole===role&&!state.testRole&&state.tenantId===C04C05.tenantId&&state.authNamespace==='staff','APP_PRINCIPAL_MISMATCH');
+  check(state.projectId===C04C05.projectId&&state.periodId===C04C05.projectPeriod&&state.hrRevision===pins.hrRevision,'APP_SCOPE_MISMATCH');
+  check(state.backendEnabled&&state.fixtures===false,'PROTECTED_FINANCE_NOT_ACTIVE');
+  return {role,tenantId:state.tenantId,projectId:state.projectId,periodId:state.periodId,hrRevision:state.hrRevision,fixtures:false};
+}
+
+async function openGlobal(page,pins,role){
+  await readScope(page,pins,role);
+  await bounded(page.evaluate(()=>window.CX.router.nav('movimientos',{history:false})),10000,'FINANCE_NAV_TIMEOUT');
+  const global=page.locator('[data-scope="global"]');
+  await global.waitFor({state:'visible',timeout:20000});check(await global.count()===1,'GLOBAL_CONTROL_AMBIGUOUS');
+  await global.click({timeout:10000});
+  await page.waitForFunction(()=>document.querySelector('[data-scope="global"]')?.classList.contains('btn-pr')&&
+    window.CX?.data?.__financeGlobalProjectionLoaded===true&&
+    window.CX.data.__financeGlobalProjectionKey==='tya::__global__::2026-10'&&
+    !!document.querySelector('[data-cuenta="cxc"]')&&!!document.querySelector('#addFin'),null,{timeout:30000});
+  await readScope(page,pins,role);
+}
+
+async function scopedLedgerSnapshot(db){
+  const tenant=db.collection('tenants').doc(C04C05.tenantId),out=new Map();
+  for(const name of ['financialMovements','financeAccounts']){
+    for(const scope of ['global','project']){
+      let q=tenant.collection(name);
+      q=scope==='global'?q.where('global','==',true).where('projectId','==',null).where('periodId','==',C04C05.globalPeriod):
+        q.where('projectId','==',C04C05.projectId).where('periodId','==',C04C05.projectPeriod);
+      const snap=await bounded(q.limit(C04C05.maxRowsPerScopedQuery+1).get(),15000,'SCOPED_BASELINE_TIMEOUT');
+      check(snap.size<=C04C05.maxRowsPerScopedQuery,'SCOPED_BASELINE_LIMIT_EXCEEDED');
+      for(const doc of snap.docs)out.set(doc.ref.path,{head:head(doc),data:doc.data(),scope,collection:name});
+    }
+  }
+  return out;
+}
+function ledgerFingerprint(map,excluded=new Set()){
+  return [...map].filter(([p])=>!excluded.has(p)).map(([p,v])=>({pathHash:sha(p),...v.head})).sort((a,b)=>a.pathHash.localeCompare(b.pathHash));
+}
+function operationIncome(map,currency){
+  let total=0;
+  for(const [,v] of map)if(v.scope==='global'&&v.collection==='financialMovements'){
+    const r=v.data;if(r.currency===currency&&Number(r.monto)>0&&r.tipoIngreso!=='financiamiento'&&r.operatingRevenue===true&&r.revenueRecognized===true)total+=Number(r.monto);
+  }
+  return total;
+}
+
+async function linkedSnapshots(db,paths){
+  const keys=[...paths].sort();if(!keys.length)return new Map();
+  const snaps=await getAll(db,keys.map(p=>db.doc(p)));
+  return new Map(keys.map((p,i)=>[p,{head:head(snaps[i]),snap:snaps[i],data:snaps[i].exists?snaps[i].data():null}]));
+}
+function headsOf(map){return new Map([...map].map(([p,v])=>[p,v.head]));}
+function equalHeads(a,b){return isDeepStrictEqual([...a].sort(([p],[q])=>p.localeCompare(q)),[...b].sort(([p],[q])=>p.localeCompare(q)));}
+
+function validateC04CommandFootprint(record,snapshots,knownHeads){
+  const created=new Set(record.refs.created),changed=new Set(record.refs.changed);
+  for(const p of created)check(!knownHeads.has(p)&&!changed.has(p),'COMMAND_FOOTPRINT_CREATED_COLLISION');
+  for(const p of changed)check(knownHeads.has(p),'COMMAND_FOOTPRINT_CHANGED_NOT_OWNED');
+  check(snapshots.size===knownHeads.size+created.size,'COMMAND_FOOTPRINT_SIZE_MISMATCH');
+  for(const [p,prior] of knownHeads){
+    const current=snapshots.get(p)?.head;
+    check(current?.exists===true,'COMMAND_FOOTPRINT_OWNED_DOCUMENT_MISSING');
+    if(!changed.has(p))check(isDeepStrictEqual(current,prior),'UNEXPECTED_OWNED_DOCUMENT_DELTA');
+  }
+  for(const [p,current] of snapshots)check(current.head?.exists===true&&(knownHeads.has(p)||created.has(p)),
+    'COMMAND_FOOTPRINT_UNPLANNED_DOCUMENT');
+  return true;
+}
+
+function validateC04Ack(record){
+  const b=record.body,c=record.command;
+  check(record.httpStatus===200&&b?.ok===true&&b.status==='committed'&&b.committed===true&&b.providerAck===true&&b.successUiAllowed===true,'STRICT_PROVIDER_ACK_REQUIRED');
+  check(b.tenantId===c.tenantId&&b.projectId===null&&b.periodId===c.periodId&&b.commandType===c.commandType&&b.idempotencyKey===c.idempotencyKey,'ACK_SCOPE_MISMATCH');
+  check(b.localMutation===false&&b.localStorageWrite===false&&b.externalPaymentConfirmed===false&&b.externalPaymentWrites===0&&b.bankWrites===0,'ACK_SIDE_EFFECT_CONTRACT_MISMATCH');
+  if(record.step.replay){
+    check(b.idempotentReplay===true&&b.providerWrites===0,'REPLAY_WRITES_OR_NOT_IDEMPOTENT');
+    check(b.entityId===record.step.originalEntityId,'REPLAY_ENTITY_CHANGED');return;
+  }
+  check(b.idempotentReplay===false&&b.providerWrites===(record.step.kind==='create-cxc'?3:4),'COMMAND_WRITE_COUNT_MISMATCH');
+}
+
+function validateCommittedRows(record,snaps){
+  validateC04Ack(record);
+  const c=record.command,r=record.refs,b=record.body,p=c.payload;
+  const get=ref=>{const s=snaps.get(ref);check(s?.head.exists,'ACK_WITHOUT_EXACT_DOCUMENT');return s.data;};
+  const receipt=get(r.receipt),audit=get(r.audit);
+  check(receipt.status==='committed'&&receipt.providerAck===true&&receipt.commandType===c.commandType&&receipt.commandDigest===sha(c)&&receipt.actorUid===C04C05.uid,'RECEIPT_MISMATCH');
+  check(rowScope(audit)&&audit.actorUid===C04C05.uid&&audit.commandType===c.commandType&&audit.idempotencyKey===c.idempotencyKey,'AUDIT_SCOPE_MISMATCH');
+  const account=get(r.account);
+  check(rowScope(account)&&account.id===r.accountId,'ACCOUNT_ID_OR_SCOPE_MISMATCH');
+  if(record.step.kind==='create-cxc'){
+    check(b.entityId===r.accountId&&account.kind==='cxc'&&account.concepto===record.step.marker&&account.country==='GT'&&account.currency==='Q'&&cents(account.originalAmount)===100&&cents(account.balance)===100,'CXC_CREATE_READBACK_MISMATCH');
+    check(isDeepStrictEqual(receipt.entity,account)&&isDeepStrictEqual(b.account,account),'CXC_ACK_RECEIPT_READBACK_MISMATCH');
+  }else{
+    const movement=get(r.movement);
+    check(rowScope(movement)&&movement.id===r.movementId&&movement.revenueRecognized===false&&movement.operatingRevenue===false,'MOVEMENT_SCOPE_OR_DOUBLE_REVENUE');
+    check(isDeepStrictEqual(b.movement,movement),'MOVEMENT_ACK_READBACK_MISMATCH');
+    if(record.step.kind==='create-financing'){
+      check(b.entityId===r.movementId&&movement.tipo==='ingreso'&&movement.tipoIngreso==='financiamiento'&&movement.nonOperating===true&&movement.cat===record.step.marker&&movement.country==='HN'&&movement.currency==='L'&&cents(movement.amount)===200,'FINANCING_MOVEMENT_MISMATCH');
+      check(account.kind==='cxp'&&account.origin==='financiamiento'&&account.sourceMovementId===movement.id&&account.concepto===record.step.marker&&account.country==='HN'&&account.currency==='L'&&cents(account.balance)===200,'FINANCING_LINKED_CXP_MISMATCH');
+      check(isDeepStrictEqual(receipt.entity,movement)&&isDeepStrictEqual(receipt.linkedAccount,account)&&isDeepStrictEqual(b.linkedAccount,account),'FINANCING_RECEIPT_READBACK_MISMATCH');
+    }else{
+      const before=record.step.before,expectedBalance=record.step.kind==='apply-cxc'?C04C05.cxc.balance:C04C05.financing.balance;
+      check(b.entityId===r.accountId&&movement.accountId===r.accountId&&account.lastMovementId===movement.id&&account.version===Number(before.version||0)+1,'APPLY_LINK_OR_VERSION_MISMATCH');
+      check(cents(account.balance)===cents(expectedBalance)&&cents(account.saldo)===cents(expectedBalance)&&cents(movement.amount)===cents(p.amount),'APPLY_BALANCE_MISMATCH');
+      check(movement.currency===before.currency&&movement.country===before.country&&account.currency===before.currency&&account.country===before.country,'APPLY_CURRENCY_SCOPE_MISMATCH');
+      if(record.step.kind==='apply-cxc')check(movement.tipo==='ingreso'&&movement.tipoIngreso==='cobro_cxc'&&movement.cashCollection===true,'CXC_COLLECTION_CLASSIFICATION_MISMATCH');
+      else check(movement.tipo==='egreso'&&movement.tipoEgreso==='abono_cxp'&&movement.cashCollection===false,'CXP_REPAYMENT_CLASSIFICATION_MISMATCH');
+      check(movement.cat===(record.step.kind==='apply-cxc'?'Cobro CxC · ':'Abono CxP · ')+before.concepto,'APPLY_CONCEPT_LINK_MISMATCH');
+      check(isDeepStrictEqual(receipt.entity,account)&&isDeepStrictEqual(receipt.movement,movement)&&isDeepStrictEqual(b.account,account),'APPLY_ACK_RECEIPT_READBACK_MISMATCH');
+      check(cents(audit.balanceBefore)===cents(before.balance)&&cents(audit.balanceAfter)===cents(expectedBalance),'APPLY_AUDIT_BALANCE_MISMATCH');
+    }
+  }
+  check(receipt.entityId===b.entityId&&audit.entityId===b.entityId,'ACK_RECEIPT_AUDIT_ID_MISMATCH');
+}
+
+async function visibleFinanceRows(page,model,baseline,label,outDir){
+  const proof=await bounded(page.evaluate(({accounts,movements,income})=>{
+    const money=(currency,amount)=>currency+' '+Number(amount).toLocaleString('es-GT');
+    const text=node=>String(node?.innerText||'').replace(/\s+/g,' ').trim();
+    const accountRows=accounts.map(r=>{
+      const nodes=[...document.querySelectorAll('[data-cxdet]')].filter(n=>n.dataset.cxdet===r.kind+':'+r.id);
+      const row=nodes.length===1?nodes[0].closest(r.kind==='cxc'?'.cxcRow':'.cxpRow'):null;
+      const value=text(row);
+      const concept=text(row?.querySelector(':scope > div:first-child > b'));
+      const country=text(row?.querySelector(':scope > div:first-child > div')).split('·')[0].trim();
+      const balance=text(row?.querySelector(':scope > div:last-child > b'));
+      return {id:r.id,unique:nodes.length===1,visible:!!row?.getClientRects().length,marker:concept===r.marker,country:country===r.country,money:balance===money(r.currency,r.balance),textHashInput:value};
+    });
+    const movementRows=movements.map(r=>{
+      const nodes=[...document.querySelectorAll('[data-delm]')].filter(n=>n.dataset.delm===r.id);
+      const row=nodes.length===1?nodes[0].closest('tr'):null;
+      const cells=row?[...row.querySelectorAll('td')]:[];
+      return {id:r.id,unique:nodes.length===1,visible:!!row?.getClientRects().length,marker:text(cells[1]?.querySelector('b'))===r.concept,country:text(cells[4])===r.country,money:text(cells[5])===(r.amount<0?'− ':'+ ')+money(r.currency,Math.abs(r.amount)),textHashInput:text(row)};
+    });
+    const kpis=income.map(x=>{
+      const headings=[...document.querySelectorAll('#view div')].filter(n=>text(n)==='Moneda '+x.currency&&n.nextElementSibling?.classList.contains('grid'));
+      const cells=headings.length===1?[...headings[0].nextElementSibling.querySelectorAll('.kpi')]:[];
+      const tiles=cells.filter(n=>text(n.querySelector('.k-l'))==='Ingresos oper.');
+      return {currency:x.currency,unique:headings.length===1&&tiles.length===1,unchanged:tiles.length===1&&text(tiles[0].querySelector('.k-v'))===money(x.currency,x.amount)};
+    });
+    return {accountRows,movementRows,kpis,globalSelected:document.querySelector('[data-scope="global"]')?.classList.contains('btn-pr')===true};
+  },{accounts:model.accounts,movements:model.movements,income:['Q','L'].map(currency=>({currency,amount:operationIncome(baseline,currency)}))}),10000,'DOM_READBACK_TIMEOUT');
+  check(proof.globalSelected&&proof.accountRows.every(r=>r.unique&&r.visible&&r.marker&&r.country&&r.money)&&proof.movementRows.every(r=>r.unique&&r.visible&&r.marker&&r.country&&r.money),'VISIBLE_EXACT_ROWS_MISMATCH');
+  check(proof.kpis.every(x=>x.unique&&x.unchanged),'VISIBLE_CURRENCY_OR_DOUBLE_REVENUE_MISMATCH');
+  for(const r of [...proof.accountRows,...proof.movementRows]){r.textSha256=sha(r.textHashInput);delete r.textHashInput;}
+  await page.locator('#view').screenshot({path:path.join(outDir,'c04-'+label+'.png'),timeout:10000});
+  return {...proof,screenshot:'c04-'+label+'.png'};
+}
+
+async function c04ConditionalCleanup(db,expected){
+  const refs=[...expected.keys()].sort();
+  check(refs.length>0&&refs.length<=C04C05.maxLinkedDocuments,'CLEANUP_REFERENCE_COUNT_DENIED');
+  for(const ref of refs)check(/^tenants\/tya\/(financialMovements|financeAccounts|commandReceipts|entityAuditTrail)\/[a-z0-9-]+$/.test(ref)&&expected.get(ref)?.exists===true&&expected.get(ref).id===ref.split('/').at(-1),'CLEANUP_REFERENCE_SCOPE_DENIED');
+  await bounded(db.runTransaction(async tx=>{
+    const snapshots=await tx.getAll(...refs.map(p=>db.doc(p)));
+    for(let i=0;i<refs.length;i++)check(isDeepStrictEqual(head(snapshots[i]),expected.get(refs[i])),'CLEANUP_PRECONDITION_CHANGED');
+    for(const p of refs)tx.delete(db.doc(p));
+  },{maxAttempts:1}),20000,'CLEANUP_TRANSACTION_UNCERTAIN');
+  const after=await linkedSnapshots(db,refs);
+  check([...after.values()].every(v=>v.head.exists===false),'CLEANUP_ABSENCE_NOT_PROVEN');
+  return {decision:'PASS_EXACT_CONDITIONAL_CLEANUP',count:refs.length,allAbsent:true,blindDeletes:false};
+}
+
+/**
+ * openAdminSession({member,label,installContextGuard}) is supplied by the existing
+ * CI runner. It creates a fresh BrowserContext, calls installContextGuard(context)
+ * BEFORE newPage/goto, uses the existing UID/custom token in memory, proves empty
+ * initial Auth, and returns {ctx,page,sessionBoundary}. It must not create users,
+ * change claims/membership, navigate elsewhere, or install a service-worker bypass.
+ */
+async function runC04C05BoundedFinance({db,auth,openAdminSession,pins,proof,runId,outDir}){
+  const result={schemaVersion:C04C05.schema,decision:'HOLD_C04_C05_BOUNDED_FINANCE',fullTaskClosed:false,
+    scope:{tenantId:C04C05.tenantId,projectId:C04C05.projectId,periodId:C04C05.projectPeriod,globalPeriod:C04C05.globalPeriod},
+    sourceSha:pins?.sourceSha||null,sourceTree:pins?.sourceTree||null,runtimeRevision:pins?.runtimeRevision||null,
+    commands:[],replays:[],sessions:[],fixturesStarted:false,cleanup:{decision:'NOT_STARTED'},
+    writes:{authAccountsIssued:0,claimsIssued:0,membershipIssued:0,hrIssued:0,productionIssued:0,bankIssued:0,externalPaymentIssued:0,financeProvider:null,cleanupDeletes:null},
+    c02Executed:false,q205Replayed:false,q7300Recreated:false,production:false};
+  const sessions=[],guards=[],planned=new Map(),knownHeads=new Map(),records=[];
+  let baseline=null,memberHead=null,allVerified=true,integrityFailure=false,firstPage=null,lastSnapshots=new Map();
+  const finishFile=()=>{fs.mkdirSync(outDir,{recursive:true});fs.writeFileSync(path.join(outDir,'c04-c05-bounded-result.json'),JSON.stringify(result,null,2)+'\n');};
+  try{
+    check(/^\d+$/.test(str(runId))&&typeof openAdminSession==='function','RUNNER_INPUT_INVALID');
+    validateC04Pins(pins,proof);
+    const memberRef=db.doc('tenants/'+C04C05.tenantId+'/users/'+C04C05.uid);
+    const memberSnap=await bounded(memberRef.get(),15000,'EXACT_ADMIN_READ_TIMEOUT');
+    check(memberSnap.exists,'EXACT_ADMIN_MEMBERSHIP_MISSING');memberHead=head(memberSnap);
+    const member={...memberSnap.data(),id:C04C05.uid};
+    const authUser=await bounded(auth.getUser(C04C05.uid),15000,'EXACT_ADMIN_AUTH_READ_TIMEOUT');
+    result.actor=validateC04Actor(member,authUser);
+    const marker='QA-C04-C05-'+runId+'-'+randomBytes(6).toString('hex');
+    const markers={cxc:marker+'-GT-CXC',financing:marker+'-HN-FIN'};
+    result.fixtureMarker=marker;
+    fs.mkdirSync(outDir,{recursive:true});
+    const onPlanned=record=>{
+      for(const p of [...record.refs.created,...record.refs.changed])planned.set(p,record);
+      result.lastAction={phase:'request_validated_before_send',kind:record.step.kind,commandType:record.command.commandType,commandSha256:sha(record.command),
+        receipt:record.refs.receipt,audit:record.refs.audit,accountId:record.refs.accountId,movementId:record.refs.movementId||null};
+    };
+    async function newSession(label){
+      const guard=createCommandGuard({db,pins,onPlanned,knownHeads});guards.push(guard);
+      const session=await bounded(openAdminSession({member,label,installContextGuard:ctx=>guard.install(ctx)}),150000,'FRESH_SESSION_TIMEOUT');
+      sessions.push(session);check(guard.evidence.installedBeforeNavigation,'CONTEXT_GUARD_NOT_INSTALLED');
+      check(session.ctx===guard.context&&typeof session.page?.context==='function'&&session.page.context()===session.ctx,'SESSION_GUARD_CONTEXT_MISMATCH');
+      session.page.setDefaultTimeout(10000);
+      check(session.sessionBoundary?.newBrowserContext===true&&session.sessionBoundary?.authNullBeforeSignIn===true,'INDEPENDENT_SESSION_NOT_PROVEN');
+      check(!sessions.slice(0,-1).some(s=>s.ctx===session.ctx),'BROWSER_CONTEXT_REUSED');
+      result.sessions.push({label,newBrowserContext:true,authNullBeforeSignIn:true,mechanism:'existing_ci_custom_token_in_memory',ordinaryPasswordLoginProven:false,
+        scope:await readScope(session.page,pins,member.role)});
+      await openGlobal(session.page,pins,member.role);
+      return {session,guard};
+    }
+    const first=await newSession('primary');firstPage=first.session.page;
+    baseline=await scopedLedgerSnapshot(db);
+    result.baseline={queryScope:'global_and_cinepolis_october_financial_movements_and_accounts',count:baseline.size,sha256:sha(ledgerFingerprint(baseline))};
+
+    async function uiCommand(step,prepare,saveSelector){
+      result.phase='prepare_'+step.kind;
+      await readScope(firstPage,pins,member.role);
+      await prepare();
+      const armed=first.guard.arm({...step,role:member.role});
+      const successText={
+        'create-cxc':'Cuenta por cobrar registrada con ACK y lectura remota coincidente',
+        'apply-cxc':'Cobro interno registrado con ACK y lectura protegida. Confirmación bancaria independiente.',
+        'create-financing':'Financiamiento confirmado · flujo no operativo + CxP vinculada',
+        'apply-cxp':'Devolución confirmada · CxP reducida'
+      }[step.kind];
+      const visibleAck=firstPage.waitForFunction(expected=>Array.from(document.querySelectorAll('#cx-toasts > div')).some(n=>n.getClientRects().length&&getComputedStyle(n).opacity!=='0'&&getComputedStyle(n).visibility!=='hidden'&&String(n.innerText||'').replace(/\s+/g,' ').trim()===expected),successText,{timeout:35000});
+      visibleAck.catch(()=>{});
+      let record;
+      try{
+        // Response observer is active before the click. No automatic click retry.
+        const [observed]=await Promise.all([bounded(armed.observed,40000,'COMMAND_ACK_TIMEOUT'),firstPage.locator(saveSelector).click({timeout:10000})]);
+        record=observed;result.fixturesStarted=true;allVerified=false;
+        result.lastAction={...result.lastAction,phase:'response_observed',httpStatus:record.httpStatus,
+          providerAck:record.body?.providerAck===true,providerWrites:Number.isSafeInteger(record.body?.providerWrites)?record.body.providerWrites:null,
+          providerCode:/^[A-Z0-9_]{1,100}$/.test(str(record.body?.code))?record.body.code:null};
+        validateC04Ack(record);
+        lastSnapshots=await linkedSnapshots(db,planned.keys());
+        validateCommittedRows(record,lastSnapshots);
+        // Never adopt a changed earlier fixture as a new cleanup expectation.
+        // Only this exact command's declared account update may change a prior head.
+        validateC04CommandFootprint(record,lastSnapshots,knownHeads);
+        for(const [p,v] of lastSnapshots)knownHeads.set(p,v.head);
+        allVerified=true;records.push(record);
+        result.lastAction.phase='durable_readback_verified';
+        result.commands.push({kind:step.kind,commandType:record.command.commandType,commandSha256:sha(record.command),idempotencyKeySha256:sha(record.command.idempotencyKey),
+          entityId:record.body.entityId,providerWrites:record.body.providerWrites,strictAck:true,serverReceiptAuditAndRows:true,sourceRefs:[record.refs.receipt,record.refs.audit]});
+        const ackHandle=await visibleAck;await ackHandle.dispose();result.commands.at(-1).visibleAck=true;
+        await firstPage.locator(saveSelector).waitFor({state:'detached',timeout:20000});
+        await readScope(firstPage,pins,member.role);
+        return record;
+      }finally{
+        if(armed.item.continued&&!record){allVerified=false;result.fixturesStarted=true;}
+        armed.finish();
+      }
+    }
+    async function replay(original){
+      result.phase='replay_'+original.step.kind;
+      await readScope(firstPage,pins,member.role);
+      const before=await linkedSnapshots(db,planned.keys()),beforeLedger=await scopedLedgerSnapshot(db);
+      const armed=first.guard.arm({replay:true,kind:'replay-'+original.step.kind,role:member.role,originalCommand:original.command,originalRefs:original.refs,originalEntityId:original.body.entityId});
+      try{
+        const [observed]=await Promise.all([bounded(armed.observed,40000,'REPLAY_ACK_TIMEOUT'),bounded(firstPage.evaluate(async ({command,uid})=>{
+          const user=window.firebase.auth().currentUser;if(!user||user.uid!==uid)throw Error('C04_REPLAY_AUTH_MISSING');
+          const token=await user.getIdToken();
+          const response=await fetch('/v1/cxorbia/commands',{method:'POST',headers:{authorization:'Bearer '+token,'content-type':'application/json'},body:JSON.stringify(command)});
+          return {httpStatus:response.status};
+        },{command:original.command,uid:C04C05.uid}),40000,'REPLAY_FETCH_TIMEOUT')]);
+        validateC04Ack(observed);
+        const after=await linkedSnapshots(db,planned.keys()),afterLedger=await scopedLedgerSnapshot(db);
+        if(!equalHeads(headsOf(before),headsOf(after))||!isDeepStrictEqual(ledgerFingerprint(beforeLedger),ledgerFingerprint(afterLedger))){integrityFailure=true;throw Error('C04_REPLAY_DURABLE_DELTA');}
+        result.replays.push({commandType:observed.command.commandType,entityId:observed.body.entityId,exactCommand:true,idempotentReplay:true,providerWrites:0,allLinkedDataAndUpdateTimesUnchanged:true,scopedLedgerUnchanged:true});
+      }catch(error){integrityFailure=true;throw error;}finally{armed.finish();}
+    }
+
+    const cxc=await uiCommand({kind:'create-cxc',marker:markers.cxc},async()=>{
+      await firstPage.locator('[data-cuenta="cxc"]').click({timeout:10000});
+      await firstPage.locator('#ctCon').fill(markers.cxc);await firstPage.locator('#ctPais').selectOption('GT');
+      await firstPage.locator('#ctCurrency').fill('Q');await firstPage.locator('#ctMonto').fill('1.00');
+    },'#ctSave');
+    const cxcBefore=lastSnapshots.get(cxc.refs.account).data;
+    const collection=await uiCommand({kind:'apply-cxc',accountId:cxc.refs.accountId,amount:0.4,expectedVersion:versionOf(cxcBefore),before:cxcBefore},async()=>{
+      await firstPage.locator('[data-cxc-apply="'+cxc.refs.accountId+'"]').click({timeout:10000});
+      await firstPage.locator('#cxcApplyAmount').fill('0.40');
+    },'#cxcApplySave');
+    await replay(collection);
+    const financing=await uiCommand({kind:'create-financing',marker:markers.financing},async()=>{
+      await firstPage.locator('#addFin').click({timeout:10000});
+      await firstPage.locator('#fnF').fill(markers.financing);await firstPage.locator('#fnC').fill(markers.financing);
+      await firstPage.locator('#fnP').selectOption('HN');await firstPage.locator('#fnCurrency').fill('L');await firstPage.locator('#fnM').fill('2.00');
+    },'#fnSave');
+    await replay(financing);
+    const financingBefore=lastSnapshots.get(financing.refs.account).data;
+    const repayment=await uiCommand({kind:'apply-cxp',accountId:financing.refs.accountId,amount:0.5,expectedVersion:versionOf(financingBefore),before:financingBefore},async()=>{
+      await firstPage.locator('[data-devfin="'+financing.refs.accountId+'"]').click({timeout:10000});
+      await firstPage.locator('#dvM').fill('0.50');
+    },'#dvOk');
+    check(records.length===4&&planned.size===13&&result.replays.length===2,'EXPECTED_FOOTPRINT_NOT_PROVEN');
+    const model={accounts:[
+      {id:cxc.refs.accountId,kind:'cxc',marker:markers.cxc,...C04C05.cxc},
+      {id:financing.refs.accountId,kind:'cxp',marker:markers.financing,...C04C05.financing}],movements:[
+      {id:collection.refs.movementId,concept:'Cobro CxC · '+markers.cxc,country:'GT',currency:'Q',amount:0.4},
+      {id:financing.refs.movementId,concept:markers.financing,country:'HN',currency:'L',amount:2},
+      {id:repayment.refs.movementId,concept:'Abono CxP · '+markers.financing,country:'HN',currency:'L',amount:-0.5}]};
+    result.primaryDom=await visibleFinanceRows(firstPage,model,baseline,'primary',outDir);
+    result.phase='independent_session';
+    const beforeSecond=await linkedSnapshots(db,planned.keys());
+    const second=await newSession('independent');
+    result.independentDom=await visibleFinanceRows(second.session.page,model,baseline,'independent',outDir);
+    const afterSecond=await linkedSnapshots(db,planned.keys());
+    check(equalHeads(headsOf(beforeSecond),headsOf(afterSecond)),'SECOND_SESSION_DURABLE_CHANGE');
+    check(isDeepStrictEqual(result.primaryDom.accountRows,result.independentDom.accountRows)&&isDeepStrictEqual(result.primaryDom.movementRows,result.independentDom.movementRows),'INDEPENDENT_VISIBLE_ROWS_DIFFER');
+    lastSnapshots=afterSecond;for(const [p,v] of lastSnapshots)knownHeads.set(p,v.head);
+    const afterLedger=await scopedLedgerSnapshot(db),excluded=new Set(planned.keys());
+    if(!isDeepStrictEqual(ledgerFingerprint(baseline),ledgerFingerprint(afterLedger,excluded))){integrityFailure=true;throw Error('C04_OTHER_SCOPED_RECORDS_CHANGED');}
+    check(['Q','L'].every(cur=>cents(operationIncome(baseline,cur))===cents(operationIncome(afterLedger,cur))),'OPERATING_REVENUE_CHANGED');
+    result.otherScopedRecords={unchanged:true,beforeSha256:sha(ledgerFingerprint(baseline)),afterSha256:sha(ledgerFingerprint(afterLedger,excluded)),count:baseline.size,noClaimAboutConcurrentExternalWriters:true};
+    const memberAfter=await bounded(memberRef.get(),15000,'MEMBERSHIP_FINAL_READ_TIMEOUT');
+    check(isDeepStrictEqual(memberHead,head(memberAfter)),'MEMBERSHIP_CHANGED_DURING_CASE');
+    check(guards.every(g=>g.evidence.unexpectedMutationBlocked===0&&g.evidence.validationFailures.length===0),'UNEXPECTED_CASE_COMMANDS');
+    check(first.guard.evidence.commandsIssued===4&&first.guard.evidence.replaysIssued===2&&guards[1].evidence.commandsIssued===0&&guards[1].evidence.replaysIssued===0,'ISSUED_COMMAND_COUNT_MISMATCH');
+    result.linkedDocuments=[...knownHeads].map(([ref,h])=>({collection:ref.split('/')[2],id:h.id,sha256:h.hash,updateTime:h.updateTime}));
+    result.writes.financeProvider=result.commands.reduce((n,r)=>n+r.providerWrites,0);
+    result.decision='PASS_C04_C05_BOUNDED_FINANCE_AWAITING_CLEANUP';
+    result.phase='verified_awaiting_cleanup';
+  }catch(error){
+    result.error=safeError(error);result.errorType=['TimeoutError','AssertionError','Error'].includes(error?.name)?error.name:'OTHER';
+    if(firstPage){
+      result.failureUi=await bounded(firstPage.evaluate(()=>({
+        globalSelected:document.querySelector('[data-scope="global"]')?.classList.contains('btn-pr')===true,
+        cxcCreateDialog:!!document.querySelector('#ctSave'),cxcApplyDialog:!!document.querySelector('#cxcApplySave'),
+        financingDialog:!!document.querySelector('#fnSave'),repaymentDialog:!!document.querySelector('#dvOk'),
+        role:window.CX?.backendAuth?.context?.()?.role||null,projectId:window.CX?.data?.currentProjectId||null,periodId:window.CX?.data?.currentPeriodId||null
+      })),10000,'FAILURE_UI_TIMEOUT').catch(()=>null);
+      try{await firstPage.locator('#view').screenshot({path:path.join(outDir,'c04-failure.png'),timeout:10000});result.failureScreenshot='c04-failure.png';}
+      catch(_){result.failureScreenshotError='C04_SCREENSHOT_UNAVAILABLE';}
+    }
+  }finally{
+    result.guards=guards.map(g=>({...g.evidence}));
+    // No cleanup on replay deltas, unaccounted side effects, or unverified commits.
+    if(planned.size&&allVerified&&!integrityFailure&&knownHeads.size===planned.size){
+      try{result.cleanup=await c04ConditionalCleanup(db,knownHeads);result.writes.cleanupDeletes=result.cleanup.count;}
+      catch(error){result.cleanup={decision:'HOLD_CLEANUP_PRECONDITION_OR_COMMIT_UNCERTAIN',error:safeError(error),blindDeletes:false};}
+    }else if(planned.size){
+      result.cleanup={decision:'HOLD_PRESERVE_DIAGNOSTIC_DOCUMENTS',reason:integrityFailure?'replay_or_unexpected_delta':'commit_not_fully_verified',blindDeletes:false,knownCandidateIds:[...planned.keys()]};
+    }else result.cleanup={decision:'NO_FIXTURES_PLANNED',count:0,allAbsent:true,blindDeletes:false};
+    if(result.decision==='PASS_C04_C05_BOUNDED_FINANCE_AWAITING_CLEANUP'&&result.cleanup.decision==='PASS_EXACT_CONDITIONAL_CLEANUP'){
+      try{
+        const afterCleanup=await scopedLedgerSnapshot(db);
+        check(isDeepStrictEqual(ledgerFingerprint(baseline),ledgerFingerprint(afterCleanup)),'POST_CLEANUP_LEDGER_DIFFERS');
+        result.cleanup.otherScopedRecordsUnchanged=true;
+        result.decision='PASS_C04_C05_BOUNDED_FINANCE';
+      }catch(error){result.decision='HOLD_C04_C05_BOUNDED_FINANCE';result.error=safeError(error);}
+    }else result.decision='HOLD_C04_C05_BOUNDED_FINANCE';
+    result.contextClose=[];
+    const closedContexts=new Set();
+    // The mutation guard remains installed until each context has actually closed.
+    for(let i=0;i<guards.length;i++){
+      const context=guards[i].context;
+      if(!context){result.contextClose.push({session:i,closed:false,error:'C04_CONTEXT_NOT_RETURNED'});continue;}
+      if(closedContexts.has(context)){result.contextClose.push({session:i,closed:true,duplicateContext:true});continue;}
+      try{await bounded(context.close(),10000,'CONTEXT_CLOSE_TIMEOUT');closedContexts.add(context);result.contextClose.push({session:i,closed:true});}
+      catch(error){result.contextClose.push({session:i,closed:false,error:safeError(error)});}
+    }
+    for(const guard of guards)if(closedContexts.has(guard.context))await guard.stop().catch(()=>{});
+    // Include any blocked request observed during cleanup or context closure.
+    result.guards=guards.map(g=>({...g.evidence}));
+    if(result.guards.some(g=>g.unexpectedMutationBlocked>0||g.validationFailures.length>0)){
+      result.decision='HOLD_C04_C05_BOUNDED_FINANCE';result.error||='C04_UNEXPECTED_CASE_COMMANDS';
+    }
+    result.sessionsClosed=result.contextClose.every(x=>x.closed===true);
+    if(!result.sessionsClosed){result.decision='HOLD_C04_C05_BOUNDED_FINANCE';result.error||='C04_CONTEXT_CLOSE_NOT_PROVEN';}
+    finishFile();
+  }
+  return result;
+}
+
+return {C04C05,runC04C05BoundedFinance};
+})():null;
+
+const r7SafeCode=(error,fallback)=>/^(?:D07|C04|R7)_[A-Z0-9_]{1,120}$/.test(String(error?.message||''))?error.message:fallback;
+async function r7Bounded(operation,ms,code){
+  let timer;try{return await Promise.race([operation,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('R7_'+code)),ms);})]);}
+  finally{clearTimeout(timer);}
+}
+
+async function r7ExactAdmin(){
+  const uid=sessionPackage.actor.uid,user=await r7Bounded(auth.getUser(uid),15000,'ADMIN_IDENTITY_READ_TIMEOUT'),claims=user.customClaims||{};
+  assert.equal(user.uid,uid);assert.equal(user.disabled,false);assert.equal(claims.role,sessionPackage.actor.role);
+  assert.equal(claims.authNamespace,'staff');assert.equal(claims.tenantId,'tya');
+  assert.ok(Array.isArray(claims.projectIds)&&claims.projectIds.includes('cinepolis'));
+  const snap=await r7Bounded(tenant.collection('users').doc(uid).get(),15000,'ADMIN_MEMBERSHIP_READ_TIMEOUT');
+  assert.equal(snap.exists,true,'R7_ADMIN_MEMBERSHIP_REQUIRED');const m=snap.data()||{};
+  assert.equal(m.active,true);assert.notEqual(m.status,'inactive');assert.equal(m.tenantId,'tya');
+  assert.equal(m.role,claims.role);assert.equal(m.authNamespace,'staff');
+  assert.ok(Array.isArray(m.projectIds)&&m.projectIds.includes('cinepolis'));
+  return {id:uid,role:claims.role};
+}
+
+async function openR7D07Session(m,role,ownedBrowser,evidence){
+  check(R7_MODE&&['admin','shopper'].includes(role),'SESSION_MODE_OR_ROLE_UNAUTHORIZED');
+  if(role==='admin')check(m.id===sessionPackage.actor.uid,'ADMIN_UID_MISMATCH');
+  else check(m.shopperId===D07.shopperId&&m.uidFingerprint===D07.shopperUidFingerprint&&uidFingerprint(m.id)===D07.shopperUidFingerprint,'SHOPPER_UID_MISMATCH');
+  const ctx=await ownedBrowser.newContext({viewport:{width:1400,height:940}});
+  const guard=await installD07ReadOnlyContextGuardR7(ctx);evidence.contexts.push({ctx,guard,role});
+  const page=await ctx.newPage();
+  await page.goto(url+'&r7d07pre='+Date.now(),{waitUntil:'domcontentloaded',timeout:90000});
+  await page.waitForFunction(()=>!!window.firebase?.auth&&window.firebase.apps?.length>0,null,{timeout:90000});
+  const empty=await bounded(page.evaluate(async()=>{
+    const a=window.firebase.auth();let unsub=null,timer;
+    try{return await new Promise((resolve,reject)=>{timer=setTimeout(()=>reject(Error('AUTH_INITIAL_STATE_TIMEOUT')),30000);unsub=a.onAuthStateChanged(u=>resolve(u===null),reject);});}
+    finally{clearTimeout(timer);if(unsub)unsub();}
+  }),35000,'INITIAL_AUTH_STATE_TIMEOUT');check(empty===true,'NEW_CONTEXT_NOT_EMPTY');
+  const token=await bounded(auth.createCustomToken(m.id),15000,'EXISTING_IDENTITY_TOKEN_TIMEOUT');
+  await bounded(page.evaluate(async t=>{const a=window.firebase.auth();await a.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);await a.signInWithCustomToken(t);},token),45000,'EXISTING_IDENTITY_SIGNIN_TIMEOUT');
+  await page.goto('about:blank');
+  await page.goto(url+'&r7d07signed='+Date.now(),{waitUntil:'domcontentloaded',timeout:90000});
+  await page.waitForFunction(id=>window.firebase?.auth?.().currentUser?.uid===id,m.id,{timeout:90000});
+  await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
+  await bounded(page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();}),45000,'APPLICATION_AUTH_TIMEOUT');
+  await page.waitForFunction(input=>{
+    const c=window.CX?.backendAuth?.context?.()||{},g=window.CX_C6_HR_AUTHORITY_GATE||{},role=String(c.role||'').toLowerCase();
+    return c.authenticated===true&&window.firebase?.auth?.().currentUser?.uid===input.uid&&c.tenantId==='tya'&&
+      c.authNamespace===(input.role==='admin'?'staff':'shopper')&&
+      (input.role==='admin'?['admin','super'].includes(role):role==='shopper'&&c.shopperId===input.shopperId&&Array.isArray(c.projectIds)&&c.projectIds.includes('cinepolis'))&&
+      window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&g.blocked!==true&&String(window.CX?.data?.previewMeta?.sourceRevision||'')===input.hr;
+  },{uid:m.id,role,shopperId:role==='shopper'?D07.shopperId:null,hr:HR},{timeout:45000});
+  const observed=await bounded(page.evaluate(()=>{const c=window.CX.backendAuth.context();return {uid:window.firebase.auth().currentUser.uid,role:c.role,tenantId:c.tenantId,authNamespace:c.authNamespace,shopperId:c.shopperId||null,revision:String(window.CX.data.previewMeta.sourceRevision||'')};}),10000,'AUTH_SCOPE_READ_TIMEOUT');
+  check(observed.uid===m.id&&observed.tenantId==='tya'&&observed.revision===HR,'AUTH_OR_HR_REVISION_MISMATCH');
+  if(evidence.hrRevisionLive)check(evidence.hrRevisionLive===observed.revision,'TWO_ROLE_HR_REVISION_MISMATCH');else evidence.hrRevisionLive=observed.revision;
+  return {ctx,page,guard,sessionBoundary:{newBrowserContext:true,authNullBeforeSignIn:true,role:observed.role,tenantId:observed.tenantId,
+    authNamespace:observed.authNamespace,uidFingerprint:uidFingerprint(m.id),shopperId:role==='shopper'?D07.shopperId:null,
+    applicationAuthAndHrGatePassed:true,hrRevision:observed.revision,mechanism:'existing_ci_custom_token_in_memory',ordinaryPasswordLoginProven:false,tokenLogged:false}};
+}
+
+async function runR7D07(result){
+  Object.assign(result,{decision:'HOLD_D07_REAL_PDF_READ_ONLY_CLAUSE',executed:true,fullTaskClosed:false,stage:'IDENTITY',
+    bindingDiagnostics:[],sessions:{},cleanup:{resourceCleanupPerformed:false,browserClosed:false},contextGuardsPass:false,
+    writes:{authAccounts:0,claims:0,membership:0,resource:0,storage:0,hr:0,finance:0,production:0}});
+  const evidence={contexts:[]};let ownedBrowser=null;
+  const outDir=path.join(OUT,'d07');fs.mkdirSync(outDir,{recursive:true});
+  const checkpoint=stage=>{result.stage=stage;record();};
+  try{
+    const admin=await r7ExactAdmin(),shopper=await resolveD07ExistingShopper({tenant,auth});
+    result.actor={admin:{uidFingerprint:uidFingerprint(admin.id),exactConfiguredUidVerified:true},
+      shopper:{uidFingerprint:shopper.uidFingerprint,shopperId:shopper.shopperId,existingIdentityVerified:true},accountCreated:false,claimsChanged:false};
+    checkpoint('LAUNCH_D07_BROWSER');ownedBrowser=await chromium.launch({headless:true,timeout:45000});
+    checkpoint('AUTH_ADMIN');const a=await openR7D07Session(admin,'admin',ownedBrowser,evidence);result.sessions.admin=a.sessionBoundary;
+    await selectD07UiScope(a.page);
+    checkpoint('AUTH_SHOPPER');const s=await openR7D07Session(shopper,'shopper',ownedBrowser,evidence);result.sessions.shopper=s.sessionBoundary;
+    check(a.ctx!==s.ctx,'ROLE_CONTEXT_REUSED');result.sessions.distinctContexts=true;await selectD07UiScope(s.page);
+    checkpoint('BIND_BOTH_ROLE_CATALOGS');
+    const binding=await bindD07BeforeReadsR7({adminPage:a.page,shopperPage:s.page,adminUid:admin.id,shopperUid:shopper.id,db,preflight:sessionPreflight,
+      onDiagnostic:safe=>{result.bindingDiagnostics.push(safe);record();}});result.binding=binding.safe;
+    for(const entry of [{page:a.page,role:'admin'},{page:s.page,role:'shopper'}]){
+      const button=entry.page.locator('button[data-doc="'+binding.id+'"]');
+      await button.waitFor({state:'visible',timeout:15000});check(await button.count()===1,'ROLE_VISIBLE_RESOURCE_NOT_UNIQUE');
+      if(entry.role==='shopper'){check(await entry.page.locator('#docUp').count()===0,'SHOPPER_CREATE_CONTROL_VISIBLE');check(await entry.page.locator('[data-editd],[data-deld]').count()===0,'SHOPPER_MUTATION_CONTROL_VISIBLE');}
+    }
+    result.binding.bothRoleOpenButtonsVisible=true;
+    for(const entry of evidence.contexts){
+      check(entry.guard.evidence.blockedWriteRequests===0&&entry.guard.evidence.blockedUnexpectedStorageReads===0&&entry.guard.evidence.storageGetsOutsideRoleGuard===0,'UNEXPECTED_REQUEST_BEFORE_BOUND_READ');entry.guard.setBinding(binding);
+    }
+    checkpoint('ADMIN_PDF');const adminRead=await readD07RolePdfR7({page:a.page,role:'admin',uid:admin.id,binding,outDir});result.admin=adminRead;record();
+    checkpoint('SHOPPER_PDF');const shopperRead=await readD07RolePdfR7({page:s.page,role:'shopper',uid:shopper.id,binding,outDir});result.shopper=shopperRead;record();
+    checkpoint('FINAL_METADATA_READ');Object.assign(result,await finishD07ReadOnly({binding,admin:adminRead,shopper:shopperRead}));
+  }catch(error){
+    if(error?.d07BindingDiagnostic)result.bindingDiagnostics.push(error.d07BindingDiagnostic);
+    result.failureStage=result.stage;result.decision='HOLD_D07_REAL_PDF_READ_ONLY_CLAUSE';result.error=r7SafeCode(error,'R7_D07_AUTH_UI_OR_PROVIDER_FAILURE');
+  }finally{
+    if(ownedBrowser){
+      try{await r7Bounded(ownedBrowser.close(),20000,'D07_BROWSER_CLOSE_TIMEOUT');result.cleanup.browserClosed=true;}
+      catch(error){result.cleanup.browserClosed=false;result.cleanup.error=r7SafeCode(error,'R7_D07_BROWSER_CLOSE_FAILED');result.decision='HOLD_D07_BROWSER_CLEANUP';}
+    }else result.cleanup.browserClosed=true;
+    result.contextGuards=evidence.contexts.map(x=>({role:x.role,...x.guard.evidence}));
+    result.contextGuardsPass=result.contextGuards.length===2&&result.contextGuards.every(x=>x.installedBeforeNavigation===true&&x.bindingSet===true&&x.blockedWriteRequests===0&&x.blockedUnexpectedStorageReads===0&&x.storageGetsOutsideRoleGuard===0);
+    if(!result.contextGuardsPass&&result.decision==='PASS_D07_ADMIN_SHOPPER_REAL_PDF_READ_ONLY_CLAUSE')result.decision='HOLD_D07_NETWORK_SCOPE_UNPROVEN';
+    fs.writeFileSync(path.join(outDir,'result.json'),JSON.stringify(result,null,2)+'\n');record();
+  }
+  return result;
+}
+
+async function selectR7FinanceScope(page){
+  const initial=await r7Bounded(page.evaluate(()=>({project:String(window.CX?.data?.currentProjectId||''),period:String(window.CX?.data?.currentPeriodId||'')})),10000,'FINANCE_INITIAL_SCOPE_TIMEOUT');
+  if(initial.project!=='cinepolis'){
+    await page.locator('#projSel').waitFor({state:'visible',timeout:15000});assert.equal(await page.locator('#projSel option[value="cinepolis"]').count(),1);
+    await page.locator('#projSel').selectOption('cinepolis',{timeout:15000});
+  }
+  await page.waitForFunction(()=>window.CX?.data?.currentProjectId==='cinepolis',null,{timeout:30000});
+  const period=await r7Bounded(page.evaluate(()=>String(window.CX?.data?.currentPeriodId||'')),10000,'FINANCE_PERIOD_READ_TIMEOUT');
+  if(period!=='cinepolis-2026-10'){
+    await page.locator('#periodSel').waitFor({state:'visible',timeout:15000});assert.equal(await page.locator('#periodSel option[value="cinepolis-2026-10"]').count(),1);
+    await page.locator('#periodSel').selectOption('cinepolis-2026-10',{timeout:15000});
+  }
+  await page.waitForFunction(()=>window.CX?.data?.currentProjectId==='cinepolis'&&window.CX?.data?.currentPeriodId==='cinepolis-2026-10',null,{timeout:30000});
+}
+
+async function runR7Finance(){
+  const outDir=path.join(OUT,'c04-c05');fs.mkdirSync(outDir,{recursive:true});
+  const envelope={decision:'HOLD_C04_C05_BOUNDED_FINANCE',executed:false,fullTaskClosed:false,browserClosed:false};
+  let ownedBrowser=null;
+  try{
+    assert.equal(res.d07.cleanup?.browserClosed,true,'R7_D07_BROWSER_ISOLATION_NOT_PROVEN');
+    ownedBrowser=await chromium.launch({headless:true,timeout:45000});
+    async function openAdminSession({member,label,installContextGuard}){
+      assert.equal(member.id,sessionPackage.actor.uid);assert.equal(member.tenantId,'tya');assert.equal(member.authNamespace,'staff');assert.ok(['admin','super'].includes(member.role));
+      const ctx=await ownedBrowser.newContext({viewport:{width:1400,height:940}});
+      await installContextGuard(ctx);const page=await ctx.newPage();page.setDefaultTimeout(10000);
+      await page.goto(url+'&r7financepre='+encodeURIComponent(label),{waitUntil:'domcontentloaded',timeout:45000});
+      await page.waitForFunction(()=>!!window.firebase?.auth&&window.firebase.apps?.length>0,null,{timeout:45000});
+      const empty=await r7Bounded(page.evaluate(async()=>{
+        const a=window.firebase.auth();let unsubscribe=null,timer;
+        try{return await new Promise((resolve,reject)=>{timer=setTimeout(()=>reject(Error('AUTH_INITIAL_STATE_TIMEOUT')),30000);unsubscribe=a.onAuthStateChanged(user=>resolve(user===null),reject);});}
+        finally{clearTimeout(timer);if(unsubscribe)unsubscribe();}
+      }),35000,'FINANCE_INITIAL_AUTH_TIMEOUT');assert.equal(empty,true,'R7_FINANCE_CONTEXT_NOT_EMPTY');
+      const token=await r7Bounded(auth.createCustomToken(member.id),15000,'FINANCE_EXISTING_TOKEN_TIMEOUT');
+      await r7Bounded(page.evaluate(async value=>{const a=window.firebase.auth();await a.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);await a.signInWithCustomToken(value);},token),45000,'FINANCE_SIGNIN_TIMEOUT');
+      await page.goto('about:blank');
+      await page.goto(url+'&r7financesigned='+encodeURIComponent(label),{waitUntil:'domcontentloaded',timeout:45000});
+      await page.waitForFunction(id=>window.firebase?.auth?.().currentUser?.uid===id,member.id,{timeout:45000});
+      await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:45000});
+      await r7Bounded(page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();}),45000,'FINANCE_APP_AUTH_TIMEOUT');
+      await page.waitForFunction(input=>{
+        const c=window.CX?.backendAuth?.context?.()||{},g=window.CX_C6_HR_AUTHORITY_GATE||{};
+        return c.authenticated===true&&window.firebase?.auth?.().currentUser?.uid===input.uid&&c.role===input.role&&c.authNamespace==='staff'&&c.tenantId==='tya'&&
+          window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&g.blocked!==true&&String(window.CX?.data?.previewMeta?.sourceRevision||'')===input.hr;
+      },{uid:member.id,role:member.role,hr:HR},{timeout:45000});
+      await selectR7FinanceScope(page);
+      return {ctx,page,sessionBoundary:{newBrowserContext:true,authNullBeforeSignIn:true,role:member.role,tenantId:'tya',authNamespace:'staff',
+        uidFingerprint:uidFingerprint(member.id),hrRevision:HR,applicationAuthAndHrGatePassed:true,mechanism:'existing_ci_custom_token_in_memory',ordinaryPasswordLoginProven:false,tokenLogged:false}};
+    }
+    envelope.executed=true;
+    Object.assign(envelope,await R7Finance.runC04C05BoundedFinance({db,auth,openAdminSession,pins:sessionPackage.materialization,proof:sessionPreflight,runId:RUN,outDir}));
+  }catch(error){envelope.decision='HOLD_C04_C05_BOUNDED_FINANCE';envelope.error=r7SafeCode(error,'R7_FINANCE_CALLBACK_OR_BROWSER_FAILURE');}
+  finally{
+    if(ownedBrowser){try{await r7Bounded(ownedBrowser.close(),20000,'FINANCE_BROWSER_CLOSE_TIMEOUT');envelope.browserClosed=true;}
+      catch(error){envelope.browserClosed=false;envelope.decision='HOLD_C04_C05_BOUNDED_FINANCE';envelope.browserCloseError=r7SafeCode(error,'R7_FINANCE_BROWSER_CLOSE_FAILED');}}
+    else envelope.browserClosed=true;
+    fs.writeFileSync(path.join(outDir,'r7-finance-envelope.json'),JSON.stringify(envelope,null,2)+'\n');
+  }
+  return envelope;
+}
+
+async function runR7Bounded(){
+  res.version='cxorbia.i3.r7.d07-c04-c05.bounded.v1';res.mode='R7_D07_C04_C05_BOUNDED';
+  res.scope={tenant:'tya',project:'cinepolis',period:'cinepolis-2026-10',globalPeriod:'2026-10',taskIds:['D07','C04','C05'],testScopeOnly:true};
+  res.c02={executed:false,commands:0,replayReconciliation:false};res.d04={executed:false,fixtureSeeds:0,contentEdits:0,fixtureDeletes:0};res.e04={executed:false};
+  res.d07={};res.c04c05={decision:'NOT_STARTED',executed:false};res.writes={authAccountsIssued:0,claimsIssued:0,membershipIssued:0,hrIssued:0,resourceIssued:0,storageIssued:0,productionIssued:0};
+  res.decision='HOLD_R7_D07_C04_C05_BOUNDED';res.fullTasksClosed=false;record();
+  await runR7D07(res.d07);
+  // A functional D07 HOLD does not suppress the independent finance evidence.
+  // Closure of its browser is required before creating the finance browser.
+  if(res.d07.cleanup?.browserClosed===true)res.c04c05=await runR7Finance();
+  else res.c04c05={decision:'HOLD_C04_C05_BROWSER_ISOLATION_NOT_PROVEN',executed:false,fullTaskClosed:false};
+  const passed=res.d07.decision==='PASS_D07_ADMIN_SHOPPER_REAL_PDF_READ_ONLY_CLAUSE'&&res.d07.cleanup.browserClosed===true&&res.d07.contextGuardsPass===true&&
+    res.c04c05.decision==='PASS_C04_C05_BOUNDED_FINANCE'&&res.c04c05.sessionsClosed===true&&res.c04c05.browserClosed===true;
+  res.decision=passed?'PASS_R7_D07_C04_C05_BOUNDED':'HOLD_R7_D07_C04_C05_BOUNDED';
+  res.cleanup={d07BrowserClosed:res.d07.cleanup?.browserClosed===true,financeBrowserClosed:res.c04c05.browserClosed===true,finance:res.c04c05.cleanup||null};
+  record();console.log(JSON.stringify({decision:res.decision,mode:res.mode,d07:res.d07.decision,c04c05:res.c04c05.decision,cleanup:res.cleanup,production:false}));
+  if(!passed)process.exitCode=1;
+}
+
+
+if(R7_MODE){
+ await runR7Bounded();
+}else if(D07_READ_ONLY_MODE){
  await runD07ReadOnly();
 }else{
 try{
