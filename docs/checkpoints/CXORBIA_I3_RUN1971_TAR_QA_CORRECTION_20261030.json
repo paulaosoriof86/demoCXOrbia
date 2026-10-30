@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "cxorbia.i3.qa-control-correction.v1",
+  "observedAt": "2026-10-30",
+  "runId": 40987612464,
+  "runNumber": 1971,
+  "controlSha": "0d5700a001b575ee7673db8d492dd93e55ee01af",
+  "authorityJobId": 123842191113,
+  "materializerJobId": 123842368040,
+  "materializerConclusion": "skipped",
+  "cloudBuilds": 0,
+  "trafficUpdates": 0,
+  "production": false,
+  "decision": "LEGACY_TAR_CHECK_COUNT_FALSE_POSITIVE_CORRECTED_PENDING_CANONICAL_AUTHORITY",
+  "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+  "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+  "controlScriptGitBlob": "c3ea327c9fe312b37521b646b416866b5f094266",
+  "qaPath": "backend/runtime/hr-live-service/test/cxorbia-i3-phasea-completion-source-contract.test.mjs",
+  "baseQaGitBlob": "b6070e6d5bdf0e06f64ab01d76da4c168a353963",
+  "qaGitBlob": "fda8d43d25556d61c88f65e87460b5d6a0566e22",
+  "qaSha256": "972fc43cd0882f11538dde8e1534d2a2bc950dd28e3c3545d876eb835839fe1a",
+  "cause": "Legacy source contract counted two checksum commands globally. The bounded activation added two independent required checks, making four. No wrong archive path or missing verification was observed.",
+  "correction": "Require two exact checks in the preserved legacy scope and two in the optional paired activation helper scope; reject omitted checks, duplicated output prefix and changed checksum working directory.",
+  "localRed": {
+    "tests": 20,
+    "pass": 19,
+    "fail": 1
+  },
+  "localGreen": {
+    "tests": 20,
+    "pass": 20,
+    "fail": 0,
+    "skip": 0,
+    "path": "docs/checkpoints/evidence/CXORBIA_I3_RUN1971_TAR_QA_CORRECTION_20_PASS_20261030.tap",
+    "gitBlob": "b7434ccfa6a71e1408f8d45da667429c5409d5cc",
+    "sha256": "6e48770cf5d96f648c57d903a7b179d2ecbb407c9052089d1488e5480c4a783c"
+  },
+  "unchangedOtherCases": 19,
+  "verifiedSourceDependencies": 19,
+  "independentReview": "PASS",
+  "productChanges": 0,
+  "controlScriptChanges": 0,
+  "fullTaskClosed": false
+}

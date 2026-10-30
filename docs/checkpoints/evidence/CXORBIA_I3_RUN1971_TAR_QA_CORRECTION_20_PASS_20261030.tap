@@ -1,0 +1,130 @@
+TAP version 13
+# Subtest: R22 role and exact shopper visit select action without fuzzy fallback
+ok 1 - R22 role and exact shopper visit select action without fuzzy fallback
+  ---
+  duration_ms: 5.764238
+  type: 'test'
+  ...
+# Subtest: R22 notification click awaits durable read ACK and targets exact action
+ok 2 - R22 notification click awaits durable read ACK and targets exact action
+  ---
+  duration_ms: 0.547447
+  type: 'test'
+  ...
+# Subtest: R22 raw technical HR IDs are presentation only, never persisted as titles
+ok 3 - R22 raw technical HR IDs are presentation only, never persisted as titles
+  ---
+  duration_ms: 0.150628
+  type: 'test'
+  ...
+# Subtest: B10: live provider declaration never silently displays internal questionnaire
+ok 4 - B10: live provider declaration never silently displays internal questionnaire
+  ---
+  duration_ms: 5.524887
+  type: 'test'
+  ...
+# Subtest: B10: explicit source conflict blocks instead of choosing internal form
+ok 5 - B10: explicit source conflict blocks instead of choosing internal form
+  ---
+  duration_ms: 2.026796
+  type: 'test'
+  ...
+# Subtest: B10: explicitly configured internal project remains internal
+ok 6 - B10: explicitly configured internal project remains internal
+  ---
+  duration_ms: 1.619718
+  type: 'test'
+  ...
+# Subtest: B10: provider mapping is generic and independent of global project names
+ok 7 - B10: provider mapping is generic and independent of global project names
+  ---
+  duration_ms: 1.696694
+  type: 'test'
+  ...
+# Subtest: B10: configured per-visit link never falls back to unrelated global link
+ok 8 - B10: configured per-visit link never falls back to unrelated global link
+  ---
+  duration_ms: 3.57218
+  type: 'test'
+  ...
+# Subtest: B10: explicitly configured general external URL is preserved
+ok 9 - B10: explicitly configured general external URL is preserved
+  ---
+  duration_ms: 2.775535
+  type: 'test'
+  ...
+# Subtest: benefits and profile expose report-like hierarchy plus clickable historical detail
+ok 10 - benefits and profile expose report-like hierarchy plus clickable historical detail
+  ---
+  duration_ms: 0.662603
+  type: 'test'
+  ...
+# Subtest: shopper visit actions are durable and tenant-date gated
+ok 11 - shopper visit actions are durable and tenant-date gated
+  ---
+  duration_ms: 1.006727
+  type: 'test'
+  ...
+# Subtest: certification source supports durable self-admin, multi-cert, recertification and exact-count AI
+ok 12 - certification source supports durable self-admin, multi-cert, recertification and exact-count AI
+  ---
+  duration_ms: 0.631165
+  type: 'test'
+  ...
+# Subtest: finance UI exposes individual and batch internal payment, durable support and reconciliation without false bank confirmation
+ok 13 - finance UI exposes individual and batch internal payment, durable support and reconciliation without false bank confirmation
+  ---
+  duration_ms: 1.638574
+  type: 'test'
+  ...
+# Subtest: frozen historical payment cut is explicit and September remains non-inferred
+ok 14 - frozen historical payment cut is explicit and September remains non-inferred
+  ---
+  duration_ms: 0.242038
+  type: 'test'
+  ...
+# Subtest: admin dashboard/postulations and reservation source expose real interaction owners
+ok 15 - admin dashboard/postulations and reservation source expose real interaction owners
+  ---
+  duration_ms: 0.813155
+  type: 'test'
+  ...
+# Subtest: admin shopper source exposes banking/profile workflow with provider ACK governance
+ok 16 - admin shopper source exposes banking/profile workflow with provider ACK governance
+  ---
+  duration_ms: 0.753205
+  type: 'test'
+  ...
+# Subtest: B2 self-display name validation uses real Unicode escapes and preserves HR identity
+ok 17 - B2 self-display name validation uses real Unicode escapes and preserves HR identity
+  ---
+  duration_ms: 1.770346
+  type: 'test'
+  ...
+# Subtest: I3 Phase A existing DEV runner has one artifact, runtime build, rules and hosting in one guarded lane
+ok 18 - I3 Phase A existing DEV runner has one artifact, runtime build, rules and hosting in one guarded lane
+  ---
+  duration_ms: 6.778741
+  type: 'test'
+  ...
+# Subtest: I3 Phase A exact source TAR is verified from repository workdir without duplicated output prefix
+ok 19 - I3 Phase A exact source TAR is verified from repository workdir without duplicated output prefix
+  ---
+  duration_ms: 8.891924
+  type: 'test'
+  ...
+# Subtest: I3 DEV previously-published artifact uses same job in readback-only mode with no extra build
+ok 20 - I3 DEV previously-published artifact uses same job in readback-only mode with no extra build
+  ---
+  duration_ms: 2.549499
+  type: 'test'
+  ...
+1..20
+# tests 20
+# suites 0
+# pass 20
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 94.928483

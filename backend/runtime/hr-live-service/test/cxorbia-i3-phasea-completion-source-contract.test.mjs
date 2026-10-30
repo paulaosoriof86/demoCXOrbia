@@ -87,9 +87,32 @@ test('I3 Phase A existing DEV runner has one artifact, runtime build, rules and 
 
 test('I3 Phase A exact source TAR is verified from repository workdir without duplicated output prefix',()=>{
   const runner=read('.github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh');
-  assert.match(runner,/sha256sum "\$OUT\/cxorbia-phasea-source\.tar" > "\$OUT\/cxorbia-phasea-source\.tar\.sha256"/);
-  assert.equal((runner.match(/sha256sum -c "\$OUT\/cxorbia-phasea-source\.tar\.sha256"/g)||[]).length,2);
-  assert.doesNotMatch(runner,/\(cd "\$OUT" && sha256sum -c cxorbia-phasea-source\.tar\.sha256\)/);
+  const check='sha256sum -c "$OUT/cxorbia-phasea-source.tar.sha256"';
+  const begin='# BEGIN_EXISTING_IMAGE_TRAFFIC_ACTIVATION_HELPERS';
+  const end='# END_EXISTING_IMAGE_TRAFFIC_ACTIVATION_HELPERS';
+  const verify=source=>{
+    const lines=source.split('\n'),begins=lines.flatMap((line,i)=>line===begin?[i]:[]),ends=lines.flatMap((line,i)=>line===end?[i]:[]);
+    assert.equal(begins.length,ends.length,'ACTIVATION_HELPER_MARKERS_UNPAIRED');
+    assert.ok(begins.length<=1,'ACTIVATION_HELPER_MARKERS_DUPLICATED');
+    if(begins.length)assert.ok(begins[0]<ends[0],'ACTIVATION_HELPER_MARKERS_REVERSED');
+    const activation=begins.length?lines.slice(begins[0]+1,ends[0]):[];
+    const legacy=begins.length?[...lines.slice(0,begins[0]),...lines.slice(ends[0]+1)]:lines;
+    const count=scope=>scope.filter(line=>line.trim()===check).length;
+    assert.match(source,/sha256sum "\$OUT\/cxorbia-phasea-source\.tar" > "\$OUT\/cxorbia-phasea-source\.tar\.sha256"/);
+    assert.equal(count(legacy),2,'LEGACY_TAR_CHECK_COUNT');
+    if(begins.length)assert.equal(count(activation),2,'ACTIVATION_TAR_CHECK_COUNT');
+    assert.doesNotMatch(source,/\(cd "\$OUT" && sha256sum -c cxorbia-phasea-source\.tar\.sha256\)/);
+    assert.doesNotMatch(source,/\bcd[ \t]+"\$OUT"[ \t]*(?:&&|;)[ \t]*sha256sum -c/,'TAR_CHECK_REQUIRES_REPOSITORY_WORKDIR');
+  };
+  verify(runner);
+  const checks=runner.split('\n').flatMap((line,i)=>line.trim()===check?[i]:[]);
+  for(const index of checks){
+    const omitted=runner.split('\n');omitted[index]='# omitted checksum verification';
+    assert.throws(()=>verify(omitted.join('\n')),/(?:LEGACY|ACTIVATION)_TAR_CHECK_COUNT/);
+  }
+  assert.throws(()=>verify(runner.replace(check,'sha256sum -c "$OUT/$OUT/cxorbia-phasea-source.tar.sha256"')),/(?:LEGACY|ACTIVATION)_TAR_CHECK_COUNT/);
+  assert.throws(()=>verify(runner+'\n(cd "$OUT" && sha256sum -c cxorbia-phasea-source.tar.sha256)\n'));
+  assert.throws(()=>verify(runner+'\n(cd "$OUT" && '+check+')\n'),/TAR_CHECK_REQUIRES_REPOSITORY_WORKDIR/);
 });
 
 test('I3 DEV previously-published artifact uses same job in readback-only mode with no extra build',()=>{

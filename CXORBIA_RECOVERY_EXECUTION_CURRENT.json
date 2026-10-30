@@ -53,7 +53,7 @@
     "gate20": "HOLD",
     "gate21": "HOLD"
   },
-  "controlParentSha": "6c29d887c3ab6aaa320be02e524c6d55e8334e7f",
+  "controlParentSha": "0d5700a001b575ee7673db8d492dd93e55ee01af",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
     "executed": [
@@ -3335,7 +3335,18 @@
     "preserveTrafficTags": true,
     "preserveRuntimeConfiguration": true,
     "fullTaskClosed": false,
-    "production": false
+    "production": false,
+    "qaCorrection": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN1971_TAR_QA_CORRECTION_20261030.json",
+      "gitBlob": "5f46a490e88010017ee4db689a9470d5395dd195",
+      "decision": "LEGACY_TAR_CHECK_COUNT_FALSE_POSITIVE_CORRECTED_PENDING_CANONICAL_AUTHORITY",
+      "runId": 40987612464,
+      "qaPath": "backend/runtime/hr-live-service/test/cxorbia-i3-phasea-completion-source-contract.test.mjs",
+      "qaGitBlob": "fda8d43d25556d61c88f65e87460b5d6a0566e22",
+      "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+      "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+      "production": false
+    }
   },
   "lastExecutionReceiptSemantics": "SEALED_POSTDEPLOY_SNAPSHOT_NOT_CURRENT_CONTROL_HANDOFF",
   "currentExecutionReceiptSemantics": "LATEST_CONTROL_AND_QA_RECEIPT_NOT_A_POSTDEPLOY_SEAL",
@@ -4969,19 +4980,14 @@
     "production": false
   },
   "currentControlCorrection": {
-    "runId": 40984083454,
-    "runNumber": 1968,
-    "controlSha": "2d5a95a19c9e168019a5b8fb531d8212081bc739",
-    "authorityJobId": 123830848745,
-    "authorityConclusion": "failure",
-    "failureCode": "MAPPING_FAILURE:SHOCK_CONTINUITY:MATRIX_PATH_DESYNC,MATRIX_BLOB_DESYNC,CLASSIFICATION_SNAPSHOT_AUTHORITY",
-    "materializationJobId": 123830989645,
-    "materializationConclusion": "skipped",
-    "classification": "CONTROL_POINTER_UPDATE_INCOMPLETE",
-    "correction": "Align execution matrix authority, classification snapshot and G03 matrix/ledger links to M199/L531; no product or guard change.",
-    "builds": 0,
-    "deploys": 0,
-    "providerWrites": 0,
+    "path": "docs/checkpoints/CXORBIA_I3_RUN1971_TAR_QA_CORRECTION_20261030.json",
+    "gitBlob": "5f46a490e88010017ee4db689a9470d5395dd195",
+    "decision": "LEGACY_TAR_CHECK_COUNT_FALSE_POSITIVE_CORRECTED_PENDING_CANONICAL_AUTHORITY",
+    "runId": 40987612464,
+    "qaPath": "backend/runtime/hr-live-service/test/cxorbia-i3-phasea-completion-source-contract.test.mjs",
+    "qaGitBlob": "fda8d43d25556d61c88f65e87460b5d6a0566e22",
+    "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+    "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
     "production": false
   },
   "currentSuccessorDevObservation": {
