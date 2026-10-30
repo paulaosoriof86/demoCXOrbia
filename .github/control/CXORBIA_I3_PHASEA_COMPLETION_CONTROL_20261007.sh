@@ -567,9 +567,9 @@ import {execFileSync,spawnSync} from 'node:child_process';
 
 const CONTRACT = {
   "mode": "R7_D07_C04_C05_BOUNDED",
-  "packagePath": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R7.json",
+  "packagePath": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R8.json",
   "packageSchema": "cxorbia.i3.c02-d04.independent-session-package.v1",
-  "packageId": "CXORBIA-I3-D07-C04-C05-BOUNDED-20261029-R7",
+  "packageId": "CXORBIA-I3-D07-C04-C05-BOUNDED-20261029-R8",
   "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
   "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
   "origin": "https://cxorbia-backend-dev.web.app",
@@ -605,6 +605,7 @@ const CONTRACT = {
     "financeReplays": 2,
     "financeProviderWrites": 15,
     "cleanupDeletes": 13,
+    "providerConfigWritesMax": 1,
     "production": false
   },
   "d07": {
@@ -626,7 +627,7 @@ const CONTRACT = {
     "downloadsPerRole": 1,
     "resourceCrud": false,
     "storageRuleChanges": false,
-    "corsChanges": false,
+    "corsChanges": true,
     "serviceWorkerChanges": false
   },
   "c04c05": {
@@ -660,7 +661,7 @@ const SRC=CONTRACT.sourceSha,TREE=CONTRACT.sourceTree,ROOT=CONTRACT.origin;
 const RUN=String(process.env.GITHUB_RUN_ID||'');
 const RUNNER='tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs';
 const TOOL_BLOBS={
-  'tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs':'36ab65da6f62e5d0225cd47481e04a64fa6b183a',
+  'tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs':'2110c5fc3cbb790f57d8257c51aac8767ac9bfc7',
   'tools/qa/cxorbia-i3-d03-ai-generation-source.test.mjs':'0baa74bd8c42c137fe0f6501f5b970fd2ca95e8b'
 };
 const PIN_FIELDS=['sourceSha','sourceTree','runtimeSourceSha','runtimeRevision','runtimeDigest','hrRevision','hostingVersion','hostingRelease','rulesRelease','rulesetName','rulesGitBlob','deliveryKind','origin','materializationRunId','production'];
@@ -684,7 +685,7 @@ const readLinked=link=>{
   return JSON.parse(bytes);
 };
 const sourceResult=(decision,extra={})=>({decision,mode:CONTRACT.mode,controlSha,packageBlob,sourceSha:SRC,sourceTree:TREE,sourceRepair:pkg?.sourceRepair||null,sourceProof:pkg?.sourceProof||null,materializationReceipt:target?.receipt||null,runtimeBinding:pkg?.runtimeBinding||null,sourceArtifactDigest:target?.sourceArtifactDigest||null,runtimeSourceVerified:false,cloudAccess:false,writes:0,deploys:0,production:false,...extra});
-const preflightBase=()=>({decision:'HOLD_R7_DEV_LIVE_MATERIALIZATION_PREFLIGHT',mode:CONTRACT.mode,controlSha,packageBlob,runId:RUN,sourceRepair:pkg.sourceRepair,sourceProof:pkg.sourceProof,materializationReceipt:target.receipt,materializationControlSha:target.controlSha,runtimeBinding:pkg.runtimeBinding,runtimeBindingReceipt:runtimeBinding,sourceArtifactDigest:target.sourceArtifactDigest,runtimeBindingVerified:false,runtimeSourceVerified:false,runtimeSourceBinding:null,...Object.fromEntries(PIN_FIELDS.map(field=>[field,target[field]])),proofObservedAt:null,sourceIdentityVerified:false,runtimeIdentityVerified:false,hostingReleaseVerified:false,rulesReleaseVerified:false,servedOwnerCount:0,servedOwnerBlobs:{},cloudAccess:false,deploys:0,writes:0});
+const preflightBase=()=>({decision:'HOLD_R7_DEV_LIVE_MATERIALIZATION_PREFLIGHT',mode:CONTRACT.mode,controlSha,packageBlob,runId:RUN,sourceRepair:pkg.sourceRepair,sourceProof:pkg.sourceProof,materializationReceipt:target.receipt,materializationControlSha:target.controlSha,runtimeBinding:pkg.runtimeBinding,runtimeBindingReceipt:runtimeBinding,sourceArtifactDigest:target.sourceArtifactDigest,runtimeBindingVerified:false,runtimeSourceVerified:false,runtimeSourceBinding:null,...Object.fromEntries(PIN_FIELDS.map(field=>[field,target[field]])),proofObservedAt:null,sourceIdentityVerified:false,runtimeIdentityVerified:false,hostingReleaseVerified:false,rulesReleaseVerified:false,servedOwnerCount:0,servedOwnerBlobs:{},storageCors:null,providerConfigWrites:0,cloudAccess:false,deploys:0,writes:0});
 let proof=null;
 const savePreflight=()=>write('preflight.json',proof);
 const checkpoint=next=>{stage=next;if(preflightStarted){proof.stage=stage;proof.cloudAccess=cloudAccess;savePreflight();}};
@@ -709,7 +710,7 @@ try{
   const execution=json('CXORBIA_RECOVERY_EXECUTION_CURRENT.json');
   assert.equal(execution.currentSessionProofPackage?.path,packagePath);assert.equal(execution.currentSessionProofPackage?.gitBlob,packageBlob);
   assert.equal(git('rev-parse','HEAD:'+packagePath),packageBlob);
-  assert.equal(pkg.schemaVersion,CONTRACT.packageSchema);assert.equal(pkg.id,CONTRACT.packageId);assert.equal(pkg.mode,CONTRACT.mode);assert.equal(pkg.attemptNumber,7);
+  assert.equal(pkg.schemaVersion,CONTRACT.packageSchema);assert.equal(pkg.id,CONTRACT.packageId);assert.equal(pkg.mode,CONTRACT.mode);assert.equal(pkg.attemptNumber,8);
   assert.equal(pkg.branch,'recovery/cxorbia-phase-a-20260831');
   assert.equal(pkg.expectedControlParentSha,git('rev-parse','HEAD^'));
   assert.equal(pkg.sourceSha,SRC);assert.equal(pkg.sourceTree,TREE);assert.equal(pkg.production,false);
@@ -800,6 +801,11 @@ function validateR8RuntimeBindingReceipt(binding,pkg,target){
       args.push(url);
       return invoke('curl',args,{encoding:null,timeout:50000,maxBuffer:8*1024*1024,...(token?{input:'header = "Authorization: Bearer '+token+'"\n'}:{})});
     };
+    const curlPatchJson=(url,token,body)=>{
+      cloudAccess=true;assert.match(token,/^[A-Za-z0-9._~+\/-]+$/);
+      const args=['--fail','--silent','--show-error','--proto','=https','--connect-timeout','10','--max-time','45','--request','PATCH','--header','Content-Type: application/json','--data-binary',JSON.stringify(body),'--config','-',url];
+      return invoke('curl',args,{encoding:null,timeout:50000,maxBuffer:8*1024*1024,input:'header = "Authorization: Bearer '+token+'"\n'});
+    };
     checkpoint('PREFLIGHT_RUNTIME');
     const runtime=cloudJson(['run','services','describe',process.env.SERVICE,'--project',process.env.PROJECT,'--region',process.env.REGION,'--format=json']);
     assert.equal(runtime.metadata?.name,process.env.SERVICE);assert.equal(runtime.status?.latestReadyRevisionName,target.runtimeRevision);
@@ -833,6 +839,17 @@ function validateR8RuntimeBindingReceipt(binding,pkg,target){
       assert.equal(bytesBlob(served),target.rulesGitBlob);assert.deepEqual(served,canonical);
       proof.rulesReleaseVerified=true;
       write('rules-readback.json',{rulesRelease:release.name,rulesetName:ruleset.name,rulesGitBlob:bytesBlob(served),exactSourceBytes:true});
+      checkpoint('PREFLIGHT_STORAGE_CORS');
+      const bucket=CONTRACT.d07.bucket;assert.equal(bucket,'cxorbia-backend-dev.firebasestorage.app');
+      const corsUrl='https://storage.googleapis.com/storage/v1/b/'+encodeURIComponent(bucket)+'?fields=cors';
+      const expectedCors={origin:[ROOT],method:['GET','HEAD'],responseHeader:['Authorization','Content-Type'],maxAgeSeconds:3600};
+      const corsKey=rule=>JSON.stringify({origin:[...(rule?.origin||[])].sort(),method:[...(rule?.method||[])].sort(),responseHeader:[...(rule?.responseHeader||[])].sort(),maxAgeSeconds:Number(rule?.maxAgeSeconds||0)});
+      const beforeBucket=JSON.parse(curl(corsUrl,token)),beforeCors=Array.isArray(beforeBucket.cors)?beforeBucket.cors:[];
+      const expectedKey=corsKey(expectedCors);let corsChanged=false;
+      if(!beforeCors.some(rule=>corsKey(rule)===expectedKey)){const patched=JSON.parse(curlPatchJson(corsUrl,token,{cors:[...beforeCors,expectedCors]}));assert.ok(Array.isArray(patched.cors));corsChanged=true;}
+      const afterBucket=JSON.parse(curl(corsUrl,token)),afterCors=Array.isArray(afterBucket.cors)?afterBucket.cors:[];
+      assert.ok(afterCors.some(rule=>corsKey(rule)===expectedKey));proof.providerConfigWrites=corsChanged?1:0;assert.ok(proof.providerConfigWrites<=CONTRACT.scope.providerConfigWritesMax);
+      proof.storageCors={bucket,origin:ROOT,method:['GET','HEAD'],responseHeader:['Authorization','Content-Type'],maxAgeSeconds:3600,beforeRuleCount:beforeCors.length,afterRuleCount:afterCors.length,changed:corsChanged,expectedRulePresent:true,production:false};write('storage-cors-readback.json',proof.storageCors);savePreflight();
     }finally{token=null;}
     checkpoint('PREFLIGHT_SERVED_OWNERS');
     for(const owner of CONTRACT.ownerPaths){
@@ -860,7 +877,7 @@ function validateR8RuntimeBindingReceipt(binding,pkg,target){
   assert.equal(preflight.runtimeBindingVerified,true);assert.equal(preflight.runtimeSourceVerified,true);assert.equal(preflight.runtimeSourceBinding,RUNTIME_BINDING_LABEL);
   for(const field of PIN_FIELDS)assert.equal(preflight[field],target[field]);
   for(const field of ['sourceIdentityVerified','runtimeIdentityVerified','hostingReleaseVerified','rulesReleaseVerified'])assert.equal(preflight[field],true);
-  assert.equal(preflight.servedOwnerCount,14);assert.deepEqual(preflight.servedOwnerBlobs,target.owners);assert.equal(preflight.deploys,0);assert.equal(preflight.writes,0);
+  assert.equal(preflight.servedOwnerCount,14);assert.deepEqual(preflight.servedOwnerBlobs,target.owners);assert.equal(preflight.deploys,0);assert.equal(preflight.writes,0);assert.ok([0,1].includes(preflight.providerConfigWrites));assert.equal(preflight.storageCors?.bucket,CONTRACT.d07.bucket);assert.equal(preflight.storageCors?.origin,ROOT);assert.equal(preflight.storageCors?.expectedRulePresent,true);assert.equal(preflight.storageCors?.production,false);
   assert.match(preflight.proofObservedAt||'',/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/);
   const observedAt=Date.parse(preflight.proofObservedAt);
   assert.ok(Number.isFinite(observedAt)&&observedAt<=Date.now()+30000&&Date.now()-observedAt<=600000);

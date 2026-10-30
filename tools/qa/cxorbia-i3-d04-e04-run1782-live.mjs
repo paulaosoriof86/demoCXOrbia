@@ -48,9 +48,9 @@ assert.equal(r7Git('rev-parse','HEAD:'+packagePath),packageBlob);
 sessionPackage=JSON.parse(packageBytes);
 sessionPreflight=JSON.parse(fs.readFileSync(process.env.CXORBIA_I3_SESSION_PREFLIGHT,'utf8'));
 assert.equal(sessionPackage.schemaVersion,'cxorbia.i3.c02-d04.independent-session-package.v1');
-assert.equal(sessionPackage.id,'CXORBIA-I3-D07-C04-C05-BOUNDED-20261029-R7');
+assert.equal(sessionPackage.id,'CXORBIA-I3-D07-C04-C05-BOUNDED-20261029-R8');
 assert.equal(sessionPackage.mode,'R7_D07_C04_C05_BOUNDED');
-assert.equal(sessionPackage.attemptNumber,7);
+assert.equal(sessionPackage.attemptNumber,8);
 assert.equal(sessionPackage.expectedControlParentSha,r7Git('rev-parse','HEAD^'));
 assert.equal(sessionPackage.sourceSha,SRC);assert.equal(sessionPackage.sourceTree,descriptor.productTreeAuthority);
 assert.equal(sessionPackage.production,false);
@@ -71,7 +71,7 @@ assert.equal(sessionPackage.d07.bucket,'cxorbia-backend-dev.firebasestorage.app'
 assert.equal(sessionPackage.d07.approvedName,'Instructivo Shopper.pdf');assert.equal(sessionPackage.d07.approvedSize,162335);
 assert.equal(sessionPackage.d07.approvedSha256,'3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454');
 assert.equal(sessionPackage.d07.binaryGetsPerRole,1);assert.equal(sessionPackage.d07.downloadsPerRole,1);
-for(const key of ['resourceCrud','storageRuleChanges','corsChanges','serviceWorkerChanges'])assert.equal(sessionPackage.d07[key],false);
+for(const key of ['resourceCrud','storageRuleChanges','serviceWorkerChanges'])assert.equal(sessionPackage.d07[key],false);assert.equal(sessionPackage.d07.corsChanges,true);assert.equal(sessionPackage.scope.providerConfigWritesMax,1);
 assert.equal(sessionPackage.c04c05.execute,true);assert.equal(sessionPackage.c04c05.commands,4);
 assert.equal(sessionPackage.c04c05.replays,2);assert.equal(sessionPackage.c04c05.maxLinkedDocuments,13);
 assert.equal(sessionPackage.c04c05.helperSha256,'aec21d3231eb895ee7c873ab22ab8bf74125c37457b915a5e95ca0059d3aed3b');
@@ -1300,6 +1300,7 @@ async function bindD07BeforeReadsR7({adminPage,shopperPage,adminUid,shopperUid,d
     preflight?.servedOwnerBlobs?.['app/modules/documentos.js']===D07.viewerOwnerBlob,'SOURCE_PREFLIGHT_UNBOUND');
   check(preflight.deliveryKind==='DEV_LIVE_MATERIALIZATION'&&preflight.origin==='https://cxorbia-backend-dev.web.app'&&
     new URL(adminPage.url()).origin===preflight.origin&&new URL(shopperPage.url()).origin===preflight.origin,'DEV_LIVE_ORIGIN_MISMATCH');
+  check(preflight?.storageCors?.bucket===D07.bucket&&preflight?.storageCors?.expectedRulePresent===true&&Number(preflight?.providerConfigWrites||0)<=1,'DEV_STORAGE_CORS_PREFLIGHT_UNBOUND');
   check(typeof preflight.hostingVersion==='string'&&/^sites\/cxorbia-backend-dev\/versions\/[0-9a-f]+$/.test(preflight.hostingVersion),'HOSTING_VERSION_UNBOUND');
   // Both role catalogs must expose the same exact resource before either binary GET.
   const a=await readD07LoadedBinding(adminPage,{role:'admin',uid:adminUid,onDiagnostic});
@@ -1613,15 +1614,15 @@ function validateC04Actor(member,user){
   check(['admin','super'].includes(member.role),'EXACT_ADMIN_ROLE_INVALID');
   check(member.role==='super'||member.entitlementMode==='TYA_COMPLETE','GLOBAL_ENTITLEMENT_REQUIRED');
   check(Array.isArray(member.projectIds)&&member.projectIds.includes(C04C05.projectId),'EXACT_ADMIN_PROJECT_DENIED');
-  check(Array.isArray(member.countries),'COUNTRY_SCOPE_NOT_PROVEN');
-  check(member.role==='super'||member.countries.length===0||['GT','HN'].every(c=>member.countries.includes(c)),'GT_HN_SCOPE_DENIED');
+  const memberCountries=uniq(member.countries);
+  check(member.role==='super'||memberCountries.length===0||['GT','HN'].every(c=>memberCountries.includes(c)),'GT_HN_SCOPE_DENIED');
   const claims=user?.customClaims||{};
   check(user?.uid===C04C05.uid&&user.disabled===false&&claims.role===member.role&&claims.tenantId===C04C05.tenantId&&claims.authNamespace==='staff','EXACT_ADMIN_CLAIMS_INVALID');
   check(isDeepStrictEqual(uniq(claims.projectIds),uniq(member.projectIds)),'EXACT_ADMIN_CLAIMS_SCOPE_MISMATCH');
   return {uidFingerprint:sha('cxorbia-provider-uid-v1\0'+C04C05.uid),role:member.role,
     tenantId:member.tenantId,authNamespace:member.authNamespace,active:member.active,
-    entitlementMode:member.entitlementMode??null,projectIds:uniq(member.projectIds),countries:uniq(member.countries),
-    countryScopeRule:member.role==='super'?'super':member.countries.length?'explicit_countries':'provider_empty_list_means_unrestricted',
+    entitlementMode:member.entitlementMode??null,projectIds:uniq(member.projectIds),countries:memberCountries,
+    countryScopeRule:member.role==='super'?'super':memberCountries.length?'explicit_countries':'provider_empty_list_means_unrestricted',
     memberRead:'exact_document',authRead:'exact_getUser',accountCreated:false,claimsChanged:false};
 }
 

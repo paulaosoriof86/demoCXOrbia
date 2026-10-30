@@ -254,7 +254,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 G03: reconcile 21 domains preserving owner-scoped approved PASS and exact source/DEV artifacts; parallel read-only HR freshness/ACK, Admin/Shopper operations, finanzas, certificaciones and visual proof. D07 one bounded Admin+Shopper smoke only; fix only P0_PROVEN with one serial writer and cumulative candidate, then Gate20/Gate21. No production.",
+  "nextExactAction": "Execute existing I3 R8 session-proof: merge/read back exact DEV Storage CORS if absent, then D07 Admin+Shopper PDF and C04/C05 bounded Global finance on the same 4854a4e artifact; production remains DO_NOT_TOUCH.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -3513,10 +3513,10 @@
     "resumeAfterAuthorizedReceiptRead": "C02: read the receipt/audit and committed HR revision of the existing single attempt without replay; retain fresh-page and explicit-reload persistence proof. Continue D04/D05/D06 and bounded D07 evidence on the same e753 candidate, preserving passed owners."
   },
   "currentSessionProofPackage": {
-    "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R7.json",
-    "gitBlob": "09ff1ca803bba9da42c51652d9cdb96f305f33ea",
-    "state": "READY_FOR_SINGLE_BOUNDED_D07_C04_C05",
-    "expectedControlParentSha": "1f536ea7e3df80b08c70d7fc12b985abae0438c2",
+    "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R8.json",
+    "gitBlob": "ac7a9207e31b47e16cff0a3b1293f7556f469e83",
+    "state": "READY_R8_DEV_CORS_REMEDIATION_AND_D07_C04_C05_REPROOF",
+    "expectedControlParentSha": "e4b377aa7050276daf622727836b59535d694b49",
     "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
     "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
     "materialization": {
@@ -3536,15 +3536,24 @@
     "existingJob": "phasea-representative-same-artifact-live-reproof",
     "existingRunner": "tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs",
     "triggerMarker": "[i3-c02-d04-session-proof]",
+    "priorAttempt": {
+      "runId": 40989335048,
+      "runNumber": 1973,
+      "jobId": 123848183509,
+      "artifactId": 12948472412,
+      "receiptPath": "docs/checkpoints/CXORBIA_I3_R7_D07_C04_C05_HOLD_RUN1973_20261030.json",
+      "receiptGitBlob": "5411ff997dc28d314810763bbf2f20429e49645f",
+      "decision": "HOLD_R7_D07_C04_C05_BOUNDED"
+    },
+    "providerRemediation": "DEV Storage CORS exact-origin merge/readback; max one provider-config write",
+    "qaRemediation": "countries normalization aligned to canonical finance provider; zero Auth/membership mutation",
     "userChromeSessionPreserved": true,
     "production": false,
     "sourceChanges": 0,
     "newWorkflow": 0,
     "newMaterializer": 0,
     "liveResult": "PENDING",
-    "attemptNumber": 7,
-    "priorAttemptRunId": 40976272252,
-    "runnerOs": "ubuntu-24.04",
+    "attemptNumber": 8,
     "mode": "R7_D07_C04_C05_BOUNDED"
   },
   "d04CarryForwardRecovered20261029": {

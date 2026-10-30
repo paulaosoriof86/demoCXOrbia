@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "cxorbia.i3.r7-hold.v1",
+  "id": "CXORBIA-I3-R7-D07-C04-C05-HOLD-RUN1973",
+  "iteration": "I3",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadSha": "e4b377aa7050276daf622727836b59535d694b49",
+  "productSourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+  "productTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+  "runId": 40989335048,
+  "runNumber": 1973,
+  "jobId": 123848183509,
+  "artifactId": 12948472412,
+  "artifactDigest": "sha256:3ff70908c91812ca69eb900b2e4691a5ad74ad6811047ba39b426e002587b90c",
+  "decision": "HOLD_R7_D07_C04_C05_BOUNDED",
+  "d07": {
+    "decision": "HOLD_D07_REAL_PDF_READ_ONLY_CLAUSE",
+    "classification": "PROVIDER_FAILURE",
+    "admin": {
+      "binaryGetCount": 1,
+      "authenticatedGetHeaderPresent": true,
+      "httpStatus": null,
+      "networkError": "net::ERR_FAILED",
+      "code": "RESOURCE_READ_GET_FAILED"
+    },
+    "shopper": {
+      "binaryGetCount": 1,
+      "authenticatedGetHeaderPresent": true,
+      "httpStatus": null,
+      "networkError": "net::ERR_FAILED"
+    },
+    "metadataAndUpdateTimeUnchanged": true,
+    "browserClosed": true,
+    "writes": 0,
+    "production": false
+  },
+  "c04c05": {
+    "decision": "HOLD_C04_C05_BOUNDED_FINANCE",
+    "classification": "MAPPING_FAILURE",
+    "code": "C04_COUNTRY_SCOPE_NOT_PROVEN",
+    "commandsIssued": 0,
+    "providerWrites": 0,
+    "production": false
+  },
+  "remediation": {
+    "d07": "DEV CORS exact-origin merge/readback then same-artifact reproof",
+    "c04c05": "QA countries normalization to canonical provider semantics; no membership mutation"
+  },
+  "productSourceChanged": false,
+  "productionTouched": false
+}
