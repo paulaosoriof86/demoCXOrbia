@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "cxorbia.i3.r8-control-hold.v1",
+  "id": "CXORBIA-I3-R8-CONTROL-HOLD-RUN1974",
+  "iteration": "I3",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadSha": "eb31fd46c1eacab433c42d33318be54fb1c5255d",
+  "productSourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+  "productTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+  "runId": 40991014920,
+  "runNumber": 1974,
+  "jobId": 123853164700,
+  "decision": "HOLD_CANONICAL_AUTHORITY",
+  "classification": "MAPPING_FAILURE",
+  "code": "SHOCK_CONTINUITY:NEXT_ACTION_DESYNC",
+  "providerConfigWrites": 0,
+  "corsChanged": false,
+  "e2eExecuted": false,
+  "productSourceChanged": false,
+  "productionTouched": false,
+  "remediation": "Restore execution.nextExactAction to descriptor.exactNextAction and keep R9 focal action inside currentSessionProofPackage."
+}

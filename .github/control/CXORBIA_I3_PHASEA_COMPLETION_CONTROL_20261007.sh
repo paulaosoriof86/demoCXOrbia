@@ -567,9 +567,9 @@ import {execFileSync,spawnSync} from 'node:child_process';
 
 const CONTRACT = {
   "mode": "R7_D07_C04_C05_BOUNDED",
-  "packagePath": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R8.json",
+  "packagePath": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R9.json",
   "packageSchema": "cxorbia.i3.c02-d04.independent-session-package.v1",
-  "packageId": "CXORBIA-I3-D07-C04-C05-BOUNDED-20261029-R8",
+  "packageId": "CXORBIA-I3-D07-C04-C05-BOUNDED-20261029-R9",
   "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
   "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
   "origin": "https://cxorbia-backend-dev.web.app",
@@ -661,7 +661,7 @@ const SRC=CONTRACT.sourceSha,TREE=CONTRACT.sourceTree,ROOT=CONTRACT.origin;
 const RUN=String(process.env.GITHUB_RUN_ID||'');
 const RUNNER='tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs';
 const TOOL_BLOBS={
-  'tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs':'2110c5fc3cbb790f57d8257c51aac8767ac9bfc7',
+  'tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs':'13a9ddf2b0aaa0d1504520dee6f8564a33daaaff',
   'tools/qa/cxorbia-i3-d03-ai-generation-source.test.mjs':'0baa74bd8c42c137fe0f6501f5b970fd2ca95e8b'
 };
 const PIN_FIELDS=['sourceSha','sourceTree','runtimeSourceSha','runtimeRevision','runtimeDigest','hrRevision','hostingVersion','hostingRelease','rulesRelease','rulesetName','rulesGitBlob','deliveryKind','origin','materializationRunId','production'];
@@ -710,7 +710,7 @@ try{
   const execution=json('CXORBIA_RECOVERY_EXECUTION_CURRENT.json');
   assert.equal(execution.currentSessionProofPackage?.path,packagePath);assert.equal(execution.currentSessionProofPackage?.gitBlob,packageBlob);
   assert.equal(git('rev-parse','HEAD:'+packagePath),packageBlob);
-  assert.equal(pkg.schemaVersion,CONTRACT.packageSchema);assert.equal(pkg.id,CONTRACT.packageId);assert.equal(pkg.mode,CONTRACT.mode);assert.equal(pkg.attemptNumber,8);
+  assert.equal(pkg.schemaVersion,CONTRACT.packageSchema);assert.equal(pkg.id,CONTRACT.packageId);assert.equal(pkg.mode,CONTRACT.mode);assert.equal(pkg.attemptNumber,9);
   assert.equal(pkg.branch,'recovery/cxorbia-phase-a-20260831');
   assert.equal(pkg.expectedControlParentSha,git('rev-parse','HEAD^'));
   assert.equal(pkg.sourceSha,SRC);assert.equal(pkg.sourceTree,TREE);assert.equal(pkg.production,false);

@@ -1,0 +1,168 @@
+{
+  "schemaVersion": "cxorbia.i3.c02-d04.independent-session-package.v1",
+  "id": "CXORBIA-I3-D07-C04-C05-BOUNDED-20261029-R9",
+  "mode": "R7_D07_C04_C05_BOUNDED",
+  "attemptNumber": 9,
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedControlParentSha": "eb31fd46c1eacab433c42d33318be54fb1c5255d",
+  "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+  "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+  "sourceRepair": {
+    "path": "docs/checkpoints/CXORBIA_I3_D05_CUMULATIVE_SOURCE_REPAIR_20261030.json",
+    "gitBlob": "1002fe5dfe57b27104da3ecb2e369378f2dbf4e3"
+  },
+  "sourceProof": {
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "workflowPath": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "jobName": "phasea-rejected-checkpoint-source-proof",
+    "runId": 40983126884,
+    "runNumber": 1967,
+    "jobId": 123827903809,
+    "artifactId": 12945078520,
+    "headSha": "7175fd3ce27de0e74cc2a18cc23d054b6b39ec01",
+    "artifactDigest": "sha256:75ac9e16364a7b93a62c23a4b749d2b303c3801f4ba979551b879ac61f774086",
+    "receipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_CUMULATIVE_SOURCE_PROOF_RUN1967_20261030.json",
+      "gitBlob": "e19e7966f896a6ba920344fcc71259e097986abd"
+    }
+  },
+  "runtimeBinding": {
+    "path": "docs/checkpoints/CXORBIA_I3_S485_RUNTIME_BUILD_REVISION_BINDING_20261030.json",
+    "gitBlob": "60296349eee5d0a497bd7870b77886bc2668e529"
+  },
+  "materialization": {
+    "deliveryKind": "DEV_LIVE_MATERIALIZATION",
+    "origin": "https://cxorbia-backend-dev.web.app",
+    "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+    "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+    "sourceArtifactDigest": "sha256:f3509fc74a7a5c46c1a8bf1e018ebae8e363b2897d1f06c85bbac34379316fa4",
+    "runtimeSourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+    "materializationRunId": 40984272542,
+    "controlSha": "1f536ea7e3df80b08c70d7fc12b985abae0438c2",
+    "runtimeRevision": "cxorbia-live-hr-dev-00331-2xq",
+    "runtimeDigest": "sha256:e56826df529bd132d2413a0913c557743dbeb78945724e1073665e8bc388ca65",
+    "hrRevision": "ad25ad68f7d08c4dd3617c9de49df909d26ab73e69a1e40f2800b947a4dde79a",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/eeef27f0aca1d6e5",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1793322873249000",
+    "rulesRelease": "projects/cxorbia-backend-dev/releases/cloud.firestore",
+    "rulesetName": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
+    "rulesGitBlob": "540240ddbbb078ebcd14611dd2cc39375472ea66",
+    "production": false,
+    "owners": {
+      "app/index-backend-dev.html": "eec56cf5e4afc7624c1a6f73841bb28d18617280",
+      "app/adapters/tya-financial-canonical-source-safe-adapter.js": "9d2d1a9a541c74a6234353a44f0bfaa43bc1fb79",
+      "app/core/backend-browser-auth.js": "1274e67e69a73fd619d81b0d01687e72894901e6",
+      "app/core/backend-certifications.js": "178ce391af835a8ebe2dfccf68a590110d0466cd",
+      "app/core/backend-cxdata-finance-read.js": "2a7cd3ffbd2bf0999b149b3095218b7d3d09276b",
+      "app/core/backend-finance-benefits.js": "66856002901be88aefb38acc0aaab635a8872c2b",
+      "app/core/backend-protected-dev-mode.js": "3924d7d02ea21f589e6be6d451dff740c884300a",
+      "app/core/backend-protected-dev-session-continuity.js": "00f2b3d1e92ad6154853282a8881163cf9e6ca5d",
+      "app/core/backend-resources.js": "f12a2325948bf25133b5f7e5cff68061e0521d60",
+      "app/modules/cert.js": "78c9630fd627daa015aff5919d34565260240d74",
+      "app/modules/documentos.js": "db994135c9e38854000b13606e7fdd3872ab7e1b",
+      "app/modules/finanzas.js": "f1545f0439863090e04b4729e8483616f7d209cf",
+      "app/adapters/cxorbia-cxdata-command-boundary-v1.js": "d345acb084d63c7f74847eef5be03c05cd70d458",
+      "app/adapters/cxorbia-command-adapter-v1.js": "aa6522b76a5958aece332c6346c312086d803500"
+    },
+    "receipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_S485_DEV_MATERIALIZATION_RUN1972_20261030.json",
+      "gitBlob": "734fadab265d042eadf874ecf57af5e8f7d3258f"
+    }
+  },
+  "actor": {
+    "uid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+    "role": "admin",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "createUser": false,
+    "changeClaims": false
+  },
+  "c02": {
+    "execute": false,
+    "replayReconciliation": false
+  },
+  "d04": {
+    "execute": false,
+    "fixtureSeeds": 0,
+    "contentEdits": 0,
+    "fixtureDeletes": 0
+  },
+  "scope": {
+    "authMutations": 0,
+    "hrWrites": 0,
+    "resourceWrites": 0,
+    "storageWrites": 0,
+    "deploys": 0,
+    "financeCommands": 4,
+    "financeReplays": 2,
+    "financeProviderWrites": 15,
+    "cleanupDeletes": 13,
+    "production": false,
+    "providerConfigWritesMax": 1
+  },
+  "d07": {
+    "execute": true,
+    "roles": [
+      "admin",
+      "shopper"
+    ],
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "periodId": "cinepolis-2026-10",
+    "shopperId": "TYA_GT_393371F88D10F7A8",
+    "shopperUidFingerprint": "a6e3ff21498bd79cbc4078ec47b7b5760a6534e43803614e997bb2294d77ee98",
+    "bucket": "cxorbia-backend-dev.firebasestorage.app",
+    "approvedName": "Instructivo Shopper.pdf",
+    "approvedSize": 162335,
+    "approvedSha256": "3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454",
+    "binaryGetsPerRole": 1,
+    "downloadsPerRole": 1,
+    "resourceCrud": false,
+    "storageRuleChanges": false,
+    "corsChanges": true,
+    "serviceWorkerChanges": false
+  },
+  "c04c05": {
+    "execute": true,
+    "commands": 4,
+    "replays": 2,
+    "maxLinkedDocuments": 13,
+    "helperSha256": "aec21d3231eb895ee7c873ab22ab8bf74125c37457b915a5e95ca0059d3aed3b"
+  },
+  "production": false,
+  "priorAttemptRunId": 40991014920,
+  "priorAttempt": {
+    "runId": 40991014920,
+    "runNumber": 1974,
+    "headSha": "eb31fd46c1eacab433c42d33318be54fb1c5255d",
+    "jobId": 123853164700,
+    "decision": "HOLD_CANONICAL_AUTHORITY_NEXT_ACTION_DESYNC",
+    "classification": "MAPPING_FAILURE",
+    "providerConfigWrites": 0,
+    "production": false
+  },
+  "providerRemediation": {
+    "classification": "PROVIDER_FAILURE",
+    "owner": "DEV Cloud Storage bucket CORS",
+    "bucket": "cxorbia-backend-dev.firebasestorage.app",
+    "origin": "https://cxorbia-backend-dev.web.app",
+    "method": [
+      "GET",
+      "HEAD"
+    ],
+    "responseHeader": [
+      "Authorization",
+      "Content-Type"
+    ],
+    "maxAgeSeconds": 3600,
+    "mergeOnly": true,
+    "removeExistingRules": false,
+    "production": false
+  },
+  "controlQaRepair": {
+    "classification": "MAPPING_FAILURE",
+    "owner": "tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs",
+    "rule": "Normalize absent membership.countries to [] exactly as canonical finance provider does under TYA_COMPLETE; do not mutate membership/Auth.",
+    "productSourceChanges": 0
+  }
+}
