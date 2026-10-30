@@ -1,0 +1,438 @@
+TAP version 13
+# Subtest: Global exact get and catalog query: complete allowed
+ok 1 - Global exact get and catalog query: complete allowed
+  ---
+  duration_ms: 3738.282132
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: complete-no-ns-claim allowed
+ok 2 - Global exact get and catalog query: complete-no-ns-claim allowed
+  ---
+  duration_ms: 249.1969
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: super allowed
+ok 3 - Global exact get and catalog query: super allowed
+  ---
+  duration_ms: 151.830048
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: specific denied
+ok 4 - Global exact get and catalog query: specific denied
+  ---
+  duration_ms: 90.690828
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: missing-entitlement denied
+ok 5 - Global exact get and catalog query: missing-entitlement denied
+  ---
+  duration_ms: 117.268801
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: ops denied
+ok 6 - Global exact get and catalog query: ops denied
+  ---
+  duration_ms: 133.175928
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: coordinator denied
+ok 7 - Global exact get and catalog query: coordinator denied
+  ---
+  duration_ms: 81.933982
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: client denied
+ok 8 - Global exact get and catalog query: client denied
+  ---
+  duration_ms: 121.356886
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: shopper denied
+ok 9 - Global exact get and catalog query: shopper denied
+  ---
+  duration_ms: 64.684577
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: no-member denied
+ok 10 - Global exact get and catalog query: no-member denied
+  ---
+  duration_ms: 97.874546
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: inactive denied
+ok 11 - Global exact get and catalog query: inactive denied
+  ---
+  duration_ms: 123.028695
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: member-tenant-mismatch denied
+ok 12 - Global exact get and catalog query: member-tenant-mismatch denied
+  ---
+  duration_ms: 92.092385
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: member-role-mismatch denied
+ok 13 - Global exact get and catalog query: member-role-mismatch denied
+  ---
+  duration_ms: 87.197346
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: member-namespace-mismatch denied
+ok 14 - Global exact get and catalog query: member-namespace-mismatch denied
+  ---
+  duration_ms: 66.79013
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: claim-namespace-mismatch denied
+ok 15 - Global exact get and catalog query: claim-namespace-mismatch denied
+  ---
+  duration_ms: 54.52044
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: other-tenant denied
+ok 16 - Global exact get and catalog query: other-tenant denied
+  ---
+  duration_ms: 67.789158
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: other-tenant-list denied
+ok 17 - Global exact get and catalog query: other-tenant-list denied
+  ---
+  duration_ms: 52.319008
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: super-no-member denied
+ok 18 - Global exact get and catalog query: super-no-member denied
+  ---
+  duration_ms: 80.84333
+  type: 'test'
+  ...
+# Subtest: Global exact get and catalog query: super-other-tenant denied
+ok 19 - Global exact get and catalog query: super-other-tenant denied
+  ---
+  duration_ms: 50.995842
+  type: 'test'
+  ...
+# Subtest: Anonymous Global get and query denied
+ok 20 - Anonymous Global get and query denied
+  ---
+  duration_ms: 43.597842
+  type: 'test'
+  ...
+# Subtest: Preserve exact legacy and project reads: specific
+ok 21 - Preserve exact legacy and project reads: specific
+  ---
+  duration_ms: 99.124899
+  type: 'test'
+  ...
+# Subtest: Preserve current project catalog query: specific
+ok 22 - Preserve current project catalog query: specific
+  ---
+  duration_ms: 101.919276
+  type: 'test'
+  ...
+# Subtest: Preserve project+period+country/status/kind queries: specific
+ok 23 - Preserve project+period+country/status/kind queries: specific
+  ---
+  duration_ms: 142.038851
+  type: 'test'
+  ...
+# Subtest: Unfiltered collection never serves Global to specific
+ok 24 - Unfiltered collection never serves Global to specific
+  ---
+  duration_ms: 44.532256
+  type: 'test'
+  ...
+# Subtest: Preserve exact legacy and project reads: missing-entitlement
+ok 25 - Preserve exact legacy and project reads: missing-entitlement
+  ---
+  duration_ms: 109.114888
+  type: 'test'
+  ...
+# Subtest: Preserve current project catalog query: missing-entitlement
+ok 26 - Preserve current project catalog query: missing-entitlement
+  ---
+  duration_ms: 75.401491
+  type: 'test'
+  ...
+# Subtest: Preserve project+period+country/status/kind queries: missing-entitlement
+ok 27 - Preserve project+period+country/status/kind queries: missing-entitlement
+  ---
+  duration_ms: 88.620662
+  type: 'test'
+  ...
+# Subtest: Unfiltered collection never serves Global to missing-entitlement
+ok 28 - Unfiltered collection never serves Global to missing-entitlement
+  ---
+  duration_ms: 38.024003
+  type: 'test'
+  ...
+# Subtest: Preserve exact legacy and project reads: ops
+ok 29 - Preserve exact legacy and project reads: ops
+  ---
+  duration_ms: 92.469122
+  type: 'test'
+  ...
+# Subtest: Preserve current project catalog query: ops
+ok 30 - Preserve current project catalog query: ops
+  ---
+  duration_ms: 36.311369
+  type: 'test'
+  ...
+# Subtest: Preserve project+period+country/status/kind queries: ops
+ok 31 - Preserve project+period+country/status/kind queries: ops
+  ---
+  duration_ms: 85.019627
+  type: 'test'
+  ...
+# Subtest: Unfiltered collection never serves Global to ops
+ok 32 - Unfiltered collection never serves Global to ops
+  ---
+  duration_ms: 39.514298
+  type: 'test'
+  ...
+# Subtest: Preserve exact legacy and project reads: coordinator
+ok 33 - Preserve exact legacy and project reads: coordinator
+  ---
+  duration_ms: 67.051454
+  type: 'test'
+  ...
+# Subtest: Preserve current project catalog query: coordinator
+ok 34 - Preserve current project catalog query: coordinator
+  ---
+  duration_ms: 36.158204
+  type: 'test'
+  ...
+# Subtest: Preserve project+period+country/status/kind queries: coordinator
+ok 35 - Preserve project+period+country/status/kind queries: coordinator
+  ---
+  duration_ms: 89.424588
+  type: 'test'
+  ...
+# Subtest: Unfiltered collection never serves Global to coordinator
+ok 36 - Unfiltered collection never serves Global to coordinator
+  ---
+  duration_ms: 43.757884
+  type: 'test'
+  ...
+[2026-10-30T00:17:56.870Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f32 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L343, false for 'update' @ L187, false for 'update' @ L343
+[2026-10-30T00:17:56.896Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f33 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, false for 'update' @ L343
+[2026-10-30T00:17:56.905Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f34 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'delete' @ L187, false for 'delete' @ L343
+[2026-10-30T00:17:56.916Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f35 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L355, false for 'update' @ L187, false for 'update' @ L355
+[2026-10-30T00:17:56.924Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f36 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, false for 'update' @ L355
+[2026-10-30T00:17:56.931Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f37 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'delete' @ L187, false for 'delete' @ L355
+[2026-10-30T00:17:56.953Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f38 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L343, false for 'update' @ L187, false for 'update' @ L343
+[2026-10-30T00:17:56.962Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f39 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, false for 'update' @ L343
+[2026-10-30T00:17:56.971Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f3a error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'delete' @ L187, false for 'delete' @ L343
+[2026-10-30T00:17:56.981Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f3b error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L355, false for 'update' @ L187, false for 'update' @ L355
+[2026-10-30T00:17:56.997Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f3c error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, false for 'update' @ L355
+[2026-10-30T00:17:57.005Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f3d error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'delete' @ L187, false for 'delete' @ L355
+# Subtest: Client SDK Global writes stay denied even to exact complete Admin and Super
+ok 37 - Client SDK Global writes stay denied even to exact complete Admin and Super
+  ---
+  duration_ms: 169.474078
+  type: 'test'
+  ...
+# Subtest: Global audit values obey same entitlement: complete
+ok 38 - Global audit values obey same entitlement: complete
+  ---
+  duration_ms: 45.272392
+  type: 'test'
+  ...
+# Subtest: Preserve project audit and operational entity query: complete
+ok 39 - Preserve project audit and operational entity query: complete
+  ---
+  duration_ms: 41.401443
+  type: 'test'
+  ...
+# Subtest: Receipts containing Global entity/linkedAccount remain SDK-denied: complete
+ok 40 - Receipts containing Global entity/linkedAccount remain SDK-denied: complete
+  ---
+  duration_ms: 35.922673
+  type: 'test'
+  ...
+# Subtest: Global audit values obey same entitlement: super
+ok 41 - Global audit values obey same entitlement: super
+  ---
+  duration_ms: 49.91951
+  type: 'test'
+  ...
+# Subtest: Preserve project audit and operational entity query: super
+ok 42 - Preserve project audit and operational entity query: super
+  ---
+  duration_ms: 40.33802
+  type: 'test'
+  ...
+# Subtest: Receipts containing Global entity/linkedAccount remain SDK-denied: super
+ok 43 - Receipts containing Global entity/linkedAccount remain SDK-denied: super
+  ---
+  duration_ms: 26.225333
+  type: 'test'
+  ...
+# Subtest: Global audit values obey same entitlement: specific
+ok 44 - Global audit values obey same entitlement: specific
+  ---
+  duration_ms: 59.158367
+  type: 'test'
+  ...
+# Subtest: Preserve project audit and operational entity query: specific
+ok 45 - Preserve project audit and operational entity query: specific
+  ---
+  duration_ms: 57.503295
+  type: 'test'
+  ...
+# Subtest: Receipts containing Global entity/linkedAccount remain SDK-denied: specific
+ok 46 - Receipts containing Global entity/linkedAccount remain SDK-denied: specific
+  ---
+  duration_ms: 46.777576
+  type: 'test'
+  ...
+# Subtest: Global audit values obey same entitlement: missing-entitlement
+ok 47 - Global audit values obey same entitlement: missing-entitlement
+  ---
+  duration_ms: 48.178876
+  type: 'test'
+  ...
+# Subtest: Preserve project audit and operational entity query: missing-entitlement
+ok 48 - Preserve project audit and operational entity query: missing-entitlement
+  ---
+  duration_ms: 47.786756
+  type: 'test'
+  ...
+# Subtest: Receipts containing Global entity/linkedAccount remain SDK-denied: missing-entitlement
+ok 49 - Receipts containing Global entity/linkedAccount remain SDK-denied: missing-entitlement
+  ---
+  duration_ms: 28.702609
+  type: 'test'
+  ...
+# Subtest: Global audit values obey same entitlement: ops
+ok 50 - Global audit values obey same entitlement: ops
+  ---
+  duration_ms: 48.045289
+  type: 'test'
+  ...
+# Subtest: Preserve project audit and operational entity query: ops
+ok 51 - Preserve project audit and operational entity query: ops
+  ---
+  duration_ms: 45.094026
+  type: 'test'
+  ...
+# Subtest: Receipts containing Global entity/linkedAccount remain SDK-denied: ops
+ok 52 - Receipts containing Global entity/linkedAccount remain SDK-denied: ops
+  ---
+  duration_ms: 31.29496
+  type: 'test'
+  ...
+# Subtest: Global audit values obey same entitlement: coordinator
+ok 53 - Global audit values obey same entitlement: coordinator
+  ---
+  duration_ms: 61.440074
+  type: 'test'
+  ...
+# Subtest: Preserve project audit and operational entity query: coordinator
+ok 54 - Preserve project audit and operational entity query: coordinator
+  ---
+  duration_ms: 53.324085
+  type: 'test'
+  ...
+# Subtest: Receipts containing Global entity/linkedAccount remain SDK-denied: coordinator
+ok 55 - Receipts containing Global entity/linkedAccount remain SDK-denied: coordinator
+  ---
+  duration_ms: 33.697381
+  type: 'test'
+  ...
+[2026-10-30T00:17:57.865Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f50 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L317, false for 'update' @ L187, false for 'update' @ L319
+[2026-10-30T00:17:57.946Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f52 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L317, false for 'update' @ L187, false for 'update' @ L319
+[2026-10-30T00:17:57.979Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f54 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L317, false for 'update' @ L187, false for 'update' @ L319
+[2026-10-30T00:17:58.024Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f56 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L317, false for 'update' @ L187, false for 'update' @ L319
+# Subtest: Global finance audit creation is provider-only; legacy operational creation stays allowed
+ok 56 - Global finance audit creation is provider-only; legacy operational creation stays allowed
+  ---
+  duration_ms: 225.291683
+  type: 'test'
+  ...
+[2026-10-30T00:17:58.065Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f58 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:17:58.083Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f59 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:17:58.095Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f5a error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:17:58.106Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f5b error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:17:58.116Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f5c error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:17:58.128Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f5d error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:17:58.137Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f5e error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:17:58.145Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f5f error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'delete' @ L187, false for 'delete' @ L197
+[2026-10-30T00:17:58.155Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f60 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L197, false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'create' @ L187, false for 'create' @ L197
+# Subtest: Admin cannot mutate membership authority or delete/recreate: specific
+ok 57 - Admin cannot mutate membership authority or delete/recreate: specific
+  ---
+  duration_ms: 146.057147
+  type: 'test'
+  ...
+[2026-10-30T00:17:58.209Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f63 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:17:58.218Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f64 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:17:58.228Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f65 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:17:58.240Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f66 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:17:58.250Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f67 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:17:58.259Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f68 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:17:58.268Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f69 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'update' @ L187, false for 'update' @ L198
+[2026-10-30T00:17:58.278Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f6a error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'delete' @ L187, false for 'delete' @ L197
+[2026-10-30T00:17:58.290Z]  @firebase/firestore: Firestore (11.10.0): GrpcConnection RPC 'Write' stream 0x2de89f6b error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L187, false for 'create' @ L197, false for 'update' @ L187, evaluation error at L198:26 for 'update' @ L198, false for 'create' @ L187, false for 'create' @ L197
+# Subtest: Admin cannot mutate membership authority or delete/recreate: complete
+ok 58 - Admin cannot mutate membership authority or delete/recreate: complete
+  ---
+  duration_ms: 132.472785
+  type: 'test'
+  ...
+# Subtest: Existing Super user administration can create, change scope and delete synthetic member
+ok 59 - Existing Super user administration can create, change scope and delete synthetic member
+  ---
+  duration_ms: 84.460184
+  type: 'test'
+  ...
+# Subtest: Super provider Admin SDK write mechanism is unaffected by client Rules
+ok 60 - Super provider Admin SDK write mechanism is unaffected by client Rules
+  ---
+  duration_ms: 115.663397
+  type: 'test'
+  ...
+1..60
+# tests 60
+# suites 0
+# pass 60
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8770.49912

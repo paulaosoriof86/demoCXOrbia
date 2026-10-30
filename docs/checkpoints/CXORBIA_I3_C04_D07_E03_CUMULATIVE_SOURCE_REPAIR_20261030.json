@@ -1,0 +1,244 @@
+{
+  "schemaVersion": "cxorbia.i3.cumulative-source-repair.v1",
+  "id": "CXORBIA-I3-C04-D07-E03-SOURCE-20261030",
+  "asOf": "2026-10-30",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "decision": "LOCAL_SOURCE_AND_RULES_PASS_PENDING_CANONICAL_CI_AND_EXACT_DEV_E2E",
+  "production": false,
+  "terminalCertificationAllowed": false,
+  "fullTaskClosed": false,
+  "sourceSha": "512111715ad13722281426c7add724fc5e7d39c0",
+  "sourceTree": "c0f55f97b541bb62d3ec34c1af24a46dcd0c99a6",
+  "predecessorProductSourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+  "controlParentSha": "28e600332e86550880dc338ba7363643dc05c9ca",
+  "changedFiles": [
+    {
+      "path": "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+      "bytes": 60470,
+      "sha": "57aefc43bf0f1bf31fdeea4eb3e80119c9cd82ff",
+      "sha256": "79f4f18f6d684d58b97fa0c5295448afe5cf20dbd162001b015b95b6bd2852f4",
+      "type": "blob",
+      "mode": "100644"
+    },
+    {
+      "path": "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+      "bytes": 33611,
+      "sha": "d345acb084d63c7f74847eef5be03c05cd70d458",
+      "sha256": "a6a779f6f985361580530cd136d77b543675934f553d7b39b273104b99ba6ae3",
+      "type": "blob",
+      "mode": "100644"
+    },
+    {
+      "path": "app/core/backend-finance-benefits.js",
+      "bytes": 8002,
+      "sha": "66856002901be88aefb38acc0aaab635a8872c2b",
+      "sha256": "2fe664c9ba1c65bd712cf55875cb77a2ff3f9623e49b47c5d71158dfded7b13d",
+      "type": "blob",
+      "mode": "100644"
+    },
+    {
+      "path": "app/modules/finanzas.js",
+      "bytes": 163369,
+      "sha": "f1545f0439863090e04b4729e8483616f7d209cf",
+      "sha256": "3f98f30564a18fbfa924d723d45e617a169e887c0a7136f44d85216d99dcf510",
+      "type": "blob",
+      "mode": "100644"
+    },
+    {
+      "path": "firestore.rules",
+      "bytes": 17459,
+      "sha": "e2328170214ad08b8de2034ddfbc0ad53b487f5e",
+      "sha256": "d9acd083629f022536526bf5f6db366709c7f5090c3a52fd3abe2edd6eb5d725",
+      "type": "blob",
+      "mode": "100644"
+    },
+    {
+      "path": "app/core/backend-resources.js",
+      "bytes": 22698,
+      "sha": "f12a2325948bf25133b5f7e5cff68061e0521d60",
+      "sha256": "ddba612c28743759aaa1ef46239181faafad7b665cbc5f46c8d8aa8299762a19",
+      "type": "blob",
+      "mode": "100644"
+    },
+    {
+      "path": "app/modules/cert.js",
+      "bytes": 59916,
+      "sha": "cc30277c238ec34919881d9cbc527651eb394d89",
+      "sha256": "5d5185fead5769b321d5d0f3b6a784bc43b5869cfb96bed6a6e4ce7f51d6484b",
+      "type": "blob",
+      "mode": "100644"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
+      "bytes": 87528,
+      "sha": "538f41d46351fb488285a3303c2c60070609e537",
+      "sha256": "75ccafd7d7291dcc84fd285c92c026a049fdc861df1ee4d015b445f26692da8e",
+      "type": "blob",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-d04-versioned-bank-review.test.mjs",
+      "bytes": 23071,
+      "sha": "fb71168022099c9e847d7e2f4c60ed702b89d47c",
+      "sha256": "a968bd1c586eb9363ead5d9f709be8c637b8d4141510b91424cf11c9a6a60c2f",
+      "type": "blob",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs",
+      "bytes": 16762,
+      "sha": "99c815f88309e80dd12d0bd5f5090afaf4705586",
+      "sha256": "544338da44057c71de3cb39c8f235d6cc24d96e520ebd4a017d5d82742f0ca1b",
+      "type": "blob",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-c04-global-finance-rules.test.mjs",
+      "bytes": 12647,
+      "sha": "aa8c495fd4afb799a9ef0622a7919d4f8d363026",
+      "sha256": "07b3863ebd2b0197f69285998242b4a1ccbc569a799142e421f9e4376b870857",
+      "type": "blob",
+      "mode": "100644"
+    }
+  ],
+  "productFileCount": 7,
+  "qaFileCount": 4,
+  "repairs": [
+    {
+      "tasks": [
+        "C04",
+        "C05"
+      ],
+      "classification": "P0_PROVEN",
+      "scope": "Durable tenant Global finance using the three existing financial commands, explicit null project and exact month, GTQ/HNL stored per record without conversion. Exact server membership and TYA_COMPLETE for Admin; token scope, active tenant membership, server ACK and exact server readback required. Project financial behavior preserved. No legacy local records imported."
+    },
+    {
+      "tasks": [
+        "C04",
+        "A08"
+      ],
+      "classification": "P0_PROVEN",
+      "scope": "Server-authorized reads of global finance and prevention of limited Admin self-grant through membership update or delete/recreate. Membership authority stays with existing Super provider. Financial client writes and commandReceipt reads remain denied.",
+      "baseEmulator": {
+        "tests": 60,
+        "pass": 36,
+        "fail": 24
+      },
+      "proposalEmulator": {
+        "tests": 60,
+        "pass": 60,
+        "fail": 0
+      },
+      "selfElevationReproducedOnBase": true,
+      "actualMembershipWrites": 0
+    },
+    {
+      "tasks": [
+        "D07"
+      ],
+      "classification": "P0_PROVEN",
+      "scope": "Actual resource reader and router reproducibly remount forever on identical snapshots. Emit only when stable scoped resource state changes, isolate by UID, retain every remote query and real update/error/recovery events.",
+      "localReproduction": {
+        "identicalResolvedSnapshots": 6,
+        "queries": 7,
+        "renders": 7,
+        "detachedHosts": 6,
+        "pendingQuery": 1
+      },
+      "relationToRun1964": "Consistent source defect; exact live failure stage not captured, so not asserted as exclusive cause."
+    },
+    {
+      "tasks": [
+        "D04",
+        "E03"
+      ],
+      "classification": "P0_PROVEN",
+      "scope": "Only latest certification mount may attach deferred UI. RUN1962 screenshots show duplicate controls; two real delayed callback tests fail on old source and pass on successor. D04 ACK/CAS/review persistence untouched."
+    }
+  ],
+  "localQa": {
+    "financeProvider": {
+      "tests": 86,
+      "pass": 86,
+      "fail": 0
+    },
+    "rulesEmulator": {
+      "tests": 60,
+      "pass": 60,
+      "fail": 0,
+      "emulator": "1.19.8",
+      "rulesTesting": "4.0.1",
+      "firebase": "11.10.0",
+      "syntheticOnly": true
+    },
+    "certificationAndResources": {
+      "tests": 71,
+      "pass": 71,
+      "fail": 0,
+      "includesOriginalD04Tests": 38
+    },
+    "evidence": [
+      {
+        "path": "docs/checkpoints/evidence/CXORBIA_I3_C04_GLOBAL_PROVIDER_LOCAL_20261030.tap",
+        "gitBlob": "3a16523838b351c9aa05ac75596acfa0d7f2e4b7",
+        "sha256": "c52925f1b6c71aab3ee8a5518dd4a68c9eb6e9f663bd26f014fc9515d9fde268"
+      },
+      {
+        "path": "docs/checkpoints/evidence/CXORBIA_I3_C04_GLOBAL_RULES_LOCAL_20261030.tap",
+        "gitBlob": "4af62349387a126d5e8886559f9b3ea583fb9c7f",
+        "sha256": "e3b6285b8d10814283f04d18ba3335c7bd9b3b231ec802fcdb2ed3aa4db66e99"
+      },
+      {
+        "path": "docs/checkpoints/evidence/CXORBIA_I3_D04_D07_COMPOSED_LOCAL_20261030.tap",
+        "gitBlob": "1fe887dc9553f2ee699a2e75c78bf761071a5f8e",
+        "sha256": "988ac9e2d25099f6d01f45721d74a6aa7c02c7bb573574a3a00d2204699f08dc"
+      }
+    ],
+    "scope": "Source fixtures and local emulator only; no live application commands or real identity writes."
+  },
+  "inheritedProof": {
+    "run1962": {
+      "path": "docs/checkpoints/CXORBIA_I3_C02_D04_SCOPED_PASS_RUN1962_20261029.json",
+      "gitBlob": "80cbc5a2a1c09402227ee3b0ac179d2cc707727c",
+      "state": "PRESERVED_AT_EXACT_PRIOR_SOURCE_NOT_AUTO_PROMOTED_TO_SUCCESSOR"
+    },
+    "run1964": {
+      "path": "docs/checkpoints/CXORBIA_I3_D07_READONLY_RUN1964_ADJUDICATION_20261030.json",
+      "gitBlob": "f548cb374913ce31636f159a9ac5d26cea4d5162",
+      "decision": "HOLD_D07_UI_OPEN_NOT_PROVEN_AFTER_EXACT_TWO_ROLE_BINDING"
+    }
+  },
+  "runtimeComposition": {
+    "currentRuntimeSource": "a2be5a77a4c0008ec374c17f42d5da27070e1ed6",
+    "predecessorRuntimeCodeByteParity": true,
+    "predecessorBackendDifference": "Only four test files; all backend runtime code matched S946 before this finance provider repair.",
+    "existingRuntimeMaterializerRequired": true,
+    "hostingOnlyInsufficient": true,
+    "newMaterializer": false,
+    "workflowUnchanged": true
+  },
+  "outstanding": [
+    "Canonical source CI for this exact source/tree",
+    "Existing DEV runtime + Rules + Hosting materialization and exact readback",
+    "One bounded D07 two-role PDF proof with action-stage diagnostics",
+    "C04/C05 four synthetic UI commands, exact replay checks, independent second session and preconditioned cleanup",
+    "D05 server lifecycle, D06, remaining frozen HR/visual/task clauses, human acceptance, Gate20/Gate21 and exact I4 authorization"
+  ],
+  "noEffects": {
+    "hrWrites": 0,
+    "authWrites": 0,
+    "financeWrites": 0,
+    "cloudBuilds": 0,
+    "deploys": 0,
+    "productionWrites": 0,
+    "Q205Replay": false,
+    "Q7300Recreation": false,
+    "verifiedIdentityGroupsPreserved": 29
+  },
+  "canonicalCi": "PENDING",
+  "devMaterialization": "PENDING",
+  "liveE2e": "PENDING",
+  "humanAcceptance": "PENDING",
+  "gate20": "HOLD",
+  "gate21": "HOLD"
+}

@@ -1,0 +1,396 @@
+{
+  "decision": "HOLD_D07_REAL_PDF_READ_ONLY_CLAUSE",
+  "version": "cxorbia.i3.d07.admin-shopper-readonly.v1",
+  "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+  "sourceTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
+  "materializationRunId": 40973709501,
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/bd065678b1af6c14",
+  "runtimeRevision": "cxorbia-live-hr-dev-00330-fim",
+  "hrRevision": "6fd4beb82cc85e61c26f54992fc60fd28d49f9b1c832654dba6fd3204571bcbf",
+  "scope": {
+    "tenant": "tya",
+    "project": "cinepolis",
+    "period": "cinepolis-2026-10",
+    "taskIds": [
+      "D07"
+    ],
+    "roles": [
+      "admin",
+      "shopper"
+    ],
+    "testRunOnly": true
+  },
+  "d04": {
+    "executed": false,
+    "fixtureSeeds": 0,
+    "contentEdits": 0,
+    "fixtureDeletes": 0
+  },
+  "e04": {
+    "executed": false
+  },
+  "cleanup": {
+    "resourceCleanupPerformed": false,
+    "browserClosed": true
+  },
+  "writes": {
+    "auth": 0,
+    "hr": 0,
+    "resource": 0,
+    "financeCommands": 0,
+    "production": 0
+  },
+  "production": false,
+  "preview": {
+    "origin": "https://cxorbia-backend-dev--i3-recovery-1029-40973709501-011nk50h.web.app",
+    "runId": 40973709501,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/bd065678b1af6c14",
+    "runtimeRevision": "cxorbia-live-hr-dev-00330-fim",
+    "runtimeDigest": "sha256:bba5ebbf19c203954ec0be6c2c3ef01a057e7ce3f98fb7e5eeac2d889bd0a500"
+  },
+  "packageBlob": "daa51dcb2bde4e1209053512b7f5e028b5781480",
+  "controlSha": "28e600332e86550880dc338ba7363643dc05c9ca",
+  "deploys": 0,
+  "i3": "HOLD",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false,
+  "mode": "R6D07_READ_ONLY",
+  "c02": {
+    "executed": false,
+    "commandCount": 0
+  },
+  "d07": {
+    "decision": "HOLD_D07_REAL_PDF_READ_ONLY_CLAUSE",
+    "fullTaskClosed": false,
+    "sourceProof": {
+      "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+      "sourceTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
+      "previewRunId": 40973709501,
+      "previewOrigin": "https://cxorbia-backend-dev--i3-recovery-1029-40973709501-011nk50h.web.app",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/bd065678b1af6c14",
+      "servedOwnerBlobs": {
+        "app/adapters/tya-financial-canonical-source-safe-adapter.js": "9d2d1a9a541c74a6234353a44f0bfaa43bc1fb79",
+        "app/core/backend-browser-auth.js": "1274e67e69a73fd619d81b0d01687e72894901e6",
+        "app/core/backend-certifications.js": "b1558c74b9e1780e9e028c8d1e7aef692c7d47d6",
+        "app/core/backend-cxdata-finance-read.js": "2a7cd3ffbd2bf0999b149b3095218b7d3d09276b",
+        "app/core/backend-finance-benefits.js": "d1b16d783d29aba3620c909546a345f739f931a5",
+        "app/core/backend-protected-dev-mode.js": "3924d7d02ea21f589e6be6d451dff740c884300a",
+        "app/core/backend-protected-dev-session-continuity.js": "00f2b3d1e92ad6154853282a8881163cf9e6ca5d",
+        "app/core/backend-resources.js": "d3073758c85f0184cdd38fd9f88882ecc212c30c",
+        "app/index-backend-dev.html": "eec56cf5e4afc7624c1a6f73841bb28d18617280",
+        "app/modules/cert.js": "c6552631231639c4aadcf96b8db6e7e265465426",
+        "app/modules/documentos.js": "db994135c9e38854000b13606e7fdd3872ab7e1b",
+        "app/modules/finanzas.js": "eb5af6344109bbf4908bae098a668f924c43b57e"
+      }
+    },
+    "resource": {
+      "resourceId": "res-1olqhkg",
+      "version": 1,
+      "storagePathSha256": "7dd0565408e08a01d316b654cb0ffe9167327d3ed88ab77f16392c7bb45fa435",
+      "approvedSha256": "3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454",
+      "approvedSize": 162335,
+      "bothRoleCatalogsVisible": true,
+      "exactMetadataBound": true,
+      "pathDiagnostic": {
+        "stage": "catalog-admin",
+        "version": 1,
+        "size": null,
+        "role": "admin",
+        "resourceId": "res-1olqhkg",
+        "pathSha256": "7dd0565408e08a01d316b654cb0ffe9167327d3ed88ab77f16392c7bb45fa435",
+        "pathLength": 102,
+        "segmentCount": 9,
+        "scope": {
+          "tenantId": "tya",
+          "projectId": "cinepolis",
+          "periodId": "cinepolis-2026-10"
+        },
+        "parentScopeMatches": true,
+        "safeSingleFolderAndPdfBasename": true,
+        "storageFolderId": "res-18gkwuj",
+        "storageFolderEqualsDocumentId": false,
+        "basenameSha256": "2798595da169368e610a7fdab159519467f1237ffe313d6484a0ad75ae433cf8",
+        "basenameLength": 23,
+        "approvedBasenameMatches": true
+      },
+      "metadataDiagnostic": {
+        "stage": "exact-sdk-document",
+        "resourceId": "res-1olqhkg",
+        "version": 1,
+        "size": null,
+        "scope": {
+          "tenantId": "tya",
+          "projectId": "cinepolis",
+          "periodId": "cinepolis-2026-10"
+        },
+        "checks": {
+          "exists": true,
+          "documentIdMatches": true,
+          "storedIdMatches": true,
+          "publishedPdf": true,
+          "scopeMatches": true,
+          "exactStoragePathMatches": true,
+          "versionMatches": true,
+          "approvedMetadataNameMatches": true,
+          "shopperPublished": true,
+          "approvedSizeMatchesIfDeclared": true
+        },
+        "storagePathSha256": "7dd0565408e08a01d316b654cb0ffe9167327d3ed88ab77f16392c7bb45fa435",
+        "storageFolderEqualsDocumentId": false,
+        "updateTime": {
+          "seconds": 1790902694,
+          "nanoseconds": 358207000
+        }
+      },
+      "bothRoleOpenButtonsVisible": true
+    },
+    "admin": {
+      "role": "admin",
+      "decision": "HOLD",
+      "openClicks": 1,
+      "binaryGetCount": 0,
+      "blockedUnexpectedRequests": 0,
+      "downloadCount": 0,
+      "rendered": false,
+      "writesObserved": false,
+      "blockedWriteRequests": 0,
+      "httpStatus": null,
+      "networkError": null,
+      "diagnostic": null,
+      "error": "D07_BOUNDED_UI_OR_PROVIDER_FAILURE"
+    },
+    "shopper": {
+      "role": "shopper",
+      "decision": "HOLD",
+      "openClicks": 1,
+      "binaryGetCount": 0,
+      "blockedUnexpectedRequests": 0,
+      "downloadCount": 0,
+      "rendered": false,
+      "writesObserved": false,
+      "blockedWriteRequests": 0,
+      "httpStatus": null,
+      "networkError": null,
+      "diagnostic": null,
+      "error": "D07_BOUNDED_UI_OR_PROVIDER_FAILURE"
+    },
+    "metadataAndUpdateTimeUnchanged": true,
+    "scope": "EXACT_APPROVED_PROJECT_PERIOD_PDF_READ_RENDER_DOWNLOAD",
+    "testScopeOnly": true,
+    "resourceWrites": null,
+    "observedBlockedWriteRequests": 0,
+    "authAccountMutationsIssuedByHelper": 0,
+    "hrCommandsIssuedByHelper": 0,
+    "financeCommandsIssuedByHelper": 0,
+    "production": false,
+    "remainingFrozenClauses": [
+      "PDF alta/metadatos/version y no binario huerfano",
+      "documento ajeno denegado",
+      "vinculo a visita y revision",
+      "retiro seguro"
+    ],
+    "existingTxtCoveragePreserved": true,
+    "miDiaEligibilityProven": false
+  },
+  "bindingDiagnostics": [
+    {
+      "stage": "catalog-admin",
+      "version": 1,
+      "size": null,
+      "role": "admin",
+      "resourceId": "res-1olqhkg",
+      "pathSha256": "7dd0565408e08a01d316b654cb0ffe9167327d3ed88ab77f16392c7bb45fa435",
+      "pathLength": 102,
+      "segmentCount": 9,
+      "scope": {
+        "tenantId": "tya",
+        "projectId": "cinepolis",
+        "periodId": "cinepolis-2026-10"
+      },
+      "parentScopeMatches": true,
+      "safeSingleFolderAndPdfBasename": true,
+      "storageFolderId": "res-18gkwuj",
+      "storageFolderEqualsDocumentId": false,
+      "basenameSha256": "2798595da169368e610a7fdab159519467f1237ffe313d6484a0ad75ae433cf8",
+      "basenameLength": 23,
+      "approvedBasenameMatches": true
+    },
+    {
+      "stage": "catalog-shopper",
+      "version": 1,
+      "size": null,
+      "role": "shopper",
+      "resourceId": "res-1olqhkg",
+      "pathSha256": "7dd0565408e08a01d316b654cb0ffe9167327d3ed88ab77f16392c7bb45fa435",
+      "pathLength": 102,
+      "segmentCount": 9,
+      "scope": {
+        "tenantId": "tya",
+        "projectId": "cinepolis",
+        "periodId": "cinepolis-2026-10"
+      },
+      "parentScopeMatches": true,
+      "safeSingleFolderAndPdfBasename": true,
+      "storageFolderId": "res-18gkwuj",
+      "storageFolderEqualsDocumentId": false,
+      "basenameSha256": "2798595da169368e610a7fdab159519467f1237ffe313d6484a0ad75ae433cf8",
+      "basenameLength": 23,
+      "approvedBasenameMatches": true
+    },
+    {
+      "stage": "exact-sdk-document",
+      "resourceId": "res-1olqhkg",
+      "version": 1,
+      "size": null,
+      "scope": {
+        "tenantId": "tya",
+        "projectId": "cinepolis",
+        "periodId": "cinepolis-2026-10"
+      },
+      "checks": {
+        "exists": true,
+        "documentIdMatches": true,
+        "storedIdMatches": true,
+        "publishedPdf": true,
+        "scopeMatches": true,
+        "exactStoragePathMatches": true,
+        "versionMatches": true,
+        "approvedMetadataNameMatches": true,
+        "shopperPublished": true,
+        "approvedSizeMatchesIfDeclared": true
+      },
+      "storagePathSha256": "7dd0565408e08a01d316b654cb0ffe9167327d3ed88ab77f16392c7bb45fa435",
+      "storageFolderEqualsDocumentId": false,
+      "updateTime": {
+        "seconds": 1790902694,
+        "nanoseconds": 358207000
+      }
+    }
+  ],
+  "contextGuardsPass": true,
+  "actor": {
+    "admin": {
+      "uidFingerprint": "f23a676ce531cbab91ccd193011cf672652f4cfe31bfbf731a6ab5363af7bc66",
+      "exactConfiguredUidVerified": true
+    },
+    "shopper": {
+      "uidFingerprint": "a6e3ff21498bd79cbc4078ec47b7b5760a6534e43803614e997bb2294d77ee98",
+      "shopperId": "TYA_GT_393371F88D10F7A8",
+      "existingIdentityVerified": true
+    },
+    "accountCreated": false,
+    "claimsChanged": false
+  },
+  "hrRevisionLive": "6fd4beb82cc85e61c26f54992fc60fd28d49f9b1c832654dba6fd3204571bcbf",
+  "sessions": {
+    "admin": {
+      "newBrowserContext": true,
+      "authNullBeforeSignIn": true,
+      "role": "admin",
+      "tenantId": "tya",
+      "authNamespace": "staff",
+      "uidFingerprint": "f23a676ce531cbab91ccd193011cf672652f4cfe31bfbf731a6ab5363af7bc66",
+      "shopperId": null,
+      "applicationAuthAndHrGatePassed": true,
+      "hrRevision": "6fd4beb82cc85e61c26f54992fc60fd28d49f9b1c832654dba6fd3204571bcbf",
+      "mechanism": "existing_ci_custom_token_in_memory",
+      "ordinaryPasswordLoginProven": false,
+      "tokenLogged": false
+    },
+    "shopper": {
+      "newBrowserContext": true,
+      "authNullBeforeSignIn": true,
+      "role": "shopper",
+      "tenantId": "tya",
+      "authNamespace": "shopper",
+      "uidFingerprint": "a6e3ff21498bd79cbc4078ec47b7b5760a6534e43803614e997bb2294d77ee98",
+      "shopperId": "TYA_GT_393371F88D10F7A8",
+      "applicationAuthAndHrGatePassed": true,
+      "hrRevision": "6fd4beb82cc85e61c26f54992fc60fd28d49f9b1c832654dba6fd3204571bcbf",
+      "mechanism": "existing_ci_custom_token_in_memory",
+      "ordinaryPasswordLoginProven": false,
+      "tokenLogged": false
+    },
+    "distinctContexts": true
+  },
+  "binding": {
+    "resourceId": "res-1olqhkg",
+    "version": 1,
+    "storagePathSha256": "7dd0565408e08a01d316b654cb0ffe9167327d3ed88ab77f16392c7bb45fa435",
+    "approvedSha256": "3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454",
+    "approvedSize": 162335,
+    "bothRoleCatalogsVisible": true,
+    "exactMetadataBound": true,
+    "pathDiagnostic": {
+      "stage": "catalog-admin",
+      "version": 1,
+      "size": null,
+      "role": "admin",
+      "resourceId": "res-1olqhkg",
+      "pathSha256": "7dd0565408e08a01d316b654cb0ffe9167327d3ed88ab77f16392c7bb45fa435",
+      "pathLength": 102,
+      "segmentCount": 9,
+      "scope": {
+        "tenantId": "tya",
+        "projectId": "cinepolis",
+        "periodId": "cinepolis-2026-10"
+      },
+      "parentScopeMatches": true,
+      "safeSingleFolderAndPdfBasename": true,
+      "storageFolderId": "res-18gkwuj",
+      "storageFolderEqualsDocumentId": false,
+      "basenameSha256": "2798595da169368e610a7fdab159519467f1237ffe313d6484a0ad75ae433cf8",
+      "basenameLength": 23,
+      "approvedBasenameMatches": true
+    },
+    "metadataDiagnostic": {
+      "stage": "exact-sdk-document",
+      "resourceId": "res-1olqhkg",
+      "version": 1,
+      "size": null,
+      "scope": {
+        "tenantId": "tya",
+        "projectId": "cinepolis",
+        "periodId": "cinepolis-2026-10"
+      },
+      "checks": {
+        "exists": true,
+        "documentIdMatches": true,
+        "storedIdMatches": true,
+        "publishedPdf": true,
+        "scopeMatches": true,
+        "exactStoragePathMatches": true,
+        "versionMatches": true,
+        "approvedMetadataNameMatches": true,
+        "shopperPublished": true,
+        "approvedSizeMatchesIfDeclared": true
+      },
+      "storagePathSha256": "7dd0565408e08a01d316b654cb0ffe9167327d3ed88ab77f16392c7bb45fa435",
+      "storageFolderEqualsDocumentId": false,
+      "updateTime": {
+        "seconds": 1790902694,
+        "nanoseconds": 358207000
+      }
+    },
+    "bothRoleOpenButtonsVisible": true
+  },
+  "contextGuards": [
+    {
+      "role": "admin",
+      "installedBeforeNavigation": true,
+      "bindingSet": true,
+      "blockedWriteRequests": 0,
+      "blockedUnexpectedStorageReads": 0,
+      "storageGetsOutsideRoleGuard": 0
+    },
+    {
+      "role": "shopper",
+      "installedBeforeNavigation": true,
+      "bindingSet": true,
+      "blockedWriteRequests": 0,
+      "blockedUnexpectedStorageReads": 0,
+      "storageGetsOutsideRoleGuard": 0
+    }
+  ]
+}

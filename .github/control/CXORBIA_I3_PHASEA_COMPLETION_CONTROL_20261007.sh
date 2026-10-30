@@ -183,6 +183,10 @@ node --test tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs |
   node --test tools/qa/cxorbia-i3-d02-document-extraction-source.test.mjs | tee /tmp/i3-d02-document-extraction-source-test.log
   node --test tools/qa/cxorbia-i3-d03-ai-generation-source.test.mjs | tee /tmp/i3-d03-ai-generation-source-test.log
   node --test tools/qa/cxorbia-i3-d04-versioned-bank-review.test.mjs tools/qa/cxorbia-i3-e04-benchmark-source.test.mjs | tee /tmp/i3-d04-e04-parallel-source-proof.log
+  # C04/C05: durable Global scope, authoritative membership, ACK/readback and currency isolation.
+  node --test backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs | tee /tmp/i3-c04-global-finance-source-proof.log
+  # D07: identical snapshots must not remount the viewer; retain authenticated bytes and period isolation.
+  node --test tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs tools/qa/cxorbia-i3-d07-authenticated-pdf-resource.test.mjs tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs | tee /tmp/i3-d07-resource-stability-source-proof.log
   node --test tools/qa/cxorbia-i3-admin-client-readonly-preview.test.mjs | tee /tmp/i3-admin-client-preview-source-proof.log
   node --test backend/runtime/hr-live-service/test/cxorbia-i3-d03-document-source-metadata.test.mjs | tee /tmp/i3-d03-document-source-metadata.log
   node --test backend/runtime/hr-live-service/test/cxorbia-vrm261-264-source-contract.test.mjs | tee /tmp/i3-vrm261-264-source-test.log
@@ -191,7 +195,7 @@ node --test tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs |
   npm install --no-save --ignore-scripts --package-lock=false firebase@12.4.0 @firebase/rules-unit-testing@5.0.2 firebase-tools@latest
   if [ -n "${JAVA_HOME_21_X64:-}" ]; then export JAVA_HOME="$JAVA_HOME_21_X64"; export PATH="$JAVA_HOME/bin:$PATH"; fi
   node -e "require('fs').writeFileSync('firebase.i3-b7-emulator.json', JSON.stringify({firestore:{rules:'firestore.rules'},emulators:{firestore:{port:8080}}}))"
-  ./node_modules/.bin/firebase emulators:exec --config firebase.i3-b7-emulator.json --project demo-cxorbia-b7-ruleproof --only firestore "node --test tools/qa/cxorbia-i3-b7-exact-notification-firestore-rules.test.mjs" | tee /tmp/i3-b7-emulator-proof.log
+  ./node_modules/.bin/firebase emulators:exec --config firebase.i3-b7-emulator.json --project demo-cxorbia-b7-ruleproof --only firestore "node --test tools/qa/cxorbia-i3-b7-exact-notification-firestore-rules.test.mjs tools/qa/cxorbia-i3-c04-global-finance-rules.test.mjs" | tee /tmp/i3-b7-emulator-proof.log
   node --test backend/runtime/hr-live-service/test/cxorbia-vrm268-269-source-contract.test.mjs | tee /tmp/i3-vrm268-269-source-test.log
   node --test backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs | tee /tmp/i3-b1-oct07-source-test.log
   node --test backend/runtime/hr-live-service/test/cxorbia-i3-oct08-b1-b3-source.test.mjs | tee /tmp/i3-oct08-b1-b3-source-test.log
@@ -366,4 +370,3 @@ proof)
   ;;
 *) exit 2;;
 esac
-

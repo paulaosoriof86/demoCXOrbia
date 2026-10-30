@@ -1,0 +1,438 @@
+TAP version 13
+# Subtest: D04 reviews fifteen questions with version guard, source provenance and durable readback
+ok 1 - D04 reviews fifteen questions with version guard, source provenance and durable readback
+  ---
+  duration_ms: 17.40401
+  type: 'test'
+  ...
+# Subtest: D04 rejects invalid source, same-author maker-checker, missing version and empty edits
+ok 2 - D04 rejects invalid source, same-author maker-checker, missing version and empty edits
+  ---
+  duration_ms: 1.940699
+  type: 'test'
+  ...
+# Subtest: D04 role gate and complete question validation fail closed
+ok 3 - D04 role gate and complete question validation fail closed
+  ---
+  duration_ms: 1.395738
+  type: 'test'
+  ...
+# Subtest: D04 modal edit button, diff preview and CAS-backed save exist without auto-publication
+ok 4 - D04 modal edit button, diff preview and CAS-backed save exist without auto-publication
+  ---
+  duration_ms: 0.448942
+  type: 'test'
+  ...
+# Subtest: D04 name-only review keeps bank identity and question content, with versioned durable metadata ACK
+ok 5 - D04 name-only review keeps bank identity and question content, with versioned durable metadata ACK
+  ---
+  duration_ms: 7.059444
+  type: 'test'
+  ...
+# Subtest: D04 rejects blank, unsafe and overly long names without writing provider
+ok 6 - D04 rejects blank, unsafe and overly long names without writing provider
+  ---
+  duration_ms: 1.567945
+  type: 'test'
+  ...
+# Subtest: D04 generation and pending-review both expose editable names with full ACK readback
+ok 7 - D04 generation and pending-review both expose editable names with full ACK readback
+  ---
+  duration_ms: 0.258654
+  type: 'test'
+  ...
+# Subtest: D04 exact server document confirms edit while presentation cache remains old
+ok 8 - D04 exact server document confirms edit while presentation cache remains old
+  ---
+  duration_ms: 8.605265
+  type: 'test'
+  ...
+# Subtest: D04 accepts reordered map keys at every depth without changing arrays
+ok 9 - D04 accepts reordered map keys at every depth without changing arrays
+  ---
+  duration_ms: 3.793472
+  type: 'test'
+  ...
+# Subtest: D04 rejects incorrect exact document even when presentation cache appears correct
+    # Subtest: content revision
+    ok 1 - content revision
+      ---
+      duration_ms: 3.489557
+      type: 'test'
+      ...
+    # Subtest: publication state
+    ok 2 - publication state
+      ---
+      duration_ms: 5.610254
+      type: 'test'
+      ...
+    # Subtest: question value
+    ok 3 - question value
+      ---
+      duration_ms: 3.524492
+      type: 'test'
+      ...
+    # Subtest: bank name
+    ok 4 - bank name
+      ---
+      duration_ms: 2.838205
+      type: 'test'
+      ...
+    # Subtest: metadata name
+    ok 5 - metadata name
+      ---
+      duration_ms: 3.895516
+      type: 'test'
+      ...
+    # Subtest: option order
+    ok 6 - option order
+      ---
+      duration_ms: 3.647358
+      type: 'test'
+      ...
+    # Subtest: question order
+    ok 7 - question order
+      ---
+      duration_ms: 2.964151
+      type: 'test'
+      ...
+    # Subtest: missing question field
+    ok 8 - missing question field
+      ---
+      duration_ms: 3.8941
+      type: 'test'
+      ...
+    # Subtest: additional question field
+    ok 9 - additional question field
+      ---
+      duration_ms: 4.519674
+      type: 'test'
+      ...
+    # Subtest: question field type
+    ok 10 - question field type
+      ---
+      duration_ms: 3.080219
+      type: 'test'
+      ...
+    1..10
+ok 10 - D04 rejects incorrect exact document even when presentation cache appears correct
+  ---
+  duration_ms: 39.814497
+  type: 'test'
+  ...
+# Subtest: D04 rejects missing, cached, pending or out-of-scope exact reads after one commit
+    # Subtest: missing document
+    ok 1 - missing document
+      ---
+      duration_ms: 3.43121
+      type: 'test'
+      ...
+    # Subtest: cached snapshot
+    ok 2 - cached snapshot
+      ---
+      duration_ms: 2.59504
+      type: 'test'
+      ...
+    # Subtest: pending writes
+    ok 3 - pending writes
+      ---
+      duration_ms: 2.297005
+      type: 'test'
+      ...
+    # Subtest: unconfirmed metadata
+    ok 4 - unconfirmed metadata
+      ---
+      duration_ms: 3.033344
+      type: 'test'
+      ...
+    # Subtest: wrong snapshot id
+    ok 5 - wrong snapshot id
+      ---
+      duration_ms: 2.425235
+      type: 'test'
+      ...
+    # Subtest: wrong id
+    ok 6 - wrong id
+      ---
+      duration_ms: 2.101269
+      type: 'test'
+      ...
+    # Subtest: wrong tenantId
+    ok 7 - wrong tenantId
+      ---
+      duration_ms: 3.134565
+      type: 'test'
+      ...
+    # Subtest: wrong projectId
+    ok 8 - wrong projectId
+      ---
+      duration_ms: 4.428255
+      type: 'test'
+      ...
+    # Subtest: wrong periodId
+    ok 9 - wrong periodId
+      ---
+      duration_ms: 4.01237
+      type: 'test'
+      ...
+    # Subtest: wrong status
+    ok 10 - wrong status
+      ---
+      duration_ms: 13.010058
+      type: 'test'
+      ...
+    # Subtest: later version
+    ok 11 - later version
+      ---
+      duration_ms: 2.289951
+      type: 'test'
+      ...
+    # Subtest: other operation
+    ok 12 - other operation
+      ---
+      duration_ms: 2.226815
+      type: 'test'
+      ...
+    1..12
+ok 11 - D04 rejects missing, cached, pending or out-of-scope exact reads after one commit
+  ---
+  duration_ms: 47.408785
+  type: 'test'
+  ...
+# Subtest: D04 server-read error does not fall back to payload/cache or repeat the commit
+ok 12 - D04 server-read error does not fall back to payload/cache or repeat the commit
+  ---
+  duration_ms: 2.664156
+  type: 'test'
+  ...
+# Subtest: D04 preserves project guard when active context changes during exact readback
+ok 13 - D04 preserves project guard when active context changes during exact readback
+  ---
+  duration_ms: 2.16745
+  type: 'test'
+  ...
+# Subtest: D04 does not accept ACK payload or cache without explicit confirmed server readback
+ok 14 - D04 does not accept ACK payload or cache without explicit confirmed server readback
+  ---
+  duration_ms: 1.855626
+  type: 'test'
+  ...
+# Subtest: D04 map comparison does not equate opaque objects or sparse arrays to valid values
+ok 15 - D04 map comparison does not equate opaque objects or sparse arrays to valid values
+  ---
+  duration_ms: 0.961877
+  type: 'test'
+  ...
+# Subtest: Resource writes without opt-in keep the existing flow and do not add an exact server read
+ok 16 - Resource writes without opt-in keep the existing flow and do not add an exact server read
+  ---
+  duration_ms: 1.310707
+  type: 'test'
+  ...
+# Subtest: E03/E11 rapid certification rerenders mount each action and listener exactly once
+ok 17 - E03/E11 rapid certification rerenders mount each action and listener exactly once
+  ---
+  duration_ms: 3.987947
+  type: 'test'
+  ...
+# Subtest: E03/E11 navigating away before deferred mount performs no stale DOM mutation
+ok 18 - E03/E11 navigating away before deferred mount performs no stale DOM mutation
+  ---
+  duration_ms: 0.918791
+  type: 'test'
+  ...
+# Subtest: E03/E11 a later complete render keeps the current review action functional
+ok 19 - E03/E11 a later complete render keeps the current review action functional
+  ---
+  duration_ms: 0.926176
+  type: 'test'
+  ...
+# Subtest: D07 authenticates a single role-scoped PDF read without public download tokens
+ok 20 - D07 authenticates a single role-scoped PDF read without public download tokens
+  ---
+  duration_ms: 2.358739
+  type: 'test'
+  ...
+# Subtest: D07 never accesses Storage when Firebase Auth is absent
+ok 21 - D07 never accesses Storage when Firebase Auth is absent
+  ---
+  duration_ms: 0.839761
+  type: 'test'
+  ...
+# Subtest: D07 rejects cross-project or other period Storage paths before requesting bytes
+ok 22 - D07 rejects cross-project or other period Storage paths before requesting bytes
+  ---
+  duration_ms: 0.833413
+  type: 'test'
+  ...
+# Subtest: D07 does not read a withdrawn/unpublished resource even when URL metadata survives
+ok 23 - D07 does not read a withdrawn/unpublished resource even when URL metadata survives
+  ---
+  duration_ms: 0.838996
+  type: 'test'
+  ...
+# Subtest: D07 returns provider-denied without public token fallback on HTTP 403
+ok 24 - D07 returns provider-denied without public token fallback on HTTP 403
+  ---
+  duration_ms: 0.893968
+  type: 'test'
+  ...
+# Subtest: D07 rejects non-PDF responses without ever rendering provider error HTML
+ok 25 - D07 rejects non-PDF responses without ever rendering provider error HTML
+  ---
+  duration_ms: 0.865214
+  type: 'test'
+  ...
+# Subtest: D07 fails closed when identity changes during an in-flight download
+ok 26 - D07 fails closed when identity changes during an in-flight download
+  ---
+  duration_ms: 0.925407
+  type: 'test'
+  ...
+# Subtest: D07 rejects response over bounded size and protects existing binary-write gate
+ok 27 - D07 rejects response over bounded size and protects existing binary-write gate
+  ---
+  duration_ms: 0.799908
+  type: 'test'
+  ...
+# Subtest: D07 diagnostic separates ID-token acquisition failure without attempting GET
+ok 28 - D07 diagnostic separates ID-token acquisition failure without attempting GET
+  ---
+  duration_ms: 0.908024
+  type: 'test'
+  ...
+# Subtest: D07 diagnostic separates transport rejection without inventing HTTP 403
+ok 29 - D07 diagnostic separates transport rejection without inventing HTTP 403
+  ---
+  duration_ms: 1.019081
+  type: 'test'
+  ...
+# Subtest: D07 diagnostic distinguishes valid HTTP GET from rejected PDF body read
+ok 30 - D07 diagnostic distinguishes valid HTTP GET from rejected PDF body read
+  ---
+  duration_ms: 1.036184
+  type: 'test'
+  ...
+# Subtest: D07 diagnostic returns HTTP 403 as a response and never mislabels it as transport error
+ok 31 - D07 diagnostic returns HTTP 403 as a response and never mislabels it as transport error
+  ---
+  duration_ms: 0.92449
+  type: 'test'
+  ...
+# Subtest: D07 positive PDF records metadata only and retains authenticated bytes for caller
+ok 32 - D07 positive PDF records metadata only and retains authenticated bytes for caller
+  ---
+  duration_ms: 0.973489
+  type: 'test'
+  ...
+# Subtest: D07 bounded read fails closed if Firebase ID token never resolves
+ok 33 - D07 bounded read fails closed if Firebase ID token never resolves
+  ---
+  duration_ms: 26.773308
+  type: 'test'
+  ...
+# Subtest: D07 bounded read aborts a hanging GET and reports its stage without revealing a token
+ok 34 - D07 bounded read aborts a hanging GET and reports its stage without revealing a token
+  ---
+  duration_ms: 26.722992
+  type: 'test'
+  ...
+# Subtest: D/Cert: published October bank reloads after the protected HR authority changes period
+ok 35 - D/Cert: published October bank reloads after the protected HR authority changes period
+  ---
+  duration_ms: 2.724229
+  type: 'test'
+  ...
+# Subtest: D/Cert: later stale September response never replaces the current October bank
+ok 36 - D/Cert: later stale September response never replaces the current October bank
+  ---
+  duration_ms: 2.358354
+  type: 'test'
+  ...
+# Subtest: D/Cert: project change never retains another project or period in cache
+ok 37 - D/Cert: project change never retains another project or period in cache
+  ---
+  duration_ms: 1.282703
+  type: 'test'
+  ...
+# Subtest: D/Cert: provider read error is fail-closed, not an unverified empty-bank PASS
+ok 38 - D/Cert: provider read error is fail-closed, not an unverified empty-bank PASS
+  ---
+  duration_ms: 2.273863
+  type: 'test'
+  ...
+# Subtest: D04/E03: Admin reports the selected bank state without granting shopper certification
+ok 39 - D04/E03: Admin reports the selected bank state without granting shopper certification
+  ---
+  duration_ms: 4.443709
+  type: 'test'
+  ...
+# Subtest: VRM-288: identical Firestore resource notices preserve live controls and do not repaint the viewer
+ok 40 - VRM-288: identical Firestore resource notices preserve live controls and do not repaint the viewer
+  ---
+  duration_ms: 4.583713
+  type: 'test'
+  ...
+# Subtest: VRM-288: loading, denied and verified empty are three different states
+ok 41 - VRM-288: loading, denied and verified empty are three different states
+  ---
+  duration_ms: 1.240707
+  type: 'test'
+  ...
+# Subtest: VRM-288: detached old module cannot be repeatedly rebuilt by provider notices
+ok 42 - VRM-288: detached old module cannot be repeatedly rebuilt by provider notices
+  ---
+  duration_ms: 0.825285
+  type: 'test'
+  ...
+# Subtest: VRM-285: a late resources event and a router remount do not destroy the active PDF reader
+ok 43 - VRM-285: a late resources event and a router remount do not destroy the active PDF reader
+  ---
+  duration_ms: 1.367533
+  type: 'test'
+  ...
+# Subtest: VRM-285: different auth UID, role, project and period never inherit an old PDF reader
+ok 44 - VRM-285: different auth UID, role, project and period never inherit an old PDF reader
+  ---
+  duration_ms: 1.593024
+  type: 'test'
+  ...
+# Subtest: VRM-285: revoked/deleted resource closes the open reader fail-closed
+ok 45 - VRM-285: revoked/deleted resource closes the open reader fail-closed
+  ---
+  duration_ms: 45.771723
+  type: 'test'
+  ...
+# Subtest: VRM-285: viewer state is session-scoped presentation state, never localStorage truth
+ok 46 - VRM-285: viewer state is session-scoped presentation state, never localStorage truth
+  ---
+  duration_ms: 0.257802
+  type: 'test'
+  ...
+# Subtest: D07 Admin-only diagnostic UI exposes safe stage metadata without JWT, UID or path
+ok 47 - D07 Admin-only diagnostic UI exposes safe stage metadata without JWT, UID or path
+  ---
+  duration_ms: 0.257443
+  type: 'test'
+  ...
+# Subtest: D07 admin identical resource loads settle without hiding remote updates, errors or identity changes
+ok 48 - D07 admin identical resource loads settle without hiding remote updates, errors or identity changes
+  ---
+  duration_ms: 9.025952
+  type: 'test'
+  ...
+# Subtest: D07 shopper identical resource loads settle without hiding remote updates, errors or identity changes
+ok 49 - D07 shopper identical resource loads settle without hiding remote updates, errors or identity changes
+  ---
+  duration_ms: 16.042367
+  type: 'test'
+  ...
+1..49
+# tests 71
+# suites 0
+# pass 71
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 345.92931

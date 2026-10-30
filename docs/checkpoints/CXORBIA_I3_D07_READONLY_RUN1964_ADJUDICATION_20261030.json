@@ -1,0 +1,184 @@
+{
+  "schemaVersion": "cxorbia.i3.d07.scoped-live-adjudication.v1",
+  "id": "CXORBIA-I3-D07-RUN1964-READONLY-ADJUDICATION-20261030",
+  "asOf": "2026-10-30",
+  "iteration": "I3",
+  "decision": "HOLD_D07_UI_OPEN_NOT_PROVEN_AFTER_EXACT_TWO_ROLE_BINDING",
+  "production": false,
+  "fullTaskClosed": false,
+  "humanAcceptance": "PENDING",
+  "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+  "sourceTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
+  "controlSha": "28e600332e86550880dc338ba7363643dc05c9ca",
+  "controlParentSha": "79fe75142144a6dba96218b07957ebffad2e3e01",
+  "package": {
+    "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R6.json",
+    "gitBlob": "daa51dcb2bde4e1209053512b7f5e028b5781480",
+    "mode": "R6D07_READ_ONLY"
+  },
+  "run": {
+    "id": 40976272252,
+    "number": 1964,
+    "jobId": 123805521068,
+    "jobName": "phasea-representative-same-artifact-live-reproof",
+    "conclusion": "failure"
+  },
+  "artifact": {
+    "id": 12942329260,
+    "zipSha256": "3b5416efe3864529a3f9f39a48fce8727a7d0e64209840242808461829ffcd1e",
+    "bytes": 463776
+  },
+  "originalEvidence": [
+    {
+      "path": "docs/checkpoints/evidence/CXORBIA_I3_RUN1964_D07_RESULT_ORIGINAL_20261029.json",
+      "gitBlob": "1ccd09f2853aeb939e32893620f14c13b67f3477",
+      "sha256": "a2f927610e3c4f53e1f45681f8a11b9c34d5f7d17570faffa1eb89d795385326"
+    },
+    {
+      "path": "docs/checkpoints/evidence/CXORBIA_I3_RUN1964_PREFLIGHT_ORIGINAL_20261029.json",
+      "gitBlob": "42dbe9623d8b9cb3bd493cc6d1f1c957f1008713",
+      "sha256": "6d406cb03713b372836816e80d995a76be87b1882887f751e6c1a3824b69fb72"
+    },
+    {
+      "path": "docs/checkpoints/evidence/CXORBIA_I3_D07_SHOPPER_CATALOG_RUN1964_20261029.png",
+      "gitBlob": "615dd9866576eea1594f243b0abba0c4241824ce",
+      "sha256": "aad7fa22cf22303066614031581c8036ef1bbc3f97a52995318ac9afdfb25fdd"
+    }
+  ],
+  "preservedPass": {
+    "path": "docs/checkpoints/CXORBIA_I3_C02_D04_SCOPED_PASS_RUN1962_20261029.json",
+    "gitBlob": "80cbc5a2a1c09402227ee3b0ac179d2cc707727c",
+    "runId": 40974429136,
+    "runNumber": 1962,
+    "jobId": 123799366836,
+    "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+    "sourceTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
+    "artifactId": 12941758269,
+    "artifactZipSha256": "d2efe95460f2f5428d897837746979592ab2a82cfb37359270a5f6ed7d5c67e2",
+    "decision": "PASS_D04_EXACT_SERVER_READBACK_AND_C02_INDEPENDENT_SESSION_CLAUSES",
+    "fullTaskClosed": false,
+    "humanAcceptance": "PENDING",
+    "production": false
+  },
+  "sourceAndPreview": {
+    "controlSha": "28e600332e86550880dc338ba7363643dc05c9ca",
+    "decision": "PASS_D07_EXISTING_PREVIEW_PREFLIGHT",
+    "deploys": 0,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/bd065678b1af6c14",
+    "hrRevision": "6fd4beb82cc85e61c26f54992fc60fd28d49f9b1c832654dba6fd3204571bcbf",
+    "mode": "R6D07_READ_ONLY",
+    "packageBlob": "daa51dcb2bde4e1209053512b7f5e028b5781480",
+    "previewArtifactId": 12940989138,
+    "previewArtifactZipSha256": "7b027f5807befb5c8cc6f83c9e70664a7487661865ac0e8d01d1ddaefeb90b61",
+    "previewControlSha": "2c63dcf489806d65fe4927a225daa94853ec2ac3",
+    "previewOrigin": "https://cxorbia-backend-dev--i3-recovery-1029-40973709501-011nk50h.web.app",
+    "previewRunId": 40973709501,
+    "production": false,
+    "runId": "40976272252",
+    "runtimeDigest": "sha256:bba5ebbf19c203954ec0be6c2c3ef01a057e7ce3f98fb7e5eeac2d889bd0a500",
+    "runtimeRevision": "cxorbia-live-hr-dev-00330-fim",
+    "servedOwnerBlobs": {
+      "app/adapters/tya-financial-canonical-source-safe-adapter.js": "9d2d1a9a541c74a6234353a44f0bfaa43bc1fb79",
+      "app/core/backend-browser-auth.js": "1274e67e69a73fd619d81b0d01687e72894901e6",
+      "app/core/backend-certifications.js": "b1558c74b9e1780e9e028c8d1e7aef692c7d47d6",
+      "app/core/backend-cxdata-finance-read.js": "2a7cd3ffbd2bf0999b149b3095218b7d3d09276b",
+      "app/core/backend-finance-benefits.js": "d1b16d783d29aba3620c909546a345f739f931a5",
+      "app/core/backend-protected-dev-mode.js": "3924d7d02ea21f589e6be6d451dff740c884300a",
+      "app/core/backend-protected-dev-session-continuity.js": "00f2b3d1e92ad6154853282a8881163cf9e6ca5d",
+      "app/core/backend-resources.js": "d3073758c85f0184cdd38fd9f88882ecc212c30c",
+      "app/index-backend-dev.html": "eec56cf5e4afc7624c1a6f73841bb28d18617280",
+      "app/modules/cert.js": "c6552631231639c4aadcf96b8db6e7e265465426",
+      "app/modules/documentos.js": "db994135c9e38854000b13606e7fdd3872ab7e1b",
+      "app/modules/finanzas.js": "eb5af6344109bbf4908bae098a668f924c43b57e"
+    },
+    "servedOwnerCount": 12,
+    "sourceIdentityVerified": true,
+    "sourceSha": "946c3cb8eff6a043693b10ed628d2ebc860508e1",
+    "sourceTree": "4afcecfd4b41ac697995a1164115a23a46db44c7",
+    "writes": 0,
+    "scope": "IDENTITY_PREFLIGHT_ONLY"
+  },
+  "proven": {
+    "twoFreshIndependentAuthenticatedContexts": true,
+    "exactAdminAndExistingShopper": true,
+    "ordinaryPasswordLogin": false,
+    "resourceId": "res-1olqhkg",
+    "version": 1,
+    "scope": {
+      "tenantId": "tya",
+      "projectId": "cinepolis",
+      "periodId": "cinepolis-2026-10"
+    },
+    "bothCatalogsSameResource": true,
+    "bothOpenButtonsVisibleBeforeRoleAttempt": true,
+    "exactFirestoreMetadataBound": true,
+    "metadataAndUpdateTimeUnchanged": true,
+    "storagePathSha256": "7dd0565408e08a01d316b654cb0ffe9167327d3ed88ab77f16392c7bb45fa435",
+    "storageFolderEqualsDocumentId": false,
+    "pathAllChecksPassed": true,
+    "browserClosed": true
+  },
+  "roleAttempts": {
+    "admin": {
+      "role": "admin",
+      "decision": "HOLD",
+      "openClicks": 1,
+      "binaryGetCount": 0,
+      "blockedUnexpectedRequests": 0,
+      "downloadCount": 0,
+      "rendered": false,
+      "writesObserved": false,
+      "blockedWriteRequests": 0,
+      "httpStatus": null,
+      "networkError": null,
+      "diagnostic": null,
+      "error": "D07_BOUNDED_UI_OR_PROVIDER_FAILURE"
+    },
+    "shopper": {
+      "role": "shopper",
+      "decision": "HOLD",
+      "openClicks": 1,
+      "binaryGetCount": 0,
+      "blockedUnexpectedRequests": 0,
+      "downloadCount": 0,
+      "rendered": false,
+      "writesObserved": false,
+      "blockedWriteRequests": 0,
+      "httpStatus": null,
+      "networkError": null,
+      "diagnostic": null,
+      "error": "D07_BOUNDED_UI_OR_PROVIDER_FAILURE"
+    }
+  },
+  "adjudication": {
+    "qaPathOverconstraintResolved": "The exact approved resource has Storage folder res-18gkwuj and Firestore document res-1olqhkg. The product upload contract permits this; R5's equality assumption was invalid.",
+    "openClicksCounterMeaning": "The original runner increments openClicks before awaiting Playwright click. Value 1 proves one attempted click, not successful dispatch.",
+    "binaryGetObserved": {
+      "admin": 0,
+      "shopper": 0
+    },
+    "rootVisualObservation": "Shopper failure screenshot remains in the one-resource catalog with the Instructivo Shopper PDF and Abrir button. No Admin screenshot was emitted.",
+    "failureStageCaptured": false,
+    "exactCause": "UNPROVEN_UI_ACTION_OR_QA_FAILURE_BEFORE_BINARY_READ",
+    "pdfBytesProven": false,
+    "pdfRenderProven": false,
+    "downloadProven": false,
+    "storageOrCorsDefectProven": false,
+    "providerPermissionsDenialObserved": false,
+    "noWholeD07Promotion": true
+  },
+  "noMutations": {
+    "c02Executed": false,
+    "d04Executed": false,
+    "qaFixtures": 0,
+    "resourceCommandsIssued": 0,
+    "authAccountMutationsIssued": 0,
+    "hrCommandsIssued": 0,
+    "financeCommandsIssued": 0,
+    "blockedWriteRequestsObserved": 0,
+    "metadataAndUpdateTimeUnchanged": true,
+    "production": 0,
+    "scope": "RUNNER_COMMANDS_AND_EXACT_RESOURCE_READBACK_NOT_WHOLE_TENANT_AUDIT"
+  },
+  "next": "Inspect the UI click/route sequence and safe exact failure stage before another attempt. Preserve original R6 result. Any follow-up uses the same existing runner and one bounded attempt; no speculative Storage/Rules/CORS/SW changes. Keep C02/D04 RUN1962 scoped PASS and all frozen-plan requirements."
+}
