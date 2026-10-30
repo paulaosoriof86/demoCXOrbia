@@ -117,13 +117,16 @@ CX.module('documentos', ({data,role,ui})=>{
           throw error;
         }
         authenticatedBytes=result.bytes;
+        // pdf.js may transfer/detach the typed array it receives. Preserve an
+        // independent authenticated copy for the later user-initiated download.
+        const downloadBytes=authenticatedBytes.slice();
         const download=host.querySelector('[data-pdf-download]');
         if(download){
           const readerKey=viewerScopeKey();
           download.disabled=false;
           download.addEventListener('click',()=>{
             if(!live()||readerKey!==viewerScopeKey())return;
-            const blob=new Blob([authenticatedBytes],{type:'application/pdf'});
+            const blob=new Blob([downloadBytes],{type:'application/pdf'});
             const objectUrl=URL.createObjectURL(blob);
             const link=document.createElement('a');
             link.href=objectUrl;

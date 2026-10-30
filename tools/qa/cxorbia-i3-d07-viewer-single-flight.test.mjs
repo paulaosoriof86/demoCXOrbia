@@ -81,3 +81,9 @@ test('D07 shares one authenticated GET across router remounts and only retries o
   third.slot.status.retry.click();await tick();
   assert.equal(h.calls(),2,'the explicitly requested retry must issue a fresh GET');
 });
+
+test('D07 preserves independent authenticated bytes for download when pdf.js takes render ownership',()=>{
+  assert.match(source,/const downloadBytes=authenticatedBytes\.slice\(\);/);
+  assert.match(source,/new Blob\(\[downloadBytes\],\{type:'application\/pdf'\}\)/);
+  assert.doesNotMatch(source,/new Blob\(\[authenticatedBytes\]/);
+});

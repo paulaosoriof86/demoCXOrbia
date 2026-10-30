@@ -1565,6 +1565,18 @@ const C04C05=Object.freeze({
   cxc:{country:'GT',currency:'Q',amount:1,apply:0.4,balance:0.6},
   financing:{country:'HN',currency:'L',amount:2,apply:0.5,balance:1.5}
 });
+const R11_RESIDUE=Object.freeze({
+  runId:40992435376,
+  fixtureMarker:'QA-C04-C05-40992435376-36825c95ac0d',
+  accountId:'acct-c63650b9e9d3956b67e8f96894e6',
+  movementId:'acct-8ee873cf36cd65a3ebb3e22df1e4c8',
+  createReceipt:'tenants/tya/commandReceipts/b8f998e679811e96df23f96e31fd23a18da596fe',
+  createAudit:'tenants/tya/entityAuditTrail/finance-5df6ad8474f6aadbb7a74426ad7224737dd0e9dd',
+  applyReceipt:'tenants/tya/commandReceipts/d314b63822a0abc141b67fcfb1aa78fe6d189c53',
+  applyAudit:'tenants/tya/entityAuditTrail/finance-01dd4a42ec53dd0616b025f26814ea0d1a3b2b50',
+  account:'tenants/tya/financeAccounts/acct-c63650b9e9d3956b67e8f96894e6',
+  movement:'tenants/tya/financialMovements/acct-8ee873cf36cd65a3ebb3e22df1e4c8'
+});
 const OWNER_PATHS=['app/modules/finanzas.js','app/core/backend-finance-benefits.js',
   'app/core/backend-cxdata-finance-read.js','app/adapters/cxorbia-cxdata-command-boundary-v1.js',
   'app/adapters/cxorbia-command-adapter-v1.js'];
@@ -1735,7 +1747,7 @@ function createCommandGuard({db,pins,onPlanned,knownHeads}){
     }
   };
   const responseHandler=response=>{
-    const item=requests.get(response.request());if(!item)return;
+    const item=requests.get(response.request());if(!item||item.step.replay)return;
     const task=(async()=>{
       try{
         const body=await bounded(response.json(),15000,'COMMAND_RESPONSE_TIMEOUT');
@@ -1927,6 +1939,67 @@ async function visibleFinanceRows(page,model,baseline,label,outDir){
   return {...proof,screenshot:'c04-'+label+'.png'};
 }
 
+
+function validateR11ResidueDoc(ref,snap){
+  check(snap.exists===true,'R11_RESIDUE_EXPECTED_DOCUMENT_MISSING');
+  const d=snap.data()||{},id=snap.id,marker=R11_RESIDUE.fixtureMarker,createConcept=marker+'-GT-CXC';
+  if(ref===R11_RESIDUE.account){
+    check(id===R11_RESIDUE.accountId&&rowScope(d)&&d.kind==='cxc'&&d.concepto===createConcept,'R11_ACCOUNT_IDENTITY_MISMATCH');
+    check(d.country==='GT'&&d.pais==='GT'&&d.currency==='Q'&&d.moneda==='Q','R11_ACCOUNT_SCOPE_MISMATCH');
+    check(cents(d.monto)===100&&cents(d.originalAmount)===100&&cents(d.saldo)===60&&cents(d.balance)===60,'R11_ACCOUNT_AMOUNT_MISMATCH');
+    check(d.sourceRef==='admin-entry:'+R11_RESIDUE.createReceipt.split('/').at(-1)&&d.createdBy===C04C05.uid&&d.lastMovementId===R11_RESIDUE.movementId,'R11_ACCOUNT_PROVENANCE_MISMATCH');
+    return true;
+  }
+  if(ref===R11_RESIDUE.movement){
+    check(id===R11_RESIDUE.movementId&&rowScope(d)&&d.accountId===R11_RESIDUE.accountId,'R11_MOVEMENT_IDENTITY_MISMATCH');
+    check(d.tipo==='ingreso'&&d.tipoIngreso==='cobro_cxc'&&d.cat==='Cobro CxC · '+createConcept,'R11_MOVEMENT_CLASSIFICATION_MISMATCH');
+    check(d.country==='GT'&&d.pais==='GT'&&d.currency==='Q'&&d.moneda==='Q'&&cents(d.amount)===40&&cents(d.monto)===40,'R11_MOVEMENT_SCOPE_AMOUNT_MISMATCH');
+    check(d.sourceRef==='finance-account:'+R11_RESIDUE.accountId&&d.createdBy===C04C05.uid&&d.revenueRecognized===false&&d.operatingRevenue===false,'R11_MOVEMENT_PROVENANCE_MISMATCH');
+    return true;
+  }
+  if(ref===R11_RESIDUE.createReceipt||ref===R11_RESIDUE.applyReceipt){
+    const apply=ref===R11_RESIDUE.applyReceipt,entity=d.entity||{};
+    check(d.status==='committed'&&d.providerAck===true&&d.actorUid===C04C05.uid&&d.entityId===R11_RESIDUE.accountId,'R11_RECEIPT_ACK_MISMATCH');
+    check(d.commandType===(apply?'finance.account.apply':'finance.account.create'),'R11_RECEIPT_COMMAND_MISMATCH');
+    check(entity.id===R11_RESIDUE.accountId&&rowScope(entity)&&entity.concepto===createConcept&&entity.kind==='cxc','R11_RECEIPT_ENTITY_MISMATCH');
+    if(apply){
+      const movement=d.movement||{};
+      check(movement.id===R11_RESIDUE.movementId&&rowScope(movement)&&movement.accountId===R11_RESIDUE.accountId&&movement.cat==='Cobro CxC · '+createConcept,'R11_APPLY_RECEIPT_MOVEMENT_MISMATCH');
+      check(cents(movement.amount)===40&&cents(entity.balance)===60,'R11_APPLY_RECEIPT_AMOUNT_MISMATCH');
+    }else check(cents(entity.originalAmount)===100&&cents(entity.balance)===100,'R11_CREATE_RECEIPT_AMOUNT_MISMATCH');
+    return true;
+  }
+  if(ref===R11_RESIDUE.createAudit||ref===R11_RESIDUE.applyAudit){
+    const apply=ref===R11_RESIDUE.applyAudit,type=apply?'finance.account.apply':'finance.account.create',key=str(d.idempotencyKey);
+    check(key&&d.tenantId===C04C05.tenantId&&d.projectId===null&&d.periodId===C04C05.globalPeriod&&d.global===true,'R11_AUDIT_SCOPE_MISMATCH');
+    check(d.entityType==='financeAccount'&&d.entityId===R11_RESIDUE.accountId&&d.commandType===type&&d.actorUid===C04C05.uid,'R11_AUDIT_IDENTITY_MISMATCH');
+    check(id==='finance-'+sha(key+'\0'+type).slice(0,40),'R11_AUDIT_HASH_MISMATCH');
+    const expectedReceipt=sha(C04C05.tenantId+'\0null\0'+C04C05.globalPeriod+'\0'+key).slice(0,40);
+    check(expectedReceipt===(apply?R11_RESIDUE.applyReceipt:R11_RESIDUE.createReceipt).split('/').at(-1),'R11_RECEIPT_HASH_MISMATCH');
+    if(apply)check(d.movementId===R11_RESIDUE.movementId&&cents(d.amount)===40&&cents(d.balanceBefore)===100&&cents(d.balanceAfter)===60,'R11_APPLY_AUDIT_AMOUNT_MISMATCH');
+    else check(d.kind==='cxc','R11_CREATE_AUDIT_KIND_MISMATCH');
+    return true;
+  }
+  check(false,'R11_RESIDUE_REFERENCE_DENIED');
+}
+async function c04ConditionalCleanupR11Residue(db){
+  const refs=[R11_RESIDUE.createReceipt,R11_RESIDUE.createAudit,R11_RESIDUE.account,R11_RESIDUE.applyReceipt,R11_RESIDUE.applyAudit,R11_RESIDUE.movement];
+  const snaps=await getAll(db,refs.map(p=>db.doc(p))),present=[];
+  for(let i=0;i<refs.length;i++)if(snaps[i].exists){validateR11ResidueDoc(refs[i],snaps[i]);present.push([refs[i],head(snaps[i])]);}
+  if(!present.length)return {decision:'PASS_R11_RESIDUE_ALREADY_ABSENT',count:0,allAbsent:true,blindDeletes:false,runId:R11_RESIDUE.runId};
+  await bounded(db.runTransaction(async tx=>{
+    const current=await tx.getAll(...present.map(([p])=>db.doc(p)));
+    for(let i=0;i<present.length;i++){
+      check(isDeepStrictEqual(head(current[i]),present[i][1]),'R11_CLEANUP_PRECONDITION_CHANGED');
+      validateR11ResidueDoc(present[i][0],current[i]);
+    }
+    for(const [p] of present)tx.delete(db.doc(p));
+  },{maxAttempts:1}),20000,'R11_CLEANUP_TRANSACTION_UNCERTAIN');
+  const after=await getAll(db,refs.map(p=>db.doc(p)));
+  check(after.every(s=>s.exists===false),'R11_CLEANUP_ABSENCE_NOT_PROVEN');
+  return {decision:'PASS_R11_RESIDUE_EXACT_CONDITIONAL_CLEANUP',count:present.length,allAbsent:true,blindDeletes:false,runId:R11_RESIDUE.runId};
+}
+
 async function c04ConditionalCleanup(db,expected){
   const refs=[...expected.keys()].sort();
   check(refs.length>0&&refs.length<=C04C05.maxLinkedDocuments,'CLEANUP_REFERENCE_COUNT_DENIED');
@@ -1953,7 +2026,7 @@ async function runC04C05BoundedFinance({db,auth,openAdminSession,pins,proof,runI
     scope:{tenantId:C04C05.tenantId,projectId:C04C05.projectId,periodId:C04C05.projectPeriod,globalPeriod:C04C05.globalPeriod},
     sourceSha:pins?.sourceSha||null,sourceTree:pins?.sourceTree||null,runtimeRevision:pins?.runtimeRevision||null,
     commands:[],replays:[],sessions:[],fixturesStarted:false,cleanup:{decision:'NOT_STARTED'},
-    writes:{authAccountsIssued:0,claimsIssued:0,membershipIssued:0,hrIssued:0,productionIssued:0,bankIssued:0,externalPaymentIssued:0,financeProvider:null,cleanupDeletes:null},
+    writes:{authAccountsIssued:0,claimsIssued:0,membershipIssued:0,hrIssued:0,productionIssued:0,bankIssued:0,externalPaymentIssued:0,financeProvider:null,preflightR11CleanupDeletes:0,cleanupDeletes:null},
     c02Executed:false,q205Replayed:false,q7300Recreated:false,production:false};
   const sessions=[],guards=[],planned=new Map(),knownHeads=new Map(),records=[];
   let baseline=null,memberHead=null,allVerified=true,integrityFailure=false,firstPage=null,lastSnapshots=new Map();
@@ -1967,6 +2040,9 @@ async function runC04C05BoundedFinance({db,auth,openAdminSession,pins,proof,runI
     const member={...memberSnap.data(),id:C04C05.uid};
     const authUser=await bounded(auth.getUser(C04C05.uid),15000,'EXACT_ADMIN_AUTH_READ_TIMEOUT');
     result.actor=validateC04Actor(member,authUser);
+    result.preflightR11Cleanup=await c04ConditionalCleanupR11Residue(db);
+    result.writes.preflightR11CleanupDeletes=result.preflightR11Cleanup.count;
+    check(['PASS_R11_RESIDUE_ALREADY_ABSENT','PASS_R11_RESIDUE_EXACT_CONDITIONAL_CLEANUP'].includes(result.preflightR11Cleanup.decision),'R11_RESIDUE_CLEANUP_NOT_PROVEN');
     const marker='QA-C04-C05-'+runId+'-'+randomBytes(6).toString('hex');
     const markers={cxc:marker+'-GT-CXC',financing:marker+'-HN-FIN'};
     result.fixtureMarker=marker;
@@ -2040,12 +2116,15 @@ async function runC04C05BoundedFinance({db,auth,openAdminSession,pins,proof,runI
       const before=await linkedSnapshots(db,planned.keys()),beforeLedger=await scopedLedgerSnapshot(db);
       const armed=first.guard.arm({replay:true,kind:'replay-'+original.step.kind,role:member.role,originalCommand:original.command,originalRefs:original.refs,originalEntityId:original.body.entityId});
       try{
-        const [observed]=await Promise.all([bounded(armed.observed,40000,'REPLAY_ACK_TIMEOUT'),bounded(firstPage.evaluate(async ({command,uid})=>{
+        const replayResponse=await bounded(firstPage.evaluate(async ({command,uid})=>{
           const user=window.firebase.auth().currentUser;if(!user||user.uid!==uid)throw Error('C04_REPLAY_AUTH_MISSING');
           const token=await user.getIdToken();
           const response=await fetch('/v1/cxorbia/commands',{method:'POST',headers:{authorization:'Bearer '+token,'content-type':'application/json'},body:JSON.stringify(command)});
-          return {httpStatus:response.status};
-        },{command:original.command,uid:C04C05.uid}),40000,'REPLAY_FETCH_TIMEOUT')]);
+          const body=await response.json();
+          return {httpStatus:response.status,body};
+        },{command:original.command,uid:C04C05.uid}),40000,'REPLAY_FETCH_TIMEOUT');
+        check(armed.item.claimed&&armed.item.continued&&armed.item.command&&armed.item.refs,'REPLAY_REQUEST_NOT_GUARDED');
+        const observed={command:armed.item.command,refs:armed.item.refs,step:armed.item.step,httpStatus:replayResponse.httpStatus,body:replayResponse.body};
         validateC04Ack(observed);
         const after=await linkedSnapshots(db,planned.keys()),afterLedger=await scopedLedgerSnapshot(db);
         if(!equalHeads(headsOf(before),headsOf(after))||!isDeepStrictEqual(ledgerFingerprint(beforeLedger),ledgerFingerprint(afterLedger))){integrityFailure=true;throw Error('C04_REPLAY_DURABLE_DELTA');}
