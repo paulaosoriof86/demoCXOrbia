@@ -285,10 +285,18 @@ preflight)
   jq -e '.moduleTruthReadback.sourceAligned==true and .moduleTruthReadback.domainCount==21 and .moduleBlobReadback.pass==true' "$OUT/canonical-authority.json" >/dev/null
   # Install the pre-existing Firebase CLI in the same approved runner before the one DEV build.
   npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest >/dev/null 2>&1
-  git archive --format=tar "$PHASEA_SOURCE" > "$OUT/cxorbia-phasea-source.tar"
-  sha256sum "$OUT/cxorbia-phasea-source.tar" > "$OUT/cxorbia-phasea-source.tar.sha256"
+  if [[ "$STATUS" == HOLD_I3_PHASEA_CUMULATIVE_DEV_READBACK_ONLY_REQUIRED && "$(jq -r '.i3PhaseADevReadbackTarget.diagnosticOnly // false' "$CANDIDATE_DESCRIPTOR")" == true ]]; then
+    SOURCE_ARCHIVE="$RUNNER_TEMP/cxorbia-phasea-readback-source.tar"
+    git archive --format=tar "$PHASEA_SOURCE" > "$SOURCE_ARCHIVE"
+    sha256sum "$SOURCE_ARCHIVE" > "$OUT/cxorbia-phasea-source.tar.sha256"
+    test "$(cut -d' ' -f1 "$OUT/cxorbia-phasea-source.tar.sha256")" = f3509fc74a7a5c46c1a8bf1e018ebae8e363b2897d1f06c85bbac34379316fa4
+  else
+    git archive --format=tar "$PHASEA_SOURCE" > "$OUT/cxorbia-phasea-source.tar"
+    sha256sum "$OUT/cxorbia-phasea-source.tar" > "$OUT/cxorbia-phasea-source.tar.sha256"
+    SOURCE_ARCHIVE="$OUT/cxorbia-phasea-source.tar"
+  fi
   SOURCE_DIR="$RUNNER_TEMP/cxorbia-phasea-source";rm -rf "$SOURCE_DIR";mkdir -p "$SOURCE_DIR"
-  tar -xf "$OUT/cxorbia-phasea-source.tar" -C "$SOURCE_DIR"
+  tar -xf "$SOURCE_ARCHIVE" -C "$SOURCE_DIR"
   echo "PHASEA_SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
   ;;
 materialize)
@@ -340,6 +348,53 @@ readback)
   test "$(jq -r '.production' "$TARGET")" = "false"
   BUILD="$(jq -r '.cloudBuildId // empty' "$TARGET")"
   test -n "$BUILD"
+  if [[ "$(jq -r '.diagnosticOnly // false' "$TARGET")" == true ]]; then
+    # Read-only diagnostic: collect every observation before adjudicating identity.
+    test "$(jq -r '.requireBuildImageRuntimeDigestBinding' "$TARGET")" = true
+    test "$(jq -r '.sourceArtifactDigest' "$TARGET")" = sha256:f3509fc74a7a5c46c1a8bf1e018ebae8e363b2897d1f06c85bbac34379316fa4
+    test "$(cut -d' ' -f1 "$OUT/cxorbia-phasea-source.tar.sha256")" = f3509fc74a7a5c46c1a8bf1e018ebae8e363b2897d1f06c85bbac34379316fa4
+    DIAG_TMP="$RUNNER_TEMP/cxorbia-runtime-binding-readback"
+    mkdir -p "$DIAG_TMP"
+    READ_ERRORS='[]'
+    if ! gcloud builds describe "$BUILD" --project "$PROJECT" --format=json > "$DIAG_TMP/build.json" 2> "$DIAG_TMP/build.stderr"; then
+      READ_ERRORS='["BUILD_READ_FAILED"]'; echo '{}' > "$DIAG_TMP/build.json"
+    fi
+    if ! gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$DIAG_TMP/service.json" 2> "$DIAG_TMP/service.stderr"; then
+      READ_ERRORS="$(jq -c '.+["SERVICE_READ_FAILED"]' <<< "$READ_ERRORS")"; echo '{}' > "$DIAG_TMP/service.json"
+    fi
+    # Never place environment values, secret substitutions or raw stderr in the artifact.
+    jq '{id,projectId,status,createTime,startTime,finishTime,source,sourceProvenance,images,substitutions:(.substitutions // {} | with_entries(if .key=="_IMAGE" then . else .value="REDACTED" end)),steps:[.steps[]? | {name,id,dir,entrypoint,args:[.args[]? | if test("^(build|push|-t|-f|--tag|\\.|backend/|gcr\\.io/|\\$\\{?_IMAGE\\}?$)") then . else "REDACTED_OR_UNEXPECTED_ARGUMENT" end],envNames:[.env[]? | split("=")[0]],secretEnvNames:.secretEnv}],results:{images:.results.images,buildStepImages:.results.buildStepImages},options:{sourceProvenanceHash:.options.sourceProvenanceHash,requestedVerifyOption:.options.requestedVerifyOption,logging:.options.logging}}' "$DIAG_TMP/build.json" > "$OUT/build-existing.json"
+    jq '{metadata:{name:.metadata.name,generation:.metadata.generation,resourceVersion:.metadata.resourceVersion},spec:{traffic:.spec.traffic,template:{metadata:{name:.spec.template.metadata.name,userImage:.spec.template.metadata.annotations["client.knative.dev/user-image"]},spec:{containers:[.spec.template.spec.containers[]? | {name,image,ports,envNames:[.env[]?.name]}]}}},status}' "$DIAG_TMP/service.json" > "$OUT/runtime.json"
+    echo '[]' > "$OUT/runtime-revisions.json"
+    mapfile -t DIAG_REVISIONS < <(jq -r '[.status.latestCreatedRevisionName,.status.latestReadyRevisionName] | map(select(type=="string" and test("^cxorbia-live-hr-dev-[a-z0-9-]+$"))) | unique[]' "$OUT/runtime.json")
+    for DIAG_REV in "${DIAG_REVISIONS[@]}"; do
+      if gcloud run revisions describe "$DIAG_REV" --project "$PROJECT" --region "$REGION" --format=json > "$DIAG_TMP/$DIAG_REV.json" 2> "$DIAG_TMP/$DIAG_REV.stderr"; then
+        jq '{metadata:{name:.metadata.name,generation:.metadata.generation,resourceVersion:.metadata.resourceVersion},spec:{containers:[.spec.containers[]? | {name,image,ports,envNames:[.env[]?.name]}]},status}' "$DIAG_TMP/$DIAG_REV.json" > "$OUT/revision-$DIAG_REV.json"
+        jq --slurpfile revision "$OUT/revision-$DIAG_REV.json" '.+$revision' "$OUT/runtime-revisions.json" > "$DIAG_TMP/revisions-next.json"
+        cp "$DIAG_TMP/revisions-next.json" "$OUT/runtime-revisions.json"
+      else
+        READ_ERRORS="$(jq -c --arg rev "$DIAG_REV" '.+["REVISION_READ_FAILED:"+$rev]' <<< "$READ_ERRORS")"
+      fi
+    done
+    jq -n --slurpfile b "$OUT/build-existing.json" --slurpfile s "$OUT/runtime.json" --slurpfile r "$OUT/runtime-revisions.json" --slurpfile t "$TARGET" --argjson readErrors "$READ_ERRORS" '
+      def digest: (tostring | (try capture("(?:^|@)(?<d>sha256:[a-f0-9]{64})$").d catch "")) // "";
+      $b[0] as $build | $s[0] as $service | $t[0] as $target | $r[0] as $revisions |
+      [$build.results.images[]? | select(.name==$target.imageUri)] as $images |
+      ($images[0].digest // "" | digest) as $buildDigest |
+      ($service.status.latestCreatedRevisionName // "") as $created |
+      ($service.status.latestReadyRevisionName // "") as $ready |
+      ([$revisions[] | select(.metadata.name==$ready)][0] // {}) as $readyObject |
+      ($readyObject.status.imageDigest // "" | digest) as $readyDigest |
+      ($service.spec.template.spec.containers[0].image // "") as $templateImage |
+      ([ $service.status.traffic[]? | select(.revisionName==$ready) | (.percent // 0)] | add // 0) as $readyTraffic |
+      ([ $service.status.traffic[]? | (.percent // 0)] | add // 0) as $totalTraffic |
+      {decision:"HOLD_READONLY_RUNTIME_BINDING_DIAGNOSTIC",diagnosticOnly:true,sourceSha:$target.sourceSha,sourceTree:$target.sourceTree,sourceArtifactDigest:$target.sourceArtifactDigest,localCanonicalSourceTarVerified:true,runtimeSourceSha:null,sourceIdentityVerified:false,remoteBuildSourceContentVerified:false,cloudBuildId:$build.id,buildStatus:$build.status,expectedImageUri:$target.imageUri,buildDeclaredImages:$build.images,buildImageResults:$images,buildImageDigest:$buildDigest,serviceTemplateImage:$templateImage,latestCreatedRevision:$created,latestReadyRevision:$ready,readyRevisionDigest:$readyDigest,buildRuntimeDigestBound:($build.status=="SUCCESS" and ($images|length)==1 and $buildDigest!="" and $buildDigest==$readyDigest),readyRevisionTrafficPercent:$readyTraffic,totalTrafficPercent:$totalTraffic,specTraffic:$service.spec.traffic,observedTraffic:$service.status.traffic,serviceConditions:$service.status.conditions,serviceGeneration:$service.metadata.generation,serviceObservedGeneration:$service.status.observedGeneration,cloudBuildSource:$build.source,cloudBuildSourceProvenance:$build.sourceProvenance,
+       reasonCodes:($readErrors + [if $build.status!="SUCCESS" then "BUILD_NOT_SUCCESS" else empty end,if ($build.images // [] | index($target.imageUri))==null then "BUILD_DECLARED_IMAGE_MISMATCH" else empty end,if ($images|length)!=1 or $buildDigest=="" then "BUILD_RESULT_DIGEST_UNPROVEN" else empty end,if $templateImage!=$target.imageUri and $templateImage!=(($target.imageUri|split(":")[0])+"@"+$buildDigest) then "SERVICE_TEMPLATE_IMAGE_MISMATCH" else empty end,if $created=="" or $created!=$ready then "LATEST_CREATED_NOT_READY_OR_ROLLOUT_INCOMPLETE" else empty end,if $buildDigest=="" or $readyDigest!=$buildDigest then "BUILD_RUNTIME_DIGEST_MISMATCH" else empty end,if $readyTraffic!=100 or $totalTraffic!=100 then "TRAFFIC_NOT_100_PERCENT_READY_REVISION" else empty end,"REMOTE_BUILD_SOURCE_CONTENT_NOT_VERIFIED"]),builds:0,deploys:0,providerWrites:0,production:false}' > "$OUT/runtime-binding-diagnostic.json"
+    cp "$OUT/runtime-binding-diagnostic.json" "$OUT/result.json"
+    cat "$OUT/runtime-binding-diagnostic.json"
+    # A diagnostic never reaches the old materialization PASS writer in proof).
+    exit 1
+  fi
   gcloud builds describe "$BUILD" --project "$PROJECT" --format=json > "$OUT/build-existing.json"
   test "$(jq -r '.status' "$OUT/build-existing.json")" = "SUCCESS"
   IMAGE_URI="$(jq -r '.imageUri' "$TARGET")"
