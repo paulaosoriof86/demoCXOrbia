@@ -80,28 +80,40 @@ window.CX = window.CX || {};
     return {items, totals:summarize(items), status:'ok'};
   }
 
+  function globalLedgerQuery(q,input){
+    if(input.global!==true)return q;
+    if(input.projectId!==null||!/^\d{4}-(?:0[1-9]|1[0-2])$/.test(String(input.periodId||'')))throw new Error('FINANCE_GLOBAL_READ_SCOPE_REQUIRED');
+    return q.where('global','==',true).where('projectId','==',null);
+  }
+  async function readLedger(q,input){
+    const global=input.global===true;
+    const expectedTenant=tenantId(input),expectedPeriod=input.periodId;
+    const snap=await (global?q.get({source:'server'}):q.get());
+    if(global&&(snap.metadata?.fromCache!==false||snap.metadata?.hasPendingWrites!==false))throw new Error('FINANCE_GLOBAL_REMOTE_READ_REQUIRED');
+    const items=snap.docs.map(docData);
+    if(global&&items.some((row,i)=>snap.docs[i].data()?.id!==snap.docs[i].id||row.id!==snap.docs[i].id||row.global!==true||row.projectId!==null||row.tenantId!==expectedTenant||row.periodId!==expectedPeriod))throw new Error('FINANCE_GLOBAL_READ_SCOPE_MISMATCH');
+    return {items,status:'ok'};
+  }
+
   async function getFinancialMovements(input){
     input = input || {};
-    let q = col(input, 'financialMovements');
+    let q = globalLedgerQuery(col(input, 'financialMovements'),input);
     if(input.projectId) q = q.where('projectId', '==', input.projectId);
     if(input.periodId) q = q.where('periodId', '==', input.periodId);
     if(input.country) q = q.where('country', '==', input.country);
     if(input.status) q = q.where('status', '==', input.status);
-    const snap = await q.get();
-    const items = snap.docs.map(docData);
-    return {items, status:'ok'};
+    return readLedger(q,input);
   }
 
   async function getFinanceAccounts(input){
     input = input || {};
-    let q = col(input, 'financeAccounts');
+    let q = globalLedgerQuery(col(input, 'financeAccounts'),input);
     if(input.projectId) q = q.where('projectId', '==', input.projectId);
     if(input.periodId) q = q.where('periodId', '==', input.periodId);
     if(input.kind) q = q.where('kind', '==', input.kind);
     if(input.country) q = q.where('country', '==', input.country);
     if(input.status) q = q.where('status', '==', input.status);
-    const snap = await q.get();
-    return {items:snap.docs.map(docData), status:'ok'};
+    return readLedger(q,input);
   }
 
   async function getFinanceBudgets(input){

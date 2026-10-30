@@ -730,7 +730,7 @@ test('R12 remote operating revenue does not count remittances, advances, financi
  assert.equal(eligible({monto:123,tipoIngreso:'honorarios',revenueRecognized:true,operatingRevenue:true},true),true);
  assert.equal(eligible({monto:123,tipoIngreso:'honorarios',revenueRecognized:true},true),false);
  assert.equal(eligible({monto:-123,tipoIngreso:'honorarios',revenueRecognized:true,operatingRevenue:true},true),false);
- assert.match(source,/cxFinanceOperatingRevenueEligible\(m,connectedFinance\(\)&&!isG\)/);
+ assert.match(source,/cxFinanceOperatingRevenueEligible\(m,connectedFinance\(\)\)/);
 });
 test('R09 ordinary finance screens use human explanations while preserving provider audit code',()=>{
  const source=fs.readFileSync(new URL('../../../../app/modules/finanzas.js',import.meta.url),'utf8');
@@ -742,4 +742,328 @@ test('R09 ordinary finance screens use human explanations while preserving provi
  assert.match(source,/dataset\.providerResultCode/);
  assert.doesNotMatch(source,/textContent=status\+' · '\+code\+' · visita '/);
  assert.doesNotMatch(source,/ui\.toast\('Conciliación no confirmada · '\+diagnostic\.code/);
+});
+
+// C04: same financial command/provider contract, explicit administrative tenant scope.
+function c04Environment({role='admin',entitlement='TYA_COMPLETE',countries=['GT','HN'],active=true,namespace='staff'}={}){
+  const db=baseDb();
+  db.seed('tenants/tenant-a/users/admin-1',{active,tenantId:'tenant-a',role,authNamespace:namespace,projectIds:['project-a'],countries,...(entitlement===undefined?{}:{entitlementMode:entitlement})});
+  const auth={verifyIdToken:async()=>({uid:'admin-1',tenantId:'tenant-a',role,authNamespace:namespace,projectIds:['project-a']})};
+  return {db,provider:createFinanceCommandProvider({auth,db,policy})};
+}
+function c04Command(type,{idempotencyKey=type+':c04-global',entityId=null,expectedVersion='absent',payload={},...extra}={}){
+  const entityTypes={'finance.movement.create':'financialMovement','finance.account.create':'financeAccount','finance.account.apply':'financeAccount','finance.reconcile.visit':'financeReconciliation','finance.budget.save':'financeBudget'};
+  const permissions={'finance.movement.create':'finance.movement.write','finance.account.create':'finance.account.write','finance.account.apply':'finance.account.apply','finance.reconcile.visit':'finance.reconcile','finance.budget.save':'finance.budget.write'};
+  return {version:'cxorbia-command-adapter-v1',commandType:type,entityType:entityTypes[type],tenantId:'tenant-a',projectId:null,periodId:'2026-10',requireProject:false,requirePeriod:true,
+    entityId,expectedVersion,idempotencyKey,authorization:{providerEnforcementRequired:true,permission:permissions[type]},
+    payload:{global:true,periodId:'2026-10',kind:'cxc',tipo:'ingreso',tipoIngreso:'remesa',country:'GT',currency:'Q',amount:1,concepto:'C04 memory fixture',cat:'C04 memory fixture',fecha:'2026-10-29',...payload},...extra};
+}
+
+test('C04 project-scoped account and movement remain available to a project-limited Admin',async()=>{
+  const {db,provider}=c04Environment({entitlement:'SPECIFIC_PROJECTS'});
+  for(const type of ['finance.account.create','finance.movement.create']){
+    const cmd=c04Command(type,{projectId:'project-a',requireProject:true,periodId:'project-a-2026-10',payload:{global:false,periodId:'project-a-2026-10'}});
+    const result=await provider.execute('token',cmd);
+    assert.equal(result.ok,true);assert.equal(result.projectId,'project-a');assert.equal(result.periodId,'project-a-2026-10');
+    const row=result.account||result.movement;assert.notEqual(row.global,true);assert.equal(row.currency,'Q');
+  }
+  const before=clone([...db.s]);
+  const wrongCurrency=c04Command('finance.movement.create',{idempotencyKey:'c04-project-wrong-currency',projectId:'project-a',requireProject:true,periodId:'project-a-2026-10',payload:{global:false,periodId:'project-a-2026-10',currency:'L'}});
+  assert.equal((await provider.execute('token',wrongCurrency)).code,'FINANCE_MOVEMENT_CURRENCY_SCOPE_CONFLICT');assert.deepEqual([...db.s],before);
+});
+
+test('C04 Global movement/account use the tenant ledger, explicit country/currency and exact replay without bank or HR writes',async()=>{
+  const {db,provider}=c04Environment(),beforeProject=clone(db.get('tenants/tenant-a/projects/project-a'));
+  const gt=await provider.execute('token',c04Command('finance.movement.create',{idempotencyKey:'c04-gt',payload:{amount:1.25}}));
+  const hn=await provider.execute('token',c04Command('finance.movement.create',{idempotencyKey:'c04-hn',payload:{country:'HN',currency:'L',amount:2.5}}));
+  assert.equal(gt.ok,true);assert.equal(hn.ok,true);
+  for(const result of [gt,hn]){
+    assert.equal(result.projectId,null);assert.equal(result.periodId,'2026-10');
+    assert.equal(result.externalPaymentConfirmed,false);assert.equal(result.bankWrites,0);
+    const row=db.get('tenants/tenant-a/financialMovements/'+result.entityId);
+    assert.equal(row.global,true);assert.equal(row.projectId,null);assert.equal(row.tenantId,'tenant-a');
+    assert.equal(row.revenueRecognized,false);assert.equal(row.operatingRevenue,false);
+    assert.equal(row.periodId,'2026-10');
+  }
+  assert.equal(gt.movement.currency,'Q');assert.equal(gt.movement.amount,1.25);
+  assert.equal(hn.movement.currency,'L');assert.equal(hn.movement.amount,2.5);
+  const cmd=c04Command('finance.account.create'),created=await provider.execute('token',cmd);
+  assert.equal(created.ok,true);assert.equal(created.account.global,true);assert.equal(created.account.projectId,null);
+  const snapshot=clone([...db.s]);
+  const replay=await provider.execute('token',cmd);
+  assert.equal(replay.ok,true);assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);
+  assert.deepEqual([...db.s],snapshot);
+  const changed=await provider.execute('token',{...cmd,payload:{...cmd.payload,amount:2}});
+  assert.equal(changed.ok,false);assert.match(changed.code,/IDEMPOTENCY_REUSE_DIFFERENT_PAYLOAD/);assert.equal(changed.providerWrites,0);
+  assert.deepEqual(db.get('tenants/tenant-a/projects/project-a'),beforeProject);
+  assert.equal([...db.s.keys()].filter(path=>path.includes('/visits/')).length,1);
+});
+
+test('C04 Global financing remains non-operating and creates only a linked Global CxP',async()=>{
+  const {db,provider}=c04Environment();
+  const result=await provider.execute('token',c04Command('finance.movement.create',{payload:{tipoIngreso:'financiamiento',amount:4.25}}));
+  assert.equal(result.ok,true);assert.equal(result.movement.nonOperating,true);assert.equal(result.movement.revenueRecognized,false);
+  const account=db.get('tenants/tenant-a/financeAccounts/'+result.linkedAccount.id);
+  assert.equal(account.global,true);assert.equal(account.projectId,null);assert.equal(account.periodId,'2026-10');
+  assert.equal(account.kind,'cxp');assert.equal(account.sourceMovementId,result.movement.id);assert.equal(account.balance,4.25);
+  assert.equal(account.country,'GT');assert.equal(account.currency,'Q');
+});
+
+test('C04 Global collection changes only the exact account and replay preserves balance/version/movement',async()=>{
+  const {db,provider}=c04Environment();
+  const created=await provider.execute('token',c04Command('finance.account.create'));
+  const other=await provider.execute('token',c04Command('finance.account.create',{idempotencyKey:'c04-other-account',payload:{country:'HN',currency:'L',amount:3}}));
+  assert.equal(created.ok,true);assert.equal(other.ok,true);
+  const beforeOther=clone(db.get('tenants/tenant-a/financeAccounts/'+other.entityId));
+  const cmd=c04Command('finance.account.apply',{entityId:created.entityId,expectedVersion:created.account.updatedAt,payload:{accountId:created.entityId,amount:0.4}});
+  const applied=await provider.execute('token',cmd);
+  assert.equal(applied.ok,true);assert.equal(applied.account.balance,0.6);assert.equal(applied.account.version,1);
+  assert.equal(applied.movement.global,true);assert.equal(applied.movement.accountId,created.entityId);
+  assert.equal(applied.movement.revenueRecognized,false);assert.equal(applied.movement.operatingRevenue,false);assert.equal(applied.externalPaymentConfirmed,false);
+  const after=clone([...db.s]),replay=await provider.execute('token',cmd);
+  assert.equal(replay.ok,true);assert.equal(replay.providerWrites,0);assert.deepEqual([...db.s],after);
+  assert.deepEqual(db.get('tenants/tenant-a/financeAccounts/'+other.entityId),beforeOther);
+  const stale=await provider.execute('token',{...cmd,idempotencyKey:'c04-stale'});
+  assert.equal(stale.ok,false);assert.match(stale.code,/EXPECTED_VERSION_CONFLICT/);assert.deepEqual([...db.s],after);
+});
+
+test('C04 Global is denied for project-only/missing entitlements, disallowed roles, inactive membership and country restriction',async t=>{
+  const cases=[
+    ['specific-projects',{entitlement:'SPECIFIC_PROJECTS'},{},'FINANCE_ACTOR_TENANT_ENTITLEMENT_REQUIRED'],
+    ['missing-entitlement',{entitlement:null},{},'FINANCE_ACTOR_TENANT_ENTITLEMENT_REQUIRED'],
+    ['ops',{role:'ops'},{},'FINANCE_ACTOR_SCOPE_DENIED'],
+    ['coordinador',{role:'coordinador'},{},'FINANCE_ACTOR_SCOPE_DENIED'],
+    ['shopper',{role:'shopper',namespace:'shopper'},{},'FINANCE_ACTOR_SCOPE_DENIED'],
+    ['client',{role:'cliente',namespace:'client'},{},'FINANCE_ACTOR_SCOPE_DENIED'],
+    ['inactive',{active:false},{},'FINANCE_ACTOR_MEMBERSHIP_INVALID'],
+    ['country',{countries:['GT']},{country:'HN',currency:'L'},'FINANCE_ACTOR_COUNTRY_DENIED'],
+  ];
+  for(const [label,env,payload,code] of cases)await t.test(label,async()=>{
+    const {db,provider}=c04Environment(env),before=clone([...db.s]);
+    if(label==='missing-entitlement'){const m=db.get('tenants/tenant-a/users/admin-1');delete m.entitlementMode;db.seed('tenants/tenant-a/users/admin-1',m);}
+    const actualBefore=clone([...db.s]);
+    const result=await provider.execute('token',c04Command('finance.account.create',{payload}));
+    assert.equal(result.ok,false);assert.equal(result.code,code);assert.equal(result.providerWrites,0);assert.deepEqual([...db.s],actualBefore);
+  });
+});
+
+test('C04 Global never bypasses project command scope, tenant allowlist, version or project-only visit/budget contracts',async t=>{
+  const cases=[
+    ['missing-global',c04Command('finance.movement.create',{payload:{global:false}})],
+    ['fake-global-project',c04Command('finance.movement.create',{projectId:'__global__'})],
+    ['global-with-project',c04Command('finance.movement.create',{projectId:'project-a'})],
+    ['global-wrong-period',c04Command('finance.movement.create',{periodId:'project-a-2026-10'})],
+    ['global-payload-period',c04Command('finance.movement.create',{payload:{periodId:'2026-09'}})],
+    ['global-date-period',c04Command('finance.movement.create',{payload:{fecha:'2026-09-29'}})],
+    ['global-no-date',c04Command('finance.movement.create',{payload:{fecha:null}})],
+    ['global-invalid-date',c04Command('finance.movement.create',{payload:{fecha:'2026-10-32'}})],
+    ['global-project-destination',c04Command('finance.movement.create',{payload:{proyectoId:'project-a'}})],
+    ['global-visit-link',c04Command('finance.account.create',{payload:{visitId:'visit-a'}})],
+    ['global-unbounded-version',c04Command('finance.account.apply',{entityId:'account-a',expectedVersion:'source-current'})],
+    ['global-budget',c04Command('finance.budget.save')],
+    ['global-reconcile',c04Command('finance.reconcile.visit',{entityId:'visit-a',payload:{visitId:'visit-a'}})],
+    ['foreign-tenant',c04Command('finance.movement.create',{tenantId:'tenant-b'})],
+    ['project-policy-still-denied',c04Command('finance.movement.create',{projectId:'project-b',requireProject:true,periodId:'project-b-2026-10',payload:{global:false,periodId:'project-b-2026-10'}})],
+  ];
+  for(const [label,cmd] of cases)await t.test(label,async()=>{
+    const {db,provider}=c04Environment(),before=clone([...db.s]);
+    const result=await provider.execute('token',cmd);
+    assert.equal(result.ok,false,label);assert.equal(result.providerWrites,0,label);assert.deepEqual([...db.s],before,label);
+  });
+  const {db,provider}=c04Environment({role:'super',entitlement:null});
+  const accepted=await provider.execute('token',c04Command('finance.movement.create'));
+  assert.equal(accepted.ok,true);assert.equal(accepted.projectId,null);
+});
+
+test('C04 Global account application refuses wrong account tenant/project/month/marker and country',async t=>{
+  const variations=[['tenant',{tenantId:'tenant-b'}],['project',{projectId:'project-a'}],['period',{periodId:'2026-09'}],['marker',{global:false}],['country',{country:'HN',pais:'HN',currency:'L',moneda:'L'}],['internal-id',{id:'other'}],['missing-id',{id:undefined}]];
+  for(const [label,patch] of variations)await t.test(label,async()=>{
+    const {db,provider}=c04Environment({countries:['GT']});
+    db.seed('tenants/tenant-a/financeAccounts/c04-account',{id:'c04-account',tenantId:'tenant-a',projectId:null,global:true,periodId:'2026-10',kind:'cxc',country:'GT',pais:'GT',currency:'Q',moneda:'Q',balance:1,saldo:1,version:1,...patch});
+    const before=clone([...db.s]);
+    const result=await provider.execute('token',c04Command('finance.account.apply',{entityId:'c04-account',expectedVersion:1,payload:{accountId:'c04-account',amount:0.25}}));
+    assert.equal(result.ok,false);assert.equal(result.providerWrites,0);assert.deepEqual([...db.s],before);
+  });
+});
+
+function c04BrowserBoundary(){
+  const commands=[];
+  const CX={BACKEND:{enabled:true,enableCommandWrites:true,tenantId:'tenant-a'},
+    backendAuth:{context:()=>({authenticated:true,tenantId:'tenant-a',role:'admin',authNamespace:'staff',actorId:'admin-1',projectIds:['project-a']})},
+    session:{user:{id:'admin-1',tenantId:'tenant-a',role:'admin',projectIds:['project-a']}},bus:{on(){},emit(){}},
+    data:{ctx:()=>({tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-10'}),currentProjectId:'project-a',currentPeriodId:'project-a-2026-10'}};
+  const context={CX,console,document:{readyState:'complete'},setTimeout:()=>0,queueMicrotask:()=>{},addEventListener(){}};context.window=context;
+  vm.createContext(context);
+  vm.runInContext(fs.readFileSync(new URL('../../../../app/adapters/cxorbia-command-adapter-v1.js',import.meta.url),'utf8'),context);
+  CX.commandAdapter.registerTransport('memory',{execute:async command=>{commands.push(clone(command));return {ok:true,status:'committed',providerAck:true,successUiAllowed:true,projectId:command.projectId,periodId:command.periodId};}});
+  CX.commandAdapter.useTransport('memory');
+  vm.runInContext(fs.readFileSync(new URL('../../../../app/adapters/cxorbia-cxdata-command-boundary-v1.js',import.meta.url),'utf8'),context);
+  return {CX,commands};
+}
+
+test('C04 command boundary carries explicit Global scope and keeps project cache/commands independent',async()=>{
+  const {CX,commands}=c04BrowserBoundary(),body={tipo:'ingreso',tipoIngreso:'remesa',country:'GT',currency:'Q',amount:1,fecha:'2026-10-29'};
+  const global=await CX.data.createFinancialMovement(body,{ackAware:true,global:true,periodId:'2026-10'});
+  await CX.data.createFinancialMovement(body,{ackAware:true});
+  assert.equal(global.projectId,null);assert.equal(commands[0].projectId,null);assert.equal(commands[0].periodId,'2026-10');assert.equal(commands[0].payload.periodId,'2026-10');
+  assert.equal(commands[0].payload.global,true);assert.equal(commands[0].requireProject,false);
+  assert.equal(commands[1].projectId,'project-a');assert.equal(commands[1].periodId,'project-a-2026-10');assert.equal(commands[1].requireProject,true);
+  assert.notEqual(commands[0].idempotencyKey,commands[1].idempotencyKey);
+  CX.data.__financeAccounts=[{id:'account-a',tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-10',version:99}];
+  CX.data.__globalFinanceAccounts=[{id:'account-a',tenantId:'tenant-a',projectId:null,periodId:'2026-10',global:true,version:2}];
+  await CX.data.applyFinanceAccount('account-a',0.4,{ackAware:true,global:true,periodId:'2026-10',fecha:'2026-10-29'});
+  assert.equal(commands.at(-1).expectedVersion,2);assert.equal(commands.at(-1).projectId,null);
+  CX.data.__globalFinanceAccounts=[];
+  const count=commands.length,rejected=await CX.data.applyFinanceAccount('account-a',0.4,{ackAware:true,global:true,periodId:'2026-10',fecha:'2026-10-29'});
+  assert.equal(rejected.ok,false);assert.equal(rejected.code,'FINANCE_ACCOUNT_SOURCE_READ_REQUIRED');assert.equal(commands.length,count);
+  assert.equal(CX.data.__financeAccounts[0].version,99);
+});
+
+function c04Reader(rows,metadata={fromCache:false,hasPendingWrites:false}){
+  const queries=[];
+  class Query{
+    constructor(path,filters=[]){this.path=path;this.filters=filters;}
+    collection(name){return new Query(this.path+'/'+name);}
+    doc(id){return new Query(this.path+'/'+id);}
+    where(field,op,value){assert.equal(op,'==');return new Query(this.path,[...this.filters,[field,value]]);}
+    async get(options){queries.push({path:this.path,filters:clone(this.filters),options:clone(options)});return {metadata,docs:rows.filter(r=>this.filters.every(([field,value])=>r.data[field]===value)).map(r=>({id:r.id,data:()=>clone(r.data)}))};}
+  }
+  const CX={BACKEND:{tenantId:'tenant-a'},backend:{tenantId:()=> 'tenant-a'},bus:{emit(){}}};
+  const firebase={apps:[{}],firestore:()=>({collection:name=>new Query(name)})};
+  const context={CX,firebase,console:{warn(){}}};context.window=context;
+  vm.runInNewContext(fs.readFileSync(new URL('../../../../app/core/backend-finance-benefits.js',import.meta.url),'utf8'),context);
+  return {reader:CX.backendFinanceBenefits,queries};
+}
+
+test('C04 Global reader filters Global-only/month and requires server-confirmed snapshot without pending local writes',async t=>{
+  const rows=[
+    {id:'global-q',data:{id:'global-q',tenantId:'tenant-a',projectId:null,periodId:'2026-10',global:true,country:'GT',currency:'Q',amount:1.25}},
+    {id:'global-l',data:{id:'global-l',tenantId:'tenant-a',projectId:null,periodId:'2026-10',global:true,country:'HN',currency:'L',amount:2.5}},
+    {id:'project',data:{id:'project',tenantId:'tenant-a',projectId:'project-a',periodId:'2026-10',country:'GT',currency:'Q',amount:99}},
+    {id:'prior',data:{id:'prior',tenantId:'tenant-a',projectId:null,periodId:'2026-09',global:true,country:'GT',currency:'Q',amount:88}},
+  ];
+  for(const method of ['getFinancialMovements','getFinanceAccounts']){
+    const {reader,queries}=c04Reader(rows),result=await reader[method]({global:true,projectId:null,periodId:'2026-10'});
+    assert.equal(result.status,'ok');assert.deepEqual(Array.from(result.items,r=>r.id),['global-q','global-l']);
+    assert.deepEqual(queries[0].options,{source:'server'});
+    assert.deepEqual(queries[0].filters,[['global',true],['projectId',null],['periodId','2026-10']]);
+    const project=await reader[method]({projectId:'project-a',periodId:'2026-10'});
+    assert.deepEqual(Array.from(project.items,r=>r.id),['project']);assert.equal(queries[1].options,undefined);
+  }
+  for(const metadata of [{fromCache:true,hasPendingWrites:false},{fromCache:false,hasPendingWrites:true},{}])await t.test(JSON.stringify(metadata),async()=>{
+    const result=await c04Reader(rows,metadata).reader.getFinanceAccounts({global:true,projectId:null,periodId:'2026-10'});
+    assert.equal(result.status,'error');assert.ok(result.errors.includes('FINANCE_GLOBAL_REMOTE_READ_REQUIRED'));assert.equal(result.items.length,0);
+  });
+  for(const patch of [{tenantId:'tenant-b'},{id:'hidden-other-id'},{id:undefined}]){
+    const invalid=clone(rows);Object.assign(invalid[0].data,patch);
+    const result=await c04Reader(invalid).reader.getFinancialMovements({global:true,projectId:null,periodId:'2026-10'});
+    assert.equal(result.status,'error');assert.ok(result.errors.includes('FINANCE_GLOBAL_READ_SCOPE_MISMATCH'));
+  }
+  const malformed=await c04Reader(rows).reader.getFinanceAccounts({global:true,projectId:'project-a',periodId:'2026-10'});
+  assert.equal(malformed.status,'error');assert.ok(malformed.errors.includes('FINANCE_GLOBAL_READ_SCOPE_REQUIRED'));
+});
+
+test('C04 Global UI currency/month/readback preserve actual row scope, cents and linked account update',()=>{
+  const source=fs.readFileSync(new URL('../../../../app/modules/finanzas.js',import.meta.url),'utf8');
+  const start=source.indexOf('function cxFinanceExplicitCurrency('),end=source.indexOf('/* END HF24 exact finance create readback */',start);
+  assert.ok(start>0&&end>start);
+  const context={};vm.createContext(context);
+  vm.runInContext("function cxFinanceCommandCommitted(r){return r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true;}\n"+source.slice(start,end),context);
+  const p={currency:{GT:'Q',HN:'L'}};
+  assert.equal(context.cxFinanceRowCurrency({country:'GT',currency:'USD'},p,true),'USD');
+  assert.equal(context.cxFinanceRowCurrency({country:'HN',currency:'L'},p,true),'L');
+  assert.equal(context.cxFinanceRowCurrency({country:'GT'},p,true),'pending_currency');
+  assert.equal(context.cxFinanceGlobalMonth({periodKey:'2026-10'},'project-a-2026-10'),'2026-10');
+  assert.equal(context.cxFinanceGlobalMonth({},'unknown'),null);
+  const before={id:'account-a',kind:'cxc',country:'GT',currency:'Q',balance:1};
+  const account={...before,global:true,projectId:null,periodId:'2026-10',tenantId:'tenant-a',balance:0.6,version:2,lastMovementId:'movement-a'};
+  const movement={id:'movement-a',global:true,projectId:null,periodId:'2026-10',tenantId:'tenant-a',accountId:'account-a',country:'GT',currency:'Q',amount:0.4,revenueRecognized:false,operatingRevenue:false};
+  const ack={ok:true,status:'committed',providerAck:true,successUiAllowed:true,tenantId:'tenant-a',projectId:null,periodId:'2026-10',entityId:'account-a',account,movement};
+  assert.equal(context.cxFinanceGlobalApplyReadback(ack,[account],[movement],before,0.4),true);
+  for(const patch of [{global:false},{projectId:'project-a'},{periodId:'2026-09'},{currency:'L'},{country:'HN'},{version:3},{balance:0.61},{lastMovementId:'other'}])assert.equal(context.cxFinanceGlobalApplyReadback(ack,[{...account,...patch}],[movement],before,0.4),false);
+  assert.equal(context.cxFinanceGlobalApplyReadback(ack,[account,account],[movement],before,0.4),false);
+  assert.equal(context.cxFinanceGlobalApplyReadback(ack,[account],[],before,0.4),false);
+  assert.equal(context.cxFinanceGlobalApplyReadback({...ack,account:{...account,id:'other'}},[account],[movement],before,0.4),false);
+  assert.equal(context.cxFinanceGlobalApplyReadback({...ack,movement:{...movement,accountId:'other'}},[account],[movement],before,0.4),false);
+  assert.equal(context.cxFinanceGlobalApplyReadback({...ack,account:{...account,global:false}},[account],[movement],before,0.4),false);
+  const createAck={...ack,entityId:'movement-a'},row={...movement,monto:0.4};
+  assert.equal(context.cxFinanceCreatedReadback(createAck,[row],{country:'GT',currency:'Q',amount:0.4,global:true}),true);
+  assert.equal(context.cxFinanceCreatedReadback(createAck,[{...row,global:false}],{country:'GT',currency:'Q',amount:0.4,global:true}),false);
+  assert.equal(context.cxFinanceCreatedReadback(createAck,[row],{country:'GT',currency:'Q',amount:0.4,global:true,sourceMovementId:'required-link'}),false);
+  assert.equal(context.cxFinanceCreatedReadback(createAck,[{...row,sourceMovementId:'required-link'}],{country:'GT',currency:'Q',amount:0.4,global:true,sourceMovementId:'required-link'}),true);
+});
+
+function c04MovementView({failGlobal=false,globalRows}={}){
+  // The real module renders and binds its scope/export events; this tiny host is
+  // a DOM test double, not a live browser or a provider authentication proof.
+  class Element{
+    constructor(dataset={}){this.dataset=dataset;this.handlers={};this._html='';}
+    set innerHTML(v){this._html=String(v);this.nodes={};}
+    get innerHTML(){return this._html;}
+    addEventListener(name,fn){this.handlers[name]=fn;}
+    async click(){return this.handlers.click?.({preventDefault(){}});}
+    querySelectorAll(selector){
+      if(selector==='[data-scope]')return ['proyecto','global'].map(value=>this.nodes[value]||(this.nodes[value]=new Element({scope:value})));
+      return [];
+    }
+    querySelector(selector){
+      if(selector==='#movExport'&&this._html.includes('id="movExport"'))return this.nodes.export||(this.nodes.export=new Element());
+      return null;
+    }
+  }
+  const modules={},queries=[],reports=[],localCalls=[],toasts=[];
+  const project={id:'project-a-2026-10',projectId:'project-a',periodKey:'2026-10',name:'Project October',countries:['GT','HN'],currency:{GT:'Q',HN:'L'}};
+  const projectRows=[{id:'project-movement',tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-10',pais:'GT',country:'GT',currency:'Q',moneda:'Q',monto:99,amount:99,fecha:'2026-10-29',tipo:'ingreso',tipoIngreso:'remesa',cat:'Project only',revenueRecognized:false,operatingRevenue:false}];
+  const globals=globalRows||[
+    {id:'global-q',tenantId:'tenant-a',projectId:null,periodId:'2026-10',global:true,pais:'GT',country:'GT',currency:'Q',moneda:'Q',monto:1.25,amount:1.25,fecha:'2026-10-29',tipo:'ingreso',tipoIngreso:'remesa',cat:'Global Q',revenueRecognized:false,operatingRevenue:false},
+    {id:'global-l',tenantId:'tenant-a',projectId:null,periodId:'2026-10',global:true,pais:'HN',country:'HN',currency:'L',moneda:'L',monto:2.5,amount:2.5,fecha:'2026-10-29',tipo:'ingreso',tipoIngreso:'remesa',cat:'Global L',revenueRecognized:false,operatingRevenue:false}
+  ];
+  const data={currentProjectId:'project-a',currentPeriodId:'project-a-2026-10',tenantId:()=> 'tenant-a',period:()=>project,
+    async getFinancialMovements(req){queries.push({kind:'movements',...clone(req)});return {status:req.global&&failGlobal?'error':'ok',items:clone(req.global?globals:projectRows)};},
+    async getFinanceAccounts(req){queries.push({kind:'accounts',...clone(req)});return {status:req.global&&failGlobal?'error':'ok',items:[]};},
+    async getFinanceBudgets(req){queries.push({kind:'budgets',...clone(req)});return {status:'ok',items:[]};},_visitas:[]};
+  const ui={el:()=>new Element(),ph:(...v)=>v.join(' '),empty:(...v)=>v.join(' '),money:(c,v)=>c+' '+Number(v).toFixed(2),kpi:(...v)=>v.join(' '),bdg:(...v)=>v.join(' '),aiBox:(...v)=>v.join(' '),toast:(...v)=>toasts.push(v)};
+  const finStore={GLOBAL:'__global__',CATEGORIAS:[],TIPOS_INGRESO:{remesa:'Remesa'},TIPOS_EGRESO:{},_mov:{__global__:[{monto:7300,currency:'Q'}]},_cxp:{},_cxc:{},_fin:{}};
+  for(const k of ['mov','cxp','cxc','financiamientos'])finStore[k]=()=>{localCalls.push(k);return [];};
+  const CX={BACKEND:{enabled:true,tenantId:'tenant-a'},data,dataSource:{showFixtures:()=>false},module:(name,fn)=>{modules[name]=fn;},finStore,
+    bus:{on(){},emit(){}},fin:{canonPeriods:()=>[{id:'project-a-2026-10',label:'October'}],canonCurrentId:()=>data.currentPeriodId},liq:{forProject:()=>[]},reportKit:{openReport:spec=>reports.push(spec)}};
+  const context={CX,console,setTimeout:()=>0,document:{},CX_TENANT_RUNTIME_CONFIG:{tenantId:'tenant-a',countries:['GT','HN']}};context.window=context;
+  vm.runInNewContext(fs.readFileSync(new URL('../../../../app/modules/finanzas.js',import.meta.url),'utf8'),context);
+  const host=modules.movimientos({data,ui});
+  return {host,data,queries,reports,localCalls,toasts,globals};
+}
+
+test('C04 real Movimientos draw/scope/export use isolated remote ledgers, never the legacy local balance',async()=>{
+  const v=c04MovementView();await new Promise(resolve=>setImmediate(resolve));
+  assert.match(v.host.innerHTML,/Project only/);assert.doesNotMatch(v.host.innerHTML,/Global Q/);
+  const projectCache=v.data.__financialMovements;
+  const projectBudgetReader=v.data.getFinanceBudgets;delete v.data.getFinanceBudgets;
+  await v.host.querySelectorAll('[data-scope]')[1].click();await new Promise(resolve=>setImmediate(resolve));
+  assert.match(v.host.innerHTML,/Global Q/);assert.match(v.host.innerHTML,/Global L/);assert.doesNotMatch(v.host.innerHTML,/Project only|7300/);
+  assert.match(v.host.innerHTML,/Hay 1 registros heredados/);
+  assert.deepEqual(v.localCalls,[]);assert.equal(v.data.__financialMovements,projectCache);
+  assert.deepEqual(v.queries.filter(q=>q.global).map(q=>[q.kind,q.projectId,q.periodId]),[['movements',null,'2026-10'],['accounts',null,'2026-10']]);
+  await v.host.querySelector('#movExport').click();
+  const report=v.reports[0];assert.equal(report.meta.scope,'Global');assert.equal(report.meta.period,'2026-10');assert.match(report.filename,/movimientos_global_2026-10_/);
+  assert.deepEqual(Array.from(report.rows,r=>[r.moneda,r.monto]),[['Q',1.25],['L',2.5]]);
+  assert.deepEqual(Array.from(report.chart.data,r=>[r.label,r.value]),[['Q · Ingreso',1.25],['L · Ingreso',2.5]]);
+  assert.equal(report.chart.perCurrency.Q.Ingreso,1.25);assert.equal(report.chart.perCurrency.L.Ingreso,2.5);
+  assert.ok(report.summary.some(line=>line.includes('Q — Ingresos oper.: Q 0.00')));
+  assert.ok(report.summary.some(line=>line.includes('L — Ingresos oper.: L 0.00')));
+  v.data.getFinanceBudgets=projectBudgetReader;
+  await v.host.querySelectorAll('[data-scope]')[0].click();await new Promise(resolve=>setImmediate(resolve));
+  assert.match(v.host.innerHTML,/Project only/);assert.doesNotMatch(v.host.innerHTML,/Global Q|Global L/);
+  assert.equal(v.data.__financialMovements,projectCache);assert.deepEqual(v.localCalls,[]);
+});
+
+test('C04 failed Global read shows no monetary fallback and currency keys cannot corrupt aggregation',async()=>{
+  const failed=c04MovementView({failGlobal:true});await new Promise(resolve=>setImmediate(resolve));
+  await failed.host.querySelectorAll('[data-scope]')[1].click();await new Promise(resolve=>setImmediate(resolve));
+  assert.match(failed.host.innerHTML,/No se pudo confirmar la lectura remota/);assert.doesNotMatch(failed.host.innerHTML,/Global Q|7300|Ingresos oper\./);assert.deepEqual(failed.localCalls,[]);
+  const sample=c04MovementView().globals[0];
+  const keys=c04MovementView({globalRows:['__proto__','constructor'].map((currency,i)=>({...sample,id:'key-'+i,currency,moneda:currency,cat:'Key '+i}))});
+  await new Promise(resolve=>setImmediate(resolve));await keys.host.querySelectorAll('[data-scope]')[1].click();await new Promise(resolve=>setImmediate(resolve));
+  await keys.host.querySelector('#movExport').click();
+  const report=keys.reports[0];assert.equal(report.chart.perCurrency.__proto__.Ingreso,1.25);assert.equal(report.chart.perCurrency.constructor.Ingreso,1.25);
+  assert.deepEqual(Array.from(report.chart.data,r=>r.value),[1.25,1.25]);
 });

@@ -97,6 +97,16 @@
     };
   }
 
+  function buildFinance(commandType,entityType,entityId,payload,expectedVersion,meta){
+    const cmd=buildBase(commandType,entityType,entityId,payload,expectedVersion,meta);
+    if(meta?.global!==true)return cmd;
+    const c=ctx(),periodId=str(meta.periodId);
+    cmd.projectId=null;cmd.periodId=periodId;cmd.requireProject=false;cmd.requirePeriod=true;
+    cmd.payload=Object.assign({},payload,{global:true,periodId});
+    cmd.idempotencyKey=idempotency(commandType,entityId,cmd.payload,expectedVersion,{tenantId:c.tenantId,projectId:null,periodId});
+    return cmd;
+  }
+
   function install(reason){
     if(!canonicalMode()||!CX.data)return false;
     const D=CX.data;
@@ -242,18 +252,23 @@
     };
     D.createFinancialMovement=function(rec,meta){
       rec=rec||{};meta=commandMeta(meta||rec.__commandMeta);const payload=Object.assign({},rec);delete payload.__commandMeta;
-      const cmd=buildBase('finance.movement.create','financialMovement',null,payload,'absent',Object.assign({permission:'finance.movement.write'},meta));
+      const cmd=buildFinance('finance.movement.create','financialMovement',null,payload,'absent',Object.assign({permission:'finance.movement.write'},meta));
       return execute(cmd,meta);
     };
     D.createFinanceAccount=function(kind,rec,meta){
       rec=rec||{};meta=commandMeta(meta||rec.__commandMeta);const payload=Object.assign({},rec,{kind});delete payload.__commandMeta;
-      const cmd=buildBase('finance.account.create','financeAccount',null,payload,'absent',Object.assign({permission:'finance.account.write'},meta));
+      const cmd=buildFinance('finance.account.create','financeAccount',null,payload,'absent',Object.assign({permission:'finance.account.write'},meta));
       return execute(cmd,meta);
     };
     D.applyFinanceAccount=function(accountId,amount,meta){
-      meta=commandMeta(meta);const current=(D.__financeAccounts||[]).find(x=>str(x.id)===str(accountId))||{};
+      meta=commandMeta(meta);const matches=(meta.global===true?D.__globalFinanceAccounts||[]:D.__financeAccounts||[]).filter(x=>str(x.id)===str(accountId));
+      const current=meta.global===true?(matches.length===1?matches[0]:{}):(matches[0]||{});
+      if(meta.global===true&&(matches.length!==1||current.global!==true||current.projectId!==null||current.tenantId!==ctx().tenantId||current.periodId!==meta.periodId)){
+        const result=CX.commandAdapter?.blocked?.({commandType:'finance.account.apply',entityType:'financeAccount'},'FINANCE_ACCOUNT_SOURCE_READ_REQUIRED')||{ok:false,status:'blocked',code:'FINANCE_ACCOUNT_SOURCE_READ_REQUIRED'};
+        return meta.ackAware?Promise.resolve(surfaceBlocked(result)):legacyFailClosed(result);
+      }
       const payload={accountId,amount,fecha:meta.fecha||null,desc:meta.desc||null};
-      const cmd=buildBase('finance.account.apply','financeAccount',accountId,payload,versionOf(current),Object.assign({permission:'finance.account.apply'},meta));
+      const cmd=buildFinance('finance.account.apply','financeAccount',accountId,payload,versionOf(current),Object.assign({permission:'finance.account.apply'},meta));
       return execute(cmd,meta);
     };
     D.saveFinanceBudget=function(rec,meta){

@@ -308,3 +308,68 @@ test('Resource writes without opt-in keep the existing flow and do not add an ex
   assert.equal(h.stats.exactReads.length,0);assert.equal(h.stats.queryReads,1);
   assert.equal(h.stats.transactions,1);assert.equal(h.stats.writes,1);
 });
+
+// Execute the real module with a DOM-shaped event target and a controllable task queue.
+// Reproduce two renders before the browser executes either deferred mount callback.
+function renderMountHarness(){
+  let module,periodId='cinepolis-2026-09';
+  const tasks=[],nodes=[],gates=[],modals=[];
+  class Element {
+    constructor(tag='button'){this.tagName=tag;this.id='';this.dataset={};this.listeners=new Map();}
+    addEventListener(type,fn){const list=this.listeners.get(type)||[];list.push(fn);this.listeners.set(type,list);}
+    insertAdjacentElement(where,node){assert.equal(where,'afterend');const i=nodes.indexOf(this);assert.ok(i>=0);nodes.splice(i+1,0,node);}
+    async click(){for(const fn of this.listeners.get('click')||[])await fn({target:this});}
+  }
+  const document={
+    getElementById:id=>nodes.find(x=>x.id===id)||null,
+    querySelectorAll:selector=>selector.startsWith('#')&&!selector.includes(' ')?nodes.filter(x=>x.id===selector.slice(1)):[],
+    createElement:tag=>new Element(tag)
+  };
+  const data={currentProjectId:'cinepolis',shoppers:[],period:()=>({id:periodId,name:'QA period '+periodId}),programs:()=>[]};
+  const ui={ph:()=>'',kpi:()=>'',bdg:()=>'',degraded:()=>'',empty:()=>'',toast:()=>{},modal:(...args)=>modals.push(args)};
+  const CX={BACKEND:{enabled:true},data,ui,dataSource:{showFixtures:()=>false},
+    session:{role:'admin',user:{role:'admin'}},backendCertifications:{currentUid:()=> 'qa-reviewer'},
+    backendResources:{list:()=>[{id:'bank-'+periodId,version:2,bank:{certificationId:'qa',
+      certificationName:'QA bank '+periodId,estado:'pending_review',generadoPorUid:'qa-author',preguntas:clone(questions)}}]},
+    permissions:{ctx:value=>value,gate:(_action,ctx)=>{gates.push(ctx);return true;}},
+    module:(name,fn)=>{assert.equal(name,'cert');module=fn;}};
+  const window={CX};
+  vm.runInNewContext(source,{CX,window,document,crypto:webcrypto,TextEncoder,console,Date,setTimeout:fn=>tasks.push(fn)});
+  function render(nextPeriod){
+    periodId=nextPeriod;
+    const html=module({role:'admin',data,ui});
+    nodes.splice(0);
+    for(const match of html.matchAll(/<([a-z]+)[^>]*\bid="([^"]+)"[^>]*>/g)){
+      const el=new Element(match[1]);el.id=match[2];nodes.push(el);
+    }
+  }
+  return {render,flush(){while(tasks.length)tasks.shift()();},leave(){nodes.splice(0);},
+    count:id=>nodes.filter(x=>x.id===id).length,button:id=>document.getElementById(id),gates,modals};
+}
+
+test('E03/E11 rapid certification rerenders mount each action and listener exactly once',async()=>{
+  const h=renderMountHarness();
+  h.render('cinepolis-2026-09');h.render('cinepolis-2026-10');h.flush();
+  assert.equal(h.count('certPublish'),1,'one publication control for the current bank');
+  assert.equal(h.count('certReviewEdit'),1,'one review control for the current bank');
+  assert.equal(h.button('certIA').listeners.get('click').length,1,'one IA handler');
+  assert.equal(h.button('certImp').listeners.get('click').length,1,'one import handler');
+  await h.button('certReviewEdit').click();
+  assert.equal(h.modals.length,1);
+  assert.equal(h.gates.length,1);
+  assert.equal(h.gates[0].entityId,'cinepolis-2026-10','only the latest period owns the handler');
+});
+
+test('E03/E11 navigating away before deferred mount performs no stale DOM mutation',()=>{
+  const h=renderMountHarness();h.render('cinepolis-2026-10');h.leave();
+  assert.doesNotThrow(()=>h.flush());
+  assert.equal(h.count('certPublish'),0);assert.equal(h.count('certReviewEdit'),0);
+});
+
+test('E03/E11 a later complete render keeps the current review action functional',async()=>{
+  const h=renderMountHarness();h.render('cinepolis-2026-09');h.flush();
+  h.render('cinepolis-2026-10');h.flush();
+  assert.equal(h.count('certPublish'),1);assert.equal(h.count('certReviewEdit'),1);
+  await h.button('certReviewEdit').click();
+  assert.equal(h.modals.length,1);assert.equal(h.gates[0].entityId,'cinepolis-2026-10');
+});

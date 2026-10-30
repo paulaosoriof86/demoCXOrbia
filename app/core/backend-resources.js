@@ -44,7 +44,23 @@ window.CX=window.CX||{};
   };
   // The active tenant/project/period/role owns the resource cache; stale async reads must never replace it.
   let latestLoadId=0,lastLoadedKey='',pendingKey='';
-  const cacheKey=scope=>JSON.stringify([scope.tenantId,scope.projectId,scope.periodId,role()]);
+  const cacheKey=scope=>JSON.stringify([scope.tenantId,uid(),scope.projectId,scope.periodId,role()]);
+  // Re-entering a resource screen still performs a remote read. Only a changed
+  // projection/state needs the resources event: emitting an identical snapshot
+  // remounts the router, whose new screen starts another identical remote read.
+  let lastPublishedReadSignature='';
+  function publishReadState(scope,state){
+    window.CX_BACKEND_RESOURCES_STATUS=state;
+    const rows=arr(api.items).slice().sort((a,b)=>str(a?.id).localeCompare(str(b?.id)));
+    const signature=JSON.stringify([cacheKey(scope),state.status,state.reason||null,rows],(_key,value)=>{
+      if(value&&typeof value==='object'&&!Array.isArray(value))
+        return Object.fromEntries(Object.keys(value).sort().map(key=>[key,value[key]]));
+      return value;
+    });
+    if(signature===lastPublishedReadSignature)return;
+    lastPublishedReadSignature=signature;
+    try{CX.bus?.emit?.('resources',state);}catch(_){}
+  }
   api.load=async function(input={}){
     if(!connected())return [];
     const c=resourcesCol(),scope=currentScope(input),key=cacheKey(scope),readId=++latestLoadId;
@@ -52,8 +68,7 @@ window.CX=window.CX||{};
     if(!c||!scope.projectId){
       if(readId===latestLoadId){
         api.items=[];lastLoadedKey='';
-        window.CX_BACKEND_RESOURCES_STATUS={source:'firestore',status:'blocked',reason:'RESOURCE_SCOPE_UNAVAILABLE',count:0,at:now()};
-        try{CX.bus?.emit?.('resources',window.CX_BACKEND_RESOURCES_STATUS);}catch(_){}
+        publishReadState(scope,{source:'firestore',status:'blocked',reason:'RESOURCE_SCOPE_UNAVAILABLE',count:0,at:now()});
         pendingKey='';
       }
       return [];
@@ -65,14 +80,12 @@ window.CX=window.CX||{};
       if(readId!==latestLoadId||cacheKey(currentScope())!==key)return [];
       const rows=snap.docs.map(d=>Object.assign({id:d.id},d.data()||{})).filter(x=>visible(x,scope));
       api.items=rows;lastLoadedKey=key;
-      window.CX_BACKEND_RESOURCES_STATUS={source:'firestore',status:'ready',tenantId:scope.tenantId,projectId:scope.projectId,periodId:scope.periodId,count:rows.length,at:now()};
-      try{CX.bus?.emit?.('resources',window.CX_BACKEND_RESOURCES_STATUS);}catch(_){}
+      publishReadState(scope,{source:'firestore',status:'ready',tenantId:scope.tenantId,projectId:scope.projectId,periodId:scope.periodId,count:rows.length,at:now()});
       return rows;
     }catch(error){
       if(readId===latestLoadId&&cacheKey(currentScope())===key){
         api.items=[];lastLoadedKey='';
-        window.CX_BACKEND_RESOURCES_STATUS={source:'firestore',status:'blocked',reason:'RESOURCE_PROVIDER_READ_FAILED',tenantId:scope.tenantId,projectId:scope.projectId,periodId:scope.periodId,count:0,at:now()};
-        try{CX.bus?.emit?.('resources',window.CX_BACKEND_RESOURCES_STATUS);}catch(_){}
+        publishReadState(scope,{source:'firestore',status:'blocked',reason:'RESOURCE_PROVIDER_READ_FAILED',tenantId:scope.tenantId,projectId:scope.projectId,periodId:scope.periodId,count:0,at:now()});
       }
       throw error;
     }finally{

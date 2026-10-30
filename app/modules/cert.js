@@ -141,6 +141,9 @@ CX.certStore = CX.certStore || {
 
 };
 CX.module('cert', ({role,data,ui})=>{
+  // A deferred callback belongs to this render, never to a newer bank or view.
+  const mountToken={};
+  CX.certStore._mountToken=mountToken;
   const p=data.period();
   // Etiquetas humanas únicamente: el estado técnico sigue intacto para permisos,
   // aprobación, elegibilidad, guardado y readback del proveedor.
@@ -336,6 +339,7 @@ CX.module('cert', ({role,data,ui})=>{
       ${bankNotice()}
     </div>`;})()}`}`;
   setTimeout(()=>{
+    if(CX.certStore._mountToken!==mountToken||!document.getElementById('certIA'))return;
     const ckData={
       cert:['Shoppers certificados (18)','<table class="tbl"><thead><tr><th>Shopper</th><th>Score</th><th>Fecha</th></tr></thead><tbody>'+['Evaluador 01|92|2026-05-12','Evaluador 03|88|2026-05-14','Evaluador 05|85|2026-05-20','Evaluador 07|90|2026-06-02'].map(r=>{const[n,s,f]=r.split('|');return `<tr><td><b>${n}</b></td><td>${CX.ui.bdg(s+'%','g')}</td><td style="font-size:12px">${f}</td></tr>`;}).join('')+'<tr><td colspan="3" style="font-size:11px;color:var(--t3);text-align:center">+ 14 más</td></tr></tbody></table>'],
       prog:['En progreso (6)','<table class="tbl"><thead><tr><th>Shopper</th><th>Avance</th><th>Intentos</th></tr></thead><tbody>'+['Evaluador 09|60|1','Evaluador 12|40|1','Evaluador 14|75|2'].map(r=>{const[n,a,i]=r.split('|');return `<tr><td><b>${n}</b></td><td>${CX.ui.bdg(a+'%','a')}</td><td>${i}</td></tr>`;}).join('')+'</tbody></table>'],

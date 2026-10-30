@@ -32,6 +32,51 @@ service cloud.firestore {
       return role() in ['super', 'admin', 'ops', 'coordinador'];
     }
 
+
+    // C04 Global read: same exact tenant membership used by the finance provider.
+    function canReadGlobalFinance(tenantId) {
+      let memberPath = /databases/$(database)/documents/tenants/$(tenantId)/users/$(request.auth.uid);
+      let member = get(memberPath);
+      return signedIn() &&
+        request.auth.token.get('tenantId', '') == tenantId &&
+        request.auth.token.get('authNamespace', 'staff') == 'staff' &&
+        isAdmin() &&
+        exists(memberPath) &&
+        member.data.get('active', false) == true &&
+        member.data.get('tenantId', '') == tenantId &&
+        member.data.get('role', '') == role() &&
+        member.data.get('authNamespace', '') == 'staff' &&
+        (isSuper() || member.data.get('entitlementMode', '') == 'TYA_COMPLETE');
+    }
+
+    function financeGlobalGetGuard(tenantId) {
+      return resource.data.get('global', false) != true || canReadGlobalFinance(tenantId);
+    }
+
+    // Queries must prove a project scope. A missing marker is safe for an exact
+    // legacy get, but must never authorize an unfiltered query that can include Global.
+    // Provider-owned Global rows have projectId null; client writes remain denied.
+    function financeGlobalListGuard(tenantId) {
+      return (resource.data.projectId is string && resource.data.projectId != '') ||
+        canReadGlobalFinance(tenantId);
+    }
+
+    function financeGlobalAuditListGuard(tenantId) {
+      return (resource.data.projectId is string && resource.data.projectId != '') ||
+        (resource.data.entityType is string &&
+          !(resource.data.entityType in ['financialMovement', 'financeAccount'])) ||
+        canReadGlobalFinance(tenantId);
+    }
+
+    // User creation and scope grants already belong to the Super user-admin
+    // provider. Ordinary Admin profile edits cannot change its authority fields.
+    function membershipAuthorityUnchanged() {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+        'entitlementMode', 'active', 'tenantId', 'role', 'authNamespace',
+        'projectIds', 'countries'
+      ]);
+    }
+
     function isClient() {
       return role() in ['cliente', 'client'];
     }
@@ -149,7 +194,9 @@ service cloud.firestore {
 
       match /users/{uid} {
         allow read: if tenantAllowed(tenantId) && (isSelf(uid) || isAdmin());
-        allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
+        allow create, delete: if tenantAllowed(tenantId) && isSuper();
+        allow update: if tenantAllowed(tenantId) &&
+          (isSuper() || (isAdmin() && membershipAuthorityUnchanged()));
       }
 
       match /clients/{clientId} {
@@ -265,8 +312,10 @@ service cloud.firestore {
       }
 
       match /entityAuditTrail/{auditId} {
-        allow read: if tenantAllowed(tenantId) && isOperator();
-        allow create: if operationDocForTenant(tenantId);
+        allow get: if tenantAllowed(tenantId) && isOperator() && financeGlobalGetGuard(tenantId);
+        allow list: if tenantAllowed(tenantId) && isOperator() && financeGlobalAuditListGuard(tenantId);
+        allow create: if operationDocForTenant(tenantId) &&
+          request.resource.data.get('global', false) != true;
         allow update, delete: if false;
       }
 
@@ -289,7 +338,8 @@ service cloud.firestore {
       // PRE-I4 VRM-142: finance writes remain provider-only. Authenticated
       // operators may read the durable projections required by Finanzas/Liquidaciones.
       match /financialMovements/{movementId} {
-        allow read: if tenantAllowed(tenantId) && isOperator();
+        allow get: if tenantAllowed(tenantId) && isOperator() && financeGlobalGetGuard(tenantId);
+        allow list: if tenantAllowed(tenantId) && isOperator() && financeGlobalListGuard(tenantId);
         allow create, update, delete: if false;
       }
 
@@ -300,7 +350,8 @@ service cloud.firestore {
       }
 
       match /financeAccounts/{accountId} {
-        allow read: if tenantAllowed(tenantId) && isOperator();
+        allow get: if tenantAllowed(tenantId) && isOperator() && financeGlobalGetGuard(tenantId);
+        allow list: if tenantAllowed(tenantId) && isOperator() && financeGlobalListGuard(tenantId);
         allow create, update, delete: if false;
       }
 

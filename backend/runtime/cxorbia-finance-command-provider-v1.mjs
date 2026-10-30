@@ -9,6 +9,12 @@ import crypto from 'node:crypto';
 export const VERSION='cxorbia-finance-command-provider-v1';
 export const COMMAND_TYPES=Object.freeze(['finance.reconcile.visit','finance.historical.reconcile','finance.payment.batch','finance.movement.create','finance.account.create','finance.account.apply','finance.budget.save','finance.budget.delete']);
 export const OPERATOR_ROLES=Object.freeze(['super','admin']);
+// Global is an administrative fact of the tenant, never a synthetic project or
+// an aggregate of project ledgers. Reuse only the existing manual ledger commands.
+const TENANT_LEDGER_COMMANDS=new Set(['finance.movement.create','finance.account.create','finance.account.apply']);
+const tenantLedgerScope=command=>command?.requireProject===false&&command.projectId===null&&command.payload?.global===true;
+const financeMonth=value=>/^\d{4}-(?:0[1-9]|1[0-2])$/.test(String(value||''));
+const ledgerScopeFields=command=>tenantLedgerScope(command)?{global:true}:{};
 
 const str=v=>String(v==null?'':v).trim();
 const arr=v=>Array.isArray(v)?v:[];
@@ -46,7 +52,7 @@ export function validateProviderPolicy(policy={}){
 }
 function scopeAllowed(policy,command){
   const tenants=new Set(uniq(policy.allowedTenantIds)),projects=new Set(uniq(policy.allowedProjectIds));
-  return tenants.has(str(command.tenantId))&&(!projects.size||projects.has(str(command.projectId)));
+  return tenants.has(str(command.tenantId))&&(tenantLedgerScope(command)||!projects.size||projects.has(str(command.projectId)));
 }
 function validateCommand(command={}){
   const errors=[],type=str(command.commandType);
@@ -73,7 +79,21 @@ function validateCommand(command={}){
   if(command.version!=='cxorbia-command-adapter-v1')errors.push('FINANCE_COMMAND_VERSION_INVALID');
   if(!COMMAND_TYPES.includes(type))errors.push('FINANCE_COMMAND_TYPE_INVALID');
   if(str(command.entityType)!==entityByType[type])errors.push('FINANCE_ENTITY_TYPE_INVALID');
-  if(!str(command.tenantId)||!str(command.projectId)||!str(command.periodId))errors.push('FINANCE_SCOPE_REQUIRED');
+  const global=tenantLedgerScope(command);
+  const asksGlobal=command.requireProject===false||command.payload?.global===true||command.projectId===null;
+  if(!str(command.tenantId)||!str(command.periodId)||(!global&&!str(command.projectId)))errors.push('FINANCE_SCOPE_REQUIRED');
+  if(asksGlobal&&(!global||!TENANT_LEDGER_COMMANDS.has(type)))errors.push('FINANCE_GLOBAL_SCOPE_INVALID');
+  if(global){
+    if(command.requirePeriod===false||!financeMonth(command.periodId)||str(command.payload?.periodId)!==str(command.periodId))errors.push('FINANCE_GLOBAL_PERIOD_REQUIRED');
+    if(str(command.payload?.projectId)||str(command.payload?.proyectoId))errors.push('FINANCE_GLOBAL_PROJECT_FORBIDDEN');
+    if(str(command.payload?.visitId)||str(command.payload?.visitaId)||uniq(command.payload?.visitIds).length)errors.push('FINANCE_GLOBAL_VISIT_LINK_FORBIDDEN');
+    if(command.payload?.fecha&&String(command.payload.fecha).slice(0,7)!==command.periodId)errors.push('FINANCE_GLOBAL_DATE_PERIOD_CONFLICT');
+    if(type!=='finance.account.create'){
+      const date=str(command.payload?.fecha),epoch=Date.parse(date+'T00:00:00Z');
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(epoch)||new Date(epoch).toISOString().slice(0,10)!==date)errors.push('FINANCE_GLOBAL_DATE_REQUIRED');
+    }
+    if(type==='finance.account.apply'&&str(command.expectedVersion)==='source-current')errors.push('FINANCE_GLOBAL_EXPECTED_VERSION_REQUIRED');
+  }
   if(!str(command.idempotencyKey))errors.push('FINANCE_IDEMPOTENCY_REQUIRED');
   if(command.expectedVersion===undefined||command.expectedVersion===null||command.expectedVersion==='')errors.push('FINANCE_EXPECTED_VERSION_REQUIRED');
   if(command.authorization?.providerEnforcementRequired!==true||str(command.authorization?.permission)!==permissionByType[type])errors.push('FINANCE_PROVIDER_PERMISSION_REQUIRED');
@@ -90,13 +110,14 @@ async function exactActor(auth,db,token,command){
   const decoded=await auth.verifyIdToken(token,true);
   const role=str(decoded.role),namespace=str(decoded.authNamespace||'staff');
   if(str(decoded.tenantId)!==str(command.tenantId)||!OPERATOR_ROLES.includes(role)||namespace!=='staff')throw new Error('FINANCE_ACTOR_SCOPE_DENIED');
-  if(role!=='super'&&!uniq(decoded.projectIds).includes(str(command.projectId)))throw new Error('FINANCE_ACTOR_PROJECT_DENIED');
+  if(!tenantLedgerScope(command)&&role!=='super'&&!uniq(decoded.projectIds).includes(str(command.projectId)))throw new Error('FINANCE_ACTOR_PROJECT_DENIED');
   const member=await db.collection('tenants').doc(command.tenantId).collection('users').doc(decoded.uid).get();
   if(!member.exists)throw new Error('FINANCE_ACTOR_MEMBERSHIP_MISSING');
   const m=member.data()||{};
   if(m.active!==true||str(m.tenantId)!==str(command.tenantId)||str(m.role)!==role||str(m.authNamespace)!=='staff')throw new Error('FINANCE_ACTOR_MEMBERSHIP_INVALID');
-  if(role!=='super'&&!uniq(m.projectIds).includes(str(command.projectId)))throw new Error('FINANCE_ACTOR_MEMBERSHIP_PROJECT_DENIED');
-  return {uid:decoded.uid,role};
+  if(!tenantLedgerScope(command)&&role!=='super'&&!uniq(m.projectIds).includes(str(command.projectId)))throw new Error('FINANCE_ACTOR_MEMBERSHIP_PROJECT_DENIED');
+  if(tenantLedgerScope(command)&&role!=='super'&&m.entitlementMode!=='TYA_COMPLETE')throw new Error('FINANCE_ACTOR_TENANT_ENTITLEMENT_REQUIRED');
+  return {uid:decoded.uid,role,countries:uniq(m.countries)};
 }
 
 async function resolveVisitDocument(tx,visits,visitId,hrRowId){
@@ -215,7 +236,8 @@ export function createFinanceCommandProvider({auth,db,policy,hrSnapshot=null,hrR
       let actor;try{actor=await exactActor(auth,db,token,command);}catch(error){return blocked(command,str(error?.message||error));}
       const reconcile=command.commandType==='finance.reconcile.visit';
       const visitIds=uniq(command.payload?.visitIds),fechaPago=str(command.payload?.fechaPago)||today(),referencia=str(command.payload?.referencia);
-      const tenant=db.collection('tenants').doc(command.tenantId),project=tenant.collection('projects').doc(command.projectId),visits=project.collection('visits');
+      const global=tenantLedgerScope(command);
+      const tenant=db.collection('tenants').doc(command.tenantId),project=global?null:tenant.collection('projects').doc(command.projectId),visits=project?project.collection('visits'):null;
       const receipt=tenant.collection('commandReceipts').doc(receiptId(command));
       const audit=tenant.collection('entityAuditTrail').doc('finance-'+auditId(command));
       const digest=sha(clean(command));
@@ -427,12 +449,14 @@ export function createFinanceCommandProvider({auth,db,policy,hrSnapshot=null,hrR
               if(str(p.commandDigest)!==digest)throw new Error('FINANCE_IDEMPOTENCY_REUSE_DIFFERENT_PAYLOAD');
               if(p.status==='committed')return ack(command,{entityType:'financialMovement',entityId:p.entityId,movement:p.entity||null,linkedAccount:p.linkedAccount||null,idempotentReplay:true,providerWrites:0});
             }
-            const projectSnap=await tx.get(project),projectData=projectSnap.exists?(projectSnap.data()||{}):{};
+            const projectSnap=global?null:await tx.get(project),projectData=projectSnap?.exists?(projectSnap.data()||{}):{};
             const tipo=str(command.payload?.tipo).toLowerCase(),country=str(command.payload?.country||command.payload?.pais),currency=str(command.payload?.currency||command.payload?.moneda);
             const amount=Math.abs(Number(command.payload?.amount??command.payload?.monto));
             if(!['ingreso','egreso'].includes(tipo))throw new Error('FINANCE_MOVEMENT_TYPE_INVALID');
             if(!country)throw new Error('FINANCE_MOVEMENT_COUNTRY_REQUIRED');
             if(!currency)throw new Error('FINANCE_MOVEMENT_CURRENCY_REQUIRED');
+            if(global&&(!/^[A-Z]{2}$/.test(country)||currency.length>12||/[<>&"'\s\\]/.test(currency)))throw new Error('FINANCE_GLOBAL_COUNTRY_CURRENCY_INVALID');
+            if(global&&actor.role!=='super'&&actor.countries.length&&!actor.countries.includes(country))throw new Error('FINANCE_ACTOR_COUNTRY_DENIED');
             if(!Number.isFinite(amount)||amount<=0)throw new Error('FINANCE_MOVEMENT_AMOUNT_INVALID');
             const configuredCurrency=str(projectData?.currency?.[country]||projectData?.currencies?.[country]);
             if(configuredCurrency&&configuredCurrency!==currency)throw new Error('FINANCE_MOVEMENT_CURRENCY_SCOPE_CONFLICT');
@@ -446,14 +470,14 @@ export function createFinanceCommandProvider({auth,db,policy,hrSnapshot=null,hrR
             const movementId=str(command.entityId)||('mov-'+sha(`${command.tenantId}\0${command.projectId}\0${command.periodId}\0${command.idempotencyKey}`).slice(0,28));
             const movementRef=tenant.collection('financialMovements').doc(movementId),movementSnap=await tx.get(movementRef);
             if(movementSnap.exists)throw new Error('FINANCE_MOVEMENT_ALREADY_EXISTS');
-            const ts=now(),movement={id:movementId,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,tipo,tipoIngreso:tipo==='ingreso'?tipoIngreso:null,tipoEgreso:tipo==='egreso'?tipoEgreso:null,cat:str(command.payload?.cat||command.payload?.categoria||'Movimiento'),categoria:str(command.payload?.categoria),pais:country,country,currency,moneda:currency,monto:tipo==='ingreso'?amount:-amount,amount,revenueRecognized,operatingRevenue:revenueRecognized,nonOperating,sourceStatus:'confirmed',sourceRef:`admin-entry:${receiptId(command)}`,fecha:str(command.payload?.fecha)||today(),desc:str(command.payload?.desc||command.payload?.description),beneficiario:str(command.payload?.beneficiario)||null,estado:str(command.payload?.estado)||'Confirmado',createdBy:actor.uid,createdAt:ts,updatedAt:ts};
+            const ts=now(),movement={id:movementId,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,...ledgerScopeFields(command),tipo,tipoIngreso:tipo==='ingreso'?tipoIngreso:null,tipoEgreso:tipo==='egreso'?tipoEgreso:null,cat:str(command.payload?.cat||command.payload?.categoria||'Movimiento'),categoria:str(command.payload?.categoria),pais:country,country,currency,moneda:currency,monto:tipo==='ingreso'?amount:-amount,amount,revenueRecognized,operatingRevenue:revenueRecognized,nonOperating,sourceStatus:'confirmed',sourceRef:`admin-entry:${receiptId(command)}`,fecha:str(command.payload?.fecha)||today(),desc:str(command.payload?.desc||command.payload?.description),beneficiario:str(command.payload?.beneficiario)||null,estado:str(command.payload?.estado)||'Confirmado',createdBy:actor.uid,createdAt:ts,updatedAt:ts};
             tx.create(movementRef,movement);let providerWrites=1,linkedAccount=null;
             if(nonOperating){
               const accountId='fin-'+sha(`${movementId}\0cxp`).slice(0,28),accountRef=tenant.collection('financeAccounts').doc(accountId);
-              linkedAccount={id:accountId,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,kind:'cxp',concepto:str(command.payload?.concepto||command.payload?.cat||'Financiamiento'),origin:'financiamiento',sourceMovementId:movementId,pais:country,country,currency,moneda:currency,monto:amount,originalAmount:amount,saldo:amount,balance:amount,status:'open',createdBy:actor.uid,createdAt:ts,updatedAt:ts};
+              linkedAccount={id:accountId,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,...ledgerScopeFields(command),kind:'cxp',concepto:str(command.payload?.concepto||command.payload?.cat||'Financiamiento'),origin:'financiamiento',sourceMovementId:movementId,pais:country,country,currency,moneda:currency,monto:amount,originalAmount:amount,saldo:amount,balance:amount,status:'open',createdBy:actor.uid,createdAt:ts,updatedAt:ts};
               tx.create(accountRef,linkedAccount);providerWrites++;
             }
-            tx.set(audit,{tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,entityType:'financialMovement',entityId:movementId,commandType:command.commandType,actorUid:actor.uid,actorRole:actor.role,idempotencyKey:command.idempotencyKey,revenueRecognized,nonOperating,createdAt:ts},{merge:false});providerWrites++;
+            tx.set(audit,{tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,...ledgerScopeFields(command),entityType:'financialMovement',entityId:movementId,commandType:command.commandType,actorUid:actor.uid,actorRole:actor.role,idempotencyKey:command.idempotencyKey,revenueRecognized,nonOperating,createdAt:ts},{merge:false});providerWrites++;
             tx.set(receipt,{status:'committed',commandDigest:digest,entityId:movementId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,entity:movement,linkedAccount,updatedAt:ts},{merge:false});providerWrites++;
             return ack(command,{entityType:'financialMovement',entityId:movementId,movement,linkedAccount,providerWrites,idempotentReplay:false});
           }
@@ -468,16 +492,18 @@ export function createFinanceCommandProvider({auth,db,policy,hrSnapshot=null,hrR
             const amount=Math.abs(Number(command.payload?.amount??command.payload?.monto));
             if(!['cxp','cxc'].includes(kind))throw new Error('FINANCE_ACCOUNT_KIND_INVALID');
             if(!country||!currency)throw new Error('FINANCE_ACCOUNT_SCOPE_REQUIRED');
+            if(global&&(!/^[A-Z]{2}$/.test(country)||currency.length>12||/[<>&"'\s\\]/.test(currency)))throw new Error('FINANCE_GLOBAL_COUNTRY_CURRENCY_INVALID');
+            if(global&&actor.role!=='super'&&actor.countries.length&&!actor.countries.includes(country))throw new Error('FINANCE_ACTOR_COUNTRY_DENIED');
             if(!Number.isFinite(amount)||amount<=0)throw new Error('FINANCE_ACCOUNT_AMOUNT_INVALID');
-            const projectSnap=await tx.get(project),projectData=projectSnap.exists?(projectSnap.data()||{}):{};
+            const projectSnap=global?null:await tx.get(project),projectData=projectSnap?.exists?(projectSnap.data()||{}):{};
             const configuredCurrency=str(projectData?.currency?.[country]||projectData?.currencies?.[country]);
             if(configuredCurrency&&configuredCurrency!==currency)throw new Error('FINANCE_ACCOUNT_CURRENCY_SCOPE_CONFLICT');
             const accountId=str(command.entityId)||('acct-'+sha(`${command.tenantId}\0${command.projectId}\0${command.periodId}\0${kind}\0${command.idempotencyKey}`).slice(0,28));
             const accountRef=tenant.collection('financeAccounts').doc(accountId),accountSnap=await tx.get(accountRef);
             if(accountSnap.exists)throw new Error('FINANCE_ACCOUNT_ALREADY_EXISTS');
-            const visitId=str(command.payload?.visitId||command.payload?.visitaId)||null,ts=now(),account={id:accountId,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,kind,concepto:str(command.payload?.concepto||command.payload?.counterparty||'Cuenta'),counterparty:str(command.payload?.counterparty)||null,origin:str(command.payload?.origin||'manual'),visitId,visitaId:visitId,pais:country,country,currency,moneda:currency,monto:amount,originalAmount:amount,saldo:amount,balance:amount,vence:str(command.payload?.dueDate||command.payload?.vence)||null,status:'open',sourceRef:`admin-entry:${receiptId(command)}`,createdBy:actor.uid,createdAt:ts,updatedAt:ts};
+            const visitId=str(command.payload?.visitId||command.payload?.visitaId)||null,ts=now(),account={id:accountId,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,...ledgerScopeFields(command),kind,concepto:str(command.payload?.concepto||command.payload?.counterparty||'Cuenta'),counterparty:str(command.payload?.counterparty)||null,origin:str(command.payload?.origin||'manual'),visitId,visitaId:visitId,pais:country,country,currency,moneda:currency,monto:amount,originalAmount:amount,saldo:amount,balance:amount,vence:str(command.payload?.dueDate||command.payload?.vence)||null,status:'open',sourceRef:`admin-entry:${receiptId(command)}`,createdBy:actor.uid,createdAt:ts,updatedAt:ts};
             tx.create(accountRef,account);let providerWrites=1;
-            tx.set(audit,{tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,entityType:'financeAccount',entityId:accountId,commandType:command.commandType,actorUid:actor.uid,actorRole:actor.role,idempotencyKey:command.idempotencyKey,kind,createdAt:ts},{merge:false});providerWrites++;
+            tx.set(audit,{tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,...ledgerScopeFields(command),entityType:'financeAccount',entityId:accountId,commandType:command.commandType,actorUid:actor.uid,actorRole:actor.role,idempotencyKey:command.idempotencyKey,kind,createdAt:ts},{merge:false});providerWrites++;
             tx.set(receipt,{status:'committed',commandDigest:digest,entityId:accountId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,entity:account,updatedAt:ts},{merge:false});providerWrites++;
             return ack(command,{entityType:'financeAccount',entityId:accountId,account,providerWrites,idempotentReplay:false});
           }
@@ -492,6 +518,9 @@ export function createFinanceCommandProvider({auth,db,policy,hrSnapshot=null,hrR
             if(!accountSnap.exists)throw new Error('FINANCE_ACCOUNT_MISSING');
             const account=accountSnap.data()||{};
             if(str(account.tenantId||command.tenantId)!==str(command.tenantId)||str(account.projectId)!==str(command.projectId))throw new Error('FINANCE_ACCOUNT_SCOPE_CONFLICT');
+            if(global&&(account.id!==accountId||account.global!==true||account.projectId!==null||account.tenantId!==command.tenantId||account.periodId!==command.periodId))throw new Error('FINANCE_ACCOUNT_SCOPE_CONFLICT');
+            if(global&&actor.role!=='super'&&actor.countries.length&&!actor.countries.includes(str(account.country||account.pais)))throw new Error('FINANCE_ACTOR_COUNTRY_DENIED');
+            if(!global&&account.global===true)throw new Error('FINANCE_ACCOUNT_SCOPE_CONFLICT');
             const expected=str(command.expectedVersion),actual=str(versionOf(account));if(expected&&expected!=='source-current'&&expected!==actual)throw new Error('FINANCE_EXPECTED_VERSION_CONFLICT');
             const amount=Math.abs(Number(command.payload?.amount??command.payload?.monto)),balance=Number(account.balance??account.saldo);
             if(!Number.isFinite(amount)||amount<=0||!Number.isFinite(balance)||amount>balance)throw new Error('FINANCE_ACCOUNT_APPLY_AMOUNT_INVALID');
@@ -499,11 +528,11 @@ export function createFinanceCommandProvider({auth,db,policy,hrSnapshot=null,hrR
             const next=Math.max(0,balance-amount),ts=now(),movementId='acct-'+sha(`${accountId}\0${command.idempotencyKey}`).slice(0,30);
             const movementRef=tenant.collection('financialMovements').doc(movementId),movementSnap=await tx.get(movementRef);if(movementSnap.exists)throw new Error('FINANCE_ACCOUNT_MOVEMENT_ALREADY_EXISTS');
             const isReceivable=kind==='cxc';
-            const movement={id:movementId,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,tipo:isReceivable?'ingreso':'egreso',tipoIngreso:isReceivable?'cobro_cxc':null,tipoEgreso:isReceivable?null:'abono_cxp',cat:(isReceivable?'Cobro CxC · ':'Abono CxP · ')+str(account.concepto),categoria:'Financiero',pais:str(account.pais||account.country),country:str(account.country||account.pais),currency:str(account.currency||account.moneda),moneda:str(account.moneda||account.currency),monto:isReceivable?amount:-amount,amount,revenueRecognized:false,operatingRevenue:false,cashCollection:isReceivable,sourceStatus:'confirmed',sourceRef:`finance-account:${accountId}`,accountId,fecha:str(command.payload?.fecha)||today(),desc:str(command.payload?.desc)||null,estado:'Confirmado',createdBy:actor.uid,createdAt:ts,updatedAt:ts};
+            const movement={id:movementId,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,...ledgerScopeFields(command),tipo:isReceivable?'ingreso':'egreso',tipoIngreso:isReceivable?'cobro_cxc':null,tipoEgreso:isReceivable?null:'abono_cxp',cat:(isReceivable?'Cobro CxC · ':'Abono CxP · ')+str(account.concepto),categoria:'Financiero',pais:str(account.pais||account.country),country:str(account.country||account.pais),currency:str(account.currency||account.moneda),moneda:str(account.moneda||account.currency),monto:isReceivable?amount:-amount,amount,revenueRecognized:false,operatingRevenue:false,cashCollection:isReceivable,sourceStatus:'confirmed',sourceRef:`finance-account:${accountId}`,accountId,fecha:str(command.payload?.fecha)||today(),desc:str(command.payload?.desc)||null,estado:'Confirmado',createdBy:actor.uid,createdAt:ts,updatedAt:ts};
             const updated={...account,saldo:next,balance:next,status:next===0?'closed':'open',updatedAt:ts,version:Number(account.version||0)+1,lastMovementId:movementId};
             tx.set(accountRef,{saldo:next,balance:next,status:updated.status,updatedAt:ts,version:updated.version,lastMovementId:movementId},{merge:true});
             tx.create(movementRef,movement);let providerWrites=2;
-            tx.set(audit,{tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,entityType:'financeAccount',entityId:accountId,commandType:command.commandType,actorUid:actor.uid,actorRole:actor.role,idempotencyKey:command.idempotencyKey,movementId,amount,balanceBefore:balance,balanceAfter:next,createdAt:ts},{merge:false});providerWrites++;
+            tx.set(audit,{tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,...ledgerScopeFields(command),entityType:'financeAccount',entityId:accountId,commandType:command.commandType,actorUid:actor.uid,actorRole:actor.role,idempotencyKey:command.idempotencyKey,movementId,amount,balanceBefore:balance,balanceAfter:next,createdAt:ts},{merge:false});providerWrites++;
             tx.set(receipt,{status:'committed',commandDigest:digest,entityId:accountId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,entity:updated,movement,updatedAt:ts},{merge:false});providerWrites++;
             return ack(command,{entityType:'financeAccount',entityId:accountId,account:updated,movement,providerWrites,idempotentReplay:false});
           }

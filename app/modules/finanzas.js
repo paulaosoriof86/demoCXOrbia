@@ -168,16 +168,49 @@ function cxFinanceBindReconcile(root,data,ui,onConfirmed,options={}){
   });
 }
 
+/* C04: a Global row owns its explicit currency; the active project cannot relabel it. */
+function cxFinanceExplicitCurrency(value){
+  const currency=String(value||'').trim();
+  return currency&&currency.length<=12&&!/[<>&"'\s\\]/.test(currency)?currency:'pending_currency';
+}
+function cxFinanceRowCurrency(row,project,global){
+  if(global)return row&&(row.country||row.pais)?cxFinanceExplicitCurrency(row.currency||row.moneda):'pending_currency';
+  if(row&&row.pais&&project.currency&&project.currency[row.pais])return project.currency[row.pais];
+  return row&&row.moneda?row.moneda:'pending_currency';
+}
+function cxFinanceGlobalMonth(period,periodId){
+  const source=String(period?.periodKey||period?.startDate||period?.fechaInicio||period?.desde||'');
+  const match=/^(\d{4}-(?:0[1-9]|1[0-2]))(?:$|-)/.exec(source)||/(?:^|-)(\d{4}-(?:0[1-9]|1[0-2]))$/.exec(String(periodId||''));
+  return match?match[1]:null;
+}
+function cxFinanceGlobalApplyReadback(ack,accounts,movements,before,amount){
+  if(!cxFinanceCommandCommitted(ack)||ack.projectId!==null||ack.entityId!==before.id||ack.account?.id!==before.id||!ack.movement?.id)return false;
+  const sameScope=row=>row&&row.global===true&&row.projectId===null&&row.tenantId===ack.tenantId&&row.periodId===ack.periodId;
+  const accountRows=accounts.filter(row=>row.id===before.id),movementRows=movements.filter(row=>row.id===ack.movement.id);
+  if(accountRows.length!==1||movementRows.length!==1)return false;
+  const account=accountRows[0],movement=movementRows[0];
+  return sameScope(account)&&sameScope(movement)&&sameScope(ack.account)&&sameScope(ack.movement)&&ack.movement.accountId===before.id&&account.kind===before.kind
+    &&Number(account.balance??account.saldo)===Math.max(0,Number(before.balance??before.saldo)-amount)
+    &&Number(account.balance??account.saldo)===Number(ack.account.balance??ack.account.saldo)
+    &&String(account.version)===String(ack.account.version)&&account.lastMovementId===movement.id
+    &&movement.accountId===before.id&&Number(movement.amount)===amount
+    &&movement.currency===(before.currency||before.moneda)&&movement.country===(before.country||before.pais)
+    &&account.currency===(before.currency||before.moneda)&&account.country===(before.country||before.pais)
+    &&movement.revenueRecognized===false&&movement.operatingRevenue===false;
+}
+
 /* HF24: provider ACK never equals independently proved financial readback. */
 function cxFinanceCreatedReadback(ack,items,expected){
   if(ack?.ok!==true||ack?.providerAck!==true||!ack?.entityId||!Array.isArray(items))return false;
   const matches=items.filter(x=>String(x?.id||'')===String(ack.entityId));
   if(matches.length!==1)return false;
   const row=matches[0],str=x=>String(x==null?'':x);
+  if(expected.global===true&&(row.global!==true||row.projectId!==null||ack.projectId!==null))return false;
   return str(row.tenantId)===str(ack.tenantId)&&str(row.projectId)===str(ack.projectId)&&str(row.periodId)===str(ack.periodId)
     &&str(row.pais||row.country)===str(expected.country)&&str(row.moneda||row.currency)===str(expected.currency)
     &&Number(row.amount??row.originalAmount??row.monto)===Number(expected.amount)
-    &&(!expected.kind||str(row.kind)===str(expected.kind));
+    &&(!expected.kind||str(row.kind)===str(expected.kind))
+    &&(!expected.sourceMovementId||str(row.sourceMovementId)===str(expected.sourceMovementId));
 }
 /* END HF24 exact finance create readback */
 
@@ -463,7 +496,7 @@ CX.module('movimientos', ({data,ui})=>{
      (nunca hereda la primera moneda del proyecto). Las filas pending_currency no se agregan a
      una moneda, no se exportan como Q/L y entran a revisión. */
   const PENDING_CURRENCY='pending_currency';
-  const currencyOf=(row)=>{ if(row&&row.pais&&p.currency&&p.currency[row.pais])return p.currency[row.pais]; if(row&&row.moneda)return row.moneda; return PENDING_CURRENCY; };
+  const currencyOf=row=>cxFinanceRowCurrency(row,p,scope==='global');
   const curOfRow=(r)=>currencyOf(r);
   const isFinancialReview=(l)=>{
     const cur=currencyOf(l);
@@ -483,57 +516,87 @@ CX.module('movimientos', ({data,ui})=>{
   const CAT=CX.finStore.CATEGORIAS, TI=CX.finStore.TIPOS_INGRESO, TE=CX.finStore.TIPOS_EGRESO;
   const canonicalProjectId=()=>String(p.parentProjectId||p.rootProjectId||p.program||p.projectId||p.id||'');
   const connectedFinance=()=>CX.BACKEND?.enabled===true&&!_showFixtures;
-  let durableMovements=Array.isArray(data.__financialMovements)?data.__financialMovements:[];
-  let durableAccounts=Array.isArray(data.__financeAccounts)?data.__financeAccounts:[];
+  let durableMovements=[];
+  let durableAccounts=[];
   let durableBudgets=Array.isArray(data.__financeBudgets)?data.__financeBudgets:[];
-  const accountKind=(kind)=>durableAccounts.filter(r=>String(r.kind||'').toLowerCase()===kind&&String(r.status||'open')!=='closed');
-  const refreshDurableFinance=async(force=false)=>{
-    if(!connectedFinance()||scope==='global')return false;
-    const tenantScope=typeof data.tenantId==='function'?data.tenantId():(data.tenantId||CX.BACKEND?.tenantId||'');
-    const key=String(tenantScope)+'::'+canonicalProjectId()+'::'+canonicalPeriodId;
-    if(!force&&data.__financeProjectionKey===key&&data.__financeProjectionLoaded===true){
-      durableMovements=Array.isArray(data.__financialMovements)?data.__financialMovements:[];
-      durableAccounts=Array.isArray(data.__financeAccounts)?data.__financeAccounts:[];
-      durableBudgets=Array.isArray(data.__financeBudgets)?data.__financeBudgets:[];
-      return true;
-    }
-    if(typeof data.getFinancialMovements!=='function'||typeof data.getFinanceAccounts!=='function'||typeof data.getFinanceBudgets!=='function')return false;
-    const [mov,acc,bud]=await Promise.all([
-      data.getFinancialMovements({projectId:canonicalProjectId(),periodId:canonicalPeriodId}),
-      data.getFinanceAccounts({projectId:canonicalProjectId(),periodId:canonicalPeriodId}),
-      data.getFinanceBudgets({projectId:canonicalProjectId(),periodId:canonicalPeriodId})
-    ]);
-    if(mov?.status!=='ok'||acc?.status!=='ok'||bud?.status!=='ok')return false;
-    durableMovements=Array.isArray(mov.items)?mov.items:[];
-    durableAccounts=Array.isArray(acc.items)?acc.items:[];
-    durableBudgets=Array.isArray(bud.items)?bud.items:[];
-    data.__financialMovements=durableMovements;
-    data.__financeAccounts=durableAccounts;
-    data.__financeBudgets=durableBudgets;
-    data.__financeProjectionLoaded=true;
-    data.__financeProjectionKey=key;
-    try{CX.bus?.emit?.('finance-durable-ready',{projectId:canonicalProjectId(),periodId:canonicalPeriodId});}catch(_){}
+  let financeReadError=false;
+  const tenantId=()=>String(typeof data.tenantId==='function'?data.tenantId():(data.tenantId||CX.BACKEND?.tenantId||''));
+  const ledgerRequest=()=>scope==='global'
+    ?{global:true,projectId:null,periodId:cxFinanceGlobalMonth(p,canonicalPeriodId)}
+    :{projectId:canonicalProjectId(),periodId:canonicalPeriodId};
+  const projectionKey=req=>tenantId()+'::'+(req.global===true?'__global__':req.projectId)+'::'+req.periodId;
+  const projectionFields=req=>req.global===true
+    ?{mov:'__globalFinancialMovements',acc:'__globalFinanceAccounts',key:'__financeGlobalProjectionKey',loaded:'__financeGlobalProjectionLoaded'}
+    :{mov:'__financialMovements',acc:'__financeAccounts',key:'__financeProjectionKey',loaded:'__financeProjectionLoaded'};
+  const loadProjection=()=>{
+    if(!connectedFinance())return true;
+    const req=ledgerRequest(),fields=projectionFields(req);
+    if(!req.periodId||data[fields.key]!==projectionKey(req)||data[fields.loaded]!==true)return false;
+    durableMovements=Array.isArray(data[fields.mov])?data[fields.mov]:[];
+    durableAccounts=Array.isArray(data[fields.acc])?data[fields.acc]:[];
+    durableBudgets=Array.isArray(data.__financeBudgets)?data.__financeBudgets:[];
     return true;
   };
+  const accountKind=kind=>durableAccounts.filter(r=>String(r.kind||'').toLowerCase()===kind&&String(r.status||'open')!=='closed');
+  const refreshDurableFinance=async(force=false,requiredScope=scope)=>{
+    if(!connectedFinance()||requiredScope!==scope)return false;
+    const requestedScope=scope,req=ledgerRequest(),fields=projectionFields(req),key=projectionKey(req);
+    if(!req.periodId)return false;
+    if(!force&&loadProjection())return true;
+    if(typeof data.getFinancialMovements!=='function'||typeof data.getFinanceAccounts!=='function'||req.global!==true&&typeof data.getFinanceBudgets!=='function')return false;
+    const [mov,acc,bud]=await Promise.all([
+      data.getFinancialMovements(req),data.getFinanceAccounts(req),
+      ...(req.global===true?[]:[data.getFinanceBudgets({projectId:canonicalProjectId(),periodId:canonicalPeriodId})])
+    ]);
+    if(scope!==requestedScope||key!==projectionKey(ledgerRequest())||String(data.currentProjectId)!==canonicalProjectId()||String(data.currentPeriodId)!==String(canonicalPeriodId))return false;
+    if(mov?.status!=='ok'||acc?.status!=='ok'||req.global!==true&&bud?.status!=='ok')return false;
+    data[fields.mov]=Array.isArray(mov.items)?mov.items:[];
+    data[fields.acc]=Array.isArray(acc.items)?acc.items:[];
+    // Budgets retain their existing, explicitly labelled project/period contract.
+    if(req.global!==true)data.__financeBudgets=Array.isArray(bud.items)?bud.items:[];
+    data[fields.loaded]=true;data[fields.key]=key;
+    loadProjection();
+    try{CX.bus?.emit?.('finance-durable-ready',{projectId:req.projectId,periodId:req.periodId,global:req.global===true});}catch(_){}
+    return true;
+  };
+  const refreshAndDraw=()=>{
+    const requestedScope=scope;financeReadError=false;
+    refreshDurableFinance(false,requestedScope).then(ok=>{if(scope===requestedScope){financeReadError=!ok;draw();}}).catch(()=>{if(scope===requestedScope){financeReadError=true;draw();}});
+  };
+  const bindScopeButtons=()=>host.querySelectorAll('[data-scope]').forEach(button=>button.addEventListener('click',()=>{
+    scope=button.dataset.scope;financeReadError=false;draw();if(connectedFinance())refreshAndDraw();
+  }));
   const draw=()=>{
     const isG=scope==='global';
-    const per=canonMonth();
-    const localMovs=CX.finStore.mov(pid()).filter(m=>!m.fecha||m.fecha.slice(0,7)===per);
-    const movs=connectedFinance()&&!isG
-      ? durableMovements.filter(m=>String(m.projectId||canonicalProjectId())===canonicalProjectId()&&String(m.periodId||canonicalPeriodId)===String(canonicalPeriodId))
+    const per=isG?cxFinanceGlobalMonth(p,canonicalPeriodId):canonMonth();
+    const countries=isG?(window.CX_TENANT_RUNTIME_CONFIG?.tenantId===tenantId()?window.CX_TENANT_RUNTIME_CONFIG.countries||[]:[]):p.countries;
+    const scopedMeta=extra=>{
+      if(scope!==(isG?'global':'proyecto'))throw new Error('FINANCE_SCOPE_CHANGED');
+      return isG?{...extra,global:true,periodId:per}:extra;
+    };
+    if(connectedFinance()&&!loadProjection()){
+      host.innerHTML=ui.ph('Movimientos & Tesorería','Registro financiero del alcance seleccionado')+
+        `<div class="flex" style="gap:8px;margin-bottom:16px"><button class="btn btn-sm ${!isG?'btn-pr':'btn-ghost'}" data-scope="proyecto">📁 ${p.name}</button><button class="btn btn-sm ${isG?'btn-pr':'btn-ghost'}" data-scope="global">🌐 Global (administrativo)</button></div>`+
+        ui.empty('💰',financeReadError?'No se pudo confirmar la lectura remota de este alcance. No se muestran saldos locales.':'Consultando movimientos y cuentas en la fuente remota…');
+      bindScopeButtons();return;
+    }
+    const localMovs=(connectedFinance()?[]:CX.finStore.mov(pid())).filter(m=>!m.fecha||m.fecha.slice(0,7)===per);
+    const movs=connectedFinance()
+      ? durableMovements.filter(m=>isG?m.global===true&&m.projectId===null&&m.tenantId===tenantId()&&m.periodId===per:m.global!==true&&String(m.projectId||canonicalProjectId())===canonicalProjectId()&&String(m.periodId||canonicalPeriodId)===String(canonicalPeriodId))
       : [...(isG||!_showFixtures?[]:seed),...localMovs];
-    const cxpAccounts=connectedFinance()&&!isG?accountKind('cxp'):CX.finStore.cxp(pid());
-    const cxcAccounts=connectedFinance()&&!isG?accountKind('cxc'):CX.finStore.cxc(pid());
+    const cxpAccounts=connectedFinance()?accountKind('cxp'):CX.finStore.cxp(pid());
+    const cxcAccounts=connectedFinance()?accountKind('cxc'):CX.finStore.cxc(pid());
     /* R31 — agregación por MONEDA primero; los KPIs/tablas se derivan de aggByCur DESPUÉS de
        excluir pending_currency. No hay totales crudos multi-moneda previos. */
     const curOf=(m)=>currencyOf(m);
     const _mvMoney=(m,v)=>{const cu=curOf(m);return cu===PENDING_CURRENCY?'<span class="bdg bdg-a">Pendiente de moneda</span>':ui.money(cu,v);};
-    const aggByCur={}; const groupByCurrency=aggByCur; /* totalsByCurrency / porMoneda */
+    const legacyGlobalCount=connectedFinance()&&isG?['_mov','_cxp','_cxc','_fin'].reduce((n,key)=>n+(Array.isArray(CX.finStore[key]?.[CX.finStore.GLOBAL])?CX.finStore[key][CX.finStore.GLOBAL].length:0),0):0;
+    const aggByCur=Object.create(null); const groupByCurrency=aggByCur; /* totalsByCurrency / porMoneda */
     const pendingCurrencyRows=[]; /* filas sin moneda resoluble: fail-closed, no se agregan */
     const bump=(cu,k,v)=>{const a=aggByCur[cu]||(aggByCur[cu]={ingOper:0,egr:0,cxc:0,cxp:0,remesas:0,financiamiento:0});a[k]+=v;};
     movs.forEach(m=>{const cu=curOf(m);
       if(cu===PENDING_CURRENCY){pendingCurrencyRows.push({kind:'mov',r:m});return;}
-      if(m.monto>0){ if(m.tipoIngreso==='financiamiento')bump(cu,'financiamiento',m.monto); else if(cxFinanceOperatingRevenueEligible(m,connectedFinance()&&!isG))bump(cu,'ingOper',m.monto); if(m.tipoIngreso==='remesa')bump(cu,'remesas',m.monto); }
+      if(m.monto>0){ if(m.tipoIngreso==='financiamiento')bump(cu,'financiamiento',m.monto); else if(cxFinanceOperatingRevenueEligible(m,connectedFinance()))bump(cu,'ingOper',m.monto); if(m.tipoIngreso==='remesa')bump(cu,'remesas',m.monto); }
       else bump(cu,'egr',m.monto);
       if((m.estado||'').includes('CxC'))bump(cu,'cxc',Math.abs(m.monto)); });
     cxpAccounts.forEach(r=>{const cu=currencyOf(r);if(cu===PENDING_CURRENCY){pendingCurrencyRows.push({kind:'cxp',r});return;}bump(cu,'cxp',Number(r.balance??r.saldo)||0);});
@@ -541,7 +604,8 @@ CX.module('movimientos', ({data,ui})=>{
     const derivedLiqCxps=!isG?CX.liq.forProject(data).filter(l=>l.estado!=='pagada'&&l.estado!=='pagada_preview'&&!isFinancialReview(l)):[];
     const derivedLiqReviews=!isG?CX.liq.forProject(data).filter(l=>l.estado!=='pagada'&&l.estado!=='pagada_preview'&&isFinancialReview(l)):[];
     derivedLiqCxps.forEach(l=>{const cu=currencyOf(l);if(cu===PENDING_CURRENCY){pendingCurrencyRows.push({kind:'liq',r:l});return;}bump(cu,'cxp',l.total||0);});
-    const shownCurs=[...new Set([...p.countries.map(c=>p.currency[c]), ...Object.keys(aggByCur)])].filter(Boolean);
+    const shownCurs=[...new Set([...(isG?[]:p.countries.map(c=>p.currency[c])), ...Object.keys(aggByCur)])].filter(Boolean);
+    const cur=shownCurs.length===1?shownCurs[0]:'';
     const multiCur=shownCurs.length>1;
     /* KPIs de una sola moneda: se leen del grupo de la moneda visible (ya sin pending_currency). */
     const _one=aggByCur[shownCurs[0]]||{ingOper:0,egr:0,cxc:0,cxp:0,remesas:0,financiamiento:0};
@@ -571,7 +635,7 @@ CX.module('movimientos', ({data,ui})=>{
       <button class="btn btn-soft btn-sm" data-new="egreso">＋ Egreso</button>
       <button class="btn btn-soft btn-sm" data-cuenta="cxc">＋ Cuenta por cobrar</button>
       <button class="btn btn-soft btn-sm" data-cuenta="cxp">＋ Cuenta por pagar</button>
-      <button class="btn btn-soft btn-sm" id="autoCxp">⚙️ Generar cuentas por cobrar y por pagar automáticas</button>
+      ${!isG?`<button class="btn btn-soft btn-sm" id="autoCxp">⚙️ Generar cuentas por cobrar y por pagar automáticas</button>`:''}
       <button class="btn btn-soft btn-sm" data-new="remesa">＋ Remesa</button>
       ${!isG?`<button class="btn btn-pr btn-sm" id="payLote">💳 Pagar lote</button>`:''}
       <button class="btn btn-ghost btn-sm" id="impHist">⤒ Importar histórico</button>
@@ -594,10 +658,11 @@ CX.module('movimientos', ({data,ui})=>{
       <div style="margin-top:9px;font-size:11px;color:var(--t3)">🔒 Bloqueadas para pago, lote y export monetario hasta asignar país/moneda.</div>
     </div>`:''}
 
+    ${legacyGlobalCount?`<div class="card card-p" data-finance-legacy-local="true" style="margin-bottom:14px">Hay ${legacyGlobalCount} registros heredados en este navegador pendientes de revisión. Se conservan separados de los saldos remotos; no se han importado.</div>`:''}
     <div class="grid g2" style="gap:14px;margin-bottom:16px">
       <div class="card card-p"><div class="card-h"><div class="card-t">Ingresos por tipo</div></div>
         ${(()=>{ /* income_type_rows por moneda (porMoneda): agrupa por moneda de fila, no cross-currency */
-          const porTipoMoneda={}; movs.filter(m=>m.monto>0&&curOf(m)!==PENDING_CURRENCY).forEach(m=>{const t=m.tipoIngreso||'otro';const cu=curOf(m);(porTipoMoneda[cu]=porTipoMoneda[cu]||{})[t]=(porTipoMoneda[cu][t]||0)+m.monto;});
+          const porTipoMoneda=Object.create(null); movs.filter(m=>m.monto>0&&curOf(m)!==PENDING_CURRENCY).forEach(m=>{const t=m.tipoIngreso||'otro';const cu=curOf(m);(porTipoMoneda[cu]=porTipoMoneda[cu]||Object.create(null))[t]=(porTipoMoneda[cu][t]||0)+m.monto;});
           const cus=Object.keys(porTipoMoneda).filter(c=>c!==PENDING_CURRENCY); if(!cus.length) return '<div class="muted" style="font-size:12px;padding:8px 0">Sin ingresos registrados</div>';
           return cus.map(cu=>`<div style="font-size:10.5px;font-weight:700;color:var(--t3);margin:6px 0 2px">Moneda ${cu}</div>`+Object.keys(TI).map(t=>{const val=porTipoMoneda[cu][t]||0;return val?`<div class="between" style="padding:6px 0;border-bottom:1px solid var(--border-2)"><span style="font-size:12px;color:var(--t2)">${TI[t]}${t==='financiamiento'?' <span class="bdg bdg-a" style="font-size:9px">→ por pagar</span>':''}</span><b style="font-size:12.5px;color:${t==='financiamiento'?'var(--amber)':'var(--green)'}">${ui.money(cu,val)}</b></div>`:'';}).join('')).join('');
         })()}
@@ -605,7 +670,7 @@ CX.module('movimientos', ({data,ui})=>{
       </div>
       <div class="card card-p" id="cxpMonthCard"><div class="card-h"><div class="card-t">Cuentas por pagar · ${per}</div><span class="muted" style="font-size:11px">Vista mensual · ${cxpAccounts.length} cuentas</span></div>
         ${cxpAccounts.length?`<input class="inp" id="cxpFind" placeholder="🔍 Buscar concepto/beneficiario…" style="margin-bottom:8px;padding:5px 9px;font-size:12px">`:''}
-        <div id="cxpBody">${cxpAccounts.length?cxpAccounts.map(r=>`<div class="between cxpRow" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div style="cursor:pointer" data-cxdet="cxp:${r.id}"><b style="font-size:12px">${r.concepto}</b><div style="font-size:10px;color:var(--t3)">${r.pais||'<span class="bdg bdg-n" style="font-size:9px">Pendiente de moneda</span>'} · ${r.estado||'pendiente'} · saldo ↗ ver detalle</div></div><div class="flex" style="gap:8px"><b style="font-size:12.5px;color:var(--amber)">${r.pais&&p.currency[r.pais]?ui.money(p.currency[r.pais],r.saldo||0):(r.moneda?ui.money(r.moneda,r.saldo||0):'Pendiente de moneda')}</b>${currencyOf(r)!==PENDING_CURRENCY?`<button class="btn btn-soft btn-sm" data-abono="${r.id}">Abonar</button>`:ui.bdg('Revisión · sin moneda','r')}</div></div>`).join(''):''}
+        <div id="cxpBody">${cxpAccounts.length?cxpAccounts.map(r=>`<div class="between cxpRow" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div style="cursor:pointer" data-cxdet="cxp:${r.id}"><b style="font-size:12px">${r.concepto}</b><div style="font-size:10px;color:var(--t3)">${r.pais||'<span class="bdg bdg-n" style="font-size:9px">Pendiente de moneda</span>'} · ${r.estado||'pendiente'} · saldo ↗ ver detalle</div></div><div class="flex" style="gap:8px"><b style="font-size:12.5px;color:var(--amber)">${currencyOf(r)!==PENDING_CURRENCY?ui.money(currencyOf(r),Number(r.balance??r.saldo)||0):'Pendiente de moneda'}</b>${currencyOf(r)!==PENDING_CURRENCY?`<button class="btn btn-soft btn-sm" data-abono="${r.id}">Abonar</button>`:ui.bdg('Revisión · sin moneda','r')}</div></div>`).join(''):''}
         ${derivedLiqCxps.length?`<div style="font-size:10.5px;font-weight:700;color:var(--t3);text-transform:uppercase;margin:8px 0 4px">CxP derivada de liquidaciones exactas</div>${derivedLiqCxps.map(l=>`<div class="between cxpRow" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div><b style="font-size:12px">Liquidación pendiente · ${l.shopper||'Shopper'}</b><div style="font-size:10px;color:var(--t3)">${l.pais||''} · ${l.estado||'conciliada_pendiente_pago'} · fuente exacta, pago pendiente</div></div><b style="font-size:12.5px;color:var(--amber)">${ui.money(currencyOf(l),l.total||0)}</b></div>`).join('')}`:''}
         ${derivedLiqReviews.length?`<div style="font-size:11px;color:var(--red);margin-top:8px">🔒 ${derivedLiqReviews.length} liquidación(es) en revisión financiera visibles, excluidas de CxP pagable.</div>`:''}
         ${!cxpAccounts.length&&!derivedLiqCxps.length?'<div class="muted" style="font-size:12px;padding:8px 0">Sin CxP registradas ni liquidaciones exactas por pagar. Útil al importar saldos iniciales.</div>':''}</div>
@@ -615,7 +680,7 @@ CX.module('movimientos', ({data,ui})=>{
 
     <div class="card card-p" id="cxcMonthCard" style="margin-bottom:16px">
       <div class="card-h"><div class="card-t">Cuentas por cobrar · ${per}</div><span class="muted" style="font-size:11px">Vista mensual · ${cxcAccounts.length} cuentas</span></div>
-      <div style="font-size:11.5px;color:var(--t2);margin-bottom:10px">Las cuentas se consultan desde el mismo registro financiero del proyecto. Un cobro interno no acredita recepción bancaria externa.</div>
+      <div style="font-size:11.5px;color:var(--t2);margin-bottom:10px">Las cuentas se consultan desde el registro financiero ${isG?'Global del tenant':'del proyecto'}. Un cobro interno no acredita recepción bancaria externa.</div>
       ${cxcAccounts.length?'<input class="inp" id="cxcFind" placeholder="Buscar cuenta por cobrar de este período" style="margin-bottom:8px;padding:6px 9px;font-size:12px">':''}
       <div id="cxcBody" style="max-height:440px;overflow-y:auto">
         ${cxcAccounts.length?cxcAccounts.map(r=>`<div class="between cxcRow" style="padding:8px 0;border-bottom:1px solid var(--border-2);gap:10px;flex-wrap:wrap">
@@ -630,7 +695,7 @@ CX.module('movimientos', ({data,ui})=>{
 
     <div class="grid g2" style="gap:14px;margin-bottom:16px">
       <div class="card card-p" id="presMesCard">
-        <div class="between" style="margin-bottom:8px"><div class="card-t">📋 Presupuesto mensual <span class="bdg bdg-b">${per}</span></div><button class="btn btn-soft btn-sm" id="addPresMes">＋ Rubro</button></div>
+        <div class="between" style="margin-bottom:8px"><div class="card-t">📋 Presupuesto mensual del proyecto <span class="bdg bdg-b">${canonMonth()}</span></div><button class="btn btn-soft btn-sm" id="addPresMes">＋ Rubro</button></div>
         <div id="presMesList"></div>
         <div style="font-size:11px;color:var(--t3);margin-top:8px">Presupuesto planificado por país y moneda, ligado al período canónico. No constituye gasto, pago ni margen realizado. Requiere confirmación remota.</div>
       </div>
@@ -654,24 +719,24 @@ CX.module('movimientos', ({data,ui})=>{
       <div style="margin-top:14px">${ui.aiBox('Separo ingresos por comisiones, honorarios, anticipos y facturación de los financiamientos (que van a CxP). Registro cuentas por cobrar y por pagar iniciales en la importación y vinculo cada abono a su egreso. Las remesas recibidas se concilian aquí.','Tesorería completa, no solo gastos del proyecto')}</div>
     </div>`;
 
-    host.querySelectorAll('[data-scope]').forEach(b=>b.addEventListener('click',()=>{scope=b.dataset.scope;draw();}));
+    bindScopeButtons();
     const mx=host.querySelector('#movExport');
     if(mx&&CX.reportKit){
       const san=(s)=>String(s||'r').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'r';
       const projectLabel=data.programBase?data.programBase(p):p.name;
       /* R30 P0-4: gráfica POR MONEDA (nunca suma GTQ+HNL en una sola serie). */
-      const chartByCur={}; movs.filter(m=>curOf(m)!==PENDING_CURRENCY).forEach(m=>{const cu=curOf(m);const key=(m.monto<0?'Egreso':'Ingreso');(chartByCur[cu]=chartByCur[cu]||{})[key]=(chartByCur[cu][key]||0)+Math.abs(m.monto);});
+      const chartByCur=Object.create(null); movs.filter(m=>curOf(m)!==PENDING_CURRENCY).forEach(m=>{const cu=curOf(m);const key=(m.monto<0?'Egreso':'Ingreso');(chartByCur[cu]=chartByCur[cu]||Object.create(null))[key]=(chartByCur[cu][key]||0)+Math.abs(m.monto);});
       /* R30 P0-3: export excluye filas sin moneda del reporte monetario; van en sección de revisión. */
       const exportMovs=movs.filter(m=>curOf(m)!==PENDING_CURRENCY);
       const movSpec=(ext)=>({ title:'Movimientos & Tesorería',
-        meta:{title:'Movimientos & Tesorería',project:(isG?'Global (administrativo)':projectLabel),period:canonicalPeriodLabel,scope:(isG?'Global':projectLabel),sourceLabel:'Finanzas · movimientos del periodo',generatedAt:new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})},
+        meta:{title:'Movimientos & Tesorería',project:(isG?'Global (administrativo)':projectLabel),period:(isG?per:canonicalPeriodLabel),scope:(isG?'Global':projectLabel),sourceLabel:'Finanzas · movimientos del periodo',generatedAt:new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})},
         columns:[{key:'fecha',label:'Fecha'},{key:'concepto',label:'Concepto'},{key:'categoria',label:'Categoría'},{key:'tipo',label:'Tipo'},{key:'pais',label:'País'},{key:'moneda',label:'Moneda'},{key:'monto',label:'Monto'},{key:'estado',label:'Estado'}],
-        rows:exportMovs.map(m=>({fecha:m.fecha||'—',concepto:m.cat||m.desc||'—',categoria:m.categoria||(m.global?'Administrativo':'Proyecto'),tipo:(TI[m.tipoIngreso]||TE[m.tipoEgreso]||m.tipo||'—'),pais:m.pais||'—',moneda:curOf(m),monto:Math.round(m.monto||0),estado:m.estado||'—'})),
+        rows:exportMovs.map(m=>({fecha:m.fecha||'—',concepto:m.cat||m.desc||'—',categoria:m.categoria||(m.global?'Administrativo':'Proyecto'),tipo:(TI[m.tipoIngreso]||TE[m.tipoEgreso]||m.tipo||'—'),pais:m.pais||'—',moneda:curOf(m),monto:isG?Number(m.monto||0):Math.round(m.monto||0),estado:m.estado||'—'})),
         notes:'Cada fila conserva su moneda; los totales por moneda no se suman entre sí.',
         summary:['Movimientos: '+exportMovs.length].concat(shownCurs.map(cu=>{const a=aggByCur[cu]||{};return cu+' — Ingresos oper.: '+ui.money(cu,a.ingOper||0)+' · Egresos: '+ui.money(cu,Math.abs(a.egr||0));})),
-        chart:{title:'Ingresos vs Egresos por moneda',perCurrency:chartByCur,data:Object.entries(chartByCur).flatMap(([cu,o])=>Object.entries(o).map(([k2,v2])=>({label:cu+' · '+k2,value:Math.round(v2)})))},
+        chart:{title:'Ingresos vs Egresos por moneda',perCurrency:chartByCur,data:Object.entries(chartByCur).flatMap(([cu,o])=>Object.entries(o).map(([k2,v2])=>({label:cu+' · '+k2,value:isG?v2:Math.round(v2)})))},
         reviewSection:pendingCurrencyRows.length?{title:'Filas en revisión (moneda no resuelta)',rows:pendingCurrencyRows.map(x=>({tipo:x.kind,concepto:(x.r.cat||x.r.concepto||x.r.desc||'—'),pais:x.r.pais||'—',monto:Math.round(x.r.monto||x.r.saldo||x.r.total||0),estado:'Pendiente de moneda'}))}:null,
-        filename:[san('movimientos'),san(projectLabel),san(per),new Date().toISOString().slice(0,10)].join('_')+'.'+ext });
+        filename:[san('movimientos'),san(isG?'global':projectLabel),san(per),new Date().toISOString().slice(0,10)].join('_')+'.'+ext });
       mx.addEventListener('click',()=>{ if(pendingCurrencyRows.length){ui.toast('Export bloqueado: hay '+pendingCurrencyRows.length+' fila(s) en revisión de moneda. Resuélvelas para exportar.','err',4200);return;} if(!exportMovs.length){ui.toast('Sin movimientos para exportar','err');return;} CX.reportKit.openReport(movSpec('pdf'),'fin_movimientos'); });
     }
     const ps=host.querySelector('#perSel'); if(ps)ps.addEventListener('change',()=>{CX.fin.setCanonPeriod(ps.value);CX.router.nav('movimientos');});
@@ -765,10 +830,10 @@ CX.module('movimientos', ({data,ui})=>{
           fecha:String(r.createdAt||r.fecha||'').slice(0,10)
         }))
       : CX.finStore.financiamientos(p.id);
-      fl.innerHTML=fins.length?fins.map(f=>`<div style="padding:8px 0;border-bottom:1px solid var(--border-2)"><div class="between"><div><b style="font-size:12.5px">${f.fuente||'Financiamiento'}</b><div style="font-size:10.5px;color:var(--t3)">${f.pais||''} · ${f.fecha} · devuelto ${f.pais&&p.currency[f.pais]?ui.money(p.currency[f.pais],f.devuelto||0):(f.moneda?ui.money(f.moneda,f.devuelto||0):'—')}</div></div>
-        <div class="flex" style="gap:8px"><b style="font-size:12.5px;color:${(f.saldo||0)>0?'var(--amber)':'var(--green)'}">saldo ${f.pais&&p.currency[f.pais]?ui.money(p.currency[f.pais],f.saldo||0):(f.moneda?ui.money(f.moneda,f.saldo||0):'Pendiente de moneda')}</b>${(!(f.pais&&p.currency[f.pais])&&!f.moneda)?ui.bdg('Revisión requerida · sin moneda · Bloqueado','r'):((f.saldo||0)<=0?ui.bdg('saldado','g'):`<button class="btn btn-soft btn-sm" data-devfin="${f.id}">Devolver</button>`)}</div></div></div>`).join(''):'<div class="muted" style="font-size:12px;padding:6px 0">Sin financiamientos registrados</div>';
+      fl.innerHTML=fins.length?fins.map(f=>`<div style="padding:8px 0;border-bottom:1px solid var(--border-2)"><div class="between"><div><b style="font-size:12.5px">${f.fuente||'Financiamiento'}</b><div style="font-size:10.5px;color:var(--t3)">${f.pais||''} · ${f.fecha} · devuelto ${currencyOf(f)!==PENDING_CURRENCY?ui.money(currencyOf(f),f.devuelto||0):'—'}</div></div>
+        <div class="flex" style="gap:8px"><b style="font-size:12.5px;color:${(f.saldo||0)>0?'var(--amber)':'var(--green)'}">saldo ${currencyOf(f)!==PENDING_CURRENCY?ui.money(currencyOf(f),f.saldo||0):'Pendiente de moneda'}</b>${(currencyOf(f)===PENDING_CURRENCY)?ui.bdg('Revisión requerida · sin moneda · Bloqueado','r'):((f.saldo||0)<=0?ui.bdg('saldado','g'):`<button class="btn btn-soft btn-sm" data-devfin="${f.id}">Devolver</button>`)}</div></div></div>`).join(''):'<div class="muted" style="font-size:12px;padding:6px 0">Sin financiamientos registrados</div>';
       fl.querySelectorAll('[data-devfin]').forEach(b=>b.addEventListener('click',()=>{const f=fins.find(x=>x.id===b.dataset.devfin);
-        ui.modal('Devolver financiamiento · '+f.fuente,`<div style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Saldo: <b>${f.pais&&p.currency[f.pais]?ui.money(p.currency[f.pais],f.saldo||0):(f.moneda?ui.money(f.moneda,f.saldo||0):'Pendiente de moneda')}</b></div><label class="lbl">Monto a devolver</label><input class="inp" id="dvM" type="number" value="${f.saldo||0}" style="margin-bottom:14px"><div style="text-align:right"><button class="btn btn-green btn-sm" id="dvOk">Registrar devolución</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#dvOk').addEventListener('click',async()=>{const amount=Math.abs(+ov.querySelector('#dvM').value||0);if(!amount){ui.toast('Ingresa un monto mayor a cero','warn');return;}const btn=ov.querySelector('#dvOk');btn.disabled=true;try{if(connectedFinance()){const ack=await data.applyFinanceAccount(f.id,amount,{ackAware:true,fecha:new Date().toISOString().slice(0,10),desc:'Devolución de financiamiento'});if(!(ack?.ok&&ack?.providerAck))throw new Error('FINANCE_ACCOUNT_ACK_REQUIRED');await refreshDurableFinance(true);}else CX.finStore.devolverFinanciamiento(p.id,f.id,amount);close();draw();ui.toast('Devolución confirmada · CxP reducida','ok',3600);}catch(_){btn.disabled=false;ui.toast('No se registró la devolución: faltó confirmación durable.','err');}});}});
+        ui.modal('Devolver financiamiento · '+f.fuente,`<div style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Saldo: <b>${currencyOf(f)!==PENDING_CURRENCY?ui.money(currencyOf(f),f.saldo||0):'Pendiente de moneda'}</b></div><label class="lbl">Monto a devolver</label><input class="inp" id="dvM" type="number" value="${f.saldo||0}" style="margin-bottom:14px"><div style="text-align:right"><button class="btn btn-green btn-sm" id="dvOk">Registrar devolución</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#dvOk').addEventListener('click',async()=>{const amount=Math.abs(+ov.querySelector('#dvM').value||0);if(!amount){ui.toast('Ingresa un monto mayor a cero','warn');return;}const btn=ov.querySelector('#dvOk');btn.disabled=true;let committed=false;try{if(connectedFinance()){const ack=await data.applyFinanceAccount(f.id,amount,scopedMeta({ackAware:true,fecha:new Date().toISOString().slice(0,10),desc:'Devolución de financiamiento'}));if(!(ack?.ok&&ack?.providerAck))throw new Error('FINANCE_ACCOUNT_ACK_REQUIRED');committed=true;if(!await refreshDurableFinance(true,isG?'global':'proyecto'))throw new Error('FINANCE_ACCOUNT_READBACK_UNAVAILABLE');if(isG&&!cxFinanceGlobalApplyReadback(ack,durableAccounts,durableMovements,f,amount))throw new Error('FINANCE_ACCOUNT_READBACK_MISMATCH');}else CX.finStore.devolverFinanciamiento(p.id,f.id,amount);close();draw();ui.toast('Devolución confirmada · CxP reducida','ok',3600);}catch(_){btn.disabled=isG&&committed;ui.toast(isG&&committed?'Devolución recibida; lectura remota pendiente. Verifica antes de repetir.':'No se confirmó la devolución.','warn');}});}});
       }));
     }
     const af=host.querySelector('#addFin');
@@ -777,18 +842,19 @@ CX.module('movimientos', ({data,ui})=>{
       <div class="grid g2" style="gap:10px 12px"><div style="grid-column:1/3"><label class="lbl">Fuente</label><input class="inp" id="fnF" placeholder="Banco / socio / casa matriz"></div>
       <div style="grid-column:1/3"><label class="lbl">Concepto / destino</label><input class="inp" id="fnC" placeholder="Ej. capital de trabajo, anticipo de nómina"></div>
       <div><label class="lbl">Monto <span id="fnCurLbl" class="muted">(elige país)</span></label><input class="inp" id="fnM" type="number"></div>
-      <div><label class="lbl">País</label><select class="sel" id="fnP"><option value="">— elige país —</option>${p.countries.map(c=>`<option>${c}</option>`).join('')}</select></div></div>
-      <div id="fnReview" style="font-size:11px;color:var(--red);margin-top:6px;display:none">Pendiente de moneda · Bloqueado hasta elegir país</div>
+      <div><label class="lbl">País</label><select class="sel" id="fnP"><option value="">— elige país —</option>${countries.map(c=>`<option>${c}</option>`).join('')}</select></div></div>
+      ${isG?`<div style="margin-top:10px"><label class="lbl">Moneda del financiamiento</label><input class="inp" id="fnCurrency" maxlength="12" placeholder="Moneda indicada en la fuente" autocomplete="off"></div>`:''}
+      <div id="fnReview" style="font-size:11px;color:var(--red);margin-top:6px;display:none">Pendiente de moneda · ${isG?'Indica país y moneda de la fuente':'Bloqueado hasta elegir país'}</div>
       <div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="fnSave">Registrar</button></div>
     `,{onMount:(ov,close)=>{
-      const fnCur=()=>{const c=ov.querySelector('#fnP').value;return c&&p.currency[c]?p.currency[c]:PENDING_CURRENCY;};
-      const syncFn=()=>{const cu=fnCur();ov.querySelector('#fnCurLbl').textContent=cu===PENDING_CURRENCY?'(elige país)':'('+cu+')';ov.querySelector('#fnReview').style.display=cu===PENDING_CURRENCY?'':'none';};
-      ov.querySelector('#fnP').addEventListener('change',syncFn); syncFn();
+      const fnCur=()=>{const c=ov.querySelector('#fnP').value;return isG?(c?cxFinanceExplicitCurrency(ov.querySelector('#fnCurrency')?.value):PENDING_CURRENCY):(c&&p.currency[c]?p.currency[c]:PENDING_CURRENCY);};
+      const syncFn=()=>{const cu=fnCur();ov.querySelector('#fnCurLbl').textContent=cu===PENDING_CURRENCY?(isG?'(indica país y moneda)':'(elige país)'):'('+cu+')';ov.querySelector('#fnReview').style.display=cu===PENDING_CURRENCY?'':'none';};
+      ov.querySelector('#fnP').addEventListener('change',syncFn);ov.querySelector('#fnCurrency')?.addEventListener('input',syncFn); syncFn();
       ov.querySelector('#fnSave').addEventListener('click',async()=>{
-        if(fnCur()===PENDING_CURRENCY){ui.toast('Selecciona el país para resolver la moneda antes de registrar','warn');return;} /* R31: bloquear sin moneda */
+        if(fnCur()===PENDING_CURRENCY){ui.toast(isG?'Selecciona el país e indica la moneda de la fuente antes de registrar.':'Selecciona el país para resolver la moneda antes de registrar','warn');return;} /* R31: bloquear sin moneda */
         const amount=Math.abs(+ov.querySelector('#fnM').value||0),country=ov.querySelector('#fnP').value,fuente=(ov.querySelector('#fnF').value||'').trim(),concepto=(ov.querySelector('#fnC').value||'').trim()||'Financiamiento';
         if(!amount){ui.toast('Ingresa un monto mayor a cero','warn');return;}
-        const btn=ov.querySelector('#fnSave');btn.disabled=true;try{if(connectedFinance()){const ack=await data.createFinancialMovement({tipo:'ingreso',tipoIngreso:'financiamiento',cat:concepto,concepto,beneficiario:fuente,pais:country,country,moneda:fnCur(),currency:fnCur(),monto:amount,amount,fecha:new Date().toISOString().slice(0,10),desc:fuente?('Fuente: '+fuente):concepto},{ackAware:true,reason:'admin-financing-create'});if(!(ack?.ok&&ack?.providerAck))throw new Error('FINANCE_MOVEMENT_ACK_REQUIRED');await refreshDurableFinance(true);}else CX.finStore.addFinanciamiento(p.id,{fuente,concepto,monto:amount,pais:country,moneda:fnCur()});close();draw();ui.toast('Financiamiento confirmado · flujo no operativo + CxP vinculada','ok',3600);}catch(_){btn.disabled=false;ui.toast('No se registró el financiamiento: faltó confirmación durable.','err');}});}}));
+        const btn=ov.querySelector('#fnSave');btn.disabled=true;let committed=false;try{if(connectedFinance()){const ack=await data.createFinancialMovement({tipo:'ingreso',tipoIngreso:'financiamiento',cat:concepto,concepto,beneficiario:fuente,pais:country,country,moneda:fnCur(),currency:fnCur(),monto:amount,amount,fecha:new Date().toISOString().slice(0,10),desc:fuente?('Fuente: '+fuente):concepto},scopedMeta({ackAware:true,reason:'admin-financing-create'}));if(!(ack?.ok&&ack?.providerAck))throw new Error('FINANCE_MOVEMENT_ACK_REQUIRED');committed=true;if(!await refreshDurableFinance(true,isG?'global':'proyecto'))throw new Error('FINANCE_MOVEMENT_READBACK_UNAVAILABLE');if(isG&&(!cxFinanceCommandCommitted(ack)||!cxFinanceCreatedReadback(ack,durableMovements,{country,currency:fnCur(),amount,global:true})||!ack.linkedAccount||!cxFinanceCreatedReadback({...ack,entityId:ack.linkedAccount.id},durableAccounts,{country,currency:fnCur(),amount,kind:'cxp',global:true,sourceMovementId:ack.entityId})))throw new Error('FINANCE_MOVEMENT_READBACK_MISMATCH');}else CX.finStore.addFinanciamiento(p.id,{fuente,concepto,monto:amount,pais:country,moneda:fnCur()});close();draw();ui.toast('Financiamiento confirmado · flujo no operativo + CxP vinculada','ok',3600);}catch(_){btn.disabled=isG&&committed;ui.toast(isG&&committed?'Financiamiento recibido; lectura remota pendiente. Verifica antes de repetir.':'No se confirmó el financiamiento.','warn');}});}}));
     const cxcF=host.querySelector('#cxcFind');
     if(cxcF)cxcF.addEventListener('input',()=>{const q=cxcF.value.toLowerCase();host.querySelectorAll('#cxcBody .cxcRow').forEach(row=>{row.style.display=row.textContent.toLowerCase().includes(q)?'':'none';});});
     const cxpF=host.querySelector('#cxpFind');
@@ -803,7 +869,7 @@ CX.module('movimientos', ({data,ui})=>{
         const safe=v=>String(v==null?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
         ui.modal((kind==='cxc'?'Cuenta por cobrar':'Cuenta por pagar')+' · '+safe(r.concepto||r.id),`
           <div style="font-size:12.5px;line-height:1.9">
-            <div><b>Proyecto y período:</b> ${safe(canonicalProjectId())} · ${safe(canonicalPeriodId)}</div>
+            <div><b>Alcance y período:</b> ${isG?'Global (administrativo)':safe(canonicalProjectId())} · ${safe(r.periodId||canonicalPeriodId)}</div>
             <div><b>País / moneda:</b> ${safe(r.country||r.pais||'sin país')} · ${safe(r.currency||r.moneda||'sin moneda')}</div>
             <div><b>Saldo de fuente:</b> ${currencyOf(r)===PENDING_CURRENCY?'Pendiente de moneda':ui.money(curOfRow(r),Number(r.balance??r.saldo)||0)}</div>
             <div><b>Estado:</b> ${safe(r.status||'open')} · <b>Origen:</b> ${safe(r.origin||'desconocido')}</div>
@@ -861,33 +927,34 @@ CX.module('movimientos', ({data,ui})=>{
           <div><label class="lbl">Categoría</label><select class="sel" id="mvCateg">${CAT.map(c=>`<option ${(scope==='global'&&c==='Administrativo')?'selected':''}>${c}</option>`).join('')}</select></div>
           <div><label class="lbl">Tipo de ${esIng?'ingreso':'egreso'}</label><select class="sel" id="mvTipo">${Object.keys(tipos).map(k=>`<option value="${k}" ${k===defTipo?'selected':''}>${tipos[k]}</option>`).join('')}</select></div>
           <div><label class="lbl">Monto <span id="mvCurLbl" class="muted">(elige país)</span></label><input class="inp" id="mvMonto" type="number"></div>
-          <div><label class="lbl">País</label><select class="sel" id="mvPais"><option value="">— elige país —</option>${p.countries.map(c=>`<option ${scope!=='global'?'selected':''}>${c}</option>`).join('')}</select></div>
+          <div><label class="lbl">País</label><select class="sel" id="mvPais"><option value="">— elige país —</option>${countries.map(c=>`<option ${!isG?'selected':''}>${c}</option>`).join('')}</select></div>
+          ${isG?`<div><label class="lbl">Moneda del movimiento</label><input class="inp" id="mvCurrency" maxlength="12" placeholder="Moneda indicada en la fuente" autocomplete="off"></div>`:''}
           <div><label class="lbl">Fecha (admite histórico)</label><input class="inp" id="mvFecha" type="date" value="${new Date().toISOString().slice(0,10)}"></div>
           <div><label class="lbl">Estado</label><select class="sel" id="mvEstado">${(esIng?['Conciliado','Pendiente (CxC)','Por conciliar']:['Pagado','Programado']).map(s=>`<option>${s}</option>`).join('')}</select></div>
           <div><label class="lbl">${esIng?'Pagador / fuente':'Beneficiario'}</label><input class="inp" id="mvBenef" placeholder="${esIng?'Quién paga (cliente/casa matriz)':'A quién se paga (shopper/proveedor)'}"></div>
-          <div><label class="lbl">Proyecto destino</label><select class="sel" id="mvProy"><option value="">— sin proyecto —</option>${(typeof data.programs==='function'?data.programs():[]).map(program=>`<option value="${program.key}" ${program.key===canonicalProjectId()?'selected':''}>${program.name}</option>`).join('')}</select></div>
+          <div><label class="lbl">Proyecto destino</label><select class="sel" id="mvProy" ${isG?'disabled':''}><option value="">— sin proyecto —</option>${(isG?[]:(typeof data.programs==='function'?data.programs():[])).map(program=>`<option value="${program.key}" ${program.key===canonicalProjectId()?'selected':''}>${program.name}</option>`).join('')}</select></div>
           <div style="grid-column:1/3"><label class="lbl">Descripción</label><input class="inp" id="mvDesc" placeholder="Opcional"></div>
         </div>
         <div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="mvSave">Registrar</button></div>
       `,{onMount:(ov,close)=>{
-        const mvCur=()=>{const c=ov.querySelector('#mvPais').value;return c&&p.currency[c]?p.currency[c]:PENDING_CURRENCY;};
-        const syncMv=()=>{const cu=mvCur();ov.querySelector('#mvCurLbl').textContent=cu===PENDING_CURRENCY?'(elige país)':'('+cu+')';};
-        ov.querySelector('#mvPais').addEventListener('change',syncMv); syncMv();
+        const mvCur=()=>{const c=ov.querySelector('#mvPais').value;return isG?(c?cxFinanceExplicitCurrency(ov.querySelector('#mvCurrency')?.value):PENDING_CURRENCY):(c&&p.currency[c]?p.currency[c]:PENDING_CURRENCY);};
+        const syncMv=()=>{const cu=mvCur();ov.querySelector('#mvCurLbl').textContent=cu===PENDING_CURRENCY?(isG?'(indica país y moneda)':'(elige país)'):'('+cu+')';};
+        ov.querySelector('#mvPais').addEventListener('change',syncMv);ov.querySelector('#mvCurrency')?.addEventListener('input',syncMv); syncMv();
         ov.querySelector('#mvSave').addEventListener('click',async()=>{
-        if(mvCur()===PENDING_CURRENCY){ui.toast('Selecciona el país para resolver la moneda antes de registrar','warn');return;} /* R31: bloquear sin moneda */
+        if(mvCur()===PENDING_CURRENCY){ui.toast(isG?'Selecciona el país e indica la moneda de la fuente antes de registrar.':'Selecciona el país para resolver la moneda antes de registrar','warn');return;} /* R31: bloquear sin moneda */
         const monto=Math.abs(+ov.querySelector('#mvMonto').value||0)*(esIng?1:-1);
         if(!monto){ui.toast('Ingresa un monto mayor a cero','warn');return;}
         const rec={tipo:esIng?'ingreso':'egreso',cat:ov.querySelector('#mvCat').value||t,categoria:ov.querySelector('#mvCateg').value,pais:ov.querySelector('#mvPais').value,country:ov.querySelector('#mvPais').value,moneda:mvCur(),currency:mvCur(),monto,amount:Math.abs(monto),fecha:ov.querySelector('#mvFecha').value,desc:ov.querySelector('#mvDesc').value,estado:ov.querySelector('#mvEstado').value,beneficiario:(ov.querySelector('#mvBenef').value||'').trim(),proyectoId:ov.querySelector('#mvProy').value};
         if(esIng)rec.tipoIngreso=ov.querySelector('#mvTipo').value; else rec.tipoEgreso=ov.querySelector('#mvTipo').value;
         if(connectedFinance()){
-          if(scope==='global'||typeof data.createFinancialMovement!=='function'){ui.toast('Este alcance aún no tiene persistencia financiera durable habilitada.','warn');return;}
+          if(typeof data.createFinancialMovement!=='function'){ui.toast('Este alcance aún no tiene persistencia financiera durable habilitada.','warn');return;}
           const btn=ov.querySelector('#mvSave'),prior=btn.textContent;btn.disabled=true;btn.textContent='Registrando…';let committed=false;
           try{
-            const r=await data.createFinancialMovement(rec,{ackAware:true,reason:'admin-finance-movement-create'});
+            const r=await data.createFinancialMovement(rec,scopedMeta({ackAware:true,reason:'admin-finance-movement-create'}));
             if(!(r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true))throw new Error(r?.code||'FINANCE_MOVEMENT_ACK_REQUIRED');
             committed=true;
-            if(!await refreshDurableFinance(true))throw new Error('FINANCE_MOVEMENT_READBACK_UNAVAILABLE');
-            if(!cxFinanceCreatedReadback(r,durableMovements,{country:rec.country,currency:rec.currency,amount:rec.amount}))
+            if(!await refreshDurableFinance(true,isG?'global':'proyecto'))throw new Error('FINANCE_MOVEMENT_READBACK_UNAVAILABLE');
+            if(!cxFinanceCreatedReadback(r,durableMovements,{country:rec.country,currency:rec.currency,amount:rec.amount,global:isG}))
               throw new Error('FINANCE_MOVEMENT_READBACK_MISMATCH');
             close();draw();ui.toast('Movimiento registrado con ACK y lectura remota coincidente','ok');
           }catch(error){
@@ -934,28 +1001,29 @@ CX.module('movimientos', ({data,ui})=>{
         <p style="font-size:12px;color:var(--t2);margin-bottom:10px">Útil para cargar saldos iniciales en la importación o registrar deudas/derechos del periodo.</p>
         <div class="grid g2" style="gap:10px 12px">
           <div style="grid-column:1/3"><label class="lbl">Concepto / contraparte</label><input class="inp" id="ctCon" list="ctConList" placeholder="${k==='cxc'?'Cliente / casa matriz':'Proveedor / financiamiento'}"></div><datalist id="ctConList">${(k==="cxc"?cxcAccounts:cxpAccounts).map(r=>`<option value="${r.concepto}">`).join("")}${CX.data._visitas.filter(v=>v.projectId===CX.data.currentPeriodId).map(v=>v.shopper).filter((s,i,a)=>s&&a.indexOf(s)===i).map(s=>`<option value="${s}">`).join("")}</datalist>
-          <div><label class="lbl">País</label><select class="sel" id="ctPais"><option value="">—</option>${p.countries.map(c=>`<option>${c}</option>`).join('')}</select></div>
+          <div><label class="lbl">País</label><select class="sel" id="ctPais"><option value="">—</option>${countries.map(c=>`<option>${c}</option>`).join('')}</select></div>
           <div><label class="lbl">Monto <span id="ctCurLbl" class="muted">(elige país)</span></label><input class="inp" id="ctMonto" type="number"></div>
+          ${isG?`<div><label class="lbl">Moneda de la cuenta</label><input class="inp" id="ctCurrency" maxlength="12" placeholder="Moneda indicada en la fuente" autocomplete="off"></div>`:''}
           <div style="grid-column:1/3"><label class="lbl">Vence</label><input class="inp" id="ctVence" type="date"></div>
         </div>
         <div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="ctSave">Registrar</button></div>
       `,{onMount:(ov,close)=>{
-        const ctCur=()=>{const c=ov.querySelector('#ctPais').value;return c&&p.currency[c]?p.currency[c]:PENDING_CURRENCY;};
-        const syncCt=()=>{const cu=ctCur();ov.querySelector('#ctCurLbl').textContent=cu===PENDING_CURRENCY?'(elige país)':'('+cu+')';};
-        ov.querySelector('#ctPais').addEventListener('change',syncCt); syncCt();
+        const ctCur=()=>{const c=ov.querySelector('#ctPais').value;return isG?(c?cxFinanceExplicitCurrency(ov.querySelector('#ctCurrency')?.value):PENDING_CURRENCY):(c&&p.currency[c]?p.currency[c]:PENDING_CURRENCY);};
+        const syncCt=()=>{const cu=ctCur();ov.querySelector('#ctCurLbl').textContent=cu===PENDING_CURRENCY?(isG?'(indica país y moneda)':'(elige país)'):'('+cu+')';};
+        ov.querySelector('#ctPais').addEventListener('change',syncCt);ov.querySelector('#ctCurrency')?.addEventListener('input',syncCt); syncCt();
         ov.querySelector('#ctSave').addEventListener('click',async()=>{
-        if(ctCur()===PENDING_CURRENCY){ui.toast('Selecciona el país para resolver la moneda antes de registrar','warn');return;} /* R31: país/moneda obligatorio */
+        if(ctCur()===PENDING_CURRENCY){ui.toast(isG?'Selecciona el país e indica la moneda de la fuente antes de registrar.':'Selecciona el país para resolver la moneda antes de registrar','warn');return;} /* R31: país/moneda obligatorio */
         const r={concepto:ov.querySelector('#ctCon').value||'(sin concepto)',monto:+ov.querySelector('#ctMonto').value||0,amount:+ov.querySelector('#ctMonto').value||0,pais:ov.querySelector('#ctPais').value,country:ov.querySelector('#ctPais').value,moneda:ctCur(),currency:ctCur(),vence:ov.querySelector('#ctVence').value,dueDate:ov.querySelector('#ctVence').value,origin:'manual'};
         if(!r.amount||r.amount<=0){ui.toast('Ingresa un monto mayor a cero','warn');return;}
         if(connectedFinance()){
-          if(scope==='global'||typeof data.createFinanceAccount!=='function'){ui.toast('Este alcance aún no tiene persistencia financiera durable habilitada.','warn');return;}
+          if(typeof data.createFinanceAccount!=='function'){ui.toast('Este alcance aún no tiene persistencia financiera durable habilitada.','warn');return;}
           const btn=ov.querySelector('#ctSave'),prior=btn.textContent;btn.disabled=true;btn.textContent='Registrando…';let committed=false;
           try{
-            const ack=await data.createFinanceAccount(k,r,{ackAware:true,reason:'admin-finance-account-create'});
+            const ack=await data.createFinanceAccount(k,r,scopedMeta({ackAware:true,reason:'admin-finance-account-create'}));
             if(!(ack?.ok===true&&ack?.status==='committed'&&ack?.providerAck===true&&ack?.successUiAllowed===true))throw new Error(ack?.code||'FINANCE_ACCOUNT_ACK_REQUIRED');
             committed=true;
-            if(!await refreshDurableFinance(true))throw new Error('FINANCE_ACCOUNT_READBACK_UNAVAILABLE');
-            if(!cxFinanceCreatedReadback(ack,durableAccounts,{country:r.country,currency:r.currency,amount:r.amount,kind:k}))
+            if(!await refreshDurableFinance(true,isG?'global':'proyecto'))throw new Error('FINANCE_ACCOUNT_READBACK_UNAVAILABLE');
+            if(!cxFinanceCreatedReadback(ack,durableAccounts,{country:r.country,currency:r.currency,amount:r.amount,kind:k,global:isG}))
               throw new Error('FINANCE_ACCOUNT_READBACK_MISMATCH');
             close();draw();ui.toast('Cuenta por '+(k==='cxc'?'cobrar':'pagar')+' registrada con ACK y lectura remota coincidente','ok');
           }catch(error){
@@ -969,7 +1037,7 @@ CX.module('movimientos', ({data,ui})=>{
 
     host.querySelectorAll('[data-cxc-apply]').forEach(btn=>btn.addEventListener('click',()=>{
       const rec=cxcAccounts.find(x=>String(x.id)===String(btn.dataset.cxcApply||''));
-      if(!rec||!connectedFinance()||scope==='global'){ui.toast('Cobro no disponible sin fuente financiera protegida.','warn');return;}
+      if(!rec||!connectedFinance()){ui.toast('Cobro no disponible sin fuente financiera protegida.','warn');return;}
       const current=Number(rec.balance??rec.saldo),currency=currencyOf(rec);
       if(!Number.isFinite(current)||current<=0||currency===PENDING_CURRENCY){ui.toast('Cuenta sin saldo o moneda resueltos.','warn');return;}
       ui.modal('Registrar cobro interno · '+(rec.concepto||'CxC'),`
@@ -982,17 +1050,17 @@ CX.module('movimientos', ({data,ui})=>{
         save.disabled=true;save.textContent='Registrando…';let committed=false;
         try{
           if(typeof data.applyFinanceAccount!=='function')throw new Error('FINANCE_ACCOUNT_PROVIDER_UNAVAILABLE');
-          const ack=await data.applyFinanceAccount(rec.id,amount,{ackAware:true,fecha:new Date().toISOString().slice(0,10),desc:'Cobro interno CxC'});
+          const ack=await data.applyFinanceAccount(rec.id,amount,scopedMeta({ackAware:true,fecha:new Date().toISOString().slice(0,10),desc:'Cobro interno CxC'}));
           if(!(ack?.ok===true&&ack?.status==='committed'&&ack?.providerAck===true))throw new Error(String(ack?.code||'FINANCE_ACCOUNT_ACK_REQUIRED'));
           committed=true;
-          if(!await refreshDurableFinance(true))throw new Error('FINANCE_ACCOUNT_READBACK_UNAVAILABLE');
+          if(!await refreshDurableFinance(true,isG?'global':'proyecto'))throw new Error('FINANCE_ACCOUNT_READBACK_UNAVAILABLE');
           const read=durableAccounts.find(x=>String(x.id)===String(rec.id));
-          if(!read||Math.abs(Number(read.balance??read.saldo)-Math.max(0,current-amount))>0.01)throw new Error('FINANCE_ACCOUNT_READBACK_MISMATCH');
+          if(!read||Math.abs(Number(read.balance??read.saldo)-Math.max(0,current-amount))>0.01||isG&&!cxFinanceGlobalApplyReadback(ack,durableAccounts,durableMovements,rec,amount))throw new Error('FINANCE_ACCOUNT_READBACK_MISMATCH');
           close();draw();ui.toast('Cobro interno registrado con ACK y lectura protegida. Confirmación bancaria independiente.','ok',5000);
         }catch(error){
           save.dataset.providerResultCode=String(error?.message||'FINANCE_ACCOUNT_ERROR').slice(0,100);
           ui.toast((committed?'ACK registrado; lectura de saldo pendiente.':'Cobro no confirmado.')+' '+cxFinanceFailureCopy(error?.message),'warn',5500);
-          save.disabled=false;save.textContent='Registrar con ACK';
+          save.disabled=isG&&committed;save.textContent=isG&&committed?'ACK registrado · relectura pendiente':'Registrar con ACK';
         }
       });}});
     }));
@@ -1012,16 +1080,16 @@ CX.module('movimientos', ({data,ui})=>{
         const btn=ov.querySelector('#abSave');btn.disabled=true;let committed=false;
         try{
           if(connectedFinance()){
-            const ack=await data.applyFinanceAccount(r.id,amount,{ackAware:true,fecha:new Date().toISOString().slice(0,10),desc:'Abono interno CxP'});
+            const ack=await data.applyFinanceAccount(r.id,amount,scopedMeta({ackAware:true,fecha:new Date().toISOString().slice(0,10),desc:'Abono interno CxP'}));
             if(!(ack?.ok===true&&ack?.status==='committed'&&ack?.providerAck===true))throw new Error(String(ack?.code||'FINANCE_ACCOUNT_ACK_REQUIRED'));
             committed=true;
-            if(!await refreshDurableFinance(true))throw new Error('FINANCE_ACCOUNT_READBACK_UNAVAILABLE');
+            if(!await refreshDurableFinance(true,isG?'global':'proyecto'))throw new Error('FINANCE_ACCOUNT_READBACK_UNAVAILABLE');
             const read=durableAccounts.find(row=>String(row.id)===String(r.id));
-            if(!read||Math.abs(Number(read.balance??read.saldo)-Math.max(0,before-amount))>0.01)throw new Error('FINANCE_ACCOUNT_READBACK_MISMATCH');
+            if(!read||Math.abs(Number(read.balance??read.saldo)-Math.max(0,before-amount))>0.01||isG&&!cxFinanceGlobalApplyReadback(ack,durableAccounts,durableMovements,r,amount))throw new Error('FINANCE_ACCOUNT_READBACK_MISMATCH');
           }else CX.finStore.abonarCxp(pid(),r.id,amount);
           close();draw();ui.toast(connectedFinance()?'Abono interno registrado con ACK y lectura protegida. Confirmación externa pendiente.':'Abono registrado en modo demostración','ok',5000);
         }catch(error){
-          btn.disabled=false;
+          btn.disabled=isG&&committed;
           btn.dataset.providerResultCode=String(error?.message||'FINANCE_ACCOUNT_ERROR').slice(0,100);
           ui.toast((committed?'ACK registrado; lectura pendiente.':'Abono no confirmado.')+' '+cxFinanceFailureCopy(error?.message),'warn',5500);
         }
@@ -1053,15 +1121,16 @@ CX.module('movimientos', ({data,ui})=>{
       }
     }); }
     const ih=host.querySelector('#impHist');
-    if(ih)ih.addEventListener('click',()=>ui.modal('Importar histórico de movimientos',`
+    if(ih)ih.addEventListener('click',()=>{if(connectedFinance()){ui.modal('Importación de movimientos', '<p>La importación financiera requiere una fuente revisada y todavía no está habilitada en este alcance. Los registros heredados de este navegador se conservan separados de los saldos confirmados.</p>');return;}ui.modal('Importar histórico de movimientos',`
       <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Sube tu archivo (Excel/CSV) de movimientos, remesas, cuentas por cobrar y por pagar. Vista previa + anti-duplicado por fecha+monto+concepto.</p>
       <input type="file" class="inp" style="padding:7px;margin-bottom:12px">
       <div style="background:var(--brand-light);border-radius:9px;padding:10px 12px;font-size:12px;color:var(--brand-dark)">Mapeo de columnas → tipo/categoría/monto/fecha/país/estado. Permite cargar <b>saldos iniciales</b> de cuentas por cobrar y por pagar y remesas para conciliar.</div>
       <div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('Vista previa lista (demo)','ok');this.closest('.cx-ov').remove()">Ver vista previa</button></div>
-    `));
+    `);});
   };
   draw();
   CX.bus.on('fin',()=>draw());
+  if(connectedFinance())refreshAndDraw();
   return host;
 });
 
