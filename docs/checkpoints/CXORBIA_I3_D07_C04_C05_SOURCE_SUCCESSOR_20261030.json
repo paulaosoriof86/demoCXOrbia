@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "cxorbia.i3.d07-c04-c05-source-successor.v1",
+  "id": "CXORBIA-I3-D07-C04-C05-SOURCE-SUCCESSOR-20261030",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "production": "DO_NOT_TOUCH",
+  "authorizationI4": false,
+  "predecessor": {
+    "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+    "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4"
+  },
+  "candidate": {
+    "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
+    "commitMessage": "fix(i3): preserve D07 download bytes and make finance replay proof deterministic"
+  },
+  "sourceChanges": {
+    "product": [
+      {
+        "path": "app/modules/documentos.js",
+        "blob": "7572b99223222f052824bdf075e76a5e7f53fea0"
+      }
+    ],
+    "qa": [
+      {
+        "path": "tools/qa/cxorbia-i3-d07-viewer-single-flight.test.mjs",
+        "blob": "3e6f369a68063a505024718c686f04a140d4fe33"
+      },
+      {
+        "path": "tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs",
+        "blob": "ad7714730377c21b20c20386d4a30db8233103ce"
+      }
+    ],
+    "financeProviderChanged": false
+  },
+  "priorEvidence": {
+    "run1977": {
+      "runId": 40992435376,
+      "jobId": 123858275699,
+      "artifactId": 12949434501,
+      "artifactDigest": "sha256:5fc530b3623438955531c8f86b1a22cf591ebfd01a8b93cbe924d87ec56984b5",
+      "decision": "HOLD_D07_DOWNLOAD_BYTES_EMPTY_C04_C05_REPLAY_OBSERVER_EXPIRED",
+      "deploys": 0,
+      "production": false
+    },
+    "run1978": {
+      "runId": 40994579064,
+      "jobId": 123864617151,
+      "decision": "RELEASE_COMPOSITION_FAILURE_UNDECLARED_PRODUCT_DRIFT_AFTER_CANONICAL_CANDIDATE",
+      "materialized": false,
+      "deploys": 0,
+      "production": false
+    }
+  },
+  "authorityAlignment": {
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V532_2026-10-30.json",
+    "ledgerBlob": "0ed553f8530893d98ac88bb88360f2fab4d13650",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V200.json",
+    "matrixBlob": "1dc960b6dd93f26a37466917ccad78289cb32e4c",
+    "descriptorPath": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "executionPointerPath": "CXORBIA_RECOVERY_EXECUTION_CURRENT.json"
+  },
+  "expectedSourceProof": {
+    "state": "PENDING_CANONICAL",
+    "workflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "job": "phasea-rejected-checkpoint-source-proof",
+    "trigger": "control-authority-push",
+    "deployMarker": false
+  },
+  "previousServedMaterialization": {
+    "path": "docs/checkpoints/CXORBIA_I3_S485_DEV_MATERIALIZATION_RUN1972_20261030.json",
+    "gitBlob": "734fadab265d042eadf874ecf57af5e8f7d3258f",
+    "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+    "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+    "controlSha": "1f536ea7e3df80b08c70d7fc12b985abae0438c2",
+    "materializationRunId": 40984272542,
+    "readbackRunId": 40988379125,
+    "runNumber": 1972,
+    "artifactId": 12947908043,
+    "artifactZipSha256": "ef4008d2d3f4de017031bc819968403e6518775d547a68826b8e9479be9aef84",
+    "runtimeRevision": "cxorbia-live-hr-dev-00331-2xq",
+    "runtimeDigest": "sha256:e56826df529bd132d2413a0913c557743dbeb78945724e1073665e8bc388ca65",
+    "trafficPercent": 100,
+    "fullTaskClosed": false,
+    "humanAcceptance": "PENDING",
+    "production": false
+  },
+  "requiredNextProof": [
+    "D07 Admin",
+    "D07 Shopper",
+    "GET 200",
+    "seven pages",
+    "navigation 1→2→1",
+    "download 162335 bytes",
+    "SHA-256 3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454",
+    "C04/C05 after exact R11 cleanup",
+    "four ACK/readbacks",
+    "two zero-write idempotent replays",
+    "thirteen linked documents",
+    "independent session",
+    "reload",
+    "KPI parity",
+    "final exact cleanup"
+  ],
+  "nextExactAction": "I3 G03: ejecutar el source proof canónico de 419/c13 sin deploy; sólo si pasa, hacer una única materialización DEV de esa candidata, sellar source/runtime/Hosting/Rules/HR y luego repetir D07 + C04/C05 sobre el mismo artefacto. Mantener el DEV anterior como predecesor servido hasta el readback nuevo; revisar HR live y finanzas con sus contratos vigentes. Producción DO_NOT_TOUCH; I4 no autorizado.",
+  "decision": "CONTROL_ALIGNMENT_PENDING_CANONICAL_SOURCE_PROOF",
+  "fullTaskClosed": false
+}

@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
-  "productTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+  "productSourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+  "productTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
   "i3P0CountryScope20261028": {
     "sourceSha": "db56b89a1221d26f5cc4466585cda7eaa7360ddd",
     "sourceTree": "7b157bdf187ed712256eacfe86c1ff016b40c44e",
@@ -53,7 +53,7 @@
     "gate20": "HOLD",
     "gate21": "HOLD"
   },
-  "controlParentSha": "0d5700a001b575ee7673db8d492dd93e55ee01af",
+  "controlParentSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
     "executed": [
@@ -254,7 +254,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 G03: reconcile 21 domains preserving owner-scoped approved PASS and exact source/DEV artifacts; parallel read-only HR freshness/ACK, Admin/Shopper operations, finanzas, certificaciones and visual proof. D07 one bounded Admin+Shopper smoke only; fix only P0_PROVEN with one serial writer and cumulative candidate, then Gate20/Gate21. No production.",
+  "nextExactAction": "I3 G03: ejecutar el source proof canónico de 419/c13 sin deploy; sólo si pasa, hacer una única materialización DEV de esa candidata, sellar source/runtime/Hosting/Rules/HR y luego repetir D07 + C04/C05 sobre el mismo artefacto. Mantener el DEV anterior como predecesor servido hasta el readback nuevo; revisar HR live y finanzas con sus contratos vigentes. Producción DO_NOT_TOUCH; I4 no autorizado.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -463,7 +463,7 @@
   "nextUserAuthorizationRequired": "Existing DEV authorization covers the single cumulative DEV build/runtime/Hosting/Firestore Rules materialization and bounded scoped QA. Production remains DO_NOT_TOUCH; I4 and human acceptance are not granted.",
   "primaryExecutionRoute": "DIRECT_NATIVE_GITHUB_SINGLE_WRITER",
   "tinyFishRequiredForThisAction": false,
-  "receiptControlParentSha": "5df72f867d8cc27a680e070865b27cc78eb3dae6",
+  "receiptControlParentSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
   "previousExecutionReceiptBeforeG05": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_READBACK_RUN1729_2026-10-17.json",
     "kind": "CANONICAL_INTEGRATION_READBACK_VERIFIED_SOURCE_QA_PASS_DEV_LIVE_PENDING",
@@ -955,9 +955,9 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V199.json",
-    "gitBlob": "34891fa9f99130bceb392458f7f2596bcdc4f4ad",
-    "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V200.json",
+    "gitBlob": "1dc960b6dd93f26a37466917ccad78289cb32e4c",
+    "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
     "allModulesMatch": false,
     "phaseAComplete": false
   },
@@ -2995,17 +2995,17 @@
     "gitBlob": "879313bfbced75baa8d764d9678f5efcc489c944"
   },
   "activeShockModuleTruth": {
-    "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V199.json",
-    "matrixBlob": "34891fa9f99130bceb392458f7f2596bcdc4f4ad",
+    "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V200.json",
+    "matrixBlob": "1dc960b6dd93f26a37466917ccad78289cb32e4c",
     "classificationCounts": {
-      "COMPOSED_NOT_DEPLOYED": 2,
-      "MATCH": 5,
       "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN": 2,
+      "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN": 5,
       "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 3,
-      "SOURCE_FIXED_PENDING_CI_AND_DEV_FOCAL": 2,
-      "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN": 4,
-      "TRUE_FUNCTIONAL_DEFECT": 3
+      "TRUE_FUNCTIONAL_DEFECT": 3,
+      "SOURCE_FIXED_PENDING_CI_AND_DEV_FOCAL": 1,
+      "MATCH": 5,
+      "COMPOSED_NOT_DEPLOYED": 2
     },
     "derivedAt": "2026-10-30",
     "meaning": "LIVE_CONTROL_CLASSIFICATIONS_NOT_PROGRESS_PERCENTAGE"
@@ -4860,17 +4860,11 @@
     "production": false
   },
   "currentSourceProof": {
-    "path": "docs/checkpoints/CXORBIA_I3_CUMULATIVE_SOURCE_PROOF_RUN1967_20261030.json",
-    "gitBlob": "e19e7966f896a6ba920344fcc71259e097986abd",
-    "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
-    "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
-    "controlSha": "7175fd3ce27de0e74cc2a18cc23d054b6b39ec01",
-    "runId": 40983126884,
-    "runNumber": 1967,
-    "sourceJobId": 123827903809,
-    "artifactId": 12945078520,
-    "artifactZipSha256": "75ac9e16364a7b93a62c23a4b749d2b303c3801f4ba979551b879ac61f774086",
-    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "path": "docs/checkpoints/CXORBIA_I3_D07_C04_C05_SOURCE_SUCCESSOR_20261030.json",
+    "gitBlob": "a35f12261b822eb31f16fad08bfc696abbdf0a1b",
+    "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
+    "decision": "PENDING_CANONICAL_SOURCE_PROOF",
     "production": false
   },
   "currentControlQaCorrection": {
@@ -4918,44 +4912,15 @@
     "state": "I3_HOLD"
   },
   "currentSuccessorDevMaterializationRequest": {
-    "kind": "SINGLE_CUMULATIVE_DEV_MATERIALIZATION_REQUEST",
-    "state": "EXECUTED_RUN1969_BUILD_WITH_RUNTIME_BINDING_CLOSED_RUN1972",
-    "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
-    "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+    "state": "PENDING_SOURCE_PROOF_419",
+    "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
     "sourceProof": {
-      "path": "docs/checkpoints/CXORBIA_I3_CUMULATIVE_SOURCE_PROOF_RUN1967_20261030.json",
-      "gitBlob": "e19e7966f896a6ba920344fcc71259e097986abd",
-      "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
-      "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
-      "controlSha": "7175fd3ce27de0e74cc2a18cc23d054b6b39ec01",
-      "runId": 40983126884,
-      "runNumber": 1967,
-      "sourceJobId": 123827903809,
-      "artifactId": 12945078520,
-      "artifactZipSha256": "75ac9e16364a7b93a62c23a4b749d2b303c3801f4ba979551b879ac61f774086",
-      "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
-      "production": false
+      "path": "docs/checkpoints/CXORBIA_I3_D07_C04_C05_SOURCE_SUCCESSOR_20261030.json",
+      "gitBlob": "a35f12261b822eb31f16fad08bfc696abbdf0a1b",
+      "decision": "PENDING_CANONICAL_SOURCE_PROOF"
     },
-    "project": "cxorbia-backend-dev",
-    "service": "cxorbia-live-hr-dev",
-    "hostingSite": "cxorbia-backend-dev",
-    "workflowPath": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
-    "jobName": "b1-canonical-visible-identity-dev-materialization",
-    "controlScriptGitBlob": "0539f8663ec733445674fb7afd77003ed1374e49",
-    "planned": {
-      "builds": 1,
-      "runtimeDeploys": 1,
-      "hostingDeploys": 1,
-      "firestoreRulesDeploys": 1,
-      "storageRulesDeploys": 0
-    },
-    "executed": true,
-    "authMutations": 0,
-    "hrWrites": 0,
-    "financeWrites": 0,
-    "fullTaskClosed": false,
-    "production": false,
-    "result": {
+    "previousServedMaterialization": {
       "path": "docs/checkpoints/CXORBIA_I3_S485_DEV_MATERIALIZATION_RUN1972_20261030.json",
       "gitBlob": "734fadab265d042eadf874ecf57af5e8f7d3258f",
       "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
@@ -4973,7 +4938,9 @@
       "fullTaskClosed": false,
       "humanAcceptance": "PENDING",
       "production": false
-    }
+    },
+    "materializationStarted": false,
+    "production": false
   },
   "previousAuthorizationStatementBeforeRun1967": "No new authorization for read-only UAT Work. No Storage Rules, CORS, IAM, Auth, Firestore or production writes authorized by this DEV Hosting-only PASS.",
   "currentCanonicalControl": {
@@ -5404,5 +5371,27 @@
       "production": false
     },
     "retryAllowedWithoutNewCause": false
-  }
+  },
+  "previousCurrentSourceProofBefore419": {
+    "path": "docs/checkpoints/CXORBIA_I3_CUMULATIVE_SOURCE_PROOF_RUN1967_20261030.json",
+    "gitBlob": "e19e7966f896a6ba920344fcc71259e097986abd",
+    "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+    "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+    "controlSha": "7175fd3ce27de0e74cc2a18cc23d054b6b39ec01",
+    "runId": 40983126884,
+    "runNumber": 1967,
+    "sourceJobId": 123827903809,
+    "artifactId": 12945078520,
+    "artifactZipSha256": "75ac9e16364a7b93a62c23a4b749d2b303c3801f4ba979551b879ac61f774086",
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "production": false
+  },
+  "currentControlAlignmentReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_D07_C04_C05_SOURCE_SUCCESSOR_20261030.json",
+    "gitBlob": "a35f12261b822eb31f16fad08bfc696abbdf0a1b",
+    "decision": "CONTROL_ALIGNMENT_PENDING_CANONICAL_SOURCE_PROOF",
+    "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751"
+  },
+  "exactNextAction": "I3 G03: ejecutar el source proof canónico de 419/c13 sin deploy; sólo si pasa, hacer una única materialización DEV de esa candidata, sellar source/runtime/Hosting/Rules/HR y luego repetir D07 + C04/C05 sobre el mismo artefacto. Mantener el DEV anterior como predecesor servido hasta el readback nuevo; revisar HR live y finanzas con sus contratos vigentes. Producción DO_NOT_TOUCH; I4 no autorizado."
 }
