@@ -8895,29 +8895,15 @@
   },
   "sourceProof": {
     "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
-    "runId": 37678003445,
-    "runNumber": 1354,
-    "jobId": 112986496678,
-    "artifactId": 11507384937,
-    "artifactDigest": "sha256:54cb3b8e45013907cf6bded97fd48aef6329d7429d1999bd14969b9790237807",
-    "sourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
-    "sourceTree": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
-    "phaseAContract": {
-      "tests": 7,
-      "pass": 7,
-      "fail": 0
-    },
-    "vrm261to264Contract": {
-      "tests": 4,
-      "pass": 4,
-      "fail": 0
-    },
-    "vrm268to269Contract": {
-      "tests": 3,
-      "pass": 3,
-      "fail": 0
-    },
-    "deploys": 0,
+    "runId": 40998024504,
+    "runNumber": 1981,
+    "jobId": 123875777720,
+    "artifactId": 12952500545,
+    "artifactDigest": "sha256:611ec970e46d48d4dfedb329dc551de232adcfaa7275681957c39f92289ddce4",
+    "controlSha": "425dd862b379f0aa554c09993b4232d17c711ff9",
+    "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
+    "wholeProductPass": false,
     "production": false
   },
   "v11SourceProof": {
@@ -14684,8 +14670,8 @@
     "predecessorProductSourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
     "affectedDomain": "documents-resources",
     "ownerBlob": "7572b99223222f052824bdf075e76a5e7f53fea0",
-    "sourceProof": "PENDING_CANONICAL_SOURCE_PROOF",
-    "devMaterialization": "PENDING_SOURCE_PROOF_PASS",
+    "sourceProof": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "devMaterialization": "PENDING_SINGLE_DEV_MATERIALIZATION",
     "servedPredecessor": {
       "path": "docs/checkpoints/CXORBIA_I3_S485_DEV_MATERIALIZATION_RUN1972_20261030.json",
       "gitBlob": "734fadab265d042eadf874ecf57af5e8f7d3258f",
@@ -14705,7 +14691,20 @@
       "humanAcceptance": "PENDING",
       "production": false
     },
-    "production": false
+    "production": false,
+    "sourceProofRun": {
+      "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+      "runId": 40998024504,
+      "runNumber": 1981,
+      "jobId": 123875777720,
+      "artifactId": 12952500545,
+      "artifactDigest": "sha256:611ec970e46d48d4dfedb329dc551de232adcfaa7275681957c39f92289ddce4",
+      "controlSha": "425dd862b379f0aa554c09993b4232d17c711ff9",
+      "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+      "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
+      "wholeProductPass": false,
+      "production": false
+    }
   },
   "classificationCounts": {
     "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN": 2,

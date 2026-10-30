@@ -4,7 +4,7 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "production": "DO_NOT_TOUCH",
+  "production": false,
   "authorizationI4": false,
   "predecessor": {
     "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
@@ -55,18 +55,29 @@
   },
   "authorityAlignment": {
     "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V532_2026-10-30.json",
-    "ledgerBlob": "9c97307b4859e9f678743903d71673334f81918c",
+    "ledgerBlob": "246df914d2820afcea6a631d7490a773a67fe234",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V200.json",
-    "matrixBlob": "1dc960b6dd93f26a37466917ccad78289cb32e4c",
+    "matrixBlob": "7bc7befdc8db47c7f1cae253de93b93a404c3f82",
     "descriptorPath": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "executionPointerPath": "CXORBIA_RECOVERY_EXECUTION_CURRENT.json"
   },
   "expectedSourceProof": {
-    "state": "PENDING_CANONICAL",
+    "state": "PASS",
     "workflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
     "job": "phasea-rejected-checkpoint-source-proof",
     "trigger": "control-authority-push",
-    "deployMarker": false
+    "deployMarker": false,
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "runId": 40998024504,
+    "runNumber": 1981,
+    "sourceJobId": 123875777720,
+    "artifactId": 12952500545,
+    "artifactZipSha256": "611ec970e46d48d4dfedb329dc551de232adcfaa7275681957c39f92289ddce4",
+    "controlSha": "425dd862b379f0aa554c09993b4232d17c711ff9",
+    "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
+    "wholeProductPass": false,
+    "production": false
   },
   "previousServedMaterialization": {
     "path": "docs/checkpoints/CXORBIA_I3_S485_DEV_MATERIALIZATION_RUN1972_20261030.json",
@@ -105,7 +116,7 @@
     "final exact cleanup"
   ],
   "nextExactAction": "I3 G03: ejecutar el source proof canónico de 419/c13 sin deploy; sólo si pasa, hacer una única materialización DEV de esa candidata, sellar source/runtime/Hosting/Rules/HR y luego repetir D07 + C04/C05 sobre el mismo artefacto. Mantener el DEV anterior como predecesor servido hasta el readback nuevo; revisar HR live y finanzas con sus contratos vigentes. Producción DO_NOT_TOUCH; I4 no autorizado.",
-  "decision": "CONTROL_ALIGNMENT_PENDING_CANONICAL_SOURCE_PROOF",
+  "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
   "fullTaskClosed": false,
   "priorSourceProofAttempt": {
     "runId": 40997591889,
@@ -132,5 +143,14 @@
       "deployed": false,
       "production": false
     }
-  ]
+  ],
+  "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+  "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
+  "runId": 40998024504,
+  "runNumber": 1981,
+  "sourceJobId": 123875777720,
+  "artifactId": 12952500545,
+  "artifactZipSha256": "611ec970e46d48d4dfedb329dc551de232adcfaa7275681957c39f92289ddce4",
+  "controlSha": "425dd862b379f0aa554c09993b4232d17c711ff9",
+  "continuationState": "PENDING_SINGLE_DEV_MATERIALIZATION_419_C13"
 }

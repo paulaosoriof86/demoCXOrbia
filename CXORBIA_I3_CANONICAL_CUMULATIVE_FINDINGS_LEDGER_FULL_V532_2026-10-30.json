@@ -20333,11 +20333,24 @@
         "ownerBlob": "7572b99223222f052824bdf075e76a5e7f53fea0",
         "qaBlob": "3e6f369a68063a505024718c686f04a140d4fe33",
         "runnerBlob": "ad7714730377c21b20c20386d4a30db8233103ce",
-        "sourceProof": "PENDING_CANONICAL",
+        "sourceProof": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
         "devMaterialization": "PENDING",
         "liveE2e": "PENDING",
         "humanAcceptance": "PENDING",
-        "production": false
+        "production": false,
+        "sourceProofRun": {
+          "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+          "runId": 40998024504,
+          "runNumber": 1981,
+          "jobId": 123875777720,
+          "artifactId": 12952500545,
+          "artifactDigest": "sha256:611ec970e46d48d4dfedb329dc551de232adcfaa7275681957c39f92289ddce4",
+          "controlSha": "425dd862b379f0aa554c09993b4232d17c711ff9",
+          "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+          "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
+          "wholeProductPass": false,
+          "production": false
+        }
       },
       "priorEvidence": {
         "run1977": {
@@ -35455,7 +35468,7 @@
       "tools/qa/cxorbia-i3-d07-viewer-single-flight.test.mjs",
       "tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs"
     ],
-    "sourceProof": "PENDING_CANONICAL_SOURCE_PROOF",
+    "sourceProof": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
     "previousServedMaterialization": {
       "path": "docs/checkpoints/CXORBIA_I3_S485_DEV_MATERIALIZATION_RUN1972_20261030.json",
       "gitBlob": "734fadab265d042eadf874ecf57af5e8f7d3258f",
@@ -35476,7 +35489,21 @@
       "production": false
     },
     "run1978Failure": "UNDECLARED_PRODUCT_DRIFT_AFTER_CANONICAL_CANDIDATE",
-    "production": false
+    "production": false,
+    "sourceProofEvidence": {
+      "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+      "runId": 40998024504,
+      "runNumber": 1981,
+      "jobId": 123875777720,
+      "artifactId": 12952500545,
+      "artifactDigest": "sha256:611ec970e46d48d4dfedb329dc551de232adcfaa7275681957c39f92289ddce4",
+      "controlSha": "425dd862b379f0aa554c09993b4232d17c711ff9",
+      "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+      "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
+      "wholeProductPass": false,
+      "production": false
+    },
+    "devMaterialization": "PENDING_SINGLE_DEV_MATERIALIZATION"
   },
   "sourceSuccessor419Alignment": {
     "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
@@ -35489,8 +35516,8 @@
     "previousMatrixBlob": "34891fa9f99130bceb392458f7f2596bcdc4f4ad",
     "run1978Id": 40994579064,
     "classification": "RELEASE_COMPOSITION_FAILURE",
-    "sourceProof": "PENDING",
-    "devMaterialization": "NOT_STARTED",
+    "sourceProof": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "devMaterialization": "PENDING_SINGLE_DEV_MATERIALIZATION",
     "production": false,
     "authorityGuardRun1979": {
       "runId": 40997591889,
@@ -35512,6 +35539,19 @@
       "observed": "activeShockModuleTruth classificationCounts key order differed from the sorted canonical matrix classificationCounts; values and 21-domain classifications were unchanged",
       "materialized": false,
       "deployed": false,
+      "production": false
+    },
+    "sourceProofRun": {
+      "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+      "runId": 40998024504,
+      "runNumber": 1981,
+      "jobId": 123875777720,
+      "artifactId": 12952500545,
+      "artifactDigest": "sha256:611ec970e46d48d4dfedb329dc551de232adcfaa7275681957c39f92289ddce4",
+      "controlSha": "425dd862b379f0aa554c09993b4232d17c711ff9",
+      "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+      "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
+      "wholeProductPass": false,
       "production": false
     }
   }
