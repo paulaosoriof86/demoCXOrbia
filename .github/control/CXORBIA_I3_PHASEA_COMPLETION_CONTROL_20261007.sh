@@ -657,9 +657,111 @@ const R11_CONTRACT = {
   "sourceArtifactDigest": "sha256:f3509fc74a7a5c46c1a8bf1e018ebae8e363b2897d1f06c85bbac34379316fa4"
 };
 
+function verifyRun1991D07CarryForward(receipt,target){
+  const digest=value=>createHash('sha256').update(value,'utf8').digest('hex');
+  const equal=(a,b,label)=>assert.deepEqual(a,b,'D07_CARRY_'+label);
+  equal(receipt.schemaVersion,'cxorbia.i3.d07.carry-forward-evidence.v1','SCHEMA');
+  equal(receipt.origin.runId,41000990873,'ORIGIN_RUN');
+  equal(receipt.origin.controlSha,'7d064f67a394d87c3cc1dc732f528c3c017fd279','ORIGIN_CONTROL');
+  equal(receipt.origin.artifactId,12953531530,'ORIGIN_ARTIFACT');
+  equal(receipt.origin.artifactZipSha256,'0b2179f9c40929e714b5bc402bba90049c997962f08b603f47a8bbba0ac82118','ORIGIN_ARCHIVE');
+  equal(receipt.production,false,'PRODUCTION');
+  equal(receipt.fullTaskClosed,false,'FULL_TASK');
+  equal(typeof receipt.rawEvidence.d07,'string','D07_BYTES_TYPE');
+  equal(typeof receipt.rawEvidence.preflight,'string','PREFLIGHT_BYTES_TYPE');
+  equal(digest(receipt.rawEvidence.d07),'57e15abbf9b052097521550f464175d090af17fb24ca212a7c562676dcb18b37','D07_HASH');
+  equal(receipt.origin.d07Sha256,'57e15abbf9b052097521550f464175d090af17fb24ca212a7c562676dcb18b37','D07_DECLARED_HASH');
+  equal(receipt.origin.preflightSha256,'b2d834d2207cb88a92cb3bb4ec0e59ece894745f17089b192bbcf6fefdbadef0','PREFLIGHT_DECLARED_HASH');
+  equal(digest(receipt.rawEvidence.preflight),'b2d834d2207cb88a92cb3bb4ec0e59ece894745f17089b192bbcf6fefdbadef0','PREFLIGHT_HASH');
+  const d07=JSON.parse(receipt.rawEvidence.d07),before=JSON.parse(receipt.rawEvidence.preflight);
+  equal(before.controlSha,receipt.origin.controlSha,'PREFLIGHT_CONTROL');
+  equal(String(before.runId),String(receipt.origin.runId),'PREFLIGHT_RUN');
+  equal(before.decision,'PASS_R7_DEV_LIVE_MATERIALIZATION_PREFLIGHT','PREFLIGHT_DECISION');
+  equal(before.production,false,'PREFLIGHT_PRODUCTION');
+  const pins=['sourceSha','sourceTree','runtimeSourceSha','runtimeRevision','runtimeDigest','hrRevision',
+    'hostingVersion','hostingRelease','rulesRelease','rulesetName','rulesGitBlob','deliveryKind','origin',
+    'materializationRunId','sourceArtifactDigest','production'];
+  for(const key of pins)equal(before[key],target[key],'PIN_'+key);
+  equal(before.materializationReceipt,target.receipt,'MATERIALIZATION_RECEIPT');
+  equal(before.materializationControlSha,target.controlSha,'MATERIALIZATION_CONTROL');
+  equal(before.servedOwnerBlobs,target.owners,'SERVED_OWNERS');
+  equal(before.servedOwnerCount,Object.keys(target.owners).length,'OWNER_COUNT');
+  for(const key of ['sourceIdentityVerified','runtimeIdentityVerified','hostingReleaseVerified','rulesReleaseVerified'])
+    equal(before[key],true,'PREFLIGHT_'+key);
+  equal(before.writes,0,'PREFLIGHT_WRITES');equal(before.deploys,0,'PREFLIGHT_DEPLOYS');
+  equal(d07.decision,'PASS_D07_ADMIN_SHOPPER_REAL_PDF_READ_ONLY_CLAUSE','CLAUSE_DECISION');
+  equal(d07.executed,true,'HISTORICAL_EXECUTION');
+  equal(d07.fullTaskClosed,false,'HISTORICAL_FULL_TASK');
+  equal(d07.production,false,'HISTORICAL_PRODUCTION');
+  equal(d07.testScopeOnly,true,'HISTORICAL_SCOPE_LIMIT');
+  equal(d07.metadataAndUpdateTimeUnchanged,true,'METADATA_UNCHANGED');
+  equal(d07.contextGuardsPass,true,'CONTEXT_GUARDS');
+  equal(d07.cleanup.browserClosed,true,'HISTORICAL_BROWSER_CLOSED');
+  equal(d07.resourceWrites,0,'RESOURCE_WRITES');
+  equal(d07.observedBlockedWriteRequests,0,'BLOCKED_WRITES');
+  for(const key of ['authAccountMutationsIssuedByHelper','hrCommandsIssuedByHelper','financeCommandsIssuedByHelper'])
+    equal(d07[key],0,'HISTORICAL_'+key);
+  for(const value of Object.values(d07.writes))equal(value,0,'HISTORICAL_WRITE_COUNT');
+  for(const key of ['sourceSha','sourceTree','deliveryKind','materializationRunId','origin','hostingVersion'])
+    equal(d07.sourceProof[key],target[key],'SOURCE_'+key);
+  equal(d07.sourceProof.servedOwnerBlobs,target.owners,'D07_OWNER_BLOBS');
+  equal(d07.sessions.distinctContexts,true,'DISTINCT_CONTEXTS');
+  for(const role of ['admin','shopper']){
+    const r=d07[role];
+    equal(r.role,role,'ROLE');equal(r.decision,'PASS_EXACT_APPROVED_PDF_READ_RENDER_DOWNLOAD_FOR_ROLE','ROLE_DECISION');
+    equal(r.httpStatus,200,'HTTP');equal(r.rendered,true,'RENDERED');equal(r.pageCount,7,'PAGES');
+    equal(r.pageNavigation,'PASS_1_2_1','NAVIGATION');equal(r.backToCatalog,true,'CATALOG_RETURN');
+    equal(r.openClicks,1,'OPEN_COUNT');equal(r.binaryGetCount,1,'GET_COUNT');equal(r.downloadCount,1,'DOWNLOAD_COUNT');
+    equal(r.blockedWriteRequests,0,'ROLE_WRITE_COUNT');equal(r.writesObserved,false,'ROLE_WRITES');
+    equal(r.authenticatedGetHeaderPresent,true,'AUTHENTICATED_GET');
+    equal(r.download,{size:162335,sha256:'3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454',pdfSignature:true},'PDF_BYTES');
+  }
+  assert.ok(Array.isArray(d07.remainingFrozenClauses)&&d07.remainingFrozenClauses.length>0,'D07_CARRY_REMAINING_CLAUSES');
+  // This is NOT an executed D07 result for the current run.
+  return {decision:'PASS_D07_CARRY_FORWARD_SOURCE_BINDING',executed:false,
+    originRunId:receipt.origin.runId,originControlSha:receipt.origin.controlSha,
+    artifactId:receipt.origin.artifactId,artifactZipSha256:receipt.origin.artifactZipSha256,
+    historicalDecision:d07.decision,d07EvidenceSha256:digest(receipt.rawEvidence.d07),
+    preflightEvidenceSha256:digest(receipt.rawEvidence.preflight),sourceSha:target.sourceSha,
+    sourceTree:target.sourceTree,materializationRunId:target.materializationRunId,
+    fullTaskClosed:false,remainingFrozenClauses:d07.remainingFrozenClauses,production:false};
+}
+
+
+function verifyC04C05OnlyResult(finance){
+  assert.equal(finance.decision,'PASS_C04_C05_BOUNDED_FINANCE');
+  assert.equal(finance.executed,true);assert.equal(finance.fullTaskClosed,false);
+  assert.equal(finance.production,false);assert.equal(finance.sessionsClosed,true);assert.equal(finance.browserClosed,true);
+  assert.deepEqual(finance.commands.map(x=>x.kind),['create-cxc','apply-cxc','create-financing','apply-cxp']);
+  assert.deepEqual(finance.commands.map(x=>x.providerWrites),[3,4,4,4]);
+  assert.ok(finance.commands.every(x=>x.strictAck===true&&x.serverReceiptAuditAndRows===true&&x.visibleAck===true));
+  assert.equal(finance.replays.length,2);
+  assert.ok(finance.replays.every(x=>x.exactCommand===true&&x.idempotentReplay===true&&x.providerWrites===0&&x.allLinkedDataAndUpdateTimesUnchanged===true&&x.scopedLedgerUnchanged===true));
+  assert.equal(finance.linkedDocuments.length,13);
+  assert.equal(new Set(finance.linkedDocuments.map(x=>x.collection+'/'+x.id)).size,13);
+  assert.equal(finance.writes.financeProvider,15);assert.equal(finance.writes.cleanupDeletes,13);assert.equal(finance.writes.preflightR11CleanupDeletes,0);
+  for(const key of ['authAccountsIssued','claimsIssued','membershipIssued','hrIssued','productionIssued','bankIssued','externalPaymentIssued'])assert.equal(finance.writes[key],0);
+  assert.equal(finance.cleanup.decision,'PASS_EXACT_CONDITIONAL_CLEANUP');assert.equal(finance.cleanup.count,13);
+  assert.equal(finance.cleanup.allAbsent,true);assert.equal(finance.cleanup.blindDeletes,false);assert.equal(finance.cleanup.otherScopedRecordsUnchanged,true);
+  assert.equal(finance.otherScopedRecords.unchanged,true);assert.equal(finance.otherScopedRecords.beforeSha256,finance.otherScopedRecords.afterSha256);
+  for(const dom of [finance.primaryDom,finance.independentDom]){
+    assert.equal(dom.globalSelected,true);assert.equal(dom.accountRows.length,2);assert.equal(dom.movementRows.length,3);
+    assert.ok([...dom.accountRows,...dom.movementRows].every(x=>x.unique&&x.visible&&x.marker&&x.country&&x.money));
+    assert.deepEqual(dom.kpis.map(x=>x.currency),['Q','L']);assert.ok(dom.kpis.every(x=>x.unique&&x.visible&&x.unchanged));
+  }
+  assert.equal(finance.sessions.length,2);assert.ok(finance.sessions.every(x=>x.newBrowserContext===true&&x.authNullBeforeSignIn===true));
+  assert.equal(finance.guards.length,2);assert.ok(finance.guards.every(x=>x.unexpectedMutationBlocked===0&&x.validationFailures.length===0));
+  return true;
+}
+
 const [mode,packagePath,out]=process.argv.slice(2);
 const IS_R12=packagePath.endsWith('_R12.json');
 const R12_CONTRACT_OVERRIDES={
+ c04c05:{...R11_CONTRACT.c04c05,helperSha256:"b8a583213ea9f077a3ca1431233f944a924c64323a94d80b338c18f9b6bc8de4",helperHashScope:"R7_FINANCE_IIFE_UTF8_FROM_DECLARATION_THROUGH_NULL_NO_TRAILING_NEWLINE"},
+ focus:"C04_C05_ONLY_D07_RUN1991_CARRY_FORWARD",
+ d07CarryForward:{"path":"docs/checkpoints/CXORBIA_I3_RUN1991_D07_CARRY_FORWARD_EVIDENCE_20261030.json","gitBlob":"a2293870ee1db51adfcbb702059e4ba2be928242","sha256":"847e3c74504f37e67150e6eee587661ff3023063201688a0f29919757babe84d"},
+ scope:{...R11_CONTRACT.scope,providerConfigWritesMax:0},
+ d07:{...R11_CONTRACT.d07,execute:false,binaryGetsPerRole:0,downloadsPerRole:0,corsChanges:false},
  packagePath:'docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R12.json',
  packageId:'CXORBIA-I3-D07-C04-C05-BOUNDED-20261030-R12',
  packageSchema:'cxorbia.i3.c02-d04.independent-session-package.v1',
@@ -676,7 +778,7 @@ const CONTRACT=IS_R12?{...R11_CONTRACT,...R12_CONTRACT_OVERRIDES}:R11_CONTRACT;
 const SRC=CONTRACT.sourceSha,TREE=CONTRACT.sourceTree,ROOT=CONTRACT.origin;
 const RUN=String(process.env.GITHUB_RUN_ID||'');
 const RUNNER='tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs';
-const TOOL_BLOBS=IS_R12?{'tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs':'29911bf029c873cc387cda9666c70ecf50d89ccc'}:{
+const TOOL_BLOBS=IS_R12?{'tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs':"aa5f5f9581db9d6de9b4d00923a300e5bf78d92e","tools/qa/cxorbia-i3-c04-c05-carry-forward.test.mjs":"77c908106c18c4210b0f422dcf8238dc58908562"}:{
   'tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs':'b07cd8c59032f5b2f5d65e7d1f5a7cdd33b1508b',
   'tools/qa/cxorbia-i3-d03-ai-generation-source.test.mjs':'0baa74bd8c42c137fe0f6501f5b970fd2ca95e8b'
 };
@@ -685,7 +787,7 @@ const PROTECTED=['app','backend','firebase.json','.firebaserc','firestore.rules'
 const CONTROL_QA_EXCEPTION=IS_R12?{"path":"backend/runtime/hr-live-service/test/cxorbia-i3-phasea-completion-source-contract.test.mjs","sourceGitBlob":"fda8d43d25556d61c88f65e87460b5d6a0566e22","controlGitBlob":"fda8d43d25556d61c88f65e87460b5d6a0566e22"}:{"path":"backend/runtime/hr-live-service/test/cxorbia-i3-phasea-completion-source-contract.test.mjs","sourceGitBlob":"b6070e6d5bdf0e06f64ab01d76da4c168a353963","controlGitBlob":"fda8d43d25556d61c88f65e87460b5d6a0566e22"};
 const PROTECTED_WITH_QA_EXCLUSION=[...PROTECTED,':(exclude,literal)'+CONTROL_QA_EXCEPTION.path];
 let stage='SOURCE_ENVIRONMENT',sourcePassed=false,cloudAccess=false,preflightStarted=false;
-let pkg=null,target=null,runtimeBinding=null,packageBlob=null,controlSha=null;
+let pkg=null,target=null,runtimeBinding=null,packageBlob=null,controlSha=null,carriedD07Proof=null;
 const RUNTIME_BINDING_LABEL=IS_R12?'LINKED_RUN1983_SOURCE_ARTIFACT_RUNTIME_HOSTING_RULES_HR_RECEIPT':'LINKED_SOURCE_TAR_CLOUD_BUILD_IMAGE_REVISION_RECEIPT_AND_OBSERVED_DIGEST';
 const write=(name,value)=>fs.writeFileSync(path.join(out,name),JSON.stringify(value,null,2)+'\n');
 const bytesBlob=bytes=>createHash('sha1').update(Buffer.from('blob '+bytes.length+'\0')).update(bytes).digest('hex');
@@ -697,11 +799,12 @@ const readLinked=link=>{
   assert.match(link?.gitBlob||'',/^[a-f0-9]{40}$/);
   const bytes=fs.readFileSync(link.path);
   assert.equal(bytesBlob(bytes),link.gitBlob);
+  if(link.sha256)assert.equal(createHash('sha256').update(bytes).digest('hex'),link.sha256);
   assert.equal(git('rev-parse','HEAD:'+link.path),link.gitBlob);
   return JSON.parse(bytes);
 };
 const sourceResult=(decision,extra={})=>({decision,mode:CONTRACT.mode,controlSha,packageBlob,sourceSha:SRC,sourceTree:TREE,sourceRepair:pkg?.sourceRepair||null,sourceProof:pkg?.sourceProof||null,materializationReceipt:target?.receipt||null,runtimeBinding:pkg?.runtimeBinding||null,sourceArtifactDigest:target?.sourceArtifactDigest||null,runtimeSourceVerified:false,cloudAccess:false,writes:0,deploys:0,production:false,...extra});
-const preflightBase=()=>({decision:'HOLD_R7_DEV_LIVE_MATERIALIZATION_PREFLIGHT',mode:CONTRACT.mode,controlSha,packageBlob,runId:RUN,sourceRepair:pkg.sourceRepair,sourceProof:pkg.sourceProof,materializationReceipt:target.receipt,materializationControlSha:target.controlSha,runtimeBinding:pkg.runtimeBinding,runtimeBindingReceipt:runtimeBinding,sourceArtifactDigest:target.sourceArtifactDigest,runtimeBindingVerified:false,runtimeSourceVerified:false,runtimeSourceBinding:null,...Object.fromEntries(PIN_FIELDS.map(field=>[field,target[field]])),proofObservedAt:null,sourceIdentityVerified:false,runtimeIdentityVerified:false,hostingReleaseVerified:false,rulesReleaseVerified:false,servedOwnerCount:0,servedOwnerBlobs:{},storageCors:null,providerConfigWrites:0,cloudAccess:false,deploys:0,writes:0});
+const preflightBase=()=>({...(IS_R12?{d07CarryForward:carriedD07Proof}:{}),decision:'HOLD_R7_DEV_LIVE_MATERIALIZATION_PREFLIGHT',mode:CONTRACT.mode,controlSha,packageBlob,runId:RUN,sourceRepair:pkg.sourceRepair,sourceProof:pkg.sourceProof,materializationReceipt:target.receipt,materializationControlSha:target.controlSha,runtimeBinding:pkg.runtimeBinding,runtimeBindingReceipt:runtimeBinding,sourceArtifactDigest:target.sourceArtifactDigest,runtimeBindingVerified:false,runtimeSourceVerified:false,runtimeSourceBinding:null,...Object.fromEntries(PIN_FIELDS.map(field=>[field,target[field]])),proofObservedAt:null,sourceIdentityVerified:false,runtimeIdentityVerified:false,hostingReleaseVerified:false,rulesReleaseVerified:false,servedOwnerCount:0,servedOwnerBlobs:{},storageCors:null,providerConfigWrites:0,cloudAccess:false,deploys:0,writes:0});
 let proof=null;
 const savePreflight=()=>write('preflight.json',proof);
 const checkpoint=next=>{stage=next;if(preflightStarted){proof.stage=stage;proof.cloudAccess=cloudAccess;savePreflight();}};
@@ -808,6 +911,11 @@ function validateR8RuntimeBindingReceipt(binding,pkg,target){
   checkpoint('SOURCE_OWNER_BLOBS');
   assert.deepEqual(Object.keys(target.owners||{}).sort(),CONTRACT.ownerPaths.slice().sort());
   for(const owner of CONTRACT.ownerPaths)assert.equal(target.owners[owner],git('rev-parse',SRC+':'+owner));
+  if(IS_R12){
+    assert.equal(pkg.focus,CONTRACT.focus);
+    assert.deepEqual(pkg.d07CarryForward,CONTRACT.d07CarryForward);
+    carriedD07Proof=verifyRun1991D07CarryForward(readLinked(pkg.d07CarryForward),target);
+  }
   invoke(process.execPath,['--check',RUNNER]);
   sourcePassed=true;
   write('package-source-guard.json',sourceResult('PASS_R7_SESSION_PACKAGE_SOURCE_GUARD',{expectedControlParentSha:pkg.expectedControlParentSha,sourceIdentityVerified:true,linkedReceiptsVerified:true,runtimeBindingReceiptVerified:true,productDrift:false,toolBlobs:TOOL_BLOBS,controlQaException:CONTROL_QA_EXCEPTION,ownerCount:CONTRACT.ownerPaths.length,ownerBlobs:target.owners,liveIdentityVerified:false,liveE2e:'NOT_RUN'}));
@@ -824,6 +932,8 @@ function validateR8RuntimeBindingReceipt(binding,pkg,target){
       return invoke('curl',args,{encoding:null,timeout:50000,maxBuffer:8*1024*1024,...(token?{input:'header = "Authorization: Bearer '+token+'"\n'}:{})});
     };
     const curlPatchJson=(url,token,body)=>{
+      assert.equal(CONTRACT.d07.corsChanges,true,'D07_CARRY_CORS_PATCH_FORBIDDEN');
+      assert.equal(CONTRACT.scope.providerConfigWritesMax,1,'D07_CARRY_CORS_PATCH_FORBIDDEN');
       cloudAccess=true;assert.match(token,/^[A-Za-z0-9._~+\/-]+$/);
       const args=['--fail','--silent','--show-error','--proto','=https','--connect-timeout','10','--max-time','45','--request','PATCH','--header','Content-Type: application/json','--data-binary',JSON.stringify(body),'--config','-',url];
       return invoke('curl',args,{encoding:null,timeout:50000,maxBuffer:8*1024*1024,input:'header = "Authorization: Bearer '+token+'"\n'});
@@ -868,7 +978,7 @@ function validateR8RuntimeBindingReceipt(binding,pkg,target){
       const corsKey=rule=>JSON.stringify({origin:[...(rule?.origin||[])].sort(),method:[...(rule?.method||[])].sort(),responseHeader:[...(rule?.responseHeader||[])].sort(),maxAgeSeconds:Number(rule?.maxAgeSeconds||0)});
       const beforeBucket=JSON.parse(curl(corsUrl,token)),beforeCors=Array.isArray(beforeBucket.cors)?beforeBucket.cors:[];
       const expectedKey=corsKey(expectedCors);let corsChanged=false;
-      if(!beforeCors.some(rule=>corsKey(rule)===expectedKey)){const patched=JSON.parse(curlPatchJson(corsUrl,token,{cors:[...beforeCors,expectedCors]}));assert.ok(Array.isArray(patched.cors));corsChanged=true;}
+      if(!beforeCors.some(rule=>corsKey(rule)===expectedKey)){assert.equal(CONTRACT.d07.corsChanges,true,'D07_CARRY_CORS_DRIFT_NO_WRITE_AUTHORIZED');assert.equal(CONTRACT.scope.providerConfigWritesMax,1);const patched=JSON.parse(curlPatchJson(corsUrl,token,{cors:[...beforeCors,expectedCors]}));assert.ok(Array.isArray(patched.cors));corsChanged=true;}
       const afterBucket=JSON.parse(curl(corsUrl,token)),afterCors=Array.isArray(afterBucket.cors)?afterBucket.cors:[];
       assert.ok(afterCors.some(rule=>corsKey(rule)===expectedKey));proof.providerConfigWrites=corsChanged?1:0;assert.ok(proof.providerConfigWrites<=CONTRACT.scope.providerConfigWritesMax);
       proof.storageCors={bucket,origin:ROOT,method:['GET','HEAD'],responseHeader:['Authorization','Content-Type'],maxAgeSeconds:3600,beforeRuleCount:beforeCors.length,afterRuleCount:afterCors.length,changed:corsChanged,expectedRulePresent:true,production:false};write('storage-cors-readback.json',proof.storageCors);savePreflight();
@@ -900,6 +1010,7 @@ function validateR8RuntimeBindingReceipt(binding,pkg,target){
   for(const field of PIN_FIELDS)assert.equal(preflight[field],target[field]);
   for(const field of ['sourceIdentityVerified','runtimeIdentityVerified','hostingReleaseVerified','rulesReleaseVerified'])assert.equal(preflight[field],true);
   assert.equal(preflight.servedOwnerCount,14);assert.deepEqual(preflight.servedOwnerBlobs,target.owners);assert.equal(preflight.deploys,0);assert.equal(preflight.writes,0);assert.ok([0,1].includes(preflight.providerConfigWrites));assert.equal(preflight.storageCors?.bucket,CONTRACT.d07.bucket);assert.equal(preflight.storageCors?.origin,ROOT);assert.equal(preflight.storageCors?.expectedRulePresent,true);assert.equal(preflight.storageCors?.production,false);
+  if(IS_R12){assert.equal(preflight.providerConfigWrites,0);assert.equal(preflight.storageCors.changed,false);assert.deepEqual(preflight.d07CarryForward,carriedD07Proof);}
   assert.match(preflight.proofObservedAt||'',/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/);
   const observedAt=Date.parse(preflight.proofObservedAt);
   assert.ok(Number.isFinite(observedAt)&&observedAt<=Date.now()+30000&&Date.now()-observedAt<=600000);
@@ -908,10 +1019,22 @@ function validateR8RuntimeBindingReceipt(binding,pkg,target){
   assert.equal(result.error,undefined);assert.equal(result.signal,null);assert.equal(result.status,0);
   checkpoint('PROOF_AGGREGATE_RESULT');
   const aggregate=json(path.join(process.env.PHASEA_LIVE_OUT,'r7-d07-c04-c05','result.json'));
-  assert.equal(aggregate.mode,CONTRACT.mode);assert.equal(aggregate.decision,'PASS_R7_D07_C04_C05_BOUNDED');assert.equal(aggregate.production,false);assert.equal(aggregate.fullTasksClosed,false);
+  assert.equal(aggregate.mode,CONTRACT.mode);assert.equal(aggregate.decision,IS_R12?"PASS_R7_C04_C05_ONLY_D07_CARRIED_FORWARD":'PASS_R7_D07_C04_C05_BOUNDED');assert.equal(aggregate.production,false);assert.equal(aggregate.fullTasksClosed,false);
+  if(IS_R12){
+    assert.equal(aggregate.d07.executed,false);
+    assert.equal(aggregate.d07.decision,'NOT_EXECUTED_PASS_CARRIED_FORWARD');
+    assert.deepEqual(aggregate.d07.carryForward,carriedD07Proof);
+    assert.equal(aggregate.d07.fullTaskClosed,false);
+    assert.equal(aggregate.cleanup.d07BrowserCreated,false);
+    assert.equal(aggregate.cleanup.d07BrowserClosed,null);
+    assert.deepEqual(aggregate.scope.taskIds,['C04','C05']);
+  }else{
   assert.equal(aggregate.d07.executed,true);assert.equal(aggregate.d07.decision,'PASS_D07_ADMIN_SHOPPER_REAL_PDF_READ_ONLY_CLAUSE');assert.equal(aggregate.d07.contextGuardsPass,true);assert.equal(aggregate.d07.cleanup.browserClosed,true);
+    assert.equal(aggregate.cleanup.d07BrowserClosed,true);
+  }
+  if(IS_R12)verifyC04C05OnlyResult(aggregate.c04c05);
   assert.equal(aggregate.c04c05.decision,'PASS_C04_C05_BOUNDED_FINANCE');assert.equal(aggregate.c04c05.sessionsClosed,true);assert.equal(aggregate.c04c05.browserClosed,true);
-  assert.equal(aggregate.cleanup.d07BrowserClosed,true);assert.equal(aggregate.cleanup.financeBrowserClosed,true);
+  assert.equal(aggregate.cleanup.financeBrowserClosed,true);
   assert.equal(aggregate.c02.executed,false);assert.equal(aggregate.c04c05.executed,true);assert.equal(aggregate.d04.executed,false);assert.equal(aggregate.e04.executed,false);
   for(const field of ['authAccountsIssued','claimsIssued','membershipIssued','hrIssued','resourceIssued','storageIssued','productionIssued'])assert.equal(aggregate.writes[field],0);
   write('session-proof-guard.json',{decision:'PASS_R7_BOUNDED_SESSION_RESULT_GUARD',mode:CONTRACT.mode,controlSha,packageBlob,runId:RUN,aggregateDecision:aggregate.decision,fullTasksClosed:false,production:false});

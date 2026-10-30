@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D07_C04_C05_SAME_ARTIFACT_SESSION_PROOF_PENDING",
+  "activeBlocker": "C04_C05_ONLY_LIVE_REPROOF_PENDING_D07_CARRY_FORWARD",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 G03: ejecutar D07 + C04/C05 en sesión independiente sobre el mismo artefacto DEV RUN1983 de 419/c13, verificar descarga exacta y los cuatro comandos con dos replays idempotentes sin writes; conservar el predecesor RUN1972 y cerrar sólo con readback completo. Revisar HR live y finanzas con sus contratos vigentes. Producción DO_NOT_TOUCH; I4 no autorizado.",
+  "exactNextAction": "I3 G03: finanzas C04/C05-only, una sola corrida en el workflow existente sobre RUN1983 sin rebuild ni deploy, con revisión HR enlazada conservada; transportar la cláusula PDF D07 de RUN1991 por hashes verificados, executed:false y fullTaskClosed:false. Preservar residuos ajenos, cero PATCH CORS. I3/Gate20/Gate21 HOLD; producción DO_NOT_TOUCH; I4 no autorizada.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -12394,7 +12394,7 @@
     "artifactUnchanged": true,
     "production": false
   },
-  "nextExactAction": "I3 G03: reconcile 21 domains preserving owner-scoped approved PASS and exact source/DEV artifacts; parallel read-only HR freshness/ACK, Admin/Shopper operations, finanzas, certificaciones and visual proof. D07 one bounded Admin+Shopper smoke only; fix only P0_PROVEN with one serial writer and cumulative candidate, then Gate20/Gate21. No production.",
+  "nextExactAction": "I3 G03: finanzas C04/C05-only, una sola corrida en el workflow existente sobre RUN1983 sin rebuild ni deploy, con revisión HR enlazada conservada; transportar la cláusula PDF D07 de RUN1991 por hashes verificados, executed:false y fullTaskClosed:false. Preservar residuos ajenos, cero PATCH CORS. I3/Gate20/Gate21 HOLD; producción DO_NOT_TOUCH; I4 no autorizada.",
   "adminClientPreview20261018": {
     "sourceSha": "39e4ee2ad45d1f8a166493b5bcf17bf0c610e005",
     "sourceTree": "0e1b5e00b43a2ebfc2e6784c48a7aa53793a6075",
@@ -15530,22 +15530,21 @@
     "production": false
   },
   "currentSessionProofRequest": {
-    "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R7.json",
-    "gitBlob": "09ff1ca803bba9da42c51652d9cdb96f305f33ea",
-    "state": "READY_FOR_SINGLE_BOUNDED_D07_C04_C05",
-    "expectedControlParentSha": "1f536ea7e3df80b08c70d7fc12b985abae0438c2",
-    "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
-    "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+    "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R12.json",
+    "gitBlob": "14955ede2c956284a0a11d0e6e5faaebad40fc31",
+    "state": "READY_R12_C04_C05_ONLY_D07_RUN1991_CARRY_FORWARD",
+    "expectedControlParentSha": "6a238c98bffdce85081b3084a696f4affdf044c8",
+    "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
     "materialization": {
-      "path": "docs/checkpoints/CXORBIA_I3_S485_DEV_MATERIALIZATION_RUN1972_20261030.json",
-      "gitBlob": "734fadab265d042eadf874ecf57af5e8f7d3258f"
+      "path": "docs/checkpoints/CXORBIA_I3_419_DEV_MATERIALIZATION_RUN1983_20261030.json",
+      "gitBlob": "0f7a9e2da03ca3758f85bf22153923f7f8670f16"
     },
     "runtimeBinding": {
-      "path": "docs/checkpoints/CXORBIA_I3_S485_RUNTIME_BUILD_REVISION_BINDING_20261030.json",
-      "gitBlob": "60296349eee5d0a497bd7870b77886bc2668e529"
+      "path": "docs/checkpoints/CXORBIA_I3_419_DEV_MATERIALIZATION_RUN1983_20261030.json",
+      "gitBlob": "0f7a9e2da03ca3758f85bf22153923f7f8670f16"
     },
     "tasks": [
-      "D07",
       "C04",
       "C05"
     ],
@@ -15553,16 +15552,25 @@
     "existingJob": "phasea-representative-same-artifact-live-reproof",
     "existingRunner": "tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs",
     "triggerMarker": "[i3-c02-d04-session-proof]",
-    "userChromeSessionPreserved": true,
+    "priorAttempt": {
+      "runId": 40991623755,
+      "runNumber": 1976,
+      "decision": "HOLD_R7_D07_C04_C05_BOUNDED"
+    },
+    "focusAction": "I3 G03: finanzas C04/C05-only, una sola corrida en el workflow existente sobre RUN1983 sin rebuild ni deploy, con revisión HR enlazada conservada; transportar la cláusula PDF D07 de RUN1991 por hashes verificados, executed:false y fullTaskClosed:false. Preservar residuos ajenos, cero PATCH CORS. I3/Gate20/Gate21 HOLD; producción DO_NOT_TOUCH; I4 no autorizada.",
     "production": false,
     "sourceChanges": 0,
     "newWorkflow": 0,
     "newMaterializer": 0,
     "liveResult": "PENDING",
-    "attemptNumber": 7,
-    "priorAttemptRunId": 40976272252,
-    "runnerOs": "ubuntu-24.04",
-    "mode": "R7_D07_C04_C05_BOUNDED"
+    "attemptNumber": 12,
+    "mode": "R7_D07_C04_C05_BOUNDED",
+    "focus": "C04_C05_ONLY_D07_RUN1991_CARRY_FORWARD",
+    "d07CarryForward": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN1991_D07_CARRY_FORWARD_EVIDENCE_20261030.json",
+      "gitBlob": "a2293870ee1db51adfcbb702059e4ba2be928242",
+      "sha256": "847e3c74504f37e67150e6eee587661ff3023063201688a0f29919757babe84d"
+    }
   },
   "previousCurrentSourceProofBefore419": {
     "path": "docs/checkpoints/CXORBIA_I3_CUMULATIVE_SOURCE_PROOF_RUN1967_20261030.json",
@@ -15641,5 +15649,71 @@
       "fullTaskClosed": false,
       "humanAcceptance": "PENDING"
     }
+  },
+  "currentHarnessOnlyCorrection": {
+    "classification": "MAPPING_FAILURE",
+    "owner": "tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs",
+    "parentSha": "6a238c98bffdce85081b3084a696f4affdf044c8",
+    "sourceChanged": false,
+    "devMaterializationChanged": false,
+    "d07CarryForward": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN1991_D07_CARRY_FORWARD_EVIDENCE_20261030.json",
+      "gitBlob": "a2293870ee1db51adfcbb702059e4ba2be928242",
+      "sha256": "847e3c74504f37e67150e6eee587661ff3023063201688a0f29919757babe84d"
+    },
+    "liveC04C05": "PENDING",
+    "fullTaskClosed": false,
+    "production": false,
+    "runnerGitBlob": "aa5f5f9581db9d6de9b4d00923a300e5bf78d92e",
+    "helperSha256": "b8a583213ea9f077a3ca1431233f944a924c64323a94d80b338c18f9b6bc8de4",
+    "helperHashScope": "R7_FINANCE_IIFE_UTF8_FROM_DECLARATION_THROUGH_NULL_NO_TRAILING_NEWLINE"
+  },
+  "previousSessionProofRequestBeforeC04C05Only": {
+    "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R7.json",
+    "gitBlob": "09ff1ca803bba9da42c51652d9cdb96f305f33ea",
+    "state": "READY_FOR_SINGLE_BOUNDED_D07_C04_C05",
+    "expectedControlParentSha": "1f536ea7e3df80b08c70d7fc12b985abae0438c2",
+    "sourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
+    "sourceTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
+    "materialization": {
+      "path": "docs/checkpoints/CXORBIA_I3_S485_DEV_MATERIALIZATION_RUN1972_20261030.json",
+      "gitBlob": "734fadab265d042eadf874ecf57af5e8f7d3258f"
+    },
+    "runtimeBinding": {
+      "path": "docs/checkpoints/CXORBIA_I3_S485_RUNTIME_BUILD_REVISION_BINDING_20261030.json",
+      "gitBlob": "60296349eee5d0a497bd7870b77886bc2668e529"
+    },
+    "tasks": [
+      "D07",
+      "C04",
+      "C05"
+    ],
+    "existingWorkflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "existingJob": "phasea-representative-same-artifact-live-reproof",
+    "existingRunner": "tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs",
+    "triggerMarker": "[i3-c02-d04-session-proof]",
+    "userChromeSessionPreserved": true,
+    "production": false,
+    "sourceChanges": 0,
+    "newWorkflow": 0,
+    "newMaterializer": 0,
+    "liveResult": "PENDING",
+    "attemptNumber": 7,
+    "priorAttemptRunId": 40976272252,
+    "runnerOs": "ubuntu-24.04",
+    "mode": "R7_D07_C04_C05_BOUNDED"
+  },
+  "d07Run1991CarryForward": {
+    "evidence": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN1991_D07_CARRY_FORWARD_EVIDENCE_20261030.json",
+      "gitBlob": "a2293870ee1db51adfcbb702059e4ba2be928242",
+      "sha256": "847e3c74504f37e67150e6eee587661ff3023063201688a0f29919757babe84d"
+    },
+    "executed": false,
+    "historicalDecision": "PASS_D07_ADMIN_SHOPPER_REAL_PDF_READ_ONLY_CLAUSE",
+    "fullTaskClosed": false,
+    "remainingClausesSource": "rawEvidence.d07.remainingFrozenClauses",
+    "matrixAndLedgerSerialization": "PENDING_NOT_DOMAIN_CLOSURE",
+    "production": false
   }
 }

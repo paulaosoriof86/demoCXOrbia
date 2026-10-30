@@ -254,7 +254,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 G03: ejecutar D07 + C04/C05 en sesión independiente sobre el mismo artefacto DEV RUN1983 de 419/c13, verificar descarga exacta y los cuatro comandos con dos replays idempotentes sin writes; conservar el predecesor RUN1972 y cerrar sólo con readback completo. Revisar HR live y finanzas con sus contratos vigentes. Producción DO_NOT_TOUCH; I4 no autorizado.",
+  "nextExactAction": "I3 G03: finanzas C04/C05-only, una sola corrida en el workflow existente sobre RUN1983 sin rebuild ni deploy, con revisión HR enlazada conservada; transportar la cláusula PDF D07 de RUN1991 por hashes verificados, executed:false y fullTaskClosed:false. Preservar residuos ajenos, cero PATCH CORS. I3/Gate20/Gate21 HOLD; producción DO_NOT_TOUCH; I4 no autorizada.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -3513,9 +3513,9 @@
   },
   "currentSessionProofPackage": {
     "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R12.json",
-    "gitBlob": "0cb9976a366eacca2e185ecc1040855ef4b57ae3",
-    "state": "READY_R12_D07_C04_C05_SAME_ARTIFACT_RUN1983",
-    "expectedControlParentSha": "3265b7c9874b2b5f89d10c998dfd61392e15c0a3",
+    "gitBlob": "14955ede2c956284a0a11d0e6e5faaebad40fc31",
+    "state": "READY_R12_C04_C05_ONLY_D07_RUN1991_CARRY_FORWARD",
+    "expectedControlParentSha": "6a238c98bffdce85081b3084a696f4affdf044c8",
     "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
     "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
     "materialization": {
@@ -3527,7 +3527,6 @@
       "gitBlob": "0f7a9e2da03ca3758f85bf22153923f7f8670f16"
     },
     "tasks": [
-      "D07",
       "C04",
       "C05"
     ],
@@ -3540,14 +3539,20 @@
       "runNumber": 1976,
       "decision": "HOLD_R7_D07_C04_C05_BOUNDED"
     },
-    "focusAction": "R12: D07 + C04/C05 same RUN1983 artifact on source 419/c13.",
+    "focusAction": "I3 G03: finanzas C04/C05-only, una sola corrida en el workflow existente sobre RUN1983 sin rebuild ni deploy, con revisión HR enlazada conservada; transportar la cláusula PDF D07 de RUN1991 por hashes verificados, executed:false y fullTaskClosed:false. Preservar residuos ajenos, cero PATCH CORS. I3/Gate20/Gate21 HOLD; producción DO_NOT_TOUCH; I4 no autorizada.",
     "production": false,
     "sourceChanges": 0,
     "newWorkflow": 0,
     "newMaterializer": 0,
     "liveResult": "PENDING",
     "attemptNumber": 12,
-    "mode": "R7_D07_C04_C05_BOUNDED"
+    "mode": "R7_D07_C04_C05_BOUNDED",
+    "focus": "C04_C05_ONLY_D07_RUN1991_CARRY_FORWARD",
+    "d07CarryForward": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN1991_D07_CARRY_FORWARD_EVIDENCE_20261030.json",
+      "gitBlob": "a2293870ee1db51adfcbb702059e4ba2be928242",
+      "sha256": "847e3c74504f37e67150e6eee587661ff3023063201688a0f29919757babe84d"
+    }
   },
   "d04CarryForwardRecovered20261029": {
     "status": "PRIOR_FOCAL_PASS_PRESERVED_INDEPENDENT_SESSION_AND_HUMAN_PENDING",
@@ -5451,7 +5456,7 @@
     "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
     "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751"
   },
-  "exactNextAction": "I3 G03: ejecutar el source proof canónico de 419/c13 sin deploy; sólo si pasa, hacer una única materialización DEV de esa candidata, sellar source/runtime/Hosting/Rules/HR y luego repetir D07 + C04/C05 sobre el mismo artefacto. Mantener el DEV anterior como predecesor servido hasta el readback nuevo; revisar HR live y finanzas con sus contratos vigentes. Producción DO_NOT_TOUCH; I4 no autorizado.",
+  "exactNextAction": "I3 G03: finanzas C04/C05-only, una sola corrida en el workflow existente sobre RUN1983 sin rebuild ni deploy, con revisión HR enlazada conservada; transportar la cláusula PDF D07 de RUN1991 por hashes verificados, executed:false y fullTaskClosed:false. Preservar residuos ajenos, cero PATCH CORS. I3/Gate20/Gate21 HOLD; producción DO_NOT_TOUCH; I4 no autorizada.",
   "previousExecutionReceiptBeforeRun1983Seal": {
     "path": "CXORBIA_I3_RUN1852_POST_DEPLOY_CONSISTENCY_SEAL_2026-10-24.json",
     "kind": "RUN1852_SOURCE_F283_DEV_PASS_ADMIN_THREE_VISIT_UI_PASS_DURABLE_HR_OPERATIONAL_PARITY_P0_OPEN",
@@ -5463,6 +5468,37 @@
     "sourceChanges": 2,
     "newFunctionalClosures": 0,
     "scope": "A09_B11_DURABLE_HR_OPERATIONAL_PARITY",
+    "production": false
+  },
+  "currentHarnessOnlyCorrection": {
+    "classification": "MAPPING_FAILURE",
+    "owner": "tools/qa/cxorbia-i3-d04-e04-run1782-live.mjs",
+    "parentSha": "6a238c98bffdce85081b3084a696f4affdf044c8",
+    "sourceChanged": false,
+    "devMaterializationChanged": false,
+    "d07CarryForward": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN1991_D07_CARRY_FORWARD_EVIDENCE_20261030.json",
+      "gitBlob": "a2293870ee1db51adfcbb702059e4ba2be928242",
+      "sha256": "847e3c74504f37e67150e6eee587661ff3023063201688a0f29919757babe84d"
+    },
+    "liveC04C05": "PENDING",
+    "fullTaskClosed": false,
+    "production": false,
+    "runnerGitBlob": "aa5f5f9581db9d6de9b4d00923a300e5bf78d92e",
+    "helperSha256": "b8a583213ea9f077a3ca1431233f944a924c64323a94d80b338c18f9b6bc8de4",
+    "helperHashScope": "R7_FINANCE_IIFE_UTF8_FROM_DECLARATION_THROUGH_NULL_NO_TRAILING_NEWLINE"
+  },
+  "d07Run1991CarryForward": {
+    "evidence": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN1991_D07_CARRY_FORWARD_EVIDENCE_20261030.json",
+      "gitBlob": "a2293870ee1db51adfcbb702059e4ba2be928242",
+      "sha256": "847e3c74504f37e67150e6eee587661ff3023063201688a0f29919757babe84d"
+    },
+    "executed": false,
+    "historicalDecision": "PASS_D07_ADMIN_SHOPPER_REAL_PDF_READ_ONLY_CLAUSE",
+    "fullTaskClosed": false,
+    "remainingClausesSource": "rawEvidence.d07.remainingFrozenClauses",
+    "matrixAndLedgerSerialization": "PENDING_NOT_DOMAIN_CLOSURE",
     "production": false
   }
 }

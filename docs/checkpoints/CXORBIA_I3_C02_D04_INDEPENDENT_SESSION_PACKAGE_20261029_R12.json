@@ -4,7 +4,7 @@
   "mode": "R7_D07_C04_C05_BOUNDED",
   "attemptNumber": 12,
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "expectedControlParentSha": "3265b7c9874b2b5f89d10c998dfd61392e15c0a3",
+  "expectedControlParentSha": "6a238c98bffdce85081b3084a696f4affdf044c8",
   "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
   "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
   "sourceRepair": {
@@ -101,10 +101,10 @@
     "financeProviderWrites": 15,
     "cleanupDeletes": 13,
     "production": false,
-    "providerConfigWritesMax": 1
+    "providerConfigWritesMax": 0
   },
   "d07": {
-    "execute": true,
+    "execute": false,
     "roles": [
       "admin",
       "shopper"
@@ -118,11 +118,11 @@
     "approvedName": "Instructivo Shopper.pdf",
     "approvedSize": 162335,
     "approvedSha256": "3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454",
-    "binaryGetsPerRole": 1,
-    "downloadsPerRole": 1,
+    "binaryGetsPerRole": 0,
+    "downloadsPerRole": 0,
     "resourceCrud": false,
     "storageRuleChanges": false,
-    "corsChanges": true,
+    "corsChanges": false,
     "serviceWorkerChanges": false
   },
   "c04c05": {
@@ -130,7 +130,8 @@
     "commands": 4,
     "replays": 2,
     "maxLinkedDocuments": 13,
-    "helperSha256": "aec21d3231eb895ee7c873ab22ab8bf74125c37457b915a5e95ca0059d3aed3b"
+    "helperSha256": "b8a583213ea9f077a3ca1431233f944a924c64323a94d80b338c18f9b6bc8de4",
+    "helperHashScope": "R7_FINANCE_IIFE_UTF8_FROM_DECLARATION_THROUGH_NULL_NO_TRAILING_NEWLINE"
   },
   "production": false,
   "priorAttemptRunId": 40991623755,
@@ -170,8 +171,22 @@
     "classification": "MAPPING_FAILURE",
     "changes": [
       "D07 records safe actual download size/SHA-256 before approval check; no raw URL/path/token.",
-      "C04 accepts only exact UID or documented non-authoritative authenticated-user client hint; provider exactActor still derives/verifies UID from token and receipts/audit must match exact UID."
+      "C04 accepts only exact UID or documented non-authoritative authenticated-user client hint; provider exactActor still derives/verifies UID from token and receipts/audit must match exact UID.",
+      "C04/C05-only: semantic label selectors with visible amounts and rows preserved; R11 residue is read-only and causes HOLD if present.",
+      "R12 helperSha256 binds the exact current finance IIFE; prior proposal hash remains in previousControlPackage Git history.",
+      "D07 RUN1991 read/render/download clause carried by exact verified archive members; no new D07 execution or CORS write."
     ],
     "productSourceChanges": 0
+  },
+  "focus": "C04_C05_ONLY_D07_RUN1991_CARRY_FORWARD",
+  "d07CarryForward": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN1991_D07_CARRY_FORWARD_EVIDENCE_20261030.json",
+    "gitBlob": "a2293870ee1db51adfcbb702059e4ba2be928242",
+    "sha256": "847e3c74504f37e67150e6eee587661ff3023063201688a0f29919757babe84d"
+  },
+  "previousControlPackage": {
+    "commit": "6a238c98bffdce85081b3084a696f4affdf044c8",
+    "path": "docs/checkpoints/CXORBIA_I3_C02_D04_INDEPENDENT_SESSION_PACKAGE_20261029_R12.json",
+    "gitBlob": "0cb9976a366eacca2e185ecc1040855ef4b57ae3"
   }
 }

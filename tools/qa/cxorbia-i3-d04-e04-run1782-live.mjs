@@ -15,12 +15,110 @@ const HR=String(process.env.EXPECTED_HR_REVISION||'');
 const RUN=String(process.env.GITHUB_RUN_ID||'');
 const SESSION_PROOF_MODE=process.env.CXORBIA_I3_INDEPENDENT_SESSION_PROOF==='YES_PAULA_20261029_DEV';
 const R7_MODE=SESSION_PROOF_MODE&&process.env.CXORBIA_I3_SESSION_MODE==='R7_D07_C04_C05_BOUNDED';
+const R12_FINANCE_ONLY=R7_MODE&&(process.env.CXORBIA_I3_SESSION_PACKAGE||'').endsWith('_R12.json');
 const D07_READ_ONLY_MODE=SESSION_PROOF_MODE&&process.env.CXORBIA_I3_SESSION_MODE==='R6D07_READ_ONLY';
 const OUT=String(process.env.PHASEA_LIVE_OUT||'')+(R7_MODE?'/r7-d07-c04-c05':D07_READ_ONLY_MODE?'/d07-readonly':'/d04-e04');
 const descriptor=JSON.parse(fs.readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8'));
 if(!ROOT||!SRC||!HR||!/^\d+$/.test(RUN))throw Error('ENVIRONMENT_FAILURE:D04_E04_ENV');
 assert.equal(descriptor.productSourceSha,SRC);
-let sessionPackage=null, sessionPreflight=null;
+function verifyRun1991D07CarryForward(receipt,target){
+  const digest=value=>createHash('sha256').update(value,'utf8').digest('hex');
+  const equal=(a,b,label)=>assert.deepEqual(a,b,'D07_CARRY_'+label);
+  equal(receipt.schemaVersion,'cxorbia.i3.d07.carry-forward-evidence.v1','SCHEMA');
+  equal(receipt.origin.runId,41000990873,'ORIGIN_RUN');
+  equal(receipt.origin.controlSha,'7d064f67a394d87c3cc1dc732f528c3c017fd279','ORIGIN_CONTROL');
+  equal(receipt.origin.artifactId,12953531530,'ORIGIN_ARTIFACT');
+  equal(receipt.origin.artifactZipSha256,'0b2179f9c40929e714b5bc402bba90049c997962f08b603f47a8bbba0ac82118','ORIGIN_ARCHIVE');
+  equal(receipt.production,false,'PRODUCTION');
+  equal(receipt.fullTaskClosed,false,'FULL_TASK');
+  equal(typeof receipt.rawEvidence.d07,'string','D07_BYTES_TYPE');
+  equal(typeof receipt.rawEvidence.preflight,'string','PREFLIGHT_BYTES_TYPE');
+  equal(digest(receipt.rawEvidence.d07),'57e15abbf9b052097521550f464175d090af17fb24ca212a7c562676dcb18b37','D07_HASH');
+  equal(receipt.origin.d07Sha256,'57e15abbf9b052097521550f464175d090af17fb24ca212a7c562676dcb18b37','D07_DECLARED_HASH');
+  equal(receipt.origin.preflightSha256,'b2d834d2207cb88a92cb3bb4ec0e59ece894745f17089b192bbcf6fefdbadef0','PREFLIGHT_DECLARED_HASH');
+  equal(digest(receipt.rawEvidence.preflight),'b2d834d2207cb88a92cb3bb4ec0e59ece894745f17089b192bbcf6fefdbadef0','PREFLIGHT_HASH');
+  const d07=JSON.parse(receipt.rawEvidence.d07),before=JSON.parse(receipt.rawEvidence.preflight);
+  equal(before.controlSha,receipt.origin.controlSha,'PREFLIGHT_CONTROL');
+  equal(String(before.runId),String(receipt.origin.runId),'PREFLIGHT_RUN');
+  equal(before.decision,'PASS_R7_DEV_LIVE_MATERIALIZATION_PREFLIGHT','PREFLIGHT_DECISION');
+  equal(before.production,false,'PREFLIGHT_PRODUCTION');
+  const pins=['sourceSha','sourceTree','runtimeSourceSha','runtimeRevision','runtimeDigest','hrRevision',
+    'hostingVersion','hostingRelease','rulesRelease','rulesetName','rulesGitBlob','deliveryKind','origin',
+    'materializationRunId','sourceArtifactDigest','production'];
+  for(const key of pins)equal(before[key],target[key],'PIN_'+key);
+  equal(before.materializationReceipt,target.receipt,'MATERIALIZATION_RECEIPT');
+  equal(before.materializationControlSha,target.controlSha,'MATERIALIZATION_CONTROL');
+  equal(before.servedOwnerBlobs,target.owners,'SERVED_OWNERS');
+  equal(before.servedOwnerCount,Object.keys(target.owners).length,'OWNER_COUNT');
+  for(const key of ['sourceIdentityVerified','runtimeIdentityVerified','hostingReleaseVerified','rulesReleaseVerified'])
+    equal(before[key],true,'PREFLIGHT_'+key);
+  equal(before.writes,0,'PREFLIGHT_WRITES');equal(before.deploys,0,'PREFLIGHT_DEPLOYS');
+  equal(d07.decision,'PASS_D07_ADMIN_SHOPPER_REAL_PDF_READ_ONLY_CLAUSE','CLAUSE_DECISION');
+  equal(d07.executed,true,'HISTORICAL_EXECUTION');
+  equal(d07.fullTaskClosed,false,'HISTORICAL_FULL_TASK');
+  equal(d07.production,false,'HISTORICAL_PRODUCTION');
+  equal(d07.testScopeOnly,true,'HISTORICAL_SCOPE_LIMIT');
+  equal(d07.metadataAndUpdateTimeUnchanged,true,'METADATA_UNCHANGED');
+  equal(d07.contextGuardsPass,true,'CONTEXT_GUARDS');
+  equal(d07.cleanup.browserClosed,true,'HISTORICAL_BROWSER_CLOSED');
+  equal(d07.resourceWrites,0,'RESOURCE_WRITES');
+  equal(d07.observedBlockedWriteRequests,0,'BLOCKED_WRITES');
+  for(const key of ['authAccountMutationsIssuedByHelper','hrCommandsIssuedByHelper','financeCommandsIssuedByHelper'])
+    equal(d07[key],0,'HISTORICAL_'+key);
+  for(const value of Object.values(d07.writes))equal(value,0,'HISTORICAL_WRITE_COUNT');
+  for(const key of ['sourceSha','sourceTree','deliveryKind','materializationRunId','origin','hostingVersion'])
+    equal(d07.sourceProof[key],target[key],'SOURCE_'+key);
+  equal(d07.sourceProof.servedOwnerBlobs,target.owners,'D07_OWNER_BLOBS');
+  equal(d07.sessions.distinctContexts,true,'DISTINCT_CONTEXTS');
+  for(const role of ['admin','shopper']){
+    const r=d07[role];
+    equal(r.role,role,'ROLE');equal(r.decision,'PASS_EXACT_APPROVED_PDF_READ_RENDER_DOWNLOAD_FOR_ROLE','ROLE_DECISION');
+    equal(r.httpStatus,200,'HTTP');equal(r.rendered,true,'RENDERED');equal(r.pageCount,7,'PAGES');
+    equal(r.pageNavigation,'PASS_1_2_1','NAVIGATION');equal(r.backToCatalog,true,'CATALOG_RETURN');
+    equal(r.openClicks,1,'OPEN_COUNT');equal(r.binaryGetCount,1,'GET_COUNT');equal(r.downloadCount,1,'DOWNLOAD_COUNT');
+    equal(r.blockedWriteRequests,0,'ROLE_WRITE_COUNT');equal(r.writesObserved,false,'ROLE_WRITES');
+    equal(r.authenticatedGetHeaderPresent,true,'AUTHENTICATED_GET');
+    equal(r.download,{size:162335,sha256:'3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454',pdfSignature:true},'PDF_BYTES');
+  }
+  assert.ok(Array.isArray(d07.remainingFrozenClauses)&&d07.remainingFrozenClauses.length>0,'D07_CARRY_REMAINING_CLAUSES');
+  // This is NOT an executed D07 result for the current run.
+  return {decision:'PASS_D07_CARRY_FORWARD_SOURCE_BINDING',executed:false,
+    originRunId:receipt.origin.runId,originControlSha:receipt.origin.controlSha,
+    artifactId:receipt.origin.artifactId,artifactZipSha256:receipt.origin.artifactZipSha256,
+    historicalDecision:d07.decision,d07EvidenceSha256:digest(receipt.rawEvidence.d07),
+    preflightEvidenceSha256:digest(receipt.rawEvidence.preflight),sourceSha:target.sourceSha,
+    sourceTree:target.sourceTree,materializationRunId:target.materializationRunId,
+    fullTaskClosed:false,remainingFrozenClauses:d07.remainingFrozenClauses,production:false};
+}
+
+
+function verifyC04C05OnlyResult(finance){
+  assert.equal(finance.decision,'PASS_C04_C05_BOUNDED_FINANCE');
+  assert.equal(finance.executed,true);assert.equal(finance.fullTaskClosed,false);
+  assert.equal(finance.production,false);assert.equal(finance.sessionsClosed,true);assert.equal(finance.browserClosed,true);
+  assert.deepEqual(finance.commands.map(x=>x.kind),['create-cxc','apply-cxc','create-financing','apply-cxp']);
+  assert.deepEqual(finance.commands.map(x=>x.providerWrites),[3,4,4,4]);
+  assert.ok(finance.commands.every(x=>x.strictAck===true&&x.serverReceiptAuditAndRows===true&&x.visibleAck===true));
+  assert.equal(finance.replays.length,2);
+  assert.ok(finance.replays.every(x=>x.exactCommand===true&&x.idempotentReplay===true&&x.providerWrites===0&&x.allLinkedDataAndUpdateTimesUnchanged===true&&x.scopedLedgerUnchanged===true));
+  assert.equal(finance.linkedDocuments.length,13);
+  assert.equal(new Set(finance.linkedDocuments.map(x=>x.collection+'/'+x.id)).size,13);
+  assert.equal(finance.writes.financeProvider,15);assert.equal(finance.writes.cleanupDeletes,13);assert.equal(finance.writes.preflightR11CleanupDeletes,0);
+  for(const key of ['authAccountsIssued','claimsIssued','membershipIssued','hrIssued','productionIssued','bankIssued','externalPaymentIssued'])assert.equal(finance.writes[key],0);
+  assert.equal(finance.cleanup.decision,'PASS_EXACT_CONDITIONAL_CLEANUP');assert.equal(finance.cleanup.count,13);
+  assert.equal(finance.cleanup.allAbsent,true);assert.equal(finance.cleanup.blindDeletes,false);assert.equal(finance.cleanup.otherScopedRecordsUnchanged,true);
+  assert.equal(finance.otherScopedRecords.unchanged,true);assert.equal(finance.otherScopedRecords.beforeSha256,finance.otherScopedRecords.afterSha256);
+  for(const dom of [finance.primaryDom,finance.independentDom]){
+    assert.equal(dom.globalSelected,true);assert.equal(dom.accountRows.length,2);assert.equal(dom.movementRows.length,3);
+    assert.ok([...dom.accountRows,...dom.movementRows].every(x=>x.unique&&x.visible&&x.marker&&x.country&&x.money));
+    assert.deepEqual(dom.kpis.map(x=>x.currency),['Q','L']);assert.ok(dom.kpis.every(x=>x.unique&&x.visible&&x.unchanged));
+  }
+  assert.equal(finance.sessions.length,2);assert.ok(finance.sessions.every(x=>x.newBrowserContext===true&&x.authNullBeforeSignIn===true));
+  assert.equal(finance.guards.length,2);assert.ok(finance.guards.every(x=>x.unexpectedMutationBlocked===0&&x.validationFailures.length===0));
+  return true;
+}
+
+let sessionPackage=null, sessionPreflight=null, d07CarryProof=null;
 if(R7_MODE){
 // R11 and R12 share this bounded runner; R12 binds the same DEV RUN1983 source receipt.
 const IS_R12=(process.env.CXORBIA_I3_SESSION_PACKAGE||'').endsWith('_R12.json');
@@ -34,6 +132,7 @@ const r7ReadLinked=link=>{
   assert.match(link?.path||'',/^docs\/checkpoints\/[A-Z0-9_]+\.json$/);
   assert.match(link?.gitBlob||'',/^[a-f0-9]{40}$/);
   const bytes=fs.readFileSync(link.path);assert.equal(r7Blob(bytes),link.gitBlob);
+  if(link.sha256)assert.equal(createHash('sha256').update(bytes).digest('hex'),link.sha256);
   assert.equal(r7Git('rev-parse','HEAD:'+link.path),link.gitBlob);
   return JSON.parse(bytes);
 };
@@ -63,7 +162,7 @@ assert.equal(sessionPackage.d04.execute,false);
 for(const key of ['fixtureSeeds','contentEdits','fixtureDeletes'])assert.equal(sessionPackage.d04[key],0);
 for(const key of ['authMutations','hrWrites','resourceWrites','storageWrites','deploys'])assert.equal(sessionPackage.scope[key],0);
 assert.equal(sessionPackage.scope.production,false);
-assert.equal(sessionPackage.d07.execute,true);assert.deepEqual(sessionPackage.d07.roles,['admin','shopper']);
+assert.equal(sessionPackage.d07.execute,!R12_FINANCE_ONLY);assert.deepEqual(sessionPackage.d07.roles,['admin','shopper']);
 assert.equal(sessionPackage.d07.tenantId,'tya');assert.equal(sessionPackage.d07.projectId,'cinepolis');
 assert.equal(sessionPackage.d07.periodId,'cinepolis-2026-10');
 assert.equal(sessionPackage.d07.shopperId,'TYA_GT_393371F88D10F7A8');
@@ -71,11 +170,18 @@ assert.equal(sessionPackage.d07.shopperUidFingerprint,'a6e3ff21498bd79cbc4078ec4
 assert.equal(sessionPackage.d07.bucket,'cxorbia-backend-dev.firebasestorage.app');
 assert.equal(sessionPackage.d07.approvedName,'Instructivo Shopper.pdf');assert.equal(sessionPackage.d07.approvedSize,162335);
 assert.equal(sessionPackage.d07.approvedSha256,'3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454');
-assert.equal(sessionPackage.d07.binaryGetsPerRole,1);assert.equal(sessionPackage.d07.downloadsPerRole,1);
-for(const key of ['resourceCrud','storageRuleChanges','serviceWorkerChanges'])assert.equal(sessionPackage.d07[key],false);assert.equal(sessionPackage.d07.corsChanges,true);assert.equal(sessionPackage.scope.providerConfigWritesMax,1);
+assert.equal(sessionPackage.d07.binaryGetsPerRole,R12_FINANCE_ONLY?0:1);assert.equal(sessionPackage.d07.downloadsPerRole,R12_FINANCE_ONLY?0:1);
+for(const key of ['resourceCrud','storageRuleChanges','serviceWorkerChanges'])assert.equal(sessionPackage.d07[key],false);assert.equal(sessionPackage.d07.corsChanges,!R12_FINANCE_ONLY);assert.equal(sessionPackage.scope.providerConfigWritesMax,R12_FINANCE_ONLY?0:1);
 assert.equal(sessionPackage.c04c05.execute,true);assert.equal(sessionPackage.c04c05.commands,4);
 assert.equal(sessionPackage.c04c05.replays,2);assert.equal(sessionPackage.c04c05.maxLinkedDocuments,13);
-assert.equal(sessionPackage.c04c05.helperSha256,'aec21d3231eb895ee7c873ab22ab8bf74125c37457b915a5e95ca0059d3aed3b');
+if(R12_FINANCE_ONLY){
+  assert.equal(sessionPackage.c04c05.helperHashScope,"R7_FINANCE_IIFE_UTF8_FROM_DECLARATION_THROUGH_NULL_NO_TRAILING_NEWLINE");
+  const runnerBytes=fs.readFileSync(new URL(import.meta.url),'utf8');
+  const from=runnerBytes.indexOf("\nconst R7Finance=R7_MODE?(()=>{")+1;
+  const through=runnerBytes.indexOf("})():null;",from)+10;
+  assert.ok(from>0&&through>from);
+  assert.equal(createHash('sha256').update(runnerBytes.slice(from,through),'utf8').digest('hex'),sessionPackage.c04c05.helperSha256);
+}else assert.equal(sessionPackage.c04c05.helperSha256,'aec21d3231eb895ee7c873ab22ab8bf74125c37457b915a5e95ca0059d3aed3b');
 assert.equal(sessionPackage.scope.financeCommands,4);assert.equal(sessionPackage.scope.financeReplays,2);
 assert.equal(sessionPackage.scope.financeProviderWrites,15);assert.equal(sessionPackage.scope.cleanupDeletes,13);
 assert.equal(sessionPackage.sourceProof?.decision,'PASS_I3_B_CUMULATIVE_SOURCE_PROOF');
@@ -124,6 +230,13 @@ assert.deepEqual(Object.keys(sessionPreflight.servedOwnerBlobs||{}).sort(),owner
 assert.deepEqual(Object.keys(target.owners||{}).sort(),owners.slice().sort());assert.equal(sessionPreflight.servedOwnerCount,owners.length);
 for(const owner of owners){const canonical=r7Git('rev-parse',SRC+':'+owner);assert.equal(target.owners[owner],canonical);assert.equal(sessionPreflight.servedOwnerBlobs[owner],canonical);}
 assert.equal(sessionPreflight.deploys,0);assert.equal(sessionPreflight.writes,0);
+if(R12_FINANCE_ONLY){
+  assert.equal(sessionPackage.focus,"C04_C05_ONLY_D07_RUN1991_CARRY_FORWARD");
+  d07CarryProof=verifyRun1991D07CarryForward(r7ReadLinked(sessionPackage.d07CarryForward),target);
+  assert.deepEqual(sessionPreflight.d07CarryForward,d07CarryProof);
+  assert.equal(sessionPreflight.providerConfigWrites,0);
+  assert.equal(sessionPreflight.storageCors?.changed,false);
+}
 }else if(SESSION_PROOF_MODE){
   assert.equal(descriptor.status,'HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL');
   assert.equal(SRC,'946c3cb8eff6a043693b10ed628d2ebc860508e1');
@@ -1910,6 +2023,7 @@ async function visibleFinanceRows(page,model,baseline,label,outDir){
   const proof=await bounded(page.evaluate(({accounts,movements,income})=>{
     const money=(currency,amount)=>currency+' '+Number(amount).toLocaleString('es-GT');
     const text=node=>String(node?.innerText||'').replace(/\s+/g,' ').trim();
+    const semanticText=node=>String(node?.textContent||'').replace(/\s+/g,' ').trim();
     const accountRows=accounts.map(r=>{
       const nodes=[...document.querySelectorAll('[data-cxdet]')].filter(n=>n.dataset.cxdet===r.kind+':'+r.id);
       const row=nodes.length===1?nodes[0].closest(r.kind==='cxc'?'.cxcRow':'.cxpRow'):null;
@@ -1926,15 +2040,15 @@ async function visibleFinanceRows(page,model,baseline,label,outDir){
       return {id:r.id,unique:nodes.length===1,visible:!!row?.getClientRects().length,marker:text(cells[1]?.querySelector('b'))===r.concept,country:text(cells[4])===r.country,money:text(cells[5])===(r.amount<0?'− ':'+ ')+money(r.currency,Math.abs(r.amount)),textHashInput:text(row)};
     });
     const kpis=income.map(x=>{
-      const headings=[...document.querySelectorAll('#view div')].filter(n=>text(n)==='Moneda '+x.currency&&n.nextElementSibling?.classList.contains('grid'));
+      const headings=[...document.querySelectorAll('#view div')].filter(n=>semanticText(n)==='Moneda '+x.currency&&n.nextElementSibling?.classList.contains('grid'));
       const cells=headings.length===1?[...headings[0].nextElementSibling.querySelectorAll('.kpi')]:[];
-      const tiles=cells.filter(n=>text(n.querySelector('.k-l'))==='Ingresos oper.');
-      return {currency:x.currency,unique:headings.length===1&&tiles.length===1,unchanged:tiles.length===1&&text(tiles[0].querySelector('.k-v'))===money(x.currency,x.amount)};
+      const tiles=cells.filter(n=>semanticText(n.querySelector('.k-l'))==='Ingresos oper.');
+      return {currency:x.currency,unique:headings.length===1&&tiles.length===1,visible:!!headings[0]?.getClientRects().length&&!!tiles[0]?.getClientRects().length,unchanged:tiles.length===1&&text(tiles[0].querySelector('.k-v'))===money(x.currency,x.amount)};
     });
     return {accountRows,movementRows,kpis,globalSelected:document.querySelector('[data-scope="global"]')?.classList.contains('btn-pr')===true};
   },{accounts:model.accounts,movements:model.movements,income:['Q','L'].map(currency=>({currency,amount:operationIncome(baseline,currency)}))}),10000,'DOM_READBACK_TIMEOUT');
   check(proof.globalSelected&&proof.accountRows.every(r=>r.unique&&r.visible&&r.marker&&r.country&&r.money)&&proof.movementRows.every(r=>r.unique&&r.visible&&r.marker&&r.country&&r.money),'VISIBLE_EXACT_ROWS_MISMATCH');
-  check(proof.kpis.every(x=>x.unique&&x.unchanged),'VISIBLE_CURRENCY_OR_DOUBLE_REVENUE_MISMATCH');
+  check(proof.kpis.every(x=>x.unique&&x.visible&&x.unchanged),'VISIBLE_CURRENCY_OR_DOUBLE_REVENUE_MISMATCH');
   for(const r of [...proof.accountRows,...proof.movementRows]){r.textSha256=sha(r.textHashInput);delete r.textHashInput;}
   await page.locator('#view').screenshot({path:path.join(outDir,'c04-'+label+'.png'),timeout:10000});
   return {...proof,screenshot:'c04-'+label+'.png'};
@@ -1988,6 +2102,7 @@ async function c04ConditionalCleanupR11Residue(db){
   const snaps=await getAll(db,refs.map(p=>db.doc(p))),present=[];
   for(let i=0;i<refs.length;i++)if(snaps[i].exists){validateR11ResidueDoc(refs[i],snaps[i]);present.push([refs[i],head(snaps[i])]);}
   if(!present.length)return {decision:'PASS_R11_RESIDUE_ALREADY_ABSENT',count:0,allAbsent:true,blindDeletes:false,runId:R11_RESIDUE.runId};
+  check(!R12_FINANCE_ONLY,'HISTORICAL_RESIDUE_PRESENT_DO_NOT_TOUCH');
   await bounded(db.runTransaction(async tx=>{
     const current=await tx.getAll(...present.map(([p])=>db.doc(p)));
     for(let i=0;i<present.length;i++){
@@ -2360,7 +2475,11 @@ async function runR7Finance(){
   const envelope={decision:'HOLD_C04_C05_BOUNDED_FINANCE',executed:false,fullTaskClosed:false,browserClosed:false};
   let ownedBrowser=null;
   try{
-    assert.equal(res.d07.cleanup?.browserClosed,true,'R7_D07_BROWSER_ISOLATION_NOT_PROVEN');
+    if(R12_FINANCE_ONLY){
+      assert.equal(res.d07.executed,false);
+      assert.deepEqual(res.d07.carryForward,d07CarryProof);
+      assert.equal(d07CarryProof?.decision,'PASS_D07_CARRY_FORWARD_SOURCE_BINDING');
+    }else assert.equal(res.d07.cleanup?.browserClosed,true,'R7_D07_BROWSER_ISOLATION_NOT_PROVEN');
     ownedBrowser=await chromium.launch({headless:true,timeout:45000});
     async function openAdminSession({member,label,installContextGuard}){
       assert.equal(member.id,sessionPackage.actor.uid);assert.equal(member.tenantId,'tya');assert.equal(member.authNamespace,'staff');assert.ok(['admin','super'].includes(member.role));
@@ -2403,19 +2522,29 @@ async function runR7Finance(){
 
 async function runR7Bounded(){
   res.version='cxorbia.i3.r7.d07-c04-c05.bounded.v1';res.mode='R7_D07_C04_C05_BOUNDED';
-  res.scope={tenant:'tya',project:'cinepolis',period:'cinepolis-2026-10',globalPeriod:'2026-10',taskIds:['D07','C04','C05'],testScopeOnly:true};
+  res.scope={tenant:'tya',project:'cinepolis',period:'cinepolis-2026-10',globalPeriod:'2026-10',taskIds:R12_FINANCE_ONLY?['C04','C05']:['D07','C04','C05'],testScopeOnly:true};
   res.c02={executed:false,commands:0,replayReconciliation:false};res.d04={executed:false,fixtureSeeds:0,contentEdits:0,fixtureDeletes:0};res.e04={executed:false};
   res.d07={};res.c04c05={decision:'NOT_STARTED',executed:false};res.writes={authAccountsIssued:0,claimsIssued:0,membershipIssued:0,hrIssued:0,resourceIssued:0,storageIssued:0,productionIssued:0};
   res.decision='HOLD_R7_D07_C04_C05_BOUNDED';res.fullTasksClosed=false;record();
-  await runR7D07(res.d07);
+  if(R12_FINANCE_ONLY){
+    assert.equal(d07CarryProof?.decision,'PASS_D07_CARRY_FORWARD_SOURCE_BINDING');
+    res.d07={executed:false,decision:'NOT_EXECUTED_PASS_CARRIED_FORWARD',carryForward:d07CarryProof,fullTaskClosed:false};
+    record();
+  }else await runR7D07(res.d07);
   // A functional D07 HOLD does not suppress the independent finance evidence.
   // Closure of its browser is required before creating the finance browser.
-  if(res.d07.cleanup?.browserClosed===true)res.c04c05=await runR7Finance();
+  if(R12_FINANCE_ONLY||res.d07.cleanup?.browserClosed===true)res.c04c05=await runR7Finance();
   else res.c04c05={decision:'HOLD_C04_C05_BROWSER_ISOLATION_NOT_PROVEN',executed:false,fullTaskClosed:false};
-  const passed=res.d07.decision==='PASS_D07_ADMIN_SHOPPER_REAL_PDF_READ_ONLY_CLAUSE'&&res.d07.cleanup.browserClosed===true&&res.d07.contextGuardsPass===true&&
+  if(R12_FINANCE_ONLY&&res.c04c05.decision==='PASS_C04_C05_BOUNDED_FINANCE'){
+    try{verifyC04C05OnlyResult(res.c04c05);}catch(_){res.c04c05.decision='HOLD_C04_C05_BOUNDED_FINANCE';res.c04c05.error='C04_TERMINAL_EVIDENCE_INCOMPLETE';}
+  }
+  const d07Accepted=R12_FINANCE_ONLY
+    ?res.d07.executed===false&&d07CarryProof?.decision==='PASS_D07_CARRY_FORWARD_SOURCE_BINDING'
+    :res.d07.decision==='PASS_D07_ADMIN_SHOPPER_REAL_PDF_READ_ONLY_CLAUSE'&&res.d07.cleanup.browserClosed===true&&res.d07.contextGuardsPass===true;
+  const passed=d07Accepted&&
     res.c04c05.decision==='PASS_C04_C05_BOUNDED_FINANCE'&&res.c04c05.sessionsClosed===true&&res.c04c05.browserClosed===true;
-  res.decision=passed?'PASS_R7_D07_C04_C05_BOUNDED':'HOLD_R7_D07_C04_C05_BOUNDED';
-  res.cleanup={d07BrowserClosed:res.d07.cleanup?.browserClosed===true,financeBrowserClosed:res.c04c05.browserClosed===true,finance:res.c04c05.cleanup||null};
+  res.decision=passed?(R12_FINANCE_ONLY?"PASS_R7_C04_C05_ONLY_D07_CARRIED_FORWARD":'PASS_R7_D07_C04_C05_BOUNDED'):'HOLD_R7_D07_C04_C05_BOUNDED';
+  res.cleanup={...(R12_FINANCE_ONLY?{d07BrowserCreated:false}:{}),d07BrowserClosed:R12_FINANCE_ONLY?null:res.d07.cleanup?.browserClosed===true,financeBrowserClosed:res.c04c05.browserClosed===true,finance:res.c04c05.cleanup||null};
   record();console.log(JSON.stringify({decision:res.decision,mode:res.mode,d07:res.d07.decision,c04c05:res.c04c05.decision,cleanup:res.cleanup,production:false}));
   if(!passed)process.exitCode=1;
 }
