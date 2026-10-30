@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASE_A_CROSS_FUNCTIONAL_SHOCK_CONTROL",
+  "status": "HOLD_I3_DEV_MATERIALIZED_G03_AUTHORITY_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -15822,5 +15822,13 @@
     "readbackId": "CXORBIA-I3-G03-OWNER-AUTHORITY-CROSSWALK-READBACK-20261030",
     "scope": "CONTROL_EVIDENCE_ONLY__TASK_SCOPED_MAPPING_NOT_APPROVAL_OR_DOMAIN_CLOSURE",
     "productSourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923"
+  },
+  "currentControlStatusCompatibilityRepair": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN1994_CONTROL_STATUS_COMPATIBILITY_REPAIR_20261030.json",
+    "gitBlob": "f4d2d7b17e061c8867133602ff9498dd244708dc",
+    "sha256": "91756305091075a48ab0ef92fd8d6f67c53455f514195ddc680c08307a9fab74",
+    "expectedControlParentSha": "159adf6f69bdecef852aaac0895bd78aad6bd2fc",
+    "selectedStatus": "HOLD_I3_DEV_MATERIALIZED_G03_AUTHORITY_PENDING",
+    "scope": "CONTROL_STATUS_COMPATIBILITY_ONLY_NOT_FUNCTIONAL_CLOSURE"
   }
 }
