@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "cxorbia.i3.shopper-identity-continuity-recovery.v1",
+  "asOfUtc": "2026-10-31T23:44:32.312Z",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "state": "READ_ONLY_EVIDENCE_RECONCILIATION_I3_HOLD",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlParentSha": "b2b679f2fc674535f1e58aa991b5d48c6373f4be",
+  "humanApprovedAuthority": {
+    "decisionFile": "CXORBIA_I3_SHOPPER_IDENTITY_DECISIONS_20261028_FROZEN.md",
+    "policyFile": "CXORBIA_I3_SHOPPER_IDENTITY_PERMANENT_POLICY_FREEZE_2026-10-28.md",
+    "approvedPairs": 139,
+    "uniqueGroups": 83,
+    "approvedDigest": "ac3e15184316d62aa53942359e857f2c34dec486a2ca41057e529a39f062d872"
+  },
+  "recoveredBatch": {
+    "actionRunId": 40813627623,
+    "result": "21_INDIVIDUAL_CASES_PROVIDER_ACK_READBACK_SHOPPER_UI_PASS",
+    "caseCodes": [
+      "F-011",
+      "F-012",
+      "F-013",
+      "F-020",
+      "F-021",
+      "F-022",
+      "F-026",
+      "F-028",
+      "F-030",
+      "F-031",
+      "F-037",
+      "F-039",
+      "F-040",
+      "F-042",
+      "F-044",
+      "F-047",
+      "F-050",
+      "F-051",
+      "F-056",
+      "F-059",
+      "F-063"
+    ],
+    "successfulCaseCount": 21,
+    "totalHrHistoricalVisitReferencesPreserved": 71,
+    "providerWritesPerCase": 9,
+    "noProductionWrites": true,
+    "partOfEarlierIndependentVerifiedCount": true
+  },
+  "lastIndependentCohortRecount": {
+    "actionRunId": 40820123220,
+    "groupsVerified": 31,
+    "groupsPendingAtThatTime": 52,
+    "sourceRevision": "4fc8def718fd1504f5d76a1fbc80b6901cbf711ec2b89f4dfc3a81ecbbca517a",
+    "readOnly": true
+  },
+  "postRecountFocal": {
+    "caseCode": "R-026",
+    "actionRunId": 40833855942,
+    "jobId": 123313964464,
+    "decision": "PASS_R026_CANARY_PROVIDER_AND_SHOPPER_UI",
+    "providerAck": true,
+    "independentReadback": true,
+    "shopperUiVerified": true,
+    "hrHistoricalVisitsPreserved": 5,
+    "protectedProviderWrites": 9,
+    "production": false,
+    "cohortRecensusAfterAction": "NOT_YET_PROVEN"
+  },
+  "provisionalCohort": {
+    "completedGroups": 32,
+    "pendingGroups": 51,
+    "denominator": 83,
+    "verdict": "PROVISIONAL_PENDING_FRESH_INDEPENDENT_83_GROUP_RECOUNT",
+    "notCumulativeWithTwentyOneRun": true,
+    "knownPendingBucketsBeforeR026": {
+      "aliasOwnedVisits": 36,
+      "multipleHrCanonical": 11,
+      "keeperVerified": 4,
+      "keeperNotVerified": 1
+    },
+    "remainingAfterR026Estimate": {
+      "aliasOwnedVisits": 36,
+      "multipleHrCanonical": 11,
+      "keeperVerified": 3,
+      "keeperNotVerified": 1
+    }
+  },
+  "adjacentReadback": {
+    "actionRunId": 40834869606,
+    "result": "PASS_S1_SHOPPER_UI_MATCHES_HR_SCOPE",
+    "eligibleSourceRows": 1,
+    "renderedOpportunityCards": 1,
+    "readOnly": true,
+    "notCertificationOfWholePhaseA": true
+  },
+  "currentDevObservation": {
+    "sourceCodeCommit": "7b70557c22e3902ab3c91fbee326357630fc20a1",
+    "hostingOnlyVersion": "sites/cxorbia-backend-dev/versions/3d1d42ad02066ae2",
+    "scope": "VRM-294_PROTECTED_PROJECT_SCOPE_HOSTING_ONLY",
+    "observed": "NO_STALE_PROYECTO_RETAIL_GET_ON_AUTHENTICATED_CINEPOLIS",
+    "crmAccountsUi": 0,
+    "crmFixtureExists": true,
+    "confidence": "FOCAL_DEV_BROWSER_OBSERVATION_NOT_FULL_SOURCE_RUNTIME_PARITY",
+    "production": false
+  },
+  "continuityGap": {
+    "cause": "LATEST_FUSION_POSTFLIGHT_AND_HOSTING_DEV_READBACK_NOT_INCLUDED_IN_LATEST_CONTROL_POINTER_NEXT_ACTION",
+    "guardLimitation": "POINTER_AND_DESCRIPTOR_CAN_BOTH_AGREE_ON_OBSOLETE_ACTION",
+    "sourceShaUnchanged": true,
+    "phaseAMatrixMatches": 5,
+    "phaseAMatrixTotal": 21
+  },
+  "nextExecution": "READ_ONLY_RECOUNT_EXACT_83_GROUPS_AFTER_R026; THEN FOCAL_APPROVED_KEEPERS_AND_STIVEN_HR_CANONICAL_PREFLIGHT; IN_PARALLEL_QA_HR_VISITS_CERTIFICATIONS_FINANCE_CRM; SINGLE_SERIAL_WRITER; INCREMENTAL_REAL_DEV_E2E_HUMAN_CERTIFICATION",
+  "writeScope": {
+    "thisReceiptOnly": true,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "financeWrites": 0,
+    "deploys": 0,
+    "production": false
+  },
+  "gates": {
+    "I3": "HOLD",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "I4Authorized": false
+  }
+}

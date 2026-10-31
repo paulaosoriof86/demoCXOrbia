@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3/G03: corrección P0 de alcance HR protegido VRM-294 probada en fuente 7b70557, aún NO servida en DEV; completar guardia canónica y solicitar autorización nueva de Hosting DEV para readback. Cuenta sintética crmAccount providerAck committed en fuente bd1f875 sigue invisible en CRM Cuentas=0: inspeccionar GET protegido _protected.commercial.accounts contra CX.data.__commercialState en Admin y aislar owner sin asumir que el fix HR resuelve CRM. No duplicar escritura sintética ni borrar fixture sin aprobación. Mantener pendientes F9/post-F9, HR, finanzas, 5/21 MATCH, I3/Gate20/Gate21 HOLD; I4 y producción DO_NOT_TOUCH.",
+  "exactNextAction": "I3 FASE A / PLAN CHOQUE FROZEN: recuperar progreso Shopper 31/83 recenso independiente run 40820123220 + canaria R-026 ACK/readback run 40833855942 = 32/83 PROVISIONAL; hacer recenso READ-ONLY exacto de 83 sin repetir fusiones. Hosting DEV VRM-294 alcance HR ya servido 3d1d42ad02066ae2 (solo Hosting), no reiterar despliegue; G03 CRM Cuentas=0 aún HOLD. Continuar en QA simultánea HR/identidad/visitas+Stiven, certificaciones D05/D06, finanzas (36 alias con liquidaciones), CRM y visual/portal, con un único escritor y candidata serial. Certificar bloques DEV E2E+humano incremental, conservar PASS y 5/21 MATCH; Gate20/21 HOLD, I4 no autorizado, producción DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -15937,5 +15937,34 @@
     "gate21": "HOLD",
     "formalMatch": 5,
     "production": "DO_NOT_TOUCH"
-  }
+  },
+  "i3FusionContinuityRecovered20261031": {
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_SHOPPER_FUSIONS_RECOVERED_CONTINUITY_20261031.json",
+    "receiptGitBlob": "9c18d53fd179ea76f6ed734055eb14f9568be6ca",
+    "authority": "PAULA_20261028_139_APPROVED_PAIRS_83_GROUPS",
+    "lastIndependentRecountRunId": 40820123220,
+    "lastIndependentVerifiedGroups": 31,
+    "postflightCanaryRunId": 40833855942,
+    "postflightCaseCode": "R-026",
+    "provisionalVerifiedGroups": 32,
+    "provisionalPendingGroups": 51,
+    "recensusRequired": true,
+    "batchTwentyOneRunId": 40813627623,
+    "sourceWrites": 0,
+    "dataWritesThisCorrection": 0,
+    "production": false,
+    "status": "PRESERVED_EVIDENCE_POST_R026_GLOBAL_RECOUNT_PENDING"
+  },
+  "g03ActualHostingDevReadback20261031": {
+    "verifiedBrowserDevOnly": true,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/3d1d42ad02066ae2",
+    "protectedProjectScopeSourceSha": "7b70557c22e3902ab3c91fbee326357630fc20a1",
+    "scope": "VRM-294_STALE_PROYECTO_RETAIL_GET_REMOVED",
+    "crmAccountsUi": 0,
+    "crmE2e": "HOLD",
+    "runtimeWholeArtifactCertified": false,
+    "production": false,
+    "readbackSource": "WORK_CHROME_CLOUD_SHELL_AND_AUTHENTICATED_CINEPOLIS_ADMIN_20261031"
+  },
+  "lastContinuityEvidenceRecoveryAt": "2026-10-31T23:45:02.611Z"
 }
