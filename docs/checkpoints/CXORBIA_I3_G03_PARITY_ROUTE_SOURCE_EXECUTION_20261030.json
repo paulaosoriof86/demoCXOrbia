@@ -1,0 +1,2887 @@
+{
+  "schemaVersion": "cxorbia.i3.g03.parity-route-source-execution.v1",
+  "executedAt": "2026-10-31T01:51:30.479Z",
+  "executionLocalDate": "2026-10-30",
+  "timeZone": "America/Guatemala",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "kind": "G03_FOCAL_SOURCE_EXECUTION_AND_CANONICAL_QA_LINK",
+  "decision": "PASS_FOCAL_SOURCE_ONLY_G03_AUTHORITY_AND_HUMAN_ACCEPTANCE_PENDING",
+  "expectedControlParentSha": "eb5d5dbfb8d7d77280555b99c828997e43cd48cf",
+  "expectedControlParentTree": "d4078447f52f1d66c00c9ee0cb7d27619866b4a5",
+  "productSourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+  "productTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
+  "inputs": {
+    "packetSha256": "fd1fc4cadda9fee9a8d39c9c85a2b83996c27221157ddc277bd5d0e15133822b",
+    "components": [
+      {
+        "path": "00_ENCARGO_G03_EJECUTAR_NO_REAUDITAR.md",
+        "bytes": 11542,
+        "sha256": "d8076957911a09fbb905831dbbbff92973e95b8b2f4c0becba391ac900160ceb"
+      },
+      {
+        "path": "autoridades/00_START_HERE_CXORBIA_RECOVERY.md",
+        "bytes": 1814,
+        "sha256": "47c1ec267ec36df121455366d3d31a37d2174a52587d6caedf09addd79e6524d"
+      },
+      {
+        "path": "autoridades/ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA.md",
+        "bytes": 3859,
+        "sha256": "58c52dd92903929806adedb518dd692c03a49d08ed783ef90305d534b44ff8d6"
+      },
+      {
+        "path": "autoridades/PLAN_RECTOR_RECUPERACION_CXORBIA.md",
+        "bytes": 4366,
+        "sha256": "956a8d9cd45a75cde0ccbe22bc37e39ac764c042f433152c453fdbc5e0ef0a6d"
+      },
+      {
+        "path": "autoridades/CONTRATOS_FUNCIONALES_CXORBIA_RECOVERY.md",
+        "bytes": 2370,
+        "sha256": "7af6c8379a371a2f957529d407f4b57e73c06d3fb9cac4fa61557775dd57d0ba"
+      },
+      {
+        "path": "autoridades/CHECKPOINT_INICIAL_RECUPERACION_CXORBIA.md",
+        "bytes": 2049,
+        "sha256": "1dc602da45e4fde07fe36980dfe89f003de0d80aaf6b5d331f4336bf696416eb"
+      },
+      {
+        "path": "autoridades/ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-10(1).md",
+        "bytes": 15182,
+        "sha256": "7469fade9cbbb9fb896ef5115e6ce5a680e353154e7c1a1198b54418b1c41689"
+      },
+      {
+        "path": "autoridades/ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-18_CUMULATIVE_MODULE_INTEGRITY_FROZEN (1).md",
+        "bytes": 11955,
+        "sha256": "9a5463939f5144214d9bcf314b2728c8c7d505c08a81fb85a148d370fd9ace01"
+      },
+      {
+        "path": "autoridades/ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-18_I3_GATE20_GATE21_ANTI_DESYNC_FROZEN (1).md",
+        "bytes": 5038,
+        "sha256": "e1b88423d5982904bcf156429197bcbcb0e9c4fe48ee0464c20ad3db5446c469"
+      },
+      {
+        "path": "autoridades/ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-10-06_PHASE_A_COMPLETION_EXECUTION_LOCK_FROZEN.md",
+        "bytes": 13939,
+        "sha256": "1971f41d8970c9b4584050f3b6e082a4842d079d57c86afe2775d53bef8e373c"
+      },
+      {
+        "path": "autoridades/00_LEER_PRIMERO_PLAN_CONGELADO.md",
+        "bytes": 9992,
+        "sha256": "718c1091aa59bfa3ae81a36e28511a57be42fb12805e9bb8e94391ba01b2824e"
+      },
+      {
+        "path": "autoridades/PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+        "bytes": 203721,
+        "sha256": "83e8f2c0a6b190bab1d9dea32bf99158116f3164f419ae72e051fd791fd8576c"
+      },
+      {
+        "path": "evidencia_local_no_publicada/CXORBIA_G03_DELTA_DOCUMENTAL_PREPARADO_20261030.json",
+        "bytes": 30480,
+        "sha256": "f1449948b83d326f4cbf94af0defad981677646b388785c559fb1759bbb61ef2"
+      },
+      {
+        "path": "evidencia_local_no_publicada/CXORBIA_G03_DELTA_DOCUMENTAL_VALIDACION_20261030.json",
+        "bytes": 766,
+        "sha256": "9839a417c674f61a37100b199fdbee0dfe5de52fbf8a055778ce1ac9e0cb96a6"
+      },
+      {
+        "path": "evidencia_local_no_publicada/CXORBIA_G03_ADJUDICACION_READ_ONLY_20261030.json",
+        "bytes": 13081,
+        "sha256": "1b074ac93291219dccdcb7bf206ab3c916559fb70e82fc51e8b4fa9fcb283daf"
+      },
+      {
+        "path": "evidencia_local_no_publicada/CXORBIA_G03_COBERTURA_CANONICA_Y_RUTA_20261030.json",
+        "bytes": 7297,
+        "sha256": "9bb633595061e93ec7908ce71433576df43d062e4c13b8aa5d657eb4cc946161"
+      },
+      {
+        "path": "evidencia_local_no_publicada/run1981-source-evidence-readback.json",
+        "bytes": 2861,
+        "sha256": "74b0f5af8606e839b8500591e639e8569b5b8336382943865e22a6e83aec57f2"
+      },
+      {
+        "path": "evidencia_local_no_publicada/RUN1942_authority_failure_excerpt.log",
+        "bytes": 552,
+        "sha256": "536100065af66efd7ba2bf684797f23b966118f14ad982ea81c6f98e09aca319"
+      }
+    ],
+    "verified": 18,
+    "repositoryWrites": 0
+  },
+  "bindings": [
+    {
+      "path": "tools/qa/cxorbia-i3-period-project-client-parity.test.mjs",
+      "sourceGitBlob": "4206640395f73f5f6b62e896252747c6871a2209",
+      "bytes": 5677,
+      "sha256": "422a702134776d83b8f3f31998e42a7212c4f3c9562422147d92c960f3679ca8"
+    },
+    {
+      "path": "app/core/data.js",
+      "sourceGitBlob": "4457a3b07b11a2b57fad56aebce4a7046400dbed",
+      "bytes": 60713,
+      "sha256": "9ee63b4786fb89cda88547b553c11aeba15067abeb91f4708f4fccd62b69bb0b"
+    },
+    {
+      "path": "app/modules/clientes.js",
+      "sourceGitBlob": "28afb209ff3b882f322d2ba9a3f40c18997effef",
+      "bytes": 21351,
+      "sha256": "7260fa6c2ef5eccc0eea3cf43bc9cf5c06af2be4cc923742e45876e21480ad1e"
+    },
+    {
+      "path": "app/modules/historico.js",
+      "sourceGitBlob": "842df3520ffa05d27e04b10c8fc225f023e4f304",
+      "bytes": 10061,
+      "sha256": "cab99b87798f385d6cf71cc63bef144b5fc7cb6c55bf31ba101817ade07e2819"
+    },
+    {
+      "path": "app/modules/proyectos.js",
+      "sourceGitBlob": "31006e2f0a7dd4527be4d4fb6b1f1dcdfe2d2dc3",
+      "bytes": 20936,
+      "sha256": "4982083291f05e09ed2f136f56b3979cf23ff008ba75eab7b755e5857e77a17e"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-g03-rutas-effective-hr-source-truth.test.mjs",
+      "sourceGitBlob": "64dca6a04bf193f73006833ad37ca90950710efc",
+      "bytes": 2577,
+      "sha256": "fbd7f7943f4ffbd8937323ee332523445ebbaab0b8464618e75135a62a9bd267"
+    },
+    {
+      "path": "app/index-backend-dev.html",
+      "sourceGitBlob": "eec56cf5e4afc7624c1a6f73841bb28d18617280",
+      "bytes": 14208,
+      "sha256": "38460409bee133f1f746156de1e1e5fa3d5db0c7a22c6d0d0b36a64f947c0479"
+    },
+    {
+      "path": "app/modules/operacion-extra.js",
+      "sourceGitBlob": "796b1454fdbff75011eaa9664306988e45fad161",
+      "bytes": 44626,
+      "sha256": "b432d5bb6087969ad42bbf6c700bcb14a49d225cded0191c4586f46991b110c0"
+    },
+    {
+      "path": "app/modules/rutas.js",
+      "sourceGitBlob": "5ad69a8bad0dc02b58ca8b06145a74f0a4ddd51e",
+      "bytes": 5417,
+      "sha256": "24435f353e4ed8d2eefae7a4847d5e767bd46a9ea0628cdda5d9b31dca9b8216"
+    }
+  ],
+  "tests": [
+    {
+      "node": "v24.16.0",
+      "command": [
+        "node",
+        "--test",
+        "tools/qa/cxorbia-i3-period-project-client-parity.test.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "scope": "LOCAL_SYNTHETIC_SOURCE_NO_DEV",
+      "testPath": "tools/qa/cxorbia-i3-period-project-client-parity.test.mjs",
+      "pass": 4,
+      "fail": 0,
+      "skipped": 0,
+      "stdout": "✔ P0: periodo y Dashboard usan la misma definición canónica de realizada por fecha/facets (15.1726ms)\n✔ P0: cliente agrupa un proyecto de negocio con dos periodos y conserva sus tres visitas (7.2802ms)\n✔ P0: Histórico muestra países y desglose del periodo usando periodId, no projectId (6.547ms)\n✔ P0: configuración de proyecto también selecciona por recordPeriodId; formularios conservan periodos (0.7311ms)\nℹ tests 4\nℹ suites 0\nℹ pass 4\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1067.8406\n",
+      "stderr": ""
+    },
+    {
+      "node": "v24.16.0",
+      "command": [
+        "node",
+        "--test",
+        "tools/qa/cxorbia-i3-g03-rutas-effective-hr-source-truth.test.mjs"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "scope": "LOCAL_SYNTHETIC_SOURCE_NO_DEV",
+      "testPath": "tools/qa/cxorbia-i3-g03-rutas-effective-hr-source-truth.test.mjs",
+      "pass": 3,
+      "fail": 0,
+      "skipped": 0,
+      "stdout": "✔ G03: canonical Hojas de Ruta shows actual external provider authority and source revision, never fake local selector (3.7719ms)\n✔ G03: canonical Hojas de Ruta without revision must not claim fresh provider read (0.9842ms)\n✔ G03: legacy noncanonical HR preview keeps its existing controls without changing data contracts (0.8738ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1231.8775\n",
+      "stderr": ""
+    }
+  ],
+  "routeAdjudication": {
+    "scope": "SOURCE_COMPOSITION_ONLY_NOT_AUTHENTICATED_DEV_E2E",
+    "selectedOwner": "app/modules/operacion-extra.js",
+    "registrationLine": 170,
+    "registryInitialization": {
+      "path": "app/core/ui.js",
+      "resetLine": 190,
+      "assignmentLine": 191,
+      "semantics": "CX.modules = {}; CX.module(id,fn) assigns CX.modules[id]=fn; last registration wins"
+    },
+    "router": {
+      "path": "app/core/router.js",
+      "line": 377,
+      "semantics": "render(id) resolves CX.modules[id] and invokes function; nav applies role/module guards before render"
+    },
+    "standalone": {
+      "path": "app/modules/rutas.js",
+      "loaded": false,
+      "added": false,
+      "explanation": "Another registration for same key exists in standalone source; absence from entrypoint is not absence of the Rutas function."
+    },
+    "staticAnalysis": {
+      "parser": "acorn@8.15.0 / acorn-walk@8.3.4",
+      "scriptCount": 142,
+      "localScripts": 132,
+      "inlineScripts": 3,
+      "files": [
+        {
+          "path": "app/core/build-lock.js",
+          "gitBlob": "068b28bce919c2a4f357eb4c21f85fede06a0c5d",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/config/runtime.js",
+          "gitBlob": "48ef2eac898bc2ee8df1649830f12851d8836229",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/config.js",
+          "gitBlob": "5446270196c99f01715f60d1ad65892d12a070db",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/geo.js",
+          "gitBlob": "d519e60bb5a99f4b28d0631edc176b1dd1a75602",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/store.js",
+          "gitBlob": "c6921e26773c866ba0b0ac0b725f4660e47742a5",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/data.js",
+          "gitBlob": "4457a3b07b11a2b57fad56aebce4a7046400dbed",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/shopper-credential-rule.js",
+          "gitBlob": "723abba57c5fed73c1fab933150943e39ebb76e3",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/tya-project-financial-model-contract-v1.js",
+          "gitBlob": "333f5fd204cba2c53eefe8f98acb27a4502da166",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/data-source.js",
+          "gitBlob": "cea2af688a7d60d58eec6b4a5d89cac9b3965db3",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/dedupe.js",
+          "gitBlob": "4dbfe7f318b72a174dd2c253fb5355166788a7f5",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/shoppers-store.js",
+          "gitBlob": "16d1abd55c3ab166f4c10c08220985e7a54f53ba",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/programa.js",
+          "gitBlob": "3560737099f97e0a4774420c10073e108da2677c",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/cliente-data.js",
+          "gitBlob": "ed808881dc9b1026244213bb531a5d160b766078",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/hr.js",
+          "gitBlob": "c35bc4efbf70c9915246cf234b64445979ba81c8",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/costos.js",
+          "gitBlob": "7f0c4547a68b8bafebae0652b8de5c8e27114a0c",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/automations.js",
+          "gitBlob": "1bf04186e2461340e2852a7608b98d1d510a71a0",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/permissions.js",
+          "gitBlob": "070dfd2a7dbdaf0268d568dc7622e974a18fd383",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/manuales-data.js",
+          "gitBlob": "b18921f9cc87cb78a4db34b6205a480749470f26",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/vendor/pptxgenjs.min.js",
+          "gitBlob": "1ff971b3a9684bf3d2592883f1832e6992043154",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/importador.js",
+          "gitBlob": "4df42e90e0c1b42a45be57e6e34ad8c1f73b2daf",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/ui.js",
+          "gitBlob": "4947c325a17c95086ae6006615b651aa39097d7c",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/data/tya-financial-canonical-source-safe.js",
+          "gitBlob": "889426185947563aaf128d7206acf42fdb218e3b",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/data/tya-financial-canonical-source-safe-liq-01.js",
+          "gitBlob": "5eb9146d7b8050bff489602d25426e658fb9316e",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/data/tya-financial-canonical-source-safe-liq-02.js",
+          "gitBlob": "7c36694b90736af980145c32c2aa4c034cd34870",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/data/tya-financial-canonical-source-safe-liq-03.js",
+          "gitBlob": "91fedfea2f837fa6b4319b3738432afc6da05a94",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/data/tya-financial-canonical-source-safe-review-01.js",
+          "gitBlob": "1e8866bbb585e970c993c5ebec245ca644d0fc6c",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/data/tya-financial-canonical-source-safe-review-02.js",
+          "gitBlob": "3afbcc5faa627029e09ecf695c7f494f2c7995d2",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/data/tya-financial-canonical-source-safe-evidence.js",
+          "gitBlob": "8285bdbc138f6ca8f85bf680f06d22e3a962cf28",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/data/tya-financial-canonical-source-safe-final.js",
+          "gitBlob": "e40955ee476e8fe5a0bab01965b0e29bd0958b5b",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/data/tya-payment-history-source-safe.js",
+          "gitBlob": "a8d8461222c01f6450d7677675734c33b75b4ed2",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/data/tya-certification-carryover-source-safe.js",
+          "gitBlob": "8f987530e24ebe433e7f1c73a6036a37e563f074",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/liquidacion.js",
+          "gitBlob": "b3f4d3fd387ad5dde454d115a7a3a8235fbfaaa3",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/finanzas-core.js",
+          "gitBlob": "6276d86f8e3ddbfc84d41fc1903f968d92291527",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/notif.js",
+          "gitBlob": "b544f25fdbb5894a96e61e31f10e92220f131985",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/tya-live-source-inplace-apply.js",
+          "gitBlob": "45e1cd1b8c01d6276be2c256d5b99baa93e90252",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/tya-corte1-report-projection-live.js",
+          "gitBlob": "7209da989458534742108e4575552a7dcd1837ba",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/tya-live-source-refresh-watch-v2.js",
+          "gitBlob": "08ae9f9ca73d41c6c431e0234a9d209eb6fa2a16",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/cxorbia-exact-identity-contract-v1.js",
+          "gitBlob": "9b2d465dfe4d77a0a30786b0d540903b0f014c32",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/tya-cumulative-read-model-v2.js",
+          "gitBlob": "ab2abe6660d53d623e725f754d41b69710a8f612",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/tya-certification-evidence-projection-v1.js",
+          "gitBlob": "ac37f825049d2bf7c8072fef84d1ff7b97373a7e",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/cxorbia-identity-roll-forward-v1.js",
+          "gitBlob": "89d1de9535ac4537c0309c8bf24483cceebc08e5",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/tya-canonical-state-semantics-v2.js",
+          "gitBlob": "a0104aa043ebdb7c9ee55cde5766ada8ed5e28fb",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/backend-config.js",
+          "gitBlob": "b12f0ec1e26d2c8d34fa19fb98433d02e926a455",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/backend-config-preview-dev.js",
+          "gitBlob": "8eaad7a9b56e559a342aee5f4be2f303ed61fbaf",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/backend-protected-dev-mode.js",
+          "gitBlob": "3924d7d02ea21f589e6be6d451dff740c884300a",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/backend-protected-dev-session-continuity.js",
+          "gitBlob": "00f2b3d1e92ad6154853282a8881163cf9e6ca5d",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/backend-v57-extra-config.js",
+          "gitBlob": "a6c73a471af480e904e59adcacc12ec08d4a697f",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/backend-dev-auth.local.js",
+          "gitBlob": "6b2e3ce079552fad247c7202df684328ad7dac7b",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/backend-browser-auth.js",
+          "gitBlob": "1274e67e69a73fd619d81b0d01687e72894901e6",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js",
+          "gitBlob": "a669a9930191e2872dea5ffbf7aff039f5a29918",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/cxorbia-shopper-membership-wiring-v1.js",
+          "gitBlob": "a96370a5a72ac6a12a6733d6e768a52293abe82b",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/cxorbia-provider-identity-link-runtime-v1.js",
+          "gitBlob": "39b4d8dc1569bcce6c1c68630f82d937fe6a2743",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/tya-phase-a-authority-compat-v1.js",
+          "gitBlob": "6a54ddbbbf3a6d717c9e9ffed6a16f3bba1591b0",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/tya-dev-technical-auth-e2e-v1.js",
+          "gitBlob": "bae31255c340e14bccec4f1e6a3b844ddd5cd65e",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/backend-firebase.js",
+          "gitBlob": "b6e1ad084cc3a7dc4bc1e9618766bf680540fb8a",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/backend-certifications.js",
+          "gitBlob": "178ce391af835a8ebe2dfccf68a590110d0466cd",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/backend-ai.js",
+          "gitBlob": "45b05a50b058ed66d98aa41db6abdbceec1f399f",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/backend-resources.js",
+          "gitBlob": "f12a2325948bf25133b5f7e5cff68061e0521d60",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+          "gitBlob": "4e9cfc368ec47b31929e6dff36c5768fcd7226cf",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/backend-cxdata-read-guard.js",
+          "gitBlob": "49b66d84ddb772e1e33a9845ddff9cde1ccdc670",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/backend-finance-benefits.js",
+          "gitBlob": "66856002901be88aefb38acc0aaab635a8872c2b",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/backend-cxdata-finance-read.js",
+          "gitBlob": "2a7cd3ffbd2bf0999b149b3095218b7d3d09276b",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/backend-operational-actions.js",
+          "gitBlob": "785ea0967b5984fd63431048712b3a5726a4e947",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/cxorbia-command-adapter-v1.js",
+          "gitBlob": "aa6522b76a5958aece332c6346c312086d803500",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/cxorbia-command-http-transport-v1.js",
+          "gitBlob": "72bdfcdaa5667b62b52962396631e1665506ba13",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/cxorbia-shopper-admin-command-contract-v1.js",
+          "gitBlob": "f08d8ce0f099b499754209326ec1a08ff35290bc",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/cxorbia-hr-write-adapter-contract-v1.js",
+          "gitBlob": "aad818a8be3581397672ade7988c9a5ec9b4ccb0",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/backend-cxdata-readonly-corte4.js",
+          "gitBlob": "68ac1771d6441f48ca4388ad54a9d409d345de8a",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+          "gitBlob": "d345acb084d63c7f74847eef5be03c05cd70d458",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/backend-ui-action-bridge.js",
+          "gitBlob": "1e94719110d72b76da05a86ebc54d28bd6f9338a",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/backend-bulletins.js",
+          "gitBlob": "86ca6a38cb738141c9077e8cbaa1e583a9787e92",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/backend-automations.js",
+          "gitBlob": "63ad78a8b50134a787c66b3e49e551313edc69d8",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/backend-hr-source-bridge.js",
+          "gitBlob": "e86d0564e75d8e1dcfe941854b0d7154ca4d9e6c",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/tya-financial-canonical-source-safe-adapter.js",
+          "gitBlob": "9d2d1a9a541c74a6234353a44f0bfaa43bc1fb79",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/tya-canonical-finance-read-model-v2.js",
+          "gitBlob": "4997010949dd8a126b058f720041fe5eeb04f1bd",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/tya-delegated-coordination-finance-guard-v1.js",
+          "gitBlob": "f4c64bc7314df32fad8cf8c4aaa77a046bb86a8c",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/cxorbia-canonical-write-firewall-v1.js",
+          "gitBlob": "93a33cc587ab3271a43cb1d50532ecdd138c5222",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/topbar.js",
+          "gitBlob": "823fe9af94cdf1a83b3d3b733a5c306b5af2155d",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/pwa.js",
+          "gitBlob": "b6d8bb5d5b6aacf0e456130bb7b7b746bcf754bf",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/router.js",
+          "gitBlob": "05f3b943d667814ae151556ee7281abbfe7bc6e5",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/midia.js",
+          "gitBlob": "7e6403b30ed23851b8475493ab79e94b7d392706",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/dashboard.js",
+          "gitBlob": "c48d1c63d0628c637c4257bef1725dc4349b8668",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/proyectos.js",
+          "gitBlob": "31006e2f0a7dd4527be4d4fb6b1f1dcdfe2d2dc3",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/periodos.js",
+          "gitBlob": "25d39e553da379d113dad8a6db8a1d70554c4cd7",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/historico.js",
+          "gitBlob": "842df3520ffa05d27e04b10c8fc225f023e4f304",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/hr-source.js",
+          "gitBlob": "c59440efb4d66238a1cbce09d7bf45a8cc2e4751",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/proyecto-wizard.js",
+          "gitBlob": "b32f6277df9bcfca5324c5f67cc9db14e00875f1",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/visitas.js",
+          "gitBlob": "1605e94b94ab2b99fd7f6348b287b58f36099ede",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/visita-detalle.js",
+          "gitBlob": "1f2178bbfa2c6aeb2b11f78b645f4922cfc32876",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/revision-admin.js",
+          "gitBlob": "41fcea495c1e23e7ecee43a637b45002124ea3c9",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/cuestionario-shopper.js",
+          "gitBlob": "5f5609aa91fe3d0c3682e1dc13a1d69443bed00b",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/postulaciones.js",
+          "gitBlob": "13acd6982be68e945733f0048c1aa8a911bdc219",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/shoppers.js",
+          "gitBlob": "2ea1e68a229cdcfeaf55784d6ac9cc9bd863ccb9",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/misvisitas.js",
+          "gitBlob": "de7e10c0509aabcf96f3834ee8a5496be297b2b3",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/beneficios.js",
+          "gitBlob": "c7060562558f307b9b037e929a6fa7e179db1826",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/tablon.js",
+          "gitBlob": "bb0da6c1e77cfa3a80df2fa00d2d5fd653433251",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/cert.js",
+          "gitBlob": "78c9630fd627daa015aff5919d34565260240d74",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/documentos.js",
+          "gitBlob": "7572b99223222f052824bdf075e76a5e7f53fea0",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/academia.js",
+          "gitBlob": "5ba399295367cb2f5e2ea6fd9de706e6d4fb1323",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/soporte.js",
+          "gitBlob": "ce46ad2fe4ad28e70588fae72e4d391dd372009e",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/operacion-extra.js",
+          "gitBlob": "796b1454fdbff75011eaa9664306988e45fad161",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/finanzas.js",
+          "gitBlob": "f1545f0439863090e04b4729e8483616f7d209cf",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/configuracion.js",
+          "gitBlob": "1311ffb081aebef59ff82f4bb266bae907449b67",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/saas-console.js",
+          "gitBlob": "e5fa0e57083d4affdc044f3c32eeffd1c96980b5",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/cliente.js",
+          "gitBlob": "c3802b25e05851d1abff99adab793d323b52b0f0",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/cliente-extra.js",
+          "gitBlob": "ca3d2d6b356b3d942ebbb2076625ce0b000e4b64",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/cliente-insights.js",
+          "gitBlob": "4fca3b9c25231ef025c2d421c9ce07f2c2124a30",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/novedades.js",
+          "gitBlob": "735f977d139415807938fd29f4e03b1ecb3edefe",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/clientes.js",
+          "gitBlob": "28afb209ff3b882f322d2ba9a3f40c18997effef",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/importador.js",
+          "gitBlob": "ad4f6b4621a69aa2cb303f026be6113e8f158ca2",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/comercial.js",
+          "gitBlob": "61aaee6432e4a4206b07f8633d158b8d2b2c2271",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/crm.js",
+          "gitBlob": "07732668ea2bd700dffe5fbff8df8e473575be05",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/marketing.js",
+          "gitBlob": "6bfe1b4e3dbed12ead8a88404cdb495dbf1b8e83",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/reservas.js",
+          "gitBlob": "37e4305161c93cbdae0fd5cbe20a55216f59206b",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/integraciones.js",
+          "gitBlob": "a71fc5bf83ff54df83c90339d0a3c0940167d75a",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/automatizaciones.js",
+          "gitBlob": "a28a2354bd4a0132cd788abfa3842a796005be32",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/correo.js",
+          "gitBlob": "be3cbf808498de86265410682625a45e57541b97",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/marca.js",
+          "gitBlob": "163e8e2aee2bf1b8289ac7183d6355e7ef6f5f11",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/diagnostico.js",
+          "gitBlob": "23f1bd5b72738d18e78d23a6af77ba2833279d65",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/modules/administrabilidad.js",
+          "gitBlob": "0139182cd28acc77a5839b572b0d2cbbb4fbb7df",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/tya-ab-cumulative-composition-v1.js",
+          "gitBlob": "9c0d76382531b8393cc0866ec694935a2a5e25a6",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/tya-c6-domain-consistency-bridge.js",
+          "gitBlob": "0a551989ea82eac52eea3b1440965812d83d4f17",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/tya-canonical-shopper-portal-v2.js",
+          "gitBlob": "99bde07ca213541bdec920606303621bdfeb406c",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/tya-canonical-reservations-guard-v2.js",
+          "gitBlob": "ac12767b433dfa0debd3eb08cfc2b67271c3264e",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+          "gitBlob": "630cb1ac7bff4124cae28c281ae8186ee7c7c28a",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/tya-c6-shopper-auth-click-guard-v1.js",
+          "gitBlob": "0b065999e74d366340eb8692ca39184514c97cfc",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js",
+          "gitBlob": "218ca59cb37dd17d3de6ba81660616f9c1c45116",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js",
+          "gitBlob": "9c6c3170e5ea8cde2693667b56534b8d0b0043ef",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/cxorbia-legal-runtime-http-v1.js",
+          "gitBlob": "56385f181c7e7e36b903ea18c1e470f759749a86",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/backend-corte4-empty-shell-guard.js",
+          "gitBlob": "a8b5b99a81ba903508a08d37e34fae414d61a492",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/app.js",
+          "gitBlob": "5c0fa4734c17ae57d2de46e17c1f0b796a885c07",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/adapters/cxorbia-admin-identity-review-notice-v1.js",
+          "gitBlob": "b894ca68eaef916cfe4ec64d16a3741167a019f9",
+          "conditionalDynamic": false
+        },
+        {
+          "path": "app/core/backend-preview-status.js",
+          "gitBlob": "3f3dad02014b743af201ccac07719007db736639",
+          "conditionalDynamic": true
+        }
+      ],
+      "moduleRegistrations": [
+        {
+          "file": "app/modules/midia.js",
+          "line": 11,
+          "kind": "module-call",
+          "source": "CX.module('midia', ({data,role,ui})=>{\n  const p=data.period();\n  /* realinea el mes visible del calendario con el periodo activo (nunca un literal fijo) —\n     primera carga o cambio real de periodo; navegación manual (‹ ›) se conserva mientras el\n     periodo no cambie. */\n  if(_cgLastPeriod!==data.currentPeriodId){ ",
+          "id": "midia",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/dashboard.js",
+          "line": 3,
+          "kind": "module-call",
+          "source": "CX.module('dashboard', ({data,ui})=>{\n  const p=data.period();\n  const BF=data.visitBucketFns;\n  const ALL=!!CX.session._dashAll;\n  const cs=ALL?[...new Set(data._visitas.filter(v=>data.inScope(v.pais)).map(v=>v.pais))]:p.countries;\n  /* Bloque 9 (corrección V103, 20260711): el archivado (soft-delete) marca v._archived",
+          "id": "dashboard",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/proyectos.js",
+          "line": 3,
+          "kind": "module-call",
+          "source": "CX.module('proyectos', ({data,ui})=>{\n  const groups = data.scopedProyectos().map(pg=>{\n    const periods = data.periodosDe(pg.key);\n    const rep = pg.sample;\n    const totalV = periods.reduce((a,p)=>a+data._visitas.filter(x=>\n      (typeof data.recordPeriodId==='function'?data.recordPeriodId(x):(x.periodId||x.project",
+          "id": "proyectos",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/periodos.js",
+          "line": 4,
+          "kind": "module-call",
+          "source": "CX.module('periodos', ({data,ui})=>{\n  const host=ui.el('div');\n  const canonical=()=>CX.cxDataCommandBoundary?.canonicalMode?.()===true;\n  const ackOk=a=>a&&a.ok===true&&a.committed===true&&a.providerAck===true&&a.successUiAllowed===true&&a.readbackVerified===true;\n  const durableWarn=()=>ui.toast('Cambio de período n",
+          "id": "periodos",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/historico.js",
+          "line": 4,
+          "kind": "module-call",
+          "source": "CX.module('historico', ({data,ui})=>{\n  const host=ui.el('div');\n  let fPais='all';\n  /* Frontend genérico (corrección 20260711): el copy decía \"separado de la operación activa\" pero\n     el filtro por defecto era 'all' — mezclaba el periodo activo con el histórico desde el primer\n     render. Ahora el default excluye ",
+          "id": "historico",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/hr-source.js",
+          "line": 85,
+          "kind": "module-call",
+          "source": "CX.module('hrsource', ({data, ui})=>{\n  const host=ui.el('div');\n  const p=data.project();\n  const pid=()=>data.currentProjectId;\n\n  const draw=()=>{\n    const cfg=CX.hrSource.get(pid());\n    const st=CX.hrSource.STATES[cfg.estado]||CX.hrSource.STATES.pendiente_backend;\n    const tipos=[['google_sheets','Google Sheets'",
+          "id": "hrsource",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/visitas.js",
+          "line": 2,
+          "kind": "module-call",
+          "source": "CX.module('visitas', ({data,role,ui})=>{\n  const p=data.period();\n  /* Shared P0 offer contract: a stale canonical `available` flag may coexist\n     with a completed/out-of-range visit. Never offer or assign that record. */\n  const effectiveAvailable=(v)=>{\n    if(!v||typeof v!=='object')return false;\n    const status=",
+          "id": "visitas",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/postulaciones.js",
+          "line": 358,
+          "kind": "module-call",
+          "source": "CX.module('postulaciones', ({data,ui})=>{\n  const p=data.period(), posts=data._posts.filter(x=>data.inScope(x.pais));\n  const projName=(id)=>{const pg=data.programs?.().find(x=>x.key===id);if(pg)return pg.name;const pr=data.projects.find(x=>x.id===id);return pr?(data.programBase?data.programBase(pr):pr.name):(id||'');}",
+          "id": "postulaciones",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/shoppers.js",
+          "line": 2,
+          "kind": "module-call",
+          "source": "CX.module('shoppers', ({data,ui})=>{\n\n  /* ---------- helpers de presentación ---------- */\n  const initials=(n)=>(n||'?').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();\n  const av=(n,sz)=>`<div class=\"rail-av\" style=\"width:${sz}px;height:${sz}px;font-size:${sz*0.38}px;background:linear-gradient(135deg,var(",
+          "id": "shoppers",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/misvisitas.js",
+          "line": 4,
+          "kind": "module-call",
+          "source": "CX.module('misvisitas',({data,ui})=>{\n  const p=data.period();\n  const rawSid=String(CX.session?.user?.shopperId||'').trim();\n  const sid=rawSid?String(data.__identityMap?.[rawSid]||rawSid).trim():null;\n  const shopperProfile=sid?((data.getShopper&&data.getShopper(sid))||(data.shoppers||[]).find(x=>String(x?.id||x?.sho",
+          "id": "misvisitas",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/beneficios.js",
+          "line": 2,
+          "kind": "module-call",
+          "source": "CX.module('beneficios', ({data,ui})=>{\n  const p=data.period();\n  /* P0-D (paquete 20260711): shopper obligatorio — el fallback previo a 'sh1' hacía que\n     cualquier sesión sin shopperId (ej. un rol mal mapeado) heredara los beneficios de un\n     shopper fijo. Sin identidad de shopper autenticada, la vista se muestra",
+          "id": "beneficios",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/tablon.js",
+          "line": 2,
+          "kind": "module-call",
+          "source": "CX.module('tablon', ({role,ui})=>{\n  const host=ui.el('div');\n  const EMOJIS=['✅','📢','⚠️','📅','🔔','💡','🎉','📝','🚨','ℹ️','🏆','🤝'];\n  /* R22: use the authorized exact visit resolver across notification surfaces. */\n  const noticeText=n=>CX.topbar._noticeText(n);\n  const noticeTarget=n=>{\n    const route=role==='",
+          "id": "tablon",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/cert.js",
+          "line": 177,
+          "kind": "module-call",
+          "source": "CX.module('cert', ({role,data,ui})=>{\n  // A deferred callback belongs to this render, never to a newer bank or view.\n  const mountToken={};\n  CX.certStore._mountToken=mountToken;\n  const p=data.period();\n  // Etiquetas humanas únicamente: el estado técnico sigue intacto para permisos,\n  // aprobación, elegibilidad, gu",
+          "id": "cert",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/documentos.js",
+          "line": 21,
+          "kind": "module-call",
+          "source": "CX.module('documentos', ({data,role,ui})=>{\n  const p=data.period(), pid=p.id;\n  const host=ui.el('div');\n  const canManage=()=>['super','admin'].includes(String(role||'').toLowerCase());\n  const connected=()=>CX.docStore.connected();\n  const storageState=()=>CX.backendResources?.storageStatus?.()||{authorized:false,co",
+          "id": "documentos",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/academia.js",
+          "line": 2133,
+          "kind": "module-call",
+          "source": "CX.module('aprendizaje', ({data,role,ui})=>{\n  const host=ui.el('div');\n  const PK='cx_acad2_'+role;\n  const prog=()=>{try{return JSON.parse(localStorage.getItem(PK)||'{}');}catch(e){return{};}};\n  const setProg=(id,v)=>{const s=prog();s[id]=v;try{localStorage.setItem(PK,JSON.stringify(s));}catch(e){}};\n\n  let activeCa",
+          "id": "aprendizaje",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/soporte.js",
+          "line": 50,
+          "kind": "module-call",
+          "source": "CX.module('soporte', ({data,role,ui})=>{\n  const p=data.period();\n  const ctx=`Proyecto activo: ${p.name} (${p.industry}), países ${p.countries.join('/')}, escenarios: ${p.scenarios.join(', ')}. Honorario GT Q60 + combo + boleto reembolsados. Rango de visita típico 12–18 jun.`;\n  const host=document.createElement('div'",
+          "id": "soporte",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/operacion-extra.js",
+          "line": 2,
+          "kind": "module-call",
+          "source": "CX.module('miperfil', ({data,ui})=>{\n  /* P0-2 (V171): sin shopperId verificable, fail-closed — nunca 'sh1' ni primer registro. */\n  const sid=(CX.session.user&&CX.session.user.shopperId)||null;\n  if(!sid){\n    const host=ui.el('div');\n    host.innerHTML=`${ui.ph('Mi Perfil','Tu perfil de evaluador')}<div class=\"card c",
+          "id": "miperfil",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/operacion-extra.js",
+          "line": 170,
+          "kind": "module-call",
+          "source": "CX.module('rutas', ({data,ui})=>{\n  const p=data.period();\n  const canonicalHr=CX.hr?._canonical?.()===true;\n  const online=CX.hr.esOnline(p);\n  const rows=CX.hr.external(p);\n  const d=CX.hr.diff(p);\n  const fuentes=['Hoja creada en plataforma','Google Sheets (online)','Excel Online','Excel importado'];\n  const escapeH",
+          "id": "rutas",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/operacion-extra.js",
+          "line": 265,
+          "kind": "module-call",
+          "source": "CX.module('informes', ({data,ui})=>{\n  const p=data.period();\n  /* P0-5 (V171): estados canónicos ÚNICOS (visitFacets/visitBucketFns) y exclusión de\n     canceladas/archivadas. Prohibido redefinir done/cuest aquí. Coincide con Dashboard/Panorama. */\n  const F=data.visitFacets, BF=data.visitBucketFns;\n  const vis=data.v",
+          "id": "informes",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/operacion-extra.js",
+          "line": 434,
+          "kind": "module-call",
+          "source": "CX.module('mireportes', ({data,ui})=>{\n  const p=data.period();\n  /* P0-2 (V171): identidad fail-closed — sin shopperId verificable, cero filas y export deshabilitado.\n     Prohibido el fallback 'sh1'/nombre/primer registro. */\n  const sid=(CX.session.user&&CX.session.user.shopperId)||null;\n  if(!sid){\n    const host=u",
+          "id": "mireportes",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/finanzas.js",
+          "line": 285,
+          "kind": "module-call",
+          "source": "CX.module('financiero', ({data,ui})=>{\n  const p=data.period();\n  const fp=CX.fin.porPais(data);\n  const canonicalPeriodId=CX.fin.canonCurrentId();\n  /* CORTE 3 P0-4 — selector interno lee/escribe EXACTAMENTE el periodo canónico de CX.data */\n  const finPeriods=()=>CX.fin.canonPeriods();\n  const finCurPeriod=()=>{const",
+          "id": "financiero",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/finanzas.js",
+          "line": 482,
+          "kind": "module-call",
+          "source": "CX.module('movimientos', ({data,ui})=>{\n  const p=data.period();\n  /* V176 P0-4 — sin moneda del primer país como agregado. La moneda se resuelve por país/fila\n     (curOf en draw). 'defCur' solo se usa como etiqueta cuando el alcance tiene UNA sola moneda. */\n  const CURRENCY_GROUPING_CONTRACT=FINANCE_CURRENCY_GROUPIN",
+          "id": "movimientos",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/finanzas.js",
+          "line": 1137,
+          "kind": "module-call",
+          "source": "CX.module('liquidaciones', ({data,ui})=>{\n  const p=data.period();\n  /* V182 P0-2 — helpers LOCALES (no dependen del scope de Movimientos). */\n  const PENDING_CURRENCY='pending_currency';\n  const currencyOf=(row)=>{ if(row&&row.pais&&p.currency&&p.currency[row.pais])return p.currency[row.pais]; if(row&&row.moneda)retur",
+          "id": "liquidaciones",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/finanzas.js",
+          "line": 1420,
+          "kind": "module-call",
+          "source": "CX.module('lotes', ({data,ui})=>{\n  const p=data.period(), cur=defCur0(p);\n  /* V182 P0-1 — helper LOCAL (no depende del scope de Movimientos). */\n  const PENDING_CURRENCY='pending_currency';\n  const curHN=p.currency[p.countries[p.countries.length-1]];\n  /* Bloque A (auditoría V101 — 20260711): este módulo mostraba SIE",
+          "id": "lotes",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/configuracion.js",
+          "line": 6,
+          "kind": "module-call",
+          "source": "CX.module('cuestionarios', ({data,ui})=>{\n  const p=data.period();\n  if(!_qProg||_qPid!==p.id){ _qProg=JSON.parse(JSON.stringify(CX.programa.get(p.id))); _qPid=p.id; }\n  const TIPOS=CX.programa.TIPOS, CRIT=CX.programa.CRITERIOS;\n  const host=ui.el('div');\n\n  const ver=()=>_qProg.versions.find(v=>v.id===_qProg.activeId)",
+          "id": "cuestionarios",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/configuracion.js",
+          "line": 319,
+          "kind": "module-call",
+          "source": "CX.module('usuarios', ({ui})=>{\n  if(_cfgConnectedAuthority()) return _connectedUsersModule(ui);\n  if(!_uState){\n    let savedUsers=null, savedRoles=null;\n    try{ savedUsers=JSON.parse(localStorage.getItem(_U_KEY)||'null'); }catch(e){}\n    try{ savedRoles=JSON.parse(localStorage.getItem(_UR_KEY)||'null'); }catch(e){}\n",
+          "id": "usuarios",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/configuracion.js",
+          "line": 501,
+          "kind": "module-call",
+          "source": "CX.module('config', ({data,ui})=>{\n  const p=data.period();\n  const host=ui.el('div');\n  const connected=_cfgConnectedAuthority();\n  const plan=CX.session.plan||p.plan||'estandar';\n\n  const draw=()=>{\n    host.innerHTML=`${ui.ph('Configuración', connected?'Administración conectada · solo cambios con autoridad durable':",
+          "id": "config",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/saas-console.js",
+          "line": 19,
+          "kind": "module-call",
+          "source": "CX.module('saas', ({data, ui})=>{\n  const host=ui.el('div');\n  const MODS=[['dashboard','📊 Dashboard'],['visitas','📋 Visitas'],['finanzas','💰 Finanzas'],['crm','🏢 CRM'],['marketing','📣 Marketing'],['academia','🎓 Academia'],['portal','📈 Portal cliente']];\n  const FLAGS=[['iaGemini','🤖 IA (Gemini)'],['evidenciaGe",
+          "id": "saas",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/cliente.js",
+          "line": 226,
+          "kind": "module-call",
+          "source": "CX.module('cli_dashboard', ({ui})=>{\n  const C=CX.clienteData, p=CX.data.period();\n  const list=C.scoped(p), R=C.resumen(list);\n  const hasBranches = list.length>0;\n  /* T3 (paquete V109 — 20260712, corrección P0): un solo helper decide qué es un score válido\n     y en qué banda cae — CX.clienteData.band()/validScore()",
+          "id": "cli_dashboard",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/cliente.js",
+          "line": 346,
+          "kind": "module-call",
+          "source": "CX.module('cli_sucursales', ({ui})=>{\n  const C=CX.clienteData, p=CX.data.period();\n  const all=C.scoped(p);\n  const card=(s)=>`<div class=\"card hov\" data-suc=\"${s.id}\" style=\"padding:14px;cursor:pointer\">\n    <div class=\"flex\" style=\"gap:12px\">${CX.cliUI.donut(s.score,58)}\n      <div style=\"flex:1;min-width:0\"><b styl",
+          "id": "cli_sucursales",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/cliente.js",
+          "line": 385,
+          "kind": "module-call",
+          "source": "CX.module('cli_acciones', ({ui})=>{\n  const C=CX.clienteData, p=CX.data.period();\n  const M=CX.cliUI.ACC_META;\n  const render=()=>{\n    const acc=C.acciones(p);\n    const f=window.__cliAccFilter||'';\n    const L=f?acc.filter(a=>a.tipo===f):acc;\n    const card=(a)=>{ const m=M[a.tipo]||{label:a.tipo,icon:'•',tone:'n'};\n",
+          "id": "cli_acciones",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/cliente-extra.js",
+          "line": 4,
+          "kind": "module-call",
+          "source": "CX.module('cli_capacitacion', ({ui})=>{\n  const C=CX.clienteData, p=CX.data.period();\n  const list=C.scoped(p), R=C.resumen(list);\n  const CURSOS={\n    recib:['Protocolo de bienvenida','Primeros 30 segundos de servicio'],\n    aten:['Asesoría consultiva','Manejo de objeciones','Escucha activa'],\n    tiemp:['Gestión de f",
+          "id": "cli_capacitacion",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/cliente-extra.js",
+          "line": 177,
+          "kind": "module-call",
+          "source": "CX.module('cli_reportes', ({ui})=>{\n  const p=CX.data.period()||{};\n  const projectLabel=CX.data.programBase?CX.data.programBase(p):(p.name||CX.data.programKey(p)||'Proyecto');\n  const u=CX.session.user||{};\n  const role=u.clienteRole||'director';\n  const SOURCE_LABEL='Fuente verificada · Vista previa segura';\n\n  const",
+          "id": "cli_reportes",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/cliente-extra.js",
+          "line": 369,
+          "kind": "module-call",
+          "source": "CX.module('cli_programa', ({ui})=>{\n  const C=CX.clienteData, p=CX.data.period(), prog=C.programa(p);\n  const secBlock=(sec)=>`\n    <div class=\"card card-p\">\n      <div class=\"between\"><div class=\"card-t\" style=\"font-size:14px\">${sec.name}</div><span class=\"bdg bdg-b\">Peso ${sec.weight}%</span></div>\n      <table class",
+          "id": "cli_programa",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/cliente-extra.js",
+          "line": 407,
+          "kind": "module-call",
+          "source": "CX.module('cli_market', ({ui})=>{\n  const C=CX.clienteData;\n  const DET={\n    'Investigación de mercados':{como:'Diseñamos y ejecutamos estudios ad-hoc (paneles, encuestas cuanti/cuali, focus groups) y los cruzamos con tus datos de mystery shopping para una lectura 360°.',valor:['Decisiones con evidencia, no intuición'",
+          "id": "cli_market",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/cliente-insights.js",
+          "line": 5,
+          "kind": "module-call",
+          "source": "CX.module('cli_insights', ({data,ui})=>{\n  const host=ui.el('div');\n  const p=data.period();\n  const K='cx_cli_insights_'+p.id;\n  const load=()=>{try{return JSON.parse(localStorage.getItem(K)||'{}');}catch(e){return {};}};\n  const save=(o)=>{try{localStorage.setItem(K,JSON.stringify(o));}catch(e){} };\n\n  /* score vivo ",
+          "id": "cli_insights",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/novedades.js",
+          "line": 43,
+          "kind": "module-call",
+          "source": "CX.module('novedades', ({role,ui})=>{\n  const host=ui.el('div');\n  const tipoTone={Nuevo:'g',Mejora:'b',Aviso:'a',Correcci\\u00f3n:'n'};\n\n  const draw=()=>{\n    const isAdmin=(role==='admin'||role==='super');\n    const items=CX.novedades.forRole(role);\n    host.innerHTML=`\n      ${ui.ph('Novedades', isAdmin?'Publica nov",
+          "id": "novedades",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/clientes.js",
+          "line": 88,
+          "kind": "module-call",
+          "source": "CX.module('clientes', ({data,ui})=>{\n  const canonicalCommercial=()=>CX.commercialCommandBoundary?.canonicalMode?.()===true;\n  const ackOk=a=>a&&a.ok===true&&a.committed===true&&a.providerAck===true&&a.successUiAllowed===true&&a.readbackVerified===true;\n  const estadoTone={Activo:'g',Prospecto:'a',Inactivo:'n',Pausado:",
+          "id": "clientes",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/importador.js",
+          "line": 2,
+          "kind": "module-call",
+          "source": "CX.module('importador',({data,ui})=>{\n  const p=data.period();\n  const host=ui.el('div');\n  let tab='ai'; // 'ai' | 'legacy' | 'hr' | 'entities' | 'setup'\n  let ai={step:1,raw:'',result:null,confirmed:[]};\n  let hr={step:1,parsed:null,map:{},cands:[],diff:null,dest:'hr'};\n  let legacy={step:1,raw:'',parsed:null,section",
+          "id": "importador",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/comercial.js",
+          "line": 15,
+          "kind": "module-call",
+          "source": "CX.module('costos', ({data,ui})=>{\n  const p=data.period();\n  const cur=(p.currency&&p.currency[p.countries[0]])||'$';\n  // estado editable (persistente por sesión en memoria del módulo)\n  let cfg=Object.assign(CX.costos.defaults(),{moneda:cur}, _costosState||{});\n  const host=ui.el('div');\n\n  const fields=[\n    ['Volu",
+          "id": "costos",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/crm.js",
+          "line": 88,
+          "kind": "module-call",
+          "source": "CX.module('crm', ({data,ui})=>{\n  const host=ui.el('div');\n  const ackOk=a=>!CX.crmStore._canonical()||(a&&CX.crmStore._ackOk(a));\n  const durableWarn=()=>ui.toast('Acción no confirmada: el proveedor durable no emitió ACK/readback.','warn',4200);\n  let crmView='dashboard'; // dashboard | pipeline | leads | cuentas | co",
+          "id": "crm",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/marketing.js",
+          "line": 27,
+          "kind": "module-call",
+          "source": "CX.module('marketing', ({data,ui})=>{\n  const S=CX.mktStore, host=ui.el('div');\n  const shift=(ym,d)=>{let[y,m]=ym.split('-').map(Number);m+=d;if(m<1){m=12;y--}if(m>12){m=1;y++}return y+'-'+String(m).padStart(2,'0');};\n  const monthLabel=(ym)=>{const[y,m]=ym.split('-').map(Number);return new Date(y,m-1,1).toLocaleDateS",
+          "id": "marketing",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/reservas.js",
+          "line": 126,
+          "kind": "module-call",
+          "source": "CX.module('reservas', ({data,role,ui})=>{\n  const p=data.period(), pid=p.id;\n  const host=ui.el('div');\n  const ESTLBL={solicitada:'Solicitada',asignada:'Asignada',aprobada:'Aprobada',cruzada:'✓ Cruzada con visita',rechazada:'Rechazada'};\n  const ESTTONE={solicitada:'a',asignada:'b',aprobada:'g',cruzada:'g',rechazada:'",
+          "id": "reservas",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/integraciones.js",
+          "line": 161,
+          "kind": "module-call",
+          "source": "CX.module('integraciones', ({ui,data})=>{\n  const host=ui.el('div');\n  const PLAN=CX.session.plan||(data.period()&&data.period().plan)||'estandar';\n  const planLevel={estandar:0,pro:1,enterprise:2};\n  const canUse=(p)=> (planLevel[p]||0) <= (planLevel[PLAN]||0);\n\n  const configModal=(item)=>{\n    if(!item.cfg||!item.cf",
+          "id": "integraciones",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/automatizaciones.js",
+          "line": 3,
+          "kind": "module-call",
+          "source": "CX.module('automatizaciones', ({data,ui})=>{\n  const A=CX.automations, AI=CX.ai;\n  const host=ui.el('div');\n\n  const draw=()=>{\n    const list=A.list(), hookStatus=A.hookStatus(), log=A.log(), aic=AI.cfg();\n    const remote=A.configStatus();\n    const scan=A.scanPendientes();\n\n    const autoRow=(a)=>`<tr>\n      <td><la",
+          "id": "automatizaciones",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/correo.js",
+          "line": 2,
+          "kind": "module-call",
+          "source": "CX.module('correo',({data,role,ui})=>{\n  const host=ui.el('div');\n  const CONN_KEY='cx_mail_conn', STAR_KEY='cx_mail_starred';\n  const getConn=()=>{try{return JSON.parse(localStorage.getItem(CONN_KEY)||'null');}catch(e){return null;}};\n  const setConn=(v)=>localStorage.setItem(CONN_KEY,JSON.stringify(v));\n  const getSt",
+          "id": "correo",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/marca.js",
+          "line": 2,
+          "kind": "module-call",
+          "source": "CX.module('marca',({data,ui})=>{\n  const host=ui.el('div');\n  const connectedTenantAuthority=()=>!!(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority()&&window.CX_PROTECTED_DEV_RUNTIME===true&&CX.BACKEND?.enableCommandWrites===true);\n  if(connectedTenantAuthority()){\n    const rt=window.CX_TENANT_RUNTIME_CONFIG|",
+          "id": "marca",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/diagnostico.js",
+          "line": 144,
+          "kind": "module-call",
+          "source": "CX.module('diagnostico', ({data, ui})=>{\n  const host = ui.el('div');\n  const SEV = { alta:'r', media:'a', baja:'n' };\n  const EST = { pendiente_revision:['Pendiente de revisión','a'], en_revision:['En revisión','b'], resuelto:['Resuelto','g'] };\n  const GATE = { off:['⛔ Gate apagado · no autorizado','r'], preview:['🧪",
+          "id": "diagnostico",
+          "insideFunction": false
+        },
+        {
+          "file": "app/modules/administrabilidad.js",
+          "line": 39,
+          "kind": "module-call",
+          "source": "CX.module('administrabilidad', ({data, ui, role})=>{\n  const host = ui.el('div');\n  const connectedTenantAuthority=()=>!!(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority()&&window.CX_PROTECTED_DEV_RUNTIME===true&&CX.BACKEND?.enableCommandWrites===true);\n  if(connectedTenantAuthority()){\n    const rt=window.CX_",
+          "id": "administrabilidad",
+          "insideFunction": false
+        }
+      ],
+      "registrySites": [
+        {
+          "file": "app/core/ui.js",
+          "line": 190,
+          "kind": "registry-reference",
+          "source": "CX.modules"
+        },
+        {
+          "file": "app/core/ui.js",
+          "line": 190,
+          "kind": "registry-or-module-assignment",
+          "source": "CX.modules = {}"
+        },
+        {
+          "file": "app/core/ui.js",
+          "line": 191,
+          "kind": "registry-reference",
+          "source": "CX.modules"
+        },
+        {
+          "file": "app/core/ui.js",
+          "line": 191,
+          "kind": "registry-or-module-assignment",
+          "source": "CX.modules[id]=fn"
+        },
+        {
+          "file": "app/core/ui.js",
+          "line": 191,
+          "kind": "registry-or-module-assignment",
+          "source": "CX.module = function(id, fn){ CX.modules[id]=fn; }"
+        },
+        {
+          "file": "app/core/router.js",
+          "line": 377,
+          "kind": "registry-reference",
+          "source": "CX.modules"
+        },
+        {
+          "file": "app/core/router.js",
+          "line": 377,
+          "kind": "registry-alias-or-lookup",
+          "source": "fn=CX.modules[id]"
+        },
+        {
+          "file": "app/adapters/tya-c6-domain-consistency-bridge.js",
+          "line": 173,
+          "kind": "registry-reference",
+          "source": "CX.modules"
+        },
+        {
+          "file": "app/adapters/tya-c6-domain-consistency-bridge.js",
+          "line": 174,
+          "kind": "registry-reference",
+          "source": "CX.modules"
+        },
+        {
+          "file": "app/adapters/tya-c6-domain-consistency-bridge.js",
+          "line": 174,
+          "kind": "registry-alias-or-lookup",
+          "source": "dash=CX.modules.dashboard"
+        },
+        {
+          "file": "app/adapters/tya-c6-domain-consistency-bridge.js",
+          "line": 174,
+          "kind": "registry-reference",
+          "source": "CX.modules"
+        },
+        {
+          "file": "app/adapters/tya-c6-domain-consistency-bridge.js",
+          "line": 174,
+          "kind": "registry-or-module-assignment",
+          "source": "CX.modules.dashboard=w"
+        },
+        {
+          "file": "app/adapters/tya-c6-domain-consistency-bridge.js",
+          "line": 177,
+          "kind": "registry-reference",
+          "source": "CX.modules"
+        },
+        {
+          "file": "app/adapters/tya-c6-domain-consistency-bridge.js",
+          "line": 177,
+          "kind": "registry-alias-or-lookup",
+          "source": "shoppers=CX.modules.shoppers"
+        },
+        {
+          "file": "app/adapters/tya-c6-domain-consistency-bridge.js",
+          "line": 177,
+          "kind": "registry-reference",
+          "source": "CX.modules"
+        },
+        {
+          "file": "app/adapters/tya-c6-domain-consistency-bridge.js",
+          "line": 177,
+          "kind": "registry-or-module-assignment",
+          "source": "CX.modules.shoppers=w"
+        },
+        {
+          "file": "app/adapters/tya-c6-domain-consistency-bridge.js",
+          "line": 178,
+          "kind": "registry-reference",
+          "source": "CX.modules"
+        },
+        {
+          "file": "app/adapters/tya-c6-domain-consistency-bridge.js",
+          "line": 178,
+          "kind": "registry-alias-or-lookup",
+          "source": "original=CX.modules[id]"
+        },
+        {
+          "file": "app/adapters/tya-c6-domain-consistency-bridge.js",
+          "line": 178,
+          "kind": "registry-reference",
+          "source": "CX.modules"
+        },
+        {
+          "file": "app/adapters/tya-c6-domain-consistency-bridge.js",
+          "line": 178,
+          "kind": "registry-or-module-assignment",
+          "source": "CX.modules[id]=w"
+        },
+        {
+          "file": "app/adapters/tya-canonical-shopper-portal-v2.js",
+          "line": 253,
+          "kind": "registry-reference",
+          "source": "CX.modules"
+        },
+        {
+          "file": "app/adapters/tya-canonical-shopper-portal-v2.js",
+          "line": 253,
+          "kind": "registry-reference",
+          "source": "CX.modules"
+        },
+        {
+          "file": "app/adapters/tya-canonical-shopper-portal-v2.js",
+          "line": 253,
+          "kind": "registry-or-module-assignment",
+          "source": "CX.modules.miperfil=render"
+        },
+        {
+          "file": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+          "line": 298,
+          "kind": "registry-reference",
+          "source": "CX.modules"
+        },
+        {
+          "file": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+          "line": 298,
+          "kind": "registry-reference",
+          "source": "CX.modules"
+        },
+        {
+          "file": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+          "line": 298,
+          "kind": "registry-alias-or-lookup",
+          "source": "current=CX.modules&&CX.modules.dashboard"
+        },
+        {
+          "file": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+          "line": 306,
+          "kind": "registry-reference",
+          "source": "CX.modules"
+        },
+        {
+          "file": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+          "line": 306,
+          "kind": "registry-or-module-assignment",
+          "source": "CX.modules.dashboard=wrapped"
+        }
+      ],
+      "dynamicScriptCreation": [
+        {
+          "file": "app/core/automations.js",
+          "line": 87,
+          "source": "document.createElement('script')"
+        },
+        {
+          "file": "app/vendor/pptxgenjs.min.js",
+          "line": 2,
+          "source": "e.document.createElement(\"script\")"
+        },
+        {
+          "file": "app/vendor/pptxgenjs.min.js",
+          "line": 2,
+          "source": "e.document.createElement(\"script\")"
+        },
+        {
+          "file": "app/core/backend-config-preview-dev.js",
+          "line": 33,
+          "source": "document.createElement('script')"
+        },
+        {
+          "file": "app/core/backend-v57-extra-config.js",
+          "line": 15,
+          "source": "document.createElement('script')"
+        },
+        {
+          "file": "inline-81",
+          "line": 7,
+          "source": "document.createElement('script')"
+        },
+        {
+          "file": "app/modules/documentos.js",
+          "line": 96,
+          "source": "document.createElement('script')"
+        }
+      ],
+      "dynamicResolution": [
+        "backend-config-preview-dev conditionally loads cxorbia-identity-roll-forward-v1.js already included and parsed",
+        "backend-v57-extra-config conditionally loads core/backend-resources.js and core/backend-ai.js already included and parsed",
+        "inline technical/audit path conditionally loads core/backend-preview-status.js included in AST inventory",
+        "automations/documentos load third-party PDF.js on user operation; vendor pptxgenjs has library loaders; these are not local route registrations, no such operation invoked"
+      ]
+    },
+    "callbackAndWrapperResolution": [
+      {
+        "file": "app/adapters/tya-c6-domain-consistency-bridge.js",
+        "lines": [
+          172,
+          178,
+          180,
+          181,
+          182,
+          183
+        ],
+        "targets": [
+          "dashboard",
+          "shoppers",
+          "financiero",
+          "movimientos",
+          "liquidaciones",
+          "lotes",
+          "beneficios"
+        ],
+        "rutasIncluded": false,
+        "callbacks": [
+          "cx:full-visual-ready",
+          "DOMContentLoaded",
+          "script_ready"
+        ]
+      },
+      {
+        "file": "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "line": 253,
+        "target": "miperfil",
+        "rutasIncluded": false
+      },
+      {
+        "file": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+        "lines": [
+          297,
+          306
+        ],
+        "target": "dashboard",
+        "rutasIncluded": false
+      }
+    ],
+    "isolatedExecution": {
+      "scope": "ISOLATED_SOURCE_BOOT_WITH_ALL_NETWORK_INTERCEPTED_NOT_AUTHENTICATED_DEV_E2E",
+      "method": "Headless Chromium exact local entrypoint, Proxy of registry set/delete/reset before page scripts, route interception fulfills only existing local GET files on source.invalid; all other requests aborted; service workers blocked.",
+      "events": [
+        {
+          "event": "RESET",
+          "script": "https://source.invalid/app/core/ui.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:416)\n    at https://source.invalid/app/core/ui.js:190:12",
+          "functionSha256": null
+        },
+        {
+          "event": "SET",
+          "key": "midia",
+          "script": "https://source.invalid/app/modules/midia.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/midia.js:11:4",
+          "functionSha256": "625c6a20d0713c2108ccf70958b6a0fd9587310b1d935e574f064366d6b271e9"
+        },
+        {
+          "event": "SET",
+          "key": "dashboard",
+          "script": "https://source.invalid/app/modules/dashboard.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/dashboard.js:3:4",
+          "functionSha256": "ba338ea61873ee9bdfec4fd6e40f035b3e02fbda50680c6e3fd598abf7fafc5e"
+        },
+        {
+          "event": "SET",
+          "key": "proyectos",
+          "script": "https://source.invalid/app/modules/proyectos.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/proyectos.js:3:4",
+          "functionSha256": "45140c3cf595bbe5f08403fefbb8b2ff36574e561435286e40dcddb457897bcf"
+        },
+        {
+          "event": "SET",
+          "key": "periodos",
+          "script": "https://source.invalid/app/modules/periodos.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/periodos.js:4:4",
+          "functionSha256": "10505d3eeacdeaf3f3705d915f65c1e512bab5753bc4a5fc7d9302012b3fc0b4"
+        },
+        {
+          "event": "SET",
+          "key": "historico",
+          "script": "https://source.invalid/app/modules/historico.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/historico.js:4:4",
+          "functionSha256": "2c4e8594f6c920f259db849e5381f374bbd94b1ef2b0c56676148ce1e720f17d"
+        },
+        {
+          "event": "SET",
+          "key": "hrsource",
+          "script": "https://source.invalid/app/modules/hr-source.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/hr-source.js:85:4",
+          "functionSha256": "c4d8043f22b65c36caabccef785d6114a4f90d4eeb465a6eecf99ae58e1aad31"
+        },
+        {
+          "event": "SET",
+          "key": "visitas",
+          "script": "https://source.invalid/app/modules/visitas.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/visitas.js:2:4",
+          "functionSha256": "e98cf8ecc5524e4ba86495956a3b743d26c99419d342c55f9dd701cbddfad1ae"
+        },
+        {
+          "event": "SET",
+          "key": "postulaciones",
+          "script": "https://source.invalid/app/modules/postulaciones.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/postulaciones.js:358:4",
+          "functionSha256": "c7720a22777695e7fbf7226f4ee8751c4755dbcc31261411982fbefae7f29d10"
+        },
+        {
+          "event": "SET",
+          "key": "shoppers",
+          "script": "https://source.invalid/app/modules/shoppers.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/shoppers.js:2:4",
+          "functionSha256": "9b3104e49601d261dc613fd81620ef7868994936761c5cbc1bd4d6db80603c26"
+        },
+        {
+          "event": "SET",
+          "key": "misvisitas",
+          "script": "https://source.invalid/app/modules/misvisitas.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/misvisitas.js:4:4",
+          "functionSha256": "79e3af52fbce164147b4951838f9e95fe5fe14e9abb146c6ce8f8b6364bfb60b"
+        },
+        {
+          "event": "SET",
+          "key": "beneficios",
+          "script": "https://source.invalid/app/modules/beneficios.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/beneficios.js:2:4",
+          "functionSha256": "00c6cba09a36ac7ba897a414e634e751342e5d3dfa4fed823ccda8b6d3d066d0"
+        },
+        {
+          "event": "SET",
+          "key": "tablon",
+          "script": "https://source.invalid/app/modules/tablon.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/tablon.js:2:4",
+          "functionSha256": "c24bdbe566289b05dc56e0ba484d97b1e69e657f6e7ee389b85f5942d9ce94b6"
+        },
+        {
+          "event": "SET",
+          "key": "cert",
+          "script": "https://source.invalid/app/modules/cert.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/cert.js:177:4",
+          "functionSha256": "528188356057283af23b385c9fcd38588ca11a9df05558ae0466ab9e2b0794f1"
+        },
+        {
+          "event": "SET",
+          "key": "documentos",
+          "script": "https://source.invalid/app/modules/documentos.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/documentos.js:21:4",
+          "functionSha256": "36cba0ff83e8776dc7773cb03eb875d727bd96b7cc0c16e9df1812690abe610a"
+        },
+        {
+          "event": "SET",
+          "key": "aprendizaje",
+          "script": "https://source.invalid/app/modules/academia.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/academia.js:2133:4",
+          "functionSha256": "8e03e3cdf331e261c47517e93c66e1269ceac4f833d28019191c526e730783b1"
+        },
+        {
+          "event": "SET",
+          "key": "soporte",
+          "script": "https://source.invalid/app/modules/soporte.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/soporte.js:50:4",
+          "functionSha256": "edb7dc6f071a60a1970a25beadad48b58a41d11f417230fb7d5e7d27f21c317f"
+        },
+        {
+          "event": "SET",
+          "key": "miperfil",
+          "script": "https://source.invalid/app/modules/operacion-extra.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/operacion-extra.js:2:4",
+          "functionSha256": "f79075cbc53dd6687b2214ee3bb83b0875af434f00728737d6b1256a9803c0e8"
+        },
+        {
+          "event": "SET",
+          "key": "rutas",
+          "script": "https://source.invalid/app/modules/operacion-extra.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/operacion-extra.js:170:4",
+          "functionSha256": "ca67a1a5fe8bd0b1c5ab2909692a872ce0d40bddaaee1965bd2365761d735366"
+        },
+        {
+          "event": "SET",
+          "key": "informes",
+          "script": "https://source.invalid/app/modules/operacion-extra.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/operacion-extra.js:265:4",
+          "functionSha256": "691d8968d7542cbe73c7ce590d5f9a6750dbebf53f43b93fb05c25339ef158a8"
+        },
+        {
+          "event": "SET",
+          "key": "mireportes",
+          "script": "https://source.invalid/app/modules/operacion-extra.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/operacion-extra.js:434:4",
+          "functionSha256": "df36ddcffe470b5b43651f8e24f730036c2d036d9c0fa1df88b4bf3af7d1d060"
+        },
+        {
+          "event": "SET",
+          "key": "financiero",
+          "script": "https://source.invalid/app/modules/finanzas.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/finanzas.js:285:4",
+          "functionSha256": "e5e99be9016be8e97acaba8b5baff4d0804abad2d6d02b0ddecd063cc1f76ce9"
+        },
+        {
+          "event": "SET",
+          "key": "movimientos",
+          "script": "https://source.invalid/app/modules/finanzas.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/finanzas.js:482:4",
+          "functionSha256": "5ef56245e7646ce6a6b0e0d678108c28fed7e3e03755514aa3fd7b66277781b2"
+        },
+        {
+          "event": "SET",
+          "key": "liquidaciones",
+          "script": "https://source.invalid/app/modules/finanzas.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/finanzas.js:1137:4",
+          "functionSha256": "868f941c5641fab1baa22f209409a581a98de4b2ba6c24d3bb62469338a50ec5"
+        },
+        {
+          "event": "SET",
+          "key": "lotes",
+          "script": "https://source.invalid/app/modules/finanzas.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/finanzas.js:1420:4",
+          "functionSha256": "b3686e21d50379dce8fdc6ae8b648e119190e963ff6de15bb4c2b6b0af7b876a"
+        },
+        {
+          "event": "SET",
+          "key": "cuestionarios",
+          "script": "https://source.invalid/app/modules/configuracion.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/configuracion.js:6:4",
+          "functionSha256": "acc26164bb006051176605422e633787903a3f8f98d6da4f667796c94c432e36"
+        },
+        {
+          "event": "SET",
+          "key": "usuarios",
+          "script": "https://source.invalid/app/modules/configuracion.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/configuracion.js:319:4",
+          "functionSha256": "44c4c7bc818753c3a14698635ab8b550cf8038e17bdf45f62b77558f468abee6"
+        },
+        {
+          "event": "SET",
+          "key": "config",
+          "script": "https://source.invalid/app/modules/configuracion.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/configuracion.js:501:4",
+          "functionSha256": "914fa27346e34cda78201b745db083fd1ad552cbea3a8276af66508f3d996884"
+        },
+        {
+          "event": "SET",
+          "key": "saas",
+          "script": "https://source.invalid/app/modules/saas-console.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/saas-console.js:19:4",
+          "functionSha256": "630a7f685ae590705a90305b95137733e145f9f525431b09ebe65ba19e367f02"
+        },
+        {
+          "event": "SET",
+          "key": "cli_dashboard",
+          "script": "https://source.invalid/app/modules/cliente.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/cliente.js:226:4",
+          "functionSha256": "d3d5c5de00238c5afda4efdb41b3d612beb9ba7ec6160640a612684a92285e4a"
+        },
+        {
+          "event": "SET",
+          "key": "cli_sucursales",
+          "script": "https://source.invalid/app/modules/cliente.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/cliente.js:346:4",
+          "functionSha256": "edc25be573b5cc7e72df246582367d4e156b6f390b1b220134512b8ebcee21d1"
+        },
+        {
+          "event": "SET",
+          "key": "cli_acciones",
+          "script": "https://source.invalid/app/modules/cliente.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/cliente.js:385:4",
+          "functionSha256": "2315babf1bb622c487e2822e9ccb43d832cf58151705d22b72eaf4ab0feccbeb"
+        },
+        {
+          "event": "SET",
+          "key": "cli_capacitacion",
+          "script": "https://source.invalid/app/modules/cliente-extra.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/cliente-extra.js:4:4",
+          "functionSha256": "447f4f8d6ee0b5cb0fd569f4cfb8d49abf9e482e2308d795d7fbf3654b895918"
+        },
+        {
+          "event": "SET",
+          "key": "cli_reportes",
+          "script": "https://source.invalid/app/modules/cliente-extra.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/cliente-extra.js:177:4",
+          "functionSha256": "f12d21d22670d9b8c51d3df78bf62cecd68ac6215865b8034fe9242892ad3801"
+        },
+        {
+          "event": "SET",
+          "key": "cli_programa",
+          "script": "https://source.invalid/app/modules/cliente-extra.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/cliente-extra.js:369:4",
+          "functionSha256": "41dd53fbfd754f60f0ebd4661dfe267a1f33e3360a92ccc626d210e25a6420c1"
+        },
+        {
+          "event": "SET",
+          "key": "cli_market",
+          "script": "https://source.invalid/app/modules/cliente-extra.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/cliente-extra.js:407:4",
+          "functionSha256": "a0f57f8d3e3976cea3536b16b0b72ee032310028d935e55b4fd03634e9ed058c"
+        },
+        {
+          "event": "SET",
+          "key": "cli_insights",
+          "script": "https://source.invalid/app/modules/cliente-insights.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/cliente-insights.js:5:4",
+          "functionSha256": "ee0a373a0b5759584002071aaafcf111d3271d119861b86b1e16c101b22659ac"
+        },
+        {
+          "event": "SET",
+          "key": "novedades",
+          "script": "https://source.invalid/app/modules/novedades.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/novedades.js:43:4",
+          "functionSha256": "55e10991379425580d3e7e20d859d3c5a39d6cbc129e0162b7a8993dc0e33588"
+        },
+        {
+          "event": "SET",
+          "key": "clientes",
+          "script": "https://source.invalid/app/modules/clientes.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/clientes.js:88:4",
+          "functionSha256": "a3edea5a8232c1e764d245a6404d39f7d2a0d4bcc6bd00acdcdae098236f851b"
+        },
+        {
+          "event": "SET",
+          "key": "importador",
+          "script": "https://source.invalid/app/modules/importador.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/importador.js:2:4",
+          "functionSha256": "193dc2c750a96eb65c53f60b1955804d7889a8b44c4f3435059b4a4f4be5585c"
+        },
+        {
+          "event": "SET",
+          "key": "costos",
+          "script": "https://source.invalid/app/modules/comercial.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/comercial.js:15:4",
+          "functionSha256": "10cf5e81473879598ccbf8b503fcd6c7187bc2962b1f626fe8e78c7aeb416d20"
+        },
+        {
+          "event": "SET",
+          "key": "crm",
+          "script": "https://source.invalid/app/modules/crm.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/crm.js:88:4",
+          "functionSha256": "d08ee340f63aa206b414083c5d3fcb48743edfbf14ac5b8e3eb2bd4bcadd9bb5"
+        },
+        {
+          "event": "SET",
+          "key": "marketing",
+          "script": "https://source.invalid/app/modules/marketing.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/marketing.js:27:4",
+          "functionSha256": "b4c3b57c161c124a4948a1c69ec06f58cf0988c645422132ab5a2fe9ad44863b"
+        },
+        {
+          "event": "SET",
+          "key": "reservas",
+          "script": "https://source.invalid/app/modules/reservas.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/reservas.js:126:4",
+          "functionSha256": "5d7ac200c3630564798b248e6f44e038edf9183e586451a5bcb9b0087994fce8"
+        },
+        {
+          "event": "SET",
+          "key": "integraciones",
+          "script": "https://source.invalid/app/modules/integraciones.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/integraciones.js:161:4",
+          "functionSha256": "1416e634ecbf9dce1062f2133b0ab63d5cd4fd4248d7a38d2a5949360b88243a"
+        },
+        {
+          "event": "SET",
+          "key": "automatizaciones",
+          "script": "https://source.invalid/app/modules/automatizaciones.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/automatizaciones.js:3:4",
+          "functionSha256": "6bfee2298c92038ff5791c1e427b0fac45bfbfe92e528093c0764a22ff3c1045"
+        },
+        {
+          "event": "SET",
+          "key": "correo",
+          "script": "https://source.invalid/app/modules/correo.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/correo.js:2:4",
+          "functionSha256": "ce5def9cb507486e1a9854fca575db9bd95d7c83100d81459fe8f768eec7454b"
+        },
+        {
+          "event": "SET",
+          "key": "marca",
+          "script": "https://source.invalid/app/modules/marca.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/marca.js:2:4",
+          "functionSha256": "35157f1b0f0f350abc93d815d1d54d3e0e2ce6cf34f766cd595a158220f95223"
+        },
+        {
+          "event": "SET",
+          "key": "diagnostico",
+          "script": "https://source.invalid/app/modules/diagnostico.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/diagnostico.js:144:4",
+          "functionSha256": "4aa10f536c1b53a75af2fd46367324c30b0f586c31d6bd0ceaffd9f3495f95dd"
+        },
+        {
+          "event": "SET",
+          "key": "administrabilidad",
+          "script": "https://source.invalid/app/modules/administrabilidad.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at CX.module (https://source.invalid/app/core/ui.js:191:45)\n    at https://source.invalid/app/modules/administrabilidad.js:39:4",
+          "functionSha256": "52da477c607d04c92c850793c9e595fbeb7326818a08ebe3dab99f649f344ade"
+        },
+        {
+          "event": "SET",
+          "key": "miperfil",
+          "script": "https://source.invalid/app/adapters/tya-canonical-shopper-portal-v2.js",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at install (https://source.invalid/app/adapters/tya-canonical-shopper-portal-v2.js:253:63)\n    at https://source.invalid/app/adapters/tya-canonical-shopper-portal-v2.js:324:3\n    at https://source.invalid/app/adapters/tya-canonical-shopper-portal-v2.js:326:3",
+          "functionSha256": "48ea0211887410b639755558d223ce80245ada31d0eb5a32e83ca9f14a924a0c"
+        },
+        {
+          "event": "SET",
+          "key": "dashboard",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at wrapModules (https://source.invalid/app/adapters/tya-c6-domain-consistency-bridge.js:174:241)\n    at activate (https://source.invalid/app/adapters/tya-c6-domain-consistency-bridge.js:180:81)\n    at document.addEventListener.once (https://source.invalid/app/adapters/tya-c6-domain-consistency-bridge.js:182:53)",
+          "functionSha256": "e7507d8cbf09f4012507f6554f2131e332387d92c766434a9827410b5cf8ba07"
+        },
+        {
+          "event": "SET",
+          "key": "shoppers",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at wrapModules (https://source.invalid/app/adapters/tya-c6-domain-consistency-bridge.js:177:238)\n    at activate (https://source.invalid/app/adapters/tya-c6-domain-consistency-bridge.js:180:81)\n    at document.addEventListener.once (https://source.invalid/app/adapters/tya-c6-domain-consistency-bridge.js:182:53)",
+          "functionSha256": "eaa15c0e0acd9275b5546db04a2c74a7e88b8cb12af2ec3e63ba428c0aff519e"
+        },
+        {
+          "event": "SET",
+          "key": "financiero",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at wrapModules (https://source.invalid/app/adapters/tya-c6-domain-consistency-bridge.js:178:298)\n    at activate (https://source.invalid/app/adapters/tya-c6-domain-consistency-bridge.js:180:81)\n    at document.addEventListener.once (https://source.invalid/app/adapters/tya-c6-domain-consistency-bridge.js:182:53)",
+          "functionSha256": "7a09eae389eb7c33694a41b129e683c14bf163e4e08b71893d71d77b75f48f8f"
+        },
+        {
+          "event": "SET",
+          "key": "movimientos",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at wrapModules (https://source.invalid/app/adapters/tya-c6-domain-consistency-bridge.js:178:298)\n    at activate (https://source.invalid/app/adapters/tya-c6-domain-consistency-bridge.js:180:81)\n    at document.addEventListener.once (https://source.invalid/app/adapters/tya-c6-domain-consistency-bridge.js:182:53)",
+          "functionSha256": "7a09eae389eb7c33694a41b129e683c14bf163e4e08b71893d71d77b75f48f8f"
+        },
+        {
+          "event": "SET",
+          "key": "liquidaciones",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at wrapModules (https://source.invalid/app/adapters/tya-c6-domain-consistency-bridge.js:178:298)\n    at activate (https://source.invalid/app/adapters/tya-c6-domain-consistency-bridge.js:180:81)\n    at document.addEventListener.once (https://source.invalid/app/adapters/tya-c6-domain-consistency-bridge.js:182:53)",
+          "functionSha256": "7a09eae389eb7c33694a41b129e683c14bf163e4e08b71893d71d77b75f48f8f"
+        },
+        {
+          "event": "SET",
+          "key": "lotes",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at wrapModules (https://source.invalid/app/adapters/tya-c6-domain-consistency-bridge.js:178:298)\n    at activate (https://source.invalid/app/adapters/tya-c6-domain-consistency-bridge.js:180:81)\n    at document.addEventListener.once (https://source.invalid/app/adapters/tya-c6-domain-consistency-bridge.js:182:53)",
+          "functionSha256": "7a09eae389eb7c33694a41b129e683c14bf163e4e08b71893d71d77b75f48f8f"
+        },
+        {
+          "event": "SET",
+          "key": "beneficios",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at wrapModules (https://source.invalid/app/adapters/tya-c6-domain-consistency-bridge.js:178:298)\n    at activate (https://source.invalid/app/adapters/tya-c6-domain-consistency-bridge.js:180:81)\n    at document.addEventListener.once (https://source.invalid/app/adapters/tya-c6-domain-consistency-bridge.js:182:53)",
+          "functionSha256": "7a09eae389eb7c33694a41b129e683c14bf163e4e08b71893d71d77b75f48f8f"
+        },
+        {
+          "event": "SET",
+          "key": "miperfil",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at HTMLDocument.install (https://source.invalid/app/adapters/tya-canonical-shopper-portal-v2.js:253:63)",
+          "functionSha256": "48ea0211887410b639755558d223ce80245ada31d0eb5a32e83ca9f14a924a0c"
+        },
+        {
+          "event": "SET",
+          "key": "dashboard",
+          "stack": "Error\n    at Object.set (<anonymous>:2:589)\n    at wrapDashboard (https://source.invalid/app/adapters/tya-c6-unified-human-runtime-v1.js:306:25)\n    at activate (https://source.invalid/app/adapters/tya-c6-unified-human-runtime-v1.js:422:5)\n    at document.addEventListener.once (https://source.invalid/app/adapters/tya-c6-unified-human-runtime-v1.js:447:87)",
+          "functionSha256": "14575f5b4ffe13db251ca667e62ac29c3a0859271716d88bac1518a49f074250"
+        }
+      ],
+      "rutasWriteCount": 1,
+      "finalRutasEqualsRegisteredFunction": true,
+      "pageErrors": [],
+      "requests": [
+        {
+          "path": "/app/index-backend-dev.html",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "origin": "https://fonts.googleapis.com",
+          "path": "/css2",
+          "method": "GET",
+          "action": "ABORT_NO_NETWORK"
+        },
+        {
+          "path": "/app/styles/theme.css",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/styles/layout.css",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "origin": "https://www.gstatic.com",
+          "path": "/firebasejs/10.12.5/firebase-app-compat.js",
+          "method": "GET",
+          "action": "ABORT_NO_NETWORK"
+        },
+        {
+          "origin": "https://www.gstatic.com",
+          "path": "/firebasejs/10.12.5/firebase-auth-compat.js",
+          "method": "GET",
+          "action": "ABORT_NO_NETWORK"
+        },
+        {
+          "origin": "https://www.gstatic.com",
+          "path": "/firebasejs/10.12.5/firebase-firestore-compat.js",
+          "method": "GET",
+          "action": "ABORT_NO_NETWORK"
+        },
+        {
+          "origin": "https://www.gstatic.com",
+          "path": "/firebasejs/10.12.5/firebase-storage-compat.js",
+          "method": "GET",
+          "action": "ABORT_NO_NETWORK"
+        },
+        {
+          "origin": "https://source.invalid",
+          "path": "/__/firebase/init.js",
+          "method": "GET",
+          "action": "ABORT_NO_NETWORK"
+        },
+        {
+          "path": "/app/core/build-lock.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/config/runtime.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/config.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/geo.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/store.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/data.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/shopper-credential-rule.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/tya-project-financial-model-contract-v1.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/data-source.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/dedupe.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/shoppers-store.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/programa.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/cliente-data.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/hr.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/costos.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/automations.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/permissions.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/manuales-data.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "origin": "https://cdn.sheetjs.com",
+          "path": "/xlsx-0.20.3/package/dist/xlsx.full.min.js",
+          "method": "GET",
+          "action": "ABORT_NO_NETWORK"
+        },
+        {
+          "origin": "https://cdnjs.cloudflare.com",
+          "path": "/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js",
+          "method": "GET",
+          "action": "ABORT_NO_NETWORK"
+        },
+        {
+          "path": "/app/vendor/pptxgenjs.min.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/importador.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/ui.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/data/tya-financial-canonical-source-safe.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/data/tya-financial-canonical-source-safe-liq-01.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/data/tya-financial-canonical-source-safe-liq-02.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/data/tya-financial-canonical-source-safe-liq-03.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/data/tya-financial-canonical-source-safe-review-01.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/data/tya-financial-canonical-source-safe-review-02.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/data/tya-financial-canonical-source-safe-evidence.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/data/tya-financial-canonical-source-safe-final.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/data/tya-payment-history-source-safe.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/data/tya-certification-carryover-source-safe.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/liquidacion.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/finanzas-core.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/notif.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/tya-live-source-inplace-apply.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/tya-corte1-report-projection-live.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/tya-live-source-refresh-watch-v2.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/cxorbia-exact-identity-contract-v1.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/tya-cumulative-read-model-v2.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/tya-certification-evidence-projection-v1.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/cxorbia-identity-roll-forward-v1.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/tya-canonical-state-semantics-v2.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/backend-config.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/backend-config-preview-dev.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/backend-protected-dev-mode.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/backend-protected-dev-session-continuity.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/backend-v57-extra-config.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/backend-dev-auth.local.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/backend-browser-auth.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/cxorbia-shopper-membership-wiring-v1.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/cxorbia-provider-identity-link-runtime-v1.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/tya-phase-a-authority-compat-v1.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/tya-dev-technical-auth-e2e-v1.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/backend-firebase.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/backend-certifications.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/backend-ai.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/backend-resources.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/backend-cxdata-read-guard.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/backend-finance-benefits.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/backend-cxdata-finance-read.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/backend-operational-actions.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/cxorbia-command-adapter-v1.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/cxorbia-command-http-transport-v1.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/cxorbia-shopper-admin-command-contract-v1.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/cxorbia-hr-write-adapter-contract-v1.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/backend-cxdata-readonly-corte4.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/backend-ui-action-bridge.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/backend-bulletins.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/backend-automations.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/backend-hr-source-bridge.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/tya-financial-canonical-source-safe-adapter.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/tya-canonical-finance-read-model-v2.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/tya-delegated-coordination-finance-guard-v1.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/cxorbia-canonical-write-firewall-v1.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/topbar.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/pwa.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/router.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/midia.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/dashboard.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/proyectos.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/periodos.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/historico.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/hr-source.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/proyecto-wizard.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/visitas.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/visita-detalle.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/revision-admin.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/cuestionario-shopper.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/postulaciones.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/shoppers.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/misvisitas.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/beneficios.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/tablon.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/cert.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/documentos.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/academia.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/soporte.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/operacion-extra.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/finanzas.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/configuracion.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/saas-console.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/cliente.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/cliente-extra.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/cliente-insights.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/novedades.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/clientes.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/importador.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/comercial.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/crm.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/marketing.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/reservas.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/integraciones.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/automatizaciones.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/correo.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/marca.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/diagnostico.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/modules/administrabilidad.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/tya-ab-cumulative-composition-v1.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/tya-c6-domain-consistency-bridge.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/tya-canonical-shopper-portal-v2.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/tya-canonical-reservations-guard-v2.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/tya-c6-unified-human-runtime-v1.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/tya-c6-shopper-auth-click-guard-v1.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/cxorbia-legal-runtime-http-v1.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/core/backend-corte4-empty-shell-guard.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/app.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "path": "/app/adapters/cxorbia-admin-identity-review-notice-v1.js",
+          "action": "LOCAL_BYTES"
+        },
+        {
+          "origin": "https://flagcdn.com",
+          "path": "/24x18/gt.png",
+          "method": "GET",
+          "action": "ABORT_NO_NETWORK"
+        },
+        {
+          "origin": "https://flagcdn.com",
+          "path": "/24x18/hn.png",
+          "method": "GET",
+          "action": "ABORT_NO_NETWORK"
+        },
+        {
+          "origin": "https://tyaconsultores.com",
+          "path": "/wp-content/uploads/2023/05/logo.png",
+          "method": "GET",
+          "action": "ABORT_NO_NETWORK"
+        },
+        {
+          "origin": "https://tyaconsultores.com",
+          "path": "/wp-content/uploads/2023/05/logo.png",
+          "method": "GET",
+          "action": "ABORT_NO_NETWORK"
+        }
+      ],
+      "outboundNetworkRequestsSent": 0,
+      "providerOperations": 0
+    },
+    "hrLimit": "Canonical view displays published session HR revision. Opening Rutas is not a fresh external HR query.",
+    "supersedesInferenceOnly": {
+      "historicalReceipt": "docs/checkpoints/CXORBIA_I3_G03_OWNER_AUTHORITY_CROSSWALK_READBACK_20261030.json",
+      "historicalClassification": "RELEASE_COMPOSITION_FAILURE",
+      "correction": "Missing standalone rutas.js does not establish missing effective Rutas. Loaded operacion-extra owns the effective route in this source composition. Frozen receipt remains unchanged; full route task and HR E2E remain open."
+    }
+  },
+  "ownerAuthorityContradictions": [
+    {
+      "path": "app/core/automations.js",
+      "historicalApproval": {
+        "path": "app/core/automations.js",
+        "domain": "base-router-shell-cache",
+        "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "latestApprovedBlob": "940ece14951719114401891697f303fab88b0f36",
+        "currentBlob": "1bf04186e2461340e2852a7608b98d1d510a71a0",
+        "loadTarget": "browser-script",
+        "phaseAAuthority": true,
+        "classification": "MATCH",
+        "loadOrder": 18,
+        "atomicDisposition": "KEEP",
+        "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+        "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+        "approvedBlob": "940ece14951719114401891697f303fab88b0f36",
+        "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+        "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
+        "provenanceIndependent": true,
+        "approvalDisposition": "KEEP",
+        "currentCumulativeSource": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
+        "currentLoadOrder": 16,
+        "previousMatrixCurrentBlob": "06d5b397d6e213267a4d6c6efc79b5f53a7cb59d",
+        "byteAuthorityReadback": "EXACT_GIT_TREE_SOURCE_ONLY__HF28_LEGACY_WHATSAPP_NORMALIZATION"
+      },
+      "currentSource": "4190089d813bd23948ac7f4f75b772b6727f3923",
+      "currentBlob": "1bf04186e2461340e2852a7608b98d1d510a71a0",
+      "approvalPending": true,
+      "newHumanApproval": false,
+      "scopedProof": "NO_NEW_TEST_EXECUTION_FOR_THIS_OWNER",
+      "provenanceDelta": {
+        "from": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "to": "4190089d813bd23948ac7f4f75b772b6727f3923",
+        "command": [
+          "git",
+          "diff",
+          "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+          "4190089d813bd23948ac7f4f75b772b6727f3923",
+          "--",
+          "app/core/automations.js"
+        ],
+        "bytes": 18095,
+        "sha256": "0f377702beb846b37e5c58ba4f8b1ae30df9190e181ffcaa3f75c963df54f186",
+        "commits": [
+          "8cd2464bd3804436f07e56e0dcf59f2d3eab525d control(i3): restore full candidate tree and record pointer alignment",
+          "5898b453fb5bac014028adde3e4ff826e41e7611 control(i3): record A09/B11 candidate pointer alignment",
+          "99e8e456318b3f0f01c9bd0caa16cc6a0c1c07dc fix(i3): replace D02 binary extraction with PDF/DOCX parsers",
+          "ab5a85b1747b5e4bf48b5a5660f13692a32693b9 fix(i3/hf28): normalize legacy whatsapp to draft-only channel before durable validation",
+          "50472d8cb637e8385834ba184951eeffd9a6012a fix(i3/b7-b8): make HF28 automation templates tenant-durable with remote ACK/readback",
+          "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08 fix(i3): close VRM-143 through VRM-151 focal owners",
+          "a26e2cc0ed75c536870c9327c5c6cfa8a3e3a79f fix(control): restore full canonical tree after Run736 freeze",
+          "d9a7a5c0ebdba3f83b93ef5e5f253e508a7f5a6a control(pre-i4): freeze Run736 cumulative DEV live closure",
+          "a33108e5b4e00d61f3dff1645ea22b2a777504a3 fix(control): restore canonical tree and reprove VRM-107 [prei4-content-001-source] [prei4-content-001-live]",
+          "e0b3433705aa2719aab25a21ec8f686b3546c489 fix(i3): single-flight HR reconciliation and repeat affected DEV gate [prei4-content-001-source] [prei4-content-001-live]"
+        ]
+      },
+      "disposition": "PRESERVE_HISTORICAL_APPROVAL_AND_OPEN_CURRENT_BLOB_AUTHORITY_CONTRADICTION"
+    },
+    {
+      "path": "app/modules/automatizaciones.js",
+      "historicalApproval": {
+        "path": "app/modules/automatizaciones.js",
+        "domain": "base-router-shell-cache",
+        "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "latestApprovedBlob": "ac456dfb309de43cbc5a25bee3ecf48076a168db",
+        "currentBlob": "a28a2354bd4a0132cd788abfa3842a796005be32",
+        "loadTarget": "browser-script",
+        "phaseAAuthority": true,
+        "classification": "MATCH",
+        "loadOrder": 115,
+        "atomicDisposition": "KEEP",
+        "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+        "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+        "approvedBlob": "ac456dfb309de43cbc5a25bee3ecf48076a168db",
+        "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+        "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
+        "provenanceIndependent": true,
+        "approvalDisposition": "KEEP",
+        "currentCumulativeSource": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
+        "currentLoadOrder": 112,
+        "previousMatrixCurrentBlob": "ac456dfb309de43cbc5a25bee3ecf48076a168db",
+        "byteAuthorityReadback": "EXACT_GIT_TREE_SOURCE_ONLY__HF28_SOURCE_QA_PENDING"
+      },
+      "currentSource": "4190089d813bd23948ac7f4f75b772b6727f3923",
+      "currentBlob": "a28a2354bd4a0132cd788abfa3842a796005be32",
+      "approvalPending": true,
+      "newHumanApproval": false,
+      "scopedProof": "NO_NEW_TEST_EXECUTION_FOR_THIS_OWNER",
+      "provenanceDelta": {
+        "from": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "to": "4190089d813bd23948ac7f4f75b772b6727f3923",
+        "command": [
+          "git",
+          "diff",
+          "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+          "4190089d813bd23948ac7f4f75b772b6727f3923",
+          "--",
+          "app/modules/automatizaciones.js"
+        ],
+        "bytes": 6290,
+        "sha256": "6fca620a02e2c188f431c5a510fbf5fe7ab482166cd2b458a3a9f0a376c12abd",
+        "commits": [
+          "8cd2464bd3804436f07e56e0dcf59f2d3eab525d control(i3): restore full candidate tree and record pointer alignment",
+          "5898b453fb5bac014028adde3e4ff826e41e7611 control(i3): record A09/B11 candidate pointer alignment",
+          "50472d8cb637e8385834ba184951eeffd9a6012a fix(i3/b7-b8): make HF28 automation templates tenant-durable with remote ACK/readback",
+          "a26e2cc0ed75c536870c9327c5c6cfa8a3e3a79f fix(control): restore full canonical tree after Run736 freeze",
+          "d9a7a5c0ebdba3f83b93ef5e5f253e508a7f5a6a control(pre-i4): freeze Run736 cumulative DEV live closure",
+          "a33108e5b4e00d61f3dff1645ea22b2a777504a3 fix(control): restore canonical tree and reprove VRM-107 [prei4-content-001-source] [prei4-content-001-live]",
+          "e0b3433705aa2719aab25a21ec8f686b3546c489 fix(i3): single-flight HR reconciliation and repeat affected DEV gate [prei4-content-001-source] [prei4-content-001-live]"
+        ]
+      },
+      "disposition": "PRESERVE_HISTORICAL_APPROVAL_AND_OPEN_CURRENT_BLOB_AUTHORITY_CONTRADICTION"
+    },
+    {
+      "path": "app/modules/clientes.js",
+      "historicalApproval": {
+        "path": "app/modules/clientes.js",
+        "domain": "client-portal",
+        "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "latestApprovedBlob": "9c3c98605f4fb2e22d66b241607c9dd70c45d159",
+        "currentBlob": "28afb209ff3b882f322d2ba9a3f40c18997effef",
+        "loadTarget": "browser-script",
+        "phaseAAuthority": true,
+        "classification": "MATCH",
+        "loadOrder": 108,
+        "atomicDisposition": "KEEP",
+        "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+        "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+        "approvedBlob": "9c3c98605f4fb2e22d66b241607c9dd70c45d159",
+        "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+        "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
+        "provenanceIndependent": true,
+        "approvalDisposition": "KEEP",
+        "currentCumulativeSource": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
+        "currentLoadOrder": 105,
+        "previousMatrixCurrentBlob": "d4279080b2eee3e2e97bd132de5789202016df38",
+        "byteAuthorityReadback": "EXACT_GIT_TREE_SOURCE_ONLY"
+      },
+      "currentSource": "4190089d813bd23948ac7f4f75b772b6727f3923",
+      "currentBlob": "28afb209ff3b882f322d2ba9a3f40c18997effef",
+      "approvalPending": true,
+      "newHumanApproval": false,
+      "scopedProof": "CURRENT_FOUR_PARITY_SOURCE_TESTS_PASS_NOT_FULL_MODULE_APPROVAL",
+      "provenanceDelta": {
+        "from": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "to": "4190089d813bd23948ac7f4f75b772b6727f3923",
+        "command": [
+          "git",
+          "diff",
+          "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+          "4190089d813bd23948ac7f4f75b772b6727f3923",
+          "--",
+          "app/modules/clientes.js"
+        ],
+        "bytes": 24706,
+        "sha256": "ed75c0f24c18906082210cdecce9e002f5cc7905fe265f992a3d12c64b0db608",
+        "commits": [
+          "c8d2a790df29208c07eafea49d1d62d2d93b09e6 fix(cxorbia-i3): align period, visit and business-project projections",
+          "8cd2464bd3804436f07e56e0dcf59f2d3eab525d control(i3): restore full candidate tree and record pointer alignment",
+          "5898b453fb5bac014028adde3e4ff826e41e7611 control(i3): record A09/B11 candidate pointer alignment",
+          "4050e8afc952183131d48600b84260024ed78ac5 fix(i3): close run1418 identity, Clientes and auth retry blockers [skip ci]",
+          "f41b61629d57432fa6c1382ea9bb09f1a464c263 fix(i3): add durable tenant commercial authority for VRM189",
+          "a26e2cc0ed75c536870c9327c5c6cfa8a3e3a79f fix(control): restore full canonical tree after Run736 freeze",
+          "d9a7a5c0ebdba3f83b93ef5e5f253e508a7f5a6a control(pre-i4): freeze Run736 cumulative DEV live closure",
+          "a33108e5b4e00d61f3dff1645ea22b2a777504a3 fix(control): restore canonical tree and reprove VRM-107 [prei4-content-001-source] [prei4-content-001-live]",
+          "e0b3433705aa2719aab25a21ec8f686b3546c489 fix(i3): single-flight HR reconciliation and repeat affected DEV gate [prei4-content-001-source] [prei4-content-001-live]"
+        ]
+      },
+      "disposition": "PRESERVE_HISTORICAL_APPROVAL_AND_OPEN_CURRENT_BLOB_AUTHORITY_CONTRADICTION"
+    },
+    {
+      "path": "app/modules/crm.js",
+      "historicalApproval": {
+        "path": "app/modules/crm.js",
+        "domain": "base-router-shell-cache",
+        "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "latestApprovedBlob": "6a6ff1c964eff4f25ecaf33b028335bfc62810ee",
+        "currentBlob": "07732668ea2bd700dffe5fbff8df8e473575be05",
+        "loadTarget": "browser-script",
+        "phaseAAuthority": true,
+        "classification": "MATCH",
+        "loadOrder": 111,
+        "atomicDisposition": "KEEP",
+        "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+        "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+        "approvedBlob": "6a6ff1c964eff4f25ecaf33b028335bfc62810ee",
+        "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+        "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
+        "provenanceIndependent": true,
+        "approvalDisposition": "KEEP",
+        "currentCumulativeSource": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
+        "currentLoadOrder": 108,
+        "previousMatrixCurrentBlob": "07732668ea2bd700dffe5fbff8df8e473575be05",
+        "byteAuthorityReadback": "EXACT_GIT_TREE_SOURCE_ONLY"
+      },
+      "currentSource": "4190089d813bd23948ac7f4f75b772b6727f3923",
+      "currentBlob": "07732668ea2bd700dffe5fbff8df8e473575be05",
+      "approvalPending": true,
+      "newHumanApproval": false,
+      "scopedProof": "NO_NEW_TEST_EXECUTION_FOR_THIS_OWNER",
+      "provenanceDelta": {
+        "from": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "to": "4190089d813bd23948ac7f4f75b772b6727f3923",
+        "command": [
+          "git",
+          "diff",
+          "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+          "4190089d813bd23948ac7f4f75b772b6727f3923",
+          "--",
+          "app/modules/crm.js"
+        ],
+        "bytes": 43043,
+        "sha256": "39b803428a60924a92532efb318d4f30e0f306293a0cbeebe45ee6516be3f06e",
+        "commits": [
+          "8cd2464bd3804436f07e56e0dcf59f2d3eab525d control(i3): restore full candidate tree and record pointer alignment",
+          "5898b453fb5bac014028adde3e4ff826e41e7611 control(i3): record A09/B11 candidate pointer alignment",
+          "ef790a5191bc5359d9c67ab2a28f8e04eb54be37 fix(i3): repair VRM189 CRM source syntax",
+          "f41b61629d57432fa6c1382ea9bb09f1a464c263 fix(i3): add durable tenant commercial authority for VRM189",
+          "a26e2cc0ed75c536870c9327c5c6cfa8a3e3a79f fix(control): restore full canonical tree after Run736 freeze",
+          "d9a7a5c0ebdba3f83b93ef5e5f253e508a7f5a6a control(pre-i4): freeze Run736 cumulative DEV live closure",
+          "a33108e5b4e00d61f3dff1645ea22b2a777504a3 fix(control): restore canonical tree and reprove VRM-107 [prei4-content-001-source] [prei4-content-001-live]",
+          "e0b3433705aa2719aab25a21ec8f686b3546c489 fix(i3): single-flight HR reconciliation and repeat affected DEV gate [prei4-content-001-source] [prei4-content-001-live]"
+        ]
+      },
+      "disposition": "PRESERVE_HISTORICAL_APPROVAL_AND_OPEN_CURRENT_BLOB_AUTHORITY_CONTRADICTION"
+    }
+  ],
+  "canonicalLink": {
+    "workflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "job": "canonical-candidate-authority",
+    "addedCommands": [
+      "node --test tools/qa/cxorbia-i3-period-project-client-parity.test.mjs",
+      "node --test tools/qa/cxorbia-i3-g03-rutas-effective-hr-source-truth.test.mjs"
+    ],
+    "position": "After canonical authority guard, source/tree/lock and ancestry checks; before existing subsequent source checks",
+    "workflowBytes": 511269,
+    "allJobConditionsUnchanged": true,
+    "statusUnchanged": "HOLD_I3_DEV_MATERIALIZED_G03_AUTHORITY_PENDING",
+    "localCommitGuardAndAutomaticCi": "PENDING_AT_RECEIPT_SERIALIZATION; validate exact commit before one push; post-publication run/job/log readback is a separate local report to avoid a second control commit."
+  },
+  "preserved": {
+    "domainCount": 21,
+    "match": 5,
+    "nonMatch": 16,
+    "findingCount": 292,
+    "allDomainClassificationsUnchanged": true,
+    "allFindingRecordsUnchanged": true,
+    "latestApprovedBlobsUnchanged": true,
+    "devRunNumber": 1983,
+    "devRunId": 40998569643,
+    "run1992": {
+      "runId": 41124697399,
+      "decision": "PASS_C04_C05_BOUNDED_FINANCE",
+      "artifactId": 13010072681,
+      "artifactZipSha256": "0269dc512dfc206908d2955a762e103fada743466d5e9558738b4c003f4a7412",
+      "fullTaskClosed": false,
+      "fullTasksClosed": false,
+      "d07": {
+        "executed": false,
+        "historicalPassRunNumber": 1991,
+        "remainingClauses": 4,
+        "fullTaskClosed": false
+      }
+    },
+    "humanApprovalNew": false,
+    "g03FullTaskClosed": false,
+    "i3": "HOLD",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": "DO_NOT_TOUCH",
+    "authorizationI4": false
+  },
+  "operations": {
+    "devWrites": 0,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "businessDataWrites": 0,
+    "authWrites": 0,
+    "builds": 0,
+    "deploys": 0,
+    "c04C05Replays": 0,
+    "d07Replays": 0,
+    "cleanupOperations": 0,
+    "productionWrites": 0
+  },
+  "remaining": [
+    "Four sourceFiles historical MATCH metadata vs current/approved blob contradictions require exact scoped approval, not replacement hashes",
+    "Remaining G03 owner/dependency authority and full frozen task clauses remain open",
+    "Fresh HR revision and authenticated role E2E, human acceptance and Gate20/Gate21 are not established by synthetic source tests"
+  ],
+  "nextExactAction": "I3 G03: devolver coordinación al Project ChatGPT con las pruebas source Clientes/Histórico 4/4 y Rutas 3/3 y owner efectivo operacion-extra acreditados. Adjudicar la autoridad F9/post-F9 de los cuatro blobs contradictorios y las restantes cláusulas HR/identidad, operación, finanzas y aceptación humana por evidencia exacta. No repetir C04/C05 ni D07; no iniciar otro bloque desde este recibo. I3/Gate20/Gate21 HOLD; producción DO_NOT_TOUCH; I4 no autorizada.",
+  "fullTaskClosed": false,
+  "fullTasksClosed": false,
+  "production": "DO_NOT_TOUCH",
+  "authorizationI4": false
+}

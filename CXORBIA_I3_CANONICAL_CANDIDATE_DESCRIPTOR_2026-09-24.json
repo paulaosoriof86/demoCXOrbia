@@ -7,9 +7,9 @@
   "productSourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
   "productTreeAuthority": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
   "predecessorProductSourceSha": "4854a4e289bf76d08f3ffe3ecddd09168ba501af",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V534_2026-10-30.json",
-  "findingsLedgerExpectedGitBlob": "68658b952bb5aabec00dea456a4c34ac5c10d524",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V202.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V535_2026-10-30.json",
+  "findingsLedgerExpectedGitBlob": "62fbb4d3cbf638b1090d8bfb4ee0a8918a27eca7",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V203.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 G03: completar autoridad F9/última aprobación por owner para los 21 dominios; reconciliar los 12 owners y las dos omisiones de inventario (backend-ai.js, rutas.js) contra evidencia aprobada, y resolver composición de carga de rutas. Conservar HR/identidad, operación, finanzas y D07 sólo según sus evidencias exactas; RUN1992 cierra selector y Finanzas C04/C05 acotado, no tareas completas. Mantener I3/Gate20/Gate21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
+  "exactNextAction": "I3 G03: devolver coordinación al Project ChatGPT con las pruebas source Clientes/Histórico 4/4 y Rutas 3/3 y owner efectivo operacion-extra acreditados. Adjudicar la autoridad F9/post-F9 de los cuatro blobs contradictorios y las restantes cláusulas HR/identidad, operación, finanzas y aceptación humana por evidencia exacta. No repetir C04/C05 ni D07; no iniciar otro bloque desde este recibo. I3/Gate20/Gate21 HOLD; producción DO_NOT_TOUCH; I4 no autorizada.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "4a5854d6e49db89c6c2a80d3b1b2ac42d410487c",
+  "moduleTruthExpectedGitBlob": "dcb05e523619d43dfc8e8dd6a52d9e82a108b4af",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -15830,5 +15830,16 @@
     "expectedControlParentSha": "159adf6f69bdecef852aaac0895bd78aad6bd2fc",
     "selectedStatus": "HOLD_I3_DEV_MATERIALIZED_G03_AUTHORITY_PENDING",
     "scope": "CONTROL_STATUS_COMPATIBILITY_ONLY_NOT_FUNCTIONAL_CLOSURE"
+  },
+  "g03ParityRouteSourceExecution20261030": {
+    "path": "docs/checkpoints/CXORBIA_I3_G03_PARITY_ROUTE_SOURCE_EXECUTION_20261030.json",
+    "gitBlob": "380c696a887b6f8c08eef253a819e765b7b48650",
+    "sha256": "c8ce54efe0e00b3f144e3e14d2d08d6809576ab46174f3da67d2e0f1e8e5aa34",
+    "kind": "G03_FOCAL_SOURCE_EXECUTION_AND_CANONICAL_QA_LINK",
+    "decision": "PASS_FOCAL_SOURCE_ONLY_G03_AUTHORITY_AND_HUMAN_ACCEPTANCE_PENDING",
+    "scope": "SOURCE_ONLY",
+    "productSourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "fullTaskClosed": false,
+    "production": false
   }
 }
