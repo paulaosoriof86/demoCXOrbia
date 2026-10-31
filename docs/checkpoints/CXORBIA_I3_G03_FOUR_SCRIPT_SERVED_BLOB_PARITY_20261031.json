@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "cxorbia.i3.g03.four-script-served-blob-parity.v1",
+  "id": "CXORBIA-I3-G03-FOUR-SCRIPT-SERVED-BLOB-PARITY-20261031",
+  "observedAt": "2026-10-31T17:25:46.261Z",
+  "dateLocal": "2026-10-31",
+  "timeZone": "America/Guatemala",
+  "iteration": "I3",
+  "state": "HOLD",
+  "kind": "EXACT_SERVED_FILE_BYTES_PROOF_4_OF_4_NOT_FULL_ARTIFACT_CERTIFICATION",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlParent": {
+    "sha": "2fa815e1b76d983c7aadb4a413bb9a7b36594d04",
+    "tree": "8350ca7b76a0075c98ca2faf820a50a7f0ae6d5d"
+  },
+  "productSource": {
+    "sha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "tree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751"
+  },
+  "devMainOrigin": "https://cxorbia-backend-dev.web.app",
+  "method": {
+    "request": "HTTPS GET each public JS URL; curl -f for HTTP success; pipe raw served bytes to git hash-object --stdin",
+    "authorization": "READ_ONLY",
+    "gitBlobSemantics": "SHA-1 of exact Git blob header and downloaded bytes; compare against source tree blob",
+    "sourceVerification": "GitHub fetch_file at exact source 419 independently returned expected blobs",
+    "cachedResponseCaveat": "Proves actual HTTP-served bytes at observation, not entire release or future cache state"
+  },
+  "checks": [
+    {
+      "path": "core/automations.js",
+      "servedUrl": "https://cxorbia-backend-dev.web.app/core/automations.js",
+      "servedGitBlob": "1bf04186e2461340e2852a7608b98d1d510a71a0",
+      "sourceGitBlob": "1bf04186e2461340e2852a7608b98d1d510a71a0",
+      "httpRequestExitCode": 0,
+      "exactMatch": true
+    },
+    {
+      "path": "modules/automatizaciones.js",
+      "servedUrl": "https://cxorbia-backend-dev.web.app/modules/automatizaciones.js",
+      "servedGitBlob": "a28a2354bd4a0132cd788abfa3842a796005be32",
+      "sourceGitBlob": "a28a2354bd4a0132cd788abfa3842a796005be32",
+      "httpRequestExitCode": 0,
+      "exactMatch": true
+    },
+    {
+      "path": "modules/clientes.js",
+      "servedUrl": "https://cxorbia-backend-dev.web.app/modules/clientes.js",
+      "servedGitBlob": "28afb209ff3b882f322d2ba9a3f40c18997effef",
+      "sourceGitBlob": "28afb209ff3b882f322d2ba9a3f40c18997effef",
+      "httpRequestExitCode": 0,
+      "exactMatch": true
+    },
+    {
+      "path": "modules/crm.js",
+      "servedUrl": "https://cxorbia-backend-dev.web.app/modules/crm.js",
+      "servedGitBlob": "07732668ea2bd700dffe5fbff8df8e473575be05",
+      "sourceGitBlob": "07732668ea2bd700dffe5fbff8df8e473575be05",
+      "httpRequestExitCode": 0,
+      "exactMatch": true
+    }
+  ],
+  "aggregate": {
+    "expectedChecks": 4,
+    "successfulGetAndHash": 4,
+    "exactMatches": 4,
+    "mismatches": 0,
+    "staticFilesProven": [
+      "app/core/automations.js",
+      "app/modules/automatizaciones.js",
+      "app/modules/clientes.js",
+      "app/modules/crm.js"
+    ]
+  },
+  "scopeLimit": {
+    "directlySupported": "These four current candidate script blobs are served on DEV main; focal source changes present in live JS.",
+    "notSupported": [
+      "Full Hosting artifact digest equality",
+      "Runtime/Cloud Run revision equality",
+      "All dependencies/load-order/config version equality",
+      "End-to-end create/update/delete provider ACK/readback",
+      "Independent second Admin session",
+      "Client/Shopper role coverage",
+      "F9/post-F9 human approval",
+      "I3 GO",
+      "Gate20/21"
+    ],
+    "sourceFileApprovalBlobsStillOlder": true,
+    "sourceFileMatchMetadataContradictionStillOpen": true,
+    "domainCountMatchStill": "5/21"
+  },
+  "preservedPriorReceipts": [
+    "docs/checkpoints/CXORBIA_I3_G03_POSTF9_SOURCE_DELTA_READBACK_20261031.json",
+    "docs/checkpoints/CXORBIA_I3_G03_DEV_READONLY_SURFACE_RECONCILIATION_20261031.json"
+  ],
+  "unchanged": {
+    "sourceChanges": 0,
+    "matrixChanges": 0,
+    "ledgerChanges": 0,
+    "descriptorChanges": 0,
+    "builds": 0,
+    "deploys": 0,
+    "providerWrites": 0,
+    "productionWrites": 0,
+    "i4Authorized": false
+  },
+  "decision": "PASS_G03_FOUR_SCRIPT_DEV_BYTE_PARITY_ONLY__G03_AUTHORITY_AND_E2E_HOLD",
+  "nextExactAction": "With 4/4 scripts byte-exact in DEV, preserve this subproof. Resolve approved source-lineage for four post-F9 deltas and test only missing bounded HF28 two-Admin ACK/readback, VRM189 provider commands, D02 document case, and Cliente/period role E2E on same artifact. Never promote metadata MATCH or I3 GO without evidence; production DO_NOT_TOUCH."
+}
