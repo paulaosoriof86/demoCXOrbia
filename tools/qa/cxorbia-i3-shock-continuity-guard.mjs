@@ -59,6 +59,29 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
   check(/G03/.test(d.exactNextAction || '') && /HR/.test(d.exactNextAction || '') &&
     /finanzas/i.test(d.exactNextAction || ''),
     'MAPPING_FAILURE:EXCLUSIVE_FOCAL_LOOP');
+
+  // Matching pointers can still be mutually stale. Preserve the last verified
+  // cohort receipt and the actual DEV Hosting observation across iterations.
+  const fusionD = d.i3FusionContinuityRecovered20261031 || {};
+  const fusionP = p.i3FusionContinuityRecovered20261031 || {};
+  check(Boolean(fusionD.receiptPath && fusionD.receiptGitBlob) &&
+    JSON.stringify(fusionD) === JSON.stringify(fusionP) &&
+    gitBlob(fusionD.receiptPath) === fusionD.receiptGitBlob,
+    'MAPPING_FAILURE:SHOPPER_FUSION_RECEIPT_DESYNC');
+  check(fusionD.provisionalVerifiedGroups >= fusionD.lastIndependentVerifiedGroups &&
+    fusionD.provisionalVerifiedGroups + fusionD.provisionalPendingGroups === 83 &&
+    fusionD.recensusRequired === true &&
+    new RegExp(`${fusionD.provisionalVerifiedGroups}/83`).test(d.exactNextAction || ''),
+    'MAPPING_FAILURE:SHOPPER_FUSION_PROGRESS_STALE');
+
+  const hostingD = d.g03ActualHostingDevReadback20261031 || {};
+  const hostingP = p.g03ActualHostingDevReadback20261031 || {};
+  const servedVersion = String(hostingD.hostingVersion || '').split('/').pop();
+  check(Boolean(servedVersion) && JSON.stringify(hostingD) === JSON.stringify(hostingP) &&
+    hostingD.verifiedBrowserDevOnly === true &&
+    (d.exactNextAction || '').includes(servedVersion) &&
+    !/a[uú]n\s+NO\s+servid[oa]\s+en\s+DEV/i.test(d.exactNextAction || ''),
+    'MAPPING_FAILURE:DEV_HOSTING_REALITY_STALE');
   check(p.progressByStageSemantics === 'HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY',
     'MAPPING_FAILURE:STALE_PROGRESS_AS_LIVE');
   check(p.state === 'HOLD' && d.production === 'DO_NOT_TOUCH' && p.production === 'DO_NOT_TOUCH' &&
