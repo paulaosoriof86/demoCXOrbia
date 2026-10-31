@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "cxorbia.i3.g03.postdeploy-seal-reality-fix.v1",
+  "id": "CXORBIA-I3-G03-POSTDEPLOY-SEAL-REALITY-20261031",
+  "observedAt": "2026-10-31T17:45:43.068Z",
+  "iteration": "I3",
+  "state": "HOLD",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedParentSha": "abd3e2580c074a0319c1228345c6b20809a953c9",
+  "sourceSha": "bd1f875ab0f1ed0059ab55ede24d7816142817ec",
+  "devServedSourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+  "ciRun": {
+    "runId": 41225994999,
+    "runNumber": 1998,
+    "jobId": 124610149404,
+    "guard": "RELEASE_COMPOSITION_FAILURE:POSTDEPLOY_SEAL_MISMATCH:servedSource",
+    "testsPassBeforeGuard": 66,
+    "testsFailBeforeGuard": 0
+  },
+  "rootCause": "postDeployRunSeal.mode seguía CURRENT_SOURCE_SERVING tras generar un source successor aún no materializado",
+  "change": "Actualizar solo descriptor y puntero a PREDECESSOR_SERVING_PENDING_SOURCE, sin modificar el sello de bytes o la versión realmente servida.",
+  "proof": {
+    "descriptorMode": "PREDECESSOR_SERVING_PENDING_SOURCE",
+    "pointerMode": "PREDECESSOR_SERVING_PENDING_SOURCE",
+    "sourceSha": "bd1f875ab0f1ed0059ab55ede24d7816142817ec",
+    "servedSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "exactBytesUnchanged": true
+  },
+  "next": "CI del guardia fuente, luego materialización DEV scoped y E2E de una cuenta sintética",
+  "production": "DO_NOT_TOUCH",
+  "i4Authorized": false
+}

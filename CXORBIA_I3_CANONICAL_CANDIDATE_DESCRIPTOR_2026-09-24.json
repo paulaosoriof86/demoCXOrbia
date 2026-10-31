@@ -12856,7 +12856,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 40998569643,
     "runNumber": 1983,
     "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
@@ -15861,6 +15861,28 @@
     },
     "devMaterialization": "PENDING",
     "liveFirestoreAckReadback": "NOT_TESTED",
-    "production": false
+    "production": false,
+    "sealCorrection": {
+      "kind": "I3_G03_POSTDEPLOY_SEAL_CONTROL_REALITY_CORRECTION",
+      "sourceSha": "bd1f875ab0f1ed0059ab55ede24d7816142817ec",
+      "devServedSourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+      "previousMode": "CURRENT_SOURCE_SERVING",
+      "newMode": "PREDECESSOR_SERVING_PENDING_SOURCE",
+      "trigger": {
+        "runId": 41225994999,
+        "runNumber": 1998,
+        "jobId": 124610149404,
+        "guardFailure": "RELEASE_COMPOSITION_FAILURE:POSTDEPLOY_SEAL_MISMATCH:servedSource"
+      },
+      "unmodified": {
+        "artifactDigest": "sha256:92a2ff5695ad2980b36776c95df203feb537ea3d8b432d8956b307d5fecf1efd",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/0ae801f3a01e249f",
+        "runtimeRevision": "cxorbia-live-hr-dev-00331-2xq",
+        "ruleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62"
+      },
+      "effect": "CONTROL_MAPPINGS_ONLY_NO_DEPLOY_OR_PROVIDER_WRITES",
+      "terminalEligible": false,
+      "production": false
+    }
   }
 }
