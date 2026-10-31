@@ -1,0 +1,302 @@
+{
+  "schemaVersion": "cxorbia.i3.plan-choque-operational-progress-freeze.v1",
+  "id": "CXORBIA-I3-PLAN-CHOQUE-OPERACIONAL-20261031",
+  "dateLocal": "2026-10-31",
+  "timeZone": "America/Guatemala",
+  "iteration": "I3",
+  "state": "HOLD",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedControlParentSha": "c89d2a8c002607728c5a9ab56e062aab60f647bf",
+  "expectedControlParentTree": "8aba86813ce97a2754768bb234960604f66661ba",
+  "productSourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+  "productTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
+  "authority": {
+    "planLock": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
+    "planId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
+    "fullPlanSha256": "83e8f2c0a6b190bab1d9dea32bf99158116f3164f419ae72e051fd791fd8576c",
+    "fullPlanVerifiedFromCustody": true,
+    "planImmutable": true,
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V203.json",
+    "matrixGitBlob": "dcb05e523619d43dfc8e8dd6a52d9e82a108b4af",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V535_2026-10-30.json",
+    "ledgerGitBlob": "62fbb4d3cbf638b1090d8bfb4ee0a8918a27eca7",
+    "currentArtifactFromRun1983": "sha256:92a2ff5695ad2980b36776c95df203feb537ea3d8b432d8956b307d5fecf1efd"
+  },
+  "metrics": {
+    "denominator": 21,
+    "nonDefectiveEvidenceStage": {
+      "count": 18,
+      "percent": 85.71,
+      "meaning": "MATCH + SOURCE_FIXED + COMPOSED_NOT_DEPLOYED; NO equivale a certificación ni ausencia de P0"
+    },
+    "devMaterializedOrMatch": {
+      "count": 11,
+      "percent": 52.38,
+      "meaning": "Estadios que mencionan DEV_MATERIALIZED + MATCH; no todo E2E ni aprobación"
+    },
+    "focalLiveE2eOrMatch": {
+      "count": 7,
+      "percent": 33.33,
+      "meaning": "LIVE_E2E_PASS focal + MATCH; el resto del dominio sigue pendiente"
+    },
+    "formalMatch": {
+      "count": 5,
+      "percent": 23.81,
+      "meaning": "Único numerador certificable de dominios; no equivale a porcentaje de todo el proyecto"
+    },
+    "stageCount": {
+      "MATCH": 5,
+      "SOURCE_FIXED": 11,
+      "COMPOSED_NOT_DEPLOYED": 2,
+      "TRUE_FUNCTIONAL_DEFECT": 3
+    },
+    "nonMatch": 16
+  },
+  "classificationCounts": {
+    "COMPOSED_NOT_DEPLOYED": 2,
+    "MATCH": 5,
+    "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN": 2,
+    "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 4,
+    "SOURCE_FIXED_PENDING_CI_AND_DEV_FOCAL": 1,
+    "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN": 4,
+    "TRUE_FUNCTIONAL_DEFECT": 3
+  },
+  "domains": [
+    {
+      "domain": "auth-protected-data-runtime",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN"
+    },
+    {
+      "domain": "base-router-shell-cache",
+      "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN"
+    },
+    {
+      "domain": "benefits",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN"
+    },
+    {
+      "domain": "canonical-hr-state-adapters",
+      "classification": "TRUE_FUNCTIONAL_DEFECT"
+    },
+    {
+      "domain": "certifications",
+      "classification": "TRUE_FUNCTIONAL_DEFECT"
+    },
+    {
+      "domain": "client-portal-reportkit",
+      "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN"
+    },
+    {
+      "domain": "core-config-data-router-permissions",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN"
+    },
+    {
+      "domain": "dashboard-operation",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN"
+    },
+    {
+      "domain": "documents-resources",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN"
+    },
+    {
+      "domain": "finance-core-liquidation-costs",
+      "classification": "TRUE_FUNCTIONAL_DEFECT"
+    },
+    {
+      "domain": "historical",
+      "classification": "MATCH"
+    },
+    {
+      "domain": "human-runtime-domain-consistency",
+      "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN"
+    },
+    {
+      "domain": "identity-membership-roll-forward",
+      "classification": "MATCH"
+    },
+    {
+      "domain": "persistence-command-ack-boundary",
+      "classification": "COMPOSED_NOT_DEPLOYED"
+    },
+    {
+      "domain": "phase-a-supporting-core",
+      "classification": "MATCH"
+    },
+    {
+      "domain": "projects-periods-hr-source-wizard-multiproject",
+      "classification": "SOURCE_FIXED_PENDING_CI_AND_DEV_FOCAL"
+    },
+    {
+      "domain": "questionnaire-shopper",
+      "classification": "COMPOSED_NOT_DEPLOYED"
+    },
+    {
+      "domain": "reports-admin-shopper",
+      "classification": "MATCH"
+    },
+    {
+      "domain": "shoppers-mi-visitas-profile",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN"
+    },
+    {
+      "domain": "visits-review-postulations-reservations",
+      "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN"
+    },
+    {
+      "domain": "tenant-admin-config-branding",
+      "classification": "MATCH"
+    }
+  ],
+  "g03Readback": {
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "closed": false,
+    "ownerPathsMappedByTask": 12,
+    "directApprovedOwnerMembership": 0,
+    "approvalContradictions": [
+      {
+        "path": "app/core/automations.js",
+        "recordedClassification": "MATCH",
+        "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "approvedBlob": "940ece14951719114401891697f303fab88b0f36",
+        "currentSource": "4190089d813bd23948ac7f4f75b772b6727f3923",
+        "currentBlob": "1bf04186e2461340e2852a7608b98d1d510a71a0",
+        "parity": false,
+        "decision": "HOLD_APPROVAL_PROVENANCE_NOT_ESTABLISHED"
+      },
+      {
+        "path": "app/modules/automatizaciones.js",
+        "recordedClassification": "MATCH",
+        "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "approvedBlob": "ac456dfb309de43cbc5a25bee3ecf48076a168db",
+        "currentSource": "4190089d813bd23948ac7f4f75b772b6727f3923",
+        "currentBlob": "a28a2354bd4a0132cd788abfa3842a796005be32",
+        "parity": false,
+        "decision": "HOLD_APPROVAL_PROVENANCE_NOT_ESTABLISHED"
+      },
+      {
+        "path": "app/modules/clientes.js",
+        "recordedClassification": "MATCH",
+        "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "approvedBlob": "9c3c98605f4fb2e22d66b241607c9dd70c45d159",
+        "currentSource": "4190089d813bd23948ac7f4f75b772b6727f3923",
+        "currentBlob": "28afb209ff3b882f322d2ba9a3f40c18997effef",
+        "parity": false,
+        "decision": "HOLD_APPROVAL_PROVENANCE_NOT_ESTABLISHED"
+      },
+      {
+        "path": "app/modules/crm.js",
+        "recordedClassification": "MATCH",
+        "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "approvedBlob": "6a6ff1c964eff4f25ecaf33b028335bfc62810ee",
+        "currentSource": "4190089d813bd23948ac7f4f75b772b6727f3923",
+        "currentBlob": "07732668ea2bd700dffe5fbff8df8e473575be05",
+        "parity": false,
+        "decision": "HOLD_APPROVAL_PROVENANCE_NOT_ESTABLISHED"
+      }
+    ],
+    "addedInventoryPaths": [
+      "app/core/backend-ai.js",
+      "app/modules/rutas.js"
+    ],
+    "effectiveRoutesOwner": "app/modules/operacion-extra.js",
+    "standaloneRutasLoaded": false,
+    "paritySourceTests": {
+      "clientsAndHistory": {
+        "pass": 4,
+        "fail": 0
+      },
+      "routes": {
+        "pass": 3,
+        "fail": 0
+      }
+    },
+    "sourceProofOnly": true,
+    "run1996": {
+      "runId": 41157449212,
+      "authorityJob": "PASS",
+      "otherCertificationJobs": "SKIPPED",
+      "artifactPublished": false
+    },
+    "matrixInternalVersionMismatch": {
+      "fileName": "V203",
+      "value": "V202",
+      "status": "CONTROL_METADATA_OPEN"
+    },
+    "nextEvidenceNeeded": "F9/post-F9 explicit approved blobs and human authority for four conflicts; focal live clauses and human acceptance"
+  },
+  "dayExecutionBlocks": [
+    {
+      "id": "B1",
+      "taskIds": [
+        "G03"
+      ],
+      "goal": "Adjudicar 12 owners y 4 contradicciones de aprobación F9/post-F9; reconocer owner Rutas efectivo y conservar backend-ai sin falsa aprobación",
+      "exit": "Trazabilidad aprobada exacta por archivo o HOLD focal con evidencia y owner; sin inventar PASS",
+      "authorization": "EXISTING"
+    },
+    {
+      "id": "B2",
+      "taskIds": [
+        "A01-A09",
+        "B01-B14",
+        "C01-C10",
+        "D01-D08",
+        "E01-E11"
+      ],
+      "goal": "Cerrar 3 dominios TRUE_FUNCTIONAL_DEFECT, 2 COMPOSED_NOT_DEPLOYED y pruebas restantes de los 11 SOURCE_FIXED",
+      "exit": "Owner P0 demostrado, source proof, lectura/escritura provider con ACK si aplica; no repetir PASS",
+      "authorization": "EXISTING_SCOPED_NO_PRODUCTION"
+    },
+    {
+      "id": "B3",
+      "taskIds": [
+        "V01",
+        "V02",
+        "V03"
+      ],
+      "goal": "Única composición y materialización DEV cuando sea necesaria, E2E Admin/Shopper/Cliente GT/HN contra misma HR revision",
+      "exit": "Todos contratos P0 con expected/observed, proveedor, reload, idempotencia, fingerprint; no fuente paralela",
+      "authorization": "EXISTING_SCOPED_DEV"
+    },
+    {
+      "id": "B4",
+      "taskIds": [
+        "V04",
+        "V05"
+      ],
+      "goal": "Aceptación humana incremental de módulos aprobados, Gate20 visual y Gate21 mismo artifact",
+      "exit": "21/21 MATCH, 0 P0 abierto, 0 capacidades Phase A sin prueba, I3 GO",
+      "authorization": "PAULA_HUMAN_ACCEPTANCE_WHEN_READY"
+    },
+    {
+      "id": "B5",
+      "taskIds": [
+        "P01-P07"
+      ],
+      "goal": "I4 immutable production replacement del artifact certificado",
+      "exit": "Backup/rollback, publicacion sin rebuild, smoke Admin/Shopper/HR/KPIs, PRODUCTION_LOCK",
+      "authorization": "FUTURE_EXPLICIT_I4_ON_EXACT_ARTIFACT"
+    }
+  ],
+  "unchanged": {
+    "productFiles": true,
+    "DEV": true,
+    "production": "DO_NOT_TOUCH",
+    "I4Authorized": false,
+    "HR": true,
+    "Auth": true,
+    "Firestore": true,
+    "Storage": true,
+    "Rules": true,
+    "providerWrites": 0,
+    "reexecutedRun1991": false,
+    "reexecutedRun1992": false,
+    "phaseAI3": "HOLD",
+    "Gate20": "HOLD",
+    "Gate21": "HOLD",
+    "fullTasksClosedByThisReceipt": 0
+  },
+  "decision": "PROGRESS_METRICS_AND_TODAY_SEQUENCE_FROZEN_G03_HOLD",
+  "nextExactAction": "I3 G03: adjudicar autoridad aprobada F9/post-F9 de 4 blobs contradictorios y 12 owners mapeados, sin adjudicar aprobación a backend-ai.js/rutas.js; preservar pruebas 4/4 y 3/3, después solo gates focales pendientes. Producción DO_NOT_TOUCH."
+}

@@ -254,7 +254,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 G03: devolver coordinación al Project ChatGPT con las pruebas source Clientes/Histórico 4/4 y Rutas 3/3 y owner efectivo operacion-extra acreditados. Adjudicar la autoridad F9/post-F9 de los cuatro blobs contradictorios y las restantes cláusulas HR/identidad, operación, finanzas y aceptación humana por evidencia exacta. No repetir C04/C05 ni D07; no iniciar otro bloque desde este recibo. I3/Gate20/Gate21 HOLD; producción DO_NOT_TOUCH; I4 no autorizada.",
+  "nextExactAction": "I3 G03: adjudicar autoridad aprobada F9/post-F9 de 4 blobs contradictorios y 12 owners mapeados, sin adjudicar aprobación a backend-ai.js/rutas.js; preservar pruebas 4/4 y 3/3, después solo gates focales pendientes. Producción DO_NOT_TOUCH.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -297,7 +297,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-10-31T01:51:30.479Z",
+  "lastUpdatedAt": "2026-10-31T16:55:24.905Z",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -5678,5 +5678,43 @@
     "productSourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
     "fullTaskClosed": false,
     "production": false
+  },
+  "operationalProgress20261031": {
+    "path": "docs/checkpoints/CXORBIA_I3_PLAN_CHOQUE_OPERACIONAL_20261031.json",
+    "receiptGitBlob": "6645b68224a1f4decf651958d22cbfe91868d77c",
+    "planId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
+    "formalMatch": {
+      "count": 5,
+      "percent": 23.81,
+      "meaning": "Único numerador certificable de dominios; no equivale a porcentaje de todo el proyecto"
+    },
+    "devMaterializedOrMatch": {
+      "count": 11,
+      "percent": 52.38,
+      "meaning": "Estadios que mencionan DEV_MATERIALIZED + MATCH; no todo E2E ni aprobación"
+    },
+    "focalLiveE2eOrMatch": {
+      "count": 7,
+      "percent": 33.33,
+      "meaning": "LIVE_E2E_PASS focal + MATCH; el resto del dominio sigue pendiente"
+    },
+    "stageCount": {
+      "MATCH": 5,
+      "SOURCE_FIXED": 11,
+      "COMPOSED_NOT_DEPLOYED": 2,
+      "TRUE_FUNCTIONAL_DEFECT": 3
+    },
+    "nonMatch": 16,
+    "meaning": "Métricas por etapas, no sumar ni interpretar como GO; matriz certificable 5/21 intacta",
+    "g03Pending": true,
+    "executionBlocks": [
+      "B1",
+      "B2",
+      "B3",
+      "B4",
+      "B5"
+    ],
+    "production": "DO_NOT_TOUCH",
+    "I4Authorized": false
   }
 }
