@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "cxorbia.i3.g03.crm-modal-p0-source-control.v1",
+  "id": "CXORBIA-I3-G03-CRM-MODAL-P0-SOURCE-CONTROL-20261031",
+  "observedAt": "2026-10-31T17:43:35.348Z",
+  "dateLocal": "2026-10-31",
+  "timeZone": "America/Guatemala",
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "FUNCTIONAL_DEFECT",
+  "findingId": "VRM-293",
+  "task": "G03",
+  "relatedFinding": "VRM-189",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "authorization": {
+    "Paula": "autorizo",
+    "scope": "solo registros sintéticos Firestore DEV para CRM y HF28; no datos reales, Auth, HR, producción ni limpieza sin confirmación",
+    "production": false
+  },
+  "reproducedInChromeDev": {
+    "origin": "https://cxorbia-backend-dev.web.app",
+    "route": "CRM Comercial > Cuentas > Nueva cuenta",
+    "modal": "＋ Nueva cuenta / cliente",
+    "controlsPresent": [
+      "#cuFile",
+      "#cuSave"
+    ],
+    "controlsMissing": [
+      "#cuModoManual",
+      "#cuModoIA"
+    ],
+    "exception": "TypeError: Cannot read properties of null (reading 'addEventListener') at app/modules/crm.js:528",
+    "fixtureAttempt": "CXORBIA_QA_G03_20261031_K7P3",
+    "fixtureWritten": false,
+    "accountsBefore": 0,
+    "accountsAfter": 0
+  },
+  "sourceMutation": {
+    "predecessorControlHead": "1264a25e0c07bda1542a06531d79486bd1e1564b",
+    "predecessorProductSource": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "sourceCommit": "bd1f875ab0f1ed0059ab55ede24d7816142817ec",
+    "sourceTree": "82e291d378203b355c1e199ca31494672853ab6c",
+    "files": [
+      {
+        "path": "app/modules/crm.js",
+        "oldBlob": "07732668ea2bd700dffe5fbff8df8e473575be05",
+        "newBlob": "c04c7792f0dd903563ea9cac41c54dd36127f005",
+        "changes": "+1/-2",
+        "reason": "eliminar listeners de botones inexistentes para que se conecte #cuSave"
+      },
+      {
+        "path": "tools/qa/cxorbia-i3-g03-crm-create-modal-binding.test.mjs",
+        "newBlob": "9e282a9536494f4113a50fa83bd744b88225dd28",
+        "changes": "+94/-0"
+      }
+    ],
+    "diffConfirmedByGithub": true,
+    "parentTreeCASReadback": true
+  },
+  "focalQa": {
+    "red": "TypeError y cero listeners para #cuSave en source predecesora",
+    "green": "#cuFile change y #cuSave click enlazados",
+    "nodeSyntax": "PASS",
+    "nodeTests": {
+      "pass": 3,
+      "fail": 0
+    },
+    "fakeProviderOnly": true,
+    "liveFirestore": "NOT_TESTED"
+  },
+  "automaticCiOnFirstSourcePush": {
+    "runId": 41225572295,
+    "runNumber": 1997,
+    "jobId": 124608897494,
+    "sourceRegressionTestsInJob": {
+      "pass": 66,
+      "fail": 0
+    },
+    "guard": "RELEASE_COMPOSITION_FAILURE:UNDECLARED_PRODUCT_DRIFT_AFTER_CANONICAL_CANDIDATE:app/modules/crm.js",
+    "classification": "EXPECTED_CONTROL_AUTHORITY_NOT_YET_UPDATED",
+    "deploys": 0
+  },
+  "previousMatrix": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261030-V203.json",
+    "blobs": 21,
+    "formalMatch": 5,
+    "nonMatch": 16
+  },
+  "newControl": {
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261031-V204.json",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V536_2026-10-31.json",
+    "newFinding": "VRM-293",
+    "nextFinding": "VRM-294",
+    "existingFindingsPreserved": 292,
+    "existingModuleClassificationsPreserved": 21
+  },
+  "gates": {
+    "canonicalCI": "PENDING_POST_CONTROL_COMMIT",
+    "devMaterialization": "NOT_EXECUTED",
+    "crmFirestoreAckReadback": "NOT_EXECUTED",
+    "independentAdminSession": "NOT_EXECUTED",
+    "hf28LiveWrite": "NOT_EXECUTED",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i3": "HOLD",
+    "i4Authorized": false,
+    "production": "DO_NOT_TOUCH"
+  },
+  "nextAction": "Conservar control canónico en el mismo source bd1f875 con v204/v536; obtener PASS del guardia sin declarar aceptación funcional; si el carril scoped lo autoriza, materializar DEV y probar fixture CRM con ACK y readback remoto; HF28 solo fixture aislado. No eliminar QA sin confirmación."
+}
