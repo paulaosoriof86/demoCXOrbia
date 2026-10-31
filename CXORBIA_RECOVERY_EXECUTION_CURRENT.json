@@ -254,7 +254,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 G03: P0 de creación de cuenta CRM corregido en source bd1f875 con QA focal 3/3; certificar autoridad source y DEV exacto, luego probar una cuenta exclusivamente sintética con ACK/readback Firestore y segunda sesión Admin; HF28 solo fixture sintética aislada, sin editar plantillas operativas. Continuar revisión HR, finanzas y autoridad F9/post-F9; no repetir D07 ni C04/C05 ya preservados. I3/Gate20/Gate21 HOLD; producción DO_NOT_TOUCH, I4 sin autorización.",
+  "nextExactAction": "I3 G03: source CRM bd1f875 y guardia canónico run1999 PASS; DEV sigue en predecesora 419, sin ACK/readback confirmado del intento CRM sintético. Próximo bloqueo: autorizar y ejecutar una sola materialización Hosting-only DEV exacta sin Cloud Run/Rules/Auth/HR ni producción, verificar el blob servido y entonces una cuenta sintética con ACK/readback en dos Admin. HF28 únicamente fixture aislada; continuar autoridad F9/post-F9, HR y finanzas pendientes. Sin repetir D07 ni C04/C05. I3/Gate20/Gate21 HOLD, 5/21 MATCH, I4 no autorizado.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -297,7 +297,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-10-31T17:43:35.348Z",
+  "lastUpdatedAt": "2026-10-31T17:51:00.532Z",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -5465,7 +5465,7 @@
     "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
     "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751"
   },
-  "exactNextAction": "I3 G03: P0 de creación de cuenta CRM corregido en source bd1f875 con QA focal 3/3; certificar autoridad source y DEV exacto, luego probar una cuenta exclusivamente sintética con ACK/readback Firestore y segunda sesión Admin; HF28 solo fixture sintética aislada, sin editar plantillas operativas. Continuar revisión HR, finanzas y autoridad F9/post-F9; no repetir D07 ni C04/C05 ya preservados. I3/Gate20/Gate21 HOLD; producción DO_NOT_TOUCH, I4 sin autorización.",
+  "exactNextAction": "I3 G03: source CRM bd1f875 y guardia canónico run1999 PASS; DEV sigue en predecesora 419, sin ACK/readback confirmado del intento CRM sintético. Próximo bloqueo: autorizar y ejecutar una sola materialización Hosting-only DEV exacta sin Cloud Run/Rules/Auth/HR ni producción, verificar el blob servido y entonces una cuenta sintética con ACK/readback en dos Admin. HF28 únicamente fixture aislada; continuar autoridad F9/post-F9, HR y finanzas pendientes. Sin repetir D07 ni C04/C05. I3/Gate20/Gate21 HOLD, 5/21 MATCH, I4 no autorizado.",
   "previousExecutionReceiptBeforeRun1983Seal": {
     "path": "CXORBIA_I3_RUN1852_POST_DEPLOY_CONSISTENCY_SEAL_2026-10-24.json",
     "kind": "RUN1852_SOURCE_F283_DEV_PASS_ADMIN_THREE_VISIT_UI_PASS_DURABLE_HR_OPERATIONAL_PARITY_P0_OPEN",
@@ -5769,7 +5769,7 @@
     "oldDevSourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
     "sourceFixed": true,
     "localTestsPassed": 3,
-    "canonicalCi": "PENDING_POST_CONTROL_ALIGNMENT",
+    "canonicalCi": "PASS_RUN1999_SOURCE_AUTHORITY_ONLY",
     "devMaterialized": false,
     "providerWriteAckReadback": false,
     "hf28FixtureWrite": false,
@@ -5796,6 +5796,15 @@
       "effect": "CONTROL_MAPPINGS_ONLY_NO_DEPLOY_OR_PROVIDER_WRITES",
       "terminalEligible": false,
       "production": false
+    },
+    "canonicalCiRunId": 41226115013,
+    "liveDevProbe": {
+      "receiptPath": "docs/checkpoints/CXORBIA_I3_G03_CRM_DEV_SYNTHETIC_PROBE_CI_PASS_20261031.json",
+      "receiptBlob": "a291eb03a1ebbbecae1464eea232a492d5eb6ecb",
+      "syntheticAccount": "NO_COMMAND_HANDLER",
+      "syntheticOpportunity": "NOT_VISIBLE_AFTER_RELOAD",
+      "providerAck": "NOT_OBSERVED",
+      "noDeletion": true
     }
   },
   "g03PostDeploySealReality20261031": {
@@ -5805,5 +5814,22 @@
     "devSourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
     "sourceSha": "bd1f875ab0f1ed0059ab55ede24d7816142817ec",
     "production": false
+  },
+  "g03CrmDevSyntheticProbeAndCiPass20261031": {
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_G03_CRM_DEV_SYNTHETIC_PROBE_CI_PASS_20261031.json",
+    "receiptGitBlob": "a291eb03a1ebbbecae1464eea232a492d5eb6ecb",
+    "sourceSha": "bd1f875ab0f1ed0059ab55ede24d7816142817ec",
+    "devServedSourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "canonicalCiRunId": 41226115013,
+    "sourceCiPass": true,
+    "devMaterialization": false,
+    "providerAckReadback": false,
+    "uiReadbackAfterReload": "PIPELINE_ZERO",
+    "firestoreDocumentAbsenceUnverified": true,
+    "qaFixtureNames": [
+      "CXORBIA_QA_G03_20261031_K7P3",
+      "CXORBIA_QA_G03_OPORTUNIDAD_20261031_R9N2"
+    ],
+    "production": "DO_NOT_TOUCH"
   }
 }

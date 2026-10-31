@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 G03: P0 de creación de cuenta CRM corregido en source bd1f875 con QA focal 3/3; certificar autoridad source y DEV exacto, luego probar una cuenta exclusivamente sintética con ACK/readback Firestore y segunda sesión Admin; HF28 solo fixture sintética aislada, sin editar plantillas operativas. Continuar revisión HR, finanzas y autoridad F9/post-F9; no repetir D07 ni C04/C05 ya preservados. I3/Gate20/Gate21 HOLD; producción DO_NOT_TOUCH, I4 sin autorización.",
+  "exactNextAction": "I3 G03: source CRM bd1f875 y guardia canónico run1999 PASS; DEV sigue en predecesora 419, sin ACK/readback confirmado del intento CRM sintético. Próximo bloqueo: autorizar y ejecutar una sola materialización Hosting-only DEV exacta sin Cloud Run/Rules/Auth/HR ni producción, verificar el blob servido y entonces una cuenta sintética con ACK/readback en dos Admin. HF28 únicamente fixture aislada; continuar autoridad F9/post-F9, HR y finanzas pendientes. Sin repetir D07 ni C04/C05. I3/Gate20/Gate21 HOLD, 5/21 MATCH, I4 no autorizado.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -15882,6 +15882,22 @@
       },
       "effect": "CONTROL_MAPPINGS_ONLY_NO_DEPLOY_OR_PROVIDER_WRITES",
       "terminalEligible": false,
+      "production": false
+    },
+    "canonicalSourceGuard": {
+      "runId": 41226115013,
+      "runNumber": 1999,
+      "jobId": 124610494412,
+      "decision": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+      "scope": "SOURCE_AUTHORITY_NOT_LIVE_DEV"
+    },
+    "liveDevProbe": {
+      "receiptPath": "docs/checkpoints/CXORBIA_I3_G03_CRM_DEV_SYNTHETIC_PROBE_CI_PASS_20261031.json",
+      "receiptBlob": "a291eb03a1ebbbecae1464eea232a492d5eb6ecb",
+      "crmSourceServed": false,
+      "syntheticOpportunityUiReadbackAfterReload": "ABSENT_PIPELINE_ZERO",
+      "providerAck": "NOT_OBSERVED",
+      "remoteDurability": "NOT_PROVEN",
       "production": false
     }
   }

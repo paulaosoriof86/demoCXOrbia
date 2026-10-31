@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "cxorbia.i3.g03.crm-synthetic-dev-probe-ci-pass.v1",
+  "id": "CXORBIA-I3-G03-CRM-SYNTHETIC-DEV-PROBE-CI-PASS-20261031",
+  "observedAt": "2026-10-31T17:51:00.532Z",
+  "iteration": "I3",
+  "state": "HOLD",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlParentSha": "fbbb13008b9cc5c6869f46423953cd861d1d0140",
+  "productSource": {
+    "sha": "bd1f875ab0f1ed0059ab55ede24d7816142817ec",
+    "tree": "82e291d378203b355c1e199ca31494672853ab6c",
+    "crmBlob": "c04c7792f0dd903563ea9cac41c54dd36127f005",
+    "localTestsPassed": 3
+  },
+  "canonicalSourceAuthority": {
+    "workflow": "CXOrbia Recovery I3 DEV Certification",
+    "runId": 41226115013,
+    "runNumber": 1999,
+    "jobId": 124610494412,
+    "conclusion": "success",
+    "scope": "CANONICAL_CANDIDATE_AUTHORITY_ONLY",
+    "fullI3Certification": false,
+    "devMaterialized": false
+  },
+  "servedDev": {
+    "origin": "https://cxorbia-backend-dev.web.app",
+    "entrypoint": "/index-backend-dev.html",
+    "crmServedBlob": "07732668ea2bd700dffe5fbff8df8e473575be05",
+    "sourceCommit": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "source419Readback": "RUN1983_APPROVED_DEV_MATERIALIZATION_PREDECESSOR",
+    "currentSourceBd1Served": false
+  },
+  "browserSession": {
+    "role": "Admin",
+    "project": "Cinépolis",
+    "period": "OCT 2026",
+    "protectedRuntime": true,
+    "sessionReusedAfterReload": true
+  },
+  "syntheticAttempts": [
+    {
+      "type": "CRM_ACCOUNT",
+      "name": "CXORBIA_QA_G03_20261031_K7P3",
+      "attemptCount": 1,
+      "contacts": 0,
+      "clientsActive": 0,
+      "observed": "Modal onMount TypeError at crm.js:528, no #cuSave binding; Cuentas remained 0",
+      "providerExecution": "NOT_REACHED",
+      "providerAck": "NOT_OBSERVED",
+      "firestoreEntityId": null,
+      "cleanup": "NOT_REQUIRED_BY_OBSERVED_UI; verify provider independently before any conclusion"
+    },
+    {
+      "type": "CRM_OPPORTUNITY",
+      "name": "CXORBIA_QA_G03_OPORTUNIDAD_20261031_R9N2",
+      "attemptCount": 1,
+      "industry": "Otra",
+      "country": "GT",
+      "leadContact": "",
+      "value": 0,
+      "source": "Directo",
+      "observed": "El modal cerró posteriormente, pero Pipeline Nuevo 0 y Leads 0; tras reload de sesión Admin y nueva lectura Pipeline Nuevo 0",
+      "providerAck": "NOT_OBSERVED",
+      "remoteReadback": "NOT_PROVEN",
+      "uiReadbackAfterReload": "NOT_PRESENT",
+      "firestoreEntityId": null,
+      "cleanup": "NO_DELETE_ATTEMPTED; if independent provider search finds this exact synthetic tag, request action-time deletion approval"
+    }
+  ],
+  "hf28": {
+    "tenantTemplatesRead": 9,
+    "source": "Firestore DEV read-only presentation",
+    "allPreExistingTemplatesOperational": true,
+    "isolatedSyntheticTemplateCreated": false,
+    "reason": "User authorized synthetic-only writes; editing shared operational templates is out of scope"
+  },
+  "protectedMode": {
+    "script": "app/core/backend-protected-dev-mode.js",
+    "mode": "readOnly:true, writeMode:disabled, enableDataWrites:false, enableCommandWrites:true",
+    "meaning": "Direct browser writes disabled by design; command provider can in principle commit but must return exact ACK and readback, neither observed"
+  },
+  "currentGate": {
+    "formalMatch": 5,
+    "totalDomains": 21,
+    "nonMatch": 16,
+    "i3": "HOLD",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "production": "DO_NOT_TOUCH"
+  },
+  "constraints": {
+    "humanApprovalPending": true,
+    "hostingOnlyDevSourceBd1NotMaterialized": true,
+    "externalSourceF9ApprovalUnresolved": true,
+    "hrRevisionFreshNotProven": true,
+    "fullArtifactDigestNotCertified": true,
+    "providerWriteAckNotProven": true
+  },
+  "nextAction": "Obtener autorización y ejecución DEV Hosting-only explícitamente limitada a fuente bd1 sin Cloud Run/Firestore Rules/Auth/HR/producción; verificar blob CRM servido; entonces crear una única cuenta sintética y confirmar ACK/readback con dos sesiones; HF28 sólo si se aísla plantilla sintética. No repetir D07 C04/C05."
+}
