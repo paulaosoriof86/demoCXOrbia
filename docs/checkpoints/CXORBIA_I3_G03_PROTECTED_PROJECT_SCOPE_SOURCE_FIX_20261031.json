@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "cxorbia.i3.g03.protected-project-scope-source-fix.20261031.v1",
+  "asOf": "2026-10-31",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "findingId": "VRM-294",
+  "classification": "MAPPING_FAILURE",
+  "severity": "P0",
+  "decision": "PASS_FOCAL_SOURCE_QA_ONLY_PENDING_CANONICAL_CI_AND_EXACT_DEV_REPROOF",
+  "scope": {
+    "tenantId": "tya",
+    "authorizedProjectId": "cinepolis",
+    "provisionalRejectedProjectId": "proyecto retail",
+    "runtime": "cxorbia-backend-dev",
+    "liveSource": "HR_PROTECTED_AUTHENTICATED_READ",
+    "otherTenants": "NOT_TOUCHED"
+  },
+  "observed": {
+    "method": "authenticated DEV browser read-only page resource inventory and DOM",
+    "wrongProjectHrRequests": 6,
+    "wrongProjectRoute": "/api/tenants/tya/projects/proyecto%20retail/hr-live",
+    "correctProjectHrRequests": 14,
+    "correctProjectRoute": "/api/tenants/tya/projects/cinepolis/hr-live",
+    "visibleProjectChoices": ["Cinépolis"],
+    "htmlProjectId": "cinepolis",
+    "sourceRootCause": "resolveScope prioritized CX.data.currentProjectId (provisional/demo) ahead of authorized projectIds from the active principal",
+    "backendRejectionStatus": "NOT_OBSERVED",
+    "relationshipToCrmZeroRows": "NOT_PROVEN"
+  },
+  "source": {
+    "expectedParentControlSha": "7d58b482b55006aa92cc7a58db7148cdfd754b9a",
+    "expectedParentControlTree": "32a2885ff0e074fad3e869186320d43f6f81a9b0",
+    "predecessorProductSourceSha": "bd1f875ab0f1ed0059ab55ede24d7816142817ec",
+    "productSourceSha": "7b70557c22e3902ab3c91fbee326357630fc20a1",
+    "productTree": "97386bece69ead50b85fd3eb1880968cf1dcaa26",
+    "ownerBlobs": {
+      "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js": "7b68d08357f256d736de57ff5b89bf97f397fb4f",
+      "tools/qa/cxorbia-i3-g03-protected-project-scope-source.test.mjs": "855b6329f8cd46b16de92f357c8a819bc613e0e4"
+    },
+    "functionalOwnerChanges": ["app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"],
+    "newTestOwners": ["tools/qa/cxorbia-i3-g03-protected-project-scope-source.test.mjs"],
+    "behavior": "Current and explicit project selectors must belong to the authorized project list. Super role may use backend project records only when tenant/role/UID matches the active principal. Single authorized project is selected; ambiguous untrusted selection blocks."
+  },
+  "localTests": {
+    "beforeFix": "RED_3_OF_5_REPRODUCED",
+    "afterFix": "PASS_10_OF_10",
+    "sourceSyntax": "PASS_NODE_CHECK",
+    "focusedSuiteFiles": [
+      "tools/qa/cxorbia-i3-g03-protected-project-scope-source.test.mjs",
+      "tools/qa/cxorbia-i3-g03-crm-create-modal-binding.test.mjs",
+      "backend/runtime/hr-live-service/test/cxorbia-commercial-command-provider-v1.test.mjs",
+      "backend/runtime/hr-live-service/test/cxorbia-i3-project-period-contract.test.mjs",
+      "backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs"
+    ],
+    "sourceWriteOrProviderMutation": false
+  },
+  "carriedEvidence": {
+    "previousCrmSourceShaServedInDev": "bd1f875ab0f1ed0059ab55ede24d7816142817ec",
+    "previousHostingVersionTail": "79349b",
+    "syntheticCrmAccountId": "ac-6246c88e50534696b139",
+    "syntheticCreateReceiptStatus": "committed",
+    "providerAck": true,
+    "crmUiCountAfterReload": 0,
+    "crmReadModelRootCause": "NOT_ISOLATED",
+    "fixtureRetainedNoDuplicateWrite": true
+  },
+  "gates": {
+    "sourceFocal": "PASS_LOCAL",
+    "canonicalCi": "PENDING",
+    "devMaterialization": "NOT_EXECUTED",
+    "exactDevBrowserReproof": "PENDING",
+    "g03CrmUi": "HOLD",
+    "formalDomainMatch": 5,
+    "formalDomainTotal": 21,
+    "i3": "HOLD",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "production": "DO_NOT_TOUCH"
+  },
+  "nonExecution": {
+    "devDeploys": 0,
+    "productionDeploys": 0,
+    "firebaseAuthWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "newSyntheticCrmWrites": 0,
+    "branchRefMovedAtReceiptConstruction": false
+  },
+  "nextExactAction": "After canonical control alignment and CI source guard, obtain a separate DEV-only Hosting authorization before serving source 7b70557. Reprove HR project routing for Admin and same existing CRM fixture, inspect authenticated _protected.commercial.accounts versus CX.data.__commercialState to isolate CRM UI zero; do not infer CRM closure from HR scope fix. Keep production and I4 blocked."
+}

@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_CRM_SOURCE_SERVED_DEV_PROVIDER_COMMITTED_UI_READ_MODEL_FAILURE",
+  "status": "HOLD_I3_PROJECT_SCOPE_SOURCE_ONLY_CRM_UI_READ_MODEL_FAILURE",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "bd1f875ab0f1ed0059ab55ede24d7816142817ec",
-  "productTreeAuthority": "82e291d378203b355c1e199ca31494672853ab6c",
-  "predecessorProductSourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V536_2026-10-31.json",
-  "findingsLedgerExpectedGitBlob": "77b4fc97eeff05099937bf06dcf99604a287d355",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261031-V205.json",
+  "productSourceSha": "7b70557c22e3902ab3c91fbee326357630fc20a1",
+  "productTreeAuthority": "97386bece69ead50b85fd3eb1880968cf1dcaa26",
+  "predecessorProductSourceSha": "bd1f875ab0f1ed0059ab55ede24d7816142817ec",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V537_2026-10-31.json",
+  "findingsLedgerExpectedGitBlob": "3f3346c2b85e8b2537c0d8dc6a24dd884348c626",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261031-V206.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "G03_CRM_UI_READ_MODEL_AFTER_PROVIDER_PERSISTENCE__F9_POST_F9_HR_FINANCE_HUMAN_E2E_PENDING",
+  "activeBlocker": "G03_CRM_UI_READ_MODEL_AND_HR_PROJECT_SCOPE_DEV_REPROOF__F9_POST_F9_FINANCE_HUMAN_E2E_PENDING",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -106,7 +106,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-294",
+  "nextFindingId": "VRM-295",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3/G03: DEV Hosting source bd1f875 exacto PASS; cuenta sintética crmAccount con recibo providerAck committed y readback Firestore PASS; CRM UI Cuentas=0 tras recarga (FUNCTIONAL_DEFECT observado, owner exacto pendiente). Reproducir origen del desfase entre GET protegido _protected.commercial.accounts y CX.data.__commercialState en Admin, aislar P0, QA focal y autorización nueva antes de otro despliegue DEV. No repetir escritura sintética; no borrar fixture sin aprobación. Mantener plan congelado, pendientes F9/post-F9, HR, finanzas, 5/21 MATCH, I3/Gate20/Gate21 HOLD, I4 y producción NO autorizados.",
+  "exactNextAction": "I3/G03: corrección P0 de alcance HR protegido VRM-294 probada en fuente 7b70557, aún NO servida en DEV; completar guardia canónica y solicitar autorización nueva de Hosting DEV para readback. Cuenta sintética crmAccount providerAck committed en fuente bd1f875 sigue invisible en CRM Cuentas=0: inspeccionar GET protegido _protected.commercial.accounts contra CX.data.__commercialState en Admin y aislar owner sin asumir que el fix HR resuelve CRM. No duplicar escritura sintética ni borrar fixture sin aprobación. Mantener pendientes F9/post-F9, HR, finanzas, 5/21 MATCH, I3/Gate20/Gate21 HOLD; I4 y producción DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "ce52a35ea22c96de062fc6a71b69e8a8ec9f9d40",
+  "moduleTruthExpectedGitBlob": "b545cdceaf74d03d134f464f382027247eaafbc7",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -15920,6 +15920,22 @@
     "totalDomains": 21,
     "gate20": "HOLD",
     "gate21": "HOLD",
+    "production": "DO_NOT_TOUCH"
+  },
+  "g03ProtectedProjectScope20261031": {
+    "findingId": "VRM-294",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_G03_PROTECTED_PROJECT_SCOPE_SOURCE_FIX_20261031.json",
+    "receiptGitBlob": "5dd954561d965a39346d0e0147b12283b6f0a364",
+    "sourceSha": "7b70557c22e3902ab3c91fbee326357630fc20a1",
+    "sourceTree": "97386bece69ead50b85fd3eb1880968cf1dcaa26",
+    "sourceBlob": "7b68d08357f256d736de57ff5b89bf97f397fb4f",
+    "qaBlob": "855b6329f8cd46b16de92f357c8a819bc613e0e4",
+    "sourceTests": "PASS_10_OF_10",
+    "devMaterialization": "NOT_EXECUTED",
+    "crmUiReadModel": "HOLD_UNRESOLVED",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "formalMatch": 5,
     "production": "DO_NOT_TOUCH"
   }
 }
