@@ -2,7 +2,7 @@
   "schemaVersion": "cxorbia.recovery.execution-current.v1",
   "planLockPath": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
   "planId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
-  "asOf": "2026-10-30",
+  "asOf": "2026-10-31",
   "iteration": "I3",
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
@@ -254,7 +254,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 G03: source CRM bd1f875 y guardia canónico run1999 PASS; DEV sigue en predecesora 419, sin ACK/readback confirmado del intento CRM sintético. Próximo bloqueo: autorizar y ejecutar una sola materialización Hosting-only DEV exacta sin Cloud Run/Rules/Auth/HR ni producción, verificar el blob servido y entonces una cuenta sintética con ACK/readback en dos Admin. HF28 únicamente fixture aislada; continuar autoridad F9/post-F9, HR y finanzas pendientes. Sin repetir D07 ni C04/C05. I3/Gate20/Gate21 HOLD, 5/21 MATCH, I4 no autorizado.",
+  "nextExactAction": "I3/G03: DEV Hosting source bd1f875 exacto PASS; cuenta sintética crmAccount con recibo providerAck committed y readback Firestore PASS; CRM UI Cuentas=0 tras recarga (FUNCTIONAL_DEFECT observado, owner exacto pendiente). Reproducir origen del desfase entre GET protegido _protected.commercial.accounts y CX.data.__commercialState en Admin, aislar P0, QA focal y autorización nueva antes de otro despliegue DEV. No repetir escritura sintética; no borrar fixture sin aprobación. Mantener plan congelado, pendientes F9/post-F9, HR, finanzas, 5/21 MATCH, I3/Gate20/Gate21 HOLD, I4 y producción NO autorizados.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -297,7 +297,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-10-31T17:51:00.532Z",
+  "lastUpdatedAt": "2026-10-31T20:30:00Z",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -550,7 +550,7 @@
     "newlyFunctionallyClosedI3Tasks": 0,
     "newReadyPreviews": []
   },
-  "nextAuthorizationScope": "DEV tya/cinepolis protected HR/Firebase reconciliation and idempotent shopper/visits writes only, after revision and runtime preflight, including receipts ACK effects and readback; no HR sheet or production writes.",
+  "nextAuthorizationScope": "Una futura publicación DEV o eliminación de fixture QA exige alcance nuevo y explícito; la autorización de un solo deploy Hosting DEV ya fue consumida. Producción no autorizada.",
   "latestHumanVisualAdjudication": {
     "receiptPath": "CXORBIA_I3_SHOPPER_VISUAL_ADJUDICATION_2026-10-18.json",
     "day": "2026-10-18",
@@ -954,12 +954,12 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261031-V204.json",
-    "gitBlob": "b6519779e71ba34201bde768297f51eece1a331a",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261031-V205.json",
+    "gitBlob": "ce52a35ea22c96de062fc6a71b69e8a8ec9f9d40",
     "sourceSha": "bd1f875ab0f1ed0059ab55ede24d7816142817ec",
     "allModulesMatch": false,
     "phaseAComplete": false,
-    "sha256": "dcaf39baa6b4c4ec71be96f832c80b81107a0bc88a327fbe134c5f85c45293f4"
+    "sha256": "cb1aa486b5ac32d4a940751980d59d75326034430651746e406b711b10dd759a"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -2996,8 +2996,8 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "bd1f875ab0f1ed0059ab55ede24d7816142817ec",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261031-V204.json",
-    "matrixBlob": "b6519779e71ba34201bde768297f51eece1a331a",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261031-V205.json",
+    "matrixBlob": "ce52a35ea22c96de062fc6a71b69e8a8ec9f9d40",
     "classificationCounts": {
       "COMPOSED_NOT_DEPLOYED": 2,
       "MATCH": 5,
@@ -3008,7 +3008,7 @@
       "TRUE_FUNCTIONAL_DEFECT": 3
     },
     "derivedAt": "2026-10-31",
-    "meaning": "LIVE_CONTROL_CLASSIFICATIONS_NOT_PROGRESS_PERCENTAGE"
+    "meaning": "CONTROL_CLASSIFICATIONS_5_OF_21_UNCHANGED_AFTER_HOSTING_AND_ONE_SYNTHETIC_WRITE"
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
   "activeMethodologyGuard": {
@@ -5465,7 +5465,7 @@
     "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
     "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751"
   },
-  "exactNextAction": "I3 G03: source CRM bd1f875 y guardia canónico run1999 PASS; DEV sigue en predecesora 419, sin ACK/readback confirmado del intento CRM sintético. Próximo bloqueo: autorizar y ejecutar una sola materialización Hosting-only DEV exacta sin Cloud Run/Rules/Auth/HR ni producción, verificar el blob servido y entonces una cuenta sintética con ACK/readback en dos Admin. HF28 únicamente fixture aislada; continuar autoridad F9/post-F9, HR y finanzas pendientes. Sin repetir D07 ni C04/C05. I3/Gate20/Gate21 HOLD, 5/21 MATCH, I4 no autorizado.",
+  "exactNextAction": "I3/G03: DEV Hosting source bd1f875 exacto PASS; cuenta sintética crmAccount con recibo providerAck committed y readback Firestore PASS; CRM UI Cuentas=0 tras recarga (FUNCTIONAL_DEFECT observado, owner exacto pendiente). Reproducir origen del desfase entre GET protegido _protected.commercial.accounts y CX.data.__commercialState en Admin, aislar P0, QA focal y autorización nueva antes de otro despliegue DEV. No repetir escritura sintética; no borrar fixture sin aprobación. Mantener plan congelado, pendientes F9/post-F9, HR, finanzas, 5/21 MATCH, I3/Gate20/Gate21 HOLD, I4 y producción NO autorizados.",
   "previousExecutionReceiptBeforeRun1983Seal": {
     "path": "CXORBIA_I3_RUN1852_POST_DEPLOY_CONSISTENCY_SEAL_2026-10-24.json",
     "kind": "RUN1852_SOURCE_F283_DEV_PASS_ADMIN_THREE_VISIT_UI_PASS_DURABLE_HR_OPERATIONAL_PARITY_P0_OPEN",
@@ -5831,5 +5831,34 @@
       "CXORBIA_QA_G03_OPORTUNIDAD_20261031_R9N2"
     ],
     "production": "DO_NOT_TOUCH"
+  },
+  "g03HostingDevSyntheticReadback20261031": {
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_G03_CRM_DEV_HOSTING_AND_PERSISTENCE_PARTIAL_E2E_20261031.json",
+    "receiptGitBlob": "9840dcbedb38a0bed6dd540f2ecc2221eff3f9fa",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261031-V205.json",
+    "matrixGitBlob": "ce52a35ea22c96de062fc6a71b69e8a8ec9f9d40",
+    "sourceSha": "bd1f875ab0f1ed0059ab55ede24d7816142817ec",
+    "sourceTree": "82e291d378203b355c1e199ca31494672853ab6c",
+    "hostingVersionTail": "79349b",
+    "servedCrmBlob": "c04c7792f0dd903563ea9cac41c54dd36127f005",
+    "providerReceiptStatus": "committed",
+    "providerAck": true,
+    "providerAccountId": "ac-6246c88e50534696b139",
+    "uiReadback": "FAIL_ZERO_AFTER_RELOAD",
+    "g03": "HOLD",
+    "secondAdminReadback": "PENDING",
+    "formalMatch": 5,
+    "totalDomains": 21,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": "DO_NOT_TOUCH"
+  },
+  "latestControlObservationReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_G03_CRM_DEV_HOSTING_AND_PERSISTENCE_PARTIAL_E2E_20261031.json",
+    "gitBlob": "9840dcbedb38a0bed6dd540f2ecc2221eff3f9fa",
+    "state": "HOLD_G03_PROVIDER_COMMITTED_UI_READ_MODEL_FAIL",
+    "kind": "G03_DEV_HOSTING_AND_ONE_SYNTHETIC_PROVIDER_PROBE",
+    "noWholeProductCertification": true,
+    "production": false
   }
 }

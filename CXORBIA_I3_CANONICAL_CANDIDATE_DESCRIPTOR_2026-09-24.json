@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_CRM_MODAL_SOURCE_FIXED_G03_DEV_E2E_AND_APPROVAL_PENDING",
+  "status": "HOLD_I3_CRM_SOURCE_SERVED_DEV_PROVIDER_COMMITTED_UI_READ_MODEL_FAILURE",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -9,11 +9,11 @@
   "predecessorProductSourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V536_2026-10-31.json",
   "findingsLedgerExpectedGitBlob": "77b4fc97eeff05099937bf06dcf99604a287d355",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261031-V204.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261031-V205.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "G03_CRM_MODAL_P0_SOURCE_ONLY_AND_F9_POST_F9_APPROVAL_PROVIDER_E2E_HR_FINANCE_PENDING",
+  "activeBlocker": "G03_CRM_UI_READ_MODEL_AFTER_PROVIDER_PERSISTENCE__F9_POST_F9_HR_FINANCE_HUMAN_E2E_PENDING",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 G03: source CRM bd1f875 y guardia canónico run1999 PASS; DEV sigue en predecesora 419, sin ACK/readback confirmado del intento CRM sintético. Próximo bloqueo: autorizar y ejecutar una sola materialización Hosting-only DEV exacta sin Cloud Run/Rules/Auth/HR ni producción, verificar el blob servido y entonces una cuenta sintética con ACK/readback en dos Admin. HF28 únicamente fixture aislada; continuar autoridad F9/post-F9, HR y finanzas pendientes. Sin repetir D07 ni C04/C05. I3/Gate20/Gate21 HOLD, 5/21 MATCH, I4 no autorizado.",
+  "exactNextAction": "I3/G03: DEV Hosting source bd1f875 exacto PASS; cuenta sintética crmAccount con recibo providerAck committed y readback Firestore PASS; CRM UI Cuentas=0 tras recarga (FUNCTIONAL_DEFECT observado, owner exacto pendiente). Reproducir origen del desfase entre GET protegido _protected.commercial.accounts y CX.data.__commercialState en Admin, aislar P0, QA focal y autorización nueva antes de otro despliegue DEV. No repetir escritura sintética; no borrar fixture sin aprobación. Mantener plan congelado, pendientes F9/post-F9, HR, finanzas, 5/21 MATCH, I3/Gate20/Gate21 HOLD, I4 y producción NO autorizados.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "b6519779e71ba34201bde768297f51eece1a331a",
+  "moduleTruthExpectedGitBlob": "ce52a35ea22c96de062fc6a71b69e8a8ec9f9d40",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -15900,5 +15900,26 @@
       "remoteDurability": "NOT_PROVEN",
       "production": false
     }
+  },
+  "g03HostingDevSyntheticReadback20261031": {
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_G03_CRM_DEV_HOSTING_AND_PERSISTENCE_PARTIAL_E2E_20261031.json",
+    "receiptGitBlob": "9840dcbedb38a0bed6dd540f2ecc2221eff3f9fa",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261031-V205.json",
+    "matrixGitBlob": "ce52a35ea22c96de062fc6a71b69e8a8ec9f9d40",
+    "sourceSha": "bd1f875ab0f1ed0059ab55ede24d7816142817ec",
+    "sourceTree": "82e291d378203b355c1e199ca31494672853ab6c",
+    "hostingVersionTail": "79349b",
+    "servedCrmBlob": "c04c7792f0dd903563ea9cac41c54dd36127f005",
+    "providerReceiptStatus": "committed",
+    "providerAck": true,
+    "providerAccountId": "ac-6246c88e50534696b139",
+    "uiReadback": "FAIL_ZERO_AFTER_RELOAD",
+    "g03": "HOLD",
+    "secondAdminReadback": "PENDING",
+    "formalMatch": 5,
+    "totalDomains": 21,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": "DO_NOT_TOUCH"
   }
 }

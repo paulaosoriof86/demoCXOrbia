@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "cxorbia.i3.g03.crm-hosting-dev-materialization-and-persisted-readback.v1",
+  "id": "CXORBIA-I3-G03-CRM-HOSTING-DEV-MATERIALIZATION-PARTIAL-E2E-20261031",
+  "observedAt": "2026-10-31T20:30:00Z",
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": {
+    "hosting": "PASS_SOURCE_MATCH",
+    "providerPersistence": "PASS",
+    "crmUiReadProjection": "FUNCTIONAL_DEFECT_OBSERVED_ROOT_CAUSE_UNCONFIRMED",
+    "wholeG03": "HOLD",
+    "releaseComposition": "HOLD"
+  },
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadAtEvidence": "95db8f92b47882d391f7a2f02d51bebdf4ad2957",
+  "authorization": {
+    "Paula": "autorizo",
+    "scope": "Un único despliegue Hosting DEV de source bd1f875 y prueba exclusivamente sintética en Firestore DEV",
+    "production": false,
+    "cloudRun": false,
+    "rules": false,
+    "auth": false,
+    "hr": false
+  },
+  "productSource": {
+    "sha": "bd1f875ab0f1ed0059ab55ede24d7816142817ec",
+    "tree": "82e291d378203b355c1e199ca31494672853ab6c",
+    "file": "app/modules/crm.js",
+    "blob": "c04c7792f0dd903563ea9cac41c54dd36127f005",
+    "filesAtCheckout": 3075,
+    "gitClean": true,
+    "hostingConfigPublic": "app",
+    "firebaseTarget": "cxorbia-dev",
+    "project": "cxorbia-backend-dev"
+  },
+  "canonicalSourceQa": {
+    "ciRunId": 41226115013,
+    "ciRunNumber": 1999,
+    "conclusion": "success",
+    "scope": "SOURCE_AUTHORITY_NOT_TERMINAL_I3",
+    "localTests": {
+      "pass": 3,
+      "fail": 0
+    }
+  },
+  "devHosting": {
+    "origin": "https://cxorbia-backend-dev.web.app",
+    "site": "cxorbia-backend-dev",
+    "cli": "firebase deploy --only hosting:cxorbia-dev --project cxorbia-backend-dev --non-interactive",
+    "deployCount": 1,
+    "result": "success",
+    "hostingVersionTail": "79349b",
+    "predecessorHostingVersionTail": "1e249f",
+    "servedPath": "/modules/crm.js",
+    "servedGitBlob": "c04c7792f0dd903563ea9cac41c54dd36127f005",
+    "sourceGitBlob": "c04c7792f0dd903563ea9cac41c54dd36127f005",
+    "servedBytesExactSource": true,
+    "fullArtifactDigestCertified": false,
+    "runtimeChanged": false,
+    "firestoreRulesChanged": false,
+    "authChanged": false,
+    "hrChanged": false,
+    "productionChanged": false
+  },
+  "syntheticE2e": {
+    "tenantId": "tya",
+    "role": "Admin",
+    "route": "CRM Comercial > Cuentas > Nueva cuenta",
+    "attemptCount": 1,
+    "accountName": "CXORBIA_QA_G03_20261031_K7P3",
+    "notes": "QA sintética exclusivamente DEV · I3/G03 · commit bd1f875 · NO cliente real",
+    "contactCreated": false,
+    "clientCreated": false,
+    "providerEntityPath": "tenants/tya/crmAccounts/ac-6246c88e50534696b139",
+    "providerEntityId": "ac-6246c88e50534696b139",
+    "providerEntityVersion": 1,
+    "providerEntityDeleted": false,
+    "providerEntityCreatedAt": "2026-10-31T20:27:01.703Z",
+    "receiptPath": "tenants/tya/commandReceipts/df3677d9ebc66ef408b0ebb538ed7a2f70186891",
+    "receiptCommandType": "crm.account.create",
+    "receiptStatus": "committed",
+    "receiptProviderAck": true,
+    "receiptEntityVersion": 1,
+    "providerPersistenceReadback": "PASS",
+    "uiCountAfterSave": 0,
+    "uiCountAfterReload": 0,
+    "independentSecondAdminReadback": "NOT_EXECUTED",
+    "uiProjection": "FAIL",
+    "fullE2e": "HOLD",
+    "cleanup": "NOT_EXECUTED; do not delete without action-time confirmation"
+  },
+  "causalBoundaries": {
+    "sourceModalBindingDefectFixed": true,
+    "commercialProviderCanCreate": true,
+    "protectedReadModelInSource": "backend/runtime/hr-live-service/server.mjs:202-215",
+    "frontendProjectionInSource": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js:157",
+    "crmRenderingInSource": "app/modules/crm.js:64,284-300",
+    "rootCause": "NOT_PROVEN__inspect_protected_commercial_payload_vs_frontend_hydration_before_source_mutation"
+  },
+  "currentGates": {
+    "formalDomainsMatch": 5,
+    "totalDomains": 21,
+    "nonMatch": 16,
+    "i3": "HOLD",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "production": "DO_NOT_TOUCH",
+    "humanAcceptance": "PENDING",
+    "f9AndPostF9Approval": "PENDING",
+    "hrFinanceAndOtherP0": "PENDING"
+  },
+  "preserved": {
+    "frozenPlan": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
+    "shockPlan": "CXORBIA_I3_PLAN_CHOQUE_CIERRE_MONOTONICO_FROZEN_2026-10-28.md",
+    "previousFullDevMaterializationSource": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "previousRuntimeRevision": "cxorbia-live-hr-dev-00331-2xq",
+    "historicalReceiptsImmutable": true,
+    "noSecondDeploy": true
+  },
+  "nextAction": "I3 G03: lectura segura del GET protegido `_protected.commercial.accounts` autenticado y comparación con CX.data.__commercialState/CRM después de boot y reload; aislar owner exacto y reproducir FAIL; corregir solo P0 PROVEN, tests focales, source guard y nueva aprobación explícita antes de otro deploy DEV. No usar I4/producción ni elevar 5/21 MATCH."
+}
