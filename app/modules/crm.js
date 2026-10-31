@@ -525,8 +525,7 @@ CX.module('crm', ({data,ui})=>{
       <label class="flex" style="gap:7px;font-size:12.5px;margin-bottom:12px;cursor:pointer"><input type="checkbox" id="cuEsCli"> Registrar también como Cliente activo (crea expediente y trazabilidad)</label>
       <div style="text-align:right"><button class="btn btn-pr btn-sm" id="cuSave">Crear cuenta + contacto</button></div>
     `,{onMount:(ov,close)=>{
-      ov.querySelector('#cuModoManual').addEventListener('click',()=>{ov.querySelector('#cuIAbox').style.display='none';ov.querySelector('#cuModoManual').className='btn btn-sm btn-pr';ov.querySelector('#cuModoIA').className='btn btn-sm btn-ghost';});
-      ov.querySelector('#cuModoIA').addEventListener('click',()=>{ov.querySelector('#cuIAbox').style.display='block';ov.querySelector('#cuModoIA').className='btn btn-sm btn-pr';ov.querySelector('#cuModoManual').className='btn btn-sm btn-ghost';});
+      // Los botones de alternancia ya no existen en este modal; el panel IA sigue siendo opcional.
       ov.querySelector('#cuFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;ov.querySelector('#cuFileName').textContent='Analizando '+f.name+'…';
         const fill=()=>{const base=f.name.replace(/\.[^.]+$/,'').replace(/[_-]/g,' ');ov.querySelector('#cuN').value=ov.querySelector('#cuN').value||base.replace(/\b\w/g,c=>c.toUpperCase());ov.querySelector('#cuNota').value=ov.querySelector('#cuNota').value||('Extraído de '+f.name+' con IA.');ov.querySelector('#cuFileName').textContent='✓ Datos extraídos de '+f.name+' — revisa y completa.';ui.toast('IA extrajo los datos del documento','ok');};
         if(CX.ai&&CX.ai.ready()){CX.ai.ask('Extrae de este documento ('+f.name+') el nombre de la empresa, rubro, contacto y datos. Responde breve.').then(fill).catch(fill);}else setTimeout(fill,800);
