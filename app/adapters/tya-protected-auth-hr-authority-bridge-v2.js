@@ -12,7 +12,14 @@ function resolveScope(c){
   const explicit=str(p.get('cxProjectId'));
   const current=str(CX.data?.currentProjectId);
   const scoped=[...new Set(arr(c?.projectIds).map(str).filter(Boolean))];
-  const projectId=explicit||current||(scoped.length===1?scoped[0]:'');
+  const backend=window.CX_BACKEND_AUTHORIZED_STATE||{},principal=backend.principal||{};
+  const sameBackendPrincipal=str(backend.tenantId)===tenantId&&str(principal.actorUid)===principalUid()&&!!principalUid()&&str(principal.role)===str(c?.role);
+  const backendProjects=sameBackendPrincipal?[...new Set(arr(backend.projects).map(x=>str(x?.projectId||x?.id)).filter(Boolean))]:[];
+  const allowed=str(c?.role).toLowerCase()==='super'&&backendProjects.length?backendProjects:scoped;
+  // Initial seed/demo project is never an authenticated HR routing authority.
+  const trustedExplicit=allowed.includes(explicit)?explicit:'';
+  const trustedCurrent=allowed.includes(current)?current:'';
+  const projectId=trustedExplicit||trustedCurrent||(allowed.length===1?allowed[0]:'');
   return {tenantId,projectId,project:projectId?projectRecord(projectId):null};
 }
 function operationalSource(scope){const x=scope?.project?.operationalSource;return x&&typeof x==='object'?x:null;}
