@@ -1,0 +1,344 @@
+{
+  "schemaVersion": "cxorbia.i3.g03.postf9-source-delta-readback.v1",
+  "id": "CXORBIA-I3-G03-POSTF9-SOURCE-DELTA-READBACK-20261031",
+  "observedAt": "2026-10-31T17:14:46.008Z",
+  "dateLocal": "2026-10-31",
+  "timeZone": "America/Guatemala",
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "kind": "SOURCE_APPROVAL_PROVENANCE_FOCAL_READONLY_ADJUDICATION",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlParent": {
+    "sha": "baeacf0d4a58bdead3f2ccfe86e919588bcb09c5",
+    "tree": "637f5fa0bc11d2fd9047502fa6e7a55f10fd76cd"
+  },
+  "productSource": {
+    "sha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "tree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751"
+  },
+  "plan": {
+    "id": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
+    "frozenSince": "2026-10-16",
+    "unchanged": true
+  },
+  "baselineAuthority": {
+    "latestRecordedApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+    "approvalPolicy": "approvedSourceCommit + approvedBlob + exact currentBlob equality; composition alone does not confer approval"
+  },
+  "scope": {
+    "filesCompared": 4,
+    "exactBlobPairsReadback": 8,
+    "sourceHistoriesRead": 4,
+    "associatedPrSearches": 7,
+    "associatedPrsFound": 0,
+    "humanApprovalsEstablished": 0,
+    "directDomainOwnerApprovalMembershipEstablished": 0,
+    "domainFormalMatchBeforeAndAfter": 5,
+    "domainTotal": 21
+  },
+  "fileAdjudication": [
+    {
+      "path": "app/core/automations.js",
+      "latestRecordedApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+      "latestRecordedApprovedBlob": "940ece14951719114401891697f303fab88b0f36",
+      "candidateSource": "4190089d813bd23948ac7f4f75b772b6727f3923",
+      "candidateBlob": "1bf04186e2461340e2852a7608b98d1d510a71a0",
+      "approvalParity": false,
+      "sourceFileClassificationBefore": "MATCH",
+      "classificationDecision": "HOLD_APPROVAL_PROVENANCE_NOT_ESTABLISHED",
+      "diff": {
+        "method": "exact_content_LCS_lines",
+        "lineAdditions": 244,
+        "lineDeletions": 21,
+        "changeGroups": 3
+      },
+      "taskIds": [
+        "D02",
+        "E08"
+      ],
+      "impact": [
+        "D02_pdf_docx_binary_extraction",
+        "HF28_tenant_durable_templates"
+      ],
+      "changedSourceCommits": [
+        {
+          "sha": "99e8e456318b3f0f01c9bd0caa16cc6a0c1c07dc",
+          "subject": "fix(i3): replace D02 binary extraction with PDF/DOCX parsers",
+          "url": "https://github.com/paulaosoriof86/demoCXOrbia/commit/99e8e456318b3f0f01c9bd0caa16cc6a0c1c07dc"
+        },
+        {
+          "sha": "ab5a85b1747b5e4bf48b5a5660f13692a32693b9",
+          "subject": "fix(i3/hf28): normalize legacy whatsapp to draft-only channel before durable validation",
+          "url": "https://github.com/paulaosoriof86/demoCXOrbia/commit/ab5a85b1747b5e4bf48b5a5660f13692a32693b9"
+        },
+        {
+          "sha": "50472d8cb637e8385834ba184951eeffd9a6012a",
+          "subject": "fix(i3/b7-b8): make HF28 automation templates tenant-durable with remote ACK/readback",
+          "url": "https://github.com/paulaosoriof86/demoCXOrbia/commit/50472d8cb637e8385834ba184951eeffd9a6012a"
+        }
+      ],
+      "priorProofPreserved": [
+        "RUN1749_D02_5_OF_5",
+        "RUN1753_D02_LIVE_PDF_DOCX_PARSER_SMOKE"
+      ],
+      "openProof": [
+        "F9_POST_F9_EXPLICIT_APPROVAL",
+        "CURRENT_ARTIFACT_DOCUMENT_EXTRACTION_E2E",
+        "HF28_TWO_INDEPENDENT_ADMIN_SESSIONS"
+      ],
+      "earlierG03QA": [
+        "RUN1749_D02_5_OF_5",
+        "RUN1753_D02_LIVE_PDF_DOCX_PARSER_SMOKE"
+      ],
+      "domainMembership": "TASK_DEPENDENCY_MAPPING_ONLY_NOT_DIRECT_APPROVED_MEMBERSHIP",
+      "currentMatchesHistoricalRun1357": false,
+      "prLookup": "NO_ASSOCIATED_PULL_REQUEST_FOUND_FOR_QUERIED_FOCAL_FIX_COMMITS__NOT_A_GLOBAL_APPROVAL_SEARCH"
+    },
+    {
+      "path": "app/modules/automatizaciones.js",
+      "latestRecordedApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+      "latestRecordedApprovedBlob": "ac456dfb309de43cbc5a25bee3ecf48076a168db",
+      "candidateSource": "4190089d813bd23948ac7f4f75b772b6727f3923",
+      "candidateBlob": "a28a2354bd4a0132cd788abfa3842a796005be32",
+      "approvalParity": false,
+      "sourceFileClassificationBefore": "MATCH",
+      "classificationDecision": "HOLD_APPROVAL_PROVENANCE_NOT_ESTABLISHED",
+      "diff": {
+        "method": "exact_content_LCS_lines",
+        "lineAdditions": 32,
+        "lineDeletions": 4,
+        "changeGroups": 4
+      },
+      "taskIds": [
+        "E08"
+      ],
+      "impact": [
+        "HF28_tenant_durable_templates_with_remote_ACK_readback"
+      ],
+      "changedSourceCommits": [
+        {
+          "sha": "50472d8cb637e8385834ba184951eeffd9a6012a",
+          "subject": "fix(i3/b7-b8): make HF28 automation templates tenant-durable with remote ACK/readback",
+          "url": "https://github.com/paulaosoriof86/demoCXOrbia/commit/50472d8cb637e8385834ba184951eeffd9a6012a"
+        }
+      ],
+      "priorProofPreserved": [
+        "HF28_OCT13_SOURCE_PATCH"
+      ],
+      "openProof": [
+        "F9_POST_F9_EXPLICIT_APPROVAL",
+        "TWO_ADMIN_SESSION_PROVIDER_ACK_READBACK",
+        "HUMAN_ACCEPTANCE"
+      ],
+      "earlierG03QA": [
+        "HF28_OCT13_SOURCE_PATCH",
+        "PRIOR_RUN1513_LEGACY_CHANNEL_VALIDATION_FAIL"
+      ],
+      "domainMembership": "TASK_DEPENDENCY_MAPPING_ONLY_NOT_DIRECT_APPROVED_MEMBERSHIP",
+      "currentMatchesHistoricalRun1357": false,
+      "prLookup": "NO_ASSOCIATED_PULL_REQUEST_FOUND_FOR_QUERIED_FOCAL_FIX_COMMITS__NOT_A_GLOBAL_APPROVAL_SEARCH"
+    },
+    {
+      "path": "app/modules/clientes.js",
+      "latestRecordedApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+      "latestRecordedApprovedBlob": "9c3c98605f4fb2e22d66b241607c9dd70c45d159",
+      "candidateSource": "4190089d813bd23948ac7f4f75b772b6727f3923",
+      "candidateBlob": "28afb209ff3b882f322d2ba9a3f40c18997effef",
+      "approvalParity": false,
+      "sourceFileClassificationBefore": "MATCH",
+      "classificationDecision": "HOLD_APPROVAL_PROVENANCE_NOT_ESTABLISHED",
+      "diff": {
+        "method": "exact_content_LCS_lines",
+        "lineAdditions": 91,
+        "lineDeletions": 99,
+        "changeGroups": 13
+      },
+      "taskIds": [
+        "E06",
+        "A08",
+        "G03"
+      ],
+      "impact": [
+        "VRM189_provider_durable_client_commands",
+        "business_project_period_projections"
+      ],
+      "changedSourceCommits": [
+        {
+          "sha": "c8d2a790df29208c07eafea49d1d62d2d93b09e6",
+          "subject": "fix(cxorbia-i3): align period, visit and business-project projections",
+          "url": "https://github.com/paulaosoriof86/demoCXOrbia/commit/c8d2a790df29208c07eafea49d1d62d2d93b09e6"
+        },
+        {
+          "sha": "4050e8afc952183131d48600b84260024ed78ac5",
+          "subject": "fix(i3): close run1418 identity, Clientes and auth retry blockers [skip ci]",
+          "url": "https://github.com/paulaosoriof86/demoCXOrbia/commit/4050e8afc952183131d48600b84260024ed78ac5"
+        },
+        {
+          "sha": "f41b61629d57432fa6c1382ea9bb09f1a464c263",
+          "subject": "fix(i3): add durable tenant commercial authority for VRM189",
+          "url": "https://github.com/paulaosoriof86/demoCXOrbia/commit/f41b61629d57432fa6c1382ea9bb09f1a464c263"
+        }
+      ],
+      "priorProofPreserved": [
+        "RUN1418_SOURCE_FIX",
+        "LOCAL_5_OF_5_COMMERCIAL_QA",
+        "G03_CLIENTES_HISTORICO_LOCAL_4_OF_4"
+      ],
+      "openProof": [
+        "F9_POST_F9_EXPLICIT_APPROVAL",
+        "EXACT_DEV_CLIENT_ADMIN_E2E",
+        "HUMAN_ACCEPTANCE"
+      ],
+      "earlierG03QA": [
+        "4050e8af_RUN1418_SOURCE_FIX",
+        "LOCAL_5_OF_5_TEST_AFTER_ASSERTION_RECTIFICATION"
+      ],
+      "domainMembership": "TASK_DEPENDENCY_MAPPING_ONLY_NOT_DIRECT_APPROVED_MEMBERSHIP",
+      "currentMatchesHistoricalRun1357": false,
+      "prLookup": "NO_ASSOCIATED_PULL_REQUEST_FOUND_FOR_QUERIED_FOCAL_FIX_COMMITS__NOT_A_GLOBAL_APPROVAL_SEARCH"
+    },
+    {
+      "path": "app/modules/crm.js",
+      "latestRecordedApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+      "latestRecordedApprovedBlob": "6a6ff1c964eff4f25ecaf33b028335bfc62810ee",
+      "candidateSource": "4190089d813bd23948ac7f4f75b772b6727f3923",
+      "candidateBlob": "07732668ea2bd700dffe5fbff8df8e473575be05",
+      "approvalParity": false,
+      "sourceFileClassificationBefore": "MATCH",
+      "classificationDecision": "HOLD_APPROVAL_PROVENANCE_NOT_ESTABLISHED",
+      "diff": {
+        "method": "exact_content_LCS_lines",
+        "lineAdditions": 53,
+        "lineDeletions": 49,
+        "changeGroups": 18
+      },
+      "taskIds": [
+        "E06"
+      ],
+      "impact": [
+        "VRM189_provider_durable_CRM_commands_ACK_readback"
+      ],
+      "changedSourceCommits": [
+        {
+          "sha": "ef790a5191bc5359d9c67ab2a28f8e04eb54be37",
+          "subject": "fix(i3): repair VRM189 CRM source syntax",
+          "url": "https://github.com/paulaosoriof86/demoCXOrbia/commit/ef790a5191bc5359d9c67ab2a28f8e04eb54be37"
+        },
+        {
+          "sha": "f41b61629d57432fa6c1382ea9bb09f1a464c263",
+          "subject": "fix(i3): add durable tenant commercial authority for VRM189",
+          "url": "https://github.com/paulaosoriof86/demoCXOrbia/commit/f41b61629d57432fa6c1382ea9bb09f1a464c263"
+        }
+      ],
+      "priorProofPreserved": [
+        "RUN1357_HISTORICAL_BLOB_PARITY",
+        "RUN1357_ADMIN_34_OF_34_HISTORICAL_SCOPE"
+      ],
+      "openProof": [
+        "F9_POST_F9_EXPLICIT_APPROVAL",
+        "CURRENT_ARTIFACT_PROVIDER_ACK_READBACK",
+        "HUMAN_ACCEPTANCE"
+      ],
+      "earlierG03QA": [
+        "RUN1357_SOURCE_BLOB_IDENTICAL"
+      ],
+      "domainMembership": "TASK_DEPENDENCY_MAPPING_ONLY_NOT_DIRECT_APPROVED_MEMBERSHIP",
+      "currentMatchesHistoricalRun1357": true,
+      "prLookup": "NO_ASSOCIATED_PULL_REQUEST_FOUND_FOR_QUERIED_FOCAL_FIX_COMMITS__NOT_A_GLOBAL_APPROVAL_SEARCH"
+    }
+  ],
+  "groupedProofQueue": [
+    {
+      "id": "G03-D02",
+      "files": [
+        "app/core/automations.js"
+      ],
+      "tasks": [
+        "D02"
+      ],
+      "carryForward": [
+        "RUN1749_SOURCE_QA_5_OF_5",
+        "RUN1753_OLDER_LIVE_PARSER_SMOKE"
+      ],
+      "next": "Reconcile source approval and exact 419 DEV parser E2E only if not already certified by matching digest; do not repeat old PASS."
+    },
+    {
+      "id": "G03-HF28",
+      "files": [
+        "app/core/automations.js",
+        "app/modules/automatizaciones.js"
+      ],
+      "tasks": [
+        "E08"
+      ],
+      "carryForward": [
+        "HF28_SOURCE_REPAIR"
+      ],
+      "next": "Two independent real Admin DEV sessions, provider ACK/readback and visible template state; no production writes."
+    },
+    {
+      "id": "G03-VRM189",
+      "files": [
+        "app/modules/clientes.js",
+        "app/modules/crm.js"
+      ],
+      "tasks": [
+        "E06",
+        "A08"
+      ],
+      "carryForward": [
+        "RUN1357_HISTORICAL_ADMIN_SCOPE",
+        "RUN1418_CLIENTES_SOURCE_REPAIR"
+      ],
+      "next": "Confirm current candidate provider-backed create/update commands and client/CRM role gates; current artifact E2E and human only where affected."
+    },
+    {
+      "id": "G03-PERIOD",
+      "files": [
+        "app/modules/clientes.js"
+      ],
+      "tasks": [
+        "G03",
+        "E06"
+      ],
+      "carryForward": [
+        "G03_LOCAL_CLIENTES_HISTORICO_4_OF_4"
+      ],
+      "next": "Exact DEV periodId vs business projectId Client/Admin E2E; preserve 4/4 source PASS."
+    }
+  ],
+  "compositionNote": {
+    "effectiveRutasOwner": "app/modules/operacion-extra.js",
+    "standaloneRutasLoaded": false,
+    "noApprovedProvenanceAssignedTo": [
+      "app/core/backend-ai.js",
+      "app/modules/rutas.js"
+    ]
+  },
+  "importantLimits": [
+    "The diff proves changed bytes and causal commit topics, not release approval or full functional correctness.",
+    "No associated GitHub PR in inspected commits does not prove absence of approval outside GitHub.",
+    "Current sourceFiles MATCH metadata for the four paths remains contradictory; it is not silently repaired or counted as a formal approval.",
+    "Historical RUN1357 and focal RUN1749/RUN1753/RUN1418 evidence retain their exact prior scope, without current full-artifact certification.",
+    "No 21-domain classification, task PASS, Gate20/21, or I3 GO is changed by this forensic readback."
+  ],
+  "noChanges": {
+    "sourceFiles": 0,
+    "canonicalMatrix": 0,
+    "ledger": 0,
+    "descriptor": 0,
+    "productArtifact": 0,
+    "devBuilds": 0,
+    "devDeploys": 0,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "productionWrites": 0,
+    "i4Authorized": false
+  },
+  "decision": "HOLD_G03_FOUR_POST_APPROVAL_DELTAS_CAUSALLY_MAPPED_APPROVAL_AND_LIVE_PROOF_PENDING",
+  "nextExactAction": "Use the 4 grouped proof queues to obtain exact approved source/blobs and affected DEV E2E with existing scopes, then repair metadata in a single CAS control reconciliation only after authority is established. No automatic revert, no false MATCH; keep G03/I3/Gate20/Gate21 HOLD and production DO_NOT_TOUCH."
+}
