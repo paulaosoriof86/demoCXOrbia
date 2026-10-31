@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "cxorbia.i3.g03.dev-readonly-surface-reconciliation.v1",
+  "id": "CXORBIA-I3-G03-DEV-READONLY-SURFACE-RECONCILIATION-20261031",
+  "observedAt": "2026-10-31T17:23:06.477Z",
+  "dateLocal": "2026-10-31",
+  "timeZone": "America/Guatemala",
+  "iteration": "I3",
+  "state": "HOLD",
+  "kind": "BOUND_UI_READ_ONLY__NOT_E2E_OR_SERVED_ARTIFACT_CERTIFICATION",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedControlParentSha": "afaaf280d56fdea8af6f4a4a7000ec4d4bd3059b",
+  "expectedControlParentTree": "0fb0720fb494a1cb8eb79902f7a27fb1d647fe18",
+  "productSourceRecord": {
+    "sha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "tree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
+    "currentDevServedSourceIdentityVerified": false
+  },
+  "page": {
+    "origin": "https://cxorbia-backend-dev.web.app",
+    "entrypoint": "/index-backend-dev.html",
+    "mode": "protected DEV; Admin session already authenticated",
+    "project": "Cinépolis",
+    "period": "OCT 2026",
+    "createdFreshTabBecauseOldOct29PreviewWasNotCurrentMainDev": true,
+    "tabHandedOff": true
+  },
+  "observations": [
+    {
+      "route": "Configuración > Automatizaciones",
+      "category": "HF28_READONLY_LOAD",
+      "initialStatus": "AUTOMATION_REMOTE_READ_REQUIRED",
+      "settledStatus": "Plantillas compartidas del tenant · confirmadas por Firestore",
+      "eventTemplateRowsVisible": 9,
+      "readAfterSettled": true,
+      "providerWriteAckTested": false,
+      "independentAdminSession2Tested": false,
+      "decision": "PASS_BOUND_READ_PRESENTATION_ONLY"
+    },
+    {
+      "route": "Admin del Proyecto > Clientes",
+      "category": "G03_PERIOD_CLIENT_READONLY",
+      "clientRowsVisible": 4,
+      "activeClientRows": 1,
+      "commercialProjectsShown": 1,
+      "oneBusinessProjectPeriodsShown": 17,
+      "historicalVisitsShown": 748,
+      "realizedVisitsShown": 738,
+      "clientDetailOpened": true,
+      "partnerRolesNotTested": true,
+      "visualDataQualityObservation": "One displayed client row appeared as CinÃ©polis; causal source and severity not adjudicated.",
+      "decision": "PASS_BOUND_UI_AGGREGATION_PRESENTATION_ONLY"
+    },
+    {
+      "route": "Comercial > CRM Comercial > Cuentas",
+      "category": "VRM189_READONLY_NAV",
+      "dashboardOpportunitiesShown": 0,
+      "accountsShown": 0,
+      "readOnlyNavigationPass": true,
+      "providerCommitAndReadbackNotTested": true,
+      "decision": "PASS_BOUND_NAVIGATION_ONLY_NO_DATA_OR_WRITES_PROVEN"
+    },
+    {
+      "route": "Admin del Proyecto > Hojas de Ruta",
+      "category": "G03_EFFECTIVE_ROUTE_SOURCE_TRUTH",
+      "octoberStopsShown": 44,
+      "sourceProviderStatus": "Fuente externa · pendiente de vínculo seguro",
+      "publishedHrRevisionPrefix": "9b99d5ef9c72",
+      "explicitBanner": "This view uses published HR revision; opening it does not query provider anew",
+      "newProviderReadVerified": false,
+      "decision": "PASS_BOUND_UI_SOURCE_DISCLOSURE_ONLY"
+    }
+  ],
+  "caveats": [
+    "Current DEV hosted artifact digest/source identity not proven by browser UI. Prior RUN1983 materialization is separate historical evidence; no same-artifact correlation asserted here.",
+    "No form submission, file upload, Auth/HR/Firestore/Storage write, automation save, CRM create/update, or cross-session provider ACK proof occurred.",
+    "No full Client/Shopper role E2E or human approval, no SourceFile APPROVED metadata adjudication, no domain MATCH increase.",
+    "The temporary remote-read-required status settled to a confirmed Firestore shared-template status; not classified as durable failure.",
+    "Do not infer that zero CRM records or existing 273 pending shopper identities are new defects without fixture and contract comparison."
+  ],
+  "tests": {
+    "adminNavigationReadOnly": 4,
+    "writeTests": 0,
+    "providerAckTests": 0,
+    "newDevDeploys": 0,
+    "sourceQaReruns": 0,
+    "productionOps": 0
+  },
+  "decisions": {
+    "g03": "HOLD",
+    "i3": "HOLD",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "production": "DO_NOT_TOUCH",
+    "classificationCountsUnchanged": true,
+    "formalMatch": "5/21"
+  },
+  "nextExactAction": "Reconcile exact served DEV artifact digest/source then run only G03-HF28 two Admin provider ACK/readback and G03-VRM189 role-scoped command E2E; obtain F9/post-F9 approval receipts before changing per-file MATCH status. Preserve read-only UI evidence; no production or unrelated writes."
+}

@@ -254,7 +254,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 G03: 4 deltas post-aprobación causalmente identificados en D02, HF28, VRM189 y Cliente/períodos. Recuperar autoridad F9/post-F9 exacta (no PR hallado en 7 commits), probar solo E2E DEV focal faltante, luego corregir metadata MATCH contradictoria con CAS. No revertir mejoras, no recrear RUN1991/1992, no tocar producción. I3 HOLD.",
+  "nextExactAction": "I3 G03: confirmar fingerprint exacto de DEV principal (vía artefacto RUN1983/Hosting), luego HF28 dos sesiones Admin ACK/readback y CRM/Clientes escritura acotada solo con fixture autorizado; recuperar aprobación exacta F9/post-F9 de 4 blobs antes de reparar MATCH por archivo. Navegación Admin/read-only 4 superficies comprobada el 31-10, no E2E ni cierre de dominio. I3 HOLD, producción DO_NOT_TOUCH.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -297,7 +297,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-10-31T17:14:46.008Z",
+  "lastUpdatedAt": "2026-10-31T17:23:06.477Z",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -5734,6 +5734,18 @@
     ],
     "productSourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
     "controlParentSha": "baeacf0d4a58bdead3f2ccfe86e919588bcb09c5",
+    "production": "DO_NOT_TOUCH"
+  },
+  "g03DevReadOnlySurfaceReconciliation20261031": {
+    "path": "docs/checkpoints/CXORBIA_I3_G03_DEV_READONLY_SURFACE_RECONCILIATION_20261031.json",
+    "sourceRecord": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "servedDigestVerified": false,
+    "uiReadOnlyObservations": 4,
+    "adminSession": true,
+    "providerWriteTests": 0,
+    "domainMatchChange": 0,
+    "decision": "HOLD_G03_READONLY_PRESENTATION_PASS_EXACT_ARTIFACT_AND_WRITE_E2E_PENDING",
+    "controlParentSha": "afaaf280d56fdea8af6f4a4a7000ec4d4bd3059b",
     "production": "DO_NOT_TOUCH"
   }
 }
