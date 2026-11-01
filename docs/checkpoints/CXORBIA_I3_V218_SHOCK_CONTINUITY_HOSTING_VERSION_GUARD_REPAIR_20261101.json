@@ -1,21 +1,27 @@
 {
-  "schemaVersion": "cxorbia.i3.v218.shock-continuity-control-correction.v1",
-  "observedAt": "2026-11-01T19:21:34.348Z",
+  "schemaVersion": "cxorbia.i3.v218.shock-continuity-control-correction.v2",
+  "observedAt": "2026-11-01T19:24:26.534Z",
   "candidateVersion": "V218",
-  "failureRunId": 41341223912,
-  "failureUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/41341223912",
-  "failureCode": "MAPPING_FAILURE:SHOCK_CONTINUITY:MAPPING_FAILURE:DEV_HOSTING_REALITY_STALE",
-  "diagnosedGuard": "tools/qa/cxorbia-i3-shock-continuity-guard.mjs",
-  "rootCause": "The new exactNextAction narrative omitted the immutable already-observed DEV Hosting version, although both descriptor and pointer retained equal g03ActualHostingDevReadback20261031 records.",
-  "requiredServedVersion": "231186c337bcd0ba",
-  "remediation": "Only synchronize the exact version literal in descriptor, execution pointer, and V218 nextExactAction; keep existing G03 evidence and run the unchanged guard.",
+  "failedRuns": [
+    {
+      "id": 41341223912,
+      "code": "MAPPING_FAILURE:DEV_HOSTING_REALITY_STALE",
+      "rootCause": "nextExactAction omitted exact already-verified Hosting DEV version"
+    },
+    {
+      "id": 41341392404,
+      "code": "MAPPING_FAILURE:MATRIX_BLOB_DESYNC",
+      "rootCause": "correction regenerated descriptor/pointer from V217 baseline and pointed to V217, while updated content was stored under V218 path"
+    }
+  ],
+  "guard": "tools/qa/cxorbia-i3-shock-continuity-guard.mjs",
+  "correction": "Restore ALL three V218 authorities from first V218 control commit 5cd898e; include Hosting version 231186c337bcd0ba and corrected SHA/Git blob pointers, preflight all guard invariants before write. No guard bypass.",
   "productSourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
-  "businessDataWrites": 0,
+  "previousVerifiedUiRun": 41340843792,
+  "businessWrites": 0,
   "providerCommands": 0,
   "devDeploys": 0,
   "production": false,
-  "previousFunctionalUiPassRun": 41340843792,
-  "previousFunctionalUiPassUnaffected": true,
   "classificationCountsUnchanged": true,
-  "status": "CONTROL_CORRECTION_PENDING_CANONICAL_CI"
+  "remainingGate": "PENDING_CANONICAL_SUCCESS"
 }
