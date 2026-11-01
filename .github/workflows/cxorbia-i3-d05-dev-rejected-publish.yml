@@ -1,0 +1,40 @@
+name: CXOrbia I3 D05 Protected Negative Publish DEV
+on:
+  push:
+    branches:
+      - recovery/cxorbia-phase-a-20260831
+permissions:
+  contents: read
+jobs:
+  d05-negative-publish-no-mutation:
+    if: ${{ contains(github.event.head_commit.message, '[i3-d05-protected-negative]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      CXORBIA_PRODUCT_SOURCE_SHA: e44483d895e75d5e1bf48b327d464a8c4686ddba
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify immutable product candidate
+        run: |
+          set -Eeuo pipefail
+          test "$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = "$CXORBIA_PRODUCT_SOURCE_SHA"
+          git diff --quiet "$CXORBIA_PRODUCT_SOURCE_SHA" HEAD -- app backend firestore.rules storage.rules firebase.json .firebaserc
+          node --check tools/qa/cxorbia-i3-d05-dev-negative-publish.mjs
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install isolated Firebase readback dependency
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0
+      - name: Reject protected stale publish and verify zero changed documents
+        env:
+          CXORBIA_D05_SA_JSON: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+        run: node tools/qa/cxorbia-i3-d05-dev-negative-publish.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-d05-negative-publish-${{ github.run_id }}
+          path: .tmp/cxorbia-i3-d05-rejected-publish/result.json
+          if-no-files-found: warn
+          retention-days: 30
