@@ -57,6 +57,12 @@ async function inspectAuthenticatedFrontend(customToken) {
       const accounts = commercial.accounts;
       const visible = Array.isArray(accounts) ? accounts.filter(x => x?.deleted !== true) : [];
       const canonical = root.commercialCommandBoundary?.canonicalMode;
+      const store = root.crmStore || {};
+      // Counts and mode only: never serialize account rows, profile data or credentials.
+      const countOf = fn => { try { const rows = fn(); return Array.isArray(rows) ? rows.length : null; }
+        catch { return null; } };
+      const storeCanonical = typeof store._canonical === 'function'
+        ? (() => { try { return store._canonical(); } catch { return null; } })() : null;
       return {
         authenticated: !!window.firebase?.auth?.().currentUser,
         protectedApplied: window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied === true,
@@ -72,7 +78,14 @@ async function inspectAuthenticatedFrontend(customToken) {
           ? accounts.filter(x => typeof x?.deleted === 'string' && x.deleted.trim().toLowerCase() === 'false').length : null,
         fixtureInState: visible.some(x => String(x?.id || '') === 'ac-6246c88e50534696b139'),
         canonicalMode: typeof canonical === 'function' ? canonical() : null,
-        crmStoreCount: typeof root.crmStore?.cuentas === 'function' ? root.crmStore.cuentas().length : null,
+        crmStoreCanonical: storeCanonical,
+        crmStoreDirectStateCount: typeof store._state === 'function'
+          ? countOf(() => store._state()?.accounts) : null,
+        crmStoreDirectRowsCount: typeof store._rows === 'function'
+          ? countOf(() => store._rows('accounts')) : null,
+        crmStoreCount: typeof store.cuentas === 'function' ? countOf(() => store.cuentas()) : null,
+        crmStoreSeedCount: Array.isArray(store._cuentas) ? store._cuentas.length : null,
+        crmStoreMethodPresent: typeof store.cuentas === 'function',
       };
     });
     await context.close();
