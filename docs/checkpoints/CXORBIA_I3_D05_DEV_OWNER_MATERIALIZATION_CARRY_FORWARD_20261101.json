@@ -1,0 +1,142 @@
+{
+  "schemaVersion": "cxorbia.i3.d05.dev-materialization-carryforward.20261101.v1",
+  "decision": "PASS_D05_SOURCE_TO_DEV_OWNER_MATERIALIZATION_CARRY_FORWARD_NO_REDEPLOY",
+  "scope": "D05_EXACT_SEVEN_OWNER_BLOB_AND_FIVE_DEV_FRONTEND_BYTES_WITH_IMMUTABLE_RUN1983_RUNTIME_RULES_RECEIPT__NOT_REAL_PROTECTED_ACTOR_E2E",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedControlParent": "084ccdc7648197fa350418e5fbbd10f088911c42",
+  "productSourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
+  "productTree": "66f745312ee6c98602f72254353caac16f2bcb44",
+  "historicalDevMaterialization": {
+    "receipt": "docs/checkpoints/CXORBIA_I3_419_DEV_MATERIALIZATION_RUN1983_20261030.json",
+    "gitBlob": "0f7a9e2da03ca3758f85bf22153923f7f8670f16",
+    "runId": 40998569643,
+    "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "runtimeRevision": "cxorbia-live-hr-dev-00331-2xq",
+    "runtimeDigest": "sha256:e56826df529bd132d2413a0913c557743dbeb78945724e1073665e8bc388ca65",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
+    "firestoreRulesGitBlob": "540240ddbbb078ebcd14611dd2cc39375472ea66",
+    "firestoreRulesReadback": "PASS_EXACT_SOURCE_BYTES"
+  },
+  "g03HostingOnlyCarryForward": {
+    "receipt": "docs/checkpoints/CXORBIA_I3_G03_CUENTAS_ONE_TWO_SESSIONS_FOCAL_PASS_20261101.json",
+    "gitBlob": "a3f9c9970b9bc146e6562cd7626cd71b31e06252",
+    "version": "sites/cxorbia-backend-dev/versions/231186c337bcd0ba",
+    "runtimeUnchanged": true,
+    "rulesUnchanged": true
+  },
+  "sourceOwnersExact": [
+    {
+      "path": "app/modules/cert.js",
+      "source419GitBlob": "78c9630fd627daa015aff5919d34565260240d74",
+      "currentCandidateGitBlob": "78c9630fd627daa015aff5919d34565260240d74",
+      "sameBytes": true,
+      "hostedCurrentExact": true
+    },
+    {
+      "path": "app/core/backend-resources.js",
+      "source419GitBlob": "f12a2325948bf25133b5f7e5cff68061e0521d60",
+      "currentCandidateGitBlob": "f12a2325948bf25133b5f7e5cff68061e0521d60",
+      "sameBytes": true,
+      "hostedCurrentExact": true
+    },
+    {
+      "path": "backend/runtime/hr-live-service/certification-runtime.mjs",
+      "source419GitBlob": "4137a22d1d2780fbc5daf053504ce924fa832410",
+      "currentCandidateGitBlob": "4137a22d1d2780fbc5daf053504ce924fa832410",
+      "sameBytes": true,
+      "hostedCurrentExact": false
+    },
+    {
+      "path": "firestore.rules",
+      "source419GitBlob": "540240ddbbb078ebcd14611dd2cc39375472ea66",
+      "currentCandidateGitBlob": "540240ddbbb078ebcd14611dd2cc39375472ea66",
+      "sameBytes": true,
+      "hostedCurrentExact": false
+    },
+    {
+      "path": "app/core/backend-certifications.js",
+      "source419GitBlob": "178ce391af835a8ebe2dfccf68a590110d0466cd",
+      "currentCandidateGitBlob": "178ce391af835a8ebe2dfccf68a590110d0466cd",
+      "sameBytes": true,
+      "hostedCurrentExact": true
+    },
+    {
+      "path": "app/modules/academia.js",
+      "source419GitBlob": "5ba399295367cb2f5e2ea6fd9de706e6d4fb1323",
+      "currentCandidateGitBlob": "5ba399295367cb2f5e2ea6fd9de706e6d4fb1323",
+      "sameBytes": true,
+      "hostedCurrentExact": true
+    },
+    {
+      "path": "app/data/tya-certification-carryover-source-safe.js",
+      "source419GitBlob": "8f987530e24ebe433e7f1c73a6036a37e563f074",
+      "currentCandidateGitBlob": "8f987530e24ebe433e7f1c73a6036a37e563f074",
+      "sameBytes": true,
+      "hostedCurrentExact": true
+    }
+  ],
+  "liveHostingClientReadback": [
+    {
+      "path": "app/modules/cert.js",
+      "sourceGitBlob": "78c9630fd627daa015aff5919d34565260240d74",
+      "servedGitBlob": "78c9630fd627daa015aff5919d34565260240d74",
+      "exactMatch": true
+    },
+    {
+      "path": "app/core/backend-resources.js",
+      "sourceGitBlob": "f12a2325948bf25133b5f7e5cff68061e0521d60",
+      "servedGitBlob": "f12a2325948bf25133b5f7e5cff68061e0521d60",
+      "exactMatch": true
+    },
+    {
+      "path": "app/core/backend-certifications.js",
+      "sourceGitBlob": "178ce391af835a8ebe2dfccf68a590110d0466cd",
+      "servedGitBlob": "178ce391af835a8ebe2dfccf68a590110d0466cd",
+      "exactMatch": true
+    },
+    {
+      "path": "app/modules/academia.js",
+      "sourceGitBlob": "5ba399295367cb2f5e2ea6fd9de706e6d4fb1323",
+      "servedGitBlob": "5ba399295367cb2f5e2ea6fd9de706e6d4fb1323",
+      "exactMatch": true
+    },
+    {
+      "path": "app/data/tya-certification-carryover-source-safe.js",
+      "sourceGitBlob": "8f987530e24ebe433e7f1c73a6036a37e563f074",
+      "servedGitBlob": "8f987530e24ebe433e7f1c73a6036a37e563f074",
+      "exactMatch": true
+    }
+  ],
+  "canonicalCi": {
+    "runId": 41269151108,
+    "assertionsPass": 100
+  },
+  "before": {
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V212.json",
+    "d05DevMaterializationStage": "PENDING_AS_CURRENT_TASK_CONTROL"
+  },
+  "after": {
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V213.json",
+    "d05DevMaterializationStage": "DEV_MATERIALIZED_D05_OWNER_BYTES_VERIFIED_CARRIED_FORWARD_FROM_RUN1983_PENDING_LIVE_ACTOR_E2E",
+    "classification": "TRUE_FUNCTIONAL_DEFECT",
+    "matchDomains": 5,
+    "nonMatchDomains": 16,
+    "matrixGitBlob": "6db097f4a0064416ad0458729798db21d8bce326",
+    "matrixSha256": "907150de28cb59e8ca98edef920c363beb0ac8fbc3ebd307c2ca9a00e19fdd1e"
+  },
+  "forbiddenClaims": [
+    "REAL_PROTECTED_PUBLISH_CONFIGURE_RETIRE_E2E_PASS",
+    "D06_SEPARATE_REVIEWER_HUMAN_PASS",
+    "PRODUCTION_OR_GLOBAL_PHASEA_CERTIFIED"
+  ],
+  "sideEffects": {
+    "newProductCode": 0,
+    "devBuilds": 0,
+    "devDeploys": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "financialWrites": 0,
+    "productionWrites": 0
+  },
+  "nextExactAction": "I3 PLAN DE CHOQUE CONGELADO — G03 CRM PASS dos Admin DEV y Hosting 231186c337bcd0ba NO REPETIR. D05 source CI 100/100 PASS; siete owner blobs actuales iguales a fuente del runtime/Rules DEV RUN1983, cinco clientes DEV exactos, G03 runtime/Rules intactos; NO redeploy. D05 siguiente: una prueba aislada con Admin y revisor reales publish/configure/retire + persistencia ACK, D06 negativo/no-message sin tocar datos ajenos. VRM-286 CI 5/5 y DEV assets 5/5 PASS, falta lectura Admin autenticada de períodos/visitas. HR 32/83 PROVISIONALES y 51 pendientes sin fusionar; finanzas Q7,300 x2 sin recibo bancario, no duplicar ni borrar. 5/21 MATCH, 16 no-MATCH, Gates20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH."
+}

@@ -219,7 +219,7 @@
       "humanAcceptance": "PENDING"
     },
     "D05": {
-      "state": "SOURCE_PROVEN_CANONICAL_FOCAL_RUN41269151108_PENDING_ISOLATED_RULES_PROVIDER_DEV_E2E",
+      "state": "DEV_MATERIALIZED_EXACT_SEVEN_OWNER_BLOBS_FIVE_CLIENT_ASSETS_PASS_PROTECTED_LIVE_ACTOR_E2E_PENDING",
       "receipt": {
         "path": "docs/checkpoints/CXORBIA_I3_D05_CUMULATIVE_SOURCE_REPAIR_20261030.json",
         "gitBlob": "1002fe5dfe57b27104da3ecb2e369378f2dbf4e3",
@@ -247,7 +247,10 @@
         "devRuntimeAndRules": "PENDING",
         "humanAcceptance": "PENDING",
         "production": false
-      }
+      },
+      "sourceRunId": 40998569643,
+      "materializationCarryForward": "PASS_SOURCE_419_TO_E444_BYTE_EXACT",
+      "newDeployRequired": false
     },
     "VRM286": {
       "state": "SOURCE_CI_AND_DEV_EXACT_FIVE_LOADED_ASSETS_PASS_PENDING_AUTHENTICATED_ADMIN_E2E_HUMAN",
@@ -290,7 +293,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 PLAN DE CHOQUE CONGELADO — G03 VRM-295 DEV dos sesiones PASS, Hosting 231186c337bcd0ba, NO REPETIR. VRM-286 CI 5/5 PASS y 5/5 ASSETS BYTE-EXACTOS DEV PASS (index/proyectos/periodos/hr-source/proyecto-wizard); no repetir Hosting ni hashes sin drift: siguiente única prueba VRM-286 lectura real Admin proyecto/período contra revisión HR aprobada y aceptación humana de bloque. D05 CI 100/100 PASS; siguiente preflight read-only Rules/actor/fixture aislada, luego DEV provider E2E protegido sujeto a guardas. HR 32/83 PROVISIONALES, 51 pendientes, recenso sobre revisión HR autorizada; finanzas dos Q7,300 sin prueba bancaria, no borrar ni duplicar. 5/21 MATCH y 16 pendientes, Gate20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH.",
+  "nextExactAction": "I3 PLAN DE CHOQUE CONGELADO — G03 CRM PASS dos Admin DEV y Hosting 231186c337bcd0ba NO REPETIR. D05 source CI 100/100 PASS; siete owner blobs actuales iguales a fuente del runtime/Rules DEV RUN1983, cinco clientes DEV exactos, G03 runtime/Rules intactos; NO redeploy. D05 siguiente: una prueba aislada con Admin y revisor reales publish/configure/retire + persistencia ACK, D06 negativo/no-message sin tocar datos ajenos. VRM-286 CI 5/5 y DEV assets 5/5 PASS, falta lectura Admin autenticada de períodos/visitas. HR 32/83 PROVISIONALES y 51 pendientes sin fusionar; finanzas Q7,300 x2 sin recibo bancario, no duplicar ni borrar. 5/21 MATCH, 16 no-MATCH, Gates20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -990,12 +993,12 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V212.json",
-    "gitBlob": "b0648438daecf2592c0d5128f47344af91d932ef",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V213.json",
+    "gitBlob": "6db097f4a0064416ad0458729798db21d8bce326",
     "sourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
     "allModulesMatch": false,
     "phaseAComplete": false,
-    "sha256": "a21a2b831855a2d6616d0c580ab78b1e4fac86f8b5a072c7085bc5efb32faae2"
+    "sha256": "907150de28cb59e8ca98edef920c363beb0ac8fbc3ebd307c2ca9a00e19fdd1e"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -3032,8 +3035,8 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V212.json",
-    "matrixBlob": "b0648438daecf2592c0d5128f47344af91d932ef",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V213.json",
+    "matrixBlob": "6db097f4a0064416ad0458729798db21d8bce326",
     "classificationCounts": {
       "COMPOSED_NOT_DEPLOYED": 2,
       "MATCH": 5,
@@ -3044,7 +3047,7 @@
       "TRUE_FUNCTIONAL_DEFECT": 3
     },
     "derivedAt": "2026-11-01",
-    "meaning": "FROZEN_5_OF_21_MATCH__VRM286_SOURCE_PASS_AND_FIVE_DEV_ASSET_BYTES_PASS__ADMIN_E2E_HUMAN_PENDING"
+    "meaning": "FROZEN_5_OF_21_MATCH__D05_SOURCE_CI_AND_DEV_CARRIED_FORWARD_PASS__PROTECTED_E2E_PENDING__VRM286_DEV_BYTES_PASS_HUMAN_PENDING"
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
   "activeMethodologyGuard": {
@@ -6155,5 +6158,79 @@
     ],
     "inferredHumanAcceptance": false,
     "production": false
+  },
+  "d05DevOwnerMaterializationCarryForward20261101": {
+    "status": "PASS_EXACT_7_D05_OWNER_BLOBS_AND_5_LIVE_DEV_CLIENT_ASSETS",
+    "scope": "STAGED_SOURCE_OWNER_MATERIALIZATION_CARRY_FORWARD_NOT_PROTECTED_ACTOR_E2E",
+    "sourceRunId": 40998569643,
+    "source419": "4190089d813bd23948ac7f4f75b772b6727f3923",
+    "currentSource": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
+    "runtimeRevision": "cxorbia-live-hr-dev-00331-2xq",
+    "runtimeDigest": "sha256:e56826df529bd132d2413a0913c557743dbeb78945724e1073665e8bc388ca65",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
+    "rulesGitBlob": "540240ddbbb078ebcd14611dd2cc39375472ea66",
+    "firestoreRulesReadback": "PASS_EXACT_SOURCE_BYTES",
+    "g03HostingVersion": "sites/cxorbia-backend-dev/versions/231186c337bcd0ba",
+    "g03RuntimeUnchanged": true,
+    "g03RulesUnchanged": true,
+    "sourceOwnerBytes": [
+      {
+        "path": "app/modules/cert.js",
+        "source419GitBlob": "78c9630fd627daa015aff5919d34565260240d74",
+        "currentCandidateGitBlob": "78c9630fd627daa015aff5919d34565260240d74",
+        "sameBytes": true,
+        "hostedCurrentExact": true
+      },
+      {
+        "path": "app/core/backend-resources.js",
+        "source419GitBlob": "f12a2325948bf25133b5f7e5cff68061e0521d60",
+        "currentCandidateGitBlob": "f12a2325948bf25133b5f7e5cff68061e0521d60",
+        "sameBytes": true,
+        "hostedCurrentExact": true
+      },
+      {
+        "path": "backend/runtime/hr-live-service/certification-runtime.mjs",
+        "source419GitBlob": "4137a22d1d2780fbc5daf053504ce924fa832410",
+        "currentCandidateGitBlob": "4137a22d1d2780fbc5daf053504ce924fa832410",
+        "sameBytes": true,
+        "hostedCurrentExact": false
+      },
+      {
+        "path": "firestore.rules",
+        "source419GitBlob": "540240ddbbb078ebcd14611dd2cc39375472ea66",
+        "currentCandidateGitBlob": "540240ddbbb078ebcd14611dd2cc39375472ea66",
+        "sameBytes": true,
+        "hostedCurrentExact": false
+      },
+      {
+        "path": "app/core/backend-certifications.js",
+        "source419GitBlob": "178ce391af835a8ebe2dfccf68a590110d0466cd",
+        "currentCandidateGitBlob": "178ce391af835a8ebe2dfccf68a590110d0466cd",
+        "sameBytes": true,
+        "hostedCurrentExact": true
+      },
+      {
+        "path": "app/modules/academia.js",
+        "source419GitBlob": "5ba399295367cb2f5e2ea6fd9de706e6d4fb1323",
+        "currentCandidateGitBlob": "5ba399295367cb2f5e2ea6fd9de706e6d4fb1323",
+        "sameBytes": true,
+        "hostedCurrentExact": true
+      },
+      {
+        "path": "app/data/tya-certification-carryover-source-safe.js",
+        "source419GitBlob": "8f987530e24ebe433e7f1c73a6036a37e563f074",
+        "currentCandidateGitBlob": "8f987530e24ebe433e7f1c73a6036a37e563f074",
+        "sameBytes": true,
+        "hostedCurrentExact": true
+      }
+    ],
+    "clientLiveBytesPass": 5,
+    "clientLiveBytesTotal": 5,
+    "devDeploysThisIteration": 0,
+    "realProtectedPublishConfigureRetireE2e": "PENDING",
+    "human": "PENDING",
+    "production": false,
+    "nonMatchDomains": 16,
+    "matchDomains": 5
   }
 }
