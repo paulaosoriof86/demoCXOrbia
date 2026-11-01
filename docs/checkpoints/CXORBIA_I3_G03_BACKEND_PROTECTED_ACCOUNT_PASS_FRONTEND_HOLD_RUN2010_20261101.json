@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "cxorbia.i3.g03.backend-protected-account-readonly.v1",
+  "id": "CXORBIA-I3-G03-BACKEND-PROTECTED-ACCOUNT-PASS-FRONTEND-HOLD-RUN2010-20261101",
+  "observedAt": "2026-11-01T01:03:02Z",
+  "iteration": "I3",
+  "phase": "A",
+  "decision": "PASS_G03_BACKEND_PROTECTED_READ_MODEL_ONLY__HOLD_G03_FRONTEND_UI",
+  "scope": "DEV_TYA_CINEPOLIS_SYNTHETIC_ACCOUNT_READ_ONLY",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlParentSha": "3ac18f98ca7b5d4506ba7a8ade75febbc5d63d0b",
+  "controlParentTree": "3bd43a8d0e6b60ecedf5b83af35a3697e6de8a50",
+  "source": {
+    "productSha": "7b70557c22e3902ab3c91fbee326357630fc20a1",
+    "productTree": "97386bece69ead50b85fd3eb1880968cf1dcaa26",
+    "devRuntimeRevision": "cxorbia-live-hr-dev-00331-2xq",
+    "production": false
+  },
+  "test": {
+    "workflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "script": "tools/qa/cxorbia-i3-g03-protected-crm-readonly.mjs",
+    "runId": 41259357540,
+    "runNumber": 2010,
+    "conclusion": "success",
+    "headSha": "3ac18f98ca7b5d4506ba7a8ade75febbc5d63d0b",
+    "canonicalJob": "PASS",
+    "protectedReadOnlyStep": "PASS",
+    "logLine": "G03_RESULT decision=PASS_G03_BACKEND_PROTECTED_READ_MODEL_ONLY firestoreExists=true protectedHttp=200 protectedAccounts=1 fixtureInProtected=true frontendCertified=false",
+    "newUserCreated": false
+  },
+  "verified": {
+    "syntheticAccountId": "ac-6246c88e50534696b139",
+    "persisted": {
+      "exists": true,
+      "version": 1,
+      "deleted": false
+    },
+    "principal": "existing_active_staff_admin_dev",
+    "protected": {
+      "httpStatus": 200,
+      "protectedState": true,
+      "commercialAuthority": "firestore_tenant_commercial",
+      "rawAccounts": 1,
+      "aliveAccounts": 1,
+      "fixturePresent": true
+    }
+  },
+  "frontendBoundary": {
+    "previousUi": "Admin DEV CRM Cuentas (0) after refresh",
+    "priorEvidence": "docs/checkpoints/CXORBIA_I3_G03_CRM_PROTECTED_GET_200_READMODEL_HOLD_20261101.json",
+    "sameSessionFrontendReadback": false,
+    "frontendStateCounts": "NOT_YET_OBTAINED",
+    "exactOwner": "UNATTRIBUTED_BRIDGE_PUBLISHER_CRM_OR_HOSTING",
+    "g03FunctionalGate": "HOLD"
+  },
+  "attempts": [
+    {
+      "runId": 41258906628,
+      "issue": "YAML_INDENTATION_NO_JOBS",
+      "resolution": "CORRECTED"
+    },
+    {
+      "runId": 41259228139,
+      "issue": "QA_ASSERTION_EXPECTED_UNSUPPORTED_FIREBASE_LOCALID",
+      "resolution": "VERIFY_ID_TOKEN"
+    },
+    {
+      "runId": 41259357540,
+      "issue": "NONE",
+      "resolution": "PASS_BACKEND"
+    }
+  ],
+  "unchanged": {
+    "productSourceChanges": 0,
+    "firestoreWrites": 0,
+    "newSyntheticAccounts": 0,
+    "iamChanges": 0,
+    "hrWrites": 0,
+    "shopperFusionWrites": 0,
+    "deploys": 0,
+    "productionWrites": 0,
+    "certifiedDomains": "5/21",
+    "verifiedFusionGroups": "32/83",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "production": "DO_NOT_TOUCH"
+  },
+  "nextExactAction": "I3 FASE A / PLAN CONGELADO — G03 RUN2010: CI canónico PASS y prueba DEV autenticada PASS. Firestore crmAccounts/ac-6246c88e50534696b139 existe v1 no borrada; _protected.commercial.accounts devuelve 1 cuenta activa e incluye el ID, HTTP 200 con Admin DEV. G03 permanece HOLD: UI anterior mostró Cuentas (0) y aún falta readback simultáneo de CX.data.__commercialState.accounts, modo canónico, puente/publicador/Hosting. Acción única siguiente: leer sólo esos contadores en Admin DEV sin PII/token, atribuir owner exacto, corregir únicamente P0 PROVEN y repetir gate Cuentas >=1 tras recarga DEV. Sin recrear cuenta, backend, IAM, fusiones ni deploy por rutina. 5/21 MATCH; shoppers 32/83 verificadas con delta HR en HOLD; Gates 20/21 HOLD; I4 no autorizado; producción DO_NOT_TOUCH."
+}
