@@ -200,7 +200,12 @@ async function run() {
     : !protectedResult.protectedState || !hasAccountsArray || !protectedHasFixture
       ? 'HOLD_G03_BACKEND_PROTECTED_READ_MODEL'
       : 'PASS_G03_BACKEND_PROTECTED_READ_MODEL_ONLY';
-  const requireUiParity = process.env.CXORBIA_G03_REQUIRE_UI_PARITY === '1';
+  const strictReadOnlyCi = process.env.GITHUB_EVENT_NAME === 'push'
+    && process.env.GITHUB_REF === 'refs/heads/recovery/cxorbia-phase-a-20260831'
+    && process.env.GITHUB_EVENT_PATH
+    && JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'))
+      .head_commit?.message?.includes('[g03-read-only]') === true;
+  const requireUiParity = process.env.CXORBIA_G03_REQUIRE_UI_PARITY === '1' || strictReadOnlyCi;
   let frontend = null;
   if (process.env.CXORBIA_G03_UI_TRACE === '1' && decision === 'PASS_G03_BACKEND_PROTECTED_READ_MODEL_ONLY') {
     try {

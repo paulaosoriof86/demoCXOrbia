@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "cxorbia.i3.g03.dev-hosting-one-shot-readback.v1",
+  "status": "PASS_HOSTING_DEV_EXACT_SOURCE_BYTES__HOLD_AUTHENTICATED_UI_ENVIRONMENT",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "authorizedControlCommitSha": "19d9c77b32a64c1f23d810b194f17ebb34662cc4",
+  "productSourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
+  "productSourceTree": "66f745312ee6c98602f72254353caac16f2bcb44",
+  "ci": {
+    "runId": 41264157605,
+    "jobId": 124723441317,
+    "artifactId": 13066212005,
+    "url": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/41264157605",
+    "canonicalAuthority": "PASS",
+    "materializeStep": "PASS",
+    "postdeployExactByteAndBackendReadback": "PASS",
+    "browserQa": "ENVIRONMENT_FAILURE_PLAYWRIGHT_CHROMIUM_UNSUPPORTED_UBUNTU_26_04",
+    "overallConclusion": "failure",
+    "runAttempt": 1
+  },
+  "materialization": {
+    "project": "cxorbia-backend-dev",
+    "hostingSite": "cxorbia-backend-dev",
+    "priorHostingVersion": "sites/cxorbia-backend-dev/versions/3d1d42ad02066ae2",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/231186c337bcd0ba",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1793499185836000",
+    "sourceTarSha256": "a2ceedd6828df5e383fcf1ed976412ea2b03c5a3f6337b3c47772d825a6647df",
+    "sourceBytesVerified": true,
+    "criticalAssetsVerified": {
+      "app/adapters/tya-ab-cumulative-composition-v1.js": "9d014be5cde2962f77f726b3298c2549f6c45cae",
+      "app/modules/crm.js": "187d7af112cccbe06d27c9a72bb69dc440b7fe67",
+      "app/index-backend-dev.html": "eec56cf5e4afc7624c1a6f73841bb28d18617280"
+    },
+    "runtimeRevision": "cxorbia-live-hr-dev-00331-2xq",
+    "runtimeUnchanged": true,
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
+    "firestoreRulesUnchanged": true,
+    "hostingDeployAttempted": 1,
+    "hostingDeploys": 1,
+    "cloudBuilds": 0,
+    "cloudRunDeploys": 0,
+    "firestoreWrites": 0,
+    "firestoreRulesDeploys": 0,
+    "authAdminWrites": 0,
+    "hrWrites": 0,
+    "financesWrites": 0,
+    "production": false
+  },
+  "authorization": {
+    "hostingDevOneShotConsumed": true,
+    "noSecondHostingDeploy": true,
+    "readOnlyIndependentAdminProofWithinExistingWorkflowAllowed": true,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "humanAcceptanceUnchanged": true
+  },
+  "nextReadOnlyProof": {
+    "existingWorkflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "existingJob": "canonical-candidate-authority",
+    "existingG03ReadOnlyStep": true,
+    "runner": "ubuntu-24.04",
+    "trigger": "[g03-read-only]",
+    "strict": true,
+    "independentAdminSessions": 2,
+    "expectedRenderedAccounts": 1,
+    "providerWrites": 0
+  }
+}
