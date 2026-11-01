@@ -2,7 +2,7 @@
   "schemaVersion": "cxorbia.recovery.execution-current.v1",
   "planLockPath": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
   "planId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
-  "asOf": "2026-10-31",
+  "asOf": "2026-11-01",
   "iteration": "I3",
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
@@ -254,7 +254,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 FASE A PLAN CHOQUE CONGELADO: READ-ONLY RUN 41255179958 reconcilia 139 pares exactos, 83 grupos, 32/83 fusiones verificadas y 51 pendientes (36 alias/210 visitas/192 liquidaciones, 11 HR canonicos multiples, 3 keeper verificados, 1 no verificado). HR observado f12fba714 (231 shoppers/748 visitas) difiere de HR aprobado 4fc8def7 (229/748): HOLD_REVISED_HR_SOURCE_NOT_APPROVED. Adjudicar delta antes de nuevas fusiones, no repetir 32/83. Hosting DEV VRM-294 ya servido 3d1d42ad02066ae2 (solo Hosting; backend runtime y CRM G03 Cuentas=0 continuan HOLD). QA transversal paralelo sin escritura: CRM G03, HR G05, certificaciones D05/D06 (2 bancos/5 evidencias historicas), finanzas C04/C05 PASS acotado, visitas y aceptacion humana. Un escritor serial, evidencia DEV+ACK/readback+humano por modulo. 5/21 MATCH, Gate20/21 HOLD, I4 no autorizada, produccion DO_NOT_TOUCH.",
+  "nextExactAction": "I3 FASE A / PLAN CHOQUE CONGELADO — G03 CRM HOLD: en la misma sesión Admin DEV, GET protegido HR/cinepolis HTTP 200 (2.38 MiB), meta/readback HTTP 200 (1.84 KiB), pero Cuentas (0) tras recarga; cuenta sintética ac-6246c88e50534696b139 persistida por ACK/readback previo, no crear duplicado ni borrar. Siguiente ACCIÓN ÚNICA: leer sólo los agregados de la respuesta autenticada ya existente (_protected.commercial.accounts: cantidad y presencia del ID sintético) y del estado que CRM consume (__commercialState.accounts: cantidad y presencia) sin copiar token/PII; si respuesta tiene cuenta y estado no, owner frontend bridge/publicación; si respuesta no tiene cuenta, owner backend Firestore/rol/tenant/revisión con readback focal; corregir únicamente P0 PROVEN y revalidar Cuentas >=1 tras recarga en DEV. Runtime 00331 digest e568 confirmado 100%, 00332 digest fae 0%; Hosting DEV 3d1d42ad02066ae2, NO redeploy por rutina. Shoppers 32/83 verificadas; nueva HR f12fba714 vs aprobada 4fc8def7 HOLD, no re-fusionar. QA paralelo D05/D06/finanzas/HR; 5/21 MATCH, Gate20/21 HOLD, I4 no autorizado, producción DO_NOT_TOUCH.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -297,7 +297,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-10-31T23:45:02.611Z",
+  "lastUpdatedAt": "2026-11-01T00:29:10.279Z",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -5929,5 +5929,20 @@
     "decision": "HOLD_REVISED_HR_SOURCE_NOT_APPROVED",
     "production": false,
     "receiptGitBlob": "f2f75b72fe28f175f4ceace28012a4518c9fe929"
+  },
+  "previousNextExactActionBeforeG03ProtectedReadModel20261101": "I3 FASE A PLAN CHOQUE CONGELADO: READ-ONLY RUN 41255179958 reconcilia 139 pares exactos, 83 grupos, 32/83 fusiones verificadas y 51 pendientes (36 alias/210 visitas/192 liquidaciones, 11 HR canonicos multiples, 3 keeper verificados, 1 no verificado). HR observado f12fba714 (231 shoppers/748 visitas) difiere de HR aprobado 4fc8def7 (229/748): HOLD_REVISED_HR_SOURCE_NOT_APPROVED. Adjudicar delta antes de nuevas fusiones, no repetir 32/83. Hosting DEV VRM-294 ya servido 3d1d42ad02066ae2 (solo Hosting; backend runtime y CRM G03 Cuentas=0 continuan HOLD). QA transversal paralelo sin escritura: CRM G03, HR G05, certificaciones D05/D06 (2 bancos/5 evidencias historicas), finanzas C04/C05 PASS acotado, visitas y aceptacion humana. Un escritor serial, evidencia DEV+ACK/readback+humano por modulo. 5/21 MATCH, Gate20/21 HOLD, I4 no autorizada, produccion DO_NOT_TOUCH.",
+  "g03ProtectedGet200ReadModel20261101": {
+    "receipt": "docs/checkpoints/CXORBIA_I3_G03_CRM_PROTECTED_GET_200_READMODEL_HOLD_20261101.json",
+    "decision": "HOLD_G03_CRM_LIVE_READ_MODEL_UNATTRIBUTED",
+    "observedAt": "2026-11-01T00:28:54.727Z",
+    "protectedJsonHttp200": true,
+    "revisionMetaHttp200": true,
+    "crmAccountsUiAfterReload": 0,
+    "liveResponseBodyInspected": false,
+    "localFocusedTests": "PASS_3_OF_3",
+    "canonicalRuntimeDigestVerified": "sha256:e56826df529bd132d2413a0913c557743dbeb78945724e1073665e8bc388ca65",
+    "sourceCodeChanges": 0,
+    "remoteDeploys": 0,
+    "production": false
   }
 }
