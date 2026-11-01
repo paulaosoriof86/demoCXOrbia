@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "cxorbia.i3.g03.crm-provider-composition-source-repair.v1",
+  "date": "2026-11-01",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "findingId": "VRM-295",
+  "relatedFindings": [
+    "VRM-293",
+    "VRM-294"
+  ],
+  "classification": "RELEASE_COMPOSITION_FAILURE_AND_FUNCTIONAL_DEFECT",
+  "severity": "P0",
+  "gate": "G03",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "decision": "SOURCE_FIXED_FOCAL_REMOTE_TEST_PASS_DEV_MATERIALIZATION_AND_LIVE_UI_PENDING",
+  "baseline": {
+    "sourceSha": "7b70557c22e3902ab3c91fbee326357630fc20a1",
+    "readOnlyDiagnosticControlSha": "cfb7d1e5ae32ae297f1f24aec9674d3b46ec8dd2",
+    "diagnosticRunId": 41261811952,
+    "accountId": "ac-6246c88e50534696b139",
+    "firestoreExists": true,
+    "firestoreDeleted": false,
+    "protectedHttp": 200,
+    "protectedAccounts": 1,
+    "commercialStateAccounts": 1,
+    "crmDirectStateRows": 1,
+    "crmPublicRows": 0,
+    "renderedCuentas": 0,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/3d1d42ad02066ae2"
+  },
+  "rootCause": "app/adapters/tya-ab-cumulative-composition-v1.js sanitizeCrm overrides crmStore.list/cuentas/contactos and applies historical source-provenance visibility to canonical provider-backed rows; these rows may have no demo provenance. app/modules/crm.js already has explicit boolean-true tombstone fix, but the overlay masked rows downstream.",
+  "correction": {
+    "productSourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
+    "productTree": "66f745312ee6c98602f72254353caac16f2bcb44",
+    "predecessorProductSourceSha": "7b70557c22e3902ab3c91fbee326357630fc20a1",
+    "productFiles": [
+      "app/adapters/tya-ab-cumulative-composition-v1.js"
+    ],
+    "qaFiles": [
+      "tools/qa/cxorbia-i3-g03-crm-protected-tombstone-parity.test.mjs",
+      "tools/qa/cxorbia-i3-g03-crm-composition-provider-parity.test.mjs"
+    ],
+    "ownerBlob": "9d014be5cde2962f77f726b3298c2549f6c45cae",
+    "readModelRule": "In canonical mode call unmodified underlying provider-backed store methods; maintain demo/fixture provenance filtering only in noncanonical mode; reject real boolean true tombstones at CRM source.",
+    "localFocalTests": {
+      "pass": 3,
+      "fail": 0
+    },
+    "remoteCi": {
+      "runId": 41262158209,
+      "workflow": "CXOrbia Recovery I3 DEV Certification",
+      "generalSourceTests": {
+        "pass": 66,
+        "fail": 0
+      },
+      "focalTests": {
+        "pass": 3,
+        "fail": 0
+      },
+      "focalStep": "success",
+      "overall": "failure",
+      "blockingGuard": "UNDECLARED_PRODUCT_DRIFT_AFTER_CANONICAL_CANDIDATE_BEFORE_CONTROL_ALIGNMENT"
+    }
+  },
+  "pending": {
+    "controlLineageGuard": "PENDING_ALIGNED_CONTROL_RUN",
+    "devMaterialization": "NOT_EXECUTED_NEW_SOURCE",
+    "sameArtifactAuthenticatedBrowser": "PENDING_CUENTAS_ONE_AFTER_RELOAD_AND_INDEPENDENT_SESSION",
+    "humanVisualAcceptance": "PENDING",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "terminalCertificationAllowed": false
+  },
+  "preservation": {
+    "frozenPlan": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
+    "shockFreeze": "CXORBIA_I3_PLAN_CHOQUE_CIERRE_MONOTONICO_FROZEN_2026-10-28.md",
+    "moduleMatches": 5,
+    "moduleTotal": 21,
+    "shopperFusionProvisional": "32/83_RECOUNT_REQUIRED",
+    "providerWrites": 0,
+    "devDeploysThisRepair": 0,
+    "productionDeploys": 0,
+    "production": "DO_NOT_TOUCH",
+    "i4Authorized": false
+  },
+  "nextExactAction": "I3 FASE A / PLAN DE CHOQUE CONGELADO — G03 VRM-295: corrección P0 de composición CRM integrada en fuente e44483d y 3/3 pruebas focales + 66/66 contratos generales PASS en RUN 41262158209; el guard de ese run FALLÓ correctamente por descriptor fuente anterior. Backend protegido cuenta activa 1 y estado CRM canónico 1, pero DEV aún muestra Cuentas (0) porque el Hosting que sirve 3d1d42ad02066ae2 es predecesor. ÚNICA ACCIÓN SIGUIENTE: certificar candidato e44483d con guard + ledger/matriz/descriptor alineados; después materializar una sola vez el artefacto exacto Hosting DEV y comprobar UI Cuentas (1), recarga y sesión independiente con ACK de proveedor, sin re-crear cuenta ni tocar backend/HR/finanzas. Conservar QA focal paralelo D05/D06/finanzas/HR y readbacks previos. 5/21 MATCH, shoppers 32/83 provisionales con recenso HR pendiente, Gates 20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH."
+}

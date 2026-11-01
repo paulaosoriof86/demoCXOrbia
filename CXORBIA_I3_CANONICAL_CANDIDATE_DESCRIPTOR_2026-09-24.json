@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_G03_READ_MODEL_UNATTRIBUTED",
+  "status": "HOLD_I3_G03_VRM295_COMPOSITION_SOURCE_FIXED_DEV_E2E_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "7b70557c22e3902ab3c91fbee326357630fc20a1",
-  "productTreeAuthority": "97386bece69ead50b85fd3eb1880968cf1dcaa26",
-  "predecessorProductSourceSha": "bd1f875ab0f1ed0059ab55ede24d7816142817ec",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V537_2026-10-31.json",
-  "findingsLedgerExpectedGitBlob": "3f3346c2b85e8b2537c0d8dc6a24dd884348c626",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261031-V206.json",
+  "productSourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
+  "productTreeAuthority": "66f745312ee6c98602f72254353caac16f2bcb44",
+  "predecessorProductSourceSha": "7b70557c22e3902ab3c91fbee326357630fc20a1",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V538_2026-11-01.json",
+  "findingsLedgerExpectedGitBlob": "6b56aa795d83dbe729a853636a7efee2b5663768",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V207.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "G03_FRONTEND_PROTECTED_TO_CRM_READMODEL_UI_HOLD__F9_POST_F9_FINANCE_HUMAN_E2E_PENDING",
+  "activeBlocker": "G03_VRM295_CRM_COMPOSITION_SOURCE_ONLY_DEV_E2E_HOLD__F9_FINANCE_HR_HUMAN_PENDING",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -106,7 +106,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-295",
+  "nextFindingId": "VRM-296",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 FASE A / PLAN CONGELADO — G03 RUN2010: CI canónico PASS y prueba DEV autenticada PASS. Firestore crmAccounts/ac-6246c88e50534696b139 existe v1 no borrada; _protected.commercial.accounts devuelve 1 cuenta activa e incluye el ID, HTTP 200 con Admin DEV. G03 permanece HOLD: UI anterior mostró Cuentas (0) y aún falta readback simultáneo de CX.data.__commercialState.accounts, modo canónico, puente/publicador/Hosting. Acción única siguiente: leer sólo esos contadores en Admin DEV sin PII/token, atribuir owner exacto, corregir únicamente P0 PROVEN y repetir gate Cuentas >=1 tras recarga DEV. Hosting DEV servido y verificado: sites/cxorbia-backend-dev/versions/3d1d42ad02066ae2; conservar QA paralelo D05/D06/finanzas/HR. Sin recrear cuenta, backend, IAM, fusiones ni deploy por rutina. 5/21 MATCH; shoppers 32/83 verificadas con delta HR en HOLD; Gates 20/21 HOLD; I4 no autorizado; producción DO_NOT_TOUCH.",
+  "exactNextAction": "I3 FASE A / PLAN DE CHOQUE CONGELADO — G03 VRM-295: corrección P0 de composición CRM integrada en fuente e44483d y 3/3 pruebas focales + 66/66 contratos generales PASS en RUN 41262158209; el guard de ese run FALLÓ correctamente por descriptor fuente anterior. Backend protegido cuenta activa 1 y estado CRM canónico 1, pero DEV aún muestra Cuentas (0) porque el Hosting que sirve 3d1d42ad02066ae2 es predecesor. ÚNICA ACCIÓN SIGUIENTE: certificar candidato e44483d con guard + ledger/matriz/descriptor alineados; después materializar una sola vez el artefacto exacto Hosting DEV y comprobar UI Cuentas (1), recarga y sesión independiente con ACK de proveedor, sin re-crear cuenta ni tocar backend/HR/finanzas. Conservar QA focal paralelo D05/D06/finanzas/HR y readbacks previos. 5/21 MATCH, shoppers 32/83 provisionales con recenso HR pendiente, Gates 20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "b545cdceaf74d03d134f464f382027247eaafbc7",
+  "moduleTruthExpectedGitBlob": "0cb8fbb79fd26601c2597e981bb1034bfc625ae2",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -16022,6 +16022,25 @@
       "previousUiAccounts": 0,
       "currentStateReadback": "PENDING"
     },
+    "production": false
+  },
+  "g03CrmCompositionProviderParity20261101": {
+    "findingId": "VRM-295",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_G03_CRM_PROVIDER_COMPOSITION_SOURCE_REPAIR_20261101.json",
+    "receiptGitBlob": "04c1d587bfd27b88d31bc3ccf0613834c6287e93",
+    "sourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
+    "sourceTree": "66f745312ee6c98602f72254353caac16f2bcb44",
+    "predecessorSourceSha": "7b70557c22e3902ab3c91fbee326357630fc20a1",
+    "sourceQaRunId": 41262158209,
+    "sourceContractTestsPassed": 66,
+    "focalCrmTestsPassed": 3,
+    "previousRunGuardFailure": "UNDECLARED_PRODUCT_DRIFT_SOURCE_DESCRIPTOR_NOT_YET_ALIGNED",
+    "controlSuccessorGuard": "PENDING_CANONICAL_CI",
+    "hostingServedSource": "PREDECESSOR",
+    "devCuentasBefore": 0,
+    "backendAccounts": 1,
+    "readModelAccounts": 1,
+    "devReproof": "PENDING",
     "production": false
   }
 }
