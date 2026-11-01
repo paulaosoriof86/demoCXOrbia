@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "cxorbia.i3.module-truth-matrix.20261101.v218",
+  "schemaVersion": "cxorbia.i3.module-truth-matrix.20261101.v217",
   "observedAt": "2026-11-01",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -110,7 +110,7 @@
     "authorityState": "PASS_CANONICAL_CI_RUN2021_EXACT_101_OWNERS_153_FILES_ZERO_MISMATCH",
     "state": "SOURCE_CI_PASS_G03_HOSTING_DEV_FOCAL_TWO_SESSION_PASS_GLOBAL_I3_HOLD"
   },
-  "controlHeadAtConstruction": "00a7c13e6e641c4d1f63b8ecf319a93ffaabdf36",
+  "controlHeadAtConstruction": "5cd898e7a0ff04e88bf93e8c3dc2cc1f86d3176e",
   "phaseAComplete": false,
   "allModulesMatch": false,
   "modules": [
@@ -597,7 +597,7 @@
       ],
       "contractFunctional": "Shopper/Identidad/Visual",
       "classification": "TRUE_FUNCTIONAL_DEFECT",
-      "actionRequired": "D05 Admin UI actual DEV 15Q editor v1 no-change save disabled; CI RUN41340843792 natural click with isolated simulated 409 shows warning, no false success, 0 provider commands, bank digests and receipts unchanged PASS. Real protected backend negative RUN41338635392 and QA-only positive RUN41339292153 retained. Remaining distinct reviewer under relevant policy, actual safe QA-only review-save UI, Shopper consumption/recert and D06 full contract, human acceptance. Keep TRUE_FUNCTIONAL_DEFECT/Gates HOLD, no real bank publish.",
+      "actionRequired": "D05 actual DEV Admin negative stale publish (409/0 writes) and positive protected backend QA-only publish/configure/retire 3x HTTP200 with provider ACK/readback/3 receipts and QA tombstone PASS. Four preexisting banks byte-for-byte unchanged; QA never visible to shoppers. Still no natural UI click E2E, no distinct-reviewer actor proof, shopper bank consumption/no-message D06 or human acceptance. Preserve TRUE_FUNCTIONAL_DEFECT classification, Gates/I4 HOLD.",
       "preI4SuccessorCommits": [
         "61cf7120603aeff110e97632bb6c69f5c4809d62"
       ],
@@ -983,31 +983,6 @@
           "humanAcceptance": "PENDING",
           "fullDomainMatch": false
         }
-      },
-      "d05AdminUiNegativeDev20261101": {
-        "path": "docs/checkpoints/CXORBIA_I3_D05_ADMIN_UI_NEGATIVE_409_NO_FALSE_SUCCESS_PASS_20261101.json",
-        "gitBlob": "cc83f453f99e5f5da91bb22e1438e89ebe39a290",
-        "status": "PASS_ADMIN_AUTH_UI_EDITOR_15Q_CLICK_INTERCEPTED_409_NO_FALSE_SUCCESS",
-        "testRunId": 41340843792,
-        "canonicalSourceRunId": 41340843565,
-        "testControlSha": "00a7c13e6e641c4d1f63b8ecf319a93ffaabdf36",
-        "productSourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
-        "realBackend409SeparateRun": 41338635392,
-        "qaOnlyPositiveBackendSeparateRun": 41339292153,
-        "simulatedProvider409": true,
-        "realBankWrites": 0,
-        "uiProviderCommandsSent": 0,
-        "pendingBankEditorQuestions": 15,
-        "bankDocumentsDigestBeforeAfterEqual": true,
-        "receiptCountBefore": 1,
-        "receiptCountAfter": 1,
-        "shopperConsumption": "PENDING",
-        "qaReviewerSave": "PENDING",
-        "d06FullContract": "PENDING",
-        "humanAcceptance": "PENDING",
-        "classification": "TRUE_FUNCTIONAL_DEFECT",
-        "fullDomainMatch": false,
-        "production": false
       }
     },
     {
@@ -7940,7 +7915,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "I3 PLAN DE CHOQUE CONGELADO — G03 CRM 2 Admin DEV PASS; VRM-286 Admin 748/748 visitas y 17/17 períodos PASS, sin repetir. D05 cinco assets DEV exactos y backend real 409/0 writes RUN41338635392 PASS; QA aislada publish/configure/retire 3 ACK RUN41339292153 PASS; UI Admin en Chrome editor 15 preguntas v1 y CI RUN41340843792 PASS clic natural con 409 SIMULADO INTERCEPTADO (0 comandos proveedor, advertencia visible, sin falso éxito, digest bancaria igual, recibos 1→1). No confundir 409 simulado UI con 409 real backend. Siguiente D05: guardado versionado de revisión con actor autorizado y fixture QA aislado, más consumo Shopper del banco publicado y obligación D06 restante; nunca publicar el banco real pendiente. HR 32/83 provisionales+51 pendientes, finanzas Q7,300 x2 sin recibo; no fusionar/duplicar/borrar. 5/21 MATCH, 16 restantes, Gates20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH, un escritor.",
+  "nextExactAction": "I3 PLAN DE CHOQUE CONGELADO — G03 CRM 2 Admin DEV PASS y Hosting DEV 231186c337bcd0ba; VRM-286 Admin 748/748 visitas y 17/17 períodos PASS, sin repetir. D05 cinco assets DEV exactos y backend real 409/0 writes RUN41338635392 PASS; QA aislada publish/configure/retire 3 ACK RUN41339292153 PASS; UI Admin en Chrome editor 15 preguntas v1 y CI RUN41340843792 PASS clic natural con 409 SIMULADO INTERCEPTADO (0 comandos proveedor, advertencia visible, sin falso éxito, digest bancaria igual, recibos 1→1). No confundir 409 simulado UI con 409 real backend. Siguiente D05: guardado versionado de revisión con actor autorizado y fixture QA aislado, más consumo Shopper del banco publicado y obligación D06 restante; nunca publicar el banco real pendiente. HR 32/83 provisionales+51 pendientes, finanzas Q7,300 x2 sin recibo; no fusionar/duplicar/borrar. 5/21 MATCH, 16 restantes, Gates20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH, un escritor.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -8973,8 +8948,8 @@
     "state": "SEALED_V190_DEV_PENDING_LIVE_REPROOF",
     "production": false
   },
-  "supersedesMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V217.json",
-  "supersedesGitBlob": "a783637782b7dc65a5f92719c862efc4892f26fe",
+  "supersedesMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V216.json",
+  "supersedesGitBlob": "919e1fac7b276d52375879ba256528bd6ad32369",
   "currentSourceReproof": {
     "runId": 37159003511,
     "runNumber": 1014,
@@ -16352,29 +16327,13 @@
       "fullDomainMatch": false
     }
   },
-  "d05AdminUiNegativeDev20261101": {
-    "path": "docs/checkpoints/CXORBIA_I3_D05_ADMIN_UI_NEGATIVE_409_NO_FALSE_SUCCESS_PASS_20261101.json",
-    "gitBlob": "cc83f453f99e5f5da91bb22e1438e89ebe39a290",
-    "status": "PASS_ADMIN_AUTH_UI_EDITOR_15Q_CLICK_INTERCEPTED_409_NO_FALSE_SUCCESS",
-    "testRunId": 41340843792,
-    "canonicalSourceRunId": 41340843565,
-    "testControlSha": "00a7c13e6e641c4d1f63b8ecf319a93ffaabdf36",
-    "productSourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
-    "realBackend409SeparateRun": 41338635392,
-    "qaOnlyPositiveBackendSeparateRun": 41339292153,
-    "simulatedProvider409": true,
-    "realBankWrites": 0,
-    "uiProviderCommandsSent": 0,
-    "pendingBankEditorQuestions": 15,
-    "bankDocumentsDigestBeforeAfterEqual": true,
-    "receiptCountBefore": 1,
-    "receiptCountAfter": 1,
-    "shopperConsumption": "PENDING",
-    "qaReviewerSave": "PENDING",
-    "d06FullContract": "PENDING",
-    "humanAcceptance": "PENDING",
-    "classification": "TRUE_FUNCTIONAL_DEFECT",
-    "fullDomainMatch": false,
-    "production": false
+  "v218ControlContinuityCorrection": {
+    "path": "docs/checkpoints/CXORBIA_I3_V218_SHOCK_CONTINUITY_HOSTING_VERSION_GUARD_REPAIR_20261101.json",
+    "gitBlob": "1850ebe93b93279d50c005fa5fe57a52a7d9f0fa",
+    "failedCanonicalCiRunId": 41341223912,
+    "reason": "DEV_HOSTING_REALITY_STALE_MISSING_VERSION_LITERAL",
+    "repair": "EXACT_NEXT_ACTION_ONLY_WITHOUT_GUARD_DISABLE",
+    "productSourceUnchanged": true,
+    "classificationCountsUnchanged": true
   }
 }
