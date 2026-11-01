@@ -78,7 +78,9 @@ async function run() {
   });
   if (!signIn.ok) fail(`AUTH_FAILURE:G03_DEV_ADMIN_SIGN_IN_HTTP_${signIn.status}`);
   const session = await signIn.json();
-  if (!session.idToken || session.localId !== principal.uid) fail('AUTH_FAILURE:G03_DEV_ADMIN_TOKEN_UID_MISMATCH');
+  if (!session.idToken || session.isNewUser === true) fail('AUTH_FAILURE:G03_DEV_ADMIN_SIGN_IN_NOT_EXISTING_USER');
+  const verifiedToken = await auth.verifyIdToken(session.idToken, true);
+  if (verifiedToken.uid !== principal.uid) fail('AUTH_FAILURE:G03_DEV_ADMIN_TOKEN_UID_MISMATCH');
 
   const url = `${ROOT}/api/tenants/${TENANT}/projects/${PROJECT_ID}/hr-live?format=json&view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV&protectedState=1&g03ReadOnly=${Date.now()}`;
   const response = await fetch(url, {
@@ -113,6 +115,7 @@ fs.mkdirSync(OUT, {recursive: true});
 try {
   const result = await run();
   fs.writeFileSync(`${OUT}/result.json`, `${JSON.stringify(result, null, 2)}\n`);
+  console.log(`G03_RESULT decision=${result.decision} firestoreExists=${result.persisted.exists} protectedHttp=${result.protected.httpStatus} protectedAccounts=${result.protected.visibleAccounts} fixtureInProtected=${result.protected.fixturePresent} frontendCertified=false`);
   console.log(JSON.stringify(result));
 } catch (error) {
   // Never print service-account material, Firebase tokens, UID, names, or payloads.
