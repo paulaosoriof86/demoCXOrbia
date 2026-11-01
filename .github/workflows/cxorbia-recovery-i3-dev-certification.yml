@@ -62,7 +62,7 @@ jobs:
    - run: node --test backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs
 
   canonical-candidate-authority:
-   runs-on: ubuntu-latest
+   runs-on: ubuntu-24.04
    outputs:
     source_sha: ${{ steps.authority.outputs.source_sha }}
     source_tree: ${{ steps.authority.outputs.source_tree }}
