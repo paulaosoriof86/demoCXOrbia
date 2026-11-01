@@ -252,30 +252,7 @@
       "materializationCarryForward": "PASS_SOURCE_419_TO_E444_BYTE_EXACT",
       "newDeployRequired": false
     },
-    "VRM286": {
-      "state": "SOURCE_CI_AND_DEV_EXACT_FIVE_LOADED_ASSETS_PASS_PENDING_AUTHENTICATED_ADMIN_E2E_HUMAN",
-      "currentCanonicalSourceCi": {
-        "kind": "CANONICAL_SOURCE_CI_FOCAL_ONLY",
-        "runId": 41269151108,
-        "jobId": 124738131438,
-        "url": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/41269151108",
-        "conclusion": "success",
-        "evidencePath": "docs/checkpoints/CXORBIA_I3_D05_VRM286_CANONICAL_SOURCE_CI_FOCAL_20261101.json",
-        "productSourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
-        "devRuntimeAndRules": "PENDING",
-        "humanAcceptance": "PENDING",
-        "production": false
-      },
-      "fullTaskClosed": false,
-      "humanAcceptance": "PENDING",
-      "exactDevAssets": [
-        "/index-backend-dev.html",
-        "/modules/proyectos.js",
-        "/modules/periodos.js",
-        "/modules/hr-source.js",
-        "/modules/proyecto-wizard.js"
-      ]
-    }
+    "VRM286": "SOURCE_CI_5_OF_5_PASS__DEV_EXACT_5_ASSETS_PASS__REAL_ADMIN_PROTECTED_UI_READ_MODEL_PASS_748_OF_748_VISITS_17_OF_17_PERIODS_RUN41336613738__EXTERNAL_HR_REVISION_OTHER_ROLES_HUMAN_PENDING__DOMAIN_NOT_MATCH"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -293,7 +270,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 PLAN DE CHOQUE CONGELADO — G03 CRM PASS dos Admin DEV y Hosting 231186c337bcd0ba NO REPETIR. D05 source CI 100/100 PASS; siete owner blobs actuales iguales a fuente del runtime/Rules DEV RUN1983, cinco clientes DEV exactos, G03 runtime/Rules intactos; NO redeploy. D05 siguiente: una prueba aislada con Admin y revisor reales publish/configure/retire + persistencia ACK, D06 negativo/no-message sin tocar datos ajenos. VRM-286 CI 5/5 y DEV assets 5/5 PASS, falta lectura Admin autenticada de períodos/visitas. HR 32/83 PROVISIONALES y 51 pendientes sin fusionar; finanzas Q7,300 x2 sin recibo bancario, no duplicar ni borrar. 5/21 MATCH, 16 no-MATCH, Gates20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH.",
+  "nextExactAction": "I3 PLAN DE CHOQUE CONGELADO — G03 CRM dos Admin DEV PASS, Hosting 231186c337bcd0ba, NO REPETIR. D05 siete owner blobs y cinco assets DEV exactos, Runtime/Rules por RUN1983 + G03 sin cambios, NO redesplegar; actor E2E publish/configure/retire con persistencia/ACK pendiente. D06 prueba negativa/no-message sin datos ajenos. VRM-286: source CI 5/5, DEV cinco assets exactos, Admin real DEV RUN41336613738 PASS (748 visitas cargadas = 748 UI, 17 períodos = 17 chips, rol Admin protegido). NO equiparar con revisión HR externa aprobada, otros roles ni aceptación humana: pendientes. HR 32/83 provisionales, 51 pendientes; finanzas dos Q7,300 ambiguos sin recibos, NO fusionar/duplicar/borrar. Fase A 5/21 MATCH, 16 restantes, Gates20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -336,7 +313,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-11-01T01:07:41.468Z",
+  "lastUpdatedAt": "2026-11-01T18:30:00Z",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -993,12 +970,12 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V213.json",
-    "gitBlob": "6db097f4a0064416ad0458729798db21d8bce326",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V214.json",
+    "gitBlob": "467ca37904091f84d0bea6f3caf514576e68ce2d",
     "sourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
     "allModulesMatch": false,
     "phaseAComplete": false,
-    "sha256": "907150de28cb59e8ca98edef920c363beb0ac8fbc3ebd307c2ca9a00e19fdd1e"
+    "sha256": "f087df7e9192320fe43acc749bf4599aa5a80e2c41676c4e7c694b0c92fd985e"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -6232,5 +6209,49 @@
     "production": false,
     "nonMatchDomains": 16,
     "matchDomains": 5
+  },
+  "vrm286AuthenticatedDevAdminReadModel20261101": {
+    "findingId": "VRM-286",
+    "scope": "REAL_AUTHENTICATED_ADMIN_UI_CINEPOLIS_PERIOD_VISIT_READ_MODEL_ONLY",
+    "status": "PASS_AUTHENTICATED_ADMIN_PROJECT_PERIOD_READ_MODEL_UI",
+    "sourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
+    "controlSha": "61058fcd4734a2e6c4c2e133571e45038f39ba1c",
+    "workflowPath": ".github/workflows/cxorbia-i3-vrm286-admin-readonly.yml",
+    "scriptPath": "tools/qa/cxorbia-i3-vrm286-admin-readonly-live.mjs",
+    "runId": 41336613738,
+    "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/41336613738",
+    "artifactId": 13094928603,
+    "artifactSha256": "aaf7c2e51db8f92fc91bfd66f230c85de927e0db6d1104300c6428d3b07f5142",
+    "canonicalRunId": 41336613691,
+    "authenticated": true,
+    "protectedApplied": true,
+    "role": "admin",
+    "project": "cinepolis",
+    "visitRowsHydrated": 748,
+    "approvedProjectPeriodCount": 17,
+    "periodChipsRendered": 17,
+    "sourceDerivedVisitCount": 748,
+    "renderedVisitCount": 748,
+    "noDataWrites": true,
+    "deploys": 0,
+    "externalHrRevisionApproval": "NOT_EVALUATED",
+    "otherRoles": "NOT_EVALUATED",
+    "humanAcceptance": "PENDING",
+    "fullDomainMatch": false,
+    "production": false,
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM286_AUTH_ADMIN_DEV_PROJECT_PERIOD_UI_PASS_20261101.json"
+  },
+  "verifiedFocalMilestones20261101": {
+    "VRM286": {
+      "completed": 3,
+      "total": 5,
+      "scope": "SOURCE_CI_DEV_ASSETS_AUTH_ADMIN_READ_MODEL__EXTERNAL_HR_REVISION_AND_HUMAN_ROLES_PENDING",
+      "notGlobalCompletionPercent": true
+    },
+    "moduleDomains": {
+      "match": 5,
+      "total": 21,
+      "nonMatch": 16
+    }
   }
 }

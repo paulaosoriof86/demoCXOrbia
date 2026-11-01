@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_D05_DEV_SOURCE_OWNER_MATERIALIZATION_PASS_PROTECTED_E2E_PENDING_VRM286_ROLE_E2E_PENDING",
+  "status": "HOLD_I3_D05_ACTOR_E2E_PENDING_VRM286_ADMIN_UI_PASS_EXTERNAL_HR_REVISION_OTHER_ROLES_HUMAN_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -9,11 +9,11 @@
   "predecessorProductSourceSha": "7b70557c22e3902ab3c91fbee326357630fc20a1",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V541_2026-11-01.json",
   "findingsLedgerExpectedGitBlob": "7021e5c83bf9374a0a5da103773cef18753236bf",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V213.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V214.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D05_D06_LIVE_ACTOR_E2E_VRM286_AUTH_ADMIN_HR_REVISION_FINANCE_HUMAN_AND_16_NONMATCH",
+  "activeBlocker": "D05_D06_LIVE_ACTOR_E2E_VRM286_EXTERNAL_HR_REVISION_OTHER_ROLES_FINANCE_HUMAN_AND_16_NONMATCH",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 PLAN DE CHOQUE CONGELADO — G03 CRM PASS dos Admin DEV y Hosting 231186c337bcd0ba NO REPETIR. D05 source CI 100/100 PASS; siete owner blobs actuales iguales a fuente del runtime/Rules DEV RUN1983, cinco clientes DEV exactos, G03 runtime/Rules intactos; NO redeploy. D05 siguiente: una prueba aislada con Admin y revisor reales publish/configure/retire + persistencia ACK, D06 negativo/no-message sin tocar datos ajenos. VRM-286 CI 5/5 y DEV assets 5/5 PASS, falta lectura Admin autenticada de períodos/visitas. HR 32/83 PROVISIONALES y 51 pendientes sin fusionar; finanzas Q7,300 x2 sin recibo bancario, no duplicar ni borrar. 5/21 MATCH, 16 no-MATCH, Gates20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH.",
+  "exactNextAction": "I3 PLAN DE CHOQUE CONGELADO — G03 CRM dos Admin DEV PASS, Hosting 231186c337bcd0ba, NO REPETIR. D05 siete owner blobs y cinco assets DEV exactos, Runtime/Rules por RUN1983 + G03 sin cambios, NO redesplegar; actor E2E publish/configure/retire con persistencia/ACK pendiente. D06 prueba negativa/no-message sin datos ajenos. VRM-286: source CI 5/5, DEV cinco assets exactos, Admin real DEV RUN41336613738 PASS (748 visitas cargadas = 748 UI, 17 períodos = 17 chips, rol Admin protegido). NO equiparar con revisión HR externa aprobada, otros roles ni aceptación humana: pendientes. HR 32/83 provisionales, 51 pendientes; finanzas dos Q7,300 ambiguos sin recibos, NO fusionar/duplicar/borrar. Fase A 5/21 MATCH, 16 restantes, Gates20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "6db097f4a0064416ad0458729798db21d8bce326",
+  "moduleTruthExpectedGitBlob": "467ca37904091f84d0bea6f3caf514576e68ce2d",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12086,7 +12086,7 @@
     "proofTree": "1753d01aa909dd4181e3490c07d24287913d68a0",
     "decision": "PASS_FOCAL_SOURCE_ONLY_I3_HOLD"
   },
-  "lastUpdatedAt": "2026-10-31",
+  "lastUpdatedAt": "2026-11-01T18:30:00Z",
   "a05SourceProof": {
     "recordedAt": "2026-10-17T12:00:37.826Z",
     "productSourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
@@ -16245,5 +16245,36 @@
     "production": false,
     "nonMatchDomains": 16,
     "matchDomains": 5
+  },
+  "vrm286AuthenticatedDevAdminReadModel20261101": {
+    "findingId": "VRM-286",
+    "scope": "REAL_AUTHENTICATED_ADMIN_UI_CINEPOLIS_PERIOD_VISIT_READ_MODEL_ONLY",
+    "status": "PASS_AUTHENTICATED_ADMIN_PROJECT_PERIOD_READ_MODEL_UI",
+    "sourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
+    "controlSha": "61058fcd4734a2e6c4c2e133571e45038f39ba1c",
+    "workflowPath": ".github/workflows/cxorbia-i3-vrm286-admin-readonly.yml",
+    "scriptPath": "tools/qa/cxorbia-i3-vrm286-admin-readonly-live.mjs",
+    "runId": 41336613738,
+    "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/41336613738",
+    "artifactId": 13094928603,
+    "artifactSha256": "aaf7c2e51db8f92fc91bfd66f230c85de927e0db6d1104300c6428d3b07f5142",
+    "canonicalRunId": 41336613691,
+    "authenticated": true,
+    "protectedApplied": true,
+    "role": "admin",
+    "project": "cinepolis",
+    "visitRowsHydrated": 748,
+    "approvedProjectPeriodCount": 17,
+    "periodChipsRendered": 17,
+    "sourceDerivedVisitCount": 748,
+    "renderedVisitCount": 748,
+    "noDataWrites": true,
+    "deploys": 0,
+    "externalHrRevisionApproval": "NOT_EVALUATED",
+    "otherRoles": "NOT_EVALUATED",
+    "humanAcceptance": "PENDING",
+    "fullDomainMatch": false,
+    "production": false,
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM286_AUTH_ADMIN_DEV_PROJECT_PERIOD_UI_PASS_20261101.json"
   }
 }
