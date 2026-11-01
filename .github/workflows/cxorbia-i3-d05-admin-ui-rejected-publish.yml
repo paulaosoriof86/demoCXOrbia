@@ -1,0 +1,43 @@
+name: CXOrbia I3 D05 Admin UI Rejected Publish DEV
+on:
+  push:
+    branches:
+      - recovery/cxorbia-phase-a-20260831
+permissions:
+  contents: read
+jobs:
+  admin-ui-rejected-publish:
+    if: ${{ contains(github.event.head_commit.message, '[i3-d05-admin-ui-negative]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      CXORBIA_PRODUCT_SOURCE_SHA: e44483d895e75d5e1bf48b327d464a8c4686ddba
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Pin immutable product, inspect scoped script
+        run: |
+          set -Eeuo pipefail
+          test "$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = "$CXORBIA_PRODUCT_SOURCE_SHA"
+          git diff --quiet "$CXORBIA_PRODUCT_SOURCE_SHA" HEAD -- app backend firestore.rules storage.rules firebase.json .firebaserc
+          node --check tools/qa/cxorbia-i3-d05-admin-ui-rejected-publish-live.mjs
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install isolated read-only browser dependencies
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1
+          npx --no-install playwright install chromium
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Prove actual Admin editor and UI rejection, block all provider writes
+        run: node tools/qa/cxorbia-i3-d05-admin-ui-rejected-publish-live.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-d05-admin-ui-rejected-publish-${{ github.run_id }}
+          path: .tmp/cxorbia-i3-d05-admin-ui-negative/
+          if-no-files-found: warn
+          retention-days: 30
