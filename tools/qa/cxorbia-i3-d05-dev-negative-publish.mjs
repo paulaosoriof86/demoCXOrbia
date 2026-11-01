@@ -90,9 +90,10 @@ async function run() {
     : [periodId, ...(periodId.startsWith(PROJECT_ID + '-') ? [periodId.slice(PROJECT_ID.length + 1)] : [])];
   const periodSnaps = await Promise.all(periodIds.map(id =>
     db.doc(`tenants/${TENANT}/projects/${PROJECT_ID}/periods/${id}`).get()));
-  if (periodSnaps.filter(x => x.exists).length !== 1)
-    fail('SOURCE_FAILURE:D05_PERIOD_NOT_UNIQUE');
-  const policySources = [projectSnap.data() || {}, periodSnaps.find(x => x.exists)?.data() || {}];
+  const matchedPeriodDocs = periodSnaps.filter(x => x.exists);
+  if (matchedPeriodDocs.length > 1)
+    fail('SOURCE_FAILURE:D05_PERIOD_POLICY_AMBIGUOUS');
+  const policySources = [projectSnap.data() || {}, matchedPeriodDocs[0]?.data() || {}];
   const aliasesFor = x => ['certificationReviewPolicy', 'certReviewPolicy']
     .filter(k => Object.hasOwn(x, k)).map(k => str(x[k]).toLowerCase());
   const explicitPolicies = policySources.flatMap(aliasesFor);
@@ -150,6 +151,8 @@ async function run() {
   result.readback = {
     principalExisting: true, role: 'admin', tenant: TENANT, project: PROJECT_ID,
     periodScopeVerified: periodId.length > 0,
+    periodPolicyDocuments: matchedPeriodDocs.length,
+    policyAuthority: matchedPeriodDocs.length ? 'EXACT_PERIOD_OR_PROJECT_OVERRIDE' : 'PROJECT_DEFAULT_NO_PERIOD_DOCUMENT',
     reviewPolicyConfigured: explicitPolicies.length > 0,
     resourceFingerprint: sha(chosen.id), bankStateBefore: str(bank.estado),
     bankStateAfter: str(after.data()?.bank?.estado),
