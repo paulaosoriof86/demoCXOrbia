@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm286.v215.shock-continuity-correction.v1",
+  "decision": "RESTORED_CANONICAL_SNAPSHOT_CLASSIFICATION_FROZEN_FOCAL_PASS_UNCHANGED",
+  "asOf": "2026-11-01",
+  "failedControlCommit": "e8162c2c6c1933705817cb112dc9239f7a1446b3",
+  "failedRunId": 41337040535,
+  "failedGuard": [
+    "MAPPING_FAILURE:CLASSIFICATION_SNAPSHOT_AUTHORITY",
+    "MAPPING_FAILURE:CLASSIFICATION_COUNTS_STALE"
+  ],
+  "cause": "V214 updated matrix classification and pointer but did not sync activeShockModuleTruth. V215 keeps domain classification unchanged and syncs exact snapshot path/blob/counts, while recording role-scoped PASS as separate immutable proof.",
+  "newMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V215.json",
+  "newMatrixGitBlob": "3c43dc82b8c8e0cc4deff0e3aaae7d4667c5d5c8",
+  "newMatrixSha256": "8b26633006bba86d242ea07237985a3dfc7e62c15646c8dec5a8ff096be6f14a",
+  "formalMatchedDomains": 5,
+  "formalTotalDomains": 21,
+  "liveProofRunId": 41336613738,
+  "sourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
+  "production": "DO_NOT_TOUCH",
+  "i4Authorized": false,
+  "productEdits": 0,
+  "deploys": 0,
+  "humanAcceptance": "PENDING"
+}

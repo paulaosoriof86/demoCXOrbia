@@ -9,7 +9,7 @@
   "predecessorProductSourceSha": "7b70557c22e3902ab3c91fbee326357630fc20a1",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V541_2026-11-01.json",
   "findingsLedgerExpectedGitBlob": "7021e5c83bf9374a0a5da103773cef18753236bf",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V214.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V215.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "467ca37904091f84d0bea6f3caf514576e68ce2d",
+  "moduleTruthExpectedGitBlob": "3c43dc82b8c8e0cc4deff0e3aaae7d4667c5d5c8",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12086,7 +12086,7 @@
     "proofTree": "1753d01aa909dd4181e3490c07d24287913d68a0",
     "decision": "PASS_FOCAL_SOURCE_ONLY_I3_HOLD"
   },
-  "lastUpdatedAt": "2026-11-01T18:30:00Z",
+  "lastUpdatedAt": "2026-11-01T18:33:00Z",
   "a05SourceProof": {
     "recordedAt": "2026-10-17T12:00:37.826Z",
     "productSourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
@@ -16275,6 +16275,7 @@
     "humanAcceptance": "PENDING",
     "fullDomainMatch": false,
     "production": false,
-    "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM286_AUTH_ADMIN_DEV_PROJECT_PERIOD_UI_PASS_20261101.json"
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM286_AUTH_ADMIN_DEV_PROJECT_PERIOD_UI_PASS_20261101.json",
+    "matrixVersion": "V215"
   }
 }

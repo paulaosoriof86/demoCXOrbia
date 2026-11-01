@@ -313,7 +313,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-11-01T18:30:00Z",
+  "lastUpdatedAt": "2026-11-01T18:33:00Z",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -970,12 +970,12 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V214.json",
-    "gitBlob": "467ca37904091f84d0bea6f3caf514576e68ce2d",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V215.json",
+    "gitBlob": "3c43dc82b8c8e0cc4deff0e3aaae7d4667c5d5c8",
     "sourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
     "allModulesMatch": false,
     "phaseAComplete": false,
-    "sha256": "f087df7e9192320fe43acc749bf4599aa5a80e2c41676c4e7c694b0c92fd985e"
+    "sha256": "8b26633006bba86d242ea07237985a3dfc7e62c15646c8dec5a8ff096be6f14a"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -3012,8 +3012,8 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V213.json",
-    "matrixBlob": "6db097f4a0064416ad0458729798db21d8bce326",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V215.json",
+    "matrixBlob": "3c43dc82b8c8e0cc4deff0e3aaae7d4667c5d5c8",
     "classificationCounts": {
       "COMPOSED_NOT_DEPLOYED": 2,
       "MATCH": 5,
@@ -3024,7 +3024,7 @@
       "TRUE_FUNCTIONAL_DEFECT": 3
     },
     "derivedAt": "2026-11-01",
-    "meaning": "FROZEN_5_OF_21_MATCH__D05_SOURCE_CI_AND_DEV_CARRIED_FORWARD_PASS__PROTECTED_E2E_PENDING__VRM286_DEV_BYTES_PASS_HUMAN_PENDING"
+    "meaning": "FROZEN_5_OF_21_MATCH__D05_DEV_OWNER_BYTES_CARRIED_FORWARD__VRM286_ADMIN_AUTHENTICATED_748_VISITS_17_PERIODS_FOCAL_PASS__FULL_ROLE_HR_REVISION_HUMAN_PENDING"
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
   "activeMethodologyGuard": {
@@ -6239,7 +6239,8 @@
     "humanAcceptance": "PENDING",
     "fullDomainMatch": false,
     "production": false,
-    "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM286_AUTH_ADMIN_DEV_PROJECT_PERIOD_UI_PASS_20261101.json"
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM286_AUTH_ADMIN_DEV_PROJECT_PERIOD_UI_PASS_20261101.json",
+    "matrixVersion": "V215"
   },
   "verifiedFocalMilestones20261101": {
     "VRM286": {
