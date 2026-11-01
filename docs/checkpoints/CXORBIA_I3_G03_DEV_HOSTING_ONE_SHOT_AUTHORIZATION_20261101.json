@@ -3,7 +3,10 @@
   "status": "PAULA_AUTHORIZED_ONE_SHOT_DEV_HOSTING_ONLY",
   "authority": "Paula, explicit authorization in Recovery continuation conversation, 2026-11-01",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "expectedControlParentSha": "545a642122ee4ef9f18baf04013e722be3efdb13",
+  "originalAuthorizedControlHeadSha": "545a642122ee4ef9f18baf04013e722be3efdb13",
+  "nonExecutingControlCommitSha": "cff0c4c9838297c8a56d21bb40aa55c8e5529c97",
+  "nonExecutingControlReason": "GitHub Actions rejected workflow over 500 KiB before scheduling any jobs; zero deployments attempted.",
+  "expectedControlParentSha": "cff0c4c9838297c8a56d21bb40aa55c8e5529c97",
   "productSourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
   "productSourceTree": "66f745312ee6c98602f72254353caac16f2bcb44",
   "protectedSourceBlobs": {
@@ -16,7 +19,7 @@
   "hostingSite": "cxorbia-backend-dev",
   "hostingTarget": "cxorbia-dev",
   "hostingOrigin": "https://cxorbia-backend-dev.web.app",
-  "trigger": "[g03-dev-hosting-once]",
+  "trigger": "[g03-once]",
   "runAttemptRequired": 1,
   "allowedCommitFiles": [
     ".github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh",

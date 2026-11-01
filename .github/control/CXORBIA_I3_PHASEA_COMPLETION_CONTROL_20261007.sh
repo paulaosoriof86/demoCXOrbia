@@ -557,7 +557,7 @@ phasea_g03_guard() {
   test "${PROJECT:-}" = cxorbia-backend-dev
   test "${HOSTING_SITE:-}" = cxorbia-backend-dev
   test "${FIREBASE_HOSTING_TARGET:-}" = cxorbia-dev
-  jq -e '.head_commit.message | contains("[g03-dev-hosting-once]") and
+  jq -e '.head_commit.message | contains("[g03-once]") and
     (contains("[i3-phasea-dev-materialize]")|not) and
     (contains("[i3-phasea-dev-readback]")|not)' "$GITHUB_EVENT_PATH" >/dev/null
   test "$(git rev-parse HEAD^)" = "$(jq -r .expectedControlParentSha "$G03_PACKAGE")"
@@ -1422,6 +1422,10 @@ node --test tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs |
   cat /tmp/i3-phasea-completion-source-proof.json
   ;;
 preflight)
+  if jq -e '.head_commit.message | contains("[g03-once]")' "$GITHUB_EVENT_PATH" >/dev/null; then
+    bash "$0" g03-hosting-preflight
+    exit 0
+  fi
   mkdir -p "$OUT"
   test "$PROJECT" = "cxorbia-backend-dev"
   test "$SERVICE" = "cxorbia-live-hr-dev"
@@ -1511,6 +1515,11 @@ preflight)
   echo "PHASEA_SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
   ;;
 materialize)
+  if jq -e '.head_commit.message | contains("[g03-once]")' "$GITHUB_EVENT_PATH" >/dev/null; then
+    bash "$0" g03-hosting-baseline
+    bash "$0" g03-hosting-materialize
+    exit 0
+  fi
   # BEGIN_EXISTING_IMAGE_TRAFFIC_ACTIVATION_MATERIALIZE
   if [[ "$(jq -r '.i3PhaseADevReadbackTarget.existingImageTrafficActivation // false' "$CANDIDATE_DESCRIPTOR")" == true ]]; then
     phasea_activate_existing_image
@@ -1640,6 +1649,22 @@ readback)
   ;;
 
 proof)
+  if jq -e '.head_commit.message | contains("[g03-once]")' "$GITHUB_EVENT_PATH" >/dev/null; then
+    bash "$0" g03-hosting-proof
+    npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1
+    npx playwright install chromium
+    CXORBIA_G03_UI_TRACE=1 CXORBIA_G03_REQUIRE_UI_PARITY=1 \
+      node tools/qa/cxorbia-i3-g03-protected-crm-readonly.mjs
+    cp .tmp/cxorbia-i3-g03-protected-crm-readonly/result.json "$G03_OUT/independent-admin-ui-result.json"
+    jq -e '.focalUiParity==true and .independentClassification=="PASS_AUTHENTICATED_FRONTEND_ACCOUNT_VISIBLE" and
+      .frontend.renderedCount==1 and .independentFrontend.renderedCount==1 and .frontendCertified==false' \
+      "$G03_OUT/independent-admin-ui-result.json" >/dev/null
+    jq '.decision="PASS_G03_HOSTING_DEV_CUENTAS_ONE_TWO_SESSIONS_ONLY" |
+      .focalUiParity=true | .independentAdminSessions=2' "$G03_OUT/result.json" > "$G03_TMP/final-result.json"
+    cp "$G03_TMP/final-result.json" "$G03_OUT/result.json"
+    cat "$G03_OUT/result.json"
+    exit 0
+  fi
   # BEGIN_EXISTING_IMAGE_TRAFFIC_ACTIVATION_PROOF
   if [[ "$(jq -r '.i3PhaseADevReadbackTarget.existingImageTrafficActivation // false' "$CANDIDATE_DESCRIPTOR")" == true ]]; then
     phasea_prove_existing_image_activation

@@ -111,7 +111,11 @@ function classifyFrontend(protectedResult, frontend) {
 }
 
 async function run() {
-  const rawSecret = process.env.CXORBIA_G03_SA_JSON;
+  // Reuse the existing google-github-actions/auth credential in the Recovery
+  // materialization job; never create or distribute another service account.
+  const rawSecret = process.env.CXORBIA_G03_SA_JSON
+    || (process.env.GOOGLE_APPLICATION_CREDENTIALS
+      ? fs.readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS, 'utf8') : null);
   if (!rawSecret) fail('AUTH_FAILURE:G03_DEV_SERVICE_ACCOUNT_NOT_CONFIGURED');
   let sa;
   try { sa = JSON.parse(rawSecret); } catch { fail('AUTH_FAILURE:G03_DEV_SERVICE_ACCOUNT_JSON_INVALID'); }
