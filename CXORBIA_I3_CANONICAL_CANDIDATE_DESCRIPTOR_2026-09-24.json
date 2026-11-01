@@ -7,9 +7,9 @@
   "productSourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
   "productTreeAuthority": "66f745312ee6c98602f72254353caac16f2bcb44",
   "predecessorProductSourceSha": "7b70557c22e3902ab3c91fbee326357630fc20a1",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V538_2026-11-01.json",
-  "findingsLedgerExpectedGitBlob": "6b56aa795d83dbe729a853636a7efee2b5663768",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V207.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V539_2026-11-01.json",
+  "findingsLedgerExpectedGitBlob": "ce93638cd889298dc75ac236deb067940647dc50",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V208.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 FASE A / PLAN DE CHOQUE CONGELADO — G03 VRM-295: corrección P0 de composición CRM integrada en fuente e44483d y 3/3 pruebas focales + 66/66 contratos generales PASS en RUN 41262158209; el guard de ese run FALLÓ correctamente por descriptor fuente anterior. Backend protegido cuenta activa 1 y estado CRM canónico 1, pero DEV aún muestra Cuentas (0) porque el Hosting que sirve 3d1d42ad02066ae2 es predecesor. ÚNICA ACCIÓN SIGUIENTE: certificar candidato e44483d con guard + ledger/matriz/descriptor alineados; después materializar una sola vez el artefacto exacto Hosting DEV y comprobar UI Cuentas (1), recarga y sesión independiente con ACK de proveedor, sin re-crear cuenta ni tocar backend/HR/finanzas. Conservar QA focal paralelo D05/D06/finanzas/HR y readbacks previos. 5/21 MATCH, shoppers 32/83 provisionales con recenso HR pendiente, Gates 20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH.",
+  "exactNextAction": "I3 FASE A / PLAN CONGELADO: G03 VRM-295, código fuente e44483d PASS en RUN2020; RUN2020 autoría de fuente PASS, pero detectó 1 mismatch de inventario CRM que se reconcilia en matriz V208 sin modificar producto. SIGUIENTE ACCIÓN: verificar CI del sucesor con 0 owner/sourceFile mismatches; solo después una materialización única del artefacto exacto en Hosting DEV por carril existente/autorizado y E2E Admin Cuentas (1), recarga y sesión independiente. DEV previo 3d1d42ad02066ae2 aún muestra Cuentas (0) mientras backend 1 y estado 1. Prohibido crear flujo alternativo, duplicar cuenta, reimportar, tocar backend, HR, finanzas, Auth, IAM, reglas o producción. 5/21 MATCH, shoppers 32/83 provisionales con recenso HR pendiente, Gates 20/21 HOLD, I4 no autorizada, producción DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "0cb8fbb79fd26601c2597e981bb1034bfc625ae2",
+  "moduleTruthExpectedGitBlob": "ec112eeb1dd61287013bd80bb0821d5815c51dfc",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -16035,12 +16035,28 @@
     "sourceContractTestsPassed": 66,
     "focalCrmTestsPassed": 3,
     "previousRunGuardFailure": "UNDECLARED_PRODUCT_DRIFT_SOURCE_DESCRIPTOR_NOT_YET_ALIGNED",
-    "controlSuccessorGuard": "PENDING_CANONICAL_CI",
+    "controlSuccessorGuard": "PASS_RUN2020_SOURCE_LINEAGE_SHOCK_AND_SEAL",
     "hostingServedSource": "PREDECESSOR",
     "devCuentasBefore": 0,
     "backendAccounts": 1,
     "readModelAccounts": 1,
     "devReproof": "PENDING",
+    "production": false,
+    "controlRunId": 41262533643,
+    "sourceBlobAuditBefore": "ONE_CRM_MISMATCH"
+  },
+  "g03CrmBlobReconciliationRun2020": {
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_G03_CRM_BLOB_AUTHORITY_RECONCILIATION_RUN2020_20261101.json",
+    "receiptGitBlob": "e714f47ceb28f2d842ed9e4eec2090d8b831e09f",
+    "sourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
+    "sourceTree": "66f745312ee6c98602f72254353caac16f2bcb44",
+    "runId": 41262533643,
+    "crmBlob": "187d7af112cccbe06d27c9a72bb69dc440b7fe67",
+    "priorMatrixBlob": "c04c7792f0dd903563ea9cac41c54dd36127f005",
+    "expectedOwnerMismatches": 0,
+    "expectedSourceFileMismatches": 0,
+    "zeroMismatchCi": "PENDING",
+    "devMaterialization": "PENDING",
     "production": false
   }
 }

@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "cxorbia.i3.g03.crm-blob-authority-reconciliation.v1",
+  "date": "2026-11-01",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "findingId": "VRM-295",
+  "classification": "MAPPING_FAILURE_IN_SOURCE_INVENTORY",
+  "decision": "CONTROL_SOURCE_BLOB_AUTHORITY_RECONCILED_PENDING_ZERO_MISMATCH_CI",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "source": {
+    "productSourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
+    "productTree": "66f745312ee6c98602f72254353caac16f2bcb44",
+    "controlRunHead": "9fe012e652452c93d5baba9c5112961ed1d0e580",
+    "runId": 41262533643,
+    "runNumber": 2020,
+    "canonicalJobId": 124718545718,
+    "workflowConclusion": "success",
+    "canonicalJobConclusion": "success",
+    "lineageAuthority": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+    "shockContinuityPass": true,
+    "postDeploySealReadbackPass": true,
+    "terminalReleaseEligible": false
+  },
+  "diagnostic": {
+    "moduleBlobReadback": {
+      "pass": false,
+      "sourceFileMismatches": [
+        "app/modules/crm.js"
+      ],
+      "ownerMismatches": [],
+      "sourceFileCount": 153,
+      "ownerCount": 101,
+      "domainCount": 21
+    },
+    "cause": "Matrix V207 carried crm.js blob c04c77 from pre-tombstone source, while the canonical e444 product tree includes the P0 deleted===true protection at blob 187d7af1.",
+    "observedProtectedBackendAccounts": 1,
+    "observedCanonicalFrontendStateAccounts": 1,
+    "observedDevFrontendCount": 0,
+    "devSource": "PREDECESSOR_HOSTING",
+    "authAndFirestoreWrites": 0,
+    "production": false
+  },
+  "correction": {
+    "matrixNew": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V208.json",
+    "ledgerNew": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V539_2026-11-01.json",
+    "sourceFile": "app/modules/crm.js",
+    "beforeCurrentBlob": "c04c7792f0dd903563ea9cac41c54dd36127f005",
+    "afterCurrentBlob": "187d7af112cccbe06d27c9a72bb69dc440b7fe67",
+    "approvedBlobPreserved": "6a6ff1c964eff4f25ecaf33b028335bfc62810ee",
+    "approvedSourcePreserved": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+    "otherProductOwnersChanged": 0,
+    "newProductBuilds": 0,
+    "remoteArtifact": "NOT_CREATED",
+    "devMaterialization": "PENDING",
+    "nextGate": "CANONICAL_GUARD_MODULE_BLOB_ZERO_MISMATCH_AND_G03_CRM_REMOTE_FOCAL_PASS"
+  },
+  "preservation": {
+    "frozenPlan": true,
+    "shockFreeze": true,
+    "moduleMatchCount": 5,
+    "domainCount": 21,
+    "shopperFusionProgress": "32/83_PROVISIONAL_RECOUNT_REQUIRED",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "production": "DO_NOT_TOUCH"
+  },
+  "nextExactAction": "Cerrar 0 discrepancias de blobs CRM contra source SHA e44483d y readback exacto RUN siguiente; luego materialización DEV única por carril Recovery ya autorizado, sin crear otro workflow/materializador ni tocar HR, finanzas, Auth, Firestore o producción. Repetir UI Cuentas (1) tras recarga/sesión Admin independiente; I3 HOLD hasta cierre."
+}
