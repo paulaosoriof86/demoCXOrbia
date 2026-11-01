@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 FASE A / PLAN CHOQUE FROZEN: recuperar progreso Shopper 31/83 recenso independiente run 40820123220 + canaria R-026 ACK/readback run 40833855942 = 32/83 PROVISIONAL; hacer recenso READ-ONLY exacto de 83 sin repetir fusiones. Hosting DEV VRM-294 alcance HR ya servido 3d1d42ad02066ae2 (solo Hosting), no reiterar despliegue; G03 CRM Cuentas=0 aún HOLD. Continuar en QA simultánea HR/identidad/visitas+Stiven, certificaciones D05/D06, finanzas (36 alias con liquidaciones), CRM y visual/portal, con un único escritor y candidata serial. Certificar bloques DEV E2E+humano incremental, conservar PASS y 5/21 MATCH; Gate20/21 HOLD, I4 no autorizado, producción DO_NOT_TOUCH.",
+  "exactNextAction": "I3 FASE A PLAN CHOQUE CONGELADO: READ-ONLY RUN 41255179958 reconcilia 139 pares exactos, 83 grupos, 32 fusiones verificadas y 51 pendientes (36 alias/210 visitas/192 liquidaciones, 11 HR canonicos multiples, 3 keeper verificados, 1 no verificado). HR observado f12fba714 (231 shoppers/748 visitas) difiere de HR aprobado 4fc8def7 (229/748): HOLD_REVISED_HR_SOURCE_NOT_APPROVED. Adjudicar delta antes de nuevas fusiones; no repetir 32. QA transversal paralelo sin escritura: CRM G03 Cuentas=0, HR G05, Cert D05/D06 (2 bancos/5 evidencias historicas), Finanzas C04/C05 PASS acotado preservado, visitas y aceptacion humana. Un escritor serial, evidencia DEV+ACK/readback+humano por modulo. 5/21 MATCH, Gate20/21 HOLD, I4 no autorizada, produccion DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -15953,7 +15953,12 @@
     "sourceWrites": 0,
     "dataWritesThisCorrection": 0,
     "production": false,
-    "status": "PRESERVED_EVIDENCE_POST_R026_GLOBAL_RECOUNT_PENDING"
+    "status": "EXACT_139_83_READBACK_32_CONSOLIDATED_SOURCE_REVISION_APPROVAL_HOLD",
+    "latestDiagnosticRecountRunId": 41255179958,
+    "latestDiagnosticReadbackVerifiedGroups": 32,
+    "latestDiagnosticPendingGroups": 51,
+    "recensusDiagnosticComplete": true,
+    "sourceRevisionApprovalPending": true
   },
   "g03ActualHostingDevReadback20261031": {
     "verifiedBrowserDevOnly": true,
@@ -15966,5 +15971,18 @@
     "production": false,
     "readbackSource": "WORK_CHROME_CLOUD_SHELL_AND_AUTHENTICATED_CINEPOLIS_ADMIN_20261031"
   },
-  "lastContinuityEvidenceRecoveryAt": "2026-10-31T23:45:02.611Z"
+  "lastContinuityEvidenceRecoveryAt": "2026-11-01T00:09:01.225Z",
+  "i3Approved139CurrentHrDiagnostic20261101": {
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_APPROVED139_RECENSUS_DIAGNOSTIC_20261101.json",
+    "readOnlyRunId": 41255179958,
+    "observedHrRevision": "f12fba714e039c8a27ecf494ea8f883af8600b1625c06713814f241602a5a799",
+    "approvedRevisionMatch": false,
+    "exactPairs": 139,
+    "exactGroups": 83,
+    "consolidatedVerified": 32,
+    "pendingGroups": 51,
+    "decision": "HOLD_REVISED_HR_SOURCE_NOT_APPROVED",
+    "production": false,
+    "receiptGitBlob": "f2f75b72fe28f175f4ceace28012a4518c9fe929"
+  }
 }
