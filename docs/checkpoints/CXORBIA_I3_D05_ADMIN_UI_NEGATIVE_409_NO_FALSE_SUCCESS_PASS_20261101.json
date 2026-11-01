@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "cxorbia.i3.d05.admin-ui-negative-click.control-evidence.v1",
+  "observedAt": "2026-11-01T19:19:06.055Z",
+  "decision": "PASS_D05_ADMIN_UI_NEGATIVE_409_NO_FALSE_SUCCESS_KEEP_DOMAIN_HOLD",
+  "scope": "AUTHENTICATED_ADMIN_CHROME_LIVE_READONLY_PLUS_CI_HEADLESS_UI_CLICK_WITH_NETWORK_INTERCEPT",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "productSourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
+  "productTreeSha": "66f745312ee6c98602f72254353caac16f2bcb44",
+  "testControlSha": "00a7c13e6e641c4d1f63b8ecf319a93ffaabdf36",
+  "testScript": "tools/qa/cxorbia-i3-d05-admin-ui-rejected-publish-live.mjs",
+  "workflow": ".github/workflows/cxorbia-i3-d05-admin-ui-rejected-publish.yml",
+  "testRun": {
+    "id": 41340843792,
+    "conclusion": "success",
+    "url": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/41340843792",
+    "artifactId": 13097480270,
+    "artifactSha256": "40ab432c0a144a456c7bd59de2956213fd8bbc90d86874ac37ca6237946dd246",
+    "screenshots": [
+      "editor-unchanged.png",
+      "rejected-publish-warning.png"
+    ],
+    "json": "result.json"
+  },
+  "frozenGlobalCi": {
+    "id": 41340843565,
+    "conclusion": "success",
+    "url": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/41340843565"
+  },
+  "actor": {
+    "existingAuthStaffAdmin": true,
+    "tenant": "tya",
+    "project": "cinepolis",
+    "period": "2026-10",
+    "protectedAuthorityApplied": true
+  },
+  "realChromeReadOnly": {
+    "bankSelectorVisible": true,
+    "periodActiveBanks": 2,
+    "published": 1,
+    "pending": 1,
+    "reviewEditorOpened": true,
+    "pendingQuestionCount": 15,
+    "sourceDocumentSha256": "3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454",
+    "version": 1,
+    "emptyDiffDisablesSave": true,
+    "cloudBusinessWrites": 0
+  },
+  "ciUiNegative": {
+    "naturalClick": true,
+    "networkInterceptorInstalledBeforePageLoad": true,
+    "realProviderCommandsSent": 0,
+    "simulatedProviderStatus": 409,
+    "simulatedCode": "CERT_BANK_EXPECTED_VERSION_CONFLICT",
+    "interceptedPublish": 1,
+    "unrelatedWritesAttempted": 0,
+    "requestPayloadScopeVersionContentRevisionIdempotencyAuthVerified": true,
+    "visibleConflictWarning": true,
+    "falseSuccessToast": false
+  },
+  "firestoreBeforeAfter": {
+    "allProjectCertificationBankDocumentSha256Before": "a47491587eda68c9f3d7193b388f4ac0df5c17e9904e1fc7a2e333a326e28ecc",
+    "allProjectCertificationBankDocumentSha256After": "a47491587eda68c9f3d7193b388f4ac0df5c17e9904e1fc7a2e333a326e28ecc",
+    "equal": true,
+    "matchingResourceReceiptsBefore": 1,
+    "matchingResourceReceiptsAfter": 1,
+    "bankWrites": 0,
+    "receiptWrites": 0
+  },
+  "priorIndependentBackendProof": {
+    "negativeRealHttp409Run": 41338635392,
+    "positiveRealQaOnlyPublishConfigureRetireRun": 41339292153,
+    "realBusinessBanksPublished": false
+  },
+  "boundaries": {
+    "simulated409ResponseNotRealProviderForThisClick": true,
+    "positiveUiClickE2e": "PENDING_QA_ONLY",
+    "shopperRoleBankConsumption": "PENDING",
+    "distinctReviewerActualRoleIfPolicyRequires": "PENDING",
+    "d06FullContract": "PENDING_BEYOND_THIS_NEGATIVE_MESSAGE_CLAUSE",
+    "humanAcceptance": "PENDING",
+    "moduleClassification": "TRUE_FUNCTIONAL_DEFECT",
+    "moduleMatch": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "devDeploys": 0,
+    "production": false
+  },
+  "nextExactAction": "D05: scoped QA-only reviewer save and authenticated Shopper consumption; policy-authorized distinct actor only when maker_checker is configured, never publish the existing business pending bank; preserve D06 remaining and human review."
+}
