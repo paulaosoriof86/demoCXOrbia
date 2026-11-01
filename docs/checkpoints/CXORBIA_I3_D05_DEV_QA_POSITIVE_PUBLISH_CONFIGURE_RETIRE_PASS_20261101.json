@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "cxorbia.i3.d05.dev-qa-positive-publish-configure-retire.v1",
+  "decision": "PASS_REAL_DEV_AUTH_ADMIN_QA_ONLY_LIFECYCLE_3_OF_3_PROVIDER_ACK_AND_READBACK",
+  "asOf": "2026-11-01",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedControlParent": "68c0d0d96e460f90e44bde27d7f49e2848814bea",
+  "frozenProductSourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
+  "frozenProductTree": "66f745312ee6c98602f72254353caac16f2bcb44",
+  "evidence": {
+    "status": "PASS_D05_QA_ONLY_PUBLISH_CONFIGURE_RETIRE_ALL_THREE_ACK_AND_READBACK",
+    "scope": "REAL_DEV_PROTECTED_BACKEND_LIFECYCLE_ON_NEW_DISPOSABLE_ADMIN_ONLY_QA_BANK",
+    "productSourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
+    "controlSha": "68c0d0d96e460f90e44bde27d7f49e2848814bea",
+    "runId": 41339292153,
+    "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/41339292153",
+    "canonicalRunId": 41339292156,
+    "artifactId": 13096636352,
+    "artifactSha256": "1e1ff110f4e90d188016048656a4dbe9ebfd88b99228700d08c334e96d2c7d00",
+    "workflowPath": ".github/workflows/cxorbia-i3-d05-qa-positive-lifecycle.yml",
+    "scriptPath": "tools/qa/cxorbia-i3-d05-qa-positive-lifecycle.mjs",
+    "actor": "EXISTING_AUTHENTICATED_STAFF_ADMIN",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "policyAuthority": "EXISTING_DEFAULT_AUTHORIZED_ADMIN",
+    "periodPolicyDocuments": 0,
+    "qaBankFingerprint": "924136a2b3f26e2963267d03ec3ddf7cecfa5cc211a60e90402b688c9506da44",
+    "qaBankCreated": true,
+    "shopperVisible": false,
+    "realBanksBefore": 4,
+    "realBanksModified": false,
+    "realBankDigestsPreflight": "2d9e2aba6720673bd4082824618d0d77d72c10f6d1860123a70f873b4cf4d9be",
+    "lifecycle": [
+      {
+        "action": "publish",
+        "httpStatus": 200,
+        "fromVersion": 1,
+        "toVersion": 2,
+        "status": "published",
+        "providerAck": true,
+        "readbackVerified": true,
+        "receiptCreated": true
+      },
+      {
+        "action": "configure",
+        "httpStatus": 200,
+        "fromVersion": 2,
+        "toVersion": 3,
+        "status": "published",
+        "gate": 85,
+        "required": true,
+        "providerAck": true,
+        "readbackVerified": true,
+        "receiptCreated": true
+      },
+      {
+        "action": "retire",
+        "httpStatus": 200,
+        "fromVersion": 3,
+        "toVersion": 4,
+        "status": "withdrawn",
+        "resourceStatus": "deleted",
+        "providerAck": true,
+        "readbackVerified": true,
+        "receiptCreated": true
+      }
+    ],
+    "qaFinal": {
+      "resourceStatus": "deleted",
+      "bankEstado": "withdrawn",
+      "version": 4,
+      "tombstoneRetained": true
+    },
+    "fixtureSeedWrites": 1,
+    "protectedLifecycleProviderWrites": 6,
+    "commandReceiptsCreated": 3,
+    "authUsersCreated": 0,
+    "aiCalls": 0,
+    "hrWrites": 0,
+    "devDeploys": 0,
+    "production": false,
+    "approvalBoundaries": {
+      "realBusinessBankPublished": false,
+      "positiveBackendLifecycleOnQaFixture": true,
+      "naturalFrontendClickPath": "PENDING",
+      "distinctReviewerEnforcementActualDev": "PENDING",
+      "shopperConsumption": "PENDING",
+      "d06NoSuccessMessageUi": "PENDING",
+      "humanAcceptance": "PENDING",
+      "fullDomainMatch": false
+    }
+  },
+  "earlierProofs": {
+    "d05NegativeDev": {
+      "runId": 41338635392,
+      "decision": "PASS_409_NO_CHANGE"
+    },
+    "vrm286AdminDev": {
+      "runId": 41336613738,
+      "visits": "748_OF_748",
+      "periods": "17_OF_17"
+    },
+    "g03CrmDev": "PASS_TWO_ADMIN_SESSIONS_DO_NOT_REPEAT"
+  },
+  "effectBoundaries": {
+    "qaSeedWrites": 1,
+    "qaLifecycleResourceWrites": 3,
+    "qaCommandReceiptWrites": 3,
+    "realBankWrites": 0,
+    "authUsersCreated": 0,
+    "hrWrites": 0,
+    "aiCalls": 0,
+    "deploys": 0,
+    "productionWrites": 0,
+    "qaTombstoneRetained": true,
+    "naturalUiClick": "PENDING",
+    "distinctReviewer": "PENDING",
+    "shopperConsumption": "PENDING",
+    "d06NoMessage": "PENDING",
+    "humanAcceptance": "PENDING"
+  },
+  "frozenRelease": {
+    "matchedDomains": 5,
+    "totalDomains": 21,
+    "nonMatch": 16,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "production": "DO_NOT_TOUCH"
+  },
+  "nextExactAction": "I3 PLAN DE CHOQUE CONGELADO — G03 CRM dos Admin DEV PASS y Hosting 231186c337bcd0ba, NO REPETIR; VRM-286 fuente+5 bytes DEV+Admin 748/748 visitas y 17/17 períodos PASS, HR revision externa/otros roles/humano pendientes. D05 runtime/rules/5 assets DEV verificados sin redeploy; negativa Admin real RUN41338635392 HTTP409 sin writes PASS; positiva QA aislada RUN41339292153 publish/configure/retire tres HTTP200 con provider ACK, readback y 3 recibos PASS, banco QA retirado/deleted, 4 bancos reales intactos. Próximo D05: una sola prueba UI Admin de reviewer/persistencia + rol shopper sin publicar banco real, revisor distinto según política, D06 no-message negativo. HR 32/83 provisionales +51 pendientes; finanzas Q7,300 x2 sin recibo, no fusionar/duplicar/borrar. 5/21 MATCH, 16 restantes, Gates20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH."
+}
