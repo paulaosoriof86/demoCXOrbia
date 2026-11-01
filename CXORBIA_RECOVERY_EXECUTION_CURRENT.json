@@ -250,7 +250,10 @@
       },
       "sourceRunId": 40998569643,
       "materializationCarryForward": "PASS_SOURCE_419_TO_E444_BYTE_EXACT",
-      "newDeployRequired": false
+      "newDeployRequired": false,
+      "protectedNegativeDev20261101": "PASS_REAL_ADMIN_HTTP409_NO_BANK_OR_RECEIPT_CHANGE_RUN41338635392",
+      "positiveActorLifecycle": "PENDING",
+      "domainMatch": false
     },
     "VRM286": "SOURCE_CI_5_OF_5_PASS__DEV_EXACT_5_ASSETS_PASS__REAL_ADMIN_PROTECTED_UI_READ_MODEL_PASS_748_OF_748_VISITS_17_OF_17_PERIODS_RUN41336613738__EXTERNAL_HR_REVISION_OTHER_ROLES_HUMAN_PENDING__DOMAIN_NOT_MATCH"
   },
@@ -270,7 +273,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 PLAN DE CHOQUE CONGELADO — G03 CRM dos Admin DEV PASS, Hosting 231186c337bcd0ba, NO REPETIR. D05 siete owner blobs y cinco assets DEV exactos, Runtime/Rules por RUN1983 + G03 sin cambios, NO redesplegar; actor E2E publish/configure/retire con persistencia/ACK pendiente. D06 prueba negativa/no-message sin datos ajenos. VRM-286: source CI 5/5, DEV cinco assets exactos, Admin real DEV RUN41336613738 PASS (748 visitas cargadas = 748 UI, 17 períodos = 17 chips, rol Admin protegido). NO equiparar con revisión HR externa aprobada, otros roles ni aceptación humana: pendientes. HR 32/83 provisionales, 51 pendientes; finanzas dos Q7,300 ambiguos sin recibos, NO fusionar/duplicar/borrar. Fase A 5/21 MATCH, 16 restantes, Gates20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH.",
+  "nextExactAction": "I3 PLAN DE CHOQUE CONGELADO — G03 CRM dos Admin DEV y Hosting 231186c337bcd0ba PASS, NO REPETIR. VRM-286 source CI + cinco assets DEV + Admin real 748/748 visitas y 17/17 períodos PASS, HR revision externa/otros roles/humano pendientes. D05 siete owner blobs/Runtime/Rules/Hosting certificados sin redeploy y negativa Admin real RUN41338635392 PASS (HTTP409 stale publish, documento y versión sin cambios, sin ACK ni recibo). Próximo D05: sólo fixture QA nueva aislada y actor publish/configure/retire con ACK/readback/reload y retiro, jamás publicar banco real pendiente; D06 no-message negativo y otros roles pendientes. HR 32/83 provisionales, 51 pendientes sin fusionar; finanzas Q7,300 x2 sin recibos, no duplicar ni borrar. 5/21 MATCH, 16 no-MATCH, Gates20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -313,7 +316,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-11-01T18:33:00Z",
+  "lastUpdatedAt": "2026-11-01T18:55:00Z",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -970,12 +973,12 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V215.json",
-    "gitBlob": "3c43dc82b8c8e0cc4deff0e3aaae7d4667c5d5c8",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V216.json",
+    "gitBlob": "919e1fac7b276d52375879ba256528bd6ad32369",
     "sourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
     "allModulesMatch": false,
     "phaseAComplete": false,
-    "sha256": "8b26633006bba86d242ea07237985a3dfc7e62c15646c8dec5a8ff096be6f14a"
+    "sha256": "f928ad9b45dc3fe8bbb9b48d6b32ce7432322485170904abf4003d2b1cd8b74d"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -3012,8 +3015,8 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V215.json",
-    "matrixBlob": "3c43dc82b8c8e0cc4deff0e3aaae7d4667c5d5c8",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V216.json",
+    "matrixBlob": "919e1fac7b276d52375879ba256528bd6ad32369",
     "classificationCounts": {
       "COMPOSED_NOT_DEPLOYED": 2,
       "MATCH": 5,
@@ -3024,7 +3027,7 @@
       "TRUE_FUNCTIONAL_DEFECT": 3
     },
     "derivedAt": "2026-11-01",
-    "meaning": "FROZEN_5_OF_21_MATCH__D05_DEV_OWNER_BYTES_CARRIED_FORWARD__VRM286_ADMIN_AUTHENTICATED_748_VISITS_17_PERIODS_FOCAL_PASS__FULL_ROLE_HR_REVISION_HUMAN_PENDING"
+    "meaning": "FROZEN_5_OF_21_MATCH__G03_AND_VRM286_PASSES_RETAINED__D05_ADMIN_NEGATIVE_409_ZERO_WRITES_PASS__POSITIVE_LIFECYCLE_HUMAN_PENDING"
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
   "activeMethodologyGuard": {
@@ -6254,5 +6257,48 @@
       "total": 21,
       "nonMatch": 16
     }
+  },
+  "d05ProtectedNegativeDev20261101": {
+    "scope": "REAL_DEV_PROTECTED_ADMIN_PUBLISH_NEGATIVE_STALE_VERSION_EXACT_NO_MUTATION",
+    "status": "PASS_PROTECTED_ADMIN_STALE_PUBLISH_REJECTED_NO_MUTATION",
+    "runId": 41338635392,
+    "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/41338635392",
+    "canonicalRunId": 41338635522,
+    "productSourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
+    "controlSha": "1b7cc567a99f434c8c9b4800496879d6a26190e1",
+    "artifactId": 13096401157,
+    "artifactSha256": "859f12b7dc11f29fdd7edf33825a2ac69ba0935b83786bd91f21c547363e831a",
+    "workflowPath": ".github/workflows/cxorbia-i3-d05-dev-rejected-publish.yml",
+    "scriptPath": "tools/qa/cxorbia-i3-d05-dev-negative-publish.mjs",
+    "actor": "EXISTING_AUTHENTICATED_STAFF_ADMIN",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "existingProjectBanks": 4,
+    "matchingPendingBank": 1,
+    "periodPolicyDocuments": 0,
+    "periodPolicyAuthority": "PROJECT_DEFAULT_NO_PERIOD_DOCUMENT",
+    "resourceFingerprint": "6a44c3a8a6353ed0e2f40386ad01f2dcefa41619eb5c2f0f805138b5b7d89bf5",
+    "versionBefore": 1,
+    "versionAfter": 1,
+    "expectedRejectedVersion": 1000001,
+    "documentDigestBefore": "9cc59d1f7ad8084626bd0868c46a097c3e75203313bc2c7ea52553a411a6d7cc",
+    "documentDigestAfter": "9cc59d1f7ad8084626bd0868c46a097c3e75203313bc2c7ea52553a411a6d7cc",
+    "bankStateBefore": "pending_review",
+    "bankStateAfter": "pending_review",
+    "httpStatus": 409,
+    "errorCode": "CERT_BANK_EXPECTED_VERSION_CONFLICT",
+    "committed": false,
+    "providerAck": false,
+    "successUiAllowed": false,
+    "commandReceiptCreated": false,
+    "bankWrites": 0,
+    "hrWrites": 0,
+    "deploys": 0,
+    "positiveLifecycleActions": "PENDING_NEW_QA_ONLY_FIXTURE",
+    "shopperConsumption": "PENDING",
+    "humanAcceptance": "PENDING",
+    "fullDomainMatch": false,
+    "production": false,
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_D05_DEV_PROTECTED_NEGATIVE_PUBLISH_PASS_20261101.json"
   }
 }
