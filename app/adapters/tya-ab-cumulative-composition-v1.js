@@ -75,16 +75,21 @@
       s.contactosSeed=()=>[];
       const visible=x=>hasExplicitProvenance(x)||projectClientIds().has(str(x&&x.clientId));
       s.list=function(){
+        // The protected commercial provider already owns canonical filtering and ACKs.
+        // Do not mask its durable rows with this historical fixture-only provenance gate.
+        if(this._canonical?.()===true)return arr(o.list?o.list():[]);
         if(!Array.isArray(this._l))this._l=arr(o.list?o.list():[]);
         this._l=this._l.filter(visible);
         return this._l;
       };
       s.cuentas=function(){
+        if(this._canonical?.()===true)return arr(o.cuentas?o.cuentas():[]);
         if(!Array.isArray(this._cuentas))this._cuentas=arr(o.cuentas?o.cuentas():[]);
         this._cuentas=this._cuentas.filter(visible);
         return this._cuentas;
       };
       s.contactos=function(){
+        if(this._canonical?.()===true)return arr(o.contactos?o.contactos():[]);
         if(!Array.isArray(this._contactos))this._contactos=arr(o.contactos?o.contactos():[]);
         this._contactos=this._contactos.filter(visible);
         return this._contactos;

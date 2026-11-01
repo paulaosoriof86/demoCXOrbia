@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import test from 'node:test';
 import {runInNewContext} from 'node:vm';
+import './cxorbia-i3-g03-crm-composition-provider-parity.test.mjs';
 
 const source = readFileSync(new URL('../../app/modules/crm.js', import.meta.url), 'utf8');
 const storeSource = source.slice(0, source.indexOf("\nCX.module('crm'"));
