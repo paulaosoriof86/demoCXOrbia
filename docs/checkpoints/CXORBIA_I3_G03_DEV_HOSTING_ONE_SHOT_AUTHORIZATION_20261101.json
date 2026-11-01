@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "cxorbia.i3.g03.dev-hosting-one-shot-authorization.v1",
+  "status": "PAULA_AUTHORIZED_ONE_SHOT_DEV_HOSTING_ONLY",
+  "authority": "Paula, explicit authorization in Recovery continuation conversation, 2026-11-01",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedControlParentSha": "545a642122ee4ef9f18baf04013e722be3efdb13",
+  "productSourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
+  "productSourceTree": "66f745312ee6c98602f72254353caac16f2bcb44",
+  "protectedSourceBlobs": {
+    "app/adapters/tya-ab-cumulative-composition-v1.js": "9d014be5cde2962f77f726b3298c2549f6c45cae",
+    "app/modules/crm.js": "187d7af112cccbe06d27c9a72bb69dc440b7fe67",
+    "app/index-backend-dev.html": "eec56cf5e4afc7624c1a6f73841bb28d18617280"
+  },
+  "expectedPriorDevHostingVersion": "sites/cxorbia-backend-dev/versions/3d1d42ad02066ae2",
+  "project": "cxorbia-backend-dev",
+  "hostingSite": "cxorbia-backend-dev",
+  "hostingTarget": "cxorbia-dev",
+  "hostingOrigin": "https://cxorbia-backend-dev.web.app",
+  "trigger": "[g03-dev-hosting-once]",
+  "runAttemptRequired": 1,
+  "allowedCommitFiles": [
+    ".github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh",
+    ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "docs/checkpoints/CXORBIA_I3_G03_DEV_HOSTING_ONE_SHOT_AUTHORIZATION_20261101.json",
+    "tools/qa/cxorbia-i3-g03-protected-crm-readonly.mjs"
+  ],
+  "allowedProviderWrites": {
+    "firebaseHostingDevDeploy": 1,
+    "cloudBuild": 0,
+    "cloudRun": 0,
+    "firestore": 0,
+    "firestoreRules": 0,
+    "authAdmin": 0,
+    "iam": 0,
+    "hr": 0,
+    "finances": 0,
+    "production": 0
+  },
+  "releaseConstraints": {
+    "currentGate20": "HOLD",
+    "currentGate21": "HOLD",
+    "i4Authorized": false,
+    "humanAcceptanceUnchanged": true,
+    "newWorkflowOrMaterializerAuthorized": false,
+    "independentAdminSessionRequired": true,
+    "byteExactSourceServingRequired": true,
+    "noAutomaticRetry": true
+  }
+}

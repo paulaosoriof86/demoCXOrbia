@@ -539,7 +539,186 @@ ACTIVATION_RECEIPT_PY
 }
 # END_EXISTING_IMAGE_TRAFFIC_ACTIVATION_HELPERS
 
+# G03: one explicitly approved Hosting DEV use of this existing Recovery transport.
+# Historical Phase A modes above/below remain untouched; these modes never call
+# Cloud Build, Cloud Run update, Firestore rules deploy, or any provider mutation
+# other than the single guarded "hosting:cxorbia-dev" Firebase invocation.
+G03_PACKAGE="docs/checkpoints/CXORBIA_I3_G03_DEV_HOSTING_ONE_SHOT_AUTHORIZATION_20261101.json"
+G03_OUT="$OUT/g03-hosting-one-shot"
+G03_TMP="${RUNNER_TEMP:-/tmp}/cxorbia-i3-g03-hosting-${GITHUB_RUN_ID:-unknown}"
+
+phasea_g03_guard() {
+  mkdir -p "$G03_OUT"
+  test "${GITHUB_EVENT_NAME:-}" = push
+  test "${GITHUB_REF:-}" = refs/heads/recovery/cxorbia-phase-a-20260831
+  test "${GITHUB_RUN_ATTEMPT:-}" = 1
+  test "${GITHUB_SHA:-}" = "$(git rev-parse HEAD)"
+  test "$(git rev-list --parents -n 1 HEAD | wc -w)" -eq 2
+  test "${PROJECT:-}" = cxorbia-backend-dev
+  test "${HOSTING_SITE:-}" = cxorbia-backend-dev
+  test "${FIREBASE_HOSTING_TARGET:-}" = cxorbia-dev
+  jq -e '.head_commit.message | contains("[g03-dev-hosting-once]") and
+    (contains("[i3-phasea-dev-materialize]")|not) and
+    (contains("[i3-phasea-dev-readback]")|not)' "$GITHUB_EVENT_PATH" >/dev/null
+  test "$(git rev-parse HEAD^)" = "$(jq -r .expectedControlParentSha "$G03_PACKAGE")"
+  jq -e --arg s "$PHASEA_SOURCE" --arg t "$PHASEA_TREE" \
+    '.status=="PAULA_AUTHORIZED_ONE_SHOT_DEV_HOSTING_ONLY" and
+     .productSourceSha==$s and .productSourceTree==$t and
+     .project=="cxorbia-backend-dev" and .hostingTarget=="cxorbia-dev" and
+     .allowedProviderWrites.firebaseHostingDevDeploy==1 and
+     ([.allowedProviderWrites | to_entries[] | select(.key!="firebaseHostingDevDeploy") | .value] | all(.==0)) and
+     .releaseConstraints.i4Authorized==false and .releaseConstraints.noAutomaticRetry==true' "$G03_PACKAGE" >/dev/null
+  diff -u <(jq -r '.allowedCommitFiles | sort | .[]' "$G03_PACKAGE") \
+    <(git diff-tree --no-commit-id --name-only -r HEAD | LC_ALL=C sort)
+  test "$(git rev-parse "$PHASEA_SOURCE^{tree}")" = "$PHASEA_TREE"
+  test "$(jq -r .productSourceSha "$CANDIDATE_DESCRIPTOR")" = "$PHASEA_SOURCE"
+  test "$(jq -r .productTreeAuthority "$CANDIDATE_DESCRIPTOR")" = "$PHASEA_TREE"
+  test "$(jq -r .status "$CANDIDATE_DESCRIPTOR")" = HOLD_I3_G03_SOURCE_PROVEN_DEV_TRANSPORT_AUTH_PENDING
+  test "$(jq -r .production "$CANDIDATE_DESCRIPTOR")" = DO_NOT_TOUCH
+  git diff --quiet "$PHASEA_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source
+  while IFS=$'\t' read -r g03_path g03_blob; do
+    test "$(git rev-parse "$PHASEA_SOURCE:$g03_path")" = "$g03_blob"
+  done < <(jq -r '.protectedSourceBlobs | to_entries[] | [.key,.value] | @tsv' "$G03_PACKAGE")
+  jq -e '.hosting.target=="cxorbia-dev" and .hosting.public=="app" and
+    ([.hosting.rewrites[]? | select(.run? != null) | .run.serviceId] |
+      all(.=="cxorbia-live-hr-dev"))' firebase.json >/dev/null
+  jq -e '.projects.default=="cxorbia-backend-dev" and
+    .targets["cxorbia-backend-dev"].hosting["cxorbia-dev"]==["cxorbia-backend-dev"]' .firebaserc >/dev/null
+}
+
+phasea_g03_capture() {
+  local stage="$1" access_token
+  mkdir -p "$G03_TMP" "$G03_OUT"
+  gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$G03_TMP/runtime-$stage.json"
+  jq -S '{spec:.spec,traffic:.status.traffic,ready:.status.latestReadyRevisionName,
+    created:.status.latestCreatedRevisionName}' "$G03_TMP/runtime-$stage.json" > "$G03_TMP/runtime-immutable-$stage.json"
+  jq '{latestReadyRevision:.status.latestReadyRevisionName,
+    latestCreatedRevision:.status.latestCreatedRevisionName,
+    observedTraffic:.status.traffic}' "$G03_TMP/runtime-$stage.json" > "$G03_OUT/runtime-$stage.json"
+  access_token="$(gcloud auth print-access-token)"
+  curl --fail --silent --show-error --retry 4 -H "Authorization: Bearer $access_token" \
+    "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$G03_TMP/hosting-$stage.json"
+  curl --fail --silent --show-error --retry 4 -H "Authorization: Bearer $access_token" \
+    "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" > "$G03_TMP/firestore-$stage.json"
+  unset access_token
+  jq '{hostingVersion:.release.version.name,hostingRelease:.release.name,
+    hostingStatus:.release.version.status,url:.url}' "$G03_TMP/hosting-$stage.json" > "$G03_OUT/hosting-$stage.json"
+  jq '{rulesetName:.rulesetName}' "$G03_TMP/firestore-$stage.json" > "$G03_OUT/firestore-$stage.json"
+}
+
 case "$MODE" in
+g03-hosting-preflight)
+  phasea_g03_guard
+  mkdir -p "$G03_TMP"
+  node --test tools/qa/cxorbia-i3-g03-crm-protected-tombstone-parity.test.mjs \
+    tools/qa/cxorbia-i3-g03-crm-composition-provider-parity.test.mjs | tee "$G03_OUT/source-focal-tests.log"
+  node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs > "$G03_OUT/candidate-authority.json"
+  jq -e --arg s "$PHASEA_SOURCE" --arg t "$PHASEA_TREE" \
+    '.decision=="PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY" and
+     .productSourceSha==$s and .productSourceTree==$t and
+     .moduleBlobReadback.pass==true and .moduleBlobReadback.domainCount==21 and
+     .moduleBlobReadback.ownerCount==101 and .moduleBlobReadback.sourceFileCount==153 and
+     (.moduleBlobReadback.ownerMismatches|length)==0 and
+     (.moduleBlobReadback.sourceFileMismatches|length)==0 and
+     .terminalReleaseEligible==false and .production==false' "$G03_OUT/candidate-authority.json" >/dev/null
+  jq -n -S --arg source "$PHASEA_SOURCE" --arg tree "$PHASEA_TREE" \
+    '{decision:"PASS_G03_ONE_SHOT_PREFLIGHT_NO_PROVIDER_WRITES",sourceSha:$source,
+    sourceTree:$tree,hostingDeployAttempted:0,production:false}' > "$G03_OUT/preflight.json"
+  jq -n -S '{decision:"HOLD_G03_DEV_HOSTING_NOT_YET_ATTEMPTED",hostingDeployAttempted:0,
+    cloudBuilds:0,cloudRunDeploys:0,firestoreWrites:0,firestoreRulesDeploys:0,
+    authAdminWrites:0,hrWrites:0,production:false}' > "$G03_OUT/result.json"
+  ;;
+g03-hosting-baseline)
+  phasea_g03_guard
+  test -f "$G03_OUT/preflight.json"
+  phasea_g03_capture before
+  jq -e --arg v "$(jq -r .expectedPriorDevHostingVersion "$G03_PACKAGE")" \
+    '.release.version.name==$v and .release.version.status=="FINALIZED" and
+    .url=="https://cxorbia-backend-dev.web.app"' "$G03_TMP/hosting-before.json" >/dev/null
+  jq -e '.name=="projects/cxorbia-backend-dev/releases/cloud.firestore" and
+    (.rulesetName|startswith("projects/cxorbia-backend-dev/rulesets/"))' "$G03_TMP/firestore-before.json" >/dev/null
+  jq -e '.status.latestReadyRevisionName|startswith("cxorbia-live-hr-dev-")' "$G03_TMP/runtime-before.json" >/dev/null
+  jq -n -S --arg before "$(jq -r .release.version.name "$G03_TMP/hosting-before.json")" \
+    '{decision:"PASS_G03_DEV_HOSTING_BASELINE_CAS",priorHostingVersion:$before,
+    providerWrites:0,production:false}' > "$G03_OUT/baseline.json"
+  ;;
+g03-hosting-materialize)
+  phasea_g03_guard
+  test -f "$G03_OUT/baseline.json"
+  test ! -e "$G03_OUT/deployment-attempt.json"
+  # Re-read just before the one irreversible action; no silent second deployment.
+  phasea_g03_capture cas
+  cmp "$G03_TMP/runtime-immutable-before.json" "$G03_TMP/runtime-immutable-cas.json"
+  test "$(jq -r .release.version.name "$G03_TMP/hosting-cas.json")" = \
+    "$(jq -r .release.version.name "$G03_TMP/hosting-before.json")"
+  test "$(jq -r .rulesetName "$G03_TMP/firestore-cas.json")" = \
+    "$(jq -r .rulesetName "$G03_TMP/firestore-before.json")"
+  mkdir -p "$G03_TMP/source" "$G03_TMP/firebase-cli"
+  git archive --format=tar "$PHASEA_SOURCE" > "$G03_TMP/product-source.tar"
+  sha256sum "$G03_TMP/product-source.tar" > "$G03_OUT/product-source-tar.sha256"
+  tar -xf "$G03_TMP/product-source.tar" -C "$G03_TMP/source"
+  for g03_asset in adapters/tya-ab-cumulative-composition-v1.js modules/crm.js index-backend-dev.html; do
+    test "$(git hash-object "$G03_TMP/source/app/$g03_asset")" = "$(git rev-parse "$PHASEA_SOURCE:app/$g03_asset")"
+  done
+  jq -e '.hosting.public=="app" and .hosting.target=="cxorbia-dev"' "$G03_TMP/source/firebase.json" >/dev/null
+  npm install --prefix "$G03_TMP/firebase-cli" --no-save --ignore-scripts --package-lock=false firebase-tools@14.12.0
+  test -x "$G03_TMP/firebase-cli/node_modules/.bin/firebase"
+  jq -n -S --arg run "$GITHUB_RUN_ID" --arg source "$PHASEA_SOURCE" \
+    '{decision:"HOLD_G03_HOSTING_DEPLOY_OUTCOME_PENDING",runId:$run,sourceSha:$source,
+    hostingDeployAttempted:1,maxHostingDeploys:1,cloudBuilds:0,cloudRunDeploys:0,
+    firestoreWrites:0,firestoreRulesDeploys:0,authAdminWrites:0,hrWrites:0,
+    production:false,noAutomaticRetry:true}' > "$G03_OUT/deployment-attempt.json"
+  cp "$G03_OUT/deployment-attempt.json" "$G03_OUT/result.json"
+  (cd "$G03_TMP/source" && "$G03_TMP/firebase-cli/node_modules/.bin/firebase" deploy \
+    --config firebase.json --only "hosting:cxorbia-dev" --project cxorbia-backend-dev --non-interactive) \
+    | tee "$G03_OUT/hosting-deploy.log"
+  ;;
+g03-hosting-proof)
+  phasea_g03_guard
+  test -f "$G03_OUT/deployment-attempt.json"
+  phasea_g03_capture after
+  cmp "$G03_TMP/runtime-immutable-before.json" "$G03_TMP/runtime-immutable-after.json"
+  test "$(jq -r .rulesetName "$G03_TMP/firestore-before.json")" = \
+    "$(jq -r .rulesetName "$G03_TMP/firestore-after.json")"
+  test "$(jq -r .release.version.name "$G03_TMP/hosting-before.json")" != \
+    "$(jq -r .release.version.name "$G03_TMP/hosting-after.json")"
+  jq -e '.release.version.status=="FINALIZED" and
+    .url=="https://cxorbia-backend-dev.web.app"' "$G03_TMP/hosting-after.json" >/dev/null
+  sha256sum -c "$G03_OUT/product-source-tar.sha256"
+  : > "$G03_OUT/served-source-byte-parity.tsv"
+  for g03_asset in adapters/tya-ab-cumulative-composition-v1.js modules/crm.js index-backend-dev.html; do
+    g03_expected="$(git rev-parse "$PHASEA_SOURCE:app/$g03_asset")"
+    g03_matched=false
+    for g03_try in 1 2 3 4 5 6 7 8; do
+      if curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' \
+        "$ROOT/$g03_asset?g03=$GITHUB_RUN_ID-$g03_try" -o "$G03_TMP/served-$(basename "$g03_asset")" \
+        && test "$(git hash-object "$G03_TMP/served-$(basename "$g03_asset")")" = "$g03_expected"; then
+        g03_matched=true
+        break
+      fi
+      sleep 2
+    done
+    test "$g03_matched" = true
+    printf '%s\t%s\t%s\n' "$g03_asset" "$g03_expected" \
+      "$(sha256sum "$G03_TMP/served-$(basename "$g03_asset")" | cut -d' ' -f1)" >> "$G03_OUT/served-source-byte-parity.tsv"
+  done
+  jq -n -S --arg run "$GITHUB_RUN_ID" --arg source "$PHASEA_SOURCE" --arg tree "$PHASEA_TREE" \
+    --arg before "$(jq -r .release.version.name "$G03_TMP/hosting-before.json")" \
+    --arg after "$(jq -r .release.version.name "$G03_TMP/hosting-after.json")" \
+    --arg release "$(jq -r .release.name "$G03_TMP/hosting-after.json")" \
+    --arg rules "$(jq -r .rulesetName "$G03_TMP/firestore-after.json")" \
+    --arg rev "$(jq -r .status.latestReadyRevisionName "$G03_TMP/runtime-after.json")" \
+    --arg sourceTar "$(cut -d' ' -f1 "$G03_OUT/product-source-tar.sha256")" \
+    '{decision:"PASS_G03_HOSTING_DEV_EXACT_SOURCE_BYTES_PENDING_AUTHENTICATED_UI",
+    runId:$run,sourceSha:$source,sourceTree:$tree,sourceTarSha256:$sourceTar,
+    priorHostingVersion:$before,hostingVersion:$after,hostingRelease:$release,
+    firestoreRuleset:$rules,runtimeRevision:$rev,sourceBytesVerified:true,
+    criticalAssetsVerified:3,runtimeUnchanged:true,firestoreRulesUnchanged:true,
+    hostingDeployAttempted:1,hostingDeploys:1,cloudBuilds:0,cloudRunDeploys:0,
+    firestoreWrites:0,firestoreRulesDeploys:0,authAdminWrites:0,hrWrites:0,
+    gate20:"HOLD",gate21:"HOLD",i4Authorized:false,production:false}' > "$G03_OUT/result.json"
+  cat "$G03_OUT/result.json"
+  ;;
 session-source-proof|session-preflight|session-proof)
   # Focal opt-in in this existing control lane; no materialization and no seal rewrite.
   test "${I3_SESSION_PROOF:-}" = true

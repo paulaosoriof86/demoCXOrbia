@@ -6354,16 +6354,23 @@ jobs:
 
   b1-canonical-visible-identity-dev-materialization:
    needs: canonical-candidate-authority
-   if: ${{ contains(github.event.head_commit.message, '[i3-phasea-dev-readback]')||contains(github.event.head_commit.message, '[i3-phasea-dev-materialize]') }}
+   if: ${{ contains(github.event.head_commit.message, '[i3-phasea-dev-readback]')||contains(github.event.head_commit.message, '[i3-phasea-dev-materialize]')||(github.event_name=='push'&&contains(github.event.head_commit.message,'[g03-dev-hosting-once]')&&needs.canonical-candidate-authority.outputs.status=='HOLD_I3_G03_SOURCE_PROVEN_DEV_TRANSPORT_AUTH_PENDING') }}
    runs-on: ubuntu-latest
-   timeout-minutes: 25
-   env: {PHASEA_SOURCE: "${{ needs.canonical-candidate-authority.outputs.source_sha }}", PHASEA_TREE: "${{ needs.canonical-candidate-authority.outputs.source_tree }}"}
+   timeout-minutes: 40
+   env:
+    PHASEA_SOURCE: "${{ needs.canonical-candidate-authority.outputs.source_sha }}"
+    PHASEA_TREE: "${{ needs.canonical-candidate-authority.outputs.source_tree }}"
+    G03_HOSTING_ONCE: "${{ github.event_name=='push'&&contains(github.event.head_commit.message,'[g03-dev-hosting-once]') }}"
    steps:
    - uses: actions/checkout@v4
      with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
      with: {node-version: '24'}
    - run: bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh preflight
+     if: ${{ env.G03_HOSTING_ONCE!='true' }}
+   - name: G03 bounded single-use existing transport preflight
+     if: ${{ env.G03_HOSTING_ONCE=='true' }}
+     run: bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh g03-hosting-preflight
    - uses: google-github-actions/auth@v2
      with: {credentials_json: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}"}
    - uses: google-github-actions/setup-gcloud@v2
@@ -6373,9 +6380,37 @@ jobs:
    - run: bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh materialize
      if: ${{ contains(github.event.head_commit.message, '[i3-phasea-dev-materialize]') }}
    - run: bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh proof
+     if: ${{ env.G03_HOSTING_ONCE!='true' }}
+   - name: G03 DEV Hosting baseline and runtime/rules snapshots
+     if: ${{ env.G03_HOSTING_ONCE=='true' }}
+     run: bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh g03-hosting-baseline
+   - name: G03 exactly one Firebase Hosting DEV materialization
+     if: ${{ env.G03_HOSTING_ONCE=='true' }}
+     run: bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh g03-hosting-materialize
+   - name: G03 postdeploy exact-source bytes and no-backend-change proof
+     if: ${{ env.G03_HOSTING_ONCE=='true' }}
+     run: bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh g03-hosting-proof
+   - name: G03 authenticated Admin Cuentas independent-session UI proof
+     if: ${{ env.G03_HOSTING_ONCE=='true' }}
+     env:
+      CXORBIA_G03_SA_JSON: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      CXORBIA_G03_UI_TRACE: '1'
+      CXORBIA_G03_REQUIRE_UI_PARITY: '1'
+     run: |
+      npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1
+      npx playwright install chromium
+      node tools/qa/cxorbia-i3-g03-protected-crm-readonly.mjs
    - uses: actions/upload-artifact@v4
      if: always()
-     with: {name: "cxorbia-i3-phasea-materialization-${{ github.run_id }}", path: .tmp/i3-phasea-completion, if-no-files-found: error, retention-days: 30, compression-level: 0, include-hidden-files: true}
+     with:
+      name: "cxorbia-i3-phasea-materialization-${{ github.run_id }}"
+      path: |
+       .tmp/i3-phasea-completion
+       .tmp/cxorbia-i3-g03-protected-crm-readonly
+      if-no-files-found: error
+      retention-days: 30
+      compression-level: 0
+      include-hidden-files: true
 
   phasea-representative-same-artifact-live-reproof:
    needs: [canonical-candidate-authority, phasea-rejected-checkpoint-source-proof]

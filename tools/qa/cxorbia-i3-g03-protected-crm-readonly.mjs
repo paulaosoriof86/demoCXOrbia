@@ -196,6 +196,7 @@ async function run() {
     : !protectedResult.protectedState || !hasAccountsArray || !protectedHasFixture
       ? 'HOLD_G03_BACKEND_PROTECTED_READ_MODEL'
       : 'PASS_G03_BACKEND_PROTECTED_READ_MODEL_ONLY';
+  const requireUiParity = process.env.CXORBIA_G03_REQUIRE_UI_PARITY === '1';
   let frontend = null;
   if (process.env.CXORBIA_G03_UI_TRACE === '1' && decision === 'PASS_G03_BACKEND_PROTECTED_READ_MODEL_ONLY') {
     try {
@@ -205,20 +206,46 @@ async function run() {
     }
   }
   const frontendClassification = classifyFrontend(protectedResult, frontend);
+  let independentFrontend = null;
+  // A separate browser process/context and a separately minted short-lived token;
+  // the existing Admin identity is never created or modified.
+  if (requireUiParity && decision === 'PASS_G03_BACKEND_PROTECTED_READ_MODEL_ONLY'
+      && frontendClassification === 'PASS_AUTHENTICATED_FRONTEND_ACCOUNT_VISIBLE') {
+    try {
+      independentFrontend = await inspectAuthenticatedFrontend(await auth.createCustomToken(principal.uid));
+    } catch {
+      independentFrontend = {probeFailed: true, classification: 'ENVIRONMENT_FAILURE_INDEPENDENT_FRONTEND_PROBE', readOnly: true};
+    }
+  }
+  const independentClassification = classifyFrontend(protectedResult, independentFrontend);
+  const accountExactlyOne = state => state?.authenticated === true && state?.protectedApplied === true
+    && state?.fixtureInState === true && state?.canonicalMode === true
+    && state?.commercialVisibleCount === 1 && state?.crmStoreCount === 1
+    && state?.renderedCount === 1;
+  const focalUiParity = requireUiParity
+    && decision === 'PASS_G03_BACKEND_PROTECTED_READ_MODEL_ONLY'
+    && protectedResult.visibleAccounts === 1
+    && frontendClassification === 'PASS_AUTHENTICATED_FRONTEND_ACCOUNT_VISIBLE'
+    && independentClassification === 'PASS_AUTHENTICATED_FRONTEND_ACCOUNT_VISIBLE'
+    && accountExactlyOne(frontend) && accountExactlyOne(independentFrontend);
   return {...resultBase, decision, persisted, protected: protectedResult,
-    frontend, frontendClassification, frontendCertified: false,
-    g03FunctionalGate: 'HOLD_UNTIL_FULL_SAME_ARTIFACT_UI_AND_HUMAN_ACCEPTANCE'};
+    frontend, frontendClassification, independentFrontend, independentClassification,
+    focalUiParity, requireUiParity, frontendCertified: false,
+    g03FunctionalGate: focalUiParity
+      ? 'PASS_FOCAL_G03_AUTHENTICATED_CUENTAS_1__I3_HOLD'
+      : 'HOLD_UNTIL_FULL_SAME_ARTIFACT_UI_AND_HUMAN_ACCEPTANCE'};
 }
 
 fs.mkdirSync(OUT, {recursive: true});
 try {
   const result = await run();
   fs.writeFileSync(`${OUT}/result.json`, `${JSON.stringify(result, null, 2)}\n`);
-  console.log(`G03_RESULT decision=${result.decision} firestoreExists=${result.persisted.exists} protectedHttp=${result.protected.httpStatus} protectedAccounts=${result.protected.visibleAccounts} fixtureInProtected=${result.protected.fixturePresent} frontendClassification=${result.frontendClassification} frontendStateAccounts=${result.frontend?.commercialVisibleCount ?? 'unknown'} frontendDomAccounts=${result.frontend?.renderedCount ?? 'unknown'} frontendCertified=false`);
+  console.log(`G03_RESULT decision=${result.decision} firestoreExists=${result.persisted.exists} protectedHttp=${result.protected.httpStatus} protectedAccounts=${result.protected.visibleAccounts} fixtureInProtected=${result.protected.fixturePresent} frontendClassification=${result.frontendClassification} frontendStateAccounts=${result.frontend?.commercialVisibleCount ?? 'unknown'} frontendDomAccounts=${result.frontend?.renderedCount ?? 'unknown'} independentFrontendClassification=${result.independentClassification} independentDomAccounts=${result.independentFrontend?.renderedCount ?? 'unknown'} focalUiParity=${result.focalUiParity} frontendCertified=false`);
   console.log(JSON.stringify(result));
+  if (result.requireUiParity && !result.focalUiParity) process.exitCode = 1;
 } catch (error) {
   // Never print service-account material, Firebase tokens, UID, names, or payloads.
-  const code = String(error?.message || '').match(/^(AUTH_FAILURE|ENVIRONMENT_FAILURE|PROVIDER_FAILURE|PERSISTENCE_FAILURE):[A-Z0-9_]+(?:_\d{3})?$/)?.[0]
+  const code = String(error?.message || '').match(/^(AUTH_FAILURE|ENVIRONMENT_FAILURE|PROVIDER_FAILURE|PERSISTENCE_FAILURE|FUNCTIONAL_DEFECT):[A-Z0-9_]+(?:_\d{3})?$/)?.[0]
     || 'ENVIRONMENT_FAILURE:G03_READONLY_DIAGNOSTIC_UNCLASSIFIED';
   const result = {...resultBase, decision: 'HOLD_G03_DIAGNOSTIC_FAILED', failureClass: code,
     frontendCertified: false, g03FunctionalGate: 'HOLD'};
