@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "cxorbia.i3.bounded-ci-stage-forward.20261101.v1",
+  "scope": "AUTHORITATIVE_CONTROL_POINTERS_ONLY__NO_PRODUCT_NO_DEV_NO_PRODUCTION",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedControlParentSha": "469efb32d954b2e90a75016b49dfd3b0ffbc0484",
+  "productSourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
+  "productTree": "66f745312ee6c98602f72254353caac16f2bcb44",
+  "officialCi": {
+    "runId": 41269151108,
+    "jobId": 124738131438,
+    "conclusion": "success",
+    "url": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/41269151108",
+    "sourceEvidence": "docs/checkpoints/CXORBIA_I3_D05_VRM286_CANONICAL_SOURCE_CI_FOCAL_20261101.json"
+  },
+  "before": {
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V210.json",
+    "matrixGitBlob": "5efa89ba01143e22837ce102d067bcfbc2dfe718",
+    "d05SourceProofState": "RUN1794_FAIL_CORRECTED_PENDING_EXACT_CI",
+    "vrm286Classification": "SOURCE_FIXED_PENDING_CI_AND_DEV_FOCAL",
+    "matchDomains": 5,
+    "nonMatchDomains": 16
+  },
+  "after": {
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V211.json",
+    "matrixGitBlob": "07fecc3c3a45922a462808b153efe75cad35a6cb",
+    "matrixSha256": "8aa23518909633d169d95f91d1ad0d6dc8a82edb1405e04293c177c1a2e07c08",
+    "d05SourceProofState": "PASS_CANONICAL_CI_FOCAL_RUN41269151108_100_OF_100",
+    "vrm286Classification": "SOURCE_PROVEN_PENDING_EXACT_DEV_BYTES_ROLE_E2E_HUMAN",
+    "matchDomains": 5,
+    "nonMatchDomains": 16
+  },
+  "decisionsFrozen": [
+    "Unique Recovery branch and one writer; preserve exact parent and product-source SHA",
+    "Never repeat G03 hosting/readback, D04 or D05 canonical focal CI while no exact drift",
+    "Keep historical PASS by receipt; stage by bounded evidence, not generic percentage",
+    "Next D05 preflight must be read-only, isolated own fixture and authorized real actors; no Rules or runtime DEV write until guard/rollback and exact artifact are proven",
+    "Next VRM286 exact served DEV bytes and one scoped authenticated Admin count; do not infer human PASS",
+    "Keep 139 approved pairs / 83 shopper groups / 32 provisional verified / 51 pending; no silent identity merge",
+    "No unverified finance payment reconciliation or deletion",
+    "Gate20/Gate21 HOLD, no I4 authority, production DO_NOT_TOUCH"
+  ],
+  "effects": {
+    "productFilesChanged": 0,
+    "runtimeDevDeploys": 0,
+    "hostingDevDeploys": 0,
+    "rulesDevDeploys": 0,
+    "hrWrites": 0,
+    "financialWrites": 0,
+    "productionWrites": 0,
+    "domainsPromotedToMatch": 0
+  },
+  "nextAction": "I3 PLAN DE CHOQUE CONGELADO — G03 VRM-295 PASS DEV dos sesiones, Hosting 231186c337bcd0ba (RUN41264157605/RUN41264390022); NO REPETIR. D05 CI focal 100/100 PASS RUN41269151108; próximo único paso D05: preflight Rules/actor/fixture aislada sin writes y, sólo con guardas PASS, una materialización DEV runtime/Rules + E2E publish/configure/retire y ACK. VRM-286 CI 5/5 PASS misma corrida; próximo: bytes exactos servidos en DEV + Admin lectura proyecto/período. HR 32/83 grupos PROVISIONALES, 51 pendientes y revisión HR independiente; finanzas Q7,300 x2 pendientes de prueba bancaria, NO duplicar ni borrar. Mantener 5/21 MATCH, 16 no-MATCH, aceptación humana por bloque pendiente. Gates20/21 HOLD; I4 NO AUTORIZADA; producción DO_NOT_TOUCH."
+}

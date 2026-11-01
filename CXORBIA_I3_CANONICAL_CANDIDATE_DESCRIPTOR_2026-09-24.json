@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_G03_FOCAL_CUENTAS_ONE_DEV_UI_PASS_GLOBAL_SHOCK_PLAN_OPEN",
+  "status": "HOLD_I3_G03_DEV_PASS_D05_VRM286_SOURCE_CI_PROVEN_DEV_HUMAN_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -9,11 +9,11 @@
   "predecessorProductSourceSha": "7b70557c22e3902ab3c91fbee326357630fc20a1",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V541_2026-11-01.json",
   "findingsLedgerExpectedGitBlob": "7021e5c83bf9374a0a5da103773cef18753236bf",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V210.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V211.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM295_G03_FOCAL_DEV_PASS__OTHER_16_I3_NON_MATCH_HR_RECENSUS_FINANZAS_D05_D06_HUMAN_HOLD",
+  "activeBlocker": "D05_ISOLATED_RULES_PROVIDER_DEV_E2E_VRM286_EXACT_SERVED_DEV_HR_FINANCE_HUMAN_AND_16_NONMATCH",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 FASE A / PLAN DE CHOQUE CONGELADO — G03 VRM-295 PASS FOCAL: fuente e44483d certificada y servida en DEV Hosting 231186c337bcd0ba (RUN41264157605, tres archivos byte-exactos, Cloud Run y reglas intactos); Admin CRM Cuentas (1) en recarga y segunda sesión independiente (RUN41264390022, read-only PASS). NO repetir Hosting. Sin promoción global: 5/21 MATCH, 16 dominios no-MATCH; shoppers 32/83 PROVISIONALES con recenso HR independiente READ-ONLY pendiente. Mantener D05/D06, HR, finanzas, otras pruebas E2E y aceptación humana por bloque/artefacto exacto. Gates20/21 HOLD; I4 NO AUTORIZADA; producción DO_NOT_TOUCH.",
+  "exactNextAction": "I3 PLAN DE CHOQUE CONGELADO — G03 VRM-295 PASS DEV dos sesiones, Hosting 231186c337bcd0ba (RUN41264157605/RUN41264390022); NO REPETIR. D05 CI focal 100/100 PASS RUN41269151108; próximo único paso D05: preflight Rules/actor/fixture aislada sin writes y, sólo con guardas PASS, una materialización DEV runtime/Rules + E2E publish/configure/retire y ACK. VRM-286 CI 5/5 PASS misma corrida; próximo: bytes exactos servidos en DEV + Admin lectura proyecto/período. HR 32/83 grupos PROVISIONALES, 51 pendientes y revisión HR independiente; finanzas Q7,300 x2 pendientes de prueba bancaria, NO duplicar ni borrar. Mantener 5/21 MATCH, 16 no-MATCH, aceptación humana por bloque pendiente. Gates20/21 HOLD; I4 NO AUTORIZADA; producción DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "5efa89ba01143e22837ce102d067bcfbc2dfe718",
+  "moduleTruthExpectedGitBlob": "07fecc3c3a45922a462808b153efe75cad35a6cb",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -16125,6 +16125,22 @@
     "gate20": "HOLD",
     "gate21": "HOLD",
     "i4Authorized": false,
+    "production": false
+  },
+  "boundedSourceCiStageAdvance20261101": {
+    "scope": "D05_SOURCE_PROVEN_VRM286_SOURCE_PROVEN_CONTROL_ONLY",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_D05_VRM286_CANONICAL_SOURCE_CI_FOCAL_20261101.json",
+    "runId": 41269151108,
+    "jobId": 124738131438,
+    "oldMatrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V210.json",
+    "oldMatrixGitBlob": "5efa89ba01143e22837ce102d067bcfbc2dfe718",
+    "newDomainsMatch": 0,
+    "matchDomains": 5,
+    "nonMatchDomains": 16,
+    "d05AssertionsPassed": 100,
+    "vrm286CasesPassed": 5,
+    "sourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
+    "devDeploys": 0,
     "production": false
   }
 }
