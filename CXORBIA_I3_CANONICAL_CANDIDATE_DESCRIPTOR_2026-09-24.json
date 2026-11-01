@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_G03_DEV_PASS_D05_VRM286_SOURCE_CI_PROVEN_DEV_HUMAN_PENDING",
+  "status": "HOLD_I3_VRM286_SOURCE_CI_AND_DEV_5_ASSETS_PASS_ROLE_E2E_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -9,11 +9,11 @@
   "predecessorProductSourceSha": "7b70557c22e3902ab3c91fbee326357630fc20a1",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V541_2026-11-01.json",
   "findingsLedgerExpectedGitBlob": "7021e5c83bf9374a0a5da103773cef18753236bf",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V211.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V212.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D05_ISOLATED_RULES_PROVIDER_DEV_E2E_VRM286_EXACT_SERVED_DEV_HR_FINANCE_HUMAN_AND_16_NONMATCH",
+  "activeBlocker": "VRM286_AUTH_ADMIN_ROLE_E2E_HR_REVISION__D05_ISOLATED_PROVIDER_E2E__16_NONMATCH_HUMAN",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 PLAN DE CHOQUE CONGELADO — G03 VRM-295 PASS DEV dos sesiones, Hosting 231186c337bcd0ba (RUN41264157605/RUN41264390022); NO REPETIR. D05 CI focal 100/100 PASS RUN41269151108; próximo único paso D05: preflight Rules/actor/fixture aislada sin writes y, sólo con guardas PASS, una materialización DEV runtime/Rules + E2E publish/configure/retire y ACK. VRM-286 CI 5/5 PASS misma corrida; próximo: bytes exactos servidos en DEV + Admin lectura proyecto/período. HR 32/83 grupos PROVISIONALES, 51 pendientes y revisión HR independiente; finanzas Q7,300 x2 pendientes de prueba bancaria, NO duplicar ni borrar. Mantener 5/21 MATCH, 16 no-MATCH, aceptación humana por bloque pendiente. Gates20/21 HOLD; I4 NO AUTORIZADA; producción DO_NOT_TOUCH.",
+  "exactNextAction": "I3 PLAN DE CHOQUE CONGELADO — G03 VRM-295 DEV dos sesiones PASS, Hosting 231186c337bcd0ba, NO REPETIR. VRM-286 CI 5/5 PASS y 5/5 ASSETS BYTE-EXACTOS DEV PASS (index/proyectos/periodos/hr-source/proyecto-wizard); no repetir Hosting ni hashes sin drift: siguiente única prueba VRM-286 lectura real Admin proyecto/período contra revisión HR aprobada y aceptación humana de bloque. D05 CI 100/100 PASS; siguiente preflight read-only Rules/actor/fixture aislada, luego DEV provider E2E protegido sujeto a guardas. HR 32/83 PROVISIONALES, 51 pendientes, recenso sobre revisión HR autorizada; finanzas dos Q7,300 sin prueba bancaria, no borrar ni duplicar. 5/21 MATCH y 16 pendientes, Gate20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "07fecc3c3a45922a462808b153efe75cad35a6cb",
+  "moduleTruthExpectedGitBlob": "b0648438daecf2592c0d5128f47344af91d932ef",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -16142,5 +16142,34 @@
     "sourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
     "devDeploys": 0,
     "production": false
+  },
+  "vrm286ExactDevAssetParity20261101": {
+    "status": "PASS_EXACT_5_OF_5_READ_ONLY",
+    "sourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
+    "assets": [
+      {
+        "path": "/index-backend-dev.html",
+        "sha256": "38460409bee133f1f746156de1e1e5fa3d5db0c7a22c6d0d0b36a64f947c0479"
+      },
+      {
+        "path": "/modules/proyectos.js",
+        "sha256": "4982083291f05e09ed2f136f56b3979cf23ff008ba75eab7b755e5857e77a17e"
+      },
+      {
+        "path": "/modules/periodos.js",
+        "sha256": "3ed29c7709939b38c50da8e3a6573c4f40d30edb0ea701d4dddddf155eb23edc"
+      },
+      {
+        "path": "/modules/hr-source.js",
+        "sha256": "019faec336ec59047a90fa4b51a55715b6cfbc19ba4345f68584b6b5f5100dec"
+      },
+      {
+        "path": "/modules/proyecto-wizard.js",
+        "sha256": "0dda55bf7e5827f91a9261045af7c1875955e76f744ac181534d2d175444be6c"
+      }
+    ],
+    "inferredHumanAcceptance": false,
+    "production": false,
+    "realAdminRoleE2e": "PENDING"
   }
 }

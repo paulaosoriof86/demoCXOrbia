@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm286.exact-dev-asset-parity.20261101.v1",
+  "decision": "PASS_VRM286_FIVE_FOCAL_DEV_SERVED_ASSETS_BYTE_EXACT",
+  "scope": "READ_ONLY_HOSTING_ASSET_PROOF_ONLY_NOT_FULL_RUNTIME_OR_ROLE_E2E",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedControlParentSha": "491ded3c00eac5c072f9502cd869d8f50401ec77",
+  "productSourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
+  "productTree": "66f745312ee6c98602f72254353caac16f2bcb44",
+  "observedAtUtc": "2026-11-01T16:18:22.904Z",
+  "ciSource": {
+    "runId": 41269151108,
+    "sourceCasesPass": 5,
+    "d05AssertionsPass": 100
+  },
+  "ciControl": {
+    "runId": 41325116137,
+    "conclusion": "success",
+    "exactSha": "491ded3c00eac5c072f9502cd869d8f50401ec77"
+  },
+  "devHosting": {
+    "origin": "https://cxorbia-backend-dev.web.app",
+    "version": "sites/cxorbia-backend-dev/versions/231186c337bcd0ba",
+    "firebasePublicDir": "app",
+    "scriptRootMapping": "app/modules/proyectos.js -> /modules/proyectos.js",
+    "assets": [
+      {
+        "sourcePath": "app/index-backend-dev.html",
+        "devPath": "/index-backend-dev.html",
+        "githubExpectedSha256": "38460409bee133f1f746156de1e1e5fa3d5db0c7a22c6d0d0b36a64f947c0479",
+        "devObservedSha256": "38460409bee133f1f746156de1e1e5fa3d5db0c7a22c6d0d0b36a64f947c0479",
+        "exactEqual": true,
+        "comparison": "SHA256_OF_FULL_RESPONSE_BODY",
+        "status": "PASS",
+        "verifiedBy": "READ_ONLY_HTTPS_GET_NO_DEPLOY"
+      },
+      {
+        "sourcePath": "app/modules/proyectos.js",
+        "devPath": "/modules/proyectos.js",
+        "githubExpectedSha256": "4982083291f05e09ed2f136f56b3979cf23ff008ba75eab7b755e5857e77a17e",
+        "devObservedSha256": "4982083291f05e09ed2f136f56b3979cf23ff008ba75eab7b755e5857e77a17e",
+        "exactEqual": true,
+        "comparison": "SHA256_OF_FULL_RESPONSE_BODY",
+        "status": "PASS",
+        "verifiedBy": "READ_ONLY_HTTPS_GET_NO_DEPLOY"
+      },
+      {
+        "sourcePath": "app/modules/periodos.js",
+        "devPath": "/modules/periodos.js",
+        "githubExpectedSha256": "3ed29c7709939b38c50da8e3a6573c4f40d30edb0ea701d4dddddf155eb23edc",
+        "devObservedSha256": "3ed29c7709939b38c50da8e3a6573c4f40d30edb0ea701d4dddddf155eb23edc",
+        "exactEqual": true,
+        "comparison": "SHA256_OF_FULL_RESPONSE_BODY",
+        "status": "PASS",
+        "verifiedBy": "READ_ONLY_HTTPS_GET_NO_DEPLOY"
+      },
+      {
+        "sourcePath": "app/modules/hr-source.js",
+        "devPath": "/modules/hr-source.js",
+        "githubExpectedSha256": "019faec336ec59047a90fa4b51a55715b6cfbc19ba4345f68584b6b5f5100dec",
+        "devObservedSha256": "019faec336ec59047a90fa4b51a55715b6cfbc19ba4345f68584b6b5f5100dec",
+        "exactEqual": true,
+        "comparison": "SHA256_OF_FULL_RESPONSE_BODY",
+        "status": "PASS",
+        "verifiedBy": "READ_ONLY_HTTPS_GET_NO_DEPLOY"
+      },
+      {
+        "sourcePath": "app/modules/proyecto-wizard.js",
+        "devPath": "/modules/proyecto-wizard.js",
+        "githubExpectedSha256": "0dda55bf7e5827f91a9261045af7c1875955e76f744ac181534d2d175444be6c",
+        "devObservedSha256": "0dda55bf7e5827f91a9261045af7c1875955e76f744ac181534d2d175444be6c",
+        "exactEqual": true,
+        "comparison": "SHA256_OF_FULL_RESPONSE_BODY",
+        "status": "PASS",
+        "verifiedBy": "READ_ONLY_HTTPS_GET_NO_DEPLOY"
+      }
+    ],
+    "passCount": 5,
+    "totalCount": 5
+  },
+  "correctionFromDiscardedAttempt": {
+    "incorrectPath": "/app/modules/proyectos.js",
+    "observedResponse": "SPA_FALLBACK_HTML_NOT_SCRIPT",
+    "reason": "firebase.json hosting.public is app; relative index loads modules/*",
+    "misleadingDigestWasNotUsedForCertification": true
+  },
+  "before": {
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V211.json",
+    "vrm286Classification": "SOURCE_PROVEN_PENDING_EXACT_DEV_BYTES_ROLE_E2E_HUMAN"
+  },
+  "after": {
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V212.json",
+    "vrm286Classification": "SOURCE_PROVEN_DEV_EXACT_5_ASSETS_PASS_PENDING_ROLE_E2E_HUMAN",
+    "matchDomains": 5,
+    "nonMatchDomains": 16,
+    "matrixGitBlob": "b0648438daecf2592c0d5128f47344af91d932ef",
+    "matrixSha256": "a21a2b831855a2d6616d0c580ab78b1e4fac86f8b5a072c7085bc5efb32faae2"
+  },
+  "effects": {
+    "newDevDeploys": 0,
+    "sourceCodeChanged": 0,
+    "dataWrites": 0,
+    "productionWrites": 0,
+    "adminRoleE2eProven": false,
+    "humanAccepted": false
+  },
+  "nextExactAction": "I3 PLAN DE CHOQUE CONGELADO — G03 VRM-295 DEV dos sesiones PASS, Hosting 231186c337bcd0ba, NO REPETIR. VRM-286 CI 5/5 PASS y 5/5 ASSETS BYTE-EXACTOS DEV PASS (index/proyectos/periodos/hr-source/proyecto-wizard); no repetir Hosting ni hashes sin drift: siguiente única prueba VRM-286 lectura real Admin proyecto/período contra revisión HR aprobada y aceptación humana de bloque. D05 CI 100/100 PASS; siguiente preflight read-only Rules/actor/fixture aislada, luego DEV provider E2E protegido sujeto a guardas. HR 32/83 PROVISIONALES, 51 pendientes, recenso sobre revisión HR autorizada; finanzas dos Q7,300 sin prueba bancaria, no borrar ni duplicar. 5/21 MATCH y 16 pendientes, Gate20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH."
+}

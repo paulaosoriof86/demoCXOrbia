@@ -250,7 +250,7 @@
       }
     },
     "VRM286": {
-      "state": "SOURCE_PROVEN_RUN41269151108_5_OF_5_PENDING_EXACT_DEV_BYTES_AND_ADMIN_ROLE_E2E",
+      "state": "SOURCE_CI_AND_DEV_EXACT_FIVE_LOADED_ASSETS_PASS_PENDING_AUTHENTICATED_ADMIN_E2E_HUMAN",
       "currentCanonicalSourceCi": {
         "kind": "CANONICAL_SOURCE_CI_FOCAL_ONLY",
         "runId": 41269151108,
@@ -264,7 +264,14 @@
         "production": false
       },
       "fullTaskClosed": false,
-      "humanAcceptance": "PENDING"
+      "humanAcceptance": "PENDING",
+      "exactDevAssets": [
+        "/index-backend-dev.html",
+        "/modules/proyectos.js",
+        "/modules/periodos.js",
+        "/modules/hr-source.js",
+        "/modules/proyecto-wizard.js"
+      ]
     }
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
@@ -283,7 +290,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 PLAN DE CHOQUE CONGELADO — G03 VRM-295 PASS DEV dos sesiones, Hosting 231186c337bcd0ba (RUN41264157605/RUN41264390022); NO REPETIR. D05 CI focal 100/100 PASS RUN41269151108; próximo único paso D05: preflight Rules/actor/fixture aislada sin writes y, sólo con guardas PASS, una materialización DEV runtime/Rules + E2E publish/configure/retire y ACK. VRM-286 CI 5/5 PASS misma corrida; próximo: bytes exactos servidos en DEV + Admin lectura proyecto/período. HR 32/83 grupos PROVISIONALES, 51 pendientes y revisión HR independiente; finanzas Q7,300 x2 pendientes de prueba bancaria, NO duplicar ni borrar. Mantener 5/21 MATCH, 16 no-MATCH, aceptación humana por bloque pendiente. Gates20/21 HOLD; I4 NO AUTORIZADA; producción DO_NOT_TOUCH.",
+  "nextExactAction": "I3 PLAN DE CHOQUE CONGELADO — G03 VRM-295 DEV dos sesiones PASS, Hosting 231186c337bcd0ba, NO REPETIR. VRM-286 CI 5/5 PASS y 5/5 ASSETS BYTE-EXACTOS DEV PASS (index/proyectos/periodos/hr-source/proyecto-wizard); no repetir Hosting ni hashes sin drift: siguiente única prueba VRM-286 lectura real Admin proyecto/período contra revisión HR aprobada y aceptación humana de bloque. D05 CI 100/100 PASS; siguiente preflight read-only Rules/actor/fixture aislada, luego DEV provider E2E protegido sujeto a guardas. HR 32/83 PROVISIONALES, 51 pendientes, recenso sobre revisión HR autorizada; finanzas dos Q7,300 sin prueba bancaria, no borrar ni duplicar. 5/21 MATCH y 16 pendientes, Gate20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -983,12 +990,12 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V211.json",
-    "gitBlob": "07fecc3c3a45922a462808b153efe75cad35a6cb",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V212.json",
+    "gitBlob": "b0648438daecf2592c0d5128f47344af91d932ef",
     "sourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
     "allModulesMatch": false,
     "phaseAComplete": false,
-    "sha256": "8aa23518909633d169d95f91d1ad0d6dc8a82edb1405e04293c177c1a2e07c08"
+    "sha256": "a21a2b831855a2d6616d0c580ab78b1e4fac86f8b5a072c7085bc5efb32faae2"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -3025,19 +3032,19 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V211.json",
-    "matrixBlob": "07fecc3c3a45922a462808b153efe75cad35a6cb",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V212.json",
+    "matrixBlob": "b0648438daecf2592c0d5128f47344af91d932ef",
     "classificationCounts": {
       "COMPOSED_NOT_DEPLOYED": 2,
       "MATCH": 5,
       "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN": 2,
       "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 4,
       "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN": 4,
-      "SOURCE_PROVEN_PENDING_EXACT_DEV_BYTES_ROLE_E2E_HUMAN": 1,
+      "SOURCE_PROVEN_DEV_EXACT_5_ASSETS_PASS_PENDING_ROLE_E2E_HUMAN": 1,
       "TRUE_FUNCTIONAL_DEFECT": 3
     },
     "derivedAt": "2026-11-01",
-    "meaning": "FROZEN_5_OF_21_MATCH__D05_100_SOURCE_PASS__VRM286_5_SOURCE_PASS__DEV_HUMAN_HOLD"
+    "meaning": "FROZEN_5_OF_21_MATCH__VRM286_SOURCE_PASS_AND_FIVE_DEV_ASSET_BYTES_PASS__ADMIN_E2E_HUMAN_PENDING"
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
   "activeMethodologyGuard": {
@@ -6119,6 +6126,34 @@
     "vrm286CasesPassed": 5,
     "sourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
     "devDeploys": 0,
+    "production": false
+  },
+  "vrm286ExactDevAssetParity20261101": {
+    "status": "PASS_EXACT_5_OF_5_READ_ONLY",
+    "sourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
+    "assets": [
+      {
+        "path": "/index-backend-dev.html",
+        "sha256": "38460409bee133f1f746156de1e1e5fa3d5db0c7a22c6d0d0b36a64f947c0479"
+      },
+      {
+        "path": "/modules/proyectos.js",
+        "sha256": "4982083291f05e09ed2f136f56b3979cf23ff008ba75eab7b755e5857e77a17e"
+      },
+      {
+        "path": "/modules/periodos.js",
+        "sha256": "3ed29c7709939b38c50da8e3a6573c4f40d30edb0ea701d4dddddf155eb23edc"
+      },
+      {
+        "path": "/modules/hr-source.js",
+        "sha256": "019faec336ec59047a90fa4b51a55715b6cfbc19ba4345f68584b6b5f5100dec"
+      },
+      {
+        "path": "/modules/proyecto-wizard.js",
+        "sha256": "0dda55bf7e5827f91a9261045af7c1875955e76f744ac181534d2d175444be6c"
+      }
+    ],
+    "inferredHumanAcceptance": false,
     "production": false
   }
 }
