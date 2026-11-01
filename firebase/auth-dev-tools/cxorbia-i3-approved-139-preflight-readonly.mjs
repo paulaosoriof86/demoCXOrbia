@@ -17,6 +17,9 @@ const PROJECT='cxorbia-backend-dev',TENANT='tya',PROGRAM='cinepolis';
 // view; require its explicit authority bit or fail closed before adjudication.
 const HR_URL='https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live?format=json&view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV';
 const EXPECTED_REV='4fc8def718fd1504f5d76a1fbc80b6901cbf711ec2b89f4dfc3a81ecbbca517a';
+// Explicitly scoped diagnostic only; cannot promote a newly changed HR revision to the approved source.
+const DIAGNOSTIC_REV='f12fba714e039c8a27ecf494ea8f883af8600b1625c06713814f241602a5a799';
+const DIAGNOSTIC_AUTH='I3_HR_REVISION_READONLY_DELTA_20261101';
 const EXPECTED_PAIR_DIGEST='ac3e15184316d62aa53942359e857f2c34dec486a2ca41057e529a39f062d872';
 const approvedCompletionReason=/^paula_confirmed_exact_same_human_[fr]\d{3}_2026_10_28$/;
 const AUTHORIZATION='PAULA_CONFIRMED_2026_10_28_139_EXACT_COHORT_PAIRS_READONLY_PREFLIGHT';
@@ -44,7 +47,13 @@ async function readCurrentHr(){
   assert(response.ok,'HR_PROVIDER_HTTP_'+response.status);
   const body=await response.json(),snapshot=body.snapshot||body.data||body;
   const revision=val(body.revision||body._runtime?.revision||snapshot.sourceRevision);
-  assert(revision===EXPECTED_REV,'HR_SOURCE_REVISION_DRIFT');
+  const approved=revision===EXPECTED_REV;
+  const diagnostic=revision===DIAGNOSTIC_REV&&process.env.CX_APPROVED_COHORT_REVISION_DIAGNOSTIC===DIAGNOSTIC_AUTH;
+  report.observedSourceRevision=revision;
+  report.observedHrShoppers=arr(snapshot.shoppers).length;
+  report.observedHrVisits=arr(snapshot.visits).length;
+  report.approvedSourceRevisionMatch=approved;
+  assert(approved||diagnostic,'HR_SOURCE_REVISION_DRIFT');
   assert(body._runtime?.operationalView===true&&snapshot.operationalIdentityPreview===true,
     'HR_OPERATIONAL_DISPLAY_IDENTITY_VIEW_NOT_PROVEN');
   assert(arr(snapshot.shoppers).length>0&&arr(snapshot.visits).length>0,'HR_EMPTY');
@@ -300,7 +309,12 @@ try{
   const auth=getAuth(),db=getFirestore(),hr=await readCurrentHr();
   report.reconciliation=await livePreflight({db,auth,hr});
   const post=await readCurrentHr();assert(post.revision===hr.revision,'HR_CHANGED_DURING_PREFLIGHT');
-  report.decision='PASS_APPROVED_COHORT_PREFLIGHT_READONLY';
+  if(hr.revision===EXPECTED_REV){
+    report.decision='PASS_APPROVED_COHORT_PREFLIGHT_READONLY';
+  }else{
+    report.decision='HOLD_REVISED_HR_SOURCE_NOT_APPROVED';
+    report.errorCode='HR_SOURCE_REVISION_PENDING_APPROVAL';
+  }
 }catch(error){report.decision='HOLD_APPROVED_COHORT_PREFLIGHT';
   report.errorCode=val(error?.message||error).replace(/[^A-Z0-9_:-]/gi,'_').slice(0,80);
   process.exitCode=2;
