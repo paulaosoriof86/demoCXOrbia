@@ -132,8 +132,10 @@ jobs:
      if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[g03-read-only]') }}
      env:
       CXORBIA_G03_SA_JSON: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      CXORBIA_G03_UI_TRACE: '1'
      run: |
-      npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+      npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+      npx playwright install chromium >/dev/null 2>&1
       node tools/qa/cxorbia-i3-g03-protected-crm-readonly.mjs
   vrm143-151-source-reproof:
    needs: canonical-candidate-authority

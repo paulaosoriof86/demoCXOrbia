@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import {cert, initializeApp} from 'firebase-admin/app';
 import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
+import {chromium} from 'playwright';
 
 const PROJECT = 'cxorbia-backend-dev';
 const TENANT = 'tya';
@@ -20,6 +21,73 @@ const resultBase = {
   scope: {project: PROJECT, tenant: TENANT, projectId: PROJECT_ID, fixtureOnly: true},
   safety: {firestoreWrites: 0, authAdminWrites: 0, hrWrites: 0, deploys: 0, production: false},
 };
+
+async function inspectAuthenticatedFrontend(customToken) {
+  const browser = await chromium.launch({headless: true});
+  try {
+    const context = await browser.newContext({viewport: {width: 1440, height: 900}});
+    const page = await context.newPage();
+    const url = `${ROOT}/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV`;
+    await page.goto(url, {waitUntil: 'domcontentloaded', timeout: 90000});
+    await page.waitForFunction(() => !!window.firebase?.auth && Array.isArray(window.firebase.apps)
+      && window.firebase.apps.length > 0, null, {timeout: 90000});
+    await page.evaluate(async token => {
+      const fb = window.firebase;
+      await fb.auth().setPersistence(fb.auth.Auth.Persistence.LOCAL);
+      await fb.auth().signInWithCustomToken(token);
+      return true;
+    }, customToken);
+    await page.reload({waitUntil: 'domcontentloaded', timeout: 90000});
+    const applied = await page.waitForFunction(() => window.firebase?.auth?.().currentUser
+      && window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied === true, null, {timeout: 90000})
+      .then(() => true, () => false);
+    let renderedCount = null;
+    if (applied) {
+      await page.getByRole('button', {name: 'CRM Comercial'}).click({timeout: 30000});
+      await page.getByRole('button', {name: '🏢 Cuentas'}).click({timeout: 30000});
+      await page.waitForFunction(() => /Cuentas\s*\(\d+\)/.test(document.querySelector('main')?.innerText || ''),
+        null, {timeout: 30000});
+      renderedCount = await page.evaluate(() => {
+        const matches = [...(document.querySelector('main')?.innerText || '').matchAll(/Cuentas\s*\((\d+)\)/g)];
+        return matches.length ? Number(matches.at(-1)[1]) : null;
+      });
+    }
+    const state = await page.evaluate(() => {
+      const root = window.CX || {}, commercial = root.data?.__commercialState || {};
+      const accounts = commercial.accounts;
+      const visible = Array.isArray(accounts) ? accounts.filter(x => x?.deleted !== true) : [];
+      const canonical = root.commercialCommandBoundary?.canonicalMode;
+      return {
+        authenticated: !!window.firebase?.auth?.().currentUser,
+        protectedApplied: window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied === true,
+        sourceRef: String(root.dataSource?.sourceRef || ''),
+        project: String(root.data?.currentProjectId || ''),
+        commercialArray: Array.isArray(accounts),
+        commercialRawCount: Array.isArray(accounts) ? accounts.length : null,
+        commercialVisibleCount: Array.isArray(accounts) ? visible.length : null,
+        fixtureInState: visible.some(x => String(x?.id || '') === 'ac-6246c88e50534696b139'),
+        canonicalMode: typeof canonical === 'function' ? canonical() : null,
+        crmStoreCount: typeof root.crmStore?.cuentas === 'function' ? root.crmStore.cuentas().length : null,
+      };
+    });
+    await context.close();
+    return {...state, renderedCount, readOnly: true};
+  } finally {
+    await browser.close();
+  }
+}
+
+function classifyFrontend(protectedResult, frontend) {
+  if (!frontend) return 'FRONTEND_NOT_PROBED';
+  if (frontend.probeFailed) return 'ENVIRONMENT_FAILURE_FRONTEND_PROBE';
+  if (!frontend.authenticated || !frontend.protectedApplied) return 'AUTH_OR_RECONCILIATION_NOT_READY';
+  if (!protectedResult.fixturePresent) return 'BACKEND_PROTECTED_MISSING';
+  if (!frontend.commercialArray || !frontend.fixtureInState) return 'BRIDGE_OR_PUBLISHER_DROPS_COMMERCIAL';
+  if (frontend.canonicalMode !== true) return 'CRM_COMMAND_BOUNDARY_NONCANONICAL';
+  if (!Number.isInteger(frontend.crmStoreCount) || frontend.crmStoreCount < 1) return 'CRM_STORE_FILTER_OR_MAPPING';
+  if (!Number.isInteger(frontend.renderedCount) || frontend.renderedCount < 1) return 'CRM_RENDERER_STALE';
+  return 'PASS_AUTHENTICATED_FRONTEND_ACCOUNT_VISIBLE';
+}
 
 async function run() {
   const rawSecret = process.env.CXORBIA_G03_SA_JSON;
@@ -107,15 +175,25 @@ async function run() {
     : !protectedResult.protectedState || !hasAccountsArray || !protectedHasFixture
       ? 'HOLD_G03_BACKEND_PROTECTED_READ_MODEL'
       : 'PASS_G03_BACKEND_PROTECTED_READ_MODEL_ONLY';
+  let frontend = null;
+  if (process.env.CXORBIA_G03_UI_TRACE === '1' && decision === 'PASS_G03_BACKEND_PROTECTED_READ_MODEL_ONLY') {
+    try {
+      frontend = await inspectAuthenticatedFrontend(customToken);
+    } catch {
+      frontend = {probeFailed: true, classification: 'ENVIRONMENT_FAILURE_FRONTEND_PROBE', readOnly: true};
+    }
+  }
+  const frontendClassification = classifyFrontend(protectedResult, frontend);
   return {...resultBase, decision, persisted, protected: protectedResult,
-    frontendCertified: false, g03FunctionalGate: 'HOLD_UNTIL_AUTHENTICATED_UI_READBACK'};
+    frontend, frontendClassification, frontendCertified: false,
+    g03FunctionalGate: 'HOLD_UNTIL_FULL_SAME_ARTIFACT_UI_AND_HUMAN_ACCEPTANCE'};
 }
 
 fs.mkdirSync(OUT, {recursive: true});
 try {
   const result = await run();
   fs.writeFileSync(`${OUT}/result.json`, `${JSON.stringify(result, null, 2)}\n`);
-  console.log(`G03_RESULT decision=${result.decision} firestoreExists=${result.persisted.exists} protectedHttp=${result.protected.httpStatus} protectedAccounts=${result.protected.visibleAccounts} fixtureInProtected=${result.protected.fixturePresent} frontendCertified=false`);
+  console.log(`G03_RESULT decision=${result.decision} firestoreExists=${result.persisted.exists} protectedHttp=${result.protected.httpStatus} protectedAccounts=${result.protected.visibleAccounts} fixtureInProtected=${result.protected.fixturePresent} frontendClassification=${result.frontendClassification} frontendStateAccounts=${result.frontend?.commercialVisibleCount ?? 'unknown'} frontendDomAccounts=${result.frontend?.renderedCount ?? 'unknown'} frontendCertified=false`);
   console.log(JSON.stringify(result));
 } catch (error) {
   // Never print service-account material, Firebase tokens, UID, names, or payloads.
