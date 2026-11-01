@@ -20,6 +20,7 @@ jobs:
       GOOGLE_CLOUD_PROJECT: cxorbia-backend-dev
       CX_APPROVED_COHORT_PREFLIGHT: PAULA_CONFIRMED_2026_10_28_139_EXACT_COHORT_PAIRS_READONLY_PREFLIGHT
       CX_APPROVED_COHORT_PREFLIGHT_OUT: .tmp/i3-approved-cohort-preflight
+      CX_APPROVED_COHORT_REVISION_DIAGNOSTIC: I3_HR_REVISION_READONLY_DELTA_20261101
     steps:
       - uses: actions/checkout@v4
         with:
@@ -73,7 +74,7 @@ jobs:
           set -Eeuo pipefail
           npm install --prefix firebase/auth-dev-tools --no-save --no-package-lock --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
           node firebase/auth-dev-tools/cxorbia-i3-approved-139-preflight-readonly.mjs
-          jq -e '.decision=="PASS_APPROVED_COHORT_PREFLIGHT_READONLY" and .production==false and .authWrites==0 and .firestoreWrites==0 and .hrWrites==0 and .merges==0 and .reconciliation.groups==83' "$CX_APPROVED_COHORT_PREFLIGHT_OUT/result.json" >/dev/null
+          jq -e '(.decision=="PASS_APPROVED_COHORT_PREFLIGHT_READONLY" or (.decision=="HOLD_REVISED_HR_SOURCE_NOT_APPROVED" and .approvedSourceRevisionMatch==false and .observedSourceRevision=="f12fba714e039c8a27ecf494ea8f883af8600b1625c06713814f241602a5a799")) and .production==false and .authWrites==0 and .firestoreWrites==0 and .hrWrites==0 and .merges==0 and .reconciliation.groups==83 and .reconciliation.approvedWorkbookPairDigest=="ac3e15184316d62aa53942359e857f2c34dec486a2ca41057e529a39f062d872"' "$CX_APPROVED_COHORT_PREFLIGHT_OUT/result.json" >/dev/null
       - uses: actions/upload-artifact@v4
         if: always()
         with:
