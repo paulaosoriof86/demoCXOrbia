@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "cxorbia.i3.source-ci-focal.20261101.v1",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "decision": "PASS_D05_D04_EXACT_CANONICAL_SOURCE_CI_FOCAL_WITH_VRM286_PRESERVED",
+  "scope": "CONTROL_AND_SOURCE_CI_ONLY_NOT_PHASEA_OR_DEV_E2E_CERTIFICATION",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlCommit": "58374f0ff380cd5ae5a1cd6a9a6061974573f539",
+  "controlParent": "89423c97266a5eda7660d3c9d5034e3b98043d25",
+  "productSource": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
+  "productTree": "66f745312ee6c98602f72254353caac16f2bcb44",
+  "workflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+  "canonicalCi": {
+    "runId": 41269151108,
+    "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/41269151108",
+    "jobId": 124738131438,
+    "conclusion": "success",
+    "d05D04": {
+      "decision": "PASS_D05_D04_EXACT_CANONICAL_SOURCE_CI_FOCAL",
+      "newTestFile": "tools/qa/cxorbia-i3-work-uat-d05-canonical-source-proof.test.mjs",
+      "newTestGitBlob": "6346646abd219061498d3ae749a61418108101ba",
+      "runtimeAssertions": 40,
+      "clientAssertions": 60,
+      "totalAssertions": 100,
+      "failedAssertions": 0,
+      "sourceAndOwnerByteGuard": true,
+      "reviewerRoleVersionReceiptScope": "SOURCE_CONTRACT_ONLY",
+      "ruleEmulatorAndLiveActorProof": "NOT_COVERED"
+    },
+    "vrm286": {
+      "state": "FIVE_EXISTING_CASES_PASSED_IN_SAME_CANONICAL_JOB",
+      "newImplementationOrTest": false,
+      "cases": 5,
+      "scope": "PROJECT_PERIOD_VISIT_COUNT_SOURCE_ONLY",
+      "realDevArtifactByteParity": "NOT_ESTABLISHED_BY_THIS_RUN"
+    }
+  },
+  "preservedControl": {
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V210.json",
+    "matchDomains": 5,
+    "remainingNonMatchDomains": 16,
+    "noDomainPromotions": true,
+    "identityApprovedPairs": 139,
+    "identityApprovedGroups": 83,
+    "noNewMerges": true,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4": "NOT_AUTHORIZED",
+    "production": "DO_NOT_TOUCH"
+  },
+  "effects": {
+    "productFilesChanged": 0,
+    "firebaseAuthWrites": 0,
+    "hrWrites": 0,
+    "financialWrites": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0,
+    "rulesDeploys": 0,
+    "productionWrites": 0
+  },
+  "stillOpen": [
+    "D05 Firestore Rules and real protected provider actor lifecycle on the exact approved DEV artifact",
+    "D06 real separate reviewer, shopper qualification and no-message scope",
+    "VRM-286 exact served artifact and human/role-scoped DEV acceptance",
+    "Other 16 non-MATCH domains and final cumulative same-artifact Admin/Shopper E2E",
+    "HR identity pending owner adjudications, without redoing verified groups",
+    "Finance C03 external reconciliation of the two observed Q7300 advances",
+    "Human acceptance, Gate20, Gate21 and separate I4 release authorization"
+  ],
+  "nextExactAction": "Preserve this bounded CI PASS without re-running it. Advance D05 Rules/provider lifecycle and the remaining SOURCE_FIXED/TRUE_FUNCTIONAL_DEFECT owners on the single e44483d lineage; require the exact DEV runtime, Rules and Hosting readbacks before any whole-domain or release promotion.",
+  "fullTaskClosed": false,
+  "sourceOnly": true
+}
