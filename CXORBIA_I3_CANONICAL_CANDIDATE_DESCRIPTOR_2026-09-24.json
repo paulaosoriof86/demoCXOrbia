@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_G03_VRM295_COMPOSITION_SOURCE_FIXED_DEV_E2E_PENDING",
+  "status": "HOLD_I3_G03_SOURCE_PROVEN_DEV_TRANSPORT_AUTH_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
   "productTreeAuthority": "66f745312ee6c98602f72254353caac16f2bcb44",
   "predecessorProductSourceSha": "7b70557c22e3902ab3c91fbee326357630fc20a1",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V539_2026-11-01.json",
-  "findingsLedgerExpectedGitBlob": "ce93638cd889298dc75ac236deb067940647dc50",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V208.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V540_2026-11-01.json",
+  "findingsLedgerExpectedGitBlob": "5b236b3535592860255240bbb56dd766b6297ca0",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261101-V209.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "G03_VRM295_CRM_COMPOSITION_SOURCE_ONLY_DEV_E2E_HOLD__F9_FINANCE_HR_HUMAN_PENDING",
+  "activeBlocker": "G03_VRM295_SOURCE_PASS_EXISTING_DEV_TRANSPORT_HISTORICAL_PIN_APPROVAL_REQUIRED__F9_FINANCE_HR_HUMAN_PENDING",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 FASE A / PLAN CONGELADO: G03 VRM-295, código fuente e44483d PASS en RUN2020; RUN2020 autoría de fuente PASS, pero detectó 1 mismatch de inventario CRM que se reconcilia en matriz V208 sin modificar producto. SIGUIENTE ACCIÓN: verificar CI del sucesor con 0 owner/sourceFile mismatches; solo después una materialización única del artefacto exacto en Hosting DEV por carril existente/autorizado y E2E Admin Cuentas (1), recarga y sesión independiente. DEV previo 3d1d42ad02066ae2 aún muestra Cuentas (0) mientras backend 1 y estado 1. Prohibido crear flujo alternativo, duplicar cuenta, reimportar, tocar backend, HR, finanzas, Auth, IAM, reglas o producción. 5/21 MATCH, shoppers 32/83 provisionales con recenso HR pendiente, Gates 20/21 HOLD, I4 no autorizada, producción DO_NOT_TOUCH.",
+  "exactNextAction": "I3 FASE A / PLAN DE CHOQUE CONGELADO — G03 VRM-295 SOURCE PROVEN: CI RUN2021 PASS (66/66 general, 3/3 CRM, 21 dominios, 101 owners y 153 archivos, cero blobs discrepantes). DEV Hosting aún sirve predecesor 3d1d42ad02066ae2 y Cuentas (0), aunque backend protegido=1 y estado canónico=1. SIGUIENTE ACCIÓN EXACTA: Paula debe decidir si autoriza reanclar el transporte de materialización DEV YA EXISTENTE (hardpin histórico 4854a4e) al SHA e44483d, con máximo 1 Hosting DEV, cero Cloud Run/reglas/Firestore/Auth/HR/finanzas/producción y readback de bytes + E2E Admin Cuentas (1) en recarga y sesión independiente. No crear otro workflow/materializador, no recrear cuenta ni fusiones. Se preservan D05/D06/finanzas/HR, 5/21 MATCH y shoppers 32/83 provisionales con recenso pendiente; Gates20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "ec112eeb1dd61287013bd80bb0821d5815c51dfc",
+  "moduleTruthExpectedGitBlob": "960cfb4c240c533a19812a637715733666ef308c",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -16035,7 +16035,7 @@
     "sourceContractTestsPassed": 66,
     "focalCrmTestsPassed": 3,
     "previousRunGuardFailure": "UNDECLARED_PRODUCT_DRIFT_SOURCE_DESCRIPTOR_NOT_YET_ALIGNED",
-    "controlSuccessorGuard": "PASS_RUN2020_SOURCE_LINEAGE_SHOCK_AND_SEAL",
+    "controlSuccessorGuard": "PASS_RUN2021_SOURCE_LINEAGE_BLOB_INVENTORY_SHOCK_SEAL",
     "hostingServedSource": "PREDECESSOR",
     "devCuentasBefore": 0,
     "backendAccounts": 1,
@@ -16055,8 +16055,30 @@
     "priorMatrixBlob": "c04c7792f0dd903563ea9cac41c54dd36127f005",
     "expectedOwnerMismatches": 0,
     "expectedSourceFileMismatches": 0,
-    "zeroMismatchCi": "PENDING",
+    "zeroMismatchCi": "PASS_RUN2021_101_OWNERS_153_FILES",
     "devMaterialization": "PENDING",
+    "production": false
+  },
+  "g03CrmSourceAuthorityPassRun2021": {
+    "findingId": "VRM-295",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_G03_SOURCE_AUTHORITY_PASS_RUN2021_TRANSPORT_HOLD_20261101.json",
+    "receiptGitBlob": "26d93a1547b607f44d9b2edd0cdfd88750f3864e",
+    "sourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
+    "sourceTree": "66f745312ee6c98602f72254353caac16f2bcb44",
+    "runId": 41262789723,
+    "runNumber": 2021,
+    "controlSha": "b01aefc96b15962bca85b0614ab708c9527e5af2",
+    "sourceTestsPass": 66,
+    "focalCrmPass": 3,
+    "domainCount": 21,
+    "ownerCount": 101,
+    "sourceFileCount": 153,
+    "blobMismatches": 0,
+    "canonicalCi": "PASS",
+    "devMaterialization": "PENDING_NO_COMPATIBLE_EXISTING_PIN",
+    "humanVisual": "PENDING",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
     "production": false
   }
 }
