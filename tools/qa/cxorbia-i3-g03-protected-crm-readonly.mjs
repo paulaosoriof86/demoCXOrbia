@@ -65,6 +65,11 @@ async function inspectAuthenticatedFrontend(customToken) {
         commercialArray: Array.isArray(accounts),
         commercialRawCount: Array.isArray(accounts) ? accounts.length : null,
         commercialVisibleCount: Array.isArray(accounts) ? visible.length : null,
+        commercialLegacyFilterCount: Array.isArray(accounts) ? accounts.filter(x => !x?.deleted).length : null,
+        commercialTruthyNonTombstones: Array.isArray(accounts)
+          ? accounts.filter(x => !!x?.deleted && x.deleted !== true).length : null,
+        commercialStringFalseCount: Array.isArray(accounts)
+          ? accounts.filter(x => typeof x?.deleted === 'string' && x.deleted.trim().toLowerCase() === 'false').length : null,
         fixtureInState: visible.some(x => String(x?.id || '') === 'ac-6246c88e50534696b139'),
         canonicalMode: typeof canonical === 'function' ? canonical() : null,
         crmStoreCount: typeof root.crmStore?.cuentas === 'function' ? root.crmStore.cuentas().length : null,
@@ -84,7 +89,10 @@ function classifyFrontend(protectedResult, frontend) {
   if (!protectedResult.fixturePresent) return 'BACKEND_PROTECTED_MISSING';
   if (!frontend.commercialArray || !frontend.fixtureInState) return 'BRIDGE_OR_PUBLISHER_DROPS_COMMERCIAL';
   if (frontend.canonicalMode !== true) return 'CRM_COMMAND_BOUNDARY_NONCANONICAL';
-  if (!Number.isInteger(frontend.crmStoreCount) || frontend.crmStoreCount < 1) return 'CRM_STORE_FILTER_OR_MAPPING';
+  if (!Number.isInteger(frontend.crmStoreCount) || frontend.crmStoreCount < 1) {
+    return frontend.commercialTruthyNonTombstones > 0
+      ? 'CRM_STORE_TOMBSTONE_FILTER_FALSE_POSITIVE' : 'CRM_STORE_FILTER_OR_MAPPING';
+  }
   if (!Number.isInteger(frontend.renderedCount) || frontend.renderedCount < 1) return 'CRM_RENDERER_STALE';
   return 'PASS_AUTHENTICATED_FRONTEND_ACCOUNT_VISIBLE';
 }

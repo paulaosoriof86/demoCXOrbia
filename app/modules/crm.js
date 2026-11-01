@@ -5,7 +5,9 @@ CX.crmStore = CX.crmStore || {
   _l:null, _cols:null, _cuentas:null, _contactos:null, _meta:null,
   _canonical(){return CX.commercialCommandBoundary?.canonicalMode?.()===true;},
   _state(){CX.data.__commercialState=CX.data.__commercialState||{};return CX.data.__commercialState;},
-  _rows(k){const v=this._state()[k];return Array.isArray(v)?v.filter(x=>!x.deleted):[];},
+  /* Match protected backend projection: only boolean `deleted:true` is a tombstone.
+     Truthy non-boolean values must not hide provider-approved active rows. */
+  _rows(k){const v=this._state()[k];return Array.isArray(v)?v.filter(x=>x?.deleted!==true):[];},
   _version(x,fallback=0){return x?.version??(x?.__sourceDefault?'source-default':fallback);},
   _ackOk(a){return a&&a.ok===true&&a.committed===true&&a.providerAck===true&&a.successUiAllowed===true&&a.readbackVerified===true;},
   _apply(k,a){if(!this._ackOk(a)||!a.entityReadback)return a;const s=this._state(),rows=Array.isArray(s[k])?s[k]:[],i=rows.findIndex(x=>x.id===a.entityReadback.id);if(i>=0)rows[i]=Object.assign({},a.entityReadback);else rows.push(Object.assign({},a.entityReadback));s[k]=rows;CX.bus&&CX.bus.emit('crm');return a;},

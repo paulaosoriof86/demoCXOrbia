@@ -128,6 +128,7 @@ jobs:
       node --test tools/qa/cxorbia-i3-r20-no-visit-shopper-auth-gate.test.mjs
       bash -n .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh
       node --test backend/runtime/hr-live-service/test/cxorbia-i3-phasea-completion-source-contract.test.mjs
+      node --test tools/qa/cxorbia-i3-g03-crm-protected-tombstone-parity.test.mjs
    - name: G03 protected CRM read-only DEV
      if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[g03-read-only]') }}
      env:
