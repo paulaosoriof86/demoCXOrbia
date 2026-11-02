@@ -128,10 +128,12 @@ async function preflight() {
   if (admins.length !== 1 || !(await activeMember(admins[0], 'admin')))
     fail('AUTH_FAILURE:D05_UNIQUE_ADMIN_MEMBERSHIP_REQUIRED');
   const shoppers = await principals('shopper');
-  let shopper = null;
+  const eligibleShoppers = [];
   for (const candidate of shoppers.slice(0, 30)) {
-    if (await activeMember(candidate, 'shopper')) {shopper = candidate; break;}
+    if (await activeMember(candidate, 'shopper')) eligibleShoppers.push(candidate);
+    if (eligibleShoppers.length === 3) break;
   }
+  const shopper = eligibleShoppers[0] || null;
   if (!shopper) result.shopper.status = 'HOLD_NO_EXISTING_MEMBER_ELIGIBLE_FOR_FOCAL_READ';
 
   const before = await allBanks();
@@ -164,8 +166,10 @@ async function preflight() {
     policy: 'authorized_admin', realBankDigest: sha(originalHashes),
     adminUidFingerprint: sha(admins[0].uid),
     shopperUidFingerprint: shopper ? sha(shopper.uid) : null,
-    publishedQuestionCount: arr(published[0].row.bank.preguntas).length};
-  return {admin: admins[0], shopper, periodId, publishedId: published[0].id};
+    publishedQuestionCount: arr(published[0].row.bank.preguntas).length,
+    eligibleShopperReadOnlySamples: eligibleShoppers.length};
+  return {admin: admins[0], shopper, eligibleShoppers, periodId,
+    publishedId: published[0].id, pendingId: pending[0].id};
 }
 
 async function saveQaViaAdminUi({admin, periodId}) {
@@ -295,7 +299,7 @@ async function saveQaViaAdminUi({admin, periodId}) {
   await context.close();
 }
 
-async function shopperReadOnly({shopper, publishedId}) {
+async function shopperReadOnly({shopper, publishedId, pendingId}, sessionIndex=1) {
   if (!shopper) fail('AUTH_FAILURE:D06_EXISTING_SHOPPER_MEMBERSHIP_UNAVAILABLE');
   const context = await browser.newContext({viewport: {width: 1440, height: 900}, serviceWorkers: 'block'});
   const page = await authenticatedPage(shopper, context);
@@ -312,21 +316,25 @@ async function shopperReadOnly({shopper, publishedId}) {
   await page.waitForFunction(expectedId =>
     (window.CX?.backendResources?.list?.({resourceType: 'certification_bank'}) || [])
       .some(x => x.id === expectedId), publishedId, {timeout: 30000});
-  const observed = await page.evaluate(expectedId => {
+  const observed = await page.evaluate(({expectedId, unpublishedId}) => {
     const banks = window.CX?.backendResources?.list?.({resourceType: 'certification_bank'}) || [];
     const published = banks.find(x => x.id === expectedId);
     return {publishedVisible: !!published && published.bank?.estado === 'published',
       publishedQuestions: published?.bank?.preguntas?.length || 0,
       qaVisible: banks.some(x => x.qaOnly === true),
+      unpublishedVisible: banks.some(x => x.id === unpublishedId),
+      adminControlsVisible: !!document.querySelector('#certPublish, #certReviewEdit'),
       view: String(window.CX?.session?.view || ''),
       bodyText: String(document.querySelector('#view')?.innerText || '').slice(0, 2500),
       examQuestionCount: document.querySelectorAll('#examBox input[type=radio]').length / 4,
       submitButtonAvailable: !!document.querySelector('#examGo')};
-  }, publishedId);
+  }, {expectedId: publishedId, unpublishedId: pendingId});
   result.shopper = {status: 'HOLD', role: 'shopper', realExistingUser: true,
     publishedVisible: observed.publishedVisible,
     publishedQuestions: observed.publishedQuestions,
     qaVisible: observed.qaVisible,
+    unpublishedVisible: observed.unpublishedVisible,
+    adminControlsVisible: observed.adminControlsVisible,
     certificationView: observed.view === 'cert',
     examQuestionCount: observed.examQuestionCount,
     submitButtonAvailable: observed.submitButtonAvailable,
@@ -334,12 +342,15 @@ async function shopperReadOnly({shopper, publishedId}) {
       .test(observed.bodyText),
     submittedAttempt: false, passwordLoginE2E: 'NOT_TESTED_CUSTOM_TOKEN'};
   if (!observed.publishedVisible || observed.publishedQuestions < 1 || observed.qaVisible ||
+      observed.unpublishedVisible || observed.adminControlsVisible ||
       observed.view !== 'cert' || !result.shopper.eligibilityOrExamVisible ||
       (observed.submitButtonAvailable && observed.examQuestionCount !== observed.publishedQuestions))
     fail('FUNCTIONAL_DEFECT:D06_SHOPPER_PUBLISHED_BANK_NOT_CONSUMED');
-  await page.screenshot({path: OUT + '/shopper-certification-read-only.png', fullPage: true});
+  await page.screenshot({path: OUT + (sessionIndex === 1 ? '/shopper-certification-read-only.png'
+    : '/shopper-certification-read-only-' + sessionIndex + '.png'), fullPage: true});
   result.shopper.status = 'PASS_EXISTING_SHOPPER_ROLE_READ_ONLY';
   await context.close();
+  return result.shopper;
 }
 
 async function protectRealBanks() {
@@ -376,9 +387,16 @@ try {
   const scope = await preflight();
   if (SHOPPER_READ_ONLY) {
     browser = await chromium.launch({headless: true});
-    await shopperReadOnly(scope);
+    const shopperReads = [];
+    for (const [index, person] of scope.eligibleShoppers.entries()) {
+      const readback = await shopperReadOnly({...scope, shopper: person}, index + 1);
+      shopperReads.push({...readback, shopperUidFingerprint: sha(person.uid)});
+    }
+    if (!shopperReads.length) fail('AUTH_FAILURE:D06_EXISTING_SHOPPER_MEMBERSHIP_UNAVAILABLE');
+    result.independentShopperReads = shopperReads;
+    result.shopper = shopperReads[0];
     await protectRealBanks();
-    result.decision = 'PASS_D06_EXISTING_SHOPPER_UI_READ_ONLY_NO_ATTEMPT';
+    result.decision = 'PASS_D06_MULTI_SHOPPER_PUBLISHED_ONLY_AND_NEGATIVE_VISIBILITY_READ_ONLY';
   } else {
     await saveQaViaAdminUi(scope);
     await protectRealBanks();
