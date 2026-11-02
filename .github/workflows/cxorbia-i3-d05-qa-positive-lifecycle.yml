@@ -571,3 +571,103 @@ jobs:
           path: .tmp/i3-d06-vrm297-dev-traffic-continuation/
           if-no-files-found: warn
           retention-days: 30
+
+  d06-vrm297-three-real-shopper-dev-read:
+    if: ${{ contains(github.event.head_commit.message, '[i3-d06-vrm297-shopper-live]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      REQUEST: docs/checkpoints/CXORBIA_I3_D06_VRM297_THREE_REAL_SHOPPER_DEV_REPROOF_20261102.json
+      CXORBIA_PRODUCT_SOURCE_SHA: 128272027850fa0edad710ad1451a927041815d4
+      CXORBIA_D05_CERT_SOURCE_BLOB: dac1bbb506b34e6ddc0dbc2742fe39dfbc666415
+      CXORBIA_D06_READ_ONLY: '1'
+      CXORBIA_D06_VRM296_ONLY: '0'
+      CXORBIA_D06_VRM297_ONLY: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Three Shopper no-write proof requires exact source and successful DEV transport
+        run: |
+          set -Eeuo pipefail
+          jq -e '.schemaVersion=="cxorbia.i3.d06.vrm297.three-real-shopper-dev-reproof.20261102.v1"
+            and .authorization=="PAULA_EXPLICIT_DEV_MODULE_RECERTIFICATION_2026_11_02"
+            and .intent=="THREE_EXISTING_SHOPPERS_AUTHENTICATED_READ_ONLY_AFTER_EXACT_DEV_SOURCE"
+            and .exactSource.sha=="128272027850fa0edad710ad1451a927041815d4"
+            and .exactSource.priorDevMaterializationRunId==41475638843
+            and .exactSource.priorDevMaterializationConclusion=="success"
+            and .requirements.shopperCount==3
+            and .requirements.publishedQuestionCount==8
+            and .requirements.pendingQuestionCount==15
+            and .requirements.browserAnswerKeysOrExplanations==0
+            and .requirements.pendingAndPublishedFullFirestoreDocumentDirectGet=="DENIED_FOR_ALL_THREE"
+            and .requirements.resourceCacheAuthority=="verified-server-projection"
+            and .limits.realBankWrites==0 and .limits.qaBankWrites==0
+            and .limits.shopperAttemptWrites==0 and .limits.authUsersCreated==0
+            and .limits.devDeploys==0 and .limits.productionWrites==0
+            and .limits.production=="DO_NOT_TOUCH" and .limits.authorizationI4==false
+            and .limits.domainsFullyMatchedUntilFullRoleReproof==5' "$REQUEST" >/dev/null
+          test "$(git rev-parse HEAD^)" = "$(jq -r .controlParentSha "$REQUEST")"
+          test "$(git diff --name-only HEAD^ HEAD | LC_ALL=C sort)" = "$(jq -r '.allowedControlFiles|sort|.[]' "$REQUEST")"
+          SRC="$(jq -r .exactSource.sha "$REQUEST")"
+          test "$(git rev-parse "$SRC^{tree}")" = "$(jq -r .exactSource.tree "$REQUEST")"
+          test "$SRC" = "$(jq -r .productSourceSha CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          git diff --quiet "$SRC" HEAD -- app backend firestore.rules firestore.indexes.json storage.rules firebase.json .firebaserc
+          test "$(git rev-parse "$SRC:app/modules/cert.js")" = "$(jq -r .exactSource.certUiBlob "$REQUEST")"
+          node --check tools/qa/cxorbia-i3-d05-qa-ui-review-shopper-read.mjs
+          RUN_ID="$(jq -r .exactSource.priorDevMaterializationRunId "$REQUEST")"
+          curl -fsS --max-time 30 -H 'Accept: application/vnd.github+json' "https://api.github.com/repos/paulaosoriof86/demoCXOrbia/actions/runs/$RUN_ID" -o /tmp/cxorbia-vrm297-dev-run-readback.json
+          jq -e '.status=="completed" and .conclusion=="success"
+            and .head_branch=="recovery/cxorbia-phase-a-20260831"' /tmp/cxorbia-vrm297-dev-run-readback.json >/dev/null
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install isolated existing Shopper QA dependencies and browser
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1
+          npx --no-install playwright install chromium
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: cxorbia-backend-dev
+      - name: Three-provider source-matched DEV CAS before Shopper sessions
+        run: |
+          set -Eeuo pipefail
+          RUNTIME="$(gcloud run services describe cxorbia-live-hr-dev --project cxorbia-backend-dev --region us-central1 --format='value(status.latestReadyRevisionName)')"
+          test "$RUNTIME" = "$(jq -r .exactSource.runtimeRevision "$REQUEST")"
+          TOKEN="$(gcloud auth print-access-token)"
+          RULESET="$(curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/cxorbia-backend-dev/releases/cloud.firestore" | jq -r .rulesetName)"
+          HOSTING="$(curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/cxorbia-backend-dev/channels/live" | jq -r .release.version.name)"
+          test "$RULESET" = "$(jq -r .exactSource.firestoreRuleset "$REQUEST")"
+          test "$HOSTING" = "$(jq -r .exactSource.hostingVersion "$REQUEST")"
+      - name: Three existing Shopper identities, real DEV UI, deny both banks and no answer key
+        run: |
+          set -Eeuo pipefail
+          node tools/qa/cxorbia-i3-d05-qa-ui-review-shopper-read.mjs
+          RESULT=.tmp/cxorbia-i3-d05-qa-ui-review-shopper/result.json
+          jq -e '.decision=="PASS_D06_VRM297_THREE_REAL_SHOPPERS_PUBLISHED_PENDING_DENIED_SAFE_PROJECTION"
+            and .limits.realBankWrites==0 and .limits.shopperAttemptWrites==0
+            and .limits.authUsersCreated==0 and .limits.devDeploys==0
+            and .realBankReadback.unchanged==true
+            and (.independentShopperReads|length)==3
+            and all(.independentShopperReads[]; .realExistingUser==true and .role=="shopper"
+              and .pendingDirectGet=="DENIED" and .publishedDirectGet=="DENIED"
+              and .publishedQuestions==8 and .publishedVisible==true
+              and .publishedAnswerKeysInBrowser==false
+              and .publishedRestrictedFieldsInBrowser==false
+              and .resourceSource=="verified-server-projection"
+              and .unpublishedVisible==false and .unpublishedAnswerKeysInBrowser==false
+              and .submittedAttempt==false)
+            and .limits.production==false' "$RESULT" >/dev/null
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-d06-vrm297-three-shopper-live-${{ github.run_id }}
+          path: .tmp/cxorbia-i3-d05-qa-ui-review-shopper/
+          if-no-files-found: warn
+          retention-days: 30

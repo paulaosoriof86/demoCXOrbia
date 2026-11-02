@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "cxorbia.i3.d06.vrm297.three-real-shopper-dev-reproof.20261102.v1",
+  "authorization": "PAULA_EXPLICIT_DEV_MODULE_RECERTIFICATION_2026_11_02",
+  "intent": "THREE_EXISTING_SHOPPERS_AUTHENTICATED_READ_ONLY_AFTER_EXACT_DEV_SOURCE",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlParentSha": "04f0e8946ace83cf0e375cecca8e1ff366b4e72f",
+  "allowedControlFiles": [
+    ".github/workflows/cxorbia-i3-d05-qa-positive-lifecycle.yml",
+    "docs/checkpoints/CXORBIA_I3_D06_VRM297_THREE_REAL_SHOPPER_DEV_REPROOF_20261102.json",
+    "tools/qa/cxorbia-i3-d05-qa-ui-review-shopper-read.mjs"
+  ],
+  "exactSource": {
+    "sha": "128272027850fa0edad710ad1451a927041815d4",
+    "tree": "4b357cb285ef03228e1dc928fda5f3115d8656f8",
+    "certUiBlob": "dac1bbb506b34e6ddc0dbc2742fe39dfbc666415",
+    "priorDevMaterializationRunId": 41475638843,
+    "priorDevMaterializationConclusion": "success",
+    "runtimeRevision": "cxorbia-live-hr-dev-00333-srb",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/c69d52baf9e87433"
+  },
+  "requirements": {
+    "shopperCount": 3,
+    "usesExistingAuthenticationUids": true,
+    "customTokenSessionNotPasswordLogin": true,
+    "publishedBankCount": 1,
+    "pendingBankCount": 1,
+    "publishedQuestionCount": 8,
+    "pendingQuestionCount": 15,
+    "pendingAndPublishedFullFirestoreDocumentDirectGet": "DENIED_FOR_ALL_THREE",
+    "browserAnswerKeysOrExplanations": 0,
+    "resourceCacheAuthority": "verified-server-projection",
+    "realBankHashBeforeAfter": "EXACT_EQUAL",
+    "screenshots": 3,
+    "fullD06MatchWithoutPracticeAndHuman": false
+  },
+  "limits": {
+    "realBankWrites": 0,
+    "qaBankWrites": 0,
+    "shopperAttemptWrites": 0,
+    "authUsersCreated": 0,
+    "devDeploys": 0,
+    "hrWrites": 0,
+    "productionWrites": 0,
+    "production": "DO_NOT_TOUCH",
+    "authorizationI4": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "domainsFullyMatchedUntilFullRoleReproof": 5
+  }
+}

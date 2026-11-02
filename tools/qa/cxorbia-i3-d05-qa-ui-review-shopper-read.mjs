@@ -9,7 +9,10 @@ import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
 import {chromium} from 'playwright';
 
-const SOURCE = '4ba2a96e1f90fba7ba8e981429bce8b4161ebee6';
+const SHOPPER_VRM297_ONLY = process.env.CXORBIA_D06_VRM297_ONLY === '1';
+const SOURCE = SHOPPER_VRM297_ONLY
+  ? '128272027850fa0edad710ad1451a927041815d4'
+  : '4ba2a96e1f90fba7ba8e981429bce8b4161ebee6';
 const PROJECT = 'cxorbia-backend-dev';
 const TENANT = 'tya';
 const PROJECT_ID = 'cinepolis';
@@ -36,9 +39,11 @@ const result = {
   shopper: {status: 'PENDING', submittedAttempt: false}
 };
 if (SHOPPER_READ_ONLY) {
-  result.scope = SHOPPER_VRM296_ONLY
-    ? 'EXACT_3_REAL_SHOPPERS_PENDING_BANK_GET_DENIED_AND_PUBLISHED_RETAINED_VRM297_OPEN'
-    : 'EXISTING_SHOPPER_AUTHENTICATED_UI_PUBLISHED_BANK_READ_ONLY';
+  result.scope = SHOPPER_VRM297_ONLY
+    ? 'VRM297_EXACT_THREE_REAL_SHOPPERS_PUBLISHED_AND_PENDING_DIRECT_GET_DENIED_SAFE_PROJECTION'
+    : SHOPPER_VRM296_ONLY
+      ? 'EXACT_3_REAL_SHOPPERS_PENDING_BANK_GET_DENIED_AND_PUBLISHED_RETAINED_VRM297_OPEN'
+      : 'EXISTING_SHOPPER_AUTHENTICATED_UI_PUBLISHED_BANK_READ_ONLY';
   result.qa.status = 'NOT_RUN_NO_QA_WRITES';
 }
 fs.mkdirSync(OUT, {recursive: true});
@@ -149,6 +154,8 @@ async function preflight() {
   if (real.length !== 4 || active.length !== 2 || pending.length !== 1 ||
       published.length !== 1 || arr(published[0].row.bank?.preguntas).length < 1)
     fail('SOURCE_FAILURE:D05_REAL_BANK_INVENTORY_OR_SHOPPER_PUBLISH_CHANGED');
+  if (SHOPPER_VRM297_ONLY && arr(published[0].row.bank?.preguntas).length !== 8)
+    fail('SOURCE_FAILURE:D06_PUBLISHED_QUESTION_COUNT_CHANGED');
   const periodId = str(pending[0].row.periodId);
   if (!periodId || periodId.includes('/')) fail('SOURCE_FAILURE:D05_PERIOD_SCOPE_INVALID');
   const projectSnap = await db.doc(`tenants/${TENANT}/projects/${PROJECT_ID}`).get();
@@ -313,18 +320,25 @@ async function shopperReadOnly({shopper, publishedId, pendingId}, sessionIndex=1
   }));
   if (!role.auth || role.role !== 'shopper' || !role.projectIds.includes(PROJECT_ID))
     fail('AUTH_FAILURE:D06_SHOPPER_ROLE_SCOPE_MISMATCH');
-  const pendingDirectGet = await page.evaluate(async path => {
+  const directGets = await page.evaluate(async ({pendingId, publishedId}) => {
     if (typeof window.firebase?.firestore !== 'function') return 'SDK_UNAVAILABLE';
-    try {
-      await window.firebase.firestore().doc(path).get();
-      return 'UNEXPECTED_ALLOWED';
-    } catch (error) {
-      return String(error?.code || '') === 'permission-denied'
-        ? 'DENIED' : 'UNEXPECTED_ERROR_' + String(error?.code || 'unknown');
-    }
-  }, `tenants/${TENANT}/resources/${pendingId}`);
+    const check = async id => {
+      try {
+        await window.firebase.firestore().doc(`tenants/tya/resources/${id}`).get();
+        return 'UNEXPECTED_ALLOWED';
+      } catch (error) {
+        return String(error?.code || '') === 'permission-denied'
+          ? 'DENIED' : 'UNEXPECTED_ERROR_' + String(error?.code || 'unknown');
+      }
+    };
+    return {pending: await check(pendingId), published: await check(publishedId)};
+  }, {pendingId, publishedId});
+  const pendingDirectGet = directGets.pending;
+  const publishedDirectGet = directGets.published;
   if (pendingDirectGet !== 'DENIED')
     fail('FUNCTIONAL_DEFECT:D06_PENDING_BANK_DIRECT_GET_NOT_DENIED');
+  if (SHOPPER_VRM297_ONLY && publishedDirectGet !== 'DENIED')
+    fail('FUNCTIONAL_DEFECT:D06_PUBLISHED_BANK_DIRECT_GET_NOT_DENIED');
   await page.locator('#nav-cert').waitFor({state: 'visible', timeout: 30000});
   await page.locator('#nav-cert').click();
   await page.waitForFunction(() => window.CX?.session?.view === 'cert', null, {timeout: 30000});
@@ -338,6 +352,13 @@ async function shopperReadOnly({shopper, publishedId, pendingId}, sessionIndex=1
       publishedQuestions: published?.bank?.preguntas?.length || 0,
       publishedAnswerKeysInBrowser: (published?.bank?.preguntas || []).some(q =>
         typeof q.correcta === 'string' && q.correcta.length > 0),
+      publishedRestrictedFieldsInBrowser: (published?.bank?.preguntas || []).some(q =>
+        ['correcta', 'exp', 'fuente', 'answer', 'answerKey'].some(key =>
+          Object.prototype.hasOwnProperty.call(q, key))) ||
+        ['answerKey', 'documentSource'].some(key =>
+          Object.prototype.hasOwnProperty.call(published || {}, key)),
+      resourceSource: String(window.CX_BACKEND_RESOURCES_STATUS?.source || ''),
+      ordinaryProjectResourceCount: (window.CX?.backendResources?.list?.({resourceType: 'project_resource'}) || []).length,
       qaVisible: banks.some(x => x.qaOnly === true),
       unpublishedVisible: banks.some(x => x.id === unpublishedId),
       unpublishedQuestionsInBrowser: banks.find(x => x.id === unpublishedId)?.bank?.preguntas?.length || 0,
@@ -352,8 +373,12 @@ async function shopperReadOnly({shopper, publishedId, pendingId}, sessionIndex=1
   result.shopper = {status: 'HOLD', role: 'shopper', realExistingUser: true,
     publishedVisible: observed.publishedVisible,
     pendingDirectGet,
+    publishedDirectGet,
     publishedQuestions: observed.publishedQuestions,
     publishedAnswerKeysInBrowser: observed.publishedAnswerKeysInBrowser,
+    publishedRestrictedFieldsInBrowser: observed.publishedRestrictedFieldsInBrowser,
+    resourceSource: observed.resourceSource,
+    ordinaryProjectResourceCount: observed.ordinaryProjectResourceCount,
     qaVisible: observed.qaVisible,
     unpublishedVisible: observed.unpublishedVisible,
     unpublishedQuestionsInBrowser: observed.unpublishedQuestionsInBrowser,
@@ -370,6 +395,10 @@ async function shopperReadOnly({shopper, publishedId, pendingId}, sessionIndex=1
       observed.view !== 'cert' || !result.shopper.eligibilityOrExamVisible ||
       (observed.submitButtonAvailable && observed.examQuestionCount !== observed.publishedQuestions))
     fail('FUNCTIONAL_DEFECT:D06_SHOPPER_PUBLISHED_BANK_NOT_CONSUMED');
+  if (SHOPPER_VRM297_ONLY && (observed.publishedQuestions !== 8 ||
+      observed.publishedRestrictedFieldsInBrowser ||
+      observed.resourceSource !== 'verified-server-projection'))
+    fail('FUNCTIONAL_DEFECT:D06_SHOPPER_PROJECTION_EXPOSES_PRIVATE_CONTENT_OR_MISSING_SOURCE');
   await page.screenshot({path: OUT + (sessionIndex === 1 ? '/shopper-certification-read-only.png'
     : '/shopper-certification-read-only-' + sessionIndex + '.png'), fullPage: true});
   result.shopper.status = SHOPPER_READ_ONLY && (observed.unpublishedVisible || observed.unpublishedAnswerKeysInBrowser)
@@ -419,20 +448,27 @@ try {
       shopperReads.push({...readback, shopperUidFingerprint: sha(person.uid)});
     }
     if (!shopperReads.length) fail('AUTH_FAILURE:D06_EXISTING_SHOPPER_MEMBERSHIP_UNAVAILABLE');
-    if (SHOPPER_VRM296_ONLY && shopperReads.length !== 3)
+    if ((SHOPPER_VRM296_ONLY || SHOPPER_VRM297_ONLY) && shopperReads.length !== 3)
       fail('AUTH_FAILURE:D06_THREE_REAL_SHOPPERS_REQUIRED');
     result.independentShopperReads = shopperReads;
     result.shopper = shopperReads[0];
     await protectRealBanks();
     if (shopperReads.some(x => x.unpublishedVisible || x.unpublishedAnswerKeysInBrowser))
       fail('FUNCTIONAL_DEFECT:D06_UNPUBLISHED_BANK_CONTENT_VISIBLE_TO_SHOPPER');
+    if (SHOPPER_VRM297_ONLY && shopperReads.some(x =>
+      x.pendingDirectGet !== 'DENIED' || x.publishedDirectGet !== 'DENIED' ||
+      x.publishedQuestions !== 8 || x.publishedRestrictedFieldsInBrowser ||
+      x.resourceSource !== 'verified-server-projection'))
+      fail('FUNCTIONAL_DEFECT:D06_VRM297_THREE_SHOPPERS_SECURE_PROJECTION_FAILED');
     if (shopperReads.some(x => x.publishedAnswerKeysInBrowser)) {
       if (!SHOPPER_VRM296_ONLY)
         fail('FUNCTIONAL_DEFECT:D06_PUBLISHED_BANK_ANSWER_KEYS_VISIBLE_TO_SHOPPER');
       result.unresolvedP0 = 'VRM-297_PUBLISHED_BANK_ANSWER_KEYS_REACH_SHOPPER';
       result.decision = 'PASS_D06_VRM296_THREE_REAL_SHOPPERS_PENDING_DENIED_VRM297_OPEN';
     } else {
-      result.decision = 'PASS_D06_MULTI_SHOPPER_PUBLISHED_ONLY_AND_NEGATIVE_VISIBILITY_READ_ONLY';
+      result.decision = SHOPPER_VRM297_ONLY
+        ? 'PASS_D06_VRM297_THREE_REAL_SHOPPERS_PUBLISHED_PENDING_DENIED_SAFE_PROJECTION'
+        : 'PASS_D06_MULTI_SHOPPER_PUBLISHED_ONLY_AND_NEGATIVE_VISIBILITY_READ_ONLY';
     }
   } else {
     await saveQaViaAdminUi(scope);
@@ -460,3 +496,4 @@ try {
   fs.writeFileSync(OUT + '/result.json', JSON.stringify(result, null, 2) + '\n');
   process.stdout.write(JSON.stringify(result, null, 2) + '\n');
 }
+
