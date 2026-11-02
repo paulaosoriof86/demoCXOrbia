@@ -22,7 +22,13 @@ const checks={
   projectSaveGeneralUrl:projects.includes("url:cueMode==='externo_general'?cueUrl:''"),
   visitSpecificHasNoGeneralFallback:projects.includes("visitLinkField:cueMode==='externo_visita'"),
   runtimeSafeProjectConfigCarriesQuestionnaire:server.includes("SAFE_PROJECT_CONFIG_KEYS")&&server.includes("'cuestionario'"),
-  liveCompositionPreservesDurableQuestionnaire:apply.includes("identity.projectConfig.cuestionario||{}"),
+  // B10 external source authority is resolved per project before period composition.
+  // The historical inline expression was superseded by fail-closed B10 logic.
+  liveCompositionPreservesDurableQuestionnaire:
+    apply.includes('projectConfig.cuestionario||{}')&&
+    apply.includes('cuestionario:resolveScopedQuestionnaire(identity.projectConfig)')&&
+    apply.includes('const providerName=str(projectConfig.questionnaireSource)')&&
+    apply.includes('sourceConflict:true'),
   vrm188ProgramHasNoBrowserStorageAuthority:!programa.match(/localStorage\.(getItem|setItem|removeItem)/),
   vrm188ProgramReadsDurablePeriodOrProject:programa.includes('questionnaireProgram')&&programa.includes('questionnaireProgramsByPeriod')&&programa.includes("source:durable?'firestore_project_config':'default_template'"),
   vrm188ProgramWritesOnlyViaConnectedProvider:programa.includes("updateQuestionnaireProgram")&&programa.includes("providerAck:false")&&programa.includes("localStorageWrite:false"),
