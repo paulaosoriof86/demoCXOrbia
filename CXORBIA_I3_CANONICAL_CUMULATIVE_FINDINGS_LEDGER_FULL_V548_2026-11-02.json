@@ -21953,7 +21953,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-299",
+  "nextFindingId": "VRM-300",
   "lastControlFailure": {
     "id": "RUN1238_NEXT_FINDING_ID_GOVERNANCE_DESYNC",
     "classification": "MAPPING_FAILURE",
@@ -35593,7 +35593,7 @@
     "result": "SOURCE_ONLY_AUTHORITY_ALIGNMENT_NOT_HN_IDENTITY_MERGE_OR_TERMINAL_CERTIFICATION",
     "production": false
   },
-  "findingCount": 295,
+  "findingCount": 299,
   "i3GeneralShopperIdentityGuard20261028": {
     "findingId": "VRM-291",
     "sourceSha": "308c69e3756e3e80577856009901934ce5f52fba",
