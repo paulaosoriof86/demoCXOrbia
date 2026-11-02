@@ -75,6 +75,8 @@ jobs:
       set -Eeuo pipefail
       mkdir -p .tmp/canonical-candidate-authority
       node --test tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs
+      node --check app/modules/cert.js
+      node --test tools/qa/cxorbia-i3-d05-review-visibility-source.test.mjs
       node --test tools/qa/cxorbia-i3-r22-alias-notice-scope-transversal.test.mjs
       node --test tools/qa/cxorbia-i3-r22-tablon-provider-ack-source.test.mjs
       node --test tools/qa/cxorbia-i3-r20-pwa-auth-no-interrupt.test.mjs
