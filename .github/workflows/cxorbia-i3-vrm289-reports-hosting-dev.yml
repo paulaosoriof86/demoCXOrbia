@@ -293,7 +293,7 @@ jobs:
       contents: read
       id-token: write
     env:
-      REQUEST: docs/checkpoints/CXORBIA_I3_D06_DEV_RULES_HOSTING_ONLY_ONE_SHOT_REQUEST_20261102.json
+      REQUEST: docs/checkpoints/CXORBIA_I3_D06_DEV_RULES_HOSTING_ONLY_ONE_SHOT_REQUEST_20261102_V2.json
       QA_DIR: .tmp/i3-d06-dev-rules-hosting-one-shot
       QA_ASSETS: "modules/cert.js core/backend-resources.js core/backend-certifications.js modules/academia.js data/tya-certification-carryover-source-safe.js index-backend-dev.html core/backend-browser-auth.js modules/dashboard.js"
       PROD_URL: https://tya-plataforma.web.app
@@ -308,7 +308,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           mkdir -p "$QA_DIR"
-          jq -e '.schemaVersion=="cxorbia.i3.d06.dev-rules-hosting-only-one-shot-request.20261102.v1"
+          jq -e '.schemaVersion=="cxorbia.i3.d06.dev-rules-hosting-only-one-shot-request.20261102.v2"
             and .intent=="D06_VRM296_SHOPPER_UNPUBLISHED_BANK_DENY_RULES_AND_EXACT_HOSTING_DEV"
             and .authorization=="PAULA_EXPLICIT_CERTIFY_MODULES_AND_DEV_QA_2026_11_02"
             and .branch=="recovery/cxorbia-phase-a-20260831"
@@ -332,7 +332,12 @@ jobs:
             and .frozen.i4Authorized==false
             and .frozen.production=="DO_NOT_TOUCH"
             and .qualification.vrm297PublishedAnswerKeys=="OPEN_SEPARATE_P0"
-            and .qualification.fullD06Match==false' "$REQUEST" >/dev/null
+            and .qualification.fullD06Match==false
+            and .priorPreflightFailure.firestoreRulesDeployAttempts==0
+            and .priorPreflightFailure.hostingDeployAttempts==0
+            and .knownMatrixBlobDrift.classification=="MAPPING_FAILURE"
+            and (.knownMatrixBlobDrift.sourceFilePaths|sort)==["app/core/backend-resources.js","firestore.rules"]
+            and .knownMatrixBlobDrift.notEquivalentToModuleMatch==true' "$REQUEST" >/dev/null
           test "$(git rev-parse HEAD^)" = "$(jq -r .controlParentSha "$REQUEST")"
           test "$(git rev-parse 'HEAD^{tree}')" != "$(jq -r .controlParentTree "$REQUEST")"
           test "$(git rev-parse 'HEAD^^{tree}')" = "$(jq -r .controlParentTree "$REQUEST")"
@@ -359,9 +364,12 @@ jobs:
           node tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs
           node tools/qa/cxorbia-i3-d05-review-visibility-source.test.mjs
           node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs > "$QA_DIR/source-authority.json"
-          jq -e '.decision=="PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY"
+          jq -e --arg source "$SRC" '.decision=="PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY"
             and .moduleTruthReadback.sourceAligned==true
-            and .moduleBlobReadback.pass==true
+            and .moduleBlobReadback.pass==false
+            and .moduleBlobReadback.sourceSha==$source
+            and (.moduleBlobReadback.ownerMismatches|sort_by(.path))==[{"domain":"documents-resources","path":"app/core/backend-resources.js"},{"domain":"visits-review-postulations-reservations","path":"firestore.rules"}]
+            and (.moduleBlobReadback.sourceFileMismatches|sort)==["app/core/backend-resources.js","firestore.rules"]
             and .terminalReleaseEligible==false
             and .production==false' "$QA_DIR/source-authority.json" >/dev/null
           SOURCE_DIR="$(mktemp -d)"

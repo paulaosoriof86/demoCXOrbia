@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "cxorbia.i3.d06.dev-rules-hosting-only-one-shot-request.20261102.v2",
+  "intent": "D06_VRM296_SHOPPER_UNPUBLISHED_BANK_DENY_RULES_AND_EXACT_HOSTING_DEV",
+  "authorization": "PAULA_EXPLICIT_CERTIFY_MODULES_AND_DEV_QA_2026_11_02",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlParentSha": "bf08d52e1f7f746a084599e954e93c317cb024b6",
+  "controlParentTree": "744840530c9287e2fa7d11884f82a64859c14ea3",
+  "allowedControlFiles": [
+    ".github/workflows/cxorbia-i3-vrm289-reports-hosting-dev.yml",
+    "docs/checkpoints/CXORBIA_I3_D06_DEV_RULES_HOSTING_ONLY_ONE_SHOT_REQUEST_20261102_V2.json"
+  ],
+  "targetProject": "cxorbia-backend-dev",
+  "database": "(default)",
+  "firebaseHostingTarget": "cxorbia-dev",
+  "firebaseHostingSite": "cxorbia-backend-dev",
+  "productSourceSha": "4ba2a96e1f90fba7ba8e981429bce8b4161ebee6",
+  "productSourceTree": "0e19bfe90db917d67cf493c79bc74df4d44f1a81",
+  "predecessorProductSourceSha": "a363f9e4f604cba722e899bb1916c442c77c1fed",
+  "expectedSourceBlobs": {
+    "firestore.rules": "50df261ac74c518df4f7a44ba0cc3c23d201c568",
+    "firestore.indexes.json": "c35c2e452a266ad569d598c71ba429cfacf1ba3c",
+    "app/core/backend-resources.js": "24e26eaacc7e04608014eba61c65deb1aab3b679"
+  },
+  "beforeVerified": {
+    "indexOnlyRunId": 41387319118,
+    "indexOnlyAttempt": 2,
+    "readOnlyIndexHostingRunId": 41387084294,
+    "readOnlyAttempt": 2,
+    "indexesReady": 3,
+    "indexCollection": "resources",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/4c82b2b51af9f3f6",
+    "ruleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
+    "runtimeRevision": "cxorbia-live-hr-dev-00331-2xq",
+    "predecessorServedAppBlob": "f12a2325948bf25133b5f7e5cff68061e0521d60"
+  },
+  "frozen": {
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V220.json",
+    "matrixBlob": "fa066597cd2c13d1498f4c228baea9859dd6d625",
+    "matchedDomains": 5,
+    "totalDomains": 21,
+    "gates20And21": "HOLD",
+    "i4Authorized": false,
+    "production": "DO_NOT_TOUCH"
+  },
+  "limits": {
+    "maxFireStoreRulesDeployAttempts": 1,
+    "maxHostingDevDeployAttempts": 1,
+    "automaticRetry": false,
+    "onlyFirebaseDeployFlags": [
+      "firestore:rules",
+      "hosting:cxorbia-dev"
+    ],
+    "newIndexesDeploy": false,
+    "cloudRunDeploy": false,
+    "storageRulesDeploy": false,
+    "realBankWrites": 0,
+    "shopperAttemptWrites": 0,
+    "HRWrites": 0,
+    "productionWrites": 0,
+    "production": "DO_NOT_TOUCH"
+  },
+  "qualification": {
+    "vrm296ExpectedMaterialization": "PENDING_THIS_GATE",
+    "vrm297PublishedAnswerKeys": "OPEN_SEPARATE_P0",
+    "threeShopperRetest": "PENDING",
+    "fullD06Match": false,
+    "fullD05Match": false,
+    "productionReady": false
+  },
+  "priorPreflightFailure": {
+    "runId": 41463129469,
+    "jobId": 125336993871,
+    "artifactId": 13149572564,
+    "artifactZipSha256": "1de14048c15d0fe8b8e9a8216492cb029ce4ff86ffd9c98a0639ea0545625f29",
+    "functionalTestsPass": 11,
+    "failedAt": "SCOPED_CANONICAL_OWNER_BLOB_ALIGNMENT",
+    "firestoreRulesDeployAttempts": 0,
+    "hostingDeployAttempts": 0,
+    "cloudProviderStepsReached": false
+  },
+  "knownMatrixBlobDrift": {
+    "classification": "MAPPING_FAILURE",
+    "matrix": "V220",
+    "ownerMismatches": [
+      {
+        "path": "app/core/backend-resources.js",
+        "domain": "documents-resources"
+      },
+      {
+        "path": "firestore.rules",
+        "domain": "visits-review-postulations-reservations"
+      }
+    ],
+    "sourceFilePaths": [
+      "app/core/backend-resources.js",
+      "firestore.rules"
+    ],
+    "v220NotRewritten": true,
+    "notEquivalentToModuleMatch": true,
+    "requiresNewMatrixSuccessorForFullCertification": true
+  }
+}
