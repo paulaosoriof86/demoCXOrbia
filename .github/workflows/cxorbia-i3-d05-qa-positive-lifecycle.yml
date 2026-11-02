@@ -38,3 +38,39 @@ jobs:
           path: .tmp/cxorbia-i3-d05-qa-lifecycle/result.json
           if-no-files-found: warn
           retention-days: 30
+
+  d05-qa-ui-review-shopper-read:
+    if: ${{ contains(github.event.head_commit.message, '[i3-d05-qa-ui-review-shopper]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CXORBIA_PRODUCT_SOURCE_SHA: e44483d895e75d5e1bf48b327d464a8c4686ddba
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Pin immutable product and test owner
+        run: |
+          set -Eeuo pipefail
+          test "$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = "$CXORBIA_PRODUCT_SOURCE_SHA"
+          git diff --quiet "$CXORBIA_PRODUCT_SOURCE_SHA" HEAD -- app backend firestore.rules storage.rules firebase.json .firebaserc
+          node --check tools/qa/cxorbia-i3-d05-qa-ui-review-shopper-read.mjs
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install scoped Admin SDK and browser dependencies
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1
+          npx --no-install playwright install chromium
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: QA-only versioned Admin UI save and existing Shopper read-only proof
+        run: node tools/qa/cxorbia-i3-d05-qa-ui-review-shopper-read.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-d05-qa-ui-review-shopper-${{ github.run_id }}
+          path: .tmp/cxorbia-i3-d05-qa-ui-review-shopper/
+          if-no-files-found: warn
+          retention-days: 30
