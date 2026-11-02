@@ -182,6 +182,12 @@ async function saveQaViaAdminUi({admin, periodId}) {
   browser = await chromium.launch({headless: true});
   const context = await browser.newContext({viewport: {width: 1440, height: 900}, serviceWorkers: 'block'});
   const page = await authenticatedPage(admin, context);
+  const safeUiErrors = [];
+  page.on('console', message => {
+    const value = str(message.text());
+    if (value.startsWith('CXORBIA_CERT_REVIEW_SAFE_ERROR'))
+      safeUiErrors.push(value.slice(0, 170));
+  });
   await page.getByRole('button', {name: 'Certificación', exact: true}).click();
   const selector = page.locator('select').filter({hasText: name});
   await selector.waitFor({state: 'visible', timeout: 30000});
@@ -201,11 +207,25 @@ async function saveQaViaAdminUi({admin, periodId}) {
       !(await dialog.getByRole('button', {name: 'Guardar revisión sin publicar'}).isEnabled()))
     fail('FUNCTIONAL_DEFECT:D05_QA_DIFF_OR_SAVE_DISABLED');
   await dialog.screenshot({path: OUT + '/qa-review-before-save.png'});
+  const success = page.getByText('Revisión guardada en servidor · publicación pendiente.', {exact: true});
+  const rejection = page.getByText('No se pudo guardar la revisión. Comprueba tu sesión y vuelve a cargar el banco si alguien lo modificó.', {exact: true});
+  // Install observers before clicking: the toast may be removed immediately
+  // when the certification route re-renders after a successful provider ACK.
+  const message = Promise.race([
+    success.waitFor({state: 'visible', timeout: 15000}).then(() => 'success').catch(() => 'not_seen'),
+    rejection.waitFor({state: 'visible', timeout: 15000}).then(() => 'rejected').catch(() => 'not_seen')
+  ]);
   await dialog.getByRole('button', {name: 'Guardar revisión sin publicar'}).click();
-  await page.getByText('Revisión guardada en servidor · publicación pendiente.', {exact: true})
-    .waitFor({state: 'visible', timeout: 30000});
+  result.qa.uiMessage = await message;
+  result.qa.safeErrorCodes = safeUiErrors;
   const savedSnap = await qaRef.get();
   const saved = savedSnap.data() || {}, afterBank = saved.bank || {};
+  result.qa.postClickReadback = {version: saved.version ?? null,
+    status: str(saved.status), bankState: str(afterBank.estado),
+    reviewHistoryEntries: arr(afterBank.reviewHistory).length,
+    revisionChanged: str(afterBank.contentRevision) !== revision};
+  if (saved.version !== 2)
+    fail('PERSISTENCE_FAILURE:D05_QA_UI_SAVE_NOT_COMMITTED');
   if (saved.version !== 2 || saved.status !== 'active' ||
       afterBank.estado !== 'pending_review' ||
       afterBank.reviewVersion !== 2 ||
@@ -241,6 +261,7 @@ async function saveQaViaAdminUi({admin, periodId}) {
     fail('PERSISTENCE_FAILURE:D05_QA_RELOAD_DID_NOT_RETAIN_REVIEW');
   result.qa.reloadReadback = true;
   await reopened.screenshot({path: OUT + '/qa-review-after-reload.png'});
+  result.qa.uiSuccessFeedbackObserved = result.qa.uiMessage === 'success';
   await context.close();
 }
 
@@ -320,6 +341,8 @@ try {
   await saveQaViaAdminUi(scope);
   await protectRealBanks();
   await shopperReadOnly(scope);
+  if (!result.qa.uiSuccessFeedbackObserved)
+    fail('FUNCTIONAL_DEFECT:D05_QA_UI_SUCCESS_FEEDBACK_NOT_SEEN');
   result.decision = 'PASS_D05_QA_UI_REVIEW_VERSION_2_AND_D06_SHOPPER_ROLE_READ_ONLY';
 } catch (error) {
   const code = str(error?.message);
