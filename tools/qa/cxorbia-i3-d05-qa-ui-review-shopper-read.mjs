@@ -321,8 +321,13 @@ async function shopperReadOnly({shopper, publishedId, pendingId}, sessionIndex=1
     const published = banks.find(x => x.id === expectedId);
     return {publishedVisible: !!published && published.bank?.estado === 'published',
       publishedQuestions: published?.bank?.preguntas?.length || 0,
+      publishedAnswerKeysInBrowser: (published?.bank?.preguntas || []).some(q =>
+        typeof q.correcta === 'string' && q.correcta.length > 0),
       qaVisible: banks.some(x => x.qaOnly === true),
       unpublishedVisible: banks.some(x => x.id === unpublishedId),
+      unpublishedQuestionsInBrowser: banks.find(x => x.id === unpublishedId)?.bank?.preguntas?.length || 0,
+      unpublishedAnswerKeysInBrowser: (banks.find(x => x.id === unpublishedId)?.bank?.preguntas || [])
+        .some(q => typeof q.correcta === 'string' && q.correcta.length > 0),
       adminControlsVisible: !!document.querySelector('#certPublish, #certReviewEdit'),
       view: String(window.CX?.session?.view || ''),
       bodyText: String(document.querySelector('#view')?.innerText || '').slice(0, 2500),
@@ -332,8 +337,11 @@ async function shopperReadOnly({shopper, publishedId, pendingId}, sessionIndex=1
   result.shopper = {status: 'HOLD', role: 'shopper', realExistingUser: true,
     publishedVisible: observed.publishedVisible,
     publishedQuestions: observed.publishedQuestions,
+    publishedAnswerKeysInBrowser: observed.publishedAnswerKeysInBrowser,
     qaVisible: observed.qaVisible,
     unpublishedVisible: observed.unpublishedVisible,
+    unpublishedQuestionsInBrowser: observed.unpublishedQuestionsInBrowser,
+    unpublishedAnswerKeysInBrowser: observed.unpublishedAnswerKeysInBrowser,
     adminControlsVisible: observed.adminControlsVisible,
     certificationView: observed.view === 'cert',
     examQuestionCount: observed.examQuestionCount,
@@ -342,13 +350,15 @@ async function shopperReadOnly({shopper, publishedId, pendingId}, sessionIndex=1
       .test(observed.bodyText),
     submittedAttempt: false, passwordLoginE2E: 'NOT_TESTED_CUSTOM_TOKEN'};
   if (!observed.publishedVisible || observed.publishedQuestions < 1 || observed.qaVisible ||
-      observed.unpublishedVisible || observed.adminControlsVisible ||
+      observed.adminControlsVisible ||
       observed.view !== 'cert' || !result.shopper.eligibilityOrExamVisible ||
       (observed.submitButtonAvailable && observed.examQuestionCount !== observed.publishedQuestions))
     fail('FUNCTIONAL_DEFECT:D06_SHOPPER_PUBLISHED_BANK_NOT_CONSUMED');
   await page.screenshot({path: OUT + (sessionIndex === 1 ? '/shopper-certification-read-only.png'
     : '/shopper-certification-read-only-' + sessionIndex + '.png'), fullPage: true});
-  result.shopper.status = 'PASS_EXISTING_SHOPPER_ROLE_READ_ONLY';
+  result.shopper.status = SHOPPER_READ_ONLY && (observed.unpublishedVisible || observed.unpublishedAnswerKeysInBrowser)
+    ? 'FAIL_UNPUBLISHED_BANK_CONTENT_EXPOSED_TO_SHOPPER'
+    : 'PASS_EXISTING_SHOPPER_ROLE_READ_ONLY';
   await context.close();
   return result.shopper;
 }
@@ -396,6 +406,10 @@ try {
     result.independentShopperReads = shopperReads;
     result.shopper = shopperReads[0];
     await protectRealBanks();
+    if (shopperReads.some(x => x.unpublishedVisible || x.unpublishedAnswerKeysInBrowser))
+      fail('FUNCTIONAL_DEFECT:D06_UNPUBLISHED_BANK_CONTENT_VISIBLE_TO_SHOPPER');
+    if (shopperReads.some(x => x.publishedAnswerKeysInBrowser))
+      fail('FUNCTIONAL_DEFECT:D06_PUBLISHED_BANK_ANSWER_KEYS_VISIBLE_TO_SHOPPER');
     result.decision = 'PASS_D06_MULTI_SHOPPER_PUBLISHED_ONLY_AND_NEGATIVE_VISIBILITY_READ_ONLY';
   } else {
     await saveQaViaAdminUi(scope);
