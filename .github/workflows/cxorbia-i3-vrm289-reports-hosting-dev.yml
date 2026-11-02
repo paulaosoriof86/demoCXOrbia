@@ -285,4 +285,182 @@ jobs:
       if-no-files-found: warn
       retention-days: 30
 
-
+  d06-dev-rules-hosting-one-shot:
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-d06-dev-secure-resource-release]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      REQUEST: docs/checkpoints/CXORBIA_I3_D06_DEV_RULES_HOSTING_ONLY_ONE_SHOT_REQUEST_20261102.json
+      QA_DIR: .tmp/i3-d06-dev-rules-hosting-one-shot
+      QA_ASSETS: "modules/cert.js core/backend-resources.js core/backend-certifications.js modules/academia.js data/tya-certification-carryover-source-safe.js index-backend-dev.html core/backend-browser-auth.js modules/dashboard.js"
+      PROD_URL: https://tya-plataforma.web.app
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Pin immutable candidate, frozen authority and only two control files
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$QA_DIR"
+          jq -e '.schemaVersion=="cxorbia.i3.d06.dev-rules-hosting-only-one-shot-request.20261102.v1"
+            and .intent=="D06_VRM296_SHOPPER_UNPUBLISHED_BANK_DENY_RULES_AND_EXACT_HOSTING_DEV"
+            and .authorization=="PAULA_EXPLICIT_CERTIFY_MODULES_AND_DEV_QA_2026_11_02"
+            and .branch=="recovery/cxorbia-phase-a-20260831"
+            and .targetProject=="cxorbia-backend-dev"
+            and .firebaseHostingTarget=="cxorbia-dev"
+            and .firebaseHostingSite=="cxorbia-backend-dev"
+            and .limits.maxFireStoreRulesDeployAttempts==1
+            and .limits.maxHostingDevDeployAttempts==1
+            and .limits.automaticRetry==false
+            and .limits.onlyFirebaseDeployFlags==["firestore:rules","hosting:cxorbia-dev"]
+            and .limits.newIndexesDeploy==false
+            and .limits.cloudRunDeploy==false
+            and .limits.storageRulesDeploy==false
+            and .limits.realBankWrites==0
+            and .limits.shopperAttemptWrites==0
+            and .limits.HRWrites==0
+            and .limits.productionWrites==0
+            and .frozen.matchedDomains==5
+            and .frozen.totalDomains==21
+            and .frozen.gates20And21=="HOLD"
+            and .frozen.i4Authorized==false
+            and .frozen.production=="DO_NOT_TOUCH"
+            and .qualification.vrm297PublishedAnswerKeys=="OPEN_SEPARATE_P0"
+            and .qualification.fullD06Match==false' "$REQUEST" >/dev/null
+          test "$(git rev-parse HEAD^)" = "$(jq -r .controlParentSha "$REQUEST")"
+          test "$(git rev-parse 'HEAD^{tree}')" != "$(jq -r .controlParentTree "$REQUEST")"
+          test "$(git rev-parse 'HEAD^^{tree}')" = "$(jq -r .controlParentTree "$REQUEST")"
+          test "$(git diff --name-only HEAD^ HEAD | LC_ALL=C sort)" = "$(jq -r '.allowedControlFiles|sort|.[]' "$REQUEST")"
+          test "$(git ls-remote origin refs/heads/recovery/cxorbia-phase-a-20260831 | awk '{print $1}')" = "$GITHUB_SHA"
+          SRC="$(jq -r .productSourceSha "$REQUEST")"
+          TREE="$(jq -r .productSourceTree "$REQUEST")"
+          PRIOR="$(jq -r .predecessorProductSourceSha "$REQUEST")"
+          test "$SRC" = "$(jq -r .productSourceSha "$CANDIDATE_DESCRIPTOR")"
+          test "$TREE" = "$(jq -r .productTreeAuthority "$CANDIDATE_DESCRIPTOR")"
+          test "$(git rev-parse "$SRC^{tree}")" = "$TREE"
+          git merge-base --is-ancestor "$PRIOR" "$SRC"
+          git merge-base --is-ancestor "$SRC" HEAD
+          test "$(git diff --name-only "$PRIOR" "$SRC" -- app backend firestore.rules firestore.indexes.json firebase.json storage.rules | LC_ALL=C sort)" = "$(printf '%s\n' app/core/backend-resources.js firestore.indexes.json firestore.rules | LC_ALL=C sort)"
+          git diff --quiet "$SRC" HEAD -- app backend firestore.rules firestore.indexes.json firebase.json storage.rules
+          for FILE in firestore.rules firestore.indexes.json app/core/backend-resources.js; do
+            EXPECTED="$(jq -r --arg file "$FILE" '.expectedSourceBlobs[$file]' "$REQUEST")"
+            test "$(git rev-parse "$SRC:$FILE")" = "$EXPECTED"
+          done
+          test "$(git rev-parse "HEAD:$(jq -r .frozen.matrixPath "$REQUEST")")" = "$(jq -r .frozen.matrixBlob "$REQUEST")"
+          test "$(jq -r .production "$CANDIDATE_DESCRIPTOR")" = DO_NOT_TOUCH
+          test "$(jq -r .authorizationI4 CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
+          node --check app/core/backend-resources.js
+          node tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs
+          node tools/qa/cxorbia-i3-d05-review-visibility-source.test.mjs
+          node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs > "$QA_DIR/source-authority.json"
+          jq -e '.decision=="PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY"
+            and .moduleTruthReadback.sourceAligned==true
+            and .moduleBlobReadback.pass==true
+            and .terminalReleaseEligible==false
+            and .production==false' "$QA_DIR/source-authority.json" >/dev/null
+          SOURCE_DIR="$(mktemp -d)"
+          git archive "$SRC" | tar -x -C "$SOURCE_DIR"
+          jq -e '.hosting.public=="app" and .hosting.target=="cxorbia-dev" and .firestore.rules=="firestore.rules"' "$SOURCE_DIR/firebase.json" >/dev/null
+          cmp -s "$SOURCE_DIR/firestore.rules" firestore.rules
+          cmp -s "$SOURCE_DIR/app/core/backend-resources.js" app/core/backend-resources.js
+          echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
+          echo "SRC=$SRC" >> "$GITHUB_ENV"
+          echo "PRIOR=$PRIOR" >> "$GITHUB_ENV"
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Fail-closed DEV provider and immutable served-baseline preflight
+        run: |
+          set -Eeuo pipefail
+          gcloud firestore indexes composite list --project "$PROJECT" --format=json > "$QA_DIR/indexes-before.json"
+          jq -e 'length==3 and all(.[]; (.name|contains("/collectionGroups/resources/indexes/")) and .state=="READY")' "$QA_DIR/indexes-before.json" >/dev/null
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" -o "$QA_DIR/hosting-before.json"
+          test "$(jq -r .release.version.name "$QA_DIR/hosting-before.json")" = "$(jq -r .beforeVerified.hostingVersion "$REQUEST")"
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" -o "$QA_DIR/rules-release-before.json"
+          test "$(jq -r .rulesetName "$QA_DIR/rules-release-before.json")" = "$(jq -r .beforeVerified.ruleset "$REQUEST")"
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$QA_DIR/runtime-before.json"
+          EXPECTED_REV="$(jq -r .beforeVerified.runtimeRevision "$REQUEST")"
+          jq -e --arg rev "$EXPECTED_REV" '.status.latestReadyRevisionName==$rev and ([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$QA_DIR/runtime-before.json" >/dev/null
+          curl -fsS --max-time 45 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/core/backend-resources.js?d06Before=$GITHUB_RUN_ID" -o "$QA_DIR/backend-resources-before.js"
+          test "$(git hash-object "$QA_DIR/backend-resources-before.js")" = "$(jq -r .beforeVerified.predecessorServedAppBlob "$REQUEST")"
+          curl -fsS --max-time 45 -H 'Cache-Control: no-cache, no-store' "$PROD_URL/" -o "$QA_DIR/production-before.html"
+          sha256sum "$QA_DIR/production-before.html" | awk '{print $1}' > "$QA_DIR/production-before.sha256"
+          jq -n --arg source "$SRC" --arg rules "$(jq -r .rulesetName "$QA_DIR/rules-release-before.json")" --arg hosting "$(jq -r .release.version.name "$QA_DIR/hosting-before.json")" '{decision:"PASS_D06_DEV_RULES_HOSTING_CAS_PREFLIGHT",productSource:$source,priorRuleset:$rules,priorHostingVersion:$hosting,indexesReady:3,production:false,realBankWrites:0}' > "$QA_DIR/preflight.json"
+      - name: Install pinned Firebase CLI for isolated DEV operations
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-tools@14.16.0
+      - name: ONE Firestore Rules DEV deployment from immutable source
+        run: |
+          set -Eeuo pipefail
+          test ! -e "$QA_DIR/rules-attempt-started.json"
+          jq -n --arg source "$SRC" --arg run "$GITHUB_RUN_ID" '{decision:"HOLD_D06_RULES_DEV_ONE_ATTEMPT_STARTED",sourceSha:$source,runId:$run,maxAttempts:1,only:"firestore:rules",hostingDeploys:0,indexDeploys:0,realBankWrites:0,production:false}' > "$QA_DIR/rules-attempt-started.json"
+          cd "$SOURCE_DIR"
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only firestore:rules --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$QA_DIR/rules-deploy.log"
+      - name: Read back exact new Rules source before Hosting
+        run: |
+          set -Eeuo pipefail
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" -o "$QA_DIR/rules-release-after.json"
+          BEFORE="$(jq -r .rulesetName "$QA_DIR/rules-release-before.json")"
+          AFTER="$(jq -r .rulesetName "$QA_DIR/rules-release-after.json")"
+          test "$AFTER" != "$BEFORE" && test -n "$AFTER"
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/$AFTER" -o "$QA_DIR/ruleset-after.json"
+          jq -e '.source.files|length==1' "$QA_DIR/ruleset-after.json" >/dev/null
+          jq -rj '.source.files[0].content' "$QA_DIR/ruleset-after.json" > "$QA_DIR/rules-readback.txt"
+          cmp -s "$SOURCE_DIR/firestore.rules" "$QA_DIR/rules-readback.txt"
+          gcloud firestore indexes composite list --project "$PROJECT" --format=json > "$QA_DIR/indexes-after-rules.json"
+          cmp -s <(jq -S . "$QA_DIR/indexes-before.json") <(jq -S . "$QA_DIR/indexes-after-rules.json")
+          jq -n --arg before "$BEFORE" --arg after "$AFTER" '{decision:"PASS_D06_DEV_EXACT_FIRESTORE_RULES_SOURCE",previousRuleset:$before,activeRuleset:$after,ruleDeployAttempts:1,hostingDeployAttempts:0,production:false,realBankWrites:0}' > "$QA_DIR/rules-readback.json"
+      - name: ONE exact source Firebase Hosting DEV deployment
+        run: |
+          set -Eeuo pipefail
+          test -f "$QA_DIR/rules-readback.json"
+          test ! -e "$QA_DIR/hosting-attempt-started.json"
+          jq -n --arg source "$SRC" --arg run "$GITHUB_RUN_ID" '{decision:"HOLD_D06_HOSTING_DEV_ONE_ATTEMPT_STARTED",sourceSha:$source,runId:$run,maxAttempts:1,only:"hosting:cxorbia-dev",ruleDeployAttempts:1,indexDeploys:0,realBankWrites:0,production:false}' > "$QA_DIR/hosting-attempt-started.json"
+          cd "$SOURCE_DIR"
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$QA_DIR/hosting-deploy.log"
+      - name: Exact 8 served files, rules/indexes/runtime and production readback
+        run: |
+          set -Eeuo pipefail
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" -o "$QA_DIR/hosting-after.json"
+          HOST_BEFORE="$(jq -r .release.version.name "$QA_DIR/hosting-before.json")"
+          HOST_AFTER="$(jq -r .release.version.name "$QA_DIR/hosting-after.json")"
+          test -n "$HOST_AFTER" && test "$HOST_AFTER" != "$HOST_BEFORE"
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" -o "$QA_DIR/rules-release-final.json"
+          cmp -s "$QA_DIR/rules-release-final.json" "$QA_DIR/rules-release-after.json"
+          gcloud firestore indexes composite list --project "$PROJECT" --format=json > "$QA_DIR/indexes-final.json"
+          cmp -s <(jq -S . "$QA_DIR/indexes-before.json") <(jq -S . "$QA_DIR/indexes-final.json")
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$QA_DIR/runtime-after.json"
+          cmp -s <(jq -S '{revision:.status.latestReadyRevisionName,traffic:.status.traffic}' "$QA_DIR/runtime-before.json") <(jq -S '{revision:.status.latestReadyRevisionName,traffic:.status.traffic}' "$QA_DIR/runtime-after.json")
+          for FILE in $QA_ASSETS; do
+            SAFE_FILE="$(printf '%s' "$FILE" | tr '/' '-')"
+            curl -fsS --max-time 45 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$FILE?d06After=$GITHUB_RUN_ID" -o "$QA_DIR/served-$SAFE_FILE"
+            test "$(git hash-object "$QA_DIR/served-$SAFE_FILE")" = "$(git rev-parse "$SRC:app/$FILE")" || { echo "RELEASE_COMPOSITION_FAILURE:D06_SERVED_SOURCE_MISMATCH:$FILE"; exit 1; }
+            if [ "$FILE" != core/backend-resources.js ]; then
+              test "$(git rev-parse "$SRC:app/$FILE")" = "$(git rev-parse "$PRIOR:app/$FILE")"
+            fi
+          done
+          curl -fsS --max-time 45 -H 'Cache-Control: no-cache, no-store' "$PROD_URL/" -o "$QA_DIR/production-after.html"
+          sha256sum "$QA_DIR/production-after.html" | awk '{print $1}' > "$QA_DIR/production-after.sha256"
+          cmp -s "$QA_DIR/production-before.sha256" "$QA_DIR/production-after.sha256"
+          jq -n -S --arg source "$SRC" --arg tree "$(jq -r .productSourceTree "$REQUEST")" --arg priorRules "$(jq -r .rulesetName "$QA_DIR/rules-release-before.json")" --arg newRules "$(jq -r .rulesetName "$QA_DIR/rules-release-final.json")" --arg oldHosting "$HOST_BEFORE" --arg newHosting "$HOST_AFTER" --arg rev "$(jq -r .beforeVerified.runtimeRevision "$REQUEST")" --arg prodSha "$(cat "$QA_DIR/production-after.sha256")" '{decision:"PASS_D06_VRM296_DEV_RULES_AND_HOSTING_EXACT_SOURCE",sourceSha:$source,sourceTree:$tree,rulesetBefore:$priorRules,rulesetAfter:$newRules,hostingVersionBefore:$oldHosting,hostingVersionAfter:$newHosting,cloudRunRevision:$rev,compositeIndexesReady:3,servedSourceAssetsExact:8,firestoreRulesDeployAttempts:1,hostingDeployAttempts:1,indexDeployAttempts:0,realBankWrites:0,shopperAttemptWrites:0,hrWrites:0,productionWrites:0,productionIndexSha256:$prodSha,productionChanged:false,vrm296RealShopperRetest:"PENDING",vrm297PublishedKeyExposure:"OPEN",moduleMatchCount:5,gate20:"HOLD",gate21:"HOLD",i4Authorized:false,production:false}' > "$QA_DIR/result.json"
+          jq -e '.decision=="PASS_D06_VRM296_DEV_RULES_AND_HOSTING_EXACT_SOURCE" and .servedSourceAssetsExact==8 and .productionChanged==false and .moduleMatchCount==5 and .production==false' "$QA_DIR/result.json" >/dev/null
+          jq '{decision,sourceSha,rulesetAfter,hostingVersionAfter,servedSourceAssetsExact,compositeIndexesReady,realBankWrites,productionChanged,vrm297PublishedKeyExposure,moduleMatchCount}' "$QA_DIR/result.json"
+      - name: Archive serial DEV release proof, including failed step artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-d06-vrm296-rules-hosting-dev-${{ github.run_id }}
+          path: .tmp/i3-d06-dev-rules-hosting-one-shot/
+          if-no-files-found: warn
+          retention-days: 30
