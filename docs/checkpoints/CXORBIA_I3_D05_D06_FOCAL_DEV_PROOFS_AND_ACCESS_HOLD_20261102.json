@@ -1,0 +1,159 @@
+{
+  "schemaVersion": "cxorbia.i3.d05-d06.focal-dev-evidence.20261102.v1",
+  "date": "2026-11-02",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "candidate": {
+    "sourceSha": "4ba2a96e1f90fba7ba8e981429bce8b4161ebee6",
+    "sourceTree": "0e19bfe90db917d67cf493c79bc74df4d44f1a81",
+    "predecessorSourceSha": "a363f9e4f604cba722e899bb1916c442c77c1fed",
+    "singleWriter": true
+  },
+  "priorApprovedD05Dev": {
+    "hostingOnly": {
+      "runId": 41383743722,
+      "conclusion": "success",
+      "decision": "PASS_I3_D05_HOSTING_ONLY_DEV_EXACT_SOURCE_BYTES",
+      "servedExactAssetCount": 8,
+      "sourceSha": "a363f9e4f604cba722e899bb1916c442c77c1fed",
+      "artifactId": 13113929161,
+      "artifactZipSha256": "7066b0662e125828b395645c3d32acf4d9ed901e328df414f1fdb4a2a2e66b22",
+      "runtimeRevisionUnchanged": "cxorbia-live-hr-dev-00331-2xq",
+      "rulesetUnchanged": true,
+      "productionChanged": false
+    },
+    "adminVersionedQa": {
+      "runId": 41384446891,
+      "conclusion": "success",
+      "decision": "PASS_D05_QA_UI_REVIEW_VERSION_2_AND_D06_SHOPPER_ROLE_READ_ONLY",
+      "sourceSha": "a363f9e4f604cba722e899bb1916c442c77c1fed",
+      "fromVersion": 1,
+      "toVersion": 2,
+      "questionCount": 15,
+      "readbackChecks": 16,
+      "qaOnly": true,
+      "reviewHistoryIncreased": true,
+      "adminOnlyAclPreserved": true,
+      "qaTombstoned": true,
+      "realBanksUnchanged": 4,
+      "shopperReadOnlyPublishedQuestions": 8,
+      "shopperAttemptWrites": 0,
+      "artifactId": 13114648024,
+      "artifactZipSha256": "014bd534e45940ba8328bbdf8bd2c6718e56372012884c20e595e420b182c699",
+      "humanAcceptance": "PENDING",
+      "fullD05Match": false
+    },
+    "canonicalRunId": 41384446784,
+    "canonicalConclusion": "success"
+  },
+  "d06RealNegative": {
+    "firstRunId": 41384921600,
+    "threeShopperRunId": 41385453693,
+    "threeShopperRunConclusion": "failure_expected_real_defect",
+    "canonicalRunId": 41385453717,
+    "canonicalConclusion": "success",
+    "artifactId": 13115082298,
+    "artifactZipSha256": "e737961f08bd439f185e7c0fd69b0d336d33a08fbfeada036d9a038174060855",
+    "accounts": {
+      "realExistingShopperSessions": 3,
+      "independent": 3,
+      "pendingBankVisible": 3,
+      "pendingQuestionCount": 15,
+      "pendingAnswerKeysAccessible": 3,
+      "publishedBankVisible": 3,
+      "publishedQuestionCount": 8,
+      "publishedAnswerKeysAccessible": 3,
+      "adminUiControlsVisible": 0,
+      "qaBanksVisible": 0,
+      "attemptsSubmitted": 0
+    },
+    "bankIntegrity": {
+      "realBankCount": 4,
+      "hashUnchanged": true
+    },
+    "failCode": "FUNCTIONAL_DEFECT:D06_UNPUBLISHED_BANK_CONTENT_VISIBLE_TO_SHOPPER",
+    "rootCause": [
+      "app/core/backend-resources.js broad Shopper query accepted draft",
+      "firestore.rules role ACL lacked bank publication-state guard",
+      "published full bank document also contains grading keys"
+    ],
+    "production": false,
+    "newFindings": [
+      "VRM-296",
+      "VRM-297"
+    ],
+    "classification": "SECURITY_ACCESS_CONTROL_DEFECT",
+    "fullD06Match": false
+  },
+  "sourceOnlyCorrection": {
+    "sourceSha": "4ba2a96e1f90fba7ba8e981429bce8b4161ebee6",
+    "sourceTree": "0e19bfe90db917d67cf493c79bc74df4d44f1a81",
+    "changedProductOwners": [
+      "app/core/backend-resources.js",
+      "firestore.rules",
+      "firestore.indexes.json"
+    ],
+    "qaOwners": [
+      "tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs",
+      "tools/qa/cxorbia-i3-d05-certification-authority-rules.test.mjs"
+    ],
+    "logic": "Shopper resource reader performs project_resource and released certification_bank queries separately; Firestore Rules directly deny pending bank read; two new query indexes defined; Admin lane unchanged.",
+    "localSourceRegression": {
+      "pass": 5,
+      "fail": 0
+    },
+    "d05ReviewCarryForward": {
+      "pass": 6,
+      "fail": 0
+    },
+    "indexJsonSyntax": "PASS",
+    "firebaseEmulator": "PENDING_CANONICAL_CI",
+    "indexesDevReady": "PENDING",
+    "rulesDevMaterialized": false,
+    "hostingDevMaterialized": false,
+    "directShopperGetNegative": "PENDING_EXACT_DEV_RULES",
+    "threeShopperRealRetest": "PENDING",
+    "publishedAnswerKeyElimination": "NOT_FIXED_SEPARATE_VRM297",
+    "production": false
+  },
+  "honestProgress": {
+    "officialCompleteModules": 5,
+    "totalModules": 21,
+    "remaining": 16,
+    "gates20And21": "HOLD",
+    "phaseAComplete": false,
+    "I4Authorized": false,
+    "production": "DO_NOT_TOUCH",
+    "reusedEvidence": [
+      "RUN1790 source QA",
+      "RUN1791 DEV materialization",
+      "RUN1792 focal Admin/Cliente",
+      "RUN1815 benefits DEV 25/25",
+      "RUN41336613738 VRM286 Admin 748 visits / 17 periods"
+    ],
+    "nearMatchButHumanPending": [
+      "auth-protected-data-runtime",
+      "core-config-data-router-permissions",
+      "benefits",
+      "projects-periods-hr-source-wizard-multiproject",
+      "human-runtime-domain-consistency"
+    ],
+    "nextSerialDevActions": [
+      "D06 emulator source CI PASS",
+      "DEV Firestore composite indexes READY",
+      "DEV rules fail-closed readback + Hosting source exact in scoped one-shot",
+      "3 real Shopper retest and Admin/Shopper document regression",
+      "VRM297 secure public projection without answer keys",
+      "two-role isolated human visual acceptance of near-MATCH modules"
+    ]
+  },
+  "invariants": {
+    "realBusinessBankWrites": 0,
+    "realBankPublish": 0,
+    "shopperAttemptWrites": 0,
+    "hrWrites": 0,
+    "productionWrites": 0,
+    "noSecondCandidate": true,
+    "noI4": true
+  }
+}

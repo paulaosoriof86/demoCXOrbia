@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      CXORBIA_PRODUCT_SOURCE_SHA: a363f9e4f604cba722e899bb1916c442c77c1fed
+      CXORBIA_PRODUCT_SOURCE_SHA: 4ba2a96e1f90fba7ba8e981429bce8b4161ebee6
     steps:
       - uses: actions/checkout@v4
         with:
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
-      CXORBIA_PRODUCT_SOURCE_SHA: a363f9e4f604cba722e899bb1916c442c77c1fed
+      CXORBIA_PRODUCT_SOURCE_SHA: 4ba2a96e1f90fba7ba8e981429bce8b4161ebee6
       CXORBIA_D06_READ_ONLY: ${{ contains(github.event.head_commit.message, '[i3-d06-shopper-read-only]') && '1' || '0' }}
     steps:
       - uses: actions/checkout@v4
@@ -76,3 +76,36 @@ jobs:
           path: .tmp/cxorbia-i3-d05-qa-ui-review-shopper/
           if-no-files-found: warn
           retention-days: 30
+
+  d06-shopper-firestore-read-authority-source:
+    if: ${{ contains(github.event.head_commit.message, '[i3-d06-rules-source]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Exact immutable D06 source and no deployment preflight
+        run: |
+          set -Eeuo pipefail
+          SOURCE="$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          test "$SOURCE" = 4ba2a96e1f90fba7ba8e981429bce8b4161ebee6
+          git diff --quiet "$SOURCE" HEAD -- app backend firestore.rules firestore.indexes.json storage.rules firebase.json
+          node --check app/core/backend-resources.js
+          node --check tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs
+          node --check tools/qa/cxorbia-i3-d05-certification-authority-rules.test.mjs
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: D06 source role-and-period routing regressions
+        run: node tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs
+      - name: Install isolated Firestore Rules Emulator test dependencies
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase@10.12.5 @firebase/rules-unit-testing@4.0.0 firebase-tools@14.16.0
+      - name: Firestore emulator denies pending Shopper read, permits published and documents
+        env:
+          CI: 'true'
+        run: npx --no-install firebase emulators:exec --only firestore --project demo-cxorbia-d05-ruleproof 'node tools/qa/cxorbia-i3-d05-certification-authority-rules.test.mjs'

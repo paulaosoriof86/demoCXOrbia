@@ -1,15 +1,15 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_D05_VERSIONED_REVIEW_SOURCE_FIXED_LOCAL_QA_CI_DEV_PENDING_16_NONMATCH",
+  "status": "HOLD_I3_D06_3_REAL_SHOPPERS_EXPOSE_PENDING_ANSWER_KEYS_SOURCE_ONLY_EMULATOR_INDEX_DEV_PENDING_16_NONMATCH",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "a363f9e4f604cba722e899bb1916c442c77c1fed",
-  "productTreeAuthority": "75929483706d7cf077840ad4596eeec9963bcf54",
-  "predecessorProductSourceSha": "e44483d895e75d5e1bf48b327d464a8c4686ddba",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V542_2026-11-02.json",
-  "findingsLedgerExpectedGitBlob": "044569c651e25c5236965c3ca7b799be7bfc9db5",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V219.json",
+  "productSourceSha": "4ba2a96e1f90fba7ba8e981429bce8b4161ebee6",
+  "productTreeAuthority": "0e19bfe90db917d67cf493c79bc74df4d44f1a81",
+  "predecessorProductSourceSha": "a363f9e4f604cba722e899bb1916c442c77c1fed",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V543_2026-11-02.json",
+  "findingsLedgerExpectedGitBlob": "d1174ed0a653232ba589cdcbe15d7696b9095d26",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V220.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -106,7 +106,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-296",
+  "nextFindingId": "VRM-298",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 PLAN DE CHOQUE V219 — Fuente D05 Admin versioned review source a363f9e4f604cba722e899bb1916c442c77c1fed: omitir visibleRoles/targetAll solo en revisión exacta para conservar ACL de banco QA; 6 regresiones sintéticas PASS, CI canónica y guardado real DEV PENDIENTES. Prioridad: CI del sucesor único; materialización exacta DEV autorizada; revisión Admin QA exclusiva v1→v2 con readback/version y rol aprobado sin publicar banco real; consumo Shopper 8Q y negativos D06; aceptación visual. G03 CRM 2 Admin DEV PASS, Hosting DEV histórico 231186c337bcd0ba y VRM-286 748/748 visitas + 17/17 períodos PASS, sin repetir. D05 backend real 409/0 writes RUN41338635392 PASS; QA publish/configure/retire 3 ACK RUN41339292153 PASS; UI 409 SIMULADO interceptado RUN41340843792 PASS, no equivale a guardado real. HR 32/83 provisionales y 51 pendientes, finanzas Q7,300 x2 sin recibo: NO fusionar/duplicar/borrar. 5/21 MATCH, 16 no-MATCH; Gates20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH, un escritor.",
+  "exactNextAction": "I3 V220 — D05 Admin QA guardado real v1→v2 con 16 readbacks PASS RUN41384446891, 8 activos DEV exactos RUN41383743722, sin banco real modificado. D06 prueba negativa real 3/3 Shopper RUN41385453693 detecta VRM-296 filtración banco pendiente 15 preguntas con claves y VRM-297 claves del publicado 8Q accesibles desde navegador. Fuente sucesora D06 4ba2a96e1f90fba7ba8e981429bce8b4161ebee6 solo compuesta: primero QA Firestore emulador y índices DEV READY, después reglas DEV y Hosting DEV exactos con lectura directa negada + Shopper/Documentos, luego resolver proyección sin respuestas, aceptar visual/roles. No promover D05/D06 completos por prueba parcial. Reutilizar RUN1790-1792 auth/config, RUN1815 beneficios, RUN41336613738 proyectos HR y RUN1537 consistencia sin repetir; aceptación focal humana agrupada, avance por cláusulas. HR 32/83 provisionales + 51 pendientes; finanzas Q7,300 x2 sin recibo, NO fusionar ni borrar. 5/21 MATCH, 16 pendientes, Gates20/21 HOLD, I4 no autorizada, producción DO_NOT_TOUCH, un escritor.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "55746cf55713c9eec070f356fccafd7bfeb8a9af",
+  "moduleTruthExpectedGitBlob": "d87e57e17e5c438295d6d384849fff2f3ddbc753",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12086,7 +12086,7 @@
     "proofTree": "1753d01aa909dd4181e3490c07d24287913d68a0",
     "decision": "PASS_FOCAL_SOURCE_ONLY_I3_HOLD"
   },
-  "lastUpdatedAt": "2026-11-01T19:24:55.808Z",
+  "lastUpdatedAt": "2026-11-02T04:01:39.577Z",
   "a05SourceProof": {
     "recordedAt": "2026-10-17T12:00:37.826Z",
     "productSourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
@@ -16433,6 +16433,28 @@
     "receiptPath": "docs/checkpoints/CXORBIA_I3_D05_VERSIONED_REVIEW_VISIBILITY_SOURCE_ONLY_20261102.json",
     "receiptBlob": "84667eb810b572e630e7f9aa6339d69a3d04ebac",
     "decision": "SOURCE_ONLY_CI_DEV_QA_PENDING",
+    "production": false
+  },
+  "d05D06FocalSecurityProof20261102": {
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_D05_D06_FOCAL_DEV_PROOFS_AND_ACCESS_HOLD_20261102.json",
+    "receiptGitBlob": "c231a78a52c044dbf76f8d56bb7b776b8fa3adb9",
+    "priorSourceSha": "a363f9e4f604cba722e899bb1916c442c77c1fed",
+    "currentSourceSha": "4ba2a96e1f90fba7ba8e981429bce8b4161ebee6",
+    "currentSourceTree": "0e19bfe90db917d67cf493c79bc74df4d44f1a81",
+    "d05HostingDevPassRunId": 41383743722,
+    "d05QaAdminVersionedSavePassRunId": 41384446891,
+    "d06ThreeShopperSecurityFailRunId": 41385453693,
+    "findings": [
+      "VRM-296",
+      "VRM-297"
+    ],
+    "localRoleCasesPass": 5,
+    "firestoreEmulator": "PENDING",
+    "devRulesAndIndexes": "NOT_DEPLOYED",
+    "devHostingNewSource": "NOT_DEPLOYED",
+    "publishedAnswerKeys": "EXPOSED_REQUIRES_PROJECTION",
+    "officialMatchedDomains": 5,
+    "fullCertification": false,
     "production": false
   }
 }
