@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "cxorbia.i3.d06.vrm298.existing-revision-traffic-only.20261102.v1",
+  "authorization": "PAULA_EXPLICIT_DEV_MODULE_RECERTIFICATION_2026_11_02",
+  "intent": "ACTIVATE_EXACT_ALREADY_BUILT_REVISION_WITH_ZERO_NEW_BUILDS_AND_ZERO_IMAGE_UPDATES",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlParentSha": "db9cb3fa0826a066835199b297216247eed6554c",
+  "allowedControlFiles": [
+    ".github/workflows/cxorbia-i3-d05-qa-positive-lifecycle.yml",
+    "docs/checkpoints/CXORBIA_I3_D06_VRM298_EXISTING_REVISION_TRAFFIC_REQUEST_20261102.json"
+  ],
+  "productSource": {
+    "sha": "bf60d57aa36fac08933d14f93d80f4c30e59a36c",
+    "tree": "1c02eb88bbbe2afdba136046dbf9716f2120f1fd",
+    "backendBlob": "b8b0aedb3cd4bdeb927b814dae2bc29ba995e9b2"
+  },
+  "failedAttempt": {
+    "runId": 41482959265,
+    "artifactId": 13161006276,
+    "failedStep": "ONE_RUNTIME_UPDATE_BEFORE_TRAFFIC_CAS",
+    "newImage": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-vrm298-bf60d57aa36fac08933d14f93d80f4c30e59a36c-41482959265",
+    "createdRevision": "cxorbia-live-hr-dev-00334-8jb",
+    "previousReadyRevision": "cxorbia-live-hr-dev-00333-srb",
+    "imageBuildsAlreadyConsumed": 1,
+    "imageUpdatesAlreadyConsumed": 1,
+    "trafficSwitchesConsumed": 0,
+    "failedRunConclusion": "failure",
+    "observedLatestCreatedRevisionName": "cxorbia-live-hr-dev-00334-8jb",
+    "observedLatestReadyRevisionName": "cxorbia-live-hr-dev-00333-srb"
+  },
+  "dev": {
+    "project": "cxorbia-backend-dev",
+    "service": "cxorbia-live-hr-dev",
+    "region": "us-central1",
+    "expectedRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+    "expectedHostingVersion": "sites/cxorbia-backend-dev/versions/c69d52baf9e87433",
+    "newBuildsAllowed": 0,
+    "newImageUpdatesAllowed": 0,
+    "trafficSwitchesAllowed": 1,
+    "rulesDeploysAllowed": 0,
+    "hostingDeploysAllowed": 0,
+    "realBankWritesAllowed": 0,
+    "shopperAttemptWritesAllowed": 0,
+    "authWritesAllowed": 0,
+    "hrWritesAllowed": 0,
+    "financeWritesAllowed": 0,
+    "productionWritesAllowed": 0,
+    "automaticRetries": false,
+    "automaticRollback": false,
+    "production": "DO_NOT_TOUCH",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "matchedDomains": 5
+  },
+  "fullD06Match": false,
+  "production": "DO_NOT_TOUCH"
+}
