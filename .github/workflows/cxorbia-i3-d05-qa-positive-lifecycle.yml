@@ -104,7 +104,7 @@ jobs:
       - name: D06 source role-and-period routing regressions
         run: node tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs
       - name: Install isolated Firestore Rules Emulator test dependencies
-        run: npm install --no-save --ignore-scripts --package-lock=false firebase@10.12.5 @firebase/rules-unit-testing@4.0.0 firebase-tools@14.16.0
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase@11.0.0 @firebase/rules-unit-testing@4.0.0 firebase-tools@14.16.0
       - name: Firestore emulator denies pending Shopper read, permits published and documents
         env:
           CI: 'true'

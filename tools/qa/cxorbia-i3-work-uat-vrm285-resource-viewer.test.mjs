@@ -229,7 +229,11 @@ function d07RouterResourceFixture(role='shopper'){
   function resolveOne({error=false}={}){
     const q=pending.shift();assert.ok(q,'expected queued Firestore read');
     if(error){q.reject(new Error('LOCAL_READ_DENIED'));return;}
-    const selected=rows.filter(row=>q.filters.every(([field,op,value])=>op==='=='?row[field]===value:op==='array-contains'?row[field]?.includes(value):false));
+    const selected=rows.filter(row=>q.filters.every(([field,op,value])=>{
+      const actual=field.split('.').reduce((record,key)=>record?.[key],row);
+      return op==='=='?actual===value:op==='array-contains'?Array.isArray(actual)&&actual.includes(value):
+        op==='in'?Array.isArray(value)&&value.includes(actual):false;
+    }));
     q.resolve({docs:selected.map(row=>({id:row.id,data:()=>d07OwnerClone(row)}))});
   }
   return {CX,context,rows:()=>rows,setRows:value=>{rows=value;},setUid:value=>{uid=value;},host:()=>host,hosts,pending,resolveOne,
@@ -238,29 +242,31 @@ function d07RouterResourceFixture(role='shopper'){
 
 for(const role of ['admin','shopper'])test('D07 '+role+' identical resource loads settle without hiding remote updates, errors or identity changes',async()=>{
   const h=d07RouterResourceFixture(role);h.CX.router.nav('documentos');
-  for(let n=0;n<6&&h.pending.length;n++){h.resolveOne();await d07OwnerFlush();}
+  const perLoad=role==='shopper'?2:1;
+  const resolveLoad=async({error=false}={})=>{for(let i=0;i<perLoad;i++)h.resolveOne({error});await d07OwnerFlush();};
+  for(let n=0;n<12&&h.pending.length;n++){h.resolveOne();await d07OwnerFlush();}
   const initial=h.counts();
-    assert.equal(initial.queries,2);assert.equal(initial.renders,2);assert.equal(initial.pending,0);assert.equal(initial.resourceEvents,1);
+    assert.equal(initial.queries,2*perLoad);assert.equal(initial.renders,2);assert.equal(initial.pending,0);assert.equal(initial.resourceEvents,1);
     // Explicit entry still requests the remote metadata, even with unchanged content.
-    h.CX.router.nav('documentos');assert.equal(h.pending.length,1);h.resolveOne();await d07OwnerFlush();assert.equal(h.pending.length,0);assert.equal(h.counts().queries,3);
+    h.CX.router.nav('documentos');assert.equal(h.pending.length,perLoad);await resolveLoad();assert.equal(h.pending.length,0);assert.equal(h.counts().queries,3*perLoad);
     // Different map-key order does not restart the mounted reader.
     const before=h.counts();h.setRows(h.rows().map(row=>Object.fromEntries(Object.entries(row).reverse())));
-    const repeat=h.CX.backendResources.load();h.resolveOne();await repeat;await d07OwnerFlush();assert.equal(h.counts().resourceEvents,before.resourceEvents);assert.equal(h.counts().renders,before.renders);
+    const repeat=h.CX.backendResources.load();await resolveLoad();await repeat;assert.equal(h.counts().resourceEvents,before.resourceEvents);assert.equal(h.counts().renders,before.renders);
     // A version change still emits and remounts once, then settles.
     h.setRows(h.rows().map(row=>({...row,version:2})));
-    const changed=h.CX.backendResources.load();h.resolveOne();await changed;await d07OwnerFlush();assert.equal(h.pending.length,1);h.resolveOne();await d07OwnerFlush();assert.equal(h.pending.length,0);
+    const changed=h.CX.backendResources.load();await resolveLoad();await changed;assert.equal(h.pending.length,perLoad);await resolveLoad();assert.equal(h.pending.length,0);
     assert.equal(h.counts().resourceEvents,before.resourceEvents+1);
     h.host().buttons[0].click();assert.match(h.host().innerHTML,/data-pdf-viewer/);
     // Revocation/removal closes the active viewer; an empty result is an actual remote result.
-    h.setRows([]);const removed=h.CX.backendResources.load();h.resolveOne();await removed;await d07OwnerFlush();h.resolveOne();await d07OwnerFlush();assert.equal(h.pending.length,0);assert.doesNotMatch(h.host().innerHTML,/data-pdf-viewer/);
+    h.setRows([]);const removed=h.CX.backendResources.load();await resolveLoad();await removed;await resolveLoad();assert.equal(h.pending.length,0);assert.doesNotMatch(h.host().innerHTML,/data-pdf-viewer/);
     // A read error stays blocked, emits once, and does not turn into a remount loop.
-    const fail=h.CX.backendResources.load().catch(()=>{});h.resolveOne({error:true});await fail;await d07OwnerFlush();h.resolveOne({error:true});await d07OwnerFlush();assert.equal(h.pending.length,0);assert.equal(h.context.CX_BACKEND_RESOURCES_STATUS.status,'blocked');
+    const fail=h.CX.backendResources.load().catch(()=>{});await resolveLoad({error:true});await fail;await resolveLoad({error:true});assert.equal(h.pending.length,0);assert.equal(h.context.CX_BACKEND_RESOURCES_STATUS.status,'blocked');
     // Recover normally before testing identity; the UID case is not a status change.
-    h.CX.router.nav('documentos');h.resolveOne();await d07OwnerFlush();h.resolveOne();await d07OwnerFlush();assert.equal(h.pending.length,0);
+    h.CX.router.nav('documentos');await resolveLoad();await resolveLoad();assert.equal(h.pending.length,0);
     const eventsBeforeUid=h.counts().resourceEvents;
-    const stale=h.CX.backendResources.load();h.setUid('local-other-'+role);h.resolveOne();await stale;await d07OwnerFlush();assert.equal(h.counts().resourceEvents,eventsBeforeUid,'late same-role previous UID result must be discarded');
-    h.CX.router.nav('documentos');h.resolveOne();await d07OwnerFlush();h.resolveOne();await d07OwnerFlush();assert.equal(h.pending.length,0);assert.equal(h.counts().resourceEvents,eventsBeforeUid+1);
+    const stale=h.CX.backendResources.load();h.setUid('local-other-'+role);await resolveLoad();await stale;assert.equal(h.counts().resourceEvents,eventsBeforeUid,'late same-role previous UID result must be discarded');
+    h.CX.router.nav('documentos');await resolveLoad();await resolveLoad();assert.equal(h.pending.length,0);assert.equal(h.counts().resourceEvents,eventsBeforeUid+1);
     // Identical empty result still carries a new period/project scope.
-    const eventsBeforeScope=h.counts().resourceEvents;h.CX.data.currentPeriodId='cinepolis-2026-09';h.CX.router.nav('documentos');h.resolveOne();await d07OwnerFlush();h.resolveOne();await d07OwnerFlush();assert.equal(h.pending.length,0);assert.equal(h.counts().resourceEvents,eventsBeforeScope+1);
-    h.CX.data.currentProjectId='other-project';h.CX.data.currentPeriodId='other-project-2026-09';h.CX.router.nav('documentos');h.resolveOne();await d07OwnerFlush();h.resolveOne();await d07OwnerFlush();assert.equal(h.pending.length,0);assert.equal(h.counts().resourceEvents,eventsBeforeScope+2);
+    const eventsBeforeScope=h.counts().resourceEvents;h.CX.data.currentPeriodId='cinepolis-2026-09';h.CX.router.nav('documentos');await resolveLoad();await resolveLoad();assert.equal(h.pending.length,0);assert.equal(h.counts().resourceEvents,eventsBeforeScope+1);
+    h.CX.data.currentProjectId='other-project';h.CX.data.currentPeriodId='other-project-2026-09';h.CX.router.nav('documentos');await resolveLoad();await resolveLoad();assert.equal(h.pending.length,0);assert.equal(h.counts().resourceEvents,eventsBeforeScope+2);
 });
