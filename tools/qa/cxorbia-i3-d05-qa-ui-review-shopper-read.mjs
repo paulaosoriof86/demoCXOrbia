@@ -243,19 +243,32 @@ async function saveQaViaAdminUi({admin, periodId}) {
     revisionChanged: str(afterBank.contentRevision) !== revision};
   if (saved.version !== 2)
     fail('PERSISTENCE_FAILURE:D05_QA_UI_SAVE_NOT_COMMITTED');
-  if (saved.version !== 2 || saved.status !== 'active' ||
-      afterBank.estado !== 'pending_review' ||
-      afterBank.reviewVersion !== 2 ||
-      afterBank.contentRevision === revision ||
-      afterBank.preguntas?.length !== 15 ||
-      afterBank.preguntas[0]?.q !== revised ||
-      afterBank.preguntas.slice(1).some((q, n) => JSON.stringify(q) !== JSON.stringify(questions[n + 1])) ||
-      afterBank.reviewHistory?.length !== 1 ||
-      afterBank.reviewHistory[0]?.fromVersion !== 1 ||
-      afterBank.reviewHistory[0]?.toVersion !== 2 ||
-      afterBank.ultimaRevisionPorUid !== admin.uid || saved.qaOnly !== true ||
-      str(saved.qaRunId) !== runId || saved.targetAll !== false ||
-      arr(saved.visibleRoles).length !== 0)
+  // Compare meaningful question fields, not JSON property-insertion order.
+  // Extra persisted metadata is allowed; altered questions or scope are not.
+  const questionFields = ['q', 'ops', 'correcta', 'exp', 'fuente'];
+  const questionsUnchanged = arr(afterBank.preguntas).slice(1).every((q, n) =>
+    questionFields.every(key => JSON.stringify(q?.[key]) === JSON.stringify(questions[n + 1]?.[key])));
+  const checks = {
+    version2: saved.version === 2,
+    resourceActive: saved.status === 'active',
+    pendingUnpublished: afterBank.estado === 'pending_review',
+    reviewVersion2: afterBank.reviewVersion === 2,
+    contentRevisionChanged: afterBank.contentRevision !== revision,
+    questionCount15: afterBank.preguntas?.length === 15,
+    revisedFirstQuestion: afterBank.preguntas?.[0]?.q === revised,
+    otherQuestionsUnchanged: questionsUnchanged,
+    singleReviewHistory: afterBank.reviewHistory?.length === 1,
+    historyFrom1: afterBank.reviewHistory?.[0]?.fromVersion === 1,
+    historyTo2: afterBank.reviewHistory?.[0]?.toVersion === 2,
+    reviewerIsAuthorizedAdmin: afterBank.ultimaRevisionPorUid === admin.uid,
+    qaOnly: saved.qaOnly === true,
+    qaRunIdExact: str(saved.qaRunId) === runId,
+    notTargetAll: saved.targetAll === false,
+    noShopperVisibleRoles: arr(saved.visibleRoles).length === 0
+  };
+  result.qa.readbackChecks = checks;
+  result.qa.failedReadbackChecks = Object.entries(checks).filter(([, ok]) => !ok).map(([key]) => key);
+  if (result.qa.failedReadbackChecks.length)
     fail('PERSISTENCE_FAILURE:D05_QA_VERSIONED_READBACK_MISMATCH');
   result.qa.saveCommitted = true;
   result.qa.versionBefore = 1;
