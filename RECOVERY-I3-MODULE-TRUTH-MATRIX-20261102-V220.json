@@ -597,7 +597,7 @@
       ],
       "contractFunctional": "Shopper/Identidad/Visual",
       "classification": "TRUE_FUNCTIONAL_DEFECT",
-      "actionRequired": "D05 Admin QA real v1→v2 16/16 readback PASS RUN41384446891, DEV Hosting 8 exact served assets RUN41383743722, prior real backend 409 and QA publish/configure/retire retained; no real Cinépolis bank write or publish. D06 negative RUN41385453693 FAIL: 3/3 actual Shopper sessions read pending 15Q + correct answer keys and published 8Q answer keys in browser. VRM-296 source-only fix 4ba2a96e1f90fba7ba8e981429bce8b4161ebee6 adds typed queries, Firestore draft deny and two indexes; local 5/5 PASS but emulator, DEV indexes/rules/Hosting, independent protected retest and visual still PENDING. VRM-297 published exam key redaction requires server-authoritative public projection. TRUE_FUNCTIONAL_DEFECT until every D05/D06 clause and human acceptance PASS.",
+      "actionRequired": "D05 Admin QA real v1→v2 16/16 readback PASS RUN41384446891, DEV Hosting 8 exact served assets RUN41383743722, prior real backend 409 and QA publish/configure/retire retained; no real Cinépolis bank write or publish. D06 negative RUN41385453693 FAIL: 3/3 actual Shopper sessions read pending 15Q + correct answer keys and published 8Q answer keys in browser. VRM-296 source-only fix 4ba2a96e1f90fba7ba8e981429bce8b4161ebee6 adds typed queries, Firestore draft deny and two indexes; local 5/5 PASS y emulador 32/32 PASS RUN41386412201; DEV indexes/rules/Hosting, independent protected retest and visual still PENDING. VRM-297 published exam key redaction requires server-authoritative public projection. TRUE_FUNCTIONAL_DEFECT until every D05/D06 clause and human acceptance PASS.",
       "preI4SuccessorCommits": [
         "61cf7120603aeff110e97632bb6c69f5c4809d62"
       ],
@@ -7961,7 +7961,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "I3 V220 — D05 Admin QA guardado real v1→v2 con 16 readbacks PASS RUN41384446891, 8 activos DEV exactos RUN41383743722, sin banco real modificado. D06 prueba negativa real 3/3 Shopper RUN41385453693 detecta VRM-296 filtración banco pendiente 15 preguntas con claves y VRM-297 claves del publicado 8Q accesibles desde navegador. Fuente sucesora D06 4ba2a96e1f90fba7ba8e981429bce8b4161ebee6 solo compuesta: primero QA Firestore emulador y índices DEV READY, después reglas DEV y Hosting DEV exactos con lectura directa negada + Shopper/Documentos, luego resolver proyección sin respuestas, aceptar visual/roles. No promover D05/D06 completos por prueba parcial. Reutilizar RUN1790-1792 auth/config, RUN1815 beneficios, RUN41336613738 proyectos HR y RUN1537 consistencia sin repetir; aceptación focal humana agrupada, avance por cláusulas. HR 32/83 provisionales + 51 pendientes; finanzas Q7,300 x2 sin recibo, NO fusionar ni borrar. 5/21 MATCH, 16 pendientes, Gates20/21 HOLD, I4 no autorizada, producción DO_NOT_TOUCH, un escritor.",
+  "nextExactAction": "I3 V220 — G03 CRM 2 Admin DEV PASS y Hosting DEV histórico 231186c337bcd0ba (antes del deploy D05), reutilizar sin repetir; VRM-286 Admin 748/748 visitas y 17/17 períodos RUN41336613738 PASS. D05 corrección Hosting DEV exacta 8 assets RUN41383743722, guardado Admin QA real v1→v2 +16 lecturas RUN41384446891 PASS, sin editar banco real. D06 RUN41385453693 FAIL: 3/3 Shopper pueden leer banco pendiente 15Q y claves, además de claves del publicado 8Q; VRM-296/297 P0. Sucesor fuente 4ba2a96e1f90fba7ba8e981429bce8b4161ebee6 compone consultas y reglas seguras; Firestore emulador RUN41386412201 PASS (32 casos), índices DEV y Hosting DEV PENDIENTES; después revalidar 3 Shopper y resolver proyección sin claves publicada, sin elevar dominio MATCH. En paralelo aceptación humana aislada Admin/Cliente/Shopper para auth/config, beneficios y otros módulos cercanos, reutilizando pruebas previas. HR 32/83 grupos provisionales y 51 pendientes, finanzas Q7,300 x2 sin recibo: NO fusionar/duplicar/borrar. 5/21 MATCH; Gates20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH, un escritor.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -16419,7 +16419,7 @@
   },
   "d05D06Focal20261102": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_D05_D06_FOCAL_DEV_PROOFS_AND_ACCESS_HOLD_20261102.json",
-    "receiptGitBlob": "c231a78a52c044dbf76f8d56bb7b776b8fa3adb9",
+    "receiptGitBlob": "3199a210b9e197b47721e12cefc2474be17cebfd",
     "d05HostingRunId": 41383743722,
     "d05PositiveAdminQaRunId": 41384446891,
     "d06FirstNegativeRunId": 41384921600,
@@ -16436,7 +16436,7 @@
       "firestore.indexes.json"
     ],
     "sourceLocalRoleTestsPass": 5,
-    "emulator": "PENDING",
+    "emulator": "PASS_32_FIRESTORE_RULE_CASES_AND_5_ROLE_PERIOD_CASES_RUN41386412201",
     "devIndexes": "PENDING",
     "devRules": "PENDING",
     "devHosting": "PENDING",

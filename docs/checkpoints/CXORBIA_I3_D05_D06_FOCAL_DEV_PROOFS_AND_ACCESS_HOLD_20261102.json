@@ -107,14 +107,21 @@
       "fail": 0
     },
     "indexJsonSyntax": "PASS",
-    "firebaseEmulator": "PENDING_CANONICAL_CI",
+    "firebaseEmulator": {
+      "runId": 41386412201,
+      "conclusion": "success",
+      "rulesTestsPass": 32,
+      "roleAndPeriodTestsPass": 5,
+      "realDevRules": "NOT_DEPLOYED"
+    },
     "indexesDevReady": "PENDING",
     "rulesDevMaterialized": false,
     "hostingDevMaterialized": false,
     "directShopperGetNegative": "PENDING_EXACT_DEV_RULES",
     "threeShopperRealRetest": "PENDING",
     "publishedAnswerKeyElimination": "NOT_FIXED_SEPARATE_VRM297",
-    "production": false
+    "production": false,
+    "ruleTestRuntime": "Firebase Rules Emulator Java21 / Firebase11; no production or DEV mutation"
   },
   "honestProgress": {
     "officialCompleteModules": 5,
@@ -139,7 +146,7 @@
       "human-runtime-domain-consistency"
     ],
     "nextSerialDevActions": [
-      "D06 emulator source CI PASS",
+      "D06 emulador fuente 32 reglas +5 rutas PASS RUN41386412201; falta índices DEV READY",
       "DEV Firestore composite indexes READY",
       "DEV rules fail-closed readback + Hosting source exact in scoped one-shot",
       "3 real Shopper retest and Admin/Shopper document regression",

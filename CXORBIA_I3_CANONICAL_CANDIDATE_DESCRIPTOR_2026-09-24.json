@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_D06_3_REAL_SHOPPERS_EXPOSE_PENDING_ANSWER_KEYS_SOURCE_ONLY_EMULATOR_INDEX_DEV_PENDING_16_NONMATCH",
+  "status": "HOLD_I3_D06_SOURCE_QA_FIRESTORE_EMULATOR_32_PASS_DEV_INDEX_RULES_HOSTING_PENDING_16_NONMATCH",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,7 +8,7 @@
   "productTreeAuthority": "0e19bfe90db917d67cf493c79bc74df4d44f1a81",
   "predecessorProductSourceSha": "a363f9e4f604cba722e899bb1916c442c77c1fed",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V543_2026-11-02.json",
-  "findingsLedgerExpectedGitBlob": "d1174ed0a653232ba589cdcbe15d7696b9095d26",
+  "findingsLedgerExpectedGitBlob": "5d327ffc4db4d49ead89ea294b21c2211e7dc911",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V220.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 V220 — D05 Admin QA guardado real v1→v2 con 16 readbacks PASS RUN41384446891, 8 activos DEV exactos RUN41383743722, sin banco real modificado. D06 prueba negativa real 3/3 Shopper RUN41385453693 detecta VRM-296 filtración banco pendiente 15 preguntas con claves y VRM-297 claves del publicado 8Q accesibles desde navegador. Fuente sucesora D06 4ba2a96e1f90fba7ba8e981429bce8b4161ebee6 solo compuesta: primero QA Firestore emulador y índices DEV READY, después reglas DEV y Hosting DEV exactos con lectura directa negada + Shopper/Documentos, luego resolver proyección sin respuestas, aceptar visual/roles. No promover D05/D06 completos por prueba parcial. Reutilizar RUN1790-1792 auth/config, RUN1815 beneficios, RUN41336613738 proyectos HR y RUN1537 consistencia sin repetir; aceptación focal humana agrupada, avance por cláusulas. HR 32/83 provisionales + 51 pendientes; finanzas Q7,300 x2 sin recibo, NO fusionar ni borrar. 5/21 MATCH, 16 pendientes, Gates20/21 HOLD, I4 no autorizada, producción DO_NOT_TOUCH, un escritor.",
+  "exactNextAction": "I3 V220 — G03 CRM 2 Admin DEV PASS y Hosting DEV histórico 231186c337bcd0ba (antes del deploy D05), reutilizar sin repetir; VRM-286 Admin 748/748 visitas y 17/17 períodos RUN41336613738 PASS. D05 corrección Hosting DEV exacta 8 assets RUN41383743722, guardado Admin QA real v1→v2 +16 lecturas RUN41384446891 PASS, sin editar banco real. D06 RUN41385453693 FAIL: 3/3 Shopper pueden leer banco pendiente 15Q y claves, además de claves del publicado 8Q; VRM-296/297 P0. Sucesor fuente 4ba2a96e1f90fba7ba8e981429bce8b4161ebee6 compone consultas y reglas seguras; Firestore emulador RUN41386412201 PASS (32 casos), índices DEV y Hosting DEV PENDIENTES; después revalidar 3 Shopper y resolver proyección sin claves publicada, sin elevar dominio MATCH. En paralelo aceptación humana aislada Admin/Cliente/Shopper para auth/config, beneficios y otros módulos cercanos, reutilizando pruebas previas. HR 32/83 grupos provisionales y 51 pendientes, finanzas Q7,300 x2 sin recibo: NO fusionar/duplicar/borrar. 5/21 MATCH; Gates20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH, un escritor.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "d87e57e17e5c438295d6d384849fff2f3ddbc753",
+  "moduleTruthExpectedGitBlob": "fa066597cd2c13d1498f4c228baea9859dd6d625",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -16437,7 +16437,7 @@
   },
   "d05D06FocalSecurityProof20261102": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_D05_D06_FOCAL_DEV_PROOFS_AND_ACCESS_HOLD_20261102.json",
-    "receiptGitBlob": "c231a78a52c044dbf76f8d56bb7b776b8fa3adb9",
+    "receiptGitBlob": "3199a210b9e197b47721e12cefc2474be17cebfd",
     "priorSourceSha": "a363f9e4f604cba722e899bb1916c442c77c1fed",
     "currentSourceSha": "4ba2a96e1f90fba7ba8e981429bce8b4161ebee6",
     "currentSourceTree": "0e19bfe90db917d67cf493c79bc74df4d44f1a81",
@@ -16449,7 +16449,7 @@
       "VRM-297"
     ],
     "localRoleCasesPass": 5,
-    "firestoreEmulator": "PENDING",
+    "firestoreEmulator": "PASS_32_RULES_5_ROUTING_RUN41386412201",
     "devRulesAndIndexes": "NOT_DEPLOYED",
     "devHostingNewSource": "NOT_DEPLOYED",
     "publishedAnswerKeys": "EXPOSED_REQUIRES_PROJECTION",

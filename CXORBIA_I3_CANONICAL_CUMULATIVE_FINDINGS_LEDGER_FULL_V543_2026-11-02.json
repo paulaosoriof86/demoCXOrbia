@@ -20680,7 +20680,7 @@
         "sourceSha": "4ba2a96e1f90fba7ba8e981429bce8b4161ebee6",
         "sourceTree": "0e19bfe90db917d67cf493c79bc74df4d44f1a81",
         "localSourceTestsPass": 5,
-        "firestoreEmulator": "PENDING",
+        "firestoreEmulator": "PASS_32_RULES_RUN41386412201",
         "devIndexes": "PENDING_READY",
         "devRules": "NOT_DEPLOYED",
         "devHosting": "NOT_DEPLOYED",
@@ -21789,7 +21789,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "I3 V220 — D05 Admin QA guardado real v1→v2 con 16 readbacks PASS RUN41384446891, 8 activos DEV exactos RUN41383743722, sin banco real modificado. D06 prueba negativa real 3/3 Shopper RUN41385453693 detecta VRM-296 filtración banco pendiente 15 preguntas con claves y VRM-297 claves del publicado 8Q accesibles desde navegador. Fuente sucesora D06 4ba2a96e1f90fba7ba8e981429bce8b4161ebee6 solo compuesta: primero QA Firestore emulador y índices DEV READY, después reglas DEV y Hosting DEV exactos con lectura directa negada + Shopper/Documentos, luego resolver proyección sin respuestas, aceptar visual/roles. No promover D05/D06 completos por prueba parcial. Reutilizar RUN1790-1792 auth/config, RUN1815 beneficios, RUN41336613738 proyectos HR y RUN1537 consistencia sin repetir; aceptación focal humana agrupada, avance por cláusulas. HR 32/83 provisionales + 51 pendientes; finanzas Q7,300 x2 sin recibo, NO fusionar ni borrar. 5/21 MATCH, 16 pendientes, Gates20/21 HOLD, I4 no autorizada, producción DO_NOT_TOUCH, un escritor.",
+  "exactNextAction": "I3 V220 — G03 CRM 2 Admin DEV PASS y Hosting DEV histórico 231186c337bcd0ba (antes del deploy D05), reutilizar sin repetir; VRM-286 Admin 748/748 visitas y 17/17 períodos RUN41336613738 PASS. D05 corrección Hosting DEV exacta 8 assets RUN41383743722, guardado Admin QA real v1→v2 +16 lecturas RUN41384446891 PASS, sin editar banco real. D06 RUN41385453693 FAIL: 3/3 Shopper pueden leer banco pendiente 15Q y claves, además de claves del publicado 8Q; VRM-296/297 P0. Sucesor fuente 4ba2a96e1f90fba7ba8e981429bce8b4161ebee6 compone consultas y reglas seguras; Firestore emulador RUN41386412201 PASS (32 casos), índices DEV y Hosting DEV PENDIENTES; después revalidar 3 Shopper y resolver proyección sin claves publicada, sin elevar dominio MATCH. En paralelo aceptación humana aislada Admin/Cliente/Shopper para auth/config, beneficios y otros módulos cercanos, reutilizando pruebas previas. HR 32/83 grupos provisionales y 51 pendientes, finanzas Q7,300 x2 sin recibo: NO fusionar/duplicar/borrar. 5/21 MATCH; Gates20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH, un escritor.",
   "supersedesGitBlob": "044569c651e25c5236965c3ca7b799be7bfc9db5",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -36903,7 +36903,7 @@
   },
   "d06ShopperRealReadSecurity20261102": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_D05_D06_FOCAL_DEV_PROOFS_AND_ACCESS_HOLD_20261102.json",
-    "receiptGitBlob": "c231a78a52c044dbf76f8d56bb7b776b8fa3adb9",
+    "receiptGitBlob": "3199a210b9e197b47721e12cefc2474be17cebfd",
     "firstRunId": 41384921600,
     "threeShopperRunId": 41385453693,
     "threeAffected": 3,
@@ -36911,14 +36911,14 @@
     "publishedAnswersExposed": true,
     "sourceSuccessorSha": "4ba2a96e1f90fba7ba8e981429bce8b4161ebee6",
     "sourceLocalTestsPass": 5,
-    "emulator": "PENDING",
+    "emulator": "PASS_32_RULES_RUN41386412201",
     "dev": "PENDING",
     "fullDomainMatch": false,
     "production": false
   },
   "d05QaUiSaveSuccessCarryForward20261102": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_D05_D06_FOCAL_DEV_PROOFS_AND_ACCESS_HOLD_20261102.json",
-    "receiptGitBlob": "c231a78a52c044dbf76f8d56bb7b776b8fa3adb9",
+    "receiptGitBlob": "3199a210b9e197b47721e12cefc2474be17cebfd",
     "sourceSha": "a363f9e4f604cba722e899bb1916c442c77c1fed",
     "devHostingRunId": 41383743722,
     "qaUiRunId": 41384446891,
