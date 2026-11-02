@@ -93,9 +93,11 @@ jobs:
           retention-days: 30
 
   d06-shopper-firestore-read-authority-source:
-    if: ${{ contains(github.event.head_commit.message, '[i3-d06-rules-source]') }}
+    if: ${{ contains(github.event.head_commit.message, '[i3-d06-rules-source]') || contains(github.event.head_commit.message, '[i3-d06-vrm297-source]') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    env:
+      CXORBIA_D06_VRM297: ${{ contains(github.event.head_commit.message, '[i3-d06-vrm297-source]') && '1' || '0' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -104,9 +106,19 @@ jobs:
         run: |
           set -Eeuo pipefail
           SOURCE="$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
-          test "$SOURCE" = 4ba2a96e1f90fba7ba8e981429bce8b4161ebee6
+          if [ "$CXORBIA_D06_VRM297" = 1 ]; then
+            test "$SOURCE" = "$(jq -r '.productSource.sha' RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V222.json)"
+            test "$(jq -r '.productSource.predecessorProductSourceSha' RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V222.json)" = 4ba2a96e1f90fba7ba8e981429bce8b4161ebee6
+            test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
+            test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
+          else
+            test "$SOURCE" = 4ba2a96e1f90fba7ba8e981429bce8b4161ebee6
+          fi
           git diff --quiet "$SOURCE" HEAD -- app backend firestore.rules firestore.indexes.json storage.rules firebase.json
           node --check app/core/backend-resources.js
+          node --check app/core/backend-certifications.js
+          node --check app/modules/cert.js
+          node --check backend/runtime/hr-live-service/certification-runtime.mjs
           node --check tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs
           node --check tools/qa/cxorbia-i3-d05-certification-authority-rules.test.mjs
       - uses: actions/setup-node@v4
@@ -117,10 +129,15 @@ jobs:
           distribution: temurin
           java-version: '21'
       - name: D06 source role-and-period routing regressions
-        run: node tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs
+        run: |
+          node tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs
+          if [ "$CXORBIA_D06_VRM297" = 1 ]; then
+            node backend/runtime/hr-live-service/test/certification-shopper-projection.test.mjs
+            node tools/qa/cxorbia-i3-vrm297-shopper-client-projection.test.mjs
+          fi
       - name: Install isolated Firestore Rules Emulator test dependencies
         run: npm install --no-save --ignore-scripts --package-lock=false firebase@11.0.0 @firebase/rules-unit-testing@4.0.0 firebase-tools@14.16.0
-      - name: Firestore emulator denies pending Shopper read, permits published and documents
+      - name: Firestore emulator proves exact Shopper read authority and Admin preservation
         env:
           CI: 'true'
         run: npx --no-install firebase emulators:exec --only firestore --project demo-cxorbia-d05-ruleproof 'node tools/qa/cxorbia-i3-d05-certification-authority-rules.test.mjs'
