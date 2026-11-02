@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "B10 DEV asset + CI source QA PASS; matrix V227 retains 5/21 MATCH. Next D06 isolated QA positive/negative readback, Shopper password role E2E, B10 provider navigation, Benefits/Auth role acceptance, HR/Finance closure. Gates20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH: B10 exact DEV asset + canonical QA PASS run 41524873910, desplegado pendiente de recorrido Shopper/proveedor y aceptación humana. G03 Hosting DEV histórico 231186c337bcd0ba PASS; nuevo Hosting exacto run 41517119181. HR externa y finanzas pendientes; fusión Shopper 32/83 PROVISIONAL, 51 grupos pendientes de revisión/ACK de fuente. Siguiente D06 intento QA aislado con ACK/idempotencia, login Shopper, B10 proveedor, Beneficios y Auth/Core por roles; Gate20/21 HOLD, I4 no autorizado, producción DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
