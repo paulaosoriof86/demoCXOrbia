@@ -40,11 +40,12 @@ jobs:
           retention-days: 30
 
   d05-qa-ui-review-shopper-read:
-    if: ${{ contains(github.event.head_commit.message, '[i3-d05-qa-ui-review-shopper]') }}
+    if: ${{ contains(github.event.head_commit.message, '[i3-d05-qa-ui-review-shopper]') || contains(github.event.head_commit.message, '[i3-d06-shopper-read-only]') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
       CXORBIA_PRODUCT_SOURCE_SHA: e44483d895e75d5e1bf48b327d464a8c4686ddba
+      CXORBIA_D06_READ_ONLY: ${{ contains(github.event.head_commit.message, '[i3-d06-shopper-read-only]') && '1' || '0' }}
     steps:
       - uses: actions/checkout@v4
         with:

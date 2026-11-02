@@ -16,6 +16,7 @@ const PROJECT_ID = 'cinepolis';
 const PERIOD = '2026-10';
 const ROOT = 'https://cxorbia-backend-dev.web.app';
 const OUT = '.tmp/cxorbia-i3-d05-qa-ui-review-shopper';
+const SHOPPER_READ_ONLY = process.env.CXORBIA_D06_READ_ONLY === '1';
 const str = v => String(v ?? '').trim();
 const arr = v => Array.isArray(v) ? v : [];
 const sha = v => crypto.createHash('sha256').update(typeof v === 'string' ? v : JSON.stringify(v)).digest('hex');
@@ -33,6 +34,10 @@ const result = {
   qa: {created: false, saveCommitted: false, safelyRetired: false},
   shopper: {status: 'PENDING', submittedAttempt: false}
 };
+if (SHOPPER_READ_ONLY) {
+  result.scope = 'EXISTING_SHOPPER_AUTHENTICATED_UI_PUBLISHED_BANK_READ_ONLY';
+  result.qa.status = 'NOT_RUN_NO_QA_WRITES';
+}
 fs.mkdirSync(OUT, {recursive: true});
 let browser, db, qaRef;
 let originalHashes = null;
@@ -289,19 +294,25 @@ async function shopperReadOnly({shopper, publishedId}) {
       publishedQuestions: published?.bank?.preguntas?.length || 0,
       qaVisible: banks.some(x => x.qaOnly === true),
       view: String(window.CX?.session?.view || ''),
-      bodyText: String(document.querySelector('#view')?.innerText || '').slice(0, 2500)};
+      bodyText: String(document.querySelector('#view')?.innerText || '').slice(0, 2500),
+      examQuestionCount: document.querySelectorAll('#examBox input[type=radio]').length / 4,
+      submitButtonAvailable: !!document.querySelector('#examGo')};
   }, publishedId);
   result.shopper = {status: 'HOLD', role: 'shopper', realExistingUser: true,
     publishedVisible: observed.publishedVisible,
     publishedQuestions: observed.publishedQuestions,
     qaVisible: observed.qaVisible,
     certificationView: observed.view === 'cert',
+    examQuestionCount: observed.examQuestionCount,
+    submitButtonAvailable: observed.submitButtonAvailable,
     eligibilityOrExamVisible: /Certificación vigente|preguntas|certificación histórica reutilizada/i
       .test(observed.bodyText),
     submittedAttempt: false, passwordLoginE2E: 'NOT_TESTED_CUSTOM_TOKEN'};
   if (!observed.publishedVisible || observed.publishedQuestions < 1 || observed.qaVisible ||
-      observed.view !== 'cert' || !result.shopper.eligibilityOrExamVisible)
+      observed.view !== 'cert' || !result.shopper.eligibilityOrExamVisible ||
+      (observed.submitButtonAvailable && observed.examQuestionCount !== observed.publishedQuestions))
     fail('FUNCTIONAL_DEFECT:D06_SHOPPER_PUBLISHED_BANK_NOT_CONSUMED');
+  await page.screenshot({path: OUT + '/shopper-certification-read-only.png', fullPage: true});
   result.shopper.status = 'PASS_EXISTING_SHOPPER_ROLE_READ_ONLY';
   await context.close();
 }
@@ -338,12 +349,19 @@ async function safeRetireQa() {
 
 try {
   const scope = await preflight();
-  await saveQaViaAdminUi(scope);
-  await protectRealBanks();
-  await shopperReadOnly(scope);
-  if (!result.qa.uiSuccessFeedbackObserved)
-    fail('FUNCTIONAL_DEFECT:D05_QA_UI_SUCCESS_FEEDBACK_NOT_SEEN');
-  result.decision = 'PASS_D05_QA_UI_REVIEW_VERSION_2_AND_D06_SHOPPER_ROLE_READ_ONLY';
+  if (SHOPPER_READ_ONLY) {
+    browser = await chromium.launch({headless: true});
+    await shopperReadOnly(scope);
+    await protectRealBanks();
+    result.decision = 'PASS_D06_EXISTING_SHOPPER_UI_READ_ONLY_NO_ATTEMPT';
+  } else {
+    await saveQaViaAdminUi(scope);
+    await protectRealBanks();
+    await shopperReadOnly(scope);
+    if (!result.qa.uiSuccessFeedbackObserved)
+      fail('FUNCTIONAL_DEFECT:D05_QA_UI_SUCCESS_FEEDBACK_NOT_SEEN');
+    result.decision = 'PASS_D05_QA_UI_REVIEW_VERSION_2_AND_D06_SHOPPER_ROLE_READ_ONLY';
+  }
 } catch (error) {
   const code = str(error?.message);
   result.decision = 'HOLD_D05_QA_UI_OR_D06_SHOPPER_READ';
