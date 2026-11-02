@@ -141,3 +141,203 @@ jobs:
         env:
           CI: 'true'
         run: npx --no-install firebase emulators:exec --only firestore --project demo-cxorbia-d05-ruleproof 'node tools/qa/cxorbia-i3-d05-certification-authority-rules.test.mjs'
+
+  d06-vrm297-serial-one-shot-dev:
+    if: ${{ contains(github.event.head_commit.message, '[i3-d06-vrm297-dev-one-shot]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    permissions:
+      contents: read
+      id-token: write
+    concurrency:
+      group: cxorbia-i3-d06-vrm297-dev-serial-one-shot
+      cancel-in-progress: false
+    env:
+      REQUEST: docs/checkpoints/CXORBIA_I3_D06_VRM297_DEV_SERIAL_ONE_SHOT_REQUEST_20261102.json
+      QA_DIR: .tmp/i3-d06-vrm297-serial-dev
+      DEV_PROJECT: cxorbia-backend-dev
+      DEV_SERVICE: cxorbia-live-hr-dev
+      DEV_REGION: us-central1
+      DEV_HOSTING: cxorbia-backend-dev
+      DEV_TARGET: cxorbia-dev
+      DEV_URL: https://cxorbia-backend-dev.web.app
+      PROD_URL: https://tya-plataforma.web.app
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Exact source, two remote PASS gates, one-shot authority and zero product drift
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$QA_DIR"
+          jq -e '.schemaVersion=="cxorbia.i3.d06.vrm297.dev-serial-one-shot.20261102.v1"
+            and .authorization=="PAULA_EXPLICIT_DEV_MODULE_RECERTIFICATION_2026_11_02"
+            and .branch=="recovery/cxorbia-phase-a-20260831"
+            and .intent=="VRM297_SECURE_SHOPPER_BANK_AND_RESOURCE_PROJECTION_DEV_ONLY"
+            and .devOnly.project=="cxorbia-backend-dev"
+            and .devOnly.maxBuildAttempts==1
+            and .devOnly.maxCloudRunDeployAttempts==1
+            and .devOnly.maxFirestoreRulesDeployAttempts==1
+            and .devOnly.maxHostingDeployAttempts==1
+            and .devOnly.automaticRetry==false
+            and .devOnly.automaticRollback==false
+            and .devOnly.production=="DO_NOT_TOUCH"
+            and .devOnly.authorizationI4==false
+            and .devOnly.bankWrites==0 and .devOnly.authWrites==0
+            and .devOnly.hrWrites==0 and .devOnly.financeWrites==0
+            and .devOnly.productionDeploys==0
+            and .devOnly.gate20=="HOLD" and .devOnly.gate21=="HOLD"
+            and .devOnly.domainsFullyMatchedBeforeAndUntilReproof==5
+            and .controlProof.firestoreEmulatorConclusion=="success"
+            and .controlProof.globalSourceConclusion=="success"
+            and .controlProof.sourceTestCases==13 and .controlProof.sourceTestFailures==0' "$REQUEST" >/dev/null
+          test "$(git rev-parse HEAD^)" = "$(jq -r .controlParentSha "$REQUEST")"
+          test "$(git diff --name-only HEAD^ HEAD | LC_ALL=C sort)" = "$(jq -r '.allowedControlFiles|sort|.[]' "$REQUEST")"
+          SRC="$(jq -r .immutableSource.sha "$REQUEST")"
+          TREE="$(jq -r .immutableSource.tree "$REQUEST")"
+          PREV="$(jq -r .immutableSource.predecessor "$REQUEST")"
+          test "$SRC" = 128272027850fa0edad710ad1451a927041815d4
+          test "$TREE" = 4b357cb285ef03228e1dc928fda5f3115d8656f8
+          test "$SRC" = "$(jq -r .productSourceSha CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          test "$TREE" = "$(git rev-parse "$SRC^{tree}")"
+          test "$TREE" = "$(jq -r .productTreeAuthority CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          test "$(jq -r .findingsLedgerPath CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = "$(jq -r .controlProof.currentLedger "$REQUEST")"
+          test "$(jq -r .moduleTruthPath CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = "$(jq -r .controlProof.currentMatrix "$REQUEST")"
+          test "$(jq -r .production CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
+          test "$(jq -r .authorizationI4 CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
+          git merge-base --is-ancestor "$PREV" "$SRC"
+          git merge-base --is-ancestor "$SRC" HEAD
+          git diff --quiet "$SRC" HEAD -- app backend firestore.rules firestore.indexes.json storage.rules firebase.json .firebaserc
+          for FIELD in rulesBlob bankClientBlob resourcesClientBlob certUiBlob backendBlob; do
+            case "$FIELD" in
+              rulesBlob) FILE=firestore.rules;;
+              bankClientBlob) FILE=app/core/backend-certifications.js;;
+              resourcesClientBlob) FILE=app/core/backend-resources.js;;
+              certUiBlob) FILE=app/modules/cert.js;;
+              backendBlob) FILE=backend/runtime/hr-live-service/certification-runtime.mjs;;
+            esac
+            test "$(git rev-parse "$SRC:$FILE")" = "$(jq -r --arg field "$FIELD" '.immutableSource[$field]' "$REQUEST")"
+          done
+          for RUN_FIELD in firestoreEmulatorRunId globalSourceRunId; do
+            RUN_ID="$(jq -r --arg field "$RUN_FIELD" '.controlProof[$field]' "$REQUEST")"
+            curl -fsS --max-time 30 -H 'Accept: application/vnd.github+json' +              "https://api.github.com/repos/paulaosoriof86/demoCXOrbia/actions/runs/$RUN_ID" -o "$QA_DIR/ci-$RUN_FIELD.json"
+            jq -e '.status=="completed" and .conclusion=="success"
+              and .head_branch=="recovery/cxorbia-phase-a-20260831"' "$QA_DIR/ci-$RUN_FIELD.json" >/dev/null
+          done
+          test "$(jq -r .head_sha "$QA_DIR/ci-firestoreEmulatorRunId.json")" = a661de8a350a8371f343c6c9e27bb5d7647b4afa
+          test "$(jq -r .head_sha "$QA_DIR/ci-globalSourceRunId.json")" = "$(jq -r .controlParentSha "$REQUEST")"
+          node --check app/core/backend-certifications.js
+          node --check app/core/backend-resources.js
+          node --check app/modules/cert.js
+          node --check backend/runtime/hr-live-service/certification-runtime.mjs
+          node --test tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs
+          node --test backend/runtime/hr-live-service/test/certification-shopper-projection.test.mjs tools/qa/cxorbia-i3-vrm297-shopper-client-projection.test.mjs tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs
+          node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs > "$QA_DIR/authority.json"
+          jq -e --arg source "$SRC" --arg tree "$TREE" '.decision=="PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY"
+            and .productSourceSha==$source and .productSourceTree==$tree
+            and .moduleTruthReadback.sourceAligned==true
+            and .moduleBlobReadback.pass==true
+            and .terminalReleaseEligible==false and .production==false' "$QA_DIR/authority.json" >/dev/null
+          SOURCE_DIR="$(mktemp -d)"
+          git archive "$SRC" | tar -x -C "$SOURCE_DIR"
+          test "$(git hash-object "$SOURCE_DIR/firestore.rules")" = "$(jq -r .immutableSource.rulesBlob "$REQUEST")"
+          jq -e '.hosting.public=="app" and .hosting.target=="cxorbia-dev"
+            and .firestore.rules=="firestore.rules"' "$SOURCE_DIR/firebase.json" >/dev/null
+          echo "SRC=$SRC" >> "$GITHUB_ENV"
+          echo "TREE=$TREE" >> "$GITHUB_ENV"
+          echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.DEV_PROJECT }}
+      - name: DEV three-provider CAS and production baseline before first deployment
+        run: |
+          set -Eeuo pipefail
+          gcloud run services describe "$DEV_SERVICE" --project "$DEV_PROJECT" --region "$DEV_REGION" --format=json > "$QA_DIR/runtime-before.json"
+          EXPECTED_REV="$(jq -r .devOnly.beforeExpectedRuntimeRevision "$REQUEST")"
+          jq -e --arg rev "$EXPECTED_REV" '.status.latestReadyRevisionName==$rev
+            and ([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$QA_DIR/runtime-before.json" >/dev/null
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" +            "https://firebaserules.googleapis.com/v1/projects/$DEV_PROJECT/releases/cloud.firestore" -o "$QA_DIR/rules-before.json"
+          test "$(jq -r .rulesetName "$QA_DIR/rules-before.json")" = "$(jq -r .devOnly.beforeExpectedFirestoreRuleset "$REQUEST")"
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" +            "https://firebasehosting.googleapis.com/v1beta1/sites/$DEV_HOSTING/channels/live" -o "$QA_DIR/hosting-before.json"
+          test "$(jq -r .release.version.name "$QA_DIR/hosting-before.json")" = "$(jq -r .devOnly.beforeExpectedHostingVersion "$REQUEST")"
+          curl -fsS --max-time 45 -H 'Cache-Control: no-cache, no-store' +            "$DEV_URL/core/backend-resources.js?prior=$GITHUB_RUN_ID" -o "$QA_DIR/served-resources-before.js"
+          test "$(git hash-object "$QA_DIR/served-resources-before.js")" = "$(git rev-parse "$(jq -r .immutableSource.predecessor "$REQUEST"):app/core/backend-resources.js")"
+          curl -fsS --max-time 45 -H 'Cache-Control: no-cache, no-store' "$PROD_URL/" -o "$QA_DIR/production-before.html"
+          sha256sum "$QA_DIR/production-before.html" | awk '{print $1}' > "$QA_DIR/production-before.sha256"
+          jq -n --arg source "$SRC" --arg run "$GITHUB_RUN_ID" '{decision:"PASS_D06_DEV_PREDEPLOY_CAS",sourceSha:$source,runId:$run,builds:0,deploys:0,bankWrites:0,production:false}' > "$QA_DIR/preflight.json"
+      - name: Build immutable source image exactly once for DEV runtime
+        run: |
+          set -Eeuo pipefail
+          IMAGE_URI="gcr.io/$DEV_PROJECT/$DEV_SERVICE:i3-vrm297-$SRC-$GITHUB_RUN_ID"
+          jq -n --arg source "$SRC" --arg image "$IMAGE_URI" '{decision:"BUILD_ATTEMPT_STARTED",sourceSha:$source,image:$image,attempt:1,maxAttempts:1,production:false}' > "$QA_DIR/build-attempt.json"
+          gcloud builds submit "$SOURCE_DIR" --project "$DEV_PROJECT" +            --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" +            --substitutions "_IMAGE=$IMAGE_URI" --quiet 2>&1 | tee "$QA_DIR/build.log"
+          echo "IMAGE_URI=$IMAGE_URI" >> "$GITHUB_ENV"
+      - name: Cloud Run DEV once, exact new revision and health readback
+        run: |
+          set -Eeuo pipefail
+          jq -n '{decision:"CLOUD_RUN_DEPLOY_ATTEMPT_STARTED",attempt:1,maxAttempts:1,production:false}' > "$QA_DIR/runtime-attempt.json"
+          gcloud run services update "$DEV_SERVICE" --project "$DEV_PROJECT" --region "$DEV_REGION" --image "$IMAGE_URI" --quiet
+          gcloud run services describe "$DEV_SERVICE" --project "$DEV_PROJECT" --region "$DEV_REGION" --format=json > "$QA_DIR/runtime-after.json"
+          REV="$(jq -r '.status.latestReadyRevisionName // empty' "$QA_DIR/runtime-after.json")"
+          test -n "$REV" && test "$REV" != "$(jq -r .devOnly.beforeExpectedRuntimeRevision "$REQUEST")"
+          jq -e --arg rev "$REV" '([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$QA_DIR/runtime-after.json" >/dev/null
+          gcloud run revisions describe "$REV" --project "$DEV_PROJECT" --region "$DEV_REGION" --format=json > "$QA_DIR/runtime-revision-after.json"
+          IMAGE_REF="$(jq -r '.spec.containers[0].image // empty' "$QA_DIR/runtime-revision-after.json")"
+          [[ "$IMAGE_REF" == "$IMAGE_URI" || "$IMAGE_REF" == "gcr.io/$DEV_PROJECT/$DEV_SERVICE@sha256:"* ]]
+          RUNTIME_URL="$(jq -r '.status.url // empty' "$QA_DIR/runtime-after.json")"
+          test -n "$RUNTIME_URL"
+          curl -fsS --retry 6 --retry-delay 3 --max-time 30 "$RUNTIME_URL/health" -o "$QA_DIR/runtime-health-after.json"
+          jq -e '.ok==true and .production==false and .hrWrites==false' "$QA_DIR/runtime-health-after.json" >/dev/null
+      - name: Firestore Rules DEV exactly once, deny full bank and preserve resource projection
+        run: |
+          set -Eeuo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@14.16.0 >/dev/null 2>&1
+          jq -n '{decision:"FIRESTORE_RULES_DEPLOY_ATTEMPT_STARTED",attempt:1,maxAttempts:1,production:false}' > "$QA_DIR/rules-attempt.json"
+          cd "$SOURCE_DIR"
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json +            --only firestore:rules --project "$DEV_PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$QA_DIR/rules-deploy.log"
+          cd "$GITHUB_WORKSPACE"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" +            "https://firebaserules.googleapis.com/v1/projects/$DEV_PROJECT/releases/cloud.firestore" -o "$QA_DIR/rules-after.json"
+          test -n "$(jq -r '.rulesetName // empty' "$QA_DIR/rules-after.json")"
+          test "$(jq -r .rulesetName "$QA_DIR/rules-after.json")" != "$(jq -r .rulesetName "$QA_DIR/rules-before.json")"
+      - name: Firebase Hosting DEV exactly once from same immutable source tree
+        run: |
+          set -Eeuo pipefail
+          jq -n '{decision:"HOSTING_DEV_DEPLOY_ATTEMPT_STARTED",attempt:1,maxAttempts:1,production:false}' > "$QA_DIR/hosting-attempt.json"
+          cd "$SOURCE_DIR"
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json +            --only "hosting:$DEV_TARGET" --project "$DEV_PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$QA_DIR/hosting-deploy.log"
+          cd "$GITHUB_WORKSPACE"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" +            "https://firebasehosting.googleapis.com/v1beta1/sites/$DEV_HOSTING/channels/live" -o "$QA_DIR/hosting-after.json"
+          test "$(jq -r .release.version.name "$QA_DIR/hosting-after.json")" != "$(jq -r .release.version.name "$QA_DIR/hosting-before.json")"
+          for FILE in core/backend-certifications.js core/backend-resources.js modules/cert.js modules/documentos.js core/router.js index-backend-dev.html; do
+            SAFE="$(printf '%s' "$FILE" | tr '/' '-')"
+            curl -fsS --max-time 45 -H 'Cache-Control: no-cache, no-store' +              "$DEV_URL/$FILE?verify=$GITHUB_RUN_ID" -o "$QA_DIR/served-$SAFE"
+            test "$(git hash-object "$QA_DIR/served-$SAFE")" = "$(git rev-parse "$SRC:app/$FILE")"
+          done
+          curl -fsS --max-time 45 -H 'Cache-Control: no-cache, no-store' "$PROD_URL/" -o "$QA_DIR/production-after.html"
+          sha256sum "$QA_DIR/production-after.html" | awk '{print $1}' > "$QA_DIR/production-after.sha256"
+          cmp -s "$QA_DIR/production-before.sha256" "$QA_DIR/production-after.sha256"
+          jq -n --arg source "$SRC" --arg tree "$TREE" --arg runtime "$(jq -r .status.latestReadyRevisionName "$QA_DIR/runtime-after.json")" +            --arg rules "$(jq -r .rulesetName "$QA_DIR/rules-after.json")" +            --arg hosting "$(jq -r .release.version.name "$QA_DIR/hosting-after.json")" +            '{decision:"PASS_I3_D06_VRM297_ONE_SOURCE_THREE_DEV_DEPLOYS",sourceSha:$source,sourceTree:$tree,
+              runtimeRevision:$runtime,firestoreRuleset:$rules,hostingVersion:$hosting,
+              verifiedExactAssets:6,cloudBuilds:1,cloudRunDeploys:1,firestoreRulesDeploys:1,hostingDeploys:1,
+              bankWrites:0,shopperAttemptWrites:0,hrWrites:0,financeWrites:0,
+              productionChanged:false,shopperRoleE2E:"PENDING",domainMatchCount:5,
+              gate20:"HOLD",gate21:"HOLD",i4Authorized:false,production:false}' > "$QA_DIR/result.json"
+          jq -e '.decision=="PASS_I3_D06_VRM297_ONE_SOURCE_THREE_DEV_DEPLOYS"
+            and .verifiedExactAssets==6 and .productionChanged==false
+            and .shopperRoleE2E=="PENDING" and .domainMatchCount==5' "$QA_DIR/result.json" >/dev/null
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-d06-vrm297-dev-serial-${{ github.run_id }}
+          path: .tmp/i3-d06-vrm297-serial-dev/
+          if-no-files-found: warn
+          retention-days: 30

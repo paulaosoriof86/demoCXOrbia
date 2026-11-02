@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "cxorbia.i3.d06.vrm297.dev-serial-one-shot.20261102.v1",
+  "authorization": "PAULA_EXPLICIT_DEV_MODULE_RECERTIFICATION_2026_11_02",
+  "intent": "VRM297_SECURE_SHOPPER_BANK_AND_RESOURCE_PROJECTION_DEV_ONLY",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlParentSha": "62a968dfd48093d2ffb532fa49c0cc3b46308322",
+  "allowedControlFiles": [
+    ".github/workflows/cxorbia-i3-d05-qa-positive-lifecycle.yml",
+    "docs/checkpoints/CXORBIA_I3_D06_VRM297_DEV_SERIAL_ONE_SHOT_REQUEST_20261102.json"
+  ],
+  "immutableSource": {
+    "sha": "128272027850fa0edad710ad1451a927041815d4",
+    "tree": "4b357cb285ef03228e1dc928fda5f3115d8656f8",
+    "predecessor": "4ba2a96e1f90fba7ba8e981429bce8b4161ebee6",
+    "rulesBlob": "9001a1a39f97f8a83a8be9fcb96f5f2237da4109",
+    "bankClientBlob": "cb052f263f27999b2c3c067d1254fb5bc31ef9d6",
+    "resourcesClientBlob": "cdeb6f4dddac201a7701d82d427774840da1596f",
+    "certUiBlob": "dac1bbb506b34e6ddc0dbc2742fe39dfbc666415",
+    "backendBlob": "67497a09355b8f1538fc249a7d33348cc624a25f"
+  },
+  "controlProof": {
+    "firestoreEmulatorRunId": 41471892264,
+    "firestoreEmulatorConclusion": "success",
+    "globalSourceRunId": 41472970290,
+    "globalSourceConclusion": "success",
+    "sourceTestCases": 13,
+    "sourceTestFailures": 0,
+    "currentMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V222.json",
+    "currentLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V544_2026-11-02.json"
+  },
+  "devOnly": {
+    "project": "cxorbia-backend-dev",
+    "service": "cxorbia-live-hr-dev",
+    "region": "us-central1",
+    "hostingTarget": "cxorbia-dev",
+    "hostingSite": "cxorbia-backend-dev",
+    "beforeExpectedRuntimeRevision": "cxorbia-live-hr-dev-00331-2xq",
+    "beforeExpectedFirestoreRuleset": "projects/cxorbia-backend-dev/rulesets/79abb6e1-41ba-4415-8f8d-60b3ea274f2f",
+    "beforeExpectedHostingVersion": "sites/cxorbia-backend-dev/versions/00944ee3c1eb86cb",
+    "preflightMismatchPolicy": "STOP_ZERO_DEPLOYS_AND_REPORT_REAL_DRIFT",
+    "deploySequence": ["cloud-run", "firestore-rules", "firebase-hosting"],
+    "maxBuildAttempts": 1,
+    "maxCloudRunDeployAttempts": 1,
+    "maxFirestoreRulesDeployAttempts": 1,
+    "maxHostingDeployAttempts": 1,
+    "automaticRetry": false,
+    "automaticRollback": false,
+    "hrWrites": 0,
+    "bankWrites": 0,
+    "authWrites": 0,
+    "shopperAttemptWrites": 0,
+    "financeWrites": 0,
+    "productionDeploys": 0,
+    "production": "DO_NOT_TOUCH",
+    "authorizationI4": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "domainsFullyMatchedBeforeAndUntilReproof": 5
+  },
+  "postDevAcceptanceRequired": [
+    "3 authenticated Shoppers cannot get pending nor published full Firestore certification bank",
+    "3 authenticated Shoppers can see 8 released questions without answer keys or explanations",
+    "Admin can see 15 unreleased questions, edit only QA versioned bank and verify provider readback",
+    "Shopper practice is server graded and no browser answer key escapes",
+    "Ordinary project PDFs remain downloadable within correct role/project/period",
+    "3 role-specific negative paths, no real bank mutation and no production change",
+    "Human acceptance and every missing clause reproof before raising 5/21"
+  ]
+}
