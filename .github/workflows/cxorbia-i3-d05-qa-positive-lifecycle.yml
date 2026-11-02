@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      CXORBIA_PRODUCT_SOURCE_SHA: e44483d895e75d5e1bf48b327d464a8c4686ddba
+      CXORBIA_PRODUCT_SOURCE_SHA: a363f9e4f604cba722e899bb1916c442c77c1fed
     steps:
       - uses: actions/checkout@v4
         with:
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
-      CXORBIA_PRODUCT_SOURCE_SHA: e44483d895e75d5e1bf48b327d464a8c4686ddba
+      CXORBIA_PRODUCT_SOURCE_SHA: a363f9e4f604cba722e899bb1916c442c77c1fed
       CXORBIA_D06_READ_ONLY: ${{ contains(github.event.head_commit.message, '[i3-d06-shopper-read-only]') && '1' || '0' }}
     steps:
       - uses: actions/checkout@v4
@@ -56,6 +56,7 @@ jobs:
           test "$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = "$CXORBIA_PRODUCT_SOURCE_SHA"
           git diff --quiet "$CXORBIA_PRODUCT_SOURCE_SHA" HEAD -- app backend firestore.rules storage.rules firebase.json .firebaserc
           node --check tools/qa/cxorbia-i3-d05-qa-ui-review-shopper-read.mjs
+          echo "CXORBIA_D05_CERT_SOURCE_BLOB=$(git rev-parse "$CXORBIA_PRODUCT_SOURCE_SHA:app/modules/cert.js")" >> "$GITHUB_ENV"
       - uses: actions/setup-node@v4
         with:
           node-version: '24'

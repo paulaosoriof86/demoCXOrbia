@@ -9,7 +9,7 @@ import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
 import {chromium} from 'playwright';
 
-const SOURCE = 'e44483d895e75d5e1bf48b327d464a8c4686ddba';
+const SOURCE = 'a363f9e4f604cba722e899bb1916c442c77c1fed';
 const PROJECT = 'cxorbia-backend-dev';
 const TENANT = 'tya';
 const PROJECT_ID = 'cinepolis';
@@ -105,6 +105,18 @@ async function authenticatedPage(person, context) {
 async function preflight() {
   if (str(process.env.CXORBIA_PRODUCT_SOURCE_SHA) !== SOURCE ||
       !/^\d{7,20}$/.test(runId)) fail('RELEASE_COMPOSITION_FAILURE:D05_SOURCE_OR_RUN_ID');
+  const expectedCertBlob = str(process.env.CXORBIA_D05_CERT_SOURCE_BLOB);
+  if (!/^[0-9a-f]{40}$/.test(expectedCertBlob))
+    fail('RELEASE_COMPOSITION_FAILURE:D05_CERT_SOURCE_BLOB_MISSING');
+  const served = await fetch(ROOT + '/modules/cert.js?qaSource=' + encodeURIComponent(runId), {cache: 'no-store'});
+  if (!served.ok) fail('ENVIRONMENT_FAILURE:D05_DEV_CERT_ASSET_FETCH');
+  const assetBytes = Buffer.from(await served.arrayBuffer());
+  const servedBlob = crypto.createHash('sha1').update('blob ' + assetBytes.length + '\0')
+    .update(assetBytes).digest('hex');
+  result.devAssetReadback = {path: 'modules/cert.js', expectedGitBlob: expectedCertBlob,
+    servedGitBlob: servedBlob, exact: servedBlob === expectedCertBlob};
+  if (!result.devAssetReadback.exact)
+    fail('RELEASE_COMPOSITION_FAILURE:D05_DEV_CERT_SOURCE_NOT_SERVED');
   const credentialPath = str(process.env.GOOGLE_APPLICATION_CREDENTIALS);
   if (!credentialPath) fail('AUTH_FAILURE:D05_SERVICE_ACCOUNT_UNAVAILABLE');
   const sa = JSON.parse(fs.readFileSync(credentialPath, 'utf8'));
