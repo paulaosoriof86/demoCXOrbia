@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_D06_VRM297_SOURCE_ONLY_13_LOCAL_PASS_DEV_PENDING_16_NONMATCH",
+  "status": "HOLD_I3_D06_VRM298_BACKEND_RUNTIME_DEV_ACTIVE_16_NONMATCH",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "bf60d57aa36fac08933d14f93d80f4c30e59a36c",
   "productTreeAuthority": "1c02eb88bbbe2afdba136046dbf9716f2120f1fd",
   "predecessorProductSourceSha": "128272027850fa0edad710ad1451a927041815d4",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V546_2026-11-02.json",
-  "findingsLedgerExpectedGitBlob": "1f7df234b33818378ef60915ab8e0ff09c02aa8d",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V224.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V547_2026-11-02.json",
+  "findingsLedgerExpectedGitBlob": "7e6fa76bf17154cb19120cc2b7aaaa11e317a1e2",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V225.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM297_SOURCE_FIXED_PENDING_FIRESTORE_EMULATOR_CANONICAL_CI_DEV_3_SHOPPERS",
+  "activeBlocker": "D06_REAL_QA_ISOLATED_ATTEMPT_AND_PASSWORD_SHOPPER_E2E_AND_HUMAN_PENDING; OTHER_15_DOMAIN_ROLE_ACCEPTANCE",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "CI source P0 test 6 cases [i3-d06-attempt-contract] y global; después materializar solo backend nuevo en DEV con un build y readback de revisión, sin reprocesar Rules ni Hosting sin drift; repetir 3 Shopper solo lectura. Para intento positivo real, primero aislar identidad/banco/proyecto QA y KPI; no escribir intentos de Shopper reales. Beneficios / Auth+Core E2E por roles en paralelo; conservar G03 PASS Hosting DEV 231186c337bcd0ba, HR 32/83 provisionales y 51 pendientes, finanzas Q7,300 x2 sin recibo; Gate20/21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
+  "exactNextAction": "I3: VRM-298 fuente 6/6 CI PASS RUN41482423802 y global PASS RUN41482423622; backend DEV exacta revisión 00334-8jb al 100% PASS RUN41488609593 (0 builds extra, 1 traffic switch, Rules/Hosting/producción intactos). Siguiente: D06 intento positivo/negativo únicamente con identidad/proyecto/banco QA aislados y readback de ACK/idempotencia; Shopper login por contraseña y aceptación humana. Beneficios y Auth+Core E2E por roles con pruebas heredadas conservadas, sin reabrir PASS. Mantener G03 PASS Hosting DEV 231186c337bcd0ba, HR 32/83 provisionales y 51 pendientes, finanzas Q7,300 x2 sin recibo; 5/21 MATCH, Gates20/21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "2f2b25ad3cfe046fc7aca26c929191fa15df4fe5",
+  "moduleTruthExpectedGitBlob": "b54c847fdb2ebec603745c4a71f7509f2085877f",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -16538,10 +16538,24 @@
     "ownerBlob": "b8b0aedb3cd4bdeb927b814dae2bc29ba995e9b2",
     "qaBlob": "6e3634f966203ca753c0b0349b4806a2ac268982",
     "syntheticCasesPass": 6,
-    "canonicalCi": "PENDING",
-    "devMaterialization": "PENDING",
+    "canonicalCi": "PASS_SOURCE_RUN41482423802_GLOBAL_RUN41482423622",
+    "devMaterialization": "PASS_BACKEND_DEV_REV_00334_8JB_100_RUN41488609593",
     "providerWrites": 0,
     "fullMatch": false,
     "production": false
+  },
+  "vrm298DevTrafficActivation20261102": {
+    "path": "docs/checkpoints/CXORBIA_I3_D06_VRM298_DEV_TRAFFIC_ACTIVATION_PASS_20261102.json",
+    "gitBlob": "c35b99a3a6bd9d633c45de38e1ca8b3849fe51d7",
+    "runId": 41488609593,
+    "artifactId": 13163775583,
+    "revision": "cxorbia-live-hr-dev-00334-8jb",
+    "runtimeDigest": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:ef9f7134c6a4505fdd3a1e960f49da81486cb1feedb5ecbe677c52aa8df8f641",
+    "backendTrafficPercent": 100,
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/c69d52baf9e87433",
+    "noRebuild": true,
+    "production": false,
+    "fullD06Match": false
   }
 }

@@ -286,7 +286,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "CI source P0 test 6 cases [i3-d06-attempt-contract] y global; después materializar solo backend nuevo en DEV con un build y readback de revisión, sin reprocesar Rules ni Hosting sin drift; repetir 3 Shopper solo lectura. Para intento positivo real, primero aislar identidad/banco/proyecto QA y KPI; no escribir intentos de Shopper reales. Beneficios / Auth+Core E2E por roles en paralelo; conservar G03 PASS Hosting DEV 231186c337bcd0ba, HR 32/83 provisionales y 51 pendientes, finanzas Q7,300 x2 sin recibo; Gate20/21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
+  "nextExactAction": "I3: VRM-298 fuente 6/6 CI PASS RUN41482423802 y global PASS RUN41482423622; backend DEV exacta revisión 00334-8jb al 100% PASS RUN41488609593 (0 builds extra, 1 traffic switch, Rules/Hosting/producción intactos). Siguiente: D06 intento positivo/negativo únicamente con identidad/proyecto/banco QA aislados y readback de ACK/idempotencia; Shopper login por contraseña y aceptación humana. Beneficios y Auth+Core E2E por roles con pruebas heredadas conservadas, sin reabrir PASS. Mantener G03 PASS Hosting DEV 231186c337bcd0ba, HR 32/83 provisionales y 51 pendientes, finanzas Q7,300 x2 sin recibo; 5/21 MATCH, Gates20/21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -986,12 +986,12 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V224.json",
-    "gitBlob": "2f2b25ad3cfe046fc7aca26c929191fa15df4fe5",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V225.json",
+    "gitBlob": "b54c847fdb2ebec603745c4a71f7509f2085877f",
     "sourceSha": "bf60d57aa36fac08933d14f93d80f4c30e59a36c",
     "allModulesMatch": false,
     "phaseAComplete": false,
-    "sha256": "7a452525dcd0e57674936e8c9cd087a4549c05818957cda5e31d5133292c92bd"
+    "sha256": "7cfb7ca2704350e9cbf62233e1897ef94a0c64444f05b33bd4d599829a669966"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -5497,7 +5497,7 @@
     "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
     "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751"
   },
-  "exactNextAction": "I3 V220 — G03 CRM 2 Admin DEV PASS y Hosting DEV histórico 231186c337bcd0ba (antes del deploy D05), reutilizar sin repetir; VRM-286 Admin 748/748 visitas y 17/17 períodos RUN41336613738 PASS. D05 corrección Hosting DEV exacta 8 assets RUN41383743722, guardado Admin QA real v1→v2 +16 lecturas RUN41384446891 PASS, sin editar banco real. D06 RUN41385453693 FAIL: 3/3 Shopper pueden leer banco pendiente 15Q y claves, además de claves del publicado 8Q; VRM-296/297 P0. Sucesor fuente 4ba2a96e1f90fba7ba8e981429bce8b4161ebee6 compone consultas y reglas seguras; Firestore emulador RUN41386412201 PASS (32 casos), índices DEV y Hosting DEV PENDIENTES; después revalidar 3 Shopper y resolver proyección sin claves publicada, sin elevar dominio MATCH. En paralelo aceptación humana aislada Admin/Cliente/Shopper para auth/config, beneficios y otros módulos cercanos, reutilizando pruebas previas. HR 32/83 grupos provisionales y 51 pendientes, finanzas Q7,300 x2 sin recibo: NO fusionar/duplicar/borrar. 5/21 MATCH; Gates20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH, un escritor.",
+  "exactNextAction": "I3: VRM-298 fuente 6/6 CI PASS RUN41482423802 y global PASS RUN41482423622; backend DEV exacta revisión 00334-8jb al 100% PASS RUN41488609593 (0 builds extra, 1 traffic switch, Rules/Hosting/producción intactos). Siguiente: D06 intento positivo/negativo únicamente con identidad/proyecto/banco QA aislados y readback de ACK/idempotencia; Shopper login por contraseña y aceptación humana. Beneficios y Auth+Core E2E por roles con pruebas heredadas conservadas, sin reabrir PASS. Mantener G03 PASS Hosting DEV 231186c337bcd0ba, HR 32/83 provisionales y 51 pendientes, finanzas Q7,300 x2 sin recibo; 5/21 MATCH, Gates20/21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
   "previousExecutionReceiptBeforeRun1983Seal": {
     "path": "CXORBIA_I3_RUN1852_POST_DEPLOY_CONSISTENCY_SEAL_2026-10-24.json",
     "kind": "RUN1852_SOURCE_F283_DEV_PASS_ADMIN_THREE_VISIT_UI_PASS_DURABLE_HR_OPERATIONAL_PARITY_P0_OPEN",
@@ -6012,8 +6012,8 @@
     },
     "production": false
   },
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V546_2026-11-02.json",
-  "findingsLedgerExpectedGitBlob": "1f7df234b33818378ef60915ab8e0ff09c02aa8d",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V547_2026-11-02.json",
+  "findingsLedgerExpectedGitBlob": "7e6fa76bf17154cb19120cc2b7aaaa11e317a1e2",
   "nextFindingId": "VRM-299",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -6538,10 +6538,24 @@
     "ownerBlob": "b8b0aedb3cd4bdeb927b814dae2bc29ba995e9b2",
     "qaBlob": "6e3634f966203ca753c0b0349b4806a2ac268982",
     "syntheticCasesPass": 6,
-    "canonicalCi": "PENDING",
-    "devMaterialization": "PENDING",
+    "canonicalCi": "PASS_SOURCE_RUN41482423802_GLOBAL_RUN41482423622",
+    "devMaterialization": "PASS_BACKEND_DEV_REV_00334_8JB_100_RUN41488609593",
     "providerWrites": 0,
     "fullMatch": false,
     "production": false
+  },
+  "vrm298DevTrafficActivation20261102": {
+    "path": "docs/checkpoints/CXORBIA_I3_D06_VRM298_DEV_TRAFFIC_ACTIVATION_PASS_20261102.json",
+    "gitBlob": "c35b99a3a6bd9d633c45de38e1ca8b3849fe51d7",
+    "runId": 41488609593,
+    "artifactId": 13163775583,
+    "revision": "cxorbia-live-hr-dev-00334-8jb",
+    "runtimeDigest": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:ef9f7134c6a4505fdd3a1e960f49da81486cb1feedb5ecbe677c52aa8df8f641",
+    "backendTrafficPercent": 100,
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/c69d52baf9e87433",
+    "noRebuild": true,
+    "production": false,
+    "fullD06Match": false
   }
 }
