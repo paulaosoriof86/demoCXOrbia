@@ -10,6 +10,7 @@ const SEP='cinepolis-2026-09',OCT='cinepolis-2026-10';
 const items=[
  {id:'sept-draft',projectId:'cinepolis',periodId:SEP,status:'active',resourceType:'certification_bank',visibleRoles:['shopper','admin'],bank:{estado:'pending_review',preguntas:new Array(10).fill({q:'fixture'})}},
  {id:'oct-published',projectId:'cinepolis',periodId:OCT,status:'active',resourceType:'certification_bank',visibleRoles:['shopper','admin'],bank:{estado:'published',preguntas:new Array(8).fill({q:'fixture'})}},
+ {id:'oct-document',projectId:'cinepolis',periodId:OCT,status:'active',resourceType:'project_resource',visibleRoles:['shopper','admin'],tipo:'pdf',n:'Approved PDF'},
  {id:'other-project-bank',projectId:'other-project',periodId:'other-project-2026-10',status:'active',resourceType:'certification_bank',visibleRoles:['shopper','admin'],bank:{estado:'published',preguntas:new Array(4).fill({q:'fixture'})}}
 ];
 function harness({deferred=false,fail=false}={}){
@@ -21,7 +22,11 @@ function harness({deferred=false,fail=false}={}){
  class Query {
   constructor(conditions=[]){this.conditions=conditions;}
   where(field,op,value){return new Query([...this.conditions,[field,op,value]]);}
-  snapshot(){return{docs:items.filter(row=>this.conditions.every(([f,op,v])=>op==='=='?row[f]===v:op==='array-contains'?row[f].includes(v):false)).map(row=>({id:row.id,data:()=>row}))};}
+  snapshot(){return{docs:items.filter(row=>this.conditions.every(([f,op,v])=>{
+   const field=f.split('.').reduce((value,key)=>value?.[key],row);
+   return op==='=='?field===v:op==='array-contains'?Array.isArray(field)&&field.includes(v):
+    op==='in'?Array.isArray(v)&&v.includes(field):false;
+  })).map(row=>({id:row.id,data:()=>row}))};}
   get(){if(fail)return Promise.reject(new Error('MOCK_FIRESTORE_DENIED'));if(deferred)return new Promise((resolve,reject)=>pending.push({resolve,reject,snapshot:()=>this.snapshot()}));return Promise.resolve(this.snapshot());}
  }
  const firebase={apps:[{}],auth:()=>({currentUser:{uid:'qa-user'}}),firestore:()=>({collection:()=>({doc:()=>({collection:()=>new Query()})})})};
@@ -32,11 +37,12 @@ function harness({deferred=false,fail=false}={}){
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
 test('D/Cert: published October bank reloads after the protected HR authority changes period',async()=>{
  const h=harness();await h.emit('backend-ready',{source:'firestore'});
- assert.equal(h.banks(SEP).length,1);
+ assert.equal(h.banks(SEP).length,0,'pending September answers must never enter Shopper cache');
  assert.equal(h.banks(OCT).length,0);
  h.cx.data.currentPeriodId=OCT;
  h.dom('cx:protected-auth-hr-authority-ready');await flush();
  assert.deepEqual(Array.from(h.banks(OCT),x=>x.id),['oct-published']);
+ assert.deepEqual(Array.from(h.cx.backendResources.list({projectId:'cinepolis',periodId:OCT,resourceType:'project_resource'}),x=>x.id),['oct-document']);
  assert.equal(h.banks(SEP).length,0);
  assert.equal(h.win.CX_BACKEND_RESOURCES_STATUS.periodId,OCT);
  assert.equal(h.emitted.filter(e=>e.k==='resources').length,2);
@@ -46,10 +52,10 @@ test('D/Cert: later stale September response never replaces the current October 
  const h=harness({deferred:true});
  const p=h.emit('backend-ready',{source:'firestore'});
  h.cx.data.currentPeriodId=OCT;h.dom('cx:protected-auth-hr-authority-ready');
- assert.equal(h.pending.length,2);
- h.pending[1].resolve(h.pending[1].snapshot());await flush();
+ assert.equal(h.pending.length,4,'each authorized resource type needs an isolated query');
+ h.pending[2].resolve(h.pending[2].snapshot());h.pending[3].resolve(h.pending[3].snapshot());await flush();
  assert.deepEqual(Array.from(h.banks(OCT),x=>x.id),['oct-published']);
- h.pending[0].resolve(h.pending[0].snapshot());await p;await flush();
+ h.pending[0].resolve(h.pending[0].snapshot());h.pending[1].resolve(h.pending[1].snapshot());await p;await flush();
  assert.deepEqual(Array.from(h.banks(OCT),x=>x.id),['oct-published']);
 });
 test('D/Cert: project change never retains another project or period in cache',async()=>{

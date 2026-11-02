@@ -30,6 +30,14 @@ window.CX=window.CX||{};
     if(!item||item.status!=='active'||str(item.projectId)!==scope.projectId)return false;
     if(item.periodId&&scope.periodId&&str(item.periodId)!==scope.periodId)return false;
     if(isOperator())return true;
+    // A Shopper must never receive unreleased certification questions or the
+    // answer key of a draft, including via a stale application resource cache.
+    if(role()==='shopper'){
+      const type=str(item.resourceType),state=str(item.bank?.estado);
+      if(type==='certification_bank'&&!['published','confirmed','approved_preview'].includes(state))return false;
+      if(!['project_resource','certification_bank'].includes(type)||
+        (type==='project_resource'&&str(item.tipo)==='certification_bank'))return false;
+    }
     return item.targetAll===true||arr(item.visibleRoles).map(str).includes(role());
   }
   function blocked(code,extra={}){return Object.assign({ok:false,status:'blocked',committed:false,providerAck:false,successUiAllowed:false,localMutation:false,localStorageWrite:false,code,production:false},extra);}
@@ -74,11 +82,24 @@ window.CX=window.CX||{};
       return [];
     }
     try{
-      let q=c.where('projectId','==',scope.projectId).where('status','==','active');
-      if(!isOperator())q=q.where('visibleRoles','array-contains',role());
-      const snap=await q.get();
+      const q=c.where('projectId','==',scope.projectId).where('status','==','active');
+      let snapshots;
+      if(role()==='shopper'){
+        // Firestore rules are not query filters. An all-resource Shopper query
+        // could include a pending bank and would be denied under the D06 rules.
+        // Both eligible collections must resolve before publishing any cache.
+        const eligible=q.where('visibleRoles','array-contains',role());
+        snapshots=await Promise.all([
+          eligible.where('resourceType','==','project_resource').get(),
+          eligible.where('resourceType','==','certification_bank')
+            .where('bank.estado','in',['published','confirmed','approved_preview']).get()
+        ]);
+      }else{
+        snapshots=[await (isOperator()?q:q.where('visibleRoles','array-contains',role())).get()];
+      }
       if(readId!==latestLoadId||cacheKey(currentScope())!==key)return [];
-      const rows=snap.docs.map(d=>Object.assign({id:d.id},d.data()||{})).filter(x=>visible(x,scope));
+      const rows=snapshots.flatMap(snap=>snap.docs)
+        .map(d=>Object.assign({id:d.id},d.data()||{})).filter(x=>visible(x,scope));
       api.items=rows;lastLoadedKey=key;
       publishReadState(scope,{source:'firestore',status:'ready',tenantId:scope.tenantId,projectId:scope.projectId,periodId:scope.periodId,count:rows.length,at:now()});
       return rows;

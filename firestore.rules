@@ -372,7 +372,18 @@ service cloud.firestore {
           isShopperRole() &&
           resource.data.status == 'active' &&
           resource.data.projectId in request.auth.token.projectIds &&
-          role() in resource.data.visibleRoles
+          role() in resource.data.visibleRoles &&
+          // A resource's role metadata alone cannot release a draft bank.
+          // Query-level resourceType/bank.estado filters are mandatory because
+          // Firestore rules reject potential matches; they do not filter rows.
+          (
+            resource.data.get('resourceType', '') == 'project_resource' ||
+            (
+              resource.data.get('resourceType', '') == 'certification_bank' &&
+              resource.data.get('bank', {}).get('estado', '') in
+                ['published', 'confirmed', 'approved_preview']
+            )
+          )
         );
         allow create: if tenantAllowed(tenantId) && isOperator() &&
           (!certificationBank(request.resource.data) || createCertificationDraft(request.resource.data));
