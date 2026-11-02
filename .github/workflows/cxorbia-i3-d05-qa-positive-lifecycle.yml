@@ -40,12 +40,13 @@ jobs:
           retention-days: 30
 
   d05-qa-ui-review-shopper-read:
-    if: ${{ contains(github.event.head_commit.message, '[i3-d05-qa-ui-review-shopper]') || contains(github.event.head_commit.message, '[i3-d06-shopper-read-only]') }}
+    if: ${{ contains(github.event.head_commit.message, '[i3-d05-qa-ui-review-shopper]') || contains(github.event.head_commit.message, '[i3-d06-shopper-read-only]') || contains(github.event.head_commit.message, '[i3-d06-vrm296-reproof]') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
       CXORBIA_PRODUCT_SOURCE_SHA: 4ba2a96e1f90fba7ba8e981429bce8b4161ebee6
-      CXORBIA_D06_READ_ONLY: ${{ contains(github.event.head_commit.message, '[i3-d06-shopper-read-only]') && '1' || '0' }}
+      CXORBIA_D06_READ_ONLY: ${{ (contains(github.event.head_commit.message, '[i3-d06-shopper-read-only]') || contains(github.event.head_commit.message, '[i3-d06-vrm296-reproof]')) && '1' || '0' }}
+      CXORBIA_D06_VRM296_ONLY: ${{ contains(github.event.head_commit.message, '[i3-d06-vrm296-reproof]') && '1' || '0' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -56,6 +57,20 @@ jobs:
           test "$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = "$CXORBIA_PRODUCT_SOURCE_SHA"
           git diff --quiet "$CXORBIA_PRODUCT_SOURCE_SHA" HEAD -- app backend firestore.rules storage.rules firebase.json .firebaserc
           node --check tools/qa/cxorbia-i3-d05-qa-ui-review-shopper-read.mjs
+          if [ "$CXORBIA_D06_VRM296_ONLY" = 1 ]; then
+            REQUEST=docs/checkpoints/CXORBIA_I3_D06_VRM296_THREE_SHOPPER_READ_ONLY_REPROOF_20261102.json
+            jq -e '.schemaVersion=="cxorbia.i3.d06.vrm296-three-shopper-readonly-reproof.20261102.v1"
+              and .authorization=="PAULA_EXPLICIT_CERTIFY_MODULES_2026_11_02"
+              and .sourceSha=="4ba2a96e1f90fba7ba8e981429bce8b4161ebee6"
+              and .limits.realBankWrites==0 and .limits.shopperAttemptWrites==0
+              and .limits.qaBankWrites==0 and .limits.devDeploys==0
+              and .limits.productionWrites==0 and .limits.production=="DO_NOT_TOUCH"
+              and .expectedVrm297=="OPEN"' "$REQUEST" >/dev/null
+            test "$(git rev-parse HEAD^)" = "$(jq -r .controlParentSha "$REQUEST")"
+            test "$(git diff --name-only HEAD^ HEAD | LC_ALL=C sort)" = "$(jq -r '.allowedFiles|sort|.[]' "$REQUEST")"
+            test "$(git rev-parse "$CXORBIA_PRODUCT_SOURCE_SHA^{tree}")" = "$(jq -r .sourceTree "$REQUEST")"
+            test "$(git rev-parse HEAD:tools/qa/cxorbia-i3-d05-qa-ui-review-shopper-read.mjs)" = "$(jq -r .qaScriptBlob "$REQUEST")"
+          fi
           echo "CXORBIA_D05_CERT_SOURCE_BLOB=$(git rev-parse "$CXORBIA_PRODUCT_SOURCE_SHA:app/modules/cert.js")" >> "$GITHUB_ENV"
       - uses: actions/setup-node@v4
         with:

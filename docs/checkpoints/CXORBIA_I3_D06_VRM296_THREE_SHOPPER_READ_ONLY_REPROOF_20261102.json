@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "cxorbia.i3.d06.vrm296-three-shopper-readonly-reproof.20261102.v1",
+  "date": "2026-11-02",
+  "intent": "THREE_EXISTING_AUTHENTICATED_SHOPPER_SESSIONS_READ_ONLY_VERIFY_PENDING_DENIAL_VRM296",
+  "authorization": "PAULA_EXPLICIT_CERTIFY_MODULES_2026_11_02",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlParentSha": "eaa922cd303431e2307420a454134b97dbab4ccd",
+  "controlParentTree": "208a3057525a988f7e9872a3aba283342666291f",
+  "allowedFiles": [
+    ".github/workflows/cxorbia-i3-d05-qa-positive-lifecycle.yml",
+    "tools/qa/cxorbia-i3-d05-qa-ui-review-shopper-read.mjs",
+    "docs/checkpoints/CXORBIA_I3_D06_VRM296_THREE_SHOPPER_READ_ONLY_REPROOF_20261102.json"
+  ],
+  "sourceSha": "4ba2a96e1f90fba7ba8e981429bce8b4161ebee6",
+  "sourceTree": "0e19bfe90db917d67cf493c79bc74df4d44f1a81",
+  "qaScriptBlob": "e0de552c683093e7e3534ff45468f2bbd6a56690",
+  "environment": {
+    "project": "cxorbia-backend-dev",
+    "tenant": "tya",
+    "projectId": "cinepolis",
+    "period": "2026-10",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/00944ee3c1eb86cb",
+    "ruleset": "projects/cxorbia-backend-dev/rulesets/79abb6e1-41ba-4415-8f8d-60b3ea274f2f",
+    "indexesReady": 3
+  },
+  "priorDevMaterialization": {
+    "runId": 41463769468,
+    "conclusion": "success",
+    "artifactId": 13150347458,
+    "artifactZipSha256": "05990229703dd2341603539fc56be40efc9db44e80a1def832334cc799314cf5",
+    "servedAssetsExact": 8,
+    "realBankWrites": 0,
+    "productionChanged": false
+  },
+  "proof": {
+    "realExistingShopperSessionsExpected": 3,
+    "readOnlyCustomToken": true,
+    "realBankDigestBeforeAfter": true,
+    "pendingBankGetDeniedByRules": true,
+    "pendingBankAbsentFromClientCache": true,
+    "publishedBankStillVisible": true,
+    "publishedKeysStatus": "OPEN_SEPARATE_VRM297_NOT_ACCEPTED_AS_D06_PASS",
+    "adminEditorNotChanged": true
+  },
+  "limits": {
+    "realBankWrites": 0,
+    "shopperAttemptWrites": 0,
+    "qaBankWrites": 0,
+    "devDeploys": 0,
+    "HRWrites": 0,
+    "authUserCreates": 0,
+    "productionWrites": 0,
+    "production": "DO_NOT_TOUCH"
+  },
+  "expectedVrm297": "OPEN",
+  "frozen": {
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V220.json",
+    "matchedDomains": 5,
+    "totalDomains": 21,
+    "gates20And21": "HOLD",
+    "i4Authorized": false
+  },
+  "fullD06Match": false
+}

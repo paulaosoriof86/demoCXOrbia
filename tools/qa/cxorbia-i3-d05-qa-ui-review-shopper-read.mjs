@@ -9,7 +9,7 @@ import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
 import {chromium} from 'playwright';
 
-const SOURCE = 'a363f9e4f604cba722e899bb1916c442c77c1fed';
+const SOURCE = '4ba2a96e1f90fba7ba8e981429bce8b4161ebee6';
 const PROJECT = 'cxorbia-backend-dev';
 const TENANT = 'tya';
 const PROJECT_ID = 'cinepolis';
@@ -17,6 +17,7 @@ const PERIOD = '2026-10';
 const ROOT = 'https://cxorbia-backend-dev.web.app';
 const OUT = '.tmp/cxorbia-i3-d05-qa-ui-review-shopper';
 const SHOPPER_READ_ONLY = process.env.CXORBIA_D06_READ_ONLY === '1';
+const SHOPPER_VRM296_ONLY = process.env.CXORBIA_D06_VRM296_ONLY === '1';
 const str = v => String(v ?? '').trim();
 const arr = v => Array.isArray(v) ? v : [];
 const sha = v => crypto.createHash('sha256').update(typeof v === 'string' ? v : JSON.stringify(v)).digest('hex');
@@ -35,7 +36,9 @@ const result = {
   shopper: {status: 'PENDING', submittedAttempt: false}
 };
 if (SHOPPER_READ_ONLY) {
-  result.scope = 'EXISTING_SHOPPER_AUTHENTICATED_UI_PUBLISHED_BANK_READ_ONLY';
+  result.scope = SHOPPER_VRM296_ONLY
+    ? 'EXACT_3_REAL_SHOPPERS_PENDING_BANK_GET_DENIED_AND_PUBLISHED_RETAINED_VRM297_OPEN'
+    : 'EXISTING_SHOPPER_AUTHENTICATED_UI_PUBLISHED_BANK_READ_ONLY';
   result.qa.status = 'NOT_RUN_NO_QA_WRITES';
 }
 fs.mkdirSync(OUT, {recursive: true});
@@ -310,6 +313,18 @@ async function shopperReadOnly({shopper, publishedId, pendingId}, sessionIndex=1
   }));
   if (!role.auth || role.role !== 'shopper' || !role.projectIds.includes(PROJECT_ID))
     fail('AUTH_FAILURE:D06_SHOPPER_ROLE_SCOPE_MISMATCH');
+  const pendingDirectGet = await page.evaluate(async path => {
+    if (typeof window.firebase?.firestore !== 'function') return 'SDK_UNAVAILABLE';
+    try {
+      await window.firebase.firestore().doc(path).get();
+      return 'UNEXPECTED_ALLOWED';
+    } catch (error) {
+      return String(error?.code || '') === 'permission-denied'
+        ? 'DENIED' : 'UNEXPECTED_ERROR_' + String(error?.code || 'unknown');
+    }
+  }, `tenants/${TENANT}/resources/${pendingId}`);
+  if (pendingDirectGet !== 'DENIED')
+    fail('FUNCTIONAL_DEFECT:D06_PENDING_BANK_DIRECT_GET_NOT_DENIED');
   await page.locator('#nav-cert').waitFor({state: 'visible', timeout: 30000});
   await page.locator('#nav-cert').click();
   await page.waitForFunction(() => window.CX?.session?.view === 'cert', null, {timeout: 30000});
@@ -336,6 +351,7 @@ async function shopperReadOnly({shopper, publishedId, pendingId}, sessionIndex=1
   }, {expectedId: publishedId, unpublishedId: pendingId});
   result.shopper = {status: 'HOLD', role: 'shopper', realExistingUser: true,
     publishedVisible: observed.publishedVisible,
+    pendingDirectGet,
     publishedQuestions: observed.publishedQuestions,
     publishedAnswerKeysInBrowser: observed.publishedAnswerKeysInBrowser,
     qaVisible: observed.qaVisible,
@@ -403,14 +419,21 @@ try {
       shopperReads.push({...readback, shopperUidFingerprint: sha(person.uid)});
     }
     if (!shopperReads.length) fail('AUTH_FAILURE:D06_EXISTING_SHOPPER_MEMBERSHIP_UNAVAILABLE');
+    if (SHOPPER_VRM296_ONLY && shopperReads.length !== 3)
+      fail('AUTH_FAILURE:D06_THREE_REAL_SHOPPERS_REQUIRED');
     result.independentShopperReads = shopperReads;
     result.shopper = shopperReads[0];
     await protectRealBanks();
     if (shopperReads.some(x => x.unpublishedVisible || x.unpublishedAnswerKeysInBrowser))
       fail('FUNCTIONAL_DEFECT:D06_UNPUBLISHED_BANK_CONTENT_VISIBLE_TO_SHOPPER');
-    if (shopperReads.some(x => x.publishedAnswerKeysInBrowser))
-      fail('FUNCTIONAL_DEFECT:D06_PUBLISHED_BANK_ANSWER_KEYS_VISIBLE_TO_SHOPPER');
-    result.decision = 'PASS_D06_MULTI_SHOPPER_PUBLISHED_ONLY_AND_NEGATIVE_VISIBILITY_READ_ONLY';
+    if (shopperReads.some(x => x.publishedAnswerKeysInBrowser)) {
+      if (!SHOPPER_VRM296_ONLY)
+        fail('FUNCTIONAL_DEFECT:D06_PUBLISHED_BANK_ANSWER_KEYS_VISIBLE_TO_SHOPPER');
+      result.unresolvedP0 = 'VRM-297_PUBLISHED_BANK_ANSWER_KEYS_REACH_SHOPPER';
+      result.decision = 'PASS_D06_VRM296_THREE_REAL_SHOPPERS_PENDING_DENIED_VRM297_OPEN';
+    } else {
+      result.decision = 'PASS_D06_MULTI_SHOPPER_PUBLISHED_ONLY_AND_NEGATIVE_VISIBILITY_READ_ONLY';
+    }
   } else {
     await saveQaViaAdminUi(scope);
     await protectRealBanks();
