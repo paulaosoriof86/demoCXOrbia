@@ -14,11 +14,12 @@ const owners=[
 ];
 const suites=[
   ['backend/runtime/hr-live-service/test/cxorbia-prei4-cert-res-contract.test.mjs',40],
-  ['tools/qa/cxorbia-i3-d04-versioned-bank-review.test.mjs',60]
+  ['tools/qa/cxorbia-i3-d04-versioned-bank-review.test.mjs',60],
+  ['tools/qa/cxorbia-i3-d05-review-visibility-source.test.mjs',6]
 ];
 const git=(...args)=>execFileSync('git',args,{encoding:'utf8',timeout:30000}).trim();
 
-test('D05/D04 exact canonical source, 100 server/client assertions, no DEV actions',()=>{
+test('D05/D04 exact canonical source, 106 server/client assertions, no DEV actions',()=>{
   const descriptor=JSON.parse(readFileSync(descriptorPath,'utf8'));
   const source=String(descriptor.productSourceSha||'');
   const tree=String(descriptor.productTreeAuthority||'');
@@ -41,7 +42,7 @@ test('D05/D04 exact canonical source, 100 server/client assertions, no DEV actio
   }
   console.log(JSON.stringify({
     decision:'PASS_D05_D04_EXACT_CANONICAL_SOURCE_CI_FOCAL',
-    sourceSha:source,sourceTree:tree,tests:100,pass:100,fail:0,
+    sourceSha:source,sourceTree:tree,tests:106,pass:106,fail:0,
     scope:'SERVER_CLIENT_SOURCE_ONLY',rulesE2e:'PENDING',
     devRuntimeHosting:'PENDING',shopperLifecycle:'PENDING',
     humanAcceptance:'PENDING',builds:0,deploys:0,hrWrites:0,production:false
