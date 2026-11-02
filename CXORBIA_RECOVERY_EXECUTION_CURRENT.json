@@ -3028,8 +3028,8 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "bf60d57aa36fac08933d14f93d80f4c30e59a36c",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V224.json",
-    "matrixBlob": "2f2b25ad3cfe046fc7aca26c929191fa15df4fe5",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V225.json",
+    "matrixBlob": "b54c847fdb2ebec603745c4a71f7509f2085877f",
     "classificationCounts": {
       "COMPOSED_NOT_DEPLOYED": 2,
       "MATCH": 5,
@@ -3040,7 +3040,7 @@
       "TRUE_FUNCTIONAL_DEFECT": 3
     },
     "derivedAt": "2026-11-02",
-    "meaning": "5_OF_21_MATCH__VRM297_DEV_SECURITY_PASS_PRIOR_SOURCE__VRM298_P0_NEW_SOURCE_SYNTHETIC_6_PASS_CI_DEV_PENDING"
+    "meaning": "5_OF_21_MATCH__VRM297_3_REAL_SHOPPERS_PASS__VRM298_SOURCE_AND_BACKEND_DEV_100_PASS_FULL_D06_QA_ATTEMPT_PENDING"
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
   "activeMethodologyGuard": {
