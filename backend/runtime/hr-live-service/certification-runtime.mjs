@@ -91,8 +91,17 @@ async function loadPublishedBank(db,scope,body){
   const snap=await resourcesCol(db,scope).doc(rid).get();
   if(!snap.exists)throw new Error('CERT_BANK_NOT_FOUND');
   const resource={id:snap.id,...(snap.data()||{})};
-  if(resource.status!=='active'||resource.resourceType!=='certification_bank'||str(resource.projectId)!==scope.projectId)throw new Error('CERT_BANK_SCOPE_MISMATCH');
-  if(body.periodId&&resource.periodId&&str(resource.periodId)!==str(body.periodId))throw new Error('CERT_BANK_PERIOD_MISMATCH');
+  if(resource.status!=='active'||resource.resourceType!=='certification_bank'||
+    str(resource.tipo)!=='certification_bank'||str(resource.projectId)!==scope.projectId||
+    (resource.tenantId!==undefined&&str(resource.tenantId)!==scope.tenantId))
+    throw new Error('CERT_BANK_SCOPE_MISMATCH');
+  if(!str(body.periodId)||str(resource.periodId)!==str(body.periodId))
+    throw new Error('CERT_BANK_PERIOD_MISMATCH');
+  // D06 P0: an arbitrary known resource ID is not authorization to sit an exam.
+  // An Admin-only or disposable QA bank must never create a Shopper credential.
+  if(resource.qaOnly===true||
+    !(resource.targetAll===true||arr(resource.visibleRoles).map(str).includes('shopper')))
+    throw new Error('CERT_BANK_AUDIENCE_MISMATCH');
   const bank=resource.bank||{};
   if(!['published','confirmed'].includes(str(bank.estado).toLowerCase()))throw new Error('CERT_BANK_NOT_PUBLISHED');
   if(!arr(bank.preguntas).length)throw new Error('CERT_BANK_EMPTY');
@@ -378,7 +387,20 @@ async function saveAttempt(db,scope,principal,body,sourceRevision,idem){
   let replay=false,item=null;
   await db.runTransaction(async tx=>{
     const snap=await tx.get(ref);
-    if(snap.exists){replay=true;item={id:snap.id,...(snap.data()||{})};return;}
+    if(snap.exists){
+      const previous=snap.data()||{};
+      // The idempotency key names one exact attempt, not a mutable score lookup.
+      // A conflicting replay must never return the newly calculated feedback
+      // next to the old durable certification record.
+      const exact={recordType:'certification_attempt',tenantId:scope.tenantId,
+        projectId:scope.projectId,periodId:str(body.periodId||resource.periodId),
+        shopperId:str(principal.shopperId),bankResourceId:resource.id,
+        bankFingerprint:fingerprint,answersHash:sha(body.answers),
+        idempotencyKeyHash:sha(idem),score:calc.score,gate:calc.gate,pass:calc.pass};
+      if(Object.entries(exact).some(([key,value])=>previous[key]!==value))
+        throw new Error('CERT_ATTEMPT_IDEMPOTENCY_REUSE');
+      replay=true;item={id:snap.id,...previous};return;
+    }
     item={recordType:'certification_attempt',tenantId:scope.tenantId,projectId:scope.projectId,periodId:str(body.periodId||resource.periodId),shopperId:str(principal.shopperId),bankResourceId:resource.id,bankFingerprint:fingerprint,contentRevision:str(bank.contentRevision||fingerprint),score:calc.score,gate:calc.gate,pass:calc.pass,status:calc.pass?'certified':'failed',eligibilityGranted:calc.pass,currentCertification:calc.pass,recertificationSatisfied:calc.pass&&recerts.length>0,recertificationRequestIds:recerts.map(r=>r.id),sourceRevision:str(sourceRevision||''),answersHash:sha(body.answers),idempotencyKeyHash:sha(idem),providerAck:true,createdAt,createdByUid:str(principal.uid),updatedAt:createdAt};
     tx.create(ref,item);
   });
@@ -563,7 +585,7 @@ export async function saveCertificationBankLifecycle(db,scope,principal,body,act
 }
 
 function errorStatus(message){
-  if(/CERT_BANK_EXPECTED_VERSION_CONFLICT|CERT_BANK_IDEMPOTENCY_REUSE|AI_PERSISTENCE_DRAFT_RETIRED/.test(message))return 409;
+  if(/CERT_BANK_EXPECTED_VERSION_CONFLICT|CERT_BANK_IDEMPOTENCY_REUSE|CERT_ATTEMPT_IDEMPOTENCY_REUSE|AI_PERSISTENCE_DRAFT_RETIRED/.test(message))return 409;
   if(/CERT_REVIEW_DISTINCT_REVIEWER_REQUIRED/.test(message))return 403;
   if(/CERT_REVIEW_POLICY_/.test(message))return 400;
   if(/AUTH_FAILURE|OPERATOR_REQUIRED|SHOPPER_REQUIRED/.test(message))return 403;
