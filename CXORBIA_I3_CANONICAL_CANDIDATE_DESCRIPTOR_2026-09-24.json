@@ -7,8 +7,8 @@
   "productSourceSha": "128272027850fa0edad710ad1451a927041815d4",
   "productTreeAuthority": "4b357cb285ef03228e1dc928fda5f3115d8656f8",
   "predecessorProductSourceSha": "4ba2a96e1f90fba7ba8e981429bce8b4161ebee6",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V543_2026-11-02.json",
-  "findingsLedgerExpectedGitBlob": "5d327ffc4db4d49ead89ea294b21c2211e7dc911",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V544_2026-11-02.json",
+  "findingsLedgerExpectedGitBlob": "cbab4e06661dca7f26d2ba9c0b29c2ad9232f636",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V222.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 V222 / VRM297 fuente sucesora 1282720: 13 pruebas locales de proyección segura, cambio de periodo, recursos y práctica PASS (0 fallos), 5 owners P0 y 4 owners QA; emulador Firestore, CI canónico y DEV Cloud Run+Rules+Hosting serial PENDIENTES. Conservar VRM296 DEV 3/3 Shopper pendientes DENIED #41464721085, D05 Admin QA v1→v2 #41384446891, y Admin Chrome Cinépolis 748 visitas/17 períodos; no reabrir PASS sin drift. Después de CI/emulador PASS, autorizar una sola materialización focal DEV y volver a probar 3 Shopper: bancos pendientes Y publicados Firestore DENIED, 8Q publicadas sin claves en cache, recursos PDF permitidos vía proyección, editor Admin 15Q, práctica/intent(os) QA sin alterar banco real. En paralelo revalidar únicamente owners modificados en 11 dominios; preservar aprobaciones históricas 21/21 Sep17 y exactos V41 13/21, V62 10/21. HR identidades 32/83 provisionales y 51 pendientes, finanzas Q7,300 x2 sin recibo: no fusionar, duplicar ni borrar. Oficial 5/21 MATCH; Gate20/21 HOLD; I4 NO AUTORIZADA y producción DO_NOT_TOUCH.",
+  "exactNextAction": "I3 V222 / VRM297 fuente sucesora 1282720: 13 pruebas locales de proyección segura, cambio de periodo, recursos y práctica PASS (0 fallos), 5 owners P0 y 4 owners QA; emulador Firestore, CI canónico y DEV Cloud Run+Rules+Hosting serial PENDIENTES. Conservar VRM296 DEV 3/3 Shopper pendientes DENIED #41464721085, D05 Admin QA v1→v2 #41384446891, y Admin Chrome Cinépolis 748 visitas/17 períodos; no reabrir PASS sin drift. Después de CI/emulador PASS, autorizar una sola materialización focal DEV y volver a probar 3 Shopper: bancos pendientes Y publicados Firestore DENIED, 8Q publicadas sin claves en cache, recursos PDF permitidos vía proyección, editor Admin 15Q, práctica/intent(os) QA sin alterar banco real. En paralelo revalidar únicamente owners modificados en 11 dominios; preservar aprobaciones históricas 21/21 Sep17 y exactos V41 13/21, V62 10/21. HR identidades 32/83 provisionales y 51 pendientes, finanzas Q7,300 x2 sin recibo: no fusionar, duplicar ni borrar. Oficial 5/21 MATCH; Gate20/21 HOLD; I4 NO AUTORIZADA y producción DO_NOT_TOUCH. G03: Hosting DEV versión 231186c337bcd0ba y dos sesiones Admin de Cuentas preservadas; HR 32/83 grupos provisionales + 51 por recenso, sin fusionar sin autorización; finanzas y recibos Q7,300 x2 bloqueados hasta ACK. Las aprobaciones previas con owners y contratos intactos permanecen vigentes, no se reinician 21 módulos.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -16488,7 +16488,7 @@
     "localSourceCasesPass": 13,
     "localSourceCasesFail": 0,
     "remoteCanonicalCI": "PENDING",
-    "firestoreEmulator": "PENDING",
+    "firestoreEmulator": "PASS_RUN_41471892264",
     "devCloudRun": "NOT_DEPLOYED",
     "devFirestoreRules": "NOT_DEPLOYED",
     "devHosting": "NOT_DEPLOYED",
@@ -16508,6 +16508,10 @@
     "production": false,
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V222.json",
     "matrixBlob": "c14216225b5ad1be1c1dd5aff90b2faacaeabeb6",
-    "matrixSha256": "8f23f64dc5eac101339b4b73eb4668373757a7068ae16760fb00a67c00ce414a"
+    "matrixSha256": "8f23f64dc5eac101339b4b73eb4668373757a7068ae16760fb00a67c00ce414a",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V544_2026-11-02.json",
+    "ledgerBlob": "cbab4e06661dca7f26d2ba9c0b29c2ad9232f636",
+    "canonicalCI": "PENDING_REPEAT_AFTER_D07_TEST_SYNC",
+    "devMaterialization": "PENDING"
   }
 }
