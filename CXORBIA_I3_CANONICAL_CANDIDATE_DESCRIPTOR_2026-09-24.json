@@ -16557,5 +16557,17 @@
     "noRebuild": true,
     "production": false,
     "fullD06Match": false
+  },
+  "v225ControlReconciliation20261102": {
+    "failureRunId": 41489569327,
+    "classification": "MAPPING_FAILURE",
+    "failedGuard": "SHOCK_CONTINUITY:CLASSIFICATION_SNAPSHOT_AUTHORITY",
+    "sourceFunctionalCasesPass": 67,
+    "correctionCommit": "c83cf18614d7cbb38b45bb64ddbe9650e30abe68",
+    "pointerBlob": "10aae42dcf94f9c978449262f4a6138e2c56df89",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V225.json",
+    "matrixBlob": "b54c847fdb2ebec603745c4a71f7509f2085877f",
+    "followup": "RERUN_CANONICAL_ON_EXACT_CONTROL_COMMIT",
+    "production": false
   }
 }
