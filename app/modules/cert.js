@@ -52,11 +52,19 @@ CX.certStore = CX.certStore || {
     if(!CX.backendResources?.saveMetadata)return {ok:false,status:'blocked',providerAck:false,successUiAllowed:false,code:'CERT_DURABLE_BACKEND_UNAVAILABLE'};
     const id=this.resourceId(pid,cid),projectId=CX.data.currentProjectId;
     if(options.expectedResourceId&&options.expectedResourceId!==id)throw new Error('CERT_REVIEW_RESOURCE_ID_MISMATCH');
-    const result=await CX.backendResources.saveMetadata({
+    const preserveExistingVisibility=options.preserveExistingVisibility===true;
+    if(preserveExistingVisibility&&(!Number.isInteger(options.expectedVersion)||options.expectedVersion<1
+      ||options.expectedResourceId!==id||options.requireReadback!==true))
+      throw new Error('CERT_REVIEW_EXACT_VISIBILITY_SOURCE_REQUIRED');
+    const metadata={
       id,resourceType:'certification_bank',projectId,periodId:pid,
-      n:bank.certificationName||bank.name||'Banco de certificación',tipo:'certification_bank',bank,
-      visibleRoles:['super','admin','ops','coordinador','shopper'],targetAll:false
-    },{projectId,periodId:pid,expectedVersion:options.expectedVersion,requireReadback:options.requireReadback===true,
+      n:bank.certificationName||bank.name||'Banco de certificación',tipo:'certification_bank',bank
+    };
+    // An existing review changes bank content only. The versioned Firestore
+    // transaction carries forward access fields from the exact prior document;
+    // setting defaults here would widen an admin-only QA bank to Shopper.
+    if(!preserveExistingVisibility)Object.assign(metadata,{visibleRoles:['super','admin','ops','coordinador','shopper'],targetAll:false});
+    const result=await CX.backendResources.saveMetadata(metadata,{projectId,periodId:pid,expectedVersion:options.expectedVersion,requireReadback:options.requireReadback===true,
       idempotencyKey:'certbank.save:'+id+':'+String(bank.contentRevision||bank.updatedAt||bank.generatedAt||'current')});
     if(options.requireReadback&&result?.providerAck===true){
       const proof=result.readback,stored=proof?.confirmed===true&&proof.source==='firestore-server'?proof.item:null;
@@ -117,7 +125,7 @@ CX.certStore = CX.certStore || {
       previousContentRevision:String(original.contentRevision||''),reviewHistory:history,reviewVersion:version+1,
       ultimaRevisionPorUid:uid,ultimaRevisionAt:now};
     return this.save(pid,next,original.certificationId,{
-      expectedVersion:version,expectedResourceId:original.__resourceId,requireReadback:true
+      expectedVersion:version,expectedResourceId:original.__resourceId,requireReadback:true,preserveExistingVisibility:true
     });
   },
   async lifecycle(action,pid,original,changes={}){
