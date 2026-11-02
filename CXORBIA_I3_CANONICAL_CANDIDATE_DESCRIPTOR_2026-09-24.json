@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_D06_VRM298_BACKEND_RUNTIME_DEV_ACTIVE_16_NONMATCH",
+  "status": "HOLD_I3_VRM299_SOURCE_LOCAL_PENDING_DEV_16_NONMATCH",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "bf60d57aa36fac08933d14f93d80f4c30e59a36c",
-  "productTreeAuthority": "1c02eb88bbbe2afdba136046dbf9716f2120f1fd",
-  "predecessorProductSourceSha": "128272027850fa0edad710ad1451a927041815d4",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V547_2026-11-02.json",
-  "findingsLedgerExpectedGitBlob": "7e6fa76bf17154cb19120cc2b7aaaa11e317a1e2",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V225.json",
+  "productSourceSha": "1737051ae56238eb0f71a6e3a237a4651ab32073",
+  "productTreeAuthority": "184d0f23eab12de82bcb3cc6e91160b7724aabd1",
+  "predecessorProductSourceSha": "bf60d57aa36fac08933d14f93d80f4c30e59a36c",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V548_2026-11-02.json",
+  "findingsLedgerExpectedGitBlob": "8534184f76bc2f290437d250242f426fe7b1c098",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V226.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D06_REAL_QA_ISOLATED_ATTEMPT_AND_PASSWORD_SHOPPER_E2E_AND_HUMAN_PENDING; OTHER_15_DOMAIN_ROLE_ACCEPTANCE",
+  "activeBlocker": "D06_REAL_QA_ISOLATED_ATTEMPT_AND_PASSWORD_SHOPPER_E2E_AND_HUMAN_PENDING; OTHER_15_DOMAIN_ROLE_ACCEPTANCE; VRM299_UI_COUNTER_NOT_YET_SERVING_DEV",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -106,7 +106,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-299",
+  "nextFindingId": "VRM-300",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3: VRM-298 fuente 6/6 CI PASS RUN41482423802 y global PASS RUN41482423622; backend DEV exacta revisión 00334-8jb al 100% PASS RUN41488609593 (0 builds extra, 1 traffic switch, Rules/Hosting/producción intactos). Siguiente: D06 intento positivo/negativo únicamente con identidad/proyecto/banco QA aislados y readback de ACK/idempotencia; Shopper login por contraseña y aceptación humana. Beneficios y Auth+Core E2E por roles con pruebas heredadas conservadas, sin reabrir PASS. Mantener G03 PASS Hosting DEV 231186c337bcd0ba, HR 32/83 provisionales y 51 pendientes, finanzas Q7,300 x2 sin recibo; 5/21 MATCH, Gates20/21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
+  "exactNextAction": "VRM-299: corregido en SOURCE el significado del aviso de expedientes técnicos y el KPI de perfiles visibles; seis suites focales PASS, sin tocar identidades, ACK, HR ni DEV. Canonical CI y Hosting DEV aún pendientes. I3: VRM-298 fuente 6/6 CI PASS RUN41482423802 y global PASS RUN41482423622; backend DEV exacta revisión 00334-8jb al 100% PASS RUN41488609593 (0 builds extra, 1 traffic switch, Rules/Hosting/producción intactos). Siguiente: D06 intento positivo/negativo únicamente con identidad/proyecto/banco QA aislados y readback de ACK/idempotencia; Shopper login por contraseña y aceptación humana. Beneficios y Auth+Core E2E por roles con pruebas heredadas conservadas, sin reabrir PASS. Mantener G03 PASS Hosting DEV 231186c337bcd0ba, HR 32/83 provisionales y 51 pendientes, finanzas Q7,300 x2 sin recibo; 5/21 MATCH, Gates20/21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "b54c847fdb2ebec603745c4a71f7509f2085877f",
+  "moduleTruthExpectedGitBlob": "5051302715b312cb44bc8e4d9cde4ebaaef0e0a9",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -16569,5 +16569,27 @@
     "matrixBlob": "b54c847fdb2ebec603745c4a71f7509f2085877f",
     "followup": "RERUN_CANONICAL_ON_EXACT_CONTROL_COMMIT",
     "production": false
+  },
+  "vrm299ShopperReviewCounterSource20261102": {
+    "findingId": "VRM-299",
+    "classification": "MAPPING_FAILURE",
+    "sourceSha": "1737051ae56238eb0f71a6e3a237a4651ab32073",
+    "sourceTree": "184d0f23eab12de82bcb3cc6e91160b7724aabd1",
+    "predecessorProductSourceSha": "bf60d57aa36fac08933d14f93d80f4c30e59a36c",
+    "owners": {
+      "app/core/router.js": "d7afbf30cdfe17b5a6a968f46883625e7d56a9f6",
+      "app/modules/shoppers.js": "c68b5493578b6f3069ad08b060f584ed8e46de91"
+    },
+    "qaOwner": "tools/qa/cxorbia-i3-shopper-identity-review-rail-notice.test.mjs",
+    "qaBlob": "872dd26ccff805c224862c8aad1e8b29e37954da",
+    "sourceLocalSuites": {
+      "passed": 6,
+      "failed": 0
+    },
+    "devMaterialization": "PENDING",
+    "realShoppersMerged": 0,
+    "providerWrites": 0,
+    "production": false,
+    "phaseAMatchAdded": 0
   }
 }
