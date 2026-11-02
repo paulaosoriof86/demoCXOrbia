@@ -671,3 +671,31 @@ jobs:
           path: .tmp/cxorbia-i3-d05-qa-ui-review-shopper/
           if-no-files-found: warn
           retention-days: 30
+
+  d06-attempt-audience-idempotency-source:
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-d06-attempt-contract]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Exact canonical source and scoped no-provider-write P0 attempt suite
+        run: |
+          set -Eeuo pipefail
+          SRC="$(jq -r .productSourceSha CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          test "$SRC" = "bf60d57aa36fac08933d14f93d80f4c30e59a36c"
+          test "$(git rev-parse "$SRC:backend/runtime/hr-live-service/certification-runtime.mjs")" = "b8b0aedb3cd4bdeb927b814dae2bc29ba995e9b2"
+          test "$(git rev-parse "$SRC:backend/runtime/hr-live-service/test/certification-attempt-audience-idempotency.test.mjs")" = "6e3634f966203ca753c0b0349b4806a2ac268982"
+          mkdir -p .tmp/i3-d06-attempt-contract
+          node --check backend/runtime/hr-live-service/certification-runtime.mjs
+          node --check backend/runtime/hr-live-service/test/certification-attempt-audience-idempotency.test.mjs
+          node --test backend/runtime/hr-live-service/test/certification-attempt-audience-idempotency.test.mjs | tee .tmp/i3-d06-attempt-contract/result.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-d06-attempt-audience-idempotency-source-${{ github.run_id }}
+          path: .tmp/i3-d06-attempt-contract/
+          if-no-files-found: warn
+          retention-days: 30

@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "cxorbia.i3.d06.vrm298.attempt-audience-idempotency.source-only.v1",
+  "date": "2026-11-02",
+  "iteration": "I3",
+  "findingId": "VRM-298",
+  "classification": "P0_PROVEN_SOURCE_ATTEMPT_AUTHORIZATION_AND_IDEMPOTENCY",
+  "sourceSha": "bf60d57aa36fac08933d14f93d80f4c30e59a36c",
+  "sourceTree": "1c02eb88bbbe2afdba136046dbf9716f2120f1fd",
+  "predecessorSourceSha": "128272027850fa0edad710ad1451a927041815d4",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceOwner": "backend/runtime/hr-live-service/certification-runtime.mjs",
+  "sourceOwnerGitBlob": "b8b0aedb3cd4bdeb927b814dae2bc29ba995e9b2",
+  "qaOwner": "backend/runtime/hr-live-service/test/certification-attempt-audience-idempotency.test.mjs",
+  "qaOwnerGitBlob": "6e3634f966203ca753c0b0349b4806a2ac268982",
+  "sourceStaticRootCause": [
+    "loadPublishedBank accepted any known published bank id without verifying Shopper audience or QA-only exclusion",
+    "saveAttempt replay returned the previous persisted item with newly recomputed score/feedback for different answers under the same idempotency key"
+  ],
+  "exactFix": [
+    "Validate tenant/project/type/period plus targetAll or Shopper visibleRoles, reject qaOnly",
+    "Transaction replay compares record type, scope, shopper, bank, revision, answers hash, idempotency hash, score/gate/pass; mismatched replay HTTP 409 without provider ACK"
+  ],
+  "scopedSyntheticRegression": {
+    "cases": 6,
+    "passed": 6,
+    "failed": 0,
+    "execution": "IN_MEMORY_FAKE_FIRESTORE_V8_PRECI_ONLY",
+    "realProviderWrites": 0,
+    "realBankWrites": 0,
+    "authWrites": 0
+  },
+  "remoteCi": "PENDING",
+  "devMaterialization": "PENDING_NO_DEV_WRITE",
+  "qaDurableAttempt": "NOT_EXECUTED_ISOLATION_REQUIRED",
+  "realShopperReadOnlyPreviouslyPassRunId": 41478576401,
+  "previousDevRuntimeRunId": 41475638843,
+  "fullD06Match": false,
+  "fullCertificationsMatch": false,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "production": "DO_NOT_TOUCH",
+  "i4Authorized": false,
+  "nextExactAction": "CI source P0 test 6 cases [i3-d06-attempt-contract] y global; después materializar solo backend nuevo en DEV con un build y readback de revisión, sin reprocesar Rules ni Hosting sin drift; repetir 3 Shopper solo lectura. Para intento positivo real, primero aislar identidad/banco/proyecto QA y KPI; no escribir intentos de Shopper reales. Beneficios / Auth+Core E2E por roles en paralelo; conservar G03 PASS Hosting DEV 231186c337bcd0ba, HR 32/83 provisionales y 51 pendientes, finanzas Q7,300 x2 sin recibo; Gate20/21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada."
+}

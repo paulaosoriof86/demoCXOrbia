@@ -4,12 +4,12 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "128272027850fa0edad710ad1451a927041815d4",
-  "productTreeAuthority": "4b357cb285ef03228e1dc928fda5f3115d8656f8",
-  "predecessorProductSourceSha": "4ba2a96e1f90fba7ba8e981429bce8b4161ebee6",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V545_2026-11-02.json",
-  "findingsLedgerExpectedGitBlob": "8818e3fb65ab420d7243c4adb83ed2d2f664bf73",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V223.json",
+  "productSourceSha": "bf60d57aa36fac08933d14f93d80f4c30e59a36c",
+  "productTreeAuthority": "1c02eb88bbbe2afdba136046dbf9716f2120f1fd",
+  "predecessorProductSourceSha": "128272027850fa0edad710ad1451a927041815d4",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V546_2026-11-02.json",
+  "findingsLedgerExpectedGitBlob": "1f7df234b33818378ef60915ab8e0ff09c02aa8d",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V224.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -106,7 +106,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-298",
+  "nextFindingId": "VRM-299",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "D06 QA-only bank+QA-only Shopper attempt positive/negative con ACK/readback e idempotencia, sin escribir intentos de Shopper reales. Revalidar D07 recursos y B10 navegación Shopper; después recuperar aprobaciones históricas por owner sin reabrir PASS estables. G03 Cuentas Admin dos sesiones PASS (Hosting DEV 231186c337bcd0ba); HR 32/83 grupos provisionales + 51 pendientes sin fusionar; finanzas Q7,300 x2 sin recibo, NO tocar. Gates20/21 HOLD; I4 no autorizada; producción DO_NOT_TOUCH.",
+  "exactNextAction": "CI source P0 test 6 cases [i3-d06-attempt-contract] y global; después materializar solo backend nuevo en DEV con un build y readback de revisión, sin reprocesar Rules ni Hosting sin drift; repetir 3 Shopper solo lectura. Para intento positivo real, primero aislar identidad/banco/proyecto QA y KPI; no escribir intentos de Shopper reales. Beneficios / Auth+Core E2E por roles en paralelo; conservar G03 PASS Hosting DEV 231186c337bcd0ba, HR 32/83 provisionales y 51 pendientes, finanzas Q7,300 x2 sin recibo; Gate20/21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "7b196372a80b186618f985652a07136742614b45",
+  "moduleTruthExpectedGitBlob": "2f2b25ad3cfe046fc7aca26c929191fa15df4fe5",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -16528,5 +16528,20 @@
     "fullDomainMatch": false,
     "production": false,
     "limitation": "QA_ATTEMPT_AND_PASSWORD_LOGIN_E2E_AND_HUMAN_PENDING"
+  },
+  "vrm298P0AttemptSource20261102": {
+    "path": "docs/checkpoints/CXORBIA_I3_D06_P0_ATTEMPT_AUDIENCE_IDEMPOTENCY_SOURCE_ONLY_20261102.json",
+    "gitBlob": "cb5ea3c8ebf5e648e8f300819f38836aad56b584",
+    "findingId": "VRM-298",
+    "sourceSha": "bf60d57aa36fac08933d14f93d80f4c30e59a36c",
+    "sourceTree": "1c02eb88bbbe2afdba136046dbf9716f2120f1fd",
+    "ownerBlob": "b8b0aedb3cd4bdeb927b814dae2bc29ba995e9b2",
+    "qaBlob": "6e3634f966203ca753c0b0349b4806a2ac268982",
+    "syntheticCasesPass": 6,
+    "canonicalCi": "PENDING",
+    "devMaterialization": "PENDING",
+    "providerWrites": 0,
+    "fullMatch": false,
+    "production": false
   }
 }

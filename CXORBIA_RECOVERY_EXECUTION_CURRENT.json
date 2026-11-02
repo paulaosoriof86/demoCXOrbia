@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "128272027850fa0edad710ad1451a927041815d4",
-  "productTree": "4b357cb285ef03228e1dc928fda5f3115d8656f8",
+  "productSourceSha": "bf60d57aa36fac08933d14f93d80f4c30e59a36c",
+  "productTree": "1c02eb88bbbe2afdba136046dbf9716f2120f1fd",
   "i3P0CountryScope20261028": {
     "sourceSha": "db56b89a1221d26f5cc4466585cda7eaa7360ddd",
     "sourceTree": "7b157bdf187ed712256eacfe86c1ff016b40c44e",
@@ -286,7 +286,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "D06 QA-only bank+QA-only Shopper attempt positive/negative con ACK/readback e idempotencia, sin escribir intentos de Shopper reales. Revalidar D07 recursos y B10 navegación Shopper; después recuperar aprobaciones históricas por owner sin reabrir PASS estables. G03 Cuentas Admin dos sesiones PASS (Hosting DEV 231186c337bcd0ba); HR 32/83 grupos provisionales + 51 pendientes sin fusionar; finanzas Q7,300 x2 sin recibo, NO tocar. Gates20/21 HOLD; I4 no autorizada; producción DO_NOT_TOUCH.",
+  "nextExactAction": "CI source P0 test 6 cases [i3-d06-attempt-contract] y global; después materializar solo backend nuevo en DEV con un build y readback de revisión, sin reprocesar Rules ni Hosting sin drift; repetir 3 Shopper solo lectura. Para intento positivo real, primero aislar identidad/banco/proyecto QA y KPI; no escribir intentos de Shopper reales. Beneficios / Auth+Core E2E por roles en paralelo; conservar G03 PASS Hosting DEV 231186c337bcd0ba, HR 32/83 provisionales y 51 pendientes, finanzas Q7,300 x2 sin recibo; Gate20/21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -986,12 +986,12 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V223.json",
-    "gitBlob": "7b196372a80b186618f985652a07136742614b45",
-    "sourceSha": "128272027850fa0edad710ad1451a927041815d4",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V224.json",
+    "gitBlob": "2f2b25ad3cfe046fc7aca26c929191fa15df4fe5",
+    "sourceSha": "bf60d57aa36fac08933d14f93d80f4c30e59a36c",
     "allModulesMatch": false,
     "phaseAComplete": false,
-    "sha256": "56cd0c50853e034e091a77fa661b06a3de357030d99fa8cbda944ba509097607"
+    "sha256": "7a452525dcd0e57674936e8c9cd087a4549c05818957cda5e31d5133292c92bd"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -2957,7 +2957,7 @@
     "gate21": "HOLD",
     "production": false
   },
-  "predecessorProductSourceSha": "a363f9e4f604cba722e899bb1916c442c77c1fed",
+  "predecessorProductSourceSha": "128272027850fa0edad710ad1451a927041815d4",
   "d07DiagnosticInstrumentation20261028": {
     "sourceSha": "77fd283349ce46033a95235fd2fae632e856fe35",
     "sourceTree": "9e3c446c829edbcb7cc5d2f6ab179ddacb246248",
@@ -3027,9 +3027,9 @@
     "gitBlob": "879313bfbced75baa8d764d9678f5efcc489c944"
   },
   "activeShockModuleTruth": {
-    "sourceSha": "128272027850fa0edad710ad1451a927041815d4",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V223.json",
-    "matrixBlob": "7b196372a80b186618f985652a07136742614b45",
+    "sourceSha": "bf60d57aa36fac08933d14f93d80f4c30e59a36c",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V224.json",
+    "matrixBlob": "2f2b25ad3cfe046fc7aca26c929191fa15df4fe5",
     "classificationCounts": {
       "COMPOSED_NOT_DEPLOYED": 2,
       "MATCH": 5,
@@ -3040,7 +3040,7 @@
       "TRUE_FUNCTIONAL_DEFECT": 3
     },
     "derivedAt": "2026-11-02",
-    "meaning": "5_OF_21_BINARY_MATCH__VRM297_DEV_SECURITY_3_EXISTING_SHOPPER_PASS_RUN41478576401__D06_QA_ATTEMPT_AND_HUMAN_PENDING"
+    "meaning": "5_OF_21_MATCH__VRM297_DEV_SECURITY_PASS_PRIOR_SOURCE__VRM298_P0_NEW_SOURCE_SYNTHETIC_6_PASS_CI_DEV_PENDING"
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
   "activeMethodologyGuard": {
@@ -6012,9 +6012,9 @@
     },
     "production": false
   },
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V545_2026-11-02.json",
-  "findingsLedgerExpectedGitBlob": "8818e3fb65ab420d7243c4adb83ed2d2f664bf73",
-  "nextFindingId": "VRM-298",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V546_2026-11-02.json",
+  "findingsLedgerExpectedGitBlob": "1f7df234b33818378ef60915ab8e0ff09c02aa8d",
+  "nextFindingId": "VRM-299",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
     "receiptPath": "docs/checkpoints/CXORBIA_I3_G03_CRM_PROVIDER_COMPOSITION_SOURCE_REPAIR_20261101.json",
@@ -6528,5 +6528,20 @@
     "fullDomainMatch": false,
     "production": false,
     "limitation": "QA_ATTEMPT_AND_PASSWORD_LOGIN_E2E_AND_HUMAN_PENDING"
+  },
+  "vrm298P0AttemptSource20261102": {
+    "path": "docs/checkpoints/CXORBIA_I3_D06_P0_ATTEMPT_AUDIENCE_IDEMPOTENCY_SOURCE_ONLY_20261102.json",
+    "gitBlob": "cb5ea3c8ebf5e648e8f300819f38836aad56b584",
+    "findingId": "VRM-298",
+    "sourceSha": "bf60d57aa36fac08933d14f93d80f4c30e59a36c",
+    "sourceTree": "1c02eb88bbbe2afdba136046dbf9716f2120f1fd",
+    "ownerBlob": "b8b0aedb3cd4bdeb927b814dae2bc29ba995e9b2",
+    "qaBlob": "6e3634f966203ca753c0b0349b4806a2ac268982",
+    "syntheticCasesPass": 6,
+    "canonicalCi": "PENDING",
+    "devMaterialization": "PENDING",
+    "providerWrites": 0,
+    "fullMatch": false,
+    "production": false
   }
 }
