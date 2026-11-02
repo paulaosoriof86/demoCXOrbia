@@ -207,7 +207,7 @@ function d07RouterResourceFixture(role='shopper'){
   class Query{
     constructor(filters=[]){this.filters=filters;}
     where(field,op,value){return new Query([...this.filters,[field,op,value]]);}
-    get(){queryCount++;return new Promise((resolve,reject)=>pending.push({resolve,reject,filters:this.filters}));}
+    get(){queryCount++;return new Promise((resolve,reject)=>pending.push({resolve,reject,filters:this.filters,kind:'firestore'}));}
   }
   const ui={el:()=>new Host(),ph:(...args)=>args.join(' '),bdg:value=>String(value),aiBox:()=>'',degraded:(value,{title}={})=>String(title||'')+' '+String(value)};
   const data={currentProjectId:'cinepolis',currentPeriodId:'cinepolis-2026-10',_visitas:[],
@@ -215,6 +215,13 @@ function d07RouterResourceFixture(role='shopper'){
   const CX={BACKEND:{enabled:true,tenantId:'tya',resourceStorageAuthorized:true,resourceStorageRulesValidated:true},data,
     session:{role,view:'documentos',effectiveRole(){return this.role;}},module(name,fn){if(name==='documentos')this.documents=fn;},
     router:{buildRail(){},nav(){if(host)host.isConnected=false;host=CX.documents({data,role:CX.session.role,ui});host.isConnected=true;hosts.push(host);renderCount++;}}};
+  // VRM-297: Shopper resources are now returned by an authenticated, sanitized
+  // server projection. The source intentionally never issues Firestore reads.
+  CX.backendCertifications={loadShopperResources(_periodId){
+    queryCount++;
+    const filters=[['projectId','==',data.currentProjectId],['periodId','==',data.currentPeriodId],['status','==','active']];
+    return new Promise((resolve,reject)=>pending.push({resolve,reject,filters,kind:'projection'}));
+  }};
   const firebase={apps:[{}],auth:()=>({currentUser:{uid}}),storage:()=>({}),firestore:()=>({collection:()=>({doc:()=>({collection:()=>new Query()})})})};
   const context={CX,firebase,document:{readyState:'loading',addEventListener(){}},console:{warn:()=>warnings.push('SAFE_LOCAL_WARNING')},setTimeout};context.window=context;context.addEventListener=()=>{};
   vm.createContext(context);
@@ -234,7 +241,8 @@ function d07RouterResourceFixture(role='shopper'){
       return op==='=='?actual===value:op==='array-contains'?Array.isArray(actual)&&actual.includes(value):
         op==='in'?Array.isArray(value)&&value.includes(actual):false;
     }));
-    q.resolve({docs:selected.map(row=>({id:row.id,data:()=>d07OwnerClone(row)}))});
+    if(q.kind==='projection')q.resolve(d07OwnerClone(selected));
+    else q.resolve({docs:selected.map(row=>({id:row.id,data:()=>d07OwnerClone(row)}))});
   }
   return {CX,context,rows:()=>rows,setRows:value=>{rows=value;},setUid:value=>{uid=value;},host:()=>host,hosts,pending,resolveOne,
     counts:()=>({queries:queryCount,renders:renderCount,resourceEvents:events,pending:pending.length,detachedHosts:hosts.filter(x=>!x.isConnected).length,warnings:warnings.length})};
@@ -242,7 +250,9 @@ function d07RouterResourceFixture(role='shopper'){
 
 for(const role of ['admin','shopper'])test('D07 '+role+' identical resource loads settle without hiding remote updates, errors or identity changes',async()=>{
   const h=d07RouterResourceFixture(role);h.CX.router.nav('documentos');
-  const perLoad=role==='shopper'?2:1;
+  // One authenticated projection response replaces the former pair of
+  // Shopper Firestore reads; event/remount semantics remain identical.
+  const perLoad=1;
   const resolveLoad=async({error=false}={})=>{for(let i=0;i<perLoad;i++)h.resolveOne({error});await d07OwnerFlush();};
   for(let n=0;n<12&&h.pending.length;n++){h.resolveOne();await d07OwnerFlush();}
   const initial=h.counts();
@@ -270,3 +280,4 @@ for(const role of ['admin','shopper'])test('D07 '+role+' identical resource load
     const eventsBeforeScope=h.counts().resourceEvents;h.CX.data.currentPeriodId='cinepolis-2026-09';h.CX.router.nav('documentos');await resolveLoad();await resolveLoad();assert.equal(h.pending.length,0);assert.equal(h.counts().resourceEvents,eventsBeforeScope+1);
     h.CX.data.currentProjectId='other-project';h.CX.data.currentPeriodId='other-project-2026-09';h.CX.router.nav('documentos');await resolveLoad();await resolveLoad();assert.equal(h.pending.length,0);assert.equal(h.counts().resourceEvents,eventsBeforeScope+2);
 });
+
