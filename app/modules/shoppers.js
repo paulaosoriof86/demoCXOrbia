@@ -127,6 +127,7 @@ CX.module('shoppers', ({data,ui})=>{
   };
 
   const list=()=>data.shoppersFor();
+  const activeRows=()=>list().filter(x=>!['retired_by_admin','superseded_exact_alias'].includes(String(x?.identityState||''))&&String(x?.status||'').toLowerCase()!=='retired');
   /* PRE-I4 VRM-185/186 — identity resolution is ADMIN-ONLY.
      Every review schema is normalized here. Shopper views only consume the adjudicated result.
      Name/fuzzy similarity never authorizes a merge; exact technical evidence requires explicit
@@ -312,7 +313,7 @@ CX.module('shoppers', ({data,ui})=>{
     <div class="grid g4" style="margin-bottom:16px">
       <div data-tk="comp" style="cursor:pointer">${ui.kpi('Perfiles completos',L.filter(s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&profileComplete(s)).length,'g')}</div>
       <div data-tk="incom" style="cursor:pointer">${ui.kpi('Perfiles incompletos',L.filter(s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!profileComplete(s)).length,'a')}</div>
-      <div data-tk="review" style="cursor:pointer">${ui.kpi('Requieren revisión / decisión',identityReviewIds.size,'a')}</div>
+      <div data-tk="review" style="cursor:pointer">${ui.kpi('Perfiles visibles con revisión',activeRows().filter(s=>identityReviewIds.has(String(s.id||''))).length,'a')}</div>
     </div>
     </div>
     <div style="font-size:10.5px;color:var(--t3);margin:-10px 0 12px">Activo = perfil real con al menos 1 visita realizada en los 6 meses previos al ${data.activeRefDate()} (fecha de referencia del periodo). Una referencia protegida nunca cuenta como activa.</div>
@@ -587,7 +588,6 @@ CX.module('shoppers', ({data,ui})=>{
       }catch(error){ui.toast('No fue posible leer el contrato de puntuación.','warn');}
     });
     const updateSelectionBar=()=>{const bar=document.getElementById('shSelectionBar'),count=document.getElementById('shSelectedCount');if(!bar||!count)return;const n=selectedShopperIds.size;bar.style.display=n?'flex':'none';count.textContent=n+' seleccionada'+(n===1?'':'s');};
-    const activeRows=()=>list().filter(x=>!['retired_by_admin','superseded_exact_alias'].includes(String(x?.identityState||''))&&String(x?.status||'').toLowerCase()!=='retired');
     const currentRows=()=>activeRows().filter(s=>{const hay=!shopperSearchQuery||[s.nombre,s.ciudad,s.code,CX.paisName(s.pais)].join(' ').toLowerCase().includes(shopperSearchQuery);return hay&&(!reviewListFilter||identityReviewIds.has(String(s.id||'')));});
     const bindRows=()=>{document.querySelectorAll('#shBody [data-sid]').forEach(tr=>tr.addEventListener('click',e=>{if(e.target?.closest?.('[data-select-shopper]'))return;const s=data.getShopper(tr.dataset.sid);if(s)profileModal(s);}));document.querySelectorAll('#shBody [data-select-shopper]').forEach(box=>{box.addEventListener('click',e=>e.stopPropagation());box.addEventListener('change',()=>{const id=String(box.dataset.selectShopper||'');if(box.checked)selectedShopperIds.add(id);else selectedShopperIds.delete(id);updateSelectionBar();});});};
     const renderRowsDom=()=>{const rows=currentRows(),body=document.getElementById('shBody'),empty=document.getElementById('shEmpty');if(!body)return;body.innerHTML=rows.map(row).join('');if(empty)empty.style.display=rows.length?'none':'block';bindRows();updateSelectionBar();};
@@ -595,7 +595,7 @@ CX.module('shoppers', ({data,ui})=>{
     document.getElementById('shBulkMerge')?.addEventListener('click',mergeSelectedIdentities);document.getElementById('shBulkDistinct')?.addEventListener('click',keepSelectedSeparate);document.getElementById('shBulkDelete')?.addEventListener('click',deleteSelectedShopper);
     document.getElementById('shSelectVisible')?.addEventListener('change',e=>{currentRows().forEach(x=>e.currentTarget.checked?selectedShopperIds.add(String(x.id)):selectedShopperIds.delete(String(x.id)));renderRowsDom();});
     const L=activeRows();
-    const tkMap={all:['Shoppers del proyecto',()=>true],act:['Shoppers activos (6 meses)',s=>data.shopperActivo(s)],inact:['Inactivas',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!data.shopperActivo(s)],prot:['Referencias protegidas',s=>CX.data_shopperDataLevel(s)==='protected_reference'],comp:['Perfiles completos',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&profileComplete(s)],incom:['Perfiles incompletos',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!profileComplete(s)],review:['Requieren revisión / decisión',s=>identityReviewIds.has(String(s.id||''))]};
+    const tkMap={all:['Shoppers del proyecto',()=>true],act:['Shoppers activos (6 meses)',s=>data.shopperActivo(s)],inact:['Inactivas',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!data.shopperActivo(s)],prot:['Referencias protegidas',s=>CX.data_shopperDataLevel(s)==='protected_reference'],comp:['Perfiles completos',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&profileComplete(s)],incom:['Perfiles incompletos',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!profileComplete(s)],review:['Perfiles visibles con revisión',s=>identityReviewIds.has(String(s.id||''))]};
     document.querySelectorAll('#shTopKpis [data-tk]').forEach(el=>el.addEventListener('click',()=>{if(el.dataset.tk==='review'){reviewListFilter=!reviewListFilter;renderRowsDom();ui.toast(reviewListFilter?'Mostrando solo perfiles que requieren revisión o decisión.':'Filtro de revisión desactivado.','ok',2600);return;}const d=tkMap[el.dataset.tk],isIncomplete=el.dataset.tk==='incom',items=L.filter(d[1]);
       const body=items.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Ciudad</th><th>${isIncomplete?'Falta':'Puntuación'}</th><th>Acción</th></tr></thead><tbody>${items.map(x=>`<tr><td class="hov" data-pk="${x.id}" style="cursor:pointer"><b>${esc(x.nombre||x.id)}</b><div style="font-size:10px;color:var(--t3)">${esc(x.code||'')}</div></td><td style="font-size:12px">${esc(x.ciudad||CX.paisName(x.pais)||'—')}</td><td style="font-size:11.5px">${isIncomplete?esc(missingProfileFields(x).join(', ')||'Revisar perfil'):scoreCell(x)}</td><td>${isIncomplete?`<button class="btn btn-soft btn-sm" data-request-profile="${x.id}">Solicitar completar</button>`:`<button class="btn btn-ghost btn-sm" data-pk="${x.id}">Ver perfil</button>`}</td></tr>`).join('')}</tbody></table>`:ui.empty('👥','Sin shoppers en esta categoría.');
       ui.modal(d[0]+' ('+items.length+')',body,{onMount:(ov,close)=>{

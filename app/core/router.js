@@ -225,16 +225,16 @@ CX.router = {
     if(identityReviewCount){
       const canOpen=!!CX.moduleEnabled?.('shoppers')&&!!CX.roleCanAccess?.(CX.session.testRole||role,'shoppers')&&
         !!CX.moduleVisibleForProfile?.('shoppers',role);
-      projBlock += `<button type="button" id="cxIdentityReviewAlert" aria-label="Revisar ${identityReviewCount} identidades pendientes" ${canOpen?'':'disabled'}
+      projBlock += `<button type="button" id="cxIdentityReviewAlert" aria-label="Consultar ${identityReviewCount} expedientes técnicos de revisión de identidad" ${canOpen?'':'disabled'}
         style="display:block;width:100%;margin-top:9px;padding:10px;border:1px solid #e5a23d;border-radius:9px;background:#fff2da;color:#6e4416;text-align:left;font-size:11px;line-height:1.4;cursor:${canOpen?'pointer':'default'}">
-        ⚠️ <b>${identityReviewCount} identidad(es) por confirmar</b><span style="display:block">¿Son la misma persona? Revisa la evidencia antes de vincular, fusionar o mantener separadas.</span></button>`;
+        ⚠️ <b>${identityReviewCount} expedientes técnicos en revisión</b><span style="display:block">Este total incluye casos y alias: no representa personas ni fusiones pendientes. Las fusiones aprobadas se controlan por la cohorte con ACK del proveedor.</span></button>`;
     }
 
     const collapsed = (()=>{try{return JSON.parse(localStorage.getItem('cx_rail_col')||'{}')}catch(e){return {};}})();
     const nav=this.navGroups(role).map(group=>{
       const items=group.items.filter(id=>CX.moduleEnabled(id)&&CX.roleCanAccess(CX.session.testRole||role,id)&&CX.moduleVisibleForProfile(id,role)).map(id=>{
         const m=CX.MODULES[id]; if(!m)return '';
-        const badge = id==='shoppers'&&identityReviewCount ? `<span class="n-badge" aria-label="${identityReviewCount} identidades por revisar">${identityReviewCount}</span>`
+        const badge = id==='shoppers'&&identityReviewCount ? `<span class="n-badge" aria-label="${identityReviewCount} expedientes técnicos de identidad en revisión">${identityReviewCount}</span>`
           : (m.badge && role==='admin') ? `<span class="n-badge">${d.kpis().postPend||''}</span>`
           : (m.badgeNotif && CX.notif && CX.notif.unread(role)) ? `<span class="n-badge">${CX.notif.unread(role)}</span>` : '';
         const soon  = m.status==='soon' ? `<span class="n-soon">pronto</span>` : '';

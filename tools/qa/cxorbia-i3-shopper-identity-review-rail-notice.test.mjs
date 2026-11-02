@@ -33,4 +33,34 @@ CX.data.__identityReviewQueue=[{reviewId:'r-123',status:'active'}];
 assert.equal(count('admin'),1,'a review-only technical case still gets a visible notification');
 CX.data.__identityReviewQueue=[];
 assert.equal(count('admin'),0,'zero pending reviews produce zero badge');
-console.log('PASS identity-review notice: 9 scoped role and de-duplication checks');
+const source=readFileSync(new URL('../../app/core/router.js',import.meta.url),'utf8');
+const shopperSource=readFileSync(new URL('../../app/modules/shoppers.js',import.meta.url),'utf8');
+assert.match(source,/expedientes técnicos en revisión/,'rail explicitly labels its technical-case universe');
+assert.match(source,/no representa personas ni fusiones pendientes/,'rail cannot misstate the count as remaining approved merges');
+assert.match(shopperSource,/ui\.kpi\('Perfiles visibles con revisión',activeRows\(\)\.filter\(s=>identityReviewIds\.has\(String\(s\.id\|\|''\)\)\)\.length,'a'\)/,
+  'Shopper KPI counts only project profiles shown by the same identity filter, not the unrelated technical-ID set');
+assert.doesNotMatch(shopperSource,/ui\.kpi\('Requieren revisión \/ decisión',identityReviewIds\.size/,
+  'old technical-ID numerator is not used for the clickable shopper-review filter');
+const shoppers=[{id:'s1',nombre:'Uno',pais:'GT',estado:'Activo'},
+  {id:'s2',nombre:'Dos',pais:'GT',estado:'Activo'},
+  {id:'s3',nombre:'Tres',pais:'GT',estado:'Activo',identityState:'retired_by_admin'},
+  {id:'s4',nombre:'Cuatro',pais:'GT',estado:'Activo'}];
+let registerShopperModule=null;
+const moduleCx={module(name,fn){if(name==='shoppers')registerShopperModule=fn;},
+  data_shopperDataLevel(){return 'operational';},paisName(c){return c;}};
+vm.runInNewContext(shopperSource,{CX:moduleCx,setTimeout(){}},{filename:'shoppers.js'});
+const mockData={shoppersFor:()=>shoppers,period:()=>({name:'Periodo QA'}),
+  shopperActivo:()=>true,activeRefDate:()=> '2026-11-02',currentProjectId:'cinepolis',
+  getShopper:id=>shoppers.find(s=>s.id===id)||null,
+  __identityReviewQueue:[
+    {reviewId:'review1',shopperIds:['s1','s2','alias-not-visible'],status:'active'},
+    {reviewId:'review2',shopperIds:['s3','alias-retired'],status:'active'}],
+  __identityReviewResolutions:[]};
+const fakeUi={ph:()=>'',kpi:(label,n)=>`<kpi title="${label}">${n}</kpi>`,
+  bdg:()=>'',empty:()=>'',aiBox:()=>''};
+const rendered=registerShopperModule({data:mockData,ui:fakeUi});
+assert.match(rendered,/<kpi title="Perfiles visibles con revisión">2<\/kpi>/,
+  'two visible active profiles counted; unrelated technical aliases and retired profiles excluded');
+assert.doesNotMatch(rendered,/<kpi title="Perfiles visibles con revisión">(?:5|6)<\/kpi>/,
+  'technical queue IDs do not inflate the clickable numerator');
+console.log('PASS identity-review notice: 15 scoped, semantic, numerator and actual Shopper render checks');
