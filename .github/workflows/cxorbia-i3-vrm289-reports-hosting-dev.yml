@@ -1,5 +1,5 @@
-name: CXOrbia I3 Serial Hosting-only DEV - D07 diagnostic
-# Sequential reuse of VRM289 Hosting-only workflow. No parallel workflow or additional deploy path.
+name: CXOrbia I3 Serial Hosting-only DEV - D05 versioned QA review
+# Authorized focal reuse of existing VRM289 Hosting-only DEV lane for D05; no extra deploy workflow.
 on:
   push:
     branches:
@@ -22,18 +22,16 @@ env:
   FIREBASE_HOSTING_TARGET: cxorbia-dev
 jobs:
   serial-hosting-only-dev:
-   if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[d07-diagnostic-hosting-only]') }}
+   if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[d05-review-hosting-only]') }}
    runs-on: ubuntu-latest
    timeout-minutes: 35
    permissions:
     contents: read
     id-token: write
    env:
-    SRC: 77fd283349ce46033a95235fd2fae632e856fe35
-    PREDECESSOR_SRC: ab5fbfb0f70c0f1ddcbd0148385ff78506902874
-    TREE: 9e3c446c829edbcb7cc5d2f6ab179ddacb246248
-    EXPECTED_RUNTIME_REV: cxorbia-live-hr-dev-00327-xsc
-    FOCAL_DIR: .tmp/i3-d07-diagnostic-hosting-only
+    REQUEST: docs/checkpoints/CXORBIA_I3_D05_HOSTING_ONLY_DEV_ONE_SHOT_REQUEST_20261102.json
+    FOCAL_DIR: .tmp/i3-d05-versioned-review-hosting-only
+    QA_ASSETS: "modules/cert.js core/backend-resources.js core/backend-certifications.js modules/academia.js data/tya-certification-carryover-source-safe.js index-backend-dev.html core/backend-browser-auth.js modules/dashboard.js"
     PROD_URL: https://tya-plataforma.web.app
    steps:
    - uses: actions/checkout@v4
@@ -42,95 +40,122 @@ jobs:
    - uses: actions/setup-node@v4
      with:
       node-version: '24'
-   - name: Verify exact D07 instrumentation source and safe diagnostic QA
+   - name: Verify exact D05 source, frozen scope and six new regression cases
      run: |
       set -Eeuo pipefail
       mkdir -p "$FOCAL_DIR"
-      node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs | tee "$FOCAL_DIR/authority.json"
-      jq -e --arg source "$SRC" --arg tree "$TREE" '.decision=="PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY" and .productSourceSha==$source and .productSourceTree==$tree and .terminalReleaseEligible==false' "$FOCAL_DIR/authority.json"
-      test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = HOLD_I3_D07_DIAGNOSTIC_SOURCE_FIXED_PENDING_DEV
-      test "$SRC" = 77fd283349ce46033a95235fd2fae632e856fe35
-      test "$TREE" = 9e3c446c829edbcb7cc5d2f6ab179ddacb246248
+      test "$(git rev-parse HEAD^)" = "$(jq -r .controlParentSha "$REQUEST")"
+      test "$(jq -r .controlParentSha "$REQUEST")" = "9e24025a2d56c0d60a73fd3dbdf0018a04e65c71"
+      test "$(git diff --name-only HEAD^ HEAD | LC_ALL=C sort)" = "$(jq -r '.allowedControlFiles | sort | .[]' "$REQUEST")"
+      jq -e '.schemaVersion=="cxorbia.i3.d05.hosting-only-dev-one-shot-request.20261102.v1"
+        and .intent=="D05_ADMIN_QA_VERSIONED_REVIEW_VISIBILITY_HOSTING_ONLY_DEV"
+        and .authorization=="PAULA_EXPLICIT_2026_11_02"
+        and .branch=="recovery/cxorbia-phase-a-20260831"
+        and .project=="cxorbia-backend-dev"
+        and .hostingTarget=="cxorbia-dev" and .hostingSite=="cxorbia-backend-dev"
+        and .maxHostingDevDeployAttempts==1 and .automaticRetryAllowed==false
+        and .gate20=="HOLD" and .gate21=="HOLD" and .i4Authorized==false
+        and .production=="DO_NOT_TOUCH" and .moduleMatchCountUnchanged==5
+        and .sourceControlCi.conclusion=="success"' "$REQUEST" >/dev/null
+      SRC="$(jq -r .sourceSha "$REQUEST")"
+      TREE="$(jq -r .sourceTree "$REQUEST")"
+      PREDECESSOR_SRC="$(jq -r .predecessorSourceSha "$REQUEST")"
+      EXPECTED_RUNTIME_REV="$(jq -r .expectedRuntimeRevision "$REQUEST")"
+      test "$(jq -r .sourceControlCi.controlHeadSha "$REQUEST")" = "$(jq -r .controlParentSha "$REQUEST")"
+      test "$(jq -r .productSourceSha "$CANDIDATE_DESCRIPTOR")" = "$SRC"
+      test "$(jq -r .productTreeAuthority "$CANDIDATE_DESCRIPTOR")" = "$TREE"
+      test "$(jq -r .production "$CANDIDATE_DESCRIPTOR")" = DO_NOT_TOUCH
+      test "$(jq -r .authorizationI4 CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
       test "$(git rev-parse "$SRC^{tree}")" = "$TREE"
-      test "$(git rev-parse "$SRC:app/core/backend-resources.js")" = 58b2504f2a02b96bd4155e2f8c45e9409fdeedc3
-      test "$(git rev-parse "$SRC:app/modules/documentos.js")" = e32ae18d4c047a95590aa137587589d5f9a46aed
       git merge-base --is-ancestor "$PREDECESSOR_SRC" "$SRC"
-      test "$(git diff --name-only "$PREDECESSOR_SRC" "$SRC" -- app | LC_ALL=C sort)" = "$(printf '%s\n' app/core/backend-resources.js app/modules/documentos.js | LC_ALL=C sort)"
-      test -z "$(git diff --name-only "$PREDECESSOR_SRC" "$SRC" -- backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)"
       git merge-base --is-ancestor "$SRC" HEAD
+      test "$(git diff --name-only "$PREDECESSOR_SRC" "$SRC" -- app | LC_ALL=C sort)" = app/modules/cert.js
+      test -z "$(git diff --name-only "$PREDECESSOR_SRC" "$SRC" -- backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)"
       test -z "$(git diff --name-only "$SRC" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)"
-      test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$SRC"
-      test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
-      test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
-      test "$(jq -r '.nextFindingId' "$CANDIDATE_DESCRIPTOR")" = VRM-290
-      test "$(git rev-parse "$SRC:tools/qa/cxorbia-i3-d07-authenticated-pdf-resource.test.mjs")" = a7c64a94ecf13293b38cf706426f983daf065752
-      test "$(git rev-parse "$SRC:tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs")" = e0811cb5fa7774f4ec64888ac04dab40d0ec44e6
-      node --check app/core/backend-resources.js
-      node --check app/modules/documentos.js
-      node --test tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs
+      test "$(git rev-parse "$SRC:app/modules/cert.js")" = "$(jq -r .sourceBlob "$REQUEST")"
+      test "$(git rev-parse "$SRC:tools/qa/cxorbia-i3-d05-review-visibility-source.test.mjs")" = "$(jq -r .testBlob "$REQUEST")"
+      node --check app/modules/cert.js
+      node tools/qa/cxorbia-i3-d05-review-visibility-source.test.mjs
+      node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs > "$FOCAL_DIR/authority.json"
+      jq -e --arg source "$SRC" --arg tree "$TREE" '.decision=="PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY"
+        and .productSourceSha==$source and .productSourceTree==$tree
+        and .moduleTruthReadback.sourceAligned==true and .moduleBlobReadback.pass==true
+        and .terminalReleaseEligible==false and .production==false' "$FOCAL_DIR/authority.json" >/dev/null
       SOURCE_DIR="$(mktemp -d)"
       git archive "$SRC" | tar -x -C "$SOURCE_DIR"
+      cmp -s "$SOURCE_DIR/app/modules/cert.js" app/modules/cert.js
+      jq -e '.hosting.public=="app" and .hosting.target=="cxorbia-dev"' "$SOURCE_DIR/firebase.json" >/dev/null
+      echo "SRC=$SRC" >> "$GITHUB_ENV"
+      echo "TREE=$TREE" >> "$GITHUB_ENV"
+      echo "PREDECESSOR_SRC=$PREDECESSOR_SRC" >> "$GITHUB_ENV"
+      echo "EXPECTED_RUNTIME_REV=$EXPECTED_RUNTIME_REV" >> "$GITHUB_ENV"
       echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
-      cmp -s "$SOURCE_DIR/app/modules/documentos.js" app/modules/documentos.js
-      cmp -s "$SOURCE_DIR/app/core/backend-resources.js" app/core/backend-resources.js
    - uses: google-github-actions/auth@v2
      with:
       credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
    - uses: google-github-actions/setup-gcloud@v2
      with:
       project_id: ${{ env.PROJECT }}
-   - name: Read-only DEV, Hosting and untouched-production baselines
+   - name: Read-only exact DEV Hosting CAS and untouched-production baseline
      run: |
       set -Eeuo pipefail
       gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$FOCAL_DIR/runtime-before.json"
-      jq -e --arg rev "$EXPECTED_RUNTIME_REV" '.status.latestReadyRevisionName==$rev and ([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$FOCAL_DIR/runtime-before.json"
+      jq -e --arg rev "$EXPECTED_RUNTIME_REV" '.status.latestReadyRevisionName==$rev and ([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$FOCAL_DIR/runtime-before.json" >/dev/null
       TOKEN="$(gcloud auth print-access-token)"
-      curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$FOCAL_DIR/hosting-before.json"
-      jq -e '.release.version.name | length > 0' "$FOCAL_DIR/hosting-before.json"
-      # Do not overwrite an unexpected Hosting release; verify prior exact source bytes.
-      for FILE in core/backend-resources.js modules/documentos.js index-backend-dev.html modules/cert.js; do
+      curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" -o "$FOCAL_DIR/hosting-before.json"
+      test "$(jq -r .release.version.name "$FOCAL_DIR/hosting-before.json")" = "$(jq -r .expectedPriorHostingVersion "$REQUEST")"
+      for FILE in $QA_ASSETS; do
         SAFE_FILE="$(printf '%s' "$FILE" | tr '/' '-')"
-        OUT="$FOCAL_DIR/before-$SAFE_FILE"
-        curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$FILE?d07Before=$GITHUB_RUN_ID" -o "$OUT"
-        test "$(git hash-object "$OUT")" = "$(git rev-parse "$PREDECESSOR_SRC:app/$FILE")" || { echo "RELEASE_COMPOSITION_FAILURE:D07_PRE_DEPLOY_SERVING_DRIFT:$FILE"; exit 1; }
+        curl -fsS --max-time 45 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$FILE?d05Before=$GITHUB_RUN_ID" -o "$FOCAL_DIR/before-$SAFE_FILE"
+        test "$(git hash-object "$FOCAL_DIR/before-$SAFE_FILE")" = "$(git rev-parse "$PREDECESSOR_SRC:app/$FILE")" || { echo "RELEASE_COMPOSITION_FAILURE:D05_PRE_DEPLOY_SERVING_DRIFT:$FILE"; exit 1; }
       done
-      curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" > "$FOCAL_DIR/firestore-release-before.json"
-      curl -fsS -H 'Cache-Control: no-cache' "$PROD_URL/" -o "$FOCAL_DIR/production-before.html"
+      curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" -o "$FOCAL_DIR/firestore-release-before.json"
+      test "$(jq -r .rulesetName "$FOCAL_DIR/firestore-release-before.json")" = "$(jq -r .expectedFirestoreRuleset "$REQUEST")"
+      curl -fsS --max-time 45 -H 'Cache-Control: no-cache' "$PROD_URL/" -o "$FOCAL_DIR/production-before.html"
       sha256sum "$FOCAL_DIR/production-before.html" | awk '{print $1}' > "$FOCAL_DIR/production-before.sha256"
-   - name: Publish exact immutable source to Firebase Hosting DEV only
+   - name: Deploy exact immutable candidate once to Firebase Hosting DEV only
      run: |
       set -Eeuo pipefail
+      test ! -e "$FOCAL_DIR/deployment-attempt.json"
+      jq -n --arg source "$SRC" --arg tree "$TREE" --arg run "$GITHUB_RUN_ID" '{decision:"HOLD_D05_DEV_HOSTING_DEPLOY_ATTEMPT_STARTED",runId:$run,sourceSha:$source,sourceTree:$tree,maxAttempts:1,noAutomaticRetry:true,production:false,firestoreWrites:0,authWrites:0,hrWrites:0}' > "$FOCAL_DIR/deployment-attempt.json"
       npm install --no-save --ignore-scripts --package-lock=false firebase-tools@14.12.0 >/dev/null 2>&1
       cd "$SOURCE_DIR"
       "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$FOCAL_DIR/hosting-deploy.log"
-   - name: Read back exact serving bytes and isolation
+   - name: Verify exact served bytes, runtime/rules isolation and no production drift
      run: |
       set -Eeuo pipefail
+      test -f "$FOCAL_DIR/deployment-attempt.json"
       gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$FOCAL_DIR/runtime-after.json"
-      jq -e --arg rev "$EXPECTED_RUNTIME_REV" '.status.latestReadyRevisionName==$rev and ([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$FOCAL_DIR/runtime-after.json"
+      jq -e --arg rev "$EXPECTED_RUNTIME_REV" '.status.latestReadyRevisionName==$rev and ([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$FOCAL_DIR/runtime-after.json" >/dev/null
+      jq -S '{revision:.status.latestReadyRevisionName,traffic:.status.traffic}' "$FOCAL_DIR/runtime-before.json" > "$FOCAL_DIR/runtime-before-fingerprint.json"
+      jq -S '{revision:.status.latestReadyRevisionName,traffic:.status.traffic}' "$FOCAL_DIR/runtime-after.json" > "$FOCAL_DIR/runtime-after-fingerprint.json"
+      cmp -s "$FOCAL_DIR/runtime-before-fingerprint.json" "$FOCAL_DIR/runtime-after-fingerprint.json"
       TOKEN="$(gcloud auth print-access-token)"
-      curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$FOCAL_DIR/hosting-after.json"
-      BEFORE="$(jq -r '.release.version.name' "$FOCAL_DIR/hosting-before.json")"
-      AFTER="$(jq -r '.release.version.name' "$FOCAL_DIR/hosting-after.json")"
-      test -n "$AFTER"
-      test "$AFTER" != "$BEFORE"
-      curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" > "$FOCAL_DIR/firestore-release-after.json"
-      test "$(jq -r '.rulesetName' "$FOCAL_DIR/firestore-release-after.json")" = "$(jq -r '.rulesetName' "$FOCAL_DIR/firestore-release-before.json")"
-      for FILE in core/backend-resources.js modules/documentos.js index-backend-dev.html modules/cert.js; do
-       OUT="$FOCAL_DIR/served-${FILE//\//-}"
-       curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$FILE?d07After=$GITHUB_RUN_ID" -o "$OUT"
-       cmp -s "$SOURCE_DIR/app/$FILE" "$OUT"
+      curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" -o "$FOCAL_DIR/hosting-after.json"
+      BEFORE="$(jq -r .release.version.name "$FOCAL_DIR/hosting-before.json")"
+      AFTER="$(jq -r .release.version.name "$FOCAL_DIR/hosting-after.json")"
+      test -n "$AFTER" && test "$AFTER" != "$BEFORE"
+      curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" -o "$FOCAL_DIR/firestore-release-after.json"
+      test "$(jq -r .rulesetName "$FOCAL_DIR/firestore-release-after.json")" = "$(jq -r .rulesetName "$FOCAL_DIR/firestore-release-before.json")"
+      for FILE in $QA_ASSETS; do
+        SAFE_FILE="$(printf '%s' "$FILE" | tr '/' '-')"
+        curl -fsS --max-time 45 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$FILE?d05After=$GITHUB_RUN_ID" -o "$FOCAL_DIR/served-$SAFE_FILE"
+        test "$(git hash-object "$FOCAL_DIR/served-$SAFE_FILE")" = "$(git rev-parse "$SRC:app/$FILE")" || { echo "RELEASE_COMPOSITION_FAILURE:D05_SERVED_SOURCE_MISMATCH:$FILE"; exit 1; }
+        if [ "$FILE" != modules/cert.js ]; then
+          test "$(git rev-parse "$SRC:app/$FILE")" = "$(git rev-parse "$PREDECESSOR_SRC:app/$FILE")"
+        fi
       done
-      curl -fsS -H 'Cache-Control: no-cache' "$PROD_URL/" -o "$FOCAL_DIR/production-after.html"
+      curl -fsS --max-time 45 -H 'Cache-Control: no-cache' "$PROD_URL/" -o "$FOCAL_DIR/production-after.html"
       sha256sum "$FOCAL_DIR/production-after.html" | awk '{print $1}' > "$FOCAL_DIR/production-after.sha256"
       cmp -s "$FOCAL_DIR/production-before.sha256" "$FOCAL_DIR/production-after.sha256"
-      jq -n -S --arg source "$SRC" --arg tree "$TREE" --arg old "$BEFORE" --arg version "$AFTER" --arg revision "$EXPECTED_RUNTIME_REV" --arg rules "$(jq -r .rulesetName "$FOCAL_DIR/firestore-release-after.json")" --arg prodSha "$(cat "$FOCAL_DIR/production-after.sha256")" '{decision:"PASS_I3_D07_DIAGNOSTIC_HOSTING_ONLY_DEV_EXACT_BYTES",sourceSha:$source,sourceTree:$tree,previousHostingVersion:$old,hostingVersion:$version,runtimeRevision:$revision,firestoreRuleset:$rules,verifiedServedAssetCount:4,cloudRunBuilds:0,runtimeDeploys:0,hostingDeploys:1,firestoreRulesDeploys:0,storageRulesDeploys:0,firestoreWrites:0,authWrites:0,hrWrites:0,productionIndexSha256:$prodSha,productionChanged:false,diagnosisCodeVisibleToAdmin:true,providerCause:"NOT_VERIFIED",pdfLiveE2e:"NOT_VERIFIED",shopperE2e:"NOT_VERIFIED",humanAcceptance:"PENDING",gate20:"HOLD",gate21:"HOLD",terminalEligible:false,production:false}' > "$FOCAL_DIR/result.json"
-   - name: Archive focal DEV deployment evidence
+      jq -n -S --arg source "$SRC" --arg tree "$TREE" --arg before "$BEFORE" --arg after "$AFTER" --arg runtime "$EXPECTED_RUNTIME_REV" --arg rules "$(jq -r .rulesetName "$FOCAL_DIR/firestore-release-after.json")" --arg prodSha "$(cat "$FOCAL_DIR/production-after.sha256")" '{decision:"PASS_I3_D05_HOSTING_ONLY_DEV_EXACT_SOURCE_BYTES",sourceSha:$source,sourceTree:$tree,previousHostingVersion:$before,hostingVersion:$after,runtimeRevision:$runtime,firestoreRuleset:$rules,verifiedServedAssetCount:8,hostingDeployAttempts:1,hostingDeploys:1,cloudRunDeploys:0,firestoreRulesDeploys:0,storageRulesDeploys:0,firestoreWrites:0,authWrites:0,hrWrites:0,productionIndexSha256:$prodSha,productionChanged:false,qaAdminReviewVersionedSave:"PENDING_REAL_UI",shopperD06Negatives:"PENDING",humanAcceptance:"PENDING",matchDomains:5,gate20:"HOLD",gate21:"HOLD",terminalEligible:false,production:false}' > "$FOCAL_DIR/result.json"
+      jq -e '.decision=="PASS_I3_D05_HOSTING_ONLY_DEV_EXACT_SOURCE_BYTES" and .verifiedServedAssetCount==8 and .productionChanged==false' "$FOCAL_DIR/result.json" >/dev/null
+   - name: Archive exact D05-only DEV transport evidence
      if: always()
      uses: actions/upload-artifact@v4
      with:
-      name: cxorbia-i3-d07-diagnostic-hosting-dev-${{ github.run_id }}
-      path: .tmp/i3-d07-diagnostic-hosting-only/
+      name: cxorbia-i3-d05-versioned-review-hosting-dev-${{ github.run_id }}
+      path: .tmp/i3-d05-versioned-review-hosting-only/
       if-no-files-found: warn
       retention-days: 30
 
