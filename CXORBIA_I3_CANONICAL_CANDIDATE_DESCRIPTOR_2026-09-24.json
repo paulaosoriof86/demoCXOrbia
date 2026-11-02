@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM299_SOURCE_LOCAL_PENDING_DEV_16_NONMATCH",
+  "status": "HOLD_I3_B10_DEV_ASSET_PROVEN_5_MATCH_16_NONMATCH",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "1737051ae56238eb0f71a6e3a237a4651ab32073",
   "productTreeAuthority": "184d0f23eab12de82bcb3cc6e91160b7724aabd1",
   "predecessorProductSourceSha": "bf60d57aa36fac08933d14f93d80f4c30e59a36c",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V548_2026-11-02.json",
-  "findingsLedgerExpectedGitBlob": "2d23cdc0daedd968f3400e504b4644bea80de0b9",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V226.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V549_2026-11-02.json",
+  "findingsLedgerExpectedGitBlob": "1a30780cc5dca8457d67b7e942a1f75d1f1ca550",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V227.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D06_REAL_QA_ISOLATED_ATTEMPT_AND_PASSWORD_SHOPPER_E2E_AND_HUMAN_PENDING; OTHER_15_DOMAIN_ROLE_ACCEPTANCE; VRM299_UI_COUNTER_NOT_YET_SERVING_DEV",
+  "activeBlocker": "D06_ISOLATED_QA_ATTEMPT_PASSWORD_SHOPPER_E2E_AND_HUMAN_PENDING; OTHER_MODULE_ROLE_ACCEPTANCE; B10_PROVIDER_CLICK_AND_HUMAN_PENDING; HR_AND_FINANCE_CONTRACTS_OPEN",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "VRM-299: corregido en SOURCE el significado del aviso de expedientes técnicos y el KPI de perfiles visibles; seis suites focales PASS, sin tocar identidades, ACK, HR ni DEV. Canonical CI y Hosting DEV aún pendientes. I3: VRM-298 fuente 6/6 CI PASS RUN41482423802 y global PASS RUN41482423622; backend DEV exacta revisión 00334-8jb al 100% PASS RUN41488609593 (0 builds extra, 1 traffic switch, Rules/Hosting/producción intactos). Siguiente: D06 intento positivo/negativo únicamente con identidad/proyecto/banco QA aislados y readback de ACK/idempotencia; Shopper login por contraseña y aceptación humana. Beneficios y Auth+Core E2E por roles con pruebas heredadas conservadas, sin reabrir PASS. Mantener G03 PASS Hosting DEV 231186c337bcd0ba, HR 32/83 provisionales y 51 pendientes, finanzas Q7,300 x2 sin recibo; 5/21 MATCH, Gates20/21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
+  "exactNextAction": "B10 DEV asset + CI source QA PASS; matrix V227 retains 5/21 MATCH. Next D06 isolated QA positive/negative readback, Shopper password role E2E, B10 provider navigation, Benefits/Auth role acceptance, HR/Finance closure. Gates20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "c5ace87c755889bf3420de0e5ae9c58873790908",
+  "moduleTruthExpectedGitBlob": "25f36d3165068717f41c09283a45bd19518e8001",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -16591,5 +16591,18 @@
     "providerWrites": 0,
     "production": false,
     "phaseAMatchAdded": 0
+  },
+  "b10DevExactAssetAndQa20261102": {
+    "decision": "PASS_SCOPED_NOT_DOMAIN_MATCH",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_B10_EXACT_DEV_ASSET_AND_QA_20261102.json",
+    "receiptBlob": "739a4168374b67bffba01de75c9127f5856397cc",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V227.json",
+    "matrixBlob": "25f36d3165068717f41c09283a45bd19518e8001",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V549_2026-11-02.json",
+    "ledgerBlob": "1a30780cc5dca8457d67b7e942a1f75d1f1ca550",
+    "runId": 41524873910,
+    "match": 5,
+    "total": 21,
+    "noProduction": true
   }
 }

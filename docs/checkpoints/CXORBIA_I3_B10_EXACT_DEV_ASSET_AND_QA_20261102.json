@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "cxorbia.i3.b10.dev-asset-proof.20261102.v1",
+  "dateLocal": "2026-11-02",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "decision": "PASS_B10_DEV_SOURCE_ASSET_MATCH_AND_CANONICAL_QA_NOT_DOMAIN_MATCH",
+  "productSourceSha": "1737051ae56238eb0f71a6e3a237a4651ab32073",
+  "productTree": "184d0f23eab12de82bcb3cc6e91160b7724aabd1",
+  "controlCommitSha": "4c34b0d7d0196c1f9c7a6f9391ab828dc2c597ff",
+  "proof": {
+    "initialExactHostingDevRunId": 41517119181,
+    "canonicalNewQaRunId": 41524873910,
+    "canonicalNewQaConclusion": "success",
+    "questionnaire": {
+      "path": "app/modules/cuestionario-shopper.js",
+      "url": "https://cxorbia-backend-dev.web.app/modules/cuestionario-shopper.js",
+      "httpStatus": 200,
+      "sourceSha256": "576272660a6b7cf96055587de39ee172df6ebc9147711a5cf0f17d0a8c943388",
+      "servedSha256": "576272660a6b7cf96055587de39ee172df6ebc9147711a5cf0f17d0a8c943388",
+      "match": true
+    },
+    "relatedRoleAssets": [
+      {
+        "path": "app/modules/beneficios.js",
+        "sha256": "2c1763b65ef055eecd56e3622033d53c9946f679e758d06be797b7e854b6b419",
+        "match": true
+      },
+      {
+        "path": "app/core/backend-browser-auth.js",
+        "sha256": "caa74dad682936e3cd5f40bb91bb7104d27eda9aa18fde40f5c1aac9444a38c8",
+        "match": true
+      },
+      {
+        "path": "app/modules/clientes.js",
+        "sha256": "7260fa6c2ef5eccc0eea3cf43bc9cf5c06af2be4cc923742e45876e21480ad1e",
+        "match": true
+      }
+    ],
+    "sourceQa": [
+      {
+        "test": "tools/qa/cxorbia-i3-b10-external-provider-routing.test.mjs",
+        "status": "PASS"
+      },
+      {
+        "test": "backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs",
+        "status": "PASS_AFTER_STALE_LITERAL_ORACLE_CORRECTION"
+      }
+    ],
+    "originalTestFailure": "The previous oracle asserted the superseded inline expression identity.projectConfig.cuestionario||{}; B10 uses resolveScopedQuestionnaire(identity.projectConfig) with fail-closed external provider authority.",
+    "testOwnerChangedOnly": true,
+    "productionCodeChanged": false
+  },
+  "moduleTransition": {
+    "domain": "questionnaire-shopper",
+    "classificationBefore": "COMPOSED_NOT_DEPLOYED",
+    "classificationAfter": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+    "matchBefore": false,
+    "matchAfter": false,
+    "pending": [
+      "real Shopper role login and authorized click route",
+      "external/provider questionnaire link validity in project-period-visit context",
+      "human visual acceptance on exact DEV artifact"
+    ]
+  },
+  "certification": {
+    "match": 5,
+    "total": 21,
+    "phaseAComplete": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false
+  },
+  "safety": {
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "cloudRunDeploys": 0,
+    "productionDeploys": 0,
+    "production": "DO_NOT_TOUCH"
+  },
+  "evidenceCaveat": "Source bytes and source QA alone do not prove the complete user action cycle or third-party provider ACK."
+}

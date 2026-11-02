@@ -286,7 +286,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "VRM-299: corregido en SOURCE el significado del aviso de expedientes técnicos y el KPI de perfiles visibles; seis suites focales PASS, sin tocar identidades, ACK, HR ni DEV. Canonical CI y Hosting DEV aún pendientes. I3: VRM-298 fuente 6/6 CI PASS RUN41482423802 y global PASS RUN41482423622; backend DEV exacta revisión 00334-8jb al 100% PASS RUN41488609593 (0 builds extra, 1 traffic switch, Rules/Hosting/producción intactos). Siguiente: D06 intento positivo/negativo únicamente con identidad/proyecto/banco QA aislados y readback de ACK/idempotencia; Shopper login por contraseña y aceptación humana. Beneficios y Auth+Core E2E por roles con pruebas heredadas conservadas, sin reabrir PASS. Mantener G03 PASS Hosting DEV 231186c337bcd0ba, HR 32/83 provisionales y 51 pendientes, finanzas Q7,300 x2 sin recibo; 5/21 MATCH, Gates20/21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
+  "nextExactAction": "I3 HOLD 5/21 MATCH: B10 DEV exact bytes + source QA now PASS and reclassified deployed (not domain MATCH). Execute isolated D06 QA positive/negative with ACK/idempotency, Shopper password E2E, B10 authorized provider click, Benefits/Auth/Core two-role proof, HR/finance contracts, Gate20 and 21 on same certified artifact. I4 not authorized; production DO_NOT_TOUCH.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -329,7 +329,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-11-02T04:01:39.577Z",
+  "lastUpdatedAt": "2026-11-02",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -986,12 +986,12 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V226.json",
-    "gitBlob": "c5ace87c755889bf3420de0e5ae9c58873790908",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V227.json",
+    "gitBlob": "25f36d3165068717f41c09283a45bd19518e8001",
     "sourceSha": "1737051ae56238eb0f71a6e3a237a4651ab32073",
     "allModulesMatch": false,
     "phaseAComplete": false,
-    "sha256": "ef01810be66a00ec94b27a926a04f94c0720e05105d88c8d391f0abee94f6597"
+    "sha256": "cacae7c71a992f02b3518b16db8444e0c9c7126e9798e2c82f00c137ca2a9b7e"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -6012,8 +6012,8 @@
     },
     "production": false
   },
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V548_2026-11-02.json",
-  "findingsLedgerExpectedGitBlob": "2d23cdc0daedd968f3400e504b4644bea80de0b9",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V549_2026-11-02.json",
+  "findingsLedgerExpectedGitBlob": "1a30780cc5dca8457d67b7e942a1f75d1f1ca550",
   "nextFindingId": "VRM-300",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -6579,5 +6579,21 @@
     "providerWrites": 0,
     "production": false,
     "phaseAMatchAdded": 0
+  },
+  "latestB10ExactDevAssetAndQa20261102": {
+    "decision": "PASS_B10_DEPLOYED_BYTES_CANONICAL_SOURCE_QA_NOT_MATCH",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_B10_EXACT_DEV_ASSET_AND_QA_20261102.json",
+    "receiptGitBlob": "739a4168374b67bffba01de75c9127f5856397cc",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V227.json",
+    "matrixGitBlob": "25f36d3165068717f41c09283a45bd19518e8001",
+    "descriptorGitBlob": "f1affe31a444bb649438f0e0554e33964fe04a28",
+    "source": "1737051ae56238eb0f71a6e3a237a4651ab32073",
+    "ciRunId": 41524873910,
+    "officialMatch": 5,
+    "total": 21,
+    "nonMatch": 16,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": false
   }
 }
