@@ -699,3 +699,159 @@ jobs:
           path: .tmp/i3-d06-attempt-contract/
           if-no-files-found: warn
           retention-days: 30
+
+  d06-vrm298-backend-only-dev:
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-d06-vrm298-backend-dev]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    concurrency:
+      group: cxorbia-i3-d06-vrm297-dev-serial-one-shot
+      cancel-in-progress: false
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REQUEST: docs/checkpoints/CXORBIA_I3_D06_VRM298_BACKEND_ONLY_DEV_REQUEST_20261102.json
+      OUT: .tmp/i3-d06-vrm298-backend-only-dev
+      DEV_URL: https://cxorbia-backend-dev.web.app
+      PROD_URL: https://tya-plataforma.web.app
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Exact frozen P0 source, approved CI, no product drift and one-shot limits
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$OUT"
+          jq -e '.schemaVersion=="cxorbia.i3.d06.vrm298.backend-only-dev-one-shot.20261102.v1"
+            and .authorization=="PAULA_EXPLICIT_DEV_MODULE_RECERTIFICATION_2026_11_02"
+            and .intent=="ONE_BUILD_ONE_RUNTIME_IMAGE_UPDATE_ONE_TRAFFIC_SWITCH_NO_RULES_HOSTING_PRODUCTION_OR_DATA_WRITES"
+            and .dev.oneNewBuildAllowed==1 and .dev.oneRuntimeImageUpdateAllowed==1
+            and .dev.oneTrafficSwitchAllowed==1 and .dev.rulesDeploysAllowed==0
+            and .dev.hostingDeploysAllowed==0 and .dev.realBankWritesAllowed==0
+            and .dev.shopperAttemptWritesAllowed==0 and .dev.authWritesAllowed==0
+            and .dev.hrWritesAllowed==0 and .dev.financeWritesAllowed==0
+            and .dev.productionWritesAllowed==0 and .dev.automaticRetries==false
+            and .dev.automaticRollback==false and .dev.production=="DO_NOT_TOUCH"
+            and .dev.authorizationI4==false and .dev.gate20=="HOLD"
+            and .dev.gate21=="HOLD" and .dev.moduleMatchCount==5' "$REQUEST" >/dev/null
+          test "$(git rev-parse HEAD^)" = "$(jq -r .controlParentSha "$REQUEST")"
+          test "$(git diff --name-only HEAD^ HEAD | LC_ALL=C sort)" = "$(jq -r '.allowedControlFiles|sort|.[]' "$REQUEST")"
+          SRC="$(jq -r .source.sha "$REQUEST")"
+          TREE="$(jq -r .source.tree "$REQUEST")"
+          test "$SRC" = "bf60d57aa36fac08933d14f93d80f4c30e59a36c"
+          test "$TREE" = "1c02eb88bbbe2afdba136046dbf9716f2120f1fd"
+          test "$(git rev-parse "$SRC^{tree}")" = "$TREE"
+          test "$(jq -r .productSourceSha CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = "$SRC"
+          test "$(jq -r .productTreeAuthority CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = "$TREE"
+          git diff --quiet "$SRC" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules
+          test "$(git rev-parse "$SRC:backend/runtime/hr-live-service/certification-runtime.mjs")" = "$(jq -r .source.ownerBlob "$REQUEST")"
+          test "$(git rev-parse "$SRC:backend/runtime/hr-live-service/test/certification-attempt-audience-idempotency.test.mjs")" = "$(jq -r .source.qaBlob "$REQUEST")"
+          test "$(git rev-parse "$SRC:firestore.rules")" = "$(jq -r .source.unchangedRulesBlob "$REQUEST")"
+          test "$(git rev-parse "$SRC:app/modules/cert.js")" = "$(jq -r .source.unchangedCertUiBlob "$REQUEST")"
+          test "$(git diff --name-only "$(jq -r .source.predecessor "$REQUEST")" "$SRC" -- app backend firebase.json .firebaserc firestore.rules storage.rules | LC_ALL=C sort)" = "$(printf '%s\n' 'backend/runtime/hr-live-service/certification-runtime.mjs' 'backend/runtime/hr-live-service/test/certification-attempt-audience-idempotency.test.mjs' | LC_ALL=C sort)"
+          node --check backend/runtime/hr-live-service/certification-runtime.mjs
+          node --test backend/runtime/hr-live-service/test/certification-attempt-audience-idempotency.test.mjs | tee "$OUT/source-reproof.log"
+          node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs > "$OUT/authority.json"
+          jq -e '.decision=="PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY"
+            and .moduleBlobReadback.pass==true and .terminalReleaseEligible==false
+            and .production==false' "$OUT/authority.json" >/dev/null
+          for NAME in focalRunId canonicalRunId; do
+            RUN_ID="$(jq -r --arg n "$NAME" '.sourceProof[$n]' "$REQUEST")"
+            curl -fsS --max-time 30 -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/repos/paulaosoriof86/demoCXOrbia/actions/runs/$RUN_ID" -o "$OUT/$NAME.json"
+            jq -e --arg sha "$(jq -r .sourceProof.controlSha "$REQUEST")" '.conclusion=="success" and .head_sha==$sha' "$OUT/$NAME.json" >/dev/null
+          done
+          SRC_DIR="$(mktemp -d)"
+          git archive "$SRC" | tar -x -C "$SRC_DIR"
+          echo "SRC=$SRC" >> "$GITHUB_ENV"
+          echo "SRC_DIR=$SRC_DIR" >> "$GITHUB_ENV"
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: cxorbia-backend-dev
+      - name: Read-only compare-and-swap DEV runtime rules Hosting and production
+        run: |
+          set -Eeuo pipefail
+          PROJECT="$(jq -r .dev.project "$REQUEST")"
+          REGION="$(jq -r .dev.region "$REQUEST")"
+          SERVICE="$(jq -r .dev.service "$REQUEST")"
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-before.json"
+          jq -e --arg rev "$(jq -r .dev.oldRevision "$REQUEST")" '.status.latestReadyRevisionName==$rev
+            and ([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$OUT/runtime-before.json" >/dev/null
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" -o "$OUT/rules-before.json"
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/cxorbia-backend-dev/channels/live" -o "$OUT/hosting-before.json"
+          test "$(jq -r .rulesetName "$OUT/rules-before.json")" = "$(jq -r .dev.oldRuleset "$REQUEST")"
+          test "$(jq -r .release.version.name "$OUT/hosting-before.json")" = "$(jq -r .dev.oldHostingVersion "$REQUEST")"
+          curl -fsS --max-time 45 "$PROD_URL/" -o "$OUT/production-before.html"
+          sha256sum "$OUT/production-before.html" | awk '{print $1}' > "$OUT/production-before.sha256"
+          jq -n --arg src "$SRC" '{decision:"PASS_VRM298_DEV_CAS_NO_WRITE_YET",sourceSha:$src,builds:0,deploys:0,production:false}' > "$OUT/preflight.json"
+      - name: Build one immutable source image for DEV only
+        run: |
+          set -Eeuo pipefail
+          PROJECT="$(jq -r .dev.project "$REQUEST")"
+          SERVICE="$(jq -r .dev.service "$REQUEST")"
+          IMAGE_URI="gcr.io/$PROJECT/$SERVICE:i3-vrm298-$SRC-$GITHUB_RUN_ID"
+          jq -n --arg src "$SRC" --arg image "$IMAGE_URI" '{decision:"BUILD_ATTEMPT_STARTED",sourceSha:$src,image:$image,attemptsAllowed:1,production:false}' > "$OUT/build-attempt.json"
+          gcloud builds submit "$SRC_DIR" --project "$PROJECT" --config "$SRC_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet 2>&1 | tee "$OUT/build.log"
+          echo "IMAGE_URI=$IMAGE_URI" >> "$GITHUB_ENV"
+      - name: One DEV Cloud Run image update and explicit new-revision traffic switch
+        run: |
+          set -Eeuo pipefail
+          PROJECT="$(jq -r .dev.project "$REQUEST")"
+          REGION="$(jq -r .dev.region "$REQUEST")"
+          SERVICE="$(jq -r .dev.service "$REQUEST")"
+          OLD="$(jq -r .dev.oldRevision "$REQUEST")"
+          jq -n --arg image "$IMAGE_URI" '{decision:"RUNTIME_UPDATE_ATTEMPT_STARTED",attemptsAllowed:1,image:$image,production:false}' > "$OUT/runtime-update-attempt.json"
+          gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --quiet
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-updated.json"
+          NEW="$(jq -r '.status.latestReadyRevisionName // empty' "$OUT/runtime-updated.json")"
+          test -n "$NEW" && test "$NEW" != "$OLD"
+          gcloud run revisions describe "$NEW" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/new-revision.json"
+          IMAGE_REF="$(jq -r '.spec.containers[0].image // empty' "$OUT/new-revision.json")"
+          [[ "$IMAGE_REF" == "$IMAGE_URI" || "$IMAGE_REF" == "gcr.io/$PROJECT/$SERVICE@sha256:"* ]]
+          echo "NEW_REVISION=$NEW" >> "$GITHUB_ENV"
+          jq -n --arg rev "$NEW" '{decision:"NEW_REVISION_READY_TRAFFIC_SWITCH_STARTED",revision:$rev,trafficSwitchesAllowed:1,production:false}' > "$OUT/traffic-attempt.json"
+          gcloud run services update-traffic "$SERVICE" --project "$PROJECT" --region "$REGION" --to-revisions "$NEW=100" --quiet
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-after.json"
+          jq -e --arg rev "$NEW" '.status.latestReadyRevisionName==$rev
+            and ([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$OUT/runtime-after.json" >/dev/null
+          RUNTIME_URL="$(jq -r '.status.url // empty' "$OUT/runtime-after.json")"
+          test -n "$RUNTIME_URL"
+          curl -fsS --retry 6 --retry-delay 3 --max-time 30 "$RUNTIME_URL/health" -o "$OUT/health-after.json"
+          jq -e '.ok==true and .production==false and .hrWrites==false' "$OUT/health-after.json" >/dev/null
+      - name: Verify unchanged DEV Rules Hosting served assets and production; no bank writes
+        run: |
+          set -Eeuo pipefail
+          TOKEN="$(gcloud auth print-access-token)"
+          PROJECT="$(jq -r .dev.project "$REQUEST")"
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" -o "$OUT/rules-after.json"
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/cxorbia-backend-dev/channels/live" -o "$OUT/hosting-after.json"
+          test "$(jq -r .rulesetName "$OUT/rules-after.json")" = "$(jq -r .rulesetName "$OUT/rules-before.json")"
+          test "$(jq -r .release.version.name "$OUT/hosting-after.json")" = "$(jq -r .release.version.name "$OUT/hosting-before.json")"
+          for FILE in core/backend-certifications.js core/backend-resources.js modules/cert.js modules/documentos.js core/router.js index-backend-dev.html; do
+            SAFE="$(printf '%s' "$FILE" | tr '/' '-')"
+            curl -fsS --max-time 45 -H 'Cache-Control: no-cache, no-store' "$DEV_URL/$FILE?vrm298=$GITHUB_RUN_ID" -o "$OUT/served-$SAFE"
+            test "$(git hash-object "$OUT/served-$SAFE")" = "$(git rev-parse "$SRC:app/$FILE")"
+          done
+          curl -fsS --max-time 45 "$PROD_URL/" -o "$OUT/production-after.html"
+          sha256sum "$OUT/production-after.html" | awk '{print $1}' > "$OUT/production-after.sha256"
+          cmp -s "$OUT/production-before.sha256" "$OUT/production-after.sha256"
+          jq -n --arg source "$SRC" --arg tree "$(jq -r .source.tree "$REQUEST")" --arg revision "$NEW_REVISION" --arg digest "$(jq -r '.status.imageDigest // empty' "$OUT/new-revision.json")" --arg rules "$(jq -r .rulesetName "$OUT/rules-after.json")" --arg hosting "$(jq -r .release.version.name "$OUT/hosting-after.json")" '{decision:"PASS_D06_VRM298_ONE_NEW_BACKEND_REVISION_DEV_ONLY",sourceSha:$source,sourceTree:$tree,backendRevision:$revision,backendDigest:$digest,firestoreRuleset:$rules,hostingVersion:$hosting,cloudBuilds:1,cloudRunImageUpdates:1,cloudRunTrafficSwitches:1,firestoreRulesDeploys:0,hostingDeploys:0,realBankWrites:0,shopperAttemptWrites:0,authWrites:0,hrWrites:0,financeWrites:0,productionChanged:false,domainMatchCount:5,gate20:"HOLD",gate21:"HOLD",production:false}' > "$OUT/result.json"
+          jq -e '.decision=="PASS_D06_VRM298_ONE_NEW_BACKEND_REVISION_DEV_ONLY"
+            and .cloudBuilds==1 and .cloudRunImageUpdates==1
+            and .cloudRunTrafficSwitches==1 and .realBankWrites==0
+            and .firestoreRulesDeploys==0 and .hostingDeploys==0
+            and .productionChanged==false and .domainMatchCount==5' "$OUT/result.json" >/dev/null
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-d06-vrm298-backend-dev-${{ github.run_id }}
+          path: .tmp/i3-d06-vrm298-backend-only-dev/
+          if-no-files-found: warn
+          retention-days: 30

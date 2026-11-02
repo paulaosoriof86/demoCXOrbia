@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "cxorbia.i3.d06.vrm298.backend-only-dev-one-shot.20261102.v1",
+  "authorization": "PAULA_EXPLICIT_DEV_MODULE_RECERTIFICATION_2026_11_02",
+  "intent": "ONE_BUILD_ONE_RUNTIME_IMAGE_UPDATE_ONE_TRAFFIC_SWITCH_NO_RULES_HOSTING_PRODUCTION_OR_DATA_WRITES",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlParentSha": "895b000294e0d0ca1ed9436b48870e39150e0022",
+  "allowedControlFiles": [
+    ".github/workflows/cxorbia-i3-d05-qa-positive-lifecycle.yml",
+    "docs/checkpoints/CXORBIA_I3_D06_VRM298_BACKEND_ONLY_DEV_REQUEST_20261102.json"
+  ],
+  "source": {
+    "sha": "bf60d57aa36fac08933d14f93d80f4c30e59a36c",
+    "tree": "1c02eb88bbbe2afdba136046dbf9716f2120f1fd",
+    "predecessor": "128272027850fa0edad710ad1451a927041815d4",
+    "owner": "backend/runtime/hr-live-service/certification-runtime.mjs",
+    "ownerBlob": "b8b0aedb3cd4bdeb927b814dae2bc29ba995e9b2",
+    "qaFile": "backend/runtime/hr-live-service/test/certification-attempt-audience-idempotency.test.mjs",
+    "qaBlob": "6e3634f966203ca753c0b0349b4806a2ac268982",
+    "unchangedRulesBlob": "9001a1a39f97f8a83a8be9fcb96f5f2237da4109",
+    "unchangedCertUiBlob": "dac1bbb506b34e6ddc0dbc2742fe39dfbc666415"
+  },
+  "sourceProof": {
+    "focalRunId": 41482423802,
+    "canonicalRunId": 41482423622,
+    "controlSha": "895b000294e0d0ca1ed9436b48870e39150e0022",
+    "sixNoProviderCases": "PASS",
+    "global": "PASS"
+  },
+  "dev": {
+    "project": "cxorbia-backend-dev",
+    "region": "us-central1",
+    "service": "cxorbia-live-hr-dev",
+    "oldRevision": "cxorbia-live-hr-dev-00333-srb",
+    "oldRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+    "oldHostingVersion": "sites/cxorbia-backend-dev/versions/c69d52baf9e87433",
+    "oneNewBuildAllowed": 1,
+    "oneRuntimeImageUpdateAllowed": 1,
+    "oneTrafficSwitchAllowed": 1,
+    "rulesDeploysAllowed": 0,
+    "hostingDeploysAllowed": 0,
+    "realBankWritesAllowed": 0,
+    "shopperAttemptWritesAllowed": 0,
+    "authWritesAllowed": 0,
+    "hrWritesAllowed": 0,
+    "financeWritesAllowed": 0,
+    "productionWritesAllowed": 0,
+    "automaticRetries": false,
+    "automaticRollback": false,
+    "production": "DO_NOT_TOUCH",
+    "authorizationI4": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "moduleMatchCount": 5
+  },
+  "postCheck": {
+    "realShopperReadOnlyRetest": "PENDING",
+    "fullD06Match": false,
+    "humanAcceptance": "PENDING"
+  },
+  "production": "DO_NOT_TOUCH"
+}
