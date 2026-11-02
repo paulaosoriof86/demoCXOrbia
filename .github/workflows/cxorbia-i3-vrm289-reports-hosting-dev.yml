@@ -199,6 +199,8 @@ jobs:
       test "$(git hash-object "$QA_DIR/served-backend-resources.js")" = "$BEFORE"
       jq -n --argjson count "$(jq 'length' "$QA_DIR/indexes-before.json")" --arg hosting "$(jq -r '.release.version.name' "$QA_DIR/hosting-before.json")" --arg oldBlob "$BEFORE" '{decision:"PASS_D06_READONLY_DEV_INDEX_HOSTING_BASELINE",devIndexCount:$count,hostingVersion:$hosting,predecessorServedBlob:$oldBlob,sourceDevRules:"NOT_MATERIALIZED",sourceDevHosting:"NOT_MATERIALIZED",writes:0,production:false}' > "$QA_DIR/result.json"
       jq -e '.decision=="PASS_D06_READONLY_DEV_INDEX_HOSTING_BASELINE" and .devIndexCount>=0 and .hostingVersion!="" and .writes==0' "$QA_DIR/result.json" >/dev/null
+      jq '{decision,devIndexCount,hostingVersion,writes,production}' "$QA_DIR/result.json"
+      jq '[.[] | select(.collectionGroup=="resources") | {name,state,queryScope,fields:[.fields[] | {fieldPath,order,arrayConfig}]}]' "$QA_DIR/indexes-before.json"
    - uses: actions/upload-artifact@v4
      if: always()
      with:
