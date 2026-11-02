@@ -341,3 +341,75 @@ jobs:
           path: .tmp/i3-d06-vrm297-serial-dev/
           if-no-files-found: warn
           retention-days: 30
+
+  d06-vrm297-postattempt-readonly-runtime:
+    if: ${{ contains(github.event.head_commit.message, '[i3-d06-vrm297-runtime-readback]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      REQUEST: docs/checkpoints/CXORBIA_I3_D06_VRM297_RUNTIME_AFTER_ONE_SHOT_READBACK_20261102.json
+      QA_DIR: .tmp/i3-d06-vrm297-runtime-readback
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Exact read-only scope, source control and prior stop
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$QA_DIR"
+          jq -e '.schemaVersion=="cxorbia.i3.d06.vrm297.runtime-after-one-shot-readback.20261102.v1"
+            and .intent=="READ_ONLY_POST_DEPLOY_STATE_RECONCILIATION_BEFORE_ANY_RETRY"
+            and .authorization=="PAULA_EXPLICIT_DEV_MODULE_RECERTIFICATION_2026_11_02"
+            and .attempt.runId==41473920256
+            and .attempt.firestoreRulesDeployAttempted==false and .attempt.hostingDeployAttempted==false
+            and .limits.readOnly==true and .limits.cloudBuilds==0 and .limits.cloudRunDeploys==0
+            and .limits.firebaseRulesDeploys==0 and .limits.hostingDeploys==0
+            and .limits.production=="DO_NOT_TOUCH" and .limits.authorizationI4==false
+            and .limits.gate20=="HOLD" and .limits.gate21=="HOLD"' "$REQUEST" >/dev/null
+          test "$(git rev-parse HEAD^)" = "$(jq -r .controlParentSha "$REQUEST")"
+          test "$(git diff --name-only HEAD^ HEAD | LC_ALL=C sort)" = "$(jq -r '.allowedFiles|sort|.[]' "$REQUEST")"
+          test "$(jq -r .sourceSha "$REQUEST")" = "$(jq -r .productSourceSha CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          test "$(git rev-parse "$(jq -r .sourceSha "$REQUEST")^{tree}")" = "$(jq -r .sourceTree "$REQUEST")"
+          git diff --quiet "$(jq -r .sourceSha "$REQUEST")" HEAD -- app backend firestore.rules firestore.indexes.json storage.rules firebase.json .firebaserc
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: cxorbia-backend-dev
+      - name: DEV runtime/revision/image and unchanged rules/hosting readback only
+        run: |
+          set -Eeuo pipefail
+          PROJECT="$(jq -r .target.project "$REQUEST")"
+          SERVICE="$(jq -r .target.service "$REQUEST")"
+          REGION="$(jq -r .target.region "$REQUEST")"
+          IMAGE="$(jq -r .attempt.expectedBuiltImage "$REQUEST")"
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$QA_DIR/runtime-current.json"
+          gcloud run revisions list --service "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$QA_DIR/runtime-revisions.json"
+          if gcloud container images describe "$IMAGE" --project "$PROJECT" --format=json > "$QA_DIR/new-image.json"; then
+            echo PRESENT > "$QA_DIR/image-state.txt"
+          else
+            echo UNAVAILABLE > "$QA_DIR/image-state.txt"
+          fi
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" -o "$QA_DIR/rules-current.json"
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/cxorbia-backend-dev/channels/live" -o "$QA_DIR/hosting-current.json"
+          RULESET="$(jq -r .rulesetName "$QA_DIR/rules-current.json")"
+          HOSTING="$(jq -r .release.version.name "$QA_DIR/hosting-current.json")"
+          test "$RULESET" = "$(jq -r .target.expectedPriorRuleset "$REQUEST")"
+          test "$HOSTING" = "$(jq -r .target.expectedPriorHostingVersion "$REQUEST")"
+          CURRENT_REV="$(jq -r '.status.latestReadyRevisionName // empty' "$QA_DIR/runtime-current.json")"
+          TEMPLATE_IMAGE="$(jq -r '.spec.template.spec.containers[0].image // empty' "$QA_DIR/runtime-current.json")"
+          IMAGE_STATE="$(cat "$QA_DIR/image-state.txt")"
+          jq -n --arg rev "$CURRENT_REV" --arg prior "$(jq -r .target.expectedPriorRuntimeRevision "$REQUEST")" --arg template "$TEMPLATE_IMAGE" --arg built "$IMAGE" --arg imageState "$IMAGE_STATE" --arg rules "$RULESET" --arg hosting "$HOSTING" '{decision:"PASS_D06_READONLY_POSTATTEMPT_PROVIDER_INVENTORY",currentRuntimeRevision:$rev,priorRuntimeRevision:$prior,revisionChanged:($rev!=$prior),currentRuntimeTemplateImage:$template,builtImage:$built,builtImageState:$imageState,firestoreRuleset:$rules,hostingVersion:$hosting,sourceReproof:"PENDING",cloudBuilds:0,deployments:0,bankWrites:0,production:false}' > "$QA_DIR/result.json"
+          jq -e '.decision=="PASS_D06_READONLY_POSTATTEMPT_PROVIDER_INVENTORY" and .deployments==0 and .production==false' "$QA_DIR/result.json" >/dev/null
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-d06-vrm297-runtime-readback-${{ github.run_id }}
+          path: .tmp/i3-d06-vrm297-runtime-readback/
+          if-no-files-found: warn
+          retention-days: 30
