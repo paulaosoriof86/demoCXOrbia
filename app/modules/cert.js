@@ -262,10 +262,12 @@ CX.module('cert', ({role,data,ui})=>{
           try{
             let result;
             if(isPreviewOnly){
-              let ok=0;
-              const feedback=bank.preguntas.map((q,i)=>{const mine=selected[i],correct=mine.trim().toLowerCase()===(q.correcta||'').trim().toLowerCase();if(correct)ok++;return {index:i,ok:correct,selected:mine,correcta:q.correcta||'',exp:q.exp||''};});
-              const score=Math.round(ok/bank.preguntas.length*100);
-              result={score,pass:score>=(bank.gate||80),gate:bank.gate||80,feedback,preview:true};
+              // Practice is also server-graded. Answer keys must never be
+              // bundled with the public question projection (VRM-297).
+              if(!CX.backendCertifications?.previewAttempt)throw new Error('CERT_PRACTICE_PROVIDER_UNAVAILABLE');
+              result=await CX.backendCertifications.previewAttempt({periodId:p.id,bankResourceId:bank.__resourceId,answers:selected});
+              if(result?.providerAck!==true||result?.preview!==true||result?.providerWrites!==0)
+                throw new Error('CERT_PRACTICE_PROVIDER_ACK_REQUIRED');
             }else{
               if(!CX.backendCertifications?.submitAttempt)throw new Error('CERT_PERSISTENCE_PROVIDER_UNAVAILABLE');
               result=await CX.backendCertifications.submitAttempt({periodId:p.id,bankResourceId:bank.__resourceId,answers:selected});
@@ -276,9 +278,9 @@ CX.module('cert', ({role,data,ui})=>{
             const score=Number(result.score||0),pass=result.pass===true,feedback=Array.isArray(result.feedback)?result.feedback:[];
             feedback.forEach(x=>{const fb=host.querySelector('.examFb[data-i="'+x.index+'"]');if(fb){fb.style.display='block';fb.innerHTML=(x.ok?'<b style="color:var(--green)">✓ Correcta</b>':'<b style="color:var(--amber)">↻ A reforzar</b> · correcta: <b style="color:var(--green)">'+(x.correcta||'—')+'</b>')+(x.exp?'<div style="color:var(--t2);margin-top:3px">'+x.exp+'</div>':'');}});
             const ok=feedback.filter(x=>x.ok).length,box=host.querySelector('#examBox');
-            box.insertAdjacentHTML('afterbegin',`<div class="flex" style="gap:14px;background:var(--${pass?'green':'amber'}-bg);border-radius:11px;padding:13px 16px;margin-bottom:12px"><div style="font-family:var(--disp);font-size:30px;font-weight:800;color:var(--${pass?'green':'amber'})">${score}%</div><div><b style="color:var(--t1)">${pass?'Aprobado':'No alcanzado'}</b> · ${ok}/${bank.preguntas.length} correctas · requisito ${result.gate||bank.gate||80}%<div style="font-size:12px;color:var(--t3)">${pass?(isPreviewOnly?'Práctica aprobada — no modifica elegibilidad.':'Intento persistido con ACK remoto · certificación vigente.'):'Intento persistido · repasa el feedback y vuelve a intentarlo.'}</div></div></div>`);
+            box.insertAdjacentHTML('afterbegin',`<div class="flex" style="gap:14px;background:var(--${pass?'green':'amber'}-bg);border-radius:11px;padding:13px 16px;margin-bottom:12px"><div style="font-family:var(--disp);font-size:30px;font-weight:800;color:var(--${pass?'green':'amber'})">${score}%</div><div><b style="color:var(--t1)">${pass?'Aprobado':'No alcanzado'}</b> · ${ok}/${bank.preguntas.length} correctas · requisito ${result.gate||bank.gate||80}%<div style="font-size:12px;color:var(--t3)">${pass?(isPreviewOnly?'Práctica aprobada — no modifica elegibilidad.':'Intento persistido con ACK remoto · certificación vigente.'):(isPreviewOnly?'Práctica no aprobada — sin modificar elegibilidad.':'Intento persistido · repasa el feedback y vuelve a intentarlo.')}</div></div></div>`);
             if(!isPreviewOnly)CX.automations?.fire?.('certificacion',{shopper:(CX.session.user&&CX.session.user.name)||'',score,pass});
-            ui.toast(pass?(isPreviewOnly?'✓ Práctica aprobada ('+score+'%)':'✓ Certificación aprobada y guardada ('+score+'%)'):'Puntaje '+score+'% · intento guardado','ok',4200);
+            ui.toast(pass?(isPreviewOnly?'✓ Práctica aprobada ('+score+'%)':'✓ Certificación aprobada y guardada ('+score+'%'):'Puntaje '+score+'% · '+(isPreviewOnly?'práctica sin guardado':'intento guardado'),'ok',4200);
           }catch(error){
             ui.toast('No se pudo confirmar el intento: '+String(error?.message||error),'warn',5200);
           }finally{

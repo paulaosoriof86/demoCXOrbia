@@ -27,6 +27,25 @@ window.CX=window.CX||{};
     }
     return body;
   }
+  async function loadShopperResources(periodId){
+    const s=scope(),pid=str(periodId);
+    if(!pid)throw new Error('CERT_SHOPPER_PERIOD_REQUIRED');
+    const route='/api/tenants/'+encodeURIComponent(s.tenantId)+'/projects/'+encodeURIComponent(s.projectId)
+      +'/certifications/shopper-resources?periodId='+encodeURIComponent(pid);
+    const response=await fetch(route,{method:'GET',cache:'no-store',headers:{Authorization:'Bearer '+await token()}});
+    const body=await response.json().catch(()=>({}));
+    if(!response.ok||body?.ok!==true||body?.providerAck!==true||!Array.isArray(body.items))
+      throw new Error(str(body?.code||body?.error||('CERT_SHOPPER_PROJECTION_HTTP_'+response.status)));
+    // Never cache a malformed backend response that could restore VRM-297.
+    for(const row of body.items){
+      if(row?.resourceType!=='certification_bank')continue;
+      if(!['published','confirmed','approved_preview'].includes(row?.bank?.estado)
+        ||row.bank?.documentSource!==undefined||!Array.isArray(row.bank?.preguntas)
+        ||row.bank.preguntas.some(q=>!q||Object.keys(q).some(k=>!['q','ops'].includes(k))))
+        throw new Error('CERT_SHOPPER_PROJECTION_UNSAFE');
+    }
+    return body.items;
+  }
   function explicitReviewPolicy(row){
     if(!row||typeof row!=='object')return null;
     const fields=['certificationReviewPolicy','certReviewPolicy'].filter(key=>Object.prototype.hasOwnProperty.call(row,key));
@@ -105,7 +124,9 @@ window.CX=window.CX||{};
   }
   CX.backendCertifications={
     call,
+    loadShopperResources,
     submitAttempt:payload=>call('attempt',Object.assign({idempotencyKey:newId('cert.attempt')},payload||{})),
+    previewAttempt:payload=>call('practice',payload||{}),
     requestRecertification:payload=>call('recertify',Object.assign({idempotencyKey:newId('cert.recert')},payload||{})),
     generateBank:payload=>call('ai-generate',Object.assign({idempotencyKey:newId('cert.generate')},payload||{})),
     reviewPolicy,

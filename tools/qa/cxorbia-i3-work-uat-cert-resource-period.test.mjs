@@ -30,6 +30,19 @@ function harness({deferred=false,fail=false}={}){
   get(){if(fail)return Promise.reject(new Error('MOCK_FIRESTORE_DENIED'));if(deferred)return new Promise((resolve,reject)=>pending.push({resolve,reject,snapshot:()=>this.snapshot()}));return Promise.resolve(this.snapshot());}
  }
  const firebase={apps:[{}],auth:()=>({currentUser:{uid:'qa-user'}}),firestore:()=>({collection:()=>({doc:()=>({collection:()=>new Query()})})})};
+ // VRM-297 source contract: Shopper uses an authenticated, sanitized server
+ // projection. A direct Firestore bank/resource read must never be needed.
+ cx.backendCertifications={loadShopperResources:async periodId=>{
+  const snapshot=()=>items.filter(row=>row.projectId===cx.data.currentProjectId
+    &&row.periodId===periodId&&(row.resourceType==='project_resource'||
+      (row.resourceType==='certification_bank'&&['published','confirmed','approved_preview'].includes(row.bank?.estado))))
+    .map(row=>row.resourceType==='certification_bank'?{
+      ...row,bank:{...row.bank,preguntas:row.bank.preguntas.map(q=>({q:q.q,ops:q.ops||['A','B']}))}
+    }:row);
+  if(fail)throw new Error('MOCK_SHOPPER_PROJECTION_DENIED');
+  if(deferred)return new Promise((resolve,reject)=>pending.push({resolve,reject,snapshot}));
+  return snapshot();
+ }};
  const win={CX:cx,firebase,addEventListener(k,fn){if(!dom.has(k))dom.set(k,[]);dom.get(k).push(fn);}};
  vm.runInNewContext(resourcesSource,{window:win,document:{readyState:'complete'},firebase,CX:cx,console,setTimeout});
  return {cx,win,pending,emitted,emit:(k,x)=>cx.bus.emit(k,x),dom:(k)=>{for(const f of dom.get(k)||[])f({detail:{}})},banks:(periodId,projectId='cinepolis')=>cx.backendResources.list({projectId,periodId,resourceType:'certification_bank'})};
@@ -52,10 +65,10 @@ test('D/Cert: later stale September response never replaces the current October 
  const h=harness({deferred:true});
  const p=h.emit('backend-ready',{source:'firestore'});
  h.cx.data.currentPeriodId=OCT;h.dom('cx:protected-auth-hr-authority-ready');
- assert.equal(h.pending.length,4,'each authorized resource type needs an isolated query');
- h.pending[2].resolve(h.pending[2].snapshot());h.pending[3].resolve(h.pending[3].snapshot());await flush();
+ assert.equal(h.pending.length,2,'one scoped projection per period; no Firestore Shopper query');
+ h.pending[1].resolve(h.pending[1].snapshot());await flush();
  assert.deepEqual(Array.from(h.banks(OCT),x=>x.id),['oct-published']);
- h.pending[0].resolve(h.pending[0].snapshot());h.pending[1].resolve(h.pending[1].snapshot());await p;await flush();
+ h.pending[0].resolve(h.pending[0].snapshot());await p;await flush();
  assert.deepEqual(Array.from(h.banks(OCT),x=>x.id),['oct-published']);
 });
 test('D/Cert: project change never retains another project or period in cache',async()=>{
@@ -67,7 +80,7 @@ test('D/Cert: project change never retains another project or period in cache',a
 });
 test('D/Cert: provider read error is fail-closed, not an unverified empty-bank PASS',async()=>{
  const h=harness({fail:true});
- await assert.rejects(h.cx.backendResources.load(),/MOCK_FIRESTORE_DENIED/);
+ await assert.rejects(h.cx.backendResources.load(),/MOCK_SHOPPER_PROJECTION_DENIED/);
  assert.equal(h.win.CX_BACKEND_RESOURCES_STATUS.status,'blocked');
  assert.equal(h.win.CX_BACKEND_RESOURCES_STATUS.reason,'RESOURCE_PROVIDER_READ_FAILED');
  assert.equal(h.banks(SEP).length,0);

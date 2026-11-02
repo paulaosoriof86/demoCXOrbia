@@ -82,27 +82,24 @@ window.CX=window.CX||{};
       return [];
     }
     try{
-      const q=c.where('projectId','==',scope.projectId).where('status','==','active');
-      let snapshots;
+      let rows;
       if(role()==='shopper'){
-        // Firestore rules are not query filters. An all-resource Shopper query
-        // could include a pending bank and would be denied under the D06 rules.
-        // Both eligible collections must resolve before publishing any cache.
-        const eligible=q.where('visibleRoles','array-contains',role());
-        snapshots=await Promise.all([
-          eligible.where('resourceType','==','project_resource').get(),
-          eligible.where('resourceType','==','certification_bank')
-            .where('bank.estado','in',['published','confirmed','approved_preview']).get()
-        ]);
+        // VRM-297: Firestore cannot redact the answer keys in a published bank.
+        // All Shopper resources now arrive through the authenticated server
+        // projection; direct Firestore resource reads are denied by Rules.
+        if(typeof CX.backendCertifications?.loadShopperResources!=='function')
+          throw new Error('CERT_SHOPPER_PROJECTION_UNAVAILABLE');
+        rows=await CX.backendCertifications.loadShopperResources(scope.periodId);
       }else{
-        snapshots=[await (isOperator()?q:q.where('visibleRoles','array-contains',role())).get()];
+        const q=c.where('projectId','==',scope.projectId).where('status','==','active');
+        const snapshot=await (isOperator()?q:q.where('visibleRoles','array-contains',role())).get();
+        rows=snapshot.docs.map(d=>Object.assign({id:d.id},d.data()||{}));
       }
       if(readId!==latestLoadId||cacheKey(currentScope())!==key)return [];
-      const rows=snapshots.flatMap(snap=>snap.docs)
-        .map(d=>Object.assign({id:d.id},d.data()||{})).filter(x=>visible(x,scope));
-      api.items=rows;lastLoadedKey=key;
-      publishReadState(scope,{source:'firestore',status:'ready',tenantId:scope.tenantId,projectId:scope.projectId,periodId:scope.periodId,count:rows.length,at:now()});
-      return rows;
+      const approved=arr(rows).filter(x=>visible(x,scope));
+      api.items=approved;lastLoadedKey=key;
+      publishReadState(scope,{source:role()==='shopper'?'verified-server-projection':'firestore',status:'ready',tenantId:scope.tenantId,projectId:scope.projectId,periodId:scope.periodId,count:approved.length,at:now()});
+      return approved;
     }catch(error){
       if(readId===latestLoadId&&cacheKey(currentScope())===key){
         api.items=[];lastLoadedKey='';

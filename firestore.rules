@@ -367,24 +367,13 @@ service cloud.firestore {
             last.fromVersion == before.version && last.toVersion == after.version &&
             last.previousContentRevision == before.bank.contentRevision && last.contentRevision == after.bank.contentRevision;
         }
-        allow read: if tenantAllowed(tenantId) && (
-          isOperator() ||
-          isShopperRole() &&
-          resource.data.status == 'active' &&
-          resource.data.projectId in request.auth.token.projectIds &&
-          role() in resource.data.visibleRoles &&
-          // A resource's role metadata alone cannot release a draft bank.
-          // Query-level resourceType/bank.estado filters are mandatory because
-          // Firestore rules reject potential matches; they do not filter rows.
-          (
-            resource.data.get('resourceType', '') == 'project_resource' ||
-            (
-              resource.data.get('resourceType', '') == 'certification_bank' &&
-              resource.data.get('bank', {}).get('estado', '') in
-                ['published', 'confirmed', 'approved_preview']
-            )
-          )
-        );
+        // VRM-297: a Firestore read returns every field, including the answer
+        // key of a published bank. Deny ALL direct Shopper resource reads,
+        // including legacy records identified only by tipo. The existing
+        // authenticated runtime returns a scoped, sanitized projection of
+        // eligible project resources and released bank questions instead.
+        // Operator/Admin read authority and the versioned review rules remain.
+        allow read: if tenantAllowed(tenantId) && isOperator();
         allow create: if tenantAllowed(tenantId) && isOperator() &&
           (!certificationBank(request.resource.data) || createCertificationDraft(request.resource.data));
         allow update: if tenantAllowed(tenantId) && isOperator() &&

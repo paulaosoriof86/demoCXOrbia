@@ -52,27 +52,28 @@ test('D05 Rules allow only a new pending draft with authenticated author',async(
     const bad={...clone(b),id,bank:{...clone(b.bank),...patch}};await assertFails(setDoc(doc(principal(),path(id)),bad));
   }
 });
-test('D06 Rules deny Shopper direct draft read and broad query, preserve published bank and project resources',async()=>{
+test('D06 VRM297 Rules deny all Shopper direct resources; Admin retains exact bank/project reads',async()=>{
   const db=env.authenticatedContext('qa-existing-shopper',{
     role:'shopper',tenantId:TENANT,authNamespace:'shopper',projectIds:['cinepolis']
   }).firestore();
   const draft=resource('d06-pending-hidden');
-  const published=resource('d06-published-visible');published.bank.estado='published';
+  const banks=['published','confirmed','approved_preview'].map(state=>{
+    const b=resource('d06-'+state+'-hidden');b.bank.estado=state;return b;
+  });
+  const alias={...resource('d06-legacy-alias-hidden'),resourceType:'project_resource',bank:{estado:'published',preguntas:[{q:'Hidden',ops:['A','B'],correcta:'A'}]}};
   const file={id:'d06-public-resource',tenantId:TENANT,projectId:'cinepolis',periodId:PERIOD,
     resourceType:'project_resource',tipo:'pdf',status:'active',visibleRoles:['shopper']};
-  await seed(path(draft.id),draft);await seed(path(published.id),published);await seed(path(file.id),file);
+  for(const row of [draft,...banks,alias,file])await seed(path(row.id),row);
   await assertFails(getDoc(doc(db,path(draft.id))));
-  await assertSucceeds(getDoc(doc(db,path(published.id))));
-  await assertSucceeds(getDoc(doc(db,path(file.id))));
+  for(const row of [...banks,alias,file])await assertFails(getDoc(doc(db,path(row.id))));
+  const admin=principal();
+  for(const row of [draft,...banks,alias,file])await assertSucceeds(getDoc(doc(admin,path(row.id))));
   const base=[where('projectId','==','cinepolis'),where('status','==','active'),where('visibleRoles','array-contains','shopper')];
   await assertFails(getDocs(query(collection(db,'tenants/tya/resources'),...base)));
-  const exposed=await assertSucceeds(getDocs(query(collection(db,'tenants/tya/resources'),...base,
+  await assertFails(getDocs(query(collection(db,'tenants/tya/resources'),...base,
     where('resourceType','==','certification_bank'),where('bank.estado','in',['published','confirmed','approved_preview']))));
-  assert.ok(exposed.docs.some(row=>row.id===published.id));
-  assert.ok(exposed.docs.every(row=>row.id!==draft.id));
-  const files=await assertSucceeds(getDocs(query(collection(db,'tenants/tya/resources'),...base,
+  await assertFails(getDocs(query(collection(db,'tenants/tya/resources'),...base,
     where('resourceType','==','project_resource'))));
-  assert.ok(files.docs.some(row=>row.id===file.id));
 });
 for(const [uid,role] of [['qa-ops','ops'],['qa-coord','coordinador']])test('D05 Rules preserve ordinary resources but reject bank writes for '+role,async()=>{
   const p=path('ordinary-'+role),db=principal(uid,role),ordinary={projectId:'cinepolis',resourceType:'project_resource',tipo:'text',status:'active'};

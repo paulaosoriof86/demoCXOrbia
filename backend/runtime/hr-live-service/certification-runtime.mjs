@@ -8,7 +8,7 @@ const sha=v=>crypto.createHash('sha256').update(typeof v==='string'?v:JSON.strin
 const iso=()=>new Date().toISOString();
 
 export function certificationRouteScope(pathname){
-  const m=str(pathname).match(/^\/api\/tenants\/([^/]+)\/projects\/([^/]+)\/certifications\/(ai-generate|attempt|recertify|publish|configure|retire)$/);
+  const m=str(pathname).match(/^\/api\/tenants\/([^/]+)\/projects\/([^/]+)\/certifications\/(ai-generate|attempt|recertify|publish|configure|retire|shopper-resources|practice)$/);
   return m?{tenantId:decodeURIComponent(m[1]),projectId:decodeURIComponent(m[2]),action:m[3]}:null;
 }
 export function isCertificationRuntimePath(pathname){return !!certificationRouteScope(pathname);}
@@ -97,6 +97,69 @@ async function loadPublishedBank(db,scope,body){
   if(!['published','confirmed'].includes(str(bank.estado).toLowerCase()))throw new Error('CERT_BANK_NOT_PUBLISHED');
   if(!arr(bank.preguntas).length)throw new Error('CERT_BANK_EMPTY');
   return {resource,bank,fingerprint:certificationBankFingerprint(bank)};
+}
+
+// VRM-297: Firestore does not redact document fields. All Shopper resource
+// metadata now crosses this authenticated server boundary. No raw bank question,
+// answer key, explanation or document-source object may cross it.
+export function shopperResourceProjection(input={},scope={}){
+  const row=input||{},periodId=str(scope.periodId);
+  if(str(row.status)!=='active'||str(row.projectId)!==str(scope.projectId)
+    ||(row.tenantId!==undefined&&str(row.tenantId)!==str(scope.tenantId))
+    ||(row.periodId&&periodId&&str(row.periodId)!==periodId)
+    ||!(row.targetAll===true||arr(row.visibleRoles).map(str).includes('shopper')))return null;
+  const bankType=str(row.resourceType)==='certification_bank'||str(row.tipo)==='certification_bank';
+  if(bankType){
+    // Conflicting legacy markers must fail closed, even if a document happens to
+    // carry a project_resource type alongside a certification_bank alias.
+    if(str(row.resourceType)!=='certification_bank'||str(row.tipo)!=='certification_bank')return null;
+    const bank=row.bank||{},state=str(bank.estado).toLowerCase();
+    if(!['published','confirmed','approved_preview'].includes(state))return null;
+    const preguntas=arr(bank.preguntas);
+    if(!preguntas.length||preguntas.some(q=>!str(q?.q)||!arr(q?.ops).length))return null;
+    return {
+      id:str(row.id),tenantId:str(scope.tenantId),projectId:str(scope.projectId),periodId:str(row.periodId),
+      resourceType:'certification_bank',tipo:'certification_bank',status:'active',
+      visibleRoles:['shopper'],targetAll:false,version:Number(row.version||0),n:str(row.n||bank.certificationName),
+      bank:{estado:state,certificationId:str(bank.certificationId||'main'),
+        certificationName:str(bank.certificationName||bank.name),name:str(bank.name||bank.certificationName),
+        contentRevision:str(bank.contentRevision),gate:Number(bank.gate||80),required:bank.required===true,
+        requestedQuestionCount:preguntas.length,
+        preguntas:preguntas.map(q=>({q:str(q.q),ops:arr(q.ops).map(str)}))}
+    };
+  }
+  if(str(row.resourceType)!=='project_resource')return null;
+  // Preserve previously permitted project-resource metadata (including document
+  // links) without shipping a bank payload from a misclassified resource.
+  const {bank,answerKey,correcta,exp,preguntas,documentSource,...metadata}=row;
+  return {...metadata,id:str(row.id)};
+}
+
+export async function readShopperResourceProjection(db,scope,principal,periodId){
+  if(str(principal?.role)!=='shopper'||str(principal?.namespace)!=='shopper'||!str(principal?.shopperId))
+    throw new Error('AUTH_FAILURE:CERT_SHOPPER_PROJECTION_REQUIRED');
+  if(!str(periodId)||str(periodId).length>120||str(periodId).includes('/'))throw new Error('CERT_PERIOD_REQUIRED');
+  const exactScope={...scope,periodId:str(periodId)};
+  // A single indexed projectId equality avoids dependence on an unproven new
+  // composite index; status, type, period and visibility are enforced here.
+  const snapshot=await resourcesCol(db,scope).where('projectId','==',scope.projectId).get();
+  const items=snapshot.docs.map(doc=>shopperResourceProjection({...doc.data(),id:doc.id},exactScope)).filter(Boolean);
+  return {items,periodId:str(periodId),count:items.length,source:'verified_shopper_projection'};
+}
+
+export async function calculateCertificationPractice(db,scope,principal,body){
+  if(str(principal?.role)!=='shopper'||str(principal?.namespace)!=='shopper'||!str(principal?.shopperId))
+    throw new Error('AUTH_FAILURE:CERT_PRACTICE_SHOPPER_REQUIRED');
+  const rid=str(body?.bankResourceId),periodId=str(body?.periodId);
+  if(!rid||rid.includes('/')||rid.length>180||!periodId)throw new Error('CERT_PRACTICE_SCOPE_REQUIRED');
+  const snap=await resourcesCol(db,scope).doc(rid).get();
+  if(!snap.exists)throw new Error('CERT_BANK_NOT_FOUND');
+  const row=snap.data()||{},bank=row.bank||{};
+  if(str(row.status)!=='active'||str(row.projectId)!==scope.projectId||str(row.periodId)!==periodId
+    ||str(row.resourceType)!=='certification_bank'||str(row.tipo)!=='certification_bank'
+    ||str(bank.estado)!=='approved_preview'||!(row.targetAll===true||arr(row.visibleRoles).map(str).includes('shopper')))
+    throw new Error('CERT_PRACTICE_SCOPE_MISMATCH');
+  return calculateCertificationAttempt(bank,body.answers);
 }
 async function activeRecertifications(db,scope,shopperId){
   const snap=await projectRef(db,scope).collection('certificationRecertifications').get();
@@ -512,9 +575,21 @@ function errorStatus(message){
 
 export async function maybeHandleCertificationRuntimeRequest(req,res,url,{ensureAdmin,verifyPrincipal,sendJson,currentSourceRevision}){
   const scope=certificationRouteScope(url.pathname);if(!scope)return false;
-  if(req.method!=='POST'){sendJson(res,405,{ok:false,error:'method_not_allowed',production:false});return true;}
+  if(req.method!==(scope.action==='shopper-resources'?'GET':'POST')){
+    sendJson(res,405,{ok:false,error:'method_not_allowed',production:false});return true;
+  }
   try{
-    const principal=await verifyPrincipal(req,scope),{db}=ensureAdmin(),body=await readJson(req),idem=requestId(req,body);
+    const principal=await verifyPrincipal(req,scope),{db}=ensureAdmin();
+    if(scope.action==='shopper-resources'){
+      const projected=await readShopperResourceProjection(db,scope,principal,url.searchParams.get('periodId'));
+      sendJson(res,200,{ok:true,providerAck:true,...projected,production:false});return true;
+    }
+    const body=await readJson(req),idem=requestId(req,body);
+    if(scope.action==='practice'){
+      const calc=await calculateCertificationPractice(db,scope,principal,body);
+      sendJson(res,200,{ok:true,providerAck:true,preview:true,committed:false,providerWrites:0,
+        score:calc.score,gate:calc.gate,pass:calc.pass,feedback:calc.feedback,production:false});return true;
+    }
     if(CERT_BANK_LIFECYCLE_ACTIONS.has(scope.action)){
       const saved=await saveCertificationBankLifecycle(db,scope,principal,body,scope.action,idem);
       sendJson(res,200,{ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,...saved,production:false});return true;
