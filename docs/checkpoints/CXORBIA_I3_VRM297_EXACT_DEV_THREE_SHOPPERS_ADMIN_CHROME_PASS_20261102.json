@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm297.dev-three-shoppers-admin-browser.v1",
+  "date": "2026-11-02",
+  "iteration": "I3",
+  "decision": "PASS_SECURITY_VRM297_DEV_THREE_EXISTING_SHOPPER_ROLES_NO_PRE_EXAM_ANSWER_KEY",
+  "scope": "P0_VRM297_DEV_RUNTIME_RULES_HOSTING_SERVER_PROJECTION_THREE_REAL_EXISTING_SHOPPERS_ADMIN_CHROME",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "productSourceSha": "128272027850fa0edad710ad1451a927041815d4",
+  "productTree": "4b357cb285ef03228e1dc928fda5f3115d8656f8",
+  "controlSha": "3d413f799fd457e273614d65e01931529a8bb509",
+  "evidence": {
+    "sourceEmulatorCi": {
+      "runId": 41471892264,
+      "conclusion": "success",
+      "sourceLocalCases": 13
+    },
+    "canonicalBeforeShopper": {
+      "runId": 41472970290,
+      "conclusion": "success"
+    },
+    "exactDevTransport": {
+      "runId": 41475638843,
+      "conclusion": "success",
+      "runtimeRevision": "cxorbia-live-hr-dev-00333-srb",
+      "trafficPercent": 100,
+      "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/c69d52baf9e87433",
+      "sourceRebuiltAfterCertification": false
+    },
+    "threeShopperLive": {
+      "runId": 41478576401,
+      "jobId": 125390580351,
+      "artifactId": 13157994184,
+      "artifactDigest": "sha256:10bbfdd1119feca98d9240c15e5f9583540ee1305bc0e3e2a1af62f19477ae5d",
+      "controlSha": "3d413f799fd457e273614d65e01931529a8bb509",
+      "decision": "PASS_D06_VRM297_THREE_REAL_SHOPPERS_PUBLISHED_PENDING_DENIED_SAFE_PROJECTION",
+      "existingIndependentShopperIdentities": 3,
+      "publishedQuestionsEach": 8,
+      "pendingDirectReadDenied": 3,
+      "publishedDirectReadDenied": 3,
+      "preAttemptAnswerKeysExposed": 0,
+      "restrictedFieldsExposed": 0,
+      "adminControlsVisible": 0,
+      "ordinaryProjectResourcesEach": 1,
+      "readSource": "verified-server-projection",
+      "realBankDocumentsBefore": 4,
+      "realBankDocumentsAfter": 4,
+      "realBankHashUnchanged": true,
+      "providerWrites": 0,
+      "authUsersCreated": 0
+    },
+    "globalAtControl": {
+      "runId": 41478576171,
+      "conclusion": "success"
+    },
+    "connectedChromeAdmin": {
+      "environment": "DEV",
+      "realAuthenticatedAdmin": true,
+      "tenant": "tya",
+      "projectId": "cinepolis",
+      "periodId": "2026-10",
+      "visibleProjectBanks": 2,
+      "pendingBankEditorQuestions": 15,
+      "pendingBankVersion": 1,
+      "sourceDocument": "Instructivo Shopper.pdf",
+      "noUiSaveOrPublish": true,
+      "noScreenshotArtifactThisSession": true
+    }
+  },
+  "limitations": {
+    "fullDomainMatch": false,
+    "shopperPasswordLogin": "NOT_TESTED_CUSTOM_TOKEN",
+    "durableExamAttemptPositive": "NOT_TESTED",
+    "durableExamAttemptNegative": "NOT_TESTED",
+    "qaOnlyPracticeAndAttempt": "PENDING",
+    "otherResourceClauses": "PENDING",
+    "humanVisualAcceptance": "PENDING",
+    "moduleMatch": 5,
+    "totalModules": 21,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": "DO_NOT_TOUCH",
+    "i4Authorized": false
+  },
+  "classification": "P0_SECURITY_EXPOSURE_RESOLVED_FOR_TESTED_DEV_READ_PATHS__D06_PERSISTENCE_E2E_PENDING",
+  "nextExactAction": "D06 QA-only bank+QA-only Shopper attempt positive/negative con ACK/readback e idempotencia, sin escribir intentos de Shopper reales. Revalidar D07 recursos y B10 navegación Shopper; después recuperar aprobaciones históricas por owner sin reabrir PASS estables. G03 Cuentas Admin dos sesiones PASS (Hosting DEV 231186c337bcd0ba); HR 32/83 grupos provisionales + 51 pendientes sin fusionar; finanzas Q7,300 x2 sin recibo, NO tocar. Gates20/21 HOLD; I4 no autorizada; producción DO_NOT_TOUCH."
+}

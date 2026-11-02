@@ -7,9 +7,9 @@
   "productSourceSha": "128272027850fa0edad710ad1451a927041815d4",
   "productTreeAuthority": "4b357cb285ef03228e1dc928fda5f3115d8656f8",
   "predecessorProductSourceSha": "4ba2a96e1f90fba7ba8e981429bce8b4161ebee6",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V544_2026-11-02.json",
-  "findingsLedgerExpectedGitBlob": "cbab4e06661dca7f26d2ba9c0b29c2ad9232f636",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V222.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V545_2026-11-02.json",
+  "findingsLedgerExpectedGitBlob": "8818e3fb65ab420d7243c4adb83ed2d2f664bf73",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V223.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 V222 / VRM297 fuente sucesora 1282720: 13 pruebas locales de proyección segura, cambio de periodo, recursos y práctica PASS (0 fallos), 5 owners P0 y 4 owners QA; emulador Firestore, CI canónico y DEV Cloud Run+Rules+Hosting serial PENDIENTES. Conservar VRM296 DEV 3/3 Shopper pendientes DENIED #41464721085, D05 Admin QA v1→v2 #41384446891, y Admin Chrome Cinépolis 748 visitas/17 períodos; no reabrir PASS sin drift. Después de CI/emulador PASS, autorizar una sola materialización focal DEV y volver a probar 3 Shopper: bancos pendientes Y publicados Firestore DENIED, 8Q publicadas sin claves en cache, recursos PDF permitidos vía proyección, editor Admin 15Q, práctica/intent(os) QA sin alterar banco real. En paralelo revalidar únicamente owners modificados en 11 dominios; preservar aprobaciones históricas 21/21 Sep17 y exactos V41 13/21, V62 10/21. HR identidades 32/83 provisionales y 51 pendientes, finanzas Q7,300 x2 sin recibo: no fusionar, duplicar ni borrar. Oficial 5/21 MATCH; Gate20/21 HOLD; I4 NO AUTORIZADA y producción DO_NOT_TOUCH. G03: Hosting DEV versión 231186c337bcd0ba y dos sesiones Admin de Cuentas preservadas; HR 32/83 grupos provisionales + 51 por recenso, sin fusionar sin autorización; finanzas y recibos Q7,300 x2 bloqueados hasta ACK. Las aprobaciones previas con owners y contratos intactos permanecen vigentes, no se reinician 21 módulos.",
+  "exactNextAction": "D06 QA-only bank+QA-only Shopper attempt positive/negative con ACK/readback e idempotencia, sin escribir intentos de Shopper reales. Revalidar D07 recursos y B10 navegación Shopper; después recuperar aprobaciones históricas por owner sin reabrir PASS estables. G03 Cuentas Admin dos sesiones PASS (Hosting DEV 231186c337bcd0ba); HR 32/83 grupos provisionales + 51 pendientes sin fusionar; finanzas Q7,300 x2 sin recibo, NO tocar. Gates20/21 HOLD; I4 no autorizada; producción DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "c14216225b5ad1be1c1dd5aff90b2faacaeabeb6",
+  "moduleTruthExpectedGitBlob": "7b196372a80b186618f985652a07136742614b45",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -16513,5 +16513,20 @@
     "ledgerBlob": "cbab4e06661dca7f26d2ba9c0b29c2ad9232f636",
     "canonicalCI": "PENDING_REPEAT_AFTER_D07_TEST_SYNC",
     "devMaterialization": "PENDING"
+  },
+  "vrm297DevThreeShopperEvidence20261102": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM297_EXACT_DEV_THREE_SHOPPERS_ADMIN_CHROME_PASS_20261102.json",
+    "gitBlob": "5730f8b9702e3388e7e6950eaee4fd2f39840df7",
+    "sourceSha": "128272027850fa0edad710ad1451a927041815d4",
+    "decision": "PASS_SECURITY_VRM297_DEV_THREE_EXISTING_SHOPPER_ROLES_NO_PRE_EXAM_ANSWER_KEY",
+    "devRunId": 41475638843,
+    "shopperRunId": 41478576401,
+    "globalRunId": 41478576171,
+    "shopperCount": 3,
+    "answerKeysBeforeAttempt": 0,
+    "realBankWrites": 0,
+    "fullDomainMatch": false,
+    "production": false,
+    "limitation": "QA_ATTEMPT_AND_PASSWORD_LOGIN_E2E_AND_HUMAN_PENDING"
   }
 }
