@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "cxorbia.i3.d06.vrm296.dev-security-closure-shopper-reproof.20261102.v1",
+  "observedAt": "2026-11-02",
+  "scope": "VRM296_PENDING_CERTIFICATION_BANK_EXPOSURE_REMOVED_IN_REAL_DEV_FROM_3_SHOPPER_SESSIONS",
+  "decision": "PASS_VRM296_DEV_MATERIALIZATION_AND_REAL_SHOPPER_NEGATIVE__D06_FULL_HOLD_VRM297",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "candidate": {
+    "sourceSha": "4ba2a96e1f90fba7ba8e981429bce8b4161ebee6",
+    "sourceTree": "0e19bfe90db917d67cf493c79bc74df4d44f1a81",
+    "predecessorSourceSha": "a363f9e4f604cba722e899bb1916c442c77c1fed",
+    "productSourceUnchanged": true
+  },
+  "evidence": {
+    "sourceRolePeriodCasesPass": 5,
+    "firestoreEmulatorRuleCasesPass": 32,
+    "firestoreEmulatorRunId": 41386412201,
+    "compositeIndexes": {
+      "createdByRunId": 41387319118,
+      "attempt": 2,
+      "ready": 3,
+      "collection": "resources",
+      "ids": [
+        "CICAgJim14AK",
+        "CICAgOjXh4EK",
+        "CICAgJiUpoMK"
+      ]
+    },
+    "devDeployment": {
+      "runId": 41463769468,
+      "conclusion": "success",
+      "artifactId": 13150347458,
+      "artifactZipSha256": "05990229703dd2341603539fc56be40efc9db44e80a1def832334cc799314cf5",
+      "firestoreRulesetBefore": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
+      "firestoreRulesetAfter": "projects/cxorbia-backend-dev/rulesets/79abb6e1-41ba-4415-8f8d-60b3ea274f2f",
+      "hostingBefore": "sites/cxorbia-backend-dev/versions/4c82b2b51af9f3f6",
+      "hostingAfter": "sites/cxorbia-backend-dev/versions/00944ee3c1eb86cb",
+      "servedAssetsExact": 8,
+      "compositeIndexesReady": 3,
+      "cloudRunRevision": "cxorbia-live-hr-dev-00331-2xq",
+      "productionChanged": false,
+      "realBankWrites": 0
+    },
+    "threeShopperReadOnly": {
+      "runId": 41464721085,
+      "conclusion": "success",
+      "artifactId": 13151095762,
+      "artifactZipSha256": "0ef61d18b508ee320c161e675ab9d06e399b3edf9a57d8abd74de8a9e77292ec",
+      "testOwnerBlob": "e0de552c683093e7e3534ff45468f2bbd6a56690",
+      "existingAuthenticatedShopperSessions": 3,
+      "pendingBankDirectGetDenied": 3,
+      "pendingBankInClientCache": 0,
+      "pendingAnswersInClientCache": 0,
+      "publishedBankVisible": 3,
+      "publishedBankQuestions": 8,
+      "publishedKeysInBrowser": 3,
+      "adminControlsVisible": 0,
+      "qaBankWrites": 0,
+      "shopperAttemptsSubmitted": 0,
+      "realBanksBefore": 4,
+      "realBanksAfter": 4,
+      "realBankContentHashUnchanged": true,
+      "passwordLoginE2e": "NOT_TESTED_CUSTOM_TOKEN"
+    },
+    "chromeAdminReadOnly": {
+      "projectId": "cinepolis",
+      "periodId": "2026-10",
+      "publishedBankCount": 1,
+      "pendingBankCount": 1,
+      "pendingEditorQuestions": 15,
+      "pendingEditorVersion": 1,
+      "saveDisabledWithoutChanges": true,
+      "realBankEdits": 0,
+      "realBankPublish": 0
+    }
+  },
+  "knownMappingCorrection": {
+    "classification": "MAPPING_FAILURE",
+    "priorMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V220.json",
+    "ownerPathsWithStaleBlobs": [
+      "app/core/backend-resources.js",
+      "firestore.rules"
+    ],
+    "newMatrixRequiresExactSourceBlobs": true,
+    "previousV220Immutable": true
+  },
+  "unresolved": {
+    "finding": "VRM-297",
+    "scope": "PUBLISHED_8Q_ANSWER_KEYS_STILL_VISIBLE_TO_SHOPPER",
+    "root": "FULL_FIRESTORE_BANK_DOCUMENT_PUBLIC_TO_SHOPPER",
+    "required": "DENY_FULL_DIRECT_BANK_READ_AND_SERVE_SANITIZED_AUTHENTICATED_PROJECTION_WITH_SERVER_GRADING",
+    "newP0SourceCandidateRequired": true,
+    "realShopperPasswordSignInE2e": "PENDING",
+    "fullD06Match": false,
+    "humanAcceptance": "PENDING"
+  },
+  "officialProgress": {
+    "matchedModules": 5,
+    "totalModules": 21,
+    "pending": 16,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "production": "DO_NOT_TOUCH"
+  },
+  "invariants": {
+    "dataMigrations": 0,
+    "hrWrites": 0,
+    "realBankWrites": 0,
+    "shopperAttemptWrites": 0,
+    "productionWrites": 0,
+    "noSecondProductCandidate": true,
+    "oneWriter": true
+  }
+}

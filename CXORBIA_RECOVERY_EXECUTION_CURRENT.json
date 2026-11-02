@@ -286,7 +286,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 V220 — G03 CRM 2 Admin DEV PASS y Hosting DEV histórico 231186c337bcd0ba (antes del deploy D05), reutilizar sin repetir; VRM-286 Admin 748/748 visitas y 17/17 períodos RUN41336613738 PASS. D05 corrección Hosting DEV exacta 8 assets RUN41383743722, guardado Admin QA real v1→v2 +16 lecturas RUN41384446891 PASS, sin editar banco real. D06 RUN41385453693 FAIL: 3/3 Shopper pueden leer banco pendiente 15Q y claves, además de claves del publicado 8Q; VRM-296/297 P0. Sucesor fuente 4ba2a96e1f90fba7ba8e981429bce8b4161ebee6 compone consultas y reglas seguras; Firestore emulador RUN41386412201 PASS (32 casos), índices DEV y Hosting DEV PENDIENTES; después revalidar 3 Shopper y resolver proyección sin claves publicada, sin elevar dominio MATCH. En paralelo aceptación humana aislada Admin/Cliente/Shopper para auth/config, beneficios y otros módulos cercanos, reutilizando pruebas previas. HR 32/83 grupos provisionales y 51 pendientes, finanzas Q7,300 x2 sin recibo: NO fusionar/duplicar/borrar. 5/21 MATCH; Gates20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH, un escritor.",
+  "nextExactAction": "I3 V221 — G03 CRM 2 Admin DEV PASS y Hosting histórico 231186c337bcd0ba conservados; VRM-286 748/748 visitas y 17/17 períodos RUN41336613738. D05 Admin QA guardado real v1→v2 RUN41384446891 y Chrome Admin posterior a nuevo DEV: 2 bancos, pendiente 15Q versión1 sin write. D06 VRM-296: 3 índices READY, Firestore Rules+Hosting DEV exacto RUN41463769468 PASS, 3/3 Shopper con GET pendiente DENIED y 0 preguntas/claves pendientes en cache RUN41464721085 PASS; 8Q publicadas visibles pero con claves expuestas VRM-297 P0 abierto. Próximo único P0 técnico: proyección Shopper saneada desde servidor, negar Firestore banco completo, calificación backend con QA, source+DEV+3 Shopper reproof. En paralelo aceptación humana focal Admin/Cliente/Shopper de auth/config, beneficios, proyectos y consistencia, reutilizar RUN1790-1792, RUN1815, RUN41336613738 y RUN1537 sin repetir. HR 32/83 grupos provisionales y 51 pendientes; finanzas Q7,300 x2 sin recibo, NO fusionar/duplicar/borrar. 5/21 MATCH, 16 pendientes, Gates20/21 HOLD, I4 NO AUTORIZADA, producción DO_NOT_TOUCH, un escritor.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -986,12 +986,12 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V220.json",
-    "gitBlob": "fa066597cd2c13d1498f4c228baea9859dd6d625",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V221.json",
+    "gitBlob": "292ec5cc461929efd99542dec32ef9a86db69116",
     "sourceSha": "4ba2a96e1f90fba7ba8e981429bce8b4161ebee6",
     "allModulesMatch": false,
     "phaseAComplete": false,
-    "sha256": "d1120bea65542665937913d831f28d94971dfa2c9882e0ae43a8a0b97bd75df1"
+    "sha256": "3a5e01c8142ea98ac7611d530eccc5ec6b23417c9e4824d235b260ad1e8e8457"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -3028,8 +3028,8 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "4ba2a96e1f90fba7ba8e981429bce8b4161ebee6",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V220.json",
-    "matrixBlob": "fa066597cd2c13d1498f4c228baea9859dd6d625",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V221.json",
+    "matrixBlob": "292ec5cc461929efd99542dec32ef9a86db69116",
     "classificationCounts": {
       "COMPOSED_NOT_DEPLOYED": 2,
       "MATCH": 5,
@@ -3040,7 +3040,7 @@
       "TRUE_FUNCTIONAL_DEFECT": 3
     },
     "derivedAt": "2026-11-02",
-    "meaning": "FROZEN_5_OF_21_MATCH__D05_REAL_UI_VERSIONED_QA_PASS__D06_THREE_SHOPPER_CONFIRMED_ANSWER_EXPOSURES__FIRESTORE_EMULATOR_32_PASS__DEV_INDEX_RULES_HOSTING_PENDING_HOLD"
+    "meaning": "FROZEN_5_OF_21_MATCH__VRM296_DEV_RULES_HOSTING_EXACT_3_SHOPPER_PENDING_GET_DENIED__VRM297_PUBLISHED_KEY_EXPOSURE_OPEN"
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
   "activeMethodologyGuard": {
@@ -6456,5 +6456,20 @@
     "officialMatchedDomains": 5,
     "fullCertification": false,
     "production": false
+  },
+  "vrm296DevClosure20261102": {
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_D06_VRM296_DEV_SECURITY_CLOSURE_AND_SHOPPER_REPROOF_20261102.json",
+    "receiptGitBlob": "c2fa4597ab4b1ea160663ae7091245095b5217a6",
+    "sourceSha": "4ba2a96e1f90fba7ba8e981429bce8b4161ebee6",
+    "sourceTree": "0e19bfe90db917d67cf493c79bc74df4d44f1a81",
+    "devReleaseRunId": 41463769468,
+    "threeShopperRunId": 41464721085,
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/79abb6e1-41ba-4415-8f8d-60b3ea274f2f",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/00944ee3c1eb86cb",
+    "realBankWrites": 0,
+    "productionChanged": false,
+    "vrm296": "PASS_DEV_AUTHENTICATED_3_OF_3_PENDING_DENIED",
+    "vrm297": "OPEN_PUBLISHED_KEYS",
+    "certificationFull": false
   }
 }
