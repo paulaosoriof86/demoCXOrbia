@@ -223,12 +223,12 @@ jobs:
           done
           for RUN_FIELD in firestoreEmulatorRunId globalSourceRunId; do
             RUN_ID="$(jq -r --arg field "$RUN_FIELD" '.controlProof[$field]' "$REQUEST")"
-            curl -fsS --max-time 30 -H 'Accept: application/vnd.github+json' +              "https://api.github.com/repos/paulaosoriof86/demoCXOrbia/actions/runs/$RUN_ID" -o "$QA_DIR/ci-$RUN_FIELD.json"
+            curl -fsS --max-time 30 -H 'Accept: application/vnd.github+json' "https://api.github.com/repos/paulaosoriof86/demoCXOrbia/actions/runs/$RUN_ID" -o "$QA_DIR/ci-$RUN_FIELD.json"
             jq -e '.status=="completed" and .conclusion=="success"
               and .head_branch=="recovery/cxorbia-phase-a-20260831"' "$QA_DIR/ci-$RUN_FIELD.json" >/dev/null
           done
           test "$(jq -r .head_sha "$QA_DIR/ci-firestoreEmulatorRunId.json")" = a661de8a350a8371f343c6c9e27bb5d7647b4afa
-          test "$(jq -r .head_sha "$QA_DIR/ci-globalSourceRunId.json")" = "$(jq -r .controlParentSha "$REQUEST")"
+          test "$(jq -r .head_sha "$QA_DIR/ci-globalSourceRunId.json")" = "$(jq -r .controlProof.globalSourceControlHeadSha "$REQUEST")"
           node --check app/core/backend-certifications.js
           node --check app/core/backend-resources.js
           node --check app/modules/cert.js
@@ -263,11 +263,11 @@ jobs:
           jq -e --arg rev "$EXPECTED_REV" '.status.latestReadyRevisionName==$rev
             and ([.status.traffic[]|select(.revisionName==$rev and .percent==100)]|length)==1' "$QA_DIR/runtime-before.json" >/dev/null
           TOKEN="$(gcloud auth print-access-token)"
-          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" +            "https://firebaserules.googleapis.com/v1/projects/$DEV_PROJECT/releases/cloud.firestore" -o "$QA_DIR/rules-before.json"
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$DEV_PROJECT/releases/cloud.firestore" -o "$QA_DIR/rules-before.json"
           test "$(jq -r .rulesetName "$QA_DIR/rules-before.json")" = "$(jq -r .devOnly.beforeExpectedFirestoreRuleset "$REQUEST")"
-          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" +            "https://firebasehosting.googleapis.com/v1beta1/sites/$DEV_HOSTING/channels/live" -o "$QA_DIR/hosting-before.json"
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$DEV_HOSTING/channels/live" -o "$QA_DIR/hosting-before.json"
           test "$(jq -r .release.version.name "$QA_DIR/hosting-before.json")" = "$(jq -r .devOnly.beforeExpectedHostingVersion "$REQUEST")"
-          curl -fsS --max-time 45 -H 'Cache-Control: no-cache, no-store' +            "$DEV_URL/core/backend-resources.js?prior=$GITHUB_RUN_ID" -o "$QA_DIR/served-resources-before.js"
+          curl -fsS --max-time 45 -H 'Cache-Control: no-cache, no-store' "$DEV_URL/core/backend-resources.js?prior=$GITHUB_RUN_ID" -o "$QA_DIR/served-resources-before.js"
           test "$(git hash-object "$QA_DIR/served-resources-before.js")" = "$(git rev-parse "$(jq -r .immutableSource.predecessor "$REQUEST"):app/core/backend-resources.js")"
           curl -fsS --max-time 45 -H 'Cache-Control: no-cache, no-store' "$PROD_URL/" -o "$QA_DIR/production-before.html"
           sha256sum "$QA_DIR/production-before.html" | awk '{print $1}' > "$QA_DIR/production-before.sha256"
@@ -277,7 +277,7 @@ jobs:
           set -Eeuo pipefail
           IMAGE_URI="gcr.io/$DEV_PROJECT/$DEV_SERVICE:i3-vrm297-$SRC-$GITHUB_RUN_ID"
           jq -n --arg source "$SRC" --arg image "$IMAGE_URI" '{decision:"BUILD_ATTEMPT_STARTED",sourceSha:$source,image:$image,attempt:1,maxAttempts:1,production:false}' > "$QA_DIR/build-attempt.json"
-          gcloud builds submit "$SOURCE_DIR" --project "$DEV_PROJECT" +            --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" +            --substitutions "_IMAGE=$IMAGE_URI" --quiet 2>&1 | tee "$QA_DIR/build.log"
+          gcloud builds submit "$SOURCE_DIR" --project "$DEV_PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet 2>&1 | tee "$QA_DIR/build.log"
           echo "IMAGE_URI=$IMAGE_URI" >> "$GITHUB_ENV"
       - name: Cloud Run DEV once, exact new revision and health readback
         run: |
@@ -301,10 +301,10 @@ jobs:
           npm install --no-save --ignore-scripts --package-lock=false firebase-tools@14.16.0 >/dev/null 2>&1
           jq -n '{decision:"FIRESTORE_RULES_DEPLOY_ATTEMPT_STARTED",attempt:1,maxAttempts:1,production:false}' > "$QA_DIR/rules-attempt.json"
           cd "$SOURCE_DIR"
-          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json +            --only firestore:rules --project "$DEV_PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$QA_DIR/rules-deploy.log"
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only firestore:rules --project "$DEV_PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$QA_DIR/rules-deploy.log"
           cd "$GITHUB_WORKSPACE"
           TOKEN="$(gcloud auth print-access-token)"
-          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" +            "https://firebaserules.googleapis.com/v1/projects/$DEV_PROJECT/releases/cloud.firestore" -o "$QA_DIR/rules-after.json"
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$DEV_PROJECT/releases/cloud.firestore" -o "$QA_DIR/rules-after.json"
           test -n "$(jq -r '.rulesetName // empty' "$QA_DIR/rules-after.json")"
           test "$(jq -r .rulesetName "$QA_DIR/rules-after.json")" != "$(jq -r .rulesetName "$QA_DIR/rules-before.json")"
       - name: Firebase Hosting DEV exactly once from same immutable source tree
@@ -312,20 +312,20 @@ jobs:
           set -Eeuo pipefail
           jq -n '{decision:"HOSTING_DEV_DEPLOY_ATTEMPT_STARTED",attempt:1,maxAttempts:1,production:false}' > "$QA_DIR/hosting-attempt.json"
           cd "$SOURCE_DIR"
-          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json +            --only "hosting:$DEV_TARGET" --project "$DEV_PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$QA_DIR/hosting-deploy.log"
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$DEV_TARGET" --project "$DEV_PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$QA_DIR/hosting-deploy.log"
           cd "$GITHUB_WORKSPACE"
           TOKEN="$(gcloud auth print-access-token)"
-          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" +            "https://firebasehosting.googleapis.com/v1beta1/sites/$DEV_HOSTING/channels/live" -o "$QA_DIR/hosting-after.json"
+          curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$DEV_HOSTING/channels/live" -o "$QA_DIR/hosting-after.json"
           test "$(jq -r .release.version.name "$QA_DIR/hosting-after.json")" != "$(jq -r .release.version.name "$QA_DIR/hosting-before.json")"
           for FILE in core/backend-certifications.js core/backend-resources.js modules/cert.js modules/documentos.js core/router.js index-backend-dev.html; do
             SAFE="$(printf '%s' "$FILE" | tr '/' '-')"
-            curl -fsS --max-time 45 -H 'Cache-Control: no-cache, no-store' +              "$DEV_URL/$FILE?verify=$GITHUB_RUN_ID" -o "$QA_DIR/served-$SAFE"
+            curl -fsS --max-time 45 -H 'Cache-Control: no-cache, no-store' "$DEV_URL/$FILE?verify=$GITHUB_RUN_ID" -o "$QA_DIR/served-$SAFE"
             test "$(git hash-object "$QA_DIR/served-$SAFE")" = "$(git rev-parse "$SRC:app/$FILE")"
           done
           curl -fsS --max-time 45 -H 'Cache-Control: no-cache, no-store' "$PROD_URL/" -o "$QA_DIR/production-after.html"
           sha256sum "$QA_DIR/production-after.html" | awk '{print $1}' > "$QA_DIR/production-after.sha256"
           cmp -s "$QA_DIR/production-before.sha256" "$QA_DIR/production-after.sha256"
-          jq -n --arg source "$SRC" --arg tree "$TREE" --arg runtime "$(jq -r .status.latestReadyRevisionName "$QA_DIR/runtime-after.json")" +            --arg rules "$(jq -r .rulesetName "$QA_DIR/rules-after.json")" +            --arg hosting "$(jq -r .release.version.name "$QA_DIR/hosting-after.json")" +            '{decision:"PASS_I3_D06_VRM297_ONE_SOURCE_THREE_DEV_DEPLOYS",sourceSha:$source,sourceTree:$tree,
+          jq -n --arg source "$SRC" --arg tree "$TREE" --arg runtime "$(jq -r .status.latestReadyRevisionName "$QA_DIR/runtime-after.json")" --arg rules "$(jq -r .rulesetName "$QA_DIR/rules-after.json")" --arg hosting "$(jq -r .release.version.name "$QA_DIR/hosting-after.json")" '{decision:"PASS_I3_D06_VRM297_ONE_SOURCE_THREE_DEV_DEPLOYS",sourceSha:$source,sourceTree:$tree,
               runtimeRevision:$runtime,firestoreRuleset:$rules,hostingVersion:$hosting,
               verifiedExactAssets:6,cloudBuilds:1,cloudRunDeploys:1,firestoreRulesDeploys:1,hostingDeploys:1,
               bankWrites:0,shopperAttemptWrites:0,hrWrites:0,financeWrites:0,

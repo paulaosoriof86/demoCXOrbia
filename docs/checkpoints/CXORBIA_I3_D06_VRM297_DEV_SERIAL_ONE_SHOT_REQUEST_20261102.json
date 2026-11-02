@@ -4,7 +4,7 @@
   "intent": "VRM297_SECURE_SHOPPER_BANK_AND_RESOURCE_PROJECTION_DEV_ONLY",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "controlParentSha": "62a968dfd48093d2ffb532fa49c0cc3b46308322",
+  "controlParentSha": "b1e89b321e79f08bd13e1a7ca35d6398bfe0a427",
   "allowedControlFiles": [
     ".github/workflows/cxorbia-i3-d05-qa-positive-lifecycle.yml",
     "docs/checkpoints/CXORBIA_I3_D06_VRM297_DEV_SERIAL_ONE_SHOT_REQUEST_20261102.json"
@@ -24,10 +24,22 @@
     "firestoreEmulatorConclusion": "success",
     "globalSourceRunId": 41472970290,
     "globalSourceConclusion": "success",
+    "globalSourceControlHeadSha": "62a968dfd48093d2ffb532fa49c0cc3b46308322",
     "sourceTestCases": 13,
     "sourceTestFailures": 0,
     "currentMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V222.json",
     "currentLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V544_2026-11-02.json"
+  },
+  "preflightOnlyAttempt": {
+    "runId": 41473580929,
+    "status": "FAILED_BEFORE_AUTH_OR_BUILD_AFTER_MALFORMED_CURL_URL_CONCATENATION",
+    "cloudBuilds": 0,
+    "cloudRunDeploys": 0,
+    "firestoreRulesDeploys": 0,
+    "hostingDeploys": 0,
+    "bankWrites": 0,
+    "productionWrites": 0,
+    "previousControlSha": "b1e89b321e79f08bd13e1a7ca35d6398bfe0a427"
   },
   "devOnly": {
     "project": "cxorbia-backend-dev",
