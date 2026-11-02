@@ -209,4 +209,80 @@ jobs:
       if-no-files-found: warn
       retention-days: 30
 
+  d06-dev-index-only-one-shot:
+   if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-d06-dev-index-one-shot]') }}
+   runs-on: ubuntu-24.04
+   timeout-minutes: 35
+   permissions:
+    contents: read
+    id-token: write
+   env:
+    REQUEST: docs/checkpoints/CXORBIA_I3_D06_DEV_INDEX_ONLY_ONE_SHOT_REQUEST_20261102.json
+    INDEX_DIR: .tmp/i3-d06-dev-index-only-one-shot
+   steps:
+   - uses: actions/checkout@v4
+     with:
+      fetch-depth: 0
+   - uses: actions/setup-node@v4
+     with:
+      node-version: '24'
+   - name: Verify one-shot index-only authority and immutable source
+     run: |
+      set -Eeuo pipefail
+      mkdir -p "$INDEX_DIR"
+      jq -e '.schemaVersion=="cxorbia.i3.d06.dev-index-only-one-shot-request.20261102.v1" and .intent=="D06_SECURITY_SHOPPER_READ_QUERY_DEV_COMPOSITE_INDEXES_ONLY" and .authorization=="PAULA_EXPLICIT_CERTIFY_MODULES_2026_11_02" and .limits.maxDeployAttempts==1 and .limits.automaticRetry==false and .limits.onlyFirebaseDeployFlag=="firestore:indexes" and .limits.newFirestoreRulesDeploy==false and .limits.newHostingDeploy==false and .limits.cloudRunDeploy==false and .limits.productionWrites==0 and .frozen.matchedDomains==5 and .frozen.production=="DO_NOT_TOUCH"' "$REQUEST" >/dev/null
+      test "$(git rev-parse HEAD^)" = "$(jq -r .controlParentSha "$REQUEST")"
+      test "$(git diff --name-only HEAD^ HEAD | LC_ALL=C sort)" = "$(printf '%s\n' .github/workflows/cxorbia-i3-vrm289-reports-hosting-dev.yml "$REQUEST" | LC_ALL=C sort)"
+      test "$(jq -r .targetProject "$REQUEST")" = "$PROJECT"
+      test "$(jq -r .productSourceSha "$REQUEST")" = "$(jq -r .productSourceSha "$CANDIDATE_DESCRIPTOR")"
+      test "$(jq -r .productSourceTree "$REQUEST")" = "$(jq -r .productTreeAuthority "$CANDIDATE_DESCRIPTOR")"
+      git diff --quiet "$(jq -r .productSourceSha "$REQUEST")" HEAD -- app backend firestore.rules firestore.indexes.json firebase.json storage.rules
+      test "$(jq -r .frozen.matrixBlob "$REQUEST")" = "$(git rev-parse "HEAD:$(jq -r .frozen.matrixPath "$REQUEST")")"
+      node -e 'const i=require("./firestore.indexes.json");if(i.indexes.length!==3 || i.indexes.some(x=>x.collectionGroup!=="resources"))process.exit(1)'
+   - uses: google-github-actions/auth@v2
+     with:
+      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+   - uses: google-github-actions/setup-gcloud@v2
+     with:
+      project_id: ${{ env.PROJECT }}
+   - name: Strict DEV-only zero-index CAS and current Hosting preservation
+     run: |
+      set -Eeuo pipefail
+      gcloud firestore indexes composite list --project "$PROJECT" --format=json > "$INDEX_DIR/indexes-before.json"
+      test "$(jq 'length' "$INDEX_DIR/indexes-before.json")" = 0
+      TOKEN="$(gcloud auth print-access-token)"
+      curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" -o "$INDEX_DIR/hosting-before.json"
+      test "$(jq -r '.release.version.name' "$INDEX_DIR/hosting-before.json")" = "$(jq -r .beforeVerified.hostingVersion "$REQUEST")"
+      test "$(jq -r .beforeVerified.compositeIndexCount "$REQUEST")" = 0
+   - name: Install pinned Firebase CLI only for DEV index creation
+     run: npm install --no-save --ignore-scripts --package-lock=false firebase-tools@14.16.0
+   - name: ONE deploy attempt - firestore:indexes in DEV only, no rule or Hosting action
+     run: |
+      set -Eeuo pipefail
+      jq -n '{decision:"HOLD_D06_DEV_INDEX_CREATE_STARTED",maxAttempts:1,attemptNumber:1,project:"cxorbia-backend-dev",only:"firestore:indexes",rulesWrites:0,hostingWrites:0,production:false}' > "$INDEX_DIR/attempt-started.json"
+      npx --no-install firebase deploy --config firebase.json --only firestore:indexes --project "$PROJECT" --non-interactive
+   - name: Read back created indexes and unchanged Hosting, no retry deploy
+     run: |
+      set -Eeuo pipefail
+      for ATTEMPT in 1 2 3 4 5 6 7 8 9 10 11 12; do
+        gcloud firestore indexes composite list --project "$PROJECT" --format=json > "$INDEX_DIR/indexes-after.json"
+        test "$(jq 'length' "$INDEX_DIR/indexes-after.json")" -ge 3 && break
+        sleep 5
+      done
+      test "$(jq 'length' "$INDEX_DIR/indexes-after.json")" = 3
+      test "$(jq '[.[]|select(.collectionGroup=="resources")]|length' "$INDEX_DIR/indexes-after.json")" = 3
+      TOKEN="$(gcloud auth print-access-token)"
+      curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" -o "$INDEX_DIR/hosting-after.json"
+      test "$(jq -r '.release.version.name' "$INDEX_DIR/hosting-before.json")" = "$(jq -r '.release.version.name' "$INDEX_DIR/hosting-after.json")"
+      jq -n --arg hosting "$(jq -r '.release.version.name' "$INDEX_DIR/hosting-after.json")" --argjson indexCount "$(jq 'length' "$INDEX_DIR/indexes-after.json")" '{decision:"PASS_D06_DEV_INDEX_ONLY_THREE_CREATED",devCompositeIndexCount:$indexCount,hostingVersionUnchanged:$hosting,firestoreRulesWrites:0,hostingWrites:0,runtimeDeploys:0,realBankWrites:0,production:false,indexState:"CREATING_OR_READY_PENDING_NEXT_READBACK"}' > "$INDEX_DIR/result.json"
+      jq -e '.decision=="PASS_D06_DEV_INDEX_ONLY_THREE_CREATED" and .devCompositeIndexCount==3 and .production==false' "$INDEX_DIR/result.json" >/dev/null
+      jq '{decision,devCompositeIndexCount,hostingVersionUnchanged,firestoreRulesWrites,hostingWrites,production,indexState}' "$INDEX_DIR/result.json"
+   - uses: actions/upload-artifact@v4
+     if: always()
+     with:
+      name: cxorbia-i3-d06-dev-index-one-shot-${{ github.run_id }}
+      path: .tmp/i3-d06-dev-index-only-one-shot/
+      if-no-files-found: warn
+      retention-days: 30
+
 

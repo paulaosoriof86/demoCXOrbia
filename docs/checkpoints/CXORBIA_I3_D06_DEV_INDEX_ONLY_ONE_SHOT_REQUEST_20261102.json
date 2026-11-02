@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "cxorbia.i3.d06.dev-index-only-one-shot-request.20261102.v1",
+  "intent": "D06_SECURITY_SHOPPER_READ_QUERY_DEV_COMPOSITE_INDEXES_ONLY",
+  "authorization": "PAULA_EXPLICIT_CERTIFY_MODULES_2026_11_02",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "productSourceSha": "4ba2a96e1f90fba7ba8e981429bce8b4161ebee6",
+  "productSourceTree": "0e19bfe90db917d67cf493c79bc74df4d44f1a81",
+  "controlParentSha": "734ded45391b3085203d347c30d86353734c2f73",
+  "targetProject": "cxorbia-backend-dev",
+  "database": "(default)",
+  "indexesFile": "firestore.indexes.json",
+  "beforeVerified": {
+    "readOnlyRunId": 41387084294,
+    "artifactId": 13116035557,
+    "artifactZipSha256": "fba439136fbe74d3178c8f60cdf7c7ff8d95c258ae18c216b2ea985d3891c4c1",
+    "compositeIndexCount": 0,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/4c82b2b51af9f3f6",
+    "predecessorServedAppBlob": "f12a2325948bf25133b5f7e5cff68061e0521d60"
+  },
+  "expectedAfter": {
+    "compositeIndexCount": 3,
+    "collectionGroup": "resources",
+    "types": [
+      "project+status+visibleRoles",
+      "project+status+resourceType+visibleRoles",
+      "project+status+resourceType+bank.estado+visibleRoles"
+    ],
+    "noDeletes": true
+  },
+  "limits": {
+    "maxDeployAttempts": 1,
+    "automaticRetry": false,
+    "onlyFirebaseDeployFlag": "firestore:indexes",
+    "newFirestoreRulesDeploy": false,
+    "newHostingDeploy": false,
+    "cloudRunDeploy": false,
+    "HRWrites": 0,
+    "documentWrites": 0,
+    "realBankWrites": 0,
+    "productionWrites": 0,
+    "noI4": true
+  },
+  "frozen": {
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V220.json",
+    "matrixBlob": "fa066597cd2c13d1498f4c228baea9859dd6d625",
+    "matchedDomains": 5,
+    "totalDomains": 21,
+    "gates20And21": "HOLD",
+    "production": "DO_NOT_TOUCH"
+  }
+}
