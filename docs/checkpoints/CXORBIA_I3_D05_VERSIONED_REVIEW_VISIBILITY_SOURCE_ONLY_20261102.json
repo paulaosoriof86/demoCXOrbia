@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "cxorbia.i3.d05.versioned-review-visibility-source-only.v1",
+  "date": "2026-11-02",
+  "domain": "certifications",
+  "scope": "D05 QA-only Admin versioned review source repair",
+  "sourceCommit": "a363f9e4f604cba722e899bb1916c442c77c1fed",
+  "sourceTree": "75929483706d7cf077840ad4596eeec9963bcf54",
+  "sourceParent": "fb73c884d7fbbab2ac0147d81387924b5b46960e",
+  "productChangedFiles": [
+    "app/modules/cert.js"
+  ],
+  "regressionTest": "tools/qa/cxorbia-i3-d05-review-visibility-source.test.mjs",
+  "sourceBlob": "a0f858db5a9e8ea528a0f64cd3b2d28fcaf913ea",
+  "testBlob": "f5b924807e3e2fc44eaffab3e4e9cd4c5a96432c",
+  "rootCause": "Versioned review client wrote the default visibleRoles array and targetAll to an existing exclusive QA bank; Firestore draft review enforces metadata scope and denied unauthorized role widening.",
+  "exactChange": "Versioned review explicitly omits visibility-scope fields in saveMetadata so the backend preserves prior bank ACLs; a new bank still receives original defaults. Exact expected version/resource/readback are required.",
+  "localEvidence": {
+    "syntaxCheck": "PASS",
+    "tests": "PASS",
+    "scenarios": 6,
+    "tool": "node --test",
+    "environment": "LOCAL_SYNTHETIC_VM",
+    "realProviderWrites": 0
+  },
+  "pending": {
+    "canonicalCI": "PENDING",
+    "exactDevHosting": "PENDING",
+    "qaAdminRealVersionedSave": "PENDING",
+    "shopperConsumption": "PENDING",
+    "d06Negatives": "PENDING",
+    "humanVisualAcceptance": "PENDING"
+  },
+  "decision": "SOURCE_ONLY_NOT_DEPLOYED_NOT_FUNCTIONALLY_CLOSED",
+  "classification": "TRUE_FUNCTIONAL_DEFECT",
+  "matchedDomains": 5,
+  "totalDomains": 21,
+  "gates": {
+    "gate20": "HOLD",
+    "gate21": "HOLD"
+  },
+  "production": "DO_NOT_TOUCH",
+  "i4Authorized": false,
+  "sourceUse": "Only through canonical single-writer source/control successor; do not publish or mutate original Cinépolis bank."
+}
