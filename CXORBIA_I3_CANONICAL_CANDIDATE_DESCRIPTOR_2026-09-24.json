@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM134_A07_HOSTING_DEV_SERVING_FULL_LOAD_P0_OPEN_5_MATCH",
+  "status": "HOLD_I3_VRM134_A08_SOURCE_PROVEN_DEV_HOSTING_REQUIRED_5_MATCH",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "b8d516f07062f4c2fe991d2c14991103118c33b8",
-  "productTreeAuthority": "b5c47afa48859b1fa7b0d7bd0b12e9b50443b4c6",
-  "predecessorProductSourceSha": "f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d",
+  "productSourceSha": "c3037483f236837f1e469817db8d11415cd59dbe",
+  "productTreeAuthority": "c05181456e0c22e0d5a852002035d5e83f95f4e6",
+  "predecessorProductSourceSha": "b8d516f07062f4c2fe991d2c14991103118c33b8",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V557_2026-11-03.json",
-  "findingsLedgerExpectedGitBlob": "c9a1eb45fd91623185830e8f74c8a72e3e55b374",
+  "findingsLedgerExpectedGitBlob": "be460a06860287d322d1500ced55dbaa33ecbde4",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261103-V236.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM134_A07_HOSTING_EXACT_RUN2092_PASS__FULL_ADMIN_LOAD_STILL_12_TO_18_5_SEC__P0_OPEN; SHOPPER_PERF_E2E_D06_B10_HR_FINANCE_16_NONMATCH",
+  "activeBlocker": "VRM134_A08_SOURCE_16_OF_16_LOCAL_PASS__DEV_HOSTING_READBACK_AND_FULL_ADMIN_SHOPPER_PERFORMANCE_PENDING__P0_OPEN; D06_B10_G03_HR_FINANCE_16_NONMATCH",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD 5/21 MATCH. G03 Hosting DEV 231186c337bcd0ba histórico. A07 fuente b8d516f07062f4c2fe991d2c14991103118c33b8 exacta en Hosting DEV una vez RUN2092 41698298511 versión 6fed8be0e6525c99; core/backend-firebase.js blob PASS, Cloud Run 00336 100% sin rebuild/deploy y producción intacta. Admin Chrome Cinépolis OCT2026 visita #705 E03 PASS visual. Auth→ready 4509ms frente a 5027ms A06 en una muestra, pantalla operativa aún 12–18.5 segundos: VRM134 P0 OPEN/HOLD. Siguiente owner-proven full-load remediation y Admin+Shopper E2E; D06, B10, G03 por roles, HR misma revisión, finanzas y 16 no MATCH. Fusiones 32/83 ACK + 51/83 revisión. Gate20/21 HOLD; I4 NO autorizada.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH. A08 fuente c3037483f236837f1e469817db8d11415cd59dbe 16/16 QA local PASS, no publicada. Publicar exactamente A08 en Hosting DEV por carril existente, verificar blob watcher y Cloud Run 00336 sin cambios; medir Admin+Shopper cold/full load con HR misma revisión. A07 Hosting DEV RUN2092 versión 6fed8be0e6525c99 es predecesora servida; G03 Hosting DEV 231186c337bcd0ba histórico. E03 visita #705 PASS focal, no módulo certificado. Si mejora real no resuelve VRM134, clasificar nueva causa funcional en su owner; continuar D06, B10, G03 por roles, HR y finanzas; 16 no MATCH. Fusiones 32/83 ACK + 51/83 revisión. Gate20/21 HOLD, producción DO_NOT_TOUCH e I4 no autorizada.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "cc2ba41afb584a3292fe7e98531b45cefcd474e4",
+  "moduleTruthExpectedGitBlob": "ac3bd521d0628adec35feb079dfeb04da95b3807",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -16847,6 +16847,26 @@
     },
     "moduleMatchCount": 5,
     "nonmatchCount": 16,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": false
+  },
+  "vrm134A08VerifiedRevisionWatcher20261103": {
+    "finding": "VRM-134",
+    "classification": "FUNCTIONAL_DEFECT",
+    "severity": "P0",
+    "sourceSha": "c3037483f236837f1e469817db8d11415cd59dbe",
+    "sourceTree": "c05181456e0c22e0d5a852002035d5e83f95f4e6",
+    "predecessorSourceSha": "b8d516f07062f4c2fe991d2c14991103118c33b8",
+    "owner": "app/adapters/tya-live-source-refresh-watch-v2.js",
+    "ownerBlob": "8fa224fe7f7a565be8553bc855deef6d0e6a3b9f",
+    "testOwner": "tools/qa/cxorbia-i3-vrm134-a08-watcher-revision-reuse.test.mjs",
+    "localFocalPlusAtomicRegression": {"pass": 16, "fail": 0, "scope": "SOURCE_ONLY_SYNTHETIC"},
+    "preservedInvariant": "PROTECTED_AUTHORITY_INDEPENDENT_HR_REVISION_READBACK_BEFORE_ATOMIC_PUBLICATION",
+    "expectedDevDeploy": "HOSTING_ONLY_EXACT_SOURCE_NO_RUNTIME_BUILD_NO_RULES_NO_HR_WRITES",
+    "devMaterialization": "PENDING",
+    "authenticatedAdminAndShopperPerformance": "PENDING",
+    "moduleMatchCount": 5,
     "gate20": "HOLD",
     "gate21": "HOLD",
     "production": false

@@ -7344,7 +7344,7 @@ jobs:
 
   i3-current-source-hosting-dev:
    needs: canonical-candidate-authority
-   if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-current-hosting-dev-only]') && needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM134_A07_SOURCE_PROVEN_DEV_HOSTING_REQUIRED_5_MATCH' }}
+   if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-current-hosting-dev-only]') && needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM134_A08_SOURCE_PROVEN_DEV_HOSTING_REQUIRED_5_MATCH' }}
    runs-on: ubuntu-24.04
    timeout-minutes: 35
    permissions:
@@ -7356,23 +7356,23 @@ jobs:
     EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00336-fz2
     EVIDENCE: .tmp/i3-current-source-hosting-dev
     PRODUCTION_URL: https://tya-plataforma.web.app/
+    ASSET_FILES: index-backend-dev.html core/backend-firebase.js core/router.js adapters/tya-live-source-refresh-watch-v2.js modules/shoppers.js modules/beneficios.js modules/clientes.js modules/historico.js modules/visitas.js modules/cuestionario-shopper.js core/data.js
    steps:
    - uses: actions/checkout@v4
      with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
      with: {node-version: '24'}
-   - name: Verify canonical frontend source
-     run: |
+   - run: |
       set -Eeuo pipefail
       mkdir -p "$EVIDENCE"
       test "$GITHUB_REPOSITORY" = paulaosoriof86/demoCXOrbia
       test "$GITHUB_REF_NAME" = recovery/cxorbia-phase-a-20260831
-      test "$SOURCE" = b8d516f07062f4c2fe991d2c14991103118c33b8
-      test "$SOURCE_TREE" = b5c47afa48859b1fa7b0d7bd0b12e9b50443b4c6
+      test "$SOURCE" = c3037483f236837f1e469817db8d11415cd59dbe
+      test "$SOURCE_TREE" = c05181456e0c22e0d5a852002035d5e83f95f4e6
       test "$(git rev-parse "$SOURCE^{tree}")" = "$SOURCE_TREE"
       git merge-base --is-ancestor "$SOURCE" "$GITHUB_SHA"
       git diff --quiet "$SOURCE" "$GITHUB_SHA" -- app backend tools firebase.json .firebaserc firestore.rules storage.rules
-      test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = HOLD_I3_VRM134_A07_SOURCE_PROVEN_DEV_HOSTING_REQUIRED_5_MATCH
+      test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = HOLD_I3_VRM134_A08_SOURCE_PROVEN_DEV_HOSTING_REQUIRED_5_MATCH
       test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$SOURCE"
       test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$SOURCE_TREE"
       test "$(jq -r '.production' "$CANDIDATE_DESCRIPTOR")" = DO_NOT_TOUCH
@@ -7384,12 +7384,13 @@ jobs:
       test "$(jq -r '.hosting.rewrites[0].run.serviceId' firebase.json)" = "$SERVICE"
       node --test tools/qa/cxorbia-i3-shopper-identity-review-rail-notice.test.mjs tools/qa/cxorbia-i3-e03-visita-payment-human-state.test.mjs tools/qa/cxorbia-i3-visitas-effective-availability.test.mjs tools/qa/cxorbia-i3-b10-external-provider-routing.test.mjs > "$EVIDENCE/source-tests.log"
       node --test backend/runtime/hr-live-service/test/cxorbia-vrm134-firestore-early-hydration.test.mjs tools/qa/cxorbia-i3-b1-cold-login-parallel-source.test.mjs > "$EVIDENCE/a07-cold-load-tests.log"
+      node --test tools/qa/cxorbia-i3-vrm134-a08-watcher-revision-reuse.test.mjs tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs > "$EVIDENCE/a08-watcher-hr-revision-tests.log"
       SOURCE_DIR="$(mktemp -d)"
       git archive "$SOURCE" | tar -x -C "$SOURCE_DIR"
       echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
       node --check "$SOURCE_DIR/app/core/router.js"
       node --check "$SOURCE_DIR/app/modules/shoppers.js"
-      for FILE in index-backend-dev.html core/backend-firebase.js core/router.js modules/shoppers.js modules/beneficios.js modules/clientes.js modules/historico.js modules/visitas.js modules/cuestionario-shopper.js core/data.js; do
+      for FILE in $ASSET_FILES; do
        test -s "$SOURCE_DIR/app/$FILE"
       done
       (cd "$SOURCE_DIR/app" && find . -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum) > "$EVIDENCE/source-hosting-files.sha256"
@@ -7400,8 +7401,7 @@ jobs:
    - uses: google-github-actions/setup-gcloud@v2
      with:
       project_id: ${{ env.PROJECT }}
-   - name: DEV/production preflight
-     run: |
+   - run: |
       set -Eeuo pipefail
       gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$EVIDENCE/runtime-before.json"
       jq -e --arg rev "$EXPECTED_RUNTIME_REVISION" '.status.latestReadyRevisionName==$rev and ([.status.traffic[]?|select(.revisionName==$rev and .percent==100)]|length)==1' "$EVIDENCE/runtime-before.json"
@@ -7412,7 +7412,7 @@ jobs:
       jq -e '.release.version.name | length > 0' "$EVIDENCE/hosting-before.json" >/dev/null
       curl -fsSL -H 'Cache-Control: no-cache' "$PRODUCTION_URL" -o "$EVIDENCE/production-before.html"
       sha256sum "$EVIDENCE/production-before.html" | awk '{print $1}' > "$EVIDENCE/production-before.sha256"
-   - name: Publish exact DEV Hosting
+   - name: Publish DEV Hosting
      run: |
       set -Eeuo pipefail
       TOKEN="$(gcloud auth print-access-token)"
@@ -7424,8 +7424,7 @@ jobs:
       cmp -s "$EVIDENCE/traffic-before.json" "$EVIDENCE/traffic-predeploy.json"
       npm install --no-save --ignore-scripts --package-lock=false firebase-tools@14.12.0 > "$EVIDENCE/firebase-install.log" 2>&1
       (cd "$SOURCE_DIR" && "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive) | tee "$EVIDENCE/hosting-deploy.log"
-   - name: Readback bytes and immutable services
-     run: |
+   - run: |
       set -Eeuo pipefail
       TOKEN="$(gcloud auth print-access-token)"
       curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$EVIDENCE/hosting-after.json"
@@ -7439,7 +7438,7 @@ jobs:
       cmp -s "$EVIDENCE/traffic-before.json" "$EVIDENCE/traffic-after.json"
       gcloud run revisions describe "$EXPECTED_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$EVIDENCE/revision-after.json"
       test "$(jq -r '.status.imageDigest' "$EVIDENCE/revision-before.json")" = "$(jq -r '.status.imageDigest' "$EVIDENCE/revision-after.json")"
-      for FILE in index-backend-dev.html core/backend-firebase.js core/router.js modules/shoppers.js modules/beneficios.js modules/clientes.js modules/historico.js modules/visitas.js modules/cuestionario-shopper.js core/data.js; do
+      for FILE in $ASSET_FILES; do
        curl -fsS --retry 3 -H 'Cache-Control: no-cache, no-store' "$HOSTING_URL/$FILE?i3=$GITHUB_RUN_ID" -o "$EVIDENCE/served-$(printf '%s' "$FILE" | tr '/' '-')"
        cmp -s "$SOURCE_DIR/app/$FILE" "$EVIDENCE/served-$(printf '%s' "$FILE" | tr '/' '-')"
       done

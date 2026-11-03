@@ -103,12 +103,12 @@
     }
   },
   "productSource": {
-    "sha": "b8d516f07062f4c2fe991d2c14991103118c33b8",
-    "treeSha": "b5c47afa48859b1fa7b0d7bd0b12e9b50443b4c6",
-    "predecessorProductSourceSha": "f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d",
-    "message": "fix(i3/VRM-134 A07 P0): overlap scoped Firestore hydration reads [vrm134-a07-source]",
-    "authorityState": "A07_SOURCE_PROVEN_DEV_HOSTING_PENDING_A06_RUNTIME_00336_ACTIVE",
-    "state": "I3_HOLD_5_OF_21_MATCH_A07_SOURCE_ONLY_PERFORMANCE_UNPROVEN"
+    "sha": "c3037483f236837f1e469817db8d11415cd59dbe",
+    "treeSha": "c05181456e0c22e0d5a852002035d5e83f95f4e6",
+    "predecessorProductSourceSha": "b8d516f07062f4c2fe991d2c14991103118c33b8",
+    "message": "fix(i3/VRM-134 A08 P0): reuse authenticated verified HR revision on ready event [vrm134-a08-source]",
+    "authorityState": "A08_SOURCE_FOCAL_PASS_DEV_HOSTING_NOT_YET_DEPLOYED",
+    "state": "I3_HOLD_5_OF_21_MATCH_A08_SOURCE_ONLY_PERFORMANCE_UNPROVEN"
   },
   "controlHeadAtConstruction": "7a702a55cfb7e0c49a8efbb5d83a1ace8d598890",
   "phaseAComplete": false,
@@ -501,7 +501,7 @@
         "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js": "7b68d08357f256d736de57ff5b89bf97f397fb4f",
         "app/adapters/tya-cumulative-read-model-v2.js": "ab2abe6660d53d623e725f754d41b69710a8f612",
         "app/adapters/tya-canonical-state-semantics-v2.js": "a0104aa043ebdb7c9ee55cde5766ada8ed5e28fb",
-        "app/adapters/tya-live-source-refresh-watch-v2.js": "08ae9f9ca73d41c6c431e0234a9d209eb6fa2a16",
+        "app/adapters/tya-live-source-refresh-watch-v2.js": "8fa224fe7f7a565be8553bc855deef6d0e6a3b9f",
         "app/adapters/tya-live-source-inplace-apply.js": "45e1cd1b8c01d6276be2c256d5b99baa93e90252",
         "backend/runtime/hr-live-service/server.mjs": "16b4526b30d5e72ddcf9d90f193e15c2826bd3d1",
         "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs": "f910023524a7f2460a255ce3b1aa3cab275cf297",
@@ -3980,7 +3980,7 @@
       "f9ApprovedBlob": "4f10c7cf1e2bbd665c7723b7edf2dd43991474ec",
       "latestApprovedSource": "77bf74f807d254637f0b2cde4b1d1668017a0c8a",
       "latestApprovedBlob": "9cc8113b56d8344ead9700901ab3805c7ac98d60",
-      "currentBlob": "08ae9f9ca73d41c6c431e0234a9d209eb6fa2a16",
+      "currentBlob": "8fa224fe7f7a565be8553bc855deef6d0e6a3b9f",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",

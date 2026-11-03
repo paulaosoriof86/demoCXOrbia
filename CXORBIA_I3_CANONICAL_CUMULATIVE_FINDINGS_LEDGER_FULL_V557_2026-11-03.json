@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "b8d516f07062f4c2fe991d2c14991103118c33b8",
-    "sourceTree": "b5c47afa48859b1fa7b0d7bd0b12e9b50443b4c6",
-    "predecessorSha": "f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d",
+    "sourceSha": "c3037483f236837f1e469817db8d11415cd59dbe",
+    "sourceTree": "c05181456e0c22e0d5a852002035d5e83f95f4e6",
+    "predecessorSha": "b8d516f07062f4c2fe991d2c14991103118c33b8",
     "production": false,
-    "state": "VRM134_A07_SOURCE_PROVEN_DEV_HOSTING_AND_HUMAN_PERFORMANCE_HOLD_5_MATCH_16_NONMATCH",
+    "state": "VRM134_A08_SOURCE_PROVEN_DEV_HOSTING_PENDING_HUMAN_PERFORMANCE_HOLD_5_MATCH_16_NONMATCH",
     "i3P0CountryScope20261028": {
       "rootTasks": [
         "A09",
@@ -37739,6 +37739,26 @@
     "run2092DevAndBrowserReceipt": "docs/checkpoints/CXORBIA_I3_VRM134_A07_RUN2092_EXACT_DEV_AND_E03_BROWSER_READBACK_20261103.json",
     "e03AdminVisit705OnA07": "PASS_PENDING_CONFIRMATION_NOT_PAID__NOT_FULL_MODULE_MATCH",
     "productionIndexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+    "moduleMatchCount": 5,
+    "nonmatchCount": 16,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": false
+  },
+  "vrm134A08VerifiedRevisionWatcher20261103": {
+    "finding": "VRM-134",
+    "classification": "FUNCTIONAL_DEFECT",
+    "severity": "P0",
+    "sourceSha": "c3037483f236837f1e469817db8d11415cd59dbe",
+    "sourceTree": "c05181456e0c22e0d5a852002035d5e83f95f4e6",
+    "predecessorSourceSha": "b8d516f07062f4c2fe991d2c14991103118c33b8",
+    "sourceOwner": "app/adapters/tya-live-source-refresh-watch-v2.js",
+    "ownerBlob": "8fa224fe7f7a565be8553bc855deef6d0e6a3b9f",
+    "testOwner": "tools/qa/cxorbia-i3-vrm134-a08-watcher-revision-reuse.test.mjs",
+    "localTests": {"pass": 16, "fail": 0, "scope": "SOURCE_ONLY_SYNTHETIC_PLUS_A05_ATOMIC_PUBLICATION"},
+    "change": "Reuse independently verified protected HR revision on immediate authority-ready event; preserve normal polling, principal, tenant and project guards, fail-closed on stale or mismatched authority.",
+    "devHosting": "PENDING",
+    "adminAndShopperFullLoadPerformance": "PENDING",
     "moduleMatchCount": 5,
     "nonmatchCount": 16,
     "gate20": "HOLD",
