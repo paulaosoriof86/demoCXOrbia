@@ -18,14 +18,24 @@ const service=run(['run','services','describe','cxorbia-live-hr-dev',
 const created=service.status?.latestCreatedRevisionName;
 const ready=service.status?.latestReadyRevisionName;
 const traffic=(service.status?.traffic||[]).filter(x=>x.revisionName===ready&&x.percent===100);
+const intendedRevision=run(['run','revisions','describe',expectedRevision,
+  '--project=cxorbia-backend-dev','--region=us-central1','--format=json']);
+const conciseConditions=(xs)=>(xs||[]).map(({type,status,reason,message})=>({type,status,reason,message}));
+console.log(JSON.stringify({decision:'DIAGNOSTIC_VRM134_A05_RUNTIME_STATE_READ_ONLY',
+  expectedRevision,latestCreatedRevision:created,latestReadyRevision:ready,
+  traffic:service.status?.traffic?.filter(x=>x.percent>0),
+  templateImage:service.spec?.template?.spec?.containers?.[0]?.image,
+  serviceConditions:conciseConditions(service.status?.conditions),
+  intendedRevisionConditions:conciseConditions(intendedRevision.status?.conditions),
+  intendedRevisionImageDigest:intendedRevision.status?.imageDigest,
+  builds:0,deploys:0,production:false}));
 assert.equal(created,expectedRevision,'ENVIRONMENT_FAILURE:UNEXPECTED_CREATED_REVISION');
 assert.equal(ready,expectedRevision,'ENVIRONMENT_FAILURE:NEW_RUNTIME_NOT_READY');
 assert.equal(service.spec?.template?.spec?.containers?.[0]?.image,expectedImage,
   'RELEASE_COMPOSITION_FAILURE:SOURCE_IMAGE_TAG_NOT_ACTIVE');
 assert.equal(traffic.length,1,'ENVIRONMENT_FAILURE:NEW_RUNTIME_NOT_100_PERCENT_TRAFFIC');
 
-const revision=run(['run','revisions','describe',ready,
-  '--project=cxorbia-backend-dev','--region=us-central1','--format=json']);
+const revision=intendedRevision;
 const raw=String(revision.status?.imageDigest||'');
 const digest=raw.includes('@sha256:')?`sha256:${raw.split('@sha256:')[1]}`:raw;
 assert.match(digest,/^sha256:[a-f0-9]{64}$/,'ENVIRONMENT_FAILURE:REVISION_DIGEST_MISSING');

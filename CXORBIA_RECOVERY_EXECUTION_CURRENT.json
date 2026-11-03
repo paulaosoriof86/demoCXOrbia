@@ -286,7 +286,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 HOLD 5/21 MATCH. G03 DEV Hosting 231186c337bcd0ba histórico + nuevo af8bf558cebb9a23 PASS bytes. E03 Admin Visita #705 DEV visual PASS focal, aceptación humana pendiente. VRM134 A05: RUN2080 compilación/Hosting PASS, revisión nueva 00335 creada pero primera lectura mostró tráfico 00334; ejecutar solo readback remoto de revisión READY+100% y comparar Chrome; HR externa y finanzas pendientes, shoppers fusiones 32/83 ACK, 51/83 revisión proveedor. D06 Shopper E2E y B10; Gate20/21 HOLD; I4 no autorizada, producción DO_NOT_TOUCH.",
+  "nextExactAction": "I3 HOLD 5/21 MATCH. G03 DEV Hosting 231186c337bcd0ba histórico y af8bf558cebb9a23 exacto. E03 Admin visita #705 DEV focal PASS, aceptación humana pendiente. VRM134 A05: RUN2080 fuente/Hosting PASS pero RUN2081 Cloud Run FAIL (00335 creada, 00334 sigue ready/tráfico); obtener condiciones exactas de revisión nueva en lectura sola, reparar owner probado, no recompilar por rutina. HR externa y finanzas pendientes, shoppers fusiones 32/83 ACK y 51/83 revisión proveedor; D06 Shopper E2E, B10; Gate20/21 HOLD; I4 no autorizada, producción DO_NOT_TOUCH.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -6681,6 +6681,19 @@
       "moduleMatchCount": 5,
       "gate20": "HOLD",
       "gate21": "HOLD",
+      "production": false
+    },
+    "devRuntimeReadbackAttempt": {
+      "runId": 41657513988,
+      "jobId": 125991678127,
+      "decision": "FAIL_ENVIRONMENT_FAILURE_NEW_RUNTIME_NOT_READY",
+      "expectedRevision": "cxorbia-live-hr-dev-00335-tpk",
+      "observedLatestReadyRevision": "cxorbia-live-hr-dev-00334-8jb",
+      "independentReadOnly": true,
+      "newRuntimeServingProven": false,
+      "nextExactDiagnostic": "Read only new revision conditions and service traffic, classify startup/traffic cause before any new build",
+      "builds": 0,
+      "deploys": 0,
       "production": false
     }
   }
