@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM134_A07_SOURCE_PROVEN_DEV_HOSTING_REQUIRED_5_MATCH",
+  "status": "HOLD_I3_VRM134_A07_DEV_MATERIALIZED_FULL_LOAD_P0_OPEN_5_MATCH",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "b8d516f07062f4c2fe991d2c14991103118c33b8",
   "productTreeAuthority": "b5c47afa48859b1fa7b0d7bd0b12e9b50443b4c6",
   "predecessorProductSourceSha": "f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V556_2026-11-03.json",
-  "findingsLedgerExpectedGitBlob": "50d72ee25a8d2ee8d4659febd4771c2324a0d3b2",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261103-V235.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V557_2026-11-03.json",
+  "findingsLedgerExpectedGitBlob": "c9a1eb45fd91623185830e8f74c8a72e3e55b374",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261103-V236.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM134_A07_SOURCE_PROVEN_NEEDS_DEV_HOSTING_BYTES_AND_AUTHENTICATED_LOAD_MEASUREMENT; SHOPPER_PERF_E2E_D06_B10_HR_FINANCE_16_NONMATCH",
+  "activeBlocker": "VRM134_A07_HOSTING_EXACT_RUN2092_PASS__FULL_ADMIN_LOAD_STILL_12_TO_18_5_SEC__P0_OPEN; SHOPPER_PERF_E2E_D06_B10_HR_FINANCE_16_NONMATCH",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD 5/21 MATCH. G03 Hosting DEV 231186c337bcd0ba histórico; de0956bc66ce57d8 actual pre-A07. VRM134 A07 fuente b8d516f07062f4c2fe991d2c14991103118c33b8 árbol b5c47afa48859b1fa7b0d7bd0b12e9b50443b4c6 y tests 52/52 + 75/75 + 10/10 PASS. Publicar una vez esos bytes en Hosting DEV existente, readback de core/backend-firebase.js; Cloud Run 00336 debe continuar 100%, producción intacta. Medir carga autenticada Admin+Shopper en mismo artefacto contra Admin 16,3–19,6 segundos; E03 #705 ya PASS focal. D06 Shopper, B10, G03 por roles, paridad HR externa, finanzas y 16 módulos no MATCH permanecen obligaciones. Fusiones 32/83 ACK + 51/83 revisión, Gate20/21 HOLD, I4 NO autorizada.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH. G03 Hosting DEV 231186c337bcd0ba histórico. A07 fuente b8d516f07062f4c2fe991d2c14991103118c33b8 exacta en Hosting DEV una vez RUN2092 41698298511 versión 6fed8be0e6525c99; core/backend-firebase.js blob PASS, Cloud Run 00336 100% sin rebuild/deploy y producción intacta. Admin Chrome Cinépolis OCT2026 visita #705 E03 PASS visual. Auth→ready 4509ms frente a 5027ms A06 en una muestra, pantalla operativa aún 12–18.5 segundos: VRM134 P0 OPEN/HOLD. Siguiente owner-proven full-load remediation y Admin+Shopper E2E; D06, B10, G03 por roles, HR misma revisión, finanzas y 16 no MATCH. Fusiones 32/83 ACK + 51/83 revisión. Gate20/21 HOLD; I4 NO autorizada.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "e6f6caad6ebd3a2fdd67bddff793cbadfc04bc47",
+  "moduleTruthExpectedGitBlob": "cc2ba41afb584a3292fe7e98531b45cefcd474e4",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -16820,11 +16820,23 @@
     "ownerBlob": "d181236f44178c455c78b129d680d3a6674ef6e3",
     "receipt": {"path":"docs/checkpoints/CXORBIA_I3_VRM134_A07_FIRESTORE_EARLY_HYDRATION_SOURCE_20261103.json","gitBlob":"4bebb363ecd2e25b8ed2ae10f1185a5edfb09546"},
     "tests": {"focalPass":52,"regressionPass":75,"continuityPass":10,"fail":0},
-    "state": "SOURCE_PROVEN_PENDING_DEV_EXACT_HOSTING_AND_PERFORMANCE",
+    "state": "PASS_EXACT_DEV_HOSTING_AND_E03_ADMIN_FOCAL__HOLD_FULL_AUTHENTICATED_LOAD",
     "activeRuntime": "cxorbia-live-hr-dev-00336-fz2",
     "expectedDevHostingOnly": true,
-    "authenticatedAdminLoadGain": "UNPROVEN",
+    "authenticatedAdminLoadGain": "SINGLE_SAMPLE_5027_TO_4509_MS_AUTH_TO_READY__FULL_SCREEN_12_TO_18_5_SEC_HOLD",
     "authenticatedShopperLoadGain": "UNPROVEN",
+    "devAndBrowserReadback20261103": {
+      "runId": 41698298511,
+      "runNumber": 2092,
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/6fed8be0e6525c99",
+      "servedOwnerGitBlob": "d181236f44178c455c78b129d680d3a6674ef6e3",
+      "runtimeRevision": "cxorbia-live-hr-dev-00336-fz2",
+      "productionUnchanged": true,
+      "adminE03Visit705Visual": "PASS_PENDING_CONFIRMATION_NOT_PAID",
+      "performanceP0": "OPEN",
+      "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM134_A07_RUN2092_EXACT_DEV_AND_E03_BROWSER_READBACK_20261103.json",
+      "receiptGitBlob": "452973e0d542d72f7683bcdee4fe5da9de0fa5cd"
+    },
     "moduleMatchCount": 5,
     "nonmatchCount": 16,
     "gate20": "HOLD",
