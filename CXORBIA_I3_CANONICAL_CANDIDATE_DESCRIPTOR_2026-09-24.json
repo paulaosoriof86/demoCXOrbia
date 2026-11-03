@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM134_A05_RUNTIME_READBACK_REQUIRED",
+  "status": "HOLD_VRM134_A05_DEV_TRAFFIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM134_A05_RUNTIME_NOT_READY_DIAGNOSE_NEW_REVISION_CONDITIONS; D06_B10_G03_HR_FINANCE_16_NONMATCH",
+  "activeBlocker": "VRM134_A05_CLOUDRUN_EXACT_REVISION_RETIRED_NO_TRAFFIC; D06_B10_G03_HR_FINANCE_16_NONMATCH",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD 5/21 MATCH. G03 DEV Hosting 231186c337bcd0ba histórico y af8bf558cebb9a23 exacto. E03 Admin visita #705 DEV focal PASS, aceptación humana pendiente. VRM134 A05: RUN2080 fuente/Hosting PASS pero RUN2081 Cloud Run FAIL (00335 creada, 00334 sigue ready/tráfico); obtener condiciones exactas de revisión nueva en lectura sola, reparar owner probado, no recompilar por rutina. HR externa y finanzas pendientes, shoppers fusiones 32/83 ACK y 51/83 revisión proveedor; D06 Shopper E2E, B10; Gate20/21 HOLD; I4 no autorizada, producción DO_NOT_TOUCH.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH. G03 DEV Hosting 231186c337bcd0ba histórico y af8bf558cebb9a23 exacto. E03 Admin visita #705 visual PASS focal, aprobación humana pendiente. VRM134 A05: RUN2080 produjo imagen 00335 exacta, RUN2081/2082 verificaron 00335 Retired y 00334 con 100% del tráfico; activar una sola vez tráfico DEV hacia 00335 con readback de salud/100% y rollback si falla. HR externa, finanzas, D06 Shopper E2E, B10 y G03 rol pendientes; shoppers 32/83 ACK y 51/83 revisión proveedor. Gate20/21 HOLD, I4 no autorizada, producción DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -16692,6 +16692,26 @@
       "builds": 0,
       "deploys": 0,
       "production": false
+    },
+    "authorizeExactDevTrafficSwitch20261103": true,
+    "exactDevTrafficActivation20261103": {
+      "id": "VRM134_A05_DEV_ONE_TRAFFIC_SWITCH_20261103",
+      "sourceSha": "3c2e3973c47759a5892f3c8c3c41f5db67c59396",
+      "sourceTree": "bb40076934365a3ae0d4e2566dc34c95e8fdf1ef",
+      "buildRunId": 41655176051,
+      "target": "cxorbia-backend-dev/us-central1/cxorbia-live-hr-dev",
+      "priorRevision": "cxorbia-live-hr-dev-00334-8jb",
+      "newExactRevision": "cxorbia-live-hr-dev-00335-tpk",
+      "newExactDigest": "sha256:34418f7bcba9fdd37dbf4c34d7c09f4da01b5ecaa89f2ce2eaa24c05faaac941",
+      "expectedImageTag": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-vrm154-156-3c2e3973c477-41655176051",
+      "run2082Observed": "Retired, Active False, MinInstances NotProvisioned; previous revision serves 100 percent",
+      "requestedOperation": "One DEV-only update-traffic to exact existing revision, health and 100 percent readback, restore prior on failed verification",
+      "cloudBuilds": 0,
+      "cloudRunImageUpdates": 0,
+      "hostingDeploys": 0,
+      "hrWrites": 0,
+      "production": false,
+      "state": "AUTHORIZED_DEV_ONLY_PENDING_ONE_TRAFFIC_ACTIVATION"
     }
   }
 }

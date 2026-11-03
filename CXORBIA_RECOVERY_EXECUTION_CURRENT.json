@@ -286,7 +286,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 HOLD 5/21 MATCH. G03 DEV Hosting 231186c337bcd0ba histórico y af8bf558cebb9a23 exacto. E03 Admin visita #705 DEV focal PASS, aceptación humana pendiente. VRM134 A05: RUN2080 fuente/Hosting PASS pero RUN2081 Cloud Run FAIL (00335 creada, 00334 sigue ready/tráfico); obtener condiciones exactas de revisión nueva en lectura sola, reparar owner probado, no recompilar por rutina. HR externa y finanzas pendientes, shoppers fusiones 32/83 ACK y 51/83 revisión proveedor; D06 Shopper E2E, B10; Gate20/21 HOLD; I4 no autorizada, producción DO_NOT_TOUCH.",
+  "nextExactAction": "I3 HOLD 5/21 MATCH. G03 DEV Hosting 231186c337bcd0ba histórico y af8bf558cebb9a23 exacto. E03 Admin visita #705 visual PASS focal, aprobación humana pendiente. VRM134 A05: RUN2080 produjo imagen 00335 exacta, RUN2081/2082 verificaron 00335 Retired y 00334 con 100% del tráfico; activar una sola vez tráfico DEV hacia 00335 con readback de salud/100% y rollback si falla. HR externa, finanzas, D06 Shopper E2E, B10 y G03 rol pendientes; shoppers 32/83 ACK y 51/83 revisión proveedor. Gate20/21 HOLD, I4 no autorizada, producción DO_NOT_TOUCH.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -6695,6 +6695,26 @@
       "builds": 0,
       "deploys": 0,
       "production": false
+    },
+    "authorizeExactDevTrafficSwitch20261103": true,
+    "exactDevTrafficActivation20261103": {
+      "id": "VRM134_A05_DEV_ONE_TRAFFIC_SWITCH_20261103",
+      "sourceSha": "3c2e3973c47759a5892f3c8c3c41f5db67c59396",
+      "sourceTree": "bb40076934365a3ae0d4e2566dc34c95e8fdf1ef",
+      "buildRunId": 41655176051,
+      "target": "cxorbia-backend-dev/us-central1/cxorbia-live-hr-dev",
+      "priorRevision": "cxorbia-live-hr-dev-00334-8jb",
+      "newExactRevision": "cxorbia-live-hr-dev-00335-tpk",
+      "newExactDigest": "sha256:34418f7bcba9fdd37dbf4c34d7c09f4da01b5ecaa89f2ce2eaa24c05faaac941",
+      "expectedImageTag": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-vrm154-156-3c2e3973c477-41655176051",
+      "run2082Observed": "Retired, Active False, MinInstances NotProvisioned; previous revision serves 100 percent",
+      "requestedOperation": "One DEV-only update-traffic to exact existing revision, health and 100 percent readback, restore prior on failed verification",
+      "cloudBuilds": 0,
+      "cloudRunImageUpdates": 0,
+      "hostingDeploys": 0,
+      "hrWrites": 0,
+      "production": false,
+      "state": "AUTHORIZED_DEV_ONLY_PENDING_ONE_TRAFFIC_ACTIVATION"
     }
   }
 }
