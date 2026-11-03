@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm134-a05-dev-runtime-and-perf-receipt.v1",
+  "observedAt": "2026-11-03",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "findingId": "VRM-134",
+  "subblock": "A05",
+  "classification": "FUNCTIONAL_DEFECT",
+  "sourceSha": "3c2e3973c47759a5892f3c8c3c41f5db67c59396",
+  "sourceTree": "bb40076934365a3ae0d4e2566dc34c95e8fdf1ef",
+  "sourceBuildRunId": 41655176051,
+  "sourceBuildRunNumber": 2080,
+  "sourceArtifactId": 13240430326,
+  "sourceArtifactZipDigest": "sha256:c1eb10e2c777305f52a9bc659541caf1804e7b366dcd6db94c6966b4d266a9cc",
+  "sourceTests": {
+    "pass": 5,
+    "fail": 0
+  },
+  "materializationDecision": "PASS_VRM134_A05_EXACT_DEV_MATERIALIZATION",
+  "previousActiveRuntimeRevision": "cxorbia-live-hr-dev-00334-8jb",
+  "newActiveRuntimeRevision": "cxorbia-live-hr-dev-00335-tpk",
+  "newRuntimeImageTag": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-vrm154-156-3c2e3973c477-41655176051",
+  "newRuntimeDigest": "sha256:34418f7bcba9fdd37dbf4c34d7c09f4da01b5ecaa89f2ce2eaa24c05faaac941",
+  "newHostingVersion": "sites/cxorbia-backend-dev/versions/af8bf558cebb9a23",
+  "newHostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1793716741079000",
+  "sourceBuildHrRevision": "2f02fe8613092f5e5b3e748085fce9db483e70c11974c39cf300b2506687cbde",
+  "sourceBuilds": 1,
+  "sourceRuntimeDeploys": 1,
+  "sourceHostingDeploys": 1,
+  "independentReadbackFailures": [
+    {
+      "runId": 41657513988,
+      "runNumber": 2081,
+      "reason": "NEW_RUNTIME_NOT_READY; 00334 still ready"
+    },
+    {
+      "runId": 41657954386,
+      "runNumber": 2082,
+      "reason": "00335 retired, no traffic; 00334 still 100 percent"
+    }
+  ],
+  "activationRunId": 41658753853,
+  "activationRunNumber": 2083,
+  "activationJobId": 125996054542,
+  "activationDecision": "PASS_VRM134_A05_ACTIVE_RUNTIME_READBACK",
+  "activationTrafficPercent": 100,
+  "activationHealth": "PASS_DEV_OK_NO_HR_WRITES",
+  "activationTrafficSwitches": 1,
+  "activationBuilds": 0,
+  "activationImageUpdates": 0,
+  "activationHostingDeploys": 0,
+  "exactBrowserObservation20261103": {
+    "role": "Authenticated Admin",
+    "project": "Cinépolis",
+    "period": "OCT 2026",
+    "browser": "Chrome conectado",
+    "initialPostDeployReadyWindowSeconds": [
+      10.5,
+      16.7
+    ],
+    "afterActiveRevisionReadyWindowSeconds": [
+      11.3,
+      20.2
+    ],
+    "objectivePerformanceImprovementProven": false,
+    "outcome": "HOLD_VRM134_P0_LONG_LOADING_STILL_OBSERVED",
+    "shopperRolePerformanceE2E": "PENDING",
+    "noRepeatOfAlreadyApprovedUnrelatedModules": true
+  },
+  "outcome": "PASS_EXACT_RUNTIME_ACTIVATION__HOLD_PERFORMANCE_CLOSURE",
+  "moduleMatchCount": 5,
+  "otherModulesNonmatchCount": 16,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "humanAcceptance": "PENDING",
+  "providerWrites": 0,
+  "financialWrites": 0,
+  "hrWrites": 0,
+  "productionDeploys": 0,
+  "production": false
+}

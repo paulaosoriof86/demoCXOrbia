@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM134_A05_DEV_TRAFFIC_REQUIRED",
+  "status": "HOLD_I3_VRM134_DEV_ACTIVE_PERFORMANCE_P0_OPEN_5_MATCH",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "3c2e3973c47759a5892f3c8c3c41f5db67c59396",
   "productTreeAuthority": "bb40076934365a3ae0d4e2566dc34c95e8fdf1ef",
   "predecessorProductSourceSha": "7a702a55cfb7e0c49a8efbb5d83a1ace8d598890",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V551_2026-11-03.json",
-  "findingsLedgerExpectedGitBlob": "94f2dec464c32c1c97dfa2c4a752135fbb76e62c",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261103-V230.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V552_2026-11-03.json",
+  "findingsLedgerExpectedGitBlob": "24df463449e28cf23e842b12e369f24f93429e16",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261103-V231.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM134_A05_CLOUDRUN_EXACT_REVISION_RETIRED_NO_TRAFFIC; D06_B10_G03_HR_FINANCE_16_NONMATCH",
+  "activeBlocker": "VRM134_P0_AUTHENTICATED_LOADING_STILL_SLOW_ADMIN_AND_SHOPPER_PERF_E2E_OPEN; D06_B10_G03_HR_FINANCE_16_NONMATCH",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD 5/21 MATCH. G03 DEV Hosting 231186c337bcd0ba histórico y af8bf558cebb9a23 exacto. E03 Admin visita #705 visual PASS focal, aprobación humana pendiente. VRM134 A05: RUN2080 produjo imagen 00335 exacta, RUN2081/2082 verificaron 00335 Retired y 00334 con 100% del tráfico; activar una sola vez tráfico DEV hacia 00335 con readback de salud/100% y rollback si falla. HR externa, finanzas, D06 Shopper E2E, B10 y G03 rol pendientes; shoppers 32/83 ACK y 51/83 revisión proveedor. Gate20/21 HOLD, I4 no autorizada, producción DO_NOT_TOUCH.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH. G03 DEV Hosting 231186c337bcd0ba histórico y af8bf558cebb9a23 exacto. E03 Admin visita #705 visual PASS focal, aceptación humana pendiente. VRM134: runtime 00335 DEV activo 100% RUN2083 sin rebuild, pero Admin sigue tardando 11,3–20,2 s al recargar: P0 rendimiento OPEN; próxima acción exacta segmentar A05 carga de HR y composición de sesión en Admin/Shopper para aislar owner sin cambiar HR ni otra candidata. HR externa, finanzas, D06 Shopper E2E, B10 y G03 rol pendientes; shoppers 32/83 ACK y 51/83 revisión proveedor. Gate20/21 HOLD; I4 no autorizada, producción DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "2de44d0a88162b0efd7c9079ae8452f00dd1199f",
+  "moduleTruthExpectedGitBlob": "7f243ca53775cb7b5d90af49922261df67704f42",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -16693,7 +16693,7 @@
       "deploys": 0,
       "production": false
     },
-    "authorizeExactDevTrafficSwitch20261103": true,
+    "authorizeExactDevTrafficSwitch20261103": false,
     "exactDevTrafficActivation20261103": {
       "id": "VRM134_A05_DEV_ONE_TRAFFIC_SWITCH_20261103",
       "sourceSha": "3c2e3973c47759a5892f3c8c3c41f5db67c59396",
@@ -16712,6 +16712,17 @@
       "hrWrites": 0,
       "production": false,
       "state": "AUTHORIZED_DEV_ONLY_PENDING_ONE_TRAFFIC_ACTIVATION"
+    },
+    "activationVerdict": "PASS_EXACT_RUNTIME_ACTIVATION__HOLD_PERFORMANCE_CLOSURE",
+    "newRuntimeActiveReadback": "PASS_RUN2083_ACTIVE_00335_100_PERCENT",
+    "performanceP0": "OPEN",
+    "receipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM134_A05_DEV_TRAFFIC_RUN2083_20261103.json",
+      "gitBlob": "9f90eb6390dc9384203021d337a3d84da945205b",
+      "activationRunId": 41658753853,
+      "decision": "PASS_EXACT_RUNTIME_ACTIVATION__HOLD_PERFORMANCE_CLOSURE",
+      "performanceState": "HOLD",
+      "production": false
     }
   }
 }
