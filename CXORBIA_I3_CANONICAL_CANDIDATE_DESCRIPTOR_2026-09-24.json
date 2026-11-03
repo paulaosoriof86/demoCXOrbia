@@ -1,15 +1,15 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B10_DEV_ASSET_PROVEN_5_MATCH_16_NONMATCH",
+  "status": "HOLD_I3_E03_VISITA_HUMAN_LABEL_SOURCE_13_PASS_5_MATCH_16_NONMATCH",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "1737051ae56238eb0f71a6e3a237a4651ab32073",
-  "productTreeAuthority": "184d0f23eab12de82bcb3cc6e91160b7724aabd1",
-  "predecessorProductSourceSha": "bf60d57aa36fac08933d14f93d80f4c30e59a36c",
+  "productSourceSha": "7a702a55cfb7e0c49a8efbb5d83a1ace8d598890",
+  "productTreeAuthority": "1ea98d513ab8a51decd3bd82cf0070213c7281af",
+  "predecessorProductSourceSha": "1737051ae56238eb0f71a6e3a237a4651ab32073",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V549_2026-11-02.json",
   "findingsLedgerExpectedGitBlob": "1a30780cc5dca8457d67b7e942a1f75d1f1ca550",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V227.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V228.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD 5/21 MATCH: B10 exact DEV asset + canonical QA PASS run 41524873910, desplegado pendiente de recorrido Shopper/proveedor y aceptación humana. G03 Hosting DEV histórico 231186c337bcd0ba PASS; nuevo Hosting exacto run 41517119181. HR externa y finanzas pendientes; fusión Shopper 32/83 PROVISIONAL, 51 grupos pendientes de revisión/ACK de fuente. Siguiente D06 intento QA aislado con ACK/idempotencia, login Shopper, B10 proveedor, Beneficios y Auth/Core por roles; Gate20/21 HOLD, I4 no autorizado, producción DO_NOT_TOUCH.",
+  "exactNextAction": "I3 HOLD 5/21: E03 visita pago label reparado en source 7a702a5 y 13/13 focal QA PASS; DEV readback pendiente. Conservar 139 autorizaciones y 32/83 fusiones ACK, 51 pendientes; D06 QA intento aislado, Shopper password E2E, B10 externo, HR/finanzas, Gate20/21 HOLD e I4 no autorizada.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -16604,5 +16604,16 @@
     "match": 5,
     "total": 21,
     "noProduction": true
+  },
+  "e03VisitPaymentHumanSource20261102": {
+    "receipt": "docs/checkpoints/CXORBIA_I3_E03_VISIT_PAYMENT_HUMAN_SOURCE_FIX_20261102.json",
+    "sourceSha": "7a702a55cfb7e0c49a8efbb5d83a1ace8d598890",
+    "sourceTree": "1ea98d513ab8a51decd3bd82cf0070213c7281af",
+    "ownerBlob": "535ce2da5c44546b7cbb1609833159ea57021a0a",
+    "testBlob": "d2a1d01d53cee91188d06c18ce5e05714aca1254",
+    "localQaPass": 13,
+    "liveDev": "PENDING",
+    "domainMatch": false,
+    "production": false
   }
 }

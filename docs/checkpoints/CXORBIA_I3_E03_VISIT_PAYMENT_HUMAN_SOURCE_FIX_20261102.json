@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "cxorbia.i3.e03-visit-payment-human-20261102.v1",
+  "iteration": "I3",
+  "decision": "PASS_FOCAL_LOCAL_SOURCE_ONLY_FULL_DOMAIN_HOLD",
+  "cause": "VISUAL_DEFECT",
+  "before": {
+    "productSourceSha": "1737051ae56238eb0f71a6e3a237a4651ab32073",
+    "visitasOwnerBlob": "1605e94b94ab2b99fd7f6348b287b58f36099ede",
+    "devObservedState": "raw pending_source_confirmation in Visit #705 Admin detail"
+  },
+  "after": {
+    "productSourceSha": "7a702a55cfb7e0c49a8efbb5d83a1ace8d598890",
+    "treeSha": "1ea98d513ab8a51decd3bd82cf0070213c7281af",
+    "visitasOwnerBlob": "535ce2da5c44546b7cbb1609833159ea57021a0a",
+    "testOwnerBlob": "d2a1d01d53cee91188d06c18ce5e05714aca1254",
+    "expectedDisplay": "Pendiente de confirmación; never mark unconfirmed as paid"
+  },
+  "localQA": {
+    "syntax": "PASS",
+    "focalPrimaryTests": 13,
+    "fail": 0,
+    "diffCheck": "PASS"
+  },
+  "liveDEV": {
+    "before": "RAW_ENUM_PROVEN_ADMIN",
+    "after": "PENDING_MATERIALIZATION_AND_BROWSER_READBACK"
+  },
+  "closure": {
+    "module": "visits-review-postulations-reservations",
+    "domainMatch": false,
+    "officialMatch": 5,
+    "total": 21,
+    "gate20": "HOLD",
+    "gate21": "HOLD"
+  },
+  "identityCohort": {
+    "approvedCases": 139,
+    "approvedGroups": 83,
+    "completedGroups": 32,
+    "pendingGroups": 51,
+    "unmodified": true
+  },
+  "mutations": {
+    "adminAccounts": 0,
+    "shopperAuth": 0,
+    "hr": 0,
+    "firestore": 0,
+    "finances": 0,
+    "devDeployments": 0,
+    "production": 0
+  },
+  "production": "DO_NOT_TOUCH",
+  "authorizationI4": false,
+  "nextExactAction": "Align descriptor/matrix/pointer; source CI; one exact DEV materialization before claiming live E03 label PASS; D06 isolated QA attempt; shopper role/provider tests."
+}
