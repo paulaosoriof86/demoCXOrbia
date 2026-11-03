@@ -371,9 +371,17 @@ window.CX = window.CX || {};
     return projects.length===1 ? projects.slice() : [];
   }
 
-  async function loadCanonicalPeriods(activeProjects){
+  async function consumeEarlyRead(prefetched, read){
+    if(!prefetched) return read();
+    const settled = await prefetched;
+    if(!settled.ok) throw settled.error;
+    return settled.value;
+  }
+
+  async function loadCanonicalPeriods(activeProjects, earlyReads){
     const buckets = await Promise.all(activeProjects.map(async function(project){
-      const raw = await getAll(subCol(project.id, 'periods'));
+      const raw = await consumeEarlyRead(earlyReads?.get(project.id)?.periods,
+        ()=>getAll(subCol(project.id, 'periods')));
       return raw.map(function(period){ return normalizePeriod(period, project); });
     }));
     const periods = [];
@@ -382,19 +390,25 @@ window.CX = window.CX || {};
     return periods;
   }
 
-  async function loadProjectData(project, shoppersById, ctx){
-    const projectId = project.id;
-    const periodId = project.periodId || projectId;
+  async function loadProjectSourceData(projectId, ctx){
     // These reads share the already-authorized principal and project scope; none
     // depends on visit normalization. Join before mapping posts to visit IDs.
     const pendingPosts = isClient(ctx) ? Promise.resolve([]) : loadPostsForPrincipal(projectId, ctx);
     const pendingReservations = isClient(ctx) ? Promise.resolve([]) : loadReservationsForPrincipal(projectId, ctx);
     const visitsRawAll = isShopper(ctx) ? await loadShopperVisits(projectId, ctx.shopperId) : await getAll(subCol(projectId, 'visits'));
+    const [rawPosts, reservations] = await Promise.all([pendingPosts, pendingReservations]);
+    return {visitsRawAll, rawPosts, reservations};
+  }
+
+  async function loadProjectData(project, shoppersById, ctx, preloaded){
+    const projectId = project.id;
+    const periodId = project.periodId || projectId;
+    const {visitsRawAll, rawPosts, reservations} = await consumeEarlyRead(preloaded,
+      ()=>loadProjectSourceData(projectId, ctx));
     const visitsRaw = preserveDurableVisits(visitsRawAll);
     const visitsById = {};
     const visits = visitsRaw.map(function(v){ return normalizeVisit(v, projectId, periodId); });
     visits.forEach(function(v){ v.projectId = v.projectId || projectId; visitsById[v.id] = v; visitsById[v.visitId] = v; });
-    const [rawPosts, reservations] = await Promise.all([pendingPosts, pendingReservations]);
     const posts = [];
     rawPosts.forEach(function(x){
       const item = normalizeApplication(x, projectId, periodId, visitsById, shoppersById);
@@ -403,10 +417,36 @@ window.CX = window.CX || {};
     return {visits:visits, posts:posts, reservations:reservations};
   }
 
+  function primeAuthorizedProjectReads(ctx){
+    // I3 VRM-134 P0: only prefetch an exact, already-authenticated project
+    // from claims (Shopper/Client) or the operator's selected DEV scope.
+    // The registry is still authoritative: unmatched projects are discarded
+    // and no transient slice is published before the verified joined state.
+    if(!ctx || ctx.authenticated !== true) return new Map();
+    const hints = isOperator(ctx)
+      ? toList(cfg.previewProjectIds).concat(toList(cfg.defaultProjectId))
+      : toList(ctx.projectIds);
+    const earlyReads = new Map();
+    const settle = promise => promise.then(value=>({ok:true,value}),error=>({ok:false,error}));
+    Array.from(new Set(hints.filter(Boolean))).forEach(function(id){
+      earlyReads.set(id, {
+        // Settle unused hints too: an unmatched project must never generate
+        // an unhandled rejection or surface unauthorized data in the shell.
+        periods:settle(getAll(subCol(id, 'periods'))),
+        projectData:settle(loadProjectSourceData(id, ctx))
+      });
+    });
+    return earlyReads;
+  }
+
   async function loadTenantData(){
     const loadStartedAt = Date.now();
     const ctx = authContext();
     emit('backend-loading', {provider:'firebase', tenantId:tenantId(), source:'firestore', role:roleOf(ctx), scoped:!!ctx});
+    // Start independent project-scoped Firestore reads while the authorized
+    // project registry and shopper records hydrate; join only after registry
+    // membership is confirmed. This removes a serial network round trip.
+    const earlyReads = primeAuthorizedProjectReads(ctx);
     const result = await Promise.all([loadAuthorizedProjects(ctx), loadAuthorizedShoppers(ctx)]);
     const allProjects = result[0].map(normalizeProject);
     const activeProjects = resolveActiveProjects(allProjects);
@@ -415,8 +455,8 @@ window.CX = window.CX || {};
     shoppers.forEach(function(s){ shoppersById[s.id] = s; shoppersById[s.shopperId] = s; });
     // Canonical period reads and authorized project records are independent.
     const [periods, perProject] = await Promise.all([
-      loadCanonicalPeriods(activeProjects),
-      Promise.all(activeProjects.map(function(p){ return loadProjectData(p, shoppersById, ctx); }))
+      loadCanonicalPeriods(activeProjects, earlyReads),
+      Promise.all(activeProjects.map(function(p){ return loadProjectData(p, shoppersById, ctx, earlyReads.get(p.id)?.projectData); }))
     ]);
     const visits = [];
     const posts = [];

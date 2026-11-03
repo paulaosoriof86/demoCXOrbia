@@ -45,6 +45,9 @@ test('B1 cold shopper: postulations, reservations and visit reads begin together
     loadReservationsForPrincipal:()=>delayed('reservations',[{id:'r1'}]),
     preserveDurableVisits:x=>x,normalizeVisit:(v,project)=>({...v,visitId:v.id,projectId:project}),
     normalizeApplication:(post,project,period,byId)=>({...post,mapped:!!byId[post.visitId]})};
+  const sourceRead=isolate('loadProjectSourceData',context);
+  context.loadProjectSourceData=sourceRead;
+  context.consumeEarlyRead=async(prefetched,read)=>prefetched ? (await prefetched).value : read();
   const load=isolate('loadProjectData',context);
   const pending=load({id:'cinepolis'}, {},{shopperId:'shopper_fixture'});
   assert.deepEqual(Array.from(started).sort(),['posts','reservations','visits']);
@@ -55,5 +58,6 @@ test('B1 cold shopper: postulations, reservations and visit reads begin together
 });
 test('B1 cold shopper: canonical periods overlap project-scoped records',()=>{
   assert.match(source,/const \[periods, perProject\] = await Promise\.all\(\[/);
-  assert.match(source,/loadCanonicalPeriods\(activeProjects\),\s*Promise\.all\(activeProjects\.map/);
+  assert.match(source,/loadCanonicalPeriods\(activeProjects, earlyReads\),\s*Promise\.all\(activeProjects\.map/);
+  assert.match(source,/const earlyReads = primeAuthorizedProjectReads\(ctx\);\s*const result = await Promise\.all/);
 });
