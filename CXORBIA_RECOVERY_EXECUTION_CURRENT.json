@@ -286,7 +286,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 HOLD 5/21 MATCH. G03 Hosting DEV 231186c337bcd0ba histórico; af8bf558cebb9a23 anterior; de0956bc66ce57d8 nuevo exacto. E03 #705 visual PASS focal sin certificación integral. VRM134 A06 fuente f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d 7/7 PASS, RUN2087 build y Hosting PASS, Cloud Run creó 00336 pero 00335 conserva tráfico 100%; activar solamente 00336 con rollback, verificar digest y HR, medir Admin y Shopper. D06 Shopper, B10, G03 rol, HR externa, finanzas y 16 no MATCH abiertos; fusiones 32/83 ACK y 51/83 revisión. Gate20/21 HOLD; producción DO_NOT_TOUCH, I4 no autorizada.",
+  "nextExactAction": "I3 HOLD 5/21 MATCH. G03 Hosting DEV 231186c337bcd0ba histórico; af8bf558cebb9a23 previo; de0956bc66ce57d8 actual. E03 #705 PASS visual focal, aceptación humana pendiente. VRM134 A06: fuente f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d RUN2087 build PASS y RUN2089 Cloud Run 00336 activo 100% exacto; HR refresh 4,385→3,334 ms (muestra parcial), pero Admin bloqueada aún a 16,3 s y visible a 19,6 s: P0 FULL LOAD OPEN. Siguiente acción exacta: segmentar hidratación Auth/Firestore y composición HR protegida de la sesión con marcas de etapa, probar owner mínimo sin perder source/role validation y comparar Admin+Shopper en DEV. Mantener D06 Shopper, B10, G03 por rol, HR externa y finanzas; fusiones 32/83 ACK + 51/83 revisión. Gate20/21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -986,12 +986,12 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261103-V233.json",
-    "gitBlob": "c54812068f97bf784d3922a4a8bf8e1273329ca8",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261103-V234.json",
+    "gitBlob": "c8f8aa5ae79d0decf25567db84c787774744576e",
     "sourceSha": "f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d",
     "allModulesMatch": false,
     "phaseAComplete": false,
-    "sha256": "c6bd2eeca580c8a59f8c9533d4fd02356fa485b6125ac097f7c012a9bbe272c8"
+    "sha256": "d5787d87b4979010ed603146b8f6cf03ea3e28b423502e63d6657d59726e90b1"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -3028,8 +3028,8 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261103-V233.json",
-    "matrixBlob": "c54812068f97bf784d3922a4a8bf8e1273329ca8",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261103-V234.json",
+    "matrixBlob": "c8f8aa5ae79d0decf25567db84c787774744576e",
     "classificationCounts": {
       "COMPOSED_NOT_DEPLOYED": 1,
       "MATCH": 5,
@@ -3040,7 +3040,7 @@
       "TRUE_FUNCTIONAL_DEFECT": 3
     },
     "derivedAt": "2026-11-03",
-    "meaning": "5_OF_21_MATCH__A06_BUILD_HOSTING_PASS_TRAFFIC_HOLD_PERF_P0_OPEN"
+    "meaning": "5_OF_21_MATCH__A06_ACTIVE_DEV_SOURCE_REFRESH_IMPROVED_FULL_LOADING_P0_HOLD"
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
   "activeMethodologyGuard": {
@@ -6012,8 +6012,8 @@
     },
     "production": false
   },
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V554_2026-11-03.json",
-  "findingsLedgerExpectedGitBlob": "20f8cd0509dfcb63b1991ac6dbf4dffee1bcac5e",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V555_2026-11-03.json",
+  "findingsLedgerExpectedGitBlob": "524df77248c8cb702d6d92693d8188d1da04ae6d",
   "nextFindingId": "VRM-300",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -6798,14 +6798,18 @@
     },
     "devMaterialization": "PASS_BUILD_HOSTING_RUNTIME_CREATED_TRAFFIC_HOLD",
     "materializationRunId": 41663635530,
-    "authorizeExactDevTrafficSwitch20261103": true,
+    "authorizeExactDevTrafficSwitch20261103": false,
     "receipt": {
-      "path": "docs/checkpoints/CXORBIA_I3_VRM134_A06_RUN2087_DEV_MATERIALIZATION_20261103.json",
-      "gitBlob": "c529b902d147eb703643533273796fd0cac98103",
-      "runId": 41663635530,
-      "verdict": "PASS_BUILD_AND_HOSTING_ONLY__HOLD_RUNTIME_TRAFFIC_NOT_YET_NEW",
-      "performance": "HOLD",
+      "path": "docs/checkpoints/CXORBIA_I3_VRM134_A06_RUN2089_ACTIVE_DEV_AND_BROWSER_PERFORMANCE_20261103.json",
+      "gitBlob": "65565914b2853ff4b46f698826da537523381913",
+      "sourceSha": "f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d",
+      "buildRunId": 41663635530,
+      "readbackRunId": 41665520506,
+      "performanceState": "HOLD_FULL_LOAD",
       "production": false
-    }
+    },
+    "activeDevRuntime": "PASS_00336_100_PERCENT_RUN2089",
+    "partialSourceRefreshImproved": true,
+    "fullLoadPerformanceP0": "OPEN"
   }
 }

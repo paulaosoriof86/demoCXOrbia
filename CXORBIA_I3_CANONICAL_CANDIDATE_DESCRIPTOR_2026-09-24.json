@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM134_A05_DEV_TRAFFIC_REQUIRED",
+  "status": "HOLD_I3_VRM134_A06_ACTIVE_DEV_FULL_LOAD_P0_OPEN_5_MATCH",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d",
   "productTreeAuthority": "386d8c858cae35b624d11b2bac04efc5194d7a88",
   "predecessorProductSourceSha": "3c2e3973c47759a5892f3c8c3c41f5db67c59396",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V554_2026-11-03.json",
-  "findingsLedgerExpectedGitBlob": "20f8cd0509dfcb63b1991ac6dbf4dffee1bcac5e",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261103-V233.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V555_2026-11-03.json",
+  "findingsLedgerExpectedGitBlob": "524df77248c8cb702d6d92693d8188d1da04ae6d",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261103-V234.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM134_A06_DEV_BUILD_AND_HOSTING_PASS_RUNTIME_CREATED_00336_NOT_ACTIVE; PERFORMANCE_P0_OPEN; 16_MODULES_NONMATCH",
+  "activeBlocker": "VRM134_P0_AUTHENTICATED_FULL_LOADING_STILL_16_3_TO_19_6_SECONDS_ADMIN; SHOPPER_PERF_E2E_D06_B10_HR_FINANCE_16_NONMATCH",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD 5/21 MATCH. G03 Hosting DEV 231186c337bcd0ba histórico; af8bf558cebb9a23 anterior; de0956bc66ce57d8 nuevo exacto. E03 #705 visual PASS focal sin certificación integral. VRM134 A06 fuente f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d 7/7 PASS, RUN2087 build y Hosting PASS, Cloud Run creó 00336 pero 00335 conserva tráfico 100%; activar solamente 00336 con rollback, verificar digest y HR, medir Admin y Shopper. D06 Shopper, B10, G03 rol, HR externa, finanzas y 16 no MATCH abiertos; fusiones 32/83 ACK y 51/83 revisión. Gate20/21 HOLD; producción DO_NOT_TOUCH, I4 no autorizada.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH. G03 Hosting DEV 231186c337bcd0ba histórico; af8bf558cebb9a23 previo; de0956bc66ce57d8 actual. E03 #705 PASS visual focal, aceptación humana pendiente. VRM134 A06: fuente f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d RUN2087 build PASS y RUN2089 Cloud Run 00336 activo 100% exacto; HR refresh 4,385→3,334 ms (muestra parcial), pero Admin bloqueada aún a 16,3 s y visible a 19,6 s: P0 FULL LOAD OPEN. Siguiente acción exacta: segmentar hidratación Auth/Firestore y composición HR protegida de la sesión con marcas de etapa, probar owner mínimo sin perder source/role validation y comparar Admin+Shopper en DEV. Mantener D06 Shopper, B10, G03 por rol, HR externa y finanzas; fusiones 32/83 ACK + 51/83 revisión. Gate20/21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "c54812068f97bf784d3922a4a8bf8e1273329ca8",
+  "moduleTruthExpectedGitBlob": "c8f8aa5ae79d0decf25567db84c787774744576e",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -16795,14 +16795,18 @@
     },
     "devMaterialization": "PASS_BUILD_HOSTING_RUNTIME_CREATED_TRAFFIC_HOLD",
     "materializationRunId": 41663635530,
-    "authorizeExactDevTrafficSwitch20261103": true,
+    "authorizeExactDevTrafficSwitch20261103": false,
     "receipt": {
-      "path": "docs/checkpoints/CXORBIA_I3_VRM134_A06_RUN2087_DEV_MATERIALIZATION_20261103.json",
-      "gitBlob": "c529b902d147eb703643533273796fd0cac98103",
-      "runId": 41663635530,
-      "verdict": "PASS_BUILD_AND_HOSTING_ONLY__HOLD_RUNTIME_TRAFFIC_NOT_YET_NEW",
-      "performance": "HOLD",
+      "path": "docs/checkpoints/CXORBIA_I3_VRM134_A06_RUN2089_ACTIVE_DEV_AND_BROWSER_PERFORMANCE_20261103.json",
+      "gitBlob": "65565914b2853ff4b46f698826da537523381913",
+      "sourceSha": "f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d",
+      "buildRunId": 41663635530,
+      "readbackRunId": 41665520506,
+      "performanceState": "HOLD_FULL_LOAD",
       "production": false
-    }
+    },
+    "activeDevRuntime": "PASS_00336_100_PERCENT_RUN2089",
+    "partialSourceRefreshImproved": true,
+    "fullLoadPerformanceP0": "OPEN"
   }
 }
