@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM134_A07_DEV_MATERIALIZED_FULL_LOAD_P0_OPEN_5_MATCH",
+  "status": "HOLD_I3_VRM134_A07_HOSTING_DEV_SERVING_FULL_LOAD_P0_OPEN_5_MATCH",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -16823,6 +16823,14 @@
     "state": "PASS_EXACT_DEV_HOSTING_AND_E03_ADMIN_FOCAL__HOLD_FULL_AUTHENTICATED_LOAD",
     "activeRuntime": "cxorbia-live-hr-dev-00336-fz2",
     "expectedDevHostingOnly": true,
+    "releaseMaterializationSemantics": "HOSTING_ONLY_CURRENT_SOURCE__FULL_CUMULATIVE_RUNTIME_ARTIFACT_SEAL_REMAINS_PREDECESSOR_RUN1983",
+    "run2093ControlFailureCorrection": {
+      "runId": 41701057425,
+      "failure": "RELEASE_COMPOSITION_FAILURE:FALSE_PREDECESSOR_DEV_DECLARATION",
+      "cause": "Descriptor status used DEV_MATERIALIZED while the unchanged final full release seal remains the predecessor RUN1983; A07 only changed Hosting DEV bytes",
+      "correction": "Status now says HOSTING_DEV_SERVING, with separate exact Hosting readback and unchanged full-release predecessor materialization",
+      "scope": "CONTROL_SEMANTICS_ONLY_NO_PRODUCT_BUILD_OR_DEPLOY"
+    },
     "authenticatedAdminLoadGain": "SINGLE_SAMPLE_5027_TO_4509_MS_AUTH_TO_READY__FULL_SCREEN_12_TO_18_5_SEC_HOLD",
     "authenticatedShopperLoadGain": "UNPROVEN",
     "devAndBrowserReadback20261103": {
