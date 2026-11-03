@@ -7334,7 +7334,7 @@ jobs:
   # Hosting only. No Cloud Run build/deploy, rules, HR, Firestore, or I4 work.
   i3-current-source-hosting-dev:
    needs: canonical-candidate-authority
-   if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-current-hosting-dev-only]') && needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM299_SOURCE_LOCAL_PENDING_DEV_16_NONMATCH' }}
+   if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-current-hosting-dev-only]') && needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_E03_VISITA_HUMAN_LABEL_SOURCE_13_PASS_5_MATCH_16_NONMATCH' }}
    runs-on: ubuntu-24.04
    timeout-minutes: 35
    permissions:
@@ -7357,12 +7357,12 @@ jobs:
       mkdir -p "$EVIDENCE"
       test "$GITHUB_REPOSITORY" = paulaosoriof86/demoCXOrbia
       test "$GITHUB_REF_NAME" = recovery/cxorbia-phase-a-20260831
-      test "$SOURCE" = 1737051ae56238eb0f71a6e3a237a4651ab32073
-      test "$SOURCE_TREE" = 184d0f23eab12de82bcb3cc6e91160b7724aabd1
+      test "$SOURCE" = 7a702a55cfb7e0c49a8efbb5d83a1ace8d598890
+      test "$SOURCE_TREE" = 1ea98d513ab8a51decd3bd82cf0070213c7281af
       test "$(git rev-parse "$SOURCE^{tree}")" = "$SOURCE_TREE"
       git merge-base --is-ancestor "$SOURCE" "$GITHUB_SHA"
       git diff --quiet "$SOURCE" "$GITHUB_SHA" -- app backend tools firebase.json .firebaserc firestore.rules storage.rules
-      test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = HOLD_I3_VRM299_SOURCE_LOCAL_PENDING_DEV_16_NONMATCH
+      test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = HOLD_I3_E03_VISITA_HUMAN_LABEL_SOURCE_13_PASS_5_MATCH_16_NONMATCH
       test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$SOURCE"
       test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$SOURCE_TREE"
       test "$(jq -r '.production' "$CANDIDATE_DESCRIPTOR")" = DO_NOT_TOUCH
@@ -7372,13 +7372,13 @@ jobs:
       test "$(jq -r '.hosting.public' firebase.json)" = app
       test "$(jq -r '.projects.default' .firebaserc)" = "$PROJECT"
       test "$(jq -r '.hosting.rewrites[0].run.serviceId' firebase.json)" = "$SERVICE"
-      node --test tools/qa/cxorbia-i3-shopper-identity-review-rail-notice.test.mjs > "$EVIDENCE/source-tests.log"
+      node --test tools/qa/cxorbia-i3-shopper-identity-review-rail-notice.test.mjs tools/qa/cxorbia-i3-e03-visita-payment-human-state.test.mjs tools/qa/cxorbia-i3-visitas-effective-availability.test.mjs tools/qa/cxorbia-i3-b10-external-provider-routing.test.mjs > "$EVIDENCE/source-tests.log"
       SOURCE_DIR="$(mktemp -d)"
       git archive "$SOURCE" | tar -x -C "$SOURCE_DIR"
       echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
       node --check "$SOURCE_DIR/app/core/router.js"
       node --check "$SOURCE_DIR/app/modules/shoppers.js"
-      for FILE in index-backend-dev.html core/router.js modules/shoppers.js modules/beneficios.js modules/clientes.js modules/historico.js core/data.js; do
+      for FILE in index-backend-dev.html core/router.js modules/shoppers.js modules/beneficios.js modules/clientes.js modules/historico.js modules/visitas.js modules/cuestionario-shopper.js core/data.js; do
        test -s "$SOURCE_DIR/app/$FILE"
       done
       (cd "$SOURCE_DIR/app" && find . -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum) > "$EVIDENCE/source-hosting-files.sha256"
@@ -7428,7 +7428,7 @@ jobs:
       cmp -s "$EVIDENCE/traffic-before.json" "$EVIDENCE/traffic-after.json"
       gcloud run revisions describe "$EXPECTED_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$EVIDENCE/revision-after.json"
       test "$(jq -r '.status.imageDigest' "$EVIDENCE/revision-before.json")" = "$(jq -r '.status.imageDigest' "$EVIDENCE/revision-after.json")"
-      for FILE in index-backend-dev.html core/router.js modules/shoppers.js modules/beneficios.js modules/clientes.js modules/historico.js core/data.js; do
+      for FILE in index-backend-dev.html core/router.js modules/shoppers.js modules/beneficios.js modules/clientes.js modules/historico.js modules/visitas.js modules/cuestionario-shopper.js core/data.js; do
        curl -fsS --retry 3 -H 'Cache-Control: no-cache, no-store' "$HOSTING_URL/$FILE?i3=$GITHUB_RUN_ID" -o "$EVIDENCE/served-$(printf '%s' "$FILE" | tr '/' '-')"
        cmp -s "$SOURCE_DIR/app/$FILE" "$EVIDENCE/served-$(printf '%s' "$FILE" | tr '/' '-')"
       done
