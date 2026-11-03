@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM134_A05_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_VRM134_A05_RUNTIME_READBACK_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM134_A05_P0_LOADING_PERFORMANCE_DEV_UNPROVEN; D06_SHOPPER_B10_HR_FINANCE_G03_ROLE_E2E_OPEN; 16_MODULES_NONMATCH",
+  "activeBlocker": "VRM134_A05_NEW_CLOUDRUN_CREATED_NOT_YET_PROVEN_READY_100_PERCENT_TRAFFIC; D06_B10_G03_HR_FINANCE_16_NONMATCH",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD 5/21 MATCH. G03 DEV Hosting 231186c337bcd0ba: evidencia acotada previa; E03 Visitas 13/13 source y Admin #705 DEV visual PASS focal (Hosting b08d1ccdada0adcf), aceptación humana pendiente. VRM-134 A05: corregir carga mediante runtime DEV del source exacto y medir antes/después Chrome; HR externa y finanzas pendientes; shoppers fusiones 32/83 con ACK, 51/83 revisión proveedor. Luego D06 positivo/negativo aislado Shopper E2E y B10. Gate20/21 HOLD; producción DO_NOT_TOUCH; I4 no autorizada.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH. G03 DEV Hosting 231186c337bcd0ba histórico + nuevo af8bf558cebb9a23 PASS bytes. E03 Admin Visita #705 DEV visual PASS focal, aceptación humana pendiente. VRM134 A05: RUN2080 compilación/Hosting PASS, revisión nueva 00335 creada pero primera lectura mostró tráfico 00334; ejecutar solo readback remoto de revisión READY+100% y comparar Chrome; HR externa y finanzas pendientes, shoppers fusiones 32/83 ACK, 51/83 revisión proveedor. D06 Shopper E2E y B10; Gate20/21 HOLD; I4 no autorizada, producción DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -16654,6 +16654,31 @@
     "browserPerfBeforeAfter": "PENDING_SAME_DEV_ARTIFACT",
     "humanAcceptance": "PENDING",
     "providerWrites": 0,
-    "production": false
+    "production": false,
+    "devMaterialization": {
+      "phase": "DEV_MATERIALIZATION_RUN2080_PASS_ACTIVE_RUNTIME_READBACK_PENDING",
+      "sourceSha": "3c2e3973c47759a5892f3c8c3c41f5db67c59396",
+      "sourceTree": "bb40076934365a3ae0d4e2566dc34c95e8fdf1ef",
+      "runId": 41655176051,
+      "jobId": 125983728969,
+      "artifactId": 13240430326,
+      "artifactDigest": "sha256:c1eb10e2c777305f52a9bc659541caf1804e7b366dcd6db94c6966b4d266a9cc",
+      "buildCount": 1,
+      "runtimeDeployCommandAccepted": true,
+      "newCreatedRevision": "cxorbia-live-hr-dev-00335-tpk",
+      "readyAtMaterializationReceipt": "cxorbia-live-hr-dev-00334-8jb",
+      "trafficAtMaterializationReceipt": "cxorbia-live-hr-dev-00334-8jb",
+      "newRuntimeActiveReadback": "PENDING_INDEPENDENT_GCLOUD_READONLY",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/af8bf558cebb9a23",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1793716741079000",
+      "hostingByteReadback": "PASS_VISITAS_JS_MATCH_SOURCE",
+      "hrMeta": "PASS_NO_HR_WRITES",
+      "chromeColdAdminObservation": "RELOAD_READY_BETWEEN_10_5_AND_16_7_SECONDS_SINGLE_SAMPLE",
+      "verifiedSpeedImprovement": false,
+      "moduleMatchCount": 5,
+      "gate20": "HOLD",
+      "gate21": "HOLD",
+      "production": false
+    }
   }
 }
