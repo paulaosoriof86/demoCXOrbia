@@ -15,6 +15,19 @@ CX.module('visitas', ({data,role,ui})=>{
     return status==='disponible';
   };
 
+  /* E03: show payment contract states in human language. The underlying state
+     remains untouched; an unconfirmed payment must never look paid. */
+  const paymentContractBadge=(rawState)=>{
+    const state=String(rawState||'').trim().toLowerCase();
+    if(['confirmado','confirmed','payment_confirmed','paid','pagado','pagada'].includes(state))
+      return ui.bdg('Pago confirmado','g');
+    if(['pending_source_confirmation','preview','pending','pendiente','pending_payment'].includes(state))
+      return ui.bdg('Pendiente de confirmación','a');
+    if(['pending_financial_source','pending_source'].includes(state))
+      return ui.bdg('Pendiente de fuente financiera','a');
+    return ui.bdg('Pendiente de validación','a');
+  };
+
   /* ---------------- SHOPPER: marketplace de oportunidades (TODOS los proyectos) ---------------- */
   if(role==='shopper'){
     /* P0-2: proyecto = programa (nombre base), nunca el nombre del PERIODO (que ya incluye el mes).
@@ -544,7 +557,7 @@ CX.module('visitas', ({data,role,ui})=>{
       ui.modal('Detalle · '+v.sucursal, `
         <div class="grid g2" style="gap:10px;margin-bottom:14px">
           <div style="font-size:12px;color:var(--t3)">Estado actual</div><div>${estadoCanonBadge(v)}</div>
-          ${(()=>{const vc=data.visitContract?data.visitContract(v):null;return vc&&vc.paymentState!=='no_aplica'?`<div style="font-size:12px;color:var(--t3)">Pago (contrato)</div><div>${ui.bdg(vc.paymentState,vc.paymentState==='confirmado'?'g':'n')}</div>`:'';})()}
+          ${(()=>{const vc=data.visitContract?data.visitContract(v):null;return vc&&vc.paymentState!=='no_aplica'?`<div style="font-size:12px;color:var(--t3)">Pago (contrato)</div><div>${paymentContractBadge(vc.paymentState)}</div>`:'';})()}
           <div style="font-size:12px;color:var(--t3)">Shopper</div><div style="font-size:13px;font-weight:700">${v.shopper||'— sin asignar'}</div>
           <div style="font-size:12px;color:var(--t3)">Honorario</div><div style="font-size:13px;font-weight:700;color:var(--green)">${v.honorario!=null?ui.money(v.currency,v.honorario):'<span class="muted">Pendiente de fuente</span>'}</div>
         </div>
