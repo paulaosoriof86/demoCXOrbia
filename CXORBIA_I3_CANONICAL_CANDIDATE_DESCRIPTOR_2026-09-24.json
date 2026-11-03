@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_E03_VISITA_HUMAN_LABEL_SOURCE_13_PASS_5_MATCH_16_NONMATCH",
+  "status": "HOLD_VRM134_A05_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "7a702a55cfb7e0c49a8efbb5d83a1ace8d598890",
-  "productTreeAuthority": "1ea98d513ab8a51decd3bd82cf0070213c7281af",
-  "predecessorProductSourceSha": "1737051ae56238eb0f71a6e3a237a4651ab32073",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V550_2026-11-02.json",
-  "findingsLedgerExpectedGitBlob": "d909999591596c842302b6f11434a6af271cb3ed",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V229.json",
+  "productSourceSha": "3c2e3973c47759a5892f3c8c3c41f5db67c59396",
+  "productTreeAuthority": "bb40076934365a3ae0d4e2566dc34c95e8fdf1ef",
+  "predecessorProductSourceSha": "7a702a55cfb7e0c49a8efbb5d83a1ace8d598890",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V551_2026-11-03.json",
+  "findingsLedgerExpectedGitBlob": "94f2dec464c32c1c97dfa2c4a752135fbb76e62c",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261103-V230.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D06_ISOLATED_QA_ATTEMPT_PASSWORD_SHOPPER_E2E_AND_HUMAN_PENDING; OTHER_MODULE_ROLE_ACCEPTANCE; B10_PROVIDER_CLICK_AND_HUMAN_PENDING; HR_AND_FINANCE_CONTRACTS_OPEN",
+  "activeBlocker": "VRM134_A05_P0_LOADING_PERFORMANCE_DEV_UNPROVEN; D06_SHOPPER_B10_HR_FINANCE_G03_ROLE_E2E_OPEN; 16_MODULES_NONMATCH",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD 5/21 MATCH. G03 DEV Hosting 231186c337bcd0ba: PASS acotado previo; E03 Visitas source QA 13/13 PASS y DEV E2E pendiente. HR externa y finanzas pendientes; shoppers fusiones 32/83 con ACK, 51 grupos con gate de revisión proveedor. Siguiente D06 positivo/negativo aislado y Shopper E2E, B10; Gate20/21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH. G03 DEV Hosting 231186c337bcd0ba: evidencia acotada previa; E03 Visitas 13/13 source y Admin #705 DEV visual PASS focal (Hosting b08d1ccdada0adcf), aceptación humana pendiente. VRM-134 A05: corregir carga mediante runtime DEV del source exacto y medir antes/después Chrome; HR externa y finanzas pendientes; shoppers fusiones 32/83 con ACK, 51/83 revisión proveedor. Luego D06 positivo/negativo aislado Shopper E2E y B10. Gate20/21 HOLD; producción DO_NOT_TOUCH; I4 no autorizada.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -853,7 +853,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751",
+  "productSourceTree": "bb40076934365a3ae0d4e2566dc34c95e8fdf1ef",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "731ffe1189d809092705ad601b9373c39117d804",
+  "moduleTruthExpectedGitBlob": "2de44d0a88162b0efd7c9079ae8452f00dd1199f",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -16612,8 +16612,48 @@
     "ownerBlob": "535ce2da5c44546b7cbb1609833159ea57021a0a",
     "testBlob": "d2a1d01d53cee91188d06c18ce5e05714aca1254",
     "localQaPass": 13,
-    "liveDev": "PENDING",
+    "liveDev": "PASS_FOCAL_CHROME_VISIT_705_PENDING_HUMAN",
     "domainMatch": false,
+    "production": false,
+    "devBrowserReadback20261103": {
+      "scope": "I3_E03_ADMIN_VISIT_705_ONLY",
+      "observed": "Chrome conectado, Admin autenticada, Cinépolis, OCT 2026, Visita #705, detalle de pago: Pendiente de confirmación; no se muestra como pagado",
+      "uiVerdict": "PASS_FOCAL_BROWSER_E2E",
+      "appSourceSha": "7a702a55cfb7e0c49a8efbb5d83a1ace8d598890",
+      "devHostingVersion": "sites/cxorbia-backend-dev/versions/b08d1ccdada0adcf",
+      "runId": 41578371461,
+      "localSourceTests": {
+        "pass": 13,
+        "fail": 0
+      },
+      "humanAcceptance": "PENDING",
+      "fullModuleMatch": false,
+      "production": false
+    }
+  },
+  "vrm134A05LoadingRepair20261103": {
+    "classification": "FUNCTIONAL_DEFECT",
+    "priority": "P0",
+    "sourceSha": "3c2e3973c47759a5892f3c8c3c41f5db67c59396",
+    "sourceTree": "bb40076934365a3ae0d4e2566dc34c95e8fdf1ef",
+    "predecessorSourceSha": "7a702a55cfb7e0c49a8efbb5d83a1ace8d598890",
+    "exactOwner": "backend/runtime/hr-live-service/server.mjs",
+    "ownerBlob": "6528e0e7750970fe12a5e2d477034e0758f9f74d",
+    "testOwner": "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+    "testBlob": "da6638cfcd257cd4b6a9e264d3b25778998fae5b",
+    "observedSlowLoad": "Después de recargar DEV en Chrome: aún Sincronizando operación / Validando fuente operacional a los 7,9 y 13,9 s; lista antes de aproximadamente 29,6 s",
+    "provenCause": "El endpoint protegido format=meta era un probe de revisión pero llamaba protectedPlatformState y serializaba un snapshot completo tras resolver HR y principal, duplicando lecturas de Firestore protegidas",
+    "sourceFix": "Mantener HR, token y pertenencia verificados; omitir solo overlay protegida redundante y serialización de snapshot para format=meta",
+    "focalSourceQA": {
+      "pass": 5,
+      "fail": 0,
+      "syntax": "PASS",
+      "diffCheck": "PASS"
+    },
+    "devRuntimeDeploy": "PENDING",
+    "browserPerfBeforeAfter": "PENDING_SAME_DEV_ARTIFACT",
+    "humanAcceptance": "PENDING",
+    "providerWrites": 0,
     "production": false
   }
 }
