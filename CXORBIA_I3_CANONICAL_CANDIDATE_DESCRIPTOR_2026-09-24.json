@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD 5/21 MATCH. VRM-134 A05 DEV runtime 00335 activo 100% RUN2083, pero Admin todavía tardó 11,3–20,2 s. A06 P0 fuente exacta: paralelizar dos lecturas HR independientes con settle seguro (7/7 PASS); materializar SOLO la candidata source f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d en DEV, comprobar Cloud Run activo y la misma revisión HR, medir Admin y Shopper. E03 #705 PASS focal; D06, B10, finanzas, HR, G03 y roles pendientes; identidad 32/83 ACK + 51/83 revisión; Gate20/21 HOLD; producción DO_NOT_TOUCH, I4 no autorizada.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH. G03 DEV Hosting 231186c337bcd0ba histórico verificado; af8bf558cebb9a23 exacto posterior. VRM-134 A05 DEV runtime 00335 activo 100% RUN2083, pero Admin todavía tardó 11,3–20,2 s. A06 P0 fuente exacta: paralelizar dos lecturas HR independientes con settle seguro (7/7 PASS); materializar SOLO la candidata source f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d en DEV, comprobar Cloud Run activo y la misma revisión HR, medir Admin y Shopper. E03 #705 PASS focal; D06, B10, finanzas, HR, G03 y roles pendientes; identidad 32/83 ACK + 51/83 revisión; Gate20/21 HOLD; producción DO_NOT_TOUCH, I4 no autorizada.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",

@@ -286,7 +286,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 HOLD 5/21 MATCH. VRM-134 A05 DEV runtime 00335 activo 100% RUN2083, pero Admin todavía tardó 11,3–20,2 s. A06 P0 fuente exacta: paralelizar dos lecturas HR independientes con settle seguro (7/7 PASS); materializar SOLO la candidata source f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d en DEV, comprobar Cloud Run activo y la misma revisión HR, medir Admin y Shopper. E03 #705 PASS focal; D06, B10, finanzas, HR, G03 y roles pendientes; identidad 32/83 ACK + 51/83 revisión; Gate20/21 HOLD; producción DO_NOT_TOUCH, I4 no autorizada.",
+  "nextExactAction": "I3 HOLD 5/21 MATCH. G03 DEV Hosting 231186c337bcd0ba histórico verificado; af8bf558cebb9a23 exacto posterior. VRM-134 A05 DEV runtime 00335 activo 100% RUN2083, pero Admin todavía tardó 11,3–20,2 s. A06 P0 fuente exacta: paralelizar dos lecturas HR independientes con settle seguro (7/7 PASS); materializar SOLO la candidata source f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d en DEV, comprobar Cloud Run activo y la misma revisión HR, medir Admin y Shopper. E03 #705 PASS focal; D06, B10, finanzas, HR, G03 y roles pendientes; identidad 32/83 ACK + 51/83 revisión; Gate20/21 HOLD; producción DO_NOT_TOUCH, I4 no autorizada.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
