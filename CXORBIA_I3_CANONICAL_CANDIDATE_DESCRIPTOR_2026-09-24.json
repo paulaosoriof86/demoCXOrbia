@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM134_DEV_ACTIVE_PERFORMANCE_P0_OPEN_5_MATCH",
+  "status": "HOLD_VRM134_A05_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "3c2e3973c47759a5892f3c8c3c41f5db67c59396",
-  "productTreeAuthority": "bb40076934365a3ae0d4e2566dc34c95e8fdf1ef",
-  "predecessorProductSourceSha": "7a702a55cfb7e0c49a8efbb5d83a1ace8d598890",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V552_2026-11-03.json",
-  "findingsLedgerExpectedGitBlob": "24df463449e28cf23e842b12e369f24f93429e16",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261103-V231.json",
+  "productSourceSha": "f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d",
+  "productTreeAuthority": "386d8c858cae35b624d11b2bac04efc5194d7a88",
+  "predecessorProductSourceSha": "3c2e3973c47759a5892f3c8c3c41f5db67c59396",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V553_2026-11-03.json",
+  "findingsLedgerExpectedGitBlob": "afe75d312bb7e8009361b306f60441c61c5ebbe7",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261103-V232.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM134_P0_AUTHENTICATED_LOADING_STILL_SLOW_ADMIN_AND_SHOPPER_PERF_E2E_OPEN; D06_B10_G03_HR_FINANCE_16_NONMATCH",
+  "activeBlocker": "VRM134_A06_P0_SOURCE_READY_DEV_MATERIALIZATION_AND_PERFORMANCE_NOT_YET_PROVEN; 16_MODULES_NONMATCH",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD 5/21 MATCH. G03 DEV Hosting 231186c337bcd0ba histórico y af8bf558cebb9a23 exacto. E03 Admin visita #705 visual PASS focal, aceptación humana pendiente. VRM134: runtime 00335 DEV activo 100% RUN2083 sin rebuild, pero Admin sigue tardando 11,3–20,2 s al recargar: P0 rendimiento OPEN; próxima acción exacta segmentar A05 carga de HR y composición de sesión en Admin/Shopper para aislar owner sin cambiar HR ni otra candidata. HR externa, finanzas, D06 Shopper E2E, B10 y G03 rol pendientes; shoppers 32/83 ACK y 51/83 revisión proveedor. Gate20/21 HOLD; I4 no autorizada, producción DO_NOT_TOUCH.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH. VRM-134 A05 DEV runtime 00335 activo 100% RUN2083, pero Admin todavía tardó 11,3–20,2 s. A06 P0 fuente exacta: paralelizar dos lecturas HR independientes con settle seguro (7/7 PASS); materializar SOLO la candidata source f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d en DEV, comprobar Cloud Run activo y la misma revisión HR, medir Admin y Shopper. E03 #705 PASS focal; D06, B10, finanzas, HR, G03 y roles pendientes; identidad 32/83 ACK + 51/83 revisión; Gate20/21 HOLD; producción DO_NOT_TOUCH, I4 no autorizada.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -853,7 +853,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "bb40076934365a3ae0d4e2566dc34c95e8fdf1ef",
+  "productSourceTree": "386d8c858cae35b624d11b2bac04efc5194d7a88",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "7f243ca53775cb7b5d90af49922261df67704f42",
+  "moduleTruthExpectedGitBlob": "168931095f5e45d3da2d1c9f81c2925ba701971a",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -16724,5 +16724,75 @@
       "performanceState": "HOLD",
       "production": false
     }
+  },
+  "vrm134A06ParallelHrRefresh20261103": {
+    "finding": "VRM-134",
+    "iteration": "I3",
+    "subblock": "A06_PARALLEL_LIVE_SOURCE_REFRESH",
+    "classification": "FUNCTIONAL_DEFECT",
+    "priority": "P0",
+    "sourceSha": "f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d",
+    "sourceTree": "386d8c858cae35b624d11b2bac04efc5194d7a88",
+    "predecessorSourceSha": "3c2e3973c47759a5892f3c8c3c41f5db67c59396",
+    "owner": "backend/runtime/hr-live-service/server.mjs",
+    "ownerGitBlob": "16b4526b30d5e72ddcf9d90f193e15c2826bd3d1",
+    "testOwner": "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+    "testGitBlob": "93cf0a3baf3d10e975a3495f22a53c455ddd56bd",
+    "defect": "Se detectaron dos fuentes de Sheets independientes ejecutadas serialmente durante refreshSnapshot; los scripts escriben a archivos temporales separados.",
+    "sourceFix": "runIndependentHrSourceReads inicia ambos procesos concurrentemente y espera Promise.allSettled antes de tabRegistryGuard y limpieza, incluso ante FAIL.",
+    "preserved": [
+      "Sin datos de HR ni Firestore importados",
+      "Ningún write ni cambio de fuente de verdad",
+      "Revisión canónica y guardias posteriores intactas",
+      "No se revela perfil sin validar fuente ni rol",
+      "Sin cambios de ruta, tenant, proyecto, HR Sheet ID o arquitectura",
+      "Producción intocable"
+    ],
+    "tests": {
+      "pass": 7,
+      "fail": 0,
+      "syntax": "PASS",
+      "diff": "PASS",
+      "includesFailureWait": true,
+      "sourceSafe": true
+    },
+    "observedPriorDev": {
+      "revision": "cxorbia-live-hr-dev-00335-tpk",
+      "trafficPercent": 100,
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/af8bf558cebb9a23",
+      "adminReadyWindowSeconds": [
+        11.3,
+        20.2
+      ],
+      "hrRefreshDurationMs": 4385,
+      "hrStagesMs": {
+        "registryIdentity": 1194,
+        "liveProviderRead": 1507,
+        "tabRegistryGuard": 388,
+        "canonicalize": 395,
+        "reapplyState": 425,
+        "freshSourceProbe": 177,
+        "durableProjectConfig": 57
+      }
+    },
+    "predictedSaving": "UNPROVEN_UNTIL_EXACT_DEV_DEPLOY_AND_COMPARABLE_MEASUREMENT",
+    "performanceVerdict": "HOLD_P0",
+    "moduleMatchCount": 5,
+    "nonmatchCount": 16,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "humanAcceptance": "PENDING",
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "productionDeploys": 0,
+    "production": false,
+    "receiptRef": {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM134_A06_PARALLEL_HR_SOURCE_20261103.json",
+      "gitBlob": "9a38a9f9497728110499de75ddbf30900d548834",
+      "sourceSha": "f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d",
+      "verdict": "SOURCE_TESTS_7_PASS_DEV_PENDING",
+      "production": false
+    },
+    "devMaterialization": "PENDING"
   }
 }

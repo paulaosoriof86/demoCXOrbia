@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm134-a06-parallel-source-proof.v1",
+  "observedAt": "2026-11-03",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "finding": "VRM-134",
+  "iteration": "I3",
+  "subblock": "A06_PARALLEL_LIVE_SOURCE_REFRESH",
+  "classification": "FUNCTIONAL_DEFECT",
+  "priority": "P0",
+  "sourceSha": "f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d",
+  "sourceTree": "386d8c858cae35b624d11b2bac04efc5194d7a88",
+  "predecessorSourceSha": "3c2e3973c47759a5892f3c8c3c41f5db67c59396",
+  "owner": "backend/runtime/hr-live-service/server.mjs",
+  "ownerGitBlob": "16b4526b30d5e72ddcf9d90f193e15c2826bd3d1",
+  "testOwner": "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+  "testGitBlob": "93cf0a3baf3d10e975a3495f22a53c455ddd56bd",
+  "defect": "Se detectaron dos fuentes de Sheets independientes ejecutadas serialmente durante refreshSnapshot; los scripts escriben a archivos temporales separados.",
+  "sourceFix": "runIndependentHrSourceReads inicia ambos procesos concurrentemente y espera Promise.allSettled antes de tabRegistryGuard y limpieza, incluso ante FAIL.",
+  "preserved": [
+    "Sin datos de HR ni Firestore importados",
+    "Ningún write ni cambio de fuente de verdad",
+    "Revisión canónica y guardias posteriores intactas",
+    "No se revela perfil sin validar fuente ni rol",
+    "Sin cambios de ruta, tenant, proyecto, HR Sheet ID o arquitectura",
+    "Producción intocable"
+  ],
+  "tests": {
+    "pass": 7,
+    "fail": 0,
+    "syntax": "PASS",
+    "diff": "PASS",
+    "includesFailureWait": true,
+    "sourceSafe": true
+  },
+  "observedPriorDev": {
+    "revision": "cxorbia-live-hr-dev-00335-tpk",
+    "trafficPercent": 100,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/af8bf558cebb9a23",
+    "adminReadyWindowSeconds": [
+      11.3,
+      20.2
+    ],
+    "hrRefreshDurationMs": 4385,
+    "hrStagesMs": {
+      "registryIdentity": 1194,
+      "liveProviderRead": 1507,
+      "tabRegistryGuard": 388,
+      "canonicalize": 395,
+      "reapplyState": 425,
+      "freshSourceProbe": 177,
+      "durableProjectConfig": 57
+    }
+  },
+  "predictedSaving": "UNPROVEN_UNTIL_EXACT_DEV_DEPLOY_AND_COMPARABLE_MEASUREMENT",
+  "performanceVerdict": "HOLD_P0",
+  "moduleMatchCount": 5,
+  "nonmatchCount": 16,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "humanAcceptance": "PENDING",
+  "providerWrites": 0,
+  "hrWrites": 0,
+  "productionDeploys": 0,
+  "production": false
+}
