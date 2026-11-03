@@ -1,19 +1,28 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM134_A08_HOSTING_DEV_SERVING_E2E_PERF_HOLD_5_MATCH",
+  "status": "HOLD_I3_NOVEMBER_HR_SOURCE_PROVEN_DEV_RUNTIME_PENDING_5_MATCH",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "c3037483f236837f1e469817db8d11415cd59dbe",
-  "productTreeAuthority": "c05181456e0c22e0d5a852002035d5e83f95f4e6",
-  "predecessorProductSourceSha": "b8d516f07062f4c2fe991d2c14991103118c33b8",
+  "productSourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
+  "productTreeAuthority": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
+  "predecessorProductSourceSha": "c3037483f236837f1e469817db8d11415cd59dbe",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V557_2026-11-03.json",
-  "findingsLedgerExpectedGitBlob": "db49b01c42789536732995d2bead8689022d53e2",
+  "findingsLedgerExpectedGitBlob": "fd4dfca3b8068557153c5a86181c4907c812ab64",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261103-V236.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM134_A08_EXACT_HOSTING_DEV_RUN2095_PASS__FULL_AUTHENTICATED_ADMIN_SHOPPER_PERFORMANCE_PENDING__P0_OPEN; D06_B10_G03_HR_FINANCE_16_NONMATCH",
+  "activeBlocker": "NOVEMBER_AUTO_HR_SOURCE_PROVEN_DEV_CLOUD_RUN_RUNTIME_NOT_YET_MATERIALIZED__A08_RUN2095_HOSTING_PASS_PERF_E2E_PENDING__OCTOBER_11_UNSUBMITTED_1_NOT_REALIZED__D06_B10_G03_HR_FINANCE_16_NONMATCH",
+  "november2026AutomaticPeriodI3": {
+    "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
+    "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_P0_HR_NOVEMBER_2026_AUTO_DETECTION_SOURCE_PROOF_20261103.json",
+    "focalTests": "30_OF_30_PASS_SOURCE_ONLY",
+    "runtimeMaterialization": "PENDING",
+    "sameArtifactAdminShopper": "PENDING",
+    "production": false
+  },
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -118,7 +127,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD 5/21 MATCH. A08 fuente c3037483f236837f1e469817db8d11415cd59dbe servida exactamente en Hosting DEV RUN2095 41713428498 versión f096f9992587a3f6, watcher blob 8fa224fe7f7a565be8553bc855deef6d0e6a3b9f PASS; runtime 00336 y producción intactos. Medir con Chrome Admin+Shopper cold/full load y misma revisión HR; VRM134 performance P0 sigue HOLD hasta evidencia. A07 RUN2092 predecesora; G03 Hosting DEV histórico 231186c337bcd0ba; E03 visita #705 PASS focal no módulo. Continuar D06/B10/G03 por roles, paridad independiente HR, finanzas y 16 no MATCH; fusiones 32/83 ACK + 51/83 revisión. Gate20/21 HOLD, I4 no autorizada.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH. Fuente canónica 1d24d706e263f256849644f2aa3586eca7900949: NOVIEMBRE HR automático 30/30 PASS source-only; no nueva materialización runtime DEV ni certificación de módulo. Preservar A08 Hosting DEV RUN2095 41713428498 versión f096f9992587a3f6 y G03 Hosting DEV histórico 231186c337bcd0ba; runtime 00336 y producción intactos. Ejecutar control canónico y una materialización exacta de runtime DEV, luego cotejar octubre/noviembre contra la misma revisión HR externa en vivo, Admin+Shopper, ACK e idempotencia. Resolver G03 HR finanzas D06/B10 y 16 no MATCH; A08 performance permanece HOLD. Octubre: 11 sin submitir y 1 sin realizar al último readback; no cerrar por simple cambio de periodo. Fusiones 32/83 ACK y 51/83 revisión. Gate20/21 HOLD, I4 no autorizada.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3036,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "b411fda24d9e5fb971b15aff7fcb59f6e5c7b45b",
+  "moduleTruthExpectedGitBlob": "fe950ff2fae61d046913269a86db4a45ec417659",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,

@@ -14,11 +14,24 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "c3037483f236837f1e469817db8d11415cd59dbe",
-    "sourceTree": "c05181456e0c22e0d5a852002035d5e83f95f4e6",
-    "predecessorSha": "b8d516f07062f4c2fe991d2c14991103118c33b8",
+    "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
+    "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
+    "predecessorSha": "c3037483f236837f1e469817db8d11415cd59dbe",
     "production": false,
-    "state": "VRM134_A08_EXACT_HOSTING_DEV_RUN2095_PASS_HUMAN_PERFORMANCE_HOLD_5_MATCH_16_NONMATCH",
+    "state": "NOVEMBER_HR_SOURCE_PROVEN_DEV_CLOUD_RUN_PENDING__VRM134_A08_HOSTING_RUN2095_PRESERVED__5_MATCH_16_NONMATCH",
+    "november2026AutomaticPeriodSourceProof": {
+      "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
+      "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
+      "predecessorSha": "c3037483f236837f1e469817db8d11415cd59dbe",
+      "receiptPath": "docs/checkpoints/CXORBIA_I3_P0_HR_NOVEMBER_2026_AUTO_DETECTION_SOURCE_PROOF_20261103.json",
+      "decision": "SOURCE_PROVEN_30_OF_30_NOT_DEV_CERTIFICATION",
+      "providerLiveComparison": "PRIOR_INDEPENDENT_SHEETS_READBACK_NOT_CURRENT_RUN",
+      "devCloudRunMaterialization": "PENDING",
+      "sameRevisionAdminShopperE2e": "PENDING",
+      "octoberOperationalClosure": "PENDING_11_UNSUBMITTED_1_NOT_REALIZED_AT_LAST_READBACK",
+      "newModuleMatch": 0,
+      "production": false
+    },
     "i3P0CountryScope20261028": {
       "rootTasks": [
         "A09",

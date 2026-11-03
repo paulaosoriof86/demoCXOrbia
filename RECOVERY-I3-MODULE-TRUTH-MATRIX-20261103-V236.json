@@ -103,12 +103,12 @@
     }
   },
   "productSource": {
-    "sha": "c3037483f236837f1e469817db8d11415cd59dbe",
-    "treeSha": "c05181456e0c22e0d5a852002035d5e83f95f4e6",
-    "predecessorProductSourceSha": "b8d516f07062f4c2fe991d2c14991103118c33b8",
-    "message": "fix(i3/VRM-134 A08 P0): reuse authenticated verified HR revision on ready event [vrm134-a08-source]",
-    "authorityState": "A08_EXACT_HOSTING_DEV_RUN2095_PASS_00336_RUNTIME_UNCHANGED",
-    "state": "I3_HOLD_5_OF_21_MATCH_A08_HOSTING_DEV_SERVED_ADMIN_SHOPPER_PERFORMANCE_UNPROVEN"
+    "sha": "1d24d706e263f256849644f2aa3586eca7900949",
+    "treeSha": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
+    "predecessorProductSourceSha": "c3037483f236837f1e469817db8d11415cd59dbe",
+    "message": "fix(i3/HR): auto-detect yearless NOVIEMBRE from live provider tab sequence, fail closed on ambiguity",
+    "authorityState": "NOVEMBER_SOURCE_PROVEN_30_OF_30__DEV_RUNTIME_MATERIALIZATION_PENDING__A08_HOSTING_RUN2095_PRESERVED",
+    "state": "I3_HOLD_5_OF_21_MATCH_NOVEMBER_SOURCE_ONLY_DEV_CLOUD_RUN_PENDING"
   },
   "controlHeadAtConstruction": "7a702a55cfb7e0c49a8efbb5d83a1ace8d598890",
   "phaseAComplete": false,
@@ -459,9 +459,12 @@
         "app/adapters/tya-live-source-inplace-apply.js",
         "backend/runtime/hr-live-service/server.mjs",
         "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+        "tools/hr-source/tya-build-live-hr-source-safe-static.mjs",
         "tools/hr-source/tya-canonical-visit-state-r20.mjs",
+        "tools/hr-source/tya-enforce-live-tab-registry.mjs",
         "tools/hr-source/tya-reapply-canonical-state-r20.mjs",
         "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+        "tools/hr-source/tya-resolve-live-month-tabs.mjs",
         "backend/contracts/tya-hr-column-map-r20-v1.json",
         "app/core/backend-hr-source-bridge.js"
       ],
@@ -504,10 +507,13 @@
         "app/adapters/tya-live-source-refresh-watch-v2.js": "8fa224fe7f7a565be8553bc855deef6d0e6a3b9f",
         "app/adapters/tya-live-source-inplace-apply.js": "45e1cd1b8c01d6276be2c256d5b99baa93e90252",
         "backend/runtime/hr-live-service/server.mjs": "16b4526b30d5e72ddcf9d90f193e15c2826bd3d1",
-        "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs": "f910023524a7f2460a255ce3b1aa3cab275cf297",
+        "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs": "fe13fa857d5fefdd742c6a11681ddefb477393fa",
+        "tools/hr-source/tya-build-live-hr-source-safe-static.mjs": "0b4dc7a1739479f43ed35cd80cb6789b89829e45",
         "tools/hr-source/tya-canonical-visit-state-r20.mjs": "b76677a6a49fc50624b0cd31142f29132f0caa5d",
+        "tools/hr-source/tya-enforce-live-tab-registry.mjs": "7047144d6937cebd135c23ecd52bb0c2d27f4fb9",
         "tools/hr-source/tya-reapply-canonical-state-r20.mjs": "921b43f98846d0ad431fb5667cecdb5b8b101409",
-        "tools/hr-source/tya-live-provider-registry-identity-dev.mjs": "d166bcaee36c3fb16a336a28f5d329e61a34972a",
+        "tools/hr-source/tya-live-provider-registry-identity-dev.mjs": "fb2050c2f28375a0417915771ab16f1783ef999e",
+        "tools/hr-source/tya-resolve-live-month-tabs.mjs": "86c8d102c70f0d1edd541aedf7d0784c965cefbe",
         "backend/contracts/tya-hr-column-map-r20-v1.json": "105b322fe3fc20dded57eec35f123938c0c29fea",
         "app/core/backend-hr-source-bridge.js": "e86d0564e75d8e1dcfe941854b0d7154ca4d9e6c"
       },
@@ -7225,7 +7231,7 @@
       "f9ApprovedBlob": null,
       "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "latestApprovedBlob": "a048ce612df1d84f138150679f642063c0895134",
-      "currentBlob": "f910023524a7f2460a255ce3b1aa3cab275cf297",
+      "currentBlob": "fe13fa857d5fefdd742c6a11681ddefb477393fa",
       "loadTarget": "runtime-tool",
       "phaseAAuthority": true,
       "classification": "MATCH",
@@ -7297,7 +7303,7 @@
       "f9ApprovedBlob": null,
       "latestApprovedSource": "40b847d2a50c35e2d2417d1f904bc8ec1b74d22a",
       "latestApprovedBlob": "d166bcaee36c3fb16a336a28f5d329e61a34972a",
-      "currentBlob": "d166bcaee36c3fb16a336a28f5d329e61a34972a",
+      "currentBlob": "fb2050c2f28375a0417915771ab16f1783ef999e",
       "loadTarget": "runtime-tool",
       "phaseAAuthority": true,
       "classification": "MATCH",
@@ -7599,6 +7605,36 @@
       "approvalAuthority": "VRM297_P0_SHOPPER_PROJECTION_SECURE_RUNTIME_CLIENT",
       "byteAuthorityReadback": "EXACT_GIT_BLOB_SOURCE_ONLY_PENDING_CANONICAL_CI_DEV",
       "currentCumulativeSource": "128272027850fa0edad710ad1451a927041815d4"
+    },
+    {
+      "path": "tools/hr-source/tya-build-live-hr-source-safe-static.mjs",
+      "domain": "canonical-hr-state-adapters",
+      "currentBlob": "0b4dc7a1739479f43ed35cd80cb6789b89829e45",
+      "loadTarget": "runtime-tool",
+      "phaseAAuthority": true,
+      "classification": "SOURCE_PROVEN_PENDING_DEV_RUNTIME_E2E",
+      "approvalAuthority": "NOVEMBER_AUTOMATIC_PERIOD_SOURCE_PROOF_30_OF_30_NOT_MODULE_PASS",
+      "sourceInventoryAddedBy": "CXORBIA-I3-HR-NOVEMBER-20261103"
+    },
+    {
+      "path": "tools/hr-source/tya-enforce-live-tab-registry.mjs",
+      "domain": "canonical-hr-state-adapters",
+      "currentBlob": "7047144d6937cebd135c23ecd52bb0c2d27f4fb9",
+      "loadTarget": "runtime-tool",
+      "phaseAAuthority": true,
+      "classification": "SOURCE_PROVEN_PENDING_DEV_RUNTIME_E2E",
+      "approvalAuthority": "NOVEMBER_AUTOMATIC_PERIOD_SOURCE_PROOF_30_OF_30_NOT_MODULE_PASS",
+      "sourceInventoryAddedBy": "CXORBIA-I3-HR-NOVEMBER-20261103"
+    },
+    {
+      "path": "tools/hr-source/tya-resolve-live-month-tabs.mjs",
+      "domain": "canonical-hr-state-adapters",
+      "currentBlob": "86c8d102c70f0d1edd541aedf7d0784c965cefbe",
+      "loadTarget": "runtime-tool",
+      "phaseAAuthority": true,
+      "classification": "SOURCE_PROVEN_PENDING_DEV_RUNTIME_E2E",
+      "approvalAuthority": "NOVEMBER_AUTOMATIC_PERIOD_SOURCE_PROOF_30_OF_30_NOT_MODULE_PASS",
+      "sourceInventoryAddedBy": "CXORBIA-I3-HR-NOVEMBER-20261103"
     }
   ],
   "loadOrder": {
