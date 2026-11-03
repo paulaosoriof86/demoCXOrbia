@@ -7,9 +7,9 @@
   "productSourceSha": "7a702a55cfb7e0c49a8efbb5d83a1ace8d598890",
   "productTreeAuthority": "1ea98d513ab8a51decd3bd82cf0070213c7281af",
   "predecessorProductSourceSha": "1737051ae56238eb0f71a6e3a237a4651ab32073",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V549_2026-11-02.json",
-  "findingsLedgerExpectedGitBlob": "1a30780cc5dca8457d67b7e942a1f75d1f1ca550",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V228.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V550_2026-11-02.json",
+  "findingsLedgerExpectedGitBlob": "d909999591596c842302b6f11434a6af271cb3ed",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261102-V229.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD 5/21: E03 visita pago label reparado en source 7a702a5 y 13/13 focal QA PASS; DEV readback pendiente. Conservar 139 autorizaciones y 32/83 fusiones ACK, 51 pendientes; D06 QA intento aislado, Shopper password E2E, B10 externo, HR/finanzas, Gate20/21 HOLD e I4 no autorizada.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH. G03 DEV Hosting 231186c337bcd0ba: PASS acotado previo; E03 Visitas source QA 13/13 PASS y DEV E2E pendiente. HR externa y finanzas pendientes; shoppers fusiones 32/83 con ACK, 51 grupos con gate de revisión proveedor. Siguiente D06 positivo/negativo aislado y Shopper E2E, B10; Gate20/21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "25f36d3165068717f41c09283a45bd19518e8001",
+  "moduleTruthExpectedGitBlob": "731ffe1189d809092705ad601b9373c39117d804",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
