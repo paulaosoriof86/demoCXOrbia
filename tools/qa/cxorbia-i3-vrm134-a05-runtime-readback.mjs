@@ -2,14 +2,14 @@ import {execFileSync} from 'node:child_process';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 
-// I3 P0: exact readback and (only with an explicit descriptor/status flag)
-// one DEV traffic activation of the image built by RUN2080. Never rebuild.
-const source='3c2e3973c47759a5892f3c8c3c41f5db67c59396';
-const expectedRevision='cxorbia-live-hr-dev-00335-tpk';
-const expectedImage='gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-vrm154-156-3c2e3973c477-41655176051';
-const previousDigest='sha256:ef9f7134c6a4505fdd3a1e960f49da81486cb1feedb5ecbe677c52aa8df8f641';
-const newDigest='sha256:34418f7bcba9fdd37dbf4c34d7c09f4da01b5ecaa89f2ce2eaa24c05faaac941';
-const priorRevision='cxorbia-live-hr-dev-00334-8jb';
+// I3 P0: exact A06 readback and one DEV traffic activation of the already
+// built image from RUN2087, only with explicit descriptor/status authority.
+// No rebuild, no production, and no data/provider writes.
+const source='f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d';
+const expectedRevision='cxorbia-live-hr-dev-00336-fz2';
+const expectedImage='gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-vrm154-156-f36ab1eb7c6b-41663635530';
+const previousDigest='sha256:34418f7bcba9fdd37dbf4c34d7c09f4da01b5ecaa89f2ce2eaa24c05faaac941';
+const priorRevision='cxorbia-live-hr-dev-00335-tpk';
 const activate=process.argv.includes('--activate-exact-dev');
 const scope=['--project=cxorbia-backend-dev','--region=us-central1'];
 const run=(args)=>JSON.parse(execFileSync('gcloud',args,{encoding:'utf8',timeout:45000,maxBuffer:6_000_000}));
@@ -20,8 +20,10 @@ assert.equal(d.productSourceSha,source,'RELEASE_COMPOSITION_FAILURE:SOURCE_NOT_E
 assert.equal(d.production,'DO_NOT_TOUCH');
 if(activate){
   assert.equal(d.status,'HOLD_VRM134_A05_DEV_TRAFFIC_REQUIRED','RELEASE_COMPOSITION_FAILURE:TRAFFIC_AUTHORITY');
-  assert.equal(d.vrm134A05LoadingRepair20261103?.authorizeExactDevTrafficSwitch20261103,true,
+  assert.equal(d.vrm134A06ParallelHrRefresh20261103?.authorizeExactDevTrafficSwitch20261103,true,
     'RELEASE_COMPOSITION_FAILURE:EXACT_DEV_TRAFFIC_AUTHORIZATION_MISSING');
+  assert.equal(d.vrm134A06ParallelHrRefresh20261103?.materializationRunId,41663635530,
+    'RELEASE_COMPOSITION_FAILURE:SOURCE_BUILD_RUN_NOT_EXACT');
 }
 
 const service=describe();
@@ -30,7 +32,7 @@ const ready=service.status?.latestReadyRevisionName;
 const traffic=(service.status?.traffic||[]).filter(x=>x.revisionName===ready&&x.percent===100);
 const intendedRevision=run(['run','revisions','describe',expectedRevision,...scope,'--format=json']);
 const conciseConditions=(xs)=>(xs||[]).map(({type,status,reason,message})=>({type,status,reason,message}));
-console.log(JSON.stringify({decision:'DIAGNOSTIC_VRM134_A05_RUNTIME_STATE_READ_ONLY',
+console.log(JSON.stringify({decision:'DIAGNOSTIC_VRM134_A06_RUNTIME_STATE_READ_ONLY',
   expectedRevision,latestCreatedRevision:created,latestReadyRevision:ready,
   traffic:service.status?.traffic?.filter(x=>x.percent>0),
   templateImage:service.spec?.template?.spec?.containers?.[0]?.image,
@@ -47,7 +49,8 @@ const raw=String(revision.status?.imageDigest||'');
 const digest=raw.includes('@sha256:')?`sha256:${raw.split('@sha256:')[1]}`:raw;
 assert.match(digest,/^sha256:[a-f0-9]{64}$/,'ENVIRONMENT_FAILURE:REVISION_DIGEST_MISSING');
 assert.notEqual(digest,previousDigest,'RELEASE_COMPOSITION_FAILURE:OLD_RUNTIME_DIGEST_STILL_SERVING');
-assert.equal(digest,newDigest,'RELEASE_COMPOSITION_FAILURE:BUILT_IMAGE_DIGEST_DRIFT');
+assert.equal(revision.spec?.containers?.[0]?.image,expectedImage,
+  'RELEASE_COMPOSITION_FAILURE:NEW_REVISION_IMAGE_TAG_MISMATCH');
 assert.equal(revision.metadata?.name,expectedRevision);
 assert.equal(revision.status?.conditions?.find(x=>x.type==='Ready')?.status,'True',
   'ENVIRONMENT_FAILURE:REVISION_NOT_HEALTHY');
@@ -56,7 +59,7 @@ let observed=service,trafficSwitches=0;
 if(activate){
   assert.equal(ready,priorRevision,'ENVIRONMENT_FAILURE:PRIOR_RUNTIME_TRAFFIC_CHANGED');
   assert.equal(traffic.length,1,'ENVIRONMENT_FAILURE:PRIOR_TRAFFIC_NOT_EXACT_100');
-  console.log(JSON.stringify({decision:'VRM134_A05_ONE_DEV_TRAFFIC_SWITCH_START',
+  console.log(JSON.stringify({decision:'VRM134_A06_ONE_DEV_TRAFFIC_SWITCH_START',
     fromRevision:priorRevision,toRevision:expectedRevision,digest,builds:0,production:false}));
   execFileSync('gcloud',['run','services','update-traffic','cxorbia-live-hr-dev',
     '--to-revisions',`${expectedRevision}=100`,...scope,'--quiet'],
@@ -92,19 +95,19 @@ try{
   assert.equal(health?.hrWrites,false,'PERSISTENCE_FAILURE:UNEXPECTED_HR_WRITE');
 }catch(error){
   if(trafficSwitches===1){
-    console.error(JSON.stringify({decision:'VRM134_A05_DEV_ACTIVATION_FAILED_ROLLBACK',reason:error.message,
+    console.error(JSON.stringify({decision:'VRM134_A06_DEV_ACTIVATION_FAILED_ROLLBACK',reason:error.message,
       restoreRevision:priorRevision,production:false}));
     execFileSync('gcloud',['run','services','update-traffic','cxorbia-live-hr-dev',
       '--to-revisions',`${priorRevision}=100`,...scope,'--quiet'],{timeout:180000,maxBuffer:4_000_000});
     const rollback=describe();
     assert.equal((rollback.status?.traffic||[]).filter(x=>x.revisionName===priorRevision&&x.percent===100).length,
       1,'ENVIRONMENT_FAILURE:ROLLBACK_READBACK_FAILED');
-    console.error(JSON.stringify({decision:'VRM134_A05_DEV_ROLLBACK_TRAFFIC_RESTORED',
+    console.error(JSON.stringify({decision:'VRM134_A06_DEV_ROLLBACK_TRAFFIC_RESTORED',
       revision:priorRevision,trafficPercent:100,production:false}));
   }
   throw error;
 }
-console.log(JSON.stringify({decision:'PASS_VRM134_A05_ACTIVE_RUNTIME_READBACK',sourceSha:source,
+console.log(JSON.stringify({decision:'PASS_VRM134_A06_ACTIVE_RUNTIME_READBACK',sourceSha:source,
   revision:expectedRevision,imageTag:expectedImage,runtimeDigest:digest,trafficPercent:100,
-  sourceBuildRun:41655176051,trafficSwitches,builds:0,cloudRunImageUpdates:0,
+  sourceBuildRun:41663635530,trafficSwitches,builds:0,cloudRunImageUpdates:0,
   hostingDeploys:0,providerWrites:0,production:false}));
