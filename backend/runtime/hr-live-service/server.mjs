@@ -333,6 +333,18 @@ function loadBootstrap(){
   }
 }
 
+async function runIndependentHrSourceReads(timedNode){
+  // VRM-134: both live source reads use the same scoped spreadsheet but
+  // write separate temporary outputs. Neither consumes the other's output.
+  // Wait for BOTH to settle before validation or cleanup, including on FAIL.
+  const sourceReadResults=await Promise.allSettled([
+    timedNode('registryIdentity',['tools/hr-source/tya-live-provider-registry-identity-dev.mjs']),
+    timedNode('liveProviderRead',['tools/hr-source/tya-build-live-hr-source-safe-r20.mjs'])
+  ]);
+  const sourceReadFailure=sourceReadResults.find(result=>result.status==='rejected');
+  if(sourceReadFailure)throw sourceReadFailure.reason;
+}
+
 async function refreshSnapshot(){
   if(inFlight)return inFlight;
   lastRefreshStartedAt=new Date().toISOString();
@@ -361,8 +373,7 @@ async function refreshSnapshot(){
       try{return await runNode(args,env);}finally{stagesMs[label]=Date.now()-startedAt;}
     };
     try{
-      await timedNode('registryIdentity',['tools/hr-source/tya-live-provider-registry-identity-dev.mjs']);
-      await timedNode('liveProviderRead',['tools/hr-source/tya-build-live-hr-source-safe-r20.mjs']);
+      await runIndependentHrSourceReads(timedNode);
       await timedNode('tabRegistryGuard',['tools/hr-source/tya-enforce-live-tab-registry.mjs']);
       await timedNode('canonicalize',['tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs','--input',payload,'--out',payload,'--report-dir',path.join(dir,'canonical')]);
       await timedNode('reapplyState',['tools/hr-source/tya-reapply-canonical-state-r20.mjs','--input',payload,'--out',payload,'--report-dir',path.join(dir,'state')]);

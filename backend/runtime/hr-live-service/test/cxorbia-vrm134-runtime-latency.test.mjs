@@ -12,6 +12,10 @@ const snapshotRequiredBegin=source.indexOf('function protectedSnapshotRequired('
 const snapshotRequiredEnd=source.indexOf('\nfunction runtimeMeta(',snapshotRequiredBegin);
 assert.ok(snapshotRequiredBegin>=0&&snapshotRequiredEnd>snapshotRequiredBegin,'VRM-134 protected metadata fast path required');
 const protectedSnapshotRequired=new Function(source.slice(snapshotRequiredBegin,snapshotRequiredEnd)+'\nreturn protectedSnapshotRequired;')();
+const pairBegin=source.indexOf('async function runIndependentHrSourceReads(');
+const pairEnd=source.indexOf('\nasync function refreshSnapshot(',pairBegin);
+assert.ok(pairBegin>=0&&pairEnd>pairBegin,'VRM-134 exact source read pair helper required');
+const runIndependentHrSourceReads=new Function(source.slice(pairBegin,pairEnd)+'\nreturn runIndependentHrSourceReads;')();
 
 test('VRM-134 coalesces independent protected HR and principal reads without returning before both',async()=>{
   const starts=[];let releaseHr,releaseAuth;
@@ -62,4 +66,36 @@ test('VRM-134 protected metadata read verifies identity and HR without repeating
     'verified meta exposes a traceable metadata-only timing');
   assert.ok(source.indexOf("if(format==='meta')")<source.indexOf('const json=(operational||protectedRequested)'),
     'metadata response must not serialize a full snapshot just to return revision');
+});
+test('VRM-134 registry identity and live HR read start concurrently, then both settle before validation',async()=>{
+  const started=[];let releaseRegistry,releaseProvider;
+  const registry=new Promise(resolve=>{releaseRegistry=resolve;});
+  const provider=new Promise(resolve=>{releaseProvider=resolve;});
+  let settled=false;
+  const pending=runIndependentHrSourceReads((name,args)=>{
+    started.push([name,args[0]]);
+    return name==='registryIdentity'?registry:provider;
+  }).then(()=>{settled=true;});
+  assert.deepEqual(started.map(x=>x[0]),['registryIdentity','liveProviderRead']);
+  assert.notEqual(started[0][1],started[1][1],'two independent process outputs');
+  releaseRegistry();
+  await Promise.resolve();await Promise.resolve();
+  assert.equal(settled,false,'metadata first cannot skip live provider read');
+  releaseProvider();
+  await pending;
+  assert.equal(settled,true);
+  assert.ok(source.indexOf('await runIndependentHrSourceReads(timedNode)')<source.indexOf("await timedNode('tabRegistryGuard'"),
+    'tab/registry guard must execute only after both source reads');
+});
+test('VRM-134 source read failure waits for the other process before cleanup',async()=>{
+  let releaseProvider,settled=false;
+  const provider=new Promise(resolve=>{releaseProvider=resolve;});
+  const pending=runIndependentHrSourceReads(name=>name==='registryIdentity'
+    ?Promise.reject(new Error('SOURCE_FAILURE:REGISTRY')):provider);
+  pending.finally(()=>{settled=true;}).catch(()=>{});
+  await Promise.resolve();await Promise.resolve();
+  assert.equal(settled,false,'a failed source process must not race temp-file cleanup with the other');
+  releaseProvider();
+  await assert.rejects(pending,/SOURCE_FAILURE:REGISTRY/);
+  assert.equal(settled,true);
 });
