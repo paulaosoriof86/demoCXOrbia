@@ -10,6 +10,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { unzipXlsx, sharedStrings, workbookSheets, worksheetRows } from './tya-hr-source-xlsx-lite.mjs';
+import { resolveLiveMonthTabs } from './tya-resolve-live-month-tabs.mjs';
 
 const SHEET_ID = process.env.CXORBIA_HR_LIVE_SHEET_ID || '1h307t37LxM1nZNh_9Odt6wHUQhROG6cYbsbMKr48vU4';
 const OUT_FILE = process.env.CXORBIA_HR_SOURCE_SAFE_OUT || 'app/data/tya-hr-source-safe-periods.js';
@@ -17,22 +18,6 @@ const SERVICE_ACCOUNT_JSON = process.env.FIREBASE_SERVICE_ACCOUNT_JSON || '';
 const RANGE_MAX_ROW = Number(process.env.CXORBIA_HR_LIVE_MAX_ROW || 140);
 const RANGE_MAX_COL = process.env.CXORBIA_HR_LIVE_MAX_COL || 'AI';
 const NOW = new Date().toISOString();
-
-const MONTHS = {
-  ENERO: { n: 1, short: 'ENE', full: 'Enero' },
-  FEBRERO: { n: 2, short: 'FEB', full: 'Febrero' },
-  MARZO: { n: 3, short: 'MAR', full: 'Marzo' },
-  ABRIL: { n: 4, short: 'ABR', full: 'Abril' },
-  MAYO: { n: 5, short: 'MAY', full: 'Mayo' },
-  JUNIO: { n: 6, short: 'JUN', full: 'Junio' },
-  JULIO: { n: 7, short: 'JUL', full: 'Julio' },
-  AGOSTO: { n: 8, short: 'AGO', full: 'Agosto' },
-  SEPTIEMBRE: { n: 9, short: 'SEP', full: 'Septiembre' },
-  SETIEMBRE: { n: 9, short: 'SEP', full: 'Septiembre' },
-  OCTUBRE: { n: 10, short: 'OCT', full: 'Octubre' },
-  NOVIEMBRE: { n: 11, short: 'NOV', full: 'Noviembre' },
-  DICIEMBRE: { n: 12, short: 'DIC', full: 'Diciembre' }
-};
 
 function b64url(input){
   return Buffer.from(input).toString('base64').replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
@@ -86,25 +71,6 @@ async function sheetsGet(pathAndQuery, token){
   const json = await res.json();
   if(!res.ok) throw new Error(`Sheets API failed: HTTP ${res.status} ${JSON.stringify(json).slice(0, 500)}`);
   return json;
-}
-
-function parseTabName(title){
-  const clean = String(title || '').trim().replace(/\s+/g, ' ').toUpperCase();
-  const m = clean.match(/^(ENERO|FEBRERO|MARZO|ABRIL|MAYO|JUNIO|JULIO|AGOSTO|SEPTIEMBRE|SETIEMBRE|OCTUBRE|NOVIEMBRE|DICIEMBRE)\s+(\d{2})(?:\s+(HN))?$/);
-  if(!m) return null;
-  const month = MONTHS[m[1]];
-  const year = 2000 + Number(m[2]);
-  const country = m[3] === 'HN' ? 'HN' : 'GT';
-  return {
-    country,
-    year,
-    month: month.n,
-    monthName: month.full,
-    label: `${month.short} ${year}`,
-    fullLabel: `${month.full} ${year}`,
-    key: `${year}-${String(month.n).padStart(2, '0')}`,
-    tabTitle: title
-  };
 }
 
 function norm(value){
@@ -331,7 +297,7 @@ function countsByStatus(visits){
 async function readFromSheetsApi(){
   const { token, clientEmail } = await tokenFromServiceAccount();
   const meta = await sheetsGet('?fields=properties(title,timeZone,locale),sheets(properties(title,index,gridProperties(rowCount,columnCount)))', token);
-  const tabs = (meta.sheets || []).map(s => parseTabName(s.properties?.title)).filter(Boolean);
+  const tabs = resolveLiveMonthTabs((meta.sheets || []).map(s => ({ title: s.properties?.title, index: s.properties?.index })));
   if(!tabs.length) throw new Error('No valid HR month tabs detected.');
   const ranges = tabs.map(t => `'${t.tabTitle.replace(/'/g, "''")}'!A1:${RANGE_MAX_COL}${RANGE_MAX_ROW}`);
   const valueRanges = [];
@@ -362,7 +328,7 @@ async function readFromPublicXlsxExport(apiError){
   const files = unzipXlsx(buf);
   const shared = sharedStrings(files);
   const sheets = workbookSheets(files);
-  const tabs = sheets.map(s => parseTabName(s.name)).filter(Boolean);
+  const tabs = resolveLiveMonthTabs(sheets.map((s, index) => ({ title: s.name, index })));
   if(!tabs.length) throw new Error('No valid HR month tabs detected in XLSX export.');
   const valueRanges = tabs.map(tab => {
     const sheet = sheets.find(s => s.name === tab.tabTitle);
@@ -383,6 +349,7 @@ async function readLiveHr(){
   try {
     return await readFromSheetsApi();
   } catch (apiError) {
+    if(/^HR_MONTH_(YEAR_UNRESOLVED|YEAR_AMBIGUOUS|DUPLICATE):/.test(String(apiError?.message || apiError))) throw apiError;
     console.warn('[HR live] Sheets API path failed; trying public XLSX export fallback.');
     console.warn(String(apiError?.message || apiError).slice(0, 800));
     return await readFromPublicXlsxExport(apiError);

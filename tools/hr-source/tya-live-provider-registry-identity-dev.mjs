@@ -2,6 +2,7 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import { resolveLiveMonthTabs } from './tya-resolve-live-month-tabs.mjs';
 
 const SHEET_ID=process.env.CXORBIA_HR_LIVE_SHEET_ID||'1h307t37LxM1nZNh_9Odt6wHUQhROG6cYbsbMKr48vU4';
 const REGISTRY_OUT=path.resolve(process.env.CXORBIA_HR_TAB_REGISTRY||'.tmp/live-hr-tab-registry.source-safe.json');
@@ -42,21 +43,13 @@ async function sheets(pathAndQuery,token){
   return json(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}${pathAndQuery}`,{headers:{Authorization:`Bearer ${token}`,'Cache-Control':'no-store'}});
 }
 function normalized(value){return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase().replace(/[^a-z0-9ñ]+/g,' ').replace(/\s+/g,' ').trim();}
-function parseTab(title){
-  const clean=String(title||'').trim().replace(/\s+/g,' ').toUpperCase();
-  const m=clean.match(/^(ENERO|FEBRERO|MARZO|ABRIL|MAYO|JUNIO|JULIO|AGOSTO|SEPTIEMBRE|SETIEMBRE|OCTUBRE|NOVIEMBRE|DICIEMBRE)\s+(\d{2})(?:\s+(HN))?$/);
-  if(!m)return null;
-  const canonicalMonth=m[1]==='SETIEMBRE'?'SEPTIEMBRE':m[1];
-  const month=MONTH_NAMES.indexOf(canonicalMonth)+1;
-  const year=2000+Number(m[2]);
-  return {title:String(title),country:m[3]==='HN'?'HN':'GT',periodKey:`${year}-${String(month).padStart(2,'0')}`};
-}
 function currentPeriodDescriptor(){
   const explicit=String(process.env.CXORBIA_EXPECTED_CURRENT_PERIOD||'').trim();
   const match=explicit.match(/^(20\d{2})-(0[1-9]|1[0-2])$/);
-  const now=new Date();
-  const year=match?Number(match[1]):now.getUTCFullYear();
-  const month=match?Number(match[2]):now.getUTCMonth()+1;
+  const timezone=process.env.CXORBIA_TENANT_TIMEZONE||'America/Guatemala';
+  const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:timezone,year:'numeric',month:'2-digit'}).formatToParts(new Date()).filter(p=>p.type!=='literal').map(p=>[p.type,p.value]));
+  const year=match?Number(match[1]):Number(parts.year);
+  const month=match?Number(match[2]):Number(parts.month);
   const yy=String(year).slice(-2);
   const monthName=MONTH_NAMES[month-1];
   return {periodKey:`${year}-${String(month).padStart(2,'0')}`,tabs:[`${monthName} ${yy}`,`${monthName} ${yy} HN`]};
@@ -97,17 +90,21 @@ async function main(){
   const meta=await sheets('?fields=properties(title),sheets(properties(title,index))',auth.token);
   const title=String(meta.properties?.title||'');
   if(title!=='HR Guatemala - Sincronizacion Google Sheets')throw new Error(`canonical_hr_title_mismatch:${title}`);
-  const monthly=(meta.sheets||[]).map(s=>parseTab(s.properties?.title)).filter(Boolean);
+  const monthly=resolveLiveMonthTabs((meta.sheets||[]).map(s=>({title:s.properties?.title,index:s.properties?.index}))).map(tab=>({title:tab.tabTitle,country:tab.country,periodKey:tab.key}));
   if(!monthly.length)throw new Error('canonical_monthly_tabs_missing');
   const monthlyTabs=monthly.map(x=>x.title);
   const current=currentPeriodDescriptor();
+  const currentMonthly=monthly.filter(tab=>tab.periodKey===current.periodKey);
+  const currentByCountry=new Map(currentMonthly.map(tab=>[tab.country,tab.title]));
+  const currentPeriodPresent=currentByCountry.has('GT')&&currentByCountry.has('HN');
   const now=new Date().toISOString();
   const registry={
     schemaVersion:'cxorbia.tya-live-hr-tab-registry.v1',observedAt:now,sourceTitle:title,sourceSafe:true,
     providerMetadataReadOnly:true,autoDiscovery:true,registryMode:'live_provider_metadata_auto_refresh',
     monthlyTabs,nonMonthlyTabs:(meta.sheets||[]).map(s=>String(s.properties?.title||'')).filter(t=>!monthlyTabs.includes(t)),
-    currentCalendarPeriodKey:current.periodKey,requiredCurrentPeriodTabs:current.tabs,
-    requiredCurrentPeriodTabsPresent:current.tabs.every(tab=>monthlyTabs.includes(tab)),
+    currentCalendarPeriodKey:current.periodKey,
+    requiredCurrentPeriodTabs:currentPeriodPresent?[currentByCountry.get('GT'),currentByCountry.get('HN')]:current.tabs,
+    requiredCurrentPeriodTabsPresent:currentPeriodPresent,
     provider:{mode:auth.mode,principalMasked:String(auth.principal||'').replace(/^[^@]+/,'***')},
     safety:{pii:false,hrWrites:0,firestoreWrites:0,authWrites:0,production:false,merge:false}
   };

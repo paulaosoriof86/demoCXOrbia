@@ -41,6 +41,9 @@ let registryMode=providerMetadataLive?'live_provider_metadata_auto_refresh':'las
 if(sourceCarriesProviderMetadata){
   const monthlyTabs=uniq((source.tabsRead||[]).map(t=>String(t.title||t.tabTitle||'')));
   if(!monthlyTabs.length)throw new Error('live_provider_metadata_has_no_monthly_tabs');
+  const currentPeriodTabs=(source.tabsRead||[]).filter(tab=>String(tab.periodKey||'')===current.periodKey);
+  const currentTabByCountry=new Map(currentPeriodTabs.filter(tab=>tab.country==='GT'||tab.country==='HN').map(tab=>[tab.country,String(tab.title||tab.tabTitle||'')]));
+  const currentPeriodPresent=currentTabByCountry.has('GT')&&currentTabByCountry.has('HN');
   registry={
     schemaVersion:'cxorbia.tya-live-hr-tab-registry.v1',
     observedAt:source.generatedAt||new Date().toISOString(),
@@ -52,8 +55,8 @@ if(sourceCarriesProviderMetadata){
     monthlyTabs,
     nonMonthlyTabs:[],
     currentCalendarPeriodKey:current.periodKey,
-    requiredCurrentPeriodTabs:current.tabs,
-    requiredCurrentPeriodTabsPresent:current.tabs.every(tab=>monthlyTabs.includes(tab)),
+    requiredCurrentPeriodTabs:currentPeriodPresent?[currentTabByCountry.get('GT'),currentTabByCountry.get('HN')]:current.tabs,
+    requiredCurrentPeriodTabsPresent:currentPeriodPresent,
     safety:{pii:false,hrWrites:0,firestoreWrites:0,authWrites:0,production:false,merge:false}
   };
   fs.mkdirSync(path.dirname(registryPath),{recursive:true});

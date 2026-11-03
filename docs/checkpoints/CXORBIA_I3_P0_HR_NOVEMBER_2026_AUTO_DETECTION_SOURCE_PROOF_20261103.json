@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "cxorbia.i3.hr-yearless-month-detection.source-proof.v1",
+  "dateGuatemala": "2026-11-03",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "classification": "MAPPING_FAILURE",
+  "status": "SOURCE_PROVEN_DEV_E2E_PENDING",
+  "rootCause": "November GT/HN tabs exist in live HR as NOVIEMBRE and NOVIEMBRE HN; three independent readers/registries previously required a two-digit year in the tab title and could exclude the new period.",
+  "providerObservation": {
+    "source": "HR Guatemala - Sincronizacion Google Sheets",
+    "october2026Tabs": ["OCTUBRE 26", "OCTUBRE 26 HN"],
+    "november2026Tabs": ["NOVIEMBRE", "NOVIEMBRE HN"],
+    "november2025RemainsDistinct": true,
+    "liveMetadataObserved": true,
+    "dataReadOnly": true
+  },
+  "correction": {
+    "singleOwner": "tools/hr-source",
+    "scope": "Resolve physical tab year from ordered live Sheets metadata only when consecutive with a previous dated period; fail closed for ambiguity or duplication; align source-safe builders and both provider tab registries.",
+    "automaticallyDetectsExistingNewPeriod": true,
+    "createsPhysicalGoogleSheetTabs": false,
+    "changesOctoberHistoricalRows": false,
+    "requiresManualSheetRename": false
+  },
+  "localProof": {
+    "resolverAndCanonicalState": { "tests": 13, "passed": 13, "failed": 0 },
+    "projectPeriodContract": { "tests": 17, "passed": 17, "failed": 0 },
+    "total": { "tests": 30, "passed": 30, "failed": 0 },
+    "includesReadOnlyRegistryIntegration": true,
+    "verifiedOnAuthenticatedDev": false,
+    "verifiedAgainstGoogleSheetsApiBuild": false
+  },
+  "releaseDecision": {
+    "moduleTruthCertified": 5,
+    "moduleTruthTotal": 21,
+    "moduleTruthPercent": 23.8,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "production": "DO_NOT_TOUCH"
+  },
+  "nextAction": "Integrate P0 with current remote canonical HEAD without overwriting its A08/VRM134 control; run existing Sheets-API source proof and build exact DEV; read back November and October with authenticated Admin and Shopper, then update module truth only on same-artifact evidence. Preserve legacy production."
+}
