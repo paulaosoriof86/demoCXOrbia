@@ -18,7 +18,7 @@
     "sourceTree": "c05181456e0c22e0d5a852002035d5e83f95f4e6",
     "predecessorSha": "b8d516f07062f4c2fe991d2c14991103118c33b8",
     "production": false,
-    "state": "VRM134_A08_SOURCE_PROVEN_DEV_HOSTING_PENDING_HUMAN_PERFORMANCE_HOLD_5_MATCH_16_NONMATCH",
+    "state": "VRM134_A08_EXACT_HOSTING_DEV_RUN2095_PASS_HUMAN_PERFORMANCE_HOLD_5_MATCH_16_NONMATCH",
     "i3P0CountryScope20261028": {
       "rootTasks": [
         "A09",
@@ -37757,7 +37757,10 @@
     "testOwner": "tools/qa/cxorbia-i3-vrm134-a08-watcher-revision-reuse.test.mjs",
     "localTests": {"pass": 16, "fail": 0, "scope": "SOURCE_ONLY_SYNTHETIC_PLUS_A05_ATOMIC_PUBLICATION"},
     "change": "Reuse independently verified protected HR revision on immediate authority-ready event; preserve normal polling, principal, tenant and project guards, fail-closed on stale or mismatched authority.",
-    "devHosting": "PENDING",
+    "devHosting": "PASS_EXACT_HOSTING_DEV_RUN2095_VERSION_f096f9992587a3f6",
+    "runId": 41713428498,
+    "artifactId": 13269815694,
+    "sourceReceipt": {"path": "docs/checkpoints/CXORBIA_I3_VRM134_A08_RUN2095_EXACT_HOSTING_DEV_READBACK_20261103.json", "gitBlob": "74f54360f60a57e3be405e6074b34ed3c07afb88"},
     "adminAndShopperFullLoadPerformance": "PENDING",
     "moduleMatchCount": 5,
     "nonmatchCount": 16,

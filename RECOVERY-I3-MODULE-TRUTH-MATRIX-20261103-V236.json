@@ -107,8 +107,8 @@
     "treeSha": "c05181456e0c22e0d5a852002035d5e83f95f4e6",
     "predecessorProductSourceSha": "b8d516f07062f4c2fe991d2c14991103118c33b8",
     "message": "fix(i3/VRM-134 A08 P0): reuse authenticated verified HR revision on ready event [vrm134-a08-source]",
-    "authorityState": "A08_SOURCE_FOCAL_PASS_DEV_HOSTING_NOT_YET_DEPLOYED",
-    "state": "I3_HOLD_5_OF_21_MATCH_A08_SOURCE_ONLY_PERFORMANCE_UNPROVEN"
+    "authorityState": "A08_EXACT_HOSTING_DEV_RUN2095_PASS_00336_RUNTIME_UNCHANGED",
+    "state": "I3_HOLD_5_OF_21_MATCH_A08_HOSTING_DEV_SERVED_ADMIN_SHOPPER_PERFORMANCE_UNPROVEN"
   },
   "controlHeadAtConstruction": "7a702a55cfb7e0c49a8efbb5d83a1ace8d598890",
   "phaseAComplete": false,

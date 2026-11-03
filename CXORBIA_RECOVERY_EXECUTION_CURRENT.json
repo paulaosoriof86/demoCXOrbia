@@ -286,7 +286,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 HOLD 5/21 MATCH. A08 fuente c3037483f236837f1e469817db8d11415cd59dbe 16/16 QA local PASS, no publicada. Publicar exactamente A08 en Hosting DEV por carril existente, verificar blob watcher y Cloud Run 00336 sin cambios; medir Admin+Shopper cold/full load con HR misma revisión. A07 Hosting DEV RUN2092 versión 6fed8be0e6525c99 es predecesora servida; G03 Hosting DEV 231186c337bcd0ba histórico. E03 visita #705 PASS focal, no módulo certificado. Si mejora real no resuelve VRM134, clasificar nueva causa funcional en su owner; continuar D06, B10, G03 por roles, HR y finanzas; 16 no MATCH. Fusiones 32/83 ACK + 51/83 revisión. Gate20/21 HOLD, producción DO_NOT_TOUCH e I4 no autorizada.",
+  "nextExactAction": "I3 HOLD 5/21 MATCH. A08 fuente c3037483f236837f1e469817db8d11415cd59dbe servida exactamente en Hosting DEV RUN2095 41713428498 versión f096f9992587a3f6, watcher blob 8fa224fe7f7a565be8553bc855deef6d0e6a3b9f PASS; runtime 00336 y producción intactos. Medir con Chrome Admin+Shopper cold/full load y misma revisión HR; VRM134 performance P0 sigue HOLD hasta evidencia. A07 RUN2092 predecesora; G03 Hosting DEV histórico 231186c337bcd0ba; E03 visita #705 PASS focal no módulo. Continuar D06/B10/G03 por roles, paridad independiente HR, finanzas y 16 no MATCH; fusiones 32/83 ACK + 51/83 revisión. Gate20/21 HOLD, I4 no autorizada.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -987,11 +987,11 @@
   },
   "moduleTruthAuthority": {
     "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261103-V236.json",
-    "gitBlob": "ac3bd521d0628adec35feb079dfeb04da95b3807",
+    "gitBlob": "b411fda24d9e5fb971b15aff7fcb59f6e5c7b45b",
     "sourceSha": "c3037483f236837f1e469817db8d11415cd59dbe",
     "allModulesMatch": false,
     "phaseAComplete": false,
-    "sha256": "b3cd1975393971e57c419231493d03344757620994967a1e86ac5fe079eb3647"
+    "sha256": "be19195d79a64a5d128035c77a155ce7bac02b5bda248b25632c29b4382f911b"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -3029,7 +3029,7 @@
   "activeShockModuleTruth": {
     "sourceSha": "c3037483f236837f1e469817db8d11415cd59dbe",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261103-V236.json",
-    "matrixBlob": "ac3bd521d0628adec35feb079dfeb04da95b3807",
+    "matrixBlob": "b411fda24d9e5fb971b15aff7fcb59f6e5c7b45b",
     "classificationCounts": {
       "COMPOSED_NOT_DEPLOYED": 1,
       "MATCH": 5,
@@ -3040,7 +3040,7 @@
       "TRUE_FUNCTIONAL_DEFECT": 3
     },
     "derivedAt": "2026-11-03",
-    "meaning": "5_OF_21_MATCH__A08_SOURCE_ONLY_DEV_HOSTING_PENDING_FULL_LOAD_P0_HOLD"
+    "meaning": "5_OF_21_MATCH__A08_EXACT_HOSTING_DEV_RUN2095_PASS_FULL_LOAD_E2E_P0_HOLD"
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
   "activeMethodologyGuard": {
@@ -6851,7 +6851,11 @@
     "owner": "app/adapters/tya-live-source-refresh-watch-v2.js",
     "ownerBlob": "8fa224fe7f7a565be8553bc855deef6d0e6a3b9f",
     "localTests": {"pass": 16, "fail": 0, "scope": "SOURCE_ONLY"},
-    "devMaterialization": "PENDING",
+    "devMaterialization": "PASS_EXACT_HOSTING_DEV_RUN2095_ONLY",
+    "devHostingVersion": "sites/cxorbia-backend-dev/versions/f096f9992587a3f6",
+    "runId": 41713428498,
+    "artifactId": 13269815694,
+    "receipt": {"path": "docs/checkpoints/CXORBIA_I3_VRM134_A08_RUN2095_EXACT_HOSTING_DEV_READBACK_20261103.json", "gitBlob": "74f54360f60a57e3be405e6074b34ed3c07afb88"},
     "adminAndShopperFullLoadPerformance": "PENDING",
     "gate20": "HOLD",
     "gate21": "HOLD",

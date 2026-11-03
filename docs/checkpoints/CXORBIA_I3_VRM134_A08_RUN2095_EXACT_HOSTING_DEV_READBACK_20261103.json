@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm134.a08.dev-hosting-readback.v1",
+  "observedAt": "2026-11-03",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "finding": "VRM-134",
+  "classification": "FUNCTIONAL_DEFECT",
+  "priority": "P0",
+  "source": {
+    "commit": "c3037483f236837f1e469817db8d11415cd59dbe",
+    "tree": "c05181456e0c22e0d5a852002035d5e83f95f4e6",
+    "owner": "app/adapters/tya-live-source-refresh-watch-v2.js",
+    "gitBlob": "8fa224fe7f7a565be8553bc855deef6d0e6a3b9f",
+    "predecessor": "b8d516f07062f4c2fe991d2c14991103118c33b8"
+  },
+  "execution": {
+    "workflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "runId": 41713428498,
+    "runNumber": 2095,
+    "controlHead": "e48c0d8396de1888482e8e8624eb467ba0bcc256",
+    "conclusion": "success",
+    "authorityJob": "PASS",
+    "devHostingJob": "PASS",
+    "artifactId": 13269815694,
+    "artifactName": "cxorbia-i3-current-source-hosting-dev-41713428498",
+    "artifactDigest": "sha256:371c6e76f68233c5ac01216d721069f90ee0eec6e7a2998184fa7901e874fdce"
+  },
+  "exactDevReadback": {
+    "decision": "PASS_I3_CURRENT_SOURCE_HOSTING_DEV_ONLY",
+    "hostingBefore": "sites/cxorbia-backend-dev/versions/6fed8be0e6525c99",
+    "hostingAfter": "sites/cxorbia-backend-dev/versions/f096f9992587a3f6",
+    "servedOwnerGitBlob": "8fa224fe7f7a565be8553bc855deef6d0e6a3b9f",
+    "runtimeRevision": "cxorbia-live-hr-dev-00336-fz2",
+    "runtimeDigest": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:ddcd19db3b2126f28af55f960b5654aa7a8168d8634ead9fbab443b4e882ecca",
+    "hostingDeploys": 1,
+    "cloudRunBuilds": 0,
+    "cloudRunDeploys": 0,
+    "rulesDeploys": 0,
+    "hrWrites": 0,
+    "firestoreDirectWrites": 0,
+    "productionDeploys": 0,
+    "productionIndexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+    "productionUnchanged": true
+  },
+  "tests": {
+    "a08AndA05AtomicRegression": {"pass": 16, "fail": 0},
+    "sourceChecks": {"pass": 14, "fail": 0},
+    "canonicalAuthority": "PASS",
+    "continuity": {"pass": 10, "fail": 0}
+  },
+  "remaining": {
+    "authenticatedAdminFullLoadBenchmark": "PENDING",
+    "authenticatedShopperFullLoadBenchmark": "PENDING",
+    "independentHrRevisionAndRoleE2E": "PENDING",
+    "moduleMatchCount": 5,
+    "moduleTotal": 21,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "phaseAComplete": false,
+    "i4Authorized": false,
+    "production": "DO_NOT_TOUCH"
+  }
+}
