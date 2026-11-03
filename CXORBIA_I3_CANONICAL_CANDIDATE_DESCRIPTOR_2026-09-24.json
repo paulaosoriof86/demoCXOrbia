@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM134_A06_ACTIVE_DEV_FULL_LOAD_P0_OPEN_5_MATCH",
+  "status": "HOLD_I3_VRM134_A07_SOURCE_PROVEN_DEV_HOSTING_REQUIRED_5_MATCH",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d",
-  "productTreeAuthority": "386d8c858cae35b624d11b2bac04efc5194d7a88",
-  "predecessorProductSourceSha": "3c2e3973c47759a5892f3c8c3c41f5db67c59396",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V555_2026-11-03.json",
-  "findingsLedgerExpectedGitBlob": "524df77248c8cb702d6d92693d8188d1da04ae6d",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261103-V234.json",
+  "productSourceSha": "b8d516f07062f4c2fe991d2c14991103118c33b8",
+  "productTreeAuthority": "b5c47afa48859b1fa7b0d7bd0b12e9b50443b4c6",
+  "predecessorProductSourceSha": "f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V556_2026-11-03.json",
+  "findingsLedgerExpectedGitBlob": "50d72ee25a8d2ee8d4659febd4771c2324a0d3b2",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261103-V235.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM134_P0_AUTHENTICATED_FULL_LOADING_STILL_16_3_TO_19_6_SECONDS_ADMIN; SHOPPER_PERF_E2E_D06_B10_HR_FINANCE_16_NONMATCH",
+  "activeBlocker": "VRM134_A07_SOURCE_PROVEN_NEEDS_DEV_HOSTING_BYTES_AND_AUTHENTICATED_LOAD_MEASUREMENT; SHOPPER_PERF_E2E_D06_B10_HR_FINANCE_16_NONMATCH",
   "i3P0CountryScope20261028": {
     "linkedHistoricalFindings": [
       "VRM-081",
@@ -118,7 +118,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD 5/21 MATCH. G03 Hosting DEV 231186c337bcd0ba histórico; af8bf558cebb9a23 previo; de0956bc66ce57d8 actual. E03 #705 PASS visual focal, aceptación humana pendiente. VRM134 A06: fuente f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d RUN2087 build PASS y RUN2089 Cloud Run 00336 activo 100% exacto; HR refresh 4,385→3,334 ms (muestra parcial), pero Admin bloqueada aún a 16,3 s y visible a 19,6 s: P0 FULL LOAD OPEN. Siguiente acción exacta: segmentar hidratación Auth/Firestore y composición HR protegida de la sesión con marcas de etapa, probar owner mínimo sin perder source/role validation y comparar Admin+Shopper en DEV. Mantener D06 Shopper, B10, G03 por rol, HR externa y finanzas; fusiones 32/83 ACK + 51/83 revisión. Gate20/21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH. G03 Hosting DEV 231186c337bcd0ba histórico; de0956bc66ce57d8 actual pre-A07. VRM134 A07 fuente b8d516f07062f4c2fe991d2c14991103118c33b8 árbol b5c47afa48859b1fa7b0d7bd0b12e9b50443b4c6 y tests 52/52 + 75/75 + 10/10 PASS. Publicar una vez esos bytes en Hosting DEV existente, readback de core/backend-firebase.js; Cloud Run 00336 debe continuar 100%, producción intacta. Medir carga autenticada Admin+Shopper en mismo artefacto contra Admin 16,3–19,6 segundos; E03 #705 ya PASS focal. D06 Shopper, B10, G03 por roles, paridad HR externa, finanzas y 16 módulos no MATCH permanecen obligaciones. Fusiones 32/83 ACK + 51/83 revisión, Gate20/21 HOLD, I4 NO autorizada.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3027,7 +3027,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "c8f8aa5ae79d0decf25567db84c787774744576e",
+  "moduleTruthExpectedGitBlob": "e6f6caad6ebd3a2fdd67bddff793cbadfc04bc47",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -16808,5 +16808,27 @@
     "activeDevRuntime": "PASS_00336_100_PERCENT_RUN2089",
     "partialSourceRefreshImproved": true,
     "fullLoadPerformanceP0": "OPEN"
+  },
+  "vrm134A07FirestoreEarlyHydration20261103": {
+    "finding": "VRM-134",
+    "classification": "FUNCTIONAL_DEFECT",
+    "priority": "P0",
+    "sourceSha": "b8d516f07062f4c2fe991d2c14991103118c33b8",
+    "sourceTree": "b5c47afa48859b1fa7b0d7bd0b12e9b50443b4c6",
+    "predecessorSourceSha": "f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d",
+    "owner": "app/core/backend-firebase.js",
+    "ownerBlob": "d181236f44178c455c78b129d680d3a6674ef6e3",
+    "receipt": {"path":"docs/checkpoints/CXORBIA_I3_VRM134_A07_FIRESTORE_EARLY_HYDRATION_SOURCE_20261103.json","gitBlob":"4bebb363ecd2e25b8ed2ae10f1185a5edfb09546"},
+    "tests": {"focalPass":52,"regressionPass":75,"continuityPass":10,"fail":0},
+    "state": "SOURCE_PROVEN_PENDING_DEV_EXACT_HOSTING_AND_PERFORMANCE",
+    "activeRuntime": "cxorbia-live-hr-dev-00336-fz2",
+    "expectedDevHostingOnly": true,
+    "authenticatedAdminLoadGain": "UNPROVEN",
+    "authenticatedShopperLoadGain": "UNPROVEN",
+    "moduleMatchCount": 5,
+    "nonmatchCount": 16,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": false
   }
 }
