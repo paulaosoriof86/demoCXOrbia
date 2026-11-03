@@ -78,6 +78,21 @@
   function flush(){if(!pending||busy())return false;const p=pending;pending=null;emitOnce(p.reason,p.detail,p.state);return true;}
   function applySilent(snapshot,runtime,reason){const fn=window.CX_TYA_APPLY_LIVE_SNAPSHOT;if(typeof fn!=='function')throw new Error('Adapter in-place no disponible');const state=capture(),original=CX.bus?.emit;let intercepted=0;if(original)CX.bus.emit=function(event,...args){if(event==='visit-flow'){intercepted++;return;}return original.call(CX.bus,event,...args);};try{return {result:fn(snapshot,runtime,{reason}),state,intercepted};}finally{if(original)CX.bus.emit=original;}}
   function recompose(reason){if(!fullVisual)return {ok:true,skipped:true};const fn=window.CX_TYA_REAPPLY_FULL_VISUAL_OVERLAY;if(typeof fn!=='function')return {ok:false,skipped:true,reason:'overlay_not_ready'};return fn(reason);}
+  // VRM-134/A08: the protected authority bridge has just checked this revision
+  // independently with HR before its atomic publish. Reuse that exact proof for
+  // the immediate ready event only; regular polling must still query live HR.
+  function reuseJustVerifiedProtectedRevision(){
+    if(!authenticatedHumanRuntime||checking||!canonicalHumanAuthReady()||!canonicalProtectedAuthorityReady())return false;
+    const scope=runtimeScope(),authority=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{},boot=window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE||{};
+    const revision=String(authority.sourceRevision||'').trim(),published=String(CX.data?.previewMeta?.sourceRevision||'').trim();
+    const user=window.firebase?.auth?.().currentUser,elapsed=Date.now()-Date.parse(authority.at||'');
+    if(!revision||revision!==published||String(boot.sourceRevision||'')!==revision||boot.ready!==true||boot.completed!==true)return false;
+    if(String(authority.tenantId||'')!==scope.tenantId||String(authority.projectId||'')!==scope.projectId)return false;
+    if(!user?.uid||String(authority.actorUid||'')!==String(user.uid))return false;
+    if(!Number.isFinite(elapsed)||elapsed<0||elapsed>5000)return false;
+    currentRevision=revision;failures=0;
+    return true;
+  }
   async function check(reason){
     const scope=runtimeScope();
     if(scope.project?.operationalSource?.mode==='internal')return {ok:true,skipped:true,reason:'internal_project_firestore_authority'};
@@ -121,6 +136,6 @@
   window.CX_TYA_FLUSH_PENDING_STABLE_RERENDER=flush;window.CX_TYA_CAPTURE_UI_STATE=capture;window.CX_TYA_CHECK_LIVE_SOURCE=check;
   if(window.CX_TYA_HR_LIVE_META?.runtimeRead===true&&canonicalHumanAuthReady()&&canonicalProtectedAuthorityReady())markLive(window.CX_TYA_HR_LIVE_META);else if(CX.dataSource){CX.dataSource.warnings=[authenticatedHumanRuntime?'Esperando autenticación y autoridad canónica antes de leer HR viva…':'Validando lectura HR viva…'];refreshBadge();}
   if(CX.bus?.on)CX.bus.on('backend-auth-ready',()=>check('backend_auth_ready'));
-  window.addEventListener('cx:protected-auth-hr-authority-ready',()=>check('canonical_authority_ready'));
+  window.addEventListener('cx:protected-auth-hr-authority-ready',()=>reuseJustVerifiedProtectedRevision()?{ok:true,skipped:true,reason:'just_verified_protected_revision'}:check('canonical_authority_ready'));
   window.addEventListener('focus',()=>check('window_focus'));document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')check('visibility_resume');});document.addEventListener('focusout',()=>setTimeout(flush,0));window.addEventListener('load',()=>setTimeout(()=>check('initial_load'),300),{once:true});setInterval(()=>check('poll'),pollMs);
 })();
