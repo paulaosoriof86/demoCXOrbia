@@ -9,6 +9,7 @@ const source='f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d';
 const expectedRevision='cxorbia-live-hr-dev-00336-fz2';
 const expectedImage='gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-vrm154-156-f36ab1eb7c6b-41663635530';
 const previousDigest='sha256:34418f7bcba9fdd37dbf4c34d7c09f4da01b5ecaa89f2ce2eaa24c05faaac941';
+const newDigest='sha256:ddcd19db3b2126f28af55f960b5654aa7a8168d8634ead9fbab443b4e882ecca';
 const priorRevision='cxorbia-live-hr-dev-00335-tpk';
 const activate=process.argv.includes('--activate-exact-dev');
 const scope=['--project=cxorbia-backend-dev','--region=us-central1'];
@@ -49,8 +50,12 @@ const raw=String(revision.status?.imageDigest||'');
 const digest=raw.includes('@sha256:')?`sha256:${raw.split('@sha256:')[1]}`:raw;
 assert.match(digest,/^sha256:[a-f0-9]{64}$/,'ENVIRONMENT_FAILURE:REVISION_DIGEST_MISSING');
 assert.notEqual(digest,previousDigest,'RELEASE_COMPOSITION_FAILURE:OLD_RUNTIME_DIGEST_STILL_SERVING');
-assert.equal(revision.spec?.containers?.[0]?.image,expectedImage,
-  'RELEASE_COMPOSITION_FAILURE:NEW_REVISION_IMAGE_TAG_MISMATCH');
+assert.equal(digest,newDigest,'RELEASE_COMPOSITION_FAILURE:BUILT_IMAGE_DIGEST_DRIFT');
+// Cloud Run resolves the service template's source tag to an immutable digest
+// inside each revision. Compare the revision to that digest, not to its tag.
+assert.equal(revision.spec?.containers?.[0]?.image,
+  'gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@'+newDigest,
+  'RELEASE_COMPOSITION_FAILURE:NEW_REVISION_IMMUTABLE_IMAGE_DRIFT');
 assert.equal(revision.metadata?.name,expectedRevision);
 assert.equal(revision.status?.conditions?.find(x=>x.type==='Ready')?.status,'True',
   'ENVIRONMENT_FAILURE:REVISION_NOT_HEALTHY');
