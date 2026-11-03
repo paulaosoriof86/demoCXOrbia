@@ -422,6 +422,13 @@ async function resolveHrAndProtectedPrincipal(req,scope,forceFresh,protectedRequ
   };
 }
 
+// A revision-only read still requires a verified principal and current HR,
+// but must not rehydrate the entire protected Firestore overlay. The caller
+// compares the returned revision before atomically publishing any snapshot.
+function protectedSnapshotRequired(format,protectedRequested){
+  return protectedRequested&&format!=='meta';
+}
+
 function runtimeMeta(current){
   return {
     revision:current.revision,
@@ -517,6 +524,7 @@ const server=http.createServer(async(req,res)=>{
   if(await maybeHandleDevVisualRequest(req,res,url,{sendJson}))return;
   try{
     const protectedRequestStartedAt=Date.now();
+    const format=url.searchParams.get('format')||'json';
     const forceFresh=url.searchParams.get('fresh')==='1';
     const protectedRequested=url.searchParams.get('protectedState')==='1';
     const {current,principal,timing}=await resolveHrAndProtectedPrincipal(req,requestedScope,forceFresh,protectedRequested);
@@ -524,17 +532,18 @@ const server=http.createServer(async(req,res)=>{
     if(actualScope.tenantId!==requestedScope.tenantId||actualScope.projectId!==requestedScope.projectId){
       return sendJson(res,409,{ok:false,error:'hr_scope_mismatch',requested:{tenantId:requestedScope.tenantId,projectId:requestedScope.projectId},source:{tenantId:actualScope.tenantId,projectId:actualScope.projectId},writes:false,hrWrites:false,production:false});
     }
-    const format=url.searchParams.get('format')||'json';
     const operational=DEV_OPERATIONAL_NAMES&&url.searchParams.get('view')==='operational-names'&&url.searchParams.get('cxOperationalPreview')===DEV_OPERATIONAL_TOKEN;
     const meta={...runtimeMeta(current),tenantId:requestedScope.tenantId,projectId:requestedScope.projectId,legacyRoute:requestedScope.legacy===true};
     let snapshot,protectedState=null;
-    if(protectedRequested){
+    if(protectedSnapshotRequired(format,protectedRequested)){
       const protectedStateStartedAt=Date.now();
       const protectedView=await protectedPlatformState(current,principal,requestedScope,operational);
       meta.protectedTiming={...timing,protectedStateMs:Date.now()-protectedStateStartedAt,totalProtectedRequestMs:Date.now()-protectedRequestStartedAt};
       snapshot=protectedView.snapshot;protectedState=protectedView.protectedState;
-    }else snapshot=operational?operationalSnapshot(current):current.snapshot;
-    const json=(operational||protectedRequested)?JSON.stringify(snapshot):current.json;
+    }else{
+      snapshot=operational?operationalSnapshot(current):current.snapshot;
+      if(protectedRequested)meta.protectedTiming={...timing,protectedStateMs:0,totalProtectedRequestMs:Date.now()-protectedRequestStartedAt,metadataOnly:true};
+    }
     res.setHeader('ETag',`"${current.revision}"`);
     res.setHeader('X-CXOrbia-Source-Revision',current.revision);
     res.setHeader('X-CXOrbia-Generated-At',current.snapshot.generatedAt||'');
@@ -551,6 +560,7 @@ const server=http.createServer(async(req,res)=>{
         latestPeriodKey:[...(current.snapshot.periods||[])].map(p=>p.key).filter(Boolean).sort().at(-1)||null
       });
     }
+    const json=(operational||protectedRequested)?JSON.stringify(snapshot):current.json;
     if(format==='js'){
       res.statusCode=200;
       res.setHeader('Content-Type','application/javascript; charset=utf-8');

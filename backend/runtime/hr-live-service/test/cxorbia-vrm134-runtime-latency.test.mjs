@@ -8,6 +8,10 @@ const end=source.indexOf('\nfunction runtimeMeta(',begin);
 assert.ok(begin>=0&&end>begin,'VRM-134 exact server owner helper required');
 const makeHelper=(hr,auth)=>new Function('buildSnapshot','verifiedProtectedPrincipal',
   source.slice(begin,end)+'\nreturn resolveHrAndProtectedPrincipal;')(hr,auth);
+const snapshotRequiredBegin=source.indexOf('function protectedSnapshotRequired(');
+const snapshotRequiredEnd=source.indexOf('\nfunction runtimeMeta(',snapshotRequiredBegin);
+assert.ok(snapshotRequiredBegin>=0&&snapshotRequiredEnd>snapshotRequiredBegin,'VRM-134 protected metadata fast path required');
+const protectedSnapshotRequired=new Function(source.slice(snapshotRequiredBegin,snapshotRequiredEnd)+'\nreturn protectedSnapshotRequired;')();
 
 test('VRM-134 coalesces independent protected HR and principal reads without returning before both',async()=>{
   const starts=[];let releaseHr,releaseAuth;
@@ -44,4 +48,18 @@ test('VRM-134 exposes non-sensitive source refresh stages and protected timing o
   assert.match(source,/if\(protectedRequested\)return sendJson\(res,200,\{snapshot,_protected:protectedState,_runtime:/);
   assert.match(source,/if\(cache&&age<CACHE_MS\)return cache/);
   assert.match(source,/Expired data is never served as current/);
+});
+test('VRM-134 protected metadata read verifies identity and HR without repeating protected Firestore overlay',()=>{
+  assert.equal(protectedSnapshotRequired('meta',true),false,'protected metadata needs no duplicate overlay');
+  assert.equal(protectedSnapshotRequired('json',true),true,'full protected JSON still requires its overlay');
+  assert.equal(protectedSnapshotRequired('js',true),true,'protected JavaScript output keeps prior semantics');
+  assert.equal(protectedSnapshotRequired('meta',false),false,'public metadata never requests protected overlay');
+  assert.match(source,/resolveHrAndProtectedPrincipal\(req,requestedScope,forceFresh,protectedRequested\)/,
+    'protected meta still verifies Firebase principal and tenant/project membership');
+  assert.match(source,/if\(protectedSnapshotRequired\(format,protectedRequested\)\)/,
+    'only full protected representations expand Firestore collections');
+  assert.match(source,/if\(protectedRequested\)meta\.protectedTiming=\{\.\.\.timing,protectedStateMs:0/,
+    'verified meta exposes a traceable metadata-only timing');
+  assert.ok(source.indexOf("if(format==='meta')")<source.indexOf('const json=(operational||protectedRequested)'),
+    'metadata response must not serialize a full snapshot just to return revision');
 });
