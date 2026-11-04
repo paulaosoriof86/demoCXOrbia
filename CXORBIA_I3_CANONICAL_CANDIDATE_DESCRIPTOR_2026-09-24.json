@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM300_READBACK_RUN2103",
+  "status": "HOLD_I3_VRM301_SOURCE_FIXED_CANONICAL_PROOF_DEV_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "9ca91af24f1b3810c1c53a6566757617066d5314",
-  "productTreeAuthority": "81cd6bbd181b7e43007926643716e5086f42079b",
-  "predecessorProductSourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V558_2026-11-03.json",
-  "findingsLedgerExpectedGitBlob": "e85e86eeb42c118d926222f05c3b18132fb28b94",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261103-V237.json",
+  "productSourceSha": "742f2300f3cc0ac726b5b54558b27b1cd63a462d",
+  "productTreeAuthority": "e9452bf870ceaaad3dc51552e776e94d05a0644b",
+  "predecessorProductSourceSha": "9ca91af24f1b3810c1c53a6566757617066d5314",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V559_2026-11-04.json",
+  "findingsLedgerExpectedGitBlob": "505e768cfbbe080f070c7d6b0ed2c3ed68f27eab",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V238.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM300_RUN2103_DEV_RUNTIME_MATERIALIZED_READBACK_PENDING__ADMIN_SHOPPER_HR_CONTRAST__OCTOBER_G03_FINANCE_D06_B10_16_NONMATCH",
+  "activeBlocker": "VRM-301 source fix 9/9 local PASS; canonical source proof on 742f2300 pending; exact DEV Admin/Shopper proof pending; retain 5/21 MATCH, 16 NONMATCH, Gate20/21 HOLD.",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -115,7 +115,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-301",
+  "nextFindingId": "VRM-302",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -127,7 +127,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD 5/21 MATCH. RUN2103 41761015296 materializó fuente canónica 9ca91af24f1b3810c1c53a6566757617066d5314 con runtime DEV cxorbia-live-hr-dev-00340-zzt, digest sha256:480374e4a30e23b1389badbf67247089f02d966e218ab943009be47f7dc8b50d y HR revision cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac, Hosting DEV f096f9992587a3f6 intacto y G03 Hosting DEV histórico 231186c337bcd0ba preservado; 0 escrituras. Admin NOV 2026 auto visible; OCT 2026 conserva 2 bancos visibles segun correccion D05; ninguna fusion ni cierre octubre se infiere. Lectura protegida VRM157 RUN41779593810 PASS artefacto 13298382754: runtime/digest y Hosting DEV iguales, HR revision cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac igual y estable, 23 ficheros de evidencia y bytes frontend exactos, 0 writes/deploy. Causa del FAIL previo ENVIRONMENT_FAILURE Playwright sobre Ubuntu26; fix focal job Ubuntu24 commit b35005210f6e8642f3c3849f58a83054a6f0512c. Siguiente accion exacta: comprobar en mismo artefacto autentificacion Shopper y Admin, disponibilidad/asignacion/postulacion/cuestionario con ACK remoto idempotente, paridad de conteos contra HR Sheets independiente; cerrar datos operativos OCT (43/44 realizadas, 10 sin submitir, 1 fuera de rango) sin adulterar HR; conservar 32/83 fusiones con ACK historico y 51/83 pendientes por cohorte, revisar G03 finanzas D06/B10 y promover exclusivamente los 16 modulos sin MATCH con prueba. I3 HOLD 5/21, Gate20/21 HOLD, produccion DO_NOT_TOUCH; autorizacion I4 no otorgada. P0 UI nuevo: visita #728 en DEV acumulo 7 dialogos por click tras rerenders; owner app/modules/visitas.js [data-vdetail] y contraparte shopper [data-detail]; corregir binder idempotente y probar mismo artefacto antes de certificar visitas.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH. RUN2103 41761015296 materializó fuente canónica 9ca91af24f1b3810c1c53a6566757617066d5314 con runtime DEV cxorbia-live-hr-dev-00340-zzt, digest sha256:480374e4a30e23b1389badbf67247089f02d966e218ab943009be47f7dc8b50d y HR revision cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac, Hosting DEV f096f9992587a3f6 intacto y G03 Hosting DEV histórico 231186c337bcd0ba preservado; 0 escrituras. Admin NOV 2026 auto visible; OCT 2026 conserva 2 bancos visibles segun correccion D05; ninguna fusion ni cierre octubre se infiere. Lectura protegida VRM157 RUN41779593810 PASS artefacto 13298382754: runtime/digest y Hosting DEV iguales, HR revision cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac igual y estable, 23 ficheros de evidencia y bytes frontend exactos, 0 writes/deploy. Causa del FAIL previo ENVIRONMENT_FAILURE Playwright sobre Ubuntu26; fix focal job Ubuntu24 commit b35005210f6e8642f3c3849f58a83054a6f0512c. Siguiente accion exacta: comprobar en mismo artefacto autentificacion Shopper y Admin, disponibilidad/asignacion/postulacion/cuestionario con ACK remoto idempotente, paridad de conteos contra HR Sheets independiente; cerrar datos operativos OCT (43/44 realizadas, 10 sin submitir, 1 fuera de rango) sin adulterar HR; conservar 32/83 fusiones con ACK historico y 51/83 pendientes por cohorte, revisar G03 finanzas D06/B10 y promover exclusivamente los 16 modulos sin MATCH con prueba. I3 HOLD 5/21, Gate20/21 HOLD, produccion DO_NOT_TOUCH; autorizacion I4 no otorgada. P0 VRM-301 — visita #728 abría 7 overlays tras rerenders. Corrección en app/modules/visitas.js y contraparte Shopper; pruebas focales locales 9/9 PASS. RUN41792005418 pasó 67 checks preflight y se detuvo antes del source proof por RELEASE_COMPOSITION_FAILURE: descriptor/matriz/ledger aún apuntaban a 9ca91af. Siguiente: ejecutar la certificación source canónica de esta candidata sincronizada; luego materializar el artefacto exacto en DEV y probar Admin/Shopper, HR revision, persistencia e idempotencia. Sin writes de HR ni producción.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -862,7 +862,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "386d8c858cae35b624d11b2bac04efc5194d7a88",
+  "productSourceTree": "e9452bf870ceaaad3dc51552e776e94d05a0644b",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -3036,7 +3036,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "814a05c6ea27387b65694ccdd07c76168df69845",
+  "moduleTruthExpectedGitBlob": "169fe7182bfb94857f68354779e7228653f6a32a",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -17017,5 +17017,21 @@
       "status": "PROVEN_NOT_FIXED",
       "noCodeOrRuntimeChange": true
     }
+  },
+  "vrm301VisitDetailBinding": {
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM301_VISIT_DETAIL_BINDING_SOURCE_RECEIPT_20261104.json",
+    "receiptGitBlob": "842b743f614de66cfd061570b3b523f7e166cb4e",
+    "sourceSha": "742f2300f3cc0ac726b5b54558b27b1cd63a462d",
+    "sourceTree": "e9452bf870ceaaad3dc51552e776e94d05a0644b",
+    "predecessorSourceSha": "9ca91af24f1b3810c1c53a6566757617066d5314",
+    "owner": "app/modules/visitas.js",
+    "ownerBlob": "e78caa3c4bd28f1a57618986c6d5cebc3ea1e699",
+    "qaOwner": "tools/qa/cxorbia-i3-vrm301-idempotent-visit-detail.test.mjs",
+    "qaBlob": "fcb2771c34d0006f60dacbecff221dfd95678ee8",
+    "localTests": "9_OF_9_PASS",
+    "canonicalWorkflow": "PENDING_RE-RUN_AFTER_CONTROL_SYNC",
+    "devMaterialization": "PENDING",
+    "sameArtifactAdminShopper": "PENDING",
+    "production": false
   }
 }

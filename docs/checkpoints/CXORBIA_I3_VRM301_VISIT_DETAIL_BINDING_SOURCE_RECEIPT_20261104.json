@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "cxorbia.i3.source-fix-receipt.v1",
+  "receiptId": "CXORBIA-I3-VRM301-VISIT-DETAIL-BINDING-20261104",
+  "iteration": "I3",
+  "state": "SOURCE_FIXED_LOCAL_TESTS_PASS_CANONICAL_SOURCE_PROOF_PENDING",
+  "findingId": "VRM-301",
+  "classification": "FUNCTIONAL_DEFECT",
+  "severity": "P0",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "production": "DO_NOT_TOUCH",
+  "sourceCandidate": {
+    "sha": "742f2300f3cc0ac726b5b54558b27b1cd63a462d",
+    "tree": "e9452bf870ceaaad3dc51552e776e94d05a0644b",
+    "parent": "d1ab66b7e691573e59f62c0a6bbd88def55e5d15",
+    "predecessorSourceSha": "9ca91af24f1b3810c1c53a6566757617066d5314"
+  },
+  "observedDefect": {
+    "sourceRun": 41761015296,
+    "page": "Admin > Visitas > detalle de visita #728",
+    "observed": "Un clic tras rerenders asíncronos abrió siete overlays superpuestos.",
+    "control": "Recarga limpia: un overlay.",
+    "rootCause": "Los renderers registraban listeners click adicionales sobre el mismo botón; cada handler abría un overlay.",
+    "shopperCounterpart": "[data-detail]"
+  },
+  "sourceFix": {
+    "owner": "app/modules/visitas.js",
+    "ownerBlob": "e78caa3c4bd28f1a57618986c6d5cebc3ea1e699",
+    "qaOwner": "tools/qa/cxorbia-i3-vrm301-idempotent-visit-detail.test.mjs",
+    "qaBlob": "fcb2771c34d0006f60dacbecff221dfd95678ee8",
+    "commit": "742f2300f3cc0ac726b5b54558b27b1cd63a462d",
+    "approach": "Un handler por acción y elemento DOM: retirar el previo usando una clave Symbol estable; aplicado a Admin y Shopper."
+  },
+  "tests": {
+    "focusedLocal": {
+      "tests": 9,
+      "pass": 9,
+      "fail": 0,
+      "scope": "Tres suites focales leídas byte a byte desde el commit 742f2300."
+    },
+    "canonicalWorkflow": {
+      "runId": 41792005418,
+      "jobId": 126447421426,
+      "conclusion": "failure",
+      "preGuardChecks": {
+        "pass": 67,
+        "fail": 0
+      },
+      "failure": "RELEASE_COMPOSITION_FAILURE:UNDECLARED_PRODUCT_DRIFT_AFTER_CANONICAL_CANDIDATE:app/modules/visitas.js",
+      "sourceProof": "NOT_REACHED"
+    }
+  },
+  "deployment": {
+    "devMaterialized": false,
+    "sameArtifactAdminShopper": "PENDING",
+    "hrWrites": 0,
+    "providerWrites": 0,
+    "productionWrites": 0
+  },
+  "nextExactAction": "Reejecutar el workflow canónico existente con descriptor, ledger y matriz alineados; luego materializar el artefacto exacto en DEV y probar Admin/Shopper."
+}
