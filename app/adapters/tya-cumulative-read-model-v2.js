@@ -220,6 +220,28 @@
       if(candidates.length===1)liveToCanonical.set(str(liveId),candidates[0]);
       else if(candidates.length>1)identityConflicts.push({liveShopperId:str(liveId),candidates:candidates.sort(),reason:'conflicting_exact_visit_crosswalk'});
     }
+    // VRM-304 P0: an explicitly retired exact alias belongs to its adjudicated
+    // canonical keeper, even while both Firestore profile documents still exist.
+    // This provider-authorized edge is stronger than an ambiguous generic alias
+    // index; it is never inferred from human names, logins, or countries.
+    const adjudicatedSupersession=liveId=>{
+      const alias=onlyUnique(profilesById,liveId);
+      if(!alias||lower(alias.identityState)!=='superseded_exact_alias')return '';
+      const target=str(alias.supersededByShopperId),keeper=onlyUnique(profilesById,target);
+      if(!target||target===liveId||!keeper||
+         lower(keeper.identityAuthority)!=='tenant_adjudication'||
+         !str(keeper.identityAuthorityRef)||
+         !arr(keeper.exactAliases).includes(liveId))return '';
+      const project=str(hr.currentProjectId),inScope=profile=>{
+        const explicit=str(profile.projectId),allowed=uniq(profile.projectIds);
+        return (!explicit||explicit===project)&&(!allowed.length||allowed.includes(project));
+      };
+      if(!inScope(alias)||!inScope(keeper))return '';
+      if(str(alias.tenantId)&&str(keeper.tenantId)&&str(alias.tenantId)!==str(keeper.tenantId))return '';
+      const aliasCountry=lower(alias.pais||alias.country),keeperCountry=lower(keeper.pais||keeper.country);
+      if(aliasCountry&&keeperCountry&&aliasCountry!==keeperCountry)return '';
+      return target;
+    };
     for(const s of baseShoppers){
       const liveId=str(s.shopperId||s.id);if(!liveId)continue;
       const authoritativeCanonical=str(s.canonicalShopperId);
@@ -227,6 +249,8 @@
         liveToCanonical.set(liveId,authoritativeCanonical);
         continue;
       }
+      const supersession=adjudicatedSupersession(liveId);
+      if(supersession){liveToCanonical.set(liveId,supersession);continue;}
       const candidates=new Set();
       const direct=onlyUnique(profilesById,liveId);if(direct)addIdentityCandidate(candidates,liveId,direct.id,'direct_profile_id');
       const alias=onlyUnique(profilesByAlias,liveId);if(alias)addIdentityCandidate(candidates,liveId,alias.id,'profile_exact_alias');
@@ -236,6 +260,14 @@
       const rel=relation.get(liveId);if(rel&&rel.size===1)candidates.add([...rel][0]);
       if(candidates.size===1)liveToCanonical.set(liveId,[...candidates][0]);
       else if(candidates.size>1)identityConflicts.push({liveShopperId:liveId,candidates:[...candidates].sort(),reason:'conflicting_exact_crosswalk'});
+    }
+    // An HR visit may reference a source identity absent from the current
+    // shopper summary; apply only the same verified supersession in that case.
+    for(const visit of baseVisits){
+      const liveId=str(visit.shopperId);
+      if(!liveId||liveToCanonical.has(liveId))continue;
+      const supersession=adjudicatedSupersession(liveId);
+      if(supersession)liveToCanonical.set(liveId,supersession);
     }
     const assignmentConflicts=[],pendingPlatformAssignmentOverlays=[];
     const composedVisits=baseVisits.map(base=>{
