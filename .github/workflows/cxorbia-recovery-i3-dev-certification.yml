@@ -84,6 +84,7 @@ jobs:
       node --test tools/qa/cxorbia-i3-work-uat-*.test.mjs
       node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs | tee .tmp/canonical-candidate-authority/result.json
       node --test tools/hr-source/tya-resolve-live-month-tabs.test.mjs
+      node --test tools/qa/cxorbia-i3-vrm300-traffic.test.mjs
       SOURCE="$(jq -r '.productSourceSha' .tmp/canonical-candidate-authority/result.json)"
       TREE="$(jq -r '.productSourceTree' .tmp/canonical-candidate-authority/result.json)"
       STATUS="$(jq -r '.status // empty' "$CANDIDATE_DESCRIPTOR")"
@@ -592,9 +593,9 @@ jobs:
    runs-on: ubuntu-latest
    timeout-minutes: 55
    env:
-    FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
-    FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-    VRM151_MAT_OUT: .tmp/vrm151-runtime-only-materialization
+    SRC: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+    FTREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+    VOUT: .tmp/vrm151-runtime-only-materialization
     PRIOR_APP_SOURCE: c3037483f236837f1e469817db8d11415cd59dbe
     EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/f096f9992587a3f6
    steps:
@@ -604,15 +605,15 @@ jobs:
      with: {node-version: '24'}
    - run: |
       set -Eeuo pipefail
-      mkdir -p "$VRM151_MAT_OUT"
-      test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
-      test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
-      test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
-      git merge-base --is-ancestor "$FOCAL_SOURCE" HEAD
-      git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-      git diff --quiet "$PRIOR_APP_SOURCE" "$FOCAL_SOURCE" -- app firebase.json .firebaserc firestore.rules storage.rules
+      mkdir -p "$VOUT"
+      test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$SRC"
+      test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FTREE"
+      test "$(git rev-parse "$SRC^{tree}")" = "$FTREE"
+      git merge-base --is-ancestor "$SRC" HEAD
+      git diff --quiet "$SRC" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+      git diff --quiet "$PRIOR_APP_SOURCE" "$SRC" -- app firebase.json .firebaserc firestore.rules storage.rules
       node --check tools/hr-source/tya-resolve-live-month-tabs.mjs
-      node --test tools/hr-source/tya-resolve-live-month-tabs.test.mjs | tee "$VRM151_MAT_OUT/source-tests.log"
+      node --test tools/hr-source/tya-resolve-live-month-tabs.test.mjs | tee "$VOUT/source-tests.log"
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
      with:
@@ -624,7 +625,7 @@ jobs:
       set -Eeuo pipefail
       SOURCE_DIR="$RUNNER_TEMP/cxorbia-vrm151-source"
       rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
-      git archive "$FOCAL_SOURCE" | tar -x -C "$SOURCE_DIR"
+      git archive "$SRC" | tar -x -C "$SOURCE_DIR"
       test -f "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml"
       TOKEN="$(gcloud auth print-access-token)"
       HOSTING_LIVE="$(curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" | jq -r '.release.version.name // empty')"
@@ -632,53 +633,41 @@ jobs:
       echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
    - run: |
       set -Eeuo pipefail
-      IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-vrm151-${FOCAL_SOURCE:0:12}-${GITHUB_RUN_ID}"
-      echo "$IMAGE_URI" > "$VRM151_MAT_OUT/image-uri.txt"
+      IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-vrm151-${SRC:0:12}-${GITHUB_RUN_ID}"
+      echo "$IMAGE_URI" > "$VOUT/image-uri.txt"
       gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
-      jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg image "$IMAGE_URI" '{decision:"PASS_VRM151_ONE_BUILD",sourceSha:$source,sourceTree:$tree,imageTag:$image,builds:1,production:false}' > "$VRM151_MAT_OUT/build.json"
+      jq -n -S --arg source "$SRC" --arg tree "$FTREE" --arg image "$IMAGE_URI" '{decision:"PASS_VRM151_ONE_BUILD",sourceSha:$source,sourceTree:$tree,imageTag:$image,builds:1,production:false}' > "$VOUT/build.json"
    - run: |
       set -Eeuo pipefail
-      IMAGE_URI="$(cat "$VRM151_MAT_OUT/image-uri.txt")"
+      IMAGE_URI="$(cat "$VOUT/image-uri.txt")"
       gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --quiet
-      # A ready revision is not proof of a serving revision: route the exact DEV build first.
-      gcloud run services update-traffic "$SERVICE" --project "$PROJECT" --region "$REGION" --to-latest --quiet
-      DEV_TRAFFIC_READY=0
-      for attempt in $(seq 1 30); do
-        gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM151_MAT_OUT/runtime.json"
-        DEV_REVISION="$(jq -r '.status.latestCreatedRevisionName // empty' "$VRM151_MAT_OUT/runtime.json")"
-        READY_REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$VRM151_MAT_OUT/runtime.json")"
-        DEV_TRAFFIC_PERCENT="$(jq -r --arg revision "$DEV_REVISION" '[.status.traffic[]? | select(.revisionName == $revision) | (.percent // 0)] | add // 0' "$VRM151_MAT_OUT/runtime.json")"
-        if [[ -n "$DEV_REVISION" && "$DEV_REVISION" == "$READY_REVISION" && "$DEV_TRAFFIC_PERCENT" == "100" ]]; then DEV_TRAFFIC_READY=1; break; fi
-        sleep 4
-      done
-      if [[ "$DEV_TRAFFIC_READY" != "1" ]]; then echo "DEV serving revision/traffic does not match the latest created and ready revision" >&2; exit 1; fi
-      gcloud run revisions describe "$DEV_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$VRM151_MAT_OUT/runtime-revision.json"
-      REVISION_IMAGE="$(jq -r '.spec.containers[0].image // empty' "$VRM151_MAT_OUT/runtime-revision.json")"
-      if [[ "$REVISION_IMAGE" != "$IMAGE_URI" ]]; then echo "DEV serving revision is not the exact image built by this run" >&2; exit 1; fi
-      RAW="$(jq -r '.status.imageDigest // empty' "$VRM151_MAT_OUT/runtime-revision.json")"
+      DEV_REVISION="$(node tools/qa/cxorbia-i3-vrm300-traffic.mjs "$SERVICE" "$PROJECT" "$REGION" "$IMAGE_URI")"
+      gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VOUT/runtime.json"
+      gcloud run revisions describe "$DEV_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$VOUT/runtime-revision.json"
+      RAW="$(jq -r '.status.imageDigest // empty' "$VOUT/runtime-revision.json")"
       if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else echo "runtime digest unresolved" >&2; exit 1; fi
-      RUNTIME_URL="$(jq -r '.status.url // empty' "$VRM151_MAT_OUT/runtime.json")"
-      curl -fsS --retry 12 --retry-delay 3 "$RUNTIME_URL/health" > "$VRM151_MAT_OUT/health.json"
-      jq -e '.ok==true and .production==false and .hrWrites==false' "$VRM151_MAT_OUT/health.json" >/dev/null
+      RUNTIME_URL="$(jq -r '.status.url // empty' "$VOUT/runtime.json")"
+      curl -fsS --retry 12 --retry-delay 3 "$RUNTIME_URL/health" > "$VOUT/health.json"
+      jq -e '.ok==true and .production==false and .hrWrites==false' "$VOUT/health.json" >/dev/null
       echo "DEV_REVISION=$DEV_REVISION" >> "$GITHUB_ENV"
       echo "RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
    - run: |
       set -Eeuo pipefail
       TOKEN="$(gcloud auth print-access-token)"
-      curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM151_MAT_OUT/hosting-live-channel.json"
-      HOSTING_VERSION_NAME="$(jq -r '.release.version.name // empty' "$VRM151_MAT_OUT/hosting-live-channel.json")"
+      curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VOUT/hosting-live-channel.json"
+      HOSTING_VERSION_NAME="$(jq -r '.release.version.name // empty' "$VOUT/hosting-live-channel.json")"
       test "$HOSTING_VERSION_NAME" = "$EXPECTED_HOSTING_VERSION"
-      jq -n -S --arg hosting "$HOSTING_VERSION_NAME" '{decision:"PASS_VRM151_HOSTING_REUSED_BYTE_IDENTICAL_APP",hostingVersion:$hosting,hostingDeploys:0,production:false}' > "$VRM151_MAT_OUT/hosting-reuse.json"
+      jq -n -S --arg hosting "$HOSTING_VERSION_NAME" '{decision:"PASS_VRM151_HOSTING_REUSED_BYTE_IDENTICAL_APP",hostingVersion:$hosting,hostingDeploys:0,production:false}' > "$VOUT/hosting-reuse.json"
    - run: |
       set -Eeuo pipefail
-      curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm151mat=$GITHUB_RUN_ID" > "$VRM151_MAT_OUT/hr-meta.json"
-      HR_REVISION="$(jq -r '.revision // empty' "$VRM151_MAT_OUT/hr-meta.json")"
+      curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm151mat=$GITHUB_RUN_ID" > "$VOUT/hr-meta.json"
+      HR_REVISION="$(jq -r '.revision // empty' "$VOUT/hr-meta.json")"
       [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
-      jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .hrWrites==false and .production==false' "$VRM151_MAT_OUT/hr-meta.json" >/dev/null
+      jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .hrWrites==false and .production==false' "$VOUT/hr-meta.json" >/dev/null
       echo "HR_REVISION=$HR_REVISION" >> "$GITHUB_ENV"
    - run: |
       set -Eeuo pipefail
-      jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg runtime "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg hosting "$EXPECTED_HOSTING_VERSION" --arg hr "$HR_REVISION" '{decision:"PASS_I3_HR_NOVEMBER_RUNTIME_ONLY_DEV_MATERIALIZATION",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,builds:1,runtimeDeploys:1,hostingDeploys:0,hrWrites:0,bankWrites:0,production:false}' > "$VRM151_MAT_OUT/result.json"
+      jq -n -S --arg source "$SRC" --arg tree "$FTREE" --arg runtime "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg hosting "$EXPECTED_HOSTING_VERSION" --arg hr "$HR_REVISION" '{decision:"PASS_I3_HR_NOVEMBER_RUNTIME_ONLY_DEV_MATERIALIZATION",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,builds:1,runtimeDeploys:1,hostingDeploys:0,hrWrites:0,bankWrites:0,production:false}' > "$VOUT/result.json"
    - if: always()
      uses: actions/upload-artifact@v4
      with:
