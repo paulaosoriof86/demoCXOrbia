@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm302.dev-readback.identity-continuity.v1",
+  "asOfUtc": "2026-11-04T09:44:18Z",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "status": "HOLD",
+  "production": "DO_NOT_TOUCH",
+  "authorizationI4": false,
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "canonicalCandidate": {
+    "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "matrixSuccessor": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V243.json",
+    "matchingModules": 5,
+    "totalModules": 21,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "phaseAComplete": false
+  },
+  "provenSource": {
+    "sha": "99114523e4e08dd480e30e665e6dfd4304d84301",
+    "tree": "8ed2e4c6cac329ad540e38075ad4ec814b01e305",
+    "adminShoppersOwner": "app/modules/shoppers.js",
+    "ownerBlob": "be17bbafe991fc1e5a090f03ffcf5170bb7624a0",
+    "findingId": "VRM-302",
+    "classification": "FUNCTIONAL_DEFECT",
+    "defect": "Repeated bindRows listeners caused 7 stacked Admin shopper profile dialogs from a single click; idempotent binding corrected source.",
+    "sourceTests": {
+      "focal18Of18": "PASS",
+      "coldLoad9Of9": "PASS",
+      "hrWatcher16Of16": "PASS"
+    },
+    "canonicalCi": "PASS"
+  },
+  "devMaterialization": {
+    "decision": "PASS_I3_CURRENT_SOURCE_HOSTING_DEV_ONLY",
+    "workflowRunId": 41809435938,
+    "jobId": 126504829738,
+    "artifactId": 13311701111,
+    "artifactZipSha256": "8fa8f3b07752a804ba7c3dec0317ae3f236fb5d621909358a34a9f0464984cf8",
+    "hostingBefore": "sites/cxorbia-backend-dev/versions/eb1678123f0cf01d",
+    "hostingAfter": "sites/cxorbia-backend-dev/versions/b163f88f064004e9",
+    "filesComparedExactly": 11,
+    "runtimeRevision": "cxorbia-live-hr-dev-00340-zzt",
+    "runtimeDigest": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:480374e4a30e23b1389badbf67247089f02d966e218ab943009be47f7dc8b50d",
+    "runtimeBuilds": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 1,
+    "rulesDeploys": 0,
+    "hrWrites": 0,
+    "firestoreDirectWrites": 0,
+    "productionDeploys": 0,
+    "productionIndexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+    "productionUnchanged": true,
+    "wholeProductCertified": false
+  },
+  "browserQa": {
+    "gtStivenLopez": {
+      "postDeployReload": "PASS",
+      "identityCorrect": true,
+      "country": "GT",
+      "project": "cinepolis",
+      "period": "NOV_2026",
+      "canonicalVisits": 9,
+      "activeVisits": 1,
+      "shopperFee": "Q60"
+    },
+    "hnWilsonLanza": {
+      "preDeployLoginAndHistory": "PASS",
+      "country": "HN",
+      "canonicalVisits": 18,
+      "shopperFee": "L200",
+      "sameHostingPostDeploy": "PENDING"
+    },
+    "gtJulissaFlores": {
+      "priorCanonicalAdjudication": "PRESERVE",
+      "canonicalShopperId": "shopper_gt_0c198c1055",
+      "historicAliasId": "shopper_gt_86254c4228",
+      "visibleLogin": "julissa.flores",
+      "priorNineVisitsProof": "PASS_HISTORICAL",
+      "currentPasswordPatternAttempt": "INVALID_ONE_ATTEMPT_NOT_PROOF_OF_IDENTITY_REGRESSION",
+      "credentialAndPostDeployAdminReadback": "PENDING",
+      "noReMergeNoReset": true
+    },
+    "adminShoppersSingleModalPostDeploy": "PENDING_BROWSER_FOCUS_TIMEOUT_SEPARATE_TAB"
+  },
+  "approvedIdentityDecisions": {
+    "file": "CXORBIA_I3_SHOPPERS_CONFIRMAR_IDENTIDADES_2026-10-28(1).xlsx",
+    "decisionDigest": "ac3e15184316d62aa53942359e857f2c34dec486a2ca41057e529a39f062d872",
+    "pairsApproved": 139,
+    "groupsApproved": 83,
+    "groupsIndependentlyVerifiedAsOf20261101": 32,
+    "groupsStillOpenAsOf20261101": 51,
+    "pendingBuckets": {
+      "aliasOwnedVisits": 36,
+      "multipleHrCanonical": 11,
+      "keeperVerified": 3,
+      "keeperNotVerified": 1
+    },
+    "lastIndependentRecountRunId": 41255179958,
+    "approvedRevision": "4fc8def718fd1504f5d76a1fbc80b6901cbf711ec2b89f4dfc3a81ecbbca517a",
+    "observedRevisionAsOf20261101": "f12fba714e039c8a27ecf494ea8f883af8600b1625c06713814f241602a5a799",
+    "revisionApproval": "HOLD_MUST_RECONCILE_EXACT_IDS_NO_REASK_139_DECISIONS",
+    "noFusionWritesThisIteration": true
+  },
+  "identityReviewNotice": {
+    "lastUserVisibleCount": 273,
+    "source": "app/core/router.js pendingShopperIdentityReviewCount",
+    "semantic": "Unique active technical case/alias identity review keys; scoped to project, excluding resolved/superseded/closed; not shoppers or approved pending fusions",
+    "lastVisibleShoppersWithReview": 19,
+    "liveCategoryBreakdown": "NOT_VERIFIED_FRESH",
+    "requiresSeparateQueueRecount": true
+  },
+  "remainingGates": {
+    "adminSingleModalAfterRerender": "PENDING",
+    "independentSameHrRevisionDirectSheetVsAdminShopper": "PENDING",
+    "remainingIdentityGroups": 51,
+    "all21ModulesExactArtifactRoleE2e": "PENDING",
+    "terminalImmutableArtifact": "PENDING",
+    "authorizationI4": false
+  },
+  "sourceControlOnly": {
+    "receiptAndPointersOnly": true,
+    "newProductSourceChanges": 0,
+    "newBackendChanges": 0,
+    "newWorkflowAdded": 0,
+    "productionWrites": 0
+  }
+}

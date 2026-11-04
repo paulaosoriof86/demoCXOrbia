@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM302_SOURCE_ONLY_QA_DEV_PENDING_5_MATCH",
+  "status": "HOLD_I3_VRM302_DEV_HOSTING_PASS_ADMIN_E2E_PENDING_5_MATCH",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -9,11 +9,11 @@
   "predecessorProductSourceSha": "742f2300f3cc0ac726b5b54558b27b1cd63a462d",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V563_2026-11-04.json",
   "findingsLedgerExpectedGitBlob": "00584ef7b3208291eeb88cf3d2d326f2bc6cc67a",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V242.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V243.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-302 Admin Shoppers multi-modal P0 source-only fixed; exact canonical CI and DEV materialization plus Admin/Shopper 1-modal E2E pending. VRM-301 DEV Admin and Shopper GT/HN read-only focal PASS; 5/21 MATCH; Gate20/21 HOLD; production DO_NOT_TOUCH.",
+  "activeBlocker": "DEV Hosting exact source now PASS 41809435938; VRM-302 real Admin single-modal E2E, 51 approved identity groups revised-HR preflight, independent HR parity and other nonMATCH modules still HOLD.",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -127,7 +127,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD 5/21 MATCH, Gate20/21 HOLD. VRM-301 detalle de visita Admin DEV PASS; Shopper Wilson (HN) y Stiven (GT) E2E DEV autenticados PASS en contexto/visitas/histórico/disponibilidad/moneda/sesión y modal de oportunidad único; Julissa GT credencial actual no validada, sin reset. VRM-302 P0 Admin Shoppers: 7 perfiles modales apilados tras un clic inicial, 1 tras rerender; owner app/modules/shoppers.js; corrección source-only 99114523e4e0 con 2/2 ensayos aislados PASS, CI canónica/recomposición y E2E post-deploy pendientes; sin elevar módulos a MATCH. Comparar HR viva misma revisión externa; retomar G03 usando sites/cxorbia-backend-dev/versions/231186c337bcd0ba como evidencia histórica, no candidata actual; continuar cierre de finanzas; conservar fusiones 32/83 verificadas y 51/83 pendientes de recenso. Producción DO_NOT_TOUCH; sin escrituras HR/proveedor ni I4.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH, Gate20/21 HOLD. VRM-302: canonical CI and DEV Hosting-only run 41809435938 PASS; source 99114523 / tree 8ed2e4c6, 43/43 focal-source checks, exact 11 DEV assets, Hosting version b163f88f064004e9, same runtime digest, prod unchanged. Postdeploy Shopper Stiven reload PASS; Admin Shoppers single-modal real E2E after rerender PENDING due Chrome focus on other tab. Julissa identity adjudication was previously PASS and must NOT be re-merged/reset; one rejected guess password is not proof of identity regression. Identity warning 273 is technical cases/aliases, NOT 273 fusions; Paula Excel 139 YES / 83 groups preserved, last 32 verified / 51 pending; HR revision source preflight HOLD, reconcile exact stable IDs before bounded provider ACK/idempotent writes. Next: Admin 1-modal E2E and identity review queue breakdown on same deployed artifact; independent HR live revision parity; certify affected module matrix without reopening historical PASS; G03/C04-C05/D05-D06/B10 and rest 16 nonMATCH; then full Gate20/21, explicit I4 authorization. No production/HR write in this iteration.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -17076,5 +17076,15 @@
       "gate21": "HOLD",
       "production": "DO_NOT_TOUCH"
     }
+  },
+  "vrm302DevHostingIdentityContinuity20261104": {
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM302_DEV_HOSTING_IDENTITY_CONTINUITY_20261104.json",
+    "sourceSha": "99114523e4e08dd480e30e665e6dfd4304d84301",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/b163f88f064004e9",
+    "ciRunId": 41809435938,
+    "artifactId": 13311701111,
+    "sourceTests": "43_OF_43_PASS",
+    "currentStatus": "DEV_SERVED_HUMAN_E2E_PENDING",
+    "production": "DO_NOT_TOUCH"
   }
 }
