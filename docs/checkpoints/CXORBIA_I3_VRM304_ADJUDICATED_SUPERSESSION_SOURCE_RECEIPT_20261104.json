@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm304.p0-exact-supersession-source-receipt.v1",
+  "asOf": "2026-11-04",
+  "iteration": "I3",
+  "state": "HOLD",
+  "expectedParentSha": "482ff0235d7214c8e31d9f1c36253c6412a5c2d7",
+  "source": {
+    "sha": "21a82e7a4b42ba2c0878bf1d6041b5b0e8dc7c1c",
+    "tree": "2a98089c41bf0ca45d553902918c6eae6a539d60",
+    "predecessor": "bc685392d7f1a9ba685df6f7b74d48b19b44e385",
+    "owner": "app/adapters/tya-cumulative-read-model-v2.js",
+    "ownerBlob": "39b217eee3258b658fa28a07fdfa52c837194653",
+    "testPath": "tools/qa/cxorbia-i3-vrm304-adjudicated-supersession.test.mjs",
+    "testBlob": "bbfc69d47bf3a94186cd2eb2470dd9cc9f2659ec"
+  },
+  "evidence": {
+    "realDevBefore": "Admin 10 vs Shopper 0 after adjudicated alias; Julissa 10 PASS",
+    "sourceReproduction": "two Firestore profile documents keep retired alias in generic index; exact adjudication override fixes 10/0 synthetic",
+    "relatedTestsPass": 64,
+    "relatedTestsFail": 0,
+    "compositionReplays": 3,
+    "compositionVisits": 616,
+    "privacy": "no names, email or password matching",
+    "sourceRevisionCurrentLive": "NOT_READ_THIS_ATTEMPT"
+  },
+  "controls": {
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V564_2026-11-04.json",
+    "ledgerGitBlob": "54159221beacc888518a7da5fea3af9cfbdf28d2",
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V244.json",
+    "matrixGitBlob": "bd908231e4c11f420a3d4184bb297a3efe21414f",
+    "modulesMatch": 5,
+    "modulesTotal": 21,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4": "NO_GO",
+    "reconciledPriorPointerPath": "V562 pathname but V563 expected hash; current pointer atomically aligned to V564"
+  },
+  "noChanges": {
+    "hr": true,
+    "auth": true,
+    "firestore": true,
+    "cloudRun": true,
+    "hostingDev": true,
+    "production": true,
+    "credentials": true,
+    "approvedMerge": true
+  },
+  "nextExactAction": "Run existing canonical source gate and publish only approved 11-asset focal Hosting DEV successor, read back exact asset bytes, same-revision Admin and real Shopper Stiven/Julissa visits, history and benefits; preserve frozen HR + finance gate work. I3 HOLD until proven.",
+  "authorization": "No separate authorization needed for scoped DEV focal source and QA. I4 production replacement still requires explicit owner authorization."
+}

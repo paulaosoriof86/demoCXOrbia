@@ -87,6 +87,7 @@ jobs:
       node --test tools/qa/cxorbia-i3-e03-visita-payment-human-state.test.mjs
       node --test tools/qa/cxorbia-i3-vrm301-idempotent-visit-detail.test.mjs
       node --test tools/qa/cxorbia-i3-vrm302-admin-shoppers-modal-binding.test.mjs
+      node --test tools/qa/cxorbia-i3-vrm304-adjudicated-supersession.test.mjs
       node --test tools/hr-source/tya-resolve-live-month-tabs.test.mjs
       node --test tools/qa/cxorbia-i3-vrm300-traffic.test.mjs
       SOURCE="$(jq -r '.productSourceSha' .tmp/canonical-candidate-authority/result.json)"
