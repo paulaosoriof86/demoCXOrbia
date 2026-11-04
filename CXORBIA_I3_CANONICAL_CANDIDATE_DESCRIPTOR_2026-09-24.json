@@ -8,7 +8,7 @@
   "productTreeAuthority": "13bdb8f47f9348164be4470f65ca42786accdfbb",
   "predecessorProductSourceSha": "99114523e4e08dd480e30e665e6dfd4304d84301",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V563_2026-11-04.json",
-  "findingsLedgerExpectedGitBlob": "fe1924569e96eb29f80e79fb3f006d10517a1597",
+  "findingsLedgerExpectedGitBlob": "af625101217d63eff532981ad06704d4063aa361",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V243.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",

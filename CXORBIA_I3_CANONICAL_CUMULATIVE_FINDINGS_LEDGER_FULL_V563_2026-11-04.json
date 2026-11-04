@@ -22169,11 +22169,12 @@
       "VRM-300",
       "VRM-301",
       "VRM-302",
-      "VRM-303"
+      "VRM-303",
+      "VRM-304"
     ],
-    "findingCount": 303,
-    "expectedCurrentRange": "VRM-001..VRM-303",
-    "nextFindingId": "VRM-304",
+    "findingCount": 304,
+    "expectedCurrentRange": "VRM-001..VRM-304",
+    "nextFindingId": "VRM-305",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_I3_REMAINING_E2E_HUMAN_GATE_AFTER_VRM153_DEV_DURABLE_PASS",
