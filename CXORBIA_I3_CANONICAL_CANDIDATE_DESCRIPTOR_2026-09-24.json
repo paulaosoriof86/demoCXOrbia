@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM303_SHOPPER_KPI_COHORT_SOURCE_FIXED_DEV_MATERIALIZATION_ROLE_E2E_PENDING_5_MATCH",
+  "status": "HOLD_I3_VRM303_DEV_HOSTING_PASS_ADMIN_KPI_FOCAL_PASS_SHOPPER_ROLE_PENDING_5_MATCH",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,7 +8,7 @@
   "productTreeAuthority": "13bdb8f47f9348164be4470f65ca42786accdfbb",
   "predecessorProductSourceSha": "99114523e4e08dd480e30e665e6dfd4304d84301",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V563_2026-11-04.json",
-  "findingsLedgerExpectedGitBlob": "d19ed641c203301b6eb44a7ed63c95b3522434cc",
+  "findingsLedgerExpectedGitBlob": "f2d3963fd522a6df95d644869c00b0fd64afc6db",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V243.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -127,7 +127,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD 5/21 MATCH: VRM-303 canonical shopper KPI cohort code FIXED source bc685392; expected 95 tile vs 94 modal bug requires canonical CI and DEV Hosting exact same-owner blob, then full Admin/Shopper role E2E and refreshed identity counts. Stiven two stiven.lopez identities merged with provider ACK, 10 historical visits; canonical login postmerge still PENDING. OCT2026: #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango; do not edit HR-managed states absent source ACK. NOV2026 44 visitas, 26 asignadas, 18 sin asignar; read-only cross-module counts. G03 HR independent live revision parity and finanzas source/payment ACK remain HOLD. Approved fusion cohort legacy 32/83 verified, 51/83 pending. Last certified DEV Hosting b163f88f064004e9 remains predecessor; no new DEV claim, Gate20/21 HOLD, I4 not authorized; production DO_NOT_TOUCH. G03 historical DEV Hosting version 231186c337bcd0ba remains independently verified historical only, not the current DEV release.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -17114,5 +17114,24 @@
     "expectedResult": "PREDECESSOR_DEV_TO_EXACT_SOURCE_BC685392_ONLY_IF_PROVIDER_AND_CI_GATES_PASS",
     "production": "DO_NOT_TOUCH",
     "moduleCertification": "5_OF_21_MATCH_REMAINS_UNTIL_ROLE_E2E"
+  },
+  "previousStatusBeforeVrm303AdminPass": "HOLD_I3_VRM303_SHOPPER_KPI_COHORT_SOURCE_FIXED_DEV_MATERIALIZATION_ROLE_E2E_PENDING_5_MATCH",
+  "vrm303DevHostingExactReadback20261104": {
+    "decision": "PASS_EXACT_DEV_HOSTING_AND_ADMIN_KPI_FOCAL",
+    "sourceSha": "bc685392d7f1a9ba685df6f7b74d48b19b44e385",
+    "sourceTree": "13bdb8f47f9348164be4470f65ca42786accdfbb",
+    "canonicalGuardRun": 41819202716,
+    "hostingRun": 41819336084,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/aed73e33f55ce916",
+    "previousVersion": "sites/cxorbia-backend-dev/versions/b163f88f064004e9",
+    "artifactId": 13316950182,
+    "artifactDigest": "sha256:8b25a96bf9471df877b8ea87ca3ca87d0792eb67b904cb3cec07aa2a0f50f4b9",
+    "assetsServedExact": 11,
+    "adminTile": 94,
+    "adminModal": 94,
+    "stivenVisits": 10,
+    "shopperRoleE2e": "PENDING",
+    "fullModuleMatch": 5,
+    "production": "DO_NOT_TOUCH"
   }
 }
