@@ -7356,7 +7356,7 @@ jobs:
 
   i3-current-source-hosting-dev:
    needs: canonical-candidate-authority
-   if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-current-hosting-dev-only]') && startsWith(needs.canonical-candidate-authority.outputs.status, 'HOLD_I3_') }}
+   if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-current-hosting-dev-only]') && needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM302_SOURCE_ONLY_QA_DEV_PENDING_5_MATCH' }}
    runs-on: ubuntu-24.04
    timeout-minutes: 35
    permissions:
