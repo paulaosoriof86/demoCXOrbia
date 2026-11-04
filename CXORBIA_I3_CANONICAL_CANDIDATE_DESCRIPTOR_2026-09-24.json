@@ -4,16 +4,16 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
-  "productTreeAuthority": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
-  "predecessorProductSourceSha": "c3037483f236837f1e469817db8d11415cd59dbe",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V557_2026-11-03.json",
-  "findingsLedgerExpectedGitBlob": "fd4dfca3b8068557153c5a86181c4907c812ab64",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261103-V236.json",
+  "productSourceSha": "9ca91af24f1b3810c1c53a6566757617066d5314",
+  "productTreeAuthority": "81cd6bbd181b7e43007926643716e5086f42079b",
+  "predecessorProductSourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V558_2026-11-03.json",
+  "findingsLedgerExpectedGitBlob": "e85e86eeb42c118d926222f05c3b18132fb28b94",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261103-V237.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "NOVEMBER_AUTO_HR_SOURCE_PROVEN_DEV_CLOUD_RUN_RUNTIME_NOT_YET_MATERIALIZED__A08_RUN2095_HOSTING_PASS_PERF_E2E_PENDING__OCTOBER_11_UNSUBMITTED_1_NOT_REALIZED__D06_B10_G03_HR_FINANCE_16_NONMATCH",
+  "activeBlocker": "VRM300_NOVEMBER_YEARLESS_HR_CLOUD_RUN_ADC_SOURCE_PROVEN_DEV_REPROOF_PENDING__RUN2099_PREDECESSOR_OCTOBER_ONLY__A08_PERF_E2E__OCTOBER_PENDING__G03_FINANCE_D06_B10_16_NONMATCH",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -115,7 +115,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-300",
+  "nextFindingId": "VRM-301",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -127,7 +127,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD 5/21 MATCH. Fuente canónica 1d24d706e263f256849644f2aa3586eca7900949: NOVIEMBRE HR automático 30/30 PASS source-only; no nueva materialización runtime DEV ni certificación de módulo. Preservar A08 Hosting DEV RUN2095 41713428498 versión f096f9992587a3f6 y G03 Hosting DEV histórico 231186c337bcd0ba; runtime 00336 y producción intactos. Ejecutar control canónico y una materialización exacta de runtime DEV, luego cotejar octubre/noviembre contra la misma revisión HR externa en vivo, Admin+Shopper, ACK e idempotencia. Resolver G03 HR finanzas D06/B10 y 16 no MATCH; A08 performance permanece HOLD. Octubre: 11 sin submitir y 1 sin realizar al último readback; no cerrar por simple cambio de periodo. Fusiones 32/83 ACK y 51/83 revisión. Gate20/21 HOLD, I4 no autorizada.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH. P0 VRM-300: Cloud Run RUN2099 desplegó la fuente anterior 1d24d706e263f256849644f2aa3586eca7900949 con revisión 00336-fz2, sin escrituras, pero latestPeriodKey=2026-10 mientras HR viva tiene NOVIEMBRE y NOVIEMBRE HN. Fuente sucesora 9ca91af24f1b3810c1c53a6566757617066d5314 (81cd6bbd181b7e43007926643716e5086f42079b) corrige lectura autónoma Sheets con identidad Cloud Run y rechazo fail-closed, 38/38 PASS source-only; aún NO desplegada ni certificada Admin/Shopper. Ejecutar el workflow canónico sobre un solo artefacto DEV, acreditar latestPeriodKey=2026-11 y cotejar octubre/noviembre con una misma revisión HR externa; después E2E de Admin/Shopper, asignación, cuestionario, ACK/idempotencia y certificación modular. Preservar Hosting DEV f096f9992587a3f6 y G03 Hosting DEV histórico 231186c337bcd0ba; G03 HR finanzas D06/B10 y 16 no MATCH siguen abiertos. Octubre: 11 sin submitir y 1 sin realizar; no cerrarlo automáticamente. Fusiones 32/83 ACK y 51/83 revisión. Gate20/21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3036,7 +3036,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "fe950ff2fae61d046913269a86db4a45ec417659",
+  "moduleTruthExpectedGitBlob": "814a05c6ea27387b65694ccdd07c76168df69845",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -16827,8 +16827,16 @@
     "predecessorSourceSha": "f36ab1eb7c6bf842603273ee5fb8e79e7fabce6d",
     "owner": "app/core/backend-firebase.js",
     "ownerBlob": "d181236f44178c455c78b129d680d3a6674ef6e3",
-    "receipt": {"path":"docs/checkpoints/CXORBIA_I3_VRM134_A07_FIRESTORE_EARLY_HYDRATION_SOURCE_20261103.json","gitBlob":"4bebb363ecd2e25b8ed2ae10f1185a5edfb09546"},
-    "tests": {"focalPass":52,"regressionPass":75,"continuityPass":10,"fail":0},
+    "receipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM134_A07_FIRESTORE_EARLY_HYDRATION_SOURCE_20261103.json",
+      "gitBlob": "4bebb363ecd2e25b8ed2ae10f1185a5edfb09546"
+    },
+    "tests": {
+      "focalPass": 52,
+      "regressionPass": 75,
+      "continuityPass": 10,
+      "fail": 0
+    },
     "state": "PASS_EXACT_DEV_HOSTING_AND_E03_ADMIN_FOCAL__HOLD_FULL_AUTHENTICATED_LOAD",
     "activeRuntime": "cxorbia-live-hr-dev-00336-fz2",
     "expectedDevHostingOnly": true,
@@ -16870,18 +16878,50 @@
     "owner": "app/adapters/tya-live-source-refresh-watch-v2.js",
     "ownerBlob": "8fa224fe7f7a565be8553bc855deef6d0e6a3b9f",
     "testOwner": "tools/qa/cxorbia-i3-vrm134-a08-watcher-revision-reuse.test.mjs",
-    "localFocalPlusAtomicRegression": {"pass": 16, "fail": 0, "scope": "SOURCE_ONLY_SYNTHETIC"},
+    "localFocalPlusAtomicRegression": {
+      "pass": 16,
+      "fail": 0,
+      "scope": "SOURCE_ONLY_SYNTHETIC"
+    },
     "preservedInvariant": "PROTECTED_AUTHORITY_INDEPENDENT_HR_REVISION_READBACK_BEFORE_ATOMIC_PUBLICATION",
     "expectedDevDeploy": "HOSTING_ONLY_EXACT_SOURCE_NO_RUNTIME_BUILD_NO_RULES_NO_HR_WRITES",
     "devMaterialization": "PASS_EXACT_HOSTING_DEV_RUN2095_ONLY_FULL_RELEASE_SEAL_REMAINS_PREDECESSOR_RUN1983",
     "devHostingVersion": "sites/cxorbia-backend-dev/versions/f096f9992587a3f6",
     "runId": 41713428498,
     "artifactId": 13269815694,
-    "receipt": {"path": "docs/checkpoints/CXORBIA_I3_VRM134_A08_RUN2095_EXACT_HOSTING_DEV_READBACK_20261103.json", "gitBlob": "74f54360f60a57e3be405e6074b34ed3c07afb88"},
+    "receipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM134_A08_RUN2095_EXACT_HOSTING_DEV_READBACK_20261103.json",
+      "gitBlob": "74f54360f60a57e3be405e6074b34ed3c07afb88"
+    },
     "authenticatedAdminAndShopperPerformance": "PENDING",
     "moduleMatchCount": 5,
     "gate20": "HOLD",
     "gate21": "HOLD",
+    "production": false
+  },
+  "november2026AdcRuntimeFix": {
+    "findingId": "VRM-300",
+    "classification": "MAPPING_FAILURE",
+    "owner": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+    "guard": "tools/hr-source/tya-enforce-live-tab-registry.mjs",
+    "qaOwner": "tools/hr-source/tya-resolve-live-month-tabs.test.mjs",
+    "sourceSha": "9ca91af24f1b3810c1c53a6566757617066d5314",
+    "sourceTree": "81cd6bbd181b7e43007926643716e5086f42079b",
+    "predecessorSourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
+    "predecessorRuntimeProof": {
+      "runNumber": 2099,
+      "runId": 41747184349,
+      "revision": "cxorbia-live-hr-dev-00336-fz2",
+      "runtimeDigest": "sha256:ddcd19db3b2126f28af55f960b5654aa7a8168d8634ead9fbab443b4e882ecca",
+      "observedLatestPeriodKey": "2026-10",
+      "hrWrites": 0,
+      "production": false
+    },
+    "newSourceTests": "38_OF_38_PASS_LOCAL_FOCAL",
+    "newSourceDevReadback": "PENDING",
+    "sameRevisionOctoberNovemberHr": "PENDING",
+    "adminShopperE2E": "PENDING",
+    "octoberOperationalClosure": "PENDING_11_UNSUBMITTED_1_NOT_REALIZED",
     "production": false
   }
 }
