@@ -7091,7 +7091,7 @@ jobs:
      with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
      with: {node-version: '24'}
-   - name: Verify exact candidate, scope, and A09/B11 source tests
+   - name: A09/B11 source QA
      run: |
       set -Eeuo pipefail
       mkdir -p "$FOCAL_EVIDENCE"
@@ -7139,7 +7139,7 @@ jobs:
       sha256sum "$FOCAL_EVIDENCE/production-before.html" | awk '{print $1}' > "$FOCAL_EVIDENCE/production-before.sha256"
       printf '%s\n' "$HOSTING_VERSION_BEFORE" > "$FOCAL_EVIDENCE/hosting-version-before.txt"
       printf '%s\n' "$RUNTIME_URL" > "$FOCAL_EVIDENCE/runtime-url.txt"
-   - name: Build exactly once from the pinned source archive
+   - name: One source build
      run: |
       set -Eeuo pipefail
       IMAGE_URI="gcr.io/$PROJECT/$SERVICE:i3-a09b11-$EXPECTED_SOURCE-${GITHUB_RUN_ID}"
@@ -7197,7 +7197,7 @@ jobs:
      with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
      with: {node-version: '24'}
-   - name: Verify candidate and retrieve original pre-deploy baseline
+   - name: Verify baseline
      run: |
       set -Eeuo pipefail
       mkdir -p "$READBACK_EVIDENCE/baseline"
@@ -7208,7 +7208,7 @@ jobs:
       test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$EXPECTED_TREE"
       git merge-base --is-ancestor "$FOCAL_SOURCE" HEAD
       git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-   - name: Download prior run baseline artifact
+   - name: Fetch baseline
      uses: actions/download-artifact@v4
      with:
       name: cxorbia-i3-a09b11-backend-only-dev-40154645333
