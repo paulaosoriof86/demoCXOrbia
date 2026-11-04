@@ -649,6 +649,42 @@ try{
     }));
   }
   const postReconcilePopulation=await populationAfterAdminAck();
+  /* I3 P0 S1: single read-only exact-identity/resource scope proof for the two November HR rows.
+     No manual linking, no account creation and no resource publication during this probe. */
+  const damarisId='shopper_gt_617abd0ad7';
+  const identityName=value=>str(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^\p{L}\p{N}\s]/gu,' ').replace(/\s+/g,' ').trim();
+  const sameDamaris=value=>identityName(value)===identityName('Damaris de León');
+  const [probeProfiles,probeReviews,probeResources]=await Promise.all([
+    tenant.collection('shoppers').get(),
+    tenant.collection('shopperIdentityReviews').get(),
+    tenant.collection('resources').where('projectId','==',projectId).get()
+  ]);
+  const identityCandidates=probeProfiles.docs.map(doc=>({id:doc.id,...(doc.data()||{})}))
+    .filter(row=>sameDamaris(row.nombre||row.displayName||[row.firstName,row.lastName].filter(Boolean).join(' ')))
+    .map(row=>({id:row.id,sourceType:str(row.sourceType),identityState:str(row.identityState),
+      status:str(row.status),active:row.active!==false,hasPhone:!!str(row.phone||row.whatsapp||row.telefono),
+      hasEmail:!!str(row.email),hasVisibleLogin:!!str(row.visibleLogin||row.username)}));
+  const sourceDamaris=arr(snap.shoppers).filter(row=>str(row.shopperId||row.id)===damarisId)
+    .map(row=>({id:str(row.shopperId||row.id),name:str(row.nombre||row.name||[row.firstName,row.lastName].filter(Boolean).join(' ')),
+      hasPhone:!!str(row.whatsapp||row.phone||row.telefono),hasEmail:!!str(row.email)}));
+  const relevantIds=new Set([damarisId,...identityCandidates.map(row=>row.id)]);
+  const identityReviews=probeReviews.docs.map(doc=>({id:doc.id,...(doc.data()||{})}))
+    .filter(row=>[row.sourceShopperId,row.canonicalShopperId,...arr(row.shopperIds),...arr(row.candidateShopperIds)]
+      .some(value=>relevantIds.has(str(value))))
+    .map(row=>({id:row.id,reason:str(row.reason),status:str(row.status),
+      shopperIds:arr(row.shopperIds).map(str),sourceShopperId:str(row.sourceShopperId),
+      canonicalShopperId:str(row.canonicalShopperId)}));
+  const resourceRows=probeResources.docs.map(doc=>({id:doc.id,...(doc.data()||{})}));
+  const projectInstructives=resourceRows.filter(row=>/instruct|manual|protocolo/i.test(str(row.n||row.name||row.title||row.tipo)))
+    .map(row=>({id:row.id,name:str(row.n||row.name||row.title),status:str(row.status),periodId:str(row.periodId),
+      resourceType:str(row.resourceType),visibleToShopper:row.targetAll===true||arr(row.visibleRoles).map(str).includes('shopper'),
+      hasText:!!str(row.body),hasBinary:!!str(row.storagePath||row.url),version:Number(row.version||0)}));
+  evidence.identityAndResourceProbe={scope:{tenantId,projectId,periodId,sourceRevision:revision},
+    damaris:{shopperId:damarisId,sourceRows:sourceDamaris,exactProfileExists:probeProfiles.docs.some(doc=>doc.id===damarisId),
+      matchingNameProfiles:identityCandidates,reviews:identityReviews},
+    resources:{projectResourceCount:resourceRows.filter(row=>str(row.resourceType)==='project_resource').length,
+      projectInstructives}};
+  write(evidence);
   evidence.population={...evidence.population,invariant:postReconcilePopulation.invariant,
     beforeAdminReconciliation:{invariant:populationInvariantPass?'PASS':'HOLD',issues:populationIssues},
     postReconcile:postReconcilePopulation};
