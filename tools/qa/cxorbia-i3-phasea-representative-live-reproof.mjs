@@ -433,12 +433,17 @@ try{
       const instr=page.locator('[data-visit-action="instructive"][data-visit-id="'+base.firstActive.id+'"]').first();
       if(await instr.count()!==1)throw new Error('FUNCTIONAL_DEFECT:B1_JULISSA_MIDIA_INSTRUCTIVE_CONTROL_MISSING');
       await instr.click();
-      await page.waitForFunction(()=>String(window.CX?.session?.view||'')==='misvisitas',null,{timeout:10000});
-      const ov=page.locator('.cx-ov:visible').last();
-      await ov.waitFor({state:'visible',timeout:10000});
-      const instructiveModalText=String(await ov.innerText());
-      if(!/Instructivo|Confirmo que lo he leído/i.test(instructiveModalText))throw new Error('FUNCTIONAL_DEFECT:B1_JULISSA_INSTRUCTIVE_MODAL_NOT_OPENED:'+instructiveModalText.slice(0,600));
-      await page.evaluate(()=>{const visible=e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0;};const o=[...document.querySelectorAll('.cx-ov')].find(visible);if(!o)return;const b=[...o.querySelectorAll('button')].find(x=>/×|cerrar/i.test(String(x.innerText||x.getAttribute('aria-label')||'')));if(b)b.click();else o.remove();});
+      // A missing project instructive takes the user to Documentos by contract.
+      // Observe that distinct outcome instead of timing out on a modal that cannot exist.
+      await page.waitForFunction(()=>{const visible=e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0;};return [...document.querySelectorAll('.cx-ov')].some(visible)||String(window.CX?.session?.view||'')==='documentos';},null,{timeout:10000});
+      const instructive=await page.evaluate(()=>{const visible=e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0;};const ov=[...document.querySelectorAll('.cx-ov')].find(visible);return {modalOpened:!!ov,modalText:String(ov?.innerText||'').slice(0,800),view:String(window.CX?.session?.view||'')};});
+      if(instructive.modalOpened){
+        if(!/Instructivo|Confirmo que lo he leído/i.test(instructive.modalText))throw new Error('FUNCTIONAL_DEFECT:B1_JULISSA_INSTRUCTIVE_MODAL_CONTENT:'+instructive.modalText);
+        await page.evaluate(()=>{const visible=e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0;};const o=[...document.querySelectorAll('.cx-ov')].find(visible);if(!o)return;const b=[...o.querySelectorAll('button')].find(x=>/×|cerrar/i.test(String(x.innerText||x.getAttribute('aria-label')||'')));if(b)b.click();else o.remove();});
+      }else if(instructive.view==='documentos'){
+        b1ActionExercise.instructiveResourcePublished=false;
+        evidence.functionalHolds=[...(evidence.functionalHolds||[]),{domain:'project-resources',role:'Shopper',shopper:target.name,reason:'INSTRUCTIVE_RESOURCE_NOT_PUBLISHED'}];
+      }else throw new Error('FUNCTIONAL_DEFECT:B1_JULISSA_INSTRUCTIVE_ACTION_UNEXPECTED:'+JSON.stringify(instructive));
       await nav(page,'midia');
       if(!base.firstActive.scheduled){
         const sched=page.locator('[data-visit-action="schedule"][data-visit-id="'+base.firstActive.id+'"]').first();
@@ -449,7 +454,7 @@ try{
         const scheduleOutcome=await page.evaluate(()=>String(document.body?.innerText||'').match(/Completa primero el instructivo y la certificación requerida|Agendar visita/i)?.[0]||'');
         b1ActionExercise.scheduleOutcome=scheduleOutcome;
       }
-      b1ActionExercise.instructiveModalOpened=true;
+      b1ActionExercise.instructiveModalOpened=instructive.modalOpened;
     }
     if(base.firstActive?.scheduled){
       const hasPendingRequest=base.firstActive.rescheduleRequestStatus==='pending_review'||base.firstActive.cancelRequestStatus==='pending_review';
@@ -582,11 +587,17 @@ try{
     write(evidence);
     throw new Error('MAPPING_FAILURE:PHASEA_POPULATION_INVARIANT:'+JSON.stringify(populationIssues));
   }
+  if(evidence.functionalHolds?.length){
+    evidence.decision='HOLD_I3_PHASEA_REPRESENTATIVE_RESOURCE_CONTENT_MISSING';
+    write(evidence);
+    throw new Error('MAPPING_FAILURE:PHASEA_PROJECT_RESOURCE_NOT_PUBLISHED:'+JSON.stringify(evidence.functionalHolds));
+  }
   evidence.decision='PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF';
   write(evidence);
   console.log(JSON.stringify(evidence,null,2));
 }catch(error){
-  evidence.decision='FAIL_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF';
+  if(evidence.decision!=='HOLD_I3_PHASEA_REPRESENTATIVE_RESOURCE_CONTENT_MISSING')
+    evidence.decision='FAIL_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF';
   evidence.error=str(error?.stack||error);
   write(evidence);
   throw error;
