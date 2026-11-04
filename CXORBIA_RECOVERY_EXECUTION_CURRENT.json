@@ -7332,5 +7332,23 @@
     "authWrites": 0,
     "firestoreWrites": 0,
     "production": false
+  },
+  "i3Nov04LegacyAutoNormalizationOwnerDecision": {
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_DECISION_AUTONORMALIZACION_LEGACY_20261104.md",
+    "receiptBlob": "0329ac6eae9624bfe0e1bfdeb77159c2b356a8be",
+    "authority": "Paula explicit 2026-11-04: legacy-style weak normalized-name compatible automatic shopper fusion",
+    "before": "NO_FUZZY_MATCH_AUTOMERGE_HUMAN_ADJUDICATION_REQUIRED",
+    "after": "AUTOMERGE_COMPATIBLE_NORM_NAME_REQUESTED_WITH_UID_HR_HISTORY_CONFLICT_SAFEGUARDS",
+    "queueReadbackBeforeStivenMerge": {"technicalKeys":276,"flaggedVisibleProfiles":24,"visibleProfiles":213},
+    "queueReadbackAfterStivenMerge": {"technicalKeys":275,"flaggedVisibleProfiles":22,"visibleProfiles":212},
+    "queueIsNotNumberOfPeople": true,
+    "queueNoticeNonblocking": true,
+    "codeImplemented": false,
+    "liveProviderReasonBreakdown": "PENDING_READ_ONLY",
+    "providerBatch": "NOT_RUN",
+    "phaseAMatchesAdded": 0,
+    "iteration": "I3",
+    "state": "HOLD",
+    "production": "DO_NOT_TOUCH"
   }
 }
