@@ -588,15 +588,15 @@ jobs:
       compression-level: 0
   vrm151-runtime-only-dev-materialization:
    needs: canonical-candidate-authority
-   if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION_REQUIRED' }}
+   if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_I3_NOVEMBER_HR_SOURCE_PROVEN_DEV_RUNTIME_PENDING_5_MATCH' }}
    runs-on: ubuntu-latest
    timeout-minutes: 55
    env:
     FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
     FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
     VRM151_MAT_OUT: .tmp/vrm151-runtime-only-materialization
-    PRIOR_APP_SOURCE: eb71f4a9e51ad325b27e4b60db2c0bef263f726d
-    EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/3c2418df100edab0
+    PRIOR_APP_SOURCE: c3037483f236837f1e469817db8d11415cd59dbe
+    EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/f096f9992587a3f6
    steps:
    - uses: actions/checkout@v4
      with: {fetch-depth: 0}
@@ -611,8 +611,8 @@ jobs:
       git merge-base --is-ancestor "$FOCAL_SOURCE" HEAD
       git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
       git diff --quiet "$PRIOR_APP_SOURCE" "$FOCAL_SOURCE" -- app firebase.json .firebaserc firestore.rules storage.rules
-      node --check backend/runtime/cxorbia-finance-command-provider-v1.mjs
-      node --test backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs | tee "$VRM151_MAT_OUT/source-tests.log"
+      node --check tools/hr-source/tya-resolve-live-month-tabs.mjs
+      node --test tools/hr-source/tya-resolve-live-month-tabs.test.mjs | tee "$VRM151_MAT_OUT/source-tests.log"
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
      with:
@@ -626,6 +626,9 @@ jobs:
       rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
       git archive "$FOCAL_SOURCE" | tar -x -C "$SOURCE_DIR"
       test -f "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml"
+      TOKEN="$(gcloud auth print-access-token)"
+      HOSTING_LIVE="$(curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" | jq -r '.release.version.name // empty')"
+      test "$HOSTING_LIVE" = "$EXPECTED_HOSTING_VERSION"
       echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
    - run: |
       set -Eeuo pipefail
@@ -636,7 +639,7 @@ jobs:
    - run: |
       set -Eeuo pipefail
       IMAGE_URI="$(cat "$VRM151_MAT_OUT/image-uri.txt")"
-      gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --min-instances=1 --max-instances=1 --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE,$I3_HR_CACHE_PIN_NAME=$I3_HR_CACHE_PIN_VALUE" --quiet
+      gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --quiet
       gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM151_MAT_OUT/runtime.json"
       DEV_REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$VRM151_MAT_OUT/runtime.json")"
       test -n "$DEV_REVISION"
@@ -664,7 +667,7 @@ jobs:
       echo "HR_REVISION=$HR_REVISION" >> "$GITHUB_ENV"
    - run: |
       set -Eeuo pipefail
-      jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg runtime "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg hosting "$EXPECTED_HOSTING_VERSION" --arg hr "$HR_REVISION" '{decision:"PASS_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,builds:1,runtimeDeploys:1,hostingDeploys:0,hrWrites:0,bankWrites:0,production:false}' > "$VRM151_MAT_OUT/result.json"
+      jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg runtime "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg hosting "$EXPECTED_HOSTING_VERSION" --arg hr "$HR_REVISION" '{decision:"PASS_I3_HR_NOVEMBER_RUNTIME_ONLY_DEV_MATERIALIZATION",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,builds:1,runtimeDeploys:1,hostingDeploys:0,hrWrites:0,bankWrites:0,production:false}' > "$VRM151_MAT_OUT/result.json"
    - if: always()
      uses: actions/upload-artifact@v4
      with:
