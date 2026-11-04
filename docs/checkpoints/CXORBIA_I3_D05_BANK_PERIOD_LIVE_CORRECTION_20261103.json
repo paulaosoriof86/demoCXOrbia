@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "cxorbia.i3.d05.period-bank-live-readback-correction.v1",
+  "date": "2026-11-03",
+  "timezone": "America/Guatemala",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "status": "HOLD",
+  "priorReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2103_ADMIN_OCT_NOV_LIVE_READBACK_20261103.json",
+    "gitBlob": "202105017ef6532f2e0048ca67fec7477886a500",
+    "commit": "e0ce322e5e158703d0d1084cb74ba10d19980b32",
+    "correction": "Earlier transient UI snapshot reported 0 bank(s) for OCT and NOV. This was not a settled provider state and must not be construed as durable absence or deletion in OCT."
+  },
+  "canonicalProduct": {
+    "sourceSha": "9ca91af24f1b3810c1c53a6566757617066d5314",
+    "treeSha": "81cd6bbd181b7e43007926643716e5086f42079b",
+    "devRunId": 41761015296,
+    "devRunNumber": 2103,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/f096f9992587a3f6",
+    "runtimeRevision": "cxorbia-live-hr-dev-00340-zzt"
+  },
+  "actor": "EXISTING_AUTHENTICATED_ADMIN",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "actualUiReadback": {
+    "OCT_2026": {
+      "banks": 2,
+      "banksSummary": [
+        {
+          "displayName": "Banco IA pendiente de revisión",
+          "state": "pending_review"
+        },
+        {
+          "displayName": "main",
+          "state": "published",
+          "questionCount": 8,
+          "minimumScorePercent": 80
+        }
+      ],
+      "projectResources": 1,
+      "resourceName": "Instructivo Shopper Cinépolis",
+      "historicalEvidence": 5,
+      "historicalApprovals": 4,
+      "shoppersLinked": 3
+    },
+    "NOV_2026": {
+      "banks": 0,
+      "bankPublishedVerified": false,
+      "projectResourcesObservedEarlier": 0,
+      "historicalEvidence": 5,
+      "historicalApprovals": 4,
+      "shoppersLinked": 3
+    },
+    "periodChange": "PASS_ADMIN_ROLE_SCOPE_READ_ONLY",
+    "readSettled": true
+  },
+  "legacyDevProviderEvidence": {
+    "source": "CXORBIA_RECOVERY_EXECUTION_CURRENT.json.d05ProtectedNegativeDev20261101 and d05ProtectedPositiveQaLifecycleDev20261101",
+    "projectBanksEarlier": 4,
+    "matchingPendingEarlier": 1,
+    "realBankWritesFromQa": 0,
+    "differentObservationDate": true,
+    "implication": "Project-wide 4-bank historical proof is not a same-period count. Two visible OCT banks and zero NOV banks are not evidence of deletion."
+  },
+  "disposition": {
+    "earlierOctZeroBankInference": "RETRACTED_AS_UNSETTLED_READBACK",
+    "octoberCertificationBankVisibility": "PASS_FOCAL",
+    "novemberPeriodScope": "PASS_READ_ONLY_NO_BANK_PRESENT",
+    "newProductDefectProven": false,
+    "D05": "TRUE_FUNCTIONAL_DEFECT_EXISTING_LIFECYCLE_UNPROVEN_FULL_E2E",
+    "D06": "REUSE_PRIOR_PASS_SECURITY_3_SHOPPERS_NO_ANSWER_KEYS_RUN41478576401; ATTEMPT_AND_PASSWORD_E2E_PENDING",
+    "fullModulePromotions": 0,
+    "matchedDomains": 5,
+    "totalDomains": 21,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": "DO_NOT_TOUCH"
+  },
+  "changes": {
+    "productFiles": 0,
+    "hrWrites": 0,
+    "certificationWrites": 0,
+    "realBankWrites": 0,
+    "shopperAttempts": 0,
+    "productionWrites": 0
+  },
+  "nextExactAction": "Do not modify October/November banks. Prove existing published OCT bank through authorized Shopper login and safe attempt ACK/readback; preserve earlier three-Shopper VRM297 access PASS; then promote only proven D05/D06 scope."
+}
