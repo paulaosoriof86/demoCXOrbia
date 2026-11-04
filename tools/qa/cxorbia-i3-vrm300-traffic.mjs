@@ -19,10 +19,15 @@ export function inspectServingDevRevision(service) {
   };
 }
 
-export function assertExactRevisionImage(revision, expectedImage) {
-  const actual = String(revision?.spec?.containers?.[0]?.image ?? '');
-  if (!expectedImage || actual !== expectedImage) {
-    throw new Error('DEV serving revision image differs from the exact image built by this run');
+function sha256(value) {
+  return String(value ?? '').match(/sha256:[a-f0-9]{64}/i)?.[0]?.toLowerCase() ?? '';
+}
+
+export function assertExactServingDigest(revision, expectedDigest) {
+  const servingDigest = sha256(revision?.status?.imageDigest);
+  const builtDigest = sha256(expectedDigest);
+  if (!servingDigest || !builtDigest || servingDigest !== builtDigest) {
+    throw new Error('DEV serving revision digest differs from the immutable image digest built by this run');
   }
 }
 
@@ -39,6 +44,10 @@ async function main(argv) {
   if (![service, project, region, image].every(Boolean)) {
     throw new Error('Expected service, project, region, exact image tag');
   }
+  // Cloud Run may reuse a revision when a new tag resolves to identical bytes.
+  const builtDigest = gcloud(['container', 'images', 'describe', image,
+    '--format=value(image_summary.digest)']).trim();
+  if (!sha256(builtDigest)) throw new Error('Expected image tag has no resolved immutable SHA-256');
   gcloud(['run', 'services', 'update-traffic', service,
     '--project', project, '--region', region, '--to-latest', '--quiet']);
 
@@ -50,7 +59,7 @@ async function main(argv) {
     if (observed.ok) {
       const revision = JSON.parse(gcloud(['run', 'revisions', 'describe', observed.created,
         '--project', project, '--region', region, '--format=json']));
-      assertExactRevisionImage(revision, image);
+      assertExactServingDigest(revision, builtDigest);
       process.stdout.write(observed.created + '\n');
       return;
     }
