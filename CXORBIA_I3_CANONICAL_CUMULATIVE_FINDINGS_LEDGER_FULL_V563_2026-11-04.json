@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "99114523e4e08dd480e30e665e6dfd4304d84301",
-    "sourceTree": "8ed2e4c6cac329ad540e38075ad4ec814b01e305",
-    "predecessorSha": "742f2300f3cc0ac726b5b54558b27b1cd63a462d",
+    "sourceSha": "bc685392d7f1a9ba685df6f7b74d48b19b44e385",
+    "sourceTree": "13bdb8f47f9348164be4470f65ca42786accdfbb",
+    "predecessorSha": "99114523e4e08dd480e30e665e6dfd4304d84301",
     "production": false,
-    "state": "VRM302_SOURCE_ONLY_PATCH_PENDING_CANONICAL_CI_DEV__5_MATCH_16_NONMATCH",
+    "state": "VRM303_SOURCE_PROVEN_LOCALLY_AUTHORITY_SYNC_PENDING_5_MATCH_16_NONMATCH",
     "november2026AutomaticPeriodSourceProof": {
       "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
       "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -21337,6 +21337,44 @@
       "state": "SOURCE_FIXED_LOCAL_TESTS_PASS_CANONICAL_SOURCE_PROOF_PENDING",
       "disposition": "One canonical candidate, no parallel branch or new workflow. Complete atomic authority sync, run existing CI, materialize same artifact in DEV, then recheck Admin 1-dialog and Shopper GT/HN independently. Production HOLD.",
       "production": false
+    },
+    "VRM-303": {
+      "id": "VRM-303",
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "taskIds": [
+        "E11"
+      ],
+      "relatedFindings": [
+        "VRM-302"
+      ],
+      "title": "Shoppers KPI cohort includes retired aliases while drilldown and table exclude them",
+      "firstObservedAt": "2026-11-04",
+      "observed": "After provider-confirmed Stiven identity fusion and complete DEV reload, Shoppers 'Activos (6 meses)' tile showed 95 while its click-through modal showed 94; modal includes canonical Stiven López; issue reproducible after reload.",
+      "rootCause": "app/modules/shoppers.js render() uses list() for summary KPI tiles and initial table, but click-through uses activeRows() excluding identityState retired_by_admin/superseded_exact_alias and status retired. An alias retired after merge can still inflate summary.",
+      "expected": "One activeRows() canonical-visible cohort drives both summary tiles, initial table and modal, excluding retired aliases without deleting historical visits or changing HR.",
+      "owners": [
+        "app/modules/shoppers.js"
+      ],
+      "qaOwners": [
+        "tools/qa/cxorbia-i3-vrm302-admin-shoppers-modal-binding.test.mjs"
+      ],
+      "sourceFixCommit": "bc685392d7f1a9ba685df6f7b74d48b19b44e385",
+      "sourceFixTree": "13bdb8f47f9348164be4470f65ca42786accdfbb",
+      "sourceFixBlob": "d35063276004ab1a1ee4ca0c99dd65aa9959e699",
+      "predecessorSourceSha": "99114523e4e08dd480e30e665e6dfd4304d84301",
+      "sourceTests": {
+        "syntax": "PASS_V8_PARSE",
+        "focalFixture": "PASS_OLD_TILE_2_VS_MODAL_1_NEW_TILE_1_VS_MODAL_1",
+        "canonicalCi": {
+          "runId": 41817879166,
+          "preGuardTestsPass": 67,
+          "conclusion": "FAIL_EXPECTED_RELEASE_COMPOSITION_UNDECLARED_PRODUCT_SOURCE_BEFORE_AUTHORITY_ADVANCE"
+        }
+      },
+      "state": "SOURCE_FIXED_LOCAL_TESTS_PASS_CANONICAL_AUTHORITY_SYNC_IN_PROGRESS",
+      "disposition": "Advance existing single descriptor/ledger/module matrix/current pointer atomically; run existing CI, exact DEV Hosting materialization and Admin 95/94 parity reload. No production or HR writes.",
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -22061,11 +22099,12 @@
       "VRM-299",
       "VRM-300",
       "VRM-301",
-      "VRM-302"
+      "VRM-302",
+      "VRM-303"
     ],
-    "findingCount": 301,
-    "expectedCurrentRange": "VRM-001..VRM-301",
-    "nextFindingId": "VRM-303",
+    "findingCount": 303,
+    "expectedCurrentRange": "VRM-001..VRM-303",
+    "nextFindingId": "VRM-304",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_I3_REMAINING_E2E_HUMAN_GATE_AFTER_VRM153_DEV_DURABLE_PASS",
@@ -22446,7 +22485,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-303",
+  "nextFindingId": "VRM-304",
   "lastControlFailure": {
     "id": "RUN1238_NEXT_FINDING_ID_GOVERNANCE_DESYNC",
     "classification": "MAPPING_FAILURE",
@@ -38052,5 +38091,19 @@
       "waitSeconds": 2.2,
       "readOnly": true
     }
+  },
+  "vrm303CanonicalCohort20261104": {
+    "classification": "FUNCTIONAL_DEFECT",
+    "owner": "app/modules/shoppers.js",
+    "sourceSha": "bc685392d7f1a9ba685df6f7b74d48b19b44e385",
+    "sourceTree": "13bdb8f47f9348164be4470f65ca42786accdfbb",
+    "sourceBlob": "d35063276004ab1a1ee4ca0c99dd65aa9959e699",
+    "localSyntax": "PASS",
+    "focalFixture": "PASS",
+    "ciRun41817879166": "FAIL_EXPECTED_UNDECLARED_DRIFT_BEFORE_SOURCE_POINTER_RECONCILIATION",
+    "devHosting": "PENDING",
+    "roleE2e": "PENDING",
+    "moduleMatchPromoted": 0,
+    "production": false
   }
 }
