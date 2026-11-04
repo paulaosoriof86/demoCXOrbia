@@ -774,7 +774,7 @@ jobs:
    if: ${{ false }}
    runs-on: ubuntu-24.04
    steps:
-   - run: echo "Archived historical I3 job: docs/checkpoints/CXORBIA_I3_HISTORICAL_WORKFLOW_JOBS_ARCHIVE_20261104.md"
+   - run: echo archived-historical-I3-job-see-docs-checkpoints
   prei4-admin-002-postulation-semantic-diagnostic:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_002_POSTULACIONES_DIAGNOSTIC_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[prei4-admin-002-diagnostic]') }}
@@ -872,7 +872,7 @@ jobs:
    if: ${{ false }}
    runs-on: ubuntu-24.04
    steps:
-   - run: echo "Archived historical I3 job: docs/checkpoints/CXORBIA_I3_HISTORICAL_WORKFLOW_JOBS_ARCHIVE_20261104.md"
+   - run: echo archived-historical-I3-job-see-docs-checkpoints
   prei4-admin-003-identity-diagnostic:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_003_IDENTITY_DIAGNOSTIC_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[prei4-admin-003-diagnostic]') }}
@@ -2208,19 +2208,19 @@ jobs:
    if: ${{ false }}
    runs-on: ubuntu-24.04
    steps:
-   - run: echo "Archived historical I3 job: docs/checkpoints/CXORBIA_I3_HISTORICAL_WORKFLOW_JOBS_ARCHIVE_20261104.md"
+   - run: echo archived-historical-I3-job-see-docs-checkpoints
   vrm079-documents-resources-live:
    needs: canonical-candidate-authority
    if: ${{ false }}
    runs-on: ubuntu-24.04
    steps:
-   - run: echo "Archived historical I3 job: docs/checkpoints/CXORBIA_I3_HISTORICAL_WORKFLOW_JOBS_ARCHIVE_20261104.md"
+   - run: echo archived-historical-I3-job-see-docs-checkpoints
   vrm080-connected-admin-config-live:
    needs: canonical-candidate-authority
    if: ${{ false }}
    runs-on: ubuntu-24.04
    steps:
-   - run: echo "Archived historical I3 job: docs/checkpoints/CXORBIA_I3_HISTORICAL_WORKFLOW_JOBS_ARCHIVE_20261104.md"
+   - run: echo archived-historical-I3-job-see-docs-checkpoints
   vrm081-population-credential-diagnostic:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM218_EXACT_OWNER_DIAGNOSTIC_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM217_219_POPULATION_ROOT_DIAGNOSTIC_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM217_219_RUNTIME_RECONCILIATION_READBACK_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM217_POST_SWEEP_READBACK_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM219_POST_RUN1087_READBACK_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM219_POST_RUN1090_READBACK_REQUIRED' }}
@@ -4577,7 +4577,7 @@ jobs:
    if: ${{ false }}
    runs-on: ubuntu-24.04
    steps:
-   - run: echo "Archived historical I3 job: docs/checkpoints/CXORBIA_I3_HISTORICAL_WORKFLOW_JOBS_ARCHIVE_20261104.md"
+   - run: echo archived-historical-I3-job-see-docs-checkpoints
   pre-i4-cert-res-live-resume:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[prei4-cert-res-live-resume]') }}
