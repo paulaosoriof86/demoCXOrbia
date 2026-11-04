@@ -1,0 +1,105 @@
+{
+  "schemaVersion": "cxorbia.i3.live-admin-oct-nov-readback.v1",
+  "evidenceDate": "2026-11-03",
+  "timezone": "America/Guatemala",
+  "iteration": "I3",
+  "status": "HOLD",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "canonicalBranch": "recovery/cxorbia-phase-a-20260831",
+  "sourceHeadBeforeReceipt": "7366ce4627d4004be06b2d01aba1f427ffceef08",
+  "sourceTreeBeforeReceipt": "99a473dd83f4fc2b45962f84d05f7bd667599357",
+  "productSourceSha": "9ca91af24f1b3810c1c53a6566757617066d5314",
+  "productTreeSha": "81cd6bbd181b7e43007926643716e5086f42079b",
+  "devMaterialization": {
+    "runNumber": 2103,
+    "runId": 41761015296,
+    "result": "PASS_RUNTIME_ONLY_MATERIALIZATION",
+    "runtimeRevision": "cxorbia-live-hr-dev-00340-zzt",
+    "runtimeDigest": "sha256:480374e4a30e23b1389badbf67247089f02d966e218ab943009be47f7dc8b50d",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/f096f9992587a3f6",
+    "hrSourceRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
+    "hrWrites": 0,
+    "productionWrites": 0
+  },
+  "liveUi": {
+    "environment": "cxorbia-backend-dev.web.app",
+    "identity": "Administracion autenticada",
+    "project": "cinepolis",
+    "observedPeriods": 18,
+    "periodAutoSelected": "NOV 2026",
+    "selectionSwitch": [
+      "NOV 2026",
+      "OCT 2026",
+      "NOV 2026"
+    ],
+    "monthSwitchResult": "PASS_FOCAL",
+    "periodKpis": {
+      "october2026": {
+        "total": 44,
+        "assigned": 44,
+        "unassigned": 0,
+        "realized": 43,
+        "notRealized": 1,
+        "pendingSubmit": 10,
+        "pendingQuestionnaire": 1,
+        "outOfRange": 1,
+        "gt": 34,
+        "hn": 10,
+        "periodStatus": "Activo"
+      },
+      "november2026": {
+        "total": 44,
+        "assigned": 26,
+        "unassigned": 18,
+        "realized": 0,
+        "scheduled": 4,
+        "outOfRange": 1,
+        "gt": 34,
+        "hn": 10,
+        "periodStatus": "Activo"
+      }
+    },
+    "periodsUi": {
+      "closed": 13,
+      "active": 5
+    },
+    "novemberApplications": {
+      "pending": 0,
+      "assignmentsShown": 26,
+      "origin": "HR / Hoja de Ruta"
+    },
+    "certificationBankUi": {
+      "october2026": 0,
+      "november2026": 0,
+      "interpretation": "UI readback only; durable bank state not independently reconciled"
+    },
+    "technicalIdentityReviewNotice": 276
+  },
+  "disposition": {
+    "adminPeriodSwitch": "PASS_FOCAL",
+    "adminKpiPeriodIsolation": "PASS_FOCAL",
+    "automaticNovemberVisibility": "PASS_FOCAL",
+    "octoberOperationalClosure": "HOLD_1_NOT_REALIZED",
+    "bankPublicationAndShopperLifecycle": "HOLD_NOT_PROVEN",
+    "shopperAuthenticatedE2E": "HOLD_NOT_RUN",
+    "sourceManagedAssignmentAndRemoteWriteAck": "HOLD_NOT_PROVEN",
+    "globalModuleMatrixBeforeReceipt": {
+      "match": 5,
+      "partial": 12,
+      "trueFunctionalDefect": 3,
+      "composedNotDeployed": 1,
+      "total": 21
+    },
+    "officialModulePromotion": 0,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": "DO_NOT_TOUCH"
+  },
+  "invariants": {
+    "scope": "Evidence append only; no re-certification or new candidate.",
+    "hr": "No writes, no reimport, October left intact.",
+    "hosting": "DEV UI read only; production not deployed.",
+    "dashboardSource": "Counts observed from authenticated DEV UI, not a separate independent HR reconciliation."
+  },
+  "nextExactAction": "Continue pre-existing I3 functional P0 closure for bank publication/Shopper E2E/remote ACK; then atomic matrix-promotion only on proven modules. Request explicit I4 production authorization after Gate20+Gate21 GO."
+}
