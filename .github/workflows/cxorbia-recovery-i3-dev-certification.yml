@@ -7353,6 +7353,7 @@ jobs:
    uses: ./.github/workflows/cxorbia-i3-vrm290-invoked-hosting-dev.yml
    secrets: inherit
 
+  # VRM-301: dispatch the existing exact-candidate DEV Hosting-only lane after canonical source proof.
   i3-current-source-hosting-dev:
    needs: canonical-candidate-authority
    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-current-hosting-dev-only]') && needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM301_SOURCE_PROVEN_DEV_HOSTING_REQUIRED_5_MATCH' }}
