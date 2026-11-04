@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-301: fuente canónica PASS (RUN 41797786195 / 2114); falta materialización focal de Hosting DEV y readback/E2E Admin-Shopper. Continúan 5/21 MATCH, 16 dominios sin cierre, Gate20/21 HOLD; producción DO_NOT_TOUCH.",
+  "activeBlocker": "VRM-301: canonical source proof PASS (RUN 41797786195); exact DEV Hosting-only materialization and same-artifact Admin/Shopper readback pending. 5/21 MATCH; Gate20/21 HOLD; production DO_NOT_TOUCH. Existing exact-source lane dispatch.",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
