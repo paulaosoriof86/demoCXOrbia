@@ -184,7 +184,12 @@ if(fs.existsSync('CXORBIA_I3_ANTI_BUCLE_CIERRE_EXECUTION_LOCK_2026-10-21.json'))
    same(s[k],d.currentMaterialization?.[k],'descriptor.'+k);
    same(s[k],p.currentDevMaterialization?.[k],'pointer.'+k);
  }
- same(s.receiptPath,p.lastExecutionReceipt?.path,'lastReceiptPath');
+ // The post-deploy seal binds the immutable materialization receipt (RUN2150).
+ // lastExecutionReceipt advances with later read-only QA (RUN2151/2152/...) and
+ // must not be mistaken for a replacement materialization or cause a false FAIL.
+ same(s.receiptPath,t.receiptPath,'sealedMaterializationReceiptPath');
+ if(p.lastExecutionReceipt?.sourceSha)
+   same(p.lastExecutionReceipt.sourceSha,d.productSourceSha,'latestQAProductSource');
  same(s.sourceSha,receipt.source?.sha,'receiptSource');
  same(s.sourceTree,receipt.source?.tree,'receiptTree');
  // Accept the current materialization, never a hardcoded prior finding as release authority.
