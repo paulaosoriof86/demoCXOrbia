@@ -198,7 +198,8 @@ if(fs.existsSync('CXORBIA_I3_ANTI_BUCLE_CIERRE_EXECUTION_LOCK_2026-10-21.json'))
  same(ledgerDev?.sourceSha,s.sourceSha,'ledgerServedSource');
  // A negative status such as NOT_DEV_MATERIALIZED must not assert a live DEV release.
  const status=String(d.status||'');
- const currentDevDeclared=/(^|_)DEV_MATERIALIZED($|_)/.test(status)&&!/(^|_)NOT_DEV_MATERIALIZED($|_)/.test(status);
+ const currentDevDeclared=(/(^|_)DEV_MATERIALIZED($|_)/.test(status)&&!/(^|_)NOT_DEV_MATERIALIZED($|_)/.test(status))||
+   status==='HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED';
  if(s.mode==='CURRENT_SOURCE_SERVING'){
    same(s.sourceSha,d.productSourceSha,'servedSource');
    same(s.sourceTree,d.productTreeAuthority,'servedTree');
