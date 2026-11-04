@@ -7189,5 +7189,85 @@
     },
     "nextExactAction": "Resolve current independent HR/source case-queue delta, run Julissa plus two other shoppers with a proven credential route (no guessed reset), then map each pending module to exact full gate and promote only qualifying MATCH; I4 still unauthorised.",
     "production": "DO_NOT_TOUCH"
+  },
+  "i3Nov04StivenHumanMergeProviderAck": {
+    "observedAt": "2026-11-04",
+    "decisionAuthority": "Paula explicit: ambos stiven.lopez sí fusionarlos",
+    "iteration": "I3",
+    "state": "HOLD_GLOBAL_CERTIFICATION_CONTINUES",
+    "classification": "MAPPING_FAILURE_IDENTITY_ALIAS",
+    "scope": {
+      "project": "cinepolis",
+      "country": "GT",
+      "environment": "cxorbia-backend-dev",
+      "production": "DO_NOT_TOUCH"
+    },
+    "pre": {
+      "canonical": {
+        "name": "Stiven López",
+        "sid": "shopper_gt_319cd82eaf",
+        "username": "stiven.lopez",
+        "visits": 9,
+        "realized": 8,
+        "inProgress": 1,
+        "review": "required"
+      },
+      "duplicate": {
+        "name": "Stiven Lopez",
+        "sid": "shopper_gt_471d1b8dd5",
+        "username": "stiven.lopez",
+        "visits": 1,
+        "realized": 1,
+        "inProgress": 0,
+        "review": "required"
+      },
+      "profilesVisible": 213,
+      "profilesMarkedForReview": 24,
+      "technicalCases": 276
+    },
+    "providerConfirmation": {
+      "selectedExactIdentities": 2,
+      "keepProfileId": "shopper_gt_319cd82eaf",
+      "keepAccessId": "shopper_gt_319cd82eaf",
+      "expectedVisitCount": 10,
+      "otherDependenciesInConfirmationDialog": {
+        "certifications": 0,
+        "applications": 0,
+        "reservations": 0,
+        "liquidations": 0,
+        "otherReferences": 0
+      },
+      "finalSubmitCount": 1,
+      "providerUiAck": "Identidades fusionadas y confirmadas por el proveedor.",
+      "providerAckToken": "NOT_EXPOSED_IN_UI"
+    },
+    "postReloadReadback": {
+      "fullReload": true,
+      "canonicalRowCount": 1,
+      "retiredAliasVisible": false,
+      "canonicalSid": "shopper_gt_319cd82eaf",
+      "canonicalDisplayName": "Stiven López",
+      "username": "stiven.lopez",
+      "identityReview": "clear",
+      "visits": 10,
+      "realized": 9,
+      "inProgress": 1,
+      "profilesVisible": 212,
+      "profilesMarkedForReview": 22,
+      "technicalCases": 275,
+      "activityIndicator": "NOT_CERTIFIED_AFTER_ALIAS_RETIREMENT"
+    },
+    "unverified": {
+      "currentShopperPasswordLogin": "PENDING_AUTH_E2E",
+      "independentHrSheetRevision": "PENDING_DIRECT_SOURCE_READ",
+      "fullModuleTruthPromotion": "PENDING_FULL_MODULE_CLAUSE_E2E"
+    },
+    "writes": {
+      "uiProviderFusion": 1,
+      "manualHrWrites": 0,
+      "productionWrites": 0,
+      "repoProductSourceWrites": 0
+    },
+    "invariants": "NO_NEW_CANDIDATE_NO_DATA_REIMPORT_NO_PRODUCTION_WRITE"
   }
 }
