@@ -5885,7 +5885,7 @@ jobs:
   vrm157-dev-readback-only:
    needs: [canonical-candidate-authority, vrm185-admin-live-adjudication]
    if: ${{ always()&&needs.canonical-candidate-authority.result=='success'&&contains(fromJSON('["HOLD_I3_VRM300_READBACK_RUN2103","HOLD_VRM157_DEV_READBACK_ONLY_REQUIRED","HOLD_VRM154_156_LIVE_REPROOF_REQUIRED","HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED","HOLD_V190_LIVE_REPROOF_REQUIRED","HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status)&&(needs.canonical-candidate-authority.outputs.status!='HOLD_V190_LIVE_REPROOF_REQUIRED'||needs.vrm185-admin-live-adjudication.result=='success') }}
-   runs-on: ubuntu-latest
+   runs-on: ubuntu-24.04
    timeout-minutes: 20
    env:
     FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
