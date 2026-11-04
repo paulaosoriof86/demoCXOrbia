@@ -143,9 +143,11 @@ for(const v of currentHrVisits.filter(v=>facet(v).assigned===true)){
 }
 const hrKeys=currentHrVisits.map(v=>str(v.hrRowId||v.sourceCoord||v.id||v.visitId)).filter(Boolean);
 const duplicateHrKeys=hrKeys.filter((k,i)=>hrKeys.indexOf(k)!==i);
-if(unresolvedMemberships.length||duplicateActivePrincipals.length||unresolvedAssigned.length||duplicateHrKeys.length){
-  throw new Error('MAPPING_FAILURE:PHASEA_POPULATION_INVARIANT:'+JSON.stringify({unresolvedMemberships,duplicateActivePrincipals,unresolvedAssigned,duplicateHrKeys}));
-}
+// P0 population drift must not hide independently testable routes and roles.
+// Retain the exact failure and continue read-only E2E; never certify the
+// aggregate gate when any of these invariants still fail.
+const populationIssues={unresolvedMemberships,duplicateActivePrincipals,unresolvedAssigned,duplicateHrKeys};
+const populationInvariantPass=Object.values(populationIssues).every(rows=>rows.length===0);
 
 const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV';
 const URL=ROOT+'/index-backend-dev.html?cxBackendPreview='+PREVIEW+'&cxProjectId='+encodeURIComponent(projectId)+'&cxProtectedRuntime='+PROTECTED;
@@ -198,7 +200,7 @@ const evidence={
   decision:'HOLD',
   sourceSha:SOURCE,hrRevision:revision,periodId,
   representatives:{},admin:null,
-  population:{activeShopperMemberships:members.filter(x=>x.active===true&&str(x.role).toLowerCase()==='shopper').length,profiles:profiles.length,currentHrVisits:currentHrVisits.length,assignedHrVisits:currentHrVisits.filter(v=>facet(v).assigned===true).length,unresolvedMemberships:0,duplicateActivePrincipals:0,unresolvedAssignedVisits:0,duplicateHrVisitKeys:0},
+  population:{activeShopperMemberships:members.filter(x=>x.active===true&&str(x.role).toLowerCase()==='shopper').length,profiles:profiles.length,currentHrVisits:currentHrVisits.length,assignedHrVisits:currentHrVisits.filter(v=>facet(v).assigned===true).length,unresolvedMemberships:unresolvedMemberships.length,duplicateActivePrincipals:duplicateActivePrincipals.length,unresolvedAssignedVisits:unresolvedAssigned.length,duplicateHrVisitKeys:duplicateHrKeys.length,invariant:populationInvariantPass?'PASS':'HOLD',issues:populationIssues},
   writes:{auth:0,hr:0,provider:0},deploys:0,production:false
 };
 
@@ -576,6 +578,10 @@ try{
   evidence.admin={uid:admin.id,shopperAdmin,modal:{manualMerge:modal.manualMerge,instructProfile:modal.instructProfile},postulations:post,replacementModal,visits:visitAdmin};
   await ap.ctx.close();
 
+  if(!populationInvariantPass){
+    write(evidence);
+    throw new Error('MAPPING_FAILURE:PHASEA_POPULATION_INVARIANT:'+JSON.stringify(populationIssues));
+  }
   evidence.decision='PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF';
   write(evidence);
   console.log(JSON.stringify(evidence,null,2));
