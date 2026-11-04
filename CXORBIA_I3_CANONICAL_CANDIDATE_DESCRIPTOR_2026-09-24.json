@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM302_DEV_HOSTING_PASS_ADMIN_E2E_PENDING_5_MATCH",
+  "status": "HOLD_I3_VRM303_SHOPPER_KPI_COHORT_SOURCE_FIXED_DEV_MATERIALIZATION_ROLE_E2E_PENDING_5_MATCH",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -17100,5 +17100,6 @@
     "sameArtifactE2e": "PENDING",
     "fullModuleMatch": 5,
     "production": false
-  }
+  },
+  "previousStatusBeforeVrm303": "HOLD_I3_VRM302_DEV_HOSTING_PASS_ADMIN_E2E_PENDING_5_MATCH"
 }
