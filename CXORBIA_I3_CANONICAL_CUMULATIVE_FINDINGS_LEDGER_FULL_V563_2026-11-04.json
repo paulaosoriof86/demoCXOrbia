@@ -18,7 +18,7 @@
     "sourceTree": "13bdb8f47f9348164be4470f65ca42786accdfbb",
     "predecessorSha": "99114523e4e08dd480e30e665e6dfd4304d84301",
     "production": false,
-    "state": "VRM303_SOURCE_PROVEN_LOCALLY_AUTHORITY_SYNC_PENDING_5_MATCH_16_NONMATCH",
+    "state": "VRM303_SOURCE_CI_AND_DEV_HOSTING_PASS_ADMIN_E2E_PASS_5_OF_21_MATCH",
     "november2026AutomaticPeriodSourceProof": {
       "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
       "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -21367,14 +21367,35 @@
         "syntax": "PASS_V8_PARSE",
         "focalFixture": "PASS_OLD_TILE_2_VS_MODAL_1_NEW_TILE_1_VS_MODAL_1",
         "canonicalCi": {
-          "runId": 41817879166,
-          "preGuardTestsPass": 67,
-          "conclusion": "FAIL_EXPECTED_RELEASE_COMPOSITION_UNDECLARED_PRODUCT_SOURCE_BEFORE_AUTHORITY_ADVANCE"
+          "runId": 41819202716,
+          "conclusion": "PASS"
         }
       },
-      "state": "SOURCE_FIXED_LOCAL_TESTS_PASS_CANONICAL_AUTHORITY_SYNC_IN_PROGRESS",
+      "state": "CI_PASS_DEV_EXACT_HOSTING_PASS_ADMIN_94_94_E2E_PASS_SHOPPER_ROLE_PENDING",
       "disposition": "Advance existing single descriptor/ledger/module matrix/current pointer atomically; run existing CI, exact DEV Hosting materialization and Admin 95/94 parity reload. No production or HR writes.",
-      "production": false
+      "production": false,
+      "devHosting": {
+        "runId": 41819336084,
+        "decision": "PASS_I3_CURRENT_SOURCE_HOSTING_DEV_ONLY",
+        "version": "sites/cxorbia-backend-dev/versions/aed73e33f55ce916",
+        "sourceSha": "bc685392d7f1a9ba685df6f7b74d48b19b44e385",
+        "artifactId": 13316950182,
+        "assetsExact": 11,
+        "hrWrites": 0,
+        "productionUnchanged": true
+      },
+      "adminE2e": {
+        "decision": "PASS",
+        "activeTile": 94,
+        "modal": 94,
+        "shoppersVisible": 211,
+        "shoppersInactive": 117,
+        "reviewVisible": 22,
+        "stivenVisits": 10,
+        "stivenRealized": 9,
+        "stivenInProgress": 1
+      },
+      "shopperE2e": "PENDING"
     }
   },
   "latestEvidenceOverrides": {
@@ -38101,9 +38122,46 @@
     "localSyntax": "PASS",
     "focalFixture": "PASS",
     "ciRun41817879166": "FAIL_EXPECTED_UNDECLARED_DRIFT_BEFORE_SOURCE_POINTER_RECONCILIATION",
-    "devHosting": "PENDING",
-    "roleE2e": "PENDING",
+    "devHosting": {
+      "runId": 41819336084,
+      "decision": "PASS_I3_CURRENT_SOURCE_HOSTING_DEV_ONLY",
+      "version": "sites/cxorbia-backend-dev/versions/aed73e33f55ce916",
+      "sourceSha": "bc685392d7f1a9ba685df6f7b74d48b19b44e385",
+      "artifactId": 13316950182,
+      "assetsExact": 11,
+      "hrWrites": 0,
+      "productionUnchanged": true
+    },
+    "roleE2e": "ADMIN_PASS_SHOPPER_PENDING",
     "moduleMatchPromoted": 0,
-    "production": false
+    "production": false,
+    "canonicalCi": "PASS_RUN41819202716"
+  },
+  "vrm303ExactDevReadback20261104": {
+    "source": {
+      "runId": 41819336084,
+      "decision": "PASS_I3_CURRENT_SOURCE_HOSTING_DEV_ONLY",
+      "version": "sites/cxorbia-backend-dev/versions/aed73e33f55ce916",
+      "sourceSha": "bc685392d7f1a9ba685df6f7b74d48b19b44e385",
+      "artifactId": 13316950182,
+      "assetsExact": 11,
+      "hrWrites": 0,
+      "productionUnchanged": true
+    },
+    "admin": {
+      "decision": "PASS",
+      "activeTile": 94,
+      "modal": 94,
+      "shoppersVisible": 211,
+      "shoppersInactive": 117,
+      "reviewVisible": 22,
+      "stivenVisits": 10,
+      "stivenRealized": 9,
+      "stivenInProgress": 1
+    },
+    "domain": "SHOPPERS_MI_VISITAS_PROFILE_NONMATCH_PENDING_SHOPPER_LOGIN",
+    "production": "DO_NOT_TOUCH",
+    "gate20": "HOLD",
+    "gate21": "HOLD"
   }
 }
