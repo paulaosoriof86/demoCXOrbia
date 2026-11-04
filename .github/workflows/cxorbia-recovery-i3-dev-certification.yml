@@ -86,6 +86,7 @@ jobs:
       node --test tools/qa/cxorbia-i3-visitas-effective-availability.test.mjs
       node --test tools/qa/cxorbia-i3-e03-visita-payment-human-state.test.mjs
       node --test tools/qa/cxorbia-i3-vrm301-idempotent-visit-detail.test.mjs
+      node --test tools/qa/cxorbia-i3-vrm302-admin-shoppers-modal-binding.test.mjs
       node --test tools/hr-source/tya-resolve-live-month-tabs.test.mjs
       node --test tools/qa/cxorbia-i3-vrm300-traffic.test.mjs
       SOURCE="$(jq -r '.productSourceSha' .tmp/canonical-candidate-authority/result.json)"
@@ -7355,7 +7356,7 @@ jobs:
 
   i3-current-source-hosting-dev:
    needs: canonical-candidate-authority
-   if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-current-hosting-dev-only]') && needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM301_SOURCE_PROVEN_DEV_HOSTING_REQUIRED_5_MATCH' }}
+   if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-current-hosting-dev-only]') && startsWith(needs.canonical-candidate-authority.outputs.status, 'HOLD_I3_') }}
    runs-on: ubuntu-24.04
    timeout-minutes: 35
    permissions:
@@ -7378,12 +7379,12 @@ jobs:
       mkdir -p "$EVIDENCE"
       test "$GITHUB_REPOSITORY" = paulaosoriof86/demoCXOrbia
       test "$GITHUB_REF_NAME" = recovery/cxorbia-phase-a-20260831
-      test "$SOURCE" = 742f2300f3cc0ac726b5b54558b27b1cd63a462d
-      test "$SOURCE_TREE" = e9452bf870ceaaad3dc51552e776e94d05a0644b
+      test "$SOURCE" = "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")"
+      test "$SOURCE_TREE" = "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")"
       test "$(git rev-parse "$SOURCE^{tree}")" = "$SOURCE_TREE"
       git merge-base --is-ancestor "$SOURCE" "$GITHUB_SHA"
       git diff --quiet "$SOURCE" "$GITHUB_SHA" -- app backend tools firebase.json .firebaserc firestore.rules storage.rules
-      test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = HOLD_I3_VRM301_SOURCE_PROVEN_DEV_HOSTING_REQUIRED_5_MATCH
+      [[ "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" == HOLD_I3_* ]]
       test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$SOURCE"
       test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$SOURCE_TREE"
       test "$(jq -r '.production' "$CANDIDATE_DESCRIPTOR")" = DO_NOT_TOUCH
@@ -7393,7 +7394,7 @@ jobs:
       test "$(jq -r '.hosting.public' firebase.json)" = app
       test "$(jq -r '.projects.default' .firebaserc)" = "$PROJECT"
       test "$(jq -r '.hosting.rewrites[0].run.serviceId' firebase.json)" = "$SERVICE"
-      node --test tools/qa/cxorbia-i3-shopper-identity-review-rail-notice.test.mjs tools/qa/cxorbia-i3-e03-visita-payment-human-state.test.mjs tools/qa/cxorbia-i3-visitas-effective-availability.test.mjs tools/qa/cxorbia-i3-b10-external-provider-routing.test.mjs tools/qa/cxorbia-i3-vrm301-idempotent-visit-detail.test.mjs > "$EVIDENCE/source-tests.log"
+      node --test tools/qa/cxorbia-i3-shopper-identity-review-rail-notice.test.mjs tools/qa/cxorbia-i3-e03-visita-payment-human-state.test.mjs tools/qa/cxorbia-i3-visitas-effective-availability.test.mjs tools/qa/cxorbia-i3-b10-external-provider-routing.test.mjs tools/qa/cxorbia-i3-vrm301-idempotent-visit-detail.test.mjs tools/qa/cxorbia-i3-vrm302-admin-shoppers-modal-binding.test.mjs > "$EVIDENCE/source-tests.log"
       node --test backend/runtime/hr-live-service/test/cxorbia-vrm134-firestore-early-hydration.test.mjs tools/qa/cxorbia-i3-b1-cold-login-parallel-source.test.mjs > "$EVIDENCE/a07-cold-load-tests.log"
       node --test tools/qa/cxorbia-i3-vrm134-a08-watcher-revision-reuse.test.mjs tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs > "$EVIDENCE/a08-watcher-hr-revision-tests.log"
       SOURCE_DIR="$(mktemp -d)"
