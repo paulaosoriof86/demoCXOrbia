@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM304_SOURCE_FIXED_LOCAL_QA_PASS_DEV_ROLE_E2E_PENDING_5_MATCH",
+  "status": "HOLD_I3_VRM305_CANONICAL_SOURCE_COMPOSED_DEV_PROVIDER_ROLE_E2E_PENDING_5_MATCH",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "21a82e7a4b42ba2c0878bf1d6041b5b0e8dc7c1c",
-  "productTreeAuthority": "2a98089c41bf0ca45d553902918c6eae6a539d60",
-  "predecessorProductSourceSha": "bc685392d7f1a9ba685df6f7b74d48b19b44e385",
+  "productSourceSha": "3c51feb1a5c2bb7edeb842f7a234d16913b8989d",
+  "productTreeAuthority": "5e427b43bfad2c916ac6290447b6a096d9e3f09e",
+  "predecessorProductSourceSha": "21a82e7a4b42ba2c0878bf1d6041b5b0e8dc7c1c",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V564_2026-11-04.json",
-  "findingsLedgerExpectedGitBlob": "54159221beacc888518a7da5fea3af9cfbdf28d2",
+  "findingsLedgerExpectedGitBlob": "a8f843b8d09eb696566f4f39b818a15c04b49035",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V244.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-304 source 21a82e7... was materialized to DEV Hosting in successful run 41867359181, but no current exact served asset hash/Shopper-role E2E plus independent HR parity and Gates20/21. Canonical 5/21 full MATCH unchanged; 12 source/DEV QA pending, 3 TRUE_FUNCTIONAL_DEFECT, 1 COMPOSED_NOT_DEPLOYED. Auto-normalization/merge user-approved but not implemented.",
+  "activeBlocker": "VRM-305 automatic compatible-name normalization/identity consolidation source 3c51feb1 is implemented and 153/153 local source tests PASS, but canonical CI and identical DEV materialization not verified, real provider/HR readback ACK not executed, Stiven Shopper 0 vs Admin 10 unresolved on currently served prior DEV. Historical 275 technical keys are not a people or merge count. Preserve 5/21 MATCH, 32/83 verified cohort and 51/83 pending; Gates20/21 HOLD; G03 and finanzas pending. Production DO_NOT_TOUCH.",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -115,7 +115,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-305",
+  "nextFindingId": "VRM-306",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -127,7 +127,8 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
+  "historicalExactNextActionPreS1": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
+  "exactNextAction": "S1 I3 HOLD / VRM-305: source 3c51feb1, 153/153 focal PASS. Siguiente: ejecutar CI canónica existente sobre la composición y verificar trabajos realmente ejecutados; clasificar en lectura los 275 casos técnicos/alias por causa sin contarlos como personas; materializar una vez en DEV aislado idéntico artefacto certificado; probar con el mismo HR live revision y ACK de proveedor Admin/Shopper Stiven y Julissa, accesos, historial, finanzas y no duplicados. Preservar 5/21 MATCH y cohorte 32/83 verificada, 51/83 pendiente; DEV anterior aed73e33f55ce916 no prueba S1. Continuar G03 (readback histórico 231186c337bcd0ba), HR, finanzas y compuertas restantes de 21 módulos. Gate20/21 HOLD, I4 sin autorización, producción DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3036,7 +3037,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "bd908231e4c11f420a3d4184bb297a3efe21414f",
+  "moduleTruthExpectedGitBlob": "ccc347b64ba46bf3a47be94c4590e1bb448e76c0",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,

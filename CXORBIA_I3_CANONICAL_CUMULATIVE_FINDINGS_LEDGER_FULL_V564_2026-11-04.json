@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "21a82e7a4b42ba2c0878bf1d6041b5b0e8dc7c1c",
-    "sourceTree": "2a98089c41bf0ca45d553902918c6eae6a539d60",
-    "predecessorSha": "bc685392d7f1a9ba685df6f7b74d48b19b44e385",
+    "sourceSha": "3c51feb1a5c2bb7edeb842f7a234d16913b8989d",
+    "sourceTree": "5e427b43bfad2c916ac6290447b6a096d9e3f09e",
+    "predecessorSha": "21a82e7a4b42ba2c0878bf1d6041b5b0e8dc7c1c",
     "production": false,
-    "state": "VRM304_P0_SOURCE_FIXED_LOCAL_64_PASS_DEV_ROLE_E2E_PENDING_5_OF_21_MATCH",
+    "state": "VRM305_S1_AUTO_IDENTITY_SOURCE_153_PASS_DEV_ROLE_E2E_PENDING_5_OF_21_MATCH",
     "november2026AutomaticPeriodSourceProof": {
       "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
       "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -21455,6 +21455,29 @@
       "production": false,
       "originalRealShopperReceiptPath": "docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json",
       "sourceReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM304_ADJUDICATED_SUPERSESSION_SOURCE_RECEIPT_20261104.json"
+    },
+    "VRM-305": {
+      "id": "VRM-305",
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "taskIds": ["A01", "A02", "A03", "A04"],
+      "relatedFindings": ["VRM-303", "VRM-304"],
+      "title": "Legacy-compatible shopper normalization and alias merger lacked a durable transverse provider owner",
+      "firstObservedAt": "2026-11-04",
+      "observed": "Protected DEV reported 275 technical case/alias keys; the UI said that no fusion was automatic. A previously merged identity had role-level historical visit divergence. Historical source evidence and 5/21 full MATCH did not establish automatic cohort reconciliation.",
+      "expected": "Compatible normalized names/contacts with one verified active tenant/project UID automatically retain login, history, visits and finance via a durable provider ACK; ambiguous pairs remain separate. Case count must be measured against live provider, not interpreted as 275 persons.",
+      "rootCause": "SOURCE_PROVEN: HR reconciliation ran credential/review decisions without a compatible-cohort auto consolidation owner; protected HR write-path journal also rejected the required identity link and historical ownership collections. Canonical descriptor pointed to predecessor and would reject the source diff as uncomposed.",
+      "sourceFixCommit": "3c51feb1a5c2bb7edeb842f7a234d16913b8989d",
+      "sourceFixTree": "5e427b43bfad2c916ac6290447b6a096d9e3f09e",
+      "sourceReceiptPath": "docs/checkpoints/CXORBIA_I3_S1_AUTO_IDENTITY_SOURCE_PROOF_20261104.json",
+      "sourceTests": {"focalPass":153,"failed":0,"protectedHrJournalReplay":"PASS_IN_MEMORY","cumulativeReadModelVisits":616,"replays":3,"duplicateVisits":0},
+      "scope": "Cross-shopper/country/period rule with tenant/project isolation, one existing active Auth UID and conflict safeguards; no per-shopper hardcode or HR import",
+      "state": "SOURCE_FIXED_CUMULATIVE_COMPOSITION_PENDING_CI_DEV_PROVIDER_ACK_ROLE_E2E",
+      "providerLiveCohort": "PENDING_READ_ONLY_COUNTS",
+      "technicalCasesBefore": 275,
+      "technicalCasesAfter": "NOT_MEASURED",
+      "moduleFullMatchesAdded": 0,
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -22181,11 +22204,12 @@
       "VRM-301",
       "VRM-302",
       "VRM-303",
-      "VRM-304"
+      "VRM-304",
+      "VRM-305"
     ],
-    "findingCount": 304,
-    "expectedCurrentRange": "VRM-001..VRM-304",
-    "nextFindingId": "VRM-305",
+    "findingCount": 305,
+    "expectedCurrentRange": "VRM-001..VRM-305",
+    "nextFindingId": "VRM-306",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_I3_REMAINING_E2E_HUMAN_GATE_AFTER_VRM153_DEV_DURABLE_PASS",

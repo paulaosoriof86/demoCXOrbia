@@ -103,12 +103,12 @@
     }
   },
   "productSource": {
-    "sha": "21a82e7a4b42ba2c0878bf1d6041b5b0e8dc7c1c",
-    "treeSha": "2a98089c41bf0ca45d553902918c6eae6a539d60",
-    "predecessorProductSourceSha": "bc685392d7f1a9ba685df6f7b74d48b19b44e385",
-    "message": "fix(i3 P0): align shopper KPI cohort with visible canonical identities",
-    "authorityState": "VRM304_SOURCE_FIXED_LOCAL_64_PASS_DEV_ROLE_E2E_PENDING",
-    "state": "I3_HOLD_5_OF_21_MATCH_VRM304_DEV_CERTIFICATION_PENDING"
+    "sha": "3c51feb1a5c2bb7edeb842f7a234d16913b8989d",
+    "treeSha": "5e427b43bfad2c916ac6290447b6a096d9e3f09e",
+    "predecessorProductSourceSha": "21a82e7a4b42ba2c0878bf1d6041b5b0e8dc7c1c",
+    "message": "fix(cxorbia-i3): reconcile compatible shopper aliases with durable provider ACK",
+    "authorityState": "S1_AUTO_COMPATIBLE_SOURCE_153_PASS_DEV_ROLE_E2E_PENDING",
+    "state": "I3_HOLD_5_OF_21_MATCH_S1_DEV_CERTIFICATION_PENDING"
   },
   "controlHeadAtConstruction": "cd9bce3c45ef4c97312be38f6311375a20ffc7c1",
   "phaseAComplete": false,
@@ -502,7 +502,7 @@
       "currentCandidateTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
       "currentOwnerBlobs": {
         "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js": "7b68d08357f256d736de57ff5b89bf97f397fb4f",
-        "app/adapters/tya-cumulative-read-model-v2.js": "39b217eee3258b658fa28a07fdfa52c837194653",
+        "app/adapters/tya-cumulative-read-model-v2.js": "e414a582eda3dbdf3d7df7a5e836250f65ab0ff2",
         "app/adapters/tya-canonical-state-semantics-v2.js": "a0104aa043ebdb7c9ee55cde5766ada8ed5e28fb",
         "app/adapters/tya-live-source-refresh-watch-v2.js": "8fa224fe7f7a565be8553bc855deef6d0e6a3b9f",
         "app/adapters/tya-live-source-inplace-apply.js": "45e1cd1b8c01d6276be2c256d5b99baa93e90252",
@@ -1860,7 +1860,7 @@
       "currentOwnerBlobs": {
         "app/adapters/tya-c6-unified-human-runtime-v1.js": "630cb1ac7bff4124cae28c281ae8186ee7c7c28a",
         "app/adapters/tya-c6-domain-consistency-bridge.js": "0a551989ea82eac52eea3b1440965812d83d4f17",
-        "app/adapters/cxorbia-admin-identity-review-notice-v1.js": "b894ca68eaef916cfe4ec64d16a3741167a019f9"
+        "app/adapters/cxorbia-admin-identity-review-notice-v1.js": "6f065e5c0558b880d006ecd78e27d4ba5323bbdf"
       },
       "humanVisualCheckpoint20261006": "NO_NEW_DRIFT_PROVEN",
       "latestHumanFindingIds": [
@@ -1978,7 +1978,7 @@
         "app/adapters/cxorbia-exact-identity-contract-v1.js": "9b2d465dfe4d77a0a30786b0d540903b0f014c32",
         "app/adapters/cxorbia-identity-roll-forward-v1.js": "89d1de9535ac4537c0309c8bf24483cceebc08e5",
         "app/adapters/cxorbia-shopper-membership-wiring-v1.js": "a96370a5a72ac6a12a6733d6e768a52293abe82b",
-        "app/adapters/cxorbia-provider-identity-link-runtime-v1.js": "39b4d8dc1569bcce6c1c68630f82d937fe6a2743",
+        "app/adapters/cxorbia-provider-identity-link-runtime-v1.js": "f8404ee410647f567ef1c04c6bd6ac20f0c93b4b",
         "app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js": "a669a9930191e2872dea5ffbf7aff039f5a29918"
       },
       "humanVisualCheckpoint20261006": "B1_IDENTITY_DEFECT_REMEDIATED_TECHNICALLY__CUMULATIVE_HUMAN_CHECKPOINT_PENDING",
@@ -2068,8 +2068,8 @@
         "app/adapters/cxorbia-shopper-admin-command-contract-v1.js": "f08d8ce0f099b499754209326ec1a08ff35290bc",
         "backend/runtime/cxorbia-finance-command-provider-v1.mjs": "57aefc43bf0f1bf31fdeea4eb3e80119c9cd82ff",
         "backend/runtime/cxorbia-operational-command-provider-v1.mjs": "1747a810b8854f871a5bf10db745ea1d92c0d900",
-        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs": "2cbe2ac0ca615aed6bfd965286288d760381cc28",
-        "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs": "d034ed56c3115ce5d86e4b03ee5fc41a6702b1d4",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs": "be5f65a2d2e0a535d10cb474f479ad5447fb1926",
+        "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs": "ca89c2867d4436402f1b56306e4f687638fc3994",
         "app/adapters/cxorbia-command-http-transport-v1.js": "72bdfcdaa5667b62b52962396631e1665506ba13",
         "app/adapters/cxorbia-hr-write-adapter-contract-v1.js": "aad818a8be3581397672ade7988c9a5ec9b4ccb0",
         "app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js": "9c6c3170e5ea8cde2693667b56534b8d0b0043ef",
@@ -2564,7 +2564,7 @@
       "currentOwnerBlobs": {
         "app/core/shopper-credential-rule.js": "723abba57c5fed73c1fab933150943e39ebb76e3",
         "app/adapters/tya-canonical-shopper-portal-v2.js": "99bde07ca213541bdec920606303621bdfeb406c",
-        "app/modules/shoppers.js": "d35063276004ab1a1ee4ca0c99dd65aa9959e699",
+        "app/modules/shoppers.js": "0b6585b25eba379b27c938f388dc698a4afb41cf",
         "app/modules/misvisitas.js": "de7e10c0509aabcf96f3834ee8a5496be297b2b3",
         "app/core/shoppers-store.js": "16d1abd55c3ab166f4c10c08220985e7a54f53ba"
       },
@@ -4050,7 +4050,7 @@
       "f9ApprovedBlob": "0b0ffc1cc215afbcc2fd3400ea1496162da93b60",
       "latestApprovedSource": "6bcbc1df70c29c2ad3ad57ecfa906917e6372ace",
       "latestApprovedBlob": "cbe63e37ff932f64c9577fa106712683d38a978a",
-      "currentBlob": "39b217eee3258b658fa28a07fdfa52c837194653",
+      "currentBlob": "e414a582eda3dbdf3d7df7a5e836250f65ab0ff2",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "COMPOSED_NOT_DEPLOYED",
@@ -4379,7 +4379,7 @@
       "f9ApprovedBlob": null,
       "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
       "latestApprovedBlob": "2074daee29ec108719ed5cdd33b49922ec348d02",
-      "currentBlob": "39b4d8dc1569bcce6c1c68630f82d937fe6a2743",
+      "currentBlob": "f8404ee410647f567ef1c04c6bd6ac20f0c93b4b",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
@@ -5575,7 +5575,7 @@
       "f9ApprovedBlob": "92f834bb2b7fcf5d8674acb717ce6b4e920c5766",
       "latestApprovedSource": "61cf7120603aeff110e97632bb6c69f5c4809d62",
       "latestApprovedBlob": "f9fb2b4787a0cdba727ed72caf3113e35e397d3c",
-      "currentBlob": "d35063276004ab1a1ee4ca0c99dd65aa9959e699",
+      "currentBlob": "0b6585b25eba379b27c938f388dc698a4afb41cf",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
@@ -7123,7 +7123,7 @@
       "f9ApprovedBlob": null,
       "latestApprovedSource": "144c58e2125aba6e49deefe0ce23fa9d94259cdb",
       "latestApprovedBlob": "8b9840fb0c1fbbab45bd100d0e2c7e21779187fc",
-      "currentBlob": "2cbe2ac0ca615aed6bfd965286288d760381cc28",
+      "currentBlob": "be5f65a2d2e0a535d10cb474f479ad5447fb1926",
       "loadTarget": "runtime-build",
       "phaseAAuthority": true,
       "classification": "COMPOSED_NOT_DEPLOYED",
@@ -7150,7 +7150,7 @@
       "f9ApprovedBlob": null,
       "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "latestApprovedBlob": "b1d2cd588fd7409ededba4dea1fdece0d08df91a",
-      "currentBlob": "d034ed56c3115ce5d86e4b03ee5fc41a6702b1d4",
+      "currentBlob": "ca89c2867d4436402f1b56306e4f687638fc3994",
       "loadTarget": "runtime-build",
       "phaseAAuthority": true,
       "classification": "COMPOSED_NOT_DEPLOYED",
@@ -7573,7 +7573,7 @@
     {
       "path": "app/adapters/cxorbia-admin-identity-review-notice-v1.js",
       "domain": "human-runtime-domain-consistency",
-      "currentBlob": "b894ca68eaef916cfe4ec64d16a3741167a019f9",
+      "currentBlob": "6f065e5c0558b880d006ecd78e27d4ba5323bbdf",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
