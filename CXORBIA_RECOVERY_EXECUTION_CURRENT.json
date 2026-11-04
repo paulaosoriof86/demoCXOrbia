@@ -295,7 +295,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 HOLD 5/21 MATCH. P0 VRM-300: Cloud Run RUN2099 desplegó la fuente anterior 1d24d706e263f256849644f2aa3586eca7900949 con revisión 00336-fz2, sin escrituras, pero latestPeriodKey=2026-10 mientras HR viva tiene NOVIEMBRE y NOVIEMBRE HN. Fuente sucesora 9ca91af24f1b3810c1c53a6566757617066d5314 (81cd6bbd181b7e43007926643716e5086f42079b) corrige lectura autónoma Sheets con identidad Cloud Run y rechazo fail-closed, 38/38 PASS source-only; aún NO desplegada ni certificada Admin/Shopper. Ejecutar el workflow canónico sobre un solo artefacto DEV, acreditar latestPeriodKey=2026-11 y cotejar octubre/noviembre con una misma revisión HR externa; después E2E de Admin/Shopper, asignación, cuestionario, ACK/idempotencia y certificación modular. Preservar Hosting DEV f096f9992587a3f6 y G03 Hosting DEV histórico 231186c337bcd0ba; G03 HR finanzas D06/B10 y 16 no MATCH siguen abiertos. Octubre: 11 sin submitir y 1 sin realizar; no cerrarlo automáticamente. Fusiones 32/83 ACK y 51/83 revisión. Gate20/21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
+  "nextExactAction": "I3 HOLD 5/21 MATCH. RUN2103 41761015296 materializó fuente canónica 9ca91af24f1b3810c1c53a6566757617066d5314 con runtime DEV cxorbia-live-hr-dev-00340-zzt, digest sha256:480374e4a30e23b1389badbf67247089f02d966e218ab943009be47f7dc8b50d y HR revision cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac, Hosting DEV f096f9992587a3f6 intacto; 0 escrituras. Admin NOV 2026 auto visible; OCT 2026 conserva 2 bancos visibles segun correccion D05; ninguna fusion ni cierre octubre se infiere. Siguiente accion exacta: ejecutar una vez el job existente vrm157-dev-readback-only con pin RUN2103 de runtime, digest, Hosting y revision HR; verificar bytes servidos, una misma revision HR y fuente sin writes ni despliegues. Despues pruebas transversales Admin/Shopper, postulacion/asignacion, cuestionario, ACK e idempotencia, HR independiente, G03 HR finanzas D06/B10, 16 no MATCH y cierre operativo OCT pendiente (1 visita no realizada), fusiones 32/83 ACK y 51/83 por revisar. Gate20/21 HOLD; produccion DO_NOT_TOUCH; I4 no autorizada.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -6023,7 +6023,7 @@
   },
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V557_2026-11-03.json",
   "findingsLedgerExpectedGitBlob": "c9a1eb45fd91623185830e8f74c8a72e3e55b374",
-  "nextFindingId": "VRM-300",
+  "nextFindingId": "VRM-301",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
     "receiptPath": "docs/checkpoints/CXORBIA_I3_G03_CRM_PROVIDER_COMPOSITION_SOURCE_REPAIR_20261101.json",
@@ -6905,10 +6905,43 @@
       "production": false
     },
     "newSourceTests": "38_OF_38_PASS_LOCAL_FOCAL",
-    "newSourceDevReadback": "PENDING",
-    "sameRevisionOctoberNovemberHr": "PENDING",
+    "newSourceDevReadback": "PASS_RUNTIME_ONLY_RUN2103_UNSEALED_SAME_ARTIFACT_E2E_PENDING",
+    "sameRevisionOctoberNovemberHr": "PENDING_INDEPENDENT_HR_VS_ADMIN_SHOPPER_CONTRAST",
     "adminShopperE2E": "PENDING",
     "octoberOperationalClosure": "PENDING_11_UNSUBMITTED_1_NOT_REALIZED",
     "production": false
+  },
+  "november2026Run2103DevRuntime": {
+    "decision": "PASS_I3_HR_NOVEMBER_RUNTIME_ONLY_DEV_MATERIALIZATION",
+    "runNumber": 2103,
+    "runId": 41761015296,
+    "jobId": 126348730060,
+    "artifactId": 13290139479,
+    "artifactZipDigest": "sha256:1a4cd4c7e9f35f7e99c3b0ac4f2b3de15090fbbe4eaf756eed7e2858e371f3aa",
+    "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/41761015296",
+    "sourceSha": "9ca91af24f1b3810c1c53a6566757617066d5314",
+    "sourceTree": "81cd6bbd181b7e43007926643716e5086f42079b",
+    "runtimeRevision": "cxorbia-live-hr-dev-00340-zzt",
+    "runtimeDigest": "sha256:480374e4a30e23b1389badbf67247089f02d966e218ab943009be47f7dc8b50d",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/f096f9992587a3f6",
+    "hrRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 0,
+    "hrWrites": 0,
+    "bankWrites": 0,
+    "production": false,
+    "adminOctNovReadbackReceipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2103_ADMIN_OCT_NOV_LIVE_READBACK_20261103.json",
+      "gitBlob": "202105017ef6532f2e0048ca67fec7477886a500"
+    },
+    "d05SettledBankCorrection": {
+      "path": "docs/checkpoints/CXORBIA_I3_D05_BANK_PERIOD_LIVE_CORRECTION_20261103.json",
+      "gitBlob": "6fd93663b7cbdedfbb01703703614e483e54dc68"
+    },
+    "independentHrVsAdminShopper": "PENDING",
+    "sameArtifactAdminShopperE2e": "PENDING",
+    "moduleCertification": "NOT_PROMOTED_5_OF_21_MATCH",
+    "productionGate": "HOLD"
   }
 }
