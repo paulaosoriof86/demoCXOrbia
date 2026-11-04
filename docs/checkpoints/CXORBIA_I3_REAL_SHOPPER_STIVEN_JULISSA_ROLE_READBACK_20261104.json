@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "cxorbia.i3.shopper.real-browser-e2e.v1",
+  "asOf": "2026-11-04",
+  "iteration": "I3",
+  "state": "HOLD",
+  "candidate": {
+    "sourceSha": "bc685392d7f1a9ba685df6f7b74d48b19b44e385",
+    "devHostingVersion": "sites/cxorbia-backend-dev/versions/aed73e33f55ce916",
+    "adminOrigin": "https://cxorbia-backend-dev.web.app",
+    "shopperIsolatedOrigin": "https://cxorbia-backend-dev.firebaseapp.com",
+    "productionChanged": false
+  },
+  "scope": "REAL_CHROME_SHOPPER_ROLE_READ_ONLY_NO_HR_FIRESTORE_AUTH_WRITES",
+  "authentication": [
+    {
+      "profile": "stiven.lopez",
+      "result": "PASS_CREDENTIAL_PATTERN_REAL_FIREBASE_AUTH",
+      "visibleRole": "Shopper",
+      "country": "GT",
+      "project": "cinepolis",
+      "oct2026": {
+        "profileVisitsObserved": 0,
+        "misVisitasActiveObserved": 0,
+        "misVisitasHistoryObserved": 0
+      },
+      "nov2026": {
+        "miDiaActiveObserved": 0
+      },
+      "misBeneficios": {
+        "periodCount": 0,
+        "historyCount": 0
+      },
+      "adminBefore": {
+        "consolidatedVisits": 10,
+        "realized": 9,
+        "ongoing": 1
+      },
+      "finding": "P0_MISMATCH_ADMIN_10_VS_SHOPPER_0_CROSSMODULE",
+      "classification": "MAPPING_FAILURE_PENDING_EXACT_PROVIDER_AUTH_CROSSWALK_PROOF"
+    },
+    {
+      "profile": {
+        "allVisits": 10,
+        "realized": 9,
+        "submitted": 9,
+        "confirmedPaid": 7
+      },
+      "result": "PASS_CREDENTIAL_PATTERN_REAL_FIREBASE_AUTH",
+      "visibleRole": "Shopper",
+      "country": "GT",
+      "project": "cinepolis",
+      "nov2026": {
+        "active": 1,
+        "history": 9,
+        "site": "C. Sankris Mall",
+        "status": "assigned_pending_schedule"
+      },
+      "oct2026": {
+        "active": 0,
+        "historyShown": 10,
+        "includesFutureNovAssigned": true,
+        "historySemantics": "EXPECTED_9_COMPLETED__FUTURE_ASSIGNED_NOT_HISTORICAL",
+        "benefitsHonorariumGTQ": 60,
+        "benefitsReimbursementGTQ": 145,
+        "benefitsTotalGTQ": 205
+      },
+      "certification": "VALID_CURRENT",
+      "resource": {
+        "visibleCount": 1,
+        "document": "Instructivo Shopper Cinépolis",
+        "read": "FAIL_PROTECTED_PDF_READ",
+        "browserWarnings": [
+          "AUTH_FAILURE:PROTECTED_RUNTIME_PROJECT_DENIED",
+          "RESOURCE_READ_GET_FAILED GET NO_RESPONSE TypeError"
+        ],
+        "attribution": "ALTERNATE_ORIGIN_OR_AUTH_RUNTIME_UNPROVEN_NO_GENERAL_PRODUCT_DEFECT_CLAIM"
+      },
+      "findings": [
+        "FUTURE_ASSIGNED_VISIT_SHOWN_AS_HISTORY_WHEN_PAST_PERIOD_SELECTED",
+        "PDF_READ_DENIED_ON_ALTERNATE_AUTH_ORIGIN"
+      ]
+    }
+  ],
+  "method": {
+    "realLogin": true,
+    "passwordsStored": false,
+    "sessionAdminPreserved": true,
+    "credentialReset": false,
+    "remerge": false,
+    "noNewBusinessWrites": true,
+    "newProductSource": false,
+    "noDeploy": true,
+    "sameCanonicalCandidate": true
+  },
+  "moduleTruth": {
+    "officialMatch": 5,
+    "total": 21,
+    "newFullMatches": 0,
+    "focalPass": [
+      "SHOPPER_AUTH_TWO_REAL_IDENTITIES",
+      "JULISSA_PROFILE_HISTORICAL_KPIS",
+      "JULISSA_MIS_VISITAS_NOV",
+      "JULISSA_BENEFITS_OCT",
+      "JULISSA_CERTIFICATION"
+    ],
+    "fullModulesNotCertified": [
+      "shoppers-mi-visitas-profile",
+      "finance-core-liquidation-costs",
+      "certifications",
+      "documents-resources"
+    ]
+  },
+  "nextExactAction": "Diagnose verified principal-to-canonical-shopperId and HR visit crosswalk for Stiven after authorized merge; exact provider/UID/alias source; classify and correct one proven owner in I3, test both roles same artifact. Separately validate PDF on canonical web.app origin without destroying Paula Admin session; repair only proven defect. Gate20/21 HOLD."
+}
