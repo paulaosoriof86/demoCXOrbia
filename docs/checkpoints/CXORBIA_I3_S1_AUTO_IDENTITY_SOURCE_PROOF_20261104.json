@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "cxorbia.i3.s1.auto-identity-source-proof.v1",
+  "dateGuatemala": "2026-11-04",
+  "iteration": "I3",
+  "frozenSequence": "docs/checkpoints/CXORBIA_I3_FAST_SEQUENCE_EXECUTION_LOCK_20261104.json",
+  "block": "S1_IDENTITY",
+  "status": "HOLD_SOURCE_PROVEN_DEV_AND_LIVE_E2E_PENDING",
+  "classification": "FUNCTIONAL_DEFECT",
+  "parentSourceSha": "fd7dccdea71119356241362038fa10948907fabd",
+  "canonicalSourceSha": "3c51feb1a5c2bb7edeb842f7a234d16913b8989d",
+  "canonicalSourceTree": "5e427b43bfad2c916ac6290447b6a096d9e3f09e",
+  "remoteBranch": "recovery/cxorbia-phase-a-20260831",
+  "remoteBranchReadback": "3c51feb1a5c2bb7edeb842f7a234d16913b8989d",
+  "sourceOwners": [
+    "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+    "app/adapters/cxorbia-provider-identity-link-runtime-v1.js",
+    "app/adapters/tya-cumulative-read-model-v2.js",
+    "app/adapters/cxorbia-admin-identity-review-notice-v1.js",
+    "app/modules/shoppers.js"
+  ],
+  "qaOwners": [
+    "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs",
+    "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs",
+    "tools/qa/cxorbia-i3-vrm304-adjudicated-supersession.test.mjs"
+  ],
+  "implemented": [
+    "Comparison-only normalized full name; preserved display, country, project and source HR authority",
+    "Compatible cohort with exactly one verified active Auth UID, no contradictory phone/email/document, no prior keep-distinct resolution",
+    "Provider-owned automatic identity link, canonical UID and profile, alias crosswalk, historical visit/finance/certification owner transfer, remote readback",
+    "Protected signed HR reconciliation journal narrowly authorized for shopper-stage identity and related ownership writes",
+    "Read model honors provider-auto-compatible aliases across periods without duplicating HR visits",
+    "User-facing notice distinguishes automatic compatible fusions from truly ambiguous cases"
+  ],
+  "tests": {
+    "sourceFocal": {"passed": 153, "failed": 0, "skipped": 0, "realProvider": false},
+    "protectedJournalPositiveReplay": "PASS_IN_MEMORY",
+    "crossCountryDualUidContradictionsKeepDistinct": "PASS_IN_MEMORY",
+    "historicalVisitAndFinanceOwnerMigration": "PASS_IN_MEMORY",
+    "sourceSyntaxAndDiff": "PASS",
+    "readModelCumulative": {"decision":"PASS_C6_STABLE_COMPOSER_3X_IDEMPOTENCE", "visits":616,"shopperRecords":208,"duplicateVisitKeys":0,"providerWrites":0}
+  },
+  "notClaimed": {
+    "actualLiveProviderAck": "PENDING",
+    "actualHRRevisionAndCohortCounts": "PENDING",
+    "technicalCasesLastObserved": 275,
+    "technicalCasesAfterCorrection": "NOT_MEASURED",
+    "realShopperRoleTests": "PENDING",
+    "devExactBuildAndRuntime": "PENDING",
+    "moduleFullMatches": 5,
+    "i4Authorized": false
+  },
+  "dataWrites": {"HR":0,"realAuth":0,"realFirestore":0,"production":0},
+  "nextExactAction": "Run canonical source CI with executed-job readback, then scoped read-only real cohort classification and one controlled DEV materialization, followed by real provider ACK and Admin/Shopper role E2E. No new branch, plan, import, overlay or production write."
+}
