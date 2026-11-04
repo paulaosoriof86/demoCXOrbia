@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "cxorbia.i3.run2103-vrm157-readback.20261103.v1",
+  "observedAtLocal": "2026-11-03 America/Guatemala",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "status": "HOLD",
+  "sourceAuthority": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "productSourceSha": "9ca91af24f1b3810c1c53a6566757617066d5314",
+    "productTree": "81cd6bbd181b7e43007926643716e5086f42079b"
+  },
+  "vrm157Readback": {
+    "decision": "PASS_I3_NOV_RUN2103_READBACK_ONLY",
+    "runId": 41779593810,
+    "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/41779593810",
+    "jobId": 126408074085,
+    "artifactId": 13298382754,
+    "artifactUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/41779593810/artifacts/13298382754",
+    "artifactZipSha256": "fdc122c17c216cd27db3f5c653e13c6ec00a342175c288de4125d56cdbd8cf22",
+    "sourceSha": "9ca91af24f1b3810c1c53a6566757617066d5314",
+    "sourceTree": "81cd6bbd181b7e43007926643716e5086f42079b",
+    "runtimeRevision": "cxorbia-live-hr-dev-00340-zzt",
+    "runtimeDigest": "sha256:480374e4a30e23b1389badbf67247089f02d966e218ab943009be47f7dc8b50d",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/f096f9992587a3f6",
+    "hrRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
+    "checks": [
+      "canonical-candidate-authority PASS",
+      "17 successful VRM157 steps",
+      "live runtime revision + digest",
+      "hosting live version exact",
+      "HR meta safe/stable and exact same pinned revision",
+      "scenario dimensions present in HR JSON",
+      "served frontend source SHA-256 exact"
+    ],
+    "skippedRoleE2e": true,
+    "builds": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0,
+    "hrWrites": 0,
+    "bankWrites": 0,
+    "production": false,
+    "sourceCommitOnly": "b35005210f6e8642f3c3849f58a83054a6f0512c",
+    "environmentRootCause": {
+      "failure": "Playwright 1.56.1 Chromium unsupported on GitHub ubuntu26.04-x64",
+      "classification": "ENVIRONMENT_FAILURE",
+      "fix": "VRM157 job runner pinned to ubuntu-24.04",
+      "noProductCodeChange": true
+    }
+  },
+  "adminBrowserReadback": {
+    "environment": "cxorbia-backend-dev.web.app",
+    "role": "Administración",
+    "project": "Cinépolis",
+    "nov2026": {
+      "visits": 44,
+      "assigned": 26,
+      "unassigned": 18,
+      "scheduled": 4,
+      "outOfRange": 1,
+      "periodVisible": true
+    },
+    "oct2026": {
+      "visits": 44,
+      "assigned": 44,
+      "realized": 43,
+      "pendingRealization": 1,
+      "pendingSubmit": 10,
+      "outOfRange": 1,
+      "periodStatus": "Activo",
+      "actionPendingVisitRef": "#728",
+      "outOfRangeVisitRef": "#733"
+    },
+    "identityBanner": {
+      "technicalReviewCasesAndAliases": 276,
+      "shopperProfilesVisible": 213,
+      "profilesWithReviewMark": 24,
+      "autoMerge": false
+    },
+    "visitDetail": {
+      "visit": "#727",
+      "paymentLabel": "Pendiente de confirmación",
+      "status": "Realizada"
+    },
+    "operationWrites": 0
+  },
+  "unproven": [
+    "independent Google Sheet cell-level HR vs UI/Shopper parity",
+    "authenticated Shopper same-artifact E2E",
+    "posting/application idempotent provider ACK",
+    "Gate20 and Gate21 final certification",
+    "Oct operational final closure; 1 pending visit and 10 pending submit"
+  ],
+  "modulesMatch": 5,
+  "modulesTotal": 21,
+  "production": "DO_NOT_TOUCH",
+  "productionDeploys": 0,
+  "authorizationRequired": "I4 explicit authorization only after I3 GO and Gate20/21 PASS"
+}

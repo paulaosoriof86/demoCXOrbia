@@ -127,7 +127,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD 5/21 MATCH. RUN2103 41761015296 materializó fuente canónica 9ca91af24f1b3810c1c53a6566757617066d5314 con runtime DEV cxorbia-live-hr-dev-00340-zzt, digest sha256:480374e4a30e23b1389badbf67247089f02d966e218ab943009be47f7dc8b50d y HR revision cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac, Hosting DEV f096f9992587a3f6 intacto y G03 Hosting DEV histórico 231186c337bcd0ba preservado; 0 escrituras. Admin NOV 2026 auto visible; OCT 2026 conserva 2 bancos visibles segun correccion D05; ninguna fusion ni cierre octubre se infiere. Siguiente accion exacta: ejecutar una vez el job existente vrm157-dev-readback-only con pin RUN2103 de runtime, digest, Hosting y revision HR; verificar bytes servidos, una misma revision HR y fuente sin writes ni despliegues. Despues pruebas transversales Admin/Shopper, postulacion/asignacion, cuestionario, ACK e idempotencia, HR independiente, G03 HR finanzas D06/B10, 16 no MATCH y cierre operativo OCT pendiente (1 visita no realizada), fusiones 32/83 ACK y 51/83 por revisar. Gate20/21 HOLD; produccion DO_NOT_TOUCH; I4 no autorizada.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH. RUN2103 41761015296 materializó fuente canónica 9ca91af24f1b3810c1c53a6566757617066d5314 con runtime DEV cxorbia-live-hr-dev-00340-zzt, digest sha256:480374e4a30e23b1389badbf67247089f02d966e218ab943009be47f7dc8b50d y HR revision cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac, Hosting DEV f096f9992587a3f6 intacto y G03 Hosting DEV histórico 231186c337bcd0ba preservado; 0 escrituras. Admin NOV 2026 auto visible; OCT 2026 conserva 2 bancos visibles segun correccion D05; ninguna fusion ni cierre octubre se infiere. Lectura protegida VRM157 RUN41779593810 PASS artefacto 13298382754: runtime/digest y Hosting DEV iguales, HR revision cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac igual y estable, 23 ficheros de evidencia y bytes frontend exactos, 0 writes/deploy. Causa del FAIL previo ENVIRONMENT_FAILURE Playwright sobre Ubuntu26; fix focal job Ubuntu24 commit b35005210f6e8642f3c3849f58a83054a6f0512c. Siguiente accion exacta: comprobar en mismo artefacto autentificacion Shopper y Admin, disponibilidad/asignacion/postulacion/cuestionario con ACK remoto idempotente, paridad de conteos contra HR Sheets independiente; cerrar datos operativos OCT (43/44 realizadas, 10 sin submitir, 1 fuera de rango) sin adulterar HR; conservar 32/83 fusiones con ACK historico y 51/83 pendientes por cohorte, revisar G03 finanzas D06/B10 y promover exclusivamente los 16 modulos sin MATCH con prueba. I3 HOLD 5/21, Gate20/21 HOLD, produccion DO_NOT_TOUCH; autorizacion I4 no otorgada.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -16955,6 +16955,44 @@
     "independentHrVsAdminShopper": "PENDING",
     "sameArtifactAdminShopperE2e": "PENDING",
     "moduleCertification": "NOT_PROMOTED_5_OF_21_MATCH",
-    "productionGate": "HOLD"
+    "productionGate": "HOLD",
+    "vrm157ReadbackProof": {
+      "decision": "PASS_I3_NOV_RUN2103_READBACK_ONLY",
+      "runId": 41779593810,
+      "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/41779593810",
+      "jobId": 126408074085,
+      "artifactId": 13298382754,
+      "artifactUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/41779593810/artifacts/13298382754",
+      "artifactZipSha256": "fdc122c17c216cd27db3f5c653e13c6ec00a342175c288de4125d56cdbd8cf22",
+      "sourceSha": "9ca91af24f1b3810c1c53a6566757617066d5314",
+      "sourceTree": "81cd6bbd181b7e43007926643716e5086f42079b",
+      "runtimeRevision": "cxorbia-live-hr-dev-00340-zzt",
+      "runtimeDigest": "sha256:480374e4a30e23b1389badbf67247089f02d966e218ab943009be47f7dc8b50d",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/f096f9992587a3f6",
+      "hrRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
+      "checks": [
+        "canonical-candidate-authority PASS",
+        "17 successful VRM157 steps",
+        "live runtime revision + digest",
+        "hosting live version exact",
+        "HR meta safe/stable and exact same pinned revision",
+        "scenario dimensions present in HR JSON",
+        "served frontend source SHA-256 exact"
+      ],
+      "skippedRoleE2e": true,
+      "builds": 0,
+      "runtimeDeploys": 0,
+      "hostingDeploys": 0,
+      "hrWrites": 0,
+      "bankWrites": 0,
+      "production": false,
+      "sourceCommitOnly": "b35005210f6e8642f3c3849f58a83054a6f0512c",
+      "environmentRootCause": {
+        "failure": "Playwright 1.56.1 Chromium unsupported on GitHub ubuntu26.04-x64",
+        "classification": "ENVIRONMENT_FAILURE",
+        "fix": "VRM157 job runner pinned to ubuntu-24.04",
+        "noProductCodeChange": true
+      }
+    }
   }
 }
