@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "3c45d623a00cf59ede959625d0f0b4114a377435",
-    "sourceTree": "c79f2c8e32e06d3d9f1a2515cdfea027d2fa631c",
-    "predecessorSha": "21a82e7a4b42ba2c0878bf1d6041b5b0e8dc7c1c",
+    "sourceSha": "160b7ae976a7cc24dd1cd9d3466d6d72ef071d6d",
+    "sourceTree": "6c4b8d95efcc1d5d46cd5d92110cf62222439123",
+    "predecessorSha": "3c45d623a00cf59ede959625d0f0b4114a377435",
     "production": false,
-    "state": "VRM305_S1_AUTO_HR_TRANSVERSAL_DEV_RUN2150_PASS_ROLE_E2E_PENDING_5_OF_21_MATCH",
+    "state": "I3_P0_TRANSVERSAL_SOURCE_81_TESTS_PASS_PENDING_EXACT_DEV_MATERIALIZATION_5_OF_21_MATCH",
     "november2026AutomaticPeriodSourceProof": {
       "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
       "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -21460,8 +21460,16 @@
       "id": "VRM-305",
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
-      "taskIds": ["A01", "A02", "A03", "A04"],
-      "relatedFindings": ["VRM-303", "VRM-304"],
+      "taskIds": [
+        "A01",
+        "A02",
+        "A03",
+        "A04"
+      ],
+      "relatedFindings": [
+        "VRM-303",
+        "VRM-304"
+      ],
       "title": "Legacy-compatible shopper normalization and alias merger lacked a durable transverse provider owner",
       "firstObservedAt": "2026-11-04",
       "observed": "Protected DEV reported 275 technical case/alias keys; the UI said that no fusion was automatic. A previously merged identity had role-level historical visit divergence. Historical source evidence and 5/21 full MATCH did not establish automatic cohort reconciliation.",
@@ -21470,7 +21478,14 @@
       "sourceFixCommit": "3c51feb1a5c2bb7edeb842f7a234d16913b8989d",
       "sourceFixTree": "5e427b43bfad2c916ac6290447b6a096d9e3f09e",
       "sourceReceiptPath": "docs/checkpoints/CXORBIA_I3_S1_AUTO_IDENTITY_SOURCE_PROOF_20261104.json",
-      "sourceTests": {"focalPass":153,"failed":0,"protectedHrJournalReplay":"PASS_IN_MEMORY","cumulativeReadModelVisits":616,"replays":3,"duplicateVisits":0},
+      "sourceTests": {
+        "focalPass": 153,
+        "failed": 0,
+        "protectedHrJournalReplay": "PASS_IN_MEMORY",
+        "cumulativeReadModelVisits": 616,
+        "replays": 3,
+        "duplicateVisits": 0
+      },
       "scope": "Cross-shopper/country/period rule with tenant/project isolation, one existing active Auth UID and conflict safeguards; no per-shopper hardcode or HR import",
       "state": "DEV_MATERIALIZED_RUN2150_AUTO_HR_ROLE_E2E_PROVIDER_ACK_PENDING",
       "latestTransversalAutomaticHrSource": {
@@ -21484,10 +21499,10 @@
         "liveAck": "PENDING",
         "reason": "RUN2147 found 11 HR assigned visits absent from operational identities; RUN2148 authenticated Julissa, then stopped on an unproven instructive modal expectation. Source successor auto-reconciles exact verified HR revision for authorized staff with replay-safe ACK; previous RUN2146 DEV is still serving until new immutable materialization."
       },
-    "canonicalCiRunId": 41894598660,
-    "canonicalCiRunNumber": 2145,
-    "canonicalCiAuthorityJob": "PASS_EXECUTED",
-    "historicalJobsConditionallySkipped": 29,
+      "canonicalCiRunId": 41894598660,
+      "canonicalCiRunNumber": 2145,
+      "canonicalCiAuthorityJob": "PASS_EXECUTED",
+      "historicalJobsConditionallySkipped": 29,
       "exactDevMaterialization": {
         "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
         "runId": 41895703032,
@@ -38284,5 +38299,32 @@
     "julissaVisitHistoryPass": true,
     "production": false,
     "moduleMatch": 5
+  },
+  "i3Nov04IncomingAliasResourceP0": {
+    "sourceSha": "160b7ae976a7cc24dd1cd9d3466d6d72ef071d6d",
+    "sourceTree": "6c4b8d95efcc1d5d46cd5d92110cf62222439123",
+    "predecessorSha": "3c45d623a00cf59ede959625d0f0b4114a377435",
+    "changedProductOwners": [
+      "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+      "backend/runtime/hr-live-service/certification-runtime.mjs",
+      "app/core/backend-resources.js"
+    ],
+    "sourceProof": {
+      "providerIdentity": 59,
+      "serverResource": 6,
+      "authenticatedPdf": 16,
+      "pass": 81,
+      "fail": 0
+    },
+    "classification": "APPROVED_NOT_COMPOSED",
+    "production": false,
+    "hrWrites": 0,
+    "devMaterialization": "PENDING",
+    "affectedCases": [
+      "HR incoming stable alias single active keeper",
+      "published generic project instructive inherited across periods"
+    ],
+    "sameArtifactShopperLive": "PENDING",
+    "modulePromotion": 0
   }
 }

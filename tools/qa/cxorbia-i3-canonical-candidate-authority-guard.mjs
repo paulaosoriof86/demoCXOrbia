@@ -189,7 +189,7 @@ if(fs.existsSync('CXORBIA_I3_ANTI_BUCLE_CIERRE_EXECUTION_LOCK_2026-10-21.json'))
  // must not be mistaken for a replacement materialization or cause a false FAIL.
  same(s.receiptPath,t.receiptPath,'sealedMaterializationReceiptPath');
  if(p.lastExecutionReceipt?.sourceSha)
-   same(p.lastExecutionReceipt.sourceSha,d.productSourceSha,'latestQAProductSource');
+   same(p.lastExecutionReceipt.sourceSha,s.mode==='PREDECESSOR_SERVING_PENDING_SOURCE'?s.sourceSha:d.productSourceSha,'latestQAProductSource');
  same(s.sourceSha,receipt.source?.sha,'receiptSource');
  same(s.sourceTree,receipt.source?.tree,'receiptTree');
  // Accept the current materialization, never a hardcoded prior finding as release authority.

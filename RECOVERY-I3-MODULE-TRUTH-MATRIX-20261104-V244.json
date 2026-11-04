@@ -103,14 +103,14 @@
     }
   },
   "productSource": {
-    "sha": "3c45d623a00cf59ede959625d0f0b4114a377435",
-    "treeSha": "c79f2c8e32e06d3d9f1a2515cdfea027d2fa631c",
-    "predecessorProductSourceSha": "21a82e7a4b42ba2c0878bf1d6041b5b0e8dc7c1c",
-    "message": "fix(cxorbia-i3): reconcile external HR revision automatically for verified Admin, durable scoped replay [i3-auto-hr-source]",
-    "authorityState": "S1_AUTO_HR_TRANSVERSAL_SOURCE_108_PASS_DEV_MATERIALIZATION_REQUIRED",
-    "state": "I3_HOLD_5_OF_21_MATCH_S1_AUTO_HR_DEV_REQUIRED"
+    "sha": "160b7ae976a7cc24dd1cd9d3466d6d72ef071d6d",
+    "treeSha": "6c4b8d95efcc1d5d46cd5d92110cf62222439123",
+    "predecessorProductSourceSha": "3c45d623a00cf59ede959625d0f0b4114a377435",
+    "message": "I3 P0 canonical incoming HR alias + period-inherited published project instructives",
+    "authorityState": "I3_P0_81_SOURCE_TESTS_PASS_PENDING_EXACT_DEV_MATERIALIZATION",
+    "state": "I3_HOLD_5_OF_21_MATCH_PREDECESSOR_SERVING"
   },
-  "controlHeadAtConstruction": "cd9bce3c45ef4c97312be38f6311375a20ffc7c1",
+  "controlHeadAtConstruction": "160b7ae976a7cc24dd1cd9d3466d6d72ef071d6d",
   "phaseAComplete": false,
   "allModulesMatch": false,
   "modules": [
@@ -629,7 +629,7 @@
         "app/modules/academia.js": "5ba399295367cb2f5e2ea6fd9de706e6d4fb1323",
         "app/modules/cert.js": "dac1bbb506b34e6ddc0dbc2742fe39dfbc666415",
         "app/data/tya-certification-carryover-source-safe.js": "8f987530e24ebe433e7f1c73a6036a37e563f074",
-        "backend/runtime/hr-live-service/certification-runtime.mjs": "b8b0aedb3cd4bdeb927b814dae2bc29ba995e9b2",
+        "backend/runtime/hr-live-service/certification-runtime.mjs": "8e02709cc8414afd9087cfa661fd03654d5b01bf",
         "app/core/backend-certifications.js": "cb052f263f27999b2c3c067d1254fb5bc31ef9d6"
       },
       "sourceStaticReproof": {
@@ -1354,7 +1354,7 @@
         "app/modules/novedades.js": "735f977d139415807938fd29f4e03b1ecb3edefe",
         "app/modules/tablon.js": "bb0da6c1e77cfa3a80df2fa00d2d5fd653433251",
         "app/modules/documentos.js": "7572b99223222f052824bdf075e76a5e7f53fea0",
-        "app/core/backend-resources.js": "cdeb6f4dddac201a7701d82d427774840da1596f",
+        "app/core/backend-resources.js": "44e450af65ae6b791128bb053e7814426423ee29",
         "app/modules/soporte.js": "ce46ad2fe4ad28e70588fae72e4d391dd372009e",
         "app/core/backend-bulletins.js": "86ca6a38cb738141c9077e8cbaa1e583a9787e92"
       },
@@ -2068,7 +2068,7 @@
         "app/adapters/cxorbia-shopper-admin-command-contract-v1.js": "f08d8ce0f099b499754209326ec1a08ff35290bc",
         "backend/runtime/cxorbia-finance-command-provider-v1.mjs": "57aefc43bf0f1bf31fdeea4eb3e80119c9cd82ff",
         "backend/runtime/cxorbia-operational-command-provider-v1.mjs": "1747a810b8854f871a5bf10db745ea1d92c0d900",
-        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs": "be5f65a2d2e0a535d10cb474f479ad5447fb1926",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs": "53af10ad3181e6dd70c6d4a192390a59405365e7",
         "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs": "ca89c2867d4436402f1b56306e4f687638fc3994",
         "app/adapters/cxorbia-command-http-transport-v1.js": "72bdfcdaa5667b62b52962396631e1665506ba13",
         "app/adapters/cxorbia-hr-write-adapter-contract-v1.js": "aad818a8be3581397672ade7988c9a5ec9b4ccb0",
@@ -7123,7 +7123,7 @@
       "f9ApprovedBlob": null,
       "latestApprovedSource": "144c58e2125aba6e49deefe0ce23fa9d94259cdb",
       "latestApprovedBlob": "8b9840fb0c1fbbab45bd100d0e2c7e21779187fc",
-      "currentBlob": "be5f65a2d2e0a535d10cb474f479ad5447fb1926",
+      "currentBlob": "53af10ad3181e6dd70c6d4a192390a59405365e7",
       "loadTarget": "runtime-build",
       "phaseAAuthority": true,
       "classification": "COMPOSED_NOT_DEPLOYED",
@@ -7440,7 +7440,7 @@
       "domain": "documents-resources",
       "latestApprovedSource": "3a14ca612988637521c3c6b39325f4d220771875",
       "latestApprovedBlob": "05c3b4b9eb4936c45894ad942a89a7e1725dd6a0",
-      "currentBlob": "cdeb6f4dddac201a7701d82d427774840da1596f",
+      "currentBlob": "44e450af65ae6b791128bb053e7814426423ee29",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "SOURCE_FIXED_PENDING_CI_AND_DEV_FOCAL",
@@ -7503,7 +7503,7 @@
       "f9ApprovedBlob": null,
       "latestApprovedSource": null,
       "latestApprovedBlob": null,
-      "currentBlob": "b8b0aedb3cd4bdeb927b814dae2bc29ba995e9b2",
+      "currentBlob": "8e02709cc8414afd9087cfa661fd03654d5b01bf",
       "loadTarget": "runtime-service",
       "phaseAAuthority": true,
       "classification": "SOURCE_FIXED_PENDING_CI_AND_DEV_FOCAL",
