@@ -7143,6 +7143,47 @@
         "shopperPasswordAuth": "UNVERIFIED_NOT_RESET",
         "historicalOct28Auth": "PASS_PRESERVED"
       },
+      "additionalMultiShopperFocalReadback": {
+        "wilson": {
+          "visibleProfiles": 1,
+          "username": "wilson.lanza",
+          "country": "HN",
+          "visits": 18,
+          "realized": 17,
+          "inProgress": 1,
+          "adminDialogCount": 1
+        },
+        "stiven": {
+          "technicalProfiles": [
+            {
+              "name": "Stiven López",
+              "sid": "shopper_gt_319cd82eaf",
+              "username": "stiven.lopez",
+              "visits": 9,
+              "realized": 8,
+              "inProgress": 1,
+              "review": "required"
+            },
+            {
+              "name": "Stiven Lopez",
+              "sid": "shopper_gt_471d1b8dd5",
+              "username": "stiven.lopez",
+              "visits": 1,
+              "realized": 1,
+              "inProgress": 0,
+              "review": "required"
+            }
+          ],
+          "approvedOct28ExcelNameHit": false,
+          "sameUsernameDifferentId": true,
+          "authCollisionClassification": "MAPPING_FAILURE_SUSPECT_AUTH_ROUTE_NOT_YET_PROVEN",
+          "noFusionPerformed": true
+        },
+        "profilesOpenedTotal": 4,
+        "oneDialogEach": "PASS_REAL_ADMIN_DEV",
+        "shopperLoginPerformed": false,
+        "adminReturnedToNov2026": true
+      },
       "adminFocalE2e": "PASS_BOUND_TO_CURRENT_DEV",
       "fullModuleTruthPromotion": false
     },
