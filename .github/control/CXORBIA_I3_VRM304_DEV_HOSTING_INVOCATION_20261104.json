@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm304.exact-dev-hosting-invocation.v1",
+  "date": "2026-11-04",
+  "iteration": "I3",
+  "classification": "MAPPING_FAILURE",
+  "sourceCommit": "21a82e7a4b42ba2c0878bf1d6041b5b0e8dc7c1c",
+  "sourceTree": "2a98089c41bf0ca45d553902918c6eae6a539d60",
+  "authorityControlHead": "27611b07bb2d62fa71d24812d6059773184c84cb",
+  "sourceProof": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+  "qa": "64_SOURCE_REGRESSION_TESTS_PASS",
+  "intendedWorkflow": "i3-current-source-hosting-dev",
+  "target": "cxorbia-backend-dev",
+  "effect": "DEV_HOSTING_EXACT_SOURCE_ONLY",
+  "production": "DO_NOT_TOUCH",
+  "hrWrites": 0,
+  "firestoreDirectWrites": 0,
+  "cloudRunDeploys": 0,
+  "humanE2e": "PENDING",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "note": "Canonical permitted workflow invocation receipt, not a second candidate or deployment result."
+}
