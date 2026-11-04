@@ -149,6 +149,58 @@ const duplicateHrKeys=hrKeys.filter((k,i)=>hrKeys.indexOf(k)!==i);
 const populationIssues={unresolvedMemberships,duplicateActivePrincipals,unresolvedAssigned,duplicateHrKeys};
 const populationInvariantPass=Object.values(populationIssues).every(rows=>rows.length===0);
 
+// The initial Firestore read happens BEFORE any authenticated Admin session
+// can complete the product's automatic HR reconciliation. It is diagnostic,
+// never the final population gate. Re-read independent provider state after
+// the signed Admin's durable ACK so we do not reject correct auto-upserts on
+// an obsolete pre-reconciliation snapshot.
+async function populationAfterAdminAck(){
+  const [users,shopperProfiles,crosswalks]=await Promise.all([
+    tenant.collection('users').get(),tenant.collection('shoppers').get(),
+    tenant.collection('shopperIdentityCrosswalk').get()
+  ]);
+  const pids=new Set(shopperProfiles.docs.map(d=>str(d.id)));
+  const map=new Map();
+  for(const doc of shopperProfiles.docs){
+    const profile=doc.data()||{};
+    for(const alias of [doc.id,profile.shopperId,...arr(profile.sourceShopperIds),
+      ...arr(profile.exactAliases),...arr(profile.legacyLiveShopperIds)].map(str).filter(Boolean)){
+      if(!map.has(alias))map.set(alias,doc.id);
+    }
+  }
+  for(const doc of crosswalks.docs){
+    const row=doc.data()||{},canonical=str(row.shopperId||row.canonicalShopperId);
+    if(canonical)map.set(str(doc.id),canonical);
+  }
+  const resolve=raw=>{
+    const start=str(raw);if(!start)return '';
+    let current=start;
+    for(let i=0;i<8;i++){
+      const next=str(map.get(current)||current);
+      if(!next||next===current)return current;
+      current=next;
+    }
+    throw new Error('MAPPING_FAILURE:POST_SYNC_CROSSWALK_CYCLE:'+start);
+  };
+  const active=users.docs.map(d=>({id:d.id,...(d.data()||{})})).filter(m=>
+    m.active===true&&str(m.role).toLowerCase()==='shopper'&&str(m.authNamespace).toLowerCase()==='shopper');
+  const missingMemberships=active.filter(m=>!pids.has(resolve(m.shopperId)))
+    .map(m=>({uid:m.id,shopperId:m.shopperId,resolved:resolve(m.shopperId)}));
+  const principalGroups=new Map();
+  for(const member of active){const id=resolve(member.shopperId),group=principalGroups.get(id)||[];group.push(member.id);principalGroups.set(id,group);}
+  const repeatedPrincipals=[...principalGroups].filter(([id,uids])=>id&&uids.length>1).map(([id,uids])=>({shopperId:id,uids}));
+  const missingAssigned=currentHrVisits.filter(v=>facet(v).assigned===true).map(v=>{
+    const shopperId=str(v.shopperId||v.evaluadorId||v.evaluatorId),resolved=resolve(shopperId);
+    return {visitId:v.id||v.visitId,hrRowId:v.hrRowId,shopperId,resolved};
+  }).filter(v=>!v.shopperId||!pids.has(v.resolved));
+  const issues={unresolvedMemberships:missingMemberships,duplicateActivePrincipals:repeatedPrincipals,
+    unresolvedAssigned:missingAssigned,duplicateHrKeys};
+  return {activeShopperMemberships:active.length,profiles:pids.size,
+    unresolvedMemberships:missingMemberships.length,duplicateActivePrincipals:repeatedPrincipals.length,
+    unresolvedAssignedVisits:missingAssigned.length,duplicateHrVisitKeys:duplicateHrKeys.length,
+    invariant:Object.values(issues).every(rows=>rows.length===0)?'PASS':'HOLD',issues};
+}
+
 const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV';
 const URL=ROOT+'/index-backend-dev.html?cxBackendPreview='+PREVIEW+'&cxProjectId='+encodeURIComponent(projectId)+'&cxProtectedRuntime='+PROTECTED;
 const browser=await chromium.launch({headless:true});
@@ -580,12 +632,35 @@ try{
   const visitAdmin=await page.evaluate(()=>{const d=window.CX?.data||{},v=typeof d.visitas==='function'?d.visitas():[];return {count:v.length,assigned:v.filter(x=>d.visitFacets?.(x)?.assigned===true).length,unique:new Set(v.map(x=>String(x.hrRowId||x.id||x.visitId||''))).size};});
   if(visitAdmin.count!==currentHrVisits.length||visitAdmin.unique!==visitAdmin.count)throw new Error('MAPPING_FAILURE:ADMIN_VISIT_HR_PARITY:'+JSON.stringify({visitAdmin,hr:currentHrVisits.length}));
 
-  evidence.admin={uid:admin.id,shopperAdmin,modal:{manualMerge:modal.manualMerge,instructProfile:modal.instructProfile},postulations:post,replacementModal,visits:visitAdmin};
+  let automaticHrReconciliation;
+  try{
+    await page.waitForFunction(rev=>{
+      const receipt=window.CX?.backendHrSourceBridge?.lastAutomatic||{};
+      return receipt.sourceRevision===rev&&Boolean(receipt.at);
+    },revision,{timeout:90000});
+    automaticHrReconciliation=await page.evaluate(()=>({...window.CX?.backendHrSourceBridge?.lastAutomatic}));
+  }catch(error){
+    automaticHrReconciliation=await page.evaluate(()=>({
+      code:'HR_AUTO_RECONCILIATION_RESULT_NOT_OBSERVED',
+      lastAutomatic:window.CX?.backendHrSourceBridge?.lastAutomatic||null,
+      lastCommand:window.CX?.backendHrSourceBridge?.last?.response?.code||null,
+      authorityReady:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,
+      captureCode:window.CX?.backendHrSourceBridge?.captureSyncContext?.(window.CX?.data?.currentProjectId)?.code||null
+    }));
+  }
+  const postReconcilePopulation=await populationAfterAdminAck();
+  evidence.population={...evidence.population,invariant:postReconcilePopulation.invariant,
+    beforeAdminReconciliation:{invariant:populationInvariantPass?'PASS':'HOLD',issues:populationIssues},
+    postReconcile:postReconcilePopulation};
+  evidence.admin={uid:admin.id,shopperAdmin,modal:{manualMerge:modal.manualMerge,instructProfile:modal.instructProfile},postulations:post,replacementModal,visits:visitAdmin,automaticHrReconciliation};
+  write(evidence);
   await ap.ctx.close();
 
-  if(!populationInvariantPass){
-    write(evidence);
-    throw new Error('MAPPING_FAILURE:PHASEA_POPULATION_INVARIANT:'+JSON.stringify(populationIssues));
+  if(automaticHrReconciliation.ok!==true||automaticHrReconciliation.providerAck!==true||automaticHrReconciliation.readbackVerified!==true){
+    throw new Error('PERSISTENCE_FAILURE:PHASEA_ADMIN_AUTOMATIC_HR_ACK_MISSING:'+JSON.stringify(automaticHrReconciliation));
+  }
+  if(postReconcilePopulation.invariant!=='PASS'){
+    throw new Error('MAPPING_FAILURE:PHASEA_POST_RECONCILIATION_POPULATION_INVARIANT:'+JSON.stringify(postReconcilePopulation.issues));
   }
   if(evidence.functionalHolds?.length){
     evidence.decision='HOLD_I3_PHASEA_REPRESENTATIVE_RESOURCE_CONTENT_MISSING';
