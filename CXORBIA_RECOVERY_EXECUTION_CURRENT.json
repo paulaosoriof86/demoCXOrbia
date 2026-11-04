@@ -83,16 +83,16 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "docs/checkpoints/CXORBIA_I3_S1_ROLE_PROOF_RUN2151_2152_20261104.json",
-    "kind": "S1_RUN2152_AUTO_HR_ACK_PASS_EIGHT_IDENTITIES_ADDED_TWO_VISITS_ONE_IDENTITY_HOLD",
-    "sourceSha": "3c45d623a00cf59ede959625d0f0b4114a377435",
-    "sourceTree": "c79f2c8e32e06d3d9f1a2515cdfea027d2fa631c",
-    "servedSourceSha": "3c45d623a00cf59ede959625d0f0b4114a377435",
-    "runId": 41909124351,
-    "runNumber": 2152,
+    "path": "docs/checkpoints/CXORBIA_I3_S1_DAMARIS_JULISSA_EXACT_DEV_RUN2157_20261104.json",
+    "kind": "I3_S1_EXACT_DEV_MATERIALIZATION_RUN2157_PASS",
+    "sourceSha": "160b7ae976a7cc24dd1cd9d3466d6d72ef071d6d",
+    "sourceTree": "6c4b8d95efcc1d5d46cd5d92110cf62222439123",
+    "servedSourceSha": "160b7ae976a7cc24dd1cd9d3466d6d72ef071d6d",
+    "runId": 41936788632,
+    "runNumber": 2157,
     "sourceChanges": 0,
     "newFunctionalClosures": 0,
-    "scope": "S1_SAME_ARTIFACT_MULTROLE_REPROOF_HR_AUTO_ACK_PASS_POPULATION_2_VISITS_1_SHOPPER_PENDING_RESOURCE_HOLD",
+    "scope": "DEV_EXACT_PUBLISHED_LIVE_E2E_NOT_EXECUTED",
     "production": false
   },
   "taskProgress": {
@@ -296,7 +296,7 @@
     "evolution": 6
   },
   "historicalNextExactActionPreS1": "S1 read-only reason/alias cohort classification, implement legacy-compatible deterministic normalizer in provider owner and bridge, run bounded GT/HN/history/Auth fixtures. Existing DEV serial materialization only after source QA; verify Stiven/Julissa Shopper role post-fix.",
-  "nextExactAction": "I3 HOLD, fuente única 160b7ae976a7 (6c4b8d95efcc): 81/81 pruebas focales de vinculación HR y guías generales heredadas, ejecución canónica y materialización exacta DEV PENDIENTES. RUN2150 fuente 3c45d623a00c sigue siendo el DEV servido (Cloud Run 00342-zpr, Hosting cb3db179817308c8); conservar sello anterior hasta readback nuevo. Ejecutar únicamente carril existente vrm154-156-dev-materialization; luego same-artifact Admin/Shopper GT/HN, histórico Stiven/Julissa, alias Damaris, recursos, HR independiente, pagos/finanzas, 275 casos, ACK y 21 módulos. 5/21 MATCH sin aumento ficticio; 32/83 fusiones históricas verificadas, 51/83 aún por censar; G03 conserva Hosting anterior 231186c337bcd0ba. Gate20/21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
+  "nextExactAction": "I3 HOLD / RUN2157 source 160b7ae976a7 exact DEV PASS (Cloud Run cxorbia-live-hr-dev-00343-4hz, Hosting 135c3f098cc2d9b6, HR cdc40258e980, ZIP db18418c76e6). Siguiente acción única: ejecutar job existente phasea-representative-same-artifact-live-reproof, sin reimportar ni escribir HR, con autenticación Admin/Shopper GT/HN, identificación Damaris filas 3/22, Julissa instrucción general heredable, Stiven 10 Admin vs 0 Shopper, 275 casos técnicos y ACK duradero; contrastar visitas/histórico/KPIs contra MISMA HR independiente y finanzas. Solamente certificar los módulos con evidencia exacta; 5/21 MATCH y 16 pendientes de prueba real, 32/83 grupos históricos y 51/83 por recenso, no forzar fusiones distintas. G03 conserva referencia histórica Hosting 231186c337bcd0ba; Gate20/21 HOLD, I4 no autorizada, producción DO_NOT_TOUCH.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -879,35 +879,39 @@
   "currentDevMaterialization": {
     "state": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
     "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
-    "sourceSha": "3c45d623a00cf59ede959625d0f0b4114a377435",
-    "sourceTree": "c79f2c8e32e06d3d9f1a2515cdfea027d2fa631c",
-    "runId": 41903482812,
-    "runNumber": 2150,
-    "jobId": 126832103735,
-    "artifactId": 13358374072,
-    "artifactDigest": "sha256:2e0dfa829a48d4302fd3b1d193f40daa909e19d223c72bbe44b2863bcdc8ecde",
-    "sourceArtifactDigest": "sha256:2e0dfa829a48d4302fd3b1d193f40daa909e19d223c72bbe44b2863bcdc8ecde",
-    "artifactZipSha256": "2e0dfa829a48d4302fd3b1d193f40daa909e19d223c72bbe44b2863bcdc8ecde",
-    "runtimeRevision": "cxorbia-live-hr-dev-00342-zpr",
-    "runtimeDigest": "sha256:39d27ca4b4387812d2b04f1e9083c1fda7dfc27fe62fe200679c257c63dc6050",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/cb3db179817308c8",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1793823061190000",
+    "runId": 41936788632,
+    "runNumber": 2157,
+    "jobId": 126947388091,
+    "artifactId": 13374507441,
+    "sourceSha": "160b7ae976a7cc24dd1cd9d3466d6d72ef071d6d",
+    "sourceTree": "6c4b8d95efcc1d5d46cd5d92110cf62222439123",
+    "artifactDigest": "sha256:db18418c76e6a14490dec6e73b8e7da17ae5b9b035c0d4b577b382dbf0218c46",
+    "artifactDigestType": "GITHUB_ACTIONS_ZIP_SHA256",
+    "artifactZipSha256": "db18418c76e6a14490dec6e73b8e7da17ae5b9b035c0d4b577b382dbf0218c46",
+    "runtimeRevision": "cxorbia-live-hr-dev-00343-4hz",
+    "runtimeDigest": "sha256:38e9c96dcca0f6bdb6728d6dd175f81358129816be167883ca0ca1a3182e3feb",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/135c3f098cc2d9b6",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1793836429858000",
     "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
     "hrRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
     "builds": 1,
     "runtimeDeploys": 1,
     "hostingDeploys": 1,
     "firestoreRulesDeploys": 0,
+    "storageRulesDeploys": 0,
     "hrWrites": 0,
     "production": false,
-    "controlHeadAtDeploy": "9804c8871ef886c2515c9e0ee3561241f76687ab",
-    "artifactDigestType": "GITHUB_ACTIONS_ZIP_SHA256",
-    "archiveZipDigest": "sha256:2e0dfa829a48d4302fd3b1d193f40daa909e19d223c72bbe44b2863bcdc8ecde",
-    "githubArtifactZipSha256": "2e0dfa829a48d4302fd3b1d193f40daa909e19d223c72bbe44b2863bcdc8ecde",
-    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_S1_AUTO_HR_TRANSVERSAL_DEV_RUN2150_20261104.json",
-    "materializationReceiptBlob": "c293ca0b926fd591ea2e692f1c01f93b3f2313cb",
+    "sourceIdentityVerified": true,
+    "runtimeSourceVerified": true,
+    "controlHeadAtDeploy": "1fdb11f7689abae7f15818d1e2f350ff8713ff1f",
+    "sourceArtifactDigest": "sha256:db18418c76e6a14490dec6e73b8e7da17ae5b9b035c0d4b577b382dbf0218c46",
+    "archiveZipDigest": "sha256:db18418c76e6a14490dec6e73b8e7da17ae5b9b035c0d4b577b382dbf0218c46",
+    "githubArtifactZipSha256": "db18418c76e6a14490dec6e73b8e7da17ae5b9b035c0d4b577b382dbf0218c46",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_S1_DAMARIS_JULISSA_EXACT_DEV_RUN2157_20261104.json",
     "fullTaskClosed": false,
-    "humanAcceptance": "PENDING"
+    "humanAcceptance": "PENDING",
+    "firestoreRulesetEvidence": "UNCHANGED_SINCE_SEALED_RUN2150_NO_RULES_DEPLOY_RUN2157",
+    "materializationReceiptBlob": "e549ac45bb275b4520e8c028c3a41fbd82f01ea6"
   },
   "latestAdminClientPreviewEvidence": {
     "receiptPath": "CXORBIA_I3_ADMIN_CLIENT_PREVIEW_LIVE_E2E_RUN1792_2026-10-18.json",
@@ -996,11 +1000,11 @@
   },
   "moduleTruthAuthority": {
     "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V244.json",
-    "gitBlob": "89d1dd8ef9b3146fefc20ee4d2248fd3cf838831",
+    "gitBlob": "229015b85d7b769decd04a3f2e95714ad9d52f17",
     "sourceSha": "160b7ae976a7cc24dd1cd9d3466d6d72ef071d6d",
     "allModulesMatch": false,
     "phaseAComplete": false,
-    "sha256": "9bf398120f9122f77ef7c3617dba59f6332480a4b8f05b48ff4ffdb7a95b58a5"
+    "sha256": "438f800c48bb3a4a49cfff1d3d97ae42a27e92f2d05dcbc2764a51a067c1fb0a"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -1570,21 +1574,21 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
-    "runId": 41903482812,
-    "runNumber": 2150,
-    "sourceSha": "3c45d623a00cf59ede959625d0f0b4114a377435",
-    "sourceTree": "c79f2c8e32e06d3d9f1a2515cdfea027d2fa631c",
-    "artifactDigest": "sha256:2e0dfa829a48d4302fd3b1d193f40daa909e19d223c72bbe44b2863bcdc8ecde",
-    "runtimeRevision": "cxorbia-live-hr-dev-00342-zpr",
-    "runtimeDigest": "sha256:39d27ca4b4387812d2b04f1e9083c1fda7dfc27fe62fe200679c257c63dc6050",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/cb3db179817308c8",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1793823061190000",
+    "mode": "CURRENT_SOURCE_SERVING",
+    "runId": 41936788632,
+    "runNumber": 2157,
+    "sourceSha": "160b7ae976a7cc24dd1cd9d3466d6d72ef071d6d",
+    "sourceTree": "6c4b8d95efcc1d5d46cd5d92110cf62222439123",
+    "artifactDigest": "sha256:db18418c76e6a14490dec6e73b8e7da17ae5b9b035c0d4b577b382dbf0218c46",
+    "runtimeRevision": "cxorbia-live-hr-dev-00343-4hz",
+    "runtimeDigest": "sha256:38e9c96dcca0f6bdb6728d6dd175f81358129816be167883ca0ca1a3182e3feb",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/135c3f098cc2d9b6",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1793836429858000",
     "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
     "hrRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
-    "receiptPath": "docs/checkpoints/CXORBIA_I3_S1_AUTO_HR_TRANSVERSAL_DEV_RUN2150_20261104.json",
-    "receiptBlob": "c293ca0b926fd591ea2e692f1c01f93b3f2313cb",
-    "liveE2e": "PENDING_AUTHENTICATED_ADMIN_SHOPPER_GT_HN_AND_275_TECHNICAL_CASES",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_S1_DAMARIS_JULISSA_EXACT_DEV_RUN2157_20261104.json",
+    "receiptBlob": "e549ac45bb275b4520e8c028c3a41fbd82f01ea6",
+    "liveE2e": "PENDING_SAME_ARTIFACT_REPRESENTATIVE_GA_AND_PROVIDER_ACK",
     "humanAcceptance": "PENDING",
     "gate20": "HOLD",
     "gate21": "HOLD",
@@ -3038,7 +3042,7 @@
   "activeShockModuleTruth": {
     "sourceSha": "160b7ae976a7cc24dd1cd9d3466d6d72ef071d6d",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V244.json",
-    "matrixBlob": "89d1dd8ef9b3146fefc20ee4d2248fd3cf838831",
+    "matrixBlob": "229015b85d7b769decd04a3f2e95714ad9d52f17",
     "classificationCounts": {
       "COMPOSED_NOT_DEPLOYED": 1,
       "MATCH": 5,
@@ -3049,7 +3053,7 @@
       "TRUE_FUNCTIONAL_DEFECT": 3
     },
     "derivedAt": "2026-11-04",
-    "meaning": "5_OF_21_MATCH__VRM303_CANONICAL_CI_DEV_HOSTING_ADMIN_94_94_PASS_SHOPPER_ROLE_PENDING"
+    "meaning": "5_OF_21_MATCH__RUN2157_EXACT_DEV_COMPOSED_PENDING_ADMIN_SHOPPER_GTHN_E2E"
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
   "activeMethodologyGuard": {
@@ -5507,7 +5511,7 @@
     "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751"
   },
   "previousExactNextActionBeforeRun2146": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "I3 HOLD, fuente única 160b7ae976a7 (6c4b8d95efcc): 81/81 pruebas focales de vinculación HR y guías generales heredadas, ejecución canónica y materialización exacta DEV PENDIENTES. RUN2150 fuente 3c45d623a00c sigue siendo el DEV servido (Cloud Run 00342-zpr, Hosting cb3db179817308c8); conservar sello anterior hasta readback nuevo. Ejecutar únicamente carril existente vrm154-156-dev-materialization; luego same-artifact Admin/Shopper GT/HN, histórico Stiven/Julissa, alias Damaris, recursos, HR independiente, pagos/finanzas, 275 casos, ACK y 21 módulos. 5/21 MATCH sin aumento ficticio; 32/83 fusiones históricas verificadas, 51/83 aún por censar; G03 conserva Hosting anterior 231186c337bcd0ba. Gate20/21 HOLD, producción DO_NOT_TOUCH, I4 no autorizada.",
+  "exactNextAction": "I3 HOLD / RUN2157 source 160b7ae976a7 exact DEV PASS (Cloud Run cxorbia-live-hr-dev-00343-4hz, Hosting 135c3f098cc2d9b6, HR cdc40258e980, ZIP db18418c76e6). Siguiente acción única: ejecutar job existente phasea-representative-same-artifact-live-reproof, sin reimportar ni escribir HR, con autenticación Admin/Shopper GT/HN, identificación Damaris filas 3/22, Julissa instrucción general heredable, Stiven 10 Admin vs 0 Shopper, 275 casos técnicos y ACK duradero; contrastar visitas/histórico/KPIs contra MISMA HR independiente y finanzas. Solamente certificar los módulos con evidencia exacta; 5/21 MATCH y 16 pendientes de prueba real, 32/83 grupos históricos y 51/83 por recenso, no forzar fusiones distintas. G03 conserva referencia histórica Hosting 231186c337bcd0ba; Gate20/21 HOLD, I4 no autorizada, producción DO_NOT_TOUCH.",
   "previousExecutionReceiptBeforeRun1983Seal": {
     "path": "CXORBIA_I3_RUN1852_POST_DEPLOY_CONSISTENCY_SEAL_2026-10-24.json",
     "kind": "RUN1852_SOURCE_F283_DEV_PASS_ADMIN_THREE_VISIT_UI_PASS_DURABLE_HR_OPERATIONAL_PARITY_P0_OPEN",
@@ -6023,7 +6027,7 @@
     "production": false
   },
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V564_2026-11-04.json",
-  "findingsLedgerExpectedGitBlob": "6b0b65a725449a3669a0091062227bb31abbcc0d",
+  "findingsLedgerExpectedGitBlob": "f7ba41b9451b936b65fc74490c068f384d454bd4",
   "nextFindingId": "VRM-306",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -7424,8 +7428,22 @@
     "sourceTree": "6c4b8d95efcc1d5d46cd5d92110cf62222439123",
     "predecessorSourceSha": "3c45d623a00cf59ede959625d0f0b4114a377435",
     "sourceProof": "81_81_PASS_SOURCE_ONLY",
-    "dev": "PENDING",
+    "dev": "PASS_EXACT_RUN2157",
     "moduleMatch": "5_OF_21",
+    "production": false,
+    "sameArtifactRoleE2E": "PENDING"
+  },
+  "previousExecutionReceiptBeforeRun2157": {
+    "path": "docs/checkpoints/CXORBIA_I3_S1_ROLE_PROOF_RUN2151_2152_20261104.json",
+    "kind": "S1_RUN2152_AUTO_HR_ACK_PASS_EIGHT_IDENTITIES_ADDED_TWO_VISITS_ONE_IDENTITY_HOLD",
+    "sourceSha": "3c45d623a00cf59ede959625d0f0b4114a377435",
+    "sourceTree": "c79f2c8e32e06d3d9f1a2515cdfea027d2fa631c",
+    "servedSourceSha": "3c45d623a00cf59ede959625d0f0b4114a377435",
+    "runId": 41909124351,
+    "runNumber": 2152,
+    "sourceChanges": 0,
+    "newFunctionalClosures": 0,
+    "scope": "S1_SAME_ARTIFACT_MULTROLE_REPROOF_HR_AUTO_ACK_PASS_POPULATION_2_VISITS_1_SHOPPER_PENDING_RESOURCE_HOLD",
     "production": false
   }
 }
