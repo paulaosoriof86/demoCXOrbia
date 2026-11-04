@@ -296,7 +296,7 @@
     "evolution": 6
   },
   "historicalNextExactActionPreS1": "S1 read-only reason/alias cohort classification, implement legacy-compatible deterministic normalizer in provider owner and bridge, run bounded GT/HN/history/Auth fixtures. Existing DEV serial materialization only after source QA; verify Stiven/Julissa Shopper role post-fix.",
-  "nextExactAction": "S1 I3 HOLD / VRM-305: source 3c51feb1, 153/153 focal PASS. Siguiente: ejecutar CI canónica existente sobre la composición y verificar trabajos realmente ejecutados; clasificar en lectura los 275 casos técnicos/alias por causa sin contarlos como personas; materializar una vez en DEV aislado idéntico artefacto certificado; probar con el mismo HR live revision y ACK de proveedor Admin/Shopper Stiven y Julissa, accesos, historial, finanzas y no duplicados. Preservar 5/21 MATCH y cohorte 32/83 verificada, 51/83 pendiente; DEV anterior aed73e33f55ce916 no prueba S1. Continuar G03 (readback histórico 231186c337bcd0ba), HR, finanzas y compuertas restantes de 21 módulos. Gate20/21 HOLD, I4 sin autorización, producción DO_NOT_TOUCH.",
+  "nextExactAction": "S1 I3 HOLD / VRM-305: CI canónica RUN2145 (41894598660) PASS para autoridad de fuente; 29 trabajos históricos omitidos correctamente por condición y no certificados. Siguiente: en flujo ya existente ejecutar una sola materialización fuente 3c51feb1 en DEV aislado, tras preflight S1 con Firebase CLI fijo; obtener revisión HR live independiente, ACK de proveedor y prueba autenticada Admin/Shopper Stiven+Julissa (mismo histórico, visitas, beneficios, no duplicados) y clasificar 275 casos técnicos/alias. Mantener 5/21 MATCH, cohorte 32/83 verificada, 51/83 pendiente; DEV anterior aed73e33f55ce916 y G03 histórico 231186c337bcd0ba no prueban S1. Continúan G03, HR, finanzas, Gate20/21 HOLD; I4 sin autorización, producción DO_NOT_TOUCH.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -6023,7 +6023,7 @@
     "production": false
   },
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V564_2026-11-04.json",
-  "findingsLedgerExpectedGitBlob": "a8f843b8d09eb696566f4f39b818a15c04b49035",
+  "findingsLedgerExpectedGitBlob": "53124a2ba9fc9c66b46e0439b54ea34857c0b3a3",
   "nextFindingId": "VRM-306",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -7390,6 +7390,12 @@
     "protectedHrJournalPositiveAndReplay": "PASS_IN_MEMORY_NOT_LIVE_PROVIDER",
     "readModelCumulativeThreeReplays": "PASS_616_HR_VISITS_ZERO_DUPLICATES",
     "remoteCommitReadback": true,
+    "canonicalCompositionCommit": "7935eb3fd36dc587617875a43f2cb76db91dba4f",
+    "canonicalCiRunId": 41894598660,
+    "canonicalCiRunNumber": 2145,
+    "canonicalCiAuthorityJob": "SUCCESS_EXECUTED",
+    "historicalJobsConditionallySkipped": 29,
+    "canonicalCiScope": "SOURCE_LINEAGE_AND_MODULE_BLOBS_ONLY_NO_LIVE_PROVIDER_OR_DEV_ARTIFACT_CERTIFICATION",
     "devMaterialization": "PENDING",
     "liveHrIdentityCohortDryRun": "PENDING",
     "realAdminShopperRoleReadback": "PENDING",
