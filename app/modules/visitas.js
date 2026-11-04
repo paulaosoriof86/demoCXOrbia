@@ -1,6 +1,16 @@
 /* CXOrbia · Visitas (admin: tabla operativa editable · shopper: marketplace) */
 CX.module('visitas', ({data,role,ui})=>{
   const p=data.period();
+  /* VRM-301: asynchronous rerenders may target the same live button more than
+     once. Replace this owner's prior click handler instead of stacking it. */
+  const replaceClickHandler=(element,action,handler)=>{
+    if(!element||typeof handler!=='function')return;
+    const key=Symbol.for('cxorbia.visitas.click.'+action);
+    const previous=element[key];
+    if(typeof previous==='function')element.removeEventListener('click',previous);
+    element[key]=handler;
+    element.addEventListener('click',handler);
+  };
   /* Shared P0 offer contract: a stale canonical `available` flag may coexist
      with a completed/out-of-range visit. Never offer or assign that record. */
   const effectiveAvailable=(v)=>{
@@ -203,7 +213,7 @@ CX.module('visitas', ({data,role,ui})=>{
       return null;
     };
     setTimeout(()=>{
-      const bind=()=>document.querySelectorAll('[data-detail]').forEach(b=>b.addEventListener('click',()=>{
+      const bind=()=>document.querySelectorAll('[data-detail]').forEach(b=>replaceClickHandler(b,'shopper-detail',()=>{
         const v=list.find(x=>x.id===b.dataset.detail); if(!v) return;
         const proj=resolveVisitProject(v);
         if(!proj){ ui.toast('No se pudo determinar el proyecto de esta oportunidad con seguridad.','err'); return; }
@@ -571,7 +581,7 @@ CX.module('visitas', ({data,role,ui})=>{
         <div style="text-align:right;margin-top:14px"><button class="btn btn-ghost btn-sm" data-x4>Cerrar</button></div>
       `,{onMount:(ov,close)=>{ ov.querySelector('[data-x4]').addEventListener('click',close); }});
     };
-    document.querySelectorAll('[data-vdetail]').forEach(b=>b.addEventListener('click',()=>detailModal(all.find(z=>z.id===b.dataset.vdetail))));
+    document.querySelectorAll('[data-vdetail]').forEach(b=>replaceClickHandler(b,'admin-detail',()=>detailModal(all.find(z=>z.id===b.dataset.vdetail))));
   },0);
   return html;
 });
