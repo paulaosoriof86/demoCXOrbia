@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM301_HOSTING_ADMIN_PASS_SHOPPER_E2E_PENDING_5_MATCH",
+  "status": "HOLD_I3_VRM302_SOURCE_ONLY_QA_DEV_PENDING_5_MATCH",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "742f2300f3cc0ac726b5b54558b27b1cd63a462d",
-  "productTreeAuthority": "e9452bf870ceaaad3dc51552e776e94d05a0644b",
-  "predecessorProductSourceSha": "9ca91af24f1b3810c1c53a6566757617066d5314",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V562_2026-11-04.json",
-  "findingsLedgerExpectedGitBlob": "24137bb1d8dea5fcf73bd457e53d4f42be559782",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V241.json",
+  "productSourceSha": "99114523e4e08dd480e30e665e6dfd4304d84301",
+  "productTreeAuthority": "8ed2e4c6cac329ad540e38075ad4ec814b01e305",
+  "predecessorProductSourceSha": "742f2300f3cc0ac726b5b54558b27b1cd63a462d",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V563_2026-11-04.json",
+  "findingsLedgerExpectedGitBlob": "00584ef7b3208291eeb88cf3d2d326f2bc6cc67a",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V242.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-301: canonical source PASS; exact DEV Hosting-only candidate PASS (run 41801457655 / 2119); Admin authenticated detail #728 PASS with one dialog before/after rerender; Shopper same-artifact E2E pending. 5/21 MATCH; Gate20/21 HOLD; production DO_NOT_TOUCH.",
+  "activeBlocker": "VRM-302 Admin Shoppers multi-modal P0 source-only fixed; exact canonical CI and DEV materialization plus Admin/Shopper 1-modal E2E pending. VRM-301 DEV Admin and Shopper GT/HN read-only focal PASS; 5/21 MATCH; Gate20/21 HOLD; production DO_NOT_TOUCH.",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -115,7 +115,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-302",
+  "nextFindingId": "VRM-303",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -127,7 +127,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD 5/21 MATCH, Gate20/21 HOLD. VRM-301: Hosting-only DEV pasó en la candidata exacta; Admin autenticado abrió un solo detalle en visita #728 y permaneció uno tras 2.2 s de rerenders. Falta Shopper autenticado sobre el mismo artefacto. Siguiente acción exacta: realizar lectura E2E Shopper aislada conservando la sesión Admin; verificar un detalle único y ningún write. Mantener HR viva comparada contra una misma revisión; retomar G03 usando sites/cxorbia-backend-dev/versions/231186c337bcd0ba como evidencia histórica, no candidata actual; continuar cierre de finanzas; conservar fusiones 32/83 verificadas y 51/83 pendientes de recenso. Producción DO_NOT_TOUCH; sin escrituras HR/proveedor.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH, Gate20/21 HOLD. VRM-301 detalle de visita Admin DEV PASS; Shopper Wilson (HN) y Stiven (GT) E2E DEV autenticados PASS en contexto/visitas/histórico/disponibilidad/moneda/sesión y modal de oportunidad único; Julissa GT credencial actual no validada, sin reset. VRM-302 P0 Admin Shoppers: 7 perfiles modales apilados tras un clic inicial, 1 tras rerender; owner app/modules/shoppers.js; corrección source-only 99114523e4e0 con 2/2 ensayos aislados PASS, CI canónica/recomposición y E2E post-deploy pendientes; sin elevar módulos a MATCH. Comparar HR viva misma revisión externa; retomar G03 usando sites/cxorbia-backend-dev/versions/231186c337bcd0ba como evidencia histórica, no candidata actual; continuar cierre de finanzas; conservar fusiones 32/83 verificadas y 51/83 pendientes de recenso. Producción DO_NOT_TOUCH; sin escrituras HR/proveedor ni I4.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -862,7 +862,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "e9452bf870ceaaad3dc51552e776e94d05a0644b",
+  "productSourceTree": "8ed2e4c6cac329ad540e38075ad4ec814b01e305",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -3036,7 +3036,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "1df631ccf098b275b585204d873b2f472503d20c",
+  "moduleTruthExpectedGitBlob": "5637db2e2d0038441d59de2c0cd7f73c3cf87fc5",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,

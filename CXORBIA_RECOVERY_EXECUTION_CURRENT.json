@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "742f2300f3cc0ac726b5b54558b27b1cd63a462d",
-  "productTree": "e9452bf870ceaaad3dc51552e776e94d05a0644b",
+  "productSourceSha": "99114523e4e08dd480e30e665e6dfd4304d84301",
+  "productTree": "8ed2e4c6cac329ad540e38075ad4ec814b01e305",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -295,7 +295,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "I3 HOLD 5/21 MATCH, Gate20/21 HOLD. VRM-301: Hosting-only DEV pasó en la candidata exacta; Admin autenticado abrió un solo detalle en visita #728 y permaneció uno tras 2.2 s de rerenders. Falta Shopper autenticado sobre el mismo artefacto. Siguiente acción exacta: realizar lectura E2E Shopper aislada conservando la sesión Admin; verificar un detalle único y ningún write. Mantener HR viva comparada contra una misma revisión; retomar G03 usando sites/cxorbia-backend-dev/versions/231186c337bcd0ba como evidencia histórica, no candidata actual; continuar cierre de finanzas; conservar fusiones 32/83 verificadas y 51/83 pendientes de recenso. Producción DO_NOT_TOUCH; sin escrituras HR/proveedor.",
+  "nextExactAction": "I3 HOLD 5/21 MATCH, Gate20/21 HOLD. VRM-301 detalle de visita Admin DEV PASS; Shopper Wilson (HN) y Stiven (GT) E2E DEV autenticados PASS en contexto/visitas/histórico/disponibilidad/moneda/sesión y modal de oportunidad único; Julissa GT credencial actual no validada, sin reset. VRM-302 P0 Admin Shoppers: 7 perfiles modales apilados tras un clic inicial, 1 tras rerender; owner app/modules/shoppers.js; corrección source-only 99114523e4e0 con 2/2 ensayos aislados PASS, CI canónica/recomposición y E2E post-deploy pendientes; sin elevar módulos a MATCH. Comparar HR viva misma revisión externa; retomar G03 usando sites/cxorbia-backend-dev/versions/231186c337bcd0ba como evidencia histórica, no candidata actual; continuar cierre de finanzas; conservar fusiones 32/83 verificadas y 51/83 pendientes de recenso. Producción DO_NOT_TOUCH; sin escrituras HR/proveedor ni I4.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -338,7 +338,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-11-04T08:13:31Z",
+  "lastUpdatedAt": "2026-11-04T09:25:00Z",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -995,12 +995,12 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V241.json",
-    "gitBlob": "1df631ccf098b275b585204d873b2f472503d20c",
-    "sourceSha": "742f2300f3cc0ac726b5b54558b27b1cd63a462d",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V242.json",
+    "gitBlob": "5637db2e2d0038441d59de2c0cd7f73c3cf87fc5",
+    "sourceSha": "99114523e4e08dd480e30e665e6dfd4304d84301",
     "allModulesMatch": false,
     "phaseAComplete": false,
-    "sha256": "a9e02c5a7254135a018b6c2eaa2a2a08be2bbb7e01e24b4a90ece721ae142625"
+    "sha256": "f3ac799a81b938c8570e7a66d1441902d3f0e2f36c96bd70cda31f32e056109a"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -3036,20 +3036,20 @@
     "gitBlob": "879313bfbced75baa8d764d9678f5efcc489c944"
   },
   "activeShockModuleTruth": {
-    "sourceSha": "742f2300f3cc0ac726b5b54558b27b1cd63a462d",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V241.json",
-    "matrixBlob": "1df631ccf098b275b585204d873b2f472503d20c",
+    "sourceSha": "99114523e4e08dd480e30e665e6dfd4304d84301",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V242.json",
+    "matrixBlob": "5637db2e2d0038441d59de2c0cd7f73c3cf87fc5",
     "classificationCounts": {
       "COMPOSED_NOT_DEPLOYED": 1,
       "MATCH": 5,
       "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN": 2,
-      "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 5,
-      "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN": 4,
+      "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 4,
+      "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN": 5,
       "SOURCE_PROVEN_DEV_EXACT_5_ASSETS_PASS_PENDING_ROLE_E2E_HUMAN": 1,
       "TRUE_FUNCTIONAL_DEFECT": 3
     },
     "derivedAt": "2026-11-04",
-    "meaning": "5_OF_21_MATCH__VRM301_HOSTING_AND_ADMIN_FOCAL_PASS__SHOPPER_E2E_PENDING"
+    "meaning": "5_OF_21_MATCH__VRM301_ADMIN_AND_TWO_SHOPPER_FOCAL_PASS__VRM302_SOURCE_ONLY_PENDING_CANONICAL_CI_DEV"
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
   "activeMethodologyGuard": {
