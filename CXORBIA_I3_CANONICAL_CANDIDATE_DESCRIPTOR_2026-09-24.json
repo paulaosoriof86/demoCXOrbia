@@ -3036,7 +3036,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "888e931a4fe30d38e1b0d812f4dbf49c7ef81a45",
+  "moduleTruthExpectedGitBlob": "20ff8489e5c71dfb7419ac06dead4f2e365b83c5",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -17132,6 +17132,7 @@
     "stivenVisits": 10,
     "shopperRoleE2e": "PENDING",
     "fullModuleMatch": 5,
-    "production": "DO_NOT_TOUCH"
+    "production": "DO_NOT_TOUCH",
+    "moduleTruthMatrixBlob": "20ff8489e5c71dfb7419ac06dead4f2e365b83c5"
   }
 }
