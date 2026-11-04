@@ -35,7 +35,7 @@ test('G05 resumes the same authenticated pending command after lost browser memo
 
 const deferred=()=>{let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b;});return {promise,resolve,reject};};
 function fixture(){
-  const calls={commands:[],saves:0,projectWrites:0,legacyFetches:0,refreshes:0,toasts:[],draws:0},nodes=new Map();
+  const calls={commands:[],saves:0,projectWrites:0,legacyFetches:0,refreshes:0,toasts:[],draws:0},nodes=new Map(),events=new Map();
   let context={authenticated:true,role:'admin',authNamespace:'staff',tenantId:'tenant-a',projectIds:['project-a']};
   let user={uid:'admin-a'},moduleFactory,transport=async command=>ack(command);
   const project={id:'project-a',tenantId:'tenant-a',name:'Fixture',operationalSource:{mode:'external',readPolicy:'external_live',writePolicy:'external_read_only',providerBindingId:'binding-a',mappingRef:'mapping-a'}};
@@ -44,7 +44,7 @@ function fixture(){
   const ui={el:()=>host,ph:()=>'',bdg:()=>'',toast:(...args)=>calls.toasts.push(args)};
   const CX={data,ui,BACKEND:{enableCommandWrites:true},backendAuth:{context:()=>context},backend:{authContext:()=>({authenticated:true,role:'admin'}),refresh:()=>{calls.refreshes++;}},cxDataCommandBoundary:{canonicalMode:()=>true},dataSource:{runtimeReadActive:true,runtimeSyncActive:false},session:{role:'admin',effectiveRole:()=>context?.role||'admin'},bus:{on(){},emit(){}},module:(name,fn)=>{moduleFactory=fn;}};
   const authority={applied:true,actorUid:'admin-a',role:'admin',authNamespace:'staff',tenantId:'tenant-a',projectId:'project-a'};
-  const sandbox={CX,crypto,TextEncoder,Uint8Array,console,Date,Map,Set,Promise,JSON,Object,String,Array,Boolean,Number,RegExp,localStorage:{getItem(){throw Error('UNEXPECTED_LOCAL_STORAGE');},setItem(){throw Error('UNEXPECTED_LOCAL_STORAGE');}},firebase:{auth:()=>({currentUser:user})},CX_PROTECTED_AUTH_HR_AUTHORITY:authority,fetch:()=>{calls.legacyFetches++;throw Error('UNEXPECTED_LEGACY_ENDPOINT');},setInterval:()=>0,clearInterval(){},setTimeout:()=>0};
+  const sandbox={CX,crypto,TextEncoder,Uint8Array,console,Date,Map,Set,Promise,JSON,Object,String,Array,Boolean,Number,RegExp,localStorage:{getItem(){throw Error('UNEXPECTED_LOCAL_STORAGE');},setItem(){throw Error('UNEXPECTED_LOCAL_STORAGE');}},firebase:{auth:()=>({currentUser:user})},CX_PROTECTED_AUTH_HR_AUTHORITY:authority,fetch:()=>{calls.legacyFetches++;throw Error('UNEXPECTED_LEGACY_ENDPOINT');},addEventListener:(name,handler)=>{if(!events.has(name))events.set(name,[]);events.get(name).push(handler);},setInterval:()=>0,clearInterval(){},setTimeout:()=>0};
   sandbox.window=sandbox;vm.createContext(sandbox);
   for(const file of ['app/adapters/cxorbia-command-adapter-v1.js','app/modules/hr-source.js','app/core/backend-hr-source-bridge.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),sandbox,{filename:file});
   CX.hrSource.save=async()=>{calls.saves++;return {ok:false};};
@@ -55,6 +55,8 @@ function fixture(){
     context:()=>context,setContext:value=>{context=value;},setUser:value=>{user=value;},
     setTransport:fn=>{transport=fn;},
     sync:()=>CX.hrSource.emitBackend('sync-request','project-a'),
+    auto:()=>CX.backendHrSourceBridge.automaticReconcileVerifiedRevision(),
+    emit:name=>(events.get(name)||[]).forEach(handler=>handler()),
     mount:()=>moduleFactory({data,ui}),
     click:()=>{const button=host.querySelector('#hsSync');return button.handlers.click({currentTarget:button});}
   };
@@ -65,6 +67,51 @@ test('G05 canonical connected external_live source syncs with canImport false an
   const result=await f.sync();assert.equal(result.ok,true);assert.equal(result.viewRefreshVerified,false);assert.equal(result.viewRefresh,'pending');assert.equal(result.publishUiAllowed,true);
   assert.equal(f.CX.hrSource.get('project-a').canImport,false);assert.equal(f.calls.commands.length,1);
   const command=f.calls.commands[0];assert.equal(command.version,'cxorbia-command-adapter-v1');assert.equal(command.commandType,'hr.snapshot.reconcile');assert.equal(command.entityId,revision);assert.equal(command.expectedVersion,revision);assert.equal(command.requirePeriod,false);assert.equal(command.periodId,null);assert.deepEqual(Object.keys(command.payload),[]);assert.equal(command.requestedAt,null);noSideWrites(f);
+});
+test('G05 automatic reconciliation starts only on verified Admin HR authority, reuses the revision receipt and refreshes after ACK',async()=>{
+  const f=fixture();
+  assert.equal(f.calls.commands.length,0,'boot alone must not write');
+  f.emit('cx:protected-auth-hr-authority-ready');
+  const result=await f.auto();
+  assert.equal(result.ok,true);assert.equal(result.viewRefreshVerified,true);
+  assert.equal(f.calls.commands.length,1);assert.equal(f.calls.refreshes,1);
+  const command=f.calls.commands[0];
+  assert.match(command.idempotencyKey,/^hr-auto-v1-/);
+  assert.equal(command.source,'hr-source-authorized-auto-reconciliation');
+  assert.equal(command.expectedVersion,revision);
+  f.emit('cx:protected-auth-hr-authority-ready');
+  await f.auto();
+  assert.equal(f.calls.commands.length,1,'same actor + source revision must reconcile only once');
+  assert.equal(f.calls.refreshes,1);
+  assert.equal(f.calls.saves,0);assert.equal(f.calls.projectWrites,0);
+});
+test('G05 automatic reconciliation never writes for shoppers or unverified authority',async()=>{
+  for(const kind of ['shopper','ops','authority_pending']){
+    const f=fixture();
+    if(kind==='authority_pending')f.authority.applied=false;
+    else {f.context().role=kind;f.context().authNamespace=kind==='shopper'?'shopper':'staff';f.authority.role=kind;f.authority.authNamespace=f.context().authNamespace;}
+    f.emit('cx:protected-auth-hr-authority-ready');
+    const result=await f.auto();
+    assert.equal(result.ok,false);assert.equal(f.calls.commands.length,0);assert.equal(f.calls.refreshes,0);
+  }
+});
+test('G05 automatic retry uses one durable key across restored sessions; different HR revisions trigger new reconciliation',async()=>{
+  const a=fixture(),b=fixture();
+  await a.auto();await b.auto();
+  assert.equal(a.calls.commands[0].idempotencyKey,b.calls.commands[0].idempotencyKey);
+  b.data.__liveHrSourceRevision=otherRevision;
+  b.data.previewMeta.sourceRevision=otherRevision;
+  const next=await b.auto();
+  assert.equal(next.ok,true);assert.equal(b.calls.commands.length,2);
+  assert.equal(b.calls.commands[1].expectedVersion,otherRevision);
+  assert.notEqual(b.calls.commands[0].idempotencyKey,b.calls.commands[1].idempotencyKey);
+});
+test('G05 automatic reconciliation reports partial/uncertain outcome without claiming success or refreshing',async()=>{
+  const f=fixture();f.setTransport(()=>({ok:false,status:'partial',providerAck:false,providerWrites:null,unresolvedEffects:1}));
+  const result=await f.auto();
+  assert.equal(result.ok,false);assert.equal(result.providerAck,false);
+  assert.equal(f.calls.commands.length,1);assert.equal(f.calls.refreshes,0);
+  await f.auto();assert.equal(f.calls.commands.length,1);
 });
 for(const [name,alter] of [
  ['unauthenticated',f=>f.setContext(null)],

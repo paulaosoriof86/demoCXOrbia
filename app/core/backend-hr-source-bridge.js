@@ -154,6 +154,7 @@
 
 
   const pendingSyncs=new Map();
+  const automaticSyncs=new Map();
   function syncBlocked(code,extra={}){
     return {ok:false,status:'blocked',committed:false,providerAck:false,readbackVerified:false,
       successUiAllowed:false,providerWrites:0,localMutation:false,localStorageWrite:false,code,
@@ -195,7 +196,7 @@
       current.uid===capture.uid&&current.tenantId===capture.tenantId&&current.revision===capture.revision&&
       current.role===capture.role&&current.authNamespace===capture.authNamespace;
   }
-  function canonicalSync(payload){
+  function canonicalSync(payload,{automatic=false}={}){
     const capture=captureSyncContext(payload.projectId);
     if(!capture.ok)return Promise.resolve(capture);
     const scopeKey=JSON.stringify([capture.uid,capture.tenantId,capture.projectId,capture.revision]);
@@ -203,14 +204,18 @@
     if(pending?.promise)return pending.promise;
     if(!pending){
       if(!window.crypto?.randomUUID)return Promise.resolve(syncBlocked('HR_SYNC_IDEMPOTENCY_UNAVAILABLE'));
-      pending={idempotencyKey:'hr-sync-'+window.crypto.randomUUID(),promise:null};
+      // A restored Admin session must replay the same provider receipt for the
+      // same HR revision. The receipt, never browser storage, is the authority.
+      pending={idempotencyKey:automatic
+        ?'hr-auto-v1-'+capture.revision.slice(0,32)+'-'+capture.uid
+        :'hr-sync-'+window.crypto.randomUUID(),promise:null};
       pendingSyncs.set(scopeKey,pending);
     }
     const command={
       commandType:'hr.snapshot.reconcile',entityType:'hrSnapshot',entityId:capture.revision,
       tenantId:capture.tenantId,projectId:capture.projectId,periodId:null,requireProject:true,requirePeriod:false,
       expectedVersion:capture.revision,idempotencyKey:pending.idempotencyKey,payload:{},
-      source:'hr-source-sync-request',authorization:{providerEnforcementRequired:true}
+      source:automatic?'hr-source-authorized-auto-reconciliation':'hr-source-sync-request',authorization:{providerEnforcementRequired:true}
     };
     const task=(async()=>{
       let result;
@@ -259,6 +264,39 @@
     return pending.promise;
   }
 
+  function automaticReconcileVerifiedRevision(){
+    // This event is published only after the exact authenticated HR revision
+    // and operational project scope have been composed. Shopper/ops sessions
+    // never initiate reconciliation; an Admin action is not needed each month.
+    const capture=captureSyncContext(CX.data?.currentProjectId);
+    if(capture.ok!==true)return Promise.resolve(capture);
+    const scopeKey=JSON.stringify([capture.uid,capture.tenantId,capture.projectId,capture.revision]);
+    if(automaticSyncs.has(scopeKey))return automaticSyncs.get(scopeKey);
+    const task=canonicalSync({projectId:capture.projectId},{automatic:true}).then(async response=>{
+      if(response?.ok!==true||response?.providerAck!==true||response?.readbackVerified!==true||response?.publishUiAllowed!==true){
+        return response;
+      }
+      // Refresh only after a confirmed durable command. The existing backend
+      // refresh wrapper reconstitutes the verified HR + operational read model.
+      if(typeof CX.backend?.refresh==='function'){
+        try{
+          await CX.backend.refresh();
+          const ready=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{};
+          response.viewRefreshVerified=sameSyncContext(capture)&&ready.applied===true&&
+            String(CX.data?.previewMeta?.sourceRevision||'')===capture.revision;
+          response.viewRefresh=response.viewRefreshVerified?'confirmed':'pending';
+        }catch(error){
+          response.viewRefreshVerified=false;
+          response.viewRefresh='pending';
+          response.refreshError=String(error?.message||error);
+        }
+      }
+      return response;
+    }).catch(error=>syncBlocked('HR_AUTO_RECONCILIATION_FAILED',{error:String(error?.message||error)}));
+    automaticSyncs.set(scopeKey,task);
+    return task;
+  }
+
   async function handle(kind, payload){
     payload = payload || {};
     if(kind==='sync-request'&&CX.hrSource?._canonical?.()===true)return canonicalSync(payload);
@@ -289,11 +327,25 @@
     CX.bus.on('hr-source:test', payload => handle('test', payload));
     CX.bus.on('hr-source:preview', payload => handle('preview', payload));
     CX.bus.on('hr-source:sync-request', payload => handle('sync-request', payload));
+    if(typeof window.addEventListener==='function'){
+      window.addEventListener('cx:protected-auth-hr-authority-ready',()=>{
+        void automaticReconcileVerifiedRevision().then(response=>{
+          CX.backendHrSourceBridge.lastAutomatic={
+            projectId:String(CX.data?.currentProjectId||''),
+            sourceRevision:String(response?.sourceRevision||CX.data?.__liveHrSourceRevision||''),
+            ok:response?.ok===true,providerAck:response?.providerAck===true,
+            readbackVerified:response?.readbackVerified===true,
+            viewRefreshVerified:response?.viewRefreshVerified===true,
+            code:response?.code||null,at:now()
+          };
+        });
+      });
+    }
     attach.done = true;
     return true;
   }
 
-  CX.backendHrSourceBridge = { attach, handle, normalizeResponse, getBackendConfig, captureSyncContext, sameSyncContext, last: null };
+  CX.backendHrSourceBridge = { attach, handle, normalizeResponse, getBackendConfig, captureSyncContext, sameSyncContext, automaticReconcileVerifiedRevision, last: null, lastAutomatic:null };
   if(!attach()){
     let tries = 0;
     const t = setInterval(()=>{ tries++; if(attach() || tries > 40) clearInterval(t); }, 250);
