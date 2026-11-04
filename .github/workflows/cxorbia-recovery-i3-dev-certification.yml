@@ -640,10 +640,21 @@ jobs:
       set -Eeuo pipefail
       IMAGE_URI="$(cat "$VRM151_MAT_OUT/image-uri.txt")"
       gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --quiet
-      gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM151_MAT_OUT/runtime.json"
-      DEV_REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$VRM151_MAT_OUT/runtime.json")"
-      test -n "$DEV_REVISION"
+      # A ready revision is not proof of a serving revision: route the exact DEV build first.
+      gcloud run services update-traffic "$SERVICE" --project "$PROJECT" --region "$REGION" --to-latest --quiet
+      DEV_TRAFFIC_READY=0
+      for attempt in $(seq 1 30); do
+        gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM151_MAT_OUT/runtime.json"
+        DEV_REVISION="$(jq -r '.status.latestCreatedRevisionName // empty' "$VRM151_MAT_OUT/runtime.json")"
+        READY_REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$VRM151_MAT_OUT/runtime.json")"
+        DEV_TRAFFIC_PERCENT="$(jq -r --arg revision "$DEV_REVISION" '[.status.traffic[]? | select(.revisionName == $revision) | (.percent // 0)] | add // 0' "$VRM151_MAT_OUT/runtime.json")"
+        if [[ -n "$DEV_REVISION" && "$DEV_REVISION" == "$READY_REVISION" && "$DEV_TRAFFIC_PERCENT" == "100" ]]; then DEV_TRAFFIC_READY=1; break; fi
+        sleep 4
+      done
+      if [[ "$DEV_TRAFFIC_READY" != "1" ]]; then echo "DEV serving revision/traffic does not match the latest created and ready revision" >&2; exit 1; fi
       gcloud run revisions describe "$DEV_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$VRM151_MAT_OUT/runtime-revision.json"
+      REVISION_IMAGE="$(jq -r '.spec.containers[0].image // empty' "$VRM151_MAT_OUT/runtime-revision.json")"
+      if [[ "$REVISION_IMAGE" != "$IMAGE_URI" ]]; then echo "DEV serving revision is not the exact image built by this run" >&2; exit 1; fi
       RAW="$(jq -r '.status.imageDigest // empty' "$VRM151_MAT_OUT/runtime-revision.json")"
       if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else echo "runtime digest unresolved" >&2; exit 1; fi
       RUNTIME_URL="$(jq -r '.status.url // empty' "$VRM151_MAT_OUT/runtime.json")"
