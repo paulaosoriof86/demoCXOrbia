@@ -996,11 +996,11 @@
   },
   "moduleTruthAuthority": {
     "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V243.json",
-    "gitBlob": "888e931a4fe30d38e1b0d812f4dbf49c7ef81a45",
+    "gitBlob": "20ff8489e5c71dfb7419ac06dead4f2e365b83c5",
     "sourceSha": "bc685392d7f1a9ba685df6f7b74d48b19b44e385",
     "allModulesMatch": false,
     "phaseAComplete": false,
-    "sha256": "c86d56db50fc818485ad9e2c8f16065fec9492b681bf17eb53a097bae25ac396"
+    "sha256": "13a289a3912036a3db2a0137ace0f17fb047a9d7fd4ecd7429a663edfa09ecfa"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -3038,7 +3038,7 @@
   "activeShockModuleTruth": {
     "sourceSha": "bc685392d7f1a9ba685df6f7b74d48b19b44e385",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V243.json",
-    "matrixBlob": "888e931a4fe30d38e1b0d812f4dbf49c7ef81a45",
+    "matrixBlob": "20ff8489e5c71dfb7419ac06dead4f2e365b83c5",
     "classificationCounts": {
       "COMPOSED_NOT_DEPLOYED": 1,
       "MATCH": 5,
@@ -3049,7 +3049,7 @@
       "TRUE_FUNCTIONAL_DEFECT": 3
     },
     "derivedAt": "2026-11-04",
-    "meaning": "5_OF_21_MATCH__VRM303_CANONICAL_COHORT_SOURCE_FIXED_PENDING_CANONICAL_CI_AND_DEV_MATERIALIZATION_ROLE_E2E"
+    "meaning": "5_OF_21_MATCH__VRM303_CANONICAL_CI_DEV_HOSTING_ADMIN_94_94_PASS_SHOPPER_ROLE_PENDING"
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
   "activeMethodologyGuard": {
@@ -7296,6 +7296,7 @@
     "stivenVisits": 10,
     "shopperLogin": "PENDING",
     "moduleTruthMatchCount": 5,
-    "productionUnchanged": true
+    "productionUnchanged": true,
+    "moduleTruthMatrixBlob": "20ff8489e5c71dfb7419ac06dead4f2e365b83c5"
   }
 }
