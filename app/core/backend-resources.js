@@ -26,9 +26,39 @@ window.CX=window.CX||{};
   }
   function tenantRef(){const d=db();return d?d.collection(col.tenants||'tenants').doc(tenantId()):null;}
   function resourcesCol(){const t=tenantRef();return t?t.collection(col.resources||'resources'):null;}
+  // General guides may carry their approved PDF across periods, never exams.
+  function isGeneralProjectGuide(item,scope){
+    if(!item||str(item.resourceType)!=='project_resource'||str(item.tipo).toLowerCase()==='certification_bank'||
+       str(item.projectId)!==scope.projectId||str(item.tenantId||scope.tenantId)!==scope.tenantId||
+       str(item.visitaId||item.visitId||item.assignedVisitId))return false;
+    const title=str(item.n||item.name||item.title||item.titulo);
+    if(!/(?:instructiv|manual|protocolo|gu[ií]a)/iu.test(title))return false;
+    if(str(item.tipo).toLowerCase()==='pdf'){
+      const period=str(item.periodId),path=str(item.storagePath),
+        prefix=['tenants',scope.tenantId,'projects',scope.projectId,'periods',period,'resources'].join('/')+'/';
+      if(!period||period.includes('/')||!path.startsWith(prefix))return false;
+    }
+    return true;
+  }
+  function preferLatestGuides(rows,scope){
+    const ordinary=[],best=new Map();
+    const name=item=>str(item.n||item.name||item.title||item.titulo)
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+    for(const item of rows){
+      if(!isGeneralProjectGuide(item,scope)){ordinary.push(item);continue;}
+      const key=name(item),before=best.get(key);
+      const newer=!before||((str(item.periodId)===scope.periodId?1:0)>(str(before.periodId)===scope.periodId?1:0))||
+        ((str(item.periodId)===scope.periodId)===(str(before.periodId)===scope.periodId)&&
+        (str(item.periodId)>str(before.periodId)||
+        (str(item.periodId)===str(before.periodId)&&Number(item.version||0)>Number(before.version||0))));
+      if(newer)best.set(key,item);
+    }
+    return [...ordinary,...best.values()];
+  }
   function visible(item,scope){
     if(!item||item.status!=='active'||str(item.projectId)!==scope.projectId)return false;
-    if(item.periodId&&scope.periodId&&str(item.periodId)!==scope.periodId)return false;
+    if(item.periodId&&scope.periodId&&str(item.periodId)!==scope.periodId&&
+       !(item.inheritedProjectGuide===true&&isGeneralProjectGuide(item,scope)))return false;
     if(isOperator())return true;
     // A Shopper must never receive unreleased certification questions or the
     // answer key of a draft, including via a stale application resource cache.
@@ -93,10 +123,13 @@ window.CX=window.CX||{};
       }else{
         const q=c.where('projectId','==',scope.projectId).where('status','==','active');
         const snapshot=await (isOperator()?q:q.where('visibleRoles','array-contains',role())).get();
-        rows=snapshot.docs.map(d=>Object.assign({id:d.id},d.data()||{}));
+        rows=snapshot.docs.map(d=>Object.assign({id:d.id},d.data()||{})).map(item=>({
+          ...item,inheritedProjectGuide:Boolean(item.periodId&&scope.periodId&&str(item.periodId)!==scope.periodId&&
+            isGeneralProjectGuide(item,scope))
+        }));
       }
       if(readId!==latestLoadId||cacheKey(currentScope())!==key)return [];
-      const approved=arr(rows).filter(x=>visible(x,scope));
+      const approved=preferLatestGuides(arr(rows).filter(x=>visible(x,scope)),scope);
       api.items=approved;lastLoadedKey=key;
       publishReadState(scope,{source:role()==='shopper'?'verified-server-projection':'firestore',status:'ready',tenantId:scope.tenantId,projectId:scope.projectId,periodId:scope.periodId,count:approved.length,at:now()});
       return approved;
@@ -224,15 +257,19 @@ window.CX=window.CX||{};
     if(!connected())return blocked('RESOURCE_READ_CONNECTED_REQUIRED');
     const scope=currentScope(options),rid=str(item.id),path=str(item.storagePath);
     if(!scope.tenantId||!scope.projectId||!scope.periodId||!rid||!path)return blocked('RESOURCE_READ_SCOPE_REQUIRED');
-    const prefix=['tenants',scope.tenantId,'projects',scope.projectId,'periods',scope.periodId,'resources'].join('/')+'/';
+    const inherited=item.inheritedProjectGuide===true&&isGeneralProjectGuide(item,scope);
+    const resourcePeriodId=inherited?str(item.periodId):scope.periodId;
+    if(!resourcePeriodId||resourcePeriodId.includes('/'))return blocked('RESOURCE_READ_SCOPE_REQUIRED');
+    const prefix=['tenants',scope.tenantId,'projects',scope.projectId,'periods',resourcePeriodId,'resources'].join('/')+'/';
     const suffix=path.startsWith(prefix)?path.slice(prefix.length):'';
     if(!/^[-a-zA-Z0-9_]+\/[-a-zA-Z0-9_.]+\.pdf$/i.test(suffix)||suffix.includes('..'))
       return blocked('RESOURCE_READ_STORAGE_SCOPE_MISMATCH');
     const isCurrent=()=>arr(api.items).some(row=>str(row.id)===rid&&str(row.storagePath)===path&&
       str(row.tenantId)===scope.tenantId&&str(row.projectId)===scope.projectId&&
-      str(row.periodId)===scope.periodId&&str(row.tipo).toLowerCase()==='pdf'&&visible(row,scope));
+      str(row.periodId)===resourcePeriodId&&str(row.tipo).toLowerCase()==='pdf'&&
+      Boolean(row.inheritedProjectGuide)===inherited&&visible(row,scope));
     if(!isCurrent()||str(item.tenantId)!==scope.tenantId||str(item.projectId)!==scope.projectId||
-      str(item.periodId)!==scope.periodId||str(item.tipo).toLowerCase()!=='pdf')
+      str(item.periodId)!==resourcePeriodId||str(item.tipo).toLowerCase()!=='pdf')
       return blocked('RESOURCE_READ_NOT_PUBLISHED_FOR_ROLE');
     const fb=window.firebase,auth=fb?.auth?.(),user=auth?.currentUser;
     if(!user?.uid||!user.getIdToken)return blocked('RESOURCE_READ_AUTH_REQUIRED');

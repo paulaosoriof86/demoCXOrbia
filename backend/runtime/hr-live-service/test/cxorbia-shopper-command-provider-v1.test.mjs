@@ -1383,3 +1383,79 @@ test('HF-20261012-04 Admin UI and Shopper portal consume signed display authorit
   assert.match(portal,/s\.__verifiedDisplayName===true/);
   assert.match(portal,/s\.__selfDisplayNameVerified===true/);
 });
+
+
+test('I3 P0 / new HR id with diacritics and case reuses single canonical shopper, durable crosswalk and existing login',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  const keeper='shopper_gt_damaris_keeper',alias='shopper_gt_damaris_november';
+  const first={...snapshot({shopperId:keeper}),visits:[{
+    id:'october-keeper',shopperId:keeper,shopper:'Damarís de León',phone:'50255557788',
+    pais:'GT',country:'GT',sourceSafe:true,piiProtected:true,hrRowId:'OCT!3',sourceTab:'OCT'
+  }]};
+  const initial=await p.reconcileSnapshot(first,{sourceRevision:'oct-damaris'});
+  assert.equal(initial.authCreated,1);
+  const uid=stableShopperUid('tenant-a',keeper),authBefore=await auth.getUser(uid);
+  const second={...snapshot({shopperId:alias}),visits:[{
+    id:'november-a',shopperId:alias,shopper:' DAMARIS DE LEON ',phone:'+502 5555-7788',
+    pais:'Guatemala',country:'GT',sourceSafe:true,piiProtected:true,hrRowId:'NOV!3',sourceTab:'NOV'
+  },{
+    id:'november-b',shopperId:alias,shopper:'Damaris de Leon',phone:'55557788',
+    pais:'GT',country:'GT',sourceSafe:true,piiProtected:true,hrRowId:'NOV!22',sourceTab:'NOV'
+  }]};
+  const reviewId='sir-damaris-pending';
+  db.seed('tenants/tenant-a/shopperIdentityReviews/'+reviewId,{
+    shopperIds:[alias,keeper],candidateShopperIds:[alias,keeper],status:'active',
+    tenantId:'tenant-a',projectScope:'project-a',reason:'SHOPPER_HR_NORM_NAME_PHONE_CANDIDATES_REVIEW_REQUIRED'
+  });
+  const out=await p.reconcileSnapshot(second,{sourceRevision:'nov-damaris'});
+  assert.equal(out.providerAck,true);assert.equal(out.automaticIncomingHrAliases,1);
+  assert.equal(out.automaticIncomingReviewsResolved,1);
+  assert.equal(out.identityHeldShopperCount,0);
+  assert.equal(out.authCreated,0);assert.equal(auth.created,1);
+  assert.equal(db.get('tenants/tenant-a/shopperIdentityCrosswalk/'+alias).shopperId,keeper);
+  assert.equal(db.get('tenants/tenant-a/shoppers/'+alias),undefined);
+  assert.equal(db.get('tenants/tenant-a/shopperIdentityReviews/'+reviewId).status,'resolved_merged');
+  const links=db.paths().filter(path=>path.includes('/shopperIdentityLinks/'));
+  assert.equal(links.length,1);
+  assert.equal(db.get(links[0]).authorityType,'provider_auto_compatible');
+  assert.equal(db.get(links[0]).humanConfirmed,false);
+  assert.equal((await auth.getUser(uid)).uid,authBefore.uid);
+  const replay=await p.reconcileSnapshot(second,{sourceRevision:'nov-damaris'});
+  assert.equal(replay.automaticIncomingHrAliases,0);
+  assert.equal(replay.identityHeldShopperCount,0);
+  assert.equal(replay.providerWrites,0);
+  assert.equal(auth.created,1);
+});
+
+test('I3 P0 / genuinely new HR person still creates identity with no manual review',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  const s={...snapshot({shopperId:'shopper_gt_newperson'}),visits:[{
+    id:'nov-new',shopperId:'shopper_gt_newperson',shopper:'Damaris de León',
+    phone:'55551111',country:'GT',pais:'GT',sourceSafe:true,piiProtected:true,hrRowId:'NOV!3'
+  }]};
+  const out=await p.reconcileSnapshot(s,{sourceRevision:'nov-newperson'});
+  assert.equal(out.authCreated,1);
+  assert.equal(out.identityHeldShopperCount,0);
+  assert.equal(out.automaticIncomingHrAliases,0);
+});
+
+test('I3 P0 / exact incoming HR match with explicit distinct decision never links the canonical shopper',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  const keeper='shopper_gt_keeper_distinct',alias='shopper_gt_new_distinct';
+  const first={...snapshot({shopperId:keeper}),visits:[{
+    id:'first-distinct',shopperId:keeper,shopper:'Damaris de León',phone:'55551122',
+    pais:'GT',country:'GT',sourceSafe:true,piiProtected:true
+  }]};
+  await p.reconcileSnapshot(first,{sourceRevision:'r1'});
+  db.seed('tenants/tenant-a/shopperIdentityReviewResolutions/distinct-hr',{
+    status:'resolved_distinct',projectScope:'project-a',shopperIds:[alias,keeper]
+  });
+  const s={...snapshot({shopperId:alias}),visits:[{
+    id:'second-distinct',shopperId:alias,shopper:'DAMARIS DE LEON',phone:'55551122',
+    pais:'GT',country:'GT',sourceSafe:true,piiProtected:true
+  }]};
+  const out=await p.reconcileSnapshot(s,{sourceRevision:'r2'});
+  assert.equal(out.automaticIncomingHrAliases,0);
+  assert.equal(db.get('tenants/tenant-a/shopperIdentityCrosswalk/'+alias)?.shopperId,alias);
+  assert.equal(db.paths().filter(path=>path.includes('/shopperIdentityLinks/')).length,0);
+});

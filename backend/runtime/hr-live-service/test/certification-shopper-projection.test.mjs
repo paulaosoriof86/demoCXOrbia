@@ -89,3 +89,21 @@ test('VRM297 authenticated HTTP GET is scoped and practice POST is non-persisten
   assert.equal(practice.body.committed,false);assert.equal(practice.body.providerWrites,0);
   assert.equal((await invoke('GET','attempt',null)).status,405);
 });
+
+
+test('I3 P0 / latest published project instructive remains visible for new period, without leaking old exams',async()=>{
+  const november={...scope,periodId:'cinepolis-2026-11'};
+  const guide={...pdf,id:'oct-guide',periodId:'cinepolis-2026-10',n:'Instructivo Shopper',
+    storagePath:'tenants/tya/projects/cinepolis/periods/cinepolis-2026-10/resources/res-guide/Instructivo.pdf'};
+  const older={...guide,id:'sep-guide',periodId:'cinepolis-2026-09',
+    storagePath:'tenants/tya/projects/cinepolis/periods/cinepolis-2026-09/resources/res-guide/Instructivo.pdf'};
+  const changedProject={...guide,id:'other-guide',projectId:'other-project'};
+  const changedVisit={...guide,id:'visit-guide',visitaId:'visit-old'};
+  const bankOld={...bank('oct-exam'),periodId:'cinepolis-2026-10'};
+  const result=await readShopperResourceProjection(
+    mockDb([older,guide,changedProject,changedVisit,bankOld]),november,shopper,november.periodId);
+  assert.deepEqual(result.items.map(item=>item.id),['oct-guide']);
+  assert.equal(result.items[0].inheritedProjectGuide,true);
+  assert.equal(result.items[0].periodId,'cinepolis-2026-10');
+  assert.equal(JSON.stringify(result).includes('correcta'),false);
+});

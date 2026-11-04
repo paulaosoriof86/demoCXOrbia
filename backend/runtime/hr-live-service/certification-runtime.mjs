@@ -108,6 +108,38 @@ async function loadPublishedBank(db,scope,body){
   return {resource,bank,fingerprint:certificationBankFingerprint(bank)};
 }
 
+// I3 P0 — general project guides remain approved for the same project across
+// periods. This does not apply to exams, visit-specific resources or drafts.
+function reusableProjectGuide(row,scope){
+  if(str(row?.resourceType)!=='project_resource'||str(row?.tipo).toLowerCase()==='certification_bank'||
+     str(row?.status)!=='active'||str(row?.projectId)!==str(scope?.projectId)||
+     (row?.tenantId!==undefined&&str(row?.tenantId)!==str(scope?.tenantId))||
+     str(row?.visitaId||row?.visitId||row?.assignedVisitId))return false;
+  const title=str(row?.n||row?.name||row?.title||row?.titulo);
+  if(!/(?:instructiv|manual|protocolo|gu[ií]a)/iu.test(title))return false;
+  if(str(row?.tipo).toLowerCase()==='pdf'){
+    const period=str(row.periodId),path=str(row.storagePath);
+    const prefix=['tenants',scope.tenantId,'projects',scope.projectId,'periods',period,'resources'].join('/')+'/';
+    if(!period||period.includes('/')||!path.startsWith(prefix))return false;
+  }
+  return true;
+}
+const projectGuideKey=row=>str(row?.n||row?.name||row?.title||row?.titulo)
+  .normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+function latestPublishedProjectGuides(rows,scope){
+  const best=new Map(),ordinary=[];
+  for(const item of rows){
+    if(!reusableProjectGuide(item,scope)){ordinary.push(item);continue;}
+    const key=projectGuideKey(item),prior=best.get(key);
+    const newer=!prior||((str(item.periodId)===str(scope.periodId)?1:0)>(str(prior.periodId)===str(scope.periodId)?1:0))||
+      ((str(item.periodId)===str(scope.periodId))===(str(prior.periodId)===str(scope.periodId))&&
+       (str(item.periodId)>str(prior.periodId)||
+        (str(item.periodId)===str(prior.periodId)&&Number(item.version||0)>Number(prior.version||0))));
+    if(newer)best.set(key,item);
+  }
+  return [...ordinary,...best.values()];
+}
+
 // VRM-297: Firestore does not redact document fields. All Shopper resource
 // metadata now crosses this authenticated server boundary. No raw bank question,
 // answer key, explanation or document-source object may cross it.
@@ -115,7 +147,7 @@ export function shopperResourceProjection(input={},scope={}){
   const row=input||{},periodId=str(scope.periodId);
   if(str(row.status)!=='active'||str(row.projectId)!==str(scope.projectId)
     ||(row.tenantId!==undefined&&str(row.tenantId)!==str(scope.tenantId))
-    ||(row.periodId&&periodId&&str(row.periodId)!==periodId)
+    ||(row.periodId&&periodId&&str(row.periodId)!==periodId&&!reusableProjectGuide(row,scope))
     ||!(row.targetAll===true||arr(row.visibleRoles).map(str).includes('shopper')))return null;
   const bankType=str(row.resourceType)==='certification_bank'||str(row.tipo)==='certification_bank';
   if(bankType){
@@ -141,7 +173,8 @@ export function shopperResourceProjection(input={},scope={}){
   // Preserve previously permitted project-resource metadata (including document
   // links) without shipping a bank payload from a misclassified resource.
   const {bank,answerKey,correcta,exp,preguntas,documentSource,...metadata}=row;
-  return {...metadata,id:str(row.id)};
+  const inherited=!!(row.periodId&&periodId&&str(row.periodId)!==periodId&&reusableProjectGuide(row,scope));
+  return {...metadata,id:str(row.id),...(inherited?{inheritedProjectGuide:true}:{})};
 }
 
 export async function readShopperResourceProjection(db,scope,principal,periodId){
@@ -152,7 +185,8 @@ export async function readShopperResourceProjection(db,scope,principal,periodId)
   // A single indexed projectId equality avoids dependence on an unproven new
   // composite index; status, type, period and visibility are enforced here.
   const snapshot=await resourcesCol(db,scope).where('projectId','==',scope.projectId).get();
-  const items=snapshot.docs.map(doc=>shopperResourceProjection({...doc.data(),id:doc.id},exactScope)).filter(Boolean);
+  const raw=snapshot.docs.map(doc=>shopperResourceProjection({...doc.data(),id:doc.id},exactScope)).filter(Boolean);
+  const items=latestPublishedProjectGuides(raw,exactScope);
   return {items,periodId:str(periodId),count:items.length,source:'verified_shopper_projection'};
 }
 

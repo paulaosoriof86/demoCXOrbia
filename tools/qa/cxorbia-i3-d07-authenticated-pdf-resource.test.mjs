@@ -160,3 +160,21 @@ test('D07 bounded read aborts a hanging GET and reports its stage without reveal
   assert.equal(h.calls[0].options.signal.aborted,true);
   assert.doesNotMatch(JSON.stringify(r),/SYNTHETIC_TOKEN_NOT_REAL/);
 });
+
+
+test('I3 P0 / inherited project instructive PDF opens in next period with authenticated source-period path',async()=>{
+  const h=fixture();
+  h.scope.periodId='cinepolis-2026-11';
+  const inherited={...h.resource,n:'Instructivo Shopper Cinépolis',inheritedProjectGuide:true};
+  h.CX.backendResources.items=[inherited];
+  const result=await h.CX.backendResources.readPublishedPdf(inherited,h.scope);
+  assert.equal(result.ok,true);
+  assert.equal(h.calls.length,1);
+  assert.match(h.calls[0].url,/cinepolis-2026-10/);
+  assert.equal(h.calls[0].options.headers.Authorization,'Firebase SYNTHETIC_TOKEN_NOT_REAL');
+  const changedPath={...inherited,storagePath:inherited.storagePath.replace('/cinepolis/','/otro/')};
+  const denied=await h.CX.backendResources.readPublishedPdf(changedPath,h.scope);
+  assert.equal(denied.ok,false);
+  assert.equal(denied.code,'RESOURCE_READ_STORAGE_SCOPE_MISMATCH');
+  assert.equal(h.calls.length,1);
+});
