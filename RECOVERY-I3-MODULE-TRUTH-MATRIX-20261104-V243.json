@@ -2535,7 +2535,7 @@
       ],
       "contractFunctional": "Shopper/Auth/Identidad/Histórico",
       "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
-      "actionRequired": "VRM-302 source 99114523 and Admin Shoppers binder idempotence: 18 focal source tests including 2/2 VRM302 PASS, 9 A07 +16 A08 PASS; sole candidate CI PASS and DEV Hosting run 41809435938 exact 11 assets / version b163f88f064004e9 PASS, unchanged Cloud Run digest and production. Shopper Stiven after reload PASS. Admin postdeploy single-modal real UI + independent HR source revision + human acceptance still PENDING; 5/21 MATCH unchanged.",
+      "actionRequired": "VRM-303 canonical CI run 41819202716 PASS; same-source DEV Hosting run 41819336084 PASS, 11 exact assets; Admin Shoppers 94 active tile / 94 active modal and Stiven 10 visits LIVE E2E PASS. Shopper session postmerge, HR independent revision and full role coverage still PENDING. Preserve classification until whole module acceptance.",
       "preI4SuccessorCommits": [
         "61cf7120603aeff110e97632bb6c69f5c4809d62",
         "275a9893532e9fa11efcbafccd34bb93919d7d64"
@@ -8074,7 +8074,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "I3 HOLD 5/21 MATCH, Gate20/21 HOLD. VRM-301 detalle de visita Admin DEV PASS; Shopper Wilson (HN) y Stiven (GT) E2E DEV autenticados PASS en contexto/visitas/histórico/disponibilidad/moneda/sesión y modal de oportunidad único; Julissa GT credencial actual no validada, sin reset. VRM-302 P0 Admin Shoppers: 7 perfiles modales apilados tras un clic inicial, 1 tras rerender; owner app/modules/shoppers.js; corrección source-only 99114523e4e0 con 2/2 ensayos aislados PASS, CI canónica/recomposición y E2E post-deploy pendientes; sin elevar módulos a MATCH. Comparar HR viva misma revisión externa; retomar G03 usando sites/cxorbia-backend-dev/versions/231186c337bcd0ba como evidencia histórica, no candidata actual; continuar cierre de finanzas; conservar fusiones 32/83 verificadas y 51/83 pendientes de recenso. Producción DO_NOT_TOUCH; sin escrituras HR/proveedor ni I4.",
+  "nextExactAction": "I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -17164,9 +17164,23 @@
     "uiRepro": "POST_RELOAD_95_TILE_94_MODAL",
     "rootCause": "SUMMARY_LIST_VS_VISIBLE_ACTIVE_ROWS",
     "localFocal": "PASS",
-    "currentDev": "PREDECESSOR_SERVED",
-    "sameArtifactAdminShopper": "PENDING",
+    "currentDev": "PASS_EXACT_SOURCE_DEV_HOSTING_RUN41819336084_VERSION_aed73e33f55ce916",
+    "sameArtifactAdminShopper": "ADMIN_94_TILE_94_MODAL_STIVEN10_PASS__SHOPPER_LOGIN_PENDING",
     "modulePromoted": false,
-    "production": false
+    "production": false,
+    "devReadback": {
+      "canonicalCiRunId": 41819202716,
+      "hostingRunId": 41819336084,
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/aed73e33f55ce916",
+      "sourceSha": "bc685392d7f1a9ba685df6f7b74d48b19b44e385",
+      "exactAssets": 11,
+      "visibleShoppers": 211,
+      "activeTile": 94,
+      "activeModal": 94,
+      "stivenVisits": 10,
+      "shopperLogin": "PENDING",
+      "moduleMatch": false,
+      "production": false
+    }
   }
 }
