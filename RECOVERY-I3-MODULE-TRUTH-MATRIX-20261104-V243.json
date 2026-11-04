@@ -103,12 +103,12 @@
     }
   },
   "productSource": {
-    "sha": "99114523e4e08dd480e30e665e6dfd4304d84301",
-    "treeSha": "8ed2e4c6cac329ad540e38075ad4ec814b01e305",
-    "predecessorProductSourceSha": "742f2300f3cc0ac726b5b54558b27b1cd63a462d",
-    "message": "fix(i3/P0): idempotent Admin shopper profile row bindings",
-    "authorityState": "VRM302_CANONICAL_CI_PASS_DEV_HOSTING_EXACT_11_ASSETS_SERVED_HUMAN_ADMIN_E2E_PENDING",
-    "state": "I3_HOLD_5_OF_21_MATCH_VRM302_DEV_MATERIALIZED_HUMAN_E2E_PENDING"
+    "sha": "bc685392d7f1a9ba685df6f7b74d48b19b44e385",
+    "treeSha": "13bdb8f47f9348164be4470f65ca42786accdfbb",
+    "predecessorProductSourceSha": "99114523e4e08dd480e30e665e6dfd4304d84301",
+    "message": "fix(i3 P0): align shopper KPI cohort with visible canonical identities",
+    "authorityState": "VRM303_SOURCE_FIX_LOCAL_PASS_DEV_MATERIALIZATION_PENDING",
+    "state": "I3_HOLD_5_OF_21_MATCH_VRM303_CANONICAL_SOURCE_PROOF_PENDING"
   },
   "controlHeadAtConstruction": "cd9bce3c45ef4c97312be38f6311375a20ffc7c1",
   "phaseAComplete": false,
@@ -2564,7 +2564,7 @@
       "currentOwnerBlobs": {
         "app/core/shopper-credential-rule.js": "723abba57c5fed73c1fab933150943e39ebb76e3",
         "app/adapters/tya-canonical-shopper-portal-v2.js": "99bde07ca213541bdec920606303621bdfeb406c",
-        "app/modules/shoppers.js": "be17bbafe991fc1e5a090f03ffcf5170bb7624a0",
+        "app/modules/shoppers.js": "d35063276004ab1a1ee4ca0c99dd65aa9959e699",
         "app/modules/misvisitas.js": "de7e10c0509aabcf96f3834ee8a5496be297b2b3",
         "app/core/shoppers-store.js": "16d1abd55c3ab166f4c10c08220985e7a54f53ba"
       },
@@ -5567,7 +5567,7 @@
       "f9ApprovedBlob": "92f834bb2b7fcf5d8674acb717ce6b4e920c5766",
       "latestApprovedSource": "61cf7120603aeff110e97632bb6c69f5c4809d62",
       "latestApprovedBlob": "f9fb2b4787a0cdba727ed72caf3113e35e397d3c",
-      "currentBlob": "be17bbafe991fc1e5a090f03ffcf5170bb7624a0",
+      "currentBlob": "d35063276004ab1a1ee4ca0c99dd65aa9959e699",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
@@ -5591,7 +5591,7 @@
       },
       "currentCumulativeSource": "1d74c31b5ba2694ad62e211ef2a04554fddb2585",
       "currentLoadOrder": 89,
-      "previousMatrixCurrentBlob": "9b9668809131d06f1fe6508c38b0d7cdc54d11a7",
+      "previousMatrixCurrentBlob": "be17bbafe991fc1e5a090f03ffcf5170bb7624a0",
       "byteAuthorityReadback": "EXACT_NEW_GIT_BLOB_PENDING_CANONICAL_CI_DEV"
     },
     {
@@ -17153,5 +17153,20 @@
     "productionUnchanged": true,
     "fullPhaseACertified": false,
     "adminE2e": "PENDING"
+  },
+  "vrm303CanonicalCohort20261104": {
+    "findingId": "VRM-303",
+    "classification": "FUNCTIONAL_DEFECT",
+    "owner": "app/modules/shoppers.js",
+    "sourceSha": "bc685392d7f1a9ba685df6f7b74d48b19b44e385",
+    "sourceTree": "13bdb8f47f9348164be4470f65ca42786accdfbb",
+    "ownerBlob": "d35063276004ab1a1ee4ca0c99dd65aa9959e699",
+    "uiRepro": "POST_RELOAD_95_TILE_94_MODAL",
+    "rootCause": "SUMMARY_LIST_VS_VISIBLE_ACTIVE_ROWS",
+    "localFocal": "PASS",
+    "currentDev": "PREDECESSOR_SERVED",
+    "sameArtifactAdminShopper": "PENDING",
+    "modulePromoted": false,
+    "production": false
   }
 }
