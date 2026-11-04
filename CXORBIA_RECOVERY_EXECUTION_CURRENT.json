@@ -83,16 +83,16 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "docs/checkpoints/CXORBIA_I3_S1_AUTO_HR_TRANSVERSAL_DEV_RUN2150_20261104.json",
-    "kind": "S1_AUTO_HR_TRANSVERSAL_RUN2150_EXACT_DEV_PASS_ROLE_E2E_PROVIDER_ACK_PENDING",
+    "path": "docs/checkpoints/CXORBIA_I3_S1_ROLE_PROOF_RUN2151_2152_20261104.json",
+    "kind": "S1_RUN2152_AUTO_HR_ACK_PASS_EIGHT_IDENTITIES_ADDED_TWO_VISITS_ONE_IDENTITY_HOLD",
     "sourceSha": "3c45d623a00cf59ede959625d0f0b4114a377435",
     "sourceTree": "c79f2c8e32e06d3d9f1a2515cdfea027d2fa631c",
     "servedSourceSha": "3c45d623a00cf59ede959625d0f0b4114a377435",
-    "runId": 41903482812,
-    "runNumber": 2150,
+    "runId": 41909124351,
+    "runNumber": 2152,
     "sourceChanges": 0,
     "newFunctionalClosures": 0,
-    "scope": "S1_AUTO_HR_RUN2150_DEV_SERVING_AUTHENTICATED_MULTIROLE_LIVE_E2E_PENDING",
+    "scope": "S1_SAME_ARTIFACT_MULTROLE_REPROOF_HR_AUTO_ACK_PASS_POPULATION_2_VISITS_1_SHOPPER_PENDING_RESOURCE_HOLD",
     "production": false
   },
   "taskProgress": {
