@@ -1456,6 +1456,7 @@ test('I3 P0 / exact incoming HR match with explicit distinct decision never link
   }]};
   const out=await p.reconcileSnapshot(s,{sourceRevision:'r2'});
   assert.equal(out.automaticIncomingHrAliases,0);
-  assert.equal(db.get('tenants/tenant-a/shopperIdentityCrosswalk/'+alias)?.shopperId,alias);
+  assert.equal(out.identityHeldShopperCount,1);
+  assert.equal(db.get('tenants/tenant-a/shopperIdentityCrosswalk/'+alias),undefined);
   assert.equal(db.paths().filter(path=>path.includes('/shopperIdentityLinks/')).length,0);
 });
