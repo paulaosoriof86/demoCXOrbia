@@ -81,14 +81,38 @@
       "paymentLabel": "Pendiente de confirmación",
       "status": "Realizada"
     },
-    "operationWrites": 0
+    "operationWrites": 0,
+    "visitDetailOverlayFinding": {
+      "id": "CX-I3-P0-VISIT-DETAIL-MULTIPLE-MODALS-20261103",
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "P0_PROVEN_UI_RACE_SCOPE",
+      "environment": "CXOrbia Admin DEV; Cinépolis OCT 2026; visit #728",
+      "readOnlyEvidence": {
+        "visibleDialogCountAfterSingleOpen": 7,
+        "modalTitle": "Detalle · MC. Plaza Américas",
+        "rowState": "Agendada",
+        "realized": false,
+        "cleanReload": {
+          "dialogsBeforeOpen": 0,
+          "dialogsAfterSingleOpen": 1
+        },
+        "hrWrites": 0,
+        "productionWrites": 0
+      },
+      "owner": "app/modules/visitas.js",
+      "rootCause": "Admin render uses setTimeout with document.querySelectorAll('[data-vdetail]').forEach(b=>b.addEventListener('click',...)), allowing repeated asynchronous route renders to stack handlers on the same button; ui.modal without replaceExisting then creates a visible overlay for each callback.",
+      "scopeOfFix": "Replace repeated addEventListener on [data-vdetail] with idempotently replaced handler; inspect shopper [data-detail] counterpart in same source file. Add regression for one dialog per click across rerenders, compose exact P0 delta, validate Admin+Shopper same materialized DEV artifact.",
+      "status": "PROVEN_NOT_FIXED",
+      "noCodeOrRuntimeChange": true
+    }
   },
   "unproven": [
     "independent Google Sheet cell-level HR vs UI/Shopper parity",
     "authenticated Shopper same-artifact E2E",
     "posting/application idempotent provider ACK",
     "Gate20 and Gate21 final certification",
-    "Oct operational final closure; 1 pending visit and 10 pending submit"
+    "Oct operational final closure; 1 pending visit and 10 pending submit",
+    "P0 admin visit detail duplicated visible dialogs after asynchronous route rerenders; exact owner identified; not fixed"
   ],
   "modulesMatch": 5,
   "modulesTotal": 21,
