@@ -12,6 +12,7 @@ on:
    - CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
    - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V561_2026-11-04.json
    - RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V240.json
+   - docs/checkpoints/CXORBIA_I3_VRM301_SOURCE_PROOF_RUN41797786195_20261104.json
    - I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json
    - CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json
    - app/**
@@ -7353,7 +7354,6 @@ jobs:
    uses: ./.github/workflows/cxorbia-i3-vrm290-invoked-hosting-dev.yml
    secrets: inherit
 
-  # VRM-301: dispatch the existing exact-candidate DEV Hosting-only lane after canonical source proof.
   i3-current-source-hosting-dev:
    needs: canonical-candidate-authority
    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-current-hosting-dev-only]') && needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM301_SOURCE_PROVEN_DEV_HOSTING_REQUIRED_5_MATCH' }}
