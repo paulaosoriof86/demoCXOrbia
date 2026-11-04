@@ -46,30 +46,14 @@
       "decision": "PASS_I3_CANONICAL_CANDIDATE_SOURCE_PROOF",
       "sourceSha": "742f2300f3cc0ac726b5b54558b27b1cd63a462d",
       "sourceTree": "e9452bf870ceaaad3dc51552e776e94d05a0644b",
-      "checks": {
-        "candidateAuthority": 67,
-        "pass": 67,
-        "fail": 0,
-        "visitAvailability": {
-          "pass": 5,
-          "fail": 0
-        },
-        "e03PaymentState": {
-          "pass": 2,
-          "fail": 0
-        },
-        "vrm301IdempotentBindings": {
-          "pass": 2,
-          "fail": 0
-        },
-        "focusedTotal": {
-          "pass": 9,
-          "fail": 0
-        }
+      "focusedTests": {
+        "availability": "5/5 PASS",
+        "e03": "2/2 PASS",
+        "vrm301": "2/2 PASS",
+        "total": "9/9 PASS"
       },
-      "artifactId": null,
+      "candidateAuthority": "67/67 PASS",
       "sourceOnly": true,
-      "devMaterialization": false,
       "production": false
     }
   },
@@ -80,5 +64,5 @@
     "providerWrites": 0,
     "productionWrites": 0
   },
-  "nextExactAction": "I3 HOLD 5/21 MATCH, Gate20/21 HOLD. VRM-301 source proof PASS en RUN 41797786195 (2114), artefact/candidato 742f2300f3cc0ac726b5b54558b27b1cd63a462d / e9452bf870ceaaad3dc51552e776e94d05a0644b. Siguiente: materializar solo Hosting DEV en el job existente, manteniendo runtime cxorbia-live-hr-dev-00340-zzt y producción DO_NOT_TOUCH; luego verificar bytes servidos, HR revision, y E2E Admin/Shopper sobre el mismo artefacto. Sin escrituras de HR, reglas, backend ni producción."
+  "nextExactAction": "I3 HOLD 5/21 MATCH, Gate20/21 HOLD. VRM-301 tiene fuente canónica PASS (RUN 41797786195 / 2114) para 742f2300f3cc0ac726b5b54558b27b1cd63a462d. Acción inmediata: terminar el job existente de Hosting-only DEV, comprobar versión servida y bytes exactos, preservar runtime cxorbia-live-hr-dev-00340-zzt y luego probar Admin/Shopper sobre el mismo artefacto. Mantener prioridad integral del plan de choque: validar HR viva contra una misma revisión, retomar G03 con Hosting verificado sites/cxorbia-backend-dev/versions/231186c337bcd0ba (evidencia histórica, no candidata actual), y continuar cierre de finanzas; preservar fusiones en 32/83 verificadas, 51/83 pendientes de recenso. Sin escrituras HR/proveedor, ni backend/reglas, ni producción."
 }

@@ -7,9 +7,9 @@
   "productSourceSha": "742f2300f3cc0ac726b5b54558b27b1cd63a462d",
   "productTreeAuthority": "e9452bf870ceaaad3dc51552e776e94d05a0644b",
   "predecessorProductSourceSha": "9ca91af24f1b3810c1c53a6566757617066d5314",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V560_2026-11-04.json",
-  "findingsLedgerExpectedGitBlob": "653a2617a5422cb9df551844eb69b74d918037ee",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V239.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V561_2026-11-04.json",
+  "findingsLedgerExpectedGitBlob": "086542151de0b223afbd258f1f65be6ca886684d",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V240.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -127,7 +127,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD 5/21 MATCH, Gate20/21 HOLD. VRM-301 source proof PASS en RUN 41797786195 (2114), artefact/candidato 742f2300f3cc0ac726b5b54558b27b1cd63a462d / e9452bf870ceaaad3dc51552e776e94d05a0644b. Siguiente: materializar solo Hosting DEV en el job existente, manteniendo runtime cxorbia-live-hr-dev-00340-zzt y producción DO_NOT_TOUCH; luego verificar bytes servidos, HR revision, y E2E Admin/Shopper sobre el mismo artefacto. Sin escrituras de HR, reglas, backend ni producción.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH, Gate20/21 HOLD. VRM-301 tiene fuente canónica PASS (RUN 41797786195 / 2114) para 742f2300f3cc0ac726b5b54558b27b1cd63a462d. Acción inmediata: terminar el job existente de Hosting-only DEV, comprobar versión servida y bytes exactos, preservar runtime cxorbia-live-hr-dev-00340-zzt y luego probar Admin/Shopper sobre el mismo artefacto. Mantener prioridad integral del plan de choque: validar HR viva contra una misma revisión, retomar G03 con Hosting verificado sites/cxorbia-backend-dev/versions/231186c337bcd0ba (evidencia histórica, no candidata actual), y continuar cierre de finanzas; preservar fusiones en 32/83 verificadas, 51/83 pendientes de recenso. Sin escrituras HR/proveedor, ni backend/reglas, ni producción.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3036,7 +3036,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "169fe7182bfb94857f68354779e7228653f6a32a",
+  "moduleTruthExpectedGitBlob": "a829e98130994cc179bd7e56632b0279081e75a8",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -17020,7 +17020,7 @@
   },
   "vrm301VisitDetailBinding": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM301_SOURCE_PROOF_RUN41797786195_20261104.json",
-    "receiptGitBlob": "c8e25b8840601ad403e85e12b459587f489749c3",
+    "receiptGitBlob": "d82505f5f2c34365b54da2f29bdb8d3a8d8cf778",
     "sourceSha": "742f2300f3cc0ac726b5b54558b27b1cd63a462d",
     "sourceTree": "e9452bf870ceaaad3dc51552e776e94d05a0644b",
     "predecessorSourceSha": "9ca91af24f1b3810c1c53a6566757617066d5314",
@@ -17037,30 +17037,14 @@
       "decision": "PASS_I3_CANONICAL_CANDIDATE_SOURCE_PROOF",
       "sourceSha": "742f2300f3cc0ac726b5b54558b27b1cd63a462d",
       "sourceTree": "e9452bf870ceaaad3dc51552e776e94d05a0644b",
-      "checks": {
-        "candidateAuthority": 67,
-        "pass": 67,
-        "fail": 0,
-        "visitAvailability": {
-          "pass": 5,
-          "fail": 0
-        },
-        "e03PaymentState": {
-          "pass": 2,
-          "fail": 0
-        },
-        "vrm301IdempotentBindings": {
-          "pass": 2,
-          "fail": 0
-        },
-        "focusedTotal": {
-          "pass": 9,
-          "fail": 0
-        }
+      "focusedTests": {
+        "availability": "5/5 PASS",
+        "e03": "2/2 PASS",
+        "vrm301": "2/2 PASS",
+        "total": "9/9 PASS"
       },
-      "artifactId": null,
+      "candidateAuthority": "67/67 PASS",
       "sourceOnly": true,
-      "devMaterialization": false,
       "production": false
     },
     "devMaterialization": "PENDING_HOSTING_ONLY",
