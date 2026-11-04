@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "3c51feb1a5c2bb7edeb842f7a234d16913b8989d",
-    "sourceTree": "5e427b43bfad2c916ac6290447b6a096d9e3f09e",
+    "sourceSha": "3c45d623a00cf59ede959625d0f0b4114a377435",
+    "sourceTree": "c79f2c8e32e06d3d9f1a2515cdfea027d2fa631c",
     "predecessorSha": "21a82e7a4b42ba2c0878bf1d6041b5b0e8dc7c1c",
     "production": false,
-    "state": "VRM305_S1_AUTO_IDENTITY_SOURCE_153_PASS_DEV_ROLE_E2E_PENDING_5_OF_21_MATCH",
+    "state": "VRM305_S1_AUTO_HR_TRANSVERSAL_SOURCE_108_PASS_DEV_REQUIRED_5_OF_21_MATCH",
     "november2026AutomaticPeriodSourceProof": {
       "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
       "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -21472,7 +21472,18 @@
       "sourceReceiptPath": "docs/checkpoints/CXORBIA_I3_S1_AUTO_IDENTITY_SOURCE_PROOF_20261104.json",
       "sourceTests": {"focalPass":153,"failed":0,"protectedHrJournalReplay":"PASS_IN_MEMORY","cumulativeReadModelVisits":616,"replays":3,"duplicateVisits":0},
       "scope": "Cross-shopper/country/period rule with tenant/project isolation, one existing active Auth UID and conflict safeguards; no per-shopper hardcode or HR import",
-      "state": "SOURCE_FIXED_EXACT_DEV_MATERIALIZED_RUN2146_LIVE_PROVIDER_ACK_ROLE_E2E_PENDING",
+      "state": "SOURCE_FIXED_SUCCESSOR_AUTO_HR_NOT_DEV_MATERIALIZED_LIVE_PROVIDER_ACK_ROLE_E2E_PENDING",
+      "latestTransversalAutomaticHrSource": {
+        "commit": "3c45d623a00cf59ede959625d0f0b4114a377435",
+        "tree": "c79f2c8e32e06d3d9f1a2515cdfea027d2fa631c",
+        "owner": "app/core/backend-hr-source-bridge.js",
+        "ownerBlob": "547687fdcd78965aa2a987ba239c763252481fd8",
+        "sourceTestsPass": 108,
+        "sourceTestsFail": 0,
+        "canonicalDevMaterialization": "PENDING",
+        "liveAck": "PENDING",
+        "reason": "RUN2147 found 11 HR assigned visits absent from operational identities; RUN2148 authenticated Julissa, then stopped on an unproven instructive modal expectation. Source successor auto-reconciles exact verified HR revision for authorized staff with replay-safe ACK; previous RUN2146 DEV is still serving until new immutable materialization."
+      },
     "canonicalCiRunId": 41894598660,
     "canonicalCiRunNumber": 2145,
     "canonicalCiAuthorityJob": "PASS_EXECUTED",

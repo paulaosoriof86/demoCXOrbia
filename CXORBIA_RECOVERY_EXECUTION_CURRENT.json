@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "3c51feb1a5c2bb7edeb842f7a234d16913b8989d",
-  "productTree": "5e427b43bfad2c916ac6290447b6a096d9e3f09e",
+  "productSourceSha": "3c45d623a00cf59ede959625d0f0b4114a377435",
+  "productTree": "c79f2c8e32e06d3d9f1a2515cdfea027d2fa631c",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -296,7 +296,7 @@
     "evolution": 6
   },
   "historicalNextExactActionPreS1": "S1 read-only reason/alias cohort classification, implement legacy-compatible deterministic normalizer in provider owner and bridge, run bounded GT/HN/history/Auth fixtures. Existing DEV serial materialization only after source QA; verify Stiven/Julissa Shopper role post-fix.",
-  "nextExactAction": "S1 I3 HOLD / VRM-305: DEV exacto RUN2146 PASS, fuente 3c51feb1, runtime 00341-nzp, Hosting b74548e1d2c5190c y revision HR cdc40258; artefacto ZIP SHA256 49bc381a. Ejecutar en workflow canónico existente phasea-representative-same-artifact-live-reproof, sin despliegues ni importaciones, y verificar invariantes de todos los principals activos, roles y visitas; después focal Stiven+Julissa Admin/Shopper/beneficios y cohorte técnica 275 casos/alias con ACK real. Solo promover módulos MATCH respaldados por evidencia exacta y conservar 5/21 hasta entonces; G03, HR, finanzas, Gate20/21 HOLD, I4 no autorizado, producción DO_NOT_TOUCH. Cohorte de fusiones históricas: 32/83 verificadas y 51/83 pendientes; recenso real requerido. G03 conserva evidencia focal histórica Hosting 231186c337bcd0ba, NO es Hosting actual ni certificación transversal; el actual DEV es b74548e1d2c5190c. No reabrir G03; finanzas y HR siguen en la secuencia.",
+  "nextExactAction": "I3 HOLD / VRM-305: fuente sucesora 3c45d623 con reconciliación automática HR verificada y ACK durable, 108/108 pruebas source PASS; publicación DEV PENDIENTE. DEV anterior RUN2146 fuente 3c51feb1, runtime 00341-nzp y Hosting b74548e1d2c5190c conservados como PREDECESSOR. Acción única: ejecutar job existente vrm154-156-dev-materialization sobre fuente sucesora exacta, comprobar artifact/Cloud Run/Hosting/HR, después revalidar Admin/Shopper GT/HN y visitas contra revisión independiente, más ACK real y cohorte técnica 275 casos/alias. RUN2147 detectó 11 visitas HR asignadas sin perfiles operativos en 8 identidades; RUN2148 autenticó Julissa y su validación de instructivo quedó HOLD. Mantener 5/21 MATCH sin promoción ficticia. Cohorte histórica 32/83 verificadas y 51/83 pendientes. G03, HR, finanzas, Gate20/21 HOLD; I4 no autorizada, producción DO_NOT_TOUCH. La evidencia G03 de Hosting 231186c337bcd0ba es histórica y no representa el DEV actual b74548e1d2c5190c; no reabrir el gate G03 sin drift.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -996,11 +996,11 @@
   },
   "moduleTruthAuthority": {
     "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V244.json",
-    "gitBlob": "f3133d0e015dfa0f58b55b611f07cc5ff5e24466",
-    "sourceSha": "3c51feb1a5c2bb7edeb842f7a234d16913b8989d",
+    "gitBlob": "d546a6fe04f3a8c4380cbdf7b0fa11e20f38df6c",
+    "sourceSha": "3c45d623a00cf59ede959625d0f0b4114a377435",
     "allModulesMatch": false,
     "phaseAComplete": false,
-    "sha256": "00cfba0f910bd2d6c0e9846753500b9654e488b0a4e9429ca47bce9239be3909"
+    "sha256": "659cfcc00efea5cbcacaf61b518d9a81cf881dae9b5c467fc3afb89740ba431f"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -1570,7 +1570,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 41895703032,
     "runNumber": 2146,
     "sourceSha": "3c51feb1a5c2bb7edeb842f7a234d16913b8989d",
@@ -3036,9 +3036,9 @@
     "gitBlob": "879313bfbced75baa8d764d9678f5efcc489c944"
   },
   "activeShockModuleTruth": {
-    "sourceSha": "3c51feb1a5c2bb7edeb842f7a234d16913b8989d",
+    "sourceSha": "3c45d623a00cf59ede959625d0f0b4114a377435",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V244.json",
-    "matrixBlob": "f3133d0e015dfa0f58b55b611f07cc5ff5e24466",
+    "matrixBlob": "d546a6fe04f3a8c4380cbdf7b0fa11e20f38df6c",
     "classificationCounts": {
       "COMPOSED_NOT_DEPLOYED": 1,
       "MATCH": 5,

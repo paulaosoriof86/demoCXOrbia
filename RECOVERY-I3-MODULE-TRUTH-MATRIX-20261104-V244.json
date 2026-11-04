@@ -103,12 +103,12 @@
     }
   },
   "productSource": {
-    "sha": "3c51feb1a5c2bb7edeb842f7a234d16913b8989d",
-    "treeSha": "5e427b43bfad2c916ac6290447b6a096d9e3f09e",
+    "sha": "3c45d623a00cf59ede959625d0f0b4114a377435",
+    "treeSha": "c79f2c8e32e06d3d9f1a2515cdfea027d2fa631c",
     "predecessorProductSourceSha": "21a82e7a4b42ba2c0878bf1d6041b5b0e8dc7c1c",
-    "message": "fix(cxorbia-i3): reconcile compatible shopper aliases with durable provider ACK",
-    "authorityState": "S1_AUTO_COMPATIBLE_SOURCE_153_PASS_DEV_ROLE_E2E_PENDING",
-    "state": "I3_HOLD_5_OF_21_MATCH_S1_DEV_CERTIFICATION_PENDING"
+    "message": "fix(cxorbia-i3): reconcile external HR revision automatically for verified Admin, durable scoped replay [i3-auto-hr-source]",
+    "authorityState": "S1_AUTO_HR_TRANSVERSAL_SOURCE_108_PASS_DEV_MATERIALIZATION_REQUIRED",
+    "state": "I3_HOLD_5_OF_21_MATCH_S1_AUTO_HR_DEV_REQUIRED"
   },
   "controlHeadAtConstruction": "cd9bce3c45ef4c97312be38f6311375a20ffc7c1",
   "phaseAComplete": false,
@@ -515,7 +515,7 @@
         "tools/hr-source/tya-live-provider-registry-identity-dev.mjs": "fb2050c2f28375a0417915771ab16f1783ef999e",
         "tools/hr-source/tya-resolve-live-month-tabs.mjs": "86c8d102c70f0d1edd541aedf7d0784c965cefbe",
         "backend/contracts/tya-hr-column-map-r20-v1.json": "105b322fe3fc20dded57eec35f123938c0c29fea",
-        "app/core/backend-hr-source-bridge.js": "e86d0564e75d8e1dcfe941854b0d7154ca4d9e6c"
+        "app/core/backend-hr-source-bridge.js": "547687fdcd78965aa2a987ba239c763252481fd8"
       },
       "sourceStaticReproof": {
         "runId": 37159003511,
@@ -4952,7 +4952,7 @@
       "domain": "canonical-hr-state-adapters",
       "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
       "latestApprovedBlob": "93b11308c2b4078c292f6f68da0b9a72d1d8f0b0",
-      "currentBlob": "e86d0564e75d8e1dcfe941854b0d7154ca4d9e6c",
+      "currentBlob": "547687fdcd78965aa2a987ba239c763252481fd8",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "COMPOSED_NOT_DEPLOYED",
