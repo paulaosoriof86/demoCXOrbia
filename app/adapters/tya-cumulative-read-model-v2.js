@@ -205,7 +205,7 @@
     const addIdentityCandidate=(candidates,liveId,candidate,authority)=>{
       candidate=str(candidate);liveId=str(liveId);if(!candidate)return;
       const candidateProfile=onlyUnique(profilesById,candidate);
-      const tenantAdjudicated=candidateProfile&&lower(candidateProfile.identityAuthority)==='tenant_adjudication'&&!!str(candidateProfile.identityAuthorityRef);
+       const tenantAdjudicated=candidateProfile&&['tenant_adjudication','provider_auto_compatible'].includes(lower(candidateProfile.identityAuthority))&&!!str(candidateProfile.identityAuthorityRef);
       const distinctKnownHrIdentities=liveId&&candidate!==liveId&&baseShopperIds.has(liveId)&&baseShopperIds.has(candidate);
       if(distinctKnownHrIdentities&&!tenantAdjudicated){
         suppressedDistinctHrIdentityCrosswalks.push({liveShopperId:liveId,durableShopperId:candidate,reason:'distinct_live_hr_identities_must_not_crosswalk',authority});
@@ -229,7 +229,7 @@
       if(!alias||lower(alias.identityState)!=='superseded_exact_alias')return '';
       const target=str(alias.supersededByShopperId),keeper=onlyUnique(profilesById,target);
       if(!target||target===liveId||!keeper||
-         lower(keeper.identityAuthority)!=='tenant_adjudication'||
+          !['tenant_adjudication','provider_auto_compatible'].includes(lower(keeper.identityAuthority))||
          !str(keeper.identityAuthorityRef)||
          !arr(keeper.exactAliases).includes(liveId))return '';
       const project=str(hr.currentProjectId),inScope=profile=>{
@@ -350,7 +350,7 @@
          but it cannot replace the human name frozen on the canonical tenant-adjudicated profile.
          Non-adjudicated HR identities keep the existing HR-name-first rule. */
       const canonicalAlias=str(base.canonicalShopperId)&&str(base.canonicalShopperId)===canonical&&liveId!==canonical;
-      const tenantAdjudicatedProfile=p&&lower(p.identityAuthority)==='tenant_adjudication'&&!!str(p.identityAuthorityRef);
+       const tenantAdjudicatedProfile=p&&['tenant_adjudication','provider_auto_compatible'].includes(lower(p.identityAuthority))&&!!str(p.identityAuthorityRef);
       const canonicalProfileName=canonicalAlias&&tenantAdjudicatedProfile&&profileDisplayName&&!technicalIdentityLabel(profileDisplayName,canonical)?profileDisplayName:'';
       // Shopper display correction does not merge identities or alter external HR.
       const displayAuthority=str(p?.displayNameAuthority);
@@ -376,7 +376,7 @@
     // may promote a platform-created profile into the authorized operational list.
     const platformOnlyAllProfiles=profiles.filter(p=>p.id&&!consumedProfiles.has(str(p.id))&&meaningfulProfile(p));
     const currentProjectId=str(hr.currentProjectId);
-    const trustedPlatformAuthorities=new Set(['provider_exact','tenant_adjudication','platform_created','migrated_exact']);
+     const trustedPlatformAuthorities=new Set(['provider_exact','tenant_adjudication','provider_auto_compatible','platform_created','migrated_exact']);
     const platformOnlyPresentedIds=new Set();
     for(const p of platformOnlyAllProfiles){
       const pid=str(p.id),projectIds=uniq(p.projectIds),authority=str(p.__providerIdentityAuthorityType).toLowerCase();

@@ -14,7 +14,7 @@
   const CANONICAL_CONTRACT='cxorbia-identity-roll-forward-v1';
   const OPERATOR_ROLES=new Set(['super','admin','ops','coordinador']);
   const ACTIVE_STATES=new Set(['active','confirmed','approved','materialized']);
-  const TRUSTED_AUTHORITIES=new Set(['provider_exact','tenant_adjudication','platform_created','migrated_exact']);
+  const TRUSTED_AUTHORITIES=new Set(['provider_exact','tenant_adjudication','provider_auto_compatible','platform_created','migrated_exact']);
   const str=v=>String(v==null?'':v).trim();
   const arr=v=>Array.isArray(v)?v.map(str).filter(Boolean):[];
   const sorted=v=>[...new Set(arr(v))].sort();

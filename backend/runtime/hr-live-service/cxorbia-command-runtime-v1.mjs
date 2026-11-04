@@ -204,7 +204,14 @@ export function createHrSnapshotReconciler({
           const tenantOk=parts[0]==='tenants'&&parts[1]===scope.tenantId;
           const shopperPath=parts.length===4&&['shoppers','users','shopperIdentityCrosswalk','shopperIdentityReviews','reviewQueue'].includes(parts[2]);
           const visitPath=parts.length===6&&parts[2]==='projects'&&parts[3]===scope.projectId&&parts[4]==='visits';
-          if(!tenantOk||!(shopperPath||visitPath))throw hrError('HR_RECONCILIATION_WRITE_PATH_DENIED');
+          // I3 A03: the signed staff/HR shopper stage may atomically transfer
+          // compatible identity aliases and historical ownership. Keep this
+          // exact scoped allowlist separate from the visit-reconciliation stage.
+          const shopperIdentityPath=stage==='shoppers'&&parts.length===4&&
+            ['shopperIdentityLinks','paymentReconciliations'].includes(parts[2]);
+          const shopperHistoryPath=stage==='shoppers'&&parts.length===6&&parts[2]==='projects'&&
+            parts[3]===scope.projectId&&['certifications','liquidations','postulations','reservations'].includes(parts[4]);
+          if(!tenantOk||!(shopperPath||visitPath||shopperIdentityPath||shopperHistoryPath))throw hrError('HR_RECONCILIATION_WRITE_PATH_DENIED');
         };
         const transaction=async(callback)=>{
           const intent=await startIntent('firestore');

@@ -813,6 +813,108 @@ test('I3 P0 cohort / duplicate of existing platform-created principal requires r
   assert.equal(auth.created,0);assert.deepEqual(db.paths(),before);
 });
 
+// I3 A01–A04: source-owned automatic consolidation is not a simulated Admin
+// confirmation. It is limited to an unambiguous compatible cohort and one
+// signed-in UID; HR visit documents are not imported, deleted or renumbered.
+function seedCompatibleAutoCohort({auth,db,country='GT',otherCountry=country,otherPhone='',dualActive=false,distinct=false}={}){
+  const canonical='shopper_'+country.toLowerCase()+'_autokeeper',alias='shopper_'+otherCountry.toLowerCase()+'_autoalias';
+  const canonicalUid='uid-auto-keeper',aliasUid='uid-auto-other',visibleLogin='elena.martinez';
+  const root='tenants/tenant-a';
+  const principal=(id,uid)=>{
+    auth.seed({uid,email:internalEmailTest('tenant-a',uid===canonicalUid?visibleLogin:'elena.martinez.other'),disabled:false,
+      customClaims:{authNamespace:'shopper',projectIds:['project-a'],role:'shopper',shopperId:id,tenantId:'tenant-a'}});
+    db.seed(`${root}/users/${uid}`,{active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:id,
+      projectIds:['project-a'],visibleLogin:uid===canonicalUid?visibleLogin:'elena.martinez.other',
+      credentialRuleVersion:CREDENTIAL_RULE_VERSION,credentialPasswordProofVersion:CREDENTIAL_PASSWORD_PROOF_VERSION});
+  };
+  principal(canonical,canonicalUid);if(dualActive)principal(alias,aliasUid);
+  db.seed(`${root}/shoppers/${canonical}`,{id:canonical,shopperId:canonical,tenantId:'tenant-a',projectIds:['project-a'],
+    sourceType:'hr_external',nombre:'Eléna Martínez',firstName:'Eléna',lastName:'Martínez',country,pais:country,
+    phone:country==='GT'?'50255551111':'50499991111',visibleLogin,
+    credentialRuleVersion:CREDENTIAL_RULE_VERSION,credentialPasswordProofVersion:CREDENTIAL_PASSWORD_PROOF_VERSION});
+  db.seed(`${root}/shoppers/${alias}`,{id:alias,shopperId:alias,tenantId:'tenant-a',projectIds:['project-a'],
+    sourceType:'hr_external',nombre:'  ELENA - MARTINEZ ',country:otherCountry,pais:otherCountry,
+    phone:otherPhone|| (otherCountry==='GT'?'50255551111':'50499991111')});
+  db.seed(`${root}/shopperIdentityCrosswalk/${canonical}`,{tenantId:'tenant-a',shopperId:canonical,projectIds:['project-a'],
+    sourceStableKey:canonical,sourceType:'hr_external',identityMode:'stable_hr_shopper_id',providerUidFingerprint:providerUidFingerprint(canonicalUid)});
+  if(dualActive)db.seed(`${root}/shopperIdentityCrosswalk/${alias}`,{tenantId:'tenant-a',shopperId:alias,projectIds:['project-a'],
+    sourceStableKey:alias,sourceType:'hr_external',identityMode:'stable_hr_shopper_id',providerUidFingerprint:providerUidFingerprint(aliasUid)});
+  db.seed(`${root}/projects/project-a/visits/visit-old`,{shopperId:alias,periodId:'2026-09',status:'realizada',honorario:60});
+  db.seed(`${root}/projects/project-a/liquidations/pay-old`,{shopperId:alias,amount:70,status:'pending_source_confirmation'});
+  if(distinct)db.seed(`${root}/shopperIdentityReviewResolutions/distinct-1`,{
+    tenantId:'tenant-a',projectScope:'project-a',shopperIds:[canonical,alias],status:'resolved_distinct',resolution:'distinct'});
+  const hr={sourceSafe:true,imported:false,firestoreWrites:0,tenantId:'tenant-a',projectId:'project-a',
+    visits:[{id:'visit-new',shopperId:alias,shopper:'Elena Martinez',pais:otherCountry,country:otherCountry,
+      phone:otherPhone||(otherCountry==='GT'?'50255551111':'50499991111'),sourceSafe:true,piiProtected:true,hrRowId:'HR!7',sourceTab:'HR'}]};
+  return {canonical,alias,canonicalUid,aliasUid,hr,root};
+}
+
+test('I3 A01–A04 / normalized compatible legacy names merge automatically with real provider ACK and stable UID/history',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),ctx=seedCompatibleAutoCohort({auth,db}),p=provider(auth,db);
+  const first=await p.reconcileSnapshot(ctx.hr,{sourceRevision:'hr-auto-gt-r1'});
+  assert.equal(first.automaticIdentityConsolidated,1);
+  assert.equal(first.automaticIdentityAliases,1);
+  assert.equal(first.providerAck,true);
+  assert.equal(first.authCreated,0);
+  assert.equal(auth.created,0);
+  assert.equal(db.get(`${ctx.root}/shoppers/${ctx.alias}`).supersededByShopperId,ctx.canonical);
+  assert.equal(db.get(`${ctx.root}/shopperIdentityCrosswalk/${ctx.alias}`).shopperId,ctx.canonical);
+  assert.equal(db.get(`${ctx.root}/projects/project-a/visits/visit-old`).shopperId,ctx.canonical);
+  assert.equal(db.get(`${ctx.root}/projects/project-a/liquidations/pay-old`).shopperId,ctx.canonical);
+  assert.equal(db.get(`${ctx.root}/projects/project-a/liquidations/pay-old`).status,'pending_source_confirmation');
+  assert.equal((await auth.getUser(ctx.canonicalUid)).customClaims.shopperId,ctx.canonical);
+  assert.equal(db.get(`${ctx.root}/shoppers/${ctx.canonical}`).nombre,'Eléna Martínez');
+  const links=db.paths().filter(x=>x.includes('/shopperIdentityLinks/'));
+  assert.equal(links.length,1);
+  const link=db.get(links[0]);
+  assert.equal(link.authorityType,'provider_auto_compatible');assert.equal(link.humanConfirmed,false);
+  assert.equal(link.providerAck,true);assert.equal(link.sourceRevision,'hr-auto-gt-r1');
+  const replay=await p.reconcileSnapshot(ctx.hr,{sourceRevision:'hr-auto-gt-r1'});
+  assert.equal(replay.automaticIdentityConsolidated,0);
+  assert.equal(replay.authCreated,0);
+  assert.equal(db.paths().filter(x=>x.includes('/shopperIdentityLinks/')).length,1);
+});
+
+test('I3 A02 / a second active UID blocks automatic name merge but does not block the HR reconciliation',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),ctx=seedCompatibleAutoCohort({auth,db,dualActive:true}),p=provider(auth,db);
+  const result=await p.reconcileSnapshot(ctx.hr,{sourceRevision:'hr-homonym-dual'});
+  assert.equal(result.automaticIdentityConsolidated,0);
+  assert.equal(result.automaticIdentityAmbiguousGroups,1);
+  assert.equal(db.paths().filter(x=>x.includes('/shopperIdentityLinks/')).length,0);
+  assert.equal((await auth.getUser(ctx.aliasUid)).disabled,false);
+});
+
+test('I3 A01–A04 / compatible Honduras names with a missing alias phone preserve the existing login',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),ctx=seedCompatibleAutoCohort({auth,db,country:'HN'}),p=provider(auth,db);
+  db.seed(`${ctx.root}/shoppers/${ctx.alias}`,{...db.get(`${ctx.root}/shoppers/${ctx.alias}`),phone:'',whatsapp:''});
+  ctx.hr.visits[0].phone='';
+  const before=await auth.getUser(ctx.canonicalUid);
+  const out=await p.reconcileSnapshot(ctx.hr,{sourceRevision:'hn-auto-r1'});
+  assert.equal(out.automaticIdentityConsolidated,1);
+  assert.equal(out.authCreated,0);
+  assert.equal(db.get(`${ctx.root}/shoppers/${ctx.alias}`).supersededByShopperId,ctx.canonical);
+  assert.equal((await auth.getUser(ctx.canonicalUid)).email,before.email);
+});
+
+test('I3 A02 / phone contradictions, different country and explicit distinct decision remain isolated',async()=>{
+  for(const variation of [{otherPhone:'50255559999'}, {otherCountry:'HN'}, {distinct:true}]){
+    const auth=new FakeAuth(),db=new FakeFirestore(),ctx=seedCompatibleAutoCohort({auth,db,...variation}),p=provider(auth,db);
+    const result=await p.reconcileSnapshot(ctx.hr,{sourceRevision:'hr-no-auto'});
+    assert.equal(result.automaticIdentityConsolidated,0);
+    assert.equal(db.paths().filter(x=>x.includes('/shopperIdentityLinks/')).length,0);
+    assert.equal(db.get(`${ctx.root}/projects/project-a/visits/visit-old`).shopperId,ctx.alias);
+  }
+});
+
+test('I3 A03 / provider transaction failure never advertises automatic ACK or changes the keeper principal',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),ctx=seedCompatibleAutoCohort({auth,db}),p=provider(auth,db);
+  db.failNextTransaction=true;
+  await assert.rejects(()=>p.reconcileSnapshot(ctx.hr,{sourceRevision:'hr-failed-auto'}),/SIMULATED_FIRESTORE_COMMIT_FAILURE/);
+  assert.equal(db.paths().filter(x=>x.includes('/shopperIdentityLinks/')).length,0);
+  assert.equal(db.get(`${ctx.root}/projects/project-a/visits/visit-old`).shopperId,ctx.alias);
+  assert.equal((await auth.getUser(ctx.canonicalUid)).disabled,false);
+});
+
 
 test('PRE-I4 ADMIN-003 tenant-adjudicated canonical name survives fresh exact HR alias reconciliation',async()=>{
   const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);

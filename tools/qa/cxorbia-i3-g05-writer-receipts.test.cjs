@@ -156,6 +156,36 @@ test('G05 initial shopper records Auth, claims and Firestore by entity without c
   const password=(await f.auth.getUser(f.uid)).password,stored=JSON.stringify([...f.db.store]);
   assert.ok(password);assert.equal(stored.includes(password),false);assert.equal(stored.includes('"password":'),false);
 });
+test('I3 A03 G05 auto-compatible shopper consolidation survives the protected HR journal and exact replay',async()=>{
+  const f=await setup(),canonical='shopper_gt_auto_keeper',alias='shopper_gt_auto_alias',uid='uid-auto-keeper';
+  const root='tenants/tenant-a',visitsPath=root+'/projects/project-a/visits/';
+  f.auth.seed({uid,email:'elena.martinez@auth.cxorbia.invalid',disabled:false,
+    customClaims:{authNamespace:'shopper',projectIds:['project-a'],role:'shopper',shopperId:canonical,tenantId:'tenant-a'}});
+  f.db.seed(`${root}/users/${uid}`,{active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:canonical,
+    projectIds:['project-a'],visibleLogin:'elena.martinez'});
+  f.db.seed(`${root}/shoppers/${canonical}`,{id:canonical,shopperId:canonical,tenantId:'tenant-a',projectIds:['project-a'],
+    sourceType:'hr_external',nombre:'Eléna Martínez',firstName:'Eléna',lastName:'Martínez',pais:'GT',country:'GT',phone:'50255551111',visibleLogin:'elena.martinez'});
+  f.db.seed(`${root}/shoppers/${alias}`,{id:alias,shopperId:alias,tenantId:'tenant-a',projectIds:['project-a'],
+    sourceType:'hr_external',nombre:'  ELENA - MARTINEZ ',pais:'GT',country:'GT',phone:'50255551111'});
+  f.db.seed(`${root}/shopperIdentityCrosswalk/${canonical}`,{tenantId:'tenant-a',shopperId:canonical,projectIds:['project-a'],
+    sourceStableKey:canonical,sourceType:'hr_external',identityMode:'stable_hr_shopper_id'});
+  f.db.seed(visitsPath+'historic-1',{shopperId:alias,periodId:'historic',estado:'realizada',status:'realizada'});
+  f.db.seed(`${root}/projects/project-a/liquidations/finance-1`,{shopperId:alias,amount:70,status:'pending_source_confirmation'});
+  f.current.snapshot.shoppers=[{id:alias,shopperId:alias,nombre:'Elena Martinez',pais:'GT',country:'GT',phone:'50255551111',sourceSafe:true,piiProtected:true}];
+  f.current.snapshot.visits=[];
+  const result=await f.run('i3-a03-g05-auto-protected-0001');
+  assert.equal(result.ok,true,JSON.stringify({code:result.code,stages:result.stages}));
+  assert.equal(result.readbackVerified,true);
+  assert.equal(result.stages.shoppers.automaticIdentityConsolidated,1);
+  assert.equal(f.db.read(`${root}/shoppers/${alias}`).supersededByShopperId,canonical);
+  assert.equal(f.db.read(visitsPath+'historic-1').shopperId,canonical);
+  assert.equal(f.db.read(`${root}/projects/project-a/liquidations/finance-1`).shopperId,canonical);
+  assert.ok(f.effects().some(e=>e.operations.some(op=>op.entity.includes('/shopperIdentityLinks/'))));
+  assert.ok(f.effects().every(e=>e.readbackVerified===true));
+  const authWrites=f.auth.log.length,logWrites=f.db.log.length;
+  const replay=await f.run('i3-a03-g05-auto-protected-0001');
+  assert.equal(replay.idempotentReplay,true);assert.equal(f.auth.log.length,authWrites);assert.equal(f.db.log.length,logWrites);
+});
 test('G05 claims-only effect counts even when historical provider reports an idempotent zero',async()=>{
   const f=await setup();assert.equal((await f.run('g05-claims-base-0001')).ok,true);
   const before=f.auth.log.length,user=await f.auth.getUser(f.uid);user.customClaims.tenantId='';f.auth.seed(user);

@@ -49,6 +49,8 @@ function scenario(profiles, options = {}) {
 
 const cases = [
   ['approved supersession with both profiles retained', [keeper(), alias()], {}, 10],
+  ['provider-auto-compatible supersession preserves all ten HR visits',
+    [keeper({identityAuthority:'provider_auto_compatible',identityAuthorityRef:'provider-auto-ack'}),alias()],{},10],
   ['server canonical annotation preserved', [keeper(), alias()], {serverCanonical: true}, 10],
   ['alias appears only on visits', [keeper(), alias()], {omitAliasSummary: true}, 10],
   ['missing tenant adjudication rejected', [keeper({identityAuthority: 'pending'}), alias()], {}, 0],

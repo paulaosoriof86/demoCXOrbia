@@ -70,7 +70,7 @@
     const title=document.createElement('div');title.style.cssText='font-weight:800;font-size:13px;margin-bottom:4px';
     title.textContent='Identidades de shoppers pendientes de confirmación';
     const explanation=document.createElement('div');explanation.style.cssText='font-size:12px;color:var(--t2);line-height:1.5';
-    explanation.textContent='Existen expedientes para revisión. Confirma si corresponden a una misma persona o deben permanecer separados. Ninguna fusión se realiza automáticamente.';
+    explanation.textContent='Las coincidencias compatibles con una sola identidad de acceso se consolidan automáticamente con confirmación del proveedor. Los casos realmente ambiguos permanecen disponibles para revisión administrativa.';
     const actions=document.createElement('div');actions.style.cssText='display:flex;flex-wrap:wrap;gap:8px;margin-top:10px';
     if(mayOpenShoppers()){
       const go=document.createElement('button');go.type='button';go.className='btn btn-pr btn-sm';

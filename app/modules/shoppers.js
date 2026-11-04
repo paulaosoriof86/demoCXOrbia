@@ -195,9 +195,9 @@ CX.module('shoppers', ({data,ui})=>{
     if(!exactResolvable){
       const sameName=reason==='display_name_collision_not_auto_merged';
       ui.modal('Revisar identidad · '+(s.nombre||'shopper'),`
-        <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px">Esta ficha requiere revisión administrativa y <b>no se fusionará automáticamente</b>.</div>
-        <div class="card card-p" style="margin-bottom:12px"><div><b>Motivo:</b> ${esc(reason)}</div><div style="margin-top:6px"><b>ID:</b> ${esc(String(s.id||''))}</div></div>
-        <div style="font-size:11.5px;color:var(--t3)">${sameName?'Coincidir en nombre no constituye evidencia suficiente para fusionar perfiles. Se necesita evidencia técnica exacta o una adjudicación humana documentada desde Administración.':'Este caso permanece fail-closed hasta contar con evidencia exacta suficiente para adjudicar una identidad canónica.'}</div>
+        <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px">Las identidades compatibles se consolidan automáticamente. <b>Este caso sigue pendiente</b> porque no ha superado los controles de equivalencia.</div>
+        <div class="card card-p" style="margin-bottom:12px"><div><b>Motivo:</b> ${esc(sameName?'Coincidencia nominal aún no resuelta':reason)}</div><div style="margin-top:6px"><b>ID:</b> ${esc(String(s.id||''))}</div></div>
+        <div style="font-size:11.5px;color:var(--t3)">${sameName?'La coincidencia de nombre sigue visible para revisar si existen contactos contradictorios, más de una cuenta activa o datos de autoridad insuficientes.':'Este caso requiere evidencia adicional para identificar una ficha canónica sin mezclar dos personas.'}</div>
       `);
       return;
     }
@@ -234,7 +234,7 @@ CX.module('shoppers', ({data,ui})=>{
   const manualIdentityAdjudication=s=>{
     const candidates=list().filter(x=>String(x.id||'')!==String(s.id||'')&&CX.data_shopperDataLevel(x)!=='protected_reference');
     ui.modal('Revisar / fusionar identidad · '+(s.nombre||s.id),`
-      <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px"><b>Decisión administrativa explícita.</b> Puedes seleccionar una o varias fichas únicamente cuando hayas confirmado que corresponden a la misma persona. La plataforma no fusiona automáticamente por nombre, teléfono, correo ni similitud.</div>
+      <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px"><b>Decisión administrativa explícita.</b> Las coincidencias compatibles con un único acceso comprobable se resuelven automáticamente. Usa esta revisión únicamente para los casos restantes en los que hayas confirmado que se trata de la misma persona.</div>
       <div class="grid g2" style="gap:10px;margin-bottom:12px">
         <div class="card card-p"><div class="muted" style="font-size:10.5px">FICHA ACTUAL</div><b>${esc(s.nombre||s.id)}</b><div style="font-size:11px;color:var(--t3)">${esc(s.ciudad||'—')} · ${kpiVisitsForActiveProject(s.id).length} visita(s)</div></div>
         <div><label class="lbl">Fichas relacionadas confirmadas</label><select class="sel" id="manualAliases" multiple size="7" style="min-height:168px">${candidates.map(x=>`<option value="${esc(x.id)}">${esc(x.nombre||x.id)} · ${esc(x.ciudad||'—')} · ${kpiVisitsForActiveProject(x.id).length} visita(s)</option>`).join('')}</select><div style="font-size:10.5px;color:var(--t3);margin-top:5px">Ctrl/Cmd + clic permite seleccionar varias fichas.</div></div>
