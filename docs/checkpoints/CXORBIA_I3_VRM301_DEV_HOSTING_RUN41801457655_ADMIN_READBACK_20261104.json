@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "cxorbia.i3.dev-hosting-focal-receipt.v1",
+  "receiptId": "CXORBIA-I3-VRM301-DEV-HOSTING-RUN41801457655-ADMIN-READBACK-20261104",
+  "iteration": "I3",
+  "state": "PASS_HOSTING_ONLY_AND_ADMIN_FOCAL__SHOPPER_E2E_PENDING",
+  "findingId": "VRM-301",
+  "classification": "FUNCTIONAL_DEFECT",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "production": "DO_NOT_TOUCH",
+  "sourceCandidate": {
+    "sha": "742f2300f3cc0ac726b5b54558b27b1cd63a462d",
+    "tree": "e9452bf870ceaaad3dc51552e776e94d05a0644b"
+  },
+  "workflow": {
+    "runId": 41801457655,
+    "runNumber": 2119,
+    "jobId": 126478181863,
+    "conclusion": "success",
+    "decision": "PASS_I3_CURRENT_SOURCE_HOSTING_DEV_ONLY",
+    "artifactId": 13306729358,
+    "artifactName": "cxorbia-i3-current-source-hosting-dev-41801457655",
+    "artifactZipSha256": "f2ac83b0c2c47b7551b899a8a38e5a844eeb7f620e83921bdbc4eba695f779f3"
+  },
+  "hosting": {
+    "previousVersion": "sites/cxorbia-backend-dev/versions/f096f9992587a3f6",
+    "version": "sites/cxorbia-backend-dev/versions/eb1678123f0cf01d",
+    "hostedSourceSha": "742f2300f3cc0ac726b5b54558b27b1cd63a462d",
+    "hostedSourceTree": "e9452bf870ceaaad3dc51552e776e94d05a0644b",
+    "servedAssetByteParity": "11_OF_11_PASS",
+    "assets": [
+      "index-backend-dev.html",
+      "core/backend-firebase.js",
+      "core/router.js",
+      "adapters/tya-live-source-refresh-watch-v2.js",
+      "modules/shoppers.js",
+      "modules/beneficios.js",
+      "modules/clientes.js",
+      "modules/historico.js",
+      "modules/visitas.js",
+      "modules/cuestionario-shopper.js",
+      "core/data.js"
+    ],
+    "deploys": 1
+  },
+  "runtime": {
+    "revision": "cxorbia-live-hr-dev-00340-zzt",
+    "digest": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:480374e4a30e23b1389badbf67247089f02d966e218ab943009be47f7dc8b50d",
+    "unchangedBeforeAfter": true,
+    "builds": 0,
+    "deploys": 0,
+    "rulesDeploys": 0
+  },
+  "adminReadback": {
+    "url": "https://cxorbia-backend-dev.web.app/index-backend-dev.html",
+    "role": "Admin autenticado",
+    "projectId": "cinepolis",
+    "periodId": "cinepolis-2026-10",
+    "visitId": 728,
+    "action": "Abrir una vez el detalle desde Visitas y esperar rerenders",
+    "expected": "Un diálogo de detalle",
+    "observedAtOpen": 1,
+    "observedAfterRerenderWaitSeconds": 2.2,
+    "observedAfterWait": 1,
+    "visibleState": "Agendada",
+    "paymentHumanState": "Pendiente de confirmación",
+    "honorarium": "Q 60",
+    "readOnly": true
+  },
+  "shopperReadback": "PENDING_AUTHENTICATED_SAME_ARTIFACT_E2E",
+  "productionReadback": {
+    "indexSha256Before": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+    "indexSha256After": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+    "unchanged": true,
+    "deploys": 0
+  },
+  "writes": {
+    "hr": 0,
+    "provider": 0,
+    "firestoreDirect": 0
+  },
+  "phaseAComplete": false,
+  "phaseAMatchAdded": 0,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false
+}

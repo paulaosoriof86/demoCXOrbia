@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM301_SOURCE_PROVEN_DEV_HOSTING_REQUIRED_5_MATCH",
+  "status": "HOLD_I3_VRM301_HOSTING_ADMIN_PASS_SHOPPER_E2E_PENDING_5_MATCH",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "742f2300f3cc0ac726b5b54558b27b1cd63a462d",
   "productTreeAuthority": "e9452bf870ceaaad3dc51552e776e94d05a0644b",
   "predecessorProductSourceSha": "9ca91af24f1b3810c1c53a6566757617066d5314",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V561_2026-11-04.json",
-  "findingsLedgerExpectedGitBlob": "086542151de0b223afbd258f1f65be6ca886684d",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V240.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V562_2026-11-04.json",
+  "findingsLedgerExpectedGitBlob": "24137bb1d8dea5fcf73bd457e53d4f42be559782",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V241.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-301: canonical source proof PASS (RUN 41797786195); exact DEV Hosting-only materialization and same-artifact Admin/Shopper readback pending. 5/21 MATCH; Gate20/21 HOLD; production DO_NOT_TOUCH. Existing exact-source lane dispatch.",
+  "activeBlocker": "VRM-301: canonical source PASS; exact DEV Hosting-only candidate PASS (run 41801457655 / 2119); Admin authenticated detail #728 PASS with one dialog before/after rerender; Shopper same-artifact E2E pending. 5/21 MATCH; Gate20/21 HOLD; production DO_NOT_TOUCH.",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -127,7 +127,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD 5/21 MATCH, Gate20/21 HOLD. VRM-301 tiene fuente canónica PASS (RUN 41797786195 / 2114) para 742f2300f3cc0ac726b5b54558b27b1cd63a462d. Acción inmediata: terminar el job existente de Hosting-only DEV, comprobar versión servida y bytes exactos, preservar runtime cxorbia-live-hr-dev-00340-zzt y luego probar Admin/Shopper sobre el mismo artefacto. Mantener prioridad integral del plan de choque: validar HR viva contra una misma revisión, retomar G03 con Hosting verificado sites/cxorbia-backend-dev/versions/231186c337bcd0ba (evidencia histórica, no candidata actual), y continuar cierre de finanzas; preservar fusiones en 32/83 verificadas, 51/83 pendientes de recenso. Sin escrituras HR/proveedor, ni backend/reglas, ni producción.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH, Gate20/21 HOLD. VRM-301: Hosting-only DEV pasó en la candidata exacta; Admin autenticado abrió un solo detalle en visita #728 y permaneció uno tras 2.2 s de rerenders. Falta Shopper autenticado sobre el mismo artefacto. Siguiente acción exacta: realizar lectura E2E Shopper aislada conservando la sesión Admin; verificar un detalle único y ningún write. Mantener HR viva comparada contra una misma revisión; retomar G03 usando sites/cxorbia-backend-dev/versions/231186c337bcd0ba como evidencia histórica, no candidata actual; continuar cierre de finanzas; conservar fusiones 32/83 verificadas y 51/83 pendientes de recenso. Producción DO_NOT_TOUCH; sin escrituras HR/proveedor.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3036,7 +3036,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "a829e98130994cc179bd7e56632b0279081e75a8",
+  "moduleTruthExpectedGitBlob": "1df631ccf098b275b585204d873b2f472503d20c",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -17019,8 +17019,8 @@
     }
   },
   "vrm301VisitDetailBinding": {
-    "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM301_SOURCE_PROOF_RUN41797786195_20261104.json",
-    "receiptGitBlob": "d82505f5f2c34365b54da2f29bdb8d3a8d8cf778",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM301_DEV_HOSTING_RUN41801457655_ADMIN_READBACK_20261104.json",
+    "receiptGitBlob": "b8138b76db5159956aa500fe30f2be0f99fc8fce",
     "sourceSha": "742f2300f3cc0ac726b5b54558b27b1cd63a462d",
     "sourceTree": "e9452bf870ceaaad3dc51552e776e94d05a0644b",
     "predecessorSourceSha": "9ca91af24f1b3810c1c53a6566757617066d5314",
@@ -17047,8 +17047,34 @@
       "sourceOnly": true,
       "production": false
     },
-    "devMaterialization": "PENDING_HOSTING_ONLY",
-    "sameArtifactAdminShopper": "PENDING",
-    "production": false
+    "devMaterialization": "PASS_I3_CURRENT_SOURCE_HOSTING_DEV_ONLY_RUN2119",
+    "sameArtifactAdminShopper": "ADMIN_FOCAL_PASS_SHOPPER_E2E_PENDING",
+    "production": false,
+    "phaseAMatchAdded": 0,
+    "hostingOnlyDevReadback": {
+      "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM301_DEV_HOSTING_RUN41801457655_ADMIN_READBACK_20261104.json",
+      "receiptGitBlob": "b8138b76db5159956aa500fe30f2be0f99fc8fce",
+      "decision": "PASS_HOSTING_ONLY_AND_ADMIN_FOCAL__SHOPPER_E2E_PENDING",
+      "runId": 41801457655,
+      "runNumber": 2119,
+      "jobId": 126478181863,
+      "artifactId": 13306729358,
+      "artifactZipSha256": "f2ac83b0c2c47b7551b899a8a38e5a844eeb7f620e83921bdbc4eba695f779f3",
+      "sourceSha": "742f2300f3cc0ac726b5b54558b27b1cd63a462d",
+      "sourceTree": "e9452bf870ceaaad3dc51552e776e94d05a0644b",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/eb1678123f0cf01d",
+      "previousHostingVersion": "sites/cxorbia-backend-dev/versions/f096f9992587a3f6",
+      "servedAssetByteParity": "11_OF_11_PASS",
+      "runtimeRevision": "cxorbia-live-hr-dev-00340-zzt",
+      "runtimeDigest": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:480374e4a30e23b1389badbf67247089f02d966e218ab943009be47f7dc8b50d",
+      "adminDialogCountAtOpen": 1,
+      "adminDialogCountAfterRerender": 1,
+      "shopperE2e": "PENDING_AUTHENTICATED_SAME_ARTIFACT",
+      "phaseAMatchAdded": 0,
+      "phaseAComplete": false,
+      "gate20": "HOLD",
+      "gate21": "HOLD",
+      "production": "DO_NOT_TOUCH"
+    }
   }
 }
