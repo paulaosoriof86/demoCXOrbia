@@ -4,16 +4,16 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "99114523e4e08dd480e30e665e6dfd4304d84301",
-  "productTreeAuthority": "8ed2e4c6cac329ad540e38075ad4ec814b01e305",
-  "predecessorProductSourceSha": "742f2300f3cc0ac726b5b54558b27b1cd63a462d",
+  "productSourceSha": "bc685392d7f1a9ba685df6f7b74d48b19b44e385",
+  "productTreeAuthority": "13bdb8f47f9348164be4470f65ca42786accdfbb",
+  "predecessorProductSourceSha": "99114523e4e08dd480e30e665e6dfd4304d84301",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V563_2026-11-04.json",
-  "findingsLedgerExpectedGitBlob": "00584ef7b3208291eeb88cf3d2d326f2bc6cc67a",
+  "findingsLedgerExpectedGitBlob": "d19ed641c203301b6eb44a7ed63c95b3522434cc",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V243.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "DEV Hosting exact source now PASS 41809435938; VRM-302 real Admin single-modal E2E, 51 approved identity groups revised-HR preflight, independent HR parity and other nonMATCH modules still HOLD.",
+  "activeBlocker": "VRM-303 P0 canonical cohort source patch needs source CI and DEV materialization; HR independent revision, Stiven post-merge role login, global 16 nonMATCH modules and Gate20/21 still HOLD.",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -115,7 +115,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-303",
+  "nextFindingId": "VRM-304",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -127,7 +127,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 HOLD 5/21 MATCH, Gate20/21 HOLD. VRM-302: canonical CI and DEV Hosting-only run 41809435938 PASS; source 99114523 / tree 8ed2e4c6, 43/43 focal-source checks, exact 11 DEV assets, Hosting version b163f88f064004e9, same runtime digest, prod unchanged. Postdeploy Shopper Stiven reload PASS; Admin Shoppers single-modal real E2E after rerender PENDING due Chrome focus on other tab. Julissa identity adjudication was previously PASS and must NOT be re-merged/reset; one rejected guess password is not proof of identity regression. Identity warning 273 is technical cases/aliases, NOT 273 fusions; Paula Excel 139 YES / 83 groups preserved, last 32 verified / 51 pending; HR revision source preflight HOLD, reconcile exact stable IDs before bounded provider ACK/idempotent writes. Next: Admin 1-modal E2E and identity review queue breakdown on same deployed artifact; independent HR live revision parity; certify affected module matrix without reopening historical PASS; G03/C04-C05/D05-D06/B10 and rest 16 nonMATCH; then full Gate20/21, explicit I4 authorization. No production/HR write in this iteration. G03 historical DEV Hosting 231186c337bcd0ba confirmed 31/10 (not current); newest DEV Hosting b163f88f064004e9 via CI 41809435938; HR and finanzas independent provider parity still HOLD. Fusion cohort 32/83 verified, 51/83 pending, no repeat of approved decisions.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH: VRM-303 canonical shopper KPI cohort code FIXED source bc685392; expected 95 tile vs 94 modal bug requires canonical CI and DEV Hosting exact same-owner blob, then full Admin/Shopper role E2E and refreshed identity counts. Stiven two stiven.lopez identities merged with provider ACK, 10 historical visits; canonical login postmerge still PENDING. OCT2026: #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango; do not edit HR-managed states absent source ACK. NOV2026 44 visitas, 26 asignadas, 18 sin asignar; read-only cross-module counts. G03 HR independent live revision parity and finanzas source/payment ACK remain HOLD. Approved fusion cohort legacy 32/83 verified, 51/83 pending. Last certified DEV Hosting b163f88f064004e9 remains predecessor; no new DEV claim, Gate20/21 HOLD, I4 not authorized; production DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3036,7 +3036,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "3c177285dd1c6bf77aa7dff96d3785279382e604",
+  "moduleTruthExpectedGitBlob": "888e931a4fe30d38e1b0d812f4dbf49c7ef81a45",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -17086,5 +17086,19 @@
     "sourceTests": "43_OF_43_PASS",
     "currentStatus": "DEV_SERVED_HUMAN_E2E_PENDING",
     "production": "DO_NOT_TOUCH"
+  },
+  "vrm303CanonicalCohort20261104": {
+    "findingId": "VRM-303",
+    "classification": "FUNCTIONAL_DEFECT",
+    "owner": "app/modules/shoppers.js",
+    "ownerBlob": "d35063276004ab1a1ee4ca0c99dd65aa9959e699",
+    "sourceSha": "bc685392d7f1a9ba685df6f7b74d48b19b44e385",
+    "sourceTree": "13bdb8f47f9348164be4470f65ca42786accdfbb",
+    "sourceQa": "LOCAL_SYNTAX_AND_FIXTURE_PASS",
+    "canonicalCI": "PENDING_POST_CONTROL_CONVERGENCE",
+    "devHosting": "PREDECESSOR_ONLY",
+    "sameArtifactE2e": "PENDING",
+    "fullModuleMatch": 5,
+    "production": false
   }
 }
