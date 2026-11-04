@@ -1,0 +1,142 @@
+{
+  "schemaVersion": "cxorbia.i3.real-chrome-live-readback.v1",
+  "observedDate": "2026-11-04",
+  "source": "Chrome extension, live authenticated DEV Admin, DOM-backed UI readback",
+  "devUrl": "https://cxorbia-backend-dev.web.app/index-backend-dev.html",
+  "project": "Cinépolis",
+  "role": "Administración",
+  "priorContext": {
+    "currentDescriptorProductSourceSha": "21a82e7a4b42ba2c0878bf1d6041b5b0e8dc7c1c",
+    "currentSourceHostingRun": 41867359181,
+    "hostingRunResult": "SUCCESS; canonical-candidate-authority and i3-current-source-hosting-dev ran; ~100 historical/conditional jobs SKIPPED",
+    "liveServedArtifactHashNotVerified": true
+  },
+  "browser": {
+    "adminSessionPreserved": true,
+    "periodRestored": "NOV 2026",
+    "noDataWrites": true,
+    "shoppers": {
+      "visibleRows": 211,
+      "active": 94,
+      "inactive": 117,
+      "flaggedVisibleProfiles": 22,
+      "technicalCasesAndAliasesShown": 275,
+      "technicalQueueIsNotDistinctPersons": true,
+      "stiven": {
+        "canonicalId": "TYA_GT_471D1B8DD5",
+        "username": "stiven.lopez",
+        "adminVisits": 10,
+        "adminRealized": 9,
+        "adminInProgress": 1
+      },
+      "julissa": {
+        "username": "julissa.flores",
+        "adminVisits": 10,
+        "adminRealized": 9,
+        "adminInProgress": 1
+      }
+    },
+    "visitsNovember": {
+      "total": 44,
+      "distinctVisibleVisitNumbers": 44,
+      "countries": {
+        "GT": 34,
+        "HN": 10
+      },
+      "statuses": {
+        "Agendada": 3,
+        "Asignada": 22,
+        "Disponible": 17,
+        "FueraDeRango": 1,
+        "PendienteDeValidacion": 1
+      },
+      "assignedHeader": 26,
+      "unassignedHeader": 18
+    },
+    "visitsOctober": {
+      "total": 44,
+      "distinctVisibleVisitNumbers": 44,
+      "countries": {
+        "GT": 34,
+        "HN": 10
+      },
+      "states": {
+        "Agendada": 1,
+        "ConCuestionario": 10,
+        "FueraDeRango": 1,
+        "Realizada": 1,
+        "Submitida": 31
+      },
+      "performedHeader": 43,
+      "unassignedHeader": 0
+    },
+    "dashboardNovember": {
+      "total": 44,
+      "assigned": 26,
+      "unassigned": 18,
+      "GT": 34,
+      "HN": 10,
+      "rankingScoresMissingFor": 10
+    },
+    "reportsNovember": {
+      "total": 44,
+      "assigned": 26,
+      "performed": 0
+    },
+    "reportsOctober": {
+      "total": 44,
+      "performed": 43,
+      "reportedCompliancePercent": 98
+    },
+    "financeOctober": {
+      "GT": {
+        "feeGTQ": 1980,
+        "reimbursementGTQ": 5173,
+        "payableGTQ": 7153,
+        "feeArithmetic": "33 completed visits x Q60"
+      },
+      "HN": {
+        "feeHNL": 2000,
+        "reimbursementHNL": 4171,
+        "payableHNL": 6171,
+        "feeArithmetic": "10 completed visits x L200"
+      },
+      "requiresReconciliationRecords": 42,
+      "paymentBankConfirmed": false
+    },
+    "certification": {
+      "screen": "Certificación",
+      "observedBanks": 0,
+      "historicalEvidences": 5,
+      "historicalApprovals": 4,
+      "linkedShoppers": 3,
+      "warning": "Banco no publicado · verificación pendiente",
+      "comparisonWithPriorBankProof": "Prior 15-question bank proof may refer to another scope; parity not yet verified"
+    },
+    "questionnaire": {
+      "screen": "Cuestionarios",
+      "octoberVisibleSections": 6
+    },
+    "finalView": "Mi Día, NOV 2026, 4 agendadas, 18 sin asignar, 0 realizadas"
+  },
+  "findings": {
+    "adminCrossPeriodUiCounts": "FOCAL_LIVE_READBACK_PASS_NOT_FULL_MODULE_CERTIFICATION",
+    "shopperStivenBeforeFix": "P0 MAPPING_FAILURE: previous real shopper readback 0 visits vs 10 Admin, still requires re-test after VRM-304 exact current source",
+    "autoNormalization": "P0 FUNCTIONAL_DEFECT: banner explicitly says no automatic merges; Paula authorized compatible legacy-style weak-name normalization and auto-merges, not implemented",
+    "certificationTracking": "RELEASE_COMPOSITION_FAILURE or certification-orchestration design: CI completed two jobs and skipped conditional historical gates; descriptor activeBlocker stale about DEV materialization",
+    "moduleTruth": "5 MATCH, 12 non-MATCH source-proven/partially materialized, 3 TRUE_FUNCTIONAL_DEFECT, 1 COMPOSED_NOT_DEPLOYED",
+    "financeProvenance": "P0 financial confirmation remains source-unverified; do not translate 42 review cases into paid"
+  },
+  "notCertifiedByThisReadback": [
+    "independent live external HR revision parity",
+    "Shopper E2E after VRM304",
+    "provider ACK and idempotent auto-merge batch",
+    "writes for applications/assignments",
+    "same exact hosted artifact hash and Gate20/Gate21",
+    "bank-confirmed payment",
+    "production readiness"
+  ],
+  "authorization": "Existing user authorizations for read-only Chrome DEV testing and legacy-compatible automatic normalization; NO I4 production authorization in this receipt",
+  "finalStatus": "I3_HOLD; I4_NO_GO; MODULE_FULL_MATCH_5_OF_21; NO_PRODUCTION_CHANGE",
+  "nextExactAction": "One exact P0 owner: ensure identity/alias normalization in backend provider and shared canonical projection, idempotent batch classification of 275 technical cases with preservation of UIDs/aliases/history. Re-test Stiven and Julissa in isolated Shopper role against current hosted source; independently compare HR revision and update module truth from hard evidence. Then close remaining 3 defect domains/1 composed-not-deployed, run unified terminal Gate20/21."
+}

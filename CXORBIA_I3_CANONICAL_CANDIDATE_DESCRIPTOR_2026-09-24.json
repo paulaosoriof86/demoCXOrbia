@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM304 P0 exact adjudicated alias source fixed and locally tested, but not DEV materialized or certified on both roles. 16 other modules non-MATCH, HR independent parity and Gate20/21 still HOLD.",
+  "activeBlocker": "VRM-304 source 21a82e7... was materialized to DEV Hosting in successful run 41867359181, but no current exact served asset hash/Shopper-role E2E plus independent HR parity and Gates20/21. Canonical 5/21 full MATCH unchanged; 12 source/DEV QA pending, 3 TRUE_FUNCTIONAL_DEFECT, 1 COMPOSED_NOT_DEPLOYED. Auto-normalization/merge user-approved but not implemented.",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -17167,6 +17167,13 @@
     "hrWrites": 0,
     "authWrites": 0,
     "firestoreWrites": 0,
+    "production": false
+  },
+  "i3Nov04AdminChromeLiveReadback": {
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_ADMIN_CHROME_LIVE_READBACK_20261104.json",
+    "sourceSha": "21a82e7a4b42ba2c0878bf1d6041b5b0e8dc7c1c",
+    "hostingRun": 41867359181,
+    "decision": "FOCAL_ADMIN_LIVE_CROSS_MONTH_PASS__NO_PROMOTION",
     "production": false
   }
 }
