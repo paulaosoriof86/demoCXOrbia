@@ -68,6 +68,14 @@ if(!registry)throw new Error('tab_registry_missing_and_live_metadata_unavailable
 
 const allowed=new Set(registry.monthlyTabs||[]);
 if(!allowed.size)throw new Error('tab_registry_has_no_monthly_tabs');
+// The provider can already expose the new month while a fallback reader still
+// looks for legacy year-suffixed tab names. Fail closed instead of silently
+// certifying October as the newest period when November exists in live HR.
+if(registry.requiredCurrentPeriodTabsPresent===true){
+  const observed=new Set((source.tabsRead||[]).map(tab=>String(tab.title||tab.tabTitle||'')));
+  const missing=(registry.requiredCurrentPeriodTabs||[]).filter(tab=>!observed.has(String(tab)));
+  if(missing.length)throw new Error(`CURRENT_PERIOD_HR_TAB_MAPPING_INCOMPLETE:${missing.join(',')}`);
+}
 const before={tabs:(source.tabsRead||[]).length,periods:(source.periods||[]).length,visits:(source.visits||[]).length,shoppers:(source.shoppers||[]).length};
 const removedTabs=(source.tabsRead||[]).filter(t=>!allowed.has(String(t.title||t.tabTitle||''))).map(t=>String(t.title||t.tabTitle||''));
 source.tabsRead=(source.tabsRead||[]).filter(t=>allowed.has(String(t.title||t.tabTitle||'')));

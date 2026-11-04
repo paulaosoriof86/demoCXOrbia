@@ -106,3 +106,47 @@ test('registro HR en DEV acepta pestañas noviembre sin año y conserva octubre'
     fs.rmSync(temp, { recursive: true, force: true });
   }
 });
+
+test('Cloud Run usa token de metadatos para lectura independiente de Sheets sin secret adicional', () => {
+  const result = execFileSync(process.execPath, ['tools/hr-source/tya-build-live-hr-source-safe-r20.mjs', '--provider-auth-self-test'], { cwd: process.cwd(), encoding: 'utf8' });
+  const report = JSON.parse(result);
+  assert.equal(report.decision, 'PASS_R20_CLOUD_RUN_METADATA_READ_ONLY_AUTH');
+  assert.equal(report.negativeRejected, true);
+  assert.equal(report.hrWrites, 0);
+});
+
+test('si el proveedor ya tiene noviembre, un fallback que solo ve octubre se rechaza', () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'cxorbia-hr-nov-failclosed-'));
+  try {
+    const sourceFile = path.join(temp, 'source.js');
+    const registryFile = path.join(temp, 'registry.json');
+    const evidenceFile = path.join(temp, 'evidence.json');
+    const source = {
+      sourceSafe: true,
+      source: { accessMode: 'public_gviz_csv_cache_busted' },
+      tabsRead: [ { title: 'OCTUBRE 26', country: 'GT', periodKey: '2026-10' } ],
+      visits: [ { sourceTab: 'OCTUBRE 26', periodKey: '2026-10', country: 'GT' } ],
+      periods: [ { key: '2026-10' } ], shoppers: [], counts: {}
+    };
+    const registry = {
+      schemaVersion: 'cxorbia.tya-live-hr-tab-registry.v1', sourceSafe: true,
+      autoDiscovery: true, providerMetadataReadOnly: true,
+      registryMode: 'live_provider_metadata_auto_refresh',
+      currentCalendarPeriodKey: '2026-11',
+      requiredCurrentPeriodTabsPresent: true,
+      requiredCurrentPeriodTabs: ['NOVIEMBRE', 'NOVIEMBRE HN'],
+      monthlyTabs: ['OCTUBRE 26', 'NOVIEMBRE', 'NOVIEMBRE HN']
+    };
+    fs.writeFileSync(sourceFile, `window.CX_TYA_HR_SOURCE_SAFE = ${JSON.stringify(source)};\n`);
+    fs.writeFileSync(registryFile, JSON.stringify(registry));
+    assert.throws(() => execFileSync(process.execPath, ['tools/hr-source/tya-enforce-live-tab-registry.mjs'], {
+      cwd: process.cwd(), stdio: 'pipe',
+      env: { ...process.env, CXORBIA_HR_SOURCE_SAFE_OUT: sourceFile,
+        CXORBIA_HR_TAB_REGISTRY: registryFile,
+        CXORBIA_HR_TAB_REGISTRY_EVIDENCE: evidenceFile,
+        CXORBIA_EXPECTED_CURRENT_PERIOD: '2026-11' }
+    }), error => String(error.stderr).includes('CURRENT_PERIOD_HR_TAB_MAPPING_INCOMPLETE:NOVIEMBRE,NOVIEMBRE HN'));
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+});
