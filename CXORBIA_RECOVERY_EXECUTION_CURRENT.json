@@ -7042,7 +7042,7 @@
     "sameArtifactAdminShopper": "PENDING",
     "production": false
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V241.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V243.json",
   "vrm301DevHostingAdminReadback20261104": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM301_DEV_HOSTING_RUN41801457655_ADMIN_READBACK_20261104.json",
     "receiptGitBlob": "b8138b76db5159956aa500fe30f2be0f99fc8fce",
@@ -7075,7 +7075,78 @@
     "ciRunId": 41809435938,
     "artifactId": 13311701111,
     "sourceTests": "43_OF_43_PASS",
-    "currentStatus": "DEV_SERVED_HUMAN_E2E_PENDING",
+    "currentStatus": "DEV_SERVED_ADMIN_REAL_E2E_PASS_SHOPPER_E2E_PENDING",
+    "production": "DO_NOT_TOUCH"
+  },
+  "i3Nov04CanonicalConsistencyAndRealAdminE2e": {
+    "observedAt": "2026-11-04",
+    "state": "HOLD",
+    "canonicalControl": {
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "owner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      "sourceBefore": "1d36699b7c10c861e4e9b25c39a1e46fced44e77",
+      "controlFixCommit": "6c0f5bcd53f58d62a89103f8901c3fcfeda2ddcc",
+      "singleLineGuard": "startsWith(HOLD_I3_)",
+      "runId": 41814072002,
+      "runConclusion": "SUCCESS_CANONICAL_CANDIDATE_AUTHORITY",
+      "devDeployTriggered": false,
+      "productionWrites": 0
+    },
+    "matrixPointer": {
+      "before": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V241.json",
+      "after": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V243.json",
+      "descriptorMatches": true,
+      "officialMatch": 5,
+      "total": 21,
+      "composedNotDeployed": 1,
+      "trueFunctionalDefect": 3,
+      "otherRoleOrQaPending": 12,
+      "internalMatrixVersionLabelsRemainInherited": true
+    },
+    "adminRealDev": {
+      "project": "cinepolis",
+      "role": "admin",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/b163f88f064004e9",
+      "periodSwitchReadback": {
+        "oct2026": {
+          "scheduled": 1,
+          "approvalPending": 0,
+          "realized": 43,
+          "unassigned": 0
+        },
+        "nov2026": {
+          "scheduled": 4,
+          "approvalPending": 0,
+          "realized": 0,
+          "unassigned": 18
+        },
+        "restoredNov2026": true
+      },
+      "identityCases": {
+        "technicalQueueUniqueCaseOrAliasKeys": 276,
+        "flaggedProfilesVisible": 24,
+        "profilesVisible": 213,
+        "countUnchangedByPeriodSwitch": true,
+        "difference273To276Cause": "PENDING_INDEPENDENT_PROVIDER_DELTA"
+      },
+      "julissa": {
+        "visibleProfiles": 1,
+        "displayName": "Julissa Flores",
+        "username": "julissa.flores",
+        "displayCode": "TYA_GT_86254C4228",
+        "domRowDataSid": "shopper_gt_0c198c1055",
+        "reviewFlag": "clear",
+        "totalVisits": 10,
+        "realized": 9,
+        "inProgress": 1,
+        "adminDialogCount": 1,
+        "shopperPasswordAuth": "UNVERIFIED_NOT_RESET",
+        "historicalOct28Auth": "PASS_PRESERVED"
+      },
+      "adminFocalE2e": "PASS_BOUND_TO_CURRENT_DEV",
+      "fullModuleTruthPromotion": false
+    },
+    "nextExactAction": "Resolve current independent HR/source case-queue delta, run Julissa plus two other shoppers with a proven credential route (no guessed reset), then map each pending module to exact full gate and promote only qualifying MATCH; I4 still unauthorised.",
     "production": "DO_NOT_TOUCH"
   }
 }
