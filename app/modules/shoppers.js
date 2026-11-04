@@ -300,7 +300,9 @@ CX.module('shoppers', ({data,ui})=>{
   };
   /* ---------- HTML del módulo ---------- */
   const render=()=>{
-    const L=list();
+    /* I3 P0: one canonical visible cohort for KPI tiles, table and drill-downs.
+       Retired/superseded aliases remain in provider history, not shopper counts. */
+    const L=activeRows();
     return `
     ${ui.ph('Shoppers / Auditores', data.period().name+' · red de evaluadores y calificación')}
     <div id="shTopKpis">
