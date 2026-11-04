@@ -1,0 +1,146 @@
+{
+  "schemaVersion": "cxorbia.i3.fast-sequence-execution-lock.v1",
+  "dateGuatemala": "2026-11-04",
+  "status": "FROZEN_EXECUTION_ORDER_ACTIVE_I3_HOLD",
+  "authority": "Paula explicit freeze-and-start instruction 2026-11-04",
+  "immutablePrecedent": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
+  "originalPlanId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
+  "immutablePlanSha256": "83e8f2c0a6b190bab1d9dea32bf99158116f3164f419ae72e051fd791fd8576c",
+  "immutableBundleSha256": "4ef4124040ba8a81f71f4291b5ddefbc2183ffffb24b52079b5137664e9cc44c",
+  "exactRecoveryBranch": "recovery/cxorbia-phase-a-20260831",
+  "parentBeforeLock": "335755645ea37c4e881ffefa249e37cbbb045ddd",
+  "productSourceUnchanged": "21a82e7a4b42ba2c0878bf1d6041b5b0e8dc7c1c",
+  "previousChromeReadback": "docs/checkpoints/CXORBIA_I3_ADMIN_CHROME_LIVE_READBACK_20261104.json",
+  "previousAutoDecision": "docs/checkpoints/CXORBIA_I3_DECISION_AUTONORMALIZACION_LEGACY_20261104.md",
+  "confirmedNewUIEvidence": {
+    "project": "Cinépolis",
+    "period": "NOV 2026",
+    "role": "Administración",
+    "DEV": "cxorbia-backend-dev.web.app",
+    "technicalCaseAliasCount": 275,
+    "visibleProfiles": 211,
+    "visibleIdentityReviewProfiles": 22,
+    "reviewedCaseReason": "display_name_collision_not_auto_merged",
+    "banner": "Ninguna fusión se realiza automáticamente",
+    "classification": "FUNCTIONAL_DEFECT",
+    "productMutations": false
+  },
+  "originalMatrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V244.json",
+  "startingState": {
+    "MATCH": 5,
+    "partialSourceOrDEV": 12,
+    "TRUE_FUNCTIONAL_DEFECT": 3,
+    "COMPOSED_NOT_DEPLOYED": 1,
+    "I3": "HOLD",
+    "I4": "NO_GO"
+  },
+  "sequence": [
+    {
+      "ordinal": 1,
+      "id": "S1_IDENTITY",
+      "originalTaskIds": [
+        "A01",
+        "A02",
+        "A03",
+        "A04"
+      ],
+      "ownerFiles": [
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "app/adapters/tya-cumulative-read-model-v2.js",
+        "app/modules/shoppers.js"
+      ],
+      "outcome": "Auto-normalize and merge weak-name compatible and strong-identical profiles within a tenant, scoped to compatible country and linked projects/periods (NEVER merge across tenants) with deterministic canonical keeper; preserve UID/aliases/history/visits/benefits/certificates/payment records; 275 case/alias cohort classified by reason and provider ACK. Genuine contradictions remain isolated; no per-shopper repair.",
+      "gate": "Source owner exact P0 proof, fail-safe fixture suite GT/HN, dry-run totals, idempotent provider ACK/readback, DEV exact bytes and real Admin/Shopper identity equality."
+    },
+    {
+      "ordinal": 2,
+      "id": "S2_SHOPPER_HR_ROLE",
+      "originalTaskIds": [
+        "A05",
+        "A06",
+        "A07",
+        "A08",
+        "A09",
+        "B03",
+        "B04",
+        "B05",
+        "B06"
+      ],
+      "outcome": "Same external HR sourceRevision yields identical Admin/Shopper assignment, visit history, availability and KPIs independent of shopper/month/country; confirm Stiven and Julissa then representative GT/HN and new shopper.",
+      "gate": "Read external HR revision independently, login from isolated Shopper role, role reload/cold start, exact history and no duplicate, provider ACK for authorized writes."
+    },
+    {
+      "ordinal": 3,
+      "id": "S3_CUMULATIVE_MODULE_QA",
+      "originalTaskIds": [
+        "G03",
+        "G05",
+        "E01",
+        "E02",
+        "V01",
+        "V02"
+      ],
+      "outcome": "Re-use 5 exact MATCH and all prior owner-evidence; execute remaining 12 modules' missing real role/tests only, promote individually on evidence, no repeat of unaffected historical PASS.",
+      "gate": "Per module source/owner hash + DEV served artifact/readback + role/function + human acceptance when applicable; no promotion from docs-only/skip."
+    },
+    {
+      "ordinal": 4,
+      "id": "S4_TERMINAL_P0",
+      "originalTaskIds": [
+        "B01",
+        "B02",
+        "B07",
+        "C01",
+        "C02",
+        "C04",
+        "D04",
+        "D05",
+        "G04"
+      ],
+      "outcome": "Close actual 3 defective domains: canonical HR state, certifications, finance core; close 1 composed-not-deployed persistence ACK boundary, preserve historical approval and bank provenance, do not fabricate paid.",
+      "gate": "Exact P0 owner, unit/focal QA, DEV materialization and readback, independent HR/remote ACK, no unconfirmed paid state."
+    },
+    {
+      "ordinal": 5,
+      "id": "S5_SINGLE_ARTIFACT_GO_LIVE",
+      "originalTaskIds": [
+        "V03",
+        "V04",
+        "V05",
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07"
+      ],
+      "outcome": "Run only terminal Gate20/21 on single certified fingerprint; I3 GO only if all required P0 PASS; only then ask Paula I4 approval and deploy exact artifact without rebuild; production lock and rollback.",
+      "gate": "Artifact digest same on approval and Hosting/runtime; production DO_NOT_TOUCH until explicit I4 authorization."
+    }
+  ],
+  "scheduling": "Read-only QA for independent modules may proceed while one writer performs code P0; product writes strictly serial on one branch and one candidate. Each deliverable block immediately materialized on existing DEV only after tests, then live/readback and human review. No parallel writer, independent release or workflow.",
+  "antiStall": {
+    "classificationAllowed": [
+      "SOURCE_FAILURE",
+      "MAPPING_FAILURE",
+      "PROVIDER_FAILURE",
+      "PERSISTENCE_FAILURE",
+      "AUTH_FAILURE",
+      "FUNCTIONAL_DEFECT",
+      "VISUAL_DEFECT",
+      "RELEASE_COMPOSITION_FAILURE",
+      "ENVIRONMENT_FAILURE"
+    ],
+    "onFail": "Within the same current block, record exact reproducer/owner/expected/observed; fix smallest valid owner; run affected gate again. Never switch to new plan, overlay, branch, workflow, import, test snapshot or arbitrary shopper/month special-case.",
+    "verify": "After every mutation compare expected parent/tree, source owners, CI jobs actually executed, artifact digest served, remote provider ACK, role/HR independent readback. If job skipped: SKIPPED, never PASS. If code deployed but descriptor stale: correct descriptor in same receipt and continue.",
+    "progress": "Per iteration publish completed/partially tested/blocked tasks and 21-domain statuses, by evidence, not percentage; preserve PASS owners with no drift.",
+    "escalation": "Only actual contradictory identity groups or external authority/credential/IAM blockers ask Paula; do not require routine manual testing.",
+    "continuity": "Append verified attempts and exact next action to CXORBIA_RECOVERY_EXECUTION_CURRENT.json, read this lock first on conversation restart; no redo of complete PASS."
+  },
+  "production": "DO_NOT_TOUCH",
+  "currentProgress": "S1: P0 proven/owner located; DEV modal confirmed manual-only; correction and cohort ACK not yet done. S2-S5 not newly executed by this lock.",
+  "nextExactAction": "S1 read-only reason/alias cohort classification, implement legacy-compatible deterministic normalizer in provider owner and bridge, run bounded GT/HN/history/Auth fixtures. Existing DEV serial materialization only after source QA; verify Stiven/Julissa Shopper role post-fix.",
+  "i4Authorized": false
+}

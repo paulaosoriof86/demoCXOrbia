@@ -295,7 +295,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "One exact P0 owner: ensure identity/alias normalization in backend provider and shared canonical projection, idempotent batch classification of 275 technical cases with preservation of UIDs/aliases/history. Re-test Stiven and Julissa in isolated Shopper role against current hosted source; independently compare HR revision and update module truth from hard evidence. Then close remaining 3 defect domains/1 composed-not-deployed, run unified terminal Gate20/21.",
+  "nextExactAction": "S1 read-only reason/alias cohort classification, implement legacy-compatible deterministic normalizer in provider owner and bridge, run bounded GT/HN/history/Auth fixtures. Existing DEV serial materialization only after source QA; verify Stiven/Julissa Shopper role post-fix.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -7365,5 +7365,14 @@
     "hostingRun": 41867359181,
     "decision": "FOCAL_ADMIN_PASS__I3_HOLD__5_MODULES_MATCH",
     "production": false
+  },
+  "i3Nov04FastSequenceExecutionLock": {
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_FAST_SEQUENCE_EXECUTION_LOCK_20261104.json",
+    "planId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
+    "status": "FROZEN_EXECUTION_ORDER_ACTIVE_I3_HOLD",
+    "sourceSha": "21a82e7a4b42ba2c0878bf1d6041b5b0e8dc7c1c",
+    "startedBlock": "S1_IDENTITY",
+    "production": false,
+    "moduleFullMatches": 5
   }
 }
