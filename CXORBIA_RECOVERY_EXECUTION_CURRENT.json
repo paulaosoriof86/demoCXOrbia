@@ -9,6 +9,56 @@
   "authorizationI4": false,
   "productSourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
   "productTree": "e6f941c511272dfb0d258e935d7c1526c83b31cb",
+  "currentCanonicalCheckpoint": {
+    "path": "docs/checkpoints/CXORBIA_RECOVERY_CHECKPOINT_CANONICO_2026-11-05_I3_V2.md",
+    "status": "I3_HOLD",
+    "runId": 42063057316,
+    "artifactId": 13434525370,
+    "artifactSha256": "fed08e9024d90a58caa37b3dd57cfe8297410e585f923586c0f96d5ed64280fb",
+    "controlCommit": "2b23686be39958cee0983b131ae7f56c8c0f430a",
+    "approvedGroups": 83,
+    "verifiedEarlier": 32,
+    "mergedNew": 37,
+    "verifiedTotal": 69,
+    "remaining": 14,
+    "sourceRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
+    "productUnchanged": true,
+    "productionUnchanged": true
+  },
+  "continuityHandoff": {
+    "authority": "CURRENT_CANONICAL_V2_OVERRIDES_HISTORICAL_HANDOFF_ONLY",
+    "path": "docs/checkpoints/CXORBIA_RECOVERY_CHECKPOINT_CANONICO_2026-11-05_I3_V2.md",
+    "asOf": "2026-11-05",
+    "iteration": "I3",
+    "status": "HOLD",
+    "productSourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+    "productSourceTree": "e6f941c511272dfb0d258e935d7c1526c83b31cb",
+    "latestBatchRunId": 42063057316,
+    "verifiedCohortGroups": 69,
+    "pendingCohortGroups": 14,
+    "moduleMatches": 5,
+    "moduleTotal": 21,
+    "nextTaskIds": ["A01", "A02", "G03", "D05", "C04", "C05", "D07", "E11"],
+    "immediateAction": "I3: reconcile the 11 approved multi-HR-canonical groups with exact stable crosswalk/credential and history readback; then two secondary recent sign-ins and one unproven keeper without independent per-name approval. Afterward recertify 16 non-MATCH modules against one exact DEV source/artifact and close Gate20/21. Production DO_NOT_TOUCH.",
+    "noProduction": true
+  },
+  "currentModuleEvidenceOverrides": {
+    "shoppers-mi-visitas-profile": {
+      "previousStivenAdmin10Shopper0ActionIsHistorical": true,
+      "stivenAdminVisits": 10,
+      "stivenShopperVisits": 10,
+      "proofRunId": 42044986780,
+      "ordinaryPasswordRunId": 42047162119,
+      "wholeModuleMatch": false,
+      "remainingAction": "Full multi-role Shopper/Admin + HR/finance and human module criteria; do not repeat Stiven 10/0 as an open P0."
+    },
+    "identity-membership-roll-forward": {
+      "cohortVerified": 69,
+      "cohortPending": 14,
+      "newProviderBatchProofRunId": 42063057316,
+      "wholeModuleHistoricalMatchPreserved": true
+    }
+  },
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -83,6 +133,28 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
+    "path": "docs/checkpoints/CXORBIA_RECOVERY_CHECKPOINT_CANONICO_2026-11-05_I3_V2.md",
+    "kind": "I3_APPROVED_139_PAIRS_83_GROUPS_DEV_BATCH_37_ACK_AND_READBACK_PASS",
+    "runId": 42063057316,
+    "runConclusion": "success",
+    "controlCommit": "2b23686be39958cee0983b131ae7f56c8c0f430a",
+    "sourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+    "approvedCases": 139,
+    "approvedGroups": 83,
+    "previouslyVerified": 32,
+    "newlyMergedAndVerified": 37,
+    "totalVerified": 69,
+    "remainingGroups": 14,
+    "aliasIdentifiersPreserved": 70,
+    "visitsReassigned": 201,
+    "liquidationsReassigned": 184,
+    "certificationsReassigned": 44,
+    "idempotentZeroWriteReplays": 74,
+    "moduleMatches": 5,
+    "moduleTotal": 21,
+    "production": false
+  },
+  "priorExecutionReceiptRun2183": {
     "path": "docs/checkpoints/CXORBIA_I3_RUN2183_STIVEN_PASSWORD_PASS_AND_CLICK_AUTHORITY_TIMEOUT_20261105.json",
     "kind": "I3_R20_ORDINARY_PASSWORD_PASS_SEPARATE_EXHAUSTIVE_CLICK_AUTHORITY_TIMEOUT",
     "checkpointBlob": "e6340891d71da0ae6d208d0fb19e4d3f9bcfedf3",
@@ -307,7 +379,7 @@
     "evolution": 6
   },
   "historicalNextExactActionPreS1": "S1 read-only reason/alias cohort classification, implement legacy-compatible deterministic normalizer in provider owner and bridge, run bounded GT/HN/history/Auth fixtures. Existing DEV serial materialization only after source QA; verify Stiven/Julissa Shopper role post-fix.",
-  "nextExactAction": "I3 HOLD / RUN2172 exact DEV PASS source 09eed4f, Cloud Run 00347-jmn, Hosting 3b675f7bcc8b07e6, HR independently same cdc40258 revision 18 periods / 792 visits, G05 48/48 local and exact RUN2172 materialization. Damaris NOVIEMBRE rows 3 and 22 resolved_merged keeper, 0 unresolved assigned in RUN2169/2170 (on prior exact source). Julissa NOV resources show PDF and Abrir; NEW source binary viewer/download E2E pending, prior QA selector drift fixed. VRM168 Nov provider-schedule PASS RUN2170 with synthetic cleanup. EXHAUSTIVE role navigation P0 and Stiven Admin10/Shopper0, G03 HR finanzas, historical 32/83 verified fusion groups (51 recensus) and 5/21 MATCH (16 genuine pending evidence) all remain I3 HOLD; prior verified Hosting 231186c337bcd0ba preserved. NEXT exact existing phasea-representative-same-artifact-live-reproof + phasea-exhaustive-click-visual for Admin/Shopper/client on the same NEW source, PDF protected viewer+download, HR/finanzas and G03, then module truth/gates 20/21. Production DO_NOT_TOUCH; I4 not authorized; no rebuilt candidates.",
+  "nextExactAction": "I3 HOLD after RUN 42063057316: 37 new protected DEV fusion groups ACK/readback PASS, 69/83 cohort consolidated, 14 pending (11 multiple HR source canonical, 2 recent secondary sign-ins, 1 keeper credential proof). Next: exact multi-HR crosswalk/old+new history authority proof on frozen 09eed4f product source, then one safe bounded DEV cohort pass for eligible remainder; isolate only truly unsafe credentials. Admin warning review count must reconcile to truly active cases. Reprove 16 non-MATCH modules, questionnaires 15Q attempt persistence, finance and source HR parity, protected documents, GT/HN Admin/Shopper/Client role UI, Gate20/21 one immutable artifact. Stiven Admin10/Shopper10 PASS RUN2182; no 10/0 open. Preserve 5/21 current MATCH and all historic PASS. Production DO_NOT_TOUCH until I3 GO/I4 explicit authorization.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -679,7 +751,7 @@
     "Gates20/21 then authorized I4"
   ],
   "coverageGuard": "Do not declare all finance, HR, Shopper, Client, Certification or Phase A PASS solely from source tests or an inherited PASS. Apply task-specific provider/readback/human proof and preserve historical VRM PASS without reproducible drift; no skipped findings.",
-  "continuityHandoff": {
+  "historicalContinuityHandoff20261030": {
     "path": "docs/checkpoints/CXORBIA_I3_S485_DEV_MATERIALIZATION_RUN1972_20261030.json",
     "blobSha": "734fadab265d042eadf874ecf57af5e8f7d3258f",
     "kind": "EXACT_S485_DEV_BINDING_PASS_PENDING_BOUNDED_R7_FUNCTIONAL_PROOF",
@@ -1023,12 +1095,12 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V244.json",
-    "gitBlob": "8c5e5a20ab3286619154e4a2423c050bfad9a834",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261105-V245.json",
+    "gitBlob": "3d68b87ea0a487930e695cdef63b3795288be861",
     "sourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
     "allModulesMatch": false,
     "phaseAComplete": false,
-    "sha256": "7eb8a9410ea480cebadac2f5ab3a58b5636ea152f6b5451d437d1a08592d5ab2"
+    "sha256": "1cb2089dc7edeee5f18422f98e2f7d46b1aa3b5118c8ce4399184a7653253bc0"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
