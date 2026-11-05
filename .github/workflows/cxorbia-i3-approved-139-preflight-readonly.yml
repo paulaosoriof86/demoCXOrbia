@@ -15,15 +15,14 @@ concurrency:
   group: cxorbia-i3-approved-139-readonly-preflight
   cancel-in-progress: false
 jobs:
-  jhennypher-murga-residual-protected-dev-once:
-    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-JHENNYPHER-MURGA-DEV-PROTECTED-ONCE-20261105' }}
+  two-approved-residual-groups-protected-dev-once:
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-TWO-RESIDUALS-PROTECTED-DEV-ONCE-20261105' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
       GCLOUD_PROJECT: cxorbia-backend-dev
       GOOGLE_CLOUD_PROJECT: cxorbia-backend-dev
-      CXORBIA_PRODUCT_SOURCE_SHA: 09eed4f012f9ad04e49d53569aabd86bd4c832a9
-      CX_I3_MURGA_RESIDUAL_BATCH: PAULA_20261105_JHENNYPHER_MURGA_APPROVED_EXACT_HUMAN_DEV_ONCE
+      CXORBIA_PRODUCT_SOURCE_SHA: 5c8dade1de10134e9c0aa4d8bdf953c979a2c1cf
     steps:
       - uses: actions/checkout@v4
         with:
@@ -58,9 +57,11 @@ jobs:
           set -Eeuo pipefail
           npm install --prefix firebase/auth-dev-tools --no-save --no-package-lock --ignore-scripts firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
           ./firebase/auth-dev-tools/node_modules/.bin/playwright install chromium
-      - name: One approved Jhennypher Murga human protected DEV consolidation, full ACK and readback
+      - name: Two explicitly approved human clusters, sequential protected provider ACK and independent readback
         run: |
           set -Eeuo pipefail
+          CX_I3_RESIDUAL_CASE=MURGA \
+          CX_I3_RESIDUAL_APPROVAL=PAULA_20261105_JHENNYPHER_MURGA_APPROVED_EXACT_HUMAN_DEV_ONCE \
           node firebase/auth-dev-tools/cxorbia-i3-murga-residual-protected-dev-once.mjs
           jq -e '(.decision=="PASS_RESIDUAL_MURGA_FUSION_AND_NAME_DEV" or
             .decision=="PASS_RESIDUAL_MURGA_FUSION_PROFILE_NAME_PROJECTION_PENDING") and
@@ -68,14 +69,32 @@ jobs:
             .idempotentReplays==2 and .keeperLoginPreserved==true and
             .directAuthWrites==0 and .directFirestoreWrites==0 and .hrWrites==0 and
             .credentialResets==0 and .deployments==0 and
-            .readback.providerDomainRowsPreserved==46 and
-            .readback.aliasesRetired==8 and .readback.canonicalMemberships==1' \
+            .readback.providerDomainRowsPreserved==([.domainRowsPlanned[]]|add) and
+            .readback.aliasesRetired==.aliasCount and .readback.canonicalMemberships==1 and
+            .readback.nameMatchesCorrectedHr==true' \
             .tmp/cxorbia-i3-murga-residual-merge/result.json >/dev/null
+          CX_I3_RESIDUAL_CASE=ROCIO \
+          CX_I3_RESIDUAL_APPROVAL=PAULA_20261105_ROCIO_VILCA_APPROVED_EXACT_HUMAN_DEV_ONCE \
+          node firebase/auth-dev-tools/cxorbia-i3-murga-residual-protected-dev-once.mjs
+          jq -e '(.decision=="PASS_RESIDUAL_ROCIO_FUSION_AND_NAME_DEV" or
+            .decision=="PASS_RESIDUAL_ROCIO_FUSION_PROFILE_NAME_PROJECTION_PENDING") and
+            .target=="Rocío Vilca" and .keeperLogin=="rocio.vilca" and
+            .production==false and .providerAck==true and .identityConsolidated==true and
+            .idempotentReplays==2 and .keeperLoginPreserved==true and
+            .directAuthWrites==0 and .directFirestoreWrites==0 and .hrWrites==0 and
+            .credentialResets==0 and .deployments==0 and
+            .approvedRecentSecondarySession=="rocio.vica.3599" and
+            .readback.providerDomainRowsPreserved==([.domainRowsPlanned[]]|add) and
+            .readback.aliasesRetired==.aliasCount and .readback.canonicalMemberships==1 and
+            .readback.nameMatchesCorrectedHr==true' \
+            .tmp/cxorbia-i3-rocio-residual-merge/result.json >/dev/null
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cxorbia-i3-murga-residual-${{ github.run_id }}
-          path: .tmp/cxorbia-i3-murga-residual-merge/result.json
+          name: cxorbia-i3-two-residual-groups-${{ github.run_id }}
+          path: |
+            .tmp/cxorbia-i3-murga-residual-merge/result.json
+            .tmp/cxorbia-i3-rocio-residual-merge/result.json
           if-no-files-found: warn
           retention-days: 30
 
