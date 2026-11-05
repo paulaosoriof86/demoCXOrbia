@@ -20,7 +20,7 @@ jobs:
       GOOGLE_CLOUD_PROJECT: cxorbia-backend-dev
       CX_APPROVED_COHORT_PREFLIGHT: PAULA_CONFIRMED_2026_10_28_139_EXACT_COHORT_PAIRS_READONLY_PREFLIGHT
       CX_APPROVED_COHORT_PREFLIGHT_OUT: .tmp/i3-approved-cohort-preflight
-      CX_APPROVED_COHORT_REVISION_DIAGNOSTIC: I3_HR_REVISION_READONLY_DELTA_20261101
+      CX_APPROVED_COHORT_REVISION_DIAGNOSTIC: I3_HR_REVISION_READONLY_DELTA_20261105
     steps:
       - uses: actions/checkout@v4
         with:
@@ -36,35 +36,12 @@ jobs:
           test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
           SOURCE="$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
           TREE="$(jq -r '.productTreeAuthority' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
-          test "$SOURCE" = '7b70557c22e3902ab3c91fbee326357630fc20a1'
+          test "$SOURCE" = '09eed4f012f9ad04e49d53569aabd86bd4c832a9'
           test "$(git rev-parse "$SOURCE^{tree}")" = "$TREE"
-          git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules \
-            ':(exclude)app/core/router.js' \
-            ':(exclude)app/adapters/tya-cumulative-read-model-v2.js' \
-            ':(exclude)app/adapters/tya-c6-domain-consistency-bridge.js' \
-            ':(exclude)app/modules/visitas.js' \
-            ':(exclude)app/modules/dashboard.js' \
-            ':(exclude)app/modules/postulaciones.js' \
-            ':(exclude)app/modules/cert.js' \
-            ':(exclude)backend/runtime/cxorbia-shopper-command-provider-v1.mjs' \
-            ':(exclude)backend/runtime/hr-live-service/test/cxorbia-i3-project-period-contract.test.mjs' \
-            ':(exclude)backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs'
-          test "$(git hash-object app/core/router.js)" = '05f3b943d667814ae151556ee7281abbfe7bc6e5'
-          test "$(git hash-object app/modules/visitas.js)" = '1605e94b94ab2b99fd7f6348b287b58f36099ede'
-          test "$(git hash-object app/adapters/tya-cumulative-read-model-v2.js)" = 'ab2abe6660d53d623e725f754d41b69710a8f612'
-          test "$(git hash-object backend/runtime/cxorbia-shopper-command-provider-v1.mjs)" = '2cbe2ac0ca615aed6bfd965286288d760381cc28'
-          test "$(git hash-object app/adapters/tya-c6-domain-consistency-bridge.js)" = '0a551989ea82eac52eea3b1440965812d83d4f17'
-          test "$(git hash-object app/modules/dashboard.js)" = 'c48d1c63d0628c637c4257bef1725dc4349b8668'
-          test "$(git hash-object app/modules/postulaciones.js)" = '13acd6982be68e945733f0048c1aa8a911bdc219'
-          test "$(git hash-object app/modules/cert.js)" = '78c9630fd627daa015aff5919d34565260240d74'
-          test "$(git hash-object tools/qa/cxorbia-i3-cert-bank-human-state-labels.test.mjs)" = '30c99263da5a15b70fc8eae64f31a5ee39a0421d'
-          test "$(git hash-object backend/runtime/hr-live-service/test/cxorbia-i3-project-period-contract.test.mjs)" = 'd627273f67458bf4096c1ce602aa237dda7aac22'
-          test "$(git hash-object backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs)" = '291c816a45a127418ee5cab50e2f156b3828009d'
-          test "$(git hash-object tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs)" = '1c842eef3bfaa5237300167024f4ae17c812e0cd'
-          test "$(git hash-object tools/qa/cxorbia-i3-postulaciones-country-options-unified.test.mjs)" = '2bcf2559b35d7eeced8b9aa95bc854b20ccda367'
-          test "$(git hash-object tools/qa/cxorbia-i3-postulaciones-manual-availability-guard.test.mjs)" = 'caee10f2a0552df2653cb87b6a62df9e5dee7af9'
-          test "$(git hash-object tools/qa/cxorbia-i3-shoppers-bridge-authority.test.mjs)" = 'ab1d0ac3d57902ad20d3c974395b946fb34fb0c8'
-          test "$(git hash-object tools/qa/cxorbia-i3-visitas-effective-availability.test.mjs)" = '31b97ec75076594f9e0e3bee061ae59976a6dcb4'
+          # No source-change exception is allowed in this current cohort check.
+          # All product owners are verified against the unique certified source;
+          # historical per-file hashes no longer describe the present candidate.
+          git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules
           node --check firebase/auth-dev-tools/cxorbia-i3-approved-139-preflight-readonly.mjs
       - uses: google-github-actions/auth@v2
         with:
@@ -74,7 +51,7 @@ jobs:
           set -Eeuo pipefail
           npm install --prefix firebase/auth-dev-tools --no-save --no-package-lock --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
           node firebase/auth-dev-tools/cxorbia-i3-approved-139-preflight-readonly.mjs
-          jq -e '(.decision=="PASS_APPROVED_COHORT_PREFLIGHT_READONLY" or (.decision=="HOLD_REVISED_HR_SOURCE_NOT_APPROVED" and .approvedSourceRevisionMatch==false and .observedSourceRevision=="f12fba714e039c8a27ecf494ea8f883af8600b1625c06713814f241602a5a799")) and .production==false and .authWrites==0 and .firestoreWrites==0 and .hrWrites==0 and .merges==0 and .reconciliation.groups==83 and .reconciliation.approvedWorkbookPairDigest=="ac3e15184316d62aa53942359e857f2c34dec486a2ca41057e529a39f062d872"' "$CX_APPROVED_COHORT_PREFLIGHT_OUT/result.json" >/dev/null
+          jq -e '(.decision=="PASS_APPROVED_COHORT_PREFLIGHT_READONLY" or (.decision=="HOLD_REVISED_HR_SOURCE_NOT_APPROVED" and .approvedSourceRevisionMatch==false and .observedSourceRevision=="cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac")) and .production==false and .authWrites==0 and .firestoreWrites==0 and .hrWrites==0 and .merges==0 and .reconciliation.groups==83 and .reconciliation.approvedWorkbookPairDigest=="ac3e15184316d62aa53942359e857f2c34dec486a2ca41057e529a39f062d872"' "$CX_APPROVED_COHORT_PREFLIGHT_OUT/result.json" >/dev/null
       - uses: actions/upload-artifact@v4
         if: always()
         with:

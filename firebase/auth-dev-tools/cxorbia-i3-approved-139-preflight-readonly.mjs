@@ -18,8 +18,10 @@ const PROJECT='cxorbia-backend-dev',TENANT='tya',PROGRAM='cinepolis';
 const HR_URL='https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live?format=json&view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV';
 const EXPECTED_REV='4fc8def718fd1504f5d76a1fbc80b6901cbf711ec2b89f4dfc3a81ecbbca517a';
 // Explicitly scoped diagnostic only; cannot promote a newly changed HR revision to the approved source.
-const DIAGNOSTIC_REV='f12fba714e039c8a27ecf494ea8f883af8600b1625c06713814f241602a5a799';
-const DIAGNOSTIC_AUTH='I3_HR_REVISION_READONLY_DELTA_20261101';
+// Preserve the 28-Oct approved revision. The 05-Nov revision is permitted for
+// read-only comparison only; it never silently re-approves changed HR pairs.
+const DIAGNOSTIC_REV='cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac';
+const DIAGNOSTIC_AUTH='I3_HR_REVISION_READONLY_DELTA_20261105';
 const EXPECTED_PAIR_DIGEST='ac3e15184316d62aa53942359e857f2c34dec486a2ca41057e529a39f062d872';
 const approvedCompletionReason=/^paula_confirmed_exact_same_human_[fr]\d{3}_2026_10_28$/;
 const AUTHORIZATION='PAULA_CONFIRMED_2026_10_28_139_EXACT_COHORT_PAIRS_READONLY_PREFLIGHT';
