@@ -1366,7 +1366,9 @@ async function durableIdentityAdjudication({auth,db,command,actor,canonicalShopp
   const allLinks=await tenant.collection('shopperIdentityLinks').get(),staleLinkDocs=arr(allLinks?.docs).filter(doc=>{
     if(doc.id===linkId)return false;
     const l=doc.data()||{},status=str(l.status||l.state).toLowerCase(),authority=str(l.authorityType||l.authority?.type).toLowerCase(),target=str(l.canonicalShopperId||l.canonicalId||l.shopperId||l.profileId);
-    return ACTIVE_IDENTITY_LINK_STATES.has(status)&&authority==='tenant_adjudication'&&allAliases.includes(target)&&identityLinkTokens(l).includes(canonicalShopperId);
+    const tokens=identityLinkTokens(l);
+    return ACTIVE_IDENTITY_LINK_STATES.has(status)&&authority==='tenant_adjudication'&&
+      allAliases.includes(target)&&tokens.length>0&&tokens.every(id=>identitySet.has(id));
   });
   const existingNewLink=await linkRef.get();
   if(existingNewLink.exists){

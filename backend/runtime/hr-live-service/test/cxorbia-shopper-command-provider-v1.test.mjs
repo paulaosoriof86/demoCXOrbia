@@ -1018,6 +1018,7 @@ test('VRM-185 / admin identity adjudication keeps the unique password-proof prin
   db.seed(`tenants/tenant-a/shopperIdentityCrosswalk/${canonical}`,{tenantId:'tenant-a',shopperId:canonical,projectIds:['project-a'],providerUidFingerprint:providerUidFingerprint(canonicalUid),sourceStableKey:canonical,identityMode:'stable_hr_shopper_id',sourceType:'hr_external'});
   db.seed(`tenants/tenant-a/shopperIdentityCrosswalk/${alias}`,{tenantId:'tenant-a',shopperId:alias,projectIds:['project-a'],providerUidFingerprint:providerUidFingerprint(keeperUid),sourceStableKey:alias,identityMode:'stable_hr_shopper_id',sourceType:'hr_external'});
   db.seed('tenants/tenant-a/shopperIdentityLinks/historical-admin-resolution',{tenantId:'tenant-a',canonicalShopperId:alias,sourceSystem:'hr',sourceIdentityKey:canonical,projectScope:'project-a',status:'materialized',authorityType:'tenant_adjudication',authorityRef:'frozen-admin-resolution',periodIndependent:true});
+  db.seed('tenants/tenant-a/shopperIdentityLinks/older-partial-adjudication',{tenantId:'tenant-a',canonicalShopperId:alias,sourceSystem:'hr',sourceIdentityKey:alias,projectScope:'project-a',status:'active',authorityType:'tenant_adjudication',authorityRef:'previous-approved-subgroup',periodIndependent:true});
   db.seed('tenants/tenant-a/paymentReconciliations/pay-1',{shopperId:alias,status:'pending'});
   db.seed('tenants/tenant-a/reviewQueue/review-1',{shopperId:alias,candidateShopperIds:[alias]});
   db.seed('tenants/tenant-a/projects/project-a/certifications/cert-1',{shopperId:alias,status:'certificada'});
@@ -1038,6 +1039,7 @@ test('VRM-185 / admin identity adjudication keeps the unique password-proof prin
   assert.equal(db.get(`tenants/tenant-a/shopperIdentityCrosswalk/${canonical}`).providerUidFingerprint,providerUidFingerprint(keeperUid));
   assert.equal(db.get(`tenants/tenant-a/shopperIdentityCrosswalk/${alias}`).shopperId,canonical);
   assert.equal(db.get('tenants/tenant-a/shopperIdentityLinks/historical-admin-resolution').status,'superseded');
+  assert.equal(db.get('tenants/tenant-a/shopperIdentityLinks/older-partial-adjudication').status,'superseded','previous approved subgroup must not remain active after its owner changes');
   assert.equal(db.get(`tenants/tenant-a/shopperIdentityLinks/${first.identityLinkId}`).canonicalShopperId,canonical);
   assert.equal(db.get('tenants/tenant-a/paymentReconciliations/pay-1').shopperId,canonical);
   assert.equal(db.get('tenants/tenant-a/reviewQueue/review-1').shopperId,canonical);
