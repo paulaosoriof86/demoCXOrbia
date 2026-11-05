@@ -25,10 +25,27 @@ try{
   if(sa.project_id!==PROJECT)throw Error('AUTH_FAILURE:PROJECT_MISMATCH');
   const app=initializeApp({credential:cert(sa),projectId:PROJECT},'two-names-readonly');
   const db=getFirestore(app),auth=getAuth(app),base=`tenants/${TENANT}`;
-  const [ps,ms]=await Promise.all([db.collection(`${base}/shoppers`).get(),db.collection(`${base}/users`).get()]);
+  const collections=[['tenant','paymentReconciliations'],['tenant','reviewQueue'],
+    ['project','certifications'],['project','liquidations'],['project','postulations'],
+    ['project','reservations'],['project','visits']];
+  const [ps,ms,crossSnap,linkSnap,...domainSnaps]=await Promise.all([
+    db.collection(`${base}/shoppers`).get(),db.collection(`${base}/users`).get(),
+    db.collection(`${base}/shopperIdentityCrosswalk`).get(),db.collection(`${base}/shopperIdentityLinks`).get(),
+    ...collections.map(([scope,name])=>db.collection(scope==='tenant'?`${base}/${name}`:
+      `${base}/projects/${PROJECT_ID}/${name}`).get())]);
   const members=ms.docs.map(doc=>({uid:doc.id,...(doc.data()||{})})).filter(m=>
     m.active===true&&m.role==='shopper'&&m.authNamespace==='shopper'&&m.tenantId===TENANT&&arr(m.projectIds).includes(PROJECT_ID));
   const profiles=ps.docs.map(doc=>({id:doc.id,...(doc.data()||{})}));
+  const cross=new Map(crossSnap.docs.map(doc=>[doc.id,doc.data()||{}]));
+  const links=linkSnap.docs.map(doc=>doc.data()||{});
+  const ownerFields=['shopperId','assignedShopperId','assignedToShopperId','auditorId','profileId',
+    'applicantShopperId','ownerShopperId','targetShopperId','beneficiaryShopperId',
+    'liquidationShopperId','reservationShopperId'];
+  const ownerArrays=['shopperIds','candidateShopperIds'];
+  const refsFor=shopperId=>Object.fromEntries(collections.map(([,name],i)=>[
+    name,domainSnaps[i].docs.filter(doc=>{const data=doc.data()||{};
+      return ownerFields.some(field=>str(data[field])===shopperId)||
+        ownerArrays.some(field=>arr(data[field]).some(v=>str(v)===shopperId));}).length]));
   for(const [target,pattern,desiredName,desiredLogin] of [
     ['JHENNYPHER_MURGA',/murga/i,'Jhennypher Murga',null],
     ['ROCIO_VILCA',/vica|vilca/i,'Rocío Vilca','rocio.vilca']]){
@@ -41,6 +58,9 @@ try{
       const matchingMembers=members.filter(m=>str(m.shopperId)===str(profile.shopperId||profile.id));
       for(const member of matchingMembers){
         const a=await auth.getUser(member.uid),login=str(member.visibleLogin).toLowerCase();
+        const lastSignIn=Date.parse(str(a.metadata?.lastSignInTime));
+        const recentDays=Number.isFinite(lastSignIn)?Math.round((Date.now()-lastSignIn)/86400000):null;
+        const sourceShopperId=str(profile.shopperId||profile.id);
         records.push({
           profileNombre:str(profile.nombre),
           staffDisplayName:[profile.displayFirstName,profile.displayLastName].map(str).filter(Boolean).join(' ')||null,
@@ -48,6 +68,12 @@ try{
           memberLogin:login,authEmailMatchesMember:!!login&&str(a.email).toLowerCase()===emailFor(login),
           authActive:a.disabled!==true,claimsIdentityMatches:str(a.customClaims?.shopperId)===str(member.shopperId),
           sourceType:str(profile.sourceType),membershipActive:member.active===true,
+          country:str(profile.pais||profile.country),recentSignInDays:recentDays,
+          passwordProofCurrent:!!str(member.credentialPasswordProofVersion),
+          domainRowReferences:refsFor(sourceShopperId),
+          crosswalkCanonicalFingerprint:str(cross.get(sourceShopperId)?.shopperId)?
+            hash(str(cross.get(sourceShopperId).shopperId)).slice(0,16):null,
+          trustedLinkCount:links.filter(l=>str(l.canonicalShopperId)===sourceShopperId&&l.humanConfirmed===true).length,
           idFingerprint:hash(str(member.shopperId)).slice(0,16),uidFingerprint:hash(member.uid).slice(0,16)
         });
       }
