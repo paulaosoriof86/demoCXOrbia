@@ -1,0 +1,135 @@
+{
+  "schemaVersion": "cxorbia.i3.run2177.same-artifact-full-functional-pass.v1",
+  "observedAt": "2026-11-04",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "status": "HOLD",
+  "production": "DO_NOT_TOUCH",
+  "purpose": "Additive same-artifact functional evidence; preserve official 21-module matrix until per-contract and human acceptance adjudication.",
+  "canonicalProduct": {
+    "repo": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "sourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+    "sourceTree": "e6f941c511272dfb0d258e935d7c1526c83b31cb",
+    "exactDevRun": 41952653181,
+    "devRuntimeRevision": "cxorbia-live-hr-dev-00347-jmn",
+    "devHostingVersion": "sites/cxorbia-backend-dev/versions/3b675f7bcc8b07e6",
+    "hrRevisionIndependent": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac"
+  },
+  "e2e": {
+    "runId": 41958315783,
+    "runNumber": 2177,
+    "githubUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/41958315783",
+    "conclusion": "success",
+    "artifactId": 13384054637,
+    "artifactSha256": "94d8e361717bdccddbc39afcf2ad8c0c584ac1da16ad4768ffdf0337b14694c6",
+    "representatives": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+    "independentHr": {
+      "currentVisits": 44,
+      "assignedVisits": 26,
+      "unresolvedAssignedVisits": 0,
+      "duplicateHrVisitKeys": 0,
+      "unresolvedMemberships": 0,
+      "duplicateActivePrincipals": 0,
+      "invariant": "PASS"
+    },
+    "allRoleNavigation": {
+      "decision": "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL",
+      "routes": {
+        "admin": 34,
+        "shopper": 12,
+        "client": 10,
+        "total": 56
+      },
+      "clicks": 44,
+      "actionFindings": 0,
+      "screenshots": 108,
+      "humanVisualAcceptance": "PENDING"
+    },
+    "adminPostulationsReservations": "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+    "finance": "PASS_PREI4_FINAL_FOCAL_FINANCE",
+    "providerSchedule": "PASS_VRM168_PROVIDER_SCHEDULE_PATH",
+    "certificationsResources": {
+      "decision": "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE",
+      "cert001": {
+        "decision": "PASS_PREI4_CERT_001_LIVE",
+        "questionCount": 4,
+        "providerAck": true
+      },
+      "cert002": {
+        "score": 100,
+        "pass": true,
+        "providerAck": true,
+        "recertificationDecision": "PASS_PREI4_CERT_002_LIVE",
+        "priorAttemptInvalidated": true,
+        "carryState": "recertification_required"
+      },
+      "resources": {
+        "decision": "PASS_PREI4_RES_001_LIVE",
+        "orphanBinary": false
+      },
+      "cleanup": {
+        "staleSyntheticDraftDeleted": true,
+        "attempt": true,
+        "recert": true,
+        "bank": true,
+        "resource": true,
+        "binary": true
+      }
+    },
+    "julissa": {
+      "novemberInstructiveAccess": true,
+      "resourcePdfReady": true,
+      "pdfPage": "Página 1 de 7",
+      "pdfCanvasReady": true,
+      "downloadEnabled": true,
+      "downloadTriggered": true,
+      "historicalVisits": 10
+    },
+    "damaris": {
+      "hrRows": [
+        "NOVIEMBRE!3",
+        "NOVIEMBRE!22"
+      ],
+      "canonicalShopperId": "shopper_gt_9c80e5538b",
+      "aliasShopperId": "shopper_gt_617abd0ad7",
+      "reviewId": "sir_7e173f7b0c7929ff4196dd16f63e601f",
+      "reviewStatus": "resolved_merged",
+      "activeProfile": true
+    },
+    "syntheticCleanup": {
+      "certResource": true,
+      "adminPostulations": true,
+      "providerSchedule": true,
+      "finance": true
+    },
+    "externalHrWrites": 0,
+    "productionWrites": 0,
+    "productSourceChanged": false,
+    "newDeploys": 0
+  },
+  "statusReconciliation": {
+    "officialModulesFullMatch": 5,
+    "totalModules": 21,
+    "remainingNonMatch": 16,
+    "warning": "RUN2177 successful functional coverage is not a blanket 21/21 module certificate; preserve historical/human/negative security/HR authority obligations.",
+    "verifiedOnlyNewly": [
+      "CERT_001",
+      "CERT_002",
+      "RES_001",
+      "finance-focal",
+      "admin-postulations-reservations",
+      "provider-schedule",
+      "Julissa PDF view/download",
+      "56-role-route-inventory",
+      "44-action-exercises"
+    ],
+    "remainingP0": [
+      "Stiven October Admin10/Shopper0 exact real-role readback after approved stiven.lopez fusion",
+      "G03 authority / source-HR-finance independent parity to exact serving revision",
+      "Per-module contract matrix reconciliation and true human acceptance for still pending domains",
+      "Gate20 visual/semantic and Gate21 immutable manifest same-artifact"
+    ],
+    "nonBlockingHistoricalRecensus": "Previously 32 of 83 historical reviews verified and 51 awaiting recensus; 0 unresolved assigned visits live. Historical count is not 51 currently blocked assignments."
+  },
+  "nextExactAction": "Reconcile RUN2177 receipts into canonical MODULE_TRUTH_MATRIX domain-by-domain without blanket promotion; independently test Stiven October Admin10/Shopper0 against exact 09eed4f DEV and classify; then G03/role and final Gate20/Gate21. No new commercial decision on Damaris or Julissa. I4 production requires express authorization once I3 GO."
+}
