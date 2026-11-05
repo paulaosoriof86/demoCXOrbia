@@ -124,16 +124,18 @@ test('I3 P0 / same country and phone with different human names never supplies a
   assert.equal(out.authCreated,2);assert.equal(auth.created,2);
 });
 
-test('I3 P0 / an existing canonical HR profile survives while its new unlinked homonym is held',async()=>{
+test('I3 P0 / exact name-country-phone newcomer links one verified existing canonical without a duplicate',async()=>{
   const {auth,db,provider}=make(),a='TYA_GT_CANON1',b='TYA_GT_NEW002';
   const canonical=row(a,'GT','Ana Pérez','50255557777');
   const start=await provider.reconcileSnapshot(snapshot(canonical),{sourceRevision:'hr-canonical'});
   assert.equal(start.authCreated,1);
   const existing=copy(db.get(profilePath(a)));
   const next=await provider.reconcileSnapshot(snapshot(canonical,row(b,'Guatemala','ANA PEREZ','5555-7777')),{sourceRevision:'hr-new'});
-  assert.equal(next.identityReviewCount,1);assert.equal(next.identityHeldShopperCount,1);
+  assert.equal(next.identityReviewCount,0);assert.equal(next.identityHeldShopperCount,0);
+  assert.equal(next.automaticIncomingHrAliases,1);
   assert.equal(next.authCreated,0);assert.equal(auth.created,1);
   assert.equal(db.get(profilePath(b)),undefined);
+  assert.equal(db.get(`tenants/tenant-a/shopperIdentityCrosswalk/${b}`).shopperId,a);
   assert.equal(db.get(profilePath(a)).shopperId,existing.shopperId);
 });
 
@@ -167,21 +169,23 @@ test('I3 P0 / an evidenced human distinct resolution permits two separate source
   assert.ok(db.get(profilePath(a)));assert.ok(db.get(profilePath(b)));
 });
 
-test('I3 P0 / an unlinked HR newcomer in a later single-person snapshot cannot duplicate a prior canonical',async()=>{
+test('I3 P0 / later HR-only revision reuses one verified canonical and never creates another Auth',async()=>{
   const {auth,db,provider}=make(),a='TYA_GT_PRIOR01',b='TYA_GT_LATER02';
   const first=await provider.reconcileSnapshot(snapshot(row(a,'GT','José Molina','50255559999')),{sourceRevision:'hr-before'});
   assert.equal(first.authCreated,1);assert.equal(auth.created,1);
   const original=copy(db.get(profilePath(a)));
   const later=snapshot(row(b,'Guatemala','JOSE  MOLINA','5555-9999'));
   const blocked=await provider.reconcileSnapshot(later,{sourceRevision:'hr-after'});
-  assert.equal(blocked.identityReviewCount,1);assert.equal(blocked.identityHeldShopperCount,1);
-  assert.equal(blocked.authCreated,0);assert.equal(blocked.reconciledShopperCount,0);
-  assert.deepEqual(blocked.identityReviewQueue[0].shopperIds,[a,b].sort());
+  assert.equal(blocked.identityReviewCount,0);assert.equal(blocked.identityHeldShopperCount,0);
+  assert.equal(blocked.automaticIncomingHrAliases,1);
+  assert.equal(blocked.authCreated,0);assert.equal(blocked.reconciledShopperCount,1);
+  assert.equal(db.get(`tenants/tenant-a/shopperIdentityCrosswalk/${b}`).shopperId,a);
   assert.equal(auth.created,1);assert.equal(db.get(profilePath(b)),undefined);
-  assert.deepEqual(db.get(profilePath(a)),original);
+  assert.equal(db.get(profilePath(a)).shopperId,original.shopperId);
   const replay=await provider.reconcileSnapshot(later,{sourceRevision:'hr-after'});
-  assert.equal(replay.identityReviewCount,1);assert.equal(replay.identityReviewWrites,0);
-  assert.equal(db.paths().filter(p=>p.includes('/shopperIdentityReviews/')).length,1);
+  assert.equal(replay.identityReviewCount,0);assert.equal(replay.identityReviewWrites,0);
+  assert.equal(replay.authCreated,0);assert.equal(auth.created,1);
+  assert.equal(db.get(profilePath(b)),undefined);
 });
 
 test('I3 P0 / the same established canonical can replay alone, while different new names/countries remain distinct',async()=>{
@@ -198,19 +202,28 @@ test('I3 P0 / the same established canonical can replay alone, while different n
   assert.ok(db.get(profilePath(b)));assert.ok(db.get(profilePath(c)));
 });
 
-test('I3 P0 / protected distinct decision allows later single HR newcomer without linking to prior person',async()=>{
+test('I3 P0 / prior exact human distinct decision prevents later automatic incoming HR crosswalk',async()=>{
   const {auth,db,provider}=make(),a='TYA_HN_ORIG01',b='TYA_HN_NEW002';
   await provider.reconcileSnapshot(snapshot(row(a,'HN','Elena García','9999 1001')),{sourceRevision:'hr-first'});
   const newRow=snapshot(row(b,'Honduras','ELENA GARCIA','+50499991001'));
-  const held=await provider.reconcileSnapshot(newRow,{sourceRevision:'hr-review'});
-  assert.equal(held.identityHeldShopperCount,1);
-  const ids=[a,b].sort(),review=held.identityReviewQueue[0];
+  const ids=[a,b].sort();
   const resolutionId='srr_'+hash(['tenant-a','project-a',...ids].join('\0')).slice(0,32);
   db.seed(`tenants/tenant-a/shopperIdentityReviewResolutions/${resolutionId}`,{
-    status:'resolved_distinct',shopperIds:ids,evidenceFingerprint:review.evidenceFingerprint,identityRemap:false
+    status:'resolved_distinct',shopperIds:ids,evidenceFingerprint:'independent-admin-evidence',
+    projectScope:'project-a',identityRemap:false
+  });
+  const guarded=await provider.reconcileSnapshot(newRow,{sourceRevision:'hr-review-1'});
+  assert.equal(guarded.automaticIncomingHrAliases,0);
+  assert.equal(guarded.identityHeldShopperCount,1,'a distinct decision with mismatched evidence cannot silently release a second Auth');
+  assert.equal(auth.created,1);
+  const exactEvidence=guarded.identityReviewQueue[0].evidenceFingerprint;
+  db.seed(`tenants/tenant-a/shopperIdentityReviewResolutions/${resolutionId}`,{
+    status:'resolved_distinct',shopperIds:ids,evidenceFingerprint:exactEvidence,
+    projectScope:'project-a',identityRemap:false
   });
   const resolved=await provider.reconcileSnapshot(newRow,{sourceRevision:'hr-review-2'});
   assert.equal(resolved.identityReviewCount,0);assert.equal(resolved.identityHeldShopperCount,0);
+  assert.equal(resolved.automaticIncomingHrAliases,0);
   assert.equal(resolved.authCreated,1);assert.equal(auth.created,2);
   assert.ok(db.get(profilePath(a)));assert.ok(db.get(profilePath(b)));
 });

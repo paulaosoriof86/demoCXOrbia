@@ -1051,6 +1051,137 @@ test('VRM-185 / admin identity adjudication keeps the unique password-proof prin
   assert.equal(second.ok,true);assert.equal(second.idempotentReplay,true);assert.equal(second.providerWrites,0);assert.equal((await auth.getUser(keeperUid)).disabled,false);assert.equal((await auth.getUser(canonicalUid)).disabled,true);
 });
 
+test('I3 P0 / corrected HR spelling must not silently change adjudicated keeper login or password on reconciliation',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  const canonical='TYA_GT_MURGA',alias='legacy_murga',uid='verified-keeper-uid';
+  const originalLogin='jennypher.murga',originalPassword='PreservedHumanSecret-1';
+  db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'super',authNamespace:'staff',projectIds:['project-a']});
+  auth.seed({uid,email:internalEmailTest('tenant-a',originalLogin),password:originalPassword,disabled:false,
+    customClaims:{tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:alias,projectIds:['project-a']}});
+  db.seed(`tenants/tenant-a/users/${uid}`,{active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:alias,projectIds:['project-a'],
+    providerUidFingerprint:providerUidFingerprint(uid),visibleLogin:originalLogin,credentialRuleVersion:CREDENTIAL_RULE_VERSION,
+    credentialPasswordProofVersion:CREDENTIAL_PASSWORD_PROOF_VERSION,credentialPasswordRuleVersion:CREDENTIAL_RULE_VERSION});
+  for(const [id,nombre] of [[canonical,'Jennypher Murga'],[alias,'Jennypher Murga']]){
+    db.seed(`tenants/tenant-a/shoppers/${id}`,{id,shopperId:id,tenantId:'tenant-a',projectIds:['project-a'],
+      sourceType:'hr_external',nombre,firstName:'Jennypher',lastName:'Murga',pais:'GT',country:'GT',
+      visibleLogin:originalLogin,credentialRuleVersion:CREDENTIAL_RULE_VERSION,
+      credentialPasswordProofVersion:CREDENTIAL_PASSWORD_PROOF_VERSION,credentialPasswordRuleVersion:CREDENTIAL_RULE_VERSION});
+  }
+  db.seed(`tenants/tenant-a/shopperIdentityCrosswalk/${alias}`,{tenantId:'tenant-a',shopperId:alias,projectIds:['project-a'],
+    providerUidFingerprint:providerUidFingerprint(uid),sourceStableKey:alias,identityMode:'stable_hr_shopper_id',sourceType:'hr_external'});
+  const command={version:'cxorbia-command-adapter-v1',commandType:'shopper.identity.adjudicate',tenantId:'tenant-a',projectId:'project-a',
+    periodId:'project-a-2026-10',entityId:canonical,idempotencyKey:'i3-p0-keeper-preservation-before-hr-spelling',
+    authorization:{providerEnforcementRequired:true,permission:'shopper.identity.adjudicate'},payload:{
+      canonicalShopperId:canonical,aliasShopperIds:[alias],humanConfirmed:true,keeperShopperId:alias,
+      keeperAccessConfirmed:true,reason:'exact_same_person_approved'}};
+  const merged=await p.execute('staff-token',command);
+  assert.equal(merged.ok,true,'MERGE_PRECONDITION='+JSON.stringify(merged));
+  const hr=snapshot({shopperId:canonical,shopperCode:canonical});
+  hr.visits[0].shopper='Jhennypher Murga';
+  const first=await p.reconcileSnapshot(hr,{sourceRevision:'hr-name-correction-new-revision'});
+  assert.equal(first.ok,true);
+  const keeper=await auth.getUser(uid);
+  assert.equal(keeper.disabled,false);
+  assert.equal(keeper.customClaims.shopperId,canonical);
+  assert.equal(keeper.email,internalEmailTest('tenant-a',originalLogin),'reconciliation changed keeper login');
+  assert.equal(keeper.password,originalPassword,'reconciliation silently reset keeper password');
+  assert.equal(db.get(`tenants/tenant-a/users/${uid}`).visibleLogin,originalLogin);
+  assert.equal(db.get(`tenants/tenant-a/shoppers/${canonical}`).nombre,'Jhennypher Murga');
+  assert.equal(db.get(`tenants/tenant-a/shoppers/${canonical}`).firstName,'Jhennypher','HR-managed first name did not follow corrected source');
+  const second=await p.reconcileSnapshot(hr,{sourceRevision:'hr-name-correction-new-revision'});
+  assert.equal(second.providerWrites,0,'same HR revision should be a true idempotent replay');
+  const authWritesBefore=auth.updated;
+  const sweep=await p.normalizeDurableCredentials({tenantId:'tenant-a'});
+  assert.equal(sweep.credentialRuleVersion,CREDENTIAL_RULE_VERSION);
+  assert.equal(auth.updated,authWritesBefore,'credential sweep silently reset a verified adjudicated keeper');
+  assert.equal((await auth.getUser(uid)).password,originalPassword);
+});
+
+test('I3 P0 / approved exact human joins an HR-only source ID to an existing keeper without new Auth',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore();
+  const canonical='profile-keeper-opaque',alias='profile-old-opaque',hrOnly='TYA_GT_1A2B3C4D',uid='keeper-verified',retiredUid='historical-verified';
+  const previousPassword='KeepTheExistingPassword-1',revision='live-current-external-revision';
+  const hr=snapshot({shopperId:hrOnly,shopperCode:hrOnly});hr.visits[0].shopper='Jhennypher Murga';
+  const p=createShopperCommandProvider({auth,db,policy,hrSnapshot:hr,hrRevision:revision});
+  db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'super',authNamespace:'staff',projectIds:['project-a']});
+  for(const [id,currentUid,login,password] of [[canonical,uid,'jennypher.murga',previousPassword],[alias,retiredUid,'jennifer.murga','HistoricalPassword-1']]){
+    auth.seed({uid:currentUid,email:internalEmailTest('tenant-a',login),password,disabled:false,
+      customClaims:{tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:id,projectIds:['project-a']}});
+    db.seed(`tenants/tenant-a/users/${currentUid}`,{active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:id,
+      projectIds:['project-a'],providerUidFingerprint:providerUidFingerprint(currentUid),visibleLogin:login,
+      credentialRuleVersion:CREDENTIAL_RULE_VERSION,credentialPasswordProofVersion:CREDENTIAL_PASSWORD_PROOF_VERSION,
+      credentialPasswordRuleVersion:CREDENTIAL_RULE_VERSION});
+    db.seed(`tenants/tenant-a/shoppers/${id}`,{id,shopperId:id,tenantId:'tenant-a',projectIds:['project-a'],
+      sourceType:'hr_external',nombre:id===canonical?'Jennypher Murga':'Jennifer Murga',
+      firstName:id===canonical?'Jennypher':'Jennifer',lastName:'Murga',pais:'GT',country:'GT',
+      visibleLogin:login,credentialRuleVersion:CREDENTIAL_RULE_VERSION,
+      credentialPasswordProofVersion:CREDENTIAL_PASSWORD_PROOF_VERSION,credentialPasswordRuleVersion:CREDENTIAL_RULE_VERSION});
+    db.seed(`tenants/tenant-a/shopperIdentityCrosswalk/${id}`,{tenantId:'tenant-a',shopperId:id,sourceStableKey:id,
+      sourceType:'hr_external',identityMode:'stable_hr_shopper_id',projectIds:['project-a'],
+      providerUidFingerprint:providerUidFingerprint(currentUid)});
+  }
+  db.seed('tenants/tenant-a/projects/project-a/visits/legacy-visit',{shopperId:alias,status:'submitted',history:'keep-original'});
+  db.seed('tenants/tenant-a/projects/project-a/visits/current-visit',{shopperId:hrOnly,status:'submitted',history:'keep-live'});
+  db.seed('tenants/tenant-a/projects/project-a/liquidations/legacy-payment',{shopperId:alias,value:145,status:'pending'});
+  const command={version:'cxorbia-command-adapter-v1',commandType:'shopper.identity.adjudicate',tenantId:'tenant-a',projectId:'project-a',
+    periodId:'project-a-2026-11',entityId:canonical,idempotencyKey:'i3-p0-approved-external-hr-link',
+    authorization:{providerEnforcementRequired:true,permission:'shopper.identity.adjudicate'},payload:{
+      canonicalShopperId:canonical,aliasShopperIds:[alias],externalHrShopperIds:[hrOnly],expectedHrRevision:revision,
+      approvedHrDisplayName:'Jhennypher Murga',humanConfirmed:true,keeperShopperId:canonical,keeperAccessConfirmed:true,
+      reason:'director_confirmed_same_human',preserveHistoricalVisitRows:true,
+      authoritativeVisitIds:['legacy-visit','current-visit']}};
+  const first=await p.execute('staff-token',command);
+  assert.equal(first.ok,true,'EXTERNAL_LINK_FIRST='+JSON.stringify(first));
+  assert.equal(first.providerAck,true);assert.equal(first.identityConsolidated,true);assert.equal(first.externalHrSourceLinks,1);
+  assert.equal(auth.created,0);assert.equal((await auth.getUser(uid)).password,previousPassword);
+  assert.equal((await auth.getUser(retiredUid)).disabled,true);
+  assert.equal(db.get(`tenants/tenant-a/shoppers/${canonical}`).nombre,'Jhennypher Murga');
+  assert.equal(db.get(`tenants/tenant-a/shoppers/${canonical}`).visibleLogin,'jennypher.murga');
+  assert.equal(db.get(`tenants/tenant-a/shoppers/${hrOnly}`),undefined,'an HR-only alias must not create a duplicate profile');
+  assert.equal(db.get(`tenants/tenant-a/shopperIdentityCrosswalk/${hrOnly}`).shopperId,canonical);
+  assert.equal(db.get('tenants/tenant-a/projects/project-a/visits/legacy-visit').shopperId,canonical);
+  assert.equal(db.get('tenants/tenant-a/projects/project-a/visits/current-visit').shopperId,canonical);
+  assert.equal(db.get('tenants/tenant-a/projects/project-a/liquidations/legacy-payment').value,145);
+  for(let i=0;i<2;i++){
+    const replay=await p.execute('staff-token',command);
+    assert.equal(replay.ok,true);assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);
+  }
+  const reconciled=await p.reconcileSnapshot(hr,{sourceRevision:revision});
+  assert.equal(reconciled.ok,true);
+  assert.equal(auth.created,0,'HR reconciliation must not create a second shopper');
+  assert.equal((await auth.getUser(uid)).password,previousPassword);
+  assert.equal((await auth.getUser(uid)).email,internalEmailTest('tenant-a','jennypher.murga'));
+});
+
+test('I3 P0 / HR-only alias refuses stale revision or a link to another human without any write',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),canonical='keeper-profile',alias='historical-profile',hrOnly='TYA_HN_1234ABCD';
+  const hr=snapshot({shopperId:hrOnly,shopperCode:hrOnly,revisionCountry:'HN'});hr.visits[0].shopper='Rocío Vilca';
+  const p=createShopperCommandProvider({auth,db,policy,hrSnapshot:hr,hrRevision:'hr-newest'});
+  db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'super',authNamespace:'staff',projectIds:['project-a']});
+  db.seed(`tenants/tenant-a/shoppers/${canonical}`,{id:canonical,shopperId:canonical,tenantId:'tenant-a',projectIds:['project-a'],pais:'HN',country:'HN'});
+  db.seed(`tenants/tenant-a/shoppers/${alias}`,{id:alias,shopperId:alias,tenantId:'tenant-a',projectIds:['project-a'],pais:'HN',country:'HN'});
+  db.seed(`tenants/tenant-a/shopperIdentityCrosswalk/${hrOnly}`,{tenantId:'tenant-a',shopperId:'different-person',sourceStableKey:hrOnly,sourceType:'hr_external'});
+  const command={version:'cxorbia-command-adapter-v1',commandType:'shopper.identity.adjudicate',tenantId:'tenant-a',projectId:'project-a',
+    periodId:'project-a-2026-11',entityId:canonical,idempotencyKey:'i3-p0-conflicting-hr-id',
+    authorization:{providerEnforcementRequired:true,permission:'shopper.identity.adjudicate'},payload:{
+      canonicalShopperId:canonical,aliasShopperIds:[alias],externalHrShopperIds:[hrOnly],expectedHrRevision:'hr-old',
+      approvedHrDisplayName:'Rocío Vilca',humanConfirmed:true,keeperShopperId:canonical,keeperAccessConfirmed:true}};
+  const stale=await p.execute('staff-token',command);
+  assert.equal(stale.ok,false);assert.equal(stale.providerWrites,0);
+  assert.equal(stale.code,'SHOPPER_IDENTITY_EXTERNAL_HR_EXACT_AUTHORITY_REQUIRED');
+  command.payload.expectedHrRevision='hr-newest';
+  command.payload.approvedHrDisplayName='Persona Equivocada';
+  const wrongName=await p.execute('staff-token',command);
+  assert.equal(wrongName.ok,false);assert.equal(wrongName.providerWrites,0);
+  assert.equal(wrongName.code,'SHOPPER_IDENTITY_EXTERNAL_HR_APPROVED_NAME_MISMATCH');
+  command.payload.approvedHrDisplayName='Rocío Vilca';
+  const conflict=await p.execute('staff-token',command);
+  assert.equal(conflict.ok,false);assert.equal(conflict.providerWrites,0);
+  assert.equal(conflict.code,'SHOPPER_IDENTITY_EXTERNAL_HR_CROSSWALK_CONFLICT');
+  assert.equal(db.get(`tenants/tenant-a/shopperIdentityCrosswalk/${hrOnly}`).shopperId,'different-person');
+  assert.equal(auth.created,0);
+});
+
 test('VRM-197 / multiple password-proof principals choose the unique canonical visible-login keeper',async()=>{
   const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),canonical='shopper_gt_exact_julissa',aliasA='legacy-login-exact',aliasB='shopper_gt_alias_history',aliasC='legacy-duplicate-visits';
   db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'super',authNamespace:'staff',projectIds:['project-a']});

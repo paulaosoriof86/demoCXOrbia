@@ -75,7 +75,7 @@
       actor:{actorId:str(input.actorId||''),role:str(input.actorRole),projectIds:uniq(input.projectIds)},
       expectedVersion:input.expectedVersion==null?'provider-current':input.expectedVersion,
       idempotencyKey:str(input.idempotencyKey),
-      payload:{canonicalShopperId,aliasShopperIds,humanConfirmed:true,keeperShopperId:str(input.keeperShopperId),keeperAccessConfirmed:input.keeperAccessConfirmed===true,reason:str(input.reason||'admin_confirmed_same_human'),periodIndependent:true,fuzzyMatching:false,preserveHistoricalVisitRows:input.preserveHistoricalVisitRows===true,authoritativeVisitIds:uniq(input.authoritativeVisitIds)},
+      payload:{canonicalShopperId,aliasShopperIds,humanConfirmed:true,keeperShopperId:str(input.keeperShopperId),keeperAccessConfirmed:input.keeperAccessConfirmed===true,reason:str(input.reason||'admin_confirmed_same_human'),periodIndependent:true,fuzzyMatching:false,preserveHistoricalVisitRows:input.preserveHistoricalVisitRows===true,authoritativeVisitIds:uniq(input.authoritativeVisitIds),...(uniq(input.externalHrShopperIds).length?{externalHrShopperIds:uniq(input.externalHrShopperIds),expectedHrRevision:str(input.expectedHrRevision),approvedHrDisplayName:str(input.approvedHrDisplayName)}:{})},
       source:'admin-shopper-identity-adjudication',
       authorization:{providerEnforcementRequired:true,permission:'shopper.identity.adjudicate',humanAdjudicationRequired:true}
     }};
