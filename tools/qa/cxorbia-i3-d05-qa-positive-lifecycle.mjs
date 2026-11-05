@@ -128,13 +128,19 @@ async function run() {
   const project = projectSnap.data() || {};
   const col = db.collection(`tenants/${TENANT}/resources`);
   const candidateSnap = await col.where('resourceType', '==', 'certification_bank').get();
-  const realBanks = candidateSnap.docs.filter(d => str(d.data().projectId) === PROJECT_ID);
+  // Snapshot all real banks, independently of month or count; previous isolated
+  // QA tombstones are not part of the operational bank baseline.
+  const realBanks = candidateSnap.docs.filter(d => str(d.data().projectId) === PROJECT_ID &&
+    d.data().qaOnly !== true);
   const realHashes = Object.fromEntries(realBanks.map(d => [d.id, sha(d.data())]));
   const pending = realBanks.filter(d => str(d.data().bank?.estado) === 'pending_review'
-    && str(d.data().periodId).includes('2026-10') && str(d.data().status) === 'active');
-  if (realBanks.length !== 4 || pending.length !== 1)
-    fail('SOURCE_FAILURE:D05_QA_REAL_BANK_BASELINE_CHANGED');
-  const periodId = str(pending[0].data().periodId);
+    && str(d.data().status) === 'active');
+  const active = realBanks.filter(d => str(d.data().status) === 'active' &&
+    /^((?:[a-zA-Z0-9_-]+-)?\d{4}-(?:0[1-9]|1[0-2]))$/.test(str(d.data().periodId)));
+  const periodSource = [...(pending.length ? pending : active)].sort((a,b) =>
+    str(b.data().periodId).localeCompare(str(a.data().periodId)) || a.id.localeCompare(b.id))[0];
+  if (!periodSource) fail('SOURCE_FAILURE:D05_QA_NO_SCOPED_ACTIVE_BANK');
+  const periodId = str(periodSource.data().periodId);
   if (!periodId || periodId.includes('/')) fail('SOURCE_FAILURE:D05_PERIOD_ID_INVALID');
   const periodIds = /^\d{4}-(0[1-9]|1[0-2])$/.test(periodId)
     ? [periodId, PROJECT_ID + '-' + periodId]
