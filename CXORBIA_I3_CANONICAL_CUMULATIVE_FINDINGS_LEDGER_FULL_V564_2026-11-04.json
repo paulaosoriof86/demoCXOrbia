@@ -18,7 +18,7 @@
     "sourceTree": "e5ceeec5b810c8ad4c8c703682032dc0517ad0d4",
     "predecessorSha": "6087774752e140361a4cd0b35aadf9fe25771611",
     "production": false,
-    "state": "HOLD_I3_S1_AUTO_COMPATIBLE_IDENTITY_DEV_MATERIALIZATION_REQUIRED",
+    "state": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
     "november2026AutomaticPeriodSourceProof": {
       "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
       "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -21562,9 +21562,10 @@
         "bridgeBlob": "5b7aa2af031239aac9c19895619b0969d4bc16b2",
         "sourceTestPass": 46,
         "description": "Unchanged HR revision replayed committed hr-auto-v1 receipt without executing fixed identity provider; epoch v2 forces one safe new scoped provider receipt before replay.",
-        "dev": "PENDING",
+        "dev": "PASS_EXACT_RUN2168",
         "realAck": "PENDING",
-        "production": false
+        "production": false,
+        "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_S1_HR_AUTO_POLICY_EPOCH_EXACT_DEV_RUN2168_20261104.json"
       }
     }
   },
@@ -22667,7 +22668,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "I3 HOLD / VRM-305 G05/A03: RUN2164 verified no Damaris association (NOVIEMBRE!3+!22) because committed hr-auto-v1 receipt for unchanged HR revision bypassed revised provider. Source d9c49359 updates scoped reconciliation policy epoch to hr-auto-v2, G05 source tests 46/46 PASS. NEXT exact existing vrm154-156 DEV materialization, then same-artifact Admin/Shopper role E2E incl Damaris one Auth keeper, Julissa PDF open/download, Stiven historical 10 Admin vs Shopper, HR independent revision, finanzas, GT/HN and G03. Preserve 5/21 MATCH; previous fusion readback 32/83 groups, 51 pending recensus (not 51 confirmed failures). G03 historical exact DEV Hosting version 231186c337bcd0ba, current release before this patch from RUN2162; no old PASS reopened. Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH.",
+  "exactNextAction": "I3 HOLD / RUN2168 exact DEV PASS from d9c49359: 1 build, Cloud Run 00346-5lh, Hosting 9f203252d74f2dec, HR same independent cdc40258e980 revision 18 periods/792 visits, 114/114 identity source tests PASS and 46/46 G05 local; Damaris NOVIEMBRE!3+!22 has not yet received real authenticated provider crosswalk ACK. NEXT exact existing phasea-representative-same-artifact-live-reproof (no rebuild): Admin/Shopper GT/HN, Damaris keeper unique, Julissa inherited PDF real viewer/download, Stiven Admin 10 vs Shopper 0, historical/HR/finanzas, G03 parity. Freeze 5/21 MATCH, historic fusion readback 32/83 and 51 recensus pending. G03 historical Hosting 231186c337bcd0ba preserved. Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH.",
   "supersedesGitBlob": "086542151de0b223afbd258f1f65be6ca886684d",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -26394,7 +26395,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-11-04T08:13:31Z",
-  "nextExactAction": "I3 HOLD / VRM-305 G05/A03: RUN2164 verified no Damaris association (NOVIEMBRE!3+!22) because committed hr-auto-v1 receipt for unchanged HR revision bypassed revised provider. Source d9c49359 updates scoped reconciliation policy epoch to hr-auto-v2, G05 source tests 46/46 PASS. NEXT exact existing vrm154-156 DEV materialization, then same-artifact Admin/Shopper role E2E incl Damaris one Auth keeper, Julissa PDF open/download, Stiven historical 10 Admin vs Shopper, HR independent revision, finanzas, GT/HN and G03. Preserve 5/21 MATCH; previous fusion readback 32/83 groups, 51 pending recensus (not 51 confirmed failures). G03 historical exact DEV Hosting version 231186c337bcd0ba, current release before this patch from RUN2162; no old PASS reopened. Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH.",
+  "nextExactAction": "I3 HOLD / RUN2168 exact DEV PASS from d9c49359: 1 build, Cloud Run 00346-5lh, Hosting 9f203252d74f2dec, HR same independent cdc40258e980 revision 18 periods/792 visits, 114/114 identity source tests PASS and 46/46 G05 local; Damaris NOVIEMBRE!3+!22 has not yet received real authenticated provider crosswalk ACK. NEXT exact existing phasea-representative-same-artifact-live-reproof (no rebuild): Admin/Shopper GT/HN, Damaris keeper unique, Julissa inherited PDF real viewer/download, Stiven Admin 10 vs Shopper 0, historical/HR/finanzas, G03 parity. Freeze 5/21 MATCH, historic fusion readback 32/83 and 51 recensus pending. G03 historical Hosting 231186c337bcd0ba preserved. Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -35116,19 +35117,19 @@
   "latestDevMaterialization": {
     "state": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
     "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
-    "runId": 41943791338,
-    "runNumber": 2162,
-    "jobId": 126971078853,
-    "artifactId": 13378431234,
-    "sourceSha": "6087774752e140361a4cd0b35aadf9fe25771611",
-    "sourceTree": "d75a45b42f574d5d0efd4ad0aef5b0ae8f1dfff1",
-    "artifactDigest": "sha256:e07cbef181632528de57c00c11f25e1d0cc80219a7c5a2e4bc822e47f29e13f8",
+    "runId": 41946997443,
+    "runNumber": 2168,
+    "jobId": 126981774226,
+    "artifactId": 13379475942,
+    "sourceSha": "d9c4935987ec28a74f06df0319e97cbf5e232070",
+    "sourceTree": "e5ceeec5b810c8ad4c8c703682032dc0517ad0d4",
+    "artifactDigest": "sha256:8dcaa1a45c14f8ac83b4729d4ad427f560d8fc201d0eb7e69a83776a67b23fe7",
     "artifactDigestType": "GITHUB_ACTIONS_ZIP_SHA256",
-    "artifactZipSha256": "e07cbef181632528de57c00c11f25e1d0cc80219a7c5a2e4bc822e47f29e13f8",
-    "runtimeRevision": "cxorbia-live-hr-dev-00345-dw9",
-    "runtimeDigest": "sha256:16e3f2c75653230d543e82c37aeac70b98c9dee6d71eb394e562f6cd8389ad25",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/03c4551b90a28e27",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1793839790108000",
+    "artifactZipSha256": "8dcaa1a45c14f8ac83b4729d4ad427f560d8fc201d0eb7e69a83776a67b23fe7",
+    "runtimeRevision": "cxorbia-live-hr-dev-00346-5lh",
+    "runtimeDigest": "sha256:bcfcffa3d31d7adef7228fa3d76914a15e8fbe6d03083477d2251dd4d24dbc04",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/9f203252d74f2dec",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1793841406912000",
     "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
     "hrRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
     "builds": 1,
@@ -35140,14 +35141,14 @@
     "production": false,
     "sourceIdentityVerified": true,
     "runtimeSourceVerified": true,
-    "controlHeadAtDeploy": "fc6ff8fab6a1265378ef2d1fe87fda547b238a46",
-    "sourceArtifactDigest": "sha256:e07cbef181632528de57c00c11f25e1d0cc80219a7c5a2e4bc822e47f29e13f8",
-    "archiveZipDigest": "sha256:e07cbef181632528de57c00c11f25e1d0cc80219a7c5a2e4bc822e47f29e13f8",
-    "githubArtifactZipSha256": "e07cbef181632528de57c00c11f25e1d0cc80219a7c5a2e4bc822e47f29e13f8",
+    "controlHeadAtDeploy": "bfa4033b8a9ed6f088078179fc3c531f63162599",
+    "sourceArtifactDigest": "sha256:8dcaa1a45c14f8ac83b4729d4ad427f560d8fc201d0eb7e69a83776a67b23fe7",
+    "archiveZipDigest": "sha256:8dcaa1a45c14f8ac83b4729d4ad427f560d8fc201d0eb7e69a83776a67b23fe7",
+    "githubArtifactZipSha256": "8dcaa1a45c14f8ac83b4729d4ad427f560d8fc201d0eb7e69a83776a67b23fe7",
     "fullTaskClosed": false,
     "humanAcceptance": "PENDING",
-    "firestoreRulesetEvidence": "UNCHANGED_FROM_SEALED_RUN2157_NO_RULES_DEPLOY_RUN2162",
-    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_S1_MASKED_DURABLE_REVIEW_EXACT_DEV_RUN2162_20261104.json"
+    "firestoreRulesetEvidence": "UNCHANGED_FROM_PRIOR_DEV_RULESET_NO_RULES_DEPLOY_RUN2168",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_S1_HR_AUTO_POLICY_EPOCH_EXACT_DEV_RUN2168_20261104.json"
   },
   "previousLedgerBeforeVrm280": {
     "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V489_2026-10-22.json",
@@ -38506,9 +38507,10 @@
     "sourceSha": "d9c4935987ec28a74f06df0319e97cbf5e232070",
     "sourceTree": "e5ceeec5b810c8ad4c8c703682032dc0517ad0d4",
     "sourceProof": 46,
-    "dev": "PENDING",
+    "dev": "PASS_EXACT_RUN2168",
     "providerAck": "PENDING",
     "readbackReceipt": "docs/checkpoints/CXORBIA_I3_S1_HR_AUTO_RECEIPT_POLICY_EPOCH_SOURCE_20261104.json",
-    "production": false
+    "production": false,
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_S1_HR_AUTO_POLICY_EPOCH_EXACT_DEV_RUN2168_20261104.json"
   }
 }
