@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "cxorbia.i3.safe-omitted-certification-trigger.v1",
+  "iteration": "I3",
+  "date": "2026-11-05",
+  "scope": "read-only source and DEV-admin negative E2E reproof",
+  "controlMarker": "[i3-recert-safe-09eed-20261105]",
+  "productSourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+  "productSourceTreeSha": "e6f941c511272dfb0d258e935d7c1526c83b31cb",
+  "identityBatchTriggerCommitSha": "1967033b05e0f6cfc56f4f19ee29eccfffa6e642",
+  "onlyActivatedJobs": [
+    "admin-project-period-readonly",
+    "d05-negative-publish-no-mutation",
+    "admin-ui-rejected-publish",
+    "d06-attempt-audience-idempotency-source"
+  ],
+  "forbidden": ["production deployment", "DEV deploy", "HR write", "identity write", "credential reset", "business-data mutation"],
+  "gate20": "HOLD until readback and functional closure",
+  "gate21": "HOLD until same-artifact cross-role E2E",
+  "production": "DO_NOT_TOUCH"
+}
