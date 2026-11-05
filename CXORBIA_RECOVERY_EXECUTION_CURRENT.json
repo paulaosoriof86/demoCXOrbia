@@ -1573,7 +1573,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 41943791338,
     "runNumber": 2162,
     "sourceSha": "6087774752e140361a4cd0b35aadf9fe25771611",
@@ -7561,6 +7561,7 @@
     "roleE2E": "PENDING",
     "receiptPath": "docs/checkpoints/CXORBIA_I3_S1_HR_AUTO_RECEIPT_POLICY_EPOCH_SOURCE_20261104.json",
     "controlStatus": "HOLD_I3_S1_AUTO_COMPATIBLE_IDENTITY_DEV_MATERIALIZATION_REQUIRED",
-    "production": "DO_NOT_TOUCH"
+    "production": "DO_NOT_TOUCH",
+    "previousArtifactServedUntilDev": true
   }
 }

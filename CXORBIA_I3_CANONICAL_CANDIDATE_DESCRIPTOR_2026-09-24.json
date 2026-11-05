@@ -8209,7 +8209,7 @@
     "representativeSameArtifact": "PASS_RUN1427",
     "exactB2Ack": "PENDING"
   },
-  "currentMaterializationIsPredecessorOnly": false,
+  "currentMaterializationIsPredecessorOnly": true,
   "i3B2Run1425SourceProof": {
     "runId": 37887175242,
     "runNumber": 1425,
@@ -12869,7 +12869,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 41943791338,
     "runNumber": 2162,
     "sourceSha": "6087774752e140361a4cd0b35aadf9fe25771611",
