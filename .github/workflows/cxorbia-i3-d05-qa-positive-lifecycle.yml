@@ -78,7 +78,11 @@ jobs:
             test "$(git rev-parse "$CXORBIA_PRODUCT_SOURCE_SHA^{tree}")" = "$(jq -r .sourceTree "$REQUEST")"
             test "$(git rev-parse HEAD:tools/qa/cxorbia-i3-d05-qa-ui-review-shopper-read.mjs)" = "$(jq -r .qaScriptBlob "$REQUEST")"
           fi
-          echo "CXORBIA_D05_CERT_SOURCE_BLOB=$(git rev-parse "$CXORBIA_PRODUCT_SOURCE_SHA:app/modules/cert.js")" >> "$GITHUB_ENV"
+          # GITHUB_ENV becomes visible only in *subsequent* steps; the source
+          # variable for this same shell step is SOURCE, never the exported var.
+          CERT_BLOB="$(git rev-parse "$SOURCE:app/modules/cert.js")"
+          [[ "$CERT_BLOB" =~ ^[a-f0-9]{40}$ ]]
+          echo "CXORBIA_D05_CERT_SOURCE_BLOB=$CERT_BLOB" >> "$GITHUB_ENV"
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
