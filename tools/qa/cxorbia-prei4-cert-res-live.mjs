@@ -135,7 +135,7 @@ try{
   const ai=await adminSession.page.evaluate(async ({fixturePeriod})=>{
     await window.CX?.backendAI?.load?.();
     if(!window.CX?.ai?.ready?.())throw new Error('AI_PROVIDER_NOT_READY_IN_BROWSER');
-    const sourceText='Protocolo de prueba técnica CXOrbia. El shopper debe conservar anonimato. Debe registrar evidencia exactamente según el instructivo. Debe completar el cuestionario dentro del plazo definido y no inventar información.';
+    const sourceText='[Página 1]\nProtocolo técnico de prueba CXOrbia. El shopper debe conservar anonimato durante toda la visita. Debe registrar la fecha y la hora reales de su visita en el formulario. Debe documentar la evidencia observada sin inventar información.\n[Página 2]\nDebe completar el cuestionario dentro del plazo definido por el proyecto. Debe revisar que todas las respuestas correspondan a lo observado antes del envío. Si una visita no se realiza, debe avisar al coordinador por el canal oficial.';
     // The protected D03 runtime requires provenance for every AI source.
     // This is a synthetic manual-text QA fixture, not an imported HR file or
     // a user-specific certification exception. Its exact content is hashed.
