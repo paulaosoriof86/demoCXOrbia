@@ -6,6 +6,7 @@ on:
       - .github/workflows/cxorbia-i3-approved-139-preflight-readonly.yml
       - firebase/auth-dev-tools/cxorbia-i3-approved-139-preflight-readonly.mjs
       - firebase/auth-dev-tools/cxorbia-i3-approved-139-batch-dev-once.mjs
+      - firebase/auth-dev-tools/cxorbia-i3-approved-14-preflight-readonly.mjs
       - firebase/auth-dev-tools/cxorbia-i3-approved-139-pair-hashes.json
 permissions:
   contents: read
@@ -13,6 +14,60 @@ concurrency:
   group: cxorbia-i3-approved-139-readonly-preflight
   cancel-in-progress: false
 jobs:
+  approved-14-human-confirmed-readonly-preflight:
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-APPROVED-14-READONLY-20261105' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      GCLOUD_PROJECT: cxorbia-backend-dev
+      GOOGLE_CLOUD_PROJECT: cxorbia-backend-dev
+      CX_I3_APPROVED14_PREFLIGHT: PAULA_APPROVED_20261105_14_REMAINING_READONLY_PREFLIGHT
+      CX_I3_APPROVED14_PREFLIGHT_OUT: .tmp/i3-approved14-preflight
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Assert exact immutable product authority and DEV-only read scope
+        run: |
+          set -Eeuo pipefail
+          test "$GITHUB_REF_NAME" = 'recovery/cxorbia-phase-a-20260831'
+          test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
+          test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
+          SOURCE="$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          TREE="$(jq -r '.productTreeAuthority' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          test "$SOURCE" = '09eed4f012f9ad04e49d53569aabd86bd4c832a9'
+          test "$(git rev-parse "$SOURCE^{tree}")" = "$TREE"
+          git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules
+          node --check firebase/auth-dev-tools/cxorbia-i3-approved-14-preflight-readonly.mjs
+      - name: Source tests for safe identity adjudication and HR configuration
+        run: |
+          set -Eeuo pipefail
+          node backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
+          node backend/runtime/hr-live-service/test/cxorbia-i3-project-period-contract.test.mjs
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Inspect all approved 14 remaining groups without changing accounts or data
+        run: |
+          set -Eeuo pipefail
+          npm install --prefix firebase/auth-dev-tools --no-save --no-package-lock --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
+          node firebase/auth-dev-tools/cxorbia-i3-approved-14-preflight-readonly.mjs
+          jq -e '.decision=="PASS_READONLY_14_GROUP_PREFLIGHT_WITH_FOCAL_HOLDS" and .production==false and
+            .approvedPairs==139 and .approvedGroupCount==83 and .exactPairsVerified==139 and
+            .hrNamesVerified==97 and (.groups|length)==14 and .eligibleGroups+.heldGroups==14 and
+            .authWrites==0 and .firestoreWrites==0 and .hrWrites==0 and .identityWrites==0 and
+            .deployments==0 and .credentialResets==0' "$CX_I3_APPROVED14_PREFLIGHT_OUT/result.json" >/dev/null
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-approved-14-readonly-${{ github.run_id }}
+          path: .tmp/i3-approved14-preflight/result.json
+          if-no-files-found: warn
+          retention-days: 14
+
   identity-cohort-approved-readonly:
     if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-APPROVED-139-PREFLIGHT-READONLY' }}
     runs-on: ubuntu-24.04

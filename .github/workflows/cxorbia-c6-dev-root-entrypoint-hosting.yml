@@ -23,7 +23,7 @@ env:
   FIREBASE_HOSTING_TARGET: cxorbia-dev
   DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
   OUT_DIR: .tmp/i3-11c-r3c-hosting-materialization
-  DEPLOY_TREE: ${{ runner.temp }}/cxorbia-i3-11c-r3c-source
+  DEPLOY_TREE: ${{ github.workspace }}/../cxorbia-i3-11c-r3c-source
   CLAIM_CONTEXT: cxorbia/i3-11c-r3c-hosting/claim
 
 jobs:

@@ -23,7 +23,7 @@ env:
   OUT_DIR: .tmp/i3-9-10-11-visible-login-close
   GCP_PROJECT_ID: cxorbia-backend-dev
   FIREBASE_HOSTING_TARGET: cxorbia-dev
-  DEPLOY_TREE: ${{ runner.temp }}/cxorbia-i3-9-10-11-product-source
+  DEPLOY_TREE: ${{ github.workspace }}/../cxorbia-i3-9-10-11-product-source
 
 jobs:
   close-i3:
