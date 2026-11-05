@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM306_DEV_MATERIALIZED_MANUAL_FUSION_READBACK_AND_G03",
+  "status": "HOLD_VRM307_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196",
-  "productTreeAuthority": "65d0beeb9282395867128691747b171cdbf3e3fe",
-  "predecessorProductSourceSha": "5c8dade1de10134e9c0aa4d8bdf953c979a2c1cf",
+  "productSourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
+  "productTreeAuthority": "ed9362c9d432028978c2d3b748eb7559c2e8f1b1",
+  "predecessorProductSourceSha": "f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V564_2026-11-04.json",
-  "findingsLedgerExpectedGitBlob": "5fe1ccfedd6921835308f4d79a22fe60d9ec6b4c",
+  "findingsLedgerExpectedGitBlob": "ad0926f7b4f17818072571ba48696d138de03dae",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261105-V245.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "P0_MANUAL_UI_ACK_JHENNYPHER_ROCIO_INDEPENDENT_READBACK_PENDING__G03_HR_RECONCILIATION_SCOPE_BUSY__16_MODULES_PENDING",
+  "activeBlocker": "P0_VRM307_PARTIAL_CHAIN_LINKS_SOURCE_PROVEN_DEV_PENDING__G03_HR_FINANZAS_LOCK__16_MODULES_PENDING",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -115,7 +115,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-307",
+  "nextFindingId": "VRM-308",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -128,7 +128,7 @@
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
   "historicalExactNextActionPreS1": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "I3 V10 HOLD: RUN42124979529 (#2199) PASS DEV exact source f5f653d tree 65d0bee, CloudRun 00349-fsk Hosting cf8987585aafe19c, HR estable 63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba sin HR writes ni produccion. 83/83 cohorte previa PASS, 16/16 nombres HR PASS, dos fusiones adicionales Jhennypher Murga GT y Rocio Vilca HN confirmadas por Paula con 2 capturas de ACK verde del proveedor pero aun sin readback durable independiente. Accion EXACTA: ejecutar SOLO READONLY post-fusion de perfiles, UID, sesiones, historico, visitas, liquidaciones, certificaciones y receipts; NO reejecutar writer. G03 HR finanzas: diagnosticar HR_RECONCILIATION_SCOPE_BUSY y recibo previo sin forzar lock. Certificar 21 modulos con pruebas ejecutadas, 5/21 MATCH, 16 pendientes, no contar jobs SKIPPED. Gate20/21 HOLD, I4 NO autorizada, produccion intacta.",
+  "exactNextAction": "I3 V11 HOLD; 83/83 original approved cohort remains preserved. VRM-307 SOURCE 3a299715 tree ed9362c9 verified by 66/66 synthetic owner tests. RUN42128661278 read-only shows Jhennypher Murga GT and Rocío Vilca HN manual UI ACKs are partial across alias chains. The same DEV currently serves preceding source f5f653d0 (RUN42124979529); materialize ONE exact new source to DEV through existing certified workflow, then verify runtime/hosting/HR readback, finish exact approved keeper/UID/visits/liquidation/certification alias groups through protected idempotent provider only after fresh preflight. G03 HR finanzas same-revision scope lock HOLD. Recertify 21 modules with executed owner E2E (5/21 MATCH, 16 pending; SKIPPED is not PASS). No HR reimport, no new candidate, no production; Gate20/21 HOLD, I4 not authorized.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2979,7 +2979,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "a0cc3c4bfefa449b79414cdf8c4c759172267acd",
+  "moduleTruthExpectedGitBlob": "dd6e5206b7ddb000b5257d671783248be928da81",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12808,7 +12808,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 42124979529,
     "runNumber": 2199,
     "sourceSha": "f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196",
@@ -17383,5 +17383,20 @@
     "fullPhaseA": "HOLD",
     "ownerUiAcknowledgedFusions": 2,
     "independentReadback": "PENDING"
+  },
+  "vrm307IdentityChainSourceOnly20261105": {
+    "sourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
+    "sourceTree": "ed9362c9d432028978c2d3b748eb7559c2e8f1b1",
+    "predecessorSha": "f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196",
+    "independentReadbackRunId": 42128661278,
+    "priorServingDevRunId": 42124979529,
+    "sourceTests": {
+      "pass": 66,
+      "fail": 0
+    },
+    "materialization": "PENDING",
+    "providerGroupWrite": "NOT_ATTEMPTED",
+    "partialManualUiAcksPreserved": true,
+    "production": false
   }
 }

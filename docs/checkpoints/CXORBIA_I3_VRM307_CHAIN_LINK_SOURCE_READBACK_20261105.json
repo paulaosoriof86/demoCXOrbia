@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm307.canonical-source-readback.v1",
+  "date": "2026-11-05",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "decision": "SOURCE_66_OF_66_PASS_DEV_MATERIALIZATION_REQUIRED",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "exactProductSource": {
+    "sha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
+    "tree": "ed9362c9d432028978c2d3b748eb7559c2e8f1b1",
+    "predecessorSha": "f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196"
+  },
+  "ownerFiles": [
+    "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs"
+  ],
+  "protectedReadback": {
+    "runId": 42128661278,
+    "conclusion": "success",
+    "artifactId": 13461668242,
+    "scope": "EXACT_TWO_HUMAN_GROUPS_READONLY",
+    "providerWrites": 0,
+    "jhennypherProfiles": 11,
+    "rocioProfiles": 5,
+    "activeAuthMembersEach": 2,
+    "manualGuiAck": "PARTIAL_ACK_CONFIRMED_NOT_COMPLETE_GROUP"
+  },
+  "rootCause": "FUNCTIONAL_DEFECT: stale-link cleanup previously required each prior link to explicitly name final canonical ID, which is false for prior adjudications targeting intermediate IDs; Admin UI ACK applies only to selected rows.",
+  "sourceTests": {
+    "pass": 66,
+    "fail": 0,
+    "scope": "LOCAL_SYNTHETIC_OWNER_SOURCE_ONLY_NOT_DEV_PROVIDER_ACK"
+  },
+  "currentDevTruth": {
+    "status": "PREDECESSOR_SERVING_PENDING_SOURCE",
+    "previousSourceSha": "f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196",
+    "runId": 42124979529,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/cf8987585aafe19c",
+    "runtimeRevision": "cxorbia-live-hr-dev-00349-fsk"
+  },
+  "certificationTruth": {
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261105-V245.json",
+    "count": 21,
+    "matches": 5,
+    "pending": 16,
+    "fullDomainPromotions": 0
+  },
+  "nextExactAction": "I3 V11 HOLD; 83/83 original approved cohort remains preserved. VRM-307 SOURCE 3a299715 tree ed9362c9 verified by 66/66 synthetic owner tests. RUN42128661278 read-only shows Jhennypher Murga GT and Rocío Vilca HN manual UI ACKs are partial across alias chains. The same DEV currently serves preceding source f5f653d0 (RUN42124979529); materialize ONE exact new source to DEV through existing certified workflow, then verify runtime/hosting/HR readback, finish exact approved keeper/UID/visits/liquidation/certification alias groups through protected idempotent provider only after fresh preflight. G03 HR finanzas same-revision scope lock HOLD. Recertify 21 modules with executed owner E2E (5/21 MATCH, 16 pending; SKIPPED is not PASS). No HR reimport, no new candidate, no production; Gate20/21 HOLD, I4 not authorized.",
+  "production": "DO_NOT_TOUCH",
+  "i3": "HOLD",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "writerExecutedHere": false,
+  "hrWritesHere": 0,
+  "productionWritesHere": 0
+}

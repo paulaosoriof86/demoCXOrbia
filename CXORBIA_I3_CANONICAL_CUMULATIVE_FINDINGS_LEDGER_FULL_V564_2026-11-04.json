@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196",
-    "sourceTree": "65d0beeb9282395867128691747b171cdbf3e3fe",
-    "predecessorSha": "5c8dade1de10134e9c0aa4d8bdf953c979a2c1cf",
+    "sourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
+    "sourceTree": "ed9362c9d432028978c2d3b748eb7559c2e8f1b1",
+    "predecessorSha": "f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196",
     "production": false,
-    "state": "HOLD_VRM306_DEV_MATERIALIZED_MANUAL_IDENTITY_READBACK_PENDING",
+    "state": "HOLD_VRM307_DEV_MATERIALIZATION_REQUIRED",
     "november2026AutomaticPeriodSourceProof": {
       "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
       "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -21654,6 +21654,55 @@
         "credentialAndHistoryReadback": "PENDING",
         "production": false
       }
+    },
+    "VRM-307": {
+      "id": "VRM-307",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0",
+      "taskIds": [
+        "A01",
+        "A02",
+        "B01",
+        "G03"
+      ],
+      "relatedFindings": [
+        "VRM-306"
+      ],
+      "title": "Selected-row Admin fusion ACK leaves previously adjudicated intermediate aliases active in the same human identity graph",
+      "firstObservedAt": "2026-11-05",
+      "observed": "Provider ACK green confirmed selected profiles, but independent read-only topology RUN42128661278 demonstrated manual partial chains: Jhennypher Murga GT 11 profiles, two active Auth accounts, 3 acknowledged partial merges, 6 links terminating at an intermediate alias; Rocío Vilca HN 5 profiles, two active Auth accounts, 3 acknowledged partial merges with an intermediate rather than approved keeper. No deletion was observed.",
+      "expected": "Within an owner-approved exact human identity cohort, all prior approved chain links are superseded once and all aliases, credentials, historical visits, liquidations, certifications and provider crosswalks converge idempotently to a single authoritative keeper; unrelated identities remain separate.",
+      "rootCause": "FUNCTIONAL_DEFECT: stale-link cleanup previously required each prior link to explicitly name final canonical ID, which is false for prior adjudications targeting intermediate IDs; Admin UI ACK applies only to selected rows.",
+      "ownerFiles": [
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+        "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs"
+      ],
+      "sourceFixCommit": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
+      "sourceFixTree": "ed9362c9d432028978c2d3b748eb7559c2e8f1b1",
+      "predecessorSourceSha": "f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196",
+      "sourceTests": {
+        "pass": 66,
+        "fail": 0,
+        "scope": "LOCAL_SYNTHETIC_OWNER_SOURCE_ONLY_NOT_DEV_PROVIDER_ACK"
+      },
+      "independentProtectedReadback": {
+        "runId": 42128661278,
+        "conclusion": "success",
+        "artifactId": 13461668242,
+        "scope": "EXACT_TWO_HUMAN_GROUPS_READONLY",
+        "providerWrites": 0,
+        "jhennypherProfiles": 11,
+        "rocioProfiles": 5,
+        "activeAuthMembersEach": 2,
+        "manualGuiAck": "PARTIAL_ACK_CONFIRMED_NOT_COMPLETE_GROUP"
+      },
+      "state": "SOURCE_FIXED_66_OF_66_PENDING_EXACT_DEV_AND_PROTECTED_GROUP_READBACK",
+      "devMaterialization": "PENDING_NEW_SOURCE",
+      "protectedWrites": 0,
+      "hrWrites": 0,
+      "modulePromotions": 0,
+      "production": false,
+      "reviewRequired": "NEW_SOURCE_DEV_ACK + RELOADED_IDENTITY_GRAPH + CROSS_SURFACE_HISTORY + G03 HR FINANZAS + 21_MODULE_OWNER_E2E"
     }
   },
   "latestEvidenceOverrides": {
@@ -22399,11 +22448,13 @@
       "VRM-302",
       "VRM-303",
       "VRM-304",
-      "VRM-305"
+      "VRM-305",
+      "VRM-306",
+      "VRM-307"
     ],
-    "findingCount": 305,
-    "expectedCurrentRange": "VRM-001..VRM-305",
-    "nextFindingId": "VRM-307",
+    "findingCount": 307,
+    "expectedCurrentRange": "VRM-001..VRM-307",
+    "nextFindingId": "VRM-308",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_I3_REMAINING_E2E_HUMAN_GATE_AFTER_VRM153_DEV_DURABLE_PASS",
@@ -22421,8 +22472,8 @@
     "userReportedRequirementsFrozenAt": "2026-09-30T20:18:00-06:00",
     "userReviewComplete": true,
     "userReviewEvidence": "19 screenshots plus complete Shopper/Admin observations supplied 2026-10-02",
-    "currentProductSourceSha": "f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196",
-    "currentProductSourceTree": "65d0beeb9282395867128691747b171cdbf3e3fe",
+    "currentProductSourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
+    "currentProductSourceTree": "ed9362c9d432028978c2d3b748eb7559c2e8f1b1",
     "currentMaterialization": {
       "state": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
       "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
@@ -22755,7 +22806,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "I3 V10 HOLD: RUN42124979529 (#2199) PASS DEV exact source f5f653d tree 65d0bee, CloudRun 00349-fsk Hosting cf8987585aafe19c, HR estable 63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba sin HR writes ni produccion. 83/83 cohorte previa PASS, 16/16 nombres HR PASS, dos fusiones adicionales Jhennypher Murga GT y Rocio Vilca HN confirmadas por Paula con 2 capturas de ACK verde del proveedor pero aun sin readback durable independiente. Accion EXACTA: ejecutar SOLO READONLY post-fusion de perfiles, UID, sesiones, historico, visitas, liquidaciones, certificaciones y receipts; NO reejecutar writer. G03 HR finanzas: diagnosticar HR_RECONCILIATION_SCOPE_BUSY y recibo previo sin forzar lock. Certificar 21 modulos con pruebas ejecutadas, 5/21 MATCH, 16 pendientes, no contar jobs SKIPPED. Gate20/21 HOLD, I4 NO autorizada, produccion intacta.",
+  "exactNextAction": "I3 V11 HOLD; 83/83 original approved cohort remains preserved. VRM-307 SOURCE 3a299715 tree ed9362c9 verified by 66/66 synthetic owner tests. RUN42128661278 read-only shows Jhennypher Murga GT and Rocío Vilca HN manual UI ACKs are partial across alias chains. The same DEV currently serves preceding source f5f653d0 (RUN42124979529); materialize ONE exact new source to DEV through existing certified workflow, then verify runtime/hosting/HR readback, finish exact approved keeper/UID/visits/liquidation/certification alias groups through protected idempotent provider only after fresh preflight. G03 HR finanzas same-revision scope lock HOLD. Recertify 21 modules with executed owner E2E (5/21 MATCH, 16 pending; SKIPPED is not PASS). No HR reimport, no new candidate, no production; Gate20/21 HOLD, I4 not authorized.",
   "supersedesGitBlob": "086542151de0b223afbd258f1f65be6ca886684d",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -22784,7 +22835,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-307",
+  "nextFindingId": "VRM-308",
   "lastControlFailure": {
     "id": "RUN1238_NEXT_FINDING_ID_GOVERNANCE_DESYNC",
     "classification": "MAPPING_FAILURE",
@@ -26483,7 +26534,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-11-04T08:13:31Z",
-  "nextExactAction": "I3 V10 HOLD: RUN42124979529 (#2199) PASS DEV exact source f5f653d tree 65d0bee, CloudRun 00349-fsk Hosting cf8987585aafe19c, HR estable 63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba sin HR writes ni produccion. 83/83 cohorte previa PASS, 16/16 nombres HR PASS, dos fusiones adicionales Jhennypher Murga GT y Rocio Vilca HN confirmadas por Paula con 2 capturas de ACK verde del proveedor pero aun sin readback durable independiente. Accion EXACTA: ejecutar SOLO READONLY post-fusion de perfiles, UID, sesiones, historico, visitas, liquidaciones, certificaciones y receipts; NO reejecutar writer. G03 HR finanzas: diagnosticar HR_RECONCILIATION_SCOPE_BUSY y recibo previo sin forzar lock. Certificar 21 modulos con pruebas ejecutadas, 5/21 MATCH, 16 pendientes, no contar jobs SKIPPED. Gate20/21 HOLD, I4 NO autorizada, produccion intacta.",
+  "nextExactAction": "I3 V11 HOLD; 83/83 original approved cohort remains preserved. VRM-307 SOURCE 3a299715 tree ed9362c9 verified by 66/66 synthetic owner tests. RUN42128661278 read-only shows Jhennypher Murga GT and Rocío Vilca HN manual UI ACKs are partial across alias chains. The same DEV currently serves preceding source f5f653d0 (RUN42124979529); materialize ONE exact new source to DEV through existing certified workflow, then verify runtime/hosting/HR readback, finish exact approved keeper/UID/visits/liquidation/certification alias groups through protected idempotent provider only after fresh preflight. G03 HR finanzas same-revision scope lock HOLD. Recertify 21 modules with executed owner E2E (5/21 MATCH, 16 pending; SKIPPED is not PASS). No HR reimport, no new candidate, no production; Gate20/21 HOLD, I4 not authorized.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -38765,5 +38816,17 @@
     "fullPhaseA": "HOLD",
     "ownerUiAcknowledgedFusions": 2,
     "independentReadback": "PENDING"
+  },
+  "vrm307IdentityChainContinuity20261105": {
+    "finding": "VRM-307",
+    "sourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
+    "sourceTree": "ed9362c9d432028978c2d3b748eb7559c2e8f1b1",
+    "readOnlyProviderRunId": 42128661278,
+    "sourceTestPass": 66,
+    "sourceTestFail": 0,
+    "priorDevRunId": 42124979529,
+    "materialization": "PENDING",
+    "production": false,
+    "terminalReady": false
   }
 }
