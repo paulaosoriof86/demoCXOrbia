@@ -318,6 +318,13 @@ async function saveQaViaAdminUi({admin, periodId}) {
   await page.reload({waitUntil: 'domcontentloaded', timeout: 90000});
   await page.waitForFunction(() => window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied === true,
     null, {timeout: 90000});
+  result.qa.reloadPeriodSelection = await selectExactBankPeriod(page, periodId);
+  if(!result.qa.reloadPeriodSelection.selected ||
+      result.qa.reloadPeriodSelection.currentPeriod !== result.qa.periodSelection.currentPeriod)
+    fail('SOURCE_FAILURE:D05_QA_RELOAD_PERIOD_NOT_RESTORED');
+  await page.waitForFunction(expectedName =>
+    (window.CX?.backendResources?.list?.({resourceType:'certification_bank'}) || [])
+      .some(x => x.bank?.certificationName === expectedName), name, {timeout: 30000});
   await page.getByRole('button', {name: 'Certificación', exact: true}).click();
   const freshSelector = page.locator('select').filter({hasText: name});
   await freshSelector.waitFor({state: 'visible', timeout: 30000});
