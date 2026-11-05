@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "cxorbia.i3.approved-identity-adjudication.v1",
+  "approvalDate": "2026-11-05",
+  "approvalAuthority": "Paula Andrea Osorio Franco — Dirección; confirmación explícita en CXOrbia Recovery",
+  "scope": "DEV_ONLY",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "productSourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+  "approvedCases": [
+    {
+      "caseId": "STIVEN_SINGLE_HUMAN_CONFIRMED_20261105",
+      "canonicalShopperId": "shopper_gt_319cd82eaf",
+      "approvedAliasShopperIds": ["shr-1783519013963-4koxm"],
+      "keeperShopperId": "shr-1783519013963-4koxm",
+      "expectedLogin": "stiven.lopez",
+      "normalizedFullName": "stiven lopez",
+      "country": "GT",
+      "periodForCommand": "cinepolis-2026-10",
+      "expectedAdminHistory": 10,
+      "reason": "direccion_confirmo_misma_persona_acceso_y_alias_20261105"
+    }
+  ],
+  "rules": {
+    "neverMergeByNameAlone": true,
+    "additionalAliasesRequireExistingExactCanonicalEvidence": true,
+    "keeperAccessMustBeVerified": true,
+    "providerAckAndIdempotentReplay": true,
+    "preserveHistoricalAndFinancialReferences": true,
+    "hrWrites": 0,
+    "production": false
+  }
+}
