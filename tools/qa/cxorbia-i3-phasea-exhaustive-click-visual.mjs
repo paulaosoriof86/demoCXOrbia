@@ -13,11 +13,24 @@ const tenantId='tya',projectId='cinepolis',PREVIEW='YES_PAULA_20260628_PREVIEW_D
 const URL=ROOT+'/index-backend-dev.html?cxBackendPreview='+PREVIEW+'&cxProjectId='+projectId+'&cxProtectedRuntime='+PROTECTED+'&phaseaclick='+Date.now();
 if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
 const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(tenantId);
-const [metaRes,bodyRes]=await Promise.all([
- fetch(ROOT+'/api/'+tenantId+'/'+projectId+'/hr-live?format=meta&click='+Date.now(),{headers:{'Cache-Control':'no-cache'},signal:AbortSignal.timeout(120000)}),
- fetch(ROOT+'/api/'+tenantId+'/'+projectId+'/hr-live?format=json&click='+Date.now(),{headers:{'Cache-Control':'no-cache'},signal:AbortSignal.timeout(120000)})
-]);
-if(!metaRes.ok||!bodyRes.ok)throw new Error('PROVIDER_FAILURE:CLICK_HR_HTTP');
+const readHr=async format=>{
+ for(let attempt=1;attempt<=3;attempt++){
+  let response;
+  try{
+   response=await fetch(ROOT+'/api/'+tenantId+'/'+projectId+'/hr-live?format='+format+'&click='+Date.now(),{headers:{'Cache-Control':'no-cache'},signal:AbortSignal.timeout(120000)});
+  }catch(error){
+   if(attempt===3)throw new Error('PROVIDER_FAILURE:CLICK_HR_NETWORK:'+format+':attempt_'+attempt+':'+str(error?.name||'unknown'));
+   await new Promise(resolve=>setTimeout(resolve,800*attempt));
+   continue;
+  }
+  if(response.ok)return response;
+  const transient=[408,425,429].includes(response.status)||response.status>=500;
+  if(!transient||attempt===3)throw new Error('PROVIDER_FAILURE:CLICK_HR_HTTP:'+format+':status_'+response.status+':attempt_'+attempt);
+  await new Promise(resolve=>setTimeout(resolve,800*attempt));
+ }
+ throw new Error('PROVIDER_FAILURE:CLICK_HR_HTTP_EXHAUSTED:'+format);
+};
+const [metaRes,bodyRes]=await Promise.all([readHr('meta'),readHr('json')]);
 const meta=await metaRes.json(),body=await bodyRes.json(),snap=body.snapshot||body.data||body,revision=str(meta.revision||body.revision||snap.sourceRevision);
 if(revision!==EXPECTED_HR||meta.ok!==true||meta.revisionStable!==true)throw new Error('PROVIDER_FAILURE:CLICK_HR_REVISION');
 const periodKey=str(snap.source?.currentCalendarPeriodKey||body.currentCalendarPeriodKey||''),pm=arr(snap.periods).find(p=>str(p.key)===periodKey),periodId=str(pm?.id||('cinepolis-'+periodKey));
