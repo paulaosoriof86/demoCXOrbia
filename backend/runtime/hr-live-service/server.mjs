@@ -316,6 +316,9 @@ function configureCommandRuntime(snapshot){
   globalThis.CXORBIA_ACADEMY_COMMAND_PROVIDER_POLICY=academyPolicy(snapshot);
   globalThis.CXORBIA_COMMAND_HR_SNAPSHOT=snapshot;
   globalThis.CXORBIA_COMMAND_HR_REVISION=String(cache?.revision||'');
+  // Server-side only: the identity file is produced with this exact fresh HR
+  // snapshot. Protected provider comparisons must not use masked public names.
+  globalThis.CXORBIA_COMMAND_HR_PRIVATE_IDENTITY=cache?.identity instanceof Map?cache.identity:null;
 }
 const explicitHrReconciliation=createHrSnapshotReconciler({
   verifyPrincipal:verifiedProtectedPrincipal,

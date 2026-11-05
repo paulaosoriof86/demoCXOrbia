@@ -322,7 +322,7 @@ function sourceCandidate(row,scope,identityByShopperId){
   const source=identityByShopperId instanceof Map?identityByShopperId.get(shopperId):identityByShopperId?.[shopperId]||{};
   const rowName=str(row?.nombre||row?.shopper);
   const protectedName=technicalIdentityLabel(rowName,shopperId);
-  const credentialName=protectedName?credentialIdentityName(identityByShopperId,shopperId):'';
+  const privateExactName=credentialIdentityName(identityByShopperId,shopperId);
   const phone=str(row?.whatsapp||row?.phone||row?.telefono||source?.whatsapp||source?.phone||source?.telefono);
   const email=str(row?.email||row?.mail||row?.correo||source?.email||source?.mail).toLowerCase();
   return clean({
@@ -334,7 +334,7 @@ function sourceCandidate(row,scope,identityByShopperId){
     country:str(row?.country||row?.pais||source?.country),
     sourceSafe:row?.sourceSafe===true,
     piiProtected:row?.piiProtected===true,
-    nombre:credentialName||(protectedName?'':rowName)||(!technicalIdentityLabel(source?.displayName,shopperId)?str(source?.displayName):''),
+    nombre:privateExactName||(protectedName?'':rowName)||(!technicalIdentityLabel(source?.displayName,shopperId)?str(source?.displayName):''),
     firstName:str(row?.firstName),
     lastName:str(row?.lastName||row?.apellido),
     whatsapp:phone,
@@ -354,8 +354,11 @@ export function shoppersFromSnapshot(snapshot={},options={}){
     const prior=byId.get(c.shopperId)||{};
     byId.set(c.shopperId,{...prior,...Object.fromEntries(Object.entries(c).filter(([,v])=>v!==''&&v!==false)),sourceSafe:prior.sourceSafe===true||c.sourceSafe===true,piiProtected:prior.piiProtected===true||c.piiProtected===true});
   };
-  for(const shopper of arr(snapshot.shoppers))ingest(shopper);
+  // Visits may carry an older name from their historical period. Keep them as
+  // fallback identities, but the current HR shopper row is the final authority
+  // for the same opaque shopperId (including protected server-side identity).
   for(const visit of arr(snapshot.visits))if(str(visit?.shopperId))ingest(visit);
+  for(const shopper of arr(snapshot.shoppers))ingest(shopper);
   return {scope,shoppers:[...byId.values()].sort((a,b)=>a.shopperId.localeCompare(b.shopperId))};
 }
 
@@ -1172,7 +1175,7 @@ async function adjudicationDomainPlan(tenant,projectId,aliases,canonicalShopperI
   }
   return plan;
 }
-async function durableIdentityAdjudication({auth,db,command,actor,canonicalShopperId,autoEvidence=null,hrSnapshot=null,hrRevision=''}){
+async function durableIdentityAdjudication({auth,db,command,actor,canonicalShopperId,autoEvidence=null,hrSnapshot=null,hrRevision='',hrIdentityByShopperId=null}){
   const automatic=autoEvidence?.authority==='hr_compatible_auto_v1';
   if(!automatic&&(!OPERATOR_ROLES.includes(str(actor?.role))||actor?.selfScoped===true))throw new Error('SHOPPER_IDENTITY_ADJUDICATION_OPERATOR_REQUIRED');
   if(automatic&&(!str(autoEvidence.sourceRevision)||command.payload?.humanConfirmed===true))throw new Error('SHOPPER_IDENTITY_AUTO_AUTHORITY_INVALID');
@@ -1193,7 +1196,11 @@ async function durableIdentityAdjudication({auth,db,command,actor,canonicalShopp
       throw new Error('SHOPPER_IDENTITY_EXTERNAL_HR_EXACT_AUTHORITY_REQUIRED');
     if(hrOnlyIds.some(id=>id===canonicalShopperId||aliases.includes(id)))
       throw new Error('SHOPPER_IDENTITY_EXTERNAL_HR_ID_OVERLAP');
-    const source=shoppersFromSnapshot(hrSnapshot);
+    // The public source-safe HR snapshot masks personal names. Verify exact
+    // source IDs against it, then compare the Director-approved name using the
+    // server-private identity tied to the *same* HR revision. Never trust a
+    // browser-provided identity map or an older visit's display label.
+    const source=shoppersFromSnapshot(hrSnapshot,{identityByShopperId:hrIdentityByShopperId});
     if(source.scope.tenantId!==str(command.tenantId)||source.scope.projectId!==str(command.projectId))
       throw new Error('SHOPPER_IDENTITY_EXTERNAL_HR_SCOPE_MISMATCH');
     const byId=new Map(source.shoppers.map(row=>[str(row.shopperId),row]));
@@ -1904,7 +1911,7 @@ async function normalizeDurableShopperCredentials({auth,db,tenantId}={}){
   };
 }
 
-export function createShopperCommandProvider({auth,db,policy,hrSnapshot=null,hrRevision=''}={}){
+export function createShopperCommandProvider({auth,db,policy,hrSnapshot=null,hrRevision='',hrIdentityByShopperId=null}={}){
   const pv=validateProviderPolicy(policy);if(!pv.ok)throw new Error('SHOPPER_PROVIDER_POLICY_INVALID:'+pv.errors.join(','));
   if(!auth?.getUser||!auth?.createUser||!auth?.setCustomUserClaims||!db?.collection||!db?.runTransaction)throw new Error('SHOPPER_PROVIDER_DEPENDENCIES_MISSING');
   return Object.freeze({
@@ -2115,7 +2122,7 @@ export function createShopperCommandProvider({auth,db,policy,hrSnapshot=null,hrR
           if(p.status==='committed')return ack(command,p.shopperId,{idempotentReplay:true,providerWrites:0,credentialState:p.credentialState||null,credentialIssued:false,uidFingerprint:p.uidFingerprint||null,profileUpdated:p.profileUpdated===true});
         }
         if(command.commandType==='shopper.identity.adjudicate'){
-          const result=await durableIdentityAdjudication({auth,db,command,actor,canonicalShopperId:shopperId,hrSnapshot,hrRevision});
+          const result=await durableIdentityAdjudication({auth,db,command,actor,canonicalShopperId:shopperId,hrSnapshot,hrRevision,hrIdentityByShopperId});
           await receipt.set({status:'committed',commandDigest:digest,shopperId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,identityLinkId:result.identityLinkId,identityConsolidated:result.identityConsolidated===true,externalHrSourceLinks:Number(result.externalHrSourceLinks||0),canonicalProfileRecovered:result.canonicalProfileRecovered===true,canonicalProfileRecoveredFromAliasId:result.canonicalProfileRecoveredFromAliasId||null,canonicalRecoveryAuthorityRef:result.canonicalRecoveryAuthorityRef||null,keeperUidFingerprint:result.keeperUidFingerprint||null,retiredPrincipalCount:Number(result.retiredPrincipalCount||0),domainWrites:result.domainWrites||{},resolvedIdentityReviews:Number(result.resolvedIdentityReviews||0),updatedAt:now()},{merge:false});
           return ack(command,shopperId,{idempotentReplay:false,providerWrites:result.providerWrites+1,identityAdjudicated:true,identityConsolidated:result.identityConsolidated===true,externalHrSourceLinks:Number(result.externalHrSourceLinks||0),canonicalProfileRecovered:result.canonicalProfileRecovered===true,canonicalProfileRecoveredFromAliasId:result.canonicalProfileRecoveredFromAliasId||null,canonicalRecoveryAuthorityRef:result.canonicalRecoveryAuthorityRef||null,keeperUidFingerprint:result.keeperUidFingerprint||null,retiredPrincipalCount:Number(result.retiredPrincipalCount||0),domainWrites:result.domainWrites||{},resolvedIdentityReviews:Number(result.resolvedIdentityReviews||0),historicalVisitRowsPreserved:result.historicalVisitRowsPreserved===true,authoritativeVisitCount:Number(result.authoritativeVisitCount||0),hrWrites:Number(result.hrWrites||0),externalWrites:Number(result.externalWrites||0),identityLinkId:result.identityLinkId,canonicalShopperId:result.canonicalShopperId,exactAliases:result.exactAliases,authorityType:result.authorityType});
         }

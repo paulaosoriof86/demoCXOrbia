@@ -374,6 +374,7 @@ export function createProviderForCommand(command,overrides={}){
   const academyPolicy=overrides.academyPolicy??globalThis.CXORBIA_ACADEMY_COMMAND_PROVIDER_POLICY??null;
   const hrSnapshot=overrides.hrSnapshot??globalThis.CXORBIA_COMMAND_HR_SNAPSHOT??null;
   const hrRevision=overrides.hrRevision??globalThis.CXORBIA_COMMAND_HR_REVISION??'';
+  const hrIdentityByShopperId=overrides.hrIdentityByShopperId??globalThis.CXORBIA_COMMAND_HR_PRIVATE_IDENTITY??null;
   if(!auth||!db)return {provider:null,kind,error:'COMMAND_PROVIDER_DEPENDENCIES_NOT_CONFIGURED'};
   if(kind==='project'){
     if(!projectPolicy)return {provider:null,kind,error:'PROJECT_COMMAND_PROVIDER_NOT_CONFIGURED'};
@@ -382,7 +383,7 @@ export function createProviderForCommand(command,overrides={}){
   }
   if(kind==='shopper'){
     if(!shopperPolicy)return {provider:null,kind,error:'SHOPPER_COMMAND_PROVIDER_NOT_CONFIGURED'};
-    try{return {provider:createShopperCommandProvider({auth,db,policy:shopperPolicy,hrSnapshot,hrRevision}),kind};}
+    try{return {provider:createShopperCommandProvider({auth,db,policy:shopperPolicy,hrSnapshot,hrRevision,hrIdentityByShopperId}),kind};}
     catch(error){return {provider:null,kind,error:'SHOPPER_COMMAND_PROVIDER_POLICY_INVALID',detail:str(error?.message||error)};}
   }
   if(kind==='finance'){

@@ -8,7 +8,8 @@ import {
   CREDENTIAL_RULE_VERSION,
   CREDENTIAL_PASSWORD_PROOF_VERSION,
   DURABLE_CREDENTIAL_SWEEP_VERSION,
-  shopperCredentialRule
+  shopperCredentialRule,
+  shoppersFromSnapshot
 } from '../../cxorbia-shopper-command-provider-v1.mjs';
 
 const clone=value=>value===undefined?undefined:structuredClone(value);
@@ -1101,8 +1102,22 @@ test('I3 P0 / approved exact human joins an HR-only source ID to an existing kee
   const auth=new FakeAuth(),db=new FakeFirestore();
   const canonical='profile-keeper-opaque',alias='profile-old-opaque',hrOnly='TYA_GT_1A2B3C4D',uid='keeper-verified',retiredUid='historical-verified';
   const previousPassword='KeepTheExistingPassword-1',revision='live-current-external-revision';
-  const hr=snapshot({shopperId:hrOnly,shopperCode:hrOnly});hr.visits[0].shopper='Jhennypher Murga';
-  const p=createShopperCommandProvider({auth,db,policy,hrSnapshot:hr,hrRevision:revision});
+  const hr=snapshot({shopperId:hrOnly,shopperCode:hrOnly});
+  // Real DEV incident: the public HR shopper name is masked, a previous
+  // visit carries an old spelling, and only the private same-revision
+  // operational identity has Paula's approved current name.
+  hr.visits[0].shopper='Jennypher Murga';
+  hr.shoppers=[{shopperId:hrOnly,shopperCode:hrOnly,nombre:hrOnly,pais:'GT',country:'GT',
+    sourceSafe:true,piiProtected:true}];
+  const privateIdentity=new Map([[hrOnly,{displayName:'Jhennypher Murga',country:'GT'}]]);
+  const expected=shoppersFromSnapshot(hr,{identityByShopperId:privateIdentity}).shoppers[0];
+  assert.equal(expected.nombre,'Jhennypher Murga','latest private HR identity must take priority over older visit label');
+  assert.equal(shoppersFromSnapshot({...hr,shoppers:[]},{identityByShopperId:privateIdentity}).shoppers[0].nombre,
+    'Jhennypher Murga','the same-revision private identity must also protect visit-only historical rows');
+  assert.notEqual(shoppersFromSnapshot(hr).shoppers[0].nombre,'Jhennypher Murga',
+    'the masked source alone must never claim independently verified exact-human authority');
+  const p=createShopperCommandProvider({auth,db,policy,hrSnapshot:hr,hrRevision:revision,
+    hrIdentityByShopperId:privateIdentity});
   db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'super',authNamespace:'staff',projectIds:['project-a']});
   for(const [id,currentUid,login,password] of [[canonical,uid,'jennypher.murga',previousPassword],[alias,retiredUid,'jennifer.murga','HistoricalPassword-1']]){
     auth.seed({uid:currentUid,email:internalEmailTest('tenant-a',login),password,disabled:false,
@@ -1146,7 +1161,7 @@ test('I3 P0 / approved exact human joins an HR-only source ID to an existing kee
     const replay=await p.execute('staff-token',command);
     assert.equal(replay.ok,true);assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);
   }
-  const reconciled=await p.reconcileSnapshot(hr,{sourceRevision:revision});
+  const reconciled=await p.reconcileSnapshot(hr,{sourceRevision:revision,identityByShopperId:privateIdentity});
   assert.equal(reconciled.ok,true);
   assert.equal(auth.created,0,'HR reconciliation must not create a second shopper');
   assert.equal((await auth.getUser(uid)).password,previousPassword);
