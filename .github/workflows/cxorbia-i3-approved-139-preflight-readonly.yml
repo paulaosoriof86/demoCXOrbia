@@ -7,6 +7,7 @@ on:
       - firebase/auth-dev-tools/cxorbia-i3-approved-139-preflight-readonly.mjs
       - firebase/auth-dev-tools/cxorbia-i3-approved-139-batch-dev-once.mjs
       - firebase/auth-dev-tools/cxorbia-i3-approved-14-preflight-readonly.mjs
+      - firebase/auth-dev-tools/cxorbia-i3-murga-residual-protected-dev-once.mjs
       - firebase/auth-dev-tools/cxorbia-i3-approved-139-pair-hashes.json
 permissions:
   contents: read
