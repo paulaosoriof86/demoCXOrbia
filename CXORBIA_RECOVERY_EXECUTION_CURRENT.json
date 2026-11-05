@@ -10,7 +10,7 @@
   "productSourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
   "productTree": "e6f941c511272dfb0d258e935d7c1526c83b31cb",
   "currentCanonicalCheckpoint": {
-    "path": "docs/checkpoints/CXORBIA_RECOVERY_CHECKPOINT_CANONICO_2026-11-05_I3_V2.md",
+    "path": "docs/checkpoints/CXORBIA_RECOVERY_CHECKPOINT_CANONICO_2026-11-05_I3_V3.md",
     "status": "I3_HOLD",
     "runId": 42063057316,
     "artifactId": 13434525370,
@@ -23,11 +23,24 @@
     "remaining": 14,
     "sourceRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
     "productUnchanged": true,
-    "productionUnchanged": true
+    "productionUnchanged": true,
+    "adminBrowserDevAfterRefresh": {
+      "technicalIdentityReviewCasesBeforeRefresh": 272,
+      "technicalIdentityReviewCasesAfterRefresh": 206,
+      "technicalCaseReduction": 66,
+      "visibleShopperProfiles": 209,
+      "visibleProfilesWithReviewBadge": 19,
+      "approvedCohortGroupsStillPending": 14,
+      "interpretation": "THREE_DISTINCT_POPULATIONS_NOT_TO_BE_EQUATED",
+      "ramsesSalinasF045": "MERGED_VERIFIED_BUT_VISIBLE_OTHER_REVIEW_REASON_NEEDS_PROVIDER_CASE_ID_RECONCILIATION",
+      "modulePromotion": false,
+      "source": "CHROME_AUTH_ADMIN_AFTER_LIVE_HR_HYDRATION_20261105"
+    },
+    "privateCensusV2": "libfile_ed0533ff08b48191b4e2b809fb70d6db"
   },
   "continuityHandoff": {
-    "authority": "CURRENT_CANONICAL_V2_OVERRIDES_HISTORICAL_HANDOFF_ONLY",
-    "path": "docs/checkpoints/CXORBIA_RECOVERY_CHECKPOINT_CANONICO_2026-11-05_I3_V2.md",
+    "authority": "CURRENT_CANONICAL_V3_OVERRIDES_HISTORICAL_HANDOFF_ONLY",
+    "path": "docs/checkpoints/CXORBIA_RECOVERY_CHECKPOINT_CANONICO_2026-11-05_I3_V3.md",
     "asOf": "2026-11-05",
     "iteration": "I3",
     "status": "HOLD",
@@ -39,7 +52,7 @@
     "moduleMatches": 5,
     "moduleTotal": 21,
     "nextTaskIds": ["A01", "A02", "G03", "D05", "C04", "C05", "D07", "E11"],
-    "immediateAction": "I3: reconcile the 11 approved multi-HR-canonical groups with exact stable crosswalk/credential and history readback; then two secondary recent sign-ins and one unproven keeper without independent per-name approval. Afterward recertify 16 non-MATCH modules against one exact DEV source/artifact and close Gate20/21. Production DO_NOT_TOUCH.",
+    "immediateAction": "I3: reconcile the 11 approved multi-HR-canonical groups with exact stable crosswalk/credential and history readback; then two secondary recent sign-ins and one unproven keeper without independent per-name approval. Separate refreshed Admin 206 technical review cases from 19 visibly flagged profiles and 14 cohort groups; resolve provider-review flags by verified IDs, not by count. Recertify 16 non-MATCH modules against one exact DEV source/artifact and close Gate20/21. Production DO_NOT_TOUCH.",
     "noProduction": true
   },
   "currentModuleEvidenceOverrides": {
@@ -379,7 +392,7 @@
     "evolution": 6
   },
   "historicalNextExactActionPreS1": "S1 read-only reason/alias cohort classification, implement legacy-compatible deterministic normalizer in provider owner and bridge, run bounded GT/HN/history/Auth fixtures. Existing DEV serial materialization only after source QA; verify Stiven/Julissa Shopper role post-fix.",
-  "nextExactAction": "I3 HOLD after RUN 42063057316: 37 new protected DEV fusion groups ACK/readback PASS, 69/83 cohort consolidated, 14 pending (11 multiple HR source canonical, 2 recent secondary sign-ins, 1 keeper credential proof). Next: exact multi-HR crosswalk/old+new history authority proof on frozen 09eed4f product source, then one safe bounded DEV cohort pass for eligible remainder; isolate only truly unsafe credentials. Admin warning review count must reconcile to truly active cases. Reprove 16 non-MATCH modules, questionnaires 15Q attempt persistence, finance and source HR parity, protected documents, GT/HN Admin/Shopper/Client role UI, Gate20/21 one immutable artifact. Stiven Admin10/Shopper10 PASS RUN2182; no 10/0 open. Preserve 5/21 current MATCH and all historic PASS. Production DO_NOT_TOUCH until I3 GO/I4 explicit authorization.",
+  "nextExactAction": "I3 HOLD after RUN 42063057316: 37 new protected DEV fusion groups ACK/readback PASS, 69/83 cohort consolidated, 14 pending (11 multiple HR source canonical, 2 recent secondary sign-ins, 1 keeper credential proof). Chrome Admin after protected HR hydration: review counter 272->206 (-66), 209 project profiles, 19 visibly marked review; these are not the same universe as 14 approved cohort pending. Next: exact multi-HR crosswalk/old+new history authority proof on frozen 09eed4f product source, then one safe bounded DEV cohort pass for eligible remainder; reconcile provider review IDs, especially F-045 visible HR-normalized-name/phone review after merge ACK, and distinguish stale vs genuine flags before any UI adjustment. Reprove 16 non-MATCH modules, questionnaires 15Q attempt persistence, finance and source HR parity, protected documents, GT/HN Admin/Shopper/Client role UI, Gate20/21 one immutable artifact. Stiven Admin10/Shopper10 PASS RUN2182; no 10/0 open. Preserve 5/21 current MATCH and all historic PASS. Production DO_NOT_TOUCH until I3 GO/I4 explicit authorization.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
