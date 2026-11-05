@@ -11,3 +11,13 @@ La aprobación humana del grupo Murga y los 83/83 grupos anteriores permanece v�
 - Siguiente acción exacta: disparar el readback protegido ya existente Admin/HR/Auth y keeper en el commit actual, conciliar 11 perfiles y 46 referencias por identidad canónica; solo después proponer una ejecución única, idempotente, con ACK y lectura posterior. Rocío Vilca permanece separada, conservando su sesión reciente.
 
 El bloqueo es `MAPPING_FAILURE` antes de escritura, no una regresión del producto ni pérdida de datos. Los 5/21 módulos MATCH y los 83/83 grupos anteriores no se alteran.
+
+## Readback independiente posterior — RUN42101372355
+
+El workflow existente de Administración/HR/Auth terminó **PASS** sin escrituras. El artefacto `13448638306`, `cxorbia-i3-residual-keeper-preflight/result.json`, registró revisión HR `63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba`:
+
+- Murga GT: **11 perfiles**, 1 identidad HR, **0 IDs de perfiles que coincidan directamente con el ID HR** (`unmatchedProfileCount=11`), 3 cuentas Auth activas, keeper candidato `jennypher.murga`, referencias 12 conciliaciones + 7 certificaciones + 9 liquidaciones + 18 visitas = **46**.
+- Rocío Vilca HN: 5 perfiles, 2 identidades HR, 3 cuentas Auth, 15 referencias, sesión secundaria reciente: `HOLD_RECENT_SECONDARY_SESSION`.
+- El inventario alternativo de nombres sigue mostrando nueve coincidencias Murga, porque selecciona campos distintos de los utilizados por el preflight de identidad. No confundir esos nueve con el conjunto canónico de 11.
+
+**Nueva precondición:** conciliar el ID HR con el perfil Firestore/keeper y crosswalk antes de invocar `identityAdjudicate`; no cambiar un literal de 9 a 11 ni ensanchar una fusión a ciegas. Estado de las dos fusiones residuales: **HOLD**, sin pérdida ni modificación de accesos, visitas o pagos.
