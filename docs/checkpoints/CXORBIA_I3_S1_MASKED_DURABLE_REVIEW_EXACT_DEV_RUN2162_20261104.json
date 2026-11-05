@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "cxorbia.i3.s1.masked-durable-review.exact-dev-materialization.v1",
+  "iteration": "I3",
+  "decision": "PASS_I3_EXACT_DEV_MATERIALIZATION_RUN2162",
+  "state": "HOLD_LIVE_E2E_PROVIDER_ACK_REQUIRED",
+  "sourceControlCommitAtDeploy": "fc6ff8fab6a1265378ef2d1fe87fda547b238a46",
+  "source": {
+    "sha": "6087774752e140361a4cd0b35aadf9fe25771611",
+    "tree": "d75a45b42f574d5d0efd4ad0aef5b0ae8f1dfff1"
+  },
+  "materialization": {
+    "state": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
+    "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
+    "runId": 41943791338,
+    "runNumber": 2162,
+    "jobId": 126971078853,
+    "artifactId": 13378431234,
+    "sourceSha": "6087774752e140361a4cd0b35aadf9fe25771611",
+    "sourceTree": "d75a45b42f574d5d0efd4ad0aef5b0ae8f1dfff1",
+    "artifactDigest": "sha256:e07cbef181632528de57c00c11f25e1d0cc80219a7c5a2e4bc822e47f29e13f8",
+    "artifactDigestType": "GITHUB_ACTIONS_ZIP_SHA256",
+    "artifactZipSha256": "e07cbef181632528de57c00c11f25e1d0cc80219a7c5a2e4bc822e47f29e13f8",
+    "runtimeRevision": "cxorbia-live-hr-dev-00345-dw9",
+    "runtimeDigest": "sha256:16e3f2c75653230d543e82c37aeac70b98c9dee6d71eb394e562f6cd8389ad25",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/03c4551b90a28e27",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1793839790108000",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
+    "hrRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "firestoreRulesDeploys": 0,
+    "storageRulesDeploys": 0,
+    "hrWrites": 0,
+    "production": false,
+    "sourceIdentityVerified": true,
+    "runtimeSourceVerified": true,
+    "controlHeadAtDeploy": "fc6ff8fab6a1265378ef2d1fe87fda547b238a46",
+    "sourceArtifactDigest": "sha256:e07cbef181632528de57c00c11f25e1d0cc80219a7c5a2e4bc822e47f29e13f8",
+    "archiveZipDigest": "sha256:e07cbef181632528de57c00c11f25e1d0cc80219a7c5a2e4bc822e47f29e13f8",
+    "githubArtifactZipSha256": "e07cbef181632528de57c00c11f25e1d0cc80219a7c5a2e4bc822e47f29e13f8",
+    "fullTaskClosed": false,
+    "humanAcceptance": "PENDING",
+    "firestoreRulesetEvidence": "UNCHANGED_FROM_SEALED_RUN2157_NO_RULES_DEPLOY_RUN2162",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_S1_MASKED_DURABLE_REVIEW_EXACT_DEV_RUN2162_20261104.json"
+  },
+  "hrReadback": {
+    "revision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
+    "revisionStable": true,
+    "sourceSafe": true,
+    "hrWrites": 0,
+    "periodCount": 18,
+    "visits": 792,
+    "damarisRows": [
+      "NOVIEMBRE!3",
+      "NOVIEMBRE!22"
+    ],
+    "rowCount": 2,
+    "realShopperOwnerProviderAck": "PENDING"
+  },
+  "githubRunUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/41943791338",
+  "canonicalCi": {
+    "decision": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+    "sourceTests": {
+      "pass": 63,
+      "fail": 0
+    },
+    "materializationScopedTests": {
+      "pass": 114,
+      "fail": 0
+    }
+  },
+  "moduleFullMatches": 5,
+  "realProviderIdentityAck": "PENDING_SAME_ARTIFACT_ROLE_E2E",
+  "realAdminShopperCrossRoleE2E": "PENDING",
+  "julissaInstructive": {
+    "priorRun2160ModalOpened": true,
+    "projectPublishedBinaryInstructives": 2,
+    "localAuthenticatedPdfTestsPass": 16,
+    "newRunBinaryPdf": "PENDING_REAL_ROLE_E2E"
+  },
+  "stivenHistory": {
+    "admin": 10,
+    "shopper": "PENDING_ROLE_READBACK"
+  },
+  "humanAcceptance": "PENDING",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "production": false,
+  "ciSourceChecks": {
+    "sourceSha": "6087774752e140361a4cd0b35aadf9fe25771611",
+    "sourceTree": "d75a45b42f574d5d0efd4ad0aef5b0ae8f1dfff1",
+    "canonicalGuard": "PASS",
+    "modifiedOwner": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+    "newTestCases": 2
+  },
+  "predecessorReceiptPath": "docs/checkpoints/CXORBIA_I3_S1_DAMARIS_NO_PHONE_EXACT_DEV_RUN2159_20261104.json"
+}
