@@ -12808,7 +12808,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 41946997443,
     "runNumber": 2168,
     "sourceSha": "d9c4935987ec28a74f06df0319e97cbf5e232070",
@@ -17286,6 +17286,14 @@
     "liveRoleE2E": "PENDING",
     "julissaPdfDownload": "PENDING",
     "moduleMatch": "5_OF_21_UNCHANGED",
-    "production": false
+    "production": false,
+    "controlRepair": {
+      "reason": "RUN2171_CANONICAL_GUARD_POSTDEPLOY_SEAL_MISMATCH",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "change": "Use PREDECESSOR_SERVING_PENDING_SOURCE while RUN2168 immutable exact DEV is served; source 09eed4f pending",
+      "previousSealRunId": 41946997443,
+      "dev": "NOT_YET_MATERIALIZED",
+      "production": false
+    }
   }
 }
