@@ -23,6 +23,11 @@ const EXPECTED_REV='4fc8def718fd1504f5d76a1fbc80b6901cbf711ec2b89f4dfc3a81ecbbca
 const DIAGNOSTIC_REV='cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac';
 const DIAGNOSTIC_AUTH='I3_HR_REVISION_READONLY_DELTA_20261105';
 const EXPECTED_PAIR_DIGEST='ac3e15184316d62aa53942359e857f2c34dec486a2ca41057e529a39f062d872';
+// Exact authorized identities are recovered from one-way hashes of the 28-Oct
+// traceability sheet. Re-deriving approvals from today's names/phones silently
+// drops pairs after a valid fusion or contact update, so that is forbidden.
+// The checked-in manifest has NO raw IDs, names, phone numbers or credentials.
+const APPROVED_HASHES=JSON.parse(fs.readFileSync(new URL('./cxorbia-i3-approved-139-pair-hashes.json',import.meta.url),'utf8'));
 const approvedCompletionReason=/^paula_confirmed_exact_same_human_[fr]\d{3}_2026_10_28$/;
 const AUTHORIZATION='PAULA_CONFIRMED_2026_10_28_139_EXACT_COHORT_PAIRS_READONLY_PREFLIGHT';
 const OUT=String(process.env.CX_APPROVED_COHORT_PREFLIGHT_OUT||'.tmp/i3-approved-cohort-preflight');
@@ -77,53 +82,28 @@ function currentCanonical(memberId,cross,hrById){
   return '';
 }
 function makePairs({members,profiles,hrById,cross,links,authByUid}){
-  const strong=[],weak=[];
-  const active=members.filter(m=>m.active===true&&val(m.tenantId)===TENANT&&val(m.role)==='shopper'&&
-    val(m.authNamespace)==='shopper'&&arr(m.projectIds).includes(PROGRAM));
-  for(const member of active){
-    if(!authValid(member,authByUid.get(member.uid)))continue;
-    const accountId=val(member.shopperId),profile=profiles.get(accountId);
-    if(!profile||currentCanonical(accountId,cross,hrById))continue;
-    const n=name(profile),p=phone(profile),c=country(profile);
-    if(!n||c==='UNSET')continue;
-    const matches=[];
-    for(const [id] of hrById){
-      const source=profiles.get(id);
-      if(!source||val(source.sourceType)!=='hr_external'||country(source)!==c||name(source)!==n)continue;
-      matches.push({id,phoneExact:!!p&&p===phone(source)});
-    }
-    const exact=matches.filter(x=>x.phoneExact);
-    if(exact.length===1){strong.push({hrId:exact[0].id,accountId,country:c,hrName:displayName(profiles.get(exact[0].id))});continue;}
-    if(exact.length===0)for(const x of matches){weak.push({hrId:x.id,accountId,country:c,hrName:displayName(profiles.get(x.id))});}
-  }
-  // Approved completions disappear from active memberships after a protected
-  // merge. Rebuild each approved *pair* from its exact, human-confirmed provider
-  // link and independent profile/crosswalk readback, never from name similarity.
-  // The immutable 139-case workbook digest below still fails closed on drift.
-  const completed=links.filter(l=>val(l.authorityType)==='tenant_adjudication'&&
-    approvedCompletionReason.test(val(l.reason))&&l.humanConfirmed===true&&
-    ['active','approved','confirmed'].includes(val(l.status||l.state).toLowerCase()));
-  for(const link of completed){
-    const canonicalId=val(link.canonicalShopperId),cp=profiles.get(canonicalId);
-    if(!hrById.has(canonicalId)||!cp||val(cp.sourceType)!=='hr_external')continue;
-    const c=country(cp);
-    for(const aliasId of uniq(link.exactAliases||[])){
-      const ap=profiles.get(aliasId),cw=cross.get(aliasId)||{},sameName=!!ap&&name(cp)===name(ap);
-      assert(aliasId!==canonicalId&&ap&&sameName&&c!=='UNSET'&&c===country(ap)&&
-        val(ap.supersededByShopperId)===canonicalId&&val(cw.shopperId)===canonicalId&&
-        !active.some(m=>val(m.shopperId)===aliasId),'APPROVED_COMPLETED_LINK_READBACK_DRIFT');
-      if(strong.some(x=>x.hrId===canonicalId&&x.accountId===aliasId)||
-        weak.some(x=>x.hrId===canonicalId&&x.accountId===aliasId))continue;
-      const matchingPhone=!!phone(cp)&&phone(cp)===phone(ap);
-      (matchingPhone?strong:weak).push({hrId:canonicalId,accountId:aliasId,country:c,
-        hrName:displayName(cp),alreadyConsolidated:true});
+  assert(APPROVED_HASHES.schemaVersion==='cxorbia.i3.approved-139-pair-hashes.v1'&&
+    APPROVED_HASHES.approvedCaseCount===139&&APPROVED_HASHES.approvedGroupCount===83&&
+    APPROVED_HASHES.approvedPairDigest===EXPECTED_PAIR_DIGEST&&
+    APPROVED_HASHES.sourceRevision===EXPECTED_REV,'APPROVED_HASH_MANIFEST_AUTHORITY_DRIFT');
+  const expected=new Map(arr(APPROVED_HASHES.casePairHashes).map(pair=>[val(pair[1]),val(pair[0])]));
+  assert(expected.size===139,'APPROVED_HASH_MANIFEST_COUNT_DRIFT');
+  const casesByCode=new Map();
+  const sources=[...profiles.entries()].filter(([,p])=>val(p.sourceType)==='hr_external');
+  for(const [hrId,hrProfile] of sources){
+    for(const [accountId] of profiles){
+      if(hrId===accountId)continue;
+      const code=expected.get(hash(hrId+'\0'+accountId));
+      if(!code)continue;
+      assert(!casesByCode.has(code),'APPROVED_CASE_DUPLICATE_PROFILE_PAIR');
+      casesByCode.set(code,{caseId:code,hrId,accountId,country:country(hrProfile),
+        hrName:displayName(hrProfile)});
     }
   }
-  const sorter=(a,b)=>a.country.localeCompare(b.country)||a.hrName.localeCompare(b.hrName,'es')||a.accountId.localeCompare(b.accountId);
-  strong.sort(sorter);weak.sort(sorter);
-  assert(strong.length===66&&weak.length===73,'APPROVED_COHORT_COUNT_DRIFT');
-  const cases=[...strong.map((x,i)=>({...x,caseId:'F-'+String(i+1).padStart(3,'0')})),
-    ...weak.map((x,i)=>({...x,caseId:'R-'+String(i+1).padStart(3,'0')}))];
+  const missing=arr(APPROVED_HASHES.casePairHashes).map(x=>val(x[0])).filter(code=>!casesByCode.has(code));
+  report.approvedPairResolution={expected:139,found:casesByCode.size,missingCaseCodes:missing};
+  assert(missing.length===0,'APPROVED_EXACT_PAIRS_MISSING_FROM_LIVE_PROFILES');
+  const cases=[...casesByCode.values()].sort((a,b)=>a.caseId.localeCompare(b.caseId));
   const digest=hash(cases.map(c=>c.caseId+'\0'+c.hrId+'\0'+c.accountId).join('\n'));
   assert(digest===EXPECTED_PAIR_DIGEST,'APPROVED_EXACT_PAIR_DIGEST_DRIFT');
   return cases;
