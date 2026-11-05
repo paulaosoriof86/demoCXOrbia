@@ -14,6 +14,70 @@ concurrency:
   group: cxorbia-i3-approved-139-readonly-preflight
   cancel-in-progress: false
 jobs:
+  jhennypher-murga-residual-protected-dev-once:
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-JHENNYPHER-MURGA-DEV-PROTECTED-ONCE-20261105' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      GCLOUD_PROJECT: cxorbia-backend-dev
+      GOOGLE_CLOUD_PROJECT: cxorbia-backend-dev
+      CXORBIA_PRODUCT_SOURCE_SHA: 09eed4f012f9ad04e49d53569aabd86bd4c832a9
+      CX_I3_MURGA_RESIDUAL_BATCH: PAULA_20261105_JHENNYPHER_MURGA_APPROVED_EXACT_HUMAN_DEV_ONCE
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Fail closed on source, matrix or continuity divergence
+        run: |
+          set -Eeuo pipefail
+          test "$GITHUB_REF_NAME" = 'recovery/cxorbia-phase-a-20260831'
+          test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
+          test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
+          SOURCE="$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          TREE="$(jq -r '.productTreeAuthority' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          test "$SOURCE" = "$CXORBIA_PRODUCT_SOURCE_SHA"
+          test "$(git rev-parse "$SOURCE^{tree}")" = "$TREE"
+          git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules
+          node tools/qa/cxorbia-i3-shock-continuity-guard.mjs
+          node --test tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs
+          node --check firebase/auth-dev-tools/cxorbia-i3-murga-residual-protected-dev-once.mjs
+      - name: Execute canonical provider and password-preservation regressions
+        run: |
+          set -Eeuo pipefail
+          node backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
+          node tools/qa/cxorbia-i3-shopper-name-collision-normalization.test.mjs
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Install scoped DEV tooling and protected Chromium
+        run: |
+          set -Eeuo pipefail
+          npm install --prefix firebase/auth-dev-tools --no-save --no-package-lock --ignore-scripts firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          ./firebase/auth-dev-tools/node_modules/.bin/playwright install chromium
+      - name: One approved Jhennypher Murga human protected DEV consolidation, full ACK and readback
+        run: |
+          set -Eeuo pipefail
+          node firebase/auth-dev-tools/cxorbia-i3-murga-residual-protected-dev-once.mjs
+          jq -e '(.decision=="PASS_RESIDUAL_MURGA_FUSION_AND_NAME_DEV" or
+            .decision=="PASS_RESIDUAL_MURGA_FUSION_PROFILE_NAME_PROJECTION_PENDING") and
+            .production==false and .providerAck==true and .identityConsolidated==true and
+            .idempotentReplays==2 and .keeperLoginPreserved==true and
+            .directAuthWrites==0 and .directFirestoreWrites==0 and .hrWrites==0 and
+            .credentialResets==0 and .deployments==0 and
+            .readback.providerDomainRowsPreserved==46 and
+            .readback.aliasesRetired==8 and .readback.canonicalMemberships==1' \
+            .tmp/cxorbia-i3-murga-residual-merge/result.json >/dev/null
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-murga-residual-${{ github.run_id }}
+          path: .tmp/cxorbia-i3-murga-residual-merge/result.json
+          if-no-files-found: warn
+          retention-days: 30
+
   approved-14-final-human-confirmed-dev-batch:
     if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-APPROVED-14-FINAL-DEV-ONCE-20261105' }}
     runs-on: ubuntu-24.04
