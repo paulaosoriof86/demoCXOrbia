@@ -1409,8 +1409,11 @@ async function autoConsolidateCompatibleExistingProfiles({auth,db,scope,shoppers
   return {consolidated,aliases,providerWrites,ambiguousGroups};
 }
 // I3 P0 — link an incoming, previously unmaterialized HR identity to exactly
-// one existing active principal. This is an exact country + normalized full
-// name + national phone match, NOT fuzzy/name-only identity adjudication.
+// one existing active principal. Prefer full-name/country/national-phone facts.
+// When the HR does not provide ANY phone, allow a unique strong full-name
+// (3+ tokens) + country + project match, with one verified Auth principal and
+// no contradictory identity facts or prior distinct-person adjudication.
+// Ambiguous cohorts stay in the existing durable human-review rail.
 async function planAutomaticIncomingHrAliases({db,scope,shoppers,authUsers,exactIdentityMap}){
   const tenant=db.collection('tenants').doc(scope.tenantId);
   const [profileSnap,userSnap,crossSnap,resolutionSnap]=await Promise.all([
@@ -1420,15 +1423,21 @@ async function planAutomaticIncomingHrAliases({db,scope,shoppers,authUsers,exact
   ]);
   const anchored=new Set(arr(profileSnap?.docs).map(doc=>str(doc.id)));
   const crossBySource=new Map(arr(crossSnap?.docs).map(doc=>[str(doc.id),doc.data()||{}]));
-  const byKey=new Map(),authByUid=new Map(arr(authUsers).map(u=>[str(u.uid),u]));
+  const byKey=new Map(),byStrongName=new Map(),authByUid=new Map(arr(authUsers).map(u=>[str(u.uid),u]));
   for(const doc of arr(profileSnap?.docs)){
-    const p=doc.data()||{},key=hrIdentityReviewKey(p);
-    if(!key||str(p.tenantId||scope.tenantId)!==scope.tenantId||
+    const p=doc.data()||{},key=hrIdentityReviewKey(p),strongName=hrStrongNameReviewKey(p);
+    if((!key&&!strongName)||str(p.tenantId||scope.tenantId)!==scope.tenantId||
        !uniq(p.projectIds).includes(scope.projectId)||p.active===false||
        !['hr_external','platform'].includes(str(p.sourceType).toLowerCase())||
        str(p.supersededByShopperId)||['inactive','superseded','retired','deleted','tombstoned','superseded_exact_alias'].includes(str(p.status||p.identityState).toLowerCase()))continue;
-    if(!byKey.has(key.key))byKey.set(key.key,[]);
-    byKey.get(key.key).push({id:doc.id,profile:p});
+    if(key){
+      if(!byKey.has(key.key))byKey.set(key.key,[]);
+      byKey.get(key.key).push({id:doc.id,profile:p});
+    }
+    if(strongName){
+      if(!byStrongName.has(strongName.key))byStrongName.set(strongName.key,[]);
+      byStrongName.get(strongName.key).push({id:doc.id,profile:p});
+    }
   }
   const members=arr(userSnap?.docs).filter(doc=>{
     const m=doc.data()||{},u=authByUid.get(doc.id);
@@ -1437,9 +1446,11 @@ async function planAutomaticIncomingHrAliases({db,scope,shoppers,authUsers,exact
   });
   const plans=new Map();
   for(const source of shoppers){
-    const sourceId=str(source.shopperId),key=hrIdentityReviewKey(source);
-    if(!sourceId||!key||anchored.has(sourceId)||exactIdentityMap.has(sourceId))continue;
-    const candidates=byKey.get(key.key)||[];
+    const sourceId=str(source.shopperId),key=hrIdentityReviewKey(source),strongName=hrStrongNameReviewKey(source);
+    const sourcePhone=normalizeIdentityPhone(source.whatsapp||source.phone||source.telefono||source.hrManaged?.whatsapp||source.hrManaged?.phone);
+    const missingPhoneFallback=!sourcePhone&&!key&&!!strongName;
+    if(!sourceId||(!key&&!missingPhoneFallback)||anchored.has(sourceId)||exactIdentityMap.has(sourceId))continue;
+    const candidates=missingPhoneFallback?(byStrongName.get(strongName.key)||[]):(byKey.get(key.key)||[]);
     if(candidates.length!==1||!compatibleIdentityProfiles([source,candidates[0].profile]))continue;
     const {id:canonicalShopperId}=candidates[0];
     if(sourceId===canonicalShopperId)continue;
@@ -1457,12 +1468,13 @@ async function planAutomaticIncomingHrAliases({db,scope,shoppers,authUsers,exact
     const allAuth=arr(authUsers).filter(u=>u.disabled!==true&&
       authPrincipalMatches(u,scope.tenantId,canonicalShopperId,scope.projectId));
     if(keepers.length!==1||allAuth.length!==1||keepers[0].id!==allAuth[0].uid)continue;
-    plans.set(sourceId,{canonicalShopperId,keeperUid:keepers[0].id});
+    plans.set(sourceId,{canonicalShopperId,keeperUid:keepers[0].id,
+      matchMethod:missingPhoneFallback?'unique_strong_name_country_missing_hr_phone':'exact_name_country_phone'});
     exactIdentityMap.set(sourceId,canonicalShopperId);
   }
   return plans;
 }
-async function confirmAutomaticIncomingHrAlias({db,scope,sourceShopperId,canonicalShopperId,keeperUid,sourceRevision}){
+async function confirmAutomaticIncomingHrAlias({db,scope,sourceShopperId,canonicalShopperId,keeperUid,sourceRevision,matchMethod='exact_name_country_phone'}){
   const tenant=db.collection('tenants').doc(scope.tenantId),
     links=tenant.collection('shopperIdentityLinks'),reviews=tenant.collection('shopperIdentityReviews');
   const linkId='irl_'+sha(['hr_incoming_exact_v1',scope.tenantId,scope.projectId,canonicalShopperId,sourceShopperId].join('\0')).slice(0,32);
@@ -1482,7 +1494,8 @@ async function confirmAutomaticIncomingHrAlias({db,scope,sourceShopperId,canonic
     canonicalShopperId,sourceSystem:'hr_external',sourceIdentityKey:sourceShopperId,
     exactAliases:[sourceShopperId],sourceAliases:[sourceShopperId],
     status:'active',state:'active',authorityType:'provider_auto_compatible',authorityRef,
-    autoNormalized:true,autoPolicyVersion:'hr_incoming_exact_v1',humanConfirmed:false,
+    autoNormalized:true,autoPolicyVersion:matchMethod==='unique_strong_name_country_missing_hr_phone'?'hr_incoming_unique_strong_name_v2':'hr_incoming_exact_v1',
+    matchMethod,humanConfirmed:false,
     sourceRevision,providerUidFingerprint:fingerprint,providerAck:true,
     sourceSafe:true,fuzzyMatching:false,createdAt:stamp,updatedAt:stamp
   };
@@ -1919,7 +1932,8 @@ export function createShopperCommandProvider({auth,db,policy,hrSnapshot=null,hrR
         if(plan){
           const linked=await confirmAutomaticIncomingHrAlias({
             db,scope,sourceShopperId:source.shopperId,
-            canonicalShopperId:plan.canonicalShopperId,keeperUid:plan.keeperUid,sourceRevision
+            canonicalShopperId:plan.canonicalShopperId,keeperUid:plan.keeperUid,sourceRevision,
+            matchMethod:plan.matchMethod
           });
           automaticIncomingAliases++;
           automaticIncomingReviewsResolved+=linked.resolvedReviews;
@@ -2014,3 +2028,4 @@ export function createShopperCommandProvider({auth,db,policy,hrSnapshot=null,hrR
 }
 
 export default {VERSION,COMMAND_TYPES,OPERATOR_ROLES,CREDENTIAL_RULE_VERSION,DURABLE_CREDENTIAL_SWEEP_VERSION,shopperCredentialRule,providerUidFingerprint,stableShopperUid,shoppersFromSnapshot,validateProviderPolicy,createShopperCommandProvider};
+

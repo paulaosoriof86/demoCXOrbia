@@ -1427,6 +1427,57 @@ test('I3 P0 / new HR id with diacritics and case reuses single canonical shopper
   assert.equal(auth.created,1);
 });
 
+test('I3 P0 / protected November HR without phone links one unique strong-name GT keeper and preserves Auth',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  const keeper='shopper_gt_damaris_name_keeper',alias='shopper_gt_damaris_protected_nov';
+  const earlier={...snapshot({shopperId:keeper}),visits:[{
+    id:'oct-namekeeper',shopperId:keeper,shopper:'Damarís de León',phone:'50255557788',
+    pais:'GT',country:'GT',sourceSafe:true,piiProtected:true,hrRowId:'OCT!3'
+  }]};
+  assert.equal((await p.reconcileSnapshot(earlier,{sourceRevision:'oct-name'})).authCreated,1);
+  const uid=stableShopperUid('tenant-a',keeper),before=await auth.getUser(uid),reviewId='sir-protected-nov';
+  db.seed('tenants/tenant-a/shopperIdentityReviews/'+reviewId,{
+    shopperIds:[alias,keeper],candidateShopperIds:[alias,keeper],status:'active',
+    tenantId:'tenant-a',projectScope:'project-a',reason:'SHOPPER_HR_NORM_NAME_PHONE_CANDIDATES_REVIEW_REQUIRED'
+  });
+  const nov={...snapshot({shopperId:alias}),visits:[
+    {id:'nov-no-phone-a',shopperId:alias,shopper:'Shopper protegido',pais:'GT',country:'GT',sourceSafe:true,piiProtected:true,hrRowId:'NOV!3'},
+    {id:'nov-no-phone-b',shopperId:alias,shopper:'Shopper protegido',pais:'GT',country:'GT',sourceSafe:true,piiProtected:true,hrRowId:'NOV!22'}
+  ]};
+  const identityByShopperId=new Map([[alias,{displayName:'  DAMARIS DE LEON  ',country:'GT'}]]);
+  const out=await p.reconcileSnapshot(nov,{sourceRevision:'nov-protected',identityByShopperId});
+  assert.equal(out.providerAck,true);assert.equal(out.automaticIncomingHrAliases,1);
+  assert.equal(out.automaticIncomingReviewsResolved,1);assert.equal(out.identityHeldShopperCount,0);
+  assert.equal(out.authCreated,0);assert.equal(auth.created,1);
+  assert.equal(db.get('tenants/tenant-a/shopperIdentityCrosswalk/'+alias).shopperId,keeper);
+  assert.equal(db.get('tenants/tenant-a/shoppers/'+alias),undefined);
+  assert.equal(db.get('tenants/tenant-a/shopperIdentityReviews/'+reviewId).status,'resolved_merged');
+  const paths=db.paths().filter(path=>path.includes('/shopperIdentityLinks/'));
+  assert.equal(paths.length,1);
+  assert.equal(db.get(paths[0]).matchMethod,'unique_strong_name_country_missing_hr_phone');
+  assert.equal(db.get(paths[0]).autoPolicyVersion,'hr_incoming_unique_strong_name_v2');
+  assert.equal((await auth.getUser(uid)).uid,before.uid);
+  const again=await p.reconcileSnapshot(nov,{sourceRevision:'nov-protected',identityByShopperId});
+  assert.equal(again.automaticIncomingHrAliases,0);assert.equal(again.providerWrites,0);
+});
+
+test('I3 P0 / missing HR phone with two same-name keepers stays in review without guessing Auth UID',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),keeper='shopper_gt_same_name_one',alias='shopper_gt_same_name_unknown';
+  const first={...snapshot({shopperId:keeper}),visits:[{id:'old',shopperId:keeper,shopper:'Damaris de León',phone:'55557788',pais:'GT',country:'GT',sourceSafe:true,piiProtected:true}]};
+  await p.reconcileSnapshot(first,{sourceRevision:'old'});
+  db.seed('tenants/tenant-a/shoppers/shopper_gt_same_name_two',{
+    id:'shopper_gt_same_name_two',shopperId:'shopper_gt_same_name_two',tenantId:'tenant-a',projectIds:['project-a'],
+    sourceType:'hr_external',nombre:'Damarís de León',pais:'GT',country:'GT',phone:'55556666',active:true
+  });
+  const nov={...snapshot({shopperId:alias}),visits:[{id:'new',shopperId:alias,shopper:'Shopper protegido',pais:'GT',country:'GT',sourceSafe:true,piiProtected:true}]};
+  const id=new Map([[alias,{displayName:'DAMARIS DE LEON',country:'GT'}]]);
+  const out=await p.reconcileSnapshot(nov,{sourceRevision:'new',identityByShopperId:id});
+  assert.equal(out.automaticIncomingHrAliases,0);assert.equal(out.identityHeldShopperCount,1);
+  assert.equal(db.get('tenants/tenant-a/shopperIdentityCrosswalk/'+alias),undefined);
+  assert.equal(db.paths().filter(path=>path.includes('/shopperIdentityLinks/')).length,0);
+  assert.equal(auth.created,1);
+});
+
 test('I3 P0 / genuinely new HR person still creates identity with no manual review',async()=>{
   const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
   const s={...snapshot({shopperId:'shopper_gt_newperson'}),visits:[{
@@ -1460,3 +1511,4 @@ test('I3 P0 / exact incoming HR match with explicit distinct decision never link
   assert.equal(db.get('tenants/tenant-a/shopperIdentityCrosswalk/'+alias),undefined);
   assert.equal(db.paths().filter(path=>path.includes('/shopperIdentityLinks/')).length,0);
 });
+
