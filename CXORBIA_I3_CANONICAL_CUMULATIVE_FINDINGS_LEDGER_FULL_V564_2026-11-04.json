@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "d9c4935987ec28a74f06df0319e97cbf5e232070",
-    "sourceTree": "e5ceeec5b810c8ad4c8c703682032dc0517ad0d4",
-    "predecessorSha": "6087774752e140361a4cd0b35aadf9fe25771611",
+    "sourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+    "sourceTree": "e6f941c511272dfb0d258e935d7c1526c83b31cb",
+    "predecessorSha": "d9c4935987ec28a74f06df0319e97cbf5e232070",
     "production": false,
-    "state": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+    "state": "HOLD_I3_EFFECT_FREE_HR_REPLAY_SOURCE_QA_PASS_PENDING_DEV_AND_ROLE_E2E",
     "november2026AutomaticPeriodSourceProof": {
       "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
       "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -38223,8 +38223,8 @@
   "successorOf": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V561_2026-11-04.json",
   "createdAt": "2026-11-04",
   "currentLedgerSuccessor": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V562_2026-11-04.json",
-  "currentProductSourceSha": "742f2300f3cc0ac726b5b54558b27b1cd63a462d",
-  "currentProductSourceTree": "e9452bf870ceaaad3dc51552e776e94d05a0644b",
+  "currentProductSourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+  "currentProductSourceTree": "e6f941c511272dfb0d258e935d7c1526c83b31cb",
   "vrm301VisitDetailBinding": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM301_DEV_HOSTING_RUN41801457655_ADMIN_READBACK_20261104.json",
     "receiptGitBlob": "b8138b76db5159956aa500fe30f2be0f99fc8fce",
@@ -38512,5 +38512,23 @@
     "readbackReceipt": "docs/checkpoints/CXORBIA_I3_S1_HR_AUTO_RECEIPT_POLICY_EPOCH_SOURCE_20261104.json",
     "production": false,
     "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_S1_HR_AUTO_POLICY_EPOCH_EXACT_DEV_RUN2168_20261104.json"
+  },
+  "i3Nov04EffectFreeReplayLoadingP0": {
+    "classification": "FUNCTIONAL_DEFECT",
+    "rootFinding": "VRM-134",
+    "sourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+    "sourceTree": "e6f941c511272dfb0d258e935d7c1526c83b31cb",
+    "predecessorSourceSha": "d9c4935987ec28a74f06df0319e97cbf5e232070",
+    "owner": "app/core/backend-hr-source-bridge.js",
+    "changedOwnerBlob": "7d7f3282fbd06019970a534f9d422945a0625576",
+    "qa": "tools/qa/cxorbia-i3-g05-sync-command-ui.test.cjs",
+    "localTestPass": 48,
+    "scope": "Avoid redundant entire HR rehydration only for ACK-confirmed effect-free exact-revision provider receipt replays; preserve full refresh for new writes and unverified scope",
+    "julissaResourceQA": "Correct real [data-doc] selector; requires DEV PDF bytes/view/download E2E",
+    "dev": "PENDING",
+    "roleE2E": "PENDING",
+    "modulePromotion": false,
+    "production": false,
+    "backlogRemaining": "G03 HR finanzas + 21-module actual same-artifact E2E"
   }
 }

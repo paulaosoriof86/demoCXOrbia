@@ -103,12 +103,12 @@
     }
   },
   "productSource": {
-    "sha": "d9c4935987ec28a74f06df0319e97cbf5e232070",
-    "treeSha": "e5ceeec5b810c8ad4c8c703682032dc0517ad0d4",
-    "predecessorProductSourceSha": "6087774752e140361a4cd0b35aadf9fe25771611",
-    "message": "I3 P0 verified durable exact-name/phone review for protected HR alias; generic guard, 63/63 local, no per-person hardcode",
-    "authorityState": "I3_P0_EXACT_DEV_MATERIALIZED_RUN2162_PENDING_SAME_ARTIFACT_ROLE_E2E",
-    "state": "I3_HOLD_5_OF_21_MATCH_NEW_SOURCE_DEV_SERVING"
+    "sha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+    "treeSha": "e6f941c511272dfb0d258e935d7c1526c83b31cb",
+    "predecessorProductSourceSha": "d9c4935987ec28a74f06df0319e97cbf5e232070",
+    "message": "I3 P0 effect-free HR receipt replay skip duplicate Admin hydration, generic per verified actor+HR revision; 48/48 local G05; Julissa real D07 PDF QA selector fix",
+    "authorityState": "I3_SOURCE_QA_PROVEN_PENDING_EXACT_DEV_AND_ROLE_E2E",
+    "state": "I3_HOLD_5_OF_21_MATCH_SOURCE_QA_ONLY_PENDING_DEV"
   },
   "controlHeadAtConstruction": "d9c4935987ec28a74f06df0319e97cbf5e232070",
   "phaseAComplete": false,
@@ -515,7 +515,7 @@
         "tools/hr-source/tya-live-provider-registry-identity-dev.mjs": "fb2050c2f28375a0417915771ab16f1783ef999e",
         "tools/hr-source/tya-resolve-live-month-tabs.mjs": "86c8d102c70f0d1edd541aedf7d0784c965cefbe",
         "backend/contracts/tya-hr-column-map-r20-v1.json": "105b322fe3fc20dded57eec35f123938c0c29fea",
-        "app/core/backend-hr-source-bridge.js": "547687fdcd78965aa2a987ba239c763252481fd8"
+        "app/core/backend-hr-source-bridge.js": "7d7f3282fbd06019970a534f9d422945a0625576"
       },
       "sourceStaticReproof": {
         "runId": 37159003511,
@@ -4952,7 +4952,7 @@
       "domain": "canonical-hr-state-adapters",
       "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
       "latestApprovedBlob": "93b11308c2b4078c292f6f68da0b9a72d1d8f0b0",
-      "currentBlob": "547687fdcd78965aa2a987ba239c763252481fd8",
+      "currentBlob": "7d7f3282fbd06019970a534f9d422945a0625576",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "COMPOSED_NOT_DEPLOYED",
@@ -17336,5 +17336,18 @@
     "production": false,
     "receiptPath": "docs/checkpoints/CXORBIA_I3_S1_HR_AUTO_RECEIPT_POLICY_EPOCH_SOURCE_20261104.json",
     "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_S1_HR_AUTO_POLICY_EPOCH_EXACT_DEV_RUN2168_20261104.json"
+  },
+  "i3Nov04EffectFreeReplayLoadingP0": {
+    "rootFinding": "VRM-134",
+    "classification": "FUNCTIONAL_DEFECT",
+    "sourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+    "sourceTree": "e6f941c511272dfb0d258e935d7c1526c83b31cb",
+    "ownerBlob": "7d7f3282fbd06019970a534f9d422945a0625576",
+    "qaPass": 48,
+    "dev": "PENDING",
+    "roleE2E": "PENDING",
+    "julissaPdf": "PENDING_REAL_PROTECTED_BYTES_AND_RENDER",
+    "moduleMatch": "5_OF_21_UNCHANGED",
+    "production": false
   }
 }

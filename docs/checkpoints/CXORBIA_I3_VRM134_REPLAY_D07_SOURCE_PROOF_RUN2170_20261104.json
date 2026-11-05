@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm134-replay-and-d07-qa-source-receipt.v1",
+  "observedAt": "2026-11-04",
+  "iteration": "I3",
+  "status": "HOLD",
+  "production": "DO_NOT_TOUCH",
+  "predecessorSourceSha": "d9c4935987ec28a74f06df0319e97cbf5e232070",
+  "sourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+  "sourceTree": "e6f941c511272dfb0d258e935d7c1526c83b31cb",
+  "classification": "FUNCTIONAL_DEFECT",
+  "rootFinding": "VRM-134",
+  "devMaterialization": "PENDING",
+  "currentDevServedPreviousSource": "d9c4935987ec28a74f06df0319e97cbf5e232070",
+  "sourceQA": {
+    "decision": "PASS_LOCAL_48_48_G05",
+    "tests": 48,
+    "pass": 48,
+    "fail": 0,
+    "changedOwners": [
+      "app/core/backend-hr-source-bridge.js"
+    ],
+    "change": "Do not repeat full authority-resetting backend refresh when exact current authenticated HR revision has ACK+readback and zero application effects on a durable provider receipt replay; refresh unchanged for new writes or uncertain replay."
+  },
+  "e2eQA": {
+    "script": "tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs",
+    "selectorCorrection": "previous [data-opend] was obsolete; actual resource button is #view button[data-doc]",
+    "guard": "Verify PDF protected bytes/render-ready canvas, enabled download and download event.",
+    "result": "PENDING_SAME_ARTIFACT_DEV_E2E"
+  },
+  "previousEvidence": {
+    "run2168": {
+      "runId": 41946997443,
+      "decision": "PASS_EXACT_DEV_MATERIALIZATION",
+      "runtimeRevision": "cxorbia-live-hr-dev-00346-5lh",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/9f203252d74f2dec",
+      "production": false
+    },
+    "run2169": {
+      "runId": 41947813990,
+      "decision": "PASS_REPRESENTATIVE_SAME_ARTIFACT_DEV_LIVE_REPROOF",
+      "damaris": "resolved_merged keeper shopper_gt_9c80e5538b",
+      "hrCurrentPeriodVisitCount": 44,
+      "assigned": 26,
+      "unresolvedAssignedVisits": 0,
+      "roleReadback": "Julissa visits 10 with accessible November resource listing"
+    },
+    "run2170": {
+      "runId": 41949172482,
+      "attempt": 2,
+      "representative": "PASS",
+      "providerSchedule": "PASS_VRM168_PROVIDER_SCHEDULE_PATH_CURRENT_PERIOD_NOVEMBER",
+      "qaCleanup": "PASS_NO_HR_WRITES",
+      "exhaustiveClicks": 20,
+      "exhaustive": "HOLD_NAVIGATION_TIMEOUT_MID_HR_REHYDRATION",
+      "julissaResourceListing": "PASS",
+      "binaryReadAndDownload": "NOT_PROVEN_PRIOR_SELECTOR_DRIFT"
+    }
+  },
+  "officialCertification": {
+    "modules": 21,
+    "match": 5,
+    "matchPercent": 23.81,
+    "notPromoted": 16,
+    "historicalFusion": "32/83 last independently read, 51 recensus",
+    "findingsLedger": "305 cumulative not active count"
+  },
+  "nextExactAction": "Materialize exactly source 09eed4f in DEV through existing vrm154-156-dev-materialization, inspect source-identity + provider runtime + hosting readback; then replay Admin/Shopper+Julissa PDF binary E2E, G03 HR/finanzas and all 21 module matrix. HOLD until PASS; I4 requires explicit production authorization."
+}
