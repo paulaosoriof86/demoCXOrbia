@@ -16,6 +16,7 @@ const arr=x=>Array.isArray(x)?x:[];
 const uniq=x=>[...new Set(arr(x).map(str).filter(Boolean))].sort();
 const hash=x=>crypto.createHash('sha256').update(String(x),'utf8').digest('hex');
 const norm=x=>str(x).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').toLowerCase();
+const countryCode=x=>({guatemala:'GT',gt:'GT',gtm:'GT',honduras:'HN',hn:'HN',hnd:'HN'})[norm(x)]||str(x).toUpperCase();
 const PROJECT=str(process.env.PROJECT||'cxorbia-backend-dev');
 const TENANT=str(process.env.TENANT_ID||'tya');
 const PROGRAM=str(process.env.PROJECT_ID||'cinepolis');
@@ -59,7 +60,7 @@ async function activeIdentityPreflight(item){
     p[id]=snap.data()||{};
     const actualName=fullName(p[id]);
     if(actualName&&actualName!==norm(item.normalizedFullName))throw Error('MAPPING_FAILURE:IDENTITY_NAME_CONTRADICTION_'+id);
-    const country=str(p[id].pais||p[id].country||p[id].hrManaged?.pais||p[id].hrManaged?.country).toUpperCase();
+    const country=countryCode(p[id].pais||p[id].country||p[id].hrManaged?.pais||p[id].hrManaged?.country);
     if(country&&country!==item.country)throw Error('MAPPING_FAILURE:IDENTITY_COUNTRY_CONTRADICTION_'+id);
   }
   const canonicalActive=await activeMembers(canonical),aliasActive=await Promise.all(aliases.map(activeMembers));
