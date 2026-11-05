@@ -103,12 +103,12 @@
     }
   },
   "productSource": {
-    "sha": "5c8dade1de10134e9c0aa4d8bdf953c979a2c1cf",
-    "treeSha": "7936711275f6215e21636125848d634de8218c7d",
-    "predecessorProductSourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
-    "message": "I3 P0 external HR shopper ID verified keeper source successor",
-    "authorityState": "I3_EXACT_DEV_RUN2182_STIVEN_BOTH_ROLES_PASS_AND_RUN42063057316_37_APPROVED_FUSIONS_ACK_READBACK_NO_PRODUCT_CHANGE",
-    "state": "I3_EXACT_DEV_RUN2196_5_OF_21_MATCH_PENDING_GT_HN_E2E"
+    "sha": "f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196",
+    "treeSha": "65d0beeb9282395867128691747b171cdbf3e3fe",
+    "predecessorProductSourceSha": "5c8dade1de10134e9c0aa4d8bdf953c979a2c1cf",
+    "message": "VRM-306 protected same-revision HR-approved name resolution",
+    "authorityState": "VRM306_SOURCE_PROVEN_DEV_PREDECESSOR_SERVING",
+    "state": "SOURCE_PROVEN_DEV_PENDING"
   },
   "controlHeadAtConstruction": "2b23686be39958cee0983b131ae7f56c8c0f430a",
   "phaseAComplete": false,
@@ -531,7 +531,7 @@
         "app/adapters/tya-canonical-state-semantics-v2.js": "a0104aa043ebdb7c9ee55cde5766ada8ed5e28fb",
         "app/adapters/tya-live-source-refresh-watch-v2.js": "8fa224fe7f7a565be8553bc855deef6d0e6a3b9f",
         "app/adapters/tya-live-source-inplace-apply.js": "45e1cd1b8c01d6276be2c256d5b99baa93e90252",
-        "backend/runtime/hr-live-service/server.mjs": "16b4526b30d5e72ddcf9d90f193e15c2826bd3d1",
+        "backend/runtime/hr-live-service/server.mjs": "ade2bdddcf02c970cb52538343e21beb4719012d",
         "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs": "f3823bbb7ac1cffd0d2e6ab7b8ddfc0b83fca3b8",
         "tools/hr-source/tya-build-live-hr-source-safe-static.mjs": "0b4dc7a1739479f43ed35cd80cb6789b89829e45",
         "tools/hr-source/tya-canonical-visit-state-r20.mjs": "b76677a6a49fc50624b0cd31142f29132f0caa5d",
@@ -2093,8 +2093,8 @@
         "app/adapters/cxorbia-shopper-admin-command-contract-v1.js": "e97ba5ec6838c946fd6322b0ea76b0a710b07e82",
         "backend/runtime/cxorbia-finance-command-provider-v1.mjs": "57aefc43bf0f1bf31fdeea4eb3e80119c9cd82ff",
         "backend/runtime/cxorbia-operational-command-provider-v1.mjs": "1747a810b8854f871a5bf10db745ea1d92c0d900",
-        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs": "5f8745b57b55d5e3785e5b8ba3b9a39190aac996",
-        "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs": "ca89c2867d4436402f1b56306e4f687638fc3994",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs": "ad5d48075328b8ae7e451cea9a225c47a764aaa2",
+        "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs": "3a05182c5b1b1968d6c06cd04a9a468f715b296e",
         "app/adapters/cxorbia-command-http-transport-v1.js": "72bdfcdaa5667b62b52962396631e1665506ba13",
         "app/adapters/cxorbia-hr-write-adapter-contract-v1.js": "aad818a8be3581397672ade7988c9a5ec9b4ccb0",
         "app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js": "9c6c3170e5ea8cde2693667b56534b8d0b0043ef",
@@ -7148,7 +7148,7 @@
       "f9ApprovedBlob": null,
       "latestApprovedSource": "144c58e2125aba6e49deefe0ce23fa9d94259cdb",
       "latestApprovedBlob": "8b9840fb0c1fbbab45bd100d0e2c7e21779187fc",
-      "currentBlob": "5f8745b57b55d5e3785e5b8ba3b9a39190aac996",
+      "currentBlob": "ad5d48075328b8ae7e451cea9a225c47a764aaa2",
       "loadTarget": "runtime-build",
       "phaseAAuthority": true,
       "classification": "COMPOSED_NOT_DEPLOYED",
@@ -7175,7 +7175,7 @@
       "f9ApprovedBlob": null,
       "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "latestApprovedBlob": "b1d2cd588fd7409ededba4dea1fdece0d08df91a",
-      "currentBlob": "ca89c2867d4436402f1b56306e4f687638fc3994",
+      "currentBlob": "3a05182c5b1b1968d6c06cd04a9a468f715b296e",
       "loadTarget": "runtime-build",
       "phaseAAuthority": true,
       "classification": "COMPOSED_NOT_DEPLOYED",
@@ -7228,7 +7228,7 @@
       "f9ApprovedBlob": null,
       "latestApprovedSource": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
       "latestApprovedBlob": "245157d6812321bec99d1d3d2d4e03261b4f21fa",
-      "currentBlob": "16b4526b30d5e72ddcf9d90f193e15c2826bd3d1",
+      "currentBlob": "ade2bdddcf02c970cb52538343e21beb4719012d",
       "loadTarget": "runtime-service",
       "phaseAAuthority": true,
       "classification": "COMPOSED_NOT_DEPLOYED",
@@ -8107,7 +8107,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "I3 HOLD / 2026-11-05 RUN42063057316 37/37 nuevas fusiones DEV ACK+readback PASS, cohort 69/83 verificadas, 14 pendientes (11 múltiples HR canónicos, 2 segundos inicios recientes, 1 keeper sin prueba). Una sola fuente de producto 09eed4f, mismo DEV Hosting y runtime; Stiven RUN2182 Admin10/Shopper10 PASS, NO repetir 10/0. NEXT: demostrar multi-HR canonical readmodel/crosswalk with no HR mutation, reconciliar y adjudicar los restantes 14 solo con keeper/visitas seguros; después 16 módulos no MATCH por contrato, cuestionario 15Q, finanzas/HR, recursos PDF, roles GT/HN, Gate20/21 artefacto inmutable. 5/21 MATCH conservados, Gate20/21 HOLD, I4 no autorizado, producción DO_NOT_TOUCH.",
+  "nextExactAction": "I3 V9 HOLD: fuente VRM-306 f5f653d (HR nombre privado mismo snapshot y prioridad maestro sobre visitas) pasa 66/66 fuente, todavia NO materializada DEV; DEV sirve predecesor 5c8dade RUN42118170286. RUN42122741419 bloqueado SHOPPER_IDENTITY_EXTERNAL_HR_APPROVED_NAME_MISMATCH con 0 escrituras. 83/83 fusiones lote previo y 16/16 celdas HR PASS. Dos grupos adicionales Jhennypher Murga GT (11 perfiles/3 Auth/46 referencias) y Rocio Vilca HN (5 perfiles/3 Auth/2 HR IDs), sin fusion confirmado. Pasos: CI canonico, materializar exactamente f5f653d en DEV, ACK protegido e idempotencia + readback ambos grupos, G03 HR finanzas bloqueado HR_RECONCILIATION_SCOPE_BUSY con readback del recibo, GT/HN roles E2E, 16 modulos pendientes certificacion. Matriz 5/21 MATCH. Gate20/21 HOLD, I4 no autorizada, produccion intacta.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -17402,5 +17402,55 @@
     "verifiedOriginalCohort": "83_OF_83",
     "moduleMatchIncrement": 0,
     "production": false
+  },
+  "i3P0PrivateHrNameSource20261105": {
+    "sourceSha": "f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196",
+    "sourceTree": "65d0beeb9282395867128691747b171cdbf3e3fe",
+    "predecessorSourceSha": "5c8dade1de10134e9c0aa4d8bdf953c979a2c1cf",
+    "sourceTestsPass": 66,
+    "sourceTestsFail": 0,
+    "sourceTestScope": "LOCAL_SOURCE_SYNTHETIC_ONLY",
+    "sourceFix": "Provider internal same-revision private HR identity map; source master authoritative over stale visit names; no display-name hardcode",
+    "sourceFiles": [
+      "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+      "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+      "backend/runtime/hr-live-service/server.mjs",
+      "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs"
+    ],
+    "protectedAttemptRunId": 42122741419,
+    "protectedAttemptDecision": "HOLD_PROVIDER_ACK_UNKNOWN_STOP_NO_RETRY",
+    "protectedProviderCode": "SHOPPER_IDENTITY_EXTERNAL_HR_APPROVED_NAME_MISMATCH",
+    "protectedProviderWrites": 0,
+    "protectedReadbackRunId": 42122364354,
+    "originalCohortGroupFusions": 83,
+    "originalCohortGroupTotal": 83,
+    "hrNameCellsVerified": 16,
+    "pendingAdditionalGroups": [
+      {
+        "name": "Jhennypher Murga",
+        "country": "GT",
+        "keeperLogin": "jennypher.murga",
+        "profiles": 11,
+        "activeAuth": 3,
+        "historicalRefs": 46
+      },
+      {
+        "name": "Rocío Vilca",
+        "country": "HN",
+        "keeperLogin": "rocio.vilca",
+        "profiles": 5,
+        "activeAuth": 3,
+        "externalHrIds": 2
+      }
+    ],
+    "currentServedDevPredecessorSha": "5c8dade1de10134e9c0aa4d8bdf953c979a2c1cf",
+    "currentServedRunId": 42118170286,
+    "certifiedModules": 5,
+    "totalModules": 21,
+    "remainingModules": 16,
+    "production": false,
+    "devMaterialization": "PENDING",
+    "groupWrite": "NOT_EXECUTED_WITH_CORRECTED_DEV_SOURCE",
+    "fullPhaseA": "HOLD"
   }
 }

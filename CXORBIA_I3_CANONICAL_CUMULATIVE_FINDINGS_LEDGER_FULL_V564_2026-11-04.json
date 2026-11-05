@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "5c8dade1de10134e9c0aa4d8bdf953c979a2c1cf",
-    "sourceTree": "7936711275f6215e21636125848d634de8218c7d",
-    "predecessorSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+    "sourceSha": "f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196",
+    "sourceTree": "65d0beeb9282395867128691747b171cdbf3e3fe",
+    "predecessorSha": "5c8dade1de10134e9c0aa4d8bdf953c979a2c1cf",
     "production": false,
-    "state": "HOLD_I3_EXACT_DEV_RUN2196_GT_HN_ROLE_E2E_AND_RESIDUAL_IDENTITY_PENDING",
+    "state": "HOLD_VRM306_SOURCE_ONLY_DEV_PREDECESSOR",
     "november2026AutomaticPeriodSourceProof": {
       "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
       "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -21567,6 +21567,50 @@
         "production": false,
         "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_S1_HR_AUTO_POLICY_EPOCH_EXACT_DEV_RUN2168_20261104.json"
       }
+    },
+    "VRM-306": {
+      "id": "VRM-306",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0",
+      "taskIds": [
+        "A01",
+        "A02",
+        "G03"
+      ],
+      "relatedFindings": [
+        "VRM-305"
+      ],
+      "title": "Approved external-HR shopper identity was rejected due to stale/masked snapshot name despite private same-revision identity map",
+      "firstObservedAt": "2026-11-05",
+      "observed": "RUN42122741419 protected provider rejected Jhennypher Murga with SHOPPER_IDENTITY_EXTERNAL_HR_APPROVED_NAME_MISMATCH (providerWrites=0); Rocío Vilca not attempted, readback RUN42122364354 shows neither group merged; original 83/83 cohort preserved.",
+      "expected": "Read one authoritative same-revision protected HR identity map; compare approved keeper to HR master ahead of historical visit labels; maintain credential, crosswalk, visits and finance and reject real identity conflicts.",
+      "rootCause": "SOURCE/MAPPING_FAILURE: existing runtime did not supply server-private cache.identity map to protected adjudication. snapshot shoppers name was masked and historical visit display could override corrected operational name.",
+      "sourceFixCommit": "f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196",
+      "sourceFixTree": "65d0beeb9282395867128691747b171cdbf3e3fe",
+      "predecessorSourceSha": "5c8dade1de10134e9c0aa4d8bdf953c979a2c1cf",
+      "ownerFiles": [
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+        "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+        "backend/runtime/hr-live-service/server.mjs",
+        "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs"
+      ],
+      "sourceTests": {
+        "pass": 66,
+        "fail": 0,
+        "scope": "local synthetic source; not provider ACK or live E2E"
+      },
+      "state": "SOURCE_PROVEN_DEV_MATERIALIZATION_REQUIRED",
+      "protectedReadbackRunId": 42122364354,
+      "blockedProtectedAttemptRunId": 42122741419,
+      "providerWrites": 0,
+      "hrWrites": 0,
+      "production": false,
+      "approvedPendingGroups": [
+        "Jhennypher Murga GT keeper jennypher.murga",
+        "Rocío Vilca HN keeper rocio.vilca"
+      ],
+      "modulePromotions": 0,
+      "reviewRequired": "DEV provider receipt + idempotency + Auth/historical readback"
     }
   },
   "latestEvidenceOverrides": {
@@ -22316,7 +22360,7 @@
     ],
     "findingCount": 305,
     "expectedCurrentRange": "VRM-001..VRM-305",
-    "nextFindingId": "VRM-306",
+    "nextFindingId": "VRM-307",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_I3_REMAINING_E2E_HUMAN_GATE_AFTER_VRM153_DEV_DURABLE_PASS",
@@ -22334,8 +22378,8 @@
     "userReportedRequirementsFrozenAt": "2026-09-30T20:18:00-06:00",
     "userReviewComplete": true,
     "userReviewEvidence": "19 screenshots plus complete Shopper/Admin observations supplied 2026-10-02",
-    "currentProductSourceSha": "9ca91af24f1b3810c1c53a6566757617066d5314",
-    "currentProductSourceTree": "81cd6bbd181b7e43007926643716e5086f42079b",
+    "currentProductSourceSha": "f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196",
+    "currentProductSourceTree": "65d0beeb9282395867128691747b171cdbf3e3fe",
     "currentMaterialization": {
       "state": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
       "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
@@ -22668,7 +22712,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "I3 HOLD / RUN2168 exact DEV PASS from d9c49359: 1 build, Cloud Run 00346-5lh, Hosting 9f203252d74f2dec, HR same independent cdc40258e980 revision 18 periods/792 visits, 114/114 identity source tests PASS and 46/46 G05 local; Damaris NOVIEMBRE!3+!22 has not yet received real authenticated provider crosswalk ACK. NEXT exact existing phasea-representative-same-artifact-live-reproof (no rebuild): Admin/Shopper GT/HN, Damaris keeper unique, Julissa inherited PDF real viewer/download, Stiven Admin 10 vs Shopper 0, historical/HR/finanzas, G03 parity. Freeze 5/21 MATCH, historic fusion readback 32/83 and 51 recensus pending. G03 historical Hosting 231186c337bcd0ba preserved. Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH.",
+  "exactNextAction": "I3 V9 HOLD: fuente VRM-306 f5f653d (HR nombre privado mismo snapshot y prioridad maestro sobre visitas) pasa 66/66 fuente, todavia NO materializada DEV; DEV sirve predecesor 5c8dade RUN42118170286. RUN42122741419 bloqueado SHOPPER_IDENTITY_EXTERNAL_HR_APPROVED_NAME_MISMATCH con 0 escrituras. 83/83 fusiones lote previo y 16/16 celdas HR PASS. Dos grupos adicionales Jhennypher Murga GT (11 perfiles/3 Auth/46 referencias) y Rocio Vilca HN (5 perfiles/3 Auth/2 HR IDs), sin fusion confirmado. Pasos: CI canonico, materializar exactamente f5f653d en DEV, ACK protegido e idempotencia + readback ambos grupos, G03 HR finanzas bloqueado HR_RECONCILIATION_SCOPE_BUSY con readback del recibo, GT/HN roles E2E, 16 modulos pendientes certificacion. Matriz 5/21 MATCH. Gate20/21 HOLD, I4 no autorizada, produccion intacta.",
   "supersedesGitBlob": "086542151de0b223afbd258f1f65be6ca886684d",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -22697,7 +22741,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-306",
+  "nextFindingId": "VRM-307",
   "lastControlFailure": {
     "id": "RUN1238_NEXT_FINDING_ID_GOVERNANCE_DESYNC",
     "classification": "MAPPING_FAILURE",
@@ -38224,8 +38268,8 @@
   "successorOf": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V561_2026-11-04.json",
   "createdAt": "2026-11-04",
   "currentLedgerSuccessor": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V562_2026-11-04.json",
-  "currentProductSourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
-  "currentProductSourceTree": "e6f941c511272dfb0d258e935d7c1526c83b31cb",
+  "currentProductSourceSha": "f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196",
+  "currentProductSourceTree": "65d0beeb9282395867128691747b171cdbf3e3fe",
   "vrm301VisitDetailBinding": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM301_DEV_HOSTING_RUN41801457655_ADMIN_READBACK_20261104.json",
     "receiptGitBlob": "b8138b76db5159956aa500fe30f2be0f99fc8fce",
@@ -38591,5 +38635,55 @@
     "humanAcceptance": "PENDING",
     "firestoreRulesetEvidence": "UNCHANGED_RUN2196_NO_RULES_DEPLOY",
     "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM217_219_DEV_RUN2196_20261105.json"
+  },
+  "i3P0PrivateHrNameSource20261105": {
+    "sourceSha": "f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196",
+    "sourceTree": "65d0beeb9282395867128691747b171cdbf3e3fe",
+    "predecessorSourceSha": "5c8dade1de10134e9c0aa4d8bdf953c979a2c1cf",
+    "sourceTestsPass": 66,
+    "sourceTestsFail": 0,
+    "sourceTestScope": "LOCAL_SOURCE_SYNTHETIC_ONLY",
+    "sourceFix": "Provider internal same-revision private HR identity map; source master authoritative over stale visit names; no display-name hardcode",
+    "sourceFiles": [
+      "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+      "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+      "backend/runtime/hr-live-service/server.mjs",
+      "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs"
+    ],
+    "protectedAttemptRunId": 42122741419,
+    "protectedAttemptDecision": "HOLD_PROVIDER_ACK_UNKNOWN_STOP_NO_RETRY",
+    "protectedProviderCode": "SHOPPER_IDENTITY_EXTERNAL_HR_APPROVED_NAME_MISMATCH",
+    "protectedProviderWrites": 0,
+    "protectedReadbackRunId": 42122364354,
+    "originalCohortGroupFusions": 83,
+    "originalCohortGroupTotal": 83,
+    "hrNameCellsVerified": 16,
+    "pendingAdditionalGroups": [
+      {
+        "name": "Jhennypher Murga",
+        "country": "GT",
+        "keeperLogin": "jennypher.murga",
+        "profiles": 11,
+        "activeAuth": 3,
+        "historicalRefs": 46
+      },
+      {
+        "name": "Rocío Vilca",
+        "country": "HN",
+        "keeperLogin": "rocio.vilca",
+        "profiles": 5,
+        "activeAuth": 3,
+        "externalHrIds": 2
+      }
+    ],
+    "currentServedDevPredecessorSha": "5c8dade1de10134e9c0aa4d8bdf953c979a2c1cf",
+    "currentServedRunId": 42118170286,
+    "certifiedModules": 5,
+    "totalModules": 21,
+    "remainingModules": 16,
+    "production": false,
+    "devMaterialization": "PENDING",
+    "groupWrite": "NOT_EXECUTED_WITH_CORRECTED_DEV_SOURCE",
+    "fullPhaseA": "HOLD"
   }
 }
