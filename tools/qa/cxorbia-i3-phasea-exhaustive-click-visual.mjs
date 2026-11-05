@@ -176,8 +176,28 @@ async function deepShopperActions(page,target,key){
   cov.certControls=await page.locator('#view button,#view select,#view input').count();
 
   await nav(page,'documentos');
-  cov.resourceOpen=await click(page,'[data-opend],.docOpen,[data-open]');
-  if(cov.resourceOpen){await page.waitForTimeout(160);await dismissOverlays(page);}
+  // D07: the actual approved resource control is data-doc, not the obsolete
+  // data-opend selector. Verify protected bytes, canvas and real download UI.
+  cov.resourceOpen=await click(page,'#view button[data-doc]');
+  if(cov.resourceOpen){
+    await page.waitForFunction(()=>{const s=document.querySelector('#view [data-pdf-status]');return s?.dataset.pdfStatus==='ready'||s?.dataset.pdfStatus==='failed';},null,{timeout:50000}).catch(()=>{});
+    cov.resourcePdf=await page.evaluate(()=>{
+      const status=document.querySelector('#view [data-pdf-status]'),canvas=document.querySelector('#view [data-pdf-viewer] canvas'),download=document.querySelector('#view [data-pdf-download]');
+      return {status:String(status?.dataset?.pdfStatus||'missing'),page:String(document.querySelector('#view [data-pdf-page]')?.textContent||''),canvasReady:!!(canvas?.width>0&&canvas?.height>0),downloadEnabled:!!(download&&!download.disabled)};
+    });
+    if(cov.resourcePdf.status!=='ready'||!cov.resourcePdf.canvasReady||!cov.resourcePdf.downloadEnabled)
+      finding('FUNCTIONAL_DEFECT','SHOPPER_RESOURCE_PDF_NOT_VERIFIED',{shopper:key,pdf:cov.resourcePdf});
+    if(cov.resourcePdf.downloadEnabled){
+      try{
+        const downloaded=page.waitForEvent('download',{timeout:15000});
+        if(await click(page,'#view [data-pdf-download]')){
+          const file=await downloaded;cov.resourcePdf.downloadTriggered=/\.pdf$/i.test(file.suggestedFilename());
+          if(!cov.resourcePdf.downloadTriggered)finding('FUNCTIONAL_DEFECT','SHOPPER_RESOURCE_PDF_DOWNLOAD_NAME_INVALID',{shopper:key});
+        }
+      }catch(e){cov.resourcePdf.downloadTriggered=false;finding('FUNCTIONAL_DEFECT','SHOPPER_RESOURCE_PDF_DOWNLOAD_FAILED',{shopper:key});}
+    }
+    if(await page.locator('#view #docBack').count())await page.locator('#view #docBack').click();
+  }
 
   await nav(page,'beneficios');
   cov.benefitFilterExercises=0;

@@ -281,6 +281,19 @@
       if(response?.ok!==true||response?.providerAck!==true||response?.readbackVerified!==true||response?.publishUiAllowed!==true){
         return response;
       }
+      // A durable, effect-free replay cannot change the already composed
+      // authenticated view. Re-hydrating it again resets HR authority while
+      // users navigate, and can strand a route behind the loading gate.
+      // Preserve the full refresh on first commit, new effects or any scope
+      // mismatch. This is scoped to the exact verified actor + HR revision,
+      // never to a shopper, calendar month or locally cached receipt.
+      const writes=response.applicationWritesThisAttempt;
+      if(response.idempotentReplay===true&&writes&&writes.auth===0&&writes.firestore===0&&
+        sameSyncContext(capture)){
+        response.viewRefreshVerified=true;
+        response.viewRefresh='already_verified_current_session';
+        return response;
+      }
       // Refresh only after a confirmed durable command. The existing backend
       // refresh wrapper reconstitutes the verified HR + operational read model.
       if(typeof CX.backend?.refresh==='function'){

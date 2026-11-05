@@ -87,6 +87,30 @@ test('G05 automatic reconciliation starts only on verified Admin HR authority, r
   assert.equal(f.calls.refreshes,1);
   assert.equal(f.calls.saves,0);assert.equal(f.calls.projectWrites,0);
 });
+test('G05 committed effect-free provider replay preserves already verified Admin view without redundant full hydration',async()=>{
+  const f=fixture();
+  f.setTransport(command=>f.ack(command,{idempotentReplay:true,applicationWritesThisAttempt:{auth:0,firestore:0}}));
+  const result=await f.auto();
+  assert.equal(result.ok,true);assert.equal(result.providerAck,true);assert.equal(result.readbackVerified,true);
+  assert.equal(result.viewRefreshVerified,true);
+  assert.equal(result.viewRefresh,'already_verified_current_session');
+  assert.equal(f.calls.commands.length,1);
+  assert.equal(f.calls.refreshes,0,'replay must not interrupt navigation with a second hydration');
+  noSideWrites(f);
+});
+test('G05 newly committed reconciliation and replay with application effects still refresh the verified source',async()=>{
+  for(const extra of [
+    {idempotentReplay:false,applicationWritesThisAttempt:{auth:0,firestore:0}},
+    {idempotentReplay:true,applicationWritesThisAttempt:{auth:0,firestore:1}},
+    {idempotentReplay:true}
+  ]){
+    const f=fixture();f.setTransport(command=>f.ack(command,extra));
+    const result=await f.auto();
+    assert.equal(result.viewRefreshVerified,true);
+    assert.equal(result.viewRefresh,'confirmed');
+    assert.equal(f.calls.refreshes,1,'unverified replay or new writes must retain refresh');
+  }
+});
 test('G05 automatic reconciliation never writes for shoppers or unverified authority',async()=>{
   for(const kind of ['shopper','ops','authority_pending']){
     const f=fixture();
