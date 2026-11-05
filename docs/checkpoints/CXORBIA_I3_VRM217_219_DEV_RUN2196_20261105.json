@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "cxorbia.i3.dev-materialization.run2196.v1",
+  "iteration": "I3",
+  "status": "HOLD",
+  "decision": "PASS_VRM217_219_EXACT_DEV_MATERIALIZATION",
+  "source": {
+    "sha": "5c8dade1de10134e9c0aa4d8bdf953c979a2c1cf",
+    "tree": "7936711275f6215e21636125848d634de8218c7d",
+    "predecessorSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9"
+  },
+  "materialization": {
+    "state": "PASS_VRM217_219_EXACT_DEV_MATERIALIZATION",
+    "decision": "PASS_VRM217_219_EXACT_DEV_MATERIALIZATION",
+    "runId": 42118170286,
+    "runNumber": 2196,
+    "jobId": 127563537967,
+    "artifactId": 13458026510,
+    "sourceSha": "5c8dade1de10134e9c0aa4d8bdf953c979a2c1cf",
+    "sourceTree": "7936711275f6215e21636125848d634de8218c7d",
+    "artifactDigest": "sha256:2fe399852abc95b7cbcb18f17b5f72b67797e0d334d943351bde88f487916938",
+    "artifactDigestType": "GITHUB_ACTIONS_ZIP_SHA256",
+    "artifactZipSha256": "2fe399852abc95b7cbcb18f17b5f72b67797e0d334d943351bde88f487916938",
+    "runtimeRevision": "cxorbia-live-hr-dev-00348-g59",
+    "runtimeDigest": "sha256:7db9ea4ae2dfd7674f067a4c64cd8f694a26cdecfc127303d08be7ca1b7efd2d",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/5a53ded22a2a68b4",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1793916436691000",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
+    "hrRevision": "63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "firestoreRulesDeploys": 0,
+    "storageRulesDeploys": 0,
+    "hrWrites": 0,
+    "production": false,
+    "sourceIdentityVerified": true,
+    "runtimeSourceVerified": true,
+    "controlHeadAtDeploy": "64f967685ccbd3ab70cc3167c27ee688002e44ce",
+    "sourceArtifactDigest": "sha256:2fe399852abc95b7cbcb18f17b5f72b67797e0d334d943351bde88f487916938",
+    "archiveZipDigest": "sha256:2fe399852abc95b7cbcb18f17b5f72b67797e0d334d943351bde88f487916938",
+    "githubArtifactZipSha256": "2fe399852abc95b7cbcb18f17b5f72b67797e0d334d943351bde88f487916938",
+    "fullTaskClosed": false,
+    "humanAcceptance": "PENDING",
+    "firestoreRulesetEvidence": "UNCHANGED_RUN2196_NO_RULES_DEPLOY",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM134_EFFECT_FREE_REPLAY_DEV_RUN2172_20261104.json"
+  },
+  "verification": {
+    "sourceTreeExact": true,
+    "cloudRunReady": true,
+    "hostingAssetsExact": true,
+    "independentHrRevisionStable": true,
+    "readOnlyHr": true,
+    "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/42118170286",
+    "jobId": 127563537967,
+    "artifactId": 13458026510
+  },
+  "identityFusion": {
+    "murga": "NOT_YET_EXECUTED",
+    "rocio": "NOT_YET_EXECUTED"
+  },
+  "modules": {
+    "match": 5,
+    "total": 21,
+    "changes": 0
+  },
+  "production": false
+}
