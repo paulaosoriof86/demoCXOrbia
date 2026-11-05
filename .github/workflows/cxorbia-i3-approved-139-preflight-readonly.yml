@@ -1,10 +1,11 @@
-name: CXOrbia I3 Approved Shopper Identity Cohort Preflight Readonly
+name: CXOrbia I3 Approved Shopper Identity Cohort Preflight and Bounded DEV Batch
 on:
   push:
     branches: [recovery/cxorbia-phase-a-20260831]
     paths:
       - .github/workflows/cxorbia-i3-approved-139-preflight-readonly.yml
       - firebase/auth-dev-tools/cxorbia-i3-approved-139-preflight-readonly.mjs
+      - firebase/auth-dev-tools/cxorbia-i3-approved-139-batch-dev-once.mjs
       - firebase/auth-dev-tools/cxorbia-i3-approved-139-pair-hashes.json
 permissions:
   contents: read
@@ -85,6 +86,72 @@ jobs:
 # I3 approved strong-five sequential readback 40812539393: rerun exact 139-pair preflight, no writes.
 # I3 P0 prevention: source-only fail-closed manual identity review; protected provider blob checked above.
 # I3 availability P0: source-only active-period/country empty-state explanation; exact blob guard and 4 regression cases.
+
+  # Reuse the already approved 139-pair DEV identity lane; no new workflow,
+  # alternate product candidate, production write or HR data import.
+  approved-139-single-bounded-dev-batch:
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-APPROVED-139-BATCH-DEV-ONCE' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      GCLOUD_PROJECT: cxorbia-backend-dev
+      GOOGLE_CLOUD_PROJECT: cxorbia-backend-dev
+      CX_I3_APPROVED139_BATCH: PAULA_2026_10_28_139_PAIRS_83_GROUPS_DEV_BATCH_SINGLE_RUN
+      CX_I3_APPROVED139_DIGEST: ac3e15184316d62aa53942359e857f2c34dec486a2ca41057e529a39f062d872
+      CX_I3_APPROVED139_BATCH_OUT: .tmp/i3-approved139-batch
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Prewrite immutable product, exact branch and DEV-only guards
+        run: |
+          set -Eeuo pipefail
+          test "$GITHUB_REF_NAME" = 'recovery/cxorbia-phase-a-20260831'
+          test "$GITHUB_EVENT_NAME" = push
+          test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
+          test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
+          SOURCE="$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          TREE="$(jq -r '.productTreeAuthority' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          test "$SOURCE" = '09eed4f012f9ad04e49d53569aabd86bd4c832a9'
+          test "$(git rev-parse "$SOURCE^{tree}")" = "$TREE"
+          git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules
+          node --check firebase/auth-dev-tools/cxorbia-i3-approved-139-batch-dev-once.mjs
+      - name: Exact provider, identity and HR source focal regressions
+        run: |
+          set -Eeuo pipefail
+          node backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
+          node backend/runtime/hr-live-service/test/cxorbia-i3-project-period-contract.test.mjs
+          node tools/qa/cxorbia-i3-shopper-name-collision-normalization.test.mjs
+          node tools/qa/cxorbia-i3-shopper-identity-review-rail-notice.test.mjs
+          node --test tools/qa/cxorbia-i3-available-visits-active-period-scope.test.mjs
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Install scoped authenticated DEV command dependencies
+        run: |
+          set -Eeuo pipefail
+          npm install --prefix firebase/auth-dev-tools --no-save --no-package-lock --ignore-scripts firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          ./firebase/auth-dev-tools/node_modules/.bin/playwright install chromium
+      - name: One 83-group DEV batch, verified provider ACK and safe isolated holds
+        run: |
+          set -Eeuo pipefail
+          node firebase/auth-dev-tools/cxorbia-i3-approved-139-batch-dev-once.mjs
+          jq -e '.decision=="PASS_VERIFIED_DEV_BATCH_WITH_FOCAL_HOLDS" and
+            .production==false and .approvedPairCount==139 and .approvedGroupCount==83 and
+            .preflight.verifiedCasePairs==139 and .preflight.verifiedHrNames==97 and
+            .alreadyVerified>=32 and .merged>0 and .remaining==83-.alreadyVerified-.merged and
+            .directAuthWrites==0 and .directFirestoreWrites==0 and .hrWrites==0 and
+            .credentialResets==0 and .deployments==0' "$CX_I3_APPROVED139_BATCH_OUT/result.json" >/dev/null
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-approved-139-bounded-dev-batch-${{ github.run_id }}
+          path: .tmp/i3-approved139-batch/result.json
+          if-no-files-found: warn
+          retention-days: 30
 
 # Post-pass independent 83-group readback after 21/21 exact DEV strong provider and UI passes in run 40813627623.
 # F046 exact one-visit/one-cert protected DEV canary 40817081883: independent 139/83 READ-ONLY postflight; no data changes.
