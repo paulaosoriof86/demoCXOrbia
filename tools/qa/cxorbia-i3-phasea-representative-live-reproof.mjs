@@ -99,7 +99,7 @@ const requiredProfileFields=p=>[
 ].filter(([,v])=>!str(v)).map(([k])=>k);
 const authExists=async uid=>{try{await auth.getUser(uid);return true;}catch(e){if(str(e?.code)==='auth/user-not-found')return false;throw e;}};
 
-const targetNames=['Julissa Flores','Priscila López','Paula Osorio'];
+const targetNames=['Julissa Flores','Priscila López','Paula Osorio','Stiven López'];
 const targets=[],profileById=new Map(profiles.map(p=>[p.id,p]));
 for(const name of targetNames){
   const namedProfiles=profiles.filter(p=>norm(profileName(p))===norm(name));
@@ -302,6 +302,28 @@ try{
     write(evidence);
     if(base.sessionShopperId!==target.profile.id)throw new Error('MAPPING_FAILURE:SESSION_NOT_CANONICAL:'+target.name+':'+JSON.stringify(base));
     if(base.ownVisits!==base.uniqueOwnVisits)throw new Error('MAPPING_FAILURE:DUPLICATE_OWN_VISITS:'+target.name+':'+JSON.stringify(base));
+    // VRM-304: user-approved stiven.lopez fusion is done. Reprove the real
+    // isolated Shopper principal/history across periods on the same DEV
+    // artifact instead of repeating an Admin-only consolidation.
+    if(target.name==='Stiven López'){
+      const expectedId='shopper_gt_319cd82eaf';
+      const visibleLogin=str(target.member.visibleLogin||target.member.username||target.member.user).toLowerCase();
+      const stiven={
+        expectedCanonicalShopperId:expectedId,visibleLogin,
+        memberShopperId:str(target.member.shopperId),profileId:str(target.profile.id),
+        authShopperId:base.authShopperId,canonicalShopperId:base.canonicalShopperId,
+        sessionShopperId:base.sessionShopperId,sessionProfileId:base.sessionProfile?.id||'',
+        historicalVisits:base.ownVisits,uniqueHistoricalVisits:base.uniqueOwnVisits,
+        expectedHistoricalVisits:10,sourceRevision:revision
+      };
+      evidence.stivenExactShopperReproof=stiven;
+      write(evidence);
+      if(visibleLogin!=='stiven.lopez'||target.profile.id!==expectedId||
+        base.sessionShopperId!==expectedId||base.canonicalShopperId!==expectedId||
+        base.sessionProfile?.id!==expectedId||base.ownVisits!==10||
+        base.uniqueOwnVisits!==10)
+        throw new Error('MAPPING_FAILURE:VRM304_STIVEN_REAL_SHOPPER_HISTORICAL_10_MISSING:'+JSON.stringify(stiven));
+    }
 
     await nav(page,'midia');
     const midia=await page.evaluate(branch=>{const text=String(document.body?.innerText||''),rail=[...document.querySelectorAll('.rail-user')].map(x=>String(x.innerText||'').replace(/\s+/g,' ').trim()).join(' | '),heading=String(document.querySelector('.page-h,.page-head,.page-title')?.innerText||''),actions=[...document.querySelectorAll('[data-visit-action]')].map(b=>({action:String(b.dataset.visitAction||''),visitId:String(b.dataset.visitId||''),text:String(b.innerText||'').trim()})),progress=[...document.querySelectorAll('.cx-day-progress-card')].map(c=>String(c.innerText||'').replace(/\s+/g,' ').trim());return {text:text.slice(0,2200),noActive:/Sin visitas activas/i.test(text),branchVisible:branch?text.includes(branch):true,railUser:rail,heading,actions,progress};},base.firstActive?.branch||'');
@@ -594,6 +616,15 @@ try{
   const modal=await page.evaluate(()=>{const m=[...document.querySelectorAll('[role="dialog"],.modal,.overlay,.ov')].find(x=>/Julissa Flores/i.test(String(x.innerText||'')))||[...document.querySelectorAll('body *')].find(x=>/Revisar \/ fusionar identidad/i.test(String(x.innerText||''))&&/Instruir perfil/i.test(String(x.innerText||'')));const text=String(m?.innerText||document.body.innerText||'');return {manualMerge:/Revisar \/ fusionar identidad|Resolver identidad/i.test(text),instructProfile:/Instruir perfil/i.test(text),text:text.slice(0,1800)};});
   if(!modal.manualMerge||!modal.instructProfile)throw new Error('FUNCTIONAL_DEFECT:ADMIN_IDENTITY_ACTIONS_MISSING:'+JSON.stringify(modal));
   await page.keyboard.press('Escape').catch(()=>{});
+  // Compare the authenticated Stiven Shopper history to the independent
+  // Admin table projection, preserving the merged keeper and no duplicates.
+  const stivenAdmin=await searchAdminShopper('Stiven López');
+  evidence.stivenExactAdminReproof=stivenAdmin;
+  write(evidence);
+  if(!stivenAdmin.visible||stivenAdmin.sid!=='shopper_gt_319cd82eaf'||
+    stivenAdmin.rows.filter(row=>/stiven lópez/i.test(row)).length!==1||
+    !/\b10\b/.test(stivenAdmin.row))
+    throw new Error('MAPPING_FAILURE:VRM304_STIVEN_ADMIN_10_CANONICAL_NOT_VISIBLE:'+JSON.stringify(stivenAdmin));
 
   await nav(page,'postulaciones');
   const post=await page.evaluate(()=>{
