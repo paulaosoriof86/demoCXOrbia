@@ -5,6 +5,7 @@ on:
     paths:
       - .github/workflows/cxorbia-i3-approved-139-preflight-readonly.yml
       - firebase/auth-dev-tools/cxorbia-i3-approved-139-preflight-readonly.mjs
+      - firebase/auth-dev-tools/cxorbia-i3-approved-139-pair-hashes.json
 permissions:
   contents: read
 concurrency:
