@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "cxorbia.i3.s1.damaris-no-phone.exact-dev-materialization.v1",
+  "iteration": "I3",
+  "decision": "PASS_I3_EXACT_DEV_MATERIALIZATION_RUN2159",
+  "state": "HOLD_LIVE_E2E_PROVIDER_ACK_REQUIRED",
+  "sourceControlCommitAtDeploy": "4d368399699a19f7cd3c705e3be4dff6213df974",
+  "source": {
+    "sha": "1b7b98a34028515fce88419b722df6d5269bb263",
+    "tree": "0e99b57eef2f751b7759b38ad22939b5cf4148e6"
+  },
+  "materialization": {
+    "state": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
+    "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
+    "runId": 41940300321,
+    "runNumber": 2159,
+    "jobId": 126959297429,
+    "artifactId": 13375712820,
+    "sourceSha": "1b7b98a34028515fce88419b722df6d5269bb263",
+    "sourceTree": "0e99b57eef2f751b7759b38ad22939b5cf4148e6",
+    "artifactDigest": "sha256:5e833dad0ca1f9b885413a49b09bd685a4f1ca0261575789c67f088a48af353b",
+    "artifactDigestType": "GITHUB_ACTIONS_ZIP_SHA256",
+    "artifactZipSha256": "5e833dad0ca1f9b885413a49b09bd685a4f1ca0261575789c67f088a48af353b",
+    "runtimeRevision": "cxorbia-live-hr-dev-00344-jz7",
+    "runtimeDigest": "sha256:3d0fb5fa4446f2062abb081f2531d752162d259c5a30fa931a0a9d472421ce51",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/bf3cc0d9f3c9f640",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1793838113309000",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
+    "hrRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "firestoreRulesDeploys": 0,
+    "storageRulesDeploys": 0,
+    "hrWrites": 0,
+    "production": false,
+    "sourceIdentityVerified": true,
+    "runtimeSourceVerified": true,
+    "controlHeadAtDeploy": "4d368399699a19f7cd3c705e3be4dff6213df974",
+    "sourceArtifactDigest": "sha256:5e833dad0ca1f9b885413a49b09bd685a4f1ca0261575789c67f088a48af353b",
+    "archiveZipDigest": "sha256:5e833dad0ca1f9b885413a49b09bd685a4f1ca0261575789c67f088a48af353b",
+    "githubArtifactZipSha256": "5e833dad0ca1f9b885413a49b09bd685a4f1ca0261575789c67f088a48af353b",
+    "fullTaskClosed": false,
+    "humanAcceptance": "PENDING",
+    "firestoreRulesetEvidence": "UNCHANGED_FROM_SEALED_RUN2157_NO_RULES_DEPLOY_RUN2159",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_S1_DAMARIS_NO_PHONE_EXACT_DEV_RUN2159_20261104.json"
+  },
+  "hrReadback": {
+    "revision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
+    "revisionStable": true,
+    "sourceSafe": true,
+    "hrWrites": 0,
+    "periodCount": 18,
+    "visits": 792,
+    "damarisRows": [
+      "NOVIEMBRE!3",
+      "NOVIEMBRE!22"
+    ],
+    "rowCount": 2,
+    "realShopperOwnerProviderAck": "PENDING"
+  },
+  "githubRunUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/41940300321",
+  "canonicalCi": {
+    "decision": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+    "sourceTests": {
+      "pass": 61,
+      "fail": 0
+    },
+    "materializationScopedTests": {
+      "pass": 112,
+      "fail": 0
+    }
+  },
+  "moduleFullMatches": 5,
+  "realProviderIdentityAck": "PENDING_SAME_ARTIFACT_ROLE_E2E",
+  "realAdminShopperCrossRoleE2E": "PENDING",
+  "julissaInstructive": {
+    "lastRun2158ModalOpened": true,
+    "newRunBinaryPdf": "PENDING"
+  },
+  "stivenHistory": {
+    "admin": 10,
+    "shopper": "PENDING_REPROOF"
+  },
+  "humanAcceptance": "PENDING",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "production": false,
+  "ciSourceChecks": {
+    "sourceSha": "1b7b98a34028515fce88419b722df6d5269bb263",
+    "sourceTree": "0e99b57eef2f751b7759b38ad22939b5cf4148e6",
+    "canonicalGuard": "PASS",
+    "modifiedOwner": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+    "newTestCases": 2
+  },
+  "predecessorReceiptPath": "docs/checkpoints/CXORBIA_I3_S1_DAMARIS_JULISSA_EXACT_DEV_RUN2157_20261104.json"
+}
