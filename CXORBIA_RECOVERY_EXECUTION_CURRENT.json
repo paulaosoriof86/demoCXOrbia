@@ -2,7 +2,7 @@
   "schemaVersion": "cxorbia.recovery.execution-current.v1",
   "planLockPath": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
   "planId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
-  "asOf": "2026-11-04",
+  "asOf": "2026-11-05",
   "iteration": "I3",
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
@@ -83,16 +83,19 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "docs/checkpoints/CXORBIA_I3_VRM134_EFFECT_FREE_REPLAY_DEV_RUN2172_20261104.json",
-    "kind": "I3_VRM134_EXACT_DEV_RUN2172_PASS",
-    "sourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
-    "sourceTree": "e6f941c511272dfb0d258e935d7c1526c83b31cb",
-    "servedSourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
-    "runId": 41952653181,
-    "runNumber": 2172,
-    "sourceChanges": 1,
+    "path": "docs/checkpoints/CXORBIA_I3_FAST_TRACK_EVIDENCE_FREEZE_20261105.json",
+    "kind": "I3_FAST_TRACK_EVIDENCE_FREEZE_HOLD_ROLE_MAPPING_P0",
+    "productSourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+    "productTree": "e6f941c511272dfb0d258e935d7c1526c83b31cb",
+    "checkpointBlob": "51172c6de5da1f6731eeb63d55ab1a1b79406022",
+    "lastSuccessfulFullSameArtifactRunId": 41958315783,
+    "lastSuccessfulFullSameArtifactRunNumber": 2177,
+    "newTargetedRun2178": "MAPPING_FAILURE_TWO_ACTIVE_PRINCIPALS",
+    "newTargetedRun2179": "MAPPING_FAILURE_ORDINARY_LOGIN_DIFFERENT_FROM_CANONICAL_HISTORICAL_KEEPER",
+    "sourceChanges": 0,
     "newFunctionalClosures": 0,
-    "scope": "DEV_EXACT_PUBLISHED_CURRENT_SOURCE_REAL_ADMIN_SHOPPER_PDF_G03_E2E_PENDING",
+    "moduleMatches": 5,
+    "moduleTotal": 21,
     "production": false
   },
   "taskProgress": {
@@ -277,7 +280,8 @@
         "fullDomainMatch": false
       }
     },
-    "VRM286": "SOURCE_CI_5_OF_5_PASS__DEV_EXACT_5_ASSETS_PASS__REAL_ADMIN_PROTECTED_UI_READ_MODEL_PASS_748_OF_748_VISITS_17_OF_17_PERIODS_RUN41336613738__EXTERNAL_HR_REVISION_OTHER_ROLES_HUMAN_PENDING__DOMAIN_NOT_MATCH"
+    "VRM286": "SOURCE_CI_5_OF_5_PASS__DEV_EXACT_5_ASSETS_PASS__REAL_ADMIN_PROTECTED_UI_READ_MODEL_PASS_748_OF_748_VISITS_17_OF_17_PERIODS_RUN41336613738__EXTERNAL_HR_REVISION_OTHER_ROLES_HUMAN_PENDING__DOMAIN_NOT_MATCH",
+    "VRM304": "HOLD_P0_EXACT_AUTH_LOGIN_CROSSWALK: ordinary stiven.lopez UID maps to shr-1783519013963-4koxm while 10-visit keeper shopper_gt_319cd82eaf uses stiven.lopez.7685; 2178/2179 verified; no new product source and no production writes."
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -296,7 +300,7 @@
     "evolution": 6
   },
   "historicalNextExactActionPreS1": "S1 read-only reason/alias cohort classification, implement legacy-compatible deterministic normalizer in provider owner and bridge, run bounded GT/HN/history/Auth fixtures. Existing DEV serial materialization only after source QA; verify Stiven/Julissa Shopper role post-fix.",
-  "nextExactAction": "I3 HOLD / RUN2172 exact DEV PASS source 09eed4f, Cloud Run 00347-jmn, Hosting 3b675f7bcc8b07e6, HR independently same cdc40258 revision 18 periods / 792 visits, G05 48/48 local and exact RUN2172 materialization. Damaris NOVIEMBRE rows 3 and 22 resolved_merged keeper, 0 unresolved assigned in RUN2169/2170 (on prior exact source). Julissa NOV resources show PDF and Abrir; NEW source binary viewer/download E2E pending, prior QA selector drift fixed. VRM168 Nov provider-schedule PASS RUN2170 with synthetic cleanup. EXHAUSTIVE role navigation P0 and Stiven Admin10/Shopper0, G03 HR finanzas, historical 32/83 verified fusion groups (51 recensus) and 5/21 MATCH (16 genuine pending evidence) all remain I3 HOLD; prior verified Hosting 231186c337bcd0ba preserved. NEXT exact existing phasea-representative-same-artifact-live-reproof + phasea-exhaustive-click-visual for Admin/Shopper/client on the same NEW source, PDF protected viewer+download, HR/finanzas and G03, then module truth/gates 20/21. Production DO_NOT_TOUCH; I4 not authorized; no rebuilt candidates.",
+  "nextExactAction": "I3 HOLD urgent: 1) invoke existing authorized provider-backed shopper.identity.adjudicate for Stiven two operational accounts with approved keeper shopper_gt_319cd82eaf while retaining valid ordinary stiven.lopez access and all 10 historical visits; preserve provider ACK and exact crosswalk, no name-only auto merge; 2) isolated exact Shopper/Admin readback 10=10 plus independent HR and finance; 3) reconcile RUN2177 domain-by-domain into 21-module truth (no blanket PASS); 4) G03 permissions/privacy and Gate20/21 exact-source immutable build; 5) express I4 authorization and production replacement. No new plan or candidate. Nov05 checkpoint docs/checkpoints/CXORBIA_I3_FAST_TRACK_EVIDENCE_FREEZE_20261105.json",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -499,6 +503,20 @@
       "devTotal": 1,
       "humanApproved": 0,
       "humanTotal": 1
+    },
+    "nov05SameArtifactExternalProof": {
+      "fullRoleRoutesVerified": 56,
+      "roleRouteTotal": 56,
+      "clicksVerified": 44,
+      "screenshotEvidence": 108,
+      "actionFindings": 0,
+      "independentHrAssigned": 26,
+      "unresolvedCurrentHrAssigned": 0,
+      "ordinaryStivenLoginVisitation": "HOLD_0_VS_ADMIN_10",
+      "moduleTruthMatched": 5,
+      "moduleTruthTotal": 21,
+      "percentFullyMatched": 23.81,
+      "interpretation": "RUN2177 executed functional slices on same candidate; module-level MATCH remains 5/21 until domain complete. Skipped conditional workflow jobs are not executed tests."
     }
   },
   "nextDiagnosisPath": null,
@@ -7582,5 +7600,14 @@
       "production": false
     },
     "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM134_EFFECT_FREE_REPLAY_DEV_RUN2172_20261104.json"
+  },
+  "nov05FastTrack": {
+    "checkpoint": "docs/checkpoints/CXORBIA_I3_FAST_TRACK_EVIDENCE_FREEZE_20261105.json",
+    "run2177": "PASS_FULL_SAME_ARTIFACT_FOCAL",
+    "run2178": "FAIL_AUTH_HOMONYM",
+    "run2179": "FAIL_EXACT_USERNAME_MISLINK",
+    "replacesEarlierStaleUnfinishedNarrative": true,
+    "doNotReopenHistoricalPASSWithoutReproducibleDrift": true,
+    "production": false
   }
 }
