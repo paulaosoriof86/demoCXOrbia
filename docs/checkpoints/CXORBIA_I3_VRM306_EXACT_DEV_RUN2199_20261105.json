@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm306.exact-dev-materialization-receipt.v1",
+  "date": "2026-11-05",
+  "iteration": "I3",
+  "state": "PASS_DEV_EXACT_SOURCE_NOT_FULL_PHASEA",
+  "source": {
+    "sha": "f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196",
+    "tree": "65d0beeb9282395867128691747b171cdbf3e3fe"
+  },
+  "materialization": {
+    "state": "PASS_VRM306_EXACT_DEV_MATERIALIZATION",
+    "decision": "PASS_VRM306_EXACT_DEV_MATERIALIZATION",
+    "runId": 42124979529,
+    "runNumber": 2199,
+    "jobId": 127587004283,
+    "artifactId": 13459973902,
+    "sourceSha": "f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196",
+    "sourceTree": "65d0beeb9282395867128691747b171cdbf3e3fe",
+    "artifactDigest": "sha256:9f69e8416b4e9cf91e7a7aa5278d3d5aef48a598f5533a15652d7fc33f61f4f0",
+    "artifactDigestType": "GITHUB_ACTIONS_ZIP_SHA256",
+    "artifactZipSha256": "9f69e8416b4e9cf91e7a7aa5278d3d5aef48a598f5533a15652d7fc33f61f4f0",
+    "sourceArtifactDigest": "sha256:9f69e8416b4e9cf91e7a7aa5278d3d5aef48a598f5533a15652d7fc33f61f4f0",
+    "archiveZipDigest": "sha256:9f69e8416b4e9cf91e7a7aa5278d3d5aef48a598f5533a15652d7fc33f61f4f0",
+    "githubArtifactZipSha256": "9f69e8416b4e9cf91e7a7aa5278d3d5aef48a598f5533a15652d7fc33f61f4f0",
+    "runtimeRevision": "cxorbia-live-hr-dev-00349-fsk",
+    "runtimeDigest": "sha256:5cb2fbcc1f9f47033e2bcb841cf9a8fac81a53aff25728d900a819b7aef8b70f",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/cf8987585aafe19c",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1793919328331000",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
+    "hrRevision": "63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "firestoreRulesDeploys": 0,
+    "storageRulesDeploys": 0,
+    "hrWrites": 0,
+    "production": false,
+    "sourceIdentityVerified": true,
+    "runtimeSourceVerified": true,
+    "controlHeadAtDeploy": "71cf466ef32439e98748c94ebe1f7b3f57309e3d",
+    "fullTaskClosed": false,
+    "humanAcceptance": "PENDING",
+    "firestoreRulesetEvidence": "UNCHANGED_RUN2199_NO_RULES_DEPLOY",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM306_EXACT_DEV_RUN2199_20261105.json"
+  },
+  "githubAction": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/42124979529",
+  "artifactReadback": {
+    "artifactId": 13459973902,
+    "zipSha256": "9f69e8416b4e9cf91e7a7aa5278d3d5aef48a598f5533a15652d7fc33f61f4f0",
+    "resultDecision": "PASS_VRM306_EXACT_DEV_MATERIALIZATION",
+    "hostingAssetByteParity": "PASS_IN_WORKFLOW",
+    "hrRevisionStable": true,
+    "sourceSafe": true
+  },
+  "manualOwnerEvidence": {
+    "report": "Paula posted two screenshots of green Identidades fusionadas y confirmadas por el proveedor toast on Nov 5 2026. This proves UI/provider response; durable post-write readback still pending.",
+    "groups": [
+      "Jhennypher Murga GT",
+      "Rocío Vilca HN"
+    ],
+    "providerReadback": "PENDING_INDEPENDENT"
+  },
+  "terminalCertification": false,
+  "production": false
+}

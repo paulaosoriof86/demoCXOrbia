@@ -1,0 +1,11 @@
+# CXOrbia Recovery — checkpoint canónico V10 — 05/11/2026
+
+**I3 HOLD. Gate20/21 HOLD. I4 NO autorizado. Producción DO_NOT_TOUCH.** Predecesor V9 commit 71cf466ef32439e98748c94ebe1f7b3f57309e3d.
+
+1. Fuente única `f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196` tree `65d0beeb9282395867128691747b171cdbf3e3fe` materializada exactamente en DEV [RUN42124979529](https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/42124979529) #2199, job 127587004283, resultado `PASS_VRM306_EXACT_DEV_MATERIALIZATION`.
+2. Artefacto 13459973902 ZIP SHA256 `9f69e8416b4e9cf91e7a7aa5278d3d5aef48a598f5533a15652d7fc33f61f4f0` verificado; 1 build, 1 Cloud Run, 1 Hosting, cero reglas, HR y producción. Runtime `cxorbia-live-hr-dev-00349-fsk` digest `sha256:5cb2fbcc1f9f47033e2bcb841cf9a8fac81a53aff25728d900a819b7aef8b70f`, Hosting `sites/cxorbia-backend-dev/versions/cf8987585aafe19c` release `sites/cxorbia-backend-dev/channels/live/releases/1793919328331000`, HR `63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba`.
+3. Cohorte previa 83/83 PASS; HR nombres 16/16 PASS; Stiven octubre 10/10 PASS. **Paula ejecutó las dos fusiones manuales Jhennypher Murga GT y Rocío Vilca HN**, mostrando dos capturas de toast verde `Identidades fusionadas y confirmadas por el proveedor`. **NO reejecutar writer**. Falta readback independiente de UIDs/alias, estado de membresías, visitas, liquidaciones, pagos, certificados, receipts, login.
+4. Matriz **5/21 MATCH, 16 pendientes**. El dominio persistencia pasó de COMPOSED_NOT_DEPLOYED a FUENTE SERVIDA EN DEV pendiente E2E. G03 HR finanzas todavía `HR_RECONCILIATION_SCOPE_BUSY` en RUN42119774721, requiere readback de recibo y propietario sin liberar lock por fuerza. D05 QA funcional focal PASS, no certificación global.
+5. Alerta de Administración visible en capturas: 176 expedientes **técnicos** en revisión, 15 perfiles visibles con bandera; no son 176 identidades humanas ni prueban 176 fusiones pendientes. Los dos grupos recién fusionados deben recargar y reconciliar vistas con ACK durable.
+
+**Siguiente acción:** únicamente verificación READONLY posfusión en DEV mediante workflow existente, G03 control de recibos y 21 módulos sin repetir trabajos omitidos ni mutar producción. No se requiere nueva autorización para lectura; I4 exige autorización separada.

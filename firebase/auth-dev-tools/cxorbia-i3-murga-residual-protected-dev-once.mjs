@@ -14,7 +14,7 @@ import {chromium} from 'playwright';
 import CredentialRule from '../../app/core/shopper-credential-rule.js';
 
 const PROJECT='cxorbia-backend-dev',TENANT='tya',PROGRAM='cinepolis';
-const SOURCE='5c8dade1de10134e9c0aa4d8bdf953c979a2c1cf';
+const SOURCE='f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196';
 const ROOT='https://cxorbia-backend-dev.web.app';
 const HR_URL=ROOT+`/api/${TENANT}/${PROGRAM}/hr-live?format=json&view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV`;
 const CASE=process.env.CX_I3_RESIDUAL_CASE||'';

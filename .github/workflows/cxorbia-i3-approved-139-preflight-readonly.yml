@@ -22,7 +22,7 @@ jobs:
     env:
       GCLOUD_PROJECT: cxorbia-backend-dev
       GOOGLE_CLOUD_PROJECT: cxorbia-backend-dev
-      CXORBIA_PRODUCT_SOURCE_SHA: 5c8dade1de10134e9c0aa4d8bdf953c979a2c1cf
+      CXORBIA_PRODUCT_SOURCE_SHA: f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196
       CX_I3_RESIDUAL_READBACK_ONLY: YES_PAULA_20261105_POST_ATTEMPT
     steps:
       - uses: actions/checkout@v4
@@ -73,7 +73,7 @@ jobs:
     env:
       GCLOUD_PROJECT: cxorbia-backend-dev
       GOOGLE_CLOUD_PROJECT: cxorbia-backend-dev
-      CXORBIA_PRODUCT_SOURCE_SHA: 5c8dade1de10134e9c0aa4d8bdf953c979a2c1cf
+      CXORBIA_PRODUCT_SOURCE_SHA: f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196
     steps:
       - uses: actions/checkout@v4
         with:
