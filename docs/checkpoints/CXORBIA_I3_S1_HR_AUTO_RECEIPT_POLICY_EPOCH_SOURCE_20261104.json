@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "cxorbia.i3.s1.hr-auto-policy-epoch.source-replay.v1",
+  "iteration": "I3",
+  "state": "HOLD_DEV_MATERIALIZATION_REQUIRED",
+  "classification": "FUNCTIONAL_DEFECT",
+  "rootFinding": "VRM-305",
+  "tasks": [
+    "G05",
+    "A01",
+    "A03",
+    "A04",
+    "B01"
+  ],
+  "observed": "RUN2164 authenticated DEV same-artifact reproof stayed on previously committed hr-auto-v1 scoped receipt for identical HR revision; provider correction was not re-executed. Damaris two assigned November source rows remained unresolved; no duplicate identity or HR mutations observed.",
+  "cause": "Automatic Admin reconciliation deterministic idempotency key included HR source revision+actor but did not include a semantic reconciliation-policy epoch; backend returned committed receipt before provider evaluation. Stage cache is scoped to that receipt.",
+  "source": {
+    "commit": "d9c4935987ec28a74f06df0319e97cbf5e232070",
+    "tree": "e5ceeec5b810c8ad4c8c703682032dc0517ad0d4",
+    "predecessorCommit": "6087774752e140361a4cd0b35aadf9fe25771611",
+    "predecessorTree": "d75a45b42f574d5d0efd4ad0aef5b0ae8f1dfff1",
+    "owners": [
+      {
+        "path": "app/core/backend-hr-source-bridge.js",
+        "blob": "5b7aa2af031239aac9c19895619b0969d4bc16b2"
+      },
+      {
+        "path": "tools/qa/cxorbia-i3-g05-sync-command-ui.test.cjs",
+        "blob": "fb0378baeb79fb442c52de442e46c815db4114bd"
+      }
+    ]
+  },
+  "change": "Advance scoped automatic reconciliation epoch to hr-auto-v2 for one idempotent re-evaluation after provider semantics change. Normal same-version refreshes and restored Admin sessions replay one receipt; manual sync still uses distinct verified key. No shopper/country/period-specific logic, no backend policy bypass.",
+  "localFocalTests": {
+    "path": "tools/qa/cxorbia-i3-g05-sync-command-ui.test.cjs",
+    "pass": 46,
+    "fail": 0,
+    "scope": "SOURCE_ONLY",
+    "assertions": [
+      "same_revised_hr_auto_key_per_revision_and_actor",
+      "policy_epoch_differs_from_predecessor_receipt",
+      "cross_tenant_unauthorized_denied",
+      "replay_preserved_across_restored_admin_sessions",
+      "uncertain_effects_not_misreported"
+    ]
+  },
+  "requiredNext": "Exact existing vrm154-156-dev-materialization on this source, then same-artifact phasea-representative-same-artifact-live-reproof. Verify Damaris November rows 3 and 22 resolve to one active Auth keeper with provider ACK and no duplicate/write drift. Julissa PDF viewer/actual download and Stiven history remain independently unclosed.",
+  "moduleTruth": {
+    "fullMatches": 5,
+    "total": 21,
+    "changedMatches": 0
+  },
+  "priorRunLive": {
+    "runId": 41944714278,
+    "runNumber": 2164,
+    "status": "HOLD_DAMARIS_IDENTITY_UNRESOLVED",
+    "hrRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac"
+  },
+  "sourceRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
+  "devMaterialization": "PENDING",
+  "realProviderIdentityAck": "PENDING",
+  "julissaPdfHuman": "PENDING",
+  "stivenHistory": "PENDING",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "production": "DO_NOT_TOUCH",
+  "immutablePriorReceipt": "docs/checkpoints/CXORBIA_I3_S1_MASKED_DURABLE_REVIEW_EXACT_DEV_RUN2162_20261104.json"
+}

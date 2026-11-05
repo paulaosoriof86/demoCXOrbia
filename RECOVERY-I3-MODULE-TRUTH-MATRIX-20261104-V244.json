@@ -103,14 +103,14 @@
     }
   },
   "productSource": {
-    "sha": "6087774752e140361a4cd0b35aadf9fe25771611",
-    "treeSha": "d75a45b42f574d5d0efd4ad0aef5b0ae8f1dfff1",
-    "predecessorProductSourceSha": "1b7b98a34028515fce88419b722df6d5269bb263",
+    "sha": "d9c4935987ec28a74f06df0319e97cbf5e232070",
+    "treeSha": "e5ceeec5b810c8ad4c8c703682032dc0517ad0d4",
+    "predecessorProductSourceSha": "6087774752e140361a4cd0b35aadf9fe25771611",
     "message": "I3 P0 verified durable exact-name/phone review for protected HR alias; generic guard, 63/63 local, no per-person hardcode",
     "authorityState": "I3_P0_EXACT_DEV_MATERIALIZED_RUN2162_PENDING_SAME_ARTIFACT_ROLE_E2E",
     "state": "I3_HOLD_5_OF_21_MATCH_NEW_SOURCE_DEV_SERVING"
   },
-  "controlHeadAtConstruction": "6087774752e140361a4cd0b35aadf9fe25771611",
+  "controlHeadAtConstruction": "d9c4935987ec28a74f06df0319e97cbf5e232070",
   "phaseAComplete": false,
   "allModulesMatch": false,
   "modules": [
@@ -8082,7 +8082,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "I3 HOLD / RUN2162 source 60877747 exact DEV PASS (Cloud Run 00345-dw9, Hosting 03c4551b90a28e27, HR cdc40258e980, ZIP e07cbef18163, 114/114 test PASS). Siguiente unica accion job existente phasea-representative-same-artifact-live-reproof: Admin/Shopper GT/HN, ACK alias automatico Damaris NOVIEMBRE!3+!22 vs keeper Auth, Julissa instructivo real PDF visor/descarga, Stiven 10 Admin vs Shopper, 275 casos tecnicos, historico/finanzas y paridad HR revision independiente. Solo certificar modulos con evidencia exacta; 5/21 MATCH, 32/83 grupos historicos y 51/83 recenso; G03 Hosting historico 231186c337bcd0ba, HR y finanzas HOLD, Gate20/21 HOLD, I4 no autorizada, produccion DO_NOT_TOUCH.",
+  "nextExactAction": "I3 HOLD / P0 VRM-305 G05 exact-owner replay: automatic HR receipt was bound only to unchanged sourceRevision, so RUN2162 code was not re-executed by DEV (RUN2164 Damaris rows NOVIEMBRE!3+!22 remained unresolved). Source d9c49359 introduces hr-auto-v2 semantic epoch, preserving actor/tenant/project/source scope and idempotent replay. 46/46 G05 UI/security focal tests PASS locally; DEV materialization and real provider ACK pending. Same HR independent revision cdc40258e980, 5/21 MATCH preserved, 305 historical findings preserved, Julissa PDF UI and Stiven 10 history E2E pending, Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -17321,5 +17321,19 @@
     },
     "sameArtifactLive": "PENDING",
     "production": false
+  },
+  "i3Nov04HrAutoReceiptEpochP0": {
+    "classification": "FUNCTIONAL_DEFECT",
+    "rootFinding": "VRM-305",
+    "sourceSha": "d9c4935987ec28a74f06df0319e97cbf5e232070",
+    "sourceTree": "e5ceeec5b810c8ad4c8c703682032dc0517ad0d4",
+    "bridgeBlob": "5b7aa2af031239aac9c19895619b0969d4bc16b2",
+    "testBlob": "fb0378baeb79fb442c52de442e46c815db4114bd",
+    "localG05Pass": 46,
+    "dev": "PENDING",
+    "sameArtifactLive": "PENDING",
+    "certifiedModulesPreserved": 5,
+    "production": false,
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_S1_HR_AUTO_RECEIPT_POLICY_EPOCH_SOURCE_20261104.json"
   }
 }
