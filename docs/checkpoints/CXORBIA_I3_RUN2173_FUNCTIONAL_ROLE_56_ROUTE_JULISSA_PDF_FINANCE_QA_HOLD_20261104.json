@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "cxorbia.i3.run2173.full-role-pdf-finance-proof-with-qa-fixture-hold.v1",
+  "observedAt": "2026-11-04",
+  "iteration": "I3",
+  "status": "HOLD_QA_FIXTURE_ONLY_TAIL_AFTER_FUNCTIONAL_PASSES",
+  "source": {
+    "sha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+    "tree": "e6f941c511272dfb0d258e935d7c1526c83b31cb",
+    "devRun": 41952653181,
+    "devRunNumber": 2172,
+    "devRuntimeRevision": "cxorbia-live-hr-dev-00347-jmn",
+    "devHostingVersion": "sites/cxorbia-backend-dev/versions/3b675f7bcc8b07e6"
+  },
+  "e2eRun": {
+    "id": 41953617684,
+    "number": 2173,
+    "job": 127003369149,
+    "artifactId": 13382880276,
+    "conclusion": "failure",
+    "reason": "LAST_PREI4_CERT_RES_QA_SYNTHETIC_MISSING_SHA256",
+    "production": false
+  },
+  "independentProofs": {
+    "representative": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+    "hrRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
+    "population": {
+      "invariant": "PASS",
+      "unresolvedAssignedVisits": 0
+    },
+    "providerSchedule": "PASS_VRM168_PROVIDER_SCHEDULE_PATH",
+    "providerCleanup": {
+      "visit": true,
+      "receipt": true,
+      "audit": true,
+      "hrWrites": 0
+    },
+    "exhaustive": {
+      "decision": "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL",
+      "clicks": 44,
+      "adminRoutes": 34,
+      "shopperRoutes": 12,
+      "clientRoutes": 10,
+      "actionFindings": 0
+    },
+    "julissaDocument": {
+      "listed": true,
+      "opened": true,
+      "rendered": true,
+      "pages": 7,
+      "downloadEnabled": true,
+      "downloadTriggered": true
+    },
+    "adminPostulations": "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+    "reservations": "PASS_I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE",
+    "finance": "PASS_PREI4_FINAL_FOCAL_FINANCE",
+    "financeCleanup": true,
+    "hrWrites": 0
+  },
+  "residual": {
+    "classification": "ENVIRONMENT_FAILURE",
+    "label": "QA_FIXTURE_PROVENANCE_MISSING",
+    "qaScript": "tools/qa/cxorbia-prei4-cert-res-live.mjs",
+    "error": "AI_INPUT_SOURCE_SHA256_REQUIRED",
+    "api": "backend-certifications.js",
+    "runtimeContract": "generationInput requires sourceText length >=40, sourceSha256 64 hex, manual_text quality fallback or parser sufficient",
+    "fix": "QA-only: hash the exact synthetic source text with SHA-256, send sourceSha256+sourceTitle+documentSource manual_text provenance",
+    "productChange": false,
+    "qaReproof": "PENDING"
+  },
+  "moduleMatrix": {
+    "officialMatch": 5,
+    "total": 21,
+    "unchanged": true,
+    "exhaustiveRoleRoutesFunctionalPass": 56,
+    "fullTerminalGate": "HOLD"
+  },
+  "production": "DO_NOT_TOUCH",
+  "authorizationI4": false,
+  "history": "No rewrite previous PASS; no new source candidate or HR import."
+}

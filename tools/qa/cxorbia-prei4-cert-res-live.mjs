@@ -136,7 +136,15 @@ try{
     await window.CX?.backendAI?.load?.();
     if(!window.CX?.ai?.ready?.())throw new Error('AI_PROVIDER_NOT_READY_IN_BROWSER');
     const sourceText='Protocolo de prueba técnica CXOrbia. El shopper debe conservar anonimato. Debe registrar evidencia exactamente según el instructivo. Debe completar el cuestionario dentro del plazo definido y no inventar información.';
-    const generated=await window.CX.ai.ask(sourceText,{module:'certification',questionCount:4,gate:80});
+    // The protected D03 runtime requires provenance for every AI source.
+    // This is a synthetic manual-text QA fixture, not an imported HR file or
+    // a user-specific certification exception. Its exact content is hashed.
+    const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(sourceText));
+    const sourceSha256=Array.from(new Uint8Array(digest),byte=>byte.toString(16).padStart(2,'0')).join('');
+    const generated=await window.CX.ai.ask(sourceText,{module:'certification',questionCount:4,gate:80,
+      sourceSha256,sourceTitle:'Protocolo técnico de prueba CXOrbia',
+      documentSource:{mode:'manual_text',name:'Protocolo técnico de prueba CXOrbia',source_sha256:sourceSha256,
+        extraction_quality:{sufficient:true,source:'manual_text_qa_fixture'}}});
     if(!(generated?.providerAck===true&&Array.isArray(generated.preguntas)&&generated.preguntas.length>=3))throw new Error('AI_PROVIDER_ACK_OR_QUESTIONS_MISSING');
     const uid=String(window.firebase?.auth?.().currentUser?.uid||'');
     const bank={
