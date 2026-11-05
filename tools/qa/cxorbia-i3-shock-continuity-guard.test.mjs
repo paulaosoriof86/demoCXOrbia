@@ -66,6 +66,19 @@ test('current V5 checkpoint supersedes old receipt without erasing its historica
   a.pointer.currentDevMaterialization.sourceSha = 'different-source';
   assert.match(validateShockContinuity(a).failures.join(' '), /DEV_HOSTING_REALITY_STALE/);
 });
+test('a verified old DEV seal is allowed while a new P0 source awaits materialization, without claiming it is served', () => {
+  const a = mk();
+  a.pointer.currentCanonicalCheckpoint = {path:'V7.md',verifiedTotal:83,remaining:0};
+  a.pointer.continuityHandoff = {path:'V7.md'};
+  a.descriptor.exactNextAction = 'G03 HR finanzas 83/83, DEV actual previo, P0 source awaiting materialization';
+  a.pointer.nextExactAction = a.descriptor.exactNextAction;
+  a.pointer.currentDevMaterialization = {sourceSha:'predecessor',sourceTree:'old-tree',hostingVersion:'sites/cxorbia-backend-dev/versions/old',runtimeRevision:'old-rev',runtimeDigest:'sha256:old',hostingRelease:'old-release'};
+  const seal = {mode:'PREDECESSOR_SERVING_PENDING_SOURCE',sourceSha:'predecessor',sourceTree:'old-tree',hostingVersion:'sites/cxorbia-backend-dev/versions/old',runtimeRevision:'old-rev',runtimeDigest:'sha256:old',hostingRelease:'old-release'};
+  a.descriptor.postDeployRunSeal = {...seal};a.pointer.postDeployRunSeal = {...seal};
+  assert.equal(validateShockContinuity(a).pass,true);
+  a.pointer.currentDevMaterialization.sourceSha = 'source';
+  assert.match(validateShockContinuity(a).failures.join(' '),/DEV_HOSTING_REALITY_STALE/);
+});
 test('V5 current checkpoint cannot claim more fused profiles than the approved cohort', () => {
   const a = mk();
   a.pointer.currentCanonicalCheckpoint = {verifiedTotal: 84, remaining: 0};

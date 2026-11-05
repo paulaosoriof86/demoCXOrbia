@@ -103,12 +103,12 @@
     }
   },
   "productSource": {
-    "sha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
-    "treeSha": "e6f941c511272dfb0d258e935d7c1526c83b31cb",
-    "predecessorProductSourceSha": "d9c4935987ec28a74f06df0319e97cbf5e232070",
-    "message": "I3 P0 effect-free HR receipt replay skip duplicate Admin hydration, generic per verified actor+HR revision; 48/48 local G05; Julissa real D07 PDF QA selector fix",
+    "sha": "5c8dade1de10134e9c0aa4d8bdf953c979a2c1cf",
+    "treeSha": "7936711275f6215e21636125848d634de8218c7d",
+    "predecessorProductSourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+    "message": "I3 P0 external HR shopper ID verified keeper source successor",
     "authorityState": "I3_EXACT_DEV_RUN2182_STIVEN_BOTH_ROLES_PASS_AND_RUN42063057316_37_APPROVED_FUSIONS_ACK_READBACK_NO_PRODUCT_CHANGE",
-    "state": "I3_HOLD_5_OF_21_MATCH_EXACT_DEV_RUN2182_AND_APPROVED_139_BATCH_RUN42063057316"
+    "state": "SOURCE_FIXED_PENDING_DEV_MATERIALIZATION_5_OF_21_MATCH"
   },
   "controlHeadAtConstruction": "2b23686be39958cee0983b131ae7f56c8c0f430a",
   "phaseAComplete": false,
@@ -2090,10 +2090,10 @@
         "app/adapters/cxorbia-command-adapter-v1.js": "aa6522b76a5958aece332c6346c312086d803500",
         "app/adapters/cxorbia-cxdata-command-boundary-v1.js": "d345acb084d63c7f74847eef5be03c05cd70d458",
         "app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js": "218ca59cb37dd17d3de6ba81660616f9c1c45116",
-        "app/adapters/cxorbia-shopper-admin-command-contract-v1.js": "f08d8ce0f099b499754209326ec1a08ff35290bc",
+        "app/adapters/cxorbia-shopper-admin-command-contract-v1.js": "e97ba5ec6838c946fd6322b0ea76b0a710b07e82",
         "backend/runtime/cxorbia-finance-command-provider-v1.mjs": "57aefc43bf0f1bf31fdeea4eb3e80119c9cd82ff",
         "backend/runtime/cxorbia-operational-command-provider-v1.mjs": "1747a810b8854f871a5bf10db745ea1d92c0d900",
-        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs": "28fe1d6c7bb89adacef98e3ed2ab2b40258f2de2",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs": "5f8745b57b55d5e3785e5b8ba3b9a39190aac996",
         "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs": "ca89c2867d4436402f1b56306e4f687638fc3994",
         "app/adapters/cxorbia-command-http-transport-v1.js": "72bdfcdaa5667b62b52962396631e1665506ba13",
         "app/adapters/cxorbia-hr-write-adapter-contract-v1.js": "aad818a8be3581397672ade7988c9a5ec9b4ccb0",
@@ -4755,7 +4755,7 @@
       "f9ApprovedBlob": null,
       "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
       "latestApprovedBlob": "c928691256c1b7c18a51758d3dce94c63b26e976",
-      "currentBlob": "f08d8ce0f099b499754209326ec1a08ff35290bc",
+      "currentBlob": "e97ba5ec6838c946fd6322b0ea76b0a710b07e82",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
@@ -7148,7 +7148,7 @@
       "f9ApprovedBlob": null,
       "latestApprovedSource": "144c58e2125aba6e49deefe0ce23fa9d94259cdb",
       "latestApprovedBlob": "8b9840fb0c1fbbab45bd100d0e2c7e21779187fc",
-      "currentBlob": "28fe1d6c7bb89adacef98e3ed2ab2b40258f2de2",
+      "currentBlob": "5f8745b57b55d5e3785e5b8ba3b9a39190aac996",
       "loadTarget": "runtime-build",
       "phaseAAuthority": true,
       "classification": "COMPOSED_NOT_DEPLOYED",
@@ -17376,5 +17376,31 @@
     "moduleMatch": "5_OF_21_UNCHANGED",
     "production": false,
     "sourceQaPass": 48
+  },
+  "i3D05UiAdminShopperFocal20261105": {
+    "runId": 42115319793,
+    "jobId": 127553305264,
+    "decision": "PASS_D05_QA_UI_REVIEW_VERSION_2_AND_D06_SHOPPER_ROLE_READ_ONLY",
+    "save15QuestionsVersion2": true,
+    "reloadReadback": true,
+    "shopperPublishedQuestions": 8,
+    "unpublishedQuestionsInBrowser": 0,
+    "realBanksUnchanged": true,
+    "passwordLoginE2E": "NOT_TESTED_CUSTOM_TOKEN",
+    "moduleMatchIncrement": 0,
+    "production": false
+  },
+  "i3PendingP0ShopperIdentity20261105": {
+    "sourceSha": "5c8dade1de10134e9c0aa4d8bdf953c979a2c1cf",
+    "devSourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+    "classification": "MAPPING_FAILURE",
+    "state": "SOURCE_FIXED_NOT_DEV_MATERIALIZED",
+    "residualClusters": [
+      "Jhennypher Murga GT",
+      "Rocío Vilca HN"
+    ],
+    "verifiedOriginalCohort": "83_OF_83",
+    "moduleMatchIncrement": 0,
+    "production": false
   }
 }

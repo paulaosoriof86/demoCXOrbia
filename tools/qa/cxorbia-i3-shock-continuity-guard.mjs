@@ -88,9 +88,22 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
   const currentDev = p.currentDevMaterialization || {};
   const newerCurrentDev = Boolean(currentDev.hostingVersion && currentDev.sourceSha);
   const servedVersion = String(newerCurrentDev ? currentDev.hostingVersion : hostingD.hostingVersion || '').split('/').pop();
+  // A newly source-proven P0 can legitimately wait for a single controlled
+  // DEV materialization. The *actual* served version stays bound to its old
+  // immutable seal; never relabel it as the newly proposed source.
+  const seal = d.postDeployRunSeal || {};
+  const predecessorServing = seal.mode === 'PREDECESSOR_SERVING_PENDING_SOURCE' &&
+    p.postDeployRunSeal?.mode === seal.mode &&
+    p.postDeployRunSeal?.sourceSha === seal.sourceSha &&
+    seal.sourceSha !== d.productSourceSha &&
+    currentDev.sourceSha === seal.sourceSha && currentDev.sourceTree === seal.sourceTree &&
+    currentDev.hostingVersion === seal.hostingVersion &&
+    currentDev.runtimeRevision === seal.runtimeRevision &&
+    currentDev.runtimeDigest === seal.runtimeDigest &&
+    currentDev.hostingRelease === seal.hostingRelease;
   const servedAuthorityMatches = newerCurrentDev ?
-    currentDev.sourceSha === d.productSourceSha &&
-    currentDev.sourceTree === d.productTreeAuthority &&
+    ((currentDev.sourceSha === d.productSourceSha &&
+      currentDev.sourceTree === d.productTreeAuthority && seal.mode !== 'PREDECESSOR_SERVING_PENDING_SOURCE') || predecessorServing) &&
     Boolean(currentDev.runtimeRevision && currentDev.runtimeDigest && currentDev.hostingRelease) &&
     p.continuityHandoff?.path === p.currentCanonicalCheckpoint?.path :
     (d.exactNextAction || '').includes(servedVersion);

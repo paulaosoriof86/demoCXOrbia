@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
-    "sourceTree": "e6f941c511272dfb0d258e935d7c1526c83b31cb",
-    "predecessorSha": "d9c4935987ec28a74f06df0319e97cbf5e232070",
+    "sourceSha": "5c8dade1de10134e9c0aa4d8bdf953c979a2c1cf",
+    "sourceTree": "7936711275f6215e21636125848d634de8218c7d",
+    "predecessorSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
     "production": false,
-    "state": "HOLD_I3_SOURCE_EXACT_DEV_RUN2172_PENDING_FULL_ROLE_E2E",
+    "state": "HOLD_I3_P0_EXTERNAL_HR_ID_SOURCE_FIXED_PENDING_DEV_RUNTIME_AND_HOSTING",
     "november2026AutomaticPeriodSourceProof": {
       "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
       "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -38532,5 +38532,28 @@
     "production": false,
     "backlogRemaining": "G03 HR finanzas + 21-module actual same-artifact E2E",
     "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM134_EFFECT_FREE_REPLAY_DEV_RUN2172_20261104.json"
+  },
+  "i3D05UiAdminShopperFocal20261105": {
+    "runId": 42115319793,
+    "jobId": 127553305264,
+    "status": "PASS_FOCAL_NOT_MODULE_MATCH",
+    "realBanksUnchanged": true,
+    "questionCount": 15,
+    "shopperPublishedQuestions": 8,
+    "passwordLoginE2E": "NOT_TESTED",
+    "production": false
+  },
+  "i3P0ApprovedExternalHrIdentitySource20261105": {
+    "sourceSha": "5c8dade1de10134e9c0aa4d8bdf953c979a2c1cf",
+    "sourceTree": "7936711275f6215e21636125848d634de8218c7d",
+    "predecessorSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+    "sourceTests": "76_OF_76_PASS_LOCAL",
+    "devMaterialization": "PENDING",
+    "protectedFusionExecuted": false,
+    "clusters": [
+      "Jhennypher Murga GT",
+      "Rocío Vilca HN"
+    ],
+    "production": false
   }
 }
