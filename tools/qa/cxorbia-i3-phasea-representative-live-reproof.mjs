@@ -115,6 +115,14 @@ for(const name of targetNames){
     if(exact.length!==1)throw new Error('MAPPING_FAILURE:TARGET_EXACT_AUTHORITY_PRINCIPAL_paula_osorio:'+JSON.stringify({expectedShopperId:PAULA_EXACT_HR_ID,expectedVisibleLogin:PAULA_VISIBLE_LOGIN,namedProfiles:namedProfiles.map(p=>({id:p.id,name:profileName(p),resolved:resolveProfileId(p.id)})),operational:operational.map(x=>({uid:x.member.id,shopperId:x.member.shopperId,visibleLogin:x.member.visibleLogin,resolved:x.resolved,profileId:x.profile.id}))}));
     selected=exact[0];
     selectionAuthority='exact_hr_id_plus_visible_login';
+  }else if(norm(name)===norm('Stiven López')){
+    // VRM-304: select only the owner-approved canonical login. Another
+    // homonymous principal must be recorded, not silently fused by name.
+    const keeper='shopper_gt_319cd82eaf',login='stiven.lopez';
+    const exact=operational.filter(x=>x.resolved===keeper&&str(x.member.visibleLogin||x.member.username||x.member.user).toLowerCase()===login);
+    if(exact.length!==1)throw new Error('MAPPING_FAILURE:VRM304_STIVEN_EXACT_KEEPER_LOGIN_NOT_UNIQUE:'+JSON.stringify({keeper,login,operational:operational.map(x=>({uid:x.member.id,shopperId:x.member.shopperId,resolved:x.resolved,visibleLogin:x.member.visibleLogin||null}))}));
+    selected=exact[0];
+    selectionAuthority='owner_approved_keeper_plus_exact_visible_login';
   }else{
     if(operational.length!==1)throw new Error('MAPPING_FAILURE:TARGET_ACTIVE_CANONICAL_PRINCIPAL_'+norm(name).replace(/\s+/g,'_')+':'+JSON.stringify({namedProfiles:namedProfiles.map(p=>({id:p.id,name:profileName(p),resolved:resolveProfileId(p.id)})),operational:operational.map(x=>({uid:x.member.id,shopperId:x.member.shopperId,resolved:x.resolved,profileId:x.profile.id}))}));
     selected=operational[0];
