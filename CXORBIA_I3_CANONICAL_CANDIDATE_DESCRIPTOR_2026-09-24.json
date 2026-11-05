@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_S1_AUTO_COMPATIBLE_IDENTITY_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "160b7ae976a7cc24dd1cd9d3466d6d72ef071d6d",
-  "productTreeAuthority": "6c4b8d95efcc1d5d46cd5d92110cf62222439123",
-  "predecessorProductSourceSha": "3c45d623a00cf59ede959625d0f0b4114a377435",
+  "productSourceSha": "1b7b98a34028515fce88419b722df6d5269bb263",
+  "productTreeAuthority": "0e99b57eef2f751b7759b38ad22939b5cf4148e6",
+  "predecessorProductSourceSha": "160b7ae976a7cc24dd1cd9d3466d6d72ef071d6d",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V564_2026-11-04.json",
-  "findingsLedgerExpectedGitBlob": "f7ba41b9451b936b65fc74490c068f384d454bd4",
+  "findingsLedgerExpectedGitBlob": "b0321939f10ec8f1dc4df0d303339cc76aa61fde",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V244.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "RUN2157 160b7ae976a7 DEV EXACT materialization PASS, 110/110 source CI; Admin/Shopper GT/HN E2E, Damaris durable crosswalk ACK, Julissa PDF, Stiven history, 275 technical alias checks P0 pending, 5/21 MATCH; 32/83 historical, 51/83 recensus. G03, HR, finanzas, Gate20/21 HOLD. I4 unauthorised; production DO_NOT_TOUCH.",
+  "activeBlocker": "RUN2158 MAPPING_FAILURE Damaris protected November rows 3/22 have no phone, one existing verified Auth keeper; source fix 61/61 local PASS, exact DEV and provider ACK pending. Julissa instructive modal opened but PDF view/download not certified, Stiven 10/Admin versus Shopper readback pending, 5/21 MATCH. Gate20/21 HOLD, HR/finanzas G03 pending, production DO_NOT_TOUCH.",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -128,7 +128,7 @@
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
   "historicalExactNextActionPreS1": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "I3 HOLD / RUN2157 source 160b7ae976a7 exact DEV PASS (Cloud Run cxorbia-live-hr-dev-00343-4hz, Hosting 135c3f098cc2d9b6, HR cdc40258e980, ZIP db18418c76e6). Siguiente acción única: ejecutar job existente phasea-representative-same-artifact-live-reproof, sin reimportar ni escribir HR, con autenticación Admin/Shopper GT/HN, identificación Damaris filas 3/22, Julissa instrucción general heredable, Stiven 10 Admin vs 0 Shopper, 275 casos técnicos y ACK duradero; contrastar visitas/histórico/KPIs contra MISMA HR independiente y finanzas. Solamente certificar los módulos con evidencia exacta; 5/21 MATCH y 16 pendientes de prueba real, 32/83 grupos históricos y 51/83 por recenso, no forzar fusiones distintas. G03 conserva referencia histórica Hosting 231186c337bcd0ba; Gate20/21 HOLD, I4 no autorizada, producción DO_NOT_TOUCH.",
+  "exactNextAction": "I3 HOLD / RUN2158 MAPPING_FAILURE Damaris NOVIEMBRE!3 y !22, fuente HR protegida sin telefono, keeper Auth unico. Nuevo P0 source 1b7b98a34028 61/61 LOCAL; pasar mismo artifact por job existente a DEV; verificar ACK identidad y alias, Julissa instructivo contenido/descarga, Stiven historial 10/10 Admin/Shopper, Admin/Shopper GT/HN, 275 casos tecnicos. Recertificar 21 modulos solo con readback HR revision exacta y finanzas; 5/21 MATCH actual, 32/83 grupos historicos +51/83 recenso, G03 Hosting referencia 231186c337bcd0ba, Gate20/21 HOLD, I4 no autorizada, produccion DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3040,7 +3040,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "229015b85d7b769decd04a3f2e95714ad9d52f17",
+  "moduleTruthExpectedGitBlob": "25cb45a65a997d5644d36e9d4aff9828c2830eef",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12869,7 +12869,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 41936788632,
     "runNumber": 2157,
     "sourceSha": "160b7ae976a7cc24dd1cd9d3466d6d72ef071d6d",
@@ -12883,7 +12883,7 @@
     "hrRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
     "receiptPath": "docs/checkpoints/CXORBIA_I3_S1_DAMARIS_JULISSA_EXACT_DEV_RUN2157_20261104.json",
     "receiptBlob": "e549ac45bb275b4520e8c028c3a41fbd82f01ea6",
-    "liveE2e": "PENDING_SAME_ARTIFACT_REPRESENTATIVE_GA_AND_PROVIDER_ACK",
+    "liveE2e": "RUN2158_MAPPING_FAILURE_DAMARIS_SOURCE_FOCAL_REPAIR_PENDING_DEV",
     "humanAcceptance": "PENDING",
     "gate20": "HOLD",
     "gate21": "HOLD",
@@ -17205,6 +17205,49 @@
       "hostingVersion": "sites/cxorbia-backend-dev/versions/135c3f098cc2d9b6",
       "artifactDigest": "sha256:db18418c76e6a14490dec6e73b8e7da17ae5b9b035c0d4b577b382dbf0218c46",
       "receiptPath": "docs/checkpoints/CXORBIA_I3_S1_DAMARIS_JULISSA_EXACT_DEV_RUN2157_20261104.json"
+    }
+  },
+  "i3Nov04DamarisNoPhoneProtectedSourceFix": {
+    "classification": "MAPPING_FAILURE",
+    "finding": "VRM-305",
+    "priorLiveRunId": 41937906504,
+    "priorLiveRunNumber": 2158,
+    "priorLiveFailure": "PHASEA_POST_RECONCILIATION_POPULATION_INVARIANT",
+    "sourceHrRows": [
+      "NOVIEMBRE!3",
+      "NOVIEMBRE!22"
+    ],
+    "sourceShopperId": "shopper_gt_617abd0ad7",
+    "existingKeeperShopperId": "shopper_gt_9c80e5538b",
+    "predecessorSourceSha": "160b7ae976a7cc24dd1cd9d3466d6d72ef071d6d",
+    "sourceSha": "1b7b98a34028515fce88419b722df6d5269bb263",
+    "sourceTree": "0e99b57eef2f751b7759b38ad22939b5cf4148e6",
+    "owner": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+    "ownerBlob": "86f824e80e28dbe5762e0c2aa3c8207523b1684d",
+    "test": "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs",
+    "testBlob": "6ea3f7c153d10d6f01f2f3e39250475a8a155482",
+    "localTests": {
+      "pass": 61,
+      "fail": 0,
+      "scope": "SYNTHETIC_IN_MEMORY_NO_REAL_PROVIDER"
+    },
+    "contract": "Unique normalized 3+ full-token strong-name + country + project + one verified existing Auth principal when HR truly lacks phone; conflicts and distinct decisions stay in review",
+    "dev": "PENDING",
+    "liveAdminShopper": "PENDING",
+    "production": false,
+    "sourceDriven": true,
+    "liveRun2158": {
+      "runId": 41937906504,
+      "runNumber": 2158,
+      "classification": "MAPPING_FAILURE",
+      "blockingShopperId": "shopper_gt_617abd0ad7",
+      "eligibleHrRowRefs": [
+        "NOVIEMBRE!3",
+        "NOVIEMBRE!22"
+      ],
+      "otherShoppers": "PASS_AUTO_RECONCILED",
+      "julissaModalOpened": true,
+      "scope": "DEV_SAME_ARTIFACT_REAL_PROVIDER_FAILED_BEFORE_FULL_E2E"
     }
   }
 }
