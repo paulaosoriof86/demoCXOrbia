@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "1b7b98a34028515fce88419b722df6d5269bb263",
-    "sourceTree": "0e99b57eef2f751b7759b38ad22939b5cf4148e6",
-    "predecessorSha": "160b7ae976a7cc24dd1cd9d3466d6d72ef071d6d",
+    "sourceSha": "6087774752e140361a4cd0b35aadf9fe25771611",
+    "sourceTree": "d75a45b42f574d5d0efd4ad0aef5b0ae8f1dfff1",
+    "predecessorSha": "1b7b98a34028515fce88419b722df6d5269bb263",
     "production": false,
-    "state": "I3_P0_PHONELESS_HR_AUTO_LINK_EXACT_DEV_RUN2159_PENDING_SAME_ARTIFACT_ROLE_E2E_5_OF_21_MATCH",
+    "state": "HOLD_I3_S1_AUTO_COMPATIBLE_IDENTITY_DEV_MATERIALIZATION_REQUIRED",
     "november2026AutomaticPeriodSourceProof": {
       "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
       "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -21534,7 +21534,18 @@
         "previousRun2158": "FAIL_POST_RECONCILIATION_POPULATION",
         "fixedSourceSha": "1b7b98a34028515fce88419b722df6d5269bb263",
         "devMaterializationRun2159": "PASS",
-        "providerReadback": "PENDING"
+        "providerReadback": "FAIL_RUN2160_MASKED_NAME_SOURCE_EMPTY_NO_ALIAS"
+      },
+      "protectedMaskedNameReviewFingerprintSuccessor": {
+        "sourceSha": "6087774752e140361a4cd0b35aadf9fe25771611",
+        "sourceTree": "d75a45b42f574d5d0efd4ad0aef5b0ae8f1dfff1",
+        "localUnitTestsPass": 63,
+        "localUnitTestsFail": 0,
+        "realRun2160Failure": "NOVIEMBRE!3_AND_NOVIEMBRE!22_UNRESOLVED_WHILE_HR_ACK_PASS",
+        "policy": "No untrusted review-as-authority; match durable exact-name/phone evidence fingerprint to single active principal; no hardcode, no extra Auth, no HR writes",
+        "devMaterialization": "PENDING",
+        "realE2E": "PENDING",
+        "production": false
       }
     }
   },
@@ -21962,6 +21973,15 @@
       "sourceSha": "1b7b98a34028515fce88419b722df6d5269bb263",
       "run2158Failure": "PHASEA_POST_RECONCILIATION_POPULATION_INVARIANT",
       "newLocalTestsPass": 61,
+      "realProviderAck": "PENDING",
+      "modulePromotion": 0
+    },
+    "VRM-305-MASKED-REVIEW-FINGERPRINT-LOCAL": {
+      "classification": "MAPPING_FAILURE",
+      "rootFinding": "VRM-305",
+      "sourceSha": "6087774752e140361a4cd0b35aadf9fe25771611",
+      "previousRealRunId": 41941333379,
+      "localTestsPass": 63,
       "realProviderAck": "PENDING",
       "modulePromotion": 0
     }
@@ -22628,7 +22648,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "I3 HOLD / RUN2159 source 1b7b98a exact DEV PASS (Cloud Run 00344-jz7, Hosting bf3cc0d9f3c9f640, HR cdc40258e980, ZIP 5e833dad0ca1). Siguiente unica accion job existente phasea-representative-same-artifact-live-reproof: Admin/Shopper GT/HN, ACK alias automatico Damaris NOVIEMBRE!3+!22 vs keeper Auth, Julissa instructivo publicado/visor/descarga, Stiven 10 Admin vs Shopper, 275 casos tecnicos, historico/finanzas y paridad HR revision independiente. Solo certificar modulos con evidencia exacta; 5/21 MATCH, 32/83 grupos historicos y 51/83 recenso; G03 Hosting historico 231186c337bcd0ba, HR y finanzas HOLD, Gate20/21 HOLD, I4 no autorizada, produccion DO_NOT_TOUCH.",
+  "exactNextAction": "I3 HOLD / fuente focal 60877747 63/63 local PASS pero no servida en DEV. Accion unica: job existente vrm154-156-dev-materialization con un solo build exacto; luego RUN real phasea-representative-same-artifact-live-reproof Damaris NOVIEMBRE!3+!22 y keeper Auth, Julissa instructivo visor/descarga, Stiven 10/10 Admin/Shopper, GT/HN, HR revision y finanzas, 275 casos tecnicos. Mantener 5/21 MATCH, 32/83 grupos historicos (51/83 recenso), G03 Hosting historico 231186c337bcd0ba, HR y finanzas HOLD, Gate20/21 HOLD, I4 sin autorizacion, produccion DO_NOT_TOUCH.",
   "supersedesGitBlob": "086542151de0b223afbd258f1f65be6ca886684d",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -38407,5 +38427,23 @@
       "artifactDigest": "sha256:5e833dad0ca1f9b885413a49b09bd685a4f1ca0261575789c67f088a48af353b",
       "hrRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac"
     }
+  },
+  "i3Nov04MaskedExactReviewFingerprintSourceFix": {
+    "classification": "MAPPING_FAILURE",
+    "rootFinding": "VRM-305",
+    "predecessorSourceSha": "1b7b98a34028515fce88419b722df6d5269bb263",
+    "sourceSha": "6087774752e140361a4cd0b35aadf9fe25771611",
+    "sourceTree": "d75a45b42f574d5d0efd4ad0aef5b0ae8f1dfff1",
+    "owner": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+    "ownerBlob": "28fe1d6c7bb89adacef98e3ed2ab2b40258f2de2",
+    "testsBlob": "a122a5914c8a031839d40db45837092ee4901d72",
+    "localUnitTests": {
+      "passed": 63,
+      "failed": 0
+    },
+    "proof": "Protected HR alias can be reconciled only with one active name+country+phone review fingerprint that independently matches a unique active Auth keeper; otherwise HOLD review. No user-specific code.",
+    "devMaterialization": "PENDING",
+    "sameArtifactLive": "PENDING",
+    "production": false
   }
 }

@@ -7,8 +7,8 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "1b7b98a34028515fce88419b722df6d5269bb263",
-  "productTree": "0e99b57eef2f751b7759b38ad22939b5cf4148e6",
+  "productSourceSha": "6087774752e140361a4cd0b35aadf9fe25771611",
+  "productTree": "d75a45b42f574d5d0efd4ad0aef5b0ae8f1dfff1",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -296,7 +296,7 @@
     "evolution": 6
   },
   "historicalNextExactActionPreS1": "S1 read-only reason/alias cohort classification, implement legacy-compatible deterministic normalizer in provider owner and bridge, run bounded GT/HN/history/Auth fixtures. Existing DEV serial materialization only after source QA; verify Stiven/Julissa Shopper role post-fix.",
-  "nextExactAction": "I3 HOLD / RUN2159 source 1b7b98a exact DEV PASS (Cloud Run 00344-jz7, Hosting bf3cc0d9f3c9f640, HR cdc40258e980, ZIP 5e833dad0ca1). Siguiente unica accion job existente phasea-representative-same-artifact-live-reproof: Admin/Shopper GT/HN, ACK alias automatico Damaris NOVIEMBRE!3+!22 vs keeper Auth, Julissa instructivo publicado/visor/descarga, Stiven 10 Admin vs Shopper, 275 casos tecnicos, historico/finanzas y paridad HR revision independiente. Solo certificar modulos con evidencia exacta; 5/21 MATCH, 32/83 grupos historicos y 51/83 recenso; G03 Hosting historico 231186c337bcd0ba, HR y finanzas HOLD, Gate20/21 HOLD, I4 no autorizada, produccion DO_NOT_TOUCH.",
+  "nextExactAction": "I3 HOLD / fuente focal 60877747 63/63 local PASS pero no servida en DEV. Accion unica: job existente vrm154-156-dev-materialization con un solo build exacto; luego RUN real phasea-representative-same-artifact-live-reproof Damaris NOVIEMBRE!3+!22 y keeper Auth, Julissa instructivo visor/descarga, Stiven 10/10 Admin/Shopper, GT/HN, HR revision y finanzas, 275 casos tecnicos. Mantener 5/21 MATCH, 32/83 grupos historicos (51/83 recenso), G03 Hosting historico 231186c337bcd0ba, HR y finanzas HOLD, Gate20/21 HOLD, I4 sin autorizacion, produccion DO_NOT_TOUCH.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -999,11 +999,11 @@
   },
   "moduleTruthAuthority": {
     "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V244.json",
-    "gitBlob": "4ad2508079ec59e8a177e0bb8d64a0f6daaf1edc",
-    "sourceSha": "1b7b98a34028515fce88419b722df6d5269bb263",
+    "gitBlob": "c6137ed2390f39c8befc738068cb8e950c22c35a",
+    "sourceSha": "6087774752e140361a4cd0b35aadf9fe25771611",
     "allModulesMatch": false,
     "phaseAComplete": false,
-    "sha256": "579f380d34eda070c92a9660bbc7e0ecac7986537193bc1b413ea90ab3524a58"
+    "sha256": "b633f42ff8fa6e4fa669496827ff5d9c1fa420aca6420302c9d37460bc61788b"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -1573,7 +1573,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 41940300321,
     "runNumber": 2159,
     "sourceSha": "1b7b98a34028515fce88419b722df6d5269bb263",
@@ -3039,9 +3039,9 @@
     "gitBlob": "879313bfbced75baa8d764d9678f5efcc489c944"
   },
   "activeShockModuleTruth": {
-    "sourceSha": "1b7b98a34028515fce88419b722df6d5269bb263",
+    "sourceSha": "6087774752e140361a4cd0b35aadf9fe25771611",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V244.json",
-    "matrixBlob": "4ad2508079ec59e8a177e0bb8d64a0f6daaf1edc",
+    "matrixBlob": "c6137ed2390f39c8befc738068cb8e950c22c35a",
     "classificationCounts": {
       "COMPOSED_NOT_DEPLOYED": 1,
       "MATCH": 5,
@@ -7495,5 +7495,23 @@
       "artifactDigest": "sha256:5e833dad0ca1f9b885413a49b09bd685a4f1ca0261575789c67f088a48af353b",
       "hrRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac"
     }
+  },
+  "i3Nov04MaskedExactReviewFingerprintSourceFix": {
+    "classification": "MAPPING_FAILURE",
+    "rootFinding": "VRM-305",
+    "predecessorSourceSha": "1b7b98a34028515fce88419b722df6d5269bb263",
+    "sourceSha": "6087774752e140361a4cd0b35aadf9fe25771611",
+    "sourceTree": "d75a45b42f574d5d0efd4ad0aef5b0ae8f1dfff1",
+    "owner": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+    "ownerBlob": "28fe1d6c7bb89adacef98e3ed2ab2b40258f2de2",
+    "testsBlob": "a122a5914c8a031839d40db45837092ee4901d72",
+    "localUnitTests": {
+      "passed": 63,
+      "failed": 0
+    },
+    "proof": "Protected HR alias can be reconciled only with one active name+country+phone review fingerprint that independently matches a unique active Auth keeper; otherwise HOLD review. No user-specific code.",
+    "devMaterialization": "PENDING",
+    "sameArtifactLive": "PENDING",
+    "production": false
   }
 }
