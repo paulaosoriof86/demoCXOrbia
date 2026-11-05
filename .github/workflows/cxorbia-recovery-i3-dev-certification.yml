@@ -5260,7 +5260,7 @@ jobs:
       PROBE_OUT="$FOCAL_OUT/vrm168-provider"
       ACTIVE_VRM168_UID="$(jq -r '.activeCanonicalPrincipal.uid // empty' "$FOCAL_OUT/human-acceptance/vrm168-identity-authority-readonly.json")"
       test -n "$ACTIVE_VRM168_UID"
-      PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" OUT="$PROBE_OUT" VRM168_PERIOD_ID="cinepolis-2026-10" VRM168_SHOPPER_ID="shopper_gt_1440137b73" VRM168_UID="$ACTIVE_VRM168_UID" node tools/qa/cxorbia-i3-vrm168-schedule-provider-probe.mjs | tee "$FOCAL_OUT/vrm168-provider.log"
+      PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" OUT="$PROBE_OUT" VRM168_SHOPPER_ID="shopper_gt_1440137b73" VRM168_UID="$ACTIVE_VRM168_UID" node tools/qa/cxorbia-i3-vrm168-schedule-provider-probe.mjs | tee "$FOCAL_OUT/vrm168-provider.log"
       test "$(jq -r '.decision' "$PROBE_OUT/result.json")" = "PASS_VRM168_PROVIDER_SCHEDULE_PATH"
       test "$(jq -r '.cleanup.visit and .cleanup.receipt and .cleanup.audit' "$PROBE_OUT/result.json")" = "true"
       test "$(jq -r '.hrWrites' "$PROBE_OUT/result.json")" = "0"
@@ -5671,7 +5671,7 @@ jobs:
         jq -e '.writes=={"auth":0,"hr":0,"provider":0} and .deploys==0 and .production==false' "$P/result.json" >/dev/null
         exit 0
       fi
-      VRM168_OUT="$P/provider-schedule" VRM168_PERIOD_ID="$PERIOD_ID" node tools/qa/cxorbia-i3-vrm168-schedule-provider-probe.mjs | tee "$P/provider-schedule-console.log"
+      VRM168_OUT="$P/provider-schedule" node tools/qa/cxorbia-i3-vrm168-schedule-provider-probe.mjs | tee "$P/provider-schedule-console.log"
       test "$(jq -r '.decision' "$P/provider-schedule/result.json")" = "PASS_VRM168_PROVIDER_SCHEDULE_PATH"
       jq -e '.result.providerAck==true and .cleanup.visit==true and .cleanup.receipt==true and .cleanup.audit==true and .hrWrites==0 and .production==false' "$P/provider-schedule/result.json" >/dev/null
       test "$(jq -r '.writes.auth' "$P/result.json")" = "0"
