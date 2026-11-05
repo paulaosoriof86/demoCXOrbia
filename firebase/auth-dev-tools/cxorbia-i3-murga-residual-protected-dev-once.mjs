@@ -258,6 +258,35 @@ async function verify(db,auth,old,plan,ack,hr){
     nameInCanonicalProfile:s(cp.nombre),nameMatchesCorrectedHr:name(cp)===target.normalized,
     hrRevision:nextHr.revision};
 }
+async function postAttemptReadOnly(db,hr,state){
+  const rows=[...state.profiles].filter(([_id,p])=>target.matchesProfile(name(p))&&country(p)===target.country);
+  const hrRows=hr.shoppers.filter(p=>name(p)===target.normalized&&country(p)===target.country);
+  const keeper=state.members.find(m=>m.active===true&&m.role==='shopper'&&m.authNamespace==='shopper'&&
+    s(m.visibleLogin).toLowerCase()===target.login&&m.tenantId===TENANT);
+  assert(keeper&&rows.length>=target.minProfiles&&hrRows.length===target.hrCount,'READONLY_IDENTITY_CENSUS_CHANGED');
+  const canonical=s(keeper.shopperId),ids=rows.map(([id])=>id),hrIds=unique(hrRows.map(sid)),aliases=ids.filter(id=>id!==canonical).sort();
+  const owned=domainOwned(state,[...aliases,...hrIds]),visitRows=owned.find(x=>x.key==='visits').rows.map(x=>x.id);
+  const key='i3-'+CASE.toLowerCase()+'-residual-once:'+hash([TENANT,PROGRAM,hr.periodId,hr.revision,canonical,
+    keeper.uid,...aliases,...hrIds,...visitRows].join('\0')).slice(0,32);
+  const receiptId=hash(TENANT+'\0'+PROGRAM+'\0'+hr.periodId+'\0'+key).slice(0,40);
+  const receiptSnap=await state.tenant.collection('commandReceipts').doc(receiptId).get(),receipt=receiptSnap.data()||{};
+  const receiptQuery=await state.tenant.collection('commandReceipts').where('shopperId','==',canonical).limit(80).get();
+  const matchingReceipts=receiptQuery.docs.map(d=>({id:d.id,...d.data()}))
+    .filter(x=>s(x.commandType)==='shopper.identity.adjudicate')
+    .map(x=>({sameComputedId:x.id===receiptId,status:s(x.status),providerAck:x.providerAck===true,
+      identityConsolidated:x.identityConsolidated===true,domainWrites:x.domainWrites||{}}));
+  const activeMembers=state.members.filter(m=>m.active===true&&[canonical,...aliases,...hrIds].includes(s(m.shopperId)));
+  return {hrRevision:hr.revision,canonicalFound:ids.includes(canonical),profileCount:rows.length,
+    hrSourceIds:hrIds.length,aliasCount:aliases.length,activeMembers:activeMembers.length,
+    supersededProfiles:rows.filter(([,p])=>s(p.supersededByShopperId)===canonical).length,
+    crosswalkToKeeper:[...aliases,...hrIds].filter(id=>s(state.cross.get(id)?.shopperId)===canonical).length,
+    refsStillOnAliases:Object.fromEntries(owned.map(x=>[x.key,x.rows.length])),
+    receipt:{exists:receiptSnap.exists,status:s(receipt.status),commandType:s(receipt.commandType),
+      providerAck:receipt.providerAck===true,shopperIdMatches:s(receipt.shopperId)===canonical,
+      identityConsolidated:receipt.identityConsolidated===true,domainWrites:receipt.domainWrites||{}},
+    matchingReceipts,
+    linkedProviderAcks:state.links.filter(l=>s(l.canonicalShopperId)===canonical&&l.providerAck===true).length};
+}
 
 try{
   assert(process.env.CX_I3_RESIDUAL_APPROVAL===target.approval,'EXPLICIT_TARGET_DEV_AUTHORITY_MISSING');
@@ -265,6 +294,10 @@ try{
   assert(process.env.CXORBIA_PRODUCT_SOURCE_SHA===SOURCE,'PRODUCT_SOURCE_PIN_CHANGED');
   if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
   const db=getFirestore(),auth=getAuth(),hr=await hrRead(),state=await stateRead(db);
+  if(process.env.CX_I3_RESIDUAL_READBACK_ONLY==='YES_PAULA_20261105_POST_ATTEMPT'){
+    result.postAttemptReadback=await postAttemptReadOnly(db,hr,state);
+    result.decision='READONLY_POST_ATTEMPT_RECEIPT_AND_DOMAIN_CENSUS';save();
+  }else{
   const approved=plan(state,hr);await authPreflight(auth,approved);
   const second=await hrRead();assert(second.revision===hr.revision,'HR_CHANGED_DURING_PREFLIGHT');
   result.hrRevisionBefore=hr.revision;result.domainRowsPlanned=approved.counts;
@@ -272,6 +305,10 @@ try{
   result.decision='PREFLIGHT_PASS_PROTECTED_PROVIDER_PENDING';save();
   const operator=await protectedOperator(auth,hr,state);
   const outcome=await execute(approved,hr,operator);
+  result.providerFirstResult={built:outcome.built===true,contractErrors:outcome.built===true?null:outcome.errors||[],
+    code:s(outcome.first?.code),status:s(outcome.first?.status),providerAck:outcome.first?.providerAck===true,
+    providerWrites:outcome.first?.providerWrites??null,receiptPath:s(outcome.first?.receiptPath)};
+  save();
   if(outcome.built!==true||outcome.first?.ok!==true||outcome.first?.providerAck!==true){
     result.decision='HOLD_PROVIDER_ACK_UNKNOWN_STOP_NO_RETRY';save();throw Error('PROVIDER_ACK_UNKNOWN_STOP');
   }
@@ -290,6 +327,7 @@ try{
     'PASS_RESIDUAL_'+CASE+'_FUSION_AND_NAME_DEV':
     'PASS_RESIDUAL_'+CASE+'_FUSION_PROFILE_NAME_PROJECTION_PENDING';
   await operator.context.close();
+  }
 }catch(e){result.errorCode=s(e?.message||e).replace(/[^A-Z0-9_:-]/gi,'_').slice(0,100);
   if(!result.decision.startsWith('HOLD_PROVIDER_ACK_UNKNOWN'))result.decision='HOLD_STOP_ON_P0_PROOF_OR_WRITE';
   process.exitCode=1;
