@@ -38,6 +38,10 @@ jobs:
         run: |
           node --check firebase/auth-dev-tools/cxorbia-i3-two-authorized-name-logins-readonly.mjs
           node firebase/auth-dev-tools/cxorbia-i3-two-authorized-name-logins-readonly.mjs
+      - name: Prove current HR revision and safe keeper feasibility for both residual humans
+        run: |
+          node --check firebase/auth-dev-tools/cxorbia-i3-two-residual-cluster-keeper-preflight-readonly.mjs
+          node firebase/auth-dev-tools/cxorbia-i3-two-residual-cluster-keeper-preflight-readonly.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -45,5 +49,6 @@ jobs:
           path: |
             .tmp/cxorbia-i3-vrm286-admin-readonly/result.json
             .tmp/cxorbia-i3-two-authorized-name-logins-readonly/result.json
+            .tmp/cxorbia-i3-residual-keeper-preflight/result.json
           if-no-files-found: warn
           retention-days: 30
