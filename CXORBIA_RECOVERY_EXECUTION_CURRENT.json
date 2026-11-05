@@ -10,12 +10,12 @@
   "productSourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
   "productTree": "e6f941c511272dfb0d258e935d7c1526c83b31cb",
   "currentCanonicalCheckpoint": {
-    "path": "docs/checkpoints/CXORBIA_RECOVERY_CHECKPOINT_CANONICO_2026-11-05_I3_V4.md",
+    "path": "docs/checkpoints/CXORBIA_RECOVERY_CHECKPOINT_CANONICO_2026-11-05_I3_V5.md",
     "status": "I3_HOLD",
     "runId": 42080118914,
     "artifactId": 13439729089,
     "artifactSha256": "7d407e9e4fc493793e247eee917406fd5b3d2d6d833d7816df5e6b37a947bda1",
-    "controlCommit": "f8ac7b744d8fbd65679d0e846e7950703c9b8037",
+    "controlCommit": "01fce7dc6fc256dd867433c9fb13a64f38a8e0fe",
     "approvedGroups": 83,
     "verifiedEarlier": 32,
     "mergedEarlier": 37,
@@ -23,12 +23,28 @@
     "verifiedTotal": 83,
     "remaining": 0,
     "sourceRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
+    "sourceRevisionIsPreNameCorrectionHistorical": true,
+    "postNameCorrectionHrRevision": "PENDING_FRESH_REPROOF",
     "productUnchanged": true,
     "productionUnchanged": true,
     "approvedNameLoginCorrections": {
-      "jhennypherMurga": "HOLD_SOURCE_HR_AND_AUTH_READBACK",
-      "rocioVilcaUsernameRocioDotVilca": "HOLD_SOURCE_HR_AND_AUTH_READBACK",
+      "jhennypherMurga": "HR_15_CELLS_PASS_PROFILE_AUTH_AND_THREE_MEMBER_CONSOLIDATION_HOLD",
+      "rocioVilcaUsernameRocioDotVilca": "HR_1_CELL_PASS_EXISTING_LOGIN_COLLISION_AND_THREE_MEMBER_CONSOLIDATION_HOLD",
       "freddyHernandezGt": "PASS_SEPARATE_FROM_HN"
+    },
+    "postHrNameCorrection": {
+      "trueSpreadsheetId": "1h307t37LxM1nZNh_9Odt6wHUQhROG6cYbsbMKr48vU4",
+      "cellsUpdated": 16,
+      "murgaNameCells": 15,
+      "rocioNameCells": 1,
+      "fullRowOtherCellChanges": 0,
+      "safeReadback": "PASS_16_OF_16",
+      "accountInventoryRunId": 42085353602,
+      "murgaActiveAccounts": 3,
+      "rocioActiveAccounts": 3,
+      "sourceProfileAuthConsolidation": "HOLD",
+      "credentialResets": 0,
+      "production": false
     },
     "recertificationPreviouslySkipped": {
       "workflowRunIds": [42081974057, 42081974109, 42081974152, 42081973891],
@@ -54,8 +70,8 @@
     "privateCensusV2": "libfile_ed0533ff08b48191b4e2b809fb70d6db"
   },
   "continuityHandoff": {
-    "authority": "CURRENT_CANONICAL_V4_OVERRIDES_HISTORICAL_HANDOFF_ONLY",
-    "path": "docs/checkpoints/CXORBIA_RECOVERY_CHECKPOINT_CANONICO_2026-11-05_I3_V4.md",
+    "authority": "CURRENT_CANONICAL_V5_OVERRIDES_HISTORICAL_HANDOFF_ONLY",
+    "path": "docs/checkpoints/CXORBIA_RECOVERY_CHECKPOINT_CANONICO_2026-11-05_I3_V5.md",
     "asOf": "2026-11-05",
     "iteration": "I3",
     "status": "HOLD",
@@ -67,7 +83,7 @@
     "moduleMatches": 5,
     "moduleTotal": 21,
     "nextTaskIds": ["A01", "A02", "G03", "D05", "C04", "C05", "D07", "E11"],
-    "immediateAction": "I3: 83/83 approved identity groups merged and independently read back in DEV. Materialize Directorate-approved Jhennypher Murga and Rocío Vilca/rocio.vilca by exact operational HR and protected account owner, no unapproved credential reset. Re-read the technical Admin review queue after batch and reconcile provider IDs; historical 206 notices and 19 row badges are not proof of current queue. Four omitted recertification workflows PASS on 09eed4f source, but 16/21 modules require complete same-artifact E2E before promotion and Gate20/21. Production DO_NOT_TOUCH.",
+    "immediateAction": "I3 V5: Approved 83/83 graph merged on historical HR revision; following exact HR name correction (15 Jhennypher Murga cells, 1 Rocío Vilca cell; other row fields untouched), DEV Auth readback proves 3 active members per human across separate clusters. Execute bounded protected cross-group preflight/merge preserving today's Rocío Vica sign-in while producing desired rocio.vilca login, no blind password reset, with new HR revision. Reconcile provider review IDs and 16 non-MATCH modules by same-artifact GT/HN E2E and Gate20/21; four formerly skipped recert workflows passed post-HR write. Production DO_NOT_TOUCH.",
     "noProduction": true
   },
   "currentModuleEvidenceOverrides": {
@@ -416,7 +432,7 @@
     "evolution": 6
   },
   "historicalNextExactActionPreS1": "S1 read-only reason/alias cohort classification, implement legacy-compatible deterministic normalizer in provider owner and bridge, run bounded GT/HN/history/Auth fixtures. Existing DEV serial materialization only after source QA; verify Stiven/Julissa Shopper role post-fix.",
-  "nextExactAction": "I3 HOLD after RUN 42080118914: all 83/83 Directorate-approved shopper identity groups merged and independently read back in DEV, no cohort pending. Run 42081974057/42081974109/42081974152/42081973891: 4/4 previously skipped recertification workflows now PASS against exact 09eed4f source with no product source changes. Still reconcile operational HR truth and approved canonical Jhennypher Murga, Rocío Vilca username rocio.vilca under protected credential owner without resetting passwords; connected Drive lacks exact configured multitab HR. Re-read live Admin review counter and reconcile provider review IDs instead of assuming historic 206 notices or 19 badges vanished. Certify remaining 16 non-MATCH modules via full same-artifact cross-role GT/HN E2E plus HR/finance, protected documents, questionnaires, assignment, history, Gate20/21. Preserve 5/21 MATCH and all historic PASS. Production DO_NOT_TOUCH until I3 GO/I4 explicit authorization.",
+  "nextExactAction": "I3 V5 HOLD: 83/83 approved graph identity groups PASS (RUN42080118914) but after corrections in exact operational HR 1h307t...vU4, 16/16 targeted name cells PASS and all other columns preserved; fresh DEV Auth READ-ONLY RUN42085353602 proves 3 separate active memberships each for Jhennypher Murga and Rocío Vilca, including rocio.vilca already in another account and rocio.vica.3599 signed in today. Next perform bounded owner/provider preflight by exact shopperIds/crosswalk and current HR revision, consolidate histories and accounts preserving active access, verify final rocio.vilca login with protected Auth; avoid blind credential resets. Four formerly omitted module QA workflows PASS again after HR correction RUN42084843602/42084843656/42084844048/42084843661, source exact 09eed4f, product unchanged; official 5/21 MATCH, 16 complete E2E pending, Gate20/21 HOLD. Re-read Admin review queue by exact provider case IDs, not historic 206/19 counts. Production DO_NOT_TOUCH until I3 GO/I4 explicit authorization.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
