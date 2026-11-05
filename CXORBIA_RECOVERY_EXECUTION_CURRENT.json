@@ -10,7 +10,7 @@
   "productSourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
   "productTree": "e6f941c511272dfb0d258e935d7c1526c83b31cb",
   "currentCanonicalCheckpoint": {
-    "path": "docs/checkpoints/CXORBIA_RECOVERY_CHECKPOINT_CANONICO_2026-11-05_I3_V5.md",
+    "path": "docs/checkpoints/CXORBIA_RECOVERY_CHECKPOINT_CANONICO_2026-11-05_I3_V6.md",
     "status": "I3_HOLD",
     "runId": 42080118914,
     "artifactId": 13439729089,
@@ -24,7 +24,9 @@
     "remaining": 0,
     "sourceRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
     "sourceRevisionIsPreNameCorrectionHistorical": true,
-    "postNameCorrectionHrRevision": "PENDING_FRESH_REPROOF",
+    "postNameCorrectionHrRevision": "63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba",
+    "latestAdminReadOnlyRunId": 42101372355,
+    "latestD05QaPositiveRunId": 42102176594,
     "productUnchanged": true,
     "productionUnchanged": true,
     "approvedNameLoginCorrections": {
@@ -70,8 +72,8 @@
     "privateCensusV2": "libfile_ed0533ff08b48191b4e2b809fb70d6db"
   },
   "continuityHandoff": {
-    "authority": "CURRENT_CANONICAL_V5_OVERRIDES_HISTORICAL_HANDOFF_ONLY",
-    "path": "docs/checkpoints/CXORBIA_RECOVERY_CHECKPOINT_CANONICO_2026-11-05_I3_V5.md",
+    "authority": "CURRENT_CANONICAL_V6_OVERRIDES_HISTORICAL_HANDOFF_ONLY",
+    "path": "docs/checkpoints/CXORBIA_RECOVERY_CHECKPOINT_CANONICO_2026-11-05_I3_V6.md",
     "asOf": "2026-11-05",
     "iteration": "I3",
     "status": "HOLD",
@@ -83,7 +85,7 @@
     "moduleMatches": 5,
     "moduleTotal": 21,
     "nextTaskIds": ["A01", "A02", "G03", "D05", "C04", "C05", "D07", "E11"],
-    "immediateAction": "I3 V5: Approved 83/83 graph merged on historical HR revision; following exact HR name correction (15 Jhennypher Murga cells, 1 Rocío Vilca cell; other row fields untouched), DEV Auth readback proves 3 active members per human across separate clusters. Execute bounded protected cross-group preflight/merge preserving today's Rocío Vica sign-in while producing desired rocio.vilca login, no blind password reset, with new HR revision. Reconcile provider review IDs and 16 non-MATCH modules by same-artifact GT/HN E2E and Gate20/21; four formerly skipped recert workflows passed post-HR write. Production DO_NOT_TOUCH.",
+    "immediateAction": "I3 V6 HOLD. 83/83 approved original shopper identity groups PASS RUN42080118914; 16/16 exact HR name cells ACK/readback. Fresh independent HR revision 63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba and Admin/HR/Auth read-only RUN42101372355 PASS. Residual Jhennypher Murga GT: 11 profiles but none directly has the 1 HR source identity ID, 3 active Auth, keeper candidate jennypher.murga, 46 historical visit/certificate/liquidation/reconciliation references; two protected preflight attempts failed before any provider write. Rocío Vilca HN: 5 profiles/2 HR IDs/3 Auth, 15 domain rows, rocio.vilca keeper candidate, recent secondary session HOLD. Next fix P0 MAPPING_FAILURE HR shopperId→canonical Firestore profile/crosswalk idempotent upsert transversally GT/HN, then protected approved mergers with historical preservation, no credential reset and full Shopper login readback. D05 QA positive RUN42102176594 3/3 publish-configure-retire provider ACK, 3 receipts, bank tombstoned, real banks unchanged; UI Admin/Shopper still pending. V245 matrix 5/21 MATCH, 16 non-MATCH, 3 TRUE_FUNCTIONAL_DEFECT, 1 COMPOSED_NOT_DEPLOYED; 9 omitted CI jobs SKIPPED. Continue role E2E G03 HR finanzas, Visitas, Mi Visitas, historico, questionnaires, postings, payments, Gates20/21 HOLD. Production DO_NOT_TOUCH, I4 not authorized.",
     "noProduction": true
   },
   "currentModuleEvidenceOverrides": {
@@ -432,7 +434,7 @@
     "evolution": 6
   },
   "historicalNextExactActionPreS1": "S1 read-only reason/alias cohort classification, implement legacy-compatible deterministic normalizer in provider owner and bridge, run bounded GT/HN/history/Auth fixtures. Existing DEV serial materialization only after source QA; verify Stiven/Julissa Shopper role post-fix.",
-  "nextExactAction": "I3 V5 HOLD 83/83 approved identity groups PASS RUN42080118914, post-correction HR exact 16/16 cells PASS: Jhennypher Murga GT 15, Rocío Vilca HN 1, Freddy Hernández GT remains separate from HN. RUN42098615560 independent DEV Auth+HR+keeper preflight PASS as an audit only: Jhennypher 3 active accounts, keeper jennypher.murga eligible with 46 domain rows across 4 collections; Rocío 3 active accounts, intended rocio.vilca, recent session rocio.vica.3599 protected HOLD, 15 domain rows. Next bounded protected Murga-only consolidation under current independent HR revision with full preflight, remote ACK, replay and keeper login readback; Rocío require session-preserving Auth plan, no blind disables or password resets. Module certification: 5/21 MATCH V245, 16 remaining; four previously omitted selected workflows PASS but 9 jobs in RUN42084843656 SKIPPED intentionally. Repair guard control-plane V244→V245; resume full-module exact same-artifact Admin/Shopper/cliente GT/HN E2E including G03 HR finanzas, D05 positive QA source alignment, P0 canonical HR adapters/certificates/finance and historical visits. Gate20/21 HOLD; production DO_NOT_TOUCH, I4 not authorized.",
+  "nextExactAction": "I3 V6 HOLD. 83/83 approved original shopper identity groups PASS RUN42080118914; 16/16 exact HR name cells ACK/readback. Fresh independent HR revision 63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba and Admin/HR/Auth read-only RUN42101372355 PASS. Residual Jhennypher Murga GT: 11 profiles but none directly has the 1 HR source identity ID, 3 active Auth, keeper candidate jennypher.murga, 46 historical visit/certificate/liquidation/reconciliation references; two protected preflight attempts failed before any provider write. Rocío Vilca HN: 5 profiles/2 HR IDs/3 Auth, 15 domain rows, rocio.vilca keeper candidate, recent secondary session HOLD. Next fix P0 MAPPING_FAILURE HR shopperId→canonical Firestore profile/crosswalk idempotent upsert transversally GT/HN, then protected approved mergers with historical preservation, no credential reset and full Shopper login readback. D05 QA positive RUN42102176594 3/3 publish-configure-retire provider ACK, 3 receipts, bank tombstoned, real banks unchanged; UI Admin/Shopper still pending. V245 matrix 5/21 MATCH, 16 non-MATCH, 3 TRUE_FUNCTIONAL_DEFECT, 1 COMPOSED_NOT_DEPLOYED; 9 omitted CI jobs SKIPPED. Continue role E2E G03 HR finanzas, Visitas, Mi Visitas, historico, questionnaires, postings, payments, Gates20/21 HOLD. Production DO_NOT_TOUCH, I4 not authorized.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
