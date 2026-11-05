@@ -18,9 +18,13 @@ const ROOT='https://cxorbia-backend-dev.web.app';
 const HR_URL=`${ROOT}/api/${TENANT}/${PROGRAM}/hr-live?format=json&view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV`;
 const APPROVED_REV='4fc8def718fd1504f5d76a1fbc80b6901cbf711ec2b89f4dfc3a81ecbbca517a';
 const PAIR_DIGEST='ac3e15184316d62aa53942359e857f2c34dec486a2ca41057e529a39f062d872';
-const AUTHORITY='PAULA_2026_10_28_139_PAIRS_83_GROUPS_DEV_BATCH_SINGLE_RUN';
+const FINAL14=process.env.CX_I3_APPROVED14_FINAL==='PAULA_20261105_FINAL_14_EXACT_GROUPS_DEV_ACK_ONCE';
+const FINAL_CODES=new Set(['F-015','F-017','F-024','F-032','F-034','F-055','F-061','F-064','R-009','R-018','R-027','R-045','R-055','R-064']);
+const AUTHORITY=FINAL14?'PAULA_20261105_FINAL_14_EXACT_GROUPS_DEV_ACK_ONCE':
+  'PAULA_2026_10_28_139_PAIRS_83_GROUPS_DEV_BATCH_SINGLE_RUN';
 const HASHES=JSON.parse(fs.readFileSync(new URL('./cxorbia-i3-approved-139-pair-hashes.json',import.meta.url),'utf8'));
-const OUT=String(process.env.CX_I3_APPROVED139_BATCH_OUT||'.tmp/i3-approved139-batch');
+const OUT=String((FINAL14?process.env.CX_I3_APPROVED14_FINAL_OUT:process.env.CX_I3_APPROVED139_BATCH_OUT)||
+  (FINAL14?'.tmp/i3-approved14-final':'.tmp/i3-approved139-batch'));
 const val=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[],unique=v=>[...new Set(arr(v).map(val).filter(Boolean))];
 const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
 const norm=v=>val(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ');
@@ -39,7 +43,7 @@ const immutableFields=['nombre','displayName','fullName','name','firstName','las
 const stamp=()=>new Date().toISOString();
 const stable=value=>JSON.stringify(value,(_key,v)=>v&&typeof v==='object'&&!Array.isArray(v)?
   Object.fromEntries(Object.keys(v).sort().map(key=>[key,v[key]])):v);
-const report={schemaVersion:'cxorbia.i3.approved139.dev-batch.v1',iteration:'I3',environment:'DEV',production:false,
+const report={schemaVersion:FINAL14?'cxorbia.i3.approved14.final-dev-batch.v1':'cxorbia.i3.approved139.dev-batch.v1',iteration:'I3',environment:'DEV',production:false,
   decision:'HOLD_PREFLIGHT',createdAt:stamp(),approvedPairCount:139,approvedGroupCount:83,
   approvedWorkbookDigest:PAIR_DIGEST,approvedHrRevision:APPROVED_REV,
   productSourceSha:'09eed4f012f9ad04e49d53569aabd86bd4c832a9',
@@ -155,16 +159,25 @@ function authValid(member,user,id){
     arr(member.projectIds).includes(PROGRAM)&&val(c.tenantId)===TENANT&&val(c.role)==='shopper'&&
     val(c.authNamespace)==='shopper'&&val(c.shopperId)===id&&arr(c.projectIds).includes(PROGRAM);
 }
-function adjudicationPlan(group,state,authByUid){
-  const canonical=[...group.hrs][0],ids=unique([...group.hrs,...group.accounts]);
+function adjudicationPlan(group,state,authByUid,hr){
+  const ids=unique([...group.hrs,...group.accounts]);
+  let canonical=[...group.hrs][0];
+  if(FINAL14&&FINAL_CODES.has(group.cases[0])){
+    const hrIds=[...group.hrs].sort();
+    const hrActive=hrIds.filter(id=>state.users.some(x=>x.active===true&&val(x.shopperId)===id));
+    const ranked=hrIds.map(id=>({id,visits:hr.visits.filter(v=>sid(v)===id||val(v.assignedShopperId)===id).length}))
+      .sort((a,b)=>b.visits-a.visits||a.id.localeCompare(b.id));
+    canonical=hrActive.length===1?hrActive[0]:ranked[0].id;
+    group.aliases=ids.filter(id=>id!==canonical).sort();
+  }
   const refs=domainOwned(state,group.aliases),counts=Object.fromEntries(refs.map(d=>[d.name,d.rows.length]));
   const allMembers=ids.flatMap(id=>state.users.filter(m=>m.active===true&&val(m.shopperId)===id).map(m=>({id,member:m})));
   const resolution={code:group.cases[0],caseCodes:group.cases,caseCount:group.cases.length,country:group.country,
     aliasCount:group.aliases.length,domainRows:counts,action:'HOLD'};
-  if(group.hrs.size!==1){resolution.reason='MULTIPLE_HR_CANONICAL';return {resolution};}
+  if(group.hrs.size!==1&&!FINAL14){resolution.reason='MULTIPLE_HR_CANONICAL';return {resolution};}
   if(!group.aliases.length){resolution.reason='NO_EXACT_ALIAS';return {resolution};}
   const trusted=state.links.filter(l=>val(l.authorityType)==='tenant_adjudication'&&
-    /^paula_confirmed_exact_same_human_[fr]\d{3}_2026_10_28$/.test(val(l.reason))&&
+    /^paula_confirmed_exact_same_human_[fr]\d{3}_2026_(10_28|11_05)$/.test(val(l.reason))&&
     l.humanConfirmed===true&&['active','approved','confirmed'].includes(val(l.status||l.state).toLowerCase())&&
     val(l.canonicalShopperId)===canonical);
   if(group.aliases.every(id=>trusted.some(l=>arr(l.exactAliases).map(val).includes(id)))&&
@@ -189,6 +202,18 @@ function adjudicationPlan(group,state,authByUid){
     const login=rule?.ok?val(rule.login).toLowerCase():'';
     const matching=strong.filter(x=>val(x.member.visibleLogin||state.profiles.get(x.id)?.visibleLogin).toLowerCase()===login);
     if(matching.length===1)keeper=matching[0];
+  }
+  // The 14 November-approved same-human cases contain two or three valid Auth
+  // principals with strong password proof. An explicitly chosen, unique active
+  // canonical HR principal keeps access without a credential reset. Never
+  // choose a principal with unverified claims or across a country boundary.
+  if(!keeper&&FINAL14&&strong.length>1){
+    const recent=strong.filter(x=>{const t=Date.parse(val(x.user.metadata?.lastSignInTime));
+      return Number.isFinite(t)&&Date.now()-t<7*86400000;});
+    if(recent.length===1)keeper=recent[0];
+    else if(recent.length===0){const anchor=strong.filter(x=>x.id===canonical);
+      if(anchor.length===1)keeper=anchor[0];
+    }
   }
   if(!keeper||!val(keeper.member.visibleLogin)){resolution.reason='KEEPER_PASSWORD_PROOF_NOT_UNIQUE';return {resolution};}
   if(!val(keeper.user.email).endsWith('@auth.cxorbia.invalid')){
@@ -307,8 +332,9 @@ async function execute({auth,db,operator,group,plan,hr}){
   const canonical=plan.canonical,keeperUid=plan.keeper.member.uid,aliases=group.aliases;
   const allVisits=plan.refs.find(d=>d.name==='visits').rows.map(x=>x.id);
   const preserve=allVisits.length?allVisits:['__preserve_all_alias_visit_history__'];
-  const reason='paula_confirmed_exact_same_human_'+group.cases[0].toLowerCase().replace('-','')+'_2026_10_28';
-  const key='i3-approved139-'+group.cases[0].toLowerCase()+':'+
+  const reason='paula_confirmed_exact_same_human_'+group.cases[0].toLowerCase().replace('-','')+
+    (FINAL14?'_2026_11_05':'_2026_10_28');
+  const key=(FINAL14?'i3-approved14-final-':'i3-approved139-')+group.cases[0].toLowerCase()+':'+
     sha([TENANT,PROGRAM,hr.periodId,canonical,...aliases,keeperUid,hr.revision,...preserve].join('\0')).slice(0,32);
   const originalProfiles=new Map(aliases.map(id=>[id,clone(plan.stateProfiles.get(id)||{})]));
   plan.originalProfiles=originalProfiles;
@@ -348,13 +374,14 @@ async function execute({auth,db,operator,group,plan,hr}){
 }
 
 try{
-  assert(process.env.CX_I3_APPROVED139_BATCH===AUTHORITY,'BATCH_EXECUTION_AUTHORITY_MISSING');
+  assert((FINAL14?process.env.CX_I3_APPROVED14_FINAL:process.env.CX_I3_APPROVED139_BATCH)===AUTHORITY,
+    'BATCH_EXECUTION_AUTHORITY_MISSING');
   assert(process.env.CX_I3_APPROVED139_DIGEST===PAIR_DIGEST,'BATCH_APPROVAL_DIGEST_MISSING');
   assert(process.env.GOOGLE_CLOUD_PROJECT===PROJECT||process.env.GCLOUD_PROJECT===PROJECT,'DEV_PROJECT_GUARD');
   if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
   const auth=getAuth(),db=getFirestore();
   const hr=await readHr(),state=await readState(db),authByUid=await readAuthUsers(auth);
-  const groups=approvedGroups(state,hr),plans=groups.map(group=>({group,...adjudicationPlan(group,state,authByUid)}));
+  const groups=approvedGroups(state,hr),plans=groups.map(group=>({group,...adjudicationPlan(group,state,authByUid,hr)}));
   report.preflight={hrRevision:hr.revision,hrShoppers:hr.shoppers.length,hrVisits:hr.visits.length,
     currentPeriodId:hr.periodId,verifiedCasePairs:139,verifiedHrNames:97,groups:83,
     byAction:Object.fromEntries(['ALREADY_VERIFIED','ELIGIBLE','HOLD'].map(action=>
@@ -362,14 +389,20 @@ try{
   report.alreadyVerified=plans.filter(x=>x.resolution.action==='ALREADY_VERIFIED').length;
   report.groups=plans.map(x=>({...x.resolution,attempted:false,providerAck:false,readback:false}));
   report.remaining=83-report.alreadyVerified;report.decision='PREFLIGHT_PASS_BATCH_PENDING';save();
-  assert(report.alreadyVerified===32,'PRIOR_32_VERIFIED_COUNT_DRIFT');
-  assert(report.preflight.byAction.ELIGIBLE>=3,'NO_EXACT_ELIGIBLE_GROUPS');
+  assert(report.alreadyVerified===(FINAL14?69:32),'PRIOR_VERIFIED_COUNT_DRIFT');
+  assert(report.preflight.byAction.ELIGIBLE>=(FINAL14?14:3),'APPROVED_ELIGIBLE_GROUPS_INCOMPLETE');
+  if(FINAL14){
+    const candidates=plans.filter(x=>FINAL_CODES.has(x.resolution.code));
+    assert(candidates.length===14&&candidates.every(x=>x.resolution.action==='ELIGIBLE'),
+      'NOVEMBER_14_APPROVED_PREFLIGHT_NOT_ALL_ELIGIBLE');
+  }
   const nextHr=await readHr();
   assert(nextHr.revision===hr.revision&&nextHr.visits.length===hr.visits.length&&
     nextHr.shoppers.length===hr.shoppers.length,'HR_CHANGED_BEFORE_BATCH');
   const operator=await protectedOperator(auth,state,hr);
   report.decision='BATCH_IN_PROGRESS';save();
-  for(const original of plans.filter(x=>x.resolution.action==='ELIGIBLE')){
+  for(const original of plans.filter(x=>x.resolution.action==='ELIGIBLE'&&
+    (!FINAL14||FINAL_CODES.has(x.resolution.code)))){
     const result=report.groups.find(x=>x.code===original.resolution.code);
     // Reconstruct all exact approved identity links on each live preflight; no
     // stale snapshot can silently authorize a later write in the same run.
@@ -378,9 +411,10 @@ try{
     const currentState=await readState(db),currentAuth=await readAuthUsers(auth);
     const groupsNow=approvedGroups(currentState,currentHr);
     const currentGroup=groupsNow.find(g=>g.cases[0]===original.group.cases[0]);
-    assert(currentGroup&&JSON.stringify(currentGroup.aliases)===JSON.stringify(original.group.aliases),
+    assert(currentGroup,'APPROVED_GROUP_MISSING_DURING_BATCH');
+    const current=adjudicationPlan(currentGroup,currentState,currentAuth,currentHr);
+    assert(JSON.stringify(currentGroup.aliases)===JSON.stringify(original.group.aliases),
       'APPROVED_GROUP_TOPOLOGY_DRIFT');
-    const current=adjudicationPlan(currentGroup,currentState,currentAuth);
     if(current.resolution.action==='ALREADY_VERIFIED'){
       result.action='ALREADY_VERIFIED';result.reason='CONSOLIDATED_DURING_RUN';
       report.alreadyVerified++;report.remaining--;save();continue;
@@ -408,7 +442,8 @@ try{
   const afterHr=await readHr();
   assert(afterHr.revision===hr.revision&&afterHr.visits.length===hr.visits.length&&
     afterHr.shoppers.length===hr.shoppers.length,'HR_CHANGED_AFTER_BATCH');
-  report.decision=report.merged>0?'PASS_VERIFIED_DEV_BATCH_WITH_FOCAL_HOLDS':'HOLD_NO_NEW_MERGES';
+  report.decision=report.remaining===0?'PASS_VERIFIED_DEV_83_OF_83_APPROVED_GROUPS':
+    report.merged>0?'PASS_VERIFIED_DEV_BATCH_WITH_FOCAL_HOLDS':'HOLD_NO_NEW_MERGES';
   report.completedAt=stamp();save();
   console.log(JSON.stringify({decision:report.decision,approvedGroups:83,alreadyVerified:report.alreadyVerified,
     merged:report.merged,remaining:report.remaining,held:report.groups.filter(x=>x.action==='HOLD').length,

@@ -673,7 +673,7 @@ jobs:
           retention-days: 30
 
   d06-attempt-audience-idempotency-source:
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-d06-attempt-contract]') }}
+    if: ${{ github.event_name == 'push' && (contains(github.event.head_commit.message, '[i3-d06-attempt-contract]') || contains(github.event.head_commit.message, '[i3-recert-safe-09eed-20261105]')) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 8
     steps:
@@ -685,8 +685,8 @@ jobs:
         run: |
           set -Eeuo pipefail
           SRC="$(jq -r .productSourceSha CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
-          test "$SRC" = "bf60d57aa36fac08933d14f93d80f4c30e59a36c"
-          test "$(git rev-parse "$SRC:backend/runtime/hr-live-service/certification-runtime.mjs")" = "b8b0aedb3cd4bdeb927b814dae2bc29ba995e9b2"
+          test "$SRC" = "09eed4f012f9ad04e49d53569aabd86bd4c832a9"
+          test "$(git rev-parse "$SRC:backend/runtime/hr-live-service/certification-runtime.mjs")" = "8e02709cc8414afd9087cfa661fd03654d5b01bf"
           test "$(git rev-parse "$SRC:backend/runtime/hr-live-service/test/certification-attempt-audience-idempotency.test.mjs")" = "6e3634f966203ca753c0b0349b4806a2ac268982"
           mkdir -p .tmp/i3-d06-attempt-contract
           node --check backend/runtime/hr-live-service/certification-runtime.mjs

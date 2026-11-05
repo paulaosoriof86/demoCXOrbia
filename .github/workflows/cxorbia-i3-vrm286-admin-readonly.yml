@@ -7,11 +7,11 @@ permissions:
   contents: read
 jobs:
   admin-project-period-readonly:
-    if: ${{ contains(github.event.head_commit.message, '[i3-vrm286-admin-readonly]') }}
+    if: ${{ contains(github.event.head_commit.message, '[i3-vrm286-admin-readonly]') || contains(github.event.head_commit.message, '[i3-recert-safe-09eed-20261105]') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     env:
-      CXORBIA_PRODUCT_SOURCE_SHA: e44483d895e75d5e1bf48b327d464a8c4686ddba
+      CXORBIA_PRODUCT_SOURCE_SHA: 09eed4f012f9ad04e49d53569aabd86bd4c832a9
     steps:
       - uses: actions/checkout@v4
         with:
