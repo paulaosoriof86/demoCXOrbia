@@ -197,7 +197,12 @@ function adjudicationPlan(group,state,authByUid,hr){
     principals.push({id,member,user,proof});
   }
   const strong=principals.filter(x=>x.proof);
-  let keeper=strong.length===1?strong[0]:null;
+  // Preserve the account that demonstrably signed in recently when Paula has
+  // confirmed every identity in this bounded same-human group. A stale name-
+  // derived credential candidate must never displace an active session.
+  const recentlyActive=FINAL14?strong.filter(x=>{const t=Date.parse(val(x.user.metadata?.lastSignInTime));
+    return Number.isFinite(t)&&Date.now()-t<7*86400000;}):[];
+  let keeper=recentlyActive.length===1?recentlyActive[0]:strong.length===1?strong[0]:null;
   if(!keeper&&strong.length>1){const rule=ShopperCredentialRule.shopperCredentialRule(state.profiles.get(canonical));
     const login=rule?.ok?val(rule.login).toLowerCase():'';
     const matching=strong.filter(x=>val(x.member.visibleLogin||state.profiles.get(x.id)?.visibleLogin).toLowerCase()===login);
@@ -226,10 +231,13 @@ function adjudicationPlan(group,state,authByUid,hr){
     }
   }
   for(const alias of group.aliases){const x=state.cross.get(alias)||{},target=val(x.shopperId||x.canonicalShopperId);
-    if(target&&target!==alias){resolution.reason='EXISTING_ALIAS_CROSSWALK';return {resolution};}
+    if(target&&target!==alias&&!(FINAL14&&ids.includes(target))){
+      resolution.reason='EXISTING_ALIAS_CROSSWALK';return {resolution};
+    }
     if(state.links.some(l=>['active','confirmed','approved','materialized'].includes(val(l.status||l.state).toLowerCase())&&
       [l.sourceShopperId,l.sourceIdentityKey,...arr(l.exactAliases),...arr(l.sourceAliases)].map(val).includes(alias)&&
-      val(l.canonicalShopperId)!==canonical&&val(l.canonicalShopperId)!==alias)){
+      val(l.canonicalShopperId)!==canonical&&val(l.canonicalShopperId)!==alias&&
+      !(FINAL14&&ids.includes(val(l.canonicalShopperId))))){
       resolution.reason='OTHER_TRUSTED_LINK_CONFLICT';return {resolution};
     }
   }
