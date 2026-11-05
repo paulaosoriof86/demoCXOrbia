@@ -147,6 +147,19 @@ async function run() {
   await page.waitForFunction(() => !!window.firebase?.auth?.().currentUser &&
     window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied === true,
   null, {timeout: 90000});
+  // The live HR is already on a later period. Exercise the specific bank's
+  // real period, as an Admin would via the global project/period selectors;
+  // never assume the default current period is October or any fixed month.
+  await page.waitForFunction(periodId =>
+    window.CX?.data?.projects?.some(p => p.id === periodId),
+  chosen.row.periodId, {timeout: 90000});
+  const selected = await page.evaluate(({projectId, periodId}) => {
+    const d = window.CX.data;
+    return d.setCurrentProject(projectId) === true &&
+      d.setCurrentPeriod(periodId) === true &&
+      d.currentPeriodId === periodId;
+  }, {projectId: PROJECT_ID, periodId: chosen.row.periodId});
+  if (!selected) fail('SOURCE_FAILURE:D05_UI_BANK_PERIOD_NOT_SELECTABLE');
   await page.getByRole('button', {name: 'Certificación', exact: true}).click();
   // Select by the uniquely displayed certification option, independent of
   // unrelated project/role dropdowns on the same responsive Admin page.
