@@ -182,6 +182,22 @@ async function preflight() {
     publishedId: published[0].id, pendingId: pending[0].id};
 }
 
+async function selectExactBankPeriod(page, requested) {
+  return page.evaluate(async period => {
+    const d = window.CX?.data, candidates = [period,
+      period.startsWith('cinepolis-') ? period.slice('cinepolis-'.length) : 'cinepolis-' + period];
+    const actual = (d?.projects || []).find(p => candidates.includes(String(p.id)));
+    const selected = !!actual && (d.setCurrentPeriod?.(actual.id) === true ||
+      d.setProject?.(actual.id) === true);
+    if(selected && typeof window.CX?.backendResources?.load === 'function')
+      await window.CX.backendResources.load({periodId: actual.id});
+    return {requestedPeriod: period, resolvedPeriod: actual?.id || null,
+      selected, currentPeriod: d?.currentPeriodId || null,
+      currentProject: d?.currentProjectId || null,
+      resourceCount: window.CX?.backendResources?.list?.({resourceType:'certification_bank'})?.length || 0};
+  }, requested);
+}
+
 async function saveQaViaAdminUi({admin, periodId}) {
   const cid = `qa-d05-ui-${runId}`;
   const name = `QA D05 UI ${runId} uso interno`;
@@ -213,6 +229,15 @@ async function saveQaViaAdminUi({admin, periodId}) {
   browser = await chromium.launch({headless: true});
   const context = await browser.newContext({viewport: {width: 1440, height: 900}, serviceWorkers: 'block'});
   const page = await authenticatedPage(admin, context);
+  // A QA bank is created in the exact existing period; an authenticated
+  // browser can default to the latest *other* period. Select and rehydrate the
+  // same period before asserting its presence in Admin's bank selector.
+  result.qa.periodSelection = await selectExactBankPeriod(page, periodId);
+  if(!result.qa.periodSelection.selected || result.qa.periodSelection.currentProject !== PROJECT_ID)
+    fail('SOURCE_FAILURE:D05_QA_EXACT_PERIOD_SELECTION_UNAVAILABLE');
+  await page.waitForFunction(expectedName =>
+    (window.CX?.backendResources?.list?.({resourceType:'certification_bank'}) || [])
+      .some(x => x.bank?.certificationName === expectedName), name, {timeout: 30000});
   const safeUiErrors = [];
   page.on('console', message => {
     const value = str(message.text());
@@ -309,10 +334,14 @@ async function saveQaViaAdminUi({admin, periodId}) {
   await context.close();
 }
 
-async function shopperReadOnly({shopper, publishedId, pendingId}, sessionIndex=1) {
+async function shopperReadOnly({shopper, publishedId, pendingId, periodId}, sessionIndex=1) {
   if (!shopper) fail('AUTH_FAILURE:D06_EXISTING_SHOPPER_MEMBERSHIP_UNAVAILABLE');
   const context = await browser.newContext({viewport: {width: 1440, height: 900}, serviceWorkers: 'block'});
   const page = await authenticatedPage(shopper, context);
+  const selectedPeriod = await selectExactBankPeriod(page, periodId);
+  if(!selectedPeriod.selected || selectedPeriod.currentProject !== PROJECT_ID)
+    fail('SOURCE_FAILURE:D06_SHOPPER_EXACT_PERIOD_SELECTION_UNAVAILABLE');
+  result.shopper.periodSelection = selectedPeriod;
   const role = await page.evaluate(() => ({
     auth: window.CX?.backendAuth?.context?.()?.authenticated === true,
     role: String(window.CX?.backendAuth?.context?.()?.role || ''),
