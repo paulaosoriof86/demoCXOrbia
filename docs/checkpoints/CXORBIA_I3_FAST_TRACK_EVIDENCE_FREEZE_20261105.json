@@ -1,0 +1,261 @@
+{
+  "schemaVersion": "cxorbia.i3.nov05.single-lane-fast-track-evidence.v1",
+  "asOf": "2026-11-05",
+  "iteration": "I3",
+  "decision": "HOLD",
+  "authority": {
+    "frozenPlan": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
+    "recoveryAddenda": "prevalent",
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "singleCandidate": true,
+    "noSecondPlan": true
+  },
+  "candidate": {
+    "productSourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+    "productTree": "e6f941c511272dfb0d258e935d7c1526c83b31cb",
+    "devHostingVersion": "sites/cxorbia-backend-dev/versions/3b675f7bcc8b07e6",
+    "devRuntime": "cxorbia-live-hr-dev-00347-jmn",
+    "hrRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
+    "productChangesThisCheckpoint": 0,
+    "deploysThisCheckpoint": 0,
+    "production": "DO_NOT_TOUCH_I4_EXPLICIT_AUTHORIZATION_REQUIRED"
+  },
+  "frozenCoverage": {
+    "tasksTotal": 82,
+    "I3Tasks": 63,
+    "I4Tasks": 7,
+    "stabilizationTasks": 6,
+    "futureTasks": 6,
+    "roleRoutes": 56,
+    "criticalFunctions": 42,
+    "moduleDomains": 21,
+    "matchedModules": 5,
+    "notFullyMatchedModules": 16,
+    "moduleClassificationCounts": {
+      "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN": 2,
+      "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN": 4,
+      "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 5,
+      "TRUE_FUNCTIONAL_DEFECT": 3,
+      "MATCH": 5,
+      "COMPOSED_NOT_DEPLOYED": 1,
+      "SOURCE_PROVEN_DEV_EXACT_5_ASSETS_PASS_PENDING_ROLE_E2E_HUMAN": 1
+    },
+    "perModule": [
+      {
+        "domain": "auth-protected-data-runtime",
+        "classification": "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN"
+      },
+      {
+        "domain": "base-router-shell-cache",
+        "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN"
+      },
+      {
+        "domain": "benefits",
+        "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN"
+      },
+      {
+        "domain": "canonical-hr-state-adapters",
+        "classification": "TRUE_FUNCTIONAL_DEFECT"
+      },
+      {
+        "domain": "certifications",
+        "classification": "TRUE_FUNCTIONAL_DEFECT"
+      },
+      {
+        "domain": "client-portal-reportkit",
+        "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN"
+      },
+      {
+        "domain": "core-config-data-router-permissions",
+        "classification": "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN"
+      },
+      {
+        "domain": "dashboard-operation",
+        "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN"
+      },
+      {
+        "domain": "documents-resources",
+        "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN"
+      },
+      {
+        "domain": "finance-core-liquidation-costs",
+        "classification": "TRUE_FUNCTIONAL_DEFECT"
+      },
+      {
+        "domain": "historical",
+        "classification": "MATCH"
+      },
+      {
+        "domain": "human-runtime-domain-consistency",
+        "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN"
+      },
+      {
+        "domain": "identity-membership-roll-forward",
+        "classification": "MATCH"
+      },
+      {
+        "domain": "persistence-command-ack-boundary",
+        "classification": "COMPOSED_NOT_DEPLOYED"
+      },
+      {
+        "domain": "phase-a-supporting-core",
+        "classification": "MATCH"
+      },
+      {
+        "domain": "projects-periods-hr-source-wizard-multiproject",
+        "classification": "SOURCE_PROVEN_DEV_EXACT_5_ASSETS_PASS_PENDING_ROLE_E2E_HUMAN"
+      },
+      {
+        "domain": "questionnaire-shopper",
+        "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN"
+      },
+      {
+        "domain": "reports-admin-shopper",
+        "classification": "MATCH"
+      },
+      {
+        "domain": "shoppers-mi-visitas-profile",
+        "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN"
+      },
+      {
+        "domain": "visits-review-postulations-reservations",
+        "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN"
+      },
+      {
+        "domain": "tenant-admin-config-branding",
+        "classification": "MATCH"
+      }
+    ]
+  },
+  "verifiedRun2177": {
+    "id": 41958315783,
+    "number": 2177,
+    "result": "SUCCESS",
+    "sameArtifact": "PASS",
+    "adminRoutes": 34,
+    "shopperRoutes": 12,
+    "clientRoutes": 10,
+    "clicks": 44,
+    "screenshots": 108,
+    "actionFindings": 0,
+    "hrCurrentVisits": 44,
+    "hrAssignedVisits": 26,
+    "hrUnresolvedAssigned": 0,
+    "hrDuplicateKeys": 0,
+    "hrDuplicateActiveCanonicalMemberships": 0,
+    "julissaHistoricalVisits": 10,
+    "julissaPdfViewDownload": "PASS",
+    "damarisRows": [
+      "NOVIEMBRE!3",
+      "NOVIEMBRE!22"
+    ],
+    "damarisResolvedMerged": true,
+    "adminPostulationsReservations": "PASS",
+    "financialFocal": "PASS",
+    "certResourceSyntheticAndCleanup": "PASS",
+    "cert15QuestionsLiveAndHumanAcceptance": "REQUIRES_EXISTING_EVIDENCE_RECONCILIATION_NOT_BLANKET_CLAIM",
+    "prodWrites": 0,
+    "sourceChanges": 0
+  },
+  "newNov05Proof": {
+    "qaOnlyCommits": [
+      "f844d2ce268cfd3f83174b716cbbf9357ad19ebe",
+      "65644851b719fee6c7d28e60df4df6fbc50d3aa0"
+    ],
+    "run2178": {
+      "id": 42039195374,
+      "result": "FAIL",
+      "classification": "MAPPING_FAILURE",
+      "cause": "STIVEN_NAME_HAS_TWO_ACTIVE_AUTH_PRINCIPALS",
+      "noProductSourceChange": true
+    },
+    "run2179": {
+      "id": 42040024163,
+      "result": "FAIL",
+      "classification": "MAPPING_FAILURE",
+      "cause": "CANONICAL_HISTORICAL_SHOPPER_PRINCIPAL_HAS_SUFFIXED_VISIBLE_LOGIN__ORDINARY_VISIBLE_LOGIN_POINTS_TO_OTHER_ACTIVE_PROFILE",
+      "keeperShopperId": "shopper_gt_319cd82eaf",
+      "keeperVisibleLogin": "stiven.lopez.7685",
+      "ordinaryVisibleLogin": "stiven.lopez",
+      "otherShopperId": "shr-1783519013963-4koxm",
+      "activePrincipals": 2,
+      "noProductSourceChange": true
+    },
+    "adminPriorReadback": {
+      "uniqueComposedStivenRow": true,
+      "visits": 10,
+      "realized": 9,
+      "ongoing": 1
+    },
+    "realShopperCredentialPriorReadback": {
+      "visibleLogin": "stiven.lopez",
+      "octVisits": 0
+    },
+    "status": "P0_UNRESOLVED_EXACT_AUTH_IDENTITY_LINK_AND_HISTORICAL_SHOPPER_ACCESS"
+  },
+  "legacyCrosswalkFrozen": {
+    "principle": "LEGACY_ORACLE_BEHAVIORAL_COMPARATOR_ONLY_NO_CODE_OR_DB_COPY",
+    "coverage": [
+      "GT/HN and project/period/currency dynamic",
+      "independent live HR source, period rollover and eligible availability",
+      "name typography normalization for display, authoritative exact ID for auth",
+      "automatic idempotent shopper upsert and authorized exact identity consolidation",
+      "shopper login, profile, visits, instructives, documents view/download",
+      "Admin shoppers, postulations, reservations, schedule/reschedule/cancel",
+      "questionnaire 15Q, durable certification and recertification, role paths",
+      "financial historical parity, reimbursement/honorarium and provider ACK",
+      "notifications, dashboards, reports, KPIs vs the same independent HR revision",
+      "one certified artifact, no rebuilt deploy"
+    ],
+    "separateNonGoLive": [
+      "historical identity census not affecting current 26 assigned visits",
+      "optional visual or future project enhancements"
+    ],
+    "neverInferAccountOwnerFromNameAlone": true
+  },
+  "conciseCriticalPath": [
+    {
+      "priority": 1,
+      "goal": "Adjudicate proven Stiven source-auth identity mapping using existing provider-backed command and stable keeper; preserve both histories, never name-only generic merge",
+      "gate": "Ordinary stiven.lopez shows Admin10/Shopper10, unique 10 across history, no lost finance or cert"
+    },
+    {
+      "priority": 2,
+      "goal": "Same-artifact Admin+Shopper+Cliente E2E incl 15Q published bank, Julissa instructions/pdf/download, Damaris novice upsert, 26 assigned HR records",
+      "gate": "PASS by domain with independent provider revision and no duplicates"
+    },
+    {
+      "priority": 3,
+      "goal": "Append-only 21-domain module-truth adjudication from RUN2177 and new E2E with preserved historical PASS",
+      "gate": "Only domains satisfying full contract promoted to MATCH; focal and human pending separately"
+    },
+    {
+      "priority": 4,
+      "goal": "G03 privacy/permissions, Gate20/21 exact artifact digest, owner human sign-off",
+      "gate": "I3 GO then ask express I4 production authorization, no rebuild"
+    },
+    {
+      "priority": 5,
+      "goal": "I4 exact artifact replacement at existing legacy target then production E2E and PRODUCTION_LOCK",
+      "gate": "Production source/artifact identity and HR live PASS"
+    }
+  ],
+  "gatingRules": {
+    "noNewProductRepoPlanOrParallelCandidates": true,
+    "noRealHRReimport": true,
+    "noLegacyBaseCopy": true,
+    "noProductionUntilI4": true,
+    "noReopenPASSWithoutObservedDrift": true,
+    "allChangesTransversalByRoleProjectCountryPeriod": true,
+    "allChecksEvidenceAndReadback": true,
+    "onlyCriticalActualFailuresBlockI3": true
+  },
+  "durationEstimate": {
+    "bestCaseHours": "1.5–3.0",
+    "conditionalOn": "fast approved identity link and existing evidence sufficing for remaining domain gates",
+    "notGuaranteed": true,
+    "ifNewP0": "report exact owner and revised time, do not conceal or start new method"
+  },
+  "nextExactAction": "Use approved single-identity provider adjudication for Stiven ordinary login with explicit canonical keeper and readback both active auth accounts; then rerun isolated real Shopper and independent Admin parity. Preserve other distinct-person principals. Reconcile RUN2177 into 21-module matrix incrementally, close only P0, G03, Gate20/21, then I4 explicit approval."
+}
