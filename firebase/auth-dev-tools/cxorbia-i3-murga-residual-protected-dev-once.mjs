@@ -14,19 +14,19 @@ import {chromium} from 'playwright';
 import CredentialRule from '../../app/core/shopper-credential-rule.js';
 
 const PROJECT='cxorbia-backend-dev',TENANT='tya',PROGRAM='cinepolis';
-const SOURCE='f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196';
+const SOURCE='3a299715ea2d87ae43c0f6415f44bd23b13a1837';
 const ROOT='https://cxorbia-backend-dev.web.app';
 const HR_URL=ROOT+`/api/${TENANT}/${PROGRAM}/hr-live?format=json&view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV`;
 const CASE=process.env.CX_I3_RESIDUAL_CASE||'';
 const TARGETS={
   MURGA:{key:'MURGA',name:'Jhennypher Murga',normalized:'jhennypher murga',country:'GT',
-    login:'jennypher.murga',minProfiles:11,hrCount:1,authCount:3,
+    login:'jennypher.murga',minProfiles:11,hrCount:1,authCount:2,
     minHistory:{visits:18,liquidations:9,certifications:7,paymentReconciliations:12},
     matchesProfile:n=>/(^|\s)murga(\s|$)/.test(n),
     approval:'PAULA_20261105_JHENNYPHER_MURGA_APPROVED_EXACT_HUMAN_DEV_ONCE',
     recentAliasLogin:''},
   ROCIO:{key:'ROCIO',name:'Rocío Vilca',normalized:'rocio vilca',country:'HN',
-    login:'rocio.vilca',minProfiles:5,hrCount:2,authCount:3,
+    login:'rocio.vilca',minProfiles:5,hrCount:2,authCount:2,
     minHistory:{visits:6,liquidations:3,certifications:2,paymentReconciliations:4},
     matchesProfile:n=>/(^|\s)rocio(\s|$)/.test(n)&&/(^|\s)(vilca|vica)(\s|$)/.test(n),
     approval:'PAULA_20261105_ROCIO_VILCA_APPROVED_EXACT_HUMAN_DEV_ONCE',

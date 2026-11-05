@@ -22,7 +22,7 @@ jobs:
     env:
       GCLOUD_PROJECT: cxorbia-backend-dev
       GOOGLE_CLOUD_PROJECT: cxorbia-backend-dev
-      CXORBIA_PRODUCT_SOURCE_SHA: f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196
+      CXORBIA_PRODUCT_SOURCE_SHA: 3a299715ea2d87ae43c0f6415f44bd23b13a1837
       CX_I3_RESIDUAL_READBACK_ONLY: YES_PAULA_20261105_POST_ATTEMPT
     steps:
       - uses: actions/checkout@v4
@@ -67,13 +67,13 @@ jobs:
           retention-days: 30
 
   two-approved-residual-groups-protected-dev-once:
-    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-TWO-RESIDUALS-PROTECTED-DEV-DIAGNOSTIC-RETRY-20261105' }}
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-VRM307-TWO-APPROVED-GROUPS-PROTECTED-DEV-ONCE-20261105' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
       GCLOUD_PROJECT: cxorbia-backend-dev
       GOOGLE_CLOUD_PROJECT: cxorbia-backend-dev
-      CXORBIA_PRODUCT_SOURCE_SHA: f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196
+      CXORBIA_PRODUCT_SOURCE_SHA: 3a299715ea2d87ae43c0f6415f44bd23b13a1837
     steps:
       - uses: actions/checkout@v4
         with:
@@ -90,6 +90,10 @@ jobs:
           SOURCE="$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
           TREE="$(jq -r '.productTreeAuthority' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
           test "$SOURCE" = "$CXORBIA_PRODUCT_SOURCE_SHA"
+          test "$(jq -r '.status' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = HOLD_VRM307_DEV_MATERIALIZED_PROTECTED_GROUP_READBACK_G03
+          test "$(jq -r '.postDeployRunSeal.mode' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = CURRENT_SOURCE_SERVING
+          test "$(jq -r '.postDeployRunSeal.runId' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = 42132045461
+          test "$(jq -r '.postDeployRunSeal.sourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = "$SOURCE"
           test "$(git rev-parse "$SOURCE^{tree}")" = "$TREE"
           git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules
           node tools/qa/cxorbia-i3-shock-continuity-guard.mjs

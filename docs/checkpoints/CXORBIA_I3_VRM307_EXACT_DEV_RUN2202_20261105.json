@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm307.exact-dev-materialization-receipt.v1",
+  "date": "2026-11-05",
+  "iteration": "I3",
+  "state": "PASS_DEV_EXACT_SOURCE_NOT_FULL_PHASEA",
+  "source": {
+    "sha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
+    "tree": "ed9362c9d432028978c2d3b748eb7559c2e8f1b1"
+  },
+  "materialization": {
+    "state": "PASS_VRM307_EXACT_DEV_MATERIALIZATION",
+    "decision": "PASS_VRM307_EXACT_DEV_MATERIALIZATION",
+    "runId": 42132045461,
+    "runNumber": 2202,
+    "jobId": 127611040518,
+    "artifactId": 13463767290,
+    "sourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
+    "sourceTree": "ed9362c9d432028978c2d3b748eb7559c2e8f1b1",
+    "artifactDigest": "sha256:f990526dcbd0e90fd3e9111ae87036807946263101bd40145a51decbde4981fd",
+    "artifactDigestType": "GITHUB_ACTIONS_ZIP_SHA256",
+    "artifactZipSha256": "f990526dcbd0e90fd3e9111ae87036807946263101bd40145a51decbde4981fd",
+    "sourceArtifactDigest": "sha256:f990526dcbd0e90fd3e9111ae87036807946263101bd40145a51decbde4981fd",
+    "archiveZipDigest": "sha256:f990526dcbd0e90fd3e9111ae87036807946263101bd40145a51decbde4981fd",
+    "githubArtifactZipSha256": "f990526dcbd0e90fd3e9111ae87036807946263101bd40145a51decbde4981fd",
+    "runtimeRevision": "cxorbia-live-hr-dev-00350-9pq",
+    "runtimeDigest": "sha256:0e9c28e8c45328fd4f0f95e5757cab3c9abbf1b570a676192082b3dee78fba77",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/5a740a9c18805fc4",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1793922650314000",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
+    "hrRevision": "63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "firestoreRulesDeploys": 0,
+    "storageRulesDeploys": 0,
+    "hrWrites": 0,
+    "production": false,
+    "sourceIdentityVerified": true,
+    "runtimeSourceVerified": true,
+    "controlHeadAtDeploy": "96555df423fc7bd622ccd66239037d2fb035742b",
+    "fullTaskClosed": false,
+    "humanAcceptance": "PENDING",
+    "firestoreRulesetEvidence": "UNCHANGED_RUN2202_NO_RULES_DEPLOY",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM307_EXACT_DEV_RUN2202_20261105.json"
+  },
+  "githubAction": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/42132045461",
+  "artifactReadback": {
+    "artifactId": 13463767290,
+    "zipSha256": "dcbd0e90fd3e9111ae87036807946263101bd40145a51decbde4981fd",
+    "resultDecision": "PASS_VRM307_EXACT_DEV_MATERIALIZATION",
+    "hostingAssetByteParity": "PASS_IN_WORKFLOW",
+    "hrRevisionStable": true,
+    "sourceSafe": true
+  },
+  "authorizedNext": {
+    "humanGroups": [
+      "Jhennypher Murga GT",
+      "Rocío Vilca HN"
+    ],
+    "independentPriorReadbackRunId": 42128661278,
+    "protectedMerge": "PENDING_FRESH_PREFLIGHT",
+    "automaticOtherGroups": "NO_WRITER",
+    "production": false
+  },
+  "moduleTruth": {
+    "matches": 5,
+    "total": 21,
+    "promotionsHere": 0
+  },
+  "terminalCertification": false,
+  "production": false
+}
