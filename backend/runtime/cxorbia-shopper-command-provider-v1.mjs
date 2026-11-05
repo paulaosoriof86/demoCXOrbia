@@ -1413,17 +1413,23 @@ async function autoConsolidateCompatibleExistingProfiles({auth,db,scope,shoppers
 // When the HR does not provide ANY phone, allow a unique strong full-name
 // (3+ tokens) + country + project match, with one verified Auth principal and
 // no contradictory identity facts or prior distinct-person adjudication.
-// Ambiguous cohorts stay in the existing durable human-review rail.
+// For a privacy-masked name, accept ONLY an existing, single, active exact-
+// name/country/phone review whose durable fingerprint independently verifies
+// the one active keeper. The review alone (or a shared first name) is NEVER
+// merge authority. Ambiguous cohorts stay in the durable human-review rail.
 async function planAutomaticIncomingHrAliases({db,scope,shoppers,authUsers,exactIdentityMap}){
   const tenant=db.collection('tenants').doc(scope.tenantId);
-  const [profileSnap,userSnap,crossSnap,resolutionSnap]=await Promise.all([
+  const [profileSnap,userSnap,crossSnap,resolutionSnap,reviewSnap]=await Promise.all([
     tenant.collection('shoppers').get(),tenant.collection('users').get(),
     tenant.collection('shopperIdentityCrosswalk').get(),
-    tenant.collection('shopperIdentityReviewResolutions').get()
+    tenant.collection('shopperIdentityReviewResolutions').get(),
+    tenant.collection('shopperIdentityReviews').get()
   ]);
   const anchored=new Set(arr(profileSnap?.docs).map(doc=>str(doc.id)));
   const crossBySource=new Map(arr(crossSnap?.docs).map(doc=>[str(doc.id),doc.data()||{}]));
   const byKey=new Map(),byStrongName=new Map(),authByUid=new Map(arr(authUsers).map(u=>[str(u.uid),u]));
+  const activeReviews=arr(reviewSnap?.docs).map(doc=>doc.data()||{}).filter(row=>
+    str(row.status||'active')==='active'&&str(row.projectScope||row.projectId)===scope.projectId);
   for(const doc of arr(profileSnap?.docs)){
     const p=doc.data()||{},key=hrIdentityReviewKey(p),strongName=hrStrongNameReviewKey(p);
     if((!key&&!strongName)||str(p.tenantId||scope.tenantId)!==scope.tenantId||
@@ -1449,9 +1455,38 @@ async function planAutomaticIncomingHrAliases({db,scope,shoppers,authUsers,exact
     const sourceId=str(source.shopperId),key=hrIdentityReviewKey(source),strongName=hrStrongNameReviewKey(source);
     const sourcePhone=normalizeIdentityPhone(source.whatsapp||source.phone||source.telefono||source.hrManaged?.whatsapp||source.hrManaged?.phone);
     const missingPhoneFallback=!sourcePhone&&!key&&!!strongName;
-    if(!sourceId||(!key&&!missingPhoneFallback)||anchored.has(sourceId)||exactIdentityMap.has(sourceId))continue;
-    const candidates=missingPhoneFallback?(byStrongName.get(strongName.key)||[]):(byKey.get(key.key)||[]);
-    if(candidates.length!==1||!compatibleIdentityProfiles([source,candidates[0].profile]))continue;
+    // A redacted HR row cannot supply a usable name for the strong-name rule.
+    // Re-check the *existing* durable exact-match review against the live
+    // keeper's own normalized facts, not against a guess or a masked label.
+    const protectedWithoutFacts=!key&&!strongName&&!sourcePhone&&
+      !str(source.nombre||source.firstName||source.lastName).trim()&&
+      source.piiProtected===true;
+    let verifiedReviewCandidate=null;
+    if(protectedWithoutFacts&&sourceId){
+      const sourceReviews=activeReviews.filter(row=>reviewIds(row).includes(sourceId));
+      if(sourceReviews.length===1){
+        const review=sourceReviews[0],ids=reviewIds(review);
+        if(ids.length===2&&str(review.reason)==='SHOPPER_HR_NORM_NAME_PHONE_CANDIDATES_REVIEW_REQUIRED'&&
+           str(review.credentialFingerprint).length===24){
+          const otherId=ids.find(id=>id!==sourceId),other=arr(profileSnap?.docs).find(doc=>doc.id===otherId);
+          const facts=other&&hrIdentityReviewKey(other.data()||{});
+          const strong=other&&hrStrongNameReviewKey(other.data()||{});
+          const expected=facts&&sha(`${scope.tenantId}\0${scope.projectId}\0${facts.key}`).slice(0,24);
+          const sourceCountry=normalizeIdentityCountry(source.pais||source.country);
+          if(facts&&strong&&expected===str(review.credentialFingerprint)&&
+             sourceCountry===facts.country&&
+             (!str(review.country)||normalizeIdentityCountry(review.country)===facts.country)&&
+             (byKey.get(facts.key)||[]).length===1&&
+             (byStrongName.get(strong.key)||[]).length===1){
+            verifiedReviewCandidate={id:otherId,profile:other.data()||{}};
+          }
+        }
+      }
+    }
+    if(!sourceId||(!key&&!missingPhoneFallback&&!verifiedReviewCandidate)||anchored.has(sourceId)||exactIdentityMap.has(sourceId))continue;
+    const candidates=verifiedReviewCandidate?[verifiedReviewCandidate]:
+      missingPhoneFallback?(byStrongName.get(strongName.key)||[]):(byKey.get(key.key)||[]);
+    if(candidates.length!==1||(!verifiedReviewCandidate&&!compatibleIdentityProfiles([source,candidates[0].profile])))continue;
     const {id:canonicalShopperId}=candidates[0];
     if(sourceId===canonicalShopperId)continue;
     const priorCross=crossBySource.get(sourceId);
@@ -1469,7 +1504,8 @@ async function planAutomaticIncomingHrAliases({db,scope,shoppers,authUsers,exact
       authPrincipalMatches(u,scope.tenantId,canonicalShopperId,scope.projectId));
     if(keepers.length!==1||allAuth.length!==1||keepers[0].id!==allAuth[0].uid)continue;
     plans.set(sourceId,{canonicalShopperId,keeperUid:keepers[0].id,
-      matchMethod:missingPhoneFallback?'unique_strong_name_country_missing_hr_phone':'exact_name_country_phone'});
+      matchMethod:verifiedReviewCandidate?'verified_durable_exact_review_protected_hr':
+        missingPhoneFallback?'unique_strong_name_country_missing_hr_phone':'exact_name_country_phone'});
     exactIdentityMap.set(sourceId,canonicalShopperId);
   }
   return plans;
@@ -1494,7 +1530,8 @@ async function confirmAutomaticIncomingHrAlias({db,scope,sourceShopperId,canonic
     canonicalShopperId,sourceSystem:'hr_external',sourceIdentityKey:sourceShopperId,
     exactAliases:[sourceShopperId],sourceAliases:[sourceShopperId],
     status:'active',state:'active',authorityType:'provider_auto_compatible',authorityRef,
-    autoNormalized:true,autoPolicyVersion:matchMethod==='unique_strong_name_country_missing_hr_phone'?'hr_incoming_unique_strong_name_v2':'hr_incoming_exact_v1',
+    autoNormalized:true,autoPolicyVersion:matchMethod==='verified_durable_exact_review_protected_hr'?'hr_incoming_verified_protected_v3':
+      matchMethod==='unique_strong_name_country_missing_hr_phone'?'hr_incoming_unique_strong_name_v2':'hr_incoming_exact_v1',
     matchMethod,humanConfirmed:false,
     sourceRevision,providerUidFingerprint:fingerprint,providerAck:true,
     sourceSafe:true,fuzzyMatching:false,createdAt:stamp,updatedAt:stamp

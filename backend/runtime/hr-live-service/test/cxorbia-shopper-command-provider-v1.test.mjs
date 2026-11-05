@@ -1461,6 +1461,60 @@ test('I3 P0 / protected November HR without phone links one unique strong-name G
   assert.equal(again.automaticIncomingHrAliases,0);assert.equal(again.providerWrites,0);
 });
 
+test('I3 P0 / masked HR reuses the one keeper from a verified durable exact review even without PII map',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  const keeper='shopper_gt_review_keeper',alias='shopper_gt_masked_incoming';
+  const earlier={...snapshot({shopperId:keeper}),visits:[{
+    id:'oct-review',shopperId:keeper,shopper:'Damarís de León',phone:'50255557788',
+    pais:'GT',country:'GT',sourceSafe:true,piiProtected:true
+  }]};
+  assert.equal((await p.reconcileSnapshot(earlier,{sourceRevision:'oct-review'})).authCreated,1);
+  const before=await auth.getUser(stableShopperUid('tenant-a',keeper));
+  const reviewId='sir-trusted-norm-review';
+  const fingerprint=shaTest(['tenant-a','project-a','GT','damaris de leon','55557788'].join('\0')).slice(0,24);
+  db.seed('tenants/tenant-a/shopperIdentityReviews/'+reviewId,{
+    shopperIds:[alias,keeper],candidateShopperIds:[alias,keeper],status:'active',country:'GT',
+    tenantId:'tenant-a',projectScope:'project-a',reason:'SHOPPER_HR_NORM_NAME_PHONE_CANDIDATES_REVIEW_REQUIRED',
+    credentialFingerprint:fingerprint,requiresHumanAdjudication:true
+  });
+  const nov={...snapshot({shopperId:alias}),visits:[
+    {id:'nov-masked-3',shopperId:alias,shopper:'Shopper protegido',pais:'GT',country:'GT',sourceSafe:true,piiProtected:true,hrRowId:'NOV!3'},
+    {id:'nov-masked-22',shopperId:alias,shopper:'Shopper protegido',pais:'GT',country:'GT',sourceSafe:true,piiProtected:true,hrRowId:'NOV!22'}
+  ]};
+  const out=await p.reconcileSnapshot(nov,{sourceRevision:'nov-protected-review'});
+  assert.equal(out.automaticIncomingHrAliases,1);assert.equal(out.identityHeldShopperCount,0);
+  assert.equal(out.authCreated,0);assert.equal(auth.created,1);
+  assert.equal(db.get('tenants/tenant-a/shopperIdentityCrosswalk/'+alias).shopperId,keeper);
+  assert.equal(db.get('tenants/tenant-a/shopperIdentityReviews/'+reviewId).status,'resolved_merged');
+  const linkPath=db.paths().find(path=>path.includes('/shopperIdentityLinks/'));
+  assert.equal(db.get(linkPath).matchMethod,'verified_durable_exact_review_protected_hr');
+  assert.equal(db.get(linkPath).autoPolicyVersion,'hr_incoming_verified_protected_v3');
+  assert.equal((await auth.getUser(before.uid)).uid,before.uid);
+  const replay=await p.reconcileSnapshot(nov,{sourceRevision:'nov-protected-review'});
+  assert.equal(replay.automaticIncomingHrAliases,0);assert.equal(replay.providerWrites,0);
+});
+
+test('I3 P0 / masked HR review without independent exact fingerprint does not guess identity',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  const keeper='shopper_gt_unverified_keeper',alias='shopper_gt_unverified_masked';
+  await p.reconcileSnapshot({...snapshot({shopperId:keeper}),visits:[{
+    id:'old-unverified',shopperId:keeper,shopper:'Damarís de León',phone:'55557788',
+    pais:'GT',country:'GT',sourceSafe:true,piiProtected:true
+  }]},{sourceRevision:'oct-unverified'});
+  db.seed('tenants/tenant-a/shopperIdentityReviews/sir-unverified',{
+    shopperIds:[alias,keeper],candidateShopperIds:[alias,keeper],status:'active',country:'GT',
+    tenantId:'tenant-a',projectScope:'project-a',reason:'SHOPPER_HR_NORM_NAME_PHONE_CANDIDATES_REVIEW_REQUIRED',
+    credentialFingerprint:'not-a-valid-proof',requiresHumanAdjudication:true
+  });
+  const nov={...snapshot({shopperId:alias}),visits:[{
+    id:'masked-unverified',shopperId:alias,shopper:'Shopper protegido',pais:'GT',country:'GT',sourceSafe:true,piiProtected:true
+  }]};
+  const out=await p.reconcileSnapshot(nov,{sourceRevision:'nov-unverified'});
+  assert.equal(out.automaticIncomingHrAliases,0);assert.equal(out.identityHeldShopperCount,1);
+  assert.equal(db.get('tenants/tenant-a/shopperIdentityCrosswalk/'+alias),undefined);
+  assert.equal(auth.created,1);
+});
+
 test('I3 P0 / missing HR phone with two same-name keepers stays in review without guessing Auth UID',async()=>{
   const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),keeper='shopper_gt_same_name_one',alias='shopper_gt_same_name_unknown';
   const first={...snapshot({shopperId:keeper}),visits:[{id:'old',shopperId:keeper,shopper:'Damaris de León',phone:'55557788',pais:'GT',country:'GT',sourceSafe:true,piiProtected:true}]};
