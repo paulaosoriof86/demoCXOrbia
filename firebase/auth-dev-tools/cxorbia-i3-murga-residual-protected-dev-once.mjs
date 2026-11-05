@@ -265,17 +265,46 @@ async function postAttemptReadOnly(db,hr,state){
     s(m.visibleLogin).toLowerCase()===target.login&&m.tenantId===TENANT);
   assert(keeper&&rows.length>=target.minProfiles&&hrRows.length===target.hrCount,'READONLY_IDENTITY_CENSUS_CHANGED');
   const canonical=s(keeper.shopperId),ids=rows.map(([id])=>id),hrIds=unique(hrRows.map(sid)),aliases=ids.filter(id=>id!==canonical).sort();
+  const groupIds=unique([...ids,...hrIds]),groupSet=new Set(groupIds);
+  assert(ids.length<=30,'READONLY_GROUP_RECEIPT_QUERY_LIMIT');
+  const tag=id=>!s(id)?'NONE':s(id)===canonical?'APPROVED_KEEPER':groupSet.has(s(id))?
+    'GROUP_'+hash(id).slice(0,10):'OUTSIDE_'+hash(id).slice(0,10);
   const owned=domainOwned(state,[...aliases,...hrIds]),visitRows=owned.find(x=>x.key==='visits').rows.map(x=>x.id);
   const key='i3-'+CASE.toLowerCase()+'-residual-once:'+hash([TENANT,PROGRAM,hr.periodId,hr.revision,canonical,
     keeper.uid,...aliases,...hrIds,...visitRows].join('\0')).slice(0,32);
   const receiptId=hash(TENANT+'\0'+PROGRAM+'\0'+hr.periodId+'\0'+key).slice(0,40);
   const receiptSnap=await state.tenant.collection('commandReceipts').doc(receiptId).get(),receipt=receiptSnap.data()||{};
-  const receiptQuery=await state.tenant.collection('commandReceipts').where('shopperId','==',canonical).limit(80).get();
+  // Query every exact group profile: a manual UI merge can choose an alias as
+  // its receipt shopperId instead of the owner-approved surviving login.
+  const receiptQuery=await state.tenant.collection('commandReceipts').where('shopperId','in',ids).limit(200).get();
   const matchingReceipts=receiptQuery.docs.map(d=>({id:d.id,...d.data()}))
     .filter(x=>s(x.commandType)==='shopper.identity.adjudicate')
-    .map(x=>({sameComputedId:x.id===receiptId,status:s(x.status),providerAck:x.providerAck===true,
-      identityConsolidated:x.identityConsolidated===true,domainWrites:x.domainWrites||{}}));
-  const activeMembers=state.members.filter(m=>m.active===true&&[canonical,...aliases,...hrIds].includes(s(m.shopperId)));
+    .map(x=>({sameComputedId:x.id===receiptId,receiptTag:hash(x.id).slice(0,12),
+      shopperTag:tag(x.shopperId),canonicalTag:tag(x.canonicalShopperId),
+      keeperTag:tag(x.keeperShopperId),status:s(x.status),providerAck:x.providerAck===true,
+      identityConsolidated:x.identityConsolidated===true,domainWrites:x.domainWrites||{},
+      aliasesApproved:Array.isArray(x.exactAliases)?x.exactAliases.length:null,
+      hrSourceLinks:Number(x.externalHrSourceLinks||0)}));
+  const activeMembers=state.members.filter(m=>m.active===true&&groupSet.has(s(m.shopperId)));
+  const profileTopology=rows.map(([id,p])=>({id:tag(id),supersededBy:tag(p.supersededByShopperId),
+    profileStatus:s(p.status||p.identityStatus||'UNSET'),
+    linkedToApprovedKeeper:s(p.supersededByShopperId)===canonical})).sort((a,b)=>a.id.localeCompare(b.id));
+  const memberTopology=activeMembers.map(m=>({profileTag:tag(m.shopperId),keeperLogin:s(m.visibleLogin).toLowerCase()===target.login,
+    approvedRecentAlias:s(m.visibleLogin).toLowerCase()===target.recentAliasLogin,
+    authNamespace:s(m.authNamespace),role:s(m.role)}));
+  const crosswalkTopology=[...state.cross].filter(([id,m])=>groupSet.has(id)||groupSet.has(s(m.shopperId))||
+    groupSet.has(s(m.canonicalShopperId))).map(([id,m])=>({
+      from:tag(id),shopperTarget:tag(m.shopperId),canonicalTarget:tag(m.canonicalShopperId),
+      status:s(m.status||m.state)}));
+  const linkTopology=state.links.filter(l=>unique([l.sourceIdentityKey,l.sourceShopperId,l.canonicalShopperId,
+    ...arr(l.exactAliases),...arr(l.sourceAliases)]).some(id=>groupSet.has(id)))
+    .map(l=>({source:tag(l.sourceShopperId),canonical:tag(l.canonicalShopperId),
+      status:s(l.status||l.state),providerAck:l.providerAck===true,
+      aliasCount:arr(l.exactAliases).length,externalCount:arr(l.externalHrShopperIds).length}));
+  const historicalDomainTopology=state.rows.map(d=>({domain:d.key,totalGroupRefs:d.rows.filter(x=>ownerRefs(x.data,new Set(groupIds))).length,
+    remainingOnAliases:d.rows.filter(x=>ownerRefs(x.data,new Set([...aliases,...hrIds]))).length,
+    perAlias:[...aliases,...hrIds].map(id=>({tag:tag(id),count:d.rows.filter(x=>ownerRefs(x.data,new Set([id]))).length}))
+      .filter(x=>x.count>0)}));
   return {hrRevision:hr.revision,canonicalFound:ids.includes(canonical),profileCount:rows.length,
     hrSourceIds:hrIds.length,aliasCount:aliases.length,activeMembers:activeMembers.length,
     supersededProfiles:rows.filter(([,p])=>s(p.supersededByShopperId)===canonical).length,
@@ -284,8 +313,9 @@ async function postAttemptReadOnly(db,hr,state){
     receipt:{exists:receiptSnap.exists,status:s(receipt.status),commandType:s(receipt.commandType),
       providerAck:receipt.providerAck===true,shopperIdMatches:s(receipt.shopperId)===canonical,
       identityConsolidated:receipt.identityConsolidated===true,domainWrites:receipt.domainWrites||{}},
-    matchingReceipts,
-    linkedProviderAcks:state.links.filter(l=>s(l.canonicalShopperId)===canonical&&l.providerAck===true).length};
+    matchingReceipts,linkedProviderAcks:state.links.filter(l=>s(l.canonicalShopperId)===canonical&&l.providerAck===true).length,
+    profileTopology,memberTopology,crosswalkTopology,linkTopology,historicalDomainTopology,
+    diagnosticOnly:true,production:false,directAuthWrites:0,directFirestoreWrites:0,hrWrites:0};
 }
 
 try{
