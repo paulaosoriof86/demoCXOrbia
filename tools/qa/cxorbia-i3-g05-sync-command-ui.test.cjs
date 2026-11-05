@@ -76,7 +76,9 @@ test('G05 automatic reconciliation starts only on verified Admin HR authority, r
   assert.equal(result.ok,true);assert.equal(result.viewRefreshVerified,true);
   assert.equal(f.calls.commands.length,1);assert.equal(f.calls.refreshes,1);
   const command=f.calls.commands[0];
-  assert.match(command.idempotencyKey,/^hr-auto-v1-/);
+  assert.match(command.idempotencyKey,/^hr-auto-v2-/);
+  assert.notEqual(command.idempotencyKey,'hr-auto-v1-'+revision.slice(0,32)+'-admin-a',
+    'new provider semantics must use a new receipt at the identical HR source revision');
   assert.equal(command.source,'hr-source-authorized-auto-reconciliation');
   assert.equal(command.expectedVersion,revision);
   f.emit('cx:protected-auth-hr-authority-ready');

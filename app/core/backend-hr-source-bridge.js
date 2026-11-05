@@ -155,6 +155,11 @@
 
   const pendingSyncs=new Map();
   const automaticSyncs=new Map();
+  // A committed automatic receipt replays without invoking providers. Advance
+  // this epoch only when the server's HR identity/reconciliation semantics change,
+  // so unchanged HR source revisions receive one safe, idempotent re-evaluation.
+  // Never bind this to a shopper, period, project, release build or browser cache.
+  const HR_AUTO_RECONCILIATION_POLICY_EPOCH='hr-auto-v2';
   function syncBlocked(code,extra={}){
     return {ok:false,status:'blocked',committed:false,providerAck:false,readbackVerified:false,
       successUiAllowed:false,providerWrites:0,localMutation:false,localStorageWrite:false,code,
@@ -207,7 +212,7 @@
       // A restored Admin session must replay the same provider receipt for the
       // same HR revision. The receipt, never browser storage, is the authority.
       pending={idempotencyKey:automatic
-        ?'hr-auto-v1-'+capture.revision.slice(0,32)+'-'+capture.uid
+        ?HR_AUTO_RECONCILIATION_POLICY_EPOCH+'-'+capture.revision.slice(0,32)+'-'+capture.uid
         :'hr-sync-'+window.crypto.randomUUID(),promise:null};
       pendingSyncs.set(scopeKey,pending);
     }
