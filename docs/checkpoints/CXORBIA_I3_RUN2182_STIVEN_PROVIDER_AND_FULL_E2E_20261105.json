@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "cxorbia.i3.run2182.stiven-provider-and-full-e2e.v1",
+  "observedAt": "2026-11-05",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "state": "HOLD",
+  "production": "DO_NOT_TOUCH",
+  "controlHeadAtRun": "6ba8ce74ef5afca7aea029bc100b6f4bfd7e07c6",
+  "productSourceSha": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+  "productTree": "e6f941c511272dfb0d258e935d7c1526c83b31cb",
+  "exactDev": {
+    "materializationRunId": 41952653181,
+    "runtimeRevision": "cxorbia-live-hr-dev-00347-jmn",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/3b675f7bcc8b07e6",
+    "hrRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac"
+  },
+  "run": {
+    "id": 42044986780,
+    "number": 2182,
+    "url": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/42044986780",
+    "status": "completed",
+    "conclusion": "success",
+    "evidenceArtifactId": 13424417384,
+    "evidenceArtifactDigest": "sha256:83825c3db4f8cf66be1953e2efd2dabb568c21cd8f6b054e59b83e86c7fff07e"
+  },
+  "identityAdjudication": {
+    "approvalPath": "docs/checkpoints/CXORBIA_I3_APPROVED_FUSIONS_20261105.json",
+    "providerCommand": "shopper.identity.adjudicate",
+    "canonicalShopperId": "shopper_gt_319cd82eaf",
+    "exactAliasShopperId": "shr-1783519013963-4koxm",
+    "keeperAccessFromAlias": "stiven.lopez",
+    "providerAck": true,
+    "identityConsolidated": true,
+    "retiredPrincipalCount": 1,
+    "providerWritesFirstCall": 9,
+    "idempotentReplay": true,
+    "providerWritesOnReplay": 0,
+    "canonicalActiveMemberships": 1,
+    "aliasActiveMemberships": 0,
+    "aliasCrosswalksVerified": 1,
+    "operationalAliasResiduals": 0,
+    "historicalVisitsShopper": 10,
+    "uniqueHistoricalVisitsShopper": 10,
+    "historicalVisitsAdmin": 10,
+    "authShopperId": "shopper_gt_319cd82eaf",
+    "sessionShopperId": "shopper_gt_319cd82eaf",
+    "passwordFormLoginTest": "NOT_INCLUDED_IN_RUN2182_USE_PRESERVED_R20_OR_SEPARATE_PROOF",
+    "sourceWrites": 0,
+    "hrWrites": 0,
+    "externalWrites": 0,
+    "productionWrites": 0
+  },
+  "fullSameArtifactE2e": {
+    "representatives": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+    "navigation": "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL",
+    "roleRoutes": {
+      "admin": 34,
+      "shopper": 12,
+      "client": 10,
+      "total": 56
+    },
+    "exercisedClicks": 44,
+    "actionFindings": 0,
+    "postulationsReservations": "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+    "financeFocal": "PASS_PREI4_FINAL_FOCAL_FINANCE",
+    "providerSchedule": "PASS_VRM168_PROVIDER_SCHEDULE_PATH",
+    "certificationsResourcesFocal": "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE",
+    "julissaPdfViewerDownload": "PASS_PRESERVED_AND_REPROVEN",
+    "hrCurrentVisits": 44,
+    "hrAssignedVisits": 26,
+    "hrUnresolvedAssigned": 0,
+    "hrDuplicateKeys": 0,
+    "real15QuestionBankHumanAccept": "PENDING",
+    "adminShopperHumanVisualAccept": "PENDING",
+    "productDeploys": 0,
+    "production": false
+  },
+  "moduleTruth": {
+    "authorityPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261104-V244.json",
+    "total": 21,
+    "fullMatch": 5,
+    "remainingWithoutFullMatch": 16,
+    "realFunctionalDefectsAtLastMatrix": 3,
+    "alreadyComposedNotDeployedAtLastMatrix": 1,
+    "otherPendingEvidenceAtLastMatrix": 12,
+    "explicitlyNoBlanketPromotion": true,
+    "newClauseClosures": [
+      {
+        "domain": "shoppers-mi-visitas-profile",
+        "proof": "Stiven Admin10 equals Shopper10 unique; real role E2E PASS"
+      },
+      {
+        "domain": "identity-membership-roll-forward",
+        "proof": "provider authority persisted, keeper canonical, alias inactive, idempotent replay; domain already MATCH before"
+      },
+      {
+        "domain": "visits-review-postulations-reservations",
+        "proof": "live QA role navigation and lifecycle postulations/reservations PASS"
+      },
+      {
+        "domain": "documents-resources",
+        "proof": "Julissa PDF viewer/download and synthetic project resource live PASS"
+      },
+      {
+        "domain": "certifications",
+        "proof": "4Q synthetic score and recertification PASS, not full real 15Q acceptance"
+      },
+      {
+        "domain": "finance-core-liquidation-costs",
+        "proof": "focal finance live + cleanup PASS, other clauses remain"
+      },
+      {
+        "domain": "canonical-hr-state-adapters",
+        "proof": "independent HR same revision 44 current / 26 assigned / zero assigned unresolved, other clauses remain"
+      }
+    ]
+  },
+  "antiLoop": {
+    "canonicalCandidateCount": 1,
+    "newProductBranch": false,
+    "newProductRepo": false,
+    "newLegacyImport": false,
+    "newFirebaseProduct": false,
+    "noRepeatOfPriorPass": true,
+    "legacyOracleOnly": true
+  },
+  "nextExactExecution": "Run one ordinary Shopper password E2E using existing verified R20 provenance if available; reconcile RUN2177+RUN2182 clauses against all 21 modules preserving prior PASS; close remaining G03 HR-finanzas/role and certifications/resources/15Q human evidence, Gate20/21; then request I4 express production authorization. Keep frozen descriptor nextExactAction unchanged for continuity."
+}
