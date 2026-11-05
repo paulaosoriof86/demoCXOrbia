@@ -56,6 +56,10 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
     freezeD.id === freezeP.id, 'MAPPING_FAILURE:PRIORITY_ID_DESYNC');
   check(Boolean(d.exactNextAction) && d.exactNextAction === p.nextExactAction,
     'MAPPING_FAILURE:NEXT_ACTION_DESYNC');
+  // Some older continuity consumers still read this second field. A green
+  // gate must not hide a stale historical next action alongside the new one.
+  check(!p.exactNextAction||p.exactNextAction===p.nextExactAction,
+    'MAPPING_FAILURE:LEGACY_NEXT_ACTION_DESYNC');
   check(/G03/.test(d.exactNextAction || '') && /HR/.test(d.exactNextAction || '') &&
     /finanzas/i.test(d.exactNextAction || ''),
     'MAPPING_FAILURE:EXCLUSIVE_FOCAL_LOOP');

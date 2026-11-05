@@ -37,6 +37,12 @@ test('stale next action fails closed', () => {
   const a = mk(); a.pointer.nextExactAction = 'Only diagnose D07 PDF';
   assert.match(validateShockContinuity(a).failures.join(' '), /NEXT_ACTION_DESYNC/);
 });
+test('legacy next-action field may not silently contradict the authoritative pointer', () => {
+  const a = mk(); a.pointer.exactNextAction = '32/83 historical cohort, no remaining fusion decisions';
+  assert.match(validateShockContinuity(a).failures.join(' '), /LEGACY_NEXT_ACTION_DESYNC/);
+  a.pointer.exactNextAction = a.pointer.nextExactAction;
+  assert.equal(validateShockContinuity(a).pass, true);
+});
 test('matching but stale pointers cannot erase a proven fusion or served DEV version', () => {
   const a = mk();
   a.descriptor.exactNextAction = 'G03 readback HR y finanzas; 29/83; Hosting a\u00fan NO servido en DEV';
