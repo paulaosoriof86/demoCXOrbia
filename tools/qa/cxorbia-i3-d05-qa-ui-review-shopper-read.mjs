@@ -12,7 +12,7 @@ import {chromium} from 'playwright';
 const SHOPPER_VRM297_ONLY = process.env.CXORBIA_D06_VRM297_ONLY === '1';
 const SOURCE = SHOPPER_VRM297_ONLY
   ? '128272027850fa0edad710ad1451a927041815d4'
-  : '4ba2a96e1f90fba7ba8e981429bce8b4161ebee6';
+  : String(process.env.CXORBIA_PRODUCT_SOURCE_SHA || '').trim();
 const PROJECT = 'cxorbia-backend-dev';
 const TENANT = 'tya';
 const PROJECT_ID = 'cinepolis';
