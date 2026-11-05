@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { chromium } from 'playwright';
 import { getApps, initializeApp, applicationDefault } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
@@ -43,7 +44,10 @@ if(!shopperId)throw new Error('AUTH_FAILURE:CERT_RES_SHOPPER_ID_CLAIM_MISSING');
 
 const fixturePeriod='cert-res-fixture-'+runId;
 const fixtureResource='res-cert-res-'+runId;
-let bankResourceId='',attemptId='',recertId='',binaryPath='';
+const fixtureSourceText='[Página 1]\nProtocolo técnico de prueba CXOrbia. El shopper debe conservar anonimato durante toda la visita. Debe registrar la fecha y la hora reales de su visita en el formulario. Debe documentar la evidencia observada sin inventar información.\n[Página 2]\nDebe completar el cuestionario dentro del plazo definido por el proyecto. Debe revisar que todas las respuestas correspondan a lo observado antes del envío. Si una visita no se realiza, debe avisar al coordinador por el canal oficial.';
+const fixtureSourceSha=createHash('sha256').update(fixtureSourceText).digest('hex');
+const expectedBankResourceId=('certbank-'+projectId+'-'+fixturePeriod+'-ai-'+fixtureSourceSha.slice(0,12)).replace(/[^a-zA-Z0-9_-]+/g,'-');
+let bankResourceId=expectedBankResourceId,attemptId='',recertId='',binaryPath='';
 const evidence={
   schemaVersion:'cxorbia.prei4.cert-res.live.v1',
   decision:'HOLD',
@@ -64,7 +68,20 @@ for(const stalePeriod of staleFixturePeriods){
     }
   }
 }
-evidence.preflightCleanup={staleRecertificationsDeleted,periods:staleFixturePeriods};
+const staleUnscopedBankId=('certbank-'+projectId+'-period-ai-'+fixtureSourceSha.slice(0,12)).replace(/[^a-zA-Z0-9_-]+/g,'-');
+const staleUnscopedRef=tenant.collection('resources').doc(staleUnscopedBankId);
+const staleUnscopedSnap=await staleUnscopedRef.get();
+let staleSyntheticDraftDeleted=false;
+if(staleUnscopedSnap.exists){
+  const prior=staleUnscopedSnap.data()||{};
+  if(prior.projectId!==projectId||str(prior.periodId)!==''||prior.resourceType!=='certification_bank'
+    ||prior.bank?.estado!=='pending_review'||prior.bank?.documentSource?.source_sha256!==fixtureSourceSha
+    ||prior.bank?.documentSource?.mode!=='manual_text'||prior.bank?.documentSource?.name!=='Protocolo técnico de prueba CXOrbia')
+    throw new Error('PERSISTENCE_FAILURE:CERT_QA_STALE_DRAFT_ID_COLLISION');
+  await staleUnscopedRef.delete();
+  staleSyntheticDraftDeleted=true;
+}
+evidence.preflightCleanup={staleRecertificationsDeleted,periods:staleFixturePeriods,staleSyntheticDraftDeleted};
 
 async function signIn(member,expectedRole){
   const ctx=await browser.newContext({viewport:{width:1440,height:980}});
@@ -132,51 +149,43 @@ try{
   adminSession=await signIn(adminMember,'admin');
   evidence.admin={uid:adminMember.id,role:str(adminSession.context.role),authorityApplied:true,pageErrors:adminSession.errors};
 
-  const ai=await adminSession.page.evaluate(async ({fixturePeriod})=>{
+  const ai=await adminSession.page.evaluate(async ({fixturePeriod,fixtureSourceText})=>{
     await window.CX?.backendAI?.load?.();
     if(!window.CX?.ai?.ready?.())throw new Error('AI_PROVIDER_NOT_READY_IN_BROWSER');
-    const sourceText='[Página 1]\nProtocolo técnico de prueba CXOrbia. El shopper debe conservar anonimato durante toda la visita. Debe registrar la fecha y la hora reales de su visita en el formulario. Debe documentar la evidencia observada sin inventar información.\n[Página 2]\nDebe completar el cuestionario dentro del plazo definido por el proyecto. Debe revisar que todas las respuestas correspondan a lo observado antes del envío. Si una visita no se realiza, debe avisar al coordinador por el canal oficial.';
+    const sourceText=fixtureSourceText;
     // The protected D03 runtime requires provenance for every AI source.
     // This is a synthetic manual-text QA fixture, not an imported HR file or
     // a user-specific certification exception. Its exact content is hashed.
     const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(sourceText));
     const sourceSha256=Array.from(new Uint8Array(digest),byte=>byte.toString(16).padStart(2,'0')).join('');
-    const generated=await window.CX.ai.ask(sourceText,{module:'certification',questionCount:4,gate:80,
+    const generated=await window.CX.ai.ask(sourceText,{module:'certification',periodId:fixturePeriod,certificationName:'CXOrbia QA certificación '+fixturePeriod,questionCount:4,gate:80,
       sourceSha256,sourceTitle:'Protocolo técnico de prueba CXOrbia',
       documentSource:{mode:'manual_text',name:'Protocolo técnico de prueba CXOrbia',source_sha256:sourceSha256,
         extraction_quality:{sufficient:true,source:'manual_text_qa_fixture'}}});
     if(!(generated?.providerAck===true&&Array.isArray(generated.preguntas)&&generated.preguntas.length>=3))throw new Error('AI_PROVIDER_ACK_OR_QUESTIONS_MISSING');
-    const uid=String(window.firebase?.auth?.().currentUser?.uid||'');
-    const bank={
-      preguntas:generated.preguntas,
-      gate:80,
-      fecha:new Date().toISOString().slice(0,10),
-      generadoPor:'fixture-generator',
-      generadoPorUid:'fixture-generator-not-current',
-      revisadoPor:'Recovery live proof',
-      revisadoPorUid:uid,
-      estado:'published',
-      provider:generated.provider,
-      model:generated.model,
-      providerAck:true,
-      contentRevision:generated.contentRevision,
-      generatedAt:new Date().toISOString(),
-      publishedAt:new Date().toISOString(),
-      historicalEquivalenceKeys:['cert-res-fixture-equivalence']
-    };
-    const saved=await window.CX.certStore.save(fixturePeriod,bank);
-    if(!(saved?.providerAck===true&&saved?.committed===true))throw new Error('CERT_BANK_SAVE_ACK_REQUIRED');
-    const resourceId=window.CX.certStore.resourceId(fixturePeriod);
+    const draft=generated.item||{},draftBank=draft.bank||{};
+    if(!draft.id||draftBank.estado!=='pending_review'||draftBank.documentSource?.source_sha256!==sourceSha256
+      ||draftBank.contentRevision!==generated.contentRevision||!(Number.isInteger(draft.version)&&draft.version>=1))
+      throw new Error('CERT_GENERATED_DRAFT_PROVENANCE_INVALID');
+    const published=await window.CX.backendCertifications.publishBank({
+      bankResourceId:draft.id,periodId:fixturePeriod,
+      expectedVersion:draft.version,expectedContentRevision:draftBank.contentRevision
+    });
+    if(!(published?.providerAck===true&&published?.committed===true&&published?.readbackVerified===true
+      &&published.item?.bank?.estado==='published'&&published.item?.id===draft.id))
+      throw new Error('CERT_BANK_PROTECTED_PUBLISH_ACK_REQUIRED');
     return {
       provider:generated.provider,
       model:generated.model,
       questionCount:generated.preguntas.length,
       contentRevision:generated.contentRevision,
-      resourceId,
-      savedAck:true,
-      answers:generated.preguntas.map(q=>q.correcta)
+      resourceId:draft.id,
+      generatedDraftAck:true,
+      protectedPublishAck:true,
+      answers:generated.preguntas.map(question=>question.correcta)
     };
-  },{fixturePeriod});
+  },{fixturePeriod,fixtureSourceText});
+  if(ai.resourceId!==expectedBankResourceId)throw new Error('MAPPING_FAILURE:CERT_QA_DRAFT_ID_MISMATCH');
   bankResourceId=ai.resourceId;
   evidence.cert001={decision:'PASS_PREI4_CERT_001_LIVE',provider:ai.provider,model:ai.model,questionCount:ai.questionCount,contentRevision:ai.contentRevision,bankResourceId,providerAck:true};
 
@@ -270,7 +279,17 @@ try{
   try{
     if(attemptId){await db.collection('tenants').doc(tenantId).collection('projects').doc(projectId).collection('certifications').doc(attemptId).delete();cleanup.attempt=true;}
     if(recertId){await db.collection('tenants').doc(tenantId).collection('projects').doc(projectId).collection('certificationRecertifications').doc(recertId).delete();cleanup.recert=true;}
-    if(bankResourceId){await tenant.collection('resources').doc(bankResourceId).delete();cleanup.bank=true;}
+    if(bankResourceId){
+      const bankRef=tenant.collection('resources').doc(bankResourceId),snap=await bankRef.get();
+      if(snap.exists){
+        const item=snap.data()||{};
+        if(item.projectId!==projectId||item.periodId!==fixturePeriod||item.resourceType!=='certification_bank'
+          ||item.bank?.documentSource?.source_sha256!==fixtureSourceSha)
+          throw new Error('PERSISTENCE_FAILURE:CERT_QA_BANK_CLEANUP_SCOPE_MISMATCH');
+        await bankRef.delete();
+      }
+      cleanup.bank=true;
+    }
     if(fixtureResource){await tenant.collection('resources').doc(fixtureResource).delete();cleanup.resource=true;}
     if(binaryPath){try{await bucket.file(binaryPath).delete({ignoreNotFound:true});}catch(_){}cleanup.binary=!(await bucket.file(binaryPath).exists())[0];}
   }catch(error){
