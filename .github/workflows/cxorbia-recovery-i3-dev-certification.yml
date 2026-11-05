@@ -5636,6 +5636,15 @@ jobs:
         [[ "$EXPECTED_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
         echo "EXPECTED_HR_REVISION=$EXPECTED_HR_REVISION" >> "$GITHUB_ENV"
       fi
+   - name: I3 exact owner-approved identity adjudication with provider ACK
+     run: |
+      set -Eeuo pipefail
+      if [[ "$I3_SESSION_PROOF" == true ]];then exit 0;fi
+      if [[ "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" != "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED" ]];then exit 0;fi
+      node --check tools/qa/cxorbia-i3-approved-identity-adjudication-write.mjs
+      test "$(jq -r '.productSourceSha' docs/checkpoints/CXORBIA_I3_APPROVED_FUSIONS_20261105.json)" = "$FOCAL_SOURCE"
+      APPROVED_IDENTITY_OUT="$PHASEA_LIVE_OUT/approved-identity" FOCAL_SOURCE="$FOCAL_SOURCE" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" node tools/qa/cxorbia-i3-approved-identity-adjudication-write.mjs | tee "$PHASEA_LIVE_OUT/approved-identity-console.log"
+      jq -e '.decision=="PASS_APPROVED_IDENTITY_PROVIDER_ADJUDICATION" and .production==false and .hrWrites==0 and .externalWrites==0 and ([.cases[]|select(.providerAck==true and .idempotentReplay==true and .durableReadback==true)]|length)==(.cases|length)' "$PHASEA_LIVE_OUT/approved-identity/result.json" >/dev/null
    - name: step
      run: |
       set -Eeuo pipefail
