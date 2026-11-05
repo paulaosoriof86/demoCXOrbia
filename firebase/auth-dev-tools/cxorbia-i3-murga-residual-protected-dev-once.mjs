@@ -28,7 +28,10 @@ const copy=v=>JSON.parse(JSON.stringify(v));
 const sid=v=>s(v?.shopperId||v?.id);
 const name=v=>normal(v?.nombre||v?.displayName||v?.fullName||v?.name||[v?.firstName,v?.lastName].filter(Boolean).join(' '));
 const country=v=>{const x=normal(v?.pais||v?.country);return ['gt','guatemala'].includes(x)?'GT':['hn','honduras'].includes(x)?'HN':'UNSET';};
-const murga=x=>/^(jhennypher|jennifer|jenifer|jennypher|jennipher|jennypher|jennyper) murga$/.test(x);
+// Direction confirmed that no other GT shopper has the Murga surname.
+// Match the whole surname token, including older first/middle-name variants;
+// the exact nine-profile inventory and same-country guards still fail closed.
+const murga=x=>/(^|\s)murga(\s|$)/.test(x);
 const assert=(ok,code)=>{if(!ok)throw Error(code);};
 const ownerFields=['shopperId','assignedShopperId','assignedToShopperId','auditorId','profileId','applicantShopperId',
   'ownerShopperId','targetShopperId','beneficiaryShopperId','liquidationShopperId','reservationShopperId'];
@@ -88,6 +91,9 @@ function identityFields(profile){return Object.fromEntries(sensitive.filter(key=
 function plan(state,hr){
   const rows=[...state.profiles].filter(([_id,p])=>murga(name(p))&&country(p)==='GT');
   const hrRows=hr.shoppers.filter(p=>name(p)==='jhennypher murga'&&country(p)==='GT');
+  result.observedTargetProfiles=rows.length;
+  result.observedHrSourceProfiles=hrRows.length;
+  save();
   assert(rows.length===9&&hrRows.length===1,'EXACT_MURGA_GRAPH_COUNT_DRIFT');
   const canonical=sid(hrRows[0]),ids=rows.map(([id])=>id);
   assert(ids.includes(canonical),'HR_CANONICAL_PROFILE_UNAVAILABLE');
@@ -258,4 +264,6 @@ try{
 }finally{try{if(browser)await browser.close();}catch{}
   save();process.stdout.write(JSON.stringify({decision:result.decision,target:result.target,
     providerAck:result.providerAck,readback:result.readback||null,
+    observedTargetProfiles:result.observedTargetProfiles,
+    observedHrSourceProfiles:result.observedHrSourceProfiles,
     domainRowsPlanned:result.domainRowsPlanned,hrWrites:0,production:false,errorCode:result.errorCode||null},null,2)+'\n');}
