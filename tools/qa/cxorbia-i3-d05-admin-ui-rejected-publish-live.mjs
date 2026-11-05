@@ -148,7 +148,9 @@ async function run() {
     window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied === true,
   null, {timeout: 90000});
   await page.getByRole('button', {name: 'Certificación', exact: true}).click();
-  const chooser = page.getByRole('combobox').nth(2);
+  // Select by the uniquely displayed certification option, independent of
+  // unrelated project/role dropdowns on the same responsive Admin page.
+  const chooser = page.locator('select:has(option:has-text("Banco IA pendiente de revisión"))');
   await chooser.waitFor({state: 'visible', timeout: 30000});
   await chooser.selectOption({label: 'Banco IA pendiente de revisión · Pendiente de revisión'});
   await page.locator('#certPublish').waitFor({state: 'visible', timeout: 30000});
