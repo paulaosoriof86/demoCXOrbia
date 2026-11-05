@@ -5645,6 +5645,16 @@ jobs:
       test "$(jq -r '.productSourceSha' docs/checkpoints/CXORBIA_I3_APPROVED_FUSIONS_20261105.json)" = "$FOCAL_SOURCE"
       APPROVED_IDENTITY_OUT="$PHASEA_LIVE_OUT/approved-identity" FOCAL_SOURCE="$FOCAL_SOURCE" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" node tools/qa/cxorbia-i3-approved-identity-adjudication-write.mjs | tee "$PHASEA_LIVE_OUT/approved-identity-console.log"
       jq -e '.decision=="PASS_APPROVED_IDENTITY_PROVIDER_ADJUDICATION" and .production==false and .hrWrites==0 and .externalWrites==0 and ([.cases[]|select(.providerAck==true and .idempotentReplay==true and .durableReadback==true)]|length)==(.cases|length)' "$PHASEA_LIVE_OUT/approved-identity/result.json" >/dev/null
+   - name: I3 ordinary Shopper password one-shot proof after approved fusion
+     run: |
+      set -Eeuo pipefail
+      if [[ "$I3_SESSION_PROOF" == true ]];then exit 0;fi
+      if [[ "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" != "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED" ]];then exit 0;fi
+      node --check tools/qa/cxorbia-i3-r20-ordinary-password-single-readonly.mjs
+      TARGET_LOGIN="$(jq -r '.approvedCases[0].expectedLogin' docs/checkpoints/CXORBIA_I3_APPROVED_FUSIONS_20261105.json)"
+      test -n "$TARGET_LOGIN"
+      R20_AUTHORIZED_TEST_LOGIN="$TARGET_LOGIN" R20_SOURCE_SHA="$FOCAL_SOURCE" R20_HOSTING_URL="$HOSTING_URL" R20_SAFE_OUT="$PHASEA_LIVE_OUT/r20-approved-keeper" node tools/qa/cxorbia-i3-r20-ordinary-password-single-readonly.mjs | tee "$PHASEA_LIVE_OUT/r20-approved-keeper-console.log"
+      jq -e '.decision=="PASS_R20_ORDINARY_PASSWORD_FULL_SESSION_LIFECYCLE" and .credentialProvenance=="EXACT_SEALED_HASH_CANONICAL_RULE_AND_AUTH_CLAIMS" and .attemptedAccounts==1 and .historyAvailable==true and .authWrites==0 and .passwordChanges==0 and .passwordResets==0 and .firestoreWrites==0 and .production==false' "$PHASEA_LIVE_OUT/r20-approved-keeper/result.json" >/dev/null
    - name: step
      run: |
       set -Eeuo pipefail
