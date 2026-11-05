@@ -67,7 +67,7 @@ jobs:
           retention-days: 30
 
   two-approved-residual-groups-protected-dev-once:
-    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-TWO-RESIDUALS-PROTECTED-DEV-ONCE-20261105' }}
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-TWO-RESIDUALS-PROTECTED-DEV-DIAGNOSTIC-RETRY-20261105' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
