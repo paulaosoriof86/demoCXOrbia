@@ -71,15 +71,28 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
   check(fusionD.provisionalVerifiedGroups >= fusionD.lastIndependentVerifiedGroups &&
     fusionD.provisionalVerifiedGroups + fusionD.provisionalPendingGroups === 83 &&
     fusionD.recensusRequired === true &&
-    new RegExp(`${fusionD.provisionalVerifiedGroups}/83`).test(d.exactNextAction || ''),
+    // The October receipt remains immutable historical evidence. Once a
+    // newer checkpoint supersedes it, compare the current 83-group tally.
+    new RegExp(`${p.currentCanonicalCheckpoint?.verifiedTotal ?? fusionD.provisionalVerifiedGroups}/83`)
+      .test(d.exactNextAction || '') &&
+    ((p.currentCanonicalCheckpoint?.verifiedTotal ?? fusionD.provisionalVerifiedGroups) +
+      (p.currentCanonicalCheckpoint?.remaining ?? fusionD.provisionalPendingGroups) === 83),
     'MAPPING_FAILURE:SHOPPER_FUSION_PROGRESS_STALE');
 
   const hostingD = d.g03ActualHostingDevReadback20261031 || {};
   const hostingP = p.g03ActualHostingDevReadback20261031 || {};
-  const servedVersion = String(hostingD.hostingVersion || '').split('/').pop();
+  const currentDev = p.currentDevMaterialization || {};
+  const newerCurrentDev = Boolean(currentDev.hostingVersion && currentDev.sourceSha);
+  const servedVersion = String(newerCurrentDev ? currentDev.hostingVersion : hostingD.hostingVersion || '').split('/').pop();
+  const servedAuthorityMatches = newerCurrentDev ?
+    currentDev.sourceSha === d.productSourceSha &&
+    currentDev.sourceTree === d.productTreeAuthority &&
+    Boolean(currentDev.runtimeRevision && currentDev.runtimeDigest && currentDev.hostingRelease) &&
+    p.continuityHandoff?.path === p.currentCanonicalCheckpoint?.path :
+    (d.exactNextAction || '').includes(servedVersion);
   check(Boolean(servedVersion) && JSON.stringify(hostingD) === JSON.stringify(hostingP) &&
     hostingD.verifiedBrowserDevOnly === true &&
-    (d.exactNextAction || '').includes(servedVersion) &&
+    servedAuthorityMatches &&
     !/a[uú]n\s+NO\s+servid[oa]\s+en\s+DEV/i.test(d.exactNextAction || ''),
     'MAPPING_FAILURE:DEV_HOSTING_REALITY_STALE');
   check(p.progressByStageSemantics === 'HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY',

@@ -46,6 +46,27 @@ test('matching but stale pointers cannot erase a proven fusion or served DEV ver
   assert.match(failures, /DEV_HOSTING_REALITY_STALE/);
   assert.doesNotMatch(failures, /NEXT_ACTION_DESYNC/);
 });
+test('current V5 checkpoint supersedes old receipt without erasing its historical identity proof', () => {
+  const a = mk();
+  a.pointer.currentCanonicalCheckpoint = {path: 'V5.md', verifiedTotal: 83, remaining: 0};
+  a.pointer.continuityHandoff = {path: 'V5.md'};
+  a.pointer.currentDevMaterialization = {
+    sourceSha: 'source', sourceTree: 'tree', hostingVersion: 'sites/cxorbia-backend-dev/versions/new',
+    runtimeRevision: 'dev-rev', runtimeDigest: 'sha256:abc', hostingRelease: 'new-release'};
+  a.descriptor.productTreeAuthority = 'tree';
+  a.descriptor.exactNextAction = 'I3 HOLD 83/83 groups; G03 HR finanzas; DEV source confirmed; 5/21 MATCH';
+  a.pointer.nextExactAction = a.descriptor.exactNextAction;
+  assert.equal(validateShockContinuity(a).pass, true);
+  a.pointer.currentDevMaterialization.sourceSha = 'different-source';
+  assert.match(validateShockContinuity(a).failures.join(' '), /DEV_HOSTING_REALITY_STALE/);
+});
+test('V5 current checkpoint cannot claim more fused profiles than the approved cohort', () => {
+  const a = mk();
+  a.pointer.currentCanonicalCheckpoint = {verifiedTotal: 84, remaining: 0};
+  a.descriptor.exactNextAction = 'G03 HR finanzas; 84/83';
+  a.pointer.nextExactAction = a.descriptor.exactNextAction;
+  assert.match(validateShockContinuity(a).failures.join(' '), /SHOPPER_FUSION_PROGRESS_STALE/);
+});
 test('lost receipt or divergent fusion status fails closed', () => {
   const a = mk();
   a.pointer.i3FusionContinuityRecovered20261031.provisionalVerifiedGroups = 31;
