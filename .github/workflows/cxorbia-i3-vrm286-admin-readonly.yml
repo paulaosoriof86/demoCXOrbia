@@ -34,10 +34,16 @@ jobs:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
       - name: Verify real authenticated Admin UI versus hydrated read model
         run: node tools/qa/cxorbia-i3-vrm286-admin-readonly-live.mjs
+      - name: Inspect approved Murga/Vilca profile and Auth login without writes
+        run: |
+          node --check firebase/auth-dev-tools/cxorbia-i3-two-authorized-name-logins-readonly.mjs
+          node firebase/auth-dev-tools/cxorbia-i3-two-authorized-name-logins-readonly.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: cxorbia-i3-vrm286-admin-readonly-${{ github.run_id }}
-          path: .tmp/cxorbia-i3-vrm286-admin-readonly/result.json
+          path: |
+            .tmp/cxorbia-i3-vrm286-admin-readonly/result.json
+            .tmp/cxorbia-i3-two-authorized-name-logins-readonly/result.json
           if-no-files-found: warn
           retention-days: 30
