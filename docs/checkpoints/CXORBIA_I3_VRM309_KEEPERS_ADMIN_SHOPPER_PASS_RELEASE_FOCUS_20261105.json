@@ -85,5 +85,71 @@
     "phaseBPlanningAllowedWithoutProductionWrite": true,
     "immutableI4RequiresI3GoAndSeparateProductionAuthorization": true
   },
-  "evidenceUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/42150462459"
+  "evidenceUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/42150462459",
+  "additionalReadOnlyChromeAdminEvidence": {
+    "observedDateGuatemala": "2026-11-05",
+    "site": "https://cxorbia-backend-dev.web.app",
+    "browser": "Chrome isolated authenticated Admin tab",
+    "sourceContext": "Cinepolis",
+    "november2026": {
+      "visits": 44,
+      "assigned": 26,
+      "unassigned": 18,
+      "available": 17,
+      "outOfRange": 1,
+      "periodSelector": "NOV 2026",
+      "comparison": "MATCH_PREVIOUS_INDEPENDENT_HR_COUNTS__UI_READONLY_NOT_A_WHOLE_MODULE_PASS"
+    },
+    "postulations": {
+      "visibleCurrentAssignments": 26,
+      "visibleCurrentPendingApplications": 0,
+      "olderActiveReviewCardsPresent": true,
+      "sourcePeriodCrosswalk": "NOT_YET_PROVEN",
+      "newWrites": 0
+    },
+    "reservations": {
+      "period": "2026-11",
+      "newRequests": 0,
+      "internalReservationAssignments": 0,
+      "hrAssignmentsFromVisitas": 26,
+      "differentSourceUniverses": "NOT_CLASSIFIED_AS_DRIFT"
+    },
+    "october2026Finance": {
+      "financialReview": 42,
+      "payableCandidates": 1,
+      "validatedReady": "GT_Q205_JULISSA_EXACT_FOCAL",
+      "totals": {
+        "GT": {
+          "visits": 33,
+          "honorarios": "Q 1,980",
+          "reembolsos": "Q 5,173",
+          "total": "Q 7,153"
+        },
+        "HN": {
+          "visits": 10,
+          "honorarios": "L 2,000",
+          "reembolsos": "L 4,171",
+          "total": "L 6,171"
+        }
+      },
+      "financialExternalSourceAck": "PENDING",
+      "reconciliation": "PENDING",
+      "noBankPaymentConfirmedByUi": true
+    },
+    "october2026QuestionnaireEditor": {
+      "visible": true,
+      "version": "General",
+      "saveProviderAck": "NOT_TESTED",
+      "shopperAnswerE2E": "NOT_TESTED"
+    },
+    "actions": {
+      "postulationWrites": 0,
+      "assignmentWrites": 0,
+      "financialWrites": 0,
+      "questionnaireWrites": 0,
+      "hrWrites": 0,
+      "productionWrites": 0
+    },
+    "interpretation": "Priority G03 financial external reconciliation and durable cross-role postulation/assignment + questionnaire tests; preserving 5 of 21 module MATCH."
+  }
 }
