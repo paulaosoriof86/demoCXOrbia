@@ -511,6 +511,7 @@ const server=http.createServer(async(req,res)=>{
       ensureAdmin,
       verifyPrincipal:verifiedProtectedPrincipal,
       sendJson,
+      readCurrentSnapshot:()=>buildSnapshot(),
       currentSourceRevision:()=>String(cache?.revision||'')
     });
     return;

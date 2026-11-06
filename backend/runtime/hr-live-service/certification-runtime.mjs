@@ -86,7 +86,7 @@ async function readJson(req,maxBytes=160000){
 function projectRef(db,scope){return db.collection('tenants').doc(scope.tenantId).collection('projects').doc(scope.projectId);}
 function resourcesCol(db,scope){return db.collection('tenants').doc(scope.tenantId).collection('resources');}
 function deterministicBankId(scope,periodId){return ('certbank-'+scope.projectId+'-'+str(periodId||'period')).replace(/[^a-zA-Z0-9_-]+/g,'-');}
-async function loadPublishedBank(db,scope,body){
+async function loadPublishedBank(db,scope,body,readCurrentSnapshot){
   const rid=str(body.bankResourceId)||deterministicBankId(scope,body.periodId);
   const snap=await resourcesCol(db,scope).doc(rid).get();
   if(!snap.exists)throw new Error('CERT_BANK_NOT_FOUND');
@@ -105,23 +105,46 @@ async function loadPublishedBank(db,scope,body){
   const bank=resource.bank||{};
   if(!['published','confirmed'].includes(str(bank.estado).toLowerCase()))throw new Error('CERT_BANK_NOT_PUBLISHED');
   if(!arr(bank.preguntas).length)throw new Error('CERT_BANK_EMPTY');
+  let executionPeriodAuthority=null;
   if(str(resource.periodId)!==str(body.periodId)){
     if(!reusableProjectResource(resource,scope))throw new Error('CERT_BANK_PERIOD_MISMATCH');
-    await validateExecutionPeriod(db,scope,body.periodId);
+    executionPeriodAuthority=await validateExecutionPeriod(db,scope,body.periodId,readCurrentSnapshot);
   }
-  return {resource,bank,fingerprint:certificationBankFingerprint(bank)};
+  return {resource,bank,fingerprint:certificationBankFingerprint(bank),executionPeriodAuthority};
 }
 
-async function validateExecutionPeriod(db,scope,periodId){
+async function validateExecutionPeriod(db,scope,periodId,readCurrentSnapshot){
   const ids=certificationPeriodDocumentIds(scope.projectId,periodId);
   const snaps=await Promise.all(ids.map(id=>projectRef(db,scope).collection('periods').doc(id).get()));
   const found=snaps.filter(x=>x.exists);
-  if(found.length!==1)throw new Error('CERT_EXECUTION_PERIOD_REQUIRED');
+  if(found.length>1)throw new Error('CERT_EXECUTION_PERIOD_SCOPE_MISMATCH');
+  if(!found.length){
+    // Period metadata is optional. Operational periods come from the current
+    // server HR snapshot, never from caller payload or an invented monthly doc.
+    if(typeof readCurrentSnapshot!=='function')throw new Error('CERT_EXECUTION_PERIOD_REQUIRED');
+    const current=await readCurrentSnapshot(),snapshot=current?.snapshot;
+    if(current?.origin!=='runtime_refresh'||!str(current?.revision)||snapshot?.sourceSafe!==true||
+      snapshot.imported===true||!Array.isArray(snapshot.periods))
+      throw new Error('CERT_EXECUTION_PERIOD_AUTHORITY_REQUIRED');
+    if(str(snapshot.tenantId||snapshot.tenantConfig?.tenantId)!==scope.tenantId||
+      str(snapshot.projectId||snapshot.projectConfig?.projectId)!==scope.projectId)
+      throw new Error('CERT_EXECUTION_PERIOD_SCOPE_MISMATCH');
+    const expected=certificationPeriodDisplayId(scope.projectId,{},periodId);
+    // Match the operational mapper for monthly and non-monthly keys alike.
+    const matches=snapshot.periods.filter(row=>str(row?.key)&&scope.projectId+'-'+str(row.key)===expected);
+    if(!matches.length)throw new Error('CERT_EXECUTION_PERIOD_REQUIRED');
+    if(matches.length!==1||
+      (matches[0].tenantId!==undefined&&str(matches[0].tenantId)!==scope.tenantId)||
+      (matches[0].projectId!==undefined&&str(matches[0].projectId)!==scope.projectId))
+      throw new Error('CERT_EXECUTION_PERIOD_SCOPE_MISMATCH');
+    return {authority:'current_server_hr_snapshot',sourceRevision:str(current.revision)};
+  }
   const doc=found[0],row=doc.data()||{};
   if((row.tenantId!==undefined&&str(row.tenantId)!==scope.tenantId)||
     (row.projectId!==undefined&&str(row.projectId)!==scope.projectId)||
     certificationPeriodDisplayId(scope.projectId,row,doc.id)!==certificationPeriodDisplayId(scope.projectId,{},periodId))
     throw new Error('CERT_EXECUTION_PERIOD_SCOPE_MISMATCH');
+  return {authority:'project_period_document',documentId:doc.id};
 }
 
 function reusableProjectResource(row,scope){
@@ -218,7 +241,7 @@ export async function readShopperResourceProjection(db,scope,principal,periodId)
   return {items,periodId:str(periodId),count:items.length,source:'verified_shopper_projection'};
 }
 
-export async function calculateCertificationPractice(db,scope,principal,body){
+export async function calculateCertificationPractice(db,scope,principal,body,readCurrentSnapshot){
   if(str(principal?.role)!=='shopper'||str(principal?.namespace)!=='shopper'||!str(principal?.shopperId))
     throw new Error('AUTH_FAILURE:CERT_PRACTICE_SHOPPER_REQUIRED');
   const rid=str(body?.bankResourceId),periodId=str(body?.periodId);
@@ -233,7 +256,7 @@ export async function calculateCertificationPractice(db,scope,principal,body){
     throw new Error('CERT_PRACTICE_SCOPE_MISMATCH');
   if(str(row.periodId)!==periodId){
     if(!reusableProjectResource(row,scope))throw new Error('CERT_PRACTICE_SCOPE_MISMATCH');
-    await validateExecutionPeriod(db,scope,periodId);
+    await validateExecutionPeriod(db,scope,periodId,readCurrentSnapshot);
   }
   return calculateCertificationAttempt(bank,body.answers);
 }
@@ -446,10 +469,11 @@ async function generateBank(db,scope,body,input=generationInput(body)){
   return {aiProviderAck:true,providerAck:true,provider:setting.provider,model:setting.model,location:setting.location,settingId:setting.id,preguntas,requestedQuestionCount:questionCount,gate,contentRevision,generationAttempts:attempts,sourceSha256:input.sourceSha256,sourceTitle:input.sourceTitle};
 }
 function requestId(req,body){return cleanKey(req.headers['idempotency-key']||body.idempotencyKey);}
-async function saveAttempt(db,scope,principal,body,sourceRevision,idem){
+async function saveAttempt(db,scope,principal,body,sourceRevision,idem,readCurrentSnapshot){
   if(str(principal.role)!=='shopper'||!str(principal.shopperId))throw new Error('CERT_ATTEMPT_SHOPPER_REQUIRED');
   if(!idem)throw new Error('IDEMPOTENCY_KEY_REQUIRED');
-  const {resource,bank,fingerprint}=await loadPublishedBank(db,scope,body),calc=calculateCertificationAttempt(bank,body.answers),recerts=await activeRecertifications(db,scope,principal.shopperId);
+  const {resource,bank,fingerprint,executionPeriodAuthority}=await loadPublishedBank(db,scope,body,readCurrentSnapshot),calc=calculateCertificationAttempt(bank,body.answers),recerts=await activeRecertifications(db,scope,principal.shopperId);
+  sourceRevision=executionPeriodAuthority?.sourceRevision||sourceRevision;
   const createdAt=iso(),docId='attempt-'+sha([scope.tenantId,scope.projectId,principal.shopperId,idem]).slice(0,28),ref=projectRef(db,scope).collection('certifications').doc(docId);
   let replay=false,item=null;
   await db.runTransaction(async tx=>{
@@ -662,7 +686,7 @@ function errorStatus(message){
   return 500;
 }
 
-export async function maybeHandleCertificationRuntimeRequest(req,res,url,{ensureAdmin,verifyPrincipal,sendJson,currentSourceRevision}){
+export async function maybeHandleCertificationRuntimeRequest(req,res,url,{ensureAdmin,verifyPrincipal,sendJson,currentSourceRevision,readCurrentSnapshot}){
   const scope=certificationRouteScope(url.pathname);if(!scope)return false;
   if(req.method!==(scope.action==='shopper-resources'?'GET':'POST')){
     sendJson(res,405,{ok:false,error:'method_not_allowed',production:false});return true;
@@ -675,7 +699,7 @@ export async function maybeHandleCertificationRuntimeRequest(req,res,url,{ensure
     }
     const body=await readJson(req),idem=requestId(req,body);
     if(scope.action==='practice'){
-      const calc=await calculateCertificationPractice(db,scope,principal,body);
+      const calc=await calculateCertificationPractice(db,scope,principal,body,readCurrentSnapshot);
       sendJson(res,200,{ok:true,providerAck:true,preview:true,committed:false,providerWrites:0,
         score:calc.score,gate:calc.gate,pass:calc.pass,feedback:calc.feedback,production:false});return true;
     }
@@ -695,7 +719,7 @@ export async function maybeHandleCertificationRuntimeRequest(req,res,url,{ensure
       sendJson(res,200,{ok:true,status:'committed',committed:true,providerAck:true,aiProviderAck:result.aiProviderAck===true,readbackVerified:true,successUiAllowed:true,...result,item:saved.item,idempotentReplay:saved.idempotentReplay,providerWrites:saved.providerWrites,writes:saved.providerWrites,hrWrites:0,production:false});return true;
     }
     if(scope.action==='attempt'){
-      const saved=await saveAttempt(db,scope,principal,body,currentSourceRevision?.(),idem);
+      const saved=await saveAttempt(db,scope,principal,body,currentSourceRevision?.(),idem,readCurrentSnapshot);
       sendJson(res,200,{ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,item:saved.item,score:saved.calc.score,gate:saved.calc.gate,pass:saved.calc.pass,feedback:saved.calc.feedback,idempotentReplay:saved.idempotentReplay,providerWrites:saved.idempotentReplay?0:1,hrWrites:0,production:false});return true;
     }
     if(scope.action==='recertify'){

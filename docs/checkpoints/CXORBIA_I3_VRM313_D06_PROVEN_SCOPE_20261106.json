@@ -1,0 +1,184 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm313.proven-owner-scope.v1",
+  "observedAt": "2026-11-06T23:44:25.762045+00:00",
+  "iteration": "I3",
+  "state": "HOLD",
+  "expectedParentSha": "3ea83392b0f4bb71ebad2ae96ad9f2d8f803d6b8",
+  "sourceBefore": "439a688be58b23c93ac4e99a91da78b4c3cf81fa",
+  "sourceTreeBefore": "905f71d394033f3363fefd8221127c6fe0145d8c",
+  "servingMaterialization": {
+    "builds": 1,
+    "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
+    "hostingDeploys": 1,
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794005714172000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/7719a1e904bd33fd",
+    "hrRevision": "32d9416f76ba00d1b766ab8b4276ef74827b62f3c200ef704ba40a511a478b68",
+    "production": false,
+    "runtimeDeploys": 1,
+    "runtimeDigest": "sha256:b315e404b05c409b4904ddff41f0992652cee7e19473e75f618a155bed9ed767",
+    "runtimeRevision": "cxorbia-live-hr-dev-00353-jzc",
+    "scenarioDimensionsProven": true,
+    "sourceSha": "439a688be58b23c93ac4e99a91da78b4c3cf81fa",
+    "sourceTree": "905f71d394033f3363fefd8221127c6fe0145d8c",
+    "storageRulesDeploys": 0,
+    "state": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
+    "runId": 42307799172,
+    "runNumber": 2246,
+    "jobId": 128201670615,
+    "artifactId": 13546793809,
+    "artifactDigest": "sha256:e08c2f93dc5017ad00a67d801ceef181d07943e93f596dd9866fbb230d3bf5d9",
+    "sourceArtifactDigest": "sha256:e08c2f93dc5017ad00a67d801ceef181d07943e93f596dd9866fbb230d3bf5d9",
+    "artifactDigestType": "GITHUB_ACTIONS_EVIDENCE_ZIP_SHA256",
+    "artifactZipSha256": "e08c2f93dc5017ad00a67d801ceef181d07943e93f596dd9866fbb230d3bf5d9",
+    "runtimeImageArtifactDigest": "sha256:b315e404b05c409b4904ddff41f0992652cee7e19473e75f618a155bed9ed767",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
+    "firestoreRulesetEvidence": "NO_RULES_DEPLOY_RUN2246_PREDECESSOR_RULESET_RETAINED_NOT_NEW_RULES_READBACK",
+    "firestoreRulesDeploys": 0,
+    "hrWrites": 0,
+    "runtimeTrafficPercent": 100,
+    "controlHeadAtDeploy": "2d92a9dd04cc0f1ec4baf30e4a2a08ca4eccca3f",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM311_VRM312_EXACT_DEV_RUN2246_20261106.json",
+    "sourceIdentityVerified": true,
+    "runtimeSourceVerified": true,
+    "fullTaskClosed": false,
+    "humanAcceptance": "PENDING"
+  },
+  "moduleTruthBefore": [
+    {
+      "domain": "canonical-hr-state-adapters",
+      "lastApprovedAuthority": "P0_PROVEN_RUN285_SOLE_HUMAN_HR_WRITER_FIX",
+      "sourceCommit": "77bf74f807d254637f0b2cde4b1d1668017a0c8a",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN",
+      "currentCandidateSource": "439a688be58b23c93ac4e99a91da78b4c3cf81fa",
+      "currentCandidateTree": "905f71d394033f3363fefd8221127c6fe0145d8c",
+      "currentOwnerBlobs": {
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js": "7b68d08357f256d736de57ff5b89bf97f397fb4f",
+        "app/adapters/tya-cumulative-read-model-v2.js": "11425e47e54ca955056dc6b891235a5bdcdbaf4d",
+        "app/adapters/tya-canonical-state-semantics-v2.js": "a0104aa043ebdb7c9ee55cde5766ada8ed5e28fb",
+        "app/adapters/tya-live-source-refresh-watch-v2.js": "8fa224fe7f7a565be8553bc855deef6d0e6a3b9f",
+        "app/adapters/tya-live-source-inplace-apply.js": "45e1cd1b8c01d6276be2c256d5b99baa93e90252",
+        "backend/runtime/hr-live-service/server.mjs": "ade2bdddcf02c970cb52538343e21beb4719012d",
+        "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs": "f3823bbb7ac1cffd0d2e6ab7b8ddfc0b83fca3b8",
+        "tools/hr-source/tya-build-live-hr-source-safe-static.mjs": "0b4dc7a1739479f43ed35cd80cb6789b89829e45",
+        "tools/hr-source/tya-canonical-visit-state-r20.mjs": "b76677a6a49fc50624b0cd31142f29132f0caa5d",
+        "tools/hr-source/tya-enforce-live-tab-registry.mjs": "3ff548f1ef9d4af2ad899a2e58d948dfe92aa586",
+        "tools/hr-source/tya-reapply-canonical-state-r20.mjs": "921b43f98846d0ad431fb5667cecdb5b8b101409",
+        "tools/hr-source/tya-live-provider-registry-identity-dev.mjs": "fb2050c2f28375a0417915771ab16f1783ef999e",
+        "tools/hr-source/tya-resolve-live-month-tabs.mjs": "86c8d102c70f0d1edd541aedf7d0784c965cefbe",
+        "backend/contracts/tya-hr-column-map-r20-v1.json": "105b322fe3fc20dded57eec35f123938c0c29fea",
+        "app/core/backend-hr-source-bridge.js": "7d7f3282fbd06019970a534f9d422945a0625576"
+      },
+      "actionRequired": "G05 113/113 PASS and independent A05 HR live parity 2026-11-06 PASS; accepted 83/83+2 identities preserved. Remaining scope: bounded independent role E2E and human domain approval. G03 historical finance proof is evidence gap, not this domain defect."
+    },
+    {
+      "domain": "certifications",
+      "lastApprovedAuthority": "F9 accepted release lineage preserved through terminal b949 and f836",
+      "sourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "currentCandidateSource": "439a688be58b23c93ac4e99a91da78b4c3cf81fa",
+      "currentCandidateTree": "905f71d394033f3363fefd8221127c6fe0145d8c",
+      "currentOwnerBlobs": {
+        "app/modules/academia.js": "5ba399295367cb2f5e2ea6fd9de706e6d4fb1323",
+        "app/modules/cert.js": "2b96488b737108031f9eb69631000775c158fb49",
+        "app/data/tya-certification-carryover-source-safe.js": "8f987530e24ebe433e7f1c73a6036a37e563f074",
+        "backend/runtime/hr-live-service/certification-runtime.mjs": "44f4728e5f99cda9925ea3dd9223e6ee1036734f",
+        "app/core/backend-certifications.js": "b9655ba768efed802fbcea5c12ebbf52c94c1aeb"
+      },
+      "actionRequired": "Complete real Chrome D06/D07 post-deploy visual/readback and human acceptance after Browser connection recovers; source77PASS+exactDEV+same project bank/resource across OCT/NOV and original PDF authenticated200 already verified. Preserve prior passing clauses, IDs/history/resources; no rebuild or reimport."
+    }
+  ],
+  "allowedProductFiles": [
+    "backend/runtime/hr-live-service/certification-runtime.mjs",
+    "backend/runtime/hr-live-service/server.mjs"
+  ],
+  "allowedControlFiles": [
+    "tools/qa/cxorbia-i3-shock-continuity-guard.mjs",
+    "tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs"
+  ],
+  "ownerBlobsBefore": {
+    "backend/runtime/hr-live-service/certification-runtime.mjs": "44f4728e5f99cda9925ea3dd9223e6ee1036734f",
+    "backend/runtime/hr-live-service/server.mjs": "ade2bdddcf02c970cb52538343e21beb4719012d"
+  },
+  "findings": [
+    {
+      "id": "VRM-313",
+      "classification": "FUNCTIONAL_DEFECT",
+      "priority": "P0_PROVEN",
+      "owner": "backend/runtime/hr-live-service/certification-runtime.mjs",
+      "evidence": "Chrome isolated Shopper Stiven in NOV2026 displays published original OCT bank; eight selected answers rejected with CERT_EXECUTION_PERIOD_REQUIRED before persistence. Same-principal Firestore readback confirms both exact NOV metadata aliases absent (HTTP404), one original failed attempt unchanged. UI operational periods originate in fresh HR snapshot; optional Firestore metadata is not universal period existence authority.",
+      "expected": "When no metadata doc exists, validate exact period in server current HR snapshot for the same tenant/project. Preserve bank identity, history, idempotency and exact revision. Fail closed on ambiguity, wrong scope or missing/stale authority."
+    }
+  ],
+  "periodMetadataReadback": {
+    "scope": "DEV_SAME_SHOPPER_PROJECT_PERIOD_METADATA_READ_ONLY",
+    "periods": [
+      {
+        "documentId": "cinepolis-2026-11",
+        "httpStatus": 404,
+        "exists": false
+      },
+      {
+        "documentId": "2026-11",
+        "httpStatus": 404,
+        "exists": false
+      }
+    ],
+    "unchangedAttemptCount": 1
+  },
+  "incompleteAttemptReadback": {
+    "scope": "DEV_SAME_SHOPPER_OWN_PROJECT_READ_ONLY",
+    "count": 1,
+    "attempts": [
+      {
+        "tenantId": "tya",
+        "projectId": "cinepolis",
+        "periodId": "cinepolis-2026-10",
+        "bankResourceId": "certbank-cinepolis-cinepolis-2026-10",
+        "bankPeriodId": null,
+        "contentRevision": "78fbcc32e1ca10eb9328ae546669a91611d9e12b4483cb4c55a47e716ba202b3",
+        "score": 0,
+        "gate": 80,
+        "pass": false,
+        "status": "failed",
+        "providerAck": true,
+        "createdAt": "2026-11-06T22:23:33.920Z",
+        "questionCount": null,
+        "correctCount": null,
+        "validUntil": null,
+        "id": "attempt-f2bf8aa25dc951b05daf542ccb71",
+        "feedbackCount": 0,
+        "updateTime": "2026-11-06T22:23:34.036334Z"
+      }
+    ]
+  },
+  "controlScopeReason": "RELEASE_COMPOSITION_FAILURE: existing pending-successor guard only accepts Hosting-only predecessors; add exact paired materialization predecessor using immutable RUN2246 receipt and same identity checks. No alternate candidate or deployment lane.",
+  "preservedUserWorkReceipt": {
+    "provenance": "USER_PROVIDED_WORK_RECEIPT",
+    "D07AdminPdfOctoberNovember": "PASS_READABLE_PAGE_1_OF_7",
+    "rootIndependentlyViewedThoseScreenshots": false,
+    "resourceId": "res-1olqhkg",
+    "version": 1,
+    "examOrQuestionnaireWritesInWorkReceipt": 0
+  },
+  "testsRequired": [
+    "HR period with zero optional metadata docs: cross-period attempt ACK, source revision and one write",
+    "exact replay zero extra writes",
+    "unknown/mismatched/ambiguous/unavailable authority fail closed",
+    "practice HR period read only",
+    "generic monthly and nonmonthly period keys",
+    "paired-predecessor control preserves immutable receipt and rejects tampering"
+  ],
+  "production": false,
+  "hrWrites": 0,
+  "dataMigration": false,
+  "reimport": false,
+  "newCandidate": false,
+  "newWorkflow": false,
+  "writer": "root",
+  "sourceTests": {
+    "pass": 48,
+    "fail": 0,
+    "skipped": 0,
+    "logSha256": "ca76e4dd511d39a12a0a2f86a614bf94fff70ca237982a9f389238fdeb429d01"
+  }
+}

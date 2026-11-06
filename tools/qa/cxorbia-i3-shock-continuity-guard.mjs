@@ -23,11 +23,28 @@ export function validatePendingDevSuccessor({descriptor:d,pointer:p,matrix:m,git
       !gitAncestor(pending.predecessorProductSourceSha,pending.sourceSha)||pending.predecessorProductSourceSha===pending.sourceSha||
       pending.devPublished!==false||pending.production!==false||pending.rulesDeploys!==0||pending.storageRulesDeploys!==0||
       m.productSource?.authorityState!=='SOURCE_ONLY_PROVEN_PENDING_RUNTIME_AND_HOSTING_DEV')return {present:true,pass:false};
-    const hosting=d.currentHostingOnlyDevMaterialization||{},seal=d.postDeployRunSeal||{};
-    if(pending.predecessorProductSourceSha!==hosting.sourceSha||
-      JSON.stringify(pending.servingHosting)!==JSON.stringify(hosting)||
-      JSON.stringify(pending.servingRuntimeSeal)!==JSON.stringify(seal)||seal.mode!=='PREDECESSOR_SERVING_PENDING_SOURCE'||
-      !hosting.receiptPath||gitBlob(hosting.receiptPath)!==hosting.receiptBlob)return {present:true,pass:false};
+    const hosting=d.currentHostingOnlyDevMaterialization,seal=d.postDeployRunSeal||{};
+    if(JSON.stringify(pending.servingRuntimeSeal)!==JSON.stringify(seal)||
+      seal.mode!=='PREDECESSOR_SERVING_PENDING_SOURCE')return {present:true,pass:false};
+    if(hosting){
+      if(pending.servingPairedMaterialization||pending.predecessorProductSourceSha!==hosting.sourceSha||
+        JSON.stringify(pending.servingHosting)!==JSON.stringify(hosting)||
+        !hosting.receiptPath||gitBlob(hosting.receiptPath)!==hosting.receiptBlob)return {present:true,pass:false};
+    }else{
+      const paired=d.currentMaterialization;
+      if(p.currentHostingOnlyDevMaterialization||pending.servingHosting||!paired||
+        JSON.stringify(seal)!==JSON.stringify(p.postDeployRunSeal)||
+        JSON.stringify(paired)!==JSON.stringify(p.currentDevMaterialization)||
+        JSON.stringify(pending.servingPairedMaterialization)!==JSON.stringify(paired)||
+        pending.predecessorProductSourceSha!==paired.sourceSha||
+        paired.materializationReceiptPath!==seal.receiptPath||
+        !seal.receiptPath||gitBlob(seal.receiptPath)!==seal.receiptBlob)return {present:true,pass:false};
+      const receipt=JSON.parse(gitRead(['show','HEAD:'+seal.receiptPath]));
+      if(receipt.source?.sha!==paired.sourceSha||receipt.source?.tree!==paired.sourceTree||
+        JSON.stringify(receipt.materialization)!==JSON.stringify(paired)||paired.production!==false||
+        ['sourceSha','sourceTree','runId','runNumber','runtimeRevision','runtimeDigest','hostingVersion','hostingRelease','artifactDigest']
+          .some(key=>!paired[key]||paired[key]!==seal[key]))return {present:true,pass:false};
+    }
     if(!pending.proofReceiptPath||gitBlob(pending.proofReceiptPath)!==pending.proofReceiptBlob)return {present:true,pass:false};
     const proof=JSON.parse(gitRead(['show','HEAD:'+pending.proofReceiptPath]));
     for(const field of ['sourceSha','sourceTree','predecessorProductSourceSha','sourceTestsPass','sourceTestsFail','allowedProductFiles','allowedTestFiles'])

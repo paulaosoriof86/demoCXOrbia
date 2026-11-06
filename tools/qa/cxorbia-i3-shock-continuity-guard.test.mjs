@@ -294,3 +294,35 @@ test('runtime/Hosting pending transition rejects tree, ancestry, committed proof
   assert.match(validateShockContinuity(a).failures.join(' '),/PENDING_DEV_SUCCESSOR_UNPROVEN/);
  }
 });
+
+const withPairedPendingSuccessor=()=>{
+ const a=withPendingRuntimeHostingSuccessor();
+ delete a.descriptor.currentHostingOnlyDevMaterialization;delete a.pointer.currentHostingOnlyDevMaterialization;
+ const paired={...a.pointer.currentDevMaterialization,runId:123,runNumber:12,artifactDigest:'sha256:evidence',production:false,materializationReceiptPath:'paired.json'};
+ a.descriptor.currentMaterialization=structuredClone(paired);a.pointer.currentDevMaterialization=structuredClone(paired);
+ const seal={...paired,mode:'PREDECESSOR_SERVING_PENDING_SOURCE',receiptPath:'paired.json',receiptBlob:'paired-blob'};
+ a.descriptor.postDeployRunSeal=structuredClone(seal);a.pointer.postDeployRunSeal=structuredClone(seal);
+ for(const x of [a.descriptor,a.pointer]){
+  delete x.pendingDevSuccessor.servingHosting;
+  x.pendingDevSuccessor.servingPairedMaterialization=structuredClone(paired);
+  x.pendingDevSuccessor.servingRuntimeSeal=structuredClone(seal);
+ }
+ const beforeRead=a.gitRead,beforeBlob=a.gitBlob;
+ a.gitRead=args=>args[1]==='HEAD:paired.json'?JSON.stringify({source:{sha:paired.sourceSha,tree:paired.sourceTree},materialization:paired}):beforeRead(args);
+ a.gitBlob=file=>file==='paired.json'?'paired-blob':beforeBlob(file);
+ return a;
+};
+test('VRM313: a proven paired predecessor retains its exact materialization receipt through the pending source transition',()=>{
+ assert.equal(validateShockContinuity(withPairedPendingSuccessor()).pass,true);
+});
+test('VRM313: paired predecessor source, artifact, runtime, hosting and receipt cannot be fabricated',()=>{
+ for(const mutate of [
+  a=>{a.pointer.currentHostingOnlyDevMaterialization={sourceSha:'source'};},
+  a=>{a.pointer.currentDevMaterialization.sourceSha='foreign';},
+  a=>{a.descriptor.pendingDevSuccessor.servingPairedMaterialization.runtimeDigest='foreign';a.pointer.pendingDevSuccessor=structuredClone(a.descriptor.pendingDevSuccessor);},
+  a=>{const before=a.gitBlob;a.gitBlob=file=>file==='paired.json'?'foreign':before(file);},
+  a=>{const before=a.gitRead;a.gitRead=args=>args[1]==='HEAD:paired.json'?JSON.stringify({source:{sha:'source',tree:'tree'},materialization:{...a.descriptor.currentMaterialization,hostingVersion:'foreign'}}):before(args);},
+  a=>{a.descriptor.postDeployRunSeal.runId=999;a.descriptor.pendingDevSuccessor.servingRuntimeSeal.runId=999;a.pointer.pendingDevSuccessor=structuredClone(a.descriptor.pendingDevSuccessor);},
+  a=>{a.descriptor.currentMaterialization.materializationReceiptPath='other.json';a.pointer.currentDevMaterialization.materializationReceiptPath='other.json';a.descriptor.pendingDevSuccessor.servingPairedMaterialization.materializationReceiptPath='other.json';a.pointer.pendingDevSuccessor=structuredClone(a.descriptor.pendingDevSuccessor);}
+ ]){const a=withPairedPendingSuccessor();mutate(a);assert.match(validateShockContinuity(a).failures.join(' '),/PENDING_DEV_SUCCESSOR_UNPROVEN/);}
+});
