@@ -1,0 +1,118 @@
+{
+  "schemaVersion": "cxorbia.i3.chrome-real-admin-crossmodule-readback.v1",
+  "observedAt": "2026-11-06",
+  "evidenceKind": "LIVE_CHROME_EXTENSION_AUTHENTICATED_ADMIN_DEV_UI_READONLY",
+  "scope": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "currentControlHeadBeforeEvidence": "6853a362dca8d830203edae281e6a39903f147bb",
+    "productSourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
+    "devHost": "cxorbia-backend-dev.web.app",
+    "route": "/index-backend-dev.html",
+    "projectId": "cinepolis",
+    "role": "Admin",
+    "productionChanged": false
+  },
+  "currentDevBrowserResults": {
+    "chromeConnection": "PASS_READ_AND_NAVIGATE_REAL_ADMIN_UI",
+    "october2026": {
+      "hrPublishedRevision": "32d9416f76ba",
+      "hrPublishedRows": 44,
+      "visitRows": 44,
+      "realizedVisits": 43,
+      "reportingNumerator": 43,
+      "reportingDenominator": 44,
+      "reportingPercentRounded": 98,
+      "certification": {
+        "bankCount": 2,
+        "publishedBankCount": 1,
+        "pendingReviewBankCount": 1,
+        "publishedBankQuestionCount": 8,
+        "previousHistoricalEvidenceCount": 40,
+        "previousHistoricalApprovedCount": 38,
+        "shoppersLinked": 14,
+        "minimumScorePercent": 80
+      }
+    },
+    "november2026": {
+      "hrPublishedRevision": "32d9416f76ba",
+      "hrPublishedRows": 44,
+      "visitRows": 44,
+      "dashboardTotalVisits": 44,
+      "dashboardCountryVisits": {
+        "GT": 34,
+        "HN": 10
+      },
+      "assigned": 26,
+      "unassigned": 18,
+      "available": 17,
+      "outOfRange": 1,
+      "scheduledWithDate": 4,
+      "assignedWithoutDate": 22,
+      "realized": 0,
+      "reportingNumerator": 0,
+      "reportingDenominator": 44,
+      "reportingPercentRounded": 0,
+      "postulationsPending": 0,
+      "postulationsActiveAssignments": 26,
+      "postulationsActiveSchedulings": 4,
+      "reservationsDistinctUniverse": {
+        "requests": 0,
+        "matched": 0,
+        "assignedFromReservations": 0,
+        "note": "NOT_THE_SAME_UNIVERSE_AS_26_HR_ASSIGNMENTS"
+      }
+    },
+    "shoppersProject": {
+      "visibleProjectPopulation": 194,
+      "activeInSixMonths": 89,
+      "inactive": 105,
+      "profilesFlaggedForReview": 10,
+      "technicalIdentityReviewKeysDisplayed": 170,
+      "technicalKeysAreNotPersons": true,
+      "stivenAdminHistoricalVisits": 10,
+      "julissaAdminHistoricalVisits": 10
+    },
+    "hrSourceSurface": {
+      "hrPublishedScreenExplicitlyStatesNoFreshProviderReadOnOpen": true,
+      "publishedRevision": "32d9416f76ba",
+      "sourceConfigUiStatus": "PENDIENTE_DE_CONEXION",
+      "sourceConfigUiValidationCode": "backend_endpoint_missing",
+      "platformSourceOverview": "CONECTADO",
+      "actualIndependentProviderFreshnessFromThisBrowser": "NOT_VERIFIED",
+      "priorProviderG05A05LiveParity": "CARRIED_FORWARD_ALREADY_ACCEPTED_NOT_RERUN",
+      "interpretation": "UI_SOURCE_CONFIGURATION_STATE_MAY_BE_NONAUTHORITATIVE_OR_STALE_RELATIVE_TO_BACKEND; OWNER_SPECIFIC_RECONCILIATION_NEEDED; NO_TRUE_FUNCTIONAL_DEFECT_ASSERTED"
+    }
+  },
+  "existingD06SecurityGuard": {
+    "source": "backend/runtime/hr-live-service/certification-runtime.mjs",
+    "sourceBlob": "8e02709cc8414afd9087cfa661fd03654d5b01bf",
+    "qaOnlyShopperAttempt": "PROHIBITED_BY_DESIGN_CERT_BANK_AUDIENCE_MISMATCH",
+    "previouslySuggestedQaOnlyShopperAttempt": "SUPERSEDED_UNSAFE_NOT_EXECUTED",
+    "realShopperPositiveAttempt": "NOT_RUN_REQUIRES_AUTHORIZED_ACTOR_AND_DURABLE_WRITE_SCOPE"
+  },
+  "existingAcceptedEvidencePreserved": {
+    "identityCohort": "83/83_ACK_PLUS_TWO_APPROVED_MERGES",
+    "g05A05": "EXTERNAL_HR_PARITY_PASS_CARRIED_NO_RERUN",
+    "financeC04C05": "13_OF_13_PROVIDER_ACK_READBACK_PASS_CARRIED_NO_RERUN",
+    "d05": "15_OF_15_QA_ADMIN_REAL_EDITOR_SAVE_AND_RELOAD_PASS_42277757800",
+    "shopperStiven": "10_OF_10_ADMIN_SHOPPER_CROSS_PERIOD_E2E_PREVIOUSLY_PASS",
+    "modulesFullyMatched": 5,
+    "modulesTotal": 21
+  },
+  "conclusion": {
+    "decision": "PASS_SCOPED_REAL_CHROME_ADMIN_CROSSMODULE_READ_ONLY_E2E",
+    "scopeHonesty": "SAME_PUBLISHED_HR_SNAPSHOT_CROSS_UI_CONSISTENCY_NOT_INDEPENDENT_FRESH_GOOGLE_SHEETS_PROOF",
+    "newlyFoundTrueFunctionalDefects": 0,
+    "newlyCertifiedWholeDomains": 0,
+    "wholeDomainsMatch": 5,
+    "nextExact": "OWNER_SCOPED_HR_SOURCE_UI_VS_BACKEND_STATUS_RECONCILIATION_AND_REAL_SHOPPER_D06_E2E_ONLY_WITH_SCOPED_DURABLE_ATTEMPT_AUTHORIZATION",
+    "iteration": "I3",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": "DO_NOT_TOUCH",
+    "i4Authorized": false,
+    "browserWrites": 0,
+    "providerWrites": 0
+  }
+}
