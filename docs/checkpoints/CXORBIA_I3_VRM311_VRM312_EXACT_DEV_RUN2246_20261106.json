@@ -1,0 +1,338 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm311-vrm312.exact-dev-run2246.v1",
+  "observedAt": "2026-11-06T23:03:54.836033+00:00",
+  "iteration": "I3",
+  "state": "HOLD",
+  "decision": "PASS_EXACT_DEV_AND_PROJECT_RESOURCE_READBACK_PENDING_CHROME_D06_D07_HUMAN",
+  "source": {
+    "sha": "439a688be58b23c93ac4e99a91da78b4c3cf81fa",
+    "tree": "905f71d394033f3363fefd8221127c6fe0145d8c"
+  },
+  "materialization": {
+    "builds": 1,
+    "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
+    "hostingDeploys": 1,
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794005714172000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/7719a1e904bd33fd",
+    "hrRevision": "32d9416f76ba00d1b766ab8b4276ef74827b62f3c200ef704ba40a511a478b68",
+    "production": false,
+    "runtimeDeploys": 1,
+    "runtimeDigest": "sha256:b315e404b05c409b4904ddff41f0992652cee7e19473e75f618a155bed9ed767",
+    "runtimeRevision": "cxorbia-live-hr-dev-00353-jzc",
+    "scenarioDimensionsProven": true,
+    "sourceSha": "439a688be58b23c93ac4e99a91da78b4c3cf81fa",
+    "sourceTree": "905f71d394033f3363fefd8221127c6fe0145d8c",
+    "storageRulesDeploys": 0,
+    "state": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
+    "runId": 42307799172,
+    "runNumber": 2246,
+    "jobId": 128201670615,
+    "artifactId": 13546793809,
+    "artifactDigest": "sha256:e08c2f93dc5017ad00a67d801ceef181d07943e93f596dd9866fbb230d3bf5d9",
+    "sourceArtifactDigest": "sha256:e08c2f93dc5017ad00a67d801ceef181d07943e93f596dd9866fbb230d3bf5d9",
+    "artifactDigestType": "GITHUB_ACTIONS_EVIDENCE_ZIP_SHA256",
+    "artifactZipSha256": "e08c2f93dc5017ad00a67d801ceef181d07943e93f596dd9866fbb230d3bf5d9",
+    "runtimeImageArtifactDigest": "sha256:b315e404b05c409b4904ddff41f0992652cee7e19473e75f618a155bed9ed767",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
+    "firestoreRulesetEvidence": "NO_RULES_DEPLOY_RUN2246_PREDECESSOR_RULESET_RETAINED_NOT_NEW_RULES_READBACK",
+    "firestoreRulesDeploys": 0,
+    "hrWrites": 0,
+    "runtimeTrafficPercent": 100,
+    "controlHeadAtDeploy": "2d92a9dd04cc0f1ec4baf30e4a2a08ca4eccca3f",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM311_VRM312_EXACT_DEV_RUN2246_20261106.json",
+    "sourceIdentityVerified": true,
+    "runtimeSourceVerified": true,
+    "fullTaskClosed": false,
+    "humanAcceptance": "PENDING"
+  },
+  "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/42307799172",
+  "jobUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/42307799172/job/128201670615",
+  "artifact": {
+    "id": 13546793809,
+    "name": "cxorbia-vrm154-156-dev-materialization-42307799172",
+    "sizeBytes": 4286486,
+    "sha256": "e08c2f93dc5017ad00a67d801ceef181d07943e93f596dd9866fbb230d3bf5d9",
+    "digestType": "GITHUB_ACTIONS_EVIDENCE_ZIP_SHA256",
+    "apiDigestEqualsDownloadedZip": true,
+    "url": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/42307799172/artifacts/13546793809"
+  },
+  "runtimeProof": {
+    "latestCreated": "cxorbia-live-hr-dev-00353-jzc",
+    "latestReady": "cxorbia-live-hr-dev-00353-jzc",
+    "traffic": [
+      {
+        "revisionName": "cxorbia-live-hr-dev-00329-xac",
+        "percent": 0,
+        "latestRevision": false
+      },
+      {
+        "revisionName": "cxorbia-live-hr-dev-00330-fim",
+        "percent": 0,
+        "latestRevision": false
+      },
+      {
+        "revisionName": "cxorbia-live-hr-dev-00353-jzc",
+        "percent": 100,
+        "latestRevision": true
+      }
+    ],
+    "activePercent": 100,
+    "templateImage": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-vrm154-156-439a688be58b-42307799172",
+    "revisionImage": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:b315e404b05c409b4904ddff41f0992652cee7e19473e75f618a155bed9ed767",
+    "revisionDigest": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:b315e404b05c409b4904ddff41f0992652cee7e19473e75f618a155bed9ed767",
+    "revisionReady": true,
+    "sourceTagMatchesBuild": true
+  },
+  "buildProof": {
+    "buildId": "f8a04f15-a5e4-4b79-92c4-2676fb821612",
+    "status": "SUCCESS",
+    "imageTag": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-vrm154-156-439a688be58b-42307799172",
+    "sourceSha": "439a688be58b23c93ac4e99a91da78b4c3cf81fa",
+    "sourceTree": "905f71d394033f3363fefd8221127c6fe0145d8c",
+    "builds": 1
+  },
+  "hostingProof": {
+    "version": "sites/cxorbia-backend-dev/versions/7719a1e904bd33fd",
+    "status": "FINALIZED",
+    "finalizeTime": "2026-11-06T22:55:14.481922Z",
+    "release": "sites/cxorbia-backend-dev/channels/live/releases/1794005714172000"
+  },
+  "health": {
+    "ok": true,
+    "hrWrites": false,
+    "production": false
+  },
+  "hr": {
+    "ok": true,
+    "revision": "32d9416f76ba00d1b766ab8b4276ef74827b62f3c200ef704ba40a511a478b68",
+    "revisionStable": true,
+    "sourceSafe": true,
+    "hrWrites": false,
+    "production": false
+  },
+  "sourceProof": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM311_VRM312_SOURCE_PROOF_20261106.json",
+    "gitBlob": "0b26e88a9d22862211ce6bd0df8d515f66f95cf6",
+    "pass": 77,
+    "fail": 0,
+    "skip": 0
+  },
+  "servedAssetsReadback": {
+    "observedAt": "2026-11-06T22:55:36.357127+00:00",
+    "sourceSha": "439a688be58b23c93ac4e99a91da78b4c3cf81fa",
+    "runId": 42307799172,
+    "assets": [
+      {
+        "origin": "https://cxorbia-backend-dev.web.app",
+        "path": "core/backend-certifications.js",
+        "bytes": 10754,
+        "sourceSha256": "024be245be7f090e27d7a1b5febf7acfa3e20d66ec648fba09327ff115f21206",
+        "servedSha256": "024be245be7f090e27d7a1b5febf7acfa3e20d66ec648fba09327ff115f21206",
+        "match": true
+      },
+      {
+        "origin": "https://cxorbia-backend-dev.web.app",
+        "path": "core/backend-resources.js",
+        "bytes": 27126,
+        "sourceSha256": "df9b45dec8811292fdfa1743095d7afceeb1bb8117afad8f1d9461c067843623",
+        "servedSha256": "df9b45dec8811292fdfa1743095d7afceeb1bb8117afad8f1d9461c067843623",
+        "match": true
+      },
+      {
+        "origin": "https://cxorbia-backend-dev.web.app",
+        "path": "modules/cert.js",
+        "bytes": 67481,
+        "sourceSha256": "3f4cb6d2f096fc5172a0731d9303fe3b76a9b6a72c818980a0c7e6dacd38f833",
+        "servedSha256": "3f4cb6d2f096fc5172a0731d9303fe3b76a9b6a72c818980a0c7e6dacd38f833",
+        "match": true
+      },
+      {
+        "origin": "https://cxorbia-backend-dev.firebaseapp.com",
+        "path": "core/backend-certifications.js",
+        "bytes": 10754,
+        "sourceSha256": "024be245be7f090e27d7a1b5febf7acfa3e20d66ec648fba09327ff115f21206",
+        "servedSha256": "024be245be7f090e27d7a1b5febf7acfa3e20d66ec648fba09327ff115f21206",
+        "match": true
+      },
+      {
+        "origin": "https://cxorbia-backend-dev.firebaseapp.com",
+        "path": "core/backend-resources.js",
+        "bytes": 27126,
+        "sourceSha256": "df9b45dec8811292fdfa1743095d7afceeb1bb8117afad8f1d9461c067843623",
+        "servedSha256": "df9b45dec8811292fdfa1743095d7afceeb1bb8117afad8f1d9461c067843623",
+        "match": true
+      },
+      {
+        "origin": "https://cxorbia-backend-dev.firebaseapp.com",
+        "path": "modules/cert.js",
+        "bytes": 67481,
+        "sourceSha256": "3f4cb6d2f096fc5172a0731d9303fe3b76a9b6a72c818980a0c7e6dacd38f833",
+        "servedSha256": "3f4cb6d2f096fc5172a0731d9303fe3b76a9b6a72c818980a0c7e6dacd38f833",
+        "match": true
+      }
+    ],
+    "pass": true,
+    "productionAccessed": false
+  },
+  "authenticatedCrossPeriodResources": {
+    "observedAt": "2026-11-06T23:01:16.863139+00:00",
+    "scope": "DEV_AUTHENTICATED_SHOPPER_PROJECT_RESOURCE_PROJECTION_READ_ONLY",
+    "sourceSha": "439a688be58b23c93ac4e99a91da78b4c3cf81fa",
+    "runId": 42307799172,
+    "reads": [
+      {
+        "requestedPeriod": "cinepolis-2026-10",
+        "providerAck": true,
+        "count": 2,
+        "items": [
+          {
+            "id": "certbank-cinepolis-cinepolis-2026-10",
+            "resourceType": "certification_bank",
+            "projectId": "cinepolis",
+            "originalPeriodId": "cinepolis-2026-10",
+            "version": 2,
+            "bankState": "published",
+            "contentRevision": "78fbcc32e1ca10eb9328ae546669a91611d9e12b4483cb4c55a47e716ba202b3",
+            "questions": 8,
+            "publicQuestionsOnly": true
+          },
+          {
+            "id": "res-1olqhkg",
+            "resourceType": "project_resource",
+            "projectId": "cinepolis",
+            "originalPeriodId": "cinepolis-2026-10",
+            "version": 1,
+            "bankState": null,
+            "contentRevision": null,
+            "questions": 0,
+            "publicQuestionsOnly": true,
+            "originalStoragePathSha256": "7dd0565408e08a01d316b654cb0ffe9167327d3ed88ab77f16392c7bb45fa435"
+          }
+        ]
+      },
+      {
+        "requestedPeriod": "cinepolis-2026-11",
+        "providerAck": true,
+        "count": 2,
+        "items": [
+          {
+            "id": "certbank-cinepolis-cinepolis-2026-10",
+            "resourceType": "certification_bank",
+            "projectId": "cinepolis",
+            "originalPeriodId": "cinepolis-2026-10",
+            "version": 2,
+            "bankState": "published",
+            "contentRevision": "78fbcc32e1ca10eb9328ae546669a91611d9e12b4483cb4c55a47e716ba202b3",
+            "questions": 8,
+            "publicQuestionsOnly": true
+          },
+          {
+            "id": "res-1olqhkg",
+            "resourceType": "project_resource",
+            "projectId": "cinepolis",
+            "originalPeriodId": "cinepolis-2026-10",
+            "version": 1,
+            "bankState": null,
+            "contentRevision": null,
+            "questions": 0,
+            "publicQuestionsOnly": true,
+            "originalStoragePathSha256": "7dd0565408e08a01d316b654cb0ffe9167327d3ed88ab77f16392c7bb45fa435"
+          }
+        ]
+      }
+    ],
+    "identicalProjectResourceIdsAndVersions": true,
+    "noDraftBankExposed": true,
+    "production": false
+  },
+  "authenticatedCrossPeriodPdfRead": {
+    "observedAt": "2026-11-06T23:02:25.248410+00:00",
+    "scope": "DEV_AUTHENTICATED_STORAGE_READ_FROM_NOVEMBER_PROJECT_RESOURCE_PROJECTION",
+    "resourceId": "res-1olqhkg",
+    "requestedPeriod": "cinepolis-2026-11",
+    "originalPeriodId": "cinepolis-2026-10",
+    "storagePathSha256": "7dd0565408e08a01d316b654cb0ffe9167327d3ed88ab77f16392c7bb45fa435",
+    "httpStatus": 200,
+    "contentType": "application/pdf",
+    "bytes": 162335,
+    "pdfMagicValid": true,
+    "pdfSha256": "3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454",
+    "providerWrites": 0,
+    "browserViewerVerified": false,
+    "production": false
+  },
+  "originalAttemptPreservedAfterDeploy": {
+    "scope": "DEV_SAME_SHOPPER_OWN_PROJECT_READ_ONLY",
+    "count": 1,
+    "attempts": [
+      {
+        "tenantId": "tya",
+        "projectId": "cinepolis",
+        "periodId": "cinepolis-2026-10",
+        "bankResourceId": "certbank-cinepolis-cinepolis-2026-10",
+        "bankPeriodId": null,
+        "contentRevision": "78fbcc32e1ca10eb9328ae546669a91611d9e12b4483cb4c55a47e716ba202b3",
+        "score": 0,
+        "gate": 80,
+        "pass": false,
+        "status": "failed",
+        "providerAck": true,
+        "createdAt": "2026-11-06T22:23:33.920Z",
+        "questionCount": null,
+        "correctCount": null,
+        "validUntil": null,
+        "id": "attempt-f2bf8aa25dc951b05daf542ccb71",
+        "feedbackCount": 0,
+        "updateTime": "2026-11-06T22:23:34.036334Z"
+      }
+    ]
+  },
+  "browserReadback": {
+    "state": "PENDING_ENVIRONMENT_FAILURE",
+    "classification": "ENVIRONMENT_FAILURE",
+    "observed": "Connected Chrome pre-deploy Admin and Stiven pages read successfully; post-deploy reload/read timed out at the Browser MCP connection. Subsequent read-only state requests did not return and were stopped. No new exam submission was performed after deployment.",
+    "browser": "Chrome extension",
+    "preDeployRealAttemptId": "attempt-f2bf8aa25dc951b05daf542ccb71",
+    "newFailedAttempt": false,
+    "newPassedAttempt": false,
+    "postDeployVisualAcceptance": false,
+    "validPerformanceMeasurement": false,
+    "pending": [
+      "failed and passed exam feedback in real Chrome",
+      "reload/new session/period change history and eligibility",
+      "Admin bank selector and project resource viewer",
+      "B10 eligible OCT Miraflores questionnaire open",
+      "A06 cold/warm operational-load observation"
+    ]
+  },
+  "userDecision": {
+    "date": "2026-11-06",
+    "rule": "Project certification banks, valid certifications, attempt history and project resources persist across periods. Keep original IDs and resource storage location. Only explicit expiry or durable recertification request changes valid eligibility.",
+    "deletions": 0,
+    "monthlyCopies": 0,
+    "reimports": 0
+  },
+  "preservedEvidence": {
+    "wholeModuleMatches": 5,
+    "wholeModuleTotal": 21,
+    "approvedIdentityCohortGroups": 83,
+    "approvedAdditionalIdentityGroups": 2,
+    "hrOperationalVisits": 113,
+    "financeFocalChecks": 13,
+    "d05EditorQuestions": 15,
+    "recertificationProviderProof": "docs/checkpoints/CXORBIA_I3_RUN2182_STIVEN_PROVIDER_AND_FULL_E2E_20261105.json",
+    "real15QuestionBankAcceptance": "PENDING_SEPARATE_FROM_PUBLISHED8_QUESTION_EXAM"
+  },
+  "productionCheck": {
+    "productionWrites": 0,
+    "newLegacyReadback": "NOT_AVAILABLE_AUTOMATIC_APPROVAL_REVIEW_REJECTED_PRODUCTION_LEGACY_GET_AS_DO_NOT_TOUCH_UNTIL_I4",
+    "retryOrWorkaroundPerformed": false,
+    "productionAuthorization": false
+  },
+  "nextExactAction": "I3 HOLD: source439a688be58b23c93ac4e99a91da78b4c3cf81fa exact runtime+Hosting DEV RUN42307799172 #2246,100%traffic,6/6 changed assets exact. FIRST restore connected Chrome readback after MCP request timeout, then complete D06 real published8-question failed/pass ACK+feedback/reload/new session and common eligibility Certificacion/Mi Dia/Mis Visitas; verify D07 PDF viewer OCT/NOV using same original resource. Read-only provider projection already proves identical bank/resource IDs and versions across OCT/NOV, PDF200 authenticated, original attempt preserved1/1. Then B10 existing Stiven OCT C.Miraflores Pending questionnaire open only; A06/VRM134 actual cold/warm load measurement. Preserve 83/83 identity groups+2 approved,113/113 HR,13/13 finanzas,D05editor15/15,5/21 MATCH; keep independent G03 historical HR finanzas payment evidence and E04/F09/D07 remaining clauses in parallel. No new source/build/deploy required for these checks. Gate20/21 HOLD, I4 authorization absent, production DO_NOT_TOUCH.",
+  "fullTaskClosed": false,
+  "humanAcceptance": "PENDING",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "production": false
+}
