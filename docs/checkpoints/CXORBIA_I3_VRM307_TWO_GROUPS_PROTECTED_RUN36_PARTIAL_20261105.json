@@ -38,6 +38,18 @@
     "providerErrorCode": "SHOPPER_IDENTITY_EXTERNAL_HR_ANCHOR_NOT_PROFILE_FREE",
     "providerWrites": 0,
     "idempotentReplays": 0,
+    "protectedAnchorRootCause": {
+      "independentReadbackRunId": 42134519534,
+      "artifactId": 13464009226,
+      "hrSourceIds": 2,
+      "alreadyMaterializedHistoricalProfiles": 2,
+      "historicalProfilesState": "superseded_exact_alias",
+      "country": "HN",
+      "sameTenantProject": true,
+      "crosswalkTargetsInsideApprovedGroup": true,
+      "activeAuthMembersOnHrAnchors": 0,
+      "classification": "MAPPING_FAILURE_PREVIOUS_HR_ALIAS_WRONGLY_SENT_AS_PROFILE_FREE_ANCHOR"
+    },
     "postAttemptIndependentReadback": {
       "runId": 42134069394,
       "artifactId": 13463339836,
@@ -55,5 +67,5 @@
   "production": false,
   "certifiedModules": 5,
   "totalModules": 21,
-  "nextAction": "Read-only exact graph/receipt/domain census on both groups; no retry of Murga; classify Rocio external-HR anchor before scoped owner fix."
+  "nextAction": "One approved Rocio-only existing-profile-alias protected DEV attempt after zero-write exact HR/tenant/project/keeper preflight; NEVER retry Murga, never reimport HR, never touch production."
 }

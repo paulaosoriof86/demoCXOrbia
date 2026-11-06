@@ -156,6 +156,88 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
+  rocio-previously-materialized-hr-aliases-protected-dev-once:
+    if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-VRM307-ROCIO-MATERIALIZED-HR-ALIAS-PROTECTED-DEV-ONCE-20261106' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      GCLOUD_PROJECT: cxorbia-backend-dev
+      GOOGLE_CLOUD_PROJECT: cxorbia-backend-dev
+      CXORBIA_PRODUCT_SOURCE_SHA: 3a299715ea2d87ae43c0f6415f44bd23b13a1837
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Require unchanged exact DEV product and independent Murga closure
+        run: |
+          set -Eeuo pipefail
+          test "$GITHUB_REF_NAME" = 'recovery/cxorbia-phase-a-20260831'
+          test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
+          test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
+          test "$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = "$CXORBIA_PRODUCT_SOURCE_SHA"
+          test "$(jq -r '.postDeployRunSeal.mode' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = CURRENT_SOURCE_SERVING
+          test "$(jq -r '.postDeployRunSeal.runId' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = 42132045461
+          test "$(git rev-parse "$CXORBIA_PRODUCT_SOURCE_SHA^{tree}")" = "$(jq -r '.productTreeAuthority' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          git diff --quiet "$CXORBIA_PRODUCT_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules
+          jq -e '.gate=="HOLD" and .production==false and .jhennypherMurga.independentPostAttemptReadback.activeMembers==1 and .jhennypherMurga.independentPostAttemptReadback.aliasDomainReferencesRemaining==0' docs/checkpoints/CXORBIA_I3_VRM307_TWO_GROUPS_PROTECTED_RUN36_PARTIAL_20261105.json >/dev/null
+          jq -e '.rocioVilca.postAttemptIndependentReadback.activeMembers==2 and .rocioVilca.postAttemptIndependentReadback.supersededProfiles==0 and .rocioVilca.providerWrites==0 and .rocioVilca.providerAck==false' docs/checkpoints/CXORBIA_I3_VRM307_TWO_GROUPS_PROTECTED_RUN36_PARTIAL_20261105.json >/dev/null
+          node --check firebase/auth-dev-tools/cxorbia-i3-murga-residual-protected-dev-once.mjs
+      - name: Verify existing provider exact alias and keeper credential contracts
+        run: |
+          set -Eeuo pipefail
+          node backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
+          node tools/qa/cxorbia-i3-shopper-name-collision-normalization.test.mjs
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Install exact DEV protected operator tooling
+        run: |
+          set -Eeuo pipefail
+          npm install --prefix firebase/auth-dev-tools --no-save --no-package-lock --ignore-scripts firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          ./firebase/auth-dev-tools/node_modules/.bin/playwright install chromium
+      - name: Independently prove both HR IDs are previously adjudicated profile aliases, zero writes
+        run: |
+          set -Eeuo pipefail
+          CX_I3_RESIDUAL_CASE=ROCIO \
+          CX_I3_RESIDUAL_APPROVAL=PAULA_20261105_ROCIO_VILCA_APPROVED_EXACT_HUMAN_DEV_ONCE \
+          CX_I3_RESIDUAL_PREFLIGHT_ONLY=YES_PAULA_20261106_MATERIALIZED_HR_ALIAS \
+            node firebase/auth-dev-tools/cxorbia-i3-murga-residual-protected-dev-once.mjs
+          jq -e '.decision=="PASS_READONLY_MATERIALIZED_HR_ALIAS_PREFLIGHT" and
+            .providerAck==false and .production==false and .hrWrites==0 and
+            .hrAnchorsRetiredAsExistingAliases==2 and .hrAnchorsProfileFree==0 and
+            .hrSourceIdsApproved==2 and .aliasCount==6 and
+            .domainRowsPlanned.visits==12 and .domainRowsPlanned.liquidations==3 and
+            .domainRowsPlanned.paymentReconciliations==4' \
+            .tmp/cxorbia-i3-rocio-residual-merge/result.json >/dev/null
+          cp .tmp/cxorbia-i3-rocio-residual-merge/result.json .tmp/cxorbia-i3-rocio-residual-merge/preflight.json
+      - name: Apply Rocío only through provider with two zero-write replays and historical readback
+        run: |
+          set -Eeuo pipefail
+          CX_I3_RESIDUAL_CASE=ROCIO \
+          CX_I3_RESIDUAL_APPROVAL=PAULA_20261105_ROCIO_VILCA_APPROVED_EXACT_HUMAN_DEV_ONCE \
+            node firebase/auth-dev-tools/cxorbia-i3-murga-residual-protected-dev-once.mjs
+          jq -e '.decision=="PASS_RESIDUAL_ROCIO_FUSION_AND_NAME_DEV" and
+            .target=="Rocío Vilca" and .keeperLogin=="rocio.vilca" and
+            .hrSourceIdsApproved==2 and .hrAnchorsRetiredAsExistingAliases==2 and .hrAnchorsProfileFree==0 and
+            .production==false and .providerAck==true and .identityConsolidated==true and
+            .idempotentReplays==2 and .keeperLoginPreserved==true and
+            .directAuthWrites==0 and .directFirestoreWrites==0 and .hrWrites==0 and
+            .credentialResets==0 and .deployments==0 and
+            (.approvedRecentSecondarySession==null or .approvedRecentSecondarySession=="rocio.vica.3599") and
+            .readback.providerDomainRowsPreserved==([.domainRowsPlanned[]]|add) and
+            .readback.aliasesRetired==.aliasCount and .readback.canonicalMemberships==1 and
+            .readback.nameMatchesCorrectedHr==true' \
+            .tmp/cxorbia-i3-rocio-residual-merge/result.json >/dev/null
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-rocio-exact-hr-previous-alias-${{ github.run_id }}
+          path: .tmp/cxorbia-i3-rocio-residual-merge/*.json
+          retention-days: 30
+
   approved-14-final-human-confirmed-dev-batch:
     if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-APPROVED-14-FINAL-DEV-ONCE-20261105' }}
     runs-on: ubuntu-24.04

@@ -111,7 +111,26 @@ function plan(state,hr){
   // The independent census sets minimum counts, never substitutes a live read.
   assert(rows.length>=target.minProfiles&&hrRows.length===target.hrCount,'EXACT_APPROVED_HUMAN_GRAPH_UNRESOLVED');
   const hrSourceIds=unique(hrRows.map(sid)),ids=rows.map(([id])=>id),set=new Set([...ids,...hrSourceIds]);
-  assert(hrSourceIds.length===target.hrCount&&hrSourceIds.every(id=>!ids.includes(id)),'EXTERNAL_HR_SOURCE_NOT_UNMATERIALIZED');
+  assert(hrSourceIds.length===target.hrCount&&hrSourceIds.every(id=>!ids.includes(id)),'EXTERNAL_HR_SOURCE_COLLISION_WITH_APPROVED_NAME');
+  // HR source IDs previously adjudicated to another alias can already carry
+  // historical Firestore profiles under a protected/older display name. They
+  // must be retired as *existing profile aliases* (preserving their history),
+  // not sent to the provider as profile-free external HR identity anchors.
+  // Only permit this bridge for the Director-approved exact HR revision and a
+  // prior protected exact alias whose source/country/tenant/crosswalk all agree.
+  const materializedHrSourceIds=hrSourceIds.filter(id=>state.profiles.has(id));
+  const externalHrSourceIds=hrSourceIds.filter(id=>!state.profiles.has(id));
+  for(const id of materializedHrSourceIds){
+    const profile=state.profiles.get(id),cross=state.cross.get(id)||{};
+    const previous=s(profile.supersededByShopperId),linked=s(cross.shopperId||cross.canonicalShopperId);
+    assert(s(profile.sourceType)==='hr_external'&&country(profile)===target.country&&
+      s(profile.tenantId)===TENANT&&arr(profile.projectIds).includes(PROGRAM)&&
+      s(profile.identityState)==='superseded_exact_alias'&&set.has(previous)&&set.has(linked)&&
+      linked===previous&&s(cross.tenantId)===TENANT&&s(cross.sourceType)==='hr_external'&&
+      s(cross.sourceStableKey||id)===id&&
+      !state.members.some(m=>m.active===true&&s(m.shopperId)===id),
+    'MATERIALIZED_HR_ANCHOR_NOT_APPROVED_SAME_HUMAN_ALIAS');
+  }
   for(const id of ids){const target=s(state.cross.get(id)?.shopperId||state.cross.get(id)?.canonicalShopperId);
     assert(!target||set.has(target),'EXTERNAL_CROSSWALK_CONFLICT');}
   const externalLinks=state.links.filter(l=>['active','confirmed','approved','materialized'].includes(s(l.status||l.state).toLowerCase())&&
@@ -129,16 +148,16 @@ function plan(state,hr){
     'KEEPER_LOGIN_CHANGED');
   const canonical=s(keeper.shopperId);
   assert(ids.includes(canonical)&&country(state.profiles.get(canonical))===target.country,'VERIFIED_KEEPER_PROFILE_NOT_CANONICAL_ELIGIBLE');
-  const aliases=ids.filter(id=>id!==canonical).sort();
+  const aliases=unique([...ids.filter(id=>id!==canonical),...materializedHrSourceIds]).sort();
   assert(aliases.length>=1,'VERIFIED_EXACT_PROFILE_ALIASES_MISSING');
-  const owned=domainOwned(state,[...aliases,...hrSourceIds]),counts=Object.fromEntries(owned.map(d=>[d.key,d.rows.length]));
-  const historical=domainOwned(state,[...aliases,...hrSourceIds,canonical]);
+  const owned=domainOwned(state,[...aliases,...externalHrSourceIds]),counts=Object.fromEntries(owned.map(d=>[d.key,d.rows.length]));
+  const historical=domainOwned(state,[...aliases,...externalHrSourceIds,canonical]);
   const historicalCounts=Object.fromEntries(historical.map(d=>[d.key,d.rows.length]));
   const sum=Object.values(historicalCounts).reduce((n,v)=>n+v,0);
   const minimum=Object.values(target.minHistory).reduce((n,x)=>n+x,0);
   assert(sum>=minimum&&Object.entries(target.minHistory).every(([domain,n])=>historicalCounts[domain]>=n),
     'HISTORICAL_DOMAIN_REFERENCES_LOST_BEFORE_WRITE');
-  return {canonical,aliases,hrSourceIds,members,keeper,owned,counts,historicalCounts};
+  return {canonical,aliases,hrSourceIds,materializedHrSourceIds,externalHrSourceIds,members,keeper,owned,counts,historicalCounts};
 }
 async function authPreflight(auth,plan){
   for(const member of plan.members){
@@ -189,9 +208,9 @@ async function execute(plan,hr,operator){
   const visitRows=plan.owned.find(d=>d.key==='visits').rows.map(x=>x.id);
   const reason='paula_confirmed_exact_same_human_'+CASE.toLowerCase()+'_'+target.country.toLowerCase()+'_2026_11_05';
   const key='i3-'+CASE.toLowerCase()+'-residual-once:'+hash([TENANT,PROGRAM,hr.periodId,hr.revision,plan.canonical,
-    plan.keeper.uid,...plan.aliases,...plan.hrSourceIds,...visitRows].join('\0')).slice(0,32);
+    plan.keeper.uid,...plan.aliases,...plan.externalHrSourceIds,...visitRows].join('\0')).slice(0,32);
   const input={canonical:plan.canonical,aliases:plan.aliases,keeper:plan.keeper.shopperId,
-    external:plan.hrSourceIds,revision:hr.revision,approvedName:target.name,
+    external:plan.externalHrSourceIds,revision:hr.revision,approvedName:target.name,
     period:hr.periodId,reason,key,visits:visitRows};
   return await operator.page.evaluate(async input=>{
     const actor=window.CX.backendAuth.context();
@@ -228,8 +247,12 @@ async function verify(db,auth,old,plan,ack,hr){
   const cp=state.profiles.get(canonical)||{};
   assert(cp.shopperId===canonical&&plan.aliases.every(id=>arr(cp.exactAliases).includes(id)),
     'CANONICAL_PROFILE_ALIASES_MISSING');
-  assert(plan.hrSourceIds.every(id=>!state.profiles.has(id)&&s(state.cross.get(id)?.shopperId)===canonical&&
-    arr(cp.exactAliases).includes(id)),'EXTERNAL_HR_SOURCE_CROSSWALK_OR_PROFILE_DUPLICATE');
+  assert(plan.hrSourceIds.every(id=>s(state.cross.get(id)?.shopperId)===canonical&&
+    arr(cp.exactAliases).includes(id))&&
+    plan.externalHrSourceIds.every(id=>!state.profiles.has(id))&&
+    plan.materializedHrSourceIds.every(id=>state.profiles.has(id)&&
+      s(state.profiles.get(id)?.supersededByShopperId)===canonical),
+    'HR_SOURCE_CROSSWALK_OR_APPROVED_PROFILE_ALIAS_NOT_CONSOLIDATED');
   for(const alias of plan.aliases){
     const latest=state.profiles.get(alias)||{},before=old.profiles.get(alias)||{};
     assert(s(latest.supersededByShopperId)===canonical&&
@@ -237,7 +260,7 @@ async function verify(db,auth,old,plan,ack,hr){
     assert(s(state.cross.get(alias)?.shopperId)===canonical,'CROSSWALK_ALIAS_MISMATCH');
   }
   assert(s(state.cross.get(canonical)?.shopperId)===canonical,'CROSSWALK_CANONICAL_MISMATCH');
-  const retiredSourceIds=[...plan.aliases,...plan.hrSourceIds];
+  const retiredSourceIds=unique([...plan.aliases,...plan.externalHrSourceIds]);
   assert(domainOwned(state,retiredSourceIds).every(d=>d.rows.length===0),'HISTORICAL_DOMAIN_ALIAS_REFERENCES');
   for(const domain of plan.owned){
     const final=state.rows.find(x=>x.key===domain.key);
@@ -351,7 +374,13 @@ try{
   const second=await hrRead();assert(second.revision===hr.revision,'HR_CHANGED_DURING_PREFLIGHT');
   result.hrRevisionBefore=hr.revision;result.domainRowsPlanned=approved.counts;
   result.keeperLogin=target.login;result.aliasCount=approved.aliases.length;
+  result.hrSourceIdsApproved=approved.hrSourceIds.length;
+  result.hrAnchorsRetiredAsExistingAliases=approved.materializedHrSourceIds.length;
+  result.hrAnchorsProfileFree=approved.externalHrSourceIds.length;
   result.decision='PREFLIGHT_PASS_PROTECTED_PROVIDER_PENDING';save();
+  if(process.env.CX_I3_RESIDUAL_PREFLIGHT_ONLY==='YES_PAULA_20261106_MATERIALIZED_HR_ALIAS'){
+    result.decision='PASS_READONLY_MATERIALIZED_HR_ALIAS_PREFLIGHT';save();
+  }else{
   const operator=await protectedOperator(auth,hr,state);
   const outcome=await execute(approved,hr,operator);
   result.providerFirstResult={built:outcome.built===true,contractErrors:outcome.built===true?null:outcome.errors||[],
@@ -363,8 +392,8 @@ try{
   }
   const ack=outcome.first;result.providerAck=true;result.identityConsolidated=ack.identityConsolidated===true;
   assert(result.identityConsolidated&&ack.historicalVisitRowsPreserved===true&&
-    ack.exactAliases?.length===approved.aliases.length+approved.hrSourceIds.length&&
-    Number(ack.externalHrSourceLinks||0)===approved.hrSourceIds.length&&
+    ack.exactAliases?.length===approved.aliases.length+approved.externalHrSourceIds.length&&
+    Number(ack.externalHrSourceLinks||0)===approved.externalHrSourceIds.length&&
     Number(ack.authoritativeVisitCount)===approved.counts.visits&&
     Object.entries(approved.counts).every(([domain,count])=>Number(ack.domainWrites?.[domain]||0)===count)&&
     Number(ack.hrWrites||0)===0&&Number(ack.externalWrites||0)===0,'PROVIDER_ACK_CONTENT_UNSAFE');
@@ -376,6 +405,7 @@ try{
     'PASS_RESIDUAL_'+CASE+'_FUSION_AND_NAME_DEV':
     'PASS_RESIDUAL_'+CASE+'_FUSION_PROFILE_NAME_PROJECTION_PENDING';
   await operator.context.close();
+  }
   }
 }catch(e){result.errorCode=s(e?.message||e).replace(/[^A-Z0-9_:-]/gi,'_').slice(0,100);
   if(!result.decision.startsWith('HOLD_PROVIDER_ACK_UNKNOWN'))result.decision='HOLD_STOP_ON_P0_PROOF_OR_WRITE';
