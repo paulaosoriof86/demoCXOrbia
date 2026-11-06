@@ -112,6 +112,32 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
     servedAuthorityMatches &&
     !/a[uú]n\s+NO\s+servid[oa]\s+en\s+DEV/i.test(d.exactNextAction || ''),
     'MAPPING_FAILURE:DEV_HOSTING_REALITY_STALE');
+
+  // A Hosting-only deployment can be newer than the last paired runtime +
+  // Hosting materialization. Keep that paired record intact, but fail closed
+  // if its newer, immutable Hosting receipt is missing or described as source-only.
+  const latestHostingD = d.currentHostingOnlyDevMaterialization || {};
+  const latestHostingP = p.currentHostingOnlyDevMaterialization || {};
+  if (latestHostingD.receiptPath || latestHostingP.receiptPath) {
+    check(Boolean(latestHostingD.receiptPath && latestHostingD.receiptBlob) &&
+      JSON.stringify(latestHostingD) === JSON.stringify(latestHostingP) &&
+      gitBlob(latestHostingD.receiptPath) === latestHostingD.receiptBlob,
+      'MAPPING_FAILURE:ACTIVE_HOSTING_ONLY_RECEIPT_DESYNC');
+    check(latestHostingD.sourceSha === d.productSourceSha &&
+      latestHostingD.sourceTree === d.productTreeAuthority &&
+      latestHostingD.hostingVersion?.startsWith('sites/cxorbia-backend-dev/versions/') &&
+      latestHostingD.runtimeRevision === currentDev.runtimeRevision &&
+      latestHostingD.verifiedServedAssetCount > 0 &&
+      latestHostingD.cloudRunDeploys === 0 &&
+      latestHostingD.firestoreRulesDeploys === 0 &&
+      latestHostingD.productionChanged === false,
+      'RELEASE_COMPOSITION_FAILURE:ACTIVE_HOSTING_ONLY_COMPONENT_DESYNC');
+    const stalePendingDev = /SOURCE_ONLY_PENDING_DEV|PENDING_DEV_MATERIALIZATION/i;
+    check(!stalePendingDev.test(d.status || '') &&
+      !stalePendingDev.test(p.activeShockModuleTruth?.meaning || '') &&
+      !stalePendingDev.test(d.exactNextAction || ''),
+      'MAPPING_FAILURE:STALE_HOSTING_MATERIALIZATION_STATUS');
+  }
   check(p.progressByStageSemantics === 'HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY',
     'MAPPING_FAILURE:STALE_PROGRESS_AS_LIVE');
   check(p.state === 'HOLD' && d.production === 'DO_NOT_TOUCH' && p.production === 'DO_NOT_TOUCH' &&

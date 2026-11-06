@@ -30,6 +30,30 @@ const mk = () => {
   return {descriptor, pointer, matrix, gitBlob};
 };
 
+const withLatestHostingOnlyProof = () => {
+  const a = mk();
+  a.pointer.currentCanonicalCheckpoint = {path:'V247.md',verifiedTotal:83,remaining:0};
+  a.pointer.continuityHandoff = {path:'V247.md'};
+  a.pointer.currentDevMaterialization = {sourceSha:'source',sourceTree:'tree',
+    hostingVersion:'sites/cxorbia-backend-dev/versions/prior',runtimeRevision:'dev-rev',
+    runtimeDigest:'sha256:stable',hostingRelease:'prior-release'};
+  a.descriptor.productTreeAuthority = 'tree';
+  a.descriptor.exactNextAction = 'I3 HOLD 83/83; G03 HR finanzas; Hosting DEV nuevo verificado; 5/21 MATCH';
+  a.pointer.nextExactAction = a.descriptor.exactNextAction;
+  a.descriptor.status = 'HOLD_I3_HOSTING_DEV_PASS_PENDING_ROLE_E2E';
+  a.pointer.activeShockModuleTruth.meaning = 'HOSTING_DEV_VERIFIED_PENDING_E2E';
+  const hosted = {receiptPath:'hosting-proof.json',receiptBlob:'hosting-proof-blob',
+    sourceSha:'source',sourceTree:'tree',
+    hostingVersion:'sites/cxorbia-backend-dev/versions/current',runtimeRevision:'dev-rev',
+    verifiedServedAssetCount:9,cloudRunDeploys:0,firestoreRulesDeploys:0,
+    productionChanged:false};
+  a.descriptor.currentHostingOnlyDevMaterialization = {...hosted};
+  a.pointer.currentHostingOnlyDevMaterialization = {...hosted};
+  const previousBlob = a.gitBlob;
+  a.gitBlob = file => file === 'hosting-proof.json' ? 'hosting-proof-blob' : previousBlob(file);
+  return a;
+};
+
 test('same source, pointers, counts and frozen priority pass', () => {
   assert.equal(validateShockContinuity(mk()).pass, true);
 });
@@ -78,6 +102,28 @@ test('a verified old DEV seal is allowed while a new P0 source awaits materializ
   assert.equal(validateShockContinuity(a).pass,true);
   a.pointer.currentDevMaterialization.sourceSha = 'source';
   assert.match(validateShockContinuity(a).failures.join(' '),/DEV_HOSTING_REALITY_STALE/);
+});
+test('newer Hosting-only receipt is independently pinned while previous paired runtime seal remains intact', () => {
+  assert.equal(validateShockContinuity(withLatestHostingOnlyProof()).pass, true);
+});
+test('a newer Hosting deployment cannot retain stale source-only or pending-materialization status', () => {
+  const a = withLatestHostingOnlyProof();
+  a.descriptor.status = 'HOLD_I3_SOURCE_ONLY_PENDING_DEV_MATERIALIZATION';
+  assert.match(validateShockContinuity(a).failures.join(' '), /STALE_HOSTING_MATERIALIZATION_STATUS/);
+  a.descriptor.status = 'HOLD_I3_HOSTING_DEV_PASS_PENDING_ROLE_E2E';
+  a.pointer.activeShockModuleTruth.meaning = 'SOURCE_ONLY_PENDING_DEV';
+  assert.match(validateShockContinuity(a).failures.join(' '), /STALE_HOSTING_MATERIALIZATION_STATUS/);
+});
+test('a newer Hosting receipt mismatched across descriptor, pointer or provider is not a green control', () => {
+  const a = withLatestHostingOnlyProof();
+  a.pointer.currentHostingOnlyDevMaterialization.hostingVersion = 'sites/cxorbia-backend-dev/versions/wrong';
+  assert.match(validateShockContinuity(a).failures.join(' '), /ACTIVE_HOSTING_ONLY_RECEIPT_DESYNC/);
+  const b = withLatestHostingOnlyProof();
+  b.descriptor.currentHostingOnlyDevMaterialization.sourceSha = 'unproved-source';
+  assert.match(validateShockContinuity(b).failures.join(' '), /ACTIVE_HOSTING_ONLY_COMPONENT_DESYNC/);
+  const c = withLatestHostingOnlyProof();
+  c.pointer.currentHostingOnlyDevMaterialization.productionChanged = true;
+  assert.match(validateShockContinuity(c).failures.join(' '), /ACTIVE_HOSTING_ONLY_RECEIPT_DESYNC/);
 });
 test('V5 current checkpoint cannot claim more fused profiles than the approved cohort', () => {
   const a = mk();
