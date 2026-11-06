@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-evidence-adjudication.no-reopen.20261106.v1",
+  "date": "2026-11-06",
+  "authority": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
+  "state": "HOLD",
+  "iteration": "I3",
+  "sourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
+  "devHostingVersion": "sites/cxorbia-backend-dev/versions/65e8034fac283714",
+  "devReceiptRunId": 42259364657,
+  "modulesMATCH": 5,
+  "modulesTotal": 21,
+  "officialClassificationUnchanged": true,
+  "scope": "CONTROL_ONLY_FOCAL_RECONCILIATION_NOT_FUNCTIONAL_RELEASE",
+  "alreadyProvenDoNotRepeat": [
+    {
+      "task": "Identity 83/83 + 2",
+      "evidence": "RUN42150462459; RUN42154007096; provider ACK, 239 canonical memberships, 773/773 HR assignments",
+      "decision": "CARRY_FORWARD_NO_REMERGE"
+    },
+    {
+      "task": "G05/A05",
+      "evidence": "G05 source 113 PASS; A05 scoped LIVE_E2E_PASS; independent HR 20261106 receipt OCT 44/43 realized/42 questionnaires/33 submitted; NOV 44/26 assigned/18 unassigned",
+      "decision": "CARRY_FORWARD_UNCHANGED_OWNER_NO_GENERAL_RETEST"
+    },
+    {
+      "task": "C04/C05",
+      "evidence": "RUN41124697399 bounded 13/13 provider ACK/readback, two replays 0 writes, exact cleanup 13; independent finance provider not inferred",
+      "decision": "CARRY_FORWARD_FOCAL_PASS"
+    },
+    {
+      "task": "D05 Admin",
+      "evidence": "CXORBIA_I3_D05_NATURAL_ADMIN_QA_VERSIONED_READBACK_20261106.json; synthetic QA version 1 to 2 persisted after reload; RUN42156214884 publish/configure/retire ACK; RUN42156903600 negative 409 no write; original two banks preserved",
+      "decision": "CARRY_FORWARD_PREDECESSOR_4_OPTION_SUCCESS; CURRENT_SOURCE_2_3_OPTION_DELTA_ONLY"
+    },
+    {
+      "task": "D06 Shopper/Mis Visitas",
+      "evidence": "CXORBIA_I3_D06_QA_CLEANUP_SHOPPER_ROLE_PARITY_20261106.json; docs/checkpoints/CXORBIA_I3_D05_D06_POST_HOSTING_BROWSER_READBACK_20261106.json; 10 Stiven visits all periods preserved, current Hosting exact 9/9",
+      "decision": "PASS_FOCAL_CURRENT_SOURCE_NO_RETEST"
+    }
+  ],
+  "remainingTrueGaps": [
+    {
+      "scope": "G03 HR-finanzas historical paid 2026",
+      "cause": "INDEPENDENT_EXTERNAL_PAYMENT_RECEIPT_OR_PROVIDER_ACK_NOT_LOCATED; live HR counts and status already proven",
+      "classification": "EVIDENCE_GAP_NOT_A_NEW_FUNCTIONAL_FAILURE",
+      "next": "Resolve authorized independent payment source or retain 'pendiente/no confirmado' without fabrication. Test only actual discrepancy if observed."
+    },
+    {
+      "scope": "D05 certification 2/3-choice input delta",
+      "cause": "Owner cert.js changed since previous natural UI 4-option positive; editor pads 2/3 inputs to 4 and source tests PASS",
+      "classification": "TARGETED_CURRENT_SOURCE_LIVE_DELTA_E2E_PENDING",
+      "next": "One disposable QA 3-choice bank only if safe, edit fourth choice and explanation/source, provider ACK, reload, cleanup; no real bank changes."
+    },
+    {
+      "scope": "D06 certification Shopper attempt/password",
+      "cause": "Existing Shopper published-only read PASS; attempt write and ordinary password login across current version not fully authenticated",
+      "classification": "TARGETED_E2E_PENDING",
+      "next": "Use existing separate Shopper origin and disposable controlled QA scenario; no real business certification attempt."
+    },
+    {
+      "scope": "Remaining domain coverage",
+      "cause": "13 additional domains lack whole-domain independent human acceptance; some already carry scoped PASS",
+      "classification": "HUMAN_AND_ROLE_EVIDENCE_PENDING_NOT_AUTO_FUNCTIONAL_DEFECT",
+      "next": "Changed-owner/dependency-only tests then cumulative approval; do not re-run unaffected PASS."
+    }
+  ],
+  "preservation": {
+    "production": "DO_NOT_TOUCH",
+    "noNewProduct": true,
+    "noNewBranch": true,
+    "noNewWorkflow": true,
+    "noReimport": true,
+    "noIdentityMerge": true,
+    "productCodeModified": false,
+    "financialWrites": 0,
+    "hrWrites": 0,
+    "realCertificationBankWrites": 0,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false
+  },
+  "nextExactAction": "Adjudicate G03 independent 2026 payment truth vs fail-closed pending, then one D05 2/3-choice scoped QA and D06 safe Shopper attempt; update per-domain evidence without re-opening previous PASS; Gate20/21 only on one immutable artifact after human acceptance."
+}
