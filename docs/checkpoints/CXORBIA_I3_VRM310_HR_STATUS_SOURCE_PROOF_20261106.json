@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm310.hr-status-source-proof.v1",
+  "findingId": "VRM-310",
+  "iteration": "I3",
+  "date": "2026-11-06",
+  "classification": "VISUAL_DEFECT",
+  "severity": "P0",
+  "observed": "Authenticated Admin DEV Fuente de HR displayed legacy endpoint pending while platform source displayed operationally connected, so independent operational source authority was hidden.",
+  "rootCause": "Admin HR registration endpoint state and separate protected operational HR source state were projected into one visual status.",
+  "fix": "Display a separate, fail-closed, project and tenant-scoped read of the protected operational HR authority; keep optional legacy registration endpoint warnings distinct.",
+  "sourceSha": "01d072d7969f3522d3f4e882fff1c42eb426708e",
+  "sourceTree": "8fcc0539d35e5facfaef4b1a428a03444db4c10b",
+  "predecessorServingSourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
+  "ownerPaths": [
+    "app/modules/hr-source.js",
+    "tools/qa/cxorbia-i3-hr-source-operational-readback.test.mjs"
+  ],
+  "sourceTests": {
+    "pass": 14,
+    "fail": 0,
+    "command": "node --test tools/qa/cxorbia-i3-hr-source-operational-readback.test.mjs backend/runtime/hr-live-service/test/cxorbia-hr-source-admin-provider-v1.test.mjs tools/qa/cxorbia-i3-g03-rutas-effective-hr-source-truth.test.mjs"
+  },
+  "state": "SOURCE_PROVEN_PENDING_HOSTING_ONLY_DEV",
+  "liveDevReadback": "NOT_YET_PERFORMED",
+  "performance": "VRM-134 load-time improvements remain unverified in a real new cold load; not claimed resolved.",
+  "moduleTruthPromotions": 0,
+  "production": false,
+  "dataWrites": 0,
+  "newBranches": 0,
+  "resumeLineage": {
+    "interruptedLocalSourceSha": "3279a5f75d7ba7f860b608382837205577124c16",
+    "interruptedLocalControlSha": "19719210ea64992795ee9bc80b630f4c08c2160c",
+    "repositorySourceSha": "01d072d7969f3522d3f4e882fff1c42eb426708e",
+    "exactSourceTreePreserved": "8fcc0539d35e5facfaef4b1a428a03444db4c10b",
+    "branchExpectedParentSha": "19b1447227a3011c7f592d48d7a1719ed46c8b3c",
+    "productContentChangedDuringResume": false
+  }
+}

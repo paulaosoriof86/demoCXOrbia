@@ -6680,10 +6680,9 @@ jobs:
    env:
     SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
     SOURCE_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-    EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00340-zzt
     EVIDENCE: .tmp/i3-current-source-hosting-dev
     PRODUCTION_URL: https://tya-plataforma.web.app/
-    ASSET_FILES: index-backend-dev.html core/backend-firebase.js core/router.js adapters/tya-live-source-refresh-watch-v2.js modules/shoppers.js modules/beneficios.js modules/clientes.js modules/historico.js modules/visitas.js modules/cuestionario-shopper.js core/data.js
+    ASSET_FILES: index-backend-dev.html core/backend-firebase.js core/router.js adapters/tya-live-source-refresh-watch-v2.js modules/hr-source.js modules/shoppers.js modules/beneficios.js modules/clientes.js modules/historico.js modules/visitas.js modules/cuestionario-shopper.js core/data.js
    steps:
    - uses: actions/checkout@v4
      with: {fetch-depth: 0}
@@ -6709,6 +6708,13 @@ jobs:
       test "$(jq -r '.hosting.public' firebase.json)" = app
       test "$(jq -r '.projects.default' .firebaserc)" = "$PROJECT"
       test "$(jq -r '.hosting.rewrites[0].run.serviceId' firebase.json)" = "$SERVICE"
+      # Read the last verified runtime revision from the CURRENT control
+      # authority; an old hardcoded revision would abort safe DEV delivery.
+      EXPECTED_RUNTIME_REVISION="$(jq -r '.currentHostingOnlyDevMaterialization.runtimeRevision // empty' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)"
+      test -n "$EXPECTED_RUNTIME_REVISION"
+      test "$EXPECTED_RUNTIME_REVISION" = "$(jq -r '.currentDevMaterialization.runtimeRevision // empty' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)"
+      echo "EXPECTED_RUNTIME_REVISION=$EXPECTED_RUNTIME_REVISION" >> "$GITHUB_ENV"
+      node --test tools/qa/cxorbia-i3-hr-source-operational-readback.test.mjs backend/runtime/hr-live-service/test/cxorbia-hr-source-admin-provider-v1.test.mjs tools/qa/cxorbia-i3-g03-rutas-effective-hr-source-truth.test.mjs > "$EVIDENCE/hr-source-status-tests.log"
       node --test tools/qa/cxorbia-i3-shopper-identity-review-rail-notice.test.mjs tools/qa/cxorbia-i3-e03-visita-payment-human-state.test.mjs tools/qa/cxorbia-i3-visitas-effective-availability.test.mjs tools/qa/cxorbia-i3-b10-external-provider-routing.test.mjs tools/qa/cxorbia-i3-vrm301-idempotent-visit-detail.test.mjs tools/qa/cxorbia-i3-vrm302-admin-shoppers-modal-binding.test.mjs > "$EVIDENCE/source-tests.log"
       node --test backend/runtime/hr-live-service/test/cxorbia-vrm134-firestore-early-hydration.test.mjs tools/qa/cxorbia-i3-b1-cold-login-parallel-source.test.mjs > "$EVIDENCE/a07-cold-load-tests.log"
       node --test tools/qa/cxorbia-i3-vrm134-a08-watcher-revision-reuse.test.mjs tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs > "$EVIDENCE/a08-watcher-hr-revision-tests.log"
