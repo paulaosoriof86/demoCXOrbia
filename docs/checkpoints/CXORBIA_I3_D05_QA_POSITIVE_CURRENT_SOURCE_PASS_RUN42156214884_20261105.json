@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "cxorbia.i3.d05.qa-positive.current-dev.scoped-evidence.v1",
+  "dateGuatemala": "2026-11-05",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "sourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+  "decision": "PASS_D05_QA_ONLY_PUBLISH_CONFIGURE_RETIRE_ALL_THREE_ACK_AND_READBACK",
+  "scope": "QA_ONLY_BANK_REAL_DEV_RUNTIME_PUBLISH_CONFIGURE_RETIRE_PROVIDER_ACK",
+  "runId": 42156214884,
+  "jobId": 127690878924,
+  "artifactId": 13474353013,
+  "artifactDigest": "sha256:e22e1fc50bfbbc938569e373b5c19415168d946b7576dc2dd71e4bfbc716c555",
+  "stages": [
+    {
+      "action": "publish",
+      "versionBefore": 1,
+      "versionAfter": 2,
+      "httpStatus": 200,
+      "providerAck": true
+    },
+    {
+      "action": "configure",
+      "versionBefore": 2,
+      "versionAfter": 3,
+      "httpStatus": 200,
+      "providerAck": true
+    },
+    {
+      "action": "retire",
+      "versionBefore": 3,
+      "versionAfter": 4,
+      "httpStatus": 200,
+      "providerAck": true
+    }
+  ],
+  "realBanksBefore": 4,
+  "realBanksModified": false,
+  "realBanksDigest": "2d9e2aba6720673bd4082824618d0d77d72c10f6d1860123a70f873b4cf4d9be",
+  "qaBankFinal": "deleted_withdrawn_tombstone",
+  "commandReceiptsCreated": 3,
+  "fixtureSeedWrites": 1,
+  "providerWrites": 6,
+  "shopperVisible": false,
+  "hrWrites": 0,
+  "authUserWrites": 0,
+  "productionWrites": 0,
+  "fullDomainMatch": false,
+  "humanAcceptance": "PENDING",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "production": "DO_NOT_TOUCH"
+}
