@@ -16,7 +16,19 @@
     "aliasesRetired": 10,
     "canonicalMemberships": 1,
     "providerDomainRowsPreserved": 11,
-    "nameMatchesCorrectedHr": true
+    "nameMatchesCorrectedHr": true,
+    "independentPostAttemptReadback": {
+      "runId": 42134069394,
+      "artifactId": 13463339836,
+      "activeMembers": 1,
+      "supersededProfiles": 10,
+      "crosswalkToKeeper": 11,
+      "aliasDomainReferencesRemaining": 0,
+      "historicalVisits": 18,
+      "historicalLiquidations": 9,
+      "historicalCertifications": 7,
+      "historicalReconciliations": 12
+    }
   },
   "rocioVilca": {
     "decision": "HOLD_PROVIDER_ACK_UNKNOWN_STOP_NO_RETRY",
@@ -26,7 +38,18 @@
     "providerErrorCode": "SHOPPER_IDENTITY_EXTERNAL_HR_ANCHOR_NOT_PROFILE_FREE",
     "providerWrites": 0,
     "idempotentReplays": 0,
-    "postAttemptIndependentReadback": "PENDING"
+    "postAttemptIndependentReadback": {
+      "runId": 42134069394,
+      "artifactId": 13463339836,
+      "activeMembers": 2,
+      "supersededProfiles": 0,
+      "crosswalkToKeeper": 0,
+      "domainReferencesStillOnAliases": {
+        "visits": 12,
+        "liquidations": 3,
+        "paymentReconciliations": 4
+      }
+    }
   },
   "hrWrites": 0,
   "production": false,

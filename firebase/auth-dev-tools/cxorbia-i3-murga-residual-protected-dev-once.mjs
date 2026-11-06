@@ -285,6 +285,25 @@ async function postAttemptReadOnly(db,hr,state){
       identityConsolidated:x.identityConsolidated===true,domainWrites:x.domainWrites||{},
       aliasesApproved:Array.isArray(x.exactAliases)?x.exactAliases.length:null,
       hrSourceLinks:Number(x.externalHrSourceLinks||0)}));
+  // An HR source ID may already have a protected or mismatched-name profile,
+  // invisible to the approved-name group census. Diagnose existence and exact
+  // scope/linked target; do not reveal names, phones, raw IDs or change data.
+  const hrAnchorTopology=hrIds.map(id=>{
+    const profile=state.profiles.get(id),cross=state.cross.get(id)||{};
+    const active=state.members.filter(m=>m.active===true&&s(m.shopperId)===id);
+    return {sourceTag:tag(id),profileExists:!!profile,
+      profileNameMatchesApproved:!!profile&&name(profile)===target.normalized,
+      profileCountry:profile?country(profile):null,
+      profileTenantMatches:profile?(!s(profile.tenantId)||s(profile.tenantId)===TENANT):null,
+      profileProjectIncludes:profile?arr(profile.projectIds).includes(PROGRAM):null,
+      profileSourceType:profile?s(profile.sourceType):null,
+      profileIdentityState:profile?s(profile.identityState):null,
+      profileSupersededTarget:profile?tag(profile.supersededByShopperId):null,
+      crosswalkTarget:tag(cross.shopperId||cross.canonicalShopperId),
+      crosswalkSourceType:s(cross.sourceType),
+      activeMemberCount:active.length,
+      domainOwnedCount:domainOwned(state,[id]).reduce((n,d)=>n+d.rows.length,0)};
+  });
   const activeMembers=state.members.filter(m=>m.active===true&&groupSet.has(s(m.shopperId)));
   const profileTopology=rows.map(([id,p])=>({id:tag(id),supersededBy:tag(p.supersededByShopperId),
     profileStatus:s(p.status||p.identityStatus||'UNSET'),
@@ -314,7 +333,7 @@ async function postAttemptReadOnly(db,hr,state){
       providerAck:receipt.providerAck===true,shopperIdMatches:s(receipt.shopperId)===canonical,
       identityConsolidated:receipt.identityConsolidated===true,domainWrites:receipt.domainWrites||{}},
     matchingReceipts,linkedProviderAcks:state.links.filter(l=>s(l.canonicalShopperId)===canonical&&l.providerAck===true).length,
-    profileTopology,memberTopology,crosswalkTopology,linkTopology,historicalDomainTopology,
+    hrAnchorTopology,profileTopology,memberTopology,crosswalkTopology,linkTopology,historicalDomainTopology,
     diagnosticOnly:true,production:false,directAuthWrites:0,directFirestoreWrites:0,hrWrites:0};
 }
 
