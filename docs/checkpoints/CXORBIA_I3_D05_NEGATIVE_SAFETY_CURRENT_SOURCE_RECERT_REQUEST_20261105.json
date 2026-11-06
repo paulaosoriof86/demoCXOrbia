@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "cxorbia.i3.d05.negative-safety.recert.request.v1",
+  "dateGuatemala": "2026-11-05",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "authority": "PAULA_OMITTED_CERT_JOBS_APPROVED",
+  "failureClassification": "RELEASE_COMPOSITION_FAILURE",
+  "previousObsoleteSourcePin": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+  "sourceAuthority": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+  "currentDevSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+  "existingJobs": [
+    "admin-ui-rejected-publish",
+    "d05-negative-publish-no-mutation"
+  ],
+  "triggerTags": [
+    "[i3-d05-admin-ui-negative]",
+    "[i3-d05-protected-negative]"
+  ],
+  "allowedChanges": [
+    ".github/workflows/cxorbia-i3-d05-admin-ui-rejected-publish.yml",
+    ".github/workflows/cxorbia-i3-d05-dev-rejected-publish.yml",
+    "tools/qa/cxorbia-i3-d05-admin-ui-rejected-publish-live.mjs",
+    "tools/qa/cxorbia-i3-d05-dev-negative-publish.mjs"
+  ],
+  "testMode": "NEGATIVE_EXISTING_BANK_REJECTED_AND_ZERO_WRITE_PROOF",
+  "realBankWrites": 0,
+  "hrWrites": 0,
+  "shopperAttemptWrites": 0,
+  "authUserWrites": 0,
+  "productionWrites": 0,
+  "deploys": 0,
+  "state": "REQUESTED_NOT_YET_CERTIFIED",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "production": "DO_NOT_TOUCH"
+}

@@ -9,7 +9,7 @@ import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
 import {chromium} from 'playwright';
 
-const SOURCE = '09eed4f012f9ad04e49d53569aabd86bd4c832a9';
+const SOURCE = String(process.env.CXORBIA_PRODUCT_SOURCE_SHA || '').trim();
 const PROJECT = 'cxorbia-backend-dev';
 const TENANT = 'tya';
 const PROJECT_ID = 'cinepolis';

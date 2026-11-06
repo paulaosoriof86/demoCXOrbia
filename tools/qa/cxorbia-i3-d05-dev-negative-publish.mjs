@@ -11,7 +11,7 @@ import {getFirestore} from 'firebase-admin/firestore';
 const PROJECT = 'cxorbia-backend-dev';
 const TENANT = 'tya';
 const PROJECT_ID = 'cinepolis';
-const SOURCE = '09eed4f012f9ad04e49d53569aabd86bd4c832a9';
+const SOURCE = String(process.env.CXORBIA_PRODUCT_SOURCE_SHA || '').trim();
 const ROOT = 'https://cxorbia-backend-dev.web.app';
 const OUT = '.tmp/cxorbia-i3-d05-rejected-publish';
 const str = value => String(value ?? '').trim();
