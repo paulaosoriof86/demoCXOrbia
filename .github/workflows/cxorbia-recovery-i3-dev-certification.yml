@@ -5890,7 +5890,7 @@ jobs:
   vrm215-shopper-population-reproof:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED'||(contains(github.event.head_commit.message, '[i3-shopper-population-readonly]') && needs.canonical-candidate-authority.result == 'success') }}
-   runs-on: ubuntu-latest
+   runs-on: ubuntu-24.04
    timeout-minutes: 35
    env:
     FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
