@@ -13,8 +13,8 @@ import {chromium} from 'playwright';
 
 const TENANT='tya', PROGRAM='cinepolis', PROJECT='cxorbia-backend-dev';
 const ROOT='https://cxorbia-backend-dev.web.app';
-const SOURCE='2e36c4d62eedae59b65716cf75dd53e059f958ca';
-const EXPECTED_HR='63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba';
+const SOURCE=String(process.env.CXORBIA_PRODUCT_SOURCE_SHA||'').trim();
+const EXPECTED_HR=String(process.env.CXORBIA_HR_REVISION||'').trim();
 const OUT='.tmp/cxorbia-i3-two-keepers-role-e2e-readonly';
 const norm=x=>String(x??'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ');
 const str=x=>String(x??'').trim(),arr=x=>Array.isArray(x)?x:[];
@@ -75,7 +75,9 @@ async function gotoRoute(page,route){
   await page.waitForFunction(()=>String(document.querySelector('#view')?.innerText||'').trim().length>35,null,{timeout:30000});
 }
 try {
-  if(str(process.env.CXORBIA_PRODUCT_SOURCE_SHA)!==SOURCE ||
+  if(!/^[a-f0-9]{40}$/.test(SOURCE) ||
+     !/^[a-f0-9]{64}$/.test(EXPECTED_HR) ||
+     str(process.env.CXORBIA_PRODUCT_SOURCE_SHA)!==SOURCE ||
      str(process.env.CXORBIA_HR_REVISION)!==EXPECTED_HR)
     throw Error('RELEASE_COMPOSITION_FAILURE:EXPECTED_DEV_SOURCE_REVISION_MISMATCH');
   if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
