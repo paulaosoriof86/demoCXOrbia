@@ -10,6 +10,16 @@
   const has=v=>v!==undefined&&v!==null&&(typeof v!=='string'||v.trim()!=='');
   const str=v=>String(v==null?'':v).trim();
   const lower=v=>str(v).toLowerCase();
+  const countryToken=v=>lower(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
+  const canonicalCountry=v=>{
+    const token=countryToken(v);
+    if(!token)return '';
+    // Resolve country codes and human names against the configured catalog;
+    // keep an unknown token exact rather than inventing an equivalence.
+    const country=arr(root.CX&&root.CX.COUNTRIES).find(c=>
+      [c&&c.c,c&&c.n,c&&c.code,c&&c.name].some(value=>countryToken(value)===token));
+    return country?countryToken(country.c||country.code):token;
+  };
   const get=(obj,path)=>{let cur=obj;for(const p of String(path||'').split('.')){if(!cur||typeof cur!=='object'||!Object.prototype.hasOwnProperty.call(cur,p))return undefined;cur=cur[p];}return cur;};
   const first=(obj,paths)=>{for(const p of paths){const v=p.includes('.')?get(obj,p):obj&&obj[p];if(has(v))return v;}return '';};
   const patch=(base,extra)=>{const out=Object.assign({},base||{});for(const [k,v] of Object.entries(extra||{})){if(has(v)||typeof v==='boolean'||typeof v==='number'||Array.isArray(v)||(v&&typeof v==='object'))out[k]=clone(v);}return out;};
@@ -238,7 +248,7 @@
       };
       if(!inScope(alias)||!inScope(keeper))return '';
       if(str(alias.tenantId)&&str(keeper.tenantId)&&str(alias.tenantId)!==str(keeper.tenantId))return '';
-      const aliasCountry=lower(alias.pais||alias.country),keeperCountry=lower(keeper.pais||keeper.country);
+      const aliasCountry=canonicalCountry(alias.pais||alias.country),keeperCountry=canonicalCountry(keeper.pais||keeper.country);
       if(aliasCountry&&keeperCountry&&aliasCountry!==keeperCountry)return '';
       return target;
     };
