@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_G03_AND_REMAINING_FULL_DOMAIN_CERTIFICATIONS",
+  "status": "HOLD_I3_DEV_MATERIALIZED_G03_AND_REMAINING_FULL_DOMAIN_CERTIFICATIONS",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
