@@ -115,11 +115,41 @@ try {
     hrRevision:EXPECTED_HR,visibleRows:0,cases:[]};
   for(const t of targets){
     const data=await admin.page.evaluate(id=>{
-      const all=typeof window.CX?.data?.shoppersFor==='function'?window.CX.data.shoppersFor():[];
+      const source=window.CX?.data||{};
+      const all=typeof source.shoppersFor==='function'?source.shoppersFor():[];
+      const raw=Array.isArray(source.shoppers)?source.shoppers:[];
       const canonical=all.filter(s=>String(s.id||s.shopperId)===id);
+      const rawKeeper=raw.filter(s=>String(s.id||s.shopperId)===id);
+      const protectedKeeper=(Array.isArray(source.__protectedCertificationProfiles)?source.__protectedCertificationProfiles:[])
+        .filter(s=>String(s.id||s.shopperId)===id);
+      const activePeriod=typeof source.period==='function'?source.period():{};
+      const tombstones=(Array.isArray(source.__shopperTombstones)?source.__shopperTombstones:[]);
+      const idMap=source.__identityMap||{};
+      const pre=window.CX_PROVIDER_IDENTITY_LINK_PRECOMPOSE||{};
+      const post=window.CX_PROVIDER_IDENTITY_LINK_POSTCOMPOSE||{};
+      const auth=window.CX_PROVIDER_IDENTITY_LINK_RUNTIME||{};
+      const country=s=>String(s?.pais||s?.country||'');
+      const mappedIds=Object.keys(idMap).filter(key=>String(idMap[key])===id);
+      const keeperVisits=(Array.isArray(source._visitas)?source._visitas:[])
+        .filter(v=>String(v.shopperId||'')===id).length;
       return {canonicalReadRows:canonical.length,
         exactName:canonical.length===1?String(canonical[0].nombre||''):null,
-        identityState:canonical.length===1?String(canonical[0].identityState||''):null};
+        identityState:canonical.length===1?String(canonical[0].identityState||''):null,
+        diagnostic:{rawCount:raw.length,scopedCount:all.length,rawKeeperCount:rawKeeper.length,
+          rawKeeperCountries:rawKeeper.map(country),rawKeeperIdentityStates:rawKeeper.map(s=>String(s.identityState||'')),
+          rawKeeperProjects:rawKeeper.map(s=>({projectId:String(s.projectId||''),projectIds:Array.isArray(s.projectIds)?s.projectIds:[]})),
+          periodCountries:Array.isArray(activePeriod?.countries)?activePeriod.countries:[],
+          rawKeeperInScope:rawKeeper.map(s=>typeof source.inScope==='function'?source.inScope(s.pais):null),
+          protectedKeeperCount:protectedKeeper.length,protectedKeeperCountries:protectedKeeper.map(country),
+          liveHrIdsContainKeeper:(source.__liveHrShopperIds||[]).includes(id),
+          tombstoneRetiredCanonical:tombstones.some(t=>String(t.shopperId||t.id)===id&&String(t.status||'').toLowerCase()==='retired'),
+          mappedHrAliasCount:mappedIds.length,keeperVisits,
+          providerLinksStatus:String(auth.status||''),providerLinksLoaded:Number(auth.links||0),
+          precomposeAppliedCount:(pre.applied||[]).length,precomposeConflictCount:(pre.conflicts||[]).length,
+          precomposeCanonicalApplied:(pre.applied||[]).filter(x=>String(x.canonicalShopperId||'')===id).length,
+          precomposeCanonicalConflictReasons:(pre.conflicts||[]).filter(x=>String(x.canonicalShopperId||'')===id).map(x=>String(x.reason||'')),
+          postcomposeCanonicalApplied:(post.applied||[]).filter(x=>String(x.canonicalShopperId||'')===id).length,
+          postcomposeCanonicalConflictReasons:(post.conflicts||[]).filter(x=>String(x.canonicalShopperId||'')===id).map(x=>String(x.reason||''))}};
     },t.shopperId);
     const search=admin.page.locator('#shSearch');
     await search.fill(t.case.approvedName.split(' ').at(-1));
