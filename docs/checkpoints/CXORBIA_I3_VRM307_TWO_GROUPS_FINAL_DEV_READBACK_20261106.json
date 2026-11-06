@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm307.two-groups-final-readback.v1",
+  "dateGuatemala": "2026-11-05",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "gate": "HOLD",
+  "productSourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
+  "productSourceTree": "ed9362c9d432028978c2d3b748eb7559c2e8f1b1",
+  "exactDevMaterialization": {
+    "runId": 42132045461,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/5a740a9c18805fc4",
+    "runtimeRevision": "cxorbia-live-hr-dev-00350-9pq"
+  },
+  "hrRevisionBeforeAfter": "63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba",
+  "jhennypherMurga": {
+    "exactApprovedName": "Jhennypher Murga",
+    "keeperLogin": "jennypher.murga",
+    "providerRunId": 42133324561,
+    "providerArtifactId": 13463484087,
+    "decision": "PASS_RESIDUAL_MURGA_FUSION_AND_NAME_DEV",
+    "providerAck": true,
+    "idempotentZeroWriteReplays": 2,
+    "aliasesRetired": 10,
+    "activeCanonicalMemberships": 1,
+    "historicalPreserved": {
+      "visits": 18,
+      "liquidations": 9,
+      "certifications": 7,
+      "paymentReconciliations": 12
+    },
+    "unmappedAliasDomainRows": 0
+  },
+  "rocioVilca": {
+    "exactApprovedName": "Rocío Vilca",
+    "keeperLogin": "rocio.vilca",
+    "providerRunId": 42135218971,
+    "providerArtifactId": 13466110125,
+    "providerArtifactZipSha256": "09df082176e8f98c39c52d78dd0e7eda2267fb8b7f1691676490cdedad54b38f",
+    "decision": "PASS_RESIDUAL_ROCIO_FUSION_AND_NAME_DEV",
+    "providerAck": true,
+    "idempotentZeroWriteReplays": 2,
+    "aliasesRetired": 6,
+    "previouslyMaterializedHrSourceAliases": 2,
+    "activeCanonicalMemberships": 1,
+    "profileNameExactDisplay": "Rocio Vilca",
+    "profileNameNormalizesToApprovedHr": true,
+    "historicalPreserved": {
+      "visits": 12,
+      "liquidations": 3,
+      "certifications": 2,
+      "paymentReconciliations": 4
+    },
+    "unmappedAliasDomainRows": 0
+  },
+  "independentPostSuccessReadback": {
+    "runId": 42135680776,
+    "artifactId": 13466485246,
+    "artifactZipSha256": "aa5af4b5e185493430d61833611e201962fd71ba32eb37f91d0974e5561ecaa2",
+    "decision": "PASS_BOTH_GROUPS_ONE_KEEPER_ZERO_ALIAS_REFS_HR_UNCHANGED",
+    "jhennypherAliasDomainRows": 0,
+    "rocioAliasDomainRows": 0,
+    "sourceNamesMasked": true,
+    "production": false,
+    "directAuthWrites": 0,
+    "directFirestoreWrites": 0,
+    "hrWrites": 0
+  },
+  "adminChromeLiveReadback": {
+    "environment": "cxorbia-backend-dev",
+    "project": "cinepolis",
+    "period": "2026-11",
+    "afterFreshReload": true,
+    "technicalReviewCaseAliasKeysBefore": 176,
+    "technicalReviewCaseAliasKeysAfter": 170,
+    "realVisibleProfilesBefore": 197,
+    "realVisibleProfilesAfter": 193,
+    "visibleProfilesStillMarkedReview": 10,
+    "reportKpisReadOnly": {"visits": 44,"assigned": 26,"realized": 0},
+    "visitsReadOnly": {"total": 44,"available": 17,"assigned": 26,"outOfRange": 1},
+    "historicalReadOnly": {"closedPeriods": 13,"visits": 572,"executed": 571},
+    "rocioCanonicalRowVisibility": "NOT_ESTABLISHED_IN_DOM_AFTER_RELOAD_REQUIRES_FOCAL_UI_ROLE_E2E",
+    "browserTaskInterrupted": true,
+    "scope": "ADMIN_READ_ONLY_NOT_WHOLE_MODULE_E2E"
+  },
+  "canonicalMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261105-V245.json",
+  "matchDomains": 5,
+  "totalDomains": 21,
+  "domainPromotionsFromThisReceipt": 0,
+  "remainingP0": [
+    "CUMULATIVE_SHOPPER_ADMIN_ROW_HN_CANONICAL_VISIBILITY_AND_CLIENT_ALIAS_GRAPH_FOCAL_QA",
+    "CERTIFICATIONS_ADMIN_SAVE_AND_REAL_SHOPPER_E2E",
+    "CANONICAL_HR_STATE_AND_PERSISTENCE_END_TO_END",
+    "FINANCE_FULL_MODULE_DOMAIN_E2E",
+    "SKIPPED_WORKFLOW_JOBS_MUST_RUN_ELIGIBLE_SCOPED_CERTIFICATION_CLAUSES"
+  ],
+  "status": "IDENTITY_GROUPS_PROVIDER_PASS_I3_HOLD_OTHER_P0_AND_MODULE_CERTIFICATION",
+  "production": "DO_NOT_TOUCH",
+  "authorizationI4": false
+}

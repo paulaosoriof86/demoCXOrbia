@@ -17550,5 +17550,25 @@
     "humanAcceptance": "PENDING",
     "firestoreRulesetEvidence": "UNCHANGED_FROM_PRIOR_DEV_RULESET_NO_RULES_DEPLOY_RUN2172",
     "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM134_EFFECT_FREE_REPLAY_DEV_RUN2172_20261104.json"
+  },
+  "vrm307ApprovedGroupClosure20261106": {
+    "decision": "IDENTITY_GROUPS_PROVED_BUT_NO_NEW_WHOLE_MODULE_MATCH",
+    "checkpointPath": "docs/checkpoints/CXORBIA_I3_VRM307_TWO_GROUPS_FINAL_DEV_READBACK_20261106.json",
+    "checkpointBlob": "78d2046250f389da09afad16e5246920539882a4",
+    "productSourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
+    "exactDevMaterializationRunId": 42132045461,
+    "jhennypherProviderRunId": 42133324561,
+    "rocioProviderRunId": 42135218971,
+    "independentReadbackRunId": 42135680776,
+    "exactApprovedHumanGroupsComplete": 2,
+    "unmappedIdentityDomainRows": 0,
+    "moduleTruthMatchCount": 5,
+    "moduleTruthTotal": 21,
+    "skippedGatedCertificationJobsRun2203": 29,
+    "canonicalAuthorityJobRun2203": "SUCCESS",
+    "fullRoleAndActionCoverage": "PENDING",
+    "shopperAdminCanonicalHnRowVisibility": "PENDING_FOCAL_DEV_E2E",
+    "phaseA": "HOLD",
+    "production": false
   }
 }

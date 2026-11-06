@@ -38937,5 +38937,35 @@
     "humanAcceptance": "PENDING",
     "firestoreRulesetEvidence": "UNCHANGED_FROM_PRIOR_DEV_RULESET_NO_RULES_DEPLOY_RUN2172",
     "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM134_EFFECT_FREE_REPLAY_DEV_RUN2172_20261104.json"
+  },
+  "vrm307ApprovedGroupClosure20261106": {
+    "checkpointPath": "docs/checkpoints/CXORBIA_I3_VRM307_TWO_GROUPS_FINAL_DEV_READBACK_20261106.json",
+    "checkpointBlob": "78d2046250f389da09afad16e5246920539882a4",
+    "sourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
+    "exactDevRunId": 42132045461,
+    "jhennypherHumanGroup": {
+      "providerRunId": 42133324561,
+      "decision": "PASS_RESIDUAL_MURGA_FUSION_AND_NAME_DEV",
+      "providerAck": true,
+      "aliasesRetired": 10,
+      "historicalPreserved": {"visits": 18, "liquidations": 9, "certifications": 7, "paymentReconciliations": 12}
+    },
+    "rocioHumanGroup": {
+      "providerRunId": 42135218971,
+      "decision": "PASS_RESIDUAL_ROCIO_FUSION_AND_NAME_DEV",
+      "providerAck": true,
+      "aliasesRetired": 6,
+      "hrAnchorsAsHistoricalAliases": 2,
+      "historicalPreserved": {"visits": 12, "liquidations": 3, "certifications": 2, "paymentReconciliations": 4}
+    },
+    "postSuccessIndependentReadbackRunId": 42135680776,
+    "unmappedDomainRefs": 0,
+    "sameHrRevision": "63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba",
+    "affectedDomainsCertified": false,
+    "moduleMatchCount": 5,
+    "moduleTotal": 21,
+    "remaining": "UI_SHOPPER_CANONICAL_VISIBILITY_AND_ELIGIBLE_21_MODULE_ROLE_E2E_CERTIFICATION",
+    "i3": "HOLD",
+    "production": false
   }
 }

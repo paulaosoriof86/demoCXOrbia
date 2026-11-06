@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM307_DEV_MATERIALIZED_PROTECTED_GROUP_READBACK_G03",
+  "status": "HOLD_VRM307_TWO_GROUPS_PASS_MODULE_E2E_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -12822,7 +12822,7 @@
     "hrRevision": "63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba",
     "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM307_EXACT_DEV_RUN2202_20261105.json",
     "receiptBlob": "e7b21f6d207f500f0ccb97f5116f94ca69b754cb",
-    "liveE2e": "PENDING_PROTECTED_TWO_GROUPS_AND_G03",
+    "liveE2e": "IDENTITY_TWO_GROUPS_PROVIDER_AND_INDEPENDENT_READBACK_PASS_OTHER_E2E_PENDING",
     "humanAcceptance": "PENDING",
     "gate20": "HOLD",
     "gate21": "HOLD",
@@ -17399,5 +17399,23 @@
     "partialManualUiAcksPreserved": true,
     "production": false,
     "artifactId": 13463767290
+  },
+  "vrm307ApprovedGroupClosure20261106": {
+    "decision": "PASS_BOTH_EXACT_HUMAN_GROUPS_PROVIDER_AND_INDEPENDENT_READBACK_DEV",
+    "checkpointPath": "docs/checkpoints/CXORBIA_I3_VRM307_TWO_GROUPS_FINAL_DEV_READBACK_20261106.json",
+    "checkpointBlob": "78d2046250f389da09afad16e5246920539882a4",
+    "jhennypherProviderRunId": 42133324561,
+    "rocioProviderRunId": 42135218971,
+    "postSuccessReadbackRunId": 42135680776,
+    "rocioHrPreviouslyMaterializedAliases": 2,
+    "providerAckBothGroups": true,
+    "oneActiveKeeperEach": true,
+    "aliasDomainReferencesRemaining": 0,
+    "production": false,
+    "certifiedModuleDomains": 5,
+    "totalModuleDomains": 21,
+    "i3": "HOLD",
+    "i4": "DO_NOT_TOUCH",
+    "nextP0": "SHOPPER_ADMIN_CANONICAL_ROW_PROJECTION_AND_SCOPED_21_MODULE_CERTIFICATION"
   }
 }
