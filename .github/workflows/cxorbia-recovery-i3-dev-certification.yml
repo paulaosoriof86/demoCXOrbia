@@ -6760,3 +6760,54 @@ jobs:
      if: always()
      with: {name: "cxorbia-i3-current-source-hosting-dev-${{ github.run_id }}", path: .tmp/i3-current-source-hosting-dev/, if-no-files-found: warn, retention-days: 30}
 
+  i3-keeper-role-e2e-readonly:
+   # The prior 29 status-specific jobs are not deemed certified merely because
+   # the authority job is green. This focal lane can collect independent,
+   # authenticated role evidence during HOLD without any product or data write.
+   needs: canonical-candidate-authority
+   if: ${{ contains(github.event.head_commit.message, '[i3-keeper-role-e2e-readonly]') && needs.canonical-candidate-authority.result == 'success' }}
+   runs-on: ubuntu-24.04
+   timeout-minutes: 40
+   permissions:
+    contents: read
+   steps:
+   - uses: actions/checkout@v4
+     with: {fetch-depth: 0}
+   - uses: actions/setup-node@v4
+     with: {node-version: '24'}
+   - name: Seal the already-materialized DEV source and deny production writes
+     run: |
+      set -Eeuo pipefail
+      test "$GITHUB_REF_NAME" = recovery/cxorbia-phase-a-20260831
+      test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
+      test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
+      test "$(jq -r '.postDeployRunSeal.mode' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = CURRENT_SOURCE_SERVING
+      SOURCE="$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+      HR="$(jq -r '.currentMaterialization.hrRevision' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+      test "$SOURCE" = 3a299715ea2d87ae43c0f6415f44bd23b13a1837
+      test "$HR" = 63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba
+      git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules
+      node --check firebase/auth-dev-tools/cxorbia-i3-two-keepers-admin-shopper-readonly-e2e.mjs
+      echo "CXORBIA_PRODUCT_SOURCE_SHA=$SOURCE" >> "$GITHUB_ENV"
+      echo "CXORBIA_HR_REVISION=$HR" >> "$GITHUB_ENV"
+   - uses: google-github-actions/auth@v2
+     with:
+      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+   - name: Install DEV-only read-only tooling
+     run: |
+      set -Eeuo pipefail
+      npm install --prefix firebase/auth-dev-tools --no-save --no-package-lock --ignore-scripts firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+      ./firebase/auth-dev-tools/node_modules/.bin/playwright install chromium >/dev/null
+   - name: Prove one Admin plus both GT/HN keeper roles against the same HR revision
+     run: |
+      set -Eeuo pipefail
+      node firebase/auth-dev-tools/cxorbia-i3-two-keepers-admin-shopper-readonly-e2e.mjs
+      jq -e '.decision=="PASS_SCOPED_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E" and .safety.production==false and .safety.hrWrites==0 and .safety.directAuthWrites==0 and .safety.directFirestoreWrites==0' .tmp/cxorbia-i3-two-keepers-role-e2e-readonly/result.json >/dev/null
+   - uses: actions/upload-artifact@v4
+     if: always()
+     with:
+      name: cxorbia-i3-two-keepers-role-e2e-readonly-${{ github.run_id }}
+      path: .tmp/cxorbia-i3-two-keepers-role-e2e-readonly/result.json
+      if-no-files-found: warn
+      retention-days: 30
+
