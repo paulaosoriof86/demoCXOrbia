@@ -1,0 +1,165 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm310.dev-chrome-resume.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "observedAt": "2026-11-06T22:06:02.431627+00:00",
+  "userTimezone": "America/Guatemala",
+  "controlHeadAtRun": "4895122b606a81d339973885db63deb1d1dfae7d",
+  "expectedControlParentAtSeal": "4895122b606a81d339973885db63deb1d1dfae7d",
+  "sourceSha": "01d072d7969f3522d3f4e882fff1c42eb426708e",
+  "sourceTree": "8fcc0539d35e5facfaef4b1a428a03444db4c10b",
+  "findingId": "VRM-310",
+  "decision": "PASS_SCOPED_VRM310_DEV_HOSTING_AND_REAL_ADMIN_CHROME",
+  "runId": 42300919124,
+  "jobId": 128178431450,
+  "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/42300919124",
+  "artifactId": 13544845891,
+  "evidenceArtifactDigest": "sha256:f89b4d5fbd2500f0d2c703117cd058f69487c643dbac7743b82dfdda5df7424b",
+  "sourceHostingManifestSha256": "3f1207761aca78a64f6457ecb097521c690c259a45f4951463e85466ce6b9323",
+  "hostingReadback": {
+    "cloudRunBuilds": 0,
+    "cloudRunDeploys": 0,
+    "decision": "PASS_I3_CURRENT_SOURCE_HOSTING_DEV_ONLY",
+    "firestoreDirectWrites": 0,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "hostingAfter": "sites/cxorbia-backend-dev/versions/36b2c1b4875ce7e9",
+    "hostingBefore": "sites/cxorbia-backend-dev/versions/65e8034fac283714",
+    "hostingDeploys": 1,
+    "hrWrites": 0,
+    "phaseAComplete": false,
+    "productionDeploys": 0,
+    "productionIndexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+    "productionUnchanged": true,
+    "rulesDeploys": 0,
+    "runtimeDigest": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:c853f2c1f3b174c5fca5da8ab223453d49af2fe349b1da55985cb280ba39f1e7",
+    "runtimeRevision": "cxorbia-live-hr-dev-00352-dml",
+    "sourceSha": "01d072d7969f3522d3f4e882fff1c42eb426708e",
+    "sourceTree": "8fcc0539d35e5facfaef4b1a428a03444db4c10b"
+  },
+  "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794002358495000",
+  "servedAssetChecks": [
+    {
+      "path": "index-backend-dev.html",
+      "sha256": "38460409bee133f1f746156de1e1e5fa3d5db0c7a22c6d0d0b36a64f947c0479",
+      "match": true
+    },
+    {
+      "path": "core/backend-firebase.js",
+      "sha256": "2aca1f072f3cbffb993bb149b155aaeb5a175210ccd8dcea578615a39e6441d3",
+      "match": true
+    },
+    {
+      "path": "core/router.js",
+      "sha256": "d302cbadd2e427919330a8c4e81ebe04ca67e898dcc1f6a7e85445f4f74bb9c3",
+      "match": true
+    },
+    {
+      "path": "adapters/tya-live-source-refresh-watch-v2.js",
+      "sha256": "3eb1d2e35bab4c80d7d7d8922969581d61a17e67f07e5b4aeaaea783a765c194",
+      "match": true
+    },
+    {
+      "path": "modules/hr-source.js",
+      "sha256": "62907bc1e18b46247c9e35ae299404e2f7e61cd8bcfbb0973adbc224f1983255",
+      "match": true
+    },
+    {
+      "path": "modules/shoppers.js",
+      "sha256": "b985cc833635944d48bd77f66a501cb6136a1dfc898f892de2501635a65f2150",
+      "match": true
+    },
+    {
+      "path": "modules/beneficios.js",
+      "sha256": "2c1763b65ef055eecd56e3622033d53c9946f679e758d06be797b7e854b6b419",
+      "match": true
+    },
+    {
+      "path": "modules/clientes.js",
+      "sha256": "7260fa6c2ef5eccc0eea3cf43bc9cf5c06af2be4cc923742e45876e21480ad1e",
+      "match": true
+    },
+    {
+      "path": "modules/historico.js",
+      "sha256": "cab99b87798f385d6cf71cc63bef144b5fc7cb6c55bf31ba101817ade07e2819",
+      "match": true
+    },
+    {
+      "path": "modules/visitas.js",
+      "sha256": "4c8ec643438a3e812455781303fed798b4c1a267aecd079adc4bbc555efc999b",
+      "match": true
+    },
+    {
+      "path": "modules/cuestionario-shopper.js",
+      "sha256": "576272660a6b7cf96055587de39ee172df6ebc9147711a5cf0f17d0a8c943388",
+      "match": true
+    },
+    {
+      "path": "core/data.js",
+      "sha256": "9ee63b4786fb89cda88547b553c11aeba15067abeb91f4708f4fccd62b69bb0b",
+      "match": true
+    }
+  ],
+  "verifiedServedAssetCount": 12,
+  "localFocalTests": {
+    "pass": 36,
+    "fail": 0,
+    "hrStatusAndNeighborContracts": 14,
+    "continuityGuardCases": 22
+  },
+  "canonicalSourceProof": {
+    "pass": true,
+    "domainCount": 21,
+    "ownerCount": 105,
+    "sourceFileCount": 157,
+    "ownerMismatches": 0,
+    "sourceFileMismatches": 0,
+    "scope": "SOURCE_INTEGRITY_NOT_FULL_MODULE_CERTIFICATION"
+  },
+  "realChromeReadback": {
+    "surface": "Source HR",
+    "role": "Authenticated Admin",
+    "project": "cinepolis",
+    "period": "2026-11",
+    "expected": "HR operacional verificada with project-scoped protected source revision; registration channel separate",
+    "observed": "PASS",
+    "sourceRevisionVisiblePrefix": "32d9416f76ba",
+    "registrationChannelStillPending": true,
+    "importRemainsBlocked": true,
+    "independentExternalHRFreshnessReprovenByThisUI": false,
+    "technicalIdentityCaseCount": 170,
+    "countIsPersonsOrMerges": false,
+    "screenshotSha256": "92117c6e282d0dfa9aa82195fe0a90f16bb6b3e23ab50534ed14dbda0bad5846"
+  },
+  "loadObservation": {
+    "status": "NOT_CERTIFIED_RESOLVED",
+    "loadingSessionVisibleAtMs": 7501,
+    "adminReadyObservedNoLaterThanMs": 24691,
+    "isControlledBenchmark": false,
+    "explanation": "Tool-call gap is included; do not report 24.691 seconds as an exact load-time measurement."
+  },
+  "preservedWholeDomainMatches": [
+    "historical",
+    "identity-membership-roll-forward",
+    "phase-a-supporting-core",
+    "reports-admin-shopper",
+    "tenant-admin-config-branding"
+  ],
+  "moduleMatches": 5,
+  "moduleTotal": 21,
+  "newWholeModulePromotions": 0,
+  "continuityCorrections": [
+    "Recovered locally committed source/control that never reached remote branch",
+    "Exact tested source tree preserved under repository source commit",
+    "Aligned descriptor legacy nextExactAction with authoritative exactNextAction",
+    "Marked prior a290 source materialization using its existing real receipt",
+    "Preserved historical paired runtime and updated latest Hosting authority separately",
+    "Removed stale active labels for Stiven 10/0 and VRM297 disclosure while retaining residual whole-domain clauses"
+  ],
+  "production": false,
+  "dataWrites": 0,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "authorizationI4": false,
+  "nextExactAction": "I3 HOLD 5/21 MATCH. VRM-310 source 01d072d7969f3522d3f4e882fff1c42eb426708e is now served in DEV Hosting 36b2c1b4875ce7e9; RUN42300919124 PASS, 12/12 exact assets, real connected Chrome Admin shows HR operacional verificada for protected revision 32d9416f76ba, registration channel separately pending. Runtime 00352-dml and production unchanged. Preserve 83/83+2 identity ACK, Stiven 10/10 and ordinary password PASS, G05/A05 113/113 independent HR parity, C04/C05 finanzas 13/13 ACK, D05 15/15 Admin QA and VRM297 security read-path PASS; no reruns. NEXT EXACT: complete D06 genuine eligible published-bank Shopper lifecycle with specific existing authorization verified before durable attempt; never bypass the QA-only exam guard. In parallel, close only remaining role/project/period and human module clauses, and measure VRM-134 authenticated Admin/Shopper initial load. G03 HR-finanzas 2026 historical bank/payment confirmation is an INDEPENDENT_EVIDENCE_GAP; unconfirmed remains unconfirmed. Gate20/21 HOLD; I4 authorization absent; production DO_NOT_TOUCH. V251 matrix and V567 ledger are current."
+}
