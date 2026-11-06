@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "cxorbia.i3.connected-admin-crossmodule-readback.20261106.v1",
+  "observedDateGuatemala": "2026-11-06",
+  "scope": "APPEND_ONLY_CONTROL_RECEIPT_SCOPED_BROWSER_READBACK_NO_MODULE_PROMOTION",
+  "authority": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "expectedParentSha": "9e492f390f87680e98ba4a673024f23be58bfb9a",
+    "expectedParentTree": "8c2ac14601da8cfdd488f359a71497f4c01fc9ca",
+    "productSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+    "devMaterializationRunId": 42147711875,
+    "hrRevisionSeen": "63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba",
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261105-V245.json",
+    "priorIndependentHrReadback": "CXORBIA_I3_G03_HR_INDEPENDENT_READBACK_20261106.json"
+  },
+  "connectedBrowserObservation": {
+    "environment": "authenticated CXOrbia DEV admin; single Cinépolis project; no legacy production interaction",
+    "november": {
+      "independentHrCounts": {
+        "visits": 44,
+        "assigned": 26,
+        "unassigned": 18
+      },
+      "adminMiDia": {
+        "unassigned": 18,
+        "scheduled": 4
+      },
+      "adminDashboard": {
+        "visits": 44,
+        "gtVisits": 34,
+        "hnVisits": 10,
+        "assigned": 26,
+        "gtAssigned": 22,
+        "hnAssigned": 4,
+        "unassigned": 18,
+        "gtUnassigned": 12,
+        "hnUnassigned": 6
+      },
+      "adminVisitas": {
+        "visits": 44,
+        "assigned": 26,
+        "unassigned": 18,
+        "eligibleAvailable": 17,
+        "outOfEligibilityRange": 1
+      },
+      "adminAsignaciones": {
+        "activeAssignments": 26,
+        "activeAgendas": 4,
+        "pendingApplications": 0
+      },
+      "adminHojasRuta": {
+        "visits": 44,
+        "revisionPrefix": "63ddfdf36e34"
+      },
+      "scopedResult": "PASS_COUNTS_PARITY_NO_SOURCE_REPAIR_OR_MONTH_SPECIFIC_FIX_REQUIRED",
+      "caveat": "E2E assignment and Shopper role readback not repeated in this receipt; scoped parity is not whole module MATCH"
+    },
+    "october": {
+      "cert": {
+        "banks": 2,
+        "publishedMainQuestions": 8,
+        "pendingBankQuestions": 15,
+        "pendingBankLabel": "Banco IA pendiente de revisión",
+        "observedEditable": true,
+        "published": false,
+        "adminSaveAndShopperAttempt": "NOT_E2E_VERIFIED"
+      },
+      "finance": {
+        "inReview": 42,
+        "lotCandidate": 1,
+        "candidateAmountGTQ": 205,
+        "bankConfirmed": 0,
+        "observedInternalPaymentDialog": true,
+        "paymentSubmitted": false,
+        "externalBankAck": "NOT_FOUND"
+      }
+    },
+    "projectAdmin": {
+      "projects": 1,
+      "periods": 18,
+      "branches": 44,
+      "countries": [
+        "GT",
+        "HN"
+      ],
+      "externalHrSourceChosen": true,
+      "questionnaireSource": "internal",
+      "projectSaveProviderAck": "NOT_EXERCISED"
+    },
+    "hrSourceScreen": {
+      "connectionLabel": "Conectado",
+      "secureReferenceIndicator": true,
+      "mappingRef": "tya-hr-column-map-r20-v1",
+      "testConnectionAction": "CLICKED_IN_AUTHENTICATED_DEV",
+      "testConnectionProviderAck": "NOT_OBSERVED",
+      "actualImportOrSyncTriggered": false,
+      "copyMismatch": "UI_COPY_STILL_CALLS_THIS_PROTOTYPE_AND_SAYS_BROWSER_ACTIONS_DO_NOT_EXECUTE_WHILE_SOURCE_CODE_WIRES_BACKEND_BRIDGE",
+      "classification": "FOCAL_UI_COPY_OR_PROVIDER_READBACK_REQUIRES_DISAMBIGUATION; NO_NEW_GLOBAL_BARRIER_DECLARED"
+    }
+  },
+  "preservation": {
+    "iteration": "I3",
+    "state": "HOLD",
+    "modulesMatch": 5,
+    "modulesTotal": 21,
+    "alreadyApprovedIdentityMerges": "PRESERVED_NO_REMERGE",
+    "stivenHistoricalIssue": "CLOSED_PASS_DO_NOT_REOPEN",
+    "phaseB": "NOT_STARTED",
+    "production": "DO_NOT_TOUCH",
+    "devSourceFilesChanged": 0,
+    "hrCellsWritten": 0,
+    "sourceImportOrSyncTriggered": false,
+    "paymentsRecorded": 0,
+    "bankClaimsMade": 0,
+    "certificationBankSavedOrPublished": false,
+    "newCandidateOrBranch": false,
+    "newModulePromotions": 0
+  },
+  "nextExactAction": "D05 natural Admin save/provider ACK and Shopper attempt readback, plus G05/A05 same-artifact protected crossrole E2E; G03 remains HOLD until independently confirmed historical bank/payment provider ACK. Continue module-by-module and Gate20/21; no I4 production authorization."
+}
