@@ -5947,8 +5947,7 @@ jobs:
       cp "$VRM215_OUT/hr-meta-1.json" "$VRM215_OUT/hr-meta.json"
       LIVE_HR_REVISION="$(jq -r '.revision' "$VRM215_OUT/hr-meta-1.json")"
       test "$LIVE_HR_REVISION" = "$(jq -r '.revision' "$VRM215_OUT/hr-meta-2.json")"
-      test "$LIVE_HR_REVISION" = "$(jq -r '.shopperReconciliation.sourceRevision' "$VRM215_OUT/hr-meta-1.json")"
-      test "$LIVE_HR_REVISION" = "$(jq -r '.shopperReconciliation.sourceRevision' "$VRM215_OUT/hr-meta-2.json")"
+      test "$LIVE_HR_REVISION" = "$EXPECTED_HR_REVISION"
       # HR metadata is a fresh content-hash snapshot: month/visit totals are dynamic, not fixtures.
       # Last reconciliation ACK is process-local telemetry, may be null until an explicit command.
       # Durable provider ACK and roles are independently sealed in the existing canonical receipts.
