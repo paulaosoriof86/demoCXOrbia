@@ -150,11 +150,19 @@ async function preflight() {
   const before = await allBanks();
   const real = before.filter(x => x.row.qaOnly !== true);
   const active = real.filter(x => str(x.row.status) === 'active' &&
-    str(x.row.periodId).includes(PERIOD));
+    (FLEX_OPTIONS_QA
+      ? [PERIOD, `${PROJECT_ID}-${PERIOD}`].includes(str(x.row.periodId))
+      : str(x.row.periodId).includes(PERIOD)));
   const pending = active.filter(x => str(x.row.bank?.estado) === 'pending_review');
   const published = active.filter(x => str(x.row.bank?.estado) === 'published' &&
     (x.row.targetAll === true || arr(x.row.visibleRoles).map(str).includes('shopper')));
-  if (real.length !== 4 || active.length !== 2 || pending.length !== 1 ||
+  result.qa.inventoryPreflightCounts = {realProjectBanks: real.length,
+    activeExactPeriod: active.length, pendingExactPeriod: pending.length,
+    publishedShopperExactPeriod: published.length};
+  // A later period may legitimately add banks. In the FLEX variant, isolate
+  // the precise period and protect every existing real bank by its preimage.
+  // The historical fixed global count remains unchanged for older markers.
+  if ((!FLEX_OPTIONS_QA && real.length !== 4) || active.length !== 2 || pending.length !== 1 ||
       published.length !== 1 || arr(published[0].row.bank?.preguntas).length < 1)
     fail('SOURCE_FAILURE:D05_REAL_BANK_INVENTORY_OR_SHOPPER_PUBLISH_CHANGED');
   if (SHOPPER_VRM297_ONLY && arr(published[0].row.bank?.preguntas).length !== 8)
