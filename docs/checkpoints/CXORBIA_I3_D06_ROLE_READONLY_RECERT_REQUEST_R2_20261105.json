@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "cxorbia.i3.d06.shopper.readonly.recert.request.v2",
+  "dateGuatemala": "2026-11-05",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "authority": "PAULA_EXPLICIT_CONTINUE_AND_CERTIFY_SKIPPED_JOBS",
+  "previousRequestCommit": "066bb6e4c726116d4176432481d33fd7c031970c",
+  "previousRunId": 42155025725,
+  "previousRunState": "PREFLIGHT_FAILED_NOT_TEST_EXECUTED",
+  "previousFailureClassification": "MAPPING_FAILURE",
+  "previousFailure": [
+    "CLASSIFICATION_SNAPSHOT_AUTHORITY",
+    "NEXT_ACTION_DESYNC",
+    "LEGACY_NEXT_ACTION_DESYNC"
+  ],
+  "continuityRepairCommit": "ef43a7f7875bd614cb75a4dbd2e8d3784ee73b34",
+  "reason": "Repeat previously omitted role-based shopper authenticated read test after exact shock control alignment; not new code, HR period, or shopper test fixture.",
+  "sourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+  "testOwner": "tools/qa/cxorbia-i3-d05-qa-ui-review-shopper-read.mjs",
+  "existingJob": "d05-qa-ui-review-shopper-read",
+  "triggerTag": "[i3-d06-shopper-read-only]",
+  "readonlyOnly": true,
+  "limits": {
+    "qaBankWrites": 0,
+    "shopperAttemptWrites": 0,
+    "realBankWrites": 0,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "productionWrites": 0,
+    "deploys": 0
+  },
+  "state": "REQUESTED_RETRY_NOT_YET_CERTIFIED",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "production": "DO_NOT_TOUCH"
+}
