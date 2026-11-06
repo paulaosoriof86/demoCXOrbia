@@ -34,6 +34,8 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
     'RELEASE_COMPOSITION_FAILURE:SOURCE_POINTER_DESYNC');
   check(Boolean(matrixPath) && p.moduleTruthAuthority?.path === matrixPath,
     'MAPPING_FAILURE:MATRIX_PATH_DESYNC');
+  check(!p.moduleTruthPath || p.moduleTruthPath === matrixPath,
+    'MAPPING_FAILURE:LEGACY_MATRIX_PATH_DESYNC');
   check(Boolean(d.moduleTruthExpectedGitBlob) &&
     p.moduleTruthAuthority?.gitBlob === d.moduleTruthExpectedGitBlob &&
     gitBlob(matrixPath) === d.moduleTruthExpectedGitBlob,
@@ -47,6 +49,12 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
     'MAPPING_FAILURE:CLASSIFICATION_SNAPSHOT_AUTHORITY');
   check(JSON.stringify(snapshot.classificationCounts || {}) === JSON.stringify(actualCounts),
     'MAPPING_FAILURE:CLASSIFICATION_COUNTS_STALE');
+  if (m.classificationCounts) {
+    const declaredCounts = Object.fromEntries(Object.entries(m.classificationCounts)
+      .sort(([a], [b]) => a.localeCompare(b)));
+    check(JSON.stringify(declaredCounts) === JSON.stringify(actualCounts),
+      'MAPPING_FAILURE:MATRIX_REPORTED_CLASS_COUNTS_STALE');
+  }
 
   check(freezeD.path === freezePath && freezeP.path === freezePath &&
     Boolean(freezeD.gitBlob) && freezeD.gitBlob === freezeP.gitBlob &&
@@ -119,6 +127,9 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
   const latestHostingD = d.currentHostingOnlyDevMaterialization || {};
   const latestHostingP = p.currentHostingOnlyDevMaterialization || {};
   if (latestHostingD.receiptPath || latestHostingP.receiptPath) {
+    check(!/source.only.*(pending|predecessor)|source_only_proven_not_yet_composed_or_dev_materialized/i
+      .test(`${m.productSource?.message || ''} ${m.productSource?.authorityState || ''}`),
+    'MAPPING_FAILURE:MATRIX_SOURCE_ONLY_STATUS_AFTER_HOSTING_DEV');
     check(Boolean(latestHostingD.receiptPath && latestHostingD.receiptBlob) &&
       JSON.stringify(latestHostingD) === JSON.stringify(latestHostingP) &&
       gitBlob(latestHostingD.receiptPath) === latestHostingD.receiptBlob,

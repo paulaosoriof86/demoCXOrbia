@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "cxorbia.i3.d05.flex-admin-qa-and-control-synchronization.20261106.v1",
+  "dateGuatemala": "2026-11-06",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "status": "PASS_SCOPED_D05_ADMIN_QA_AND_D06_SHOPPER_READ_ONLY_NOT_FULL_MODULE_GO",
+  "sourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/65e8034fac283714",
+  "providerReceipt": {
+    "githubRunId": 42277757800,
+    "workflow": "CXOrbia I3 D05 QA-Only Positive Lifecycle DEV",
+    "jobId": 128098441859,
+    "sourceCommit": "ccd2792032953a1d18244de5e68b4123ff2ac345",
+    "artifactId": 13532524852,
+    "artifactName": "cxorbia-i3-d05-qa-ui-review-shopper-42277757800",
+    "artifactZipSha256": "e164726b48a077f7a28b79bc776fccc6e0c4e8a2b59bc7d1362f01e8ed7785c6",
+    "resultJsonSha256": "57364d1f92299eaf0f3a0a519e4ba2ea598d46393678c22bfd808cde97fcbf1f"
+  },
+  "proven": {
+    "exactDevAssetGitBlob": "d2c362958f734267123e7ac7ff0341824ba4fa11",
+    "exactDevAssetMatchesApprovedSource": true,
+    "realProjectBanksObserved": 6,
+    "activeBanksInExactPeriod": 2,
+    "pendingBanksInExactPeriod": 1,
+    "publishedShopperBanksInExactPeriod": 1,
+    "qaOnlyQuestions": 15,
+    "startedWithTwoOptions": 8,
+    "startedWithThreeOptions": 7,
+    "completedFourOptionsAll": 15,
+    "adminUiSavedVersionFrom": 1,
+    "adminUiSavedVersionTo": 2,
+    "providerReadbackAllChecksPass": true,
+    "persistedAndReloadedFourOptions": true,
+    "qaOnlyRetiredAndTombstoned": true,
+    "realBanksUnchangedCount": 6,
+    "realBanksAfterCount": 6,
+    "shopperReadOnlyStatus": "PASS_EXISTING_SHOPPER_ROLE_READ_ONLY",
+    "shopperPublishedQuestions": 8,
+    "shopperPendingUnpublishedNotExposed": true,
+    "shopperAttemptWrites": 0
+  },
+  "classificationCorrection": "Three matrix domains carried TRUE_FUNCTIONAL_DEFECT while their own records already documented focal PASS or independent evidence gaps. Reclassified as FOCAL_PASS_PENDING_DOMAIN_E2E_HUMAN; none is promoted to MATCH.",
+  "historicalApprovedEvidencePreserved": [
+    "83/83 identity groups + 2 additional approved merges, no remerge",
+    "G05 113/113 source PASS; A05 external live HR parity PASS",
+    "C04/C05 13/13 finance provider ACK and cleanup PASS",
+    "D05 four-option Admin versioned review and D06 Stiven scoped cross-period PASS"
+  ],
+  "knownUnproven": [
+    "D06 controlled idempotent Shopper attempt on safe QA target",
+    "Independent 2026 G03 HR/finanzas bank-payment evidence gap",
+    "Remaining bounded domain-role E2E and human acceptance"
+  ],
+  "certifiedModuleCount": 5,
+  "moduleTotal": 21,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "production": "DO_NOT_TOUCH",
+  "i4Authorized": false,
+  "changesByThisReceipt": "CONTROL_ONLY; NO PRODUCTION_OR_REAL_BANK_WRITES"
+}

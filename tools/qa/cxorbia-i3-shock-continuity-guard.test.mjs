@@ -145,6 +145,19 @@ test('stale module counts fail closed', () => {
   const a = mk(); a.pointer.activeShockModuleTruth.classificationCounts.MATCH = 4;
   assert.match(validateShockContinuity(a).failures.join(' '), /CLASSIFICATION_COUNTS_STALE/);
 });
+test('a legacy direct matrix path cannot silently point at a superseded version', () => {
+  const a = mk(); a.pointer.moduleTruthPath = 'old-v245.json';
+  assert.match(validateShockContinuity(a).failures.join(' '), /LEGACY_MATRIX_PATH_DESYNC/);
+});
+test('matrix-reported counts must match actual module classifications', () => {
+  const a = mk(); a.matrix.classificationCounts = {...classifyModules(a.matrix), MATCH: 6};
+  assert.match(validateShockContinuity(a).failures.join(' '), /MATRIX_REPORTED_CLASS_COUNTS_STALE/);
+});
+test('a current Hosting receipt rejects a matrix that still claims source-only predecessor', () => {
+  const a = withLatestHostingOnlyProof();
+  a.matrix.productSource.authorityState = 'SOURCE_ONLY_PROVEN_NOT_YET_COMPOSED_OR_DEV_MATERIALIZED';
+  assert.match(validateShockContinuity(a).failures.join(' '), /MATRIX_SOURCE_ONLY_STATUS_AFTER_HOSTING_DEV/);
+});
 test('different source and frozen document bytes fail closed', () => {
   const a = mk(); a.pointer.productSourceSha = 'other'; a.pointer.activeShockControl.gitBlob = 'other';
   const failures = validateShockContinuity(a).failures.join(' ');

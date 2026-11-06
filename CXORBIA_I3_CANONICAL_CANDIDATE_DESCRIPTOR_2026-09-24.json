@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_HOSTING_DEV_PASS_D05_D06_ROLE_E2E_HUMAN_PENDING_5_MATCH",
+  "status": "HOLD_I3_5_MATCH_16_DOMAIN_E2E_HUMAN_PENDING_D05_FLEX_QA_PASS",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -9,7 +9,7 @@
   "predecessorProductSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V565_2026-11-06.json",
   "findingsLedgerExpectedGitBlob": "95e8b78f1f4ed5cc2cb319622811c1642b3c6d4a",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261106-V247.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261106-V248.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -128,7 +128,7 @@
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
   "historicalExactNextActionPreS1": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "I3 HOLD; 5/21 MATCH. Source a290acf84fe71891747e4dae8b62cd952e094c71 now served in DEV Hosting 65e8034fac283714 (RUN42259364657 SUCCESS), no production deploy. Carry forward 83/83 identity groups + 2 approved merges (no remerge), G05/A05 external HR live parity PASS, C04/C05 finanzas bounded 13/13 provider ACK PASS, D05 four-option Admin natural version 1->2 save/reload PASS and QA cleanup PASS, D06 Stiven 10/10 cross-period Shopper PASS; do not rerun. G03 independent 2026 HR-finanzas historical payment ACK not located: EVIDENCE_GAP, never infer paid from HR blanks or classify a new product failure without discrepancy. NEXT EXACT: check authorized independent bank/payment source or retain unconfirmed; one disposable D05 2/3-option editor current-source E2E, then D06 controlled Shopper attempt if safe; accept other domains only by owner-specific readback. Gate20/21 HOLD; I4 not authorized. See docs/checkpoints/CXORBIA_I3_P0_PROOF_CARRY_FORWARD_ANTI_LOOP_20261106.json. Current authority matrix: RECOVERY-I3-MODULE-TRUTH-MATRIX-20261106-V247.json; older V246 remains immutable evidence.",
+  "exactNextAction": "I3 HOLD; 5/21 MATCH. Current product source a290acf84fe71891747e4dae8b62cd952e094c71 verified byte-identical in DEV Hosting version 65e8034fac283714 (9/9 assets; runtime unchanged). D05 QA Admin natural 15/15 (8 with two options; 7 with three) completed to four; version 1->2 provider readback and reload PASS, 6/6 real banks unchanged and QA-only tombstoned; D06 existing Shopper read-only PASS, no attempt writes (RUN42277757800). Preserve earlier 83/83+2 identity merges, G05/A05 HR external live parity, C04/C05 finanzas 13/13 ACK, D05 four-option and Stiven 10/10 PASS: no rerun. G03 HR-finanzas historical bank-payment confirmation 2026 is INDEPENDENT_EVIDENCE_GAP, not a reproducible functional defect; unconfirmed stays unconfirmed. Three formerly flagged TRUE_FUNCTIONAL_DEFECT domains reclassified FOCAL_PASS_PENDING_DOMAIN_E2E_HUMAN based on exact carried evidence, not MATCH. NEXT EXACT: D06 controlled QA-only Shopper attempt if safe/idempotent, then owner-specific live role/project/period E2E and human acceptance of remaining 16 domains without reopening passed focal proofs. Gate20/Gate21 HOLD; production DO_NOT_TOUCH; I4 authorization absent. Authority V248.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2979,7 +2979,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "ff6b5e9c7885c5763ce24638dd373f351c9aa841",
+  "moduleTruthExpectedGitBlob": "ded26961d68e8a3cf9bef2bdbb3258810c06ba50",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -17512,7 +17512,7 @@
     "qaContinuityGuardState": "V23_INITIAL_CONTROL_FAIL_CORRECTION_PENDING"
   },
   "priorStatusBeforeRootRun2222": "HOLD_VRM309_DEV_MATERIALIZED_ROLE_E2E_PENDING",
-  "nextExactAction": "I3 HOLD; 5/21 MATCH. Source a290acf84fe71891747e4dae8b62cd952e094c71 now served in DEV Hosting 65e8034fac283714 (RUN42259364657 SUCCESS), no production deploy. Carry forward 83/83 identity groups + 2 approved merges (no remerge), G05/A05 external HR live parity PASS, C04/C05 finanzas bounded 13/13 provider ACK PASS, D05 four-option Admin natural version 1->2 save/reload PASS and QA cleanup PASS, D06 Stiven 10/10 cross-period Shopper PASS; do not rerun. G03 independent 2026 HR-finanzas historical payment ACK not located: EVIDENCE_GAP, never infer paid from HR blanks or classify a new product failure without discrepancy. NEXT EXACT: check authorized independent bank/payment source or retain unconfirmed; one disposable D05 2/3-option editor current-source E2E, then D06 controlled Shopper attempt if safe; accept other domains only by owner-specific readback. Gate20/21 HOLD; I4 not authorized. See docs/checkpoints/CXORBIA_I3_P0_PROOF_CARRY_FORWARD_ANTI_LOOP_20261106.json. Current authority matrix: RECOVERY-I3-MODULE-TRUTH-MATRIX-20261106-V247.json; older V246 remains immutable evidence.",
+  "nextExactAction": "I3 HOLD; 5/21 MATCH. Current product source a290acf84fe71891747e4dae8b62cd952e094c71 verified byte-identical in DEV Hosting version 65e8034fac283714 (9/9 assets; runtime unchanged). D05 QA Admin natural 15/15 (8 with two options; 7 with three) completed to four; version 1->2 provider readback and reload PASS, 6/6 real banks unchanged and QA-only tombstoned; D06 existing Shopper read-only PASS, no attempt writes (RUN42277757800). Preserve earlier 83/83+2 identity merges, G05/A05 HR external live parity, C04/C05 finanzas 13/13 ACK, D05 four-option and Stiven 10/10 PASS: no rerun. G03 HR-finanzas historical bank-payment confirmation 2026 is INDEPENDENT_EVIDENCE_GAP, not a reproducible functional defect; unconfirmed stays unconfirmed. Three formerly flagged TRUE_FUNCTIONAL_DEFECT domains reclassified FOCAL_PASS_PENDING_DOMAIN_E2E_HUMAN based on exact carried evidence, not MATCH. NEXT EXACT: D06 controlled QA-only Shopper attempt if safe/idempotent, then owner-specific live role/project/period E2E and human acceptance of remaining 16 domains without reopening passed focal proofs. Gate20/Gate21 HOLD; production DO_NOT_TOUCH; I4 authorization absent. Authority V248.",
   "i3Nov06SourceOnlyFocal": {
     "sourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
     "predecessorDevSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
@@ -17576,5 +17576,21 @@
     "readback": "PASS_NINE_SERVED_ASSETS",
     "certifications": "5_OF_21_MATCH_UNCHANGED",
     "production": "DO_NOT_TOUCH"
+  },
+  "previousMatrixAuthorityAtV247": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261106-V247.json",
+    "gitBlob": "ff6b5e9c7885c5763ce24638dd373f351c9aa841"
+  },
+  "i3D05FlexQaCurrentTruth": {
+    "path": "docs/checkpoints/CXORBIA_I3_D05_FLEX_OPTIONS_QA_RUN42277757800_20261106.json",
+    "gitBlob": "9b83f3639956e40d436814f12209506a9fd59b1c",
+    "runId": 42277757800,
+    "sourceCommit": "ccd2792032953a1d18244de5e68b4123ff2ac345",
+    "decision": "PASS_SCOPED_D05_FLEX_ADMIN_UI_SAVE_RELOAD_AND_D06_SHOPPER_READ_ONLY",
+    "realBanksUnchanged": 6,
+    "qaOnlyRetired": true,
+    "moduleTruthVersion": "V248",
+    "wholeModulesNewlyCertified": 0,
+    "production": false
   }
 }
