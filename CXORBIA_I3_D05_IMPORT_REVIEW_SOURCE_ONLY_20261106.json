@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "cxorbia.i3.d05.import-review-source-only.20261106.v1",
+  "observedDateGuatemala": "2026-11-06",
+  "scope": "APPEND_ONLY_CONTROL_RECEIPT_NO_NEW_RELEASE_NO_DEV_OR_PROD_DEPLOY",
+  "authority": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "iteration": "I3",
+    "state": "HOLD",
+    "officialProductSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+    "sourceOnlySuccessorSha": "c738975e646d82e8578b40ce1c86e9233a06b140",
+    "sourceOnlyParentSha": "33789cdb65e583d7671f5b029974b837cdb6772a",
+    "sourceOnlyTreeSha": "674501a767edc04c9c91ffd3b95263f6cd0dddb8"
+  },
+  "finding": {
+    "classification": "FUNCTIONAL_DEFECT",
+    "module": "Certificación",
+    "owner": "app/modules/cert.js",
+    "priorReproduction": "Importer accepts 2/3 choices; reviewer only exposes imported choice inputs but requires exactly 4 distinct complete choices, source, explanation before publish",
+    "browserEvidence": "Live DEV authenticated Admin Oct 2026 import modal showed exactly three-option pipe format; no new bank submitted"
+  },
+  "sourceOnlyCorrection": {
+    "files": [
+      {
+        "path": "app/modules/cert.js",
+        "blobSha": "d2c362958f734267123e7ac7ff0341824ba4fa11"
+      },
+      {
+        "path": "tools/qa/cxorbia-i3-d05-import-review-focal.test.mjs",
+        "blobSha": "a4c5018072dc8d6123665b98d8ebc4c491ba41cc"
+      }
+    ],
+    "behavior": "Review padded to >=4 editable choices; import accepts repairable 2/3/4, rejects >4 before write; friendly validation; preserve pending draft until valid provider ACK",
+    "testedLocally": {
+      "newFocal": "3/3 PASS",
+      "existingD05": "6/6 PASS",
+      "existingD04": "60/60 PASS",
+      "backendCertification": "40/40 PASS",
+      "sum": "109/109 PASS",
+      "syntax": "PASS",
+      "diffWhitespace": "PASS",
+      "rulesUnitTesting": "NOT_EXECUTED_MISSING_DEPENDENCY_@firebase/rules-unit-testing"
+    }
+  },
+  "automaticWorkflow": {
+    "runId": 42251720107,
+    "url": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/42251720107",
+    "conclusion": "failure",
+    "failedJob": "canonical-candidate-authority",
+    "failedTest": "D05/D04 exact canonical source",
+    "cause": "Current descriptor still pins officialProductSourceSha 5b359...; source-only successor modified app/modules/cert.js. A deliberate mismatch blocks promotion",
+    "testsObserved": "67 PASS / 1 FAIL in initial job",
+    "dependentJobs": "28 SKIPPED",
+    "devDeployPerformed": false,
+    "prodDeployPerformed": false
+  },
+  "preservation": {
+    "officialModuleTruth": "5/21 MATCH unchanged",
+    "certificationModule": "HOLD",
+    "candidateDescriptorUpdated": false,
+    "devSourceChanged": false,
+    "devRuntimeChanged": false,
+    "devHostingChanged": false,
+    "realBanksEdited": false,
+    "hrWrites": 0,
+    "identityMerges": 0,
+    "production": "DO_NOT_TOUCH",
+    "i4": "NOT_STARTED"
+  },
+  "exactNextAction": "Reconcile source-only successor to unique canonical descriptor and module truth under frozen I3 owner rules, rerun canonical source proof and full certification guard before any DEV promotion; then authenticated Admin importer/editor E2E on temporary QA bank only with cleanup; keep previous accepted PASS. Separately correct misvisitas.js cross-period history defect as proven owner.",
+  "authorization": "No new owner decision requested for source QA; DEV deployment and I4 production require gates and existing approvals"
+}
