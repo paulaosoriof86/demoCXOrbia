@@ -21743,23 +21743,39 @@
       "id": "VRM-308",
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
-      "taskIds": ["A01", "A02", "B01", "G03"],
-      "relatedFindings": ["VRM-304", "VRM-307"],
+      "taskIds": [
+        "A01",
+        "A02",
+        "B01",
+        "G03"
+      ],
+      "relatedFindings": [
+        "VRM-304",
+        "VRM-307"
+      ],
       "title": "Approved HN canonical shopper invisible in Admin because the cumulative read model compares configured country code with country name as distinct",
       "firstObservedAt": "2026-11-05",
       "observed": "Independent DEV Admin role run 42138916399: Jhennypher canonical 1/1 visible, Rocío canonical 0/0 despite independent provider fusion PASS for both; synthetic HN/Honduras and GT/Guatemala crosswalk fixtures reproduced two failing cases before the fix.",
       "expected": "Provider-adjudicated exact aliases belonging to the same configured country map to one visible canonical profile with HR history intact; different country, tenant or unapproved identities remain separate.",
       "rootCause": "The exact supersession read-model country guard compared lowercase raw labels and rejected equivalent configured code/name forms.",
-      "ownerFiles": ["app/adapters/tya-cumulative-read-model-v2.js", "tools/qa/cxorbia-i3-vrm308-hn-country-alias-normalization.test.mjs"],
+      "ownerFiles": [
+        "app/adapters/tya-cumulative-read-model-v2.js",
+        "tools/qa/cxorbia-i3-vrm308-hn-country-alias-normalization.test.mjs"
+      ],
       "sourceFixCommit": "2e36c4d62eedae59b65716cf75dd53e059f958ca",
       "sourceFixTree": "c0814bc63bde33c042a86aff5666d40b8a429a0f",
       "predecessorSourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
-      "sourceTests": {"pass": 18, "fail": 0, "priorFailures": 2, "scope": "SYNTHETIC_SOURCE_ONLY_NOT_AUTHENTICATED_DEV"},
+      "sourceTests": {
+        "pass": 18,
+        "fail": 0,
+        "priorFailures": 2,
+        "scope": "SYNTHETIC_SOURCE_ONLY_NOT_AUTHENTICATED_DEV"
+      },
       "regressionGate": "PASS_C6_STABLE_COMPOSER_3X_IDEMPOTENCE",
       "liveRoleBeforeFixRunId": 42138916399,
-    "state": "DEV_MATERIALIZED_SAME_ARTIFACT_ROLE_E2E_PENDING",
-    "devMaterialization": "PASS_EXACT_RUN42141578072",
-    "devMaterializationRunId": 42141578072,
+      "state": "DEV_MATERIALIZED_SAME_ARTIFACT_ROLE_E2E_PENDING",
+      "devMaterialization": "PASS_EXACT_RUN42141578072",
+      "devMaterializationRunId": 42141578072,
       "adminShopperRoleReproof": "PENDING_SAME_ARTIFACT",
       "modulePromotions": 0,
       "hrWrites": 0,
@@ -21770,18 +21786,34 @@
       "id": "VRM-309",
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
-      "taskIds": ["A01", "A02", "B01", "G03"],
-      "relatedFindings": ["VRM-304", "VRM-307", "VRM-308"],
+      "taskIds": [
+        "A01",
+        "A02",
+        "B01",
+        "G03"
+      ],
+      "relatedFindings": [
+        "VRM-304",
+        "VRM-307",
+        "VRM-308"
+      ],
       "title": "HR canonical shopper country display name is filtered against period country codes in Admin scoped list",
       "firstObservedAt": "2026-11-05",
       "observed": "Exact authenticated DEV role E2E run 42145300224: Rocío Vilca canonical raw profile exists with country Honduras, while November period scopes GT/HN; raw 195 vs scoped 194, 4 current HR-mapped visits and 7 alias IDs persist. Jhennypher GT remains visible.",
       "expected": "Canonical shoppers appear once in the correct configured operational country despite human-readable labels, with HR-controlled fields authoritative and financial/visit history unchanged.",
       "rootCause": "The cumulative read model retained the profile country name Honduras in row.pais after merging HR base and protected profile; app/core/data.js uses literal country-code inclusion (GT/HN) when scoping shoppers.",
-      "ownerFiles": ["app/adapters/tya-cumulative-read-model-v2.js", "tools/qa/cxorbia-i3-vrm308-hn-country-alias-normalization.test.mjs"],
+      "ownerFiles": [
+        "app/adapters/tya-cumulative-read-model-v2.js",
+        "tools/qa/cxorbia-i3-vrm308-hn-country-alias-normalization.test.mjs"
+      ],
       "sourceFixCommit": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
       "sourceFixTree": "289d084f78dc8c1392e043a7668b10258ffe459d",
       "predecessorSourceSha": "2e36c4d62eedae59b65716cf75dd53e059f958ca",
-      "sourceTests": {"pass": 19, "fail": 0, "scope": "SOURCE_FOCAL_AND_VRM304_NO_DEV_MATERIALIZATION_YET"},
+      "sourceTests": {
+        "pass": 19,
+        "fail": 0,
+        "scope": "SOURCE_FOCAL_AND_VRM304_NO_DEV_MATERIALIZATION_YET"
+      },
       "sourceOwnerBlob": "11425e47e54ca955056dc6b891235a5bdcdbaf4d",
       "testOwnerBlob": "b6ebd9310e9e315155c171dd45e3b38d571a7fda",
       "adminRoleBeforeFixRunId": 42145300224,
@@ -22932,7 +22964,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "I3 V17 HOLD: exact VRM309 source 5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947 DEV RUN42147711875 #2214 SEALED. Existing independent authenticated Admin GT/HN + both Shopper roles RUN42150462459 #2216 20/20 PASS: Jhennypher 15/15 own unique visits, Rocío 4/4; no duplicated canonical row. 83/83 approved original identity groups + 2 extra provider PASS, no more fusion. 5/21 domain MATCH, 16 pending; skipped status-specific jobs NOT certified. NEXT EXACT I3 read-only broader shopper population/root, independent G03 HR finanzas/historical amount and payment reconciliation, then remaining D05 questionnaire, C04/C05 finance and postulations/reservations role E2E with same DEV artifact. Gate20/21 HOLD, I4 authorization absent, production DO_NOT_TOUCH.",
+  "exactNextAction": "I3 V23 HOLD: exact source 5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947 DEV RUN42147711875 sealed. 83/83 originally approved identity groups + 2 additional keeper merges provider ACK, no remerge; RUN42150462459 both Admin+Shoppers 20/20 PASS (GT Jhennypher 15, HN Rocío 4), RUN42154007096 VRM217/219 root PASS 239 canonical memberships, 773/773 HR assignments, 0 mapping conflicts, VRM215 HN target Shopper Auth 18 visits PASS; 3 independent noncanonical-login QA diagnostics NOT WAIVED. Official module MATCH 5/21; other 16 require independent whole-domain certification. NEXT EXACT I3 P0 independent G03 HR-finance/historical paid reconciliation then G05/A05, D05 Admin+Shopper questionnaire, visits/postulations/reservations and full remaining roles; separately reprove 3 username aliases with real login, no username edits without proof. Gate20/21 HOLD, I4 not authorized, HR and production untouched.",
   "supersedesGitBlob": "086542151de0b223afbd258f1f65be6ca886684d",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -26660,7 +26692,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-11-04T08:13:31Z",
-  "nextExactAction": "I3 V17 HOLD: exact VRM309 source 5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947 DEV RUN42147711875 #2214 SEALED. Existing independent authenticated Admin GT/HN + both Shopper roles RUN42150462459 #2216 20/20 PASS: Jhennypher 15/15 own unique visits, Rocío 4/4; no duplicated canonical row. 83/83 approved original identity groups + 2 extra provider PASS, no more fusion. 5/21 domain MATCH, 16 pending; skipped status-specific jobs NOT certified. NEXT EXACT I3 read-only broader shopper population/root, independent G03 HR finanzas/historical amount and payment reconciliation, then remaining D05 questionnaire, C04/C05 finance and postulations/reservations role E2E with same DEV artifact. Gate20/21 HOLD, I4 authorization absent, production DO_NOT_TOUCH.",
+  "nextExactAction": "I3 V23 HOLD: exact source 5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947 DEV RUN42147711875 sealed. 83/83 originally approved identity groups + 2 additional keeper merges provider ACK, no remerge; RUN42150462459 both Admin+Shoppers 20/20 PASS (GT Jhennypher 15, HN Rocío 4), RUN42154007096 VRM217/219 root PASS 239 canonical memberships, 773/773 HR assignments, 0 mapping conflicts, VRM215 HN target Shopper Auth 18 visits PASS; 3 independent noncanonical-login QA diagnostics NOT WAIVED. Official module MATCH 5/21; other 16 require independent whole-domain certification. NEXT EXACT I3 P0 independent G03 HR-finance/historical paid reconciliation then G05/A05, D05 Admin+Shopper questionnaire, visits/postulations/reservations and full remaining roles; separately reprove 3 username aliases with real login, no username edits without proof. Gate20/21 HOLD, I4 not authorized, HR and production untouched.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -39003,7 +39035,12 @@
       "decision": "PASS_RESIDUAL_MURGA_FUSION_AND_NAME_DEV",
       "providerAck": true,
       "aliasesRetired": 10,
-      "historicalPreserved": {"visits": 18, "liquidations": 9, "certifications": 7, "paymentReconciliations": 12}
+      "historicalPreserved": {
+        "visits": 18,
+        "liquidations": 9,
+        "certifications": 7,
+        "paymentReconciliations": 12
+      }
     },
     "rocioHumanGroup": {
       "providerRunId": 42135218971,
@@ -39011,7 +39048,12 @@
       "providerAck": true,
       "aliasesRetired": 6,
       "hrAnchorsAsHistoricalAliases": 2,
-      "historicalPreserved": {"visits": 12, "liquidations": 3, "certifications": 2, "paymentReconciliations": 4}
+      "historicalPreserved": {
+        "visits": 12,
+        "liquidations": 3,
+        "certifications": 2,
+        "paymentReconciliations": 4
+      }
     },
     "postSuccessIndependentReadbackRunId": 42135680776,
     "unmappedDomainRefs": 0,
@@ -39044,5 +39086,34 @@
     "certifiedWholeModules": 5,
     "totalModules": 21,
     "production": false
-  }
+  },
+  "vrm309PopulationRootHnRun2222Readback": {
+    "schemaVersion": "cxorbia.i3.vrm309.population-hn-readonly.v1",
+    "decision": "PASS_SCOPED_POPULATION_ROOT_AND_HN_AUTHENTICATED_SHOPPER",
+    "runId": 42154007096,
+    "runNumber": 2222,
+    "jobId": 127683872272,
+    "artifactId": 13473708310,
+    "artifactZipSha256": "d2045d453d7b07bc2ce272fa8c25ae8f13f21f694fd527d9c32ec2de6e26ddd0",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM309_POPULATION_HN_SCOPED_PASS_RUN2222_20261105.json",
+    "sourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+    "hrRevision": "63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba",
+    "populationCanonicalMemberships": 239,
+    "hrAssigned": 773,
+    "hrResolved": 773,
+    "uniqueHrVisitKeys": 792,
+    "mappingConflicts": 0,
+    "ambiguousVisitOwnerGroups": 0,
+    "hnTargetOwnVisits": 18,
+    "hnTargetAuthorizedPeriods": 14,
+    "loginPass": true,
+    "hnScopedRolePass": true,
+    "nonTargetCredentialAnomalies": 3,
+    "nonTargetCredentialIssuesNotWaived": true,
+    "moduleFullMatchesBeforeAndAfter": 5,
+    "moduleTotal": 21,
+    "production": false,
+    "writes": 0
+  },
+  "priorExactActionBeforeV23": "I3 V17 HOLD: exact VRM309 source 5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947 DEV RUN42147711875 #2214 SEALED. Existing independent authenticated Admin GT/HN + both Shopper roles RUN42150462459 #2216 20/20 PASS: Jhennypher 15/15 own unique visits, Rocío 4/4; no duplicated canonical row. 83/83 approved original identity groups + 2 extra provider PASS, no more fusion. 5/21 domain MATCH, 16 pending; skipped status-specific jobs NOT certified. NEXT EXACT I3 read-only broader shopper population/root, independent G03 HR finanzas/historical amount and payment reconciliation, then remaining D05 questionnaire, C04/C05 finance and postulations/reservations role E2E with same DEV artifact. Gate20/21 HOLD, I4 authorization absent, production DO_NOT_TOUCH."
 }

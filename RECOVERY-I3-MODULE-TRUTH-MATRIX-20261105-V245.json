@@ -115,17 +115,17 @@
   "allModulesMatch": false,
   "currentOperationalEvidence20261105": {
     "authorityCheckpoint": "docs/checkpoints/CXORBIA_RECOVERY_CHECKPOINT_CANONICO_2026-11-05_I3_V2.md",
-    "productSourceUnchanged": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+    "productSourceUnchanged": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
     "stivenAdminShopper10Of10Run": 42044986780,
     "stivenOrdinaryLoginPassWithPostClickTimeoutRun": 42047162119,
     "approved139BatchRun": 42063057316,
     "approved139BatchArtifact": 13434525370,
     "approved139BatchArtifactSha256": "fed08e9024d90a58caa37b3dd57cfe8297410e585f923586c0f96d5ed64280fb",
     "approvedGroupCount": 83,
-    "previouslyVerifiedGroups": 32,
-    "newlyVerifiedGroups": 37,
-    "totalVerifiedGroups": 69,
-    "remainingGroups": 14,
+    "previouslyVerifiedGroups": 69,
+    "newlyVerifiedGroups": 14,
+    "totalVerifiedGroups": 83,
+    "remainingGroups": 0,
     "preservedAliasIds": 70,
     "preservedAndReassignedVisitRows": 201,
     "preservedAndReassignedLiquidations": 184,
@@ -137,8 +137,13 @@
     "gate20": "HOLD",
     "gate21": "HOLD",
     "production": false,
-    "latestDevRunId": 42132045461,
-    "latestDevSourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837"
+    "latestDevRunId": 42147711875,
+    "latestDevSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+    "roleE2eRun": 42150462459,
+    "populationRootHnRun": 42154007096,
+    "activeCanonicalMemberships": 239,
+    "hrAssignedResolved": "773/773",
+    "unresolvedLoginQA": 3
   },
   "modules": [
     {
@@ -231,6 +236,13 @@
         "certifiedWholeModules": 5,
         "totalModules": 21,
         "production": false
+      },
+      "latestBroaderReadonlyPopulationProof": {
+        "runId": 42154007096,
+        "decision": "PASS_SCOPED_POPULATION_ROOT_AND_HN_AUTHENTICATED_SHOPPER",
+        "fullDomainPass": false,
+        "independentCredentialResiduals": 3,
+        "sourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947"
       }
     },
     {
@@ -2812,6 +2824,13 @@
         "certifiedWholeModules": 5,
         "totalModules": 21,
         "production": false
+      },
+      "latestBroaderReadonlyPopulationProof": {
+        "runId": 42154007096,
+        "decision": "PASS_SCOPED_POPULATION_ROOT_AND_HN_AUTHENTICATED_SHOPPER",
+        "fullDomainPass": false,
+        "independentCredentialResiduals": 3,
+        "sourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947"
       }
     },
     {
@@ -3186,6 +3205,13 @@
         "certifiedWholeModules": 5,
         "totalModules": 21,
         "production": false
+      },
+      "latestBroaderReadonlyPopulationProof": {
+        "runId": 42154007096,
+        "decision": "PASS_SCOPED_POPULATION_ROOT_AND_HN_AUTHENTICATED_SHOPPER",
+        "fullDomainPass": false,
+        "independentCredentialResiduals": 3,
+        "sourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947"
       }
     },
     {
@@ -8179,7 +8205,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "I3 V17 HOLD: exact VRM309 source 5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947 DEV RUN42147711875 #2214 SEALED. Existing independent authenticated Admin GT/HN + both Shopper roles RUN42150462459 #2216 20/20 PASS: Jhennypher 15/15 own unique visits, Rocío 4/4; no duplicated canonical row. 83/83 approved original identity groups + 2 extra provider PASS, no more fusion. 5/21 domain MATCH, 16 pending; skipped status-specific jobs NOT certified. NEXT EXACT I3 read-only broader shopper population/root, independent G03 HR finanzas/historical amount and payment reconciliation, then remaining D05 questionnaire, C04/C05 finance and postulations/reservations role E2E with same DEV artifact. Gate20/21 HOLD, I4 authorization absent, production DO_NOT_TOUCH.",
+  "nextExactAction": "I3 V23 HOLD: exact source 5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947 DEV RUN42147711875 sealed. 83/83 originally approved identity groups + 2 additional keeper merges provider ACK, no remerge; RUN42150462459 both Admin+Shoppers 20/20 PASS (GT Jhennypher 15, HN Rocío 4), RUN42154007096 VRM217/219 root PASS 239 canonical memberships, 773/773 HR assignments, 0 mapping conflicts, VRM215 HN target Shopper Auth 18 visits PASS; 3 independent noncanonical-login QA diagnostics NOT WAIVED. Official module MATCH 5/21; other 16 require independent whole-domain certification. NEXT EXACT I3 P0 independent G03 HR-finance/historical paid reconciliation then G05/A05, D05 Admin+Shopper questionnaire, visits/postulations/reservations and full remaining roles; separately reprove 3 username aliases with real login, no username edits without proof. Gate20/21 HOLD, I4 not authorized, HR and production untouched.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -17696,5 +17722,60 @@
     "certifiedWholeModules": 5,
     "totalModules": 21,
     "production": false
+  },
+  "priorOperationalEvidenceBeforeRootRun2222": {
+    "authorityCheckpoint": "docs/checkpoints/CXORBIA_RECOVERY_CHECKPOINT_CANONICO_2026-11-05_I3_V2.md",
+    "productSourceUnchanged": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+    "stivenAdminShopper10Of10Run": 42044986780,
+    "stivenOrdinaryLoginPassWithPostClickTimeoutRun": 42047162119,
+    "approved139BatchRun": 42063057316,
+    "approved139BatchArtifact": 13434525370,
+    "approved139BatchArtifactSha256": "fed08e9024d90a58caa37b3dd57cfe8297410e585f923586c0f96d5ed64280fb",
+    "approvedGroupCount": 83,
+    "previouslyVerifiedGroups": 32,
+    "newlyVerifiedGroups": 37,
+    "totalVerifiedGroups": 69,
+    "remainingGroups": 14,
+    "preservedAliasIds": 70,
+    "preservedAndReassignedVisitRows": 201,
+    "preservedAndReassignedLiquidations": 184,
+    "preservedAndReassignedCertifications": 44,
+    "idempotentZeroWriteReplays": 74,
+    "moduleMatches": 5,
+    "moduleTotal": 21,
+    "newFullDomainCertifications": 0,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": false,
+    "latestDevRunId": 42132045461,
+    "latestDevSourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837"
+  },
+  "vrm309PopulationRootHnRun2222Readback": {
+    "schemaVersion": "cxorbia.i3.vrm309.population-hn-readonly.v1",
+    "decision": "PASS_SCOPED_POPULATION_ROOT_AND_HN_AUTHENTICATED_SHOPPER",
+    "runId": 42154007096,
+    "runNumber": 2222,
+    "jobId": 127683872272,
+    "artifactId": 13473708310,
+    "artifactZipSha256": "d2045d453d7b07bc2ce272fa8c25ae8f13f21f694fd527d9c32ec2de6e26ddd0",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM309_POPULATION_HN_SCOPED_PASS_RUN2222_20261105.json",
+    "sourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+    "hrRevision": "63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba",
+    "populationCanonicalMemberships": 239,
+    "hrAssigned": 773,
+    "hrResolved": 773,
+    "uniqueHrVisitKeys": 792,
+    "mappingConflicts": 0,
+    "ambiguousVisitOwnerGroups": 0,
+    "hnTargetOwnVisits": 18,
+    "hnTargetAuthorizedPeriods": 14,
+    "loginPass": true,
+    "hnScopedRolePass": true,
+    "nonTargetCredentialAnomalies": 3,
+    "nonTargetCredentialIssuesNotWaived": true,
+    "moduleFullMatchesBeforeAndAfter": 5,
+    "moduleTotal": 21,
+    "production": false,
+    "writes": 0
   }
 }

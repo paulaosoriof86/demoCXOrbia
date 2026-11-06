@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM309_DEV_MATERIALIZED_ROLE_E2E_PENDING",
+  "status": "HOLD_I3_G03_AND_REMAINING_FULL_DOMAIN_CERTIFICATIONS",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,7 +8,7 @@
   "productTreeAuthority": "289d084f78dc8c1392e043a7668b10258ffe459d",
   "predecessorProductSourceSha": "2e36c4d62eedae59b65716cf75dd53e059f958ca",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V564_2026-11-04.json",
-  "findingsLedgerExpectedGitBlob": "b6922772b37117f49f92b0e95b9862bf14e6fc7b",
+  "findingsLedgerExpectedGitBlob": "1edac152476678cfd614c83b70f8f0b80513852e",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261105-V245.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -2979,7 +2979,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "91f31a980682bab2d0ebdcf6299a67533d3d21f3",
+  "moduleTruthExpectedGitBlob": "eb615fc1f1dcdb75e64baee0ec0b4aac3c3bb83e",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -17478,5 +17478,35 @@
     "certifiedWholeModules": 5,
     "totalModules": 21,
     "production": false
-  }
+  },
+  "vrm309PopulationRootHnRun2222Readback": {
+    "schemaVersion": "cxorbia.i3.vrm309.population-hn-readonly.v1",
+    "decision": "PASS_SCOPED_POPULATION_ROOT_AND_HN_AUTHENTICATED_SHOPPER",
+    "runId": 42154007096,
+    "runNumber": 2222,
+    "jobId": 127683872272,
+    "artifactId": 13473708310,
+    "artifactZipSha256": "d2045d453d7b07bc2ce272fa8c25ae8f13f21f694fd527d9c32ec2de6e26ddd0",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM309_POPULATION_HN_SCOPED_PASS_RUN2222_20261105.json",
+    "sourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+    "hrRevision": "63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba",
+    "populationCanonicalMemberships": 239,
+    "hrAssigned": 773,
+    "hrResolved": 773,
+    "uniqueHrVisitKeys": 792,
+    "mappingConflicts": 0,
+    "ambiguousVisitOwnerGroups": 0,
+    "hnTargetOwnVisits": 18,
+    "hnTargetAuthorizedPeriods": 14,
+    "loginPass": true,
+    "hnScopedRolePass": true,
+    "nonTargetCredentialAnomalies": 3,
+    "nonTargetCredentialIssuesNotWaived": true,
+    "moduleFullMatchesBeforeAndAfter": 5,
+    "moduleTotal": 21,
+    "production": false,
+    "writes": 0
+  },
+  "priorStatusBeforeRootRun2222": "HOLD_VRM309_DEV_MATERIALIZED_ROLE_E2E_PENDING",
+  "nextExactAction": "I3 V23 HOLD: exact source 5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947 DEV RUN42147711875 sealed. 83/83 originally approved identity groups + 2 additional keeper merges provider ACK, no remerge; RUN42150462459 both Admin+Shoppers 20/20 PASS (GT Jhennypher 15, HN Rocío 4), RUN42154007096 VRM217/219 root PASS 239 canonical memberships, 773/773 HR assignments, 0 mapping conflicts, VRM215 HN target Shopper Auth 18 visits PASS; 3 independent noncanonical-login QA diagnostics NOT WAIVED. Official module MATCH 5/21; other 16 require independent whole-domain certification. NEXT EXACT I3 P0 independent G03 HR-finance/historical paid reconciliation then G05/A05, D05 Admin+Shopper questionnaire, visits/postulations/reservations and full remaining roles; separately reprove 3 username aliases with real login, no username edits without proof. Gate20/21 HOLD, I4 not authorized, HR and production untouched."
 }
