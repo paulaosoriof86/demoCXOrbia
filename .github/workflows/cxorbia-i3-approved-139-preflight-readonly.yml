@@ -17,7 +17,8 @@ concurrency:
 jobs:
   # VRM-307 run 42133324561: Jhennypher PASS, Rocío provider rejected with
   # SHOPPER_IDENTITY_EXTERNAL_HR_ANCHOR_NOT_PROFILE_FREE and zero provider writes.
-  # Inspect exact post-attempt state before any further write (read-only trigger).
+  # Both groups now provider PASS (Rocio run 42135218971); take independent
+  # post-success persistence/domain census before final module-certification update.
   residual-post-attempt-receipt-readonly:
     if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-TWO-RESIDUALS-READBACK-ONLY-20261105' }}
     runs-on: ubuntu-24.04

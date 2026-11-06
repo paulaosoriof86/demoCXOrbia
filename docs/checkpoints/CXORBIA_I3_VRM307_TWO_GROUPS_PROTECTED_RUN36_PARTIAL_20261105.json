@@ -31,13 +31,22 @@
     }
   },
   "rocioVilca": {
-    "decision": "HOLD_PROVIDER_ACK_UNKNOWN_STOP_NO_RETRY",
+    "decision": "PASS_RESIDUAL_ROCIO_FUSION_AND_NAME_DEV",
     "keeperLogin": "rocio.vilca",
-    "providerAck": false,
-    "providerStatus": "blocked",
+    "providerAck": true,
+    "providerStatus": "committed",
     "providerErrorCode": "SHOPPER_IDENTITY_EXTERNAL_HR_ANCHOR_NOT_PROFILE_FREE",
-    "providerWrites": 0,
-    "idempotentReplays": 0,
+    "originalFailedAttemptWrites": 0,
+    "successfulRunId": 42135218971,
+    "successfulArtifactId": 13466110125,
+    "providerWrites": 38,
+    "idempotentReplays": 2,
+    "aliasesRetired": 6,
+    "canonicalMemberships": 1,
+    "providerDomainRowsPreserved": 19,
+    "canonicalProfileName": "Rocio Vilca",
+    "normalizedNameMatchesApprovedHr": true,
+    "independentReadbackAfterSuccessfulRun": "PENDING",
     "protectedAnchorRootCause": {
       "independentReadbackRunId": 42134519534,
       "artifactId": 13464009226,
@@ -67,5 +76,5 @@
   "production": false,
   "certifiedModules": 5,
   "totalModules": 21,
-  "nextAction": "One approved Rocio-only existing-profile-alias protected DEV attempt after zero-write exact HR/tenant/project/keeper preflight; NEVER retry Murga, never reimport HR, never touch production."
+  "nextAction": "Independent read-only post-success proof for both approved groups and DEV Admin UI; then reconcile cumulative module truth and execute skipped certification clauses. Do not rerun either successful fusion; no HR reimport or production write."
 }
