@@ -8,7 +8,7 @@
   "productTreeAuthority": "ed9362c9d432028978c2d3b748eb7559c2e8f1b1",
   "predecessorProductSourceSha": "f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V564_2026-11-04.json",
-  "findingsLedgerExpectedGitBlob": "1890cf32a77fc3b88b836a4ff23c956f8d78e7db",
+  "findingsLedgerExpectedGitBlob": "3d4f1186197ae0a7927830a2278ab3a28ac83231",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261105-V245.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -2979,7 +2979,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "d28f833e8f91de560dc0442f4b3bcecc770f9471",
+  "moduleTruthExpectedGitBlob": "4b7a0473090e481a71c29a75f144e42d26abf5c0",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,

@@ -1171,7 +1171,7 @@
   },
   "moduleTruthAuthority": {
     "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261105-V245.json",
-    "gitBlob": "d28f833e8f91de560dc0442f4b3bcecc770f9471",
+    "gitBlob": "4b7a0473090e481a71c29a75f144e42d26abf5c0",
     "sourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
     "allModulesMatch": false,
     "phaseAComplete": false
@@ -3212,7 +3212,7 @@
   "activeShockModuleTruth": {
     "sourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261105-V245.json",
-    "matrixBlob": "d28f833e8f91de560dc0442f4b3bcecc770f9471",
+    "matrixBlob": "4b7a0473090e481a71c29a75f144e42d26abf5c0",
     "classificationCounts": {
       "MATCH": 5,
       "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN": 2,
