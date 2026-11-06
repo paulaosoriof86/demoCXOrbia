@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "cxorbia.i3.d05-d06.hosting-only-dev-one-shot-request.20261106.v1",
+  "date": "2026-11-06",
+  "intent": "D05_D06_FOCAL_ADMIN_SHOPPER_HOSTING_ONLY_DEV",
+  "authorization": "PAULA_CONTINUE_I3_CORRECTION_2026_11_06",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlParentSha": "ad890ae5b36ccd41d0aec061e23e38f1cb913b1f",
+  "sourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
+  "sourceTree": "a2e629a6f0cd672e5270289984b498e58908baf9",
+  "predecessorSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+  "candidateChangedProductFiles": [
+    "app/modules/cert.js",
+    "app/modules/misvisitas.js"
+  ],
+  "sourceBlob": "d2c362958f734267123e7ac7ff0341824ba4fa11",
+  "testBlob": "f5b924807e3e2fc44eaffab3e4e9cd4c5a96432c",
+  "misvisitasBlob": "0fdee0f12ff2c068b237f352385f8c5dfdb65502",
+  "d06TestBlob": "5c9266aefddf7e0dce20103890241613944c755e",
+  "sourceControlCi": {
+    "runId": 42257079997,
+    "conclusion": "success",
+    "controlHeadSha": "ad890ae5b36ccd41d0aec061e23e38f1cb913b1f"
+  },
+  "project": "cxorbia-backend-dev",
+  "hostingTarget": "cxorbia-dev",
+  "hostingSite": "cxorbia-backend-dev",
+  "hostingRoot": "https://cxorbia-backend-dev.web.app",
+  "expectedPriorHostingVersion": "sites/cxorbia-backend-dev/versions/dd66761e0d4ba9a3",
+  "expectedRuntimeRevision": "cxorbia-live-hr-dev-00352-dml",
+  "expectedFirestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
+  "readbackPaths": [
+    "modules/cert.js",
+    "modules/misvisitas.js",
+    "core/backend-resources.js",
+    "core/backend-certifications.js",
+    "modules/academia.js",
+    "data/tya-certification-carryover-source-safe.js",
+    "index-backend-dev.html",
+    "core/backend-browser-auth.js",
+    "modules/dashboard.js"
+  ],
+  "allowedControlFiles": [
+    ".github/workflows/cxorbia-i3-vrm289-reports-hosting-dev.yml",
+    "docs/checkpoints/CXORBIA_I3_D05_D06_HOSTING_ONLY_DEV_ONE_SHOT_REQUEST_20261106.json"
+  ],
+  "maxHostingDevDeployAttempts": 1,
+  "automaticRetryAllowed": false,
+  "prodUrl": "https://tya-plataforma.web.app",
+  "forbiddenWrites": [
+    "production",
+    "cloud-run",
+    "firestore-rules",
+    "firestore-documents",
+    "firebase-auth",
+    "firebase-storage",
+    "hr",
+    "original-cinepolis-certification-banks"
+  ],
+  "postDeploymentVerification": [
+    "new-hosting-release-diff",
+    "exact-source-served-file-bytes",
+    "runtime-revision-unchanged",
+    "firestore-ruleset-unchanged",
+    "production-index-unchanged"
+  ],
+  "qaAdminReviewSave": "PENDING_AFTER_DEV_HOSTING",
+  "shopperCrossPeriodE2e": "PENDING_AFTER_DEV_HOSTING",
+  "moduleMatchCountUnchanged": 5,
+  "modulesTotal": 21,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false,
+  "production": "DO_NOT_TOUCH"
+}

@@ -1,5 +1,5 @@
-name: CXOrbia I3 Serial Hosting-only DEV - D05 versioned QA review
-# Authorized focal reuse of existing VRM289 Hosting-only DEV lane for D05; no extra deploy workflow.
+name: CXOrbia I3 Serial Hosting-only DEV - D05/D06 focal QA
+# Reuse of the existing VRM289 Hosting-only DEV lane for the exact D05/D06 app-only delta.
 on:
   push:
     branches:
@@ -29,9 +29,9 @@ jobs:
     contents: read
     id-token: write
    env:
-    REQUEST: docs/checkpoints/CXORBIA_I3_D05_HOSTING_ONLY_DEV_ONE_SHOT_REQUEST_20261102.json
-    FOCAL_DIR: .tmp/i3-d05-versioned-review-hosting-only
-    QA_ASSETS: "modules/cert.js core/backend-resources.js core/backend-certifications.js modules/academia.js data/tya-certification-carryover-source-safe.js index-backend-dev.html core/backend-browser-auth.js modules/dashboard.js"
+    REQUEST: docs/checkpoints/CXORBIA_I3_D05_D06_HOSTING_ONLY_DEV_ONE_SHOT_REQUEST_20261106.json
+    FOCAL_DIR: .tmp/i3-d05-d06-focal-hosting-only
+    QA_ASSETS: "modules/cert.js modules/misvisitas.js core/backend-resources.js core/backend-certifications.js modules/academia.js data/tya-certification-carryover-source-safe.js index-backend-dev.html core/backend-browser-auth.js modules/dashboard.js"
     PROD_URL: https://tya-plataforma.web.app
    steps:
    - uses: actions/checkout@v4
@@ -40,16 +40,16 @@ jobs:
    - uses: actions/setup-node@v4
      with:
       node-version: '24'
-   - name: Verify exact D05 source, frozen scope and six new regression cases
+   - name: Verify exact D05/D06 source, frozen scope and regression cases
      run: |
       set -Eeuo pipefail
       mkdir -p "$FOCAL_DIR"
       test "$(git rev-parse HEAD^)" = "$(jq -r .controlParentSha "$REQUEST")"
-      test "$(jq -r .controlParentSha "$REQUEST")" = "9e24025a2d56c0d60a73fd3dbdf0018a04e65c71"
+      test "$(jq -r .controlParentSha "$REQUEST")" = "ad890ae5b36ccd41d0aec061e23e38f1cb913b1f"
       test "$(git diff --name-only HEAD^ HEAD | LC_ALL=C sort)" = "$(jq -r '.allowedControlFiles | sort | .[]' "$REQUEST")"
-      jq -e '.schemaVersion=="cxorbia.i3.d05.hosting-only-dev-one-shot-request.20261102.v1"
-        and .intent=="D05_ADMIN_QA_VERSIONED_REVIEW_VISIBILITY_HOSTING_ONLY_DEV"
-        and .authorization=="PAULA_EXPLICIT_2026_11_02"
+      jq -e '.schemaVersion=="cxorbia.i3.d05-d06.hosting-only-dev-one-shot-request.20261106.v1"
+        and .intent=="D05_D06_FOCAL_ADMIN_SHOPPER_HOSTING_ONLY_DEV"
+        and .authorization=="PAULA_CONTINUE_I3_CORRECTION_2026_11_06"
         and .branch=="recovery/cxorbia-phase-a-20260831"
         and .project=="cxorbia-backend-dev"
         and .hostingTarget=="cxorbia-dev" and .hostingSite=="cxorbia-backend-dev"
@@ -69,13 +69,16 @@ jobs:
       test "$(git rev-parse "$SRC^{tree}")" = "$TREE"
       git merge-base --is-ancestor "$PREDECESSOR_SRC" "$SRC"
       git merge-base --is-ancestor "$SRC" HEAD
-      test "$(git diff --name-only "$PREDECESSOR_SRC" "$SRC" -- app | LC_ALL=C sort)" = app/modules/cert.js
+      test "$(git diff --name-only "$PREDECESSOR_SRC" "$SRC" -- app | LC_ALL=C sort)" = "$(printf '%s\n' app/modules/cert.js app/modules/misvisitas.js)"
       test -z "$(git diff --name-only "$PREDECESSOR_SRC" "$SRC" -- backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)"
       test -z "$(git diff --name-only "$SRC" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source)"
       test "$(git rev-parse "$SRC:app/modules/cert.js")" = "$(jq -r .sourceBlob "$REQUEST")"
       test "$(git rev-parse "$SRC:tools/qa/cxorbia-i3-d05-review-visibility-source.test.mjs")" = "$(jq -r .testBlob "$REQUEST")"
+      test "$(git rev-parse "$SRC:app/modules/misvisitas.js")" = "$(jq -r .misvisitasBlob "$REQUEST")"
+      test "$(git rev-parse "$SRC:tools/qa/cxorbia-i3-d06-misvisitas-cross-period-classification.test.mjs")" = "$(jq -r .d06TestBlob "$REQUEST")"
       node --check app/modules/cert.js
-      node tools/qa/cxorbia-i3-d05-review-visibility-source.test.mjs
+      node --check app/modules/misvisitas.js
+      node --test tools/qa/cxorbia-i3-d05-review-visibility-source.test.mjs tools/qa/cxorbia-i3-d06-misvisitas-cross-period-classification.test.mjs tools/qa/cxorbia-i3-work-uat-d05-canonical-source-proof.test.mjs
       node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs > "$FOCAL_DIR/authority.json"
       jq -e --arg source "$SRC" --arg tree "$TREE" '.decision=="PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY"
         and .productSourceSha==$source and .productSourceTree==$tree
@@ -84,6 +87,7 @@ jobs:
       SOURCE_DIR="$(mktemp -d)"
       git archive "$SRC" | tar -x -C "$SOURCE_DIR"
       cmp -s "$SOURCE_DIR/app/modules/cert.js" app/modules/cert.js
+      cmp -s "$SOURCE_DIR/app/modules/misvisitas.js" app/modules/misvisitas.js
       jq -e '.hosting.public=="app" and .hosting.target=="cxorbia-dev"' "$SOURCE_DIR/firebase.json" >/dev/null
       echo "SRC=$SRC" >> "$GITHUB_ENV"
       echo "TREE=$TREE" >> "$GITHUB_ENV"
@@ -141,21 +145,21 @@ jobs:
         SAFE_FILE="$(printf '%s' "$FILE" | tr '/' '-')"
         curl -fsS --max-time 45 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$FILE?d05After=$GITHUB_RUN_ID" -o "$FOCAL_DIR/served-$SAFE_FILE"
         test "$(git hash-object "$FOCAL_DIR/served-$SAFE_FILE")" = "$(git rev-parse "$SRC:app/$FILE")" || { echo "RELEASE_COMPOSITION_FAILURE:D05_SERVED_SOURCE_MISMATCH:$FILE"; exit 1; }
-        if [ "$FILE" != modules/cert.js ]; then
+        if [ "$FILE" != modules/cert.js ] && [ "$FILE" != modules/misvisitas.js ]; then
           test "$(git rev-parse "$SRC:app/$FILE")" = "$(git rev-parse "$PREDECESSOR_SRC:app/$FILE")"
         fi
       done
       curl -fsS --max-time 45 -H 'Cache-Control: no-cache' "$PROD_URL/" -o "$FOCAL_DIR/production-after.html"
       sha256sum "$FOCAL_DIR/production-after.html" | awk '{print $1}' > "$FOCAL_DIR/production-after.sha256"
       cmp -s "$FOCAL_DIR/production-before.sha256" "$FOCAL_DIR/production-after.sha256"
-      jq -n -S --arg source "$SRC" --arg tree "$TREE" --arg before "$BEFORE" --arg after "$AFTER" --arg runtime "$EXPECTED_RUNTIME_REV" --arg rules "$(jq -r .rulesetName "$FOCAL_DIR/firestore-release-after.json")" --arg prodSha "$(cat "$FOCAL_DIR/production-after.sha256")" '{decision:"PASS_I3_D05_HOSTING_ONLY_DEV_EXACT_SOURCE_BYTES",sourceSha:$source,sourceTree:$tree,previousHostingVersion:$before,hostingVersion:$after,runtimeRevision:$runtime,firestoreRuleset:$rules,verifiedServedAssetCount:8,hostingDeployAttempts:1,hostingDeploys:1,cloudRunDeploys:0,firestoreRulesDeploys:0,storageRulesDeploys:0,firestoreWrites:0,authWrites:0,hrWrites:0,productionIndexSha256:$prodSha,productionChanged:false,qaAdminReviewVersionedSave:"PENDING_REAL_UI",shopperD06Negatives:"PENDING",humanAcceptance:"PENDING",matchDomains:5,gate20:"HOLD",gate21:"HOLD",terminalEligible:false,production:false}' > "$FOCAL_DIR/result.json"
-      jq -e '.decision=="PASS_I3_D05_HOSTING_ONLY_DEV_EXACT_SOURCE_BYTES" and .verifiedServedAssetCount==8 and .productionChanged==false' "$FOCAL_DIR/result.json" >/dev/null
+      jq -n -S --arg source "$SRC" --arg tree "$TREE" --arg before "$BEFORE" --arg after "$AFTER" --arg runtime "$EXPECTED_RUNTIME_REV" --arg rules "$(jq -r .rulesetName "$FOCAL_DIR/firestore-release-after.json")" --arg prodSha "$(cat "$FOCAL_DIR/production-after.sha256")" '{decision:"PASS_I3_D05_D06_HOSTING_ONLY_DEV_EXACT_SOURCE_BYTES",sourceSha:$source,sourceTree:$tree,previousHostingVersion:$before,hostingVersion:$after,runtimeRevision:$runtime,firestoreRuleset:$rules,verifiedServedAssetCount:9,hostingDeployAttempts:1,hostingDeploys:1,cloudRunDeploys:0,firestoreRulesDeploys:0,storageRulesDeploys:0,firestoreWrites:0,authWrites:0,hrWrites:0,productionIndexSha256:$prodSha,productionChanged:false,qaAdminReviewVersionedSave:"PENDING_REAL_UI",shopperCrossPeriodE2e:"PENDING_LIVE_BROWSER",humanAcceptance:"PENDING",matchDomains:5,gate20:"HOLD",gate21:"HOLD",terminalEligible:false,production:false}' > "$FOCAL_DIR/result.json"
+      jq -e '.decision=="PASS_I3_D05_D06_HOSTING_ONLY_DEV_EXACT_SOURCE_BYTES" and .verifiedServedAssetCount==9 and .productionChanged==false' "$FOCAL_DIR/result.json" >/dev/null
    - name: Archive exact D05-only DEV transport evidence
      if: always()
      uses: actions/upload-artifact@v4
      with:
-      name: cxorbia-i3-d05-versioned-review-hosting-dev-${{ github.run_id }}
-      path: .tmp/i3-d05-versioned-review-hosting-only/
+      name: cxorbia-i3-d05-d06-focal-hosting-dev-${{ github.run_id }}
+      path: .tmp/i3-d05-d06-focal-hosting-only/
       if-no-files-found: warn
       retention-days: 30
 
