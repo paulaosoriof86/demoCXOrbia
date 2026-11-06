@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "cxorbia.i3.d06.cross-period-visits-source-only.20261106.v1",
+  "observedDateGuatemala": "2026-11-06",
+  "scope": "APPEND_ONLY_QA_RECEIPT_NO_CANONICAL_DESCRIPTOR_CHANGE_NO_DEPLOY",
+  "authority": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "iteration": "I3",
+    "state": "HOLD",
+    "officialProductSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+    "sourceOnlyCommit": "a290acf84fe71891747e4dae8b62cd952e094c71",
+    "parentControlCommit": "5cea177b52447ed193f14a9854ce6a69f7b9466a",
+    "sourceOnlyTree": "a2e629a6f0cd672e5270289984b498e58908baf9"
+  },
+  "finding": {
+    "classification": "FUNCTIONAL_DEFECT",
+    "domain": "shoppers-mi-visitas-profile",
+    "owner": "app/modules/misvisitas.js",
+    "liveBrowser": "authenticated Stiven Lopez Shopper GT Cinépolis DEV separate firebaseapp.com origin",
+    "reproduction": [
+      {
+        "selectedPeriod": "OCT 2026",
+        "rowInHistory": "C. Naranjo Mall",
+        "rowPeriod": "NOV 2026",
+        "state": "Agendada",
+        "date": "2026-11-03"
+      },
+      {
+        "selectedPeriod": "NOV 2026",
+        "rowInHistory": "C. Miraflores",
+        "rowPeriod": "OCT 2026",
+        "state": "Pend. cuestionario",
+        "date": "2026-10-31"
+      }
+    ],
+    "cause": "History predicate classifies any visit outside selected period as history even when it remains scheduled or awaiting questionnaire"
+  },
+  "sourceOnlyCorrection": {
+    "files": [
+      {
+        "path": "app/modules/misvisitas.js",
+        "blobSha": "0fdee0f12ff2c068b237f352385f8c5dfdb65502"
+      },
+      {
+        "path": "tools/qa/cxorbia-i3-d06-misvisitas-cross-period-classification.test.mjs",
+        "blobSha": "5c9266aefddf7e0dce20103890241613944c755e"
+      }
+    ],
+    "behavior": "Terminal visits remain in Historial; unfinished visits in a different selected period appear in separate Otros períodos read-only section, with state/date/period and no cross-period command actions. Deep links continue to resolve read-only when other period active; select correct period before actions."
+  },
+  "tests": {
+    "newFocal": "4/4 PASS",
+    "combinedTargeted": "57/57 PASS",
+    "existingFinanceSource": "4/4 PASS",
+    "syntax": "PASS",
+    "diffWhitespace": "PASS",
+    "additionalLegacySourceChecks": "Two old suites failed on unmodified certified source 5b359... as well; preexisting, not introduced by this change"
+  },
+  "automaticWorkflow": {
+    "id": 42253753595,
+    "url": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/42253753595",
+    "conclusion": "failure",
+    "failedJob": "canonical-candidate-authority",
+    "skippedDependentJobs": 29,
+    "cause": "Existing exact canonical source/descriptor still pins certified source 5b359..., source-only changes intentionally require reconciliation before gate promotion",
+    "devDeploy": false,
+    "productionDeploy": false
+  },
+  "preservation": {
+    "officialModuleTruth": "5/21 MATCH unchanged",
+    "candidateDescriptorUnchanged": true,
+    "devServingSourceUnchanged": true,
+    "devReadback": "No new serving source; existing DEV misclassification still reproducible until certified promotion",
+    "realHrWrites": 0,
+    "realCertificationBankChanges": 0,
+    "shopperVisitWrites": 0,
+    "i4": "NOT_STARTED",
+    "production": "DO_NOT_TOUCH",
+    "shopperBrowserPeriodRestoredTo": "NOV 2026",
+    "shopperSessionIntact": true,
+    "adminSessionIntact": true
+  },
+  "exactNextAction": "Align accumulated D05/D06 source-only repairs to single canonical descriptor, cumulative ledger, matrix, pointer and sealed DEV predecessor semantics under frozen I3; run full source/candidate authority gate and only then promote exact artifact to DEV if authorized; verify real Admin+Shopper E2E on controlled temporary QA records and clean up. Do not declare source-only changes live or raise 5/21."
+}
