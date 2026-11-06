@@ -34,6 +34,27 @@ CX.hrSource = {
     const tipo=admin.tipo||src.providerType||'google_sheets',estado=admin.estado||((binding&&mapping)?'connected':'pendiente_backend');
     return Object.assign(this._default(),admin,{tipo,sourceRef:binding,providerBindingId:binding,mappingRef:mapping,mappingContract:mapping,estado,canImport:!!admin.canImport});
   },
+  operationalReadback(pid){
+    // The Admin form's saved connection state describes its registration/preview
+    // endpoint. It is not the authority for the protected operational HR read.
+    // Only an exact, already-published authenticated HR revision may be shown
+    // as connected; an old backend_endpoint_missing form issue stays scoped to
+    // the configuration channel and never invalidates a verified live read.
+    pid=String(pid||this._projectId());
+    const project=this._projectRecord(pid)||{};
+    const src=project.operationalSource||project.routeSource||{};
+    const meta=CX.data?.previewMeta||{};
+    const authority=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{};
+    const revision=String(meta.sourceRevision||'');
+    const verified=this._canonical()&&src.mode==='external'&&src.readPolicy==='external_live'&&
+      !!String(src.providerBindingId||src.integrationSettingId||src.providerRef||'').trim()&&
+      !!String(src.mappingRef||'').trim()&&
+      meta.hrAuthority===true&&String(meta.projectId||'')===pid&&
+      authority.applied===true&&String(authority.projectId||'')===pid&&
+      String(authority.tenantId||'')===String(meta.tenantId||'')&&
+      /^[a-f0-9]{64}$/i.test(revision)&&String(authority.sourceRevision||'')===revision;
+    return {verified:!!verified,revision:verified?revision:null};
+  },
   all(){
     if(this._canonical()){const pid=this._projectId();return pid?{[pid]:this._fromProject(pid)}:{};}
     try{return JSON.parse(localStorage.getItem(this.KEY)||'{}');}catch(e){return{};}
@@ -89,20 +110,27 @@ CX.module('hrsource', ({data, ui})=>{
 
   const draw=()=>{
     const cfg=CX.hrSource.get(pid());
-    const st=CX.hrSource.STATES[cfg.estado]||CX.hrSource.STATES.pendiente_backend;
+    const operational=CX.hrSource.operationalReadback(pid());
+    const registrationState=CX.hrSource.STATES[cfg.estado]||CX.hrSource.STATES.pendiente_backend;
+    const st=operational.verified
+      ?Object.assign({},CX.hrSource.STATES.connected,{label:'HR operacional verificada'})
+      :registrationState;
+    const configurationOnlyIssues=(cfg.incidencias||[]).length>0&&
+      (cfg.incidencias||[]).every(i=>String(i?.codigo||i?.code||'')==='backend_endpoint_missing');
     const tipos=[['google_sheets','Google Sheets'],['excel_online','Excel Online / OneDrive'],['xlsx_manual','Carga manual XLSX']];
     host.innerHTML=`
       ${ui.ph('Fuente de Hoja de Ruta', p.name+' · la conexión real la ejecuta el sistema central · el prototipo captura la configuración y muestra estados honestos')}
 
       <div class="card card-p" style="margin-bottom:14px;border-left:4px solid ${st.c};background:${st.c}12">
         <div class="between">
-          <div><div style="font-size:12px;color:var(--t3)">Estado de conexión</div>
+          <div><div style="font-size:12px;color:var(--t3)">Estado de lectura operacional</div>
             <div style="font-size:16px;font-weight:800;color:${st.c}">${st.ic} ${st.label}</div></div>
           <div style="text-align:right;font-size:11px;color:var(--t3)">
             <div>Última lectura: ${cfg.ultimaLectura||'—'}</div>
             <div>Última vista previa: ${cfg.ultimoPreview||'—'}</div>
           </div>
         </div>
+        ${operational.verified?`<div style="margin-top:8px;font-size:11.5px;color:var(--t2)">La revisión protegida de HR coincide con el proyecto y la sesión autenticada (revisión ${operational.revision.slice(0,12)}…). La gestión de registro/vista previa es un canal independiente: ${registrationState.label.toLowerCase()}.</div>`:''}
         ${!st.canImport?`<div style="margin-top:8px;font-size:11.5px;color:var(--t2)">🔒 La importación está <b>bloqueada</b> hasta que la fuente quede lista y validada.</div>`:''}
       </div>
 
@@ -189,7 +217,7 @@ CX.module('hrsource', ({data, ui})=>{
       </div>
 
       <div class="card card-p" style="margin-bottom:14px">
-        <div class="card-t" style="font-size:12.5px;margin-bottom:8px">⚠ Incidencias de validación</div>
+          <div class="card-t" style="font-size:12.5px;margin-bottom:8px">⚠ ${operational.verified&&configurationOnlyIssues?'Incidencias del canal de configuración (no de la lectura operacional)':'Incidencias de validación'}</div>
         ${(cfg.incidencias&&cfg.incidencias.length)?`<div style="overflow-x:auto"><table class="tbl" style="font-size:11.5px"><thead><tr><th>Sev.</th><th>Código</th><th>Periodo/Tab</th><th>Esperado</th><th>Detectado</th><th>Δ</th><th>Fila</th><th>Acción sugerida</th></tr></thead><tbody>${cfg.incidencias.map(i=>{const sv={critico:'🔴',alto:'🟠',medio:'🟡',bajo:'⚪'}[i.severidad]||'•';return `<tr><td>${sv}</td><td><code>${i.codigo||'—'}</code></td><td>${i.periodo||'—'}</td><td>${i.expected!=null?i.expected:'—'}</td><td>${i.detected!=null?i.detected:'—'}</td><td style="color:${(i.delta||0)!=0?'var(--red)':'var(--t3)'}">${i.delta!=null?i.delta:'—'}</td><td>${i.sourceRow||'—'}</td><td style="font-size:11px">${i.accion||'—'}</td></tr>`;}).join('')}</tbody></table></div>`:'<div style="font-size:12px;color:var(--t3)">Sin incidencias reportadas todavía. Al recibirlas se muestran aquí con severidad, código, periodo, esperado/detectado, delta, fila y acción sugerida.</div>'}
         <div style="margin-top:10px;font-size:11px;color:var(--t3);line-height:1.7">
           <b>Tipos de incidencia que puede reportar la fuente</b> (esperado vs detectado):

@@ -54,6 +54,33 @@ const withLatestHostingOnlyProof = () => {
   return a;
 };
 
+const withBoundedPendingHostingSuccessor = () => {
+  const a = withLatestHostingOnlyProof();
+  a.descriptor.productSourceSha = 'new-source';
+  a.pointer.productSourceSha = 'new-source';
+  a.matrix.productSource.sha = 'new-source';
+  a.matrix.productSource.authorityState = 'SOURCE_ONLY_PROVEN_PENDING_HOSTING_ONLY_DEV';
+  a.matrix.productSource.message = 'New source-only fix pending first Hosting-only DEV materialization';
+  a.descriptor.productTreeAuthority = 'new-tree';
+  a.pointer.activeShockModuleTruth.sourceSha = 'new-source';
+  const sealed = {mode:'PREDECESSOR_SERVING_PENDING_SOURCE',
+    sourceSha:'source',sourceTree:'tree',
+    hostingVersion:'sites/cxorbia-backend-dev/versions/prior',
+    runtimeRevision:'dev-rev',runtimeDigest:'sha256:stable',hostingRelease:'prior-release'};
+  a.descriptor.postDeployRunSeal = {...sealed};
+  a.pointer.postDeployRunSeal = {...sealed};
+  const proposed = {status:'PENDING_HOSTING_ONLY_DEV',findingId:'VRM-310',
+    receiptPath:'source-proof.json',receiptBlob:'proof-blob',
+    sourceSha:'new-source',sourceTree:'new-tree',
+    predecessorServingSourceSha:'source',sourceTestsPass:14,sourceTestsFail:0,
+    devPublished:false,production:false};
+  a.descriptor.i3Nov06HrSourceStatusFix = {...proposed};
+  a.pointer.i3Nov06HrSourceStatusFix = {...proposed};
+  const previousBlob = a.gitBlob;
+  a.gitBlob = file => file === 'source-proof.json' ? 'proof-blob' : previousBlob(file);
+  return a;
+};
+
 test('same source, pointers, counts and frozen priority pass', () => {
   assert.equal(validateShockContinuity(mk()).pass, true);
 });
@@ -105,6 +132,23 @@ test('a verified old DEV seal is allowed while a new P0 source awaits materializ
 });
 test('newer Hosting-only receipt is independently pinned while previous paired runtime seal remains intact', () => {
   assert.equal(validateShockContinuity(withLatestHostingOnlyProof()).pass, true);
+});
+test('one exact source-tested successor can await Hosting-only DEV without falsifying prior Hosting', () => {
+  assert.equal(validateShockContinuity(withBoundedPendingHostingSuccessor()).pass, true);
+});
+test('a pending source cannot claim an unrelated or unproven previous Hosting deployment', () => {
+  const a = withBoundedPendingHostingSuccessor();
+  a.descriptor.i3Nov06HrSourceStatusFix.predecessorServingSourceSha = 'some-other-source';
+  assert.match(validateShockContinuity(a).failures.join(' '), /ACTIVE_HOSTING_ONLY_COMPONENT_DESYNC/);
+  const b = withBoundedPendingHostingSuccessor();
+  b.pointer.i3Nov06HrSourceStatusFix.sourceTestsPass = 0;
+  assert.match(validateShockContinuity(b).failures.join(' '), /ACTIVE_HOSTING_ONLY_COMPONENT_DESYNC/);
+  const c = withBoundedPendingHostingSuccessor();
+  c.descriptor.i3Nov06HrSourceStatusFix.production = true;
+  assert.match(validateShockContinuity(c).failures.join(' '), /ACTIVE_HOSTING_ONLY_COMPONENT_DESYNC/);
+  const d = withBoundedPendingHostingSuccessor();
+  d.pointer.i3Nov06HrSourceStatusFix.receiptBlob = 'unverified-proof';
+  assert.match(validateShockContinuity(d).failures.join(' '), /ACTIVE_HOSTING_ONLY_COMPONENT_DESYNC/);
 });
 test('a newer Hosting deployment cannot retain stale source-only or pending-materialization status', () => {
   const a = withLatestHostingOnlyProof();

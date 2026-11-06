@@ -127,15 +127,32 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
   const latestHostingD = d.currentHostingOnlyDevMaterialization || {};
   const latestHostingP = p.currentHostingOnlyDevMaterialization || {};
   if (latestHostingD.receiptPath || latestHostingP.receiptPath) {
-    check(!/source.only.*(pending|predecessor)|source_only_proven_not_yet_composed_or_dev_materialized/i
+    const proposed = d.i3Nov06HrSourceStatusFix || {};
+    const proposedP = p.i3Nov06HrSourceStatusFix || {};
+    // A previously verified Hosting receipt remains the served authority
+    // while one scoped, lineage-validated successor awaits its first DEV
+    // deployment. Never rewrite that receipt to pretend the new source is live.
+    const boundedSourcePending = proposed.status === 'PENDING_HOSTING_ONLY_DEV' &&
+      JSON.stringify(proposed) === JSON.stringify(proposedP) &&
+      proposed.sourceSha === d.productSourceSha &&
+      proposed.sourceTree === d.productTreeAuthority &&
+      proposed.findingId === 'VRM-310' &&
+      Boolean(proposed.receiptPath && proposed.receiptBlob) &&
+      gitBlob(proposed.receiptPath) === proposed.receiptBlob &&
+      proposed.predecessorServingSourceSha === latestHostingD.sourceSha &&
+      proposed.sourceTestsPass === 14 && proposed.sourceTestsFail === 0 &&
+      proposed.production === false && proposed.devPublished === false &&
+      m.productSource?.authorityState === 'SOURCE_ONLY_PROVEN_PENDING_HOSTING_ONLY_DEV' &&
+      latestHostingD.sourceSha !== d.productSourceSha;
+    check(boundedSourcePending || !/source.only.*(pending|predecessor)|source_only_proven_not_yet_composed_or_dev_materialized/i
       .test(`${m.productSource?.message || ''} ${m.productSource?.authorityState || ''}`),
     'MAPPING_FAILURE:MATRIX_SOURCE_ONLY_STATUS_AFTER_HOSTING_DEV');
     check(Boolean(latestHostingD.receiptPath && latestHostingD.receiptBlob) &&
       JSON.stringify(latestHostingD) === JSON.stringify(latestHostingP) &&
       gitBlob(latestHostingD.receiptPath) === latestHostingD.receiptBlob,
       'MAPPING_FAILURE:ACTIVE_HOSTING_ONLY_RECEIPT_DESYNC');
-    check(latestHostingD.sourceSha === d.productSourceSha &&
-      latestHostingD.sourceTree === d.productTreeAuthority &&
+    check((boundedSourcePending || (latestHostingD.sourceSha === d.productSourceSha &&
+      latestHostingD.sourceTree === d.productTreeAuthority)) &&
       latestHostingD.hostingVersion?.startsWith('sites/cxorbia-backend-dev/versions/') &&
       latestHostingD.runtimeRevision === currentDev.runtimeRevision &&
       latestHostingD.verifiedServedAssetCount > 0 &&
