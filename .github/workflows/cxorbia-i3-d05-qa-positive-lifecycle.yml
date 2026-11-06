@@ -42,10 +42,11 @@ jobs:
           retention-days: 30
 
   d05-qa-ui-review-shopper-read:
-    if: ${{ contains(github.event.head_commit.message, '[i3-d05-qa-ui-review-shopper]') || contains(github.event.head_commit.message, '[i3-d06-shopper-read-only]') || contains(github.event.head_commit.message, '[i3-d06-vrm296-reproof]') }}
+    if: ${{ contains(github.event.head_commit.message, '[i3-d05-qa-ui-review-shopper]') || contains(github.event.head_commit.message, '[i3-d05-qa-flex-options]') || contains(github.event.head_commit.message, '[i3-d06-shopper-read-only]') || contains(github.event.head_commit.message, '[i3-d06-vrm296-reproof]') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
+      CXORBIA_D05_FLEX_OPTIONS_QA: ${{ contains(github.event.head_commit.message, '[i3-d05-qa-flex-options]') && '1' || '0' }}
       CXORBIA_D06_READ_ONLY: ${{ (contains(github.event.head_commit.message, '[i3-d06-shopper-read-only]') || contains(github.event.head_commit.message, '[i3-d06-vrm296-reproof]')) && '1' || '0' }}
       CXORBIA_D06_VRM296_ONLY: ${{ contains(github.event.head_commit.message, '[i3-d06-vrm296-reproof]') && '1' || '0' }}
     steps:
@@ -58,8 +59,24 @@ jobs:
           SOURCE="$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
           TREE="$(jq -r '.productTreeAuthority' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
           test "$SOURCE" = "$(jq -r '.productSourceSha' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)"
-          test "$SOURCE" = "$(jq -r '.currentDevMaterialization.sourceSha' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)"
-          test "$TREE" = "$(jq -r '.currentDevMaterialization.sourceTree' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)"
+          if [ "$CXORBIA_D05_FLEX_OPTIONS_QA" = 1 ]; then
+            # Hosting-only successor is source-matched while the previous
+            # paired Cloud Run revision remains intentionally unchanged.
+            test "$SOURCE" = "$(jq -r '.currentHostingOnlyDevMaterialization.sourceSha' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)"
+            test "$TREE" = "$(jq -r '.currentHostingOnlyDevMaterialization.sourceTree' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)"
+            jq -e '.currentHostingOnlyDevMaterialization.verifiedServedAssetCount==9
+              and .currentHostingOnlyDevMaterialization.cloudRunDeploys==0
+              and .currentHostingOnlyDevMaterialization.productionChanged==false
+              and .currentHostingOnlyDevMaterialization.runtimeRevision==.currentDevMaterialization.runtimeRevision' CXORBIA_RECOVERY_EXECUTION_CURRENT.json >/dev/null
+            RECEIPT="$(jq -r '.currentHostingOnlyDevMaterialization.receiptPath' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)"
+            test "$(git rev-parse "HEAD:$RECEIPT")" = "$(jq -r '.currentHostingOnlyDevMaterialization.receiptBlob' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)"
+            jq -e --arg source "$SOURCE" '.productSource.sha==$source and
+              .providerReadback.verifiedServedAssetCount==9 and
+              .providerReadback.productionChanged==false' "$RECEIPT" >/dev/null
+          else
+            test "$SOURCE" = "$(jq -r '.currentDevMaterialization.sourceSha' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)"
+            test "$TREE" = "$(jq -r '.currentDevMaterialization.sourceTree' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)"
+          fi
           test "$(git rev-parse "$SOURCE^{tree}")" = "$TREE"
           git diff --quiet "$SOURCE" HEAD -- app backend firestore.rules storage.rules firebase.json .firebaserc
           node tools/qa/cxorbia-i3-shock-continuity-guard.mjs

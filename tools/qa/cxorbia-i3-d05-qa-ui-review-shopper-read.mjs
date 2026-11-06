@@ -21,6 +21,7 @@ const ROOT = 'https://cxorbia-backend-dev.web.app';
 const OUT = '.tmp/cxorbia-i3-d05-qa-ui-review-shopper';
 const SHOPPER_READ_ONLY = process.env.CXORBIA_D06_READ_ONLY === '1';
 const SHOPPER_VRM296_ONLY = process.env.CXORBIA_D06_VRM296_ONLY === '1';
+const FLEX_OPTIONS_QA = process.env.CXORBIA_D05_FLEX_OPTIONS_QA === '1';
 const str = v => String(v ?? '').trim();
 const arr = v => Array.isArray(v) ? v : [];
 const sha = v => crypto.createHash('sha256').update(typeof v === 'string' ? v : JSON.stringify(v)).digest('hex');
@@ -38,6 +39,8 @@ const result = {
   qa: {created: false, saveCommitted: false, safelyRetired: false},
   shopper: {status: 'PENDING', submittedAttempt: false}
 };
+if (FLEX_OPTIONS_QA) result.scope =
+  'D05_EXACT_QA_ONLY_TWO_THREE_TO_FOUR_OPTIONS_ADMIN_UI_AND_EXISTING_SHOPPER_READ_ONLY';
 if (SHOPPER_READ_ONLY) {
   result.scope = SHOPPER_VRM297_ONLY
     ? 'VRM297_EXACT_THREE_REAL_SHOPPERS_PUBLISHED_AND_PENDING_DIRECT_GET_DENIED_SAFE_PROJECTION'
@@ -205,9 +208,10 @@ async function saveQaViaAdminUi({admin, periodId}) {
     .replace(/[^a-zA-Z0-9_-]+/g, '-');
   qaRef = db.doc(`tenants/${TENANT}/resources/${id}`);
   if ((await qaRef.get()).exists) fail('SOURCE_FAILURE:D05_QA_ID_ALREADY_EXISTS');
+  const fourOptions = ['Respuesta A', 'Respuesta B', 'Respuesta C', 'Respuesta D'];
   const questions = Array.from({length: 15}, (_, n) => ({
     q: `Pregunta QA numero ${n + 1}`,
-    ops: ['Respuesta A', 'Respuesta B', 'Respuesta C', 'Respuesta D'],
+    ops: fourOptions.slice(0, FLEX_OPTIONS_QA ? (n % 2 === 0 ? 2 : 3) : 4),
     correcta: 'Respuesta A', exp: 'Explicacion de uso exclusivo QA',
     fuente: `Instructivo QA seccion ${n + 1}`
   }));
@@ -255,11 +259,30 @@ async function saveQaViaAdminUi({admin, periodId}) {
   if (await dialog.getByRole('group', {name: /^Pregunta \d+$/}).count() !== 15 ||
       !(await dialog.getByText(/versión 1/).isVisible()))
     fail('FUNCTIONAL_DEFECT:D05_QA_EDITOR_COUNT_VERSION');
+  if (FLEX_OPTIONS_QA) {
+    const fields = dialog.locator('fieldset');
+    for (let n = 0; n < questions.length; n++) {
+      const inputs = fields.nth(n).locator('input');
+      if (await inputs.count() !== 5)
+        fail('FUNCTIONAL_DEFECT:D05_QA_FLEX_EDITOR_FOUR_OPTIONS_NOT_RENDERED');
+      for (let option = questions[n].ops.length; option < fourOptions.length; option++) {
+        const empty = inputs.nth(option);
+        if ((await empty.inputValue()).trim())
+          fail('FUNCTIONAL_DEFECT:D05_QA_FLEX_EDITOR_EXTRA_OPTION_NOT_EMPTY');
+        await empty.fill(fourOptions[option]);
+      }
+    }
+    result.qa.flexOptionInputCounts = {two: questions.filter(q => q.ops.length === 2).length,
+      three: questions.filter(q => q.ops.length === 3).length, completed: questions.length};
+  }
   const field = dialog.locator('fieldset').first().locator('textarea').first();
   const revised = `Pregunta QA numero 1 corregida ${runId}`;
   await field.fill(revised);
   await dialog.getByRole('button', {name: 'Comparar cambios'}).click();
-  if (!(await dialog.getByText(/Preguntas modificadas: 1/).isVisible()) ||
+  const expectedDiff = FLEX_OPTIONS_QA
+    ? `Preguntas modificadas: ${questions.map((_, n) => n + 1).join(', ')}`
+    : 'Preguntas modificadas: 1';
+  if (!(await dialog.getByText(expectedDiff, {exact: false}).isVisible()) ||
       !(await dialog.getByRole('button', {name: 'Guardar revisión sin publicar'}).isEnabled()))
     fail('FUNCTIONAL_DEFECT:D05_QA_DIFF_OR_SAVE_DISABLED');
   await dialog.screenshot({path: OUT + '/qa-review-before-save.png'});
@@ -285,8 +308,15 @@ async function saveQaViaAdminUi({admin, periodId}) {
   // Compare meaningful question fields, not JSON property-insertion order.
   // Extra persisted metadata is allowed; altered questions or scope are not.
   const questionFields = ['q', 'ops', 'correcta', 'exp', 'fuente'];
+  const expectedQuestions = FLEX_OPTIONS_QA
+    ? questions.map(q => ({...q, ops: fourOptions})) : questions;
   const questionsUnchanged = arr(afterBank.preguntas).slice(1).every((q, n) =>
-    questionFields.every(key => JSON.stringify(q?.[key]) === JSON.stringify(questions[n + 1]?.[key])));
+    questionFields.every(key => JSON.stringify(q?.[key]) === JSON.stringify(expectedQuestions[n + 1]?.[key])));
+  const flexOptionReadback = !FLEX_OPTIONS_QA ||
+    (arr(afterBank.preguntas).length === 15 && arr(afterBank.preguntas).every((q, n) =>
+      JSON.stringify(q?.ops) === JSON.stringify(fourOptions) &&
+      JSON.stringify(q?.ops?.slice(0, questions[n].ops.length)) === JSON.stringify(questions[n].ops) &&
+      q.correcta === questions[n].correcta));
   const checks = {
     version2: saved.version === 2,
     resourceActive: saved.status === 'active',
@@ -305,6 +335,7 @@ async function saveQaViaAdminUi({admin, periodId}) {
     notTargetAll: saved.targetAll === false,
     noShopperVisibleRoles: arr(saved.visibleRoles).length === 0
   };
+  if (FLEX_OPTIONS_QA) checks.twoAndThreeToFourOptionsPersisted = flexOptionReadback;
   result.qa.readbackChecks = checks;
   result.qa.failedReadbackChecks = Object.entries(checks).filter(([, ok]) => !ok).map(([key]) => key);
   if (result.qa.failedReadbackChecks.length)
@@ -335,6 +366,17 @@ async function saveQaViaAdminUi({admin, periodId}) {
   if (!(await reopened.getByText(/versión 2/).isVisible()) ||
       (await reopened.locator('fieldset').first().locator('textarea').first().inputValue()) !== revised)
     fail('PERSISTENCE_FAILURE:D05_QA_RELOAD_DID_NOT_RETAIN_REVIEW');
+  if (FLEX_OPTIONS_QA) {
+    const reloadedFields = reopened.locator('fieldset');
+    for (let n = 0; n < questions.length; n++) {
+      const inputs = reloadedFields.nth(n).locator('input');
+      for (let option = 0; option < fourOptions.length; option++) {
+        if ((await inputs.nth(option).inputValue()).trim() !== fourOptions[option])
+          fail('PERSISTENCE_FAILURE:D05_QA_FLEX_OPTION_RELOAD_MISMATCH');
+      }
+    }
+    result.qa.flexOptionsReloadReadback = true;
+  }
   result.qa.reloadReadback = true;
   await reopened.screenshot({path: OUT + '/qa-review-after-reload.png'});
   result.qa.uiSuccessFeedbackObserved = result.qa.uiMessage === 'success';
@@ -512,7 +554,9 @@ try {
     await shopperReadOnly(scope);
     if (!result.qa.uiSuccessFeedbackObserved)
       fail('FUNCTIONAL_DEFECT:D05_QA_UI_SUCCESS_FEEDBACK_NOT_SEEN');
-    result.decision = 'PASS_D05_QA_UI_REVIEW_VERSION_2_AND_D06_SHOPPER_ROLE_READ_ONLY';
+    result.decision = FLEX_OPTIONS_QA
+      ? 'PASS_D05_QA_UI_TWO_THREE_TO_FOUR_OPTIONS_VERSION_2_AND_D06_SHOPPER_ROLE_READ_ONLY'
+      : 'PASS_D05_QA_UI_REVIEW_VERSION_2_AND_D06_SHOPPER_ROLE_READ_ONLY';
   }
 } catch (error) {
   const code = str(error?.message);
