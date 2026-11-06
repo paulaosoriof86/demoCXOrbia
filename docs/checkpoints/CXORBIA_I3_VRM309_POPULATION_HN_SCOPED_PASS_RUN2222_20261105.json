@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm309.population-hn-readonly.v1",
+  "dateGuatemala": "2026-11-05",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "decision": "PASS_SCOPED_POPULATION_ROOT_AND_HN_AUTHENTICATED_SHOPPER",
+  "state": "HOLD_REMAINING_FULL_DOMAIN_CERTIFICATIONS",
+  "production": "DO_NOT_TOUCH",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+  "sourceTree": "289d084f78dc8c1392e043a7668b10258ffe459d",
+  "devRuntimeRevision": "cxorbia-live-hr-dev-00352-dml",
+  "devHostingVersion": "sites/cxorbia-backend-dev/versions/dd66761e0d4ba9a3",
+  "hrRevision": "63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba",
+  "qaSourceControlCommit": "ddcce7f6f31bfa9fd12a39e3e46e7d0b3bcaf833",
+  "run": {
+    "id": 42154007096,
+    "number": 2222,
+    "jobId": 127683872272,
+    "artifactId": 13473708310,
+    "artifactZipSha256": "d2045d453d7b07bc2ce272fa8c25ae8f13f21f694fd527d9c32ec2de6e26ddd0",
+    "url": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/42154007096"
+  },
+  "rootPopulation": {
+    "decision": "PASS_VRM217_219_POPULATION_ROOT_DIAGNOSTIC",
+    "activeMemberships": 239,
+    "activeCanonicalIds": 239,
+    "identityMappingConflicts": 0,
+    "hrAssigned": 773,
+    "hrAssignedResolved": 773,
+    "uniqueDurableVisitKeys": 792,
+    "durableVisitRows": 2068,
+    "ambiguousAuthorityGroups": 0,
+    "aliasOperationalResiduals": 0,
+    "paymentReconciliationsAliasReferences": 11,
+    "writes": 0,
+    "production": false
+  },
+  "hnTarget": {
+    "decision": "PASS_VRM215_HN_TARGET_EXACT_SHOPPER_READINESS",
+    "shopperId": "shopper_hn_1691aecc2c",
+    "visibleLogin": "wilson.lanza",
+    "loginPass": true,
+    "ownVisits": 18,
+    "authorizedPeriods": 14,
+    "octoberHrRowId": "OCTUBRE 26 HN!2",
+    "octoberState": "submitida",
+    "hrStateParityChecked": true,
+    "projectScoped": true,
+    "country": "HN",
+    "routeContractPass": true,
+    "selfScopePass": true,
+    "writes": 0,
+    "production": false
+  },
+  "outOfScopeCredentialDiagnostics": {
+    "count": 3,
+    "code": "VISIBLE_LOGIN_NOT_CANONICAL_OR_APPROVED_COLLISION",
+    "shopperIds": [
+      "shopper_gt_a092a0647f",
+      "shopper_hn_3b3c2f5cc1",
+      "shp-3669abbb015a"
+    ],
+    "notWaived": true,
+    "requiresIndependentAuthProofBeforeTreatingAsFunctionalP0": true
+  },
+  "identityEvidenceAlreadyClosed": {
+    "originalApprovedGroups": "83_OF_83_PASS",
+    "keeperExtraGroups": "2_OF_2_PASS",
+    "adminAndShoppersAuthenticated": "20_OF_20_PASS_RUN42150462459",
+    "remergeRequired": false
+  },
+  "moduleTruth": {
+    "match": 5,
+    "total": 21,
+    "newWholeDomainPromotions": 0,
+    "reason": "Root plus HN target scoped; credentials of three out-of-scope accounts and full finance/certification contracts remain."
+  },
+  "nextExactAction": "Freeze this PASS. Execute independent G03 financial HR and history reconciliation against same source, close D05 admin/save/shopper positive-negative workflow and full remaining module contracts; test three username exceptions only by independent Auth proof, without changing username/HR or remerging. Keep Gate20/21 HOLD; I4 requires explicit authorization."
+}
