@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "cxorbia.i3.d05.qa-positive-current-source.request.v1",
+  "dateGuatemala": "2026-11-05",
+  "authority": "PAULA_OMITTED_JOBS_CERTIFY_AUTHORIZED",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "cause": "D05 QA-only lifecycle workflow and owner script pinned obsolete source SHA 09eed4... instead of current immutable DEV product source.",
+  "repairScope": [
+    ".github/workflows/cxorbia-i3-d05-qa-positive-lifecycle.yml",
+    "tools/qa/cxorbia-i3-d05-qa-positive-lifecycle.mjs"
+  ],
+  "scope": "EXISTING_QA_ONLY_PUBLISH_CONFIGURE_RETIRE_WITH_REMOTE_ACK_AND_ISOLATED_TOMBSTONE",
+  "sourceAuthority": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+  "productSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+  "fixtureIsolation": true,
+  "fixtureCleanup": "QA_ONLY_TOMBSTONE",
+  "realBanksMustBeUnchanged": true,
+  "hrWrites": 0,
+  "authUserWrites": 0,
+  "deploys": 0,
+  "productionWrites": 0,
+  "triggerTag": "[i3-d05-qa-fixture-positive]",
+  "state": "REQUESTED_NOT_YET_CERTIFIED",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "production": "DO_NOT_TOUCH"
+}

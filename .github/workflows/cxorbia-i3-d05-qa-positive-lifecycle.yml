@@ -10,8 +10,6 @@ jobs:
     if: ${{ contains(github.event.head_commit.message, '[i3-d05-qa-fixture-positive]') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
-    env:
-      CXORBIA_PRODUCT_SOURCE_SHA: 09eed4f012f9ad04e49d53569aabd86bd4c832a9
     steps:
       - uses: actions/checkout@v4
         with:
@@ -19,8 +17,11 @@ jobs:
       - name: Frozen product and scoped test preflight
         run: |
           set -Eeuo pipefail
-          test "$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = "$CXORBIA_PRODUCT_SOURCE_SHA"
-          git diff --quiet "$CXORBIA_PRODUCT_SOURCE_SHA" HEAD -- app backend firestore.rules storage.rules firebase.json .firebaserc
+          SOURCE="$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          test "$SOURCE" = "$(jq -r '.productSourceSha' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)"
+          test "$(git rev-parse "$SOURCE^{tree}")" = "$(jq -r '.productTreeAuthority' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          git diff --quiet "$SOURCE" HEAD -- app backend firestore.rules storage.rules firebase.json .firebaserc
+          echo "CXORBIA_PRODUCT_SOURCE_SHA=$SOURCE" >> "$GITHUB_ENV"
           node tools/qa/cxorbia-i3-shock-continuity-guard.mjs
           node --check tools/qa/cxorbia-i3-d05-qa-positive-lifecycle.mjs
       - uses: actions/setup-node@v4
