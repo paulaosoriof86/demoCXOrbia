@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "cxorbia.i3.d05-d06.post-hosting-browser-readback.20261106.v1",
+  "date": "2026-11-06",
+  "project": "CXOrbia Recovery — Go-Live",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlParentSha": "9ce200213147042eaa1ab652aa819aae90afed53",
+  "testedSourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
+  "testedSourceTree": "a2e629a6f0cd672e5270289984b498e58908baf9",
+  "devHostingVersion": "sites/cxorbia-backend-dev/versions/65e8034fac283714",
+  "devRuntimeRevision": "cxorbia-live-hr-dev-00352-dml",
+  "hostingOnlyPublish": {
+    "runId": 42259364657,
+    "decision": "PASS_I3_D05_D06_HOSTING_ONLY_DEV_EXACT_SOURCE_BYTES",
+    "servedAssetParity": "9/9",
+    "hostingDeploys": 1,
+    "runtimeDeploys": 0,
+    "rulesDeploys": 0,
+    "hrWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "productionChanged": false
+  },
+  "shopperD06Browser": {
+    "state": "PASS_FOCAL_LIVE_BROWSER_CROSS_PERIOD_CLASSIFICATION",
+    "site": "https://cxorbia-backend-dev.firebaseapp.com",
+    "role": "Authenticated existing Shopper (Stiven López)",
+    "project": "Cinépolis",
+    "checks": [
+      {
+        "selectedPeriod": "NOV 2026",
+        "active": 1,
+        "history": 8,
+        "otherPeriods": 1,
+        "otherVisit": "C. Miraflores · OCT 2026 · Pend. cuestionario",
+        "otherDetailReadOnly": true
+      },
+      {
+        "selectedPeriod": "OCT 2026",
+        "active": 1,
+        "history": 8,
+        "otherPeriods": 1,
+        "otherVisit": "C. Naranjo Mall · NOV 2026 · Agendada",
+        "otherDetailReadOnly": true
+      }
+    ],
+    "totalVisitsAcrossViews": 10,
+    "duplicatedVisitsObserved": 0,
+    "sessionRestoredPeriod": "NOV 2026",
+    "businessWrites": 0,
+    "fullDomainMatch": false
+  },
+  "adminD05Browser": {
+    "state": "PASS_FOCAL_UI_OPEN_AND_NO_CHANGE_COMPARE_ONLY",
+    "site": "https://cxorbia-backend-dev.web.app",
+    "role": "Authenticated existing Admin",
+    "selectedPeriod": "OCT 2026",
+    "banksObserved": 2,
+    "pendingBankName": "Banco IA pendiente de revisión",
+    "pendingBankQuestionsRendered": 15,
+    "renderedOptionInputsPerQuestion": 4,
+    "originalBankChanged": false,
+    "reviewSourceVersion": 1,
+    "noChangeCompareText": "No hay cambios para guardar.",
+    "publishedBankId": "main",
+    "publishedQuestions": 8,
+    "publishedMinPassPercent": 80,
+    "historicalAttempts": 40,
+    "historicalApproved": 38,
+    "historicalNotApproved": 2,
+    "modalClosed": true,
+    "selectionRestoredTo": "main",
+    "providerSaveAttempted": false,
+    "providerSaveAck": "PENDING_POSITIVE_NATURAL_UI",
+    "businessWrites": 0,
+    "fullDomainMatch": false
+  },
+  "identityAlertInterpretation": "170 technical case/alias records, not 170 persons or unmerged identities; no new merges performed",
+  "formalCertification": {
+    "matchingDomains": 5,
+    "totalDomains": 21,
+    "fullClosure": false,
+    "iteration": "I3",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "phaseA": "HOLD",
+    "i4Authorized": false,
+    "productionChanged": false
+  },
+  "remainingP0": [
+    "canonical-hr-state-adapters: independent HR/financial reconciliation and G05/A05 whole-domain evidence",
+    "certifications: D05 positive natural Admin versioned save with provider ACK without altering business bank, Shopper attempt/password and independent reviewer E2E",
+    "finance-core-liquidation-costs: historical finance/payment reconciliation and full workflow E2E"
+  ],
+  "nextExactAction": "Continue I3 G03/G05/A05 independent HR-finance paid-history readback, then D05 disposable authorized natural Admin save and 2-role Shopper attempt/password E2E; close whole-domain modules only on independent evidence. Keep production untouched until I4 explicit authorization."
+}
