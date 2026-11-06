@@ -13,7 +13,7 @@ import {chromium} from 'playwright';
 
 const TENANT='tya', PROGRAM='cinepolis', PROJECT='cxorbia-backend-dev';
 const ROOT='https://cxorbia-backend-dev.web.app';
-const SOURCE='3a299715ea2d87ae43c0f6415f44bd23b13a1837';
+const SOURCE='2e36c4d62eedae59b65716cf75dd53e059f958ca';
 const EXPECTED_HR='63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba';
 const OUT='.tmp/cxorbia-i3-two-keepers-role-e2e-readonly';
 const norm=x=>String(x??'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ');

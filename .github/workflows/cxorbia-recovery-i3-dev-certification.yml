@@ -6785,7 +6785,7 @@ jobs:
       test "$(jq -r '.postDeployRunSeal.mode' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = CURRENT_SOURCE_SERVING
       SOURCE="$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
       HR="$(jq -r '.currentMaterialization.hrRevision' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
-      test "$SOURCE" = 3a299715ea2d87ae43c0f6415f44bd23b13a1837
+      test "$SOURCE" = 2e36c4d62eedae59b65716cf75dd53e059f958ca
       test "$HR" = 63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba
       git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules
       node --check firebase/auth-dev-tools/cxorbia-i3-two-keepers-admin-shopper-readonly-e2e.mjs
