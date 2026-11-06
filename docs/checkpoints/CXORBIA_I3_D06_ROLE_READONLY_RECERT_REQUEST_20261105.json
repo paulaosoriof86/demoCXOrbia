@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "cxorbia.i3.d06.shoppertest.recertification.request.v1",
+  "dateGuatemala": "2026-11-05",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "authority": "PAULA_EXPLICIT_CONTINUE_AND_CERTIFY_SKIPPED_JOBS",
+  "reason": "Execute existing QA-only actual authenticated shopper read path on the canonical served DEV after 20/20 GT/HN and VRM215 HN population scoped PASS, without new product build.",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+  "currentDevMaterializationRunId": 42147711875,
+  "readonlyOnly": true,
+  "allowedExistingJob": "d05-qa-ui-review-shopper-read",
+  "triggerTag": "[i3-d06-shopper-read-only]",
+  "testSource": "tools/qa/cxorbia-i3-d05-qa-ui-review-shopper-read.mjs",
+  "limits": {
+    "qaBankWrites": 0,
+    "shopperAttemptWrites": 0,
+    "realBankWrites": 0,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "productionWrites": 0,
+    "deploys": 0
+  },
+  "state": "REQUESTED_NOT_YET_CERTIFIED",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "production": "DO_NOT_TOUCH",
+  "nextExactAction": "Read D06 role E2E result and update exact checkpoint and canonical controls only if job executed; do not count skipped as PASS."
+}
