@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM307_DEV_MATERIALIZED_TWO_GROUPS_PASS_MODULE_E2E_PENDING",
+  "status": "HOLD_VRM308_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
-  "productTreeAuthority": "ed9362c9d432028978c2d3b748eb7559c2e8f1b1",
-  "predecessorProductSourceSha": "f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196",
+  "productSourceSha": "2e36c4d62eedae59b65716cf75dd53e059f958ca",
+  "productTreeAuthority": "c0814bc63bde33c042a86aff5666d40b8a429a0f",
+  "predecessorProductSourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V564_2026-11-04.json",
-  "findingsLedgerExpectedGitBlob": "3d4f1186197ae0a7927830a2278ab3a28ac83231",
+  "findingsLedgerExpectedGitBlob": "189ae5e334e29f6e4d5e61824e1a0a26535f432f",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261105-V245.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "P0_VRM307_TWO_APPROVED_GROUPS_PROTECTED_DEV_CONFIRMATION_PENDING__G03_HR_FINANZAS_LOCK__16_MODULES_PENDING",
+  "activeBlocker": "P0_VRM308_ADMIN_CANONICAL_COUNTRY_READ_MODEL_SOURCE_PROVEN_DEV_PENDING__G03_HR_FINANZAS__16_MODULES_PENDING",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -115,7 +115,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-308",
+  "nextFindingId": "VRM-309",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -128,7 +128,7 @@
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
   "historicalExactNextActionPreS1": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "I3 V12 HOLD: 83/83 original approved cohort preserved. VRM-307 exact DEV RUN42132045461 #2202 PASS, source 3a299715 tree ed9362c9, runtime 00350-9pq, Hosting 5a740a9c18805fc4, HR 63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba unchanged; 80/80 source+continuity tests PASS, NO HR writes or production. Next EXACT: execute only the two owner-approved Jhennypher Murga GT (keeper jennypher.murga) / Rocío Vilca HN (keeper rocio.vilca) protected DEV group corrections against new source after fresh provider preflight; demand durable ACK, 2 zero-write replays, Auth/UID, historical visits, certifications, liquidations/crosswalk and no active intermediate links. If any proof fails, HOLD without replays. G03 HR finanzas same-revision scope issue HOLD. 21 modules 5 MATCH/16 pending actual owner E2E, no SKIPPED promotion. I4 not authorized, production DO_NOT_TOUCH.",
+  "exactNextAction": "I3 V13 HOLD: 83/83 original cohort approved, both Jhennypher Murga and Rocío Vilca protected provider fusion + independent readback PASS (run42135680776); do not repeat writes. Admin role same-artifact read-only RUN42138916399: Jhennypher 1 canonical row, Rocío 0 despite provider PASS (MAPPING_FAILURE VRM-308). Source successor 2e36c4d62eedae59b65716cf75dd53e059f958ca tree c0814bc63bde33c042a86aff5666d40b8a429a0f fixes catalog-equivalent HN/Honduras + GT/Guatemala country read model; 18/18 source tests + stable 3x composer PASS, NOT yet served. Current DEV remains predecessor 3a299715 RUN42132045461 #2202 runtime 00350-9pq Hosting 5a740a9c18805fc4 HR 63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba. Next EXACT: one existing gated DEV materialization from this source; verify exact bytes/runtime/HR and rerun authenticated Admin, Shopper GT/HN, visits/historical and provider readback; no fusion rewrites. G03 HR finanzas same-revision independent scope and 21 module cert 5 MATCH/16 pending, no jobs SKIPPED promotions. Gate20/21 HOLD, I4 not authorized; production DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2979,7 +2979,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "4b7a0473090e481a71c29a75f144e42d26abf5c0",
+  "moduleTruthExpectedGitBlob": "5ee1e6b74f11e98eff544f5754f552f584cb2f54",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12808,7 +12808,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 42132045461,
     "runNumber": 2202,
     "sourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
@@ -17417,5 +17417,23 @@
     "i3": "HOLD",
     "i4": "DO_NOT_TOUCH",
     "nextP0": "SHOPPER_ADMIN_CANONICAL_ROW_PROJECTION_AND_SCOPED_21_MODULE_CERTIFICATION"
+  },
+  "vrm308AdminCountryReadModel20261106": {
+    "findingId": "VRM-308",
+    "classification": "MAPPING_FAILURE",
+    "sourceSha": "2e36c4d62eedae59b65716cf75dd53e059f958ca",
+    "sourceTree": "c0814bc63bde33c042a86aff5666d40b8a429a0f",
+    "predecessorServed": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
+    "owner": "app/adapters/tya-cumulative-read-model-v2.js",
+    "ownerBlob": "45e6c1912c9f965a7105e7c605d8f1f12cefa08e",
+    "testOwner": "tools/qa/cxorbia-i3-vrm308-hn-country-alias-normalization.test.mjs",
+    "testOwnerBlob": "03586cfe6ee621cf3b345bc3e38b2593e049ce7e",
+    "redBefore": 2,
+    "localPassAfter": 18,
+    "readModelRegression": "PASS_C6_STABLE_COMPOSER_3X_IDEMPOTENCE",
+    "roleE2ePreviousRunId": 42138916399,
+    "materialization": "PENDING_ONE_EXACT_DEV_BUILD_AND_HOSTING_READBACK",
+    "modulePromotion": 0,
+    "production": false
   }
 }

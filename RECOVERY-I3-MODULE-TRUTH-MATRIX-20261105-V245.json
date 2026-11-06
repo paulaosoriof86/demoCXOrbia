@@ -103,12 +103,12 @@
     }
   },
   "productSource": {
-    "sha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
-    "treeSha": "ed9362c9d432028978c2d3b748eb7559c2e8f1b1",
-    "predecessorProductSourceSha": "f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196",
-    "message": "VRM-307 adjudicated intermediate-link supersession transversally",
-    "authorityState": "VRM307_SOURCE_PROVEN_DEV_SERVED",
-    "state": "I3_EXACT_DEV_RUN2202_PASS_PROTECTED_GROUP_E2E_PENDING"
+    "sha": "2e36c4d62eedae59b65716cf75dd53e059f958ca",
+    "treeSha": "c0814bc63bde33c042a86aff5666d40b8a429a0f",
+    "predecessorProductSourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
+    "message": "VRM-308 approved exact-identity country code/name equivalence in Admin read model",
+    "authorityState": "VRM308_SOURCE_PROVEN_DEV_NOT_YET_MATERIALIZED",
+    "state": "I3_SOURCE_ONLY_18_OF_18_PASS_DEV_RUN2202_PREDECESSOR_SERVING"
   },
   "controlHeadAtConstruction": "2b23686be39958cee0983b131ae7f56c8c0f430a",
   "phaseAComplete": false,
@@ -529,7 +529,7 @@
       "currentCandidateTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
       "currentOwnerBlobs": {
         "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js": "7b68d08357f256d736de57ff5b89bf97f397fb4f",
-        "app/adapters/tya-cumulative-read-model-v2.js": "e414a582eda3dbdf3d7df7a5e836250f65ab0ff2",
+        "app/adapters/tya-cumulative-read-model-v2.js": "45e6c1912c9f965a7105e7c605d8f1f12cefa08e",
         "app/adapters/tya-canonical-state-semantics-v2.js": "a0104aa043ebdb7c9ee55cde5766ada8ed5e28fb",
         "app/adapters/tya-live-source-refresh-watch-v2.js": "8fa224fe7f7a565be8553bc855deef6d0e6a3b9f",
         "app/adapters/tya-live-source-inplace-apply.js": "45e1cd1b8c01d6276be2c256d5b99baa93e90252",
@@ -4078,7 +4078,7 @@
       "f9ApprovedBlob": "0b0ffc1cc215afbcc2fd3400ea1496162da93b60",
       "latestApprovedSource": "6bcbc1df70c29c2ad3ad57ecfa906917e6372ace",
       "latestApprovedBlob": "cbe63e37ff932f64c9577fa106712683d38a978a",
-      "currentBlob": "e414a582eda3dbdf3d7df7a5e836250f65ab0ff2",
+      "currentBlob": "45e6c1912c9f965a7105e7c605d8f1f12cefa08e",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "COMPOSED_NOT_DEPLOYED",
@@ -17569,6 +17569,22 @@
     "fullRoleAndActionCoverage": "PENDING",
     "shopperAdminCanonicalHnRowVisibility": "PENDING_FOCAL_DEV_E2E",
     "phaseA": "HOLD",
+    "production": false
+  },
+  "vrm308CountryCatalogSourceFix20261106": {
+    "findingId": "VRM-308",
+    "classification": "MAPPING_FAILURE",
+    "ownerPath": "app/adapters/tya-cumulative-read-model-v2.js",
+    "ownerBlob": "45e6c1912c9f965a7105e7c605d8f1f12cefa08e",
+    "sourceSha": "2e36c4d62eedae59b65716cf75dd53e059f958ca",
+    "sourceTree": "c0814bc63bde33c042a86aff5666d40b8a429a0f",
+    "sourceTests": "18_OF_18_PASS_BOTH_COUNTRY_EQUIVALENCES_AND_NEGATIVE_CONTROLS",
+    "canonicalComposerRegression": "PASS_C6_STABLE_COMPOSER_3X_IDEMPOTENCE",
+    "priorAuthenticatedAdminRunId": 42138916399,
+    "devMaterialization": "PENDING",
+    "newModuleFullMatch": 0,
+    "currentMatchCount": 5,
+    "totalModules": 21,
     "production": false
   }
 }

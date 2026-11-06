@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
-    "sourceTree": "ed9362c9d432028978c2d3b748eb7559c2e8f1b1",
-    "predecessorSha": "f5f653d0ffa19fae9099f7bd8e2cb332a2b6e196",
+    "sourceSha": "2e36c4d62eedae59b65716cf75dd53e059f958ca",
+    "sourceTree": "c0814bc63bde33c042a86aff5666d40b8a429a0f",
+    "predecessorSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
     "production": false,
-    "state": "HOLD_VRM307_DEV_MATERIALIZATION_REQUIRED",
+    "state": "HOLD_VRM308_DEV_MATERIALIZATION_REQUIRED",
     "november2026AutomaticPeriodSourceProof": {
       "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
       "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -21738,6 +21738,32 @@
       "modulePromotions": 0,
       "production": false,
       "reviewRequired": "NEW_SOURCE_DEV_ACK + RELOADED_IDENTITY_GRAPH + CROSS_SURFACE_HISTORY + G03 HR FINANZAS + 21_MODULE_OWNER_E2E"
+    },
+    "VRM-308": {
+      "id": "VRM-308",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0",
+      "taskIds": ["A01", "A02", "B01", "G03"],
+      "relatedFindings": ["VRM-304", "VRM-307"],
+      "title": "Approved HN canonical shopper invisible in Admin because the cumulative read model compares configured country code with country name as distinct",
+      "firstObservedAt": "2026-11-05",
+      "observed": "Independent DEV Admin role run 42138916399: Jhennypher canonical 1/1 visible, Rocío canonical 0/0 despite independent provider fusion PASS for both; synthetic HN/Honduras and GT/Guatemala crosswalk fixtures reproduced two failing cases before the fix.",
+      "expected": "Provider-adjudicated exact aliases belonging to the same configured country map to one visible canonical profile with HR history intact; different country, tenant or unapproved identities remain separate.",
+      "rootCause": "The exact supersession read-model country guard compared lowercase raw labels and rejected equivalent configured code/name forms.",
+      "ownerFiles": ["app/adapters/tya-cumulative-read-model-v2.js", "tools/qa/cxorbia-i3-vrm308-hn-country-alias-normalization.test.mjs"],
+      "sourceFixCommit": "2e36c4d62eedae59b65716cf75dd53e059f958ca",
+      "sourceFixTree": "c0814bc63bde33c042a86aff5666d40b8a429a0f",
+      "predecessorSourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
+      "sourceTests": {"pass": 18, "fail": 0, "priorFailures": 2, "scope": "SYNTHETIC_SOURCE_ONLY_NOT_AUTHENTICATED_DEV"},
+      "regressionGate": "PASS_C6_STABLE_COMPOSER_3X_IDEMPOTENCE",
+      "liveRoleBeforeFixRunId": 42138916399,
+      "state": "SOURCE_PROVEN_DEV_MATERIALIZATION_REQUIRED",
+      "devMaterialization": "PENDING",
+      "adminShopperRoleReproof": "PENDING_SAME_ARTIFACT",
+      "modulePromotions": 0,
+      "hrWrites": 0,
+      "providerWrites": 0,
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -22485,11 +22511,12 @@
       "VRM-304",
       "VRM-305",
       "VRM-306",
-      "VRM-307"
+      "VRM-307",
+      "VRM-308"
     ],
-    "findingCount": 307,
-    "expectedCurrentRange": "VRM-001..VRM-307",
-    "nextFindingId": "VRM-308",
+    "findingCount": 308,
+    "expectedCurrentRange": "VRM-001..VRM-308",
+    "nextFindingId": "VRM-309",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_I3_REMAINING_E2E_HUMAN_GATE_AFTER_VRM153_DEV_DURABLE_PASS",
@@ -22507,8 +22534,8 @@
     "userReportedRequirementsFrozenAt": "2026-09-30T20:18:00-06:00",
     "userReviewComplete": true,
     "userReviewEvidence": "19 screenshots plus complete Shopper/Admin observations supplied 2026-10-02",
-    "currentProductSourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
-    "currentProductSourceTree": "ed9362c9d432028978c2d3b748eb7559c2e8f1b1",
+    "currentProductSourceSha": "2e36c4d62eedae59b65716cf75dd53e059f958ca",
+    "currentProductSourceTree": "c0814bc63bde33c042a86aff5666d40b8a429a0f",
     "currentMaterialization": {
       "state": "PASS_VRM307_EXACT_DEV_MATERIALIZATION",
       "decision": "PASS_VRM307_EXACT_DEV_MATERIALIZATION",
@@ -22906,7 +22933,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-308",
+  "nextFindingId": "VRM-309",
   "lastControlFailure": {
     "id": "RUN1238_NEXT_FINDING_ID_GOVERNANCE_DESYNC",
     "classification": "MAPPING_FAILURE",
