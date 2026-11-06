@@ -10,6 +10,16 @@ CX.certStore = CX.certStore || {
     if(name.length<3||name.length>120)throw new Error('CERT_BANK_NAME_INVALID');
     return name;
   },
+  editorOptions(value){
+    const options=Array.isArray(value)?value.map(x=>String(x||'')):[];
+    return Array.from({length:Math.max(4,options.length)},(_,index)=>options[index]||'');
+  },
+  importQuestions(questions){
+    const valid=(Array.isArray(questions)?questions:[]).filter(q=>q?.q&&Array.isArray(q.ops)&&q.ops.length>=2&&q.correcta&&q.ops.includes(q.correcta));
+    if(!valid.length)throw new Error('NO_VALID_QUESTIONS');
+    if(valid.some(q=>q.ops.length>4))throw new Error('CERT_IMPORT_MAX_FOUR_OPTIONS');
+    return valid;
+  },
   equalReviewValue(left,right){
     if(left===right)return true;
     if(left===null||right===null||typeof left!=='object'||typeof right!=='object')return false;
@@ -482,7 +492,7 @@ CX.module('cert', ({role,data,ui})=>{
               control.style.margin='4px 0 8px';if(multi)control.rows=2;
               wrap.appendChild(control);fieldset.appendChild(wrap);return control;
             };
-            const question=field('Enunciado',q.q,true),options=(q.ops||[]).map((v,j)=>field('Opción '+(j+1),v));
+            const question=field('Enunciado',q.q,true),options=CX.certStore.editorOptions(q.ops).map((v,j)=>field('Opción '+(j+1),v));
             const wrap=document.createElement('label');wrap.className='lbl';wrap.textContent='Respuesta correcta';
             const correct=document.createElement('select');correct.className='sel';
             for(let j=0;j<4;j++){const option=document.createElement('option');option.value=String(j);option.textContent='Opción '+(j+1);correct.appendChild(option);}
@@ -522,7 +532,14 @@ CX.module('cert', ({role,data,ui})=>{
               const reply=await CX.certStore.reviewDraft(p.id,bank,read(),policy,readName());
               if(!(reply?.providerAck===true&&reply?.committed===true))throw new Error('CERT_REVIEW_ACK_REQUIRED');
               close();ui.toast('Revisión guardada en servidor · publicación pendiente.','ok');CX.router?.nav?.('cert');
-            }catch(error){console.warn('CXORBIA_CERT_REVIEW_SAFE_ERROR',String(error?.message||error).slice(0,120));ui.toast('No se pudo guardar la revisión. Comprueba tu sesión y vuelve a cargar el banco si alguien lo modificó.','warn');save.disabled=false;}
+            }catch(error){
+              const code=String(error?.message||error);
+              console.warn('CXORBIA_CERT_REVIEW_SAFE_ERROR',code.slice(0,120));
+              ui.toast(code.includes('CERT_REVIEW_INVALID_QUESTION')
+                ?'Completa las cuatro opciones diferentes, selecciona la respuesta correcta y agrega explicación y referencia a la fuente en cada pregunta.'
+                :'No se pudo guardar la revisión. Comprueba tu sesión y vuelve a cargar el banco si alguien lo modificó.','warn');
+              save.disabled=false;
+            }
           });
         },dismissOnBackdrop:false,dismissOnEscape:false});
       });
@@ -545,7 +562,7 @@ CX.module('cert', ({role,data,ui})=>{
     }
     const imp=document.getElementById('certImp');
     if(imp)imp.addEventListener('click',()=>ui.modal('Importar banco de preguntas',`
-      <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Importa JSON, CSV/TXT con separador | o pega el contenido. Se guarda como <b>pendiente de revisión</b>; nunca se publica automáticamente.</p>
+      <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Importa JSON, CSV/TXT con separador | o pega el contenido. Se guarda como <b>pendiente de revisión</b>; nunca se publica automáticamente. En la revisión podrás completar las cuatro opciones, la explicación y la referencia a la fuente.</p>
       <div class="grid g2" style="gap:10px"><div><label class="lbl">Nombre de certificación</label><input class="inp" id="ciName" placeholder="Ej. Certificación principal"></div><div><label class="lbl">% mínimo</label><input class="inp" id="ciGate" type="number" min="1" max="100" value="80"></div></div>
       <input type="file" class="inp" id="ciImportFile" accept=".json,.csv,.txt,text/plain,application/json,text/csv" style="padding:7px;margin:10px 0">
       <textarea class="inp" id="ciImportText" rows="5" placeholder="pregunta | correcta | opción B | opción C"></textarea>
@@ -558,12 +575,18 @@ CX.module('cert', ({role,data,ui})=>{
           let raw=(ov.querySelector('#ciImportText').value||'').trim();if(file)raw+=(raw?'\n':'')+await file.text();if(!raw)throw new Error('BANK_CONTENT_REQUIRED');
           let preguntas=CX.certStore.parse(raw);
           if(!preguntas)preguntas=raw.split(/\r?\n/).map(line=>line.trim()).filter(Boolean).map(line=>{const p=line.split('|').map(x=>x.trim()).filter(Boolean);return p.length>=3?{q:p[0],correcta:p[1],ops:[p[1],...p.slice(2)].filter((x,i,a)=>a.indexOf(x)===i),exp:''}:null;}).filter(Boolean);
-          preguntas=(preguntas||[]).filter(q=>q?.q&&Array.isArray(q.ops)&&q.ops.length>=2&&q.correcta&&q.ops.includes(q.correcta));if(!preguntas.length)throw new Error('NO_VALID_QUESTIONS');
+          preguntas=CX.certStore.importQuestions(preguntas);
           const cid=CX.certStore.safeId(name),gate=Math.max(1,Math.min(100,+ov.querySelector('#ciGate').value||80)),revision='manual-'+Date.now().toString(36)+'-'+preguntas.length;
           const saved=await CX.certStore.save(p.id,{certificationId:cid,certificationName:name,preguntas,gate,required:true,estado:'pending_review',contentRevision:revision,generatedAt:new Date().toISOString(),generadoPorUid:String(CX.backendCertifications?.currentUid?.()||''),provider:'manual_import'},cid);
           if(!(saved?.providerAck===true&&saved?.committed===true))throw new Error('CERT_BANK_DURABLE_ACK_REQUIRED');
           window.CX_CERT_SELECTED_ID=cid;close();ui.toast('Banco importado y guardado · pendiente de revisión.','ok',4200);CX.router.nav('cert');
-        }catch(error){btn.disabled=false;btn.textContent='Importar y guardar';ui.toast('No se importó el banco: '+String(error?.message||error),'warn',4800);}
+        }catch(error){
+          btn.disabled=false;btn.textContent='Importar y guardar';
+          const code=String(error?.message||error);
+          ui.toast(code.includes('CERT_IMPORT_MAX_FOUR_OPTIONS')
+            ?'No se importó el banco: cada pregunta admite como máximo cuatro opciones. Corrige el archivo y vuelve a intentarlo.'
+            :'No se importó el banco: '+code,'warn',4800);
+        }
       });
     },dismissOnBackdrop:false,dismissOnEscape:false}));
     const recert=document.getElementById('certRecert');
