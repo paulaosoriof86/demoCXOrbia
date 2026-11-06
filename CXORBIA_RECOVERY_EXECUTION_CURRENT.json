@@ -347,7 +347,7 @@
         "production": false
       },
       "previousStateHistoricalNotCurrent": "SOURCE_FIXED_PENDING_CANONICAL_CI_DEV_AND_LIVE_E2E",
-      "activeFocalProof": "V248_CURRENT_I3_ACCEPTED_C04_C05_PROVIDER_ACK_13_OF_13_NO_REPEAT",
+      "activeFocalProof": "docs/checkpoints/CXORBIA_I3_D05_FLEX_OPTIONS_QA_RUN42277757800_20261106.json",
       "currentAuthority": "V249_SCOPED_FOCAL_PASS_NOT_WHOLE_MODULE_MATCH"
     },
     "C05": {
@@ -383,7 +383,7 @@
         "production": false
       },
       "previousStateHistoricalNotCurrent": "SOURCE_SCOPE_AND_REPLAY_CONTRACT_PASS_PENDING_LIVE_E2E",
-      "activeFocalProof": "V248_CURRENT_I3_ACCEPTED_C04_C05_PROVIDER_ACK_13_OF_13_NO_REPEAT",
+      "activeFocalProof": "docs/checkpoints/CXORBIA_I3_D05_FLEX_OPTIONS_QA_RUN42277757800_20261106.json",
       "currentAuthority": "V249_SCOPED_FOCAL_PASS_NOT_WHOLE_MODULE_MATCH"
     },
     "D07": {
@@ -1216,7 +1216,7 @@
   },
   "moduleTruthAuthority": {
     "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261106-V249.json",
-    "gitBlob": "6efb553ca87a98143eaaa7759950f81b777d0b9e",
+    "gitBlob": "92e1911346196b21e7c57d630caf6492bcbff452",
     "sourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
     "allModulesMatch": false,
     "phaseAComplete": false
@@ -3260,7 +3260,7 @@
   "activeShockModuleTruth": {
     "sourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261106-V249.json",
-    "matrixBlob": "6efb553ca87a98143eaaa7759950f81b777d0b9e",
+    "matrixBlob": "92e1911346196b21e7c57d630caf6492bcbff452",
     "classificationCounts": {
       "MATCH": 5,
       "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN": 5,
