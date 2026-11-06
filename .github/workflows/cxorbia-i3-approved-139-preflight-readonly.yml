@@ -15,6 +15,9 @@ concurrency:
   group: cxorbia-i3-approved-139-readonly-preflight
   cancel-in-progress: false
 jobs:
+  # VRM-307 run 42133324561: Jhennypher PASS, Rocío provider rejected with
+  # SHOPPER_IDENTITY_EXTERNAL_HR_ANCHOR_NOT_PROFILE_FREE and zero provider writes.
+  # Inspect exact post-attempt state before any further write (read-only trigger).
   residual-post-attempt-receipt-readonly:
     if: ${{ github.event_name == 'push' && github.event.head_commit.message == 'I3-P0-TWO-RESIDUALS-READBACK-ONLY-20261105' }}
     runs-on: ubuntu-24.04

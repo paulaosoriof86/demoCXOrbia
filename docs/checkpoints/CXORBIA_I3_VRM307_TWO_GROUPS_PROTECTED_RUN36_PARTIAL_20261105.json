@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm307.protected-two-groups-partial.v1",
+  "iteration": "I3",
+  "gate": "HOLD",
+  "workflowRunId": 42133324561,
+  "jobId": 127615136648,
+  "artifactId": 13463484087,
+  "artifactZipSha256": "2caea27f01658375dcec3522e3434760750a45d8167b01a989a1d3984f4eae76",
+  "productSourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
+  "devMaterializationRunId": 42132045461,
+  "jhennypherMurga": {
+    "decision": "PASS_RESIDUAL_MURGA_FUSION_AND_NAME_DEV",
+    "keeperLogin": "jennypher.murga",
+    "providerAck": true,
+    "idempotentZeroWriteReplays": 2,
+    "aliasesRetired": 10,
+    "canonicalMemberships": 1,
+    "providerDomainRowsPreserved": 11,
+    "nameMatchesCorrectedHr": true
+  },
+  "rocioVilca": {
+    "decision": "HOLD_PROVIDER_ACK_UNKNOWN_STOP_NO_RETRY",
+    "keeperLogin": "rocio.vilca",
+    "providerAck": false,
+    "providerStatus": "blocked",
+    "providerErrorCode": "SHOPPER_IDENTITY_EXTERNAL_HR_ANCHOR_NOT_PROFILE_FREE",
+    "providerWrites": 0,
+    "idempotentReplays": 0,
+    "postAttemptIndependentReadback": "PENDING"
+  },
+  "hrWrites": 0,
+  "production": false,
+  "certifiedModules": 5,
+  "totalModules": 21,
+  "nextAction": "Read-only exact graph/receipt/domain census on both groups; no retry of Murga; classify Rocio external-HR anchor before scoped owner fix."
+}
