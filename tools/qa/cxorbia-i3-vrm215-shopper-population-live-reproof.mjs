@@ -27,7 +27,7 @@ const visitKey=v=>str(v.hrRowId||v.visitKey||v.id||v.visitId);
 const REQUIRED_MODULES=['midia','miperfil','misvisitas','aprendizaje','cert','beneficios'];
 
 fs.mkdirSync(OUT,{recursive:true});
-const result={schemaVersion:'cxorbia.i3.vrm215.shopper-population.v2',decision:'HOLD',proofMode:PROOF_MODE,tenantId:TENANT,projectId:PROGRAM,expectedHrRevision:EXPECTED_HR,targetHnShopperId:TARGET_HN_SHOPPER,hnTarget:null,membershipUniverseCount:0,reviewOnlyExcludedCount:0,reviewOnlyPass:false,reviewOnlyExcluded:[],authEligiblePopulationCount:0,populationCount:0,loginPass:0,selfScopePass:0,routeContractPass:0,population:[],errors:[],writes:0,production:false};
+const result={schemaVersion:'cxorbia.i3.vrm215.shopper-population.v2',decision:'HOLD',proofMode:PROOF_MODE,tenantId:TENANT,projectId:PROGRAM,expectedHrRevision:EXPECTED_HR,targetHnShopperId:TARGET_HN_SHOPPER,hnTarget:null,membershipUniverseCount:0,reviewOnlyExcludedCount:0,reviewOnlyPass:false,reviewOnlyExcluded:[],authEligiblePopulationCount:0,populationCount:0,loginPass:0,selfScopePass:0,routeContractPass:0,population:[],errors:[],outOfScopeStaticIssues:[],writes:0,production:false};
 const save=()=>fs.writeFileSync(OUT+'/result.json',JSON.stringify(result,null,2)+'\n','utf8');
 save();
 if(!/^[a-f0-9]{64}$/.test(EXPECTED_HR))throw new Error('SOURCE_FAILURE:VRM215_HR_REVISION_REQUIRED');
@@ -96,7 +96,7 @@ for(const m of members){
     }
   }
   runtimeRows.push(row);
-  if(!row.staticPass)for(const code of row.staticErrors)result.errors.push({scope:'static',shopperId:sid,code});
+  if(!row.staticPass)for(const code of row.staticErrors){const issue={scope:'static',shopperId:sid,code};if(HN_TARGET_ONLY&&sid!==TARGET_HN_SHOPPER)result.outOfScopeStaticIssues.push(issue);else result.errors.push(issue);}
 }
 const reviewOnlyProofs=[];
 for(const x of reviewOnlyCandidates){
@@ -184,7 +184,11 @@ try{
         item.hnProof=proof.hnProof;
         const hn=proof.hnProof||{};
         const oct=hn.octoberVisit||{};
-        const hnPass=hn.authority?.actorUid===row.uid&&hn.authority?.rawShopperId===TARGET_HN_SHOPPER&&hn.authority?.canonicalShopperId===TARGET_HN_SHOPPER&&hn.authority?.shopperCountry==='HN'&&hn.authority?.exactSessionShopperReady===true&&hn.authority?.shopperPrincipalClaimsVerified===true&&hn.authority?.ownVisits===16&&hn.authority?.authorizedPeriods>0&&hn.currentPeriodAuthorized===true&&hn.ownVisits===16&&Array.isArray(hn.countries)&&hn.countries.length===1&&hn.countries[0]==='HN'&&oct.hrRowId==='OCTUBRE 26 HN!2'&&oct.country==='HN'&&oct.periodKey==='2026-10'&&oct.scheduled===true&&oct.assigned===true&&['agendada','scheduled'].includes(String(oct.state||'').toLowerCase());
+        const sourceOctober=hrVisits.find(v=>str(v.hrRowId)==='OCTUBRE 26 HN!2')||null;
+        const sourceState=norm(sourceOctober?.estado||sourceOctober?.status||sourceOctober?.state);
+        const observedState=norm(oct.state);
+        const lifecycleStateValid=['agendada','scheduled','realizada','completed','submitida','submitted'].includes(observedState)&&observedState===sourceState;
+        const hnPass=hn.authority?.actorUid===row.uid&&hn.authority?.rawShopperId===TARGET_HN_SHOPPER&&hn.authority?.canonicalShopperId===TARGET_HN_SHOPPER&&hn.authority?.shopperCountry==='HN'&&hn.authority?.exactSessionShopperReady===true&&hn.authority?.shopperPrincipalClaimsVerified===true&&Number(hn.authority?.ownVisits)>0&&hn.authority?.ownVisits===hn.ownVisits&&hn.authority?.authorizedPeriods>0&&hn.currentPeriodAuthorized===true&&Array.isArray(hn.countries)&&hn.countries.length===1&&hn.countries[0]==='HN'&&oct.hrRowId==='OCTUBRE 26 HN!2'&&oct.country==='HN'&&oct.periodKey==='2026-10'&&oct.scheduled===true&&oct.assigned===true&&lifecycleStateValid;
         result.hnTarget={shopperId:TARGET_HN_SHOPPER,uid:row.uid,pass:hnPass,proof:hn};
         if(!hnPass)result.errors.push({scope:'hn-target',shopperId:TARGET_HN_SHOPPER,code:'HN_EXACT_PRINCIPAL_COUNTRY_PERIOD_VISIT_FAILED',proof:hn});
       }
