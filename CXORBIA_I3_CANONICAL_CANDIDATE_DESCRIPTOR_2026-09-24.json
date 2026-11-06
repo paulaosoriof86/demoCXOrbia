@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM307_TWO_GROUPS_PASS_MODULE_E2E_PENDING",
+  "status": "HOLD_VRM307_DEV_MATERIALIZED_TWO_GROUPS_PASS_MODULE_E2E_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
