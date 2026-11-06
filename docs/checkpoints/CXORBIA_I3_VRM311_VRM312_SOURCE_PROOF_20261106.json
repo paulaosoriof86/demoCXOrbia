@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "cxorbia.i3.d06-d07.source-proof.v1",
+  "sourceSha": "439a688be58b23c93ac4e99a91da78b4c3cf81fa",
+  "sourceTree": "905f71d394033f3363fefd8221127c6fe0145d8c",
+  "predecessorProductSourceSha": "01d072d7969f3522d3f4e882fff1c42eb426708e",
+  "sourceTestsPass": 77,
+  "sourceTestsFail": 0,
+  "sourceTestsSkipped": 0,
+  "sourceTestsLogPath": "docs/checkpoints/CXORBIA_I3_VRM311_VRM312_LOCAL_SOURCE_TESTS_20261106.log",
+  "sourceTestsLogSha256": "54a1848e2f3e08e8ba49990d986820abaa713c4758e63bef3ca104e24a7ded47",
+  "allowedProductFiles": [
+    "app/modules/cert.js",
+    "app/core/backend-certifications.js",
+    "app/core/backend-resources.js",
+    "backend/runtime/hr-live-service/certification-runtime.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/certification-attempt-audience-idempotency.test.mjs",
+    "backend/runtime/hr-live-service/test/certification-shopper-projection.test.mjs",
+    "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs",
+    "tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs",
+    "tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs"
+  ],
+  "findings": [
+    {
+      "id": "VRM-311",
+      "classification": "FUNCTIONAL_DEFECT",
+      "priority": "P0_PROVEN",
+      "evidence": "Real Chrome Shopper submitted one genuine published 8-question exam on 2026-11-06T22:23:27.949Z; Firestore own-principal readback confirms exactly one failed attempt with providerAck=true, score0/gate80, while visit-flow synchronous rerender discards all8 feedback blocks and resets answers.",
+      "attemptId": "attempt-f2bf8aa25dc951b05daf542ccb71",
+      "createdAt": "2026-11-06T22:23:33.920Z",
+      "updateTime": "2026-11-06T22:23:34.036334Z",
+      "owner": "app/modules/cert.js",
+      "expected": "ACK result, feedback and history survive rerender/reload; no duplicate submission."
+    },
+    {
+      "id": "VRM-312",
+      "classification": "FUNCTIONAL_DEFECT",
+      "priority": "P0_PROVEN",
+      "authority": "Paula explicit instruction 2026-11-06: las certificaciones no se deben borrar entre periodos ni los recursos del proyecto",
+      "evidence": "Same Admin project OCT2026 has two banks including published main8; NOV2026 shows0. Source filters discard cross-period banks and general resources unless title-based guide exception. No delete observed.",
+      "expected": "Project resources and banks retain original IDs/revisions across period switches; visit evidence stays scoped; current attempts retain execution period; eligibility only changes by explicit expiry or recertification."
+    }
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM311_VRM312_D06_D07_PROVEN_SCOPE_20261106.json",
+  "scopeReceiptBlob": "b5b8b53c71a09fd6bb71dc7610c65a14ac3a5a49",
+  "production": false,
+  "devPublished": false,
+  "noRulesChanges": true,
+  "review": "Two read-only findings corrected: exact imported resource selection; history preserved for absent or pending bank."
+}
