@@ -45,7 +45,7 @@ jobs:
       set -Eeuo pipefail
       mkdir -p "$FOCAL_DIR"
       test "$(git rev-parse HEAD^)" = "$(jq -r .controlParentSha "$REQUEST")"
-      test "$(jq -r .controlParentSha "$REQUEST")" = "ad890ae5b36ccd41d0aec061e23e38f1cb913b1f"
+      test "$(jq -r .controlParentSha "$REQUEST")" = "013d28dc025aa3474ac88b411eb0de1168b5179f"
       test "$(git diff --name-only HEAD^ HEAD | LC_ALL=C sort)" = "$(jq -r '.allowedControlFiles | sort | .[]' "$REQUEST")"
       jq -e '.schemaVersion=="cxorbia.i3.d05-d06.hosting-only-dev-one-shot-request.20261106.v1"
         and .intent=="D05_D06_FOCAL_ADMIN_SHOPPER_HOSTING_ONLY_DEV"
@@ -61,7 +61,8 @@ jobs:
       TREE="$(jq -r .sourceTree "$REQUEST")"
       PREDECESSOR_SRC="$(jq -r .predecessorSourceSha "$REQUEST")"
       EXPECTED_RUNTIME_REV="$(jq -r .expectedRuntimeRevision "$REQUEST")"
-      test "$(jq -r .sourceControlCi.controlHeadSha "$REQUEST")" = "$(jq -r .controlParentSha "$REQUEST")"
+      test "$(jq -r .sourceControlCi.conclusion "$REQUEST")" = success
+      git merge-base --is-ancestor "$(jq -r .sourceControlCi.controlHeadSha "$REQUEST")" "$(jq -r .controlParentSha "$REQUEST")"
       test "$(jq -r .productSourceSha "$CANDIDATE_DESCRIPTOR")" = "$SRC"
       test "$(jq -r .productTreeAuthority "$CANDIDATE_DESCRIPTOR")" = "$TREE"
       test "$(jq -r .production "$CANDIDATE_DESCRIPTOR")" = DO_NOT_TOUCH
@@ -114,7 +115,9 @@ jobs:
         test "$(git hash-object "$FOCAL_DIR/before-$SAFE_FILE")" = "$(git rev-parse "$PREDECESSOR_SRC:app/$FILE")" || { echo "RELEASE_COMPOSITION_FAILURE:D05_PRE_DEPLOY_SERVING_DRIFT:$FILE"; exit 1; }
       done
       curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" -o "$FOCAL_DIR/firestore-release-before.json"
-      test "$(jq -r .rulesetName "$FOCAL_DIR/firestore-release-before.json")" = "$(jq -r .expectedFirestoreRuleset "$REQUEST")"
+      LIVE_RULESET="$(jq -r .rulesetName "$FOCAL_DIR/firestore-release-before.json")"
+      PINNED_RULESET="$(jq -r .expectedFirestoreRuleset "$REQUEST")"
+      test "$LIVE_RULESET" = "$PINNED_RULESET" || { echo "ENVIRONMENT_FAILURE:DEV_RULESET_PIN_MISMATCH:$LIVE_RULESET" >&2; exit 1; }
       curl -fsS --max-time 45 -H 'Cache-Control: no-cache' "$PROD_URL/" -o "$FOCAL_DIR/production-before.html"
       sha256sum "$FOCAL_DIR/production-before.html" | awk '{print $1}' > "$FOCAL_DIR/production-before.sha256"
    - name: Deploy exact immutable candidate once to Firebase Hosting DEV only

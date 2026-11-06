@@ -5,7 +5,7 @@
   "authorization": "PAULA_CONTINUE_I3_CORRECTION_2026_11_06",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "controlParentSha": "ad890ae5b36ccd41d0aec061e23e38f1cb913b1f",
+  "controlParentSha": "013d28dc025aa3474ac88b411eb0de1168b5179f",
   "sourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
   "sourceTree": "a2e629a6f0cd672e5270289984b498e58908baf9",
   "predecessorSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
@@ -28,7 +28,17 @@
   "hostingRoot": "https://cxorbia-backend-dev.web.app",
   "expectedPriorHostingVersion": "sites/cxorbia-backend-dev/versions/dd66761e0d4ba9a3",
   "expectedRuntimeRevision": "cxorbia-live-hr-dev-00352-dml",
-  "expectedFirestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
+  "expectedFirestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+  "reconciledPreflight": {
+    "runId": 42258964704,
+    "decision": "HOLD_PREDEPLOY_ONLY_STALE_RULESET_CONTROL_PIN",
+    "deploymentAttempted": false,
+    "observedRuleSetSource": "GitHub Actions exact DEV Firestore release readback",
+    "rulesetLastChanged": "2026-11-02T15:52:22.602776Z",
+    "runtimeRevisionUnchanged": true,
+    "hostingVersionUnchanged": true,
+    "scope": "PIN_UPDATE_ONLY_NO_RULE_DEPLOY"
+  },
   "readbackPaths": [
     "modules/cert.js",
     "modules/misvisitas.js",
