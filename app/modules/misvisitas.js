@@ -33,7 +33,11 @@ CX.module('misvisitas',({data,ui})=>{
   const assigned=mine.filter(v=>{const f=facets(v);return isCurrentPeriod(v)&&f.assigned&&!f.scheduled&&!pendingSchedule(v)&&!f.realized&&!isCancelled(v,f);});
   const scheduled=mine.filter(v=>{const f=facets(v);return isCurrentPeriod(v)&&(f.scheduled||pendingSchedule(v))&&!f.realized&&!isCancelled(v,f);});
   const realized=mine.filter(v=>{const f=facets(v);return isCurrentPeriod(v)&&f.realized&&!f.submitted&&!isCancelled(v,f);});
-  const history=mine.filter(v=>{const f=facets(v),c=contract(v);return !isCurrentPeriod(v)||f.submitted||isCancelled(v,f)||c.liquidationState==='confirmado'||financePaymentForVisit(v)||v.estado==='liquidada';});
+  // A period change must not turn an unfinished visit into historical work.
+  // Keep cross-period unfinished rows visible but read-only until their period is selected.
+  const isHistorical=v=>{const f=facets(v),c=contract(v);return f.submitted||isCancelled(v,f)||c.liquidationState==='confirmado'||financePaymentForVisit(v)||v.estado==='liquidada';};
+  const history=mine.filter(isHistorical);
+  const otherPeriodActive=mine.filter(v=>!isCurrentPeriod(v)&&!isHistorical(v));
   const activeCount=assigned.length+scheduled.length+realized.length;
   const postState=x=>String(x&&(x.estado||x.status)||'').toLowerCase();
   const postPeriod=x=>String((data.recordPeriodId?data.recordPeriodId(x):(x.periodId||x.projectId))||'');
@@ -54,9 +58,10 @@ CX.module('misvisitas',({data,ui})=>{
   /* R22: preserve an exact historical visit deep link instead of defaulting to Activas. */
   const pendingExactVisit=window.CX_PENDING_SHOPPER_VISIT_ACTION;
   const pendingExactId=String(pendingExactVisit?.visitId||'');
+  const pendingOther=!!(pendingExactId&&otherPeriodActive.some(v=>String(v.id)===pendingExactId));
   const pendingHistory=!!(pendingExactId&&history.some(v=>String(v.id)===pendingExactId));
   const pendingActive=!!(pendingExactId&&[...assigned,...scheduled,...realized].some(v=>String(v.id)===pendingExactId));
-  let view=pendingHistory&&!pendingActive?'historial':'activas';
+  let view=pendingOther?'otros':pendingHistory&&!pendingActive?'historial':'activas';
   let scheduleReturnView='misvisitas';
   const host=ui.el('div');
   const projectTimezone=String(p?.timeZone||p?.timezone||data?.ctx?.()?.timeZone||'America/Guatemala');
@@ -164,7 +169,7 @@ CX.module('misvisitas',({data,ui})=>{
     return `<div class="card card-p cx-shopper-visit-card" data-visit-card="${v.id}"><div class="between cx-visit-card-head"><div><div class="cx-visit-kicker">🎬 Tu visita</div><b class="cx-visit-title">${v.sucursal}</b><div class="cx-visit-location">📍 ${v.ciudad||''} ${v.pais?'· '+CX.paisFlag(v.pais)+' '+v.pais:''}</div></div>${badge}</div>${scenarioHTML(v)}<div class="cx-visit-payline"><span>💼 Honorario: <b>${ui.money(v.currency,v.honorario)}</b></span>${(v.reembolso||v.comboAmt||v.boleto)?'<span>🧾 Reembolso incluido</span>':''}</div>${scheduledDateOf(v)?`<div class="cx-visit-date-summary">📅 ${pendingSchedule(v)?'Fecha registrada · pendiente de sincronización HR':'Fecha agendada'}: <b>${scheduledDateOf(v)}</b></div>`:''}<div class="flex wrap cx-visit-actions">${actions}</div>${requestNotes(v)}<div class="cx-visit-progress">${progress}</div></div>`;
   };
   const blockedHTML=()=>`${ui.ph('Mis Visitas',p?.name||'')}<div class="card card-p" style="border-left:3px solid var(--red)"><div class="flex" style="gap:8px;align-items:center;margin-bottom:6px"><span style="font-size:20px">🔒</span><b>Identidad de evaluador no verificable</b></div><div style="font-size:12.5px;color:var(--t2)">No pudimos verificar tu perfil de evaluador en esta sesión. Por seguridad no se muestran ni se modifican visitas.</div></div>`;
-  const tabs=()=>`<div class="flex" style="margin-bottom:14px;gap:8px;flex-wrap:wrap"><button class="btn btn-sm ${view==='activas'?'btn-pr':'btn-ghost'}" data-view="activas">Activas ${activeCount}</button><button class="btn btn-sm ${view==='historial'?'btn-pr':'btn-ghost'}" data-view="historial">Historial ${history.length}</button><span class="bdg ${currentApps.length?'bdg-a':'bdg-n'}">Postulaciones ${currentApps.length}</span></div>`;
+  const tabs=()=>`<div class="flex" style="margin-bottom:14px;gap:8px;flex-wrap:wrap"><button class="btn btn-sm ${view==='activas'?'btn-pr':'btn-ghost'}" data-view="activas">Activas ${activeCount}</button><button class="btn btn-sm ${view==='historial'?'btn-pr':'btn-ghost'}" data-view="historial">Historial ${history.length}</button>${otherPeriodActive.length?`<button class="btn btn-sm ${view==='otros'?'btn-pr':'btn-ghost'}" data-view="otros">Otros períodos ${otherPeriodActive.length}</button>`:''}<span class="bdg ${currentApps.length?'bdg-a':'bdg-n'}">Postulaciones ${currentApps.length}</span></div>`;
   const applicationPresentation=a=>{
     const state=postState(a),sync=postSyncState(a);
     if(sync==='conflict_review_required')return{badge:ui.bdg('En revisión','a'),title:'Aprobación en revisión',copy:'Tu postulación fue aprobada, pero la asignación vigente en Hoja de Ruta no coincide. El equipo debe revisarla antes de mostrarla como visita asignada.',tone:'amber'};
@@ -179,6 +184,7 @@ CX.module('misvisitas',({data,ui})=>{
   const applicationsHTML=()=>currentApps.length?`<div class="card card-p" style="margin-bottom:12px;border-left:3px solid var(--amber)"><div class="card-h"><div class="card-t">Estado de tus postulaciones</div><span class="bdg bdg-a">${currentApps.length}</span></div>${currentApps.map(a=>{const v=visitForApp(a),present=applicationPresentation(a),sync=postSyncState(a);return`<div data-app-state="${sync}" style="padding:9px 0;border-top:1px solid var(--border-2)"><div class="between" style="gap:12px"><div><b style="font-size:12.5px">${v?.sucursal||a.sucursal||'Visita'}</b><div style="font-size:10.5px;color:var(--t3)">${a.fechaProp||a.proposedDate||'Fecha pendiente'} · ${v?.ciudad||a.ciudad||''}</div></div>${present.badge}</div><div style="font-size:11.5px;color:var(--t2);margin-top:6px"><b>${present.title}.</b> ${present.copy}</div></div>`;}).join('')}</div>`:''; 
   const activeHTML=()=>`${ui.ph('Mis Visitas',(p?.name||'')+' · agenda, ejecuta y da seguimiento')}${tabs()}${applicationsHTML()}${geoOn?`<div class="card card-p" style="margin-bottom:12px;border-left:3px solid var(--green)"><div class="flex" style="gap:8px;align-items:center;margin-bottom:4px"><span style="font-size:18px">📍</span><b style="font-size:13px">Check-in con foto geolocalizada</b><span class="bdg bdg-a" style="font-size:10px">Se confirma por visita</span></div><div style="font-size:11.5px;color:var(--t2)">La foto se guarda en Storage con scope de la visita y el GPS queda asociado solo cuando Storage y el provider confirman la operación.</div></div>`:''}${assigned.map(visitCard).join('')}${scheduled.map(visitCard).join('')}${realized.map(visitCard).join('')}${activeCount?'':ui.empty('🗓️','No tienes visitas activas en este momento.')}<div class="card card-p">${ui.aiBox('Cada cambio se muestra como confirmado únicamente cuando queda guardado correctamente. Si no puede guardarse, tu visita permanece sin cambios.','Seguimiento seguro de la visita')}</div>`;
   const historyHTML=()=>`${ui.ph('Mis Visitas',(p?.name||'')+' · agenda, ejecuta y da seguimiento')}${tabs()}<div class="card card-p"><div class="card-h"><div class="card-t">Historial de visitas</div><span class="muted" style="font-size:11px">submitidas, liquidadas, pagadas o canceladas</span></div>${history.length?`<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Sucursal</th><th>Escenario</th><th>Fecha</th><th>Honorario</th><th>Estado</th><th>Pago</th></tr></thead><tbody>${history.map(v=>{const vc=contract(v);const pay=!vc||vc.paymentState==='no_aplica'?'<span class="muted" style="font-size:11px">—</span>':financePaymentForVisit(v)?ui.bdg('Pagado (confirmado)','g'):ui.bdg('Pago pendiente de confirmación','a');return`<tr data-history-visit="${v.id}" style="cursor:pointer" title="Abrir detalle de la visita"><td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad||''}</div></td><td style="font-size:12px">${data.scenarioSummaryForVisit?data.scenarioSummaryForVisit(v,p):(v.escenario||'')}</td><td style="font-size:12px">${v.realizada||v.fechaPago||v.agendada||'—'}</td><td>${ui.money(v.currency,v.honorario)}</td><td>${ui.estadoBadge(v.estado)}</td><td>${pay}</td></tr>`;}).join('')}</tbody></table></div>`:ui.empty('🗒️','Aún no tienes visitas en tu historial.')}</div>`;
+  const otherPeriodHTML=()=>`${ui.ph('Mis Visitas',(p?.name||'')+' · agenda, ejecuta y da seguimiento')}${tabs()}<div class="card card-p"><div class="card-h"><div class="card-t">Visitas pendientes de otros períodos</div></div><div style="font-size:12px;color:var(--t2);margin-bottom:12px">Estas visitas siguen pendientes. Selecciona el período correspondiente para realizar acciones; aquí puedes consultar su detalle sin modificar datos.</div><div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Sucursal</th><th>Período</th><th>Fecha</th><th>Estado</th></tr></thead><tbody>${otherPeriodActive.map(v=>`<tr data-history-visit="${safe(v.id)}" style="cursor:pointer" title="Consultar visita de otro período"><td><b>${safe(v.sucursal||'Visita')}</b></td><td>${safe(v.periodLabel||v.periodKey||periodIdOf(v)||'—')}</td><td>${safe(scheduledDateOf(v)||v.realizada||'—')}</td><td>${ui.estadoBadge(v.estado)}</td></tr>`).join('')}</tbody></table></div></div>`;
 
   const find=id=>mine.find(v=>String(v.id)===String(id));
   const consumePendingAction=()=>{
@@ -190,7 +196,7 @@ CX.module('misvisitas',({data,ui})=>{
     if(action==='focus'){
       const card=[...host.querySelectorAll('[data-visit-card],[data-history-visit]')].find(el=>String(el.dataset.visitCard||el.dataset.historyVisit||'')===visitId);
       delete window.CX_PENDING_SHOPPER_VISIT_ACTION;
-      if(card){card.scrollIntoView({block:'center',behavior:'smooth'});if(view==='historial')card.click();return;}
+      if(card){card.scrollIntoView({block:'center',behavior:'smooth'});if(view==='historial'||view==='otros')card.click();return;}
       ui.toast('Esta visita ya no aparece activa en el período actual. Revisa tu historial o consulta con Coordinación.','warn',4200);return;
     }
     if(view==='historial'&&history.some(v=>String(v.id)===visitId)){
@@ -200,12 +206,19 @@ CX.module('misvisitas',({data,ui})=>{
       if(action==='questionnaire')ui.toast('Visita histórica localizada. Verifica su estado y la vigencia del cuestionario antes de realizar la acción.','warn',4200);
       return;
     }
+    if(view==='otros'&&otherPeriodActive.some(v=>String(v.id)===visitId)){
+      delete window.CX_PENDING_SHOPPER_VISIT_ACTION;
+      const row=[...host.querySelectorAll('[data-history-visit]')].find(el=>String(el.dataset.historyVisit||'')===visitId);
+      if(row){row.scrollIntoView({block:'center',behavior:'smooth'});row.click();}
+      ui.toast('Selecciona el período de esta visita para continuar la acción pendiente.','warn',4200);
+      return;
+    }
     const target=attr?[...host.querySelectorAll('[data-'+attr+']')].find(el=>String(el.dataset[attr]||'')===visitId):null;
     delete window.CX_PENDING_SHOPPER_VISIT_ACTION;
     if(target)setTimeout(()=>target.click(),0);else ui.toast('La acción ya no aplica al estado actual de esta visita.','warn',3200);
   };
   const bindHistory=()=>host.querySelectorAll('[data-history-visit]').forEach(tr=>tr.addEventListener('click',()=>{const v=find(tr.dataset.historyVisit);if(!v)return;const c=contract(v),f=facets(v);ui.modal('📋 '+safe(v.sucursal||'Detalle de visita'),`<div class="grid g2" style="gap:10px 16px"><div><span class="muted">Periodo</span><div><b>${safe(v.periodLabel||v.periodKey||periodIdOf(v)||'—')}</b></div></div><div><span class="muted">Estado</span><div>${ui.estadoBadge(v.estado)}</div></div><div><span class="muted">Escenario</span><div>${safe(data.scenarioSummaryForVisit?data.scenarioSummaryForVisit(v,p):(v.escenario||'—'))}</div></div><div><span class="muted">Honorario</span><div>${v.honorario!=null?ui.money(v.currency,v.honorario):'Pendiente de fuente'}</div></div><div><span class="muted">Agendada</span><div>${safe(v.agendada||'—')}</div></div><div><span class="muted">Realizada</span><div>${safe(v.realizada||'—')}</div></div><div><span class="muted">Submitida</span><div>${f.submitted?'Sí':'No'}</div></div><div><span class="muted">Pago</span><div>${financePaymentForVisit(v)?'Pago confirmado':'Pendiente de confirmación'}</div></div></div><div style="font-size:11px;color:var(--t3);margin-top:12px">Este detalle usa la misma visita canónica del histórico y no modifica datos.</div>`);}));
-  const draw=()=>{if(!identityOk){host.innerHTML=blockedHTML();return;}host.innerHTML=view==='historial'?historyHTML():activeHTML();host.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.view;draw();}));if(view==='activas'){bindActive();consumePendingAction();}else{bindHistory();consumePendingAction();}};
+  const draw=()=>{if(!identityOk){host.innerHTML=blockedHTML();return;}host.innerHTML=view==='historial'?historyHTML():view==='otros'?otherPeriodHTML():activeHTML();host.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.view;draw();}));if(view==='activas'){bindActive();consumePendingAction();}else{bindHistory();consumePendingAction();}};
   const bindActive=()=>{
     host.querySelectorAll('[data-doc]').forEach(b=>b.addEventListener('click',async()=>{
       const v=find(b.dataset.doc);if(!v)return;
