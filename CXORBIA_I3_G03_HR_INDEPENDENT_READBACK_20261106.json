@@ -1,0 +1,105 @@
+{
+  "schemaVersion": "cxorbia.i3.g03.hr-independent-readback.20261106.v1",
+  "observedAt": "2026-11-06",
+  "scope": "APPEND_ONLY_CONTROL_RECEIPT_READ_ONLY_SOURCE_NO_MODULE_PROMOTION",
+  "authority": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "expectedParentSha": "e53c20f43bf9322662bd69d7eb5fa8e2aaf2591d",
+    "expectedParentTree": "d313eaa37d5dce6d63b84f04c88543b4c12ba185",
+    "frozenPlanId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
+    "productSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+    "devMaterializationRunId": 42147711875,
+    "currentMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261105-V245.json"
+  },
+  "independentSource": {
+    "description": "Google Sheets HR GT/HN, existing native source used by CXOrbia",
+    "metadataModifiedTimeUtc": "2026-11-05T18:26:45.107Z",
+    "rangeReadPerTab": "A1:AE400",
+    "method": "authenticated connected Google Sheets range read; row is visit if numeric cinema ID and shopping name",
+    "periods": [
+      {
+        "tab": "OCTUBRE 26",
+        "country": "GT",
+        "visits": 34,
+        "assigned": 34,
+        "unassigned": 0,
+        "realized": 33,
+        "questionnaireCompleted": 32,
+        "submitted": 24,
+        "nominalHonorariumRows": 0
+      },
+      {
+        "tab": "OCTUBRE 26 HN",
+        "country": "HN",
+        "visits": 10,
+        "assigned": 10,
+        "unassigned": 0,
+        "realized": 10,
+        "questionnaireCompleted": 10,
+        "submitted": 9,
+        "nominalHonorariumRows": 0
+      },
+      {
+        "tab": "NOVIEMBRE",
+        "country": "GT",
+        "visits": 34,
+        "assigned": 22,
+        "unassigned": 12,
+        "programmed": 4,
+        "realized": 0,
+        "questionnaireCompleted": 0,
+        "submitted": 0,
+        "nominalHonorariumRows": 0
+      },
+      {
+        "tab": "NOVIEMBRE HN",
+        "country": "HN",
+        "visits": 10,
+        "assigned": 4,
+        "unassigned": 6,
+        "programmed": 1,
+        "realized": 0,
+        "questionnaireCompleted": 0,
+        "submitted": 0,
+        "nominalHonorariumRows": 0
+      }
+    ],
+    "novemberTotals": {
+      "visits": 44,
+      "assigned": 26,
+      "unassigned": 18
+    },
+    "octoberTotals": {
+      "visits": 44,
+      "realized": 43,
+      "questionnaireCompleted": 42,
+      "submitted": 33
+    }
+  },
+  "reconciliation": {
+    "novemberAssignmentSnapshot": "PASS_SCOPED_INDEPENDENT_HR_44_26_18_COUNTS_AGREE_WITH_PRIOR_CANONICAL_DEV_EVIDENCE",
+    "sameCurrentRuntimeSourceRevision": "NOT_REPROVED_IN_THIS_READBACK",
+    "wholeHrDomainPass": false,
+    "historicalPaymentsG03": "HOLD_INDEPENDENT_BANK_OR_PAYMENT_PROVIDER_ACK_NOT_FOUND",
+    "availableTyALiquidationsDriveFolder": "Only historical XLSX files last edited in 2024; not authoritative for 2026 payments",
+    "warning": "HR reimbursement amounts and blank honoraria do not prove bank transfer or paid/conciled status. Do not infer or write payment confirmations."
+  },
+  "preservation": {
+    "iteration": "I3",
+    "state": "HOLD",
+    "modulesMatch": 5,
+    "modulesTotal": 21,
+    "identityGroupsApproved": "83 original plus 2 extra provider ACK; do not remerge",
+    "stivenHistoricalTenToZero": "CLOSED_PASS_DO_NOT_REOPEN",
+    "production": "DO_NOT_TOUCH",
+    "frozenPlanOverwritten": false,
+    "productFilesChanged": 0,
+    "hrCellsWritten": 0,
+    "bankOrFinanceProviderWrites": 0,
+    "newFirebaseOrBranch": false,
+    "newWorkflow": false,
+    "moduleStatusPromoted": false
+  },
+  "nextExactAction": "I3 G03 verify existing durable historical payment/provider ACK against independent finance records; then G05/A05 same-artifact scoped HR E2E, D05 natural Admin/Shopper attempt and remaining Phase A modules. Gate20/21 HOLD, I4 not authorized."
+}
