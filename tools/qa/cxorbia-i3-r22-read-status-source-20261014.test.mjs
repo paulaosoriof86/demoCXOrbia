@@ -37,7 +37,7 @@ test('R22 cross-surface text/identity/action parity without raw HR IDs',()=>{
 test('R22 exact historical visits retain deep-link target and read-only detail',()=>{
  const visits=readFileSync(new URL('../../app/modules/misvisitas.js',import.meta.url),'utf8');
  assert.match(visits,/pendingHistory&&!pendingActive\?'historial':'activas'/);
- assert.match(visits,/if\(view==='historial'\)card\.click\(\)/);
+ assert.match(visits,/if\(view==='historial'\|\|view==='otros'\)card\.click\(\)/);
  assert.match(visits,/bindHistory\(\);consumePendingAction\(\)/);
  assert.match(visits,/if\(view==='historial'&&history\.some\(v=>String\(v\.id\)===visitId\)\)/);
 });
