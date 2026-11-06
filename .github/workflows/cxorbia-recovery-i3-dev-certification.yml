@@ -5889,7 +5889,7 @@ jobs:
       compression-level: 0
   vrm215-shopper-population-reproof:
    needs: canonical-candidate-authority
-   if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED' }}
+   if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED'||(contains(github.event.head_commit.message, '[i3-shopper-population-readonly]') && needs.canonical-candidate-authority.result == 'success') }}
    runs-on: ubuntu-latest
    timeout-minutes: 35
    env:

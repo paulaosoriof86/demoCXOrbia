@@ -22932,7 +22932,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "I3 V16 HOLD: VRM309 exact DEV source 5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947 RUN42147711875 #2214 PASS (1 build, Cloud Run 00352-dml, Hosting dd66761e0d4ba9a3, HR revision stable). Chrome Admin one canonical Jhennypher Murga GT 15 operational visits and Rocío Vilca HN 4 operational visits; historical cumulative and authenticated Shopper same-artifact E2E still PENDING, cannot promote modules. 83/83 original approved + 2 extra groups provider PASS no additional fusion. NEXT EXACT run authenticated read-only Admin GT/HN + Shopper keeper same-artifact test and repeat eligible previously skipped 21-domain certification; G03 HR finanzas independently reconcile, Gate20/21 HOLD, 5/21 MATCH, 16 pending, I4 not authorized and production DO_NOT_TOUCH.",
+  "exactNextAction": "I3 V17 HOLD: exact VRM309 source 5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947 DEV RUN42147711875 #2214 SEALED. Existing independent authenticated Admin GT/HN + both Shopper roles RUN42150462459 #2216 20/20 PASS: Jhennypher 15/15 own unique visits, Rocío 4/4; no duplicated canonical row. 83/83 approved original identity groups + 2 extra provider PASS, no more fusion. 5/21 domain MATCH, 16 pending; skipped status-specific jobs NOT certified. NEXT EXACT I3 read-only broader shopper population/root, independent G03 HR finanzas/historical amount and payment reconciliation, then remaining D05 questionnaire, C04/C05 finance and postulations/reservations role E2E with same DEV artifact. Gate20/21 HOLD, I4 authorization absent, production DO_NOT_TOUCH.",
   "supersedesGitBlob": "086542151de0b223afbd258f1f65be6ca886684d",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -26660,7 +26660,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-11-04T08:13:31Z",
-  "nextExactAction": "I3 V12 HOLD: 83/83 original approved cohort preserved. VRM-307 exact DEV RUN42132045461 #2202 PASS, source 3a299715 tree ed9362c9, runtime 00350-9pq, Hosting 5a740a9c18805fc4, HR 63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba unchanged; 80/80 source+continuity tests PASS, NO HR writes or production. Next EXACT: execute only the two owner-approved Jhennypher Murga GT (keeper jennypher.murga) / Rocío Vilca HN (keeper rocio.vilca) protected DEV group corrections against new source after fresh provider preflight; demand durable ACK, 2 zero-write replays, Auth/UID, historical visits, certifications, liquidations/crosswalk and no active intermediate links. If any proof fails, HOLD without replays. G03 HR finanzas same-revision scope issue HOLD. 21 modules 5 MATCH/16 pending actual owner E2E, no SKIPPED promotion. I4 not authorized, production DO_NOT_TOUCH.",
+  "nextExactAction": "I3 V17 HOLD: exact VRM309 source 5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947 DEV RUN42147711875 #2214 SEALED. Existing independent authenticated Admin GT/HN + both Shopper roles RUN42150462459 #2216 20/20 PASS: Jhennypher 15/15 own unique visits, Rocío 4/4; no duplicated canonical row. 83/83 approved original identity groups + 2 extra provider PASS, no more fusion. 5/21 domain MATCH, 16 pending; skipped status-specific jobs NOT certified. NEXT EXACT I3 read-only broader shopper population/root, independent G03 HR finanzas/historical amount and payment reconciliation, then remaining D05 questionnaire, C04/C05 finance and postulations/reservations role E2E with same DEV artifact. Gate20/21 HOLD, I4 authorization absent, production DO_NOT_TOUCH.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -39021,6 +39021,28 @@
     "moduleTotal": 21,
     "remaining": "UI_SHOPPER_CANONICAL_VISIBILITY_AND_ELIGIBLE_21_MODULE_ROLE_E2E_CERTIFICATION",
     "i3": "HOLD",
+    "production": false
+  },
+  "vrm309RoleKeepersRun2216AuthenticatedReadback": {
+    "state": "PASS_SCOPED_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E",
+    "runId": 42150462459,
+    "jobId": 127672375559,
+    "artifactId": 13472560630,
+    "artifactZipDigest": "sha256:2012f7066361188652b669fd3d574c147ac25d2f5339555c52604aa241911915",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM309_AUTHENTICATED_KEEPERS_20_OF_20_RUN2216_20261105.json",
+    "receiptBlob": "7e6d1a0a9f4dbd7f0f2cb907851ee24991fc255d",
+    "sourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+    "hrRevision": "63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba",
+    "checksPass": 20,
+    "checksFail": 0,
+    "scope": "Admin and authenticated GT_MURGA HN_VILCA shopper role; not 21-domain or historical finance certification",
+    "gtOwnVisits": 15,
+    "gtUniqueVisitIds": 15,
+    "hnOwnVisits": 4,
+    "hnUniqueVisitIds": 4,
+    "identityGroupAck": "83/83 + 2",
+    "certifiedWholeModules": 5,
+    "totalModules": 21,
     "production": false
   }
 }
