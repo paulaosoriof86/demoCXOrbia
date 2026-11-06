@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm313.source-proof.v1",
+  "sourceSha": "5a906e4a9aa79991924580eb54103797d311d930",
+  "sourceTree": "70cecc344f1b8c243f89459b0c7b79f9641dd864",
+  "predecessorProductSourceSha": "439a688be58b23c93ac4e99a91da78b4c3cf81fa",
+  "sourceTestsPass": 48,
+  "sourceTestsFail": 0,
+  "sourceTestsSkipped": 0,
+  "sourceTestsLogPath": "docs/checkpoints/CXORBIA_I3_VRM313_LOCAL_SOURCE_TESTS_20261106.log",
+  "sourceTestsLogSha256": "ca76e4dd511d39a12a0a2f86a614bf94fff70ca237982a9f389238fdeb429d01",
+  "allowedProductFiles": [
+    "backend/runtime/hr-live-service/certification-runtime.mjs",
+    "backend/runtime/hr-live-service/server.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/certification-hr-period-authority.test.mjs",
+    "tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs"
+  ],
+  "allowedControlFiles": [
+    "tools/qa/cxorbia-i3-shock-continuity-guard.mjs",
+    "tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs"
+  ],
+  "findings": [
+    {
+      "id": "VRM-313",
+      "classification": "FUNCTIONAL_DEFECT",
+      "priority": "P0_PROVEN",
+      "owner": "backend/runtime/hr-live-service/certification-runtime.mjs",
+      "evidence": "Chrome isolated Shopper Stiven in NOV2026 displays published original OCT bank; eight selected answers rejected with CERT_EXECUTION_PERIOD_REQUIRED before persistence. Same-principal Firestore readback confirms both exact NOV metadata aliases absent (HTTP404), one original failed attempt unchanged. UI operational periods originate in fresh HR snapshot; optional Firestore metadata is not universal period existence authority.",
+      "expected": "When no metadata doc exists, validate exact period in server current HR snapshot for the same tenant/project. Preserve bank identity, history, idempotency and exact revision. Fail closed on ambiguity, wrong scope or missing/stale authority."
+    }
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM313_D06_PROVEN_SCOPE_20261106.json",
+  "scopeReceiptBlob": "5e9b5a628db96f22c8c3ff835fd02c235d844311",
+  "production": false,
+  "devPublished": false,
+  "noRulesChanges": true,
+  "review": "Independent read-only review confirmed exact HR authority fallback, scope, canonical keys, revision and idempotency; no additional defect found."
+}
