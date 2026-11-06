@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "2e36c4d62eedae59b65716cf75dd53e059f958ca",
-    "sourceTree": "c0814bc63bde33c042a86aff5666d40b8a429a0f",
-    "predecessorSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
+    "sourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+    "sourceTree": "289d084f78dc8c1392e043a7668b10258ffe459d",
+    "predecessorSha": "2e36c4d62eedae59b65716cf75dd53e059f958ca",
     "production": false,
-    "state": "HOLD_VRM308_DEV_MATERIALIZATION_REQUIRED",
+    "state": "HOLD_VRM309_DEV_MATERIALIZATION_REQUIRED",
     "november2026AutomaticPeriodSourceProof": {
       "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
       "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -21765,6 +21765,32 @@
       "hrWrites": 0,
       "providerWrites": 0,
       "production": false
+    },
+    "VRM-309": {
+      "id": "VRM-309",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0",
+      "taskIds": ["A01", "A02", "B01", "G03"],
+      "relatedFindings": ["VRM-304", "VRM-307", "VRM-308"],
+      "title": "HR canonical shopper country display name is filtered against period country codes in Admin scoped list",
+      "firstObservedAt": "2026-11-05",
+      "observed": "Exact authenticated DEV role E2E run 42145300224: Rocío Vilca canonical raw profile exists with country Honduras, while November period scopes GT/HN; raw 195 vs scoped 194, 4 current HR-mapped visits and 7 alias IDs persist. Jhennypher GT remains visible.",
+      "expected": "Canonical shoppers appear once in the correct configured operational country despite human-readable labels, with HR-controlled fields authoritative and financial/visit history unchanged.",
+      "rootCause": "The cumulative read model retained the profile country name Honduras in row.pais after merging HR base and protected profile; app/core/data.js uses literal country-code inclusion (GT/HN) when scoping shoppers.",
+      "ownerFiles": ["app/adapters/tya-cumulative-read-model-v2.js", "tools/qa/cxorbia-i3-vrm308-hn-country-alias-normalization.test.mjs"],
+      "sourceFixCommit": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+      "sourceFixTree": "289d084f78dc8c1392e043a7668b10258ffe459d",
+      "predecessorSourceSha": "2e36c4d62eedae59b65716cf75dd53e059f958ca",
+      "sourceTests": {"pass": 19, "fail": 0, "scope": "SOURCE_FOCAL_AND_VRM304_NO_DEV_MATERIALIZATION_YET"},
+      "sourceOwnerBlob": "11425e47e54ca955056dc6b891235a5bdcdbaf4d",
+      "testOwnerBlob": "b6ebd9310e9e315155c171dd45e3b38d571a7fda",
+      "adminRoleBeforeFixRunId": 42145300224,
+      "state": "SOURCE_PROVEN_DEV_MATERIALIZATION_REQUIRED",
+      "adminShopperRoleReproof": "PENDING_AFTER_EXACT_DEV_MATERIALIZATION",
+      "modulePromotions": 0,
+      "hrWrites": 0,
+      "providerWrites": 0,
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -22513,11 +22539,12 @@
       "VRM-305",
       "VRM-306",
       "VRM-307",
-      "VRM-308"
+      "VRM-308",
+      "VRM-309"
     ],
-    "findingCount": 308,
-    "expectedCurrentRange": "VRM-001..VRM-308",
-    "nextFindingId": "VRM-309",
+    "findingCount": 309,
+    "expectedCurrentRange": "VRM-001..VRM-309",
+    "nextFindingId": "VRM-310",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_I3_REMAINING_E2E_HUMAN_GATE_AFTER_VRM153_DEV_DURABLE_PASS",
@@ -22535,8 +22562,8 @@
     "userReportedRequirementsFrozenAt": "2026-09-30T20:18:00-06:00",
     "userReviewComplete": true,
     "userReviewEvidence": "19 screenshots plus complete Shopper/Admin observations supplied 2026-10-02",
-    "currentProductSourceSha": "2e36c4d62eedae59b65716cf75dd53e059f958ca",
-    "currentProductSourceTree": "c0814bc63bde33c042a86aff5666d40b8a429a0f",
+    "currentProductSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+    "currentProductSourceTree": "289d084f78dc8c1392e043a7668b10258ffe459d",
     "currentMaterialization": {
       "state": "PASS_VRM307_EXACT_DEV_MATERIALIZATION",
       "decision": "PASS_VRM307_EXACT_DEV_MATERIALIZATION",
@@ -22905,7 +22932,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "I3 V14 HOLD: VRM-308 exact DEV materialization PASS RUN42141578072 #2209 source 2e36c4d62eedae59b65716cf75dd53e059f958ca tree c0814bc63bde33c042a86aff5666d40b8a429a0f, Cloud Run cxorbia-live-hr-dev-00351-bsh digest b0183e21, Hosting 2ab41c4fb594604a, HR revision 63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba STABLE; 1 build, 0 HR/production writes. 83/83 prior groups + 2 extra groups Jhennypher Murga GT and Rocío Vilca HN provider+independent readback PASS; do not redo fusions. NEXT EXACT execute existing authenticated read-only Admin + GT/HN shopper same-artifact role test [i3-keeper-role-e2e-readonly], inspect any real mapping/visits blockers; then run omitted eligible 21-module scoped jobs, certify only full MATCH by independent same-revision evidence. G03 HR finanzas same-revision real readback remains separate. Gate20/21 HOLD; 5/21 MATCH, 16 pending; I4 not authorized; production DO_NOT_TOUCH.",
+  "exactNextAction": "I3 V15 HOLD: exact read-only Admin GT/HN role test RUN42145300224 proved VRM-309 raw Rocío Vilca canonical Honduras excluded by country-code period GT/HN; provider fusion, HR identity map and 4 mapped current visits intact. Owner-only source 5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947 tree 289d084f78dc8c1392e043a7668b10258ffe459d, 19/19 focal PASS SOURCE ONLY. DEV still serves predecessor 2e36c4d62eedae59b65716cf75dd53e059f958ca RUN42141578072. NEXT EXACT materialize VRM309 once in existing DEV lane, verify immutable source artifact+HR revision and then same-revision authenticated Admin GT/HN Shopper role E2E; run eligible skipped 21-module jobs and record only independent full MATCH. 83/83+2 approved groups already provider PASS; never re-fuse. G03 finance HR remains separate P0. 5/21 MATCH; Gate20/21 HOLD; I4 not authorized and production DO_NOT_TOUCH.",
   "supersedesGitBlob": "086542151de0b223afbd258f1f65be6ca886684d",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -22934,7 +22961,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-309",
+  "nextFindingId": "VRM-310",
   "lastControlFailure": {
     "id": "RUN1238_NEXT_FINDING_ID_GOVERNANCE_DESYNC",
     "classification": "MAPPING_FAILURE",

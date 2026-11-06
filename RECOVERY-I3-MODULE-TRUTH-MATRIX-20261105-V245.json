@@ -103,12 +103,12 @@
     }
   },
   "productSource": {
-    "sha": "2e36c4d62eedae59b65716cf75dd53e059f958ca",
-    "treeSha": "c0814bc63bde33c042a86aff5666d40b8a429a0f",
-    "predecessorProductSourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
-    "message": "VRM-308 approved exact-identity country code/name equivalence in Admin read model",
-    "authorityState": "VRM308_SOURCE_PROVEN_DEV_NOT_YET_MATERIALIZED",
-    "state": "I3_SOURCE_ONLY_18_OF_18_PASS_DEV_RUN2202_PREDECESSOR_SERVING"
+    "sha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+    "treeSha": "289d084f78dc8c1392e043a7668b10258ffe459d",
+    "predecessorProductSourceSha": "2e36c4d62eedae59b65716cf75dd53e059f958ca",
+    "message": "VRM-309 HR-governed operational shopper country code normalization after independent Admin role failure",
+    "authorityState": "VRM309_SOURCE_PROVEN_DEV_MATERIALIZATION_PENDING",
+    "state": "I3_SOURCE_ONLY_19_OF_19_PASS_VRM308_DEV_RUN2209_PREDECESSOR_SERVING"
   },
   "controlHeadAtConstruction": "2b23686be39958cee0983b131ae7f56c8c0f430a",
   "phaseAComplete": false,
@@ -529,7 +529,7 @@
       "currentCandidateTree": "7e55c5fefee821b2d9dd1d7c6e575592b8534be4",
       "currentOwnerBlobs": {
         "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js": "7b68d08357f256d736de57ff5b89bf97f397fb4f",
-        "app/adapters/tya-cumulative-read-model-v2.js": "45e6c1912c9f965a7105e7c605d8f1f12cefa08e",
+        "app/adapters/tya-cumulative-read-model-v2.js": "11425e47e54ca955056dc6b891235a5bdcdbaf4d",
         "app/adapters/tya-canonical-state-semantics-v2.js": "a0104aa043ebdb7c9ee55cde5766ada8ed5e28fb",
         "app/adapters/tya-live-source-refresh-watch-v2.js": "8fa224fe7f7a565be8553bc855deef6d0e6a3b9f",
         "app/adapters/tya-live-source-inplace-apply.js": "45e1cd1b8c01d6276be2c256d5b99baa93e90252",
@@ -4078,7 +4078,7 @@
       "f9ApprovedBlob": "0b0ffc1cc215afbcc2fd3400ea1496162da93b60",
       "latestApprovedSource": "6bcbc1df70c29c2ad3ad57ecfa906917e6372ace",
       "latestApprovedBlob": "cbe63e37ff932f64c9577fa106712683d38a978a",
-      "currentBlob": "45e6c1912c9f965a7105e7c605d8f1f12cefa08e",
+      "currentBlob": "11425e47e54ca955056dc6b891235a5bdcdbaf4d",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "COMPOSED_NOT_DEPLOYED",
@@ -8113,7 +8113,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "I3 V12 HOLD: 83/83 original approved cohort preserved. VRM-307 exact DEV RUN42132045461 #2202 PASS, source 3a299715 tree ed9362c9, runtime 00350-9pq, Hosting 5a740a9c18805fc4, HR 63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba unchanged; 80/80 source+continuity tests PASS, NO HR writes or production. Next EXACT: execute only the two owner-approved Jhennypher Murga GT (keeper jennypher.murga) / Rocío Vilca HN (keeper rocio.vilca) protected DEV group corrections against new source after fresh provider preflight; demand durable ACK, 2 zero-write replays, Auth/UID, historical visits, certifications, liquidations/crosswalk and no active intermediate links. If any proof fails, HOLD without replays. G03 HR finanzas same-revision scope issue HOLD. 21 modules 5 MATCH/16 pending actual owner E2E, no SKIPPED promotion. I4 not authorized, production DO_NOT_TOUCH.",
+  "nextExactAction": "I3 V15 HOLD: VRM309 source 5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947 code normalization 19/19 focal PASS; predecessor 2e36 exact DEV RUN42141578072 still serves. Independent run42145300224 proved Admin HN canonical Rocío present raw but excluded in GT/HN scope due Honduras text vs HN code. 83/83+2 groups approved and provider fused, do not repeat. Materialize same canonical source in DEV once, read back Hosting/runtime/HR, run authenticated Admin/Shopper country+visits+history and re-run eligible 21-module scoped certificates (5 MATCH / 16 pending). Gate20/21 HOLD, production DO_NOT_TOUCH, I4 not authorized.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -17583,6 +17583,25 @@
     "priorAuthenticatedAdminRunId": 42138916399,
     "devMaterialization": "PASS_EXACT_RUN42141578072",
     "devMaterializationRunId": 42141578072,
+    "newModuleFullMatch": 0,
+    "currentMatchCount": 5,
+    "totalModules": 21,
+    "production": false
+  },
+  "vrm309OperationalCountryNormalization20261106": {
+    "findingId": "VRM-309",
+    "classification": "MAPPING_FAILURE",
+    "ownerPath": "app/adapters/tya-cumulative-read-model-v2.js",
+    "ownerBlob": "11425e47e54ca955056dc6b891235a5bdcdbaf4d",
+    "testOwnerPath": "tools/qa/cxorbia-i3-vrm308-hn-country-alias-normalization.test.mjs",
+    "testOwnerBlob": "b6ebd9310e9e315155c171dd45e3b38d571a7fda",
+    "sourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+    "sourceTree": "289d084f78dc8c1392e043a7668b10258ffe459d",
+    "sourceTests": "19_OF_19_FOCAL_PASS_SOURCE_ONLY",
+    "authenticatedAdminBeforeFixRunId": 42145300224,
+    "rootCause": "HR keeper Honduras was filtered by literal GT/HN country codes after canonical merge, despite retained four mapped visits and provider ACK",
+    "devMaterialization": "PENDING",
+    "adminAndShopperRoleProof": "PENDING_AFTER_DEV",
     "newModuleFullMatch": 0,
     "currentMatchCount": 5,
     "totalModules": 21,

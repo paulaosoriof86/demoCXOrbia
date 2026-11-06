@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM308_DEV_MATERIALIZED_ROLE_E2E_PENDING",
+  "status": "HOLD_VRM309_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "2e36c4d62eedae59b65716cf75dd53e059f958ca",
-  "productTreeAuthority": "c0814bc63bde33c042a86aff5666d40b8a429a0f",
-  "predecessorProductSourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
+  "productSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+  "productTreeAuthority": "289d084f78dc8c1392e043a7668b10258ffe459d",
+  "predecessorProductSourceSha": "2e36c4d62eedae59b65716cf75dd53e059f958ca",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V564_2026-11-04.json",
-  "findingsLedgerExpectedGitBlob": "a3102ebd227e23f09e9837798e930b15aac3435d",
+  "findingsLedgerExpectedGitBlob": "b72e58b26bf39216120f4297398128b2d3723a48",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261105-V245.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "P0_VRM308_ADMIN_GT_HN_SHOPPER_SAME_ARTIFACT_ROLE_E2E_PENDING__G03_HR_FINANZAS__16_MODULES_PENDING",
+  "activeBlocker": "P0_VRM309_ADMIN_HN_COUNTRY_PROJECTION_FIX_DEV_MATERIALIZATION_REQUIRED__G03_HR_FINANZAS__16_MODULES_PENDING",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -115,7 +115,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-309",
+  "nextFindingId": "VRM-310",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -128,7 +128,7 @@
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
   "historicalExactNextActionPreS1": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "I3 V14 HOLD: VRM-308 exact DEV materialization PASS RUN42141578072 #2209 source 2e36c4d62eedae59b65716cf75dd53e059f958ca tree c0814bc63bde33c042a86aff5666d40b8a429a0f, Cloud Run cxorbia-live-hr-dev-00351-bsh digest b0183e21, Hosting 2ab41c4fb594604a, HR revision 63ddfdf36e347db63b36e26e24a010d20a99c63f6e36c6542d25497bc2f6f9ba STABLE; 1 build, 0 HR/production writes. 83/83 prior groups + 2 extra groups Jhennypher Murga GT and Rocío Vilca HN provider+independent readback PASS; do not redo fusions. NEXT EXACT execute existing authenticated read-only Admin + GT/HN shopper same-artifact role test [i3-keeper-role-e2e-readonly], inspect any real mapping/visits blockers; then run omitted eligible 21-module scoped jobs, certify only full MATCH by independent same-revision evidence. G03 HR finanzas same-revision real readback remains separate. Gate20/21 HOLD; 5/21 MATCH, 16 pending; I4 not authorized; production DO_NOT_TOUCH.",
+  "exactNextAction": "I3 V15 HOLD: exact read-only Admin GT/HN role test RUN42145300224 proved VRM-309 raw Rocío Vilca canonical Honduras excluded by country-code period GT/HN; provider fusion, HR identity map and 4 mapped current visits intact. Owner-only source 5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947 tree 289d084f78dc8c1392e043a7668b10258ffe459d, 19/19 focal PASS SOURCE ONLY. DEV still serves predecessor 2e36c4d62eedae59b65716cf75dd53e059f958ca RUN42141578072. NEXT EXACT materialize VRM309 once in existing DEV lane, verify immutable source artifact+HR revision and then same-revision authenticated Admin GT/HN Shopper role E2E; run eligible skipped 21-module jobs and record only independent full MATCH. 83/83+2 approved groups already provider PASS; never re-fuse. G03 finance HR remains separate P0. 5/21 MATCH; Gate20/21 HOLD; I4 not authorized and production DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2979,7 +2979,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "938f934fd7afdd3af42d40218d93181778fe9ab2",
+  "moduleTruthExpectedGitBlob": "73979d86b536dd1b4b090b8a817eaeebe1cf76ac",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12808,7 +12808,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 42141578072,
     "runNumber": 2209,
     "sourceSha": "2e36c4d62eedae59b65716cf75dd53e059f958ca",
@@ -17436,6 +17436,25 @@
     "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM308_EXACT_DEV_RUN2209_20261105.json",
     "materializationRunId": 42141578072,
     "modulePromotion": 0,
+    "production": false
+  },
+  "vrm309OperationalCountryProjection20261106": {
+    "findingId": "VRM-309",
+    "classification": "MAPPING_FAILURE",
+    "priorAuthenticatedRoleRunId": 42145300224,
+    "canonicalHondurasKeeperRaw": 1,
+    "canonicalHondurasKeeperScopedBeforeFix": 0,
+    "hrMappedLiveVisitsBeforeFix": 4,
+    "providerFusionsUnchanged": true,
+    "sourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+    "sourceTree": "289d084f78dc8c1392e043a7668b10258ffe459d",
+    "predecessorDevSource": "2e36c4d62eedae59b65716cf75dd53e059f958ca",
+    "sourceTests": "19_OF_19_PASS",
+    "devMaterialization": "PENDING",
+    "sameArtifactAdminShopperE2e": "PENDING",
+    "newCertifiedModules": 0,
+    "moduleTruthMatchCount": 5,
+    "moduleTruthTotal": 21,
     "production": false
   }
 }
