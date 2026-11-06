@@ -11,14 +11,21 @@
   const str=v=>String(v==null?'':v).trim();
   const lower=v=>str(v).toLowerCase();
   const countryToken=v=>lower(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
-  const canonicalCountry=v=>{
+  const catalogCountry=v=>{
     const token=countryToken(v);
-    if(!token)return '';
-    // Resolve country codes and human names against the configured catalog;
-    // keep an unknown token exact rather than inventing an equivalence.
-    const country=arr(root.CX&&root.CX.COUNTRIES).find(c=>
-      [c&&c.c,c&&c.n,c&&c.code,c&&c.name].some(value=>countryToken(value)===token));
-    return country?countryToken(country.c||country.code):token;
+    if(!token)return null;
+    return arr(root.CX&&root.CX.COUNTRIES).find(c=>
+      [c&&c.c,c&&c.n,c&&c.code,c&&c.name].some(value=>countryToken(value)===token))||null;
+  };
+  const canonicalCountry=v=>{
+    const country=catalogCountry(v);
+    return country?countryToken(country.c||country.code):countryToken(v);
+  };
+  const operationalCountry=v=>{
+    const country=catalogCountry(v);
+    // A display name (e.g. Honduras) must not fail a code-based country scope.
+    // Unknown values retain their original identity; never guess a country.
+    return country?str(country.c||country.code):str(v);
   };
   const get=(obj,path)=>{let cur=obj;for(const p of String(path||'').split('.')){if(!cur||typeof cur!=='object'||!Object.prototype.hasOwnProperty.call(cur,p))return undefined;cur=cur[p];}return cur;};
   const first=(obj,paths)=>{for(const p of paths){const v=p.includes('.')?get(obj,p):obj&&obj[p];if(has(v))return v;}return '';};
@@ -354,6 +361,10 @@
       const liveId=str(base.shopperId||base.id);if(!liveId)continue;const canonical=liveToCanonical.get(liveId)||liveId;
       const p=onlyUnique(profilesById,canonical)||onlyUnique(profilesByAlias,liveId)||null;if(p&&p.id)consumedProfiles.add(str(p.id));
       let row=p?patch(base,p):clone(base);row.id=canonical;row.shopperId=canonical;row.legacyLiveShopperIds=uniq([...(arr(row.legacyLiveShopperIds)),liveId]);
+      // HR owns operational geography. Protected profile labels may enrich the
+      // identity but cannot replace the code used by periods, permissions and KPIs.
+      row.pais=operationalCountry(base.pais||base.country||row.pais||row.country);
+      if(row.pais)row.country=row.pais;
       const hrDisplayName=normalizedName(base),profileDisplayName=p?normalizedName(p):'';
       /* VRM-258 corrected authority: a provider/tenant-adjudicated HR alias is already the same
          human as the canonical shopper. The live HR alias label remains valid source evidence,
@@ -394,6 +405,8 @@
       const trustedExact=p.__providerExactIdentityLink===true&&trustedPlatformAuthorities.has(authority);
       if(!pid||!projectScoped||!trustedExact)continue;
       const row=clone(p);row.id=pid;row.shopperId=pid;row.code=row.code||row.username||row.user||row.legacyShopperId||'';
+      row.pais=operationalCountry(row.pais||row.country);
+      if(row.pais)row.country=row.pais;
       const authorizedDisplay=['shopper_self_profile','staff_authorized_profile'].includes(str(row.displayNameAuthority))&&
         !!str(row.displayNameUpdatedAt)&&!!str(row.displayNameActorUid)&&
         !!str(row.displayFirstName)&&!!str(row.displayLastName);

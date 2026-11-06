@@ -43,10 +43,24 @@ function assertTrueKeeper(result){
   assert.equal(result.diagnostics.duplicateVisitKeys,0);
 }
 test('VRM308: HN/Honduras equivalent after an authorized exact merge',()=>{
-  assertTrueKeeper(scenario({keeperCountry:'HN',aliasCountry:'Honduras',hrCountry:'HN'}));
+  const r=scenario({keeperCountry:'Honduras',aliasCountry:'HN',hrCountry:'HN'});
+  assertTrueKeeper(r);
+  assert.equal(r.shoppers[0].pais,'HN','HR country code must remain authoritative for Admin scope');
 });
 test('VRM308: GT/Guatemala equivalent after an authorized exact merge',()=>{
-  assertTrueKeeper(scenario({keeperCountry:'Guatemala',aliasCountry:'GT',hrCountry:'GT'}));
+  const r=scenario({keeperCountry:'Guatemala',aliasCountry:'GT',hrCountry:'GT'});
+  assertTrueKeeper(r);
+  assert.equal(r.shoppers[0].pais,'GT','country display labels cannot conceal a keeper');
+});
+test('VRM309: provider-linked platform-only keeper normalizes HN to the configured code',()=>{
+  const hr={currentProjectId:'program',currentPeriodId:'period',projects:[{id:'period',periodKey:'2026-11',countries:['GT','HN']}],visits:[],shoppers:[]};
+  const profile={id:keeperId,shopperId:keeperId,nombre:'Ejemplo Persona',pais:'Honduras',projectIds:['program'],
+    __providerExactIdentityLink:true,__providerIdentityAuthorityType:'tenant_adjudication',
+    identityAuthority:'tenant_adjudication',identityAuthorityRef:'provider-receipt'};
+  const r=compose({hr,protectedPayload:{shoppers:[profile],visits:[]}});
+  assert.equal(r.shoppers.length,1);
+  assert.equal(r.shoppers[0].pais,'HN');
+  assert.equal(r.shoppers[0].country,'HN');
 });
 test('VRM308: different countries stay separate',()=>{
   const r=scenario({keeperCountry:'GT',aliasCountry:'HN',hrCountry:'HN'});
