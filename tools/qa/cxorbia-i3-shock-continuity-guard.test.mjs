@@ -254,3 +254,43 @@ test('the canonical workflow remains within the enforced 500 KB file limit', () 
   assert.ok(bytes <= 500 * 1024, `workflow is ${bytes} bytes; GitHub rejects it before any job above 512000 bytes`);
 });
 
+
+
+const withPendingRuntimeHostingSuccessor=()=>{
+ const a=withBoundedPendingHostingSuccessor();
+ delete a.descriptor.i3Nov06HrSourceStatusFix;delete a.pointer.i3Nov06HrSourceStatusFix;
+ a.matrix.productSource.authorityState='SOURCE_ONLY_PROVEN_PENDING_RUNTIME_AND_HOSTING_DEV';
+ a.descriptor.status='HOLD_VRM154_156_DEV_MATERIALIZATION_REQUIRED';
+ a.pointer.activeShockModuleTruth.meaning='SOURCE_ONLY_PENDING_DEV';
+ const product=['app/modules/cert.js','backend/runtime/hr-live-service/certification-runtime.mjs'];
+ const proof={sourceSha:'new-source',sourceTree:'new-tree',predecessorProductSourceSha:'source',
+  sourceTestsPass:30,sourceTestsFail:0,allowedProductFiles:product,allowedTestFiles:['backend/runtime/hr-live-service/test/project.test.mjs'],
+  production:false,findings:[{id:'P0-example',priority:'P0_PROVEN'}],scopeReceiptPath:'scope.json',scopeReceiptBlob:'scope-blob'};
+ const proposed={...proof,state:'P0_PROVEN_PENDING_DEV_MATERIALIZATION',scope:'RUNTIME_AND_HOSTING',
+  proofReceiptPath:'proof.json',proofReceiptBlob:'proof-blob',devPublished:false,rulesDeploys:0,storageRulesDeploys:0,
+  servingHosting:{...a.descriptor.currentHostingOnlyDevMaterialization},servingRuntimeSeal:{...a.descriptor.postDeployRunSeal}};
+ a.descriptor.pendingDevSuccessor=structuredClone(proposed);a.pointer.pendingDevSuccessor=structuredClone(proposed);
+ const before=a.gitBlob;a.gitBlob=file=>({'proof.json':'proof-blob','scope.json':'scope-blob'}[file]||before(file));
+ a.gitAncestor=()=>true;
+ a.gitRead=args=>args[0]==='rev-parse'?'new-tree':args[0]==='diff'?product.join('\n'):
+  args[1]==='HEAD:proof.json'?JSON.stringify(proof):args[1]==='HEAD:scope.json'?JSON.stringify({allowedProductFiles:product}):'';
+ return a;
+};
+test('one proven runtime/Hosting successor retains immutable serving receipts while waiting for DEV',()=>{
+ assert.equal(validateShockContinuity(withPendingRuntimeHostingSuccessor()).pass,true);
+});
+test('runtime/Hosting pending transition rejects tree, ancestry, committed proof or extra product drift',()=>{
+ for(const mutate of [
+  a=>{const prior=a.gitRead;a.gitRead=args=>args[0]==='rev-parse'?'wrong-tree':prior(args);},
+  a=>{a.gitAncestor=()=>false;},
+  a=>{const prior=a.gitBlob;a.gitBlob=p=>p==='proof.json'?'altered':prior(p);},
+  a=>{const prior=a.gitRead;a.gitRead=args=>args[0]==='diff'?prior(args)+'\napp/modules/finance.js':prior(args);},
+  a=>{const prior=a.gitRead;a.gitRead=args=>args[1]==='HEAD:proof.json'?JSON.stringify({...JSON.parse(prior(args)),sourceTestsFail:1}):prior(args);},
+  a=>{a.pointer.pendingDevSuccessor.sourceSha='parallel-source';},
+  a=>{a.descriptor.pendingDevSuccessor.devPublished=true;a.pointer.pendingDevSuccessor.devPublished=true;},
+  a=>{a.descriptor.pendingDevSuccessor.servingHosting.hostingVersion='unverified';a.pointer.pendingDevSuccessor.servingHosting.hostingVersion='unverified';}
+ ]){
+  const a=withPendingRuntimeHostingSuccessor();mutate(a);
+  assert.match(validateShockContinuity(a).failures.join(' '),/PENDING_DEV_SUCCESSOR_UNPROVEN/);
+ }
+});

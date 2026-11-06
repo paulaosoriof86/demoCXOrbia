@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "cxorbia.i3.d06-d07.proven-owner-scope.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "expectedParentSha": "51a5888d1bde972855302fcee0a5418df9e2020a",
+  "sourceBefore": "01d072d7969f3522d3f4e882fff1c42eb426708e",
+  "sourceTreeBefore": "8fcc0539d35e5facfaef4b1a428a03444db4c10b",
+  "hostingBefore": "36b2c1b4875ce7e9",
+  "runtimeBefore": "cxorbia-live-hr-dev-00352-dml",
+  "moduleTruthBefore": [
+    {
+      "domain": "certifications",
+      "lastApprovedAuthority": "F9 accepted release lineage preserved through terminal b949 and f836",
+      "sourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN",
+      "currentCandidateSource": "01d072d7969f3522d3f4e882fff1c42eb426708e",
+      "currentCandidateTree": "8fcc0539d35e5facfaef4b1a428a03444db4c10b",
+      "currentOwnerBlobs": {
+        "app/modules/academia.js": "5ba399295367cb2f5e2ea6fd9de706e6d4fb1323",
+        "app/modules/cert.js": "d2c362958f734267123e7ac7ff0341824ba4fa11",
+        "app/data/tya-certification-carryover-source-safe.js": "8f987530e24ebe433e7f1c73a6036a37e563f074",
+        "backend/runtime/hr-live-service/certification-runtime.mjs": "8e02709cc8414afd9087cfa661fd03654d5b01bf",
+        "app/core/backend-certifications.js": "cb052f263f27999b2c3c067d1254fb5bc31ef9d6"
+      },
+      "actionRequired": "D05 Admin QA 2/3-to-4-options 15/15 saved version 1->2, readback/reload PASS; six real banks unchanged and temporary QA bank retired (RUN42277757800). Prior D05 4-option review, lifecycle and 409 checks PASS. D06 authenticated Shopper read-only PASS; real Shopper attempt with an actual eligible published bank and explicit action-time authorization for durable write is still pending; QA-only bank is intentionally blocked from Shopper attempts, do not bypass; remaining role/human acceptance pending. No repeat of accepted QA."
+    },
+    {
+      "domain": "documents-resources",
+      "lastApprovedAuthority": "F9 accepted release lineage preserved through terminal b949 and f836",
+      "sourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "currentCandidateSource": "01d072d7969f3522d3f4e882fff1c42eb426708e",
+      "currentCandidateTree": "8fcc0539d35e5facfaef4b1a428a03444db4c10b",
+      "currentOwnerBlobs": {
+        "app/modules/novedades.js": "735f977d139415807938fd29f4e03b1ecb3edefe",
+        "app/modules/tablon.js": "bb0da6c1e77cfa3a80df2fa00d2d5fd653433251",
+        "app/modules/documentos.js": "7572b99223222f052824bdf075e76a5e7f53fea0",
+        "app/core/backend-resources.js": "44e450af65ae6b791128bb053e7814426423ee29",
+        "app/modules/soporte.js": "ce46ad2fe4ad28e70588fae72e4d391dd372009e",
+        "app/core/backend-bulletins.js": "86ca6a38cb738141c9077e8cbaa1e583a9787e92"
+      },
+      "actionRequired": "Preserve RUN1991/RUN1992 and RUN2182 PDF viewer/download proofs. VRM297 pre-exam answer-key disclosure was resolved for three tested DEV Shopper read paths in RUN41478576401; it is not an open disclosure claim. Remaining D07 create/metadata/version/orphan prevention/cross-project denial/visit linkage/safe retirement and exact affected role/human clauses stay open. D06 genuine eligible exam persistence remains separate; do not bypass QA-only guard."
+    }
+  ],
+  "allowedProductFiles": [
+    "app/modules/cert.js",
+    "app/core/backend-certifications.js",
+    "app/core/backend-resources.js",
+    "backend/runtime/hr-live-service/certification-runtime.mjs"
+  ],
+  "ownerBlobsBefore": {
+    "app/modules/cert.js": "d2c362958f734267123e7ac7ff0341824ba4fa11",
+    "app/core/backend-certifications.js": "cb052f263f27999b2c3c067d1254fb5bc31ef9d6",
+    "app/core/backend-resources.js": "44e450af65ae6b791128bb053e7814426423ee29",
+    "backend/runtime/hr-live-service/certification-runtime.mjs": "8e02709cc8414afd9087cfa661fd03654d5b01bf"
+  },
+  "findings": [
+    {
+      "id": "VRM-311",
+      "classification": "FUNCTIONAL_DEFECT",
+      "priority": "P0_PROVEN",
+      "evidence": "Real Chrome Shopper submitted one genuine published 8-question exam on 2026-11-06T22:23:27.949Z; Firestore own-principal readback confirms exactly one failed attempt with providerAck=true, score0/gate80, while visit-flow synchronous rerender discards all8 feedback blocks and resets answers.",
+      "attemptId": "attempt-f2bf8aa25dc951b05daf542ccb71",
+      "createdAt": "2026-11-06T22:23:33.920Z",
+      "updateTime": "2026-11-06T22:23:34.036334Z",
+      "owner": "app/modules/cert.js",
+      "expected": "ACK result, feedback and history survive rerender/reload; no duplicate submission."
+    },
+    {
+      "id": "VRM-312",
+      "classification": "FUNCTIONAL_DEFECT",
+      "priority": "P0_PROVEN",
+      "authority": "Paula explicit instruction 2026-11-06: las certificaciones no se deben borrar entre periodos ni los recursos del proyecto",
+      "evidence": "Same Admin project OCT2026 has two banks including published main8; NOV2026 shows0. Source filters discard cross-period banks and general resources unless title-based guide exception. No delete observed.",
+      "expected": "Project resources and banks retain original IDs/revisions across period switches; visit evidence stays scoped; current attempts retain execution period; eligibility only changes by explicit expiry or recertification."
+    }
+  ],
+  "production": false,
+  "reimport": false,
+  "dataMigration": false,
+  "newWorkflow": false,
+  "newCandidate": false,
+  "writer": "root",
+  "testsRequired": [
+    "real-provider acknowledged history and feedback across rerender/reload",
+    "same project cross-period catalogue/attempt with original bank identity",
+    "tenant/project/role/QA-only/private-key denials preserved",
+    "exact idempotent replay0writes",
+    "Admin inherited-bank review/lifecycle retains original ID and period"
+  ],
+  "allowedControlFiles": [
+    "tools/qa/cxorbia-i3-shock-continuity-guard.mjs",
+    "tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs"
+  ],
+  "controlScopeReason": "RELEASE_COMPOSITION_FAILURE: represent one proven runtime+Hosting successor while preserving immutable currently served receipts; verify source/tree, committed proof, exact real diff allowlist, zero failed tests, predecessor lineage and no production/Rules.",
+  "sourceTests": {
+    "pass": 77,
+    "fail": 0,
+    "skipped": 0,
+    "logSha256": "54a1848e2f3e08e8ba49990d986820abaa713c4758e63bef3ca104e24a7ded47"
+  }
+}

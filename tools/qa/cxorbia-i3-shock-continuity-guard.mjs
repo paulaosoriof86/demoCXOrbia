@@ -10,6 +10,42 @@ const EXPECTED_BRANCH = 'recovery/cxorbia-phase-a-20260831';
 
 const readJson = (p) => JSON.parse(fs.readFileSync(p, 'utf8'));
 
+export function validatePendingDevSuccessor({descriptor:d,pointer:p,matrix:m,gitBlob,
+  gitRead=args=>execFileSync('git',args,{encoding:'utf8'}).trim(),
+  gitAncestor=(before,after)=>{try{execFileSync('git',['merge-base','--is-ancestor',before,after],{stdio:'ignore'});return true;}catch{return false;}}}){
+  const pending=d.pendingDevSuccessor,other=p.pendingDevSuccessor;
+  if(!pending&&!other)return {present:false,pass:false};
+  try{
+    if(!pending||JSON.stringify(pending)!==JSON.stringify(other)||
+      pending.state!=='P0_PROVEN_PENDING_DEV_MATERIALIZATION'||pending.scope!=='RUNTIME_AND_HOSTING'||
+      pending.sourceSha!==d.productSourceSha||pending.sourceSha!==m.productSource?.sha||
+      pending.sourceTree!==d.productTreeAuthority||gitRead(['rev-parse',pending.sourceSha+'^{tree}'])!==pending.sourceTree||
+      !gitAncestor(pending.predecessorProductSourceSha,pending.sourceSha)||pending.predecessorProductSourceSha===pending.sourceSha||
+      pending.devPublished!==false||pending.production!==false||pending.rulesDeploys!==0||pending.storageRulesDeploys!==0||
+      m.productSource?.authorityState!=='SOURCE_ONLY_PROVEN_PENDING_RUNTIME_AND_HOSTING_DEV')return {present:true,pass:false};
+    const hosting=d.currentHostingOnlyDevMaterialization||{},seal=d.postDeployRunSeal||{};
+    if(pending.predecessorProductSourceSha!==hosting.sourceSha||
+      JSON.stringify(pending.servingHosting)!==JSON.stringify(hosting)||
+      JSON.stringify(pending.servingRuntimeSeal)!==JSON.stringify(seal)||seal.mode!=='PREDECESSOR_SERVING_PENDING_SOURCE'||
+      !hosting.receiptPath||gitBlob(hosting.receiptPath)!==hosting.receiptBlob)return {present:true,pass:false};
+    if(!pending.proofReceiptPath||gitBlob(pending.proofReceiptPath)!==pending.proofReceiptBlob)return {present:true,pass:false};
+    const proof=JSON.parse(gitRead(['show','HEAD:'+pending.proofReceiptPath]));
+    for(const field of ['sourceSha','sourceTree','predecessorProductSourceSha','sourceTestsPass','sourceTestsFail','allowedProductFiles','allowedTestFiles'])
+      if(JSON.stringify(proof[field])!==JSON.stringify(pending[field]))return {present:true,pass:false};
+    if(!(proof.sourceTestsPass>0)||proof.sourceTestsFail!==0||proof.production!==false||
+      !Array.isArray(proof.findings)||!proof.findings.length||proof.findings.some(x=>x.priority!=='P0_PROVEN')||
+      !proof.scopeReceiptPath||gitBlob(proof.scopeReceiptPath)!==proof.scopeReceiptBlob)return {present:true,pass:false};
+    const scoped=JSON.parse(gitRead(['show','HEAD:'+proof.scopeReceiptPath]));
+    if(JSON.stringify(scoped.allowedProductFiles)!==JSON.stringify(proof.allowedProductFiles))return {present:true,pass:false};
+    const allowed=[...(proof.allowedProductFiles||[]),...(proof.allowedTestFiles||[])];
+    if(!proof.allowedProductFiles?.length||new Set(allowed).size!==allowed.length||
+      allowed.some(file=>/(?:^|\/)(?:firestore|storage)\.rules$|^firebase\.json$|^\.firebaserc$/.test(file)))return {present:true,pass:false};
+    const changed=gitRead(['diff','--name-only',pending.predecessorProductSourceSha,pending.sourceSha,'--','app','backend','firebase.json','.firebaserc','firestore.rules','storage.rules','tools/hr-source']).split('\n').filter(Boolean);
+    if(!changed.length||changed.some(file=>!allowed.includes(file))||proof.allowedProductFiles.some(file=>!changed.includes(file)))return {present:true,pass:false};
+    return {present:true,pass:true};
+  }catch{return {present:true,pass:false};}
+}
+
 export function classifyModules(matrix) {
   const modules = Array.isArray(matrix?.modules) ? matrix.modules : [];
   const counts = {};
@@ -20,9 +56,11 @@ export function classifyModules(matrix) {
   return Object.fromEntries(Object.entries(counts).sort(([a], [b]) => a.localeCompare(b)));
 }
 
-export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, gitBlob, freezePath = FREEZE}) {
+export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, gitBlob, freezePath = FREEZE,gitRead,gitAncestor}) {
   const failures = [];
   const check = (condition, code) => { if (!condition) failures.push(code); };
+  const pendingDev=validatePendingDevSuccessor({descriptor:d,pointer:p,matrix:m,gitBlob,gitRead,gitAncestor});
+  check(!pendingDev.present||pendingDev.pass,'RELEASE_COMPOSITION_FAILURE:PENDING_DEV_SUCCESSOR_UNPROVEN');
   const matrixPath = String(d.moduleTruthPath || '');
   const actualCounts = classifyModules(m);
   const uniqueDomains = new Set((Array.isArray(m.modules) ? m.modules : []).map(x => x.domain));
@@ -132,7 +170,7 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
     // A previously verified Hosting receipt remains the served authority
     // while one scoped, lineage-validated successor awaits its first DEV
     // deployment. Never rewrite that receipt to pretend the new source is live.
-    const boundedSourcePending = proposed.status === 'PENDING_HOSTING_ONLY_DEV' &&
+    const boundedSourcePending = pendingDev.pass || (proposed.status === 'PENDING_HOSTING_ONLY_DEV' &&
       JSON.stringify(proposed) === JSON.stringify(proposedP) &&
       proposed.sourceSha === d.productSourceSha &&
       proposed.sourceTree === d.productTreeAuthority &&
@@ -143,7 +181,7 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
       proposed.sourceTestsPass === 14 && proposed.sourceTestsFail === 0 &&
       proposed.production === false && proposed.devPublished === false &&
       m.productSource?.authorityState === 'SOURCE_ONLY_PROVEN_PENDING_HOSTING_ONLY_DEV' &&
-      latestHostingD.sourceSha !== d.productSourceSha;
+      latestHostingD.sourceSha !== d.productSourceSha);
     check(boundedSourcePending || !/source.only.*(pending|predecessor)|source_only_proven_not_yet_composed_or_dev_materialized/i
       .test(`${m.productSource?.message || ''} ${m.productSource?.authorityState || ''}`),
     'MAPPING_FAILURE:MATRIX_SOURCE_ONLY_STATUS_AFTER_HOSTING_DEV');
@@ -161,9 +199,9 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
       latestHostingD.productionChanged === false,
       'RELEASE_COMPOSITION_FAILURE:ACTIVE_HOSTING_ONLY_COMPONENT_DESYNC');
     const stalePendingDev = /SOURCE_ONLY_PENDING_DEV|PENDING_DEV_MATERIALIZATION/i;
-    check(!stalePendingDev.test(d.status || '') &&
+    check(pendingDev.pass || (!stalePendingDev.test(d.status || '') &&
       !stalePendingDev.test(p.activeShockModuleTruth?.meaning || '') &&
-      !stalePendingDev.test(d.exactNextAction || ''),
+      !stalePendingDev.test(d.exactNextAction || '')),
       'MAPPING_FAILURE:STALE_HOSTING_MATERIALIZATION_STATUS');
   }
   check(p.progressByStageSemantics === 'HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY',

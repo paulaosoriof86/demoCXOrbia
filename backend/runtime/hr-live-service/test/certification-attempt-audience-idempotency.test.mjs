@@ -29,6 +29,9 @@ function memoryProvider(rows) {
             return {collection:sub=>{
               if(sub==='certificationRecertifications')return {get:async()=>({docs:[]})};
               if(sub==='certifications')return {doc:id=>({id})};
+              if(sub==='periods')return {doc:id=>({id,get:async()=>({id,
+                exists:id==='cinepolis-2026-10'||id==='cinepolis-2026-11',
+                data:()=>({tenantId:'tya',projectId:'cinepolis',periodId:id})})})};
               throw new Error('Unexpected project collection '+sub);
             }};
           }};
@@ -70,6 +73,10 @@ test('D06 P0: first exact attempt has ACK; same idempotency key replays without 
   assert.equal(first.score,100);assert.equal(first.pass,true);
   assert.equal(first.idempotentReplay,false);
   assert.equal(first.item.shopperId,shopper.shopperId);
+  assert.equal(first.item.feedback.length,2);
+  assert.equal(first.item.feedback[0].question,'Pregunta QA 1');
+  assert.equal(first.item.feedback[0].selected,'A');
+  assert.equal(first.item.questionCount,2);
   assert.equal(p.creates,1);assert.equal(p.attempts.size,1);
   const replay=await p.invoke(payload());
   assert.equal(replay.httpStatus,200);assert.equal(replay.idempotentReplay,true);
@@ -115,13 +122,37 @@ test('D06 P0: an Admin-only published or disposable QA-only bank cannot create a
   assert.equal(p.creates,0);
 });
 
-test('D06 P0: incomplete answers, unpublished and cross-period banks fail closed',async()=>{
+test('D06 P0: incomplete answers and unpublished banks fail closed',async()=>{
   const pending=bank('pending',{bank:{...bank('x').bank,estado:'pending_review'}});
   const otherPeriod=bank('other-period',{periodId:'cinepolis-2026-09'});
   const p=memoryProvider([bank('published-qa'),pending,otherPeriod]);
   assert.equal((await p.invoke(payload('published-qa',['A']))).httpStatus,400);
   assert.equal((await p.invoke(payload('pending'))).httpStatus,400);
-  assert.equal((await p.invoke(payload('other-period'))).httpStatus,400);
+  assert.equal(p.creates,0);
+});
+
+test('VRM312 project bank survives period changes; attempt keeps execution period and original bank',async()=>{
+  const old=bank('other-period',{periodId:'cinepolis-2026-09'});
+  const p=memoryProvider([old]);
+  const body={...payload('other-period',['B','B']),periodId:'cinepolis-2026-11'};
+  const first=await p.invoke(body);
+  assert.equal(first.httpStatus,200);assert.equal(first.providerAck,true);
+  assert.equal(first.item.periodId,'cinepolis-2026-11');
+  assert.equal(first.item.bankPeriodId,'cinepolis-2026-09');
+  assert.equal(first.item.bankResourceId,'other-period');
+  assert.equal(first.item.status,'failed');assert.equal(first.item.feedback.length,2);
+  assert.equal(p.resources.size,1);assert.equal(p.creates,1);
+  const replay=await p.invoke(body);
+  assert.equal(replay.providerWrites,0);assert.equal(replay.item.id,first.item.id);
+  assert.equal((await p.invoke({...body,periodId:'cinepolis-2026-12'},{key:'unregistered'})).httpStatus,400);
+  assert.equal(p.creates,1);
+});
+
+test('VRM312 sharing a bank across periods never authorizes another project, tenant or visit attachment',async()=>{
+  const rows=[bank('foreign-project',{projectId:'another'}),bank('foreign-tenant',{tenantId:'another'}),
+    bank('visit-bank',{periodId:'cinepolis-2026-09',visitId:'visit-1'})];
+  const p=memoryProvider(rows);
+  for(const row of rows)assert.equal((await p.invoke(payload(row.id),{key:row.id})).httpStatus,400);
   assert.equal(p.creates,0);
 });
 

@@ -84,6 +84,32 @@ window.CX=window.CX||{};
   }
   function currentUid(){try{return str(firebase.auth().currentUser?.uid);}catch(_){return'';}}
   function newId(prefix){return prefix+':'+Date.now().toString(36)+':'+Math.random().toString(36).slice(2,10);}
+  function attemptHistory(shopperId){
+    const s=scope();
+    return arr(CX.data?.__protectedCertifications).filter(x=>
+      str(x.shopperId)===str(shopperId)&&str(x.projectId)===s.projectId&&
+      (!x.tenantId||str(x.tenantId)===s.tenantId)&&x.recordType==='certification_attempt'&&x.providerAck===true
+    ).slice().sort((a,b)=>str(b.createdAt).localeCompare(str(a.createdAt)));
+  }
+  async function submitAttempt(payload={}){
+    const initial=scope(),actorUid=currentUid();
+    const shopperId=str(CX.backendAuth?.context?.()?.shopperId||CX.session?.user?.shopperId);
+    const request=Object.assign({idempotencyKey:newId('cert.attempt')},payload);
+    const result=await call('attempt',request),item=result?.item;
+    if(result?.committed!==true||result.providerAck!==true||item?.providerAck!==true||!str(item.id)||
+      item.tenantId!==initial.tenantId||item.projectId!==initial.projectId||str(item.shopperId)!==shopperId||
+      item.periodId!==request.periodId||item.bankResourceId!==request.bankResourceId||
+      Number(item.score)!==Number(result.score)||item.pass!==result.pass)
+      throw new Error('CERT_ATTEMPT_ACK_SCOPE_MISMATCH');
+    // Publish only the server-acknowledged row before the router reconciles. This
+    // is a read-through view, never localStorage or a client-generated credential.
+    const current=scope(),currentShopper=str(CX.backendAuth?.context?.()?.shopperId||CX.session?.user?.shopperId);
+    if(actorUid===currentUid()&&current.tenantId===initial.tenantId&&current.projectId===initial.projectId&&currentShopper===shopperId){
+      const confirmed={...item,feedback:arr(item.feedback||result.feedback)};
+      CX.data.__protectedCertifications=[...arr(CX.data.__protectedCertifications).filter(x=>str(x.id)!==str(item.id)),confirmed];
+    }
+    return result;
+  }
   function applicableRecertifications(shopperId){
     const projectId=str(CX.data?.currentProjectId);
     return arr(CX.data?.__protectedCertificationRecertifications).filter(r=>
@@ -96,7 +122,8 @@ window.CX=window.CX||{};
     const latestRecert=applicableRecertifications(shopperId).sort((a,b)=>str(b.createdAt).localeCompare(str(a.createdAt)))[0]||null;
     const attempts=arr(CX.data?.__protectedCertifications).filter(x=>
       str(x.shopperId)===str(shopperId)&&(x.pass===true||x.passed===true||str(x.status).toLowerCase()==='certified')&&
-      (!x.projectId||str(x.projectId)===projectId)
+      (!x.projectId||str(x.projectId)===projectId)&&
+      (!Number.isFinite(Date.parse(str(x.validUntil)))||Date.parse(str(x.validUntil))>=Date.now())
     ).sort((a,b)=>str(b.createdAt||b.certifiedAt).localeCompare(str(a.createdAt||a.certifiedAt)));
     const latest=attempts[0]||null;if(!latest)return null;
     if(latestRecert&&str(latestRecert.createdAt)>str(latest.createdAt||latest.certifiedAt))return null;
@@ -125,7 +152,7 @@ window.CX=window.CX||{};
   CX.backendCertifications={
     call,
     loadShopperResources,
-    submitAttempt:payload=>call('attempt',Object.assign({idempotencyKey:newId('cert.attempt')},payload||{})),
+    submitAttempt,attemptHistory,
     previewAttempt:payload=>call('practice',payload||{}),
     requestRecertification:payload=>call('recertify',Object.assign({idempotencyKey:newId('cert.recert')},payload||{})),
     generateBank:payload=>call('ai-generate',Object.assign({idempotencyKey:newId('cert.generate')},payload||{})),

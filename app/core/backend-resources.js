@@ -26,7 +26,20 @@ window.CX=window.CX||{};
   }
   function tenantRef(){const d=db();return d?d.collection(col.tenants||'tenants').doc(tenantId()):null;}
   function resourcesCol(){const t=tenantRef();return t?t.collection(col.resources||'resources'):null;}
-  // General guides may carry their approved PDF across periods, never exams.
+  // Project-owned material remains available across operating periods. A visit
+  // attachment retains its exact visit/period scope; QA material is not inherited.
+  function reusableProjectResource(item,scope){
+    if(!item||!['project_resource','certification_bank'].includes(str(item.resourceType))||item.qaOnly===true||
+      str(item.projectId)!==scope.projectId||str(item.tenantId||scope.tenantId)!==scope.tenantId||
+      str(item.visitaId||item.visitId||item.assignedVisitId))return false;
+    if(str(item.tipo).toLowerCase()==='pdf'){
+      const period=str(item.periodId),path=str(item.storagePath);
+      const prefix=['tenants',scope.tenantId,'projects',scope.projectId,'periods',period,'resources'].join('/')+'/';
+      if(!period||period.includes('/')||!path.startsWith(prefix))return false;
+    }
+    return true;
+  }
+  // Preserve the existing latest-guide presentation; never group exam banks by title.
   function isGeneralProjectGuide(item,scope){
     if(!item||str(item.resourceType)!=='project_resource'||str(item.tipo).toLowerCase()==='certification_bank'||
        str(item.projectId)!==scope.projectId||str(item.tenantId||scope.tenantId)!==scope.tenantId||
@@ -56,9 +69,10 @@ window.CX=window.CX||{};
     return [...ordinary,...best.values()];
   }
   function visible(item,scope){
-    if(!item||item.status!=='active'||str(item.projectId)!==scope.projectId)return false;
+    if(!item||item.status!=='active'||str(item.projectId)!==scope.projectId||
+      str(item.tenantId||scope.tenantId)!==scope.tenantId)return false;
     if(item.periodId&&scope.periodId&&str(item.periodId)!==scope.periodId&&
-       !(item.inheritedProjectGuide===true&&isGeneralProjectGuide(item,scope)))return false;
+       !reusableProjectResource(item,scope))return false;
     if(isOperator())return true;
     // A Shopper must never receive unreleased certification questions or the
     // answer key of a draft, including via a stale application resource cache.
@@ -257,7 +271,7 @@ window.CX=window.CX||{};
     if(!connected())return blocked('RESOURCE_READ_CONNECTED_REQUIRED');
     const scope=currentScope(options),rid=str(item.id),path=str(item.storagePath);
     if(!scope.tenantId||!scope.projectId||!scope.periodId||!rid||!path)return blocked('RESOURCE_READ_SCOPE_REQUIRED');
-    const inherited=item.inheritedProjectGuide===true&&isGeneralProjectGuide(item,scope);
+    const inherited=str(item.periodId)!==scope.periodId&&reusableProjectResource(item,scope);
     const resourcePeriodId=inherited?str(item.periodId):scope.periodId;
     if(!resourcePeriodId||resourcePeriodId.includes('/'))return blocked('RESOURCE_READ_SCOPE_REQUIRED');
     const prefix=['tenants',scope.tenantId,'projects',scope.projectId,'periods',resourcePeriodId,'resources'].join('/')+'/';
@@ -267,7 +281,7 @@ window.CX=window.CX||{};
     const isCurrent=()=>arr(api.items).some(row=>str(row.id)===rid&&str(row.storagePath)===path&&
       str(row.tenantId)===scope.tenantId&&str(row.projectId)===scope.projectId&&
       str(row.periodId)===resourcePeriodId&&str(row.tipo).toLowerCase()==='pdf'&&
-      Boolean(row.inheritedProjectGuide)===inherited&&visible(row,scope));
+      (str(row.periodId)!==scope.periodId&&reusableProjectResource(row,scope))===inherited&&visible(row,scope));
     if(!isCurrent()||str(item.tenantId)!==scope.tenantId||str(item.projectId)!==scope.projectId||
       str(item.periodId)!==resourcePeriodId||str(item.tipo).toLowerCase()!=='pdf')
       return blocked('RESOURCE_READ_NOT_PUBLISHED_FOR_ROLE');

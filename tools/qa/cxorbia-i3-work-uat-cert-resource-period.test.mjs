@@ -34,7 +34,7 @@ function harness({deferred=false,fail=false}={}){
  // projection. A direct Firestore bank/resource read must never be needed.
  cx.backendCertifications={loadShopperResources:async periodId=>{
   const snapshot=()=>items.filter(row=>row.projectId===cx.data.currentProjectId
-    &&row.periodId===periodId&&(row.resourceType==='project_resource'||
+    &&(row.resourceType==='project_resource'||
       (row.resourceType==='certification_bank'&&['published','confirmed','approved_preview'].includes(row.bank?.estado))))
     .map(row=>row.resourceType==='certification_bank'?{
       ...row,bank:{...row.bank,preguntas:row.bank.preguntas.map(q=>({q:q.q,ops:q.ops||['A','B']}))}
@@ -50,13 +50,13 @@ function harness({deferred=false,fail=false}={}){
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
 test('D/Cert: published October bank reloads after the protected HR authority changes period',async()=>{
  const h=harness();await h.emit('backend-ready',{source:'firestore'});
- assert.equal(h.banks(SEP).length,0,'pending September answers must never enter Shopper cache');
- assert.equal(h.banks(OCT).length,0);
+ assert.deepEqual(Array.from(h.banks(SEP),x=>x.id),['oct-published'],'published project bank survives a period switch; pending September answers stay private');
+ assert.equal(h.banks(OCT).length,1);
  h.cx.data.currentPeriodId=OCT;
  h.dom('cx:protected-auth-hr-authority-ready');await flush();
  assert.deepEqual(Array.from(h.banks(OCT),x=>x.id),['oct-published']);
  assert.deepEqual(Array.from(h.cx.backendResources.list({projectId:'cinepolis',periodId:OCT,resourceType:'project_resource'}),x=>x.id),['oct-document']);
- assert.equal(h.banks(SEP).length,0);
+ assert.deepEqual(Array.from(h.banks(SEP),x=>x.id),['oct-published']);
  assert.equal(h.win.CX_BACKEND_RESOURCES_STATUS.periodId,OCT);
  assert.equal(h.emitted.filter(e=>e.k==='resources').length,2);
  assert.match(routerSource,/\['visit-flow','shoppers','clients','programa','project','resources'\]/);

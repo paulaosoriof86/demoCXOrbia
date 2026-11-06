@@ -35,9 +35,9 @@ test('VRM297 released projection removes every answer, explanation and source se
   assert.deepEqual(shopperResourceProjection(pdf,scope),pdf);
 });
 
-test('VRM297 never projects pending, another period, another tenant, hidden, or conflicting legacy type',()=>{
+test('VRM297 never projects pending, another tenant, hidden, or conflicting legacy type',()=>{
   assert.equal(shopperResourceProjection(bank('draft','pending_review'),scope),null);
-  assert.equal(shopperResourceProjection({...bank('other'),periodId:'cinepolis-2026-09'},scope),null);
+  assert.equal(shopperResourceProjection({...bank('other'),periodId:'cinepolis-2026-09'},scope).id,'other');
   assert.equal(shopperResourceProjection({...bank('other'),tenantId:'other'},scope),null);
   assert.equal(shopperResourceProjection({...bank('hidden'),visibleRoles:[]},scope),null);
   assert.equal(shopperResourceProjection({...bank('legacy'),resourceType:'project_resource'},scope),null);
@@ -91,7 +91,7 @@ test('VRM297 authenticated HTTP GET is scoped and practice POST is non-persisten
 });
 
 
-test('I3 P0 / latest published project instructive remains visible for new period, without leaking old exams',async()=>{
+test('VRM312 project instructive and published bank remain visible for new period with safe projection',async()=>{
   const november={...scope,periodId:'cinepolis-2026-11'};
   const guide={...pdf,id:'oct-guide',periodId:'cinepolis-2026-10',n:'Instructivo Shopper',
     storagePath:'tenants/tya/projects/cinepolis/periods/cinepolis-2026-10/resources/res-guide/Instructivo.pdf'};
@@ -102,8 +102,18 @@ test('I3 P0 / latest published project instructive remains visible for new perio
   const bankOld={...bank('oct-exam'),periodId:'cinepolis-2026-10'};
   const result=await readShopperResourceProjection(
     mockDb([older,guide,changedProject,changedVisit,bankOld]),november,shopper,november.periodId);
-  assert.deepEqual(result.items.map(item=>item.id),['oct-guide']);
-  assert.equal(result.items[0].inheritedProjectGuide,true);
-  assert.equal(result.items[0].periodId,'cinepolis-2026-10');
+  assert.deepEqual(result.items.map(item=>item.id),['oct-exam','oct-guide']);
+  assert.equal(result.items[1].inheritedProjectGuide,true);
+  assert.equal(result.items[1].periodId,'cinepolis-2026-10');
   assert.equal(JSON.stringify(result).includes('correcta'),false);
+});
+
+test('VRM312 generic project PDF survives period changes without relying on its title',()=>{
+  const material={...pdf,n:'Material de consulta',storagePath:'tenants/tya/projects/cinepolis/periods/cinepolis-2026-10/resources/material/file.pdf'};
+  const next={...scope,periodId:'cinepolis-2026-11'};
+  assert.equal(shopperResourceProjection(material,next).id,material.id);
+  assert.equal(shopperResourceProjection({...material,visitId:'specific-visit'},next),null);
+  assert.equal(shopperResourceProjection({...material,qaOnly:true},next),null);
+  assert.equal(shopperResourceProjection({...material,storagePath:'tenants/other/projects/cinepolis/periods/cinepolis-2026-10/resources/material/file.pdf'},next),null);
+  assert.equal(shopperResourceProjection({...material,status:'deleted'},next),null);
 });

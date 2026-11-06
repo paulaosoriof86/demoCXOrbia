@@ -44,20 +44,26 @@ CX.certStore = CX.certStore || {
     if(this.connected()){
       return (CX.backendResources?.list?.({projectId:CX.data.currentProjectId,periodId:pid,resourceType:'certification_bank'})||[])
         .filter(row=>row?.bank)
-        .map(row=>Object.assign({},row.bank,{certificationId:row.bank.certificationId||'main',__resourceId:row.id,__resourceVersion:row.version}))
+        .map(row=>Object.assign({},row.bank,{certificationId:row.bank.certificationId||'main',__resourceId:row.id,__resourceVersion:row.version,__resourcePeriodId:row.periodId}))
         .sort((a,b)=>String(a.certificationName||a.name||a.certificationId).localeCompare(String(b.certificationName||b.name||b.certificationId)));
     }
     return Object.values(this._demo[pid]||{});
   },
   bank(pid,certificationId){
-    const rows=this.banks(pid),cid=certificationId?this.safeId(certificationId):'';
-    if(cid){const exact=rows.find(x=>this.safeId(x.certificationId)===cid);if(exact)return exact;}
+    const rows=this.banks(pid),selected=String(certificationId||''),cid=selected?this.safeId(selected):'';
+    if(selected){
+      const exact=rows.find(x=>x.__resourceId===selected);if(exact)return exact;
+      const legacy=rows.filter(x=>this.safeId(x.certificationId)===cid);
+      if(legacy.length===1)return legacy[0];
+      if(legacy.length>1)throw new Error('CERT_BANK_SELECTION_AMBIGUOUS');
+    }
     return rows.find(x=>['published','confirmed','approved_preview'].includes(String(x.estado||'')))||rows[0]||null;
   },
   async save(pid,data,certificationId,options={}){
+    pid=String(data?.__resourcePeriodId||pid);
     const cid=this.safeId(certificationId||data?.certificationId||'main'),bank=Object.assign({},data,{certificationId:cid});
     if(bank.certificationName!==undefined)bank.certificationName=this.normalizeName(bank.certificationName);
-    delete bank.__resourceId;delete bank.__resourceVersion;
+    delete bank.__resourceId;delete bank.__resourceVersion;delete bank.__resourcePeriodId;
     if(!this.connected()){this._demo[pid]=this._demo[pid]||{};this._demo[pid][cid]=bank;CX.bus&&CX.bus.emit('cert');return {ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,demo:true,item:bank};}
     if(!CX.backendResources?.saveMetadata)return {ok:false,status:'blocked',providerAck:false,successUiAllowed:false,code:'CERT_DURABLE_BACKEND_UNAVAILABLE'};
     const id=this.resourceId(pid,cid),projectId=CX.data.currentProjectId;
@@ -139,6 +145,7 @@ CX.certStore = CX.certStore || {
     });
   },
   async lifecycle(action,pid,original,changes={}){
+    const viewingPeriodId=pid;pid=String(original?.__resourcePeriodId||pid);
     if(!this.connected())throw new Error('CERT_BANK_CONNECTED_PROVIDER_REQUIRED');
     if(!['publish','configure','retire'].includes(action))throw new Error('CERT_BANK_ACTION_INVALID');
     const uid=String(CX.backendCertifications?.currentUid?.()||''),projectId=String(CX.data.currentProjectId||'');
@@ -167,13 +174,13 @@ CX.certStore = CX.certStore || {
       ||(action==='publish'&&(bank.revisadoPorUid!==uid||bank.contentRevision!==original.contentRevision))
       ||(action==='configure'&&(bank.gate!==changes.gate||bank.required!==changes.required||bank.contentRevision===original.contentRevision)))
       throw new Error('CERT_BANK_DURABLE_READBACK_MISMATCH');
-    await CX.backendResources?.load?.({projectId,periodId:pid});
+    await CX.backendResources?.load?.({projectId,periodId:viewingPeriodId});
     CX.bus&&CX.bus.emit('cert');return result;
   },
   async clear(pid,certificationId='main'){
     const cid=this.safeId(certificationId),id=this.resourceId(pid,cid);
     if(!this.connected()){if(this._demo[pid])delete this._demo[pid][cid];return {ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,demo:true};}
-    const original=this.banks(pid).find(bank=>this.safeId(bank.certificationId)===cid);
+    const original=this.bank(pid,certificationId);
     if(!original)throw new Error('CERT_BANK_EXACT_SOURCE_REQUIRED');
     return this.lifecycle('retire',pid,original);
   },
@@ -210,7 +217,7 @@ CX.module('cert', ({role,data,ui})=>{
   const certFilters=()=>{
     const programs=projectPrograms(),banks=bankList();
     const project=programs.length>1?`<div><label class="lbl">Proyecto</label><select class="sel" onchange="if(CX.data.setCurrentProject(this.value)){window.CX_CERT_SELECTED_ID='';CX.router.nav('cert')}">${programs.map(x=>`<option value="${x.key}" ${String(x.key)===String(data.currentProjectId)?'selected':''}>${x.name||x.key}</option>`).join('')}</select></div>`:'';
-    const bankSel=banks.length>1?`<div><label class="lbl">Certificación</label><select class="sel" onchange="window.CX_CERT_SELECTED_ID=this.value;CX.router.nav('cert')"><option value="">Selecciona certificación</option>${banks.map(b=>`<option value="${b.certificationId}" ${String(b.certificationId)===selectedCertId()?'selected':''}>${b.certificationName||b.name||b.certificationId} · ${bankStateLabel(b.estado)}</option>`).join('')}</select></div>`:'';
+    const bankSel=banks.length>1?`<div><label class="lbl">Certificación</label><select class="sel" onchange="window.CX_CERT_SELECTED_ID=this.value;CX.router.nav('cert')"><option value="">Selecciona certificación</option>${banks.map(b=>`<option value="${b.__resourceId||b.certificationId}" ${String(b.__resourceId||b.certificationId)===selectedCertId()?'selected':''}>${b.certificationName||b.name||b.certificationId} · ${bankStateLabel(b.estado)}${b.__resourcePeriodId?' · '+b.__resourcePeriodId:''}</option>`).join('')}</select></div>`:'';
     return project||bankSel?`<div class="grid g2" style="gap:10px;margin-bottom:14px">${project}${bankSel}</div>`:'';
   };
   const phCert=subtitle=>ui.ph('Certificación',subtitle)+certFilters();
@@ -229,15 +236,18 @@ CX.module('cert', ({role,data,ui})=>{
        preguntas se ofrecía sin mirar su estado. */
     const bank=selectedBank();
     const shopper=currentShopper(),shopperId=String(shopper?.id||shopper?.shopperId||CX.session?.user?.shopperId||'');
+    const escape=value=>String(value==null?'':value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const attempts=CX.backendCertifications?.attemptHistory?.(shopperId)||[];
+    const history=attempts.length?`<section class="card card-p" id="certAttemptHistory" style="margin-bottom:14px"><div class="card-t">Historial de intentos del proyecto</div>${attempts.map((attempt,index)=>`<details ${index===0?'open':''} data-attempt-id="${escape(attempt.id)}" style="margin-top:12px"><summary><b>${Number(attempt.score)}% · ${attempt.pass?'Aprobado':'No alcanzado'}</b> · requisito ${Number(attempt.gate)}% · ${escape(String(attempt.createdAt||'').slice(0,19).replace('T',' '))}</summary><div style="font-size:12px;margin:8px 0">Intento guardado con ACK remoto · periodo ${escape(attempt.periodId)}. Se conserva al cambiar de periodo.</div>${(attempt.feedback||[]).map(f=>`<div class="cert-attempt-feedback" style="padding:9px 0;border-top:1px solid var(--border)"><b>${Number(f.index)+1}. ${escape(f.question||'Pregunta '+(Number(f.index)+1))}</b><div>${f.ok?'✓ Correcta':'↻ A reforzar'} · Tu respuesta: ${escape(f.selected)}${f.ok?'':' · Correcta: '+escape(f.correcta)}</div><div>${escape(f.exp)}</div></div>`).join('')||'<div class="muted">Este registro anterior conserva el resultado; no incluye retroalimentación detallada.</div>'}</details>`).join('')}</section>`:'';
     const durable=CX.backendCertifications?.durableCurrent?.(shopperId,bank);
     const carry=CX.backendCertifications?.carryoverDecision?.(shopper,bank,data.currentProjectId||p.projectId||'')||{state:'none',eligibilityGranted:false};
     if(durable){
       return `${phCert( p.name+' · certificación vigente')}
-        <div class="card card-p" style="border-left:4px solid var(--green)"><div class="card-t">✓ Certificación vigente</div><div style="font-size:12.5px;color:var(--t2);margin-top:6px">Último intento aprobado: <b>${durable.score}%</b> · requisito ${durable.gate}% · persistido con ACK remoto el ${String(durable.createdAt||'').slice(0,10)}.</div></div>`;
+        <div class="card card-p" style="border-left:4px solid var(--green)"><div class="card-t">✓ Certificación vigente</div><div style="font-size:12.5px;color:var(--t2);margin-top:6px">Último intento aprobado: <b>${durable.score}%</b> · requisito ${durable.gate}% · persistido con ACK remoto el ${String(durable.createdAt||'').slice(0,10)}. Vigente para este proyecto entre periodos.</div></div>${history}`;
     }
     if(carry.eligibilityGranted===true){
       return `${phCert( p.name+' · certificación histórica reutilizada')}
-        <div class="card card-p" style="border-left:4px solid var(--green)"><div class="card-t">✓ Certificación vigente para este proyecto</div><div style="font-size:12.5px;color:var(--t2);margin-top:6px">Existe una certificación aprobada de este proyecto y no hay una solicitud vigente de re-certificación. No necesitas certificarte de nuevo mientras esa condición siga válida.</div></div>`;
+        <div class="card card-p" style="border-left:4px solid var(--green)"><div class="card-t">✓ Certificación vigente para este proyecto</div><div style="font-size:12.5px;color:var(--t2);margin-top:6px">Existe una certificación aprobada de este proyecto y no hay una solicitud vigente de re-certificación. No necesitas certificarte de nuevo mientras esa condición siga válida.</div></div>${history}`;
     }
     /* P0-7 (paquete acumulado 20260711): 'pending_backend' significa "esperando confirmación de
        backend", NO "disponible para tomar" — incluirlo aquí dejaba certificar sobre un banco que
@@ -246,13 +256,14 @@ CX.module('cert', ({role,data,ui})=>{
     const bankTakeable = bank && bank.preguntas && bank.preguntas.length && ['approved_preview','confirmed','published'].includes(bank.estado);
     if(bank && bank.preguntas && bank.preguntas.length && !bankTakeable){
       return `${phCert( p.name+' · banco en revisión')}
-        <div class="card card-p">${ui.degraded('Hay un banco de preguntas en preparación ('+bankStateLabel(bank.estado)+') todavía no revisado/aprobado — no está disponible para certificarte. Vuelve a intentarlo cuando el equipo lo publique.',{title:'Certificación · banco no publicado'})}</div>`;
+        <div class="card card-p">${ui.degraded('Hay un banco de preguntas en preparación ('+bankStateLabel(bank.estado)+') todavía no revisado/aprobado — no está disponible para certificarte. Vuelve a intentarlo cuando el equipo lo publique.',{title:'Certificación · banco no publicado'})}</div>${history}`;
     }
     if(bankTakeable){
       const host=ui.el('div'); const answers={};
       const draw=()=>{
         host.innerHTML=`
           ${phCert( p.name+' · '+bank.preguntas.length+' preguntas · requisito '+(bank.gate||80)+'%')}
+          ${history}
           <div class="card card-p" id="examBox">
             ${bank.preguntas.map((q,i)=>`<div style="border:1px solid var(--border);border-radius:9px;padding:12px 14px;margin-bottom:10px">
               <b style="font-size:13px;color:var(--t1)">${i+1}. ${q.q}</b>
@@ -313,7 +324,7 @@ CX.module('cert', ({role,data,ui})=>{
       return `${phCert( p.name+' · certificación pendiente')}
         ${ev.length?`<div class="card card-p" style="margin-bottom:12px;border-left:4px solid var(--amber)"><div class="card-t" style="font-size:13px">Tu historial de certificación está en revisión</div><div style="font-size:12px;color:var(--t2);line-height:1.6;margin-top:6px">${ev.length} registro(s) vinculados por identidad exacta · ${approved} aprobado(s) históricamente${failed?' · '+failed+' no aprobado(s)':''}. No se te marcará como certificada hasta que exista una validación vigente del mismo proyecto.</div></div>`:''}
         ${scheduledCurrent.length?`<div class="card card-p" style="margin-bottom:12px;border-left:4px solid var(--brand)"><div class="card-t" style="font-size:13px">Tu visita ya tiene fecha, pero la certificación sigue pendiente</div><div style="font-size:12px;color:var(--t2);line-height:1.6;margin-top:6px">La agenda proviene de la operación/HR y no reemplaza el requisito de certificación. Esta etapa permanece pendiente hasta que exista certificación vigente.</div></div>`:''}
-        <div class="card card-p">${ui.degraded(humanReason,{title:'Certificación aún no disponible'})}</div>`;
+        <div class="card card-p">${ui.degraded(humanReason,{title:'Certificación aún no disponible'})}</div>${history}`;
     }
     const fb=[
       {ok:true, q:'¿Puedes revelar que eres evaluador?', tu:'No', correcta:'No', exp:'El anonimato es la base del mystery shopping: si te identificas, el comportamiento del personal se altera y la medición pierde validez. Nunca reveles tu rol, ni siquiera al salir.'},
@@ -366,7 +377,7 @@ CX.module('cert', ({role,data,ui})=>{
       <button class="btn btn-soft btn-sm" id="certRecert">🔄 Solicitar re-certificación</button>
       <button class="btn btn-ghost btn-sm" id="certGate">⚙️ Requisito y % mínimo</button>
     </div>
-    <div class="card card-p" style="margin-bottom:14px"><div class="between"><div><div class="card-t">Certificaciones del proyecto</div><div style="font-size:11px;color:var(--t3);margin-top:3px">${bankList().length} banco(s) en este periodo · selecciona proyecto/certificación arriba para administrarlos.</div></div><span class="bdg bdg-n">${bankStateLabel(bank?.estado)}</span></div></div>
+    <div class="card card-p" style="margin-bottom:14px"><div class="between"><div><div class="card-t">Certificaciones del proyecto</div><div style="font-size:11px;color:var(--t3);margin-top:3px">${bankList().length} banco(s) del proyecto · se conservan entre periodos.</div></div><span class="bdg bdg-n">${bankStateLabel(bank?.estado)}</span></div></div>
     ${_showFixtures ? `
     <div class="grid g4" style="margin-bottom:16px" id="certKpis">
       <div data-ck="cert" style="cursor:pointer">${ui.kpi('Certificados (demo)',18,'g')}</div>
@@ -579,7 +590,7 @@ CX.module('cert', ({role,data,ui})=>{
           const cid=CX.certStore.safeId(name),gate=Math.max(1,Math.min(100,+ov.querySelector('#ciGate').value||80)),revision='manual-'+Date.now().toString(36)+'-'+preguntas.length;
           const saved=await CX.certStore.save(p.id,{certificationId:cid,certificationName:name,preguntas,gate,required:true,estado:'pending_review',contentRevision:revision,generatedAt:new Date().toISOString(),generadoPorUid:String(CX.backendCertifications?.currentUid?.()||''),provider:'manual_import'},cid);
           if(!(saved?.providerAck===true&&saved?.committed===true))throw new Error('CERT_BANK_DURABLE_ACK_REQUIRED');
-          window.CX_CERT_SELECTED_ID=cid;close();ui.toast('Banco importado y guardado · pendiente de revisión.','ok',4200);CX.router.nav('cert');
+          window.CX_CERT_SELECTED_ID=String(saved.item?.id||CX.certStore.resourceId(p.id,cid));close();ui.toast('Banco importado y guardado · pendiente de revisión.','ok',4200);CX.router.nav('cert');
         }catch(error){
           btn.disabled=false;btn.textContent='Importar y guardar';
           const code=String(error?.message||error);
@@ -642,7 +653,7 @@ CX.module('cert', ({role,data,ui})=>{
         });
         ov.querySelector('#gtWithdraw').addEventListener('click',async()=>{
           if(!confirm('¿Retirar este banco? Los intentos históricos se conservan.'))return;const btn=ov.querySelector('#gtWithdraw');btn.disabled=true;
-          try{const removed=await CX.certStore.clear(p.id,bank.certificationId);if(!(removed?.providerAck===true&&removed?.committed===true))throw new Error('CERT_BANK_DELETE_ACK_REQUIRED');window.CX_CERT_SELECTED_ID='';close();ui.toast('Banco retirado con ACK remoto.','ok');CX.router.nav('cert');}catch(error){btn.disabled=false;ui.toast('No se retiró el banco.','warn');}
+          try{const removed=await CX.certStore.clear(p.id,bank.__resourceId||bank.certificationId);if(!(removed?.providerAck===true&&removed?.committed===true))throw new Error('CERT_BANK_DELETE_ACK_REQUIRED');window.CX_CERT_SELECTED_ID='';close();ui.toast('Banco retirado con ACK remoto.','ok');CX.router.nav('cert');}catch(error){btn.disabled=false;ui.toast('No se retiró el banco.','warn');}
         });
       },dismissOnBackdrop:false,dismissOnEscape:false});
     });

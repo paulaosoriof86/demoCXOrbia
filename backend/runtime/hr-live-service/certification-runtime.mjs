@@ -39,7 +39,7 @@ export function calculateCertificationAttempt(bank={},answers=[]){
     const selected=str(answers[i]),expected=str(q?.correcta);
     const ok=selected.toLocaleLowerCase('es')===expected.toLocaleLowerCase('es');
     if(ok)correct++;
-    return {index:i,ok,selected,correcta:expected,exp:str(q?.exp)};
+    return {index:i,question:str(q?.q),ok,selected,correcta:expected,exp:str(q?.exp)};
   });
   const score=Math.round(correct/questions.length*100);
   const gate=Math.max(1,Math.min(100,Number(bank.gate||80)));
@@ -95,8 +95,8 @@ async function loadPublishedBank(db,scope,body){
     str(resource.tipo)!=='certification_bank'||str(resource.projectId)!==scope.projectId||
     (resource.tenantId!==undefined&&str(resource.tenantId)!==scope.tenantId))
     throw new Error('CERT_BANK_SCOPE_MISMATCH');
-  if(!str(body.periodId)||str(resource.periodId)!==str(body.periodId))
-    throw new Error('CERT_BANK_PERIOD_MISMATCH');
+  if(!str(body.periodId)||str(body.periodId).length>120||str(body.periodId).includes('/'))
+    throw new Error('CERT_PERIOD_REQUIRED');
   // D06 P0: an arbitrary known resource ID is not authorization to sit an exam.
   // An Admin-only or disposable QA bank must never create a Shopper credential.
   if(resource.qaOnly===true||
@@ -105,7 +105,35 @@ async function loadPublishedBank(db,scope,body){
   const bank=resource.bank||{};
   if(!['published','confirmed'].includes(str(bank.estado).toLowerCase()))throw new Error('CERT_BANK_NOT_PUBLISHED');
   if(!arr(bank.preguntas).length)throw new Error('CERT_BANK_EMPTY');
+  if(str(resource.periodId)!==str(body.periodId)){
+    if(!reusableProjectResource(resource,scope))throw new Error('CERT_BANK_PERIOD_MISMATCH');
+    await validateExecutionPeriod(db,scope,body.periodId);
+  }
   return {resource,bank,fingerprint:certificationBankFingerprint(bank)};
+}
+
+async function validateExecutionPeriod(db,scope,periodId){
+  const ids=certificationPeriodDocumentIds(scope.projectId,periodId);
+  const snaps=await Promise.all(ids.map(id=>projectRef(db,scope).collection('periods').doc(id).get()));
+  const found=snaps.filter(x=>x.exists);
+  if(found.length!==1)throw new Error('CERT_EXECUTION_PERIOD_REQUIRED');
+  const doc=found[0],row=doc.data()||{};
+  if((row.tenantId!==undefined&&str(row.tenantId)!==scope.tenantId)||
+    (row.projectId!==undefined&&str(row.projectId)!==scope.projectId)||
+    certificationPeriodDisplayId(scope.projectId,row,doc.id)!==certificationPeriodDisplayId(scope.projectId,{},periodId))
+    throw new Error('CERT_EXECUTION_PERIOD_SCOPE_MISMATCH');
+}
+
+function reusableProjectResource(row,scope){
+  if(!['project_resource','certification_bank'].includes(str(row?.resourceType))||row?.qaOnly===true||
+    str(row?.projectId)!==str(scope?.projectId)||(row?.tenantId!==undefined&&str(row.tenantId)!==str(scope.tenantId))||
+    str(row?.visitaId||row?.visitId||row?.assignedVisitId))return false;
+  if(str(row?.tipo).toLowerCase()==='pdf'){
+    const period=str(row.periodId),path=str(row.storagePath);
+    const prefix=['tenants',scope.tenantId,'projects',scope.projectId,'periods',period,'resources'].join('/')+'/';
+    if(!period||period.includes('/')||!path.startsWith(prefix))return false;
+  }
+  return true;
 }
 
 // I3 P0 — general project guides remain approved for the same project across
@@ -147,7 +175,7 @@ export function shopperResourceProjection(input={},scope={}){
   const row=input||{},periodId=str(scope.periodId);
   if(str(row.status)!=='active'||str(row.projectId)!==str(scope.projectId)
     ||(row.tenantId!==undefined&&str(row.tenantId)!==str(scope.tenantId))
-    ||(row.periodId&&periodId&&str(row.periodId)!==periodId&&!reusableProjectGuide(row,scope))
+    ||(row.periodId&&periodId&&str(row.periodId)!==periodId&&!reusableProjectResource(row,scope))
     ||!(row.targetAll===true||arr(row.visibleRoles).map(str).includes('shopper')))return null;
   const bankType=str(row.resourceType)==='certification_bank'||str(row.tipo)==='certification_bank';
   if(bankType){
@@ -198,10 +226,15 @@ export async function calculateCertificationPractice(db,scope,principal,body){
   const snap=await resourcesCol(db,scope).doc(rid).get();
   if(!snap.exists)throw new Error('CERT_BANK_NOT_FOUND');
   const row=snap.data()||{},bank=row.bank||{};
-  if(str(row.status)!=='active'||str(row.projectId)!==scope.projectId||str(row.periodId)!==periodId
+  if(str(row.status)!=='active'||str(row.projectId)!==scope.projectId
+    ||(row.tenantId!==undefined&&str(row.tenantId)!==scope.tenantId)
     ||str(row.resourceType)!=='certification_bank'||str(row.tipo)!=='certification_bank'
     ||str(bank.estado)!=='approved_preview'||!(row.targetAll===true||arr(row.visibleRoles).map(str).includes('shopper')))
     throw new Error('CERT_PRACTICE_SCOPE_MISMATCH');
+  if(str(row.periodId)!==periodId){
+    if(!reusableProjectResource(row,scope))throw new Error('CERT_PRACTICE_SCOPE_MISMATCH');
+    await validateExecutionPeriod(db,scope,periodId);
+  }
   return calculateCertificationAttempt(bank,body.answers);
 }
 async function activeRecertifications(db,scope,shopperId){
@@ -435,7 +468,7 @@ async function saveAttempt(db,scope,principal,body,sourceRevision,idem){
         throw new Error('CERT_ATTEMPT_IDEMPOTENCY_REUSE');
       replay=true;item={id:snap.id,...previous};return;
     }
-    item={recordType:'certification_attempt',tenantId:scope.tenantId,projectId:scope.projectId,periodId:str(body.periodId||resource.periodId),shopperId:str(principal.shopperId),bankResourceId:resource.id,bankFingerprint:fingerprint,contentRevision:str(bank.contentRevision||fingerprint),score:calc.score,gate:calc.gate,pass:calc.pass,status:calc.pass?'certified':'failed',eligibilityGranted:calc.pass,currentCertification:calc.pass,recertificationSatisfied:calc.pass&&recerts.length>0,recertificationRequestIds:recerts.map(r=>r.id),sourceRevision:str(sourceRevision||''),answersHash:sha(body.answers),idempotencyKeyHash:sha(idem),providerAck:true,createdAt,createdByUid:str(principal.uid),updatedAt:createdAt};
+    item={recordType:'certification_attempt',tenantId:scope.tenantId,projectId:scope.projectId,periodId:str(body.periodId||resource.periodId),shopperId:str(principal.shopperId),bankResourceId:resource.id,bankPeriodId:str(resource.periodId),bankFingerprint:fingerprint,contentRevision:str(bank.contentRevision||fingerprint),score:calc.score,gate:calc.gate,pass:calc.pass,status:calc.pass?'certified':'failed',eligibilityGranted:calc.pass,currentCertification:calc.pass,feedback:calc.feedback,questionCount:calc.total,correctCount:calc.correct,recertificationSatisfied:calc.pass&&recerts.length>0,recertificationRequestIds:recerts.map(r=>r.id),sourceRevision:str(sourceRevision||''),answersHash:sha(body.answers),idempotencyKeyHash:sha(idem),providerAck:true,createdAt,createdByUid:str(principal.uid),updatedAt:createdAt};
     tx.create(ref,item);
   });
   return {item:withDocumentId(docId,item),calc,idempotentReplay:replay};
