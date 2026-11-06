@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "cxorbia.i3.d06.qa-cleanup-shopper-role-parity.20261106.v1",
+  "observedDateGuatemala": "2026-11-06",
+  "scope": "APPEND_ONLY_CONTROL_RECEIPT_NO_PRODUCT_CHANGE_NO_MODULE_PROMOTION",
+  "authority": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "parentCommit": "21278f462ed4ca2e94e1fcc144b793a1f8be043a",
+    "productSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+    "iteration": "I3",
+    "environment": "protected CXOrbia DEV; Cinépolis; Admin in web.app and Stiven Shopper in alternate firebaseapp.com origin"
+  },
+  "cleanup": {
+    "reason": "remove only authorized disposable certification QA records from Admin OCT 2026",
+    "removed": [
+      {
+        "certificationId": "qa-d05-versionado-20261106",
+        "priorVersion": 2
+      },
+      {
+        "certificationId": "qa-d05-temporal-20261106",
+        "priorVersion": 1
+      }
+    ],
+    "confirmation": "CHROME_NATIVE_CONFIRM_ACCEPTED_FOR_EACH_AFTER_OWNER_AUTHORIZATION",
+    "persistence": "UI_REMOVAL_PROVIDER_ACK_AND_AFTER_FULL_PAGE_RELOAD_READBACK",
+    "readback": {
+      "bankCount": 2,
+      "banks": [
+        {
+          "id": "main",
+          "status": "published",
+          "questions": 8,
+          "minimumPercent": 80
+        },
+        {
+          "id": "ai-3654d624896f",
+          "status": "pending_review",
+          "questions": 15
+        }
+      ],
+      "historicalEvidence": 40,
+      "historicallyApproved": 38
+    },
+    "realBanksModified": false,
+    "realBanksPublished": false,
+    "hrWrites": 0
+  },
+  "shopperRole": {
+    "method": "Shopper authenticated with preexisting Stiven Lopez session on DEV firebaseapp.com; separate origin from authenticated Admin web.app; no credential entry, no admin signout",
+    "role": "Shopper GT Cinépolis",
+    "adminReadback": {
+      "search": "Stiven López",
+      "visibleRowCount": 1,
+      "canonicalVisits": 10
+    },
+    "shopperProfileReadback": {
+      "canonicalVisits": 10,
+      "realized": 9,
+      "submitted": 8,
+      "paidConfirmed": 5,
+      "octoberVisits": 2,
+      "novemberVisits": 1
+    },
+    "adminShopperIdentityParity": "PASS_10_EQUALS_10_AFTER_REAL_AUTHENTICATED_ROLE_READBACK",
+    "shopperCertificationReadback": {
+      "publishedBank": "main",
+      "questionCount": 8,
+      "minimumPercent": 80,
+      "unpublishedAIBankHidden": true
+    },
+    "certificationQuizSubmitted": false,
+    "visitStateWrites": 0
+  },
+  "newFunctionalObservation": {
+    "classification": "FUNCTIONAL_DEFECT",
+    "module": "Mis Visitas",
+    "sourceOwner": "app/modules/misvisitas.js",
+    "predicate": "line 36: history includes !isCurrentPeriod(v) even for pending active statuses",
+    "reproduction": [
+      "On OCT 2026, Activas 1, Historial 9 includes NOV 2026 C. Naranjo Mall Agendada 2026-11-03",
+      "On NOV 2026, Activas 1, Historial 9 includes OCT 2026 C. Miraflores Pend. cuestionario 2026-10-31"
+    ],
+    "uiContract": "Historial subtitle states submitidas, liquidadas, pagadas o canceladas; includes agendada and pendiente de cuestionario across periods",
+    "scope": "cross-period generic predicate; no user-specific or month-specific patch",
+    "currentAssessment": "SOURCE_OWNER_IDENTIFIED_CORRECTION_NOT_YET_EXECUTED_MODULE_REMAINS_HOLD"
+  },
+  "priorFunctionalObservation": {
+    "classification": "FUNCTIONAL_DEFECT",
+    "module": "Certificación",
+    "sourceOwner": "app/modules/cert.js",
+    "finding": "Admin import accepts 3-choice QA bank whereas reviewer requires exactly 4 and explanation/source; editing UI cannot add absent options",
+    "result": "UNRESOLVED_NO_NEW_TEST_RECORDS_CREATED"
+  },
+  "preservation": {
+    "officialFullyMatchedModules": 5,
+    "officialTotalModules": 21,
+    "iteration": "I3",
+    "state": "HOLD",
+    "i4": "NOT_STARTED",
+    "production": "DO_NOT_TOUCH",
+    "productSourceChanged": false,
+    "devDeployment": false,
+    "identityMerges": 0,
+    "realHRReimports": 0,
+    "onlyRuntimeChanges": "DELETED_TWO_EXPLICITLY_AUTHORIZED_SYNTHETIC_QA_BANKS"
+  },
+  "exactNextAction": [
+    "Apply MODULE_TRUTH_MATRIX scope and P0_PROVEN owner check for misvisitas.js, then targeted regression for Oct/Nov and GT/HN",
+    "In certification importer, require 4 choices plus explanation/source before provider write or support constrained editor for missing option",
+    "Validate broader postulación/asignación/HR provider ACK separately; do not promote whole module from focal tests"
+  ]
+}
