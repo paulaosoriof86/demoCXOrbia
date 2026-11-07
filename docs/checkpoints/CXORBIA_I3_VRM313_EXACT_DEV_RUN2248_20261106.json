@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm313.exact-dev-run2248-readback.v1",
+  "recordedAt": "2026-11-07T00:40:01.503Z",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "decision": "PASS_EXACT_DEV_MATERIALIZATION_I3_HOLD",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadAtDeploy": "de0b9d8275226c21a836998ed6de333f62c5cd11",
+  "materialization": {
+    "state": "PASS_EXACT_DEV_MATERIALIZATION_PENDING_ROLE_E2E_HUMAN",
+    "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
+    "scopeFinding": "VRM-313",
+    "runId": 42314369471,
+    "runNumber": 2248,
+    "jobId": 128223462377,
+    "artifactId": 13549594473,
+    "artifactDigest": "sha256:385d9d8fbeaba175e6046dd41ead34f4d579970972bf358b8bd36dc8cc662fee",
+    "artifactDigestType": "GITHUB_ACTIONS_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR",
+    "sourceSha": "5a906e4a9aa79991924580eb54103797d311d930",
+    "sourceTree": "70cecc344f1b8c243f89459b0c7b79f9641dd864",
+    "runtimeRevision": "cxorbia-live-hr-dev-00354-lpb",
+    "runtimeDigest": "sha256:737d2ef53671a937fcaf875ef36e62cc0412908d3e46c371cc3add6eb9e599ad",
+    "runtimeTrafficPercent": 100,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/c1d5afaa3b2c1314",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794009159351000",
+    "hrRevision": "32d9416f76ba00d1b766ab8b4276ef74827b62f3c200ef704ba40a511a478b68",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "firestoreRulesDeploys": 0,
+    "storageRulesDeploys": 0,
+    "hrWrites": 0,
+    "production": false,
+    "controlHeadAtDeploy": "de0b9d8275226c21a836998ed6de333f62c5cd11",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM313_EXACT_DEV_RUN2248_20261106.json",
+    "humanAcceptance": "PENDING",
+    "shopperD06E2E": "PENDING_INDEPENDENT_AUTHENTICATED_SHOPPER",
+    "fullTaskClosed": false
+  },
+  "sourceProof": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM313_SOURCE_PROOF_20261106.json",
+    "sourceTestsPass": 48,
+    "sourceTestsFail": 0,
+    "sourceTestsSkipped": 0
+  },
+  "evidence": {
+    "githubActionsRun": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/42314369471",
+    "jobConclusion": "success",
+    "artifactUploaded": true,
+    "hostingReleaseCompleted": true,
+    "runtimeServingTrafficPercent": 100,
+    "productionChanged": false
+  },
+  "chromeReadback": {
+    "environment": "Chrome connected; DEV",
+    "adminRole": "Administración",
+    "project": "Cinépolis",
+    "november": {
+      "visits": 44,
+      "assigned": 26,
+      "unassigned": 18
+    },
+    "october": {
+      "visits": 44,
+      "visit722": {
+        "state": "Con cuestionario",
+        "historyLast": "Cuestionario enviado",
+        "questionnaireSubmittedByThisCheck": false
+      }
+    },
+    "newTabReadinessSampleSec": {
+      "stillValidatingAt": 17.559,
+      "readyBy": 24.815
+    },
+    "reloadReadinessSampleSec": {
+      "stillValidatingAt": 15.936,
+      "readyBy": 20.881
+    },
+    "shopperIndependentSession": "NOT_AVAILABLE_IN_THIS_BROWSER_SESSION",
+    "notes": "No login switch or logout; Admin original tab preserved. No answers transmitted. Exact browser asset bytes and Shopper D06 not certified."
+  },
+  "openScope": {
+    "finding": "VRM-313",
+    "classification": "FUNCTIONAL_DEFECT",
+    "sourceAndDev": "PASS",
+    "shopperE2e": "HOLD",
+    "performanceFinding": "VRM-134_OPEN",
+    "otherModulesNotMATCH": 16,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false
+  },
+  "unchanged": {
+    "production": true,
+    "hrData": true,
+    "financeData": true,
+    "existingExamAttempts": true,
+    "credentials": true,
+    "identityFusions": true
+  },
+  "nextExactAction": "I3 HOLD 5/21 MATCH: RUN2248 exact VRM313 source 5a906e4a9aa79991924580eb54103797d311d930 serving runtime+Hosting DEV, 100% runtime traffic, HR revision stable, zero production. NEXT real independently authenticated Shopper D06 OCT/NOV original project bank: failed/pass attempt ACK, feedback, independent server history, reload/new session and common eligibility Certificacion/Mi Dia/Mis Visitas. Preserve Admin session; do not sign it out or substitute Admin for Shopper. B10 OCT visit #722 is Con cuestionario with history Cuestionario enviado (Admin read-only); no submission. VRM134 remains P0 performance HOLD: new-tab readiness sampled between17.6-24.8s, reload between15.9-20.9s. Preserve D07 PDF OCT/NOV page1/7 user Work PASS, identity83/83+2, HR113/113, finance13/13, D05 editor15/15; G03 historical HR/finance independent evidence and remaining 16 full-domain/human gates. Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. No new source/build/deploy for these checks."
+}
