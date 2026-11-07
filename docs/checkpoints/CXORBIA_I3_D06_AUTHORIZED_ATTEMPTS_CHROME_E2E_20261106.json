@@ -1,0 +1,201 @@
+{
+  "schemaVersion": "cxorbia.i3.d06-authorized-shopper-attempts-chrome-e2e.v1",
+  "recordedAtUtc": "2026-11-07T01:39:58Z",
+  "userLocalDate": "2026-11-06",
+  "userTimezone": "America/Guatemala",
+  "iteration": "I3",
+  "state": "HOLD",
+  "decision": "PASS_FOCAL_D06_AUTHORIZED_TWO_ATTEMPT_LIFECYCLE_NOT_FULL_MODULE_CLOSURE",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedParentSha": "fa6ea2e5ee8112b98be107aa6945f1ccd7d9e3a5",
+  "expectedParentTree": "2fd1d7b36709646b572a43ddb4d24cb4866cca54",
+  "allowedControlPaths": [
+    "docs/checkpoints/CXORBIA_I3_D06_AUTHORIZED_ATTEMPTS_CHROME_E2E_20261106.json",
+    "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "CXORBIA_RECOVERY_EXECUTION_CURRENT.json"
+  ],
+  "source": {
+    "sha": "5a906e4a9aa79991924580eb54103797d311d930",
+    "tree": "70cecc344f1b8c243f89459b0c7b79f9641dd864"
+  },
+  "servingAuthority": {
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM313_EXACT_DEV_RUN2248_CONTROL_RECEIPT_V2_20261106.json",
+    "receiptBlob": "fb7ba2f482632d166ffdb9ca7a5541a1f6f1ff58",
+    "runId": 42314369471,
+    "runNumber": 2248,
+    "runtimeRevision": "cxorbia-live-hr-dev-00354-lpb",
+    "runtimeDigest": "sha256:737d2ef53671a937fcaf875ef36e62cc0412908d3e46c371cc3add6eb9e599ad",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/c1d5afaa3b2c1314",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794009159351000",
+    "hrRevision": "32d9416f76ba00d1b766ab8b4276ef74827b62f3c200ef704ba40a511a478b68",
+    "scope": "INHERITED_EXACT_RUN2248_READBACK_NO_NEW_BYTE_FETCH_OR_DEPLOY_IN_THIS_CHECK"
+  },
+  "precedingEvidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_SHOPPER_D06_D07_B10_CHROME_READBACK_20261106.json",
+    "gitBlob": "1c9666a983ab80df5c612c18ff8cb479b122b7e9",
+    "preserved": true
+  },
+  "authorization": {
+    "received": true,
+    "userMessage": "autorizo",
+    "scope": "Two durable DEV-only test attempts on the existing original published bank, one failing and one passing, using the user-selected existing authenticated Shopper; inspect save, outcome, feedback and persistence.",
+    "consumedAttempts": 2,
+    "additionalAttemptsAuthorized": false,
+    "bankEditAuthorized": false,
+    "recertificationResetAuthorized": false,
+    "productionAuthorized": false,
+    "testOnlyNotRealWorldCompetencyAssessment": true
+  },
+  "browser": {
+    "family": "Chrome",
+    "origin": "https://cxorbia-backend-dev.web.app",
+    "roleObserved": "Shopper",
+    "countryObserved": "GT",
+    "projectObserved": "Cinepolis",
+    "periodsObserved": [
+      "2026-10",
+      "2026-11"
+    ],
+    "loginActor": "USER",
+    "agentEnteredCredentials": false,
+    "credentialLoginGate": "NOT_OBSERVED_BY_AGENT",
+    "identity": "USER_SELECTED_EXISTING_SHOPPER_NO_PUBLIC_PERSONAL_IDENTIFIERS",
+    "sessionReused": true,
+    "finalPage": "Certificacion",
+    "finalPeriod": "2026-11"
+  },
+  "bank": {
+    "observedQuestionCount": 8,
+    "observedThresholdPercent": 80,
+    "publishedOriginal": true,
+    "cloned": false,
+    "requiredFlag": "NOT_OBSERVED_IN_CURRENT_SHOPPER_DOM",
+    "notSubstituteFor15QuestionAcceptance": true
+  },
+  "baseline": {
+    "visibleAttempts": 1,
+    "approvedValidityCard": false,
+    "formAvailable": true,
+    "selectedAnswers": 0,
+    "priorAttemptPreserved": true
+  },
+  "attempts": [
+    {
+      "testAlias": "authorized-failing-test",
+      "clickedSubmitOnce": true,
+      "selectedAnswers": 8,
+      "resultPercent": 0,
+      "passed": false,
+      "attemptDisplayedTimestamp": "2026-11-07 01:36:21",
+      "originPeriod": "cinepolis-2026-11",
+      "remoteAckDisplayed": true,
+      "feedbackQuestionsObserved": 8,
+      "feedbackIncludesSubmittedAnswerCorrectAnswerAndExplanation": true,
+      "totalVisibleAttemptsAfterSubmit": 2
+    },
+    {
+      "testAlias": "authorized-passing-test",
+      "clickedSubmitOnce": true,
+      "selectedAnswers": 8,
+      "resultPercent": 100,
+      "passed": true,
+      "attemptDisplayedTimestamp": "2026-11-07 01:37:15",
+      "originPeriod": "cinepolis-2026-11",
+      "remoteAckDisplayed": true,
+      "feedbackQuestionsObserved": 8,
+      "feedbackIncludesCorrectAnswerAndExplanation": true,
+      "totalVisibleAttemptsAfterSubmit": 3
+    }
+  ],
+  "readback": {
+    "method": "REAL_CHROME_UI_NORMAL_RELOAD_THEN_AUTHENTICATED_SOURCE_READY_AND_CROSS_PERIOD_NAVIGATION",
+    "periods": [
+      "2026-11",
+      "2026-10"
+    ],
+    "totalVisibleAttemptsAfterReload": 3,
+    "distinctDomAttemptIdentifiers": 3,
+    "sameIdentifiersBeforeAndAfterReload": true,
+    "sameIdentifiersAcrossPeriods": true,
+    "sameScoresAndTimestampsAcrossPeriods": true,
+    "originPeriodPreserved": true,
+    "oldAttemptPreserved": true,
+    "newAttemptsCreated": 2,
+    "additionalAttemptOrDuplicateObserved": false,
+    "approvedCardAfterReload": "Certificacion vigente",
+    "examRadioCountAfterApproval": 0,
+    "passingFeedbackQuestionsAfterReload": 8,
+    "failingFeedbackQuestionsAfterReload": 8,
+    "failingFeedbackExpandedAfterReload": true,
+    "independentDirectDatabaseQueryPerformed": false,
+    "newPasswordLoginPerformed": false,
+    "liveSameIdempotencyKeyReplayPerformed": false,
+    "interpretation": "The approved lifecycle and absence of observed duplicate attempts pass in the real UI, including reconstruction after normal reload. This is not a fresh credential-login test, direct database audit or same-key replay test."
+  },
+  "postApprovalCrossSurface": {
+    "certificacion": "CERTIFICACION_VIGENTE",
+    "miDia": "CERTIFICACION_DEL_PROYECTO_COMPLETADO",
+    "misVisitas": "CERTIFICACION_DEL_PROYECTO_CHECKED",
+    "status": "PASS_FOCAL_POSITIVE_ELIGIBILITY"
+  },
+  "preTestEligibilityContrast": {
+    "status": "HISTORICAL_CAUSE_NOT_ADJUDICATED",
+    "priorReceiptPreserved": true,
+    "reason": "A passing new attempt establishes positive eligibility but does not prove whether earlier completion indicators came from optional-bank configuration or historical profile evidence.",
+    "nextReadOnlyDiscriminator": "Read Admin required flag without saving and compare only the relevant project eligibility evidence; do not reset or revoke certification."
+  },
+  "changes": {
+    "applicationBusinessWrites": 2,
+    "certificationAttemptsCreated": 2,
+    "questionnaireSubmissions": 0,
+    "visitsMutated": 0,
+    "hrWrites": 0,
+    "financeWrites": 0,
+    "bankEdits": 0,
+    "authConfigurationChanges": 0,
+    "agentSignouts": 0,
+    "productCodeChanges": 0,
+    "builds": 0,
+    "deploys": 0,
+    "rulesChanges": 0,
+    "productionChanged": false,
+    "controlEvidenceOnly": true,
+    "applicationBusinessWritesSemantics": "COUNT_OF_AUTHORIZED_UI_SUBMIT_ACTIONS_NOT_AN_AUDIT_OF_DATABASE_DOCUMENT_WRITE_COUNT"
+  },
+  "remaining": {
+    "d06DurableAttemptLifecycle": "PASS_FOCAL_REAL_UI_AUTHORIZED_WRITE_ACK_FEEDBACK_RELOAD_PERIOD_CONTINUITY",
+    "d06Required15QuestionAcceptance": "NOT_SATISFIED_BY_THIS_8_QUESTION_TEST",
+    "d06BankSelectorAndRecertification": "CARRY_FORWARD_PRIOR_EVIDENCE_RECONCILIATION_REQUIRED_NO_NEW_RESET",
+    "d06PreTestEligibilityCause": "NOT_ADJUDICATED",
+    "d07": "PREVIOUS_READER_FOCAL_PASS_PRESERVED_RESOURCE_LIFECYCLE_RESIDUALS_OPEN",
+    "b10": "PREVIOUS_DISPLAY_FOCAL_PASS_PRESERVED_NO_QUESTIONNAIRE_SUBMISSION",
+    "vrm134": "EXISTING_PERFORMANCE_P0_OPEN",
+    "g03": "INDEPENDENT_HR_FINANZAS_HISTORICAL_EVIDENCE_GAP",
+    "other": "E04_F09_AND_REMAINING_FULL_MODULE_HUMAN_CLAUSES",
+    "moduleMatches": 5,
+    "moduleTotal": 21,
+    "phaseAComplete": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "authorizationI4": false
+  },
+  "privacy": {
+    "identity": "USER_SELECTED_EXISTING_GT_SHOPPER_PERSONAL_IDENTIFIERS_OMITTED",
+    "attemptIds": "RAW_IDS_COMPARED_IN_UI_AND_OMITTED_FROM_PUBLIC_REPOSITORY",
+    "screenshots": "INTERNAL_UI_INSPECTION_ONLY_NO_PERSONAL_SCREENSHOTS_PUBLICLY_UPLOADED"
+  },
+  "nextAction": "I3 HOLD 5/21 MATCH: exact DEV RUN2248 source 5a906e4a9aa79991924580eb54103797d311d930 unchanged. D06 authorized original published8-question failing0/pass100 attempts now saved with ACK and feedback8/8; exactly3 total attempts (1 prior+2 new) retain identical DOM IDs, results, dates and origin periods across OCT/NOV and normal reload. Certificacion vigente, Mi Dia completed and Mis Visitas check agree after approval. Do not repeat these two test attempts or ask for another Shopper login while this session remains available. NEXT: reconcile only remaining D06 contractual clauses (15-question acceptance, bank-selector and explicit recertification where applicable) against prior accepted evidence; read bank required flag in existing Admin without saving to adjudicate the pre-test eligibility contrast, not infer a new P0. Preserve D07 PDF focal reader/B10 display and 83/83 identities+2,113/113 HR,13/13 finanzas,D05editor15/15. Keep VRM134 performance P0, G03 historical HR/finanzas independent evidence gap, E04/F09/D07 residual clauses and remaining16 full-module/human gates. New authentication and live same-key replay not tested. No third attempt, bank change or recertification without scoped authorization; Gate20/21 HOLD; I4 not authorized; production DO_NOT_TOUCH.",
+  "controlPointerAlignment": {
+    "field": "executionCurrent.findingsLedgerPath/findingsLedgerExpectedGitBlob",
+    "before": {
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V570_2026-11-06.json",
+      "gitBlob": "2eae2500828da3cca16a70e8b6f6bc3f854e06f7"
+    },
+    "after": {
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V572_2026-11-06.json",
+      "gitBlob": "d7af1fcab24edec8330d306eafbdb4826606bb90"
+    },
+    "basis": "Align execution pointer to existing canonical descriptor; no ledger content or matrix classification changed."
+  }
+}
