@@ -320,7 +320,7 @@ const PROJECT_COMMANDS=new Set(['project.create','project.update','period.create
 const SHOPPER_COMMANDS=new Set(['shopper.create','shopper.update','shopper.credential.reset','shopper.identity.adjudicate','shopper.identity.review.resolve','shopper.delete']);
 const FINANCE_COMMANDS=new Set(['finance.reconcile.visit','finance.historical.reconcile','finance.payment.batch','finance.movement.create','finance.account.create','finance.account.apply','finance.budget.save','finance.budget.delete']);
 const COMMERCIAL_COMMANDS=new Set(['client.create','client.update','crm.account.create','crm.account.update','crm.contact.create','crm.contact.update','crm.opportunity.create','crm.opportunity.update','crm.column.create','crm.column.update','crm.column.delete']);
-const ACADEMY_COMMANDS=new Set(['academy.course.create','academy.course.update','academy.course.state','academy.category.create']);
+const ACADEMY_COMMANDS=new Set(['academy.course.create','academy.course.update','academy.course.state','academy.category.create','academy.progress.lesson.complete']);
 const str=v=>String(v==null?'':v).trim();
 const json=(res,status,body)=>{res.statusCode=status;res.setHeader('Content-Type','application/json; charset=utf-8');res.end(JSON.stringify(body));};
 const blocked=(code,extra={})=>({ok:false,status:'blocked',committed:false,providerAck:false,successUiAllowed:false,localMutation:false,localStorageWrite:false,providerWrites:0,code,production:false,...extra});

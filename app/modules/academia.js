@@ -20,10 +20,38 @@ CX.acadData={
   _hash(value){const s=JSON.stringify(value||{});let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return(h>>>0).toString(36);},
   _ackOk(a){return a&&a.ok===true&&a.committed===true&&a.providerAck===true&&a.successUiAllowed===true&&a.readbackVerified===true;},
   _blocked(code,error){return Promise.resolve({ok:false,status:'blocked',committed:false,providerAck:false,successUiAllowed:false,readbackVerified:false,code,error:error||code});},
+  _learnerUid(){try{return String(window.firebase?.auth?.().currentUser?.uid||'');}catch(_){return '';}},
+  _progressState(){
+    const s=this._state(),uid=this._learnerUid(),tenantId=String(CX.cxDataCommandBoundary?.context?.()?.tenantId||CX.BRAND?.id||'');
+    return uid&&s.progressOwnerUid===uid&&s.progress?.ownerUid===uid&&s.progress?.tenantId===tenantId?s.progress:{courses:{}};
+  },
+  _progressReference(course,audience){
+    const origin=course.__academyOrigin||(this.isCustom(audience,course.id)?'custom':'base');
+    return (this._state().progressCatalog||[]).find(x=>x.origin===origin&&x.audience===audience&&x.courseId===course.id)||null;
+  },
+  courseProgress(course,audience){
+    const ref=this._progressReference(course,audience);if(!ref)return {version:0,lessons:{},completed:false};
+    return Object.values(this._progressState().courses||{}).find(x=>x.origin===ref.origin&&x.audience===ref.audience&&x.courseId===ref.courseId&&x.revision===ref.revision)||{version:0,lessons:{},completed:false};
+  },
+  async completeLesson(course,audience,lesson,answers=[]){
+    if(!this._canonical()||!this._learnerUid())return this._blocked('ACADEMY_AUTHENTICATED_PROGRESS_REQUIRED');
+    const ref=this._progressReference(course,audience),s=this._state(),uid=this._learnerUid();
+    if(!ref||s.progressOwnerUid!==uid)return this._blocked('ACADEMY_PROGRESS_PROTECTED_READ_REQUIRED');
+    const current=this.courseProgress(course,audience),payload={...ref,lessonId:lesson.id,answers};
+    const result=await this._exec('academy.progress.lesson.complete',course.id,payload,current.version||0,'academy.progress.self');
+    if(!this._ackOk(result))return result;
+    const rb=result.entityReadback;
+    if(this._learnerUid()!==uid||rb?.ownerUid!==uid||rb?.tenantId!==s.tenantId||rb?.progress?.courseId!==ref.courseId||rb?.progress?.revision!==ref.revision||rb?.progress?.lessons?.[lesson.id]!==100)return this._blocked('ACADEMY_PROGRESS_READBACK_BINDING_MISMATCH');
+    const active=this._state();if(active.progressOwnerUid!==uid||active.tenantId!==rb.tenantId)return this._blocked('ACADEMY_PROGRESS_READBACK_BINDING_MISMATCH');
+    active.progress=this._progressState();active.progress.courses=active.progress.courses||{};active.progress.courses[rb.progressKey]=JSON.parse(JSON.stringify(rb.progress));
+    CX.bus&&CX.bus.emit('acad');return result;
+  },
   _exec(commandType,entityId,payload,expectedVersion,permission){
     const x=CX.cxDataCommandBoundary?.context?.()||{};
     if(!CX.commandAdapter?.execute)return this._blocked('COMMAND_ADAPTER_UNAVAILABLE');
-    return CX.commandAdapter.execute({version:'cxorbia-academy-command-boundary-v1',commandType,entityType:commandType==='academy.category.create'?'academyCategory':'academyCourse',entityId:entityId||null,tenantId:String(x.tenantId||CX.BRAND?.id||''),projectId:String(x.projectId||CX.data?.currentProjectId||'')||null,periodId:String(x.periodId||CX.data?.currentPeriodId||'')||null,requireProject:false,requirePeriod:false,actor:{actorId:String(x.actorId||''),role:String(x.role||''),projectIds:Array.isArray(x.projectIds)?x.projectIds.slice():[]},expectedVersion,idempotencyKey:commandType+':'+this._hash([x.tenantId,entityId||'',expectedVersion,payload]),payload:JSON.parse(JSON.stringify(payload||{})),source:'academia-ui',authorization:{providerEnforcementRequired:true,permission}});
+    const progress=commandType==='academy.progress.lesson.complete';
+    const idempotencyInput=progress?[x.tenantId,this._learnerUid(),entityId||'',expectedVersion,payload]:[x.tenantId,entityId||'',expectedVersion,payload];
+    return CX.commandAdapter.execute({version:'cxorbia-academy-command-boundary-v1',commandType,entityType:progress?'academyProgress':commandType==='academy.category.create'?'academyCategory':'academyCourse',entityId:entityId||null,tenantId:String(x.tenantId||CX.BRAND?.id||''),projectId:String(x.projectId||CX.data?.currentProjectId||'')||null,periodId:progress?null:String(x.periodId||CX.data?.currentPeriodId||'')||null,requireProject:progress,requirePeriod:false,actor:{actorId:String(x.actorId||''),role:String(x.role||''),projectIds:Array.isArray(x.projectIds)?x.projectIds.slice():[]},expectedVersion,idempotencyKey:commandType+':'+this._hash(idempotencyInput),payload:JSON.parse(JSON.stringify(payload||{})),source:'academia-ui',authorization:{providerEnforcementRequired:true,permission}});
   },
   _apply(result){
     if(!this._ackOk(result)){if(result&&!result.error)result.error=result.code||'Falta ACK/readback durable del proveedor.';return result;}
@@ -2132,9 +2160,16 @@ pierdan entre mensajes de WhatsApp de distintos chats y personas.</p></div>`},
 /* ─ Engine del módulo ─ */
 CX.module('aprendizaje', ({data,role,ui})=>{
   const host=ui.el('div');
-  const PK='cx_acad2_'+role;
-  const prog=()=>{try{return JSON.parse(localStorage.getItem(PK)||'{}');}catch(e){return{};}};
-  const setProg=(id,v)=>{const s=prog();s[id]=v;try{localStorage.setItem(PK,JSON.stringify(s));}catch(e){}};
+  const audience=()=>role==='admin'?(CX._acadAud||'admin'):(role==='shopper'?'shopper':role==='cliente'?'cliente':'admin');
+  const progressFor=course=>CX.acadData.courseProgress(course,audience());
+  const lessonDone=(course,lesson)=>progressFor(course).lessons?.[lesson.id]>=100;
+  const saveLesson=async(course,lesson,answers,button)=>{
+    if(button)button.disabled=true;
+    let result;try{result=await CX.acadData.completeLesson(course,audience(),lesson,answers||[]);}catch(error){result={ok:false,error:error?.message||'No se pudo guardar el avance.'};}
+    if(button)button.disabled=false;
+    if(!CX.acadData._ackOk(result)){ui.toast('No se guardó el avance: '+(result?.error||result?.code||'Falta confirmación del proveedor'),'warn',4200);return false;}
+    return true;
+  };
 
   let activeCat='Todos';
   let clsModulo='', clsNivel='', clsPaquete='';
@@ -2146,7 +2181,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
     const r=role==='admin'?(CX._acadAud||'admin'):(role==='shopper'?'shopper':role==='cliente'?'cliente':'admin');
     const base=CX.acadData.COURSES[r]||CX.acadData.COURSES.admin;
     const custom=CX.acadData.getCustom(r);
-    const all=[...custom,...base];
+    const all=[...custom.map(c=>({...c,__academyOrigin:'custom'})),...base.map(c=>({...c,__academyOrigin:'base'}))];
     /* los archivados solo se listan si el admin activa "ver archivados" — nunca para shopper/cliente */
     if(role==='admin' && showArchived) return all;
     return all.filter(c=>c.estado!=='archivado' && c.estado!=='eliminado');
@@ -2158,7 +2193,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
     const li=Math.max(0,lessons.findIndex(l=>l.id===openLesson));
     const lesson=lessons[li];
     if(!lesson)return;
-    const pct=Math.round((lessons.filter(l=>prog()[l.id]>=100)).length/lessons.length*100);
+    const pct=Math.round((lessons.filter(l=>lessonDone(course,l))).length/lessons.length*100);
 
     host.innerHTML=`
       <div class="between" style="margin-bottom:12px">
@@ -2171,7 +2206,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
         <!-- Sidebar lecciones -->
         <div class="card card-p" style="position:sticky;top:10px">
           <div style="font-size:10px;font-weight:800;color:var(--t3);letter-spacing:.6px;text-transform:uppercase;margin-bottom:10px">LECCIONES</div>
-          ${lessons.map((l,i)=>{const done=prog()[l.id]>=100;return `<div data-li="${l.id}" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;cursor:pointer;margin-bottom:4px;background:${l.id===lesson.id?course.color+'20':done?'#f0faf4':'transparent'};border-left:3px solid ${l.id===lesson.id?course.color:done?'var(--green)':'transparent'}">
+          ${lessons.map((l,i)=>{const done=lessonDone(course,l);return `<div data-li="${l.id}" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;cursor:pointer;margin-bottom:4px;background:${l.id===lesson.id?course.color+'20':done?'#f0faf4':'transparent'};border-left:3px solid ${l.id===lesson.id?course.color:done?'var(--green)':'transparent'}">
             <span style="width:20px;height:20px;border-radius:50%;background:${l.id===lesson.id?course.color:done?'var(--green)':'var(--border-2)'};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:${l.id===lesson.id||done?'#fff':'var(--t3)'};">${done?'✓':(i+1)}</span>
             <span style="font-size:12px;font-weight:${l.id===lesson.id?'700':'400'};color:var(--t1)">${l.ic} ${l.n}</span>
           </div>`;}).join('')}
@@ -2194,13 +2229,15 @@ CX.module('aprendizaje', ({data,role,ui})=>{
       <div class="acad-content">${lesson.content}</div>
       <div class="between" style="margin-top:20px;padding-top:14px;border-top:1px solid var(--border-2)">
         ${li>0?`<button class="btn btn-ghost btn-sm" id="prevL">← Anterior</button>`:'<div></div>'}
-        <button class="btn btn-pr btn-sm" id="nextL">${li<lessons.length-1?'Siguiente lección →':'Ver evaluación →'}</button>
+        <button class="btn btn-pr btn-sm" id="nextL">${li<lessons.length-1?'Guardar avance y continuar →':'Marcar lección completada ✓'}</button>
       </div>
     </div>`;
 
   const wireContent=(course,lesson,li,lessons)=>{
-    setProg(lesson.id,100);
-    host.querySelector('#nextL')?.addEventListener('click',()=>{if(li<lessons.length-1){openLesson=lessons[li+1].id;lessonPlayer(course);}});
+    host.querySelector('#nextL')?.addEventListener('click',async event=>{
+      if(!await saveLesson(course,lesson,[],event.currentTarget))return;
+      if(li<lessons.length-1){openLesson=lessons[li+1].id;lessonPlayer(course);}else{openLesson=null;openCourse=null;draw();}
+    });
     host.querySelector('#prevL')?.addEventListener('click',()=>{if(li>0){openLesson=lessons[li-1].id;lessonPlayer(course);}});
     const rr=role==='admin'?(CX._acadAud||'admin'):(role==='cliente'?'cliente':'shopper');
     host.querySelector('#delLsn')?.addEventListener('click',()=>ui.modal('🗑 Eliminar lección',`
@@ -2394,23 +2431,29 @@ CX.module('aprendizaje', ({data,role,ui})=>{
           <button class="acad-verify btn btn-pr btn-sm" data-qi="${qi}" style="margin-top:12px">Verificar</button>
           <div class="acad-fb" id="fb${qi}" style="display:none;margin-top:12px;padding:12px 14px;border-radius:10px;font-size:13px;line-height:1.5"></div>
         </div>`).join('')}
-      <div style="text-align:center;margin-top:20px"><button class="btn btn-green btn-sm" id="finQuiz" style="padding:10px 28px">Marcar completada ✓</button></div>
+      <div style="text-align:center;margin-top:20px"><button class="btn btn-green btn-sm" id="finQuiz" style="padding:10px 28px" disabled>Guardar evaluación revisada ✓</button></div>
     </div>`;
 
   const wireQuiz=(course,lesson,li,lessons)=>{
+    const reviewed=new Map();
     host.querySelectorAll('.acad-verify').forEach(b=>b.addEventListener('click',()=>{
       const qi=+b.dataset.qi;const q=lesson.quiz[qi];
       const sel=host.querySelector(`input[name="q${qi}"]:checked`);
       if(!sel){ui.toast('Elige una respuesta primero','warn');return;}
       const oi=+sel.value;const correct=(oi===q.a);
-      const fb=host.getElementById(`fb${qi}`);
+      const fb=host.querySelector(`#fb${qi}`);
       const opts=host.querySelectorAll(`[data-qi="${qi}"]`);
       opts.forEach(opt=>{const isCorrect=+opt.dataset.oi===q.a;opt.style.background=isCorrect?'#f0faf4':+opt.dataset.oi===oi&&!correct?'#fef2f2':'';opt.style.borderColor=isCorrect?'var(--green)':+opt.dataset.oi===oi&&!correct?'var(--red)':'var(--border)';});
       fb.style.display='block';fb.style.background=correct?'#f0faf4':'#fef9ec';fb.style.borderLeft=`3px solid var(--${correct?'green':'amber'})`;
-      fb.innerHTML=`<b style="color:var(--${correct?'green':'amber'})">${correct?'✅ Correcto':'💡 Respuesta a revisar'}</b><br><span style="color:var(--t2)">${q.exp}</span>`;
+      fb.innerHTML=`<b style="color:var(--${correct?'green':'amber'})">${correct?'✅ Correcto':'💡 Respuesta a revisar'}</b><br><span style="color:var(--t2)">${q.exp||q.fb||''}</span>`;
       b.disabled=true;b.textContent=correct?'✓ Correcto':'→ Revisado';
+      reviewed.set(qi,oi);host.querySelector('#finQuiz').disabled=reviewed.size!==lesson.quiz.length;
     }));
-    host.querySelector('#finQuiz')?.addEventListener('click',()=>{setProg(lesson.id,100);setProg(course.id,100);ui.toast('🏆 Curso completado','ok');openLesson=null;openCourse=null;draw();});
+    host.querySelector('#finQuiz')?.addEventListener('click',async event=>{
+      if(reviewed.size!==lesson.quiz.length){ui.toast('Revisa cada respuesta antes de guardar','warn');return;}
+      if(!await saveLesson(course,lesson,lesson.quiz.map((_,i)=>reviewed.get(i)),event.currentTarget))return;
+      ui.toast(progressFor(course).completed?'🏆 Curso completado':'Evaluación revisada · avance guardado','ok');openLesson=null;openCourse=null;draw();
+    });
   };
 
   /* ── Manuales: biblioteca por rol, lector in-app ── */
@@ -2555,10 +2598,10 @@ CX.module('aprendizaje', ({data,role,ui})=>{
     const filtered=(activeCat==='Todos'?visibleCourses:visibleCourses.filter(c=>c.cat===activeCat))
       .filter(c=>CX.acadData.matchesClassification(c, {modulo:clsModulo||null, nivel:clsNivel||null, paquete:clsPaquete||null}));
     const totalLessons=visibleCourses.reduce((a,c)=>a+(c.lessons||[]).length,0);
-    const completedCourses=visibleCourses.filter(c=>prog()[c.id]>=100).length;
-    const completedLessons=visibleCourses.reduce((a,c)=>a+(c.lessons||[]).filter(l=>prog()[l.id]>=100).length,0);
-    const avgProg=visibleCourses.length?Math.round(visibleCourses.reduce((a,c)=>{const ls=c.lessons||[];const done=ls.filter(l=>prog()[l.id]>=100).length;return a+(ls.length?done/ls.length*100:0);},0)/visibleCourses.length):0;
-    const certs=visibleCourses.filter(c=>c.cert&&prog()[c.id]>=100).length;
+    const completedCourses=visibleCourses.filter(c=>progressFor(c).completed).length;
+    const completedLessons=visibleCourses.reduce((a,c)=>a+(c.lessons||[]).filter(l=>lessonDone(c,l)).length,0);
+    const avgProg=visibleCourses.length?Math.round(visibleCourses.reduce((a,c)=>{const ls=c.lessons||[];const done=ls.filter(l=>lessonDone(c,l)).length;return a+(ls.length?done/ls.length*100:0);},0)/visibleCourses.length):0;
+    const certs=visibleCourses.filter(c=>c.cert&&progressFor(c).completed).length;
 
     host.innerHTML=`
       <div style="background:linear-gradient(135deg,#1a2740,#0d1b2e);border-radius:14px;padding:20px 24px;margin-bottom:16px">
@@ -2571,7 +2614,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
         </div>
         <div class="grid g4">
           <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:#fff">${visibleCourses.length}</div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px">Cursos</div><div style="font-size:11px;color:#64748b">${completedCourses} completados</div></div>
-          <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:${avgProg>=80?'#34d399':'#fbbf24'}">${avgProg}%</div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px">Avance promedio</div><div style="font-size:11px;color:#64748b">del equipo</div></div>
+          <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:${avgProg>=80?'#34d399':'#fbbf24'}">${avgProg}%</div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px">Mi avance</div><div style="font-size:11px;color:#64748b">guardado por persona</div></div>
           <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:#a78bfa">${certs}</div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px">Certificaciones</div><div style="font-size:11px;color:#64748b">obtenidas</div></div>
           <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:#fff">${totalLessons}</div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px">Lecciones</div><div style="font-size:11px;color:#64748b">${completedLessons} completadas</div></div>
         </div>
@@ -2597,7 +2640,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
       })()}
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
         ${filtered.map((c,courseIndex)=>{
-          const ls=c.lessons||[];const done=ls.filter(l=>prog()[l.id]>=100).length;const pct=ls.length?Math.round(done/ls.length*100):0;
+          const ls=c.lessons||[];const done=ls.filter(l=>lessonDone(c,l)).length;const pct=ls.length?Math.round(done/ls.length*100):0;
           /* visibilidad de acciones de gestión (Academia — cierre de pendiente auditoría V101):
              antes se mostraban por role==='admin' crudo, que sigue siendo 'admin' incluso cuando
              un coordinador/aliado/ops navega en modo prueba sobre el shell admin (session.role

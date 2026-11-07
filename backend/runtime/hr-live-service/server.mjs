@@ -14,6 +14,7 @@ import { isLiveUserAdminPath, maybeHandleLiveUserAdminRequest } from './user-adm
 import { isLegalRuntimePath, maybeHandleLegalRuntimeRequest } from './legal-runtime.mjs';
 import { isCxorbiaCommandRuntimePath, maybeHandleCxorbiaCommandRuntimeRequest, createHrSnapshotReconciler } from './cxorbia-command-runtime-v1.mjs';
 import { isCertificationRuntimePath, maybeHandleCertificationRuntimeRequest } from './certification-runtime.mjs';
+import { academyProgressSnapshot, academyProgressCatalog } from '../cxorbia-academy-command-provider-v1.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ROOT=path.resolve(HERE,'../../..');
@@ -216,13 +217,15 @@ async function commercialTenantState(principal,scope){
 
 async function academyTenantState(principal,scope){
   const tenant=principal.db.collection('tenants').doc(scope.tenantId);
-  const [courses,categories,audit]=await Promise.all([
+  const [courses,categories,audit,learner]=await Promise.all([
     tenant.collection('academyCourses').get(),
     tenant.collection('academyCategories').get(),
-    ['super','admin'].includes(String(principal.role||'').toLowerCase())?tenant.collection('academyAudit').get():Promise.resolve({docs:[]})
+    ['super','admin'].includes(String(principal.role||'').toLowerCase())?tenant.collection('academyAudit').get():Promise.resolve({docs:[]}),
+    tenant.collection('users').doc(principal.uid).get()
   ]);
   const rows=s=>s.docs.map(doc=>({id:doc.id,...(doc.data()||{})}));
-  return {courses:rows(courses),categories:rows(categories),audit:rows(audit),authority:'firestore_tenant_academy',tenantId:scope.tenantId};
+  return {courses:rows(courses),categories:rows(categories),audit:rows(audit),authority:'firestore_tenant_academy',tenantId:scope.tenantId,
+    progressOwnerUid:principal.uid,progress:academyProgressSnapshot(learner.data(),scope.tenantId,principal.uid),progressCatalog:academyProgressCatalog(rows(courses)),progressAuthority:'firestore_user_academy_progress'};
 }
 
 async function protectedPlatformState(current,principal,scope,operational){

@@ -90,6 +90,11 @@
       if(command.payload?.humanConfirmed!==true||command.authorization?.humanAcceptanceRequired!==true||command.authorization?.automaticAcceptanceForbidden!==true)return{ok:false,code:'COMMAND_LEGAL_HUMAN_CONFIRMATION_REQUIRED'};
       return{ok:true};
     }
+    if(command.commandType==='academy.progress.lesson.complete'){
+      if(command.entityType!=='academyProgress'||command.authorization?.permission!=='academy.progress.self')return{ok:false,code:'COMMAND_ACADEMY_SELF_SCOPE_REQUIRED'};
+      if(!['super','admin','ops','coordinador','shopper','cliente','client'].includes(actor.role))return{ok:false,code:'COMMAND_ACADEMY_LEARNER_ROLE_DENIED'};
+      return{ok:true}; // Provider binds the owner to the verified token, never the payload.
+    }
     if(actor.role==='shopper'){
       const allowed=new Set(['visit.state.update','visit.reschedule','visit.cancel','visit.questionnaire.submit','visit.checkin.evidence','resource.read.receipt','application.create','reservation.create','reservation.delete','shopper.update','support.ticket.create']);
       if(!allowed.has(command.commandType))return{ok:false,code:'COMMAND_ROLE_DENIED'};

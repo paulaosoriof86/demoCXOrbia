@@ -1,0 +1,985 @@
+{
+  "schemaVersion": "cxorbia.academy-base-progress-contract.v1",
+  "sourceCatalog": "app/modules/academia.js#CX.acadData.COURSES",
+  "purpose": "Immutable validation contract; not an editable catalog or database import. Canonical source tests enforce exact course revision and lesson equality.",
+  "courses": [
+    {
+      "courseId": "a_canon_ops",
+      "audience": "admin",
+      "revision": "7781cd39e98c55ca432b16de5c096b49e453dee3e9a6b7b54c51cd5c7c6a3ed8",
+      "scope": {
+        "modulo": [
+          "Operación",
+          "Reportes"
+        ]
+      },
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "ac1",
+          "quiz": []
+        },
+        {
+          "id": "ac2",
+          "quiz": []
+        },
+        {
+          "id": "ac3",
+          "quiz": []
+        },
+        {
+          "id": "ac4",
+          "quiz": []
+        },
+        {
+          "id": "ac5",
+          "quiz": []
+        },
+        {
+          "id": "ac6",
+          "quiz": []
+        },
+        {
+          "id": "ac7",
+          "quiz": []
+        },
+        {
+          "id": "ac8",
+          "quiz": []
+        },
+        {
+          "id": "ac9",
+          "quiz": [
+            {
+              "options": 3,
+              "answer": 1
+            },
+            {
+              "options": 3,
+              "answer": 1
+            },
+            {
+              "options": 3,
+              "answer": 1
+            },
+            {
+              "options": 3,
+              "answer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "a_fin_op",
+      "audience": "admin",
+      "revision": "ef7a65c588a992812ac946a05cadab38bd3fa356018297ac002af52cacd8f479",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "af1",
+          "quiz": []
+        },
+        {
+          "id": "af2",
+          "quiz": []
+        },
+        {
+          "id": "af3",
+          "quiz": []
+        },
+        {
+          "id": "af4",
+          "quiz": [
+            {
+              "options": 3,
+              "answer": 1
+            },
+            {
+              "options": 3,
+              "answer": 1
+            },
+            {
+              "options": 3,
+              "answer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "a_backend_prepared",
+      "audience": "admin",
+      "revision": "87e9251f8571c0ab12faee10b13c7aff9e0cc0f6c62670dcb1ba4bdd89bf5939",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "ab1",
+          "quiz": []
+        },
+        {
+          "id": "ab3",
+          "quiz": []
+        },
+        {
+          "id": "ab4",
+          "quiz": [
+            {
+              "options": 3,
+              "answer": 1
+            },
+            {
+              "options": 3,
+              "answer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "a_glos",
+      "audience": "admin",
+      "revision": "7560efb910afaf07378c73040b3689bdba0da546702728d8d730382f2f54e103",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "ag1",
+          "quiz": []
+        },
+        {
+          "id": "ag2",
+          "quiz": []
+        },
+        {
+          "id": "ag3",
+          "quiz": [
+            {
+              "options": 3,
+              "answer": 1
+            },
+            {
+              "options": 3,
+              "answer": 1
+            },
+            {
+              "options": 3,
+              "answer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "a_diag_admin",
+      "audience": "admin",
+      "revision": "28125104fbba8ecfade5f47cbb66450b1e56fb6e5c020e63b4e3e4593fa08c51",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "ada1",
+          "quiz": []
+        },
+        {
+          "id": "ada1b",
+          "quiz": []
+        },
+        {
+          "id": "ada2",
+          "quiz": []
+        },
+        {
+          "id": "ada3",
+          "quiz": []
+        },
+        {
+          "id": "ada4",
+          "quiz": [
+            {
+              "options": 3,
+              "answer": 1
+            },
+            {
+              "options": 3,
+              "answer": 1
+            },
+            {
+              "options": 3,
+              "answer": 1
+            },
+            {
+              "options": 3,
+              "answer": 1
+            },
+            {
+              "options": 3,
+              "answer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "a_modguide",
+      "audience": "admin",
+      "revision": "9d14db5537ab3d295b04cbcc2c4a6f3a83ddbeba00dbca23a328e92d5f5f9d02",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "mg1",
+          "quiz": []
+        },
+        {
+          "id": "mg2",
+          "quiz": []
+        },
+        {
+          "id": "mg3",
+          "quiz": []
+        },
+        {
+          "id": "mg4",
+          "quiz": []
+        },
+        {
+          "id": "mg5",
+          "quiz": [
+            {
+              "options": 4,
+              "answer": 1
+            },
+            {
+              "options": 4,
+              "answer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "a_ind",
+      "audience": "admin",
+      "revision": "ddb90a47e73a166021ec6663608ee33a580dbc7533891d0b472cad6828958572",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "l1",
+          "quiz": []
+        },
+        {
+          "id": "l2",
+          "quiz": []
+        },
+        {
+          "id": "l3",
+          "quiz": []
+        },
+        {
+          "id": "l4",
+          "quiz": []
+        },
+        {
+          "id": "l4b",
+          "quiz": []
+        },
+        {
+          "id": "l5",
+          "quiz": [
+            {
+              "options": 4,
+              "answer": 1
+            },
+            {
+              "options": 4,
+              "answer": 2
+            },
+            {
+              "options": 4,
+              "answer": 1
+            },
+            {
+              "options": 4,
+              "answer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "a_ops",
+      "audience": "admin",
+      "revision": "07e564e3909a0911427b771a5ab4056d2e9f88f880a571e550cf83228033888c",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "o1",
+          "quiz": []
+        },
+        {
+          "id": "o2",
+          "quiz": []
+        },
+        {
+          "id": "o3",
+          "quiz": []
+        },
+        {
+          "id": "o4",
+          "quiz": []
+        },
+        {
+          "id": "o5",
+          "quiz": [
+            {
+              "options": 4,
+              "answer": 1
+            },
+            {
+              "options": 4,
+              "answer": 1
+            },
+            {
+              "options": 4,
+              "answer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "a_setup",
+      "audience": "admin",
+      "revision": "5260458482181a1980e88be6b26a4ba97a3aab980af94478d9554ee1b454ab3f",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "s1",
+          "quiz": []
+        },
+        {
+          "id": "s2",
+          "quiz": []
+        },
+        {
+          "id": "s3",
+          "quiz": []
+        },
+        {
+          "id": "s4",
+          "quiz": []
+        },
+        {
+          "id": "s5",
+          "quiz": [
+            {
+              "options": 4,
+              "answer": 1
+            },
+            {
+              "options": 4,
+              "answer": 1
+            },
+            {
+              "options": 4,
+              "answer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "a_fin",
+      "audience": "admin",
+      "revision": "868efef8ed07364bc147b6515255eb1a4dd4fba0016167032efeba7573b07915",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "f1",
+          "quiz": []
+        },
+        {
+          "id": "f2",
+          "quiz": []
+        },
+        {
+          "id": "f3",
+          "quiz": []
+        },
+        {
+          "id": "f4",
+          "quiz": []
+        },
+        {
+          "id": "f5",
+          "quiz": [
+            {
+              "options": 4,
+              "answer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "a_ind_ms",
+      "audience": "admin",
+      "revision": "1555d6a203c75fc3fe4c970fc8cebe2d6d95b76d215c42dad3cde485398a157a",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "ms1",
+          "quiz": []
+        },
+        {
+          "id": "ms2",
+          "quiz": []
+        },
+        {
+          "id": "ms3",
+          "quiz": []
+        },
+        {
+          "id": "ms4",
+          "quiz": [
+            {
+              "options": 4,
+              "answer": 1
+            },
+            {
+              "options": 4,
+              "answer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "a_backend",
+      "audience": "admin",
+      "revision": "42b807c55be8f71237fe1b0dc55799996d26c053cc1a50da968870a49bbc64f7",
+      "scope": {},
+      "technicalOnly": true,
+      "lessons": [
+        {
+          "id": "bt1",
+          "quiz": []
+        },
+        {
+          "id": "bt2",
+          "quiz": []
+        },
+        {
+          "id": "bt3",
+          "quiz": []
+        },
+        {
+          "id": "bt4",
+          "quiz": []
+        },
+        {
+          "id": "bt5",
+          "quiz": [
+            {
+              "options": 4,
+              "answer": 1
+            },
+            {
+              "options": 4,
+              "answer": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "a_ops_conflicts_route",
+      "audience": "admin",
+      "revision": "d3594e66a607a18a3ccad152294af0e3e6a65aadd3f9280173264de9d70a4204",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "ao1",
+          "quiz": []
+        },
+        {
+          "id": "ao2",
+          "quiz": []
+        },
+        {
+          "id": "ao3",
+          "quiz": []
+        },
+        {
+          "id": "ao4",
+          "quiz": [
+            {
+              "options": 3,
+              "answer": 1
+            },
+            {
+              "options": 3,
+              "answer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "a_coord",
+      "audience": "admin",
+      "revision": "e1e8182b0d171d4ca0565250b9c029ec315bbf4da351cfd87b3cc4bb8026cdec",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "co1",
+          "quiz": []
+        },
+        {
+          "id": "co2",
+          "quiz": []
+        },
+        {
+          "id": "co3",
+          "quiz": []
+        },
+        {
+          "id": "co4",
+          "quiz": []
+        },
+        {
+          "id": "co5",
+          "quiz": [
+            {
+              "options": 4,
+              "answer": 1
+            },
+            {
+              "options": 4,
+              "answer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "a_plat_ctx",
+      "audience": "admin",
+      "revision": "c623698eedca27a610a6c5eebe94645aa2f032a3dfdcfa5376a9e964e90a6c58",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "apc1",
+          "quiz": []
+        },
+        {
+          "id": "apc2",
+          "quiz": []
+        },
+        {
+          "id": "apc3",
+          "quiz": []
+        },
+        {
+          "id": "apc4",
+          "quiz": []
+        }
+      ]
+    },
+    {
+      "courseId": "s_ruta",
+      "audience": "shopper",
+      "revision": "aaadb3e390d135a67b07a104ff394a860fde55b53822c48c46207c4cc7a121fb",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "sr1",
+          "quiz": []
+        },
+        {
+          "id": "sr2",
+          "quiz": []
+        },
+        {
+          "id": "sr3",
+          "quiz": []
+        },
+        {
+          "id": "sr4",
+          "quiz": []
+        },
+        {
+          "id": "sr5",
+          "quiz": [
+            {
+              "options": 3,
+              "answer": 1
+            },
+            {
+              "options": 3,
+              "answer": 1
+            },
+            {
+              "options": 3,
+              "answer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "s_ind",
+      "audience": "shopper",
+      "revision": "8e6a31871d5dda549960520a32d5ba24339e7dd647a2d525d5cc43f4e2e34d63",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "si1",
+          "quiz": []
+        },
+        {
+          "id": "si2",
+          "quiz": []
+        },
+        {
+          "id": "si3",
+          "quiz": []
+        },
+        {
+          "id": "si4",
+          "quiz": [
+            {
+              "options": 4,
+              "answer": 1
+            },
+            {
+              "options": 4,
+              "answer": 2
+            },
+            {
+              "options": 4,
+              "answer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "s_cuest",
+      "audience": "shopper",
+      "revision": "d76b3095244082461588515aa4bfc46b674a0ff78a77a9bcf318dac626131a16",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "sc1",
+          "quiz": []
+        },
+        {
+          "id": "sc2",
+          "quiz": []
+        },
+        {
+          "id": "sc3",
+          "quiz": []
+        },
+        {
+          "id": "sc4",
+          "quiz": [
+            {
+              "options": 4,
+              "answer": 1
+            },
+            {
+              "options": 4,
+              "answer": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "s_cert",
+      "audience": "shopper",
+      "revision": "aa4df2b0713b47cef34ec14c5baffeaf626ad88aea37cc4b69a6f51e0d73d64f",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "sct1",
+          "quiz": []
+        },
+        {
+          "id": "sct2",
+          "quiz": []
+        },
+        {
+          "id": "sct3",
+          "quiz": [
+            {
+              "options": 4,
+              "answer": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "s_soporte",
+      "audience": "shopper",
+      "revision": "6847bd48f67cccfe0f2b7dfe56b624231b8fe7f325335d14b9155d87255794dc",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "ss1",
+          "quiz": []
+        },
+        {
+          "id": "ss2",
+          "quiz": []
+        },
+        {
+          "id": "ss3",
+          "quiz": [
+            {
+              "options": 4,
+              "answer": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "s_prof",
+      "audience": "shopper",
+      "revision": "1fc20fe6b33970d948521996aac5c572407981b1daa5ed685b6f66aecd2f89a2",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "sp1",
+          "quiz": []
+        },
+        {
+          "id": "sp2",
+          "quiz": []
+        },
+        {
+          "id": "sp3",
+          "quiz": []
+        },
+        {
+          "id": "sp4",
+          "quiz": []
+        },
+        {
+          "id": "sp5",
+          "quiz": [
+            {
+              "options": 4,
+              "answer": 1
+            },
+            {
+              "options": 4,
+              "answer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "s_modguide",
+      "audience": "shopper",
+      "revision": "21ebeb6004cc7418dc529bc0edb03d4922f742f94ca7239b11b0ad88958f26c8",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "smg1",
+          "quiz": []
+        },
+        {
+          "id": "smg2",
+          "quiz": []
+        },
+        {
+          "id": "smg3",
+          "quiz": [
+            {
+              "options": 4,
+              "answer": 1
+            },
+            {
+              "options": 4,
+              "answer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "cl_ruta",
+      "audience": "cliente",
+      "revision": "e2c4276e52431865e6e87a2d6c8ae3677c67203cb38256093e6e2b9e7e2a6ec9",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "clr1",
+          "quiz": []
+        },
+        {
+          "id": "clr2",
+          "quiz": []
+        },
+        {
+          "id": "clr3",
+          "quiz": []
+        },
+        {
+          "id": "clr4",
+          "quiz": [
+            {
+              "options": 3,
+              "answer": 1
+            },
+            {
+              "options": 3,
+              "answer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "cl_por",
+      "audience": "cliente",
+      "revision": "bf72500a69fb8d3855fd035e7242b7b147c18e24e80c1b1e6bf25607a7ba412f",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "cp1",
+          "quiz": []
+        },
+        {
+          "id": "cp2",
+          "quiz": []
+        },
+        {
+          "id": "cp3",
+          "quiz": []
+        },
+        {
+          "id": "cp3b",
+          "quiz": []
+        },
+        {
+          "id": "cp4",
+          "quiz": [
+            {
+              "options": 4,
+              "answer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "cl_hall",
+      "audience": "cliente",
+      "revision": "4c9e4fd303ddd04ca8413e8cbe535f0f913f9fb46ed3b7e1eac4ef4601ac33bd",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "ch1",
+          "quiz": []
+        },
+        {
+          "id": "ch2",
+          "quiz": []
+        },
+        {
+          "id": "ch3",
+          "quiz": [
+            {
+              "options": 4,
+              "answer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "cl_soporte",
+      "audience": "cliente",
+      "revision": "42bd08336fe45b8e813fbbfbce78ee647bc2cffed90449ce0a9f4b0a8667733b",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "cls1",
+          "quiz": []
+        },
+        {
+          "id": "cls2",
+          "quiz": [
+            {
+              "options": 4,
+              "answer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "cl_roi",
+      "audience": "cliente",
+      "revision": "8b3dd7f2980c25c96e10cbd1f1929a3bc71e93d23d25d56e92cdfadf5f8d7ebe",
+      "scope": {},
+      "technicalOnly": false,
+      "lessons": [
+        {
+          "id": "cr1",
+          "quiz": []
+        },
+        {
+          "id": "cr2",
+          "quiz": []
+        },
+        {
+          "id": "cr3",
+          "quiz": []
+        },
+        {
+          "id": "cr4",
+          "quiz": [
+            {
+              "options": 4,
+              "answer": 1
+            },
+            {
+              "options": 4,
+              "answer": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
