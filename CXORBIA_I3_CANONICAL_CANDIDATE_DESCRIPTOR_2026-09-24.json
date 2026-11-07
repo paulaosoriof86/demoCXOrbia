@@ -7,9 +7,9 @@
   "productSourceSha": "5a906e4a9aa79991924580eb54103797d311d930",
   "productTreeAuthority": "70cecc344f1b8c243f89459b0c7b79f9641dd864",
   "predecessorProductSourceSha": "439a688be58b23c93ac4e99a91da78b4c3cf81fa",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V571_2026-11-06.json",
-  "findingsLedgerExpectedGitBlob": "b4f5d5e51565efc74121983481aa7ce0c7633d01",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261106-V256.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V572_2026-11-06.json",
+  "findingsLedgerExpectedGitBlob": "d7af1fcab24edec8330d306eafbdb4826606bb90",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261106-V257.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -744,11 +744,12 @@
     "hrWrites": 0,
     "production": false,
     "controlHeadAtDeploy": "de0b9d8275226c21a836998ed6de333f62c5cd11",
-    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM313_EXACT_DEV_RUN2248_20261106.json",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM313_EXACT_DEV_RUN2248_CONTROL_RECEIPT_V2_20261106.json",
     "humanAcceptance": "PENDING",
     "shopperD06E2E": "PENDING_INDEPENDENT_AUTHENTICATED_SHOPPER",
     "fullTaskClosed": false,
-    "materializationReceiptBlob": "4c14dee3af77ea18daf68e7792314e677673b6fa"
+    "materializationReceiptBlob": "fb7ba2f482632d166ffdb9ca7a5541a1f6f1ff58",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62"
   },
   "lastFocalAttempt": {
     "runId": 36198284266,
@@ -2954,7 +2955,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "69234ef9ff1e60d4b7afb72915738f3c57488d54",
+  "moduleTruthExpectedGitBlob": "a3c592d65d5d675051d12f541e22e35203c347f6",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12794,14 +12795,14 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/c1d5afaa3b2c1314",
     "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794009159351000",
     "hrRevision": "32d9416f76ba00d1b766ab8b4276ef74827b62f3c200ef704ba40a511a478b68",
-    "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM313_EXACT_DEV_RUN2248_20261106.json",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM313_EXACT_DEV_RUN2248_CONTROL_RECEIPT_V2_20261106.json",
     "liveE2e": "ADMIN_SCOPED_CHROME_READONLY_PASS_SHOPPER_D06_PENDING",
     "humanAcceptance": "PENDING",
     "gate20": "HOLD",
     "gate21": "HOLD",
     "production": false,
     "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
-    "receiptBlob": "4c14dee3af77ea18daf68e7792314e677673b6fa"
+    "receiptBlob": "fb7ba2f482632d166ffdb9ca7a5541a1f6f1ff58"
   },
   "i3CircuitBreakerAddendum": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-10-21_I3_ANTI_BUCLE_CIERRE_FROZEN.md",
   "i3CircuitBreakerLock": "CXORBIA_I3_ANTI_BUCLE_CIERRE_EXECUTION_LOCK_2026-10-21.json",
@@ -18035,7 +18036,7 @@
     },
     "previousState": "P0_PROVEN_PENDING_DEV_MATERIALIZATION",
     "controlResolution": "DEPLOYED_EXACT_RUN2248_42314369471",
-    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM313_EXACT_DEV_RUN2248_20261106.json"
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM313_EXACT_DEV_RUN2248_CONTROL_RECEIPT_V2_20261106.json"
   },
   "controlGuardRemediation": {
     "failedRunId": 42319715499,
@@ -18045,6 +18046,11 @@
     "currentMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261106-V256.json",
     "currentLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V571_2026-11-06.json",
     "shopperE2E": "PENDING",
-    "production": false
+    "production": false,
+    "run2250Failure": "RELEASE_COMPOSITION_FAILURE:POSTDEPLOY_SEAL_MISMATCH:receipt.firestoreRuleset",
+    "correctionReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM313_EXACT_DEV_RUN2248_CONTROL_RECEIPT_V2_20261106.json",
+    "correctionReceiptBlob": "fb7ba2f482632d166ffdb9ca7a5541a1f6f1ff58",
+    "correctedMatrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261106-V257.json",
+    "correctedLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V572_2026-11-06.json"
   }
 }
