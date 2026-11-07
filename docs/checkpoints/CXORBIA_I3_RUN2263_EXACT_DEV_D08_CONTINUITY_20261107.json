@@ -1,0 +1,365 @@
+{
+  "schemaVersion": "cxorbia.i3.run2263.exact-dev-continuity.v1",
+  "iteration": "I3",
+  "status": "HOLD",
+  "observedAt": "2026-11-07T22:35:58Z",
+  "decision": "PASS_RUN2263_EXACT_DEV_AND_READ_ONLY_CHROME_D08_HOLD_INTEGRAL_PHASE_A",
+  "source": {
+    "sha": "6f87531de198186ad8277564beb380cf94a09488",
+    "tree": "1f350fab2ea41504434a1c4712282b2bbbb05ae9"
+  },
+  "predecessor": {
+    "sourceSha": "e36a456e07a3b107cb7f75a0c53ffae029eb6de4",
+    "sourceTree": "4ec6c431a2e6ae1ea213b37d7c6782f33828753b",
+    "runId": 42411020610,
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2259_EXACT_DEV_CONTINUITY_RECONCILIATION_20261107.json"
+  },
+  "sourceCi": {
+    "path": "docs/checkpoints/CXORBIA_I3_D08_COMBINED_SOURCE_CI_RUN2262_20261107.json",
+    "gitBlob": "54470e486b70570fce4d547f37ffbd5ad7102b8d",
+    "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
+    "sourceTree": "1f350fab2ea41504434a1c4712282b2bbbb05ae9",
+    "runId": 42420173152,
+    "runNumber": 2262,
+    "sourceTestsPass": 27,
+    "sourceTestsFail": 0,
+    "decision": "PASS_VRM154_156_FRONTEND_SOURCE_CONTRACT_AND_D08_27_OF_27",
+    "production": false
+  },
+  "run": {
+    "id": 42420769697,
+    "number": 2263,
+    "conclusion": "success",
+    "authorityJobId": 128548506903,
+    "materializationJobId": 128548643285,
+    "jobs": {
+      "success": 2,
+      "skipped": 101
+    },
+    "workflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+  },
+  "materialization": {
+    "state": "PASS_EXACT_DEV_D08_MATERIALIZATION_REAL_ROLE_E2E_PENDING",
+    "builds": 1,
+    "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
+    "hostingDeploys": 1,
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794090736565000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/146d4bbaf0865f39",
+    "hrRevision": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+    "production": false,
+    "runtimeDeploys": 1,
+    "runtimeDigest": "sha256:2fd716f9d20044473aba814fd8c89920a813d3405e0e9d7044b248658f3eb23e",
+    "runtimeRevision": "cxorbia-live-hr-dev-00357-77z",
+    "scenarioDimensionsProven": true,
+    "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
+    "sourceTree": "1f350fab2ea41504434a1c4712282b2bbbb05ae9",
+    "storageRulesDeploys": 0,
+    "scopeFinding": "VRM-192",
+    "runId": 42420769697,
+    "runNumber": 2263,
+    "jobId": 128548643285,
+    "controlHeadAtDeploy": "77a20f2cdbb13be29879e6e51df697411b034a66",
+    "artifactId": 13593895967,
+    "artifactDigest": "sha256:d5dc0a33053e9061cf8dd9fd8bcc21b5a5b8b1e5e055d85caa455538565a952a",
+    "artifactDigestType": "GITHUB_ACTIONS_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR",
+    "runtimeTrafficPercent": 100,
+    "firestoreRulesDeploys": 0,
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
+    "firestoreRulesetEvidence": "CARRY_FORWARD_UNCHANGED_CONFIG_AND_NO_RULES_DEPLOY_RUN2263",
+    "hrWrites": 0,
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2263_EXACT_DEV_D08_CONTINUITY_20261107.json",
+    "verifiedServedAssetCount": 18,
+    "providerRefreshDurationMs": 3281,
+    "humanAcceptance": "PENDING_UNCOVERED_INTEGRAL_CLAUSES",
+    "fullTaskClosed": false
+  },
+  "artifactVerification": {
+    "zipSha256": "d5dc0a33053e9061cf8dd9fd8bcc21b5a5b8b1e5e055d85caa455538565a952a",
+    "apiAndDownloadedZipMatch": true,
+    "files": 36,
+    "servedAssets": [
+      {
+        "path": "app/adapters/tya-canonical-finance-read-model-v2.js",
+        "blob": "4997010949dd8a126b058f720041fe5eeb04f1bd",
+        "expected": "4997010949dd8a126b058f720041fe5eeb04f1bd",
+        "exact": true
+      },
+      {
+        "path": "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "blob": "99bde07ca213541bdec920606303621bdfeb406c",
+        "expected": "99bde07ca213541bdec920606303621bdfeb406c",
+        "exact": true
+      },
+      {
+        "path": "app/adapters/tya-cumulative-read-model-v2.js",
+        "blob": "11425e47e54ca955056dc6b891235a5bdcdbaf4d",
+        "expected": "11425e47e54ca955056dc6b891235a5bdcdbaf4d",
+        "exact": true
+      },
+      {
+        "path": "app/adapters/tya-live-source-inplace-apply.js",
+        "blob": "45e1cd1b8c01d6276be2c256d5b99baa93e90252",
+        "expected": "45e1cd1b8c01d6276be2c256d5b99baa93e90252",
+        "exact": true
+      },
+      {
+        "path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "blob": "9646c36c89917d7e910f1a4dcfcfa5c6ed44a6a9",
+        "expected": "9646c36c89917d7e910f1a4dcfcfa5c6ed44a6a9",
+        "exact": true
+      },
+      {
+        "path": "app/core/data.js",
+        "blob": "4457a3b07b11a2b57fad56aebce4a7046400dbed",
+        "expected": "4457a3b07b11a2b57fad56aebce4a7046400dbed",
+        "exact": true
+      },
+      {
+        "path": "app/core/router.js",
+        "blob": "d7afbf30cdfe17b5a6a968f46883625e7d56a9f6",
+        "expected": "d7afbf30cdfe17b5a6a968f46883625e7d56a9f6",
+        "exact": true
+      },
+      {
+        "path": "app/core/tya-phase-a-source-safe-preview.js",
+        "blob": "86753923856a8a60099f5c12b47ba3da30b9811b",
+        "exact": true,
+        "expected": "86753923856a8a60099f5c12b47ba3da30b9811b",
+        "authority": "EXACT_PRODUCT_GIT_BLOB_OUTSIDE_MATRIX_OWNER_INVENTORY"
+      },
+      {
+        "path": "app/data/tya-hr-source-safe-periods.js",
+        "blob": "19bf51061c0318ac0ae3a24c98c31ef26ccc23ab",
+        "exact": true,
+        "expected": "19bf51061c0318ac0ae3a24c98c31ef26ccc23ab",
+        "authority": "EXACT_PRODUCT_GIT_BLOB_OUTSIDE_MATRIX_OWNER_INVENTORY"
+      },
+      {
+        "path": "app/modules/academia.js",
+        "blob": "4c3e7aa2228899af24011cb20597892bcd1f37e4",
+        "expected": "4c3e7aa2228899af24011cb20597892bcd1f37e4",
+        "exact": true
+      },
+      {
+        "path": "app/modules/beneficios.js",
+        "blob": "c7060562558f307b9b037e929a6fa7e179db1826",
+        "expected": "c7060562558f307b9b037e929a6fa7e179db1826",
+        "exact": true
+      },
+      {
+        "path": "app/modules/cert.js",
+        "blob": "2b96488b737108031f9eb69631000775c158fb49",
+        "expected": "2b96488b737108031f9eb69631000775c158fb49",
+        "exact": true
+      },
+      {
+        "path": "app/modules/midia.js",
+        "blob": "7e6403b30ed23851b8475493ab79e94b7d392706",
+        "expected": "7e6403b30ed23851b8475493ab79e94b7d392706",
+        "exact": true
+      },
+      {
+        "path": "app/modules/misvisitas.js",
+        "blob": "0fdee0f12ff2c068b237f352385f8c5dfdb65502",
+        "expected": "0fdee0f12ff2c068b237f352385f8c5dfdb65502",
+        "exact": true
+      },
+      {
+        "path": "app/modules/postulaciones.js",
+        "blob": "13acd6982be68e945733f0048c1aa8a911bdc219",
+        "expected": "13acd6982be68e945733f0048c1aa8a911bdc219",
+        "exact": true
+      },
+      {
+        "path": "app/modules/shoppers.js",
+        "blob": "0b6585b25eba379b27c938f388dc698a4afb41cf",
+        "expected": "0b6585b25eba379b27c938f388dc698a4afb41cf",
+        "exact": true
+      },
+      {
+        "path": "app/modules/visita-detalle.js",
+        "blob": "1f2178bbfa2c6aeb2b11f78b645f4922cfc32876",
+        "expected": "1f2178bbfa2c6aeb2b11f78b645f4922cfc32876",
+        "exact": true
+      },
+      {
+        "path": "app/styles/layout.css",
+        "blob": "6f5b9bb04fbe4f21660e59aae6eb3d92e2a6bf7d",
+        "expected": "6f5b9bb04fbe4f21660e59aae6eb3d92e2a6bf7d",
+        "exact": true
+      }
+    ],
+    "academia": {
+      "academiaBytes": 317092,
+      "gitBlob": "4c3e7aa2228899af24011cb20597892bcd1f37e4",
+      "sha256": "438eade6566bd3b2b9fca24f029334b471779e3d62bdc2fb05d3b8c0d1b5a99b"
+    },
+    "sourceFixtureAssetsOutsideMatrixOwnerInventory": 2
+  },
+  "chrome": {
+    "state": "PASS_REAL_CHROME_SHOPPER_READ_ONLY_CATALOG_AND_NO_AUTO_COMPLETION",
+    "observedAt": "2026-11-07T22:35:58Z",
+    "browser": "Chrome connected extension ID0",
+    "environment": "DEV",
+    "role": "Shopper",
+    "visibleIdentity": "Stiven López",
+    "country": "GT",
+    "project": "Cinépolis",
+    "period": "2026-11",
+    "sessionType": "EXISTING_AUTH_SESSION_RESTORED_NOT_FRESH_CREDENTIAL_LOGIN",
+    "courses": 7,
+    "lessons": 27,
+    "completedBefore": 0,
+    "completedAfterOpenAndBack": 0,
+    "courseOpened": "Tu ruta operativa: de la oferta al pago",
+    "explicitCompletionButton": "Guardar avance y continuar →",
+    "completionButtonClicked": false,
+    "completionCommandsSubmitted": 0,
+    "examsSubmitted": 0,
+    "realCourseMutations": 0,
+    "globalPerformanceProof": false,
+    "ownProgressDurableAckE2E": "NOT_EXECUTED",
+    "adminAndClientE2E": "PENDING",
+    "domSnapshot": "- complementary:\n  - generic: CXOrbia\n  - generic: Field Operations Platform\n  - generic: Proyecto\n  - combobox:\n    - option \"Cinépolis\" [selected]\n  - generic: Periodo\n  - combobox:\n    - option \"JUN 2025\"\n    - option \"JUL 2025\"\n    - option \"AGO 2025\"\n    - option \"SEP 2025\"\n    - option \"OCT 2025\"\n    - option \"NOV 2025\"\n    - option \"DIC 2025\"\n    - option \"ENE 2026\"\n    - option \"FEB 2026\"\n    - option \"MAR 2026\"\n    - option \"ABR 2026\"\n    - option \"MAY 2026\"\n    - option \"JUN 2026\"\n    - option \"JUL 2026\"\n    - option \"AGO 2026\"\n    - option \"SEP 2026\"\n    - option \"OCT 2026\"\n    - option \"NOV 2026\" [selected]\n  - navigation:\n    - generic: Operación\n    - generic: ⌄\n    - button \"Mi Día\":\n      - generic: ☀️\n      - generic: Mi Día\n    - button \"Mi Perfil\":\n      - generic: 👤\n      - generic: Mi Perfil\n    - button \"Visitas Disponibles\":\n      - generic: 📋\n      - generic: Visitas Disponibles\n    - button \"Reservas & Asignación\":\n      - generic: 🙋\n      - generic: Reservas & Asignación\n    - button \"Mis Visitas\":\n      - generic: 🧭\n      - generic: Mis Visitas\n    - generic: Capacitación & IA\n    - generic: ⌄\n    - button \"Academia\":\n      - generic: 📚\n      - generic: Academia\n    - button \"Certificación\":\n      - generic: 🏆\n      - generic: Certificación\n    - button \"Recursos del proyecto\":\n      - generic: 📎\n      - generic: Recursos del proyecto\n    - button \"Soporte IA\":\n      - generic: 🤖\n      - generic: Soporte IA\n    - button \"Novedades\":\n      - generic: 📣\n      - generic: Novedades\n    - generic: Mis Beneficios\n    - button \"Mis Beneficios\":\n      - generic: 💰\n      - generic: Mis Beneficios\n    - button \"Mis Reportes\":\n      - generic: 📑\n      - generic: Mis Reportes\n  - generic: SL\n  - generic \"Stiven López\"\n  - 'generic \"Shopper · 🇬🇹 Guatemala · 🌎 alcance multipaís: GT\"': Shopper · 🇬🇹 Guatemala · 🌎 GT\n  - button \"Cerrar sesión\"\n- text: Capacitación & IA\n- generic: /\n- generic: Academia\n- img \"cliente\"\n- button \"Soporte\":\n  - generic: 🆘\n- button \"Correo\":\n  - generic: ✉️\n- button \"Novedades\":\n  - generic: 🔔\n- main:\n  - status:\n    - generic: \"Bienvenido: revisa los datos de tu perfil\"\n    - generic: Tu expediente actual se conserva. Confirma o actualiza tus datos personales, contacto y pago. Puedes ingresar aunque no tengas teléfono registrado; los datos faltantes se pueden completar después.\n    - button \"Revisar mis datos\"\n    - button \"Ahora no\"\n  - generic: 🎓 Academia CXOrbia Capacitación, certificaciones y recursos\n  - button \"📖 Manuales\"\n  - generic: \"7\"\n  - generic: Cursos\n  - generic: 0 completados\n  - generic: 0%\n  - generic: Mi avance\n  - generic: guardado por persona\n  - generic: \"0\"\n  - generic: Certificaciones\n  - generic: obtenidas\n  - generic: \"27\"\n  - generic: Lecciones\n  - generic: 0 completadas\n  - button \"Todos\"\n  - button \"Inducción\"\n  - button \"Operación\"\n  - generic: 🧭 Inducción\n  - generic: \"Tu ruta operativa: de la oferta al pago\"\n  - generic: \"Cada pantalla que usarás, en orden: agendar, reprogramar, realizar, cuestionario, beneficios y privacidad.\"\n  - generic: 5 lecciones · 45 min\n  - generic: 🚀 Comenzar\n  - generic: 🕵️ Inducción\n  - generic: Inducción del evaluador incógnito\n  - generic: Tu rol, las reglas de oro, el anonimato y cómo crecer profesionalmente.\n  - generic: 4 lecciones · 60 min · 🏅 certifica\n  - generic: 🚀 Comenzar\n  - generic: 📋 Operación\n  - generic: \"El cuestionario: llenarlo bien\"\n  - generic: Tipos de pregunta, evidencias requeridas, tiempos, score y errores comunes.\n  - generic: 4 lecciones · 30 min\n  - generic: 🚀 Comenzar\n  - generic: 🏅 Inducción\n  - generic: \"Certificación: prepárate y aprueba\"\n  - generic: Qué evalúa el examen, cómo prepararte, qué pasa si no apruebas y cómo recertificarte.\n  - generic: 3 lecciones · 20 min\n  - generic: 🚀 Comenzar\n  - generic: 💬 Operación\n  - generic: Soporte, pagos y mis beneficios\n  - generic: Cómo pedir ayuda, interpretar tus beneficios, cuándo y cómo te pagan.\n  - generic: 3 lecciones · 20 min\n  - generic: 🚀 Comenzar\n  - generic: 🎓 Inducción\n  - generic: \"Ser mystery shopper: la profesión\"\n  - generic: Qué es realmente el mystery shopping, tipos de programa, ética, y cómo convertirlo en un ingreso serio.\n  - generic: 5 lecciones · 35 min\n  - generic: 🚀 Comenzar\n  - generic: 🗺️ Inducción\n  - generic: \"Guía de tu portal: cada módulo, beneficio y cómo usarlo\"\n  - generic: \"Los 11 módulos de tu app, uno por uno: para qué existe, qué pasa si no lo usas, y cómo se usa paso a paso.\"\n  - generic: 3 lecciones · 75 min\n  - generic: 🚀 Comenzar"
+  },
+  "acceptedClausesPreserved": [
+    {
+      "task": "D03",
+      "evidencePath": "CXORBIA_I3_D03_LIVE_FRESH_15Q_RUN1778_2026-10-17.json",
+      "gitBlob": "450209cdc91f5264a1d9df304d886bf6fc615d72"
+    },
+    {
+      "task": "D04/D05",
+      "evidencePath": "docs/checkpoints/CXORBIA_I3_D05_FLEX_OPTIONS_QA_RUN42277757800_20261106.json",
+      "gitBlob": "9b83f3639956e40d436814f12209506a9fd59b1c"
+    },
+    {
+      "task": "D06",
+      "evidencePath": "docs/checkpoints/CXORBIA_I3_D06_AUTHORIZED_ATTEMPTS_CHROME_E2E_20261106.json",
+      "gitBlob": "478cf7be22694b47e0120c7ed49acf61365e2b37"
+    },
+    {
+      "task": "D07",
+      "evidencePath": "docs/checkpoints/CXORBIA_I3_SHOPPER_D06_D07_B10_CHROME_READBACK_20261106.json",
+      "gitBlob": "1c9666a983ab80df5c612c18ff8cb479b122b7e9"
+    },
+    {
+      "task": "R20/recertification",
+      "evidencePath": "docs/checkpoints/CXORBIA_I3_D06_G03_VRM134_FOCAL_ADJUDICATION_20261106.json",
+      "gitBlob": "b69307a0317ae472ce4247face6ab2d5470db81b"
+    },
+    {
+      "task": "Identity/G05/C04-C05",
+      "evidencePath": "docs/checkpoints/CXORBIA_I3_MULTIFRONT_DECISIONS_FROZEN_20261107.json",
+      "gitBlob": "7f11371be6362b40832fdce889fafeefb34ace83"
+    }
+  ],
+  "acceptedF12NoFabrication": {
+    "task": "E04/F12",
+    "state": "LIVE_E2E_PASS_FOCAL_HUMAN_PENDING",
+    "scope": "Absent benchmark source shows unavailable, no synthetic numbers; do not repeat absent affected drift.",
+    "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
+    "receiptBlob": "ab41f388e2cb32456c89367aca1737ff25e42853",
+    "runId": 39172645706,
+    "ownersUnchanged": {
+      "app/core/cliente-data.js": "ed808881dc9b1026244213bb531a5d160b766078",
+      "app/modules/cliente.js": "c3802b25e05851d1abff99adab793d323b52b0f0",
+      "app/modules/cliente-extra.js": "ca3d2d6b356b3d942ebbb2076625ce0b000e4b64",
+      "app/modules/cliente-insights.js": "4fca3b9c25231ef025c2d421c9ce07f2c2124a30"
+    }
+  },
+  "unmatchedDomainResiduals": {
+    "auth-protected-data-runtime": {
+      "pending": "Only three RUN2222 login exceptions require independent Auth proof, plus uncovered A08 role denials and integral acceptance; do not rerun population census or refusion.",
+      "preserved": "RUN2216 Admin/Shopper GT/HN20/20; RUN2222 239 memberships,773/773 HR assignments,Wilson HN18visits14periods; R20 ordinary login."
+    },
+    "base-router-shell-cache": {
+      "pending": "VRM134 comparable cold/warm initial load in relevant roles and only uncovered navigation/cache scenarios; integral acceptance.",
+      "preserved": "R20 ordinary credential login/logout/relogin and accepted session guards; restored-session samples are not global cold-login/p95 proof."
+    },
+    "benefits": {
+      "pending": "C09/C10 own benefit detail/CSV/support parity with Admin by row,currency,cut and another session; scoped historical Q7300/application and genuinely ambiguous September only.",
+      "preserved": "Accepted historical July/August cuts and existing finance proofs; no source rebuild prerequisite."
+    },
+    "canonical-hr-state-adapters": {
+      "pending": "Only uncovered B11/B14 independent HR revision/role transitions and global load; D08 protected own-progress read real role scope.",
+      "preserved": "G05 sourceQA113/113,exact source/provider readback,existing HR projections; no reimport."
+    },
+    "certifications": {
+      "pending": "D06 only uncovered eligible15Q Shopper path,two eligible-bank selector,affected frontend recertification,new-attempt history after fresh ordinary credential login,original required flag; D08 real own-progress/content ACK and separate Admin/Shopper/Cliente sessions; integral acceptance.",
+      "preserved": "D03 fresh15questions; D05 editor15/15/version1to2/lifecycle; D06 authorized original8Q fail/pass/feedback8/8/threeIDs/OCT+NOV/reload/newdocument; no new attempts/reset/pending-bank publication without bounded authority."
+    },
+    "client-portal-reportkit": {
+      "pending": "F09 durable NPS/notes/meetings with ACK/another session; independent HR KPI parity and only uncovered filters/drilldown/role/visual clauses.",
+      "preserved": "E04/F12 no-fabricated-benchmark-when-source-absent RUN1797 and all four identical owners; remove this case from repeated tests."
+    },
+    "core-config-data-router-permissions": {
+      "pending": "Only uncovered A08/E05 role/project/operation configurable positive/negative cases and durable self-administration; integral acceptance.",
+      "preserved": "Accepted role preview and source/config proofs; not an instruction for broad permissions rewrite."
+    },
+    "dashboard-operation": {
+      "pending": "B11 same independent HR revision keys/totals across MiDia,Dashboard,Visits,HR and Reports; only uncovered actions/messages and acceptance.",
+      "preserved": "Already read real GT/HN November counters and existing R01/R09/R12 source/DEV evidence."
+    },
+    "documents-resources": {
+      "pending": "D07 only uncovered document create/metadata/version/safe-retirement lifecycle,foreign-document denial,durable readACK,visit/revision binding and integral acceptance.",
+      "preserved": "Original authenticated7pagePDF; Admin+Shopper/read/download and OCTpages1,2,7/NOVpage1; TXT lifecycle is separate evidence,not proof of allPDF lifecycle; no repeat PDF viewing."
+    },
+    "finance-core-liquidation-costs": {
+      "pending": "C03 locate existing Q7300 and its application or exact absence; uncovered C06/C07/C09/C10 roles/session cycle; C08 single genuinely ambiguous September exception list and integral acceptance.",
+      "preserved": "C04/C05 13/13 ACK/readback/idempotent replay/cleanup/current HR parity; accepted July/August cuts; evidence gap is not automatically a defect."
+    },
+    "human-runtime-domain-consistency": {
+      "pending": "Only uncovered B7/E02/E03/E11 state/message/action consistency and affected visual acceptance.",
+      "preserved": "VRM259/RUN1537 exact DEV live evidence; no rebuild or general re-audit."
+    },
+    "persistence-command-ack-boundary": {
+      "pending": "D08 current combined dispatch/progress source and exact DEV are technical proof only; real own-learner ACK/readback and separate role/session evidence remain.",
+      "preserved": "Other command ACK/replay and financial/HR accepted evidence; no blanket retesting."
+    },
+    "projects-periods-hr-source-wizard-multiproject": {
+      "pending": "Only uncovered E05/A08/I3-01to03 projectA/B independence,internal/external routeSource and scoped roles/configuration acceptance.",
+      "preserved": "VRM286 Admin748/748visits17/17periods and VRM310/source display PASS; no repeated configuration display."
+    },
+    "questionnaire-shopper": {
+      "pending": "B10 authorized Shopper provider URL from project-period-visit,coherent questionnaire version and actual submitted state; integral acceptance without sending a fabricated real questionnaire.",
+      "preserved": "Exact served asset and canonical routing/configuration source QA."
+    },
+    "shoppers-mi-visitas-profile": {
+      "pending": "Uncovered A07/A08/A09 profile completeness/edit/isolation and only three exact Auth diagnostic exceptions; integral acceptance.",
+      "preserved": "Stiven10/10,periods and ordinary login; keepersGT/HN andWilson; no individual/month refusion or repeat."
+    },
+    "visits-review-postulations-reservations": {
+      "pending": "Only uncovered B05-B09/B11/B13/B14 transitions with correct actor,remote HR ACK when applicable,notification,no duplicates and retained history; integral acceptance.",
+      "preserved": "VRM301/RUN2114/RUN2119, RUN2216 two-keeper20/20,acceptedR05/R06; no repeated sourceQA/DEV."
+    }
+  },
+  "moduleTruth": {
+    "modules": 21,
+    "sourceFiles": 159,
+    "ownerFiles": 107,
+    "matchPreserved": 5,
+    "newIntegralMatches": 0,
+    "phaseAComplete": false
+  },
+  "sourceDefectDisposition": {
+    "d08Dispatch": "SOURCE_FIXED_CI_PASS_EXACT_DEV_MATERIALIZED",
+    "d08OwnProgress": "SOURCE_FIXED_CI_PASS_EXACT_DEV_MATERIALIZED_READ_ONLY_UI_PASS_REAL_WRITE_ACK_SESSION_E2E_PENDING",
+    "vrm134": "GLOBAL_COLD_WARM_ROLE_PERFORMANCE_HOLD"
+  },
+  "preservation": {
+    "production": "DO_NOT_TOUCH",
+    "authorizationI4": false,
+    "sourceChangesAfterCI": 0,
+    "newWorkflow": 0,
+    "newCandidate": 0,
+    "realLearnerCompletionCommands": 0,
+    "realExamAttempts": 0,
+    "realBankWrites": 0,
+    "hrWrites": 0,
+    "paymentWrites": 0,
+    "authIdentityWrites": 0,
+    "reimports": 0
+  },
+  "next": "Do not rebuild or redeploy this source. Synchronize all active controls to RUN2263 and continue only uncovered functional role/session/ACK clauses; preserve accepted D03-D07,identities,finance and F12. Integral certification remains5/21; Gate20/Gate21 HOLD."
+}
