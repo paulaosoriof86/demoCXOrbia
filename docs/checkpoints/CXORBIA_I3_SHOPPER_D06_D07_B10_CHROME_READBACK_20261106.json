@@ -1,0 +1,150 @@
+{
+  "schemaVersion": "cxorbia.i3.shopper-chrome-readonly-readback.v1",
+  "recordedAtUtc": "2026-11-07T01:11:37.768Z",
+  "userLocalDate": "2026-11-06",
+  "iteration": "I3",
+  "state": "HOLD",
+  "decision": "FOCAL_READONLY_UI_CLAUSES_OBSERVED_NOT_FULL_D06_D07_B10_CERTIFICATION",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedParentSha": "20a9362ddf410d76246fdaf93db8b22a053000ad",
+  "allowedControlPaths": [
+    "docs/checkpoints/CXORBIA_I3_SHOPPER_D06_D07_B10_CHROME_READBACK_20261106.json",
+    "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "CXORBIA_RECOVERY_EXECUTION_CURRENT.json"
+  ],
+  "source": {
+    "sha": "5a906e4a9aa79991924580eb54103797d311d930",
+    "tree": "70cecc344f1b8c243f89459b0c7b79f9641dd864"
+  },
+  "servingAuthority": {
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM313_EXACT_DEV_RUN2248_CONTROL_RECEIPT_V2_20261106.json",
+    "receiptBlob": "fb7ba2f482632d166ffdb9ca7a5541a1f6f1ff58",
+    "runId": 42314369471,
+    "runNumber": 2248,
+    "runtimeRevision": "cxorbia-live-hr-dev-00354-lpb",
+    "runtimeDigest": "sha256:737d2ef53671a937fcaf875ef36e62cc0412908d3e46c371cc3add6eb9e599ad",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/c1d5afaa3b2c1314",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794009159351000",
+    "hrRevision": "32d9416f76ba00d1b766ab8b4276ef74827b62f3c200ef704ba40a511a478b68",
+    "scope": "INHERITED_EXACT_RUN2248_READBACK_NO_NEW_BYTE_FETCH_OR_DEPLOY_IN_THIS_CHECK"
+  },
+  "browser": {
+    "family": "Chrome",
+    "origin": "https://cxorbia-backend-dev.web.app",
+    "roleObserved": "Shopper",
+    "countryObserved": "GT",
+    "projectObserved": "Cinepolis",
+    "periodsObserved": [
+      "2026-10",
+      "2026-11"
+    ],
+    "loginActor": "USER",
+    "agentEnteredCredentials": false,
+    "credentialLoginGate": "NOT_OBSERVED_BY_AGENT",
+    "identity": "USER_SELECTED_EXISTING_SHOPPER_NO_PUBLIC_PERSONAL_IDENTIFIERS"
+  },
+  "observations": [
+    {
+      "id": "SESSION_RELOAD",
+      "status": "PASS_FOCAL_UI",
+      "expected": "The user's authenticated Shopper session survives a normal page reload.",
+      "observed": "Same visible Shopper identity and GT scope restored on Mi Dia in NOV2026; no signout or password entry by agent."
+    },
+    {
+      "id": "D06_OCT_NOV_BANK",
+      "status": "PASS_FOCAL_UI",
+      "expected": "Published project exam remains readable across October and November.",
+      "observed": "One visible exam form with 8 questions and 80 percent threshold in OCT and NOV; no pending-bank selector exposed; no answers entered."
+    },
+    {
+      "id": "D06_PRIOR_ATTEMPT_PRESERVED",
+      "status": "PASS_FOCAL_UI_NOT_NEW_REMOTE_WRITE",
+      "expected": "Existing project attempt stays visible across period changes and reload.",
+      "observed": "Same one existing non-passing attempt remains visible in OCT and NOV and after reload; UI displays remote ACK and OCT-period origin. No new attempt or independent server database readback performed.",
+      "newAttemptCount": 0
+    },
+    {
+      "id": "D06_COMMON_ELIGIBILITY",
+      "status": "HOLD_CAUSE_NOT_YET_PROVEN",
+      "observed": "Mi Dia and Mis Visitas mark project certification completed, while Certificacion shows an exam form and prior non-passing attempt without a current-validity card. Contrast persists after normal reload.",
+      "notYetKnown": [
+        "Current bank required flag",
+        "Whether both screens resolve identical historical profile evidence"
+      ],
+      "notInferred": [
+        "A failed attempt invalidates an earlier approval",
+        "A new identity merge is needed",
+        "P0_PROVEN owner cause"
+      ],
+      "nextReadOnlyDiscriminator": "Read existing Admin Requisito y porcentaje minimo without saving, then compare the project-scoped eligibility sources."
+    },
+    {
+      "id": "D07_PDF_SHOPPER",
+      "status": "PASS_FOCAL_READER_ONLY",
+      "expected": "Real PDF opens under Shopper in both periods and pagination works.",
+      "observed": "Instructivo Shopper PDF is visible in OCT page1, page2 and page7; next control disabled at page7 of7. NOV opens page1 of7. Captures inspected internally.",
+      "octoberPagesVisuallyInspected": [
+        1,
+        2,
+        7
+      ],
+      "novemberPagesVisuallyInspected": [
+        1
+      ],
+      "notCertified": [
+        "Every pixel of every PDF page",
+        "Upload/version/retirement lifecycle",
+        "Remote reading acknowledgment",
+        "All other permissions and resource clauses"
+      ]
+    },
+    {
+      "id": "B10_ALREADY_COMPLETED_QUESTIONNAIRE",
+      "status": "PASS_FOCAL_DISPLAY_CONSISTENCY_ONLY",
+      "expected": "Existing OCT questionnaire state agrees between Admin evidence and current Shopper UI.",
+      "observed": "Selected OCT visit is marked questionnaire completed, pending review/submit. No form was reopened, no answer was entered, no submit action performed.",
+      "notEquivalentTo": "HR_SUBMITTED_OR_FULL_B10_PASS"
+    },
+    {
+      "id": "CANONICAL_PROFILE_HISTORY",
+      "status": "PASS_FOCAL_UI",
+      "expected": "Current profile retains canonical visit history.",
+      "observed": "Mi Perfil displays 10 associated visits across its history, not 10 exclusively in October.",
+      "visibleCount": 10
+    }
+  ],
+  "readOnlyLimits": {
+    "applicationBusinessWrites": 0,
+    "certificationAttemptsCreated": 0,
+    "questionnaireSubmissions": 0,
+    "visitsMutated": 0,
+    "hrWrites": 0,
+    "financeWrites": 0,
+    "authConfigurationChanges": 0,
+    "agentAdminSignouts": 0,
+    "builds": 0,
+    "deploys": 0,
+    "rulesChanges": 0,
+    "productionChanged": false
+  },
+  "remaining": {
+    "d06DurableAttemptLifecycle": "PENDING_EXPLICIT_TEST_WRITE_AUTHORIZATION_AND_ACK_FEEDBACK_READBACK",
+    "d06Required15QuestionAcceptance": "PENDING_NOT_REPLACED_BY_PUBLISHED8_QUESTION_BANK",
+    "d06EligibilityConsistency": "HOLD_CONFIGURATION_AND_PROFILE_EVIDENCE_DISCRIMINATION",
+    "d07": "READER_FOCAL_PASS_DOES_NOT_CLOSE_ALL_RESOURCE_CLAUSES",
+    "vrm134": "EXISTING_PERFORMANCE_P0_OPEN_NO_NEW_EXACT_LOAD_TIME_CLAIM",
+    "g03": "INDEPENDENT_HR_FINANZAS_HISTORICAL_EVIDENCE_GAP",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "moduleMatches": 5,
+    "moduleTotal": 21,
+    "phaseAComplete": false,
+    "authorizationI4": false
+  },
+  "privacy": {
+    "screenshots": "INTERNAL_UI_INSPECTION_ONLY_NOT_PUBLICLY_UPLOADED",
+    "personalIdentifiers": "OMITTED_FROM_THIS_PUBLIC_REPOSITORY_RECEIPT"
+  },
+  "nextAction": "Continue from the authenticated Shopper session. Before new persistent attempts, obtain explicit authorization for one failing and one passing DEV-only test attempt on the original published bank; do not recertify or clone a bank to bypass eligibility. In parallel, read the required flag from Admin without saving and keep VRM134 and G03 HR/finanzas open. No production action."
+}
