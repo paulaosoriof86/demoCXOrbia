@@ -1,0 +1,148 @@
+{
+  "schemaVersion": "cxorbia.i3.multifront-decision-freeze.v1",
+  "userLocalDate": "2026-11-07",
+  "userTimezone": "America/Guatemala",
+  "iteration": "I3",
+  "state": "HOLD",
+  "authority": "Paula: congela decisiones y arranca en todos los frentes agilmente. Al final dime que mas nos falta para cerrar fase a.",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlParentSha": "aef0977c2d50873fb68a55692be53b630b6f6856",
+  "predecessorProductSourceSha": "d4e7c4b0aa711f6d4717bca69b79b7b28d8f49d7",
+  "frozenPlan": {
+    "path": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
+    "gitBlob": "a0078f7a78ff3495339e864305b075bdcd6424a2",
+    "fullPlanSha256": "83e8f2c0a6b190bab1d9dea32bf99158116f3164f419ae72e051fd791fd8576c",
+    "tasks": 82,
+    "methodologyChanged": false
+  },
+  "decisions": {
+    "singleCandidate": "Same cumulative product/repository/branch and existing source-QA/DEV/I4 path. No new workflow, branch, product or data import.",
+    "productName": "Gravicentra CX",
+    "tenantIdentity": "T&A Consultores remains the organization using the product; do not replace its legal/tenant identity with the product name.",
+    "brandScope": "Prepare product-name surfaces in parallel. Logo, palette and orbits require Brand authority; no invented final identity. Do not block Phase A on that independent design decision.",
+    "brandingActivation": "Separate from proven-P0 repair. Activate only in the same candidate before its final certification if approved and not delaying closure; otherwise first postproduction change. Never change bytes between final certification and I4.",
+    "technicalIdentityPreserved": [
+      "repository",
+      "Firebase projects",
+      "tenant IDs",
+      "project/period IDs",
+      "HR source IDs",
+      "production URL",
+      "credentials",
+      "history",
+      "certification attempts",
+      "resources",
+      "financial data"
+    ],
+    "hr": "External HR remains authoritative. Preserve all discovered periods/countries and remote revision checks; no iframe/public embedding, copied legacy database, hidden source substitution or cache-expiry relaxation.",
+    "legacy": "Functional oracle only. Reuse proven behaviors, not its data or architecture. Comparison claims require observed evidence; no unmeasured legacy-versus-DEV speed claim.",
+    "acceptance": "Preserve accepted clauses. Distinguish source QA, exact DEV, focal role E2E and full-module/human approval. 5/21 MATCH does not mean 16 new defects.",
+    "noNewBusinessWrites": "No new certification attempt, bank publish/recertification, HR transition, resource lifecycle write, payment/settlement or I4 is authorized by this technical freeze."
+  },
+  "preserved": {
+    "identity": "83/83 accepted groups plus two subsequently preserved cases; no re-fusion by month",
+    "g05": "113/113 source QA, not HR row count",
+    "finance": "C04/C05 13/13 provider ACK/readback/replay/cleanup; historical cuts through July and August paid 02-10 preserved",
+    "certification": "D03 generated15; D05 editor15; D06 original8Q authorized fail/pass,3 retained IDs,feedback8/8,OCT/NOV/reload; R20 auth and provider recertification preserved",
+    "resources": "D07 PDF visual7pages; OCT1/2/7 and NOV1 accepted; no reader regression proven"
+  },
+  "fronts": [
+    {
+      "id": "VRM134/A05-A06",
+      "action": "Implement bounded concurrent read batches at two exact owners, prove source invariants, then same canonical DEV and real load measurements.",
+      "closed": false
+    },
+    {
+      "id": "D06",
+      "action": "Only residual15Q eligible Shopper, two eligible published banks, applicable frontend recertification, new-attempt history after fresh ordinary credentials, original required-flag readback and integral acceptance.",
+      "closed": false
+    },
+    {
+      "id": "D07/D08",
+      "action": "Resource lifecycle/version/roles/read-ACK residuals and Academia capabilities; do not re-open accepted PDF rendering.",
+      "closed": false
+    },
+    {
+      "id": "B05-B11/B13-B14",
+      "action": "Only uncovered independent operation/HR/remote-ACK/no-duplicate/role/project/period scenarios, preserving focal proofs.",
+      "closed": false
+    },
+    {
+      "id": "C02-C10",
+      "action": "Residual role E2E; existing Q7300 record/application and a single genuine September exception list. Never infer missing proof means unpaid debt.",
+      "closed": false
+    },
+    {
+      "id": "E04/F12/F09",
+      "action": "Live benchmark source or honest empty; durable client collaboration and residual role coverage.",
+      "closed": false
+    },
+    {
+      "id": "G03/E01-E11/A07-A09",
+      "action": "Crosswalk current evidence to frozen scope and visual/role coverage; no blanket re-audit, no silent Phase A deferral.",
+      "closed": false
+    },
+    {
+      "id": "BRAND",
+      "action": "Freeze Gravicentra CX product-name target and tenant separation; source inventory ready, visible activation not included in the P0 patch.",
+      "closed": false
+    }
+  ],
+  "p0": {
+    "findingId": "VRM-134",
+    "classification": "FUNCTIONAL_DEFECT",
+    "priority": "P0_PROVEN",
+    "cause": "36 HR tabs read in five serial batchGet requests per reader; two readers already parallel at server level. Both exact loops reproduced without network.",
+    "observedRuntimeEvidence": {
+      "runId": 42331532313,
+      "refreshMs": 5436,
+      "liveProviderReadMs": 3246,
+      "registryIdentityMs": 3370,
+      "measurementsAreParallelNotAdditive": true
+    },
+    "controlledDifferential": {
+      "tabs": 36,
+      "requestsPerReader": 5,
+      "oldMaxConcurrency": 1,
+      "newMaxConcurrency": 2,
+      "oldResponseWaves": 5,
+      "newResponseWaves": 3,
+      "allRangesAndOrderPreserved": true,
+      "productionMillisecondsNotMeasured": true
+    },
+    "preservedBoundaries": [
+      "same8rangesPerRequest",
+      "independentHRreaders",
+      "metadata/authBeforeReads",
+      "chronologicalIdentityReduction",
+      "lastNonemptyContact",
+      "allSettledBeforeFailure",
+      "noNextWaveOnFailure",
+      "noTTLChange",
+      "noAuthOrRulesChange",
+      "noBackendServerChange"
+    ],
+    "maxBatchGetConcurrencyAcrossBothReaders": 4
+  },
+  "allowedProductFiles": [
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+    "tools/hr-source/tya-live-provider-registry-identity-dev.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs"
+  ],
+  "testScope": {
+    "focal": 14,
+    "preservation": 22,
+    "total": 36,
+    "fail": 0,
+    "network": false,
+    "realProvider": false,
+    "realData": false
+  },
+  "production": "DO_NOT_TOUCH",
+  "authorizationI4": false,
+  "phaseAComplete": false,
+  "terminalCertificationAllowed": false
+}

@@ -114,22 +114,30 @@ async function main(){
   let identityCount=0;
   if(IDENTITY_OUT){
     const identities=new Map(),identityTabs=[...monthly].sort((a,b)=>a.periodKey.localeCompare(b.periodKey)||a.country.localeCompare(b.country));
-    for(let start=0;start<identityTabs.length;start+=8){
-      const batch=identityTabs.slice(start,start+8);
-      const q=batch.map(tab=>`ranges=${encodeURIComponent(`'${tab.title.replace(/'/g,"''")}'!A1:${MAX_COL}${MAX_ROW}`)}`).join('&');
-      const data=await sheets(`/values:batchGet?majorDimension=ROWS&valueRenderOption=FORMATTED_VALUE&${q}`,auth.token);
-      (data.valueRanges||[]).forEach((vr,idx)=>{
-        const tab=batch[idx],values=Array.isArray(vr.values)?vr.values:[],header=findHeader(values);if(!header)return;
-        const shopperCol=shopperColumn(header),phoneCol=mappedColumn(header,'telefono'),mailCol=mappedColumn(header,'mail');
-        for(let r=header.index+1;r<values.length;r++){
-          const displayName=String(values[r]?.[shopperCol]??'').trim().replace(/\s+/g,' ');if(!assigned(displayName))continue;
-          const shopperId=safeHash(displayName,`shopper_${tab.country.toLowerCase()}`);if(!shopperId)continue;
-          const phone=phoneCol>=0?phoneValue(values[r]?.[phoneCol]):'',email=mailCol>=0?emailValue(values[r]?.[mailCol]):'';
-          const prior=identities.get(shopperId);
-          if(prior&&normalized(prior.displayName)!==normalized(displayName))throw new Error(`shopper_hash_identity_conflict:${shopperId}`);
-          identities.set(shopperId,{shopperId,displayName,country:tab.country,phone:phone||prior?.phone||'',whatsapp:phone||prior?.whatsapp||prior?.phone||'',email:email||prior?.email||'',lastObservedPeriodKey:tab.periodKey});
-        }
-      });
+    // Two batchGet requests per wave; apply rows chronologically, not by completion order.
+    for(let start=0;start<identityTabs.length;start+=16){
+      const batches=[identityTabs.slice(start,start+8),identityTabs.slice(start+8,start+16)].filter(batch=>batch.length);
+      const results=await Promise.allSettled(batches.map(async batch=>{
+        const q=batch.map(tab=>`ranges=${encodeURIComponent(`'${tab.title.replace(/'/g,"''")}'!A1:${MAX_COL}${MAX_ROW}`)}`).join('&');
+        return sheets(`/values:batchGet?majorDimension=ROWS&valueRenderOption=FORMATTED_VALUE&${q}`,auth.token);
+      }));
+      const failure=results.find(result=>result.status==='rejected');
+      if(failure)throw failure.reason;
+      for(const [batchIndex,result] of results.entries()){
+        const batch=batches[batchIndex],data=result.value;
+        (data.valueRanges||[]).forEach((vr,idx)=>{
+          const tab=batch[idx],values=Array.isArray(vr.values)?vr.values:[],header=findHeader(values);if(!header)return;
+          const shopperCol=shopperColumn(header),phoneCol=mappedColumn(header,'telefono'),mailCol=mappedColumn(header,'mail');
+          for(let r=header.index+1;r<values.length;r++){
+            const displayName=String(values[r]?.[shopperCol]??'').trim().replace(/\s+/g,' ');if(!assigned(displayName))continue;
+            const shopperId=safeHash(displayName,`shopper_${tab.country.toLowerCase()}`);if(!shopperId)continue;
+            const phone=phoneCol>=0?phoneValue(values[r]?.[phoneCol]):'',email=mailCol>=0?emailValue(values[r]?.[mailCol]):'';
+            const prior=identities.get(shopperId);
+            if(prior&&normalized(prior.displayName)!==normalized(displayName))throw new Error(`shopper_hash_identity_conflict:${shopperId}`);
+            identities.set(shopperId,{shopperId,displayName,country:tab.country,phone:phone||prior?.phone||'',whatsapp:phone||prior?.whatsapp||prior?.phone||'',email:email||prior?.email||'',lastObservedPeriodKey:tab.periodKey});
+          }
+        });
+      }
     }
     const overlay={schemaVersion:'cxorbia.tya-operational-shopper-identity.v2',generatedAt:now,sourceTitle:title,displayIdentityOnly:false,containsContactData:true,contactDataOptional:true,containsGovernmentId:false,containsBankData:false,containsCredentials:false,identities:[...identities.values()].sort((a,b)=>a.shopperId.localeCompare(b.shopperId)),safety:{devOnly:true,ephemeralRuntimeFile:true,rawValuesLogged:false,hrWrites:0,firestoreWrites:0,authWrites:0,production:false,merge:false}};
     identityCount=overlay.identities.length;fs.mkdirSync(path.dirname(IDENTITY_OUT),{recursive:true});fs.writeFileSync(IDENTITY_OUT,JSON.stringify(overlay,null,2)+'\n','utf8');
@@ -137,3 +145,4 @@ async function main(){
   console.log(JSON.stringify({decision:'PASS_LIVE_PROVIDER_REGISTRY_AND_DEV_DISPLAY_IDENTITY',providerMode:auth.mode,totalTabs:(meta.sheets||[]).length,monthlyTabs:monthly.length,latestMonthlyTab:monthlyTabs.at(-1)||null,currentCalendarPeriodKey:current.periodKey,requiredCurrentPeriodTabsPresent:registry.requiredCurrentPeriodTabsPresent,identityCount,writes:0,production:false}));
 }
 main().catch(e=>{console.error(e.stack||e);process.exit(1);});
+
