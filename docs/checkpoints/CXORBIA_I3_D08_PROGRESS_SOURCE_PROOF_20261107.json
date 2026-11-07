@@ -1,0 +1,152 @@
+{
+  "schemaVersion": "cxorbia.i3.d08-dispatch-progress.source-proof.v1",
+  "iteration": "I3",
+  "status": "SOURCE_LOCAL_PASS_PENDING_CANONICAL_CI_DEV_REAL_ROLE_E2E",
+  "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
+  "sourceTree": "1f350fab2ea41504434a1c4712282b2bbbb05ae9",
+  "predecessorProductSourceSha": "e36a456e07a3b107cb7f75a0c53ffae029eb6de4",
+  "previousUnservedDispatchSourceSha": "91d29146ede33924c831ae54fe3f7b00925fff26",
+  "sourceTestsPass": 27,
+  "sourceTestsFail": 0,
+  "allowedProductFiles": [
+    "app/modules/academia.js",
+    "backend/runtime/cxorbia-academy-command-provider-v1.mjs",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+    "backend/runtime/hr-live-service/server.mjs",
+    "backend/contracts/cxorbia-academy-base-progress-contract-v1.json",
+    "app/adapters/cxorbia-command-adapter-v1.js"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-academy-command-provider-v1.test.mjs"
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_D08_PROGRESS_P0_SCOPE_20261107.json",
+  "scopeReceiptBlob": "95cc65fb26b225776a8f84d7ec7b44aaa5c1aff7",
+  "findings": [
+    {
+      "id": "VRM-192",
+      "task": "D08",
+      "priority": "P0_PROVEN",
+      "classification": "MAPPING_FAILURE",
+      "component": "Academy command factory and self-command adapter routing",
+      "decision": "SOURCE_FIXED_LOCAL_PASS"
+    },
+    {
+      "id": "VRM-192",
+      "task": "D08/F10/F14",
+      "priority": "P0_PROVEN",
+      "classification": "PERSISTENCE_FAILURE",
+      "component": "Learner progress stored per role in localStorage",
+      "decision": "SOURCE_FIXED_LOCAL_PASS"
+    }
+  ],
+  "proofBefore": {
+    "dispatch": "6 PASS / 3 FAIL before five-line factory repair;9/9 sourceCI RUN2261 after",
+    "progress": "Isolated exact legacy bodies reproduced same-role identity leakage, empty-storage loss, swallowed persistence failure and auto-write on course open; zero real data writes."
+  },
+  "sourceFiles": [
+    {
+      "path": "app/modules/academia.js",
+      "gitBlob": "4c3e7aa2228899af24011cb20597892bcd1f37e4",
+      "bytes": 317092
+    },
+    {
+      "path": "backend/runtime/cxorbia-academy-command-provider-v1.mjs",
+      "gitBlob": "353fbacd8fd24d1a3ae54249869211c13194aba9",
+      "bytes": 24216
+    },
+    {
+      "path": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+      "gitBlob": "3a6d245f7439d753f602e8752c0beea52dd34ab3",
+      "bytes": 30609
+    },
+    {
+      "path": "backend/runtime/hr-live-service/server.mjs",
+      "gitBlob": "e202fbad0ec42528cd17ae76c1d2f846598ea9db",
+      "bytes": 34227
+    },
+    {
+      "path": "backend/contracts/cxorbia-academy-base-progress-contract-v1.json",
+      "gitBlob": "6e22d060b4534413de58ca55b6a07ab34a84f83e",
+      "bytes": 19435
+    },
+    {
+      "path": "app/adapters/cxorbia-command-adapter-v1.js",
+      "gitBlob": "2cc10d7b008b4e42446ab2b70bca7f5a0fe65d26",
+      "bytes": 10632
+    },
+    {
+      "path": "backend/runtime/hr-live-service/test/cxorbia-academy-command-provider-v1.test.mjs",
+      "gitBlob": "3392b92bfc5ab750c2bba96bae2fa73e7084436d",
+      "bytes": 29191
+    }
+  ],
+  "localTests": {
+    "command": "node --test backend/runtime/hr-live-service/test/cxorbia-academy-command-provider-v1.test.mjs",
+    "tests": 27,
+    "pass": 27,
+    "fail": 0,
+    "baseCourses": 27,
+    "baseLessons": 117,
+    "adminShopperCliente": true,
+    "inMemoryOnly": true,
+    "realDatabaseWrites": 0,
+    "syntaxChecks": 5
+  },
+  "priorDispatchCanonicalCi": {
+    "runId": 42418677057,
+    "runNumber": 2261,
+    "head": "31741fbc2b43b3ebcb00591e261f3db5c39c5d84",
+    "sourceSha": "91d29146ede33924c831ae54fe3f7b00925fff26",
+    "conclusion": "success",
+    "authorityJob": 128542194838,
+    "sourceJob": 128542401553,
+    "pass": 9,
+    "fail": 0,
+    "successfulJobs": 2,
+    "skippedJobs": 101,
+    "deploys": 0
+  },
+  "independentReview": {
+    "agent": "phase_a_residuals",
+    "decision": "NO_BLOCKER_TO_CANONICAL_CI_SOURCE_ONLY",
+    "localTestSnapshotPass": 26,
+    "additionalAllCourseChecks": 27,
+    "allLessonChecks": 117,
+    "realWrites": 0
+  },
+  "preservation": {
+    "originalContentAdminTestsRetained": 6,
+    "baseCatalogContentUnchanged": true,
+    "projectCertificationBanksUnchanged": true,
+    "projectExamsUntouched": true,
+    "noAutomaticCompletionOnOpen": true,
+    "noLocalStorageTruthOrMigration": true,
+    "ownExistingUserProgressFieldOnly": true,
+    "newCollections": 0,
+    "newWorkflow": 0,
+    "roleEditorPrivilegeExpansion": false,
+    "hrWrites": 0,
+    "financialWrites": 0,
+    "rulesWrites": 0
+  },
+  "acceptedClauseRecovered": {
+    "task": "E04/F12",
+    "state": "LIVE_E2E_PASS_FOCAL_HUMAN_PENDING",
+    "scope": "Absent benchmark source shows unavailable, no synthetic numbers; do not repeat absent affected drift.",
+    "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
+    "receiptBlob": "ab41f388e2cb32456c89367aca1737ff25e42853",
+    "runId": 39172645706,
+    "ownersUnchanged": {
+      "app/core/cliente-data.js": "ed808881dc9b1026244213bb531a5d160b766078",
+      "app/modules/cliente.js": "c3802b25e05851d1abff99adab793d323b52b0f0",
+      "app/modules/cliente-extra.js": "ca3d2d6b356b3d942ebbb2076625ce0b000e4b64",
+      "app/modules/cliente-insights.js": "4fca3b9c25231ef025c2d421c9ce07f2c2124a30"
+    }
+  },
+  "devPublished": false,
+  "realProviderWrites": 0,
+  "production": false,
+  "phaseAComplete": false,
+  "allModulesMatch": false,
+  "next": "Existing source reproof lane; then one exact runtime+Hosting DEV materialization of this combined source, readback and only uncovered D08 role/session clauses. No new exam attempt or real learner progress fabricated."
+}

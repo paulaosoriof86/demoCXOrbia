@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "cxorbia.i3.d08-progress.p0.scope.v1",
+  "iteration": "I3",
+  "status": "P0_PROVEN_SCOPED_REPAIR",
+  "relatedExistingFindingId": "VRM-192",
+  "finding": "D08/F10/F14",
+  "classification": "PERSISTENCE_FAILURE",
+  "truthBefore": {
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V264.json",
+    "matrixBlob": "ff493e4254b277fe92d76ba697084081062e5552",
+    "sourceSha": "91d29146ede33924c831ae54fe3f7b00925fff26",
+    "domain": "certifications",
+    "classification": "TRUE_FUNCTIONAL_DEFECT"
+  },
+  "proofBefore": "Exact current prog/setProg isolated: role localStorage leaks between same-role identities, loses progress on empty storage, swallows persistence failure, course opens auto-complete lesson. No real writes.",
+  "allowedProductFiles": [
+    "app/modules/academia.js",
+    "backend/runtime/cxorbia-academy-command-provider-v1.mjs",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+    "backend/runtime/hr-live-service/server.mjs",
+    "backend/contracts/cxorbia-academy-base-progress-contract-v1.json",
+    "app/adapters/cxorbia-command-adapter-v1.js"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-academy-command-provider-v1.test.mjs"
+  ],
+  "contractDecision": "Immutable validation contract derived exactly from source-owned existing course catalog; same-source semantic hash equality tested. No alternative editable catalog, no imports/database seed, no new builder/workflow.",
+  "persistenceDecision": "Only own existing tenants/{tenant}/users/{verifiedUid}.academyProgress field, identity claims/member core unchanged; transaction, independent progress version, idempotent receipt/audit, provider ACK+readback. Preserve past course revisions; no localStorage role migration.",
+  "authorizationDecision": "Own authenticated active membership only, exact tenant/namespace/role/project; editor OPERATOR_ROLES unchanged; no privilege to edit courses for learners.",
+  "boundaries": {
+    "newCollections": 0,
+    "newWorkflow": 0,
+    "hrWrites": 0,
+    "financialWrites": 0,
+    "rulesWrites": 0,
+    "identityWrites": 0,
+    "examWrites": 0,
+    "production": false
+  },
+  "acceptanceScope": "Local/source proof, then one DEV materialization for dispatch+progress; real Admin/Shopper/Cliente new-session evidence required before D08/MATCH. No course progress recorded for real people by automated browsing.",
+  "extraOwnerProof": {
+    "path": "app/adapters/cxorbia-command-adapter-v1.js",
+    "blob": "aa6522b76a5958aece332c6346c312086d803500",
+    "reason": "Existing adapter denies all Cliente commands and all non-listed Shopper commands; new self progress command must receive exact entity/permission exception, without allowing course edits."
+  },
+  "sourceSuccessorScope": "Cumulative D08 dispatch plus progress; served predecessor RUN2259/e36a, prior unserved dispatch source91d291 retained in lineage.",
+  "priorReadbackOwnerBlobs": {
+    "app/modules/academia.js": "5ba399295367cb2f5e2ea6fd9de706e6d4fb1323",
+    "backend/runtime/cxorbia-academy-command-provider-v1.mjs": "c5a6536a95c4806e5eb3dcf11b146627d72080c1",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs": "3a05182c5b1b1968d6c06cd04a9a468f715b296e",
+    "backend/runtime/hr-live-service/server.mjs": "bcc16705afcf89dfce2e9886bb2d2529c2cc51c3",
+    "backend/contracts/cxorbia-academy-base-progress-contract-v1.json": null,
+    "app/adapters/cxorbia-command-adapter-v1.js": "aa6522b76a5958aece332c6346c312086d803500"
+  },
+  "newContractPath": "backend/contracts/cxorbia-academy-base-progress-contract-v1.json",
+  "newContractBlob": "6e22d060b4534413de58ca55b6a07ab34a84f83e"
+}

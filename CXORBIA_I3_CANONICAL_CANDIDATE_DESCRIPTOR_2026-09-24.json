@@ -4,16 +4,16 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "91d29146ede33924c831ae54fe3f7b00925fff26",
-  "productTreeAuthority": "aab7a7f00f406d2085f715fdd72e82b76f889b66",
+  "productSourceSha": "6f87531de198186ad8277564beb380cf94a09488",
+  "productTreeAuthority": "1f350fab2ea41504434a1c4712282b2bbbb05ae9",
   "predecessorProductSourceSha": "e36a456e07a3b107cb7f75a0c53ffae029eb6de4",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V579_2026-11-07.json",
-  "findingsLedgerExpectedGitBlob": "7c1f76e826ed00365fd91d1523f2b219f980315f",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V264.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V580_2026-11-07.json",
+  "findingsLedgerExpectedGitBlob": "14e71dab54aab75d8a081e68ba35d9030af3bfb8",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V265.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D08_ACADEMY_DISPATCH_CANONICAL_QA_DEV_AND_DURABLE_PROGRESS_P0",
+  "activeBlocker": "D08_COMBINED_SOURCE_CANONICAL_QA_DEV_REAL_ROLE_E2E_AND_EXISTING_I3_RESIDUALS",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -128,7 +128,7 @@
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
   "historicalExactNextActionPreS1": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "I3 HOLD, 5/21 MATCH. D08/VRM-192 P0_PROVEN MAPPING_FAILURE: existing Academy command classifier lacked its provider factory branch. Canonical successor 91d29146ede33924c831ae54fe3f7b00925fff26 changes one runtime owner by five lines and its existing test only; baseline6PASS/3FAIL, repaired9PASS/0FAIL, no real data writes. NEXT: existing VRM192 source-reproof lane, then exactly one bounded runtime+Hosting DEV publication if source QA passes, and exact readback; RUN2259/e36a456e remains served predecessor until that publication. D08 learner progress is a separate P0_PROVEN PERSISTENCE_FAILURE still open (role-localStorage, no durable ACK or identity isolation); no claim that dispatch fix resolves it. Continue only residual D06 eligibility/selector/frontend recertification/fresh-credential history/required flag, D07 PDF lifecycle/roles/read-ACK, operation HR ACK/B10/no duplicates, E04/F12/F09 real client source/collaboration, finanzas remaining role E2E/existing Q7300/ambiguous September and G03 uncovered frozen scope/roles. Preserve83/83 identities+2, G05 source QA113/113, finanzas13/13, accepted D03/D05/D06 two attempts and D07 PDF. VRM134 global cold/warm role performance remains HOLD despite focal Chrome reload windows. No repeat exam/bank/resource/HR/payment writes, no new architecture/workflow, no I4; production DO_NOT_TOUCH.",
+  "exactNextAction": "I3 HOLD, 5/21 MATCH. D08/VRM-192 combined dispatch plus durable own-learner progress source 6f87531de198186ad8277564beb380cf94a09488 is LOCAL27/27PASS, 27 existing courses/117 lessons checked, no real progress/identity/exam/HR/payment writes. NEXT: existing VRM192 canonical source reproof; if successful, exactly one existing runtime+Hosting DEV materialization for both D08 fixes, then exact readback and uncovered real role/session E2E. RUN2259/e36a remains served predecessor. Preserve accepted D03/D05/D06 authorized two attempts and D07 original PDF7pages; do not repeat them. E04/F12 absent-benchmark/no-invented-values clause is LIVE_E2E_PASS RUN1797 and unchanged owners, not a new pending test; E04 residual is F09 durable collaboration and uncovered KPI/roles/visuals. Continue only residual D06 eligibility/selector/frontend recertification/fresh-credential new-history/required flag, D07 lifecycle/roles/readACK/visit revision, operation HR ACK/B10/no duplicates, finanzas remaining role E2E/existing Q7300/ambiguous September and G03 uncovered frozen scope/roles. Preserve83/83 identities+2, G05 sourceQA113/113, finanzas13/13. Three RUN2222 login exceptions require independent evidence, no refusion/re-census. VRM134 global cold/warm role performance remains HOLD. No production/I4; production DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -804,7 +804,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "aab7a7f00f406d2085f715fdd72e82b76f889b66",
+  "productSourceTree": "1f350fab2ea41504434a1c4712282b2bbbb05ae9",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -1537,8 +1537,7 @@
     "production": false
   },
   "activeBlockers": [
-    "VRM-192_D08_DISPATCH_CANONICAL_SOURCE_QA_DEV_PENDING",
-    "VRM-192_D08_DURABLE_PROGRESS_PERSISTENCE_P0_OPEN",
+    "VRM-192_D08_COMBINED_SOURCE_27_OF_27_PENDING_CANONICAL_QA_DEV_ROLE_SESSIONS",
     "VRM-134_GLOBAL_LOADING_PERFORMANCE_P0_OPEN",
     "I3_UNCOVERED_FUNCTIONAL_ROLE_AND_INTEGRAL_HUMAN_ACCEPTANCE"
   ],
@@ -2948,7 +2947,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "ff493e4254b277fe92d76ba697084081062e5552",
+  "moduleTruthExpectedGitBlob": "fad075a99e7e0f76a0600e46eebc377412006837",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -3861,13 +3860,11 @@
   "shopperIdentityGovernanceLockPath": "CXORBIA_I3_SHOPPER_IDENTITY_GOVERNANCE_LOCK_2026-10-04.json",
   "queuedBlocker": "VRM297_EMULATOR_CI_THEN_SERIAL_DEV_MATERIALIZATION",
   "currentSourceProof": {
-    "path": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_DISPATCH_SOURCE_PROOF_20261107.json",
-    "gitBlob": "2ad9d960cb958e84368cbbd70a7e9f2fb7864d3f",
-    "sourceSha": "91d29146ede33924c831ae54fe3f7b00925fff26",
-    "sourceTree": "aab7a7f00f406d2085f715fdd72e82b76f889b66",
-    "sourceTestsPass": 9,
-    "sourceTestsFail": 0,
-    "decision": "P0_D08_DISPATCH_FIXED_LOCAL_9_OF_9_PENDING_CANONICAL_CI_EXACT_DEV",
+    "path": "docs/checkpoints/CXORBIA_I3_D08_PROGRESS_SOURCE_PROOF_20261107.json",
+    "gitBlob": "4500a3da31fd8bb1dc97d0042c48b66b9aa7829f",
+    "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
+    "sourceTree": "1f350fab2ea41504434a1c4712282b2bbbb05ae9",
+    "decision": "PASS_LOCAL_27_OF_27_D08_DISPATCH_PROGRESS_PENDING_CANONICAL_CI_DEV_E2E",
     "production": false
   },
   "openFindingsClosureMatrixPath": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
@@ -17448,7 +17445,7 @@
     "qaContinuityGuardState": "V23_INITIAL_CONTROL_FAIL_CORRECTION_PENDING"
   },
   "priorStatusBeforeRootRun2222": "HOLD_VRM309_DEV_MATERIALIZED_ROLE_E2E_PENDING",
-  "nextExactAction": "I3 HOLD, 5/21 MATCH. D08/VRM-192 P0_PROVEN MAPPING_FAILURE: existing Academy command classifier lacked its provider factory branch. Canonical successor 91d29146ede33924c831ae54fe3f7b00925fff26 changes one runtime owner by five lines and its existing test only; baseline6PASS/3FAIL, repaired9PASS/0FAIL, no real data writes. NEXT: existing VRM192 source-reproof lane, then exactly one bounded runtime+Hosting DEV publication if source QA passes, and exact readback; RUN2259/e36a456e remains served predecessor until that publication. D08 learner progress is a separate P0_PROVEN PERSISTENCE_FAILURE still open (role-localStorage, no durable ACK or identity isolation); no claim that dispatch fix resolves it. Continue only residual D06 eligibility/selector/frontend recertification/fresh-credential history/required flag, D07 PDF lifecycle/roles/read-ACK, operation HR ACK/B10/no duplicates, E04/F12/F09 real client source/collaboration, finanzas remaining role E2E/existing Q7300/ambiguous September and G03 uncovered frozen scope/roles. Preserve83/83 identities+2, G05 source QA113/113, finanzas13/13, accepted D03/D05/D06 two attempts and D07 PDF. VRM134 global cold/warm role performance remains HOLD despite focal Chrome reload windows. No repeat exam/bank/resource/HR/payment writes, no new architecture/workflow, no I4; production DO_NOT_TOUCH.",
+  "nextExactAction": "I3 HOLD, 5/21 MATCH. D08/VRM-192 combined dispatch plus durable own-learner progress source 6f87531de198186ad8277564beb380cf94a09488 is LOCAL27/27PASS, 27 existing courses/117 lessons checked, no real progress/identity/exam/HR/payment writes. NEXT: existing VRM192 canonical source reproof; if successful, exactly one existing runtime+Hosting DEV materialization for both D08 fixes, then exact readback and uncovered real role/session E2E. RUN2259/e36a remains served predecessor. Preserve accepted D03/D05/D06 authorized two attempts and D07 original PDF7pages; do not repeat them. E04/F12 absent-benchmark/no-invented-values clause is LIVE_E2E_PASS RUN1797 and unchanged owners, not a new pending test; E04 residual is F09 durable collaboration and uncovered KPI/roles/visuals. Continue only residual D06 eligibility/selector/frontend recertification/fresh-credential new-history/required flag, D07 lifecycle/roles/readACK/visit revision, operation HR ACK/B10/no duplicates, finanzas remaining role E2E/existing Q7300/ambiguous September and G03 uncovered frozen scope/roles. Preserve83/83 identities+2, G05 sourceQA113/113, finanzas13/13. Three RUN2222 login exceptions require independent evidence, no refusion/re-census. VRM134 global cold/warm role performance remains HOLD. No production/I4; production DO_NOT_TOUCH.",
   "i3Nov06SourceOnlyFocal": {
     "sourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
     "predecessorDevSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
@@ -17858,7 +17855,7 @@
     "sourceTestsFail": 0,
     "production": false
   },
-  "updatedAt": "2026-11-07T21:54:07Z",
+  "updatedAt": "2026-11-07T22:18:38Z",
   "previousCurrentMaterializationBeforeRun2248": {
     "builds": 1,
     "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
@@ -18802,25 +18799,23 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V264.json",
-      "gitBlob": "ff493e4254b277fe92d76ba697084081062e5552"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V265.json",
+      "gitBlob": "fad075a99e7e0f76a0600e46eebc377412006837"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V579_2026-11-07.json",
-      "gitBlob": "7c1f76e826ed00365fd91d1523f2b219f980315f"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V580_2026-11-07.json",
+      "gitBlob": "14e71dab54aab75d8a081e68ba35d9030af3bfb8"
     },
     "receipt": {
-      "path": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_DISPATCH_SOURCE_PROOF_20261107.json",
-      "gitBlob": "2ad9d960cb958e84368cbbd70a7e9f2fb7864d3f",
-      "sourceSha": "91d29146ede33924c831ae54fe3f7b00925fff26",
-      "sourceTree": "aab7a7f00f406d2085f715fdd72e82b76f889b66",
-      "sourceTestsPass": 9,
-      "sourceTestsFail": 0,
-      "decision": "P0_D08_DISPATCH_FIXED_LOCAL_9_OF_9_PENDING_CANONICAL_CI_EXACT_DEV",
+      "path": "docs/checkpoints/CXORBIA_I3_D08_PROGRESS_SOURCE_PROOF_20261107.json",
+      "gitBlob": "4500a3da31fd8bb1dc97d0042c48b66b9aa7829f",
+      "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
+      "sourceTree": "1f350fab2ea41504434a1c4712282b2bbbb05ae9",
+      "decision": "PASS_LOCAL_27_OF_27_D08_DISPATCH_PROGRESS_PENDING_CANONICAL_CI_DEV_E2E",
       "production": false
     },
-    "sourceSha": "91d29146ede33924c831ae54fe3f7b00925fff26",
-    "sourceTree": "aab7a7f00f406d2085f715fdd72e82b76f889b66",
+    "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
+    "sourceTree": "1f350fab2ea41504434a1c4712282b2bbbb05ae9",
     "production": false
   },
   "run2259ExactDevContinuity": {
@@ -18881,13 +18876,18 @@
   "pendingDevSuccessor": {
     "state": "P0_PROVEN_PENDING_DEV_MATERIALIZATION",
     "scope": "RUNTIME_AND_HOSTING",
-    "sourceSha": "91d29146ede33924c831ae54fe3f7b00925fff26",
-    "sourceTree": "aab7a7f00f406d2085f715fdd72e82b76f889b66",
+    "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
+    "sourceTree": "1f350fab2ea41504434a1c4712282b2bbbb05ae9",
     "predecessorProductSourceSha": "e36a456e07a3b107cb7f75a0c53ffae029eb6de4",
-    "sourceTestsPass": 9,
+    "sourceTestsPass": 27,
     "sourceTestsFail": 0,
     "allowedProductFiles": [
-      "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+      "app/modules/academia.js",
+      "backend/runtime/cxorbia-academy-command-provider-v1.mjs",
+      "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+      "backend/runtime/hr-live-service/server.mjs",
+      "backend/contracts/cxorbia-academy-base-progress-contract-v1.json",
+      "app/adapters/cxorbia-command-adapter-v1.js"
     ],
     "allowedTestFiles": [
       "backend/runtime/hr-live-service/test/cxorbia-academy-command-provider-v1.test.mjs"
@@ -18896,8 +18896,8 @@
     "production": false,
     "rulesDeploys": 0,
     "storageRulesDeploys": 0,
-    "proofReceiptPath": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_DISPATCH_SOURCE_PROOF_20261107.json",
-    "proofReceiptBlob": "2ad9d960cb958e84368cbbd70a7e9f2fb7864d3f",
+    "proofReceiptPath": "docs/checkpoints/CXORBIA_I3_D08_PROGRESS_SOURCE_PROOF_20261107.json",
+    "proofReceiptBlob": "4500a3da31fd8bb1dc97d0042c48b66b9aa7829f",
     "servingPairedMaterialization": {
       "state": "PASS_EXACT_DEV_MATERIALIZATION_PERFORMANCE_P0_OPEN",
       "decision": "PASS_VRM134_A05_EXACT_DEV_MATERIALIZATION",
@@ -18968,6 +18968,68 @@
     "production": false
   },
   "d08AcademyProgressResidual": {
+    "status": "SOURCE_FIXED_LOCAL_27_OF_27_PENDING_CANONICAL_CI_DEV_REAL_ROLE_SESSIONS",
+    "proof": {
+      "path": "docs/checkpoints/CXORBIA_I3_D08_PROGRESS_SOURCE_PROOF_20261107.json",
+      "gitBlob": "4500a3da31fd8bb1dc97d0042c48b66b9aa7829f",
+      "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
+      "sourceTree": "1f350fab2ea41504434a1c4712282b2bbbb05ae9",
+      "decision": "PASS_LOCAL_27_OF_27_D08_DISPATCH_PROGRESS_PENDING_CANONICAL_CI_DEV_E2E",
+      "production": false
+    },
+    "newCollections": 0,
+    "field": "own existing user.academyProgress",
+    "existingEditorRolePrivilegesUnchanged": true,
+    "acceptedD03D07Unchanged": true,
+    "production": false
+  },
+  "previousCurrentAuthorityBeforeD08Progress": {
+    "sourceSha": "91d29146ede33924c831ae54fe3f7b00925fff26",
+    "sourceTree": "aab7a7f00f406d2085f715fdd72e82b76f889b66",
+    "currentCanonicalControl": {
+      "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+      "matrix": {
+        "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V264.json",
+        "gitBlob": "ff493e4254b277fe92d76ba697084081062e5552"
+      },
+      "ledger": {
+        "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V579_2026-11-07.json",
+        "gitBlob": "7c1f76e826ed00365fd91d1523f2b219f980315f"
+      },
+      "receipt": {
+        "path": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_DISPATCH_SOURCE_PROOF_20261107.json",
+        "gitBlob": "2ad9d960cb958e84368cbbd70a7e9f2fb7864d3f",
+        "sourceSha": "91d29146ede33924c831ae54fe3f7b00925fff26",
+        "sourceTree": "aab7a7f00f406d2085f715fdd72e82b76f889b66",
+        "sourceTestsPass": 9,
+        "sourceTestsFail": 0,
+        "decision": "P0_D08_DISPATCH_FIXED_LOCAL_9_OF_9_PENDING_CANONICAL_CI_EXACT_DEV",
+        "production": false
+      },
+      "sourceSha": "91d29146ede33924c831ae54fe3f7b00925fff26",
+      "sourceTree": "aab7a7f00f406d2085f715fdd72e82b76f889b66",
+      "production": false
+    },
+    "currentSourceProof": {
+      "path": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_DISPATCH_SOURCE_PROOF_20261107.json",
+      "gitBlob": "2ad9d960cb958e84368cbbd70a7e9f2fb7864d3f",
+      "sourceSha": "91d29146ede33924c831ae54fe3f7b00925fff26",
+      "sourceTree": "aab7a7f00f406d2085f715fdd72e82b76f889b66",
+      "sourceTestsPass": 9,
+      "sourceTestsFail": 0,
+      "decision": "P0_D08_DISPATCH_FIXED_LOCAL_9_OF_9_PENDING_CANONICAL_CI_EXACT_DEV",
+      "production": false
+    }
+  },
+  "d08ProgressSourceProof": {
+    "path": "docs/checkpoints/CXORBIA_I3_D08_PROGRESS_SOURCE_PROOF_20261107.json",
+    "gitBlob": "4500a3da31fd8bb1dc97d0042c48b66b9aa7829f",
+    "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
+    "sourceTree": "1f350fab2ea41504434a1c4712282b2bbbb05ae9",
+    "decision": "PASS_LOCAL_27_OF_27_D08_DISPATCH_PROGRESS_PENDING_CANONICAL_CI_DEV_E2E",
+    "production": false
+  },
+  "previousD08ProgressResidualBeforeSourceFix": {
     "status": "P0_PROVEN_UNREPAIRED",
     "classification": "PERSISTENCE_FAILURE",
     "relatedExistingFindingId": "VRM-192",
@@ -18977,5 +19039,19 @@
     "sourceEvidence": "Role-keyed localStorage progression, no durable remote ACK; isolated same-role identity leakage and empty-storage loss reproduced, no real data mutated.",
     "acceptedD03D07Unchanged": true,
     "production": false
+  },
+  "acceptedF12NoFabrication": {
+    "task": "E04/F12",
+    "state": "LIVE_E2E_PASS_FOCAL_HUMAN_PENDING",
+    "scope": "Absent benchmark source shows unavailable, no synthetic numbers; do not repeat absent affected drift.",
+    "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
+    "receiptBlob": "ab41f388e2cb32456c89367aca1737ff25e42853",
+    "runId": 39172645706,
+    "ownersUnchanged": {
+      "app/core/cliente-data.js": "ed808881dc9b1026244213bb531a5d160b766078",
+      "app/modules/cliente.js": "c3802b25e05851d1abff99adab793d323b52b0f0",
+      "app/modules/cliente-extra.js": "ca3d2d6b356b3d942ebbb2076625ce0b000e4b64",
+      "app/modules/cliente-insights.js": "4fca3b9c25231ef025c2d421c9ce07f2c2124a30"
+    }
   }
 }
