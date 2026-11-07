@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "cxorbia.i3.d08.academy-dispatch.source-proof.v1",
+  "iteration": "I3",
+  "state": "P0_PROVEN_SOURCE_FIXED_LOCAL_PASS_PENDING_CANONICAL_CI_AND_EXACT_DEV",
+  "observedAt": "2026-11-07T21:54:07Z",
+  "sourceSha": "91d29146ede33924c831ae54fe3f7b00925fff26",
+  "sourceTree": "aab7a7f00f406d2085f715fdd72e82b76f889b66",
+  "predecessorProductSourceSha": "e36a456e07a3b107cb7f75a0c53ffae029eb6de4",
+  "controlBase": "51df626f569ee324aa546c57db1ab69254d1e211",
+  "sourceTestsPass": 9,
+  "sourceTestsFail": 0,
+  "allowedProductFiles": [
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-academy-command-provider-v1.test.mjs"
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_DISPATCH_P0_SCOPE_20261107.json",
+  "scopeReceiptBlob": "a2fd3a5568cb221bcfbf0440734c399c1c926fee",
+  "findings": [
+    {
+      "id": "VRM-192",
+      "task": "D08",
+      "contractRefs": [
+        "F10",
+        "F14"
+      ],
+      "priority": "P0_PROVEN",
+      "classification": "MAPPING_FAILURE",
+      "owner": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+      "function": "createProviderForCommand",
+      "baselineBlob": "3a05182c5b1b1968d6c06cd04a9a468f715b296e",
+      "successorBlob": "10531082ed25880fc6e7f055fc5893c51882f184",
+      "rootCause": "Existing academy classifier/import/policy had no factory branch, so Academy content commands fell through to Operational provider.",
+      "fix": "Five-line branch selects existing Academy provider and fails closed on its missing/invalid policy, preserving all other dispatch branches.",
+      "baselineExecutedTest": {
+        "tests": 9,
+        "pass": 6,
+        "fail": 3,
+        "errors": [
+          "OPERATIONAL_COMMAND_PROVIDER_NOT_CONFIGURED",
+          "OPERATIONAL_COMMAND_PROVIDER_POLICY_INVALID instead of ACADEMY_COMMAND_PROVIDER_NOT_CONFIGURED",
+          "OPERATIONAL_COMMAND_PROVIDER_POLICY_INVALID instead of ACADEMY_COMMAND_PROVIDER_POLICY_INVALID"
+        ],
+        "scope": "Synthetic Auth/DB fixtures only; zero real provider calls"
+      },
+      "afterFix": {
+        "tests": 9,
+        "pass": 9,
+        "fail": 0,
+        "syntax": "PASS",
+        "scope": "Same existing test file, synthetic provider execution verifies factory+ACK/readback/idempotent replay; historical six tests preserved"
+      }
+    }
+  ],
+  "testOwner": "backend/runtime/hr-live-service/test/cxorbia-academy-command-provider-v1.test.mjs",
+  "testBlobBefore": "abf48978d8b8fd500f5c36e0552383ce698f1265",
+  "testBlobAfter": "223220f1d903f0bd9c45cc3f3f475c696a6b9172",
+  "testGuardAdjustment": "Existing academy protected-state assertion accepts both assignment and object-property publication syntax; current bridge unchanged, no semantic relaxation of Academy state source.",
+  "deferredD08Progress": {
+    "state": "P0_PROVEN_SOURCE_LEVEL_UNREPAIRED",
+    "classification": "PERSISTENCE_FAILURE",
+    "owner": "app/modules/academia.js",
+    "ownerBlob": "5ba399295367cb2f5e2ea6fd9de706e6d4fb1323",
+    "contract": "Progress must be durable and identity-scoped, not localStorage truth",
+    "observed": "Exact prog/setProg functions key progress by role only and bypass provider ACK/readback; shared role inherits progress and empty store loses it",
+    "sourceOnly": true,
+    "noRealProgressWritten": true,
+    "notFixedByThisDelta": true
+  },
+  "preserved": [
+    "All accepted D03 generation, D05 editor and D06 two authorized attempts/feedback/history",
+    "D07 authenticated PDF reader, periods, history and resources",
+    "83/83 identities plus2 and finance13/13",
+    "Catalog, courses, category/provider schema, collections, permissions, rules and all other command factories",
+    "No new architecture, repository, branch, candidate lane or workflow"
+  ],
+  "canonicalCi": "PENDING_EXISTING_VRM192_SOURCE_REPROOF_LANE",
+  "devPublished": false,
+  "fullD08Closed": false,
+  "fullModuleMatchesAdded": 0,
+  "hrWrites": 0,
+  "providerLiveWrites": 0,
+  "examAttempts": 0,
+  "paymentWrites": 0,
+  "rulesDeploys": 0,
+  "storageRulesDeploys": 0,
+  "production": false
+}

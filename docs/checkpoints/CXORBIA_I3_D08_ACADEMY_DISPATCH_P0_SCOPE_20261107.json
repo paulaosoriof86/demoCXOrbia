@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "cxorbia.i3.p0.scope.v1",
+  "iteration": "I3",
+  "state": "FROZEN_EXACT_P0_DELTA_ONLY",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "observedAt": "2026-11-07T21:51:00Z",
+  "baseControlHead": "51df626f569ee324aa546c57db1ab69254d1e211",
+  "baseProductSource": "e36a456e07a3b107cb7f75a0c53ffae029eb6de4",
+  "taskIds": [
+    "D08"
+  ],
+  "findingIds": [
+    "VRM-192"
+  ],
+  "contractRefs": [
+    "F10",
+    "F14"
+  ],
+  "priority": "P0_PROVEN",
+  "classification": "MAPPING_FAILURE",
+  "exactOwner": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+  "ownerBlobBefore": "3a05182c5b1b1968d6c06cd04a9a468f715b296e",
+  "affectedDomain": "persistence-command-ack-boundary",
+  "moduleTruthBefore": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V263.json",
+    "gitBlob": "6f69cd815ba400fd108a329e43af376536e2ae70",
+    "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN"
+  },
+  "allowedProductFiles": [
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-academy-command-provider-v1.test.mjs"
+  ],
+  "provenFailure": "commandProviderKind returns academy but createProviderForCommand omits its branch and falls through to operational provider or operational missing-policy error",
+  "repair": "Instantiate already imported existing Academy provider using already configured Academy policy; fail closed for missing/invalid Academy policy; no fallback to other provider",
+  "outOfScope": [
+    "Learner-progress persistence (separate D08 P0 diagnosis remains open)",
+    "New collections/schema/permissions",
+    "Academy catalog or courses",
+    "D03-D07 accepted exam/editor/PDF clauses",
+    "New exam attempts/bank publication/recertification reset",
+    "Rules/config/workflow/guard/HR/financial writes",
+    "Production/I4"
+  ],
+  "production": false,
+  "hrWrites": 0,
+  "paymentWrites": 0,
+  "existingWorkflowOnly": true,
+  "localTestsSyntheticOnly": true
+}
