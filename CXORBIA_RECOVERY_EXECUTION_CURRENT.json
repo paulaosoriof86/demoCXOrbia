@@ -130,7 +130,7 @@
       "E04",
       "F09"
     ],
-    "immediateAction": "I3 HOLD, 5/21 MATCH. New cumulative source e36a456e07a3b107cb7f75a0c53ffae029eb6de4 has VRM134 bounded HR batches at two proven owners; 36/36 local tests PASS. NEXT: canonical source CI, then one existing runtime+Hosting DEV materialization after PASS, then same-context provider and Chrome cold/warm timing. RUN2256 source d4e7c4b0aa711f6d4717bca69b79b7b28d8f49d7 remains the actual served predecessor; no claim that load delay is solved. Parallel residuals: D06 eligible15Q/two eligible banks/frontend recertification/new-attempt fresh-credential readback/original required flag; D07 lifecycle/roles/durable read-ACK; B10 and operation HR ACK/no duplicates; E04/F12/F09 client source/collaboration; finanzas remaining role E2E, existing Q7300 application and genuinely ambiguous September cohort; G03 only uncovered frozen scope/visual/roles. Preserve83/83 identities+2, G05 source QA113/113 (not HR row count), finanzas13/13, D03generated15,D05editor15, D06 two authorized attempts/3 retained IDs/feedback8/8/OCT-NOV/reload, R20 auth and original PDF7pages. Gravicentra CX product-name target frozen separately from T&A tenant and pending Brand logo/orbits; no P0 branding mutation. No new exam/bank/HR/payment write, no I4; production DO_NOT_TOUCH.",
+    "immediateAction": "I3 HOLD, 5/21 MATCH. New cumulative source e36a456e07a3b107cb7f75a0c53ffae029eb6de4 has VRM134 bounded HR batches at two proven owners; 36/36 local tests PASS. Canonical source CI RUN2258 PASS, including all seven new batching cases. NEXT: one existing runtime+Hosting DEV materialization of the same e36a456e source, followed by exact traffic/digest readback and same-context provider/Chrome cold-warm timing. RUN2256 source d4e7c4b0aa711f6d4717bca69b79b7b28d8f49d7 remains the actual served predecessor; no claim that load delay is solved. Parallel residuals: D06 eligible15Q/two eligible banks/frontend recertification/new-attempt fresh-credential readback/original required flag; D07 lifecycle/roles/durable read-ACK; B10 and operation HR ACK/no duplicates; E04/F12/F09 client source/collaboration; finanzas remaining role E2E, existing Q7300 application and genuinely ambiguous September cohort; G03 only uncovered frozen scope/visual/roles. Preserve83/83 identities+2, G05 source QA113/113 (not HR row count), finanzas13/13, D03generated15,D05editor15, D06 two authorized attempts/3 retained IDs/feedback8/8/OCT-NOV/reload, R20 auth and original PDF7pages. Gravicentra CX product-name target frozen separately from T&A tenant and pending Brand logo/orbits; no P0 branding mutation. No new exam/bank/HR/payment write, no I4; production DO_NOT_TOUCH.",
     "noProduction": true
   },
   "currentModuleEvidenceOverrides": {
@@ -494,7 +494,7 @@
     "evolution": 6
   },
   "historicalNextExactActionPreS1": "S1 read-only reason/alias cohort classification, implement legacy-compatible deterministic normalizer in provider owner and bridge, run bounded GT/HN/history/Auth fixtures. Existing DEV serial materialization only after source QA; verify Stiven/Julissa Shopper role post-fix.",
-  "nextExactAction": "I3 HOLD, 5/21 MATCH. New cumulative source e36a456e07a3b107cb7f75a0c53ffae029eb6de4 has VRM134 bounded HR batches at two proven owners; 36/36 local tests PASS. NEXT: canonical source CI, then one existing runtime+Hosting DEV materialization after PASS, then same-context provider and Chrome cold/warm timing. RUN2256 source d4e7c4b0aa711f6d4717bca69b79b7b28d8f49d7 remains the actual served predecessor; no claim that load delay is solved. Parallel residuals: D06 eligible15Q/two eligible banks/frontend recertification/new-attempt fresh-credential readback/original required flag; D07 lifecycle/roles/durable read-ACK; B10 and operation HR ACK/no duplicates; E04/F12/F09 client source/collaboration; finanzas remaining role E2E, existing Q7300 application and genuinely ambiguous September cohort; G03 only uncovered frozen scope/visual/roles. Preserve83/83 identities+2, G05 source QA113/113 (not HR row count), finanzas13/13, D03generated15,D05editor15, D06 two authorized attempts/3 retained IDs/feedback8/8/OCT-NOV/reload, R20 auth and original PDF7pages. Gravicentra CX product-name target frozen separately from T&A tenant and pending Brand logo/orbits; no P0 branding mutation. No new exam/bank/HR/payment write, no I4; production DO_NOT_TOUCH.",
+  "nextExactAction": "I3 HOLD, 5/21 MATCH. New cumulative source e36a456e07a3b107cb7f75a0c53ffae029eb6de4 has VRM134 bounded HR batches at two proven owners; 36/36 local tests PASS. Canonical source CI RUN2258 PASS, including all seven new batching cases. NEXT: one existing runtime+Hosting DEV materialization of the same e36a456e source, followed by exact traffic/digest readback and same-context provider/Chrome cold-warm timing. RUN2256 source d4e7c4b0aa711f6d4717bca69b79b7b28d8f49d7 remains the actual served predecessor; no claim that load delay is solved. Parallel residuals: D06 eligible15Q/two eligible banks/frontend recertification/new-attempt fresh-credential readback/original required flag; D07 lifecycle/roles/durable read-ACK; B10 and operation HR ACK/no duplicates; E04/F12/F09 client source/collaboration; finanzas remaining role E2E, existing Q7300 application and genuinely ambiguous September cohort; G03 only uncovered frozen scope/visual/roles. Preserve83/83 identities+2, G05 source QA113/113 (not HR row count), finanzas13/13, D03generated15,D05editor15, D06 two authorized attempts/3 retained IDs/feedback8/8/OCT-NOV/reload, R20 auth and original PDF7pages. Gravicentra CX product-name target frozen separately from T&A tenant and pending Brand logo/orbits; no P0 branding mutation. No new exam/bank/HR/payment write, no I4; production DO_NOT_TOUCH.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -1207,8 +1207,8 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V261.json",
-    "gitBlob": "faea585d9539129fb400c8b4c48d7aef02b1cb02",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V262.json",
+    "gitBlob": "f2e67ac9da56f61030187832f1c71f48c69ec6aa",
     "sourceSha": "d4e7c4b0aa711f6d4717bca69b79b7b28d8f49d7",
     "allModulesMatch": false,
     "phaseAComplete": false
@@ -3209,8 +3209,8 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "e36a456e07a3b107cb7f75a0c53ffae029eb6de4",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V261.json",
-    "matrixBlob": "faea585d9539129fb400c8b4c48d7aef02b1cb02",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V262.json",
+    "matrixBlob": "f2e67ac9da56f61030187832f1c71f48c69ec6aa",
     "classificationCounts": {
       "MATCH": 5,
       "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN": 3,
@@ -3219,7 +3219,7 @@
       "SOURCE_PROVEN_DEV_EXACT_5_ASSETS_PASS_PENDING_ROLE_E2E_HUMAN": 1
     },
     "derivedAt": "2026-11-07T20:17:56Z",
-    "meaning": "NEW_BOUNDED_HR_BATCH_SOURCE_LOCAL36_PASS_PREDECESSOR_RUN2256_SERVING_5_OF_21_MATCH"
+    "meaning": "CANONICAL_SOURCE_CI_RUN2258_PASS_EXACT_RUNTIME_HOSTING_DEV_PENDING_PREDECESSOR_RUN2256_SERVING"
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
   "activeMethodologyGuard": {
@@ -5068,13 +5068,15 @@
     "production": false
   },
   "currentSourceProof": {
-    "path": "docs/checkpoints/CXORBIA_I3_VRM134_BOUNDED_HR_BATCHES_SOURCE_PROOF_20261107.json",
-    "gitBlob": "385c9f98edd3cad69a03c8ac861441694cc0a5dc",
+    "path": "docs/checkpoints/CXORBIA_I3_VRM134_BOUNDED_HR_SOURCE_CI_RUN2258_20261107.json",
+    "gitBlob": "4803723052f1a6f203750ccbd98b7210befe6a8e",
+    "runId": 42410613966,
+    "runNumber": 2258,
     "sourceSha": "e36a456e07a3b107cb7f75a0c53ffae029eb6de4",
     "sourceTree": "4ec6c431a2e6ae1ea213b37d7c6782f33828753b",
-    "sourceTestsPass": 36,
-    "sourceTestsFail": 0,
-    "decision": "PASS_LOCAL_SOURCE_36_OF_36_PENDING_CANONICAL_CI_EXACT_DEV_AND_GLOBAL_LOAD_MEASUREMENT",
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "artifactId": 13589621703,
+    "artifactDigest": "sha256:3fd8bfda3b2d289e3300f141c3955739e95aa3527b43fb212c559f2476e162d8",
     "production": false
   },
   "currentControlQaCorrection": {
@@ -5200,21 +5202,23 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V261.json",
-      "gitBlob": "faea585d9539129fb400c8b4c48d7aef02b1cb02"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V262.json",
+      "gitBlob": "f2e67ac9da56f61030187832f1c71f48c69ec6aa"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V576_2026-11-07.json",
-      "gitBlob": "a44299b0e3d0b5c247ec411a638341705851e480"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V577_2026-11-07.json",
+      "gitBlob": "ca6feabf3ae575695fc8990868512bd0f18d8da3"
     },
     "receipt": {
-      "path": "docs/checkpoints/CXORBIA_I3_VRM134_BOUNDED_HR_BATCHES_SOURCE_PROOF_20261107.json",
-      "gitBlob": "385c9f98edd3cad69a03c8ac861441694cc0a5dc",
+      "path": "docs/checkpoints/CXORBIA_I3_VRM134_BOUNDED_HR_SOURCE_CI_RUN2258_20261107.json",
+      "gitBlob": "4803723052f1a6f203750ccbd98b7210befe6a8e",
+      "runId": 42410613966,
+      "runNumber": 2258,
       "sourceSha": "e36a456e07a3b107cb7f75a0c53ffae029eb6de4",
       "sourceTree": "4ec6c431a2e6ae1ea213b37d7c6782f33828753b",
-      "sourceTestsPass": 36,
-      "sourceTestsFail": 0,
-      "decision": "PASS_LOCAL_SOURCE_36_OF_36_PENDING_CANONICAL_CI_EXACT_DEV_AND_GLOBAL_LOAD_MEASUREMENT",
+      "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+      "artifactId": 13589621703,
+      "artifactDigest": "sha256:3fd8bfda3b2d289e3300f141c3955739e95aa3527b43fb212c559f2476e162d8",
       "production": false
     },
     "sourceSha": "e36a456e07a3b107cb7f75a0c53ffae029eb6de4",
@@ -5673,7 +5677,7 @@
     "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751"
   },
   "previousExactNextActionBeforeRun2146": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "I3 HOLD, 5/21 MATCH. New cumulative source e36a456e07a3b107cb7f75a0c53ffae029eb6de4 has VRM134 bounded HR batches at two proven owners; 36/36 local tests PASS. NEXT: canonical source CI, then one existing runtime+Hosting DEV materialization after PASS, then same-context provider and Chrome cold/warm timing. RUN2256 source d4e7c4b0aa711f6d4717bca69b79b7b28d8f49d7 remains the actual served predecessor; no claim that load delay is solved. Parallel residuals: D06 eligible15Q/two eligible banks/frontend recertification/new-attempt fresh-credential readback/original required flag; D07 lifecycle/roles/durable read-ACK; B10 and operation HR ACK/no duplicates; E04/F12/F09 client source/collaboration; finanzas remaining role E2E, existing Q7300 application and genuinely ambiguous September cohort; G03 only uncovered frozen scope/visual/roles. Preserve83/83 identities+2, G05 source QA113/113 (not HR row count), finanzas13/13, D03generated15,D05editor15, D06 two authorized attempts/3 retained IDs/feedback8/8/OCT-NOV/reload, R20 auth and original PDF7pages. Gravicentra CX product-name target frozen separately from T&A tenant and pending Brand logo/orbits; no P0 branding mutation. No new exam/bank/HR/payment write, no I4; production DO_NOT_TOUCH.",
+  "exactNextAction": "I3 HOLD, 5/21 MATCH. New cumulative source e36a456e07a3b107cb7f75a0c53ffae029eb6de4 has VRM134 bounded HR batches at two proven owners; 36/36 local tests PASS. Canonical source CI RUN2258 PASS, including all seven new batching cases. NEXT: one existing runtime+Hosting DEV materialization of the same e36a456e source, followed by exact traffic/digest readback and same-context provider/Chrome cold-warm timing. RUN2256 source d4e7c4b0aa711f6d4717bca69b79b7b28d8f49d7 remains the actual served predecessor; no claim that load delay is solved. Parallel residuals: D06 eligible15Q/two eligible banks/frontend recertification/new-attempt fresh-credential readback/original required flag; D07 lifecycle/roles/durable read-ACK; B10 and operation HR ACK/no duplicates; E04/F12/F09 client source/collaboration; finanzas remaining role E2E, existing Q7300 application and genuinely ambiguous September cohort; G03 only uncovered frozen scope/visual/roles. Preserve83/83 identities+2, G05 source QA113/113 (not HR row count), finanzas13/13, D03generated15,D05editor15, D06 two authorized attempts/3 retained IDs/feedback8/8/OCT-NOV/reload, R20 auth and original PDF7pages. Gravicentra CX product-name target frozen separately from T&A tenant and pending Brand logo/orbits; no P0 branding mutation. No new exam/bank/HR/payment write, no I4; production DO_NOT_TOUCH.",
   "previousExecutionReceiptBeforeRun1983Seal": {
     "path": "CXORBIA_I3_RUN1852_POST_DEPLOY_CONSISTENCY_SEAL_2026-10-24.json",
     "kind": "RUN1852_SOURCE_F283_DEV_PASS_ADMIN_THREE_VISIT_UI_PASS_DURABLE_HR_OPERATIONAL_PARITY_P0_OPEN",
@@ -6188,8 +6192,8 @@
     },
     "production": false
   },
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V576_2026-11-07.json",
-  "findingsLedgerExpectedGitBlob": "a44299b0e3d0b5c247ec411a638341705851e480",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V577_2026-11-07.json",
+  "findingsLedgerExpectedGitBlob": "ca6feabf3ae575695fc8990868512bd0f18d8da3",
   "nextFindingId": "VRM-314",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -7209,7 +7213,7 @@
     "sameArtifactAdminShopper": "PENDING",
     "production": false
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V261.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V262.json",
   "vrm301DevHostingAdminReadback20261104": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM301_DEV_HOSTING_RUN41801457655_ADMIN_READBACK_20261104.json",
     "receiptGitBlob": "b8138b76db5159956aa500fe30f2be0f99fc8fce",
@@ -9167,6 +9171,18 @@
       "production": false,
       "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
       "receiptBlob": "e7155bb748661400b27f2016812d34496d8752f9"
+    },
+    "canonicalCiProof": {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM134_BOUNDED_HR_SOURCE_CI_RUN2258_20261107.json",
+      "gitBlob": "4803723052f1a6f203750ccbd98b7210befe6a8e",
+      "runId": 42410613966,
+      "runNumber": 2258,
+      "sourceSha": "e36a456e07a3b107cb7f75a0c53ffae029eb6de4",
+      "sourceTree": "4ec6c431a2e6ae1ea213b37d7c6782f33828753b",
+      "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+      "artifactId": 13589621703,
+      "artifactDigest": "sha256:3fd8bfda3b2d289e3300f141c3955739e95aa3527b43fb212c559f2476e162d8",
+      "production": false
     }
   },
   "historicalTaskProgressBeforeMultifrontFreeze20261107": {
@@ -9270,5 +9286,17 @@
       "path": "docs/checkpoints/CXORBIA_I3_MULTIFRONT_DECISIONS_FROZEN_20261107.json",
       "gitBlob": "7f11371be6362b40832fdce889fafeefb34ace83"
     }
+  },
+  "vrm134BoundedHrBatchesCanonicalCi20261107": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM134_BOUNDED_HR_SOURCE_CI_RUN2258_20261107.json",
+    "gitBlob": "4803723052f1a6f203750ccbd98b7210befe6a8e",
+    "runId": 42410613966,
+    "runNumber": 2258,
+    "sourceSha": "e36a456e07a3b107cb7f75a0c53ffae029eb6de4",
+    "sourceTree": "4ec6c431a2e6ae1ea213b37d7c6782f33828753b",
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "artifactId": 13589621703,
+    "artifactDigest": "sha256:3fd8bfda3b2d289e3300f141c3955739e95aa3527b43fb212c559f2476e162d8",
+    "production": false
   }
 }

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "cxorbia.i3.canonical-source-ci-receipt.v1",
+  "userLocalDate": "2026-11-07",
+  "iteration": "I3",
+  "state": "HOLD",
+  "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+  "runId": 42410613966,
+  "runNumber": 2258,
+  "controlSha": "47303278aaac5b461e6bf183a3de08658118c0b7",
+  "sourceSha": "e36a456e07a3b107cb7f75a0c53ffae029eb6de4",
+  "sourceTree": "4ec6c431a2e6ae1ea213b37d7c6782f33828753b",
+  "authorityJob": {
+    "id": 128517728206,
+    "conclusion": "success"
+  },
+  "sourceJob": {
+    "id": 128517858143,
+    "conclusion": "success"
+  },
+  "artifactId": 13589621703,
+  "artifactDigest": "sha256:3fd8bfda3b2d289e3300f141c3955739e95aa3527b43fb212c559f2476e162d8",
+  "artifactDigestType": "GITHUB_ACTIONS_SOURCE_PROOF_EVIDENCE_ZIP_NOT_I4_ARTIFACT",
+  "runtimeLatencySuitePass": 14,
+  "newBoundedBatchCasesPass": 7,
+  "sourceTestsFail": 0,
+  "localRelatedSuitesPass": 36,
+  "observedFrom": "GitHub run/jobs/artifact metadata and decoded source-job logs; all seven new batch tests printed PASS and final source-proof decision present.",
+  "proofReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM134_BOUNDED_HR_BATCHES_SOURCE_PROOF_20261107.json",
+    "gitBlob": "385c9f98edd3cad69a03c8ac861441694cc0a5dc",
+    "sourceSha": "e36a456e07a3b107cb7f75a0c53ffae029eb6de4",
+    "sourceTree": "4ec6c431a2e6ae1ea213b37d7c6782f33828753b",
+    "sourceTestsPass": 36,
+    "sourceTestsFail": 0,
+    "decision": "PASS_LOCAL_SOURCE_36_OF_36_PENDING_CANONICAL_CI_EXACT_DEV_AND_GLOBAL_LOAD_MEASUREMENT",
+    "production": false
+  },
+  "devPublished": false,
+  "production": false,
+  "rulesDeploys": 0,
+  "storageRulesDeploys": 0,
+  "hrWrites": 0,
+  "paymentWrites": 0,
+  "wholeModuleClosure": false,
+  "phaseAComplete": false,
+  "authorizationI4": false,
+  "b10ReadOnlyObservation": {
+    "sourceServed": "d4e7c4b0aa711f6d4717bca69b79b7b28d8f49d7",
+    "role": "Shopper_GT",
+    "project": "Cinepolis",
+    "period": "2026-11",
+    "visit": "Naranjo Mall scheduled2026-11-04",
+    "provider": "TyAOnline",
+    "authorizedLinkPresent": false,
+    "markQuestionnaireDoneDisabled": true,
+    "answersSubmitted": 0,
+    "classification": "MAPPING_FAILURE_PENDING_PROVIDER_BINDING_NOT_NEW_CODE_REGRESSION",
+    "next": "Read existing Admin questionnaire mode/url/visitLinkField and visit HR link presence; no invented URL or submit."
+  }
+}
