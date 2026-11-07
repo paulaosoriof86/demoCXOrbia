@@ -5,3 +5,63 @@ test('A05 reconcile validates session and revision before publish',()=>{const s=
 test('A05 publication precedes authority-ready events',()=>{const s=bridge.indexOf('function publishComposition('),e=bridge.indexOf('async function reconcile(',s),body=bridge.slice(s,e);assert.ok(body.indexOf('CX_TYA_PUBLISH_LIVE_SNAPSHOT_CANDIDATE')<body.indexOf('window.CX_PROTECTED_AUTH_HR_AUTHORITY=')&&body.indexOf('window.CX_PROTECTED_AUTH_HR_AUTHORITY=')<body.indexOf("cx:protected-auth-hr-authority-ready"));assert.match(body,/suppressEvents:true/);assert.match(body,/HR_LIVE_REVISION_PUBLICATION_MISMATCH/);});
 test('A05 backend refresh awaits atomic composition readback',()=>{assert.match(bridge,/let composed=await reconcile\('backend_refresh_dynamic'\)/);assert.match(bridge,/BACKEND_REFRESH_ATOMIC_COMPOSITION_REQUIRED/);assert.match(bridge,/BACKEND_REFRESH_READBACK_REVISION_MISMATCH/);assert.doesNotMatch(bridge,/schedule\('backend_refresh_dynamic',true\);return s;/);});
 test('A05 human gate and watcher require same-revision atomic authority',()=>{assert.match(c6,/authority\?\.atomicPublication===true/);assert.match(c6,/authorityRevision===sourceRevision/);assert.match(watcher,/authority\.atomicPublication===true/);assert.match(watcher,/authorityRevision===dataRevision/);assert.match(watcher,/CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE\?\.\('live_watcher_revision_change',true\)/);});
+import vm from 'node:vm';
+function bootSchedulerHarness({isAuthorized=true,dependenciesReady=true}={}){
+  const start=bridge.indexOf('function schedule(reason,reset)'),end=bridge.indexOf('\nfunction bind()',start);
+  assert.ok(start>=0&&end>start);
+  const pending=new Map();let serial=0,ready=false,calls=0;
+  const sandbox={
+    window:{dispatchEvent(){}},CX:{dataSource:{}},
+    context:()=>({}),resolveScope:()=>({}),authorized:()=>isAuthorized,
+    backendReady:()=>ready,depsReady:()=>dependenciesReady,operationalSource:()=>({mode:'external'}),
+    Date,CustomEvent:class{constructor(type){this.type=type;}},
+    setTimeout(fn,delay){const id=++serial;pending.set(id,{fn,delay});return id;},
+    clearTimeout(id){pending.delete(id);},
+    async reconcile(){calls++;sandbox.window.CX_PROTECTED_AUTH_HR_AUTHORITY={applied:true,at:new Date().toISOString()};return{ok:true};}
+  };
+  vm.runInNewContext("let bootTimer=null,bootAttempt=0,bootForce=false,bootReason='',reconciling=false;const BOOT_MAX_ATTEMPTS=180;\n"+bridge.slice(start,end)+"\nthis.invoke=schedule;this.setReconciling=value=>{reconciling=value;};",sandbox);
+  return{
+    invoke:sandbox.invoke,setReconciling:sandbox.setReconciling,
+    setReady(value){ready=value;},calls:()=>calls,ids:()=>[...pending.keys()],delays:()=>[...pending.values()].map(t=>t.delay),
+    setApplied(){sandbox.window.CX_PROTECTED_AUTH_HR_AUTHORITY={applied:true,at:new Date().toISOString()};},
+    async runNext(){const entry=pending.entries().next().value;assert.ok(entry,'pending callback required');pending.delete(entry[0]);await entry[1].fn();}
+  };
+}
+test('VRM134 ready event wakes the pending 325ms readiness poll immediately',async()=>{
+  const h=bootSchedulerHarness();h.invoke('script_ready_authenticated_context_restore',true);await h.runNext();
+  assert.deepEqual(h.delays(),[325]);h.setReady(true);h.invoke('backend_ready_firestore_dynamic',true);
+  assert.deepEqual(h.delays(),[0]);await h.runNext();assert.equal(h.calls(),1);assert.deepEqual(h.delays(),[]);
+});
+test('VRM134 ready event wakes the capped 2000ms readiness poll immediately',async()=>{
+  const h=bootSchedulerHarness();h.invoke('script_ready_authenticated_context_restore',true);
+  for(let i=0;i<24;i++)await h.runNext();
+  assert.deepEqual(h.delays(),[2000]);h.setReady(true);h.invoke('backend_ready_firestore_dynamic',true);
+  assert.deepEqual(h.delays(),[0]);await h.runNext();assert.equal(h.calls(),1);
+});
+test('VRM134 duplicate ready events retain one immediate callback and one reconciliation',async()=>{
+  const h=bootSchedulerHarness();h.invoke('script_ready_authenticated_context_restore',true);await h.runNext();h.setReady(true);
+  h.invoke('backend_ready_firestore_dynamic',true);h.invoke('backend_ready_dynamic');
+  assert.deepEqual(h.delays(),[0]);await h.runNext();assert.equal(h.calls(),1);assert.deepEqual(h.delays(),[]);
+});
+test('VRM134 passive focus does not replace a pending readiness timer',async()=>{
+  const h=bootSchedulerHarness();h.invoke('script_ready_authenticated_context_restore',true);await h.runNext();const ids=h.ids();
+  h.invoke('window_focus_restored_session');assert.deepEqual(h.ids(),ids);assert.deepEqual(h.delays(),[325]);assert.equal(h.calls(),0);
+});
+test('VRM134 active reconciliation is not interrupted or overlapped',async()=>{
+  const h=bootSchedulerHarness();h.invoke('script_ready_authenticated_context_restore',true);await h.runNext();const ids=h.ids();
+  h.setReconciling(true);h.setReady(true);h.invoke('backend_ready_firestore_dynamic',true);
+  assert.deepEqual(h.ids(),ids);assert.equal(h.calls(),0);
+});
+test('VRM134 waking a poll does not bypass principal authorization',async()=>{
+  const h=bootSchedulerHarness({isAuthorized:false});h.invoke('script_ready_authenticated_context_restore',true);await h.runNext();
+  h.setReady(true);h.invoke('backend_ready_firestore_dynamic',true);await h.runNext();
+  assert.equal(h.calls(),0);assert.equal(h.delays().length,1);assert.ok(h.delays()[0]>0);
+});
+test('VRM134 waking a poll does not bypass dependency readiness',async()=>{
+  const h=bootSchedulerHarness({dependenciesReady:false});h.invoke('script_ready_authenticated_context_restore',true);await h.runNext();
+  h.setReady(true);h.invoke('backend_ready_firestore_dynamic',true);await h.runNext();assert.equal(h.calls(),0);
+});
+test('VRM134 a fresh applied authority still ignores passive readiness echoes',()=>{
+  const h=bootSchedulerHarness();h.setReady(true);h.setApplied();h.invoke('backend_ready_firestore_dynamic',true);
+  assert.deepEqual(h.delays(),[]);assert.equal(h.calls(),0);
+});
