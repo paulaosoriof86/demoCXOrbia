@@ -1,0 +1,268 @@
+{
+  "schemaVersion": "cxorbia.i3.run2259.dev-continuity-reconciliation.v1",
+  "observedAt": "2026-11-07T21:34:24Z",
+  "iteration": "I3",
+  "state": "HOLD",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadAtReadback": "6e0d4a39ff8994b43734daefb08eed2396be473d",
+  "decision": "PASS_EXACT_RUN2259_DEV_AND_CONTROL_RECONCILIATION_PENDING_VALIDATION_PERFORMANCE_AND_INTEGRAL_CERTIFICATION_HOLD",
+  "source": {
+    "sha": "e36a456e07a3b107cb7f75a0c53ffae029eb6de4",
+    "tree": "4ec6c431a2e6ae1ea213b37d7c6782f33828753b"
+  },
+  "materialization": {
+    "state": "PASS_EXACT_DEV_MATERIALIZATION_PERFORMANCE_P0_OPEN",
+    "decision": "PASS_VRM134_A05_EXACT_DEV_MATERIALIZATION",
+    "scopeFinding": "VRM-134",
+    "runId": 42411020610,
+    "runNumber": 2259,
+    "jobId": 128519105629,
+    "artifactId": 13589453115,
+    "artifactDigest": "sha256:fa81ab2fd0ed485d891d3ac2d5c1504911c0324676ba127808565709e14c185f",
+    "artifactDigestType": "GITHUB_ACTIONS_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR",
+    "sourceSha": "e36a456e07a3b107cb7f75a0c53ffae029eb6de4",
+    "sourceTree": "4ec6c431a2e6ae1ea213b37d7c6782f33828753b",
+    "runtimeRevision": "cxorbia-live-hr-dev-00356-r4g",
+    "runtimeDigest": "sha256:86d360fc8851b71d864b56d2ce459286425e05ac325500a629d0c74b1cdf476c",
+    "runtimeTrafficPercent": 100,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/8625def14a41a6e6",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794083387210000",
+    "hrRevision": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "firestoreRulesDeploys": 0,
+    "storageRulesDeploys": 0,
+    "hrWrites": 0,
+    "production": false,
+    "controlHeadAtDeploy": "6e0d4a39ff8994b43734daefb08eed2396be473d",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2259_EXACT_DEV_CONTINUITY_RECONCILIATION_20261107.json",
+    "humanAcceptance": "PENDING",
+    "shopperD06E2E": "PREVIOUS_FOCAL_EVIDENCE_PRESERVED_NO_NEW_EXAM_NO_FRESH_CREDENTIAL_LOGIN_CLAIM",
+    "fullTaskClosed": false,
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
+    "scenarioDimensionsProven": true,
+    "firestoreRulesetEvidence": "CARRY_FORWARD_EXACT_RUN2256_RULESET; RUN2259_WORKFLOW_NO_RULES_DEPLOY",
+    "verifiedServedAssetCount": 18,
+    "providerRefreshDurationMs": 3936
+  },
+  "evidence": {
+    "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/42411020610",
+    "jobs": {
+      "total": 103,
+      "success": 2,
+      "skipped": 101,
+      "failed": 0
+    },
+    "deployJobId": 128519105629,
+    "artifactId": 13589453115,
+    "artifactName": "cxorbia-vrm154-156-dev-materialization-42411020610",
+    "archiveSha256": "fa81ab2fd0ed485d891d3ac2d5c1504911c0324676ba127808565709e14c185f",
+    "archiveSha256IndependentlyVerified": true,
+    "archiveResult": "result.json",
+    "archiveProviderMeasurement": "hr-meta.json",
+    "assetsVerified": 18,
+    "runtimeTests": {
+      "pass": 14,
+      "fail": 0
+    },
+    "sourceCanonicalCi": {
+      "runId": 42410613966,
+      "runNumber": 2258
+    },
+    "notI4CertifiedTar": true
+  },
+  "providerMeasurement": {
+    "sampleAt": "2026-11-07T20:29:50.631Z",
+    "refreshDurationMs": 3936,
+    "refreshStagesMs": {
+      "liveProviderRead": 1760,
+      "registryIdentity": 1778,
+      "tabRegistryGuard": 333,
+      "canonicalize": 360,
+      "reapplyState": 493,
+      "freshSourceProbe": 145,
+      "durableProjectConfig": 459
+    },
+    "cacheOrigin": "runtime_refresh",
+    "revision": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+    "controlledBeforeAfterBenchmark": false,
+    "uiLoadTime": false
+  },
+  "chromeObservation": {
+    "browser": "Chrome extension",
+    "environment": "DEV",
+    "role": "Shopper Stiven GT",
+    "project": "Cinepolis",
+    "period": "2026-11",
+    "session": "Restored authorized session; not fresh credential login",
+    "reloadSamples": [
+      {
+        "sample": 2,
+        "notReadyAtMs": 3872,
+        "readyAtMs": 5338,
+        "measurement": "Observed wall-clock sample window including automation overhead; authenticated Mi Dia visible after operational-HR validation",
+        "source": "Connected Chrome DOM snapshots"
+      },
+      {
+        "sample": 3,
+        "notReadyAtMs": 8073,
+        "readyAtMs": 9530,
+        "measurement": "Second restored-session reload; automation wall-clock sampling includes command overhead, same role/project/period",
+        "source": "Connected Chrome DOM snapshots"
+      }
+    ],
+    "initialWaitAttempt": "Selector timed out; page later ready; excluded from timed performance result",
+    "globalPerformanceClosed": false,
+    "certificationAttemptsSubmitted": 0,
+    "resourceViewerRechecked": false,
+    "academiaCatalog": {
+      "task": "D08",
+      "courses": 7,
+      "lessons": 27,
+      "completedCourses": 0,
+      "completedLessons": 0,
+      "courseOpened": false,
+      "lessonOpened": false,
+      "progressWrites": 0,
+      "scope": "READ_ONLY_CATALOG_NOT_D08_DURABLE_PROGRESS_CERTIFICATION"
+    }
+  },
+  "acceptedClausesPreserved": [
+    {
+      "task": "D03",
+      "accepted": "15 questions and 15 references generated, persisted, idempotent replay",
+      "doNotRepeat": "Do not regenerate",
+      "evidencePath": "CXORBIA_I3_D03_LIVE_FRESH_15Q_RUN1778_2026-10-17.json",
+      "gitBlob": "450209cdc91f5264a1d9df304d886bf6fc615d72"
+    },
+    {
+      "task": "D04/D05",
+      "accepted": "15/15 editor; versioned QA lifecycle and negative Shopper role proofs; real banks preserved",
+      "doNotRepeat": "Do not redo editor or publish a real pending bank to manufacture D06 eligibility",
+      "evidencePath": "docs/checkpoints/CXORBIA_I3_D05_FLEX_OPTIONS_QA_RUN42277757800_20261106.json",
+      "gitBlob": "9b83f3639956e40d436814f12209506a9fd59b1c"
+    },
+    {
+      "task": "D06",
+      "accepted": "Two authorized 8-question attempts fail/pass, remote ACK, feedback8/8, 3 retained IDs, OCT/NOV/reload/new-document readback and validity",
+      "doNotRepeat": "Authorization for two attempts already consumed; no third attempt or revoked approval",
+      "evidencePath": "docs/checkpoints/CXORBIA_I3_D06_AUTHORIZED_ATTEMPTS_CHROME_E2E_20261106.json",
+      "gitBlob": "478cf7be22694b47e0120c7ed49acf61365e2b37"
+    },
+    {
+      "task": "D07",
+      "accepted": "Authentic 7-page PDF Admin/Shopper rendered/read/downloaded; OCT1/2/7 and NOV1; existing TXT lifecycle separately preserved",
+      "doNotRepeat": "Do not repeat PDF viewer checks by period or infer PDF lifecycle from TXT",
+      "evidencePath": "docs/checkpoints/CXORBIA_I3_SHOPPER_D06_D07_B10_CHROME_READBACK_20261106.json",
+      "gitBlob": "1c9666a983ab80df5c612c18ff8cb479b122b7e9"
+    },
+    {
+      "task": "R20/recertification",
+      "accepted": "Ordinary login/logout/relogin and provider recertification ACK/readback",
+      "doNotRepeat": "Do not reopen accepted auth/provider clauses; only affected frontend residual",
+      "evidencePath": "docs/checkpoints/CXORBIA_I3_D06_G03_VRM134_FOCAL_ADJUDICATION_20261106.json",
+      "gitBlob": "b69307a0317ae472ce4247face6ab2d5470db81b"
+    },
+    {
+      "task": "Identity/G05/C04-C05",
+      "accepted": "83/83 identity groups plus2; G05 source QA113/113 not HR row count; finance13/13 ACK/readback/replay/cleanup",
+      "doNotRepeat": "No remerge, reimport, synthetic HR total or payment reexecution",
+      "evidencePath": "docs/checkpoints/CXORBIA_I3_MULTIFRONT_DECISIONS_FROZEN_20261107.json",
+      "gitBlob": "7f11371be6362b40832fdce889fafeefb34ace83"
+    }
+  ],
+  "residualOnlyQueue": [
+    {
+      "task": "A05/A06-VRM134",
+      "remaining": "Comparable whole-page load evidence in applicable roles; provider3936ms and one restored-session UI sample do not close global performance",
+      "notPending": "Exact runtime+Hosting materialization is PASS RUN2259; do not redeploy"
+    },
+    {
+      "task": "D06",
+      "remaining": "Existing eligible15Q Shopper path; two published eligible-bank selector; applicable frontend recertification; same new attempts after fresh ordinary credential login; original required flag readback; integral acceptance",
+      "type": "Uncovered contract clauses, not five newly proven defects",
+      "constraint": "No new attempt, bank publication, recertification reset or credential change"
+    },
+    {
+      "task": "D07",
+      "remaining": "Only uncovered PDF creation/metadata/version/safe retirement, role denial, durable read-ACK and visit/revision binding clauses",
+      "type": "Coverage gap separate from accepted reader",
+      "constraint": "No resource lifecycle mutation without bounded authorized case"
+    },
+    {
+      "task": "D08",
+      "remaining": "Academia course/lesson/evaluation/resources/progress/authorized edit persistence across required roles",
+      "type": "Separate contract, not repeated PDF verification"
+    },
+    {
+      "task": "B05-B11/B13-B14",
+      "remaining": "Only uncovered independent-role operation HR ACK/idempotency/no duplicates; B10 authorized project-period-visit route",
+      "constraint": "No HR writes or reimport in this reconciliation"
+    },
+    {
+      "task": "C02-C10",
+      "remaining": "Residual role E2E; existing Q7300 record/application and genuinely ambiguous September exceptions",
+      "constraint": "Preserve C04/C05 and accepted July/August, do not recreate payments"
+    },
+    {
+      "task": "E04/F12/F09",
+      "remaining": "Actual benchmark source or honest empty state, durable client collaboration and remaining roles"
+    },
+    {
+      "task": "G03",
+      "remaining": "Only uncovered original frozen scope/design/role clauses; no general re-audit"
+    },
+    {
+      "task": "Final I3 gates",
+      "remaining": "Integral per-block acceptance, all21 module evidence and Gate20/21; then separately explicit I4 authorization for exact certified artifact",
+      "constraint": "No new parallel plan, no product/brand bytes changed after certification"
+    }
+  ],
+  "governance": {
+    "frozenPlanPath": "PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+    "frozenPlanSha256": "83e8f2c0a6b190bab1d9dea32bf99158116f3164f419ae72e051fd791fd8576c",
+    "matrixBefore": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V262.json",
+    "matrixBeforeBlob": "f2e67ac9da56f61030187832f1c71f48c69ec6aa",
+    "ledgerBefore": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V577_2026-11-07.json",
+    "ledgerBeforeBlob": "ca6feabf3ae575695fc8990868512bd0f18d8da3",
+    "moduleMatchCount": 5,
+    "moduleCount": 21,
+    "newModuleMatch": 0,
+    "phaseAComplete": false,
+    "allModulesMatch": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "humanAcceptance": "PENDING_UNCOVERED_INTEGRAL_CLAUSES_ONLY",
+    "routingStatus": "HOLD_I3_DEV_MATERIALIZED_PENDING_D06_D07_CHROME_HUMAN",
+    "routingPreflight": "103 workflow conditions checked; only canonical-candidate-authority enabled, cloud auth disabled, no deploy dispatch",
+    "controlValidation": "PENDING_PRECOMMIT_AND_CANONICAL_CI",
+    "changesThisReconciliation": {
+      "product": 0,
+      "builds": 0,
+      "deploys": 0,
+      "workflow": 0,
+      "guard": 0,
+      "rules": 0,
+      "hrWrites": 0,
+      "examAttempts": 0,
+      "bankMutations": 0,
+      "resourceMutations": 0,
+      "payments": 0
+    },
+    "classificationReconciliation": {
+      "domain": "canonical-hr-state-adapters",
+      "from": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
+      "to": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "basis": "Both changed HR source owners included in domain; 36/36 local tests, CI2258 source proof and RUN2259 exact deployment; no MATCH promotion",
+      "remaining": "Comparable global performance, remaining domain live-role E2E and integral human acceptance",
+      "ownerBlobs": {
+        "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs": "a3874143a481c159a9d2a11984966bfe813f5248",
+        "tools/hr-source/tya-live-provider-registry-identity-dev.mjs": "bc60ad69d611f96b614a968fc4a9b4a5b9abd63a"
+      }
+    }
+  },
+  "production": false,
+  "authorizationI4": false
+}
