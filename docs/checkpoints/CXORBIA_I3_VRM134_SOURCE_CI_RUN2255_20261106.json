@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm134.canonical-source-ci-receipt.v1",
+  "iteration": "I3",
+  "observedAt": "2026-11-07T02:54:45.911Z",
+  "runId": 42331271057,
+  "runNumber": 2255,
+  "controlSha": "b9285fe599a4a1db4aa8dfe5d4555cd29364d2c3",
+  "sourceSha": "d4e7c4b0aa711f6d4717bca69b79b7b28d8f49d7",
+  "sourceTree": "a384b638ade1199f8bdc49036b934984a9f3b36c",
+  "source": {
+    "sha": "d4e7c4b0aa711f6d4717bca69b79b7b28d8f49d7",
+    "tree": "a384b638ade1199f8bdc49036b934984a9f3b36c"
+  },
+  "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+  "conclusion": "success",
+  "authorityJobId": 128278097297,
+  "sourceJobId": 128278227436,
+  "focalTests": {
+    "pass": 13,
+    "fail": 0,
+    "preserved": 5,
+    "new": 8
+  },
+  "artifactId": 13558135292,
+  "artifactDigest": "sha256:b6f059249852c56fa12d8604c6872ed2dc72c331f736808322bb48d88cd528d1",
+  "deploys": 0,
+  "liveE2e": "NOT_RUN",
+  "moduleMatchPromotions": 0,
+  "wholeProductPass": false,
+  "production": false
+}
