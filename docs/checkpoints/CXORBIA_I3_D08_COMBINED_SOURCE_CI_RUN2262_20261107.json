@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "cxorbia.i3.d08-combined.source-ci.v1",
+  "iteration": "I3",
+  "status": "PASS_SOURCE_CI_PENDING_EXACT_DEV",
+  "runId": 42420173152,
+  "runNumber": 2262,
+  "controlHeadSha": "bfce58df4412a74dac6b8ba7c0a9adbf47851d81",
+  "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
+  "sourceTree": "1f350fab2ea41504434a1c4712282b2bbbb05ae9",
+  "authorityJobId": 128546680264,
+  "sourceJobId": 128546809665,
+  "conclusion": "success",
+  "jobs": {
+    "success": 2,
+    "skipped": 101
+  },
+  "sourceTestsPass": 27,
+  "sourceTestsFail": 0,
+  "testsOwner": "backend/runtime/hr-live-service/test/cxorbia-academy-command-provider-v1.test.mjs",
+  "baseCatalogCourses": 27,
+  "baseCatalogLessons": 117,
+  "proofSource": {
+    "path": "docs/checkpoints/CXORBIA_I3_D08_PROGRESS_SOURCE_PROOF_20261107.json",
+    "gitBlob": "4500a3da31fd8bb1dc97d0042c48b66b9aa7829f"
+  },
+  "artifact": {
+    "id": 13592189833,
+    "name": "cxorbia-vrm154-156-frontend-source-reproof-42420173152",
+    "digest": "sha256:524c4f470b28ee79b8eecd8a9ff813ff4991954548bf9736806ea795cd272c72"
+  },
+  "decision": "PASS_VRM154_156_FRONTEND_SOURCE_CONTRACT_AND_D08_27_OF_27",
+  "sourceInventory": {
+    "domains": 21,
+    "owners": 107,
+    "sourceFiles": 159,
+    "ownerBlobMismatches": 0,
+    "sourceBlobMismatches": 0
+  },
+  "devPublished": false,
+  "builds": 0,
+  "deploys": 0,
+  "realProviderWrites": 0,
+  "rulesWrites": 0,
+  "production": false,
+  "next": "One existing bounded runtime plus Hosting DEV materialization of unchanged combined source; do not separately deploy the superseded dispatch-only source."
+}
