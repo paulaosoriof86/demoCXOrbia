@@ -1,0 +1,121 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-source-proof.v1",
+  "recordedAtUtc": "2026-11-07T20:17:56Z",
+  "userLocalDate": "2026-11-07",
+  "iteration": "I3",
+  "state": "HOLD",
+  "decision": "PASS_LOCAL_SOURCE_36_OF_36_PENDING_CANONICAL_CI_EXACT_DEV_AND_GLOBAL_LOAD_MEASUREMENT",
+  "sourceSha": "e36a456e07a3b107cb7f75a0c53ffae029eb6de4",
+  "sourceTree": "4ec6c431a2e6ae1ea213b37d7c6782f33828753b",
+  "predecessorProductSourceSha": "d4e7c4b0aa711f6d4717bca69b79b7b28d8f49d7",
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_MULTIFRONT_DECISIONS_FROZEN_20261107.json",
+  "scopeReceiptBlob": "7f11371be6362b40832fdce889fafeefb34ace83",
+  "allowedProductFiles": [
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+    "tools/hr-source/tya-live-provider-registry-identity-dev.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs"
+  ],
+  "sourceTestsPass": 36,
+  "sourceTestsFail": 0,
+  "localTests": {
+    "runtimeLatency": 14,
+    "firestoreEarlyHydration": 5,
+    "atomicSessionPublication": 13,
+    "coldLoginParallel": 4,
+    "network": false,
+    "realProvider": false,
+    "realData": false
+  },
+  "findings": [
+    {
+      "id": "VRM-134",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "cause": "Five serial batchGet requests per independent reader for36 discovered tabs.",
+      "scope": "Only bounded concurrency2 per reader, with ordered reduction and both peers settled before failure."
+    }
+  ],
+  "sourceBlobs": {
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs": "a3874143a481c159a9d2a11984966bfe813f5248",
+    "tools/hr-source/tya-live-provider-registry-identity-dev.mjs": "bc60ad69d611f96b614a968fc4a9b4a5b9abd63a",
+    "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs": "d5d7a0e8312159e1df00b30385431cd4d7979006"
+  },
+  "sourceSha256": {
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs": "36dd896fed41cbe3e6b35e2b92587627708f324ca223a4ec629a4cb8c219157c",
+    "tools/hr-source/tya-live-provider-registry-identity-dev.mjs": "ae15b84d8ca0159cb68b8deec7af2e8619016d1a46f3b785ab23fabce34213a2",
+    "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs": "ef73bbe6b2e4c16d50bbb805a9264cab0748cbc5d855de7b3ffead77a1b95cd6"
+  },
+  "independentAudit": {
+    "decision": "PASS_FOCAL_NO_BLOCKING_DEFECT",
+    "ownersChecked": 2,
+    "syntaxPass": 2,
+    "localTestsIndependentlyRun": 14,
+    "hardeningRequested": "Assert calls against independently constructed complete tab/range list.",
+    "hardeningApplied": true,
+    "finalMainReproof": 36
+  },
+  "controlledProof": {
+    "tabs": 36,
+    "requestsPerReader": 5,
+    "oldMaxConcurrency": 1,
+    "newMaxConcurrency": 2,
+    "oldResponseWaves": 5,
+    "newResponseWaves": 3,
+    "allRangesAndOrderPreserved": true,
+    "productionMillisecondsNotMeasured": true
+  },
+  "residualRisk": "Up to four simultaneous batchGet requests across two independent readers; real provider quotas/stage timing and Chrome load still require DEV observation. No millisecond improvement claim.",
+  "preserved": [
+    "TTL",
+    "authentication",
+    "independent source readers",
+    "external revision verification",
+    "all periods/countries",
+    "last nonempty contact",
+    "identity projection",
+    "server source",
+    "Rules",
+    "existing certificates/resources/finance"
+  ],
+  "browserReadOnlyAtServingPredecessor": {
+    "date": "2026-11-07",
+    "role": "Shopper",
+    "country": "GT",
+    "project": "Cinepolis",
+    "period": "2026-11",
+    "academia": {
+      "courses": 7,
+      "lessons": 27,
+      "completionActions": 0
+    },
+    "resources": {
+      "visible": 1,
+      "originalPdfPreserved": true,
+      "pdfReopened": false,
+      "readAcknowledgementWritten": false
+    },
+    "benefits": {
+      "historyEntries": 10,
+      "confirmedPayments": 5,
+      "pendingConfirmation": 5,
+      "currentPeriodRows": 1,
+      "augustPaidOctober02Preserved": true,
+      "financialWrites": 0
+    },
+    "adminAdditionalRead": "Original Admin tab present but technical focus failure; no logout/credential mutation."
+  },
+  "currentDevSourceSha": "d4e7c4b0aa711f6d4717bca69b79b7b28d8f49d7",
+  "devPublished": false,
+  "production": false,
+  "rulesDeploys": 0,
+  "storageRulesDeploys": 0,
+  "hrWrites": 0,
+  "certificationAttemptsCreated": 0,
+  "paymentWrites": 0,
+  "fullModuleClosure": false,
+  "phaseAComplete": false,
+  "terminalCertificationAllowed": false,
+  "authorizationI4": false
+}
