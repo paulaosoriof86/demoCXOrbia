@@ -108,15 +108,15 @@
     "production": false
   },
   "continuityHandoff": {
-    "authority": "CURRENT_VRM311_VRM312_EXACT_DEV_RUN2246",
-    "path": "docs/checkpoints/CXORBIA_I3_VRM311_VRM312_EXACT_DEV_RUN2246_20261106.json",
-    "gitBlob": "fcb05cd0e2be4e6111344e6892d380299b937327",
+    "authority": "CURRENT_VRM313_EXACT_DEV_RUN2248",
+    "path": "docs/checkpoints/CXORBIA_I3_VRM313_EXACT_DEV_RUN2248_20261106.json",
+    "gitBlob": "4c14dee3af77ea18daf68e7792314e677673b6fa",
     "asOf": "2026-11-06T23:03:54.836033+00:00",
     "iteration": "I3",
     "status": "HOLD",
-    "productSourceSha": "439a688be58b23c93ac4e99a91da78b4c3cf81fa",
-    "productSourceTree": "905f71d394033f3363fefd8221127c6fe0145d8c",
-    "latestBatchRunId": 42307799172,
+    "productSourceSha": "5a906e4a9aa79991924580eb54103797d311d930",
+    "productSourceTree": "70cecc344f1b8c243f89459b0c7b79f9641dd864",
+    "latestBatchRunId": 42314369471,
     "verifiedCohortGroups": 83,
     "pendingCohortGroups": 0,
     "moduleMatches": 5,
@@ -130,7 +130,7 @@
       "E04",
       "F09"
     ],
-    "immediateAction": "I3 HOLD: source439a688be58b23c93ac4e99a91da78b4c3cf81fa exact runtime+Hosting DEV RUN42307799172 #2246,100%traffic,6/6 changed assets exact. FIRST restore connected Chrome readback after MCP request timeout, then complete D06 real published8-question failed/pass ACK+feedback/reload/new session and common eligibility Certificacion/Mi Dia/Mis Visitas; verify D07 PDF viewer OCT/NOV using same original resource. Read-only provider projection already proves identical bank/resource IDs and versions across OCT/NOV, PDF200 authenticated, original attempt preserved1/1. Then B10 existing Stiven OCT C.Miraflores Pending questionnaire open only; A06/VRM134 actual cold/warm load measurement. Preserve 83/83 identity groups+2 approved,113/113 HR,13/13 finanzas,D05editor15/15,5/21 MATCH; keep independent G03 historical HR finanzas payment evidence and E04/F09/D07 remaining clauses in parallel. No new source/build/deploy required for these checks. Gate20/21 HOLD, I4 authorization absent, production DO_NOT_TOUCH.",
+    "immediateAction": "I3 HOLD 5/21 MATCH: RUN2248 exact VRM313 source 5a906e4a9aa79991924580eb54103797d311d930 serving runtime+Hosting DEV, 100% runtime traffic, HR revision stable, zero production. NEXT real independently authenticated Shopper D06 OCT/NOV original project bank: failed/pass attempt ACK, feedback, independent server history, reload/new session and common eligibility Certificacion/Mi Dia/Mis Visitas. Preserve Admin session; do not sign it out or substitute Admin for Shopper. B10 OCT visit #722 is Con cuestionario with history Cuestionario enviado (Admin read-only); no submission. VRM134 remains P0 performance HOLD: new-tab readiness sampled between17.6-24.8s, reload between15.9-20.9s. Preserve D07 PDF OCT/NOV page1/7 user Work PASS, identity83/83+2, HR113/113, finance13/13, D05 editor15/15; G03 historical HR/finanzas independent evidence and remaining 16 full-domain/human gates. Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. No new source/build/deploy for these checks.",
     "noProduction": true
   },
   "currentModuleEvidenceOverrides": {
@@ -482,7 +482,7 @@
     "evolution": 6
   },
   "historicalNextExactActionPreS1": "S1 read-only reason/alias cohort classification, implement legacy-compatible deterministic normalizer in provider owner and bridge, run bounded GT/HN/history/Auth fixtures. Existing DEV serial materialization only after source QA; verify Stiven/Julissa Shopper role post-fix.",
-  "nextExactAction": "I3 HOLD 5/21 MATCH: RUN2248 exact VRM313 source 5a906e4a9aa79991924580eb54103797d311d930 serving runtime+Hosting DEV, 100% runtime traffic, HR revision stable, zero production. NEXT real independently authenticated Shopper D06 OCT/NOV original project bank: failed/pass attempt ACK, feedback, independent server history, reload/new session and common eligibility Certificacion/Mi Dia/Mis Visitas. Preserve Admin session; do not sign it out or substitute Admin for Shopper. B10 OCT visit #722 is Con cuestionario with history Cuestionario enviado (Admin read-only); no submission. VRM134 remains P0 performance HOLD: new-tab readiness sampled between17.6-24.8s, reload between15.9-20.9s. Preserve D07 PDF OCT/NOV page1/7 user Work PASS, identity83/83+2, HR113/113, finance13/13, D05 editor15/15; G03 historical HR/finance independent evidence and remaining 16 full-domain/human gates. Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. No new source/build/deploy for these checks.",
+  "nextExactAction": "I3 HOLD 5/21 MATCH: RUN2248 exact VRM313 source 5a906e4a9aa79991924580eb54103797d311d930 serving runtime+Hosting DEV, 100% runtime traffic, HR revision stable, zero production. NEXT real independently authenticated Shopper D06 OCT/NOV original project bank: failed/pass attempt ACK, feedback, independent server history, reload/new session and common eligibility Certificacion/Mi Dia/Mis Visitas. Preserve Admin session; do not sign it out or substitute Admin for Shopper. B10 OCT visit #722 is Con cuestionario with history Cuestionario enviado (Admin read-only); no submission. VRM134 remains P0 performance HOLD: new-tab readiness sampled between17.6-24.8s, reload between15.9-20.9s. Preserve D07 PDF OCT/NOV page1/7 user Work PASS, identity83/83+2, HR113/113, finance13/13, D05 editor15/15; G03 historical HR/finanzas independent evidence and remaining 16 full-domain/human gates. Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. No new source/build/deploy for these checks.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -1194,8 +1194,8 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261106-V254.json",
-    "gitBlob": "b9f0c4943a9307cfc3865b973354445928419d0f",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261106-V256.json",
+    "gitBlob": "69234ef9ff1e60d4b7afb72915738f3c57488d54",
     "sourceSha": "5a906e4a9aa79991924580eb54103797d311d930",
     "allModulesMatch": false,
     "phaseAComplete": false
@@ -1768,7 +1768,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING_PENDING_SHOPPER_E2E",
+    "mode": "CURRENT_SOURCE_SERVING",
     "runId": 42314369471,
     "runNumber": 2248,
     "sourceSha": "5a906e4a9aa79991924580eb54103797d311d930",
@@ -3196,17 +3196,17 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "5a906e4a9aa79991924580eb54103797d311d930",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261106-V254.json",
-    "matrixBlob": "b9f0c4943a9307cfc3865b973354445928419d0f",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261106-V256.json",
+    "matrixBlob": "69234ef9ff1e60d4b7afb72915738f3c57488d54",
     "classificationCounts": {
       "MATCH": 5,
       "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN": 3,
-      "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 6,
-      "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN": 6,
+      "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 8,
+      "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN": 4,
       "SOURCE_PROVEN_DEV_EXACT_5_ASSETS_PASS_PENDING_ROLE_E2E_HUMAN": 1
     },
-    "derivedAt": "2026-11-06T23:48:05.722939+00:00",
-    "meaning": "SOURCE_ONLY_PENDING_DEV_MATERIALIZATION_VRM313"
+    "derivedAt": "2026-11-07T00:44:54.931Z",
+    "meaning": "CURRENT_SOURCE_RUNTIME_AND_HOSTING_DEV_EXACT_RUN2248_PENDING_ROLE_E2E_5_OF_21_MATCH"
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
   "activeMethodologyGuard": {
@@ -5663,7 +5663,7 @@
     "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751"
   },
   "previousExactNextActionBeforeRun2146": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "I3 HOLD 5/21 MATCH: RUN2248 exact VRM313 source 5a906e4a9aa79991924580eb54103797d311d930 serving runtime+Hosting DEV, 100% runtime traffic, HR revision stable, zero production. NEXT real independently authenticated Shopper D06 OCT/NOV original project bank: failed/pass attempt ACK, feedback, independent server history, reload/new session and common eligibility Certificacion/Mi Dia/Mis Visitas. Preserve Admin session; do not sign it out or substitute Admin for Shopper. B10 OCT visit #722 is Con cuestionario with history Cuestionario enviado (Admin read-only); no submission. VRM134 remains P0 performance HOLD: new-tab readiness sampled between17.6-24.8s, reload between15.9-20.9s. Preserve D07 PDF OCT/NOV page1/7 user Work PASS, identity83/83+2, HR113/113, finance13/13, D05 editor15/15; G03 historical HR/finance independent evidence and remaining 16 full-domain/human gates. Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. No new source/build/deploy for these checks.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH: RUN2248 exact VRM313 source 5a906e4a9aa79991924580eb54103797d311d930 serving runtime+Hosting DEV, 100% runtime traffic, HR revision stable, zero production. NEXT real independently authenticated Shopper D06 OCT/NOV original project bank: failed/pass attempt ACK, feedback, independent server history, reload/new session and common eligibility Certificacion/Mi Dia/Mis Visitas. Preserve Admin session; do not sign it out or substitute Admin for Shopper. B10 OCT visit #722 is Con cuestionario with history Cuestionario enviado (Admin read-only); no submission. VRM134 remains P0 performance HOLD: new-tab readiness sampled between17.6-24.8s, reload between15.9-20.9s. Preserve D07 PDF OCT/NOV page1/7 user Work PASS, identity83/83+2, HR113/113, finance13/13, D05 editor15/15; G03 historical HR/finanzas independent evidence and remaining 16 full-domain/human gates. Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. No new source/build/deploy for these checks.",
   "previousExecutionReceiptBeforeRun1983Seal": {
     "path": "CXORBIA_I3_RUN1852_POST_DEPLOY_CONSISTENCY_SEAL_2026-10-24.json",
     "kind": "RUN1852_SOURCE_F283_DEV_PASS_ADMIN_THREE_VISIT_UI_PASS_DURABLE_HR_OPERATIONAL_PARITY_P0_OPEN",
@@ -7199,7 +7199,7 @@
     "sameArtifactAdminShopper": "PENDING",
     "production": false
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261106-V255.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261106-V256.json",
   "vrm301DevHostingAdminReadback20261104": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM301_DEV_HOSTING_RUN41801457655_ADMIN_READBACK_20261104.json",
     "receiptGitBlob": "b8138b76db5159956aa500fe30f2be0f99fc8fce",
@@ -8641,5 +8641,15 @@
     "artifactDigest": "sha256:385d9d8fbeaba175e6046dd41ead34f4d579970972bf358b8bd36dc8cc662fee",
     "hostingVersion": "sites/cxorbia-backend-dev/versions/c1d5afaa3b2c1314",
     "runtimeRevision": "cxorbia-live-hr-dev-00354-lpb"
+  },
+  "controlGuardRemediation": {
+    "failedRunId": 42319715499,
+    "failedRunNumber": 2249,
+    "kind": "MAPPING_FAILURE",
+    "reason": "V254 pointers, V570 serving record, predecessor-serving mode persisted after RUN2248 exact DEV",
+    "currentMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261106-V256.json",
+    "currentLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V571_2026-11-06.json",
+    "shopperE2E": "PENDING",
+    "production": false
   }
 }
