@@ -7,9 +7,9 @@
   "productSourceSha": "6f87531de198186ad8277564beb380cf94a09488",
   "productTreeAuthority": "1f350fab2ea41504434a1c4712282b2bbbb05ae9",
   "predecessorProductSourceSha": "e36a456e07a3b107cb7f75a0c53ffae029eb6de4",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V582_2026-11-07.json",
-  "findingsLedgerExpectedGitBlob": "65d07dd3ff6f299b23dc02b2710bd139d40092a0",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V267.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V583_2026-11-07.json",
+  "findingsLedgerExpectedGitBlob": "40923e5987a77f0d9829de994aa259f049254d82",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V268.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -17416,7 +17416,7 @@
     "qaContinuityGuardState": "V23_INITIAL_CONTROL_FAIL_CORRECTION_PENDING"
   },
   "priorStatusBeforeRootRun2222": "HOLD_VRM309_DEV_MATERIALIZED_ROLE_E2E_PENDING",
-  "nextExactAction": "I3 HOLD,5/21 MATCH. Combined D08 source 6f87531de198186ad8277564beb380cf94a09488 passed canonical CI RUN2262 27/27 and exact runtime+Hosting DEV RUN2263;18served assets exact,Chrome Shopper catalog7courses27lessons and open/back without auto-completion PASS. No repeat sourceQA/build/deploy for this source. NEXT: only uncovered D08 real own-progress/content provider ACK and separate Admin/Shopper/Cliente session evidence; never mark a real learner completed for testing. Preserve D03/D05/D06 accepted fail/pass,feedback8/8,threeIDs,OCT/NOV/reload/newdocument and D07 original7pagePDF; D06 remaining eligible15Q,eligible-bank selector,affected frontend recertification,fresh ordinary credential new-history,required flag; D07 only lifecycle/foreign-role/readACK/visit revision not yet proven. Continue residual operations HR ACK/B10/no duplicates,finanzas existing Q7300/application and genuinely ambiguous September/remaining roles; G03 only uncovered frozen role/project/config scope. Preserve83/83 identities+2,G05sourceQA113/113,finanzas13/13. F12 absent-benchmark/no fabricated values RUN1797 PASS preserved,no repeated test; E04 residual F09 durable collaboration and independent HR KPI/roles/visuals. VRM134 comparable global cold/warm role performance HOLD. Three Auth exceptions require independent proof,not refusion or census. Gate20/Gate21 HOLD; production DO_NOT_TOUCH,I4 unauthorized.",
+  "nextExactAction": "I3 HOLD 5/21 MATCH. D09 read-only Shopper GT exact RUN2263: D06 existing prior approved100% remote ACK and D07 one PDF listed (focal only); 11 opportunities UI count not independently contrasted, Mi Visitas1active+8history+1other; B10 TyAOnline provider-pending mode has no authorized link for Nov04 completed visit, action correctly disabled (mapping/config HOLD), needs authorized Admin project-period-visit source check. VRM134 warm reload at5.9s still validating, ready by15s (P0 HOLD). No independent Admin/Cliente login, no new learner completion/exam/questionnaire/business write. Full D06 15Q/selectors, D07 lifecycle/readACK/foreign denial, D08 own real ACK, ops+finance+E04 and Gate20/21 still pending. No product/DEV/production mutation.",
   "i3Nov06SourceOnlyFocal": {
     "sourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
     "predecessorDevSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
@@ -18849,12 +18849,12 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V267.json",
-      "gitBlob": "7f1b74d5c59b2d0aba649295a2aeac156221df8a"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V268.json",
+      "gitBlob": "164b74383eb9f44d0e6cb0f1aaa00dda942696a6"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V582_2026-11-07.json",
-      "gitBlob": "65d07dd3ff6f299b23dc02b2710bd139d40092a0"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V583_2026-11-07.json",
+      "gitBlob": "40923e5987a77f0d9829de994aa259f049254d82"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2263_EXACT_DEV_D08_CONTINUITY_20261107.json",
@@ -20144,5 +20144,13 @@
     "artifactDigest": "sha256:d5dc0a33053e9061cf8dd9fd8bcc21b5a5b8b1e5e055d85caa455538565a952a",
     "production": false
   },
-  "currentExecutionReceiptSemantics": "IMMUTABLE_CURRENT_SOURCE_RUN2263_RUNTIME_HOSTING_ASSET_AND_READ_ONLY_CHROME_PROOF_NOT_TERMINAL_CERTIFICATION"
+  "currentExecutionReceiptSemantics": "IMMUTABLE_CURRENT_SOURCE_RUN2263_RUNTIME_HOSTING_ASSET_AND_READ_ONLY_CHROME_PROOF_NOT_TERMINAL_CERTIFICATION",
+  "latestFocalBrowserReadback": {
+    "path": "docs/checkpoints/CXORBIA_I3_D09_SHOPPER_SCOPED_READONLY_20261107.json",
+    "gitBlob": "dc76c8351c899fba8e3bc46af732ddc7e5d74e60",
+    "status": "SHOPPER_FOCAL_ONLY_HOLD_INTEGRAL",
+    "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
+    "devRunNumber": 2263,
+    "production": false
+  }
 }

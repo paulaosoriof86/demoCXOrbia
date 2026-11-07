@@ -2,7 +2,7 @@
   "schemaVersion": "cxorbia.recovery.execution-current.v1",
   "planLockPath": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
   "planId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
-  "asOf": "2026-11-06",
+  "asOf": "2026-11-07",
   "iteration": "I3",
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
@@ -518,7 +518,7 @@
     "evolution": 6
   },
   "historicalNextExactActionPreS1": "S1 read-only reason/alias cohort classification, implement legacy-compatible deterministic normalizer in provider owner and bridge, run bounded GT/HN/history/Auth fixtures. Existing DEV serial materialization only after source QA; verify Stiven/Julissa Shopper role post-fix.",
-  "nextExactAction": "I3 HOLD,5/21 MATCH. Combined D08 source 6f87531de198186ad8277564beb380cf94a09488 passed canonical CI RUN2262 27/27 and exact runtime+Hosting DEV RUN2263;18served assets exact,Chrome Shopper catalog7courses27lessons and open/back without auto-completion PASS. No repeat sourceQA/build/deploy for this source. NEXT: only uncovered D08 real own-progress/content provider ACK and separate Admin/Shopper/Cliente session evidence; never mark a real learner completed for testing. Preserve D03/D05/D06 accepted fail/pass,feedback8/8,threeIDs,OCT/NOV/reload/newdocument and D07 original7pagePDF; D06 remaining eligible15Q,eligible-bank selector,affected frontend recertification,fresh ordinary credential new-history,required flag; D07 only lifecycle/foreign-role/readACK/visit revision not yet proven. Continue residual operations HR ACK/B10/no duplicates,finanzas existing Q7300/application and genuinely ambiguous September/remaining roles; G03 only uncovered frozen role/project/config scope. Preserve83/83 identities+2,G05sourceQA113/113,finanzas13/13. F12 absent-benchmark/no fabricated values RUN1797 PASS preserved,no repeated test; E04 residual F09 durable collaboration and independent HR KPI/roles/visuals. VRM134 comparable global cold/warm role performance HOLD. Three Auth exceptions require independent proof,not refusion or census. Gate20/Gate21 HOLD; production DO_NOT_TOUCH,I4 unauthorized.",
+  "nextExactAction": "I3 HOLD 5/21 MATCH. D09 read-only Shopper GT exact RUN2263: D06 existing prior approved100% remote ACK and D07 one PDF listed (focal only); 11 opportunities UI count not independently contrasted, Mi Visitas1active+8history+1other; B10 TyAOnline provider-pending mode has no authorized link for Nov04 completed visit, action correctly disabled (mapping/config HOLD), needs authorized Admin project-period-visit source check. VRM134 warm reload at5.9s still validating, ready by15s (P0 HOLD). No independent Admin/Cliente login, no new learner completion/exam/questionnaire/business write. Full D06 15Q/selectors, D07 lifecycle/readACK/foreign denial, D08 own real ACK, ops+finance+E04 and Gate20/21 still pending. No product/DEV/production mutation.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -1233,8 +1233,8 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V267.json",
-    "gitBlob": "7f1b74d5c59b2d0aba649295a2aeac156221df8a",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V268.json",
+    "gitBlob": "164b74383eb9f44d0e6cb0f1aaa00dda942696a6",
     "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
     "allModulesMatch": false,
     "phaseAComplete": false
@@ -3235,16 +3235,16 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V267.json",
-    "matrixBlob": "7f1b74d5c59b2d0aba649295a2aeac156221df8a",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V268.json",
+    "matrixBlob": "164b74383eb9f44d0e6cb0f1aaa00dda942696a6",
     "classificationCounts": {
       "MATCH": 5,
       "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN": 3,
       "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 12,
       "SOURCE_PROVEN_DEV_EXACT_5_ASSETS_PASS_PENDING_ROLE_E2E_HUMAN": 1
     },
-    "derivedAt": "2026-11-07T22:35:58Z",
-    "meaning": "RUN2263_CURRENT_SOURCE_EXACT_DEV_AND_CHROME_D08_READ_ONLY_PASS_ONLY_UNCOVERED_FUNCTIONAL_ROLE_SESSION_AND_HUMAN_CLAUSES"
+    "derivedAt": "2026-11-07T23:09:44Z",
+    "meaning": "RUN2263_SOURCE_EXACT_SHOPPER_D09_READ_ONLY_FOCAL_NEW_B10_AUTHORIZED_LINK_CONFIG_HOLD_VRM134_WARM_LOAD_HOLD"
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
   "activeMethodologyGuard": {
@@ -5125,12 +5125,12 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V267.json",
-      "gitBlob": "7f1b74d5c59b2d0aba649295a2aeac156221df8a"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V268.json",
+      "gitBlob": "164b74383eb9f44d0e6cb0f1aaa00dda942696a6"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V582_2026-11-07.json",
-      "gitBlob": "65d07dd3ff6f299b23dc02b2710bd139d40092a0"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V583_2026-11-07.json",
+      "gitBlob": "40923e5987a77f0d9829de994aa259f049254d82"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2263_EXACT_DEV_D08_CONTINUITY_20261107.json",
@@ -6029,8 +6029,8 @@
     },
     "production": false
   },
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V582_2026-11-07.json",
-  "findingsLedgerExpectedGitBlob": "65d07dd3ff6f299b23dc02b2710bd139d40092a0",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V583_2026-11-07.json",
+  "findingsLedgerExpectedGitBlob": "40923e5987a77f0d9829de994aa259f049254d82",
   "nextFindingId": "VRM-314",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -7050,7 +7050,7 @@
     "sameArtifactAdminShopper": "PENDING",
     "production": false
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V267.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V268.json",
   "vrm301DevHostingAdminReadback20261104": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM301_DEV_HOSTING_RUN41801457655_ADMIN_READBACK_20261104.json",
     "receiptGitBlob": "b8138b76db5159956aa500fe30f2be0f99fc8fce",
@@ -10881,6 +10881,14 @@
     "decision": "PASS_RUN2263_EXACT_DEV_AND_READ_ONLY_CHROME_D08_HOLD_INTEGRAL_PHASE_A",
     "artifactId": 13593895967,
     "artifactDigest": "sha256:d5dc0a33053e9061cf8dd9fd8bcc21b5a5b8b1e5e055d85caa455538565a952a",
+    "production": false
+  },
+  "latestFocalBrowserReadback": {
+    "path": "docs/checkpoints/CXORBIA_I3_D09_SHOPPER_SCOPED_READONLY_20261107.json",
+    "gitBlob": "dc76c8351c899fba8e3bc46af732ddc7e5d74e60",
+    "status": "SHOPPER_FOCAL_ONLY_HOLD_INTEGRAL",
+    "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
+    "devRunNumber": 2263,
     "production": false
   }
 }

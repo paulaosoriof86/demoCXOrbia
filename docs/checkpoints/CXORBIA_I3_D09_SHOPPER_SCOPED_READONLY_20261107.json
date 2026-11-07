@@ -1,0 +1,131 @@
+{
+  "schemaVersion": "cxorbia.i3.d09.current-dev-shopper-readonly.v1",
+  "id": "CXORBIA-I3-D09-SHOPPER-SCOPED-EVIDENCE-20261107",
+  "observedAt": "2026-11-07T23:09:44Z",
+  "iteration": "I3",
+  "status": "HOLD",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadBefore": "8695955c2896a55a2b850d250e913076bf07aa21",
+  "productSourceSha": "6f87531de198186ad8277564beb380cf94a09488",
+  "productTree": "1f350fab2ea41504434a1c4712282b2bbbb05ae9",
+  "devRun": {
+    "runNumber": 2263,
+    "runId": 42420769697,
+    "artifactId": 13593895967,
+    "artifactSha256": "d5dc0a33053e9061cf8dd9fd8bcc21b5a5b8b1e5e055d85caa455538565a952a",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/146d4bbaf0865f39",
+    "runtimeRevision": "cxorbia-live-hr-dev-00357-77z",
+    "hrRevision": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636"
+  },
+  "browser": {
+    "family": "Chrome",
+    "connection": "existing authenticated profile",
+    "role": "Shopper",
+    "country": "GT",
+    "project": "Cinépolis",
+    "period": "NOV 2026",
+    "url": "https://cxorbia-backend-dev.web.app/index-backend-dev.html",
+    "reloadedOnce": true,
+    "noBusinessWrites": true,
+    "noExamAttemptSubmitted": true,
+    "noQuestionnaireSubmitted": true,
+    "noCourseProgressCompleted": true
+  },
+  "observed": [
+    {
+      "domain": "certifications",
+      "case": "D06_existing_prior_certification_readback",
+      "result": "PASS_FOCAL_READ_ONLY",
+      "actual": "existing 100% approval / 80% threshold, UI states remote ACK dated 2026-11-07; three historical attempt entries; 8-question feedback was already accepted in earlier receipts; no new attempt",
+      "limit": "does not certify eligible 15-question newer bank, two-bank selection, new session login or admin authoring"
+    },
+    {
+      "domain": "documents-resources",
+      "case": "D07_project_resource_listing",
+      "result": "PASS_FOCAL_READ_ONLY",
+      "actual": "one Cinépolis PDF instructional resource listed with Abrir button; no repeated download",
+      "limit": "metadata/version/safe retirement/foreign document denial and read ACK remain unproven; original 7-page PDF accepted historical proof preserved"
+    },
+    {
+      "domain": "visits-review-postulations-reservations",
+      "case": "B05_B10_shopper_visibility",
+      "result": "PASS_FOCAL_READ_ONLY",
+      "actual": "11 available GT opportunities displayed for active period; no comparison against independent HR; no application or assignment command executed",
+      "limit": "not HR KPI parity, idempotent assignment, or application ACK proof"
+    },
+    {
+      "domain": "shoppers-mi-visitas-profile",
+      "case": "A07_A09_shop_visits",
+      "result": "PASS_FOCAL_READ_ONLY",
+      "actual": "Mis Visitas showed 1 active, 8 historical and 1 other-period item for current project; one visit dated 2026-11-04 shown realized and questionnaire pending",
+      "limit": "does not certify profile edits, check-in photo/GPS, fresh ordinary credential, other roles"
+    },
+    {
+      "domain": "questionnaire-shopper",
+      "case": "B10_external_provider_link",
+      "result": "HOLD_MAPPING_FAILURE",
+      "actual": "shopper's current completed visit opens provider TyAOnline questionnaire modal but UI explicitly says authorized link not available; completion action disabled; no submission",
+      "causalSourceOwner": "app/modules/cuestionario-shopper.js",
+      "ownerGitBlob": "5f5609aa91fe3d0c3682e1dc13a1d69443bed00b",
+      "sourceLogic": "cfg.modo externally pending suppresses URL and blocks marking done until authorized provider route; prevents false submit; no proven code P0",
+      "exactNextAction": "read authorized project/period/visit questionnaire routing configuration and provider link in Admin; if absent, configure valid source; then same-artifact Shopper link + eventual genuine questionnaire ACK; no fabricated questionnaire"
+    },
+    {
+      "domain": "base-router-shell-cache",
+      "case": "VRM-134_warm_authenticated_reload",
+      "result": "HOLD_FUNCTIONAL_DEFECT",
+      "actual": "after one authenticated reload, DOM still displayed validating operational source at elapsed 5901ms; by elapsed 14998ms showed role context and navigation",
+      "measurementBound": "5901ms < first-authenticated-ready <=14998ms; sampled not exact, not global cold/warm cross-role benchmark",
+      "limit": "performance P0 unresolved"
+    },
+    {
+      "domain": "auth-protected-data-runtime",
+      "case": "independent_admin_shop_client_session",
+      "result": "HOLD_COVERAGE",
+      "actual": "second previously open DEV tab reloaded into the same Shopper session; cannot count as independent Admin or Cliente credential",
+      "limit": "no role switching, logout or credential injection performed"
+    },
+    {
+      "domain": "documents-resources",
+      "case": "secondary_bulletins_console",
+      "result": "WARN_NONBLOCKING_UNADJUDICATED",
+      "actual": "Chrome recorded repeated Firebase permission warnings for backend-bulletins",
+      "limit": "no proven business impact or Rules mutation; not a new P0"
+    }
+  ],
+  "acceptedHistoricalProofsPreserved": [
+    "D03 15Q creation",
+    "D05 15/15 editor and versioning",
+    "D06 existing 8Q fail/pass feedback and remote ACK",
+    "D07 authentic 7-page PDF Admin+Shopper read/download",
+    "83/83+2 canonical identities",
+    "finance C04/C05 13/13",
+    "G05 source QA 113/113"
+  ],
+  "moduleTruth": {
+    "match": 5,
+    "assessed": 21,
+    "integralNewPromotions": 0,
+    "phaseAComplete": false
+  },
+  "gates": {
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i3": "HOLD",
+    "i4Authorized": false
+  },
+  "changes": {
+    "productFiles": 0,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "financeWrites": 0,
+    "examWrites": 0,
+    "productionDeploys": 0,
+    "devDeploys": 0,
+    "classification": "CONTROL_EVIDENCE_ONLY"
+  },
+  "nextExactAction": "B10 read authorized project routing/link from Admin, and perform unproven independent real role/session E2E and VRM134 comparable timing. Do not repeat accepted PDF or certification attempts, do not fabricate real learner or questionnaire completion, do not rebuild exact DEV artifact without proven source P0."
+}
