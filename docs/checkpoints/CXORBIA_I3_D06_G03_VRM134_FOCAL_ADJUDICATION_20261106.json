@@ -1,0 +1,247 @@
+{
+  "schemaVersion": "cxorbia.i3.focal-acceptance-adjudication-p0-proposal.v1",
+  "recordedAtUtc": "2026-11-07T02:19:52Z",
+  "userLocalDate": "2026-11-06",
+  "userTimezone": "America/Guatemala",
+  "iteration": "I3",
+  "state": "HOLD",
+  "decision": "ACCEPTED_EVIDENCE_CARRIED_FORWARD_AND_LOCAL_P0_PROPOSAL_VERIFIED_NOT_DEPLOYED",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedParentSha": "e6044dcc6113e17a0e9ba71867e64305edfa60a9",
+  "expectedParentTree": "1f35445b8b2d6effbd6f5b4ad78e010e8f855650",
+  "allowedControlPaths": [
+    "docs/checkpoints/CXORBIA_I3_D06_G03_VRM134_FOCAL_ADJUDICATION_20261106.json",
+    "docs/checkpoints/CXORBIA_I3_VRM134_BACKEND_READY_WAKE_PROPOSAL_20261106.patch",
+    "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "CXORBIA_RECOVERY_EXECUTION_CURRENT.json"
+  ],
+  "source": {
+    "sha": "5a906e4a9aa79991924580eb54103797d311d930",
+    "tree": "70cecc344f1b8c243f89459b0c7b79f9641dd864",
+    "deployedRun": 2248,
+    "deployedRunId": 42314369471,
+    "unchanged": true
+  },
+  "frozenPlan": {
+    "sha256": "83e8f2c0a6b190bab1d9dea32bf99158116f3164f419ae72e051fd791fd8576c",
+    "tasksRead": [
+      "D03",
+      "D05",
+      "D06",
+      "C03",
+      "C06",
+      "C07",
+      "C08"
+    ]
+  },
+  "browserReadback": {
+    "environment": "DEV",
+    "browser": "Chrome",
+    "role": "Shopper",
+    "country": "GT",
+    "project": "Cinepolis",
+    "period": "2026-11",
+    "newDocument": true,
+    "existingAuthenticatedSessionRestored": true,
+    "freshPasswordAuthentication": false,
+    "approvedValidityCard": true,
+    "attemptCount": 3,
+    "sameThreeDomAttemptIdsAsPriorReceipt": true,
+    "newAttemptWrites": 0,
+    "priorReceipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_D06_AUTHORIZED_ATTEMPTS_CHROME_E2E_20261106.json",
+      "gitBlob": "478cf7be22694b47e0120c7ed49acf61365e2b37"
+    },
+    "connectionRecovery": {
+      "oldTabActivation": "ENVIRONMENT_FAILURE_FOCUS_TIMEOUT",
+      "sameBrowserFreshTab": "READBACK_SUCCEEDED",
+      "credentialAuthFailureProven": false
+    },
+    "adminRequiredFlagObserved": false,
+    "identityAndRawAttemptIds": "OMITTED_FROM_PUBLIC_RECEIPT"
+  },
+  "d06Adjudication": {
+    "preserved": [
+      {
+        "clause": "Two newly authorized original8-question attempts, feedback, ACK, history, reload and cross-period positive eligibility",
+        "status": "PASS_FOCAL_CURRENT",
+        "evidenceBlob": "478cf7be22694b47e0120c7ed49acf61365e2b37",
+        "repeat": false
+      },
+      {
+        "clause": "Real15-question generation",
+        "status": "PASS_PRIOR_PRESERVED",
+        "path": "CXORBIA_I3_D03_LIVE_FRESH_15Q_RUN1778_2026-10-17.json",
+        "gitBlob": "450209cdc91f5264a1d9df304d886bf6fc615d72",
+        "questions": 15,
+        "references": 15,
+        "durableReadback": true,
+        "idempotentReplay": true,
+        "regenerate": false
+      },
+      {
+        "clause": "Admin selector and versioned15-question editing",
+        "status": "PASS_FOCAL_PRIOR_PRESERVED",
+        "path": "docs/checkpoints/CXORBIA_I3_D05_FLEX_OPTIONS_QA_RUN42277757800_20261106.json",
+        "gitBlob": "9b83f3639956e40d436814f12209506a9fd59b1c",
+        "questionsEdited": 15,
+        "versionBefore": 1,
+        "versionAfter": 2,
+        "realBanksUnchanged": 6,
+        "repeat": false
+      },
+      {
+        "clause": "Ordinary password login and logout/relogin",
+        "status": "PASS_PRIOR_PRESERVED_NOT_REOPENED_BY_FOCUS_TIMEOUT",
+        "path": "docs/checkpoints/CXORBIA_I3_RUN2183_STIVEN_PASSWORD_PASS_AND_CLICK_AUTHORITY_TIMEOUT_20261105.json",
+        "gitBlob": "e6340891d71da0ae6d208d0fb19e4d3f9bcfedf3",
+        "repeatAsGeneralLoginGate": false
+      },
+      {
+        "clause": "Durable provider recertification ACK/readback",
+        "status": "PASS_PROVIDER_PRIOR_PRESERVED_NOT_FULL_FRONTEND_CLOSURE",
+        "path": "docs/checkpoints/CXORBIA_I3_RUN2182_STIVEN_PROVIDER_AND_FULL_E2E_20261105.json",
+        "gitBlob": "dab2fc4613bf2353437e22f4710bcae32cf7a88f",
+        "sameServerFunctions": [
+          "saveRecertification",
+          "activeRecertifications",
+          "historicalCarryoverDecision"
+        ],
+        "serverBlobBefore": "8e02709cc8414afd9087cfa661fd03654d5b01bf",
+        "serverBlobCurrent": "cec44889c5bc88d12bd13b3ce07a62751c180dc5",
+        "frontendBlobCurrent": "b9655ba768efed802fbcea5c12ebbf52c94c1aeb",
+        "repeatProviderReset": false
+      }
+    ],
+    "remaining": [
+      "Contractual15-question bank path through actual eligible Shopper remains unproven; generation and editor are already accepted.",
+      "Two eligible published banks selector live case not recovered; one pending plus one published correctly exposes only one. Do not publish a pending bank just to fabricate two options.",
+      "Affected frontend recertification eligibility needs existing applicable live case or separate authorization; do not revoke current approval.",
+      "Read the same newly created attempts after a fresh ordinary credential login; no additional attempt required.",
+      "Original bank required field presence/value still unobserved; pre-test eligibility contrast cause not proven."
+    ],
+    "sourceOnlyEvidence": {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM311_VRM312_SOURCE_PROOF_20261106.json",
+      "gitBlob": "0b26e88a9d22862211ce6bd0df8d515f66f95cf6",
+      "checksPassed": 77,
+      "notSubstituteForLiveUi": true
+    },
+    "readOnlyQaLaneReview": {
+      "workflow": ".github/workflows/cxorbia-i3-d05-qa-positive-lifecycle.yml",
+      "script": "tools/qa/cxorbia-i3-d05-qa-ui-review-shopper-read.mjs",
+      "executed": false,
+      "reason": "Current script requires historical global bank count4 vs known6 and omits required; existing read-only lane also starts up to3 custom-token Shopper sessions. No workflow, script or authentication changes were made to query one metadata field."
+    }
+  },
+  "financialScopeAdjudication": {
+    "preserve": [
+      "C04/C05 13/13 ACK/readback/idempotence/cleanup",
+      "Current independent HR parity",
+      "83/83 identities plus2",
+      "113/113 HR"
+    ],
+    "financialGapClassification": "EVIDENCE_GAP_NOT_CURRENT_PROVEN_PRODUCT_DEFECT",
+    "g03Meaning": "Scope/F9/approved-design reconciliation; do not reduce all G03 to bank proof.",
+    "c03": {
+      "approvedNature": "T&A advance/remittance Q7300",
+      "remaining": "Locate existing record by ID/type/date/currency/scope/source, trace actual application, or demonstrate absence in exact source; never recreate or duplicate."
+    },
+    "c08": {
+      "preserveHistoricalCloseThrough": "2026-07",
+      "preserveAugustPaidOn": "2026-10-02",
+      "september": "Only proven rows in accepted lot; build one exact current list of genuinely ambiguous exceptions.",
+      "noReproofOfAllClosedHistoricalPayments": true
+    },
+    "oldRun1716Numbers": "Historical limitations of that test, not current unpaid balances or a mandate to re-certify every historical payment.",
+    "financialWrites": 0
+  },
+  "vrm134": {
+    "classification": "FUNCTIONAL_DEFECT_PARTIAL_P0_PROVEN_SCHEDULER_DELAY",
+    "owner": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+    "ownerBlob": "7b68d08357f256d736de57ff5b89bf97f397fb4f",
+    "qa": "tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs",
+    "qaBlob": "e60a575ae3b2d20b788d5b57a087c6e9cac7432c",
+    "cause": "A pending readiness poll is retained by if(bootTimer)return even when backend_ready arrives. Controlled reproduction retains325ms and capped2000ms waits after readiness.",
+    "proposedFix": "Wake only the pending readiness poll on backend_ready when no reconciliation is active; preserve existing checks and single-flight.",
+    "proposal": {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM134_BACKEND_READY_WAKE_PROPOSAL_20261106.patch",
+      "gitBlob": "0843a0c35fabee2bc719222f1a731eacb2f7f914",
+      "sha256": "c406dea3c1ce9ef646dae96bcf27b3e35987e9dc3b82a1ae6a7b2adc049dbf6d",
+      "appliedToRepositoryProduct": false,
+      "deployed": false
+    },
+    "localPreflight": {
+      "runtime": "Node v24.22.1",
+      "baseline": {
+        "passed": 10,
+        "failed": 3,
+        "total": 13,
+        "expectedFailures": [
+          "325ms wake",
+          "2000ms wake",
+          "duplicate-ready immediate callback"
+        ]
+      },
+      "proposal": {
+        "passed": 13,
+        "failed": 0,
+        "total": 13
+      },
+      "syntaxCheck": "PASS",
+      "patchReverseApplicabilityCheck": "PASS",
+      "providerCalls": 0,
+      "remoteWrites": 0,
+      "proposedOwnerSha256": "9a79ade2ff214fce0cd0b7c1a23a80f2921ad3abc11bcc6e009088a7f98917aa",
+      "proposedQaSha256": "a1cceed2c8460a08b970cfa30b5b193b1d5bf2fe46e9672089947245e60039a6"
+    },
+    "preservedInvariants": [
+      "principal authorization",
+      "dependency readiness",
+      "single-flight",
+      "session generation",
+      "HR revision validation",
+      "atomic publication",
+      "fresh applied authority passive-event suppression"
+    ],
+    "notClaimed": [
+      "Entire15-25second observed Admin load explained",
+      "Actual DEV speed improved",
+      "P0 fully closed",
+      "Source CI run for the proposed product delta"
+    ],
+    "priorRealAdminLoadObservations": {
+      "newTabStillValidatingSeconds": 17.559,
+      "newTabReadyBySeconds": 24.815,
+      "reloadStillValidatingSeconds": 15.936,
+      "reloadReadyBySeconds": 20.881,
+      "intervalsNotExactLatencies": true,
+      "evidenceBlob": "fb7ba2f482632d166ffdb9ca7a5541a1f6f1ff58"
+    }
+  },
+  "changes": {
+    "repositoryProductFiles": 0,
+    "qaWorkflowOrScriptFiles": 0,
+    "applicationBusinessWrites": 0,
+    "newAttempts": 0,
+    "bankEdits": 0,
+    "hrWrites": 0,
+    "financeWrites": 0,
+    "authConfigurationChanges": 0,
+    "builds": 0,
+    "deploys": 0,
+    "production": false,
+    "localDiagnosticCopiesOnly": true
+  },
+  "closure": {
+    "matrix": "V257",
+    "ledger": "V572",
+    "moduleMatches": 5,
+    "moduleTotal": 21,
+    "phaseAComplete": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "authorizationI4": false
+  },
+  "nextAction": "I3 HOLD 5/21 MATCH, same served source 5a906e4a9aa79991924580eb54103797d311d930 RUN2248. D06 two authorized attempts, 3 preserved IDs, feedback8/8, OCT/NOV/reload and fresh-document session restoration PASS focal; do not repeat attempts. Preserve D03 generated15, D05 editor15/15, R20 password/relogin and unchanged provider recertification PASS; only remaining D06 15Q Shopper end-to-end, two eligible-bank selector, affected frontend recertification and new-attempt history after fresh credential login remain. Original bank required flag still unobserved; not a proven new P0. VRM134 scheduling defect reproduced on exact owner: baseline10/13 vs proposed13/13 local tests; proposal NOT applied or deployed. NEXT after scoped DEV-only authorization: apply the exact two-file proposal on the same candidate, run focal source QA, publish via existing DEV lane and measure real loading; do not claim full performance closure. Preserve 83/83 identities+2,113/113 HR,13/13 finanzas. G03 remains scope/F9/design reconciliation; financial evidence residuals must stay bounded to C03/C06-C10: accepted historical cuts through July and August paid02-10 are not reopened; identify only Q7300 record/application and ambiguous September cohort. D07/E04/F09 and other full-module/human residuals remain. No third attempt, bank publication, recertification reset or financial write under consumed authorization. Gate20/21 HOLD; I4 not authorized; production DO_NOT_TOUCH."
+}
