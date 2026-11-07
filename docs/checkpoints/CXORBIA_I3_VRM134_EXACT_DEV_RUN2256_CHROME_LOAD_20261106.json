@@ -1,0 +1,296 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm134.exact-dev-and-chrome-performance-readback.v1",
+  "recordedAt": "2026-11-07T03:03:18.926Z",
+  "clientDate": "2026-11-06",
+  "iteration": "I3",
+  "decision": "PASS_EXACT_DEV_DEPLOYMENT_HOLD_GLOBAL_LOADING_PERFORMANCE",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadAtDeploy": "0a9562259650645cc19ecf946c37cf601cdba475",
+  "source": {
+    "sha": "d4e7c4b0aa711f6d4717bca69b79b7b28d8f49d7",
+    "tree": "a384b638ade1199f8bdc49036b934984a9f3b36c"
+  },
+  "materialization": {
+    "state": "PASS_EXACT_DEV_MATERIALIZATION_PERFORMANCE_P0_OPEN",
+    "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
+    "scopeFinding": "VRM-134",
+    "runId": 42331532313,
+    "runNumber": 2256,
+    "jobId": 128279051727,
+    "artifactId": 13557344528,
+    "artifactDigest": "sha256:ba7a9946c73487b180b0da56e4a0cfda4f9eeac33122f0400129b1f99345c0b2",
+    "artifactDigestType": "GITHUB_ACTIONS_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR",
+    "sourceSha": "d4e7c4b0aa711f6d4717bca69b79b7b28d8f49d7",
+    "sourceTree": "a384b638ade1199f8bdc49036b934984a9f3b36c",
+    "runtimeRevision": "cxorbia-live-hr-dev-00355-cb5",
+    "runtimeDigest": "sha256:692ffccd668d6b550306070c350dd73beb5dd0cdded13bb516463d4d1390baa6",
+    "runtimeTrafficPercent": 100,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/039425ff4811733f",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794020323112000",
+    "hrRevision": "32d9416f76ba00d1b766ab8b4276ef74827b62f3c200ef704ba40a511a478b68",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "firestoreRulesDeploys": 0,
+    "storageRulesDeploys": 0,
+    "hrWrites": 0,
+    "production": false,
+    "controlHeadAtDeploy": "0a9562259650645cc19ecf946c37cf601cdba475",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM134_EXACT_DEV_RUN2256_CHROME_LOAD_20261106.json",
+    "humanAcceptance": "PENDING",
+    "shopperD06E2E": "PREVIOUS_FOCAL_EVIDENCE_PRESERVED_THREE_ATTEMPTS_AND_VALIDITY_OBSERVED_AFTER_NEW_DEV_RELOAD_FULL_D06_PENDING",
+    "fullTaskClosed": false,
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
+    "scenarioDimensionsProven": true
+  },
+  "sourceProof": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM134_SOURCE_CI_RUN2255_20261106.json",
+    "gitBlob": "2845e8348a6754b3b61cdacd4c3c7076b7fd1874",
+    "runId": 42331271057,
+    "runNumber": 2255,
+    "sourceSha": "d4e7c4b0aa711f6d4717bca69b79b7b28d8f49d7",
+    "sourceTree": "a384b638ade1199f8bdc49036b934984a9f3b36c",
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "sourceTestsPass": 13,
+    "sourceTestsFail": 0,
+    "artifactId": 13558135292,
+    "artifactDigest": "sha256:b6f059249852c56fa12d8604c6872ed2dc72c331f736808322bb48d88cd528d1",
+    "production": false
+  },
+  "evidence": {
+    "workflowConclusion": "success",
+    "authorityJobId": 128278932803,
+    "materializationJobId": 128279051727,
+    "artifactZipSha256Verified": "sha256:ba7a9946c73487b180b0da56e4a0cfda4f9eeac33122f0400129b1f99345c0b2",
+    "servedAssetByteParity": {
+      "pass": 18,
+      "fail": 0
+    },
+    "owner": {
+      "path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "gitBlob": "9646c36c89917d7e910f1a4dcfcfa5c6ed44a6a9",
+      "sha256": "9a79ade2ff214fce0cd0b7c1a23a80f2921ad3abc11bcc6e009088a7f98917aa"
+    },
+    "runtimeTrafficPercent": 100,
+    "hr": {
+      "revision": "32d9416f76ba00d1b766ab8b4276ef74827b62f3c200ef704ba40a511a478b68",
+      "ok": true,
+      "revisionStable": true,
+      "sourceSafe": true,
+      "hrWrites": false,
+      "production": false
+    },
+    "rules": {
+      "firestoreDeploys": 0,
+      "storageDeploys": 0,
+      "sourceBlobsUnchanged": true,
+      "ruleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
+      "rulesetEvidence": "INHERITED_UNCHANGED_RUN2248_SEAL_NO_NEW_REMOTE_RULESET_READ",
+      "priorReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM313_EXACT_DEV_RUN2248_CONTROL_RECEIPT_V2_20261106.json"
+    }
+  },
+  "chromeReadback": {
+    "browser": "Connected Chrome",
+    "role": "Shopper",
+    "country": "GT",
+    "project": "Cinepolis",
+    "period": "2026-11",
+    "method": "Normal reload, visible-DOM polling; timestamps bracket reads and include browser-control overhead. Not a controlled benchmark.",
+    "before": {
+      "source": "RUN2248 predecessor",
+      "scenario": "ordinary reload same Shopper NOV2026 MiDia",
+      "samples": [
+        {
+          "readStartMs": 1744,
+          "readEndMs": 2190,
+          "loading": false,
+          "identity": false,
+          "operation": false
+        },
+        {
+          "readStartMs": 3199,
+          "readEndMs": 3594,
+          "loading": true,
+          "identity": false,
+          "operation": false
+        },
+        {
+          "readStartMs": 4600,
+          "readEndMs": 5033,
+          "loading": true,
+          "identity": false,
+          "operation": false
+        },
+        {
+          "readStartMs": 6036,
+          "readEndMs": 8098,
+          "loading": true,
+          "identity": false,
+          "operation": false
+        },
+        {
+          "readStartMs": 9106,
+          "readEndMs": 9660,
+          "loading": false,
+          "identity": true,
+          "operation": true
+        }
+      ]
+    },
+    "afterFirst": {
+      "source": "RUN2256 successor",
+      "scenario": "ordinary reload same Shopper NOV2026 MiDia",
+      "samples": [
+        {
+          "readStartMs": 8358,
+          "readEndMs": 8933,
+          "loading": false,
+          "identity": false,
+          "operation": false
+        },
+        {
+          "readStartMs": 9944,
+          "readEndMs": 10420,
+          "loading": true,
+          "identity": false,
+          "operation": false
+        },
+        {
+          "readStartMs": 11425,
+          "readEndMs": 11888,
+          "loading": true,
+          "identity": false,
+          "operation": false
+        },
+        {
+          "readStartMs": 12893,
+          "readEndMs": 13413,
+          "loading": true,
+          "identity": false,
+          "operation": false
+        },
+        {
+          "readStartMs": 14426,
+          "readEndMs": 15816,
+          "loading": true,
+          "identity": false,
+          "operation": false
+        },
+        {
+          "readStartMs": 16823,
+          "readEndMs": 17329,
+          "loading": false,
+          "identity": true,
+          "operation": true
+        }
+      ]
+    },
+    "afterSecond": {
+      "source": "RUN2256 successor",
+      "scenario": "second ordinary reload same Shopper NOV2026 MiDia",
+      "samples": [
+        {
+          "readStartMs": 1678,
+          "readEndMs": 2145,
+          "loading": false,
+          "identity": false,
+          "operation": false
+        },
+        {
+          "readStartMs": 3157,
+          "readEndMs": 3597,
+          "loading": true,
+          "identity": false,
+          "operation": false
+        },
+        {
+          "readStartMs": 4608,
+          "readEndMs": 5016,
+          "loading": true,
+          "identity": false,
+          "operation": false
+        },
+        {
+          "readStartMs": 6031,
+          "readEndMs": 6580,
+          "loading": true,
+          "identity": false,
+          "operation": false
+        },
+        {
+          "readStartMs": 7588,
+          "readEndMs": 8509,
+          "loading": true,
+          "identity": false,
+          "operation": false
+        },
+        {
+          "readStartMs": 9522,
+          "readEndMs": 10042,
+          "loading": false,
+          "identity": true,
+          "operation": true
+        }
+      ]
+    },
+    "readyObservedByMs": {
+      "before": 9660,
+      "afterFirst": 17329,
+      "afterSecond": 10042
+    },
+    "globalSpeedImprovementProven": false,
+    "performanceDecision": "HOLD_VRM134_RESIDUAL_FULL_LOAD_P0",
+    "postDeployCertification": {
+      "valid": true,
+      "attemptsVisible": 3,
+      "passed": 1,
+      "notReached": 2,
+      "newAttemptsSubmitted": 0,
+      "periodNovember": true,
+      "sessionRestoredWithoutNewCredentialEntry": true
+    }
+  },
+  "sourceChange": {
+    "allowedProductFiles": [
+      "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+    ],
+    "allowedTestFiles": [
+      "tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs"
+    ],
+    "schedulerFocalFixed": true,
+    "wholePerformanceClosed": false
+  },
+  "preserved": {
+    "identityCohort": "83/83+2",
+    "hrParity": "113/113",
+    "finance": "13/13",
+    "priorAcceptance": "D03_D05_D06_R20_PRESERVED_NOT_REEXECUTED_AS_WRITES"
+  },
+  "unchanged": {
+    "questionBanks": true,
+    "realVisits": true,
+    "hr": true,
+    "financialData": true,
+    "credentials": true,
+    "permissions": true,
+    "production": true
+  },
+  "businessWritesThisBlock": {
+    "certificationAttempts": 0,
+    "questionBanks": 0,
+    "visits": 0,
+    "hr": 0,
+    "payments": 0
+  },
+  "openScope": [
+    "VRM134 global load performance",
+    "D06 real15Q/two-bank/frontend-recert residual",
+    "D07 residual lifecycle/read ACK",
+    "E04/F12/F09",
+    "integral module acceptance and Gate20/21"
+  ],
+  "nextExactAction": "I3 HOLD 5/21 MATCH. RUN2256 exactly serves canonical source d4e7c4b0aa711f6d4717bca69b79b7b28d8f49d7; canonical source QA RUN2255 and focal13/13 PASS. Backend-ready scheduler delay fixed and deployed, but real Chrome ordinary-reload observations before9660ms, first-after17329ms, second-after10042ms do NOT establish global speed improvement; VRM134 remains P0 OPEN. NEXT: isolate the remaining startup delay read-only across session/backend/HR stages with reproducible timing before any further code change; no routine rebuild. Preserve D06 two authorized attempts,3 retained attempts, feedback8/8,OCT/NOV/reload/fresh-document and valid certification; no new attempts. D06 residual real15Q Shopper,two eligible banks,affected frontend recertification and new-attempt history after fresh credential login remain, plus D07 residual lifecycle/read-ACK and integral acceptance,E04/F12,F09 and remaining module clauses. Preserve83/83 identities+2,113/113 HR,13/13 finanzas,D03generated15,D05editor15/15,R20login/relogin and provider recertification. G03 limited to current scope/F9/design evidence and existing Q7300 application/ambiguous September cohort; accepted historical cuts through July and August paid02-10 stay closed. Gate20/21 HOLD; no bank/HR/payment write, no I4 authorization, production DO_NOT_TOUCH.",
+  "phaseAComplete": false,
+  "production": false
+}
