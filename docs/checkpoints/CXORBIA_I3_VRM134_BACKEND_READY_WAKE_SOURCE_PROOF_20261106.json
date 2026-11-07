@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-focal-source-proof.v1",
+  "iteration": "I3",
+  "observedAt": "2026-11-07T02:50:38.191Z",
+  "decision": "PASS_LOCAL_FOCAL_SOURCE_13_OF_13_PENDING_CANONICAL_CI_AND_DEV",
+  "sourceSha": "d4e7c4b0aa711f6d4717bca69b79b7b28d8f49d7",
+  "sourceTree": "a384b638ade1199f8bdc49036b934984a9f3b36c",
+  "predecessorProductSourceSha": "5a906e4a9aa79991924580eb54103797d311d930",
+  "sourceTestsPass": 13,
+  "sourceTestsFail": 0,
+  "allowedProductFiles": [
+    "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs"
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM134_BACKEND_READY_WAKE_SCOPE_20261106.json",
+  "scopeReceiptBlob": "b035c462061e3eca010a5290f21de6bc45323fa6",
+  "findings": [
+    {
+      "id": "VRM-134",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "owner": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "cause": "A backend_ready event leaves the already pending readiness poll timer in place, adding a reproduced 325ms to capped2000ms delay before authority reconciliation."
+    }
+  ],
+  "sourceBlobs": {
+    "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js": "9646c36c89917d7e910f1a4dcfcfa5c6ed44a6a9",
+    "tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs": "4d5552f86304245233d45c0381f110e22d89388c"
+  },
+  "testExecution": {
+    "kind": "LOCAL_NODE_TEST_ON_EXACT_PATCHED_BYTES",
+    "node": "v24.22.1",
+    "baselinePass": 10,
+    "baselineFail": 3,
+    "patchedPass": 13,
+    "patchedFail": 0,
+    "syntax": "PASS",
+    "priorFiveTestsPreserved": true,
+    "newTests": 8,
+    "canonicalCi": "PENDING"
+  },
+  "transportNote": "QA original canonical blob e60a575 has no final LF; proposal header includes that LF. Applied using exact original blob and verified resulting blob 4d5552f, not a three-way header assumption.",
+  "devPublished": false,
+  "production": false,
+  "hrWrites": 0,
+  "financialWrites": 0,
+  "certificationAttempts": 0,
+  "bankWrites": 0,
+  "rulesDeploys": 0,
+  "storageRulesDeploys": 0,
+  "fullVrm134Closure": false,
+  "phaseAComplete": false
+}

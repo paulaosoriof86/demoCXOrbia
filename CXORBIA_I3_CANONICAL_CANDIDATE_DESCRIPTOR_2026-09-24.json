@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_DEV_MATERIALIZED_PENDING_D06_D07_CHROME_HUMAN",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "5a906e4a9aa79991924580eb54103797d311d930",
-  "productTreeAuthority": "70cecc344f1b8c243f89459b0c7b79f9641dd864",
-  "predecessorProductSourceSha": "439a688be58b23c93ac4e99a91da78b4c3cf81fa",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V572_2026-11-06.json",
-  "findingsLedgerExpectedGitBlob": "d7af1fcab24edec8330d306eafbdb4826606bb90",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261106-V257.json",
+  "productSourceSha": "d4e7c4b0aa711f6d4717bca69b79b7b28d8f49d7",
+  "productTreeAuthority": "a384b638ade1199f8bdc49036b934984a9f3b36c",
+  "predecessorProductSourceSha": "5a906e4a9aa79991924580eb54103797d311d930",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V573_2026-11-06.json",
+  "findingsLedgerExpectedGitBlob": "17040a84042171521589ed0e5b4e1bfd35ba0696",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261106-V258.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM313_EXACT_DEV_PASS_REAL_SHOPPER_E2E_AND_VRM134_PERFORMANCE_PENDING",
+  "activeBlocker": "VRM134_EXACT_SOURCE_CI_DEV_AND_REAL_CHROME_LOAD_PENDING",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -128,7 +128,7 @@
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
   "historicalExactNextActionPreS1": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "I3 HOLD 5/21 MATCH, same served source 5a906e4a9aa79991924580eb54103797d311d930 RUN2248. D06 two authorized attempts, 3 preserved IDs, feedback8/8, OCT/NOV/reload and fresh-document session restoration PASS focal; do not repeat attempts. Preserve D03 generated15, D05 editor15/15, R20 password/relogin and unchanged provider recertification PASS; only remaining D06 15Q Shopper end-to-end, two eligible-bank selector, affected frontend recertification and new-attempt history after fresh credential login remain. Original bank required flag still unobserved; not a proven new P0. VRM134 scheduling defect reproduced on exact owner: baseline10/13 vs proposed13/13 local tests; proposal NOT applied or deployed. NEXT after scoped DEV-only authorization: apply the exact two-file proposal on the same candidate, run focal source QA, publish via existing DEV lane and measure real loading; do not claim full performance closure. Preserve 83/83 identities+2,113/113 HR,13/13 finanzas. G03 remains scope/F9/design reconciliation; financial evidence residuals must stay bounded to C03/C06-C10: accepted historical cuts through July and August paid02-10 are not reopened; identify only Q7300 record/application and ambiguous September cohort. D07/E04/F09 and other full-module/human residuals remain. No third attempt, bank publication, recertification reset or financial write under consumed authorization. Gate20/21 HOLD; I4 not authorized; production DO_NOT_TOUCH.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH. VRM134 exact two-file backend-ready scheduler correction authorized by Paula: source d4e7c4b0aa711f6d4717bca69b79b7b28d8f49d7 is local 13/13 PASS, canonical source CI next, then one existing DEV materialization and real Chrome load measurement. RUN2248 source 5a906e4a9aa79991924580eb54103797d311d930 remains the actual served predecessor until exact readback; no full performance closure claimed. Preserve D06 two authorized attempts and 3 durable IDs, feedback8/8, OCT/NOV/reload/fresh-document readback; no new attempts. Preserve D03 generated15, D05 editor15/15, R20 password/relogin and unchanged provider recertification evidence. Preserve 83/83 identities+2,113/113 HR,13/13 finanzas. G03 remains bounded scope/F9/design and finance evidence reconciliation; do not reopen accepted historical cuts through July or August paid02-10; only Q7300 record/application and ambiguous September cohort. D06 remaining real15Q Shopper/two eligible banks/frontend recertification, D07/E04/F09 and full-module/human residuals remain. No bank edit, HR/payment write, recertification reset or production deployment; Gate20/21 HOLD, I4 not authorized.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -748,7 +748,6 @@
     "humanAcceptance": "PENDING",
     "shopperD06E2E": "PENDING_INDEPENDENT_AUTHENTICATED_SHOPPER",
     "fullTaskClosed": false,
-    "materializationReceiptBlob": "fb7ba2f482632d166ffdb9ca7a5541a1f6f1ff58",
     "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62"
   },
   "lastFocalAttempt": {
@@ -801,7 +800,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "70cecc344f1b8c243f89459b0c7b79f9641dd864",
+  "productSourceTree": "a384b638ade1199f8bdc49036b934984a9f3b36c",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -2955,7 +2954,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "a3c592d65d5d675051d12f541e22e35203c347f6",
+  "moduleTruthExpectedGitBlob": "2f833f8bb9fc110566a231ead29bec53f2900b8e",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -8124,7 +8123,7 @@
     "representativeSameArtifact": "PASS_RUN1427",
     "exactB2Ack": "PENDING"
   },
-  "currentMaterializationIsPredecessorOnly": false,
+  "currentMaterializationIsPredecessorOnly": true,
   "i3B2Run1425SourceProof": {
     "runId": 37887175242,
     "runNumber": 1425,
@@ -12784,7 +12783,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 42314369471,
     "runNumber": 2248,
     "sourceSha": "5a906e4a9aa79991924580eb54103797d311d930",
@@ -17445,7 +17444,7 @@
     "qaContinuityGuardState": "V23_INITIAL_CONTROL_FAIL_CORRECTION_PENDING"
   },
   "priorStatusBeforeRootRun2222": "HOLD_VRM309_DEV_MATERIALIZED_ROLE_E2E_PENDING",
-  "nextExactAction": "I3 HOLD 5/21 MATCH, same served source 5a906e4a9aa79991924580eb54103797d311d930 RUN2248. D06 two authorized attempts, 3 preserved IDs, feedback8/8, OCT/NOV/reload and fresh-document session restoration PASS focal; do not repeat attempts. Preserve D03 generated15, D05 editor15/15, R20 password/relogin and unchanged provider recertification PASS; only remaining D06 15Q Shopper end-to-end, two eligible-bank selector, affected frontend recertification and new-attempt history after fresh credential login remain. Original bank required flag still unobserved; not a proven new P0. VRM134 scheduling defect reproduced on exact owner: baseline10/13 vs proposed13/13 local tests; proposal NOT applied or deployed. NEXT after scoped DEV-only authorization: apply the exact two-file proposal on the same candidate, run focal source QA, publish via existing DEV lane and measure real loading; do not claim full performance closure. Preserve 83/83 identities+2,113/113 HR,13/13 finanzas. G03 remains scope/F9/design reconciliation; financial evidence residuals must stay bounded to C03/C06-C10: accepted historical cuts through July and August paid02-10 are not reopened; identify only Q7300 record/application and ambiguous September cohort. D07/E04/F09 and other full-module/human residuals remain. No third attempt, bank publication, recertification reset or financial write under consumed authorization. Gate20/21 HOLD; I4 not authorized; production DO_NOT_TOUCH.",
+  "nextExactAction": "I3 HOLD 5/21 MATCH. VRM134 exact two-file backend-ready scheduler correction authorized by Paula: source d4e7c4b0aa711f6d4717bca69b79b7b28d8f49d7 is local 13/13 PASS, canonical source CI next, then one existing DEV materialization and real Chrome load measurement. RUN2248 source 5a906e4a9aa79991924580eb54103797d311d930 remains the actual served predecessor until exact readback; no full performance closure claimed. Preserve D06 two authorized attempts and 3 durable IDs, feedback8/8, OCT/NOV/reload/fresh-document readback; no new attempts. Preserve D03 generated15, D05 editor15/15, R20 password/relogin and unchanged provider recertification evidence. Preserve 83/83 identities+2,113/113 HR,13/13 finanzas. G03 remains bounded scope/F9/design and finance evidence reconciliation; do not reopen accepted historical cuts through July or August paid02-10; only Q7300 record/application and ambiguous September cohort. D06 remaining real15Q Shopper/two eligible banks/frontend recertification, D07/E04/F09 and full-module/human residuals remain. No bank edit, HR/payment write, recertification reset or production deployment; Gate20/21 HOLD, I4 not authorized.",
   "i3Nov06SourceOnlyFocal": {
     "sourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
     "predecessorDevSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
@@ -18177,5 +18176,90 @@
     "newAuthenticationOfTheseAttempts": "NOT_TESTED",
     "historicalFinance": "DO_NOT_REOPEN_CLOSED_COHORTS",
     "vrm134": "EXACT_LOCAL_PROPOSAL_13_OF_13_NOT_APPLIED"
+  },
+  "pendingDevSuccessor": {
+    "state": "P0_PROVEN_PENDING_DEV_MATERIALIZATION",
+    "scope": "RUNTIME_AND_HOSTING",
+    "sourceSha": "d4e7c4b0aa711f6d4717bca69b79b7b28d8f49d7",
+    "sourceTree": "a384b638ade1199f8bdc49036b934984a9f3b36c",
+    "predecessorProductSourceSha": "5a906e4a9aa79991924580eb54103797d311d930",
+    "sourceTestsPass": 13,
+    "sourceTestsFail": 0,
+    "allowedProductFiles": [
+      "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+    ],
+    "allowedTestFiles": [
+      "tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs"
+    ],
+    "devPublished": false,
+    "production": false,
+    "rulesDeploys": 0,
+    "storageRulesDeploys": 0,
+    "proofReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM134_BACKEND_READY_WAKE_SOURCE_PROOF_20261106.json",
+    "proofReceiptBlob": "d09f33fc1b9aff9b73c5fe34c2d5f2e78434ff5f",
+    "servingPairedMaterialization": {
+      "state": "PASS_EXACT_DEV_MATERIALIZATION_PENDING_ROLE_E2E_HUMAN",
+      "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
+      "scopeFinding": "VRM-313",
+      "runId": 42314369471,
+      "runNumber": 2248,
+      "jobId": 128223462377,
+      "artifactId": 13549594473,
+      "artifactDigest": "sha256:385d9d8fbeaba175e6046dd41ead34f4d579970972bf358b8bd36dc8cc662fee",
+      "artifactDigestType": "GITHUB_ACTIONS_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR",
+      "sourceSha": "5a906e4a9aa79991924580eb54103797d311d930",
+      "sourceTree": "70cecc344f1b8c243f89459b0c7b79f9641dd864",
+      "runtimeRevision": "cxorbia-live-hr-dev-00354-lpb",
+      "runtimeDigest": "sha256:737d2ef53671a937fcaf875ef36e62cc0412908d3e46c371cc3add6eb9e599ad",
+      "runtimeTrafficPercent": 100,
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/c1d5afaa3b2c1314",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794009159351000",
+      "hrRevision": "32d9416f76ba00d1b766ab8b4276ef74827b62f3c200ef704ba40a511a478b68",
+      "builds": 1,
+      "runtimeDeploys": 1,
+      "hostingDeploys": 1,
+      "firestoreRulesDeploys": 0,
+      "storageRulesDeploys": 0,
+      "hrWrites": 0,
+      "production": false,
+      "controlHeadAtDeploy": "de0b9d8275226c21a836998ed6de333f62c5cd11",
+      "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM313_EXACT_DEV_RUN2248_CONTROL_RECEIPT_V2_20261106.json",
+      "humanAcceptance": "PENDING",
+      "shopperD06E2E": "PENDING_INDEPENDENT_AUTHENTICATED_SHOPPER",
+      "fullTaskClosed": false,
+      "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62"
+    },
+    "servingRuntimeSeal": {
+      "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
+      "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
+      "runId": 42314369471,
+      "runNumber": 2248,
+      "sourceSha": "5a906e4a9aa79991924580eb54103797d311d930",
+      "sourceTree": "70cecc344f1b8c243f89459b0c7b79f9641dd864",
+      "artifactDigest": "sha256:385d9d8fbeaba175e6046dd41ead34f4d579970972bf358b8bd36dc8cc662fee",
+      "runtimeRevision": "cxorbia-live-hr-dev-00354-lpb",
+      "runtimeDigest": "sha256:737d2ef53671a937fcaf875ef36e62cc0412908d3e46c371cc3add6eb9e599ad",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/c1d5afaa3b2c1314",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794009159351000",
+      "hrRevision": "32d9416f76ba00d1b766ab8b4276ef74827b62f3c200ef704ba40a511a478b68",
+      "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM313_EXACT_DEV_RUN2248_CONTROL_RECEIPT_V2_20261106.json",
+      "liveE2e": "ADMIN_SCOPED_CHROME_READONLY_PASS_SHOPPER_D06_PENDING",
+      "humanAcceptance": "PENDING",
+      "gate20": "HOLD",
+      "gate21": "HOLD",
+      "production": false,
+      "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
+      "receiptBlob": "fb7ba2f482632d166ffdb9ca7a5541a1f6f1ff58"
+    }
+  },
+  "previousStatusBeforeVrm134Scheduler": "HOLD_I3_DEV_MATERIALIZED_PENDING_D06_D07_CHROME_HUMAN",
+  "vrm134BackendReadyWakeSourceProof20261106": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM134_BACKEND_READY_WAKE_SOURCE_PROOF_20261106.json",
+    "gitBlob": "d09f33fc1b9aff9b73c5fe34c2d5f2e78434ff5f",
+    "sourceSha": "d4e7c4b0aa711f6d4717bca69b79b7b28d8f49d7",
+    "sourceTree": "a384b638ade1199f8bdc49036b934984a9f3b36c",
+    "sourceTestsPass": 13,
+    "sourceTestsFail": 0,
+    "production": false
   }
 }

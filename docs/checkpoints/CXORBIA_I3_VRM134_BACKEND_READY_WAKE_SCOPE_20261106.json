@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-focal-authorized-scope.v1",
+  "iteration": "I3",
+  "state": "AUTHORIZED_DEV_ONLY",
+  "findingId": "VRM-134",
+  "classification": "FUNCTIONAL_DEFECT",
+  "priority": "P0_PROVEN",
+  "clientDate": "2026-11-06",
+  "controlHeadAtAuthorization": "c5eacec7d419ae7c9667d82d175a35e69fcd9ddb",
+  "predecessorProductSourceSha": "5a906e4a9aa79991924580eb54103797d311d930",
+  "allowedProductFiles": [
+    "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs"
+  ],
+  "userAuthorization": "Paula explicitly authorized applying and publishing the exact proposed scheduler correction only in DEV, followed by focal QA and real Chrome load measurement.",
+  "approvedProposal": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM134_BACKEND_READY_WAKE_PROPOSAL_20261106.patch",
+    "gitBlob": "0843a0c35fabee2bc719222f1a731eacb2f7f914",
+    "sha256": "c406dea3c1ce9ef646dae96bcf27b3e35987e9dc3b82a1ae6a7b2adc049dbf6d"
+  },
+  "focalCause": "A backend_ready event leaves the already pending readiness poll timer in place, adding a reproduced 325ms to capped2000ms delay before authority reconciliation.",
+  "preserved": [
+    "single-flight",
+    "authorization and dependency readiness",
+    "late session-generation and HR revision checks",
+    "atomic publication",
+    "all prior D03/D05/D06/R20 acceptance receipts",
+    "83/83 identity cohort plus two additional groups",
+    "113/113 HR",
+    "13/13 finance"
+  ],
+  "exclusions": [
+    "production",
+    "HR writes or reimport",
+    "financial writes",
+    "bank publication or edits",
+    "new certification attempts",
+    "recertification resets",
+    "permissions or credentials",
+    "new workflow or parallel candidate"
+  ],
+  "production": false
+}
