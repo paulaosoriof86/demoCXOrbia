@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createAcademyCommandProvider} from '../../cxorbia-academy-command-provider-v1.mjs';
-import {commandProviderKind} from '../cxorbia-command-runtime-v1.mjs';
+import {commandProviderKind,createProviderForCommand} from '../cxorbia-command-runtime-v1.mjs';
 
 const clone=v=>v===undefined?undefined:structuredClone(v);
 class Snap{constructor(id,v){this.id=id;this._v=v;this.exists=v!==undefined;}data(){return clone(this._v);}}
@@ -40,6 +40,40 @@ function cmd(type,payload={},extra={}){
 
 test('VRM-192 runtime routes academy lifecycle commands to academy provider',()=>{
   for(const t of ['academy.course.create','academy.course.update','academy.course.state','academy.category.create'])assert.equal(commandProviderKind(t),'academy');
+});
+
+test('D08 runtime factory selects the actual Academia provider without operational policy',async()=>{
+  const db=baseDb(),auth=new Auth();
+  for(const type of ['academy.course.create','academy.course.update','academy.course.state','academy.category.create']){
+    const selected=createProviderForCommand(cmd(type),{auth,db,academyPolicy:policy});
+    assert.equal(selected.kind,'academy');
+    assert.ok(selected.provider,selected.error);
+    assert.equal(selected.provider.version,'cxorbia-academy-command-provider-v1');
+  }
+  const create=cmd('academy.course.create',{audience:'admin',n:'Curso QA de dispatch',lessons:[]},{idempotencyKey:'dispatch:create'});
+  const selected=createProviderForCommand(create,{auth,db,academyPolicy:policy});
+  const first=await selected.provider.execute('token',create);
+  const replay=await selected.provider.execute('token',create);
+  assert.equal(first.ok,true);assert.equal(first.providerAck,true);assert.equal(first.readbackVerified,true);
+  assert.equal(first.entityType,'academyCourse');assert.equal(first.entityReadback.n,'Curso QA de dispatch');
+  assert.equal(first.hrWrites,0);assert.equal(first.externalWrites,0);assert.equal(first.paymentWrites,0);
+  assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);
+});
+
+test('D08 missing Academia policy never falls through to the operational provider',()=>{
+  const db=baseDb(),before=[...db.s.entries()];
+  const selected=createProviderForCommand(cmd('academy.course.update'),{auth:new Auth(),db,academyPolicy:null,operationalPolicy:{enabled:true}});
+  assert.equal(selected.kind,'academy');assert.equal(selected.provider,null);
+  assert.equal(selected.error,'ACADEMY_COMMAND_PROVIDER_NOT_CONFIGURED');
+  assert.deepEqual([...db.s.entries()],before);
+});
+
+test('D08 invalid Academia policy fails closed without operational fallback or writes',()=>{
+  const db=baseDb(),before=[...db.s.entries()];
+  const selected=createProviderForCommand(cmd('academy.course.update'),{auth:new Auth(),db,academyPolicy:{...policy,enabled:false},operationalPolicy:{enabled:true}});
+  assert.equal(selected.kind,'academy');assert.equal(selected.provider,null);
+  assert.equal(selected.error,'ACADEMY_COMMAND_PROVIDER_POLICY_INVALID');
+  assert.match(selected.detail,/POLICY_DISABLED/);assert.deepEqual([...db.s.entries()],before);
 });
 
 test('VRM-192 custom course create is tenant durable audited idempotent and seed-safe',async()=>{
@@ -101,7 +135,7 @@ test('VRM-192 frontend custom content uses protected academy state and awaits pr
   assert.match(academy,/CX\.acadData\.addCategory\(n\)/);
   assert.doesNotMatch(academy,/ncatSave[^\n]*localStorage/);
   assert.match(server,/firestore_tenant_academy/);assert.match(server,/academyCourses/);assert.match(server,/academyCategories/);assert.match(server,/academyAudit/);
-  assert.match(bridge,/__academyState=clone\(protectedState\?\.academy\|\|\{\}\)/);
+  assert.match(bridge,/__academyState(?:=|:)clone\(protectedState\?\.academy\|\|\{\}\)/);
 });
 
 console.log('PASS_VRM192_ACADEMY_PROVIDER_SOURCE');

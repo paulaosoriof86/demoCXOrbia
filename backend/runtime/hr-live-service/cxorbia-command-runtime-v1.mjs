@@ -396,6 +396,11 @@ export function createProviderForCommand(command,overrides={}){
     try{return {provider:createCommercialCommandProvider({auth,db,policy:commercialPolicy}),kind};}
     catch(error){return {provider:null,kind,error:'COMMERCIAL_COMMAND_PROVIDER_POLICY_INVALID',detail:str(error?.message||error)};}
   }
+  if(kind==='academy'){
+    if(!academyPolicy)return {provider:null,kind,error:'ACADEMY_COMMAND_PROVIDER_NOT_CONFIGURED'};
+    try{return {provider:createAcademyCommandProvider({auth,db,policy:academyPolicy}),kind};}
+    catch(error){return {provider:null,kind,error:'ACADEMY_COMMAND_PROVIDER_POLICY_INVALID',detail:str(error?.message||error)};}
+  }
   if(!operationalPolicy)return {provider:null,kind,error:'OPERATIONAL_COMMAND_PROVIDER_NOT_CONFIGURED'};
   try{return {provider:createOperationalCommandProvider({auth,db,policy:operationalPolicy}),kind};}
   catch(error){return {provider:null,kind,error:'OPERATIONAL_COMMAND_PROVIDER_POLICY_INVALID',detail:str(error?.message||error)};}
