@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-proven-scoped-source-owner.v1",
+  "date": "2026-11-07",
+  "iteration": "I3",
+  "findingId": "VRM-315",
+  "priority": "P0_PROVEN",
+  "classification": "MAPPING_FAILURE",
+  "expectedParentProductSourceSha": "6f15c6e84229bc9562bfdad3a6712d4226f09078",
+  "sourceSha": "ed5b708c17b481bde00cb95dda3b426a0e27a890",
+  "sourceTree": "6cb5a48d23eec8110dc6ee17f0fa947027011f19",
+  "allowedProductFiles": [
+    "app/core/hr.js",
+    "app/modules/operacion-extra.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-g03-rutas-effective-hr-source-truth.test.mjs"
+  ],
+  "symptom": "Four NOV 2026 GT HR rows have available-from dates in O but no scheduled dates in P; Admin Hojas de Ruta displayed O as generic Fecha, falsely implying scheduled.",
+  "behavior": "Keep availability and scheduling independent in canonical external HR projection, render truthful separate columns, respect revision/provider project configuration, preserve internal/legacy fallback.",
+  "independentProviderSheet": "1h307t37LxM1nZNh_9Odt6wHUQhROG6cYbsbMKr48vU4",
+  "independentVerifiedRows": {
+    "total": 44,
+    "GT": 34,
+    "HN": 10,
+    "mismatchRows": [
+      "NOVIEMBRE!12",
+      "NOVIEMBRE!15",
+      "NOVIEMBRE!16",
+      "NOVIEMBRE!18"
+    ]
+  },
+  "sourceTests": {
+    "pass": 32,
+    "fail": 0,
+    "suites": 4
+  },
+  "currentServedSourceSha": "6f15c6e84229bc9562bfdad3a6712d4226f09078",
+  "devMaterialization": "PENDING_EXISTING_CANONICAL_DEV_ONLY",
+  "production": false,
+  "devPublished": false,
+  "hrWrites": 0,
+  "questionnaireSubmissions": 0,
+  "gate20": "HOLD",
+  "gate21": "HOLD"
+}
