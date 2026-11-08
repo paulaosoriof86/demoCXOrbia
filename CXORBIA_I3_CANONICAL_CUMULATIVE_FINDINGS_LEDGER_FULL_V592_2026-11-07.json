@@ -14,9 +14,9 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "959a40504e76b69bb2f175a5afbbcc8591b71964",
-    "sourceTree": "13fdb8cda4137b54cd64cd4a21219bca01df1014",
-    "predecessorSha": "c70352004ab580274656a80d69bb166c4da8ed9f",
+    "sourceSha": "e79cc3ccc73293c29e53e9ec6880638154b5143e",
+    "sourceTree": "e7c5158b6eff75a6080125bb9c13b6e8621b6e6f",
+    "predecessorSha": "959a40504e76b69bb2f175a5afbbcc8591b71964",
     "production": false,
     "state": "SOURCE_ONLY_PROVEN_PENDING_RUNTIME_AND_HOSTING_DEV",
     "november2026AutomaticPeriodSourceProof": {
@@ -546,7 +546,7 @@
       "octoberOperationalClosure": "PENDING_11_UNSUBMITTED_1_NOT_REALIZED",
       "production": false
     },
-    "devMaterialization": "PENDING_ONE_COMBINED_SUCCESSOR_PUBLICATION_RUN2259_PREDECESSOR_SERVING",
+    "devMaterialization": "PENDING_R5_EXACT_DEV",
     "previousProofBeforeVrm134Scheduler": {
       "path": "docs/checkpoints/CXORBIA_I3_D07_C04_C05_SOURCE_SUCCESSOR_20261030.json",
       "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
