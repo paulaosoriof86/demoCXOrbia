@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-proven-scope.v1",
+  "observedAt": "2026-11-08T05:13:31.083Z",
+  "findingId": "VRM-316",
+  "classification": "FUNCTIONAL_DEFECT",
+  "predecessorSourceSha": "c70352004ab580274656a80d69bb166c4da8ed9f",
+  "successorSourceSha": "959a40504e76b69bb2f175a5afbbcc8591b71964",
+  "sourceTree": "13fdb8cda4137b54cd64cd4a21219bca01df1014",
+  "exactOwnerFiles": [
+    "app/core/backend-certifications.js",
+    "app/modules/misvisitas.js"
+  ],
+  "exactQaFiles": [
+    "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs"
+  ],
+  "rootCause": "Mi Dia/Mis Visitas accepted HR-facing historical positive or unacknowledged current rows before protected profile, and treated fulfilled mandatory certification as optional.",
+  "sourceContracts": [
+    "No HR-only profile grants certification",
+    "Durable attempt requires exact provider ACK, recordType, tenant and project",
+    "Required indicates policy obligation independent of successful completion",
+    "Exact protected valid carryover and provider-acknowledged passes remain valid"
+  ],
+  "tests": {
+    "pass": 15,
+    "fail": 0
+  },
+  "redEvidence": "AUTHENTIC_RUN2283_SHOPPER_CROSS_VIEW_FAIL",
+  "state": "P0_PROVEN_R4_SOURCE_ONLY_PENDING_CANONICAL_CI_DEV",
+  "authorization": "DEV_ALLOWED_PRODUCTION_DO_NOT_TOUCH",
+  "production": false
+}
