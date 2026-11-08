@@ -2001,7 +2001,7 @@ jobs:
       retention-days: 30
       compression-level: 0
       include-hidden-files: true
-  vrauth-protected-data-runtime76-terminal-module-truth-finalizer:
+  vrm076-terminal-module-truth-finalizer:
    if: ${{ github.event_name=='push'&&(contains(github.event.head_commit.message, '[vrm-076-finalizer]')||contains(github.event.head_commit.message, '[vrm-087-finalizer]')) }}
    runs-on: ubuntu-latest
    timeout-minutes: 10
@@ -2013,7 +2013,7 @@ jobs:
    - name: step
      run: |
       set -Eeuo pipefail
-      T="$RUNNER_TEMP/vrauth-protected-data-runtime76"; rm -rf "$T"; mkdir -p "$T"
+      T="$RUNNER_TEMP/vrm076"; rm -rf "$T"; mkdir -p "$T"
       SOURCE="1111111111111111111111111111111111111111"
       TREE="2222222222222222222222222222222222222222"
       RUNTIME="runtime-test-1"
@@ -2021,7 +2021,7 @@ jobs:
       HOSTING="sites/test/versions/1"
       HR="bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
       node <<'NODE'
-      const fs=require('fs'),p=process.env.RUNNER_TEMP+'/vrauth-protected-data-runtime76';
+      const fs=require('fs'),p=process.env.RUNNER_TEMP+'/vrm076';
       const domains=[...JSON.parse(fs.readFileSync('CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json','utf8')).modules.map(m=>m.domain),'tenant-admin-config-branding'];
        const modules=domains.map((domain,i)=>({domain,owners:i===0?['app/modules/x.js']:i===1?['app/modules/y.js']:[],classification:i<2?'COMPOSED_NOT_DEPLOYED':'MATCH',pendingTerminalFiles:i===0?['app/modules/x.js']:i===1?['app/modules/y.js']:[]}));
       const pre={preTerminalComposition:{decision:'PASS_C3_PRETERMINAL_COMPOSITION',moduleCount:21},productSource:{sha:'1111111111111111111111111111111111111111',treeSha:'2222222222222222222222222222222222222222'},sourceFiles:[{path:'app/modules/x.js',domain:'auth-protected-data-runtime',classification:'COMPOSED_NOT_DEPLOYED'},{path:'app/modules/y.js',domain:'base-router-shell-cache',classification:'COMPOSED_NOT_DEPLOYED'}],modules};
@@ -2085,8 +2085,8 @@ jobs:
    - if: always()
      uses: actions/upload-artifact@v4
      with:
-      name: cxorbia-i3-vrauth-protected-data-runtime76-finalizer-${{ github.run_id }}
-      path: ${{ runner.temp }}/vrauth-protected-data-runtime76
+      name: cxorbia-i3-vrm076-finalizer-${{ github.run_id }}
+      path: ${{ runner.temp }}/vrm076
       if-no-files-found: error
       retention-days: 30
       compression-level: 0

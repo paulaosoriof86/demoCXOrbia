@@ -42,6 +42,7 @@ test('Terminal jobs and Gate21 require the same 21-domain contract, never legacy
   assert.match(terminal,/moduleTruthPath/);
   assert.match(terminal,/PASS_C3_TERMINAL_MODULE_TRUTH_21_21/);
   assert.match(terminal,/cxorbia-i3-terminal-module-domain-coverage\.mjs/);
+  assert.match(workflow,/\n  vrm076-terminal-module-truth-finalizer:/);
   assert.doesNotMatch(gate21,/MODULE_TRUTH_20_20|moduleCount:20/);
   assert.match(gate21,/cxorbia-i3-terminal-module-domain-coverage\.mjs/);
 });
