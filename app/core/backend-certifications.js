@@ -139,11 +139,11 @@ window.CX=window.CX||{};
       if(status==='failed'){failed=true;continue;}
       if(!['approved','certified','passed'].includes(status))continue;
       approved=true;
-      // Pre-I4 projected legacy evidence explicitly carries reviewRequired,
-      // carryoverConfirmed=false, eligibilityGranted=false and currentCertification=false.
-      // Source legacy "approved" is evidence, not independent authorization.
-      if(r.reviewRequired===true||r.carryoverConfirmed===false||r.eligibilityGranted===false||
-         r.currentCertification===false||str(r.status).toLowerCase()==='pending_review'){
+      // A legacy "approved" label is historical evidence, never authorization.
+      // Only an explicitly adjudicated, project-scoped carryover may grant rights.
+      // Missing flags also mean unreviewed: default-deny, not implicit approval.
+      if(r.reviewRequired===true||r.carryoverConfirmed!==true||r.eligibilityGranted!==true||
+         r.currentCertification!==true||str(r.status).toLowerCase()==='pending_review'){
         pendingReview=true;continue;
       }
       if(str(r.projectId)!==str(projectId)){otherProject=true;continue;}

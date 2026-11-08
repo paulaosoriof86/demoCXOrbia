@@ -141,6 +141,18 @@ test('P0 pre-I4 projected historical evidence cannot grant present certification
     const shopper={id:'shopper-one',certificationEvidenceRecords:[row]};
     assert.equal(h.cx.backendCertifications.carryoverDecision(shopper,bank,'project-a').eligibilityGranted,false,key);
   }
+  const unconfirmed={id:'shopper-one',certificationEvidenceRecords:[{
+    projectId:'project-a',sourceLegacyStatus:'approved'
+  }]};
+  assert.equal(h.cx.backendCertifications.carryoverDecision(unconfirmed,bank,'project-a').eligibilityGranted,false,
+    'An unreviewed legacy approval cannot independently grant execution rights');
+  for(const omitted of ['carryoverConfirmed','eligibilityGranted','currentCertification']){
+    const row={projectId:'project-a',sourceLegacyStatus:'approved',status:'confirmed',
+      carryoverConfirmed:true,eligibilityGranted:true,currentCertification:true};
+    delete row[omitted];
+    assert.equal(h.cx.backendCertifications.carryoverDecision({id:'shopper-one',certificationEvidenceRecords:[row]},bank,'project-a').eligibilityGranted,false,
+      'Positive adjudication must be explicit: '+omitted);
+  }
   assert.equal(h.cx.backendCertifications.durableCurrent('shopper-one',bank),null);
 });
 
