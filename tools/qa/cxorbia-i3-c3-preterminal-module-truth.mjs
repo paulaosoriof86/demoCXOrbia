@@ -4,7 +4,7 @@ import {assertCanonicalModuleCoverage,assertAllModulesAccepted} from './cxorbia-
 
 const descriptor=JSON.parse(fs.readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8'));
 const TEMPLATE=process.env.TEMPLATE||descriptor.moduleTruthPath;
-const LEDGER=process.env.LEDGER||'CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V10_2026-09-24.json';
+const LEDGER=process.env.LEDGER||descriptor.findingsLedgerPath;
 const SOURCE=String(process.env.SOURCE||'').trim();
 const TREE=String(process.env.TREE||'').trim();
 const LAST_SERVED=String(process.env.LAST_SERVED||SOURCE).trim();

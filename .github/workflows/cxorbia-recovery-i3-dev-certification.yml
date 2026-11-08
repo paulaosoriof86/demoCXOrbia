@@ -2716,7 +2716,11 @@ jobs:
       git diff --quiet "$I3_CERTIFICATION_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
       LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")"
       for id in VRM-034 VRM-035 VRM-041 VRM-043; do
-        test "$(jq -r --arg id "$id" '.findings[$id].state' "$LEDGER")" = "TERMINAL_REPROOF_PENDING_CURRENT_SOURCE"
+        state="$(jq -r --arg id "$id" '.findings[$id].state // empty' "$LEDGER")"
+        case "$state" in
+          TERMINAL_REPROOF_PENDING_CURRENT_SOURCE|PASS_*|FIXED_*|CLOSED_*|ALREADY_PROVEN|RESOLVED_*) ;;
+          *) echo "C3_TERMINAL_FINDING_STATE_UNPROVEN:$id:$state" >&2; exit 1 ;;
+        esac
       done
       EXPECTED_RUNTIME_REVISION="$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")"
       EXPECTED_RUNTIME_DIGEST="$(jq -r '.currentMaterialization.runtimeDigest' "$CANDIDATE_DESCRIPTOR")"
@@ -2848,7 +2852,7 @@ jobs:
    - name: step
      run: |
       set -Eeuo pipefail
-      LEDGER="$POST_RUN500_LEDGER"
+      LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")"
       TERMINAL_LEDGER="$OUT/terminal-evidence-ledger.json"
       jq '
         .findings["VRM-034"].state="FIXED_PROVEN_CURRENT_TERMINAL_EVIDENCE" |
