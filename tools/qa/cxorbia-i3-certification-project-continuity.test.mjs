@@ -387,7 +387,7 @@ test('I3 P0: rejected or mismatched void ACK never locally revokes the prior cer
 test('I3 P0 backend test-void protocol: five isolated provider scenarios pass before any DEV write',()=>{
   const backendTest=new URL('../../backend/runtime/hr-live-service/test/certification-attempt-void-test.test.mjs',import.meta.url);
   const stdout=execFileSync(process.execPath,[backendTest.pathname],{encoding:'utf8',
-    timeout:30000,maxBuffer:1024*1024});
+    timeout:30000,maxBuffer:1024*1024,env:{...process.env,NODE_TEST_CONTEXT:undefined}});
   assert.match(stdout,/^# tests 5$/m);
   assert.match(stdout,/^# pass 5$/m);
   assert.match(stdout,/^# fail 0$/m);
