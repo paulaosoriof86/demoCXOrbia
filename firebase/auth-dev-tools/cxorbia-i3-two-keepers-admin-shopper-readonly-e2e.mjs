@@ -13,6 +13,7 @@ import {chromium} from 'playwright';
 
 const TENANT='tya', PROGRAM='cinepolis', PROJECT='cxorbia-backend-dev';
 const ROOT='https://cxorbia-backend-dev.web.app';
+const ALIAS='https://cxorbia-backend-dev.firebaseapp.com';
 const SOURCE=String(process.env.CXORBIA_PRODUCT_SOURCE_SHA||'').trim();
 const EXPECTED_HR=String(process.env.CXORBIA_HR_REVISION||'').trim();
 const OUT='.tmp/cxorbia-i3-two-keepers-role-e2e-readonly';
@@ -26,7 +27,7 @@ const cases=[
 const result={schemaVersion:'cxorbia.i3.two-keepers.admin-shopper-readonly-e2e.v1',
   iteration:'I3',gate:'HOLD',sourceSha:SOURCE,expectedHrRevision:EXPECTED_HR,
   environment:PROJECT,projectId:PROGRAM,decision:'HOLD_NOT_EXECUTED',
-  admin:{},shoppers:[],checks:[],
+  admin:{},shoppers:[],checks:[],pdfComparison:{decision:'HOLD_NOT_RUN',sites:[]},
   safety:{providerCommands:0,directAuthWrites:0,directFirestoreWrites:0,
     hrWrites:0,deploys:0,production:false}};
 fs.mkdirSync(OUT,{recursive:true});
@@ -49,17 +50,18 @@ const approvedCountry=v=>{
   const n=norm(v);
   return ['gt','guatemala'].includes(n)?'GT':['hn','honduras'].includes(n)?'HN':'UNSET';
 };
-async function signed(auth,member,role){
+async function signed(auth,member,role,root=ROOT){
+  const requestedUrl=authUrl.replace(ROOT,root);
   const context=await browser.newContext({viewport:{width:1440,height:1000}});
   const page=await context.newPage();
   const token=await auth.createCustomToken(member.uid);
-  await page.goto(authUrl+'&case='+role+'&stamp='+Date.now(),{waitUntil:'domcontentloaded',timeout:90000});
+  await page.goto(requestedUrl+'&case='+role+'&stamp='+Date.now(),{waitUntil:'domcontentloaded',timeout:90000});
   await page.waitForFunction(()=>!!window.firebase?.auth && window.firebase.apps?.length>0,null,{timeout:90000});
   await page.evaluate(async()=>{await window.firebase.auth().setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);});
   await page.evaluate(jwt=>{window.firebase.auth().signInWithCustomToken(jwt).catch(()=>{});return true;},token);
   await page.waitForFunction(uid=>window.firebase?.auth?.()?.currentUser?.uid===uid,member.uid,{timeout:90000});
   await page.goto('about:blank',{waitUntil:'domcontentloaded',timeout:30000});
-  await page.goto(authUrl+'&settled='+role+'&stamp='+Date.now(),{waitUntil:'domcontentloaded',timeout:90000});
+  await page.goto(requestedUrl+'&settled='+role+'&stamp='+Date.now(),{waitUntil:'domcontentloaded',timeout:90000});
   await page.waitForFunction(({uid,revision,role})=>{
     const cx=window.CX,ctx=cx?.backendAuth?.context?.()||{},value=String(ctx.role||'').toLowerCase();
     return window.firebase?.auth?.()?.currentUser?.uid===uid &&
@@ -69,6 +71,93 @@ async function signed(auth,member,role){
   },{uid:member.uid,revision:EXPECTED_HR,role},{timeout:120000});
   return {context,page};
 }
+// Separate fresh browser contexts prevent the real Julissa/Admin sessions from
+// sharing Firebase persistence. Reads only; never persist JWTs, Storage paths,
+// PDF bytes, user identities or query payloads in the uploaded receipt.
+async function probePublishedPdf(auth,member,origin,label){
+  const entry={label,origin,status:'HOLD_NOT_RUN'};
+  let session;
+  try{
+    session=await signed(auth,member,'shopper',origin);
+    const failedFetches=[];
+    session.page.on('requestfailed',request=>{
+      if(request.url().startsWith('https://firebasestorage.googleapis.com/')){
+        const reason=str(request.failure()?.errorText);
+        failedFetches.push(/ERR_FAILED/.test(reason)?'NET_ERR_FAILED':
+          /ERR_BLOCKED/.test(reason)?'NET_ERR_BLOCKED':
+          /ERR_ABORTED/.test(reason)?'NET_ERR_ABORTED':'NETWORK_FAILURE');
+      }
+    });
+    entry.observed=await session.page.evaluate(async()=>{
+      const api=window.CX?.backendResources;
+      const scope=api?.scope?.()||{};
+      const safe=e=>{
+        const s=String(e?.message||e||'');
+        const m=s.match(/(?:AUTH_FAILURE|SOURCE_FAILURE|MAPPING_FAILURE|PROVIDER_FAILURE|PERSISTENCE_FAILURE|FUNCTIONAL_DEFECT|VISUAL_DEFECT|RELEASE_COMPOSITION_FAILURE|ENVIRONMENT_FAILURE):[A-Z0-9_]+/);
+        return m?m[0]:'RESOURCE_PROJECTION_UNCLASSIFIED';
+      };
+      const out={scope:{tenantId:String(scope.tenantId||''),projectId:String(scope.projectId||''),
+        periodId:String(scope.periodId||'')},projection:'HOLD',pdfCandidates:0};
+      if(!api?.load||!api?.list||!api?.readPublishedPdf){
+        out.projectionCode='RESOURCE_API_UNAVAILABLE';return out;
+      }
+      try{
+        await api.load();
+        out.projection='PASS';
+      }catch(error){
+        out.projectionCode=safe(error);return out;
+      }
+      const candidates=api.list({resourceType:'project_resource'}).filter(item=>{
+        const title=String(item?.n||item?.name||item?.title||item?.titulo||'')
+          .normalize('NFD').replace(/\p{M}/gu,'').toLowerCase();
+        return String(item?.tipo||'').toLowerCase()==='pdf'&&
+          /instructivo.*shopper.*cinepolis/.test(title);
+      });
+      out.pdfCandidates=candidates.length;
+      if(candidates.length!==1){
+        out.readCode='RESOURCE_GUIDE_CARDINALITY_MISMATCH';return out;
+      }
+      const chosen=candidates[0];
+      out.resourcePeriodId=String(chosen.periodId||'');
+      const result=await api.readPublishedPdf(chosen,{timeoutMs:15000});
+      out.read={ok:result?.ok===true,code:result?.ok===true?'PASS':
+        String(result?.code||'RESOURCE_READ_UNKNOWN'),httpStatus:result?.httpStatus??null,
+        diagnostic:{stage:String(result?.diagnostic?.stage||''),
+          tokenObtained:result?.diagnostic?.tokenObtained===true,
+          httpStatus:result?.diagnostic?.httpStatus??null,
+          bytesRead:result?.diagnostic?.bytesRead===true,
+          bytesLength:Number(result?.diagnostic?.bytesLength||0),
+          errorType:String(result?.diagnostic?.errorType||'')}};
+      return out;
+    });
+    entry.storageNetworkFailures=failedFetches.slice(0,3);
+    entry.status=entry.observed?.read?.ok===true?'PASS_PDF_READ':'HOLD_PDF_READ';
+  }catch(error){
+    entry.status='HOLD_AUTHENTICATION_OR_ENVIRONMENT';
+    entry.failureCode=shortError(error);
+  }finally{
+    if(session?.context)await session.context.close().catch(()=>{});
+  }
+  return entry;
+}
+async function comparePdfOrigins(auth,members){
+  const matches=members.filter(m=>m.active===true&&norm(m.role)==='shopper'&&
+    norm(m.authNamespace)==='shopper'&&
+    norm(m.visibleLogin||m.username||m.user)==='julissa.flores');
+  const report={decision:'HOLD',sites:[],caseId:'GT_JULISSA',membershipCount:matches.length,
+    authorizedProjectMembership:matches.length===1&&arr(matches[0].projectIds).includes(PROGRAM)};
+  if(!report.authorizedProjectMembership){
+    report.failureCode='AUTH_FAILURE:SHOPPER_RESOURCE_PROJECT_MEMBERSHIP_MISSING';
+    return report;
+  }
+  for(const [origin,label] of [[ROOT,'CANONICAL_WEB_APP'],[ALIAS,'FIREBASEAPP_ALIAS']]){
+    report.sites.push(await probePublishedPdf(auth,matches[0],origin,label));
+  }
+  report.decision=report.sites.every(s=>s.status==='PASS_PDF_READ')?
+    'PASS_BOTH_ORIGINS_PDF_READ':'HOLD_PDF_ORIGIN_COMPARISON';
+  return report;
+}
+
 async function gotoRoute(page,route){
   await page.evaluate(r=>window.CX.router.nav(r,{history:false}),route);
   await page.waitForFunction(r=>String(window.CX?.session?.view||'')===r,route,{timeout:30000});
@@ -111,6 +200,7 @@ try {
   }
   check(validAdmins.length>=1,'AUTH_FAILURE:DEV_ADMIN_NOT_AVAILABLE',{count:validAdmins.length});
   browser=await chromium.launch({headless:true});
+  result.pdfComparison=await comparePdfOrigins(auth,members);
   const admin=await signed(auth,validAdmins[0],'admin');
   await gotoRoute(admin.page,'shoppers');
   result.admin={authenticated:true,staffUidFingerprint:fingerprint(validAdmins[0].uid),
@@ -199,6 +289,8 @@ try {
     }
     await shopper.context.close();
   }
+  if(result.pdfComparison?.decision!=='PASS_BOTH_ORIGINS_PDF_READ')
+    throw Error('AUTH_FAILURE:SHOPPER_RESOURCE_PDF_ORIGIN_NOT_PROVEN');
   result.decision='PASS_SCOPED_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E';
 }catch(error){
   result.decision='HOLD_SCOPED_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E';
