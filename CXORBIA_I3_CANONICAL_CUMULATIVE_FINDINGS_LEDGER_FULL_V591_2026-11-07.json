@@ -22297,11 +22297,11 @@
       "evidence": "RUN2283 R3 technical DEV PASS yet Damaris Mi Día completed and Mis Visitas no requerida, while Admin both published banks required 80% and Shopper exam unsubmitted. R4 denies HR-only transient positive and unauthenticated passing records.",
       "scopeReceipt": {
         "path": "docs/checkpoints/CXORBIA_I3_VRM316_R4_PROTECTED_ACK_AND_REQUIREMENT_SCOPE_20261107.json",
-        "gitBlob": "4619c00652ebb40d42db226afeaa6200ef9cbd9d"
+        "gitBlob": "af8f6fb6ba5ac3d4f297377494bd2a8fb57fa29b"
       },
       "sourceProof": {
         "path": "docs/checkpoints/CXORBIA_I3_VRM316_R4_PROTECTED_ACK_SOURCE_PROOF_20261107.json",
-        "gitBlob": "291dc53780d6ae1a42133a70f56f65dd06b9f875"
+        "gitBlob": "cc29a8d87fc76d22f959b0e6b410f9c71cbb98f2"
       },
       "humanAcceptance": "PENDING_R3_SAME_ACTORS_ADMIN_SHOPPER_E2E",
       "production": false,
@@ -23579,7 +23579,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "I3 HOLD 5/21 MATCH. RUN2283 R3 exact DEV technical PASS source c7035200, runtime 00362-2ch, Hosting 60a5688e88f33f2a, HR revision stable, but authenticated Damaris Shopper Mi Dia 3/8 CERT_COMPLETED and Mis Visitas CERT_NO_REQUERIDA while both Admin bank requirements checked and Shopper Certificación 15Q/8Q exam available. VRM316 R4 source959a4050 tree13fdb8c first fixes provider-ACK/type/tenant and forbids transient HR fallback, separates mandatory from done; 15/15 local tests. NEXT: canonical CI one exact DEV R4 and authenticated Shopper/Admin cross-view role E2E. B10 TyAOnline provider/visit link HOLD, G03 independent HR and provider ACK, VRM134 first load and finance Q7300 remain; 16 modules HOLDS, Gate20/21 HOLD; production DO_NOT_TOUCH and no I4 auth.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH. RUN2283 R3 exact DEV technical PASS source c7035200, runtime 00362-2ch, Hosting 60a5688e88f33f2a, HR revision stable, but authenticated Damaris Shopper Mi Dia 3/8 CERT_COMPLETED and Mis Visitas CERT_NO_REQUERIDA while both Admin bank requirements checked and Shopper Certificación 15Q/8Q exam available. VRM316 R4 source959a4050 tree13fdb8c first fixes provider-ACK/type/tenant and forbids transient HR fallback, separates mandatory from done; 15/15 local tests. NEXT: canonical CI one exact DEV R4 and authenticated Shopper/Admin cross-view role E2E. B10 TyAOnline provider/visit link HOLD, G03 independent HR and provider ACK, VRM134 first load and finanzas Q7300 remain; 83/83 shopper identity groups prior approved count preserved; 16 modules HOLDS, Gate20/21 HOLD; production DO_NOT_TOUCH and no I4 auth.",
   "supersedesGitBlob": "fcd5dc8147b7181102a51ad20dbec6051c1cea15",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -27274,7 +27274,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-11-07T22:35:58Z",
-  "nextExactAction": "I3 HOLD 5/21 MATCH. RUN2283 R3 exact DEV technical PASS source c7035200, runtime 00362-2ch, Hosting 60a5688e88f33f2a, HR revision stable, but authenticated Damaris Shopper Mi Dia 3/8 CERT_COMPLETED and Mis Visitas CERT_NO_REQUERIDA while both Admin bank requirements checked and Shopper Certificación 15Q/8Q exam available. VRM316 R4 source959a4050 tree13fdb8c first fixes provider-ACK/type/tenant and forbids transient HR fallback, separates mandatory from done; 15/15 local tests. NEXT: canonical CI one exact DEV R4 and authenticated Shopper/Admin cross-view role E2E. B10 TyAOnline provider/visit link HOLD, G03 independent HR and provider ACK, VRM134 first load and finance Q7300 remain; 16 modules HOLDS, Gate20/21 HOLD; production DO_NOT_TOUCH and no I4 auth.",
+  "nextExactAction": "I3 HOLD 5/21 MATCH. RUN2283 R3 exact DEV technical PASS source c7035200, runtime 00362-2ch, Hosting 60a5688e88f33f2a, HR revision stable, but authenticated Damaris Shopper Mi Dia 3/8 CERT_COMPLETED and Mis Visitas CERT_NO_REQUERIDA while both Admin bank requirements checked and Shopper Certificación 15Q/8Q exam available. VRM316 R4 source959a4050 tree13fdb8c first fixes provider-ACK/type/tenant and forbids transient HR fallback, separates mandatory from done; 15/15 local tests. NEXT: canonical CI one exact DEV R4 and authenticated Shopper/Admin cross-view role E2E. B10 TyAOnline provider/visit link HOLD, G03 independent HR and provider ACK, VRM134 first load and finanzas Q7300 remain; 83/83 shopper identity groups prior approved count preserved; 16 modules HOLDS, Gate20/21 HOLD; production DO_NOT_TOUCH and no I4 auth.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -41823,9 +41823,9 @@
     "sourceTree": "13fdb8cda4137b54cd64cd4a21219bca01df1014",
     "predecessorSourceSha": "c70352004ab580274656a80d69bb166c4da8ed9f",
     "scopePath": "docs/checkpoints/CXORBIA_I3_VRM316_R4_PROTECTED_ACK_AND_REQUIREMENT_SCOPE_20261107.json",
-    "scopeBlob": "4619c00652ebb40d42db226afeaa6200ef9cbd9d",
+    "scopeBlob": "af8f6fb6ba5ac3d4f297377494bd2a8fb57fa29b",
     "proofPath": "docs/checkpoints/CXORBIA_I3_VRM316_R4_PROTECTED_ACK_SOURCE_PROOF_20261107.json",
-    "proofBlob": "291dc53780d6ae1a42133a70f56f65dd06b9f875",
+    "proofBlob": "cc29a8d87fc76d22f959b0e6b410f9c71cbb98f2",
     "priorDevReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2283_VRM316_R3_EXACT_DEV_ROLE_E2E_FAIL_20261107.json",
     "priorDevReceiptBlob": "44dd24cd1eda5b14ac81eaca32919e000b236de2",
     "sourceTestsPass": 15,

@@ -8,7 +8,7 @@
   "productTreeAuthority": "13fdb8cda4137b54cd64cd4a21219bca01df1014",
   "predecessorProductSourceSha": "c70352004ab580274656a80d69bb166c4da8ed9f",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V591_2026-11-07.json",
-  "findingsLedgerExpectedGitBlob": "65cef194d830cac54bc60cc8c6233b7cdc789627",
+  "findingsLedgerExpectedGitBlob": "845039c27468d9715c7c408cc238e2ac1a09d346",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V276.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -128,7 +128,7 @@
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
   "historicalExactNextActionPreS1": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "I3 HOLD 5/21 MATCH. RUN2283 R3 exact DEV technical PASS source c7035200, runtime 00362-2ch, Hosting 60a5688e88f33f2a, HR revision stable, but authenticated Damaris Shopper Mi Dia 3/8 CERT_COMPLETED and Mis Visitas CERT_NO_REQUERIDA while both Admin bank requirements checked and Shopper Certificación 15Q/8Q exam available. VRM316 R4 source959a4050 tree13fdb8c first fixes provider-ACK/type/tenant and forbids transient HR fallback, separates mandatory from done; 15/15 local tests. NEXT: canonical CI one exact DEV R4 and authenticated Shopper/Admin cross-view role E2E. B10 TyAOnline provider/visit link HOLD, G03 independent HR and provider ACK, VRM134 first load and finance Q7300 remain; 16 modules HOLDS, Gate20/21 HOLD; production DO_NOT_TOUCH and no I4 auth.",
+  "exactNextAction": "I3 HOLD 5/21 MATCH. RUN2283 R3 exact DEV technical PASS source c7035200, runtime 00362-2ch, Hosting 60a5688e88f33f2a, HR revision stable, but authenticated Damaris Shopper Mi Dia 3/8 CERT_COMPLETED and Mis Visitas CERT_NO_REQUERIDA while both Admin bank requirements checked and Shopper Certificación 15Q/8Q exam available. VRM316 R4 source959a4050 tree13fdb8c first fixes provider-ACK/type/tenant and forbids transient HR fallback, separates mandatory from done; 15/15 local tests. NEXT: canonical CI one exact DEV R4 and authenticated Shopper/Admin cross-view role E2E. B10 TyAOnline provider/visit link HOLD, G03 independent HR and provider ACK, VRM134 first load and finanzas Q7300 remain; 83/83 shopper identity groups prior approved count preserved; 16 modules HOLDS, Gate20/21 HOLD; production DO_NOT_TOUCH and no I4 auth.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3033,7 +3033,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "4765ca90f2a723939c65c60c33e8548b54b95690",
+  "moduleTruthExpectedGitBlob": "7e54c681de5804f614a8199088f9f7eb4fbca1c7",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -17416,7 +17416,7 @@
     "qaContinuityGuardState": "V23_INITIAL_CONTROL_FAIL_CORRECTION_PENDING"
   },
   "priorStatusBeforeRootRun2222": "HOLD_VRM309_DEV_MATERIALIZED_ROLE_E2E_PENDING",
-  "nextExactAction": "I3 HOLD 5/21 MATCH. RUN2283 R3 exact DEV technical PASS source c7035200, runtime 00362-2ch, Hosting 60a5688e88f33f2a, HR revision stable, but authenticated Damaris Shopper Mi Dia 3/8 CERT_COMPLETED and Mis Visitas CERT_NO_REQUERIDA while both Admin bank requirements checked and Shopper Certificación 15Q/8Q exam available. VRM316 R4 source959a4050 tree13fdb8c first fixes provider-ACK/type/tenant and forbids transient HR fallback, separates mandatory from done; 15/15 local tests. NEXT: canonical CI one exact DEV R4 and authenticated Shopper/Admin cross-view role E2E. B10 TyAOnline provider/visit link HOLD, G03 independent HR and provider ACK, VRM134 first load and finance Q7300 remain; 16 modules HOLDS, Gate20/21 HOLD; production DO_NOT_TOUCH and no I4 auth.",
+  "nextExactAction": "I3 HOLD 5/21 MATCH. RUN2283 R3 exact DEV technical PASS source c7035200, runtime 00362-2ch, Hosting 60a5688e88f33f2a, HR revision stable, but authenticated Damaris Shopper Mi Dia 3/8 CERT_COMPLETED and Mis Visitas CERT_NO_REQUERIDA while both Admin bank requirements checked and Shopper Certificación 15Q/8Q exam available. VRM316 R4 source959a4050 tree13fdb8c first fixes provider-ACK/type/tenant and forbids transient HR fallback, separates mandatory from done; 15/15 local tests. NEXT: canonical CI one exact DEV R4 and authenticated Shopper/Admin cross-view role E2E. B10 TyAOnline provider/visit link HOLD, G03 independent HR and provider ACK, VRM134 first load and finanzas Q7300 remain; 83/83 shopper identity groups prior approved count preserved; 16 modules HOLDS, Gate20/21 HOLD; production DO_NOT_TOUCH and no I4 auth.",
   "i3Nov06SourceOnlyFocal": {
     "sourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
     "predecessorDevSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
@@ -20352,7 +20352,7 @@
     "state": "P0_PROVEN_PENDING_DEV_MATERIALIZATION",
     "scope": "RUNTIME_AND_HOSTING",
     "proofReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM316_R4_PROTECTED_ACK_SOURCE_PROOF_20261107.json",
-    "proofReceiptBlob": "291dc53780d6ae1a42133a70f56f65dd06b9f875",
+    "proofReceiptBlob": "cc29a8d87fc76d22f959b0e6b410f9c71cbb98f2",
     "devPublished": false,
     "production": false,
     "rulesDeploys": 0,
@@ -20576,9 +20576,9 @@
     "productSourceSha": "959a40504e76b69bb2f175a5afbbcc8591b71964",
     "productSourceTree": "13fdb8cda4137b54cd64cd4a21219bca01df1014",
     "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM316_R4_PROTECTED_ACK_AND_REQUIREMENT_SCOPE_20261107.json",
-    "scopeReceiptBlob": "4619c00652ebb40d42db226afeaa6200ef9cbd9d",
+    "scopeReceiptBlob": "af8f6fb6ba5ac3d4f297377494bd2a8fb57fa29b",
     "sourceProofPath": "docs/checkpoints/CXORBIA_I3_VRM316_R4_PROTECTED_ACK_SOURCE_PROOF_20261107.json",
-    "sourceProofBlob": "291dc53780d6ae1a42133a70f56f65dd06b9f875",
+    "sourceProofBlob": "cc29a8d87fc76d22f959b0e6b410f9c71cbb98f2",
     "greenTests": {
       "pass": 15,
       "fail": 0

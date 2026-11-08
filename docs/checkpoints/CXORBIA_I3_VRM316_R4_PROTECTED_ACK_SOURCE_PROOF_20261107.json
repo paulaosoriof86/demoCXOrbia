@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "cxorbia.i3.p0-source-proof.v1",
+  "schemaVersion": "cxorbia.i3.p0-proven-source-proof.v1",
   "observedAt": "2026-11-08T05:13:31.083Z",
   "findingId": "VRM-316",
   "classification": "FUNCTIONAL_DEFECT",
@@ -16,5 +16,46 @@
   "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM316_R4_PROTECTED_ACK_AND_REQUIREMENT_SCOPE_20261107.json",
   "decision": "SOURCE_ONLY_PROVEN_PENDING_ONE_EXACT_DEV_AND_INDEPENDENT_ROLE_E2E",
   "fullModuleCertified": false,
-  "production": false
+  "production": false,
+  "predecessorProductSourceSha": "c70352004ab580274656a80d69bb166c4da8ed9f",
+  "sourceTestsPass": 15,
+  "sourceTestsFail": 0,
+  "sourceTestsSkipped": 0,
+  "redRegression": {
+    "exactLive": "RUN2283_R3_AUTHENTIC_DAMARIS_CERT_COMPLETED_AND_NO_REQUERIDA",
+    "newTests": "3_NEW_R4_SCOPED_TESTS"
+  },
+  "allowedProductFiles": [
+    "app/core/backend-certifications.js",
+    "app/modules/misvisitas.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs"
+  ],
+  "findings": [
+    {
+      "id": "VRM-316",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "owner": "app/core/backend-certifications.js + app/modules/misvisitas.js",
+      "expected": "One exact protected, verified certification decision for Shopper views; provider ACK mandatory; required independent of completed.",
+      "evidence": "RUN2283 R3 technical PASS but Shopper Damaris Mi Día false completed and Mis Visitas no requerida; Admin both published banks required, Shopper exam available."
+    }
+  ],
+  "scopeReceiptBlob": "af8f6fb6ba5ac3d4f297377494bd2a8fb57fa29b",
+  "priorDevReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2283_VRM316_R3_EXACT_DEV_ROLE_E2E_FAIL_20261107.json",
+  "priorDevReceiptBlob": "44dd24cd1eda5b14ac81eaca32919e000b236de2",
+  "sourceBlob": "c6f046cc2771d75169fd45d8bd111c12000d3ea2",
+  "testBlob": "b2c8700c78b22d0eabd04fdb234e026daed46a69",
+  "sourceBlobs": {
+    "app/core/backend-certifications.js": "c6f046cc2771d75169fd45d8bd111c12000d3ea2",
+    "app/modules/misvisitas.js": "57879fcd9e140d8f50682842cecceb9f6d86f2ac",
+    "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs": "b2c8700c78b22d0eabd04fdb234e026daed46a69"
+  },
+  "devPublished": false,
+  "noRulesChanges": true,
+  "hrWrites": 0,
+  "questionnaireSubmissions": 0,
+  "gate20": "HOLD",
+  "gate21": "HOLD"
 }
