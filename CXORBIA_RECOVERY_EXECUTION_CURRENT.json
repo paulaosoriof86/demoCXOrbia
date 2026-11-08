@@ -8,7 +8,7 @@
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
   "productSourceSha": "c794fcbd4c7fde5629ba582ede054d0560b26379",
-  "productTree": "6cb5a48d23eec8110dc6ee17f0fa947027011f19",
+  "productTree": "ac2b52c25c1e5654c9e84d7de3b66d8f63e628d0",
   "priorCanonicalCheckpointAtV10": {
     "path": "docs/checkpoints/CXORBIA_RECOVERY_CHECKPOINT_CANONICO_2026-11-05_I3_V10.md",
     "status": "I3_HOLD_VRM306_DEV_MATERIALIZED_MANUAL_FUSION_ACK_PENDING_READBACK",
