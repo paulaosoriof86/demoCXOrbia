@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm317-d06-run2296-readback.v1",
+  "iteration": "I3",
+  "findingId": "VRM-317",
+  "classification": "FUNCTIONAL_DEFECT",
+  "priority": "P0_PROVEN",
+  "localDate": "2026-11-08",
+  "observedAt": "2026-11-08T14:30:23.314Z",
+  "status": "PASS_SCOPED_DEV_MATERIALIZATION_AND_ADMIN_UI__HOLD_FULL_MODULE",
+  "source": {
+    "sha": "8583bca14a69d32692b6f7b4f826c9a24d6300e7",
+    "tree": "e345fea6963edd3462d3d4a0a838529877b1eb3e",
+    "owner": "app/modules/cert.js",
+    "testOwner": "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs"
+  },
+  "materialization": {
+    "builds": 1,
+    "decision": "PASS_VRM317_D06_EXACT_DEV_MATERIALIZATION",
+    "hostingDeploys": 1,
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794147899157000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/4025336d4315b341",
+    "hrRevision": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+    "production": false,
+    "runtimeDeploys": 1,
+    "runtimeDigest": "sha256:0e89ea4c96327e7c3f8e13301e90afe7e55a0db69c1635b8cfef2782530a4c26",
+    "runtimeRevision": "cxorbia-live-hr-dev-00365-f5m",
+    "scenarioDimensionsProven": true,
+    "sourceSha": "8583bca14a69d32692b6f7b4f826c9a24d6300e7",
+    "sourceTree": "e345fea6963edd3462d3d4a0a838529877b1eb3e",
+    "storageRulesDeploys": 0,
+    "runId": 42489370241,
+    "runNumber": 2296,
+    "jobId": 128758309925,
+    "controlHeadAtDeploy": "4d256ff8ab17bc4288bc69742f35ecbf1e427185",
+    "artifactId": 13620499460,
+    "artifactDigest": "sha256:74394898ac12271b4ac5060342a3f68245e6ea207f1c4488b1f9c466f74b4752",
+    "artifactDigestType": "GITHUB_ACTIONS_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2296_VRM317_D06_EXACT_DEV_ADMIN_SEARCH_SCOPED_PASS_20261108.json",
+    "state": "PASS_EXACT_DEV_TECHNICAL__ADMIN_SCOPED_SEARCH_ONLY",
+    "humanAcceptance": "PENDING_INDEPENDENT_SHOPPER_I3",
+    "fullTaskClosed": false,
+    "hrWrites": 0,
+    "firestoreRulesDeploys": 0,
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62"
+  },
+  "providerChecks": {
+    "health": "PASS_DEV_NONPRODUCTION_NO_HR_WRITES",
+    "hrMeta": "PASS_SAME_STABLE_HR_REVISION",
+    "hostingSourceCertJsSha256": "25042ecf45e9c97acb76c2a78ed7a0d2fe887843cd29c4ffb484c900d4059b42",
+    "artifactSourceParity": "PASS_EQUAL_LOCAL_BLOB_SHA256",
+    "artifactZipSha256": "sha256:74394898ac12271b4ac5060342a3f68245e6ea207f1c4488b1f9c466f74b4752"
+  },
+  "authenticAdminUiReadback": {
+    "browser": "Chrome connected",
+    "route": "DEV/backend/index-backend-dev.html",
+    "role": "Administration",
+    "project": "Cinépolis",
+    "period": "NOV 2026",
+    "visibleBankCount": 4,
+    "sourceProof": "ALL_193_PROJECT_SHOPPERS_POSSIBLE_EXPLICIT_SELECTION",
+    "filterExamples": [
+      "Shopper I3.8 DEV Validation",
+      "Stiven López",
+      "Damaris de León (search Dámaris)"
+    ],
+    "defaultIndividualShopper": "NONE_SELECTED",
+    "actionSubmitted": false,
+    "realShopperSessionObserved": false,
+    "retiredBanks": 0,
+    "deletedAttempts": 0
+  },
+  "priorEvidence": {
+    "retiredQaBankPublishedArchivedCycle": "PREVIOUS_D05_QA_ONLY_PROVIDER_ACK_ACCEPTED_DO_NOT_REPEAT",
+    "previousReceipt": "docs/checkpoints/CXORBIA_I3_RUN2293_VRM316_R5_EXACT_DEV_REAL_SHOPPER_SCOPED_PASS_20261107.json"
+  },
+  "moduleTruth": {
+    "domain": "certifications",
+    "classificationRemains": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+    "matchesBefore": 5,
+    "matchesAfter": 5,
+    "total": 21,
+    "integralPass": false
+  },
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "phaseAComplete": false,
+  "production": false,
+  "nextExactAction": "D06 QA-only protected Shopper login with 15Q eligible published bank, real provider ACK and session reload/history; single-shopper scoped recert QA only; no alteration of historical 40 records."
+}
