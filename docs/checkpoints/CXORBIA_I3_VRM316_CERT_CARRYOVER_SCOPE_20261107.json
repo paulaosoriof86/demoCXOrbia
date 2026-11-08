@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-proven-scoped-source-owner.v1",
+  "dateLocal": "2026-11-07",
+  "iteration": "I3",
+  "findingId": "VRM-316",
+  "classification": "FUNCTIONAL_DEFECT",
+  "priority": "P0_PROVEN",
+  "expectedParentProductSourceSha": "ed5b708c17b481bde00cb95dda3b426a0e27a890",
+  "sourceSha": "c794fcbd4c7fde5629ba582ede054d0560b26379",
+  "sourceTree": "ac2b52c25c1e5654c9e84d7de3b66d8f63e628d0",
+  "allowedProductFiles": [
+    "app/core/backend-certifications.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs"
+  ],
+  "observed": "Real Chrome Shopper Damaris de León: Admin certification current absent; Shopper Mi Día showed Completado and Mis Visitas showed Certificación vigente. Source projection explicitly sets reviewRequired=true, carryoverConfirmed=false, eligibilityGranted=false, currentCertification=false; carryoverDecision relied on legacy status approved without checking explicit denials.",
+  "expected": "Projected historical status pending_review never grants current certification or executable visit eligibility. Previously validated carryover and current durable pass remain accepted, independent of period, until explicit expiration or recertification.",
+  "p0Owner": "app/core/backend-certifications.js:carryoverDecision",
+  "scope": "Only explicit negative evidence flags take precedence; no changes to provider, HR, identities, exams, administrative historical acceptance or production.",
+  "sourceTests": {
+    "command": "node --test tools/qa/cxorbia-i3-certification-project-continuity.test.mjs",
+    "pass": 10,
+    "fail": 0,
+    "skipped": 0,
+    "mode": "LOCAL_FILE_MIRROR_EXACT_GIT_BLOBS"
+  },
+  "currentServingSourceSha": "ed5b708c17b481bde00cb95dda3b426a0e27a890",
+  "devMaterialization": "PENDING_EXISTING_SINGLE_CANONICAL_DEV_CARRIL",
+  "production": false,
+  "devPublished": false,
+  "hrWrites": 0,
+  "questionnaireSubmissions": 0,
+  "gate20": "HOLD",
+  "gate21": "HOLD"
+}

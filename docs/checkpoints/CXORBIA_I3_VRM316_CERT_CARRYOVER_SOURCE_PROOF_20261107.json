@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "cxorbia.i3.cert-carryover.p0-source-proof.v1",
+  "sourceSha": "c794fcbd4c7fde5629ba582ede054d0560b26379",
+  "sourceTree": "ac2b52c25c1e5654c9e84d7de3b66d8f63e628d0",
+  "predecessorProductSourceSha": "ed5b708c17b481bde00cb95dda3b426a0e27a890",
+  "sourceTestsPass": 10,
+  "sourceTestsFail": 0,
+  "sourceTestsSkipped": 0,
+  "allowedProductFiles": [
+    "app/core/backend-certifications.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs"
+  ],
+  "findings": [
+    {
+      "id": "VRM-316",
+      "classification": "FUNCTIONAL_DEFECT",
+      "priority": "P0_PROVEN",
+      "owner": "app/core/backend-certifications.js",
+      "expected": "Projected historical status pending_review never grants current certification or executable visit eligibility. Previously validated carryover and current durable pass remain accepted, independent of period, until explicit expiration or recertification.",
+      "evidence": "Real Chrome Shopper Damaris de León: Admin certification current absent; Shopper Mi Día showed Completado and Mis Visitas showed Certificación vigente. Source projection explicitly sets reviewRequired=true, carryoverConfirmed=false, eligibilityGranted=false, currentCertification=false; carryoverDecision relied on legacy status approved without checking explicit denials."
+    }
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM316_CERT_CARRYOVER_SCOPE_20261107.json",
+  "scopeReceiptBlob": "875233a4edf0deb574dcadbc96da47af87dc741d",
+  "sourceBlob": "c4aa54310341c9637dc9d491b5c38e737bdc48b6",
+  "testBlob": "7a8f3c60c5c3be8b2f529f5c7f9576db770bbd7b",
+  "manualEvidence": "Chrome DEV independent Shopper Damaris account and Admin cross-role readback, 2026-11-07",
+  "testCommand": "node --test tools/qa/cxorbia-i3-certification-project-continuity.test.mjs",
+  "production": false,
+  "devPublished": false,
+  "noRulesChanges": true,
+  "hrWrites": 0,
+  "questionnaireSubmissions": 0,
+  "gate20": "HOLD",
+  "gate21": "HOLD"
+}
