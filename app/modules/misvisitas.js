@@ -128,7 +128,7 @@ CX.module('misvisitas',({data,ui})=>{
     const checks=[
       {key:'asignada',label:'Asignada',done:!!f.assigned},
       {key:'instructivo',label:'Instructivo y documentos',done:!!v.instructiveReadAt},
-      {key:'certificacion',label:'Certificación del proyecto',done:certState.done,note:certState.required?'':'No requerida'},
+      {key:'certificacion',label:'Certificación del proyecto',done:certState.done,note:certState.explicitlyNotRequired?'No requerida':''},
       {key:'agendada',label:pendingSchedule(v)?'Fecha registrada · pendiente HR':'Visita agendada',done:!!f.scheduled},
       {key:'realizada',label:'Visita realizada',done:!!f.realized},
       {key:'cuestionario',label:'Cuestionario',done:!!f.questionnaire},

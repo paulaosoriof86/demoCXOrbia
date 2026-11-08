@@ -205,3 +205,40 @@ test('VRM316 R3 a missing project on a historical attempt never grants current p
   const actual=harness({records:[attempt({pass:true,score:100})]});
   assert.equal(actual.cx.backendCertifications.durableCurrent('shopper-one',{}).pass,true);
 });
+
+test('VRM316 R4 an HR-facing historical positive never substitutes for the authenticated protected profile',()=>{
+  const h=harness(),positive={projectId:'project-a',sourceLegacyStatus:'approved',status:'confirmed',
+    reviewRequired:false,carryoverConfirmed:true,eligibilityGranted:true,currentCertification:true};
+  h.cx.data.shoppers=[{id:'shopper-one',certificationEvidenceRecords:[positive]}];
+  h.cx.data.getShopper=id=>h.cx.data.shoppers.find(s=>s.id===id)||null;
+  const bank={certificationId:'main',estado:'published',required:true};
+  assert.equal(h.cx.backendCertifications.sessionDecision(bank).done,false,
+    'HR-only positive is not a protected, current certification decision');
+  h.cx.data.__sessionShopperProfile={id:'another-shopper',certificationEvidenceRecords:[positive]};
+  assert.equal(h.cx.backendCertifications.sessionDecision(bank).done,false,
+    'A protected profile of another identity never authorizes this Shopper');
+  h.cx.data.__sessionShopperProfile={id:'shopper-one',certificationEvidenceRecords:[positive]};
+  assert.equal(h.cx.backendCertifications.sessionDecision(bank).done,true,
+    'An exact protected, explicitly approved historical carryover remains valid');
+});
+
+test('VRM316 R4 a passing flag without durable provider ACK, type or tenant cannot grant certification',()=>{
+  for(const changed of [{providerAck:false},{recordType:'legacy_approval'},{tenantId:'other-tenant'}]){
+    const h=harness({records:[attempt({pass:true,score:100,...changed})]});
+    assert.equal(h.cx.backendCertifications.durableCurrent('shopper-one',{}),null,
+      'Fail closed for '+JSON.stringify(changed));
+  }
+  const valid=harness({records:[attempt({pass:true,score:100})]});
+  assert.ok(valid.cx.backendCertifications.durableCurrent('shopper-one',{}),
+    'The exact provider-acknowledged attempt still counts');
+});
+
+test('VRM316 R4 required means policy obligation, while done means a separately proven completion',()=>{
+  const h=harness({records:[attempt({pass:true,score:100})]}),bank={estado:'published',required:true};
+  const resolved=h.cx.backendCertifications.sessionDecision(bank);
+  assert.equal(resolved.done,true);
+  assert.equal(resolved.required,true,'A valid completion does not mean certification was optional');
+  const source=fs.readFileSync(new URL('../../app/modules/misvisitas.js',import.meta.url),'utf8');
+  assert.match(source,/note:certState\.explicitlyNotRequired\?'No requerida':''/);
+  assert.doesNotMatch(source,/note:certState\.required\?'':'No requerida'/);
+});

@@ -119,10 +119,12 @@ window.CX=window.CX||{};
   }
   function durableCurrent(shopperId,bank){
     const projectId=str(CX.data?.currentProjectId);
+    const tenantId=str(CX.data?.ctx?.()?.tenantId||CX.BACKEND?.tenantId||CX.session?.user?.tenantId);
     const latestRecert=applicableRecertifications(shopperId).sort((a,b)=>str(b.createdAt).localeCompare(str(a.createdAt)))[0]||null;
     const attempts=arr(CX.data?.__protectedCertifications).filter(x=>
       str(x.shopperId)===str(shopperId)&&(x.pass===true||x.passed===true||str(x.status).toLowerCase()==='certified')&&
-      str(x.projectId)===projectId&&
+      !!projectId&&str(x.projectId)===projectId&&x.recordType==='certification_attempt'&&x.providerAck===true&&
+      (!x.tenantId||str(x.tenantId)===tenantId)&&
       (!Number.isFinite(Date.parse(str(x.validUntil)))||Date.parse(str(x.validUntil))>=Date.now())
     ).sort((a,b)=>str(b.createdAt||b.certifiedAt).localeCompare(str(a.createdAt||a.certifiedAt)));
     const latest=attempts[0]||null;if(!latest)return null;
@@ -164,9 +166,10 @@ window.CX=window.CX||{};
     const canonical=raw?str(data.__identityMap?.[raw]||raw):'';
     const protectedProfile=data.__sessionShopperProfile;
     const protectedMatches=protectedProfile&&[raw,canonical].includes(str(protectedProfile.id||protectedProfile.shopperId));
-    const shopper=protectedMatches?protectedProfile:
-      (typeof data.getShopper==='function'&&(data.getShopper(canonical)||data.getShopper(raw)))||
-      arr(data.shoppers).find(x=>[raw,canonical].includes(str(x.id||x.shopperId)))||null;
+    // HR-facing identity projections may contain historical labels before the
+    // authenticated protected profile has finished loading. Never use those
+    // transient rows to grant current certification or execution rights.
+    const shopper=protectedMatches?protectedProfile:null;
     const shopperId=str(shopper?.id||shopper?.shopperId||canonical);
     const projectId=str(requestedProjectId||data.currentProjectId);
     const durable=shopperId&&projectId?durableCurrent(shopperId,bank):null;
@@ -175,7 +178,7 @@ window.CX=window.CX||{};
     const explicitlyNotRequired=bank?.required===false;
     const done=!!durable||carry.eligibilityGranted===true||explicitlyNotRequired;
     return {shopper,shopperId,projectId,bank,durable,carry,explicitlyNotRequired,
-      required:!explicitlyNotRequired&&!done,done};
+      required:!explicitlyNotRequired,done};
   }
   CX.backendCertifications={
     call,
