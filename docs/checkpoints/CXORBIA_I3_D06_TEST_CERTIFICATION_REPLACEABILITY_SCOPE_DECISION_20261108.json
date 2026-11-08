@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "cxorbia.i3.certification-test-replaceability-decision.v1",
+  "dateLocal": "2026-11-08",
+  "iteration": "I3",
+  "state": "HOLD",
+  "decisionSource": "Paula direct instruction in CXOrbia Recovery Project",
+  "decision": "Current test certification banks must be withdrawable and a new certification bank must be creatable. Apply transversally by project, period, bank and role; no special cases for shoppers.",
+  "historicalPolicy": "Historical real-person evidence and genuinely earned attempts are not automatically test data, even when DEV bank fixtures are tests. Never bulk delete them by inference.",
+  "verifiedLiveDev": {
+    "productSourceSha": "e79cc3ccc73293c29e53e9ec6880638154b5143e",
+    "run": "2293 / 42451894759",
+    "uiRole": "Admin",
+    "project": "Cinépolis",
+    "period": "2026-11",
+    "bankSelectorCount": 4,
+    "shownBankStates": [
+      "Sep 2026 pending_review: two",
+      "Oct 2026 published: two"
+    ],
+    "legacyEvidenceCount": 40,
+    "legacyApprovedCount": 38,
+    "uiActionsObserved": [
+      "Importar banco: name, gate, JSON/CSV/text, save pending_review",
+      "Crear banco con IA: name, source text/file, question count, gate",
+      "Requisito y % mínimo: Retirar banco (confirmation then provider ACK)"
+    ],
+    "noMutation": true
+  },
+  "sourceFindings": {
+    "bankOwner": "app/modules/cert.js: certStore.clear() -> lifecycle('retire')",
+    "backendOwner": "backend/runtime/hr-live-service/certification-runtime.mjs: saveCertificationBankLifecycle()",
+    "retireBehavior": "Status deleted and bank estado withdrawn with committed receipt, actor, exact version, remote readback; historical attempts intentionally unchanged.",
+    "createBehavior": "Manual import/AI generation creates pending_review bank requiring review; distinct bank identity matters.",
+    "attemptsOwner": "backend/runtime/hr-live-service/certification-runtime.mjs: saveAttempt(); app/core/backend-certifications.js: attemptHistory()/durableCurrent().",
+    "gap": "There is no exposed admin reset/revoke-test-attempt endpoint. Retiring a bank does NOT invalidate previously approved durable attempt; durableCurrent evaluates project-scoped passed attempts independently of bank withdrawal. New bank alone therefore cannot guarantee a clean Shopper certification reset.",
+    "safetyInvariant": "If QA-only attempt cancellation/reset is required, implement source-proven target-scoped revocation with authenticated authorized admin, QA evidence predicate, reason, idempotency, provider ACK, audit/readback, and excluded eligibility/history projection, never silent hard deletion. Preserve legitimate historic carryover."
+  },
+  "acceptanceRequired": [
+    "Under Admin in DEV identify exact QA-only bank/project/period, withdraw it and verify provider receipt plus readback and disappearance from active selector after reload.",
+    "Create a distinct new QA bank in the same project/period with explicit QA status and no Shopper publication until review; verify remote ACK/readback and reload.",
+    "Ensure old bank is not selectable for new submissions; do not erase existing genuine certifications.",
+    "If a QA-only passed attempt exists, verify explicit scoped revocation/reset with audit and that Shopper eligibility is recomputed, or keep HOLD.",
+    "Verify 15-question test lifecycle through authenticated isolated QA shopper; independently reload history and confirm score/ACK; retain approved records unaffected."
+  ],
+  "changes": {
+    "githubControlReceiptAdded": true,
+    "productCode": false,
+    "devProviderData": false,
+    "hr": false,
+    "production": false,
+    "existingCertifications": false
+  },
+  "status": {
+    "moduleCertificationIntegral": "HOLD",
+    "moduleTruthMatrix": "V277: 5/21 MATCH",
+    "phaseAComplete": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false
+  },
+  "nextAction": "Implement/verify target-scoped QA-only attempt reset if truly needed; test safe bank retire/new-bank lifecycle only on explicitly identified disposable QA bank, with action-time browser deletion confirmation; never delete all four banks by assumption."
+}
