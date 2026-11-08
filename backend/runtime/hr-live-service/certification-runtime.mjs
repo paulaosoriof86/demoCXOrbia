@@ -8,7 +8,7 @@ const sha=v=>crypto.createHash('sha256').update(typeof v==='string'?v:JSON.strin
 const iso=()=>new Date().toISOString();
 
 export function certificationRouteScope(pathname){
-  const m=str(pathname).match(/^\/api\/tenants\/([^/]+)\/projects\/([^/]+)\/certifications\/(ai-generate|attempt|recertify|publish|configure|retire|shopper-resources|practice)$/);
+  const m=str(pathname).match(/^\/api\/tenants\/([^/]+)\/projects\/([^/]+)\/certifications\/(ai-generate|attempt|void-test-attempt|recertify|publish|configure|retire|shopper-resources|practice)$/);
   return m?{tenantId:decodeURIComponent(m[1]),projectId:decodeURIComponent(m[2]),action:m[3]}:null;
 }
 export function isCertificationRuntimePath(pathname){return !!certificationRouteScope(pathname);}
@@ -500,6 +500,75 @@ async function saveAttempt(db,scope,principal,body,sourceRevision,idem,readCurre
   });
   return {item:withDocumentId(docId,item),calc,idempotentReplay:replay};
 }
+/* I3 P0: allow an authorized project administrator to void ONE explicitly
+   attested QA attempt. This is a durable tombstone, never a physical delete. */
+export async function voidTestCertificationAttempt(db,scope,principal,body,idem){
+  if(!['super','admin'].includes(str(principal?.role))||!str(principal?.uid)||str(principal?.namespace)!=='staff')
+    throw new Error('AUTH_FAILURE:CERT_TEST_VOID_ADMIN_REQUIRED');
+  const allowed=new Set(['attemptId','shopperId','bankResourceId','expectedCreatedAt','reason','confirmation','idempotencyKey']);
+  if(!body||typeof body!=='object'||Array.isArray(body)||Object.keys(body).some(key=>!allowed.has(key)))
+    throw new Error('CERT_TEST_VOID_PAYLOAD_INVALID');
+  const attemptId=str(body.attemptId),shopperId=str(body.shopperId),bankResourceId=str(body.bankResourceId),
+    expectedCreatedAt=str(body.expectedCreatedAt),reason=str(body.reason),actorUid=str(principal.uid);
+  if(!/^attempt-[a-f0-9]{28}$/.test(attemptId)||!shopperId||shopperId.includes('/')||!bankResourceId
+    ||bankResourceId.includes('/')||!expectedCreatedAt||!Number.isFinite(Date.parse(expectedCreatedAt))
+    ||reason.length<12||reason.length>300||body.confirmation!=='ANULAR PRUEBA'||!idem)
+    throw new Error('CERT_TEST_VOID_EXACT_QA_ATTESTATION_REQUIRED');
+  const tenant=db.collection('tenants').doc(scope.tenantId),attemptRef=projectRef(db,scope).collection('certifications').doc(attemptId);
+  const receiptRef=tenant.collection('commandReceipts').doc('cert-test-void-'+sha([scope.tenantId,scope.projectId,actorUid,idem]).slice(0,32));
+  const commandDigest=sha({tenantId:scope.tenantId,projectId:scope.projectId,actorUid,attemptId,shopperId,
+    bankResourceId,expectedCreatedAt,reason,confirmation:body.confirmation});
+  let replay=false,committedReceipt=null;
+  await db.runTransaction(async tx=>{
+    const receiptSnap=await tx.get(receiptRef),attemptSnap=await tx.get(attemptRef);
+    const memberSnap=await tx.get(tenant.collection('users').doc(actorUid));
+    if(!memberSnap.exists)throw new Error('AUTH_FAILURE:CERT_TEST_VOID_MEMBERSHIP_REQUIRED');
+    const member=memberSnap.data()||{};
+    if(member.active===false||str(member.status||'active').toLowerCase()==='inactive'
+      ||str(member.role).toLowerCase()!==str(principal.role)
+      ||str(member.authNamespace).toLowerCase()!=='staff'
+      ||(member.tenantId!==undefined&&str(member.tenantId)!==scope.tenantId)
+      ||(principal.role!=='super'&&!arr(member.projectIds).map(str).includes(scope.projectId)))
+      throw new Error('AUTH_FAILURE:CERT_TEST_VOID_PROJECT_MEMBERSHIP_DENIED');
+    if(!attemptSnap.exists)throw new Error('CERT_TEST_VOID_ATTEMPT_NOT_FOUND');
+    const prior=attemptSnap.data()||{};
+    if(prior.recordType!=='certification_attempt'||prior.providerAck!==true
+      ||str(prior.tenantId)!==scope.tenantId||str(prior.projectId)!==scope.projectId
+      ||str(prior.shopperId)!==shopperId||str(prior.bankResourceId)!==bankResourceId
+      ||str(prior.createdAt)!==expectedCreatedAt)
+      throw new Error('CERT_TEST_VOID_ATTEMPT_SCOPE_MISMATCH');
+    if(receiptSnap.exists){
+      const saved=receiptSnap.data()||{};
+      if(saved.commandDigest!==commandDigest||saved.status!=='committed'||str(prior.voidReceiptId)!==receiptRef.id
+        ||str(prior.status)!=='voided_test'||prior.eligibilityGranted!==false||prior.currentCertification!==false)
+        throw new Error('CERT_TEST_VOID_IDEMPOTENCY_CONFLICT');
+      committedReceipt=saved;replay=true;return;
+    }
+    if(str(prior.status)==='voided_test'||prior.voidedAt)
+      throw new Error('CERT_TEST_VOID_ALREADY_VOIDED');
+    const at=iso(),next={...prior,status:'voided_test',eligibilityGranted:false,currentCertification:false,
+      voidedAt:at,voidedByUid:actorUid,voidedByRole:str(principal.role),
+      voidReason:reason,voidReceiptId:receiptRef.id,qaTestAttested:true,updatedAt:at};
+    committedReceipt={status:'committed',commandType:'certification.void_test_attempt',commandDigest,
+      tenantId:scope.tenantId,projectId:scope.projectId,attemptId,shopperId,bankResourceId,
+      expectedCreatedAt,actorUid,actorRole:str(principal.role),providerAck:true,
+      attemptWrites:1,hrWrites:0,updatedAt:at};
+    tx.set(attemptRef,next,{merge:false});tx.set(receiptRef,committedReceipt,{merge:false});
+  });
+  const attemptReadback=await attemptRef.get(),receiptReadback=await receiptRef.get();
+  if(!attemptReadback.exists||!receiptReadback.exists)throw new Error('CERT_TEST_VOID_READBACK_MISSING');
+  const item=withDocumentId(attemptReadback.id,attemptReadback.data()),receipt=receiptReadback.data()||{};
+  if(item.recordType!=='certification_attempt'||item.tenantId!==scope.tenantId
+    ||item.projectId!==scope.projectId||item.shopperId!==shopperId||item.bankResourceId!==bankResourceId
+    ||item.createdAt!==expectedCreatedAt||item.status!=='voided_test'||!item.voidedAt
+    ||item.eligibilityGranted!==false||item.currentCertification!==false
+    ||item.voidReceiptId!==receiptRef.id||receipt.commandDigest!==commandDigest
+    ||receipt.status!=='committed'||receipt.providerAck!==true)
+    throw new Error('CERT_TEST_VOID_READBACK_MISMATCH');
+  return {item,receipt:{id:receiptRef.id,...receipt},readbackVerified:true,idempotentReplay:replay,
+    providerWrites:replay?0:2,attemptWrites:replay?0:1,hrWrites:0};
+}
+
 async function saveRecertification(db,scope,principal,body,idem){
   if(!OPERATOR_ROLES.has(str(principal.role)))throw new Error('RECERT_OPERATOR_REQUIRED');
   const targetScope=str(body.scope)==='one'?'one':'all',shopperId=str(body.shopperId);
@@ -679,7 +748,7 @@ export async function saveCertificationBankLifecycle(db,scope,principal,body,act
 }
 
 function errorStatus(message){
-  if(/CERT_BANK_EXPECTED_VERSION_CONFLICT|CERT_BANK_IDEMPOTENCY_REUSE|CERT_ATTEMPT_IDEMPOTENCY_REUSE|AI_PERSISTENCE_DRAFT_RETIRED/.test(message))return 409;
+  if(/CERT_BANK_EXPECTED_VERSION_CONFLICT|CERT_BANK_IDEMPOTENCY_REUSE|CERT_ATTEMPT_IDEMPOTENCY_REUSE|CERT_TEST_VOID_IDEMPOTENCY_CONFLICT|CERT_TEST_VOID_ALREADY_VOIDED|AI_PERSISTENCE_DRAFT_RETIRED/.test(message))return 409;
   if(/CERT_REVIEW_DISTINCT_REVIEWER_REQUIRED/.test(message))return 403;
   if(/CERT_REVIEW_POLICY_/.test(message))return 400;
   if(/AUTH_FAILURE|OPERATOR_REQUIRED|SHOPPER_REQUIRED/.test(message))return 403;
@@ -724,6 +793,10 @@ export async function maybeHandleCertificationRuntimeRequest(req,res,url,{ensure
     if(scope.action==='attempt'){
       const saved=await saveAttempt(db,scope,principal,body,currentSourceRevision?.(),idem,readCurrentSnapshot);
       sendJson(res,200,{ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,item:saved.item,score:saved.calc.score,gate:saved.calc.gate,pass:saved.calc.pass,feedback:saved.calc.feedback,idempotentReplay:saved.idempotentReplay,providerWrites:saved.idempotentReplay?0:1,hrWrites:0,production:false});return true;
+    }
+    if(scope.action==='void-test-attempt'){
+      const saved=await voidTestCertificationAttempt(db,scope,principal,body,idem);
+      sendJson(res,200,{ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,...saved,production:false});return true;
     }
     if(scope.action==='recertify'){
       const saved=await saveRecertification(db,scope,principal,body,idem);

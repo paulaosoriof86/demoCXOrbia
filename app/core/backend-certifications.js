@@ -110,6 +110,28 @@ window.CX=window.CX||{};
     }
     return result;
   }
+  async function voidTestAttempt(payload={}){
+    const initial=scope(),actorUid=currentUid();
+    if(!actorUid)throw new Error('AUTH_FAILURE:CERT_TEST_VOID_ADMIN_REQUIRED');
+    const request=Object.assign({idempotencyKey:newId('cert.void-test')},payload);
+    const result=await call('void-test-attempt',request),item=result?.item,receipt=result?.receipt;
+    if(result?.committed!==true||result?.providerAck!==true||result?.readbackVerified!==true
+      ||item?.status!=='voided_test'||item?.eligibilityGranted!==false||item?.currentCertification!==false
+      ||!str(item?.voidedAt)||!str(item?.voidReceiptId)||item?.id!==request.attemptId
+      ||item?.tenantId!==initial.tenantId||item?.projectId!==initial.projectId
+      ||item?.shopperId!==request.shopperId||item?.bankResourceId!==request.bankResourceId
+      ||item?.createdAt!==request.expectedCreatedAt||receipt?.providerAck!==true
+      ||receipt?.commandType!=='certification.void_test_attempt'||receipt?.id!==item.voidReceiptId)
+      throw new Error('CERT_TEST_VOID_REMOTE_READBACK_MISMATCH');
+    const current=scope();
+    if(actorUid===currentUid()&&current.tenantId===initial.tenantId&&current.projectId===initial.projectId){
+      CX.data.__protectedCertifications=[
+        ...arr(CX.data.__protectedCertifications).filter(x=>str(x.id)!==str(item.id)),item
+      ];
+    }
+    return result;
+  }
+
   function applicableRecertifications(shopperId){
     const projectId=str(CX.data?.currentProjectId);
     return arr(CX.data?.__protectedCertificationRecertifications).filter(r=>
@@ -121,8 +143,12 @@ window.CX=window.CX||{};
     const projectId=str(CX.data?.currentProjectId);
     const tenantId=str(CX.data?.ctx?.()?.tenantId||CX.BACKEND?.tenantId||CX.session?.user?.tenantId);
     const latestRecert=applicableRecertifications(shopperId).sort((a,b)=>str(b.createdAt).localeCompare(str(a.createdAt)))[0]||null;
+    const exactBankResourceId=str(bank?.__resourceId||bank?.bankResourceId);
     const attempts=arr(CX.data?.__protectedCertifications).filter(x=>
       str(x.shopperId)===str(shopperId)&&(x.pass===true||x.passed===true||str(x.status).toLowerCase()==='certified')&&
+      !['voided_test','revoked','invalidated','pending_review'].includes(str(x.status).toLowerCase())&&
+      !str(x.voidedAt)&&x.eligibilityGranted!==false&&x.currentCertification!==false&&
+      (!exactBankResourceId||str(x.bankResourceId)===exactBankResourceId)&&
       !!projectId&&str(x.projectId)===projectId&&x.recordType==='certification_attempt'&&x.providerAck===true&&
       (!x.tenantId||str(x.tenantId)===tenantId)&&
       (!Number.isFinite(Date.parse(str(x.validUntil)))||Date.parse(str(x.validUntil))>=Date.now())
@@ -183,7 +209,7 @@ window.CX=window.CX||{};
   CX.backendCertifications={
     call,
     loadShopperResources,
-    submitAttempt,attemptHistory,
+    submitAttempt,voidTestAttempt,attemptHistory,
     previewAttempt:payload=>call('practice',payload||{}),
     requestRecertification:payload=>call('recertify',Object.assign({idempotencyKey:newId('cert.recert')},payload||{})),
     generateBank:payload=>call('ai-generate',Object.assign({idempotencyKey:newId('cert.generate')},payload||{})),

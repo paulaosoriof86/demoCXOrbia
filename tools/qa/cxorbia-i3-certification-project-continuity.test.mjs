@@ -317,3 +317,68 @@ test('VRM316 R4 required means policy obligation, while done means a separately 
   assert.match(source,/note:certState\.explicitlyNotRequired\?'No requerida':''/);
   assert.doesNotMatch(source,/note:certState\.required\?'':'No requerida'/);
 });
+
+test('I3 P0: passing one published certification bank never grants another bank in the same project',()=>{
+  const otherBankId='certbank-project-a-'+NOV+'-second-certification';
+  const passed=attempt({id:'real-pass-1',score:100,pass:true,status:'certified',eligibilityGranted:true,
+    currentCertification:true,bankResourceId:bankId});
+  const banks=[
+    {id:bankId,periodId:OCT,version:1,bank:{estado:'published',certificationId:'first',required:true,preguntas:[{q:'Q1',ops:['A','B']}]}},
+    {id:otherBankId,periodId:NOV,version:1,bank:{estado:'published',certificationId:'second',required:true,preguntas:[{q:'Q2',ops:['A','B']}]}}
+  ];
+  const h=harness({records:[passed],banks});
+  h.cx.data.__sessionShopperProfile={id:'shopper-one',certificationEvidenceRecords:[]};
+  const first=h.cx.certStore.bank(OCT,bankId),second=h.cx.certStore.bank(NOV,otherBankId);
+  assert.equal(h.cx.backendCertifications.sessionDecision(first).done,true);
+  assert.equal(h.cx.backendCertifications.sessionDecision(second).done,false,
+    'An attempt on the first bank cannot complete a distinct second certification');
+  assert.equal(h.cx.backendCertifications.durableCurrent('shopper-one',second),null);
+  assert.equal(h.cx.backendCertifications.attemptHistory('shopper-one').length,1);
+});
+
+test('I3 P0: a voided test attempt remains in history but never grants visits or certification',()=>{
+  const voided=attempt({id:'qa-voided',score:100,pass:true,status:'voided_test',
+    eligibilityGranted:false,currentCertification:false,voidedAt:'2026-11-08T18:00:00Z'});
+  const banks=[{id:bankId,periodId:OCT,version:1,
+    bank:{estado:'published',certificationId:'main',required:true,preguntas:[{q:'Q',ops:['A','B']}]}}];
+  const h=harness({records:[voided],banks});
+  h.cx.data.__sessionShopperProfile={id:'shopper-one',certificationEvidenceRecords:[]};
+  assert.equal(h.cx.backendCertifications.sessionDecision(h.cx.certStore.bank(OCT)).done,false);
+  assert.equal(h.cx.backendCertifications.durableCurrent('shopper-one',h.cx.certStore.bank(OCT)),null);
+  assert.match(h.render(),/Anulado \(prueba\)/);
+  assert.match(h.render(),/no habilita visitas ni cuenta como certificación vigente/);
+  assert.equal(h.cx.backendCertifications.attemptHistory('shopper-one').length,1);
+});
+
+test('I3 P0: an audited void with exact provider readback replaces one view item and preserves other attempts',async()=>{
+  const id='attempt-'+'a'.repeat(28),prior=attempt({id,pass:true,score:100,status:'certified',
+    eligibilityGranted:true,currentCertification:true});
+  const untouched=attempt({id:'untouched',pass:true,score:100,shopperId:'another'});
+  const item={...prior,status:'voided_test',eligibilityGranted:false,currentCertification:false,
+    voidReceiptId:'cert-test-void-receipt',voidedAt:'2026-11-08T18:00:00Z'};
+  const reply={ok:true,committed:true,providerAck:true,readbackVerified:true,item,
+    receipt:{id:item.voidReceiptId,providerAck:true,commandType:'certification.void_test_attempt'}};
+  const h=harness({records:[prior,untouched],reply});
+  await h.cx.backendCertifications.voidTestAttempt({attemptId:id,shopperId:prior.shopperId,
+    bankResourceId:bankId,expectedCreatedAt:prior.createdAt,reason:'Prueba sintética DEV documentada',confirmation:'ANULAR PRUEBA'});
+  assert.equal(h.cx.data.__protectedCertifications.length,2);
+  assert.equal(h.cx.backendCertifications.durableCurrent('shopper-one',{}),null);
+  assert.equal(h.cx.data.__protectedCertifications.find(x=>x.id==='untouched').pass,true);
+  assert.equal(h.cx.backendCertifications.attemptHistory('shopper-one').length,1);
+});
+
+test('I3 P0: rejected or mismatched void ACK never locally revokes the prior certification',async()=>{
+  const id='attempt-'+'b'.repeat(28),prior=attempt({id,pass:true,score:100,status:'certified',
+    eligibilityGranted:true,currentCertification:true});
+  const item={...prior,status:'voided_test',eligibilityGranted:false,currentCertification:false,
+    voidReceiptId:'receipt-1',voidedAt:'2026-11-08T18:00:00Z'};
+  for(const reply of [{ok:false,providerAck:false},{ok:true,committed:true,providerAck:true,readbackVerified:false,item},
+    {ok:true,committed:true,providerAck:true,readbackVerified:true,item:{...item,projectId:'foreign'},
+      receipt:{id:'receipt-1',providerAck:true,commandType:'certification.void_test_attempt'}}]){
+    const h=harness({records:[prior],reply});
+    await assert.rejects(h.cx.backendCertifications.voidTestAttempt({attemptId:id,shopperId:prior.shopperId,
+      bankResourceId:bankId,expectedCreatedAt:prior.createdAt,reason:'Prueba sintética DEV documentada',
+      confirmation:'ANULAR PRUEBA'}));
+    assert.equal(h.cx.backendCertifications.durableCurrent('shopper-one',{}).id,id);
+  }
+});

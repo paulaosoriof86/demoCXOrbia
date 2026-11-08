@@ -255,7 +255,7 @@ CX.module('cert', ({role,data,ui})=>{
     const shopper=certification.shopper,shopperId=certification.shopperId;
     const escape=value=>String(value==null?'':value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const attempts=CX.backendCertifications?.attemptHistory?.(shopperId)||[];
-    const history=attempts.length?`<section class="card card-p" id="certAttemptHistory" style="margin-bottom:14px"><div class="card-t">Historial de intentos del proyecto</div>${attempts.map((attempt,index)=>`<details ${index===0?'open':''} data-attempt-id="${escape(attempt.id)}" style="margin-top:12px"><summary><b>${Number(attempt.score)}% · ${attempt.pass?'Aprobado':'No alcanzado'}</b> · requisito ${Number(attempt.gate)}% · ${escape(String(attempt.createdAt||'').slice(0,19).replace('T',' '))}</summary><div style="font-size:12px;margin:8px 0">Intento guardado con ACK remoto · periodo ${escape(attempt.periodId)}. Se conserva al cambiar de periodo.</div>${(attempt.feedback||[]).map(f=>`<div class="cert-attempt-feedback" style="padding:9px 0;border-top:1px solid var(--border)"><b>${Number(f.index)+1}. ${escape(f.question||'Pregunta '+(Number(f.index)+1))}</b><div>${f.ok?'✓ Correcta':'↻ A reforzar'} · Tu respuesta: ${escape(f.selected)}${f.ok?'':' · Correcta: '+escape(f.correcta)}</div><div>${escape(f.exp)}</div></div>`).join('')||'<div class="muted">Este registro anterior conserva el resultado; no incluye retroalimentación detallada.</div>'}</details>`).join('')}</section>`:'';
+    const history=attempts.length?`<section class="card card-p" id="certAttemptHistory" style="margin-bottom:14px"><div class="card-t">Historial de intentos del proyecto</div>${attempts.map((attempt,index)=>`<details ${index===0?'open':''} data-attempt-id="${escape(attempt.id)}" style="margin-top:12px"><summary><b>${Number(attempt.score)}% · ${attempt.status==='voided_test'?'Anulado (prueba)':attempt.pass?'Aprobado':'No alcanzado'}</b> · requisito ${Number(attempt.gate)}% · ${escape(String(attempt.createdAt||'').slice(0,19).replace('T',' '))}</summary><div style="font-size:12px;margin:8px 0">${attempt.status==='voided_test'?'Intento de prueba anulado de manera auditada; no habilita visitas ni cuenta como certificación vigente.':'Intento guardado con ACK remoto; se conserva al cambiar de periodo.'} · periodo ${escape(attempt.periodId)}.</div>${(attempt.feedback||[]).map(f=>`<div class="cert-attempt-feedback" style="padding:9px 0;border-top:1px solid var(--border)"><b>${Number(f.index)+1}. ${escape(f.question||'Pregunta '+(Number(f.index)+1))}</b><div>${f.ok?'✓ Correcta':'↻ A reforzar'} · Tu respuesta: ${escape(f.selected)}${f.ok?'':' · Correcta: '+escape(f.correcta)}</div><div>${escape(f.exp)}</div></div>`).join('')||'<div class="muted">Este registro anterior conserva el resultado; no incluye retroalimentación detallada.</div>'}</details>`).join('')}</section>`:'';
     const durable=certification.durable;
     const carry=certification.carry;
     if(durable){
@@ -393,6 +393,7 @@ CX.module('cert', ({role,data,ui})=>{
       <button class="btn btn-soft btn-sm" id="certImp">📥 Importar banco</button>
       <button class="btn btn-soft btn-sm" id="certRecert">🔄 Solicitar re-certificación</button>
       <button class="btn btn-ghost btn-sm" id="certGate">⚙️ Requisito y % mínimo</button>
+      ${['super','admin'].includes(String(role))?'<button class="btn btn-ghost btn-sm" id="certVoidTest">🧪 Anular intento de prueba</button>':''}
     </div>
     <div class="card card-p" style="margin-bottom:14px"><div class="between"><div><div class="card-t">Certificaciones del proyecto</div><div style="font-size:11px;color:var(--t3);margin-top:3px">${bankList().length} banco(s) del proyecto · se conservan entre periodos.</div></div><span class="bdg bdg-n">${bankStateLabel(bank?.estado)}</span></div></div>
     ${_showFixtures ? `
@@ -672,6 +673,60 @@ CX.module('cert', ({role,data,ui})=>{
             window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE?.('recertification_committed',true);
           }catch(error){
             ui.toast('No se pudo confirmar la re-certificación: '+String(error?.message||error),'warn',5200);btn.disabled=false;btn.textContent='Solicitar re-certificación';
+          }
+        });
+      },dismissOnBackdrop:false,dismissOnEscape:false});
+    });
+    const voidButton=document.getElementById('certVoidTest');
+    if(voidButton)voidButton.addEventListener('click',()=>{
+      const tenantId=String(data?.ctx?.()?.tenantId||CX.BACKEND?.tenantId||CX.session?.user?.tenantId||'');
+      const projectId=String(data.currentProjectId||'');
+      const attempts=(Array.isArray(data.__protectedCertifications)?data.__protectedCertifications:[])
+        .filter(row=>row?.recordType==='certification_attempt'&&row.providerAck===true
+          &&row.tenantId===tenantId&&row.projectId===projectId
+          &&/^attempt-[a-f0-9]{28}$/.test(String(row.id||''))
+          &&row.status!=='voided_test'&&!row.voidedAt)
+        .slice().sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
+      ui.modal('🧪 Anular un intento de prueba',[
+        '<p style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px">Solo para <b>intentos de prueba</b> que hayas identificado. La anulación deshabilita ese resultado, pero <b>conserva el registro histórico y su auditoría</b>. No afecta otros intentos, bancos, HR ni certificaciones de otras personas.</p>',
+        '<label class="lbl" for="cvAttempt">Intento exacto</label><select class="sel" id="cvAttempt" style="margin-bottom:10px"><option value="">Selecciona un intento</option></select>',
+        '<label class="lbl" for="cvReason">Motivo documentado</label><textarea class="inp" id="cvReason" maxlength="300" rows="2" placeholder="Ej. Intento realizado en la validación DEV del módulo de certificaciones" style="margin-bottom:10px"></textarea>',
+        '<label class="lbl" for="cvConfirm">Para confirmar, escribe ANULAR PRUEBA</label><input class="inp" id="cvConfirm" autocomplete="off" placeholder="ANULAR PRUEBA" style="margin-bottom:12px">',
+        '<div style="font-size:11px;color:var(--t3);margin-bottom:12px">No existe eliminación masiva ni borrado físico. Si un shopper tiene otra certificación válida, seguirá vigente. Para renovar una aprobación histórica válida utiliza la re-certificación individual.</div>',
+        '<div style="text-align:right"><button class="btn btn-pr btn-sm" id="cvCommit">Anular intento seleccionado con ACK</button></div>'
+      ].join(''),{onMount:(ov,close)=>{
+        const select=ov.querySelector('#cvAttempt'),commit=ov.querySelector('#cvCommit');
+        attempts.forEach(row=>{
+          const shopper=data.getShopper?.(row.shopperId);
+          const option=document.createElement('option');option.value=row.id;
+          option.textContent=String(shopper?.nombre||row.shopperId)+' · '+String(row.createdAt||'').slice(0,16)
+            +' · '+String(row.score||0)+'% · '+String(row.bankResourceId||'');
+          select.appendChild(option);
+        });
+        if(!attempts.length){
+          commit.disabled=true;
+          ui.toast('No hay intentos confirmados disponibles en este proyecto; comprueba la carga protegida.','warn');
+        }
+        commit.addEventListener('click',async()=>{
+          const selected=attempts.find(row=>row.id===select.value),reason=String(ov.querySelector('#cvReason').value||'').trim();
+          if(!selected||reason.length<12||ov.querySelector('#cvConfirm').value!=='ANULAR PRUEBA'){
+            ui.toast('Selecciona un intento de prueba, explica el motivo y escribe ANULAR PRUEBA.','warn');return;
+          }
+          if(!CX.backendCertifications?.voidTestAttempt){
+            ui.toast('La anulación protegida no está disponible; no se modificó el historial.','warn');return;
+          }
+          commit.disabled=true;commit.textContent='Confirmando con servidor…';
+          try{
+            const result=await CX.backendCertifications.voidTestAttempt({attemptId:selected.id,
+              shopperId:selected.shopperId,bankResourceId:selected.bankResourceId,
+              expectedCreatedAt:selected.createdAt,reason,confirmation:'ANULAR PRUEBA'});
+            if(result?.providerAck!==true||result?.readbackVerified!==true)throw new Error('CERT_TEST_VOID_ACK_MISSING');
+            close();ui.toast('Intento de prueba anulado y verificado; historial preservado.','ok',4800);
+            window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE?.('cert_test_void_committed',true);
+            CX.router?.nav?.('cert');
+          }catch(error){
+            ui.toast('No se confirmó la anulación. Revisa la sesión y el intento exacto.','warn',5200);
+            commit.disabled=false;commit.textContent='Anular intento seleccionado con ACK';
           }
         });
       },dismissOnBackdrop:false,dismissOnEscape:false});
