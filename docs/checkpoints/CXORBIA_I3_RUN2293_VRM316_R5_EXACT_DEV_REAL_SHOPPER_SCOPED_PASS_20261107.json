@@ -1,0 +1,126 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm316.r5.exact-dev-real-shopper-scoped-pass.v1",
+  "observedAt": "2026-11-08T05:51:27.974Z",
+  "localDate": "2026-11-07",
+  "iteration": "I3",
+  "status": "PASS_SCOPED_P0_PROVEN",
+  "findingId": "VRM-316",
+  "classification": "MAPPING_FAILURE",
+  "scope": "ADMIN_AND_SHOPPER_EXACT_CURRENT_DEV_READ_ONLY_CROSS_ROLE_CERT_REQUIREMENT",
+  "source": {
+    "sha": "e79cc3ccc73293c29e53e9ec6880638154b5143e",
+    "tree": "e7c5158b6eff75a6080125bb9c13b6e8621b6e6f"
+  },
+  "materialization": {
+    "builds": 1,
+    "decision": "PASS_VRM316_CERT_CARRYOVER_EXACT_DEV_MATERIALIZATION",
+    "hostingDeploys": 1,
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794116846261000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/88875326d42f450b",
+    "hrRevision": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+    "production": false,
+    "runtimeDeploys": 1,
+    "runtimeDigest": "sha256:f0661d6dcc82576e3a93c10cd642c951257ddb90c19889b6ae8635673d726989",
+    "runtimeRevision": "cxorbia-live-hr-dev-00364-wf9",
+    "scenarioDimensionsProven": true,
+    "sourceSha": "e79cc3ccc73293c29e53e9ec6880638154b5143e",
+    "sourceTree": "e7c5158b6eff75a6080125bb9c13b6e8621b6e6f",
+    "storageRulesDeploys": 0,
+    "runId": 42451894759,
+    "runNumber": 2293,
+    "jobId": 128642812339,
+    "controlHeadAtDeploy": "42c3ac9007a71c2da275a485c6955f564a33cf70",
+    "artifactId": 13605667604,
+    "artifactDigest": "sha256:9c95046b29102af705fc95e89fcb61c9aac68e4c148293c57a7786b6b77d278f",
+    "artifactDigestType": "GITHUB_ACTIONS_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2293_VRM316_R5_EXACT_DEV_REAL_SHOPPER_SCOPED_PASS_20261107.json",
+    "state": "PASS_EXACT_DEV_TECHNICAL__R5_REAL_ROLE_POLICY_SCOPED_PASS",
+    "humanAcceptance": "ASSISTANT_AUTHENTIC_CHROME_OPERATOR_NO_INDEPENDENT_HUMAN_I3",
+    "fullTaskClosed": false,
+    "hrWrites": 0,
+    "firestoreRulesDeploys": 0,
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62"
+  },
+  "canonicalControlRun": {
+    "runId": 42451894759,
+    "runNumber": 2293,
+    "conclusion": "success",
+    "canonicalCandidateAuthority": "PASS",
+    "exactDevMaterialization": "PASS",
+    "artifactId": 13605667604,
+    "artifactSha256": "9c95046b29102af705fc95e89fcb61c9aac68e4c148293c57a7786b6b77d278f"
+  },
+  "priorEvidence": {
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2285_VRM316_R4_EXACT_DEV_ROLE_E2E_FAIL_20261107.json",
+    "receiptBlob": "67f631f3f6548627f7950b8032b8ddd9464cc3a1",
+    "before": {
+      "shopperMiDia": "3/8_CERTIFICACION_COMPLETADA",
+      "shopperMisVisitas": "CERTIFICACION_NO_REQUERIDA",
+      "adminRequired": true
+    }
+  },
+  "authenticUiReadback": {
+    "browser": "CONNECTED_CHROME_AUTHENTICATED_EXISTING_SESSIONS",
+    "actorShopper": "DAMARIS_DE_LEON_EXISTING_GT_SHOPPER",
+    "actorAdmin": "EXISTING_ADMINISTRATION_SESSION",
+    "project": "cinepolis",
+    "period": "NOV_2026",
+    "miDia": {
+      "completed": "2/8",
+      "certification": "PENDIENTE",
+      "visit": "C_OAKLAND_MALL"
+    },
+    "misVisitas": {
+      "visit": "C_PORTALES",
+      "button": "CERTIFICARME",
+      "disabledUntilInstruction": true,
+      "step": "CERTIFICACION_PENDIENTE",
+      "noFalseNotRequired": true
+    },
+    "certification": {
+      "publishedBankOptions": 2,
+      "questions": 15,
+      "thresholdPercent": 80,
+      "attemptSubmitted": false,
+      "questionnaireSubmitted": false
+    },
+    "admin": {
+      "required": true,
+      "historicalRecords": 40,
+      "historicalApproved": 38,
+      "projectBanks": 4,
+      "octoberPublished": 2
+    },
+    "crossRolePolicy": "PASS_EXPLICIT_FALSE_ONLY_OPTIONAL_LEGACY_UNSPECIFIED_MANDATORY",
+    "browserReadbackNotHumanI3": true
+  },
+  "sourceTests": {
+    "pass": 5,
+    "fail": 0,
+    "actualNodeRuntimeProjection": true
+  },
+  "invariants": {
+    "hrRevisionUnchanged": true,
+    "productionChanged": false,
+    "realBankMutations": 0,
+    "certificationAttemptWrites": 0,
+    "hrWrites": 0,
+    "firestoreRulesDeploys": 0,
+    "storageRulesDeploys": 0,
+    "financialWrites": 0
+  },
+  "moduleTruth": {
+    "domain": "certifications",
+    "integralPass": false,
+    "classificationRemains": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+    "matchesBefore": 5,
+    "matchesAfter": 5,
+    "total": 21,
+    "remaining": "Real eligible 15Q attempt and reload/relogin/history, two-bank selector, recertification, D08 independent session/progress ACK and human integral acceptance."
+  },
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "phaseAComplete": false,
+  "production": "DO_NOT_TOUCH",
+  "nextExactAction": "Preserve R5 scoped browser PASS; perform remaining D06 non-destructive role/period checks and D07 B10 provider links, then D08 independent ACK; no exam submission or PROD without scoped authorization."
+}
