@@ -155,6 +155,22 @@ test('D06 recertification lists every project shopper, including QA identities b
     {scope:'all',shopperId:''});
 });
 
+test('D06 recertification and Shoppers use the same active project identities, excluding durable retirements',()=>{
+  const h=harness();
+  const active=Array.from({length:192},(_,index)=>({id:'shopper-'+index,nombre:'Shopper '+index,status:'active'}));
+  const retired={id:'retired-shopper',nombre:'Retired identity',identityState:'retired_by_admin'};
+  const superseded={id:'superseded-shopper',nombre:'Superseded identity',identityState:'superseded_exact_alias'};
+  const retiredStatus={id:'status-retired',nombre:'Retired status',status:'retired'};
+  h.cx.data.shoppersFor=()=>[...active,retired,superseded,retiredStatus];
+  const visible=h.cx.data.shoppersFor().filter(x=>!['retired_by_admin','superseded_exact_alias'].includes(String(x.identityState||''))&&String(x.status||'').toLowerCase()!=='retired');
+  const eligible=h.cx.certStore.recertificationCandidates(h.cx.data);
+  assert.equal(visible.length,192);
+  assert.equal(eligible.length,visible.length,'No retired profile may inflate a recertification list');
+  assert.deepEqual(eligible.map(x=>x.id).sort(),visible.map(x=>x.id).sort());
+  for(const old of [retired,superseded,retiredStatus])
+    assert.throws(()=>h.cx.certStore.recertificationTarget('one',old.id,eligible),/RECERT_SHOPPER_SELECTION_REQUIRED/);
+});
+
 test('VRM312 bank selection keeps original resource identity even when logical names repeat',()=>{
   const make=(id,period)=>({id,periodId:period,version:2,bank:{estado:'published',certificationId:'main',certificationName:'Mismo nombre'}});
   const h=harness({banks:[make(bankId,OCT),make('certbank-project-a-'+NOV,NOV)]});

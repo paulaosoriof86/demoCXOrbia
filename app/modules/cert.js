@@ -15,6 +15,10 @@ CX.certStore = CX.certStore || {
     const source=data?.shoppersFor?data.shoppersFor():data?.shoppers;
     const seen=new Set();
     return (Array.isArray(source)?source:[]).filter(shopper=>{
+      // Match Shoppers' canonical activeRows(): a retired/superseded identity
+      // may remain in HR history, but cannot receive a fresh recert request.
+      if(['retired_by_admin','superseded_exact_alias'].includes(String(shopper?.identityState||''))
+        ||String(shopper?.status||'').toLowerCase()==='retired')return false;
       const id=String(shopper?.id||'').trim();
       if(!id||seen.has(id))return false;
       seen.add(id);return true;
