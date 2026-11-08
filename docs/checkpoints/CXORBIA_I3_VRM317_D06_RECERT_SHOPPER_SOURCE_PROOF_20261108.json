@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-proven-source-proof.v1",
+  "observedAt": "2026-11-08T14:09:11Z",
+  "iteration": "I3",
+  "findingId": "VRM-317",
+  "classification": "FUNCTIONAL_DEFECT",
+  "sourceSha": "8583bca14a69d32692b6f7b4f826c9a24d6300e7",
+  "sourceTree": "e345fea6963edd3462d3d4a0a838529877b1eb3e",
+  "predecessorProductSourceSha": "e79cc3ccc73293c29e53e9ec6880638154b5143e",
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM317_D06_RECERT_SHOPPER_SCOPE_20261108.json",
+  "scopeReceiptBlob": "6ea2e26d58ad9cde73197ec1410e7c2a5ebb5860",
+  "allowedProductFiles": ["app/modules/cert.js"],
+  "allowedTestFiles": ["tools/qa/cxorbia-i3-certification-project-continuity.test.mjs"],
+  "sourceBlobs": {
+    "app/modules/cert.js": "026270803cbd643aa83525ebc14cc72deda34822",
+    "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs": "305c5a5c3797e272826d2842cc6000c1193fda33"
+  },
+  "sourceTestsPass": 108,
+  "sourceTestsFail": 0,
+  "sourceTestsSkipped": 0,
+  "qaSplit": {"certification": "40/40 PASS", "workUat": "68/68 PASS"},
+  "findings": [{
+    "id": "VRM-317",
+    "priority": "P0_PROVEN",
+    "classification": "FUNCTIONAL_DEFECT",
+    "owner": "app/modules/cert.js",
+    "expected": "Every exact project shopper is available for scoped recertification, with no arbitrary truncation and no implicit real-person recipient.",
+    "evidence": "Real Admin DEV 192 shoppers, dropdown first 40, QA user absent; original source .slice(0,40) and implicit first selected. Two new regression cases pass on focal source."
+  }],
+  "scope":"ONE_EXISTING_PRODUCT_CANDIDATE_SOURCE_ONLY",
+  "devPublished": false,
+  "certificationModuleIntegral": "HOLD",
+  "moduleTruthMatches": 5,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "hrWrites": 0,
+  "providerWrites": 0,
+  "existingBankRetirements": 0,
+  "historicalCertificationsDeleted": 0,
+  "production": false
+}
