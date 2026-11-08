@@ -2,7 +2,7 @@
   "schemaVersion": "cxorbia.recovery.execution-current.v1",
   "planLockPath": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
   "planId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
-  "asOf": "2026-11-08T19:40:00.000Z",
+  "asOf": "2026-11-08T19:43:00.000Z",
   "iteration": "I3",
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
@@ -1803,7 +1803,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": 42491298606,
     "runNumber": 2298,
     "sourceSha": "6633a68fe34cd24d03696b10e98b6ce1a36e0156",
@@ -3234,11 +3234,11 @@
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261108-V283.json",
     "matrixBlob": "813eceb7b612f82efe481e9f6eee0ff9117107e6",
     "classificationCounts": {
+      "MATCH": 5,
+      "SOURCE_FIXED_DEV_MATERIALIZED_ADMIN_B10_FOCAL_PASS_PENDING_SHOPPER_ROLE_PROVIDER_LINK": 1,
       "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN": 3,
       "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 11,
-      "SOURCE_FIXED_PENDING_CI_DEV_SHOPPER_ADMIN_E2E_HUMAN": 1,
-      "MATCH": 5,
-      "SOURCE_FIXED_DEV_MATERIALIZED_ADMIN_B10_FOCAL_PASS_PENDING_SHOPPER_ROLE_PROVIDER_LINK": 1
+      "SOURCE_FIXED_PENDING_CI_DEV_SHOPPER_ADMIN_E2E_HUMAN": 1
     },
     "derivedAt": "2026-11-08T19:29:57.161Z",
     "meaning": "CERT_BANK_SCOPE_AND_QA_ATTEMPT_VOID_SOURCE_ONLY_5_MATCH_16_HOLD"
