@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm319-run2312-exact-dev-materialization.v1",
+  "iteration": "I3",
+  "findingId": "VRM-319",
+  "localDate": "2026-11-08",
+  "observedAt": "2026-11-08T19:48:50Z",
+  "status": "PASS_EXACT_DEV_TECHNICAL_HOLD_FULL_MODULE_E2E",
+  "source": {
+    "sha": "e10b1c24e17879872f9030185b988ae7dbac3faa",
+    "tree": "b77c7bcab0b7e73b28dbda71b464c2592d4b6634",
+    "owner": [
+      "app/core/backend-certifications.js",
+      "app/modules/cert.js",
+      "backend/runtime/hr-live-service/certification-runtime.mjs"
+    ]
+  },
+  "materialization": {
+    "builds": 1,
+    "decision": "PASS_VRM319_D06_EXACT_DEV_MATERIALIZATION",
+    "hostingDeploys": 1,
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794167318994000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/6216d064773ad763",
+    "hrRevision": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+    "production": false,
+    "runtimeDeploys": 1,
+    "runtimeDigest": "sha256:33dfefa4a380d4e0e39165a670f45617b3ef84268e7a1eb0564c35f2e87a2751",
+    "runtimeRevision": "cxorbia-live-hr-dev-00367-2dn",
+    "scenarioDimensionsProven": true,
+    "sourceSha": "e10b1c24e17879872f9030185b988ae7dbac3faa",
+    "sourceTree": "b77c7bcab0b7e73b28dbda71b464c2592d4b6634",
+    "storageRulesDeploys": 0,
+    "runId": 42516569211,
+    "runNumber": 2312,
+    "jobId": 128840909676,
+    "controlHeadAtDeploy": "9df7db0e7eeab714feccb7e05485bc673ec65f3e",
+    "artifactId": 13631292941,
+    "artifactDigest": "sha256:30b7552548f7c5ae23f009ed68554f313b51830fca8be416fb5198e6bb87598c",
+    "artifactDigestType": "GITHUB_ACTIONS_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2312_VRM319_D06_EXACT_DEV_MATERIALIZATION_20261108.json",
+    "state": "PASS_EXACT_DEV_TECHNICAL_PENDING_REAL_ADMIN_SHOPPER_E2E",
+    "humanAcceptance": "PENDING_INDEPENDENT_SHOPPER_ADMIN_I3",
+    "fullTaskClosed": false,
+    "hrWrites": 0,
+    "firestoreRulesDeploys": 0,
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62"
+  },
+  "providerChecks": {
+    "hostedAssetShaMatchesExactSource": true,
+    "cloudRunRevisionServes100Percent": true,
+    "cloudRunHealthOk": true,
+    "cloudRunProduction": false,
+    "hrMetaRevisionStable": true,
+    "hrSourceSafe": true,
+    "hrWrites": 0,
+    "hostingVersionFinalized": true,
+    "hostedAssetCount": 18,
+    "artifactDigestSource": "GITHUB_ACTIONS_API",
+    "evidenceScope": "CI_PROTECTED_DEV_NO_AUTHENTICATED_SHOPPER_BROWSER"
+  },
+  "focalSourceTests": {
+    "canonicalAuthorityRunId": 42516073675,
+    "materializationRunId": 42516569211,
+    "client": "23_OF_23_PASS",
+    "mockedBackendProvider": "5_OF_5_PASS",
+    "node24ReporterPinnedTap": true
+  },
+  "realUserActions": {
+    "shopperExamSubmission": false,
+    "adminVoidedQaAttempt": false,
+    "qaAttemptRecordsChanged": 0,
+    "legitimateHistoricalRecordsChanged": 0,
+    "hrWrites": 0
+  },
+  "moduleTruth": {
+    "domain": "certifications",
+    "classificationRemains": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_AUTHENTICATED_ADMIN_SHOPPER_E2E",
+    "matchesBefore": 5,
+    "matchesAfter": 5,
+    "total": 21,
+    "integralPass": false
+  },
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "phaseAComplete": false,
+  "production": false,
+  "nextExactAction": "Authenticated Admin/Shopper DEV E2E on exact source: isolate QA attempt, verify 15Q and 8Q provider ACK, single Admin-void with reason + confirmation and idempotent replay, reload/relogin/history/eligibility and recertification; no bulk or legitimate outcome deletion."
+}
