@@ -222,25 +222,20 @@ CX.module('cert', ({role,data,ui})=>{
   };
   const phCert=subtitle=>ui.ph('Certificación',subtitle)+certFilters();
   const historicalEvidenceFor=s=>Array.isArray(s?.certificationEvidenceRecords)?s.certificationEvidenceRecords:[];
-  const currentShopper=()=>{
-    const raw=String(CX.session?.user?.shopperId||'').trim();
-    const sid=raw?String(data.__identityMap?.[raw]||raw).trim():'';
-    const protectedProfile=data.__sessionShopperProfile;
-    if(protectedProfile&&[raw,sid].includes(String(protectedProfile.id||protectedProfile.shopperId)))return protectedProfile;
-    return (data.getShopper&&data.getShopper(sid))||(data.getShopper&&data.getShopper(raw))||(data.shoppers||[]).find(x=>[raw,sid].includes(String(x.id||x.shopperId)))||null;
-  };
   if(role==='shopper'){
     /* Bloque A (auditoría V101 — 20260711): un banco en estado draft/pending_review NO habilita
        certificación para el shopper — solo approved_preview (práctica, en este prototipo) o un
        estado confirmado por backend habilitan tomar el examen. Antes cualquier banco con
        preguntas se ofrecía sin mirar su estado. */
     const bank=selectedBank();
-    const shopper=currentShopper(),shopperId=String(shopper?.id||shopper?.shopperId||CX.session?.user?.shopperId||'');
+    const certification=CX.backendCertifications?.sessionDecision?.(bank,data.currentProjectId||p.projectId||'')
+      ||{shopper:null,shopperId:'',durable:null,carry:{eligibilityGranted:false}};
+    const shopper=certification.shopper,shopperId=certification.shopperId;
     const escape=value=>String(value==null?'':value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const attempts=CX.backendCertifications?.attemptHistory?.(shopperId)||[];
     const history=attempts.length?`<section class="card card-p" id="certAttemptHistory" style="margin-bottom:14px"><div class="card-t">Historial de intentos del proyecto</div>${attempts.map((attempt,index)=>`<details ${index===0?'open':''} data-attempt-id="${escape(attempt.id)}" style="margin-top:12px"><summary><b>${Number(attempt.score)}% · ${attempt.pass?'Aprobado':'No alcanzado'}</b> · requisito ${Number(attempt.gate)}% · ${escape(String(attempt.createdAt||'').slice(0,19).replace('T',' '))}</summary><div style="font-size:12px;margin:8px 0">Intento guardado con ACK remoto · periodo ${escape(attempt.periodId)}. Se conserva al cambiar de periodo.</div>${(attempt.feedback||[]).map(f=>`<div class="cert-attempt-feedback" style="padding:9px 0;border-top:1px solid var(--border)"><b>${Number(f.index)+1}. ${escape(f.question||'Pregunta '+(Number(f.index)+1))}</b><div>${f.ok?'✓ Correcta':'↻ A reforzar'} · Tu respuesta: ${escape(f.selected)}${f.ok?'':' · Correcta: '+escape(f.correcta)}</div><div>${escape(f.exp)}</div></div>`).join('')||'<div class="muted">Este registro anterior conserva el resultado; no incluye retroalimentación detallada.</div>'}</details>`).join('')}</section>`:'';
-    const durable=CX.backendCertifications?.durableCurrent?.(shopperId,bank);
-    const carry=CX.backendCertifications?.carryoverDecision?.(shopper,bank,data.currentProjectId||p.projectId||'')||{state:'none',eligibilityGranted:false};
+    const durable=certification.durable;
+    const carry=certification.carry;
     if(durable){
       return `${phCert( p.name+' · certificación vigente')}
         <div class="card card-p" style="border-left:4px solid var(--green)"><div class="card-t">✓ Certificación vigente</div><div style="font-size:12.5px;color:var(--t2);margin-top:6px">Último intento aprobado: <b>${durable.score}%</b> · requisito ${durable.gate}% · persistido con ACK remoto el ${String(durable.createdAt||'').slice(0,10)}. Vigente para este proyecto entre periodos.</div></div>${history}`;
@@ -317,7 +312,7 @@ CX.module('cert', ({role,data,ui})=>{
        explícitamente demo; fuera de demo se rotula "pendiente de fuente", sin inventar aprobación. */
     const _showFixturesShopper = CX.dataSource ? CX.dataSource.showFixtures() : true;
     if(!_showFixturesShopper){
-      const ev=historicalEvidenceFor(currentShopper()),approved=ev.filter(x=>String(x.sourceLegacyStatus||'').toLowerCase()==='approved').length,failed=ev.filter(x=>String(x.sourceLegacyStatus||'').toLowerCase()==='failed').length;
+      const ev=historicalEvidenceFor(shopper),approved=ev.filter(x=>String(x.sourceLegacyStatus||'').toLowerCase()==='approved').length,failed=ev.filter(x=>String(x.sourceLegacyStatus||'').toLowerCase()==='failed').length;
       const ownCurrent=(typeof data.visitsForShopper==='function'?data.visitsForShopper(shopperId,false):[]).filter(v=>String(data.recordPeriodId?data.recordPeriodId(v):(v.periodId||v.projectId)||'')===String(data.currentPeriodId||''));
       const scheduledCurrent=ownCurrent.filter(v=>{const f=data.visitFacets?.(v)||v.canonicalFacets||{};return f.scheduled===true&&f.realized!==true;});
       const humanReason=ev.length?'Encontramos evidencia histórica vinculada a tu identidad, pero todavía no está validada como certificación vigente para este proyecto. El equipo debe revisarla o publicar el banco correspondiente.':'No encontramos una certificación previa válida asociada a tu identidad y todavía no hay un banco de preguntas publicado para este proyecto. El equipo debe publicar la certificación antes de que puedas completarla.';

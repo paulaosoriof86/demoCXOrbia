@@ -122,7 +122,7 @@ window.CX=window.CX||{};
     const latestRecert=applicableRecertifications(shopperId).sort((a,b)=>str(b.createdAt).localeCompare(str(a.createdAt)))[0]||null;
     const attempts=arr(CX.data?.__protectedCertifications).filter(x=>
       str(x.shopperId)===str(shopperId)&&(x.pass===true||x.passed===true||str(x.status).toLowerCase()==='certified')&&
-      (!x.projectId||str(x.projectId)===projectId)&&
+      str(x.projectId)===projectId&&
       (!Number.isFinite(Date.parse(str(x.validUntil)))||Date.parse(str(x.validUntil))>=Date.now())
     ).sort((a,b)=>str(b.createdAt||b.certifiedAt).localeCompare(str(a.createdAt||a.certifiedAt)));
     const latest=attempts[0]||null;if(!latest)return null;
@@ -157,6 +157,26 @@ window.CX=window.CX||{};
     if(failed)return {state:'failed',eligibilityGranted:false};
     return {state:records.length?'pending':'none',eligibilityGranted:false};
   }
+  // One protected, project-scoped decision for Certificación, Mi Día and Mis Visitas.
+  // The authenticated profile has precedence over HR-facing or alias projections.
+  function sessionDecision(bank,requestedProjectId){
+    const data=CX.data||{},raw=str(CX.session?.user?.shopperId);
+    const canonical=raw?str(data.__identityMap?.[raw]||raw):'';
+    const protectedProfile=data.__sessionShopperProfile;
+    const protectedMatches=protectedProfile&&[raw,canonical].includes(str(protectedProfile.id||protectedProfile.shopperId));
+    const shopper=protectedMatches?protectedProfile:
+      (typeof data.getShopper==='function'&&(data.getShopper(canonical)||data.getShopper(raw)))||
+      arr(data.shoppers).find(x=>[raw,canonical].includes(str(x.id||x.shopperId)))||null;
+    const shopperId=str(shopper?.id||shopper?.shopperId||canonical);
+    const projectId=str(requestedProjectId||data.currentProjectId);
+    const durable=shopperId&&projectId?durableCurrent(shopperId,bank):null;
+    const carry=shopperId&&projectId&&shopper?carryoverDecision(shopper,bank,projectId):
+      {state:'none',eligibilityGranted:false};
+    const explicitlyNotRequired=bank?.required===false;
+    const done=!!durable||carry.eligibilityGranted===true||explicitlyNotRequired;
+    return {shopper,shopperId,projectId,bank,durable,carry,explicitlyNotRequired,
+      required:!explicitlyNotRequired&&!done,done};
+  }
   CX.backendCertifications={
     call,
     loadShopperResources,
@@ -168,6 +188,6 @@ window.CX=window.CX||{};
     publishBank:payload=>call('publish',Object.assign({idempotencyKey:newId('cert.publish')},payload||{})),
     configureBank:payload=>call('configure',Object.assign({idempotencyKey:newId('cert.configure')},payload||{})),
     retireBank:payload=>call('retire',Object.assign({idempotencyKey:newId('cert.retire')},payload||{})),
-    currentUid,durableCurrent,carryoverDecision,applicableRecertifications
+    currentUid,durableCurrent,carryoverDecision,applicableRecertifications,sessionDecision
   };
 })();

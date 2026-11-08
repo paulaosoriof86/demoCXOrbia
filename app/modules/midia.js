@@ -192,12 +192,9 @@ CX.module('midia', ({data,role,ui})=>{
   }).slice(0,2):[];
   const nextVisit=mine[0]||null;
   const vf=nextVisit&&data.visitFacets?data.visitFacets(nextVisit):(nextVisit?.canonicalFacets||{});
-  const certBank=(()=>{try{return CX.certStore?.bank?.(p.id,window.CX_CERT_SELECTED_ID||'main')||CX.certStore?.bank?.(p.id)||null;}catch(_){return null;}})();
-  const certShopper=(data.getShopper&&data.getShopper(_mySid))||data.__sessionShopperProfile||null;
-  const certDurable=(_mySid&&CX.backendCertifications?.durableCurrent)?CX.backendCertifications.durableCurrent(_mySid,certBank):null;
-  const certCarry=(_mySid&&CX.backendCertifications?.carryoverDecision)?CX.backendCertifications.carryoverDecision(certShopper,certBank,data.currentProjectId||p.projectId||''):{eligibilityGranted:false};
-  const certExplicitlyNotRequired=!!(certBank&&certBank.required===false);
-  const certDone=!!certDurable||certCarry?.eligibilityGranted===true||certExplicitlyNotRequired;
+  const certBank=(()=>{try{return CX.certStore?.bank?.(p.id,String(window.CX_CERT_SELECTED_ID||''))||null;}catch(_){return null;}})();
+  const certDecision=CX.backendCertifications?.sessionDecision?.(certBank,data.currentProjectId||p.projectId||'');
+  const certDone=certDecision?.done===true;
   const steps=nextVisit?[
     ['Asignación confirmada',!!vf.assigned],['Instructivo leído',!!nextVisit.instructiveReadAt],['Certificación del proyecto',certDone],['Agendamiento',!!vf.scheduled],['Visita realizada',!!vf.realized],['Cuestionario completado',!!vf.questionnaire],['Submitida',!!vf.submitted],['Pago confirmado',!!vf.paymentConfirmed]
   ]:[];

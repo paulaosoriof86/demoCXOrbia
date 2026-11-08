@@ -172,3 +172,36 @@ test('P0 valid historical approvals and durable passes survive the scoped fail-c
   assert.equal(h.cx.backendCertifications.carryoverDecision(accepted,{},'project-a').eligibilityGranted,false);
   assert.equal(h.cx.backendCertifications.durableCurrent('shopper-one',{}),null);
 });
+
+test('VRM316 R3 every Shopper view shares the protected canonical certification decision',()=>{
+  const h=harness();
+  // The HR-facing row may still carry a separately adjudicated legacy record.
+  // The authenticated protected profile is the identical identity source used by Certificación.
+  h.cx.data.shoppers=[{id:'shopper-one',certificationEvidenceRecords:[{
+    projectId:'project-a',sourceLegacyStatus:'approved',status:'confirmed',
+    reviewRequired:false,carryoverConfirmed:true,eligibilityGranted:true,currentCertification:true
+  }]}];
+  h.cx.data.getShopper=id=>h.cx.data.shoppers.find(x=>x.id===id)||null;
+  h.cx.data.__sessionShopperProfile={id:'shopper-one',certificationEvidenceRecords:[]};
+  const selectedPublished={certificationId:'main',estado:'published',required:true};
+  const resolved=h.cx.backendCertifications.sessionDecision(selectedPublished);
+  assert.equal(resolved.shopperId,'shopper-one');
+  assert.equal(resolved.durable,null);
+  assert.equal(resolved.carry.eligibilityGranted,false);
+  assert.equal(resolved.done,false);
+  assert.equal(resolved.required,true);
+  const bothViews=['../../app/modules/midia.js','../../app/modules/misvisitas.js'];
+  for(const path of bothViews){
+    const source=fs.readFileSync(new URL(path,import.meta.url),'utf8');
+    assert.match(source,/backendCertifications\?\.sessionDecision/);
+    assert.doesNotMatch(source,/window\.CX_CERT_SELECTED_ID\|\|'main'/,
+      'The selected certification resource must match the exact bank shown to the shopper');
+  }
+});
+
+test('VRM316 R3 a missing project on a historical attempt never grants current project rights',()=>{
+  const h=harness({records:[attempt({pass:true,projectId:undefined})]});
+  assert.equal(h.cx.backendCertifications.durableCurrent('shopper-one',{}),null);
+  const actual=harness({records:[attempt({pass:true,score:100})]});
+  assert.equal(actual.cx.backendCertifications.durableCurrent('shopper-one',{}).pass,true);
+});

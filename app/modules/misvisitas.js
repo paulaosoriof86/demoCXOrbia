@@ -117,13 +117,11 @@ CX.module('misvisitas',({data,ui})=>{
     return'asignada';
   };
   const certificationState=()=>{
-    let bank=null;try{bank=CX.certStore?.bank?.(p.id,window.CX_CERT_SELECTED_ID||'main')||CX.certStore?.bank?.(p.id)||null;}catch(_){}
-    const durable=(sid&&CX.backendCertifications?.durableCurrent)?CX.backendCertifications.durableCurrent(sid,bank):null;
-    const carry=(sid&&CX.backendCertifications?.carryoverDecision)?CX.backendCertifications.carryoverDecision(shopperProfile,bank,data.currentProjectId||p.projectId||''):{eligibilityGranted:false};
-    const explicitlyNotRequired=!!(bank&&bank.required===false);
-    const done=!!durable||carry?.eligibilityGranted===true||explicitlyNotRequired;
-    const required=!explicitlyNotRequired&&!done;
-    return {required,done,bank,durable,carry};
+    let bank=null;try{bank=CX.certStore?.bank?.(p.id,String(window.CX_CERT_SELECTED_ID||''))||null;}catch(_){}
+    const decision=CX.backendCertifications?.sessionDecision?.(bank,data.currentProjectId||p.projectId||'');
+    return {required:decision?.required!==false,done:decision?.done===true,bank,
+      durable:decision?.durable||null,carry:decision?.carry||{eligibilityGranted:false},
+      explicitlyNotRequired:decision?.explicitlyNotRequired===true};
   };
   const routeState=v=>{
     const f=facets(v),c=contract(v),certState=certificationState();
@@ -160,7 +158,7 @@ CX.module('misvisitas',({data,ui})=>{
     const kind=kindOf(v),tone={asignada:'amber',agendada:'green',realizada:'brand'}[kind],cfg=p.cuestionario||{modo:'interna'};
     let actions='';
     if(cancelAwaitingHr(v)){actions='<span class="bdg bdg-a">Cancelación autorizada · pendiente HR</span>';}
-    else if(kind==='asignada'){const route=routeState(v),certDone=route.certState.done;actions=`<button class="btn btn-ghost btn-sm" data-doc="${v.id}">${v.instructiveReadAt?'✓ Instructivo leído':'📄 Instructivo'}</button><button class="btn btn-soft btn-sm" data-cert="${v.id}" ${v.instructiveReadAt?'':'aria-disabled="true" title="Primero confirma la lectura del instructivo"'}>${certDone?'✓ Certificación vigente':'🏆 Certificarme'}</button><button class="btn ${route.scheduleReady?'btn-pr':'btn-soft'} btn-sm" data-sched="${v.id}" ${route.scheduleReady?'':'aria-disabled="true" title="Completa instructivo y certificación antes de agendar"'}>📅 Agendar</button>${geoBtn(v)}`;}
+    else if(kind==='asignada'){const route=routeState(v),certDone=route.certState.done;actions=`<button class="btn btn-ghost btn-sm" data-doc="${v.id}">${v.instructiveReadAt?'✓ Instructivo leído':'📄 Instructivo'}</button><button class="btn btn-soft btn-sm" data-cert="${v.id}" ${v.instructiveReadAt?'':'aria-disabled="true" title="Primero confirma la lectura del instructivo"'}>${certDone?(route.certState.explicitlyNotRequired?'✓ Certificación no requerida':'✓ Certificación vigente'):'🏆 Certificarme'}</button><button class="btn ${route.scheduleReady?'btn-pr':'btn-soft'} btn-sm" data-sched="${v.id}" ${route.scheduleReady?'':'aria-disabled="true" title="Completa instructivo y certificación antes de agendar"'}>📅 Agendar</button>${geoBtn(v)}`;}
     else if(kind==='agendada'){const ready=canCompleteVisit(v),date=scheduledDateOf(v);actions=`<button class="btn ${ready?'btn-green':'btn-soft'} btn-sm" data-done="${v.id}" ${ready?'':'aria-disabled="true" title="Se habilita el día de la visita"'}>${ready?'✅ Marcar realizada':'🕒 Disponible el '+(date||'día de la visita')}</button><button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button><button class="btn btn-ghost btn-sm" data-reprog="${v.id}" ${pendingReschedule(v)||pendingCancel(v)?'disabled aria-disabled="true"':''}>🔄 Reprogramar</button><button class="btn btn-ghost btn-sm" data-cancel="${v.id}" ${pendingCancel(v)||pendingReschedule(v)?'disabled aria-disabled="true"':''}>✕ Solicitar cancelación</button>${geoBtn(v)}`;}
     else if(facets(v).questionnaire)actions=`<span class="bdg bdg-g" data-questionnaire-complete="${v.id}">✓ Cuestionario completado · pendiente de revisión/submit</span><button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button>`;
     else actions=`<button class="btn btn-pr btn-sm" data-quest="${v.id}">📝 ${cfg.modo==='interna'?'Llenar cuestionario':'Abrir cuestionario'}</button><button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button>`;
