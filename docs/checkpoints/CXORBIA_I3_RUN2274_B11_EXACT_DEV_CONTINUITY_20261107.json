@@ -1,0 +1,141 @@
+{
+  "schemaVersion": "cxorbia.i3.run2274.exact-dev-b11-continuity.v1",
+  "recordedAtUtc": "2026-11-08T02:15:46.089Z",
+  "userLocalDate": "2026-11-07",
+  "iteration": "I3",
+  "decision": "PASS_EXACT_DEV_MATERIALIZATION_B11_ADMIN_FOCAL_WITH_RESIDUAL_HOLD",
+  "state": "HOLD",
+  "production": "DO_NOT_TOUCH",
+  "authorizationI4": false,
+  "source": {
+    "sha": "ed5b708c17b481bde00cb95dda3b426a0e27a890",
+    "tree": "6cb5a48d23eec8110dc6ee17f0fa947027011f19",
+    "predecessor": "6f15c6e84229bc9562bfdad3a6712d4226f09078",
+    "registrationControlCommit": "70bc628c2cdc4ed837ef914b855809e424030779",
+    "dispatchControlCommit": "fa7afce63e7f32554f9bfaae5e5545430b277925",
+    "b11SourceProofPath": "docs/checkpoints/CXORBIA_I3_B11_HR_DATE_SEMANTICS_SOURCE_PROOF_20261107.json",
+    "b11SourceProofBlob": "6e0d48e12bee4cfff1e53395275e639036e5afad"
+  },
+  "materialization": {
+    "state": "PASS_EXACT_DEV_B11_ADMIN_HR_DATE_FOCAL_SHOPPER_AND_LATENCY_HOLD",
+    "builds": 1,
+    "decision": "PASS_I3_B11_HR_DATE_SEMANTICS_EXACT_DEV_MATERIALIZATION",
+    "hostingDeploys": 1,
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794103773857000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/e5c9e4ce2f6c689b",
+    "hrRevision": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+    "production": false,
+    "runtimeDeploys": 1,
+    "runtimeDigest": "sha256:33a3733726d63641a60443309ad91585b1bca48391c10e484b5a2e1a4c6ce1c1",
+    "runtimeRevision": "cxorbia-live-hr-dev-00359-rkd",
+    "scenarioDimensionsProven": true,
+    "sourceSha": "ed5b708c17b481bde00cb95dda3b426a0e27a890",
+    "sourceTree": "6cb5a48d23eec8110dc6ee17f0fa947027011f19",
+    "storageRulesDeploys": 0,
+    "scopeFinding": "VRM-315",
+    "runId": 42437035543,
+    "runNumber": 2274,
+    "jobId": 128598091690,
+    "controlHeadAtDeploy": "fa7afce63e7f32554f9bfaae5e5545430b277925",
+    "artifactId": 13600256430,
+    "artifactDigest": "sha256:d7e91d6d7ce80f7fd505cb0bcf643893e014b90670730fa8d4454c0fe6ff1aeb",
+    "artifactDigestType": "GITHUB_ACTIONS_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR",
+    "runtimeTrafficPercent": 100,
+    "firestoreRulesDeploys": 0,
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
+    "firestoreRulesetEvidence": "CARRY_FORWARD_UNCHANGED_RULES_AND_NO_RULES_DEPLOY_RUN2274",
+    "hrWrites": 0,
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2274_B11_EXACT_DEV_CONTINUITY_20261107.json",
+    "verifiedServedAssetCount": 18,
+    "humanAcceptance": "PENDING_16_MODULES_SHOPPER_ROLE_AND_GLOBAL_LOADING",
+    "fullTaskClosed": false,
+    "shopperB10FreshSession": "HOLD_NOT_CERTIFIED_INDEPENDENT_SHOPPER_ROLE",
+    "vrm134GlobalLoad": "HOLD_CHROME_AUTHENTICATED_ADMIN_INITIAL_LOAD_APPROX_24_3_SECONDS",
+    "visualAdminB11ReadOnly": "PASS_4_OF_4_INDEPENDENT_HR_DATE_SEMANTICS"
+  },
+  "evidence": {
+    "workflow": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/42437035543",
+    "workflowRunConclusion": "success",
+    "artifactId": 13600256430,
+    "artifactSha256": "sha256:d7e91d6d7ce80f7fd505cb0bcf643893e014b90670730fa8d4454c0fe6ff1aeb",
+    "canonicalSourceControlRun2273": 42436745466,
+    "localB11RegressionTests": "32_OF_32_PASS",
+    "canonicalB11ControlReadback": "PASS_21_DOMAINS_159_SOURCE_FILES_0_OWNER_BLOB_DRIFT",
+    "devHosting": "FINALIZED",
+    "cloudRunTrafficPercent": 100,
+    "hrMeta": {
+      "ok": true,
+      "revisionStable": true,
+      "sourceSafe": true,
+      "hrWrites": false,
+      "production": false
+    }
+  },
+  "realBrowserFocal": {
+    "actor": "authenticated Admin",
+    "role": "Administración",
+    "project": "Cinépolis",
+    "period": "NOV 2026",
+    "surface": "Hojas de Ruta",
+    "readOnly": true,
+    "independentGoogleSheetsHr": {
+      "reference": "NOVIEMBRE 2026",
+      "totalRows": 44,
+      "guatemalaRows": 34,
+      "hondurasRows": 10
+    },
+    "observedHeaders": [
+      "DISPONIBLE DESDE",
+      "FECHA PROGRAMADA"
+    ],
+    "verifiedRows": [
+      {
+        "id": "NOVIEMBRE!12",
+        "disponibleDesde": "2026-11-09",
+        "fechaProgramada": null
+      },
+      {
+        "id": "NOVIEMBRE!15",
+        "disponibleDesde": "2026-11-01",
+        "fechaProgramada": null
+      },
+      {
+        "id": "NOVIEMBRE!16",
+        "disponibleDesde": "2026-11-02",
+        "fechaProgramada": null
+      },
+      {
+        "id": "NOVIEMBRE!18",
+        "disponibleDesde": "2026-11-09",
+        "fechaProgramada": null
+      }
+    ],
+    "observedHrBanner": "Fuente externa; HR operacional verificada; revisión 7b7b62269233",
+    "result": "PASS_ADMIN_FOCAL_FOUR_OF_FOUR_HR_DATE_SEMANTICS",
+    "shopperIndependentRole": "HOLD_NOT_VERIFIED_RUN2274",
+    "questionnaireAuthorizedExternalURL": "GENERIC_TYAONLINE_LOGIN_NOT_PER_VISIT_SPECIFIC_LINK",
+    "questionnaireSubmissions": 0,
+    "adminDataWrites": 0,
+    "performance": "ADMIN_RELOAD_APPROX_24_3S_TO_MI_DIA_DOM; UNCALIBRATED_GLOBAL_PERFORMANCE_HOLD",
+    "performanceCertification": false
+  },
+  "preserved": {
+    "moduleMatch": 5,
+    "moduleTotal": 21,
+    "verifiedIdentityGroups": 83,
+    "additionalApprovedIdentityGroups": 2,
+    "financeFocalPrior": "13/13 PASS HISTORICAL",
+    "resourcePdfPrior": "7 PAGES PDF HISTORICAL",
+    "priorCertificationAttempts": "ACK_AND_PUBLICATION_HISTORICAL_UNCHANGED",
+    "previousDevRunId": 42429717528,
+    "previousDevSource": "6f15c6e84229bc9562bfdad3a6712d4226f09078"
+  },
+  "gates": {
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "phaseAComplete": false,
+    "i4Authorized": false,
+    "productionChanged": false
+  },
+  "nextExactAction": "I3 HOLD 5/21 MATCH; RUN2273 canonical source control PASS, RUN2274 paired Cloud Run+Hosting DEV PASS source ed5b708 / runtime 00359-rkd / hosting e5c9e4ce2f6c689b, no production, no HR writes. B11 VRM-315 independent HR NOV 2026 44 visits, four O-without-P cases; Chrome Admin Hojas de Ruta now shows separate DISPONIBLE DESDE and FECHA PROGRAMADA headers and four blank programmed dates, PASS focal, not full module MATCH. Next exact P0: independent Shopper authenticated session Stiven/Julissa to verify B10 TyAOnline configured per-project provider, actual per-visit questionnaire URL, no fabricated submit; D06 eligible 15-question published exam and D07 resource lifecycle role readback, D08 provider ACK. VRM134 GLOBAL cold/warm loading Admin observed approx 24.3s; reproduce measured two-role timing and fix owner, benchmark against Legacy without copying Legacy data/code. G03 HR/project config readback, independent revision and ACK; finanzas accepted historical 13/13 but application Q7300 still pending, remaining 16 module-specific E2E must be reconciled without replaying approvals. 83/83 identities plus two historical approvals preserved; Gate20/21 HOLD; I4 not authorized; production DO_NOT_TOUCH."
+}
