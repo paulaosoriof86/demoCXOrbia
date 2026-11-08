@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm318-d06-retired-identity-scope.v1",
+  "findingId": "VRM-318",
+  "iteration": "I3",
+  "dateLocal": "2026-11-08",
+  "priority": "P0_PROVEN",
+  "classification": "FUNCTIONAL_DEFECT",
+  "rootCause": "The recertification candidate source used data.shoppersFor but omitted the canonical activeRows exclusion in app/modules/shoppers.js. One retired/superseded identity could still be targeted despite being absent from Shoppers.",
+  "expected": "The recertification target population equals exactly the active (non-retired/non-superseded) current-project shopper roster.",
+  "redEvidence": {
+    "liveProject": "Cinépolis",
+    "livePeriod": "NOV 2026",
+    "shoppersActiveRows": 192,
+    "recertDropdownBefore": 193,
+    "extraName": "Milton de Paz",
+    "fullProviderIdentityStateDirectReadback": "NOT_EXPOSED_IN_UI",
+    "sourceMismatchProven": true
+  },
+  "greenEvidence": [
+    "RUN2296 exact DEV 8583 source verified with 1 build, 1 runtime and 1 Hosting; HR revision stable.",
+    "RUN2297 post-seal canonical guard PASS.",
+    "Real Admin DEV shoppers grid count 192; recert dropdown included 193; exact multiset extra identity Milton de Paz.",
+    "D06 scoped search of QA, Stiven and Damaris PASS with explicit selection; did not send command."
+  ],
+  "sourceSha": "6633a68fe34cd24d03696b10e98b6ce1a36e0156",
+  "sourceTree": "1da0acf03b838459754c6d41771a11187c856138",
+  "predecessorProductSourceSha": "8583bca14a69d32692b6f7b4f826c9a24d6300e7",
+  "allowedProductFiles": [
+    "app/modules/cert.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs"
+  ],
+  "sourceEvidence": "18/18 focal source tests pass incl exact 193 raw/192 active test; UI readback on old DEV requires new materialization",
+  "sourceTests": {
+    "focalPass": 18,
+    "focalFail": 0
+  },
+  "devPublished": false,
+  "legacyDataMutated": false,
+  "historicalAttemptsDeleted": 0,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "production": false
+}

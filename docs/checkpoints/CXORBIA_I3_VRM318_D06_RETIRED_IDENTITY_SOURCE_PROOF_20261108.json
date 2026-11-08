@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm318-d06-source-proof.v1",
+  "iteration": "I3",
+  "findingId": "VRM-318",
+  "observedAt": "2026-11-08T14:42:29.577Z",
+  "classification": "FUNCTIONAL_DEFECT",
+  "scope": "SCOPED_ONE_OWNER_P0_PROVEN",
+  "sourceSha": "6633a68fe34cd24d03696b10e98b6ce1a36e0156",
+  "sourceTree": "1da0acf03b838459754c6d41771a11187c856138",
+  "predecessorProductSourceSha": "8583bca14a69d32692b6f7b4f826c9a24d6300e7",
+  "sourceBlobs": {
+    "app/modules/cert.js": "2438d9f9cd938e12a49caac8e5447185019bf889",
+    "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs": "294a9996381553f1b77a0549f47bf02d0eb326d3"
+  },
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM318_D06_RETIRED_IDENTITY_SCOPE_20261108.json",
+  "scopeReceiptBlob": "536555d60cf191a2f4146b4878c9d429ede58c34",
+  "sourceTestsPass": 18,
+  "sourceTestsFail": 0,
+  "sourceTestsSkipped": 0,
+  "allowedProductFiles": [
+    "app/modules/cert.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs"
+  ],
+  "findings": [
+    {
+      "id": "VRM-318",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "owner": "app/modules/cert.js",
+      "expected": "The recertification target population equals exactly the active (non-retired/non-superseded) current-project shopper roster.",
+      "evidence": {
+        "liveProject": "Cinépolis",
+        "livePeriod": "NOV 2026",
+        "shoppersActiveRows": 192,
+        "recertDropdownBefore": 193,
+        "extraName": "Milton de Paz",
+        "fullProviderIdentityStateDirectReadback": "NOT_EXPOSED_IN_UI",
+        "sourceMismatchProven": true
+      }
+    }
+  ],
+  "moduleTruthMatches": 5,
+  "devPublished": false,
+  "certificationModuleIntegral": false,
+  "providerWrites": 0,
+  "historicalCertificationsDeleted": 0,
+  "hrWrites": 0,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "production": false
+}
