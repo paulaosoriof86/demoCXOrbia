@@ -9,6 +9,7 @@ import crypto from 'node:crypto';
 import {applicationDefault, getApps, initializeApp} from 'firebase-admin/app';
 import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
+import {getStorage} from 'firebase-admin/storage';
 import {chromium} from 'playwright';
 
 const TENANT='tya', PROGRAM='cinepolis', PROJECT='cxorbia-backend-dev';
@@ -79,6 +80,7 @@ async function probePublishedPdf(auth,member,origin,label){
   let session;
   try{
     session=await signed(auth,member,'shopper',origin);
+    entry.storageBucket=await session.page.evaluate(()=>String(window.firebase?.app?.()?.options?.storageBucket||''));
     const failedFetches=[];
     session.page.on('requestfailed',request=>{
       if(request.url().startsWith('https://firebasestorage.googleapis.com/')){
@@ -153,6 +155,24 @@ async function comparePdfOrigins(auth,members){
   for(const [origin,label] of [[ROOT,'CANONICAL_WEB_APP'],[ALIAS,'FIREBASEAPP_ALIAS']]){
     report.sites.push(await probePublishedPdf(auth,matches[0],origin,label));
   }
+  const bucketNames=report.sites.map(s=>s.storageBucket).filter(Boolean);
+  report.storageCors={decision:'HOLD_NOT_READ'};
+  if(bucketNames.length===2&&bucketNames[0]===bucketNames[1]&&
+      /^cxorbia-backend-dev\.(?:firebasestorage\.app|appspot\.com)$/.test(bucketNames[0])){
+    try{
+      const [metadata]=await getStorage().bucket(bucketNames[0]).getMetadata();
+      const entries=Array.isArray(metadata?.cors)?metadata.cors:[];
+      const allows=(origin)=>entries.some(rule=>Array.isArray(rule.origin)&&
+        rule.origin.includes(origin)&&Array.isArray(rule.method)&&rule.method.includes('GET'));
+      report.storageCors={decision:'PASS_BUCKET_METADATA_READ',bucketFingerprint:fingerprint(bucketNames[0]),
+        corsEntryCount:entries.length,canonicalGetAllowed:allows(ROOT),aliasGetAllowed:allows(ALIAS)};
+    }catch(error){
+      report.storageCors={decision:'HOLD_CORS_READ_PERMISSION_OR_PROVIDER',
+        failureCode:String(error?.code||'')==='403'?'PROVIDER_FAILURE:STORAGE_BUCKET_METADATA_PERMISSION':
+          'PROVIDER_FAILURE:STORAGE_BUCKET_METADATA_READ'};
+    }
+  }
+  for(const site of report.sites)delete site.storageBucket;
   report.decision=report.sites.every(s=>s.status==='PASS_PDF_READ')?
     'PASS_BOTH_ORIGINS_PDF_READ':'HOLD_PDF_ORIGIN_COMPARISON';
   return report;
