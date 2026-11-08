@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_CERT_QA_VOID_SOURCE_ONLY_PENDING_CI_DEV_E2E",
+  "status": "HOLD_I3_CERT_QA_VOID_FOCAL_QA_PASS_PENDING_CANONICAL_CI_DEV_ROLE_E2E",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "e10b1c24e17879872f9030185b988ae7dbac3faa",
   "productTreeAuthority": "b77c7bcab0b7e73b28dbda71b464c2592d4b6634",
   "predecessorProductSourceSha": "6633a68fe34cd24d03696b10e98b6ce1a36e0156",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V596_2026-11-08.json",
-  "findingsLedgerExpectedGitBlob": "5f7f78abc279f79ddb8095f9df07f4eedb4ad059",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V597_2026-11-08.json",
+  "findingsLedgerExpectedGitBlob": "e77a25664f5d75e9f9d75985b833111f75a97fb6",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261108-V283.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "I3_CERT_QA_VOID_BANK_SCOPE_SOURCE_ONLY_PENDING_CI_DEV_AND_REAL_SHOPPER_E2E",
+  "activeBlocker": "VRM319_TEST_ATTEMPT_BANK_SCOPE_SOURCE_ONLY_PENDING_EXACT_DEV_REAL_ADMIN_SHOPPER_ROLE_E2E",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -115,7 +115,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-319",
+  "nextFindingId": "VRM-320",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -20833,13 +20833,19 @@
       "ONE_EXACT_QA_ATTEMPT_ADMIN_AUDITED_VOID",
       "CLIENT_AND_SERVER_REGRESSIONS"
     ],
-    "status": "SOURCE_ONLY_PENDING_CI_DEV_MATERIALIZATION_AND_ROLE_E2E",
+    "status": "SOURCE_FOCAL_TEST_PASS_PENDING_CANONICAL_CI_DEV_E2E",
     "devSourceSha": "6633a68fe34cd24d03696b10e98b6ce1a36e0156",
     "sourceOnlyCommit": "e10b1c24e17879872f9030185b988ae7dbac3faa",
     "previousCiRunId": 42514992856,
     "previousCiFailure": "DESCRIPTOR_PIN_TO_PRIOR_PRODUCT_SOURCE",
     "noLiveWrites": true,
     "production": "DO_NOT_TOUCH",
-    "actualCertificationsUnchanged": true
+    "actualCertificationsUnchanged": true,
+    "sourceProofRunId": 42515429679,
+    "sourceTests": "23_OF_23_PASS_INCLUDING_NESTED_5_OF_5_PROVIDER_TESTS",
+    "sourceProofScope": "MOCKED_PROVIDER_ONLY",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V597_2026-11-08.json",
+    "ledgerGitBlob": "e77a25664f5d75e9f9d75985b833111f75a97fb6",
+    "findingId": "VRM-319"
   }
 }
