@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM318_D06_DEV_MATERIALIZED_PENDING_SHOPPER_E2E",
+  "status": "HOLD_I3_CERT_QA_VOID_SOURCE_ONLY_PENDING_CI_DEV_E2E",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "6633a68fe34cd24d03696b10e98b6ce1a36e0156",
-  "productTreeAuthority": "1da0acf03b838459754c6d41771a11187c856138",
-  "predecessorProductSourceSha": "8583bca14a69d32692b6f7b4f826c9a24d6300e7",
+  "productSourceSha": "e10b1c24e17879872f9030185b988ae7dbac3faa",
+  "productTreeAuthority": "b77c7bcab0b7e73b28dbda71b464c2592d4b6634",
+  "predecessorProductSourceSha": "6633a68fe34cd24d03696b10e98b6ce1a36e0156",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V596_2026-11-08.json",
   "findingsLedgerExpectedGitBlob": "5f7f78abc279f79ddb8095f9df07f4eedb4ad059",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261108-V282.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261108-V283.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "I3_D06_QA_SHOPPER_E2E_AND_C3_21_MODULE_ACTUAL_ACCEPTANCE_PENDING",
+  "activeBlocker": "I3_CERT_QA_VOID_BANK_SCOPE_SOURCE_ONLY_PENDING_CI_DEV_AND_REAL_SHOPPER_E2E",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -3029,7 +3029,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "2439ed682e4cae338aa13551cb3a10260fe28a33",
+  "moduleTruthExpectedGitBlob": "813eceb7b612f82efe481e9f6eee0ff9117107e6",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -8248,7 +8248,7 @@
     "representativeSameArtifact": "PASS_RUN1427",
     "exactB2Ack": "PENDING"
   },
-  "currentMaterializationIsPredecessorOnly": false,
+  "currentMaterializationIsPredecessorOnly": true,
   "i3B2Run1425SourceProof": {
     "runId": 37887175242,
     "runNumber": 1425,
@@ -17412,7 +17412,7 @@
     "qaContinuityGuardState": "V23_INITIAL_CONTROL_FAIL_CORRECTION_PENDING"
   },
   "priorStatusBeforeRootRun2222": "HOLD_VRM309_DEV_MATERIALIZED_ROLE_E2E_PENDING",
-  "nextExactAction": "I3 HOLD / 5 de 21 módulos MATCH. Autoridad viva: fuente 6633a68fe34cd24d03696b10e98b6ce1a36e0156, árbol 1da0acf03b838459754c6d41771a11187c856138; DEV materializado exactamente por RUN2298 (42491298606), Cloud Run cxorbia-live-hr-dev-00366-mfc, Hosting sites/cxorbia-backend-dev/versions/c0fb74eb17337c14, HR 7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636; Admin Shoppers/recert 192/192, sin solicitudes de recertificación ejecutadas. RUN2299 es control de continuidad PASS, no certificación: job certify SKIPPED. Causa estructural P0 MAPPING_FAILURE: el circuito terminal C3/certify/Gate21 conserva contrato histórico 20/20 y no representa la matriz canónica de 21; no habilitar READY ni simular MATCH por reemplazar contadores. Siguiente acción: reparar el propietario exacto del terminal 20→21 con prueba fail-closed y matriz actual; luego ejecutar en DEV sesión QA Shopper aislada (no Damaris) con banco 15Q, ACK durable, recarga/histórico, banco alternativo 8Q y recertificación dirigida solo cuando esté autorizada. En paralelo cubrir D08 progreso y ACK, B10 enlace por proyecto, G03 contraste independiente HR, VRM134 carga fría/caliente, finanzas y los demás contratos I3; registrar aceptación por módulo con actor/rol/revisión antes de promover. Los 40 intentos históricos se preservan y las cohortes de identidad aprobadas mantienen 83/83 sin nueva fusión ni recenso; retiro de bancos de prueba existe en Admin > Requisito y % mínimo, no se ejecutó. Gate20/Gate21 HOLD. Producción DO_NOT_TOUCH; I4 NO autorizado.",
+  "nextExactAction": "I3 HOLD 5/21. P0 fuente e10b1c24e17879872f9030185b988ae7dbac3faa (sin DEV): certificaciones separadas por banco y anulación administrada de UN intento de prueba con acuse/lectura durable; RUN2305 falló exclusivamente por descriptor D05 anclado a fuente previa 6633, no por las 22/22 pruebas del cliente. Sincronizar descriptor+matriz V283+pointer, ejecutar CI de 21 dominios y 23/23 cliente+5/5 backend; materializar exactamente fuente e10b1c24e17879872f9030185b988ae7dbac3faa en DEV si CI PASS, luego E2E Admin/Shopper aislado 15Q/8Q, recertificación, historial, carga, recursos, visitas, finanzas, cliente; no afectar intentos reales ni HR. Mantener I3 HOLD, Gate20/21 HOLD, I4 sin autorización, producción DO_NOT_TOUCH.",
   "i3Nov06SourceOnlyFocal": {
     "sourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
     "predecessorDevSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
@@ -20812,5 +20812,34 @@
       "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62"
     },
     "fullTaskClosed": false
+  },
+  "previousI3CertQaVoidSourceAuthority": {
+    "productSourceSha": "6633a68fe34cd24d03696b10e98b6ce1a36e0156",
+    "productTreeAuthority": "1da0acf03b838459754c6d41771a11187c856138",
+    "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261108-V282.json",
+    "moduleTruthExpectedGitBlob": "2439ed682e4cae338aa13551cb3a10260fe28a33",
+    "status": "HOLD_I3_VRM318_D06_DEV_MATERIALIZED_PENDING_SHOPPER_E2E",
+    "activeBlocker": "I3_D06_QA_SHOPPER_E2E_AND_C3_21_MODULE_ACTUAL_ACCEPTANCE_PENDING"
+  },
+  "previousNextExactActionBeforeQaVoid": "I3 HOLD / 5 de 21 módulos MATCH. Autoridad viva: fuente 6633a68fe34cd24d03696b10e98b6ce1a36e0156, árbol 1da0acf03b838459754c6d41771a11187c856138; DEV materializado exactamente por RUN2298 (42491298606), Cloud Run cxorbia-live-hr-dev-00366-mfc, Hosting sites/cxorbia-backend-dev/versions/c0fb74eb17337c14, HR 7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636; Admin Shoppers/recert 192/192, sin solicitudes de recertificación ejecutadas. RUN2299 es control de continuidad PASS, no certificación: job certify SKIPPED. Causa estructural P0 MAPPING_FAILURE: el circuito terminal C3/certify/Gate21 conserva contrato histórico 20/20 y no representa la matriz canónica de 21; no habilitar READY ni simular MATCH por reemplazar contadores. Siguiente acción: reparar el propietario exacto del terminal 20→21 con prueba fail-closed y matriz actual; luego ejecutar en DEV sesión QA Shopper aislada (no Damaris) con banco 15Q, ACK durable, recarga/histórico, banco alternativo 8Q y recertificación dirigida solo cuando esté autorizada. En paralelo cubrir D08 progreso y ACK, B10 enlace por proyecto, G03 contraste independiente HR, VRM134 carga fría/caliente, finanzas y los demás contratos I3; registrar aceptación por módulo con actor/rol/revisión antes de promover. Los 40 intentos históricos se preservan y las cohortes de identidad aprobadas mantienen 83/83 sin nueva fusión ni recenso; retiro de bancos de prueba existe en Admin > Requisito y % mínimo, no se ejecutó. Gate20/Gate21 HOLD. Producción DO_NOT_TOUCH; I4 NO autorizado.",
+  "i3CertQaVoidAndBankScopeP020261108": {
+    "source": "e10b1c24e17879872f9030185b988ae7dbac3faa",
+    "tree": "b77c7bcab0b7e73b28dbda71b464c2592d4b6634",
+    "predecessorSource": "6633a68fe34cd24d03696b10e98b6ce1a36e0156",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261108-V283.json",
+    "matrixBlob": "813eceb7b612f82efe481e9f6eee0ff9117107e6",
+    "changes": [
+      "BANK_SCOPED_DURABLE_CURRENT",
+      "ONE_EXACT_QA_ATTEMPT_ADMIN_AUDITED_VOID",
+      "CLIENT_AND_SERVER_REGRESSIONS"
+    ],
+    "status": "SOURCE_ONLY_PENDING_CI_DEV_MATERIALIZATION_AND_ROLE_E2E",
+    "devSourceSha": "6633a68fe34cd24d03696b10e98b6ce1a36e0156",
+    "sourceOnlyCommit": "e10b1c24e17879872f9030185b988ae7dbac3faa",
+    "previousCiRunId": 42514992856,
+    "previousCiFailure": "DESCRIPTOR_PIN_TO_PRIOR_PRODUCT_SOURCE",
+    "noLiveWrites": true,
+    "production": "DO_NOT_TOUCH",
+    "actualCertificationsUnchanged": true
   }
 }

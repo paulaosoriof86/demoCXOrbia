@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {webcrypto} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 
 const clientSource=fs.readFileSync(new URL('../../app/core/backend-certifications.js',import.meta.url),'utf8');
 const certSource=fs.readFileSync(new URL('../../app/modules/cert.js',import.meta.url),'utf8');
@@ -381,4 +382,13 @@ test('I3 P0: rejected or mismatched void ACK never locally revokes the prior cer
       confirmation:'ANULAR PRUEBA'}));
     assert.equal(h.cx.backendCertifications.durableCurrent('shopper-one',{}).id,id);
   }
+});
+
+test('I3 P0 backend test-void protocol: five isolated provider scenarios pass before any DEV write',()=>{
+  const backendTest=new URL('../../backend/runtime/hr-live-service/test/certification-attempt-void-test.test.mjs',import.meta.url);
+  const stdout=execFileSync(process.execPath,[backendTest.pathname],{encoding:'utf8',
+    timeout:30000,maxBuffer:1024*1024});
+  assert.match(stdout,/^# tests 5$/m);
+  assert.match(stdout,/^# pass 5$/m);
+  assert.match(stdout,/^# fail 0$/m);
 });
