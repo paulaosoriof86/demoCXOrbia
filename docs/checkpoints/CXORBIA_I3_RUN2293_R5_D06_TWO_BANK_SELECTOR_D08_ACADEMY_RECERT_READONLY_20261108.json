@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "cxorbia.i3.d06-d08-authentic-browser-readonly-scoped.v1",
+  "observedAt": "2026-11-08T06:11:07.082Z",
+  "localDate": "2026-11-08",
+  "iteration": "I3",
+  "status": "PASS_SCOPED_BROWSER_READONLY__INTEGRAL_HOLD",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadBefore": "2733e9a9314d8aaaca8a5c327feb9b448111cdd0",
+  "productSource": {
+    "sha": "e79cc3ccc73293c29e53e9ec6880638154b5143e",
+    "tree": "e7c5158b6eff75a6080125bb9c13b6e8621b6e6f"
+  },
+  "devServing": {
+    "run": 2293,
+    "runId": 42451894759,
+    "runtimeRevision": "cxorbia-live-hr-dev-00364-wf9",
+    "runtimeDigest": "sha256:f0661d6dcc82576e3a93c10cd642c951257ddb90c19889b6ae8635673d726989",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/88875326d42f450b",
+    "hrRevisionAtMaterialization": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+    "artifactId": 13605667604
+  },
+  "actors": {
+    "admin": "EXISTING_AUTHENTICATED_ADMIN_SESSION",
+    "shopper": "DAMARIS_DE_LEON_EXISTING_GT_SHOPPER",
+    "roleProof": "EXISTING_COOKIES_FRESH_AGENT_TABS"
+  },
+  "context": {
+    "projectId": "cinepolis",
+    "projectName": "Cinépolis",
+    "period": "NOV_2026",
+    "country": "GT"
+  },
+  "d06Selector": {
+    "result": "PASS_SCOPED",
+    "bankOptionsPublished": 2,
+    "banks": [
+      {
+        "label": "main",
+        "bankPeriod": "2026-10",
+        "status": "Publicado",
+        "questionsRendered": 8,
+        "radioOptionsRendered": 32,
+        "minimumPercent": 80
+      },
+      {
+        "label": "Banco IA pendiente de revisión",
+        "bankPeriod": "2026-10",
+        "status": "Publicado",
+        "questionsRendered": 15,
+        "radioOptionsRendered": 60,
+        "minimumPercent": 80
+      }
+    ],
+    "selectionOrder": "15Q_DEFAULT_TO_8Q_TO_15Q",
+    "attemptSubmitted": false,
+    "answersChosen": false,
+    "examSubmissionAck": "NOT_TESTED"
+  },
+  "d08AcademyContent": {
+    "result": "PASS_SCOPED_READ_ONLY_CONTENT_PARITY",
+    "shopperOwn": {
+      "courses": 7,
+      "lessons": 27,
+      "completedCourses": 0,
+      "completedLessons": 0
+    },
+    "adminFilteredAudienceShopper": {
+      "courses": 7,
+      "lessons": 27
+    },
+    "progressMutation": false,
+    "providerProgressAck": "NOT_TESTED"
+  },
+  "adminRecertificationUi": {
+    "result": "PASS_SCOPED_MODAL_PRESENT_ONLY",
+    "scopeOptions": [
+      "all",
+      "one"
+    ],
+    "reasonOptions": [
+      "instructor_update",
+      "new_period",
+      "expiry",
+      "low_performance"
+    ],
+    "defaultDays": 7,
+    "inAppNotificationOption": true,
+    "requestSubmitted": false,
+    "durableProviderAck": "NOT_TESTED",
+    "staticCodeReadback": "app/modules/cert.js requires backendCertifications.requestRecertification and providerAck&&committed before success; scope-one notification requests durable ACK",
+    "note": "Modal copy mentions local automation log; not proof that recertification persistence is local-only."
+  },
+  "browserLoadObservation": {
+    "classification": "OBSERVATIONAL_ONLY_NOT_PERFORMANCE_CERTIFICATION",
+    "freshTwoTabsConcurrentNavigationApproxMs": 8482,
+    "adminStillValidatingHrAtFirstSnapshot": true,
+    "subsequentAdminVisibleAfterAdditionalApproxMs": 3472,
+    "p95Certified": false
+  },
+  "constraints": {
+    "productFilesChanged": 0,
+    "codeChanges": 0,
+    "bankWrites": 0,
+    "certificationAttemptsWritten": 0,
+    "recertificationRequestsWritten": 0,
+    "academyProgressWrites": 0,
+    "hrWrites": 0,
+    "financeWrites": 0,
+    "productionWrites": 0,
+    "production": "DO_NOT_TOUCH"
+  },
+  "moduleTruth": {
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V277.json",
+    "matchingBefore": 5,
+    "matchingAfter": 5,
+    "total": 21,
+    "certificationsIntegralPass": false,
+    "persistenceIntegralPass": false
+  },
+  "limits": "DOM and source readback observed by assistant using authentic sessions, not independent Paula human visual acceptance; no original browser screenshot artifact retained.",
+  "nextExactAction": "Use explicitly isolated QA-only shopper identity for eligible 15Q attempt durable ACK, fresh login/reload/history and recertification; prove D08 own-learner progress provider ACK with a separate role/session; obtain exact human integral acceptance before promoting any domain to MATCH.",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "phaseAComplete": false,
+  "authorizationI4": false
+}
