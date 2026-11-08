@@ -19,8 +19,12 @@ const providerValidation=validateProjectPayload({
 
 const checks={
   projectUiGeneralUrl:projects.includes('id="cf_cueUrl"'),
-  projectSaveGeneralUrl:projects.includes("url:cueMode==='externo_general'?cueUrl:''"),
-  visitSpecificHasNoGeneralFallback:projects.includes("visitLinkField:cueMode==='externo_visita'"),
+  projectSaveGeneralUrl:
+    projects.includes("next.cuestionario.url=cueGeneralMode(cueMode)?cueUrl:''")&&
+    projects.includes("else if(cueGeneralMode(cueMode))next.cuestionario.url=cueUrl;"),
+  visitSpecificHasNoGeneralFallback:
+    projects.includes("next.cuestionario.visitLinkField=(cueMode==='externo_visita'||cueMode==='link')?")&&
+    projects.includes("else if(cueMode==='externo_visita'||cueMode==='link')next.cuestionario.url='';"),
   runtimeSafeProjectConfigCarriesQuestionnaire:server.includes("SAFE_PROJECT_CONFIG_KEYS")&&server.includes("'cuestionario'"),
   // B10 external source authority is resolved per project before period composition.
   // The historical inline expression was superseded by fail-closed B10 logic.
@@ -42,3 +46,4 @@ const failed=Object.entries(checks).filter(([,ok])=>!ok).map(([k])=>k);
 const decision=failed.length?'FAIL_PREI4_PROJECT_QUESTIONNAIRE_CONFIG_SOURCE':'PASS_PREI4_PROJECT_QUESTIONNAIRE_CONFIG_SOURCE';
 console.log(JSON.stringify({decision,checks,failed,providerValidation,writes:0,deploys:0,production:false},null,2));
 if(failed.length)process.exit(1);
+

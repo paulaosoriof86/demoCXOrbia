@@ -170,6 +170,7 @@ CX.module('proyectos', ({data,ui})=>{
                next.cuestionario.url=cueGeneralMode(cueMode)?cueUrl:'';
                next.cuestionario.visitLinkField=(cueMode==='externo_visita'||cueMode==='link')?(cueOriginal.visitLinkField||(pr.operationalSource||{}).visitLinkField||'questionnaireLink'):null;
              }else if(cueGeneralMode(cueMode))next.cuestionario.url=cueUrl;
+             else if(cueMode==='externo_visita'||cueMode==='link')next.cuestionario.url='';
             next.contactos=Object.assign({},pr.contactos||{}); ov.querySelectorAll('.cf_contacto').forEach(i=>{next.contactos[i.dataset.ck]=i.value.trim();});
             const external=next.hrFuente.origen==='externa';
             const currentSource=pr.operationalSource||{};

@@ -173,3 +173,12 @@ test('B10 Admin: authorized internal project remains configurable as internal',a
   assert.equal(cfg.pr.cuestionario.modo,'interna');
 });
 
+test('B10 Admin: per-visit mode retains HR field and removes unrelated general URL',async()=>{
+  const cfg=adminProjectConfig({modo:'externo_visita',url:'https://fixture.test/wrong-global',visitLinkField:'hrQuestionnaireLink'});
+  assert.equal(cfg.selected,'externo_visita');
+  await cfg.save();
+  assert.equal(cfg.pr.cuestionario.modo,'externo_visita');
+  assert.equal(cfg.pr.cuestionario.url,'');
+  assert.equal(cfg.pr.cuestionario.visitLinkField,'hrQuestionnaireLink');
+});
+
