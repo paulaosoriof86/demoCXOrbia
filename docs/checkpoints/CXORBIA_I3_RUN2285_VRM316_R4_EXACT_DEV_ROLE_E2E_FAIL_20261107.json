@@ -99,7 +99,8 @@
     "humanAcceptance": "FAIL_REQUIRED_POLICY_DAMARIS_SHOPPER_ADMIN_DRIFT",
     "fullTaskClosed": false,
     "hrWrites": 0,
-    "firestoreRulesDeploys": 0
+    "firestoreRulesDeploys": 0,
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62"
   },
   "authenticBrowserReadback": [
     {

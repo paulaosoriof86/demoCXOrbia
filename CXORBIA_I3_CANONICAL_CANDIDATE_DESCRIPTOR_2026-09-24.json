@@ -8,7 +8,7 @@
   "productTreeAuthority": "e7c5158b6eff75a6080125bb9c13b6e8621b6e6f",
   "predecessorProductSourceSha": "959a40504e76b69bb2f175a5afbbcc8591b71964",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V592_2026-11-07.json",
-  "findingsLedgerExpectedGitBlob": "ad9195ba7dd0387efa79eb98e8cd197ce303bcac",
+  "findingsLedgerExpectedGitBlob": "99f1e5d7db2a70a1835e01e17ea78ffda78f7abd",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V277.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -777,7 +777,8 @@
     "humanAcceptance": "FAIL_REQUIRED_POLICY_DAMARIS_SHOPPER_ADMIN_DRIFT",
     "fullTaskClosed": false,
     "hrWrites": 0,
-    "firestoreRulesDeploys": 0
+    "firestoreRulesDeploys": 0,
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62"
   },
   "lastFocalAttempt": {
     "runId": 36198284266,
@@ -3028,7 +3029,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "dfc1147c14394d4e512b489f552a4b1c11e49858",
+  "moduleTruthExpectedGitBlob": "ea97cc1316a1386394c05dcfa6ad9c077208bdb8",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12945,7 +12946,7 @@
     "hrRevision": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
     "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
     "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2285_VRM316_R4_EXACT_DEV_ROLE_E2E_FAIL_20261107.json",
-    "receiptBlob": "9ba0810322316870ff6f826ccd73126c66060d2f",
+    "receiptBlob": "67f631f3f6548627f7950b8032b8ddd9464cc3a1",
     "liveE2e": "FAIL_DAMARIS_SHOPPER_NO_REQUERIDA_WHILE_ADMIN_REQUIRED_R4",
     "humanAcceptance": "VRM316_R5_SOURCE_ONLY_DEV_ROLE_E2E_PENDING_16_MODULES",
     "gate20": "HOLD",
@@ -20346,7 +20347,7 @@
     "state": "P0_PROVEN_PENDING_DEV_MATERIALIZATION",
     "scope": "RUNTIME_AND_HOSTING",
     "proofReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM316_R5_SHOPPER_PROJECTION_REQUIREMENT_SOURCE_PROOF_20261107.json",
-    "proofReceiptBlob": "6c6d118be5b272bebcbe0cb8c06aa84208625236",
+    "proofReceiptBlob": "d520ada01664d5c380c23964fbb6b3af6b4501b2",
     "devPublished": false,
     "production": false,
     "rulesDeploys": 0,
@@ -20378,7 +20379,8 @@
       "humanAcceptance": "FAIL_REQUIRED_POLICY_DAMARIS_SHOPPER_ADMIN_DRIFT",
       "fullTaskClosed": false,
       "hrWrites": 0,
-      "firestoreRulesDeploys": 0
+      "firestoreRulesDeploys": 0,
+      "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62"
     },
     "servingRuntimeSeal": {
       "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
@@ -20395,7 +20397,7 @@
       "hrRevision": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
       "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
       "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2285_VRM316_R4_EXACT_DEV_ROLE_E2E_FAIL_20261107.json",
-      "receiptBlob": "9ba0810322316870ff6f826ccd73126c66060d2f",
+      "receiptBlob": "67f631f3f6548627f7950b8032b8ddd9464cc3a1",
       "liveE2e": "FAIL_DAMARIS_SHOPPER_NO_REQUERIDA_WHILE_ADMIN_REQUIRED_R4",
       "humanAcceptance": "VRM316_R5_SOURCE_ONLY_DEV_ROLE_E2E_PENDING_16_MODULES",
       "gate20": "HOLD",
@@ -20582,11 +20584,11 @@
     "sourceSha": "e79cc3ccc73293c29e53e9ec6880638154b5143e",
     "sourceTree": "e7c5158b6eff75a6080125bb9c13b6e8621b6e6f",
     "proofPath": "docs/checkpoints/CXORBIA_I3_VRM316_R5_SHOPPER_PROJECTION_REQUIREMENT_SOURCE_PROOF_20261107.json",
-    "proofBlob": "6c6d118be5b272bebcbe0cb8c06aa84208625236",
+    "proofBlob": "d520ada01664d5c380c23964fbb6b3af6b4501b2",
     "scopePath": "docs/checkpoints/CXORBIA_I3_VRM316_R5_SHOPPER_PROJECTION_REQUIREMENT_SCOPE_20261107.json",
     "scopeBlob": "d4aa6122cb39eb3879aae08b08a0575727179088",
     "priorDevReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2285_VRM316_R4_EXACT_DEV_ROLE_E2E_FAIL_20261107.json",
-    "priorDevReceiptBlob": "9ba0810322316870ff6f826ccd73126c66060d2f",
+    "priorDevReceiptBlob": "67f631f3f6548627f7950b8032b8ddd9464cc3a1",
     "tests": "PASS_5_0",
     "production": false
   }
