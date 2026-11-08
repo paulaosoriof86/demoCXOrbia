@@ -21,7 +21,7 @@
   "sourceTestsFail": 0,
   "sourceTestsSkipped": 0,
   "redRegression": {
-    "exactLive": "RUN2285_R4_AUTHENTIC_DAMARIS_CERT_COMPLETED_AND_NO_REQUERIDA",
+    "exactLive": "RUN2285_R4_AUTHENTIC_DAMARIS_CERT_COMPLETED_NO_REQUERIDA_REAL_DEV",
     "newTests": "5_IN_MEMORY_SERVER_RUNTIME_PASS_AND_UNIT_REGRESSION_ADDED"
   },
   "allowedProductFiles": [
@@ -42,7 +42,7 @@
   ],
   "scopeReceiptBlob": "d4aa6122cb39eb3879aae08b08a0575727179088",
   "priorDevReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2285_VRM316_R4_EXACT_DEV_ROLE_E2E_FAIL_20261107.json",
-  "priorDevReceiptBlob": "0442605bde9d4b6dd2d7907566e61e3785674568",
+  "priorDevReceiptBlob": "9ba0810322316870ff6f826ccd73126c66060d2f",
   "sourceBlob": "716bfb8dbcd5c2a2ae6a2c96ec397e78d3bbd743",
   "testBlob": "d87d7d17d0e3dbe358dfad5c10bf6258df84ffde",
   "sourceBlobs": {

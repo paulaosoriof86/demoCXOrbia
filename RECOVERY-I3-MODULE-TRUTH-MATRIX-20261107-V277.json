@@ -111,7 +111,7 @@
     "message": "RUN2285 DEV PASS but real role E2E FAIL: Shopper projected optional on unspecified legacy bank; R5 restores Admin mandatory default.",
     "production": false,
     "sourceProofReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM316_R5_SHOPPER_PROJECTION_REQUIREMENT_SOURCE_PROOF_20261107.json",
-    "sourceProofReceiptBlob": "d72b76e0bba52c4b395fb68bdedf489f21642824"
+    "sourceProofReceiptBlob": "6c6d118be5b272bebcbe0cb8c06aa84208625236"
   },
   "controlHeadAtConstruction": "b2a483f096b549f8304707baf2ad6191a183960f",
   "phaseAComplete": false,
@@ -21035,9 +21035,9 @@
     "scopePath": "docs/checkpoints/CXORBIA_I3_VRM316_R5_SHOPPER_PROJECTION_REQUIREMENT_SCOPE_20261107.json",
     "scopeBlob": "d4aa6122cb39eb3879aae08b08a0575727179088",
     "proofPath": "docs/checkpoints/CXORBIA_I3_VRM316_R5_SHOPPER_PROJECTION_REQUIREMENT_SOURCE_PROOF_20261107.json",
-    "proofBlob": "d72b76e0bba52c4b395fb68bdedf489f21642824",
+    "proofBlob": "6c6d118be5b272bebcbe0cb8c06aa84208625236",
     "priorDevReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2285_VRM316_R4_EXACT_DEV_ROLE_E2E_FAIL_20261107.json",
-    "priorDevReceiptBlob": "0442605bde9d4b6dd2d7907566e61e3785674568",
+    "priorDevReceiptBlob": "9ba0810322316870ff6f826ccd73126c66060d2f",
     "sourceTestsPass": 5,
     "sourceTestsFail": 0,
     "priorDevFalseCompletion": true,

@@ -14,9 +14,9 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "e79cc3ccc73293c29e53e9ec6880638154b5143e",
-    "sourceTree": "e7c5158b6eff75a6080125bb9c13b6e8621b6e6f",
-    "predecessorSha": "959a40504e76b69bb2f175a5afbbcc8591b71964",
+    "sourceSha": "959a40504e76b69bb2f175a5afbbcc8591b71964",
+    "sourceTree": "13fdb8cda4137b54cd64cd4a21219bca01df1014",
+    "predecessorSha": "c70352004ab580274656a80d69bb166c4da8ed9f",
     "production": false,
     "state": "SOURCE_ONLY_PROVEN_PENDING_RUNTIME_AND_HOSTING_DEV",
     "november2026AutomaticPeriodSourceProof": {
@@ -546,7 +546,7 @@
       "octoberOperationalClosure": "PENDING_11_UNSUBMITTED_1_NOT_REALIZED",
       "production": false
     },
-    "devMaterialization": "PENDING_RUN2288_R5",
+    "devMaterialization": "PENDING_ONE_COMBINED_SUCCESSOR_PUBLICATION_RUN2259_PREDECESSOR_SERVING",
     "previousProofBeforeVrm134Scheduler": {
       "path": "docs/checkpoints/CXORBIA_I3_D07_C04_C05_SOURCE_SUCCESSOR_20261030.json",
       "sourceSha": "4190089d813bd23948ac7f4f75b772b6727f3923",
@@ -22301,7 +22301,7 @@
       },
       "sourceProof": {
         "path": "docs/checkpoints/CXORBIA_I3_VRM316_R5_SHOPPER_PROJECTION_REQUIREMENT_SOURCE_PROOF_20261107.json",
-        "gitBlob": "d72b76e0bba52c4b395fb68bdedf489f21642824"
+        "gitBlob": "6c6d118be5b272bebcbe0cb8c06aa84208625236"
       },
       "humanAcceptance": "PENDING_R5_SAME_ACTOR_DEV_E2E",
       "production": false,
@@ -41842,9 +41842,9 @@
     "scopePath": "docs/checkpoints/CXORBIA_I3_VRM316_R5_SHOPPER_PROJECTION_REQUIREMENT_SCOPE_20261107.json",
     "scopeBlob": "d4aa6122cb39eb3879aae08b08a0575727179088",
     "proofPath": "docs/checkpoints/CXORBIA_I3_VRM316_R5_SHOPPER_PROJECTION_REQUIREMENT_SOURCE_PROOF_20261107.json",
-    "proofBlob": "d72b76e0bba52c4b395fb68bdedf489f21642824",
+    "proofBlob": "6c6d118be5b272bebcbe0cb8c06aa84208625236",
     "priorDevReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2285_VRM316_R4_EXACT_DEV_ROLE_E2E_FAIL_20261107.json",
-    "priorDevReceiptBlob": "0442605bde9d4b6dd2d7907566e61e3785674568",
+    "priorDevReceiptBlob": "9ba0810322316870ff6f826ccd73126c66060d2f",
     "sourceTestsPass": 5,
     "sourceTestsFail": 0,
     "priorDevFalseCompletion": true,
