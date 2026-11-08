@@ -117,3 +117,14 @@ test('VRM312 generic project PDF survives period changes without relying on its 
   assert.equal(shopperResourceProjection({...material,storagePath:'tenants/other/projects/cinepolis/periods/cinepolis-2026-10/resources/material/file.pdf'},next),null);
   assert.equal(shopperResourceProjection({...material,status:'deleted'},next),null);
 });
+
+
+test('VRM316 R5 shopper projection preserves Admin requirement defaults across periods',()=>{
+  const legacy=bank('legacy-unset');
+  assert.equal(legacy.bank.required,undefined);
+  assert.equal(shopperResourceProjection(legacy,scope).bank.required,true);
+  assert.equal(shopperResourceProjection({...legacy,bank:{...legacy.bank,required:true}},scope).bank.required,true);
+  assert.equal(shopperResourceProjection({...legacy,bank:{...legacy.bank,required:false}},scope).bank.required,false);
+  const next={...scope,periodId:'cinepolis-2026-11'};
+  assert.equal(shopperResourceProjection(legacy,next).bank.required,true);
+});
