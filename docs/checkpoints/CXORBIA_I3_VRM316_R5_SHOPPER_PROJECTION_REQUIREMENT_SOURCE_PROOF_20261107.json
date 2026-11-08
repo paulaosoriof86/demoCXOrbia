@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-proven-source-proof.v1",
+  "observedAt": "2026-11-08T05:29:17.853Z",
+  "findingId": "VRM-316",
+  "classification": "MAPPING_FAILURE",
+  "sourceSha": "e79cc3ccc73293c29e53e9ec6880638154b5143e",
+  "sourceTree": "e7c5158b6eff75a6080125bb9c13b6e8621b6e6f",
+  "predecessorSha": "959a40504e76b69bb2f175a5afbbcc8591b71964",
+  "changedFileGitBlobs": {
+    "backend/runtime/hr-live-service/certification-runtime.mjs": "716bfb8dbcd5c2a2ae6a2c96ec397e78d3bbd743",
+    "backend/runtime/hr-live-service/test/certification-shopper-projection.test.mjs": "d87d7d17d0e3dbe358dfad5c10bf6258df84ffde"
+  },
+  "sourceTests": "PASS_5_OF_5_RUNTIME_PROJECTION",
+  "syntax": "PASS_NODE_DYNAMIC_IMPORT_RUNTIME_CHECK",
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM316_R5_SHOPPER_PROJECTION_REQUIREMENT_SCOPE_20261107.json",
+  "decision": "SOURCE_ONLY_R5_PROVEN_PENDING_CANONICAL_CI_DEV_E2E",
+  "fullModuleCertified": false,
+  "production": false,
+  "predecessorProductSourceSha": "959a40504e76b69bb2f175a5afbbcc8591b71964",
+  "sourceTestsPass": 5,
+  "sourceTestsFail": 0,
+  "sourceTestsSkipped": 0,
+  "redRegression": {
+    "exactLive": "RUN2285_R4_AUTHENTIC_DAMARIS_CERT_COMPLETED_AND_NO_REQUERIDA",
+    "newTests": "5_IN_MEMORY_SERVER_RUNTIME_PASS_AND_UNIT_REGRESSION_ADDED"
+  },
+  "allowedProductFiles": [
+    "backend/runtime/hr-live-service/certification-runtime.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/certification-shopper-projection.test.mjs"
+  ],
+  "findings": [
+    {
+      "id": "VRM-316",
+      "priority": "P0_PROVEN",
+      "classification": "MAPPING_FAILURE",
+      "owner": "backend/runtime/hr-live-service/certification-runtime.mjs",
+      "expected": "Requirement projection preserves Admin semantics: omitted required => mandatory; explicit false => optional; no answer key.",
+      "evidence": "RUN2285 exact R4 DEV technical success but authenticated Damaris Shopper Mi Día 3/8 + Mis Visitas no requerida, Admin 15Q and 8Q required. Source sets required: bank.required===true."
+    }
+  ],
+  "scopeReceiptBlob": "d4aa6122cb39eb3879aae08b08a0575727179088",
+  "priorDevReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2285_VRM316_R4_EXACT_DEV_ROLE_E2E_FAIL_20261107.json",
+  "priorDevReceiptBlob": "0442605bde9d4b6dd2d7907566e61e3785674568",
+  "sourceBlob": "716bfb8dbcd5c2a2ae6a2c96ec397e78d3bbd743",
+  "testBlob": "d87d7d17d0e3dbe358dfad5c10bf6258df84ffde",
+  "sourceBlobs": {
+    "backend/runtime/hr-live-service/certification-runtime.mjs": "716bfb8dbcd5c2a2ae6a2c96ec397e78d3bbd743",
+    "backend/runtime/hr-live-service/test/certification-shopper-projection.test.mjs": "d87d7d17d0e3dbe358dfad5c10bf6258df84ffde"
+  },
+  "devPublished": false,
+  "noRulesChanges": true,
+  "hrWrites": 0,
+  "questionnaireSubmissions": 0,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "status": "P0_PROVEN_SOURCE_ONLY"
+}

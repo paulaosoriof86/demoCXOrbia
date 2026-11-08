@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-proven-scope.v1",
+  "observedAt": "2026-11-08T05:29:09.040Z",
+  "findingId": "VRM-316",
+  "classification": "MAPPING_FAILURE",
+  "predecessorSourceSha": "959a40504e76b69bb2f175a5afbbcc8591b71964",
+  "successorSourceSha": "e79cc3ccc73293c29e53e9ec6880638154b5143e",
+  "sourceTree": "e7c5158b6eff75a6080125bb9c13b6e8621b6e6f",
+  "exactOwnerFiles": [
+    "backend/runtime/hr-live-service/certification-runtime.mjs"
+  ],
+  "exactQaFiles": [
+    "backend/runtime/hr-live-service/test/certification-shopper-projection.test.mjs"
+  ],
+  "rootCause": "Shopper's authenticated server projection collapses unspecified legacy certification requirement to false; Admin honors unspecified as mandatory.",
+  "sourceContracts": [
+    "No policy downgrade from undefined to false while redacting Shopper questions",
+    "Explicit false remains optional",
+    "Explicit true and unspecified remain mandatory",
+    "No answer key or source secret in Shopper projection",
+    "No cross-project or period leak"
+  ],
+  "tests": {
+    "pass": 5,
+    "fail": 0
+  },
+  "redEvidence": "AUTHENTIC_RUN2285_SHOPPER_ADMIN_POLICY_DRIFT",
+  "state": "P0_PROVEN_R5_SOURCE_ONLY_PENDING_CANONICAL_CI_DEV",
+  "authorization": "DEV_ALLOWED_PRODUCTION_DO_NOT_TOUCH",
+  "production": false,
+  "dateLocal": "2026-11-07",
+  "priority": "P0_PROVEN",
+  "predecessorProductSourceSha": "959a40504e76b69bb2f175a5afbbcc8591b71964",
+  "sourceSha": "e79cc3ccc73293c29e53e9ec6880638154b5143e",
+  "allowedProductFiles": [
+    "backend/runtime/hr-live-service/certification-runtime.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/certification-shopper-projection.test.mjs"
+  ],
+  "symptom": "RUN2285 R4 exact DEV technical PASS but Shopper Mi Día 3/8 certified and Mis Visitas no requerida, Admin Requisito activo Sí and checkbox checked.",
+  "redGreen": {
+    "authenticR4": "FAIL_3_OF_8_NO_REQUERIDA",
+    "localR5": "5_PASS_0_FAIL_RUNTIME_PROJECTION"
+  },
+  "expected": [
+    "Admin and Shopper agree on legacy bank default mandatory",
+    "Only explicit false disables requirement",
+    "Damaris pending until durable project-specific approval"
+  ],
+  "sourceTests": {
+    "pass": 5,
+    "fail": 0
+  },
+  "lastTechnicalDevSourceSha": "959a40504e76b69bb2f175a5afbbcc8591b71964",
+  "lastTechnicalDevReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2285_VRM316_R4_EXACT_DEV_ROLE_E2E_FAIL_20261107.json",
+  "devPublished": false,
+  "hrWrites": 0,
+  "questionnaireSubmissions": 0,
+  "gate20": "HOLD",
+  "gate21": "HOLD"
+}

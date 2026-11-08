@@ -215,7 +215,10 @@ export function shopperResourceProjection(input={},scope={}){
       visibleRoles:['shopper'],targetAll:false,version:Number(row.version||0),n:str(row.n||bank.certificationName),
       bank:{estado:state,certificationId:str(bank.certificationId||'main'),
         certificationName:str(bank.certificationName||bank.name),name:str(bank.name||bank.certificationName),
-        contentRevision:str(bank.contentRevision),gate:Number(bank.gate||80),required:bank.required===true,
+        contentRevision:str(bank.contentRevision),gate:Number(bank.gate||80),
+        // Historical banks without an explicit flag are mandatory, as in Admin.
+        // Only a durable, explicit false disables the requirement for Shopper.
+        required:bank.required!==false,
         requestedQuestionCount:preguntas.length,
         preguntas:preguntas.map(q=>({q:str(q.q),ops:arr(q.ops).map(str)}))}
     };

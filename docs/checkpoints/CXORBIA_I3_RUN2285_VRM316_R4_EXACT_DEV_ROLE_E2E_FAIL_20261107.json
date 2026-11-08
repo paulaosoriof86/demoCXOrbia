@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "cxorbia.i3.exact-dev-role-e2e.v1",
+  "observedAt": "2026-11-08T05:28:58.196Z",
+  "localDate": "2026-11-07",
+  "iteration": "I3",
+  "state": "HOLD",
+  "findingId": "VRM-316",
+  "classification": "MAPPING_FAILURE",
+  "runNumber": 2285,
+  "runId": 42450152334,
+  "jobId": 128637542687,
+  "artifactId": 13605635947,
+  "artifactZipSha256": "d1549f3735a4c3e6538de9209edb6d70a4f71300bfa63a34bcf40b5279bd3913",
+  "exactDevResult": {
+    "builds": 1,
+    "decision": "PASS_VRM316_CERT_CARRYOVER_EXACT_DEV_MATERIALIZATION",
+    "hostingDeploys": 1,
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794115250310000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/7b443896f2bcd0b5",
+    "hrRevision": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+    "production": false,
+    "runtimeDeploys": 1,
+    "runtimeDigest": "sha256:7e9eeff7665b51a1a2596867602a4291c57a9b549df8b12d2a9188ea6f0389b1",
+    "runtimeRevision": "cxorbia-live-hr-dev-00363-27d",
+    "scenarioDimensionsProven": true,
+    "sourceSha": "959a40504e76b69bb2f175a5afbbcc8591b71964",
+    "sourceTree": "13fdb8cda4137b54cd64cd4a21219bca01df1014",
+    "storageRulesDeploys": 0
+  },
+  "technicalDev": "PASS",
+  "realBrowserE2E": "FAIL",
+  "actor": "Damaris de León",
+  "role": "Shopper",
+  "project": "Cinépolis",
+  "period": "NOV 2026",
+  "checks": [
+    {
+      "surface": "Mi Día",
+      "observed": "3/8 completed, Certificación del proyecto Completado",
+      "expected": "2/8, Certificación Pendiente"
+    },
+    {
+      "surface": "Mis Visitas",
+      "observed": "C. Portales Certificación no requerida, cert step checked",
+      "expected": "Certificarme/pending"
+    },
+    {
+      "surface": "Certificación Shopper",
+      "observed": "Two published Oct 2026 banks 15Q/8Q available, no attempt submitted"
+    },
+    {
+      "surface": "Admin Certificación fresh",
+      "observed": "15Q and main 8Q published; Requisito activo Sí; main policy checkbox checked 80%"
+    }
+  ],
+  "rootCauseSource": "backend/runtime/hr-live-service/certification-runtime.mjs shopperResourceProjection maps required:bank.required===true, converting unspecified legacy bank policy to false although Admin interprets unspecified as mandatory (bank.required===false ? unchecked : checked).",
+  "scope": "CERT_POLICY_PROJECTION_ONLY",
+  "dataMutation": 0,
+  "hrWrites": 0,
+  "certificationAttempts": 0,
+  "questionnaireSubmissions": 0,
+  "prodChanges": 0,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "phaseAComplete": false,
+  "integralModules": {
+    "match": 5,
+    "total": 21
+  },
+  "next": "R5 fix server policy projection and repeat exact DEV authenticated Shopper/Admin E2E; no release to production."
+}
