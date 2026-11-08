@@ -183,11 +183,11 @@ CX.module('rutas', ({data,ui})=>{
   const row=(r)=>`<tr>
     <td style="font-size:11px;color:var(--t3)">${r.extId}</td>
     <td><b style="font-size:12.5px">${r.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(r.pais)} ${r.ciudad} · ${r.quincena} · ${r.escenario}</div></td>
-    <td>${canonicalHr?`<span>${escapeHtml((r.fecha||'').slice(0,10))||'—'}</span>`:`<input class="inp hrF" data-id="${r.extId}" type="date" value="${(r.fecha||'').slice(0,10)}" style="padding:5px 7px;width:140px">`}</td>
+    ${canonicalHr?`<td>${escapeHtml((r.disponibleDesde||'').slice(0,10))||'—'}</td><td>${escapeHtml((r.fechaProgramada||'').slice(0,10))||'—'}</td>`:`<td><input class="inp hrF" data-id="${r.extId}" type="date" value="${(r.fecha||'').slice(0,10)}" style="padding:5px 7px;width:140px"></td>`}
     <td>${canonicalHr?`<span>${Number(r.reembolso||0)}</span>`:`<input class="inp hrR" data-id="${r.extId}" type="number" value="${r.reembolso||0}" style="padding:5px 7px;width:84px">`}</td>
     <td style="font-size:12px">${r.shopper||'<span class="muted">—</span>'}</td>
-    <td>${r.origen==='hr'?ui.bdg('Alta en HR','t'):ui.bdg('Plataforma','n')}</td>
-    <td>${flag(r)}</td>
+    <td>${canonicalHr?ui.bdg(online?'HR externa':'Fuente interna','t'):(r.origen==='hr'?ui.bdg('Alta en HR','t'):ui.bdg('Plataforma','n'))}</td>
+    <td>${canonicalHr?ui.bdg(sourceRevision?'Revisión publicada':'Revisión no verificada',sourceRevision?'g':'a'):flag(r)}</td>
   </tr>`;
 
   const syncBar = canonicalHr ? `
@@ -220,7 +220,7 @@ CX.module('rutas', ({data,ui})=>{
     ${syncBar}
     <div class="card card-p">
       <div class="card-h"><div class="card-t">Filas de la hoja de ruta</div><span class="bdg bdg-b">${rows.length} paradas</span></div>
-      <table class="tbl"><thead><tr><th>ID</th><th>Sucursal</th><th>Fecha</th><th>Reembolso</th><th>Shopper</th><th>Origen</th><th>Estado sync</th></tr></thead>
+      <table class="tbl"><thead><tr><th>ID</th><th>Sucursal</th>${canonicalHr?'<th>Disponible desde</th><th>Fecha programada</th>':'<th>Fecha</th>'}<th>Reembolso</th><th>Shopper</th><th>Origen</th><th>Estado sync</th></tr></thead>
       <tbody>${rows.map(row).join('')}</tbody></table>
       <div style="margin-top:14px">${ui.aiBox(canonicalHr?'Datos provenientes de la revisión HR publicada. Aquí no se edita, refresca ni confirma escritura a la hoja externa; la autoridad de cambios requiere ACK del proveedor.':'Una sola fuente de verdad: edita fechas y reembolsos aquí o en la hoja externa; la plataforma se mantiene sincronizada y no duplica visitas (match por ID de fila).','HR viva, sin Excel paralelo')}</div>
     </div>`;

@@ -21,6 +21,11 @@ window.CX = window.CX || {};
     _canonical(){return CX.cxDataCommandBoundary?.canonicalMode?.()===true;},
     fuente(p){
       if(this._canonical()){
+        // El readback operacional publicado y el formulario de registro/preview
+        // usan canales diferentes. No degradar una HR verificada por un endpoint
+        // administrativo aún no configurado.
+        if(CX.hrSource?.operationalReadback?.(CX.data?.currentProjectId)?.verified===true)
+          return 'Fuente externa · HR operacional verificada';
         const project=CX.data?.project?.()||{},src=project.operationalSource||project.routeSource||{},binding=src.providerBindingId||src.integrationSettingId||src.providerRef||'';
         if(src.mode==='internal')return 'Fuente interna del proyecto';
         return binding?((src.providerType||'Proveedor externo')+' · vínculo seguro'):'Fuente externa · pendiente de vínculo seguro';
@@ -45,7 +50,13 @@ window.CX = window.CX || {};
         return live.filter(v=>!p||!CX.data?.recordPeriodId||CX.data.recordPeriodId(v)===p.id).map((v,i)=>({
           extId:v.hrRowId||v.extId||('HR-LIVE-'+String(i+1).padStart(3,'0')),visitId:v.visitId||v.id||null,
           sucursal:v.sucursal||'',ciudad:v.ciudad||'',pais:v.pais||v.country||'',quincena:v.quincena||'',escenario:v.escenario||'',
-          fecha:v.agendada||v.fecha||v.disponibleDesde||'',honorario:v.honorario??null,reembolso:(Number(v.boleto||0)+Number(v.comboAmt||0)),
+          // P (programada) y O (disponible desde) son conceptos distintos en
+          // la HR. Mantener `fecha` por compatibilidad; la vista Admin muestra
+          // ambas con su etiqueta, sin convertir O en una cita agendada.
+          fecha:v.agendada||v.fecha||v.disponibleDesde||'',
+          fechaProgramada:v.agendada||v.scheduledDate||'',
+          disponibleDesde:v.disponibleDesde||v.availableFrom||'',
+          honorario:v.honorario??null,reembolso:(Number(v.boleto||0)+Number(v.comboAmt||0)),
           shopper:v.shopper||v.shopperName||'',estado:v.estado||v.operationalState||'',origen:'hr_live',sourceRevision:v.sourceRevision||CX.data.__liveHrSourceRevision||null
         }));
       }
