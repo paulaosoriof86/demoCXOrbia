@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm316.r2.affirmative-carryover.source-proof.v1",
+  "sourceSha": "2dc7e4ee49dd2ed97ff7dad0dce2096d9dc6b97e",
+  "sourceTree": "12c2d95cfc28c0176e1226b3154d12e3eb0a81e9",
+  "predecessorProductSourceSha": "c794fcbd4c7fde5629ba582ede054d0560b26379",
+  "sourceTestsPass": 10,
+  "sourceTestsFail": 0,
+  "sourceTestsSkipped": 0,
+  "redRegression": {
+    "predecessorSourceSha": "c794fcbd4c7fde5629ba582ede054d0560b26379",
+    "testsPassed": 9,
+    "testsFailed": 1,
+    "newNegativeCase": "Unreviewed legacy approved without explicit current affirmative flags"
+  },
+  "allowedProductFiles": [
+    "app/core/backend-certifications.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs"
+  ],
+  "findings": [
+    {
+      "id": "VRM-316",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "owner": "app/core/backend-certifications.js",
+      "expected": "Only carryoverConfirmed:true, eligibilityGranted:true and currentCertification:true with reviewRequired!=true and project scope may grant current historical certification. Valid durable server-approved passes survive.",
+      "evidence": "RUN2278 DEV exact source c794 still displayed Shopper ✓ Certificación vigente after reload; source carryoverDecision still granted from a bare sourceLegacyStatus approved without any positive adjudication flags."
+    }
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM316_R2_AFFIRMATIVE_CARRYOVER_SCOPE_20261107.json",
+  "scopeReceiptBlob": "02c827ad87ac217737d184ffdc4740422327bf9e",
+  "priorDevReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2278_VRM316_EXACT_DEV_E2E_FAIL_20261107.json",
+  "priorDevReceiptBlob": "8f798c513b3f261e9206b4131ba0cb472f6074b0",
+  "sourceBlob": "ece910a19cc667899abbb6fdd3483a50ad0c0af8",
+  "testBlob": "b2484e1e43c4a0f4b18aeb1a9a6902137f323384",
+  "production": false,
+  "devPublished": false,
+  "noRulesChanges": true,
+  "hrWrites": 0,
+  "questionnaireSubmissions": 0,
+  "gate20": "HOLD",
+  "gate21": "HOLD"
+}
