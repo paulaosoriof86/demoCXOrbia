@@ -96,6 +96,65 @@ test('VRM312 explicit expiration or later recertification changes eligibility wh
   assert.equal(h.cx.backendCertifications.attemptHistory('shopper-one').length,1);
 });
 
+test('D06 QA turnover: retired bank plus scoped recertification permits a new attempt without erasing the old one',()=>{
+  const prior=attempt({id:'qa-old-pass',pass:true,score:100,createdAt:'2026-11-06T10:00:00Z'});
+  const oldBank={id:bankId,periodId:OCT,status:'active',version:3,
+    bank:{estado:'published',certificationId:'qa-old',contentRevision:'qa-old-revision',required:true,
+      preguntas:[{q:'Old QA question',ops:['A','B']}]}};
+  const newBankId='certbank-project-a-'+NOV+'-qa-new';
+  const replacement={id:newBankId,periodId:NOV,status:'active',version:1,
+    bank:{estado:'published',certificationId:'qa-new',contentRevision:'qa-new-revision',required:true,
+      preguntas:[{q:'New QA question',ops:['C','D']}]}};
+  const banks=[oldBank],h=harness({records:[prior],banks});
+  h.cx.data.__sessionShopperProfile={id:'shopper-one',certificationEvidenceRecords:[]};
+  assert.equal(h.cx.backendCertifications.sessionDecision(h.cx.certStore.bank(OCT)).done,true);
+
+  // D05's provider-tested retire operation tombstones the old bank. Its active
+  // resource projection now returns only the new, independently published bank.
+  oldBank.status='deleted';oldBank.bank.estado='withdrawn';banks.splice(0,1,replacement);
+  h.cx.data.currentPeriodId=NOV;
+  assert.equal(h.cx.certStore.bank(NOV).__resourceId,newBankId);
+  h.cx.data.__protectedCertificationRecertifications=[{id:'qa-recert',scope:'one',
+    projectId:'project-a',targetShopperIds:['shopper-one'],status:'active',
+    createdAt:'2026-11-06T11:00:00Z',providerAck:true}];
+  const pending=h.cx.backendCertifications.sessionDecision(h.cx.certStore.bank(NOV));
+  assert.equal(pending.done,false,'Old QA result cannot grant new eligibility after recertification');
+  assert.equal(pending.required,true);
+  assert.equal(h.cx.backendCertifications.attemptHistory('shopper-one').length,1,
+    'The old result remains as an auditable record');
+
+  const renewed=attempt({id:'qa-new-pass',bankResourceId:newBankId,periodId:NOV,
+    pass:true,score:100,createdAt:'2026-11-06T12:00:00Z'});
+  h.cx.data.__protectedCertifications.push(renewed);
+  assert.equal(h.cx.backendCertifications.sessionDecision(h.cx.certStore.bank(NOV)).done,true);
+  assert.equal(h.cx.backendCertifications.durableCurrent('shopper-one',replacement.bank).id,'qa-new-pass');
+  const reload=harness({records:h.cx.data.__protectedCertifications,banks:[replacement]});
+  reload.cx.data.currentPeriodId=NOV;
+  reload.cx.data.__sessionShopperProfile={id:'shopper-one',certificationEvidenceRecords:[]};
+  reload.cx.data.__protectedCertificationRecertifications=h.cx.data.__protectedCertificationRecertifications;
+  assert.equal(reload.cx.backendCertifications.sessionDecision(reload.cx.certStore.bank(NOV)).done,true);
+  assert.equal(reload.cx.backendCertifications.attemptHistory('shopper-one').length,2);
+  reload.cx.data.currentProjectId='other-project';
+  assert.equal(reload.cx.backendCertifications.durableCurrent('shopper-one',replacement.bank),null);
+});
+
+test('D06 recertification lists every project shopper, including QA identities beyond position forty',()=>{
+  const h=harness();
+  const shoppers=Array.from({length:191},(_,index)=>({id:'shopper-'+index,nombre:'Auditor '+index,code:'GT-'+index}));
+  const qa={id:'qa-shopper',nombre:'Shopper I3.8 DEV Validation',code:'TYA_GT_QA'};
+  h.cx.data.shoppersFor=()=>[...shoppers,qa,qa];
+  const candidates=h.cx.certStore.recertificationCandidates(h.cx.data);
+  assert.equal(candidates.length,192,'No hidden first-forty limit or duplicated exact IDs');
+  assert.ok(candidates.some(s=>s.id===qa.id));
+  assert.deepEqual({...h.cx.certStore.recertificationTarget('one',qa.id,candidates)},
+    {scope:'one',shopperId:qa.id});
+  assert.throws(()=>h.cx.certStore.recertificationTarget('one','',candidates),/RECERT_SHOPPER_SELECTION_REQUIRED/);
+  assert.throws(()=>h.cx.certStore.recertificationTarget('one','shopper-from-other-project',candidates),/RECERT_SHOPPER_SELECTION_REQUIRED/);
+  assert.throws(()=>h.cx.certStore.recertificationTarget('unexpected',qa.id,candidates),/RECERT_SCOPE_INVALID/);
+  assert.deepEqual({...h.cx.certStore.recertificationTarget('all','',candidates)},
+    {scope:'all',shopperId:''});
+});
+
 test('VRM312 bank selection keeps original resource identity even when logical names repeat',()=>{
   const make=(id,period)=>({id,periodId:period,version:2,bank:{estado:'published',certificationId:'main',certificationName:'Mismo nombre'}});
   const h=harness({banks:[make(bankId,OCT),make('certbank-project-a-'+NOV,NOV)]});

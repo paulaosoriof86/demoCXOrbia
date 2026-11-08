@@ -10,6 +10,24 @@ CX.certStore = CX.certStore || {
     if(name.length<3||name.length>120)throw new Error('CERT_BANK_NAME_INVALID');
     return name;
   },
+  recertificationCandidates(data){
+    // A project-scoped list must not silently stop at the first forty shoppers.
+    const source=data?.shoppersFor?data.shoppersFor():data?.shoppers;
+    const seen=new Set();
+    return (Array.isArray(source)?source:[]).filter(shopper=>{
+      const id=String(shopper?.id||'').trim();
+      if(!id||seen.has(id))return false;
+      seen.add(id);return true;
+    }).sort((a,b)=>String(a.nombre||'').localeCompare(String(b.nombre||''),'es'));
+  },
+  recertificationTarget(scope,shopperId,shoppers){
+    if(scope==='all')return {scope:'all',shopperId:''};
+    if(scope!=='one')throw new Error('RECERT_SCOPE_INVALID');
+    const id=String(shopperId||'').trim();
+    if(!id||!(Array.isArray(shoppers)&&shoppers.some(shopper=>String(shopper?.id||'')===id)))
+      throw new Error('RECERT_SHOPPER_SELECTION_REQUIRED');
+    return {scope:'one',shopperId:id};
+  },
   editorOptions(value){
     const options=Array.isArray(value)?value.map(x=>String(x||'')):[];
     return Array.from({length:Math.max(4,options.length)},(_,index)=>options[index]||'');
@@ -597,23 +615,43 @@ CX.module('cert', ({role,data,ui})=>{
     },dismissOnBackdrop:false,dismissOnEscape:false}));
     const recert=document.getElementById('certRecert');
     if(recert)recert.addEventListener('click',()=>{
-      const shoppers=(data.shoppersFor?data.shoppersFor():data.shoppers).slice(0,40);
+      const shoppers=CX.certStore.recertificationCandidates(data);
       ui.modal('🔄 Solicitar re-certificación · '+p.name,`
         <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Pide a tus evaluadores volver a certificarse (cambió el instructivo, nueva ronda, o por vencimiento). Su certificación pasa a <b>pendiente</b> y se les notifica.</p>
         <label class="lbl">Alcance</label>
         <select class="sel" id="rcScope" style="margin-bottom:10px"><option value="all">Todos los certificados del proyecto</option><option value="one">Un shopper específico</option></select>
-        <div id="rcOneWrap" style="display:none;margin-bottom:10px"><label class="lbl">Shopper</label><select class="sel" id="rcOne">${shoppers.map(s=>`<option value="${s.id}">${s.nombre} · ${s.code}</option>`).join('')}</select></div>
+        <div id="rcOneWrap" style="display:none;margin-bottom:10px"><label class="lbl" for="rcSearch">Buscar shopper</label><input class="inp" id="rcSearch" type="search" placeholder="Nombre, código…" style="margin-bottom:8px"><label class="lbl" for="rcOne">Shopper</label><select class="sel" id="rcOne"><option value="">Selecciona un shopper</option></select><div id="rcOneCount" style="font-size:11px;color:var(--t3);margin-top:4px"></div></div>
         <div class="grid g2" style="gap:10px 12px;margin-bottom:10px">
           <div><label class="lbl">Motivo</label><select class="sel" id="rcReason"><option>Actualización del instructivo</option><option>Nueva ronda / periodo</option><option>Vencimiento de certificación</option><option>Bajo desempeño</option></select></div>
           <div><label class="lbl">Plazo (días)</label><input class="inp" id="rcDays" type="number" value="7"></div>
         </div>
         <label class="flex" style="gap:8px;font-size:12px;color:var(--t1);margin-bottom:6px"><input type="checkbox" id="rcNotif" checked> Notificar en su panel (in-app)</label>
-        <div style="font-size:10.5px;color:var(--t3);margin-bottom:14px">🔒 El envío real por WhatsApp/correo está pendiente de activación por tenant — este prototipo solo registra el evento en el log local de automatizaciones y en el panel in-app del shopper, nunca envía un mensaje real.</div>
+        <div style="font-size:10.5px;color:var(--t3);margin-bottom:14px">🔒 La solicitud queda confirmada en servidor. Para un shopper específico, la opción de aviso crea una notificación en su panel; para todos, se actualiza el requisito al consultar su certificación. WhatsApp/correo no se envían hasta su activación por tenant.</div>
         <div style="text-align:right"><button class="btn btn-pr btn-sm" id="rcOk">Solicitar re-certificación</button></div>
       `,{onMount:(ov,close)=>{
-        const sc=ov.querySelector('#rcScope'); sc.addEventListener('change',()=>{ov.querySelector('#rcOneWrap').style.display=sc.value==='one'?'':'none';});
+        const sc=ov.querySelector('#rcScope'),one=ov.querySelector('#rcOne'),search=ov.querySelector('#rcSearch'),count=ov.querySelector('#rcOneCount');
+        const updateOptions=()=>{
+          const query=String(search.value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+          const matches=shoppers.filter(shopper=>[shopper.nombre,shopper.code,shopper.id].some(value=>
+            String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().includes(query)));
+          const previous=one.value;
+          one.replaceChildren();
+          const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent='Selecciona un shopper';one.appendChild(placeholder);
+          matches.forEach(shopper=>{
+            const option=document.createElement('option');option.value=String(shopper.id);
+            option.textContent=String(shopper.nombre||shopper.id)+' · '+String(shopper.code||shopper.id);one.appendChild(option);
+          });
+          if(previous&&matches.some(shopper=>String(shopper.id)===previous))one.value=previous;
+          else one.value='';
+          count.textContent=matches.length+' de '+shoppers.length+' shoppers disponibles en este proyecto';
+        };
+        search.addEventListener('input',updateOptions);updateOptions();
+        sc.addEventListener('change',()=>{ov.querySelector('#rcOneWrap').style.display=sc.value==='one'?'':'none';});
         ov.querySelector('#rcOk').addEventListener('click',async()=>{
-          const btn=ov.querySelector('#rcOk'),all=sc.value==='all',shopperId=all?'':ov.querySelector('#rcOne').value,who=all?'todos los certificados':(data.getShopper(shopperId)||{}).nombre||'el shopper';
+          let target;
+          try{target=CX.certStore.recertificationTarget(sc.value,one.value,shoppers);}
+          catch(_){ui.toast('Selecciona un shopper válido antes de solicitar la re-certificación.','warn');return;}
+          const btn=ov.querySelector('#rcOk'),all=target.scope==='all',shopperId=target.shopperId,who=all?'todos los certificados':(data.getShopper(shopperId)||{}).nombre||'el shopper';
           const reason=ov.querySelector('#rcReason').value,days=+ov.querySelector('#rcDays').value||7;btn.disabled=true;btn.textContent='Guardando…';
           try{
             if(!CX.backendCertifications?.requestRecertification)throw new Error('RECERT_PROVIDER_UNAVAILABLE');
