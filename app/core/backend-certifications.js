@@ -133,12 +133,19 @@ window.CX=window.CX||{};
     const records=arr(shopper?.certificationEvidenceRecords),shopperId=str(shopper?.shopperId||shopper?.id);
     const activeRecert=applicableRecertifications(shopperId).sort((a,b)=>str(b.createdAt).localeCompare(str(a.createdAt)))[0]||null;
     if(activeRecert)return {state:'recertification_required',eligibilityGranted:false,recertification:activeRecert};
-    let approved=false,expired=false,otherProject=false,failed=false;
+    let approved=false,expired=false,otherProject=false,failed=false,pendingReview=false;
     for(const r of records.slice().sort((a,b)=>str(b.sourceApprovedAt||b.presentedAt).localeCompare(str(a.sourceApprovedAt||a.presentedAt)))){
       const status=str(r.sourceLegacyStatus||r.status).toLowerCase();
       if(status==='failed'){failed=true;continue;}
       if(!['approved','certified','passed'].includes(status))continue;
       approved=true;
+      // Pre-I4 projected legacy evidence explicitly carries reviewRequired,
+      // carryoverConfirmed=false, eligibilityGranted=false and currentCertification=false.
+      // Source legacy "approved" is evidence, not independent authorization.
+      if(r.reviewRequired===true||r.carryoverConfirmed===false||r.eligibilityGranted===false||
+         r.currentCertification===false||str(r.status).toLowerCase()==='pending_review'){
+        pendingReview=true;continue;
+      }
       if(str(r.projectId)!==str(projectId)){otherProject=true;continue;}
       const expiry=Date.parse(str(r.validUntil)||'');
       if(Number.isFinite(expiry)&&expiry<Date.now()){expired=true;continue;}
@@ -146,6 +153,7 @@ window.CX=window.CX||{};
     }
     if(expired)return {state:'expired',eligibilityGranted:false};
     if(approved&&otherProject)return {state:'other_project_only',eligibilityGranted:false};
+    if(pendingReview)return {state:'pending_review',eligibilityGranted:false};
     if(failed)return {state:'failed',eligibilityGranted:false};
     return {state:records.length?'pending':'none',eligibilityGranted:false};
   }

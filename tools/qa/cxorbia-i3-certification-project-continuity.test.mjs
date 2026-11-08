@@ -123,3 +123,40 @@ test('VRM311 failed history remains readable even when its bank is absent or bac
   assert.match(h.render(),/Explicación confirmada por servidor/);
  }
 });
+
+
+test('P0 pre-I4 projected historical evidence cannot grant present certification or visit execution',()=>{
+  const h=harness();
+  const bank={certificationId:'main'};
+  const pending={id:'shopper-one',certificationEvidenceRecords:[{
+    projectId:'project-a',sourceLegacyStatus:'approved',status:'pending_review',
+    reviewRequired:true,carryoverConfirmed:false,eligibilityGranted:false,currentCertification:false
+  }]};
+  assert.equal(h.cx.backendCertifications.carryoverDecision(pending,bank,'project-a').eligibilityGranted,false);
+  assert.equal(h.cx.backendCertifications.carryoverDecision(pending,bank,'project-a').state,'pending_review');
+  const individuallyDenied=['reviewRequired','carryoverConfirmed','eligibilityGranted','currentCertification','status'];
+  for(const key of individuallyDenied){
+    const row={projectId:'project-a',sourceLegacyStatus:'approved'};
+    row[key]=key==='reviewRequired'?true:key==='status'?'pending_review':false;
+    const shopper={id:'shopper-one',certificationEvidenceRecords:[row]};
+    assert.equal(h.cx.backendCertifications.carryoverDecision(shopper,bank,'project-a').eligibilityGranted,false,key);
+  }
+  assert.equal(h.cx.backendCertifications.durableCurrent('shopper-one',bank),null);
+});
+
+test('P0 valid historical approvals and durable passes survive the scoped fail-closed guard',()=>{
+  const passed=attempt({id:'confirmed-qa',pass:true,score:100,createdAt:'2026-11-07T10:00:00Z'});
+  const h=harness({records:[passed]});
+  const accepted={id:'shopper-one',certificationEvidenceRecords:[{
+    projectId:'project-a',sourceLegacyStatus:'approved',status:'confirmed',
+    reviewRequired:false,carryoverConfirmed:true,eligibilityGranted:true,currentCertification:true
+  }]};
+  assert.equal(h.cx.backendCertifications.carryoverDecision(accepted,{},'project-a').eligibilityGranted,true);
+  assert.equal(h.cx.backendCertifications.durableCurrent('shopper-one',{}).id,'confirmed-qa');
+  assert.equal(h.cx.backendCertifications.carryoverDecision(accepted,{},'another-project').eligibilityGranted,false);
+  h.cx.data.__protectedCertificationRecertifications.push({
+    scope:'all',projectId:'project-a',status:'active',createdAt:'2026-11-07T11:00:00Z'
+  });
+  assert.equal(h.cx.backendCertifications.carryoverDecision(accepted,{},'project-a').eligibilityGranted,false);
+  assert.equal(h.cx.backendCertifications.durableCurrent('shopper-one',{}),null);
+});
