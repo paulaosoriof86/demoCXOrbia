@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-proven-scoped-source-owner.v1",
+  "dateLocal": "2026-11-07",
+  "iteration": "I3",
+  "findingId": "VRM-316",
+  "classification": "FUNCTIONAL_DEFECT",
+  "priority": "P0_PROVEN",
+  "predecessorProductSourceSha": "2dc7e4ee49dd2ed97ff7dad0dce2096d9dc6b97e",
+  "sourceSha": "c70352004ab580274656a80d69bb166c4da8ed9f",
+  "sourceTree": "1f9588ca5df0b02d325b87ccbe9372c981c27e44",
+  "allowedProductFiles": [
+    "app/core/backend-certifications.js",
+    "app/modules/cert.js",
+    "app/modules/midia.js",
+    "app/modules/misvisitas.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs"
+  ],
+  "symptom": "RUN2280 exact DEV technical PASS but authenticated Shopper Damaris Mis Visitas and Mi Día still claim Certificación vigente/completada while Certificación offers exam, and Admin/Shoppers Damaris displays no current certificate. Both published banks configured required 80%; selecting exact main bank did not resolve the divergence.",
+  "redGreen": "Two new regression cases RED 10/12 on R2: no common sessionDecision and a missing-project durable attempt accepted. Unified protected exact-session decision across three modules and strict project-bound durable attempts achieved GREEN 12/12, node --check all four product owners.",
+  "expected": "All Shopper surfaces must use a single identity, bank and exact project-scoped eligibility decision. Required bank with no certified attempt or confirmed carryover must show Certificarme and pending. Confirmed same-project durable attempts remain valid. Historical approvals require affirmative adjudication.",
+  "sourceTests": {
+    "pass": 12,
+    "fail": 0,
+    "red": {
+      "pass": 10,
+      "fail": 2
+    },
+    "command": "node --test tools/qa/cxorbia-i3-certification-project-continuity.test.mjs",
+    "mode": "EXACT_GIT_BLOB_LOCAL_MIRROR"
+  },
+  "lastTechnicalDevSourceSha": "2dc7e4ee49dd2ed97ff7dad0dce2096d9dc6b97e",
+  "lastTechnicalDevReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2280_VRM316_R2_EXACT_DEV_E2E_FAIL_20261107.json",
+  "devPublished": false,
+  "production": false,
+  "hrWrites": 0,
+  "questionnaireSubmissions": 0,
+  "gate20": "HOLD",
+  "gate21": "HOLD"
+}

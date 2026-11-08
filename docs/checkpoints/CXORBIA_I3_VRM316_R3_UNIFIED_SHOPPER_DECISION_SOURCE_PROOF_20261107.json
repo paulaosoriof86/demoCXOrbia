@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm316.r3.unified-shopper-decision.source-proof.v1",
+  "sourceSha": "c70352004ab580274656a80d69bb166c4da8ed9f",
+  "sourceTree": "1f9588ca5df0b02d325b87ccbe9372c981c27e44",
+  "predecessorProductSourceSha": "2dc7e4ee49dd2ed97ff7dad0dce2096d9dc6b97e",
+  "sourceTestsPass": 12,
+  "sourceTestsFail": 0,
+  "sourceTestsSkipped": 0,
+  "redRegression": {
+    "predecessorSourceSha": "2dc7e4ee49dd2ed97ff7dad0dce2096d9dc6b97e",
+    "testsPassed": 10,
+    "testsFailed": 2,
+    "newNegativeCases": [
+      "Cross-view missing shared protected canonical Shopper decision",
+      "A durable attempt with missing projectId incorrectly granted eligibility"
+    ]
+  },
+  "allowedProductFiles": [
+    "app/core/backend-certifications.js",
+    "app/modules/cert.js",
+    "app/modules/midia.js",
+    "app/modules/misvisitas.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs"
+  ],
+  "findings": [
+    {
+      "id": "VRM-316",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "owner": "app/core/backend-certifications.js + app/modules/cert.js + app/modules/midia.js + app/modules/misvisitas.js",
+      "expected": "All Shopper surfaces must use a single identity, bank and exact project-scoped eligibility decision. Required bank with no certified attempt or confirmed carryover must show Certificarme and pending. Confirmed same-project durable attempts remain valid. Historical approvals require affirmative adjudication.",
+      "evidence": "RUN2280 exact DEV technical PASS but authenticated Shopper Damaris Mis Visitas and Mi Día still claim Certificación vigente/completada while Certificación offers exam, and Admin/Shoppers Damaris displays no current certificate. Both published banks configured required 80%; selecting exact main bank did not resolve the divergence."
+    }
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM316_R3_UNIFIED_SHOPPER_DECISION_SCOPE_20261107.json",
+  "scopeReceiptBlob": "bc762d7afa0243dd9edf720e01da47e4e72ec120",
+  "priorDevReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2280_VRM316_R2_EXACT_DEV_E2E_FAIL_20261107.json",
+  "priorDevReceiptBlob": "f9c370671148b8d2d70723a88e661bd3a4bcfce9",
+  "sourceBlob": "d571c578dfbb92dd784dec3e84b7c41e9ef4eca3",
+  "testBlob": "33c8d3273a4808da9520d86dfccc89195a6df5d7",
+  "production": false,
+  "devPublished": false,
+  "noRulesChanges": true,
+  "hrWrites": 0,
+  "questionnaireSubmissions": 0,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "sourceBlobs": {
+    "app/core/backend-certifications.js": "d571c578dfbb92dd784dec3e84b7c41e9ef4eca3",
+    "app/modules/cert.js": "f999e86ce3118d8560ad8365766805dcc0188d3a",
+    "app/modules/midia.js": "affaea3ea95f6df275d37733e3da69b0c63162b3",
+    "app/modules/misvisitas.js": "c1469024dc6127a64830d93beff192c5be630f2c"
+  }
+}
