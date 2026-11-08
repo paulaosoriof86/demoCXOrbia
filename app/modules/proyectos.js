@@ -56,6 +56,24 @@ CX.module('proyectos', ({data,ui})=>{
       const RONDAS=['Mensual','Bimensual','Trimestral','Semestral','Anual','Quincenal','Por campaña'];
       const CUMPL=['Igual a la ronda','Semanal','Quincenal','Mensual'];
       const paisChecks=CX.COUNTRIES.map(co=>`<label class="flex" style="gap:5px;font-size:12px;padding:3px 7px;border:1px solid var(--border);border-radius:7px;cursor:pointer"><input type="checkbox" class="cf_pais" value="${co.c}" ${pr.countries.includes(co.c)?'checked':''}>${CX.paisFlag(co.c)} ${co.c} (${co.cur})</label>`).join('');
+       // The live HR projector can legitimately expose source-controlled states
+       // that are not editable questionnaire URL modes. Never let <select>
+       // silently default those states to "interna" on an unrelated save.
+       const cueOriginal=(pr.cuestionario||{});
+       const cueCurrentMode=String(cueOriginal.modo||'interna');
+       const cueGeneralMode=mode=>mode==='externo_general'||mode==='externa';
+       const cueModes=[
+         ['interna','Interno (plataforma)'],
+         ['externo_general','Externo · link general'],
+         ['externo_visita','Externo · link por visita (desde HR)'],
+         ['externa','Externo · enlace general (compatibilidad)'],
+         ['link','Externo · enlace por visita (compatibilidad)'],
+         ['externo_proveedor','Externo · proveedor registrado (enlace pendiente)'],
+         ['fuente_pendiente','Externo · fuente en conflicto (sin autorización)']
+       ];
+       const escapeCue=val=>String(val).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+       const cueOptions=cueModes.map(([mode,label])=>`<option value="${mode}" ${cueCurrentMode===mode?'selected':''}>${label}</option>`).join('')+
+         (cueModes.some(([mode])=>mode===cueCurrentMode)?'':`<option value="${escapeCue(cueCurrentMode)}" selected>Origen no reconocido (conservado, requiere revisión)</option>`);
       ui.modal('⚙️ Configuración · '+pr.name,`
         <div class="grid g2" style="gap:10px 14px">
           <div><label class="lbl">Nombre del proyecto</label><input class="inp" id="cf_name" value="${(pr.name||'').replace(/"/g,'&quot;')}"></div>
@@ -89,9 +107,9 @@ CX.module('proyectos', ({data,ui})=>{
         <div class="grid g2" style="gap:8px 12px;margin-top:8px">
           <div><label class="lbl">Origen de HR</label><select class="sel" id="cf_hrOrigen"><option value="externa" ${((pr.hrFuente||{}).origen||'externa')==='externa'?'selected':''}>Externa (hoja en línea)</option><option value="nativa" ${((pr.hrFuente||{}).origen)==='nativa'?'selected':''}>Nativa (plataforma)</option></select></div>
           <div><label class="lbl">Etiqueta de plataforma externa (visible)</label><input class="inp" id="cf_hrEtiq" value="${((pr.hrFuente||{}).etiqueta||'').replace(/"/g,'&quot;')}" placeholder="Ej. Hoja compartida del cliente"></div>
-          <div><label class="lbl">Origen del cuestionario</label><select class="sel" id="cf_cueOrigen"><option value="interna" ${((pr.cuestionario||{}).modo||'interna')==='interna'?'selected':''}>Interno (plataforma)</option><option value="externo_general" ${((pr.cuestionario||{}).modo)==='externo_general'?'selected':''}>Externo · link general</option><option value="externo_visita" ${((pr.cuestionario||{}).modo)==='externo_visita'?'selected':''}>Externo · link por visita (desde HR)</option></select></div>
+           <div><label class="lbl">Origen del cuestionario</label><select class="sel" id="cf_cueOrigen">${cueOptions}</select></div>
           <div><label class="lbl">Etiqueta cuestionario externo</label><input class="inp" id="cf_cueEtiq" value="${((pr.cuestionario||{}).etiqueta||'').replace(/"/g,'&quot;')}" placeholder="Ej. Formulario del cliente"></div>
-          <div id="cf_cueUrlWrap" style="${((pr.cuestionario||{}).modo)==='externo_general'?'':'display:none'};grid-column:1/3"><label class="lbl">URL general del cuestionario</label><input class="inp" id="cf_cueUrl" value="${((pr.cuestionario||{}).url||'').replace(/"/g,'&quot;')}" placeholder="https://…"><div style="font-size:10.5px;color:var(--t3);margin-top:4px">Se guarda en la configuración durable de este proyecto. No se usa para proyectos con link distinto por visita.</div></div>
+           <div id="cf_cueUrlWrap" style="${cueGeneralMode(cueCurrentMode)?'':'display:none'};grid-column:1/3"><label class="lbl">URL general del cuestionario</label><input class="inp" id="cf_cueUrl" value="${((pr.cuestionario||{}).url||'').replace(/"/g,'&quot;')}" placeholder="https://…"><div style="font-size:10.5px;color:var(--t3);margin-top:4px">Se guarda en la configuración durable de este proyecto. No se usa para proyectos con link distinto por visita.</div></div>
         </div>
         <div style="font-size:10.5px;color:var(--t3);margin-top:5px">Las URLs privadas de HR/cuestionario se registran de forma segura por el sistema central (Fuente de HR); aquí solo etiqueta y origen.</div>
         <div style="margin-top:12px"><b style="font-size:12px">📲 Contactos WhatsApp por tipo de gestión</b></div>
@@ -112,7 +130,7 @@ CX.module('proyectos', ({data,ui})=>{
           ov.querySelectorAll('[data-delesc]').forEach(b=>b.addEventListener('click',()=>{esc.splice(+b.dataset.delesc,1);renderEsc();}));};
         renderEsc();
         const cueModeSel=ov.querySelector('#cf_cueOrigen'),cueUrlWrap=ov.querySelector('#cf_cueUrlWrap');
-        if(cueModeSel&&cueUrlWrap)cueModeSel.addEventListener('change',()=>{cueUrlWrap.style.display=cueModeSel.value==='externo_general'?'':'none';});
+         if(cueModeSel&&cueUrlWrap)cueModeSel.addEventListener('change',()=>{cueUrlWrap.style.display=cueGeneralMode(cueModeSel.value)?'':'none';});
         ov.querySelector('#cf_escAdd').addEventListener('click',()=>{const val=ov.querySelector('#cf_escNew').value.trim();if(val){esc.push(val);ov.querySelector('#cf_escNew').value='';renderEsc();}});
         ov.querySelector('#cf_escNew').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();ov.querySelector('#cf_escAdd').click();}});
         ov.querySelector('#cf_iaEsc').addEventListener('click',()=>{ const sug=['Atención y bienvenida','Tiempos de espera','Limpieza e imagen','Cierre y despedida'].filter(s=>!esc.includes(s)); esc=esc.concat(sug); renderEsc(); ui.toast(CX.ai&&CX.ai.ready()?'Escenarios extraídos del instructivo con IA':'Sugeridos por IA (configura Gemini para extracción real del instructivo)','ok',3600); });
@@ -143,8 +161,15 @@ CX.module('proyectos', ({data,ui})=>{
             next.revision={consultora:ov.querySelector('#cf_revCons').checked, cliente:ov.querySelector('#cf_revCli').checked};
             next.submitido={quien:ov.querySelector('#cf_submQuien').value, rol:ov.querySelector('#cf_submRol').value};
             next.hrFuente=Object.assign({},pr.hrFuente||{},{origen:ov.querySelector('#cf_hrOrigen').value, etiqueta:ov.querySelector('#cf_hrEtiq').value.trim()});
-            const cueMode=ov.querySelector('#cf_cueOrigen').value, cueUrl=(ov.querySelector('#cf_cueUrl')?.value||'').trim();
-            next.cuestionario=Object.assign({},pr.cuestionario||{},{modo:cueMode, etiqueta:ov.querySelector('#cf_cueEtiq').value.trim(), url:cueMode==='externo_general'?cueUrl:'', visitLinkField:cueMode==='externo_visita'?((pr.cuestionario||{}).visitLinkField||(pr.operationalSource||{}).visitLinkField||'questionnaireLink'):null});
+             const cueMode=ov.querySelector('#cf_cueOrigen').value, cueUrl=(ov.querySelector('#cf_cueUrl')?.value||'').trim();
+             if(cueMode==='interna'&&String(cueOriginal.providerSource||'').trim()){
+               ui.toast('No se puede sustituir una fuente externa declarada por un formulario interno. Revise la autoridad del proveedor.','warn',4800);return;
+             }
+             next.cuestionario=Object.assign({},cueOriginal,{modo:cueMode, etiqueta:ov.querySelector('#cf_cueEtiq').value.trim()});
+             if(cueMode!==cueCurrentMode){
+               next.cuestionario.url=cueGeneralMode(cueMode)?cueUrl:'';
+               next.cuestionario.visitLinkField=(cueMode==='externo_visita'||cueMode==='link')?(cueOriginal.visitLinkField||(pr.operationalSource||{}).visitLinkField||'questionnaireLink'):null;
+             }else if(cueGeneralMode(cueMode))next.cuestionario.url=cueUrl;
             next.contactos=Object.assign({},pr.contactos||{}); ov.querySelectorAll('.cf_contacto').forEach(i=>{next.contactos[i.dataset.ck]=i.value.trim();});
             const external=next.hrFuente.origen==='externa';
             const currentSource=pr.operationalSource||{};
@@ -183,4 +208,5 @@ CX.module('proyectos', ({data,ui})=>{
   },0);
   return html;
 });
+
 
