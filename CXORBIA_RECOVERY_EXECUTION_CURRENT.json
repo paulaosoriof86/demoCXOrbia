@@ -11130,7 +11130,7 @@
     "moduleMatches": 5,
     "production": false
   },
-  "status": "HOLD_I3_B11_SOURCE_ONLY_PENDING_DEV",
+  "status": "HOLD_I3_B11_DEV_MATERIALIZATION_REQUIRED",
   "pendingDevSuccessor": {
     "state": "P0_PROVEN_PENDING_DEV_MATERIALIZATION",
     "scope": "RUNTIME_AND_HOSTING",
