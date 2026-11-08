@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import {assertCanonicalModuleCoverage} from './cxorbia-i3-terminal-module-domain-coverage.mjs';
 
 const PRE=process.env.C3_PRETERMINAL;
 const FOCAL=process.env.C3_FOCAL;
@@ -46,7 +47,9 @@ if(openP0.length)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OPEN_P0_FINDING
 
 const sourceFiles=(pre.sourceFiles||[]).map(x=>({...x}));
 const modules=(pre.modules||[]).map(x=>({...x,pendingTerminalFiles:[...(x.pendingTerminalFiles||[])]}));
-if(modules.length!==20)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_TERMINAL_MODULE_COUNT');
+assertCanonicalModuleCoverage(modules);
+if(pre.preTerminalComposition?.moduleCount!==21)
+  throw new Error('RELEASE_COMPOSITION_FAILURE:C3_PRETERMINAL_MODULE_COUNT_NOT_21');
 
 const requiredReceiptDomains=new Set([
   ...modules.filter(x=>String(x.classification||'')!=='MATCH').map(x=>String(x.domain||'')).filter(Boolean),
@@ -133,13 +136,13 @@ if(nonMatchModules.length||nonMatchFiles.length)throw new Error('RELEASE_COMPOSI
 
 const receiptRows=[...promotionByDomain.entries()].flatMap(([moduleDomain,rows])=>rows.map(x=>({moduleDomain,findingId:x.findingId,decision:x.receipt.decision,ownerPaths:x.receipt.ownerPaths})));
 const out={...pre,
-  schemaVersion:'cxorbia.recovery.module-truth-matrix.v8-terminal-owner-receipts',
+  schemaVersion:'cxorbia.recovery.module-truth-matrix.v9-terminal-21-owner-receipts',
   generatedAt:new Date().toISOString(),
   productSource:{sha:SOURCE,treeSha:TREE},
   sourceFiles,modules,phaseAComplete:true,allModulesMatch:true,
   terminalClosure:{
-    decision:'PASS_C3_TERMINAL_MODULE_TRUTH_20_20',
-    moduleCount:20,matchModules:20,nonMatchModules:0,
+    decision:'PASS_C3_TERMINAL_MODULE_TRUTH_21_21',
+    moduleCount:21,matchModules:21,nonMatchModules:0,
     sourceSha:SOURCE,sourceTree:TREE,hrRevision:String(human.sourceRevision||''),
     runtimeRevision:RUNTIME,runtimeDigest:DIGEST,hostingVersion:HOSTING,
     hardenedFocalDecision:focal.decision,fullHumanDecision:human.decision,

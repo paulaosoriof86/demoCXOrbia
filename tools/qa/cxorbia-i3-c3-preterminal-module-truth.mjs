@@ -1,11 +1,13 @@
 import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
+import {assertCanonicalModuleCoverage,assertAllModulesAccepted} from './cxorbia-i3-terminal-module-domain-coverage.mjs';
 
-const TEMPLATE=process.env.TEMPLATE||'RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json';
+const descriptor=JSON.parse(fs.readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8'));
+const TEMPLATE=process.env.TEMPLATE||descriptor.moduleTruthPath;
 const LEDGER=process.env.LEDGER||'CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V10_2026-09-24.json';
 const SOURCE=String(process.env.SOURCE||'').trim();
 const TREE=String(process.env.TREE||'').trim();
-const LAST_SERVED=String(process.env.LAST_SERVED||'d8aad982ae4b47e66bf949d906b6c7ede8866f84').trim();
+const LAST_SERVED=String(process.env.LAST_SERVED||SOURCE).trim();
 const OUT_FILE=process.env.OUT_FILE||'.tmp/c3-preterminal/module-truth-preterminal.json';
 if(!/^[a-f0-9]{40}$/.test(SOURCE))throw new Error('SOURCE_FAILURE:C3_SOURCE_MISSING');
 if(!/^[a-f0-9]{40}$/.test(LAST_SERVED))throw new Error('SOURCE_FAILURE:C3_LAST_SERVED_MISSING');
@@ -14,7 +16,13 @@ const git=(...args)=>execFileSync('git',args,{encoding:'utf8'}).trim();
 const safeBlob=(ref,path)=>{try{return git('rev-parse',ref+':'+path)}catch{return null}};
 const m=JSON.parse(fs.readFileSync(TEMPLATE,'utf8'));
 const ledger=JSON.parse(fs.readFileSync(LEDGER,'utf8'));
-if((m.modules||[]).length!==20)throw new Error('RELEASE_COMPOSITION_FAILURE:MODULE_COUNT_NOT_20');
+if(TEMPLATE!==descriptor.moduleTruthPath)throw new Error('MAPPING_FAILURE:C3_NOT_CANONICAL_MATRIX');
+assertCanonicalModuleCoverage(m.modules);
+if(m.productSource?.sha!==SOURCE||m.productSource?.treeSha!==TREE||descriptor.productSourceSha!==SOURCE||descriptor.productTreeAuthority!==TREE)
+  throw new Error('RELEASE_COMPOSITION_FAILURE:C3_CANONICAL_SOURCE_TREE_MISMATCH');
+if(git('rev-parse','HEAD:'+TEMPLATE)!==descriptor.moduleTruthExpectedGitBlob)
+  throw new Error('MAPPING_FAILURE:C3_CANONICAL_MATRIX_BLOB_DESYNC');
+assertAllModulesAccepted(m.modules);
 if(ledger?.canonicalFunctionalCandidate?.sourceSha!==SOURCE)throw new Error('RELEASE_COMPOSITION_FAILURE:LEDGER_SOURCE_MISMATCH');
 if(TREE&&git('rev-parse',SOURCE+'^{tree}')!==TREE)throw new Error('RELEASE_COMPOSITION_FAILURE:SOURCE_TREE_MISMATCH');
 
@@ -94,14 +102,16 @@ const modules=(m.modules||[]).map(mod=>{
   const files=byDomain.get(mod.domain)||[];
   const pending=files.filter(x=>x.classification==='COMPOSED_NOT_DEPLOYED');
   return {...mod,
-    classification:pending.length?'COMPOSED_NOT_DEPLOYED':'MATCH',
+    classification:pending.length?'COMPOSED_NOT_DEPLOYED':mod.classification,
     currentCandidateSource:SOURCE,
     lastServedSource:LAST_SERVED,
     pendingTerminalFiles:pending.map(x=>x.path),
     ownerAuthorityCount:files.length
   };
 });
-if(modules.some(x=>!['MATCH','COMPOSED_NOT_DEPLOYED'].includes(x.classification)))throw new Error('RELEASE_COMPOSITION_FAILURE:INVALID_PRETERMINAL_MODULE_STATE');
+assertAllModulesAccepted(modules);
+const uncoveredFiles=sourceFiles.filter(x=>x.phaseAAuthority===true&&x.classification!=='MATCH');
+if(uncoveredFiles.length)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_UNACCEPTED_SOURCE_FILES:'+JSON.stringify(uncoveredFiles.map(x=>x.path)));
 
 const html=git('show',SOURCE+':app/index-backend-dev.html');
 const staticScripts=[...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi)].map(x=>x[1].replace(/^\.\//,''));
@@ -133,7 +143,7 @@ if(overlay?.path){
 }
 
 const out={...m,
-  schemaVersion:'cxorbia.recovery.module-truth-matrix.v7-preterminal',
+  schemaVersion:'cxorbia.recovery.module-truth-matrix.v8-preterminal-21',
   generatedAt:new Date().toISOString(),
   productSource:{sha:SOURCE,treeSha:TREE||git('rev-parse',SOURCE+'^{tree}')},
   lastServedSource:LAST_SERVED,
