@@ -6799,6 +6799,50 @@ jobs:
      if: always()
      with: {name: "cxorbia-i3-current-source-hosting-dev-${{ github.run_id }}", path: .tmp/i3-current-source-hosting-dev/, if-no-files-found: warn, retention-days: 30}
 
+
+  i3-dev-storage-cors-alias-focal:
+   needs: canonical-candidate-authority
+   if: ${{ contains(github.event.head_commit.message, '[i3-dev-storage-cors-alias-focal]') && needs.canonical-candidate-authority.result == 'success' }}
+   runs-on: ubuntu-24.04
+   timeout-minutes: 15
+   permissions:
+    contents: read
+   steps:
+   - uses: actions/checkout@v4
+     with: {fetch-depth: 0}
+   - uses: actions/setup-node@v4
+     with: {node-version: '24'}
+   - name: Seal already-served source and DEV-only CORS target
+     run: |
+      set -Eeuo pipefail
+      test "$GITHUB_REF_NAME" = recovery/cxorbia-phase-a-20260831
+      test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
+      test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
+      SOURCE="$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+      test "$SOURCE" = "$(jq -r '.postDeployRunSeal.sourceSha' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)"
+      git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules
+      node --check firebase/auth-dev-tools/cxorbia-i3-dev-storage-cors-alias-focal.mjs
+   - uses: google-github-actions/auth@v2
+     with:
+      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+   - name: Install DEV metadata client
+     run: |
+      set -Eeuo pipefail
+      npm install --prefix firebase/auth-dev-tools --no-save --no-package-lock --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
+   - name: Correct only DEV alias CORS and inspect bucket readback
+     run: |
+      set -Eeuo pipefail
+      node firebase/auth-dev-tools/cxorbia-i3-dev-storage-cors-alias-focal.mjs
+      jq -e '(.decision=="PASS_DEV_ALIAS_CORS_PATCHED_AND_READ_BACK" or .decision=="PASS_DEV_ALIAS_CORS_ALREADY_CONFIGURED") and .safety.production==false and .safety.deploys==0 and .safety.hrWrites==0 and .safety.authWrites==0 and .safety.storageObjectWrites==0 and .safety.bucketMetadataWrites<=1' .tmp/cxorbia-i3-dev-storage-cors-alias-focal/result.json >/dev/null
+   - uses: actions/upload-artifact@v4
+     if: always()
+     with:
+      name: cxorbia-i3-dev-storage-cors-alias-focal-${{ github.run_id }}
+      path: .tmp/cxorbia-i3-dev-storage-cors-alias-focal/
+      if-no-files-found: warn
+      retention-days: 30
+
+
   i3-keeper-role-e2e-readonly:
    # The prior 29 status-specific jobs are not deemed certified merely because
    # the authority job is green. This focal lane can collect independent,
