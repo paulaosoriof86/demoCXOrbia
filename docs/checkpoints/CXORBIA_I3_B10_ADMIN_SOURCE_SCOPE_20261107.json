@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-proven-scoped-source-owner.v1",
+  "date": "2026-11-07",
+  "iteration": "I3",
+  "findingId": "VRM-314",
+  "classification": "MAPPING_FAILURE",
+  "priority": "P0_PROVEN",
+  "expectedParentProductSourceSha": "6f87531de198186ad8277564beb380cf94a09488",
+  "sourceSha": "6f15c6e84229bc9562bfdad3a6712d4226f09078",
+  "sourceTree": "23e8c99811147a3791de568d6d6eb33b8c235025",
+  "allowedProductFiles": [
+    "app/modules/proyectos.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-b10-external-provider-routing.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs"
+  ],
+  "observedDevRole": "Admin · Cinépolis · noviembre 2026",
+  "observedShopperRole": "Shopper GT · B10 externally sourced questionnaire",
+  "symptom": "Admin project modal displays 'Interno (plataforma)' because valid source-controlled externo_proveedor and fuente_pendiente were absent from <select>. Unrelated save could overwrite project.cuestionario.modo to interna.",
+  "behavior": "Render source-controlled states truthfully; preserve untouched provider metadata and unknown successor modes; deny internal conversion when external provider declared; clear unrelated global URL for per-visit route.",
+  "sourceAuthority": "HR/project/provider configuration; no provider URL fabricated",
+  "tests": {
+    "localFocusedPass": 11,
+    "localFocusedFail": 0,
+    "sourceReadbackFiles": 3,
+    "githubRun2267": "FAIL_STATIC_PRIOR_EXPRESSION_SUPERSEDED",
+    "githubRun2268": "FAIL_RELEASE_COMPOSITION_UNDECLARED_DRIFT_AFTER_PASS_OF_B10_AND_WORK_UAT",
+    "freshGithubAfterControl": "PENDING"
+  },
+  "devMaterialization": "PENDING_EXISTING_CANONICAL_DEV_ONLY",
+  "production": false,
+  "devWrites": 0,
+  "hrWrites": 0,
+  "questionnaireSubmissions": 0,
+  "currentServedSourceSha": "6f87531de198186ad8277564beb380cf94a09488",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "humanAcceptance": "PENDING"
+}

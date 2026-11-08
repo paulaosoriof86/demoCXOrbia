@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "cxorbia.i3.b10-admin-provider-safe-source-proof.v1",
+  "date": "2026-11-07",
+  "iteration": "I3",
+  "status": "SOURCE_PROVEN_LOCAL_PENDING_CANONICAL_CI_AND_EXACT_DEV",
+  "sourceSha": "6f15c6e84229bc9562bfdad3a6712d4226f09078",
+  "sourceTree": "23e8c99811147a3791de568d6d6eb33b8c235025",
+  "predecessorProductSourceSha": "6f87531de198186ad8277564beb380cf94a09488",
+  "sourceTestsPass": 11,
+  "sourceTestsFail": 0,
+  "allowedProductFiles": [
+    "app/modules/proyectos.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-b10-external-provider-routing.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs"
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_B10_ADMIN_SOURCE_SCOPE_20261107.json",
+  "scopeReceiptBlob": "0f2726600044119f77377730db0034d268870a41",
+  "findings": [
+    {
+      "id": "VRM-314",
+      "priority": "P0_PROVEN",
+      "classification": "MAPPING_FAILURE",
+      "owner": "app/modules/proyectos.js",
+      "evidence": "Independent Chrome Admin project modal and Shopper B10 show source-controlled pending vs fallback internal; code inspection finds missing selector modes and unsafe save."
+    }
+  ],
+  "gitHeadSource": "6f15c6e84229bc9562bfdad3a6712d4226f09078",
+  "headBranch": "recovery/cxorbia-phase-a-20260831",
+  "blobs": {
+    "app/modules/proyectos.js": "346ab1682ca8726255770e3a8b20cb65bd756442",
+    "tools/qa/cxorbia-i3-b10-external-provider-routing.test.mjs": "1a28597dc938b60286ba8c683afd51695f614b8c",
+    "backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs": "2cd09be34a8f9588deded69cf4b52c08567640fc"
+  },
+  "localTests": "node --test tools/qa/cxorbia-i3-b10-external-provider-routing.test.mjs — PASS 11/11 (6 previous +5 new)",
+  "canonicalCi": {
+    "run2267": 42429002601,
+    "run2268": 42429116064,
+    "decision": "HOLD_RELEASE_COMPOSITION_GUARD_EXACT_AS_EXPECTED_UNDECLARED_SOURCE",
+    "next": "SOURCE_REGISTER_THEN_REPROOF"
+  },
+  "notDeployed": true,
+  "devPublished": false,
+  "production": false,
+  "hrWrites": 0,
+  "businessWrites": 0,
+  "humanAcceptance": "PENDING",
+  "gate20": "HOLD",
+  "gate21": "HOLD"
+}
