@@ -6027,7 +6027,7 @@
     "production": false
   },
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V592_2026-11-07.json",
-  "findingsLedgerExpectedGitBlob": "35a765315adf3404641577a15cb720dfac07d67e",
+  "findingsLedgerExpectedGitBlob": "0642fba02e491a7d0cc00d20d49fbaa16a8e16df",
   "nextFindingId": "VRM-317",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
