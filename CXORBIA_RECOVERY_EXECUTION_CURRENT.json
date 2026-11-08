@@ -5131,7 +5131,7 @@
     },
     "ledger": {
       "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V590_2026-11-07.json",
-      "gitBlob": "013ac87157d19ea8efd559f2f018e66b3b71ec6e"
+      "gitBlob": "cddad2036bcf159fdd9dbcd81663be11d992d18f"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2280_VRM316_R2_EXACT_DEV_E2E_FAIL_20261107.json",
@@ -6031,7 +6031,7 @@
     "production": false
   },
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V590_2026-11-07.json",
-  "findingsLedgerExpectedGitBlob": "013ac87157d19ea8efd559f2f018e66b3b71ec6e",
+  "findingsLedgerExpectedGitBlob": "cddad2036bcf159fdd9dbcd81663be11d992d18f",
   "nextFindingId": "VRM-317",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",

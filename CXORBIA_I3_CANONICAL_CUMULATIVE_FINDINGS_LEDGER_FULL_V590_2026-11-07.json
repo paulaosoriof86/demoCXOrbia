@@ -14,9 +14,9 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "2dc7e4ee49dd2ed97ff7dad0dce2096d9dc6b97e",
-    "sourceTree": "12c2d95cfc28c0176e1226b3154d12e3eb0a81e9",
-    "predecessorSha": "c794fcbd4c7fde5629ba582ede054d0560b26379",
+    "sourceSha": "c70352004ab580274656a80d69bb166c4da8ed9f",
+    "sourceTree": "1f9588ca5df0b02d325b87ccbe9372c981c27e44",
+    "predecessorSha": "2dc7e4ee49dd2ed97ff7dad0dce2096d9dc6b97e",
     "production": false,
     "state": "SOURCE_ONLY_PROVEN_PENDING_RUNTIME_AND_HOSTING_DEV",
     "november2026AutomaticPeriodSourceProof": {
