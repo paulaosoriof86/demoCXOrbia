@@ -1,0 +1,151 @@
+{
+  "schemaVersion": "CXORBIA_I3_20261109_ROLE_E2E_FOCAL_RECEIPT_V1",
+  "date": "2026-11-09",
+  "timeZone": "America/Guatemala",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadBefore": "bf30b4cedc7f7e897defdd9e1a384f016dda2a37",
+  "productSource": "e10b1c24e17879872f9030185b988ae7dbac3faa",
+  "productTree": "b77c7bcab0b7e73b28dbda71b464c2592d4b6634",
+  "devHosting": "sites/cxorbia-backend-dev/versions/6216d064773ad763",
+  "devRuntime": "cxorbia-live-hr-dev-00367-2dn",
+  "hrReadRevision": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+  "priorAdminReceipt": "docs/checkpoints/CXORBIA_I3_BROWSER_FOCAL_MODULE_EVIDENCE_20261109.json",
+  "identityAndSession": {
+    "admin": "Chrome connected authenticated Administration on web.app",
+    "shopperJulissa": "Chrome connected authenticated independent Julissa Flores on firebaseapp.com",
+    "shopperStiven": "Chrome connected authenticated independent Stiven López on firebaseapp.com",
+    "testCredentials": "not recorded",
+    "note": "Same project/DEV; independent SESSION auth sessions; production not accessed or changed"
+  },
+  "tests": [
+    {
+      "case": "B2-JULISSA-PROFILE",
+      "route": "Shopper > Mi Perfil",
+      "result": "PASS_FOCAL",
+      "evidence": "10 associated visits, 9 realizadas, 9 submitidas, 7 pagos confirmados; 1 active NOV + 9 historical; filter Pagadas=7."
+    },
+    {
+      "case": "B3-JULISSA-MISVISITAS-HISTORY",
+      "route": "Shopper > Mis Visitas > Historial",
+      "result": "PARTIAL_PASS_WITH_CROSSMODULE_FAIL_VRM320",
+      "evidence": "History contains 9 real visits and opens exact historical detail; payment column shows em dash for all 9 despite 7 financial paid; same historical August visit detail says Pago confirmado."
+    },
+    {
+      "case": "B5-JULISSA-BENEFITS",
+      "route": "Shopper > Mis Beneficios",
+      "result": "PASS_FOCAL_PRIOR_IN_SAME_SESSION",
+      "evidence": "Historical 9; paid confirmed 7; pending 2; clicked one liquidation detail and saw paid confirmed; no new payments. Later same-session return to benefits remained Validando fuente operacional and is NOT counted as additional PASS."
+    },
+    {
+      "case": "B4-D06-JULISSA-BANK_RENDER",
+      "route": "Shopper > Certificación",
+      "result": "PASS_FOCAL_RENDER_NO_SUBMIT",
+      "evidence": "Two published October banks isolated: main 8 questions/32 radio options, Banco IA 15 questions/60 radio options; no answers selected or submitted."
+    },
+    {
+      "case": "B4-D06-STIVEN-APPROVAL",
+      "route": "Shopper > Certificación",
+      "result": "PASS_FOCAL_APPROVAL_PRESERVED",
+      "evidence": "Approved 100% 2026-11-07 01:37:15, 80% minimum, ACK remoto marker and project history persisted after Admin QA void, bank selection and questionnaire form available; no new attempt submitted."
+    },
+    {
+      "case": "B4-D06-ADMIN-VOID-EXACT_QA",
+      "route": "Admin > Certificación > Anular intento de prueba",
+      "result": "PASS_FOCAL_PROVIDER_BACKED_ACK_AND_NAVIGATION_READBACK",
+      "authorization": "Paula explicitly approved this exact DEV QA mutation during this turn",
+      "target": "Stiven López · 2026-11-07T01:36 · 0% · certbank-cinepolis-cinepolis-2026-10",
+      "before": [
+        "2026-11-07T01:37 100%",
+        "2026-11-07T01:36 0%",
+        "2026-11-06T22:23 0%"
+      ],
+      "action": "Selected exact 01:36 zero-percent record; documented reason; typed ANULAR PRUEBA; clicked once; no other writes.",
+      "serverAcknowledgementVisible": "Intento de prueba anulado y verificado; historial preservado.",
+      "afterNavigationReadback": [
+        "2026-11-07T01:37 100%",
+        "2026-11-06T22:23 0%"
+      ],
+      "shopperHistoryReadback": "The 01:36 0% attempt remains in Shopper historic list as No alcanzado, without explicit Anulado badge; historic audit retained, inactive admin-selection confirmed.",
+      "limitation": "In-app provider ACK + Admin UI re-navigation verified; raw backend tombstone was not independently inspected, new post-void submission was not performed and other-bank server eligibility not end-to-end proven."
+    }
+  ],
+  "newOpenFinding": {
+    "id": "VRM-320",
+    "classification": "MAPPING_FAILURE",
+    "severity": "P0",
+    "source": "app/modules/misvisitas.js historyHTML",
+    "rootCause": "pay branch evaluates !vc || vc.paymentState === 'no_aplica' before financePaymentForVisit(v); thus canonical paid finance state is masked in historical rows; modal detail correctly uses financePaymentForVisit(v).",
+    "observed": "Julissa historical August C. Sankris Mall: history Pago —, same detail Pago confirmado, Mi Perfil and Beneficios paid 7.",
+    "targetedRemediation": "Use financePaymentForVisit(v) precedence to show Pagado (confirmado) before no_aplica fallback, then contract pending. Add regression for paid+no_aplica, unpaid+no_aplica, unpaid+pending, different tenant/period.",
+    "fixState": "PROPOSED_NOT_COMMITTED_NO_DEV_DEPLOY",
+    "blocking": [
+      "B3 Mis Visitas",
+      "B2/B5 visual cross-module parity"
+    ],
+    "priorRelatedFindings": [
+      "VRM-271",
+      "VRM-257"
+    ]
+  },
+  "screenshots": [
+    {
+      "path": "docs/evidence/CXORBIA_I3_20261109_SHOPPER_JULISSA_PERFIL_10_9_9_7.jpg",
+      "sha": "d605d9d5ffd16a1b304c1e9aa810e706043061c0",
+      "mime": "image/jpeg"
+    },
+    {
+      "path": "docs/evidence/CXORBIA_I3_20261109_SHOPPER_JULISSA_PAGO_HISTORIAL_CONTRADICCION.jpg",
+      "sha": "56ec14d4f1e7de36546ef6b3b82881834c056361",
+      "mime": "image/jpeg"
+    },
+    {
+      "path": "docs/evidence/CXORBIA_I3_20261109_ADMIN_CERT_VOID_ACK_READBACK.jpg",
+      "sha": "0e7227b2a4c0c3c179cbd4bedb7dcd0cbeaa9640",
+      "mime": "image/jpeg"
+    },
+    {
+      "path": "docs/evidence/CXORBIA_I3_20261109_SHOPPER_JULISSA_BANK_15Q.jpg",
+      "sha": "44f29942222f392d7a57f925f06ae0f17e669051",
+      "mime": "image/jpeg"
+    },
+    {
+      "path": "docs/evidence/CXORBIA_I3_20261109_SHOPPER_STIVEN_CERT_100_APPROVED.jpg",
+      "sha": "c8458c801441f6d31905a8341a89555d0914c4d3",
+      "mime": "image/jpeg"
+    }
+  ],
+  "moduleTruth": {
+    "priorMATCH": 5,
+    "total": 21,
+    "newWholeModuleCertifications": 0,
+    "technicalFocalPasses": [
+      "B2 Mi Perfil",
+      "B4 Cert QA void",
+      "B4 Shopper banks 8/15",
+      "B5 historical Benefits",
+      "B6 Admin counters (see prior receipt)"
+    ],
+    "knownCrossModuleFail": [
+      "B3 Mis Visitas historical payment representation"
+    ],
+    "newBlockLocked": 0,
+    "humanPerBlockAcceptance": "PENDING",
+    "tinyfish": "NOT_EXECUTED_ENVIRONMENT_FAILURE_SESSION_RESTORE_B1_EXCEPTION_PRESERVED",
+    "phaseA": "HOLD",
+    "I4": "NOT_STARTED"
+  },
+  "safety": {
+    "productionWrites": 0,
+    "hrWrites": 0,
+    "paymentWrites": 0,
+    "firestoreDirectWrites": 0,
+    "authAccountMutations": 0,
+    "resourceWrites": 0,
+    "devTestAttemptVoids": 1,
+    "codeChanges": 0,
+    "deploys": 0,
+    "providerEffect": "ONE_SCOPED_DEV_CERTIFICATION_TEST_ATTEMPT_VOID",
+    "historicalApproval100Preserved": true
+  }
+}
