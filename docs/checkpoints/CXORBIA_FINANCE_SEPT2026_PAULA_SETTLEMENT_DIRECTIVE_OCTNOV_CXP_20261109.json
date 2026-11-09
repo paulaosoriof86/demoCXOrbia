@@ -17,7 +17,7 @@
     "amount": 7300,
     "currency": "GTQ",
     "date": "2026-10-31",
-    "meaning": "Money sent by T&A to the operator, accounts-receivable/treasury collection; not equal to payout amount for each individual shopper",
+    "meaning": "One of two legitimate T&A advances: NOV 2026 program USD1000 usually converted at actual FX, visible +Q7300 GTQ; received 2026-10-31 per owner, used toward older open shopper obligations. This is cash intake, not shopper payout evidence.",
     "bankReceipt": "NOT_VERIFIED_IN_CONNECTED_SOURCES",
     "shouldNotDriveShopperPaidFlagAlone": true
   },
@@ -35,7 +35,7 @@
     "Each unpaid Sept row must resolve honorario+reembolso, eligible status, country/currency, financial source and payment reference",
     "One idempotent payment register per country/currency and correct date, 2026-10-31; retain external confirmation distinction",
     "Read provider ACK, reload Admin Finance and Shopper Mis Beneficios/Mis Visitas for representative GT/HN; verify Oct open and Nov accrual",
-    "Record T&A Q7300 remittance as separate inbound income only once when bank receipt/source and project ledger matching are verified"
+    "Do not register additional inbound income: verify already-present two Q7300 advances; correct existing November row's concept/date only upon exact ID and bank source readback."
   ],
   "scopeGuards": {
     "perShopperExceptions": false,
@@ -71,14 +71,44 @@
       "2026-10",
       "2026-11"
     ],
-    "receivedDate": "BOTH_WITHIN_2026_10",
+    "receivedDate": "NOV_ADVANCE_RECEIVED_2026-10-31; OCT_ADVANCE_BANK_DATE_UNVERIFIED",
     "novemberAdvanceReceiptDateFromEarlierOwnerDirective": "2026-10-31",
-    "octoberAdvanceReceiptDate": "NOT_BANK_VERIFIED; DEV displays 2026-10-01",
+    "octoberAdvanceReceiptDate": "DEV_DISPLAYS_2026-10-01; BANK_DATE_UNVERIFIED; USUAL_END_OF_PREVIOUS_MONTH",
     "allocation": "Funds applied to obligations of earlier, still-unpaid program visit periods; not automatically shopper payment confirmations.",
     "duplicateConcern": "CLOSED_DISTINCT_REAL_CASH_RECEIPTS",
-    "providerMapping": "PENDING_NOVEMBER_ADVANCE_ROW_ID_AND_DATE_LABEL_CORRECTION",
+    "providerMapping": "OWNER_CONFIRMS_OCTOBER_NOTE_ROW_AND_NOVEMBER_UNDESCRIBED_ROW; EXACT_PROVIDER_IDS_NOT_YET_VERIFIED",
     "noNewRemittanceWrite": true,
     "readbackReceiptPath": "docs/checkpoints/CXORBIA_I3_ADMIN_CHROME_B4_B8_READBACK_20261109.json",
-    "latestReconciliationDecisionCommit": "b26866b1e2b3e3cfb1ce100be8330d8e77caa7af"
-  }
+    "latestReconciliationDecisionCommit": "b26866b1e2b3e3cfb1ce100be8330d8e77caa7af",
+    "ownerConfirmedRowMapping": {
+      "october": {
+        "existingVisibleLabel": "Remesa de anticipo Octubre Cinépolis",
+        "visibleDate": "2026-10-01",
+        "visibleGTQ": 7300,
+        "note": "Se pagó con esto agosto y parte de septiembre",
+        "bankReceiptDate": "UNVERIFIED"
+      },
+      "november": {
+        "existingVisibleLabel": "Remesa de anticipo Octubre Cinépolis",
+        "visibleDate": "2026-10-01",
+        "visibleGTQ": 7300,
+        "note": "none visible",
+        "actualBankReceiptDatePerOwner": "2026-10-31",
+        "correctProgramLabel": "Remesa de anticipo Noviembre Cinépolis"
+      },
+      "platformCorrection": "Update existing second row only after source movement ID and safe edit path; no deletion, recreation, or third income."
+    },
+    "usualTAMonthlyAdvance": {
+      "ownerConfirmedOn": "2026-11-09",
+      "originAmount": 1000,
+      "originCurrency": "USD",
+      "usualTiming": "At the end of the month, typically as advance for the following program month",
+      "indicativeGTQPerUSD": 7.3,
+      "observedGTQPerExistingRow": 7300,
+      "validationRule": "For each receipt preserve its original USD, actual conversion/FX, value date, deposit reference and GTQ booked. 7.3 is typical, not a fixed exchange rate or proof of every bank deposit.",
+      "financeSemantics": "Advance month is distinct from cash receipt date and from older shopper payout obligation period; do not net paid flags from customer advances."
+    }
+  },
+  "reasonForHoldCurrent20261109": "Admin Chrome finance readback exists and owner identified the November visible row, but exact provider movement IDs, bank FX/date evidence, and safe non-destructive edit action remain unverified. No provider finance writes.",
+  "doNotTreatUsualUSD1000AsThirdMovement": true
 }
