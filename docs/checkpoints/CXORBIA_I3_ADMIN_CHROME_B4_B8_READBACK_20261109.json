@@ -94,7 +94,34 @@
         }
       ],
       "displayedAdvanceTotalGTQ": 14600,
-      "conflict": "Two same-date Q7300 inbound-advance movements appear in DEV, whereas owner attests one Q7300 remittance on 2026-10-31. Possible duplicate/misdating; not bank-verified. No deletion/edit/third movement permitted without exact reconciliation."
+      "conflict": "Owner now confirms TWO legitimate Q7300 advances for program October and program November; both DEV rows currently labelled October and dated Oct1. The duplicate concern is CLOSED; month label/date mapping remains to be verified without destructive rewrite.",
+      "ownerClarification20261109": {
+        "confirmedBy": "Paula Andrea Osorio Franco, direct project conversation",
+        "distinctIncomeCount": 2,
+        "eachAmount": 7300,
+        "currency": "GTQ",
+        "aggregateAmount": 14600,
+        "advances": [
+          {
+            "programPeriod": "OCT 2026",
+            "receivedIn": "OCT 2026",
+            "dateVisibleInDev": "2026-10-01",
+            "actualReceiptDate": "NOT_BANK_VERIFIED"
+          },
+          {
+            "programPeriod": "NOV 2026",
+            "receivedIn": "OCT 2026",
+            "dateVisibleInDev": "2026-10-01",
+            "ownerPreviouslyStatedReceiptDate": "2026-10-31",
+            "actualRecordID": "NOT_MAPPED"
+          }
+        ],
+        "actualUse": "Fund earlier unsettled shopper obligation periods; economic allocation can differ from month of advance.",
+        "ruling": "TWO_LEGITIMATE_DISTINCT_INCOME_MOVEMENTS_NOT_DUPLICATE",
+        "totalIsCorrect": true,
+        "nonOperatingClassification": "Advance cash flow only, not earned operating revenue or proof of individual shopper payout.",
+        "requiredCorrectiveAction": "Preserve both entries. Map exact provider movement for November advance, correct program label and receipt date only after exact ID/source verification; never delete/recreate or book third Q7300."
+      }
     },
     "november2026": {
       "liquidationsShown": 12,
@@ -127,7 +154,7 @@
     "treatment": "September paid is owner business attestation not yet reflected in DEV. No paid flags, remittance, reconciliations or CxP records altered. Do not treat T&A remittance as proof of per-shopper bank payments.",
     "nextActions": [
       "Match bank/finance Excel and per-visit/currency/source IDs to September 44 liquidations without duplicating existing payments",
-      "Adjudicate two October +Q7300 records and Oct1 vs Oct31 date against exact remittance reference before edit/remove",
+      "Preserve two distinct Q7300 advances; verify and rename November program advance and its Oct31 receipt date by exact source record ID (no duplicate/delete)",
       "Run authorized provider ACK/readback/reload idempotent payment registration and representative GT/HN Shopper readback",
       "Confirm October open payables and November accrual against HR source period and activity"
     ]
@@ -190,7 +217,7 @@
   },
   "blockers": [
     "FINANCE_SEP_OWNER_ATTESTATION_NOT_MATCHED_TO_EXACT_SOURCE_AND_PAYMENT_IDS",
-    "OCT_Q7300_TWO_VISIBLE_ADVANCES_CONFLICT_WITH_ONE_OCT31_ATTESTATION",
-    "B4_TEST_CERT_RESET_AND_REISSUE_E2E_NOT_YET_CERTIFIED"
+    "B4_TEST_CERT_RESET_AND_REISSUE_E2E_NOT_YET_CERTIFIED",
+    "NOV_PROGRAM_ADVANCE_SOURCE_ID_AND_OCT31_RECEIPT_DATE_NOT_YET_VERIFIED_OR_CORRECTED"
   ]
 }
