@@ -61,6 +61,8 @@ test('C3 preterminal can audit the HOLD candidate without pretending it is 21/21
   assert.doesNotMatch(pre,/assertAllModulesAccepted/);
   assert.doesNotMatch(pre,/C3_UNACCEPTED_SOURCE_FILES/);
   assert.match(pre,/PENDING_OWNER_PROOF_SERVED/);
+  assert.match(pre,/PENDING_BLOB_PROVENANCE_SERVED/);
+  assert.match(pre,/HISTORICAL_PROVEN_FINDING_WITHOUT_CURRENT_PATH_BOUND_BLOB/);
   assert.match(pre,/PENDING_INDEPENDENT_APPROVAL_MAPPING/);
   assert.match(pre,/terminalEligible:/);
   assert.match(job,/HOLD_C3_PRETERMINAL_MODULE_TRUTH_EVIDENCE_PENDING/);

@@ -50,6 +50,7 @@ const LEGACY_DOMAIN_ALIASES=Object.freeze({
   'client-portal':'client-portal-reportkit'
 });
 const unauthorized=[];
+const pendingProvenance=[];
 const mappingPending=[];
 const authorityRows=[];
 const sourceFiles=(m.sourceFiles||[]).map(orig=>{
@@ -97,15 +98,25 @@ const sourceFiles=(m.sourceFiles||[]).map(orig=>{
   }else if(findingEntries.length){
     const states=findingEntries.map(([id,v])=>({id,state:String(v?.state||'')}));
     const allProven=states.every(x=>isProvenState(x.state));
-    if(allProven)unauthorized.push({path:f.path,domain:f.domain,actual,reason:'PROVEN_FINDING_WITHOUT_PATH_BOUND_BLOB_AUTHORITY',states});
-    else{
+    if(allProven){
+      // Old finding PASS is historical evidence, not approval of a newer byte blob.
+      f.approvedSourceCommit=null;f.approvedBlob=null;f.provenanceIndependent=false;
+      f.approvalStatus='PENDING_CURRENT_BLOB_PROVENANCE';
+      f.classification='PENDING_BLOB_PROVENANCE_SERVED';
+      f.pendingProvenanceReason='HISTORICAL_PROVEN_FINDING_WITHOUT_CURRENT_PATH_BOUND_BLOB';
+      pendingProvenance.push({path:f.path,domain:f.domain,reason:f.pendingProvenanceReason,findingIds:states.map(x=>x.id)});
+    }else{
       f.approvedSourceCommit=null;f.approvedBlob=null;f.provenanceIndependent=false;
       f.approvalStatus='PENDING_FINDING_PROOF';
       f.classification=changedVsServed?'COMPOSED_NOT_DEPLOYED':'PENDING_OWNER_PROOF_SERVED';
       f.pendingFindingIds=states.map(x=>x.id);
     }
   }else{
-    unauthorized.push({path:f.path,domain:f.domain,actual,reason:'CURRENT_BLOB_HAS_NO_APPROVED_OR_PATH_BOUND_FINDING_AUTHORITY'});
+    f.approvedSourceCommit=null;f.approvedBlob=null;f.provenanceIndependent=false;
+    f.approvalStatus='PENDING_CURRENT_BLOB_PROVENANCE';
+    f.classification='PENDING_BLOB_PROVENANCE_SERVED';
+    f.pendingProvenanceReason='CURRENT_BLOB_WITHOUT_PATH_BOUND_APPROVAL_REFERENCE';
+    pendingProvenance.push({path:f.path,domain:f.domain,reason:f.pendingProvenanceReason,findingIds:[]});
   }
   return f;
 });
@@ -182,6 +193,7 @@ const out={...m,
     composedNotDeployedModules:modules.filter(x=>x.classification==='COMPOSED_NOT_DEPLOYED').map(x=>x.domain),
     pendingFileCount:uncoveredFiles.length,
     pendingServedOwnerProofFiles:sourceFiles.filter(x=>x.classification==='PENDING_OWNER_PROOF_SERVED').map(x=>x.path),
+    pendingBlobProvenanceFiles:pendingProvenance,
     pendingMappingApprovalFiles:mappingPending.map(x=>x.path),
     terminalEligible:modules.every(x=>x.classification==='MATCH')&&uncoveredFiles.length===0,
     unauthorizedFileCount:0,
@@ -202,6 +214,7 @@ console.log(JSON.stringify({
   composedNotDeployedModules:out.preTerminalComposition.composedNotDeployedModules.length,
   pendingFileCount:out.preTerminalComposition.pendingFileCount,
   pendingMappingApprovalCount:out.preTerminalComposition.pendingMappingApprovalFiles.length,
+  pendingBlobProvenanceCount:out.preTerminalComposition.pendingBlobProvenanceFiles.length,
   terminalEligible:out.preTerminalComposition.terminalEligible,
   production:false
 },null,2));
