@@ -21017,11 +21017,15 @@
     "october2026": "UNPAID_ACCOUNTS_PAYABLE",
     "november2026": "INCREMENTAL_ACCOUNTS_PAYABLE_WHEN_EARNED",
     "financialRecordsUpdated": false,
-    "reason": "Need exact idempotent shopper payout line mapping; remittance from T&A is not bank proof per shopper; currently Shopper Sep displays pending."
+    "reason": "Need exact idempotent shopper payout line mapping; remittance from T&A is not bank proof per shopper; currently Shopper Sep displays pending.",
+    "receiptPath": "docs/checkpoints/CXORBIA_FINANCE_SEPT2026_PAULA_SETTLEMENT_DIRECTIVE_OCTNOV_CXP_20261109.json",
+    "receiptCommit": "b19bfec5c2fe34e672c21e7827dac2a842fb4a9c"
   },
   "postproductionTableDesign20261109": {
     "priority": "POST_I4_NONBLOCKING",
     "scope": "Shared tables and listings across Admin/Shopper/Finance; visual hierarchy, typography, spacing, borders, responsivity, state badges, accessibility",
-    "currentVisualPassPreserved": true
+    "currentVisualPassPreserved": true,
+    "backlogPath": "docs/checkpoints/CXORBIA_POSTPROD_TRANSVERSAL_TABLES_DESIGN_BLOCK_20261109.md",
+    "backlogCommit": "2dcb3ea140d24910b00de8cc82900a8faa2113fd"
   }
 }
