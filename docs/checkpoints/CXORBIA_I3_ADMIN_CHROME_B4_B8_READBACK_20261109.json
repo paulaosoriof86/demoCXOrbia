@@ -1,0 +1,196 @@
+{
+  "schemaVersion": "cxorbia.i3.admin-chrome-b4-b8-readback.v1",
+  "observedDateLocal": "2026-11-09",
+  "timezone": "America/Guatemala",
+  "project": "T&A / Cinépolis",
+  "environment": "DEV_AUTHENTICATED_ADMIN",
+  "browser": "Connected Chrome extension; no TinyFish",
+  "sourceAuthority": {
+    "repo": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "governanceHeadAtReadback": "a3a2bbdbbb94cebc4c46dc74600439cc5e1aa92c",
+    "productSourceShaPriorVerified": "1c31ebd95857ada0ae32ed3070db75fe0f02bfda",
+    "productTreePriorVerified": "dab893606619575e00dc59ff30eb055d1abe7f1d",
+    "adminUrlOrigin": "https://cxorbia-backend-dev.web.app",
+    "productChangesThisRun": false
+  },
+  "finance": {
+    "ownerDirective": "September shopper obligations externally paid on 2026-10-31; October obligations unpaid; November accrue on valid completed work; T&A remittance Q7,300 on 2026-10-31 is inbound and separate from shopper payouts.",
+    "september2026": {
+      "liquidations": 44,
+      "financialReview": 43,
+      "eligibleToRecord": 1,
+      "paidConfirmedInModule": 0,
+      "countryCurrencyBreakdown": [
+        {
+          "country": "GT",
+          "currency": "GTQ",
+          "visits": 34,
+          "operationalTotal": 7363
+        },
+        {
+          "country": "HN",
+          "currency": "HNL",
+          "visits": 10,
+          "operationalTotal": 5936
+        }
+      ],
+      "singleExactCxp": {
+        "country": "HN",
+        "currency": "HNL",
+        "amount": 586,
+        "shopper": "Manuel Eguigure"
+      },
+      "noPaymentMovementsInProjectScope": true
+    },
+    "october2026": {
+      "liquidations": 43,
+      "financialReview": 42,
+      "eligibleToRecord": 1,
+      "paidConfirmedInModule": 0,
+      "countryCurrencyBreakdown": [
+        {
+          "country": "GT",
+          "currency": "GTQ",
+          "visits": 33,
+          "operationalTotal": 7153
+        },
+        {
+          "country": "HN",
+          "currency": "HNL",
+          "visits": 10,
+          "operationalTotal": 6171
+        }
+      ],
+      "singleExactCxp": {
+        "country": "GT",
+        "currency": "GTQ",
+        "amount": 205,
+        "shopper": "Julissa Flores"
+      },
+      "projectMovementRecords": [
+        {
+          "date": "2026-10-13",
+          "label": "Contabilidad Septiembre",
+          "amount": -200,
+          "currency": "GTQ",
+          "status": "Pagado"
+        },
+        {
+          "date": "2026-10-01",
+          "label": "Remesa de anticipo Octubre Cinépolis",
+          "amount": 7300,
+          "currency": "GTQ",
+          "status": "Conciliado",
+          "note": "Se pagó con esto agosto y parte de septiembre"
+        },
+        {
+          "date": "2026-10-01",
+          "label": "Remesa de anticipo Octubre Cinépolis",
+          "amount": 7300,
+          "currency": "GTQ",
+          "status": "Conciliado",
+          "note": "none visible"
+        }
+      ],
+      "displayedAdvanceTotalGTQ": 14600,
+      "conflict": "Two same-date Q7300 inbound-advance movements appear in DEV, whereas owner attests one Q7300 remittance on 2026-10-31. Possible duplicate/misdating; not bank-verified. No deletion/edit/third movement permitted without exact reconciliation."
+    },
+    "november2026": {
+      "liquidationsShown": 12,
+      "financialReview": 12,
+      "eligibleToRecord": 0,
+      "paidConfirmedInModule": 0,
+      "breakdownShown": [
+        {
+          "country": "GT",
+          "currency": "GTQ",
+          "visits": 2,
+          "operationalTotal": 450
+        },
+        {
+          "country": "HN",
+          "currency": "HNL",
+          "visits": 10,
+          "operationalTotal": 6171
+        }
+      ],
+      "sourceDateCaution": "Some HN entries shown under NOV scope have October realization dates. Needs live HR period attribution verification; no assumption of November payable or a coding defect."
+    },
+    "crossModuleCodeReadback": {
+      "owner": "app/modules/finanzas.js",
+      "blobSha": "f1545f0439863090e04b4729e8483616f7d209cf",
+      "eligibilityLogic": "estado===validada, financialSourceStatus===reconciled_exact, exact totals and currency; other reviewed/operational states block payment registration",
+      "interpretation": "Explicit protective gate, not evidence that all submission-ready rows are eligible",
+      "providerWritesExecuted": false
+    },
+    "treatment": "September paid is owner business attestation not yet reflected in DEV. No paid flags, remittance, reconciliations or CxP records altered. Do not treat T&A remittance as proof of per-shopper bank payments.",
+    "nextActions": [
+      "Match bank/finance Excel and per-visit/currency/source IDs to September 44 liquidations without duplicating existing payments",
+      "Adjudicate two October +Q7300 records and Oct1 vs Oct31 date against exact remittance reference before edit/remove",
+      "Run authorized provider ACK/readback/reload idempotent payment registration and representative GT/HN Shopper readback",
+      "Confirm October open payables and November accrual against HR source period and activity"
+    ]
+  },
+  "certificationB4": {
+    "banksFound": 4,
+    "publishedOctoberBanks": [
+      {
+        "label": "main",
+        "questionCount": 8,
+        "passingPercent": 80
+      },
+      {
+        "label": "Banco IA pendiente de revisión",
+        "questionCount": 15,
+        "passingPercent": 80
+      }
+    ],
+    "pendingReviewSeptemberBanks": 2,
+    "historicalEvidenceRecords": 40,
+    "legacyPassCount": 38,
+    "legacyFailCount": 2,
+    "shopperCount": 14,
+    "ownerClassifiesCurrentCertificatesAsTests": true,
+    "controlReadback": {
+      "invalidateTestAttempt": "Exact attempt picker with reason and ANULAR PRUEBA acknowledgment; soft invalidation, history preserved",
+      "testAttemptsAvailable": [
+        {
+          "shopper": "Stiven López",
+          "date": "2026-11-07",
+          "scorePercent": 100
+        },
+        {
+          "shopper": "Stiven López",
+          "date": "2026-11-06",
+          "scorePercent": 0
+        }
+      ],
+      "recertification": "Admin dialog defaults to all certified shoppers, allows single-shopper scope; potential notifications; no request submitted",
+      "bulkArchiveOrResetTestCertification": "Not exposed in observed UI"
+    },
+    "evidenceType": "Authenticated Chrome Admin DOM readback plus screenshot 2026-11-09; no test result mutation",
+    "status": "FOCAL_READ_ONLY_PASS; BLOCK_LOCKED=false",
+    "nextAcceptance": "Prove end-to-end single shopper test certification issuance, safe test invalidation/replacement with provider ACK and shopper readback, and clarify project-wide test reset without destroying legacy audit."
+  },
+  "priorAcceptance": {
+    "visualHumanB3": "VRM-320 focal PASS preserved",
+    "b3FullLock": false,
+    "i3Gate20": "HOLD",
+    "i3Gate21": "HOLD",
+    "production": "DO_NOT_TOUCH"
+  },
+  "mutationLog": {
+    "financialWrites": 0,
+    "certificationWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "deploys": 0
+  },
+  "blockers": [
+    "FINANCE_SEP_OWNER_ATTESTATION_NOT_MATCHED_TO_EXACT_SOURCE_AND_PAYMENT_IDS",
+    "OCT_Q7300_TWO_VISIBLE_ADVANCES_CONFLICT_WITH_ONE_OCT31_ATTESTATION",
+    "B4_TEST_CERT_RESET_AND_REISSUE_E2E_NOT_YET_CERTIFIED"
+  ]
+}
