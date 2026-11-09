@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm320-human-chrome-acceptance.v1",
+  "dateLocal": "2026-11-09",
+  "timezone": "America/Guatemala",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "findingId": "VRM-320",
+  "blockId": "B3",
+  "scope": "FOCAL_MIS_VISITAS_HISTORICAL_PAYMENT_BADGE",
+  "status": "PASS_FUNCTIONAL_AND_PAULA_VISUAL_FOCAL_B3_NOT_BLOCK_LOCKED",
+  "userDecision": {
+    "author": "Paula Andrea Osorio Franco",
+    "verbatim": "doy pass Visual",
+    "source": "direct_user_message_2026-11-09",
+    "interpretation": "Explicit visual acceptance of already demonstrated VRM-320; does not cover untested B3 Agendar/Check-in or all 21 modules."
+  },
+  "owner": {
+    "sourceFile": "app/modules/misvisitas.js",
+    "qaFiles": [
+      "tools/qa/cxorbia-i3-work-uat-misvisitas-payment-source.test.mjs",
+      "tools/qa/cxorbia-i3-d06-misvisitas-cross-period-classification.test.mjs"
+    ],
+    "sourceSha": "1c31ebd95857ada0ae32ed3070db75fe0f02bfda",
+    "treeSha": "dab893606619575e00dc59ff30eb055d1abe7f1d",
+    "approach": "Finance payment-confirmed precedence shared for all shoppers; no user-specific exception."
+  },
+  "dev": {
+    "run2322": 42658036502,
+    "run2323": 42659721668,
+    "artifactId": 13692718518,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/04b0a8ac252488fd",
+    "runtimeRevision": "cxorbia-live-hr-dev-00368-9tb",
+    "hostedOwnerSha256": "cc770a56e117e99f6b7c3d591f979862c22d3ac2cee7ce0fc2ae9724b935914b",
+    "regression": "12_OF_12_PASS",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2322_VRM320_B3_EXACT_DEV_MATERIALIZATION_20261109.json"
+  },
+  "chromeE2E": {
+    "method": "Authenticated Chrome extension DEV, not TinyFish; user's explicitly requested replacement for visual tests",
+    "shopperStiven": {
+      "visits": 10,
+      "active": 1,
+      "historical": 8,
+      "otherPeriod": 1,
+      "paidHistorical": 5
+    },
+    "shopperJulissa": {
+      "visits": 10,
+      "active": 1,
+      "historical": 9,
+      "paidHistoricalBeforeNewSepPaymentReconciliation": 7,
+      "pendingHistoricalBeforeNewSepPaymentReconciliation": 2,
+      "profileRealized": 9,
+      "profileSubmitted": 9
+    },
+    "adminJulissaReadback": "10 visits, 9 realized, 1 ongoing",
+    "before": "Seven paid historical visits displayed — in Mis Visitas",
+    "after": "Seven finance-confirmed historical visits now show Pagado (confirmado), matching Perfil and Beneficios",
+    "screenshotHashes": {
+      "julissaMisVisitas": "33b7cde644c213f6f64864c773135080b784b3c7fe8579b1a3ac883ab53688cd",
+      "julissaBeneficios": "dc00182b821b706d828e61cbf4eefa8f6e80391ea31cd6af34113b21b9335d93",
+      "julissaPerfil": "9c992b1fafd4e43c6af0e3b3f501721c1530496b8b413d620aa54a1207100312"
+    },
+    "evidenceReport": "CXORBIA_I3_VRM320_CHROME_E2E_REPORT_2026-11-09.md",
+    "testScopeNote": "Readback only; no mutation of visits, certifications or finance."
+  },
+  "separateFinancialChangeNotice": {
+    "author": "Paula",
+    "assertion": "September 2026 paid as of Oct 31; October unpaid; November newly accrued payable; T&A remittance Q7,300 received Oct 31",
+    "status": "BUSINESS_DIRECTIVE_RECEIVED_UNRECONCILED_IN_FINANCE_BACKEND",
+    "instruction": "Track separately from VRM-320 frontend code acceptance. Client remittance != proof of each shopper payout. Per-visit idempotent payment batch requires exact record mapping and provider readback."
+  },
+  "postProduction": {
+    "designBacklog": "TRANSVERSAL_TABLES_AND_LISTS_VISUAL_STANDARD",
+    "doesNotBlockI3": true
+  },
+  "safety": {
+    "noProductionWrites": true,
+    "noFinanceWritesInThisReceipt": true,
+    "noHrWrites": true,
+    "noFirestoreWrites": true,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorization": false
+  },
+  "moduleTruth": {
+    "matchesPreserved": 5,
+    "total": 21,
+    "fullB3Lock": false,
+    "remainingB3": "Agendar/Reprogramar/Check-in/Camera-GPS/Storage ACK and cross-role state persistence",
+    "tinyfish": "NOT_USED_BY_PAULA_INSTRUCTION_CHROME_REAL_E2E"
+  },
+  "nextAction": "Reconcile September 2026 finance line items by shopper, country, visit and amount; register only traceable confirmed payouts; verify October and November payables remain unpaid; complete B3 E2E."
+}
