@@ -32,7 +32,7 @@
     "finalStatus": "pending_review",
     "minimumPercentRestored": 80,
     "finalVersionObserved": 4,
-    "cleanupStatus": "ATTEMPTED_RECONCILIATION_PENDING_NO_VERIFIED_ACK",
+    "cleanupStatus": "HUMAN_CHROME_NATIVE_CONFIRM_PENDING__NO_ACK",
     "published": false
   },
   "observations": [
@@ -79,7 +79,7 @@
     "humanReceipt": "PENDING",
     "shopperAttemptFlow": "NOT_TESTED",
     "publicationFlow": "NOT_TESTED",
-    "retireFlow": "ATTEMPTED_UNVERIFIED"
+    "retireFlow": "HOLD_BROWSER_NATIVE_CONFIRM_PENDING"
   },
   "safety": {
     "hrWriteCommandsInvoked": 0,
@@ -100,7 +100,7 @@
     "b4": "FOCAL_ADMIN_WRITE_PASS_RETIRED_ATTEMPT_UNVERIFIED_BLOCK_STILL_HOLD"
   },
   "nextActions": [
-    "Reconcile only this exact QA bank retirement on DEV after browser connection recovers, requiring provider ACK/status and independent reload; do not repeat retire command blindly.",
+    "Paula clicks Aceptar on the already-open Chrome native confirm for QA-only bank; then independently reload Admin Certification and verify 4 original banks, 40 historical attempts, and durable provider status. Do not claim retire or retry in automation before that readback.",
     "Run isolated synthetic B3 schedule/check-in provider probe with positive ACK and verified cleanup through authorized CI credentials.",
     "Complete protected Shopper experience E2E and human per-block visual acceptance; update ledger and module truth only with receipts."
   ],
@@ -116,5 +116,23 @@
     "safeDisposition": "DO_NOT_RETRY_OR_CLAIM_DELETION_WITHOUT_FRESH_ACK_RECONCILIATION",
     "productionTouched": false,
     "hrOrPaymentWritesInvoked": false
+  },
+  "retireRecovery20261109": {
+    "status": "HOLD_NO_PROVIDER_ACK",
+    "connection": "Chrome extension reconnected",
+    "newAuthenticatedReadback": {
+      "banks": 5,
+      "qaBankVisible": true,
+      "qaStatus": "pending_review",
+      "historicalAttempts": 40,
+      "approvedHistorical": 38,
+      "failedHistorical": 2
+    },
+    "automatedAccept": "Browser native confirm accept timed out on focus emulation twice; no committed result verified",
+    "exactTarget": "QA DEV B4 20261109 NO PUBLICAR",
+    "browserPrepared": "DEV Admin, Certification, target QA selected, native confirmation currently open; user must click Aceptar once to unblock automation",
+    "noFurtherBlindRetry": true,
+    "noProduction": true,
+    "noHrPaymentWrite": true
   }
 }
