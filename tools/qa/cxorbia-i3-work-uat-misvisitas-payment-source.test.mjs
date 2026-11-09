@@ -39,7 +39,7 @@ function render(options={}){
     period:()=>current,currentPeriodId:current.id,currentProjectId:'qa',
     projects:[current,{id:'qa-2026-09',name:'QA historic',currency:{GT:'Q'}}],
     recordPeriodId:v=>v.periodId,visitsForShopper:()=>rows,
-    visitContract:()=>({paymentState:'pendiente',liquidationState:'pending'}),
+    visitContract:()=>({paymentState:options.paymentState||'pendiente',liquidationState:'pending'}),
     getShopper:()=>({id:'qa-shopper'}),_visitas:rows
   };
   const ui={
@@ -51,7 +51,7 @@ function render(options={}){
   const host=renderModule({data,ui});
   assert.match(host.innerHTML,/Historial de visitas/);
   const count=s=>(host.innerHTML.match(new RegExp(s,'g'))||[]).length;
-  return {paid:count('Pagado \\(confirmado\\)'),pending:count('Pago pendiente de confirmación'),calls};
+  return {paid:count('Pagado \\(confirmado\\)'),pending:count('Pago pendiente de confirmación'),neutral:count('<span class="muted" style="font-size:11px">—</span>'),calls};
 }
 
 test('VRM-271 related: historical paid visit uses unique canonical finance source proof',()=>{
@@ -71,4 +71,22 @@ test('historical reconciliation confirmation qualifies payment without a fabrica
 test('source reference alone with paymentConfirmed false never claims paid',()=>{
   const r=render({paymentConfirmed:false,paymentSourceRef:'qa-ref'});
   assert.equal(r.paid,0);assert.equal(r.pending,2);
+});
+
+test('VRM-320: finance-confirmed historical payment beats no_aplica contract status',()=>{
+  const r=render({paymentConfirmed:true,paymentSourceRef:'qa-provider-ack',paymentState:'no_aplica'});
+  assert.equal(r.paid,1);assert.equal(r.pending,0);assert.equal(r.neutral,1);
+  assert.equal(r.calls.every(x=>x.periodId==='qa-2026-09'),true);
+});
+test('VRM-320: absent finance confirmation stays neutral when contract is no_aplica',()=>{
+  const r=render({paymentConfirmed:false,paymentState:'no_aplica'});
+  assert.equal(r.paid,0);assert.equal(r.pending,0);assert.equal(r.neutral,2);
+});
+test('VRM-320: finance flag without durable reference never fakes paid',()=>{
+  const r=render({paymentConfirmed:true,paymentState:'no_aplica'});
+  assert.equal(r.paid,0);assert.equal(r.pending,0);assert.equal(r.neutral,2);
+});
+test('VRM-320: historical reconciliation proof qualifies paid without bank reference',()=>{
+  const r=render({paymentConfirmed:true,historicalReconciliationConfirmed:true,paymentState:'no_aplica'});
+  assert.equal(r.paid,1);assert.equal(r.pending,0);assert.equal(r.neutral,1);
 });
