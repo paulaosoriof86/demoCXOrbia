@@ -96,14 +96,15 @@ for(const [id,v] of Object.entries(f)){
 const promotionByDomain=new Map();
 for(const mod of modules){
   const cls=String(mod.classification||'');
-  if(cls==='MATCH')continue;
+  const pending=(mod.pendingTerminalFiles||[]).map(String);
+  // Retain historical MATCH, but never skip a current owner byte that lacks proof.
+  if(cls==='MATCH'&&!pending.length)continue;
   const domain=String(mod.domain||'');
   const moduleFiles=sourceFiles.filter(x=>x.domain===domain).map(x=>String(x.path||'')).filter(Boolean);
   const moduleOwners=new Set([...(mod.owners||[]).map(String),...moduleFiles]);
   const candidate=(receiptsByDomain.get(domain)||[]).filter(x=>(x.receipt.ownerPaths||[]).some(p=>moduleOwners.has(String(p))));
   if(!candidate.length)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_MISSING:'+domain);
   const covered=new Set(candidate.flatMap(x=>(x.receipt.ownerPaths||[]).map(String)));
-  const pending=(mod.pendingTerminalFiles||[]).map(String);
   const uncovered=pending.filter(p=>!covered.has(p));
   if(uncovered.length)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:'+domain+':'+uncovered.join(','));
   promotionByDomain.set(domain,candidate);
@@ -113,6 +114,7 @@ for(const mod of modules){
   mod.terminalServedSource=SOURCE;
   mod.terminalProof='owner-specific-receipt+same-source-byte-parity+full-human+hardened-focal';
   mod.ownerSpecificReceiptFindingIds=candidate.map(x=>x.findingId);
+  mod.historicalMatchPreserved=cls==='MATCH';
 }
 
 for(const file of sourceFiles){

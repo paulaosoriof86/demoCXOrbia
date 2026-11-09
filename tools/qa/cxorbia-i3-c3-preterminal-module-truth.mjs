@@ -58,6 +58,11 @@ const sourceFiles=(m.sourceFiles||[]).map(orig=>{
   const canonical=moduleMap.has(f.domain)?f.domain:LEGACY_DOMAIN_ALIASES[f.domain];
   if(!canonical||!moduleMap.has(canonical))throw new Error('MAPPING_FAILURE:C3_UNKNOWN_SOURCE_DOMAIN:'+f.domain+':'+f.path);
   if(canonical!==f.domain){f.preTerminalHistoricalDomain=f.domain;f.domain=canonical;}
+  if(f.phaseAAuthority===false){
+    // Explicitly excluded files stay preserved; they are not pending approvals.
+    f.preTerminalScope='PRESERVED_NON_AUTHORITY';
+    return f;
+  }
   if(f.phaseAAuthority!==true){
     // Task-referenced is not an approval; keep the missing mapping visible.
     f.classification='PENDING_INDEPENDENT_APPROVAL_MAPPING';
@@ -132,7 +137,10 @@ const modules=(m.modules||[]).map(mod=>{
   const pending=files.filter(x=>x.classification!=='MATCH');
   const notApproved=mappingPending.filter(x=>x.domain===mod.domain);
   return {...mod,
-    classification:notApproved.length?'PENDING_OWNER_APPROVAL_MAPPING':pending.length?'PENDING_OWNER_PROOF_SERVED':mod.classification,
+    preTerminalHistoricalClassification:mod.classification,
+    historicalMatchPreserved:mod.classification==='MATCH',
+    classification:mod.classification==='MATCH'?'MATCH':notApproved.length?'PENDING_OWNER_APPROVAL_MAPPING':pending.length?'PENDING_OWNER_PROOF_SERVED':mod.classification,
+    currentOwnerProofStatus:notApproved.length?'PENDING_APPROVAL_MAPPING':pending.length?'PENDING_PATH_BOUND_OWNER_PROOF':'PATH_BOUND_OWNER_PROVEN',
     currentCandidateSource:SOURCE,
     lastServedSource:LAST_SERVED,
     pendingTerminalFiles:[...pending.map(x=>x.path),...notApproved.map(x=>x.path)],
@@ -196,6 +204,8 @@ const out={...m,
     pendingBlobProvenanceFiles:pendingProvenance,
     pendingMappingApprovalFiles:mappingPending.map(x=>x.path),
     terminalEligible:modules.every(x=>x.classification==='MATCH')&&uncoveredFiles.length===0,
+    modulesWithCurrentOwnerProof:modules.filter(x=>x.currentOwnerProofStatus==='PATH_BOUND_OWNER_PROVEN').map(x=>x.domain),
+    historicalModuleMatchesPreserved:modules.filter(x=>x.historicalMatchPreserved).map(x=>x.domain),
     unauthorizedFileCount:0,
     pathBoundAuthority:true,
     globalCandidateSelfApproval:false,

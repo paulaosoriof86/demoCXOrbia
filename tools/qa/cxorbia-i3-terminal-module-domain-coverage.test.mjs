@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {spawnSync} from 'node:child_process';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
 import {assertCanonicalModuleCoverage,assertAllModulesAccepted} from './cxorbia-i3-terminal-module-domain-coverage.mjs';
 
 const d=JSON.parse(fs.readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8'));
@@ -64,12 +67,58 @@ test('C3 preterminal can audit the HOLD candidate without pretending it is 21/21
   assert.match(pre,/PENDING_BLOB_PROVENANCE_SERVED/);
   assert.match(pre,/HISTORICAL_PROVEN_FINDING_WITHOUT_CURRENT_PATH_BOUND_BLOB/);
   assert.match(pre,/PENDING_INDEPENDENT_APPROVAL_MAPPING/);
+  assert.match(pre,/PRESERVED_NON_AUTHORITY/);
+  assert.match(pre,/historicalMatchPreserved/);
   assert.match(pre,/terminalEligible:/);
   assert.match(job,/HOLD_C3_PRETERMINAL_MODULE_TRUTH_EVIDENCE_PENDING/);
   assert.match(job,/C3_AUTH_STATUS/);
   assert.match(final,/C3_PENDING_SOURCE_APPROVAL_MAPPING/);
+  assert.match(final,/if\(cls==='MATCH'&&!pending\.length\)continue/);
   assert.match(final,/C3_OWNER_RECEIPT_MISSING/);
   assert.match(final,/C3_OPEN_P0_FINDINGS/);
   assert.equal(assertCanonicalModuleCoverage(modules).moduleCount,21);
   assert.ok(modules.some(x=>x.classification!=='MATCH'));
+});
+
+test('C3 finalizer preserves historical MATCH but cannot skip missing current-owner receipts',()=>{
+  const dir=fs.mkdtempSync(join(tmpdir(),'cxorbia-c3-preserve-'));
+  try{
+    const source='a'.repeat(40),tree='b'.repeat(40),hr='c'.repeat(64);
+    const runtime='test-runtime',digest='sha256:'+'d'.repeat(64),hosting='sites/test/versions/1';
+    const write=(name,value)=>{const p=join(dir,name+'.json');fs.writeFileSync(p,JSON.stringify(value));return p;};
+    const historicPath='app/modules/historico.js';
+    const pre=write('pre',{
+      productSource:{sha:source,treeSha:tree},
+      preTerminalComposition:{decision:'PASS_C3_PRETERMINAL_COMPOSITION',moduleCount:21,pendingMappingApprovalFiles:[]},
+      modules:modules.map(m=>({...m,classification:'MATCH',pendingTerminalFiles:m.domain==='historical'?[historicPath]:[]})),
+      sourceFiles:[{path:historicPath,domain:'historical',classification:'PENDING_BLOB_PROVENANCE_SERVED'}]
+    });
+    const focal=write('focal',{decision:'PASS_PRE_I4_FOCAL_HUMAN_BROWSER',sourceSha:source,hrRevision:hr});
+    const human=write('human',{decision:'PASS_I3_HUMAN_LIVE_ACCEPTANCE',sourceSha:source,sourceRevision:hr});
+    const qa=write('qa',{decision:'PASS_C3_QA_RESERVATION_CLEANUP',after:0});
+    const parity=write('parity',{decision:'PASS_C3_PENDING_OWNER_BYTE_PARITY',mismatches:0});
+    const findings=Object.fromEntries(['VRM-033','VRM-034','VRM-035','VRM-036','VRM-037','VRM-038','VRM-039','VRM-040','VRM-041','VRM-042'].map(id=>[id,{state:'FIXED_PROVEN'}]));
+    const ledgerPath=write('ledger',{findings});
+    const output=join(dir,'out.json');
+    const env={...process.env,C3_PRETERMINAL:pre,C3_FOCAL:focal,C3_HUMAN:human,C3_QA:qa,C3_PARITY:parity,
+      C3_LEDGER:ledgerPath,C3_FINAL_MATRIX:output,C3_SOURCE:source,C3_TREE:tree,C3_RUNTIME_REVISION:runtime,C3_RUNTIME_DIGEST:digest,C3_HOSTING_VERSION:hosting};
+    const run=()=>spawnSync(process.execPath,['tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs'],{env,encoding:'utf8'});
+    const noReceipt=run();
+    assert.notEqual(noReceipt.status,0);
+    assert.match(noReceipt.stderr,/C3_OWNER_RECEIPT_MISSING:historical/);
+    findings['VRM-C3-HISTORICAL-RECEIPT']={
+      severity:'P0',state:'FIXED_PROVEN',owner:[historicPath],terminalEvidence:{ownerSpecificReceipts:[{
+        decision:'PASS_TEST_HISTORICAL_OWNER',moduleDomain:'historical',sourceSha:source,sourceTree:tree,
+        runtimeRevision:runtime,runtimeDigest:digest,hostingVersion:hosting,hrRevision:hr,ownerPaths:[historicPath],
+        actionReal:true,providerAck:true,durableReadback:true,reloadProof:true,noDuplicateRegression:true,production:false
+      }]}
+    };
+    write('ledger',{findings});
+    const pass=run();
+    assert.equal(pass.status,0,pass.stderr);
+    const result=JSON.parse(fs.readFileSync(output,'utf8'));
+    assert.equal(result.terminalClosure.decision,'PASS_C3_TERMINAL_MODULE_TRUTH_21_21');
+    assert.equal(result.modules.find(m=>m.domain==='historical').historicalMatchPreserved,true);
+    assert.equal(result.sourceFiles[0].classification,'MATCH');
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
