@@ -32,7 +32,7 @@
     "finalStatus": "pending_review",
     "minimumPercentRestored": 80,
     "finalVersionObserved": 4,
-    "cleanupStatus": "AWAITING_ACTION_TIME_CONFIRMATION_FOR_RETIRE",
+    "cleanupStatus": "ATTEMPTED_RECONCILIATION_PENDING_NO_VERIFIED_ACK",
     "published": false
   },
   "observations": [
@@ -79,7 +79,7 @@
     "humanReceipt": "PENDING",
     "shopperAttemptFlow": "NOT_TESTED",
     "publicationFlow": "NOT_TESTED",
-    "retireFlow": "NOT_TESTED"
+    "retireFlow": "ATTEMPTED_UNVERIFIED"
   },
   "safety": {
     "hrWriteCommandsInvoked": 0,
@@ -97,11 +97,24 @@
     "gate21": "HOLD",
     "i4": "NOT_AUTHORIZED",
     "b3": "HOLD_FUNCTIONAL_WRITE_NOT_EXECUTED_FOR_REAL_VISIT",
-    "b4": "FOCAL_ADMIN_WRITE_PASS_BLOCK_STILL_HOLD"
+    "b4": "FOCAL_ADMIN_WRITE_PASS_RETIRED_ATTEMPT_UNVERIFIED_BLOCK_STILL_HOLD"
   },
   "nextActions": [
-    "Confirm and safely retire only the single synthetic QA bank in DEV while preserving all 4 original banks and 40 historical attempts.",
+    "Reconcile only this exact QA bank retirement on DEV after browser connection recovers, requiring provider ACK/status and independent reload; do not repeat retire command blindly.",
     "Run isolated synthetic B3 schedule/check-in provider probe with positive ACK and verified cleanup through authorized CI credentials.",
     "Complete protected Shopper experience E2E and human per-block visual acceptance; update ledger and module truth only with receipts."
-  ]
+  ],
+  "retireAttempt": {
+    "authorizedBy": "Paula user message 'autorizo' following exact request to retire only QA DEV B4 20261109 NO PUBLICAR",
+    "target": "QA DEV B4 20261109 NO PUBLICAR",
+    "targetPeriod": "cinepolis-2026-11",
+    "browserAction": "Clicked Retirar banco once; platform native confirm appeared; accepted confirmation once",
+    "uiOutcome": "NO_PROVIDER_ACK_OBSERVED",
+    "independentReadback": "A new authenticated DEV Admin tab still showed 5 banks including the QA bank; 40 historical evidences (38 passed,2 failed) remained",
+    "secondReadback": "Reload attempt could not complete because connected Chrome browser request timed out",
+    "retryPerformed": false,
+    "safeDisposition": "DO_NOT_RETRY_OR_CLAIM_DELETION_WITHOUT_FRESH_ACK_RECONCILIATION",
+    "productionTouched": false,
+    "hrOrPaymentWritesInvoked": false
+  }
 }
