@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "CXORBIA_I3_20261109_ROLE_E2E_FOCAL_RECEIPT_V1",
+  "schemaVersion": "CXORBIA_I3_20261109_ROLE_E2E_FOCAL_RECEIPT_V2_SESSION_SCOPE_CORRECTION",
   "date": "2026-11-09",
   "timeZone": "America/Guatemala",
   "repo": "paulaosoriof86/demoCXOrbia",
@@ -13,10 +13,10 @@
   "priorAdminReceipt": "docs/checkpoints/CXORBIA_I3_BROWSER_FOCAL_MODULE_EVIDENCE_20261109.json",
   "identityAndSession": {
     "admin": "Chrome connected authenticated Administration on web.app",
-    "shopperJulissa": "Chrome connected authenticated independent Julissa Flores on firebaseapp.com",
-    "shopperStiven": "Chrome connected authenticated independent Stiven López on firebaseapp.com",
+    "shopperJulissa": "Julissa Flores authenticated in first firebaseapp.com tab during her profile, history, benefits, and certification checks; this same-origin tab later adopted Stiven auth after Stiven login and reload.",
+    "shopperStiven": "Stiven López authenticated in second firebaseapp.com tab; same-origin tabs were not independent across reload.",
     "testCredentials": "not recorded",
-    "note": "Same project/DEV; independent SESSION auth sessions; production not accessed or changed"
+    "note": "Admin web.app remained independently authenticated. Do not use two firebaseapp.com tabs as simultaneous persistent distinct Shopper actor contexts. Julissa's screenshots/proofs predate Stiven login; post-login benefits navigation in former Julissa tab is INVALID as Julissa evidence."
   },
   "tests": [
     {
@@ -35,7 +35,8 @@
       "case": "B5-JULISSA-BENEFITS",
       "route": "Shopper > Mis Beneficios",
       "result": "PASS_FOCAL_PRIOR_IN_SAME_SESSION",
-      "evidence": "Historical 9; paid confirmed 7; pending 2; clicked one liquidation detail and saw paid confirmed; no new payments. Later same-session return to benefits remained Validando fuente operacional and is NOT counted as additional PASS."
+      "evidence": "Before Stiven login: Julissa historical 9, paid 7, pending 2, one liquidation detail showed paid; no payments changed.",
+      "limitation": "Post-Stiven-login 'Validando fuente operacional' in the former Julissa tab was an invalid cross-tab auth context, not independently proven B5 loading defect; after reload it became Stiven 5 confirmed paid."
     },
     {
       "case": "B4-D06-JULISSA-BANK_RENDER",
@@ -113,6 +114,11 @@
       "path": "docs/evidence/CXORBIA_I3_20261109_SHOPPER_STIVEN_CERT_100_APPROVED.jpg",
       "sha": "c8458c801441f6d31905a8341a89555d0914c4d3",
       "mime": "image/jpeg"
+    },
+    {
+      "path": "docs/evidence/CXORBIA_I3_20261109_QA_SAME_ORIGIN_SHOPPER_CROSS_TAB_SESSION.jpg",
+      "sha": "2588b68f4c731d20686f9d28ac87c8f82faf717d",
+      "mime": "image/jpeg"
     }
   ],
   "moduleTruth": {
@@ -147,5 +153,15 @@
     "deploys": 0,
     "providerEffect": "ONE_SCOPED_DEV_CERTIFICATION_TEST_ATTEMPT_VOID",
     "historicalApproval100Preserved": true
+  },
+  "qaTransportCorrection": {
+    "observedDate": "2026-11-09",
+    "observedAfter": "Stiven logged in in second same-origin firebaseapp.com tab; former Julissa tab then displayed Stiven following one reload",
+    "beforeEvidence": "docs/evidence/CXORBIA_I3_20261109_SHOPPER_JULISSA_PERFIL_10_9_9_7.jpg",
+    "afterEvidence": "docs/evidence/CXORBIA_I3_20261109_QA_SAME_ORIGIN_SHOPPER_CROSS_TAB_SESSION.jpg",
+    "impact": "Cross-tab Firebase Auth context interference; tests before switch remain attributed to Julissa; tests after switch must be attributed to Stiven or discarded.",
+    "productBugAttribution": "NOT ESTABLISHED; test session setup limitation",
+    "adminSession": "Stayed authenticated on different web.app origin",
+    "nextRule": "Use one Shopper actor at a time on firebaseapp.com or truly isolated browser profiles/origins; reread signed-in actor before each E2E assertion."
   }
 }
