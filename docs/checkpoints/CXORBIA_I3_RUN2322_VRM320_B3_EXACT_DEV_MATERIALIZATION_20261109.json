@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm320-run2322-exact-dev-materialization.v1",
+  "iteration": "I3",
+  "findingId": "VRM-320",
+  "localDate": "2026-11-09",
+  "observedAt": "2026-11-09T16:50:23Z",
+  "status": "PASS_EXACT_DEV_TECHNICAL_HOLD_AUTHENTICATED_HUMAN_ACCEPTANCE",
+  "source": {
+    "sha": "1c31ebd95857ada0ae32ed3070db75fe0f02bfda",
+    "tree": "dab893606619575e00dc59ff30eb055d1abe7f1d",
+    "owner": [
+      "app/modules/misvisitas.js"
+    ],
+    "testOwner": [
+      "tools/qa/cxorbia-i3-work-uat-misvisitas-payment-source.test.mjs"
+    ]
+  },
+  "materialization": {
+    "builds": 1,
+    "decision": "PASS_VRM320_B3_EXACT_DEV_MATERIALIZATION",
+    "hostingDeploys": 1,
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794243003402000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/04b0a8ac252488fd",
+    "hrRevision": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+    "production": false,
+    "runtimeDeploys": 1,
+    "runtimeDigest": "sha256:1203b1fcfa92608217f0acf85abb872f4af54b206a8334a52a5e3aec66cf6785",
+    "runtimeRevision": "cxorbia-live-hr-dev-00368-9tb",
+    "scenarioDimensionsProven": true,
+    "sourceSha": "1c31ebd95857ada0ae32ed3070db75fe0f02bfda",
+    "sourceTree": "dab893606619575e00dc59ff30eb055d1abe7f1d",
+    "storageRulesDeploys": 0,
+    "runId": 42658036502,
+    "runNumber": 2322,
+    "jobId": 129302052284,
+    "controlHeadAtDeploy": "872f9dd5d2e32fca84f79a48f90f3974cf71167e",
+    "artifactId": 13692718518,
+    "artifactDigest": "sha256:a3ca7602772e0e0edb3acd79a975b948337bb732bed41900100239c1fc6fba99",
+    "artifactDigestType": "GITHUB_ACTIONS_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2322_VRM320_B3_EXACT_DEV_MATERIALIZATION_20261109.json",
+    "state": "PASS_EXACT_DEV_TECHNICAL_HOLD_AUTHENTICATED_JULISSA_ADMIN_B3_E2E",
+    "humanAcceptance": "PENDING_PAULA_B3_VISUAL_RECEIPT",
+    "fullTaskClosed": false,
+    "hrWrites": 0,
+    "firestoreRulesDeploys": 0,
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62"
+  },
+  "providerChecks": {
+    "canonicalGuard": "PASS_RUN2322",
+    "workflowRun": "SUCCESS_RUN2322",
+    "hostedAssetShaMatchesExactSource": true,
+    "expectedMisvisitasSha256": "cc770a56e117e99f6b7c3d591f979862c22d3ac2cee7ce0fc2ae9724b935914b",
+    "servedMisvisitasSha256": "cc770a56e117e99f6b7c3d591f979862c22d3ac2cee7ce0fc2ae9724b935914b",
+    "cloudRunRevisionServes100Percent": true,
+    "cloudRunHealthOk": true,
+    "cloudRunProduction": false,
+    "hrMetaRevisionStable": true,
+    "hrSourceSafe": true,
+    "hrWrites": 0,
+    "hostingVersionFinalized": true,
+    "hostedAssetCount": 18,
+    "artifactDigestSource": "GITHUB_ACTIONS_API",
+    "evidenceScope": "CI_PROTECTED_DEV_PLUS_DIRECT_PUBLIC_JS_READBACK__NO_AUTHENTICATED_JULISSA_AFTER_DEPLOY"
+  },
+  "focalSourceTests": {
+    "unitHistoryPaymentPass": 8,
+    "crossPeriodClassificationPass": 4,
+    "totalPass": 12,
+    "fail": 0,
+    "syntaxCheck": "PASS",
+    "canonicalAuthorityRunId": 42658036502,
+    "materializationRunId": 42658036502
+  },
+  "realUserActions": {
+    "shopperJulissaReloadAfterDeploy": false,
+    "shopperHistorySevenConfirmedCellsVerified": false,
+    "adminShopperCrossRoleE2e": false,
+    "humanVisualPaulaPass": false,
+    "financePaymentWrites": 0,
+    "qaAttemptRecordsChanged": 0,
+    "hrWrites": 0
+  },
+  "moduleTruth": {
+    "domain": "shoppers-mi-visitas-profile",
+    "classificationRemains": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+    "matchesBefore": 5,
+    "matchesAfter": 5,
+    "total": 21,
+    "integralPass": false
+  },
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "phaseAComplete": false,
+  "production": false,
+  "nextExactAction": "Authenticated Julissa Shopper on exact RUN2322: verify history paid badges against 7 finance-confirmed records/profile/benefits and detail; separate Admin role, screenshot with period and tenant, Paula B3 PASS/FAIL then durable receipt. No production."
+}
