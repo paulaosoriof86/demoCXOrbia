@@ -1,0 +1,226 @@
+{
+  "schemaVersion": "CXORBIA_I3_BROWSER_AUTHENTICATED_FOCAL_RECEIPT_V1",
+  "observedDate": "2026-11-09",
+  "timezone": "America/Guatemala",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadBefore": "0544435b0e9beb6e0f7ab8977f5b008c983a1f21",
+  "controlTreeBefore": "08d6b50eede747f5e03b568bc7d4521c62c11917",
+  "productSource": "e10b1c24e17879872f9030185b988ae7dbac3faa",
+  "productTree": "b77c7bcab0b7e73b28dbda71b464c2592d4b6634",
+  "devUrl": "https://cxorbia-backend-dev.web.app/index-backend-dev.html",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/6216d064773ad763",
+  "runtimeRevision": "cxorbia-live-hr-dev-00367-2dn",
+  "hrRevision": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+  "preterminalControl": {
+    "runId": 42632809644,
+    "status": "SUCCESS",
+    "artifactId": 13680504804,
+    "artifactZipSha256": "272bb1ee639ea3c1ccde4ea8f349936ae38dab7211093e5ca7d79ce58fce5e60",
+    "sourceOwnerParity": "132_ACTIVE_BROWSER_OWNERS_EXACT",
+    "moduleTruth": "5_OF_21_MATCH_PRESERVED",
+    "terminalStatus": "HOLD"
+  },
+  "browserEvidence": {
+    "browser": "Chrome connected extension",
+    "authenticatedActor": "Administración/Admin",
+    "project": "Cinépolis",
+    "period": "NOV 2026",
+    "screenshots": [
+      {
+        "key": "midia",
+        "path": "docs/evidence/CXORBIA_I3_20261109_ADMIN_MI_DIA.jpg",
+        "scope": "B1 Admin Mi Día NOV 2026",
+        "blobSha": "4d2e2847f1605a33f5363372b8e8973ba548f466",
+        "mimeType": "image/jpeg"
+      },
+      {
+        "key": "dashboard",
+        "path": "docs/evidence/CXORBIA_I3_20261109_ADMIN_DASHBOARD_NOV.jpg",
+        "scope": "B6 Dashboard counters",
+        "blobSha": "4b0a4c2c3518e0f65bd806fb8d24c810e82f7192",
+        "mimeType": "image/jpeg"
+      },
+      {
+        "key": "visits",
+        "path": "docs/evidence/CXORBIA_I3_20261109_ADMIN_VISITAS_DISPONIBLES_GT.jpg",
+        "scope": "B3 visits filtered 11 GT",
+        "blobSha": "f988bc51c4bb8e0926b6cae3cc5e4d0db3266ea1",
+        "mimeType": "image/jpeg"
+      },
+      {
+        "key": "detail",
+        "path": "docs/evidence/CXORBIA_I3_20261109_ADMIN_VISITA_755_DETALLE.jpg",
+        "scope": "B3 visit #755 detail modal",
+        "blobSha": "74b0fa37ded306734944402ea77b3a2b3db8e5af",
+        "mimeType": "image/jpeg"
+      },
+      {
+        "key": "project",
+        "path": "docs/evidence/CXORBIA_I3_20261109_ADMIN_PROYECTOS_18_PERIODOS.jpg",
+        "scope": "G05/B10 project card 792/18",
+        "blobSha": "0429cb03a52544eaf8e759df2d4f76b74f6b7cac",
+        "mimeType": "image/jpeg"
+      },
+      {
+        "key": "resource",
+        "path": "docs/evidence/CXORBIA_I3_20261109_ADMIN_RECURSO_PDF_PAGINA_2.jpg",
+        "scope": "D07 embedded PDF real page2 of7",
+        "blobSha": "3bc8437d3f6f1ef255f86b84d5e27c1b3a3f2353",
+        "mimeType": "image/jpeg"
+      },
+      {
+        "key": "cert_admin",
+        "path": "docs/evidence/CXORBIA_I3_20261109_ADMIN_CERT_ANULAR_INTENTO_DIALOG.jpg",
+        "scope": "B4/D06 test-attempt void dialog WITHOUT submission",
+        "blobSha": "493d6eef2955bccb3896e5355d3c073236ec44fc",
+        "mimeType": "image/jpeg"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "caseId": "B1-ADMIN-MI_DIA-20261109",
+      "route": "Mi Día",
+      "decision": "PASS_FOCAL_READ_ONLY",
+      "before": "Admin navigated from HR/Projects",
+      "action": "open Mi Día, advance calendar to November, activate '11 visitas sin asignar'",
+      "after": {
+        "agendadas": 11,
+        "porAprobar": 0,
+        "realizadas": 12,
+        "sinAsignar": 11,
+        "calendar": "noviembre de 2026",
+        "actionNavigation": "Visitas"
+      },
+      "limitation": "Admin only; Shopper B1, agenda command ACK, original 9 human B1 findings, per-block human acceptance not revalidated. Calendar initially showed October before advancing."
+    },
+    {
+      "caseId": "B6-ADMIN-DASHBOARD-20261109",
+      "route": "Dashboard Operativo",
+      "decision": "PASS_FOCAL_READ_ONLY",
+      "before": "Cinépolis NOV 2026",
+      "action": "Open Total visitas card and search Damaris",
+      "after": {
+        "visits": 44,
+        "gt": 34,
+        "hn": 10,
+        "assigned": 33,
+        "unassigned": 11,
+        "performed": 12,
+        "noSchedule": 10,
+        "questionnairePending": 1,
+        "notSubmitted": 1,
+        "outOfRange": 3,
+        "drilldownTitle": "Total visitas · 44",
+        "search": "Damaris",
+        "filteredRows": 2
+      },
+      "limitation": "No source HR write/refresh or approval of all dashboard actions; other role and business-owner acceptance pending."
+    },
+    {
+      "caseId": "B3-ADMIN-VISITS-20261109",
+      "route": "Visitas",
+      "decision": "PASS_FOCAL_READ_ONLY",
+      "action": "Filter state 'disponible'; compare country GT/HN; open #755 detail modal",
+      "after": {
+        "totalVisits": 44,
+        "availableTotal": 11,
+        "visibleGT": 11,
+        "visibleHN": 0,
+        "visitId": 755,
+        "branch": "MC. Plaza Américas",
+        "status": "Disponible",
+        "shopper": "sin asignar",
+        "honorarium": "Q 60",
+        "contractPayment": "Pendiente de confirmación",
+        "history": "no transitions yet"
+      },
+      "limitation": "No assignment/agendar/check-in mutation, provider ACK/readback/reload nor Shopper role."
+    },
+    {
+      "caseId": "G05-B10-ADMIN-PROJECTS-20261109",
+      "route": "Proyectos",
+      "decision": "PASS_FOCAL_READ_ONLY",
+      "action": "Open project card and compare active period to Dashboard",
+      "after": {
+        "projects": 1,
+        "periods": 18,
+        "branches": 44,
+        "cumulativeVisitsDisplayed": 792,
+        "arithmetic": "18 × 44 = 792",
+        "activePeriod": "NOV 2026"
+      },
+      "historicalCarryForward": "VRM-286 Admin 17 periods ×44=748 from RUN1844; new period added, not automatic regression.",
+      "limitation": "This is current displayed count; not independently proving visits in each historical period nor second project/Shopper provider-link E2E."
+    },
+    {
+      "caseId": "D07-ADMIN-RESOURCE-PDF-20261109",
+      "route": "Recursos del proyecto",
+      "decision": "PASS_FOCAL_READ_ONLY",
+      "action": "Open existing protected 'Instructivo Shopper Cinépolis' and click Siguiente",
+      "after": {
+        "pdfRenders": true,
+        "pageCount": 7,
+        "renderedPages": "1 to 2",
+        "page2Visible": "Actual document text/graphics rendered within portal"
+      },
+      "historicalCarryForward": "RUN1991 real Admin+Shopper PDF read/render/download PASS, RUN1992 verified carry-forward; no repeat of document upload lifecycle.",
+      "limitation": "Document create/version/retirement, cross-project denial and visit-binding still unverified; no download or file write this pass."
+    },
+    {
+      "caseId": "B4-D06-ADMIN-CERT-20261109",
+      "route": "Certificación",
+      "decision": "PASS_UI_ONLY_HOLD_PROVIDER_TRANSACTION",
+      "action": "Inspect banks and click 'Anular intento de prueba', then close without submitting",
+      "after": {
+        "banks": 4,
+        "activeBankQuestionCount": 15,
+        "minimumPassPercent": 80,
+        "historicalCertificates": 40,
+        "approvedHistorical": 38,
+        "rejectedHistorical": 2,
+        "linkedShoppers": 14,
+        "testAttemptChoicesVisible": 3,
+        "confirmationFieldsPresent": true,
+        "actualVoidExecuted": false
+      },
+      "limitation": "No actual attempt selected/voided, no provider ACK/readback/reload, no 8Q/15Q independent Shopper E2E; legitimate historical records intact."
+    }
+  ],
+  "scopeAndSafety": {
+    "onlyReadOnlyUIActions": true,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "storageWrites": 0,
+    "paymentWrites": 0,
+    "certificationVoidWrites": 0,
+    "sourceChanges": 0,
+    "deploys": 0,
+    "production": "DO_NOT_TOUCH",
+    "tinyFish": "B1_ENVIRONMENT_FAILURE_SESSION_RESTORE_EXCEPTION_PRIOR__NOT_RUN_IN_THIS_PASS",
+    "humanPassNew": false,
+    "blockLockedNew": 0
+  },
+  "closureDecision": {
+    "historicalCertifiedDomainsPreserved": [
+      "historical",
+      "identity-membership-roll-forward",
+      "phase-a-supporting-core",
+      "reports-admin-shopper",
+      "tenant-admin-config-branding"
+    ],
+    "newFullDomainCertificates": 0,
+    "newFocalPassEvidenceCases": 6,
+    "phaseA": "HOLD_I3",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4": "NOT_AUTHORIZED",
+    "frozenSequence": "B1→B2→B3→B4→B5→B6→B7→B8→B9",
+    "exactNext": "B1 authenticated Shopper E2E and explicit Paula acceptance, then B2; B4/D06 separate safe QA attempt plus Admin/Shopper readback only after write gate."
+  },
+  "supersedes": "NONE__ADDITIVE_EVIDENCE_ONLY",
+  "sourceOfTruth": "GitHub Recovery branch; Project Sources mirror only",
+  "preserveHistoricalReceipts": true
+}
