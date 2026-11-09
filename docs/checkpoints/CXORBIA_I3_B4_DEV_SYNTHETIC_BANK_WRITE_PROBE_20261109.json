@@ -1,0 +1,107 @@
+{
+  "checkpointId": "CXORBIA_I3_B4_DEV_SYNTHETIC_BANK_WRITE_PROBE_20261109",
+  "dateLocal": "2026-11-09",
+  "timezone": "America/Guatemala",
+  "type": "TECHNICAL_QA_PROBE_ONLY_NOT_HUMAN_RECEIPT",
+  "project": "CXOrbia Recovery Phase A",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "authorityBefore": {
+    "head": "99f1c21bc71f5ad7b99b200355003ead6be39a3e",
+    "productSourceSha": "1c31ebd95857ada0ae32ed3070db75fe0f02bfda",
+    "productTree": "dab893606619575e00dc59ff30eb055d1abe7f1d",
+    "devArtifact": "13692718518",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/04b0a8ac252488fd",
+    "runtimeRevision": "cxorbia-live-hr-dev-00368-9tb"
+  },
+  "environment": {
+    "url": "https://cxorbia-backend-dev.web.app/index-backend-dev.html",
+    "actor": "Administración",
+    "tenant": "tya",
+    "project": "cinepolis",
+    "period": "cinepolis-2026-11",
+    "productionTouched": false
+  },
+  "authorization": "Paula authorized controlled DEV write tests in this session; production, HR, payments and live shopper state remain out of scope.",
+  "fixture": {
+    "name": "QA DEV B4 20261109 NO PUBLICAR",
+    "bankPeriod": "cinepolis-2026-11",
+    "questionCount": 15,
+    "questionContent": "fully synthetic QA, no real shopper personally identifying data",
+    "initialStatus": "pending_review",
+    "finalStatus": "pending_review",
+    "minimumPercentRestored": 80,
+    "finalVersionObserved": 4,
+    "cleanupStatus": "AWAITING_ACTION_TIME_CONFIRMATION_FOR_RETIRE",
+    "published": false
+  },
+  "observations": [
+    {
+      "step": "Create/import 15 synthetic questions in Admin certification",
+      "result": "PASS_FOCAL_UI_PERSISTED_AFTER_RELOAD",
+      "versionAfter": 1
+    },
+    {
+      "step": "Versioned edit of all 15 explanations and source references; compare and save without publish",
+      "result": "PASS_FOCAL_UI_PERSISTED_AFTER_RELOAD",
+      "versionAfter": 2
+    },
+    {
+      "step": "Change minimum 80 to 85 using Guardar con ACK and reload",
+      "result": "PASS_FOCAL_UI_PERSISTED_AFTER_RELOAD",
+      "minimumAfter": 85
+    },
+    {
+      "step": "Restore minimum 85 to 80 using Guardar con ACK and reload",
+      "result": "PASS_FOCAL_UI_PERSISTED_AFTER_RELOAD",
+      "minimumAfter": 80,
+      "versionAfter": 4
+    },
+    {
+      "step": "Check bank and historical counters",
+      "result": "PASS_FOCAL_UI_READBACK",
+      "bankCountBefore": 4,
+      "bankCountAfter": 5,
+      "historicalAttemptsBefore": 40,
+      "historicalAttemptsAfter": 40,
+      "historicalPassed": 38,
+      "historicalFailed": 2,
+      "linkedShoppers": 14
+    }
+  ],
+  "evidence": {
+    "mode": "authenticated connected Chrome UI",
+    "beforeAfter": "observed in UI, no independent screenshot SHA captured",
+    "reloaded": true,
+    "providerAck": "No independent backend ACK receipt inspected; 'Guardar con ACK' UI path and reload proven",
+    "testScope": "B4 Admin create, versioned edit and minimum configuration only",
+    "tinyFish": "NOT_RUN",
+    "humanReceipt": "PENDING",
+    "shopperAttemptFlow": "NOT_TESTED",
+    "publicationFlow": "NOT_TESTED",
+    "retireFlow": "NOT_TESTED"
+  },
+  "safety": {
+    "hrWriteCommandsInvoked": 0,
+    "shopperPaymentCommandsInvoked": 0,
+    "productionCommandsInvoked": 0,
+    "realVisitMutationCommandsInvoked": 0,
+    "firestoreChangesIntended": "One isolated synthetic certification bank and version/config updates in DEV",
+    "bankRetireRequiresNewSpecificApproval": true
+  },
+  "phaseA": {
+    "moduleTruthCertifiedMatch": 5,
+    "moduleTruthTotal": 21,
+    "i3": "HOLD",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4": "NOT_AUTHORIZED",
+    "b3": "HOLD_FUNCTIONAL_WRITE_NOT_EXECUTED_FOR_REAL_VISIT",
+    "b4": "FOCAL_ADMIN_WRITE_PASS_BLOCK_STILL_HOLD"
+  },
+  "nextActions": [
+    "Confirm and safely retire only the single synthetic QA bank in DEV while preserving all 4 original banks and 40 historical attempts.",
+    "Run isolated synthetic B3 schedule/check-in provider probe with positive ACK and verified cleanup through authorized CI credentials.",
+    "Complete protected Shopper experience E2E and human per-block visual acceptance; update ledger and module truth only with receipts."
+  ]
+}
