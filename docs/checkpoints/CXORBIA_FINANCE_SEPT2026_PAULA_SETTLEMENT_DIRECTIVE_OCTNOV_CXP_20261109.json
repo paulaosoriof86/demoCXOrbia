@@ -53,5 +53,12 @@
   "providerWrites": 0,
   "reasonForHold": "The currently connected Chrome DEV session is Shopper Julissa, not authorized Admin Finance; no per-visit settlement manifest or bank/source ACK is available yet. Cannot truthfully claim payment persisted.",
   "doesNotAffectVisualReceipt": "VRM-320 functional/visual PASS remains valid for previously confirmed seven Julissa records.",
-  "gate": "FINANCE_B8_PROVIDER_WRITE_HOLD_UNTIL_EXACT_ID_SET_AND_FINANCIAL_REFERENCE_READY"
+  "gate": "FINANCE_B8_PROVIDER_WRITE_HOLD_UNTIL_EXACT_ID_SET_AND_FINANCIAL_REFERENCE_READY",
+  "adminChromeReadback20261109": {
+    "path": "docs/checkpoints/CXORBIA_I3_ADMIN_CHROME_B4_B8_READBACK_20261109.json",
+    "commit": "b81315843d91af169dbbebea6b698cccdf83a387",
+    "results": "SEP44:43 review/1 exact/0 paid; OCT43:42 review/1 exact/0 paid; NOV12:12 review/0 exact; two Oct1 +Q7300 advance movements conflicting with owner-stated one Oct31 remittance",
+    "financialOrProviderWrites": false,
+    "requiresSourceReconciliationBeforeAnySettlementWrite": true
+  }
 }
