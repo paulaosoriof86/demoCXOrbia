@@ -94,7 +94,7 @@
         }
       ],
       "displayedAdvanceTotalGTQ": 14600,
-      "conflict": "Owner now confirms TWO legitimate Q7300 advances for program October and program November; both DEV rows currently labelled October and dated Oct1. The duplicate concern is CLOSED; month label/date mapping remains to be verified without destructive rewrite.",
+      "conflict": "No duplicate income: two legitimate Q7300 advance rows, October and November program periods. Paula identified second undescribed October-labelled row as November advance received Oct31. Exact backend source ID and nondestructive edit capability remain unverified; month-end USD1000, FX 7.3 are customary.",
       "ownerClarification20261109": {
         "confirmedBy": "Paula Andrea Osorio Franco, direct project conversation",
         "distinctIncomeCount": 2,
@@ -120,7 +120,41 @@
         "ruling": "TWO_LEGITIMATE_DISTINCT_INCOME_MOVEMENTS_NOT_DUPLICATE",
         "totalIsCorrect": true,
         "nonOperatingClassification": "Advance cash flow only, not earned operating revenue or proof of individual shopper payout.",
-        "requiredCorrectiveAction": "Preserve both entries. Map exact provider movement for November advance, correct program label and receipt date only after exact ID/source verification; never delete/recreate or book third Q7300."
+        "requiredCorrectiveAction": "Preserve both entries. Map exact provider movement for November advance, correct program label and receipt date only after exact ID/source verification; never delete/recreate or book third Q7300.",
+        "exactRowOwnerIdentification": {
+          "confirmedOn": "2026-11-09",
+          "mappingBasis": "Paula's explicit 'es correcto' answering which of the two rows is November plus normal monthly USD1000 advance convention",
+          "octoberProgramAdvance": {
+            "visibleLabel": "Remesa de anticipo Octubre Cinépolis",
+            "visibleDate": "2026-10-01",
+            "visibleGTQ": 7300,
+            "visibleNote": "Se pagó con esto agosto y parte de septiembre",
+            "sourceRecordId": "NOT_READ_BACK",
+            "actualBankReceiptDate": "NOT_VERIFIED"
+          },
+          "novemberProgramAdvance": {
+            "visibleLabel": "Remesa de anticipo Octubre Cinépolis",
+            "visibleDate": "2026-10-01",
+            "visibleGTQ": 7300,
+            "visibleNote": "none visible",
+            "sourceRecordId": "NOT_READ_BACK",
+            "ownerConfirmedActualReceiptDate": "2026-10-31",
+            "desiredLabel": "Remesa de anticipo Noviembre Cinépolis"
+          },
+          "exactRowIdentityConfirmedByOwner": true,
+          "providerMovementIDsConfirmed": false,
+          "correctionPending": "Edit second existing movement's program label and true date only after exact provider ID/bank source and safe non-destructive edit path are proven; don't alter the first movement or create a third."
+        },
+        "monthlyAdvancePolicy": {
+          "ownerStatement": "T&A generally advances USD 1000 at month-end; exchange rate typically around 7.3 GTQ per USD.",
+          "originalCurrency": "USD",
+          "usualOriginalAmount": 1000,
+          "usualMonthEndTiming": true,
+          "fxRateIndicativeGTQPerUSD": 7.3,
+          "postedAmountPerVisibleMovementGTQ": 7300,
+          "safeguard": "The monthly USD amount and 7.3 exchange rate are customary, not a mandate to convert/revalue or force dates. Preserve bank-confirmed source currency, actual FX, GTQ received, bank/value dates and IDs for each payment; no FX revaluation without documentary proof.",
+          "periodAccounting": "program advance month, actual cash receipt date, and older shopper service settlement month are separate fields"
+        }
       }
     },
     "november2026": {
@@ -156,7 +190,8 @@
       "Match bank/finance Excel and per-visit/currency/source IDs to September 44 liquidations without duplicating existing payments",
       "Preserve two distinct Q7300 advances; verify and rename November program advance and its Oct31 receipt date by exact source record ID (no duplicate/delete)",
       "Run authorized provider ACK/readback/reload idempotent payment registration and representative GT/HN Shopper readback",
-      "Confirm October open payables and November accrual against HR source period and activity"
+      "Confirm October open payables and November accrual against HR source period and activity",
+      "Trace original USD1000 per month and actual USD/GTQ FX/bank dates individually; no fixed-rate assumption or duplicate income."
     ]
   },
   "certificationB4": {
@@ -218,6 +253,6 @@
   "blockers": [
     "FINANCE_SEP_OWNER_ATTESTATION_NOT_MATCHED_TO_EXACT_SOURCE_AND_PAYMENT_IDS",
     "B4_TEST_CERT_RESET_AND_REISSUE_E2E_NOT_YET_CERTIFIED",
-    "NOV_PROGRAM_ADVANCE_SOURCE_ID_AND_OCT31_RECEIPT_DATE_NOT_YET_VERIFIED_OR_CORRECTED"
+    "NOV_PROGRAM_ADVANCE_SOURCE_ID_AND_NONDSTRUCTIVE_LABEL_DATE_CORRECTION_PENDING"
   ]
 }
