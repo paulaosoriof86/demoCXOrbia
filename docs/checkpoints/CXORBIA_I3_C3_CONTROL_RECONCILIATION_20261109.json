@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "cxorbia.recovery.i3.c3-control-reconciliation.v1",
+  "date": "2026-11-09",
+  "timezone": "America/Guatemala",
+  "decision": "PASS_CONTROL_RECONCILIATION_WITH_PHASE_A_HOLD",
+  "scope": "SINGLE_RECOVERY_BRANCH_CONTROL_PLANE_FIX_AND_AUTHENTICATED_DEV_READ_ONLY",
+  "authority": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "controlHeadAtSuccessfulProof": "caab048d4e04f69af0dfd83256ec84fec3d321be",
+    "priorControlHead": "9591ff6133e73a19173fbb6b1ab127e7d452a595",
+    "sourceSha": "e10b1c24e17879872f9030185b988ae7dbac3faa",
+    "sourceTree": "b77c7bcab0b7e73b28dbda71b464c2592d4b6634",
+    "frozenPlan": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
+    "moduleTruth": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261108-V284.json",
+    "findingsLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V598_2026-11-08.json"
+  },
+  "controlCorrections": [
+    {
+      "commit": "695e7e28ea526e96c751480178430dc83caff4f0",
+      "result": "Removed circular demand for 21/21 before preterminal composition; enabled HOLD preterminal readback without weakening terminal finalizer."
+    },
+    {
+      "commit": "43ed07ae05a8ee6c91fdf9aa4e5a2af0a66cb925",
+      "result": "Reclassified absent current path-bound blob proof as HOLD rather than an unqualified unauthorized-drift failure; kept no automatic MATCH."
+    },
+    {
+      "commit": "caab048d4e04f69af0dfd83256ec84fec3d321be",
+      "result": "Preserved five inherited historical MATCH domains and two explicitly non-authoritative files; required current owner receipt for any pending file even inside historical MATCH."
+    }
+  ],
+  "validatedCi": {
+    "runId": 42632809644,
+    "runConclusion": "SUCCESS",
+    "canonicalCandidateAuthority": "SUCCESS",
+    "c3PreterminalJob": "SUCCESS",
+    "c3ArtifactId": 13680504804,
+    "c3ArtifactSha256": "272bb1ee639ea3c1ccde4ea8f349936ae38dab7211093e5ca7d79ce58fce5e60",
+    "c3ResultDecision": "HOLD_C3_PRETERMINAL_MODULE_TRUTH_EVIDENCE_PENDING",
+    "historicalModuleMatchCount": 5,
+    "canonicalModuleCount": 21,
+    "unacceptedModuleCount": 16,
+    "activeBrowserOwnersExactDevParity": 132,
+    "duplicateScripts": 0,
+    "currentSourceSha": "e10b1c24e17879872f9030185b988ae7dbac3faa",
+    "currentSourceTree": "b77c7bcab0b7e73b28dbda71b464c2592d4b6634",
+    "devHostingVersion": "sites/cxorbia-backend-dev/versions/6216d064773ad763",
+    "devRuntimeRevision": "cxorbia-live-hr-dev-00367-2dn",
+    "devRuntimeDigest": "sha256:33dfefa4a380d4e0e39165a670f45617b3ef84268e7a1eb0564c35f2e87a2751",
+    "liveDevFirestoreRulesSha256": "0708af825d2baaad974285acd8d72df0a7861105e453da26199f08fd5a985d3e",
+    "builds": 0,
+    "deploys": 0,
+    "providerWrites": 0,
+    "production": false
+  },
+  "inheritedMatchesPreserved": [
+    "historical",
+    "identity-membership-roll-forward",
+    "phase-a-supporting-core",
+    "reports-admin-shopper",
+    "tenant-admin-config-branding"
+  ],
+  "unprovenCurrentOwnerEvidence": {
+    "nonMatchSourceFileRows": 88,
+    "noCurrentPathBoundBlobProvenanceRows": 27,
+    "pendingIndependentMappingPaths": [
+      "app/core/backend-ai.js",
+      "app/modules/rutas.js"
+    ],
+    "explicitlyNonAuthorityPreservedPaths": [
+      "app/adapters/cxorbia-project-operational-source-v1.js",
+      "app/adapters/tya-phase-a-operational-sync-v1.js"
+    ],
+    "interpretation": "Rows are acceptance/provenance proof deficits, not 88 asserted live functional failures. Prior human approvals remain historically effective until demonstrated exact owner drift. No current-source human PASS was invented.",
+    "rawLedgerP0NotResolvedByStrictFinalizer": 96,
+    "rawLedgerP0Caution": "Historical cumulative P0 states, many likely superseded; 96 is a strict state-machine count, not 96 independently verified current functional failures. Close by owner-specific evidence and documented supersession, never bulk PASS."
+  },
+  "authenticatedBrowserDevReadOnly": {
+    "actor": "Admin — Cinépolis — NOV 2026",
+    "certifications": "4 project banks; 40 historical records, 38 approved and 2 not; two October published banks show 8 and 15 questions, minimum 80 percent; no attempt mutated.",
+    "visits": "44 real rows; 33 assigned, 12 performed, 11 unassigned.",
+    "reports": "12/44 completed approximately 27 percent, 12/33 approximately 36 percent; unavailable scores marked pending source.",
+    "academy": "14 courses, 67 lessons for Consultora view.",
+    "resources": "Cinépolis Shopper instructive PDF opened in protected in-app viewer; page 1/7 then 2/7 rendered.",
+    "postulaciones": "33 valid assignments visible with named branch cards; Gestionar agendamientos lists all 11 authorized agendas and 0 awaiting authorization.",
+    "hr": "Operational HR marked verified, revision prefix 7b7b62269233 matches DEV materialization; separate configuration/import channel remains not authorized.",
+    "proofLimitation": "Direct browser observations; no owner-specific durable write ACK, reload or separate Shopper functional receipt was produced."
+  },
+  "phaseA": {
+    "status": "HOLD_I3",
+    "historicalModuleMatch": "5/21",
+    "newlyCertifiedModules": 0,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "production": "DO_NOT_TOUCH",
+    "noProductChanged": true,
+    "noHrFirestoreAuthStoragePaymentsWritten": true,
+    "exactNextBlock": "Reconcile the 16 non-MATCH domains, 88 owner-proof rows and 96 strict historical P0 state entries against prior receipts/supersession; execute only uncovered authenticated Admin/Shopper D06 and B10 contracts, then Gate20/21. Preserve approved scenarios and do not promote without current owner-specific evidence and applicable Paula PASS."
+  }
+}
