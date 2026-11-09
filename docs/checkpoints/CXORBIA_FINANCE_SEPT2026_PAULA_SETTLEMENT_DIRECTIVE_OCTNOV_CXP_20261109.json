@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "cxorbia.finance.september-settlement-directive.v1",
+  "recordedDateLocal": "2026-11-09",
+  "declaredBy": "Paula Andrea Osorio Franco",
+  "source": "Direct user instruction in CXOrbia Recovery project",
+  "classification": "BUSINESS_SETTLEMENT_ATTESTATION_UNMATCHED_PROVIDER_RECORDS",
+  "tenantProject": "T&A Consultores / Cinépolis (GT/HN; country by canonical HR row)",
+  "september2026": {
+    "direction": "All September visit obligations paid",
+    "paymentDate": "2026-10-31",
+    "scope": "Every eligible Sept 2026 visit shopper record in project, not Julissa-specific; exclude previously paid duplicates",
+    "sourceType": "Owner attestation; individual bank transfer and external payment reference not yet read back",
+    "requestedPlatformState": "PAID_AFTER_IDEMPOTENT_RECONCILIATION",
+    "currentBackendState": "NOT_UPDATED_IN_THIS_DOCUMENTARY_ITERATION"
+  },
+  "taClientRemittance": {
+    "amount": 7300,
+    "currency": "GTQ",
+    "date": "2026-10-31",
+    "meaning": "Money sent by T&A to the operator, accounts-receivable/treasury collection; not equal to payout amount for each individual shopper",
+    "bankReceipt": "NOT_VERIFIED_IN_CONNECTED_SOURCES",
+    "shouldNotDriveShopperPaidFlagAlone": true
+  },
+  "october2026": {
+    "state": "OPEN_ACCOUNTS_PAYABLE",
+    "source": "Validated visit progress/finance reconciliation; amount unresolved until per-visit liquidation"
+  },
+  "november2026": {
+    "state": "INCREMENTAL_ACCOUNTS_PAYABLE",
+    "source": "Only when valid completed/eligible visit accrues, never pre-recognize assigned/unperformed visits"
+  },
+  "requiredMinimalWritePlan": [
+    "Authenticated Admin finance readback of existing Sept payments, reconciliations, visitIds, actual country/currency and payability",
+    "Diff desired Sept paid against existing confirmed payment records; exclude already-settled visits",
+    "Each unpaid Sept row must resolve honorario+reembolso, eligible status, country/currency, financial source and payment reference",
+    "One idempotent payment register per country/currency and correct date, 2026-10-31; retain external confirmation distinction",
+    "Read provider ACK, reload Admin Finance and Shopper Mis Beneficios/Mis Visitas for representative GT/HN; verify Oct open and Nov accrual",
+    "Record T&A Q7300 remittance as separate inbound income only once when bank receipt/source and project ledger matching are verified"
+  ],
+  "scopeGuards": {
+    "perShopperExceptions": false,
+    "allShopperGeneric": true,
+    "currencyMixing": false,
+    "deduplicate": true,
+    "hrWrite": false,
+    "prodWrite": false,
+    "backfillPerIdWithoutProof": false
+  },
+  "screenshots": {
+    "julissaSep09": "Seen pending in both Mis Visitas and Mis Beneficios on 2026-11-09",
+    "julissaOct14": "Seen pending/validated, must remain open"
+  },
+  "providerWrites": 0,
+  "reasonForHold": "The currently connected Chrome DEV session is Shopper Julissa, not authorized Admin Finance; no per-visit settlement manifest or bank/source ACK is available yet. Cannot truthfully claim payment persisted.",
+  "doesNotAffectVisualReceipt": "VRM-320 functional/visual PASS remains valid for previously confirmed seven Julissa records.",
+  "gate": "FINANCE_B8_PROVIDER_WRITE_HOLD_UNTIL_EXACT_ID_SET_AND_FINANCIAL_REFERENCE_READY"
+}
