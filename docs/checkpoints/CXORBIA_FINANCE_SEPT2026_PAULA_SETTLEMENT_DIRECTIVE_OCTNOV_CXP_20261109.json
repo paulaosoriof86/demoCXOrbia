@@ -60,5 +60,25 @@
     "results": "SEP44:43 review/1 exact/0 paid; OCT43:42 review/1 exact/0 paid; NOV12:12 review/0 exact; two Oct1 +Q7300 advance movements conflicting with owner-stated one Oct31 remittance",
     "financialOrProviderWrites": false,
     "requiresSourceReconciliationBeforeAnySettlementWrite": true
+  },
+  "twoTaAdvancesClarification20261109": {
+    "source": "Direct owner clarification, 2026-11-09",
+    "count": 2,
+    "currency": "GTQ",
+    "eachAmount": 7300,
+    "aggregateAmount": 14600,
+    "programMonths": [
+      "2026-10",
+      "2026-11"
+    ],
+    "receivedDate": "BOTH_WITHIN_2026_10",
+    "novemberAdvanceReceiptDateFromEarlierOwnerDirective": "2026-10-31",
+    "octoberAdvanceReceiptDate": "NOT_BANK_VERIFIED; DEV displays 2026-10-01",
+    "allocation": "Funds applied to obligations of earlier, still-unpaid program visit periods; not automatically shopper payment confirmations.",
+    "duplicateConcern": "CLOSED_DISTINCT_REAL_CASH_RECEIPTS",
+    "providerMapping": "PENDING_NOVEMBER_ADVANCE_ROW_ID_AND_DATE_LABEL_CORRECTION",
+    "noNewRemittanceWrite": true,
+    "readbackReceiptPath": "docs/checkpoints/CXORBIA_I3_ADMIN_CHROME_B4_B8_READBACK_20261109.json",
+    "latestReconciliationDecisionCommit": "b26866b1e2b3e3cfb1ce100be8330d8e77caa7af"
   }
 }
