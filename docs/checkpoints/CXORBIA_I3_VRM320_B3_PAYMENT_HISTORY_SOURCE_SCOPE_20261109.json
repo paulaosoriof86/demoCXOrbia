@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm320.owner-scope.v1",
+  "asOf": "2026-11-09",
+  "findingId": "VRM-320",
+  "project": "CXORBIA RECOVERY I3",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceSha": "1c31ebd95857ada0ae32ed3070db75fe0f02bfda",
+  "sourceTree": "dab893606619575e00dc59ff30eb055d1abe7f1d",
+  "predecessorProductSourceSha": "e10b1c24e17879872f9030185b988ae7dbac3faa",
+  "allowedProductFiles": [
+    "app/modules/misvisitas.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-work-uat-misvisitas-payment-source.test.mjs"
+  ],
+  "rootCause": "Shopper historyHTML payment ternary checks no_aplica before provider-backed financePaymentForVisit and hides confirmed payments",
+  "before": "All 9 Julissa historical rows show em dash despite 7 confirmed and detail Pago confirmado",
+  "afterExpected": "7 proven paid rows show Pagado (confirmado); unknown/unconfirmed no_aplica stays neutral; no inferred payment",
+  "actor": "Shopper Julissa Flores",
+  "observedDevReceipt": "docs/checkpoints/CXORBIA_I3_20261109_SHOPPER_CERT_AND_PAYMENT_CROSSMODULE_RECEIPT.json",
+  "testCounts": {
+    "unit": 8,
+    "classification": 4,
+    "total": 12,
+    "fail": 0
+  },
+  "writes": {
+    "hr": 0,
+    "finance": 0,
+    "firestore": 0,
+    "auth": 0,
+    "storage": 0,
+    "payments": 0
+  },
+  "production": false,
+  "devPublished": false,
+  "humanReceipt": "PENDING_PAULA_B3_VISUAL_ACCEPTANCE",
+  "moduleCertification": "HOLD_NOT_YET_APPROVED",
+  "scopeOutsideOwner": "FROZEN"
+}

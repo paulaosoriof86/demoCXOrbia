@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "cxorbia.i3.pending-dev-source-proof.v1",
+  "asOf": "2026-11-09",
+  "decision": "PASS_VRM320_B3_EXACT_OWNER_SOURCE_REGRESSION_PENDING_DEV",
+  "sourceSha": "1c31ebd95857ada0ae32ed3070db75fe0f02bfda",
+  "sourceTree": "dab893606619575e00dc59ff30eb055d1abe7f1d",
+  "predecessorProductSourceSha": "e10b1c24e17879872f9030185b988ae7dbac3faa",
+  "sourceTestsPass": 12,
+  "sourceTestsFail": 0,
+  "allowedProductFiles": [
+    "app/modules/misvisitas.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-work-uat-misvisitas-payment-source.test.mjs"
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM320_B3_PAYMENT_HISTORY_SOURCE_SCOPE_20261109.json",
+  "scopeReceiptBlob": "f7f219244b83f3e41b1275b827d476cad317f1fe",
+  "findings": [
+    {
+      "id": "VRM-320",
+      "priority": "P0_PROVEN",
+      "state": "SOURCE_FIXED_LOCAL_TESTS_PASS_PENDING_CI_AND_DEV",
+      "owner": "app/modules/misvisitas.js",
+      "before": "Confirmed historical visit shows —",
+      "afterExpected": "Finance-confirmed historical visit shows Pagado (confirmado)"
+    }
+  ],
+  "tests": [
+    {
+      "command": "node --test tools/qa/cxorbia-i3-work-uat-misvisitas-payment-source.test.mjs",
+      "pass": 8,
+      "fail": 0
+    },
+    {
+      "command": "node --test tools/qa/cxorbia-i3-d06-misvisitas-cross-period-classification.test.mjs",
+      "pass": 4,
+      "fail": 0
+    },
+    {
+      "command": "node --check app/modules/misvisitas.js",
+      "pass": 1,
+      "fail": 0,
+      "kind": "syntax-not-included-in-12"
+    }
+  ],
+  "production": false,
+  "devPublished": false,
+  "hrWrites": 0,
+  "firestoreWrites": 0,
+  "financeWrites": 0,
+  "storageRulesDeploys": 0,
+  "notHumanCertification": true,
+  "predecessorStillServed": "sites/cxorbia-backend-dev/versions/6216d064773ad763",
+  "plannedNext": "ONE_EXISTING_CANONICAL_DEV_MATERIALIZATION_THEN_AUTHENTICATED_SHOPPER_E2E"
+}

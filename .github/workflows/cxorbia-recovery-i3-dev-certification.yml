@@ -40,7 +40,7 @@ concurrency:
   cancel-in-progress: true
 env:
   CANDIDATE_DESCRIPTOR: CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V598_2026-11-08.json
+  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V600_2026-11-09.json
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -4974,7 +4974,7 @@ jobs:
       test "$(jq -r '[.assertions[]|select(.name=="vrm168_existing_hr_identity_preserves_conflict_review")][0].ok' "$FOCAL_OUT/vrm258-canonical-read-model.json")" = "true"
   vrm154-156-dev-materialization:
    needs: canonical-candidate-authority
-   if: ${{ contains(fromJSON('["HOLD_VRM134_A05_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM154_156_DEV_MATERIALIZATION_REQUIRED","HOLD_V190_DEV_MATERIALIZATION_REQUIRED","HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM216_SHARED_IDEMPOTENCY_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM217_219_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM306_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM307_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM308_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM309_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM221_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM227_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM249_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM174_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM256_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM257_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM258_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM259_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_B7_CONTEXT_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_S1_AUTO_COMPATIBLE_IDENTITY_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_CERT_CARRYOVER_DEV_MATERIALIZATION_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status) || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_B11_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM317_D06_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM318_D06_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM319_D06_DEV_MATERIALIZATION_REQUIRED' }}
+   if: ${{ contains(fromJSON('["HOLD_VRM134_A05_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM154_156_DEV_MATERIALIZATION_REQUIRED","HOLD_V190_DEV_MATERIALIZATION_REQUIRED","HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM216_SHARED_IDEMPOTENCY_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM217_219_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM306_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM307_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM308_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM309_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM221_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM227_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM249_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM174_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM256_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM257_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM258_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM259_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_B7_CONTEXT_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_S1_AUTO_COMPATIBLE_IDENTITY_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_CERT_CARRYOVER_DEV_MATERIALIZATION_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status) || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_B11_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM317_D06_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM318_D06_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM319_D06_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM320_B3_DEV_MATERIALIZATION_REQUIRED' }}
    runs-on: ubuntu-latest
    timeout-minutes: 60
    env:
@@ -5005,10 +5005,14 @@ jobs:
       node tools/qa/tya-c6-canonical-finance-read-model-gate.mjs > "$FOCAL_OUT/vrm174-finance-read-model.json"
       test "$(jq -r '.decision' "$FOCAL_OUT/vrm174-finance-read-model.json")" = "PASS_C6_CANONICAL_FINANCE_LIQUIDATION_COMPLETENESS"
       test "$(jq -r '[.assertions[]|select(.name=="vrm174_duplicate_hrrow_exact_doc_payment_authority_preserved")][0].ok' "$FOCAL_OUT/vrm174-finance-read-model.json")" = "true"
-      if [[ "$ACTIVE_STATUS" == "HOLD_I3_CERT_CARRYOVER_DEV_MATERIALIZATION_REQUIRED" || "$ACTIVE_STATUS" == "HOLD_I3_VRM317_D06_DEV_MATERIALIZATION_REQUIRED" || "$ACTIVE_STATUS" == "HOLD_I3_VRM318_D06_DEV_MATERIALIZATION_REQUIRED" || "$ACTIVE_STATUS" == "HOLD_I3_VRM319_D06_DEV_MATERIALIZATION_REQUIRED" ]]; then
+      if [[ "$ACTIVE_STATUS" == "HOLD_I3_CERT_CARRYOVER_DEV_MATERIALIZATION_REQUIRED" || "$ACTIVE_STATUS" == "HOLD_I3_VRM317_D06_DEV_MATERIALIZATION_REQUIRED" || "$ACTIVE_STATUS" == "HOLD_I3_VRM318_D06_DEV_MATERIALIZATION_REQUIRED" || "$ACTIVE_STATUS" == "HOLD_I3_VRM319_D06_DEV_MATERIALIZATION_REQUIRED" || "$ACTIVE_STATUS" == "HOLD_I3_VRM320_B3_DEV_MATERIALIZATION_REQUIRED" ]]; then
         node --test tools/qa/cxorbia-i3-certification-project-continuity.test.mjs | tee "$FOCAL_OUT/vrm316-cert-carryover-source-tests.log"
         node --check app/core/backend-certifications.js
         node --check app/modules/cert.js
+      fi
+      if [[ "$ACTIVE_STATUS" == "HOLD_I3_VRM320_B3_DEV_MATERIALIZATION_REQUIRED" ]]; then
+        node --check app/modules/misvisitas.js
+        node --test tools/qa/cxorbia-i3-work-uat-misvisitas-payment-source.test.mjs tools/qa/cxorbia-i3-d06-misvisitas-cross-period-classification.test.mjs | tee "$FOCAL_OUT/vrm320-b3-source-tests.log"
       fi
       node --check app/modules/midia.js
       node --test backend/runtime/hr-live-service/test/cxorbia-vrm256-midia-current-period.test.mjs | tee "$FOCAL_OUT/vrm256-midia-current-period.log"
@@ -5111,6 +5115,7 @@ jobs:
       if [[ "$ACTIVE_STATUS" == "HOLD_I3_VRM317_D06_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_VRM317_D06_EXACT_DEV_MATERIALIZATION"; fi
       if [[ "$ACTIVE_STATUS" == "HOLD_I3_VRM318_D06_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_VRM318_D06_EXACT_DEV_MATERIALIZATION"; fi
       if [[ "$ACTIVE_STATUS" == "HOLD_I3_VRM319_D06_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_VRM319_D06_EXACT_DEV_MATERIALIZATION"; fi
+      if [[ "$ACTIVE_STATUS" == "HOLD_I3_VRM320_B3_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_VRM320_B3_EXACT_DEV_MATERIALIZATION"; fi
       jq -n -S --arg decision "$DECISION" --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg runtime "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg hosting "$HOSTING_VERSION_NAME" --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hr "$HR_REVISION" '{decision:$decision,sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hostingRelease:$hostingRelease,hrRevision:$hr,builds:1,runtimeDeploys:1,hostingDeploys:1,storageRulesDeploys:0,scenarioDimensionsProven:true,production:false}' > "$FOCAL_OUT/result.json"
    - name: step
      if: always()
