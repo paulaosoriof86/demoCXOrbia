@@ -104,7 +104,7 @@
         "advances": [
           {
             "programPeriod": "OCT 2026",
-            "receivedIn": "OCT 2026",
+            "receivedIn": "ACTUAL_MONTH_UNVERIFIED; DEV shows OCT 2026",
             "dateVisibleInDev": "2026-10-01",
             "actualReceiptDate": "NOT_BANK_VERIFIED"
           },
@@ -183,7 +183,18 @@
       "blobSha": "f1545f0439863090e04b4729e8483616f7d209cf",
       "eligibilityLogic": "estado===validada, financialSourceStatus===reconciled_exact, exact totals and currency; other reviewed/operational states block payment registration",
       "interpretation": "Explicit protective gate, not evidence that all submission-ready rows are eligible",
-      "providerWritesExecuted": false
+      "providerWritesExecuted": false,
+      "movementEditCapability": {
+        "evidenceDate": "2026-11-09",
+        "owner": "app/modules/finanzas.js",
+        "blobSha": "f1545f0439863090e04b4729e8483616f7d209cf",
+        "tableRows": "Lines 710-718 show only a delete-glyph control; no edit control in each movement row.",
+        "protectedDeletion": "Line 862 rejects deleting connected durable movements and directs to audited offsetting movement.",
+        "createOnly": "Lines 921-967 define a new-movement form and call createFinancialMovement with ACK/readback; not a safe label/date edit.",
+        "verdict": "No safe existing-movement edit in source UI observed. A targeted audited update mechanism is needed for November advance if provider supports it; do not use delete-recreate or offsetting movement for a concept/date metadata correction without a formal accounting decision.",
+        "browserVerification": "Connected user Chrome tab listed but refused focus/control in this turn; no fresh UI E2E/screenshot. Source-only diagnosis, not functional PASS.",
+        "financeProviderWrites": false
+      }
     },
     "treatment": "September paid is owner business attestation not yet reflected in DEV. No paid flags, remittance, reconciliations or CxP records altered. Do not treat T&A remittance as proof of per-shopper bank payments.",
     "nextActions": [
@@ -253,6 +264,6 @@
   "blockers": [
     "FINANCE_SEP_OWNER_ATTESTATION_NOT_MATCHED_TO_EXACT_SOURCE_AND_PAYMENT_IDS",
     "B4_TEST_CERT_RESET_AND_REISSUE_E2E_NOT_YET_CERTIFIED",
-    "NOV_PROGRAM_ADVANCE_SOURCE_ID_AND_NONDSTRUCTIVE_LABEL_DATE_CORRECTION_PENDING"
+    "NOV_PROGRAM_ADVANCE_SOURCE_ID_AND_NONDESTRUCTIVE_LABEL_DATE_CORRECTION_PENDING"
   ]
 }
