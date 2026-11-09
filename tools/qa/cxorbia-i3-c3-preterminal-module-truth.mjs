@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
-import {assertCanonicalModuleCoverage,assertAllModulesAccepted} from './cxorbia-i3-terminal-module-domain-coverage.mjs';
+import {assertCanonicalModuleCoverage} from './cxorbia-i3-terminal-module-domain-coverage.mjs';
 
 const descriptor=JSON.parse(fs.readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8'));
 const TEMPLATE=process.env.TEMPLATE||descriptor.moduleTruthPath;
@@ -22,7 +22,6 @@ if(m.productSource?.sha!==SOURCE||m.productSource?.treeSha!==TREE||descriptor.pr
   throw new Error('RELEASE_COMPOSITION_FAILURE:C3_CANONICAL_SOURCE_TREE_MISMATCH');
 if(git('rev-parse','HEAD:'+TEMPLATE)!==descriptor.moduleTruthExpectedGitBlob)
   throw new Error('MAPPING_FAILURE:C3_CANONICAL_MATRIX_BLOB_DESYNC');
-assertAllModulesAccepted(m.modules);
 if(ledger?.canonicalFunctionalCandidate?.sourceSha!==SOURCE)throw new Error('RELEASE_COMPOSITION_FAILURE:LEDGER_SOURCE_MISMATCH');
 if(TREE&&git('rev-parse',SOURCE+'^{tree}')!==TREE)throw new Error('RELEASE_COMPOSITION_FAILURE:SOURCE_TREE_MISMATCH');
 
@@ -41,10 +40,29 @@ const collectRefs=(obj,out=new Set(),key='')=>{
   return out;
 };
 
+// The source registry contains historical labels outside the 21 acceptance domains.
+// Preserve each historical label for audit; do not silently create a 22nd domain.
+const LEGACY_DOMAIN_ALIASES=Object.freeze({
+  'finance-dependency-closure':'finance-core-liquidation-costs',
+  'shopper-portal-profile-history':'shoppers-mi-visitas-profile',
+  'project-multiproject-contracts':'projects-periods-hr-source-wizard-multiproject',
+  'identity-auth-closure':'auth-protected-data-runtime',
+  'client-portal':'client-portal-reportkit'
+});
 const unauthorized=[];
+const mappingPending=[];
 const authorityRows=[];
 const sourceFiles=(m.sourceFiles||[]).map(orig=>{
   const f={...orig};
+  const canonical=moduleMap.has(f.domain)?f.domain:LEGACY_DOMAIN_ALIASES[f.domain];
+  if(!canonical||!moduleMap.has(canonical))throw new Error('MAPPING_FAILURE:C3_UNKNOWN_SOURCE_DOMAIN:'+f.domain+':'+f.path);
+  if(canonical!==f.domain){f.preTerminalHistoricalDomain=f.domain;f.domain=canonical;}
+  if(f.phaseAAuthority!==true){
+    // Task-referenced is not an approval; keep the missing mapping visible.
+    f.classification='PENDING_INDEPENDENT_APPROVAL_MAPPING';
+    mappingPending.push({path:f.path,domain:f.domain,phaseAAuthority:f.phaseAAuthority});
+    return f;
+  }
   const actual=safeBlob(SOURCE,f.path);
   if(!actual){unauthorized.push({path:f.path,reason:'MISSING_AT_CANDIDATE'});return f;}
   const mod=moduleMap.get(f.domain)||{};
@@ -83,7 +101,7 @@ const sourceFiles=(m.sourceFiles||[]).map(orig=>{
     else{
       f.approvedSourceCommit=null;f.approvedBlob=null;f.provenanceIndependent=false;
       f.approvalStatus='PENDING_FINDING_PROOF';
-      f.classification='COMPOSED_NOT_DEPLOYED';
+      f.classification=changedVsServed?'COMPOSED_NOT_DEPLOYED':'PENDING_OWNER_PROOF_SERVED';
       f.pendingFindingIds=states.map(x=>x.id);
     }
   }else{
@@ -100,18 +118,19 @@ for(const f of sourceFiles.filter(x=>x.phaseAAuthority===true)){
 }
 const modules=(m.modules||[]).map(mod=>{
   const files=byDomain.get(mod.domain)||[];
-  const pending=files.filter(x=>x.classification==='COMPOSED_NOT_DEPLOYED');
+  const pending=files.filter(x=>x.classification!=='MATCH');
+  const notApproved=mappingPending.filter(x=>x.domain===mod.domain);
   return {...mod,
-    classification:pending.length?'COMPOSED_NOT_DEPLOYED':mod.classification,
+    classification:notApproved.length?'PENDING_OWNER_APPROVAL_MAPPING':pending.length?'PENDING_OWNER_PROOF_SERVED':mod.classification,
     currentCandidateSource:SOURCE,
     lastServedSource:LAST_SERVED,
-    pendingTerminalFiles:pending.map(x=>x.path),
+    pendingTerminalFiles:[...pending.map(x=>x.path),...notApproved.map(x=>x.path)],
     ownerAuthorityCount:files.length
   };
 });
-assertAllModulesAccepted(modules);
-const uncoveredFiles=sourceFiles.filter(x=>x.phaseAAuthority===true&&x.classification!=='MATCH');
-if(uncoveredFiles.length)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_UNACCEPTED_SOURCE_FILES:'+JSON.stringify(uncoveredFiles.map(x=>x.path)));
+// Preterminal verifies provenance/composition, not 21/21 human acceptance.
+// Only the terminal finalizer may promote pending owners with valid receipts.
+const uncoveredFiles=sourceFiles.filter(x=>x.classification!=='MATCH');
 
 const html=git('show',SOURCE+':app/index-backend-dev.html');
 const staticScripts=[...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi)].map(x=>x[1].replace(/^\.\//,''));
@@ -161,7 +180,10 @@ const out={...m,
     moduleCount:modules.length,
     matchModules:modules.filter(x=>x.classification==='MATCH').map(x=>x.domain),
     composedNotDeployedModules:modules.filter(x=>x.classification==='COMPOSED_NOT_DEPLOYED').map(x=>x.domain),
-    pendingFileCount:sourceFiles.filter(x=>x.classification==='COMPOSED_NOT_DEPLOYED').length,
+    pendingFileCount:uncoveredFiles.length,
+    pendingServedOwnerProofFiles:sourceFiles.filter(x=>x.classification==='PENDING_OWNER_PROOF_SERVED').map(x=>x.path),
+    pendingMappingApprovalFiles:mappingPending.map(x=>x.path),
+    terminalEligible:modules.every(x=>x.classification==='MATCH')&&uncoveredFiles.length===0,
     unauthorizedFileCount:0,
     pathBoundAuthority:true,
     globalCandidateSelfApproval:false,
@@ -179,5 +201,7 @@ console.log(JSON.stringify({
   matchModules:out.preTerminalComposition.matchModules.length,
   composedNotDeployedModules:out.preTerminalComposition.composedNotDeployedModules.length,
   pendingFileCount:out.preTerminalComposition.pendingFileCount,
+  pendingMappingApprovalCount:out.preTerminalComposition.pendingMappingApprovalFiles.length,
+  terminalEligible:out.preTerminalComposition.terminalEligible,
   production:false
 },null,2));

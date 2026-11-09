@@ -21,6 +21,9 @@ const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
 const pre=read(PRE),focal=read(FOCAL),human=read(HUMAN),qa=read(QA),parity=read(PARITY),ledger=read(LEDGER);
 
 if(pre?.preTerminalComposition?.decision!=='PASS_C3_PRETERMINAL_COMPOSITION'||pre?.productSource?.sha!==SOURCE||pre?.productSource?.treeSha!==TREE)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_PRETERMINAL_RECEIPT');
+// A referenced owner never becomes an approved Phase A owner through byte parity.
+const pendingMappings=pre?.preTerminalComposition?.pendingMappingApprovalFiles||[];
+if(pendingMappings.length)throw new Error('MAPPING_FAILURE:C3_PENDING_SOURCE_APPROVAL_MAPPING:'+pendingMappings.join(','));
 if(focal?.decision!=='PASS_PRE_I4_FOCAL_HUMAN_BROWSER'||focal?.sourceSha!==SOURCE)throw new Error('FUNCTIONAL_DEFECT:C3_HARDENED_FOCAL');
 if(human?.decision!=='PASS_I3_HUMAN_LIVE_ACCEPTANCE'||human?.sourceSha!==SOURCE)throw new Error('FUNCTIONAL_DEFECT:C3_FULL_HUMAN_ACCEPTANCE');
 if(String(focal?.hrRevision||'')!==String(human?.sourceRevision||''))throw new Error('RELEASE_COMPOSITION_FAILURE:C3_HR_REVISION_DESYNC');

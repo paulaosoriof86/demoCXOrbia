@@ -2384,11 +2384,12 @@ jobs:
       compression-level: 0
   c3-preterminal-module-truth:
    needs: canonical-candidate-authority
-   if: ${{ needs.canonical-candidate-authority.outputs.status=='READY_FOR_TERMINAL_CERTIFICATION'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[c3-preterminal-module-truth]') }}
+   if: ${{ github.event_name=='push'&&contains(github.event.head_commit.message, '[c3-preterminal-module-truth]') }}
    runs-on: ubuntu-latest
    timeout-minutes: 35
    env:
     C3_OUT: .tmp/c3-preterminal-module-truth
+    C3_AUTH_STATUS: ${{ needs.canonical-candidate-authority.outputs.status }}
     C3_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
     C3_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
    steps:
@@ -2399,7 +2400,8 @@ jobs:
      run: |
       set -Eeuo pipefail
       mkdir -p "$C3_OUT"
-      test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "READY_FOR_TERMINAL_CERTIFICATION"
+      test -n "$C3_AUTH_STATUS"
+      test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "$C3_AUTH_STATUS"
       test "$C3_SOURCE" = "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")"
       test "$C3_TREE" = "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")"
       test "$(git rev-parse "$C3_SOURCE^{tree}")" = "$C3_TREE"
@@ -2418,10 +2420,10 @@ jobs:
       node tools/qa/cxorbia-i3-c3-preterminal-module-truth.mjs | tee "$C3_OUT/console.log"
       test "$(jq -r '.preTerminalComposition.decision' "$C3_OUT/module-truth-preterminal.json")" = "PASS_C3_PRETERMINAL_COMPOSITION"
       test "$(jq '.modules|length' "$C3_OUT/module-truth-preterminal.json")" = "21"
-      test "$(jq '.preTerminalComposition.matchModules|length' "$C3_OUT/module-truth-preterminal.json")" = "21"
-      test "$(jq '.preTerminalComposition.composedNotDeployedModules|length' "$C3_OUT/module-truth-preterminal.json")" = "0"
-      test "$(jq '.preTerminalComposition.pendingFileCount' "$C3_OUT/module-truth-preterminal.json")" = "0"
-      test "$(jq '[.sourceFiles[]|select(.classification!="MATCH")]|length' "$C3_OUT/module-truth-preterminal.json")" = "0"
+      test "$(jq '.preTerminalComposition.moduleCount' "$C3_OUT/module-truth-preterminal.json")" = "21"
+      test "$(jq '.preTerminalComposition.unauthorizedFileCount' "$C3_OUT/module-truth-preterminal.json")" = "0"
+      test "$(jq '[.sourceFiles[]|select(.classification!="MATCH")]|length' "$C3_OUT/module-truth-preterminal.json")" = "$(jq '.preTerminalComposition.pendingFileCount' "$C3_OUT/module-truth-preterminal.json")"
+      test "$(jq '[.modules[]|select(.classification=="MATCH")]|length' "$C3_OUT/module-truth-preterminal.json")" = "$(jq '.preTerminalComposition.matchModules|length' "$C3_OUT/module-truth-preterminal.json")"
       test "$(jq -r '.entrypointClosure.allApprovedOwnersLoaded' "$C3_OUT/module-truth-preterminal.json")" = "true"
       test "$(jq '.entrypointClosure.duplicateSrc|length' "$C3_OUT/module-truth-preterminal.json")" = "0"
       git archive "$C3_SOURCE" | tar -x -C "$RUNNER_TEMP"
@@ -2488,12 +2490,16 @@ jobs:
      run: |
       set -Eeuo pipefail
       MATRIX_SHA="$(sha256sum "$C3_OUT/module-truth-preterminal.json"|awk '{print $1}')"
+      MATCH_COUNT="$(jq '.preTerminalComposition.matchModules|length' "$C3_OUT/module-truth-preterminal.json")"
+      PENDING_COUNT="$(jq '.preTerminalComposition.pendingFileCount' "$C3_OUT/module-truth-preterminal.json")"
+      TERMINAL_ELIGIBLE="$(jq -r '.preTerminalComposition.terminalEligible' "$C3_OUT/module-truth-preterminal.json")"
       jq -n -S \
-        --arg source "$C3_SOURCE" --arg tree "$C3_TREE" --arg matrix "$MATRIX_SHA" \
+        --arg status "$C3_AUTH_STATUS" --arg source "$C3_SOURCE" --arg tree "$C3_TREE" --arg matrix "$MATRIX_SHA" \
         --arg hosting "$EXPECTED_HOSTING_VERSION" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" \
         --arg rules "$(jq -r '.sha256' "$C3_OUT/firestore-live-parity.json")" \
         --argjson owners "$(cat "$C3_OUT/active-browser-owner-count.txt")" \
-        '{decision:"PASS_C3_PRETERMINAL_MODULE_TRUTH_21_21_EXACT_DEV",sourceSha:$source,sourceTree:$tree,moduleTruthSha256:$matrix,moduleCount:21,matchModules:21,nonMatchModules:0,pendingFiles:0,activeBrowserOwners:$owners,hostingVersion:$hosting,runtimeRevision:$runtime,runtimeDigest:$digest,firestoreRulesSha256:$rules,allApprovedOwnersLoaded:true,duplicateScripts:0,builds:0,deploys:0,writes:0,production:false}' \
+        --argjson matches "$MATCH_COUNT" --argjson pending "$PENDING_COUNT" --arg eligible "$TERMINAL_ELIGIBLE" \
+        '{decision:(if $status=="READY_FOR_TERMINAL_CERTIFICATION" and $matches==21 and $pending==0 and $eligible=="true" then "PASS_C3_PRETERMINAL_MODULE_TRUTH_21_21_EXACT_DEV" else "HOLD_C3_PRETERMINAL_MODULE_TRUTH_EVIDENCE_PENDING" end),status:$status,sourceSha:$source,sourceTree:$tree,moduleTruthSha256:$matrix,moduleCount:21,matchModules:$matches,nonMatchModules:(21-$matches),pendingFiles:$pending,terminalEligible:($eligible=="true"),activeBrowserOwners:$owners,hostingVersion:$hosting,runtimeRevision:$runtime,runtimeDigest:$digest,firestoreRulesSha256:$rules,allApprovedOwnersLoaded:true,duplicateScripts:0,builds:0,deploys:0,writes:0,production:false}' \
         > "$C3_OUT/result.json"
    - name: step
      if: always()

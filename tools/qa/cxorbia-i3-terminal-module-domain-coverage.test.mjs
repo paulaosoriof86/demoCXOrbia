@@ -49,3 +49,25 @@ test('Terminal jobs and Gate21 require the same 21-domain contract, never legacy
   assert.doesNotMatch(gate21,/MODULE_TRUTH_20_20|moduleCount:20/);
   assert.match(gate21,/cxorbia-i3-terminal-module-domain-coverage\.mjs/);
 });
+
+test('C3 preterminal can audit the HOLD candidate without pretending it is 21/21 certified',()=>{
+  const pre=fs.readFileSync('tools/qa/cxorbia-i3-c3-preterminal-module-truth.mjs','utf8');
+  const final=fs.readFileSync('tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs','utf8');
+  const workflow=fs.readFileSync('.github/workflows/cxorbia-recovery-i3-dev-certification.yml','utf8');
+  const start=workflow.indexOf('\n  c3-preterminal-module-truth:');
+  const end=workflow.indexOf('\n  vrm043-name-diagnostic:',start);
+  assert.ok(start>0&&end>start);
+  const job=workflow.slice(start,end);
+  assert.doesNotMatch(pre,/assertAllModulesAccepted/);
+  assert.doesNotMatch(pre,/C3_UNACCEPTED_SOURCE_FILES/);
+  assert.match(pre,/PENDING_OWNER_PROOF_SERVED/);
+  assert.match(pre,/PENDING_INDEPENDENT_APPROVAL_MAPPING/);
+  assert.match(pre,/terminalEligible:/);
+  assert.match(job,/HOLD_C3_PRETERMINAL_MODULE_TRUTH_EVIDENCE_PENDING/);
+  assert.match(job,/C3_AUTH_STATUS/);
+  assert.match(final,/C3_PENDING_SOURCE_APPROVAL_MAPPING/);
+  assert.match(final,/C3_OWNER_RECEIPT_MISSING/);
+  assert.match(final,/C3_OPEN_P0_FINDINGS/);
+  assert.equal(assertCanonicalModuleCoverage(modules).moduleCount,21);
+  assert.ok(modules.some(x=>x.classification!=='MATCH'));
+});
