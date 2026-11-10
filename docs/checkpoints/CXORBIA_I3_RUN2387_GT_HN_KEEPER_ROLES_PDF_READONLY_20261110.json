@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "cxorbia.i3.run2387.gt-hn-keeper-roles-pdf-readonly.v1",
+  "dateLocal": "2026-11-10",
+  "iteration": "I3",
+  "decision": "PASS_SCOPED_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E__HOLD_B1_B3_INTEGRAL",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "productSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+  "productSourceTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
+  "sameMaterialization": {
+    "runId": 42921566208,
+    "runtimeRevision": "cxorbia-live-hr-dev-00369-lkf",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/e301b123cd45d041",
+    "hrRevision": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636"
+  },
+  "run": {
+    "runId": 42926657869,
+    "runNumber": 2387,
+    "jobId": 130214974910,
+    "headCommit": "aeffa094babf19d6576aca16cc01330ffbe99369",
+    "artifactId": 13813588534,
+    "artifactDigest": "sha256:2e9a725db6899de270cdeca1f773b2d7fe241255bfad120685f0af9c97e607eb",
+    "decision": "PASS_SCOPED_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E",
+    "allFunctionalChecksPassed": 20,
+    "admin": {
+      "authenticated": true,
+      "totalVisitReadModel": 792,
+      "gtKeeper": {"caseId": "GT_MURGA", "canonicalProfileCount": 1, "adminTableVisible": true, "scopedVisits": 15},
+      "hnKeeper": {"caseId": "HN_VILCA", "canonicalProfileCount": 1, "adminTableVisible": true, "scopedVisits": 4}
+    },
+    "shopperSessions": [
+      {"caseId": "GT_MURGA", "authenticated": true, "ownVisits": 15, "duplicates": 0, "miPerfil": "PASS", "misVisitas": "PASS"},
+      {"caseId": "HN_VILCA", "authenticated": true, "ownVisits": 4, "duplicates": 0, "miPerfil": "PASS", "misVisitas": "PASS"}
+    ],
+    "resourceRead": {
+      "caseId": "GT_JULISSA",
+      "urlDomains": ["cxorbia-backend-dev.web.app", "cxorbia-backend-dev.firebaseapp.com"],
+      "providerAck": "AUTHENTICATED_READ_200_BOTH_ORIGINS",
+      "exactPdfBytesEach": 162335,
+      "sourcePeriod": "cinepolis-2026-10",
+      "activePeriod": "cinepolis-2026-11",
+      "reusableProjectResource": true,
+      "corsCanonicalGetAllowed": true,
+      "corsAliasGetAllowed": true
+    },
+    "safety": {"providerCommands": 0, "authWrites": 0, "firestoreWrites": 0, "hrWrites": 0, "deploys": 0, "production": false}
+  },
+  "scopeBoundary": {
+    "readOnlyFunctionalEvidence": true,
+    "adminShopperWritesOrProviderCommandsTestedHere": false,
+    "tinyFish": "NOT_RUN_HISTORICAL_B1_SESSION_EXCEPTION_PRESERVED",
+    "newPaulaHumanBlockPass": false,
+    "promotedBlocks": 0,
+    "functionalPassPreserved": ["B4", "B5", "B6"],
+    "strictDomainsMatch": 5,
+    "strictDomainsTotal": 21,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": "DO_NOT_TOUCH"
+  },
+  "nextExact": "B1-B3 complete actual schedule/check-in, source HR state and role E2E after/before with human receipt; B7 unread notification UI and reservations; D08 shopper/client UI progress; B8/B9 and 21-domain regression."
+}
