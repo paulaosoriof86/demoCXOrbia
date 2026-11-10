@@ -134,5 +134,40 @@
     "noFurtherBlindRetry": true,
     "noProduction": true,
     "noHrPaymentWrite": true
+  },
+  "retireRecoveryPostAuthorization20261109": {
+    "status": "HOLD_NOT_RETIRED",
+    "directionAuthorization": "Paula authorized retirement of this exact isolated synthetic DEV bank only, user message 'autorizo'.",
+    "bank": "QA DEV B4 20261109 NO PUBLICAR",
+    "environment": "https://cxorbia-backend-dev.web.app",
+    "scope": "DEV-only, no production, no HR/payment writes",
+    "beforeReadback": {
+      "banks": 5,
+      "originalBanks": 4,
+      "syntheticBankVisible": true,
+      "syntheticBankStatus": "published",
+      "historicalAttempts": 40,
+      "legacyApproved": 38,
+      "legacyNotApproved": 2,
+      "shoppersLinked": 14
+    },
+    "attempt": {
+      "ui": "Selected exact QA synthetic bank, clicked Requisito y % mínimo, clicked Retirar banco once. Browser native confirm was shown, but automated acceptance failed/timed out; provider ACK was not seen.",
+      "browserFailure": "Connected Chrome CDP Input.dispatchMouseEvent / Emulation.setFocusEmulationEnabled timeout around native confirm.",
+      "blindRetry": false
+    },
+    "independentFreshSessionReadback": {
+      "banks": 5,
+      "originalBanks": 4,
+      "qaBankVisible": true,
+      "qaStatus": "published",
+      "historicalAttempts": 40,
+      "legacyApproved": 38,
+      "legacyNotApproved": 2,
+      "shoppersLinked": 14,
+      "retired": false
+    },
+    "disposition": "Retirement is NOT completed. Treat the QA-only bank as published and require successful native confirmation + provider ACK + independent reload verifying exactly four original banks and 40 unchanged historical attempts. Do not invoke publication again. Human B4 block PASS is still pending.",
+    "nextExactAction": "Recover Chrome native-confirm control (or Paula clicks Aceptar on the exact QA retirement prompt once), then independent provider readback/reload, durable cleanup receipt, B4 Shopper certification E2E."
   }
 }
