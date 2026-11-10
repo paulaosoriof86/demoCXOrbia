@@ -3029,7 +3029,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "3cbc924986a48f2b09ffa2978707d3f3206943c6",
+  "moduleTruthExpectedGitBlob": "d2eda54188ad637e6f4a19b7de1d7beb413c01da",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -21254,6 +21254,10 @@
     "gate20": "HOLD",
     "gate21": "HOLD",
     "i4Authorized": false,
-    "production": "DO_NOT_TOUCH"
+    "production": "DO_NOT_TOUCH",
+    "matrixGitBlob": "d2eda54188ad637e6f4a19b7de1d7beb413c01da",
+    "latestAuthenticatedChromeReadbackGitBlob": "2096c43b2d7215da3c88b64137f40d070512606e",
+    "paulaPriorityLock": "B7_READONLY_PARALLEL_EXPLICITLY_AUTHORIZED_20261110__INTEGRAL_B4_B5_B6_OWNER_GAPS_STILL_OPEN",
+    "correctedB4OutdatedPending": "4_BANKS_40_HISTORIC_MAIN8_REQUIRED_AI15_OPTIONAL_ALL_PASS__DO_NOT_REPEAT"
   }
 }
