@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "cxorbia.i3.b4-b5-b6.functionally-certified-acceptance.v1",
+  "dateLocal": "2026-11-10",
+  "timezone": "America/Guatemala",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "baselineDocumentaryHead": "d7a497eea4082ccecf68b3aca91d89e74a0a14f9",
+  "sourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+  "sourceTree": "8075c43e10763ed672ec2f1742a09b04e5ffb40e",
+  "devHostingVersion": "sites/cxorbia-backend-dev/versions/ad5eb641dc8f87af",
+  "devRuntimeRevision": "cxorbia-live-hr-dev-00368-9tb",
+  "ownerDirection": {
+    "source": "Paula direct instruction in the current Project conversation, 2026-11-10",
+    "verbatim": "Necesito que termines con la certificación integral de B4, B5 y B6... si ya tenemos los pass entonces qué hace falta? ... revisa para no reprocesar y si de verdad hace falta algo, complétalo y certifica ya",
+    "earlierDirection": "Certificar en la medida en que las pruebas funcionales pasen; mantener históricos de Shopper y dejar bancos actuales como pruebas; la futura recertificación aplicará a certificados y no certificados",
+    "acceptanceMeaning": "Direction authorizes adjudicating previously passed real functional proofs and locking the functional block when equivalent owners/dependencies are demonstrated. It does NOT authorize release I4, blanket security waiver, unproved payment claims or issuance of bulk recertifications. No separate new Paula screenshot review is being attributed."
+  },
+  "methodCorrection": {
+    "previousError": "B5 functional module acceptance had been tied to the B8 business-data reconciliation of September payments. B4 functionality had been tied to Shopper final-bank completion and mass operational recertification. B6 current same-owner proofs had not been carried forward.",
+    "correctedBoundary": "Certify B4 administrative and Shopper certification mechanics using controlled DEV QA and source/provider negative guards, B5 truthful source-backed Benefits display and CSV, and B6 Dashboard/Visits/Detail operations. Preserve separate B8 financial settlement actions and final Gate20/Gate21 release controls.",
+    "noRepetition": "Preserve prior authenticated tests, screenshot blobs, Chrome actor timestamps and existing code-source checks; no new E2E or TinyFish PASS invented."
+  },
+  "blocks": {
+    "B4_certificaciones": {
+      "functionalDecision": "PASS_CERTIFIED_ON_EXISTING_AUTHENTICATED_DEV_E2E_AND_GUARDS",
+      "blockFunctionalLocked": true,
+      "currentSourceProof": "docs/checkpoints/CXORBIA_I3_VRM322_B4_DEV_AND_BANK_FLAGS_READBACK_20261110.json",
+      "testScopeReceipt": "docs/checkpoints/CXORBIA_I3_B4_B5_SCOPE_CERTIFICATION_CONTROL_20261110.json",
+      "tests": "101_OF_101_LOCAL_SOURCE_PROVIDER_MOCK_NEGATIVE_AND_IDEMPOTENCY_PASS",
+      "realE2e": "Admin created/imported QA two-question bank, saved review v2 with ACK/reload, published optional bank, Shopper passed 2/2 score100 with server ACK/history/reload, QA bank retired with exact confirmation and ACK, legacy 40 preserved",
+      "realNegativeCarryover": "docs/checkpoints/CXORBIA_I3_D05_NEGATIVE_SAFETY_CURRENT_SOURCE_PASS_RUN421569_20261105.json - authenticated Admin stale bank publish 409 without write or false success; runtime and cert Admin UI owners unchanged from 56d5ed to current source",
+      "sourceNegativeSafeguards": "ROLE_PROJECT_TENANT_CROSS_PERIOD_INACTIVE_IDENTITY_ANSWER_LEAKAGE_IDEMPOTENT_ACK_BANK_INDEPENDENCE_VOID_GUARDS",
+      "recertification": "All-scope candidate logic includes project Shoppers whether previously certified or never certified; no production-wide recertification issued before final banks. Current banks are QA content and do not qualify as mandatory program certificates.",
+      "retainedHistory": "4_ORIGINAL_BANKS__40_LEGACY_RECORDS__38_APPROVED__14_LINKED_SHOPPERS",
+      "uiFollowupWithoutFunctionalBlockRegating": [
+        "Bulk recertification dialog label says all certified although server candidate scope includes never-certified users; correct copy before actual future mass issuance",
+        "Publish reviewed bank executes without a second confirmation modal; UX hardening before routine operation"
+      ],
+      "unclaimedProof": "No new authenticated live cross-tenant denial or real all-project bulk recertification was performed during this adjudication; local guards and prior negative 409 are the evidence, not a new 403 receipt"
+    },
+    "B5_beneficios": {
+      "functionalDecision": "PASS_CERTIFIED_ON_CARRIED_AUTHENTICATED_SHOPPER_PROOF_AND_SOURCE_PARITY",
+      "blockFunctionalLocked": true,
+      "existingShopperE2e": "docs/checkpoints/CXORBIA_I3_20261109_SHOPPER_CERT_AND_PAYMENT_CROSSMODULE_RECEIPT.json",
+      "existingAdminE2e": "docs/checkpoints/CXORBIA_I3_ADMIN_CHROME_B4_B8_READBACK_20261109.json",
+      "functionalReadback": "Authenticated Julissa 9 historical liquidations, 7 confirmed with financial source, 2 pending, individual paid detail; separate Stiven authenticated benefits 5 historical confirmed after proper actor switch. No data cross-identity assumption across concurrent same-origin tabs.",
+      "sourceRegression": "docs/checkpoints/CXORBIA_I3_B5_FINANCE_CROSSMODULE_REGRESSION_158_20261110.json",
+      "tests": "158_OF_158_OVERLAPPING_B5_B8_CROSSMODULE_REGRESSION_PASS",
+      "ownerCarryover": {
+        "beneficiosJsBlob": "c7060562558f307b9b037e929a6fa7e179db1826",
+        "financeAdapterBlob": "4997010949dd8a126b058f720041fe5eeb04f1bd",
+        "backendFinanceBenefitsBlob": "66856002901be88aefb38acc0aaab635a8872c2b",
+        "identicalSourceAcross": [
+          "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+          "a290acf84fe71891747e4dae8b62cd952e094c71",
+          "b390a1e996f01896d86d4bc1b1147a0dd2a40942"
+        ]
+      },
+      "priorCrossmoduleP0": "VRM-320 Shopper Mis Visitas payment-column precedence corrected later in B3 owner; 12/12 tests and exact DEV materialization run 2322 preserved. It is not a new B5 defect.",
+      "dataBoundary": "Paula confirmed September obligations paid 2026-10-31, but exact per-visit source settlement still needs authorized B8 reconciliation; October pending and November payable accrual remain B8 operational data, not B5 rendering blockers.",
+      "unclaimedProof": "No 2026-11-10 new browser readback or bank transfer reconciliation; the source-backed display uses preserved actual Shopper readbacks and unchanged owner blobs."
+    },
+    "B6_dashboard_visitas_detalle": {
+      "functionalDecision": "PASS_CERTIFIED_ON_CARRIED_ADMIN_SHOPPER_DEV_AND_CURRENT_SOURCE_GUARDS",
+      "blockFunctionalLocked": true,
+      "existingAdminE2e": "docs/checkpoints/CXORBIA_I3_BROWSER_FOCAL_MODULE_EVIDENCE_20261109.json",
+      "sourceRegression": "docs/checkpoints/CXORBIA_I3_B6_DASHBOARD_VISITS_DETAIL_SOURCE_9_20261110.json",
+      "tests": "9_OF_9_LOCAL_SOURCE_AND_EXECUTABLE_FACET_HANDLER_PASS",
+      "latestObservedAdmin": "NOV 2026: 44 visits, GT34, HN10, assigned33, unassigned11; Total visitas drilldown 44 and Damaris filtered two rows; Visitas available GT11 HN0; visit 755 detail opened",
+      "earlierAllRoleVisual": "docs/checkpoints/CXORBIA_I3_RUN2177_FULL_SAME_ARTIFACT_FUNCTIONAL_RECEIPT_20261104.json - 56 role routes, 44 clicks, 108 screenshots in earlier DEV source; independently scoped, not claimed as a fresh current release run",
+      "earlierAuthenticatedShopper": "docs/checkpoints/CXORBIA_I3_D05_D06_POST_HOSTING_BROWSER_READBACK_20261106.json - Stiven 10 visits across period views, no duplicated visits, history detail read-only",
+      "ownerCarryover": {
+        "dashboardJsBlob": "c48d1c63d0628c637c4257bef1725dc4349b8668",
+        "visitasJsBlob": "e78caa3c4bd28f1a57618986c6d5cebc3ea1e699",
+        "coreDataJsBlob": "4457a3b07b11a2b57fad56aebce4a7046400dbed",
+        "periodReadModelBlob": "11425e47e54ca955056dc6b891235a5bdcdbaf4d",
+        "identicalSourceAcross": [
+          "a290acf84fe71891747e4dae8b62cd952e094c71",
+          "b390a1e996f01896d86d4bc1b1147a0dd2a40942"
+        ]
+      },
+      "dataBoundary": "Future external HR revision drift still belongs to same-revision release gate, not automatic invalidation of authenticated Nov9 B6 functionality absent exact drift. No HR mutation was done."
+    }
+  },
+  "certificationAccounting": {
+    "newlyAdjudicatedFunctionalBlocks": ["B4", "B5", "B6"],
+    "functionalBlocksLockedByThisReceipt": 3,
+    "totalFrozenBlocks": 9,
+    "existingBlockReceiptsPreserved": true,
+    "previous21DomainMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V290.json",
+    "previous21DomainMatch": 5,
+    "21DomainMatrixNotMutated": true,
+    "reason": "Functional B-block closures and the complete 21-domain release matrix are separate acceptance inventories; do not assert 8/21 MATCH until domain-wide release adjudication is actually done."
+  },
+  "releaseSecurityBoundary": {
+    "gate20": "HOLD_REQUIRED_FULL_REGRESSION_AND_AUTHORITATIVE_HR_SAME_REVISION",
+    "gate21": "HOLD_REQUIRED_EXACT_FINAL_ARTIFACT_CERTIFICATION",
+    "b8SeptemberPayments": "OPEN_EXACT_FINANCIAL_RECONCILIATION_NOT_WAIVED",
+    "b4NewAuthenticatedNegativeRoleCheck": "NOT_PERFORMED_CURRENT_SESSION__PRIOR_SERVER_GUARDS_AND_NEGATIVE_409_PRESERVED__RELEASE_SECURITY_GATE_STILL_REQUIRED",
+    "chromeNewUiAttempt": "ENVIRONMENT_FAILURE_CDP_EMULATION_FOCUS_TIMEOUT_NO_NEW_PASS",
+    "tinyFish": "NOT_RUN_PAULA_SELECTED_CONNECTED_CHROME_FOR_MODULE_PROOF",
+    "production": "DO_NOT_TOUCH",
+    "i4Authorized": false,
+    "sourceCodeWrites": 0,
+    "newDevDeploys": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "financialWrites": 0,
+    "massRecertIssued": 0
+  },
+  "nextFrozenBlock": "B7_POSTULACIONES_ASIGNACIONES_CARRY_FORWARD_EXISTING_PROOFS_THEN_FILL_REAL_GAPS",
+  "doNotReopen": "Preserve B4/B5/B6 functional status unless exact owner/dependency/provider/HR regression is proven; do not relabel unrelated B8 payment backfill or Gate20/Gate21 as B5/B6 UI FAIL.",
+  "appendOnly": true
+}
