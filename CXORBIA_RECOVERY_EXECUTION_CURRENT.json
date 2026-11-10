@@ -2,7 +2,7 @@
   "schemaVersion": "cxorbia.recovery.execution-current.v1",
   "planLockPath": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
   "planId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
-  "asOf": "2026-11-10T06:38:29.258Z",
+  "asOf": "2026-11-10T11:30:00-06:00",
   "iteration": "I3",
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
@@ -518,7 +518,7 @@
     "evolution": 6
   },
   "historicalNextExactActionPreS1": "S1 read-only reason/alias cohort classification, implement legacy-compatible deterministic normalizer in provider owner and bridge, run bounded GT/HN/history/Auth fixtures. Existing DEV serial materialization only after source QA; verify Stiven/Julissa Shopper role post-fix.",
-  "nextExactAction": "PAULA_20261110_PRIORITY_LOCK: do NOT advance to B7 while B4-B6 integral domain owner gaps remain. Scoped B4/B5/B6 functional PASS 3/9 is preserved in the SAME V291 matrix as full-domain MATCH 5/21; no double count. Finish D08 Academia separate Shopper course progress with provider ACK/reload, C09/C10 independent Admin/Shopper Benefits CSV row-currency-period parity, and B1 MiDia/B11 same-revision HR parity, using past evidence where valid. Authenticated Chrome Admin catalog/Dashboard/Liquidaciones readback preserved in linked 20261110 receipt; separate Shopper login not proven. B8 September settlement separate. No replay of already passed B4 banks, no I4; Gate20/21 HOLD; production DO_NOT_TOUCH.",
+  "nextExactAction": "PAULA_20261110_CROSS_TEST_CONTINUITY: B4/B5/B6 FUNCTIONAL BLOCK_LOCKED PASS 3/9 preserved; 5/21 is distinct full 21-owner-domain MATCH, not stalled B4-B6 acceptance. Current authenticated Admin readback confirms B4 4 banks, 40 histories, required main 8Q and optional AI 15Q (80% each); B6 Dashboard/Visits/Reports/HR November 44, GT34 HN10, assigned33, unassigned11, realized12, HR published 7b7b62269233. B7 parallel read-only authorized, existing RUN2177 lifecycle and RUN2216 20/20 preserved, now 33 assignments/0 requests; no new E2E write. Do NOT rerun proven tests. Remaining full-domain D08 Shopper Academy provider ACK/reload, C09/C10 Admin/Shopper Benefits CSV row/currency/period, B11 independent HR revision/Shopper actor, and uncovered B7 notification/history cross-actor states. Shopper firebaseapp.com remains at login (no credentials entered), so no new Shopper E2E claimed. HR fresh endpoint unsafe, do not invoke. Correct stale references to 4-bank/40 histories pending; they are PASS. No I4; Gate20/21 HOLD, production DO_NOT_TOUCH.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -11623,7 +11623,7 @@
     "production": "DO_NOT_TOUCH",
     "actualCertificationsUnchanged": true
   },
-  "activeBlocker": "B4_B5_B6_FUNCTIONAL_SCOPES_ADJUDICATED_PASS__B7_B8_AND_I3_GATE20_GATE21_STILL_OPEN__NEW_LIVE_NEGATIVE_ROLE_PROOF_NOT_CLAIMED",
+  "activeBlocker": "ONLY_UNPROVEN_FULL_OWNER_CROSS_ROLE_AND_PROVIDER_READBACK__B4_B5_B6_SCOPED_FUNCTIONAL_PASS_CERTIFIED__SHOPPER_DEV_AUTH_SESSION_NOT_AVAILABLE",
   "v597QaVoidCanonicalContinuity": {
     "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V597_2026-11-08.json",
     "gitBlob": "e77a25664f5d75e9f9d75985b833111f75a97fb6",
@@ -12057,12 +12057,32 @@
       "DASHBOARD_OPERATION_B1_MIDIA_AND_B11_INDEPENDENT_SAME_HR_REVISION"
     ],
     "latestAuthenticatedChromeReadbackPath": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_CHROME_INTEGRAL_GAP_READBACK_20261110.json",
-    "latestAuthenticatedChromeReadbackGitBlob": "f6211fbdd8a1930c4c07f8dff22cf803968e5ad9",
-    "paulaPriorityLock": "NO_B7_UNTIL_B4_B5_B6_INTEGRAL_GAPS_RESOLVED_OR_EXPLICITLY_SCOPED",
+    "latestAuthenticatedChromeReadbackGitBlob": "2096c43b2d7215da3c88b64137f40d070512606e",
+    "paulaPriorityLock": "B7_PARALLEL_READ_ONLY_AUTHORIZED_20261110__NO_B7_PROVIDER_WRITES_OR_HUMAN_MATCH_YET",
     "productSourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
     "production": "DO_NOT_TOUCH",
     "gate20": "HOLD",
     "gate21": "HOLD",
-    "i4Authorized": false
+    "i4Authorized": false,
+    "latestReadbackScope": "B4_ADMIN_POLICY_FLAGS_AND_4_BANK_40_LEGACY_PASS__B6_ADMIN_5_SURFACE_NOV44_33_11_12_HR_REVISION_7b7b62269233__B7_ADMIN_READONLY_33_ASSIGNMENTS",
+    "shopperLogin": "NO_ACTIVE_SHOPPER_FIREBASEAPP_SESSION__CREDENTIALS_NOT_RECONSTRUCTED"
+  },
+  "b7ParallelReadOnly20261110": {
+    "dateLocal": "2026-11-10",
+    "authorization": "PAULA_EXPLICIT_PARALLEL_B7",
+    "status": "READ_ONLY_WITH_PRESERVED_TECHNICAL_AND_HUMAN_FOCAL_PASS_NOT_INTEGRAL_OWNER_MATCH",
+    "previousAdminLifecycle": "RUN2177",
+    "previousShopperKeepers": "RUN2216_20_OF_20_PASS",
+    "sourceUnchangedOwnerFiles": 7,
+    "paulaR05R06Acceptance": "PASS_20261014",
+    "currentAdminNOV2026": {
+      "assigned": 33,
+      "postulationsPending": 0,
+      "reservationsPending": 0
+    },
+    "remaining": "ONLY_UNCOVERED_CROSS_ACTOR_PROVIDER_ACK_NOTIFICATIONS_NO_DUPLICATE_HISTORY",
+    "newReceipt": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_CHROME_INTEGRAL_GAP_READBACK_20261110.json",
+    "newReceiptBlob": "2096c43b2d7215da3c88b64137f40d070512606e",
+    "production": "DO_NOT_TOUCH"
   }
 }
