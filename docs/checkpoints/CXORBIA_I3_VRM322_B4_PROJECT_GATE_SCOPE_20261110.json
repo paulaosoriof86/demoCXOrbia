@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm322.project-certification-gate-scope.v1",
+  "findingId": "VRM-322",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "predecessorProductSourceSha": "56d5ed08e6b91854333d80b69645607615707a26",
+  "sourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+  "sourceTree": "8075c43e10763ed672ec2f1742a09b04e5ffb40e",
+  "allowedProductFiles": [
+    "app/core/backend-certifications.js",
+    "app/modules/midia.js",
+    "app/modules/misvisitas.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs"
+  ],
+  "behavior": "Project gate computed from all published/confirmed required certifications, independent of selected exam; each bank retains its exact protected eligibility proof.",
+  "priorDevHostingVersion": "sites/cxorbia-backend-dev/versions/04f5eb9dfa5df499",
+  "exactRequiredFlagsInLiveAdmin": "NOT_YET_VERIFIED",
+  "devPublished": false,
+  "production": false,
+  "hrWrites": 0,
+  "financialWrites": 0
+}

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm322.source-proof.v1",
+  "findingId": "VRM-322",
+  "sourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+  "sourceTree": "8075c43e10763ed672ec2f1742a09b04e5ffb40e",
+  "predecessorProductSourceSha": "56d5ed08e6b91854333d80b69645607615707a26",
+  "allowedProductFiles": [
+    "app/core/backend-certifications.js",
+    "app/modules/midia.js",
+    "app/modules/misvisitas.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs"
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM322_B4_PROJECT_GATE_SCOPE_20261110.json",
+  "scopeReceiptBlob": "961d9c3e96201ab8cdf7c2c44bfe966bd918f38a",
+  "sourceTestsPass": 11,
+  "sourceTestsFail": 0,
+  "testsScope": "Direct in-memory V8 mock of actual backend-certifications.js proposed source and static owner references; no real provider, no Chrome E2E, no GitHub Actions yet.",
+  "tests": [
+    "NO_BANK_FAIL_CLOSED",
+    "ONE_OF_TWO_REQUIRED_FALSE",
+    "ONLY_FIRST_TRUE",
+    "TWO_OF_TWO_TRUE",
+    "OPTIONAL_NOT_BLOCKING",
+    "ALL_OPTIONAL",
+    "EXPLICIT_CARRYOVER",
+    "UNADJUDICATED_LEGACY_FAIL",
+    "RECERT_REQUIRED_FAIL",
+    "NO_SELECTOR_IN_MIDIA",
+    "NO_SELECTOR_IN_MISVISITAS"
+  ],
+  "findings": [
+    {
+      "id": "VRM-322",
+      "priority": "P0_PROVEN",
+      "classification": "CROSS_MODULE_PROJECT_ELIGIBILITY_SELECTION_LEAK"
+    }
+  ],
+  "sourceSyntax": {
+    "appOwners": "PASS_NEW_FUNCTION_PARSE_3_OF_3",
+    "qaNodeTest": "PENDING_CANONICAL_CI"
+  },
+  "gitHubActions": "PENDING",
+  "devPublished": false,
+  "production": false,
+  "hrWrites": 0,
+  "moduleCertification": "HOLD_UNTIL_E2E_HUMAN_PASS"
+}
