@@ -1229,7 +1229,7 @@
   },
   "moduleTruthAuthority": {
     "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V291.json",
-    "gitBlob": "3cbc924986a48f2b09ffa2978707d3f3206943c6",
+    "gitBlob": "d2eda54188ad637e6f4a19b7de1d7beb413c01da",
     "sourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
     "allModulesMatch": false,
     "phaseAComplete": false
@@ -12042,7 +12042,7 @@
   },
   "functionalBlockDomainReconciliation20261110": {
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V291.json",
-    "matrixGitBlob": "3cbc924986a48f2b09ffa2978707d3f3206943c6",
+    "matrixGitBlob": "d2eda54188ad637e6f4a19b7de1d7beb413c01da",
     "descriptorPath": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "sourceReceiptPath": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_FUNCTIONAL_BLOCK_ACCEPTANCE_20261110.json",
     "scopedFunctionalBlockPass": 3,
@@ -12065,7 +12065,8 @@
     "gate21": "HOLD",
     "i4Authorized": false,
     "latestReadbackScope": "B4_ADMIN_POLICY_FLAGS_AND_4_BANK_40_LEGACY_PASS__B6_ADMIN_5_SURFACE_NOV44_33_11_12_HR_REVISION_7b7b62269233__B7_ADMIN_READONLY_33_ASSIGNMENTS",
-    "shopperLogin": "NO_ACTIVE_SHOPPER_FIREBASEAPP_SESSION__CREDENTIALS_NOT_RECONSTRUCTED"
+    "shopperLogin": "NO_ACTIVE_SHOPPER_FIREBASEAPP_SESSION__CREDENTIALS_NOT_RECONSTRUCTED",
+    "descriptorGitBlob": "854d38ecb50ec951329da66690bbc93dfb05d8b6"
   },
   "b7ParallelReadOnly20261110": {
     "dateLocal": "2026-11-10",
