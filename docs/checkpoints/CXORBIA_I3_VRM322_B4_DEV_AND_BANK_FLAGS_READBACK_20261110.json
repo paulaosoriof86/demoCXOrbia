@@ -67,7 +67,9 @@
     "explanation": "Both banks default to required because neither has explicit required=false; operator policy intent unverified.",
     "writes": 0,
     "shopperDataExported": false,
-    "answerKeysExported": false
+    "answerKeysExported": false,
+    "existingSourcePolicy": "VRM-316 frozen: undefined required => mandatory, explicit false => optional; real Admin-Shopper requirement E2E RUN2293 PASS 2026-11-07.",
+    "policyIntentLimit": "Do not make any published bank optional without Paula's explicit business decision."
   },
   "chromeExtensionFunctionalReadback": {
     "browserFamily": "Chrome",
@@ -106,7 +108,7 @@
     "newAccountsCreated": 0,
     "certificationsWritten": 0
   },
-  "decision": "SOURCE_AND_DEV_SERVING_PASS__BANK_POLICY_AMBIGUITY_HOLD__B4_NOT_CERTIFIED",
+  "decision": "SOURCE_DEV_PASS__VRM316_TWO_REQUIRED_BANKS_CONFIRMED__B4_E2E_HOLD",
   "humanAcceptance": "PENDING_PAULA_B4_EXPLICIT_PASS",
-  "nextExactAction": "Reconcile approved policy for two simultaneously published banks; if only main mandatory, set second bank required=false via protected DEV configure with ACK/readback and preserve historical approvals; otherwise prove both required and adjudicate historical per exact bank. Then execute protected Shopper attempt, reload Admin/Shopper/Mi Día/Mis Visitas, obtain B4 human receipt. Gate20/Gate21/I4 remain HOLD."
+  "nextExactAction": "Preserve VRM-316 requirement; reconcile exact per-bank protected approvals and historic equivalence, no mass grants; execute authentic DEV Shopper/Admin ACK and reload and obtain Paula B4 human PASS; do not change bank required flags absent explicit business decision."
 }
