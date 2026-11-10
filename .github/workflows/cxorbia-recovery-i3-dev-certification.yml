@@ -6907,6 +6907,30 @@ jobs:
         allBankMetadata:banks,publishedOctober:published,
         requiredOctober:published.filter(x=>x.effectiveRequired).length,
         noAnswerKeysExported:true,noShopperDataExported:true,readOnly:true,writes:0,production:false};
+      // Aggregate protected attempt metadata by exact bank, never export names/IDs of shoppers, answers, or keys.
+      const rawAttempts=(await getFirestore().collection('tenants').doc('tya').collection('projects').doc('cinepolis')
+        .collection('certifications').get()).docs.map(d=>d.data());
+      const protectedAttempts=rawAttempts.filter(a=>a.recordType==='certification_attempt'
+        &&a.tenantId==='tya'&&a.projectId==='cinepolis');
+      const positive=protectedAttempts.filter(a=>a.pass===true&&a.status==='certified'
+        &&a.eligibilityGranted===true&&a.currentCertification===true&&!a.voidedAt);
+      const bankIds=published.map(x=>x.resourceId);
+      const positivelyByBank=bankIds.map(bankResourceId=>({bankResourceId,
+        attemptCount:protectedAttempts.filter(a=>a.bankResourceId===bankResourceId).length,
+        positiveProtectedAttemptCount:positive.filter(a=>a.bankResourceId===bankResourceId).length,
+        distinctPositiveShoppers:new Set(positive.filter(a=>a.bankResourceId===bankResourceId)
+          .map(a=>String(a.shopperId||''))).size}));
+      const positiveMap=new Map();
+      for(const a of positive){
+        const shopper=String(a.shopperId||'');if(!shopper)continue;
+        const set=positiveMap.get(shopper)||new Set();set.add(a.bankResourceId);positiveMap.set(shopper,set);
+      }
+      report.protectedAttemptMetadata={totalProjectProtectedAttempts:protectedAttempts.length,
+        positiveProtectedAttemptCount:positive.length,byPublishedBank:positivelyByBank,
+        shopperCountWithPositiveAttemptsInEveryRequiredPublishedBank:[...positiveMap.values()]
+          .filter(set=>published.filter(x=>x.effectiveRequired).every(bank=>set.has(bank.resourceId))).length,
+        caveat:'Positive attempt metadata is not final per-shopper eligibility: recertification, equivalence and history review still apply.',
+        personalDataExported:false,answerDataExported:false,readOnly:true,writes:0};
       if(published.length<2)throw Error('B4_BANKS_NOT_VISIBLE_FOR_EXPECTED_READBACK');
       fs.writeFileSync('.tmp/i3-b4-required-bank-flags/readback.json',JSON.stringify(report,null,2)+'\n');
       console.log(JSON.stringify({publishedOctober:published,requiredOctober:report.requiredOctober,readOnly:true}));
