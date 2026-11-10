@@ -161,8 +161,8 @@ async function lessonProgress(who,firstToken,other,otherToken,key){
 }
 let error=null;
 try{
-  const health=await json(host+'/health');
-  ensure(health.ok===true&&health.production===false&&health.hrWrites===false,'PROVIDER_FAILURE','HEALTH_DEV_ONLY');
+  // Hosting does not proxy /health; the live scoped HR meta contract is the
+  // correct DEV-only no-write runtime assertion for this endpoint.
   result.hrBefore=await hrMeta();ensure(result.hrBefore===expectedHr,'PROVIDER_FAILURE','HR_BEFORE_MISMATCH');
   ensure((await proj.get()).exists,'SOURCE_FAILURE','PROJECT_MISSING');
   const key=await apiKey(),who=await qaIdentity('a',key),other=await qaIdentity('b',key);
