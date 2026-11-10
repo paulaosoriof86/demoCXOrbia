@@ -40,7 +40,7 @@ concurrency:
   cancel-in-progress: true
 env:
   CANDIDATE_DESCRIPTOR: CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V601_2026-11-09.json
+  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V602_2026-11-09.json
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -6709,7 +6709,7 @@ jobs:
     SOURCE_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
     EVIDENCE: .tmp/i3-current-source-hosting-dev
     PRODUCTION_URL: https://tya-plataforma.web.app/
-    ASSET_FILES: index-backend-dev.html core/backend-firebase.js core/router.js adapters/tya-live-source-refresh-watch-v2.js modules/hr-source.js modules/shoppers.js modules/beneficios.js modules/clientes.js modules/historico.js modules/visitas.js modules/cuestionario-shopper.js core/data.js
+    ASSET_FILES: index-backend-dev.html core/backend-firebase.js core/router.js adapters/tya-live-source-refresh-watch-v2.js modules/hr-source.js modules/shoppers.js modules/beneficios.js modules/clientes.js modules/historico.js modules/visitas.js modules/cuestionario-shopper.js modules/cert.js core/data.js
    steps:
    - uses: actions/checkout@v4
      with: {fetch-depth: 0}
@@ -6737,7 +6737,7 @@ jobs:
       test "$(jq -r '.hosting.rewrites[0].run.serviceId' firebase.json)" = "$SERVICE"
       # Read the last verified runtime revision from the CURRENT control
       # authority; an old hardcoded revision would abort safe DEV delivery.
-      EXPECTED_RUNTIME_REVISION="$(jq -r '.currentHostingOnlyDevMaterialization.runtimeRevision // empty' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)"
+      EXPECTED_RUNTIME_REVISION="$(jq -r '.currentHostingOnlyDevMaterialization.runtimeRevision // .currentDevMaterialization.runtimeRevision // empty' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)"
       test -n "$EXPECTED_RUNTIME_REVISION"
       test "$EXPECTED_RUNTIME_REVISION" = "$(jq -r '.currentDevMaterialization.runtimeRevision // empty' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)"
       echo "EXPECTED_RUNTIME_REVISION=$EXPECTED_RUNTIME_REVISION" >> "$GITHUB_ENV"
@@ -6750,6 +6750,7 @@ jobs:
       echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
       node --check "$SOURCE_DIR/app/core/router.js"
       node --check "$SOURCE_DIR/app/modules/shoppers.js"
+      node --check "$SOURCE_DIR/app/modules/cert.js"
       for FILE in $ASSET_FILES; do
        test -s "$SOURCE_DIR/app/$FILE"
       done
