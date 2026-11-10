@@ -91,6 +91,7 @@
   },
   "nextExactActions": [
     "Read-only exact legacy certification provenance and review decision mapping for the 14 linked shoppers, preserving approved history.",
+    "Reconcile per-bank required policy: distinguish a valid project-level legacy carryover from independently required new bank certification, using existing source contract and no unintended cross-bank eligibility.",
     "If a project-scoped positive approval exists with eligible provenance, implement the exact protected carryover adjudication owner; never infer current eligibility from presentation alone.",
     "Conduct a controlled synthetic or explicitly authorized DEV Shopper attempt for 15Q/8Q, backend grade ACK, readback after reload, Admin versus Shopper and Mi Día/Mis Visitas cross-check.",
     "Collect Paula's B4 human PASS on current artifact only after those E2E scenarios; then record BLOCK_LOCKED. Keep 5/21 MATCH and Gate20/21/I4 HOLD until actual proof."
@@ -103,5 +104,14 @@
   "financialWrites": false,
   "testAttemptsCreated": 0,
   "testAttemptsDeleted": 0,
-  "status": "B4_FOCAL_READBACK_PASS__FULL_MODULE_NOT_YET_CERTIFIED"
+  "status": "B4_FOCAL_READBACK_PASS__FULL_MODULE_NOT_YET_CERTIFIED",
+  "multipleCertificationBankContract": {
+    "sourceTest": "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs lines 322-338",
+    "rule": "A passing attempt in one published certification bank DOES NOT satisfy another distinct published bank in the same project.",
+    "reason": "Preserves independently required training; must not remove bankResourceId scoping from durableCurrent.",
+    "stivenProtectedExactAttemptShownInAdminVoidPicker": "100% on certbank-cinepolis-cinepolis-2026-10 (main) at 2026-11-07T01:37; other displayed 0% on same bank",
+    "defaultShopperSelection": "A distinct 15Q Banco IA can be selected independently from 8Q main. Not proof that either is unnecessary.",
+    "adminStatusCaveat": "Admin aggregate 'Certificada' cannot by itself demonstrate completion of each currently required bank; UI should show bank-specific requirement state and cross-module mapping.",
+    "classification": "DESIGNED_INDEPENDENT_BANK_GATE__DO_NOT_WEAKEN_FOR_SHORTCUT"
+  }
 }
