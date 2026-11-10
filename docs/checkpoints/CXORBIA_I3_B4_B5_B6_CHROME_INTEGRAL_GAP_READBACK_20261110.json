@@ -240,5 +240,124 @@
     },
     "reload": "STIVEN_SESSION_PERSISTED_AFTER_FULL_DEV_ORIGIN_NAVIGATION_AND_CERTIFICATION_100_PERCENT_ACK_HISTORY_REAPPEARED",
     "note": "NO_PAYMENT_WRITES_NO_HR_WRITES_NO_REAL_SHOPPER_PROGRESS_WRITES_NO_RECERTIFICATION"
+  },
+  "b5BenefitsThreePeriodCrossReadback20261110": {
+    "evidenceMode": "DIRECT_AUTHENTICATED_DEV_CHROME_ADMIN_AND_SHOPPER_SAME_PRODUCT_SOURCE_NO_WRITE",
+    "actor": "STIVEN_LOPEZ_GT",
+    "project": "CINEPOLIS",
+    "crossPeriodMatchedRows": [
+      {
+        "period": "SEP_2026",
+        "visit": "MC_EL_FRUTAL",
+        "realized": "2026-09-28",
+        "honorarioGTQ": 60,
+        "reembolsoGTQ": 167,
+        "totalGTQ": 227,
+        "status": "PENDING_FINANCIAL_SOURCE_CROSS",
+        "adminShopperMatched": true
+      },
+      {
+        "period": "OCT_2026",
+        "visit": "C_PORTALES",
+        "realized": "2026-10-08",
+        "honorarioGTQ": 60,
+        "reembolsoGTQ": 170,
+        "totalGTQ": 230,
+        "status": "PENDING_FINANCIAL_SOURCE_CROSS",
+        "adminShopperMatched": true
+      },
+      {
+        "period": "NOV_2026",
+        "visit": "C_NARANJO_MALL",
+        "realized": "2026-11-04",
+        "honorarioGTQ": 60,
+        "reembolsoGTQ": 173,
+        "totalGTQ": 233,
+        "status": "PENDING_QUESTIONNAIRE",
+        "adminShopperMatched": true
+      }
+    ],
+    "adminPeriodSummaries": {
+      "sep2026": {
+        "reviewCandidates": 43,
+        "paidConfirmedInPlatform": 0,
+        "gtVisitCount": 34,
+        "gtCurrency": "GTQ",
+        "gtTotal": 7363,
+        "hnVisitCount": 10,
+        "hnCurrency": "HNL",
+        "batchReadyRows": 1
+      },
+      "oct2026": {
+        "reviewCandidates": 42,
+        "paidConfirmedInPlatform": 0,
+        "gtVisitCount": 33,
+        "gtCurrency": "GTQ",
+        "gtTotal": 7153,
+        "hnVisitCount": 10,
+        "hnCurrency": "HNL",
+        "hnTotal": 6171,
+        "batchReadyRows": 1,
+        "batchReadyExample": "JULISSA_FLORES_C_MIRAFLORES_OCT14_Q205"
+      },
+      "nov2026": {
+        "gtVisitCount": 2,
+        "gtCurrency": "GTQ",
+        "gtTotal": 450,
+        "hnVisitCount": 10,
+        "hnCurrency": "HNL",
+        "hnTotal": 6171
+      }
+    },
+    "currencySafety": "GTQ_AND_HNL_KEPT_DISTINCT_NEVER_COMBINED",
+    "shopperUi": "BENEFITS_NOV_CURRENT_1_ROW_Q233__HISTORY_10_ROWS_5_PAID_5_PENDING",
+    "shopperReceiptAction": "DOWNLOAD_BUTTON_CLICKED_BUT_DOWNLOAD_EVENT_NOT_OBSERVED_NO_PDF_FILE_READBACK_CLAIMED",
+    "adminExportAction": "EXPORT_BUTTON_CLICKED_BUT_DOWNLOAD_EVENT_NOT_OBSERVED_NO_CSV_READBACK_CLAIMED",
+    "c09C10OwnerDisposition": "PARTIAL_THREE_REAL_PERIOD_ROWS_MATCH__INDEPENDENT_CSV_AND_FULL_COUNTRY_CURRENCY_SCOPE_UNPROVEN",
+    "b5ScopedFunctionalBlockPass": "PRESERVED",
+    "mutations": {
+      "financialWrites": 0,
+      "benefitWrites": 0,
+      "paymentsIssued": 0,
+      "hrWrites": 0,
+      "productionWrites": 0
+    }
+  },
+  "b8SeptemberFinancialReconciliation20261110": {
+    "directionBusinessInstruction": "ALL_SEPTEMBER_SHOPPER_PAYMENTS_EXECUTED_EXTERNALLY_ON_2026-10-31",
+    "adminCurrentSep2026PaidConfirmed": 0,
+    "discrepancy": "EXTERNAL_PAYMENTS_NOT_YET_APPLIED_TO_INTERNAL_PROVIDER_RECORDS",
+    "disposition": "B8_RECONCILE_EXACT_SOURCE_PAYMENT_RECEIPTS_PER_VISIT_NO_INFERRED_PAID",
+    "october": "PENDING_PAYABLE_AS_DIRECTED",
+    "november": "ACCRUAL_WITHOUT_FABRICATED_SETTLEMENT",
+    "advances": "TWO_SEPARATE_USD1000_RECEIPTS_AT_MONTH_END_APPROX_FX_7_3_NEVER_NET_BLINDLY",
+    "writes": 0
+  },
+  "d08AcademySourceBoundedRead20261110": {
+    "sourceTest": "backend/runtime/hr-live-service/test/cxorbia-academy-command-provider-v1.test.mjs",
+    "sourceProvider": "backend/runtime/cxorbia-academy-command-provider-v1.mjs",
+    "sourceFrontend": "app/modules/academia.js",
+    "sourceTestMockNature": "27_OF_27_PASS_SIMULATED_IN_MEMORY_DB_NOT_REAL_AUTHENTICATED_LEARNER_PROGRESS",
+    "frontendCompleteLessonCommand": "academy.progress.lesson.complete",
+    "frontendAckRequirements": [
+      "ok",
+      "committed",
+      "providerAck",
+      "successUiAllowed",
+      "readbackVerified"
+    ],
+    "realShopperCourseProgressObserved": "0_PERCENT",
+    "newRealLearnerWrites": 0,
+    "disposition": "QA_TEST_WITH_REVERSIBLE_ISOLATED_AUTHORIZED_LEARNER_FIXTURE_ONLY__DO_NOT_MARK_REAL_SHOPPER_LESSON_COMPLETE"
+  },
+  "freeze20261110": {
+    "canon": "SAME_BRANCH_SINGLE_SOURCE_SINGLE_EXISTING_RECEIPT",
+    "counts": "3_OF_9_B4_B5_B6_FUNCTIONAL_BLOCK_PASS_AND_5_OF_21_FULL_DOMAINS_MATCH_DISTINCT_DENOMINATORS",
+    "forwardPriority": "C09_C10_CSV_UNPROVEN__D08_ISOLATED_ACK_UNPROVEN__B1_B11_SAME_EXTERNAL_HR_REVISION__B7_FOCAL_UNCOVERED_ACK_NOTIFICATIONS__B8_FINANCIAL__B9_GATES",
+    "noReexecutionOfApprovedEvidence": true,
+    "production": "DO_NOT_TOUCH",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false
   }
 }
