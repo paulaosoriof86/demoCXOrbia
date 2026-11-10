@@ -7066,6 +7066,12 @@ jobs:
       set -Eeuo pipefail
       node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs | tee "$QA_OUT/console.log"
       jq -e '.decision=="PASS_I3_RUN2382_ACADEMY_B7_SYNTHETIC_DEV" and .cleanup.ok==true and .qaIdentitiesCreated==.qaIdentitiesDeleted and .academia.providerAck==true and .academia.independentNewSession==true and .postulaciones.otherShopperExcluded==true and .hrBefore==.hrAfter and .safety.hrWrites==0 and .safety.realLearnerWrites==0 and .safety.realVisitsWritten==0 and .production==false' "$QA_OUT/result.json" >/dev/null
+   - name: Certify B7 isolated two-role cancel and reschedule lifecycle on existing DEV
+     run: |
+      set -Eeuo pipefail
+      node --check tools/qa/cxorbia-i3-b7-cancel-two-role-focal-live.mjs
+      B7_OUT="$QA_OUT/b7" B7_PERIOD_ID=cinepolis-2026-10 node tools/qa/cxorbia-i3-b7-cancel-two-role-focal-live.mjs | tee "$QA_OUT/b7-console.log"
+      jq -e '.decision=="PASS_I3_B7_TWO_ROLE_DECISION_LIVE_DEV" and .providerAck==true and .hrBefore==.hrAfter and (.cases|length)==2 and (.rescheduleCases|length)==2 and ([.cleanup[]|select(.!=true)]|length)==0 and .production==false and .hrWrites==0 and .paymentWrites==0 and .deploys==0' "$QA_OUT/b7/result.json" >/dev/null
    - uses: actions/upload-artifact@v4
      if: always()
      with:
