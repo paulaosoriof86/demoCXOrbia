@@ -6998,3 +6998,77 @@ jobs:
       if-no-files-found: warn
       retention-days: 30
 
+  i3-run2382-academy-b7-isolated-dev-qa:
+   # Exactly one post-materialization canary on the existing DEV artifact.
+   # No build, Hosting/Run deploy, HR reconciliation, real learner or payment.
+   needs: canonical-candidate-authority
+   if: ${{ github.event_name=='push' && contains(github.event.head_commit.message,'[i3-run2382-academy-b7-qa-once]') && needs.canonical-candidate-authority.result=='success' && needs.canonical-candidate-authority.outputs.status=='HOLD_I3_B4_B7_COMPOSED_SOURCE_PENDING_CI_DEV_AND_ROLE_E2E' }}
+   runs-on: ubuntu-24.04
+   timeout-minutes: 30
+   permissions:
+    contents: read
+    id-token: write
+   env:
+    FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+    FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+    QA_OUT: .tmp/i3-run2382-academy-b7-synthetic
+    CXORBIA_I3_QA_ISOLATED_WRITE_GATE: PAULA_AUTHORIZED_RUN2382_DEV_ONLY
+   steps:
+   - uses: actions/checkout@v4
+     with: {fetch-depth: 0}
+   - uses: actions/setup-node@v4
+     with: {node-version: '24'}
+   - name: Enforce exact served candidate, receipt and DEV-only QA boundaries
+     run: |
+      set -Eeuo pipefail
+      P=docs/checkpoints/CXORBIA_I3_RUN2382_PAIRED_DEV_CHROME_READBACK_20261110.json
+      test "$GITHUB_REF_NAME" = recovery/cxorbia-phase-a-20260831
+      test "$(jq -r '.productSourceSha' "$P")" = "$FOCAL_SOURCE"
+      test "$(jq -r '.productSourceTree' "$P")" = "$FOCAL_TREE"
+      test "$(jq -r '.workflowRunId' "$P")" = 42921566208
+      test "$(jq -r '.providerReceipt.decision' "$P")" = PASS_VRM154_156_EXACT_DEV_MATERIALIZATION
+      test "$(jq -r '.providerReceipt.production' "$P")" = false
+      test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
+      test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
+      test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
+      git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules
+      node --check tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
+      mkdir -p "$QA_OUT"
+      echo "EXPECTED_HR_REVISION=$(jq -r '.providerReceipt.hrRevision' "$P")" >> "$GITHUB_ENV"
+   - uses: google-github-actions/auth@v2
+     with:
+      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+   - uses: google-github-actions/setup-gcloud@v2
+     with:
+      project_id: '${{ env.PROJECT }}'
+   - name: Assert Cloud Run and Hosting still serve the exact RUN2382 artifact
+     run: |
+      set -Eeuo pipefail
+      P=docs/checkpoints/CXORBIA_I3_RUN2382_PAIRED_DEV_CHROME_READBACK_20261110.json
+      gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$QA_OUT/runtime.json"
+      test "$(jq -r '.status.latestReadyRevisionName' "$QA_OUT/runtime.json")" = "$(jq -r '.providerReceipt.runtimeRevision' "$P")"
+      REV="$(jq -r '.providerReceipt.runtimeRevision' "$P")"
+      gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$QA_OUT/revision.json"
+      RAW="$(jq -r '.status.imageDigest // empty' "$QA_OUT/revision.json")"
+      if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
+      test "$DIGEST" = "$(jq -r '.providerReceipt.runtimeDigest' "$P")"
+      TOKEN="$(gcloud auth print-access-token)"
+      curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$QA_OUT/hosting.json"
+      test "$(jq -r '.release.version.name' "$QA_OUT/hosting.json")" = "$(jq -r '.providerReceipt.hostingVersion' "$P")"
+   - name: Install exact Firebase Admin DEV-only test dependency
+     run: |
+      set -Eeuo pipefail
+      npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 > "$QA_OUT/npm-install.log" 2>&1
+   - name: Certify Academia D08 and B7 on disposable identities, visits and postulations
+     run: |
+      set -Eeuo pipefail
+      node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs | tee "$QA_OUT/console.log"
+      jq -e '.decision=="PASS_I3_RUN2382_ACADEMY_B7_SYNTHETIC_DEV" and .cleanup.ok==true and .qaIdentitiesCreated==.qaIdentitiesDeleted and .academia.providerAck==true and .academia.independentNewSession==true and .postulaciones.otherShopperExcluded==true and .hrBefore==.hrAfter and .safety.hrWrites==0 and .safety.realLearnerWrites==0 and .safety.realVisitsWritten==0 and .production==false' "$QA_OUT/result.json" >/dev/null
+   - uses: actions/upload-artifact@v4
+     if: always()
+     with:
+      name: cxorbia-i3-run2382-academy-b7-synthetic-${{ github.run_id }}
+      path: .tmp/i3-run2382-academy-b7-synthetic/
+      if-no-files-found: warn
+      retention-days: 30
+
