@@ -29,7 +29,16 @@
     "integralDomainPromotion": false
   },
   "b5Benefits": {
-    "newReadback": "NOT_EXECUTED_IN_THIS_CHROME_PASS",
+    "newReadback": "ADMIN_LIQUIDACIONES_NOV_2026_READ_ONLY_NOT_DIRECT_SHOPPER_BENEFITS_PARITY",
+    "adminFinancialCandidateRowsInReview": 12,
+    "adminConciliatedPendingPayment": 0,
+    "adminPaidConfirmed": 0,
+    "adminPayableForBatch": 0,
+    "adminByCountryAndCurrency": {
+      "GT": "2_VISITS_Q450_TOTAL_CANDIDATE_PENDING_EXTERNAL_SOURCE",
+      "HN": "10_VISITS_L6171_TOTAL_CANDIDATE_PENDING_EXTERNAL_SOURCE"
+    },
+    "externalFinancialSettlementNotInferred": true,
     "priorFunctionalAcceptance": "PRESERVED_PASS_FROM_20261109_SHOPPER_AND_158_SOURCE_GUARDS",
     "c09C10IndependentAdminShopperCsvRowParity": "NOT_NEWLY_PROVEN"
   },
