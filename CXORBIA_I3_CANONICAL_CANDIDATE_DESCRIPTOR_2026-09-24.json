@@ -21273,9 +21273,9 @@
   },
   "frozenCrossPeriodBenefits20261110": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_CHROME_INTEGRAL_GAP_READBACK_20261110.json",
-    "receiptBlob": "e4e5f0dab22d3a9a5329b398379057bb299f61b7",
+    "receiptBlob": "a3f91e3eb1239b2775122ed31d2c840af69d1b6d",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V291.json",
-    "matrixBlob": "5ec588ad01a09b87f9077b9f1c5499b29f05111e",
+    "matrixBlob": "10045f2311e4ba1a3010d75a33e7e7c177af1052",
     "productSourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
     "adminShopperBenefitsRowsMatched": [
       "SEP_2026_Q227",
@@ -21293,6 +21293,19 @@
     "production": "DO_NOT_TOUCH",
     "gate20": "HOLD",
     "gate21": "HOLD",
-    "i4Authorized": false
+    "i4Authorized": false,
+    "correctedExporterGate": "SHOPPER_CSV_VERSUS_ADMIN_REPORTKIT_PDF_ROLE_SPECIFIC_OUTPUT; DO_NOT_REQUIRE_IDENTICAL_CSV; ACTUAL_FILE_RENDER_STILL_UNPROVEN"
+  },
+  "frozenB7ExactRemainingEdges20261110": {
+    "preservedHuman": "R05_R06_AND_CANCEL_REJECTION_VISUAL_PASS",
+    "preservedQa": "RUN2177_RUN1553_RUN2216",
+    "missing": [
+      "POSTULATION_APPROVAL_TO_VISIT_PENDING_HR_RELOAD",
+      "R22_SHOPPER_NOTIFICATIONS_ROUTE_READ_UNREAD",
+      "RESERVATION_VISITID_CROSS"
+    ],
+    "externalHrWrites": 0,
+    "status": "B7_SCOPED_IN_PROGRESS_NOT_FULL_MATCH",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_CHROME_INTEGRAL_GAP_READBACK_20261110.json"
   }
 }
