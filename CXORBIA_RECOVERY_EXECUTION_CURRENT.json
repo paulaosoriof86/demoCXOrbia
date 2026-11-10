@@ -12254,7 +12254,8 @@
       "realized12": true,
       "stivenNaranjo20261104Match": true,
       "externalRevisionHashNotExposed": true,
-      "hnTenOctoberRealizedInNovemberTab": "SOURCE_DATA_SEMANTIC_NOTE_NO_PARSER_BLAME"
+      "hnTenOctoberRealizedInNovemberTab": "DIRECT_LIVE_COMPARISON_10_OUT_OF_10_OPERATIONAL_COPIES_FROM_OCTOBER_HN_NOT_LIVE_READER_FAILURE",
+      "crossPeriodHnDirectRead20261110": {"currentPeriod":"2026-11","historicalPeriod":"2026-10","currentTabs":["NOVIEMBRE","NOVIEMBRE HN"],"historicalHnTab":"OCTUBRE 26 HN","hnRowsCompared":10,"identicalWholeRows":9,"identicalCoreOperationalRows":10,"oneDifference":"ROW_8_SUBMITTED_DATE_ONLY","allNovHnRealizationDatesAreOctober":true,"periodKeyDerivedFromTab":true,"hrLiveReaderPassPreserved":true,"doNotCountAsNovemberExecutionWithoutSourceCorrection":true,"doNotAutomaticallyDeduplicateOrModifyHr":true}
     }
   }
 }
