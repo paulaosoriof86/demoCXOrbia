@@ -169,5 +169,36 @@
     },
     "disposition": "Retirement is NOT completed. Treat the QA-only bank as published and require successful native confirmation + provider ACK + independent reload verifying exactly four original banks and 40 unchanged historical attempts. Do not invoke publication again. Human B4 block PASS is still pending.",
     "nextExactAction": "Recover Chrome native-confirm control (or Paula clicks Aceptar on the exact QA retirement prompt once), then independent provider readback/reload, durable cleanup receipt, B4 Shopper certification E2E."
+  },
+  "retireRecoveryAfterDirectUserRequest20261109": {
+    "instruction": "Paula: 'no aparece la pantalla que haces, dhazlo tu directamente'; exact previous DEV synthetic bank retirement remains approved.",
+    "priorHead": "f9bc6e90d1aa7cdea73081fdc153d5bf8992f2c8",
+    "bank": "QA DEV B4 20261109 NO PUBLICAR",
+    "safeScope": "DEV only",
+    "observedBefore": {
+      "bankCount": 5,
+      "qaStatus": "published",
+      "historical": 40,
+      "approved": 38,
+      "notApproved": 2,
+      "shoppersLinked": 14
+    },
+    "attempts": [
+      "Authenticated Chrome user tab, precise target bank selected and requirement modal opened.",
+      "CUA click screenshot coordinate closed modal without remote ACK; independent readback still five banks.",
+      "DOM-CUA exact Retirar banco clicked; native JavaScript confirm appeared.",
+      "Documented getJsDialog().accept failed with Chrome focus timeout; documented CUA Enter refused because native dialog active.",
+      "Another native acceptance failed; no provider receipt or verified cleanup."
+    ],
+    "independentAfterKnown": {
+      "bankCount": 5,
+      "qaStatus": "published",
+      "historical": 40,
+      "source": "authenticated fresh Admin tab before final failed acceptance"
+    },
+    "finalReadback": "HOLD: fresh verification tab could not finish loading after Chrome focus/runtime failure; no evidence of successful retirement.",
+    "disposition": "DO_NOT_CLAIM_RETIRED; avoid further blind retry; current B4 synthetic bank potentially published; preserve 40 historical attempts; I3/I4 HOLD.",
+    "browserBlocker": "Chrome native JavaScript confirm cannot be accepted through documented Browser API due CDP Emulation.setFocusEmulationEnabled timeout.",
+    "nextStep": "Fix native confirmation control or implement approved in-app confirm in existing exact owner after explicit technical gate; then retire QA-only bank with provider ACK and fresh readback."
   }
 }
