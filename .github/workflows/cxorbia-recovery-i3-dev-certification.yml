@@ -6857,6 +6857,69 @@ jobs:
       retention-days: 30
 
 
+  i3-b4-bank-flags-readonly:
+   needs: canonical-candidate-authority
+   if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-b4-bank-flags-readonly]') && needs.canonical-candidate-authority.result == 'success' }}
+   runs-on: ubuntu-24.04
+   timeout-minutes: 12
+   permissions:
+    contents: read
+   steps:
+   - uses: actions/checkout@v4
+   - uses: actions/setup-node@v4
+     with: {node-version: '24'}
+   - name: Seal DEV-only read-only metadata scope
+     run: |
+      set -Eeuo pipefail
+      test "$GITHUB_REF_NAME" = recovery/cxorbia-phase-a-20260831
+      test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
+      test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
+      mkdir -p .tmp/i3-b4-required-bank-flags
+   - uses: google-github-actions/auth@v2
+     with:
+      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+   - name: Read exact Cinépolis bank requirements without attempts or question keys
+     run: |
+      set -Eeuo pipefail
+      npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+      node --input-type=module <<'NODE'
+      import fs from 'node:fs';
+      import {initializeApp,applicationDefault} from 'firebase-admin/app';
+      import {getFirestore} from 'firebase-admin/firestore';
+      initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
+      const rows=(await getFirestore().collection('tenants').doc('tya').collection('resources')
+        .where('projectId','==','cinepolis').get()).docs.map(d=>({id:d.id,...d.data()}));
+      const banks=rows.filter(x=>x.resourceType==='certification_bank'&&x.tipo==='certification_bank')
+        .map(x=>({resourceId:x.id,periodId:String(x.periodId||''),resourceStatus:String(x.status||''),
+          bankState:String(x.bank?.estado||''),certificationId:String(x.bank?.certificationId||''),
+          name:String(x.bank?.certificationName||x.bank?.name||''),
+          requiredExplicit:x.bank?.required===undefined?null:x.bank.required,
+          effectiveRequired:x.bank?.required!==false,gate:Number(x.bank?.gate||80),
+          questionCount:Array.isArray(x.bank?.preguntas)?x.bank.preguntas.length:0,
+          shopperVisible:x.targetAll===true||(Array.isArray(x.visibleRoles)&&x.visibleRoles.includes('shopper')),
+          qaOnly:x.qaOnly===true,version:Number(x.version||0)}))
+        .sort((a,b)=>a.periodId.localeCompare(b.periodId)||a.certificationId.localeCompare(b.certificationId));
+      const published=banks.filter(x=>x.periodId==='cinepolis-2026-10'&&x.resourceStatus==='active'
+        &&x.shopperVisible&&!x.qaOnly&&['published','confirmed'].includes(x.bankState.toLowerCase()));
+      const report={schemaVersion:'cxorbia.i3.b4.bank-flags-readonly.v1',
+        project:'cxorbia-backend-dev',tenantId:'tya',projectId:'cinepolis',
+        sourceSha:'b390a1e996f01896d86d4bc1b1147a0dd2a40942',
+        allBankMetadata:banks,publishedOctober:published,
+        requiredOctober:published.filter(x=>x.effectiveRequired).length,
+        noAnswerKeysExported:true,noShopperDataExported:true,readOnly:true,writes:0,production:false};
+      if(published.length<2)throw Error('B4_BANKS_NOT_VISIBLE_FOR_EXPECTED_READBACK');
+      fs.writeFileSync('.tmp/i3-b4-required-bank-flags/readback.json',JSON.stringify(report,null,2)+'\\n');
+      console.log(JSON.stringify({publishedOctober:published,requiredOctober:report.requiredOctober,readOnly:true}));
+      NODE
+   - uses: actions/upload-artifact@v4
+     if: always()
+     with:
+      name: cxorbia-i3-b4-bank-flags-readonly-${{ github.run_id }}
+      path: .tmp/i3-b4-required-bank-flags/
+      if-no-files-found: warn
+      retention-days: 30
+
+
   i3-keeper-role-e2e-readonly:
    # The prior 29 status-specific jobs are not deemed certified merely because
    # the authority job is green. This focal lane can collect independent,
