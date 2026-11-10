@@ -269,9 +269,9 @@ test('VRM316 R3 every Shopper view shares the protected canonical certification 
   const bothViews=['../../app/modules/midia.js','../../app/modules/misvisitas.js'];
   for(const path of bothViews){
     const source=fs.readFileSync(new URL(path,import.meta.url),'utf8');
-    assert.match(source,/backendCertifications\?\.sessionDecision/);
-    assert.doesNotMatch(source,/window\.CX_CERT_SELECTED_ID\|\|'main'/,
-      'The selected certification resource must match the exact bank shown to the shopper');
+    assert.match(source,/backendCertifications\?\.projectDecision/);
+    assert.doesNotMatch(source,/CX_CERT_SELECTED_ID/,
+      'Exam selection must never change cross-module project eligibility');
   }
 });
 
