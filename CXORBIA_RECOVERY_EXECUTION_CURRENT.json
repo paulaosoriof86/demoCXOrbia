@@ -12042,7 +12042,7 @@
   },
   "functionalBlockDomainReconciliation20261110": {
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V291.json",
-    "matrixGitBlob": "10045f2311e4ba1a3010d75a33e7e7c177af1052",
+    "matrixGitBlob": "31a71801ca158b45b26da6698bbbc1c3a07e9a50",
     "descriptorPath": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "sourceReceiptPath": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_FUNCTIONAL_BLOCK_ACCEPTANCE_20261110.json",
     "scopedFunctionalBlockPass": 3,
@@ -12057,7 +12057,7 @@
       "DASHBOARD_OPERATION_B1_MIDIA_AND_B11_INDEPENDENT_SAME_HR_REVISION"
     ],
     "latestAuthenticatedChromeReadbackPath": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_CHROME_INTEGRAL_GAP_READBACK_20261110.json",
-    "latestAuthenticatedChromeReadbackGitBlob": "a3f91e3eb1239b2775122ed31d2c840af69d1b6d",
+    "latestAuthenticatedChromeReadbackGitBlob": "637320d87466ab8c824a1ce66cc604e44ec1f6eb",
     "paulaPriorityLock": "B7_READONLY_PARALLEL_AUTHORIZED_AND_EXECUTED__B4_B5_B6_FUNCTIONAL_PASS_PRESERVED__COMPLETE_UNCOVERED_OWNER_GATES",
     "productSourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
     "production": "DO_NOT_TOUCH",
@@ -12066,7 +12066,7 @@
     "i4Authorized": false,
     "latestReadbackScope": "ADMIN_NOV2026_44_TOTAL_GT34_HN10_33_ASSIGNED__SHOPPER_STIVEN_GT_10_VISITS_CERT_100_AFTER_RELOAD_BENEFITS_NARANJO_Q233_B7_11_POSTULABLE_ZERO_ANTICIPATORY_SCENARIOS",
     "shopperLogin": "PASS_AUTHENTICATED_STIVEN_GT_WITH_EXPLICIT_PAULA_AUTHORIZATION_AND_PROVIDER_RELOAD__MASKED",
-    "descriptorGitBlob": "c065be25917ebcb260c70c0606678438e2c1a778"
+    "descriptorGitBlob": "83ccf83d9b30aad440be7bfc9289a140839620af"
   },
   "b7ParallelReadOnly20261110": {
     "dateLocal": "2026-11-10",
@@ -12125,7 +12125,8 @@
     "b5": "PASS_SHOPPER_ADMIN_THREE_PERIOD_ROWS_SEP_Q227_OCT_Q230_NOV_Q233_WITH_GT_HN_CURRENCY_SEPARATED",
     "b6": "PASS_SHOPPER_10_VISITS_ONE_ADMIN_ROW",
     "b7": "B7_READ_ONLY_11_POSTULABLE_ZERO_RESERVATION_SCENARIOS_DISTINCT",
-    "receiptBlob": "a3f91e3eb1239b2775122ed31d2c840af69d1b6d"
+    "receiptBlob": "637320d87466ab8c824a1ce66cc604e44ec1f6eb",
+    "externalHrSheetValues": "GT34_HN10_TOTAL44_ASSIGNED33_UNASSIGNED11_REALIZED12_DIRECT_NATIVE_SHEETS"
   },
   "phaseACertificationClosurePlan20261110": {
     "authorization": "PAULA_USER_DIRECTIVE_20261110_FINISH_CROSS_TESTS_CERTIFY_B4_TO_B6_B7_PARALLEL",
@@ -12146,7 +12147,7 @@
       {
         "stage": "P0",
         "scope": "B4_B5_B6",
-        "action": "KEEP_B4_B5_B6_FUNCTIONAL_BLOCKS_LOCKED__D08_ISOLATED_LEARNER_ACTUAL_ACK_RELOAD__C09_C10_ROLE_SPECIFIC_SHOPPER_CSV_AND_ADMIN_PDF_RENDER_SEMANTIC_ROW_COUNTRY_PERIOD_CURRENCY_PARITY__B1_B11_INDEPENDENT_HR_SAME_REVISION; DO_NOT_REQUIRE_IDENTICAL_CSV_AND_DO_NOT_MUTATE_REAL_USER_PROGRESS"
+        "action": "KEEP_B4_B5_B6_FUNCTIONAL_PASS__B5_SHOPPER_CSV_DOWNLOAD_332B_CONFIRMED_CONTENT_PENDING_ADMIN_PDF_PENDING__B1_B11_INDEPENDENT_HR_VALUE_COUNTS_GT34_HN10_44_ASSIGNED33_REALIZED12_PASS_EXTERNAL_HASH_NOT_PROVEN_HN_TAB_OCT_DATE_SEMANTIC_NOTE__D08_ISOLATED_LEARNER_PROGRESS_PROVIDER_ACK_RELOAD_PENDING"
       },
       {
         "stage": "P1",
@@ -12190,10 +12191,10 @@
       "NOV_C_NARANJO_MALL_GTQ233"
     ],
     "sourceRoleExportContract": {
-      "shopper": "CSV_INCLUDING_PENDING_ROWS",
+      "shopper": "CSV_DOWNLOAD_CONFIRMED_BY_PAULA_SCREENSHOT_332_BYTES_CONTENT_UNPARSED",
       "admin": "REPORTKIT_PDF_ONLY_EXPORTABLE_NOT_FINANCIAL_REVIEW",
       "identicalCsvParity": "REMOVED_AS_FALSE_GATE",
-      "runtimeFileReadback": "NOT_YET_PROVEN"
+      "runtimeFileReadback": "SHOPPER_FILE_GENERATED_PASS_CONTENT_NOT_PARSED_ADMIN_PDF_NOT_RENDER_VERIFIED"
     },
     "b8": {
       "septemberPaidExternallyByPaulaOn": "2026-10-31",
@@ -12225,10 +12226,10 @@
       "notAdditive": true
     },
     "receiptPath": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_CHROME_INTEGRAL_GAP_READBACK_20261110.json",
-    "receiptBlob": "a3f91e3eb1239b2775122ed31d2c840af69d1b6d",
+    "receiptBlob": "637320d87466ab8c824a1ce66cc604e44ec1f6eb",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V291.json",
-    "matrixBlob": "10045f2311e4ba1a3010d75a33e7e7c177af1052",
-    "descriptorBlob": "c065be25917ebcb260c70c0606678438e2c1a778",
+    "matrixBlob": "31a71801ca158b45b26da6698bbbc1c3a07e9a50",
+    "descriptorBlob": "83ccf83d9b30aad440be7bfc9289a140839620af",
     "nonMutation": {
       "code": 0,
       "deploy": 0,
@@ -12240,6 +12241,19 @@
     "production": "DO_NOT_TOUCH",
     "gate20": "HOLD",
     "gate21": "HOLD",
-    "i4Authorized": false
+    "i4Authorized": false,
+    "sourceSheetReadback": {
+      "spreadsheetId": "1h307t37LxM1nZNh_9Odt6wHUQhROG6cYbsbMKr48vU4",
+      "tabGt": "NOVIEMBRE",
+      "tabHn": "NOVIEMBRE HN",
+      "gt34": true,
+      "hn10": true,
+      "assigned33": true,
+      "unassigned11": true,
+      "realized12": true,
+      "stivenNaranjo20261104Match": true,
+      "externalRevisionHashNotExposed": true,
+      "hnTenOctoberRealizedInNovemberTab": "SOURCE_DATA_SEMANTIC_NOTE_NO_PARSER_BLAME"
+    }
   }
 }
