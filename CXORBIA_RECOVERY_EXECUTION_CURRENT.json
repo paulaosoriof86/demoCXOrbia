@@ -2,7 +2,7 @@
   "schemaVersion": "cxorbia.recovery.execution-current.v1",
   "planLockPath": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
   "planId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
-  "asOf": "2026-11-10T11:36:19.858Z",
+  "asOf": "2026-11-10T14:56:40.841Z",
   "iteration": "I3",
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
@@ -1229,7 +1229,7 @@
   },
   "moduleTruthAuthority": {
     "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V291.json",
-    "gitBlob": "d2eda54188ad637e6f4a19b7de1d7beb413c01da",
+    "gitBlob": "7eeb0c90e6aa647bf3c3cb12c698b86d369ed502",
     "sourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
     "allModulesMatch": false,
     "phaseAComplete": false
@@ -9632,7 +9632,7 @@
       "production": false
     }
   },
-  "moduleTruthExpectedGitBlob": "6c52dbeea4cd1f89393670c9dabd458407ca0649",
+  "moduleTruthExpectedGitBlob": "7eeb0c90e6aa647bf3c3cb12c698b86d369ed502",
   "d08AcademyDispatchSourceProof": {
     "path": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_DISPATCH_SOURCE_PROOF_20261107.json",
     "gitBlob": "2ad9d960cb958e84368cbbd70a7e9f2fb7864d3f",
@@ -12071,19 +12071,59 @@
   "b7ParallelReadOnly20261110": {
     "dateLocal": "2026-11-10",
     "authorization": "PAULA_EXPLICIT_PARALLEL_B7",
-    "status": "READ_ONLY_WITH_PRESERVED_TECHNICAL_AND_HUMAN_FOCAL_PASS_NOT_INTEGRAL_OWNER_MATCH",
+    "status": "SCOPED_CROSS_ACTOR_READ_ONLY_VERIFIED_WITH_PRESERVED_E2E_AND_HUMAN_FOCAL_PASS_NOT_FULL_OWNER_MATCH",
     "previousAdminLifecycle": "RUN2177",
     "previousShopperKeepers": "RUN2216_20_OF_20_PASS",
     "sourceUnchangedOwnerFiles": 7,
     "paulaR05R06Acceptance": "PASS_20261014",
     "currentAdminNOV2026": {
       "assigned": 33,
-      "postulationsPending": 0,
-      "reservationsPending": 0
+      "pendingPostulations": 0,
+      "anticipatoryReservationScenarios": 0
     },
     "remaining": "ONLY_UNCOVERED_CROSS_ACTOR_PROVIDER_ACK_NOTIFICATIONS_NO_DUPLICATE_HISTORY",
     "newReceipt": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_CHROME_INTEGRAL_GAP_READBACK_20261110.json",
-    "newReceiptBlob": "2096c43b2d7215da3c88b64137f40d070512606e",
-    "production": "DO_NOT_TOUCH"
+    "newReceiptBlob": "8c7adbee68d0c35a8e9466e8c9fff4620c02db86",
+    "production": "DO_NOT_TOUCH",
+    "currentShopperNOV2026": {
+      "authenticated": "STIVEN_GT",
+      "postulableOffers": 11,
+      "reservableScenarios": 0,
+      "newApplications": 0
+    },
+    "interpretation": "VISITS_AVAILABLE_POSTULATION_OFFERS_11_ARE_DISTINCT_FROM_ANTICIPATORY_RESERVATION_SCENARIOS_ZERO__NO_DEFECT_ASSERTED"
+  },
+  "latestAuthenticatedShopperCrossRole20261110": {
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_CHROME_INTEGRAL_GAP_READBACK_20261110.json",
+    "receiptBlob": "8c7adbee68d0c35a8e9466e8c9fff4620c02db86",
+    "currentModuleMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V291.json",
+    "currentModuleMatrixBlob": "7eeb0c90e6aa647bf3c3cb12c698b86d369ed502",
+    "sourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+    "devVersion": "sites/cxorbia-backend-dev/versions/ad5eb641dc8f87af",
+    "actor": "STIVEN_GT_SHOPPER_AND_ADMIN_INDEPENDENT_DEV_ORIGINS",
+    "B4": "PASS_100_PERCENT_ACK_HISTORY_PERSISTENT_AFTER_RELOAD",
+    "B5": "PASS_ONE_REAL_ROW_ADMIN_SHOPPER_Q233_MATCH_CSV_UNCOVERED",
+    "B6": "PASS_SHOPPER_TEN_VISITS_AND_ADMIN_ONE_ROW",
+    "B7": "SCOPED_11_POSTULABLE_OFFERS_0_RESERVATION_SCENARIOS_TWO_WORKFLOWS",
+    "remainingDomainProofs": [
+      "D08_ACTUAL_ISOLATED_LEARNER_PROGRESS_PROVIDER_ACK_RELOAD",
+      "C09_C10_COMPLETE_CSV_ROWS_PERIOD_CURRENCY",
+      "B11_HR_INDEPENDENT_SAME_REVISION_ROLE_REGRESSION",
+      "B7_POSTULATION_AND_ANTICIPATORY_RESERVATION_ACK_NOTIFICATION_DUPLICATE_HISTORY",
+      "B8_FINANCIAL_EXTERNAL_SETTLEMENT",
+      "B9_GATE20_GATE21"
+    ],
+    "functionalBlocksPass": "3_OF_9",
+    "integralDomainsMatch": "5_OF_21",
+    "production": "DO_NOT_TOUCH",
+    "I4Authorized": false
+  },
+  "currentReconciledCrossSurfaceReadback20261110": {
+    "shopper": "PASS_STIVEN_AUTHENTICATED_RELOADED_AND_CERT_ACK_HISTORY",
+    "b4": "PASS_CROSS_ACTOR_ADMIN_SHOPPER_CERT_100",
+    "b5": "PASS_ONE_ROW_GT_NARANJO_Q233",
+    "b6": "PASS_SHOPPER_10_VISITS_ONE_ADMIN_ROW",
+    "b7": "B7_READ_ONLY_11_POSTULABLE_ZERO_RESERVATION_SCENARIOS_DISTINCT",
+    "receiptBlob": "8c7adbee68d0c35a8e9466e8c9fff4620c02db86"
   }
 }
