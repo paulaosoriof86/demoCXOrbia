@@ -21788,7 +21788,7 @@
     "c09C10FullOwnerPromotion": false,
     "b5FunctionalPassPreserved": true,
     "linkedReceipt": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_CHROME_INTEGRAL_GAP_READBACK_20261110.json",
-    "linkedReceiptBlob": "e4e5f0dab22d3a9a5329b398379057bb299f61b7"
+    "linkedReceiptBlob": "a3f91e3eb1239b2775122ed31d2c840af69d1b6d"
   },
   "d08SourceVsRealProviderClarification20261110": {
     "simulatedProviderQa": "27_OF_27_PASS_IN_MEMORY_TEST",
@@ -21805,5 +21805,32 @@
     "production": "DO_NOT_TOUCH",
     "gate20": "HOLD",
     "gate21": "HOLD"
+  },
+  "b5OwnerExportAcceptanceCorrected20261110": {
+    "shopper": "CSV_WITH_PENDING_PER_PERIOD_SOURCE_BLOB",
+    "admin": "PDF_REPORTKIT_EXCLUDES_FINANCIAL_UNRESOLVED_ROWS",
+    "identicalCsvRequirement": "INVALID_NOT_PART_OF_ACTUAL_ROLE_CONTRACT",
+    "stillRequired": "RUNTIME_ACTUAL_SHOPPER_CSV_READBACK_AND_ADMIN_ELIGIBLE_PDF_RENDER_WITH_SEMANTIC_ROW_PARITY",
+    "state": "HOLD_NOT_PROMOTED",
+    "sourcePaths": [
+      "app/modules/beneficios.js",
+      "app/modules/finanzas.js"
+    ]
+  },
+  "b7ExactRemainingGap20261110": {
+    "preserved": [
+      "R05_R06_PAULA_PASS",
+      "RUN2177_POSTULATIONS_STANDBY_REJECT_DELETE",
+      "RUN1553_CANCEL_RESCHEDULE_APPROVE_REJECT",
+      "RUN2216_20_OF_20_GT_HN"
+    ],
+    "missing": [
+      "APPLICATION_APPROVAL_VISIT_ASSIGNMENT_PENDING_HR_CROSS_ACTOR",
+      "R22_SHOPPER_BULLETINS_UNREAD_ROUTE_AND_NOTICE_RELOAD",
+      "RESERVATION_WITH_VISITID_CROSSES_VISIT"
+    ],
+    "nextTest": "SINGLE_ISOLATED_DEV_REVERSIBLE_FIXTURE_NO_EXTERNAL_HR_NO_COMMERCIAL_VISIT_MUTATION",
+    "status": "B7_NOT_INTEGRAL_MATCH",
+    "receiptBlob": "a3f91e3eb1239b2775122ed31d2c840af69d1b6d"
   }
 }
