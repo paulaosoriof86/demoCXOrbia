@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "cxorbia.i3.b6-dashboard-visits-detail-source-regression.v1",
+  "dateLocal": "2026-11-10",
+  "timezone": "America/Guatemala",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "owner": "B6_DASHBOARD_VISITAS_DETALLE",
+  "preReceiptDocumentaryHead": "4b23b034c684028cadf885e1d4b44f84485a3806",
+  "productSourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+  "productTree": "8075c43e10763ed672ec2f1742a09b04e5ffb40e",
+  "command": "node --test tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs tools/qa/cxorbia-i3-visitas-effective-availability.test.mjs tools/qa/cxorbia-i3-vrm301-idempotent-visit-detail.test.mjs",
+  "testFiles": [
+    "tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs",
+    "tools/qa/cxorbia-i3-visitas-effective-availability.test.mjs",
+    "tools/qa/cxorbia-i3-vrm301-idempotent-visit-detail.test.mjs"
+  ],
+  "tests": 9,
+  "pass": 9,
+  "fail": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "exitCode": 0,
+  "validatedSourceBehaviors": [
+    "Dashboard pending-assignment bucket excludes assigned, realized and canceled visits",
+    "Visit availability excludes completed, out-of-range, stale-assigned, stale-scheduled, canceled, archived, submitted and paid visits",
+    "Admin KPI and assignment action use the same canonical effective-availability predicate",
+    "Zero available visit explanation stays scoped to project period",
+    "Admin and Shopper visit-detail click handlers are idempotent across rerenders"
+  ],
+  "certification": {
+    "sourceBehaviorScope": "PASS_9_OF_9",
+    "freshAuthenticatedDevUi": "NOT_RUN_CHROME_CDP_FOCUS_TIMEOUT",
+    "currentHrRevisionParity": "NOT_REPROVED_IN_THIS_SCOPE",
+    "beforeAfterVisualEvidence": "NOT_CAPTURED_IN_THIS_SCOPE",
+    "tinyfish": "NOT_RUN",
+    "paulaHumanPass": "PENDING",
+    "b6BlockLocked": false,
+    "integralMatrixMatches": "UNCHANGED_5_OF_21"
+  },
+  "nextExactAction": "Read-only authenticated DEV Dashboard/Visitas/Detalle in GT and HN against the SAME live HR revision, exercise navigation, table filters, assignment availability and detail modal with screenshots and provider ACK where actions occur; obtain Paula B6 whole-block visual PASS before BLOCK_LOCKED.",
+  "production": "DO_NOT_TOUCH",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false,
+  "codeChanges": 0,
+  "providerWrites": 0,
+  "appendOnly": true
+}
