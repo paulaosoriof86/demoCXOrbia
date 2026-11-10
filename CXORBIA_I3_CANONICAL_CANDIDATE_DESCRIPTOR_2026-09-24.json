@@ -21320,7 +21320,8 @@
     "realized": 12,
     "fullRevisionHashNotAvailable": true,
     "hnOctoberDatesInNovemberTab": 10,
-    "sourceSemanticReview": "FLAG_NON_DESTRUCTIVE",
+    "sourceSemanticReview": "DIRECT_OCT_VS_NOV_HN_COPY_CONFIRMED__NOV_CURRENT__OCT_HISTORICAL__NO_HR_READER_FAILURE",
+    "crossPeriodHnLiveRowComparison20261110": {"octTab":"OCTUBRE 26 HN","novTab":"NOVIEMBRE HN","compared":10,"identicalRows":9,"sameCoreOperationalRows":10,"oneDifference":"NOV_ROW_8_FECHA_SUBMITIDO","doNotInferNovemberExecutionFromTabMembership":true,"liveReadApprovalPreserved":true,"noHrWrites":true,"noProductWrites":true},
     "receiptBlob": "637320d87466ab8c824a1ce66cc604e44ec1f6eb",
     "noHrWrites": true,
     "fullOwnerPromotion": false
