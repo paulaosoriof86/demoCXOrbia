@@ -6908,7 +6908,7 @@ jobs:
         requiredOctober:published.filter(x=>x.effectiveRequired).length,
         noAnswerKeysExported:true,noShopperDataExported:true,readOnly:true,writes:0,production:false};
       if(published.length<2)throw Error('B4_BANKS_NOT_VISIBLE_FOR_EXPECTED_READBACK');
-      fs.writeFileSync('.tmp/i3-b4-required-bank-flags/readback.json',JSON.stringify(report,null,2)+'\\n');
+      fs.writeFileSync('.tmp/i3-b4-required-bank-flags/readback.json',JSON.stringify(report,null,2)+'\n');
       console.log(JSON.stringify({publishedOctober:published,requiredOctober:report.requiredOctober,readOnly:true}));
       NODE
    - uses: actions/upload-artifact@v4
