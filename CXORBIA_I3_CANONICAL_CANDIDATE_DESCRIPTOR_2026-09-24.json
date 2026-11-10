@@ -21233,20 +21233,20 @@
   },
   "functionalBlockDomainReconciliation20261110": {
     "currentMatrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V291.json",
-    "currentMatrixBlob": "3cbc924986a48f2b09ffa2978707d3f3206943c6",
+    "currentMatrixBlob": "7eeb0c90e6aa647bf3c3cb12c698b86d369ed502",
     "blockReceiptPath": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_FUNCTIONAL_BLOCK_ACCEPTANCE_20261110.json",
     "latestAuthenticatedChromeReadbackPath": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_CHROME_INTEGRAL_GAP_READBACK_20261110.json",
-    "latestAuthenticatedChromeReadbackBlob": "f6211fbdd8a1930c4c07f8dff22cf803968e5ad9",
-    "paulaNextPriorityLock": "FINISH_B4_B5_B6_INTEGRAL_OWNER_GAPS_BEFORE_B7",
+    "latestAuthenticatedChromeReadbackBlob": "8c7adbee68d0c35a8e9466e8c9fff4620c02db86",
+    "paulaNextPriorityLock": "B7_PARALLEL_READ_ONLY_AUTHORIZED__B4_B5_B6_OWNER_UNCOVERED_PROOF_AND_B7_SCOPED_VALIDATION",
     "functionalBlockPass": "B4_B5_B6__3_OF_9_SCOPED_FUNCTIONAL_BLOCKS",
     "integralDomainMatch": "5_OF_21_FULL_OWNER_DOMAINS__NOT_ADDITIVE_WITH_FUNCTIONAL_BLOCKS",
     "pendingIntegralCoverage": {
-      "certifications": "D08_ACADEMIA_PROVIDER_ACK_AND_ROLE_ISOLATION",
-      "benefits": "C09_C10_INDEPENDENT_ADMIN_SHOPPER_ROW_CURRENCY_PERIOD_EXPORT_PARITY",
-      "dashboard-operation": "B1_MIDIA_OWNER_AND_B11_SAME_HR_REVISION_PARITY"
+      "certifications": "D08_ACADEMY_ISOLATED_LEARNER_PROGRESS_WRITE_ACK_RELOAD_ONLY_CERT_MAIN_HISTORIC_PASS",
+      "benefits": "C09_C10_FULL_CSV_PERIOD_CURRENCY_PARITY__ONE_NARANJO_Q233_ROW_PASS",
+      "dashboard-operation": "B1_MIDIA_WHOLE_OWNER_AND_B11_EXTERNAL_HR_SAME_REVISION__SHOPPER_10_VISITS_PASS"
     },
     "accountingRule": "ONE_V291_MATRIX_SHOWS_BOTH_DENOMINATORS_WITHOUT_FABRICATING_8_OF_21_DOMAIN_MATCH",
-    "nextExactAction": "Do not advance B7. Finish D08 real independent Shopper progress provider ACK/reload; C09/C10 exact Admin/Shopper benefits CSV row-currency-period parity; B1 MiDia plus B11 independent HR same-revision proof. Reuse B4-B6 prior functional E2E; do not rebuild current QA banks or infer bank settlement. PROD and I4 remain locked.",
+    "nextExactAction": "Reuse accepted B4/B5/B6. D08 isolated QA progress remote ACK/reload, C09/C10 full Admin/Shopper CSV-period-currency, B1/B11 same HR independent revision, B7 uncovered cross-actor application/reservation ACK notifications/idempotent history while preserving RUN2177 and RUN2216, B8 financial settlement, then B9 Gate20/21 exact current source. No production/I4.",
     "productSourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
     "productTree": "8075c43e10763ed672ec2f1742a09b04e5ffb40e",
     "frozenOwnersAndHistoricalEvidencePreserved": true,
@@ -21255,9 +21255,20 @@
     "gate21": "HOLD",
     "i4Authorized": false,
     "production": "DO_NOT_TOUCH",
-    "matrixGitBlob": "d2eda54188ad637e6f4a19b7de1d7beb413c01da",
-    "latestAuthenticatedChromeReadbackGitBlob": "2096c43b2d7215da3c88b64137f40d070512606e",
+    "matrixGitBlob": "7eeb0c90e6aa647bf3c3cb12c698b86d369ed502",
+    "latestAuthenticatedChromeReadbackGitBlob": "8c7adbee68d0c35a8e9466e8c9fff4620c02db86",
     "paulaPriorityLock": "B7_READONLY_PARALLEL_EXPLICITLY_AUTHORIZED_20261110__INTEGRAL_B4_B5_B6_OWNER_GAPS_STILL_OPEN",
-    "correctedB4OutdatedPending": "4_BANKS_40_HISTORIC_MAIN8_REQUIRED_AI15_OPTIONAL_ALL_PASS__DO_NOT_REPEAT"
+    "correctedB4OutdatedPending": "4_BANKS_40_HISTORIC_MAIN8_REQUIRED_AI15_OPTIONAL_ALL_PASS__DO_NOT_REPEAT",
+    "authenticatedShopperCrossRole": "PASS_STIVEN_SHOPPER_GT_AND_ADMIN_CINEPOLIS_NOV_B4_100_CERT_AFTER_RELOAD_B5_NARANJO_Q233_B6_10_VISITS_B7_POSTULABLE_11_RESERVATION_0"
+  },
+  "authenticatedShopperEvidence20261110": {
+    "status": "PASS_SCOPED_READ_ONLY",
+    "sourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+    "receipt": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_CHROME_INTEGRAL_GAP_READBACK_20261110.json",
+    "receiptBlob": "8c7adbee68d0c35a8e9466e8c9fff4620c02db86",
+    "matrixBlob": "7eeb0c90e6aa647bf3c3cb12c698b86d369ed502",
+    "frozenBBlocksPass": 3,
+    "fullDomainsMatch": 5,
+    "security": "NO_PASSWORDS_DOCUMENTED_NO_PROVIDER_WRITES"
   }
 }
