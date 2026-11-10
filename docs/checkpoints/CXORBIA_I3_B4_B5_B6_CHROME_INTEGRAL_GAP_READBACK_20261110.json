@@ -13,9 +13,11 @@
     "project": "Cinepolis",
     "period": "NOV_2026",
     "authenticated": true,
-    "shopperIndependentSession": "DEV_FIREBASEAPP_ISOLATED_ORIGIN_SHOWS_SHOPPER_LOGIN_FORM__NO_AUTH_SESSION__CREDENTIALS_NOT_GUESSED_OR_TRANSMITTED",
+    "shopperIndependentSession": "PASS_AUTHENTICATED_STIVEN_LOPEZ_GT_CINEPOLIS_NOV2026_IN_ISOLATED_FIREBASEAPP_ORIGIN_WITH_DIRECT_USER_AUTHORIZATION",
     "intermittentFocusTimeout": true,
-    "sensitiveInputSent": false
+    "sensitiveInputSent": true,
+    "shopperCredentialStored": false,
+    "shopperAuthPersistedAfterBrowserReload": true
   },
   "b4AcademiaAdminReadOnly": {
     "consultoraCourses": 14,
@@ -29,7 +31,7 @@
     "integralDomainPromotion": false
   },
   "b5Benefits": {
-    "newReadback": "ADMIN_LIQUIDACIONES_NOV_2026_READ_ONLY_NOT_DIRECT_SHOPPER_BENEFITS_PARITY",
+    "newReadback": "PASS_SHOPPER_INDEPENDENT_AUTH_AND_ADMIN_NOV_STIVEN_NARANJO_60_PLUS_173_EQ_233_AND_PENDING_QUESTIONNAIRE_SAME_PERIOD",
     "adminFinancialCandidateRowsInReview": 12,
     "adminConciliatedPendingPayment": 0,
     "adminPaidConfirmed": 0,
@@ -40,7 +42,7 @@
     },
     "externalFinancialSettlementNotInferred": true,
     "priorFunctionalAcceptance": "PRESERVED_PASS_FROM_20261109_SHOPPER_AND_158_SOURCE_GUARDS",
-    "c09C10IndependentAdminShopperCsvRowParity": "NOT_NEWLY_PROVEN"
+    "c09C10IndependentAdminShopperCsvRowParity": "PARTIAL_ONE_REAL_ROW_ADMIN_SHOPPER_MATCH_CSV_AND_CROSS_PERIOD_NOT_RUN"
   },
   "b6AdminReadOnly": {
     "dashboardPeriod": "NOV_2026",
@@ -56,7 +58,7 @@
     "midiaRealizadas": 12,
     "midiaSinAsignar": 11,
     "midiaCalendarObservation": "PERIOD_NOV_2026_WITH_CALENDAR_OCT_2026_ON_REENTRY__NEXT_ARROW_SHOWS_NOV_2026__FURTHER_UX_EXPECTATION_CONFIRMATION_REQUIRED_BEFORE_CLASSIFYING_DEFECT",
-    "independentHrRevisionAndShopperActor": "NOT_PROVEN_IN_THIS_PASS",
+    "independentHrRevisionAndShopperActor": "PARTIAL_ADMIN_PUBLISHED_HR_REVISION_AND_STIVEN_HR_ASSIGNMENT_PAIRED_TO_SHOPPER_ONE_ROW__INDEPENDENT_EXTERNAL_HR_REVISION_NOT_RUN",
     "integralDomainPromotion": false
   },
   "certificationAccounting": {
@@ -84,8 +86,8 @@
     "gate20": "HOLD",
     "gate21": "HOLD",
     "i4Authorized": false,
-    "browserAdminReadOnlyActions": 1,
-    "shopperCredentialTransmissions": 0
+    "browserAdminReadOnlyActions": "MULTIPLE_CROSS_ROLE_READBACKS_NO_PROVIDER_MUTATIONS",
+    "shopperCredentialTransmissions": "THREE_AUTH_LOGIN_ATTEMPTS_ALL_TO_AUTHORIZED_DEV_ONLY_CREDENTIALS_MASKED_NO_RESETS"
   },
   "b4CertificationAdminCrossReadback20261110": {
     "status": "PASS_ADMIN_READ_ONLY_VERIFIED",
@@ -106,7 +108,7 @@
     "noBankWrite": true,
     "noRecertificationIssued": true,
     "priorQaLifecycleAndProviderAck": "PASS_PRESERVED_PER_VRM322_NO_REPLAY",
-    "crossActorIndependentLogin": "HOLD_AUTHENTICATED_SHOPPER_SESSION_NOT_AVAILABLE"
+    "crossActorIndependentLogin": "PASS_STIVEN_AUTH_INDEPENDENT_SHOPPER_AND_100_PERCENT_APPROVED_PROVIDER_ACK_PERSISTED_AFTER_RELOAD"
   },
   "b6AdminReadOnlyPublishedHrCrossSurface20261110": {
     "sourceHrRevisionAsPresentedByHojasDeRuta": "7b7b62269233",
@@ -163,9 +165,80 @@
       "reservationRequests": 0,
       "reservationsForReview": 0,
       "reservationsAssigned": 0,
-      "crossed": 0
+      "crossed": 0,
+      "reservationScenarios": 0,
+      "publishAndCrossCount": 0,
+      "stivenNaranjoMall": "HR_ASSIGNED_REALIZED_2026_11_04_GTMIXCO_TAQ"
     },
-    "remaining": "NEW_CROSS_ACTOR_HR_ACK_NOTIFICATION_HISTORY_NO_DUPLICATES_ONLY_NO_BROAD_REPLAY"
+    "remaining": "NEW_CROSS_ACTOR_HR_ACK_NOTIFICATION_HISTORY_NO_DUPLICATES_ONLY_NO_BROAD_REPLAY",
+    "currentShopperNovember2026": {
+      "actor": "Stiven Lopez",
+      "availablePostulations": 11,
+      "postulationDetail": "MC_PLAZA_AMERICAS_GT_APP_QUINCENA_1_Q60__ACTION_AVAILABLE_NOT_SUBMITTED",
+      "reservableScenarios": 0,
+      "reservationRequestButton": "DISABLED_WITH_NO_SCENARIOS_LOADED",
+      "requestsSubmitted": 0
+    },
+    "twoDistinctFlows": "PUBLISHED_UNASSIGNED_VISITS_POSTULACIONES_11_VERSUS_ANTICIPATORY_SCENARIO_RESERVATIONS_0__NOT_CLASSIFIED_AS_BUG_WITHOUT_SOURCE_DRIFT"
   },
-  "crossedAccountingsExplanation": "Two different fixed denominators: 3 of 9 Phase A functional B blocks vs 5 of 21 full owner domains. Never add denominators or erase 3 scoped B4-B6 human-approved PASS."
+  "crossedAccountingsExplanation": "Two different fixed denominators: 3 of 9 Phase A functional B blocks vs 5 of 21 full owner domains. Never add denominators or erase 3 scoped B4-B6 human-approved PASS.",
+  "shopperCrossRole20261110": {
+    "scope": "READ_ONLY_REAL_SHOPPER_STIVEN_GT_AND_ADMIN_IN_DISTINCT_DEV_ORIGINS",
+    "auth": "PASS_FIRST_NAME_BASED_ACCOUNT_CONVENTION_AUTHENTICATED",
+    "disclosure": "PASSWORD_NOT_RECORDED",
+    "period": "NOV_2026",
+    "project": "Cinepolis",
+    "country": "GT",
+    "certification": {
+      "shopperPublishedBanks": 2,
+      "mandatoryMainQuestions": 8,
+      "optionalAiQuestions": 15,
+      "priorAttempt": "100_PERCENT_APPROVED_2026_11_07_01_37_15",
+      "providerAckLabel": "DISPLAYED_REMOTE_ACK",
+      "historyPersistedAfterFreshFullReload": true,
+      "newAttemptsSubmitted": 0,
+      "adminBankCount": 4,
+      "adminHistoricRecords": 40
+    },
+    "academia": {
+      "courses": 7,
+      "lessons": 27,
+      "learnerCourseProgress": 0,
+      "learnerLessonProgress": 0,
+      "providerProgressWrite": "NOT_EXECUTED_IN_REAL_USER_ACCOUNT",
+      "adminShopperRecipientCatalog": "7_COURSES_27_LESSONS_PARITY_PASS"
+    },
+    "visits": {
+      "active": 1,
+      "history": 8,
+      "otherPeriods": 1,
+      "total": 10,
+      "activeNaranjoMall": "2026_11_04_REALIZED_PENDING_QUESTIONNAIRE",
+      "otherPeriodMiraflores": "2026_10_31_PENDING_QUESTIONNAIRE",
+      "adminNovNaranjoVisitMatched": true,
+      "noVisitStateWrites": true
+    },
+    "benefits": {
+      "shopperHistoricalLiquidations": 10,
+      "shopperPaidConfirmed": 5,
+      "shopperPending": 5,
+      "shopperNovNaranjo": "Q60_HONORARIO_Q173_REEMBOLSO_Q233_TOTAL",
+      "adminNovNaranjo": "Q60_HONORARIO_Q173_REEMBOLSO_Q233_TOTAL",
+      "periodCurrencyStateCrossRole": "PASS_ONE_ROW",
+      "csvIndependentExport": "NOT_EXECUTED",
+      "septemberPaidByDirection20261031": "EXTERNAL_BUSINESS_CLAIM_NOT_YET_RECONCILED_IN_B8"
+    },
+    "b7": {
+      "publishedPostulableGT": 11,
+      "shopperReservationScenarios": 0,
+      "adminReservationScenarios": 0,
+      "adminCurrentAssignments": 33,
+      "adminNaranjoAssignedStiven": true,
+      "shopperPostulationActionAvailable": true,
+      "newApplicationsCreated": 0,
+      "sourceQuestion": "NEED_B7_OWNER_ROLE_FLOW_AND_EXTERNAL_HR_ACK_HISTORY_NOTIFICATION_DEDUP_PROOF"
+    },
+    "reload": "STIVEN_SESSION_PERSISTED_AFTER_FULL_DEV_ORIGIN_NAVIGATION_AND_CERTIFICATION_100_PERCENT_ACK_HISTORY_REAPPEARED",
+    "note": "NO_PAYMENT_WRITES_NO_HR_WRITES_NO_REAL_SHOPPER_PROGRESS_WRITES_NO_RECERTIFICATION"
+  }
 }
