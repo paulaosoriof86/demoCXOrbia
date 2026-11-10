@@ -7048,7 +7048,7 @@
     "sameArtifactAdminShopper": "PENDING",
     "production": false
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V289.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V290.json",
   "vrm301DevHostingAdminReadback20261104": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM301_DEV_HOSTING_RUN41801457655_ADMIN_READBACK_20261104.json",
     "receiptGitBlob": "b8138b76db5159956aa500fe30f2be0f99fc8fce",
