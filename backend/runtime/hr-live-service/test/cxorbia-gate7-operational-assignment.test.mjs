@@ -226,6 +226,68 @@ test('Gate 7 / visit.assign requires provider ACK and replays idempotently',asyn
   assert.equal(auditPaths(db).length,1);
 });
 
+test('Gate 7 / approval atomically assigns visit and targets exactly one shopper notice without duplicate on replay',async()=>{
+  const db=new FakeFirestore();
+  db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'admin',authNamespace:'staff',projectIds:['project-a']});
+  db.seed(visitPath('visit-a'),{id:'visit-a',visitId:'visit-a',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',hrRowId:'HR!2',estado:'disponible',status:'disponible',version:4});
+  db.seed('tenants/tenant-a/projects/project-a/postulations/app-a',{
+    id:'app-a',visitId:'visit-a',hrRowId:'HR!2',shopperId:'shopper-a',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',
+    status:'pendiente',estado:'pendiente',fechaProp:'2026-11-20',version:2
+  });
+  const command={version:'cxorbia-command-adapter-v1',commandType:'application.status.update',entityType:'application',entityId:'app-a',
+    tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',expectedVersion:2,idempotencyKey:'approve-app-a-20261110',
+    payload:{status:'aprobada',reason:'admin_approval'},authorization:{providerEnforcementRequired:true}};
+  const first=await provider(db).execute('token',command);
+  assert.equal(first.ok,true);
+  assert.equal(first.providerAck,true);
+  assert.equal(db.get(visitPath('visit-a')).shopperId,'shopper-a');
+  assert.equal(db.get(visitPath('visit-a')).assignmentSyncStatus,'pending_hr');
+  const notices=db.paths().filter(path=>path.startsWith('tenants/tenant-a/bulletins/'));
+  assert.equal(notices.length,1);
+  const notice=db.get(notices[0]);
+  assert.deepEqual(notice.targetShopperIds,['shopper-a']);
+  assert.deepEqual(notice.targetProjectIds,['project-a']);
+  assert.equal(notice.actionRoute,'misvisitas');
+  assert.equal(notice.entityId,'visit-a');
+  assert.equal(notice.eventKey,'postulation_approved_visit_assigned');
+  assert.equal(notice.operational,true);
+  const replay=await provider(db).execute('token',command);
+  assert.equal(replay.ok,true);
+  assert.equal(replay.idempotentReplay,true);
+  assert.equal(replay.providerWrites,0);
+  assert.equal(db.paths().filter(path=>path.startsWith('tenants/tenant-a/bulletins/')).length,1);
+  assert.equal(receiptPaths(db).length,1);
+  const unrelatedRetry={...command,idempotencyKey:'different-request-after-approval',expectedVersion:3};
+  const retry=await provider(db).execute('token',unrelatedRetry);
+  assert.equal(retry.ok,false);
+  assert.equal(retry.code,'OPS_APPLICATION_ALREADY_APPROVED');
+  assert.equal(db.paths().filter(path=>path.startsWith('tenants/tenant-a/bulletins/')).length,1);
+});
+
+test('Gate 7 / rejected applications never produce shopper approval bulletin',async()=>{
+  const db=new FakeFirestore();
+  db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'admin',authNamespace:'staff',projectIds:['project-a']});
+  db.seed('tenants/tenant-a/projects/project-a/postulations/app-b',{
+    id:'app-b',visitId:'visit-a',shopperId:'shopper-b',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',status:'pendiente',version:1
+  });
+  const command={version:'cxorbia-command-adapter-v1',commandType:'application.status.update',entityType:'application',entityId:'app-b',
+    tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',expectedVersion:1,idempotencyKey:'reject-app-b-20261110',
+    payload:{status:'rechazada'},authorization:{providerEnforcementRequired:true}};
+  const result=await provider(db).execute('token',command);
+  assert.equal(result.providerAck,true);
+  assert.equal(db.paths().filter(path=>path.startsWith('tenants/tenant-a/bulletins/')).length,0);
+});
+
+test('Gate 7 / shopper bulletin queries enforce exact recipient and project even when role query is broad',()=>{
+  const source=fs.readFileSync(path.join(repoRoot,'app/core/backend-bulletins.js'),'utf8');
+  assert.match(source,/if\(targets\.length&&\(!sid\|\|!targets\.includes\(String\(sid\)\)\)\)return;/);
+  assert.match(source,/if\(projects\.length&&\(!projectId\|\|!projects\.includes\(String\(projectId\)\)\)\)return;/);
+  const ui=fs.readFileSync(path.join(repoRoot,'app/modules/postulaciones.js'),'utf8');
+  assert.doesNotMatch(ui,/CX\.automations\.fire\('aprobacion'/);
+  const miDia=fs.readFileSync(path.join(repoRoot,'app/modules/midia.js'),'utf8');
+  assert.match(miDia,/n\.operational===true&&n\.eventKey==='postulation_approved_visit_assigned'/);
+});
+
 test('Gate 7 / visit.assign resolves exact HR durable key when logical visitId differs and accepts source-current',async()=>{
   const db=new FakeFirestore();
   db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'admin',authNamespace:'staff',projectIds:['project-a']});

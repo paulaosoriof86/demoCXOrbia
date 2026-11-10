@@ -624,7 +624,7 @@ CX.module('cert', ({role,data,ui})=>{
       ui.modal('🔄 Solicitar re-certificación · '+p.name,`
         <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Pide a tus evaluadores volver a certificarse (cambió el instructivo, nueva ronda, o por vencimiento). Su certificación pasa a <b>pendiente</b> y se les notifica.</p>
         <label class="lbl">Alcance</label>
-        <select class="sel" id="rcScope" style="margin-bottom:10px"><option value="all">Todos los certificados del proyecto</option><option value="one">Un shopper específico</option></select>
+        <select class="sel" id="rcScope" style="margin-bottom:10px"><option value="all">Todos los shoppers del proyecto (certificados o no)</option><option value="one">Un shopper específico</option></select>
         <div id="rcOneWrap" style="display:none;margin-bottom:10px"><label class="lbl" for="rcSearch">Buscar shopper</label><input class="inp" id="rcSearch" type="search" placeholder="Nombre, código…" style="margin-bottom:8px"><label class="lbl" for="rcOne">Shopper</label><select class="sel" id="rcOne"><option value="">Selecciona un shopper</option></select><div id="rcOneCount" style="font-size:11px;color:var(--t3);margin-top:4px"></div></div>
         <div class="grid g2" style="gap:10px 12px;margin-bottom:10px">
           <div><label class="lbl">Motivo</label><select class="sel" id="rcReason"><option>Actualización del instructivo</option><option>Nueva ronda / periodo</option><option>Vencimiento de certificación</option><option>Bajo desempeño</option></select></div>
@@ -656,7 +656,7 @@ CX.module('cert', ({role,data,ui})=>{
           let target;
           try{target=CX.certStore.recertificationTarget(sc.value,one.value,shoppers);}
           catch(_){ui.toast('Selecciona un shopper válido antes de solicitar la re-certificación.','warn');return;}
-          const btn=ov.querySelector('#rcOk'),all=target.scope==='all',shopperId=target.shopperId,who=all?'todos los certificados':(data.getShopper(shopperId)||{}).nombre||'el shopper';
+          const btn=ov.querySelector('#rcOk'),all=target.scope==='all',shopperId=target.shopperId,who=all?'todos los shoppers del proyecto':(data.getShopper(shopperId)||{}).nombre||'el shopper';
           const reason=ov.querySelector('#rcReason').value,days=+ov.querySelector('#rcDays').value||7;btn.disabled=true;btn.textContent='Guardando…';
           try{
             if(!CX.backendCertifications?.requestRecertification)throw new Error('RECERT_PROVIDER_UNAVAILABLE');

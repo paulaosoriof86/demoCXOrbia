@@ -362,6 +362,8 @@ async function transactionExecute(db,command,actor){
       if(!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_APPLICATION_STATUS_OPERATOR_ONLY');
       const aRef=r.applications.doc(entityId),aSnap=await tx.get(aRef);if(!aSnap.exists)throw new Error('OPS_APPLICATION_MISSING');const a=aSnap.data()||{};assertPeriod(command,a);assertVersion(command,a);
       const status=str(payload.status).toLowerCase();if(!APPLICATION_STATES.includes(status))throw new Error('OPS_APPLICATION_STATUS_INVALID');
+      if(status==='aprobada'&&(str(a.status||a.estado)==='aprobada'||a.postulationLifecycle==='transitioned_to_assignment'))
+        throw new Error('OPS_APPLICATION_ALREADY_APPROVED');
       let vRef=null,v=null;
       if(status==='aprobada'){
         const visitId=str(a.visitId||a.visitaId||payload.visitId);if(!visitId)throw new Error('OPS_VISIT_ID_REQUIRED');
@@ -377,6 +379,21 @@ async function transactionExecute(db,command,actor){
       if(status==='aprobada'){
         const proposedScheduleDate=str(a.fechaProp||a.proposedDate);
         tx.set(vRef,{shopperId:str(a.shopperId),estado:'asignada',status:'asignada',assignmentSource:'platform',assignmentSyncStatus:'pending_hr',proposedScheduleDate:proposedScheduleDate||null,approvedApplicationId:entityId,lastSyncedAt:null,updatedAt:now(),version:Number(v.version||0)+1},{merge:true});providerWrites++;
+        /* A shopper approval notice and its assignment belong to one atomic decision.
+           Use the command receipt key so retries cannot create another notice. */
+        const approvedShopperId=str(a.shopperId);
+        if(!approvedShopperId)throw new Error('OPS_APPLICATION_SHOPPER_SCOPE_REQUIRED');
+        const approvedVisitId=str(a.visitId||a.visitaId||payload.visitId);
+        const bulletinId='application-approval-'+receiptId(command);
+        tx.set(r.bulletins.doc(bulletinId),{
+          id:bulletinId,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,status:'active',
+          toRole:'shopper',targetRoles:['shopper'],targetShopperIds:[approvedShopperId],targetProjectIds:[command.projectId],
+          entityType:'visit',entityId:approvedVisitId,eventKey:'postulation_approved_visit_assigned',
+          operational:true,idempotencyKey:command.idempotencyKey,type:'aprobada',
+          title:'Tu postulación fue aprobada',
+          body:'Tu visita fue asignada. Revisa los detalles en Mis Visitas; la hoja de ruta está pendiente de sincronización.',
+          priority:'high',actionRoute:'misvisitas',createdAt:now(),source:'cxorbia-operational-command-provider-v1'
+        },{merge:false});providerWrites++;
       }
       auditEntityType='application';
     }

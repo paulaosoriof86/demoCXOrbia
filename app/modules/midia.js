@@ -38,6 +38,10 @@ CX.module('midia', ({data,role,ui})=>{
     const currentApproval=n=>{
       if(role!=='shopper'||n.tipo!=='aprobada')return true;
       if(!sid)return false;
+      /* A provider-confirmed approval is actionable while HR sync is pending.
+         The canonical notification guard already validates exact visit ownership. */
+      if(n.operational===true&&n.eventKey==='postulation_approved_visit_assigned')
+        return n.entityType==='visit'&&Array.isArray(n.targetShopperIds)&&n.targetShopperIds.map(String).includes(String(sid));
       return (data._posts||[]).some(p=>{
         if(String(p.shopperId||'')!==String(sid)||String(p.estado||p.status||'').toLowerCase()!=='aprobada')return false;
         if(p.sucursal&&n.txt&&!String(n.txt).includes(String(p.sucursal)))return false;

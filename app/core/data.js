@@ -612,6 +612,18 @@ CX.data = {
     return out;
   },
   periodMonth(id){
+    /* The selected operational period, not the earliest HR event date, owns the
+       initial calendar month. Historical HN realization dates can legitimately
+       remain in a November tab; they must not reopen the October calendar. */
+    const period=this.projects.find(p=>String(p.id)===String(id))||{};
+    const labels=[id,period.periodo,period.ronda,period.name].map(x=>String(x||'').trim());
+    const spanishMonths={ene:1,feb:2,mar:3,abr:4,may:5,jun:6,jul:7,ago:8,sep:9,oct:10,nov:11,dic:12};
+    for(const label of labels){
+      const iso=label.match(/(20\d{2})[-/](0?[1-9]|1[0-2])(?:\D|$)/);
+      if(iso)return iso[1]+'-'+String(Number(iso[2])).padStart(2,'0');
+      const human=label.match(/\b(ene(?:ro)?|feb(?:rero)?|mar(?:zo)?|abr(?:il)?|may(?:o)?|jun(?:io)?|jul(?:io)?|ago(?:sto)?|sep(?:tiembre)?|oct(?:ubre)?|nov(?:iembre)?|dic(?:iembre)?)\b[\s./-]*(20\d{2}|\d{2})\b/i);
+      if(human){const month=spanishMonths[human[1].slice(0,3).toLowerCase()];const year=human[2].length===2?2000+Number(human[2]):Number(human[2]);if(month)return year+'-'+String(month).padStart(2,'0');}
+    }
     const dates=this.periodDates(id);
     if(!dates.length) return new Date().toISOString().slice(0,7);
     const sorted=dates.slice().sort();

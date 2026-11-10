@@ -699,7 +699,8 @@ CX.module('postulaciones', ({data,ui})=>{
         ui.toast('Aprobación no ejecutada: no fue posible confirmar el cambio. La postulación permanece sin cambios.','warn',4200);
         return;
       }
-      if(CX.automations)CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal});
+      /* Server atomically publishes the exact shopper notice with the approved
+         assignment. Do not fire a second broad, non-idempotent local notice. */
       try{queueMicrotask(()=>window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE?.('postulation_approval_assignment_committed',true));}catch(_){}
       act(x.id,'✅ Aprobada','green','Aprobada · asignación creada y postulación cerrada');
       if(typeof close==='function')close();

@@ -87,6 +87,9 @@ window.CX = window.CX || {};
       para: d.targetLabel || '',
       priority: d.priority || 'normal',
       targetShopperIds: Array.isArray(d.targetShopperIds)?d.targetShopperIds.map(String):[],
+      targetProjectIds: Array.isArray(d.targetProjectIds)?d.targetProjectIds.map(String):[],
+      projectId: d.projectId || null,
+      periodId: d.periodId || null,
       entityType: d.entityType || null,
       entityId: d.entityId || null,
       eventKey: d.eventKey || null,
@@ -136,6 +139,14 @@ window.CX = window.CX || {};
         const snap = await q.get();
         snap.forEach(doc=>{
           const d = doc.data ? doc.data() : {};
+          /* Role/project queries can return a targeted operational notice to
+             everyone in that role. An explicit shopper target is authoritative. */
+          if(r==='shopper'){
+            const targets=Array.isArray(d.targetShopperIds)?d.targetShopperIds.map(String).filter(Boolean):[];
+            if(targets.length&&(!sid||!targets.includes(String(sid))))return;
+            const projects=Array.isArray(d.targetProjectIds)?d.targetProjectIds.map(String).filter(Boolean):[];
+            if(projects.length&&(!projectId||!projects.includes(String(projectId))))return;
+          }
           if((d.status || 'active') === 'active') seen.set(doc.id, doc);
         });
       }catch(e){ console.warn('[CX.backend-bulletins] Consulta omitida', e); }
