@@ -21235,6 +21235,9 @@
     "currentMatrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V291.json",
     "currentMatrixBlob": "3cbc924986a48f2b09ffa2978707d3f3206943c6",
     "blockReceiptPath": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_FUNCTIONAL_BLOCK_ACCEPTANCE_20261110.json",
+    "latestAuthenticatedChromeReadbackPath": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_CHROME_INTEGRAL_GAP_READBACK_20261110.json",
+    "latestAuthenticatedChromeReadbackBlob": "f6211fbdd8a1930c4c07f8dff22cf803968e5ad9",
+    "paulaNextPriorityLock": "FINISH_B4_B5_B6_INTEGRAL_OWNER_GAPS_BEFORE_B7",
     "functionalBlockPass": "B4_B5_B6__3_OF_9_SCOPED_FUNCTIONAL_BLOCKS",
     "integralDomainMatch": "5_OF_21_FULL_OWNER_DOMAINS__NOT_ADDITIVE_WITH_FUNCTIONAL_BLOCKS",
     "pendingIntegralCoverage": {
@@ -21243,6 +21246,7 @@
       "dashboard-operation": "B1_MIDIA_OWNER_AND_B11_SAME_HR_REVISION_PARITY"
     },
     "accountingRule": "ONE_V291_MATRIX_SHOWS_BOTH_DENOMINATORS_WITHOUT_FABRICATING_8_OF_21_DOMAIN_MATCH",
+    "nextExactAction": "Do not advance B7. Finish D08 real independent Shopper progress provider ACK/reload; C09/C10 exact Admin/Shopper benefits CSV row-currency-period parity; B1 MiDia plus B11 independent HR same-revision proof. Reuse B4-B6 prior functional E2E; do not rebuild current QA banks or infer bank settlement. PROD and I4 remain locked.",
     "productSourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
     "productTree": "8075c43e10763ed672ec2f1742a09b04e5ffb40e",
     "frozenOwnersAndHistoricalEvidencePreserved": true,
