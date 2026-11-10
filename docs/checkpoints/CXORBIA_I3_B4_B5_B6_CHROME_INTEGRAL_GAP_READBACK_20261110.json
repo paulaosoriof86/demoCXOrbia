@@ -13,7 +13,7 @@
     "project": "Cinepolis",
     "period": "NOV_2026",
     "authenticated": true,
-    "shopperIndependentSession": "NOT_AVAILABLE_AUTHENTICATED__SEPARATE_DEV_FIREBASEAPP_TAB_AT_LOGIN",
+    "shopperIndependentSession": "DEV_FIREBASEAPP_ISOLATED_ORIGIN_SHOWS_SHOPPER_LOGIN_FORM__NO_AUTH_SESSION__CREDENTIALS_NOT_GUESSED_OR_TRANSMITTED",
     "intermittentFocusTimeout": true,
     "sensitiveInputSent": false
   },
@@ -65,7 +65,7 @@
     "scopedFunctionalBlockPass": "3_OF_9",
     "completeDomainMatch": "5_OF_21",
     "notAdditive": true,
-    "priorityAfterPaulaDirective": "DO_NOT_PROCEED_B7_UNTIL_B4_B5_B6_INTEGRAL_OWNER_PROOFS_ARE_RESOLVED_OR_EXPLICITLY_SCOPED",
+    "priorityAfterPaulaDirective": "B7_SCOPED_READ_ONLY_PARALLEL_EXPLICITLY_AUTHORIZED_2026_11_10__B4_B5_B6_FUNCTIONAL_BLOCK_PASS_3_OF_9_PRESERVED__INTEGRAL_5_OF_21_REQUIRES_UNPROVEN_OWNER_CLAUSES",
     "remainingProofs": [
       "D08_ACADEMY_SEPARATE_SHOPPER_PROGRESS_PROVIDER_ACK_RELOAD",
       "C09_C10_BENEFITS_ADMIN_SHOPPER_CSV_ROW_CURRENCY_PERIOD_INDEPENDENT_PARITY",
@@ -83,6 +83,89 @@
     "production": "DO_NOT_TOUCH",
     "gate20": "HOLD",
     "gate21": "HOLD",
-    "i4Authorized": false
-  }
+    "i4Authorized": false,
+    "browserAdminReadOnlyActions": 1,
+    "shopperCredentialTransmissions": 0
+  },
+  "b4CertificationAdminCrossReadback20261110": {
+    "status": "PASS_ADMIN_READ_ONLY_VERIFIED",
+    "banks": 4,
+    "legacyEvidence": 40,
+    "legacyApproved": 38,
+    "linkedShoppers": 14,
+    "mainPublishedOctober2026": {
+      "questions": 8,
+      "minPercent": 80,
+      "mandatory": true
+    },
+    "aiPublishedOctober2026": {
+      "questions": 15,
+      "minPercent": 80,
+      "mandatory": false
+    },
+    "noBankWrite": true,
+    "noRecertificationIssued": true,
+    "priorQaLifecycleAndProviderAck": "PASS_PRESERVED_PER_VRM322_NO_REPLAY",
+    "crossActorIndependentLogin": "HOLD_AUTHENTICATED_SHOPPER_SESSION_NOT_AVAILABLE"
+  },
+  "b6AdminReadOnlyPublishedHrCrossSurface20261110": {
+    "sourceHrRevisionAsPresentedByHojasDeRuta": "7b7b62269233",
+    "hojasDeRuta": "44_NOV_2026_PUBLISHED_ROWS_READ_ONLY",
+    "dashboard": {
+      "total": 44,
+      "gt": 34,
+      "hn": 10,
+      "assigned": 33,
+      "unassigned": 11,
+      "realized": 12,
+      "notQuestionnaired": 1,
+      "outOfRange": 3
+    },
+    "visitas": {
+      "total": 44,
+      "assigned": 33,
+      "unassigned": 11,
+      "realized": 12,
+      "outOfRange": 3
+    },
+    "reportes": {
+      "realized": 12,
+      "total": 44,
+      "assigned": 33,
+      "fulfillmentDisplayed": "27_PERCENT",
+      "effectivenessDisplayed": "36_PERCENT"
+    },
+    "midia": {
+      "agendadas": 11,
+      "porAprobar": 0,
+      "realizadas": 12,
+      "sinAsignar": 11,
+      "calendarMonthOnEntry": "OCT_2026_WHEN_PERIOD_NOV_2026"
+    },
+    "postulations": {
+      "assignmentsActive": 33,
+      "applicationsPending": 0
+    },
+    "conclusion": "PASS_SAME_ADMIN_SESSION_PUBLISHED_HR_DISPLAY_AND_VIEW_ARITHMETIC_NOT_INDEPENDENT_EXTERNAL_HR_OR_SHOPPER_PROOF",
+    "noFreshHrProviderEndpointCalled": true,
+    "noReconciliationTriggered": true
+  },
+  "b7ParallelReadOnly20261110": {
+    "disposition": "PARALLEL_AUTHORIZED_BY_PAULA_20261110_READ_ONLY_STARTED_NOT_FULL_INTEGRAL_CERTIFICATION",
+    "priorSourceRun": "RUN2177_ADMIN_LIFECYCLE_ACK_RELOAD_IDEMPOTENCY_QA_CLEANUP_0_RESIDUE",
+    "priorRoleRun": "RUN2216_GT_HN_KEEPERS_20_OF_20_PASS",
+    "unchangedSevenOwnersFrom": "09eed4f",
+    "unchangedSevenOwnersTo": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+    "humanR05R06": "PASS_2026_10_14_PRESERVED",
+    "currentAdminNovember2026": {
+      "postulationsPending": 0,
+      "assignmentsActive": 33,
+      "reservationRequests": 0,
+      "reservationsForReview": 0,
+      "reservationsAssigned": 0,
+      "crossed": 0
+    },
+    "remaining": "NEW_CROSS_ACTOR_HR_ACK_NOTIFICATION_HISTORY_NO_DUPLICATES_ONLY_NO_BROAD_REPLAY"
+  },
+  "crossedAccountingsExplanation": "Two different fixed denominators: 3 of 9 Phase A functional B blocks vs 5 of 21 full owner domains. Never add denominators or erase 3 scoped B4-B6 human-approved PASS."
 }
