@@ -12042,7 +12042,7 @@
   },
   "functionalBlockDomainReconciliation20261110": {
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V291.json",
-    "matrixGitBlob": "7eeb0c90e6aa647bf3c3cb12c698b86d369ed502",
+    "matrixGitBlob": "10045f2311e4ba1a3010d75a33e7e7c177af1052",
     "descriptorPath": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "sourceReceiptPath": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_FUNCTIONAL_BLOCK_ACCEPTANCE_20261110.json",
     "scopedFunctionalBlockPass": 3,
@@ -12057,7 +12057,7 @@
       "DASHBOARD_OPERATION_B1_MIDIA_AND_B11_INDEPENDENT_SAME_HR_REVISION"
     ],
     "latestAuthenticatedChromeReadbackPath": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_CHROME_INTEGRAL_GAP_READBACK_20261110.json",
-    "latestAuthenticatedChromeReadbackGitBlob": "8c7adbee68d0c35a8e9466e8c9fff4620c02db86",
+    "latestAuthenticatedChromeReadbackGitBlob": "a3f91e3eb1239b2775122ed31d2c840af69d1b6d",
     "paulaPriorityLock": "B7_READONLY_PARALLEL_AUTHORIZED_AND_EXECUTED__B4_B5_B6_FUNCTIONAL_PASS_PRESERVED__COMPLETE_UNCOVERED_OWNER_GATES",
     "productSourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
     "production": "DO_NOT_TOUCH",
@@ -12066,7 +12066,7 @@
     "i4Authorized": false,
     "latestReadbackScope": "ADMIN_NOV2026_44_TOTAL_GT34_HN10_33_ASSIGNED__SHOPPER_STIVEN_GT_10_VISITS_CERT_100_AFTER_RELOAD_BENEFITS_NARANJO_Q233_B7_11_POSTULABLE_ZERO_ANTICIPATORY_SCENARIOS",
     "shopperLogin": "PASS_AUTHENTICATED_STIVEN_GT_WITH_EXPLICIT_PAULA_AUTHORIZATION_AND_PROVIDER_RELOAD__MASKED",
-    "descriptorGitBlob": "2c14728f0d281ad2452211c801df5556624b8251"
+    "descriptorGitBlob": "c065be25917ebcb260c70c0606678438e2c1a778"
   },
   "b7ParallelReadOnly20261110": {
     "dateLocal": "2026-11-10",
@@ -12122,10 +12122,10 @@
   "currentReconciledCrossSurfaceReadback20261110": {
     "shopper": "PASS_STIVEN_AUTHENTICATED_RELOADED_AND_CERT_ACK_HISTORY",
     "b4": "PASS_CROSS_ACTOR_ADMIN_SHOPPER_CERT_100",
-    "b5": "PASS_ONE_ROW_GT_NARANJO_Q233",
+    "b5": "PASS_SHOPPER_ADMIN_THREE_PERIOD_ROWS_SEP_Q227_OCT_Q230_NOV_Q233_WITH_GT_HN_CURRENCY_SEPARATED",
     "b6": "PASS_SHOPPER_10_VISITS_ONE_ADMIN_ROW",
     "b7": "B7_READ_ONLY_11_POSTULABLE_ZERO_RESERVATION_SCENARIOS_DISTINCT",
-    "receiptBlob": "8c7adbee68d0c35a8e9466e8c9fff4620c02db86"
+    "receiptBlob": "a3f91e3eb1239b2775122ed31d2c840af69d1b6d"
   },
   "phaseACertificationClosurePlan20261110": {
     "authorization": "PAULA_USER_DIRECTIVE_20261110_FINISH_CROSS_TESTS_CERTIFY_B4_TO_B6_B7_PARALLEL",
@@ -12146,12 +12146,12 @@
       {
         "stage": "P0",
         "scope": "B4_B5_B6",
-        "action": "KEEP_FUNCTIONAL_BLOCK_LOCKED_AND_RECONCILE_ONLY_D08_ISOLATED_LEARNER_PROGRESS_ACK_RELOAD__C09_C10_CSV_PERIOD_CURRENCY_ADMIN_SHOPPER__B1_B11_INDEPENDENT_EXTERNAL_HR_SAME_REVISION; DO_NOT_MUTATE_REAL_USER_PROGRESS"
+        "action": "KEEP_B4_B5_B6_FUNCTIONAL_BLOCKS_LOCKED__D08_ISOLATED_LEARNER_ACTUAL_ACK_RELOAD__C09_C10_ROLE_SPECIFIC_SHOPPER_CSV_AND_ADMIN_PDF_RENDER_SEMANTIC_ROW_COUNTRY_PERIOD_CURRENCY_PARITY__B1_B11_INDEPENDENT_HR_SAME_REVISION; DO_NOT_REQUIRE_IDENTICAL_CSV_AND_DO_NOT_MUTATE_REAL_USER_PROGRESS"
       },
       {
         "stage": "P1",
         "scope": "B7",
-        "action": "REUSE_RUN2177_RUN2216_AND_PAULA_R05_R06; TEST_ONLY_UNCOVERED_DEV_QA_POSTULATION_RESERVATION_PROVIDER_ACK_RELOAD_HISTORY_DEDUP_NOTIFICATION; RESERVATIONS_ZERO_NO_SCENARIOS_IS_NOT_EQUIVALENT_TO_POSTULATION_OFFERS_11"
+        "action": "PRESERVE_RUN2177_RUN1553_RUN2216_AND_PAULA_R05_R06; ISOLATED_REVERSIBLE_DEV_QA_TEST_ONLY_POSTULATION_APPROVE_VISIT_PENDING_HR_CROSS_ACTOR__R22_NOTIFICATION_RECIPIENT_TEXT_ROUTE_UNREAD_RELOGIN__RESERVATION_WITH_VISITID_VISIT_CROSS; NO_EXTERNAL_HR_COMMERCIAL_VISIT_WRITES"
       },
       {
         "stage": "P2",
@@ -12178,5 +12178,68 @@
     "state": "I3_IN_PROGRESS_NO_GATE20_GATE21_I4",
     "production": "DO_NOT_TOUCH",
     "linkedReceipt": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_CHROME_INTEGRAL_GAP_READBACK_20261110.json"
+  },
+  "latestFrozenCloseout20261110": {
+    "dateLocal": "2026-11-10",
+    "sourceBranch": "recovery/cxorbia-phase-a-20260831",
+    "productSourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+    "productTree": "8075c43e10763ed672ec2f1742a09b04e5ffb40e",
+    "newCrossPeriodShopperAdmin": [
+      "SEP_MC_EL_FRUTAL_GTQ227",
+      "OCT_C_PORTALES_GTQ230",
+      "NOV_C_NARANJO_MALL_GTQ233"
+    ],
+    "sourceRoleExportContract": {
+      "shopper": "CSV_INCLUDING_PENDING_ROWS",
+      "admin": "REPORTKIT_PDF_ONLY_EXPORTABLE_NOT_FINANCIAL_REVIEW",
+      "identicalCsvParity": "REMOVED_AS_FALSE_GATE",
+      "runtimeFileReadback": "NOT_YET_PROVEN"
+    },
+    "b8": {
+      "septemberPaidExternallyByPaulaOn": "2026-10-31",
+      "septemberPaidConfirmedAdmin": 0,
+      "reconciliation": "OPEN_NO_PROVIDER_WRITES",
+      "october": "UNPAID",
+      "november": "ACCRUAL"
+    },
+    "b7": {
+      "preserved": [
+        "RUN2177",
+        "RUN1553",
+        "RUN2216",
+        "PAULA_R05_R06"
+      ],
+      "uncovered": [
+        "APPLICATION_APPROVAL_TO_VISIT_ASSIGNMENT_PENDING_HR",
+        "R22_SHOPPER_NOTIFICATION_READ_ROUTE_UNREAD",
+        "RESERVATION_WITH_VISITID_TO_VISIT"
+      ],
+      "status": "INTEGRAL_HOLD_ONLY_THREE_TARGETED_EDGES"
+    },
+    "d08": "27_OF_27_MOCK_PASS_REAL_LEARNER_PROGRESS_ACK_UNPROVEN",
+    "accounting": {
+      "bBlocksPass": 3,
+      "bBlocksTotal": 9,
+      "fullDomainMatches": 5,
+      "fullDomainTotal": 21,
+      "notAdditive": true
+    },
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_CHROME_INTEGRAL_GAP_READBACK_20261110.json",
+    "receiptBlob": "a3f91e3eb1239b2775122ed31d2c840af69d1b6d",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V291.json",
+    "matrixBlob": "10045f2311e4ba1a3010d75a33e7e7c177af1052",
+    "descriptorBlob": "c065be25917ebcb260c70c0606678438e2c1a778",
+    "nonMutation": {
+      "code": 0,
+      "deploy": 0,
+      "hr": 0,
+      "finance": 0,
+      "realLearnerProgress": 0,
+      "production": 0
+    },
+    "production": "DO_NOT_TOUCH",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false
   }
 }
