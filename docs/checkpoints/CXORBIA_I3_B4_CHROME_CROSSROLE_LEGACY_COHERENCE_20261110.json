@@ -90,11 +90,11 @@
     "legacyOracle": "Production legacy DO_NOT_TOUCH"
   },
   "nextExactActions": [
-    "Read-only exact legacy certification provenance and review decision mapping for the 14 linked shoppers, preserving approved history.",
-    "Reconcile per-bank required policy: distinguish a valid project-level legacy carryover from independently required new bank certification, using existing source contract and no unintended cross-bank eligibility.",
-    "If a project-scoped positive approval exists with eligible provenance, implement the exact protected carryover adjudication owner; never infer current eligibility from presentation alone.",
-    "Conduct a controlled synthetic or explicitly authorized DEV Shopper attempt for 15Q/8Q, backend grade ACK, readback after reload, Admin versus Shopper and Mi Día/Mis Visitas cross-check.",
-    "Collect Paula's B4 human PASS on current artifact only after those E2E scenarios; then record BLOCK_LOCKED. Keep 5/21 MATCH and Gate20/21/I4 HOLD until actual proof."
+    "First repair the cross-module source selection defect with focused QA on the single cumulative recovery branch and atomically update all canonical governance pointers (VRM-322 proposed, not registered here).",
+    "Read the exact required and gate flags of the published 15Q and main 8Q banks; do not downgrade either obligation to produce a false pass.",
+    "Read-only exact legacy certification provenance and review decision mapping for the 14 linked shoppers; adjudicate only positively evidenced carryovers.",
+    "Run controlled DEV Shopper attempt and provider-ACK/reload Admin-Shopper-Mi Día-Mis Visitas E2E; preserve historical results.",
+    "Seek Paula B4 human PASS only after proof; retain Gate20/Gate21/I4 HOLD and production DO_NOT_TOUCH."
   ],
   "candidateCreated": false,
   "productEdited": false,
@@ -104,7 +104,7 @@
   "financialWrites": false,
   "testAttemptsCreated": 0,
   "testAttemptsDeleted": 0,
-  "status": "B4_FOCAL_READBACK_PASS__FULL_MODULE_NOT_YET_CERTIFIED",
+  "status": "B4_CROSSMODULE_SOURCE_DEFECT_IDENTIFIED__SOURCE_FIX_PENDING_ATOMIC_CANONICAL_GATE",
   "multipleCertificationBankContract": {
     "sourceTest": "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs lines 322-338",
     "rule": "A passing attempt in one published certification bank DOES NOT satisfy another distinct published bank in the same project.",
@@ -113,5 +113,20 @@
     "defaultShopperSelection": "A distinct 15Q Banco IA can be selected independently from 8Q main. Not proof that either is unnecessary.",
     "adminStatusCaveat": "Admin aggregate 'Certificada' cannot by itself demonstrate completion of each currently required bank; UI should show bank-specific requirement state and cross-module mapping.",
     "classification": "DESIGNED_INDEPENDENT_BANK_GATE__DO_NOT_WEAKEN_FOR_SHORTCUT"
+  },
+  "crossModuleRootCauseSourceProof": {
+    "classification": "P0_PROJECT_CERTIFICATION_GATE_DERIVED_FROM_UI_SELECTED_BANK",
+    "observationScope": "SOURCE_PROVEN__ROLE_UI_IMPACT_POTENTIAL_NOT_FULL_E2E_REPRODUCED",
+    "exactSourceOwners": [
+      "app/modules/cert.js bank() selects first published bank after sorting by certificationName; changes selection through window.CX_CERT_SELECTED_ID",
+      "app/modules/midia.js lines 196-198 reads CX_CERT_SELECTED_ID and invokes sessionDecision on only that bank",
+      "app/modules/misvisitas.js lines 119-124 uses the same UI-selected-bank decision for project progress and schedule readiness",
+      "app/core/backend-certifications.js durableCurrent requires matching bankResourceId for a protected attempt; approved bank A cannot satisfy bank B"
+    ],
+    "defect": "A shopper's project gate can vary with Certificación dropdown selection. The dropdown must only choose which examination to show, never determine whether all actual project requirements are met.",
+    "independentBankSecurityPreserved": "Passing one separately required published bank must NOT grant another. I3 source test explicitly enforces this.",
+    "proposedSourceCorrection": "Add a fail-closed projectDecision(banks,projectId) that evaluates ALL published/confirmed required banks independently; empty active-bank set is HOLD, all optional yields No requerida. Call it from Mi Día and Mis Visitas, leaving per-bank Shopper exam and protected attempt validation unchanged. Add tests for two required banks, one optional, selector independence, historical carryover and recertification.",
+    "governanceRequirement": "Register the next VRM in the cumulative ledger and atomically align source SHA/tree, module truth and execution pointer in this SAME branch; run canonical I3 CI, deploy only to DEV when authorized and read back both Chrome roles. No standalone source edit or second candidate.",
+    "publishedBankRequiredFlags": "NOT_VERIFIED_FROM_AUTHENTICATED_ADMIN_CONFIG; do not infer both must be completed until source metadata is read."
   }
 }
