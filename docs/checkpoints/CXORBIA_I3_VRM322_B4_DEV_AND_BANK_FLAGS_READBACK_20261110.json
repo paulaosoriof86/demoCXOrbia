@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm322.b4.dev-hosting-and-bank-flags.v1",
+  "observedDateLocal": "2026-11-10",
+  "timeZone": "America/Guatemala",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "canonicalCandidateSame": true,
+  "newCandidateCreated": false,
+  "product": {
+    "sourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+    "sourceTree": "8075c43e10763ed672ec2f1742a09b04e5ffb40e",
+    "governanceMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V290.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V605_2026-11-10.json"
+  },
+  "canonicalCi": {
+    "runNumber": 2334,
+    "runId": 42776056780,
+    "decision": "SUCCESS"
+  },
+  "materialization": {
+    "runNumber": 2335,
+    "runId": 42776398764,
+    "jobId": 129696007601,
+    "decision": "PASS_I3_CURRENT_SOURCE_HOSTING_DEV_ONLY",
+    "hostingBefore": "sites/cxorbia-backend-dev/versions/04f5eb9dfa5df499",
+    "hostingAfter": "sites/cxorbia-backend-dev/versions/ad5eb641dc8f87af",
+    "runtimeRevisionUnchanged": "cxorbia-live-hr-dev-00368-9tb",
+    "runtimeDigestUnchanged": "sha256:1203b1fcfa92608217f0acf85abb872f4af54b206a8334a52a5e3aec66cf6785",
+    "artifactId": 13743853043,
+    "artifactDigest": "sha256:117fdcee572917bdfe2b7d76b4f2f7e0c7afbcac883fe501fce4f7aa05a56dd7",
+    "sourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+    "sourceTree": "8075c43e10763ed672ec2f1742a09b04e5ffb40e",
+    "productionIndexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+    "productionUnchanged": true,
+    "hrWrites": 0,
+    "firestoreDirectWrites": 0,
+    "rulesDeploys": 0,
+    "cloudRunDeploys": 0,
+    "productionDeploys": 0
+  },
+  "readOnlyBankDiagnostic": {
+    "runNumber": 2337,
+    "runId": 42777234950,
+    "jobId": 129698783251,
+    "decision": "SUCCESS_READONLY",
+    "artifactId": 13744053606,
+    "artifactDigest": "sha256:8ff845713c8e74b5f5a4a4f06eb9f26cd9c9531bc41f9ef87768936aa4f38b0c",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "octoberPublished": [
+      {
+        "id": "certbank-cinepolis-cinepolis-2026-10",
+        "questions": 8,
+        "requiredExplicit": null,
+        "effectiveRequired": true,
+        "gate": 80
+      },
+      {
+        "id": "certbank-cinepolis-cinepolis-2026-10-ai-3654d624896f",
+        "questions": 15,
+        "label": "Banco IA pendiente de revisión",
+        "requiredExplicit": null,
+        "effectiveRequired": true,
+        "gate": 80
+      }
+    ],
+    "explanation": "Both banks default to required because neither has explicit required=false; operator policy intent unverified.",
+    "writes": 0,
+    "shopperDataExported": false,
+    "answerKeysExported": false
+  },
+  "chromeExtensionFunctionalReadback": {
+    "browserFamily": "Chrome",
+    "origin": "https://cxorbia-backend-dev.firebaseapp.com",
+    "authRestoredOnReload": true,
+    "shopper": "Julissa Flores",
+    "period": "NOV 2026",
+    "activeVisits": 1,
+    "historicalVisits": 9,
+    "miDiaCertificationBefore": "Pendiente",
+    "miDiaAfterSelectingMain": "Pendiente",
+    "miDiaAfterSelectingAi": "Pendiente",
+    "selectedMainShowsQuestions": 8,
+    "selectedAiShowsQuestions": 15,
+    "misVisitasCertification": "Pendiente",
+    "misVisitasScheduleBlockedBy": "Instructivo not confirmed and certification not eligible",
+    "attemptSubmitted": false,
+    "providerWrite": false,
+    "proofLimit": "A pending shopper shows selector independence but cannot substitute for passed-shopper protected attempt and cross-role readback."
+  },
+  "legacyContinuity": {
+    "historicalAttemptsObserved": 40,
+    "historicalApprovedLegacy": 38,
+    "linkedShoppers": 14,
+    "individualEligibilityNotMassGranted": true,
+    "stivenMainExactProtectedScore": 100,
+    "julissaHistoricalRecordsPendingReview": 3,
+    "completeLegacyParityClaimed": false
+  },
+  "security": {
+    "production": "DO_NOT_TOUCH",
+    "productionTouched": false,
+    "devOnly": true,
+    "hrWrites": 0,
+    "paymentsWritten": 0,
+    "newAccountsCreated": 0,
+    "certificationsWritten": 0
+  },
+  "decision": "SOURCE_AND_DEV_SERVING_PASS__BANK_POLICY_AMBIGUITY_HOLD__B4_NOT_CERTIFIED",
+  "humanAcceptance": "PENDING_PAULA_B4_EXPLICIT_PASS",
+  "nextExactAction": "Reconcile approved policy for two simultaneously published banks; if only main mandatory, set second bank required=false via protected DEV configure with ACK/readback and preserve historical approvals; otherwise prove both required and adjudicate historical per exact bank. Then execute protected Shopper attempt, reload Admin/Shopper/Mi Día/Mis Visitas, obtain B4 human receipt. Gate20/Gate21/I4 remain HOLD."
+}
