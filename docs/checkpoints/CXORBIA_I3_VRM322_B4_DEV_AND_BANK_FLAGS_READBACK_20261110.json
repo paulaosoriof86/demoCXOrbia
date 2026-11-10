@@ -168,5 +168,27 @@
     "changesToProvider": 0,
     "changesToBanks": 0,
     "changesToRecertifications": 0
+  },
+  "b4FunctionalAcceptance20261110": {
+    "governance": "Paula 2026-11-10 clarified the current banks are tests and future recertification will be for all shoppers; functional module B4 gate is distinct from any real shopper being certified",
+    "moduleMayCloseWithZeroRealCurrentBankPasses": true,
+    "criteria": [
+      "Admin create/import question bank in DEV with unique identity and source references",
+      "Edit/review/version persist with ACK, reload and no auto-publication",
+      "Publish reviewed bank via provider and confirm effective Shopper availability",
+      "Configure required/gate via Admin with server ACK/reload, including Option A for current AI test bank",
+      "Shopper QA attempt server-graded and persisted under exact bank, with feedback, history, reload; no false grant from a different bank",
+      "Request project-wide recertification with designated QA scope and verify that previously certified AND never-certified shoppers are included; do not issue mass operational recertification until Paula creates final banks",
+      "Retire QA bank with auditable tombstone and preserve historical attempts",
+      "Negative roles, project/period isolation, no cross-tenant grants, no unapproved HR/payment/prod writes",
+      "Authenticated Chrome Admin+Shopper visual evidence and Paula B4 PASS"
+    ],
+    "doNotTreatAsBlocker": [
+      "No current Shopper has approved all optional/test banks",
+      "Legacy historical approvals have not been individually adjudicated"
+    ],
+    "knownUiIssue": "Current recertification option is inaccurately labeled 'Todos los certificados del proyecto' though backend scope all includes never-certified; wording correction required for clarity",
+    "production": "DO_NOT_TOUCH",
+    "currentDecision": "B4_HOLD_E2E_NOT_YET_EXECUTED"
   }
 }
