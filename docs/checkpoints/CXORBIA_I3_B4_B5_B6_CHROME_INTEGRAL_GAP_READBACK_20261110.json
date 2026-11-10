@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "cxorbia.i3.b4-b5-b6.chrome-integral-gap-readback.v1",
+  "dateLocal": "2026-11-10",
+  "timezone": "America/Guatemala",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "productSourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+  "productTreeAuthority": "8075c43e10763ed672ec2f1742a09b04e5ffb40e",
+  "devHostingVersion": "sites/cxorbia-backend-dev/versions/ad5eb641dc8f87af",
+  "environment": "https://cxorbia-backend-dev.web.app",
+  "browser": "CONNECTED_USER_CHROME_EXTENSION",
+  "session": {
+    "actor": "Admin",
+    "project": "Cinepolis",
+    "period": "NOV_2026",
+    "authenticated": true,
+    "shopperIndependentSession": "NOT_AVAILABLE_AUTHENTICATED__SEPARATE_DEV_FIREBASEAPP_TAB_AT_LOGIN",
+    "intermittentFocusTimeout": true,
+    "sensitiveInputSent": false
+  },
+  "b4AcademiaAdminReadOnly": {
+    "consultoraCourses": 14,
+    "consultoraLessons": 67,
+    "shopperRecipientCourses": 7,
+    "shopperRecipientLessons": 27,
+    "adminOwnProgressDisplayed": "0_PERCENT_0_COMPLETIONS",
+    "filterSwitch": "PASS_UI_SHOPPER_CATALOG_RENDERED",
+    "ownShopperProgressWriteAndProviderAck": "NOT_EXECUTED_NOT_PROVEN",
+    "independentShopperReloadAndHistory": "NOT_EXECUTED_NOT_PROVEN",
+    "integralDomainPromotion": false
+  },
+  "b5Benefits": {
+    "newReadback": "NOT_EXECUTED_IN_THIS_CHROME_PASS",
+    "priorFunctionalAcceptance": "PRESERVED_PASS_FROM_20261109_SHOPPER_AND_158_SOURCE_GUARDS",
+    "c09C10IndependentAdminShopperCsvRowParity": "NOT_NEWLY_PROVEN"
+  },
+  "b6AdminReadOnly": {
+    "dashboardPeriod": "NOV_2026",
+    "visitsTotal": 44,
+    "visitsGuatemala": 34,
+    "visitsHonduras": 10,
+    "assigned": 33,
+    "unassigned": 11,
+    "realized": 12,
+    "pendingQuestionnaire": 1,
+    "midiaAgendadas": 11,
+    "midiaPorAprobar": 0,
+    "midiaRealizadas": 12,
+    "midiaSinAsignar": 11,
+    "midiaCalendarObservation": "PERIOD_NOV_2026_WITH_CALENDAR_OCT_2026_ON_REENTRY__NEXT_ARROW_SHOWS_NOV_2026__FURTHER_UX_EXPECTATION_CONFIRMATION_REQUIRED_BEFORE_CLASSIFYING_DEFECT",
+    "independentHrRevisionAndShopperActor": "NOT_PROVEN_IN_THIS_PASS",
+    "integralDomainPromotion": false
+  },
+  "certificationAccounting": {
+    "canonicalMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V291.json",
+    "b4B5B6FunctionalPassPreviouslyPreserved": true,
+    "scopedFunctionalBlockPass": "3_OF_9",
+    "completeDomainMatch": "5_OF_21",
+    "notAdditive": true,
+    "priorityAfterPaulaDirective": "DO_NOT_PROCEED_B7_UNTIL_B4_B5_B6_INTEGRAL_OWNER_PROOFS_ARE_RESOLVED_OR_EXPLICITLY_SCOPED",
+    "remainingProofs": [
+      "D08_ACADEMY_SEPARATE_SHOPPER_PROGRESS_PROVIDER_ACK_RELOAD",
+      "C09_C10_BENEFITS_ADMIN_SHOPPER_CSV_ROW_CURRENCY_PERIOD_INDEPENDENT_PARITY",
+      "B1_MIDIA_AND_B11_HR_SAME_REVISION_FULL_OWNER_REGRESSION"
+    ]
+  },
+  "nonProductImpact": {
+    "codeChanges": 0,
+    "devDeploys": 0,
+    "productionDeploys": 0,
+    "providerWrites": 0,
+    "paymentWrites": 0,
+    "trainingProgressWrites": 0,
+    "massRecertifications": 0,
+    "production": "DO_NOT_TOUCH",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false
+  }
+}
