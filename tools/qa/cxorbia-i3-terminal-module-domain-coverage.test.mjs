@@ -18,6 +18,34 @@ test('C3 21-domain inventory is canonical, unique and exact (historical 20 + bra
   assert.throws(()=>assertCanonicalModuleCoverage([...modules.slice(0,20),modules[0]]),/C3_CANONICAL_21_DOMAIN_SET/);
   assert.throws(()=>assertCanonicalModuleCoverage([...modules.slice(0,20),{domain:'other',classification:'MATCH'}]),/C3_CANONICAL_21_DOMAIN_SET/);
 });
+test('B4-B6 prior functional PASS stays visible without fabricating 21-domain MATCH',()=>{
+  const a=current.functionalBlockCertificationAccounting20261110;
+  assert.ok(a,'B4_B5_B6_ACCOUNTING_MISSING_FROM_CURRENT_CANONICAL_MATRIX');
+  const receipt=JSON.parse(fs.readFileSync(a.source,'utf8'));
+  const acceptedBlocks=Object.values(receipt.blocks).filter(x=>x.blockFunctionalLocked===true);
+  const domainMatches=modules.filter(x=>x.classification==='MATCH');
+  assert.equal(a.functionalBlockPassCount,acceptedBlocks.length);
+  assert.equal(a.functionalBlockPassCount,a.certifiedFunctionalBlocks.length);
+  assert.deepEqual(a.certifiedFunctionalBlocks.slice().sort(),[
+    'B4_CERTIFICACIONES','B5_BENEFICIOS','B6_DASHBOARD_VISITAS_DETALLE'
+  ].sort());
+  assert.equal(a.domainMatchCount,domainMatches.length);
+  assert.equal(a.domainPendingCount,modules.length-domainMatches.length);
+  assert.equal(a.domainCount,21);
+  assert.equal(a.falsePromotionForbidden,true);
+  assert.equal(a.currentProductSourceSha,d.productSourceSha);
+  const expectedOwners={
+    certifications:'app/modules/academia.js',
+    benefits:'app/modules/beneficios.js',
+    'dashboard-operation':'app/modules/midia.js'
+  };
+  for(const [domain,owner] of Object.entries(expectedOwners)){
+    const m=modules.find(x=>x.domain===domain);
+    assert.ok(m?.owners.includes(owner),`FROZEN_OWNER_MISSING:${domain}:${owner}`);
+    assert.equal(a.affectedDomainCrosswalk[domain].domainStatus,m.classification);
+    assert.equal(a.affectedDomainCrosswalk[domain].blockFunctionalCertified,true);
+  }
+});
 test('C3 never upgrades a pending domain from file-byte parity or an historical 20/20 receipt',()=>{
   const pending=modules.filter(x=>x.classification!=='MATCH');
   if(pending.length)assert.throws(()=>assertAllModulesAccepted(modules),/C3_UNCERTIFIED_MODULES/);
