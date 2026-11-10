@@ -738,14 +738,31 @@ CX.module('cert', ({role,data,ui})=>{
         <label class="lbl">% mínimo para aprobar</label><input class="inp" id="gtMin" type="number" min="1" max="100" value="${bank.gate||80}" style="margin-bottom:10px">
         <label class="flex" style="gap:8px;font-size:12.5px;color:var(--t1);margin-bottom:14px"><input type="checkbox" id="gtReq" ${bank.required===false?'':'checked'}> Obligatoria antes de ejecutar visitas cuando corresponda</label>
         <div class="between"><button class="btn btn-ghost btn-sm" id="gtWithdraw" style="color:var(--red)">Retirar banco</button><button class="btn btn-pr btn-sm" id="gtSave">Guardar con ACK</button></div>
+          <div id="gtWithdrawConfirmation" hidden role="group" aria-label="Confirmar retiro de banco" style="margin-top:12px;padding:12px;border:1px solid var(--red);border-radius:8px">
+            <p role="alert" style="font-size:12.5px;margin-bottom:10px">Este banco dejará de estar disponible. Los intentos históricos se conservan. Escribe RETIRAR para confirmar.</p>
+            <label class="lbl" for="gtWithdrawPhrase">Confirmación de retiro</label>
+            <input class="inp" id="gtWithdrawPhrase" type="text" autocomplete="off" placeholder="RETIRAR" style="margin-bottom:10px">
+            <div class="between"><button class="btn btn-ghost btn-sm" id="gtWithdrawCancel">Cancelar</button><button class="btn btn-pr btn-sm" id="gtWithdrawConfirm" disabled>Confirmar retiro con ACK</button></div>
+          </div>
       `,{onMount:(ov,close)=>{
         ov.querySelector('#gtSave').addEventListener('click',async()=>{
           const btn=ov.querySelector('#gtSave'),next=Object.assign({},bank,{gate:Math.max(1,Math.min(100,+ov.querySelector('#gtMin').value||80)),required:ov.querySelector('#gtReq').checked,updatedAt:new Date().toISOString()});delete next.__resourceId;delete next.__resourceVersion;
           btn.disabled=true;try{const saved=CX.certStore.connected()?await CX.certStore.lifecycle('configure',p.id,bank,{gate:next.gate,required:next.required}):await CX.certStore.save(p.id,next,bank.certificationId);if(!(saved?.providerAck===true&&saved?.committed===true))throw new Error('CERT_GATE_ACK_REQUIRED');close();ui.toast('Requisito guardado con ACK remoto.','ok');CX.router.nav('cert');}catch(error){btn.disabled=false;ui.toast('No se guardó el requisito.','warn');}
         });
-        ov.querySelector('#gtWithdraw').addEventListener('click',async()=>{
-          if(!confirm('¿Retirar este banco? Los intentos históricos se conservan.'))return;const btn=ov.querySelector('#gtWithdraw');btn.disabled=true;
-          try{const removed=await CX.certStore.clear(p.id,bank.__resourceId||bank.certificationId);if(!(removed?.providerAck===true&&removed?.committed===true))throw new Error('CERT_BANK_DELETE_ACK_REQUIRED');window.CX_CERT_SELECTED_ID='';close();ui.toast('Banco retirado con ACK remoto.','ok');CX.router.nav('cert');}catch(error){btn.disabled=false;ui.toast('No se retiró el banco.','warn');}
+        const withdraw=ov.querySelector('#gtWithdraw'),withdrawPanel=ov.querySelector('#gtWithdrawConfirmation'),withdrawPhrase=ov.querySelector('#gtWithdrawPhrase'),withdrawConfirm=ov.querySelector('#gtWithdrawConfirm');
+        withdraw.addEventListener('click',()=>{
+          withdrawPanel.hidden=false;withdraw.disabled=true;withdrawPhrase.focus();
+        });
+        ov.querySelector('#gtWithdrawCancel').addEventListener('click',()=>{
+          withdrawPanel.hidden=true;withdraw.disabled=false;withdrawPhrase.value='';withdrawConfirm.disabled=true;withdraw.focus();
+        });
+        withdrawPhrase.addEventListener('input',()=>{
+          withdrawConfirm.disabled=withdrawPhrase.value.trim()!=='RETIRAR';
+        });
+        withdrawConfirm.addEventListener('click',async()=>{
+          if(withdrawPhrase.value.trim()!=='RETIRAR')return;
+          withdrawConfirm.disabled=true;
+          try{const removed=await CX.certStore.clear(p.id,bank.__resourceId||bank.certificationId);if(!(removed?.providerAck===true&&removed?.committed===true))throw new Error('CERT_BANK_DELETE_ACK_REQUIRED');window.CX_CERT_SELECTED_ID='';close();ui.toast('Banco retirado con ACK remoto.','ok');CX.router.nav('cert');}catch(error){withdrawConfirm.disabled=false;ui.toast('No se retiró el banco.','warn');}
         });
       },dismissOnBackdrop:false,dismissOnEscape:false});
     });
