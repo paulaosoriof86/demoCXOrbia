@@ -12006,5 +12006,18 @@
     "moduleTruth": "5_OF_21_INTEGRAL_MATCH_UNCHANGED",
     "production": "DO_NOT_TOUCH",
     "next": "Exact September visitId/country/currency/amount/source reconciliation then authenticated DEV Admin/Shopper parity; B6 read-only preparatory checks may continue without claiming B5 closure"
+  },
+  "b6DashboardVisitsDetailSourceRegression20261110": {
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_B6_DASHBOARD_VISITS_DETAIL_SOURCE_9_20261110.json",
+    "preReceiptHead": "4b23b034c684028cadf885e1d4b44f84485a3806",
+    "productSourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+    "localSourceTests": "9_OF_9_PASS__DASHBOARD_ASSIGNMENT_FACETS_VISITS_AVAILABILITY_DETAIL_HANDLER_IDEMPOTENCY",
+    "authenticatedDevFunctionalVisual": "HOLD_CONNECTED_CHROME_CDP_FOCUS_TIMEOUT",
+    "hrSameRevision": "NOT_REPROVED",
+    "humanAcceptance": "PENDING_B6_FULL",
+    "b6BlockLocked": false,
+    "moduleTruth": "5_OF_21_INTEGRAL_MATCH_UNCHANGED",
+    "production": "DO_NOT_TOUCH",
+    "next": "B6 GT/HN Admin and Shopper authenticated DEV Dashboard/Visitas/Detalle actions/readback and current HR revision before Paula block visual PASS"
   }
 }
