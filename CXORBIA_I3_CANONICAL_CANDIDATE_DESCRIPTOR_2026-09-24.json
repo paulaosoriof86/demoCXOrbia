@@ -8,7 +8,7 @@
   "productTreeAuthority": "8075c43e10763ed672ec2f1742a09b04e5ffb40e",
   "predecessorProductSourceSha": "56d5ed08e6b91854333d80b69645607615707a26",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V605_2026-11-10.json",
-  "findingsLedgerExpectedGitBlob": "1399976a6ba9db565ea853e5c00f370d22c9b1ec",
+  "findingsLedgerExpectedGitBlob": "30165afe423d6f4eecbf8c0538b264a6031bbae6",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V290.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -3029,7 +3029,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "0814412acf933286382feb3efcb73aaeceb56654",
+  "moduleTruthExpectedGitBlob": "ab84f306dc789106a5a9d6e7452128245de864a1",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -21207,6 +21207,10 @@
       "decision": "SUCCESS",
       "canonicalCandidateAuthority": "SUCCESS",
       "sourceCodeUnchanged": true
-    }
+    },
+    "governanceMatrixBlob": "ab84f306dc789106a5a9d6e7452128245de864a1",
+    "governanceLedgerBlob": "30165afe423d6f4eecbf8c0538b264a6031bbae6",
+    "governanceAppendOnlySynchronized": true,
+    "immutableHistoricalMaterializationSealsUnchanged": true
   }
 }

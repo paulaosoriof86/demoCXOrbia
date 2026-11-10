@@ -1229,7 +1229,7 @@
   },
   "moduleTruthAuthority": {
     "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V290.json",
-    "gitBlob": "0814412acf933286382feb3efcb73aaeceb56654",
+    "gitBlob": "ab84f306dc789106a5a9d6e7452128245de864a1",
     "sourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
     "allModulesMatch": false,
     "phaseAComplete": false
@@ -3231,7 +3231,7 @@
   "activeShockModuleTruth": {
     "sourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V290.json",
-    "matrixBlob": "0814412acf933286382feb3efcb73aaeceb56654",
+    "matrixBlob": "ab84f306dc789106a5a9d6e7452128245de864a1",
     "classificationCounts": {
       "MATCH": 5,
       "SOURCE_FIXED_DEV_MATERIALIZED_ADMIN_B10_FOCAL_PASS_PENDING_SHOPPER_ROLE_PROVIDER_LINK": 1,
@@ -6028,7 +6028,7 @@
     "production": false
   },
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V605_2026-11-10.json",
-  "findingsLedgerExpectedGitBlob": "1399976a6ba9db565ea853e5c00f370d22c9b1ec",
+  "findingsLedgerExpectedGitBlob": "30165afe423d6f4eecbf8c0538b264a6031bbae6",
   "nextFindingId": "VRM-323",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -11961,6 +11961,10 @@
       "decision": "SUCCESS",
       "canonicalCandidateAuthority": "SUCCESS",
       "sourceCodeUnchanged": true
-    }
+    },
+    "governanceMatrixBlob": "ab84f306dc789106a5a9d6e7452128245de864a1",
+    "governanceLedgerBlob": "30165afe423d6f4eecbf8c0538b264a6031bbae6",
+    "governanceAppendOnlySynchronized": true,
+    "immutableHistoricalMaterializationSealsUnchanged": true
   }
 }
