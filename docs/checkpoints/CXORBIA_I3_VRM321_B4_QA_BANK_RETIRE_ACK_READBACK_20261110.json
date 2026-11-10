@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm321.b4.synthetic-bank-retire.provider-ack.v1",
+  "id": "CXORBIA_I3_VRM321_B4_QA_BANK_RETIRE_ACK_READBACK_20261110",
+  "dateLocal": "2026-11-10",
+  "timezone": "America/Guatemala",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "productSourceSha": "56d5ed08e6b91854333d80b69645607615707a26",
+  "productTree": "85308ea5987540880fc84a81b052d54def5cbbb2",
+  "controlHeadBeforeReceipt": "84f1dd8fa72ec744f5d445f0803d4da7270813cd",
+  "devHostingRunId": 42765784723,
+  "devHostingVersion": "sites/cxorbia-backend-dev/versions/04f5eb9dfa5df499",
+  "runtimeRevisionUnchanged": "cxorbia-live-hr-dev-00368-9tb",
+  "actor": "Administración",
+  "project": "Cinépolis",
+  "period": "NOV 2026",
+  "action": "Archive ONLY QA DEV B4 20261109 NO PUBLICAR (published, 15 questions, threshold 80%)",
+  "userAuthorization": "Paula confirmed immediately before exact action on 2026-11-10",
+  "sourceConfirmationControl": "In-app two-step action with required exact RETIRAR phrase; no native JS confirm.",
+  "providerAckEvidence": "app/modules/cert.js exact product source only closes modal and navigates after CX.certStore.clear returns providerAck===true AND committed===true; visible bank removed and remained absent after fresh full-page reload",
+  "providerAckNetworkPayloadCaptured": false,
+  "before": {
+    "bankCount": 5,
+    "syntheticBankPresent": true,
+    "originalBanks": 4,
+    "historicalAttempts": 40,
+    "passed": 38,
+    "failed": 2,
+    "shoppersLinked": 14
+  },
+  "after": {
+    "bankCount": 4,
+    "syntheticBankPresent": false,
+    "originalBankNames": [
+      "Banco IA pendiente de revisión · Pendiente de revisión · cinepolis-2026-09",
+      "Banco IA pendiente de revisión · Publicado · cinepolis-2026-10",
+      "main · Pendiente de revisión · cinepolis-2026-09",
+      "main · Publicado · cinepolis-2026-10"
+    ],
+    "historicalAttempts": 40,
+    "passed": 38,
+    "failed": 2,
+    "shoppersLinked": 14,
+    "fullPageReloadReadback": true
+  },
+  "browserAuthenticatedAdmin": true,
+  "visualScreenshotObserved": true,
+  "screenshotSha256": "NOT_COMPUTED",
+  "testStatus": "PASS_FOCAL_REAL_DEV_ADMIN_QA_SOFT_ARCHIVE_PROVIDER_ACK_LOGIC_AND_RELOAD",
+  "humanVisualModuleB4": "PENDING",
+  "remaining": [
+    "Shopper protected 15Q/8Q real E2E",
+    "Re-certification eligibility and history readback",
+    "B4 full human PASS receipt"
+  ],
+  "phaseAStatus": "HOLD_5_OF_21_MATCH",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4": "HOLD",
+  "production": "DO_NOT_TOUCH",
+  "paymentsChanged": false,
+  "hrWritten": false
+}
