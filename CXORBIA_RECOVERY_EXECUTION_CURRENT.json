@@ -11915,5 +11915,44 @@
     "canonicalCi": "PENDING",
     "devPublished": false,
     "production": false
+  },
+  "verifiedCurrent20261110": {
+    "authority": "PAULA_20261110_OPTION_A_ALL_SHOPPERS",
+    "proofPath": "docs/checkpoints/CXORBIA_I3_VRM322_B4_DEV_AND_BANK_FLAGS_READBACK_20261110.json",
+    "proofBlob": "0fa8316f19b76ec8e8cad86e6bf96224645b72f8",
+    "sameBranch": "recovery/cxorbia-phase-a-20260831",
+    "productSourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+    "productTree": "8075c43e10763ed672ec2f1742a09b04e5ffb40e",
+    "canonicalCi": {
+      "runNumber": 2334,
+      "runId": 42776056780,
+      "result": "SUCCESS"
+    },
+    "latestVerifiedHostingOnlyDev": {
+      "runNumber": 2335,
+      "runId": 42776398764,
+      "artifactId": 13743853043,
+      "artifactDigest": "sha256:117fdcee572917bdfe2b7d76b4f2f7e0c7afbcac883fe501fce4f7aa05a56dd7",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/ad5eb641dc8f87af",
+      "sourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+      "productionUnchanged": true,
+      "providerWrites": 0
+    },
+    "lastBankReadback": {
+      "runNumber": 2338,
+      "runId": 42778239151,
+      "requiredPublishedTestBanks": 2,
+      "distinctApprovedBoth": 0,
+      "readOnly": true
+    },
+    "decision": "ALL_HISTORIC_PRESERVED__ALL_SHOPPERS_FUTURE_RECERT__CURRENT_BANKS_TEST__OPTION_A_ON_15Q",
+    "testBankChangeStatus": "AUTHORIZED_NOT_APPLIED_PENDING_CONNECTED_ADMIN_PROVIDER_ACK",
+    "bulkRecertificationStatus": "FUTURE_AFTER_FINAL_BANK_PUBLICATION_NOT_ISSUED",
+    "humanB4": "HOLD_PENDING_CONNECTED_ADMIN_SHOPPER_E2E_AND_PAULA_PASS",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V605_2026-11-10.json",
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V290.json",
+    "governanceNote": "Historical postDeployRunSeal/currentDevMaterialization/pendingDevSuccessor fields are immutable predecessor seals; do NOT interpret as latest Hosting readback. This additive snapshot carries current DEV source/Hosting and Paula business decision without falsifying immutable legacy seals.",
+    "phaseAComplete": false,
+    "production": "DO_NOT_TOUCH"
   }
 }
