@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM322_SOURCE_PROVEN_B4_CORE_DEV_E2E_PASS_HUMAN_HOLD",
+  "status": "HOLD_I3_B4_B5_B6_FUNCTIONAL_PASS_3_OF_9__INTEGRAL_DOMAIN_MATCH_5_OF_21",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -9,11 +9,11 @@
   "predecessorProductSourceSha": "56d5ed08e6b91854333d80b69645607615707a26",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V605_2026-11-10.json",
   "findingsLedgerExpectedGitBlob": "30165afe423d6f4eecbf8c0538b264a6031bbae6",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V290.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V291.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM322_CANONICAL_CI_DEV_AND_CROSSROLE_TWO_BANK_LEGACY_E2E_HUMAN_B4_PENDING",
+  "activeBlocker": "I3_21_DOMAIN_FULL_OWNER_E2E_SECURITY_AND_GATE20_GATE21_PENDING__B4_B5_B6_SCOPED_FUNCTIONAL_ALREADY_ACCEPTED",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -3029,7 +3029,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "ab84f306dc789106a5a9d6e7452128245de864a1",
+  "moduleTruthExpectedGitBlob": "3cbc924986a48f2b09ffa2978707d3f3206943c6",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -21230,5 +21230,26 @@
     ],
     "sourceCodeUnchanged": true,
     "auditLedgerLargeFile": "UNCHANGED_EXISTING_V605_SHA_30165AFE__LATEST_E2E_PROOF_IS_LINKED_CHECKPOINT"
+  },
+  "functionalBlockDomainReconciliation20261110": {
+    "currentMatrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V291.json",
+    "currentMatrixBlob": "3cbc924986a48f2b09ffa2978707d3f3206943c6",
+    "blockReceiptPath": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_FUNCTIONAL_BLOCK_ACCEPTANCE_20261110.json",
+    "functionalBlockPass": "B4_B5_B6__3_OF_9_SCOPED_FUNCTIONAL_BLOCKS",
+    "integralDomainMatch": "5_OF_21_FULL_OWNER_DOMAINS__NOT_ADDITIVE_WITH_FUNCTIONAL_BLOCKS",
+    "pendingIntegralCoverage": {
+      "certifications": "D08_ACADEMIA_PROVIDER_ACK_AND_ROLE_ISOLATION",
+      "benefits": "C09_C10_INDEPENDENT_ADMIN_SHOPPER_ROW_CURRENCY_PERIOD_EXPORT_PARITY",
+      "dashboard-operation": "B1_MIDIA_OWNER_AND_B11_SAME_HR_REVISION_PARITY"
+    },
+    "accountingRule": "ONE_V291_MATRIX_SHOWS_BOTH_DENOMINATORS_WITHOUT_FABRICATING_8_OF_21_DOMAIN_MATCH",
+    "productSourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+    "productTree": "8075c43e10763ed672ec2f1742a09b04e5ffb40e",
+    "frozenOwnersAndHistoricalEvidencePreserved": true,
+    "currentRuntimeOrProductionWrites": 0,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "production": "DO_NOT_TOUCH"
   }
 }
