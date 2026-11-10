@@ -21808,16 +21808,25 @@
   },
   "b5OwnerExportAcceptanceCorrected20261110": {
     "shopper": "CSV_USER_SCREENSHOT_DOWNLOAD_PASS_332_BYTES_CONTENT_READBACK_NOT_PROVEN",
-    "admin": "PDF_REPORTKIT_EXCLUDES_FINANCIAL_UNRESOLVED_ROWS",
+    "admin": "OCT_REPORTKIT_PREVIEW_PASS_ONE_VALIDATED_ROW_JULISSA_Q205_42_REVIEW_EXCLUDED_PDF_BUTTON_VISIBLE",
     "identicalCsvRequirement": "INVALID_NOT_PART_OF_ACTUAL_ROLE_CONTRACT",
-    "stillRequired": "CSV_CONTENT_PARSED_ROW_PERIOD_CURRENCY; ADMIN_ELIGIBLE_PDF_RUNTIME_RENDER_SOURCE_AND_CONTENT_READBACK",
+    "stillRequired": "SHOPPER_CSV_CONTENT_PARSED_AND_ADMIN_PDF_DOWNLOAD_FILE_READBACK_FOR_EXPORT_INTEGRAL_MATCH",
     "state": "HOLD_NOT_PROMOTED",
     "sourcePaths": [
       "app/modules/beneficios.js",
       "app/modules/finanzas.js"
     ],
     "userScreenshotSha256": "e47a30a49020f3de7dc1f2bfb2d36c95ca160e01690f49603fb1ad3610633921",
-    "receiptBlob": "637320d87466ab8c824a1ce66cc604e44ec1f6eb"
+    "receiptBlob": "a3fa3f598f39a2431da08a40072ec4227d02c78f",
+    "adminPreviewDetails": {
+      "row": "JULISSA_FLORES_OCT_MIRAFLORES_GT",
+      "honorarioGTQ": 60,
+      "reembolsoGTQ": 145,
+      "totalGTQ": 205,
+      "reviewRowsExcluded": 42,
+      "pdfButton": true,
+      "actualPdfDownload": false
+    }
   },
   "b7ExactRemainingGap20261110": {
     "preserved": [
@@ -21851,6 +21860,6 @@
     "externalProviderHash": "NOT_AVAILABLE",
     "moduleFullMatchPromotion": false,
     "scopeResult": "PASS_EXACT_ROW_COUNTS_AND_STIVEN_EXAMPLE_NOT_SAME_PROVIDER_FINGERPRINT",
-    "receiptBlob": "637320d87466ab8c824a1ce66cc604e44ec1f6eb"
+    "receiptBlob": "a3fa3f598f39a2431da08a40072ec4227d02c78f"
   }
 }
