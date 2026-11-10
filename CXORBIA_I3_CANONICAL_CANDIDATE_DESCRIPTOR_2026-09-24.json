@@ -21273,9 +21273,9 @@
   },
   "frozenCrossPeriodBenefits20261110": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_CHROME_INTEGRAL_GAP_READBACK_20261110.json",
-    "receiptBlob": "637320d87466ab8c824a1ce66cc604e44ec1f6eb",
+    "receiptBlob": "a3fa3f598f39a2431da08a40072ec4227d02c78f",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V291.json",
-    "matrixBlob": "31a71801ca158b45b26da6698bbbc1c3a07e9a50",
+    "matrixBlob": "25f868d459f0f09e17dfa2099c8348db23b03025",
     "productSourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
     "adminShopperBenefitsRowsMatched": [
       "SEP_2026_Q227",
@@ -21296,7 +21296,8 @@
     "i4Authorized": false,
     "correctedExporterGate": "SHOPPER_CSV_VERSUS_ADMIN_REPORTKIT_PDF_ROLE_SPECIFIC_OUTPUT; DO_NOT_REQUIRE_IDENTICAL_CSV; ACTUAL_FILE_RENDER_STILL_UNPROVEN",
     "shopperCsvScreenshotProof": "PASS_332_BYTES_FILENAME_CIN_PÓLIS_CINEPOLIS_2026_11_CSV_SCREENSHOT_SHA256_E47A30A49020",
-    "shopperCsvContentParsed": false
+    "shopperCsvContentParsed": false,
+    "adminReportkitOctober": "PASS_PREVIEW_JULISSA_FLORES_Q205_42_REVIEW_EXCLUDED_PDF_BUTTON_PRESENT_DOWNLOAD_NOT_YET_PROVEN"
   },
   "frozenB7ExactRemainingEdges20261110": {
     "preservedHuman": "R05_R06_AND_CANCEL_REJECTION_VISUAL_PASS",
