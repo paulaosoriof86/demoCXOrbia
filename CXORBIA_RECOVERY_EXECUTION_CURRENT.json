@@ -2,7 +2,7 @@
   "schemaVersion": "cxorbia.recovery.execution-current.v1",
   "planLockPath": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
   "planId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
-  "asOf": "2026-11-10T14:59:24.924Z",
+  "asOf": "2026-11-10T23:43:07.000Z",
   "iteration": "I3",
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
@@ -12319,5 +12319,64 @@
     "testsPassed": 27,
     "realLearnerE2e": "PENDING",
     "production": false
+  },
+  "latestRun2382DevAndRun2385FocalProviderContinuity": {
+    "asOfLocal": "2026-11-10",
+    "state": "PASS_EXACT_DEV_PUBLICATION_AND_FOCAL_ACADEMY_B7_PROVIDER__PHASE_A_INTEGRAL_HOLD",
+    "iteration": "I3",
+    "sourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+    "sourceTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
+    "devMaterialization": {
+      "runId": 42921566208,
+      "runNumber": 2382,
+      "runtimeRevision": "cxorbia-live-hr-dev-00369-lkf",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/e301b123cd45d041",
+      "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2382_PAIRED_DEV_CHROME_READBACK_20261110.json",
+      "oneBuildOneRuntimeOneHosting": true,
+      "production": false
+    },
+    "focalProviderQa": {
+      "runId": 42925425510,
+      "runNumber": 2385,
+      "artifactId": 13812289666,
+      "decision": "PASS_I3_RUN2382_ACADEMY_B7_SYNTHETIC_DEV",
+      "academyOwnProgressPersistedAndNewSessionReplayed": true,
+      "b7ApplicationApproveNoticeTargetAndReject": true,
+      "temporaryQaAccountsCreated": 2,
+      "temporaryQaAccountsDeleted": 2,
+      "allQaFixtureDocumentsRemoved": true,
+      "hrRevisionUnchanged": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+      "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2385_ACADEMY_B7_PROVIDER_QA_20261110.json",
+      "receiptBlob": "193d188770b40bce5a3d03588317c9d894e0b9da",
+      "production": false
+    },
+    "chromeAdmin": {
+      "activePeriod": "NOV 2026",
+      "academySourceCourses": 27,
+      "academySourceLessons": 117,
+      "certificationBanks": 4,
+      "historicCertificateEvidence": 40,
+      "bulkRecertificationScope": "ALL_SHOPPERS_CERTIFIED_OR_NOT_192_VISIBLE_IN_INDIVIDUAL_PICKER",
+      "bulkRecertificationActuallyIssued": false,
+      "academyOrCertificationRealRecordWrite": false
+    },
+    "phaseA": {
+      "functionalPassPreserved": [
+        "B4",
+        "B5",
+        "B6"
+      ],
+      "blocksPassed": 3,
+      "blocksTotal": 9,
+      "strictDomainMatches": 5,
+      "strictDomainTotal": 21,
+      "focalProofIsNotIntegralHumanPass": true,
+      "gate20": "HOLD",
+      "gate21": "HOLD",
+      "authorizationI4": false
+    },
+    "next": "Complete browser Admin-Shopper notice unread/reload/action route; independently authenticated shopper and client Academia course progression UI; B7 reservations and human receipt; remaining B1-B3/B8/B9 domain E2E and Gate20/Gate21. No production or commercial data test writes.",
+    "frozenHistoricalSealsUnchanged": true,
+    "production": "DO_NOT_TOUCH"
   }
 }
