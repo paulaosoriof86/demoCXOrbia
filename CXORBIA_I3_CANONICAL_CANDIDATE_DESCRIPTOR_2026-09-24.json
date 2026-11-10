@@ -21273,9 +21273,9 @@
   },
   "frozenCrossPeriodBenefits20261110": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_CHROME_INTEGRAL_GAP_READBACK_20261110.json",
-    "receiptBlob": "a3f91e3eb1239b2775122ed31d2c840af69d1b6d",
+    "receiptBlob": "637320d87466ab8c824a1ce66cc604e44ec1f6eb",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V291.json",
-    "matrixBlob": "10045f2311e4ba1a3010d75a33e7e7c177af1052",
+    "matrixBlob": "31a71801ca158b45b26da6698bbbc1c3a07e9a50",
     "productSourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
     "adminShopperBenefitsRowsMatched": [
       "SEP_2026_Q227",
@@ -21294,7 +21294,9 @@
     "gate20": "HOLD",
     "gate21": "HOLD",
     "i4Authorized": false,
-    "correctedExporterGate": "SHOPPER_CSV_VERSUS_ADMIN_REPORTKIT_PDF_ROLE_SPECIFIC_OUTPUT; DO_NOT_REQUIRE_IDENTICAL_CSV; ACTUAL_FILE_RENDER_STILL_UNPROVEN"
+    "correctedExporterGate": "SHOPPER_CSV_VERSUS_ADMIN_REPORTKIT_PDF_ROLE_SPECIFIC_OUTPUT; DO_NOT_REQUIRE_IDENTICAL_CSV; ACTUAL_FILE_RENDER_STILL_UNPROVEN",
+    "shopperCsvScreenshotProof": "PASS_332_BYTES_FILENAME_CIN_PÓLIS_CINEPOLIS_2026_11_CSV_SCREENSHOT_SHA256_E47A30A49020",
+    "shopperCsvContentParsed": false
   },
   "frozenB7ExactRemainingEdges20261110": {
     "preservedHuman": "R05_R06_AND_CANCEL_REJECTION_VISUAL_PASS",
@@ -21307,5 +21309,19 @@
     "externalHrWrites": 0,
     "status": "B7_SCOPED_IN_PROGRESS_NOT_FULL_MATCH",
     "receiptPath": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_CHROME_INTEGRAL_GAP_READBACK_20261110.json"
+  },
+  "frozenB1B11DirectExternalHr20261110": {
+    "source": "GOOGLE_SHEETS_HR_GUATEMALA",
+    "gtRows": 34,
+    "hnRows": 10,
+    "assigned": 33,
+    "unassigned": 11,
+    "realized": 12,
+    "fullRevisionHashNotAvailable": true,
+    "hnOctoberDatesInNovemberTab": 10,
+    "sourceSemanticReview": "FLAG_NON_DESTRUCTIVE",
+    "receiptBlob": "637320d87466ab8c824a1ce66cc604e44ec1f6eb",
+    "noHrWrites": true,
+    "fullOwnerPromotion": false
   }
 }
