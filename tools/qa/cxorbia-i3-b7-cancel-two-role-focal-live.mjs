@@ -10,7 +10,7 @@ import {getFirestore} from 'firebase-admin/firestore';
 const E=process.env,str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
 const host=String(E.HOSTING_URL||'https://cxorbia-backend-dev.web.app').replace(/\/$/,'');
 const project=E.PROJECT||'cxorbia-backend-dev',tenantId=E.TENANT_ID||'tya',projectId=E.PROJECT_ID||'cinepolis';
-const shopperId=E.B7_SHOPPER_ID||'shopper_gt_1440137b73',periodId=E.B7_PERIOD_ID||'cinepolis-2026-10';
+const shopperId=E.B7_SHOPPER_ID||'shopper_gt_1440137b73',periodId=E.B7_PERIOD_ID||'cinepolis-2026-11';
 const runId=String(E.GITHUB_RUN_ID||'').replace(/\D/g,''),sourceSha=str(E.FOCAL_SOURCE),expectedHr=str(E.EXPECTED_HR_REVISION);
 const out=E.B7_OUT||'.tmp/i3-b7-exact-two-role-live';
 if(!/^\d{6,}$/.test(runId)||!/^[a-f0-9]{64}$/.test(expectedHr)||!/^[a-f0-9]{40}$/.test(sourceSha))throw new Error('SOURCE_FAILURE:B7_FOCAL_ENV_INCOMPLETE');
@@ -74,7 +74,7 @@ async function exercise(decision,shopperToken,adminToken){
  for(const c of [request,decide]){add(receipt(c),'receipts');add(audit(c),'audits');add(bulletin(c),'bulletins');}
  requireOk(!(await ref.get()).exists,'SOURCE_FAILURE','QA_VISIT_COLLISION');
  await ref.create({id:vid,visitId:vid,hrRowId:vid,tenantId,projectId,periodId,periodKey:periodId.replace(/^.*-(20\d{2}-\d{2})$/,'$1'),
-  shopperId,estado:'agendada',status:'agendada',agendada:'2026-10-09',sucursal:'QA B7 VISIT',pais:'GT',
+  shopperId,estado:'agendada',status:'agendada',agendada:'2026-11-19',sucursal:'QA B7 VISIT',pais:'GT',
   assignmentSource:'platform',assignmentSyncStatus:'synced',qaSynthetic:true,qaRunId:runId,version:1,
   canonicalFacets:{available:false,assigned:true,scheduled:true,realized:false,submitted:false,paymentConfirmed:false,cancelled:false}});
  const a=await invoke(shopperToken,request);
@@ -101,7 +101,7 @@ async function exercise(decision,shopperToken,adminToken){
 /* I3 B7: same DEV two-role fixture tests actual reschedule approve/reject without external HR writes. */
 async function exerciseReschedule(decision,shopperToken,adminToken){
  const visitId='QA_I3_B7_RESCHEDULE_'+decision+'_'+runId,ref=projectRef.collection('visits').doc(visitId);
- const originalDate='2026-10-18',newDate='2026-10-22';
+ const originalDate='2026-11-18',newDate='2026-11-22';
  const asReschedule=(version,key,payload)=>{
   const c=cmd(visitId,version,key,payload);
   c.commandType='visit.reschedule';c.authorization.permission='visit.reschedule';
@@ -114,8 +114,8 @@ async function exerciseReschedule(decision,shopperToken,adminToken){
  add(ref,'visits');
  for(const c of [request,decide]){add(receipt(c),'receipts');add(audit(c),'audits');add(bulletin(c),'bulletins');}
  requireOk(!(await ref.get()).exists,'SOURCE_FAILURE','RESCHEDULE_QA_COLLISION');
- await ref.create({id:visitId,visitId,hrRowId:visitId,tenantId,projectId,periodId,periodKey:'2026-10',
-  shopperId,estado:'agendada',status:'agendada',agendada:originalDate,quincena:'2Q',disponibleDesde:'2026-10-01',
+ await ref.create({id:visitId,visitId,hrRowId:visitId,tenantId,projectId,periodId,periodKey:'2026-11',
+  shopperId,estado:'agendada',status:'agendada',agendada:originalDate,quincena:'2Q',disponibleDesde:'2026-11-01',
   sucursal:'QA B7 REPROGRAMACION',pais:'GT',assignmentSource:'platform',assignmentSyncStatus:'synced',
   qaSynthetic:true,qaRunId:runId,version:1,
   canonicalFacets:{available:false,assigned:true,scheduled:true,realized:false,submitted:false,paymentConfirmed:false,cancelled:false}});
