@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "cxorbia.i3.b7.source-proof.v1",
+  "asOfLocalDate": "2026-11-10",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "predecessorControlHead": "184fc4441e0bc1a0e39032f5c0a7443640163d82",
+  "sourceCommit": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+  "sourceTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
+  "before": {
+    "B7": "approval persisted visit assignment without atomic exact shopper bulletin; a broad local automation was fired",
+    "R22": "broad role/project Firestore queries could return another shopper's targeted operational notice",
+    "MiDia": "pending-HR approved notification was hidden; NOV 2026 selected but calendar began on October historical HR event dates",
+    "B4": "the all-scope recertification action was mislabeled as only previously certified shoppers"
+  },
+  "after": {
+    "B7": "atomic exact-recipient notice is committed with approval and assignment, route misvisitas, deterministic ID and no repeat approval using a different key",
+    "R22": "shopper bulletin feed is restricted to exact target shopper and project; normalized notice retains scope",
+    "MiDia": "exact confirmed approval is visible while HR is pending; initial calendar month comes from selected period NOV 2026",
+    "B4": "all-scope label explicitly includes all project shoppers with or without prior certification; no mass recertification executed"
+  },
+  "evidence": {
+    "providerTests": "GATE7_ATOMIC_APPROVAL_REPLAY_REJECT_AND_SCOPE_PASS",
+    "regression": "51_OF_51_PASS_BEFORE_ADDITIONAL_NOVEMBER_CALENDAR_TEST",
+    "periodCase": "PASS_NOV_CURRENT_OCT_HISTORICAL_ISOLATED_METHOD",
+    "syntaxAndDiffCheck": "PASS",
+    "chromeBeforeSuccessor": "ADMIN_AUTHENTICATED_DEV_NOV2026_44_HR_ROWS_33_ASSIGNED_4_BANKS_40_HISTORICAL_CERT_RECORDS_38_PASS",
+    "newSourceServedInDev": false,
+    "realShopperAckReadback": false
+  },
+  "release": {
+    "state": "SOURCE_ONLY_SUCCESSOR_NOT_BLOCK_LOCKED",
+    "preserveFunctionalPass": ["B4", "B5", "B6"],
+    "functionalBlocks": "3_OF_9",
+    "integralModuleOwners": "5_OF_21",
+    "next": "same-source DEV Cloud Run plus Hosting followed by isolated reversible cross-actor approval, unread/reload/route and reservation-with-visitID E2E",
+    "hrWrites": 0,
+    "financeWrites": 0,
+    "production": "DO_NOT_TOUCH",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false
+  }
+}

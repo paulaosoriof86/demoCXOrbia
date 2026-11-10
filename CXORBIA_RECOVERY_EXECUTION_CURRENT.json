@@ -12257,5 +12257,21 @@
       "hnTenOctoberRealizedInNovemberTab": "DIRECT_LIVE_COMPARISON_10_OUT_OF_10_OPERATIONAL_COPIES_FROM_OCTOBER_HN_NOT_LIVE_READER_FAILURE",
       "crossPeriodHnDirectRead20261110": {"currentPeriod":"2026-11","historicalPeriod":"2026-10","currentTabs":["NOVIEMBRE","NOVIEMBRE HN"],"historicalHnTab":"OCTUBRE 26 HN","hnRowsCompared":10,"identicalWholeRows":9,"identicalCoreOperationalRows":10,"oneDifference":"ROW_8_SUBMITTED_DATE_ONLY","allNovHnRealizationDatesAreOctober":true,"periodKeyDerivedFromTab":true,"hrLiveReaderPassPreserved":true,"doNotCountAsNovemberExecutionWithoutSourceCorrection":true,"doNotAutomaticallyDeduplicateOrModifyHr":true}
     }
+  },
+  "b7ImmediateRecoverySource20261110": {
+    "state": "SOURCE_ONLY_SUCCESSOR_DEV_CROSS_ACTOR_ACK_PENDING",
+    "predecessorServedSourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+    "sourceCommit": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+    "sourceTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_B7_EXACT_APPROVAL_NOTICE_NOV_CALENDAR_SOURCE_20261110.json",
+    "functionalPassPreserved": ["B4", "B5", "B6"],
+    "functionalBlocks": "3_OF_9",
+    "integralOwners": "5_OF_21",
+    "next": "publish exact source to DEV, prove Admin-Shopper ACK notice unread/reload/route and reservation visit transition; B8 and B9 separate",
+    "hrWrites": 0,
+    "production": "DO_NOT_TOUCH",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false
   }
 }
