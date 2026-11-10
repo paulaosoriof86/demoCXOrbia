@@ -11984,5 +11984,15 @@
     ],
     "sourceCodeUnchanged": true,
     "auditLedgerLargeFile": "UNCHANGED_EXISTING_V605_SHA_30165AFE__LATEST_E2E_PROOF_IS_LINKED_CHECKPOINT"
+  },
+  "b4B5AccumulativeScopedCertification20261110": {
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_B4_B5_SCOPE_CERTIFICATION_CONTROL_20261110.json",
+    "preReceiptHead": "48b843b1fd748c15421f8e547a0c67f0db9d95aa",
+    "productSourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+    "b4": "AUTHENTICATED_CORE_PASS_PRESERVED__SOURCE_NEGATIVE_TESTS_101_OF_101_PASS__WHOLE_BLOCK_HUMAN_PENDING",
+    "b5": "SOURCE_PRESENTATION_7_OF_7_PASS__SEPTEMBER_PAYMENT_RECONCILIATION_PENDING",
+    "moduleTruth": "5_OF_21_INTEGRAL_MATCH_UNCHANGED",
+    "production": "DO_NOT_TOUCH",
+    "next": "B4 fresh negative authenticated isolation or existing exact negative receipt + formal Paula block PASS; B5 exact finance provider reconciliation by visitId and country before full certification"
   }
 }
