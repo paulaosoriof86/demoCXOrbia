@@ -21807,15 +21807,17 @@
     "gate21": "HOLD"
   },
   "b5OwnerExportAcceptanceCorrected20261110": {
-    "shopper": "CSV_WITH_PENDING_PER_PERIOD_SOURCE_BLOB",
+    "shopper": "CSV_USER_SCREENSHOT_DOWNLOAD_PASS_332_BYTES_CONTENT_READBACK_NOT_PROVEN",
     "admin": "PDF_REPORTKIT_EXCLUDES_FINANCIAL_UNRESOLVED_ROWS",
     "identicalCsvRequirement": "INVALID_NOT_PART_OF_ACTUAL_ROLE_CONTRACT",
-    "stillRequired": "RUNTIME_ACTUAL_SHOPPER_CSV_READBACK_AND_ADMIN_ELIGIBLE_PDF_RENDER_WITH_SEMANTIC_ROW_PARITY",
+    "stillRequired": "CSV_CONTENT_PARSED_ROW_PERIOD_CURRENCY; ADMIN_ELIGIBLE_PDF_RUNTIME_RENDER_SOURCE_AND_CONTENT_READBACK",
     "state": "HOLD_NOT_PROMOTED",
     "sourcePaths": [
       "app/modules/beneficios.js",
       "app/modules/finanzas.js"
-    ]
+    ],
+    "userScreenshotSha256": "e47a30a49020f3de7dc1f2bfb2d36c95ca160e01690f49603fb1ad3610633921",
+    "receiptBlob": "637320d87466ab8c824a1ce66cc604e44ec1f6eb"
   },
   "b7ExactRemainingGap20261110": {
     "preserved": [
@@ -21832,5 +21834,23 @@
     "nextTest": "SINGLE_ISOLATED_DEV_REVERSIBLE_FIXTURE_NO_EXTERNAL_HR_NO_COMMERCIAL_VISIT_MUTATION",
     "status": "B7_NOT_INTEGRAL_MATCH",
     "receiptBlob": "a3f91e3eb1239b2775122ed31d2c840af69d1b6d"
+  },
+  "b1B11ExternalHrDirectValueParity20261110": {
+    "source": "GOOGLE_SHEETS_NATIVE_CONNECTED",
+    "spreadsheetId": "1h307t37LxM1nZNh_9Odt6wHUQhROG6cYbsbMKr48vU4",
+    "tabGt": "NOVIEMBRE",
+    "tabHn": "NOVIEMBRE HN",
+    "gtRows": 34,
+    "hnRows": 10,
+    "total": 44,
+    "assigned": 33,
+    "unassigned": 11,
+    "realized": 12,
+    "shopperExample": "STIVEN_NARANJO_2026_11_04_MATCH",
+    "hnMonthSemantic": "ALL_10_HN_ROWS_HAVE_OCT_2026_REALIZATION_DATES_DESPITE_NOVIEMBRE_HN_TAB",
+    "externalProviderHash": "NOT_AVAILABLE",
+    "moduleFullMatchPromotion": false,
+    "scopeResult": "PASS_EXACT_ROW_COUNTS_AND_STIVEN_EXAMPLE_NOT_SAME_PROVIDER_FINGERPRINT",
+    "receiptBlob": "637320d87466ab8c824a1ce66cc604e44ec1f6eb"
   }
 }
