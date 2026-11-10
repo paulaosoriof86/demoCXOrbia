@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm321.scope-receipt.v1",
+  "id": "CXORBIA_I3_VRM321_B4_BANK_RETIRE_CONFIRM_SCOPE_20261109",
+  "dateLocal": "2026-11-09",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "authorization": "Paula 'autorizo' code repair + controlled DEV-only deploy and synthetic QA bank cleanup after native browser confirmation failure",
+  "expectedSourceParentSha": "13633db61854c3dc67ad64c25ffa679e195e86aa",
+  "predecessorProductSourceSha": "1c31ebd95857ada0ae32ed3070db75fe0f02bfda",
+  "sourceSha": "56d5ed08e6b91854333d80b69645607615707a26",
+  "sourceTree": "85308ea5987540880fc84a81b052d54def5cbbb2",
+  "allowedProductFiles": [
+    "app/modules/cert.js"
+  ],
+  "allowedTestFiles": [],
+  "exactChange": "Replace native confirm on existing Admin Certification Retirar banco with in-app explicit confirmation phrase RETIRAR; reuse existing certStore.clear provider ACK and archive semantics",
+  "fixtureOnly": "QA DEV B4 20261109 NO PUBLICAR",
+  "invariants": {
+    "legitimateHistoricalAttemptsPreserved": true,
+    "latestIndependentHistoricCount": 40,
+    "originalBankCount": 4,
+    "doNotAlterOriginalBanks": true,
+    "requireAckBeforeSuccessUI": true,
+    "productionTouched": false,
+    "hrWrites": 0,
+    "paymentWrites": 0,
+    "directFirestoreWrites": 0,
+    "brandAndUIRedesignDeferred": true,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4": "HOLD"
+  },
+  "testPlan": [
+    "Code parse",
+    "In-app modal open/cancel",
+    "Incorrect phrase remains disabled and no deletion",
+    "Correct phrase invokes exactly selected bank",
+    "No provider ACK stays in dialog and reports warning",
+    "Provider ACK closes dialog and re-navigates",
+    "DEV-only materialization and independent Admin readback before/after",
+    "Shopper/recertification integral E2E separate; human B4 receipt still pending"
+  ],
+  "production": false
+}

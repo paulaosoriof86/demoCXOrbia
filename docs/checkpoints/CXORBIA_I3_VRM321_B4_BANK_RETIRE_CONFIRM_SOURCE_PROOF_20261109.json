@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm321.source-proof.v1",
+  "id": "CXORBIA_I3_VRM321_B4_BANK_RETIRE_CONFIRM_SOURCE_PROOF_20261109",
+  "dateLocal": "2026-11-09",
+  "sourceSha": "56d5ed08e6b91854333d80b69645607615707a26",
+  "sourceTree": "85308ea5987540880fc84a81b052d54def5cbbb2",
+  "predecessorProductSourceSha": "1c31ebd95857ada0ae32ed3070db75fe0f02bfda",
+  "allowedProductFiles": [
+    "app/modules/cert.js"
+  ],
+  "allowedTestFiles": [],
+  "sourceTestsPass": 10,
+  "sourceTestsFail": 0,
+  "staticParse": "PASS_V8_NEW_FUNCTION_FULL_CERT_JS",
+  "focalExecution": "PASS_10_OF_10_REAL_HANDLER_EVALUATED_WITH_SYNTHETIC_DOM_AND_MOCK_PROVIDER",
+  "focalTestCases": [
+    "open_panel_ack",
+    "invalid_phrase_no_provider_call_ack",
+    "valid_phrase_enabled_ack",
+    "selected_id_exact_ack",
+    "provider_ack_close_route",
+    "open_panel_no_ack",
+    "invalid_phrase_no_provider_call_noack",
+    "valid_phrase_enabled_noack",
+    "selected_id_exact_noack",
+    "provider_noack_no_false_success"
+  ],
+  "changedFileDiff": {
+    "additions": 20,
+    "deletions": 3,
+    "sourceOwner": "app/modules/cert.js",
+    "githubSourceCommit": "56d5ed08e6b91854333d80b69645607615707a26",
+    "ownerBlob": "0adc3eaaf5ab5f505d3e8eda63b2eb3d02dd0573"
+  },
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM321_B4_BANK_RETIRE_CONFIRM_SCOPE_20261109.json",
+  "scopeReceiptBlob": "2058cf3bcfef4887b96211b9f2912d524e8e2411",
+  "findings": [
+    {
+      "id": "VRM-321",
+      "priority": "P0_PROVEN",
+      "classification": "SOURCE_UI_CONTROL_BLOCKER",
+      "owner": "app/modules/cert.js",
+      "status": "SOURCE_ONLY_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION"
+    }
+  ],
+  "qaLimitations": [
+    "Focal function evaluation uses mock provider and synthetic DOM; cannot certify real Firestore provider or Chrome UX",
+    "No DEV deployment/retirement verified at source-only stage",
+    "Existing historical attempts count 40 from prior independent UI only",
+    "No human acceptance for full B4"
+  ],
+  "production": false,
+  "devPublished": false,
+  "hrWrites": 0,
+  "paymentWrites": 0,
+  "firestoreRulesDeploys": 0,
+  "storageRulesDeploys": 0,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4": "HOLD"
+}
