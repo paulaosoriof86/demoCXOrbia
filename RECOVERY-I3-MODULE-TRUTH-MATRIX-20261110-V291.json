@@ -21768,5 +21768,42 @@
     "Gate20": "HOLD",
     "Gate21": "HOLD",
     "I4": false
+  },
+  "b5ThreePeriodMatchedCrossRole20261110": {
+    "sourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+    "actor": "STIVEN_LOPEZ_GT",
+    "periods": [
+      "SEP_2026_MC_EL_FRUTAL_Q60_Q167_Q227",
+      "OCT_2026_C_PORTALES_Q60_Q170_Q230",
+      "NOV_2026_C_NARANJO_Q60_Q173_Q233"
+    ],
+    "adminShopperMatchedRows": 3,
+    "shopperHistoricalRows": 10,
+    "shopperPaidConfirmed": 5,
+    "shopperPending": 5,
+    "adminSeptemberPaidConfirmed": 0,
+    "directionExternalSeptemberPaidOn": "2026-10-31",
+    "currencies": "GTQ_AND_HNL_NOT_MIXED",
+    "csvExport": "NOT_PROVEN_NO_DOWNLOAD_EVENT_OBSERVED",
+    "c09C10FullOwnerPromotion": false,
+    "b5FunctionalPassPreserved": true,
+    "linkedReceipt": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_CHROME_INTEGRAL_GAP_READBACK_20261110.json",
+    "linkedReceiptBlob": "e4e5f0dab22d3a9a5329b398379057bb299f61b7"
+  },
+  "d08SourceVsRealProviderClarification20261110": {
+    "simulatedProviderQa": "27_OF_27_PASS_IN_MEMORY_TEST",
+    "actualIndependentLearnerProgressAckReload": "NOT_EXECUTED_NOT_PROVEN",
+    "wouldMutateRealShopper": "FORBIDDEN_UNLESS_ISOLATED_AUTHORIZED_TEST",
+    "fullOwnerPromotion": false
+  },
+  "frozenCountsAfter20261110": {
+    "functionalBlocksPassed": 3,
+    "blocksTotal": 9,
+    "fullOwnerMatches": 5,
+    "fullOwnerTotal": 21,
+    "additive": false,
+    "production": "DO_NOT_TOUCH",
+    "gate20": "HOLD",
+    "gate21": "HOLD"
   }
 }
