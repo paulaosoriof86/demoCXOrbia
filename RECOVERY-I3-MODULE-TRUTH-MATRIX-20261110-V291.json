@@ -1050,7 +1050,7 @@
       ],
       "contractFunctional": "Shopper/Identidad/Visual",
       "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_AUTHENTICATED_ADMIN_SHOPPER_E2E",
-      "actionRequired": "VRM-321 RUN2328 exact Hosting-only deployed and in-app confirmation real Admin validated; final bank archive ACK and fresh 4-bank/40-attempt readback still pending. Shopper 15Q/8Q recert and Paula full B4 PASS HOLD.",
+      "actionRequired": "B4 bank operations & policy CLOSED FUNCTIONAL PASS: 4 original banks, 40 historic attempts (38 legacy approved), 14 linked; 8Q published main REQUIRED at 80%, 15Q published AI OPTIONAL at 80%; real QA Shopper 2/2=100% with provider ACK/reload and bank retirement proven. NO RETEST BANKS OR REISSUE GLOBAL RECERT. Only separate D08 Academia Shopper course-progress provider ACK/relogin and truly uncovered negative-role full-owner checks remain for 21-domain MATCH. B4 functional block already LOCKED PASS; this domain remains PENDING solely due to wider frozen owners.",
       "preI4SuccessorCommits": [
         "61cf7120603aeff110e97632bb6c69f5c4809d62"
       ],
@@ -1839,6 +1839,17 @@
           "app/modules/academia.js D08 course-progress actual provider ACK and independent role session",
           "new authenticated negative role/project/tenant run not obtained; prior source guards preserved"
         ]
+      },
+      "currentAccountingCorrection20261110": {
+        "functionalBlock": "B4_PASS_3_OF_9",
+        "domainIntegralMatch": false,
+        "previousFourBankFortyAttemptRequirement": "SATISFIED_20261110_NOT_PENDING",
+        "policyRequiredMain8": true,
+        "policyOptionalAI15": true,
+        "sourceRevision": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+        "devHosting": "sites/cxorbia-backend-dev/versions/ad5eb641dc8f87af",
+        "readbackReceipt": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_CHROME_INTEGRAL_GAP_READBACK_20261110.json",
+        "readbackBlob": "2096c43b2d7215da3c88b64137f40d070512606e"
       }
     },
     {
@@ -20681,7 +20692,7 @@
     "production": false
   },
   "updatedAt": "2026-11-08T14:51:34.501Z",
-  "exactNextAction": "I3 HOLD 5/21. P0 fuente e10b1c24e17879872f9030185b988ae7dbac3faa (sin DEV): certificaciones separadas por banco y anulación administrada de UN intento de prueba con acuse/lectura durable; RUN2305 falló exclusivamente por descriptor D05 anclado a fuente previa 6633, no por las 22/22 pruebas del cliente. Sincronizar descriptor+matriz V283+pointer, ejecutar CI de 21 dominios y 23/23 cliente+5/5 backend; materializar exactamente fuente e10b1c24e17879872f9030185b988ae7dbac3faa en DEV si CI PASS, luego E2E Admin/Shopper aislado 15Q/8Q, recertificación, historial, carga, recursos, visitas, finanzas, cliente; no afectar intentos reales ni HR. Mantener I3 HOLD, Gate20/21 HOLD, I4 sin autorización, producción DO_NOT_TOUCH.",
+  "exactNextAction": "2026-11-10 PAULA CROSS ROLE: preserve B4-B6 3/9 functional blocks PASS. 5/21 complete 21-owner domains is separate and unchanged. Bank proof 4/40 and main8 mandatory vs AI15 optional PASS verified in authenticated Admin Chrome; do not repeat. Admin B6 Dashboard, Visits, Reports, Hoja de Ruta and Mi Dia NOV2026 numbers consistent 44 total GT34 HN10, assigned33, unassigned11, realized12, published HR revision 7b7b62269233; independent external HR/Shopper not newly proved. B7 authorized parallel read-only, existing RUN2177/RUN2216 and human R05/R06 PASS preserved; current 33 assignments 0 requests. Next genuinely uncovered: authenticated Shopper D08 Academy course-progress provider ACK/reload, B5 C09/C10 export row/currency/period cross actor parity, B6 B11 independent same-HR revision, B7 notification/history/no-duplicate cross-actor. Shopper origin at login, no credential guessed or sent. No financial/HR/production writes, Gate20/21 HOLD.",
   "historicalActiveHeadersBeforeRun2263": {
     "currentActionReconciliation": {
       "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
@@ -21702,6 +21713,38 @@
       "gate20": "HOLD",
       "gate21": "HOLD",
       "i4Authorized": false
+    },
+    "latestReadback": {
+      "dateLocal": "2026-11-10",
+      "authenticatedAdmin": "PASS",
+      "shopper": "NO_ACTIVE_ISOLATED_DEV_FIREBASEAPP_AUTH_SESSION",
+      "sourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+      "devHosting": "sites/cxorbia-backend-dev/versions/ad5eb641dc8f87af",
+      "hrPublishedRevision": "7b7b62269233",
+      "b4": "FOUR_BANK_FORTY_HISTORIC_PASS_MAIN8_MANDATORY_AI15_OPTIONAL",
+      "b6": "ADMIN_44_TOTAL_GT34_HN10_33_ASSIGNED_11_UNASSIGNED_12_REALIZED_PASS",
+      "b7": "ADMIN_33_ASSIGNED_ZERO_PENDING_REQUESTS_READ_ONLY_RUN2177_RUN2216_PRESERVED",
+      "receipt": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_CHROME_INTEGRAL_GAP_READBACK_20261110.json",
+      "receiptBlob": "2096c43b2d7215da3c88b64137f40d070512606e",
+      "functionalBlocksPass": 3,
+      "fullOwnerDomainsMatch": 5,
+      "production": "DO_NOT_TOUCH"
     }
+  },
+  "currentReconciledCrossSurfaceReadback20261110": {
+    "dateLocal": "2026-11-10",
+    "authenticatedAdmin": "PASS",
+    "shopper": "NO_ACTIVE_ISOLATED_DEV_FIREBASEAPP_AUTH_SESSION",
+    "sourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+    "devHosting": "sites/cxorbia-backend-dev/versions/ad5eb641dc8f87af",
+    "hrPublishedRevision": "7b7b62269233",
+    "b4": "FOUR_BANK_FORTY_HISTORIC_PASS_MAIN8_MANDATORY_AI15_OPTIONAL",
+    "b6": "ADMIN_44_TOTAL_GT34_HN10_33_ASSIGNED_11_UNASSIGNED_12_REALIZED_PASS",
+    "b7": "ADMIN_33_ASSIGNED_ZERO_PENDING_REQUESTS_READ_ONLY_RUN2177_RUN2216_PRESERVED",
+    "receipt": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_CHROME_INTEGRAL_GAP_READBACK_20261110.json",
+    "receiptBlob": "2096c43b2d7215da3c88b64137f40d070512606e",
+    "functionalBlocksPass": 3,
+    "fullOwnerDomainsMatch": 5,
+    "production": "DO_NOT_TOUCH"
   }
 }
