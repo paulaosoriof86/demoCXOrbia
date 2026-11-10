@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "cxorbia.i3.b4-b5.accumulative-scope-certification-control.v1",
+  "dateLocal": "2026-11-10",
+  "timezone": "America/Guatemala",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "preReceiptHead": "48b843b1fd748c15421f8e547a0c67f0db9d95aa",
+  "productSourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+  "productTree": "8075c43e10763ed672ec2f1742a09b04e5ffb40e",
+  "devHostingVersion": "sites/cxorbia-backend-dev/versions/ad5eb641dc8f87af",
+  "devRuntimeRevision": "cxorbia-live-hr-dev-00368-9tb",
+  "scope": "B4 authenticated functional core preservation, new source-level isolation regression, B5 source-level payment presentation and owner finance directive",
+  "ownerDirection": {
+    "dateLocal": "2026-11-10",
+    "verbatimExcerpt": "certifica en la medida en que hallas completado las pruebas funcionales y den pass",
+    "meaning": "Register every genuinely proven PASS incrementally; do not turn partial tests into whole-module certification or waive required visual/provider acceptance.",
+    "earlierDecision": "OPTION_A_CURRENT_BANKS_TEST__PRESERVE_HISTORY__FUTURE_ALL_PROJECT_SHOPPERS_RECERT_INCLUDING_NEVER_CERTIFIED"
+  },
+  "b4": {
+    "technicalCoreStatus": "CERTIFIED_SCOPE_PASS__REAL_ADMIN_SHOPPER_DEV_E2E_PREVIOUSLY_ACKNOWLEDGED",
+    "liveProof": "docs/checkpoints/CXORBIA_I3_VRM322_B4_DEV_AND_BANK_FLAGS_READBACK_20261110.json",
+    "realQaLifecycle": "CREATE_IMPORT_REVIEW_V2_PUBLISH_OPTIONAL_SHOPPER_2_OF_2_SCORE100_ACK_RELOAD_RETIRE_WITH_HISTORY",
+    "historical": "4_ORIGINAL_BANKS__40_RECORDS__38_LEGACY_APPROVED__14_LINKED_SHOPPERS_PRESERVED",
+    "multiBankGate": "OPTIONAL_QA_PASS_DID_NOT_SATISFY_MANDATORY_MAIN_BANK",
+    "policy": "15Q_AI_TEST_OPTIONAL__8Q_MAIN_TEST_REQUIRED__NO_GLOBAL_RECERTIFICATION_ISSUED",
+    "newSourceOnlyRegression": {
+      "command": "node --test --test-reporter=dot [9 targeted certification tests]",
+      "testFiles": [
+        "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs",
+        "tools/qa/cxorbia-i3-d05-import-review-focal.test.mjs",
+        "tools/qa/cxorbia-i3-d05-review-visibility-source.test.mjs",
+        "tools/qa/cxorbia-i3-cert-bank-human-state-labels.test.mjs",
+        "tools/qa/cxorbia-i3-d06-misvisitas-cross-period-classification.test.mjs",
+        "backend/runtime/hr-live-service/test/certification-shopper-projection.test.mjs",
+        "backend/runtime/hr-live-service/test/certification-attempt-audience-idempotency.test.mjs",
+        "backend/runtime/hr-live-service/test/cxorbia-prei4-cert-res-contract.test.mjs",
+        "backend/runtime/hr-live-service/test/certification-attempt-void-test.test.mjs"
+      ],
+      "testCount": 101,
+      "pass": 101,
+      "fail": 0,
+      "exitCode": 0,
+      "negativeIsolationCoveredLocally": "ROLE_PROJECT_TENANT_INACTIVE_MEMBERSHIP_CROSS_PERIOD_IDEMPOTENCY_ANSWER_LEAKAGE_VOID_GUARDS",
+      "notCovered": "New authenticated Chrome negative E2E and Firestore emulator rules integration in this session",
+      "additionalEmulatorTest": "tools/qa/cxorbia-i3-d05-certification-authority-rules.test.mjs",
+      "emulatorTestState": "NOT_RUN_MISSING_@firebase/rules-unit-testing_AND_FIRESTORE_EMULATOR_HOST__NOT_PRODUCT_FAIL"
+    },
+    "browserNow": "Chrome tabs listed, but claimed DEV tab read timed out in focus-emulation command; previous authenticated E2E preserved, no fresh browser PASS invented",
+    "humanVisualBlockAcceptance": "PENDING_EXPLICIT_B4_WHOLE_BLOCK_PASS",
+    "fullBlockLocked": false,
+    "nonBlockingUiFollowup": [
+      "Recertification all-scope label inaccurately says only certified shoppers; backend includes all project shoppers",
+      "Publish reviewed bank has no second confirmation modal"
+    ],
+    "nextExactGate": "Fresh role/project/tenant negative authenticated readback or prior immutable exact evidence, then Paula B4 block-specific PASS and append-only BLOCK_LOCKED receipt. Do not recreate QA bank."
+  },
+  "b5": {
+    "sourcePresentationStatus": "CERTIFIED_SOURCE_ONLY_7_OF_7_PASS",
+    "testCount": 7,
+    "pass": 7,
+    "fail": 0,
+    "exitCode": 0,
+    "testFiles": [
+      "backend/runtime/hr-live-service/test/cxorbia-vrm084-benefits-human-payment-label.test.mjs",
+      "backend/runtime/hr-live-service/test/cxorbia-vrm257-benefits-payment-label.test.mjs",
+      "tools/qa/cxorbia-i3-b8-finance-human-copy.test.mjs",
+      "tools/qa/tya-c6-canonical-finance-read-model-gate.mjs"
+    ],
+    "emulatorRulesTest": "tools/qa/cxorbia-i3-c04-global-finance-rules.test.mjs NOT_RUN_DEPENDENCY_MISSING",
+    "lastRealAdminReadback": "docs/checkpoints/CXORBIA_I3_ADMIN_CHROME_B4_B8_READBACK_20261109.json",
+    "september2026": "44_LIQUIDATIONS__43_REVIEW__1_EXACT_ELIGIBLE__0_PAID_IN_DEV",
+    "october2026": "43_LIQUIDATIONS__42_REVIEW__1_EXACT_ELIGIBLE__0_PAID_IN_DEV",
+    "november2026": "12_LIQUIDATIONS__12_REVIEW__0_EXACT_ELIGIBLE__0_PAID_IN_DEV",
+    "ownerSettlementDirective": "SEPTEMBER_OBLIGATIONS_PAID_EXTERNALLY_2026-10-31__OCTOBER_UNPAID__NOVEMBER_ACCRUE_ONLY_ON_VALID_COMPLETED_WORK",
+    "taAdvances": "TWO_DISTINCT_GTQ_7300_CASH_INFLOWS_FOR_OCT_AND_NOV_PROGRAMS__NOT_SHOPPER_PAYOUT_PROOF",
+    "fullBlockLocked": false,
+    "pending": "Exact provider visitId, country, currency, amount, settlement reference and non-duplicating payment reconciliation; readback Admin and representative GT/HN Shopper. Do not mark unverified rows paid.",
+    "nextExactGate": "Provider-safe read-only B5/B8 current receipt inventory and exact September per-visit reconciliation manifest before authorized financial writes."
+  },
+  "moduleTruth": {
+    "existingIntegralMatches": 5,
+    "totalDomains": 21,
+    "newIntegralMatches": 0,
+    "reason": "A technical core and source-level tests are scope-specific, not whole 21-domain or B4/B5 HUMAN_PASS. Preserve every historical receipt."
+  },
+  "safety": {
+    "codeChanges": 0,
+    "devDeploys": 0,
+    "productionDeploys": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "certificationProviderWrites": 0,
+    "financialProviderWrites": 0,
+    "bulkRecertifications": 0,
+    "production": "DO_NOT_TOUCH",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false
+  },
+  "auditLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V605_2026-11-10.json",
+  "moduleMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V290.json",
+  "appendOnly": true
+}
