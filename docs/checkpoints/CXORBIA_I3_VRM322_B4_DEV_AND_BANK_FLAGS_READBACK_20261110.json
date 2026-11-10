@@ -108,9 +108,9 @@
     "newAccountsCreated": 0,
     "certificationsWritten": 0
   },
-  "decision": "SOURCE_DEV_PASS__B4_REQUIRED_BANK_ELIGIBILITY_ZERO__NO_SHOPPER_SESSION_DEFECT_PROVEN__E2E_AND_HUMAN_HOLD",
+  "decision": "VRM322_DEV_SOURCE_PUBLISHED__PAULA_OPTION_A_AND_ALL_SHOPPER_RECERT_FROZEN__ADMIN_UI_WRITE_NOT_YET_E2E__B4_HOLD",
   "humanAcceptance": "PENDING_PAULA_B4_EXPLICIT_PASS",
-  "nextExactAction": "Preserve existing canonical branch and evidence; do not mass-grant protected attempts. Determine with Paula whether the published 15-question bank still must be mandatory for October or should be withheld/marked optional; historical equivalence must be adjudicated per VRM-316/VRM-312. Then perform one controlled DEV authentic Admin->Shopper->reload E2E and explicit B4 visual receipt. Production DO_NOT_TOUCH.",
+  "nextExactAction": "Recover authentic Chrome Admin tab on .web.app; use native admin 'Requisito y % mínimo' to set AI 15Q test bank required=false with provider ACK/reload, leaving main provisional required until final tests are retired/replaced safely. Validate Admin create/review/edit/publish/bulk recert independently of historical approvals with controlled QA test, without issuing actual all-shopper recert now. Then atomically reconcile latest DEV Hosting-only receipt with descriptor/pointer/matrix/ledger guards and perform B4 human PASS; production DO_NOT_TOUCH.",
   "protectedAttemptMetadataReadback": {
     "runNumber": 2338,
     "runId": 42778239151,
@@ -138,5 +138,35 @@
     "limits": "Positive attempts are metadata only; recertification, equivalence and historical review still apply. No names, answer content or PII exported.",
     "readOnly": true,
     "writes": 0
+  },
+  "directionDecision20261110": {
+    "authority": "Paula Osorio — explicit 2026-11-10 user instruction",
+    "option": "A",
+    "currentBankStatus": "Current October 8Q and 15Q banks are TEST banks, not final certification policy",
+    "historical": "Keep all historical certification attempts and approvals immutable and queryable, but stop individual carryover adjudication as a go-live blocker; initiate a NEW recertification for all shoppers once final bank(s) are ready",
+    "targetPopulation": "ALL active project shoppers including previously certified AND never certified, no individual selection required",
+    "autoadministration": "Admin must be able to create, import, edit/version/review, publish/retire, configure required/gate, and request bulk project-wide recertification",
+    "bank15Decision": "Option A approved: 15-question AI bank must not remain a mandatory live gate while under review/test; apply required=false by authorized DEV Admin provider with ACK/readback/reload",
+    "bank8Decision": "Treat 8-question main as test; DO NOT make both currently published test banks optional and automatically open visit gate before final certification program is configured",
+    "massRecertExecution": "NOT REQUESTED YET — Paula will issue new mandatory recertification when she has created final bank(s)",
+    "production": "DO_NOT_TOUCH pending I3/Gate20/21/I4",
+    "doNot": "Delete historical attempts, reset individual scores, treat QA outcomes as production certification or grant visits with no mandatory approved bank."
+  },
+  "autoAdministrationSourceReview20261110": {
+    "source": "app/modules/cert.js, app/core/backend-certifications.js, backend/runtime/hr-live-service/certification-runtime.mjs @ b390a1e9",
+    "observed": {
+      "adminImportCreateEditVersionPublishConfigureRequiredGateRetire": "SOURCE_PRESENT",
+      "bulkRecertAllProjectShoppers": "SOURCE_PRESENT",
+      "bulkRecertIncludesNeverCertified": "PROVIDER_SCOPE_ALL_VERIFIED_SOURCE",
+      "notificationToAll": "NO_INDIVIDUAL_INAPP_FANOUT_YET; project-level requirement visible on read",
+      "uiWordingIssue": "Modal option 'Todos los certificados del proyecto' / toast 'todos los certificados' is misleading; backend actually scopes all shoppers",
+      "historicalStorage": "IMMUTABLE_PRESERVED",
+      "shopperProjectGate": "REQUIRES_AT_LEAST_ONE_PUBLISHED_BANK; OPTIONAL_ONLY_BANKS_ARE_CURRENTLY_TREATED_DONE; RISK_IF_TEST_BANKS_ALL_OPTIONAL"
+    },
+    "functionalEvidence": "Static source inspection, not authenticated Admin write E2E",
+    "browserAttempt": "Connected Chrome extension verified but Admin .web.app tab claim and new Admin tab timed out in this turn; do not claim Admin write/readback.",
+    "changesToProvider": 0,
+    "changesToBanks": 0,
+    "changesToRecertifications": 0
   }
 }
