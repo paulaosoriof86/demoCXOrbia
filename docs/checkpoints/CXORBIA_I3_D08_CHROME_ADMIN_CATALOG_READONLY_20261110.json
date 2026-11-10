@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "cxorbia.i3.d08.chrome-admin-catalog-readonly.v1",
+  "asOfLocalDate": "2026-11-10",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "productSourceCandidateSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+  "currentServing": {
+    "url": "https://cxorbia-backend-dev.web.app/index-backend-dev.html",
+    "roleActuallyAuthenticated": "Administracion",
+    "project": "Cinepolis",
+    "selectedPeriod": "NOV 2026",
+    "servedHostingSourcePriorToPendingCandidate": "56d5ed08e6b91854333d80b69645607615707a26",
+    "candidateMaterializedInThisRun": false
+  },
+  "chromeReadOnlyEvidence": {
+    "moduleOpened": "Academia",
+    "adminCourseAudienceConsultora": {"visibleCourses": 14, "visibleLessons": 67},
+    "adminAudienceSelectorShopper": {"visibleCourses": 7, "visibleLessons": 27},
+    "adminAudienceSelectorCliente": {"visibleCourses": 5, "visibleLessons": 18},
+    "technicalAdminCourseNotPresentedToNontechnicalAdministrator": {
+      "id": "a_backend",
+      "title": "Backend tecnico: Firebase, Gemini, Make y Storage",
+      "coursesReserved": 1,
+      "lessonsReserved": 5,
+      "reason": "Existing explicit hasTechAccess guard in app/modules/academia.js",
+      "sourceInventoryAdminIncludingTech": {"courses": 15, "lessons": 72},
+      "classification": "EXPECTED_ROLE_VISIBILITY_NOT_LOST_CONTENT"
+    },
+    "openedClientLessonWithoutCompleting": {
+      "course": "Tu ruta en el portal: leer y decidir",
+      "lesson": "Que ves y que NO operas",
+      "lessonHasExplicitSaveAction": "Guardar avance y continuar",
+      "progressBefore": "0/18",
+      "progressAfterReturningToCatalogue": "0/18",
+      "providerWriteIntentionallyNotAttempted": true
+    },
+    "restoredUI": "Audience Consultora; archived-filter off",
+    "scope": "ONE_AUTHENTICATED_ADMIN_SESSION_SELECTING_THREE_COURSE_AUDIENCES_NOT_THREE_INDEPENDENT_ROLES",
+    "screenshotsAttached": false
+  },
+  "academyLocalProviderRegression": {"pass": 27, "fail": 0, "receipt": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_CURRENT_SOURCE_LOCAL_REVALIDATION_20261110.json"},
+  "remainingD08Acceptance": [
+    "Isolated DEV learner exact provider ACK plus Firestore readback and new session reload",
+    "Independent authenticated Admin, Shopper and Cliente role visibility and access denials",
+    "No cross-learner or cross-tenant progress leakage",
+    "Human visual acceptance and cumulative receipt"
+  ],
+  "releaseAccounting": {"phaseAComplete": false, "domainMatch": false, "gate20": "HOLD", "gate21": "HOLD"},
+  "writes": {"academyProgress": 0, "realLearnerRecords": 0, "hr": 0, "finance": 0, "production": 0},
+  "next": "After a single approved paired DEV runtime/Hosting materialization of product source 4784f220, complete D08 synthetic learner provider ACK and independently authenticated role/new-session readback. Do not treat switching Admin catalogue audience as separate role authentication."
+}
