@@ -108,7 +108,35 @@
     "newAccountsCreated": 0,
     "certificationsWritten": 0
   },
-  "decision": "SOURCE_DEV_PASS__VRM316_TWO_REQUIRED_BANKS_CONFIRMED__B4_E2E_HOLD",
+  "decision": "SOURCE_DEV_PASS__B4_REQUIRED_BANK_ELIGIBILITY_ZERO__NO_SHOPPER_SESSION_DEFECT_PROVEN__E2E_AND_HUMAN_HOLD",
   "humanAcceptance": "PENDING_PAULA_B4_EXPLICIT_PASS",
-  "nextExactAction": "Preserve VRM-316 requirement; reconcile exact per-bank protected approvals and historic equivalence, no mass grants; execute authentic DEV Shopper/Admin ACK and reload and obtain Paula B4 human PASS; do not change bank required flags absent explicit business decision."
+  "nextExactAction": "Preserve existing canonical branch and evidence; do not mass-grant protected attempts. Determine with Paula whether the published 15-question bank still must be mandatory for October or should be withheld/marked optional; historical equivalence must be adjudicated per VRM-316/VRM-312. Then perform one controlled DEV authentic Admin->Shopper->reload E2E and explicit B4 visual receipt. Production DO_NOT_TOUCH.",
+  "protectedAttemptMetadataReadback": {
+    "runNumber": 2338,
+    "runId": 42778239151,
+    "jobId": 129701934055,
+    "artifactId": 13744811911,
+    "artifactDigest": "sha256:7905280ef771994947b80d6b176c92071212ae9f5a6304ff6feb27bc14abb271",
+    "decision": "SUCCESS_READONLY",
+    "totalProjectProtectedAttempts": 3,
+    "positiveProtectedAttemptCount": 1,
+    "byPublishedBank": [
+      {
+        "bankResourceId": "certbank-cinepolis-cinepolis-2026-10",
+        "attemptCount": 3,
+        "positiveProtectedAttemptCount": 1,
+        "distinctPositiveShoppers": 1
+      },
+      {
+        "bankResourceId": "certbank-cinepolis-cinepolis-2026-10-ai-3654d624896f",
+        "attemptCount": 0,
+        "positiveProtectedAttemptCount": 0,
+        "distinctPositiveShoppers": 0
+      }
+    ],
+    "shopperCountWithPositiveAttemptsInEveryRequiredPublishedBank": 0,
+    "limits": "Positive attempts are metadata only; recertification, equivalence and historical review still apply. No names, answer content or PII exported.",
+    "readOnly": true,
+    "writes": 0
+  }
 }
