@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM322_SOURCE_PROVEN_PENDING_DEV_FULL_B4_E2E",
+  "status": "HOLD_I3_VRM322_SOURCE_PROVEN_B4_CORE_DEV_E2E_PASS_HUMAN_HOLD",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -21165,7 +21165,7 @@
   "verifiedCurrent20261110": {
     "authority": "PAULA_20261110_OPTION_A_ALL_SHOPPERS",
     "proofPath": "docs/checkpoints/CXORBIA_I3_VRM322_B4_DEV_AND_BANK_FLAGS_READBACK_20261110.json",
-    "proofBlob": "2caebe4d2170865fa04b1dd987a3bcb0c8fd2e12",
+    "proofBlob": "198ae98152f8fef714b4213a842eaea1932c263b",
     "sameBranch": "recovery/cxorbia-phase-a-20260831",
     "productSourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
     "productTree": "8075c43e10763ed672ec2f1742a09b04e5ffb40e",
@@ -21192,9 +21192,9 @@
       "readOnly": true
     },
     "decision": "ALL_HISTORIC_PRESERVED__ALL_SHOPPERS_FUTURE_RECERT__CURRENT_BANKS_TEST__OPTION_A_ON_15Q",
-    "testBankChangeStatus": "AUTHORIZED_NOT_APPLIED_PENDING_CONNECTED_ADMIN_PROVIDER_ACK",
-    "bulkRecertificationStatus": "FUTURE_AFTER_FINAL_BANK_PUBLICATION_NOT_ISSUED",
-    "humanB4": "HOLD_PENDING_CONNECTED_ADMIN_SHOPPER_E2E_AND_PAULA_PASS",
+    "testBankChangeStatus": "APPLIED_DEV_ADMIN_ACK_RELOAD__AI15_OPTIONAL__MAIN8_MANDATORY",
+    "bulkRecertificationStatus": "NOT_ISSUED__FUTURE_ALL_SHOPPERS_AFTER_FINAL_BANKS",
+    "humanB4": "CORE_AUTHENTICATED_E2E_PASS__HUMAN_PASS_AND_NEGATIVE_ISOLATION_PENDING",
     "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V605_2026-11-10.json",
     "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V290.json",
     "governanceNote": "Historical postDeployRunSeal/currentDevMaterialization/pendingDevSuccessor fields are immutable predecessor seals; do NOT interpret as latest Hosting readback. This additive snapshot carries current DEV source/Hosting and Paula business decision without falsifying immutable legacy seals.",
@@ -21211,6 +21211,24 @@
     "governanceMatrixBlob": "ab84f306dc789106a5a9d6e7452128245de864a1",
     "governanceLedgerBlob": "30165afe423d6f4eecbf8c0538b264a6031bbae6",
     "governanceAppendOnlySynchronized": true,
-    "immutableHistoricalMaterializationSealsUnchanged": true
+    "immutableHistoricalMaterializationSealsUnchanged": true,
+    "adminShopperChromeFunctionalCore": {
+      "proofPath": "docs/checkpoints/CXORBIA_I3_VRM322_B4_DEV_AND_BANK_FLAGS_READBACK_20261110.json",
+      "proofBlob": "198ae98152f8fef714b4213a842eaea1932c263b",
+      "qaBank": "IMPORTED_REVIEWED_VERSION2_PUBLISHED_RETIRED_AFTER_ACK",
+      "qaAttempt": "ANONYMIZED_SHOPPER_2_OF_2_SCORE100_ACK_RELOAD_PRESERVED_AFTER_RETIREMENT",
+      "bankCountAdminBeforeAfter": "4_TO_5_TO_4",
+      "shopperOptionsAfterRetirement": 2,
+      "historicLegacyCountsPreserved": "40_EVIDENCE_38_APPROVED_14_LINKED",
+      "requiredIsolation": "OPTIONAL_QA_PASS_DID_NOT_SATISFY_MAIN_REQUIRED_GATE",
+      "production": "DO_NOT_TOUCH",
+      "massRecert": "NOT_ISSUED"
+    },
+    "nonBlockingUXFindings": [
+      "PUBLISH_BUTTON_NO_SECOND_CONFIRM",
+      "BULK_RECERT_SCOPE_LABEL_MISLEADING"
+    ],
+    "sourceCodeUnchanged": true,
+    "auditLedgerLargeFile": "UNCHANGED_EXISTING_V605_SHA_30165AFE__LATEST_E2E_PROOF_IS_LINKED_CHECKPOINT"
   }
 }

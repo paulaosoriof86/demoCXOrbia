@@ -21585,15 +21585,25 @@
   },
   "verifiedB4Autoadministration20261110": {
     "proofPath": "docs/checkpoints/CXORBIA_I3_VRM322_B4_DEV_AND_BANK_FLAGS_READBACK_20261110.json",
-    "proofBlob": "2caebe4d2170865fa04b1dd987a3bcb0c8fd2e12",
+    "proofBlob": "198ae98152f8fef714b4213a842eaea1932c263b",
     "productSourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
     "devHostingVersion": "sites/cxorbia-backend-dev/versions/ad5eb641dc8f87af",
     "ciReadbackRun": 2340,
     "ciReadbackConclusion": "SUCCESS",
     "paulaDecision": "OPTION_A_KEEP_CURRENT_AI_TEST_BANK_NONMANDATORY; HISTORIC_IMMUTABLE; FUTURE_ALL_SHOPPERS_RECERT_INCLUDING_NEVER_CERTIFIED; NO_LIVE_RECERT_ISSUED",
-    "b4FunctionalGate": "ADMIN_AND_SHOPPER_E2E_REQUIRED_IN_CHROME; NOT_DEPENDENT_ON_CURRENT_TEST_SHOPPER_PASS_RATE",
+    "b4FunctionalGate": "CORE_AUTHENTICATED_ADMIN_SHOPPER_DEV_E2E_PASS__HUMAN_PASS_AND_NEGATIVE_ISOLATION_PENDING",
     "classificationBasis": "Existing five MATCH and sixteen pending remain unchanged; not a new module certification",
     "production": "DO_NOT_TOUCH",
-    "legacySeals": "Do not conflate old paired runtime seal with latest Hosting-only DEV proof"
+    "legacySeals": "Do not conflate old paired runtime seal with latest Hosting-only DEV proof",
+    "ai15Required": false,
+    "main8Required": true,
+    "realQaAttempt": "2_OF_2_100_PERCENT_APPROVED_WITH_PROVIDER_ACK_RELOAD_AND_HISTORY_AFTER_RETIRE",
+    "qaBankLifecycle": "CREATED_PENDING_REVIEWED_V2_PUBLISHED_OPTIONAL_RETIRED_WITH_ACK",
+    "bankCountAfter": 4,
+    "historicalCounts": "40_LEGACY_38_APPROVED_14_LINKED_UNCHANGED",
+    "bulkRecertExecution": "NOT_ISSUED_FUTURE_AFTER_FINAL_BANKS",
+    "humanApproval": "PENDING_EXPLICIT_PAULA_PASS",
+    "technicalModuleMatchesPrior": 5,
+    "moduleTotal": 21
   }
 }
