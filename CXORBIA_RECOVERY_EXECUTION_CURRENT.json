@@ -11994,5 +11994,17 @@
     "moduleTruth": "5_OF_21_INTEGRAL_MATCH_UNCHANGED",
     "production": "DO_NOT_TOUCH",
     "next": "B4 fresh negative authenticated isolation or existing exact negative receipt + formal Paula block PASS; B5 exact finance provider reconciliation by visitId and country before full certification"
+  },
+  "b5FinancialCrossmoduleRegression20261110": {
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_B5_FINANCE_CROSSMODULE_REGRESSION_158_20261110.json",
+    "preReceiptHead": "20bf72273a67451f54ce191cf9db11fbb8cd61d6",
+    "productSourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+    "sourceAndMockProviderRegression": "158_OF_158_PASS_ACROSS_11_TEST_FILES__OVERLAPS_OLDER_B5_SEVEN",
+    "adminShopperLiveE2e": "HOLD_CONNECTED_CHROME_CDP_FOCUS_TIMEOUT",
+    "septemberFinancialPaymentProof": "HOLD_PER_VISIT_PAYMENT_SOURCE_NOT_AVAILABLE",
+    "b5BlockLocked": false,
+    "moduleTruth": "5_OF_21_INTEGRAL_MATCH_UNCHANGED",
+    "production": "DO_NOT_TOUCH",
+    "next": "Exact September visitId/country/currency/amount/source reconciliation then authenticated DEV Admin/Shopper parity; B6 read-only preparatory checks may continue without claiming B5 closure"
   }
 }
