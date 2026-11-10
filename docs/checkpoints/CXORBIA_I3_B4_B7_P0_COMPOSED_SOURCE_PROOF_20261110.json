@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "cxorbia.i3.b4-b7.p0-composed-source-proof.v1",
+  "iteration": "I3",
+  "asOfLocalDate": "2026-11-10",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "predecessorProductSourceSha": "56d5ed08e6b91854333d80b69645607615707a26",
+  "sourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+  "sourceTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_B4_B7_P0_PROMOTION_SCOPE_20261110.json",
+  "scopeReceiptBlob": "e2a5cadbfb593d994d71c6b0b270f636712fbe74",
+  "allowedProductFiles": [
+    "app/core/backend-bulletins.js",
+    "app/core/backend-certifications.js",
+    "app/core/data.js",
+    "app/modules/cert.js",
+    "app/modules/midia.js",
+    "app/modules/misvisitas.js",
+    "app/modules/postulaciones.js",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-vrm256-midia-current-period.test.mjs",
+    "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs",
+    "tools/qa/cxorbia-i3-terminal-module-domain-coverage.test.mjs"
+  ],
+  "findings": [
+    {
+      "linkedFindingId": "VRM-322",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "before": "Selected exam bank leaked its selection into project visit eligibility across Mi Dia and Mis Visitas.",
+      "after": "Every published required exam bank is adjudicated independently with preserved legacy attempts; no global recertification issued."
+    },
+    {
+      "linkedFindingId": "VRM-127",
+      "priority": "P0_PROVEN",
+      "classification": "PERSISTENCE_FAILURE",
+      "before": "Approval assignment had no atomic durable exact shopper notice; an unrelated local broadcast could be shown as confirmation.",
+      "after": "Approval uses the same provider transaction for exact-recipient durable notice and rejects replay duplicates."
+    },
+    {
+      "linkedFindingId": "VRM-166",
+      "priority": "P0_PROVEN",
+      "classification": "AUTH_FAILURE",
+      "before": "Broad bulletin selectors could expose a targeted shopper notice in another shopper context.",
+      "after": "Feed verifies exact shopper and project target, including pending HR-origin notice visibility."
+    }
+  ],
+  "sourceTestsPass": 49,
+  "sourceTestsFail": 0,
+  "sourceTestsBreakdown": [
+    {"suite": "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs", "pass": 24, "fail": 0},
+    {"suite": "backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs + backend/runtime/hr-live-service/test/cxorbia-vrm256-midia-current-period.test.mjs + tools/qa/cxorbia-i3-r05-r06-postulaciones-owner-source.test.mjs", "pass": 25, "fail": 0}
+  ],
+  "crossFrontLocalRegression": {
+    "totalPass": 180,
+    "totalFail": 0,
+    "academia": 27,
+    "b7": 25,
+    "b4": 24,
+    "b8Finance": 92,
+    "b3MisVisitas": 12,
+    "academyReceiptPath": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_CURRENT_SOURCE_LOCAL_REVALIDATION_20261110.json",
+    "academyReceiptBlob": "a65c378ab0008426a2c0b49cd67ac810ca0ca23c"
+  },
+  "existingSourceProof": "docs/checkpoints/CXORBIA_I3_B7_EXACT_APPROVAL_NOTICE_NOV_CALENDAR_SOURCE_20261110.json",
+  "servingHostingBeforePromotion": "sites/cxorbia-backend-dev/versions/04f5eb9dfa5df499",
+  "servingRuntimeBeforePromotion": "cxorbia-live-hr-dev-00368-9tb",
+  "devPublished": false,
+  "realAdminShopperAckReadback": false,
+  "hrWrites": 0,
+  "financialWrites": 0,
+  "academyRealPersonProgressWrites": 0,
+  "rulesDeploys": 0,
+  "storageRulesDeploys": 0,
+  "production": false,
+  "functionalPassPreserved": ["B4", "B5", "B6"],
+  "functionalBlocks": "3_OF_9",
+  "integralModuleMatches": "5_OF_21",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false,
+  "next": "Run canonical source CI on the exact single successor, perform one controlled DEV paired runtime+Hosting materialization, then separate Admin/Shopper B7 provider ACK/readback/no-duplicate and isolated learner D08 progress/reload checks."
+}

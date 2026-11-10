@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "cxorbia.i3.d08.local-revalidation.v1",
+  "iteration": "I3",
+  "asOfLocalDate": "2026-11-10",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+  "academicOwner": "app/modules/academia.js",
+  "academicOwnerGitBlob": "4c3e7aa2228899af24011cb20597892bcd1f37e4",
+  "ownerUnchangedFromPreviouslyServedHosting": true,
+  "catalogue": {
+    "totalCourses": 27,
+    "totalLessons": 117,
+    "adminCourses": 15,
+    "adminLessons": 72,
+    "shopperCourses": 7,
+    "shopperLessons": 27,
+    "clientCourses": 5,
+    "clientLessons": 18
+  },
+  "test": {
+    "command": "node --test backend/runtime/hr-live-service/test/cxorbia-academy-command-provider-v1.test.mjs",
+    "pass": 27,
+    "fail": 0,
+    "scope": "LOCAL_IN_MEMORY_PROVIDER_AND_UI_SOURCE_VALIDATION_ONLY"
+  },
+  "proven": ["exact-current-catalogue-contract", "own-UID-scoped-progress", "idempotent-provider-ACK-simulation", "cross-session-reconstruction-simulation", "cross-tenant-project-role-denial-simulation", "all-117-lesson-completions-simulation", "no-auto-completion-on-open"],
+  "notProven": ["real-learner-DEV-Firestore-ACK", "real-separate-Admin-Shopper-Cliente-login-reload", "human-visual-acceptance", "same-artifact-terminal-Gate20-Gate21"],
+  "contentCaution": "Some curriculum prose describes integrations or workflows as operational that remain unproven at the current release gate. Preserve the source-owned learning revision; adjudicate user-facing wording with an exact content-version migration before editing base lessons.",
+  "academyRealPersonProgressWrites": 0,
+  "production": false,
+  "next": "Authenticated isolated DEV learning-progress ACK/reload and cross-identity visibility with a designated synthetic learner, followed by role-specific visual receipt; do not mark a real person's course completed for QA."
+}

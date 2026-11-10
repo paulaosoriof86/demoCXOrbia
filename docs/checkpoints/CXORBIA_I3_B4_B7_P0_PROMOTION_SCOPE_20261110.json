@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "cxorbia.i3.b4-b7.p0-promotion-scope.v1",
+  "iteration": "I3",
+  "asOfLocalDate": "2026-11-10",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "predecessorProductSourceSha": "56d5ed08e6b91854333d80b69645607615707a26",
+  "sourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+  "sourceTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
+  "linkedFindings": ["VRM-322", "VRM-127", "VRM-166"],
+  "allowedProductFiles": [
+    "app/core/backend-bulletins.js",
+    "app/core/backend-certifications.js",
+    "app/core/data.js",
+    "app/modules/cert.js",
+    "app/modules/midia.js",
+    "app/modules/misvisitas.js",
+    "app/modules/postulaciones.js",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-vrm256-midia-current-period.test.mjs",
+    "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs",
+    "tools/qa/cxorbia-i3-terminal-module-domain-coverage.test.mjs"
+  ],
+  "reason": "One bounded pending-DEV successor composes the already-approved B4 project-gate P0 and B7 exact-recipient approval/no-duplicate/November-calendar P0, preserving one branch and one candidate.",
+  "excluded": ["production", "real-HR-writes", "real-finance-writes", "new-users", "bank-retirement", "mass-recertification", "academy-progress-of-real-people"],
+  "production": false
+}
