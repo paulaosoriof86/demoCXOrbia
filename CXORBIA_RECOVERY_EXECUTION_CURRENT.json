@@ -11919,7 +11919,7 @@
   "verifiedCurrent20261110": {
     "authority": "PAULA_20261110_OPTION_A_ALL_SHOPPERS",
     "proofPath": "docs/checkpoints/CXORBIA_I3_VRM322_B4_DEV_AND_BANK_FLAGS_READBACK_20261110.json",
-    "proofBlob": "0fa8316f19b76ec8e8cad86e6bf96224645b72f8",
+    "proofBlob": "2caebe4d2170865fa04b1dd987a3bcb0c8fd2e12",
     "sameBranch": "recovery/cxorbia-phase-a-20260831",
     "productSourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
     "productTree": "8075c43e10763ed672ec2f1742a09b04e5ffb40e",
@@ -11953,6 +11953,14 @@
     "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V290.json",
     "governanceNote": "Historical postDeployRunSeal/currentDevMaterialization/pendingDevSuccessor fields are immutable predecessor seals; do NOT interpret as latest Hosting readback. This additive snapshot carries current DEV source/Hosting and Paula business decision without falsifying immutable legacy seals.",
     "phaseAComplete": false,
-    "production": "DO_NOT_TOUCH"
+    "production": "DO_NOT_TOUCH",
+    "b4AcceptanceBasis": "FUNCTIONAL_ADMIN_SHOPPER_E2E_IN_DEV_INDEPENDENT_OF_CURRENT_SHOPPER_TEST_SCORES",
+    "governanceCi": {
+      "runNumber": 2340,
+      "runId": 42781869723,
+      "decision": "SUCCESS",
+      "canonicalCandidateAuthority": "SUCCESS",
+      "sourceCodeUnchanged": true
+    }
   }
 }
