@@ -460,5 +460,33 @@
     "doNotModifyHr": true,
     "doNotReclassifyB6FunctionalPass": true,
     "production": "DO_NOT_TOUCH"
+  },
+  "b5AdminReportkitOctoberPreview20261110": {
+    "actor": "ADMIN_AUTHENTICATED_DEV",
+    "period": "OCT_2026",
+    "browser": "CONNECTED_USER_CHROME_EXTENSION",
+    "action": "LIQUIDACIONES_EXPORTAR_OPEN_REPORTKIT_PREVIEW",
+    "result": "PASS_REPORTKIT_DIALOG_RENDERED_WITH_ROLE_SPECIFIC_PDF_EXCEL_PPT_ACTIONS",
+    "preview": {
+      "title": "Liquidaciones",
+      "project": "Cinepolis",
+      "period": "OCT_2026",
+      "monetaryRows": 1,
+      "row": "JULISSA_FLORES_C_MIRAFLORES_GT_Q",
+      "honorarioGTQ": 60,
+      "reembolsoGTQ": 145,
+      "totalGTQ": 205,
+      "status": "validada",
+      "sourceReviewRowsExcluded": 42
+    },
+    "sourceSecurity": "42_REVIEW_ROWS_EXCLUDED_FROM_MONETARY_EXPORT_CORRECT",
+    "pdfButtonPresent": true,
+    "pdfDownloadAttempt": "CLICK_CDP_TIMEOUT_NO_CONFIRMED_FILE_ARTIFACT",
+    "proofDisposition": "PASS_RENDERED_REPORT_PREVIEW_NOT_YET_DOWNLOAD_FILE_READBACK",
+    "shopperCsvDownload": "USER_VISUAL_PROOF_332_BYTES_PASS",
+    "c09C10FullOwnerMatch": false,
+    "noProviderWrites": true,
+    "noFinancialStateChange": true,
+    "production": "DO_NOT_TOUCH"
   }
 }
