@@ -117,10 +117,13 @@ CX.module('misvisitas',({data,ui})=>{
     return'asignada';
   };
   const certificationState=()=>{
-    let bank=null;try{bank=CX.certStore?.bank?.(p.id,String(window.CX_CERT_SELECTED_ID||''))||null;}catch(_){}
-    const decision=CX.backendCertifications?.sessionDecision?.(bank,data.currentProjectId||p.projectId||'');
-    return {required:decision?.required!==false,done:decision?.done===true,bank,
-      durable:decision?.durable||null,carry:decision?.carry||{eligibilityGranted:false},
+    let banks=[];try{banks=CX.certStore?.banks?.(p.id)||[];}catch(_){}
+    // VRM-322: certification selection must not alter project visit eligibility.
+    const decision=CX.backendCertifications?.projectDecision?.(banks,data.currentProjectId||p.projectId||'');
+    return {required:decision?.required!==false,done:decision?.done===true,
+      bank:null,requiredBankCount:decision?.requiredBankCount||0,
+      completedBankCount:decision?.completedBankCount||0,
+      durable:null,carry:{eligibilityGranted:false},
       explicitlyNotRequired:decision?.explicitlyNotRequired===true};
   };
   const routeState=v=>{

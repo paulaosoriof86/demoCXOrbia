@@ -392,3 +392,40 @@ test('I3 P0 backend test-void protocol: five isolated provider scenarios pass be
   assert.match(stdout,/^# pass 5$/m);
   assert.match(stdout,/^# fail 0$/m);
 });
+
+
+test('VRM322 published multi-bank project eligibility is stable across presentation selection',()=>{
+  const secondId='certbank-project-a-'+NOV+'-other';
+  const rows=[
+    {id:bankId,periodId:OCT,version:1,bank:{estado:'published',required:true,certificationName:'Z. Principal',certificationId:'main',preguntas:[{q:'Q1',ops:['A','B']}]}},
+    {id:secondId,periodId:NOV,version:1,bank:{estado:'published',required:true,certificationName:'A. Independiente',certificationId:'secondary',preguntas:[{q:'Q2',ops:['A','B']}]}}
+  ];
+  const pass=attempt({score:100,pass:true,status:'certified',eligibilityGranted:true,currentCertification:true});
+  const h=harness({records:[pass],banks:rows});
+  h.cx.data.__sessionShopperProfile={id:'shopper-one',certificationEvidenceRecords:[]};
+  const choose=()=>h.cx.backendCertifications.projectDecision(h.cx.certStore.banks(OCT),'project-a');
+  const first=choose();
+  assert.equal(first.requiredBankCount,2);
+  assert.equal(first.completedBankCount,1);
+  assert.equal(first.done,false,'One pass cannot complete two independent required certifications');
+  h.cx.data.currentPeriodId=NOV;
+  assert.equal(choose().done,false,'Changing operational period does not grant the second bank');
+  h.cx.data.__protectedCertifications.push(attempt({id:'second-pass',bankResourceId:secondId,
+    periodId:NOV,score:100,pass:true,status:'certified',eligibilityGranted:true,currentCertification:true}));
+  assert.equal(choose().done,true);
+  rows[1].bank.required=false;
+  h.cx.data.__protectedCertifications.pop();
+  assert.equal(choose().done,true,'Optional second bank does not block the valid first');
+  rows[0].bank.required=false;
+  const optional=choose();
+  assert.equal(optional.done,true);
+  assert.equal(optional.explicitlyNotRequired,true);
+  rows.length=0;
+  assert.equal(choose().done,false,'Missing published banks are never treated as passed');
+  const midia=fs.readFileSync(new URL('../../app/modules/midia.js',import.meta.url),'utf8');
+  const misvisitas=fs.readFileSync(new URL('../../app/modules/misvisitas.js',import.meta.url),'utf8');
+  for(const source of [midia,misvisitas]){
+    assert.ok(source.includes('backendCertifications?.projectDecision'));
+    assert.doesNotMatch(source,/CX_CERT_SELECTED_ID/);
+  }
+});

@@ -206,6 +206,24 @@ window.CX=window.CX||{};
     return {shopper,shopperId,projectId,bank,durable,carry,explicitlyNotRequired,
       required:!explicitlyNotRequired,done};
   }
+  // VRM-322: the project gate is independent of the bank currently selected
+  // for taking an examination. Each independently required published bank
+  // must have its own durable evidence; never reuse a different bank's pass.
+  function projectDecision(banks,requestedProjectId){
+    const projectId=str(requestedProjectId||CX.data?.currentProjectId);
+    const active=arr(banks).filter(bank=>['published','confirmed'].includes(str(bank?.estado).toLowerCase()));
+    const requiredBanks=active.filter(bank=>bank?.required!==false);
+    const decisions=requiredBanks.map(bank=>({bankResourceId:str(bank?.__resourceId||bank?.bankResourceId),
+      result:sessionDecision(bank,projectId)}));
+    const exactBankIds=decisions.every(row=>!!row.bankResourceId);
+    const missing=decisions.filter(row=>!row.bankResourceId||row.result?.done!==true);
+    const done=active.length>0&&exactBankIds&&missing.length===0;
+    return {projectId,required:requiredBanks.length>0||active.length===0,
+      explicitlyNotRequired:active.length>0&&requiredBanks.length===0,
+      done,activeBankCount:active.length,requiredBankCount:requiredBanks.length,
+      completedBankCount:decisions.length-missing.length,
+      missingBankResourceIds:missing.map(row=>row.bankResourceId),decisions};
+  }
   CX.backendCertifications={
     call,
     loadShopperResources,
@@ -217,6 +235,6 @@ window.CX=window.CX||{};
     publishBank:payload=>call('publish',Object.assign({idempotencyKey:newId('cert.publish')},payload||{})),
     configureBank:payload=>call('configure',Object.assign({idempotencyKey:newId('cert.configure')},payload||{})),
     retireBank:payload=>call('retire',Object.assign({idempotencyKey:newId('cert.retire')},payload||{})),
-    currentUid,durableCurrent,carryoverDecision,applicableRecertifications,sessionDecision
+    currentUid,durableCurrent,carryoverDecision,applicableRecertifications,sessionDecision,projectDecision
   };
 })();

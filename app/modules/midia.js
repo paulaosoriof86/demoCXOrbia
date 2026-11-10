@@ -192,8 +192,10 @@ CX.module('midia', ({data,role,ui})=>{
   }).slice(0,2):[];
   const nextVisit=mine[0]||null;
   const vf=nextVisit&&data.visitFacets?data.visitFacets(nextVisit):(nextVisit?.canonicalFacets||{});
-  const certBank=(()=>{try{return CX.certStore?.bank?.(p.id,String(window.CX_CERT_SELECTED_ID||''))||null;}catch(_){return null;}})();
-  const certDecision=CX.backendCertifications?.sessionDecision?.(certBank,data.currentProjectId||p.projectId||'');
+  // Project execution is gated by every published required bank; the exam
+  // dropdown is only a presentation choice, never an execution permission.
+  const certBanks=(()=>{try{return CX.certStore?.banks?.(p.id)||[];}catch(_){return [];}})();
+  const certDecision=CX.backendCertifications?.projectDecision?.(certBanks,data.currentProjectId||p.projectId||'');
   const certDone=certDecision?.done===true;
   const steps=nextVisit?[
     ['Asignación confirmada',!!vf.assigned],['Instructivo leído',!!nextVisit.instructiveReadAt],['Certificación del proyecto',certDone],['Agendamiento',!!vf.scheduled],['Visita realizada',!!vf.realized],['Cuestionario completado',!!vf.questionnaire],['Submitida',!!vf.submitted],['Pago confirmado',!!vf.paymentConfirmed]
