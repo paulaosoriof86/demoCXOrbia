@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "cxorbia.i3.c3.functional-accounting-pointer-correction.v1",
+  "asOfLocalDate": "2026-11-10",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "classification": "MAPPING_FAILURE",
+  "observedRun": {"runId": 42899083876, "runNumber": 2380, "job": "canonical-candidate-authority", "decision": "FAIL_ONE_STALE_CURRENT_PRODUCT_SOURCE_POINTER"},
+  "before": {
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V292.json",
+    "field": "functionalBlockCertificationAccounting20261110.currentProductSourceSha",
+    "sourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+    "descriptorProductSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb"
+  },
+  "after": {
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V293.json",
+    "field": "functionalBlockCertificationAccounting20261110.currentProductSourceSha",
+    "sourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+    "scope": "CONTROL_SOURCE_POINTER_ONLY_NO_NEW_FUNCTIONAL_ASSERTION"
+  },
+  "preserved": {
+    "functionalBlocksPass": ["B4", "B5", "B6"],
+    "functionalBlockCount": "3_OF_9",
+    "integralModuleMatches": "5_OF_21",
+    "historicalApprovalsUnchanged": true,
+    "findingsUnchanged": 322,
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V606_2026-11-10.json",
+    "academyLocalQA": "27_OF_27_PASS",
+    "productSourceUnchanged": true,
+    "devMaterialization": "PENDING",
+    "production": false
+  },
+  "next": "Rerun canonical CI with V293 on exact B4+B7 source, preserve served DEV predecessor until CI passes; then controlled DEV materialization and role E2E."
+}

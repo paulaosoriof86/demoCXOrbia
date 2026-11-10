@@ -1228,8 +1228,8 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V292.json",
-    "gitBlob": "132741b7bcd484f3f7fb7af38e804b43b17e55d6",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V293.json",
+    "gitBlob": "e15b264b64782d49aab39875ebca7b5a76335d47",
     "sourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
     "allModulesMatch": false,
     "phaseAComplete": false
@@ -3230,8 +3230,8 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V292.json",
-    "matrixBlob": "132741b7bcd484f3f7fb7af38e804b43b17e55d6",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V293.json",
+    "matrixBlob": "e15b264b64782d49aab39875ebca7b5a76335d47",
     "classificationCounts": {
       "MATCH": 5,
       "SOURCE_FIXED_DEV_MATERIALIZED_ADMIN_B10_FOCAL_PASS_PENDING_SHOPPER_ROLE_PROVIDER_LINK": 1,
@@ -7048,7 +7048,7 @@
     "sameArtifactAdminShopper": "PENDING",
     "production": false
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V292.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V293.json",
   "vrm301DevHostingAdminReadback20261104": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM301_DEV_HOSTING_RUN41801457655_ADMIN_READBACK_20261104.json",
     "receiptGitBlob": "b8138b76db5159956aa500fe30f2be0f99fc8fce",
