@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "cxorbia.i3.b5-finance-crossmodule-regression.v1",
+  "dateLocal": "2026-11-10",
+  "timezone": "America/Guatemala",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "baselineDocumentaryHead": "20bf72273a67451f54ce191cf9db11fbb8cd61d6",
+  "productSourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+  "productTree": "8075c43e10763ed672ec2f1742a09b04e5ffb40e",
+  "owner": "B5_MIS_BENEFICIOS_WITH_B8_PAYMENT_BOUNDARY",
+  "scope": "Local executable source/provider-mock regression across payment presentation, history, financial safeguards and neighboring B1/B3/B7/B8 owners. Does not assert fresh authenticated DEV E2E or external bank settlement proof.",
+  "command": "node --test backend/runtime/hr-live-service/test/cxorbia-vrm084-benefits-human-payment-label.test.mjs backend/runtime/hr-live-service/test/cxorbia-vrm257-benefits-payment-label.test.mjs backend/runtime/hr-live-service/test/cxorbia-vrm261-264-source-contract.test.mjs backend/runtime/hr-live-service/test/cxorbia-i3-phasea-completion-source-contract.test.mjs backend/runtime/hr-live-service/test/cxorbia-i3-oct08-b1-b3-source.test.mjs backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-live-source-honorarium.test.mjs backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-source-semantics.test.mjs tools/qa/cxorbia-i3-b8-finance-human-copy.test.mjs tools/qa/cxorbia-i3-e03-visita-payment-human-state.test.mjs tools/qa/cxorbia-i3-work-uat-misvisitas-payment-source.test.mjs",
+  "testFiles": 11,
+  "tests": 158,
+  "pass": 158,
+  "fail": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "exitCode": 0,
+  "coveragePositive": [
+    "Benefits UI payment label renders human wording and canonical source-backed paid state",
+    "Canonical paid reconciliation avoids contradictory pending badge in Benefits and visit detail",
+    "Historical finance reconciliation respects exact canonical visit, project and HR revision",
+    "Payment and reimbursement calculation preserves source provenance and partial-amount uncertainty",
+    "Financial command idempotency and prior audit lineage retained",
+    "Benefits CSV download source contract exists and distinguishes summary from a bank receipt",
+    "Related visit payment flags and finance summary remain consistent in local executable tests"
+  ],
+  "negativeSafeguards": [
+    "No payment confirmation from paymentState alone without source reference",
+    "No fabricated bank reference, amount, or payment date",
+    "Cross-project payment reconciliation blocked",
+    "Unsubmitted visits not promoted to historical paid",
+    "Unknown payment states fail closed rather than claim payment",
+    "Bank and HR write paths not exercised by these tests"
+  ],
+  "priorOverlappingScopeReceipt": "docs/checkpoints/CXORBIA_I3_B4_B5_SCOPE_CERTIFICATION_CONTROL_20261110.json",
+  "countingPolicy": "The 158 test suite overlaps the earlier 7 B5 source tests and must not be added as 165 independent tests or treated as 158 certified modules.",
+  "liveProviderEvidence": {
+    "lastAdminReadback": "docs/checkpoints/CXORBIA_I3_ADMIN_CHROME_B4_B8_READBACK_20261109.json",
+    "dateLocal": "2026-11-09",
+    "september": "44 liquidations; 43 source review; 1 exact eligible; none marked paid in the observed DEV readback",
+    "october": "43 liquidations; 42 source review; 1 exact eligible; none marked paid in the observed DEV readback",
+    "november": "12 liquidations; 12 source review; none eligible in the observed DEV readback",
+    "ownerDirective": "All September shopper obligations externally paid on 2026-10-31; October pending; November payable accrues from completed eligible work; October and November advances are distinct inflows, not individual shopper payout evidence",
+    "settlementEvidence": "Per-visit financial payment manifest with exact matching visitId/country/currency/amount/reference not obtained in this session",
+    "browserAttempt": "Connected local Chrome tabs listable but claimed DEV tab content/control timed out at CDP Emulation.setFocusEmulationEnabled; no fresh authenticated B5 screen action was certified",
+    "driveReadOnlySearch": "No exact Cinépolis/T&A September shopper transfer manifest obtained; unrelated finance files were not used"
+  },
+  "certification": {
+    "b5LocalRegression": "SCOPE_PASS_158_OF_158",
+    "b5FullFunctionalE2E": "HOLD_NO_FRESH_AUTHENTICATED_ADMIN_SHOPPER_PROVIDER_READBACK",
+    "b5FinancialSettlementTruth": "HOLD_EXACT_SEPTEMBER_PER_VISIT_PAYMENT_SOURCE_PENDING",
+    "b5HumanVisualPass": "PENDING",
+    "b5BlockLocked": false,
+    "integralDomainMatches": "UNCHANGED_5_OF_21"
+  },
+  "nextExactAction": "Restore connected Chrome DEV authenticated control or use equivalent approved authenticated readback; reconcile September per-visit payment source without guessing; prove GT/HN Shopper and Admin parity with ACK/reload and Paula block PASS before recording B5 BLOCK_LOCKED. Concurrent read-only B6 preparation may proceed without changing B5 status.",
+  "safety": {
+    "sourceCodeModified": false,
+    "devDeploys": 0,
+    "productionDeploys": 0,
+    "financeWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "production": "DO_NOT_TOUCH",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false
+  },
+  "appendOnly": true
+}
