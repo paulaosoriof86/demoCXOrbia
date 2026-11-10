@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "cxorbia.i3.b4.chrome.admin-shopper-crossrole-readback.v1",
+  "id": "CXORBIA_I3_B4_CHROME_CROSSROLE_LEGACY_COHERENCE_20261110",
+  "observedDateLocal": "2026-11-10",
+  "timeZone": "America/Guatemala",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadAtReadback": "787e7951628faf890a20a61fd03e00aeeb273bee",
+  "candidateProductSource": "56d5ed08e6b91854333d80b69645607615707a26",
+  "candidateProductTree": "85308ea5987540880fc84a81b052d54def5cbbb2",
+  "devHostingVersion": "sites/cxorbia-backend-dev/versions/04f5eb9dfa5df499",
+  "runtimeRevision": "cxorbia-live-hr-dev-00368-9tb",
+  "chromeExtensionBrowser": "Chrome",
+  "browserOriginIsolation": {
+    "admin": "https://cxorbia-backend-dev.web.app",
+    "shopper": "https://cxorbia-backend-dev.firebaseapp.com",
+    "authority": "Same Firebase DEV project and same modules loaded; distinct auth origins permit parallel role sessions.",
+    "initialOriginGate": "Browser approval rejected alternate origin in preceding turn; Paula explicitly approved after explanation.",
+    "shopperSession": "Julissa Flores already signed in; no new password typed or account switched.",
+    "equalityLimit": "Script src lists match; independent binary/hash equivalence between domains not remeasured this turn."
+  },
+  "adminAuthenticated": {
+    "project": "Cinépolis",
+    "period": "NOV 2026",
+    "originalBanks": 4,
+    "bankStates": [
+      "cinepolis-2026-09 / Banco IA / pending_review",
+      "cinepolis-2026-10 / Banco IA / published / 15Q",
+      "cinepolis-2026-09 / main / pending_review",
+      "cinepolis-2026-10 / main / published / 8Q"
+    ],
+    "aggregateHistoricalEvidence": 40,
+    "aggregateLegacyApproved": 38,
+    "aggregateNotApproved": 2,
+    "linkedShoppers": 14,
+    "historicalClaimLimit": "Aggregate legacy approvals do not prove each person's current project-scoped eligibility."
+  },
+  "shopperAuthenticated": {
+    "account": "Julissa Flores",
+    "project": "Cinépolis",
+    "period": "NOV 2026",
+    "publishedBanksVisible": [
+      "15Q / 80% / cinepolis-2026-10",
+      "8Q / 80% / cinepolis-2026-10"
+    ],
+    "questionsVisible": true,
+    "emptyAnswersButtonTest": "PASS client validation: Responde todas las preguntas antes de enviar.",
+    "attemptSubmitted": false,
+    "scorePersisted": false,
+    "profileVisitCounts": {
+      "associated": 10,
+      "realized": 9,
+      "submitted": 9,
+      "paidConfirmed": 7
+    },
+    "miDiaCertification": "Pendiente"
+  },
+  "exactAdminProfiles": [
+    {
+      "shopper": "Stiven López",
+      "visitCount": 10,
+      "certification": "Certificada",
+      "historicalEvidence": "Sin evidencia histórica exacta asociada",
+      "inference": "A current protected/durable approval path exists; source of that certification not independently inspected here."
+    },
+    {
+      "shopper": "Julissa Flores",
+      "visitCount": 10,
+      "certification": "Presentada",
+      "exactHistoricalEvidenceCount": 3,
+      "historicalReviewState": "Pendiente de validación",
+      "effectiveEligibility": "No habilitada actualmente"
+    },
+    {
+      "shopper": "Damaris de León",
+      "visitCount": 4,
+      "certification": "Sin certificación vigente",
+      "historicalEvidence": "Sin evidencia histórica exacta asociada"
+    }
+  ],
+  "sourceOwnerFindings": {
+    "app/core/backend-certifications.js": "sessionDecision grants current eligibility only through protected durable attempt, explicit not-required, or adjudicated historical carryover; carryover requires positive review flags and matching project, denies pending-review, expiry, and active recertification.",
+    "app/modules/cert.js": "Published exams invoke protected submitAttempt and demand providerAck and committed; incomplete answers fail locally without a provider write.",
+    "classification": "LEGACY_ELIGIBILITY_ADJUDICATION_GAP_TO_RECONCILE; not evidence of a generalized bank publication failure",
+    "unresolved": "Determine exact original statuses and adjudication provenance of legacy evidence (especially Julissa's three records) before granting carryover or requiring new exams; no automatic mass approval."
+  },
+  "preservedEvidence": {
+    "vrm321Archive": "docs/checkpoints/CXORBIA_I3_VRM321_B4_QA_BANK_RETIRE_ACK_READBACK_20261110.json",
+    "previousHumanReceipts": "Preserved; this is an additional observation, not a replacement.",
+    "legacyOracle": "Production legacy DO_NOT_TOUCH"
+  },
+  "nextExactActions": [
+    "Read-only exact legacy certification provenance and review decision mapping for the 14 linked shoppers, preserving approved history.",
+    "If a project-scoped positive approval exists with eligible provenance, implement the exact protected carryover adjudication owner; never infer current eligibility from presentation alone.",
+    "Conduct a controlled synthetic or explicitly authorized DEV Shopper attempt for 15Q/8Q, backend grade ACK, readback after reload, Admin versus Shopper and Mi Día/Mis Visitas cross-check.",
+    "Collect Paula's B4 human PASS on current artifact only after those E2E scenarios; then record BLOCK_LOCKED. Keep 5/21 MATCH and Gate20/21/I4 HOLD until actual proof."
+  ],
+  "candidateCreated": false,
+  "productEdited": false,
+  "hostingDeployed": false,
+  "productionTouched": false,
+  "hrWritten": false,
+  "financialWrites": false,
+  "testAttemptsCreated": 0,
+  "testAttemptsDeleted": 0,
+  "status": "B4_FOCAL_READBACK_PASS__FULL_MODULE_NOT_YET_CERTIFIED"
+}
