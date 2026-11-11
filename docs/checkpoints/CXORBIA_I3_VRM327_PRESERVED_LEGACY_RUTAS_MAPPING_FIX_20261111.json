@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm327.non-runtime-owner-false-gate.v1",
+  "id": "VRM-327",
+  "dateGuatemala": "2026-11-11",
+  "decision": "PASS_SOURCE_ONLY_CONTROL_CLASSIFICATION__PHASE_A_STILL_HOLD",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "productSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+  "productTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
+  "devArtifact": {
+    "runNumber": 2428,
+    "runtimeRevision": "cxorbia-live-hr-dev-00370-fl2",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/097e92b33464c10a",
+    "unchanged": true
+  },
+  "cause": "app/modules/rutas.js is preserved legacy code not loaded by app/index-backend-dev.html; app/modules/operacion-extra.js provides the effective current Hojas de Ruta UI, yet the matrix wrongly required independent approval for legacy rutas.js.",
+  "owner": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261111-V294.json and C3 preterminal/terminal source proof",
+  "before": {
+    "pendingOwnerFiles": 88,
+    "pendingIndependentMappingApproval": 2,
+    "pendingBlobProvenance": 27,
+    "strictDomainMatch": 5,
+    "domainTotal": 21
+  },
+  "after": {
+    "preterminalDecision": "PASS_C3_PRETERMINAL_COMPOSITION",
+    "pendingOwnerFiles": 87,
+    "pendingIndependentMappingApproval": 1,
+    "remainingMappingApprovalPath": "app/core/backend-ai.js",
+    "pendingBlobProvenance": 27,
+    "strictDomainMatch": 5,
+    "domainTotal": 21,
+    "terminalEligible": false
+  },
+  "preservedLegacyPath": "app/modules/rutas.js",
+  "preservedLegacyGitBlob": "5ad69a8bad0dc02b58ca8b06145a74f0a4ddd51e",
+  "activeHrRoutePath": "app/modules/operacion-extra.js",
+  "safety": {
+    "entrypointDoesNotLoadLegacyRutas": true,
+    "futureLegacyLoadBlockedByPreterminalGuard": true,
+    "productChanges": 0,
+    "liveHrWrites": 0,
+    "firestoreWrites": 0,
+    "providerWrites": 0,
+    "productionWrites": 0,
+    "i4Authorized": false
+  },
+  "qa": {
+    "targetTests": [
+      "node --test tools/qa/cxorbia-i3-terminal-module-domain-coverage.test.mjs tools/qa/cxorbia-i3-g03-rutas-effective-hr-source-truth.test.mjs",
+      "node tools/qa/cxorbia-i3-c3-preterminal-module-truth.mjs"
+    ],
+    "targetTestPassed": 13,
+    "targetTestFailed": 0
+  },
+  "unchangedHumanPassBlocks": ["B4", "B5", "B6", "B7"],
+  "stillMissing": [
+    "Genuine current-source per-owner provider ACK/reload/no-duplicate receipts for non-MATCH files",
+    "Loaded backend-ai.js independent mapping review",
+    "Current-source Admin/Shopper same revision authenticated E2E and HR GT/HN parity",
+    "B1-B3 and B8 human/module functional closure",
+    "B8 exact bank settlement source rather than unverified payment inference",
+    "B9 full 21-domain terminal proof and Gate20/Gate21"
+  ]
+}

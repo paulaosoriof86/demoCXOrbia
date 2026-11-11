@@ -22783,6 +22783,24 @@
       "providerWrites": 0,
       "production": false,
       "phaseAComplete": false
+    },
+    "VRM-327": {
+      "id": "VRM-327",
+      "priority": "P0_CONTROL",
+      "title": "Unloaded legacy HR routes owner falsely counted in Phase A terminal acceptance",
+      "owner": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261111-V294.json; tools/qa/cxorbia-i3-c3-preterminal-module-truth.mjs; tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs",
+      "discoveredAt": "2026-11-11",
+      "before": "Current 21-domain preterminal counted 88 non-MATCH owner files including app/modules/rutas.js as PENDING_INDEPENDENT_APPROVAL_MAPPING, although routes.js is a preserved legacy module intentionally absent from app/index-backend-dev.html. Active HR UI uses app/modules/operacion-extra.js.",
+      "after": "Mark only app/modules/rutas.js as preserved non-runtime authority; preterminal and terminal owner receipt tests exclude phaseAAuthority:false; loading guard still rejects accidental activation. Source-only preterminal PASS with 87 pending owners, 1 pending approval mapping (loaded backend-ai.js), 27 blob-provenance gaps. Strict domain MATCH remains 5/21; no functional/human PASS forged.",
+      "classification": "MAPPING_FAILURE",
+      "state": "FIXED_PROVEN_CONTROL_ONLY_NO_PRODUCT_CERTIFICATION",
+      "evidencePath": "docs/checkpoints/CXORBIA_I3_VRM327_PRESERVED_LEGACY_RUTAS_MAPPING_FIX_20261111.json",
+      "humanAcceptance": "B4_B5_B6_B7_PREVIOUSLY_PASS_PRESERVED",
+      "sourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+      "productChanges": 0,
+      "providerWrites": 0,
+      "production": false,
+      "phaseAComplete": false
     }
   },
   "latestEvidenceOverrides": {
@@ -23549,11 +23567,12 @@
       "VRM-323",
       "VRM-324",
       "VRM-325",
-      "VRM-326"
+      "VRM-326",
+      "VRM-327"
     ],
-    "findingCount": 326,
-    "expectedCurrentRange": "VRM-001..VRM-326",
-    "nextFindingId": "VRM-327",
+    "findingCount": 327,
+    "expectedCurrentRange": "VRM-001..VRM-327",
+    "nextFindingId": "VRM-328",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_I3_B4_B7_HUMAN_PASS_4_OF_9__STRICT_DOMAIN_MATCH_5_OF_21__B1_B3_B8_B9_GATES_HOLD",
@@ -24077,7 +24096,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Producto 4784f220/tree 0f0d5b08 YA SERVIDO DEV RUN2428 00370-fl2/Hosting 097e92b33464c10a; no redeploy por estado documental. B4-B7 PASS humano 4/9 preservado; 5/21 dominios MATCH historicos, preterminal exacto 88 owner-files pendientes (27 sin procedencia de blob, 2 mappings). VRM324 HR externa corregida por Paula: noviembre HN vs octubre 147/341 celdas distintas; ver readback directo 20261111; falta demostrar revision nueva en backend DEV/Admin/Shopper misma revision, nunca escribir HR. Cerrar solo faltantes B1-B3 E2E rol/humano, B8 septiembre pagado 31-oct declarado sin fuente bancaria exacta, octubre pendiente y noviembre devengo, luego B9 21 dominios Gate20/Gate21. ROLA futuro proyecto mismo tenant GT/SV/HN/NI, 4 fuentes nacionales y coordinadores scope pais, requiere configuracion UI/backend; aun no creado. Prohibido reabrir B4-B7 sin drift exacto; ninguna escritura pagos/HR/produccion, I4 HOLD.",
+  "exactNextAction": "Producto 4784f220/tree 0f0d5b08 YA SERVIDO DEV RUN2428 00370-fl2/Hosting 097e92b33464c10a; no redeploy por estado documental. B4-B7 PASS humano 4/9 preservado; 5/21 dominios MATCH historicos, preterminal exacto 87 owner-files pendientes (27 sin procedencia de blob, 1 mapping; VRM327 legacy rutas excluido por no cargado). VRM324 HR externa corregida por Paula: noviembre HN vs octubre 147/341 celdas distintas; ver readback directo 20261111; falta demostrar revision nueva en backend DEV/Admin/Shopper misma revision, nunca escribir HR. Cerrar solo faltantes B1-B3 E2E rol/humano, B8 septiembre pagado 31-oct declarado sin fuente bancaria exacta, octubre pendiente y noviembre devengo, luego B9 21 dominios Gate20/Gate21. ROLA futuro proyecto mismo tenant GT/SV/HN/NI, 4 fuentes nacionales y coordinadores scope pais, requiere configuracion UI/backend; aun no creado. Prohibido reabrir B4-B7 sin drift exacto; ninguna escritura pagos/HR/produccion, I4 HOLD.",
   "supersedesGitBlob": "5d428fb23ebca021a16c66f76210cca18e7d683e",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -24106,7 +24125,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-327",
+  "nextFindingId": "VRM-328",
   "lastControlFailure": {
     "id": "RUN1238_NEXT_FINDING_ID_GOVERNANCE_DESYNC",
     "classification": "MAPPING_FAILURE",
@@ -27768,7 +27787,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-11-10T06:38:06.861Z",
-  "nextExactAction": "Producto 4784f220/tree 0f0d5b08 YA SERVIDO DEV RUN2428 00370-fl2/Hosting 097e92b33464c10a; no redeploy por estado documental. B4-B7 PASS humano 4/9 preservado; 5/21 dominios MATCH historicos, preterminal exacto 88 owner-files pendientes (27 sin procedencia de blob, 2 mappings). VRM324 HR externa corregida por Paula: noviembre HN vs octubre 147/341 celdas distintas; ver readback directo 20261111; falta demostrar revision nueva en backend DEV/Admin/Shopper misma revision, nunca escribir HR. Cerrar solo faltantes B1-B3 E2E rol/humano, B8 septiembre pagado 31-oct declarado sin fuente bancaria exacta, octubre pendiente y noviembre devengo, luego B9 21 dominios Gate20/Gate21. ROLA futuro proyecto mismo tenant GT/SV/HN/NI, 4 fuentes nacionales y coordinadores scope pais, requiere configuracion UI/backend; aun no creado. Prohibido reabrir B4-B7 sin drift exacto; ninguna escritura pagos/HR/produccion, I4 HOLD.",
+  "nextExactAction": "Producto 4784f220/tree 0f0d5b08 YA SERVIDO DEV RUN2428 00370-fl2/Hosting 097e92b33464c10a; no redeploy por estado documental. B4-B7 PASS humano 4/9 preservado; 5/21 dominios MATCH historicos, preterminal exacto 87 owner-files pendientes (27 sin procedencia de blob, 1 mapping; VRM327 legacy rutas excluido por no cargado). VRM324 HR externa corregida por Paula: noviembre HN vs octubre 147/341 celdas distintas; ver readback directo 20261111; falta demostrar revision nueva en backend DEV/Admin/Shopper misma revision, nunca escribir HR. Cerrar solo faltantes B1-B3 E2E rol/humano, B8 septiembre pagado 31-oct declarado sin fuente bancaria exacta, octubre pendiente y noviembre devengo, luego B9 21 dominios Gate20/Gate21. ROLA futuro proyecto mismo tenant GT/SV/HN/NI, 4 fuentes nacionales y coordinadores scope pais, requiere configuracion UI/backend; aun no creado. Prohibido reabrir B4-B7 sin drift exacto; ninguna escritura pagos/HR/produccion, I4 HOLD.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -37786,7 +37805,7 @@
     "result": "SOURCE_ONLY_AUTHORITY_ALIGNMENT_NOT_HN_IDENTITY_MERGE_OR_TERMINAL_CERTIFICATION",
     "production": false
   },
-  "findingCount": 326,
+  "findingCount": 327,
   "i3GeneralShopperIdentityGuard20261028": {
     "findingId": "VRM-291",
     "sourceSha": "308c69e3756e3e80577856009901934ce5f52fba",
@@ -41575,7 +41594,7 @@
     "decision": "P0_D08_DISPATCH_FIXED_LOCAL_9_OF_9_PENDING_CANONICAL_CI_EXACT_DEV",
     "production": false
   },
-  "updatedAt": "2026-11-11T21:34:54Z",
+  "updatedAt": "2026-11-11T22:18:17Z",
   "previousAuthorityBeforeD08Progress": {
     "sourceSha": "91d29146ede33924c831ae54fe3f7b00925fff26",
     "sourceTree": "aab7a7f00f406d2085f715fdd72e82b76f889b66",

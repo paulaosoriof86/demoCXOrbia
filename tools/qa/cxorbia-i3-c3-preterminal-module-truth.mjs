@@ -149,7 +149,10 @@ const modules=(m.modules||[]).map(mod=>{
 });
 // Preterminal verifies provenance/composition, not 21/21 human acceptance.
 // Only the terminal finalizer may promote pending owners with valid receipts.
-const uncoveredFiles=sourceFiles.filter(x=>x.classification!=='MATCH');
+// An intentionally unloaded legacy/preserved file is not an active Phase A
+// owner, and must never count as an uncertified served file. The preserved
+// entrypoint guard below separately rejects accidental future activation.
+const uncoveredFiles=sourceFiles.filter(x=>x.phaseAAuthority!==false&&x.classification!=='MATCH');
 
 const html=git('show',SOURCE+':app/index-backend-dev.html');
 const staticScripts=[...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi)].map(x=>x[1].replace(/^\.\//,''));

@@ -9654,14 +9654,15 @@
       "path": "app/modules/rutas.js",
       "domain": "projects-periods-hr-source-wizard-multiproject",
       "currentBlob": "5ad69a8bad0dc02b58ca8b06145a74f0a4ddd51e",
-      "phaseAAuthority": "TASK_REFERENCED_PENDING_INDEPENDENT_APPROVAL_PROOF",
-      "approvalAuthority": "UNRESOLVED_BY_G03",
-      "classification": "MAPPED_APPROVAL_PROVENANCE_PENDING",
+      "phaseAAuthority": false,
+      "approvalAuthority": "PRESERVED_NOT_LOADED_NOT_AN_ACTIVE_PHASE_A_OWNER",
+      "classification": "PRESERVED_NON_AUTHORITY",
       "sourceInventoryAddedBy": "CXORBIA-I3-G03-OWNER-AUTHORITY-CROSSWALK-READBACK-20261030",
-      "loadTarget": "browser-script",
+      "loadTarget": "preserved-non-runtime",
       "entrypointPresent": false,
-      "loadOrderIssue": "RELEASE_COMPOSITION_FAILURE",
-      "currentCumulativeSource": "c70352004ab580274656a80d69bb166c4da8ed9f"
+      "loadOrderIssue": "NONE_NOT_LOADED_BY_DESIGN",
+      "nonAuthorityReason": "Legacy duplicate of canonical Hojas de Ruta rendered by app/modules/operacion-extra.js; not loaded by app/index-backend-dev.html and must stay excluded",
+      "currentCumulativeSource": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb"
     },
     {
       "path": "app/core/backend-certifications.js",
@@ -10117,6 +10118,11 @@
     }
   },
   "preservedNonAuthoritySource": [
+    {
+      "path": "app/modules/rutas.js",
+      "blob": "5ad69a8bad0dc02b58ca8b06145a74f0a4ddd51e",
+      "reason": "legacy duplicate route module deliberately absent from DEV entrypoint; current canonical rutas owner is app/modules/operacion-extra.js; reject accidental future load"
+    },
     {
       "path": "app/adapters/cxorbia-project-operational-source-v1.js",
       "blob": "95ba739c314af820c514267374f47c965e96db6f",

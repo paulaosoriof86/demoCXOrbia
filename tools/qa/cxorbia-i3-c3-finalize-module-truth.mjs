@@ -56,7 +56,7 @@ if(pre.preTerminalComposition?.moduleCount!==21)
 
 const requiredReceiptDomains=new Set([
   ...modules.filter(x=>String(x.classification||'')!=='MATCH').map(x=>String(x.domain||'')).filter(Boolean),
-  ...sourceFiles.filter(x=>String(x.classification||'')!=='MATCH').map(x=>String(x.domain||'')).filter(Boolean)
+  ...sourceFiles.filter(x=>x.phaseAAuthority!==false&&String(x.classification||'')!=='MATCH').map(x=>String(x.domain||'')).filter(Boolean)
 ]);
 
 const receiptsByDomain=new Map();
@@ -100,7 +100,7 @@ for(const mod of modules){
   // Retain historical MATCH, but never skip a current owner byte that lacks proof.
   if(cls==='MATCH'&&!pending.length)continue;
   const domain=String(mod.domain||'');
-  const moduleFiles=sourceFiles.filter(x=>x.domain===domain).map(x=>String(x.path||'')).filter(Boolean);
+  const moduleFiles=sourceFiles.filter(x=>x.phaseAAuthority!==false&&x.domain===domain).map(x=>String(x.path||'')).filter(Boolean);
   const moduleOwners=new Set([...(mod.owners||[]).map(String),...moduleFiles]);
   const candidate=(receiptsByDomain.get(domain)||[]).filter(x=>(x.receipt.ownerPaths||[]).some(p=>moduleOwners.has(String(p))));
   if(!candidate.length)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_MISSING:'+domain);
@@ -118,6 +118,10 @@ for(const mod of modules){
 }
 
 for(const file of sourceFiles){
+  if(file.phaseAAuthority===false){
+    file.terminalProof='PRESERVED_NON_RUNTIME_OWNER_NOT_PART_OF_TERMINAL_ACCEPTANCE';
+    continue;
+  }
   const cls=String(file.classification||'');
   if(cls==='MATCH'){
     file.terminalServedSource=SOURCE;
@@ -136,7 +140,7 @@ for(const file of sourceFiles){
 }
 
 const nonMatchModules=modules.filter(x=>x.classification!=='MATCH');
-const nonMatchFiles=sourceFiles.filter(x=>x.classification!=='MATCH');
+const nonMatchFiles=sourceFiles.filter(x=>x.phaseAAuthority!==false&&x.classification!=='MATCH');
 if(nonMatchModules.length||nonMatchFiles.length)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_MODULE_TRUTH_NOT_CLOSED:'+JSON.stringify({modules:nonMatchModules.map(x=>x.domain),files:nonMatchFiles.map(x=>x.path)}));
 
 const receiptRows=[...promotionByDomain.entries()].flatMap(([moduleDomain,rows])=>rows.map(x=>({moduleDomain,findingId:x.findingId,decision:x.receipt.decision,ownerPaths:x.receipt.ownerPaths})));

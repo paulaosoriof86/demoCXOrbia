@@ -108,6 +108,20 @@ test('C3 preterminal can audit the HOLD candidate without pretending it is 21/21
   assert.ok(modules.some(x=>x.classification!=='MATCH'));
 });
 
+test('legacy rutas.js is preserved but never counted or loaded as a current Phase A owner',()=>{
+  const legacy=current.sourceFiles.find(x=>x.path==='app/modules/rutas.js');
+  assert.equal(legacy?.phaseAAuthority,false);
+  assert.equal(legacy?.classification,'PRESERVED_NON_AUTHORITY');
+  assert.ok(current.preservedNonAuthoritySource.some(x=>x.path==='app/modules/rutas.js'));
+  const entry=fs.readFileSync('app/index-backend-dev.html','utf8');
+  assert.doesNotMatch(entry,/<script[^>]+src=["']modules\/rutas\.js["']/);
+  assert.match(entry,/<script[^>]+src=["']modules\/operacion-extra\.js["']/);
+  const pre=fs.readFileSync('tools/qa/cxorbia-i3-c3-preterminal-module-truth.mjs','utf8');
+  const final=fs.readFileSync('tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs','utf8');
+  assert.match(pre,/uncoveredFiles=sourceFiles\.filter\(x=>x\.phaseAAuthority!==false/);
+  assert.match(final,/nonMatchFiles=sourceFiles\.filter\(x=>x\.phaseAAuthority!==false/);
+});
+
 test('C3 finalizer preserves historical MATCH but cannot skip missing current-owner receipts',()=>{
   const dir=fs.mkdtempSync(join(tmpdir(),'cxorbia-c3-preserve-'));
   try{
@@ -119,7 +133,10 @@ test('C3 finalizer preserves historical MATCH but cannot skip missing current-ow
       productSource:{sha:source,treeSha:tree},
       preTerminalComposition:{decision:'PASS_C3_PRETERMINAL_COMPOSITION',moduleCount:21,pendingMappingApprovalFiles:[]},
       modules:modules.map(m=>({...m,classification:'MATCH',pendingTerminalFiles:m.domain==='historical'?[historicPath]:[]})),
-      sourceFiles:[{path:historicPath,domain:'historical',classification:'PENDING_BLOB_PROVENANCE_SERVED'}]
+      sourceFiles:[
+        {path:historicPath,domain:'historical',classification:'PENDING_BLOB_PROVENANCE_SERVED'},
+        {path:'app/modules/rutas.js',domain:'historical',classification:'PRESERVED_NON_AUTHORITY',phaseAAuthority:false}
+      ]
     });
     const focal=write('focal',{decision:'PASS_PRE_I4_FOCAL_HUMAN_BROWSER',sourceSha:source,hrRevision:hr});
     const human=write('human',{decision:'PASS_I3_HUMAN_LIVE_ACCEPTANCE',sourceSha:source,sourceRevision:hr});
@@ -148,5 +165,7 @@ test('C3 finalizer preserves historical MATCH but cannot skip missing current-ow
     assert.equal(result.terminalClosure.decision,'PASS_C3_TERMINAL_MODULE_TRUTH_21_21');
     assert.equal(result.modules.find(m=>m.domain==='historical').historicalMatchPreserved,true);
     assert.equal(result.sourceFiles[0].classification,'MATCH');
+    assert.equal(result.sourceFiles[1].classification,'PRESERVED_NON_AUTHORITY');
+    assert.equal(result.sourceFiles[1].terminalProof,'PRESERVED_NON_RUNTIME_OWNER_NOT_PART_OF_TERMINAL_ACCEPTANCE');
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
