@@ -6,6 +6,7 @@ on:
       - recovery/cxorbia-phase-a-20260831
     paths:
       - CXORBIA_RECOVERY_EXECUTION_CURRENT.json
+      - CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
       - docs/checkpoints/CXORBIA_I3_HUMAN_PASS_B7_NO_LOOP_ACCOUNTING_20261111.json
       - tools/qa/cxorbia-i3-human-pass-monotonic-guard.mjs
       - tools/qa/cxorbia-i3-human-pass-monotonic-guard.test.mjs
