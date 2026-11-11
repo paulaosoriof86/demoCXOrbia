@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "cxorbia.i3.postdeploy-materialization.v1",
+  "decision": "PASS_CURRENT_SOURCE_EXACT_DEV_PROVIDER_ACK_NO_TERMINAL_CERTIFICATION",
+  "asOfUtc": "2026-11-11T19:56:15Z",
+  "source": {
+    "sha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+    "tree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
+    "branch": "recovery/cxorbia-phase-a-20260831"
+  },
+  "materialization": {
+    "builds": 1,
+    "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
+    "hostingDeploys": 1,
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794426954796000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/097e92b33464c10a",
+    "hrRevision": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+    "production": false,
+    "runtimeDeploys": 1,
+    "runtimeDigest": "sha256:396cd23f895a98606fa9ca238132a5515065c07fec632cd73c00cc2e6d6c639e",
+    "runtimeRevision": "cxorbia-live-hr-dev-00370-fl2",
+    "scenarioDimensionsProven": true,
+    "sourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+    "sourceTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
+    "storageRulesDeploys": 0,
+    "runId": 43091136067,
+    "runNumber": 2428,
+    "jobId": 130768519662,
+    "controlHeadAtDeploy": "a34e5a8dfb3ecff358e9ea3cb18bb3b0f35fbe25",
+    "artifactId": 13887379850,
+    "artifactDigest": "sha256:d78d58c4f96963e73ae364560f7eb82949d3e4d4bacf777e040f2d656d94d859",
+    "artifactDigestType": "GITHUB_ACTIONS_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2428_CURRENT_SOURCE_DEV_MATERIALIZATION_20261111.json",
+    "state": "PASS_EXACT_DEV_TECHNICAL_HOLD_ROLE_E2E_HUMAN_AND_PHASEA_GATE",
+    "humanAcceptance": "B4_B5_B6_B7_PASS_PRESERVED__B1_B2_B3_B8_B9_PENDING",
+    "fullTaskClosed": false,
+    "hrWrites": 0,
+    "firestoreRulesDeploys": 0,
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62"
+  },
+  "providerEvidence": {
+    "githubRunUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43091136067",
+    "githubJobId": 130768519662,
+    "githubArtifactId": 13887379850,
+    "githubArtifactDigest": "sha256:d78d58c4f96963e73ae364560f7eb82949d3e4d4bacf777e040f2d656d94d859",
+    "workflowConclusion": "success",
+    "runtimeTraffic": "100_PERCENT_ON_REVISION_00370_FL2",
+    "runtimeAndHostingHealth": "PASS_JOB_ASSERTIONS",
+    "sourceSafe": true,
+    "hrReadback": "PASS_REVISION_STABLE_NO_WRITES",
+    "noSeparateChromeReviewInThisRun": true
+  },
+  "precedingAlreadyServedEvidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2382_PAIRED_DEV_CHROME_READBACK_20261110.json",
+    "runId": 42921566208,
+    "sourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+    "runtimeRevision": "cxorbia-live-hr-dev-00369-lkf",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/e301b123cd45d041",
+    "finding": "Earlier provider receipt established that current source had already been served; stale pointer allowed redundant paired DEV deployment."
+  },
+  "acceptance": {
+    "humanBlocksPass": [
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ],
+    "pendingHumanOrFunctional": [
+      "B1",
+      "B2",
+      "B3",
+      "B8",
+      "B9"
+    ],
+    "strictDomainsMatch": 5,
+    "strictDomainsTotal": 21,
+    "terminalPhaseA": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD"
+  },
+  "safety": {
+    "productionChanged": false,
+    "hrWrites": 0,
+    "storageRulesDeploys": 0,
+    "firestoreRulesDeploys": 0,
+    "paymentsExecuted": false
+  }
+}

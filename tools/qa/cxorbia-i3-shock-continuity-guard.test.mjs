@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {validateShockContinuity, classifyModules} from './cxorbia-i3-shock-continuity-guard.mjs';
+import {validateShockContinuity, classifyModules, findNewerDevProviderReceipt} from './cxorbia-i3-shock-continuity-guard.mjs';
 
 const freeze = 'CXORBIA_I3_PLAN_CHOQUE_CIERRE_MONOTONICO_FROZEN_2026-10-28.md';
 const mk = () => {
@@ -83,6 +83,26 @@ const withBoundedPendingHostingSuccessor = () => {
 
 test('same source, pointers, counts and frozen priority pass', () => {
   assert.equal(validateShockContinuity(mk()).pass, true);
+});
+test('independent RUN2382 DEV provider receipt detects a falsely pending already-served source', () => {
+  const source = '4784f220912ccb1f4be19254ee6b9695dcd0a6eb';
+  const receipt = {
+    path: 'docs/checkpoints/CXORBIA_I3_RUN2382_PAIRED_DEV_CHROME_READBACK_20261110.json',
+    value: {productSourceSha: source, workflowRunId: 42921566208,
+      providerReceipt: {decision:'PASS_VRM154_156_EXACT_DEV_MATERIALIZATION',
+        runtimeRevision:'cxorbia-live-hr-dev-00369-lkf',
+        hostingVersion:'sites/cxorbia-backend-dev/versions/e301b123cd45d041',
+        hostingRelease:'sites/cxorbia-backend-dev/channels/live/releases/1794352643600000',
+        production:false}},
+  };
+  assert.deepEqual(findNewerDevProviderReceipt({sourceSha:source,sealedRunId:42658036502,receipts:[receipt]}),receipt);
+  assert.equal(findNewerDevProviderReceipt({sourceSha:source,sealedRunId:43091136067,receipts:[receipt]}),undefined);
+  assert.equal(findNewerDevProviderReceipt({sourceSha:'new-source',sealedRunId:42658036502,receipts:[receipt]}),undefined);
+});
+test('current source serving cannot retain SOURCE_ONLY matrix classification', () => {
+  const a = mk();a.descriptor.postDeployRunSeal={mode:'CURRENT_SOURCE_SERVING',runId:1};
+  a.matrix.productSource.authorityState='SOURCE_ONLY_PROVEN_PENDING_RUNTIME_AND_HOSTING_DEV';
+  assert.match(validateShockContinuity(a).failures.join(' '),/CURRENT_DEV_MATRIX_FALSE_SOURCE_ONLY/);
 });
 test('stale next action fails closed', () => {
   const a = mk(); a.pointer.nextExactAction = 'Only diagnose D07 PDF';

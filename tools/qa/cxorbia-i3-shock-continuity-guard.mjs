@@ -73,6 +73,22 @@ export function classifyModules(matrix) {
   return Object.fromEntries(Object.entries(counts).sort(([a], [b]) => a.localeCompare(b)));
 }
 
+// This witness is intentionally independent of the descriptor and pointer.
+// RUN2382 already proved the active product source served in DEV while both
+// control JSONs still pointed at RUN2322 and therefore agreed falsely.
+export function findNewerDevProviderReceipt({sourceSha, sealedRunId, receipts}) {
+  return receipts.find(({path: receiptPath, value: r}) => {
+    const provider = r?.providerReceipt || r?.materialization;
+    const runId = Number(r?.workflowRunId || provider?.runId || 0);
+    const source = r?.productSourceSha || r?.source?.sha || provider?.sourceSha;
+    const passed = /^PASS/.test(String(provider?.decision || r?.decision || ''));
+    return source === sourceSha && runId > Number(sealedRunId || 0) &&
+      passed && provider?.production === false &&
+      Boolean(provider?.runtimeRevision && provider?.hostingVersion &&
+        provider?.hostingRelease) && Boolean(receiptPath);
+  });
+}
+
 export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, gitBlob, freezePath = FREEZE,gitRead,gitAncestor}) {
   const failures = [];
   const check = (condition, code) => { if (!condition) failures.push(code); };
@@ -159,6 +175,24 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
   // DEV materialization. The *actual* served version stays bound to its old
   // immutable seal; never relabel it as the newly proposed source.
   const seal = d.postDeployRunSeal || {};
+  // Check immutable, already-committed provider acknowledgements as a third
+  // witness: two stale current pointers must never pass by agreeing together.
+  const proofDir = 'docs/checkpoints';
+  const providerReceipts = fs.existsSync(proofDir)
+    ? fs.readdirSync(proofDir)
+      .filter(name => /^CXORBIA_I3_RUN\d+_.*\.json$/.test(name))
+      .flatMap(name => {
+        const file = path.join(proofDir, name);
+        try { return [{path: file, value: readJson(file)}]; }
+        catch { return []; }
+      }) : [];
+  const newerServedWitness = findNewerDevProviderReceipt({
+    sourceSha: d.productSourceSha, sealedRunId: seal.runId, receipts: providerReceipts,
+  });
+  check(!newerServedWitness, 'MAPPING_FAILURE:PROVEN_DEV_RECEIPT_NEWER_THAN_SEAL');
+  check(!(seal.mode === 'CURRENT_SOURCE_SERVING' &&
+    /^SOURCE_ONLY/.test(String(m.productSource?.authorityState || ''))),
+  'MAPPING_FAILURE:CURRENT_DEV_MATRIX_FALSE_SOURCE_ONLY');
   const predecessorServing = seal.mode === 'PREDECESSOR_SERVING_PENDING_SOURCE' &&
     p.postDeployRunSeal?.mode === seal.mode &&
     p.postDeployRunSeal?.sourceSha === seal.sourceSha &&
