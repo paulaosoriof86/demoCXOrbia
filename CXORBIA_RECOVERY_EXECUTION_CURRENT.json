@@ -39,6 +39,14 @@
         "receipt": "docs/checkpoints/CXORBIA_I3_RUN2410_B7_B8_AUTH_CHROME_SOURCE_AND_PAYMENT_GAP_20261110.json",
         "technicalOnly": true,
         "humanPass": false
+      },
+      {
+        "block": "B7/B1/B2/B3",
+        "type": "AUTH_CHROME_VISUAL_FOCAL_AND_DEV_NOTICE_EXCEPTION",
+        "humanPass": false,
+        "receipt": "docs/checkpoints/CXORBIA_I3_B7_B1_B3_VISUAL_READBACK_AND_DEV_NOTICE_20261110.json",
+        "technicalOnly": true,
+        "sourceUnchanged": true
       }
     ],
     "humanPassBlocks": [
@@ -129,6 +137,16 @@
       "oneDevReconciliation": "Susseth Cruz GT Q217 SOURCE_VALIDATED_NOT_PAID",
       "sourceTests": "PASS",
       "noProduction": true
+    },
+    "latestChromeVisualReadback": "docs/checkpoints/CXORBIA_I3_B7_B1_B3_VISUAL_READBACK_AND_DEV_NOTICE_20261110.json",
+    "devInAppNoticeException": {
+      "target": "Johana Salgado",
+      "visit": "C. Miraflores",
+      "eventKey": "admin_agenda_adjust",
+      "scope": "DEV_ONLY",
+      "providerBulletinId": "NOT_CAPTURED",
+      "sourceHandler": "app/modules/postulaciones.js",
+      "noDateChangeObserved": true
     }
   },
   "planLockPath": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
