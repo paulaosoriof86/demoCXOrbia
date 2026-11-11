@@ -122,7 +122,19 @@
       "periodSwitch": "SEP_VALUES_CORRECT_AFTER_ROUTE_REOPEN_TRANSIENT_LOADING_NOT_PROVEN_PRODUCT_DEFECT"
     },
     "searchForPaymentProof": "Targeted Google Drive queries and Cinépolis folder lacked identifiable Sept-2026 individual transfer/bank evidence; not an exhaustive Drive certification.",
-    "next": "Obtain exact authorized source for 31-Oct shopper payouts, distinguish historical paid from merely source-reconciled, run guarded no-duplicate idempotent per-visit reconciliation and independently read back external payment states. No inferred payment writes."
+    "next": "Carry Paula's 31-Oct human confirmation into a narrowly scoped historical reconciliation PRE-FLIGHT (not an inferred payment): exact visits and previously-pending records must pass provider guards; use existing backend historical reconciliation contract with its authority reference, idempotent ACK, source readback and no duplicate bank writes. Add/verify an accessible Admin flow before autonomous business use.",
+    "rootProductFlowReadback": {
+      "frontendOwner": "app/modules/finanzas.js",
+      "commandBoundary": "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+      "providerOwner": "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+      "historicalProviderCommand": "finance.historical.reconcile",
+      "backendSupportsHistoricalPaidWithAuthorityRef": true,
+      "frontendAdminHistoricalPaymentActionAvailable": false,
+      "frontendInternalPaymentActionAvailable": true,
+      "frontendInternalActionIsNotExternalBankConfirmation": true,
+      "finding": "Historical paid reconciliation exists in protected command/provider and QA scripts but there is no matching accessible Admin action in the financial module; a one-click source Conciliar only validates liquidation and does not mark historical external payment.",
+      "sourceSafeClosure": "Use explicit Paula 31-Oct statement as human direction authority only if exact eligible September visits, prior reconciliation/supersession, current HR revision, per-visit identity/currency/amount, permission, idempotency, external-paid readback and human acceptance are verified. Do not force non-submitted or mismatched rows, and do not create bank transfers."
+    }
   },
   "antiLoop": {
     "localWorktree": "21 commits behind remote and dirty; do not use as release authority or overwrite user edits",
