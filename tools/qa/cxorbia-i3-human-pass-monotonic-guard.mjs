@@ -3,6 +3,7 @@ import {execFileSync} from 'node:child_process';
 
 const POINTER='CXORBIA_RECOVERY_EXECUTION_CURRENT.json';
 const REQUIRED=Object.freeze(['B4','B5','B6','B7']);
+const ALLOWED=new Set(['B1','B2','B3','B4','B5','B6','B7','B8','B9']);
 const fail=(code,detail='')=>{throw new Error('PHASE_A_ACCEPTANCE_CONTINUITY_FAILURE:'+code+(detail?':'+detail:''));};
 const read=(path)=>JSON.parse(fs.readFileSync(path,'utf8'));
 const pointer=read(POINTER);
@@ -11,6 +12,7 @@ if(!active||typeof active!=='object')fail('CURRENT_LOCK_MISSING');
 if(active.priority!=='READ_CURRENT_HUMAN_PASS_RECEIPT_AND_MONOTONE_ACCOUNTING_BEFORE_OLDER_SNAPSHOTS')fail('STALE_LOCK_READ_PRIORITY');
 const passed=active.humanPassBlocks;
 if(!Array.isArray(passed)||new Set(passed).size!==passed.length)fail('INVALID_OR_DUPLICATED_HUMAN_PASS');
+if(passed.some(block=>!ALLOWED.has(block)))fail('UNKNOWN_HUMAN_PASS_BLOCK');
 for(const block of REQUIRED)if(!passed.includes(block))fail('PROTECTED_HUMAN_PASS_ERASED',block);
 if(active.phaseABlocksHumanPassed!==passed.length||active.phaseABlocksTotal!==9)fail('HUMAN_PASS_ACCOUNTING_MISMATCH');
 const b7=active.blocks?.B7;
@@ -54,3 +56,4 @@ const result={
   noDataWrites:true
 };
 console.log(JSON.stringify(result,null,2));
+
