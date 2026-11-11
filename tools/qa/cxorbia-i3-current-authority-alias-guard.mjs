@@ -13,6 +13,8 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
   const tree=String(d?.productSourceTree||'');
   const current=l?.currentTruth||{};
   const seal=l?.currentMaterialization||{};
+  const currentDev=p?.currentDevMaterialization||{};
+  const phaseLock=p?.activePhaseAClosureLock20261110||{};
   check(Boolean(ledgerPath)&&p?.findingsLedgerPath===ledgerPath,'CURRENT_LEDGER_PATH_DESYNC');
   check(Boolean(d?.findingsLedgerExpectedGitBlob)&&p?.findingsLedgerExpectedGitBlob===d.findingsLedgerExpectedGitBlob,'CURRENT_LEDGER_BLOB_DESYNC');
   check(l?.governance?.findingCount===count&&l?.findingCount===count,'CURRENT_FINDING_COUNT_DESYNC');
@@ -25,6 +27,12 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
   check(Boolean(blocker)&&p?.activeBlocker===blocker&&l?.activeBlocker===blocker,'CURRENT_ACTIVE_BLOCKER_DESYNC');
   check(Boolean(current?.moduleTruthPath)&&current.moduleTruthPath===d?.moduleTruthPath,'CURRENT_TRUTH_MATRIX_DESYNC');
   check(Boolean(seal?.runId)&&current?.currentMaterializationRunId===seal.runId&&current?.currentMaterializationSourceSha===seal.sourceSha,'CURRENT_TRUTH_DEV_SEAL_DESYNC');
+  // The business-facing B1-B9 lock must point to the very same served DEV
+  // release as the control seal, not a historical valid predecessor.  Keeping
+  // a stale nested DEV pointer was sufficient to restart deployment loops.
+  check(Boolean(seal?.runtimeRevision)&&currentDev.runtimeRevision===seal.runtimeRevision&&phaseLock.devRuntime===seal.runtimeRevision,'CURRENT_PHASE_LOCK_DEV_RUNTIME_DESYNC');
+  check(Boolean(seal?.hostingVersion)&&currentDev.hostingVersion===seal.hostingVersion&&phaseLock.devHosting===seal.hostingVersion,'CURRENT_PHASE_LOCK_DEV_HOSTING_DESYNC');
+  check(Boolean(seal?.sourceSha)&&currentDev.sourceSha===seal.sourceSha&&phaseLock.sourceSha===seal.sourceSha,'CURRENT_PHASE_LOCK_PRODUCT_SOURCE_DESYNC');
   check(Boolean(d?.updatedAt)&&d.updatedAt===p?.updatedAt&&p.updatedAt===l?.updatedAt,'CURRENT_CONTROL_UPDATED_AT_DESYNC');
   return {pass:failures.length===0,failures,findingCount:count,nextFindingId:next,ledgerPath,sourceSha:source,devRunId:seal?.runId||null};
 }

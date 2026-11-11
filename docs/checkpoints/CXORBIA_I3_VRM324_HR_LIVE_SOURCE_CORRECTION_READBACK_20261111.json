@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "cxorbia.recovery.external-hr-correction-readback.v1",
+  "observedOn": "2026-11-11",
+  "authority": "Google Sheets direct bounded read, not DEV runtime or Firestore",
+  "source": {
+    "spreadsheetId": "1h307t37LxM1nZNh_9Odt6wHUQhROG6cYbsbMKr48vU4",
+    "title": "HR Guatemala - Sincronizacion Google Sheets",
+    "providerModifiedAt": "2026-11-11T20:55:49.264Z",
+    "novemberHondurasTab": "NOVIEMBRE HN",
+    "octoberHondurasTab": "OCTUBRE 26 HN",
+    "novemberGuatemalaTab": "NOVIEMBRE"
+  },
+  "findingId": "VRM-324",
+  "previousObservation": "October and November HN were nearly identical, 340/341 cells; source defect, not monthly visit deduplication",
+  "newDirectReadback": {
+    "hondurasOctoberVisits": 10,
+    "hondurasNovemberVisits": 10,
+    "cellsCompared": 341,
+    "unchangedCells": 194,
+    "changedCells": 147,
+    "hondurasNovemberScheduleExamples": ["2026-11-07", "2026-11-11", "2026-11-14"],
+    "guatemalaNovemberReadback": "Dates and scheduled state corrected by Paula; bounded sheet review confirms new November values",
+    "countryPeriodVisitIdentity": "Same cinema and same source-row number across separate months are distinct visits: tenant, project, period, country, sourceRow",
+    "correctionAuthority": "User-originated HR edits, independently read from live Sheets"
+  },
+  "decision": "EXTERNAL_HR_SOURCE_CORRECTED_DIRECT_READBACK__DEV_SAME_REVISION_ROLE_PARITY_PENDING",
+  "notProven": ["New DEV backend HR source revision", "Authenticated Admin and Shopper same-revision readback", "21-domain terminal MATCH", "Gate20/Gate21"],
+  "technicalNoWrites": {"hr": 0, "firestore": 0, "payments": 0, "production": 0},
+  "productSourceUnchanged": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+  "devAlreadyServedSource": "cxorbia-live-hr-dev-00370-fl2",
+  "preservedHumanPass": ["B4", "B5", "B6", "B7"],
+  "noNewDevDeployAuthorizedFromThisReadback": true
+}

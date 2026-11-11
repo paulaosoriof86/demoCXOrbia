@@ -22728,9 +22728,21 @@
       "before": "Admin Chrome NOV 2026 shows ten HN visits as submitted with October schedules; direct live Sheets comparison confirms NOVIEMBRE HN A1:AE11 equals OCTUBRE 26 HN A1:AE11 in 340 of 341 cells, the one difference being row 8 submitted-date column AC.",
       "expected": "NOVIEMBRE HN must contain independently authorized current-period schedule or an explicit unavailable/not-ready state; never manufacture November visits from October dates.",
       "observed": "All ten November HN rows have October 2026 scheduled, performed, questionnaire and submission dates; the browser faithfully exposed this external-source mismatch.",
-      "state": "OPEN_EXTERNAL_HR_SOURCE_CORRECTION_AND_SAME_REVISION_READBACK_REQUIRED",
+      "state": "EXTERNAL_HR_SOURCE_CORRECTED_DIRECT_READBACK__DEV_SAME_REVISION_PARITY_PENDING",
       "classification": "SOURCE_FAILURE",
       "evidencePath": "docs/checkpoints/CXORBIA_I3_NOVEMBER_HN_LIVE_SHEETS_OCTOBER_DUPLICATION_20261111.json",
+      "correctionReadback": {
+        "path": "docs/checkpoints/CXORBIA_I3_VRM324_HR_LIVE_SOURCE_CORRECTION_READBACK_20261111.json",
+        "providerModifiedAt": "2026-11-11T20:55:49.264Z",
+        "octoberVsNovemberHondurasCellsDifferent": 147,
+        "cellsCompared": 341,
+        "newNovemberScheduleDate": "2026-11-14",
+        "oldObservationPreserved": true,
+        "externalHrSourceCorrected": true,
+        "devBackendRevisionParity": "PENDING_READBACK",
+        "humanPassB4B7Preserved": true,
+        "noExternalWrites": true
+      },
       "humanAcceptance": "NOT_REQUESTED_FOR_DATA_CORRECTION",
       "hrWrites": 0,
       "firestoreWrites": 0,
@@ -24045,7 +24057,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Fuente de producto 4784f220/tree 0f0d5b08 YA SERVIDA en DEV RUN2428 runtime 00370-fl2 Hosting 097e92b33464c10a. B4/B5/B6/B7 PASS humano 4/9 conservados; 5/21 dominios MATCH estrictos, 83/83 identidades, HR Nov 2026 GT34 HN10 revision backend 7b7b6226. Cerrar B1-B3 E2E por rol y PASS humano; B8 finanzas G03 HR: septiembre pagado el 31-oct declarado, sin conciliacion exacta; octubre pendiente, noviembre devengo; VRM-324 NOVIEMBRE HN contiene diez filas de octubre y requiere calendario externo real y readback misma revision. Despues B9 regresion 21 dominios, Gate20/Gate21 HOLD. No repetir DEV sin drift, no pago ni HR write, produccion DO_NOT_TOUCH; no segunda candidata.",
+  "exactNextAction": "Producto 4784f220/tree 0f0d5b08 YA SERVIDO DEV RUN2428 00370-fl2/Hosting 097e92b33464c10a; no redeploy por estado documental. B4-B7 PASS humano 4/9 preservado; 5/21 dominios MATCH historicos, preterminal exacto 88 owner-files pendientes (27 sin procedencia de blob, 2 mappings). VRM324 HR externa corregida por Paula: noviembre HN vs octubre 147/341 celdas distintas; ver readback directo 20261111; falta demostrar revision nueva en backend DEV/Admin/Shopper misma revision, nunca escribir HR. Cerrar solo faltantes B1-B3 E2E rol/humano, B8 septiembre pagado 31-oct declarado sin fuente bancaria exacta, octubre pendiente y noviembre devengo, luego B9 21 dominios Gate20/Gate21. ROLA futuro proyecto mismo tenant GT/SV/HN/NI, 4 fuentes nacionales y coordinadores scope pais, requiere configuracion UI/backend; aun no creado. Prohibido reabrir B4-B7 sin drift exacto; ninguna escritura pagos/HR/produccion, I4 HOLD.",
   "supersedesGitBlob": "5d428fb23ebca021a16c66f76210cca18e7d683e",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -27544,7 +27556,7 @@
     "hostingDeploys": 0,
     "production": false
   },
-  "activeBlocker": "B1_B2_B3_ROLE_E2E_HUMAN__B8_FINANCE_RECONCILIATION__VRM324_NOVEMBER_HN_EXTERNAL_HR_COPY__B9_GATE20_GATE21_HOLD__B4_B7_HUMAN_PASS_PRESERVED",
+  "activeBlocker": "B1_B2_B3_ROLE_E2E_HUMAN__B8_FINANCE_EXACT_PAYOUT_SOURCE__VRM324_HR_SOURCE_CORRECTED_DEV_PARITY_PENDING__B9_88_OWNER_PROOFS_GATE20_21_HOLD__ROLA_COUNTRY_SOURCE_CONFIG_PENDING__B4_B7_PASS_PRESERVED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -27736,7 +27748,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-11-10T06:38:06.861Z",
-  "nextExactAction": "Fuente de producto 4784f220/tree 0f0d5b08 YA SERVIDA en DEV RUN2428 runtime 00370-fl2 Hosting 097e92b33464c10a. B4/B5/B6/B7 PASS humano 4/9 conservados; 5/21 dominios MATCH estrictos, 83/83 identidades, HR Nov 2026 GT34 HN10 revision backend 7b7b6226. Cerrar B1-B3 E2E por rol y PASS humano; B8 finanzas G03 HR: septiembre pagado el 31-oct declarado, sin conciliacion exacta; octubre pendiente, noviembre devengo; VRM-324 NOVIEMBRE HN contiene diez filas de octubre y requiere calendario externo real y readback misma revision. Despues B9 regresion 21 dominios, Gate20/Gate21 HOLD. No repetir DEV sin drift, no pago ni HR write, produccion DO_NOT_TOUCH; no segunda candidata.",
+  "nextExactAction": "Producto 4784f220/tree 0f0d5b08 YA SERVIDO DEV RUN2428 00370-fl2/Hosting 097e92b33464c10a; no redeploy por estado documental. B4-B7 PASS humano 4/9 preservado; 5/21 dominios MATCH historicos, preterminal exacto 88 owner-files pendientes (27 sin procedencia de blob, 2 mappings). VRM324 HR externa corregida por Paula: noviembre HN vs octubre 147/341 celdas distintas; ver readback directo 20261111; falta demostrar revision nueva en backend DEV/Admin/Shopper misma revision, nunca escribir HR. Cerrar solo faltantes B1-B3 E2E rol/humano, B8 septiembre pagado 31-oct declarado sin fuente bancaria exacta, octubre pendiente y noviembre devengo, luego B9 21 dominios Gate20/Gate21. ROLA futuro proyecto mismo tenant GT/SV/HN/NI, 4 fuentes nacionales y coordinadores scope pais, requiere configuracion UI/backend; aun no creado. Prohibido reabrir B4-B7 sin drift exacto; ninguna escritura pagos/HR/produccion, I4 HOLD.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -41543,7 +41555,7 @@
     "decision": "P0_D08_DISPATCH_FIXED_LOCAL_9_OF_9_PENDING_CANONICAL_CI_EXACT_DEV",
     "production": false
   },
-  "updatedAt": "2026-11-11T20:38:14Z",
+  "updatedAt": "2026-11-11T21:17:45Z",
   "previousAuthorityBeforeD08Progress": {
     "sourceSha": "91d29146ede33924c831ae54fe3f7b00925fff26",
     "sourceTree": "aab7a7f00f406d2085f715fdd72e82b76f889b66",
