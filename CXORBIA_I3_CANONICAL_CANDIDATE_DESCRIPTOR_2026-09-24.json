@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B7_EXACT_DEV_ADMIN_SHOPPER_ACK_RELOAD_AND_D08_REAL_ROLE_PROGRESS_PENDING__GATE20_GATE21_HOLD",
+  "activeBlocker": "B1_B2_B3_FULL_BLOCK_HUMAN_E2E__B8_FINANCIAL_SOURCE_RECONCILIATION__B9_GATE20_GATE21_HOLD__B7_HUMAN_PASS_PRESERVED",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",

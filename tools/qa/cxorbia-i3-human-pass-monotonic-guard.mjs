@@ -29,6 +29,18 @@ if(!receipt.after?.humanPassed?.every(x=>passed.includes(x)))fail('B7_RECEIPT_AC
 if(active.strictDomainTotal!==21||!Number.isInteger(active.strictDomainMatches)||active.strictDomainMatches<0||active.strictDomainMatches>21)fail('STRICT_DOMAIN_ACCOUNTING_INVALID');
 if(active.technicalIsNotHumanAcceptance!==true||active.currentAccountingSemantics?.humanFunctionalBlocks?.passed!==passed.length||active.currentAccountingSemantics?.strictOwnerDomainMatch?.matched!==active.strictDomainMatches)fail('MIXED_COUNT_OR_LABEL_DRIFT');
 if(pointer.productSourceSha!==active.sourceSha||pointer.productTree!==active.sourceTree)fail('SOURCE_POINTER_DESYNC');
+if(descriptor.productTreeAuthority && descriptor.productTreeAuthority!==pointer.productTree)fail('DESCRIPTOR_PRODUCT_TREE_DESYNC');
+for(const key of ['moduleTruthPath','moduleTruthExpectedGitBlob','findingsLedgerPath','findingsLedgerExpectedGitBlob']){
+  if(!pointer[key]||!descriptor[key]||pointer[key]!==descriptor[key])fail('ROOT_DOCUMENT_AUTHORITY_DESYNC',key);
+}
+// This check is deliberately CI-only. Unit fixtures do not contain the large Git objects.
+// It prevents a matching pair of stale labels from silently passing as live authority.
+if(process.env.GITHUB_ACTIONS==='true'){
+  for(const [pathKey,blobKey] of [['moduleTruthPath','moduleTruthExpectedGitBlob'],['findingsLedgerPath','findingsLedgerExpectedGitBlob']]){
+    const actual=execFileSync('git',['rev-parse',`HEAD:${pointer[pathKey]}`],{encoding:'utf8'}).trim();
+    if(actual!==pointer[blobKey])fail('DOCUMENT_GIT_BLOB_DESYNC',pathKey);
+  }
+}
 if(active.gate20!=='HOLD'||active.gate21!=='HOLD'){
   // Terminal gate progression is reported separately. This guard never grants I3 or I4.
   if(active.i4Authorized===true && active.phaseABlocksHumanPassed!==9)fail('EARLY_I4');
@@ -53,6 +65,8 @@ const result={
   historicalComparisonNotAdditive:true,
   b7HumanPassPreserved:true,
   b7TinyFishPassed:false,
+  documentAnchorsMatch:true,
+  gitBlobAnchorsChecked:process.env.GITHUB_ACTIONS==='true',
   terminalGate20:active.gate20,
   terminalGate21:active.gate21,
   production:active.production,

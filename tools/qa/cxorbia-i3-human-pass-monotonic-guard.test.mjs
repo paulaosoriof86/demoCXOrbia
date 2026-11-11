@@ -16,7 +16,12 @@ const fixture=()=>{
   fs.copyFileSync(path.join(ROOT,POINTER),path.join(dir,POINTER));
   fs.copyFileSync(path.join(ROOT,RECEIPT),path.join(dir,RECEIPT));
   const p=JSON.parse(fs.readFileSync(path.join(dir,POINTER),'utf8'));
-  fs.writeFileSync(path.join(dir,DESCRIPTOR),JSON.stringify({productSourceSha:p.productSourceSha,phaseAHumanAcceptanceCurrent20261111:{humanAcceptedBlocks:[...p.activePhaseAClosureLock20261110.humanPassBlocks],humanCount:p.activePhaseAClosureLock20261110.phaseABlocksHumanPassed,humanTotal:9}},null,2)+'\n');
+  p.moduleTruthPath ||= 'RECOVERY-I3-MODULE-TRUTH-MATRIX-20261110-V293.json';
+  p.moduleTruthExpectedGitBlob ||= 'e15b264b64782d49aab39875ebca7b5a76335d47';
+  p.findingsLedgerPath ||= 'CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V606_2026-11-10.json';
+  p.findingsLedgerExpectedGitBlob ||= '61e266ac736c8a338f011bed610ba3c00a33a11d';
+  fs.writeFileSync(path.join(dir,POINTER),JSON.stringify(p,null,2)+'\n');
+  fs.writeFileSync(path.join(dir,DESCRIPTOR),JSON.stringify({productSourceSha:p.productSourceSha,productTreeAuthority:p.productTree,moduleTruthPath:p.moduleTruthPath,moduleTruthExpectedGitBlob:p.moduleTruthExpectedGitBlob,findingsLedgerPath:p.findingsLedgerPath,findingsLedgerExpectedGitBlob:p.findingsLedgerExpectedGitBlob,phaseAHumanAcceptanceCurrent20261111:{humanAcceptedBlocks:[...p.activePhaseAClosureLock20261110.humanPassBlocks],humanCount:p.activePhaseAClosureLock20261110.phaseABlocksHumanPassed,humanTotal:9}},null,2)+'\n');
   return dir;
 };
 const update=(dir,change)=>{
@@ -59,6 +64,16 @@ test('negative: descriptor must not silently disagree with current human PASS',(
     fs.writeFileSync(file,JSON.stringify(d,null,2)+'\n');
     const r=check(dir);assert.notEqual(r.status,0);assert.match(r.stderr,/DESCRIPTOR_HUMAN_ACCEPTANCE_DESYNC/);
   }finally{cleanup(dir);}
+});
+
+test('negative: a stale root matrix blob cannot disagree with the canonical descriptor',()=>{
+  const dir=fixture();
+  try{update(dir,p=>{p.moduleTruthExpectedGitBlob='0000000000000000000000000000000000000000';});const r=check(dir);assert.notEqual(r.status,0);assert.match(r.stderr,/ROOT_DOCUMENT_AUTHORITY_DESYNC:moduleTruthExpectedGitBlob/);}finally{cleanup(dir);}
+});
+
+test('negative: a superseded root ledger cannot masquerade as the current ledger',()=>{
+  const dir=fixture();
+  try{update(dir,p=>{p.findingsLedgerPath='CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V605_2026-11-10.json';});const r=check(dir);assert.notEqual(r.status,0);assert.match(r.stderr,/ROOT_DOCUMENT_AUTHORITY_DESYNC:findingsLedgerPath/);}finally{cleanup(dir);}
 });
 
 test('negative: newly acquired acceptance cannot disappear at next commit',t=>{
