@@ -20,10 +20,10 @@
       },
       {
         "block": "B7",
-        "run": 2401,
+        "run": 2400,
         "runId": 42953681463,
         "decision": "PASS_RESERVATION_TO_VISIT_TWO_ROLE_ACK_DURABLE_RELOAD_IDEMPOTENT_CLEAN",
-        "receipt": "docs/checkpoints/CXORBIA_I3_RUN2401_B7_RESERVATION_TO_VISIT_DEV_QA_20261110.json"
+        "receipt": "docs/checkpoints/CXORBIA_I3_RUN2400_B7_RESERVATION_TO_VISIT_DEV_QA_20261110.json"
       }
     ],
     "humanPassBlocks": [
@@ -12728,10 +12728,10 @@
     "asOfLocal": "2026-11-10",
     "state": "PASS_B7_RESERVATION_TO_VISIT_TWO_ROLE_PROVIDER__PHASE_A_INTEGRAL_HOLD",
     "controlCommit": "dcd1c0e88b1fd2de3eb3cdf31677ab11a03cd796",
-    "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2401_B7_RESERVATION_TO_VISIT_DEV_QA_20261110.json",
-    "receiptCommit": "cb05b42194f8d038f9bda0ff9d21d0962ef70a01",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2400_B7_RESERVATION_TO_VISIT_DEV_QA_20261110.json",
+    "receiptCommit": "5fe69f06ab2dcf94c9b68608c22f709096280dca",
     "workflowRunId": 42953681463,
-    "workflowRunNumber": 2401,
+    "workflowRunNumber": 2400,
     "jobId": 130303908225,
     "artifactId": 13825923230,
     "artifactDigest": "sha256:bcb5ae8961039e93ef9826d837768ccbbe024471a34e1c3da4e99692dcc31cc5",
