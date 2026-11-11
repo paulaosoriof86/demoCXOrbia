@@ -5,7 +5,16 @@ const read=p=>fs.readFileSync(p,'utf8');
 
 test('B1 Mi Dia emits distinct state-aware action intents',()=>{const s=read('app/modules/midia.js');assert.match(s,/data-visit-action="schedule"/);assert.match(s,/data-visit-action="instructive"/);assert.match(s,/data-visit-action="reschedule"/);assert.match(s,/CX_PENDING_SHOPPER_VISIT_ACTION/);assert.doesNotMatch(s,/data-cgo="misvisitas">📅 Agendar[\s\S]{0,250}data-cgo="misvisitas">📄 Instructivo/);});
 test('B1 Mi Dia renders scheduled date and state-aware primary action',()=>{const s=read('app/modules/midia.js');assert.match(s,/const scheduledDate=/);assert.match(s,/const scheduleDisplayActive=!!vf\.scheduled\|\|platformPending/);assert.match(s,/const shopperActionButtons=nextVisit\?\(pendingOperationalRequest[\s\S]{0,420}:scheduleDisplayActive[\s\S]{0,125}data-visit-action="reschedule"/);assert.match(s,/pendiente de autorización/);assert.match(s,/Agendada.*scheduledDate/);});
-test('B1 Mi Dia certification uses durable and carryover authority',()=>{const s=read('app/modules/midia.js');assert.match(s,/backendCertifications\?\.durableCurrent/);assert.match(s,/backendCertifications\?\.carryoverDecision/);});
+test('B1 Mi Día certification uses the current project gate and its durable + carryover authority',()=>{
+  const s=read('app/modules/midia.js'),cert=read('app/core/backend-certifications.js');
+  // VRM-322 replaced one-bank UI checks with the exact set of published
+  // required banks. Mi Día must consume that shared project decision.
+  assert.match(s,/CX\.backendCertifications\?\.projectDecision\?\.\(certBanks,/);
+  assert.match(cert,/const decisions=requiredBanks\.map\(bank=>/);
+  assert.match(cert,/result:sessionDecision\(bank,projectId\)/);
+  assert.match(cert,/const durable=shopperId&&projectId\?durableCurrent\(shopperId,bank\)/);
+  assert.match(cert,/const carry=shopperId&&projectId&&shopper\?carryoverDecision\(shopper,bank,projectId\)/);
+});
 test('Mis Visitas loads resource authority before declaring instructive absent',()=>{const s=read('app/modules/misvisitas.js');assert.match(s,/await CX\.backendResources\.load\(resourceScope\)/);assert.match(s,/Confirmo que lo he leído/);assert.match(s,/recordResourceReadReceipt/);});
 test('Mis Visitas no silently disables schedule prerequisites',()=>{const s=read('app/modules/misvisitas.js');assert.match(s,/aria-disabled="true" title="Completa instructivo y certificación antes de agendar"/);assert.match(s,/Completa primero el instructivo y la certificación requerida/);});
 test('HR authority retry is bounded and reset storms cannot zero active retry counter',()=>{const s=read('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js');assert.match(s,/BOOT_MAX_ATTEMPTS=30/);assert.match(s,/if\(reset===true\)\{bootForce=true;if\(!bootTimer&&!reconciling\)bootAttempt=0;/);assert.match(s,/No fue posible validar la fuente operacional en el tiempo esperado/);});
