@@ -12540,6 +12540,31 @@
     "i4Authorized": false,
     "path": "docs/checkpoints/CXORBIA_I3_CHROME_CLAIM_AND_PHASE_A_CONTINUITY_CORRECTION_20261110.md",
     "receiptCommit": "4fe0cc5b0ce2ea043c5bbfd7d615e1d659a151d4",
-    "production": "DO_NOT_TOUCH"
+    "production": "DO_NOT_TOUCH",
+    "sourceContractTests": {
+      "pass": 25,
+      "fail": 0,
+      "scope": "B1_B2_B3_CROSS_PERIOD_PROFILE_AND_HISTORICAL_PAYMENT_SOURCE_ONLY"
+    },
+    "adminB2": {
+      "realProfileEditFormReadOnly": true,
+      "countryLockedToHr": true,
+      "qaFixtureEditingGuard": true,
+      "profileMutation": 0
+    },
+    "adminB7": {
+      "reservationsApp": 0,
+      "assignmentsHrSeparate": 33,
+      "invalidBranchAssignmentNoRemoteAck": true,
+      "appAssignmentsAfter": 0,
+      "scenariosAdminSourceReadOnly": true
+    },
+    "hnNovemberCarryover": {
+      "rows": 10,
+      "allCalendarDatesOctober": true,
+      "periodTabNovember": true,
+      "doNotCallNovemberExecutionWithoutSemanticReconciliation": true
+    },
+    "docUpdateCommit": "d578a872df1254a71ec25adfae82f9e6e5df2080"
   }
 }
