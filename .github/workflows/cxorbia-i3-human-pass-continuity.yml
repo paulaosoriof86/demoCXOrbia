@@ -8,6 +8,7 @@ on:
       - CXORBIA_RECOVERY_EXECUTION_CURRENT.json
       - docs/checkpoints/CXORBIA_I3_HUMAN_PASS_B7_NO_LOOP_ACCOUNTING_20261111.json
       - tools/qa/cxorbia-i3-human-pass-monotonic-guard.mjs
+      - tools/qa/cxorbia-i3-human-pass-monotonic-guard.test.mjs
       - .github/workflows/cxorbia-i3-human-pass-continuity.yml
   workflow_dispatch:
 
@@ -27,6 +28,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           node --check tools/qa/cxorbia-i3-human-pass-monotonic-guard.mjs
+          node --test tools/qa/cxorbia-i3-human-pass-monotonic-guard.test.mjs
           node tools/qa/cxorbia-i3-human-pass-monotonic-guard.mjs | tee "$RUNNER_TEMP/cxorbia-human-pass-accounting.json"
           jq -e '.decision=="PASS_PHASE_A_ACCEPTANCE_CONTINUITY_NOT_TERMINAL_CERTIFICATION" and .b7HumanPassPreserved==true and .humanCount>=4 and .humanTotal==9 and .strictOwnerDomainTotal==21 and .noDataWrites==true' "$RUNNER_TEMP/cxorbia-human-pass-accounting.json" >/dev/null
       - name: Explain green job scope without overstating terminal certification
