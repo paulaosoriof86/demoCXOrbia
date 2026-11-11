@@ -24,6 +24,13 @@
         "runId": 42953681463,
         "decision": "PASS_RESERVATION_TO_VISIT_TWO_ROLE_ACK_DURABLE_RELOAD_IDEMPOTENT_CLEAN",
         "receipt": "docs/checkpoints/CXORBIA_I3_RUN2400_B7_RESERVATION_TO_VISIT_DEV_QA_20261110.json"
+      },
+      {
+        "block": "B7",
+        "run": 2409,
+        "runId": 42958960117,
+        "decision": "PASS_AUTH_SHOPPER_TARGET_UNREAD_RELOAD_OTHER_SHOPPER_EXCLUDED_CLICK_VISIT_READ_ACK_RELOAD_CLEAN",
+        "receipt": "docs/checkpoints/CXORBIA_I3_RUN2409_B7_SHOPPER_NOTICE_UNREAD_ROUTE_DEV_QA_20261110.json"
       }
     ],
     "humanPassBlocks": [
@@ -69,9 +76,9 @@
         "human": "PASS_PREVIOUSLY_RECEIVED"
       },
       "B7": {
-        "technical": "PASS_FOCAL_POSTULATION_NOTICE_RUN2385_CANCEL_RESCHEDULE_RUN2391_RESERVATION_TO_VISIT_RUN2401",
+        "technical": "PASS_FOCAL_POSTULATION_NOTICE_RUN2385_CANCEL_RESCHEDULE_RUN2391_RESERVATION_TO_VISIT_RUN2400_UNREAD_RELOAD_CLICK_ROUTE_RUN2409",
         "tinyFish": "NOT_NEWLY_RUN",
-        "human": "PENDING_UNREAD_RELOAD_CLICK_ROUTE_AND_BLOCK_VISUAL_RECEIPT"
+        "human": "PENDING_FULL_BLOCK_VISUAL_RECEIPT"
       },
       "B8": {
         "technical": "HOLD_SEPTEMBER_EXTERNALLY_PAID_2026_10_31_PLATFORM_ZERO_CONFIRMED_OCT_UNPAID_NOV_ACCRUAL",
@@ -91,10 +98,11 @@
       "RUN2387_GT_HN_KEEPER_ROLES",
       "RUN2391_B7_CANCEL_RESCHEDULE",
       "RUN2397_B3_SCHEDULE",
-      "RUN2400_B7_RESERVATION_TO_VISIT"
+      "RUN2400_B7_RESERVATION_TO_VISIT",
+      "RUN2409_B7_SHOPPER_NOTICE_UNREAD_RELOAD_ROUTE"
     ],
     "nextExactOrder": [
-      "B7_SHOPPER_UNREAD_RELOAD_CLICK_ROUTE_UI_AUTHENTICATED",
+      "B7_VISUAL_HUMAN_RECEIPT_PASS_FAIL_FROM_RUN2409_SCREENSHOTS",
       "B1_B2_B3_VISUAL_E2E_RECEIPTS_AND_PAULA_PASS_FAIL",
       "B8_SEPTEMBER_PAID_RECEIPT_RECONCILIATION_WITHOUT_INFERENCE",
       "B9_INTEGRAL_REGRESSION_GATE20_GATE21",
@@ -12763,5 +12771,21 @@
     "i4Authorized": false,
     "production": "DO_NOT_TOUCH",
     "nextExact": "B7 unread/reload/action-route browser receipt; B1-B3 human module acceptance; B8 September payments reconciliation; B9 Gate20/Gate21; no production until gates."
+  },
+  "latestRun2409B7ShopperNoticeUnreadRouteDevE2e": {
+    "decision": "PASS_I3_B7_SHOPPER_NOTICE_UNREAD_RELOAD_ROUTE_DEV",
+    "asOfLocal": "2026-11-10",
+    "sourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+    "receipt": "docs/checkpoints/CXORBIA_I3_RUN2409_B7_SHOPPER_NOTICE_UNREAD_ROUTE_DEV_QA_20261110.json",
+    "runId": 42958960117,
+    "runNumber": 2409,
+    "jobId": 130320837296,
+    "artifactId": 13828920066,
+    "artifactDigest": "sha256:46c8834235215d6c6738814693b1bb87658b837c9dd3ff248cc89e148ee89519",
+    "humanBlockAcceptance": "PENDING",
+    "phaseAHumanPass": "3/9",
+    "strictDomainMatches": "5/21",
+    "production": "DO_NOT_TOUCH",
+    "i4Authorized": false
   }
 }
