@@ -1,0 +1,162 @@
+{
+  "schemaVersion": "cxorbia.i3.phaseA.visual-readback-b7-b1-b3.v1",
+  "localDate": "2026-11-10",
+  "authority": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "baseHead": "c7b1fab4b86ba518b9e692d663c136892739fd38",
+    "productSource": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+    "productTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
+    "devRuntime": "cxorbia-live-hr-dev-00369-lkf",
+    "devHosting": "sites/cxorbia-backend-dev/versions/e301b123cd45d041",
+    "hrRevision": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636"
+  },
+  "scope": "CHROME_AUTH_ADMIN_DEV_READ_ONLY_EXCEPT_ONE_DEV_INAPP_NOTICE_TRIGGERED_UNINTENTIONALLY",
+  "period": "cinepolis-2026-11",
+  "b7": {
+    "adminPostulaciones": {
+      "globalAssignedFromHr": 33,
+      "platformPostulationsPending": 0,
+      "novemberApprovedSchedules": 11,
+      "pendingDateAuthorizations": 0,
+      "search": "Wilson Lanza",
+      "filteredMatches": 2,
+      "bothHonduras": true,
+      "modal": "Gestión de agendamientos rendered, 11 authorized dates"
+    },
+    "platformReservationPanel": {
+      "platformRequests": 0,
+      "platformAssigned": 0,
+      "platformCrossed": 0,
+      "independentFrom33HrAssignments": true
+    },
+    "shopperProofPreserved": {
+      "runId": 42958960117,
+      "artifactId": 13828920066,
+      "beforeUnread": 1,
+      "afterClickRead": 0,
+      "afterReloadRead": 0,
+      "route": "misvisitas",
+      "actor": "Wilson Lanza HN",
+      "browser": "GitHub Actions authenticated Chromium; separate from current Admin Chrome"
+    },
+    "technical": "FOCAL_ADMIN_VISUAL_PASS_PRIOR_SHOPPER_PROVIDER_ACK_PASS",
+    "tinyFish": "NOT_NEWLY_RUN",
+    "human": "PENDING_B7_EXPLICIT_VISUAL_RECEIPT",
+    "fullBlockLocked": false
+  },
+  "b1": {
+    "adminMiDia": {
+      "period": "NOV 2026",
+      "scheduled": 11,
+      "waitingApproval": 0,
+      "realizedInTab": 12,
+      "unassigned": 11,
+      "calendarMonth": "noviembre 2026"
+    },
+    "shopper": "PRIOR_RUN2387_FOCAL_ONLY",
+    "technical": "PASS_FOCAL",
+    "human": "PENDING_FULL_BLOCK",
+    "tinyFish": "ENVIRONMENT_FAILURE_SESSION_RESTORE_EXCEPTION_FROZEN"
+  },
+  "b2": {
+    "adminShoppers": {
+      "visibleProfiles": 192,
+      "active6mo": 87,
+      "inactive": 105,
+      "complete": 1,
+      "incomplete": 191,
+      "visibleIdentityReview": 8,
+      "JulissaFlores": {
+        "visitsAcrossPeriods": 10,
+        "completed": 9,
+        "inProgress": 1,
+        "profileEditOpened": true,
+        "countryLockedToHr": "GT",
+        "savePerformed": false
+      }
+    },
+    "technical": "PASS_READ_ONLY_FOCAL",
+    "human": "PENDING_FULL_BLOCK",
+    "tinyFish": "NOT_NEWLY_RUN"
+  },
+  "b3": {
+    "adminVisitas": {
+      "period": "NOV 2026",
+      "total": 44,
+      "gt": 34,
+      "hn": 10,
+      "assigned": 33,
+      "unassigned": 11,
+      "realizedFromSourceTab": 12,
+      "viewedExample": {
+        "row": "#759",
+        "shopper": "Julissa Flores",
+        "location": "C. Sankris Mall",
+        "state": "Asignada",
+        "feeGTQ": 60,
+        "paymentDisplay": "Pendiente de confirmación",
+        "historyVisible": true
+      }
+    },
+    "priorTechnical": {
+      "run2397": 42952734838,
+      "decision": "PASS_TWO_SHOPPER_SCHEDULE_PROVIDER_ACK_RELOAD_IDEMPOTENT"
+    },
+    "human": "PENDING_FULL_BLOCK",
+    "tinyFish": "NOT_NEWLY_RUN"
+  },
+  "hrCrossPeriod": {
+    "novemberHnRows": 10,
+    "allCarryOctoberDates": true,
+    "identicalOperationalCoreToOctoberHn": true,
+    "previouslyProvenGoogleSheetsRead": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_CHROME_INTEGRAL_GAP_READBACK_20261110.json",
+    "additionalChromeReadback": "Hojas de Ruta OCTUBRE 26 HN and NOVIEMBRE HN show same 10 operational dates",
+    "classification": "SOURCE_TAB_NOVEMBER_CARRIES_OCTOBER_EXECUTION_DATES",
+    "notNewRootFailure": true,
+    "noHrWrites": true,
+    "doNotAssertTenNovemberExecutions": true
+  },
+  "devNoticeException": {
+    "action": "clicked Solicitar ajuste in Gestión de agendamientos on Johana Salgado · C. Miraflores",
+    "sourceHandler": "app/modules/postulaciones.js:197-205",
+    "eventKey": "admin_agenda_adjust",
+    "intendedTarget": "Johana Salgado GT",
+    "channel": "IN_APP_DEV_FIRESTORE_BULLETIN",
+    "idempotent": true,
+    "uiReadback": "brief Confirmando… then modal closed; reopening showed 0 pending dates and 11 authorized unchanged",
+    "probableEffect": "DURABLE_IN_APP_NOTICE_IF_HANDLER_ACK_PATH_SUCCEEDED",
+    "noExternalWhatsAppCodeInHandler": true,
+    "noPaymentOrHrWriteTriggered": true,
+    "providerBulletinId": "NOT_CAPTURED",
+    "next": "Do not repeat; notify Direction and preserve this exception; recipient readback only if safe without duplicate notice"
+  },
+  "b8": {
+    "priorReceipt": "docs/checkpoints/CXORBIA_I3_RUN2410_B7_B8_AUTH_CHROME_SOURCE_AND_PAYMENT_GAP_20261110.json",
+    "sourceGap": "front-end reconcileHistoricalPayments omits historicalPaymentDate/historicalPaymentAuthorityRef/sourceRevision/supersession and Finance Admin lacks scoped action",
+    "codeFixPriorIsolatedTests": "3/3 PASS, NOT PROMOTED",
+    "septemberPaidByPaula": "31-OCT-2026 HUMAN CONFIRMATION; external per-visit payment evidence not asserted",
+    "doNotMarkPaidWithoutExactMapping": true
+  },
+  "preservedHumanPass": [
+    "B4",
+    "B5",
+    "B6"
+  ],
+  "phaseA": {
+    "humanBlockPass": 3,
+    "humanBlockTotal": 9,
+    "strictDomainMatch": 5,
+    "strictDomainTotal": 21,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "production": "DO_NOT_TOUCH"
+  },
+  "nextExact": [
+    "B7 explicit Paula visual PASS/FAIL on rendered Admin plus Wilson shopper evidence",
+    "B1-B3 explicit role/visual E2E receipts without repeating already proven technical writes",
+    "B8 bounded bank-paid historical authority mapping and coordinated front-end command gap promotion",
+    "B9 Gate20/Gate21 after B1-B8 receipts"
+  ]
+}
