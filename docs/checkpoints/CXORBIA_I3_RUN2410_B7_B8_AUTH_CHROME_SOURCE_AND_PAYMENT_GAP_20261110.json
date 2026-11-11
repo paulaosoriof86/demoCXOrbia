@@ -134,6 +134,18 @@
       "frontendInternalActionIsNotExternalBankConfirmation": true,
       "finding": "Historical paid reconciliation exists in protected command/provider and QA scripts but there is no matching accessible Admin action in the financial module; a one-click source Conciliar only validates liquidation and does not mark historical external payment.",
       "sourceSafeClosure": "Use explicit Paula 31-Oct statement as human direction authority only if exact eligible September visits, prior reconciliation/supersession, current HR revision, per-visit identity/currency/amount, permission, idempotency, external-paid readback and human acceptance are verified. Do not force non-submitted or mismatched rows, and do not create bank transfers."
+    },
+    "candidateFixExploredSafely": {
+      "scopedFix": "Pass sourceRevision, historicalPaymentDate, historicalPaymentAuthorityRef, and supersession through CX.data.reconcileHistoricalPayments",
+      "isolatedLocalContractTests": "3_OF_3_PASS",
+      "promotedToCurrentProduct": false,
+      "devMaterialized": false,
+      "revertedReason": "Canonical recovery source guard forbids post-candidate app drift without synchronized descriptor/ledger/matrix/artifact promotion. Do not leave a second unserved product candidate.",
+      "sourceCommitTested": "7b038b6215ffbeaf54b8ad5a842e7d034579dbf3",
+      "revertCommit": "c9bc8e746c346993fa3afc7a788eaaf643648d19",
+      "qaTestRemovalCommit": "a95e4ab203105ac67cce54ab55e5a8923d09a978",
+      "ownerFinalGitBlob": "d345acb084d63c7f74847eef5be03c05cd70d458",
+      "nextPath": "Apply same tested bounded fix only inside coordinated single-candidate source/ledger/matrix and DEV Hosting promotion, then run actual staff UI + provider readback; no production before gates."
     }
   },
   "antiLoop": {
