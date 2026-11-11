@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
 
 const POINTER='CXORBIA_RECOVERY_EXECUTION_CURRENT.json';
+const DESCRIPTOR='CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json';
 const REQUIRED=Object.freeze(['B4','B5','B6','B7']);
 const ALLOWED=new Set(['B1','B2','B3','B4','B5','B6','B7','B8','B9']);
 const fail=(code,detail='')=>{throw new Error('PHASE_A_ACCEPTANCE_CONTINUITY_FAILURE:'+code+(detail?':'+detail:''));};
@@ -15,6 +16,9 @@ if(!Array.isArray(passed)||new Set(passed).size!==passed.length)fail('INVALID_OR
 if(passed.some(block=>!ALLOWED.has(block)))fail('UNKNOWN_HUMAN_PASS_BLOCK');
 for(const block of REQUIRED)if(!passed.includes(block))fail('PROTECTED_HUMAN_PASS_ERASED',block);
 if(active.phaseABlocksHumanPassed!==passed.length||active.phaseABlocksTotal!==9)fail('HUMAN_PASS_ACCOUNTING_MISMATCH');
+const descriptor=read(DESCRIPTOR);
+const descriptorAcceptance=descriptor.phaseAHumanAcceptanceCurrent20261111;
+if(!descriptorAcceptance||descriptor.productSourceSha!==pointer.productSourceSha||descriptorAcceptance.humanCount!==passed.length||descriptorAcceptance.humanTotal!==9||descriptorAcceptance.humanAcceptedBlocks?.length!==passed.length||passed.some(x=>!descriptorAcceptance.humanAcceptedBlocks.includes(x)))fail('DESCRIPTOR_HUMAN_ACCEPTANCE_DESYNC');
 const b7=active.blocks?.B7;
 if(!b7||!String(b7.human).startsWith('PASS_')||b7.humanAcceptanceLocked!==true)fail('B7_HUMAN_PASS_NOT_CARRIED');
 const receiptPath=b7.humanAcceptanceReceipt;
