@@ -12499,5 +12499,47 @@
     "gate20": "HOLD",
     "gate21": "HOLD",
     "production": "DO_NOT_TOUCH"
+  },
+  "latestChromeClaimAndPhaseANoLoopContinuity20261110": {
+    "state": "PASS_CHROME_USER_TAB_CLAIM__ADMIN_SCOPE_READONLY__PHASE_A_INTEGRAL_HOLD",
+    "dateLocal": "2026-11-10",
+    "sourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+    "exactCause": "browser.tabs.list() is agent-owned/claimed tabs; [] after turn cleanup does not mean Chrome disconnected. Use browser.user.openTabs() and claimTab(exact user-owned DEV tab).",
+    "devAuthenticatedAdmin": true,
+    "period": "NOV 2026",
+    "miDia": {
+      "scheduled": 11,
+      "realized": 12,
+      "unassigned": 11
+    },
+    "visitas": {
+      "total": 44,
+      "GT": 34,
+      "HN": 10
+    },
+    "shoppers": {
+      "projectProfiles": 192,
+      "GT_JhennypherVisits": 15,
+      "GT_JulissaVisits": 10
+    },
+    "postulaciones": {
+      "activeAssignments": 33,
+      "pendingRequests": 0,
+      "requestActionModalReadOnly": true
+    },
+    "newRealWrites": 0,
+    "humanBlockPassAdded": 0,
+    "preservedPass": [
+      "B4",
+      "B5",
+      "B6"
+    ],
+    "strictMatch": "5/21",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "path": "docs/checkpoints/CXORBIA_I3_CHROME_CLAIM_AND_PHASE_A_CONTINUITY_CORRECTION_20261110.md",
+    "receiptCommit": "4fe0cc5b0ce2ea043c5bbfd7d615e1d659a151d4",
+    "production": "DO_NOT_TOUCH"
   }
 }
