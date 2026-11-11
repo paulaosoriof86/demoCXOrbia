@@ -31,6 +31,14 @@
         "runId": 42958960117,
         "decision": "PASS_AUTH_SHOPPER_TARGET_UNREAD_RELOAD_OTHER_SHOPPER_EXCLUDED_CLICK_VISIT_READ_ACK_RELOAD_CLEAN",
         "receipt": "docs/checkpoints/CXORBIA_I3_RUN2409_B7_SHOPPER_NOTICE_UNREAD_ROUTE_DEV_QA_20261110.json"
+      },
+      {
+        "block": "B7/B8",
+        "readbackSequence": 2410,
+        "decision": "B7_SCOPED_AUTH_CHROME_PASS_B8_SEPT_EXACT_PAYMENT_SOURCE_GAP_ONE_DEV_RECONCILIATION_NO_BANK_PAYMENT",
+        "receipt": "docs/checkpoints/CXORBIA_I3_RUN2410_B7_B8_AUTH_CHROME_SOURCE_AND_PAYMENT_GAP_20261110.json",
+        "technicalOnly": true,
+        "humanPass": false
       }
     ],
     "humanPassBlocks": [
@@ -81,9 +89,9 @@
         "human": "PENDING_FULL_BLOCK_VISUAL_RECEIPT"
       },
       "B8": {
-        "technical": "HOLD_SEPTEMBER_EXTERNALLY_PAID_2026_10_31_PLATFORM_ZERO_CONFIRMED_OCT_UNPAID_NOV_ACCRUAL",
+        "technical": "HOLD_SEP2026_42_REVIEWS_AFTER_ONE_DEV_SOURCE_RECONCILIATION_2_BATCH_ELIGIBLE_0_EXTERNAL_PAYMENT_CONFIRMED",
         "tinyFish": "NOT_NEWLY_RUN",
-        "human": "PENDING_FINANCIAL_RECONCILIATION"
+        "human": "PENDING_FINANCIAL_SOURCE_AND_HUMAN_ACCEPTANCE"
       },
       "B9": {
         "technical": "HOLD_GATE20_GATE21",
@@ -102,9 +110,9 @@
       "RUN2409_B7_SHOPPER_NOTICE_UNREAD_RELOAD_ROUTE"
     ],
     "nextExactOrder": [
-      "B7_VISUAL_HUMAN_RECEIPT_PASS_FAIL_FROM_RUN2409_SCREENSHOTS",
+      "B7_VISUAL_HUMAN_RECEIPT_PASS_FAIL_FROM_RUN2409_SCREENSHOTS_AND_CHROME_ADMIN",
       "B1_B2_B3_VISUAL_E2E_RECEIPTS_AND_PAULA_PASS_FAIL",
-      "B8_SEPTEMBER_PAID_RECEIPT_RECONCILIATION_WITHOUT_INFERENCE",
+      "B8_SEPTEMBER_31OCT_EXACT_BANK_PAYMENT_RECONCILIATION_WITHOUT_INFERENCE_OR_DUPLICATE",
       "B9_INTEGRAL_REGRESSION_GATE20_GATE21",
       "I4_SEPARATE_EXPLICIT_AUTHORIZATION_AFTER_GATE"
     ],
@@ -112,11 +120,20 @@
     "production": "DO_NOT_TOUCH",
     "gate20": "HOLD",
     "gate21": "HOLD",
-    "i4Authorized": false
+    "i4Authorized": false,
+    "b8LastReadback": {
+      "receipt": "docs/checkpoints/CXORBIA_I3_RUN2410_B7_B8_AUTH_CHROME_SOURCE_AND_PAYMENT_GAP_20261110.json",
+      "septemberReviewCases": 42,
+      "septemberValidatedEligible": 2,
+      "confirmedExternalPayments": 0,
+      "oneDevReconciliation": "Susseth Cruz GT Q217 SOURCE_VALIDATED_NOT_PAID",
+      "sourceTests": "PASS",
+      "noProduction": true
+    }
   },
   "planLockPath": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
   "planId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
-  "asOf": "2026-11-11T03:36:20.054Z",
+  "asOf": "2026-11-11T04:48:00.000Z",
   "iteration": "I3",
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
