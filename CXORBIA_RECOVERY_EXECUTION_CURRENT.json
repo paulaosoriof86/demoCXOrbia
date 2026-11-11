@@ -9819,7 +9819,7 @@
       "production": false
     }
   },
-  "moduleTruthExpectedGitBlob": "e15b264b64782d49aab39875ebca7b5a76335d47",
+  "moduleTruthExpectedGitBlob": "5814ab4be45ceca8c6c3380bc09e353478d16b16",
   "d08AcademyDispatchSourceProof": {
     "path": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_DISPATCH_SOURCE_PROOF_20261107.json",
     "gitBlob": "2ad9d960cb958e84368cbbd70a7e9f2fb7864d3f",

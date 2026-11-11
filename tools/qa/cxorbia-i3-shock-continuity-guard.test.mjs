@@ -219,6 +219,16 @@ test('a legacy direct matrix path cannot silently point at a superseded version'
   const a = mk(); a.pointer.moduleTruthPath = 'old-v245.json';
   assert.match(validateShockContinuity(a).failures.join(' '), /LEGACY_MATRIX_PATH_DESYNC/);
 });
+test('top-level compatibility blob anchors cannot point at an older root document', () => {
+  const a = mk();a.descriptor.findingsLedgerPath='ledger.json';a.descriptor.findingsLedgerExpectedGitBlob='ledger-blob';
+  a.pointer.moduleTruthExpectedGitBlob='prior-matrix-blob';
+  assert.match(validateShockContinuity(a).failures.join(' '), /LEGACY_ROOT_DOCUMENT_BLOB_DESYNC/);
+  a.pointer.moduleTruthExpectedGitBlob='matrix-blob';
+  a.pointer.findingsLedgerPath='ledger.json';a.pointer.findingsLedgerExpectedGitBlob='prior-ledger-blob';
+  assert.match(validateShockContinuity(a).failures.join(' '), /LEGACY_ROOT_DOCUMENT_BLOB_DESYNC/);
+  a.pointer.findingsLedgerExpectedGitBlob='ledger-blob';
+  assert.equal(validateShockContinuity(a).pass,true);
+});
 test('matrix-reported counts must match actual module classifications', () => {
   const a = mk(); a.matrix.classificationCounts = {...classifyModules(a.matrix), MATCH: 6};
   assert.match(validateShockContinuity(a).failures.join(' '), /MATRIX_REPORTED_CLASS_COUNTS_STALE/);

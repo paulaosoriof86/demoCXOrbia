@@ -111,6 +111,10 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
     p.moduleTruthAuthority?.gitBlob === d.moduleTruthExpectedGitBlob &&
     gitBlob(matrixPath) === d.moduleTruthExpectedGitBlob,
     'MAPPING_FAILURE:MATRIX_BLOB_DESYNC');
+  check((!p.moduleTruthExpectedGitBlob || p.moduleTruthExpectedGitBlob === d.moduleTruthExpectedGitBlob) &&
+    (!p.findingsLedgerPath || p.findingsLedgerPath === d.findingsLedgerPath) &&
+    (!p.findingsLedgerExpectedGitBlob || p.findingsLedgerExpectedGitBlob === d.findingsLedgerExpectedGitBlob),
+    'MAPPING_FAILURE:LEGACY_ROOT_DOCUMENT_BLOB_DESYNC');
   check(Array.isArray(m.modules) && m.modules.length === 21 && uniqueDomains.size === 21,
     'RELEASE_COMPOSITION_FAILURE:DOMAIN_COVERAGE');
 
