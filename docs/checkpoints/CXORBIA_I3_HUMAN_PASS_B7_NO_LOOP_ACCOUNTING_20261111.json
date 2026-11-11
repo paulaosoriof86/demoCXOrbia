@@ -63,7 +63,7 @@
       "type": "CANCEL_RESCHEDULE_TWO_ROLE",
       "run": "RUN2391",
       "scope": "isolated reversible DEV ACK and cleanup",
-      "proof": "docs/checkpoints/CXORBIA_I3_RUN2391_B7_CANCEL_RESCHEDULE_DEV_QA_20261110.json"
+      "proof": "docs/checkpoints/CXORBIA_I3_RUN2391_B7_DECISION_AND_ACADEMY_REPEAT_DEV_QA_20261110.json"
     },
     {
       "type": "RESERVATION_TO_VISIT",
