@@ -1,0 +1,151 @@
+{
+  "schemaVersion": "cxorbia.i3.human-acceptance.no-loop-ledger.v1",
+  "dateLocal": "2026-11-11",
+  "timezone": "America/Guatemala",
+  "iteration": "I3_PHASE_A",
+  "project": "CXOrbia — Backend y migración a producción",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "decision": "PRESERVE_HUMAN_PASS_B7_FIX_ACCOUNTING_MECHANISM_NO_PRODUCT_CHANGES",
+  "authority": "PAULA_EXPLICIT_USER_DIRECTIVE_2026-11-11",
+  "priority": "PAULA_DIRECT_DECISION_PRECEDES_OLDER_PENDING_VISUAL_NOTATIONS",
+  "before": {
+    "canonicalHead": "909e4fa31c8420733150cb27947fbcf52eb91a7d",
+    "productSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+    "productTreeSha": "0f0d5b080b249191696ffad6a17936bdb4c347db",
+    "devRuntime": "cxorbia-live-hr-dev-00369-lkf",
+    "devHosting": "sites/cxorbia-backend-dev/versions/e301b123cd45d041",
+    "humanPassed": [
+      "B4",
+      "B5",
+      "B6"
+    ],
+    "humanCount": 3,
+    "strictDomainMatches": 5,
+    "strictDomainTotal": 21,
+    "b7Human": "PENDING_FULL_BLOCK_VISUAL_RECEIPT"
+  },
+  "after": {
+    "humanPassed": [
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ],
+    "humanCount": 4,
+    "denominatorBlocks": 9,
+    "strictDomainMatches": 5,
+    "strictDomainTotal": 21,
+    "b7Human": "PASS_EXPLICIT_PAULA_20261111",
+    "b7FunctionalBlock": "HUMAN_ACCEPTANCE_LOCKED_PRESERVE",
+    "b7TinyFish": "NOT_NEWLY_RUN_DO_NOT_FABRICATE_PASS",
+    "b7TerminalArtifactCertified": false,
+    "i3Go": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD"
+  },
+  "exactHumanDecision": {
+    "actor": "Paula Andrea Osorio Franco",
+    "channel": "Current CXOrbia Project conversation",
+    "localDate": "2026-11-11",
+    "verbatim": "Ya yo ya di el B7 con Pass.",
+    "interpretation": "B7 human functional and visual acceptance is recorded. Earlier PENDING states reflect reporting lag. Do not request the same human acceptance again unless a reproduced, scoped regression is presented.",
+    "acceptanceDoesNotClaim": "TinyFish PASS, 21/21 full domain match, Gate20, Gate21, I3 GO, I4 authorization, production deployment."
+  },
+  "b7FunctionalProofs": [
+    {
+      "type": "POSTULATION_AND_NOTICE",
+      "run": "RUN2385",
+      "scope": "QA-only academy/postulation notice",
+      "proof": "docs/checkpoints/CXORBIA_I3_RUN2382_PAIRED_DEV_CHROME_READBACK_20261110.json"
+    },
+    {
+      "type": "CANCEL_RESCHEDULE_TWO_ROLE",
+      "run": "RUN2391",
+      "scope": "isolated reversible DEV ACK and cleanup",
+      "proof": "docs/checkpoints/CXORBIA_I3_RUN2391_B7_CANCEL_RESCHEDULE_DEV_QA_20261110.json"
+    },
+    {
+      "type": "RESERVATION_TO_VISIT",
+      "runId": 42953681463,
+      "result": "PASS_TWO_ROLE_PROVIDER_ACK_RELOAD_IDEMPOTENCE",
+      "proof": "docs/checkpoints/CXORBIA_I3_RUN2400_B7_RESERVATION_TO_VISIT_DEV_QA_20261110.json"
+    },
+    {
+      "type": "SHOPPER_NOTICE_UNREAD_ROUTE",
+      "runId": 42958960117,
+      "artifactId": 13828920066,
+      "result": "PASS_SHOPPER_UNREAD_ROUTE_READ_RELOAD_CLEAN",
+      "proof": "docs/checkpoints/CXORBIA_I3_RUN2409_B7_SHOPPER_NOTICE_UNREAD_ROUTE_DEV_QA_20261110.json"
+    },
+    {
+      "type": "ADMIN_AUTHENTICATED_CHROME_VISUAL",
+      "dateLocal": "2026-11-10",
+      "result": "FOCAL_VISUAL_READBACK_NOV_HR_GT34_HN10",
+      "proof": "docs/checkpoints/CXORBIA_I3_B7_B1_B3_VISUAL_READBACK_AND_DEV_NOTICE_20261110.json"
+    },
+    {
+      "type": "PRIOR_USER_ACCEPTANCE",
+      "dateLocal": "2026-10-14",
+      "result": "R05_R06_SCOPE_PARTIAL_PASS_PRESERVED",
+      "proof": "CXORBIA_RECOVERY_EXECUTION_CURRENT.json#b7ParallelReadOnly20261110"
+    }
+  ],
+  "diagnosedMechanism": [
+    {
+      "id": "REPORTING_SEMANTIC_DRIFT",
+      "evidence": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V32.json: allModulesMatch=true while historical breakdown says MATCH=15, COMPOSED_NOT_DEPLOYED=6; 20261110 V293 classifications MATCH=5 with stricter live-human requirements.",
+      "status": "PROVEN_DISTINCT_DENOMINATOR_CRITERIA"
+    },
+    {
+      "id": "STALE_HUMAN_PASS_POINTER",
+      "evidence": "CXORBIA_RECOVERY_EXECUTION_CURRENT.json humanPassBlocks omitted B7 despite Paula explicit PASS.",
+      "status": "PROVEN_TO_BE_CORRECTED"
+    },
+    {
+      "id": "20_VERSUS_21_CLOSURE_UNIVERSE",
+      "evidence": "tools/qa/cxorbia-i3-terminal-module-domain-coverage.mjs and preterminal/finalizer and Gate21 now assert exact 21 domains including tenant-admin-config-branding.",
+      "status": "HISTORICALLY_PROVEN_FIXED_IN_CURRENT_SOURCE_DO_NOT_REOPEN"
+    },
+    {
+      "id": "GREEN_WORKFLOW_CERTIFY_SKIPPED",
+      "evidence": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml: certify requires authority status READY_FOR_TERMINAL_CERTIFICATION; other scoped jobs may succeed without certify.",
+      "status": "PROVEN_REPORTING_CLASSIFICATION_MUST_EXPLICITLY_DISTINGUISH"
+    },
+    {
+      "id": "13_INTERMEDIATE_NUMBER",
+      "evidence": "Paula and conversation history record historical 13 MATCH before current 5; exact matching historical JSON blob not recovered in this readback.",
+      "status": "HISTORICAL_REPORTED_NOT_USED_AS_LIVE_BASELINE"
+    }
+  ],
+  "accountingContract": {
+    "humanAcceptedFunctionalBlocks": {
+      "numerator": 4,
+      "denominator": 9,
+      "semantics": "Explicit human acceptance; B4 B5 B6 B7; cumulative and monotone."
+    },
+    "strictWholeOwnerDomains": {
+      "numerator": 5,
+      "denominator": 21,
+      "semantics": "More demanding independent whole-domain proofs; NOT a measure of functional blocks or evidence lost."
+    },
+    "historicalComposition": {
+      "v32AllModulesMatchField": true,
+      "v32HistoricalMatch": 15,
+      "v32ComposedNotDeployed": 6,
+      "semantics": "Historical snapshot and different criteria; do not overwrite a current acceptance receipt."
+    },
+    "workflowSuccess": {
+      "semantics": "A successful isolated test/workflow is not final certify or Gate21 unless those exact jobs ran PASS."
+    },
+    "certificationRule": "Do not subtract existing human approvals when only the strict-domain classifier changes; exact owner SHA or reproducible drift required to reopen accepted block.",
+    "noDoubleCounting": true
+  },
+  "immediateNext": [
+    "Reconcile B1-B3 existing human receipts and only uncovered owner-specific E2E, avoiding repeated B7.",
+    "B8 validate October31 externally paid September per shopper exact reference without automatic bank/HR writes; October pending, November accrual.",
+    "B9 run one final integrated artifact and Gate20/Gate21 when B1-B8 truly accepted; seek separate explicit I4 go-live authorization."
+  ],
+  "prohibited": "No product change, DEV deploy, production deploy, HR write, Firestore write, Auth write, external payments, WhatsApp sends or invented TinyFish PASS in this accounting-only change.",
+  "appendOnly": true
+}
