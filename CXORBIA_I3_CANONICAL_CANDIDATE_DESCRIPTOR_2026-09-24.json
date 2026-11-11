@@ -21358,5 +21358,41 @@
     "testsPassed": 27,
     "realLearnerE2e": "PENDING",
     "production": false
+  },
+  "phaseAHumanAcceptanceCurrent20261111": {
+    "priority": "LATEST_HUMAN_ACCEPTANCE_GOVERNS_OVER_LEGACY_ACTIVE_BLOCKER_DESCRIPTIONS",
+    "decision": "PAULA_EXPLICIT_B7_HUMAN_PASS_CARRIED_WITH_B4_B5_B6",
+    "humanAcceptedBlocks": [
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ],
+    "humanCount": 4,
+    "humanTotal": 9,
+    "technicalDomainMatches": 5,
+    "technicalDomainTotal": 21,
+    "nonAdditiveMetrics": true,
+    "receipt": "docs/checkpoints/CXORBIA_I3_HUMAN_PASS_B7_NO_LOOP_ACCOUNTING_20261111.json",
+    "canonicalPointer": "CXORBIA_RECOVERY_EXECUTION_CURRENT.json#activePhaseAClosureLock20261110",
+    "historicalStatusFieldsNotCurrentHumanAcceptance": true,
+    "remainingHumanUnaccepted": [
+      "B1",
+      "B2",
+      "B3",
+      "B8",
+      "B9"
+    ],
+    "b1PriorVisualMiDiaFocalPassPreserved": true,
+    "b7AlreadyAcceptedDoNotRequestAgain": true,
+    "tinyFishWasNotNewlyRun": true,
+    "productSourceUnchanged": true,
+    "moduleTruthPathUnchanged": true,
+    "moduleTruthBlobUnchanged": true,
+    "findingsLedgerUnchanged": true,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "production": "DO_NOT_TOUCH"
   }
 }
