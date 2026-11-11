@@ -61,11 +61,23 @@ async function signIn(member){
 }
 async function feed(page){
  await page.evaluate(async()=>{await window.CX.backendBulletins.load();});
- return page.evaluate(id=>{
-  const cx=window.CX||{},n=(cx.notif?.for?.('shopper')||[]).find(x=>String(x.id)===id);
+ return page.evaluate(async id=>{
+  const cx=window.CX||{},raw=(cx.notif?._items||[]).find(x=>String(x.id)===id),
+   n=(cx.notif?.for?.('shopper')||[]).find(x=>String(x.id)===id),
+   sid=String(cx.backendAuth?.context?.()?.shopperId||'');
+  let remoteGet='not_checked',remoteQuery='not_checked';
+  try{const d=await firebase.firestore().collection('tenants').doc('tya').collection('bulletins').doc(id).get({source:'server'});
+   remoteGet=d.exists?'present':'absent';}catch(e){remoteGet=String(e?.code||'error').slice(0,60);}
+  try{const q=await firebase.firestore().collection('tenants').doc('tya').collection('bulletins').where('targetShopperIds','array-contains',sid).get();
+   remoteQuery=q.docs.some(d=>d.id===id)?'included':'not_in_query';}catch(e){remoteQuery=String(e?.code||'error').slice(0,60);}
   return {present:!!n,unread:!!n&&!n.leida,read:!!n&&n.leida,route:n?.nav||'',
    visitId:String(n?.entityId||''),source:n?.source||'',role:String(cx.backendAuth?.context?.()?.role||''),
-   authorityLoaded:window.CX_BACKEND_BULLETINS_STATUS?.source==='firestore'};
+   authorityLoaded:window.CX_BACKEND_BULLETINS_STATUS?.source==='firestore',
+   rawPresent:!!raw,rawRole:raw?.to||'',rawOperational:raw?.operational===true,
+   validForRole:raw?cx.notif._validForRole(raw,'shopper'):null,
+   activeForRole:raw?cx.notif._activeForRole(raw):null,
+   exactVisitPresent:(cx.data?._visitas||[]).some(v=>[v?.id,v?.visitId,v?.hrRowId].map(String).includes(String(raw?.entityId||''))),
+   feedCount:Number(window.CX_BACKEND_BULLETINS_STATUS?.count??-1),remoteGet,remoteQuery};
  },noticeId);
 }
 async function route(page,section){
