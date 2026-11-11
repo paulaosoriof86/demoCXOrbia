@@ -1,0 +1,153 @@
+{
+  "schemaVersion": "cxorbia.i3.run2410.b7-b8.real-chrome.gap-lock.v1",
+  "dateLocal": "2026-11-10",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "authority": {
+    "headBeforeReceipt": "ce80937b3efae0cf8dcdd012d8b68e15c03ae5aa",
+    "productSource": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+    "productTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
+    "devRuntime": "cxorbia-live-hr-dev-00369-lkf",
+    "devHosting": "sites/cxorbia-backend-dev/versions/e301b123cd45d041",
+    "hrRevision": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+    "production": "DO_NOT_TOUCH"
+  },
+  "humanAcceptance": {
+    "passedBlocks": [
+      "B4",
+      "B5",
+      "B6"
+    ],
+    "phaseATotal": 9,
+    "strictDomains": "5/21",
+    "b7": "PENDING_FULL_VISUAL_PASS_FAIL",
+    "b8": "PENDING_EXACT_EXTERNAL_PAYMENT_RECONCILIATION",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false
+  },
+  "b7": {
+    "technicalPreserved": {
+      "run2400": "PASS_RESERVATION_TO_VISIT_TWO_ROLE_ACK_RELOAD_IDEMPOTENT",
+      "run2409": "PASS_AUTH_SHOPPER_NOTICE_UNREAD_RELOAD_CLICK_VISIT_RELOAD"
+    },
+    "artifact": {
+      "runId": 42958960117,
+      "artifactId": 13828920066
+    },
+    "authenticatedChromeAdminReadback": {
+      "project": "Cinépolis",
+      "period": "NOV 2026",
+      "hrVisits": 44,
+      "gtVisits": 34,
+      "hnVisits": 10,
+      "hrAssignments": 33,
+      "unassigned": 11,
+      "scheduled": 11,
+      "platformReservationsNew": 0,
+      "pendingPostulations": 0,
+      "visibleActions": [
+        "Pedir acción",
+        "Agenda",
+        "Reasignar",
+        "Cancelar",
+        "Más"
+      ],
+      "requestActionOptions": 5,
+      "actionRequestsSent": 0
+    },
+    "releaseDecision": "SCOPED_PASS_ONLY_REQUIRES_PAULA_FULL_VISUAL_RECEIPT"
+  },
+  "b8": {
+    "directionStatement": {
+      "septemberShoppersPaidOn": "2026-10-31",
+      "octoberShoppers": "PENDING",
+      "november": "NEW_ACCRUAL"
+    },
+    "september2026": {
+      "gt": {
+        "honoraria": 2040,
+        "reembolsos": 5323,
+        "obligacionTotal": 7363,
+        "currency": "GTQ"
+      },
+      "hn": {
+        "honoraria": 2000,
+        "reembolsos": 3936,
+        "obligacionTotal": 5936,
+        "currency": "HNL"
+      },
+      "visits": 44,
+      "reviewCasesBeforeDevSourceReconcile": 43,
+      "reviewCasesAfterDevSourceReconcile": 42,
+      "eligibleValidatedLiquidationsAfter": 2,
+      "derivedCxPValidated": {
+        "GTQ": 217,
+        "HNL": 586
+      },
+      "externalPaymentsConfirmedInDev": 0,
+      "sourceGap": "Direction says paid but no exact per-shopper payout reference/ACK found in the reviewed DEV finance surfaces and targeted Cinépolis Drive search"
+    },
+    "october2026": {
+      "gtOperationalQ": 7153,
+      "hnOperationalL": 6171,
+      "paymentsExpected": "pending"
+    },
+    "november2026": {
+      "gtOperationalQ": 450,
+      "hnOperationalL": 6171,
+      "reviewCases": 12
+    },
+    "exactDevActionActuallyExecuted": {
+      "operation": "finance.reconcile.visit",
+      "actor": "authenticated Admin Chrome",
+      "shopper": "Susseth Cruz",
+      "site": "C. Miraflores",
+      "period": "SEP 2026",
+      "country": "GT",
+      "currency": "GTQ",
+      "amount": 217,
+      "effects": "financial source reconciled, liquidation validated and eligible for batch; external payment not confirmed",
+      "sourceAck": "NOT_CAPTURED_DIRECTLY",
+      "readback": "VISIBLE_IN_DEV_LIQUIDACIONES_AND_MOVIMIENTOS_AFTER_ACTION",
+      "bankTransferCreated": false,
+      "externalPaymentConfirmed": false,
+      "repeat": false,
+      "reason": "One 'Conciliar' click in financial Dashboard executed immediate DEV provider reconciliation; do not treat as harmless drilldown."
+    },
+    "regressionChecks": {
+      "providerFinanceCommandSourceTests": "PASS_EXIT_0",
+      "canonicalFinanceReadModelGate": "PASS_EXIT_0",
+      "liveAuthenticatedChrome": "PASS_READBACK_NOT_PAYMENT_ACK",
+      "periodSwitch": "SEP_VALUES_CORRECT_AFTER_ROUTE_REOPEN_TRANSIENT_LOADING_NOT_PROVEN_PRODUCT_DEFECT"
+    },
+    "searchForPaymentProof": "Targeted Google Drive queries and Cinépolis folder lacked identifiable Sept-2026 individual transfer/bank evidence; not an exhaustive Drive certification.",
+    "next": "Obtain exact authorized source for 31-Oct shopper payouts, distinguish historical paid from merely source-reconciled, run guarded no-duplicate idempotent per-visit reconciliation and independently read back external payment states. No inferred payment writes."
+  },
+  "antiLoop": {
+    "localWorktree": "21 commits behind remote and dirty; do not use as release authority or overwrite user edits",
+    "projectSources": "Oct-07 mirror is historical; GitHub canonical current pointer governs",
+    "repeatPolicy": "Do not rerun preserved PASS or reopen source complaints without exact drift; distinguish technical, TinyFish, human and bank payment evidence",
+    "separateStates": [
+      "financial_source_validated",
+      "liquidation_eligible",
+      "external_payment_confirmed"
+    ],
+    "nextExactOrder": [
+      "B7 full visual receipt PASS/FAIL",
+      "B1-B3 full role visual receipts",
+      "B8 historical exact payment source reconciliation",
+      "B9 Gate20/Gate21",
+      "I4 separate authorization"
+    ],
+    "noAutomaticPromotion": true
+  },
+  "safety": {
+    "productionWrites": 0,
+    "hrWritesFromThisBrowserCheck": 0,
+    "externalPaymentWrites": 0,
+    "bankWrites": 0,
+    "devFinanceReconciliationWrites": "ONE_REAL_BUSINESS_RECONCILIATION_ONLY",
+    "doNotRepeatUnprovenActions": true
+  }
+}
