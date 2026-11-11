@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "cxorbia.i3.phaseA.b7.shopper-notice-unread-route-acceptance.v1",
+  "asOfLocal": "2026-11-10",
+  "decision": "PASS_B7_SHOPPER_NOTICE_UNREAD_RELOAD_EXACT_ROUTE_TECHNICAL__BLOCK_HUMAN_PENDING",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "productSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+  "productTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
+  "devArtifact": {
+    "runtimeRevision": "cxorbia-live-hr-dev-00369-lkf",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/e301b123cd45d041",
+    "newBuildOrDeploy": false
+  },
+  "run": {
+    "runNumber": 2409,
+    "runId": 42958960117,
+    "jobId": 130320837296,
+    "workflowConclusion": "success",
+    "artifactId": 13828920066,
+    "artifactName": "cxorbia-i3-b7-notice-unread-route-42958960117",
+    "artifactDigest": "sha256:46c8834235215d6c6738814693b1bb87658b837c9dd3ff248cc89e148ee89519",
+    "url": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/42958960117"
+  },
+  "test": {
+    "script": "tools/qa/cxorbia-i3-b7-shopper-notice-read-route-dev-e2e.mjs",
+    "scope": "DEV_AUTHENTICATED_EXISTING_SHOPPER_CURRENT_HR_VISIBLE_VISIT_PLUS_DISPOSABLE_IN_APP_BULLETIN",
+    "roles": [
+      "shopper_target",
+      "different_shopper_negative"
+    ],
+    "noticeCreated": true,
+    "unreadVisible": true,
+    "unreadAfterReload": true,
+    "otherShopperExcluded": true,
+    "clickRouteMisVisitas": true,
+    "durableMarkReadAck": true,
+    "readAfterReload": true,
+    "cleaned": true,
+    "screenshots": [
+      "before-unread.png",
+      "after-click-misvisitas.png",
+      "after-reload-read.png"
+    ],
+    "artifactsRetainedInGitHubActions": true,
+    "errors": []
+  },
+  "diagnosis": {
+    "initialTrialRunId": 42958082636,
+    "diagnosticRunId": 42958474665,
+    "firstTrialScope": "BACKEND_VISIT_ID_WITHOUT_CROSS_CONFIRMING_CURRENT_HR_OWNER",
+    "firestoreNoticeGet": true,
+    "firestoreTargetQuery": true,
+    "hydratedRawFeed": true,
+    "exactVisitVisibleButRoleFilterRejected": true,
+    "resolution": "TEST_SELECTS_AUTHENTICATED_SHOPPER_WITH_NOV_2026_HR_VISIBLE_VISIT_BEFORE_ISSUING_TARGETED_NOTICE",
+    "productBugConfirmed": false,
+    "productCodeChange": false
+  },
+  "hr": {
+    "source": "EXTERNAL_LIVE_GOOGLE_SHEETS",
+    "revisionBefore": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+    "revisionAfter": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+    "writes": 0,
+    "NovemberCurrent": true
+  },
+  "safety": {
+    "syntheticNoticesCreated": 1,
+    "syntheticNoticesDeleted": 1,
+    "syntheticReadReceiptsCreated": 1,
+    "syntheticReadReceiptsDeleted": 1,
+    "visitWrites": 0,
+    "authWrites": 0,
+    "financialWrites": 0,
+    "hrWrites": 0,
+    "deploys": 0,
+    "production": "DO_NOT_TOUCH"
+  },
+  "acceptance": {
+    "B7TechnicalMissingNoticeEdge": "PASS",
+    "B7OtherTechnicalProofs": [
+      "RUN2385_POSTULATION_NOTICE",
+      "RUN2391_CANCEL_RESCHEDULE",
+      "RUN2400_RESERVATION_TO_VISIT"
+    ],
+    "B7WholeHumanBlock": "PENDING_VISUAL_PASS_FAIL",
+    "phaseAHumanPassBlocks": [
+      "B4",
+      "B5",
+      "B6"
+    ],
+    "phaseAHumanPassedCount": 3,
+    "phaseATotalBlocks": 9,
+    "strictDomainMatches": 5,
+    "strictDomainTotal": 21,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false
+  },
+  "nextExact": [
+    "B1_B2_B3_FULL_VISUAL_AND_PAULA_PASS_FAIL",
+    "B7_VISUAL_HUMAN_ACCEPTANCE",
+    "B8_SEPTEMBER_PAYMENT_RECONCILIATION_WITH_EXACT_RECEIPTS",
+    "B9_GATE20_GATE21_FINAL",
+    "I4_EXPLICIT_PRODUCTION_AUTHORIZATION_IF_GATES_PASS"
+  ]
+}
