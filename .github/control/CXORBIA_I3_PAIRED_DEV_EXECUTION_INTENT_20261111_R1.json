@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "cxorbia.i3.paired-dev-execution-intent.v1",
+  "dateLocal": "2026-11-11",
+  "timezone": "America/Guatemala",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "exactProductSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+  "exactProductTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
+  "authorityGuardRunId": 43089841491,
+  "authorityGuardConclusion": "SUCCESS_CANONICAL_AUTHORITY_ONLY",
+  "humanPassContinuityRunId": 43089841655,
+  "humanPassBlocksPreserved": [
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ],
+  "trigger": "ONE_SCOPED_PAIRED_DEV_RUNTIME_PLUS_HOSTING_MATERIALIZATION",
+  "scope": "CINEPOLIS_DEV_ONLY_SINGLE_CANONICAL_CANDIDATE_NO_PRODUCT_SOURCE_CHANGE",
+  "authorization": "PAULA_20261111_REQUEST_COMPLETE_MECHANISM_AND_PHASE_A_WITH_PRIOR_DEV_TEST_AUTHORIZATIONS",
+  "safety": {
+    "production": "DO_NOT_TOUCH",
+    "i4Authorized": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "externalPayments": false,
+    "hrWrites": false,
+    "bankWrites": false,
+    "firestoreRulesDeploys": 0,
+    "storageRulesDeploys": 0
+  },
+  "priorEmptyMarkerOnlyCommit": "e767a4e86a6ea64b4ddc7246b02dbaf4193240b4",
+  "reason": "A marker-only empty commit does not match the existing push.paths filter; this control receipt qualifies the exact scoped workflow without rewriting product.",
+  "outcome": "REQUESTED_NOT_YET_CERTIFIED"
+}
