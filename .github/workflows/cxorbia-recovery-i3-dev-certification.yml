@@ -289,6 +289,74 @@ jobs:
       path: .tmp/i3-b3-schedule-two-shopper/
       if-no-files-found: warn
       retention-days: 30
+
+  i3-b7-reservation-to-visit-two-role-dev-qa:
+   # Only the remaining B7 reservation-to-visit provider edge.
+   # A synthetic future-window reservation, two scoped roles, no HR write.
+   needs: canonical-candidate-authority
+   if: ${{ github.event_name=='push' && contains(github.event.head_commit.message,'[i3-b7-reservation-to-visit-two-role-qa-once]') && needs.canonical-candidate-authority.result=='success' }}
+   runs-on: ubuntu-24.04
+   timeout-minutes: 30
+   permissions:
+    contents: read
+    id-token: write
+   env:
+    FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+    FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+    B7_OUT: .tmp/i3-b7-reservation-to-visit
+    CXORBIA_I3_B7_RESERVATION_QA_WRITE_GATE: PAULA_AUTHORIZED_SYNTHETIC_DEV_ONLY
+   steps:
+   - uses: actions/checkout@v4
+     with: {fetch-depth: 0}
+   - uses: actions/setup-node@v4
+     with: {node-version: '24'}
+   - name: Guard same DEV artifact, source tree, external HR and DO_NOT_TOUCH
+     run: |
+      set -Eeuo pipefail
+      P=docs/checkpoints/CXORBIA_I3_RUN2382_PAIRED_DEV_CHROME_READBACK_20261110.json
+      test "$GITHUB_REF_NAME" = recovery/cxorbia-phase-a-20260831
+      test "$(jq -r '.productSourceSha' "$P")" = "$FOCAL_SOURCE"
+      test "$(jq -r '.productSourceTree' "$P")" = "$FOCAL_TREE"
+      test "$(jq -r '.providerReceipt.decision' "$P")" = PASS_VRM154_156_EXACT_DEV_MATERIALIZATION
+      test "$(jq -r '.providerReceipt.production' "$P")" = false
+      test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
+      test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
+      test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
+      git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules
+      node --check tools/qa/cxorbia-i3-b7-reservation-visit-two-role-dev-focal.mjs
+      mkdir -p "$B7_OUT"
+      echo "EXPECTED_HR_REVISION=$(jq -r '.providerReceipt.hrRevision' "$P")" >> "$GITHUB_ENV"
+   - uses: google-github-actions/auth@v2
+     with:
+      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+   - uses: google-github-actions/setup-gcloud@v2
+     with:
+      project_id: '${{ env.PROJECT }}'
+   - name: Verify unchanged RUN2382 Cloud Run and Hosting
+     run: |
+      set -Eeuo pipefail
+      P=docs/checkpoints/CXORBIA_I3_RUN2382_PAIRED_DEV_CHROME_READBACK_20261110.json
+      gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$B7_OUT/runtime.json"
+      test "$(jq -r '.status.latestReadyRevisionName' "$B7_OUT/runtime.json")" = "$(jq -r '.providerReceipt.runtimeRevision' "$P")"
+      TOKEN="$(gcloud auth print-access-token)"
+      curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$B7_OUT/hosting.json"
+      test "$(jq -r '.release.version.name' "$B7_OUT/hosting.json")" = "$(jq -r '.providerReceipt.hostingVersion' "$P")"
+   - name: Install isolated Firebase Admin test dependency
+     run: |
+      set -Eeuo pipefail
+      npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 > "$B7_OUT/npm-install.log" 2>&1
+   - name: Certify reservation to visit two-role real DEV provider lifecycle
+     run: |
+      set -Eeuo pipefail
+      node tools/qa/cxorbia-i3-b7-reservation-visit-two-role-dev-focal.mjs | tee "$B7_OUT/console.log"
+      jq -e '.decision=="PASS_I3_B7_RESERVATION_TO_VISIT_TWO_ROLE_DEV" and .shopperReserveAck==true and .adminCrossAck==true and .visitAssignedPersisted==true and .reservationCrossedPersisted==true and .receiptAuditPersisted==true and .idempotentReplay==true and .cleaned==true and .hrBefore==.hrAfter and .safety.syntheticVisitsCreated==1 and .safety.syntheticVisitsDeleted==1 and .safety.syntheticReservationsCreated==1 and .safety.syntheticReservationsDeleted==1 and .safety.hrWrites==0 and .safety.paymentsWritten==0 and .safety.production==false' "$B7_OUT/result.json" >/dev/null
+   - uses: actions/upload-artifact@v4
+     if: always()
+     with:
+      name: cxorbia-i3-b7-reservation-to-visit-${{ github.run_id }}
+      path: .tmp/i3-b7-reservation-to-visit/
+      if-no-files-found: warn
+      retention-days: 30
   vrm143-151-dev-materialization:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM143_151_DEV_MATERIALIZATION_REQUIRED' }}
