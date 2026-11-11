@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "cxorbia.i3.run2391.b7-decision-academy-repeat.v1",
+  "dateLocal": "2026-11-10",
+  "iteration": "I3",
+  "decision": "PASS_SCOPED_B7_CANCEL_RESCHEDULE_TWO_ROLE_AND_ACADEMY_B7_REPEAT__PHASE_A_INTEGRAL_HOLD",
+  "authorization": "Paula explicitly authorized real DEV materialization and certification with isolated reversible QA",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "productSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+  "productSourceTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
+  "samePublishedDev": {
+    "materializationRunId": 42921566208,
+    "runtimeRevision": "cxorbia-live-hr-dev-00369-lkf",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/e301b123cd45d041",
+    "buildsDuringQa": 0,
+    "deploysDuringQa": 0,
+    "production": false
+  },
+  "evidence": {
+    "workflowRunId": 42927850644,
+    "workflowRunNumber": 2391,
+    "workflowJobId": 130219124265,
+    "triggerHeadCommit": "3ce561eeb7083a61ac8a1382b038c7169e560650",
+    "artifactId": 13813623824,
+    "artifactDigest": "sha256:9cd608abd2c1a5cab74bbcaf3ec9a6f238a4a9d2035c8ae56cfb1c90742ca06b",
+    "files": ["b7/result.json", "result.json"],
+    "b7Decision": "PASS_I3_B7_TWO_ROLE_DECISION_LIVE_DEV",
+    "d08AndB7RepeatDecision": "PASS_I3_RUN2382_ACADEMY_B7_SYNTHETIC_DEV",
+    "providerAck": true,
+    "b7CancelCases": {
+      "approve": {"status": "approved_pending_hr", "providerAck": true, "durableReadback": true, "notification": true, "idempotentReplay": true, "hrUnchanged": true},
+      "reject": {"status": "rejected", "providerAck": true, "durableReadback": true, "notification": true, "idempotentReplay": true, "hrUnchanged": true}
+    },
+    "b7RescheduleCases": {
+      "approve": {"status": "approved", "newDate": "2026-11-22", "providerAck": true, "durableReadback": true, "notification": true, "idempotentReplay": true, "shopperTargetMatches": true, "hrUnchanged": true},
+      "reject": {"status": "rejected", "originalDate": "2026-11-18", "providerAck": true, "durableReadback": true, "notification": true, "idempotentReplay": true, "shopperTargetMatches": true, "hrUnchanged": true}
+    },
+    "b7QaCleanup": {"visits": true, "receipts": true, "audits": true, "bulletins": true, "totalItems": 28},
+    "academiaD08Repeat": {"lessonProgressDurable": true, "newSessionReadback": true, "idempotentReplay": true, "separateLearnerUnaffected": true, "wrongAudienceDenied": true},
+    "postulationsRepeat": {"approvalAssignmentAndExactShopperNotification": true, "rejectionWithoutApprovalNotice": true, "idempotentReplay": true, "otherShopperExcluded": true},
+    "temporaryQaAuthCreated": 2,
+    "temporaryQaAuthDeleted": 2,
+    "allAcademyAndPostulationQaDocumentsCleaned": true,
+    "academiaQaResidue": [],
+    "hrRevisionBefore": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+    "hrRevisionAfter": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+    "realLearnerWrites": 0,
+    "realVisitWrites": 0,
+    "hrWrites": 0,
+    "paymentWrites": 0,
+    "productionWrites": 0
+  },
+  "previousBlockedAttemptPreserved": {
+    "runId": 42927365504,
+    "workflowRunNumber": 2389,
+    "cause": "Test fixture reschedule date in October was now in the past; provider correctly returned OPS_SCHEDULE_DATE_BEFORE_ALLOWED",
+    "productFaultProven": false,
+    "syntheticItemsCleaned": 21,
+    "resolution": "Test fixture dates changed only to November 2026; same DEV runtime, same product source, no new deploy"
+  },
+  "phaseA": {
+    "acceptedFunctionalBlocks": ["B4", "B5", "B6"],
+    "acceptedFunctionalBlocksCount": 3,
+    "functionalBlocksTotal": 9,
+    "strictDomainMatches": 5,
+    "strictDomainTotal": 21,
+    "focalProviderPassNotWholeB7OrD08HumanPass": true,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4": "NOT_AUTHORIZED",
+    "production": "DO_NOT_TOUCH"
+  },
+  "nextExact": [
+    "Academia D08 complete separate authenticated Shopper/Cliente browser lesson UI and reload; no real learner progress mutation",
+    "B7 inspect actual individual notice panel recipient, unread, reload and route in isolated authenticated browser setup",
+    "B7 complete all human visual receipt and owner E2E before integral block PASS",
+    "Finish B1-B3, B8 and B9/Gate20/Gate21 cumulative regression without reopening valid historical receipts"
+  ]
+}
