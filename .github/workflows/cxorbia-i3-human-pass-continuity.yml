@@ -1,0 +1,40 @@
+name: CXOrbia Phase A Human PASS Continuity — Not I3 Certification
+
+on:
+  push:
+    branches:
+      - recovery/cxorbia-phase-a-20260831
+    paths:
+      - CXORBIA_RECOVERY_EXECUTION_CURRENT.json
+      - docs/checkpoints/CXORBIA_I3_HUMAN_PASS_B7_NO_LOOP_ACCOUNTING_20261111.json
+      - tools/qa/cxorbia-i3-human-pass-monotonic-guard.mjs
+      - .github/workflows/cxorbia-i3-human-pass-continuity.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preserve-human-acceptance:
+    name: Preserve existing human PASS (not Gate 20/21)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Verify cumulative human acceptance and counts
+        run: |
+          set -Eeuo pipefail
+          node --check tools/qa/cxorbia-i3-human-pass-monotonic-guard.mjs
+          node tools/qa/cxorbia-i3-human-pass-monotonic-guard.mjs | tee "$RUNNER_TEMP/cxorbia-human-pass-accounting.json"
+          jq -e '.decision=="PASS_PHASE_A_ACCEPTANCE_CONTINUITY_NOT_TERMINAL_CERTIFICATION" and .b7HumanPassPreserved==true and .humanCount>=4 and .humanTotal==9 and .strictOwnerDomainTotal==21 and .noDataWrites==true' "$RUNNER_TEMP/cxorbia-human-pass-accounting.json" >/dev/null
+      - name: Explain green job scope without overstating terminal certification
+        if: always()
+        run: |
+          {
+            echo "## Phase A — aceptación humana acumulativa"
+            echo "Esta comprobación evita perder PASS históricos y mantiene separados bloques humanos y dominios técnicos."
+            echo "Un check verde aquí NO significa Gate 20, Gate 21, certificación terminal, I3 GO ni autorización para producción."
+            echo "Ver estado canónico: CXORBIA_RECOVERY_EXECUTION_CURRENT.json"
+          } >> "$GITHUB_STEP_SUMMARY"
