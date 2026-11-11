@@ -120,14 +120,64 @@ test('descriptor compatibility next-action cannot reactivate a completed histori
   a.descriptor.nextExactAction = a.descriptor.exactNextAction;
   assert.equal(validateShockContinuity(a).pass, true);
 });
-test('matching but stale pointers cannot erase a proven fusion or served DEV version', () => {
+test('rewriting prose does not erase a proven fusion or verified DEV receipt', () => {
   const a = mk();
   a.descriptor.exactNextAction = 'G03 readback HR y finanzas; 29/83; Hosting a\u00fan NO servido en DEV';
   a.pointer.nextExactAction = a.descriptor.exactNextAction;
   const failures = validateShockContinuity(a).failures.join(' ');
-  assert.match(failures, /SHOPPER_FUSION_PROGRESS_STALE/);
-  assert.match(failures, /DEV_HOSTING_REALITY_STALE/);
+  assert.doesNotMatch(failures, /SHOPPER_FUSION_PROGRESS_STALE/);
+  assert.doesNotMatch(failures, /DEV_HOSTING_REALITY_STALE/);
   assert.doesNotMatch(failures, /NEXT_ACTION_DESYNC/);
+  a.descriptor.g03ActualHostingDevReadback20261031.verifiedBrowserDevOnly=false;
+  a.pointer.g03ActualHostingDevReadback20261031.verifiedBrowserDevOnly=false;
+  assert.match(validateShockContinuity(a).failures.join(' '),/DEV_HOSTING_REALITY_STALE/);
+});
+test('current fusion proof is structured, not counted by a sentence', () => {
+  const a = mk();
+  a.descriptor.exactNextAction = 'Resolver únicamente permisos y regímenes; fuente DEV publicada';
+  a.pointer.nextExactAction = a.descriptor.exactNextAction;
+  assert.equal(validateShockContinuity(a).pass, true);
+  a.pointer.currentCanonicalCheckpoint = {verifiedTotal:29,remaining:54};
+  assert.match(validateShockContinuity(a).failures.join(' '), /SHOPPER_FUSION_PROGRESS_STALE/);
+});
+test('frozen B8/B9 gates validate structured scope rather than specific prose words', () => {
+  const a = mk();
+  a.descriptor.exactNextAction = 'Resolver bloques abiertos sin repetir aceptaciones';
+  a.pointer.nextExactAction = a.descriptor.exactNextAction;
+  const blocks=Object.fromEntries(Array.from({length:9},(_,i)=>['B'+(i+1),
+    {technical:'HOLD',human:i>=3&&i<=6?'PASS_PREVIOUSLY_RECEIVED':'PENDING'}]));
+  a.pointer.activePhaseAClosureLock20261110 = {sourceSha:'source',gate20:'HOLD',gate21:'HOLD',
+    production:'DO_NOT_TOUCH',i4Authorized:false,phaseABlocksTotal:9,
+    phaseABlocksHumanPassed:4,humanPassBlocks:['B4','B5','B6','B7'],blocks};
+  assert.equal(validateShockContinuity(a).pass,true);
+  a.pointer.activePhaseAClosureLock20261110.blocks.B8.technical='PASS_AFTER_REVIEW';
+  assert.equal(validateShockContinuity(a).pass,true);
+  delete a.pointer.activePhaseAClosureLock20261110.blocks.B8;
+  assert.match(validateShockContinuity(a).failures.join(' '),/PHASE_A_FROZEN_SCOPE_DESYNC/);
+});
+test('current checkpoint and handoff cannot silently carry a predecessor DEV version', () => {
+  const a=mk(),path='served.json',blob='served-blob';
+  a.descriptor.productTreeAuthority='tree';
+  a.pointer.currentDevMaterialization={materializationReceiptPath:path,sourceSha:'source',sourceTree:'tree',
+    runId:55,runtimeRevision:'dev-55',hostingVersion:'sites/cxorbia-backend-dev/versions/current',
+    runtimeDigest:'sha256:abc',hostingRelease:'current-release'};
+  a.pointer.currentCanonicalCheckpoint={path,checkpointGitBlob:blob,gitBlob:blob,
+    productSourceSha:'source',productSourceTree:'tree',devServedCurrentSourceSha:'source',
+    devMaterializationRunId:55,devRuntimeRevision:'dev-55',
+    devHostingVersion:'sites/cxorbia-backend-dev/versions/current'};
+  a.pointer.continuityHandoff={path,gitBlob:blob,productSourceSha:'source',productSourceTree:'tree',
+    latestBatchRunId:55,immediateAction:a.descriptor.exactNextAction};
+  const oldBlob=a.gitBlob;
+  a.gitBlob=p=>p===path?blob:oldBlob(p);
+  assert.equal(validateShockContinuity(a).pass,true);
+  a.pointer.currentCanonicalCheckpoint.devMaterializationRunId=54;
+  assert.match(validateShockContinuity(a).failures.join(' '),/CURRENT_CHECKPOINT_DEV_SEAL_DESYNC/);
+  a.pointer.currentCanonicalCheckpoint.devMaterializationRunId=55;
+  a.pointer.currentCanonicalCheckpoint.checkpointGitBlob='predecessor-blob';
+  assert.match(validateShockContinuity(a).failures.join(' '),/CURRENT_CHECKPOINT_BLOB_DESYNC/);
+  a.pointer.currentCanonicalCheckpoint.checkpointGitBlob=blob;
+  a.pointer.continuityHandoff.immediateAction='Repeat completed human PASS';
+  assert.match(validateShockContinuity(a).failures.join(' '),/CURRENT_CHECKPOINT_DEV_SEAL_DESYNC/);
 });
 test('current V5 checkpoint supersedes old receipt without erasing its historical identity proof', () => {
   const a = mk();

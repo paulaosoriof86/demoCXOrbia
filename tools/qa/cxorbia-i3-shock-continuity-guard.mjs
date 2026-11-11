@@ -147,9 +147,24 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
   // gate must not hide a stale historical next action alongside the new one.
   check(!p.exactNextAction||p.exactNextAction===p.nextExactAction,
     'MAPPING_FAILURE:LEGACY_NEXT_ACTION_DESYNC');
-  check(/G03/.test(d.exactNextAction || '') && /HR/.test(d.exactNextAction || '') &&
-    /finanzas/i.test(d.exactNextAction || ''),
-    'MAPPING_FAILURE:EXCLUSIVE_FOCAL_LOOP');
+  // The next-action prose is an explanation, NOT a certification oracle.
+  // The former guard required literal "G03", "HR" and "finanzas" in every
+  // rewrite of the plan, reopening a closed control for editorial changes.
+  // Validate the structured frozen B1-B9 scope instead when it exists.
+  const phaseLock = p.activePhaseAClosureLock20261110;
+  if (phaseLock) {
+    const required=Array.from({length:9},(_,i)=>'B'+(i+1));
+    const protectedPass=['B4','B5','B6','B7'];
+    check(phaseLock.sourceSha === d.productSourceSha &&
+      phaseLock.phaseABlocksTotal === 9 &&
+      required.every(b=>Boolean(phaseLock.blocks?.[b]?.technical && phaseLock.blocks?.[b]?.human)) &&
+      protectedPass.every(b=>phaseLock.humanPassBlocks?.includes(b) &&
+        String(phaseLock.blocks?.[b]?.human||'').includes('PASS')) &&
+      phaseLock.phaseABlocksHumanPassed >= protectedPass.length &&
+      typeof phaseLock.gate20 === 'string' && typeof phaseLock.gate21 === 'string' &&
+      phaseLock.production === 'DO_NOT_TOUCH' && phaseLock.i4Authorized === false,
+      'MAPPING_FAILURE:PHASE_A_FROZEN_SCOPE_DESYNC');
+  }
 
   // Matching pointers can still be mutually stale. Preserve the last verified
   // cohort receipt and the actual DEV Hosting observation across iterations.
@@ -159,20 +174,40 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
     JSON.stringify(fusionD) === JSON.stringify(fusionP) &&
     gitBlob(fusionD.receiptPath) === fusionD.receiptGitBlob,
     'MAPPING_FAILURE:SHOPPER_FUSION_RECEIPT_DESYNC');
+  const verifiedCurrent = p.currentCanonicalCheckpoint?.verifiedTotal ?? fusionD.provisionalVerifiedGroups;
+  const pendingCurrent = p.currentCanonicalCheckpoint?.remaining ?? fusionD.provisionalPendingGroups;
   check(fusionD.provisionalVerifiedGroups >= fusionD.lastIndependentVerifiedGroups &&
     fusionD.provisionalVerifiedGroups + fusionD.provisionalPendingGroups === 83 &&
     fusionD.recensusRequired === true &&
-    // The October receipt remains immutable historical evidence. Once a
-    // newer checkpoint supersedes it, compare the current 83-group tally.
-    new RegExp(`${p.currentCanonicalCheckpoint?.verifiedTotal ?? fusionD.provisionalVerifiedGroups}/83`)
-      .test(d.exactNextAction || '') &&
-    ((p.currentCanonicalCheckpoint?.verifiedTotal ?? fusionD.provisionalVerifiedGroups) +
-      (p.currentCanonicalCheckpoint?.remaining ?? fusionD.provisionalPendingGroups) === 83),
+    // The immutable October receipt is the floor, the current checkpoint is
+    // the live count. A text-only change must not erase a proven 83/83 count.
+    Number.isInteger(verifiedCurrent) && Number.isInteger(pendingCurrent) &&
+    verifiedCurrent >= fusionD.provisionalVerifiedGroups &&
+    pendingCurrent >= 0 && verifiedCurrent + pendingCurrent === 83,
     'MAPPING_FAILURE:SHOPPER_FUSION_PROGRESS_STALE');
 
   const hostingD = d.g03ActualHostingDevReadback20261031 || {};
   const hostingP = p.g03ActualHostingDevReadback20261031 || {};
   const currentDev = p.currentDevMaterialization || {};
+  const currentCheckpoint = p.currentCanonicalCheckpoint || {};
+  const handoff = p.continuityHandoff || {};
+  if (currentDev.materializationReceiptPath && currentCheckpoint.path === currentDev.materializationReceiptPath) {
+    const currentReceiptBlob = gitBlob(currentCheckpoint.path);
+    check(Boolean(currentReceiptBlob) && currentCheckpoint.checkpointGitBlob === currentReceiptBlob &&
+      currentCheckpoint.gitBlob === currentReceiptBlob && handoff.gitBlob === currentReceiptBlob,
+      'MAPPING_FAILURE:CURRENT_CHECKPOINT_BLOB_DESYNC');
+    check(currentCheckpoint.productSourceSha === currentDev.sourceSha &&
+      currentCheckpoint.productSourceTree === currentDev.sourceTree &&
+      currentCheckpoint.devServedCurrentSourceSha === currentDev.sourceSha &&
+      currentCheckpoint.devMaterializationRunId === currentDev.runId &&
+      currentCheckpoint.devRuntimeRevision === currentDev.runtimeRevision &&
+      currentCheckpoint.devHostingVersion === currentDev.hostingVersion &&
+      handoff.productSourceSha === currentDev.sourceSha &&
+      handoff.productSourceTree === currentDev.sourceTree &&
+      handoff.latestBatchRunId === currentDev.runId &&
+      handoff.immediateAction === d.exactNextAction,
+      'MAPPING_FAILURE:CURRENT_CHECKPOINT_DEV_SEAL_DESYNC');
+  }
   const newerCurrentDev = Boolean(currentDev.hostingVersion && currentDev.sourceSha);
   const servedVersion = String(newerCurrentDev ? currentDev.hostingVersion : hostingD.hostingVersion || '').split('/').pop();
   // A newly source-proven P0 can legitimately wait for a single controlled
@@ -211,11 +246,15 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
       currentDev.sourceTree === d.productTreeAuthority && seal.mode !== 'PREDECESSOR_SERVING_PENDING_SOURCE') || predecessorServing) &&
     Boolean(currentDev.runtimeRevision && currentDev.runtimeDigest && currentDev.hostingRelease) &&
     p.continuityHandoff?.path === p.currentCanonicalCheckpoint?.path :
-    (d.exactNextAction || '').includes(servedVersion);
+    // Historical records before the structured currentDev seal may be accepted
+    // only by their frozen verified readback/receipt, not by repeating a
+    // Hosting version in a narrative next-action sentence.
+    hostingD.verifiedBrowserDevOnly === true &&
+    (!hostingD.receiptPath || (Boolean(hostingD.receiptGitBlob) &&
+      gitBlob(hostingD.receiptPath) === hostingD.receiptGitBlob));
   check(Boolean(servedVersion) && JSON.stringify(hostingD) === JSON.stringify(hostingP) &&
     hostingD.verifiedBrowserDevOnly === true &&
-    servedAuthorityMatches &&
-    !/a[uú]n\s+NO\s+servid[oa]\s+en\s+DEV/i.test(d.exactNextAction || ''),
+    servedAuthorityMatches,
     'MAPPING_FAILURE:DEV_HOSTING_REALITY_STALE');
 
   // A Hosting-only deployment can be newer than the last paired runtime +

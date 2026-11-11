@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "cxorbia.i3.control.narrative-oracle.current-seal.v1",
+  "findingId": "VRM-326",
+  "observedAt": "2026-11-11T21:30:00Z",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "currentProductSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+  "currentProductSourceTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
+  "servedDevRunId": 43091136067,
+  "servedRuntimeRevision": "cxorbia-live-hr-dev-00370-fl2",
+  "servedHostingVersion": "sites/cxorbia-backend-dev/versions/097e92b33464c10a",
+  "before": {
+    "controlHead": "fc0da64e70a7730d773cbae4331ff0b00135dd85",
+    "canonicalAuthorityGuard": "FAIL",
+    "failureCodes": [
+      "MAPPING_FAILURE:EXCLUSIVE_FOCAL_LOOP",
+      "MAPPING_FAILURE:SHOPPER_FUSION_PROGRESS_STALE"
+    ],
+    "rootCauses": [
+      "The guard required literal G03/HR/finanzas words in a narrative next action, despite the live B8/B9 structured hold.",
+      "It parsed a historic 83-group fusion tally from the next-action sentence instead of the signed structured current checkpoint.",
+      "Legacy fallback interpreted narrative inclusion of the Hosting version as evidence of DEV materialization.",
+      "The currentCanonicalCheckpoint path pointed to RUN2428 but its blob/source/run/runtime/hosting metadata still came from prior RUN2274/00359."
+    ]
+  },
+  "after": {
+    "canonicalAuthorityGuardWorkingTree": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+    "shockGuardTests": "33/33 PASS",
+    "aliasGuardTests": "13/13 PASS",
+    "currentCanonicalCheckpoint": "PINNED_TO_RUN2428_SOURCE_4784_AND_EXACT_GIT_BLOB",
+    "proofPolicy": "Structured source/candidate, frozen B1-B9 lock, 83-group checkpoint and provider receipts; editorial prose never substitutes for proof",
+    "negativeTests": [
+      "Reject structured B8/B9 prematurely PASS",
+      "Reject fusion regression below independent verified floor or invalid total",
+      "Reject current checkpoint blob, source, run or Hosting mismatch",
+      "Reject handoff action contradicting canonical current action",
+      "Reject stale current DEV/phase lock fields"
+    ]
+  },
+  "limits": {
+    "humanPassBlocksPreserved": ["B4", "B5", "B6", "B7"],
+    "strictHistoricalModuleMatches": 5,
+    "moduleDomainTotal": 21,
+    "sourceInventoryMissingProofs": 88,
+    "b1B2B3HumanGate": "PENDING",
+    "b8ExternalPaymentSource": "PENDING",
+    "b9Gate20Gate21": "HOLD",
+    "phaseAComplete": false,
+    "terminalProductCertified": false,
+    "rolaConfigured": false
+  },
+  "mutationScope": {
+    "productFilesModified": 0,
+    "externalHrWrites": 0,
+    "firestoreWrites": 0,
+    "paymentWrites": 0,
+    "productionDeploys": 0,
+    "production": "DO_NOT_TOUCH"
+  }
+}

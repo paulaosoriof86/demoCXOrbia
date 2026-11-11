@@ -8,7 +8,7 @@
   "productTreeAuthority": "0f0d5b080b249191696ffad6a17936bdb4c347db",
   "predecessorProductSourceSha": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V608_2026-11-11.json",
-  "findingsLedgerExpectedGitBlob": "946622fb19a4b5b36f70c275cc61c69c06b4e3ff",
+  "findingsLedgerExpectedGitBlob": "7f0b15a046bb694d6a8d26f851c2fe799dfcc2dc",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261111-V294.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -115,7 +115,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-326",
+  "nextFindingId": "VRM-327",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -17822,7 +17822,7 @@
     "sourceTestsFail": 0,
     "production": false
   },
-  "updatedAt": "2026-11-11T21:17:45Z",
+  "updatedAt": "2026-11-11T21:34:54Z",
   "previousCurrentMaterializationBeforeRun2248": {
     "builds": 1,
     "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",

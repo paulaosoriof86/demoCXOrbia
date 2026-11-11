@@ -278,22 +278,31 @@
   },
   "currentCanonicalCheckpoint": {
     "path": "docs/checkpoints/CXORBIA_I3_RUN2428_CURRENT_SOURCE_DEV_MATERIALIZATION_20261111.json",
-    "checkpointGitBlob": "f12edc777a46e3750ed5710e6931fe70e21fa1de",
-    "status": "I3_HOLD_RUN2274_CURRENT_SOURCE_SERVED_B11_ADMIN_HR_FOCAL_ONLY",
+    "checkpointGitBlob": "2ce9d2e159dbae98b657ba1556d013d416e364e2",
+    "status": "I3_HOLD_RUN2428_CURRENT_SOURCE_DEV_SERVING_PENDING_ROLE_E2E_HUMAN_AND_GATE",
     "verifiedTotal": 83,
     "remaining": 0,
     "approvedAdditionalGroupsProviderPass": 2,
-    "productSourceSha": "ed5b708c17b481bde00cb95dda3b426a0e27a890",
-    "productSourceTree": "6cb5a48d23eec8110dc6ee17f0fa947027011f19",
-    "devServedCurrentSourceSha": "ed5b708c17b481bde00cb95dda3b426a0e27a890",
-    "devMaterialization": "PASS_RUN42437035543",
-    "devMaterializationRunId": 42437035543,
-    "devHostingVersion": "sites/cxorbia-backend-dev/versions/e5c9e4ce2f6c689b",
-    "devRuntimeRevision": "cxorbia-live-hr-dev-00359-rkd",
+    "productSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+    "productSourceTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
+    "devServedCurrentSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+    "devMaterialization": "PASS_RUN43091136067",
+    "devMaterializationRunId": 43091136067,
+    "devHostingVersion": "sites/cxorbia-backend-dev/versions/097e92b33464c10a",
+    "devRuntimeRevision": "cxorbia-live-hr-dev-00370-fl2",
     "moduleMatches": 5,
     "moduleTotal": 21,
     "production": false,
-    "gitBlob": "2ce9d2e159dbae98b657ba1556d013d416e364e2"
+    "gitBlob": "2ce9d2e159dbae98b657ba1556d013d416e364e2",
+    "historicalStaleFieldsBeforeSealCorrection20261111": {
+      "checkpointGitBlob": "f12edc777a46e3750ed5710e6931fe70e21fa1de",
+      "productSourceSha": "ed5b708c17b481bde00cb95dda3b426a0e27a890",
+      "productSourceTree": "6cb5a48d23eec8110dc6ee17f0fa947027011f19",
+      "devMaterializationRunId": 42437035543,
+      "devRuntimeRevision": "cxorbia-live-hr-dev-00359-rkd",
+      "devHostingVersion": "sites/cxorbia-backend-dev/versions/e5c9e4ce2f6c689b",
+      "state": "HISTORICAL_NOT_CURRENT_AUTHORITY"
+    }
   },
   "continuityHandoff": {
     "authority": "CURRENT_SOURCE_EXACT_DEV_RUN2428_PROVIDER_ACK_WITH_B4_B7_PASS_AND_GATE_HOLD",
@@ -320,7 +329,7 @@
       "E04",
       "F09"
     ],
-    "immediateAction": "Fuente de producto 4784f220/tree 0f0d5b08 YA SERVIDA en DEV RUN2428 runtime 00370-fl2 Hosting 097e92b33464c10a; no repetir DEV ni QA de origen sin drift. Mantener B4/B5/B6/B7 PASS humano 4/9, 5/21 dominios MATCH estrictos, 83/83 identidad, HR externa Nov 2026 44 GT34 HN10 revision 7b7b6226. Cerrar B1-B3 E2E funcional y aprobación visual por bloque; después B8 finanzas G03 HR pagos septiembre conciliación con autoridad exacta, octubre pendiente, noviembre devengo; después B9 regresión 21 dominios, Gate20/Gate21 HOLD hasta pruebas y PASS terminal. Producción DO_NOT_TOUCH; no duplicar candidata ni proyecto.",
+    "immediateAction": "Producto 4784f220/tree 0f0d5b08 YA SERVIDO DEV RUN2428 00370-fl2/Hosting 097e92b33464c10a; no redeploy por estado documental. B4-B7 PASS humano 4/9 preservado; 5/21 dominios MATCH historicos, preterminal exacto 88 owner-files pendientes (27 sin procedencia de blob, 2 mappings). VRM324 HR externa corregida por Paula: noviembre HN vs octubre 147/341 celdas distintas; ver readback directo 20261111; falta demostrar revision nueva en backend DEV/Admin/Shopper misma revision, nunca escribir HR. Cerrar solo faltantes B1-B3 E2E rol/humano, B8 septiembre pagado 31-oct declarado sin fuente bancaria exacta, octubre pendiente y noviembre devengo, luego B9 21 dominios Gate20/Gate21. ROLA futuro proyecto mismo tenant GT/SV/HN/NI, 4 fuentes nacionales y coordinadores scope pais, requiere configuracion UI/backend; aun no creado. Prohibido reabrir B4-B7 sin drift exacto; ninguna escritura pagos/HR/produccion, I4 HOLD.",
     "noProduction": true
   },
   "currentModuleEvidenceOverrides": {
@@ -6215,8 +6224,8 @@
     "production": false
   },
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V608_2026-11-11.json",
-  "findingsLedgerExpectedGitBlob": "946622fb19a4b5b36f70c275cc61c69c06b4e3ff",
-  "nextFindingId": "VRM-326",
+  "findingsLedgerExpectedGitBlob": "7f0b15a046bb694d6a8d26f851c2fe799dfcc2dc",
+  "nextFindingId": "VRM-327",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
     "receiptPath": "docs/checkpoints/CXORBIA_I3_G03_CRM_PROVIDER_COMPOSITION_SOURCE_REPAIR_20261101.json",
@@ -8431,7 +8440,7 @@
     "sourceTestsFail": 0,
     "production": false
   },
-  "updatedAt": "2026-11-11T21:17:45Z",
+  "updatedAt": "2026-11-11T21:34:54Z",
   "previousCanonicalControlBeforeVrm313": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {

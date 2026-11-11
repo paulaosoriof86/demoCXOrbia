@@ -22764,6 +22764,25 @@
       "providerWrites": 0,
       "production": false,
       "phaseAComplete": false
+    },
+    "VRM-326": {
+      "id": "VRM-326",
+      "priority": "P0_CONTROL",
+      "title": "Narrative text falsely gates certification while current checkpoint points to a stale DEV seal",
+      "owner": "tools/qa/cxorbia-i3-shock-continuity-guard.mjs and CXORBIA_RECOVERY_EXECUTION_CURRENT.json",
+      "discoveredAt": "2026-11-11",
+      "before": "At control HEAD fc0da64e canonical guard FAILed solely because exactNextAction omitted literal G03/HR/finanzas and 83/83, despite frozen structured B8/B9 HOLD and current fusion 83/0. currentCanonicalCheckpoint path RUN2428 carried old RUN2274/00359 metadata and mismatched checkpointGitBlob.",
+      "after": "Validate structured Phase A B8/B9, 83-group checkpoint and exact DEV receipt/blob/source/run/Hosting/handoff instead of narrative phrases. Current checkpoint pinned to real RUN2428; old fields preserved in historicalStaleFieldsBeforeSealCorrection20261111. Negative tests reject stale metadata, blob, human or production gate; canonical authority guard PASS locally.",
+      "classification": "MAPPING_FAILURE",
+      "state": "FIXED_PROVEN_CONTROL_ONLY_NO_PRODUCT_CERTIFICATION",
+      "evidencePath": "docs/checkpoints/CXORBIA_I3_VRM326_NARRATIVE_ORACLE_AND_CURRENT_SEAL_CORRECTION_20261111.json",
+      "humanAcceptance": "B4_B5_B6_B7_PREVIOUSLY_PASS_PRESERVED",
+      "sourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+      "controlTestsPass": 46,
+      "productChanges": 0,
+      "providerWrites": 0,
+      "production": false,
+      "phaseAComplete": false
     }
   },
   "latestEvidenceOverrides": {
@@ -23529,11 +23548,12 @@
       "VRM-322",
       "VRM-323",
       "VRM-324",
-      "VRM-325"
+      "VRM-325",
+      "VRM-326"
     ],
-    "findingCount": 325,
-    "expectedCurrentRange": "VRM-001..VRM-325",
-    "nextFindingId": "VRM-326",
+    "findingCount": 326,
+    "expectedCurrentRange": "VRM-001..VRM-326",
+    "nextFindingId": "VRM-327",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_I3_B4_B7_HUMAN_PASS_4_OF_9__STRICT_DOMAIN_MATCH_5_OF_21__B1_B3_B8_B9_GATES_HOLD",
@@ -24086,7 +24106,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-326",
+  "nextFindingId": "VRM-327",
   "lastControlFailure": {
     "id": "RUN1238_NEXT_FINDING_ID_GOVERNANCE_DESYNC",
     "classification": "MAPPING_FAILURE",
@@ -37766,7 +37786,7 @@
     "result": "SOURCE_ONLY_AUTHORITY_ALIGNMENT_NOT_HN_IDENTITY_MERGE_OR_TERMINAL_CERTIFICATION",
     "production": false
   },
-  "findingCount": 325,
+  "findingCount": 326,
   "i3GeneralShopperIdentityGuard20261028": {
     "findingId": "VRM-291",
     "sourceSha": "308c69e3756e3e80577856009901934ce5f52fba",
@@ -41555,7 +41575,7 @@
     "decision": "P0_D08_DISPATCH_FIXED_LOCAL_9_OF_9_PENDING_CANONICAL_CI_EXACT_DEV",
     "production": false
   },
-  "updatedAt": "2026-11-11T21:17:45Z",
+  "updatedAt": "2026-11-11T21:34:54Z",
   "previousAuthorityBeforeD08Progress": {
     "sourceSha": "91d29146ede33924c831ae54fe3f7b00925fff26",
     "sourceTree": "aab7a7f00f406d2085f715fdd72e82b76f889b66",
