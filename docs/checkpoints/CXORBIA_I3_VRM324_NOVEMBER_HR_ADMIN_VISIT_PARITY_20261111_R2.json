@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm324.external-hr-admin-parity-readback.v1",
+  "findingId": "VRM-324",
+  "observedOn": "2026-11-11",
+  "timeZone": "America/Guatemala",
+  "decision": "PASS_SCOPED_NOVEMBER_SHEETS_TO_ADMIN_VISIT_ROW_PARITY__NOT_TERMINAL_CERTIFICATION",
+  "authority": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "controlHeadAtReadback": "1173b9de9f32900bec668974055c94787bf37a48",
+    "productSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+    "productTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
+    "previousSourceCorrectionReceipt": "docs/checkpoints/CXORBIA_I3_VRM324_HR_LIVE_SOURCE_CORRECTION_READBACK_20261111.json",
+    "currentDevMaterializationReceipt": "docs/checkpoints/CXORBIA_I3_RUN2428_CURRENT_SOURCE_DEV_MATERIALIZATION_20261111.json",
+    "hostingVersionOnExistingDevSeal": "sites/cxorbia-backend-dev/versions/097e92b33464c10a",
+    "runtimeRevisionOnExistingDevSeal": "cxorbia-live-hr-dev-00370-fl2"
+  },
+  "source": {
+    "provider": "Google Sheets",
+    "spreadsheetId": "1h307t37LxM1nZNh_9Odt6wHUQhROG6cYbsbMKr48vU4",
+    "spreadsheetTitle": "HR Guatemala - Sincronizacion Google Sheets",
+    "projectId": "cinepolis",
+    "period": "2026-11",
+    "countryTabs": [
+      {
+        "country": "GT",
+        "tab": "NOVIEMBRE",
+        "sheetId": 1384948963,
+        "boundedRead": "A1:AE60",
+        "visitRows": 34
+      },
+      {
+        "country": "HN",
+        "tab": "NOVIEMBRE HN",
+        "sheetId": 1065354533,
+        "boundedRead": "A1:AE30",
+        "visitRows": 10
+      }
+    ],
+    "totalVisitRows": 44,
+    "sourceRevisionHashComparedToDev": false,
+    "noHrReconciliationEndpointInvoked": true
+  },
+  "authenticatedDevUi": {
+    "url": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV",
+    "actorRoleObserved": "Administración",
+    "projectObserved": "Cinépolis",
+    "periodObserved": "NOV 2026",
+    "views": ["Mi Día", "Dashboard Operativo", "Visitas"],
+    "tableVisitRows": 44,
+    "uniqueVisitNumbers": 44,
+    "visitNumberRange": [749, 792],
+    "countryCounts": {"GT": 34, "HN": 10},
+    "operationalSummaryVisible": {
+      "assigned": 33,
+      "available": 11,
+      "realizedCumulative": 7,
+      "outOfRange": 3
+    }
+  },
+  "comparison": {
+    "scope": "each of the 44 November Admin Visitas table rows joined to its live source country-tab row",
+    "join": "source row order and source-preserved November visit numbers 749..792, including separate GT/HN country ranges",
+    "fieldsCompared": ["cinema", "country", "purchaseMethodOrScenario", "quincena", "scheduledDateWhenPresent"],
+    "matchedVisitRows": 44,
+    "mismatchedVisitRows": 0,
+    "missingVisitRows": 0,
+    "duplicateVisitNumbers": 0,
+    "sameRowCountAsLiveSheet": true,
+    "method": "bounded native Sheets reads and DOM-backed observation in the already authenticated Chrome DEV session; no bulk HR refresh/reconciliation action",
+    "humanAcceptance": false,
+    "providerAckForWrites": "NOT_APPLICABLE_READ_ONLY",
+    "screenshotsCertified": false
+  },
+  "preservedAcceptance": {
+    "humanPassBlocks": ["B4", "B5", "B6", "B7"],
+    "totalBlocks": 9,
+    "strictModuleDomainsMatched": 5,
+    "strictModuleDomainsTotal": 21,
+    "terminalGate20": "HOLD",
+    "terminalGate21": "HOLD",
+    "i4Authorized": false
+  },
+  "stillRequired": [
+    "Exact backend DEV sourceRevision compared with the corrected November GT/HN provider revision",
+    "Authenticated Shopper same-revision and visit-state readback",
+    "Pending B1-B3 human or functional acceptance by exact owner",
+    "B8 exact payment-source reconciliation and acceptance",
+    "B9 21-domain owner-specific action and byte receipts before Gates 20/21"
+  ],
+  "safety": {
+    "explicitHrWriteActionsInvoked": 0,
+    "explicitFirestoreWriteActionsInvoked": 0,
+    "explicitAuthWriteActionsInvoked": 0,
+    "explicitPaymentWriteActionsInvoked": 0,
+    "explicitDeployActionsInvoked": 0,
+    "providerSideEffectAuditPerformed": false,
+    "productSourceModified": false,
+    "humanPassReopened": false
+  }
+}
