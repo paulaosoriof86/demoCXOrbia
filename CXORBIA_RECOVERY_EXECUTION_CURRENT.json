@@ -12566,5 +12566,56 @@
       "doNotCallNovemberExecutionWithoutSemanticReconciliation": true
     },
     "docUpdateCommit": "d578a872df1254a71ec25adfae82f9e6e5df2080"
+  },
+  "latestRun2397B3ShopperSchedulingDevE2e": {
+    "asOfLocal": "2026-11-10",
+    "state": "PASS_B3_SHOPPER_SCHEDULE_FOCAL_PROVIDER__PHASE_A_INTEGRAL_HOLD",
+    "controlCommit": "c456c681cb40b963c3b03e99dbb8f62e1dffb9ee",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2397_B3_TWO_SHOPPER_SCHEDULE_DEV_QA_20261110.json",
+    "receiptCommit": "09bc8bcdc6c07310b1f0e56b67065e679aca8ab5",
+    "workflowRunId": 42952734838,
+    "workflowRunNumber": 2397,
+    "jobId": 130300796807,
+    "artifactId": 13825273817,
+    "artifactDigest": "sha256:e7fd759b1ccfbc0dd2f56ac1742ab167ee9d89891af087497dd3a31bed9a3fd5",
+    "decision": "PASS_I3_B3_SYNTHETIC_SHOPPER_SCHEDULE_ACK_DEV",
+    "productSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+    "devRuntime": "cxorbia-live-hr-dev-00369-lkf",
+    "devHosting": "sites/cxorbia-backend-dev/versions/e301b123cd45d041",
+    "shopperOwnScheduleAck": true,
+    "otherShopperDenied": true,
+    "persistedAfterIndependentReadback": true,
+    "idempotentReplay": true,
+    "qaVisitCreatedDeleted": "1/1",
+    "otherQaArtifactsCleaned": true,
+    "hrRevisionBeforeAfter": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+    "hrWrites": 0,
+    "commercialWrites": 0,
+    "payments": 0,
+    "deploys": 0,
+    "chromeAdminShoppersNov": {
+      "visibleProfiles": 192,
+      "activeSixMonths": 87,
+      "inactive": 105,
+      "complete": 1,
+      "incomplete": 191,
+      "profileReviewBadgeCount": 8,
+      "technicalIdentityReviewCases": 172
+    },
+    "blocksHumanPassPreserved": [
+      "B4",
+      "B5",
+      "B6"
+    ],
+    "blocksHumanPass": "3/9",
+    "fullDomainsMatch": "5/21",
+    "b3IntegralHuman": "HOLD",
+    "b7IntegralHuman": "HOLD",
+    "b8ExternalSeptemberPaidReconciliation": "HOLD",
+    "b9Gate20": "HOLD",
+    "b9Gate21": "HOLD",
+    "i4Authorized": false,
+    "production": "DO_NOT_TOUCH",
+    "nextExact": "Finalize B1-B3 and B7 visual/human acceptance without rerunning closed provider QA; reconcile B8 receipts; Gate20/21 and explicit I4 authorization before production."
   }
 }
