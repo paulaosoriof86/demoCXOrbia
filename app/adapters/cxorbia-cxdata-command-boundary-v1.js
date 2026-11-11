@@ -240,7 +240,17 @@
       const current=list.map(visit).filter(Boolean);
       const expected=current.map(v=>[v.id,versionOf(protectedVisitFor(v)||v)]);
       const visitRefs=current.map(v=>({visitId:str(v.id||v.visitId),hrRowId:str(v.hrRowId)||null}));
-      const payload={visitIds:list,visitRefs,paymentStatus:str(paymentStatus).toLowerCase(),reconciliationBatchId:str(meta.reconciliationBatchId),sourceRef:str(meta.sourceRef),notes:str(meta.notes)};
+      // The provider validates historical payment authority against the *current*
+      // HR revision. Do not silently drop it, or Paula's explicit payment date and
+      // its authorization: that would make the Admin command impossible to prove.
+      // No bank transfer or local payment mutation occurs in this boundary.
+      const payload={visitIds:list,visitRefs,paymentStatus:str(paymentStatus).toLowerCase(),
+        reconciliationBatchId:str(meta.reconciliationBatchId),sourceRef:str(meta.sourceRef),
+        sourceRevision:str(meta.sourceRevision||CX.data?.previewMeta?.sourceRevision),
+        notes:str(meta.notes)};
+      if(meta.historicalPaymentDate)payload.historicalPaymentDate=str(meta.historicalPaymentDate);
+      if(meta.historicalPaymentAuthorityRef)payload.historicalPaymentAuthorityRef=str(meta.historicalPaymentAuthorityRef);
+      if(meta.supersession&&typeof meta.supersession==='object')payload.supersession=JSON.parse(JSON.stringify(meta.supersession));
       const cmd=buildBase('finance.historical.reconcile','historicalPaymentReconciliation',payload.reconciliationBatchId||null,payload,hash(expected),Object.assign({permission:'finance.reconcile'},meta));
       return execute(cmd,meta);
     };
