@@ -91,25 +91,40 @@ async function eligible(){
  const visits=vs.docs.map(d=>({id:d.id,...d.data()})).filter(v=>
   str(v.periodId)===periodId&&str(v.shopperId)&&v.qaSynthetic!==true&&
   !['cancelada','cancelado','disponible'].includes(str(v.estado||v.status).toLowerCase()));
- for(const visit of visits){
-  const matching=members.filter(m=>str(m.shopperId)===str(visit.shopperId));
+ const candidateIds=[...new Set(visits.map(v=>str(v.shopperId)))];
+ const result=[];
+ for(const sid of candidateIds){
+  const matching=members.filter(m=>str(m.shopperId)===sid);
   if(matching.length!==1)continue;
-  try{const u=await auth.getUser(matching[0].uid);if(u.disabled)continue;}catch{continue;}
-  let other=null;
-  for(const m of members.filter(x=>str(x.shopperId)!==str(visit.shopperId))){
-   try{const u=await auth.getUser(m.uid);if(!u.disabled){other=m;break;}}catch{continue;}
-  }
-  if(other)return {shopper:matching[0],other,visitId:str(visit.id||visit.visitId)};
+  try{const u=await auth.getUser(matching[0].uid);if(!u.disabled)result.push(matching[0]);}catch{continue;}
  }
- throw Error('SOURCE_FAILURE:NO_EXISTING_NOV_VISIT_WITH_UNIQUE_ACTIVE_SHOPPER_PRINCIPAL');
+ need(result.length>0,'SOURCE_FAILURE','NO_NOV_SHOPPER_PRINCIPALS');
+ return {candidates:result,allMembers:members};
 }
 
 try{
  result.hrBefore=await revision();need(result.hrBefore===expectedHr,'PROVIDER_FAILURE','HR_REVISION_DRIFT_BEFORE');
  need(!(await bulletin.get()).exists,'SOURCE_FAILURE','NOTICE_ID_COLLISION');
- const chosen=await eligible();readRef=reads.doc(chosen.shopper.uid+'_'+noticeId);
+ const membership=await eligible();
+ browser=await chromium.launch({headless:true});
+ let chosen=null,s=null,targetVisitId='';
+ for(const member of membership.candidates.slice(0,20)){
+  const signed=await signIn(member);
+  const visibleId=await signed.page.evaluate(sid=>{
+   const d=window.CX?.data||{};
+   const current=(d._visitas||[]).filter(v=>String(v.shopperId||'')===sid&&
+    String(typeof d.recordPeriodId==='function'?d.recordPeriodId(v):(v.periodId||''))==='cinepolis-2026-11');
+   return String(current[0]?.id||current[0]?.visitId||current[0]?.hrRowId||'');
+  },str(member.shopperId));
+  if(visibleId){
+   const other=membership.candidates.find(m=>str(m.shopperId)!==str(member.shopperId));
+   if(other){chosen={shopper:member,other};s=signed;targetVisitId=visibleId;break;}
+  }
+  await signed.ctx.close();
+ }
+ need(!!chosen&&!!s&&!!targetVisitId,'SOURCE_FAILURE','NO_ROLE_MATCHED_NOV_VISIT_IN_AUTHENTIC_SHOPPER_UI');
+ readRef=reads.doc(chosen.shopper.uid+'_'+noticeId);
  need(!(await readRef.get()).exists,'SOURCE_FAILURE','READ_ID_COLLISION');
- const targetVisitId=chosen.visitId;
  await bulletin.create({id:noticeId,tenantId,projectId,periodId,status:'active',toRole:'shopper',
   targetRoles:['shopper'],targetProjectIds:[projectId],targetShopperIds:[str(chosen.shopper.shopperId)],
   entityType:'visit',entityId:targetVisitId,operational:true,eventKey:'qa_b7_notice_read_route',
@@ -117,8 +132,7 @@ try{
   body:'Consulta los detalles de tu visita en Mis Visitas.',priority:'normal',actionRoute:'misvisitas',
   createdAt:new Date().toISOString(),qaSynthetic:true,qaRunId:runId});
  created=true;result.safety.noticesCreated++;result.stages.noticeCreated=true;
- browser=await chromium.launch({headless:true});
- const s=await signIn(chosen.shopper),page=s.page;
+ const page=s.page;
  result.stages.shopperAuth=true;
  const initial=await feed(page);
  result.stages.unreadVisible=initial.present&&initial.unread&&initial.source==='firestore'&&
