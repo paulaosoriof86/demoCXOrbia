@@ -36,7 +36,9 @@ const update=(dir,change)=>{
   d.phaseAHumanAcceptanceCurrent20261111.humanCount=p.activePhaseAClosureLock20261110.phaseABlocksHumanPassed;
   fs.writeFileSync(descriptorFile,JSON.stringify(d,null,2)+'\n');
 };
-const check=dir=>spawnSync(process.execPath,[GUARD],{cwd:dir,encoding:'utf8'});
+// Minimal fixtures intentionally omit the large canonical Git objects. The real
+// checkout's CI-only object checks run separately after these regression tests.
+const check=dir=>spawnSync(process.execPath,[GUARD],{cwd:dir,encoding:'utf8',env:{...process.env,GITHUB_ACTIONS:'false'}});
 const cleanup=dir=>fs.rmSync(dir,{recursive:true,force:true});
 const git=(dir,...args)=>execFileSync('git',args,{cwd:dir,stdio:['ignore','pipe','pipe']}).toString('utf8').trim();
 
