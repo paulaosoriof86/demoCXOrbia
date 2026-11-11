@@ -119,6 +119,10 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
     freezeD.id === freezeP.id, 'MAPPING_FAILURE:PRIORITY_ID_DESYNC');
   check(Boolean(d.exactNextAction) && d.exactNextAction === p.nextExactAction,
     'MAPPING_FAILURE:NEXT_ACTION_DESYNC');
+  // The descriptor also retains a compatibility field. It must not silently
+  // reintroduce an older action after the current control pointer is updated.
+  check(!d.nextExactAction || d.nextExactAction === d.exactNextAction,
+    'MAPPING_FAILURE:DESCRIPTOR_LEGACY_NEXT_ACTION_DESYNC');
   // Some older continuity consumers still read this second field. A green
   // gate must not hide a stale historical next action alongside the new one.
   check(!p.exactNextAction||p.exactNextAction===p.nextExactAction,

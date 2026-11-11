@@ -120,6 +120,9 @@ const workflowLedgerReadback={
   aligned:!workflowLedgerPointer||workflowLedgerPointer===LEDGER,
   activelyConsumed:legacyWorkflowLedgerActive,scope:'HISTORICAL_ENV_POINTER_NOT_RELEASE_AUTHORITY'
 };
+// The current ledger is selected solely by the descriptor. A redundant
+// workflow-wide fixed path creates a second, eventually stale authority.
+if(workflowLedgerPointer)fail('MAPPING_FAILURE:TOP_LEVEL_WORKFLOW_LEDGER_POINTER',workflowLedgerPointer);
 if(terminalLike&&(!moduleTruthReadback.sourceAligned||!moduleTruthReadback.phaseAComplete||
    !moduleTruthReadback.allModulesMatch||!moduleBlobReadback.pass||
    !moduleRegistryReadback.historicalSubsetValid||

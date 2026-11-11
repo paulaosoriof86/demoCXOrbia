@@ -94,6 +94,12 @@ test('legacy next-action field may not silently contradict the authoritative poi
   a.pointer.exactNextAction = a.pointer.nextExactAction;
   assert.equal(validateShockContinuity(a).pass, true);
 });
+test('descriptor compatibility next-action cannot reactivate a completed historical block', () => {
+  const a = mk(); a.descriptor.nextExactAction = 'Repeat B7 human approval and use September as current HR';
+  assert.match(validateShockContinuity(a).failures.join(' '), /DESCRIPTOR_LEGACY_NEXT_ACTION_DESYNC/);
+  a.descriptor.nextExactAction = a.descriptor.exactNextAction;
+  assert.equal(validateShockContinuity(a).pass, true);
+});
 test('matching but stale pointers cannot erase a proven fusion or served DEV version', () => {
   const a = mk();
   a.descriptor.exactNextAction = 'G03 readback HR y finanzas; 29/83; Hosting a\u00fan NO servido en DEV';
