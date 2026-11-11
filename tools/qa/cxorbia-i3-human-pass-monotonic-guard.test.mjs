@@ -7,6 +7,7 @@ import {execFileSync,spawnSync} from 'node:child_process';
 
 const ROOT=process.cwd();
 const POINTER='CXORBIA_RECOVERY_EXECUTION_CURRENT.json';
+const DESCRIPTOR='CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json';
 const RECEIPT='docs/checkpoints/CXORBIA_I3_HUMAN_PASS_B7_NO_LOOP_ACCOUNTING_20261111.json';
 const GUARD=path.resolve(ROOT,'tools/qa/cxorbia-i3-human-pass-monotonic-guard.mjs');
 const fixture=()=>{
@@ -14,6 +15,8 @@ const fixture=()=>{
   fs.mkdirSync(path.join(dir,'docs/checkpoints'),{recursive:true});
   fs.copyFileSync(path.join(ROOT,POINTER),path.join(dir,POINTER));
   fs.copyFileSync(path.join(ROOT,RECEIPT),path.join(dir,RECEIPT));
+  const p=JSON.parse(fs.readFileSync(path.join(dir,POINTER),'utf8'));
+  fs.writeFileSync(path.join(dir,DESCRIPTOR),JSON.stringify({productSourceSha:p.productSourceSha,phaseAHumanAcceptanceCurrent20261111:{humanAcceptedBlocks:[...p.activePhaseAClosureLock20261110.humanPassBlocks],humanCount:p.activePhaseAClosureLock20261110.phaseABlocksHumanPassed,humanTotal:9}},null,2)+'\n');
   return dir;
 };
 const update=(dir,change)=>{
@@ -21,6 +24,12 @@ const update=(dir,change)=>{
   const p=JSON.parse(fs.readFileSync(file,'utf8'));
   change(p);
   fs.writeFileSync(file,JSON.stringify(p,null,2)+'\n');
+  const descriptorFile=path.join(dir,DESCRIPTOR);
+  const d=JSON.parse(fs.readFileSync(descriptorFile,'utf8'));
+  d.productSourceSha=p.productSourceSha;
+  d.phaseAHumanAcceptanceCurrent20261111.humanAcceptedBlocks=[...p.activePhaseAClosureLock20261110.humanPassBlocks];
+  d.phaseAHumanAcceptanceCurrent20261111.humanCount=p.activePhaseAClosureLock20261110.phaseABlocksHumanPassed;
+  fs.writeFileSync(descriptorFile,JSON.stringify(d,null,2)+'\n');
 };
 const check=dir=>spawnSync(process.execPath,[GUARD],{cwd:dir,encoding:'utf8'});
 const cleanup=dir=>fs.rmSync(dir,{recursive:true,force:true});
@@ -39,6 +48,17 @@ test('negative: B7 PASS cannot be silently deleted',()=>{
 test('negative: mixing 4 human blocks with 5 strict domains is rejected',()=>{
   const dir=fixture();
   try{update(dir,p=>{p.activePhaseAClosureLock20261110.phaseABlocksHumanPassed+=1;});const r=check(dir);assert.notEqual(r.status,0);assert.match(r.stderr,/HUMAN_PASS_ACCOUNTING_MISMATCH/);}finally{cleanup(dir);}
+});
+
+test('negative: descriptor must not silently disagree with current human PASS',()=>{
+  const dir=fixture();
+  try{
+    const file=path.join(dir,DESCRIPTOR),d=JSON.parse(fs.readFileSync(file,'utf8'));
+    d.phaseAHumanAcceptanceCurrent20261111.humanAcceptedBlocks=['B4','B5','B6'];
+    d.phaseAHumanAcceptanceCurrent20261111.humanCount=3;
+    fs.writeFileSync(file,JSON.stringify(d,null,2)+'\n');
+    const r=check(dir);assert.notEqual(r.status,0);assert.match(r.stderr,/DESCRIPTOR_HUMAN_ACCEPTANCE_DESYNC/);
+  }finally{cleanup(dir);}
 });
 
 test('negative: newly acquired acceptance cannot disappear at next commit',t=>{
