@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "cxorbia.i3.b8-finance-chrome-readback.v1",
+  "dateLocal": "2026-11-10",
+  "decision": "HOLD_B8_HISTORICAL_PAYMENT_ACK_GAP_WITH_REAL_AUTHENTICATED_DEV_READBACK",
+  "iteration": "I3",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+  "servedDevRuntimeRevision": "cxorbia-live-hr-dev-00369-lkf",
+  "servedDevHostingVersion": "sites/cxorbia-backend-dev/versions/e301b123cd45d041",
+  "uiSurface": "Connected authenticated Chrome extension; Admin; Cinépolis; read-only",
+  "evidence": {
+    "september2026": {
+      "dashboardFinancial": {
+        "gtHonorariaQ": 2040,
+        "gtReimbursementsQ": 5323,
+        "gtOperationalObligationsQ": 7363,
+        "hnHonorariaL": 2000,
+        "hnReimbursementsL": 3936,
+        "hnOperationalObligationsL": 5936,
+        "financialReviewCount": 43,
+        "paymentSourceStatusGtAndHn": "Sin pagos confirmados en la fuente",
+        "marginStatusGtAndHn": "Pendiente de fuente/configuración"
+      },
+      "liquidaciones": {
+        "gtVisits": 34,
+        "hnVisits": 10,
+        "financialReviewCount": 43,
+        "reconciledPaymentPending": 0,
+        "batchCandidates": 1,
+        "bankConfirmedPaid": 0,
+        "financialSourceInstruction": "Liquidations are operational candidates; no final payment state without external financial source"
+      },
+      "lotesDePago": "Todavía no hay liquidaciones pagadas en este proyecto",
+      "directionPriorHumanEvidence": "Paula confirmed all September shopper payments occurred on 2026-10-31",
+      "unresolvedGap": "Human-confirmed September payment event has not been proven durably reconciled to provider/bank ACK in DEV; do not label as paid without authoritative evidence"
+    },
+    "october2026": {
+      "gtHonorariaQ": 1980,
+      "gtReimbursementsQ": 5173,
+      "gtOperationalObligationsQ": 7153,
+      "hnHonorariaL": 2000,
+      "hnReimbursementsL": 4171,
+      "hnOperationalObligationsL": 6171,
+      "financialReviewCount": 42,
+      "paymentSourceStatusGtAndHn": "Sin pagos confirmados en la fuente",
+      "matchesDirectionBroadly": "October payments pending; individual detail needs external close reconciliation"
+    },
+    "november2026": {
+      "gtHonorariaQ": 120,
+      "gtReimbursementsQ": 330,
+      "gtOperationalObligationsQ": 450,
+      "hnHonorariaL": 2000,
+      "hnReimbursementsL": 4171,
+      "hnOperationalObligationsL": 6171,
+      "financialReviewCount": 12,
+      "paymentSourceStatusGtAndHn": "Sin pagos confirmados en la fuente",
+      "margins": "PENDING_UNVERIFIED_INCOME_SOURCE"
+    },
+    "academyChromeNonWritingCrossCheck": {
+      "roleSelector": "Cliente",
+      "course": "Tu ruta en el portal: leer y decidir",
+      "openedLesson": "Qué ves y qué NO operas",
+      "lessonCount": 4,
+      "contentAndObjectiveDisplayed": true,
+      "saveAdvanceButtonDisplayed": true,
+      "saveAdvanceActivated": false,
+      "actualClientSession": false,
+      "actualLearnerProgressWrite": false
+    }
+  },
+  "classification": "B8_FINANCIAL_SOURCE_RECONCILIATION_OPEN_NOT_PRODUCT_PAYMENT_STATED_FROM_HR",
+  "priorKnownFindingLink": "G03 HR-finanzas historical bank/payment gap; reconcile without duplicating ledger or reopening passed owners",
+  "testsPerformedThisReadback": "Admin Chrome view and period changes only, no transaction clicks",
+  "hrWrites": 0,
+  "paymentWrites": 0,
+  "bankWrites": 0,
+  "production": false,
+  "disposition": {
+    "b8IntegralHumanPass": false,
+    "noInferredPayments": true,
+    "need": "Reconcile September 31-Oct evidence by exact shopper/visit/payout with source ACK and then retest dashboard, Liquidaciones and Lotes; October remains pending and November accrues normally",
+    "functionalBlocksPassPreserved": ["B4", "B5", "B6"],
+    "strictDomainMatch": "5/21",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": "DO_NOT_TOUCH"
+  }
+}
