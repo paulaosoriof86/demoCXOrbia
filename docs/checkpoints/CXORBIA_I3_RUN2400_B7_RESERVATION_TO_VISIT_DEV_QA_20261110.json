@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "cxorbia.i3.phaseA.b7.reservation-to-visit-dev-certification-receipt.v1",
+  "asOfLocal": "2026-11-10",
+  "decision": "PASS_B7_RESERVATION_TO_VISIT_TWO_ROLE_PROVIDER_E2E_FOCAL__PHASE_A_INTEGRAL_HOLD",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlCommit": "dcd1c0e88b1fd2de3eb3cdf31677ab11a03cd796",
+  "productSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+  "productTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
+  "sameDevMaterialization": {
+    "runtimeRevision": "cxorbia-live-hr-dev-00369-lkf",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/e301b123cd45d041",
+    "newBuildOrDeploy": false
+  },
+  "githubActions": {
+    "runId": 42953681463,
+    "runNumber": 2400,
+    "jobId": 130303908225,
+    "conclusion": "success",
+    "artifactId": 13825923230,
+    "artifactName": "cxorbia-i3-b7-reservation-to-visit-42953681463",
+    "artifactDigest": "sha256:bcb5ae8961039e93ef9826d837768ccbbe024471a34e1c3da4e99692dcc31cc5",
+    "url": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/42953681463"
+  },
+  "test": {
+    "scope": "SYNTHETIC_DEV_ONLY",
+    "tenant": "tya",
+    "project": "cinepolis",
+    "period": "cinepolis-2026-11",
+    "roles": [
+      "shopper",
+      "admin"
+    ],
+    "shopperReservationProviderAck": true,
+    "adminCrossProviderAck": true,
+    "visitState": "asignada",
+    "reservationState": "cruzada",
+    "sameShopperAndVisitLink": true,
+    "assignmentSource": "platform",
+    "assignmentSyncStatus": "pending_hr",
+    "independentFirestoreReadback": true,
+    "persistedVisitAndReservationVersion": 2,
+    "receiptAndAuditPersisted": true,
+    "idempotentReplayNoAdditionalWrites": true,
+    "visitCreatedDeleted": "1/1",
+    "reservationCreatedDeleted": "1/1",
+    "allTrackedQaDocumentsDeleted": true,
+    "errors": []
+  },
+  "hr": {
+    "source": "EXTERNAL_LIVE_GOOGLE_SHEETS",
+    "revisionBefore": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+    "revisionAfter": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+    "writes": 0
+  },
+  "chromeAdminReadback": {
+    "route": "Reservas & Asignación",
+    "period": "NOV 2026",
+    "commercialReservationsVisible": 0,
+    "requestsToReview": 0,
+    "assignedReservations": 0,
+    "crossedReservations": 0,
+    "intervention": "READ_ONLY",
+    "interpretation": "PROVIDER_SYNTHETIC_TEST_DID_NOT_CREATE_COMMERCIAL_RESERVATIONS_OR_PUBLISH_SCENARIOS"
+  },
+  "safety": {
+    "commercialVisitWrites": 0,
+    "paymentWrites": 0,
+    "authWrites": 0,
+    "builds": 0,
+    "deploys": 0,
+    "production": "DO_NOT_TOUCH"
+  },
+  "acceptance": {
+    "b7ReservationToVisitFocalTechnical": "PASS",
+    "b7PostulationAndNoticeProviderPrior": "PASS_RUN2385",
+    "b7CancelAndReschedulePrior": "PASS_RUN2391",
+    "b7BrowserUnreadAndClickRoute": "PENDING",
+    "b7WholeHumanBlock": "PENDING",
+    "preservedHumanPassBlocks": [
+      "B4",
+      "B5",
+      "B6"
+    ],
+    "phaseABlocksPassed": 3,
+    "phaseABlocksTotal": 9,
+    "strictDomainMatches": 5,
+    "strictDomainTotal": 21,
+    "b9Gate20": "HOLD",
+    "b9Gate21": "HOLD",
+    "i4Authorized": false
+  },
+  "nextExact": "Only B7 unread/reload/click route and human visual receipt are left among named B7 provider gaps; B1-B3 still need full human acceptance, B8 Sept payment reconciliation, B9 integral gates. Never rerun RUN2401 absent exact drift."
+}
