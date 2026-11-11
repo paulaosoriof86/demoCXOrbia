@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {validateShockContinuity} from './cxorbia-i3-shock-continuity-guard.mjs';
+import {validateCurrentAuthorityAliases} from './cxorbia-i3-current-authority-alias-guard.mjs';
 
 const DESCRIPTOR='CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json';
 const WORKFLOW='.github/workflows/cxorbia-recovery-i3-dev-certification.yml';
@@ -13,6 +14,7 @@ const d=readJson(DESCRIPTOR);
 const LEDGER=String(d.findingsLedgerPath||'');
 if(!LEDGER)fail('RELEASE_COMPOSITION_FAILURE:LEDGER_POINTER_EMPTY');
 const l=readJson(LEDGER);
+const p=readJson('CXORBIA_RECOVERY_EXECUTION_CURRENT.json');
 
 if(d.schemaVersion!=='cxorbia.i3.canonical-candidate-descriptor.v1')fail('MAPPING_FAILURE:CANDIDATE_DESCRIPTOR_SCHEMA');
 if(d.branch!=='recovery/cxorbia-phase-a-20260831')fail('SOURCE_FAILURE:CANDIDATE_BRANCH');
@@ -43,6 +45,8 @@ for(let i=0;i<ids.length;i++){
 }
 const next='VRM-'+String(ids.length+1).padStart(3,'0');
 if(l.governance?.nextFindingId!==next||d.nextFindingId!==next)fail('MAPPING_FAILURE:NEXT_FINDING_ID',JSON.stringify({ledger:l.governance?.nextFindingId,descriptor:d.nextFindingId,expected:next}));
+const aliasReadback=validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l});
+if(!aliasReadback.pass)fail('MAPPING_FAILURE:CURRENT_AUTHORITY_ALIASES',aliasReadback.failures.join(','));
 if(l.canonicalFunctionalCandidate?.sourceSha!==d.productSourceSha)fail('RELEASE_COMPOSITION_FAILURE:LEDGER_DESCRIPTOR_SOURCE_MISMATCH');
 
 // Always read the same descriptor-selected module matrix, including during HOLD.
@@ -51,7 +55,7 @@ const moduleTruthPath=String(d.moduleTruthPath||'');
 if(!moduleTruthPath)fail('RELEASE_COMPOSITION_FAILURE:MODULE_TRUTH_POINTER_EMPTY');
 const mt=readJson(moduleTruthPath);
 const continuityReadback=validateShockContinuity({
-  descriptor:d, pointer:readJson('CXORBIA_RECOVERY_EXECUTION_CURRENT.json'), matrix:mt,
+  descriptor:d, pointer:p, matrix:mt,
   gitBlob:p=>{try{return git('rev-parse','HEAD:'+p);}catch{return '';}}
 });
 if(!continuityReadback.pass)fail('MAPPING_FAILURE:SHOCK_CONTINUITY',continuityReadback.failures.join(','));
