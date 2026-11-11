@@ -12462,5 +12462,42 @@
     "gate21": "HOLD",
     "i4Authorized": false,
     "production": "DO_NOT_TOUCH"
+  },
+  "latestB8ChromeFinanceSeptemberPaymentAcknowledgementGap": {
+    "asOfLocal": "2026-11-10",
+    "state": "HOLD_B8_EXTERNAL_BANK_PAYMENT_SOURCE_NOT_YET_RECONCILED",
+    "sourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+    "chromeAuthenticatedAdminReadback": true,
+    "september2026": {
+      "hrVisits": 44,
+      "financialReviewPending": 43,
+      "liquidacionesPaidConfirmed": 0,
+      "paymentLotsPaid": "none",
+      "humanDirection": "All September shopper payments made on 2026-10-31; external ACK not yet verified in platform",
+      "gtObligationQ": 7363,
+      "hnObligationL": 5936
+    },
+    "october2026": {
+      "financialReviewPending": 42,
+      "liquidacionesStatus": "PENDING",
+      "gtObligationQ": 7153,
+      "hnObligationL": 6171
+    },
+    "november2026": {
+      "financialReviewPending": 12,
+      "gtObligationQ": 450,
+      "hnObligationL": 6171
+    },
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_B8_FINANCE_CHROME_READBACK_SEP_OCT_NOV_20261110.json",
+    "receiptCommit": "a4a92a05dc5aa3da3d0169c2a670b4a08d47500d",
+    "paymentInferredOrWritten": false,
+    "academyClientCourseLessonReadOnlyVisible": true,
+    "academyRealProgressWrite": false,
+    "b8IntegralPass": false,
+    "strictDomainsMatches": 5,
+    "strictDomainsTotal": 21,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": "DO_NOT_TOUCH"
   }
 }
