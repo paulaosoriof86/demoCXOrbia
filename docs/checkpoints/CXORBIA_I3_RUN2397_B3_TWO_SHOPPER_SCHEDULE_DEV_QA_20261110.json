@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "cxorbia.i3.phaseA.b3.two-shopper-dev-certification-receipt.v1",
+  "asOfLocal": "2026-11-10",
+  "decision": "PASS_B3_SHOPPER_AGENDAR_PROVIDER_E2E_FOCAL__INTEGRAL_PHASE_A_HOLD",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlCommit": "c456c681cb40b963c3b03e99dbb8f62e1dffb9ee",
+  "productSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+  "productTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
+  "devArtifact": {
+    "runtimeRevision": "cxorbia-live-hr-dev-00369-lkf",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/e301b123cd45d041",
+    "unchangedByQa": true
+  },
+  "githubActions": {
+    "runId": 42952734838,
+    "runNumber": 2397,
+    "jobId": 130300796807,
+    "conclusion": "success",
+    "artifactId": 13825273817,
+    "artifactName": "cxorbia-i3-b3-schedule-two-shopper-42952734838",
+    "artifactDigest": "sha256:e7fd759b1ccfbc0dd2f56ac1742ab167ee9d89891af087497dd3a31bed9a3fd5",
+    "url": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/42952734838"
+  },
+  "test": {
+    "scope": "SYNTHETIC_DEV_ONLY",
+    "tenant": "tya",
+    "project": "cinepolis",
+    "period": "cinepolis-2026-11",
+    "authorizedOwnerShopperId": "shopper_gt_1440137b73",
+    "differentScopedShopperDenied": true,
+    "oneSyntheticVisitCreated": true,
+    "scheduledDate": "2026-11-25",
+    "stateTransition": "asignada -> agendada",
+    "providerAcknowledgement": true,
+    "independentFirestoreReadback": true,
+    "persistedVersion": 2,
+    "durableReceiptAndAudit": true,
+    "idempotentReplayNoWrites": true,
+    "oneSyntheticVisitDeleted": true,
+    "allTrackedQaDocumentsDeleted": true,
+    "errors": []
+  },
+  "hr": {
+    "source": "EXTERNAL_LIVE_GOOGLE_SHEETS",
+    "revisionBefore": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+    "revisionAfter": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
+    "writes": 0
+  },
+  "chromeAdminB2Readback": {
+    "route": "Shoppers / Auditores",
+    "period": "NOV 2026",
+    "visibleShoppers": 192,
+    "activeLastSixMonths": 87,
+    "inactive": 105,
+    "completeProfiles": 1,
+    "incompleteProfiles": 191,
+    "profilesWithReviewBadge": 8,
+    "technicalIdentityReviewCases": 172,
+    "exactPaulaProfileFound": true,
+    "historicalCertificate": "PRESENTADA__NOT_CURRENT_ELIGIBILITY",
+    "intervention": "READ_ONLY__NO_PROFILE_EDIT_OR_IDENTITY_FUSION",
+    "wholeB2HumanPass": false
+  },
+  "safety": {
+    "commercialVisitWrites": 0,
+    "paymentWrites": 0,
+    "authWrites": 0,
+    "codeProductChanges": 0,
+    "builds": 0,
+    "deploys": 0,
+    "production": "DO_NOT_TOUCH"
+  },
+  "acceptance": {
+    "newFunctionalE2e": "B3_SCHEDULE_FOCAL_TECHNICAL_PASS",
+    "fullB3Human": "PENDING",
+    "fullB1Human": "PENDING",
+    "fullB2Human": "PENDING",
+    "preservedHumanPassBlocks": [
+      "B4",
+      "B5",
+      "B6"
+    ],
+    "phaseABlocksPassed": 3,
+    "phaseABlocksTotal": 9,
+    "strictDomainMatches": 5,
+    "strictDomainsTotal": 21,
+    "b7Integral": "HOLD",
+    "b8SeptemberPaymentReconciliation": "HOLD",
+    "b9Gate20": "HOLD",
+    "b9Gate21": "HOLD",
+    "i4Authorized": false
+  },
+  "nextExact": "B1/B2/B3 authenticated Chrome user-facing visual receipts and B7 remaining targeted routes; B8 September external paid confirmation must be reconciled, never inferred; B9 Gates 20/21 only after integral evidence. Do not rerun RUN2397 absent exact drift."
+}
