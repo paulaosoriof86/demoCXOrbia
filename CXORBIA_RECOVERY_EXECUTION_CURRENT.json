@@ -1,11 +1,11 @@
 {
   "schemaVersion": "cxorbia.recovery.execution-current.v1",
   "activePhaseAClosureLock20261110": {
-    "schemaVersion": "cxorbia.i3.phaseA.closure-no-loop-current.v1",
-    "asOfLocal": "2026-11-10",
+    "schemaVersion": "cxorbia.i3.phaseA.closure-no-loop-current.v2",
+    "asOfLocal": "2026-11-11",
     "scope": "RECOVERY_I3_SAME_CANONICAL_BRANCH_AND_DEV_ARTIFACT",
     "status": "PHASE_A_NOT_CLOSED_I4_NOT_AUTHORIZED",
-    "priority": "READ_THIS_LOCK_BEFORE_HISTORICAL_CONTINUITY_KEYS",
+    "priority": "READ_CURRENT_HUMAN_PASS_RECEIPT_AND_MONOTONE_ACCOUNTING_BEFORE_OLDER_SNAPSHOTS",
     "sourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
     "sourceTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
     "devRuntime": "cxorbia-live-hr-dev-00369-lkf",
@@ -47,14 +47,23 @@
         "receipt": "docs/checkpoints/CXORBIA_I3_B7_B1_B3_VISUAL_READBACK_AND_DEV_NOTICE_20261110.json",
         "technicalOnly": true,
         "sourceUnchanged": true
+      },
+      {
+        "block": "B7",
+        "type": "HUMAN_PASS_DIRECT_PAULA_20261111",
+        "decision": "PASS_PRESERVED",
+        "sourceUnchanged": true,
+        "receipt": "docs/checkpoints/CXORBIA_I3_HUMAN_PASS_B7_NO_LOOP_ACCOUNTING_20261111.json",
+        "terminalGate": false
       }
     ],
     "humanPassBlocks": [
       "B4",
       "B5",
-      "B6"
+      "B6",
+      "B7"
     ],
-    "phaseABlocksHumanPassed": 3,
+    "phaseABlocksHumanPassed": 4,
     "phaseABlocksTotal": 9,
     "strictDomainMatches": 5,
     "strictDomainTotal": 21,
@@ -93,8 +102,11 @@
       },
       "B7": {
         "technical": "PASS_FOCAL_POSTULATION_NOTICE_RUN2385_CANCEL_RESCHEDULE_RUN2391_RESERVATION_TO_VISIT_RUN2400_UNREAD_RELOAD_CLICK_ROUTE_RUN2409",
-        "tinyFish": "NOT_NEWLY_RUN",
-        "human": "PENDING_FULL_BLOCK_VISUAL_RECEIPT"
+        "tinyFish": "NOT_NEWLY_RUN__NO_TINYFISH_PASS_CLAIM",
+        "human": "PASS_EXPLICIT_PAULA_20261111_PRESERVED_NO_REPEAT",
+        "humanAcceptanceLocked": true,
+        "humanAcceptanceReceipt": "docs/checkpoints/CXORBIA_I3_HUMAN_PASS_B7_NO_LOOP_ACCOUNTING_20261111.json",
+        "finalTerminalArtifactCertified": false
       },
       "B8": {
         "technical": "HOLD_SEP2026_42_REVIEWS_AFTER_ONE_DEV_SOURCE_RECONCILIATION_2_BATCH_ELIGIBLE_0_EXTERNAL_PAYMENT_CONFIRMED",
@@ -118,11 +130,10 @@
       "RUN2409_B7_SHOPPER_NOTICE_UNREAD_RELOAD_ROUTE"
     ],
     "nextExactOrder": [
-      "B7_VISUAL_HUMAN_RECEIPT_PASS_FAIL_FROM_RUN2409_SCREENSHOTS_AND_CHROME_ADMIN",
-      "B1_B2_B3_VISUAL_E2E_RECEIPTS_AND_PAULA_PASS_FAIL",
-      "B8_SEPTEMBER_31OCT_EXACT_BANK_PAYMENT_RECONCILIATION_WITHOUT_INFERENCE_OR_DUPLICATE",
-      "B9_INTEGRAL_REGRESSION_GATE20_GATE21",
-      "I4_SEPARATE_EXPLICIT_AUTHORIZATION_AFTER_GATE"
+      "B1_B2_B3_RECONCILE_EXISTING_HUMAN_RECEIPTS_ONLY_UNCOVERED_E2E_AND_VISUAL__DO_NOT_REOPEN_B7",
+      "B8_SEPTEMBER_PAID_31OCT_EXACT_PAYOUT_REFERENCE_AND_QA_FINANCIAL_READBACK_NO_UNPROVED_BANK_WRITE",
+      "B9_INTEGRAL_CROSS_ROLE_REGRESSION_ONE_EXACT_FINAL_ARTIFACT_GATE20_GATE21",
+      "I4_ONLY_AFTER_I3_GO_AND_NEW_PAULA_AUTHORIZATION"
     ],
     "hrRevisionUnchanged": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
     "production": "DO_NOT_TOUCH",
@@ -147,6 +158,32 @@
       "providerBulletinId": "NOT_CAPTURED",
       "sourceHandler": "app/modules/postulaciones.js",
       "noDateChangeObserved": true
+    },
+    "currentAccountingSemantics": {
+      "humanFunctionalBlocks": {
+        "passed": 4,
+        "total": 9,
+        "names": [
+          "B4",
+          "B5",
+          "B6",
+          "B7"
+        ],
+        "monotonic": true
+      },
+      "strictOwnerDomainMatch": {
+        "matched": 5,
+        "total": 21,
+        "differentDenominator": true
+      },
+      "historicV32": {
+        "allModulesMatchField": true,
+        "MATCH": 15,
+        "COMPOSED_NOT_DEPLOYED": 6
+      },
+      "reportedIntermediate13": "HISTORICAL_STATEMENT_VERSION_NOT_PROVEN_FROM_LIVE_MATRIX",
+      "workflowGreenNotTerminalCertify": true,
+      "reason": "Distinct metrics and source-date/classification criteria; do not subtract protected human PASS."
     }
   },
   "planLockPath": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
@@ -667,7 +704,7 @@
     "evolution": 6
   },
   "historicalNextExactActionPreS1": "S1 read-only reason/alias cohort classification, implement legacy-compatible deterministic normalizer in provider owner and bridge, run bounded GT/HN/history/Auth fixtures. Existing DEV serial materialization only after source QA; verify Stiven/Julissa Shopper role post-fix.",
-  "nextExactAction": "B7 y B4 source 4784f220 compuesto en candidata unica; CI y DEV runtime+Hosting aun PENDING. D08 Academia 27/27 local PASS, real own-progress ACK/reload y roles Admin/Shopper/Cliente PENDING. G03/HR/finanzas, B1-B3 y B8 continúan. 83/83 identidades preservadas; B4-B6 funcional PASS 3/9, matriz 5/21 MATCH, Gate20/Gate21 HOLD, I4 no autorizado, producción DO_NOT_TOUCH.",
+  "nextExactAction": "B7 PASS humano de Paula conservado en receipt 2026-11-11 (4/9 bloques humanos). No pedir nuevo PASS B7; reconciliar B1-B3 recibos humanos y cubrir solo E2E pendientes, B8 conciliar septiembre pago externo 31-oct con evidencia exacta sin inferencias, B9 único artefacto final Gate20/Gate21. Matriz integral de owners 5/21 se reporta aparte, no equivale a 5 módulos funcionales. Fuente 4784f220 DEV servida; I3 HOLD; I4 y producción sin autorización.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -12822,5 +12859,26 @@
     "strictDomainMatches": "5/21",
     "production": "DO_NOT_TOUCH",
     "i4Authorized": false
+  },
+  "mechanismCorrection20261111": {
+    "status": "DOCUMENTARY_ACCOUNTING_FIXED_WITH_MONOTONE_GUARD_PENDING_CI",
+    "asOfLocal": "2026-11-11",
+    "authority": "Paula direct decision",
+    "humanPassReceipt": "docs/checkpoints/CXORBIA_I3_HUMAN_PASS_B7_NO_LOOP_ACCOUNTING_20261111.json",
+    "preserves": [
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ],
+    "noProductChange": true,
+    "noDeploy": true,
+    "noHrWrite": true,
+    "noPaymentWrite": true,
+    "noExternalNotifications": true,
+    "noTinyFishPassInvented": true,
+    "greenWorkflowCaveat": "A successful scoped Actions job is not terminal certify or Gate21 unless those exact jobs ran.",
+    "workflow20vs21": "ALREADY_FIXED_IN_LIVE_SOURCE_DO_NOT_REOPEN",
+    "currentProductSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb"
   }
 }
