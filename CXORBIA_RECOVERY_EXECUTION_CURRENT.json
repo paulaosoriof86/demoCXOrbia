@@ -1425,7 +1425,7 @@
   },
   "moduleTruthAuthority": {
     "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261111-V296.json",
-    "gitBlob": "383c190bb96bfc8ebb3dcb11d8bb6d866e1503df",
+    "gitBlob": "300dcc3c46e236cf363790410945f1f13d555d7f",
     "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
     "allModulesMatch": false,
     "phaseAComplete": false
@@ -3427,7 +3427,7 @@
   "activeShockModuleTruth": {
     "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261111-V296.json",
-    "matrixBlob": "383c190bb96bfc8ebb3dcb11d8bb6d866e1503df",
+    "matrixBlob": "300dcc3c46e236cf363790410945f1f13d555d7f",
     "classificationCounts": {
       "MATCH": 5,
       "SOURCE_FIXED_DEV_MATERIALIZED_ADMIN_B10_FOCAL_PASS_PENDING_SHOPPER_ROLE_PROVIDER_LINK": 1,
@@ -6225,7 +6225,7 @@
     "production": false
   },
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V610_2026-11-11.json",
-  "findingsLedgerExpectedGitBlob": "c831034aa8582e4d806eedc9cdbe494ea59154e6",
+  "findingsLedgerExpectedGitBlob": "d2da63bcc234f2b3ce60106ff79911bef8c6cc2d",
   "nextFindingId": "VRM-329",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -9829,7 +9829,7 @@
       "production": false
     }
   },
-  "moduleTruthExpectedGitBlob": "383c190bb96bfc8ebb3dcb11d8bb6d866e1503df",
+  "moduleTruthExpectedGitBlob": "300dcc3c46e236cf363790410945f1f13d555d7f",
   "d08AcademyDispatchSourceProof": {
     "path": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_DISPATCH_SOURCE_PROOF_20261107.json",
     "gitBlob": "2ad9d960cb958e84368cbbd70a7e9f2fb7864d3f",
@@ -13343,5 +13343,61 @@
     ],
     "shopperFocalE2EReceipt": "docs/checkpoints/CXORBIA_I3_VRM328_CHROME_TWO_SHOPPERS_DEV_E2E_20261111.json",
     "shopperFocalE2EReceiptBlob": "1cf2ef705a31dbb137cc0b60b5ef6856f583d650"
+  },
+  "c3FourOwnerEvidenceRecovery": {
+    "id": "CXORBIA-I3-C3-FOUR-PATH-PROVENANCE-20261111",
+    "classification": "MAPPING_FAILURE",
+    "before": {
+      "pendingFiles": 86,
+      "sourceReadyModules": 1,
+      "matchModules": 5,
+      "sourcePendingOwners": 59,
+      "blobProvenancePending": 27
+    },
+    "scopedSourceProofs": [
+      {
+        "path": "app/modules/beneficios.js",
+        "domain": "benefits",
+        "sourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
+        "currentBlob": "c7060562558f307b9b037e929a6fa7e179db1826",
+        "sourceRunId": 39870141345,
+        "sourceResult": "PASS_I3_WORK_U22_25_25",
+        "dev": "PASS_RUN1815",
+        "functional": "C09_C10_BENEFIT_CROSS_SESSION_AND_PAYMENT_SCOPED_PENDING"
+      },
+      {
+        "path": "app/modules/cuestionario-shopper.js",
+        "domain": "questionnaire-shopper",
+        "sourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+        "currentBlob": "5f5609aa91fe3d0c3682e1dc13a1d69443bed00b",
+        "sourceRunId": 39321226031,
+        "sourceResult": "PASS_B10_SOURCE_6_6",
+        "dev": "PASS_SCOPED_EXACT_ASSET_RUN41524873910",
+        "functional": "TYAONLINE_PROVIDER_LINK_AND_SHOPPER_E2E_PENDING"
+      },
+      {
+        "path": "app/modules/operacion-extra.js",
+        "domain": "reports-admin-shopper",
+        "sourceSha": "ed5b708c17b481bde00cb95dda3b426a0e27a890",
+        "currentBlob": "5675754961d29e2784e04553bc08f651b51ba2b6",
+        "sourceRunId": 42437035543,
+        "sourceResult": "PASS_B11_SOURCE_32_32_AND_DEV",
+        "dev": "PASS_RUN2274",
+        "functional": "HR_INDEPENDENT_MISMATCH_4_AND_SHOPPER_E2E_HOLD"
+      },
+      {
+        "path": "app/adapters/cxorbia-provider-identity-link-runtime-v1.js",
+        "domain": "identity-membership-roll-forward",
+        "sourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
+        "currentBlob": "f8404ee410647f567ef1c04c6bd6ac20f0c93b4b",
+        "sourceRunId": 42128661278,
+        "sourceResult": "PASS_VRM307_SOURCE_66_66",
+        "dev": "PASS_RUN2202",
+        "functional": "PROVIDER_GROUP_SCOPED_PASS_B1_INTEGRAL_PENDING"
+      }
+    ],
+    "scope": "EXACT_PATH_BLOB_SOURCE_PROVENANCE_ONLY__PRESERVE_HUMAN_AND_FUNCTIONAL_HOLDS__NO_MODULE_MATCH_PROMOTION",
+    "productSourceUnchanged": true,
+    "production": false
   }
 }

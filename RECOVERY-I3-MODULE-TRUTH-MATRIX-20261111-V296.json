@@ -6389,16 +6389,28 @@
       "loadOrder": 53,
       "atomicDisposition": "FOCAL_FIX",
       "latestApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED",
-      "approvedSourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "approvedBlob": "2074daee29ec108719ed5cdd33b49922ec348d02",
-      "approvalAuthority": "P0_PROVEN_HR_CROSSWALK_PRECEDENCE",
+      "approvedSourceCommit": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
+      "approvedBlob": "f8404ee410647f567ef1c04c6bd6ac20f0c93b4b",
+      "approvalAuthority": "EXACT_PRIOR_SOURCE_QA_DEV_PATH_BLOB_PROVENANCE_SCOPED_NO_HUMAN_PROMOTION",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX",
       "currentCumulativeSource": "c70352004ab580274656a80d69bb166c4da8ed9f",
       "currentLoadOrder": 50,
       "previousMatrixCurrentBlob": "39b4d8dc1569bcce6c1c68630f82d937fe6a2743",
-      "byteAuthorityReadback": "EXACT_GIT_TREE_SOURCE_ONLY"
+      "byteAuthorityReadback": "EXACT_GIT_TREE_SOURCE_ONLY",
+      "c3SourcePathProvenance": {
+        "path": "app/adapters/cxorbia-provider-identity-link-runtime-v1.js",
+        "domain": "identity-membership-roll-forward",
+        "sourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
+        "currentBlob": "f8404ee410647f567ef1c04c6bd6ac20f0c93b4b",
+        "sourceRunId": 42128661278,
+        "sourceResult": "PASS_VRM307_SOURCE_66_66",
+        "dev": "PASS_RUN2202",
+        "functional": "PROVIDER_GROUP_SCOPED_PASS_B1_INTEGRAL_PENDING",
+        "scope": "SOURCE_ONLY_NOT_MODULE_MATCH_OR_HUMAN_PASS",
+        "prod": false
+      }
     },
     {
       "path": "app/adapters/tya-phase-a-authority-compat-v1.js",
@@ -7556,9 +7568,9 @@
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 90,
       "atomicDisposition": "KEEP",
-      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
-      "approvedBlob": "a9801776eda4b52d447abaf20c28e2bf4290930d",
-      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "approvedSourceCommit": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+      "approvedBlob": "5f5609aa91fe3d0c3682e1dc13a1d69443bed00b",
+      "approvalAuthority": "EXACT_PRIOR_SOURCE_QA_DEV_PATH_BLOB_PROVENANCE_SCOPED_NO_HUMAN_PROMOTION",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP",
@@ -7572,6 +7584,18 @@
         "sourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
         "classification": "MAPPING_FAILURE",
         "status": "SOURCE_PROVEN_RUN1799_DEV_PENDING"
+      },
+      "c3SourcePathProvenance": {
+        "path": "app/modules/cuestionario-shopper.js",
+        "domain": "questionnaire-shopper",
+        "sourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+        "currentBlob": "5f5609aa91fe3d0c3682e1dc13a1d69443bed00b",
+        "sourceRunId": 39321226031,
+        "sourceResult": "PASS_B10_SOURCE_6_6",
+        "dev": "PASS_SCOPED_EXACT_ASSET_RUN41524873910",
+        "functional": "TYAONLINE_PROVIDER_LINK_AND_SHOPPER_E2E_PENDING",
+        "scope": "SOURCE_ONLY_NOT_MODULE_MATCH_OR_HUMAN_PASS",
+        "prod": false
       }
     },
     {
@@ -7706,9 +7730,9 @@
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 94,
       "atomicDisposition": "KEEP",
-      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
-      "approvedBlob": "73e200e57530479637792c89c644fcfdf78b6799",
-      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "approvedSourceCommit": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
+      "approvedBlob": "c7060562558f307b9b037e929a6fa7e179db1826",
+      "approvalAuthority": "EXACT_PRIOR_SOURCE_QA_DEV_PATH_BLOB_PROVENANCE_SCOPED_NO_HUMAN_PROMOTION",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP",
@@ -7716,7 +7740,19 @@
       "currentLoadOrder": 91,
       "previousMatrixCurrentBlob": "5183760dabb6a0b4a39648ca513623399bf66b91",
       "byteAuthorityReadback": "EXACT_GIT_BLOB_PENDING_CANONICAL_QA_DEV",
-      "previousCurrentBlobBeforeU22": "5183760dabb6a0b4a39648ca513623399bf66b91"
+      "previousCurrentBlobBeforeU22": "5183760dabb6a0b4a39648ca513623399bf66b91",
+      "c3SourcePathProvenance": {
+        "path": "app/modules/beneficios.js",
+        "domain": "benefits",
+        "sourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
+        "currentBlob": "c7060562558f307b9b037e929a6fa7e179db1826",
+        "sourceRunId": 39870141345,
+        "sourceResult": "PASS_I3_WORK_U22_25_25",
+        "dev": "PASS_RUN1815",
+        "functional": "C09_C10_BENEFIT_CROSS_SESSION_AND_PAYMENT_SCOPED_PENDING",
+        "scope": "SOURCE_ONLY_NOT_MODULE_MATCH_OR_HUMAN_PASS",
+        "prod": false
+      }
     },
     {
       "path": "app/modules/tablon.js",
@@ -7989,16 +8025,28 @@
       "latestApprovedAuthority": "TERMINAL_CERTIFIED_PREDECESSOR: run 35247813214 Gate21 PASS",
       "loadOrder": 100,
       "atomicDisposition": "KEEP",
-      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
-      "approvedBlob": "509c4dd251515ea1429ebe51d69d9e779ae69a54",
-      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "approvedSourceCommit": "ed5b708c17b481bde00cb95dda3b426a0e27a890",
+      "approvedBlob": "5675754961d29e2784e04553bc08f651b51ba2b6",
+      "approvalAuthority": "EXACT_PRIOR_SOURCE_QA_DEV_PATH_BLOB_PROVENANCE_SCOPED_NO_HUMAN_PROMOTION",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP",
       "currentCumulativeSource": "c70352004ab580274656a80d69bb166c4da8ed9f",
       "currentLoadOrder": 97,
       "previousMatrixCurrentBlob": "d0dc8acaaf13ee9e580e5609f317b161925ebdd9",
-      "byteAuthorityReadback": "EXACT_GIT_TREE_SOURCE_ONLY"
+      "byteAuthorityReadback": "EXACT_GIT_TREE_SOURCE_ONLY",
+      "c3SourcePathProvenance": {
+        "path": "app/modules/operacion-extra.js",
+        "domain": "reports-admin-shopper",
+        "sourceSha": "ed5b708c17b481bde00cb95dda3b426a0e27a890",
+        "currentBlob": "5675754961d29e2784e04553bc08f651b51ba2b6",
+        "sourceRunId": 42437035543,
+        "sourceResult": "PASS_B11_SOURCE_32_32_AND_DEV",
+        "dev": "PASS_RUN2274",
+        "functional": "HR_INDEPENDENT_MISMATCH_4_AND_SHOPPER_E2E_HOLD",
+        "scope": "SOURCE_ONLY_NOT_MODULE_MATCH_OR_HUMAN_PASS",
+        "prod": false
+      }
     },
     {
       "path": "app/modules/finanzas.js",
@@ -22363,5 +22411,61 @@
     ],
     "shopperFocalE2EReceipt": "docs/checkpoints/CXORBIA_I3_VRM328_CHROME_TWO_SHOPPERS_DEV_E2E_20261111.json",
     "shopperFocalE2EReceiptBlob": "1cf2ef705a31dbb137cc0b60b5ef6856f583d650"
+  },
+  "c3FourOwnerEvidenceRecovery": {
+    "id": "CXORBIA-I3-C3-FOUR-PATH-PROVENANCE-20261111",
+    "classification": "MAPPING_FAILURE",
+    "before": {
+      "pendingFiles": 86,
+      "sourceReadyModules": 1,
+      "matchModules": 5,
+      "sourcePendingOwners": 59,
+      "blobProvenancePending": 27
+    },
+    "scopedSourceProofs": [
+      {
+        "path": "app/modules/beneficios.js",
+        "domain": "benefits",
+        "sourceSha": "19978907fc91e2559ce6c0440950ffc7a7f4cbae",
+        "currentBlob": "c7060562558f307b9b037e929a6fa7e179db1826",
+        "sourceRunId": 39870141345,
+        "sourceResult": "PASS_I3_WORK_U22_25_25",
+        "dev": "PASS_RUN1815",
+        "functional": "C09_C10_BENEFIT_CROSS_SESSION_AND_PAYMENT_SCOPED_PENDING"
+      },
+      {
+        "path": "app/modules/cuestionario-shopper.js",
+        "domain": "questionnaire-shopper",
+        "sourceSha": "a11a4c4d6d6a56a026b5fd6b89be94676b217698",
+        "currentBlob": "5f5609aa91fe3d0c3682e1dc13a1d69443bed00b",
+        "sourceRunId": 39321226031,
+        "sourceResult": "PASS_B10_SOURCE_6_6",
+        "dev": "PASS_SCOPED_EXACT_ASSET_RUN41524873910",
+        "functional": "TYAONLINE_PROVIDER_LINK_AND_SHOPPER_E2E_PENDING"
+      },
+      {
+        "path": "app/modules/operacion-extra.js",
+        "domain": "reports-admin-shopper",
+        "sourceSha": "ed5b708c17b481bde00cb95dda3b426a0e27a890",
+        "currentBlob": "5675754961d29e2784e04553bc08f651b51ba2b6",
+        "sourceRunId": 42437035543,
+        "sourceResult": "PASS_B11_SOURCE_32_32_AND_DEV",
+        "dev": "PASS_RUN2274",
+        "functional": "HR_INDEPENDENT_MISMATCH_4_AND_SHOPPER_E2E_HOLD"
+      },
+      {
+        "path": "app/adapters/cxorbia-provider-identity-link-runtime-v1.js",
+        "domain": "identity-membership-roll-forward",
+        "sourceSha": "3a299715ea2d87ae43c0f6415f44bd23b13a1837",
+        "currentBlob": "f8404ee410647f567ef1c04c6bd6ac20f0c93b4b",
+        "sourceRunId": 42128661278,
+        "sourceResult": "PASS_VRM307_SOURCE_66_66",
+        "dev": "PASS_RUN2202",
+        "functional": "PROVIDER_GROUP_SCOPED_PASS_B1_INTEGRAL_PENDING"
+      }
+    ],
+    "scope": "EXACT_PATH_BLOB_SOURCE_PROVENANCE_ONLY__PRESERVE_HUMAN_AND_FUNCTIONAL_HOLDS__NO_MODULE_MATCH_PROMOTION",
+    "productSourceUnchanged": true,
+    "production": false
   }
 }
