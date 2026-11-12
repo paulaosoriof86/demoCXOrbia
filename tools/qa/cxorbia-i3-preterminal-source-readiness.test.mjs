@@ -123,6 +123,7 @@ test('C3 preserves cumulative independent F12 and D08 receipts across control ve
 test('I3 current authority aliases are bound to the same C3 source, matrix, ledger and receipt',()=>{
   const descriptor=JSON.parse(readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8'));
   const execution=JSON.parse(readFileSync('CXORBIA_RECOVERY_EXECUTION_CURRENT.json','utf8'));
+  const ledger=JSON.parse(readFileSync(descriptor.findingsLedgerPath,'utf8'));
   const audit=descriptor.currentC3PreterminalAudit;
   const expectedMatrix={path:descriptor.moduleTruthPath,gitBlob:descriptor.moduleTruthExpectedGitBlob};
   const expectedLedger={path:descriptor.findingsLedgerPath,gitBlob:descriptor.findingsLedgerExpectedGitBlob};
@@ -132,6 +133,12 @@ test('I3 current authority aliases are bound to the same C3 source, matrix, ledg
   assert.equal(execution.moduleTruthExpectedGitBlob,descriptor.moduleTruthExpectedGitBlob);
   assert.equal(execution.findingsLedgerPath,descriptor.findingsLedgerPath);
   assert.equal(execution.findingsLedgerExpectedGitBlob,descriptor.findingsLedgerExpectedGitBlob);
+  assert.equal(ledger.currentLedgerSuccessor,descriptor.findingsLedgerPath);
+  assert.equal(ledger.activeBlocker,descriptor.activeBlocker);
+  assert.equal(execution.activeBlocker,descriptor.activeBlocker);
+  assert.equal(ledger.updatedAt,descriptor.updatedAt);
+  assert.equal(execution.updatedAt,descriptor.updatedAt);
+  assert.equal(ledger.currentC3PreterminalAudit.runId,audit.runId);
   assert.equal(execution.productSourceSha,descriptor.productSourceSha);
   assert.equal(execution.currentC3PreterminalAudit.runId,audit.runId);
   assert.equal(execution.currentC3PreterminalAudit.artifactDigest,audit.artifactDigest);

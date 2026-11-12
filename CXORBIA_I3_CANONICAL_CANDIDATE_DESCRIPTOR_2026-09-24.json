@@ -7,8 +7,8 @@
   "productSourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
   "productTreeAuthority": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
   "predecessorProductSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V613_2026-11-12.json",
-  "findingsLedgerExpectedGitBlob": "1b6355322f576dcaa3401dc3f2efefdb9fa545e9",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V614_2026-11-12.json",
+  "findingsLedgerExpectedGitBlob": "abeab07a4440104df4979aa1b63a7f6b7d62004f",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261112-V299.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -17904,7 +17904,7 @@
     "sourceTestsFail": 0,
     "production": false
   },
-  "updatedAt": "2026-11-12T17:35:00Z",
+  "updatedAt": "2026-11-12T18:09:00Z",
   "previousCurrentMaterializationBeforeRun2248": {
     "builds": 1,
     "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
@@ -18931,8 +18931,8 @@
       "gitBlob": "7447e1d8f19d649529af078858cd81ee1f43708b"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V613_2026-11-12.json",
-      "gitBlob": "1b6355322f576dcaa3401dc3f2efefdb9fa545e9"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V614_2026-11-12.json",
+      "gitBlob": "abeab07a4440104df4979aa1b63a7f6b7d62004f"
     },
     "receipt": {
       "kind": "GITHUB_ACTIONS_C3_PRETERMINAL_NOT_CERTIFICATE",
