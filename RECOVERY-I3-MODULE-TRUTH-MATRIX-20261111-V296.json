@@ -108,7 +108,7 @@
     "predecessorProductSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
     "authorityState": "CURRENT_SOURCE_HOSTING_DEV_MATERIALIZED_B2_B3_FOCAL_SHOPPER_E2E_PASS_PENDING_INTEGRAL_HUMAN_AND_C3_SOURCE_PROOF",
     "state": "CURRENT_FRONTEND_SOURCE_EXACT_DEV_RUN2437__C3_RUN2441_132_BROWSER_OWNERS_PARITY_PASS__21_DOMAIN_SOURCE_READINESS_HOLD",
-    "message": "RUN2446 C3 confirms exact source e2458f44 / Hosting DEV 8dea7025 and runtime 00370-fl2. 132 active browser owners served byte-parity; 21 domains, 5 strict MATCH, 5 source-ready (benefits, identity roll-forward, questionnaire, reports, tenant-admin), 82 path-bound owner-proof gaps (56 owner findings,26 blob provenance,0 mappings); still HOLD full E2E/Gate20/21/I4. B4-B7 accepted and Shopper Stiven/Julissa focal E2E PASS preserved, not reclassified whole-module MATCH.",
+    "message": "RUN2448 C3 confirms source e2458f44 / Hosting DEV 8dea7025 and runtime 00370-fl2: 133 browser owners served byte parity, 21 domains, 5 strict MATCH, 6 source-ready including Historico exact blob and 3/3 source QA, 81 path-bound gaps (56 owner proof,25 blob provenance,0 mappings). Scoped source proof is not a new terminal module certificate. Phase A HOLD / Gate20+21 HOLD / I4 not authorized, production untouched.",
     "production": false,
     "sourceProofReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM328_B2_B3_PROFILE_ACTIVE_SOURCE_PROOF_20261111.json",
     "sourceProofReceiptBlob": "892bbb8ee3d60808159c82972949fe0e713dcc3b",
@@ -10390,7 +10390,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "C3 focal: verificar Histórico con commit 236b5f64, blob 842df352, QA 3/3 y DEV byte parity; repetir el gate C3 canónico sin build/deploy y actualizar los cuatro punteros con el recibo real. Mantener 21 dominios, 328 hallazgos, cinco MATCH históricos y todos los PASS humanos conservados; continuar otras 25 procedencias y 56 owners sin declarar falso PASS funcional; B1-B3/B8/B9/Gate20/Gate21 HOLD e I4 sin autorización.",
+  "nextExactAction": "RUN2448 C3 fuente e2458f44 y DEV Hosting 8dea7025 inmutables: 21 dominios, 5 MATCH estrictos, 6 dominios source-ready (Histórico suma QA 3/3 y paridad bytes), 81 paths pendientes (56 pruebas owner, 25 procedencias blob, 0 mapeos). Siguiente exacto: recuperar 25 procedencias por commit+blob+QA independiente; después cerrar 56 owners con las pruebas funcionales/visuales y provider ACK de roles/contexto; conservar B4-B7 PASS y los 328 hallazgos; cerrar B1-B3 humanos, B8 pagos de septiembre por visitId/liquidacionId sin falsos pagados, B9 y Gate20+21 con un solo artefacto. No reeditar producto por una ausencia de recibo. I3 HOLD; I4 sin autorización; producción DO_NOT_TOUCH.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -20938,7 +20938,7 @@
     "production": false
   },
   "updatedAt": "2026-11-11T19:56:15Z",
-  "exactNextAction": "C3 focal: verificar Histórico con commit 236b5f64, blob 842df352, QA 3/3 y DEV byte parity; repetir el gate C3 canónico sin build/deploy y actualizar los cuatro punteros con el recibo real. Mantener 21 dominios, 328 hallazgos, cinco MATCH históricos y todos los PASS humanos conservados; continuar otras 25 procedencias y 56 owners sin declarar falso PASS funcional; B1-B3/B8/B9/Gate20/Gate21 HOLD e I4 sin autorización.",
+  "exactNextAction": "RUN2448 C3 fuente e2458f44 y DEV Hosting 8dea7025 inmutables: 21 dominios, 5 MATCH estrictos, 6 dominios source-ready (Histórico suma QA 3/3 y paridad bytes), 81 paths pendientes (56 pruebas owner, 25 procedencias blob, 0 mapeos). Siguiente exacto: recuperar 25 procedencias por commit+blob+QA independiente; después cerrar 56 owners con las pruebas funcionales/visuales y provider ACK de roles/contexto; conservar B4-B7 PASS y los 328 hallazgos; cerrar B1-B3 humanos, B8 pagos de septiembre por visitId/liquidacionId sin falsos pagados, B9 y Gate20+21 con un solo artefacto. No reeditar producto por una ausencia de recibo. I3 HOLD; I4 sin autorización; producción DO_NOT_TOUCH.",
   "historicalActiveHeadersBeforeRun2263": {
     "currentActionReconciliation": {
       "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
@@ -22357,24 +22357,24 @@
   "currentC3PreterminalAudit": {
     "schemaVersion": "cxorbia.i3.current-c3-preterminal-audit.v1",
     "localDate": "2026-11-11",
-    "controlHeadAtAudit": "d6c8a74621b317bdebafe62418ecbf71cc0696be",
-    "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43164956550",
-    "runId": 43164956550,
-    "runNumber": 2446,
-    "jobId": 131004731829,
-    "artifactId": 13919801348,
-    "artifactName": "cxorbia-c3-preterminal-module-truth-43164956550",
-    "artifactDigest": "sha256:6c5b853058d789dd7246954d0836e1557921502e38f7e2b6271fbcaf493316da",
+    "controlHeadAtAudit": "69a24c393751bea3477ba35d551e0e7c2e99b9ef",
+    "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43241689811",
+    "runId": 43241689811,
+    "runNumber": 2448,
+    "jobId": 131263880249,
+    "artifactId": 13954961545,
+    "artifactName": "cxorbia-c3-preterminal-module-truth-43241689811",
+    "artifactDigest": "sha256:78b4ca676ac86bc3c875cac912309ae71734d2e0f1547b92d4ae18b9eba6f430",
     "decision": "HOLD_C3_PRETERMINAL_SOURCE_EVIDENCE_PENDING",
     "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
     "sourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
     "moduleCount": 21,
     "matchModules": 5,
     "nonMatchModules": 16,
-    "sourceReadyModules": 5,
-    "pendingFiles": 82,
+    "sourceReadyModules": 6,
+    "pendingFiles": 81,
     "pendingOwnerProofFiles": 56,
-    "pendingBlobProvenanceFiles": 26,
+    "pendingBlobProvenanceFiles": 25,
     "pendingMappingApprovalFiles": 0,
     "activeBrowserOwners": 132,
     "hostingVersion": "sites/cxorbia-backend-dev/versions/8dea702589084bcf",
@@ -22386,6 +22386,7 @@
     "writes": 0,
     "sourceReadyDomainNames": [
       "benefits",
+      "historical",
       "identity-membership-roll-forward",
       "questionnaire-shopper",
       "reports-admin-shopper",
@@ -22601,5 +22602,142 @@
     "scope": "SOURCE_QA_AND_DEV_BYTE_PROVENANCE_ONLY_NOT_NEW_HUMAN_E2E_OR_GATE20_21",
     "newHumanPass": false,
     "production": false
+  },
+  "previousCurrentC3PreterminalAuditBeforeHistoricoRun2448": {
+    "schemaVersion": "cxorbia.i3.current-c3-preterminal-audit.v1",
+    "localDate": "2026-11-11",
+    "controlHeadAtAudit": "d6c8a74621b317bdebafe62418ecbf71cc0696be",
+    "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43164956550",
+    "runId": 43164956550,
+    "runNumber": 2446,
+    "jobId": 131004731829,
+    "artifactId": 13919801348,
+    "artifactName": "cxorbia-c3-preterminal-module-truth-43164956550",
+    "artifactDigest": "sha256:6c5b853058d789dd7246954d0836e1557921502e38f7e2b6271fbcaf493316da",
+    "decision": "HOLD_C3_PRETERMINAL_SOURCE_EVIDENCE_PENDING",
+    "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+    "sourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
+    "moduleCount": 21,
+    "matchModules": 5,
+    "nonMatchModules": 16,
+    "sourceReadyModules": 5,
+    "pendingFiles": 82,
+    "pendingOwnerProofFiles": 56,
+    "pendingBlobProvenanceFiles": 26,
+    "pendingMappingApprovalFiles": 0,
+    "activeBrowserOwners": 132,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/8dea702589084bcf",
+    "runtimeRevision": "cxorbia-live-hr-dev-00370-fl2",
+    "runtimeDigest": "sha256:396cd23f895a98606fa9ca238132a5515065c07fec632cd73c00cc2e6d6c639e",
+    "production": false,
+    "builds": 0,
+    "deploys": 0,
+    "writes": 0,
+    "sourceReadyDomainNames": [
+      "benefits",
+      "identity-membership-roll-forward",
+      "questionnaire-shopper",
+      "reports-admin-shopper",
+      "tenant-admin-config-branding"
+    ],
+    "scope": "CURRENT_21_DOMAIN_SOURCE_READINESS_AND_EXACT_DEV_ASSET_PARITY__NOT_TERMINAL_CERTIFICATION",
+    "strictCertificationStatus": "HOLD",
+    "phaseAComplete": false,
+    "allModulesMatch": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "existingHumanPassBlocksPreserved": [
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ],
+    "shopperFocalE2EReceipt": "docs/checkpoints/CXORBIA_I3_VRM328_CHROME_TWO_SHOPPERS_DEV_E2E_20261111.json",
+    "shopperFocalE2EReceiptBlob": "1cf2ef705a31dbb137cc0b60b5ef6856f583d650"
+  },
+  "executionReceiptThursday20261112": {
+    "id": "CXORBIA-I3-THURSDAY-EXECUTION-20261112",
+    "dateLocal": "2026-11-12",
+    "timeZone": "America/Guatemala",
+    "iteration": "I3",
+    "status": "HOLD",
+    "planAuthority": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
+    "scope": "DAILY_EXECUTION_PRIORITY_OVERLAY_WITHIN_EXISTING_FROZEN_I3_I4_PLAN__NOT_ANOTHER_STRUCTURAL_PLAN",
+    "oneWriter": true,
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "productSource": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+    "production": "DO_NOT_TOUCH",
+    "currentC3Run": 2448,
+    "baseline": {
+      "strictMatch": 5,
+      "domains": 21,
+      "sourceReady": 6,
+      "pendingOwnerProof": 56,
+      "pendingProvenance": 25,
+      "pendingMapping": 0,
+      "findings": 328
+    },
+    "executionQueue": [
+      {
+        "block": "I3-Q1",
+        "owner": "CANONICAL_AUTHORITY",
+        "action": "Exact GH HEAD/blob crosscheck matrix-ledger-descriptor-pointer and DEV source/runtime/Hosting plus PASS preservation",
+        "exit": "ZERO_CURRENT_AUTHORITY_ALIAS_DESYNC__ZERO_PRODUCT_DRIFT",
+        "status": "PASS_RUN2447_AND_RUN2448"
+      },
+      {
+        "block": "I3-Q2",
+        "owner": "C3_SOURCE_PROVENANCE",
+        "action": "Read-only commit/blob/independent QA for 25 provenance files, then 56 finding owners by exact path and state; no global candidate approval",
+        "exit": "21_SOURCE_READY_AND_0_PATH_BOUND_GAPS",
+        "status": "IN_PROGRESS_6_OF_21_SOURCE_READY"
+      },
+      {
+        "block": "I3-Q3",
+        "owner": "B1_B3_B10_OPERATOR_E2E",
+        "action": "Finish actual Admin/Shopper/provider GT-HN and per-project/per-period external HR, identity, available/assignment/postulation/durable ACK/reload, certification/resources/questionnaire cross-role functional cases",
+        "exit": "VALID_ROLE_PROJECT_PERIOD_HR_REVISION_AND_PROVIDER_ACK_RECEIPTS",
+        "status": "HOLD_INTEGRAL_HUMAN_E2E"
+      },
+      {
+        "block": "I3-Q4",
+        "owner": "B8_FINANCE",
+        "action": "Reconcile September payment identifiers and preserve July-Aug historical truth; individual/batch/support/benefits/financial status require durable ACK independent from UI",
+        "exit": "NO_FALSE_PAID_AND_PROVIDER_ACK_OR_EXACT_BOUND_PAYMENT_AMBIGUITY",
+        "status": "HOLD"
+      },
+      {
+        "block": "I3-Q5",
+        "owner": "HUMAN_VISUAL_AND_21_DOMAINS",
+        "action": "Same DEV version all 21 module versions/assets/navigation/visuals 56 role-route cases; preserve scoped PASS B4-B7 Stiven Julissa",
+        "exit": "21_21_MATCH_AND_ALL_P0_HUMAN_VISUAL_ACCEPTANCE",
+        "status": "HOLD"
+      },
+      {
+        "block": "I3-Q6",
+        "owner": "ONE_CANONICAL_CERTIFICATION_WORKFLOW",
+        "action": "Gate20 and Gate21 same run manifest/source/artifact SHA256 exact; no rebuild between certificate and publish",
+        "exit": "I3_GO_GATE20_PASS_GATE21_PASS_IMMUTABLE_TAR",
+        "status": "HOLD"
+      },
+      {
+        "block": "I4-Q7",
+        "owner": "IMMUTABLE_PRODUCTION_REPLACEMENT",
+        "action": "Only after I3 GO and Paula exact authorization backup/rollback legacy and promote certified TAR; postdeployment smoke HR/Admin/Shopper no dupes then production lock",
+        "exit": "PRODUCTION_LOCK_AND_POSTDEPLOY_READBACK",
+        "status": "NOT_AUTHORIZED"
+      }
+    ],
+    "invariants": [
+      "No I0/I1/I2 restart",
+      "No parallel candidate/workflow",
+      "No data reimport",
+      "No production before I4 GO",
+      "One certified artifact no rebuild",
+      "No reopening PASS without exact drift",
+      "Separate source QA from final human PASS"
+    ]
   }
 }
