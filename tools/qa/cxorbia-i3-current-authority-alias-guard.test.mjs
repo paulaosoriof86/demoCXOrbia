@@ -14,6 +14,31 @@ test('current aliases agree with descriptor-selected ledger and current DEV seal
   const r=validateCurrentAuthorityAliases(fixture());assert.equal(r.pass,true,JSON.stringify(r));
 });
 
+const pendingFixture=()=>{
+  const v=fixture(),predecessor='a'.repeat(40),predecessorTree='e'.repeat(40);
+  v.descriptor.postDeployRunSeal={mode:'PREDECESSOR_SERVING_PENDING_SOURCE',sourceSha:predecessor,sourceTree:predecessorTree};
+  v.pointer.postDeployRunSeal={...v.descriptor.postDeployRunSeal};
+  v.pointer.currentDevMaterialization.sourceSha=predecessor;
+  v.ledger.currentMaterialization.sourceSha=predecessor;
+  v.ledger.currentMaterialization.sourceTree=predecessorTree;
+  v.ledger.currentTruth.currentMaterializationSourceSha=predecessor;
+  v.ledger.currentTruth.sourceMaterialized=false;
+  return v;
+};
+test('pending source preserves old served DEV seal while pointers target new source',()=>{
+  const r=validateCurrentAuthorityAliases(pendingFixture());
+  assert.equal(r.pass,true,JSON.stringify(r));
+});
+for(const [name,change] of [
+  ['falsified source materialization',v=>v.ledger.currentTruth.sourceMaterialized=true],
+  ['changed predecessor seal',v=>v.ledger.currentMaterialization.sourceSha='f'.repeat(40)],
+  ['stale phase lock source',v=>v.pointer.activePhaseAClosureLock20261110.sourceSha='a'.repeat(40)],
+  ['stale current source alias',v=>v.ledger.currentTruth.productSourceSha='a'.repeat(40)]
+])test('pending predecessor rejects '+name,()=>{
+  const v=pendingFixture();change(v);
+  assert.equal(validateCurrentAuthorityAliases(v).pass,false);
+});
+
 for(const [name,change,code] of [
   ['stale top-level count',v=>v.ledger.findingCount=1,'CURRENT_FINDING_COUNT_DESYNC'],
   ['stale pointer next ID',v=>v.pointer.nextFindingId='VRM-002','CURRENT_NEXT_FINDING_ID_DESYNC'],

@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm328.source-scope.v1",
+  "findingId": "VRM-328",
+  "block": "B2_B3",
+  "allowedProductFiles": [
+    "app/adapters/tya-canonical-shopper-portal-v2.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-b2-b3-active-history-parity.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs"
+  ],
+  "excluded": ["production", "payments", "HR writes", "Firestore writes", "Auth writes", "Storage writes"],
+  "preservedHumanPassBlocks": ["B4", "B5", "B6", "B7"],
+  "production": false
+}
