@@ -24125,7 +24125,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "RUN2446 C3 misma fuente e2458f44 y DEV Hosting 8dea7025: 21 dominios, 5 MATCH estrictos, 5 dominios con source-provenance lista; 82 archivos owner pendientes (56 pruebas actuales, 26 procedencias blob, 0 mapeos). Cuatro paths recuperaron aprobación fuente por mismo blob/run sin promover E2E humano. Siguiente exacto: cruzar 26 procedencias restantes con pruebas fuente independientes por path/blob y luego 56 casos owner activos con QA+DEV real por rol/país/HR; conservar 328 hallazgos y B4-B7 PASS, además Shopper Stiven/Julissa focal PASS; ejecutar aceptación integral B1-B3 y E2E provider B10, Admin Recursos; B8 pago septiembre cruzar visitId/liquidacionId sin anotar pagado sin ACK; B9/Gate20+21 HOLD. Certificar módulos incrementalmente al cerrar cada evidencia exacta sin false MATCH ni reabrir PASS. Misma candidata, I4 sin autorización, producción DO_NOT_TOUCH.",
+  "exactNextAction": "C3 focal: verificar Histórico con commit 236b5f64, blob 842df352, QA 3/3 y DEV byte parity; repetir el gate C3 canónico sin build/deploy y actualizar los cuatro punteros con el recibo real. Mantener 21 dominios, 328 hallazgos, cinco MATCH históricos y todos los PASS humanos conservados; continuar otras 25 procedencias y 56 owners sin declarar falso PASS funcional; B1-B3/B8/B9/Gate20/Gate21 HOLD e I4 sin autorización.",
   "supersedesGitBlob": "5d428fb23ebca021a16c66f76210cca18e7d683e",
   "vrm328TwoShopperChromeNov2026Readback": {
     "findingId": "VRM-328",
@@ -27905,7 +27905,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-11-10T06:38:06.861Z",
-  "nextExactAction": "RUN2446 C3 misma fuente e2458f44 y DEV Hosting 8dea7025: 21 dominios, 5 MATCH estrictos, 5 dominios con source-provenance lista; 82 archivos owner pendientes (56 pruebas actuales, 26 procedencias blob, 0 mapeos). Cuatro paths recuperaron aprobación fuente por mismo blob/run sin promover E2E humano. Siguiente exacto: cruzar 26 procedencias restantes con pruebas fuente independientes por path/blob y luego 56 casos owner activos con QA+DEV real por rol/país/HR; conservar 328 hallazgos y B4-B7 PASS, además Shopper Stiven/Julissa focal PASS; ejecutar aceptación integral B1-B3 y E2E provider B10, Admin Recursos; B8 pago septiembre cruzar visitId/liquidacionId sin anotar pagado sin ACK; B9/Gate20+21 HOLD. Certificar módulos incrementalmente al cerrar cada evidencia exacta sin false MATCH ni reabrir PASS. Misma candidata, I4 sin autorización, producción DO_NOT_TOUCH.",
+  "nextExactAction": "C3 focal: verificar Histórico con commit 236b5f64, blob 842df352, QA 3/3 y DEV byte parity; repetir el gate C3 canónico sin build/deploy y actualizar los cuatro punteros con el recibo real. Mantener 21 dominios, 328 hallazgos, cinco MATCH históricos y todos los PASS humanos conservados; continuar otras 25 procedencias y 56 owners sin declarar falso PASS funcional; B1-B3/B8/B9/Gate20/Gate21 HOLD e I4 sin autorización.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -28307,7 +28307,7 @@
   },
   "currentTruth": {
     "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261111-V296.json",
-    "moduleTruthGitBlob": "d7e0518cf2e6db0251f17a2b50a7dc2cddbcd625",
+    "moduleTruthGitBlob": "02e10be42ccf4be9f84115ba91ef12fc0431ad3f",
     "productSourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
     "productTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
     "moduleTruthCurrent": true,
@@ -43385,5 +43385,29 @@
     ],
     "shopperFocalE2EReceipt": "docs/checkpoints/CXORBIA_I3_VRM328_CHROME_TWO_SHOPPERS_DEV_E2E_20261111.json",
     "shopperFocalE2EReceiptBlob": "1cf2ef705a31dbb137cc0b60b5ef6856f583d650"
+  },
+  "c3HistoricoOwnerEvidenceRecovery": {
+    "id": "CXORBIA-I3-C3-HISTORICAL-PATH-BOUND-SOURCE-20261112",
+    "classification": "MAPPING_FAILURE",
+    "domain": "historical",
+    "ownerPath": "app/modules/historico.js",
+    "sourceCommit": "236b5f64e3a2c3016f278333e1bc20902fd71e28",
+    "sourceBlob": "842df3520ffa05d27e04b10c8fc225f023e4f304",
+    "qaTestPath": "tools/qa/cxorbia-i3-historico-country-totals-owner.test.mjs",
+    "qaTestBlob": "87950d852502edddb99ae346a7d2d065ca53de6b",
+    "qa": "PASS_3_OF_3_CURRENT_EXACT_SOURCE_NODE_TEST",
+    "qaCases": [
+      "historico-all-country-period-universe",
+      "historico-hn-kpis-reports-details",
+      "historico-gt-payment-and-active-period"
+    ],
+    "observedSourceSha256": "cab99b87798f385d6cf71cc63bef144b5fc7cb6c55bf31ba101817ade07e2819",
+    "observedDevAssetSha256": "cab99b87798f385d6cf71cc63bef144b5fc7cb6c55bf31ba101817ade07e2819",
+    "devHostingVersion": "sites/cxorbia-backend-dev/versions/8dea702589084bcf",
+    "currentProductSource": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+    "sameServedBytes": true,
+    "scope": "SOURCE_QA_AND_DEV_BYTE_PROVENANCE_ONLY_NOT_NEW_HUMAN_E2E_OR_GATE20_21",
+    "newHumanPass": false,
+    "production": false
   }
 }

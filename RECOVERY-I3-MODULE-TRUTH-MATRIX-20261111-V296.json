@@ -3044,7 +3044,9 @@
       "contractFunctional": "Histórico",
       "classification": "MATCH",
       "actionRequired": null,
-      "preI4SuccessorCommits": [],
+      "preI4SuccessorCommits": [
+        "236b5f64e3a2c3016f278333e1bc20902fd71e28"
+      ],
       "cumulativeSource": "6f87531de198186ad8277564beb380cf94a09488",
       "preI4ProvenBy": {
         "runId": 35954023135,
@@ -3098,6 +3100,30 @@
         "functional": "PRIOR_INTEGRAL_MATCH_PRESERVED",
         "human": "PRIOR_MATCH_PRESERVED",
         "newMatchPromotion": false
+      },
+      "currentC3HistoricoOwnerSourceProof": {
+        "id": "CXORBIA-I3-C3-HISTORICAL-PATH-BOUND-SOURCE-20261112",
+        "classification": "MAPPING_FAILURE",
+        "domain": "historical",
+        "ownerPath": "app/modules/historico.js",
+        "sourceCommit": "236b5f64e3a2c3016f278333e1bc20902fd71e28",
+        "sourceBlob": "842df3520ffa05d27e04b10c8fc225f023e4f304",
+        "qaTestPath": "tools/qa/cxorbia-i3-historico-country-totals-owner.test.mjs",
+        "qaTestBlob": "87950d852502edddb99ae346a7d2d065ca53de6b",
+        "qa": "PASS_3_OF_3_CURRENT_EXACT_SOURCE_NODE_TEST",
+        "qaCases": [
+          "historico-all-country-period-universe",
+          "historico-hn-kpis-reports-details",
+          "historico-gt-payment-and-active-period"
+        ],
+        "observedSourceSha256": "cab99b87798f385d6cf71cc63bef144b5fc7cb6c55bf31ba101817ade07e2819",
+        "observedDevAssetSha256": "cab99b87798f385d6cf71cc63bef144b5fc7cb6c55bf31ba101817ade07e2819",
+        "devHostingVersion": "sites/cxorbia-backend-dev/versions/8dea702589084bcf",
+        "currentProductSource": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+        "sameServedBytes": true,
+        "scope": "SOURCE_QA_AND_DEV_BYTE_PROVENANCE_ONLY_NOT_NEW_HUMAN_E2E_OR_GATE20_21",
+        "newHumanPass": false,
+        "production": false
       }
     },
     {
@@ -7379,8 +7405,8 @@
       "historicalApprovedBlob": "bf259b28e871bc6cea991f14ce5560323ef55f9e",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "bf259b28e871bc6cea991f14ce5560323ef55f9e",
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "bf259b28e871bc6cea991f14ce5560323ef55f9e",
+      "latestApprovedSource": "236b5f64e3a2c3016f278333e1bc20902fd71e28",
+      "latestApprovedBlob": "842df3520ffa05d27e04b10c8fc225f023e4f304",
       "currentBlob": "842df3520ffa05d27e04b10c8fc225f023e4f304",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
@@ -7390,16 +7416,47 @@
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 84,
       "atomicDisposition": "KEEP",
-      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
-      "approvedBlob": "bf259b28e871bc6cea991f14ce5560323ef55f9e",
-      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "approvedSourceCommit": "236b5f64e3a2c3016f278333e1bc20902fd71e28",
+      "approvedBlob": "842df3520ffa05d27e04b10c8fc225f023e4f304",
+      "approvalAuthority": "I3_HISTORICO_GT_HN_SOURCE_QA_3_3_EXACT_DEV_BYTE_PROOF",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP",
       "currentCumulativeSource": "c70352004ab580274656a80d69bb166c4da8ed9f",
       "currentLoadOrder": 81,
       "previousMatrixCurrentBlob": "bf259b28e871bc6cea991f14ce5560323ef55f9e",
-      "byteAuthorityReadback": "EXACT_GIT_TREE_SOURCE_ONLY"
+      "byteAuthorityReadback": "EXACT_GIT_TREE_SOURCE_ONLY",
+      "historicalSourceApprovalBeforeCurrentHistoricoRecovery": {
+        "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+        "approvedBlob": "bf259b28e871bc6cea991f14ce5560323ef55f9e",
+        "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "latestApprovedBlob": "bf259b28e871bc6cea991f14ce5560323ef55f9e",
+        "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP"
+      },
+      "currentC3HistoricoOwnerSourceProof": {
+        "id": "CXORBIA-I3-C3-HISTORICAL-PATH-BOUND-SOURCE-20261112",
+        "classification": "MAPPING_FAILURE",
+        "domain": "historical",
+        "ownerPath": "app/modules/historico.js",
+        "sourceCommit": "236b5f64e3a2c3016f278333e1bc20902fd71e28",
+        "sourceBlob": "842df3520ffa05d27e04b10c8fc225f023e4f304",
+        "qaTestPath": "tools/qa/cxorbia-i3-historico-country-totals-owner.test.mjs",
+        "qaTestBlob": "87950d852502edddb99ae346a7d2d065ca53de6b",
+        "qa": "PASS_3_OF_3_CURRENT_EXACT_SOURCE_NODE_TEST",
+        "qaCases": [
+          "historico-all-country-period-universe",
+          "historico-hn-kpis-reports-details",
+          "historico-gt-payment-and-active-period"
+        ],
+        "observedSourceSha256": "cab99b87798f385d6cf71cc63bef144b5fc7cb6c55bf31ba101817ade07e2819",
+        "observedDevAssetSha256": "cab99b87798f385d6cf71cc63bef144b5fc7cb6c55bf31ba101817ade07e2819",
+        "devHostingVersion": "sites/cxorbia-backend-dev/versions/8dea702589084bcf",
+        "currentProductSource": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+        "sameServedBytes": true,
+        "scope": "SOURCE_QA_AND_DEV_BYTE_PROVENANCE_ONLY_NOT_NEW_HUMAN_E2E_OR_GATE20_21",
+        "newHumanPass": false,
+        "production": false
+      }
     },
     {
       "path": "app/modules/hr-source.js",
@@ -10333,7 +10390,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "RUN2446 C3 misma fuente e2458f44 y DEV Hosting 8dea7025: 21 dominios, 5 MATCH estrictos, 5 dominios con source-provenance lista; 82 archivos owner pendientes (56 pruebas actuales, 26 procedencias blob, 0 mapeos). Cuatro paths recuperaron aprobación fuente por mismo blob/run sin promover E2E humano. Siguiente exacto: cruzar 26 procedencias restantes con pruebas fuente independientes por path/blob y luego 56 casos owner activos con QA+DEV real por rol/país/HR; conservar 328 hallazgos y B4-B7 PASS, además Shopper Stiven/Julissa focal PASS; ejecutar aceptación integral B1-B3 y E2E provider B10, Admin Recursos; B8 pago septiembre cruzar visitId/liquidacionId sin anotar pagado sin ACK; B9/Gate20+21 HOLD. Certificar módulos incrementalmente al cerrar cada evidencia exacta sin false MATCH ni reabrir PASS. Misma candidata, I4 sin autorización, producción DO_NOT_TOUCH.",
+  "nextExactAction": "C3 focal: verificar Histórico con commit 236b5f64, blob 842df352, QA 3/3 y DEV byte parity; repetir el gate C3 canónico sin build/deploy y actualizar los cuatro punteros con el recibo real. Mantener 21 dominios, 328 hallazgos, cinco MATCH históricos y todos los PASS humanos conservados; continuar otras 25 procedencias y 56 owners sin declarar falso PASS funcional; B1-B3/B8/B9/Gate20/Gate21 HOLD e I4 sin autorización.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -20881,7 +20938,7 @@
     "production": false
   },
   "updatedAt": "2026-11-11T19:56:15Z",
-  "exactNextAction": "RUN2446 C3 misma fuente e2458f44 y DEV Hosting 8dea7025: 21 dominios, 5 MATCH estrictos, 5 dominios con source-provenance lista; 82 archivos owner pendientes (56 pruebas actuales, 26 procedencias blob, 0 mapeos). Cuatro paths recuperaron aprobación fuente por mismo blob/run sin promover E2E humano. Siguiente exacto: cruzar 26 procedencias restantes con pruebas fuente independientes por path/blob y luego 56 casos owner activos con QA+DEV real por rol/país/HR; conservar 328 hallazgos y B4-B7 PASS, además Shopper Stiven/Julissa focal PASS; ejecutar aceptación integral B1-B3 y E2E provider B10, Admin Recursos; B8 pago septiembre cruzar visitId/liquidacionId sin anotar pagado sin ACK; B9/Gate20+21 HOLD. Certificar módulos incrementalmente al cerrar cada evidencia exacta sin false MATCH ni reabrir PASS. Misma candidata, I4 sin autorización, producción DO_NOT_TOUCH.",
+  "exactNextAction": "C3 focal: verificar Histórico con commit 236b5f64, blob 842df352, QA 3/3 y DEV byte parity; repetir el gate C3 canónico sin build/deploy y actualizar los cuatro punteros con el recibo real. Mantener 21 dominios, 328 hallazgos, cinco MATCH históricos y todos los PASS humanos conservados; continuar otras 25 procedencias y 56 owners sin declarar falso PASS funcional; B1-B3/B8/B9/Gate20/Gate21 HOLD e I4 sin autorización.",
   "historicalActiveHeadersBeforeRun2263": {
     "currentActionReconciliation": {
       "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
@@ -22520,5 +22577,29 @@
     ],
     "shopperFocalE2EReceipt": "docs/checkpoints/CXORBIA_I3_VRM328_CHROME_TWO_SHOPPERS_DEV_E2E_20261111.json",
     "shopperFocalE2EReceiptBlob": "1cf2ef705a31dbb137cc0b60b5ef6856f583d650"
+  },
+  "c3HistoricoOwnerEvidenceRecovery": {
+    "id": "CXORBIA-I3-C3-HISTORICAL-PATH-BOUND-SOURCE-20261112",
+    "classification": "MAPPING_FAILURE",
+    "domain": "historical",
+    "ownerPath": "app/modules/historico.js",
+    "sourceCommit": "236b5f64e3a2c3016f278333e1bc20902fd71e28",
+    "sourceBlob": "842df3520ffa05d27e04b10c8fc225f023e4f304",
+    "qaTestPath": "tools/qa/cxorbia-i3-historico-country-totals-owner.test.mjs",
+    "qaTestBlob": "87950d852502edddb99ae346a7d2d065ca53de6b",
+    "qa": "PASS_3_OF_3_CURRENT_EXACT_SOURCE_NODE_TEST",
+    "qaCases": [
+      "historico-all-country-period-universe",
+      "historico-hn-kpis-reports-details",
+      "historico-gt-payment-and-active-period"
+    ],
+    "observedSourceSha256": "cab99b87798f385d6cf71cc63bef144b5fc7cb6c55bf31ba101817ade07e2819",
+    "observedDevAssetSha256": "cab99b87798f385d6cf71cc63bef144b5fc7cb6c55bf31ba101817ade07e2819",
+    "devHostingVersion": "sites/cxorbia-backend-dev/versions/8dea702589084bcf",
+    "currentProductSource": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+    "sameServedBytes": true,
+    "scope": "SOURCE_QA_AND_DEV_BYTE_PROVENANCE_ONLY_NOT_NEW_HUMAN_E2E_OR_GATE20_21",
+    "newHumanPass": false,
+    "production": false
   }
 }
