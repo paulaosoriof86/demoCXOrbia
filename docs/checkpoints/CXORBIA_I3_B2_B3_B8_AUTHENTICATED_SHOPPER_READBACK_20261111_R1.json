@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "cxorbia.i3.authenticated-shopper-b2-b3-b8-readback.v1",
+  "observedOn": "2026-11-11",
+  "timeZone": "America/Guatemala",
+  "decision": "PASS_SCOPED_SHOPPER_READ_ONLY_ROUTES_WITH_B2_B3_STATE_MISMATCH_AND_B8_FINANCE_HOLD",
+  "authority": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "controlHeadAtObservation": "52ca7341778afea796f2bc709c068e275b17e2ec",
+    "productSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+    "productTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
+    "currentDevHostingVersionFromExistingReceipt": "sites/cxorbia-backend-dev/versions/097e92b33464c10a",
+    "currentDevRuntimeRevisionFromExistingReceipt": "cxorbia-live-hr-dev-00370-fl2",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261111-V294.json",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V608_2026-11-11.json"
+  },
+  "observedSession": {
+    "origin": "https://cxorbia-backend-dev.firebaseapp.com",
+    "role": "Shopper",
+    "actorDisplayName": "Stiven López",
+    "actorCountryScope": ["GT"],
+    "project": "Cinépolis",
+    "selectedPeriod": "2026-11",
+    "sameOriginSessionIsolation": "One Shopper actor only; distinct firebaseapp.com origin from previously observed Admin web.app origin",
+    "method": "Connected authenticated Chrome DEV DOM snapshots and navigation; no state-changing button submission"
+  },
+  "routeEvidence": {
+    "miDia": {"nextActiveVisits": 0, "currentNotifications": 0},
+    "miPerfil": {
+      "canonicalHistoricalVisits": 10,
+      "realizedVisits": 10,
+      "submittedVisits": 10,
+      "paidConfirmedVisits": 5,
+      "activeFilterCount": 1,
+      "activeFilterOnlyRow": {"period": "2026-11", "cinema": "C. Naranjo Mall", "realizedDate": "2026-11-04", "state": "Submitida", "country": "GT"}
+    },
+    "misVisitas": {"activeCount": 0, "historyCount": 10, "novemberCompletedVisitInHistory": true},
+    "visitasDisponibles": {
+      "gtVisibleCount": 8,
+      "otherCountriesShown": 0,
+      "matchesPreviouslyObservedAdminGtUnassignedCount": true,
+      "detailModalObserved": "MC. Jutiapa, 2026-11, GT, TAQ, Q60 base plus reimbursement",
+      "postulationsSubmitted": 0
+    },
+    "reservasAsignacion": {"currentRequests": 0, "assignedThroughReservation": 0, "requestBranchDisabled": true},
+    "certificacion": {
+      "publishedOctoberBanksVisible": 2,
+      "historicalApprovedNovemberAttemptVisible": true,
+      "historicalGrade": "100%",
+      "historicalProviderAckDisplayed": true,
+      "newAttemptsSubmitted": 0,
+      "testBanksPreserved": true
+    },
+    "misBeneficios": {
+      "historicalLiquidations": 10,
+      "confirmedPaid": 5,
+      "pendingFinancialConfirmation": 5,
+      "currentNovemberCurrency": "GTQ",
+      "currentNovemberHonorar": 60,
+      "currentNovemberReimbursement": 173,
+      "currentNovemberTotalPending": 233
+    }
+  },
+  "b2B3ActiveCountDivergence": {
+    "candidateFindingIdReservedNotWrittenToLedger": "VRM-328",
+    "classification": "CROSS_MODULE_PRESENTATION_AND_STATE_FILTER_MISMATCH",
+    "observedBefore": "Mi Perfil > Trayectoria: Activas 1 includes an already submitted 2026-11-04 visit; Mis Visitas: Activas 0 / Historial 10 for the exact same authenticated identity and period.",
+    "rootCauseProvenInCurrentSource": true,
+    "owner": "app/adapters/tya-canonical-shopper-portal-v2.js",
+    "comparisonOwner": "app/modules/misvisitas.js",
+    "preciseCause": "Mi Perfil active predicate tests current period, assigned, unpaid/not liquidated and not cancelled, but omits !f.submitted; Mis Visitas correctly excludes submitted visits from its active buckets.",
+    "proposedTransversalRepairNotApplied": "Align Mi Perfil active state with Mis Visitas canonical visit-stage semantics; a submitted but unpaid visit belongs to historical/pending-payment, not operationally active. Add regression cases for assigned, scheduled, realized-unsubmitted, submitted-unpaid, paid and cancelled across GT/HN and non-current periods.",
+    "productChangeApplied": false,
+    "newDevArtifactCertified": false,
+    "humanAcceptance": false
+  },
+  "b8SeptemberPaymentAuthorityGap": {
+    "userBusinessStatement": "Paula states all September 2026 Shopper payments were made on 2026-10-31; October is pending and November accrues.",
+    "directDevReadback": [
+      {"cinema": "MC. El Frutal", "visitDate": "2026-09-28", "honorarGTQ": 60, "reimbursementGTQ": 167, "totalGTQ": 227, "shownState": "Pend. cruce financiero"},
+      {"cinema": "C. Sankris Mall", "visitDate": "2026-09-27", "honorarGTQ": 60, "reimbursementGTQ": 168, "totalGTQ": 228, "shownState": "Pend. cruce financiero"}
+    ],
+    "septemberTotalNotProjectedGTQ": 455,
+    "octoberPendingInSameShopperGTQ": 453,
+    "novemberPendingInSameShopperGTQ": 233,
+    "allFivePendingTotalGTQ": 1141,
+    "financeSourceReceiptRead": false,
+    "causeProven": false,
+    "paymentStatusNotInferred": true,
+    "paymentsWritten": 0,
+    "reconciliationRequired": "Match exact 2026-10-31 payout source, shopper identity and visit/liquidation IDs before any durable payment confirmation; keep October and November separate."
+  },
+  "preservedLocks": {
+    "b4B5B6B7HumanPassPreserved": true,
+    "phaseA21DomainsTerminal": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "production": "DO_NOT_TOUCH",
+    "priorCrashedSessionClaim": "46 local tests passing for attempted matrix/certifier/ledger repairs was reported before an unverified GitHub large-file transfer; the uncommitted bytes are not claimed recovered or published by this receipt."
+  },
+  "nextExactAction": "Keep product source 4784f220 and B4-B7 PASS frozen; add this B2/B3 finding cumulatively into next canonical ledger and implement owner-only transversal active-stage fix with regression tests and single-source DEV materialization/readback. Independently perform B8 2026-10-31 payout-source matching without financial writes. Then complete B1-B3 action E2E/human, remaining 21 owner receipts, B9 and Gate20/21.",
+  "safety": {
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "paymentWrites": 0,
+    "newExamAttempts": 0,
+    "postulationWrites": 0,
+    "deploys": 0,
+    "productFilesChanged": 0,
+    "screenshotsCertified": false,
+    "providerSideEffectAuditPerformed": false
+  }
+}
