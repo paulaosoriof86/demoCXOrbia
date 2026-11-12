@@ -9727,13 +9727,32 @@
       "path": "app/core/backend-ai.js",
       "domain": "certifications",
       "currentBlob": "45b05a50b058ed66d98aa41db6abdbceec1f399f",
-      "phaseAAuthority": "TASK_REFERENCED_PENDING_INDEPENDENT_APPROVAL_PROOF",
-      "approvalAuthority": "UNRESOLVED_BY_G03",
-      "classification": "MAPPED_APPROVAL_PROVENANCE_PENDING",
+      "phaseAAuthority": true,
+      "approvalAuthority": "EXACT_PATH_BLOB_IN_FROZEN_D03_SOURCE_QA_AND_DEV_MATERIALIZATION",
+      "classification": "PATH_BOUND_SOURCE_PROVEN_PENDING_C3_REPROOF",
       "sourceInventoryAddedBy": "CXORBIA-I3-G03-OWNER-AUTHORITY-CROSSWALK-READBACK-20261030",
       "loadTarget": "browser-script",
       "entrypointPresent": true,
-      "currentCumulativeSource": "c70352004ab580274656a80d69bb166c4da8ed9f"
+      "currentCumulativeSource": "c70352004ab580274656a80d69bb166c4da8ed9f",
+      "approvedSourceCommit": "197ec4c84d8d2b0625885afcea6c4a7b43773985",
+      "approvedBlob": "45b05a50b058ed66d98aa41db6abdbceec1f399f",
+      "c3D03ScopedOwnerProof": {
+        "id": "CXORBIA-I3-C3-D03-OWNER-BACKEND-AI-20261111",
+        "classification": "MAPPING_FAILURE",
+        "path": "app/core/backend-ai.js",
+        "domain": "certifications",
+        "sourceSha": "197ec4c84d8d2b0625885afcea6c4a7b43773985",
+        "sourceTree": "bdb01d02945d86f557a63a6e1d10377a5db4f8c1",
+        "exactBlob": "45b05a50b058ed66d98aa41db6abdbceec1f399f",
+        "sourceQaRunId": 39041744359,
+        "sourceQaDecision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+        "devMaterializationRunId": 39042262760,
+        "devMaterializationDecision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+        "authority": "EXACT_PATH_BLOB_IN_FROZEN_D03_SOURCE_QA_AND_DEV_MATERIALIZATION",
+        "scope": "SOURCE_PROVENANCE_ONLY__REAL_AI_PROVIDER_E2E_STILL_PENDING__NO_MODULE_MATCH_PROMOTION",
+        "production": false,
+        "productSourceUnchanged": true
+      }
     },
     {
       "path": "app/modules/rutas.js",
@@ -22278,5 +22297,22 @@
     ],
     "shopperFocalE2EReceipt": "docs/checkpoints/CXORBIA_I3_VRM328_CHROME_TWO_SHOPPERS_DEV_E2E_20261111.json",
     "shopperFocalE2EReceiptBlob": "1cf2ef705a31dbb137cc0b60b5ef6856f583d650"
+  },
+  "c3D03OwnerMappingAdjudication": {
+    "id": "CXORBIA-I3-C3-D03-OWNER-BACKEND-AI-20261111",
+    "classification": "MAPPING_FAILURE",
+    "path": "app/core/backend-ai.js",
+    "domain": "certifications",
+    "sourceSha": "197ec4c84d8d2b0625885afcea6c4a7b43773985",
+    "sourceTree": "bdb01d02945d86f557a63a6e1d10377a5db4f8c1",
+    "exactBlob": "45b05a50b058ed66d98aa41db6abdbceec1f399f",
+    "sourceQaRunId": 39041744359,
+    "sourceQaDecision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "devMaterializationRunId": 39042262760,
+    "devMaterializationDecision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "authority": "EXACT_PATH_BLOB_IN_FROZEN_D03_SOURCE_QA_AND_DEV_MATERIALIZATION",
+    "scope": "SOURCE_PROVENANCE_ONLY__REAL_AI_PROVIDER_E2E_STILL_PENDING__NO_MODULE_MATCH_PROMOTION",
+    "production": false,
+    "productSourceUnchanged": true
   }
 }

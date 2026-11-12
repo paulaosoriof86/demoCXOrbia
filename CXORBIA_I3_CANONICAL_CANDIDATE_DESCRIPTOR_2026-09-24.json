@@ -8,7 +8,7 @@
   "productTreeAuthority": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
   "predecessorProductSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V610_2026-11-11.json",
-  "findingsLedgerExpectedGitBlob": "8d06aa1ffd324b5f148ec46f0c47ed7426cb1453",
+  "findingsLedgerExpectedGitBlob": "ea4f284015716d438a0121e20089b8b8e9512c3a",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261111-V296.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -3059,7 +3059,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "9f01d4b17608d0e8977aa6b0a0b5b63e8cd7c91a",
+  "moduleTruthExpectedGitBlob": "c46420492ac59155d57160b214c6647c0564ac66",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -21765,5 +21765,22 @@
     "productionChanged": false,
     "noModuleAutoPromotion": true,
     "recordedAt": "2026-11-12T05:17:39.235Z"
+  },
+  "c3D03OwnerMappingAdjudication": {
+    "id": "CXORBIA-I3-C3-D03-OWNER-BACKEND-AI-20261111",
+    "classification": "MAPPING_FAILURE",
+    "path": "app/core/backend-ai.js",
+    "domain": "certifications",
+    "sourceSha": "197ec4c84d8d2b0625885afcea6c4a7b43773985",
+    "sourceTree": "bdb01d02945d86f557a63a6e1d10377a5db4f8c1",
+    "exactBlob": "45b05a50b058ed66d98aa41db6abdbceec1f399f",
+    "sourceQaRunId": 39041744359,
+    "sourceQaDecision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "devMaterializationRunId": 39042262760,
+    "devMaterializationDecision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "authority": "EXACT_PATH_BLOB_IN_FROZEN_D03_SOURCE_QA_AND_DEV_MATERIALIZATION",
+    "scope": "SOURCE_PROVENANCE_ONLY__REAL_AI_PROVIDER_E2E_STILL_PENDING__NO_MODULE_MATCH_PROMOTION",
+    "production": false,
+    "productSourceUnchanged": true
   }
 }

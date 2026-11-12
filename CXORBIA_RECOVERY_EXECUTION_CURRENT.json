@@ -1425,7 +1425,7 @@
   },
   "moduleTruthAuthority": {
     "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261111-V296.json",
-    "gitBlob": "9f01d4b17608d0e8977aa6b0a0b5b63e8cd7c91a",
+    "gitBlob": "c46420492ac59155d57160b214c6647c0564ac66",
     "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
     "allModulesMatch": false,
     "phaseAComplete": false
@@ -3427,7 +3427,7 @@
   "activeShockModuleTruth": {
     "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261111-V296.json",
-    "matrixBlob": "9f01d4b17608d0e8977aa6b0a0b5b63e8cd7c91a",
+    "matrixBlob": "c46420492ac59155d57160b214c6647c0564ac66",
     "classificationCounts": {
       "MATCH": 5,
       "SOURCE_FIXED_DEV_MATERIALIZED_ADMIN_B10_FOCAL_PASS_PENDING_SHOPPER_ROLE_PROVIDER_LINK": 1,
@@ -6225,7 +6225,7 @@
     "production": false
   },
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V610_2026-11-11.json",
-  "findingsLedgerExpectedGitBlob": "8d06aa1ffd324b5f148ec46f0c47ed7426cb1453",
+  "findingsLedgerExpectedGitBlob": "ea4f284015716d438a0121e20089b8b8e9512c3a",
   "nextFindingId": "VRM-329",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -9829,7 +9829,7 @@
       "production": false
     }
   },
-  "moduleTruthExpectedGitBlob": "9f01d4b17608d0e8977aa6b0a0b5b63e8cd7c91a",
+  "moduleTruthExpectedGitBlob": "c46420492ac59155d57160b214c6647c0564ac66",
   "d08AcademyDispatchSourceProof": {
     "path": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_DISPATCH_SOURCE_PROOF_20261107.json",
     "gitBlob": "2ad9d960cb958e84368cbbd70a7e9f2fb7864d3f",
@@ -13277,5 +13277,22 @@
     "productionChanged": false,
     "noModuleAutoPromotion": true,
     "recordedAt": "2026-11-12T05:17:39.235Z"
+  },
+  "c3D03OwnerMappingAdjudication": {
+    "id": "CXORBIA-I3-C3-D03-OWNER-BACKEND-AI-20261111",
+    "classification": "MAPPING_FAILURE",
+    "path": "app/core/backend-ai.js",
+    "domain": "certifications",
+    "sourceSha": "197ec4c84d8d2b0625885afcea6c4a7b43773985",
+    "sourceTree": "bdb01d02945d86f557a63a6e1d10377a5db4f8c1",
+    "exactBlob": "45b05a50b058ed66d98aa41db6abdbceec1f399f",
+    "sourceQaRunId": 39041744359,
+    "sourceQaDecision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "devMaterializationRunId": 39042262760,
+    "devMaterializationDecision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "authority": "EXACT_PATH_BLOB_IN_FROZEN_D03_SOURCE_QA_AND_DEV_MATERIALIZATION",
+    "scope": "SOURCE_PROVENANCE_ONLY__REAL_AI_PROVIDER_E2E_STILL_PENDING__NO_MODULE_MATCH_PROMOTION",
+    "production": false,
+    "productSourceUnchanged": true
   }
 }
