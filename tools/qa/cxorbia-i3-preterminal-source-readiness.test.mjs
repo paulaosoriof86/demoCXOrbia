@@ -119,3 +119,41 @@ test('C3 preserves cumulative independent F12 and D08 receipts across control ve
   assert.equal(q2.length,6);
   assert.ok(q2.every(x=>x.evidencePath&&/^[a-f0-9]{40}$/.test(x.evidenceGitBlob)));
 });
+
+test('I3 current authority aliases are bound to the same C3 source, matrix, ledger and receipt',()=>{
+  const descriptor=JSON.parse(readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8'));
+  const execution=JSON.parse(readFileSync('CXORBIA_RECOVERY_EXECUTION_CURRENT.json','utf8'));
+  const audit=descriptor.currentC3PreterminalAudit;
+  const expectedMatrix={path:descriptor.moduleTruthPath,gitBlob:descriptor.moduleTruthExpectedGitBlob};
+  const expectedLedger={path:descriptor.findingsLedgerPath,gitBlob:descriptor.findingsLedgerExpectedGitBlob};
+  const expectedBlocker=`C3_${audit.pendingFiles}_PATH_BOUND_SOURCE_PROOF_GAPS_${audit.pendingOwnerProofFiles}_OWNER_PROOF_${audit.pendingBlobProvenanceFiles}_BLOB_PROVENANCE_${audit.pendingMappingApprovalFiles}_MAPPING__${audit.sourceReadyModules}_SOURCE_READY`;
+
+  assert.equal(execution.moduleTruthPath,descriptor.moduleTruthPath);
+  assert.equal(execution.moduleTruthExpectedGitBlob,descriptor.moduleTruthExpectedGitBlob);
+  assert.equal(execution.findingsLedgerPath,descriptor.findingsLedgerPath);
+  assert.equal(execution.findingsLedgerExpectedGitBlob,descriptor.findingsLedgerExpectedGitBlob);
+  assert.equal(execution.productSourceSha,descriptor.productSourceSha);
+  assert.equal(execution.currentC3PreterminalAudit.runId,audit.runId);
+  assert.equal(execution.currentC3PreterminalAudit.artifactDigest,audit.artifactDigest);
+  assert.equal(audit.sourceSha,descriptor.productSourceSha);
+  assert.equal(audit.sourceTree,descriptor.productTreeAuthority);
+  assert.equal(audit.pendingFiles,audit.pendingOwnerProofFiles+audit.pendingBlobProvenanceFiles+audit.pendingMappingApprovalFiles);
+
+  for(const [owner,record] of [['descriptor',descriptor],['execution',execution]]){
+    assert.deepEqual(record.currentCanonicalControl.matrix,expectedMatrix,owner+' matrix alias drift');
+    assert.deepEqual(record.currentCanonicalControl.ledger,expectedLedger,owner+' ledger alias drift');
+    assert.equal(record.currentCanonicalControl.sourceSha,audit.sourceSha,owner+' source SHA drift');
+    assert.equal(record.currentCanonicalControl.sourceTree,audit.sourceTree,owner+' source tree drift');
+    assert.equal(record.currentCanonicalControl.receipt.runId,audit.runId,owner+' C3 receipt drift');
+    assert.equal(record.currentCanonicalControl.receipt.artifactDigest,audit.artifactDigest,owner+' C3 artifact drift');
+    assert.equal(record.currentCanonicalControl.receipt.terminalCertified,false,owner+' false terminal certificate');
+    assert.ok(record.activeBlocker.startsWith(expectedBlocker),owner+' stale C3 blocker counters');
+  }
+  assert.equal(execution.continuityHandoff.productSourceSha,audit.sourceSha);
+  assert.equal(execution.continuityHandoff.productSourceTree,audit.sourceTree);
+  assert.equal(execution.executionReceiptThursday20261112.currentVerified.runId,audit.runId);
+  assert.equal(execution.executionReceiptThursday20261112.currentVerified.totalPendingPaths,audit.pendingFiles);
+  assert.equal(execution.executionReceiptThursday20261112.production,'DO_NOT_TOUCH');
+  assert.equal(audit.phaseAComplete,false);
+  assert.equal(audit.i4Authorized,false);
+});

@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "C3_81_PATH_BOUND_SOURCE_PROOF_GAPS_56_OWNER_PROOF_25_BLOB_PROVENANCE_0_MAPPING__6_SOURCE_READY_NOT_NEW_TERMINAL_MATCH__B1_B3_INTEGRAL_PENDING__B8_FINANCE_ACK_PENDING__B9_GATE20_GATE21_HOLD__B4_B7_PASS_PRESERVED",
+  "activeBlocker": "C3_68_PATH_BOUND_SOURCE_PROOF_GAPS_52_OWNER_PROOF_16_BLOB_PROVENANCE_0_MAPPING__6_SOURCE_READY_NOT_NEW_TERMINAL_MATCH__B1_B3_INTEGRAL_PENDING__B8_FINANCE_ACK_PENDING__B9_GATE20_GATE21_HOLD__B4_B7_PASS_PRESERVED",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -18927,27 +18927,28 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V268.json",
-      "gitBlob": "164b74383eb9f44d0e6cb0f1aaa00dda942696a6"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261112-V299.json",
+      "gitBlob": "7447e1d8f19d649529af078858cd81ee1f43708b"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V583_2026-11-07.json",
-      "gitBlob": "40923e5987a77f0d9829de994aa259f049254d82"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V613_2026-11-12.json",
+      "gitBlob": "1b6355322f576dcaa3401dc3f2efefdb9fa545e9"
     },
     "receipt": {
-      "path": "docs/checkpoints/CXORBIA_I3_RUN2263_EXACT_DEV_D08_CONTINUITY_20261107.json",
-      "gitBlob": "6bc9b0448194576e8c7ee19a1d23c1fcda8d603c",
-      "runId": 42420769697,
-      "runNumber": 2263,
-      "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
-      "sourceTree": "1f350fab2ea41504434a1c4712282b2bbbb05ae9",
-      "decision": "PASS_RUN2263_EXACT_DEV_AND_READ_ONLY_CHROME_D08_HOLD_INTEGRAL_PHASE_A",
-      "artifactId": 13593895967,
-      "artifactDigest": "sha256:d5dc0a33053e9061cf8dd9fd8bcc21b5a5b8b1e5e055d85caa455538565a952a",
+      "kind": "GITHUB_ACTIONS_C3_PRETERMINAL_NOT_CERTIFICATE",
+      "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43259558323",
+      "runId": 43259558323,
+      "runNumber": 2453,
+      "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+      "sourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
+      "decision": "HOLD_C3_PRETERMINAL_SOURCE_EVIDENCE_PENDING",
+      "artifactId": 13964001743,
+      "artifactDigest": "sha256:ede96b648c5411899d367f757f954fbd0d10f352861a65d7bce3948fceaac971",
+      "terminalCertified": false,
       "production": false
     },
-    "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
-    "sourceTree": "1f350fab2ea41504434a1c4712282b2bbbb05ae9",
+    "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+    "sourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
     "production": false
   },
   "run2259ExactDevContinuity": {

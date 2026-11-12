@@ -305,14 +305,20 @@
     }
   },
   "continuityHandoff": {
-    "authority": "CURRENT_SOURCE_EXACT_DEV_RUN2428_PROVIDER_ACK_WITH_B4_B7_PASS_AND_GATE_HOLD",
-    "path": "docs/checkpoints/CXORBIA_I3_RUN2428_CURRENT_SOURCE_DEV_MATERIALIZATION_20261111.json",
-    "gitBlob": "2ce9d2e159dbae98b657ba1556d013d416e364e2",
-    "asOf": "2026-11-11T19:56:15Z",
+    "authority": "C3_PRETERMINAL_RUN2453_CURRENT_SOURCE_DEV_BOUND_B4_B7_PASS_GATE_HOLD",
+    "c3RunUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43259558323",
+    "asOf": "2026-11-12",
     "iteration": "I3",
     "status": "HOLD",
-    "productSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
-    "productSourceTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
+    "productSourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+    "productSourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
+    "historicalLastDevProof": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2428_CURRENT_SOURCE_DEV_MATERIALIZATION_20261111.json",
+      "gitBlob": "2ce9d2e159dbae98b657ba1556d013d416e364e2",
+      "sourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+      "sourceTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
+      "asOf": "2026-11-11T19:56:15Z"
+    },
     "latestBatchRunId": 43091136067,
     "verifiedCohortGroups": 83,
     "pendingCohortGroups": 0,
@@ -5320,27 +5326,28 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261107-V277.json",
-      "gitBlob": "b9c75616f0c3a60274a6e8bc0a21c33a1a528b3c"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261112-V299.json",
+      "gitBlob": "7447e1d8f19d649529af078858cd81ee1f43708b"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V591_2026-11-07.json",
-      "gitBlob": "845039c27468d9715c7c408cc238e2ac1a09d346"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V613_2026-11-12.json",
+      "gitBlob": "1b6355322f576dcaa3401dc3f2efefdb9fa545e9"
     },
     "receipt": {
-      "path": "docs/checkpoints/CXORBIA_I3_RUN2283_VRM316_R3_EXACT_DEV_ROLE_E2E_FAIL_20261107.json",
-      "gitBlob": "44dd24cd1eda5b14ac81eaca32919e000b236de2",
-      "runId": 42449178631,
-      "runNumber": 2283,
-      "sourceSha": "c70352004ab580274656a80d69bb166c4da8ed9f",
-      "sourceTree": "1f9588ca5df0b02d325b87ccbe9372c981c27e44",
-      "decision": "PASS_RUN2283_DEV_TECHNICAL__FAIL_SHOPPER_CERT_FALSE_COMPLETION",
-      "artifactId": 13604439780,
-      "artifactDigest": "sha256:19428e88279b291ce22dcf7f603d63d40a615993499beab674eb4cf81bd98f63",
+      "kind": "GITHUB_ACTIONS_C3_PRETERMINAL_NOT_CERTIFICATE",
+      "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43259558323",
+      "runId": 43259558323,
+      "runNumber": 2453,
+      "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+      "sourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
+      "decision": "HOLD_C3_PRETERMINAL_SOURCE_EVIDENCE_PENDING",
+      "artifactId": 13964001743,
+      "artifactDigest": "sha256:ede96b648c5411899d367f757f954fbd0d10f352861a65d7bce3948fceaac971",
+      "terminalCertified": false,
       "production": false
     },
-    "sourceSha": "959a40504e76b69bb2f175a5afbbcc8591b71964",
-    "sourceTree": "13fdb8cda4137b54cd64cd4a21219bca01df1014",
+    "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+    "sourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
     "production": false
   },
   "currentControlCorrection": {
@@ -11820,7 +11827,7 @@
     "production": "DO_NOT_TOUCH",
     "actualCertificationsUnchanged": true
   },
-  "activeBlocker": "C3_81_PATH_BOUND_SOURCE_PROOF_GAPS_56_OWNER_PROOF_25_BLOB_PROVENANCE_0_MAPPING__6_SOURCE_READY_NOT_NEW_TERMINAL_MATCH__B1_B3_INTEGRAL_PENDING__B8_FINANCE_ACK_PENDING__B9_GATE20_GATE21_HOLD__B4_B7_PASS_PRESERVED",
+  "activeBlocker": "C3_68_PATH_BOUND_SOURCE_PROOF_GAPS_52_OWNER_PROOF_16_BLOB_PROVENANCE_0_MAPPING__6_SOURCE_READY_NOT_NEW_TERMINAL_MATCH__B1_B3_INTEGRAL_PENDING__B8_FINANCE_ACK_PENDING__B9_GATE20_GATE21_HOLD__B4_B7_PASS_PRESERVED",
   "v597QaVoidCanonicalContinuity": {
     "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V597_2026-11-08.json",
     "gitBlob": "e77a25664f5d75e9f9d75985b833111f75a97fb6",
