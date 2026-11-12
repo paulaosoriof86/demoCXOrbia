@@ -62,6 +62,15 @@ if(!continuityReadback.pass)fail('MAPPING_FAILURE:SHOCK_CONTINUITY',continuityRe
 const mtSource=String(mt?.productSource?.sha||mt?.productSourceSha||'');
 const modules=Array.isArray(mt?.modules)?mt.modules:[];
 const domains=modules.map(x=>String(x?.domain||'')).filter(Boolean);
+const c3=d.currentC3PreterminalAudit||{};
+if(JSON.stringify(mt.currentC3PreterminalAudit||null)!==JSON.stringify(c3)||
+   c3.moduleCount!==modules.length||c3.matchModules!==modules.filter(x=>x.classification==='MATCH').length||
+   c3.sourceSha!==d.productSourceSha||c3.sourceTree!==d.productTreeAuthority)
+  fail('RELEASE_COMPOSITION_FAILURE:CURRENT_C3_MATRIX_AUDIT_DESYNC');
+if(!/^[a-f0-9]{40}$/.test(String(c3.controlHeadAtAudit||'')))
+  fail('SOURCE_FAILURE:CURRENT_C3_CONTROL_PARENT_MISSING');
+try{execFileSync('git',['merge-base','--is-ancestor',c3.controlHeadAtAudit,'HEAD']);}
+catch{fail('RELEASE_COMPOSITION_FAILURE:CURRENT_C3_CONTROL_HEAD_NOT_ANCESTOR');}
 const moduleTruthReadback={
   path:moduleTruthPath,sourceSha:mtSource,expectedSourceSha:d.productSourceSha,
   sourceAligned:mtSource===d.productSourceSha,

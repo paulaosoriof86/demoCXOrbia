@@ -59,6 +59,25 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
   check(Boolean(seal?.runtimeRevision)&&currentDev.runtimeRevision===seal.runtimeRevision&&phaseLock.devRuntime===seal.runtimeRevision,'CURRENT_PHASE_LOCK_DEV_RUNTIME_DESYNC');
   check(Boolean(seal?.hostingVersion)&&currentDev.hostingVersion===seal.hostingVersion&&phaseLock.devHosting===(hostingOnlyServing?hosting.hostingVersion:seal.hostingVersion),'CURRENT_PHASE_LOCK_DEV_HOSTING_DESYNC');
   check(Boolean(seal?.sourceSha)&&currentDev.sourceSha===seal.sourceSha&&phaseLock.sourceSha===((pendingServing||hostingOnlyServing)?source:seal.sourceSha),'CURRENT_PHASE_LOCK_PRODUCT_SOURCE_DESYNC');
+  // The current 21-domain C3 audit is distinct from archived 20-domain
+  // terminal evidence. A stale lastModuleTruthProof previously survived every
+  // canonical CI run and caused later conversations to re-enter old gates.
+  const c3=d?.currentC3PreterminalAudit||{};
+  const sameProof=JSON.stringify(c3)===JSON.stringify(p?.currentC3PreterminalAudit||null)&&
+    JSON.stringify(c3)===JSON.stringify(l?.currentC3PreterminalAudit||null);
+  const currentlyServedHosting=hostingOnlyServing?hosting.hostingVersion:seal.hostingVersion;
+  check(sameProof&&c3.schemaVersion==='cxorbia.i3.current-c3-preterminal-audit.v1'&&
+    Number.isInteger(c3.runId)&&c3.runId>0&&
+    c3.moduleCount===21&&c3.matchModules>=0&&c3.matchModules<=21&&
+    c3.sourceReadyModules>=0&&c3.sourceReadyModules<=21&&
+    Array.isArray(c3.sourceReadyDomainNames)&&c3.sourceReadyDomainNames.length===c3.sourceReadyModules&&
+    c3.pendingFiles>=0&&c3.sourceSha===source&&c3.sourceTree===tree&&
+    c3.hostingVersion===currentlyServedHosting&&c3.runtimeRevision===seal.runtimeRevision&&
+    c3.production===false&&/^(HOLD|PASS)_/.test(c3.decision||'')&&
+    JSON.stringify(d?.lastModuleTruthProof||null)===JSON.stringify(c3)&&
+    JSON.stringify(l?.lastModuleTruthProof||null)===JSON.stringify(c3)&&
+    JSON.stringify(l?.c3PreterminalProof||null)===JSON.stringify(c3),
+    'CURRENT_C3_PROOF_DESYNC');
   check(Boolean(d?.updatedAt)&&d.updatedAt===p?.updatedAt&&p.updatedAt===l?.updatedAt,'CURRENT_CONTROL_UPDATED_AT_DESYNC');
   return {pass:failures.length===0,failures,findingCount:count,nextFindingId:next,ledgerPath,sourceSha:source,devRunId:seal?.runId||null};
 }
