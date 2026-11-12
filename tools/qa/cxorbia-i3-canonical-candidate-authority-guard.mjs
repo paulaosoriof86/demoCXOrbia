@@ -62,6 +62,8 @@ if(!continuityReadback.pass)fail('MAPPING_FAILURE:SHOCK_CONTINUITY',continuityRe
 const mtSource=String(mt?.productSource?.sha||mt?.productSourceSha||'');
 const modules=Array.isArray(mt?.modules)?mt.modules:[];
 const domains=modules.map(x=>String(x?.domain||'')).filter(Boolean);
+if(String(mt.exactNextAction||'')!==d.exactNextAction||String(mt.nextExactAction||'')!==d.exactNextAction)
+  fail('MAPPING_FAILURE:CURRENT_MODULE_TRUTH_NEXT_ACTION_DESYNC');
 const c3=d.currentC3PreterminalAudit||{};
 if(JSON.stringify(mt.currentC3PreterminalAudit||null)!==JSON.stringify(c3)||
    c3.moduleCount!==modules.length||c3.matchModules!==modules.filter(x=>x.classification==='MATCH').length||

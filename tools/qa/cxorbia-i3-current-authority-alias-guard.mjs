@@ -75,6 +75,7 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
     c3.hostingVersion===currentlyServedHosting&&c3.runtimeRevision===seal.runtimeRevision&&
     c3.production===false&&/^(HOLD|PASS)_/.test(c3.decision||'')&&
     JSON.stringify(d?.lastModuleTruthProof||null)===JSON.stringify(c3)&&
+    JSON.stringify(d?.c3PreterminalProof||null)===JSON.stringify(c3)&&
     JSON.stringify(l?.lastModuleTruthProof||null)===JSON.stringify(c3)&&
     JSON.stringify(l?.c3PreterminalProof||null)===JSON.stringify(c3),
     'CURRENT_C3_PROOF_DESYNC');
