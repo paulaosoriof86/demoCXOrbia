@@ -329,7 +329,7 @@
       "E04",
       "F09"
     ],
-    "immediateAction": "VRM-328 focal Chrome DEV E2E PASS Stiven Mi Perfil/Mis Visitas Activas 0/0 y Julissa 1/1; receipt docs/checkpoints/CXORBIA_I3_VRM328_CHROME_TWO_SHOPPERS_DEV_E2E_20261111.json; no repetir esta prueba. Siguiente exacto B8: cruzar por visitId/liquidacionId el pago de septiembre del 31-oct (3 visitas muestreadas aparecen pendientes); no asentar pagos sin ACK. Revisar sólo Recursos Admin (PDF Shopper funciona). Continuar residuales B1/B2/B3/B8/B9 de los 16 dominios sin MATCH, con pruebas por rol, HR viva independiente y aceptación humana; conservar B4-B7 PASS. Total estricto 5/21, Gate20/21 HOLD, I4 no autorizado, producción DO_NOT_TOUCH.",
+    "immediateAction": "RUN2441 C3 sobre source e2458f44 / DEV Hosting 8dea7025 confirma 21 dominios, 5 MATCH, sólo 1 con fuente íntegra acreditada y 87 owner files por resolver (59 prueba vigente, 27 procedencia del blob, 1 mapeo app/core/backend-ai.js). No confundir RUN success con certificación: C3 HOLD. Conservar E2E focal Shopper Stiven/Julissa PASS (VRM-328) y B4-B7 PASS; no repetir sin drift. Siguiente acción exacta: adjudicar mapeo activo backend-ai.js y cruzar por owner/path/hash las 86 acreditaciones restantes contra evidencia aprobada, re-probar sólo casos impactados en DEV por rol/HR externa, certificar módulos sin promoción ficticia y mantener B8 cruce visitId/liquidacionId pago 31-oct sin asentar pago sin ACK. Recursos Admin focal pendiente; B1-B3 integrales, B9/Gate20/21 HOLD. I4 sin autorización; producción DO_NOT_TOUCH.",
     "noProduction": true
   },
   "currentModuleEvidenceOverrides": {
