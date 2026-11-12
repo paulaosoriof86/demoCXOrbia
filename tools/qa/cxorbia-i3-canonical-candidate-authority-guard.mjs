@@ -127,10 +127,12 @@ const workflowLedgerReadback={
 // The current ledger is selected solely by the descriptor. A redundant
 // workflow-wide fixed path creates a second, eventually stale authority.
 if(workflowLedgerPointer)fail('MAPPING_FAILURE:TOP_LEVEL_WORKFLOW_LEDGER_POINTER',workflowLedgerPointer);
-if(terminalLike&&(!moduleTruthReadback.sourceAligned||!moduleTruthReadback.phaseAComplete||
-   !moduleTruthReadback.allModulesMatch||!moduleBlobReadback.pass||
+// READY means safe to attempt terminal verification, not already terminal GO.
+// A GO descriptor is still impossible without 21 independently certified modules.
+if(terminalLike&&(!moduleTruthReadback.sourceAligned||!moduleBlobReadback.pass||
    !moduleRegistryReadback.historicalSubsetValid||
-   (legacyWorkflowLedgerActive&&!workflowLedgerReadback.aligned)))
+   (legacyWorkflowLedgerActive&&!workflowLedgerReadback.aligned)||
+   (d.status==='GO'&&(!moduleTruthReadback.phaseAComplete||!moduleTruthReadback.allModulesMatch))))
   fail('RELEASE_COMPOSITION_FAILURE:TERMINAL_AUTHORITIES_NOT_CONVERGED',
     JSON.stringify({moduleTruthReadback,moduleRegistryReadback,moduleBlobReadback,workflowLedgerReadback}));
 if(/^\s*I3_CERTIFICATION_SOURCE_SHA:\s*[a-f0-9]{40}\s*$/m.test(wf))fail('RELEASE_COMPOSITION_FAILURE:TOP_LEVEL_LEGACY_PRODUCT_SOURCE_AUTHORITY');

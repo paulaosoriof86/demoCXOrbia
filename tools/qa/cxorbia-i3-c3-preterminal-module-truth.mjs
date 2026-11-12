@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {assertCanonicalModuleCoverage} from './cxorbia-i3-terminal-module-domain-coverage.mjs';
+import {assessPreterminalSourceReadiness} from './cxorbia-i3-preterminal-source-readiness.mjs';
 
 const descriptor=JSON.parse(fs.readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8'));
 const TEMPLATE=process.env.TEMPLATE||descriptor.moduleTruthPath;
@@ -183,6 +184,8 @@ if(overlay?.path){
   if(oi<0||ci<0||oi>=ci)throw new Error('RELEASE_COMPOSITION_FAILURE:SUPERSEDED_OVERLAY_ORDER');
 }
 
+const readiness=assessPreterminalSourceReadiness({modules,sourceFiles,pendingMappingApprovalFiles:mappingPending.map(x=>x.path),pendingBlobProvenanceFiles:pendingProvenance,unauthorizedFileCount:unauthorized.length});
+
 const out={...m,
   schemaVersion:'cxorbia.recovery.module-truth-matrix.v8-preterminal-21',
   generatedAt:new Date().toISOString(),
@@ -206,7 +209,10 @@ const out={...m,
     pendingServedOwnerProofFiles:sourceFiles.filter(x=>x.classification==='PENDING_OWNER_PROOF_SERVED').map(x=>x.path),
     pendingBlobProvenanceFiles:pendingProvenance,
     pendingMappingApprovalFiles:mappingPending.map(x=>x.path),
-    terminalEligible:modules.every(x=>x.classification==='MATCH')&&uncoveredFiles.length===0,
+    terminalEligible:readiness.terminalEligible,
+    sourceReadyModules:readiness.sourceReadyModules,
+    sourceReadyModuleCount:readiness.sourceReadyModuleCount,
+    sourceReadinessBlockers:readiness.blockers,
     modulesWithCurrentOwnerProof:modules.filter(x=>x.currentOwnerProofStatus==='PATH_BOUND_OWNER_PROVEN').map(x=>x.domain),
     historicalModuleMatchesPreserved:modules.filter(x=>x.historicalMatchPreserved).map(x=>x.domain),
     unauthorizedFileCount:0,
@@ -229,5 +235,6 @@ console.log(JSON.stringify({
   pendingMappingApprovalCount:out.preTerminalComposition.pendingMappingApprovalFiles.length,
   pendingBlobProvenanceCount:out.preTerminalComposition.pendingBlobProvenanceFiles.length,
   terminalEligible:out.preTerminalComposition.terminalEligible,
+  sourceReadyModuleCount:out.preTerminalComposition.sourceReadyModuleCount,
   production:false
 },null,2));

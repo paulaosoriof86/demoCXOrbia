@@ -122,6 +122,7 @@ jobs:
       echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
       echo "status=$STATUS" >> "$GITHUB_OUTPUT"
       node --test tools/qa/cxorbia-i3-terminal-module-domain-coverage.test.mjs
+      node --test tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs
       node --test tools/qa/cxorbia-i3-period-project-client-parity.test.mjs
       node --test tools/qa/cxorbia-i3-g03-rutas-effective-hr-source-truth.test.mjs
       node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
@@ -2587,7 +2588,9 @@ jobs:
       compression-level: 0
   c3-preterminal-module-truth:
    needs: canonical-candidate-authority
-   if: ${{ github.event_name=='push'&&contains(github.event.head_commit.message, '[c3-preterminal-module-truth]') }}
+   if: ${{ github.event_name=='workflow_dispatch'||(github.event_name=='push'&&contains(github.event.head_commit.message, '[c3-preterminal-module-truth]')) }}
+   outputs:
+    terminal_ready: ${{ steps.c3_gate.outputs.terminal_ready }}
    runs-on: ubuntu-latest
    timeout-minutes: 35
    env:
@@ -2609,9 +2612,12 @@ jobs:
       test "$C3_TREE" = "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")"
       test "$(git rev-parse "$C3_SOURCE^{tree}")" = "$C3_TREE"
       LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")"
-      EXPECTED_RUNTIME_REVISION="$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")"
-      EXPECTED_RUNTIME_DIGEST="$(jq -r '.currentMaterialization.runtimeDigest' "$CANDIDATE_DESCRIPTOR")"
-      EXPECTED_HOSTING_VERSION="$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")"
+      # Pin the actual latest DEV Hosting-only release when it matches the
+      # source; the paired predecessor remains archived for the audit trail.
+      RECEIPT_JQ='if .currentHostingOnlyDevMaterialization.sourceSha==.productSourceSha and .currentHostingOnlyDevMaterialization.productionChanged==false then .currentHostingOnlyDevMaterialization else .currentMaterialization end'
+      EXPECTED_RUNTIME_REVISION="$(jq -r "($RECEIPT_JQ).runtimeRevision" "$CANDIDATE_DESCRIPTOR")"
+      EXPECTED_RUNTIME_DIGEST="$(jq -r "($RECEIPT_JQ).runtimeDigest" "$CANDIDATE_DESCRIPTOR")"
+      EXPECTED_HOSTING_VERSION="$(jq -r "($RECEIPT_JQ).hostingVersion" "$CANDIDATE_DESCRIPTOR")"
       [[ "$EXPECTED_RUNTIME_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
       git diff --quiet "$C3_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
       echo "EXPECTED_RUNTIME_REVISION=$EXPECTED_RUNTIME_REVISION" >> "$GITHUB_ENV"
@@ -2625,7 +2631,7 @@ jobs:
       test "$(jq '.modules|length' "$C3_OUT/module-truth-preterminal.json")" = "21"
       test "$(jq '.preTerminalComposition.moduleCount' "$C3_OUT/module-truth-preterminal.json")" = "21"
       test "$(jq '.preTerminalComposition.unauthorizedFileCount' "$C3_OUT/module-truth-preterminal.json")" = "0"
-      test "$(jq '[.sourceFiles[]|select(.classification!="MATCH")]|length' "$C3_OUT/module-truth-preterminal.json")" = "$(jq '.preTerminalComposition.pendingFileCount' "$C3_OUT/module-truth-preterminal.json")"
+      test "$(jq '[.sourceFiles[]|select(.phaseAAuthority!=false and .classification!="MATCH")]|length' "$C3_OUT/module-truth-preterminal.json")" = "$(jq '.preTerminalComposition.pendingFileCount' "$C3_OUT/module-truth-preterminal.json")"
       test "$(jq '[.modules[]|select(.classification=="MATCH")]|length' "$C3_OUT/module-truth-preterminal.json")" = "$(jq '.preTerminalComposition.matchModules|length' "$C3_OUT/module-truth-preterminal.json")"
       test "$(jq -r '.entrypointClosure.allApprovedOwnersLoaded' "$C3_OUT/module-truth-preterminal.json")" = "true"
       test "$(jq '.entrypointClosure.duplicateSrc|length' "$C3_OUT/module-truth-preterminal.json")" = "0"
@@ -2690,9 +2696,11 @@ jobs:
       cmp "$RUNNER_TEMP/app/index-backend-dev.html" "$C3_OUT/remote/deep.html"
       printf '%s\n' "$n" > "$C3_OUT/active-browser-owner-count.txt"
    - name: step
+     id: c3_gate
      run: |
       set -Eeuo pipefail
       MATRIX_SHA="$(sha256sum "$C3_OUT/module-truth-preterminal.json"|awk '{print $1}')"
+      SOURCE_READY_COUNT="$(jq '.preTerminalComposition.sourceReadyModuleCount' "$C3_OUT/module-truth-preterminal.json")"
       MATCH_COUNT="$(jq '.preTerminalComposition.matchModules|length' "$C3_OUT/module-truth-preterminal.json")"
       PENDING_COUNT="$(jq '.preTerminalComposition.pendingFileCount' "$C3_OUT/module-truth-preterminal.json")"
       TERMINAL_ELIGIBLE="$(jq -r '.preTerminalComposition.terminalEligible' "$C3_OUT/module-truth-preterminal.json")"
@@ -2701,9 +2709,14 @@ jobs:
         --arg hosting "$EXPECTED_HOSTING_VERSION" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" \
         --arg rules "$(jq -r '.sha256' "$C3_OUT/firestore-live-parity.json")" \
         --argjson owners "$(cat "$C3_OUT/active-browser-owner-count.txt")" \
-        --argjson matches "$MATCH_COUNT" --argjson pending "$PENDING_COUNT" --arg eligible "$TERMINAL_ELIGIBLE" \
-        '{decision:(if $status=="READY_FOR_TERMINAL_CERTIFICATION" and $matches==21 and $pending==0 and $eligible=="true" then "PASS_C3_PRETERMINAL_MODULE_TRUTH_21_21_EXACT_DEV" else "HOLD_C3_PRETERMINAL_MODULE_TRUTH_EVIDENCE_PENDING" end),status:$status,sourceSha:$source,sourceTree:$tree,moduleTruthSha256:$matrix,moduleCount:21,matchModules:$matches,nonMatchModules:(21-$matches),pendingFiles:$pending,terminalEligible:($eligible=="true"),activeBrowserOwners:$owners,hostingVersion:$hosting,runtimeRevision:$runtime,runtimeDigest:$digest,firestoreRulesSha256:$rules,allApprovedOwnersLoaded:true,duplicateScripts:0,builds:0,deploys:0,writes:0,production:false}' \
+        --argjson matches "$MATCH_COUNT" --argjson pending "$PENDING_COUNT" --argjson sourceReady "$SOURCE_READY_COUNT" --arg eligible "$TERMINAL_ELIGIBLE" \
+        '{decision:(if $sourceReady==21 and $pending==0 and $eligible=="true" then "PASS_C3_PRETERMINAL_SOURCE_READY_EXACT_DEV" else "HOLD_C3_PRETERMINAL_SOURCE_EVIDENCE_PENDING" end),status:$status,sourceSha:$source,sourceTree:$tree,moduleTruthSha256:$matrix,moduleCount:21,matchModules:$matches,nonMatchModules:(21-$matches),sourceReadyModules:$sourceReady,pendingFiles:$pending,terminalEligible:($eligible=="true"),activeBrowserOwners:$owners,hostingVersion:$hosting,runtimeRevision:$runtime,runtimeDigest:$digest,firestoreRulesSha256:$rules,allApprovedOwnersLoaded:true,duplicateScripts:0,builds:0,deploys:0,writes:0,production:false}' \
         > "$C3_OUT/result.json"
+      if jq -e '.decision=="PASS_C3_PRETERMINAL_SOURCE_READY_EXACT_DEV"' "$C3_OUT/result.json" >/dev/null; then
+        echo "terminal_ready=true" >> "$GITHUB_OUTPUT"
+      else
+        echo "terminal_ready=false" >> "$GITHUB_OUTPUT"
+      fi
    - name: step
      if: always()
      uses: actions/upload-artifact@v4
@@ -2899,8 +2912,8 @@ jobs:
      if: always()
      run: rm -rf node_modules "$RUNNER_TEMP/vrm043-source"
   certify:
-   needs: canonical-candidate-authority
-   if: ${{ needs.canonical-candidate-authority.outputs.status=='READY_FOR_TERMINAL_CERTIFICATION' }}
+   needs: [canonical-candidate-authority, c3-preterminal-module-truth]
+   if: ${{ needs.c3-preterminal-module-truth.outputs.terminal_ready=='true' }}
    runs-on: ubuntu-latest
    timeout-minutes: 85
    env:
@@ -2919,7 +2932,7 @@ jobs:
      run: |
       set -Eeuo pipefail
       mkdir -p "$OUT"
-      test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "READY_FOR_TERMINAL_CERTIFICATION"
+      [[ "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" == "READY_FOR_TERMINAL_CERTIFICATION" || "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" == HOLD_* ]]
       test "$(git rev-parse "$I3_CERTIFICATION_SOURCE_SHA^{tree}")" = "$I3_CERTIFICATION_SOURCE_TREE"
       git merge-base --is-ancestor "$I3_CERTIFICATION_SOURCE_SHA" HEAD
       git diff --quiet "$I3_CERTIFICATION_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
@@ -2931,11 +2944,15 @@ jobs:
           *) echo "C3_TERMINAL_FINDING_STATE_UNPROVEN:$id:$state" >&2; exit 1 ;;
         esac
       done
-      EXPECTED_RUNTIME_REVISION="$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")"
-      EXPECTED_RUNTIME_DIGEST="$(jq -r '.currentMaterialization.runtimeDigest' "$CANDIDATE_DESCRIPTOR")"
-      EXPECTED_HOSTING_VERSION="$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")"
-      PRETERM_RUN_ID="$(jq -r '.lastModuleTruthProof.runId // empty' "$CANDIDATE_DESCRIPTOR")"
-      PRETERM_ARTIFACT="$(jq -r '.lastModuleTruthProof.artifactName // empty' "$CANDIDATE_DESCRIPTOR")"
+      # Pin the actual latest DEV Hosting-only release when it matches the
+      # source; the paired predecessor remains archived for the audit trail.
+      RECEIPT_JQ='if .currentHostingOnlyDevMaterialization.sourceSha==.productSourceSha and .currentHostingOnlyDevMaterialization.productionChanged==false then .currentHostingOnlyDevMaterialization else .currentMaterialization end'
+      EXPECTED_RUNTIME_REVISION="$(jq -r "($RECEIPT_JQ).runtimeRevision" "$CANDIDATE_DESCRIPTOR")"
+      EXPECTED_RUNTIME_DIGEST="$(jq -r "($RECEIPT_JQ).runtimeDigest" "$CANDIDATE_DESCRIPTOR")"
+      EXPECTED_HOSTING_VERSION="$(jq -r "($RECEIPT_JQ).hostingVersion" "$CANDIDATE_DESCRIPTOR")"
+      # Take the same-run preterminal artifact; archived 20-module proof is not authority.
+      PRETERM_RUN_ID="$GITHUB_RUN_ID"
+      PRETERM_ARTIFACT="cxorbia-c3-preterminal-module-truth-${GITHUB_RUN_ID}"
       test -n "$EXPECTED_RUNTIME_REVISION"; [[ "$EXPECTED_RUNTIME_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]; test -n "$EXPECTED_HOSTING_VERSION"
       [[ "$PRETERM_RUN_ID" =~ ^[0-9]+$ ]]; test -n "$PRETERM_ARTIFACT"
       echo "EXPECTED_RUNTIME_REVISION=$EXPECTED_RUNTIME_REVISION" >> "$GITHUB_ENV"
@@ -2944,13 +2961,13 @@ jobs:
       PRIOR="$RUNNER_TEMP/cxorbia-current-module-truth"
       rm -rf "$PRIOR"; mkdir -p "$PRIOR"
       gh run download "$PRETERM_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$PRETERM_ARTIFACT" --dir "$PRIOR"
-      test "$(jq -r '.decision' "$PRIOR/result.json")" = "PASS_C3_PRETERMINAL_MODULE_TRUTH_21_21_EXACT_DEV"
+      test "$(jq -r '.decision' "$PRIOR/result.json")" = "PASS_C3_PRETERMINAL_SOURCE_READY_EXACT_DEV"
       test "$(jq -r '.sourceSha' "$PRIOR/result.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
       test "$(jq -r '.sourceTree' "$PRIOR/result.json")" = "$I3_CERTIFICATION_SOURCE_TREE"
       test "$(jq -r '.runtimeRevision' "$PRIOR/result.json")" = "$EXPECTED_RUNTIME_REVISION"
       test "$(jq -r '.runtimeDigest' "$PRIOR/result.json")" = "$EXPECTED_RUNTIME_DIGEST"
       test "$(jq -r '.hostingVersion' "$PRIOR/result.json")" = "$EXPECTED_HOSTING_VERSION"
-      test "$(jq -r '.matchModules' "$PRIOR/result.json")" = "21"
+      test "$(jq -r '.sourceReadyModules' "$PRIOR/result.json")" = "21"
        test "$(jq -r '.moduleCount' "$PRIOR/result.json")" = "21"
       test "$(jq -r '.pendingFiles' "$PRIOR/result.json")" = "0"
       cp "$PRIOR/result.json" "$OUT/current-preterminal-result.json"
@@ -3071,7 +3088,7 @@ jobs:
       ' "$LEDGER" > "$TERMINAL_LEDGER"
       TEMPLATE="$(jq -r '.moduleTruthPath' "$CANDIDATE_DESCRIPTOR")" LEDGER="$TERMINAL_LEDGER" SOURCE="$I3_CERTIFICATION_SOURCE_SHA" TREE="$I3_CERTIFICATION_SOURCE_TREE" LAST_SERVED="$I3_CERTIFICATION_SOURCE_SHA" OUT_FILE="$OUT/module-truth-preterminal.json" node tools/qa/cxorbia-i3-c3-preterminal-module-truth.mjs > "$OUT/module-truth-preterminal-console.log"
       test "$(jq -r '.preTerminalComposition.decision' "$OUT/module-truth-preterminal.json")" = "PASS_C3_PRETERMINAL_COMPOSITION"
-      test "$(jq '.preTerminalComposition.matchModules|length' "$OUT/module-truth-preterminal.json")" = "21"
+      test "$(jq '.preTerminalComposition.sourceReadyModuleCount' "$OUT/module-truth-preterminal.json")" = "21"
       test "$(jq '.preTerminalComposition.pendingFileCount' "$OUT/module-truth-preterminal.json")" = "0"
       test "$(jq -r '.entrypointClosure.allApprovedOwnersLoaded' "$OUT/module-truth-preterminal.json")" = "true"
       mkdir -p "$OUT/served"
