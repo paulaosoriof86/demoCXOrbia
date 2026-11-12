@@ -329,7 +329,7 @@
       "E04",
       "F09"
     ],
-    "immediateAction": "RUN2453 C3 verificado en GitHub contra DEV exacto: 21 dominios, 5 MATCH historicos, 6 source-ready, 68 rutas pendientes (16 procedencias, 52 owner, 0 mapeo); seis receipts Q2 se preservaron sin autoaprobar modulos. I3-Q2 continuar rutas con QA exacta; I3-Q3 B1/B3/B10 y B9 E2E; I3-Q4 B8 ACK pagos; I3-Q5 56 rutas; I3-Q6 Gate20/21 mismo artefacto. B4-B7 PASS; I3 HOLD; I4 NO AUTORIZADA; produccion DO_NOT_TOUCH.",
+    "immediateAction": "RUN2458 source QA 6/6 PASS en dos archivos financieros exactos ya servidos DEV; C3 debe recalcular 68 rutas pendientes previas antes de acreditar la reduccion. 5/21 MATCH y 6/21 source-ready anteriores; B4-B7 PASS. I3-Q2 fuentes y Q3-Q5 E2E Admin/Shopper/HR/ACK; Q6 Gate20/21 HOLD; I4 NO AUTORIZADA; produccion DO_NOT_TOUCH.",
     "noProduction": true
   },
   "currentModuleEvidenceOverrides": {
