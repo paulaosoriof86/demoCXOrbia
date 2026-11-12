@@ -1,0 +1,137 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm328.chrome-two-shoppers-dev-e2e.v1",
+  "localDate": "2026-11-11",
+  "timeZone": "America/Guatemala",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadBeforeReceipt": "8815bf9d04e1d729bc3192a9e40f631936a22071",
+  "productSourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+  "productSourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
+  "hostingDevVersion": "sites/cxorbia-backend-dev/versions/8dea702589084bcf",
+  "backendRuntimeUnchanged": "cxorbia-live-hr-dev-00370-fl2",
+  "project": "Cinépolis",
+  "period": "NOV 2026",
+  "environment": "CONNECTED_CHROME_EXTENSION_AUTHENTICATED_SHOPPER_DEV",
+  "navigationEvidence": "Live browser accessibility DOM snapshots after successful sign-in and route/filter interactions; not a source-code-only simulation.",
+  "scope": "VRM-328 focal B2/B3 active-versus-history projection and adjacent shopper read-only regressions for two distinct actors",
+  "findingId": "VRM-328",
+  "rootOwner": "app/adapters/tya-canonical-shopper-portal-v2.js",
+  "before": {
+    "actor": "Stiven López",
+    "behavior": "Predecessor DEV displayed a completed/submitted November visit in Mi Perfil Activas 1 while Mis Visitas Activas 0.",
+    "codeRootCause": "Profile active selector omitted the submitted exclusion."
+  },
+  "after": {
+    "rule": "Active profile visit requires assigned AND not submitted, matching Mis Visitas, without user-specific conditional.",
+    "browserCrossActorProof": "Stiven active 0 in both modules; Julissa active 1 in both modules, with different personal history counts."
+  },
+  "actors": [
+    {
+      "displayName": "Stiven López",
+      "actorType": "Shopper",
+      "country": "GT",
+      "login": "PASS_EXISTING_CREDENTIALS_DEV_ONLY",
+      "miPerfil": {
+        "visits": 10,
+        "completed": 10,
+        "submitted": 10,
+        "paidConfirmed": 5,
+        "activeFilterCount": 0,
+        "activeFilterRows": 0
+      },
+      "misVisitas": {
+        "activeCount": 0,
+        "historyCount": 10,
+        "activePanel": "No tienes visitas activas en este momento",
+        "historyIncludes": "NOV 2026 C. Naranjo Mall submitted 2026-11-04; OCT and SEP submissions preserved"
+      },
+      "periodSwitch": "NOV to OCT to NOV: history 10 and active 0 preserved",
+      "certification": "Approved 100 percent Nov 7 retained; prior QA and unsuccessful attempts retained; bank of 15 questions visible",
+      "projectResources": "Instructivo Shopper Cinepolis PDF listed and opened through protected in-platform PDF reader; page 1 of 7 displayed",
+      "benefits": {
+        "novemberCurrent": "1 submitted visit; Q60 honorario plus Q173 reembolso = Q233, pending payment confirmation",
+        "historicalPaidConfirmed": 5,
+        "septemberMissingConfirmedPayment": [
+          "MC. El Frutal, 2026-09-28",
+          "C. Sankris Mall, 2026-09-27"
+        ]
+      }
+    },
+    {
+      "displayName": "Julissa Flores",
+      "actorType": "Shopper",
+      "country": "GT",
+      "login": "PASS_EXISTING_CREDENTIALS_DEV_ONLY",
+      "miPerfil": {
+        "visits": 10,
+        "completed": 9,
+        "submitted": 9,
+        "paidConfirmed": 7,
+        "activeFilterCount": 1,
+        "activeFilterRows": 1,
+        "activeRow": "NOV 2026 C. Sankris Mall WEB San Cristobal, Agendada 2026-11-12, GT"
+      },
+      "misVisitas": {
+        "activeCount": 1,
+        "historyCount": 9,
+        "activeVisit": "C. Sankris Mall WEB, San Cristobal GT, agendada 2026-11-12, honorario Q60",
+        "availability": "Disponible el 2026-11-12; action disabled on Nov 11",
+        "readOnlySteps": "Viewed active visit and state timeline, did not reprogram, check in or cancel"
+      },
+      "certification": "Approved 100 percent Nov 10 09:38:06 retained with remote ACK and period continuity; published bank selectable; no certification submitted during proof",
+      "projectResources": "1 Instructivo Shopper Cinepolis PDF resource listed, Abrir enabled",
+      "benefits": {
+        "novemberCurrentCount": 0,
+        "historicalBenefitCount": 9,
+        "historicalPaidConfirmed": 7,
+        "septemberMissingConfirmedPayment": "MC. Santa Clara, 2026-09-09, Q60 honorario plus Q135 reembolso = Q195; displayed Pend. cruce financiero / Pendiente de confirmacion",
+        "october": "C. Miraflores, 2026-10-14, Q205, pending confirmation"
+      }
+    }
+  ],
+  "regressionOutcome": {
+    "authentication": "PASS_2_OF_2",
+    "miPerfilActiveVsMisVisitasActive": "PASS_2_OF_2",
+    "separateActorHistory": "PASS_2_OF_2",
+    "historicalCertificationPersistenceRead": "PASS_2_OF_2",
+    "resourcesNavigation": "PASS_2_OF_2",
+    "stivenProtectedPdfOpen": "PASS_1_OF_1",
+    "businessMutations": 0,
+    "paymentMutations": 0,
+    "hrWrites": 0,
+    "firebaseBusinessWritesInitiated": 0,
+    "productionTouched": false
+  },
+  "newRelatedB8Evidence": {
+    "classification": "PENDING_PROVIDER_RECONCILIATION_NOT_AUTOCLASSIFIED_AS_PRODUCT_BUG",
+    "priorHumanDecision": "Paula stated all September shopper visits were paid on 2026-10-31.",
+    "november11DevObservation": "Three sampled September submitted visits, two for Stiven and one for Julissa, still display unconfirmed payment.",
+    "requiredNextEvidence": "Identify exact Oct 31 payment batch / bank provider ACK and reconcile against immutable visit and benefit IDs before confirming or changing payment state.",
+    "paymentBackfillAuthorizedOrPerformed": false
+  },
+  "otherReadback": {
+    "adminResourcesPredecessor": "Admin route showed module in construction during earlier read-only Chrome proof.",
+    "shopperResourcesCurrent": "Both shoppers show a real PDF resource; Stiven opened it in protected reader.",
+    "interpretation": "Admin-specific routing/registration discrepancy remains scoped and unproven; do not claim Recursos unavailable for shoppers."
+  },
+  "tooling": {
+    "chromeSession": "Connected Chrome extension",
+    "oneTransientSnapshotTimeout": "Occurred after initial Julissa login; recovered with tab list and fresh route snapshots, without modifying product or classifying an application defect.",
+    "credentialsPersistedInReceipt": false,
+    "tinyFish": "NOT_RUN_IN_THIS_SCOPE",
+    "screenCaptureSha256": "NOT_CAPTURED_IN_THIS_SCOPE",
+    "humanReceipt": "PENDING_EXPLICIT_B2_B3_INTEGRAL_ACCEPTANCE"
+  },
+  "strictModuleMatchBefore": 5,
+  "strictModuleMatchAfter": 5,
+  "strictTotal": 21,
+  "newWholeModuleCertificationClaims": 0,
+  "acceptedBlocksPreserved": ["B4", "B5", "B6", "B7"],
+  "pendingIntegralBlocks": ["B1", "B2", "B3", "B8", "B9"],
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "phaseA": "HOLD",
+  "i4Authorized": false,
+  "decision": "PASS_SCOPED_VRM328_TWO_AUTHENTICATED_SHOPPER_DEV_E2E__HOLD_INTEGRAL_HUMAN_B2_B3_21_DOMAINS_AND_B8_PAYMENT_RECONCILIATION",
+  "nextExactAction": "Preserve this readback on the existing branch, reconcile the existing September 31-Oct payment proof by exact IDs in B8, investigate Admin Recursos route without disabling working Shopper reader, then close only remaining 21-domain acceptance gates with actual evidence; no production or I4 action."
+}
