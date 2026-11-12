@@ -24125,7 +24125,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "RUN2458 source QA 6/6 PASS en dos archivos financieros exactos ya servidos DEV; C3 debe recalcular 68 rutas pendientes previas antes de acreditar la reduccion. 5/21 MATCH y 6/21 source-ready anteriores; B4-B7 PASS. I3-Q2 fuentes y Q3-Q5 E2E Admin/Shopper/HR/ACK; Q6 Gate20/21 HOLD; I4 NO AUTORIZADA; produccion DO_NOT_TOUCH.",
+  "exactNextAction": "RUN2453 C3 verificado en GitHub contra DEV exacto: 21 dominios, 5 MATCH historicos, 6 source-ready, 68 rutas pendientes (16 procedencias, 52 owner, 0 mapeo); seis receipts Q2 se preservaron sin autoaprobar modulos. I3-Q2 continuar rutas con QA exacta; I3-Q3 B1/B3/B10 y B9 E2E; I3-Q4 B8 ACK pagos; I3-Q5 56 rutas; I3-Q6 Gate20/21 mismo artefacto. B4-B7 PASS; I3 HOLD; I4 NO AUTORIZADA; produccion DO_NOT_TOUCH.",
   "supersedesGitBlob": "5d428fb23ebca021a16c66f76210cca18e7d683e",
   "vrm328TwoShopperChromeNov2026Readback": {
     "findingId": "VRM-328",
@@ -27907,7 +27907,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-11-10T06:38:06.861Z",
-  "nextExactAction": "RUN2458 source QA 6/6 PASS en dos archivos financieros exactos ya servidos DEV; C3 debe recalcular 68 rutas pendientes previas antes de acreditar la reduccion. 5/21 MATCH y 6/21 source-ready anteriores; B4-B7 PASS. I3-Q2 fuentes y Q3-Q5 E2E Admin/Shopper/HR/ACK; Q6 Gate20/21 HOLD; I4 NO AUTORIZADA; produccion DO_NOT_TOUCH.",
+  "nextExactAction": "RUN2453 C3 verificado en GitHub contra DEV exacto: 21 dominios, 5 MATCH historicos, 6 source-ready, 68 rutas pendientes (16 procedencias, 52 owner, 0 mapeo); seis receipts Q2 se preservaron sin autoaprobar modulos. I3-Q2 continuar rutas con QA exacta; I3-Q3 B1/B3/B10 y B9 E2E; I3-Q4 B8 ACK pagos; I3-Q5 56 rutas; I3-Q6 Gate20/21 mismo artefacto. B4-B7 PASS; I3 HOLD; I4 NO AUTORIZADA; produccion DO_NOT_TOUCH.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
