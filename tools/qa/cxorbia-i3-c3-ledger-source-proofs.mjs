@@ -34,7 +34,9 @@ export const collectPathBoundLedgerSourceProofs=ledger=>{
           const id=path+'|'+proof.sourceSha+'|'+proof.runId;
           if(!rows.has(id))rows.set(id,{
             path,sourceSha:proof.sourceSha,sourceTree:proof.sourceTree,
-            runId:proof.runId,decision:proof.decision,ledgerLocation:location
+            runId:proof.runId,decision:proof.decision,ledgerLocation:location,
+            ...(proof.evidencePath!==undefined?{evidencePath:proof.evidencePath}:{}),
+            ...(proof.evidenceGitBlob!==undefined?{evidenceGitBlob:proof.evidenceGitBlob}:{})
           });
         }
       }

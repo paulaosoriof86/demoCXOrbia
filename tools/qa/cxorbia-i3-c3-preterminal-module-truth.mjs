@@ -93,6 +93,16 @@ const sourceFiles=(m.sourceFiles||[]).map(orig=>{
   }
   const matchingScopedProofs=[];
   for(const proof of scopedProofsByPath.get(f.path)||[]){
+    // Newly recovered Q2 receipts are bound to their immutable in-repository
+    // evidence too. A green run number with a modified receipt cannot approve
+    // the same source byte on a later invocation.
+    if(proof.evidencePath!==undefined||proof.evidenceGitBlob!==undefined){
+      if(typeof proof.evidencePath!=='string'||!proof.evidencePath||
+         proof.evidencePath.startsWith('/')||proof.evidencePath.includes('..')||
+         !/^[a-f0-9]{40}$/.test(String(proof.evidenceGitBlob||''))||
+         safeBlob('HEAD',proof.evidencePath)!==proof.evidenceGitBlob)
+        throw new Error('MAPPING_FAILURE:C3_SCOPED_QA_RECEIPT_BLOB_DESYNC:'+proof.ledgerLocation);
+    }
     // The receipt must bind both the repository tree and this exact owner blob.
     if(git('rev-parse',proof.sourceSha+'^{tree}')!==proof.sourceTree)
       throw new Error('SOURCE_FAILURE:C3_LEDGER_PROOF_TREE_MISMATCH:'+proof.ledgerLocation);

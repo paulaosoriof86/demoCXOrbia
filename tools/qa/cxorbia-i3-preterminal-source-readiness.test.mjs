@@ -87,6 +87,15 @@ test('C3 recognizes Academy source-count QA only within its explicit owner scope
   assert.equal(proofs[0].runId,42420173152);
 });
 
+test('C3 preserves exact QA receipt file and Git blob binding for scoped Q2 evidence',()=>{
+  const q2={...validScopedProof,sourceProof:{...validScopedProof.sourceProof,
+    evidencePath:'docs/checkpoints/exact-source-qa.json',evidenceGitBlob:'d'.repeat(40)}};
+  const [proof]=collectPathBoundLedgerSourceProofs({q2});
+  assert.equal(proof.evidencePath,'docs/checkpoints/exact-source-qa.json');
+  assert.equal(proof.evidenceGitBlob,'d'.repeat(40));
+  assert.equal(proof.ledgerLocation,'q2');
+});
+
 test('C3 rejects mere green status, failing QA, wrong source, production proof and unowned paths',()=>{
   const bad={
     noReceipt:{owners:[PROOF_OWNER],sourceSha:PROOF_SHA,state:'PASS',production:false},
@@ -106,4 +115,7 @@ test('C3 preserves cumulative independent F12 and D08 receipts across control ve
   assert.ok(proofs.some(x=>x.path===PROOF_OWNER&&x.runId===39095029741&&x.ledgerLocation==='executionUpdateE04F12'));
   assert.ok(proofs.some(x=>x.path==='backend/runtime/cxorbia-academy-command-provider-v1.mjs'&&x.runId===42420173152));
   assert.ok(proofs.some(x=>x.path==='backend/contracts/cxorbia-academy-base-progress-contract-v1.json'&&x.runId===42420173152));
+  const q2=proofs.filter(x=>x.ledgerLocation.startsWith('q2ScopedSourceProofRecovery20261112.proofs.'));
+  assert.equal(q2.length,6);
+  assert.ok(q2.every(x=>x.evidencePath&&/^[a-f0-9]{40}$/.test(x.evidenceGitBlob)));
 });
