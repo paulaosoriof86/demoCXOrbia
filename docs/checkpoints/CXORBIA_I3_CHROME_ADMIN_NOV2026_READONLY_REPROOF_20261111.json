@@ -1,0 +1,134 @@
+{
+  "schemaVersion": "cxorbia.i3.chrome-admin-nov2026-readonly-reproof.v1",
+  "localDate": "2026-11-11",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadObserved": "3b7e4df73c10ce47d27012fd30cfe32644c5ba03",
+  "productSourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+  "productSourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
+  "hostingDevVersion": "sites/cxorbia-backend-dev/versions/8dea702589084bcf",
+  "pairedRuntimeRevisionUnchanged": "cxorbia-live-hr-dev-00370-fl2",
+  "environment": "CHROME_EXTENSION_AUTHENTICATED_ADMIN_DEV",
+  "readOnly": true,
+  "project": "Cinépolis",
+  "period": "NOV 2026",
+  "functionalReadback": {
+    "miDia": {
+      "scheduled": 13,
+      "completed": 7,
+      "unassigned": 11
+    },
+    "visits": {
+      "total": 44,
+      "assigned": 33,
+      "available": 11,
+      "completed": 7,
+      "outOfRange": 3,
+      "submittedVisitDetailReadOnly": {
+        "visit": "#752 C. Portales · GT",
+        "state": "Submitida",
+        "payment": "Pendiente de confirmación",
+        "historyIncludes": ["Publicada / disponible", "Agendada", "Realizada", "Cuestionario enviado"]
+      }
+    },
+    "dashboard": {
+      "total": 44,
+      "GT": 34,
+      "HN": 10,
+      "assigned": 33,
+      "unassigned": 11,
+      "completed": 7
+    },
+    "reports": {
+      "completed": 7,
+      "assigned": 33,
+      "total": 44,
+      "efficacyPercentDisplayed": 21,
+      "completionPercentDisplayed": 16
+    },
+    "routeSheet": {
+      "rows": 44,
+      "publishedRevisionPrefix": "fbaf9605c5a8",
+      "note": "The view explicitly says that it presents a published revision and does not refetch the external provider on open."
+    },
+    "hrSource": {
+      "status": "HR operacional verificada",
+      "lastReadShown": "2026-11-06T14:47:09.033Z",
+      "interpretation": "Timestamp visible in UI, NOT independent proof of what Paula edited on Nov 11; provider parity remains unverified."
+    },
+    "certification": {
+      "projectBanks": 4,
+      "historicAttempts": 40,
+      "historicApprovals": 38,
+      "shopperLinks": 14,
+      "recertificationScopeOffersAllPreviouslyCertifiedAndUncertified": true,
+      "recertificationSubmitted": false,
+      "selectedPublishedMainBankQuestionCount": 8,
+      "defaultPublishedBankQuestionCount": 15,
+      "note": "Only read-only bank selection and non-submitted modal inspection were performed."
+    },
+    "finance": {
+      "reviewPending": 7,
+      "GTQPayableObligation": 954,
+      "HNLPayableObligation": 780,
+      "paymentsConfirmed": false,
+      "note": "No payment, liquidation, reconciliation or bank operation was submitted."
+    },
+    "postulations": {"assigned": 33, "pendingApplications": 0},
+    "reservations": {"period": "2026-11", "requests": 0},
+    "shoppers": {"projectProfilesDisplayed": 197, "activeSixMonths": 91},
+    "periods": {"total": 18, "active": 5, "closed": 13},
+    "projectConfig": {"projectCountDisplayed": 1, "project": "Cinépolis"},
+    "resources": {
+      "route": "Recursos del proyecto",
+      "observed": "Módulo en construcción · arquitectura y navegación listas",
+      "sourceOwnerExists": "app/modules/documentos.js",
+      "sourceOwnerHasRegistration": "CX.module('documentos', ...)",
+      "servedOwnerHttpTextOpenedInChrome": true,
+      "diagnosis": "POTENTIAL_REGISTRATION_OR_SERVING_DRIFT_REQUIRES_FRESH_REPROOF",
+      "classification": "OPEN_REAL_UI_GAP_NOT_CERTIFIED",
+      "doNotAssumeRootCause": true
+    },
+    "automations": {"statusDisplayed": "AUTOMATION_REMOTE_READ_REQUIRED"},
+    "email": {"statusDisplayed": "Bandeja en modo demo"},
+    "nonDestructiveNavigationSmokeRoutes": [
+      "Mi Día", "Visitas", "Dashboard Operativo", "Reportes & KPIs", "Hojas de Ruta",
+      "Certificación", "Dashboard Financiero", "Postulaciones", "Reservas & Asignación",
+      "Shoppers", "Histórico", "Fuente de HR", "Cuestionarios", "Academia",
+      "Recursos del proyecto", "Clientes", "Proyectos", "Periodos", "Importador",
+      "Movimientos", "Liquidaciones", "Lotes de Pago", "Costos & Propuestas",
+      "CRM Comercial", "Marketing & Contenidos", "Configuración", "Administrabilidad",
+      "Usuarios & Permisos", "Automatizaciones", "Integraciones & Add-ons",
+      "Correo integrado", "Identidad de Marca"
+    ]
+  },
+  "localTargetedTests": {
+    "certificationAndResourceReader": {"pass": 50, "fail": 0},
+    "shopperActiveHistorySource": {"pass": 3, "fail": 0},
+    "syncAndModuleControl": {"pass": 45, "fail": 0},
+    "total": {"pass": 98, "fail": 0},
+    "interpretation": "Source and controls PASS does not imply authenticated Shopper E2E or human 21-domain acceptance."
+  },
+  "notCompleted": [
+    "Authenticated Shopper current-source B2/B3 E2E for Stiven or Julissa",
+    "Fresh in-browser reproduction and exact server file hash of Recursos module discrepancy",
+    "External Google Sheets independent revision/value parity; connected Drive search did not resolve the operational HR",
+    "Cross-actor provider ACK/reload tests for non-readonly actions",
+    "Human incremental PASS for remaining B1/B2/B3/B8/B9",
+    "21/21 strict domain MATCH, Gate20 and Gate21"
+  ],
+  "browserControlInterruption": "Chrome extension CDP focus timed out after a read-only reload. Existing Admin user tab was not logged out; no credentials were transmitted.",
+  "strictModulesMatchBefore": 5,
+  "strictModulesTotal": 21,
+  "humanAcceptedBlocksPreserved": ["B4", "B5", "B6", "B7"],
+  "humanPendingBlocks": ["B1", "B2", "B3", "B8", "B9"],
+  "newWholeModuleCertificationClaims": 0,
+  "productionTouched": false,
+  "hrWrites": 0,
+  "firestoreWrites": 0,
+  "paymentsTouched": false,
+  "i4Authorized": false,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "decision": "PASS_SCOPED_CHROME_ADMIN_READONLY_SOURCE_AND_CROSS_ROUTE_COUNTS__HOLD_SHOPPER_ROLE_AND_INTEGRAL_21_DOMAINS"
+}
