@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "cxorbia.i3.q2.exact-finance-source-c3-dispatch-receipt.v1",
+  "dateLocal": "2026-11-12",
+  "iteration": "I3",
+  "scope": "TRIGGER_EXISTING_C3_PRETERMINAL_ON_ACTIVE_V615_AFTER_CANONICAL_QA_PASS",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V615_2026-11-12.json",
+  "productSourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+  "sourceTestReceipt": {
+    "workflowRun": 2458,
+    "runId": 43289779912,
+    "result": "SUCCESS",
+    "pass": 6,
+    "fail": 0,
+    "evidencePath": "tools/qa/cxorbia-i3-work-uat-q2-finance-adapters-source-proof.test.mjs",
+    "evidenceGitBlob": "488108bb7e9364f7edfdce2ffdf82011b6f4c5b3",
+    "pathCount": 2,
+    "humanAcceptance": false
+  },
+  "currentCanonicalGuard": {
+    "workflowRun": 2461,
+    "runId": 43292393641,
+    "jobId": 131441731870,
+    "result": "SUCCESS",
+    "terminalCertified": false
+  },
+  "expectedC3Behavior": "COUNT_PENDING_PATHS_FROM_V615_AND_REQUIRE_INDEPENDENT_EXACT_SOURCE_PROOFS",
+  "verifiedC3Decision": null,
+  "newWorkflows": 0,
+  "productChanges": 0,
+  "runtimeDeploys": 0,
+  "hostingDeploys": 0,
+  "production": false,
+  "i4Authorized": false
+}
