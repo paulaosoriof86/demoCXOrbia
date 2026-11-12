@@ -70,3 +70,13 @@ Esta anotación Recovery prevalece sobre el corte histórico I4 anterior: no rea
 - **Claude/prototipo:** sin cambio frontend; no nueva candidata.
 - **Academia:** sin reapertura hasta cierre I4.
 - **Sin impacto Claude:** QA/docs/backend adapter.
+
+## Recovery vigente — 11-nov-2026 — Chrome Shopper DEV focal VRM-328 PASS
+
+Continuación estricta de RUN2437, sin nueva candidata de producto ni despliegue. El control GitHub posterior al recibo focal es `54da684e1c0151a2bc05a4e2e7a7fd2b846da944`; la fuente `e2458f4` y Hosting DEV `8dea702589084bcf` siguen intactos.
+
+- En Chrome conectado, dos cuentas existentes iniciaron sesión en DEV: Stiven López y Julissa Flores. **Mi Perfil Activas frente a Mis Visitas Activas:** Stiven `0/0`, Julissa `1/1` (visita NOV 12 C. Sankris Mall), con 10 visitas de trayectoria cada uno. Es una regresión real transversal y no una aserción simulada.
+- Certificaciones 100% aprobadas históricas visibles en ambos perfiles, sin envío de exámenes; en Recursos del proyecto, los dos muestran Instructivo Shopper y Stiven abrió el lector PDF protegido (7 páginas). La ruta Admin que antes aparecía en construcción debe investigarse por separado: la ruta Shopper sí funciona.
+- **B8 requiere conciliación:** dos visitas SEP de Stiven y una SEP de Julissa siguen sin pago confirmado en DEV pese a instrucción humana de que septiembre se pagó 31-oct. No se escribieron pagos ni se infirió una confirmación inexistente; resolver por IDs y comprobante de lote/ACK.
+- Receipt focal: `docs/checkpoints/CXORBIA_I3_VRM328_CHROME_TWO_SHOPPERS_DEV_E2E_20261111.json`, Git blob `1cf2ef705a31dbb137cc0b60b5ef6856f583d650`. La matriz V296 se preserva como corte previo a esta prueba, mientras ledger V610 conserva sus 328 hallazgos e incorpora el readback; puntero y descriptor tienen la misma siguiente acción, evitando repetir el E2E. Se mantiene la numeración porque no se ha creado un nuevo hallazgo.
+- El **PASS focal VRM-328** no constituye aceptación humana integral B2/B3, TinyFish PASS ni certificación de los 21 dominios. Se preserva `5/21 MATCH`, B4–B7 humano PASS, Gate20/21 HOLD, I4 no autorizado y producción DO_NOT_TOUCH.

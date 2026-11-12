@@ -8,7 +8,7 @@
   "productTreeAuthority": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
   "predecessorProductSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V610_2026-11-11.json",
-  "findingsLedgerExpectedGitBlob": "dc6dd4bea8363ef34f6907943144ef85a688d307",
+  "findingsLedgerExpectedGitBlob": "5e8aee953dd23b97d359263c47b4bab534395532",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261111-V296.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -128,7 +128,7 @@
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
   "historicalExactNextActionPreS1": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "VRM328 source e2458f4 publicado en Hosting DEV RUN2437 versión 8dea702589084bcf (15 assets bytes PASS), Cloud Run 00370-fl2 sin cambios, Chrome Admin NOV 2026 PASS. Siguiente EXACTO: verificar el owner Shopper servido por hash y E2E autenticado Mi Perfil Activas 0 frente a Mis Visitas (Stiven/Julissa) antes de PASS B2/B3, sin reabrir B4-B7. B1/B2/B3 PASS humano integral pendiente. B8 prueba exacta pago septiembre Q227+Q228 31-oct no localizada, sin asentar pago. B9 21 dominios Gate20/21 HOLD. ROLA multi-pais será configurable. Produccion DO_NOT_TOUCH, I4 no autorizado.",
+  "exactNextAction": "VRM-328 focal Chrome DEV E2E PASS Stiven Mi Perfil/Mis Visitas Activas 0/0 y Julissa 1/1; receipt docs/checkpoints/CXORBIA_I3_VRM328_CHROME_TWO_SHOPPERS_DEV_E2E_20261111.json; no repetir esta prueba. Siguiente exacto B8: cruzar por visitId/liquidacionId el pago de septiembre del 31-oct (3 visitas muestreadas aparecen pendientes); no asentar pagos sin ACK. Revisar sólo Recursos Admin (PDF Shopper funciona). Continuar residuales B1/B2/B3/B8/B9 de los 16 dominios sin MATCH, con pruebas por rol, HR viva independiente y aceptación humana; conservar B4-B7 PASS. Total estricto 5/21, Gate20/21 HOLD, I4 no autorizado, producción DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -17415,7 +17415,7 @@
     "qaContinuityGuardState": "V23_INITIAL_CONTROL_FAIL_CORRECTION_PENDING"
   },
   "priorStatusBeforeRootRun2222": "HOLD_VRM309_DEV_MATERIALIZED_ROLE_E2E_PENDING",
-  "nextExactAction": "VRM328 source e2458f4 publicado en Hosting DEV RUN2437 versión 8dea702589084bcf (15 assets bytes PASS), Cloud Run 00370-fl2 sin cambios, Chrome Admin NOV 2026 PASS. Siguiente EXACTO: verificar el owner Shopper servido por hash y E2E autenticado Mi Perfil Activas 0 frente a Mis Visitas (Stiven/Julissa) antes de PASS B2/B3, sin reabrir B4-B7. B1/B2/B3 PASS humano integral pendiente. B8 prueba exacta pago septiembre Q227+Q228 31-oct no localizada, sin asentar pago. B9 21 dominios Gate20/21 HOLD. ROLA multi-pais será configurable. Produccion DO_NOT_TOUCH, I4 no autorizado.",
+  "nextExactAction": "VRM-328 focal Chrome DEV E2E PASS Stiven Mi Perfil/Mis Visitas Activas 0/0 y Julissa 1/1; receipt docs/checkpoints/CXORBIA_I3_VRM328_CHROME_TWO_SHOPPERS_DEV_E2E_20261111.json; no repetir esta prueba. Siguiente exacto B8: cruzar por visitId/liquidacionId el pago de septiembre del 31-oct (3 visitas muestreadas aparecen pendientes); no asentar pagos sin ACK. Revisar sólo Recursos Admin (PDF Shopper funciona). Continuar residuales B1/B2/B3/B8/B9 de los 16 dominios sin MATCH, con pruebas por rol, HR viva independiente y aceptación humana; conservar B4-B7 PASS. Total estricto 5/21, Gate20/21 HOLD, I4 no autorizado, producción DO_NOT_TOUCH.",
   "i3Nov06SourceOnlyFocal": {
     "sourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
     "predecessorDevSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
@@ -21481,6 +21481,26 @@
     "materializationScope": "HOSTING_ONLY",
     "hostingReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM328_HOSTING_ONLY_DEV_RUN2437_ACK_20261111.json"
   },
+  "vrm328TwoShopperChromeNov2026": {
+    "decision": "PASS_SCOPED_VRM328_TWO_AUTHENTICATED_SHOPPER_DEV_E2E",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM328_CHROME_TWO_SHOPPERS_DEV_E2E_20261111.json",
+    "receiptBlob": "1cf2ef705a31dbb137cc0b60b5ef6856f583d650",
+    "controlHeadAtReceipt": "54da684e1c0151a2bc05a4e2e7a7fd2b846da944",
+    "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/8dea702589084bcf",
+    "stivenMiPerfilMisVisitasActivas": [0, 0],
+    "julissaMiPerfilMisVisitasActivas": [1, 1],
+    "twoHistoricalCertificationsPreserved": true,
+    "shopperResourcesPdfWorks": true,
+    "septemberPaidByDirectionStillUnconfirmedInDevCountSampled": 3,
+    "integralHumanB2B3": "PENDING",
+    "matrixV296SnapshotPreserved": true,
+    "strictModulesMatch": 5,
+    "strictModulesTotal": 21,
+    "production": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD"
+  },
   "currentHostingOnlyDevMaterialization": {
     "decision": "PASS_I3_CURRENT_SOURCE_HOSTING_DEV_ONLY",
     "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
@@ -21507,7 +21527,7 @@
     "hrWrites": 0,
     "productionChanged": false,
     "productionIndexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
-    "state": "HOSTING_DEV_EXACT_15_ASSETS_PASS_ADMIN_CHROME_PASS_SHOPPER_E2E_PENDING",
+    "state": "HOSTING_DEV_EXACT_15_ASSETS_PASS_ADMIN_CHROME_PASS_TWO_SHOPPERS_FOCAL_E2E_PASS_PENDING_INTEGRAL_HUMAN",
     "production": false,
     "phaseAComplete": false,
     "gate20": "HOLD",

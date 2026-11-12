@@ -24125,8 +24125,23 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "VRM328 source e2458f4 publicado en Hosting DEV RUN2437 versión 8dea702589084bcf (15 assets bytes PASS), Cloud Run 00370-fl2 sin cambios, Chrome Admin NOV 2026 PASS. Siguiente EXACTO: verificar el owner Shopper servido por hash y E2E autenticado Mi Perfil Activas 0 frente a Mis Visitas (Stiven/Julissa) antes de PASS B2/B3, sin reabrir B4-B7. B1/B2/B3 PASS humano integral pendiente. B8 prueba exacta pago septiembre Q227+Q228 31-oct no localizada, sin asentar pago. B9 21 dominios Gate20/21 HOLD. ROLA multi-pais será configurable. Produccion DO_NOT_TOUCH, I4 no autorizado.",
+  "exactNextAction": "VRM-328 focal Chrome DEV E2E PASS Stiven Mi Perfil/Mis Visitas Activas 0/0 y Julissa 1/1; receipt docs/checkpoints/CXORBIA_I3_VRM328_CHROME_TWO_SHOPPERS_DEV_E2E_20261111.json; no repetir esta prueba. Siguiente exacto B8: cruzar por visitId/liquidacionId el pago de septiembre del 31-oct (3 visitas muestreadas aparecen pendientes); no asentar pagos sin ACK. Revisar sólo Recursos Admin (PDF Shopper funciona). Continuar residuales B1/B2/B3/B8/B9 de los 16 dominios sin MATCH, con pruebas por rol, HR viva independiente y aceptación humana; conservar B4-B7 PASS. Total estricto 5/21, Gate20/21 HOLD, I4 no autorizado, producción DO_NOT_TOUCH.",
   "supersedesGitBlob": "5d428fb23ebca021a16c66f76210cca18e7d683e",
+  "vrm328TwoShopperChromeNov2026Readback": {
+    "findingId": "VRM-328",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM328_CHROME_TWO_SHOPPERS_DEV_E2E_20261111.json",
+    "receiptGitBlob": "1cf2ef705a31dbb137cc0b60b5ef6856f583d650",
+    "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+    "decision": "PASS_SCOPED_TWO_AUTHENTICATED_SHOPPER_DEV_E2E",
+    "stivenActiveProfileVsVisits": [0, 0],
+    "julissaActiveProfileVsVisits": [1, 1],
+    "septemberPaymentsOpenExactProof": "2 Stiven + 1 Julissa still pending despite Paula's Oct31 settled statement; do not mutate before provider ACK and exact visitId mapping",
+    "humanB2B3Integral": "PENDING",
+    "matrixV296PreE2ESnapshotPreserved": true,
+    "strictMatch": 5,
+    "totalDomains": 21,
+    "production": false
+  },
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
     "runId": 36051302838,
@@ -27816,7 +27831,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-11-10T06:38:06.861Z",
-  "nextExactAction": "VRM328 source e2458f4 publicado en Hosting DEV RUN2437 versión 8dea702589084bcf (15 assets bytes PASS), Cloud Run 00370-fl2 sin cambios, Chrome Admin NOV 2026 PASS. Siguiente EXACTO: verificar el owner Shopper servido por hash y E2E autenticado Mi Perfil Activas 0 frente a Mis Visitas (Stiven/Julissa) antes de PASS B2/B3, sin reabrir B4-B7. B1/B2/B3 PASS humano integral pendiente. B8 prueba exacta pago septiembre Q227+Q228 31-oct no localizada, sin asentar pago. B9 21 dominios Gate20/21 HOLD. ROLA multi-pais será configurable. Produccion DO_NOT_TOUCH, I4 no autorizado.",
+  "nextExactAction": "VRM-328 focal Chrome DEV E2E PASS Stiven Mi Perfil/Mis Visitas Activas 0/0 y Julissa 1/1; receipt docs/checkpoints/CXORBIA_I3_VRM328_CHROME_TWO_SHOPPERS_DEV_E2E_20261111.json; no repetir esta prueba. Siguiente exacto B8: cruzar por visitId/liquidacionId el pago de septiembre del 31-oct (3 visitas muestreadas aparecen pendientes); no asentar pagos sin ACK. Revisar sólo Recursos Admin (PDF Shopper funciona). Continuar residuales B1/B2/B3/B8/B9 de los 16 dominios sin MATCH, con pruebas por rol, HR viva independiente y aceptación humana; conservar B4-B7 PASS. Total estricto 5/21, Gate20/21 HOLD, I4 no autorizado, producción DO_NOT_TOUCH.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
