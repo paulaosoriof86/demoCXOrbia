@@ -28,3 +28,11 @@ Solo si el E2E de la misma build protegida, después del gate single-authority, 
 ## Academia
 
 No reconstruir. Alinear manuales, cursos, certificación, pagos y rutas por rol después del cierre I4 con comportamiento realmente probado.
+
+## Recovery vigente — VRM-328 / Hosting DEV RUN2437 (11-nov-2026)
+
+No usar el contexto I4/2026-08 de arriba como verdad viva. Rama única `recovery/cxorbia-phase-a-20260831`, source `e2458f449ee76d965ee39effdb5790d2e6d45d8c`, control actual en `CXORBIA_RECOVERY_EXECUTION_CURRENT.json` y ledger acumulativo V610.
+
+El owner Shopper `app/adapters/tya-canonical-shopper-portal-v2.js` corrige Activas cuando una visita fue submitida pero no pagada. Firebase Hosting DEV publicó la fuente mediante RUN2437 y verificó 15 assets byte-idénticos; Cloud Run `00370-fl2` no cambió. Faltan el hash servido del owner y el E2E Shopper de Mi Perfil versus Mis Visitas: NO afirmar PASS B2/B3 ni 21/21 módulos. Mantener B4/B5/B6/B7 humanos PASS anteriores, B8 financiero sin inferir pagos, B9 Gate20/21 HOLD y producción DO_NOT_TOUCH.
+
+Academia: este deploy no altera bancos, cursos, certificados ni autoriza recertificación; conservar lo aprobado y esperar pruebas funcionales para corregir textos y recursos. Proyecto ROLA debe ser administración por proyecto/país/periodo, sin nuevas reglas hardcodeadas ni cambio de fuente HR Cinépolis.

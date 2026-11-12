@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm328.hosting-only-dev-provider-ack.v1",
+  "decision": "PASS_I3_CURRENT_SOURCE_HOSTING_DEV_ONLY",
+  "workflowRunId": 43135308161,
+  "workflowRunNumber": 2437,
+  "jobId": 130909340204,
+  "controlHeadAtDeploy": "cd6f0c12e7502bab31bc9dc5f44b82dc09161668",
+  "evidenceArtifactId": 13906778898,
+  "evidenceArtifactDigest": "sha256:d87ea3d4902e9157de646443389fc8f5a50864224d8fe17f67ef2af65f22aebb",
+  "evidenceType": "GITHUB_ACTIONS_EVIDENCE_ZIP_NOT_I4_CERTIFIED_TAR",
+  "source": {
+    "sha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+    "tree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1"
+  },
+  "hosting": {
+    "before": "sites/cxorbia-backend-dev/versions/097e92b33464c10a",
+    "after": "sites/cxorbia-backend-dev/versions/8dea702589084bcf",
+    "release": "sites/cxorbia-backend-dev/channels/live/releases/1794447298704000",
+    "releaseTime": "2026-11-12T01:34:58.704Z",
+    "servedAssetsByteMatched": 15,
+    "changedShopperOwnerInVerifiedList": false,
+    "changedShopperOwnerHttpOpenInChrome": true,
+    "changedShopperOwnerExactServedHash": "NOT_IN_RUN2437_ASSET_COMPARISON"
+  },
+  "runtime": {
+    "revision": "cxorbia-live-hr-dev-00370-fl2",
+    "digest": "sha256:396cd23f895a98606fa9ca238132a5515065c07fec632cd73c00cc2e6d6c639e",
+    "builds": 0,
+    "deploys": 0
+  },
+  "browserReadOnly": {
+    "browser": "CHROME_EXTENSION",
+    "actor": "ADMIN",
+    "period": "NOV_2026",
+    "project": "cinepolis",
+    "route": "Mi Día",
+    "observedKpis": {
+      "scheduled": 13,
+      "approval": 0,
+      "completed": 7,
+      "unassigned": 11
+    },
+    "shopperProfileVsMisVisitasE2E": "PENDING_AUTHENTICATED_SHOPPER_CURRENT_SOURCE",
+    "humanFullBlockAcceptance": "PENDING_B1_B2_B3_B8_B9"
+  },
+  "effectCounts": {
+    "hostingDeploys": 1,
+    "cloudRunBuilds": 0,
+    "cloudRunDeploys": 0,
+    "rulesDeploys": 0,
+    "hrWrites": 0,
+    "firestoreDirectWrites": 0,
+    "productionDeploys": 0
+  },
+  "production": {
+    "status": "DO_NOT_TOUCH",
+    "changed": false,
+    "indexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e"
+  },
+  "priorPairedMaterialization": {
+    "runId": 43091136067,
+    "sourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/097e92b33464c10a",
+    "runtimeRevision": "cxorbia-live-hr-dev-00370-fl2"
+  },
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "phaseAComplete": false,
+  "i4Authorized": false,
+  "timestamp": "2026-11-12T01:49:05.407Z"
+}

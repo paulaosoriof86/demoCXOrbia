@@ -6932,8 +6932,8 @@ jobs:
       test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-certification-project-continuity.test.mjs")" = "1d663cc151e638150185eb51b82566455e09f18b"
       # VRM-328: source-only predecessor control changes are QA-only; both are pinned
       # to exact blobs so no product or certification drift can hide behind exclusions.
-      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.mjs")" = "f59962b7325a25c45e57b9bf951f7ee7a5efca88"
-      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs")" = "63ea2505d4b2b1430de6d7926ddec67f5cebaadc"
+      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.mjs")" = "a95dcf2436edbd17ed093a9ed36ef299c210a03b"
+      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs")" = "a060e5a62ed1ebf26c71b6f476aa4331d08f22f0"
       [[ "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" == HOLD_I3_* ]]
       test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$SOURCE"
       test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$SOURCE_TREE"

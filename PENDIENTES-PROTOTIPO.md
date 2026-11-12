@@ -38,3 +38,13 @@ Sin reconstrucción. Alinear manuales/cursos después del cierre I4 con el compo
 ## Seguridad
 
 0 deploy, 0 merge, 0 producción, 0 provider writes, 0 Make/Gemini, 0 ejecución bancaria.
+
+## Pendientes Recovery después de Hosting DEV RUN2437 — 11-nov-2026
+
+- [x] VRM-328: corrección fuente transversal Mi Perfil Activas versus Mis Visitas, QA local y publicación Hosting DEV de `e2458f4` comprobada; nuevo Hosting `8dea702589084bcf`, Cloud Run previo conservado. Recibo canónico RUN2437 en `docs/checkpoints/CXORBIA_I3_VRM328_HOSTING_ONLY_DEV_RUN2437_ACK_20261111.json`.
+- [ ] B2/B3: comprobar hash exacto del archivo Shopper servido, sesión Shopper autenticada y paridad Activas 0 / Mis Visitas 0 para visita realizada+submitida; presentar evidencia visual a Paula sin atribuir PASS humano automático.
+- [ ] B1/B2/B3: aceptación integral restante; B4/B5/B6/B7 mantienen PASS humano y no se recertifican sin drift exacto.
+- [ ] B8: fuente bancaria específica de pagos septiembre 31-oct antes de modificar liquidaciones o declarar pagado; octubre por pagar y noviembre devengando.
+- [ ] B9: regresión transversal única de 21 dominios, Gate20/21 en HOLD hasta evidencia real, no forzar 21/21.
+- [ ] ROLA: diseño configurable cuatro países y hojas de ruta mensuales por país con permisos de coordinadores; no sustituir HR actual ni configurar solo en código.
+- [ ] I4/producción: sin autorización; no tocar `tya-plataforma.web.app`, reglas, Auth, Storage, Make, pagos ni HR.

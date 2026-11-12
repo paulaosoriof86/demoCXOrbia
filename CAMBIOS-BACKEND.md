@@ -54,6 +54,16 @@ No se incrementa 60% hasta completar gate runtime/E2E real de la misma build.
 ### 7. Seguridad
 0 provider writes, 0 merge, 0 producción, 0 Make/Gemini, 0 pagos. No se declara deploy de este bloque.
 
+## Recovery vigente — 11-nov-2026 — VRM-328, RUN2437, Hosting DEV únicamente
+
+Esta anotación Recovery prevalece sobre el corte histórico I4 anterior: no reabre I4 ni declara Phase A terminada.
+
+- Fuente de producto preservada: `e2458f449ee76d965ee39effdb5790d2e6d45d8c` (árbol `4b331d8bda49fc8a4e0fd46d947cd629ff8000e1`), owner `app/adapters/tya-canonical-shopper-portal-v2.js`: Mi Perfil excluye visitas `submitted` de Activas, coherente con Mis Visitas. QA local source 70/70 dentro del conjunto 121/121 anterior.
+- Workflow existente `CXOrbia Recovery I3 DEV Certification` RUN2437 (`43135308161`) y job `i3-current-source-hosting-dev`: `PASS_I3_CURRENT_SOURCE_HOSTING_DEV_ONLY`; nuevo Hosting `sites/cxorbia-backend-dev/versions/8dea702589084bcf`, previo `097e92b33464c10a`. 15 assets comparados byte a byte.
+- Cloud Run **no** se reconstruyó ni desplegó: `cxorbia-live-hr-dev-00370-fl2`, mismo digest; sin reglas, HR, Firestore directo, pagos ni producción. La prueba de hash del archivo *específico* Shopper servido y el E2E con Shopper autenticado continúan pendientes; Chrome Admin NOV2026 fue observado.
+- Control único acumulativo: descriptor, puntero, matriz `RECOVERY-I3-MODULE-TRUTH-MATRIX-20261111-V296.json`, ledger `CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V610_2026-11-11.json`, receipt `docs/checkpoints/CXORBIA_I3_VRM328_HOSTING_ONLY_DEV_RUN2437_ACK_20261111.json`. No cambian los 328 IDs ni se pierden los PASS humanos B4–B7.
+- Academia/Claude: preservar experiencia y módulos aprobados, sin publicar nueva candidata ni declarar cursos o certificaciones completos por el deploy. B1/B2/B3/B8/B9 y Gate20/Gate21 permanecen HOLD hasta pruebas y recibos correspondientes.
+
 ### 8. Clasificación
 - **Reusable CXOrbia:** single-authority boot lock + verificador canónico no dependiente de checkpoints obsoletos.
 - **Exclusivo TyA:** HR Cinépolis y cifras financieras de validación.

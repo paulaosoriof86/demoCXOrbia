@@ -29,6 +29,31 @@ test('pending source preserves old served DEV seal while pointers target new sou
   const r=validateCurrentAuthorityAliases(pendingFixture());
   assert.equal(r.pass,true,JSON.stringify(r));
 });
+const hostingOnlyFixture=()=>{
+  const v=pendingFixture(),source=v.descriptor.productSourceSha,tree=v.descriptor.productSourceTree;
+  v.descriptor.postDeployRunSeal={...v.descriptor.postDeployRunSeal,hostingVersion:'hosting-370',runtimeRevision:'dev-370'};
+  v.pointer.postDeployRunSeal={...v.descriptor.postDeployRunSeal};
+  const h={sourceSha:source,sourceTree:tree,hostingVersion:'hosting-371',runtimeRevision:'dev-370',productionChanged:false};
+  v.descriptor.currentHostingOnlyDevMaterialization={...h};
+  v.pointer.currentHostingOnlyDevMaterialization={...h};
+  v.ledger.currentTruth.sourceMaterialized=true;
+  v.ledger.currentTruth.materializationScope='HOSTING_ONLY_WITH_PAIRED_PREDECESSOR';
+  v.pointer.activePhaseAClosureLock20261110.devHosting=h.hostingVersion;
+  return v;
+};
+test('current Hosting-only DEV supersedes the business phase-lock Hosting without inventing a Cloud Run deploy',()=>{
+  const r=validateCurrentAuthorityAliases(hostingOnlyFixture());
+  assert.equal(r.pass,true,JSON.stringify(r));
+});
+for(const [name,change,code] of [
+  ['stale phase-lock Hosting',v=>v.pointer.activePhaseAClosureLock20261110.devHosting='hosting-370','CURRENT_PHASE_LOCK_DEV_HOSTING_DESYNC'],
+  ['fabricated Hosting source',v=>v.descriptor.currentHostingOnlyDevMaterialization.sourceSha='f'.repeat(40),'CURRENT_PRODUCT_SOURCE_DESYNC'],
+  ['falsified release continuity',v=>v.descriptor.currentHostingOnlyDevMaterialization.productionChanged=true,'CURRENT_PRODUCT_SOURCE_DESYNC']
+])test('Hosting-only receipt rejects '+name,()=>{
+  const v=hostingOnlyFixture();change(v);
+  const r=validateCurrentAuthorityAliases(v);assert.equal(r.pass,false,JSON.stringify(r));
+  assert.ok(r.failures.includes(code),JSON.stringify(r));
+});
 for(const [name,change] of [
   ['falsified source materialization',v=>v.ledger.currentTruth.sourceMaterialized=true],
   ['changed predecessor seal',v=>v.ledger.currentMaterialization.sourceSha='f'.repeat(40)],
