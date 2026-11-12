@@ -305,20 +305,14 @@
     }
   },
   "continuityHandoff": {
-    "authority": "C3_PRETERMINAL_RUN2453_CURRENT_SOURCE_DEV_BOUND_B4_B7_PASS_GATE_HOLD",
-    "c3RunUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43259558323",
-    "asOf": "2026-11-12",
+    "authority": "CURRENT_PAIRED_DEV_SEAL_RUN2428_WITH_HOSTING_ONLY_CURRENT_SOURCE_RUN2453__NOT_TERMINAL_CERTIFICATION",
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2428_CURRENT_SOURCE_DEV_MATERIALIZATION_20261111.json",
+    "gitBlob": "2ce9d2e159dbae98b657ba1556d013d416e364e2",
+    "asOf": "2026-11-11T19:56:15Z",
     "iteration": "I3",
     "status": "HOLD",
-    "productSourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
-    "productSourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
-    "historicalLastDevProof": {
-      "path": "docs/checkpoints/CXORBIA_I3_RUN2428_CURRENT_SOURCE_DEV_MATERIALIZATION_20261111.json",
-      "gitBlob": "2ce9d2e159dbae98b657ba1556d013d416e364e2",
-      "sourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
-      "sourceTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
-      "asOf": "2026-11-11T19:56:15Z"
-    },
+    "productSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+    "productSourceTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
     "latestBatchRunId": 43091136067,
     "verifiedCohortGroups": 83,
     "pendingCohortGroups": 0,

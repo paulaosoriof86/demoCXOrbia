@@ -156,8 +156,13 @@ test('I3 current authority aliases are bound to the same C3 source, matrix, ledg
     assert.equal(record.currentCanonicalControl.receipt.terminalCertified,false,owner+' false terminal certificate');
     assert.ok(record.activeBlocker.startsWith(expectedBlocker),owner+' stale C3 blocker counters');
   }
-  assert.equal(execution.continuityHandoff.productSourceSha,audit.sourceSha);
-  assert.equal(execution.continuityHandoff.productSourceTree,audit.sourceTree);
+  // The paired backend+Hosting DEV receipt can legitimately be an older
+  // source while the newer frontend is served by Hosting-only. Never relabel
+  // that immutable paired receipt as the current C3 frontend source.
+  assert.equal(execution.continuityHandoff.productSourceSha,execution.currentDevMaterialization.sourceSha);
+  assert.equal(execution.continuityHandoff.productSourceTree,execution.currentDevMaterialization.sourceTree);
+  assert.equal(execution.continuityHandoff.path,execution.currentCanonicalCheckpoint.path);
+  assert.equal(execution.continuityHandoff.gitBlob,execution.currentCanonicalCheckpoint.checkpointGitBlob);
   assert.equal(execution.executionReceiptThursday20261112.currentVerified.runId,audit.runId);
   assert.equal(execution.executionReceiptThursday20261112.currentVerified.totalPendingPaths,audit.pendingFiles);
   assert.equal(execution.executionReceiptThursday20261112.production,'DO_NOT_TOUCH');
