@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {assessPreterminalSourceReadiness as assess} from './cxorbia-i3-preterminal-source-readiness.mjs';
+import {collectPathBoundLedgerSourceProofs} from './cxorbia-i3-c3-ledger-source-proofs.mjs';
 
 const sample=()=>{
   const modules=Array.from({length:21},(_,i)=>({
@@ -64,4 +65,45 @@ test('the terminal workflow uses current source-ready proof, never the old 21-MA
   assert.match(terminal,/sourceReadyModules.*"21"/);
   assert.doesNotMatch(terminal,/lastModuleTruthProof/);
   assert.doesNotMatch(terminal,/matchModules.*"21"/);
+});
+
+const PROOF_SHA='a'.repeat(40),PROOF_TREE='b'.repeat(40),PROOF_OWNER='app/modules/cliente-insights.js';
+const validScopedProof={owners:[PROOF_OWNER],sourceSha:PROOF_SHA,production:false,state:'F12_DEV_PENDING_HUMAN',
+  sourceProof:{sourceSha:PROOF_SHA,sourceTree:PROOF_TREE,runId:39095029741,
+    decision:'PASS_I3_B_CUMULATIVE_SOURCE_PROOF',f12Tests:{pass:2,fail:0},production:false}};
+
+test('C3 recovers exact-owner source proof without promoting pending human acceptance',()=>{
+  assert.deepEqual(collectPathBoundLedgerSourceProofs({executionUpdateE04F12:validScopedProof}),[{
+    path:PROOF_OWNER,sourceSha:PROOF_SHA,sourceTree:PROOF_TREE,runId:39095029741,
+    decision:'PASS_I3_B_CUMULATIVE_SOURCE_PROOF',ledgerLocation:'executionUpdateE04F12'
+  }]);
+});
+
+test('C3 recognizes Academy source-count QA only within its explicit owner scope',()=>{
+  const academy={...validScopedProof,owners:['backend/runtime/cxorbia-academy-command-provider-v1.mjs'],
+    sourceProof:{...validScopedProof.sourceProof,runId:42420173152,sourceTestsPass:27,sourceTestsFail:0,f12Tests:undefined}};
+  const proofs=collectPathBoundLedgerSourceProofs({currentRemediationCandidate:academy});
+  assert.equal(proofs.length,1);
+  assert.equal(proofs[0].runId,42420173152);
+});
+
+test('C3 rejects mere green status, failing QA, wrong source, production proof and unowned paths',()=>{
+  const bad={
+    noReceipt:{owners:[PROOF_OWNER],sourceSha:PROOF_SHA,state:'PASS',production:false},
+    differentSource:{...validScopedProof,sourceSha:'c'.repeat(40)},
+    failedTests:{...validScopedProof,sourceProof:{...validScopedProof.sourceProof,f12Tests:{pass:2,fail:1}}},
+    noJob:{...validScopedProof,sourceProof:{...validScopedProof.sourceProof,runId:null}},
+    production:{...validScopedProof,production:true},
+    noExactOwner:{...validScopedProof,owners:['app/modules/another.js']}
+  };
+  assert.deepEqual(collectPathBoundLedgerSourceProofs(bad).filter(x=>x.path===PROOF_OWNER),[]);
+});
+
+test('C3 preserves cumulative independent F12 and D08 receipts across control versions',()=>{
+  const descriptor=JSON.parse(readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8'));
+  const ledger=JSON.parse(readFileSync(descriptor.findingsLedgerPath,'utf8'));
+  const proofs=collectPathBoundLedgerSourceProofs(ledger);
+  assert.ok(proofs.some(x=>x.path===PROOF_OWNER&&x.runId===39095029741&&x.ledgerLocation==='executionUpdateE04F12'));
+  assert.ok(proofs.some(x=>x.path==='backend/runtime/cxorbia-academy-command-provider-v1.mjs'&&x.runId===42420173152));
+  assert.ok(proofs.some(x=>x.path==='backend/contracts/cxorbia-academy-base-progress-contract-v1.json'&&x.runId===42420173152));
 });

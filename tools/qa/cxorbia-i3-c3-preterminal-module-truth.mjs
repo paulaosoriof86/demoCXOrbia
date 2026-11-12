@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {assertCanonicalModuleCoverage} from './cxorbia-i3-terminal-module-domain-coverage.mjs';
 import {assessPreterminalSourceReadiness} from './cxorbia-i3-preterminal-source-readiness.mjs';
+import {collectPathBoundLedgerSourceProofs} from './cxorbia-i3-c3-ledger-source-proofs.mjs';
 
 const descriptor=JSON.parse(fs.readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8'));
 const TEMPLATE=process.env.TEMPLATE||descriptor.moduleTruthPath;
@@ -14,7 +15,10 @@ if(!/^[a-f0-9]{40}$/.test(SOURCE))throw new Error('SOURCE_FAILURE:C3_SOURCE_MISS
 if(!/^[a-f0-9]{40}$/.test(LAST_SERVED))throw new Error('SOURCE_FAILURE:C3_LAST_SERVED_MISSING');
 
 const git=(...args)=>execFileSync('git',args,{encoding:'utf8'}).trim();
-const safeBlob=(ref,path)=>{try{return git('rev-parse',ref+':'+path)}catch{return null}};
+const safeBlob=(ref,path)=>{
+  try{return execFileSync('git',['rev-parse',ref+':'+path],{encoding:'utf8',stdio:['ignore','pipe','ignore']}).trim()}
+  catch{return null}
+};
 const m=JSON.parse(fs.readFileSync(TEMPLATE,'utf8'));
 const ledger=JSON.parse(fs.readFileSync(LEDGER,'utf8'));
 if(TEMPLATE!==descriptor.moduleTruthPath)throw new Error('MAPPING_FAILURE:C3_NOT_CANONICAL_MATRIX');
@@ -27,6 +31,12 @@ if(ledger?.canonicalFunctionalCandidate?.sourceSha!==SOURCE)throw new Error('REL
 if(TREE&&git('rev-parse',SOURCE+'^{tree}')!==TREE)throw new Error('RELEASE_COMPOSITION_FAILURE:SOURCE_TREE_MISMATCH');
 
 const findings=ledger.findings||{};
+const scopedLedgerProofs=collectPathBoundLedgerSourceProofs(ledger);
+const scopedProofsByPath=new Map();
+for(const proof of scopedLedgerProofs){
+  if(!scopedProofsByPath.has(proof.path))scopedProofsByPath.set(proof.path,[]);
+  scopedProofsByPath.get(proof.path).push(proof);
+}
 const moduleMap=new Map((m.modules||[]).map(x=>[x.domain,x]));
 const pathFindingEntries=(path)=>Object.entries(findings).filter(([,v])=>{
   const owners=[...(Array.isArray(v?.owner)?v.owner:(v?.owner?[v.owner]:[])),...(v?.owners||[]),...(v?.sourceFixFiles||[]),...(v?.productFiles||[])].map(String);
@@ -81,6 +91,16 @@ const sourceFiles=(m.sourceFiles||[]).map(orig=>{
   for(const [,finding] of findingEntries){
     if(isProvenState(finding?.state))collectRefs(finding,fileRefs);
   }
+  const matchingScopedProofs=[];
+  for(const proof of scopedProofsByPath.get(f.path)||[]){
+    // The receipt must bind both the repository tree and this exact owner blob.
+    if(git('rev-parse',proof.sourceSha+'^{tree}')!==proof.sourceTree)
+      throw new Error('SOURCE_FAILURE:C3_LEDGER_PROOF_TREE_MISMATCH:'+proof.ledgerLocation);
+    if(safeBlob(proof.sourceSha,f.path)===actual){
+      fileRefs.add(proof.sourceSha);
+      matchingScopedProofs.push(proof);
+    }
+  }
   let matched=null;
   for(const ref of fileRefs){
     if(safeBlob(ref,f.path)===actual){matched=ref;break;}
@@ -100,6 +120,11 @@ const sourceFiles=(m.sourceFiles||[]).map(orig=>{
     f.provenanceIndependent=true;
     f.approvalStatus='INDEPENDENT_PATH_BOUND_PROVEN';
     f.classification=changedVsServed?'COMPOSED_NOT_DEPLOYED':'MATCH';
+    const scopedProof=matchingScopedProofs.find(x=>x.sourceSha===matched);
+    if(scopedProof)f.preTerminalScopedLedgerSourceProof={
+      ledgerLocation:scopedProof.ledgerLocation,sourceSha:scopedProof.sourceSha,
+      runId:scopedProof.runId,decision:scopedProof.decision,scope:'SOURCE_QA_ONLY_HUMAN_NOT_APPROVED'
+    };
     authorityRows.push({path:f.path,domain:f.domain,matchedSource:matched,classification:f.classification});
   }else if(findingEntries.length){
     const states=findingEntries.map(([id,v])=>({id,state:String(v?.state||'')}));
