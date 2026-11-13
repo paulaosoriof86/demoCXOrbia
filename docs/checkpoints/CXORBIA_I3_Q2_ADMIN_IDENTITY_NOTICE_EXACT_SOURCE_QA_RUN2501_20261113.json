@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "cxorbia.i3.q2.admin-identity-notice-exact-source-qa.v1",
+  "id": "CXORBIA-I3-Q2-ADMIN-IDENTITY-NOTICE-RUN2501",
+  "observedAtLocal": "2026-11-13",
+  "iteration": "I3",
+  "classification": "MAPPING_FAILURE_RECOVERY",
+  "sourceCommit": "44800eec6a1e3dacbfa0d42d310d540d5ec673f9",
+  "sourceTree": "d3f4092000f876b005c1e10af1a5901e7dec2c3f",
+  "currentProductSource": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+  "owner": "app/adapters/cxorbia-admin-identity-review-notice-v1.js",
+  "ownerGitBlob": "6f065e5c0558b880d006ecd78e27d4ba5323bbdf",
+  "sourceQa": {
+    "workflowRunNumber": 2501,
+    "workflowRunId": 43495340240,
+    "workflowRunUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43495340240",
+    "workflowConclusion": "success",
+    "canonicalJobId": 132126842370,
+    "canonicalJobConclusion": "success",
+    "command": "node --test tools/qa/cxorbia-i3-admin-identity-review-notice.test.mjs",
+    "testPath": "tools/qa/cxorbia-i3-admin-identity-review-notice.test.mjs",
+    "testGitBlob": "2b907e51cab56f88e29196abf4fd53a8de28fc29",
+    "sourceTestsPass": 5,
+    "sourceTestsFail": 0,
+    "scenarios": [
+      "Admin pending identities banner avoids names and unsafe auto merge",
+      "Operations receives appropriate banner but Shopper and Coordinator do not",
+      "Durable distinct decision closes stale banner",
+      "Protected authority and permissions honored",
+      "Entrypoint loads after app and does not change Shopper route"
+    ]
+  },
+  "scope": "EXACT_ONE_SOURCE_PATH_QA_ONLY_NOT_PROVIDER_ACK_OR_HUMAN_E2E_OR_NEW_MODULE_CERTIFICATION",
+  "productFilesChanged": 0,
+  "devDeploys": 0,
+  "production": false,
+  "gate20": "HOLD",
+  "gate21": "HOLD"
+}
