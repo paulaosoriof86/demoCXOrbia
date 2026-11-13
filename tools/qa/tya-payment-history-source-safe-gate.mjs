@@ -42,7 +42,13 @@ assert(H.paidItems.reduce((a,x)=>a+x.totalPaid,0)===451,'june_paid_gt_total_must
 assert(H.paidItems.every(x=>x.country==='GT'&&x.currency==='Q'),'june_paid_items_currency_or_country_mismatch');
 assert(H.paidItems.every(x=>x.paymentConfirmed===true&&x.executionAllowed===false&&x.immutable===true),'historical_items_must_be_confirmed_immutable_non_executable');
 assert(H.summary.mayPaid===44&&H.summary.mayPending===0,'may_summary_mismatch');
-assert(H.summary.junePaid===2&&H.summary.junePending===42,'june_summary_mismatch');
+// The immutable historical cut confirms two exact June payments, not a
+// 42-item unpaid ledger. Remaining payment status needs a live HR/payment join.
+assert(H.summary.juneExplicitPaidRows===2,'june_exact_paid_rows_mismatch');
+assert(H.summary.confirmedPaymentVisits===null&&H.summary.confirmedPaymentVisitCountRequiresLiveJoin===true,'live_join_guard_missing');
+assert(!Object.hasOwn(H.summary,'junePaid')&&!Object.hasOwn(H.summary,'junePending'),'derived_june_payment_totals_must_not_be_fabricated');
+assert(H.summary.paidThroughPeriodKey==='2026-07'&&H.summary.augustPaidAt==='2026-10-02','historical_cut_mismatch');
+assert(H.summary.septemberPolicy==='explicit_items_only_no_inference'&&H.historicalCut.september.inferUnlisted===false,'september_unknown_payments_must_remain_unknown');
 assert(H.summary.executableBatchesCreated===0,'executable_batches_must_be_zero');
 assert(H.historicalPaymentGroups.every(x=>x.groupType==='historical_payment_evidence'&&x.executionAllowed===false&&x.immutable===true),'historical_group_contract_mismatch');
 
@@ -68,7 +74,7 @@ console.log(JSON.stringify({
   decision:'PASS_TYA_PAYMENT_HISTORY_SOURCE_SAFE_GATE',
   sourceSha:H.source.workbookSha256,
   may:{visits:44,paid:44,pending:0,financialReviewsPreserved:2,GT:H.periodPolicies['2026-05'].countryTotals.GT,HN:H.periodPolicies['2026-05'].countryTotals.HN},
-  june:{visits:44,paid:2,pending:42,paidHrRowIds:juneIds,paidGT:451,paidHN:0},
+  june:{operationalVisits:H.sourceDiagnostics.juneOperationalVisits,explicitPaidRows:H.summary.juneExplicitPaidRows,otherPaymentStatus:'UNCONFIRMED_REQUIRES_LIVE_JOIN',paidHrRowIds:juneIds,explicitPaidGT:451,explicitPaidHN:0},
   historicalGroups:H.historicalPaymentGroups.length,
   executableBatchesCreated:0,
   sourceSafe:true
