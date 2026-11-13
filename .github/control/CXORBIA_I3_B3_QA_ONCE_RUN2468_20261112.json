@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "cxorbia.i3.b3.existing-workflow-once-trigger.v1",
+  "localDate": "2026-11-12",
+  "iteration": "I3",
+  "block": "B3",
+  "state": "HOLD_PENDING_PROVIDER_E2E",
+  "reason": "Execute the already-existing exact B3 synthetic two-Shopper scheduling DEV gate after RUN2467 canonical QA source safety passed.",
+  "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+  "sourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
+  "precedingCiRun": 43370596177,
+  "expectedWorkflowJob": "i3-b3-schedule-two-shopper-dev-qa",
+  "approvedDEVQAOnly": true,
+  "limits": [
+    "one disposable QA visit in DEV",
+    "synthetic own-Shopper scheduling and separate denied Shopper",
+    "provider ACK plus independent readback and replay",
+    "remote receipts and audit cleanup",
+    "HR revision before/after must match pinned exact DEV provider",
+    "no real visits, HR writes, payments, Auth writes, build, deploy or production"
+  ],
+  "classificationIfFails": "SOURCE_FAILURE|MAPPING_FAILURE|PROVIDER_FAILURE|PERSISTENCE_FAILURE|AUTH_FAILURE|FUNCTIONAL_DEFECT|VISUAL_DEFECT|RELEASE_COMPOSITION_FAILURE|ENVIRONMENT_FAILURE",
+  "doesNotChangeHumanAcceptance": true,
+  "authorizationI4": false,
+  "production": "DO_NOT_TOUCH"
+}
