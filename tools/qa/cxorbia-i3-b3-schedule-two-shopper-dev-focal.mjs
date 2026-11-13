@@ -156,5 +156,5 @@ finally{
   &&result.rescheduleRequestAck&&result.rescheduleOtherDenied&&result.reschedulePendingReadback&&result.rescheduleIdempotent
   &&result.cleaned&&result.hrBefore===expectedHr&&result.hrAfter===expectedHr?'PASS_I3_B3_SYNTHETIC_SHOPPER_SCHEDULE_AND_RESCHEDULE_ACK_DEV':'HOLD_I3_B3_SYNTHETIC_SHOPPER_SCHEDULE_AND_RESCHEDULE_ACK_DEV';
  write();console.log(JSON.stringify({decision:result.decision,sourceSha:source,hrBefore:result.hrBefore,hrAfter:result.hrAfter,negativeDenied:result.negativeDenied,positiveAck:result.positiveAck,independentReadback:result.independentReadback,idempotent:result.idempotent,rescheduleRequestAck:result.rescheduleRequestAck,rescheduleOtherDenied:result.rescheduleOtherDenied,reschedulePendingReadback:result.reschedulePendingReadback,rescheduleIdempotent:result.rescheduleIdempotent,cleaned:result.cleaned,errors:result.errors,safety:result.safety}));
- if(result.decision!=='PASS_I3_B3_SYNTHETIC_SHOPPER_SCHEDULE_ACK_DEV')process.exitCode=2;
+ if(result.decision!=='PASS_I3_B3_SYNTHETIC_SHOPPER_SCHEDULE_AND_RESCHEDULE_ACK_DEV')process.exitCode=2;
 }
