@@ -2,13 +2,27 @@ name: CXOrbia Recovery I4 Immutable Production Replacement
 
 on:
   workflow_dispatch:
-  push:
-    branches: [recovery/cxorbia-phase-a-20260831]
-    paths:
-      - .github/workflows/cxorbia-recovery-i4-immutable-production-replacement.yml
+    inputs:
+      gate21_run_id:
+        description: "Run ID of the successful I3 Gate20/Gate21 same-artifact certification"
+        required: true
+        type: string
+      gate21_manifest_sha256:
+        description: "SHA-256 of GATE21_RELEASE_MANIFEST.json approved by Paula"
+        required: true
+        type: string
+      certified_artifact_sha256:
+        description: "SHA-256 of the single certified source TAR approved by Paula"
+        required: true
+        type: string
+      production_authorization:
+        description: "Exact I4 authorization from Paula for this run and these fingerprints"
+        required: true
+        type: string
 
 permissions:
   contents: read
+  actions: read
   id-token: write
 
 defaults:
@@ -16,17 +30,8 @@ defaults:
     shell: bash
 
 env:
-  AUTHORIZATION: AUTORIZO_I4_IMMUTABLE_PRODUCTION_REPLACEMENT
-  EXPECTED_PARENT_SHA: 71ffb14dced58c08f653d66dcb3f7d7c86085fd6
-  EXPECTED_PARENT_TREE: 5dac00995da12a1ad2605d747fa0d322c59e233d
-  FUNCTIONAL_SOURCE_SHA: 53683d0e7bb62e90de3ca4b8063db9e85f5d40ee
-  GATE21_RUN_ID: '34654337888'
-  GATE21_MANIFEST_SHA256: 91e1536f6080dd3b5ba126de0758c0ed158ca80927538d49731bfae6546a8483
   SOURCE_PROJECT: cxorbia-backend-dev
   SOURCE_SITE: cxorbia-backend-dev
-  SOURCE_VERSION: sites/cxorbia-backend-dev/versions/e811a7e63aff4aaf
-  SOURCE_RUNTIME_REVISION: cxorbia-live-hr-dev-00064-92l
-  RUNTIME_DIGEST: sha256:1437ad71c4aa7752a97041fdd2d9cfbbe0ad46177475c15701f13fd62b703cbb
   TARGET_SITE: tya-plataforma
   TARGET_URL: https://tya-plataforma.web.app
   SERVICE: cxorbia-live-hr-dev
@@ -41,6 +46,11 @@ jobs:
       group: cxorbia-recovery-i4-production
       cancel-in-progress: false
     env:
+      GH_TOKEN: ${{ github.token }}
+      GATE21_RUN_ID: ${{ inputs.gate21_run_id }}
+      APPROVED_GATE21_MANIFEST_SHA256: ${{ inputs.gate21_manifest_sha256 }}
+      APPROVED_CERTIFIED_ARTIFACT_SHA256: ${{ inputs.certified_artifact_sha256 }}
+      I4_AUTHORIZATION: ${{ inputs.production_authorization }}
       CRED_DEV: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
       CRED_CREATOR_A: ${{ secrets.CXORBIA_GCP_PROJECT_CREATOR_JSON }}
       CRED_CREATOR_B: ${{ secrets.GOOGLE_CLOUD_PROJECT_CREATOR_JSON }}
@@ -49,15 +59,102 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Fail closed on source lineage or authorization drift
+      - uses: actions/download-artifact@v4
+        with:
+          name: cxorbia-recovery-i3-gate21-${{ inputs.gate21_run_id }}
+          run-id: ${{ inputs.gate21_run_id }}
+          github-token: ${{ github.token }}
+          path: .i4/gate21
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: cxorbia-recovery-i3-single-source-certification-${{ inputs.gate21_run_id }}
+          run-id: ${{ inputs.gate21_run_id }}
+          github-token: ${{ github.token }}
+          path: .i4/certification
+
+      - name: Fail closed on real I4 authorization and same-run Gate21 artifact lineage
         run: |
           set -euo pipefail
           mkdir -p "$OUT_DIR"
-          test "$AUTHORIZATION" = 'AUTORIZO_I4_IMMUTABLE_PRODUCTION_REPLACEMENT'
-          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT_SHA"
-          test "$(git rev-parse HEAD^^{tree})" = "$EXPECTED_PARENT_TREE"
-          git diff --quiet "$FUNCTIONAL_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc
-          echo "PASS_I4_SOURCE_PRECONDITION parent=$EXPECTED_PARENT_SHA productDrift=0"
+          test "$GITHUB_EVENT_NAME" = workflow_dispatch
+          test "$GITHUB_REF_NAME" = recovery/cxorbia-phase-a-20260831
+          test "$I4_AUTHORIZATION" = 'AUTORIZO_I4_CXORBIA_TYA_ARTEFACTO_EXACTO'
+          [[ "$GATE21_RUN_ID" =~ ^[0-9]{8,15}$ ]]
+          [[ "$APPROVED_GATE21_MANIFEST_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$APPROVED_CERTIFIED_ARTIFACT_SHA256" =~ ^[0-9a-f]{64}$ ]]
+
+          G21="$OUT_DIR/gate21/GATE21_RELEASE_MANIFEST.json"
+          G21_HASH="$OUT_DIR/gate21/GATE21_RELEASE_MANIFEST.sha256"
+          CERT="$OUT_DIR/certification"
+          MAN="$CERT/i3-certification-manifest.json"
+          for f in "$G21" "$G21_HASH" "$MAN" "$CERT/result.json" "$CERT/cxorbia-i3-certified-source.tar" "$CERT/cxorbia-i3-certified-source.tar.sha256" "$CERT/module-truth-matrix.json"; do test -f "$f"; done
+          cmp "$MAN" "$CERT/result.json"
+          test "$(sha256sum "$G21" | awk '{print $1}')" = "$APPROVED_GATE21_MANIFEST_SHA256"
+          test "$(awk '{print $1}' "$G21_HASH")" = "$APPROVED_GATE21_MANIFEST_SHA256"
+          test "$(jq -r '.verdict' "$G21")" = PASS_GATE21_ARTIFACT_FINGERPRINT
+          test "$(jq -r '.gate' "$G21")" = 21
+          test "$(jq -r '.production' "$G21")" = false
+          test "$(jq -r '.promotion.exactCertifiedArtifactRequired' "$G21")" = true
+          test "$(jq -r '.promotion.noRebuild' "$G21")" = true
+          test "$(jq -r '.promotion.noRecomposition' "$G21")" = true
+          test "$(jq -r '.moduleTruth.moduleCount' "$G21")" = 21
+          test "$(jq -r '.moduleTruth.allModulesMatch' "$G21")" = true
+          test "$(jq -r '.liveFixtures.cleanup' "$G21")" = true
+          test "$(jq -r '.certification.runId' "$G21")" = "$GATE21_RUN_ID"
+          test "$(jq -r '.certification.buildCount' "$G21")" = 1
+          test "$(jq -r '.certification.rebuildAfterCertification' "$G21")" = false
+          test "$(jq -r '.decision' "$MAN")" = PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21
+          test "$(jq -r '.buildCount' "$MAN")" = 1
+          test "$(jq -r '.rebuildAfterCertification' "$MAN")" = false
+          test "$(jq -r '.production' "$MAN")" = false
+          test "$(jq -r '.phaseAComplete' "$CERT/module-truth-matrix.json")" = true
+          test "$(jq -r '.allModulesMatch' "$CERT/module-truth-matrix.json")" = true
+          test "$(jq -r '.terminalClosure.decision' "$CERT/module-truth-matrix.json")" = PASS_C3_TERMINAL_MODULE_TRUTH_21_21
+          test "$(jq '.modules | length' "$CERT/module-truth-matrix.json")" = 21
+          test "$(sha256sum "$CERT/module-truth-matrix.json" | awk '{print $1}')" = "$(jq -r '.moduleTruth.evidenceSha256' "$G21")"
+          test "$(jq -r '.moduleTruthEvidenceSha256' "$MAN")" = "$(jq -r '.moduleTruth.evidenceSha256' "$G21")"
+
+          ARTIFACT_SHA="$(sha256sum "$CERT/cxorbia-i3-certified-source.tar" | awk '{print $1}')"
+          test "$ARTIFACT_SHA" = "$APPROVED_CERTIFIED_ARTIFACT_SHA256"
+          test "$ARTIFACT_SHA" = "$(awk '{print $1}' "$CERT/cxorbia-i3-certified-source.tar.sha256")"
+          test "$ARTIFACT_SHA" = "$(jq -r '.artifactSha256' "$MAN")"
+          test "$ARTIFACT_SHA" = "$(jq -r '.certification.artifactSha256' "$G21")"
+
+          curl -fsS --max-time 30 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$GATE21_RUN_ID" > "$OUT_DIR/gate21-run.json"
+          jq -e '.status=="completed" and .conclusion=="success" and .name=="CXOrbia Recovery I3 DEV Certification" and .head_branch=="recovery/cxorbia-phase-a-20260831"' "$OUT_DIR/gate21-run.json" >/dev/null
+          RUN_HEAD="$(jq -r '.head_sha' "$OUT_DIR/gate21-run.json")"
+          SOURCE_SHA="$(jq -r '.i3CertificationSourceSha' "$MAN")"
+          SOURCE_TREE="$(jq -r '.i3CertificationSourceTree' "$MAN")"
+          [[ "$RUN_HEAD" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$SOURCE_TREE" =~ ^[0-9a-f]{40}$ ]]
+          test "$RUN_HEAD" = "$(jq -r '.controlHeadSha' "$MAN")"
+          test "$RUN_HEAD" = "$(jq -r '.source.controlHeadSha' "$G21")"
+          test "$SOURCE_SHA" = "$(jq -r '.source.sha' "$G21")"
+          test "$SOURCE_TREE" = "$(jq -r '.source.treeSha' "$G21")"
+          test "$SOURCE_TREE" = "$(git rev-parse "$SOURCE_SHA^{tree}")"
+          git merge-base --is-ancestor "$RUN_HEAD" HEAD
+          git merge-base --is-ancestor "$SOURCE_SHA" HEAD
+          git diff --quiet "$SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          test "$(jq -r '.gate20.evidenceSha256' "$MAN")" = "$(jq -r '.gate20.visualEvidenceSha256' "$G21")"
+          test "$(jq -r '.gate20Semantic.evidenceSha256' "$MAN")" = "$(jq -r '.gate20.semanticEvidenceSha256' "$G21")"
+
+          SOURCE_VERSION="$(jq -r '.hostingVersionName' "$MAN")"
+          SOURCE_RUNTIME_REVISION="$(jq -r '.devRuntimeRevision' "$MAN")"
+          RUNTIME_DIGEST="$(jq -r '.runtimeImageDigest' "$MAN")"
+          [[ "$SOURCE_VERSION" =~ ^sites/cxorbia-backend-dev/versions/[0-9a-f]+$ ]]
+          [[ "$SOURCE_RUNTIME_REVISION" =~ ^cxorbia-live-hr-dev-[a-z0-9-]+$ ]]
+          [[ "$RUNTIME_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          test "$SOURCE_VERSION" = "$(jq -r '.hosting.version' "$G21")"
+          test "$SOURCE_RUNTIME_REVISION" = "$(jq -r '.runtime.revision' "$G21")"
+          test "$RUNTIME_DIGEST" = "$(jq -r '.runtime.digest' "$G21")"
+          test "${RUNTIME_DIGEST#sha256:}" != "$RUNTIME_DIGEST"
+          for pair in "SOURCE_VERSION=$SOURCE_VERSION" "SOURCE_RUNTIME_REVISION=$SOURCE_RUNTIME_REVISION" "RUNTIME_DIGEST=$RUNTIME_DIGEST" "GATE21_MANIFEST_SHA256=$APPROVED_GATE21_MANIFEST_SHA256" "CERT_ARTIFACT_SHA256=$ARTIFACT_SHA"; do echo "$pair" >> "$GITHUB_ENV"; done
+          echo "PASS_I4_SAME_RUN_CERTIFIED_ARTIFACT gate21Run=$GATE21_RUN_ID artifactSha256=$ARTIFACT_SHA productDrift=0 productionWrites=0"
 
       - uses: google-github-actions/setup-gcloud@v2
 
@@ -173,6 +270,8 @@ jobs:
           }
           trap rollback ERR
 
+          # A later verification step must also be able to restore the captured legacy state.
+          printf '%s\n' 'I4_PRODUCTION_WRITES_STARTED' > "$OUT_DIR/production-write-started"
           gcloud run services update "$SERVICE" --project "$TARGET_PROJECT" --region "$REGION" --image "$IMMUTABLE_IMAGE" --quiet
           runtime_changed=1
           NEW_REVISION="$(gcloud run services describe "$SERVICE" --project "$TARGET_PROJECT" --region "$REGION" --format='value(status.latestReadyRevisionName)')"
@@ -242,10 +341,40 @@ jobs:
           set -euo pipefail
           TARGET_PROJECT="$(cat "$OUT_DIR/target-project.txt")"
           VERSION="$(cat "$OUT_DIR/production-version.txt")"
-          jq -n -S --arg project "$TARGET_PROJECT" --arg version "$VERSION" --arg digest "$RUNTIME_DIGEST" --arg gate21 "$GATE21_RUN_ID" --arg manifest "$GATE21_MANIFEST_SHA256" \
-            '{schemaVersion:"cxorbia.recovery.i4.production-replacement.v1",verdict:"PASS_I4_IMMUTABLE_PRODUCTION_REPLACEMENT",targetProject:$project,targetSite:"tya-plataforma",hostingVersion:$version,runtimeService:"cxorbia-live-hr-dev",runtimeDigest:$digest,gate21RunId:$gate21,gate21ManifestSha256:$manifest,rebuilds:0,recompositions:0,reimports:0,artifactDeployedEqualsArtifactCertified:true}' > "$OUT_DIR/I4_VERDICT.json"
+          test "$(sha256sum "$OUT_DIR/gate21/GATE21_RELEASE_MANIFEST.json"|awk '{print $1}')" = "$GATE21_MANIFEST_SHA256"
+          test "$(sha256sum "$OUT_DIR/certification/cxorbia-i3-certified-source.tar"|awk '{print $1}')" = "$CERT_ARTIFACT_SHA256"
+          jq -n -S --arg project "$TARGET_PROJECT" --arg version "$VERSION" --arg digest "$RUNTIME_DIGEST" --arg gate21 "$GATE21_RUN_ID" --arg manifest "$GATE21_MANIFEST_SHA256" --arg artifact "$CERT_ARTIFACT_SHA256" \
+            '{schemaVersion:"cxorbia.recovery.i4.production-replacement.v2",verdict:"PASS_I4_ARTIFACT_IDENTITY_AND_PRODUCTION_READBACK",fullOperationalProductionLock:false,postDeployE2E:"REQUIRES_SEPARATE_AUTHENTICATED_HR_ADMIN_SHOPPER_WRITE_READBACK",targetProject:$project,targetSite:"tya-plataforma",hostingVersion:$version,runtimeService:"cxorbia-live-hr-dev",runtimeDigest:$digest,gate21RunId:$gate21,gate21ManifestSha256:$manifest,certifiedArtifactSha256:$artifact,rebuilds:0,recompositions:0,reimports:0,artifactDeployedEqualsArtifactCertified:true}' > "$OUT_DIR/I4_VERDICT.json"
           sha256sum "$OUT_DIR/I4_VERDICT.json" > "$OUT_DIR/I4_VERDICT.sha256"
-          echo 'PASS_I4_IMMUTABLE_PRODUCTION_REPLACEMENT'
+          echo 'PASS_I4_EXACT_ARTIFACT_READBACK__FULL_OPERATIONAL_E2E_NOT_YET_PROVEN'
+
+      - name: Restore legacy on any post-write failure, including verification or seal failure
+        if: ${{ failure() }}
+        run: |
+          set -euo pipefail
+          if [[ ! -f "$OUT_DIR/production-write-started" ]]; then
+            echo "NO_I4_PRODUCTION_WRITE_NO_ROLLBACK_NEEDED"
+            exit 0
+          fi
+          test -f "$RUNNER_TEMP/i4-selected.json"
+          test -f "$OUT_DIR/rollback-hosting-version.txt"
+          test -f "$OUT_DIR/rollback-runtime-image.txt"
+          gcloud auth activate-service-account --key-file="$RUNNER_TEMP/i4-selected.json" --quiet >/dev/null
+          TOKEN="$(gcloud auth print-access-token)"
+          OLD_VERSION="$(cat "$OUT_DIR/rollback-hosting-version.txt")"
+          OLD_IMAGE="$(cat "$OUT_DIR/rollback-runtime-image.txt")"
+          TARGET_PROJECT="$(cat "$OUT_DIR/target-project.txt")"
+          failed=0
+          curl -fsS -X POST -H "Authorization: Bearer $TOKEN" \
+            "https://firebasehosting.googleapis.com/v1beta1/sites/$TARGET_SITE/releases?versionName=$OLD_VERSION" \
+            > "$OUT_DIR/rollback-postverify-hosting.json" || failed=1
+          gcloud run services update "$SERVICE" --project "$TARGET_PROJECT" --region "$REGION" \
+            --image "$OLD_IMAGE" --quiet > "$OUT_DIR/rollback-postverify-runtime.log" 2>&1 || failed=1
+          if [[ "$failed" != 0 ]]; then
+            echo "::error::I4_POST_DEPLOY_VERIFICATION_FAILED_AND_ROLLBACK_INCOMPLETE"
+            exit 91
+          fi
+          echo "I4_POST_DEPLOY_FAILURE_ROLLBACK_COMPLETED legacyHosting=$OLD_VERSION"
 
       - if: always()
         uses: actions/upload-artifact@v4

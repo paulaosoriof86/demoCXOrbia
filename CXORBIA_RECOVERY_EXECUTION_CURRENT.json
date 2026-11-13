@@ -1,5 +1,30 @@
 {
   "schemaVersion": "cxorbia.recovery.execution-current.v1",
+  "planChoque20261113": {
+    "authority": "PAULA_2026-11-13_CONGELA_PLAN_DE_CHOQUE_Y_DECISIONES_CORRIGE_Y_ARRANCA",
+    "scope": "APPEND_ONLY_PRIORITY_AND_I4_RELEASE_COMPOSITION_P0_WITHIN_FROZEN_V1_1_NOT_NEW_PLAN",
+    "path": "CXORBIA_I3_I4_PLAN_CHOQUE_20261113_FROZEN.md",
+    "sha256": "69f5f7192849bbaecc8531de01d31cbbaf0b83433a2bf3791cbbf32fd4c84f05",
+    "gitBlob": "7a8d063d313704c042ccbcbedf142af4894ed64c",
+    "headBefore": "23afddcdd8f83e090dd12ed7dc6854fd77822619",
+    "state": "HOLD",
+    "iteration": "I3",
+    "p0": "RELEASE_COMPOSITION_FAILURE_I4_STATIC_GATE21_SOURCE_HOSTING_RUNTIME_AND_TAUTOLOGICAL_AUTHORIZATION",
+    "owner": ".github/workflows/cxorbia-recovery-i4-immutable-production-replacement.yml",
+    "workAuthorized": "I4_GUARD_REPAIR_AND_I3_FOCAL_DEV_CORRECTIONS",
+    "productionAuthorized": false,
+    "currentProof": {
+      "c3Run": 2482,
+      "strictMatch": 5,
+      "sourceReady": 7,
+      "moduleDomains": 21,
+      "pendingProvenance": 11,
+      "pendingOwnerProof": 52,
+      "pendingTotal": 63
+    },
+    "releasePolicy": "EACH_TESTED_FUNCTIONAL_FIX_IMMEDIATE_SERIAL_DEV_READBACK__ONE_FINAL_GATE20_GATE21_CERTIFIED_ARTIFACT__NO_PRODUCTION_BEFORE_EXPLICIT_I4_APPROVAL",
+    "nextAction": "FINISH_I4_P0_FAIL_CLOSED_GUARD_AND_READBACK_THEN_I3_Q2_EXACT_PROVENANCE_AND_OWNER_PROOFS"
+  },
   "activePhaseAClosureLock20261110": {
     "schemaVersion": "cxorbia.i3.phaseA.closure-no-loop-current.v2",
     "asOfLocal": "2026-11-11",
