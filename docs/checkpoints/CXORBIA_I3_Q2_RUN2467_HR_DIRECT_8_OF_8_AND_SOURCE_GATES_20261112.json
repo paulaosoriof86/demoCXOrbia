@@ -1,0 +1,141 @@
+{
+  "schemaVersion": "cxorbia.i3.q2.source-safe-ci-and-independent-hr-readback.v1",
+  "localDate": "2026-11-12",
+  "stage": "I3/Q2",
+  "status": "HOLD",
+  "source": {
+    "sha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+    "tree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1"
+  },
+  "control": {
+    "headBeforeReceipt": "8794d3128e10bc3576895902d6be66447e777f75",
+    "runNumber": 2467,
+    "runId": 43370596177,
+    "jobId": 131705178829,
+    "workflow": "CXOrbia Recovery I3 DEV Certification",
+    "conclusion": "success",
+    "url": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43370596177",
+    "ciLogDecisions": [
+      "PASS_TYA_PAYMENT_HISTORY_SOURCE_SAFE_GATE",
+      "PASS_R21_POSTULATION_VS_SCHEDULING_SEPARATION",
+      "PASS_TYA_R20_HEADER_VARIANTS_GATE"
+    ],
+    "productSourceFilesChanged": 0,
+    "qaChanges": [
+      "tools/qa/tya-payment-history-source-safe-gate.mjs",
+      "tools/qa/tya-postulation-eligibility-r21-gate.mjs",
+      ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+    ]
+  },
+  "qaRegression": {
+    "finance": {
+      "before": "HOLD_TYA_PAYMENT_HISTORY_SOURCE_SAFE_GATE:june_summary_mismatch",
+      "after": "PASS_TYA_PAYMENT_HISTORY_SOURCE_SAFE_GATE",
+      "scope": "44 May confirmed; two exact June paid HR rows; other June payment state unconfirmed pending live join; July/Aug historical cut preserved; no inferred September row payments"
+    },
+    "postulation": {
+      "before": "5 unassigned vs false old expected 4 available",
+      "after": "PASS_R21_POSTULATION_VS_SCHEDULING_SEPARATION",
+      "scope": "P0 all unassigned postulable; P1Q and previous-visit dependencies constrain scheduling, not postulation; date, window and weekday/weekend scheduling checks preserved"
+    },
+    "hrSchema": "PASS_TYA_R20_HEADER_VARIANTS_GATE"
+  },
+  "externalHrReadback": {
+    "spreadsheetId": "1h307t37LxM1nZNh_9Odt6wHUQhROG6cYbsbMKr48vU4",
+    "tab": "NOVIEMBRE",
+    "sheetId": 1384948963,
+    "externalFileModifiedTime": "2026-11-11T20:55:49.264Z",
+    "note": "Global Drive modified_time is supporting metadata, NOT a per-tab/per-row revision or proof that DOM and provider reads were atomic.",
+    "rowWindow": "B2:L36 + O2:P36",
+    "sampleRows": 34,
+    "unassignedRows": 8,
+    "unassignedRowNumbers": [
+      8,
+      16,
+      18,
+      25,
+      29,
+      30,
+      33,
+      35
+    ],
+    "unassignedWithISOAvailableDate": 2,
+    "unassignedWithSchedulingTokens": 6,
+    "personNamesPhonesEmailAndFullStreetAddressesExcluded": true,
+    "observedDevShopper": "Julissa Flores",
+    "observedDevDateLocal": "2026-11-12",
+    "devOfferedCount": 8,
+    "devSourceRowNumbers": [
+      8,
+      16,
+      18,
+      25,
+      29,
+      30,
+      33,
+      35
+    ],
+    "scopeDecision": "PASS_FOCAL_8_OF_8_UNASSIGNED_VACANCY_READBACK",
+    "scopeLimits": [
+      "not a provider stable-row revision proof",
+      "not a postulation remote ACK",
+      "not an assignment persistence or idempotence proof",
+      "not a claim of correct scheduling or eligibility for a chosen visit date",
+      "no external HR writes"
+    ]
+  },
+  "authenticatedDevFocal": {
+    "role": "Shopper",
+    "projectId": "cinepolis",
+    "country": "GT",
+    "period": "2026-11",
+    "shopper": "Julissa Flores",
+    "profileVisits": 10,
+    "realized": 9,
+    "submitted": 9,
+    "paidConfirmed": 7,
+    "certificationBankQuestionCountsObserved": [
+      8,
+      15
+    ],
+    "bankSelectorDistinctBankIds": true,
+    "examSubmission": false,
+    "postulationSubmission": false,
+    "restoredPage": "Mi Día",
+    "scope": "READ_ONLY_AUTHENTICATED_UI_FOCAL_NOT_TERMINAL_E2E"
+  },
+  "certification": {
+    "strictModules": {
+      "passed": 5,
+      "total": 21
+    },
+    "sourceReadyDomains": {
+      "passed": 7,
+      "total": 21
+    },
+    "pathBoundOwnerProof": {
+      "passed": 90,
+      "total": 156
+    },
+    "humanBlocks": {
+      "passed": [
+        "B4",
+        "B5",
+        "B6",
+        "B7"
+      ],
+      "total": 9
+    },
+    "pendingOwnerEvidence": 52,
+    "pendingExactBlobProvenance": 14,
+    "newStrictModuleCertificates": 0,
+    "newC3RouteCredits": 0,
+    "gates20And21": "HOLD"
+  },
+  "hosting": {
+    "newProductDeploy": 0,
+    "production": "DO_NOT_TOUCH",
+    "i4Authorized": false
+  },
+  "nextExactAction": "Bind the 3 passing canonical CI source gates to exact file blobs in a versioned cumulative ledger and run C3; separately complete Admin/Shopper durable postulation and certification attempt ACK/readback on authorized isolated QA identities, then remaining 21-domain same-artifact human closure."
+}
