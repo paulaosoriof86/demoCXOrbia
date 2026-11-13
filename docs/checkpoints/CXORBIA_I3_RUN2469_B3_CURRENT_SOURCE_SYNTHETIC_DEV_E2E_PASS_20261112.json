@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "cxorbia.i3.b3.current-source-provider-ack-seal.v1",
+  "evidenceType": "IMMUTABLE_REMOTE_RUN_AND_ARTIFACT_POINTER_NOT_FULL_MODULE_CERTIFICATION",
+  "iteration": "I3",
+  "status": "HOLD",
+  "decision": "PASS_FOCAL_B3_SYNTHETIC_SHOPPER_SCHEDULE_ACK_CURRENT_DEV",
+  "title": "RUN2469 B3 synthetic two-Shopper authorization and provider write ACK revalidation on same current DEV product",
+  "execution": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "runNumber": 2469,
+    "runId": 43371447225,
+    "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43371447225",
+    "runHead": "272f259b58f61c5ec41026a0191c30a1f85cba21",
+    "runConclusion": "success",
+    "b3JobId": 131708083574,
+    "b3JobConclusion": "success",
+    "artifactId": 14012149414,
+    "artifactName": "cxorbia-i3-b3-schedule-two-shopper-43371447225",
+    "artifactDigest": "sha256:3f98e33ee08aa160283a62702bf4e9a9d203988b8aa617d748aa406fc8885d98",
+    "artifactSizeBytes": 4204
+  },
+  "productAuthority": {
+    "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+    "sourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
+    "hosting": "sites/cxorbia-backend-dev/versions/8dea702589084bcf",
+    "runtimeRevision": "cxorbia-live-hr-dev-00370-fl2",
+    "runtimeDigest": "sha256:396cd23f895a98606fa9ca238132a5515065c07fec632cd73c00cc2e6d6c639e",
+    "sameArtifactReceipt": "docs/checkpoints/CXORBIA_I3_VRM328_HOSTING_ONLY_DEV_RUN2437_ACK_20261111.json",
+    "productFilesChangedInThisRun": false,
+    "productDeploysInThisRun": 0
+  },
+  "providerRevisionGuard": {
+    "before": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "after": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "stable": true,
+    "providerRevisionIsNotSpreadsheetDriveModifiedTime": true
+  },
+  "checks": {
+    "syntheticVisitCreated": 1,
+    "syntheticVisitDeleted": 1,
+    "ownerShopperAck": true,
+    "otherShopperDenied": true,
+    "independentReadback": true,
+    "idempotentReplay": true,
+    "cleanupVerified": true,
+    "hrWrites": 0,
+    "commercialVisitsWritten": 0,
+    "paymentWrites": 0,
+    "authWrites": 0,
+    "builds": 0,
+    "deploys": 0,
+    "productionWrites": 0
+  },
+  "preflightCorrection": {
+    "runId": 43370935917,
+    "runNumber": 2468,
+    "outcome": "B3 guard failed pre-write because old paired pointer referenced old source and hosting",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "remediation": "Updated existing B3 job's read-only authority guard to current RUN2437 exact DEV artifact and preflight stable live HR revision; no alternative candidate, deployment, or bypass of negative ACL checks."
+  },
+  "frozenAggregate": {
+    "sourceReadyDomains": {
+      "complete": 7,
+      "total": 21,
+      "percent": 33.33
+    },
+    "accreditedPaths": {
+      "complete": 90,
+      "total": 156,
+      "percent": 57.69
+    },
+    "strictCertifiedModules": {
+      "complete": 5,
+      "total": 21,
+      "percent": 23.81
+    },
+    "humanAcceptedBlocks": {
+      "complete": 4,
+      "total": 9,
+      "percent": 44.44
+    },
+    "b3HumanBlock": "HOLD",
+    "b3TechnicalFocal": "PASS",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "phaseAComplete": false,
+    "i4Authorized": false
+  },
+  "production": {
+    "url": "https://tya-plataforma.web.app/",
+    "status": "DO_NOT_TOUCH",
+    "changed": false
+  },
+  "nextAction": "Complete exact-owner authenticated B1/B2/B3/B8/B9 human functional acceptance and bind readbacks to C3; do not promote source-safe technical PASS to strict certification without all gates and artifact equivalence."
+}
