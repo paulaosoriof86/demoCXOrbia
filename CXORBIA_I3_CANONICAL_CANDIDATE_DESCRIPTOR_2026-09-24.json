@@ -9,6 +9,21 @@
   "predecessorProductSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V617_2026-11-13.json",
   "findingsLedgerExpectedGitBlob": "7070db6599dcbf10ad71988d557e609b55d2e518",
+  "c3ExactSourceProofRunRequest20261113": {
+    "iteration": "I3",
+    "trigger": "[c3-preterminal-module-truth]",
+    "scope": "RECHECK_EXISTING_V617_LEDGER_THREE_RUN2479_PATH_BOUND_SOURCE_PROOFS",
+    "sourceQaRunId": 43382371061,
+    "paths": [
+      "app/sw.js",
+      "app/data/tya-payment-history-source-safe.js",
+      "backend/contracts/tya-hr-column-map-r20-v1.json"
+    ],
+    "expectedOutcome": "EVALUATE_C3_ONLY_NO_UNPROVEN_MODULE_PROMOTION",
+    "sourceCodeChanged": false,
+    "devDeployRequested": false,
+    "production": false
+  },
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261112-V300.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
