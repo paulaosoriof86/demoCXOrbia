@@ -1424,8 +1424,8 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261112-V299.json",
-    "gitBlob": "7447e1d8f19d649529af078858cd81ee1f43708b",
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261112-V300.json",
+    "gitBlob": "eef32b09dc3d4af1cab0da3f6f7a12fd3ec182a7",
     "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
     "allModulesMatch": false,
     "phaseAComplete": false
@@ -3426,8 +3426,8 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261112-V299.json",
-    "matrixBlob": "7447e1d8f19d649529af078858cd81ee1f43708b",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261112-V300.json",
+    "matrixBlob": "eef32b09dc3d4af1cab0da3f6f7a12fd3ec182a7",
     "classificationCounts": {
       "MATCH": 5,
       "SOURCE_FIXED_DEV_MATERIALIZED_ADMIN_B10_FOCAL_PASS_PENDING_SHOPPER_ROLE_PROVIDER_LINK": 1,
@@ -3436,7 +3436,7 @@
       "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 10,
       "SOURCE_FIXED_HOSTING_DEV_PUBLISHED_PENDING_AUTH_SHOPPER_B2_B3_E2E_HUMAN": 1
     },
-    "derivedAt": "2026-11-10",
+    "derivedAt": "2026-11-12",
     "meaning": "HOSTING_ONLY_DEV_RUN2437_PUBLISHED__SHOPPER_E2E_PENDING__4_OF_9_HUMAN_PASS_PRESERVED__5_OF_21_STRICT_MATCH__B1_B3_B8_B9_HOLD"
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
