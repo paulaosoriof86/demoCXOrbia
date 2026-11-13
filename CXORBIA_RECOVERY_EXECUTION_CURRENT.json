@@ -5347,7 +5347,7 @@
     },
     "ledger": {
       "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V618_2026-11-13.json",
-      "gitBlob": "d255e1779b2d83a45f110c7487e82b12df8b7c89"
+      "gitBlob": "2f7e5d7fe521fd55ce39cad25ccad9e14a36ad0f"
     },
     "receipt": {
       "kind": "GITHUB_ACTIONS_C3_PRETERMINAL_NOT_CERTIFICATE",
@@ -6248,7 +6248,7 @@
     "production": false
   },
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V618_2026-11-13.json",
-  "findingsLedgerExpectedGitBlob": "d255e1779b2d83a45f110c7487e82b12df8b7c89",
+  "findingsLedgerExpectedGitBlob": "2f7e5d7fe521fd55ce39cad25ccad9e14a36ad0f",
   "nextFindingId": "VRM-329",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
