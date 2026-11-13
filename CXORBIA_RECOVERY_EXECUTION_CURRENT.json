@@ -1,5 +1,20 @@
 {
   "schemaVersion": "cxorbia.recovery.execution-current.v1",
+  "c3ReevaluationRequestAfterV618": {
+    "id": "CXORBIA_I3_C3_REEVALUATE_V618_20261113",
+    "iteration": "I3",
+    "classification": "MAPPING_FAILURE_RECOVERY",
+    "reason": "Evaluate five already committed and source-QA-proven V618 path-bound receipts after canonical ledger aliases were synchronized",
+    "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V618_2026-11-13.json",
+    "ledgerBlob": "2f7e5d7fe521fd55ce39cad25ccad9e14a36ad0f",
+    "priorRun": 2489,
+    "expectedControlParent": "e84282dc2c361e18c233b69c7452b50576578174",
+    "trigger": "[c3-preterminal-module-truth]",
+    "scope": "EXISTING_CANONICAL_C3_READ_ONLY_SOURCE_AND_DEV_PARITY_NO_PRODUCT_WRITE_NO_NEW_DEPLOY",
+    "production": false,
+    "terminalCertification": false
+  },
   "planChoque20261113": {
     "authority": "PAULA_2026-11-13_CONGELA_PLAN_DE_CHOQUE_Y_DECISIONES_CORRIGE_Y_ARRANCA",
     "scope": "APPEND_ONLY_PRIORITY_AND_I4_RELEASE_COMPOSITION_P0_WITHIN_FROZEN_V1_1_NOT_NEW_PLAN",
