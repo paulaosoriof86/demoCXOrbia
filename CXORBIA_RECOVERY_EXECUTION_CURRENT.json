@@ -1,5 +1,74 @@
 {
   "schemaVersion": "cxorbia.recovery.execution-current.v1",
+  "c3Run2497VerifiedReadback": {
+    "id": "CXORBIA-I3-C3-RUN2497-VERIFIED-READBACK-20261113",
+    "priority": "LATEST_MEASURED_Q2_AFTER_V619__SOURCE_QA_ONLY",
+    "iteration": "I3",
+    "status": "HOLD",
+    "classification": "MAPPING_FAILURE_RECOVERY",
+    "controlHeadAtAudit": "1edfcc75b3735a7afdf9f131a44efd519bce2303",
+    "canonicalWorkflowRun": 2497,
+    "runId": 43487514699,
+    "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43487514699",
+    "canonicalAuthorityJobId": 132099768610,
+    "c3PreterminalJobId": 132100104341,
+    "workflowConclusion": "success",
+    "bothJobsSuccess": true,
+    "artifactId": 14067752318,
+    "artifactName": "cxorbia-c3-preterminal-module-truth-43487514699",
+    "artifactDigest": "sha256:5fec61764d62c502afa0a8f84b53ef49297018d0ecf11927cc1e5fce949ea6c7",
+    "decision": "HOLD_C3_PRETERMINAL_SOURCE_EVIDENCE_PENDING",
+    "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+    "sourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V619_2026-11-13.json",
+    "ledgerGitBlob": "423e0e332170f7640c03de2d7bdd95c92e7bff81",
+    "newPathBoundSourceProof": "app/core/backend-protected-dev-mode.js",
+    "newPathBoundSourceProofBlob": "3924d7d02ea21f589e6be6d451dff740c884300a",
+    "newSourceProofHistoricalRun": 36788133836,
+    "count": {
+      "totalDomains": 21,
+      "strictMatch": 5,
+      "sourceReady": 8,
+      "sourcePathProofs": 99,
+      "totalSourcePaths": 156,
+      "pendingFiles": 57,
+      "pendingOwnerServedProofs": 51,
+      "pendingBlobProvenance": 6,
+      "pendingMappingApproval": 0,
+      "activeBrowserOwners": 133
+    },
+    "priorCount": {
+      "sourcePathProofs": 98,
+      "sourceReady": 8,
+      "pendingFiles": 58,
+      "pendingOwnerServedProofs": 51,
+      "pendingBlobProvenance": 7
+    },
+    "percent": {
+      "strictModuleCertification": 23.81,
+      "sourceReadyDomains": 38.1,
+      "sourcePathsProven": 63.46,
+      "shockPlanCompletedBlocks": 14.29
+    },
+    "dev": {
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/8dea702589084bcf",
+      "runtimeRevision": "cxorbia-live-hr-dev-00370-fl2",
+      "runtimeDigest": "sha256:396cd23f895a98606fa9ca238132a5515065c07fec632cd73c00cc2e6d6c639e",
+      "duplicateScripts": 0
+    },
+    "execution": {
+      "builds": 0,
+      "deploys": 0,
+      "writes": 0,
+      "newTerminalModuleCertifications": 0,
+      "production": false
+    },
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "authorizationI4": false,
+    "scope": "PRETERMINAL_C3_PATH_OWNER_PROVENANCE_NOT_LIVE_HUMAN_ACCEPTANCE",
+    "nextExactAction": "I3-Q2 continue six missing current path-bound provenance and 51 served owner proofs; rerun C3 on same source, then Q3 Admin/Shopper/HR ACK, Q4 finance, Q5 21-domain E2E, Q6 Gates20/21, I4 only on explicit approval"
+  },
   "c3Run2490VerifiedReadback": {
     "id": "CXORBIA-I3-C3-RUN2490-VERIFIED-READBACK-20261113",
     "priority": "LATEST_VERIFIED_POST_V618_RESULT__NOT_TERMINAL_CERTIFICATION",
