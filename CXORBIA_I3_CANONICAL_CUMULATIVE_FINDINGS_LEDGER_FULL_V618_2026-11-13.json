@@ -1,4 +1,167 @@
 {
+  "c3Run2437SourceAndDevReadbackRecovery20261113": {
+    "id": "CXORBIA-I3-Q2-RUN2437-TWO-EXACT-SERVED-OWNER-SOURCE-PROOFS",
+    "dateLocal": "2026-11-13",
+    "iteration": "I3",
+    "classification": "MAPPING_FAILURE_RECOVERY",
+    "status": "SOURCE_QA_AND_EXISTING_DEV_BYTES_PROVEN__C3_REEVALUATION_PENDING__HUMAN_E2E_HOLD",
+    "scope": "EXACT_SOURCE_OWNER_BLOBS_LOCAL_DEV_READBACK_NOT_NEW_DEPLOY_OR_HUMAN_ACCEPTANCE",
+    "observedCI": {
+      "runId": 43135308161,
+      "runNumber": 2437,
+      "jobId": 130909340204,
+      "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43135308161",
+      "controlHead": "cd6f0c12e7502bab31bc9dc5f44b82dc09161668",
+      "job": "i3-current-source-hosting-dev",
+      "jobResult": "success",
+      "certifiedSourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+      "sourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
+      "readbackDecision": "PASS_I3_CURRENT_SOURCE_HOSTING_DEV_ONLY",
+      "devHostingVersion": "sites/cxorbia-backend-dev/versions/8dea702589084bcf",
+      "productionUnchanged": true,
+      "productFilesChangedThisRecovery": 0,
+      "newDeploysThisRecovery": 0
+    },
+    "provenPaths": [
+      {
+        "id": "I3-Q2-RUN2437-A08-PROTECTED-HR-REVISION-WATCHER",
+        "owners": ["app/adapters/tya-live-source-refresh-watch-v2.js"],
+        "currentOwnerGitBlobs": {"app/adapters/tya-live-source-refresh-watch-v2.js": "8fa224fe7f7a565be8553bc855deef6d0e6a3b9f"},
+        "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+        "sourceProof": {
+          "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+          "sourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
+          "runId": 43135308161,
+          "jobId": 130909340204,
+          "sourceTestsPass": 11,
+          "sourceTestsFail": 0,
+          "decision": "PASS_RUN2437_A08_WATCHER_EXACT_REVISION_11_OF_11_SERVED_BLOB",
+          "evidencePath": "tools/qa/cxorbia-i3-vrm134-a08-watcher-revision-reuse.test.mjs",
+          "evidenceGitBlob": "99cbdae612da06941d4de52543c06b56a1d6d702",
+          "scope": "SOURCE_QA_AND_EXISTING_HOSTING_READBACK_NOT_PROVIDER_WRITE_OR_HUMAN_ACCEPTANCE",
+          "production": false
+        },
+        "production": false
+      },
+      {
+        "id": "I3-Q2-RUN2437-B1-COLD-SHOPPER-PARALLEL-READS",
+        "owners": ["app/core/backend-firebase.js"],
+        "currentOwnerGitBlobs": {"app/core/backend-firebase.js": "d181236f44178c455c78b129d680d3a6674ef6e3"},
+        "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+        "sourceProof": {
+          "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+          "sourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
+          "runId": 43135308161,
+          "jobId": 130909340204,
+          "sourceTestsPass": 4,
+          "sourceTestsFail": 0,
+          "decision": "PASS_RUN2437_B1_COLD_SHOPPER_READ_PARITY_4_OF_4_SERVED_BLOB",
+          "evidencePath": "tools/qa/cxorbia-i3-b1-cold-login-parallel-source.test.mjs",
+          "evidenceGitBlob": "f400a1bb34c383eb6288cd60eaa8a31f50e2c377",
+          "scope": "SOURCE_QA_AND_EXISTING_HOSTING_READBACK_NOT_SHOPPER_AUTHENTICATED_E2E",
+          "production": false
+        },
+        "production": false
+      }
+    ],
+    "moduleCertificatesAdded": 0,
+    "humanBlocksPromoted": 0,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "production": false,
+    "nextExactAction": "C3 focal sobre la fuente e245 y el DEV Hosting existente; no re-materializar bytes ya acreditados."
+  },
+  "c3Run2485PathBoundCiQaRecovery20261113": {
+    "id": "CXORBIA-I3-Q2-RUN2485-THREE-PATH-SOURCE-QA-RECOVERY",
+    "dateLocal": "2026-11-13",
+    "iteration": "I3",
+    "classification": "MAPPING_FAILURE_RECOVERY",
+    "status": "SOURCE_QA_PROVEN__C3_REEVALUATION_PENDING__HUMAN_E2E_HOLD",
+    "scope": "SOURCE_QA_ONLY_EXACT_SOURCE_BLOBS_NOT_MODULE_OR_HUMAN_ACCEPTANCE",
+    "observedCI": {
+      "runId": 43441972301,
+      "runNumber": 2485,
+      "jobId": 131941602910,
+      "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43441972301",
+      "controlHead": "74d901c3cd50a34124a161acefd5c45d1b392121",
+      "job": "canonical-candidate-authority",
+      "jobResult": "success",
+      "testReadbackDate": "2026-11-13",
+      "productFilesChanged": 0,
+      "hostingDeploys": 0,
+      "runtimeDeploys": 0
+    },
+    "provenPaths": [
+      {
+        "id": "I3-Q2-RUN2485-EXTERNAL-QUESTIONNAIRE-ROUTING",
+        "owners": ["app/adapters/tya-live-source-inplace-apply.js"],
+        "currentOwnerGitBlobs": {"app/adapters/tya-live-source-inplace-apply.js": "45e1cd1b8c01d6276be2c256d5b99baa93e90252"},
+        "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+        "sourceProof": {
+          "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+          "sourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
+          "runId": 43441972301,
+          "jobId": 131941602910,
+          "sourceTestsPass": 11,
+          "sourceTestsFail": 0,
+          "decision": "PASS_RUN2485_B10_EXTERNAL_PROVIDER_ROUTING_11_OF_11_EXACT_BLOB",
+          "evidencePath": "tools/qa/cxorbia-i3-b10-external-provider-routing.test.mjs",
+          "evidenceGitBlob": "1a28597dc938b60286ba8c683afd51695f614b8c",
+          "scope": "SOURCE_QA_ONLY_NOT_REMOTE_PROVIDER_ACK_OR_HUMAN_ACCEPTANCE",
+          "production": false
+        },
+        "production": false
+      },
+      {
+        "id": "I3-Q2-RUN2485-CLIENT-PROJECT-PERIOD-PARITY",
+        "owners": ["app/modules/clientes.js"],
+        "currentOwnerGitBlobs": {"app/modules/clientes.js": "28afb209ff3b882f322d2ba9a3f40c18997effef"},
+        "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+        "sourceProof": {
+          "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+          "sourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
+          "runId": 43441972301,
+          "jobId": 131941602910,
+          "sourceTestsPass": 4,
+          "sourceTestsFail": 0,
+          "decision": "PASS_RUN2485_CLIENT_PERIOD_PROJECT_PARITY_4_OF_4_EXACT_BLOB",
+          "evidencePath": "tools/qa/cxorbia-i3-period-project-client-parity.test.mjs",
+          "evidenceGitBlob": "4206640395f73f5f6b62e896252747c6871a2209",
+          "scope": "SOURCE_QA_ONLY_NOT_CLIENT_PORTAL_E2E_OR_HUMAN_ACCEPTANCE",
+          "production": false
+        },
+        "production": false
+      },
+      {
+        "id": "I3-Q2-RUN2485-DURABLE-PROJECT-QUESTIONNAIRE-CONFIG",
+        "owners": ["backend/runtime/cxorbia-project-command-provider-v1.mjs"],
+        "currentOwnerGitBlobs": {"backend/runtime/cxorbia-project-command-provider-v1.mjs": "bfd59b4b91dcd2337d944223c6cd5c48ca5f0e76"},
+        "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+        "sourceProof": {
+          "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+          "sourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
+          "runId": 43441972301,
+          "jobId": 131941602910,
+          "sourceTestsPass": 13,
+          "sourceTestsFail": 0,
+          "decision": "PASS_RUN2485_PROJECT_QUESTIONNAIRE_CONFIG_13_OF_13_EXACT_BLOB",
+          "evidencePath": "backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs",
+          "evidenceGitBlob": "2cd09be34a8f9588deded69cf4b52c08567640fc",
+          "scope": "SOURCE_QA_ONLY_NOT_EXTERNAL_PROVIDER_LIVE_E2E_OR_HUMAN_ACCEPTANCE",
+          "production": false
+        },
+        "production": false
+      }
+    ],
+    "moduleCertificatesAdded": 0,
+    "humanBlocksPromoted": 0,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "production": false,
+    "nextExactAction": "Reevaluar C3 sobre misma source, acreditar únicamente los dos blobs y pruebas de RUN2485, conservar E2E y aprobación humana en HOLD."
+  },
   "c3Run2479ExactPathBoundSourceProofRecovery20261113": {
     "id": "CXORBIA-I3-C3-RUN2479-THREE-EXACT-PATH-SOURCE-PROOFS",
     "dateLocal": "2026-11-13",
