@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "cxorbia.i3.q2.two-path-exact-source-qa.v1",
+  "id": "CXORBIA-I3-Q2-BRIDGE-THEME-RUN2498",
+  "observedAtLocal": "2026-11-13",
+  "iteration": "I3",
+  "classification": "MAPPING_FAILURE_RECOVERY",
+  "sourceCommit": "f36177913836042df70e21c04db61e760a3fcd57",
+  "sourceTree": "6f374f6394dad930d4eed8dad666d1383b252835",
+  "productSource": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+  "owners": [
+    {
+      "path": "app/adapters/tya-c6-domain-consistency-bridge.js",
+      "exactGitBlob": "0a551989ea82eac52eea3b1440965812d83d4f17",
+      "assertion": "VRM259 late consistency bridge cannot override period scoped canonical pending count"
+    },
+    {
+      "path": "app/styles/theme.css",
+      "exactGitBlob": "90284e3c4cf1305d2523b596234772529ee5bdaf",
+      "assertion": "HUMAN 2026-10-13 shared contrast and type sizes are protected in actual source"
+    }
+  ],
+  "sourceQa": {
+    "workflowRun": 2498,
+    "workflowRunId": 43488105293,
+    "workflowUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43488105293",
+    "canonicalJobId": 132101820291,
+    "canonicalJobResult": "success",
+    "testPath": "tools/qa/cxorbia-i3-b7-hf16-pending-count-parity-source.test.mjs",
+    "testGitBlob": "6360c9b36c29bf54f86be363dabf6d4f1b00c867",
+    "command": "node --test tools/qa/cxorbia-i3-b7-hf16-pending-count-parity-source.test.mjs",
+    "sourceTestsPass": 11,
+    "sourceTestsFail": 0,
+    "expectedObserved": [
+      "Bridge derives pending postulations by scoped activePosts, not unscoped legacy rows",
+      "Shared CSS protects contrast and readable typography"
+    ]
+  },
+  "scope": "EXACT_TWO_SOURCE_PATHS_NOT_MODULE_CERTIFICATION_OR_HUMAN_E2E",
+  "productWrites": 0,
+  "deploys": 0,
+  "production": false,
+  "gate20": "HOLD",
+  "gate21": "HOLD"
+}
