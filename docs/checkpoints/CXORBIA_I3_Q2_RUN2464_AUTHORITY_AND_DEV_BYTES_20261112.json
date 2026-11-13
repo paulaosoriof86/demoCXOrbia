@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "cxorbia.i3.q2.control-recovery-and-exact-dev-byte-readback.v1",
+  "dateLocal": "2026-11-12",
+  "iteration": "I3",
+  "stage": "Q2",
+  "state": "HOLD",
+  "classification": "MAPPING_FAILURE",
+  "controlRepair": {
+    "beforeHead": "a23078c5fc6ab4d17fac0bed06f48d76ffecbe58",
+    "afterHead": "81558de32cb688ac240c7d5b5f3b5d463261d2a4",
+    "changedFile": "CXORBIA_RECOVERY_EXECUTION_CURRENT.json",
+    "before": "nested moduleTruthAuthority and activeShockModuleTruth referenced V299 while descriptor/top-level referenced V300",
+    "after": "both nested pointers reference RECOVERY-I3-MODULE-TRUTH-MATRIX-20261112-V300.json blob eef32b09dc3d4af1cab0da3f6f7a12fd3ec182a7",
+    "workflowRun": 2464,
+    "workflowRunId": 43367581427,
+    "workflowUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43367581427",
+    "workflowConclusion": "success",
+    "localContinuityCheck": "PASS_21_DOMAINS_ZERO_FAILURES",
+    "regressionTests": {
+      "pass": 33,
+      "fail": 0
+    },
+    "productFilesChanged": 0
+  },
+  "productSource": {
+    "sha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+    "tree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1"
+  },
+  "dev": {
+    "url": "https://cxorbia-backend-dev.web.app/index-backend-dev.html",
+    "hostingVersionPreviouslyProven": "sites/cxorbia-backend-dev/versions/8dea702589084bcf",
+    "runtimeRevisionPreviouslyProven": "cxorbia-live-hr-dev-00370-fl2",
+    "newDeploys": 0,
+    "readbackMethod": "public HTTPS GET compared byte-for-byte SHA-256 with canonical Git source; no authenticated user data; not a provider ACK or E2E",
+    "exactAssetMatches": [
+      [
+        "index-backend-dev.html",
+        "38460409bee133f1f746156de1e1e5fa3d5db0c7a22c6d0d0b36a64f947c0479"
+      ],
+      [
+        "modules/shoppers.js",
+        "b985cc833635944d48bd77f66a501cb6136a1dfc898f892de2501635a65f2150"
+      ],
+      [
+        "modules/misvisitas.js",
+        "a51799d5ac24f516d429b84ff8d79987dc3eeea6aea4c6484e39b01a43b56597"
+      ],
+      [
+        "modules/cert.js",
+        "51b0a06b53cdf38437137a390cd624bb6270721b973eebd1d03e425dfce6f344"
+      ],
+      [
+        "modules/finanzas.js",
+        "3f98f30564a18fbfa924d723d45e617a169e887c0a7136f44d85216d99dcf510"
+      ],
+      [
+        "modules/documentos.js",
+        "d9dc11f4a61a33070557c6350ca371e08a399f8f4f336b34a707ab065644c4b7"
+      ],
+      [
+        "modules/dashboard.js",
+        "44060d8d043cfaa57ad7f55618b1de217c4eb8e195111caf33ed82e6fa2cd81c"
+      ]
+    ],
+    "matched": 7,
+    "checked": 7
+  },
+  "preterminalLocalReproduction": {
+    "decision": "PASS_C3_PRETERMINAL_COMPOSITION",
+    "moduleCount": 21,
+    "matchModules": 5,
+    "sourceReadyModules": 7,
+    "pendingFileCount": 66,
+    "pendingOwnerProof": 52,
+    "pendingBlobProvenance": 14,
+    "pendingMappings": 0,
+    "terminalEligible": false
+  },
+  "certification": {
+    "strictModules": {
+      "pass": 5,
+      "total": 21
+    },
+    "sourceReadyDomains": {
+      "ready": 7,
+      "total": 21
+    },
+    "pathBoundFiles": {
+      "accredited": 90,
+      "total": 156
+    },
+    "humanPassBlocks": {
+      "passed": [
+        "B4",
+        "B5",
+        "B6",
+        "B7"
+      ],
+      "total": 9
+    },
+    "newModuleCertificates": 0,
+    "newPathCredits": 0
+  },
+  "limits": "Control/byte identity only; does not certify UI functionality, authenticated Admin/Shopper E2E, HR provider ACK, finance reconciliation, Gate20, Gate21 or I4",
+  "nextExactAction": "I3/Q2 recover independent owner and exact-blob proof only for 66 pending paths; then Q3 Admin/Shopper/HR/ACK, Q4 B8 finance, Q5 21-domain same-artifact E2E, Q6 Gate20/Gate21. Preserve B4-B7 human PASS; do not touch production.",
+  "i4Authorized": false,
+  "production": "DO_NOT_TOUCH"
+}
