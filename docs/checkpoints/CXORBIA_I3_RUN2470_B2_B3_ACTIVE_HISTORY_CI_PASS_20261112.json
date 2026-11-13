@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "cxorbia.i3.b2b3.active-history-ci.v1",
+  "iteration": "I3",
+  "decision": "PASS_SCOPED_B2_B3_ACTIVE_HISTORY_PARITY_SOURCE_CI_NOT_HUMAN_BLOCK_ACCEPTANCE",
+  "status": "HOLD",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "run": {
+    "number": 2470,
+    "id": 43372438540,
+    "conclusion": "success",
+    "headSha": "0b344b16603ead23d59c9633cc9db4df30e123b8",
+    "canonicalJobId": 131711104068,
+    "canonicalJobConclusion": "success",
+    "url": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43372438540"
+  },
+  "proof": {
+    "testFile": "tools/qa/cxorbia-i3-b2-b3-active-history-parity.test.mjs",
+    "testAddedToExistingCanonicalGate": true,
+    "testsPassed": 3,
+    "testsFailed": 0,
+    "cases": [
+      "submitted-but-unpaid belongs to history not operationally active",
+      "assigned scheduled realized-unsubmitted remain active",
+      "historical and other-period rows never become active"
+    ],
+    "workflowSourceBlob": "94de51782f527298eb7f493da995e8809e91a8c9"
+  },
+  "product": {
+    "sha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+    "tree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/8dea702589084bcf",
+    "runtimeRevision": "cxorbia-live-hr-dev-00370-fl2",
+    "productSourceChangedInRun": false,
+    "productDeployedInRun": false
+  },
+  "previousB3E2EReceipt": "docs/checkpoints/CXORBIA_I3_RUN2469_B3_CURRENT_SOURCE_SYNTHETIC_DEV_E2E_PASS_20261112.json",
+  "acceptance": {
+    "b2Human": "HOLD",
+    "b3Human": "HOLD",
+    "strictModulesPassed": 5,
+    "totalModules": 21,
+    "strictPercent": 23.81,
+    "sourceReadyDomains": 7,
+    "sourceReadyPercent": 33.33,
+    "sourcePathsPassed": 90,
+    "totalSourcePaths": 156,
+    "pathPercent": 57.69,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false
+  },
+  "browser": {
+    "currentAttempt": "CHROME_EXTENSION_CONNECTOR_TIMED_OUT",
+    "newHumanReadback": false,
+    "doNotInferVisualPass": true
+  },
+  "production": {
+    "url": "https://tya-plataforma.web.app/",
+    "changed": false,
+    "status": "DO_NOT_TOUCH"
+  },
+  "next": "Browser authenticated B2/B3 current-version functional readback; remaining B3 reprogram/check-in/camera/GPS/storage ACK; keep B8 payment authority separate; only advance full human block after exact-source and cross-role readbacks."
+}
