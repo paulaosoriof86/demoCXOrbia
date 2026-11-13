@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "cxorbia.i3.b3.schedule-reschedule-current-dev-e2e.v1",
+  "evidenceType": "CURRENT_SOURCE_SYNTHETIC_PROVIDER_E2E_AND_CLEANUP_NOT_TERMINAL_HUMAN_CERTIFICATION",
+  "decision": "PASS_I3_B3_SYNTHETIC_SHOPPER_SCHEDULE_AND_RESCHEDULE_ACK_DEV",
+  "iteration": "I3",
+  "status": "HOLD",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "run": {
+    "number": 2472,
+    "id": 43374267973,
+    "headSha": "aee7ac812f82f6e926263d21d770f80edf24d3c3",
+    "conclusion": "success",
+    "jobId": 131717161824,
+    "jobName": "i3-b3-schedule-two-shopper-dev-qa",
+    "jobConclusion": "success",
+    "url": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43374267973",
+    "artifactId": 14013049686,
+    "artifactName": "cxorbia-i3-b3-schedule-two-shopper-43374267973",
+    "artifactDigest": "sha256:0e570bcbe226edc62867f61d4725ae1f5c812324d3d6d2c85f19e12e2bf95640",
+    "artifactSizeBytes": 4309,
+    "artifactExpiresAt": "2026-12-13T05:48:43Z"
+  },
+  "product": {
+    "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+    "sourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
+    "devHosting": "sites/cxorbia-backend-dev/versions/8dea702589084bcf",
+    "devRuntimeRevision": "cxorbia-live-hr-dev-00370-fl2",
+    "devRuntimeDigest": "sha256:396cd23f895a98606fa9ca238132a5515065c07fec632cd73c00cc2e6d6c639e",
+    "productFilesChanged": false,
+    "productDeploy": false
+  },
+  "hrRevision": {
+    "before": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "after": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "stable": true,
+    "externalWrites": 0
+  },
+  "functionalChecks": {
+    "syntheticVisitCreated": 1,
+    "syntheticVisitDeleted": 1,
+    "ownerScheduleProviderAck": true,
+    "otherShopperScheduleDenied": true,
+    "scheduleIndependentReadback": true,
+    "scheduleReplayIdempotent": true,
+    "ownerRescheduleRequestProviderAck": true,
+    "otherShopperRescheduleDenied": true,
+    "reschedulePendingReviewReadback": true,
+    "rescheduleReplayIdempotent": true,
+    "scheduledDatePreservedPendingReview": true,
+    "internalAdminBulletinCreated": 1,
+    "internalAdminBulletinDeleted": 1,
+    "noticesLeftByThisTest": 0,
+    "cleanup": true,
+    "errors": []
+  },
+  "safety": {
+    "commercialVisitWrites": 0,
+    "hrWrites": 0,
+    "paymentWrites": 0,
+    "authWrites": 0,
+    "builds": 0,
+    "deploys": 0,
+    "production": false
+  },
+  "previousAttempt": {
+    "runNumber": 2471,
+    "runId": 43374024975,
+    "providerE2EResult": "PASS",
+    "runConclusion": "failure",
+    "cause": "Stale terminal comparison expected old PASS name after QA case name changed",
+    "classification": "SOURCE_FAILURE_QA_HARNESS",
+    "resolution": "One-line predicate alignment, rerun 2472 SUCCESS; no product, provider, HR or production fix"
+  },
+  "browser": {
+    "currentAttempt": "CHROME_EXTENSION_TAB_READ_TIMEOUT_AFTER_TAB_DISCOVERY",
+    "classification": "ENVIRONMENT_FAILURE",
+    "humanVisualRevalidated": false,
+    "notProductDefect": true
+  },
+  "frozenAccounting": {
+    "strictModulesPassed": 5,
+    "strictModulesTotal": 21,
+    "strictPercent": 23.81,
+    "sourceReadyDomains": 7,
+    "sourceReadyTotal": 21,
+    "sourceReadyPercent": 33.33,
+    "provenSourcePaths": 90,
+    "sourcePathsTotal": 156,
+    "sourcePathsPercent": 57.69,
+    "humanPassBlocks": [
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ],
+    "humanBlocksTotal": 9,
+    "humanPercent": 44.44,
+    "b3ScopedProviderCasesPassed": 2,
+    "b3ScopedProviderCasesTotal": 2,
+    "b3FullHuman": "HOLD",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false
+  },
+  "production": {
+    "url": "https://tya-plataforma.web.app/",
+    "status": "DO_NOT_TOUCH",
+    "changed": false
+  },
+  "nextExactAction": "Current DEV same-artifact B3 authenticated real UI check-in (camera/GPS/timestamp/visitId/Storage ACK) plus Admin review/reload and role identity, when Chrome tab controller works; path-bound C3 and human acceptance remain pending; do not inflate 5/21."
+}
