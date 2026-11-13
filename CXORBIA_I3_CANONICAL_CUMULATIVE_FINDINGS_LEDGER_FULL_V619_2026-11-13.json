@@ -40145,7 +40145,7 @@
   },
   "successorOf": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V613_2026-11-12.json",
   "createdAt": "2026-11-12",
-  "currentLedgerSuccessor": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V618_2026-11-13.json",
+  "currentLedgerSuccessor": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V619_2026-11-13.json",
   "currentProductSourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
   "currentProductSourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
   "vrm301VisitDetailBinding": {
