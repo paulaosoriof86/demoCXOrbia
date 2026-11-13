@@ -10,7 +10,7 @@ import {getAuth as getAdminAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
 import {getStorage as getAdminStorage} from 'firebase-admin/storage';
 import {initializeApp as initializeClientApp,deleteApp as deleteClientApp} from 'firebase/app';
-import {getAuth as getClientAuth,signInWithCustomToken as clientSignIn} from 'firebase/auth';
+import {getAuth as getClientAuth,signInWithCustomToken as clientSignIn,getIdTokenResult} from 'firebase/auth';
 import {getStorage as getClientStorage,ref as storageRef,uploadBytes,getMetadata} from 'firebase/storage';
 
 const env=process.env;
@@ -36,7 +36,7 @@ const storagePath=`tenants/${tenantId}/projects/${projectId}/periods/${periodId}
 const pixels=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/a7sAAAAASUVORK5CYII=','base64');
 const checksum=sha(pixels),fakeLat=14.6,fakeLon=-90.5;
 const result={schemaVersion:'cxorbia.i3.b3.checkin-storage-synthetic-dev.v1',decision:'HOLD',sourceSha:source,
-  visitId,evidenceId,storagePath,hrBefore:null,hrAfter:null,storageSdkUploadAck:false,storageReadback:false,
+  visitId,evidenceId,storagePath,hrBefore:null,hrAfter:null,clientClaimsVerified:false,storageSdkUploadAck:false,storageReadback:false,
   storageObjectExists:false,otherShopperDenied:false,missingStorageAckDenied:false,providerAck:false,
   independentFirestoreReadback:false,receiptAuditDurable:false,idempotentReplay:false,cleaned:false,
   syntheticGps:true,syntheticImage:true,cameraUxTested:false,gpsUxTested:false,humanAcceptance:false,
@@ -118,7 +118,12 @@ try{
   track(visitRef);result.safety.syntheticVisitsCreated++;
 
   clientApp=initializeClientApp(config,`cxorbia-i3-b3-checkin-${runId}`);
-  await clientSignIn(getClientAuth(clientApp),ownerIdentity.customToken);
+  const session=await clientSignIn(getClientAuth(clientApp),ownerIdentity.customToken);
+  const clientClaims=(await getIdTokenResult(session.user)).claims;
+  result.clientClaimsVerified=clientClaims.role==='shopper'&&clientClaims.authNamespace==='shopper'
+    &&str(clientClaims.shopperId)===str(owner[0].shopperId)&&str(clientClaims.tenantId)===tenantId
+    &&arr(clientClaims.projectIds).map(str).includes(projectId);
+  requireOk(result.clientClaimsVerified,'AUTH_FAILURE','CLIENT_STORAGE_SESSION_CLAIMS_MISMATCH');
   const objectRef=storageRef(getClientStorage(clientApp),storagePath);
   storageMayExist=true; // Cleanup even if the client loses its ACK after the provider writes.
   const uploaded=await uploadBytes(objectRef,pixels,{contentType:'image/png',customMetadata:{
@@ -187,7 +192,7 @@ finally{
     &&result.receiptAuditDurable&&result.idempotentReplay&&result.cleaned&&result.hrBefore===expectedHr&&result.hrAfter===expectedHr
     ?'PASS_I3_B3_SYNTHETIC_CHECKIN_STORAGE_SDK_PROVIDER_ACK_DEV':'HOLD_I3_B3_SYNTHETIC_CHECKIN_STORAGE_SDK_PROVIDER_ACK_DEV';
   write();console.log(JSON.stringify({decision:result.decision,sourceSha:source,checks:{storageSdkUploadAck:result.storageSdkUploadAck,
-    storageReadback:result.storageReadback,storageObjectExists:result.storageObjectExists,missingStorageAckDenied:result.missingStorageAckDenied,
+    storageReadback:result.storageReadback,storageObjectExists:result.storageObjectExists,clientClaimsVerified:result.clientClaimsVerified,missingStorageAckDenied:result.missingStorageAckDenied,
     otherShopperDenied:result.otherShopperDenied,providerAck:result.providerAck,independentFirestoreReadback:result.independentFirestoreReadback,
     receiptAuditDurable:result.receiptAuditDurable,idempotentReplay:result.idempotentReplay,cleaned:result.cleaned},
     hrStable:result.hrBefore===result.hrAfter,safety:result.safety,errors:result.errors}));
