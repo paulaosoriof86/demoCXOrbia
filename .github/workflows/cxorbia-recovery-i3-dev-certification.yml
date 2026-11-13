@@ -93,6 +93,7 @@ jobs:
       node tools/qa/tya-payment-history-source-safe-gate.mjs
       node tools/qa/tya-postulation-eligibility-r21-gate.mjs
       node tools/qa/tya-hr-header-variants-r20-gate.mjs --repo .
+      node --test tools/qa/cxorbia-i3-b2-b3-active-history-parity.test.mjs
       node --test tools/qa/cxorbia-i3-visitas-effective-availability.test.mjs
       node --test tools/qa/cxorbia-i3-e03-visita-payment-human-state.test.mjs
       node --test tools/qa/cxorbia-i3-vrm301-idempotent-visit-detail.test.mjs
