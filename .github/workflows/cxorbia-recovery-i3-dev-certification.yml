@@ -249,34 +249,40 @@ jobs:
    - name: Guard DEV artifact and no-production boundaries
      run: |
       set -Eeuo pipefail
-      P=docs/checkpoints/CXORBIA_I3_RUN2382_PAIRED_DEV_CHROME_READBACK_20261110.json
+      P=docs/checkpoints/CXORBIA_I3_VRM328_HOSTING_ONLY_DEV_RUN2437_ACK_20261111.json
       test "$GITHUB_REF_NAME" = recovery/cxorbia-phase-a-20260831
-      test "$(jq -r '.productSourceSha' "$P")" = "$FOCAL_SOURCE"
-      test "$(jq -r '.productSourceTree' "$P")" = "$FOCAL_TREE"
-      test "$(jq -r '.providerReceipt.decision' "$P")" = PASS_VRM154_156_EXACT_DEV_MATERIALIZATION
-      test "$(jq -r '.providerReceipt.production' "$P")" = false
+      test "$(jq -r '.source.sha' "$P")" = "$FOCAL_SOURCE"
+      test "$(jq -r '.source.tree' "$P")" = "$FOCAL_TREE"
+      test "$(jq -r '.decision' "$P")" = PASS_I3_CURRENT_SOURCE_HOSTING_DEV_ONLY
+      test "$(jq -r '.production.status' "$P")" = DO_NOT_TOUCH
+      test "$(jq -r '.production.changed' "$P")" = false
+      test "$(jq -r '.i4Authorized' "$P")" = false
       test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
       test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
       test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
       git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules
       node --check tools/qa/cxorbia-i3-b3-schedule-two-shopper-dev-focal.mjs
       mkdir -p "$B3_OUT"
-      echo "EXPECTED_HR_REVISION=$(jq -r '.providerReceipt.hrRevision' "$P")" >> "$GITHUB_ENV"
+      HR_META="$(curl --fail --silent --show-error --max-time 90 -H 'cache-control: no-cache' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&b3-preflight=$GITHUB_RUN_ID")"
+      echo "$HR_META" | jq -e '.ok==true and .sourceSafe==true and .revisionStable==true and .hrWrites==false and .production==false' >/dev/null
+      EXPECTED_HR_REVISION="$(echo "$HR_META" | jq -r '.revision')"
+      [[ "$EXPECTED_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+      echo "EXPECTED_HR_REVISION=$EXPECTED_HR_REVISION" >> "$GITHUB_ENV"
    - uses: google-github-actions/auth@v2
      with:
       credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
    - uses: google-github-actions/setup-gcloud@v2
      with:
       project_id: '${{ env.PROJECT }}'
-   - name: Assert unchanged Cloud Run and Hosting RUN2382 deployment
+   - name: Assert unchanged Cloud Run and Hosting RUN2437 DEV artifact
      run: |
       set -Eeuo pipefail
-      P=docs/checkpoints/CXORBIA_I3_RUN2382_PAIRED_DEV_CHROME_READBACK_20261110.json
+      P=docs/checkpoints/CXORBIA_I3_VRM328_HOSTING_ONLY_DEV_RUN2437_ACK_20261111.json
       gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$B3_OUT/runtime.json"
-      test "$(jq -r '.status.latestReadyRevisionName' "$B3_OUT/runtime.json")" = "$(jq -r '.providerReceipt.runtimeRevision' "$P")"
+      test "$(jq -r '.status.latestReadyRevisionName' "$B3_OUT/runtime.json")" = "$(jq -r '.runtime.revision' "$P")"
       TOKEN="$(gcloud auth print-access-token)"
       curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$B3_OUT/hosting.json"
-      test "$(jq -r '.release.version.name' "$B3_OUT/hosting.json")" = "$(jq -r '.providerReceipt.hostingVersion' "$P")"
+      test "$(jq -r '.release.version.name' "$B3_OUT/hosting.json")" = "$(jq -r '.hosting.after' "$P")"
    - name: Install isolated Firebase Admin test dependency
      run: |
       set -Eeuo pipefail
