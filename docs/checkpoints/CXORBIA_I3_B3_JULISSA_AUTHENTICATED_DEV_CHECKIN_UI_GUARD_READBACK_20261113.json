@@ -1,0 +1,124 @@
+{
+  "schemaVersion": "cxorbia.i3.b3.authenticated-shopper-checkin-ui-guard.v1",
+  "checkpointType": "IMMUTABLE_FOCAL_BROWSER_READBACK",
+  "dateLocal": "2026-11-13",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "status": "HOLD",
+  "decision": "PASS_B3_AUTHENTICATED_SHOPPER_DEV_READONLY_CHECKIN_UI_GUARD_ONLY",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadBefore": "a035a1808aeb30ffc25c18d9ea66c882eb01de12",
+  "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+  "sourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
+  "environment": {
+    "url": "https://cxorbia-backend-dev.web.app/index-backend-dev.html",
+    "devHostingVersion": "sites/cxorbia-backend-dev/versions/8dea702589084bcf",
+    "devCloudRunRevision": "cxorbia-live-hr-dev-00370-fl2",
+    "devCloudRunDigest": "sha256:396cd23f895a98606fa9ca238132a5515065c07fec632cd73c00cc2e6d6c639e",
+    "devStorageRuleset": "projects/cxorbia-backend-dev/rulesets/30db5c2c-07fe-4d6c-8be3-7de55a9f4457",
+    "evidenceSameServedDev": true
+  },
+  "browserReadback": {
+    "browser": "Chrome connected extension",
+    "access": "authenticated shopper",
+    "visibleShopper": "Julissa Flores",
+    "country": "GT",
+    "project": "Cinépolis",
+    "period": "NOV 2026",
+    "module": "Mis Visitas",
+    "activeVisitsBefore": 1,
+    "historicalVisitsBefore": 9,
+    "applicationsBefore": 0,
+    "selectedVisit": "C. Sankris Mall",
+    "visitCity": "San Cristobal",
+    "visitStatus": "Agendada",
+    "scheduledDate": "2026-11-12",
+    "checkinButtonRendered": true,
+    "checkinDialogOpened": true,
+    "modalVisitMatchesSelectedVisit": true,
+    "fileChooserRendered": true,
+    "gpsCaptureButtonRendered": true,
+    "remoteAckDisclosureRendered": true,
+    "saveButtonDisabledWithoutPhotoGps": true,
+    "dialogClosedWithoutSubmitting": true,
+    "activeVisitsAfter": 1,
+    "historicalVisitsAfter": 9,
+    "visitStatusAfter": "Agendada",
+    "sameSelectedVisitAfter": true,
+    "observations": "DOM snapshot plus in-session visual screenshot; screenshot not uploaded to repository"
+  },
+  "safety": {
+    "actualPhotoCaptured": false,
+    "actualGpsCaptured": false,
+    "screenshotUploaded": false,
+    "checkinSubmitted": false,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "commercialVisitWrites": 0,
+    "authWrites": 0,
+    "paymentWrites": 0,
+    "productionWrites": 0,
+    "browserPermissionPromptsAccepted": false
+  },
+  "linkedPreviousProof": {
+    "run2479": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43382371061",
+    "providerCheckpoint": "docs/checkpoints/CXORBIA_I3_RUN2479_B3_STORAGE_RULES_DEV_DEPLOY_CHECKIN_ACK_PASS_20261113.json",
+    "providerSyntheticCheckin": "PASS (Storage SDK upload+provider ACK+independent readback+cross-shopper denial+cleanup)",
+    "humanCheckin": "HOLD (camera/GPS/timestamp/end-to-end UI→Admin not tested)"
+  },
+  "accounting": {
+    "strictModules": {
+      "passed": 5,
+      "total": 21,
+      "percent": 23.81,
+      "delta": 0
+    },
+    "sourceReadyDomains": {
+      "ready": 7,
+      "total": 21,
+      "percent": 33.33,
+      "delta": 0
+    },
+    "provenSourcePaths": {
+      "proven": 90,
+      "total": 156,
+      "percent": 57.69,
+      "delta": 0
+    },
+    "humanBlocks": {
+      "passed": 4,
+      "total": 9,
+      "percent": 44.44,
+      "delta": 0
+    },
+    "b3SyntheticProviderSubflows": {
+      "passed": 3,
+      "total": 3,
+      "percent": 100,
+      "delta": 0
+    },
+    "b3ReadOnlyUiSmoke": {
+      "passed": 1,
+      "total": 1,
+      "percent": 100,
+      "scope": "only dialog & safe-guard, not full check-in"
+    },
+    "b3Integral": "HOLD",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false
+  },
+  "changes": {
+    "productSourceChanged": false,
+    "hostingDeployed": false,
+    "cloudRunDeployed": false,
+    "storageRulesDeployedThisIteration": false,
+    "testVisitModified": false,
+    "controlEvidenceOnly": true
+  },
+  "nextExactAction": "Run a bounded isolated synthetic visit UI E2E with authenticated Shopper photo/GPS/time/visitId and independent Admin readback; do not use or alter the Julissa commercial visit. When safe UI transmission cannot be approved, keep B3 HOLD and pursue C3 66 remaining owner/path proofs without resetting completed evidence.",
+  "production": {
+    "url": "https://tya-plataforma.web.app/",
+    "state": "DO_NOT_TOUCH"
+  }
+}
