@@ -5326,14 +5326,14 @@
     },
     "receipt": {
       "kind": "GITHUB_ACTIONS_C3_PRETERMINAL_NOT_CERTIFICATE",
-      "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43292833400",
-      "runId": 43292833400,
-      "runNumber": 2462,
+      "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43388809383",
+      "runId": 43388809383,
+      "runNumber": 2482,
       "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
       "sourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
       "decision": "HOLD_C3_PRETERMINAL_SOURCE_EVIDENCE_PENDING",
-      "artifactId": 13978730992,
-      "artifactDigest": "sha256:c788d1ff93b75fbb21f34aae9e7db64ed324b8ad86be6053d0e83b2faa794626",
+      "artifactId": 14020091440,
+      "artifactDigest": "sha256:515da7c9963e851fc1b3bec03bc00624955592cd900e88346b0b46df12f7d083",
       "terminalCertified": false,
       "production": false
     },
@@ -13596,7 +13596,7 @@
     "branch": "recovery/cxorbia-phase-a-20260831",
     "productSource": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
     "production": "DO_NOT_TOUCH",
-    "currentC3Run": 2462,
+    "currentC3Run": 2482,
     "baseline": {
       "strictMatch": 5,
       "domains": 21,
@@ -13607,16 +13607,16 @@
       "findings": 328
     },
     "currentVerified": {
-      "runNumber": 2462,
-      "runId": 43292833400,
-      "controlCommit": "941881ddea1f5ce6609e0d23a6abd49e3754b60e",
-      "artifactSha256": "c788d1ff93b75fbb21f34aae9e7db64ed324b8ad86be6053d0e83b2faa794626",
+      "runNumber": 2482,
+      "runId": 43388809383,
+      "controlCommit": "1d2767290edff821deac13774bae3dea5f89b37e",
+      "artifactSha256": "515da7c9963e851fc1b3bec03bc00624955592cd900e88346b0b46df12f7d083",
       "sourceReady": 7,
       "strictHistoricalMatch": 5,
       "pendingOwnerProof": 52,
-      "pendingProvenance": 14,
+      "pendingProvenance": 11,
       "pendingMapping": 0,
-      "totalPendingPaths": 66,
+      "totalPendingPaths": 63,
       "newTerminalCertificates": 0,
       "production": "DO_NOT_TOUCH"
     },
@@ -13631,9 +13631,9 @@
       {
         "block": "I3-Q2",
         "owner": "C3_SOURCE_PROVENANCE",
-        "action": "Two additional exact-blob financial adapters passed RUN2458 source QA 6/6 and RUN2462 C3 preterminal; retain all prior six receipts. Continue 14 provenance + 52 owner gaps, no terminal module autocertification.",
+        "action": "Preserve RUN2458 exact-blob financial QA and three additional path-bound proofs from RUN2479; RUN2482 C3 preterminal audited 93/156 routes. Continue 11 provenance + 52 owner gaps, no terminal module autocertification.",
         "exit": "21_SOURCE_READY_AND_0_PATH_BOUND_GAPS",
-        "status": "IN_PROGRESS_RUN2462_7_OF_21_SOURCE_READY_66_PENDING_PATHS"
+        "status": "IN_PROGRESS_RUN2482_7_OF_21_SOURCE_READY_63_PENDING_PATHS"
       },
       {
         "block": "I3-Q3",
