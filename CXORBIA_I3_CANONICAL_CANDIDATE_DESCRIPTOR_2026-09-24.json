@@ -155,8 +155,8 @@
   "productSourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
   "productTreeAuthority": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
   "predecessorProductSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V619_2026-11-13.json",
-  "findingsLedgerExpectedGitBlob": "423e0e332170f7640c03de2d7bdd95c92e7bff81",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V620_2026-11-13.json",
+  "findingsLedgerExpectedGitBlob": "9eec60a4b26d7819bb5223ce513e1ba3e1294c66",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -19099,8 +19099,8 @@
       "gitBlob": "9594f4d407914b47342fd21dc827a5f442294ad7"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V619_2026-11-13.json",
-      "gitBlob": "423e0e332170f7640c03de2d7bdd95c92e7bff81"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V620_2026-11-13.json",
+      "gitBlob": "9eec60a4b26d7819bb5223ce513e1ba3e1294c66"
     },
     "receipt": {
       "kind": "GITHUB_ACTIONS_C3_PRETERMINAL_NOT_CERTIFICATE",
@@ -22742,5 +22742,31 @@
     "production": false,
     "authorizationI4": false,
     "expectedNext": "RUN_EXISTING_C3_READONLY_FOR_V619_AND_READ_ARTIFACT"
+  },
+  "c3Q2LedgerPromotionV620": {
+    "id": "CXORBIA-I3-Q2-LEDGER-V620-EXACT-BRIDGE-THEME-SOURCE-PROOF-20261113",
+    "iteration": "I3",
+    "status": "HOLD_Q2_C3_REEVALUATION_REQUIRED",
+    "classification": "MAPPING_FAILURE_RECOVERY",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V620_2026-11-13.json",
+    "ledgerGitBlob": "9eec60a4b26d7819bb5223ce513e1ba3e1294c66",
+    "priorLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V619_2026-11-13.json",
+    "priorLedgerGitBlob": "423e0e332170f7640c03de2d7bdd95c92e7bff81",
+    "newOwners": [
+      "app/adapters/tya-c6-domain-consistency-bridge.js",
+      "app/styles/theme.css"
+    ],
+    "sourceProofCommit": "f36177913836042df70e21c04db61e760a3fcd57",
+    "sourceQaRun": 2498,
+    "sourceQaJob": 132101820291,
+    "sourceQaTestsPass": 11,
+    "sourceQaTestsFail": 0,
+    "scope": "TWO_EXACT_SOURCE_PATHS_ONLY_NOT_TERMINAL_CERTIFICATION",
+    "beforeC3Run": 2497,
+    "beforePendingFiles": 57,
+    "beforeSourceReady": 8,
+    "beforeStrictMatch": 5,
+    "production": false,
+    "authorizationI4": false
   }
 }
