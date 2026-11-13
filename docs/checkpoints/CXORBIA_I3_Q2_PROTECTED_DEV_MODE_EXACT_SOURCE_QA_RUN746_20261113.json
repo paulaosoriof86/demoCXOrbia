@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "cxorbia.i3.q2.exact-path-bound-source-qa.v1",
+  "id": "CXORBIA-I3-Q2-PROTECTED-DEV-MODE-RUN746",
+  "observedAtLocal": "2026-11-13",
+  "sourceCommit": "c71c7e800490059d36a5be6e266c28086b8db8f4",
+  "sourceTree": "3db14440c7125e832fffd772a6e1a7230ae31453",
+  "currentProductSource": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+  "owner": "app/core/backend-protected-dev-mode.js",
+  "ownerBlobAtHistoricalCommit": "3924d7d02ea21f589e6be6d451dff740c884300a",
+  "ownerBlobAtCurrentProductSource": "3924d7d02ea21f589e6be6d451dff740c884300a",
+  "exactBlobParity": true,
+  "ci": {
+    "workflowRunId": 36788133836,
+    "workflowRunUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/36788133836",
+    "workflowConclusion": "failure",
+    "focalJobId": 110134359753,
+    "focalJobName": "PRE-I4 CERT/RES — focal source contract — no deploy",
+    "focalJobConclusion": "success",
+    "focalContractOutput": "PASS_PREI4_CERT_RES_CONTRACT",
+    "checks": [
+      "node --check app/core/backend-protected-dev-mode.js",
+      "node backend/runtime/hr-live-service/test/cxorbia-prei4-cert-res-contract.test.mjs",
+      "grep resourceStorageAuthorized:true in exact owner file",
+      "grep resourceStorageRulesValidated:true in exact owner file"
+    ],
+    "focalContractTestPass": 1,
+    "focalContractTestFail": 0
+  },
+  "originalTest": {
+    "path": "backend/runtime/hr-live-service/test/cxorbia-prei4-cert-res-contract.test.mjs",
+    "blobAtRun": "622899a325c7ce5cc17fa412fef677e5d42e75ed",
+    "blobAtLatestHead": "bf41110b03ab0b1d47eb738f9fb84dcd7941a1fc",
+    "note": "Test evolved after historical run; this checkpoint explicitly preserves the immutable test blob from RUN746 rather than attributing current test bytes to that run."
+  },
+  "scope": "PATH_BOUND_SOURCE_QA_ONLY__NO_HUMAN_E2E__NO_PROVIDER_ACK__NO_MODULE_CERTIFICATION",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "production": false,
+  "sourceFilesChanged": 0,
+  "productionWrites": 0
+}
