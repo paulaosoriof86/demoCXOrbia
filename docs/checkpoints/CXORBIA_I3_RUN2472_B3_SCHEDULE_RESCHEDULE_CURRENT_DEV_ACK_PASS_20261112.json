@@ -69,8 +69,9 @@
     "providerE2EResult": "PASS",
     "runConclusion": "failure",
     "cause": "Stale terminal comparison expected old PASS name after QA case name changed",
-    "classification": "SOURCE_FAILURE_QA_HARNESS",
-    "resolution": "One-line predicate alignment, rerun 2472 SUCCESS; no product, provider, HR or production fix"
+    "classification": "SOURCE_FAILURE",
+    "resolution": "One-line predicate alignment, rerun 2472 SUCCESS; no product, provider, HR or production fix",
+    "subtype": "QA_HARNESS_SENTINEL_MISMATCH"
   },
   "browser": {
     "currentAttempt": "CHROME_EXTENSION_TAB_READ_TIMEOUT_AFTER_TAB_DISCOVERY",
