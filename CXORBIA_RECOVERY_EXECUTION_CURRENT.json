@@ -5578,8 +5578,8 @@
       "gitBlob": "9594f4d407914b47342fd21dc827a5f442294ad7"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V620_2026-11-13.json",
-      "gitBlob": "9eec60a4b26d7819bb5223ce513e1ba3e1294c66"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V621_2026-11-13.json",
+      "gitBlob": "f8ae8a34e6131b6d431aba7043d77c8813403e2d"
     },
     "receipt": {
       "kind": "GITHUB_ACTIONS_C3_PRETERMINAL_NOT_CERTIFICATE",
@@ -6479,8 +6479,8 @@
     },
     "production": false
   },
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V620_2026-11-13.json",
-  "findingsLedgerExpectedGitBlob": "9eec60a4b26d7819bb5223ce513e1ba3e1294c66",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V621_2026-11-13.json",
+  "findingsLedgerExpectedGitBlob": "f8ae8a34e6131b6d431aba7043d77c8813403e2d",
   "nextFindingId": "VRM-329",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -14203,6 +14203,30 @@
     "beforePendingFiles": 57,
     "beforeSourceReady": 8,
     "beforeStrictMatch": 5,
+    "production": false,
+    "authorizationI4": false
+  },
+  "c3Q2LedgerPromotionV621": {
+    "id": "CXORBIA-I3-Q2-LEDGER-V621-ADMIN-IDENTITY-NOTICE-QA-20261113",
+    "iteration": "I3",
+    "status": "HOLD_Q2_C3_REEVALUATION_REQUIRED",
+    "classification": "MAPPING_FAILURE_RECOVERY",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V621_2026-11-13.json",
+    "ledgerGitBlob": "f8ae8a34e6131b6d431aba7043d77c8813403e2d",
+    "priorLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V620_2026-11-13.json",
+    "priorLedgerBlob": "9eec60a4b26d7819bb5223ce513e1ba3e1294c66",
+    "newOwner": "app/adapters/cxorbia-admin-identity-review-notice-v1.js",
+    "newOwnerBlob": "6f065e5c0558b880d006ecd78e27d4ba5323bbdf",
+    "sourceProofCommit": "44800eec6a1e3dacbfa0d42d310d540d5ec673f9",
+    "sourceQaRun": 2501,
+    "sourceQaJob": 132126842370,
+    "sourceQaTestsPass": 5,
+    "sourceQaTestsFail": 0,
+    "beforeC3Run": 2500,
+    "beforePendingFiles": 55,
+    "beforeStrictMatch": 5,
+    "beforeSourceReady": 8,
+    "scope": "EXACT_SOURCE_QA_ONLY_NOT_MODULE_CERTIFICATION",
     "production": false,
     "authorizationI4": false
   }
