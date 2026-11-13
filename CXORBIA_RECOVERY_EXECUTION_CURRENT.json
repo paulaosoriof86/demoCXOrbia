@@ -5440,8 +5440,8 @@
       "gitBlob": "9594f4d407914b47342fd21dc827a5f442294ad7"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V618_2026-11-13.json",
-      "gitBlob": "2f7e5d7fe521fd55ce39cad25ccad9e14a36ad0f"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V619_2026-11-13.json",
+      "gitBlob": "0ad48fe512b709bdcfb7330b2a4706e88c289ace"
     },
     "receipt": {
       "kind": "GITHUB_ACTIONS_C3_PRETERMINAL_NOT_CERTIFICATE",
@@ -6341,8 +6341,8 @@
     },
     "production": false
   },
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V618_2026-11-13.json",
-  "findingsLedgerExpectedGitBlob": "2f7e5d7fe521fd55ce39cad25ccad9e14a36ad0f",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V619_2026-11-13.json",
+  "findingsLedgerExpectedGitBlob": "0ad48fe512b709bdcfb7330b2a4706e88c289ace",
   "nextFindingId": "VRM-329",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -14017,5 +14017,29 @@
     ],
     "shopperFocalE2EReceipt": "docs/checkpoints/CXORBIA_I3_VRM328_CHROME_TWO_SHOPPERS_DEV_E2E_20261111.json",
     "shopperFocalE2EReceiptBlob": "1cf2ef705a31dbb137cc0b60b5ef6856f583d650"
+  },
+  "c3Q2LedgerPromotionV619": {
+    "id": "CXORBIA-I3-Q2-LEDGER-V619-EXACT-PROTECTED-SOURCE-PROOF-20261113",
+    "iteration": "I3",
+    "status": "HOLD_Q2_C3_REEVALUATION_REQUIRED",
+    "classification": "MAPPING_FAILURE_RECOVERY",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V619_2026-11-13.json",
+    "ledgerGitBlob": "0ad48fe512b709bdcfb7330b2a4706e88c289ace",
+    "priorLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V618_2026-11-13.json",
+    "priorLedgerGitBlob": "2f7e5d7fe521fd55ce39cad25ccad9e14a36ad0f",
+    "newOwner": "app/core/backend-protected-dev-mode.js",
+    "newOwnerBlob": "3924d7d02ea21f589e6be6d451dff740c884300a",
+    "sourceProofCommit": "c71c7e800490059d36a5be6e266c28086b8db8f4",
+    "sourceQaRun": 36788133836,
+    "sourceQaJob": 110134359753,
+    "sourceQaJobResult": "success",
+    "scope": "EXACT_ONE_SOURCE_FILE_PROVENANCE_NOT_NEW_TERMINAL_MODULE_CERT_OR_NEW_DEV_DEPLOY",
+    "beforeC3Run": 2490,
+    "beforePendingFiles": 58,
+    "beforeSourceReady": 8,
+    "beforeStrictMatch": 5,
+    "production": false,
+    "authorizationI4": false,
+    "expectedNext": "RUN_EXISTING_C3_READONLY_FOR_V619_AND_READ_ARTIFACT"
   }
 }
