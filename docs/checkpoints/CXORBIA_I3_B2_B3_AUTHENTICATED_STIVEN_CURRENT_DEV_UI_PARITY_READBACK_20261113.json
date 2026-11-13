@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "cxorbia.i3.current-dev.authenticated-shopper-b2-b3-readonly.v1",
+  "iteration": "I3",
+  "status": "HOLD",
+  "decision": "PASS_SCOPED_AUTHENTICATED_CHROME_READONLY_B2_B3_HISTORY_ACTIVE_PARITY",
+  "observedDateLocal": "2026-11-13",
+  "project": "CXORBIA_RECOVERY_GO_LIVE",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "precedingHead": "2b261e28988a55bd1f59abef16aaa559adb6ee50",
+  "productAuthority": {
+    "sourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+    "sourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
+    "devHosting": "sites/cxorbia-backend-dev/versions/8dea702589084bcf",
+    "devRuntimeRevision": "cxorbia-live-hr-dev-00370-fl2",
+    "devRuntimeDigest": "sha256:396cd23f895a98606fa9ca238132a5515065c07fec632cd73c00cc2e6d6c639e",
+    "sourceFromFrozenCandidateDescriptor": true,
+    "runtimeAndHostingFromRun2472Readback": true
+  },
+  "authBrowser": {
+    "browser": "Chrome connected extension",
+    "tab": "isolated new shopper tab",
+    "urlOrigin": "https://cxorbia-backend-dev.firebaseapp.com",
+    "route": "/index-backend-dev.html",
+    "role": "Shopper",
+    "shopperDisplayName": "Stiven López",
+    "country": "GT",
+    "projectName": "Cinépolis",
+    "period": "NOV 2026",
+    "authenticated": true,
+    "userCredentialEnteredThisCheck": false,
+    "readOnly": true,
+    "screenshotsPersisted": false,
+    "uiStateFromVisibleDOM": true
+  },
+  "observations": {
+    "miDia": {
+      "activeVisits": 0,
+      "noActiveVisitsMessage": true
+    },
+    "miPerfil": {
+      "totalVisits": 10,
+      "realizadas": 10,
+      "submitidas": 10,
+      "pagadasConfirmadas": 5,
+      "trayectoriaActivas": 0,
+      "trayectoriaTodas": 10
+    },
+    "misVisitas": {
+      "activas": 0,
+      "historial": 10,
+      "postulaciones": 0,
+      "openedHistory": true
+    },
+    "historicalRow": {
+      "visitDate": "2026-11-04",
+      "location": "C. Naranjo Mall",
+      "status": "Submitida",
+      "classification": "HISTORIAL_NOT_ACTIVE",
+      "paymentStatus": "NOT_AUTOMATICALLY_ASSUMED_PAID"
+    },
+    "afterReload": {
+      "project": "Cinépolis",
+      "period": "NOV 2026",
+      "misVisitasActivas": 0,
+      "misVisitasHistorial": 10,
+      "stable": true
+    }
+  },
+  "linkedPreviousEvidence": {
+    "sourceCase": "RUN2470 / GitHub Actions 43372438540 / B2-B3 3_OF_3_SOURCE_REGRESSION_PASS",
+    "providerCase": "RUN2472 / GitHub Actions 43374267973 / B3 schedule and reschedule ACK, two shopper ACL and cleanup",
+    "priorSymptom": "Predecessor source showed active count 1 in Mi Perfil while Mis Visitas showed 0 for submitted but unpaid visit",
+    "observedCurrentFix": "Mi Perfil and Mis Visitas now both report 0 active, Nov 4 submitted visit in historical"
+  },
+  "writes": {
+    "firestore": 0,
+    "storage": 0,
+    "externalHR": 0,
+    "commercial": 0,
+    "authentication": 0,
+    "payment": 0,
+    "productFiles": 0,
+    "devDeploy": 0,
+    "production": 0
+  },
+  "limitations": [
+    "No active visits on this authenticated shopper; check-in camera/GPS/timestamp/visitId/Storage ACK not exercised",
+    "No Admin review of an actual check-in in this read-only run",
+    "Scoped Chrome DOM observations, no exported screenshot artifact",
+    "B2/B3 integral human acceptance and 21-module strict certification unchanged",
+    "Not evidence of I3 GO or authorization for I4"
+  ],
+  "frozenAccounting": {
+    "strictModules": "5/21",
+    "strictPercent": 23.81,
+    "sourceReady": "7/21",
+    "sourceReadyPercent": 33.33,
+    "provenSourcePaths": "90/156",
+    "provenSourcePathsPercent": 57.69,
+    "humanBlocks": "4/9",
+    "humanPercent": 44.44,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false
+  },
+  "nextExactAction": "Use an isolated synthetic/authorized visit and correctly permissioned current DEV Shopper UI to exercise B3 check-in camera/GPS/timestamp/visitId/Storage provider ACK, followed by independent Admin reload/readback; do not mutate an actual commercial visit solely for testing. Keep path-bound C3 proof and human acceptance pending.",
+  "production": {
+    "url": "https://tya-plataforma.web.app/",
+    "status": "DO_NOT_TOUCH",
+    "changed": false
+  }
+}
