@@ -27,7 +27,7 @@ const out=str(env.B3_OUT||'.tmp/i3-b3-schedule-two-shopper');
 if(!/^\d{6,}$/.test(runId)||!/^([a-f0-9]{40})$/.test(source)||!/^([a-f0-9]{64})$/.test(expectedHr))throw Error('SOURCE_FAILURE:B3_CHECKIN_QA_ENV_REQUIRED');
 if(env.CXORBIA_I3_B3_QA_WRITE_GATE!=='PAULA_AUTHORIZED_SYNTHETIC_DEV_ONLY')throw Error('SOURCE_FAILURE:B3_CHECKIN_QA_WRITE_GATE_REQUIRED');
 fs.mkdirSync(out,{recursive:true});
-if(!getAdminApps().length)initializeAdminApp({credential:applicationDefault(),projectId,storageBucket:bucketName});
+if(!getAdminApps().length)initializeAdminApp({credential:applicationDefault(),projectId:project,storageBucket:bucketName});
 const adminApp=getAdminApps()[0],auth=getAdminAuth(adminApp),db=getFirestore(adminApp),adminBucket=getAdminStorage(adminApp).bucket(bucketName);
 const tenant=db.collection('tenants').doc(tenantId),projectRef=tenant.collection('projects').doc(projectId);
 const visitId=`QA_I3_B3_CHECKIN_${runId}`,evidenceId=`ev-qa-i3-b3-${runId}`;
