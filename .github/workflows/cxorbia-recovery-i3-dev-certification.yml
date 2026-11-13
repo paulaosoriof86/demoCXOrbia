@@ -90,6 +90,7 @@ jobs:
       node --test tools/qa/cxorbia-i3-admin-identity-review-notice.test.mjs
       node --test tools/qa/cxorbia-i3-q2-shopper-admin-command-contract-source.test.mjs
       node --test tools/qa/cxorbia-i3-q2-cxdata-readonly-owner-source.test.mjs
+      node --test tools/qa/cxorbia-i3-q2-hr-static-builder-source.test.mjs
       node --test tools/qa/cxorbia-i3-certification-project-continuity.test.mjs
       node --test tools/qa/cxorbia-i3-work-uat-*.test.mjs
       node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs | tee .tmp/canonical-candidate-authority/result.json
