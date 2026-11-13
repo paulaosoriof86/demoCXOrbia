@@ -21,8 +21,8 @@
       "sourceTestsPass": 1,
       "sourceTestsFail": 0,
       "decision": "PASS_PREI4_CERT_RES_SOURCE_CONTRACT",
-      "evidencePath": "backend/runtime/hr-live-service/test/cxorbia-prei4-cert-res-contract.test.mjs",
-      "evidenceGitBlob": "622899a325c7ce5cc17fa412fef677e5d42e75ed",
+      "evidencePath": "docs/checkpoints/CXORBIA_I3_Q2_PROTECTED_DEV_MODE_EXACT_SOURCE_QA_RUN746_20261113.json",
+      "evidenceGitBlob": "98b17a1b4bd200b7fed5ebe7f2102e5ba8324862",
       "scope": "EXACT_FILE_COMMIT_AND_QA_LOG_FOCAL_SOURCE_ONLY_NOT_LIVE_BINARY_STORAGE_CERT",
       "production": false
     },
