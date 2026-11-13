@@ -292,7 +292,7 @@ jobs:
      run: |
       set -Eeuo pipefail
       node tools/qa/cxorbia-i3-b3-schedule-two-shopper-dev-focal.mjs | tee "$B3_OUT/console.log"
-      jq -e '.decision=="PASS_I3_B3_SYNTHETIC_SHOPPER_SCHEDULE_ACK_DEV" and .positiveAck==true and .negativeDenied==true and .independentReadback==true and .idempotent==true and .cleaned==true and .hrBefore==.hrAfter and .safety.qaSyntheticVisitsCreated==1 and .safety.qaSyntheticVisitsDeleted==1 and .safety.hrWrites==0 and .safety.paymentWrites==0 and .safety.production==false' "$B3_OUT/result.json" >/dev/null
+      jq -e '.decision=="PASS_I3_B3_SYNTHETIC_SHOPPER_SCHEDULE_AND_RESCHEDULE_ACK_DEV" and .positiveAck==true and .negativeDenied==true and .independentReadback==true and .idempotent==true and .rescheduleRequestAck==true and .rescheduleOtherDenied==true and .reschedulePendingReadback==true and .rescheduleIdempotent==true and .cleaned==true and .hrBefore==.hrAfter and .safety.qaSyntheticVisitsCreated==1 and .safety.qaSyntheticVisitsDeleted==1 and .safety.noticesCreated==1 and .safety.noticesDeleted==1 and .safety.hrWrites==0 and .safety.paymentWrites==0 and .safety.production==false' "$B3_OUT/result.json" >/dev/null
    - uses: actions/upload-artifact@v4
      if: always()
      with:

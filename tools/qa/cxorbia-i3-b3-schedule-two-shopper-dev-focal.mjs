@@ -25,16 +25,18 @@ if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:pr
 const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(tenantId),projectRef=tenant.collection('projects').doc(projectId);
 const visitId=`QA_I3_B3_SCHEDULE_${runId}`;
 const visitRef=projectRef.collection('visits').doc(visitId);
-const result={schemaVersion:'cxorbia.i3.b3.schedule-two-shopper-dev.v1',decision:'HOLD',sourceSha:source,periodId,
+const result={schemaVersion:'cxorbia.i3.b3.schedule-two-shopper-dev.v2',decision:'HOLD',sourceSha:source,periodId,
   visitId,hrBefore:null,hrAfter:null,positiveAck:false,negativeDenied:false,idempotent:false,
-  independentReadback:false,cleaned:false,safety:{qaSyntheticVisitsCreated:0,qaSyntheticVisitsDeleted:0,hrWrites:0,
-   commercialVisitsWritten:0,paymentWrites:0,authWrites:0,builds:0,deploys:0,production:false},errors:[]};
+  independentReadback:false,rescheduleRequestAck:false,rescheduleOtherDenied:false,
+  reschedulePendingReadback:false,rescheduleIdempotent:false,cleaned:false,safety:{qaSyntheticVisitsCreated:0,qaSyntheticVisitsDeleted:0,hrWrites:0,
+  commercialVisitsWritten:0,paymentWrites:0,authWrites:0,noticesCreated:0,noticesDeleted:0,builds:0,deploys:0,production:false},errors:[]};
 const cleanup=[];const seen=new Set();
 const track=(ref,kind)=>{if(!seen.has(ref.path)){seen.add(ref.path);cleanup.push({ref,kind});}};
 const requireOk=(v,kind,why)=>{if(!v)throw Error(`${kind}:${why}`);};
 const write=()=>fs.writeFileSync(out+'/result.json',JSON.stringify(result,null,2)+'\n');
 const receipt=cmd=>tenant.collection('commandReceipts').doc(sha(`${tenantId}\0${projectId}\0${periodId}\0${cmd.idempotencyKey}`).slice(0,40));
 const audit=cmd=>tenant.collection('entityAuditTrail').doc(sha(`${cmd.idempotencyKey}\0${cmd.commandType}\0${cmd.entityId}`).slice(0,40));
+const bulletin=cmd=>tenant.collection('bulletins').doc('visit-request-'+sha(`${tenantId}\0${projectId}\0${periodId}\0${cmd.idempotencyKey}`).slice(0,40));
 async function getHrRevision(){
  const u=`${host}/api/${tenantId}/${projectId}/hr-live?format=meta&b3-qa=${runId}-${Date.now()}`;
  const r=await fetch(u,{headers:{'cache-control':'no-cache, no-store'},signal:AbortSignal.timeout(90000)});
@@ -60,6 +62,10 @@ function command(idempotencyKey){return {version:'cxorbia-command-adapter-v1',co
  tenantId,projectId,periodId,idempotencyKey,expectedVersion:1,authorization:{providerEnforcementRequired:true,permission:'visit.state.update'},
  payload:{visitId,hrRowId:visitId,patch:{estado:'agendada',status:'agendada',agendada:'2026-11-25'}},
  audit:{reason:'i3-b3-schedule-synthetic-dev',correlationId:idempotencyKey}};}
+function reschedule(idempotencyKey){return {version:'cxorbia-command-adapter-v1',commandType:'visit.reschedule',entityType:'visit',entityId:visitId,
+ tenantId,projectId,periodId,idempotencyKey,expectedVersion:2,authorization:{providerEnforcementRequired:true,permission:'visit.reschedule'},
+ payload:{visitId,newDate:'2026-11-27',reason:'QA B3 synthetic reschedule request'},
+ audit:{reason:'i3-b3-reschedule-request-synthetic-dev',correlationId:idempotencyKey}};}
 async function invoke(token,cmd){
  const r=await fetch(host+'/v1/cxorbia/commands',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+token,'cache-control':'no-store'},body:JSON.stringify(cmd),signal:AbortSignal.timeout(60000)});
  return {http:r.status,...(await r.json().catch(()=>({})))};
@@ -111,18 +117,44 @@ try{
  result.idempotent=replay.ok===true&&replay.providerAck===true&&replay.idempotentReplay===true&&Number(replay.providerWrites||0)===0;
  requireOk(result.idempotent,'PERSISTENCE_FAILURE','REPLAY_NOT_IDEMPOTENT');
  requireOk((await visitRef.get()).data().version===2,'PERSISTENCE_FAILURE','REPLAY_CHANGED_STATE');
+ const crossRequest=reschedule(`qa-i3-b3-${runId}-reschedule-different-shopper`);
+ for(const x of [receipt(crossRequest),audit(crossRequest),bulletin(crossRequest)])track(x,x.path.includes('commandReceipts')?'receipts':x.path.includes('bulletins')?'notices':'audits');
+ const wrongRequest=await invoke(otherToken,crossRequest);
+ result.rescheduleOtherDenied=wrongRequest.ok!==true&&str(wrongRequest.code).includes('OPS_VISIT_SHOPPER_SCOPE_DENIED');
+ requireOk(result.rescheduleOtherDenied,'AUTH_FAILURE',`OTHER_SHOPPER_RESCHEDULE_NOT_DENIED_${str(wrongRequest.code)}`);
+ requireOk((await visitRef.get()).data().version===2,'PERSISTENCE_FAILURE','DENIED_RESCHEDULE_CHANGED_VERSION');
+ const requested=reschedule(`qa-i3-b3-${runId}-owner-reschedule-request`);
+ for(const x of [receipt(requested),audit(requested),bulletin(requested)])track(x,x.path.includes('commandReceipts')?'receipts':x.path.includes('bulletins')?'notices':'audits');
+ const requestedAck=await invoke(ownerToken,requested);
+ result.rescheduleRequestAck=requestedAck.ok===true&&requestedAck.providerAck===true&&requestedAck.status==='committed'&&requestedAck.successUiAllowed===true;
+ requireOk(result.rescheduleRequestAck,'PERSISTENCE_FAILURE',`OWNER_RESCHEDULE_REQUEST_NO_ACK_${str(requestedAck.code)}`);
+ const afterRequest=(await visitRef.get()).data();
+ result.reschedulePendingReadback=afterRequest?.version===3&&afterRequest?.estado==='agendada'&&afterRequest?.agendada==='2026-11-25'
+  &&afterRequest?.rescheduleRequest?.status==='pending_review'&&afterRequest?.rescheduleRequest?.newDate==='2026-11-27'
+  &&afterRequest?.rescheduleRequest?.requestedByShopperId===owner[0].shopperId;
+ requireOk(result.reschedulePendingReadback,'PERSISTENCE_FAILURE','RESCHEDULE_PENDING_READBACK_MISMATCH');
+ const [requestReceipt,requestAudit,requestNotice]=await Promise.all([receipt(requested).get(),audit(requested).get(),bulletin(requested).get()]);
+ result.safety.noticesCreated=Number(requestNotice.exists);
+ requireOk(requestReceipt.exists&&requestAudit.exists&&requestNotice.exists,'PERSISTENCE_FAILURE','RESCHEDULE_RECEIPT_AUDIT_NOTICE_NOT_DURABLE');
+ requireOk(requestNotice.data()?.toRole==='admin'&&requestNotice.data()?.entityId===visitId&&requestNotice.data()?.idempotencyKey===requested.idempotencyKey,'PERSISTENCE_FAILURE','RESCHEDULE_NOTICE_TARGET_MISMATCH');
+ const requestedReplay=await invoke(ownerToken,requested);
+ result.rescheduleIdempotent=requestedReplay.ok===true&&requestedReplay.providerAck===true&&requestedReplay.idempotentReplay===true&&Number(requestedReplay.providerWrites||0)===0;
+ requireOk(result.rescheduleIdempotent,'PERSISTENCE_FAILURE','RESCHEDULE_REPLAY_NOT_IDEMPOTENT');
+ requireOk((await visitRef.get()).data().version===3,'PERSISTENCE_FAILURE','RESCHEDULE_REPLAY_CHANGED_VERSION');
  result.otherShopperExcluded=str(otherId)!==str(row.shopperId);
  result.hrAfter=await getHrRevision();requireOk(result.hrAfter===expectedHr,'PROVIDER_FAILURE','HR_REVISION_DRIFT_AFTER');
 }catch(error){result.errors.push(str(error?.message||error));}
 finally{
  const errors=[];
  for(const item of cleanup.reverse()){
-  try{await item.ref.delete();if(item.kind==='visits')result.safety.qaSyntheticVisitsDeleted++;}
+  try{const existed=item.kind==='notices'?(await item.ref.get()).exists:false;await item.ref.delete();if(item.kind==='visits')result.safety.qaSyntheticVisitsDeleted++;if(existed)result.safety.noticesDeleted++;}
   catch(e){errors.push(`${item.kind}:${str(e?.code||e?.message)}`);}
  }
- result.cleaned=errors.length===0&&result.safety.qaSyntheticVisitsCreated===result.safety.qaSyntheticVisitsDeleted;
+ result.cleaned=errors.length===0&&result.safety.qaSyntheticVisitsCreated===result.safety.qaSyntheticVisitsDeleted&&result.safety.noticesCreated===1&&result.safety.noticesDeleted===1;
  if(errors.length)result.errors.push('CLEANUP_FAILURE:'+errors.join('|'));
- result.decision=result.errors.length===0&&result.negativeDenied&&result.positiveAck&&result.independentReadback&&result.idempotent&&result.cleaned&&result.hrBefore===expectedHr&&result.hrAfter===expectedHr?'PASS_I3_B3_SYNTHETIC_SHOPPER_SCHEDULE_ACK_DEV':'HOLD_I3_B3_SYNTHETIC_SHOPPER_SCHEDULE_ACK_DEV';
- write();console.log(JSON.stringify({decision:result.decision,sourceSha:source,hrBefore:result.hrBefore,hrAfter:result.hrAfter,negativeDenied:result.negativeDenied,positiveAck:result.positiveAck,independentReadback:result.independentReadback,idempotent:result.idempotent,cleaned:result.cleaned,errors:result.errors,safety:result.safety}));
+ result.decision=result.errors.length===0&&result.negativeDenied&&result.positiveAck&&result.independentReadback&&result.idempotent
+  &&result.rescheduleRequestAck&&result.rescheduleOtherDenied&&result.reschedulePendingReadback&&result.rescheduleIdempotent
+  &&result.cleaned&&result.hrBefore===expectedHr&&result.hrAfter===expectedHr?'PASS_I3_B3_SYNTHETIC_SHOPPER_SCHEDULE_AND_RESCHEDULE_ACK_DEV':'HOLD_I3_B3_SYNTHETIC_SHOPPER_SCHEDULE_AND_RESCHEDULE_ACK_DEV';
+ write();console.log(JSON.stringify({decision:result.decision,sourceSha:source,hrBefore:result.hrBefore,hrAfter:result.hrAfter,negativeDenied:result.negativeDenied,positiveAck:result.positiveAck,independentReadback:result.independentReadback,idempotent:result.idempotent,rescheduleRequestAck:result.rescheduleRequestAck,rescheduleOtherDenied:result.rescheduleOtherDenied,reschedulePendingReadback:result.reschedulePendingReadback,rescheduleIdempotent:result.rescheduleIdempotent,cleaned:result.cleaned,errors:result.errors,safety:result.safety}));
  if(result.decision!=='PASS_I3_B3_SYNTHETIC_SHOPPER_SCHEDULE_ACK_DEV')process.exitCode=2;
 }
