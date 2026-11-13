@@ -5441,7 +5441,7 @@
     },
     "ledger": {
       "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V619_2026-11-13.json",
-      "gitBlob": "0ad48fe512b709bdcfb7330b2a4706e88c289ace"
+      "gitBlob": "423e0e332170f7640c03de2d7bdd95c92e7bff81"
     },
     "receipt": {
       "kind": "GITHUB_ACTIONS_C3_PRETERMINAL_NOT_CERTIFICATE",
@@ -6342,7 +6342,7 @@
     "production": false
   },
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V619_2026-11-13.json",
-  "findingsLedgerExpectedGitBlob": "0ad48fe512b709bdcfb7330b2a4706e88c289ace",
+  "findingsLedgerExpectedGitBlob": "423e0e332170f7640c03de2d7bdd95c92e7bff81",
   "nextFindingId": "VRM-329",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -14024,7 +14024,7 @@
     "status": "HOLD_Q2_C3_REEVALUATION_REQUIRED",
     "classification": "MAPPING_FAILURE_RECOVERY",
     "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V619_2026-11-13.json",
-    "ledgerGitBlob": "0ad48fe512b709bdcfb7330b2a4706e88c289ace",
+    "ledgerGitBlob": "423e0e332170f7640c03de2d7bdd95c92e7bff81",
     "priorLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V618_2026-11-13.json",
     "priorLedgerGitBlob": "2f7e5d7fe521fd55ce39cad25ccad9e14a36ad0f",
     "newOwner": "app/core/backend-protected-dev-mode.js",
