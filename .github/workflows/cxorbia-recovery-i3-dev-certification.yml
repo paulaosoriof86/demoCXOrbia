@@ -312,7 +312,44 @@ jobs:
    - name: Install isolated Firebase Admin test dependency
      run: |
       set -Eeuo pipefail
-      npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 firebase@10.12.5 > "$B3_OUT/npm-install.log" 2>&1
+      npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 firebase@10.12.5 firebase-tools@14.16.0 > "$B3_OUT/npm-install.log" 2>&1
+   - name: P0 exact additive DEV Storage rules release once (never production)
+     if: ${{ contains(github.event.head_commit.message, '[i3-b3-storage-rules-p0-deploy-once]') }}
+     run: |
+      set -Eeuo pipefail
+      EXPECTED_SOURCE_BLOB=790798b6b170a1fd2ee882fdedea7b77e761da84
+      EXPECTED_RULESET=projects/cxorbia-backend-dev/rulesets/b2866f9b-9c4a-47cf-8b3c-c3dbcf451b03
+      EXACT_RELEASE=projects/cxorbia-backend-dev/releases/firebase.storage/cxorbia-backend-dev.firebasestorage.app
+      test "$PROJECT" = cxorbia-backend-dev
+      test "$GITHUB_REF_NAME" = recovery/cxorbia-phase-a-20260831
+      test "$FOCAL_SOURCE" = e2458f449ee76d965ee39effdb5790d2e6d45d8c
+      test "$(git rev-parse "$FOCAL_SOURCE:storage.rules")" = "$EXPECTED_SOURCE_BLOB"
+      test "$(git hash-object storage.rules)" = "$EXPECTED_SOURCE_BLOB"
+      test "$(jq -r '.source.sha' docs/checkpoints/CXORBIA_I3_VRM328_HOSTING_ONLY_DEV_RUN2437_ACK_20261111.json)" = "$FOCAL_SOURCE"
+      test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
+      test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
+      test "$(jq -r --arg name "$EXACT_RELEASE" '.releases[]? | select(.name==$name) | .rulesetName' "$B3_OUT/storage-releases.json")" = "$EXPECTED_RULESET"
+      test -s "$B3_OUT/deployed-storage-rules.txt"
+      node tools/qa/cxorbia-i3-b3-storage-rules-additive-dev-guard.mjs "$B3_OUT/deployed-storage-rules.txt" storage.rules "$B3_OUT/storage-rules-additive-guard.json"
+      jq -e '.decision=="PASS_I3_B3_STORAGE_RULES_ONLY_ADDITIVE_DEV" and .onlyShopperEvidenceAdditive==true and .existingResourcesPreserved==true and .failClosedPreserved==true and .crossTenantWritesAllowed==false and .production==false' "$B3_OUT/storage-rules-additive-guard.json" >/dev/null
+      TOKEN="$(gcloud auth print-access-token)"
+      curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/$EXACT_RELEASE" -o "$B3_OUT/storage-release-before-cas.json"
+      test "$(jq -r .rulesetName "$B3_OUT/storage-release-before-cas.json")" = "$EXPECTED_RULESET"
+      jq -n --arg source "$FOCAL_SOURCE" --arg prev "$EXPECTED_RULESET" '{decision:"DEV_STORAGE_RULES_DEPLOY_ATTEMPT_STARTED",sourceSha:$source,priorRuleset:$prev,attempt:1,maxAttempts:1,production:false}' > "$B3_OUT/storage-rules-deploy-attempt.json"
+      ./node_modules/.bin/firebase deploy --config firebase.json --only storage --project "$PROJECT" --non-interactive | tee "$B3_OUT/storage-rules-deploy.log"
+      TOKEN="$(gcloud auth print-access-token)"
+      curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/$EXACT_RELEASE" -o "$B3_OUT/storage-release-after.json"
+      NEW_RULESET="$(jq -r '.rulesetName // empty' "$B3_OUT/storage-release-after.json")"
+      test -n "$NEW_RULESET"
+      test "$NEW_RULESET" != "$EXPECTED_RULESET"
+      curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/$NEW_RULESET" -o "$B3_OUT/storage-ruleset-after.json"
+      jq -j '.source.files[]? | .content' "$B3_OUT/storage-ruleset-after.json" > "$B3_OUT/deployed-storage-rules-after.txt"
+      cmp -s storage.rules "$B3_OUT/deployed-storage-rules-after.txt"
+      gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$B3_OUT/storage-rules-runtime-after.json"
+      test "$(jq -r .status.latestReadyRevisionName "$B3_OUT/storage-rules-runtime-after.json")" = "$(jq -r .runtime.revision docs/checkpoints/CXORBIA_I3_VRM328_HOSTING_ONLY_DEV_RUN2437_ACK_20261111.json)"
+      curl -fsS --max-time 45 -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" -o "$B3_OUT/storage-rules-hosting-after.json"
+      test "$(jq -r .release.version.name "$B3_OUT/storage-rules-hosting-after.json")" = "$(jq -r .hosting.after docs/checkpoints/CXORBIA_I3_VRM328_HOSTING_ONLY_DEV_RUN2437_ACK_20261111.json)"
+      jq -n --arg source "$FOCAL_SOURCE" --arg prev "$EXPECTED_RULESET" --arg next "$NEW_RULESET" '{decision:"PASS_EXACT_DEV_STORAGE_RULES_DEPLOY_ONLY",sourceSha:$source,priorRuleset:$prev,newRuleset:$next,storageRulesChanged:true,cloudRunChanged:false,hostingChanged:false,production:false}' > "$B3_OUT/storage-rules-deploy-readback.json"
    - name: Certify B3 provider E2E with two scoped Shopper principals
      run: |
       set -Eeuo pipefail
