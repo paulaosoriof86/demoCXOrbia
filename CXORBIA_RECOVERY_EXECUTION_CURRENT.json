@@ -5578,8 +5578,8 @@
       "gitBlob": "9594f4d407914b47342fd21dc827a5f442294ad7"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V621_2026-11-13.json",
-      "gitBlob": "f8ae8a34e6131b6d431aba7043d77c8813403e2d"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V622_2026-11-13.json",
+      "gitBlob": "0c4cc507eff553128dc02ff830fbd15b389e2f3a"
     },
     "receipt": {
       "kind": "GITHUB_ACTIONS_C3_PRETERMINAL_NOT_CERTIFICATE",
@@ -6479,8 +6479,8 @@
     },
     "production": false
   },
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V621_2026-11-13.json",
-  "findingsLedgerExpectedGitBlob": "f8ae8a34e6131b6d431aba7043d77c8813403e2d",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V622_2026-11-13.json",
+  "findingsLedgerExpectedGitBlob": "0c4cc507eff553128dc02ff830fbd15b389e2f3a",
   "nextFindingId": "VRM-329",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -14265,5 +14265,41 @@
     "gate21": "HOLD",
     "i4Authorized": false,
     "scope": "VERIFIED_ARTIFACT_READBACK_ONLY__NO_NEW_TERMINAL_MODULE_CERTIFICATION"
+  },
+  "c3Q2LedgerPromotionV622": {
+    "id": "CXORBIA-I3-Q2-LEDGER-V622-THREE-OWNER-SOURCE-QA-20261113",
+    "iteration": "I3",
+    "phase": "Q2",
+    "status": "HOLD_C3_REEVALUATION_REQUIRED",
+    "classification": "MAPPING_FAILURE_RECOVERY",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V622_2026-11-13.json",
+    "ledgerGitBlob": "0c4cc507eff553128dc02ff830fbd15b389e2f3a",
+    "priorLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V621_2026-11-13.json",
+    "priorLedgerBlob": "f8ae8a34e6131b6d431aba7043d77c8813403e2d",
+    "proofRuns": [
+      {
+        "number": 2504,
+        "id": 43496750365,
+        "sourceCommit": "e57d3fe17079ee68885af92e4ea815e9c47f3d0c",
+        "testsPass": 11,
+        "owners": 2
+      },
+      {
+        "number": 2505,
+        "id": 43497170385,
+        "sourceCommit": "425f8296c1ba1969039cb70fde3ccf4ed6c8d0ad",
+        "testsPass": 2,
+        "owners": 1
+      }
+    ],
+    "beforeC3Run": 2503,
+    "beforePendingFiles": 54,
+    "beforeStrictMatchModules": 5,
+    "beforeSourceReadyModules": 8,
+    "scope": "THREE_PATH_BOUND_SOURCE_QA_PROOFS_ONLY__NOT_MODULE_CERTIFICATION",
+    "productFilesChanged": 0,
+    "devDeploys": 0,
+    "production": false,
+    "i4Authorized": false
   }
 }

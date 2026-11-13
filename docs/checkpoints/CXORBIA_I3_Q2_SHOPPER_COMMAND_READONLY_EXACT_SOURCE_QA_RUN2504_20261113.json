@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "cxorbia.i3.q2.path-bound-source-qa.v1",
+  "id": "CXORBIA-I3-Q2-RUN2504-SHOPPER-COMMAND-READONLY-EXACT-SOURCE",
+  "localDate": "2026-11-13",
+  "iteration": "I3",
+  "block": "Q2",
+  "decision": "PASS_SOURCE_QA_ONLY__MODULE_TERMINAL_HOLD",
+  "classification": "MAPPING_FAILURE_RECOVERY",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceCommit": "e57d3fe17079ee68885af92e4ea815e9c47f3d0c",
+  "sourceTree": "13329d38f91410f7111aa31bd6a57514b4d8e8ec",
+  "runNumber": 2504,
+  "runId": 43496750365,
+  "canonicalJobId": 132131724891,
+  "runConclusion": "success",
+  "paths": [
+    {
+      "owner": "app/adapters/cxorbia-shopper-admin-command-contract-v1.js",
+      "currentSourceBlob": "e97ba5ec6838c946fd6322b0ea76b0a710b07e82",
+      "sourceTest": "tools/qa/cxorbia-i3-q2-shopper-admin-command-contract-source.test.mjs",
+      "sourceTestBlob": "4ffffe4ca91784e398144231e327071c93d63d06",
+      "testsPass": 6,
+      "testsFail": 0
+    },
+    {
+      "owner": "app/core/backend-cxdata-readonly-corte4.js",
+      "currentSourceBlob": "68ac1771d6441f48ca4388ad54a9d409d345de8a",
+      "sourceTest": "tools/qa/cxorbia-i3-q2-cxdata-readonly-owner-source.test.mjs",
+      "sourceTestBlob": "ec0130900541caab5ea5c6c739c08b6fe6b7714e",
+      "testsPass": 5,
+      "testsFail": 0
+    }
+  ],
+  "totalTestsPass": 11,
+  "totalTestsFail": 0,
+  "devServingSourceCommit": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+  "devHostingVersion": "sites/cxorbia-backend-dev/versions/8dea702589084bcf",
+  "scope": "SOURCE_SPECIFIC_BEHAVIORAL_QA_NOT_LIVE_HUMAN_E2E",
+  "moduleCertificationAdded": 0,
+  "productFilesChanged": 0,
+  "builds": 0,
+  "deploys": 0,
+  "providerWrites": 0,
+  "production": false,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false
+}

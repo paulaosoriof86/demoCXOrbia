@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "cxorbia.i3.q2.path-bound-source-qa.v1",
+  "id": "CXORBIA-I3-Q2-RUN2505-HR-STATIC-SAFE-BUILDER-EXACT-SOURCE",
+  "localDate": "2026-11-13",
+  "iteration": "I3",
+  "block": "Q2",
+  "decision": "PASS_OFFLINE_SOURCE_QA_ONLY__LIVE_HR_HUMAN_E2E_HOLD",
+  "classification": "MAPPING_FAILURE_RECOVERY",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceCommit": "425f8296c1ba1969039cb70fde3ccf4ed6c8d0ad",
+  "sourceTree": "313afec193279d3b71932819a7191fbe6db39aac",
+  "runNumber": 2505,
+  "runId": 43497170385,
+  "canonicalJobId": 132133201420,
+  "runConclusion": "success",
+  "paths": [
+    {
+      "owner": "tools/hr-source/tya-build-live-hr-source-safe-static.mjs",
+      "currentSourceBlob": "0b4dc7a1739479f43ed35cd80cb6789b89829e45",
+      "sourceTest": "tools/qa/cxorbia-i3-q2-hr-static-builder-source.test.mjs",
+      "sourceTestBlob": "90c507518ff3097a2b178f5611a2c2f3966c047c",
+      "testsPass": 2,
+      "testsFail": 0
+    }
+  ],
+  "testContracts": [
+    "offline fake Google Sheets API, no network",
+    "October November GT/HN preserved",
+    "PII redacted and currency differentiated",
+    "missing month tabs fail closed"
+  ],
+  "totalTestsPass": 2,
+  "totalTestsFail": 0,
+  "devServingSourceCommit": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+  "devHostingVersion": "sites/cxorbia-backend-dev/versions/8dea702589084bcf",
+  "scope": "STATIC_HR_SOURCE_SAFE_BUILDER_ONLY_NOT_GENERIC_PROJECT_CONFIGURATION_OR_LIVE_HR_READBACK",
+  "moduleCertificationAdded": 0,
+  "productFilesChanged": 0,
+  "builds": 0,
+  "deploys": 0,
+  "providerWrites": 0,
+  "production": false,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false
+}
