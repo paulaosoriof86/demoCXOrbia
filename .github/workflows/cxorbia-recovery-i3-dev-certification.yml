@@ -284,6 +284,31 @@ jobs:
       TOKEN="$(gcloud auth print-access-token)"
       curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$B3_OUT/hosting.json"
       test "$(jq -r '.release.version.name' "$B3_OUT/hosting.json")" = "$(jq -r '.hosting.after' "$P")"
+   - name: Read deployed DEV Storage rules and bucket authority (no writes)
+     run: |
+      set -Eeuo pipefail
+      TOKEN="$(gcloud auth print-access-token)"
+      CODE="$(curl -sS --max-time 50 -o "$B3_OUT/storage-releases.json" -w '%{http_code}' -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases?pageSize=100" || true)"
+      echo "DEV_STORAGE_RULES_RELEASE_LIST_HTTP=$CODE"
+      if test "$CODE" = 200; then
+       jq -r '.releases[]? | select(.name | contains("firebase.storage")) | [.name,.rulesetName] | @tsv' "$B3_OUT/storage-releases.json" > "$B3_OUT/storage-release-refs.tsv"
+       RULESET="$(jq -r '[.releases[]? | select(.name | contains("firebase.storage")) | .rulesetName][0] // empty' "$B3_OUT/storage-releases.json")"
+       if test -n "$RULESET"; then
+        SRC_CODE="$(curl -sS --max-time 50 -o "$B3_OUT/storage-ruleset.json" -w '%{http_code}' -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/$RULESET" || true)"
+        echo "DEV_STORAGE_RULESET_READ_HTTP=$SRC_CODE"
+        if test "$SRC_CODE" = 200; then
+         jq -r '.source.files[]? | .content' "$B3_OUT/storage-ruleset.json" > "$B3_OUT/deployed-storage-rules.txt"
+         if cmp -s storage.rules "$B3_OUT/deployed-storage-rules.txt"; then echo "DEV_STORAGE_RULESET_EQUALS_SOURCE=MATCH"; else echo "DEV_STORAGE_RULESET_EQUALS_SOURCE=DIFF"; fi
+        fi
+       else
+        echo "DEV_STORAGE_RELEASE=NOT_LISTED"
+       fi
+      fi
+      if gcloud storage buckets describe "gs://cxorbia-backend-dev.firebasestorage.app" --format=json > "$B3_OUT/storage-bucket.json" 2>"$B3_OUT/storage-bucket-status.txt"; then
+       echo "DEV_STORAGE_BUCKET_READ=PASS"
+      else
+       echo "DEV_STORAGE_BUCKET_READ=UNAVAILABLE"
+      fi
    - name: Install isolated Firebase Admin test dependency
      run: |
       set -Eeuo pipefail
