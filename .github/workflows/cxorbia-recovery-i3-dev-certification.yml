@@ -87,6 +87,7 @@ jobs:
       node --test tools/qa/cxorbia-i3-r20-pwa-auth-no-interrupt.test.mjs
       node backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs
       node --test tools/qa/cxorbia-i3-b10-external-provider-routing.test.mjs
+      node --test tools/qa/cxorbia-i3-admin-identity-review-notice.test.mjs
       node --test tools/qa/cxorbia-i3-certification-project-continuity.test.mjs
       node --test tools/qa/cxorbia-i3-work-uat-*.test.mjs
       node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs | tee .tmp/canonical-candidate-authority/result.json
