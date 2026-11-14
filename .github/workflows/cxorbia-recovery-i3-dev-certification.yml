@@ -91,6 +91,7 @@ jobs:
       node --test tools/qa/cxorbia-i3-q2-shopper-admin-command-contract-source.test.mjs
       node --test tools/qa/cxorbia-i3-q2-cxdata-readonly-owner-source.test.mjs
       node --test tools/qa/cxorbia-i3-q2-hr-static-builder-source.test.mjs
+      node --test tools/qa/cxorbia-i3-q2-eight-remaining-owner-source.test.mjs
       node --test tools/qa/cxorbia-i3-postulaciones-country-options-unified.test.mjs tools/qa/cxorbia-i3-d06-misvisitas-cross-period-classification.test.mjs tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs tools/qa/cxorbia-i3-shoppers-bridge-authority.test.mjs tools/qa/cxorbia-i3-visitas-effective-availability.test.mjs tools/qa/cxorbia-i3-available-visits-active-period-scope.test.mjs tools/qa/cxorbia-i3-period-project-client-parity.test.mjs tools/qa/cxorbia-i3-r22-notification-route-ack-source.test.mjs tools/qa/cxorbia-i3-vrm302-admin-shoppers-modal-binding.test.mjs tools/qa/cxorbia-i3-shopper-identity-review-rail-notice.test.mjs
       node --test tools/qa/cxorbia-i3-certification-project-continuity.test.mjs
       # I3 Q2: 24 exact source owners, 22 current tests; source QA only, no E2E or deploy.
