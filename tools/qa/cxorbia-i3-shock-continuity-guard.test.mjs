@@ -381,6 +381,31 @@ test('runtime/Hosting pending transition rejects tree, ancestry, committed proof
  }
 });
 
+const withPendingHostingOnlySuccessor=()=>{
+  const a=withPendingRuntimeHostingSuccessor();
+  for(const obj of [a.descriptor,a.pointer])obj.pendingDevSuccessor.scope='HOSTING_ONLY';
+  a.matrix.productSource.authorityState='SOURCE_ONLY_PROVEN_PENDING_HOSTING_ONLY_DEV';
+  return a;
+};
+test('one exact browser-owner P0 successor can await Hosting-only DEV with prior runtime unchanged',()=>{
+  const a=withPendingHostingOnlySuccessor();
+  // This fixture uses a runtime owner from the paired case and must fail closed.
+  assert.match(validateShockContinuity(a).failures.join(' '),/PENDING_DEV_SUCCESSOR_UNPROVEN/);
+  const browser=['app/modules/marca.js','app/core/finanzas-core.js'];
+  const proof=JSON.parse(a.gitRead(['show','HEAD:proof.json']));
+  proof.allowedProductFiles=browser;
+  a.descriptor.pendingDevSuccessor.allowedProductFiles=browser;
+  a.pointer.pendingDevSuccessor.allowedProductFiles=browser;
+  const read=a.gitRead;
+  a.gitRead=args=>args[0]==='diff'?browser.join('\n'):
+    args[1]==='HEAD:proof.json'?JSON.stringify(proof):
+    args[1]==='HEAD:scope.json'?JSON.stringify({allowedProductFiles:browser}):read(args);
+  assert.equal(validateShockContinuity(a).pass,true,JSON.stringify(validateShockContinuity(a).failures));
+  a.descriptor.pendingDevSuccessor.servingHosting.hostingVersion='fabricated';
+  a.pointer.pendingDevSuccessor.servingHosting.hostingVersion='fabricated';
+  assert.match(validateShockContinuity(a).failures.join(' '),/PENDING_DEV_SUCCESSOR_UNPROVEN/);
+});
+
 const withPairedPendingSuccessor=()=>{
  const a=withPendingRuntimeHostingSuccessor();
  delete a.descriptor.currentHostingOnlyDevMaterialization;delete a.pointer.currentHostingOnlyDevMaterialization;

@@ -60,6 +60,27 @@ test('Q2 finance-core owner: provisional rows never create paid status or invent
   assert.ok(!Object.keys(out).some(k=>k==='USD'),'no fabricated third-country currency');
 });
 
+test('Q2 P0 finance-core: a known income never turns an unknown margin into 0 percent',()=>{
+  const cx={bus:{emit(){}},BRAND:{id:'tya'},BACKEND:{enabled:true},
+    dataSource:{showFixtures:()=>false},data:{},liq:{forProject(){return [
+      {id:'review-visit-1',pais:'GT',moneda:'GTQ',honorario:null,total:null,reviewRequired:true,
+        financialSourceStatus:'pending_or_review',paymentConfirmed:false}
+    ];}}};
+  const x=browserVM(owner('app/core/finanzas-core.js'),cx);
+  const p={id:'cinepolis-2026-11',projectId:'cinepolis',countries:['GT'],
+    currency:{GT:'GTQ'},modelo:'delegado',honRecibe:{GT:100}};
+  const data={project:()=>p,period:()=>p,periodId:()=>p.id,tenantId:()=> 'tya',
+    __financialMovements:[{projectId:'cinepolis',periodId:p.id,country:'GT',currency:'GTQ',
+      tipo:'ingreso',amount:100,revenueRecognized:true,operatingRevenue:true,sourceStatus:'confirmed'}],
+    __financeAccounts:[],__financeBudgets:[],__financeProjectionLoaded:true};
+  const result=x.CX.fin.porPais(data).GT;
+  assert.equal(result.ingreso,100);
+  assert.equal(result.honorarioDevengado,null);
+  assert.equal(result.margen,null);
+  assert.equal(result.margenPct,null,'unknown margin must not be interpreted as 0%');
+  assert.equal(result.pagosConfirmados,0);
+});
+
 test('Q2 notification owner: Firestore shopper events are exact-identity scoped; fixture seed is off',()=>{
   const cx={dataSource:{showFixtures:()=>false},backendAuth:{context:()=>({shopperId:'s1'})},
     data:{currentProjectId:'p1',currentPeriodId:'p1-2026-11',
@@ -119,6 +140,20 @@ test('Q2 brand owner: protected tenant renders read-only escaped identity withou
   assert.equal(x.CX.BACKEND.enableCommandWrites,true);
 });
 
+test('Q2 P0 brand: protected tenant remains read-only when command writes are disabled',()=>{
+  const modules={};const cx={BRAND:{clientName:'Marca protegida'},BACKEND:{enabled:true,enableCommandWrites:false},
+    canonicalTenantAuthority:()=>true,module:(id,fn)=>{modules[id]=fn;}};
+  browserVM(owner('app/modules/marca.js'),cx,{
+    CX_PROTECTED_DEV_RUNTIME:true,CX_TENANT_RUNTIME_CONFIG:{tenantName:'Marca protegida'},
+    localStorage:{getItem(){return null;},setItem(){throw Error('local write forbidden');}}
+  });
+  const host={dataset:{},innerHTML:'',querySelector:()=>({addEventListener(){}})};
+  assert.equal(modules.marca({ui:{el:()=>host,ph:()=>''}}),host);
+  assert.equal(host.dataset.connectedBrandAuthority,'read-only');
+  assert.match(host.innerHTML,/data-connected-brand-readonly/);
+  assert.doesNotMatch(host.innerHTML,/id="bSave"/);
+});
+
 test('Q2 administrability owner: protected tenant remains read-only and never fabricates a saved version',()=>{
   const modules={};const cx={BRAND:{name:'Tenant de prueba'},BACKEND:{enableCommandWrites:true},
     canonicalTenantAuthority:()=>true,module:(id,fn)=>{modules[id]=fn;}};
@@ -134,6 +169,20 @@ test('Q2 administrability owner: protected tenant remains read-only and never fa
   assert.match(host.innerHTML,/A&amp;B/);
   assert.match(host.innerHTML,/GT, HN/);
   assert.match(host.innerHTML,/no se crean versiones locales/);
+});
+
+test('Q2 P0 administrability: protected tenant cannot enter demo NDA when command writes are disabled',()=>{
+  const modules={};const cx={BRAND:{name:'Tenant protegido'},BACKEND:{enabled:true,enableCommandWrites:false},
+    canonicalTenantAuthority:()=>true,module:(id,fn)=>{modules[id]=fn;}};
+  browserVM(owner('app/modules/administrabilidad.js'),cx,{
+    CX_PROTECTED_DEV_RUNTIME:true,CX_TENANT_RUNTIME_CONFIG:{tenantName:'Tenant protegido',countries:['GT']},
+    localStorage:{getItem(){throw Error('local read forbidden');},setItem(){throw Error('local write forbidden');}}
+  });
+  const host={dataset:{},innerHTML:'',querySelector:()=>null,querySelectorAll:()=>[]};
+  assert.equal(modules.administrabilidad({ui:{el:()=>host,ph:()=>'',bdg:()=>''}}),host);
+  assert.equal(host.dataset.connectedTenantAdmin,'read-only');
+  assert.match(host.innerHTML,/data-connected-admin-readonly/);
+  assert.doesNotMatch(host.innerHTML,/id="ndaSave"/);
 });
 
 test('Q2 reservation guard owner: remote provider ACK and refresh required for any success',async()=>{

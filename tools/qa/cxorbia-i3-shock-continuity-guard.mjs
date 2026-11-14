@@ -17,12 +17,14 @@ export function validatePendingDevSuccessor({descriptor:d,pointer:p,matrix:m,git
   if(!pending&&!other)return {present:false,pass:false};
   try{
     if(!pending||JSON.stringify(pending)!==JSON.stringify(other)||
-      pending.state!=='P0_PROVEN_PENDING_DEV_MATERIALIZATION'||pending.scope!=='RUNTIME_AND_HOSTING'||
+      pending.state!=='P0_PROVEN_PENDING_DEV_MATERIALIZATION'||
+      !['RUNTIME_AND_HOSTING','HOSTING_ONLY'].includes(pending.scope)||
       pending.sourceSha!==d.productSourceSha||pending.sourceSha!==m.productSource?.sha||
       pending.sourceTree!==d.productTreeAuthority||gitRead(['rev-parse',pending.sourceSha+'^{tree}'])!==pending.sourceTree||
       !gitAncestor(pending.predecessorProductSourceSha,pending.sourceSha)||pending.predecessorProductSourceSha===pending.sourceSha||
       pending.devPublished!==false||pending.production!==false||pending.rulesDeploys!==0||pending.storageRulesDeploys!==0||
-      m.productSource?.authorityState!=='SOURCE_ONLY_PROVEN_PENDING_RUNTIME_AND_HOSTING_DEV')return {present:true,pass:false};
+      m.productSource?.authorityState!==(pending.scope==='HOSTING_ONLY'
+        ?'SOURCE_ONLY_PROVEN_PENDING_HOSTING_ONLY_DEV':'SOURCE_ONLY_PROVEN_PENDING_RUNTIME_AND_HOSTING_DEV'))return {present:true,pass:false};
     const hosting=d.currentHostingOnlyDevMaterialization,seal=d.postDeployRunSeal||{};
     if(JSON.stringify(pending.servingRuntimeSeal)!==JSON.stringify(seal)||
       seal.mode!=='PREDECESSOR_SERVING_PENDING_SOURCE')return {present:true,pass:false};
@@ -31,6 +33,7 @@ export function validatePendingDevSuccessor({descriptor:d,pointer:p,matrix:m,git
         JSON.stringify(pending.servingHosting)!==JSON.stringify(hosting)||
         !hosting.receiptPath||gitBlob(hosting.receiptPath)!==hosting.receiptBlob)return {present:true,pass:false};
     }else{
+      if(pending.scope==='HOSTING_ONLY')return {present:true,pass:false};
       const paired=d.currentMaterialization;
       if(p.currentHostingOnlyDevMaterialization||pending.servingHosting||!paired||
         JSON.stringify(seal)!==JSON.stringify(p.postDeployRunSeal)||
@@ -59,6 +62,8 @@ export function validatePendingDevSuccessor({descriptor:d,pointer:p,matrix:m,git
       allowed.some(file=>/(?:^|\/)(?:firestore|storage)\.rules$|^firebase\.json$|^\.firebaserc$/.test(file)))return {present:true,pass:false};
     const changed=gitRead(['diff','--name-only',pending.predecessorProductSourceSha,pending.sourceSha,'--','app','backend','firebase.json','.firebaserc','firestore.rules','storage.rules','tools/hr-source']).split('\n').filter(Boolean);
     if(!changed.length||changed.some(file=>!allowed.includes(file))||proof.allowedProductFiles.some(file=>!changed.includes(file)))return {present:true,pass:false};
+    // Hosting-only may change browser assets, never a backend/runtime or Firebase authority.
+    if(pending.scope==='HOSTING_ONLY'&&changed.some(file=>!file.startsWith('app/')))return {present:true,pass:false};
     return {present:true,pass:true};
   }catch{return {present:true,pass:false};}
 }

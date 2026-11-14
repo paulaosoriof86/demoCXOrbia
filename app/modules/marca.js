@@ -1,7 +1,8 @@
 /* CXOrbia · Identidad de Marca — logo, colores, tipografía → aplica a toda la plataforma */
 CX.module('marca',({data,ui})=>{
   const host=ui.el('div');
-  const connectedTenantAuthority=()=>!!(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority()&&window.CX_PROTECTED_DEV_RUNTIME===true&&CX.BACKEND?.enableCommandWrites===true);
+  // Tenant authority is read-only even when the separate command-write gate is off.
+  const connectedTenantAuthority=()=>!!(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority()&&window.CX_PROTECTED_DEV_RUNTIME===true);
   if(connectedTenantAuthority()){
     const rt=window.CX_TENANT_RUNTIME_CONFIG||{},brand=CX.BRAND||{};
     const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));

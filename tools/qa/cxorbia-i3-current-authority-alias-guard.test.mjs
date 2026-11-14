@@ -53,6 +53,36 @@ test('current Hosting-only DEV supersedes the business phase-lock Hosting withou
   const r=validateCurrentAuthorityAliases(hostingOnlyFixture());
   assert.equal(r.pass,true,JSON.stringify(r));
 });
+const hostingSuccessorPendingFixture=()=>{
+  const v=hostingOnlyFixture(),source='f'.repeat(40),tree='1'.repeat(40);
+  const serving={...v.descriptor.currentHostingOnlyDevMaterialization};
+  const successor={state:'P0_PROVEN_PENDING_DEV_MATERIALIZATION',scope:'HOSTING_ONLY',
+    sourceSha:source,sourceTree:tree,predecessorProductSourceSha:serving.sourceSha,
+    servingHosting:serving,production:false,devPublished:false};
+  v.descriptor.pendingDevSuccessor={...successor};
+  v.pointer.pendingDevSuccessor={...successor};
+  v.descriptor.productSourceSha=source;v.descriptor.productSourceTree=tree;
+  v.pointer.productTree=tree;
+  v.ledger.currentProductSourceSha=source;v.ledger.currentProductSourceTree=tree;
+  v.ledger.governance.currentProductSourceSha=source;v.ledger.governance.currentProductSourceTree=tree;
+  v.ledger.currentTruth.productSourceSha=source;v.ledger.currentTruth.productTree=tree;
+  v.ledger.currentTruth.sourceMaterialized=false;
+  v.pointer.activePhaseAClosureLock20261110.sourceSha=source;
+  return v;
+};
+test('new bounded Hosting-only source keeps prior C3 and Hosting facts until new source is actually served',()=>{
+  const v=hostingSuccessorPendingFixture();
+  const r=validateCurrentAuthorityAliases(v);
+  assert.equal(r.pass,true,JSON.stringify(r));
+  v.descriptor.currentC3PreterminalAudit.sourceSha=v.descriptor.productSourceSha;
+  v.descriptor.lastModuleTruthProof.sourceSha=v.descriptor.productSourceSha;
+  v.descriptor.c3PreterminalProof.sourceSha=v.descriptor.productSourceSha;
+  v.pointer.currentC3PreterminalAudit.sourceSha=v.descriptor.productSourceSha;
+  v.ledger.currentC3PreterminalAudit.sourceSha=v.descriptor.productSourceSha;
+  v.ledger.lastModuleTruthProof.sourceSha=v.descriptor.productSourceSha;
+  v.ledger.c3PreterminalProof.sourceSha=v.descriptor.productSourceSha;
+  assert.ok(validateCurrentAuthorityAliases(v).failures.includes('CURRENT_C3_PROOF_DESYNC'));
+});
 for(const [name,change,code] of [
   ['stale phase-lock Hosting',v=>v.pointer.activePhaseAClosureLock20261110.devHosting='hosting-370','CURRENT_PHASE_LOCK_DEV_HOSTING_DESYNC'],
   ['fabricated Hosting source',v=>v.descriptor.currentHostingOnlyDevMaterialization.sourceSha='f'.repeat(40),'CURRENT_PRODUCT_SOURCE_DESYNC'],

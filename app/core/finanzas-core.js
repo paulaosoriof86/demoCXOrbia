@@ -201,7 +201,8 @@ CX.fin = {
       out[c]={cur,visRe,ingreso,incomeSourceKnown:incomeInfo.known,incomeSource:incomeInfo.source,
         honorarioDevengado,honorarioPorPagar,honorarioPagado,pagosConfirmados,honorariumSourceComplete:honorariumComplete,totalSourceComplete:totalComplete,
         reemb,reimbursementPartial,isr,regal,fijos,margen,cxp,cxc,
-        margenPct: incomeInfo.known&&ingreso?Math.round(margen/ingreso*100):null};
+        margenPct: incomeInfo.known&&Number.isFinite(margen)&&Number.isFinite(ingreso)&&ingreso!==0
+          ?Math.round(margen/ingreso*100):null};
     });
     /* presupuesto sin asignación: entidad ÚNICA fuera del mapa por país (no imputado al margen) */
     Object.defineProperty(out,'__unassignedBudget',{enumerable:false,value:{budgetKey,tenantId,projectId:canonicalProjectId,periodId:canonicalPeriodId,total:unassignedBudgetTotal,assigned:false}});

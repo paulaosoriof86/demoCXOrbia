@@ -38,7 +38,8 @@ CX.adminCfg = CX.adminCfg || {
 
 CX.module('administrabilidad', ({data, ui, role})=>{
   const host = ui.el('div');
-  const connectedTenantAuthority=()=>!!(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority()&&window.CX_PROTECTED_DEV_RUNTIME===true&&CX.BACKEND?.enableCommandWrites===true);
+  // A protected tenant cannot fall through to demo editing when writes are disabled.
+  const connectedTenantAuthority=()=>!!(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority()&&window.CX_PROTECTED_DEV_RUNTIME===true);
   if(connectedTenantAuthority()){
     const rt=window.CX_TENANT_RUNTIME_CONFIG||{},brand=CX.BRAND||{};
     const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));

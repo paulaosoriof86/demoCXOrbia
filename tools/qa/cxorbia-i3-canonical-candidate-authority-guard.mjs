@@ -65,9 +65,18 @@ const domains=modules.map(x=>String(x?.domain||'')).filter(Boolean);
 if(String(mt.exactNextAction||'')!==d.exactNextAction||String(mt.nextExactAction||'')!==d.exactNextAction)
   fail('MAPPING_FAILURE:CURRENT_MODULE_TRUTH_NEXT_ACTION_DESYNC');
 const c3=d.currentC3PreterminalAudit||{};
+const pendingHostingOnly=d.pendingDevSuccessor?.state==='P0_PROVEN_PENDING_DEV_MATERIALIZATION'&&
+  d.pendingDevSuccessor.scope==='HOSTING_ONLY'&&
+  d.pendingDevSuccessor.sourceSha===d.productSourceSha&&
+  d.currentHostingOnlyDevMaterialization?.sourceSha===d.pendingDevSuccessor.predecessorProductSourceSha&&
+  mt.productSource?.authorityState==='SOURCE_ONLY_PROVEN_PENDING_HOSTING_ONLY_DEV';
+const c3PredecessorOnly=pendingHostingOnly&&
+  c3.sourceSha===d.currentHostingOnlyDevMaterialization.sourceSha&&
+  c3.sourceTree===d.currentHostingOnlyDevMaterialization.sourceTree&&
+  c3.hostingVersion===d.currentHostingOnlyDevMaterialization.hostingVersion;
 if(JSON.stringify(mt.currentC3PreterminalAudit||null)!==JSON.stringify(c3)||
-   c3.moduleCount!==modules.length||c3.matchModules!==modules.filter(x=>x.classification==='MATCH').length||
-   c3.sourceSha!==d.productSourceSha||c3.sourceTree!==d.productTreeAuthority)
+   c3.moduleCount!==modules.length||(!c3PredecessorOnly&&c3.matchModules!==modules.filter(x=>x.classification==='MATCH').length)||
+   (!c3PredecessorOnly&&(c3.sourceSha!==d.productSourceSha||c3.sourceTree!==d.productTreeAuthority)))
   fail('RELEASE_COMPOSITION_FAILURE:CURRENT_C3_MATRIX_AUDIT_DESYNC');
 if(!/^[a-f0-9]{40}$/.test(String(c3.controlHeadAtAudit||'')))
   fail('SOURCE_FAILURE:CURRENT_C3_CONTROL_PARENT_MISSING');

@@ -30,6 +30,16 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
   // never to the old paired Hosting version or a fictitious runtime deploy.
   const hosting=d?.currentHostingOnlyDevMaterialization||{};
   const hostingP=p?.currentHostingOnlyDevMaterialization||{};
+  const pending=d?.pendingDevSuccessor||{};
+  const pendingHostingOnly=pending.state==='P0_PROVEN_PENDING_DEV_MATERIALIZATION'&&
+    pending.scope==='HOSTING_ONLY'&&pending.production===false&&pending.devPublished===false&&
+    JSON.stringify(pending)===JSON.stringify(p?.pendingDevSuccessor||null)&&
+    pending.sourceSha===source&&pending.sourceTree===tree&&
+    pending.predecessorProductSourceSha===hosting.sourceSha&&
+    JSON.stringify(pending.servingHosting)===JSON.stringify(hosting)&&
+    JSON.stringify(hosting)===JSON.stringify(hostingP)&&
+    hosting.runtimeRevision===seal.runtimeRevision&&
+    current?.sourceMaterialized===false;
   const hostingOnlyServing=postDeploy.mode==='PREDECESSOR_SERVING_PENDING_SOURCE'&&
     p?.postDeployRunSeal?.mode===postDeploy.mode&&
     hosting.sourceSha===source&&hosting.sourceTree===tree&&
@@ -57,7 +67,7 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
   // release as the control seal, not a historical valid predecessor.  Keeping
   // a stale nested DEV pointer was sufficient to restart deployment loops.
   check(Boolean(seal?.runtimeRevision)&&currentDev.runtimeRevision===seal.runtimeRevision&&phaseLock.devRuntime===seal.runtimeRevision,'CURRENT_PHASE_LOCK_DEV_RUNTIME_DESYNC');
-  check(Boolean(seal?.hostingVersion)&&currentDev.hostingVersion===seal.hostingVersion&&phaseLock.devHosting===(hostingOnlyServing?hosting.hostingVersion:seal.hostingVersion),'CURRENT_PHASE_LOCK_DEV_HOSTING_DESYNC');
+  check(Boolean(seal?.hostingVersion)&&currentDev.hostingVersion===seal.hostingVersion&&phaseLock.devHosting===((hostingOnlyServing||pendingHostingOnly)?hosting.hostingVersion:seal.hostingVersion),'CURRENT_PHASE_LOCK_DEV_HOSTING_DESYNC');
   check(Boolean(seal?.sourceSha)&&currentDev.sourceSha===seal.sourceSha&&phaseLock.sourceSha===((pendingServing||hostingOnlyServing)?source:seal.sourceSha),'CURRENT_PHASE_LOCK_PRODUCT_SOURCE_DESYNC');
   // The current 21-domain C3 audit is distinct from archived 20-domain
   // terminal evidence. A stale lastModuleTruthProof previously survived every
@@ -65,13 +75,18 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
   const c3=d?.currentC3PreterminalAudit||{};
   const sameProof=JSON.stringify(c3)===JSON.stringify(p?.currentC3PreterminalAudit||null)&&
     JSON.stringify(c3)===JSON.stringify(l?.currentC3PreterminalAudit||null);
-  const currentlyServedHosting=hostingOnlyServing?hosting.hostingVersion:seal.hostingVersion;
+  const currentlyServedHosting=(hostingOnlyServing||pendingHostingOnly)?hosting.hostingVersion:seal.hostingVersion;
+  // A source successor must not inherit or fabricate a current-source C3 receipt.
+  // While the exact Hosting-only predecessor is still served, the previous C3
+  // remains historical with its own source, tree and successful run identity.
+  const c3Source=pendingHostingOnly?hosting.sourceSha:source;
+  const c3Tree=pendingHostingOnly?hosting.sourceTree:tree;
   check(sameProof&&c3.schemaVersion==='cxorbia.i3.current-c3-preterminal-audit.v1'&&
     Number.isInteger(c3.runId)&&c3.runId>0&&
     c3.moduleCount===21&&c3.matchModules>=0&&c3.matchModules<=21&&
     c3.sourceReadyModules>=0&&c3.sourceReadyModules<=21&&
     Array.isArray(c3.sourceReadyDomainNames)&&c3.sourceReadyDomainNames.length===c3.sourceReadyModules&&
-    c3.pendingFiles>=0&&c3.sourceSha===source&&c3.sourceTree===tree&&
+    c3.pendingFiles>=0&&c3.sourceSha===c3Source&&c3.sourceTree===c3Tree&&
     c3.hostingVersion===currentlyServedHosting&&c3.runtimeRevision===seal.runtimeRevision&&
     c3.production===false&&/^(HOLD|PASS)_/.test(c3.decision||'')&&
     JSON.stringify(d?.lastModuleTruthProof||null)===JSON.stringify(c3)&&
