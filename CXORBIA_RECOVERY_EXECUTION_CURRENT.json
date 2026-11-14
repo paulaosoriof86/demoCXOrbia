@@ -1681,8 +1681,8 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261114-V302.json",
-    "gitBlob": "bfdf5f274b86b427e2e39d6f0d72647285b4fb3d"
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261114-V303.json",
+    "gitBlob": "01a01453784f2e458af7cc9a74f4c9bc3c50621d"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -3680,8 +3680,8 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "7d8aa5f8208f059c3ff643f72ab42a6866301e6e",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261114-V302.json",
-    "matrixBlob": "bfdf5f274b86b427e2e39d6f0d72647285b4fb3d",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261114-V303.json",
+    "matrixBlob": "01a01453784f2e458af7cc9a74f4c9bc3c50621d",
     "classificationCounts": {
       "COMPOSED_NOT_DEPLOYED": 2,
       "MATCH": 4,
@@ -3692,7 +3692,7 @@
       "SOURCE_FIXED_HOSTING_DEV_PUBLISHED_PENDING_AUTH_SHOPPER_B2_B3_E2E_HUMAN": 1
     },
     "derivedAt": "2026-11-14",
-    "meaning": "SOURCE_ONLY_P0_PENDING_HOSTING_DEV__HISTORICAL_C3_5_MATCH__NEW_CURRENT_CANDIDATE_4_MATCH__B4_B7_PASS_PRESERVED"
+    "meaning": "4_SOURCE_CANDIDATE_MATCH_5_PREVIOUS_HISTORICAL_C3_MATCH_3_B4_B6_FUNCTIONAL_BLOCK_PASS"
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
   "activeMethodologyGuard": {
@@ -6480,8 +6480,8 @@
     },
     "production": false
   },
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V625_2026-11-14.json",
-  "findingsLedgerExpectedGitBlob": "53697ba377d48765591c877f81b39890fb69e007",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V626_2026-11-14.json",
+  "findingsLedgerExpectedGitBlob": "8f463d12729c2a6319ff882118c09c4b93e593bf",
   "nextFindingId": "VRM-331",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -7501,7 +7501,7 @@
     "sameArtifactAdminShopper": "PENDING",
     "production": false
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261114-V302.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261114-V303.json",
   "vrm301DevHostingAdminReadback20261104": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM301_DEV_HOSTING_RUN41801457655_ADMIN_READBACK_20261104.json",
     "receiptGitBlob": "b8138b76db5159956aa500fe30f2be0f99fc8fce",
@@ -8697,7 +8697,7 @@
     "sourceTestsFail": 0,
     "production": false
   },
-  "updatedAt": "2026-11-14T09:10:45.167Z",
+  "updatedAt": "2026-11-14T09:17:21.433Z",
   "previousCanonicalControlBeforeVrm313": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
@@ -10085,7 +10085,7 @@
       "production": false
     }
   },
-  "moduleTruthExpectedGitBlob": "bfdf5f274b86b427e2e39d6f0d72647285b4fb3d",
+  "moduleTruthExpectedGitBlob": "01a01453784f2e458af7cc9a74f4c9bc3c50621d",
   "d08AcademyDispatchSourceProof": {
     "path": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_DISPATCH_SOURCE_PROOF_20261107.json",
     "gitBlob": "2ad9d960cb958e84368cbbd70a7e9f2fb7864d3f",
@@ -14551,5 +14551,21 @@
     "canonicalCI": "PENDING",
     "hostingOnlyDEV": "PENDING",
     "production": false
+  },
+  "i3Q2CiReconciliation": {
+    "workflowRunId": 43579533987,
+    "classification": "MAPPING_FAILURE",
+    "failingTest": "tools/qa/cxorbia-i3-terminal-module-domain-coverage.test.mjs",
+    "originalError": "HISTORICAL_MATCH_5_VS_CURRENT_MATCH_4",
+    "correction": "CROSSWALK_ONLY_EXACT_SOURCE_UNCHANGED",
+    "productSourceSha": "7d8aa5f8208f059c3ff643f72ab42a6866301e6e",
+    "devPublished": false,
+    "production": false,
+    "priorLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V625_2026-11-14.json",
+    "priorMatrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261114-V302.json",
+    "currentMatch": 4,
+    "formerMatch": 5,
+    "frozenFunctionalBlockPass": 3,
+    "canonicalCI": "RETRY_PENDING"
   }
 }

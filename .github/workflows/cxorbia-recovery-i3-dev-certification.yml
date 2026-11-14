@@ -7030,13 +7030,16 @@ jobs:
       test "$SOURCE_TREE" = "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")"
       test "$(git rev-parse "$SOURCE^{tree}")" = "$SOURCE_TREE"
       git merge-base --is-ancestor "$SOURCE" "$GITHUB_SHA"
-      git diff --quiet "$SOURCE" "$GITHUB_SHA" -- app backend tools firebase.json .firebaserc firestore.rules storage.rules ':!tools/qa/cxorbia-i3-vrm302-admin-shoppers-modal-binding.test.mjs' ':!tools/qa/cxorbia-i3-certification-project-continuity.test.mjs' ':!tools/qa/cxorbia-i3-current-authority-alias-guard.mjs' ':!tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs'
+      git diff --quiet "$SOURCE" "$GITHUB_SHA" -- app backend tools firebase.json .firebaserc firestore.rules storage.rules ':!tools/qa/cxorbia-i3-vrm302-admin-shoppers-modal-binding.test.mjs' ':!tools/qa/cxorbia-i3-certification-project-continuity.test.mjs' ':!tools/qa/cxorbia-i3-current-authority-alias-guard.mjs' ':!tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs' ':!tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs'
       # VRM-322: pin the one QA-only assertion correction so no product drift can hide behind its exclusion.
       test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-certification-project-continuity.test.mjs")" = "1d663cc151e638150185eb51b82566455e09f18b"
       # VRM-328/329/330: updated canonical-source alias controls are QA-only;
       # their exact blobs are pinned, so the exclusion cannot hide source drift.
       test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.mjs")" = "3f0384dc96251d325c961d049a00c5453be9e3af"
       test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs")" = "e2ec378b61edf30a6ce83d6fe0099dd578b14b10"
+      # The pending-source/predecessor C3 accounting assertion is corrected at
+      # this exact QA blob; no browser/backend source change is exempted.
+      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs")" = "5514e00485e4e474729aa36ec3591ce7877162d1"
       [[ "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" == HOLD_I3_* ]]
       test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$SOURCE"
       test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$SOURCE_TREE"

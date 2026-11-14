@@ -129,6 +129,42 @@ test('I3 current authority aliases are bound to the same C3 source, matrix, ledg
   const expectedLedger={path:descriptor.findingsLedgerPath,gitBlob:descriptor.findingsLedgerExpectedGitBlob};
   const expectedBlocker=`C3_${audit.pendingFiles}_PATH_BOUND_SOURCE_PROOF_GAPS_${audit.pendingOwnerProofFiles}_OWNER_PROOF_${audit.pendingBlobProvenanceFiles}_BLOB_PROVENANCE_${audit.pendingMappingApprovalFiles}_MAPPING__${audit.sourceReadyModules}_SOURCE_READY`;
 
+  const pendingHostingOnly=descriptor.pendingDevSuccessor?.state==='P0_PROVEN_PENDING_DEV_MATERIALIZATION'&&
+    descriptor.pendingDevSuccessor.scope==='HOSTING_ONLY'&&
+    descriptor.pendingDevSuccessor.sourceSha===descriptor.productSourceSha;
+  if(pendingHostingOnly){
+    // A new browser-only P0 successor cannot inherit a C3 certificate from
+    // its still-served predecessor. New matrix/ledger pointers are current;
+    // currentCanonicalControl remains an immutable historical C3 receipt.
+    assert.deepEqual(execution.moduleTruthAuthority,expectedMatrix);
+    assert.equal(execution.moduleTruthPath,descriptor.moduleTruthPath);
+    assert.equal(execution.moduleTruthExpectedGitBlob,descriptor.moduleTruthExpectedGitBlob);
+    assert.equal(execution.findingsLedgerPath,descriptor.findingsLedgerPath);
+    assert.equal(execution.findingsLedgerExpectedGitBlob,descriptor.findingsLedgerExpectedGitBlob);
+    assert.equal(ledger.currentLedgerSuccessor,descriptor.findingsLedgerPath);
+    assert.equal(ledger.currentTruth.productSourceSha,descriptor.productSourceSha);
+    assert.equal(ledger.activeBlocker,descriptor.activeBlocker);
+    assert.equal(execution.activeBlocker,descriptor.activeBlocker);
+    assert.equal(ledger.updatedAt,descriptor.updatedAt);
+    assert.equal(execution.updatedAt,descriptor.updatedAt);
+    assert.equal(execution.productSourceSha,descriptor.productSourceSha);
+    assert.equal(audit.sourceSha,descriptor.pendingDevSuccessor.predecessorProductSourceSha);
+    assert.equal(audit.sourceSha,descriptor.currentHostingOnlyDevMaterialization.sourceSha);
+    assert.equal(audit.sourceTree,descriptor.currentHostingOnlyDevMaterialization.sourceTree);
+    assert.equal(audit.runId,execution.currentCanonicalControl.receipt.runId);
+    assert.equal(audit.artifactDigest,execution.currentCanonicalControl.receipt.artifactDigest);
+    assert.equal(execution.currentCanonicalControl.sourceSha,audit.sourceSha);
+    assert.equal(descriptor.currentCanonicalControl.sourceSha,audit.sourceSha);
+    assert.equal(execution.currentCanonicalControl.receipt.terminalCertified,false);
+    assert.equal(descriptor.currentCanonicalControl.receipt.terminalCertified,false);
+    assert.equal(audit.pendingFiles,audit.pendingOwnerProofFiles+audit.pendingBlobProvenanceFiles+audit.pendingMappingApprovalFiles);
+    assert.equal(audit.phaseAComplete,false);
+    assert.equal(audit.i4Authorized,false);
+    assert.equal(execution.continuityHandoff.productSourceSha,execution.currentDevMaterialization.sourceSha);
+    assert.equal(execution.production,'DO_NOT_TOUCH');
+    return;
+  }
+
   assert.equal(execution.moduleTruthPath,descriptor.moduleTruthPath);
   assert.equal(execution.moduleTruthExpectedGitBlob,descriptor.moduleTruthExpectedGitBlob);
   assert.equal(execution.findingsLedgerPath,descriptor.findingsLedgerPath);
