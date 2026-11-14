@@ -210,8 +210,18 @@ test('I3 current authority aliases are bound to the same C3 source, matrix, ledg
   assert.equal(execution.continuityHandoff.productSourceTree,execution.currentDevMaterialization.sourceTree);
   assert.equal(execution.continuityHandoff.path,execution.currentCanonicalCheckpoint.path);
   assert.equal(execution.continuityHandoff.gitBlob,execution.currentCanonicalCheckpoint.checkpointGitBlob);
-  assert.equal(execution.executionReceiptThursday20261112.currentVerified.runId,audit.runId);
-  assert.equal(execution.executionReceiptThursday20261112.currentVerified.totalPendingPaths,audit.pendingFiles);
+  // Thursday's receipt is immutable history after a newer C3 re-audits the
+  // actually served source. Never rewrite that archived run as the new run.
+  const thursday=execution.executionReceiptThursday20261112.currentVerified;
+  if(thursday.runId===audit.runId){
+    assert.equal(thursday.totalPendingPaths,audit.pendingFiles);
+  }else{
+    assert.equal(thursday.runId,execution.previousC3PreterminalAudit?.runId);
+    assert.equal(thursday.totalPendingPaths,execution.previousC3PreterminalAudit?.pendingFiles);
+    assert.ok(audit.runId>thursday.runId);
+    assert.equal(audit.sourceSha,descriptor.productSourceSha);
+    assert.equal(audit.hostingVersion,descriptor.currentHostingOnlyDevMaterialization.hostingVersion);
+  }
   assert.equal(execution.executionReceiptThursday20261112.production,'DO_NOT_TOUCH');
   assert.equal(audit.phaseAComplete,false);
   assert.equal(audit.i4Authorized,false);

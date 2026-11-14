@@ -7041,7 +7041,7 @@ jobs:
       test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs")" = "13ebf8493f879a73cd0942c751484995fcbb72c4"
       # The pending-source/predecessor C3 accounting assertion is corrected at
       # this exact QA blob; no browser/backend source change is exempted.
-      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs")" = "8083a85441b513483644b0402be237aa1d3152c3"
+      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs")" = "139fc5c5a622eaf21c9ac594bf4fa2fd9f29af45"
       [[ "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" == HOLD_I3_* ]]
       test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$SOURCE"
       test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$SOURCE_TREE"
