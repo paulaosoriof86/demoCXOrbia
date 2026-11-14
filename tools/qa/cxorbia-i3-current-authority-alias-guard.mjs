@@ -51,6 +51,18 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
     seal.sourceSha===postDeploy.sourceSha&&seal.sourceTree===postDeploy.sourceTree&&
     currentDev.sourceSha===postDeploy.sourceSha&&
     current?.sourceMaterialized===true&&current?.materializationScope==='HOSTING_ONLY_WITH_PAIRED_PREDECESSOR';
+  // The immutable Hosting ACK may arrive before the new source's C3 audit.
+  // Preserve the *previous* C3 as historical only during this receipt-bound
+  // interval; never claim its 5 MATCH as a new-source certificate.
+  const preC3=d?.i3Q2HostingReleaseC3Pending||{};
+  const c3PredecessorAfterHosting=hostingOnlyServing&&
+    preC3.state==='DEV_HOSTING_VERIFIED_C3_PENDING'&&
+    JSON.stringify(preC3)===JSON.stringify(p?.i3Q2HostingReleaseC3Pending||null)&&
+    JSON.stringify(preC3)===JSON.stringify(l?.i3Q2HostingReleaseC3Pending||null)&&
+    preC3.sourceSha===source&&preC3.sourceTree===tree&&
+    preC3.hostingVersion===hosting.hostingVersion&&
+    preC3.runtimeRevision===hosting.runtimeRevision&&
+    preC3.production===false;
   check(Boolean(ledgerPath)&&p?.findingsLedgerPath===ledgerPath,'CURRENT_LEDGER_PATH_DESYNC');
   check(Boolean(d?.findingsLedgerExpectedGitBlob)&&p?.findingsLedgerExpectedGitBlob===d.findingsLedgerExpectedGitBlob,'CURRENT_LEDGER_BLOB_DESYNC');
   check(l?.governance?.findingCount===count&&l?.findingCount===count,'CURRENT_FINDING_COUNT_DESYNC');
@@ -75,12 +87,13 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
   const c3=d?.currentC3PreterminalAudit||{};
   const sameProof=JSON.stringify(c3)===JSON.stringify(p?.currentC3PreterminalAudit||null)&&
     JSON.stringify(c3)===JSON.stringify(l?.currentC3PreterminalAudit||null);
-  const currentlyServedHosting=(hostingOnlyServing||pendingHostingOnly)?hosting.hostingVersion:seal.hostingVersion;
+  const currentlyServedHosting=c3PredecessorAfterHosting?preC3.previousHostingVersion:
+    ((hostingOnlyServing||pendingHostingOnly)?hosting.hostingVersion:seal.hostingVersion);
   // A source successor must not inherit or fabricate a current-source C3 receipt.
   // While the exact Hosting-only predecessor is still served, the previous C3
   // remains historical with its own source, tree and successful run identity.
-  const c3Source=pendingHostingOnly?hosting.sourceSha:source;
-  const c3Tree=pendingHostingOnly?hosting.sourceTree:tree;
+  const c3Source=c3PredecessorAfterHosting?preC3.previousC3SourceSha:(pendingHostingOnly?hosting.sourceSha:source);
+  const c3Tree=c3PredecessorAfterHosting?preC3.previousC3SourceTree:(pendingHostingOnly?hosting.sourceTree:tree);
   check(sameProof&&c3.schemaVersion==='cxorbia.i3.current-c3-preterminal-audit.v1'&&
     Number.isInteger(c3.runId)&&c3.runId>0&&
     c3.moduleCount===21&&c3.matchModules>=0&&c3.matchModules<=21&&

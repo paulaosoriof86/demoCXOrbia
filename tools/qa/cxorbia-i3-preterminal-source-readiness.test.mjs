@@ -132,7 +132,11 @@ test('I3 current authority aliases are bound to the same C3 source, matrix, ledg
   const pendingHostingOnly=descriptor.pendingDevSuccessor?.state==='P0_PROVEN_PENDING_DEV_MATERIALIZATION'&&
     descriptor.pendingDevSuccessor.scope==='HOSTING_ONLY'&&
     descriptor.pendingDevSuccessor.sourceSha===descriptor.productSourceSha;
-  if(pendingHostingOnly){
+  const preC3=descriptor.i3Q2HostingReleaseC3Pending||{};
+  const c3PendingAfterHosting=preC3.state==='DEV_HOSTING_VERIFIED_C3_PENDING'&&
+    preC3.sourceSha===descriptor.productSourceSha&&
+    preC3.hostingVersion===descriptor.currentHostingOnlyDevMaterialization?.hostingVersion;
+  if(pendingHostingOnly||c3PendingAfterHosting){
     // A new browser-only P0 successor cannot inherit a C3 certificate from
     // its still-served predecessor. New matrix/ledger pointers are current;
     // currentCanonicalControl remains an immutable historical C3 receipt.
@@ -148,9 +152,16 @@ test('I3 current authority aliases are bound to the same C3 source, matrix, ledg
     assert.equal(ledger.updatedAt,descriptor.updatedAt);
     assert.equal(execution.updatedAt,descriptor.updatedAt);
     assert.equal(execution.productSourceSha,descriptor.productSourceSha);
-    assert.equal(audit.sourceSha,descriptor.pendingDevSuccessor.predecessorProductSourceSha);
-    assert.equal(audit.sourceSha,descriptor.currentHostingOnlyDevMaterialization.sourceSha);
-    assert.equal(audit.sourceTree,descriptor.currentHostingOnlyDevMaterialization.sourceTree);
+    assert.equal(audit.sourceSha,pendingHostingOnly?
+      descriptor.pendingDevSuccessor.predecessorProductSourceSha:preC3.previousC3SourceSha);
+    assert.equal(audit.sourceTree,pendingHostingOnly?
+      descriptor.currentHostingOnlyDevMaterialization.sourceTree:preC3.previousC3SourceTree);
+    if(pendingHostingOnly)assert.equal(audit.sourceSha,descriptor.currentHostingOnlyDevMaterialization.sourceSha);
+    else{
+      assert.equal(audit.hostingVersion,preC3.previousHostingVersion);
+      assert.equal(descriptor.currentHostingOnlyDevMaterialization.sourceSha,descriptor.productSourceSha);
+      assert.notEqual(audit.sourceSha,descriptor.productSourceSha);
+    }
     assert.equal(audit.runId,execution.currentCanonicalControl.receipt.runId);
     assert.equal(audit.artifactDigest,execution.currentCanonicalControl.receipt.artifactDigest);
     assert.equal(execution.currentCanonicalControl.sourceSha,audit.sourceSha);

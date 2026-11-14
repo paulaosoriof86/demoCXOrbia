@@ -83,6 +83,27 @@ test('new bounded Hosting-only source keeps prior C3 and Hosting facts until new
   v.ledger.c3PreterminalProof.sourceSha=v.descriptor.productSourceSha;
   assert.ok(validateCurrentAuthorityAliases(v).failures.includes('CURRENT_C3_PROOF_DESYNC'));
 });
+test('Hosting-only ACK preserves the old C3 as historical until the new-source C3 audit runs',()=>{
+  const v=hostingSuccessorPendingFixture(),d=v.descriptor,p=v.pointer,l=v.ledger;
+  const predecessor={...d.currentHostingOnlyDevMaterialization};
+  const nextHosting={...predecessor,sourceSha:d.productSourceSha,sourceTree:d.productSourceTree,
+    hostingVersion:'hosting-372'};
+  d.currentHostingOnlyDevMaterialization={...nextHosting};
+  p.currentHostingOnlyDevMaterialization={...nextHosting};
+  delete d.pendingDevSuccessor;delete p.pendingDevSuccessor;
+  p.activePhaseAClosureLock20261110.devHosting=nextHosting.hostingVersion;
+  l.currentTruth.sourceMaterialized=true;
+  l.currentTruth.materializationScope='HOSTING_ONLY_WITH_PAIRED_PREDECESSOR';
+  const transition={state:'DEV_HOSTING_VERIFIED_C3_PENDING',sourceSha:d.productSourceSha,
+    sourceTree:d.productSourceTree,hostingVersion:nextHosting.hostingVersion,
+    runtimeRevision:nextHosting.runtimeRevision,
+    previousC3SourceSha:predecessor.sourceSha,previousC3SourceTree:predecessor.sourceTree,
+    previousHostingVersion:predecessor.hostingVersion,production:false};
+  d.i3Q2HostingReleaseC3Pending={...transition};p.i3Q2HostingReleaseC3Pending={...transition};l.i3Q2HostingReleaseC3Pending={...transition};
+  const good=validateCurrentAuthorityAliases(v);assert.equal(good.pass,true,JSON.stringify(good));
+  p.i3Q2HostingReleaseC3Pending.previousHostingVersion='fabricated';
+  assert.ok(validateCurrentAuthorityAliases(v).failures.includes('CURRENT_C3_PROOF_DESYNC'));
+});
 for(const [name,change,code] of [
   ['stale phase-lock Hosting',v=>v.pointer.activePhaseAClosureLock20261110.devHosting='hosting-370','CURRENT_PHASE_LOCK_DEV_HOSTING_DESYNC'],
   ['fabricated Hosting source',v=>v.descriptor.currentHostingOnlyDevMaterialization.sourceSha='f'.repeat(40),'CURRENT_PRODUCT_SOURCE_DESYNC'],

@@ -70,10 +70,18 @@ const pendingHostingOnly=d.pendingDevSuccessor?.state==='P0_PROVEN_PENDING_DEV_M
   d.pendingDevSuccessor.sourceSha===d.productSourceSha&&
   d.currentHostingOnlyDevMaterialization?.sourceSha===d.pendingDevSuccessor.predecessorProductSourceSha&&
   mt.productSource?.authorityState==='SOURCE_ONLY_PROVEN_PENDING_HOSTING_ONLY_DEV';
-const c3PredecessorOnly=pendingHostingOnly&&
+const preC3=d.i3Q2HostingReleaseC3Pending||{};
+const c3AfterHosting=preC3.state==='DEV_HOSTING_VERIFIED_C3_PENDING'&&
+  preC3.sourceSha===d.productSourceSha&&
+  preC3.hostingVersion===d.currentHostingOnlyDevMaterialization?.hostingVersion&&
+  preC3.previousC3SourceSha===c3.sourceSha&&
+  preC3.previousC3SourceTree===c3.sourceTree&&
+  preC3.previousHostingVersion===c3.hostingVersion&&
+  mt.productSource?.authorityState==='HOSTING_DEV_MATERIALIZED_PENDING_C3_E2E';
+const c3PredecessorOnly=(pendingHostingOnly&&
   c3.sourceSha===d.currentHostingOnlyDevMaterialization.sourceSha&&
   c3.sourceTree===d.currentHostingOnlyDevMaterialization.sourceTree&&
-  c3.hostingVersion===d.currentHostingOnlyDevMaterialization.hostingVersion;
+  c3.hostingVersion===d.currentHostingOnlyDevMaterialization.hostingVersion)||c3AfterHosting;
 if(JSON.stringify(mt.currentC3PreterminalAudit||null)!==JSON.stringify(c3)||
    c3.moduleCount!==modules.length||(!c3PredecessorOnly&&c3.matchModules!==modules.filter(x=>x.classification==='MATCH').length)||
    (!c3PredecessorOnly&&(c3.sourceSha!==d.productSourceSha||c3.sourceTree!==d.productTreeAuthority)))

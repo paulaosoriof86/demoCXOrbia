@@ -307,6 +307,26 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
       !stalePendingDev.test(d.exactNextAction || '')),
       'MAPPING_FAILURE:STALE_HOSTING_MATERIALIZATION_STATUS');
   }
+  const c3AfterHostingD=d.i3Q2HostingReleaseC3Pending;
+  const c3AfterHostingP=p.i3Q2HostingReleaseC3Pending;
+  if(c3AfterHostingD||c3AfterHostingP){
+    const x=c3AfterHostingD||{};
+    const receipt=x.receiptPath&&fs.existsSync(x.receiptPath)?readJson(x.receiptPath):{};
+    check(JSON.stringify(x)===JSON.stringify(c3AfterHostingP||null)&&
+      x.state==='DEV_HOSTING_VERIFIED_C3_PENDING'&&x.production===false&&
+      x.sourceSha===d.productSourceSha&&x.sourceTree===d.productTreeAuthority&&
+      x.hostingVersion===latestHostingD.hostingVersion&&
+      x.runtimeRevision===latestHostingD.runtimeRevision&&
+      x.previousC3SourceSha===d.currentC3PreterminalAudit?.sourceSha&&
+      x.previousC3SourceTree===d.currentC3PreterminalAudit?.sourceTree&&
+      x.previousHostingVersion===d.currentC3PreterminalAudit?.hostingVersion&&
+      x.receiptPath&&x.receiptBlob===gitBlob(x.receiptPath)&&
+      receipt.sourceSha===x.sourceSha&&receipt.sourceTree===x.sourceTree&&
+      receipt.hostingAfter===x.hostingVersion&&receipt.runtimeRevision===x.runtimeRevision&&
+      receipt.verifiedServedAssetCount===19&&receipt.productionUnchanged===true&&
+      m.productSource?.authorityState==='HOSTING_DEV_MATERIALIZED_PENDING_C3_E2E',
+      'RELEASE_COMPOSITION_FAILURE:HOSTING_DEV_C3_TRANSITION_RECEIPT');
+  }
   check(p.progressByStageSemantics === 'HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY',
     'MAPPING_FAILURE:STALE_PROGRESS_AS_LIVE');
   check(p.state === 'HOLD' && d.production === 'DO_NOT_TOUCH' && p.production === 'DO_NOT_TOUCH' &&
