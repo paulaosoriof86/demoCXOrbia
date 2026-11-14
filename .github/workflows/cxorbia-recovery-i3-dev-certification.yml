@@ -7015,7 +7015,7 @@ jobs:
     SOURCE_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
     EVIDENCE: .tmp/i3-current-source-hosting-dev
     PRODUCTION_URL: https://tya-plataforma.web.app/
-    ASSET_FILES: index-backend-dev.html core/backend-firebase.js core/router.js adapters/tya-live-source-refresh-watch-v2.js modules/hr-source.js modules/shoppers.js modules/beneficios.js modules/clientes.js modules/historico.js modules/visitas.js modules/cuestionario-shopper.js modules/cert.js core/data.js core/backend-certifications.js modules/midia.js modules/misvisitas.js
+    ASSET_FILES: index-backend-dev.html core/backend-firebase.js core/router.js adapters/tya-live-source-refresh-watch-v2.js modules/hr-source.js modules/shoppers.js modules/beneficios.js modules/clientes.js modules/historico.js modules/visitas.js modules/cuestionario-shopper.js modules/cert.js core/data.js core/backend-certifications.js modules/midia.js modules/misvisitas.js core/finanzas-core.js modules/marca.js modules/administrabilidad.js
    steps:
    - uses: actions/checkout@v4
      with: {fetch-depth: 0}
@@ -7033,10 +7033,10 @@ jobs:
       git diff --quiet "$SOURCE" "$GITHUB_SHA" -- app backend tools firebase.json .firebaserc firestore.rules storage.rules ':!tools/qa/cxorbia-i3-vrm302-admin-shoppers-modal-binding.test.mjs' ':!tools/qa/cxorbia-i3-certification-project-continuity.test.mjs' ':!tools/qa/cxorbia-i3-current-authority-alias-guard.mjs' ':!tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs'
       # VRM-322: pin the one QA-only assertion correction so no product drift can hide behind its exclusion.
       test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-certification-project-continuity.test.mjs")" = "1d663cc151e638150185eb51b82566455e09f18b"
-      # VRM-328: source-only predecessor control changes are QA-only; both are pinned
-      # to exact blobs so no product or certification drift can hide behind exclusions.
-      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.mjs")" = "a95dcf2436edbd17ed093a9ed36ef299c210a03b"
-      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs")" = "a060e5a62ed1ebf26c71b6f476aa4331d08f22f0"
+      # VRM-328/329/330: updated canonical-source alias controls are QA-only;
+      # their exact blobs are pinned, so the exclusion cannot hide source drift.
+      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.mjs")" = "3f0384dc96251d325c961d049a00c5453be9e3af"
+      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs")" = "e2ec378b61edf30a6ce83d6fe0099dd578b14b10"
       [[ "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" == HOLD_I3_* ]]
       test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$SOURCE"
       test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$SOURCE_TREE"

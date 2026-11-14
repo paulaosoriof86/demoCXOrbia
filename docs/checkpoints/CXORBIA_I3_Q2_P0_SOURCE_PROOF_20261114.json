@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "cxorbia.i3.q2.proven-p0-local-source-proof.v1",
+  "id": "CXORBIA-I3-Q2-P0-SOURCE-PROOF-20261114",
+  "iteration": "I3",
+  "decision": "LOCAL_SOURCE_PROVEN_PENDING_CANONICAL_CI_AND_HOSTING_ONLY_DEV",
+  "classification": "FUNCTIONAL_DEFECT",
+  "sourceSha": "7d8aa5f8208f059c3ff643f72ab42a6866301e6e",
+  "sourceTree": "ce780d940ae18893fec40f5f813363cf49b7f419",
+  "predecessorProductSourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+  "expectedParentSha": "f2049c322744508a5c299390ae062e1044ce19f6",
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_Q2_P0_EXACT_SCOPE_20261114.json",
+  "scopeReceiptBlob": "19bae1fd2cefb5a14859b6e4bf0fb75ab06e98c9",
+  "allowedProductFiles": [
+    "app/core/finanzas-core.js",
+    "app/modules/marca.js",
+    "app/modules/administrabilidad.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-q2-eight-remaining-owner-source.test.mjs",
+    "tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs"
+  ],
+  "findings": [
+    {"id":"VRM-329","priority":"P0_PROVEN"},
+    {"id":"VRM-330","priority":"P0_PROVEN"}
+  ],
+  "negativeFirst": {"reproductions":3,"failsBeforeFix":3,"sameTestsPassAfterFix":3},
+  "testExecution": {
+    "q2ExactOwnerPlusExistingProvider": {"pass":41,"fail":0},
+    "financeDomainRegression": {"pass":18,"fail":0},
+    "canonicalContinuityAndAliasGuards": {"pass":63,"fail":0},
+    "nodeSyntax": "PASS_4_FILES",
+    "gitDiffCheck": "PASS"
+  },
+  "sourceTestsPass": 122,
+  "sourceTestsFail": 0,
+  "canonicalCi": "PENDING",
+  "sourceQAOnly": true,
+  "devPublished": false,
+  "humanAcceptance": "PENDING",
+  "production": false,
+  "authorizationI4": false
+}

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "cxorbia.i3.q2.proven-p0-exact-scope.v1",
+  "id": "CXORBIA-I3-Q2-P0-EXACT-SCOPE-20261114",
+  "iteration": "I3",
+  "decision": "P0_PROVEN_SOURCE_SCOPE_NO_DEV_OR_HUMAN_CLAIM",
+  "classification": "FUNCTIONAL_DEFECT",
+  "expectedParentSha": "f2049c322744508a5c299390ae062e1044ce19f6",
+  "servingSourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+  "allowedProductFiles": [
+    "app/core/finanzas-core.js",
+    "app/modules/marca.js",
+    "app/modules/administrabilidad.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-q2-eight-remaining-owner-source.test.mjs",
+    "tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs"
+  ],
+  "allowedControlGuardFiles": [
+    "tools/qa/cxorbia-i3-shock-continuity-guard.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.mjs",
+    "tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs"
+  ],
+  "findings": [
+    {"id":"VRM-329","priority":"P0_PROVEN","owner":"app/core/finanzas-core.js","reproduction":"Known GTQ revenue 100 with incomplete honorarium returns null margin but 0 percent; expected unknown/null percentage"},
+    {"id":"VRM-330","priority":"P0_PROVEN","owners":["app/modules/marca.js","app/modules/administrabilidad.js"],"reproduction":"Canonical tenant in protected DEV with command-write gate disabled entered local demo controls; expected read-only"}
+  ],
+  "production": false,
+  "authorizationI4": false
+}
