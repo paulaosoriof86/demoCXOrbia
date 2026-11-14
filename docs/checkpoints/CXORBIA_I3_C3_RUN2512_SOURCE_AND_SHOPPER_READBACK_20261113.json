@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "cxorbia.i3.c3.run2512.source-and-shopper-readback.v1",
+  "localDate": "2026-11-13",
+  "iteration": "I3",
+  "phase": "Q2_SOURCE_PROOF_AND_Q3_FOCAL_SHOPPER_READONLY",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "headSha": "d9174228113de7b2d0b0a995cab1ebd5f500793e",
+  "ledger": {
+    "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V624_2026-11-13.json",
+    "gitBlob": "1f3d36496cd120f11fdbdd4a43a87f876eda3a7c"
+  },
+  "run": {
+    "number": 2512,
+    "id": 43559058695,
+    "url": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43559058695",
+    "conclusion": "success",
+    "candidateAuthorityJob": {
+      "id": 132338423223,
+      "conclusion": "success"
+    },
+    "preterminalJob": {
+      "id": 132338567896,
+      "conclusion": "success"
+    },
+    "artifactId": 14099301986,
+    "artifactName": "cxorbia-c3-preterminal-module-truth-43559058695",
+    "artifactDigest": "sha256:e6d1159c944f66143749915d312320f9f59295109283383227a287774dd21311"
+  },
+  "c3": {
+    "preterminalCompositionDecision": "PASS_C3_PRETERMINAL_COMPOSITION",
+    "overallDecision": "HOLD_C3_PRETERMINAL_SOURCE_EVIDENCE_PENDING",
+    "productSourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+    "totalOwnerPaths": 156,
+    "sourcePathsProven": 138,
+    "pendingOwnerProofPaths": 18,
+    "pendingBlobProvenancePaths": 0,
+    "pendingMappingApprovalPaths": 0,
+    "sourceReadyModules": 15,
+    "strictMatchModules": 5,
+    "totalModules": 21,
+    "terminalEligible": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD"
+  },
+  "shopperDevReadOnly": {
+    "surface": "https://cxorbia-backend-dev.web.app/index-backend-dev.html",
+    "sessionRole": "Shopper",
+    "observedName": "Julissa Flores",
+    "project": "Cinépolis",
+    "period": "NOV 2026",
+    "country": "GT",
+    "miDia": {
+      "nextVisit": "C. Sankris Mall",
+      "scheduledDate": "2026-11-12",
+      "state": "Agendada"
+    },
+    "misVisitas": {
+      "active": 1,
+      "history": 9,
+      "total": 10
+    },
+    "historicalPayments": {
+      "confirmed": 7,
+      "pending": 2
+    },
+    "benefits": {
+      "history": 9,
+      "confirmed": 7,
+      "pending": 2
+    },
+    "visitasDisponibles": {
+      "count": 8,
+      "projects": 1
+    },
+    "comparison": "FOCAL_CROSS_VIEW_COUNTS_MATCH",
+    "hrIndependentParity": "NOT_TESTED",
+    "adminCrossRoleParity": "NOT_TESTED",
+    "mutationAndAck": "NOT_TESTED",
+    "humanAcceptance": "PENDING",
+    "moduleCertificateAdded": false
+  },
+  "safety": {
+    "productFilesChanged": 0,
+    "builds": 0,
+    "deploys": 0,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "production": false,
+    "i4Authorized": false
+  },
+  "nextExact": "Q2 prove 18 remaining owners with focused behavioral tests; Q3 run independent HR/Admin and safe idempotent ACK E2E; do not promote strict MATCH without 56-scenario and HUMAN_PASS coverage."
+}
