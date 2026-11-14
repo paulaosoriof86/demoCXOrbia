@@ -225,7 +225,7 @@
   "productTreeAuthority": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
   "predecessorProductSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V623_2026-11-13.json",
-  "findingsLedgerExpectedGitBlob": "14bde41357beaa40179da99459060c71ed6c310d",
+  "findingsLedgerExpectedGitBlob": "85e6bdabb4a04e73a8873f03b7ab8674baf1293a",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -19169,7 +19169,7 @@
     },
     "ledger": {
       "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V623_2026-11-13.json",
-      "gitBlob": "14bde41357beaa40179da99459060c71ed6c310d"
+      "gitBlob": "85e6bdabb4a04e73a8873f03b7ab8674baf1293a"
     },
     "receipt": {
       "kind": "GITHUB_ACTIONS_C3_PRETERMINAL_NOT_CERTIFICATE",
@@ -22976,7 +22976,7 @@
     "status": "HOLD_C3_REEVALUATION_REQUIRED",
     "classification": "MAPPING_FAILURE_RECOVERY",
     "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V623_2026-11-13.json",
-    "ledgerGitBlob": "14bde41357beaa40179da99459060c71ed6c310d",
+    "ledgerGitBlob": "85e6bdabb4a04e73a8873f03b7ab8674baf1293a",
     "priorLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V622_2026-11-13.json",
     "priorLedgerBlob": "0c4cc507eff553128dc02ff830fbd15b389e2f3a",
     "proofRunNumber": 2507,
