@@ -5578,8 +5578,8 @@
       "gitBlob": "9594f4d407914b47342fd21dc827a5f442294ad7"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V623_2026-11-13.json",
-      "gitBlob": "85e6bdabb4a04e73a8873f03b7ab8674baf1293a"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V624_2026-11-13.json",
+      "gitBlob": "1f3d36496cd120f11fdbdd4a43a87f876eda3a7c"
     },
     "receipt": {
       "kind": "GITHUB_ACTIONS_C3_PRETERMINAL_NOT_CERTIFICATE",
@@ -6479,8 +6479,8 @@
     },
     "production": false
   },
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V623_2026-11-13.json",
-  "findingsLedgerExpectedGitBlob": "85e6bdabb4a04e73a8873f03b7ab8674baf1293a",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V624_2026-11-13.json",
+  "findingsLedgerExpectedGitBlob": "1f3d36496cd120f11fdbdd4a43a87f876eda3a7c",
   "nextFindingId": "VRM-329",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -14397,5 +14397,31 @@
     "gate21": "HOLD",
     "i4Authorized": false,
     "scope": "VERIFIED_GITHUB_ARTIFACT_SOURCE_ONLY__NO_TERMINAL_PROMOTION"
+  },
+  "c3Q2LedgerPromotionV624": {
+    "id": "CXORBIA-I3-Q2-LEDGER-V624-TWENTYFOUR-OWNER-SOURCE-QA-20261113",
+    "iteration": "I3",
+    "phase": "Q2",
+    "status": "HOLD_C3_REEVALUATION_REQUIRED",
+    "classification": "MAPPING_FAILURE_RECOVERY",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V624_2026-11-13.json",
+    "ledgerGitBlob": "1f3d36496cd120f11fdbdd4a43a87f876eda3a7c",
+    "priorLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V623_2026-11-13.json",
+    "priorLedgerBlob": "85e6bdabb4a04e73a8873f03b7ab8674baf1293a",
+    "proofRunNumber": 2511,
+    "proofRunId": 43558482664,
+    "proofJobId": 132336628616,
+    "proofSourceCommit": "792f223b14c24c061c0e0a1ba82afafedd9808c6",
+    "proofReceipt": "docs/checkpoints/CXORBIA_I3_Q2_24_OWNER_SOURCE_QA_RUN2511_20261113.json",
+    "proofReceiptBlob": "96d52e79a9469e5cc32c7e95a46f3fb83b7657d0",
+    "sourceTestsPass": 193,
+    "ownerProofsAdded": 24,
+    "beforePendingFiles": 42,
+    "beforeStrictMatchModules": 5,
+    "scope": "24_PATH_BOUND_SOURCE_QA_PROOFS_ONLY_NOT_MODULE_CERTIFICATION",
+    "productFilesChanged": 0,
+    "devDeploys": 0,
+    "production": false,
+    "i4Authorized": false
   }
 }

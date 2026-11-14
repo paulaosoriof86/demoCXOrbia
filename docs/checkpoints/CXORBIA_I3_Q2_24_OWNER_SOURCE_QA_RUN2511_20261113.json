@@ -1,0 +1,205 @@
+{
+  "schemaVersion": "cxorbia.i3.q2.path-bound-source-qa.v1",
+  "id": "CXORBIA-I3-Q2-RUN2511-TWENTYFOUR-OWNER-SOURCE-QA",
+  "localDate": "2026-11-13",
+  "iteration": "I3",
+  "block": "Q2",
+  "decision": "PASS_SOURCE_QA_ONLY__LIVE_E2E_AND_MODULE_TERMINAL_HOLD",
+  "classification": "MAPPING_FAILURE_RECOVERY",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceCommit": "792f223b14c24c061c0e0a1ba82afafedd9808c6",
+  "sourceTree": "814a94a9a9617f72e08f439bde2ce0325816f201",
+  "runNumber": 2511,
+  "runId": 43558482664,
+  "canonicalJobId": 132336628616,
+  "runConclusion": "success",
+  "paths": [
+    {
+      "owner": "app/core/shoppers-store.js",
+      "currentSourceBlob": "16d1abd55c3ab166f4c10c08220985e7a54f53ba",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-vrm280-exact-shopper-session-fallback.test.mjs"
+      ]
+    },
+    {
+      "owner": "app/core/automations.js",
+      "currentSourceBlob": "1bf04186e2461340e2852a7608b98d1d510a71a0",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-b7-hf13-whatsapp-draft-source.test.mjs"
+      ]
+    },
+    {
+      "owner": "app/adapters/tya-cumulative-read-model-v2.js",
+      "currentSourceBlob": "11425e47e54ca955056dc6b891235a5bdcdbaf4d",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-vrm304-adjudicated-supersession.test.mjs"
+      ]
+    },
+    {
+      "owner": "app/core/backend-browser-auth.js",
+      "currentSourceBlob": "1274e67e69a73fd619d81b0d01687e72894901e6",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-d04e03-shopper-relogin-pdf-source.test.mjs"
+      ]
+    },
+    {
+      "owner": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "currentSourceBlob": "9646c36c89917d7e910f1a4dcfcfa5c6ed44a6a9",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-r20-no-visit-shopper-auth-gate.test.mjs",
+        "tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs"
+      ]
+    },
+    {
+      "owner": "app/core/backend-bulletins.js",
+      "currentSourceBlob": "115685e316ce94641b6b32d6415eef5bede2db88",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-r22-read-status-source-20261014.test.mjs"
+      ]
+    },
+    {
+      "owner": "app/modules/midia.js",
+      "currentSourceBlob": "b17a2224170d23c3a9152628003115a1edfbd471",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs"
+      ]
+    },
+    {
+      "owner": "app/modules/hr-source.js",
+      "currentSourceBlob": "23c7e19110fa9972e57e5d32485f29ed62c40c79",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-hr-source-operational-readback.test.mjs"
+      ]
+    },
+    {
+      "owner": "app/modules/cert.js",
+      "currentSourceBlob": "337420953e88ea107b41db198df063e25c368274",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs",
+        "tools/qa/cxorbia-i3-d04-versioned-bank-review.test.mjs"
+      ]
+    },
+    {
+      "owner": "app/modules/documentos.js",
+      "currentSourceBlob": "7572b99223222f052824bdf075e76a5e7f53fea0",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-d07-viewer-single-flight.test.mjs"
+      ]
+    },
+    {
+      "owner": "app/modules/finanzas.js",
+      "currentSourceBlob": "f1545f0439863090e04b4729e8483616f7d209cf",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-b8-finance-human-copy.test.mjs"
+      ]
+    },
+    {
+      "owner": "app/modules/crm.js",
+      "currentSourceBlob": "187d7af112cccbe06d27c9a72bb69dc440b7fe67",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-g03-crm-composition-provider-parity.test.mjs"
+      ]
+    },
+    {
+      "owner": "app/adapters/tya-ab-cumulative-composition-v1.js",
+      "currentSourceBlob": "9d014be5cde2962f77f726b3298c2549f6c45cae",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-g03-crm-composition-provider-parity.test.mjs"
+      ]
+    },
+    {
+      "owner": "app/adapters/tya-canonical-shopper-portal-v2.js",
+      "currentSourceBlob": "536566ee5e27878aa5c40891b710c34a818e9aad",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-b2-b3-active-history-parity.test.mjs"
+      ]
+    },
+    {
+      "owner": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+      "currentSourceBlob": "630cb1ac7bff4124cae28c281ae8186ee7c7c28a",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs"
+      ]
+    },
+    {
+      "owner": "app/app.js",
+      "currentSourceBlob": "5c0fa4734c17ae57d2de46e17c1f0b796a885c07",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-shopper-registration-provider-ack.test.mjs"
+      ]
+    },
+    {
+      "owner": "app/index-backend-dev.html",
+      "currentSourceBlob": "eec56cf5e4afc7624c1a6f73841bb28d18617280",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-admin-identity-review-notice.test.mjs"
+      ]
+    },
+    {
+      "owner": "app/styles/layout.css",
+      "currentSourceBlob": "6f5b9bb04fbe4f21660e59aae6eb3d92e2a6bf7d",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-v01-cross-module-legibility.test.mjs"
+      ]
+    },
+    {
+      "owner": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+      "currentSourceBlob": "fb9997ad29e55fdc5945ce79249ea12c2987416b",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-b7-reschedule-bulletin-target-source-20261014.test.mjs"
+      ]
+    },
+    {
+      "owner": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+      "currentSourceBlob": "d440d496e4dc2d7c33b4a7a70d11973cbd24666c",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-shopper-create-phone-dial-review.test.mjs"
+      ]
+    },
+    {
+      "owner": "app/core/backend-resources.js",
+      "currentSourceBlob": "53e498fe21c5aadc9aa3a736d1bf392a5d4bd299",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs"
+      ]
+    },
+    {
+      "owner": "backend/runtime/hr-live-service/certification-runtime.mjs",
+      "currentSourceBlob": "0cc3fb952cbb19687e416ae55f72c4e831ab0f99",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-work-uat-d05-canonical-source-proof.test.mjs"
+      ]
+    },
+    {
+      "owner": "firestore.rules",
+      "currentSourceBlob": "9001a1a39f97f8a83a8be9fcb96f5f2237da4109",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-work-uat-reservations-firestore-source.test.mjs"
+      ]
+    },
+    {
+      "owner": "app/core/backend-certifications.js",
+      "currentSourceBlob": "c935a483c5edcda08076c0b13e43bb6001053dc6",
+      "sourceTests": [
+        "tools/qa/cxorbia-i3-d04-versioned-bank-review.test.mjs"
+      ]
+    }
+  ],
+  "totalTestsPass": 193,
+  "totalTestsFail": 0,
+  "sourceQaBatchNotMultipliedPerOwner": true,
+  "ownerSourceEqualsDevServingSource": true,
+  "devServingSourceCommit": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+  "devHostingVersion": "sites/cxorbia-backend-dev/versions/8dea702589084bcf",
+  "scope": "TWENTYFOUR_EXACT_SOURCE_PATHS_SOURCE_QA_ONLY_NOT_LIVE_E2E_OR_TERMINAL_MODULE_CERTIFICATION",
+  "moduleCertificationAdded": 0,
+  "productFilesChanged": 0,
+  "builds": 0,
+  "deploys": 0,
+  "providerWrites": 0,
+  "production": false,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false
+}
