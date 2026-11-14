@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "cxorbia.i3.q2.eight-path-current-source-ci.v1",
+  "dateLocal": "2026-11-14",
+  "iteration": "I3",
+  "decision": "PASS_Q2_EIGHT_CURRENT_SOURCE_OWNERS_11_OF_11_NOT_TERMINAL",
+  "scope": "INDEPENDENT_PATH_BOUND_SOURCE_QA_NOT_AUTHENTICATED_E2E_OR_HUMAN_CERTIFICATION",
+  "sourceSha": "7d8aa5f8208f059c3ff643f72ab42a6866301e6e",
+  "sourceTree": "ce780d940ae18893fec40f5f813363cf49b7f419",
+  "ci": {
+    "runId": 43606630272,
+    "jobId": 132482564062,
+    "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43606630272",
+    "workflow": "CXOrbia Recovery I3 DEV Certification",
+    "job": "canonical-candidate-authority",
+    "conclusion": "success",
+    "sourceTestsPass": 11,
+    "sourceTestsFail": 0,
+    "sourceTestPath": "tools/qa/cxorbia-i3-q2-eight-remaining-owner-source.test.mjs",
+    "sourceTestGitBlob": "a60c109289d6d3d742a4723fa06df8e9960ca005",
+    "testContract": "Each case resolves the exact owner blob in sourceSha, rejects HEAD/source drift, and exercises one current-source contract",
+    "negativeFirstRetained": "See CXORBIA_I3_Q2_P0_SOURCE_PROOF_20261114.json for the three P0 reproductions"
+  },
+  "owners": {
+    "app/core/geo.js": "d519e60bb5a99f4b28d0631edc176b1dd1a75602",
+    "app/core/finanzas-core.js": "6cab8b0e1138a2b736c014779f2c2500446843e1",
+    "app/core/notif.js": "b544f25fdbb5894a96e61e31f10e92220f131985",
+    "app/adapters/cxorbia-canonical-write-firewall-v1.js": "93a33cc587ab3271a43cb1d50532ecdd138c5222",
+    "app/modules/automatizaciones.js": "a28a2354bd4a0132cd788abfa3842a796005be32",
+    "app/modules/marca.js": "a53957b4fb74dfe62c3ea2cb03cff758c7238ea0",
+    "app/modules/administrabilidad.js": "080922b933a92a89911847e127ed06c7d4d507fd",
+    "app/adapters/tya-canonical-reservations-guard-v2.js": "ac12767b433dfa0debd3eb08cfc2b67271c3264e"
+  },
+  "observedContracts": [
+    "GT_HN_SV_NI_SCOPED_GEO_SOURCE",
+    "UNKNOWN_HONORARIUM_DOES_NOT_INVENT_ZERO_MARGIN_OR_PAYMENT",
+    "EXACT_IDENTITY_SCOPED_NOTIFICATION_SOURCE",
+    "UNACKNOWLEDGED_WRITE_STOPPED_BEFORE_MUTATION",
+    "AUTOMATION_PROVIDER_ACK_READBACK_NO_BROWSER_SECRET",
+    "TENANT_BRANDING_PROTECTED_READ_ONLY_WITH_COMMAND_WRITES_OFF",
+    "TENANT_ADMIN_PROTECTED_READ_ONLY_WITH_COMMAND_WRITES_OFF",
+    "RESERVATION_REMOTE_ACK_AND_REFRESH_REQUIRED"
+  ],
+  "devPublication": {
+    "sourceUnchanged": true,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/dbdcecc7e9b0130b",
+    "hostingReadbackRunId": 43579986890,
+    "activeBrowserSourceParityRunId": 43580976759,
+    "newDeploys": 0,
+    "newRuntimeDeploys": 0
+  },
+  "newStrictModuleCertification": 0,
+  "authenticatedAdminShopperE2E": "PENDING",
+  "terminalGate20": "HOLD",
+  "terminalGate21": "HOLD",
+  "i4Authorized": false,
+  "production": false,
+  "providerWrites": 0
+}
