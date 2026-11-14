@@ -1,0 +1,171 @@
+{
+  "schemaVersion": "cxorbia.i3.q2.source-qa-and-targeted-p0-hold.v1",
+  "id": "CXORBIA-I3-Q2-RUN2514-SOURCE-PROOF-AND-P0-HOLD-20261114",
+  "localDate": "2026-11-14",
+  "iteration": "I3",
+  "block": "Q2",
+  "decision": "HOLD_Q2_SOURCE_QA_PASS_WITH_TWO_NEW_SOURCE_REPRODUCED_DEFECTS",
+  "classification": "FUNCTIONAL_DEFECT_SOURCE_REPRODUCED__LIVE_E2E_PENDING",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "productSourceSha": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+  "productSourceTree": "4b331d8bda49fc8a4e0fd46d947cd629ff8000e1",
+  "controlSourceSha": "72c9cabc888820f70ddaccd47adfb511696110a7",
+  "controlTree": "e89d28a0e3d55cf50778da1a813e904584b025a7",
+  "ci": {
+    "runNumber": 2514,
+    "runId": 43575618897,
+    "jobId": 132389076374,
+    "conclusion": "success",
+    "testPackage": "tools/qa/cxorbia-i3-q2-cxdata-readonly-owner-source.test.mjs",
+    "testCasesPass": 38,
+    "testCasesFail": 0,
+    "testSuiteFullyInGitHubJobLog": true,
+    "artifactCertified": false,
+    "url": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43575618897"
+  },
+  "ownerPaths": [
+    {
+      "path": "app/core/geo.js",
+      "productBlob": "d519e60bb5a99f4b28d0631edc176b1dd1a75602",
+      "servedByteMatchAsOfRun2512": true
+    },
+    {
+      "path": "app/core/programa.js",
+      "productBlob": "3560737099f97e0a4774420c10073e108da2677c",
+      "servedByteMatchAsOfRun2512": true
+    },
+    {
+      "path": "app/core/ui.js",
+      "productBlob": "4947c325a17c95086ae6006615b651aa39097d7c",
+      "servedByteMatchAsOfRun2512": true
+    },
+    {
+      "path": "app/core/finanzas-core.js",
+      "productBlob": "6276d86f8e3ddbfc84d41fc1903f968d92291527",
+      "servedByteMatchAsOfRun2512": true
+    },
+    {
+      "path": "app/core/notif.js",
+      "productBlob": "b544f25fdbb5894a96e61e31f10e92220f131985",
+      "servedByteMatchAsOfRun2512": true
+    },
+    {
+      "path": "app/core/backend-finance-benefits.js",
+      "productBlob": "66856002901be88aefb38acc0aaab635a8872c2b",
+      "servedByteMatchAsOfRun2512": true
+    },
+    {
+      "path": "app/core/backend-cxdata-finance-read.js",
+      "productBlob": "2a7cd3ffbd2bf0999b149b3095218b7d3d09276b",
+      "servedByteMatchAsOfRun2512": true
+    },
+    {
+      "path": "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+      "productBlob": "d345acb084d63c7f74847eef5be03c05cd70d458",
+      "servedByteMatchAsOfRun2512": true
+    },
+    {
+      "path": "app/adapters/cxorbia-canonical-write-firewall-v1.js",
+      "productBlob": "93a33cc587ab3271a43cb1d50532ecdd138c5222",
+      "servedByteMatchAsOfRun2512": true
+    },
+    {
+      "path": "app/adapters/tya-canonical-reservations-guard-v2.js",
+      "productBlob": "ac12767b433dfa0debd3eb08cfc2b67271c3264e",
+      "servedByteMatchAsOfRun2512": true
+    },
+    {
+      "path": "app/modules/periodos.js",
+      "productBlob": "25d39e553da379d113dad8a6db8a1d70554c4cd7",
+      "servedByteMatchAsOfRun2512": true
+    },
+    {
+      "path": "app/modules/configuracion.js",
+      "productBlob": "1311ffb081aebef59ff82f4bb266bae907449b67",
+      "servedByteMatchAsOfRun2512": true
+    },
+    {
+      "path": "app/modules/automatizaciones.js",
+      "productBlob": "a28a2354bd4a0132cd788abfa3842a796005be32",
+      "servedByteMatchAsOfRun2512": true
+    },
+    {
+      "path": "app/modules/marca.js",
+      "productBlob": "163e8e2aee2bf1b8289ac7183d6355e7ef6f5f11",
+      "servedByteMatchAsOfRun2512": true
+    },
+    {
+      "path": "app/modules/administrabilidad.js",
+      "productBlob": "0139182cd28acc77a5839b572b0d2cbbb4fbb7df",
+      "servedByteMatchAsOfRun2512": true
+    },
+    {
+      "path": "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+      "productBlob": "57aefc43bf0f1bf31fdeea4eb3e80119c9cd82ff",
+      "servedByteMatchAsOfRun2512": true
+    },
+    {
+      "path": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+      "productBlob": "a3874143a481c159a9d2a11984966bfe813f5248",
+      "servedByteMatchAsOfRun2512": true
+    },
+    {
+      "path": "tools/hr-source/tya-enforce-live-tab-registry.mjs",
+      "productBlob": "3ff548f1ef9d4af2ad899a2e58d948dfe92aa586",
+      "servedByteMatchAsOfRun2512": true
+    }
+  ],
+  "independentOwnerProofNotPromoted": true,
+  "negativeSourceDiagnostics": [
+    {
+      "id": "Q2-FIN-UNKNOWN-MARGIN-PERCENT",
+      "owner": "app/core/finanzas-core.js",
+      "repro": "Connected tenant; confirmed operating revenue 100 GTQ; one reviewRequired liquidation with honorarium=null; porPais().GT.margen=null; porPais().GT.margenPct=0",
+      "expected": "margenPct=null when margin is not known",
+      "actual": "margenPct=0",
+      "category": "FUNCTIONAL_DEFECT",
+      "runScope": "local sandbox VM against exact served source; no live UI write",
+      "fixed": false
+    },
+    {
+      "id": "Q2-CONNECTED-READONLY-ENABLE_WRITES_FALSE",
+      "owners": [
+        "app/modules/marca.js",
+        "app/modules/administrabilidad.js"
+      ],
+      "repro": "CX.canonicalTenantAuthority()=true, window.CX_PROTECTED_DEV_RUNTIME=true, BACKEND.enabled=true, BACKEND.enableCommandWrites=false; protected early-return is skipped; Marca displays demo editing controls and Administrabilidad reaches local demo route",
+      "expected": "Both remain protected read-only regardless of command-write gate",
+      "actual": "Connected source falls through to local demo branch",
+      "category": "FUNCTIONAL_DEFECT",
+      "runScope": "local sandbox VM against exact served source; no live UI write",
+      "fixed": false
+    }
+  ],
+  "preservedTechnicalPasses": {
+    "b3ScheduleRescheduleRun": 2472,
+    "b3StorageCheckinRun": 2479,
+    "testsFinanceB5": 158,
+    "modulesStrictMatch": 5,
+    "modulesTotal": 21
+  },
+  "coverage": {
+    "priorProvenOwnerPaths": 138,
+    "totalOwnerPaths": 156,
+    "newOwnerProofStatus": "QA_EXECUTED_WITH_SOURCE_DEFECT_HOLD_NOT_ACCREDITED",
+    "formalPlanBlocksClosed": 1,
+    "formalPlanBlocksTotal": 7
+  },
+  "nextExact": [
+    "Repair only app/core/finanzas-core.js, app/modules/marca.js and app/modules/administrabilidad.js as one P0_PROVEN package; marginPct null guard and protected read-only mode independent of write enable.",
+    "Run negative regression and prior 38 owner tests on exact cumulative source successor; register source SHA/tree and immutable path-bound evidence without treating tests as human PASS.",
+    "Materialize only approved successor through single existing DEV path with hosting/runtime byte readback; never touch production.",
+    "Finish real authenticated synthetic B3 UI camera/GPS/Admin readback and individual September B8 bank references before 21/21 module certification."
+  ],
+  "builds": 0,
+  "deploys": 0,
+  "hrWrites": 0,
+  "paymentWrites": 0,
+  "production": "DO_NOT_TOUCH",
+  "authorizationI4": false
+}
