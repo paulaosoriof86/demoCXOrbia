@@ -3,6 +3,15 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 
+// Carry forward the 18 remaining I3/Q2 owners through the *existing*
+// canonical-candidate-authority job. The additional tests bind current bytes
+// to the frozen candidate and do not grant human or module-level approval.
+import './cxorbia-i3-q2-eight-remaining-owner-source.test.mjs';
+import '../../backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs';
+import '../../backend/runtime/hr-live-service/test/cxorbia-period-command-provider-v1.test.mjs';
+import '../../backend/runtime/hr-live-service/test/cxorbia-commercial-command-provider-v1.test.mjs';
+import '../../backend/runtime/hr-live-service/test/cxorbia-vrm261-264-source-contract.test.mjs';
+
 const owner='app/core/backend-cxdata-readonly-corte4.js';
 const source=fs.readFileSync(owner,'utf8');
 function load({protectedHr=false,humanVisual=false}={}){
