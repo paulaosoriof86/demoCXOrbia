@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "cxorbia.i3.q2.path-bound-source-qa.v1",
+  "id": "CXORBIA-I3-Q2-RUN2507-NINE-OWNER-SOURCE-QA",
+  "localDate": "2026-11-13",
+  "iteration": "I3",
+  "block": "Q2",
+  "decision": "PASS_SOURCE_QA_ONLY__LIVE_E2E_AND_MODULE_TERMINAL_HOLD",
+  "classification": "MAPPING_FAILURE_RECOVERY",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceCommit": "d1eca22ff4be1340aff75868859faec7e8311d35",
+  "sourceTree": "32c8ec03cf74b1053cdded6a20f970625b444f4f",
+  "runNumber": 2507,
+  "runId": 43498105563,
+  "canonicalJobId": 132136474729,
+  "runConclusion": "success",
+  "paths": [
+    {
+      "owner": "app/modules/postulaciones.js",
+      "currentSourceBlob": "08f22e63957392036a697b81aa79858964026d4b",
+      "sourceTests": ["tools/qa/cxorbia-i3-postulaciones-country-options-unified.test.mjs"]
+    },
+    {
+      "owner": "app/modules/misvisitas.js",
+      "currentSourceBlob": "416c5051b47427a457381ba5e9f0fb61f83c73ea",
+      "sourceTests": ["tools/qa/cxorbia-i3-d06-misvisitas-cross-period-classification.test.mjs", "tools/qa/cxorbia-i3-r22-notification-route-ack-source.test.mjs"]
+    },
+    {
+      "owner": "app/modules/dashboard.js",
+      "currentSourceBlob": "c48d1c63d0628c637c4257bef1725dc4349b8668",
+      "sourceTests": ["tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs"]
+    },
+    {
+      "owner": "app/core/data.js",
+      "currentSourceBlob": "c7fe15678c98c3c4a81c52225d60a84e0946d12f",
+      "sourceTests": ["tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs", "tools/qa/cxorbia-i3-period-project-client-parity.test.mjs"]
+    },
+    {
+      "owner": "app/modules/shoppers.js",
+      "currentSourceBlob": "0b6585b25eba379b27c938f388dc698a4afb41cf",
+      "sourceTests": ["tools/qa/cxorbia-i3-shoppers-bridge-authority.test.mjs", "tools/qa/cxorbia-i3-vrm302-admin-shoppers-modal-binding.test.mjs", "tools/qa/cxorbia-i3-shopper-identity-review-rail-notice.test.mjs"]
+    },
+    {
+      "owner": "app/modules/visitas.js",
+      "currentSourceBlob": "e78caa3c4bd28f1a57618986c6d5cebc3ea1e699",
+      "sourceTests": ["tools/qa/cxorbia-i3-visitas-effective-availability.test.mjs", "tools/qa/cxorbia-i3-available-visits-active-period-scope.test.mjs"]
+    },
+    {
+      "owner": "app/modules/proyectos.js",
+      "currentSourceBlob": "346ab1682ca8726255770e3a8b20cb65bd756442",
+      "sourceTests": ["tools/qa/cxorbia-i3-period-project-client-parity.test.mjs"]
+    },
+    {
+      "owner": "app/core/router.js",
+      "currentSourceBlob": "d7afbf30cdfe17b5a6a968f46883625e7d56a9f6",
+      "sourceTests": ["tools/qa/cxorbia-i3-shopper-identity-review-rail-notice.test.mjs"]
+    },
+    {
+      "owner": "app/core/topbar.js",
+      "currentSourceBlob": "823fe9af94cdf1a83b3d3b733a5c306b5af2155d",
+      "sourceTests": ["tools/qa/cxorbia-i3-r22-notification-route-ack-source.test.mjs"]
+    }
+  ],
+  "totalTestsPass": 30,
+  "totalTestsFail": 0,
+  "sourceQaBatchNotMultipliedPerOwner": true,
+  "ownerSourceEqualsDevServingSource": true,
+  "devServingSourceCommit": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+  "devHostingVersion": "sites/cxorbia-backend-dev/versions/8dea702589084bcf",
+  "scope": "NINE_EXACT_SOURCE_PATHS_SOURCE_QA_ONLY_NOT_LIVE_E2E_OR_TERMINAL_MODULE_CERTIFICATION",
+  "moduleCertificationAdded": 0,
+  "productFilesChanged": 0,
+  "builds": 0,
+  "deploys": 0,
+  "providerWrites": 0,
+  "production": false,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false
+}

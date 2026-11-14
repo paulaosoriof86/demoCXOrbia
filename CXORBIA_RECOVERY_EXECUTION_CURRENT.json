@@ -5578,8 +5578,8 @@
       "gitBlob": "9594f4d407914b47342fd21dc827a5f442294ad7"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V622_2026-11-13.json",
-      "gitBlob": "0c4cc507eff553128dc02ff830fbd15b389e2f3a"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V623_2026-11-13.json",
+      "gitBlob": "14bde41357beaa40179da99459060c71ed6c310d"
     },
     "receipt": {
       "kind": "GITHUB_ACTIONS_C3_PRETERMINAL_NOT_CERTIFICATE",
@@ -6479,8 +6479,8 @@
     },
     "production": false
   },
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V622_2026-11-13.json",
-  "findingsLedgerExpectedGitBlob": "0c4cc507eff553128dc02ff830fbd15b389e2f3a",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V623_2026-11-13.json",
+  "findingsLedgerExpectedGitBlob": "14bde41357beaa40179da99459060c71ed6c310d",
   "nextFindingId": "VRM-329",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -14336,5 +14336,31 @@
     "gate21": "HOLD",
     "i4Authorized": false,
     "scope": "VERIFIED_ARTIFACT_READBACK_ONLY__NO_TERMINAL_PROMOTION"
+  },
+  "c3Q2LedgerPromotionV623": {
+    "id": "CXORBIA-I3-Q2-LEDGER-V623-NINE-OWNER-SOURCE-QA-20261113",
+    "iteration": "I3",
+    "phase": "Q2",
+    "status": "HOLD_C3_REEVALUATION_REQUIRED",
+    "classification": "MAPPING_FAILURE_RECOVERY",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V623_2026-11-13.json",
+    "ledgerGitBlob": "14bde41357beaa40179da99459060c71ed6c310d",
+    "priorLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V622_2026-11-13.json",
+    "priorLedgerBlob": "0c4cc507eff553128dc02ff830fbd15b389e2f3a",
+    "proofRunNumber": 2507,
+    "proofRunId": 43498105563,
+    "proofSourceCommit": "d1eca22ff4be1340aff75868859faec7e8311d35",
+    "proofReceipt": "docs/checkpoints/CXORBIA_I3_Q2_NINE_OWNER_SOURCE_QA_RUN2507_20261113.json",
+    "proofReceiptBlob": "afc798060dbfb1e4068d006924c61fc234ad1991",
+    "sourceTestsPass": 30,
+    "ownerProofsAdded": 9,
+    "beforeC3Run": 2506,
+    "beforePendingFiles": 51,
+    "beforeStrictMatchModules": 5,
+    "scope": "NINE_PATH_BOUND_SOURCE_QA_PROOFS_ONLY_NOT_MODULE_CERTIFICATION",
+    "productFilesChanged": 0,
+    "devDeploys": 0,
+    "production": false,
+    "i4Authorized": false
   }
 }
