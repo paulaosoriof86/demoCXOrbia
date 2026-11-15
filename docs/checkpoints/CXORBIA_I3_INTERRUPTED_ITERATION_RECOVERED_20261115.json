@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "cxorbia.i3.interrupted-iteration-recovery.v1",
+  "updatedAt": "2026-11-15T16:54:34.188513+00:00",
+  "iteration": "I3",
+  "state": "HOLD",
+  "expectedRemoteParent": "aacebcaa3d9f16abca9a69b69e148fdc623e3055",
+  "recoveredUnpublishedSourceSha": "c4af8dd178b182f0ae31558161a51e289da9d891",
+  "recoveredSourceTree": "5bbc8da456c58ce116e6506e6d56bfc0a2c36d33",
+  "predecessorServingSourceSha": "c44d93a9f8ee69dbff189acc6f3517de850408d0",
+  "frozenPlanSha256": "83e8f2c0a6b190bab1d9dea32bf99158116f3164f419ae72e051fd791fd8576c",
+  "recoveredReceipts": [
+    "docs/checkpoints/CXORBIA_I3_C3_RUN2523_Q2_CLOSED_Q3_ENABLED_20261115.json",
+    "docs/checkpoints/CXORBIA_I3_RUN2524_TERMINAL_UBUNTU_EXACT_REPAIR_20261115.json",
+    "docs/checkpoints/CXORBIA_I3_RUN2525_TERMINAL_FUNCTIONAL_READBACK_20261115.json"
+  ],
+  "q2ClosurePreserved": {
+    "sourceSha": "c44d93a9f8ee69dbff189acc6f3517de850408d0",
+    "sourceReadyModules": 21,
+    "pendingFiles": 0,
+    "strictMatches": 4,
+    "runId": 43734391897,
+    "newSuccessorSameRunRevalidation": "REQUIRED_NOT_INHERITED_BY_RELABELING"
+  },
+  "q3Executed": {
+    "runId": 43735893269,
+    "roleRouteCombinations": 56,
+    "routeObservations": 90,
+    "screenshots": 93,
+    "pageErrors": 0,
+    "state": "HOLD_FOCAL_REMEDIATION",
+    "fullCrudCertification": false
+  },
+  "sourceProof": {
+    "schemaVersion": "cxorbia.i3.p0.source-proof.v1",
+    "sourceSha": "fdc73f7fe925db9edae1e2f73561f7496c451508",
+    "sourceTree": "5bbc8da456c58ce116e6506e6d56bfc0a2c36d33",
+    "predecessorProductSourceSha": "c44d93a9f8ee69dbff189acc6f3517de850408d0",
+    "sourceTestsPass": 3,
+    "sourceTestsFail": 0,
+    "allowedProductFiles": [
+      "app/modules/cliente-insights.js"
+    ],
+    "allowedTestFiles": [
+      "tools/qa/cxorbia-i3-e04-benchmark-source.test.mjs"
+    ],
+    "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM331_CLIENT_INSIGHTS_EXACT_SCOPE_20261115.json",
+    "scopeReceiptBlob": "75dd16a9412de6b28bf62ea5cda58e54f9165f46",
+    "findings": [
+      {
+        "id": "VRM-331",
+        "priority": "P0_PROVEN"
+      }
+    ],
+    "sourceQaScope": "LOCAL_SYNTHETIC_RENDER_AND_NEGATIVE_CONTRACTS_NO_PROVIDER_WRITES_NOT_TERMINAL_E2E",
+    "sourceTestReceipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM331_CLIENT_INSIGHTS_AFTER_20261115.tap",
+      "gitBlob": "9fb3f6a3c84930232c3de4d7d2528661d18d337d",
+      "pass": 3,
+      "fail": 0
+    },
+    "freshResumeVerification": {
+      "path": "docs/checkpoints/CXORBIA_I3_RECOVERY_RESUME_FOCAL_VERIFICATION_20261115.log",
+      "gitBlob": "e71618e98c01c27252c2a91e54699753b887299a",
+      "pass": 63,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "devPublished": false,
+    "humanAcceptance": "PENDING",
+    "production": false,
+    "updatedAt": "2026-11-15T16:54:34.188513+00:00",
+    "recoveredLocalSourceSha": "c4af8dd178b182f0ae31558161a51e289da9d891",
+    "canonicalSourceTreeEqualsRecoveredTree": true
+  },
+  "preservedHumanPassBlocks": [
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ],
+  "nextExactAction": "I3-Q3: publish the recovered VRM-331 client-insights successor by the existing Hosting-only DEV lane; verify exact served bytes, then consume same-run Q2 proofs and rerun only the terminal gate affected by the null heading, confirmed alias mapping and exact external-HR representative counts. RUN2525 already repaired the environment and executed 56 route-role combinations; do not return to tooling diagnosis. Preserve RUN2523 Q2 GO on predecessor c44d93a9 and B4-B7 human PASS; 4/21 strict MATCH, I3 HOLD, I4 not authorized.",
+  "production": false,
+  "authorizationI4": false,
+  "canonicalPublishedSourceSha": "fdc73f7fe925db9edae1e2f73561f7496c451508",
+  "publicationIdentity": {
+    "recoveredLocalCommit": "c4af8dd178b182f0ae31558161a51e289da9d891",
+    "canonicalSourceCommit": "fdc73f7fe925db9edae1e2f73561f7496c451508",
+    "sameExactTree": true,
+    "treeSha": "5bbc8da456c58ce116e6506e6d56bfc0a2c36d33",
+    "reason": "Authenticated repository commit preserves the identical recovered tree; commit metadata differs. Canonical branch moves only after control preflight."
+  }
+}

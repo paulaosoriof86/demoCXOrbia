@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "cxorbia.i3.p0.source-proof.v1",
+  "sourceSha": "fdc73f7fe925db9edae1e2f73561f7496c451508",
+  "sourceTree": "5bbc8da456c58ce116e6506e6d56bfc0a2c36d33",
+  "predecessorProductSourceSha": "c44d93a9f8ee69dbff189acc6f3517de850408d0",
+  "sourceTestsPass": 3,
+  "sourceTestsFail": 0,
+  "allowedProductFiles": [
+    "app/modules/cliente-insights.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-e04-benchmark-source.test.mjs"
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM331_CLIENT_INSIGHTS_EXACT_SCOPE_20261115.json",
+  "scopeReceiptBlob": "75dd16a9412de6b28bf62ea5cda58e54f9165f46",
+  "findings": [
+    {
+      "id": "VRM-331",
+      "priority": "P0_PROVEN"
+    }
+  ],
+  "sourceQaScope": "LOCAL_SYNTHETIC_RENDER_AND_NEGATIVE_CONTRACTS_NO_PROVIDER_WRITES_NOT_TERMINAL_E2E",
+  "sourceTestReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM331_CLIENT_INSIGHTS_AFTER_20261115.tap",
+    "gitBlob": "9fb3f6a3c84930232c3de4d7d2528661d18d337d",
+    "pass": 3,
+    "fail": 0
+  },
+  "freshResumeVerification": {
+    "path": "docs/checkpoints/CXORBIA_I3_RECOVERY_RESUME_FOCAL_VERIFICATION_20261115.log",
+    "gitBlob": "e71618e98c01c27252c2a91e54699753b887299a",
+    "pass": 63,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0
+  },
+  "devPublished": false,
+  "humanAcceptance": "PENDING",
+  "production": false,
+  "updatedAt": "2026-11-15T16:54:34.188513+00:00",
+  "recoveredLocalSourceSha": "c4af8dd178b182f0ae31558161a51e289da9d891",
+  "canonicalSourceTreeEqualsRecoveredTree": true
+}
