@@ -9,6 +9,9 @@ const WORKFLOW='.github/workflows/cxorbia-recovery-i3-dev-certification.yml';
 const git=(...args)=>execFileSync('git',args,{encoding:'utf8'}).trim();
 const fail=(code,detail)=>{throw new Error(code+(detail?':'+detail:''));};
 const readJson=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+// Leave headroom below GitHub's 500 KiB parser limit; validate before publishing.
+const workflowByteLength=fs.statSync(WORKFLOW).size;
+if(workflowByteLength>510000)fail('ENVIRONMENT_FAILURE:WORKFLOW_SIZE_HEADROOM',String(workflowByteLength));
 
 const d=readJson(DESCRIPTOR);
 const LEDGER=String(d.findingsLedgerPath||'');

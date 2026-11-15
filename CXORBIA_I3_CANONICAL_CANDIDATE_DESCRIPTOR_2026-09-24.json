@@ -224,8 +224,8 @@
   "productSourceSha": "5f66282e4c47b13a8d15a4b2449430c509dce785",
   "productTreeAuthority": "80eb90c13b63be0cbfd9c11a89090092552df690",
   "predecessorProductSourceSha": "fdc73f7fe925db9edae1e2f73561f7496c451508",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V638_2026-11-15.json",
-  "findingsLedgerExpectedGitBlob": "664d58709aa4324b7df5436dfd58ecce49a49319",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V639_2026-11-15.json",
+  "findingsLedgerExpectedGitBlob": "c6f19d1cc70adc0d7798830a63ffe432cd50f9f7",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -350,7 +350,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-339",
+  "nextFindingId": "VRM-340",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -15479,13 +15479,13 @@
     }
   },
   "currentExecutionReceipt": {
-    "path": "docs/checkpoints/CXORBIA_I3_RUN2530_HUMAN_PASS_FOCAL_MAPPING_HOLD_20261115.json",
-    "gitBlob": "2ac3980d53ceebe3895ca006f3f05dc426ce322a",
-    "runId": 43762256230,
-    "runNumber": 2530,
-    "sourceSha": "fdc73f7fe925db9edae1e2f73561f7496c451508",
-    "sourceTree": "5bbc8da456c58ce116e6506e6d56bfc0a2c36d33",
-    "state": "HOLD_I3_FOCAL_QA_MAPPING_FAILURE_WITH_PRESERVED_HUMAN_PASS",
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2531_WORKFLOW_SIZE_REPAIR_20261115.json",
+    "gitBlob": "1c07300a00ad893335c8c929ea03d6a1b75db27d",
+    "runId": 43766180755,
+    "runNumber": 2531,
+    "sourceSha": "5f66282e4c47b13a8d15a4b2449430c509dce785",
+    "sourceTree": "80eb90c13b63be0cbfd9c11a89090092552df690",
+    "state": "HOLD_ENVIRONMENT_WORKFLOW_SIZE_NO_JOBS_OR_DEPLOY__CONTROL_COMPACTION_PROVEN_PENDING_RETRY",
     "production": false
   },
   "currentSuccessorDevMaterializationRequest": {
@@ -18215,7 +18215,7 @@
     "sourceTestsFail": 0,
     "production": false
   },
-  "updatedAt": "2026-11-15T21:52:08.890908+00:00",
+  "updatedAt": "2026-11-15T21:58:01.044911+00:00",
   "previousCurrentMaterializationBeforeRun2248": {
     "builds": 1,
     "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
@@ -19242,8 +19242,8 @@
       "gitBlob": "d469e537d84943d2496cb4f5472b2c234aab8e6c"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V638_2026-11-15.json",
-      "gitBlob": "664d58709aa4324b7df5436dfd58ecce49a49319"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V639_2026-11-15.json",
+      "gitBlob": "c6f19d1cc70adc0d7798830a63ffe432cd50f9f7"
     },
     "receipt": {
       "kind": "GITHUB_ACTIONS_C3_PRETERMINAL_NOT_CERTIFICATE",
@@ -20534,7 +20534,7 @@
     "artifactDigest": "sha256:d5dc0a33053e9061cf8dd9fd8bcc21b5a5b8b1e5e055d85caa455538565a952a",
     "production": false
   },
-  "currentExecutionReceiptSemantics": "LATEST_EXECUTED_PREDECESSOR_HUMAN_PASS_FOCAL_QA_HOLD_NOT_SUCCESSOR_CERTIFICATION",
+  "currentExecutionReceiptSemantics": "LATEST_ENVIRONMENT_PREFLIGHT_STOP_ZERO_JOBS_NO_NEW_FUNCTIONAL_OR_DEPLOY_CLAIM",
   "latestFocalBrowserReadback": {
     "path": "docs/checkpoints/CXORBIA_I3_D09_SHOPPER_SCOPED_READONLY_20261107.json",
     "gitBlob": "dc76c8351c899fba8e3bc46af732ddc7e5d74e60",
@@ -23955,5 +23955,15 @@
     "production": false,
     "rulesDeploys": 0,
     "storageRulesDeploys": 0
+  },
+  "workflowSizeEnvironmentRepair20261115": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2531_WORKFLOW_SIZE_REPAIR_20261115.json",
+    "gitBlob": "1c07300a00ad893335c8c929ea03d6a1b75db27d",
+    "runId": 43766180755,
+    "runNumber": 2531,
+    "sourceSha": "5f66282e4c47b13a8d15a4b2449430c509dce785",
+    "sourceTree": "80eb90c13b63be0cbfd9c11a89090092552df690",
+    "state": "HOLD_ENVIRONMENT_WORKFLOW_SIZE_NO_JOBS_OR_DEPLOY__CONTROL_COMPACTION_PROVEN_PENDING_RETRY",
+    "production": false
   }
 }
