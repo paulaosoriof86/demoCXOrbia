@@ -6,8 +6,19 @@ export const DOMAIN='tenant-admin-config-branding';
 export const CONTRACT_SHA='df7951c9ad6baabcf948d19ab94269da82c68043bf5d98e491c36577828ad878';
 const hash=v=>crypto.createHash('sha256').update(v).digest('hex');
 const OWNERS=['app/modules/configuracion.js','app/modules/administrabilidad.js','app/modules/marca.js'];
-const DEPS=['app/core/config.js','app/core/backend-protected-dev-mode.js','app/core/backend-browser-auth.js','app/config/runtime.js'];
+const DEPS=['app/core/config.js','app/core/backend-protected-dev-mode.js','app/core/backend-browser-auth.js','app/config/runtime.js','app/adapters/tya-c6-unified-human-runtime-v1.js'];
 const CHECKS=['config:centro','config:marca','config:plan','config:paises','config:listas','config:nda','administrabilidad','marca'];
+export function configurationRequestEvidence({method,url,body,tenantId,projectId,hrRevision}){
+  if(['GET','HEAD','OPTIONS'].includes(method)||!/\/v1\/cxorbia\/commands|\/api\/tenants\/[^/]+\/(?:users|projects|config|brand)/.test(url))return null;
+  const command=body&&typeof body==='object'?body:{};
+  const automaticHrReconciliation=method==='POST'&&new URL(url).pathname==='/v1/cxorbia/commands'&&
+    command.commandType==='hr.snapshot.reconcile'&&command.entityType==='hrSnapshot'&&command.periodId===null&&command.requirePeriod===false&&
+    command.payload&&typeof command.payload==='object'&&!Array.isArray(command.payload)&&Object.keys(command.payload).length===0&&
+    command.tenantId===tenantId&&command.projectId===projectId&&/^[a-f0-9]{64}$/.test(String(hrRevision||''))&&
+    command.entityId===hrRevision&&command.expectedVersion===hrRevision&&command.source==='hr-source-authorized-auto-reconciliation';
+  return {method,path:new URL(url).pathname,commandType:command.commandType||null,tenantId:command.tenantId||null,projectId:command.projectId||null,
+    commandDigest:hash(JSON.stringify(command)),classification:automaticHrReconciliation?'AUTHORIZED_HR_RECONCILIATION_NOT_CONFIGURATION_WRITE':'CONFIGURATION_OR_UNCLASSIFIED_MUTATION'};
+}
 export function validateTenantReadonlyReceipt(r,mod){
   const failures=[];
   const need=(ok,code)=>{if(!ok)failures.push(code);};
@@ -31,7 +42,7 @@ export function validateTenantReadonlyReceipt(r,mod){
   return {pass:failures.length===0,failures};
 }
 
-export async function proveTenantReadonly({page,staffUid,tenantId,projectId,sourceSha,sourceTree,sourceDir,host,out,identity}){
+export async function proveTenantReadonly({page,staffUid,tenantId,projectId,sourceSha,sourceTree,sourceDir,host,out,identity,hrRevision}){
   const descriptor=JSON.parse(fs.readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8'));
   const matrix=JSON.parse(fs.readFileSync(descriptor.moduleTruthPath,'utf8'));
   const mod=matrix.modules.find(m=>m.domain===DOMAIN);
@@ -44,7 +55,7 @@ export async function proveTenantReadonly({page,staffUid,tenantId,projectId,sour
     humanAcceptance:{mode:'PRESERVED_PRIOR_SCOPE_NO_NEW_DESIGN_CHANGE',authority:mod?.latestApprovedAuthority,sourceEvidence:mod?.sourceEvidence},i3Go:false,gate20:'HOLD',gate21:'HOLD',i4Authorized:false};
   fs.mkdirSync(out,{recursive:true});
   const mutations=[];
-  const onRequest=req=>{if(!['GET','HEAD','OPTIONS'].includes(req.method()) && /\/v1\/cxorbia\/commands|\/api\/tenants\/[^/]+\/(?:users|projects|config|brand)/.test(req.url()))mutations.push({method:req.method(),path:new URL(req.url()).pathname});};
+  const onRequest=req=>{let body=null;try{body=req.postDataJSON();}catch{}const row=configurationRequestEvidence({method:req.method(),url:req.url(),body,tenantId,projectId,hrRevision});if(row)mutations.push(row);};
   page.on('request',onRequest);
   const settle=()=>page.waitForFunction(({uid,tenantId,projectId})=>{
     const c=window.CX?.backendAuth?.context?.()||{},rt=window.CX_TENANT_RUNTIME_CONFIG||{};
@@ -96,11 +107,11 @@ export async function proveTenantReadonly({page,staffUid,tenantId,projectId,sour
     const checksBeforeReload=await sweep('before');
     await page.reload({waitUntil:'domcontentloaded',timeout:90000});await settle();
     const checksAfterReload=await sweep('after'),after=await projection();
-    r.auth={authenticated:true,role:'admin',principalFingerprint:hash(staffUid).slice(0,18),tenantExact:true,projectAuthorized:true,samePrincipalAfterReload:true};
+    r.auth={authenticated:true,role:await page.evaluate(()=>window.CX.backendAuth.context().role),principalFingerprint:hash(staffUid).slice(0,18),tenantExact:true,projectAuthorized:true,samePrincipalAfterReload:true};
     r.readOnlyProof={canonicalTenantAuthority:true,protectedRuntime:true,localStorageTruth:before.localStorageTruth,
       commandWritesEnabled:before.commandWritesEnabled,checksBeforeReload,checksAfterReload,
       configurationProjectionUnchanged:JSON.stringify(before)===JSON.stringify(after),relevantLocalStorageKeysUnchanged:JSON.stringify(before.local)===JSON.stringify(after.local),
-      configurationMutationRequestsObserved:mutations.length,mutations,projectionSha256:hash(JSON.stringify(before)),countryMutationTested:false};
+      configurationMutationRequestsObserved:mutations.filter(m=>m.classification==='CONFIGURATION_OR_UNCLASSIFIED_MUTATION').length,mutations,projectionSha256:hash(JSON.stringify(before)),countryMutationTested:false};
     r.validation=validateTenantReadonlyReceipt(r,mod);
     r.decision=r.validation.pass?'PASS_I3_TENANT_ADMIN_CONFIG_BRANDING_READONLY':'HOLD_I3_TENANT_READONLY_REPROOF';
   }catch(e){r.error=String(e.message||e);}

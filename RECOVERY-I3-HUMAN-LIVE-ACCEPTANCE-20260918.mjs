@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import {proveTenantReadonly} from './tools/qa/cxorbia-i3-tenant-readonly-acceptance.mjs';
+import {proveProjectCountries,composeTenantCountryReceipts} from './tools/qa/cxorbia-i3-project-country-live-proof.mjs';
 import {collectTenantAdjudications,tenantAdjudicationReceiptRefs,currentHrPeriodId,representativeHrExpectation,representativeMatchesHr} from './tools/qa/cxorbia-i3-terminal-human-contract.mjs';
 import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';import {pathToFileURL} from 'node:url';import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';import {getAuth} from 'firebase-admin/auth';import {getFirestore} from 'firebase-admin/firestore';import {chromium} from 'playwright';import { settleCustomRoleAuth, settleVisibleShopperAuth } from './.github/control/RECOVERY-I3-BROWSER-AUTH-LIFECYCLE-20260919.mjs';
 const PROJECT=process.env.PROJECT,HOST=String(process.env.HOSTING_URL).replace(/\/$/,''),TENANT=process.env.TENANT_ID,PROJ=process.env.PROJECT_ID,SOURCE=process.env.I3_CERTIFICATION_SOURCE_SHA,SOURCE_DIR=process.env.SOURCE_DIR,OUT=process.env.ACCEPTANCE_OUT||'.tmp/recovery-i3-human-live-acceptance',PINNED_REV=String(process.env.CX_I3_PINNED_HR_REVISION||'').trim();if(!/^[a-f0-9]{64}$/.test(PINNED_REV))throw new Error('RELEASE_COMPOSITION_FAILURE:PINNED_HR_REVISION_MISSING');const PRE='YES_PAULA_20260628_PREVIEW_DEV',PROT='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
@@ -141,7 +142,12 @@ try{
  }catch(e){throw new Error('AUTH_FAILURE:FAST_ACCEPTED_SHOPPER_VISIBLE_LOGIN:'+str(e?.message||e).slice(0,420));}finally{await c.close()}}
  {const {c,p}=await ctx();await custom(p,staff,'admin');
 if(process.env.DEV_REVISION&&process.env.HOSTING_VERSION_NAME){
- await proveTenantReadonly({page:p,staffUid:staff.id,tenantId:TENANT,projectId:PROJ,sourceSha:SOURCE,sourceTree:process.env.I3_CERTIFICATION_SOURCE_TREE,sourceDir:SOURCE_DIR,host:HOST,out:path.join(OUT,'tenant-readonly'),identity:{runtimeRevision:process.env.DEV_REVISION,runtimeDigest:process.env.RUNTIME_DIGEST,hostingVersion:process.env.HOSTING_VERSION_NAME}});
+ const domainOut=path.join(OUT,'tenant-readonly'),identity={runtimeRevision:process.env.DEV_REVISION,runtimeDigest:process.env.RUNTIME_DIGEST,hostingVersion:process.env.HOSTING_VERSION_NAME};
+ const readonly=await proveTenantReadonly({page:p,staffUid:staff.id,tenantId:TENANT,projectId:PROJ,sourceSha:SOURCE,sourceTree:process.env.I3_CERTIFICATION_SOURCE_TREE,sourceDir:SOURCE_DIR,host:HOST,out:domainOut,identity,hrRevision:PINNED_REV});
+ const country=await proveProjectCountries({page:p,db,staffUid:staff.id,tenantId:TENANT,commercialProjectId:PROJ,sourceSha:SOURCE,sourceTree:process.env.I3_CERTIFICATION_SOURCE_TREE,out:domainOut,identity,hrRevision:PINNED_REV});
+ const descriptor=JSON.parse(fs.readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8'));
+ const domain=JSON.parse(fs.readFileSync(descriptor.moduleTruthPath,'utf8')).modules.find(m=>m.domain==='tenant-admin-config-branding');
+ fs.writeFileSync(path.join(domainOut,'tenant-admin-config-branding-domain.json'),JSON.stringify(composeTenantCountryReceipts(readonly,country,domain),null,2)+'\n');
  await p.evaluate(()=>window.CX.router.nav('dashboard'));
 }
 const currentPeriodKey=str(hr?.source?.currentCalendarPeriodKey||'');

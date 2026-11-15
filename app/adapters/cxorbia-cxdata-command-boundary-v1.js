@@ -236,11 +236,30 @@
     };
     D.reconcileHistoricalPayments=function(ids,paymentStatus,meta){
       meta=commandMeta(meta);
+      const sourceRevision=str(CX.data?.previewMeta?.sourceRevision);
+      if(!sourceRevision)throw new Error('FINANCE_HISTORICAL_HR_REVISION_REQUIRED');
+      if(Object.prototype.hasOwnProperty.call(meta,'sourceRevision')&&(typeof meta.sourceRevision!=='string'||meta.sourceRevision.trim()!==sourceRevision))throw new Error('FINANCE_HISTORICAL_HR_REVISION_MISMATCH');
       const list=Array.isArray(ids)?ids.map(str).filter(Boolean):[];
       const current=list.map(visit).filter(Boolean);
       const expected=current.map(v=>[v.id,versionOf(protectedVisitFor(v)||v)]);
       const visitRefs=current.map(v=>({visitId:str(v.id||v.visitId),hrRowId:str(v.hrRowId)||null}));
-      const payload={visitIds:list,visitRefs,paymentStatus:str(paymentStatus).toLowerCase(),reconciliationBatchId:str(meta.reconciliationBatchId),sourceRef:str(meta.sourceRef),notes:str(meta.notes)};
+      const payload={visitIds:list,visitRefs,paymentStatus:str(paymentStatus).toLowerCase(),reconciliationBatchId:str(meta.reconciliationBatchId),sourceRef:str(meta.sourceRef),sourceRevision,notes:str(meta.notes)};
+      const validDay=value=>typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&Number.isFinite(Date.parse(value+'T00:00:00.000Z'))&&new Date(value+'T00:00:00.000Z').toISOString().slice(0,10)===value&&value<=now().slice(0,10);
+      const hasDate=Object.prototype.hasOwnProperty.call(meta,'historicalPaymentDate'),hasAuthority=Object.prototype.hasOwnProperty.call(meta,'historicalPaymentAuthorityRef');
+      if(hasDate||hasAuthority){
+        if(payload.paymentStatus!=='paid'||meta.supersession!=null||!validDay(meta.historicalPaymentDate)||typeof meta.historicalPaymentAuthorityRef!=='string'||!meta.historicalPaymentAuthorityRef.trim())throw new Error('FINANCE_HISTORICAL_INITIAL_PAYMENT_DATE_PROOF_REQUIRED');
+        payload.historicalPaymentDate=meta.historicalPaymentDate;payload.historicalPaymentAuthorityRef=meta.historicalPaymentAuthorityRef.trim();
+      }
+      if(meta.supersession!=null){
+        const prior=meta.supersession;
+        if(typeof prior!=='object'||Array.isArray(prior)||payload.paymentStatus!=='paid'||prior.priorPaymentStatus!=='pending'||typeof prior.priorBatchId!=='string'||!prior.priorBatchId.trim()||prior.priorBatchId.trim()===payload.reconciliationBatchId||typeof prior.authorityRef!=='string'||!prior.authorityRef.trim()||!validDay(prior.paymentDate))throw new Error('FINANCE_HISTORICAL_SUPERSESSION_PROOF_REQUIRED');
+        payload.supersession={priorBatchId:prior.priorBatchId.trim(),priorPaymentStatus:'pending',authorityRef:prior.authorityRef.trim(),paymentDate:prior.paymentDate};
+        if(prior.identityLinkRefsByVisitId!=null){
+          const links=prior.identityLinkRefsByVisitId;
+          if(typeof links!=='object'||Array.isArray(links)||Object.entries(links).some(([id,ref])=>!list.includes(id)||typeof ref!=='string'||!/^irl_[a-zA-Z0-9_-]{8,96}$/.test(ref)))throw new Error('FINANCE_HISTORICAL_EXACT_IDENTITY_LINK_SCOPE_REQUIRED');
+          payload.supersession.identityLinkRefsByVisitId=Object.fromEntries(Object.entries(links));
+        }
+      }
       const cmd=buildBase('finance.historical.reconcile','historicalPaymentReconciliation',payload.reconciliationBatchId||null,payload,hash(expected),Object.assign({permission:'finance.reconcile'},meta));
       return execute(cmd,meta);
     };

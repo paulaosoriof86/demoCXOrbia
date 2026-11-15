@@ -1,0 +1,904 @@
+TAP version 13
+# Subtest: approved readonly evidence uses no fabricated mutation ACK
+ok 1 - approved readonly evidence uses no fabricated mutation ACK
+  ---
+  duration_ms: 1.793971
+  type: 'test'
+  ...
+# Subtest: readonly rejects different contract
+ok 2 - readonly rejects different contract
+  ---
+  duration_ms: 0.360362
+  type: 'test'
+  ...
+# Subtest: readonly rejects missing owner
+ok 3 - readonly rejects missing owner
+  ---
+  duration_ms: 0.230841
+  type: 'test'
+  ...
+# Subtest: readonly rejects different owner bytes
+ok 4 - readonly rejects different owner bytes
+  ---
+  duration_ms: 0.211272
+  type: 'test'
+  ...
+# Subtest: readonly rejects only navigation, no reload
+ok 5 - readonly rejects only navigation, no reload
+  ---
+  duration_ms: 0.238643
+  type: 'test'
+  ...
+# Subtest: readonly rejects missing route
+ok 6 - readonly rejects missing route
+  ---
+  duration_ms: 0.206936
+  type: 'test'
+  ...
+# Subtest: readonly rejects demo control found
+ok 7 - readonly rejects demo control found
+  ---
+  duration_ms: 0.279803
+  type: 'test'
+  ...
+# Subtest: readonly rejects changed local authority
+ok 8 - readonly rejects changed local authority
+  ---
+  duration_ms: 0.16251
+  type: 'test'
+  ...
+# Subtest: readonly rejects a real mutation
+ok 9 - readonly rejects a real mutation
+  ---
+  duration_ms: 0.255147
+  type: 'test'
+  ...
+# Subtest: readonly rejects fake provider ACK
+ok 10 - readonly rejects fake provider ACK
+  ---
+  duration_ms: 0.641864
+  type: 'test'
+  ...
+# Subtest: readonly rejects real write branch cannot be called readonly
+ok 11 - readonly rejects real write branch cannot be called readonly
+  ---
+  duration_ms: 0.429104
+  type: 'test'
+  ...
+# Subtest: readonly rejects changed principal
+ok 12 - readonly rejects changed principal
+  ---
+  duration_ms: 0.183771
+  type: 'test'
+  ...
+# Subtest: only the exact authorized automatic HR reconciliation is separated from configuration mutations
+ok 13 - only the exact authorized automatic HR reconciliation is separated from configuration mutations
+  ---
+  duration_ms: 0.991605
+  type: 'test'
+  ...
+# Subtest: valid domain progress persists while another domain and global gates remain HOLD
+ok 14 - valid domain progress persists while another domain and global gates remain HOLD
+  ---
+  duration_ms: 5.253372
+  type: 'test'
+  ...
+# Subtest: an old source receipt is retained as history without blocking valid current receipt
+ok 15 - an old source receipt is retained as history without blocking valid current receipt
+  ---
+  duration_ms: 3.346905
+  type: 'test'
+  ...
+# Subtest: one owner cannot certify a domain with three owners even when pendingTerminalFiles is empty
+ok 16 - one owner cannot certify a domain with three owners even when pendingTerminalFiles is empty
+  ---
+  duration_ms: 3.89132
+  type: 'test'
+  ...
+# Subtest: priority P0_PROVEN is a blocker even without severity property
+ok 17 - priority P0_PROVEN is a blocker even without severity property
+  ---
+  duration_ms: 1.289425
+  type: 'test'
+  ...
+# Subtest: readonly proof does not bypass a real enabled write branch
+ok 18 - readonly proof does not bypass a real enabled write branch
+  ---
+  duration_ms: 1.081668
+  type: 'test'
+  ...
+# Subtest: diagnostic supersession is not proof of P0 closure
+ok 19 - diagnostic supersession is not proof of P0 closure
+  ---
+  duration_ms: 1.146414
+  type: 'test'
+  ...
+# Subtest: source identity corruption still aborts before any progress promotion
+ok 20 - source identity corruption still aborts before any progress promotion
+  ---
+  duration_ms: 1.333511
+  type: 'test'
+  ...
+# Subtest: missing HR revision in PASS-shaped proofs cannot produce global GO
+ok 21 - missing HR revision in PASS-shaped proofs cannot produce global GO
+  ---
+  duration_ms: 1.358287
+  type: 'test'
+  ...
+# Subtest: VRM311 server ACK is in the view before remount; failed feedback survives another render and reload
+ok 22 - VRM311 server ACK is in the view before remount; failed feedback survives another render and reload
+  ---
+  duration_ms: 6.497
+  type: 'test'
+  ...
+# Subtest: VRM311 a missing or mismatched provider ACK never becomes a local result
+ok 23 - VRM311 a missing or mismatched provider ACK never becomes a local result
+  ---
+  duration_ms: 4.12175
+  type: 'test'
+  ...
+# Subtest: VRM311 an acknowledged replay does not duplicate history; a late response cannot enter a new project
+ok 24 - VRM311 an acknowledged replay does not duplicate history; a late response cannot enter a new project
+  ---
+  duration_ms: 6.782742
+  type: 'test'
+  ...
+# Subtest: VRM312 an approved project attempt and both outcomes survive OCT/NOV/reload without a monthly expiry
+ok 25 - VRM312 an approved project attempt and both outcomes survive OCT/NOV/reload without a monthly expiry
+  ---
+  duration_ms: 8.613957
+  type: 'test'
+  ...
+# Subtest: VRM312 explicit expiration or later recertification changes eligibility while preserving history
+ok 26 - VRM312 explicit expiration or later recertification changes eligibility while preserving history
+  ---
+  duration_ms: 0.919499
+  type: 'test'
+  ...
+# Subtest: D06 QA turnover: retired bank plus scoped recertification permits a new attempt without erasing the old one
+ok 27 - D06 QA turnover: retired bank plus scoped recertification permits a new attempt without erasing the old one
+  ---
+  duration_ms: 1.66496
+  type: 'test'
+  ...
+# Subtest: D06 recertification lists every project shopper, including QA identities beyond position forty
+ok 28 - D06 recertification lists every project shopper, including QA identities beyond position forty
+  ---
+  duration_ms: 3.417249
+  type: 'test'
+  ...
+# Subtest: D06 recertification and Shoppers use the same active project identities, excluding durable retirements
+ok 29 - D06 recertification and Shoppers use the same active project identities, excluding durable retirements
+  ---
+  duration_ms: 1.714543
+  type: 'test'
+  ...
+# Subtest: VRM312 bank selection keeps original resource identity even when logical names repeat
+ok 30 - VRM312 bank selection keeps original resource identity even when logical names repeat
+  ---
+  duration_ms: 1.017373
+  type: 'test'
+  ...
+# Subtest: VRM312 editing an inherited bank addresses the original document and never creates a monthly copy
+ok 31 - VRM312 editing an inherited bank addresses the original document and never creates a monthly copy
+  ---
+  duration_ms: 1.054578
+  type: 'test'
+  ...
+# Subtest: VRM311 failed history remains readable even when its bank is absent or back in review
+ok 32 - VRM311 failed history remains readable even when its bank is absent or back in review
+  ---
+  duration_ms: 2.15231
+  type: 'test'
+  ...
+# Subtest: P0 pre-I4 projected historical evidence cannot grant present certification or visit execution
+ok 33 - P0 pre-I4 projected historical evidence cannot grant present certification or visit execution
+  ---
+  duration_ms: 1.034358
+  type: 'test'
+  ...
+# Subtest: P0 valid historical approvals and durable passes survive the scoped fail-closed guard
+ok 34 - P0 valid historical approvals and durable passes survive the scoped fail-closed guard
+  ---
+  duration_ms: 1.018104
+  type: 'test'
+  ...
+# Subtest: VRM316 R3 every Shopper view shares the protected canonical certification decision
+ok 35 - VRM316 R3 every Shopper view shares the protected canonical certification decision
+  ---
+  duration_ms: 1.339029
+  type: 'test'
+  ...
+# Subtest: VRM316 R3 a missing project on a historical attempt never grants current project rights
+ok 36 - VRM316 R3 a missing project on a historical attempt never grants current project rights
+  ---
+  duration_ms: 1.564883
+  type: 'test'
+  ...
+# Subtest: VRM316 R4 an HR-facing historical positive never substitutes for the authenticated protected profile
+ok 37 - VRM316 R4 an HR-facing historical positive never substitutes for the authenticated protected profile
+  ---
+  duration_ms: 0.900661
+  type: 'test'
+  ...
+# Subtest: VRM316 R4 a passing flag without durable provider ACK, type or tenant cannot grant certification
+ok 38 - VRM316 R4 a passing flag without durable provider ACK, type or tenant cannot grant certification
+  ---
+  duration_ms: 3.108724
+  type: 'test'
+  ...
+# Subtest: VRM316 R4 required means policy obligation, while done means a separately proven completion
+ok 39 - VRM316 R4 required means policy obligation, while done means a separately proven completion
+  ---
+  duration_ms: 1.154726
+  type: 'test'
+  ...
+# Subtest: I3 P0: passing one published certification bank never grants another bank in the same project
+ok 40 - I3 P0: passing one published certification bank never grants another bank in the same project
+  ---
+  duration_ms: 1.048369
+  type: 'test'
+  ...
+# Subtest: I3 P0: a voided test attempt remains in history but never grants visits or certification
+ok 41 - I3 P0: a voided test attempt remains in history but never grants visits or certification
+  ---
+  duration_ms: 1.135428
+  type: 'test'
+  ...
+# Subtest: I3 P0: an audited void with exact provider readback replaces one view item and preserves other attempts
+ok 42 - I3 P0: an audited void with exact provider readback replaces one view item and preserves other attempts
+  ---
+  duration_ms: 1.308123
+  type: 'test'
+  ...
+# Subtest: I3 P0: rejected or mismatched void ACK never locally revokes the prior certification
+ok 43 - I3 P0: rejected or mismatched void ACK never locally revokes the prior certification
+  ---
+  duration_ms: 3.078639
+  type: 'test'
+  ...
+# Subtest: I3 P0 backend test-void protocol: five isolated provider scenarios pass before any DEV write
+ok 44 - I3 P0 backend test-void protocol: five isolated provider scenarios pass before any DEV write
+  ---
+  duration_ms: 197.235812
+  type: 'test'
+  ...
+# Subtest: VRM322 published multi-bank project eligibility is stable across presentation selection
+ok 45 - VRM322 published multi-bank project eligibility is stable across presentation selection
+  ---
+  duration_ms: 1.851896
+  type: 'test'
+  ...
+# Subtest: current aliases agree with descriptor-selected ledger and current DEV seal
+ok 46 - current aliases agree with descriptor-selected ledger and current DEV seal
+  ---
+  duration_ms: 2.283775
+  type: 'test'
+  ...
+# Subtest: pending source preserves old served DEV seal while pointers target new source
+ok 47 - pending source preserves old served DEV seal while pointers target new source
+  ---
+  duration_ms: 0.377578
+  type: 'test'
+  ...
+# Subtest: current Hosting-only DEV supersedes the business phase-lock Hosting without inventing a Cloud Run deploy
+ok 48 - current Hosting-only DEV supersedes the business phase-lock Hosting without inventing a Cloud Run deploy
+  ---
+  duration_ms: 0.352591
+  type: 'test'
+  ...
+# Subtest: new bounded Hosting-only source keeps prior C3 and Hosting facts until new source is actually served
+ok 49 - new bounded Hosting-only source keeps prior C3 and Hosting facts until new source is actually served
+  ---
+  duration_ms: 0.494331
+  type: 'test'
+  ...
+# Subtest: Hosting-only ACK preserves the old C3 as historical until the new-source C3 audit runs
+ok 50 - Hosting-only ACK preserves the old C3 as historical until the new-source C3 audit runs
+  ---
+  duration_ms: 0.428663
+  type: 'test'
+  ...
+# Subtest: Hosting-only receipt rejects stale phase-lock Hosting
+ok 51 - Hosting-only receipt rejects stale phase-lock Hosting
+  ---
+  duration_ms: 0.329136
+  type: 'test'
+  ...
+# Subtest: Hosting-only receipt rejects fabricated Hosting source
+ok 52 - Hosting-only receipt rejects fabricated Hosting source
+  ---
+  duration_ms: 1.041709
+  type: 'test'
+  ...
+# Subtest: Hosting-only receipt rejects falsified release continuity
+ok 53 - Hosting-only receipt rejects falsified release continuity
+  ---
+  duration_ms: 0.20994
+  type: 'test'
+  ...
+# Subtest: pending predecessor rejects falsified source materialization
+ok 54 - pending predecessor rejects falsified source materialization
+  ---
+  duration_ms: 0.290739
+  type: 'test'
+  ...
+# Subtest: pending predecessor rejects changed predecessor seal
+ok 55 - pending predecessor rejects changed predecessor seal
+  ---
+  duration_ms: 0.339521
+  type: 'test'
+  ...
+# Subtest: pending predecessor rejects stale phase lock source
+ok 56 - pending predecessor rejects stale phase lock source
+  ---
+  duration_ms: 0.208138
+  type: 'test'
+  ...
+# Subtest: pending predecessor rejects stale current source alias
+ok 57 - pending predecessor rejects stale current source alias
+  ---
+  duration_ms: 0.221577
+  type: 'test'
+  ...
+# Subtest: rejects stale top-level count
+ok 58 - rejects stale top-level count
+  ---
+  duration_ms: 0.380161
+  type: 'test'
+  ...
+# Subtest: rejects stale pointer next ID
+ok 59 - rejects stale pointer next ID
+  ---
+  duration_ms: 0.362105
+  type: 'test'
+  ...
+# Subtest: rejects stale top-level source
+ok 60 - rejects stale top-level source
+  ---
+  duration_ms: 0.215388
+  type: 'test'
+  ...
+# Subtest: rejects stale current truth
+ok 61 - rejects stale current truth
+  ---
+  duration_ms: 0.18277
+  type: 'test'
+  ...
+# Subtest: rejects stale nested B1-B9 runtime
+ok 62 - rejects stale nested B1-B9 runtime
+  ---
+  duration_ms: 0.228628
+  type: 'test'
+  ...
+# Subtest: rejects stale nested B1-B9 hosting
+ok 63 - rejects stale nested B1-B9 hosting
+  ---
+  duration_ms: 0.183301
+  type: 'test'
+  ...
+# Subtest: rejects stale current DEV source
+ok 64 - rejects stale current DEV source
+  ---
+  duration_ms: 0.192234
+  type: 'test'
+  ...
+# Subtest: rejects old next action
+ok 65 - rejects old next action
+  ---
+  duration_ms: 0.284791
+  type: 'test'
+  ...
+# Subtest: rejects contradictory blocker
+ok 66 - rejects contradictory blocker
+  ---
+  duration_ms: 0.173266
+  type: 'test'
+  ...
+# Subtest: rejects outdated pointer ledger
+ok 67 - rejects outdated pointer ledger
+  ---
+  duration_ms: 0.22375
+  type: 'test'
+  ...
+# Subtest: rejects outdated blob
+ok 68 - rejects outdated blob
+  ---
+  duration_ms: 0.1762
+  type: 'test'
+  ...
+# Subtest: rejects stale timestamp
+ok 69 - rejects stale timestamp
+  ---
+  duration_ms: 0.190141
+  type: 'test'
+  ...
+# Subtest: current authority rejects archived 20-domain receipt reused as current
+ok 70 - current authority rejects archived 20-domain receipt reused as current
+  ---
+  duration_ms: 0.197673
+  type: 'test'
+  ...
+# Subtest: current authority rejects C3 pointer retains an older run
+ok 71 - current authority rejects C3 pointer retains an older run
+  ---
+  duration_ms: 0.15503
+  type: 'test'
+  ...
+# Subtest: current authority rejects descriptor C3 legacy alias retains 20-domain receipt
+ok 72 - current authority rejects descriptor C3 legacy alias retains 20-domain receipt
+  ---
+  duration_ms: 0.173436
+  type: 'test'
+  ...
+# Subtest: current authority rejects C3 ledger retains an old source
+ok 73 - current authority rejects C3 ledger retains an old source
+  ---
+  duration_ms: 0.179154
+  type: 'test'
+  ...
+# Subtest: current authority rejects C3 wrong hosted version
+ok 74 - current authority rejects C3 wrong hosted version
+  ---
+  duration_ms: 0.199615
+  type: 'test'
+  ...
+# Subtest: current authority rejects C3 fabricated all-ready count
+ok 75 - current authority rejects C3 fabricated all-ready count
+  ---
+  duration_ms: 0.176851
+  type: 'test'
+  ...
+# Subtest: reject accumulated alias drift: stale current focal
+ok 76 - reject accumulated alias drift: stale current focal
+  ---
+  duration_ms: 0.193676
+  type: 'test'
+  ...
+# Subtest: reject accumulated alias drift: stale current semantic
+ok 77 - reject accumulated alias drift: stale current semantic
+  ---
+  duration_ms: 0.184142
+  type: 'test'
+  ...
+# Subtest: reject accumulated alias drift: technical count contradicted by current C3
+ok 78 - reject accumulated alias drift: technical count contradicted by current C3
+  ---
+  duration_ms: 0.169941
+  type: 'test'
+  ...
+# Subtest: reject accumulated alias drift: stale matrix hash
+ok 79 - reject accumulated alias drift: stale matrix hash
+  ---
+  duration_ms: 0.198814
+  type: 'test'
+  ...
+# Subtest: reject accumulated alias drift: stale nested current pointer
+ok 80 - reject accumulated alias drift: stale nested current pointer
+  ---
+  duration_ms: 0.187728
+  type: 'test'
+  ...
+# Subtest: reject ok=false
+ok 81 - reject ok=false
+  ---
+  duration_ms: 2.02331
+  type: 'test'
+  ...
+# Subtest: reject ok=undefined
+ok 82 - reject ok=undefined
+  ---
+  duration_ms: 0.171253
+  type: 'test'
+  ...
+# Subtest: reject ok=true
+ok 83 - reject ok=true
+  ---
+  duration_ms: 0.138965
+  type: 'test'
+  ...
+# Subtest: reject committed=false
+ok 84 - reject committed=false
+  ---
+  duration_ms: 0.130473
+  type: 'test'
+  ...
+# Subtest: reject committed=undefined
+ok 85 - reject committed=undefined
+  ---
+  duration_ms: 0.221417
+  type: 'test'
+  ...
+# Subtest: reject committed=true
+ok 86 - reject committed=true
+  ---
+  duration_ms: 0.139816
+  type: 'test'
+  ...
+# Subtest: reject providerAck=false
+ok 87 - reject providerAck=false
+  ---
+  duration_ms: 0.17581
+  type: 'test'
+  ...
+# Subtest: reject providerAck=undefined
+ok 88 - reject providerAck=undefined
+  ---
+  duration_ms: 0.164282
+  type: 'test'
+  ...
+# Subtest: reject providerAck=true
+ok 89 - reject providerAck=true
+  ---
+  duration_ms: 0.266584
+  type: 'test'
+  ...
+# Subtest: reject successUiAllowed=false
+ok 90 - reject successUiAllowed=false
+  ---
+  duration_ms: 0.257791
+  type: 'test'
+  ...
+# Subtest: reject successUiAllowed=undefined
+ok 91 - reject successUiAllowed=undefined
+  ---
+  duration_ms: 0.221798
+  type: 'test'
+  ...
+# Subtest: reject successUiAllowed=true
+ok 92 - reject successUiAllowed=true
+  ---
+  duration_ms: 0.113868
+  type: 'test'
+  ...
+# Subtest: read-only reservation readiness never proves CRUD
+ok 93 - read-only reservation readiness never proves CRUD
+  ---
+  duration_ms: 0.222719
+  type: 'test'
+  ...
+# Subtest: complete observed reservation lifecycle qualifies
+ok 94 - complete observed reservation lifecycle qualifies
+  ---
+  duration_ms: 0.139146
+  type: 'test'
+  ...
+# Subtest: no reservation PASS without created
+ok 95 - no reservation PASS without created
+  ---
+  duration_ms: 0.100719
+  type: 'test'
+  ...
+# Subtest: no reservation PASS without createAck
+ok 96 - no reservation PASS without createAck
+  ---
+  duration_ms: 0.079358
+  type: 'test'
+  ...
+# Subtest: no reservation PASS without statusAck
+ok 97 - no reservation PASS without statusAck
+  ---
+  duration_ms: 0.110674
+  type: 'test'
+  ...
+# Subtest: no reservation PASS without deleted
+ok 98 - no reservation PASS without deleted
+  ---
+  duration_ms: 0.06754
+  type: 'test'
+  ...
+# Subtest: no reservation PASS without deleteAck
+ok 99 - no reservation PASS without deleteAck
+  ---
+  duration_ms: 0.065567
+  type: 'test'
+  ...
+# Subtest: no reservation PASS without independentFirestoreReadback
+ok 100 - no reservation PASS without independentFirestoreReadback
+  ---
+  duration_ms: 0.066328
+  type: 'test'
+  ...
+# Subtest: no reservation PASS without reloadReadback
+ok 101 - no reservation PASS without reloadReadback
+  ---
+  duration_ms: 0.065147
+  type: 'test'
+  ...
+# Subtest: no reservation PASS without absentAfterReload
+ok 102 - no reservation PASS without absentAfterReload
+  ---
+  duration_ms: 0.071326
+  type: 'test'
+  ...
+# Subtest: no reservation PASS without idempotentReplay
+ok 103 - no reservation PASS without idempotentReplay
+  ---
+  duration_ms: 0.092347
+  type: 'test'
+  ...
+# Subtest: no reservation PASS without cleanupVerified
+ok 104 - no reservation PASS without cleanupVerified
+  ---
+  duration_ms: 0.072337
+  type: 'test'
+  ...
+# Subtest: lost HTTP response after committed assignment still restores exact before image
+ok 105 - lost HTTP response after committed assignment still restores exact before image
+  ---
+  duration_ms: 2.2876
+  type: 'test'
+  ...
+# Subtest: restore fails closed: later same-millisecond write
+ok 106 - restore fails closed: later same-millisecond write
+  ---
+  duration_ms: 0.482833
+  type: 'test'
+  ...
+# Subtest: restore fails closed: different target
+ok 107 - restore fails closed: different target
+  ---
+  duration_ms: 0.285482
+  type: 'test'
+  ...
+# Subtest: restore fails closed: different actor
+ok 108 - restore fails closed: different actor
+  ---
+  duration_ms: 0.295036
+  type: 'test'
+  ...
+# Subtest: restore fails closed: different digest
+ok 109 - restore fails closed: different digest
+  ---
+  duration_ms: 0.332191
+  type: 'test'
+  ...
+# Subtest: restore fails closed: false provider ACK
+ok 110 - restore fails closed: false provider ACK
+  ---
+  duration_ms: 0.332701
+  type: 'test'
+  ...
+# Subtest: restore fails closed: unrelated field edited
+ok 111 - restore fails closed: unrelated field edited
+  ---
+  duration_ms: 0.368895
+  type: 'test'
+  ...
+# Subtest: restore fails closed: different assigned shopper
+ok 112 - restore fails closed: different assigned shopper
+  ---
+  duration_ms: 0.280304
+  type: 'test'
+  ...
+# Subtest: restore fails closed: later version
+ok 113 - restore fails closed: later version
+  ---
+  duration_ms: 0.284681
+  type: 'test'
+  ...
+# Subtest: restore fails closed: missing receipt
+ok 114 - restore fails closed: missing receipt
+  ---
+  duration_ms: 0.209108
+  type: 'test'
+  ...
+# Subtest: restore fails closed: missing visit
+ok 115 - restore fails closed: missing visit
+  ---
+  duration_ms: 0.24396
+  type: 'test'
+  ...
+# Subtest: ambiguous in-flight request is not called clean merely because before image remains
+ok 116 - ambiguous in-flight request is not called clean merely because before image remains
+  ---
+  duration_ms: 0.361103
+  type: 'test'
+  ...
+# Subtest: known blocked command leaves exact before image without writes
+ok 117 - known blocked command leaves exact before image without writes
+  ---
+  duration_ms: 0.289137
+  type: 'test'
+  ...
+# Subtest: committed HTTP ACK without durable receipt does not authorize cleanup
+ok 118 - committed HTTP ACK without durable receipt does not authorize cleanup
+  ---
+  duration_ms: 0.220266
+  type: 'test'
+  ...
+# Subtest: readback error prevents fixture cleanup authorization
+ok 119 - readback error prevents fixture cleanup authorization
+  ---
+  duration_ms: 0.443966
+  type: 'test'
+  ...
+# Subtest: same-run proof returns exactly eleven registered owners without functional acceptance
+ok 120 - same-run proof returns exactly eleven registered owners without functional acceptance
+  ---
+  duration_ms: 5.097621
+  type: 'test'
+  ...
+# Subtest: rejects a different sourceSha
+ok 121 - rejects a different sourceSha
+  ---
+  duration_ms: 1.837315
+  type: 'test'
+  ...
+# Subtest: rejects a different sourceTree
+ok 122 - rejects a different sourceTree
+  ---
+  duration_ms: 0.321716
+  type: 'test'
+  ...
+# Subtest: rejects a different controlSha
+ok 123 - rejects a different controlSha
+  ---
+  duration_ms: 0.288767
+  type: 'test'
+  ...
+# Subtest: rejects a different runId
+ok 124 - rejects a different runId
+  ---
+  duration_ms: 0.268187
+  type: 'test'
+  ...
+# Subtest: rejects a different runAttempt
+ok 125 - rejects a different runAttempt
+  ---
+  duration_ms: 0.245183
+  type: 'test'
+  ...
+# Subtest: missing attempt is rejected even if both receipt and expectation omit it
+ok 126 - missing attempt is rejected even if both receipt and expectation omit it
+  ---
+  duration_ms: 0.54135
+  type: 'test'
+  ...
+# Subtest: a failed-only consumer retry reuses the exact successful producer attempt
+ok 127 - a failed-only consumer retry reuses the exact successful producer attempt
+  ---
+  duration_ms: 1.244749
+  type: 'test'
+  ...
+# Subtest: rejects modified owner blob
+ok 128 - rejects modified owner blob
+  ---
+  duration_ms: 0.508221
+  type: 'test'
+  ...
+# Subtest: rejects modified test blob
+ok 129 - rejects modified test blob
+  ---
+  duration_ms: 0.472869
+  type: 'test'
+  ...
+# Subtest: rejects missing coverage
+ok 130 - rejects missing coverage
+  ---
+  duration_ms: 0.362095
+  type: 'test'
+  ...
+# Subtest: rejects duplicate coverage
+ok 131 - rejects duplicate coverage
+  ---
+  duration_ms: 0.251572
+  type: 'test'
+  ...
+# Subtest: rejects foreign-owner coverage
+ok 132 - rejects foreign-owner coverage
+  ---
+  duration_ms: 0.233315
+  type: 'test'
+  ...
+# Subtest: rejects foreign-test coverage
+ok 133 - rejects foreign-test coverage
+  ---
+  duration_ms: 0.273504
+  type: 'test'
+  ...
+# Subtest: rejects registry coverage
+ok 134 - rejects registry coverage
+  ---
+  duration_ms: 0.229199
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence exit
+ok 135 - rejects invalid test evidence exit
+  ---
+  duration_ms: 0.379371
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence zero
+ok 136 - rejects invalid test evidence zero
+  ---
+  duration_ms: 0.305331
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence fail
+ok 137 - rejects invalid test evidence fail
+  ---
+  duration_ms: 0.285352
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence cancelled
+ok 138 - rejects invalid test evidence cancelled
+  ---
+  duration_ms: 0.22367
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence skipped
+ok 139 - rejects invalid test evidence skipped
+  ---
+  duration_ms: 0.243861
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence todo
+ok 140 - rejects invalid test evidence todo
+  ---
+  duration_ms: 0.215949
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence summary
+ok 141 - rejects invalid test evidence summary
+  ---
+  duration_ms: 0.286784
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence log
+ok 142 - rejects invalid test evidence log
+  ---
+  duration_ms: 1.344457
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence hash
+ok 143 - rejects invalid test evidence hash
+  ---
+  duration_ms: 0.282818
+  type: 'test'
+  ...
+# Subtest: rejects altered production
+ok 144 - rejects altered production
+  ---
+  duration_ms: 0.265612
+  type: 'test'
+  ...
+# Subtest: rejects altered scope
+ok 145 - rejects altered scope
+  ---
+  duration_ms: 0.171844
+  type: 'test'
+  ...
+# Subtest: rejects a digest mismatch before looking up source blobs
+ok 146 - rejects a digest mismatch before looking up source blobs
+  ---
+  duration_ms: 0.434331
+  type: 'test'
+  ...
+# Subtest: workflow carries the same-run receipt through both C3 invocations
+ok 147 - workflow carries the same-run receipt through both C3 invocations
+  ---
+  duration_ms: 2.049338
+  type: 'test'
+  ...
+# Subtest: computed 21/21 source evidence enables the next job without changing four integral MATCH
+ok 148 - computed 21/21 source evidence enables the next job without changing four integral MATCH
+  ---
+  duration_ms: 1.467819
+  type: 'test'
+  ...
+# Subtest: one missing source proof keeps the consumer disabled and rejects a stale optimistic counter
+ok 149 - one missing source proof keeps the consumer disabled and rejects a stale optimistic counter
+  ---
+  duration_ms: 0.7377
+  type: 'test'
+  ...
+1..149
+# tests 149
+# suites 0
+# pass 149
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 342.503623

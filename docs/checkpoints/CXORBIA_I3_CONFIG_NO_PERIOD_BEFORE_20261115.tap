@@ -1,0 +1,21 @@
+✖ connected project countries work before the first period exists, using the durable project scope (5.114866ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 119.831348
+
+✖ failing tests:
+
+test at tools/qa/cxorbia-i3-q2-frontend-owner-behavior.test.mjs:77:1
+✖ connected project countries work before the first period exists, using the durable project scope (5.114866ms)
+  TypeError [Error]: Cannot read properties of undefined (reading 'plan')
+      at Object.config (app/modules/configuracion.js:519:33)
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-q2-frontend-owner-behavior.test.mjs:81:59)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)

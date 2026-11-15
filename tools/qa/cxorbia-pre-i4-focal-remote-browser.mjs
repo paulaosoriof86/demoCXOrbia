@@ -4,6 +4,7 @@ import { applicationDefault, initializeApp, getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { chromium } from 'playwright';
+import {assertFocalConfigAuthority,buildFocalHrReference,knownAmount} from './cxorbia-pre-i4-focal-hr-reference.mjs';
 // PRE-I4 FAST-PATH CONTROL: routed HR authority settle; product source remains immutable.
 
 const OUT=process.env.PREI4_OUT;
@@ -20,20 +21,18 @@ const periodKey=String(hrSnapshot.source?.currentCalendarPeriodKey||'');
 const periodMeta=(Array.isArray(hrSnapshot.periods)?hrSnapshot.periods:[]).find(p=>String(p.key||'')===periodKey)||null;
 const periodId=String(periodMeta?.id||('cinepolis-'+periodKey));
 const periodVisits=(Array.isArray(hrSnapshot.visits)?hrSnapshot.visits:[]).filter(v=>String(v.periodKey||'')===periodKey);
-const facet=v=>v?.canonicalFacets||{};
-const countryRef=code=>{const rows=periodVisits.filter(v=>String(v.pais||v.country||'')===code),active=fn=>rows.filter(v=>fn(facet(v))&&!facet(v).cancelled).length,realizedRows=rows.filter(v=>facet(v).realized===true&&!facet(v).cancelled);const reimbursementValues=realizedRows.map(v=>[Number(v.boleto),Number(v.comboAmt)]);return{
-  total:rows.length,assigned:active(f=>f.assigned===true),scheduled:active(f=>f.scheduled===true),realized:active(f=>f.realized===true),questionnaire:active(f=>f.questionnaire===true),submitted:active(f=>f.submitted===true),liquidationConfirmed:active(f=>f.liquidationConfirmed===true),outOfRange:active(f=>f.outOfRange===true),
-  finance:{realizedCount:realizedRows.length,honorarioDevengado:realizedRows.length?realizedRows.reduce((n,v)=>n+(Number.isFinite(Number(v.honorario))?Number(v.honorario):0),0):0,knownReimbursements:reimbursementValues.reduce((n,p)=>n+p.filter(Number.isFinite).reduce((a,b)=>a+b,0),0),reimbursementPartial:reimbursementValues.some(p=>p.some(x=>!Number.isFinite(x)))}
-};};
-const gtRef=countryRef('GT'),hnRef=countryRef('HN'),liqRows=periodVisits.filter(v=>facet(v).liquidationCandidate===true&&!facet(v).cancelled);
-const hrShopperRows=Array.isArray(hrSnapshot.shoppers)?hrSnapshot.shoppers:[];
-const reference={countries:{GT:gtRef,HN:hnRef},finance:{GT:gtRef.finance,HN:hnRef.finance},liquidations:{total:liqRows.length,GT:liqRows.filter(v=>String(v.pais||v.country)==='GT').length,HN:liqRows.filter(v=>String(v.pais||v.country)==='HN').length,paymentsConfirmed:liqRows.filter(v=>facet(v).paymentConfirmed===true).length,liquidationsConfirmed:liqRows.filter(v=>facet(v).liquidationConfirmed===true).length},shopperPopulation:hrShopperRows.length,sourceHrShopperIds:hrShopperRows.map(x=>String(x.id||x.shopperId||'')).filter(Boolean),identityCases:[],unresolvedIdentityCases:[]};
 if(!/^[a-f0-9]{64}$/.test(hrRevision)||!/^cinepolis-20\d{2}-[01]\d$/.test(periodId)||periodVisits.length!==44)throw new Error('SOURCE_FAILURE:FOCAL_LIVE_HR_REFERENCE_INVALID:'+JSON.stringify({hrRevision,periodId,periodVisits:periodVisits.length}));
 const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
 const URL=ROOT+'/index-backend-dev.html?cxBackendPreview='+PREVIEW+'&cxProjectId='+encodeURIComponent(projectId)+'&cxProtectedRuntime='+PROTECTED+'&cxHumanFullVisual='+FULL;
 const str=v=>String(v??'').trim(), arr=v=>Array.isArray(v)?v:[], fp=v=>crypto.createHash('sha256').update(String(v)).digest('hex').slice(0,16);
 if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
 const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(tenantId);
+const projectRef=tenant.collection('projects').doc(projectId);
+const [projectSnap,periodSnaps]=await Promise.all([projectRef.get(),projectRef.collection('periods').get()]);
+const projectConfig=projectSnap.data()||{};
+const periodConfig=periodSnaps.docs.find(d=>d.id===periodId||String(d.data()?.key||d.data()?.periodKey||'')===periodKey)?.data()||{};
+assertFocalConfigAuthority({snapshot:hrSnapshot,projectId,projectConfig,projectExists:projectSnap.exists});
+const reference=buildFocalHrReference({snapshot:hrSnapshot,periodKey,countryCodes:['GT','HN'],projectConfig,periodConfig,configAuthority:'firestore_project_config'});
 const members=(await tenant.collection('users').get()).docs.map(d=>({id:d.id,...(d.data()||{})}));
 const authExists=async m=>{try{await auth.getUser(m.id);return true;}catch(e){if(str(e?.code)==='auth/user-not-found')return false;throw e;}};
 let admin=null;
@@ -56,7 +55,7 @@ const paulaExpectedTotal=paulaHistoricalVisits.length;
 if(!paulaShopperId||!Number.isFinite(paulaExpectedTotal)||paulaExpectedTotal<1)throw new Error('SOURCE_FAILURE:FOCAL_PAULA_HR_REFERENCE_MISSING:'+JSON.stringify({paulaShopperId,identityIds:[...paulaIdentityIds],historicalVisits:paulaExpectedTotal,hrRevision}));
 
 const browser=await chromium.launch({headless:true});
-const evidence={schemaVersion:'cxorbia.pre-i4.focal-human-browser.v11',decision:'HOLD',sourceSha,hrRevision,periodId,preAuth:null,admin:null,shopper:null,mobile:null,adminMobile:null,shopperMobile:null,principalClaims:null,production:false,authWrites:0,hrWrites:0,providerWrites:0};
+const evidence={schemaVersion:'cxorbia.pre-i4.focal-human-browser.v12',decision:'HOLD',sourceSha,hrRevision,periodId,referenceAuthority:{hr:'same_fresh_runtime_revision',config:'independent_firestore_project_and_period',projectVersion:projectConfig.version,projectConfigMatchesRevision:true},preAuth:null,admin:null,shopper:null,mobile:null,adminMobile:null,shopperMobile:null,principalClaims:null,production:false,authWrites:0,hrWrites:0,providerWrites:0};
 const adminAuthUser=await auth.getUser(admin.id),shopperAuthUser=await auth.getUser(shopper.id);
 const safeClaims=u=>{const c=u?.customClaims||{};return{role:str(c.role),tenantId:str(c.tenantId),projectIds:arr(c.projectIds).map(str),shopperId:str(c.shopperId),authNamespace:str(c.authNamespace),country:str(c.country)};};
 evidence.principalClaims={admin:safeClaims(adminAuthUser),shopper:safeClaims(shopperAuthUser)};
@@ -383,7 +382,7 @@ async function signInMember(member,kind,route,options={}){
     if(r==='financiero'){
       for(const [code,o] of [['GT',info.finance?.GT],['HN',info.finance?.HN]]){
         const e=reference?.finance?.[code];
-        const amountEq=(observed,expected)=>expected===null?observed===null:Number(observed)===Number(expected);
+        const amountEq=(observed,expected)=>expected===null?observed===null:knownAmount(observed)&&knownAmount(expected)&&Number(observed)===Number(expected);
         if(!o||!e||Number(o.visRe)!==Number(e.realizedCount)||!amountEq(o.honorarioDevengado,e.honorarioDevengado)||Number(o.reemb)!==Number(e.knownReimbursements)||Boolean(o.reimbursementPartial)!==Boolean(e.reimbursementPartial)||o.margenPct!==null)throw new Error('MAPPING_FAILURE:FINANCE_'+code+':'+JSON.stringify({observed:o,expected:e,hrRevision}));
       }
     }

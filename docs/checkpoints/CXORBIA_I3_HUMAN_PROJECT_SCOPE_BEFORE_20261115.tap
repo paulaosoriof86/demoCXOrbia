@@ -1,0 +1,149 @@
+TAP version 13
+# Subtest: normal human entry preserves the configured authorized tenant and project
+not ok 1 - normal human entry preserves the configured authorized tenant and project
+  ---
+  duration_ms: 4.539278
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-human-project-scope.test.mjs:29:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    'tya' !== 'tenant-a'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'tenant-a'
+  actual: 'tya'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-human-project-scope.test.mjs:30:28)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.start (node:internal/test_runner/test:1262:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+  ...
+# Subtest: authenticated exact internal project can configure countries before periods or visits exist
+not ok 2 - authenticated exact internal project can configure countries before periods or visits exist
+  ---
+  duration_ms: 1.798237
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-human-project-scope.test.mjs:33:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+    + []
+    - [
+    -   'config'
+    - ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'config'
+  actual:
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-human-project-scope.test.mjs:34:54)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: internal entry rejects unauthenticated principal
+ok 3 - internal entry rejects unauthenticated principal
+  ---
+  duration_ms: 3.307888
+  type: 'test'
+  ...
+# Subtest: internal entry rejects different uid
+ok 4 - internal entry rejects different uid
+  ---
+  duration_ms: 1.247043
+  type: 'test'
+  ...
+# Subtest: internal entry rejects different tenant
+ok 5 - internal entry rejects different tenant
+  ---
+  duration_ms: 1.423724
+  type: 'test'
+  ...
+# Subtest: internal entry rejects different project
+ok 6 - internal entry rejects different project
+  ---
+  duration_ms: 0.909674
+  type: 'test'
+  ...
+# Subtest: internal entry rejects different namespace
+ok 7 - internal entry rejects different namespace
+  ---
+  duration_ms: 0.72427
+  type: 'test'
+  ...
+# Subtest: internal entry rejects missing authorized project
+ok 8 - internal entry rejects missing authorized project
+  ---
+  duration_ms: 1.406288
+  type: 'test'
+  ...
+# Subtest: internal entry rejects external record with internal flag
+ok 9 - internal entry rejects external record with internal flag
+  ---
+  duration_ms: 1.431796
+  type: 'test'
+  ...
+# Subtest: internal entry rejects non atomic authority
+ok 10 - internal entry rejects non atomic authority
+  ---
+  duration_ms: 1.562869
+  type: 'test'
+  ...
+# Subtest: internal entry rejects old session generation
+ok 11 - internal entry rejects old session generation
+  ---
+  duration_ms: 1.270477
+  type: 'test'
+  ...
+# Subtest: internal entry rejects missing session generation
+ok 12 - internal entry rejects missing session generation
+  ---
+  duration_ms: 0.753473
+  type: 'test'
+  ...
+# Subtest: internal entry rejects wrong internal source ref
+ok 13 - internal entry rejects wrong internal source ref
+  ---
+  duration_ms: 0.718031
+  type: 'test'
+  ...
+# Subtest: internal flag never bypasses shopper exact identity requirements
+ok 14 - internal flag never bypasses shopper exact identity requirements
+  ---
+  duration_ms: 0.611183
+  type: 'test'
+  ...
+# Subtest: external HR authority retains revision, period and nonempty operational requirements
+ok 15 - external HR authority retains revision, period and nonempty operational requirements
+  ---
+  duration_ms: 8.184254
+  type: 'test'
+  ...
+# Subtest: external shopper authority still requires the exact signed-in identity
+ok 16 - external shopper authority still requires the exact signed-in identity
+  ---
+  duration_ms: 1.890544
+  type: 'test'
+  ...
+1..16
+# tests 16
+# suites 0
+# pass 14
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 148.989279

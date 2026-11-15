@@ -6,11 +6,13 @@ import {execFileSync,spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 
 export const SOURCE_OWNER_SUITES=Object.freeze([
+  {id:'human-project-scope',owners:['app/adapters/tya-c6-unified-human-runtime-v1.js'],
+    tests:['tools/qa/cxorbia-i3-human-project-scope.test.mjs']},
   {id:'frontend-behavior',owners:['app/core/programa.js','app/core/ui.js','app/modules/periodos.js','app/modules/configuracion.js','app/modules/cliente-insights.js'],
     tests:['tools/qa/cxorbia-i3-q2-frontend-owner-behavior.test.mjs','tools/qa/cxorbia-i3-e04-benchmark-source.test.mjs']},
   {id:'finance-ack-boundary',owners:['app/core/backend-finance-benefits.js','app/core/backend-cxdata-finance-read.js',
     'app/adapters/cxorbia-cxdata-command-boundary-v1.js','backend/runtime/cxorbia-finance-command-provider-v1.mjs'],
-    tests:['backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs']},
+    tests:['backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs','tools/qa/cxorbia-i3-b8-historical-command-boundary.test.mjs']},
   {id:'external-hr-source',owners:['tools/hr-source/tya-build-live-hr-source-safe-r20.mjs','tools/hr-source/tya-enforce-live-tab-registry.mjs'],
     tests:['tools/hr-source/tya-resolve-live-month-tabs.test.mjs','backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs']}
 ]);

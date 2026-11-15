@@ -1,0 +1,313 @@
+{
+  "schemaVersion": "cxorbia.i3.current-terminal-attempt.v1",
+  "iteration": "I3",
+  "decision": "HOLD_I3_FOCAL_QA_MAPPING_FAILURE_WITH_PRESERVED_HUMAN_PASS",
+  "generatedAt": "2026-11-15T21:48:08.240239+00:00",
+  "sourceSha": "fdc73f7fe925db9edae1e2f73561f7496c451508",
+  "sourceTree": "5bbc8da456c58ce116e6506e6d56bfc0a2c36d33",
+  "controlSha": "a1d17f85f039ac191c39f23c687ffdfd8a7c1e76",
+  "runId": 43762256230,
+  "runNumber": 2530,
+  "runAttempt": 1,
+  "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43762256230",
+  "conclusion": "failure",
+  "certifyJobId": 132960000570,
+  "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/698ddedf91a1f5c5",
+  "runtimeRevision": "cxorbia-live-hr-dev-00370-fl2",
+  "runtimeDigest": "sha256:396cd23f895a98606fa9ca238132a5515065c07fec632cd73c00cc2e6d6c639e",
+  "artifact": {
+    "id": 14180717541,
+    "name": "cxorbia-recovery-i3-terminal-diagnostics-43762256230-1",
+    "sha256": "89e69748578506676d70d404cc7b2863d11b3b52fd269131d84caa1fd1757c3f"
+  },
+  "artifactFiles": {
+    "full-human-acceptance/human-live-acceptance.json": "1f365f8eba990fb62423f1a02361f7593a786b8bf973c54bb48a0c3bf7e18bb5",
+    "full-human-acceptance/tenant-adjudication-authority.json": "47242357b2b915496ff25669e3bbcbe26f7707872422113268bd5d2bcf815263",
+    "full-human-acceptance/i3-functional-probes.json": "54177f1a56830d31064717c45652f554b186694080f0e2bd2220b7386dc1bb02",
+    "full-human-acceptance/representative-shopper-live-proofs.json": "f2dad18c1f31d34b3fafc445dbb41cce56235023ddda419ef49b7c57f6ceac01",
+    "full-human-acceptance/tenant-readonly/tenant-admin-config-branding-readonly.json": "6ef7794dfd042a2ed8df4232555cbc71c14f9ba3a4b9605aad2cee72eb23e2be",
+    "semantic/hr-contrast.json": "94c9c931d6cb317ee9a79e7f06a63ac48408b4cb87ba1701dd8045283a5fa5a2",
+    "semantic/browser-focal.json": "11b6e9e198e255e2d91fe5154f14beab3ce4d60ea4d12a3c3a20a5fe467de7d9",
+    "current-preterminal-result.json": "0afc1ba8eb15f3814ad6c41783470e2553042b462b7db8a059fb1a35183da0fd",
+    "module-truth-progress.json": "8ec17a431fe427e25e8210ff7e659392e3ba5f3a98cffbc686fa3d1fad8945ae",
+    "hr-current-live.json": "b5f6708dda779f938f25bda0b696e33ae96e90e93cf1dfd03265b24e0e6994d5"
+  },
+  "preterminal": {
+    "decision": "PASS_C3_PRETERMINAL_SOURCE_READY_EXACT_DEV",
+    "inputAuthorityStatus": "HOLD_I3_Q3_VRM043_AUTHORITY_PROVEN_QA_FIX_PENDING_TERMINAL__Q2_GO",
+    "status": "READY_FOR_TERMINAL_CERTIFICATION",
+    "enabledNextBlock": "I3-Q3",
+    "enabledJob": "certify",
+    "sourceSha": "fdc73f7fe925db9edae1e2f73561f7496c451508",
+    "sourceTree": "5bbc8da456c58ce116e6506e6d56bfc0a2c36d33",
+    "moduleTruthSha256": "ff11f56dcc611b14d5d9f1901d3ca0d72221bdfdbfd5657e950861c3bad7d1c8",
+    "moduleCount": 21,
+    "matchModules": 4,
+    "nonMatchModules": 17,
+    "sourceReadyModules": 21,
+    "pendingFiles": 0,
+    "terminalEligible": true,
+    "activeBrowserOwners": 133,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/698ddedf91a1f5c5",
+    "runtimeRevision": "cxorbia-live-hr-dev-00370-fl2",
+    "runtimeDigest": "sha256:396cd23f895a98606fa9ca238132a5515065c07fec632cd73c00cc2e6d6c639e",
+    "firestoreRulesSha256": "0708af825d2baaad974285acd8d72df0a7861105e453da26199f08fd5a985d3e",
+    "sameRunSourceQa": {
+      "receiptSha256": "35d9768bcdd2d767b37303384baced4663dada4e6b10665f1b82fb74a97420b2",
+      "controlSha": "a1d17f85f039ac191c39f23c687ffdfd8a7c1e76",
+      "runId": 43762256230,
+      "producerRunAttempt": 1,
+      "pathCount": 11,
+      "acceptedPaths": [
+        "app/core/programa.js",
+        "app/core/ui.js",
+        "app/core/backend-finance-benefits.js",
+        "app/core/backend-cxdata-finance-read.js",
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+        "app/modules/periodos.js",
+        "app/modules/configuracion.js",
+        "app/modules/cliente-insights.js",
+        "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+        "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+        "tools/hr-source/tya-enforce-live-tab-registry.mjs"
+      ],
+      "scope": "SOURCE_QA_ONLY_NOT_E2E_OR_HUMAN_ACCEPTANCE"
+    },
+    "allApprovedOwnersLoaded": true,
+    "duplicateScripts": 0,
+    "builds": 0,
+    "deploys": 0,
+    "writes": 0,
+    "production": false
+  },
+  "humanAcceptance": {
+    "decision": "PASS_I3_HUMAN_LIVE_ACCEPTANCE",
+    "generatedAt": "2026-11-15T21:18:10.161Z",
+    "sourceSha": "fdc73f7fe925db9edae1e2f73561f7496c451508",
+    "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "observations": 90,
+    "uniqueRoleRoutes": 56,
+    "screenshots": 93,
+    "issues": [],
+    "pageErrors": [],
+    "paulaBlockApprovalClaimed": false
+  },
+  "semanticOracle": {
+    "decision": "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE",
+    "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "projectId": "cinepolis",
+    "periodId": "cinepolis-2026-11",
+    "finance": {
+      "GT": {
+        "realizedCount": 5,
+        "honorarioDevengado": 300,
+        "knownReimbursements": 654,
+        "reimbursementPartial": true,
+        "configuredHonorarium": 60
+      },
+      "HN": {
+        "realizedCount": 2,
+        "honorarioDevengado": 400,
+        "knownReimbursements": 380,
+        "reimbursementPartial": true,
+        "configuredHonorarium": 200
+      }
+    },
+    "liquidations": {
+      "total": 7,
+      "GT": 5,
+      "HN": 2,
+      "paymentsConfirmed": 0,
+      "liquidationsConfirmed": 0
+    },
+    "configEvidence": {
+      "projectExists": true,
+      "projectHonorario": {
+        "HN": 200,
+        "GT": 60
+      },
+      "periodHonorario": {},
+      "projectCurrency": {
+        "HN": "L",
+        "GT": "Q"
+      },
+      "periodCurrency": {}
+    }
+  },
+  "hardenedFocal": {
+    "decision": "FAIL_PRE_I4_FOCAL_HUMAN_BROWSER",
+    "error": "MAPPING_FAILURE:FINANCE_GT:{\"observed\":{\"cur\":\"Q\",\"visRe\":5,\"ingreso\":null,\"incomeSourceKnown\":false,\"incomeSource\":null,\"honorarioDevengado\":300,\"honorarioPorPagar\":300,\"honorarioPagado\":0,\"pagosConfirmados\":0,\"honorariumSourceComplete\":true,\"totalSourceComplete\":true,\"reemb\":654,\"reimbursementPartial\":true,\"isr\":0,\"regal\":0,\"fijos\":0,\"margen\":null,\"cxp\":954,\"cxc\":null,\"margenPct\":null,\"financialSourceStatus\":\"canonical_source_safe\",\"exactReconciledRecords\":0,\"paymentConfirmedRecords\":0,\"reviewQueueCount\":5,\"paymentHistoryMode\":\"historical_source_safe\",\"sourceSafe\":true,\"financialModel\":\"delegado\",\"localBilling\":false,\"royaltyApplicable\":false,\"commissionAmount\":null,\"commissionSource\":\"project_configuration_required\",\"commissionSourceStatus\":\"project_configuration_required\",\"distributedAmount\":null,\"distributionSource\":\"project_configuration_required\",\"distributionSourceStatus\":\"project_configuration_required\",\"marginSourceStatus\":\"pending_or_review\",\"financialReviewRequired\":true,\"shopperCostsIncludedInCommissionMargin\":false,\"valuesInvented\":false},\"expected\":{\"realizedCount\":5,\"honorarioDevengado\":0,\"knownReimbursements\":654,\"reimbursementPartial\":false},\"hrRevision\":\"fbaf9605",
+    "classification": "MAPPING_FAILURE",
+    "owner": "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
+    "cause": "Absent HR amounts coerced to zero; independent project honorarium ignored; liquidation candidates used instead of realized-work universe",
+    "productFinancialDefectProvenByThisFail": false
+  },
+  "tenantReadonly": {
+    "decision": "HOLD_I3_TENANT_READONLY_REPROOF",
+    "validation": {
+      "pass": false,
+      "failures": [
+        "READONLY_RELOAD_NO_MUTATION",
+        "READONLY_PROJECT_COUNTRY_WRITE_BRANCH_REQUIRES_SEPARATE_EVIDENCE"
+      ]
+    },
+    "checksBefore": [
+      {
+        "id": "config:centro",
+        "ok": true,
+        "marker": "#cfgBody",
+        "forbiddenControls": [],
+        "tenantVisible": true,
+        "countryBranch": null
+      },
+      {
+        "id": "config:marca",
+        "ok": true,
+        "marker": "[data-config-locked=\"tenant-brand\"]",
+        "forbiddenControls": [],
+        "tenantVisible": true,
+        "countryBranch": null
+      },
+      {
+        "id": "config:plan",
+        "ok": true,
+        "marker": "[data-config-locked=\"plan\"]",
+        "forbiddenControls": [],
+        "tenantVisible": true,
+        "countryBranch": null
+      },
+      {
+        "id": "config:paises",
+        "ok": true,
+        "marker": "[data-project-config-authority=\"provider\"]",
+        "forbiddenControls": [],
+        "tenantVisible": true,
+        "countryBranch": "PROVIDER_WRITE_ENABLED"
+      },
+      {
+        "id": "config:listas",
+        "ok": true,
+        "marker": "[data-config-locked=\"listas\"]",
+        "forbiddenControls": [],
+        "tenantVisible": true,
+        "countryBranch": null
+      },
+      {
+        "id": "config:nda",
+        "ok": true,
+        "marker": "[data-config-locked=\"nda\"]",
+        "forbiddenControls": [],
+        "tenantVisible": true,
+        "countryBranch": null
+      },
+      {
+        "id": "administrabilidad",
+        "ok": true,
+        "marker": "[data-connected-admin-readonly=\"true\"]",
+        "forbiddenControls": [],
+        "tenantVisible": true,
+        "countryBranch": null
+      },
+      {
+        "id": "marca",
+        "ok": true,
+        "marker": "[data-connected-brand-readonly=\"true\"]",
+        "forbiddenControls": [],
+        "tenantVisible": true,
+        "countryBranch": null
+      }
+    ],
+    "checksAfter": [
+      {
+        "id": "config:centro",
+        "ok": true,
+        "marker": "#cfgBody",
+        "forbiddenControls": [],
+        "tenantVisible": true,
+        "countryBranch": null
+      },
+      {
+        "id": "config:marca",
+        "ok": true,
+        "marker": "[data-config-locked=\"tenant-brand\"]",
+        "forbiddenControls": [],
+        "tenantVisible": true,
+        "countryBranch": null
+      },
+      {
+        "id": "config:plan",
+        "ok": true,
+        "marker": "[data-config-locked=\"plan\"]",
+        "forbiddenControls": [],
+        "tenantVisible": true,
+        "countryBranch": null
+      },
+      {
+        "id": "config:paises",
+        "ok": true,
+        "marker": "[data-project-config-authority=\"provider\"]",
+        "forbiddenControls": [],
+        "tenantVisible": true,
+        "countryBranch": "PROVIDER_WRITE_ENABLED"
+      },
+      {
+        "id": "config:listas",
+        "ok": true,
+        "marker": "[data-config-locked=\"listas\"]",
+        "forbiddenControls": [],
+        "tenantVisible": true,
+        "countryBranch": null
+      },
+      {
+        "id": "config:nda",
+        "ok": true,
+        "marker": "[data-config-locked=\"nda\"]",
+        "forbiddenControls": [],
+        "tenantVisible": true,
+        "countryBranch": null
+      },
+      {
+        "id": "administrabilidad",
+        "ok": true,
+        "marker": "[data-connected-admin-readonly=\"true\"]",
+        "forbiddenControls": [],
+        "tenantVisible": true,
+        "countryBranch": null
+      },
+      {
+        "id": "marca",
+        "ok": true,
+        "marker": "[data-connected-brand-readonly=\"true\"]",
+        "forbiddenControls": [],
+        "tenantVisible": true,
+        "countryBranch": null
+      }
+    ],
+    "untypedMutationCount": 1,
+    "countryMutationTested": false,
+    "promoted": false
+  },
+  "moduleProgress": {
+    "decision": "HOLD_C3_TERMINAL_MODULE_TRUTH",
+    "matchModules": 4,
+    "phaseAComplete": false
+  },
+  "notReached": [
+    "live-fixture reservation CRUD",
+    "strict terminal closure",
+    "Gate20",
+    "Gate21",
+    "I4"
+  ],
+  "production": false,
+  "productionDeploys": 0,
+  "productDeploys": 0,
+  "humanPassesPreserved": [
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ],
+  "noNewHumanBlockApproval": true
+}

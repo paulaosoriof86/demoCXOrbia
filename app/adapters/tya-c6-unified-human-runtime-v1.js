@@ -34,11 +34,15 @@
 
   function forceUnifiedConfig(){
     const cfg=CX.BACKEND=CX.BACKEND||{};
+    // Routing selects a project; the authenticated Firestore/HR authority below
+    // still decides whether this principal may enter it.
+    const tenantId=str(cfg.tenantId||window.CX_TENANT_RUNTIME_CONFIG?.tenantId);
+    const projectId=str(params.get('cxProjectId')||cfg.defaultProjectId);
     Object.assign(cfg,{
       enabled:true,previewMode:true,humanVisualSourceSafe:false,readOnly:true,
       writeMode:'disabled',enableDataWrites:false,enableOperationalWrites:false,
       allowEmptyBackend:false,failClosedOnReadError:true,preserveCxDataInterface:true,
-      tenantId:'tya',defaultProjectId:'cinepolis',previewProjectIds:['cinepolis'],
+      tenantId,defaultProjectId:projectId,previewProjectIds:projectId?[projectId]:[],
       canonicalBackendProjectId:'cxorbia-backend-dev',migrationTargetProjectId:'cxorbia-backend-dev',
       configSource:'c6-unified-authenticated-human-canonical-runtime'
     });
@@ -112,7 +116,7 @@
     const id=str(v&& (v.periodId||v.projectId));
     return list.find(p=>str(p.id)===id)
       ||list.find(p=>str(p.periodKey)===str(v&&v.periodKey))
-      ||list.find(p=>str(p.parentProjectId||p.program)==='cinepolis')
+      ||list.find(p=>str(p.parentProjectId||p.program)===str(CX.data?.currentProjectId))
       ||null;
   }
 
@@ -322,6 +326,23 @@
     try{ctx=CX.backendAuth?.context?.()||CX.backend?.authContext?.()||null;}catch(_){ctx=null;}
     try{uid=str(window.firebase?.auth?.().currentUser?.uid);}catch(_){uid='';}
     const sourceRevision=str(data.previewMeta?.sourceRevision),authorityRevision=str(authority?.sourceRevision);
+    if(authority?.internalProjectAuthority===true){
+      const backend=window.CX_BACKEND_AUTHORIZED_STATE||{},principal=backend.principal||{};
+      const record=arr(backend.projects).find(p=>str(p.projectId||p.id)===projectId);
+      let generation=null;try{generation=JSON.parse(authority.sessionGeneration||'null');}catch(_){}
+      const ids=v=>arr(v).map(str).filter(Boolean).sort().join('|');
+      return !!(ctx?.authenticated===true&&uid&&str(ctx.authNamespace)==='staff'&&['super','admin','ops','coordinador'].includes(str(ctx.role))
+        &&authority.applied===true&&authority.atomicPublication===true&&projectId
+        &&str(authority.tenantId)===str(ctx.tenantId)&&str(authority.projectId)===projectId
+        &&str(backend.tenantId)===str(ctx.tenantId)&&str(principal.tenantId)===str(ctx.tenantId)
+        &&str(principal.actorUid)===uid&&str(principal.role)===str(ctx.role)&&str(principal.authNamespace)===str(ctx.authNamespace)
+        &&ids(principal.projectIds)===ids(ctx.projectIds)
+        &&record?.operationalSource?.mode==='internal'
+        &&generation?.authenticated===true&&str(generation.uid)===uid&&str(generation.tenantId)===str(ctx.tenantId)
+        &&str(generation.projectId)===projectId&&str(generation.role)===str(ctx.role)&&str(generation.authNamespace)===str(ctx.authNamespace)
+        &&ids(generation.projectIds)===ids(ctx.projectIds)
+        &&str(CX.dataSource?.sourceRef)==='firestore-internal:'+str(ctx.tenantId)+':'+projectId);
+    }
     const baseReady=!!(authority?.applied===true
       && authority?.atomicPublication===true
       && arr(data.projects).length>0
@@ -346,8 +367,18 @@
       );
   }
 
-  function requestHumanAuthority(reason){
-    try{window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE?.(reason||'c6_human_runtime_requires_hr_authority',true);}catch(_){}
+  function requestHumanAuthority(reason,onReady){
+    try{
+      const record=arr(window.CX_BACKEND_AUTHORIZED_STATE?.projects).find(p=>str(p.projectId||p.id)===str(CX.data?.currentProjectId));
+      if(record?.operationalSource?.mode==='internal'&&typeof window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY==='function'){
+        // Internal publication has no HR-ready event. Await the existing authority
+        // producer and release only after its exact principal/scope proof passes.
+        Promise.resolve(window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY(reason||'c6_internal_project_authority'))
+          .then(()=>{if(humanAuthorityReady()&&typeof onReady==='function')onReady();}).catch(()=>{});
+        return;
+      }
+      window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE?.(reason||'c6_human_runtime_requires_hr_authority',true);
+    }catch(_){}
   }
 
   function installHumanAuthorityGate(){
@@ -381,7 +412,7 @@
       if(CX.session?.role&&!humanAuthorityReady()){
         pendingView=pendingView||CX.session?.view||null;
         showGate('mount_waiting_hr_authority');
-        requestHumanAuthority('c6_mount_waiting_hr_authority');
+        requestHumanAuthority('c6_mount_waiting_hr_authority',()=>release('internal_project_authority_ready'));
         return;
       }
       return originalMount(...arguments);
@@ -390,7 +421,7 @@
       if(CX.session?.role&&!humanAuthorityReady()){
         pendingView=id||pendingView||CX.session?.view||null;
         showGate('nav_waiting_hr_authority');
-        requestHumanAuthority('c6_nav_waiting_hr_authority');
+        requestHumanAuthority('c6_nav_waiting_hr_authority',()=>release('internal_project_authority_ready'));
         return;
       }
       return originalNav(...arguments);
@@ -402,7 +433,7 @@
     if(CX.bus?.on)CX.bus.on('backend-auth-ready',()=>{
       if(CX.session?.role&&!humanAuthorityReady()){
         showGate('backend_auth_ready_waiting_hr_authority');
-        requestHumanAuthority('c6_backend_auth_ready_waiting_hr_authority');
+        requestHumanAuthority('c6_backend_auth_ready_waiting_hr_authority',()=>release('internal_project_authority_ready'));
       }
     });
     window.CX_C6_HR_AUTHORITY_GATE={ready:humanAuthorityReady(),blocked:false,installed:true,providerWrites:0,production:false,at:new Date().toISOString()};

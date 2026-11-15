@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
 import {getFirestore} from 'firebase-admin/firestore';
+import {assertFocalConfigAuthority,buildFocalHrReference} from './cxorbia-pre-i4-focal-hr-reference.mjs';
 
 const OUT=String(process.env.C3_SEM_OUT||'').trim();
 const HR_FILE=String(process.env.C3_HR_FILE||'').trim();
@@ -24,6 +25,8 @@ const [projectSnap,periodSnap]=await Promise.all([projectRef.get(),projectRef.co
 const projectCfg=projectSnap.exists?(projectSnap.data()||{}):{};
 const periodCfgDoc=periodSnap.docs.find(d=>String(d.id)===String(period.id||'')||String(d.data()?.key||d.data()?.periodKey||'')===currentKey);
 const periodCfg=periodCfgDoc?.data?.()||{};
+assertFocalConfigAuthority({snapshot:hr,projectId:PROJECT_ID,projectConfig:projectCfg,projectExists:projectSnap.exists});
+const focalReference=buildFocalHrReference({snapshot:hr,periodKey:currentKey,countryCodes:['GT','HN'],projectConfig:projectCfg,periodConfig:periodCfg,configAuthority:'firestore_project_config'});
 const known=v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v));
 const facet=(v,k)=>v?.canonicalFacets?.[k]===true;
 const countryCode=v=>String(v?.country||v?.pais||'').toUpperCase();
@@ -38,10 +41,6 @@ const assigned=v=>facet(v,'assigned')||String(v?.assignmentState||'')==='assigne
 const country=code=>{
   const a=current.filter(v=>countryCode(v)===code), r=a.filter(realized);
   const configuredHonorarium=amountConfig(code,'honorario');
-  const honoraria=r.map(v=>known(v?.honorario)?Number(v.honorario):configuredHonorarium);
-  const honorariumComplete=honoraria.every(Number.isFinite);
-  const knownReimbursements=r.reduce((n,v)=>n+(known(v?.boleto)?Number(v.boleto):0)+(known(v?.comboAmt)?Number(v.comboAmt):0),0);
-  const reimbursementPartial=r.some(v=>!known(v?.boleto)||!known(v?.comboAmt));
   return {
     total:a.length,
     availableUnassigned:a.filter(v=>facet(v,'available')&&!assigned(v)).length,
@@ -56,13 +55,7 @@ const country=code=>{
     outOfRange:a.filter(v=>facet(v,'outOfRange')||v?.outOfRange===true).length,
     reviewRequired:a.filter(v=>v?.reviewRequired===true).length,
     uniqueAssignedShoppers:new Set(a.filter(assigned).map(v=>String(v?.shopperId||'')).filter(Boolean)).size,
-    finance:{
-      realizedCount:r.length,
-      honorarioDevengado:honorariumComplete?honoraria.reduce((n,x)=>n+x,0):null,
-      knownReimbursements,
-      reimbursementPartial,
-      configuredHonorarium
-    }
+    finance:{...focalReference.finance[code],configuredHonorarium}
   };
 };
 const GT=country('GT'),HN=country('HN');
@@ -99,6 +92,8 @@ const reference={
 };
 const configEvidence={
   projectExists:projectSnap.exists,
+  projectDocPath:projectRef.path,projectVersion:projectCfg.version,projectUpdateTime:projectSnap.updateTime?.toDate().toISOString()||null,
+  periodDocPath:periodCfgDoc?.ref.path||null,periodVersion:periodCfg.version??null,periodUpdateTime:periodCfgDoc?.updateTime?.toDate().toISOString()||null,
   projectHonorario:projectCfg?.honorario||{},
   periodHonorario:periodCfg?.honorario||{},
   projectCurrency:projectCfg?.currency||projectCfg?.currencies||{},

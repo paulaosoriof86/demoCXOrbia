@@ -238,6 +238,13 @@ CX.connectedAdminConfig=Object.freeze({
     const current=all.find(x=>String(x.id||x.projectId||'')===id);if(!current)throw new Error('PROJECT_CONFIG_REGISTRY_RECORD_REQUIRED');
     const nextCountries=[...new Set((countries||[]).map(String).map(x=>x.trim().toUpperCase()).filter(Boolean))];if(!nextCountries.length)throw new Error('PROJECT_COUNTRIES_REQUIRED');
     const nextCurrency=Object.assign({},current.currency||{},currency||{});
+    for(const code of nextCountries){
+      const configured=String(nextCurrency[code]||'').trim();
+      const catalog=Array.isArray(CX.COUNTRIES)?CX.COUNTRIES.find(x=>String(x.c||'').toUpperCase()===code):null;
+      const resolved=configured||String(catalog?.cur||'').trim();
+      if(!resolved)throw new Error('PROJECT_COUNTRY_CURRENCY_REQUIRED:'+code);
+      nextCurrency[code]=resolved;
+    }
     const patch={name:current.name,countries:nextCountries,currency:nextCurrency,operationalSource:current.operationalSource||current.routeSource,version:current.version,periodId:String(periodId||CX.data?.currentPeriodId||current.periodId||'setup-config'),status:current.status||'draft'};
     const ack=await CX.data.updateProject(id,patch,{ackAware:true,reason:'connected-config-project-countries'});
     if(!(ack&&ack.ok===true&&ack.committed===true&&ack.providerAck===true&&ack.successUiAllowed===true))throw new Error(String(ack?.code||'PROJECT_CONFIG_PROVIDER_ACK_REQUIRED'));
@@ -245,7 +252,8 @@ CX.connectedAdminConfig=Object.freeze({
     const rb=(CX.data?.__backendAllProjectRecords||[]).find(x=>String(x.id||x.projectId||'')===id);
     const got=[...new Set((rb?.countries||[]).map(String))].sort(),want=nextCountries.slice().sort();
     if(JSON.stringify(got)!==JSON.stringify(want))throw new Error('PROJECT_CONFIG_READBACK_MISMATCH');
-    return {ok:true,providerAck:true,projectId:id,countries:got,version:rb?.version,localStorageWrite:false};
+    if(nextCountries.some(code=>String(rb?.currency?.[code]||'').trim()!==nextCurrency[code]))throw new Error('PROJECT_CURRENCY_READBACK_MISMATCH');
+    return {ok:true,providerAck:true,projectId:id,countries:got,currency:_cfgClone(rb.currency),version:rb?.version,localStorageWrite:false};
   },
   async updateQuestionnaireProgram(periodId,program){
     if(!_cfgConnectedAuthority())throw new Error('QUESTIONNAIRE_PROGRAM_CONNECTED_AUTHORITY_REQUIRED');
@@ -505,7 +513,8 @@ CX.module('usuarios', ({ui})=>{
 /* ---------- Configuración general (submenús + consola cliente/proveedor) ---------- */
 let _cfgTab='centro', _cfgMode='proveedor';
 CX.module('config', ({data,ui})=>{
-  const p=data.period();
+  // Project configuration is valid before the first operational period exists.
+  const p=data.period()||(data.__backendAllProjectRecords||[]).find(x=>String(x.id||x.projectId||'')===String(data.currentProjectId||''))||{};
   const host=ui.el('div');
   const connected=_cfgCanonicalAuthority();
   const plan=CX.session.plan||p.plan||'estandar';

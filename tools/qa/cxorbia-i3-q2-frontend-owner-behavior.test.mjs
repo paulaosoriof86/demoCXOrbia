@@ -22,6 +22,7 @@ function configFixture(writes=true){
     operationalSource:{mode:'internal'},questionnaireProgramsByPeriod:{}};
   const period={id:'period-a',rootProjectId:'project-a',countries:['GT']};
   const cx={module:(id,fn)=>{modules[id]=fn;},canonicalTenantAuthority:()=>true,
+    COUNTRIES:[{c:'GT',cur:'GTQ',n:'Guatemala'},{c:'HN',cur:'HNL',n:'Honduras'},{c:'SV',cur:'USD',n:'El Salvador'}],paisFlag:()=>'',paisName:c=>c,
     BACKEND:{enableCommandWrites:writes},BRAND:{id:'tenant-a',nda:'Original'},session:{plan:'estandar',role:'super'},
     data:{currentProjectId:'project-a',currentPeriodId:'period-a',projects:[period],
       __backendAllProjectRecords:[record],period:()=>period,
@@ -63,6 +64,35 @@ test('project configuration requires provider ACK and independent project readba
   f.cx.data.updateProject=async()=>({ok:true,committed:true,providerAck:true,successUiAllowed:true});
   await assert.rejects(f.cx.connectedAdminConfig.updateProjectCountries('project-a',['SV']),/READBACK_MISMATCH/);
   assert.deepEqual(plain(f.record.countries),['HN','GT']);assert.deepEqual(f.local,[]);
+});
+test('connected Add Country UI includes the configured currency for the new country',async()=>{
+  const f=configFixture(),add=node(),choice=node();choice.dataset.c='HN';
+  f.body.children.set('#addPais',add);
+  f.ui.modal=(_title,_body,options)=>options.onMount({querySelectorAll:()=>[choice]},()=>{});
+  vm.runInContext("_cfgTab='paises'",f.context);f.modules.config({data:f.cx.data,ui:f.ui});
+  add.handlers.click();await choice.handlers.click();
+  assert.deepEqual(plain(f.record.countries),['GT','HN']);assert.equal(f.record.currency.HN,'HNL');
+  assert.equal(f.calls[0].patch.currency.HN,'HNL');assert.deepEqual(f.local,[]);
+});
+test('connected project countries work before the first period exists, using the durable project scope',async()=>{
+  const f=configFixture(),add=node(),choice=node();choice.dataset.c='HN';
+  f.record.periodId='setup-qa';f.cx.data.currentPeriodId='';f.cx.data.period=()=>undefined;delete f.cx.session.plan;
+  f.body.children.set('#addPais',add);f.ui.modal=(_title,_body,options)=>options.onMount({querySelectorAll:()=>[choice]},()=>{});
+  vm.runInContext("_cfgTab='paises'",f.context);f.modules.config({data:f.cx.data,ui:f.ui});
+  add.handlers.click();await choice.handlers.click();
+  assert.equal(f.calls[0].id,'project-a');assert.equal(f.calls[0].patch.periodId,'setup-qa');
+  assert.equal(f.record.currency.HN,'HNL');assert.equal(f.cx.data.currentPeriodId,'');assert.deepEqual(f.local,[]);
+});
+test('adding a country preserves explicit project currency and requires independent currency readback',async()=>{
+  const f=configFixture();
+  const ack=await f.cx.connectedAdminConfig.updateProjectCountries('project-a',['GT','HN'],{GT:'Q',HN:'L'},'period-a');
+  assert.deepEqual(plain(ack.currency),{GT:'Q',HN:'L'});
+  f.cx.data.updateProject=async(_id,patch)=>{Object.assign(f.record,plain(patch));delete f.record.currency.SV;return {ok:true,committed:true,providerAck:true,successUiAllowed:true};};
+  await assert.rejects(f.cx.connectedAdminConfig.updateProjectCountries('project-a',['GT','HN','SV']),/CURRENCY_READBACK_MISMATCH/);
+});
+test('unknown country without configured currency fails before calling the provider',async()=>{
+  const f=configFixture();await assert.rejects(f.cx.connectedAdminConfig.updateProjectCountries('project-a',['GT','ZZ']),/COUNTRY_CURRENCY_REQUIRED:ZZ/);
+  assert.deepEqual(f.calls,[]);assert.deepEqual(plain(f.record.countries),['GT']);
 });
 const program=name=>({activeId:'v1',versions:[{id:'v1',name,sections:[{id:'s1',weight:100,
   questions:[{id:'q1',name:'Pregunta',tipo:'Sí / No',weight:100,req:true}]}]}]});
