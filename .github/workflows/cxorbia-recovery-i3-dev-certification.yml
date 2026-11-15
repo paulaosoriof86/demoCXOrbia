@@ -74,6 +74,7 @@ jobs:
     source_tree: ${{ steps.authority.outputs.source_tree }}
     status: ${{ steps.authority.outputs.status }}
     source_qa_sha256: ${{ steps.source_qa.outputs.source_qa_sha256 }}
+    source_qa_run_attempt: ${{ steps.source_qa.outputs.source_qa_run_attempt }}
    steps:
    - uses: actions/checkout@v4
      with: {fetch-depth: 0}
@@ -168,7 +169,7 @@ jobs:
    - name: Preserve same-run owner test evidence
      uses: actions/upload-artifact@v4
      with:
-      name: cxorbia-i3-source-qa-${{ github.run_id }}
+      name: cxorbia-i3-source-qa-${{ github.run_id }}-${{ steps.source_qa.outputs.source_qa_run_attempt }}
       path: .tmp/canonical-source-qa/
       if-no-files-found: error
       retention-days: 30
@@ -2690,6 +2691,7 @@ jobs:
    if: ${{ github.event_name=='workflow_dispatch'||(github.event_name=='push'&&contains(github.event.head_commit.message, '[c3-preterminal-module-truth]')) }}
    outputs:
     terminal_ready: ${{ steps.c3_gate.outputs.terminal_ready }}
+    artifact_name: ${{ steps.c3_gate.outputs.artifact_name }}
    runs-on: ubuntu-latest
    timeout-minutes: 35
    env:
@@ -2700,6 +2702,7 @@ jobs:
     C3_SOURCE_QA_REQUIRED: 'true'
     C3_SOURCE_QA_RECEIPT: .tmp/c3-preterminal-module-truth/source-qa/source-qa-receipt.json
     C3_SOURCE_QA_SHA256: ${{ needs.canonical-candidate-authority.outputs.source_qa_sha256 }}
+    C3_SOURCE_QA_RUN_ATTEMPT: ${{ needs.canonical-candidate-authority.outputs.source_qa_run_attempt }}
    steps:
    - name: step
      uses: actions/checkout@v4
@@ -2707,7 +2710,7 @@ jobs:
    - name: Consume exact owner evidence from this run
      uses: actions/download-artifact@v4
      with:
-      name: cxorbia-i3-source-qa-${{ github.run_id }}
+      name: cxorbia-i3-source-qa-${{ github.run_id }}-${{ needs.canonical-candidate-authority.outputs.source_qa_run_attempt }}
       path: .tmp/c3-preterminal-module-truth/source-qa/
    - name: step
      run: |
@@ -2809,7 +2812,7 @@ jobs:
      if: always()
      uses: actions/upload-artifact@v4
      with:
-      name: cxorbia-c3-preterminal-module-truth-${{ github.run_id }}
+      name: cxorbia-c3-preterminal-module-truth-${{ github.run_id }}-${{ github.run_attempt }}
       path: ${{ env.C3_OUT }}
       if-no-files-found: error
       retention-days: 30
@@ -3009,6 +3012,7 @@ jobs:
     I3_CERTIFICATION_SOURCE_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
     C3_SOURCE_QA_REQUIRED: 'true'
     C3_SOURCE_QA_SHA256: ${{ needs.canonical-candidate-authority.outputs.source_qa_sha256 }}
+    C3_SOURCE_QA_RUN_ATTEMPT: ${{ needs.canonical-candidate-authority.outputs.source_qa_run_attempt }}
    steps:
    - name: step
      uses: actions/checkout@v4
@@ -3042,7 +3046,7 @@ jobs:
       EXPECTED_HOSTING_VERSION="$(jq -r "($RECEIPT_JQ).hostingVersion" "$CANDIDATE_DESCRIPTOR")"
       # Take the same-run preterminal artifact; archived 20-module proof is not authority.
       PRETERM_RUN_ID="$GITHUB_RUN_ID"
-      PRETERM_ARTIFACT="cxorbia-c3-preterminal-module-truth-${GITHUB_RUN_ID}"
+      PRETERM_ARTIFACT="${{ needs.c3-preterminal-module-truth.outputs.artifact_name }}"
       test -n "$EXPECTED_RUNTIME_REVISION"; [[ "$EXPECTED_RUNTIME_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]; test -n "$EXPECTED_HOSTING_VERSION"
       [[ "$PRETERM_RUN_ID" =~ ^[0-9]+$ ]]; test -n "$PRETERM_ARTIFACT"
       echo "EXPECTED_RUNTIME_REVISION=$EXPECTED_RUNTIME_REVISION" >> "$GITHUB_ENV"
@@ -3066,8 +3070,8 @@ jobs:
    - name: step
      run: |
       set -Eeuo pipefail
-      npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
-      npx playwright install chromium >/dev/null 2>&1
+      npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 2>&1 | tee "$OUT/npm-install.log"
+      npx --no-install playwright install chromium 2>&1 | tee "$OUT/playwright-install.log"
       node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs | tee "$OUT/source-regressions.log"
       node --test --test-name-pattern="exact HR durable key" backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs | tee "$OUT/operational-visit-key-regression.log"
    - name: step
@@ -3254,7 +3258,7 @@ jobs:
      if: always()
      uses: actions/upload-artifact@v4
      with:
-      name: cxorbia-recovery-i3-terminal-diagnostics-${{ github.run_id }}
+      name: cxorbia-recovery-i3-terminal-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}
       path: ${{ env.OUT }}
       if-no-files-found: warn
       retention-days: 30

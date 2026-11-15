@@ -41,7 +41,7 @@ export function writeC3Result(){
     firestoreRulesSha256:JSON.parse(fs.readFileSync(dir+'/firestore-live-parity.json')).sha256,
     activeBrowserOwners:Number(fs.readFileSync(dir+'/active-browser-owner-count.txt','utf8').trim())});
   fs.writeFileSync(dir+'/result.json',JSON.stringify(result,null,2)+'\n');
-  fs.appendFileSync(env.GITHUB_OUTPUT,'terminal_ready='+result.terminalEligible+'\n');
+  fs.appendFileSync(env.GITHUB_OUTPUT,'terminal_ready='+result.terminalEligible+'\nartifact_name=cxorbia-c3-preterminal-module-truth-'+env.GITHUB_RUN_ID+'-'+env.GITHUB_RUN_ATTEMPT+'\n');
   const rows=[['Fuente acreditada',result.sourceReadyModules+'/21'],['Archivos pendientes',result.pendingFiles],
     ['MATCH integral',result.matchModules+'/21'],['Siguiente bloque habilitado',result.enabledNextBlock||'ninguno'],
     ['Job consumidor',result.enabledJob||'ninguno'],['Owners transportados en esta ejecución',result.sameRunSourceQa?.pathCount||0]];

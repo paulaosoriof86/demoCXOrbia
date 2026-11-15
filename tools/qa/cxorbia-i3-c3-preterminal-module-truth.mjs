@@ -3,7 +3,7 @@ import {execFileSync} from 'node:child_process';
 import {assertCanonicalModuleCoverage} from './cxorbia-i3-terminal-module-domain-coverage.mjs';
 import {assessPreterminalSourceReadiness,resolveModuleSourceOwners} from './cxorbia-i3-preterminal-source-readiness.mjs';
 import {collectPathBoundLedgerSourceProofs} from './cxorbia-i3-c3-ledger-source-proofs.mjs';
-import {readSameRunSourceQa} from './cxorbia-i3-source-qa-evidence.mjs';
+import {readSameRunSourceQa,sourceQaExpectedIdentity} from './cxorbia-i3-source-qa-evidence.mjs';
 
 const descriptor=JSON.parse(fs.readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8'));
 const TEMPLATE=process.env.TEMPLATE||descriptor.moduleTruthPath;
@@ -36,10 +36,8 @@ const scopedLedgerProofs=collectPathBoundLedgerSourceProofs(ledger);
 const sameRunReceipt=process.env.C3_SOURCE_QA_RECEIPT;
 if(process.env.C3_SOURCE_QA_REQUIRED==='true'&&!sameRunReceipt)
   throw new Error('RELEASE_COMPOSITION_FAILURE:C3_SAME_RUN_SOURCE_QA_MISSING');
-const sameRunProofs=sameRunReceipt?readSameRunSourceQa(sameRunReceipt,{
-  sourceSha:SOURCE,sourceTree:TREE,controlSha:process.env.GITHUB_SHA,
-  runId:Number(process.env.GITHUB_RUN_ID),runAttempt:Number(process.env.GITHUB_RUN_ATTEMPT||1)
-},process.env.C3_SOURCE_QA_SHA256):[];
+const sameRunProofs=sameRunReceipt?readSameRunSourceQa(sameRunReceipt,
+  sourceQaExpectedIdentity(process.env,SOURCE,TREE),process.env.C3_SOURCE_QA_SHA256):[];
 const scopedProofsByPath=new Map();
 for(const proof of [...scopedLedgerProofs,...sameRunProofs]){
   if(!scopedProofsByPath.has(proof.path))scopedProofsByPath.set(proof.path,[]);
@@ -262,6 +260,7 @@ const out={...m,
     sameRunSourceQa:sameRunReceipt?{
       receiptSha256:process.env.C3_SOURCE_QA_SHA256,
       controlSha:process.env.GITHUB_SHA,runId:Number(process.env.GITHUB_RUN_ID),
+      producerRunAttempt:Number(process.env.C3_SOURCE_QA_RUN_ATTEMPT),
       pathCount:sameRunProofs.length,
       acceptedPaths:sourceFiles.filter(x=>x.preTerminalSameRunSourceProof).map(x=>x.path),
       scope:'SOURCE_QA_ONLY_NOT_E2E_OR_HUMAN_ACCEPTANCE'

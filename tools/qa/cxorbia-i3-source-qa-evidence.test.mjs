@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {SOURCE_OWNER_SUITES,sha256,parseTap,validateSourceQaReceipt,readSameRunSourceQa} from './cxorbia-i3-source-qa-evidence.mjs';
+import {SOURCE_OWNER_SUITES,sha256,parseTap,validateSourceQaReceipt,readSameRunSourceQa,sourceQaExpectedIdentity} from './cxorbia-i3-source-qa-evidence.mjs';
 import {buildC3Result} from './cxorbia-i3-c3-preterminal-result.mjs';
 
 // Synthetic validator fixtures: never execution receipts or release authority.
@@ -34,6 +34,18 @@ for(const key of ['sourceSha','sourceTree','controlSha','runId','runAttempt'])te
 test('missing attempt is rejected even if both receipt and expectation omit it',()=>{
   const x=fixture();delete x.receipt.runAttempt;delete x.context.expected.runAttempt;
   assert.throws(()=>validateSourceQaReceipt(x.receipt,x.context),/RUN_IDENTITY/);
+});
+test('a failed-only consumer retry reuses the exact successful producer attempt',()=>{
+  const x=fixture();
+  const env={GITHUB_SHA:x.receipt.controlSha,GITHUB_RUN_ID:String(x.receipt.runId),
+    GITHUB_RUN_ATTEMPT:'2',C3_SOURCE_QA_RUN_ATTEMPT:'1'};
+  x.context.expected=sourceQaExpectedIdentity(env,x.receipt.sourceSha,x.receipt.sourceTree);
+  assert.equal(validateSourceQaReceipt(x.receipt,x.context).length,10);
+  x.receipt.runAttempt=2;assert.throws(()=>validateSourceQaReceipt(x.receipt,x.context),/RUN_IDENTITY/);
+  for(const bad of [undefined,'0','invalid']){
+    const y=fixture();y.context.expected=sourceQaExpectedIdentity({...env,C3_SOURCE_QA_RUN_ATTEMPT:bad},y.receipt.sourceSha,y.receipt.sourceTree);
+    assert.throws(()=>validateSourceQaReceipt(y.receipt,y.context),/RUN_IDENTITY/);
+  }
 });
 for(const kind of ['owner','test'])test('rejects modified '+kind+' blob',()=>{
   const x=fixture();x.receipt.suites[0][kind==='owner'?'owners':'tests'][0].gitBlob='e'.repeat(40);
@@ -77,7 +89,11 @@ test('workflow carries the same-run receipt through both C3 invocations',()=>{
   for(const section of [c3,terminal]){
     assert.match(section,/C3_SOURCE_QA_REQUIRED: 'true'/);
     assert.match(section,/C3_SOURCE_QA_SHA256: \$\{\{ needs.canonical-candidate-authority.outputs.source_qa_sha256 \}\}/);
+    assert.match(section,/C3_SOURCE_QA_RUN_ATTEMPT: \$\{\{ needs.canonical-candidate-authority.outputs.source_qa_run_attempt \}\}/);
   }
+  assert.match(canonical,/source_qa_run_attempt: \$\{\{ steps.source_qa.outputs.source_qa_run_attempt \}\}/);
+  assert.match(c3,/artifact_name: \$\{\{ steps.c3_gate.outputs.artifact_name \}\}/);
+  assert.match(terminal,/PRETERM_ARTIFACT="\$\{\{ needs.c3-preterminal-module-truth.outputs.artifact_name \}\}"/);
   assert.match(terminal,/cp -R "\$PRIOR\/source-qa" "\$OUT\/source-qa"/);
   assert.match(terminal,/C3_SOURCE_QA_RECEIPT=\$OUT\/source-qa\/source-qa-receipt.json/);
   assert.match(terminal,/needs.c3-preterminal-module-truth.outputs.terminal_ready=='true'/);

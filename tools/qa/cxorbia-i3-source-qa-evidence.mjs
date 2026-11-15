@@ -17,6 +17,9 @@ export const SOURCE_OWNER_SUITES=Object.freeze([
 const SHA=/^[0-9a-f]{40}$/;
 const HASH=/^[0-9a-f]{64}$/;
 export const sha256=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
+export const sourceQaExpectedIdentity=(env,sourceSha,sourceTree)=>({sourceSha,sourceTree,
+  controlSha:env.GITHUB_SHA,runId:Number(env.GITHUB_RUN_ID),
+  runAttempt:Number(env.C3_SOURCE_QA_RUN_ATTEMPT)});
 const git=(...args)=>execFileSync('git',args,{encoding:'utf8',maxBuffer:8*1024*1024}).trim();
 const registryHash=()=>sha256(JSON.stringify(SOURCE_OWNER_SUITES));
 const fail=code=>{throw new Error('RELEASE_COMPOSITION_FAILURE:SOURCE_QA_'+code);};
@@ -74,7 +77,7 @@ export function readSameRunSourceQa(file,expected,digest){
   if(!HASH.test(String(digest||''))||sha256(bytes)!==digest)fail('ARTIFACT_DIGEST');
   return validateSourceQaReceipt(JSON.parse(bytes),{expected,
     blobAt:(ref,p)=>git('rev-parse',ref+':'+p),treeAt:ref=>git('rev-parse',ref+'^{tree}'),
-    logBytes:name=>fs.readFileSync(path.join(path.dirname(file),name))});
+    logBytes:name=>fs.readFileSync(path.join(path.dirname(file),name))}).map(proof=>({...proof,sameRunEvidence:{...proof.sameRunEvidence,receiptSha256:digest}}));
 }
 export function runSourceQa(){
   const descriptor=JSON.parse(fs.readFileSync(process.env.CANDIDATE_DESCRIPTOR||'CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json'));
@@ -105,7 +108,7 @@ export function runSourceQa(){
   const file=path.join(out,'source-qa-receipt.json');fs.writeFileSync(file,JSON.stringify(receipt,null,2)+'\n');
   const digest=sha256(fs.readFileSync(file));
   readSameRunSourceQa(file,{sourceSha,sourceTree,controlSha,runId,runAttempt},digest);
-  if(process.env.GITHUB_OUTPUT)fs.appendFileSync(process.env.GITHUB_OUTPUT,'source_qa_sha256='+digest+'\n');
+  if(process.env.GITHUB_OUTPUT)fs.appendFileSync(process.env.GITHUB_OUTPUT,'source_qa_sha256='+digest+'\nsource_qa_run_attempt='+runAttempt+'\n');
   console.log(JSON.stringify({decision:receipt.decision,sourceSha,controlSha,runId,
     ownerCount:receipt.suites.reduce((n,x)=>n+x.owners.length,0),
     testPass:receipt.suites.reduce((n,x)=>n+x.stats.pass,0),testFail:0,receiptSha256:digest,production:false}));
