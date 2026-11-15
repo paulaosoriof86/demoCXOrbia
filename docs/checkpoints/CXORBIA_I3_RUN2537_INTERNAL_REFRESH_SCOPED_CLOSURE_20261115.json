@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "cxorbia.i3.scoped-live-closure.v1",
+  "generatedAt": "2026-11-15T23:56:58.368552+00:00",
+  "findingId": "VRM-345",
+  "state": "FIXED_PROVEN_INTERNAL_PROJECT_REFRESH_RUN2537",
+  "classification": "FUNCTIONAL_DEFECT",
+  "scopeOnly": true,
+  "adjudicationBasis": "SAME_SOURCE_LIVE_COUNTRY_CYCLE_C6_READY_AFTER_UPDATE_AND_RELOAD",
+  "sourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
+  "sourceTree": "e2d2fa981282ef9736aba9fa06aa9735bf486c43",
+  "controlSha": "f2d989af545fa7d462972a8fb4daf0cbdcacc1bd",
+  "runId": 43772983839,
+  "runtimeRevision": "cxorbia-live-hr-dev-00370-fl2",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/d3634e619b4ea61e",
+  "evidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2537_VERIFIED_EVIDENCE_20261115/full-human-acceptance/tenant-readonly/project-country-live-proof.json",
+    "gitBlob": "d4ea8fc64fc435bb95159757fbbd47b4b1aa2873",
+    "sha256": "8c90d50bf724a8456a5e89c42f27b839c6db4931cc326906bf3eb84686f45d17",
+    "producerPath": "tools/qa/cxorbia-i3-project-country-live-proof.mjs",
+    "producerGitBlob": "0aa10fb5b6ff4a6a70bbd49ee08e8e2af01f8ef4",
+    "addCountryVerified": true,
+    "removeCountryVerified": true,
+    "c6ReadyRequiredAfterEachUpdateAndReload": true,
+    "samePrincipal": true,
+    "providerWritesOnReplay": 0,
+    "cleanupDeletedDocuments": 7,
+    "cleanupRemainingDocuments": 0
+  },
+  "originalRawProgressUnmodified": true,
+  "includedInOriginalOwnerDomainFindingIds": false,
+  "includedInOriginalClosedByCurrentReceipt": false,
+  "domainPromotion": false,
+  "remainingDomainCoverage": [
+    "human-runtime-domain-consistency",
+    "canonical-hr-state-adapters"
+  ],
+  "residualFindingsUnchanged": [
+    "VRM-338",
+    "VRM-341"
+  ],
+  "phaseAComplete": false,
+  "production": false
+}

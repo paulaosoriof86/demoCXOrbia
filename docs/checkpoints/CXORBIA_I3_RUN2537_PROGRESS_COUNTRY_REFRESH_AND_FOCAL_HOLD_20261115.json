@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "cxorbia.i3.verified-terminal-attempt.v1",
+  "generatedAt": "2026-11-15T23:56:58.368552+00:00",
+  "decision": "HOLD_I3_FIVE_DOMAINS_COUNTRY_REFRESH_PASS_RESOURCE_FOCAL_HOLD",
+  "runId": 43772983839,
+  "runNumber": 2537,
+  "runAttempt": 1,
+  "url": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43772983839",
+  "jobId": 132993296265,
+  "controlSha": "f2d989af545fa7d462972a8fb4daf0cbdcacc1bd",
+  "sourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
+  "sourceTree": "e2d2fa981282ef9736aba9fa06aa9735bf486c43",
+  "terminalArtifactId": 14185735011,
+  "terminalArtifactDigest": "sha256:5fa655a62587952c2d96f592e76e7ab8350dabceaecb52d0862ac1e4f4019875",
+  "artifactDigestIndependentlyVerified": true,
+  "files": {
+    "current-preterminal-result.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2537_VERIFIED_EVIDENCE_20261115/current-preterminal-result.json",
+      "gitBlob": "e25d64d21f1ee4f597c563f42d3f70866415d341",
+      "sha256": "63793747be36fc7f9bae5fbc6d583b6dc32e7578f6acdcb23d794f3c55bd79de"
+    },
+    "source-qa/source-qa-receipt.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2537_VERIFIED_EVIDENCE_20261115/source-qa/source-qa-receipt.json",
+      "gitBlob": "9f9bca83686131ff55f723fd5ec5b40a0f83d519",
+      "sha256": "aa25d486b8569e72a9ca6ac0a41cf7bed834440bd7a956f72a3b4113d46dea91"
+    },
+    "module-truth-progress.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2537_VERIFIED_EVIDENCE_20261115/module-truth-progress.json",
+      "gitBlob": "2b8a096032808a7a8ce943ef08a6e0bd239b29cd",
+      "sha256": "96034d0c7285e84012f2208b127f21b1bded984d00ec3ad906a57880fa89eba3"
+    },
+    "full-human-acceptance/tenant-readonly/tenant-admin-config-branding-domain.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2537_VERIFIED_EVIDENCE_20261115/full-human-acceptance/tenant-readonly/tenant-admin-config-branding-domain.json",
+      "gitBlob": "8acdf92761f3e4a81a681b79a9875530a9624e99",
+      "sha256": "9681cf23096887a29b3ed05dc3079b153109d27d45efd8cc1dd389493f96addf"
+    },
+    "full-human-acceptance/tenant-readonly/project-country-live-proof.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2537_VERIFIED_EVIDENCE_20261115/full-human-acceptance/tenant-readonly/project-country-live-proof.json",
+      "gitBlob": "d4ea8fc64fc435bb95159757fbbd47b4b1aa2873",
+      "sha256": "8c90d50bf724a8456a5e89c42f27b839c6db4931cc326906bf3eb84686f45d17"
+    },
+    "semantic/browser-focal.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2537_VERIFIED_EVIDENCE_20261115/semantic/browser-focal.json",
+      "gitBlob": "f049f9773ce8de4ea782e1d9fca25c769a077e40",
+      "sha256": "476cd0a550675f4826cc1ebbf5d56754da417ccd83031ed72d7dc3128a9a872d"
+    }
+  },
+  "human": {
+    "decision": "PASS_I3_HUMAN_LIVE_ACCEPTANCE",
+    "observations": 90,
+    "screenshots": 93,
+    "issues": 0,
+    "pageErrors": 0
+  },
+  "country": {
+    "decision": "PASS_I3_PROJECT_COUNTRY_UI_PROVIDER_RELOAD_REPLAY_CLEANUP",
+    "addRemoveReloadReplayPass": true,
+    "providerWritesOnReplay": 0,
+    "cleanupDeleted": 7,
+    "cleanupRemaining": 0,
+    "samePrincipal": true,
+    "commercialProjectUnchanged": true,
+    "returnedToCommercialProject": true
+  },
+  "sourceReadiness": {
+    "match": 4,
+    "sourceReady": 21,
+    "pendingFiles": 0,
+    "sameRunSourceQaOwners": 13,
+    "testsPass": 168
+  },
+  "progressAfterHuman": {
+    "match": 5,
+    "nonMatch": 16,
+    "decision": "HOLD_C3_TERMINAL_MODULE_TRUTH",
+    "newDomain": "tenant-admin-config-branding",
+    "closedByCurrentReceipt": [
+      "VRM-194",
+      "VRM-330",
+      "VRM-335"
+    ]
+  },
+  "focal": {
+    "decision": "FAIL_PRE_I4_FOCAL_HUMAN_BROWSER",
+    "error": "MAPPING_FAILURE:RESOURCE_AUTHORITY_AUTHENTICATED_GET",
+    "failedResponseWasNotPersisted": true,
+    "swLocalReproductionIsSeparateEvidence": true
+  },
+  "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+  "liveFixtures": "NOT_REACHED",
+  "strictFinalCertificateProduced": false,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "phaseAComplete": false,
+  "production": false,
+  "i4Authorized": false
+}

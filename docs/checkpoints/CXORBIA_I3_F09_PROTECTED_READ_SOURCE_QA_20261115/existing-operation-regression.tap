@@ -1,0 +1,166 @@
+TAP version 13
+# Subtest: PRE-I4 VRM-134 / bounded visit workers settle all writes before reporting a failure
+ok 1 - PRE-I4 VRM-134 / bounded visit workers settle all writes before reporting a failure
+  ---
+  duration_ms: 22.701186
+  type: 'test'
+  ...
+# Subtest: Gate 7 / visit HR reconciliation creates durable visits idempotently by revision
+ok 2 - Gate 7 / visit HR reconciliation creates durable visits idempotently by revision
+  ---
+  duration_ms: 3.842035
+  type: 'test'
+  ...
+# Subtest: Gate 7 / HR reconciliation updates durable operational state across revisions and repairs stale same-revision rows
+ok 3 - Gate 7 / HR reconciliation updates durable operational state across revisions and repairs stale same-revision rows
+  ---
+  duration_ms: 3.424158
+  type: 'test'
+  ...
+# Subtest: Gate 7 / HR reconciliation gives HR authority until external reflection is confirmed
+ok 4 - Gate 7 / HR reconciliation gives HR authority until external reflection is confirmed
+  ---
+  duration_ms: 3.353494
+  type: 'test'
+  ...
+# Subtest: Gate 7 / composer overlays durable platform pending assignment without taking HR-managed fields
+ok 5 - Gate 7 / composer overlays durable platform pending assignment without taking HR-managed fields
+  ---
+  duration_ms: 3.761447
+  type: 'test'
+  ...
+# Subtest: Gate 7 / composer marks HR versus durable shopper conflict without silent overwrite
+ok 6 - Gate 7 / composer marks HR versus durable shopper conflict without silent overwrite
+  ---
+  duration_ms: 0.584233
+  type: 'test'
+  ...
+# Subtest: Gate 7 / visit.assign requires provider ACK and replays idempotently
+ok 7 - Gate 7 / visit.assign requires provider ACK and replays idempotently
+  ---
+  duration_ms: 5.306089
+  type: 'test'
+  ...
+# Subtest: Gate 7 / approval atomically assigns visit and targets exactly one shopper notice without duplicate on replay
+ok 8 - Gate 7 / approval atomically assigns visit and targets exactly one shopper notice without duplicate on replay
+  ---
+  duration_ms: 1.173884
+  type: 'test'
+  ...
+# Subtest: Gate 7 / rejected applications never produce shopper approval bulletin
+ok 9 - Gate 7 / rejected applications never produce shopper approval bulletin
+  ---
+  duration_ms: 0.41964
+  type: 'test'
+  ...
+# Subtest: Gate 7 / shopper bulletin queries enforce exact recipient and project even when role query is broad
+ok 10 - Gate 7 / shopper bulletin queries enforce exact recipient and project even when role query is broad
+  ---
+  duration_ms: 0.952107
+  type: 'test'
+  ...
+# Subtest: Gate 7 / visit.assign resolves exact HR durable key when logical visitId differs and accepts source-current
+ok 11 - Gate 7 / visit.assign resolves exact HR durable key when logical visitId differs and accepts source-current
+  ---
+  duration_ms: 0.358981
+  type: 'test'
+  ...
+# Subtest: Gate 7 / visit.assign rejects a durable visit that is no longer HR-available
+ok 12 - Gate 7 / visit.assign rejects a durable visit that is no longer HR-available
+  ---
+  duration_ms: 0.280514
+  type: 'test'
+  ...
+# Subtest: Gate 7 / visitas UI does not declare assignment success before ACK
+ok 13 - Gate 7 / visitas UI does not declare assignment success before ACK
+  ---
+  duration_ms: 0.965286
+  type: 'test'
+  ...
+# Subtest: Gate 7 / unmatched platform-only shopper profiles stay review-only until exact HR crosswalk exists
+ok 14 - Gate 7 / unmatched platform-only shopper profiles stay review-only until exact HR crosswalk exists
+  ---
+  duration_ms: 1.279239
+  type: 'test'
+  ...
+# Subtest: PRE-I4 VRM-013 / canonical provider supports atomic reassignment with ACK and schedule decision
+ok 15 - PRE-I4 VRM-013 / canonical provider supports atomic reassignment with ACK and schedule decision
+  ---
+  duration_ms: 0.607277
+  type: 'test'
+  ...
+# Subtest: PRE-I4 VRM-013 / canonical provider reschedule decision is durable and idempotent
+ok 16 - PRE-I4 VRM-013 / canonical provider reschedule decision is durable and idempotent
+  ---
+  duration_ms: 12.48205
+  type: 'test'
+  ...
+# Subtest: PRE-I4 VRM-013 / internal-owned cancellation releases only after provider ACK
+ok 17 - PRE-I4 VRM-013 / internal-owned cancellation releases only after provider ACK
+  ---
+  duration_ms: 0.721025
+  type: 'test'
+  ...
+# Subtest: PRE-I4 VRM-013 / external-HR cancellation cannot fabricate availability without HR ACK
+ok 18 - PRE-I4 VRM-013 / external-HR cancellation cannot fabricate availability without HR ACK
+  ---
+  duration_ms: 0.443675
+  type: 'test'
+  ...
+# Subtest: PRE-I4 VRM-013 / Postulaciones has no local-first edit reassign cancel or reprogram success paths
+ok 19 - PRE-I4 VRM-013 / Postulaciones has no local-first edit reassign cancel or reprogram success paths
+  ---
+  duration_ms: 0.496764
+  type: 'test'
+  ...
+# Subtest: I3 B7: stale durable date blocks before HR reconciliation, then HR date enables ACK with idempotent replay
+ok 20 - I3 B7: stale durable date blocks before HR reconciliation, then HR date enables ACK with idempotent replay
+  ---
+  duration_ms: 37.399019
+  type: 'test'
+  ...
+# Subtest: I3 B7: removal of HR future fields invalidates stale window, never fabricates available dates
+ok 21 - I3 B7: removal of HR future fields invalidates stale window, never fabricates available dates
+  ---
+  duration_ms: 0.842384
+  type: 'test'
+  ...
+# Subtest: I3 B7 dashboard and postulations share the same scoped direct request modal
+ok 22 - I3 B7 dashboard and postulations share the same scoped direct request modal
+  ---
+  duration_ms: 6.996165
+  type: 'test'
+  ...
+# Subtest: I3 B7 shared agenda modal reviews exact durable pending date with provider ACK
+ok 23 - I3 B7 shared agenda modal reviews exact durable pending date with provider ACK
+  ---
+  duration_ms: 4.128379
+  type: 'test'
+  ...
+# Subtest: I3 B7 direct contextual menu uses existing Postulaciones owner, scoped assignment and ACK
+ok 24 - I3 B7 direct contextual menu uses existing Postulaciones owner, scoped assignment and ACK
+  ---
+  duration_ms: 3.768607
+  type: 'test'
+  ...
+# Subtest: I3 B7 cancellation modal fails closed before remote ACK
+ok 25 - I3 B7 cancellation modal fails closed before remote ACK
+  ---
+  duration_ms: 3.211534
+  type: 'test'
+  ...
+# Subtest: I3 B7 filter applies search to both posts and HR assignments and closes stale KPI modals
+ok 26 - I3 B7 filter applies search to both posts and HR assignments and closes stale KPI modals
+  ---
+  duration_ms: 1.032556
+  type: 'test'
+  ...
+1..26
+# tests 26
+# suites 0
+# pass 26
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 193.909057

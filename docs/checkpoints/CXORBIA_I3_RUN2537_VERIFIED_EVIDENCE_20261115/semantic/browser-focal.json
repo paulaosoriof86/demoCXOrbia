@@ -1,0 +1,971 @@
+{
+  "schemaVersion": "cxorbia.pre-i4.focal-human-browser.v12",
+  "decision": "FAIL_PRE_I4_FOCAL_HUMAN_BROWSER",
+  "sourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
+  "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+  "periodId": "cinepolis-2026-11",
+  "referenceAuthority": {
+    "hr": "same_fresh_runtime_revision",
+    "config": "independent_firestore_project_and_period",
+    "projectVersion": 5,
+    "projectConfigMatchesRevision": true
+  },
+  "preAuth": {
+    "debug": false,
+    "lab": false,
+    "blocked": false,
+    "staleRetail": false,
+    "gravicentra": false,
+    "brandId": "tya",
+    "brandName": "T&A Consultores",
+    "logoSrc": "https://tyaconsultores.com/wp-content/uploads/2023/05/logo.png",
+    "logoLoaded": true,
+    "dataMode": "connected",
+    "dataStatus": "loading",
+    "blockers": [],
+    "lane": "authenticated-human-canonical"
+  },
+  "admin": {
+    "principalFingerprint": "625df6d4e4fc4937",
+    "route": "dashboard",
+    "projectId": "cinepolis",
+    "periodId": "cinepolis-2026-11",
+    "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "historyTotal": null,
+    "refreshPreserved": true,
+    "routes": {
+      "midia": {
+        "route": "midia",
+        "projectId": "cinepolis",
+        "periodId": "cinepolis-2026-11",
+        "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+        "debug": false,
+        "lab": false,
+        "blocked": false,
+        "technicalVisible": false,
+        "bodyHasDemoApproval": false,
+        "bodyHasStaticSeed": false,
+        "phaseGT": null,
+        "phaseHN": null,
+        "ranking": null,
+        "shopperPopulation": null,
+        "hrShopperPopulation": null,
+        "expectedCanonicalHrShopperPopulation": null,
+        "rawSemanticShopperReferences": null,
+        "authorizedPlatformShopperPopulation": null,
+        "untrustedPlatformShopperPopulation": null,
+        "technicalPrimaryCount": null,
+        "outOfRangeCount": null,
+        "qaReservationVisible": false,
+        "identityCases": null,
+        "unresolvedIdentityCases": null,
+        "finance": null,
+        "liquidations": null,
+        "shopper": null,
+        "postulationSync": null,
+        "resources": null,
+        "certification": null,
+        "mobileIdentity": {
+          "text": "AdministraciónAdministración",
+          "visible": false
+        },
+        "scrollWidth": 1440,
+        "innerWidth": 1440,
+        "routeSettleMs": 1208
+      },
+      "dashboard": {
+        "route": "dashboard",
+        "projectId": "cinepolis",
+        "periodId": "cinepolis-2026-11",
+        "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+        "debug": false,
+        "lab": false,
+        "blocked": false,
+        "technicalVisible": false,
+        "bodyHasDemoApproval": false,
+        "bodyHasStaticSeed": false,
+        "phaseGT": {
+          "total": 34,
+          "asign": [
+            26,
+            76
+          ],
+          "agend": [
+            15,
+            44
+          ],
+          "sinAgend": [
+            11,
+            32
+          ],
+          "sinAsign": [
+            8,
+            24
+          ],
+          "real": [
+            5,
+            15
+          ],
+          "cuest": [
+            5,
+            15
+          ],
+          "submit": [
+            4,
+            12
+          ],
+          "liq": [
+            0,
+            0
+          ]
+        },
+        "phaseHN": {
+          "total": 10,
+          "asign": [
+            7,
+            70
+          ],
+          "agend": [
+            5,
+            50
+          ],
+          "sinAgend": [
+            2,
+            20
+          ],
+          "sinAsign": [
+            3,
+            30
+          ],
+          "real": [
+            2,
+            20
+          ],
+          "cuest": [
+            1,
+            10
+          ],
+          "submit": [
+            1,
+            10
+          ],
+          "liq": [
+            0,
+            0
+          ]
+        },
+        "ranking": {
+          "rows": 198,
+          "population": 198,
+          "missingRating": 3
+        },
+        "shopperPopulation": null,
+        "hrShopperPopulation": null,
+        "expectedCanonicalHrShopperPopulation": null,
+        "rawSemanticShopperReferences": null,
+        "authorizedPlatformShopperPopulation": null,
+        "untrustedPlatformShopperPopulation": null,
+        "technicalPrimaryCount": null,
+        "outOfRangeCount": 3,
+        "qaReservationVisible": false,
+        "identityCases": null,
+        "unresolvedIdentityCases": null,
+        "finance": null,
+        "liquidations": null,
+        "shopper": null,
+        "postulationSync": null,
+        "resources": null,
+        "certification": null,
+        "mobileIdentity": {
+          "text": "AdministraciónAdministración",
+          "visible": false
+        },
+        "scrollWidth": 1440,
+        "innerWidth": 1440,
+        "routeSettleMs": 1222
+      },
+      "visitas": {
+        "route": "visitas",
+        "projectId": "cinepolis",
+        "periodId": "cinepolis-2026-11",
+        "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+        "debug": false,
+        "lab": false,
+        "blocked": false,
+        "technicalVisible": false,
+        "bodyHasDemoApproval": false,
+        "bodyHasStaticSeed": false,
+        "phaseGT": null,
+        "phaseHN": null,
+        "ranking": null,
+        "shopperPopulation": null,
+        "hrShopperPopulation": null,
+        "expectedCanonicalHrShopperPopulation": null,
+        "rawSemanticShopperReferences": null,
+        "authorizedPlatformShopperPopulation": null,
+        "untrustedPlatformShopperPopulation": null,
+        "technicalPrimaryCount": null,
+        "outOfRangeCount": 3,
+        "qaReservationVisible": false,
+        "identityCases": null,
+        "unresolvedIdentityCases": null,
+        "finance": null,
+        "liquidations": null,
+        "shopper": null,
+        "postulationSync": null,
+        "resources": null,
+        "certification": null,
+        "mobileIdentity": {
+          "text": "AdministraciónAdministración",
+          "visible": false
+        },
+        "scrollWidth": 1440,
+        "innerWidth": 1440,
+        "routeSettleMs": 1210
+      },
+      "postulaciones": {
+        "route": "postulaciones",
+        "projectId": "cinepolis",
+        "periodId": "cinepolis-2026-11",
+        "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+        "debug": false,
+        "lab": false,
+        "blocked": false,
+        "technicalVisible": false,
+        "bodyHasDemoApproval": false,
+        "bodyHasStaticSeed": false,
+        "phaseGT": null,
+        "phaseHN": null,
+        "ranking": null,
+        "shopperPopulation": null,
+        "hrShopperPopulation": null,
+        "expectedCanonicalHrShopperPopulation": null,
+        "rawSemanticShopperReferences": null,
+        "authorizedPlatformShopperPopulation": null,
+        "untrustedPlatformShopperPopulation": null,
+        "technicalPrimaryCount": null,
+        "outOfRangeCount": null,
+        "qaReservationVisible": false,
+        "identityCases": null,
+        "unresolvedIdentityCases": null,
+        "finance": null,
+        "liquidations": null,
+        "shopper": null,
+        "postulationSync": {
+          "expectedStates": [],
+          "visibleStates": [],
+          "expectedConflicts": 0,
+          "visibleConflicts": 0
+        },
+        "resources": null,
+        "certification": null,
+        "mobileIdentity": {
+          "text": "AdministraciónAdministración",
+          "visible": false
+        },
+        "scrollWidth": 1440,
+        "innerWidth": 1440,
+        "routeSettleMs": 1219
+      },
+      "reservas": {
+        "route": "reservas",
+        "projectId": "cinepolis",
+        "periodId": "cinepolis-2026-11",
+        "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+        "debug": false,
+        "lab": false,
+        "blocked": false,
+        "technicalVisible": false,
+        "bodyHasDemoApproval": false,
+        "bodyHasStaticSeed": false,
+        "phaseGT": null,
+        "phaseHN": null,
+        "ranking": null,
+        "shopperPopulation": null,
+        "hrShopperPopulation": null,
+        "expectedCanonicalHrShopperPopulation": null,
+        "rawSemanticShopperReferences": null,
+        "authorizedPlatformShopperPopulation": null,
+        "untrustedPlatformShopperPopulation": null,
+        "technicalPrimaryCount": null,
+        "outOfRangeCount": null,
+        "qaReservationVisible": false,
+        "identityCases": null,
+        "unresolvedIdentityCases": null,
+        "finance": null,
+        "liquidations": null,
+        "shopper": null,
+        "postulationSync": null,
+        "resources": null,
+        "certification": null,
+        "mobileIdentity": {
+          "text": "AdministraciónAdministración",
+          "visible": false
+        },
+        "scrollWidth": 1440,
+        "innerWidth": 1440,
+        "routeSettleMs": 1205
+      },
+      "shoppers": {
+        "route": "shoppers",
+        "projectId": "cinepolis",
+        "periodId": "cinepolis-2026-11",
+        "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+        "debug": false,
+        "lab": false,
+        "blocked": false,
+        "technicalVisible": false,
+        "bodyHasDemoApproval": false,
+        "bodyHasStaticSeed": false,
+        "phaseGT": null,
+        "phaseHN": null,
+        "ranking": null,
+        "shopperPopulation": 198,
+        "hrShopperPopulation": 197,
+        "expectedCanonicalHrShopperPopulation": 197,
+        "rawSemanticShopperReferences": 238,
+        "authorizedPlatformShopperPopulation": 1,
+        "untrustedPlatformShopperPopulation": 0,
+        "technicalPrimaryCount": 0,
+        "outOfRangeCount": null,
+        "qaReservationVisible": false,
+        "identityCases": [],
+        "unresolvedIdentityCases": [],
+        "finance": null,
+        "liquidations": null,
+        "shopper": null,
+        "postulationSync": null,
+        "resources": null,
+        "certification": null,
+        "mobileIdentity": {
+          "text": "AdministraciónAdministración",
+          "visible": false
+        },
+        "scrollWidth": 1440,
+        "innerWidth": 1440,
+        "routeSettleMs": 1219
+      },
+      "financiero": {
+        "route": "financiero",
+        "projectId": "cinepolis",
+        "periodId": "cinepolis-2026-11",
+        "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+        "debug": false,
+        "lab": false,
+        "blocked": false,
+        "technicalVisible": false,
+        "bodyHasDemoApproval": false,
+        "bodyHasStaticSeed": false,
+        "phaseGT": null,
+        "phaseHN": null,
+        "ranking": null,
+        "shopperPopulation": null,
+        "hrShopperPopulation": null,
+        "expectedCanonicalHrShopperPopulation": null,
+        "rawSemanticShopperReferences": null,
+        "authorizedPlatformShopperPopulation": null,
+        "untrustedPlatformShopperPopulation": null,
+        "technicalPrimaryCount": null,
+        "outOfRangeCount": null,
+        "qaReservationVisible": false,
+        "identityCases": null,
+        "unresolvedIdentityCases": null,
+        "finance": {
+          "GT": {
+            "cur": "Q",
+            "visRe": 5,
+            "ingreso": null,
+            "incomeSourceKnown": false,
+            "incomeSource": null,
+            "honorarioDevengado": 300,
+            "honorarioPorPagar": 300,
+            "honorarioPagado": 0,
+            "pagosConfirmados": 0,
+            "honorariumSourceComplete": true,
+            "totalSourceComplete": true,
+            "reemb": 654,
+            "reimbursementPartial": true,
+            "isr": 0,
+            "regal": 0,
+            "fijos": 0,
+            "margen": null,
+            "cxp": 954,
+            "cxc": null,
+            "margenPct": null,
+            "financialSourceStatus": "canonical_source_safe",
+            "exactReconciledRecords": 0,
+            "paymentConfirmedRecords": 0,
+            "reviewQueueCount": 5,
+            "paymentHistoryMode": "historical_source_safe",
+            "sourceSafe": true,
+            "financialModel": "delegado",
+            "localBilling": false,
+            "royaltyApplicable": false,
+            "commissionAmount": null,
+            "commissionSource": "project_configuration_required",
+            "commissionSourceStatus": "project_configuration_required",
+            "distributedAmount": null,
+            "distributionSource": "project_configuration_required",
+            "distributionSourceStatus": "project_configuration_required",
+            "marginSourceStatus": "pending_or_review",
+            "financialReviewRequired": true,
+            "shopperCostsIncludedInCommissionMargin": false,
+            "valuesInvented": false
+          },
+          "HN": {
+            "cur": "L",
+            "visRe": 2,
+            "ingreso": null,
+            "incomeSourceKnown": false,
+            "incomeSource": null,
+            "honorarioDevengado": 400,
+            "honorarioPorPagar": 400,
+            "honorarioPagado": 0,
+            "pagosConfirmados": 0,
+            "honorariumSourceComplete": true,
+            "totalSourceComplete": true,
+            "reemb": 380,
+            "reimbursementPartial": true,
+            "isr": 0,
+            "regal": 0,
+            "fijos": 0,
+            "margen": null,
+            "cxp": 780,
+            "cxc": null,
+            "margenPct": null,
+            "financialSourceStatus": "canonical_source_safe",
+            "exactReconciledRecords": 0,
+            "paymentConfirmedRecords": 0,
+            "reviewQueueCount": 2,
+            "paymentHistoryMode": "historical_source_safe",
+            "sourceSafe": true,
+            "financialModel": "delegado",
+            "localBilling": false,
+            "royaltyApplicable": false,
+            "commissionAmount": null,
+            "commissionSource": "project_configuration_required",
+            "commissionSourceStatus": "project_configuration_required",
+            "distributedAmount": null,
+            "distributionSource": "project_configuration_required",
+            "distributionSourceStatus": "project_configuration_required",
+            "marginSourceStatus": "pending_or_review",
+            "financialReviewRequired": true,
+            "shopperCostsIncludedInCommissionMargin": false,
+            "valuesInvented": false
+          }
+        },
+        "liquidations": null,
+        "shopper": null,
+        "postulationSync": null,
+        "resources": null,
+        "certification": null,
+        "mobileIdentity": {
+          "text": "AdministraciónAdministración",
+          "visible": false
+        },
+        "scrollWidth": 1440,
+        "innerWidth": 1440,
+        "routeSettleMs": 1210
+      },
+      "movimientos": {
+        "route": "movimientos",
+        "projectId": "cinepolis",
+        "periodId": "cinepolis-2026-11",
+        "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+        "debug": false,
+        "lab": false,
+        "blocked": false,
+        "technicalVisible": false,
+        "bodyHasDemoApproval": false,
+        "bodyHasStaticSeed": false,
+        "phaseGT": null,
+        "phaseHN": null,
+        "ranking": null,
+        "shopperPopulation": null,
+        "hrShopperPopulation": null,
+        "expectedCanonicalHrShopperPopulation": null,
+        "rawSemanticShopperReferences": null,
+        "authorizedPlatformShopperPopulation": null,
+        "untrustedPlatformShopperPopulation": null,
+        "technicalPrimaryCount": null,
+        "outOfRangeCount": null,
+        "qaReservationVisible": false,
+        "identityCases": null,
+        "unresolvedIdentityCases": null,
+        "finance": null,
+        "liquidations": null,
+        "shopper": null,
+        "postulationSync": null,
+        "resources": null,
+        "certification": null,
+        "mobileIdentity": {
+          "text": "AdministraciónAdministración",
+          "visible": false
+        },
+        "scrollWidth": 1440,
+        "innerWidth": 1440,
+        "routeSettleMs": 1240
+      },
+      "liquidaciones": {
+        "route": "liquidaciones",
+        "projectId": "cinepolis",
+        "periodId": "cinepolis-2026-11",
+        "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+        "debug": false,
+        "lab": false,
+        "blocked": false,
+        "technicalVisible": false,
+        "bodyHasDemoApproval": false,
+        "bodyHasStaticSeed": false,
+        "phaseGT": null,
+        "phaseHN": null,
+        "ranking": null,
+        "shopperPopulation": null,
+        "hrShopperPopulation": null,
+        "expectedCanonicalHrShopperPopulation": null,
+        "rawSemanticShopperReferences": null,
+        "authorizedPlatformShopperPopulation": null,
+        "untrustedPlatformShopperPopulation": null,
+        "technicalPrimaryCount": null,
+        "outOfRangeCount": null,
+        "qaReservationVisible": false,
+        "identityCases": null,
+        "unresolvedIdentityCases": null,
+        "finance": null,
+        "liquidations": {
+          "count": 7,
+          "GT": 5,
+          "HN": 2,
+          "paymentsConfirmed": 0,
+          "liquidationsConfirmed": 0
+        },
+        "shopper": null,
+        "postulationSync": null,
+        "resources": null,
+        "certification": null,
+        "mobileIdentity": {
+          "text": "AdministraciónAdministración",
+          "visible": false
+        },
+        "scrollWidth": 1440,
+        "innerWidth": 1440,
+        "routeSettleMs": 1217
+      },
+      "documentos": {
+        "route": "documentos",
+        "projectId": "cinepolis",
+        "periodId": "cinepolis-2026-11",
+        "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+        "debug": false,
+        "lab": false,
+        "blocked": false,
+        "technicalVisible": false,
+        "bodyHasDemoApproval": false,
+        "bodyHasStaticSeed": false,
+        "phaseGT": null,
+        "phaseHN": null,
+        "ranking": null,
+        "shopperPopulation": null,
+        "hrShopperPopulation": null,
+        "expectedCanonicalHrShopperPopulation": null,
+        "rawSemanticShopperReferences": null,
+        "authorizedPlatformShopperPopulation": null,
+        "untrustedPlatformShopperPopulation": null,
+        "technicalPrimaryCount": null,
+        "outOfRangeCount": null,
+        "qaReservationVisible": false,
+        "identityCases": null,
+        "unresolvedIdentityCases": null,
+        "finance": null,
+        "liquidations": null,
+        "shopper": null,
+        "postulationSync": null,
+        "resources": {
+          "count": 1,
+          "names": [
+            "Instructivo Shopper Cinépolis"
+          ],
+          "rows": [
+            {
+              "id": "res-1olqhkg",
+              "name": "Instructivo Shopper Cinépolis",
+              "meta": "Instructivo Shopper.pdf",
+              "resourceType": "project_resource",
+              "source": "",
+              "demo": false,
+              "status": "active",
+              "version": 1
+            }
+          ],
+          "staticResourceSeedIds": [],
+          "status": {
+            "source": "firestore",
+            "status": "ready",
+            "tenantId": "tya",
+            "projectId": "cinepolis",
+            "periodId": "cinepolis-2026-11",
+            "count": 5,
+            "at": "2026-11-15T23:13:33.820Z"
+          },
+          "storage": {
+            "authorized": true,
+            "configured": true,
+            "available": true,
+            "reason": null
+          },
+          "principal": {
+            "uid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+            "authenticated": true,
+            "role": "admin",
+            "authNamespace": "staff",
+            "tenantId": "tya",
+            "shopperId": ""
+          },
+          "authorityProof": {
+            "decision": "PASS_FOCAL_OPERATOR_RESOURCE_AUTHORITY",
+            "source": "firestore",
+            "production": false,
+            "writes": 0
+          }
+        },
+        "certification": null,
+        "mobileIdentity": {
+          "text": "AdministraciónAdministración",
+          "visible": false
+        },
+        "scrollWidth": 1440,
+        "innerWidth": 1440,
+        "routeSettleMs": 1205
+      },
+      "cert": {
+        "route": "cert",
+        "projectId": "cinepolis",
+        "periodId": "cinepolis-2026-11",
+        "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+        "debug": false,
+        "lab": false,
+        "blocked": false,
+        "technicalVisible": false,
+        "bodyHasDemoApproval": false,
+        "bodyHasStaticSeed": false,
+        "phaseGT": null,
+        "phaseHN": null,
+        "ranking": null,
+        "shopperPopulation": null,
+        "hrShopperPopulation": null,
+        "expectedCanonicalHrShopperPopulation": null,
+        "rawSemanticShopperReferences": null,
+        "authorizedPlatformShopperPopulation": null,
+        "untrustedPlatformShopperPopulation": null,
+        "technicalPrimaryCount": null,
+        "outOfRangeCount": null,
+        "qaReservationVisible": false,
+        "identityCases": null,
+        "unresolvedIdentityCases": null,
+        "finance": null,
+        "liquidations": null,
+        "shopper": null,
+        "postulationSync": null,
+        "resources": null,
+        "certification": {
+          "sourceStatus": "pending_authenticated_review",
+          "evidenceCandidateCount": 42,
+          "carryoverConfirmed": 0,
+          "eligibilityGranted": 0,
+          "bank": {
+            "provider": "vertex-ai",
+            "revisadoPorUid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+            "gate": 80,
+            "certificationId": "ai-3654d624896f",
+            "estado": "published",
+            "generationAttempts": 1,
+            "requestedQuestionCount": 15,
+            "fecha": "2026-10-18",
+            "publicationAuthority": {
+              "schemaVersion": "cxorbia.certification-publication.v1",
+              "contentRevision": "cbb002d08d16398b9a2d82fdc7df6a8d2b6bae7d941c9582c304da11afdb3523",
+              "policy": {
+                "version": null,
+                "mode": "authorized_admin",
+                "fields": [],
+                "requiresDistinctReviewer": false,
+                "authority": "existing_default_authorized_admin"
+              },
+              "receiptId": "cert-bank-4cfe16a519234f8f9937ff6048ef98bf",
+              "sourceContentRevision": "eb0b317a8db3d8fa6e184fddd16744cd88175a51852b61c634c2b3d28523a494",
+              "action": "configure",
+              "reviewerUid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+              "sourceVersion": 2,
+              "authorUid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+              "actorRole": "admin"
+            },
+            "configuredByUid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+            "contentRevision": "cbb002d08d16398b9a2d82fdc7df6a8d2b6bae7d941c9582c304da11afdb3523",
+            "publishedAt": "2026-11-08T02:57:33.313Z",
+            "generatedAt": "2026-10-18T15:32:02.232Z",
+            "revisadoPor": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+            "required": false,
+            "documentSource": {
+              "size": 162335,
+              "source_sha256": "3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454",
+              "name": "Instructivo Shopper.pdf",
+              "extraction_quality": {
+                "score": 100,
+                "label": "high",
+                "sufficient": true,
+                "uniqueWords": 400,
+                "controlRatio": 0,
+                "words": 1007,
+                "chars": 7259,
+                "replacementRatio": 0,
+                "alphabeticRatio": 0.7681
+              },
+              "ocrExecuted": false,
+              "mime": "application/pdf",
+              "format": "pdf",
+              "parser": "pdfjs-3.11.174",
+              "mode": "attachment"
+            },
+            "certificationName": "Banco IA pendiente de revisión",
+            "previousContentRevision": "eb0b317a8db3d8fa6e184fddd16744cd88175a51852b61c634c2b3d28523a494",
+            "preguntas": [
+              {
+                "exp": "El objetivo es evaluar el servicio como cliente real y adjuntar evidencias.",
+                "q": "¿Cuál es el objetivo principal de la visita de Mystery Shopper al proyecto Cinépolis?",
+                "correcta": "Realizar una visita como cliente real y evaluar el servicio, adjuntando evidencias.",
+                "ops": [
+                  "Realizar una visita como cliente real y evaluar el servicio, adjuntando evidencias.",
+                  "Comprar boletos y combos para disfrutar de una película.",
+                  "Identificar los errores del personal de Cinépolis para reportarlos.",
+                  "Promocionar los servicios de Cinépolis entre los clientes."
+                ],
+                "fuente": "Página 1"
+              },
+              {
+                "fuente": "Página 1",
+                "ops": [
+                  "La visita puede marcarse como fallida.",
+                  "Se le dará una segunda oportunidad para completar la visita.",
+                  "Se le pedirá que envíe las evidencias faltantes en un plazo de 24 horas.",
+                  "La visita será aceptada con una penalización menor."
+                ],
+                "q": "¿Qué debe hacer un Mystery Shopper si faltan pasos o evidencias en su visita?",
+                "exp": "Si faltan pasos o evidencias, la visita puede marcarse como fallida.",
+                "correcta": "La visita puede marcarse como fallida."
+              },
+              {
+                "q": "¿Cuál es el plazo máximo para subir el cuestionario y las evidencias después de la visita?",
+                "exp": "El plazo máximo para subir el cuestionario y las evidencias es de 48 horas desde el final de la visita.",
+                "ops": [
+                  "48 horas desde el final de la visita.",
+                  "24 horas desde el final de la visita.",
+                  "72 horas desde el final de la visita.",
+                  "Una semana después de la visita."
+                ],
+                "fuente": "Página 1",
+                "correcta": "48 horas desde el final de la visita."
+              },
+              {
+                "ops": [
+                  "Geolocalización (fecha, hora y ubicación/geoetiqueta).",
+                  "El nombre del Mystery Shopper.",
+                  "Un sello de agua con el logo de Cinépolis.",
+                  "La firma del gerente de la sucursal."
+                ],
+                "exp": "Todas las fotografías deben ser geolocalizadas (fecha, hora y ubicación/geoetiqueta).",
+                "correcta": "Geolocalización (fecha, hora y ubicación/geoetiqueta).",
+                "q": "¿Qué tipo de información debe contener obligatoriamente una fotografía aportada como evidencia?",
+                "fuente": "Página 1"
+              },
+              {
+                "q": "¿Cuál es la franja horaria asignada para una visita de Mystery Shopper durante un fin de semana (WKND)?",
+                "correcta": "16:00 a 20:00.",
+                "exp": "Para WKND, la franja horaria asignada es de 16:00 a 20:00.",
+                "ops": [
+                  "16:00 a 20:00.",
+                  "17:00 a 21:00.",
+                  "10:00 a 14:00.",
+                  "20:00 a 23:00."
+                ],
+                "fuente": "Página 2"
+              },
+              {
+                "ops": [
+                  "Tomar una foto de la fachada del mall desde calle/estacionamiento.",
+                  "Registrar la hora exacta de llegada al cine.",
+                  "Comprar el combo de alimentos.",
+                  "Dirigirse directamente a la sala de cine."
+                ],
+                "fuente": "Página 2",
+                "q": "¿Qué debe hacer el Mystery Shopper al llegar al mall, sin importar el medio de compra del boleto?",
+                "correcta": "Tomar una foto de la fachada del mall desde calle/estacionamiento.",
+                "exp": "Al llegar al mall, se debe tomar una foto de la fachada del mall desde calle/estacionamiento."
+              },
+              {
+                "ops": [
+                  "Tomar una captura de pantalla del error y luego comprar el boleto en taquilla.",
+                  "Cancelar la visita y reportar el problema.",
+                  "Esperar a que el problema técnico se resuelva.",
+                  "Comprar el boleto en otra plataforma digital."
+                ],
+                "correcta": "Tomar una captura de pantalla del error y luego comprar el boleto en taquilla.",
+                "q": "¿Qué se debe hacer si se presentan dificultades técnicas al comprar el boleto por WEB o APP?",
+                "exp": "Si hay problemas técnicos con WEB/APP, se debe tomar una captura de pantalla del error y luego comprar en taquilla.",
+                "fuente": "Página 3"
+              },
+              {
+                "exp": "La regla mínima de combo es Refresco + Palomitas + Nachos o Refresco + Palomitas + Hot Dog.",
+                "fuente": "Página 4",
+                "ops": [
+                  "Refresco + Palomitas + Nachos o Refresco + Palomitas + Hot Dog.",
+                  "Solo Refresco y Palomitas.",
+                  "Cualquier combinación de alimentos y bebidas.",
+                  "Un combo de dulces y chocolates."
+                ],
+                "q": "¿Qué tipo de combo es obligatorio comprar según la regla mínima?",
+                "correcta": "Refresco + Palomitas + Nachos o Refresco + Palomitas + Hot Dog."
+              },
+              {
+                "fuente": "Página 4",
+                "exp": "En VIP, se solicita alimentos dentro de la sala (restaurante en butaca).",
+                "q": "¿Dónde se debe comprar el combo de alimentos si la asignación es VIP?",
+                "correcta": "Dentro de la sala (restaurante en butaca).",
+                "ops": [
+                  "Dentro de la sala (restaurante en butaca).",
+                  "En la dulcería/alimentos del cine.",
+                  "En un punto de venta externo al cine.",
+                  "No es necesario comprar combo en VIP."
+                ]
+              },
+              {
+                "ops": [
+                  "Refresco mediano + Palomitas grandes + Nachos/Hot Dog (según asignación).",
+                  "Refresco grande + Palomitas medianas + Nachos/Hot Dog.",
+                  "Solo Refresco y Palomitas pequeñas.",
+                  "Cualquier tamaño de Refresco y Palomitas."
+                ],
+                "q": "¿Qué se debe solicitar como pedido base para el combo?",
+                "exp": "El pedido base es Refresco mediano + Palomitas grandes + Nachos/Hot Dog.",
+                "correcta": "Refresco mediano + Palomitas grandes + Nachos/Hot Dog (según asignación).",
+                "fuente": "Página 5"
+              },
+              {
+                "fuente": "Página 5",
+                "ops": [
+                  "Pedir proactivamente al final (cuando esté por preparar).",
+                  "Aceptar el tamaño original sin agrandar.",
+                  "Reportar al personal por no ofrecer la maximización.",
+                  "Cancelar la compra del combo."
+                ],
+                "correcta": "Pedir proactivamente al final (cuando esté por preparar).",
+                "q": "¿Qué acción se debe tomar si no se ofrece agrandar el refresco o las palomitas durante la maximización?",
+                "exp": "Si no ofrecen agrandar, se debe pedir proactivamente al final."
+              },
+              {
+                "q": "¿Qué se debe hacer si un alimento está en mal estado?",
+                "correcta": "Tomar una foto y presentar una queja inmediata para reposición.",
+                "ops": [
+                  "Tomar una foto y presentar una queja inmediata para reposición.",
+                  "Descartar el alimento y continuar con la visita.",
+                  "Informar al coordinador después de la visita.",
+                  "No hacer nada, ya que no es parte de la evaluación."
+                ],
+                "fuente": "Página 5",
+                "exp": "Si un alimento está en mal estado, se debe tomar foto y presentar queja inmediata para reposición."
+              },
+              {
+                "q": "¿Cuándo se debe visitar los sanitarios y documentar su estado?",
+                "exp": "Los sanitarios se visitan y documentan solo si hay ítems no satisfactorios.",
+                "correcta": "Solo si hay ítems no satisfactorios.",
+                "ops": [
+                  "Solo si hay ítems no satisfactorios.",
+                  "Siempre, al inicio de la visita.",
+                  "Siempre, al finalizar la película.",
+                  "Solo si se solicita específicamente."
+                ],
+                "fuente": "Página 6"
+              },
+              {
+                "ops": [
+                  "Fachada del mall (geolocalizada) y tickets de boleto + combo (legibles).",
+                  "Solo el ticket del boleto.",
+                  "Solo fotos de la sala de cine.",
+                  "Un video de toda la visita."
+                ],
+                "correcta": "Fachada del mall (geolocalizada) y tickets de boleto + combo (legibles).",
+                "exp": "Las evidencias mínimas incluyen la fachada del mall geolocalizada y los tickets de boleto + combo legibles.",
+                "q": "¿Qué evidencia mínima es obligatoria subir a la plataforma?",
+                "fuente": "Página 7"
+              },
+              {
+                "q": "¿Qué debe registrar el Mystery Shopper en relación con los tiempos de espera y atención?",
+                "correcta": "Hora de llegada al cine + tiempos de espera y atención (boleto y combo).",
+                "exp": "Se debe registrar la hora de llegada al cine y los tiempos de espera y atención para boleto y combo.",
+                "fuente": "Página 1",
+                "ops": [
+                  "Hora de llegada al cine + tiempos de espera y atención (boleto y combo).",
+                  "Solo el tiempo de espera para el boleto.",
+                  "Solo el tiempo de atención en la dulcería.",
+                  "La duración total de la película."
+                ]
+              }
+            ],
+            "configuredAt": "2026-11-10T08:52:17.020Z",
+            "providerAck": true,
+            "generadoPorUid": "NkcIVM4AnSU1gI9cGKHI5P12YqC3",
+            "model": "gemini-2.5-flash",
+            "__resourceId": "certbank-cinepolis-cinepolis-2026-10-ai-3654d624896f",
+            "__resourceVersion": 3,
+            "__resourcePeriodId": "cinepolis-2026-10"
+          }
+        },
+        "mobileIdentity": {
+          "text": "AdministraciónAdministración",
+          "visible": false
+        },
+        "scrollWidth": 1440,
+        "innerWidth": 1440,
+        "routeSettleMs": 1206
+      }
+    },
+    "layout": {
+      "scrollWidth": 1440,
+      "innerWidth": 1440,
+      "roleIdentity": {
+        "text": "AdministraciónAdministración",
+        "visible": false
+      }
+    }
+  },
+  "shopper": null,
+  "mobile": null,
+  "adminMobile": null,
+  "shopperMobile": null,
+  "principalClaims": {
+    "admin": {
+      "role": "admin",
+      "tenantId": "tya",
+      "projectIds": [
+        "cinepolis"
+      ],
+      "shopperId": "",
+      "authNamespace": "staff",
+      "country": ""
+    },
+    "shopper": {
+      "role": "shopper",
+      "tenantId": "tya",
+      "projectIds": [
+        "cinepolis"
+      ],
+      "shopperId": "shopper_gt_1440137b73",
+      "authNamespace": "shopper",
+      "country": ""
+    }
+  },
+  "production": false,
+  "authWrites": 0,
+  "hrWrites": 0,
+  "providerWrites": 0,
+  "error": "MAPPING_FAILURE:RESOURCE_AUTHORITY_AUTHENTICATED_GET"
+}

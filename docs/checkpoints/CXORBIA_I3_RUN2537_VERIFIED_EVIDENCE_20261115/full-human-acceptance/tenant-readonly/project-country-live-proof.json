@@ -1,0 +1,909 @@
+{
+  "schemaVersion": "cxorbia.i3.project-country-live-proof.v1",
+  "decision": "PASS_I3_PROJECT_COUNTRY_UI_PROVIDER_RELOAD_REPLAY_CLEANUP",
+  "sourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
+  "sourceTree": "e2d2fa981282ef9736aba9fa06aa9735bf486c43",
+  "runtimeRevision": "cxorbia-live-hr-dev-00370-fl2",
+  "runtimeDigest": "sha256:396cd23f895a98606fa9ca238132a5515065c07fec632cd73c00cc2e6d6c639e",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/d3634e619b4ea61e",
+  "runId": "43772983839",
+  "runAttempt": "1",
+  "production": false,
+  "hrWrites": 0,
+  "authWrites": 0,
+  "paymentWrites": 0,
+  "projectId": "prj-369e6d061c9dc27ed725",
+  "periodId": "setup-i3-country-43772983839-1",
+  "syntheticOnly": true,
+  "actionReal": true,
+  "providerAck": true,
+  "durableReadback": true,
+  "reloadProof": true,
+  "noDuplicateRegression": true,
+  "cleanupVerified": true,
+  "samePrincipal": true,
+  "commercialProjectUnchanged": true,
+  "steps": [
+    {
+      "label": "add-country",
+      "uiAction": true,
+      "providerAck": true,
+      "durableReadback": true,
+      "pageReload": true,
+      "idempotentReplay": true,
+      "providerWritesOnReplay": 0,
+      "countries": [
+        "GT",
+        "HN"
+      ],
+      "version": 2,
+      "commandDigest": "c9f68ddc8763778a1dbefff5a20e6395f82d82a76f0e3fb5698a216644faa087"
+    },
+    {
+      "label": "remove-country",
+      "uiAction": true,
+      "providerAck": true,
+      "durableReadback": true,
+      "pageReload": true,
+      "idempotentReplay": true,
+      "providerWritesOnReplay": 0,
+      "countries": [
+        "GT"
+      ],
+      "version": 3,
+      "commandDigest": "0dd45f0dbe9f33f678003d8f736708cdf2b184d191be56191773fddbe50e8aaa"
+    }
+  ],
+  "cleanup": {
+    "decision": "PASS_OWNED_FIXTURE_CLEANUP",
+    "before": [
+      {
+        "path": "tenants/tya/projects/prj-369e6d061c9dc27ed725",
+        "data": {
+          "periodId": "setup-i3-country-43772983839-1",
+          "name": "I3 QA Countries 43772983839 1 90c45452a6",
+          "initialPeriodId": "setup-i3-country-43772983839-1",
+          "status": "draft",
+          "qaOnly": true,
+          "qaRunId": "43772983839",
+          "qaRunAttempt": "1",
+          "operationalSource": {
+            "mode": "internal",
+            "providerType": "internal_firestore",
+            "readPolicy": "internal_live",
+            "writePolicy": "platform_only",
+            "mappingRef": "internal-native-mapping"
+          },
+          "modelo": "unconfigured",
+          "billingModel": "project_configuration_required",
+          "projectModel": "unconfigured",
+          "localBilling": null,
+          "royaltyApplicable": false,
+          "regalias": 0,
+          "compensationModel": "project_configuration_required",
+          "financialModelReviewRequired": true,
+          "financialModelNote": "Modelo financiero pendiente de configuración; no se calculan ingresos, regalías ni margen.",
+          "financialModelContractVersion": "cxorbia.project-financial-model.v1",
+          "financialModelNormalizedAt": "2026-11-15T23:10:15.346Z",
+          "id": "prj-369e6d061c9dc27ed725",
+          "projectId": "prj-369e6d061c9dc27ed725",
+          "tenantId": "tya",
+          "normalizedName": "i3 qa countries 43772983839 1 90c45452a6",
+          "createdAt": "2026-11-15T23:10:15.642Z",
+          "createdBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+          "updatedBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+          "currency": {
+            "GT": "Q",
+            "HN": "L"
+          },
+          "countries": [
+            "GT"
+          ],
+          "version": 3,
+          "updatedAt": "2026-11-15T23:10:22.578Z"
+        },
+        "updateTime": {
+          "seconds": 1794784222,
+          "nanoseconds": 614573000
+        }
+      },
+      {
+        "path": "tenants/tya/commandReceipts/bc7ebfd76d8e931eb1534818d3a974fe5de0928c",
+        "data": {
+          "status": "committed",
+          "commandDigest": "0dd45f0dbe9f33f678003d8f736708cdf2b184d191be56191773fddbe50e8aaa",
+          "projectId": "prj-369e6d061c9dc27ed725",
+          "periodId": "setup-i3-country-43772983839-1",
+          "entityVersion": 3,
+          "commandType": "project.update",
+          "providerAck": true,
+          "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+          "updatedAt": "2026-11-15T23:10:22.578Z"
+        },
+        "updateTime": {
+          "seconds": 1794784222,
+          "nanoseconds": 614573000
+        }
+      },
+      {
+        "path": "tenants/tya/entityAuditTrail/project-742f3236eb5dfa0afc8ead1dec4a9604",
+        "data": {
+          "tenantId": "tya",
+          "projectId": "prj-369e6d061c9dc27ed725",
+          "periodId": "setup-i3-country-43772983839-1",
+          "entityType": "project",
+          "entityId": "prj-369e6d061c9dc27ed725",
+          "commandType": "project.update",
+          "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+          "actorRole": "super",
+          "idempotencyKey": "project.update:1q3qiky",
+          "createdAt": "2026-11-15T23:10:22.578Z"
+        },
+        "updateTime": {
+          "seconds": 1794784222,
+          "nanoseconds": 614573000
+        }
+      },
+      {
+        "path": "tenants/tya/commandReceipts/b197ccf0adf7fd4fbca854a92c76b57982e0d185",
+        "data": {
+          "status": "committed",
+          "commandDigest": "c9f68ddc8763778a1dbefff5a20e6395f82d82a76f0e3fb5698a216644faa087",
+          "projectId": "prj-369e6d061c9dc27ed725",
+          "periodId": "setup-i3-country-43772983839-1",
+          "entityVersion": 2,
+          "commandType": "project.update",
+          "providerAck": true,
+          "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+          "updatedAt": "2026-11-15T23:10:18.522Z"
+        },
+        "updateTime": {
+          "seconds": 1794784218,
+          "nanoseconds": 575435000
+        }
+      },
+      {
+        "path": "tenants/tya/entityAuditTrail/project-620a38edd9f6222ec9dc60bc987bcce0",
+        "data": {
+          "tenantId": "tya",
+          "projectId": "prj-369e6d061c9dc27ed725",
+          "periodId": "setup-i3-country-43772983839-1",
+          "entityType": "project",
+          "entityId": "prj-369e6d061c9dc27ed725",
+          "commandType": "project.update",
+          "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+          "actorRole": "super",
+          "idempotencyKey": "project.update:1rrtmcc",
+          "createdAt": "2026-11-15T23:10:18.522Z"
+        },
+        "updateTime": {
+          "seconds": 1794784218,
+          "nanoseconds": 575435000
+        }
+      },
+      {
+        "path": "tenants/tya/commandReceipts/683a96559c6149460ba48912d04f6ba14b984d2d",
+        "data": {
+          "status": "committed",
+          "commandDigest": "d2cc4741d69830216a3594cfce27e228138f9ed5f906b96632aa3785d67cf8a3",
+          "projectId": "prj-369e6d061c9dc27ed725",
+          "periodId": "setup-i3-country-43772983839-1",
+          "entityVersion": 1,
+          "commandType": "project.create",
+          "providerAck": true,
+          "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+          "updatedAt": "2026-11-15T23:10:15.642Z"
+        },
+        "updateTime": {
+          "seconds": 1794784215,
+          "nanoseconds": 689523000
+        }
+      },
+      {
+        "path": "tenants/tya/entityAuditTrail/project-9d7a5eece997e5a9797cce9d858704c3",
+        "data": {
+          "tenantId": "tya",
+          "projectId": "prj-369e6d061c9dc27ed725",
+          "periodId": "setup-i3-country-43772983839-1",
+          "entityType": "project",
+          "entityId": "prj-369e6d061c9dc27ed725",
+          "commandType": "project.create",
+          "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+          "actorRole": "super",
+          "idempotencyKey": "project.create:1g0fukg",
+          "createdAt": "2026-11-15T23:10:15.643Z"
+        },
+        "updateTime": {
+          "seconds": 1794784215,
+          "nanoseconds": 689523000
+        }
+      }
+    ],
+    "deleted": 7,
+    "remaining": 0
+  },
+  "catalog": [
+    {
+      "code": "GT",
+      "currency": "Q"
+    },
+    {
+      "code": "HN",
+      "currency": "L"
+    }
+  ],
+  "returnedToCommercialProject": true,
+  "handlerErrors": [],
+  "commands": [
+    {
+      "commandType": "project.create",
+      "commandDigest": "d2cc4741d69830216a3594cfce27e228138f9ed5f906b96632aa3785d67cf8a3",
+      "idempotencyKey": "project.create:1g0fukg",
+      "command": {
+        "version": "cxorbia-command-adapter-v1",
+        "commandType": "project.create",
+        "entityType": "project",
+        "entityId": null,
+        "tenantId": "tya",
+        "projectId": null,
+        "periodId": "setup-i3-country-43772983839-1",
+        "requireProject": false,
+        "requirePeriod": true,
+        "actor": {
+          "actorId": "authenticated-user",
+          "role": "super",
+          "projectIds": [
+            "cinepolis"
+          ],
+          "shopperId": null
+        },
+        "expectedVersion": "absent",
+        "idempotencyKey": "project.create:1g0fukg",
+        "payload": {
+          "periodId": "setup-i3-country-43772983839-1",
+          "name": "I3 QA Countries 43772983839 1 90c45452a6",
+          "countries": [
+            "GT"
+          ],
+          "currency": {
+            "GT": "Q"
+          },
+          "initialPeriodId": "setup-i3-country-43772983839-1",
+          "status": "draft",
+          "qaOnly": true,
+          "qaRunId": "43772983839",
+          "qaRunAttempt": "1",
+          "operationalSource": {
+            "mode": "internal",
+            "providerType": "internal_firestore",
+            "readPolicy": "internal_live",
+            "writePolicy": "platform_only",
+            "mappingRef": "internal-native-mapping"
+          },
+          "modelo": "unconfigured",
+          "billingModel": "project_configuration_required",
+          "projectModel": "unconfigured",
+          "localBilling": null,
+          "royaltyApplicable": false,
+          "regalias": 0,
+          "compensationModel": "project_configuration_required",
+          "financialModelReviewRequired": true,
+          "financialModelNote": "Modelo financiero pendiente de configuración; no se calculan ingresos, regalías ni margen.",
+          "financialModelContractVersion": "cxorbia.project-financial-model.v1",
+          "financialModelNormalizedAt": "2026-11-15T23:10:15.346Z"
+        },
+        "source": "cx.data",
+        "requestedAt": null,
+        "authorization": {
+          "providerEnforcementRequired": true,
+          "permission": "project.create"
+        },
+        "audit": {
+          "reason": "i3-country-proof",
+          "correlationId": "project.create:1g0fukg",
+          "clientVersion": null
+        }
+      },
+      "paths": {
+        "receipt": "tenants/tya/commandReceipts/683a96559c6149460ba48912d04f6ba14b984d2d",
+        "audit": "tenants/tya/entityAuditTrail/project-9d7a5eece997e5a9797cce9d858704c3"
+      },
+      "sent": true,
+      "ack": {
+        "ok": true,
+        "status": "committed",
+        "committed": true,
+        "providerAck": true,
+        "successUiAllowed": true,
+        "localMutation": false,
+        "localStorageWrite": false,
+        "tenantId": "tya",
+        "projectId": "prj-369e6d061c9dc27ed725",
+        "periodId": "setup-i3-country-43772983839-1",
+        "commandType": "project.create",
+        "idempotencyKey": "project.create:1g0fukg",
+        "entityVersion": 1,
+        "entityReadback": {
+          "id": "prj-369e6d061c9dc27ed725",
+          "periodId": "setup-i3-country-43772983839-1",
+          "name": "I3 QA Countries 43772983839 1 90c45452a6",
+          "countries": [
+            "GT"
+          ],
+          "currency": {
+            "GT": "Q"
+          },
+          "initialPeriodId": "setup-i3-country-43772983839-1",
+          "status": "draft",
+          "qaOnly": true,
+          "qaRunId": "43772983839",
+          "qaRunAttempt": "1",
+          "operationalSource": {
+            "mode": "internal",
+            "providerType": "internal_firestore",
+            "readPolicy": "internal_live",
+            "writePolicy": "platform_only",
+            "mappingRef": "internal-native-mapping"
+          },
+          "modelo": "unconfigured",
+          "billingModel": "project_configuration_required",
+          "projectModel": "unconfigured",
+          "localBilling": null,
+          "royaltyApplicable": false,
+          "regalias": 0,
+          "compensationModel": "project_configuration_required",
+          "financialModelReviewRequired": true,
+          "financialModelNote": "Modelo financiero pendiente de configuración; no se calculan ingresos, regalías ni margen.",
+          "financialModelContractVersion": "cxorbia.project-financial-model.v1",
+          "financialModelNormalizedAt": "2026-11-15T23:10:15.346Z",
+          "projectId": "prj-369e6d061c9dc27ed725",
+          "tenantId": "tya",
+          "normalizedName": "i3 qa countries 43772983839 1 90c45452a6",
+          "version": 1,
+          "createdAt": "2026-11-15T23:10:15.642Z",
+          "createdBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+          "updatedAt": "2026-11-15T23:10:15.642Z",
+          "updatedBy": "tya-usr-bf5f1f5b2c873b016622d65d"
+        },
+        "readbackVerified": true,
+        "idempotentReplay": false,
+        "providerWrites": 3,
+        "warnings": []
+      },
+      "readback": {
+        "project": {
+          "path": "tenants/tya/projects/prj-369e6d061c9dc27ed725",
+          "data": {
+            "periodId": "setup-i3-country-43772983839-1",
+            "name": "I3 QA Countries 43772983839 1 90c45452a6",
+            "countries": [
+              "GT"
+            ],
+            "currency": {
+              "GT": "Q"
+            },
+            "initialPeriodId": "setup-i3-country-43772983839-1",
+            "status": "draft",
+            "qaOnly": true,
+            "qaRunId": "43772983839",
+            "qaRunAttempt": "1",
+            "operationalSource": {
+              "mode": "internal",
+              "providerType": "internal_firestore",
+              "readPolicy": "internal_live",
+              "writePolicy": "platform_only",
+              "mappingRef": "internal-native-mapping"
+            },
+            "modelo": "unconfigured",
+            "billingModel": "project_configuration_required",
+            "projectModel": "unconfigured",
+            "localBilling": null,
+            "royaltyApplicable": false,
+            "regalias": 0,
+            "compensationModel": "project_configuration_required",
+            "financialModelReviewRequired": true,
+            "financialModelNote": "Modelo financiero pendiente de configuración; no se calculan ingresos, regalías ni margen.",
+            "financialModelContractVersion": "cxorbia.project-financial-model.v1",
+            "financialModelNormalizedAt": "2026-11-15T23:10:15.346Z",
+            "id": "prj-369e6d061c9dc27ed725",
+            "projectId": "prj-369e6d061c9dc27ed725",
+            "tenantId": "tya",
+            "normalizedName": "i3 qa countries 43772983839 1 90c45452a6",
+            "version": 1,
+            "createdAt": "2026-11-15T23:10:15.642Z",
+            "createdBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "updatedAt": "2026-11-15T23:10:15.642Z",
+            "updatedBy": "tya-usr-bf5f1f5b2c873b016622d65d"
+          },
+          "updateTime": {
+            "seconds": 1794784215,
+            "nanoseconds": 689523000
+          }
+        },
+        "receipt": {
+          "path": "tenants/tya/commandReceipts/683a96559c6149460ba48912d04f6ba14b984d2d",
+          "data": {
+            "status": "committed",
+            "commandDigest": "d2cc4741d69830216a3594cfce27e228138f9ed5f906b96632aa3785d67cf8a3",
+            "projectId": "prj-369e6d061c9dc27ed725",
+            "periodId": "setup-i3-country-43772983839-1",
+            "entityVersion": 1,
+            "commandType": "project.create",
+            "providerAck": true,
+            "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "updatedAt": "2026-11-15T23:10:15.642Z"
+          },
+          "updateTime": {
+            "seconds": 1794784215,
+            "nanoseconds": 689523000
+          }
+        },
+        "audit": {
+          "path": "tenants/tya/entityAuditTrail/project-9d7a5eece997e5a9797cce9d858704c3",
+          "data": {
+            "tenantId": "tya",
+            "projectId": "prj-369e6d061c9dc27ed725",
+            "periodId": "setup-i3-country-43772983839-1",
+            "entityType": "project",
+            "entityId": "prj-369e6d061c9dc27ed725",
+            "commandType": "project.create",
+            "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "actorRole": "super",
+            "idempotencyKey": "project.create:1g0fukg",
+            "createdAt": "2026-11-15T23:10:15.643Z"
+          },
+          "updateTime": {
+            "seconds": 1794784215,
+            "nanoseconds": 689523000
+          }
+        },
+        "validation": {
+          "pass": true,
+          "errors": []
+        }
+      },
+      "replayed": false
+    },
+    {
+      "commandType": "project.update",
+      "commandDigest": "c9f68ddc8763778a1dbefff5a20e6395f82d82a76f0e3fb5698a216644faa087",
+      "idempotencyKey": "project.update:1rrtmcc",
+      "command": {
+        "version": "cxorbia-command-adapter-v1",
+        "commandType": "project.update",
+        "entityType": "project",
+        "entityId": "prj-369e6d061c9dc27ed725",
+        "tenantId": "tya",
+        "projectId": "prj-369e6d061c9dc27ed725",
+        "periodId": "setup-i3-country-43772983839-1",
+        "requireProject": true,
+        "requirePeriod": true,
+        "actor": {
+          "actorId": "authenticated-user",
+          "role": "super",
+          "projectIds": [
+            "cinepolis"
+          ],
+          "shopperId": null
+        },
+        "expectedVersion": 1,
+        "idempotencyKey": "project.update:1rrtmcc",
+        "payload": {
+          "periodId": "setup-i3-country-43772983839-1",
+          "name": "I3 QA Countries 43772983839 1 90c45452a6",
+          "countries": [
+            "GT",
+            "HN"
+          ],
+          "currency": {
+            "GT": "Q",
+            "HN": "L"
+          },
+          "operationalSource": {
+            "mappingRef": "internal-native-mapping",
+            "writePolicy": "platform_only",
+            "providerType": "internal_firestore",
+            "mode": "internal",
+            "readPolicy": "internal_live"
+          },
+          "version": 1,
+          "status": "draft",
+          "projectId": "prj-369e6d061c9dc27ed725"
+        },
+        "source": "cx.data",
+        "requestedAt": null,
+        "authorization": {
+          "providerEnforcementRequired": true,
+          "permission": "project.update"
+        },
+        "audit": {
+          "reason": "connected-config-project-countries",
+          "correlationId": "project.update:1rrtmcc",
+          "clientVersion": null
+        }
+      },
+      "paths": {
+        "receipt": "tenants/tya/commandReceipts/b197ccf0adf7fd4fbca854a92c76b57982e0d185",
+        "audit": "tenants/tya/entityAuditTrail/project-620a38edd9f6222ec9dc60bc987bcce0"
+      },
+      "sent": true,
+      "ack": {
+        "ok": true,
+        "status": "committed",
+        "committed": true,
+        "providerAck": true,
+        "successUiAllowed": true,
+        "localMutation": false,
+        "localStorageWrite": false,
+        "tenantId": "tya",
+        "projectId": "prj-369e6d061c9dc27ed725",
+        "periodId": "setup-i3-country-43772983839-1",
+        "commandType": "project.update",
+        "idempotencyKey": "project.update:1rrtmcc",
+        "entityVersion": 2,
+        "entityReadback": {
+          "id": "prj-369e6d061c9dc27ed725",
+          "periodId": "setup-i3-country-43772983839-1",
+          "name": "I3 QA Countries 43772983839 1 90c45452a6",
+          "initialPeriodId": "setup-i3-country-43772983839-1",
+          "status": "draft",
+          "qaOnly": true,
+          "qaRunId": "43772983839",
+          "qaRunAttempt": "1",
+          "operationalSource": {
+            "mode": "internal",
+            "providerType": "internal_firestore",
+            "readPolicy": "internal_live",
+            "writePolicy": "platform_only",
+            "mappingRef": "internal-native-mapping"
+          },
+          "modelo": "unconfigured",
+          "billingModel": "project_configuration_required",
+          "projectModel": "unconfigured",
+          "localBilling": null,
+          "royaltyApplicable": false,
+          "regalias": 0,
+          "compensationModel": "project_configuration_required",
+          "financialModelReviewRequired": true,
+          "financialModelNote": "Modelo financiero pendiente de configuración; no se calculan ingresos, regalías ni margen.",
+          "financialModelContractVersion": "cxorbia.project-financial-model.v1",
+          "financialModelNormalizedAt": "2026-11-15T23:10:15.346Z",
+          "projectId": "prj-369e6d061c9dc27ed725",
+          "tenantId": "tya",
+          "normalizedName": "i3 qa countries 43772983839 1 90c45452a6",
+          "createdAt": "2026-11-15T23:10:15.642Z",
+          "createdBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+          "updatedBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+          "currency": {
+            "GT": "Q",
+            "HN": "L"
+          },
+          "countries": [
+            "GT",
+            "HN"
+          ],
+          "version": 2,
+          "updatedAt": "2026-11-15T23:10:18.522Z"
+        },
+        "readbackVerified": true,
+        "idempotentReplay": true,
+        "providerWrites": 0,
+        "warnings": []
+      },
+      "readback": {
+        "project": {
+          "path": "tenants/tya/projects/prj-369e6d061c9dc27ed725",
+          "data": {
+            "periodId": "setup-i3-country-43772983839-1",
+            "name": "I3 QA Countries 43772983839 1 90c45452a6",
+            "initialPeriodId": "setup-i3-country-43772983839-1",
+            "status": "draft",
+            "qaOnly": true,
+            "qaRunId": "43772983839",
+            "qaRunAttempt": "1",
+            "operationalSource": {
+              "mode": "internal",
+              "providerType": "internal_firestore",
+              "readPolicy": "internal_live",
+              "writePolicy": "platform_only",
+              "mappingRef": "internal-native-mapping"
+            },
+            "modelo": "unconfigured",
+            "billingModel": "project_configuration_required",
+            "projectModel": "unconfigured",
+            "localBilling": null,
+            "royaltyApplicable": false,
+            "regalias": 0,
+            "compensationModel": "project_configuration_required",
+            "financialModelReviewRequired": true,
+            "financialModelNote": "Modelo financiero pendiente de configuración; no se calculan ingresos, regalías ni margen.",
+            "financialModelContractVersion": "cxorbia.project-financial-model.v1",
+            "financialModelNormalizedAt": "2026-11-15T23:10:15.346Z",
+            "id": "prj-369e6d061c9dc27ed725",
+            "projectId": "prj-369e6d061c9dc27ed725",
+            "tenantId": "tya",
+            "normalizedName": "i3 qa countries 43772983839 1 90c45452a6",
+            "createdAt": "2026-11-15T23:10:15.642Z",
+            "createdBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "updatedBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "currency": {
+              "GT": "Q",
+              "HN": "L"
+            },
+            "countries": [
+              "GT",
+              "HN"
+            ],
+            "version": 2,
+            "updatedAt": "2026-11-15T23:10:18.522Z"
+          },
+          "updateTime": {
+            "seconds": 1794784218,
+            "nanoseconds": 575435000
+          }
+        },
+        "receipt": {
+          "path": "tenants/tya/commandReceipts/b197ccf0adf7fd4fbca854a92c76b57982e0d185",
+          "data": {
+            "status": "committed",
+            "commandDigest": "c9f68ddc8763778a1dbefff5a20e6395f82d82a76f0e3fb5698a216644faa087",
+            "projectId": "prj-369e6d061c9dc27ed725",
+            "periodId": "setup-i3-country-43772983839-1",
+            "entityVersion": 2,
+            "commandType": "project.update",
+            "providerAck": true,
+            "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "updatedAt": "2026-11-15T23:10:18.522Z"
+          },
+          "updateTime": {
+            "seconds": 1794784218,
+            "nanoseconds": 575435000
+          }
+        },
+        "audit": {
+          "path": "tenants/tya/entityAuditTrail/project-620a38edd9f6222ec9dc60bc987bcce0",
+          "data": {
+            "tenantId": "tya",
+            "projectId": "prj-369e6d061c9dc27ed725",
+            "periodId": "setup-i3-country-43772983839-1",
+            "entityType": "project",
+            "entityId": "prj-369e6d061c9dc27ed725",
+            "commandType": "project.update",
+            "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "actorRole": "super",
+            "idempotencyKey": "project.update:1rrtmcc",
+            "createdAt": "2026-11-15T23:10:18.522Z"
+          },
+          "updateTime": {
+            "seconds": 1794784218,
+            "nanoseconds": 575435000
+          }
+        },
+        "validation": {
+          "pass": true,
+          "errors": []
+        }
+      },
+      "replayed": true
+    },
+    {
+      "commandType": "project.update",
+      "commandDigest": "0dd45f0dbe9f33f678003d8f736708cdf2b184d191be56191773fddbe50e8aaa",
+      "idempotencyKey": "project.update:1q3qiky",
+      "command": {
+        "version": "cxorbia-command-adapter-v1",
+        "commandType": "project.update",
+        "entityType": "project",
+        "entityId": "prj-369e6d061c9dc27ed725",
+        "tenantId": "tya",
+        "projectId": "prj-369e6d061c9dc27ed725",
+        "periodId": "setup-i3-country-43772983839-1",
+        "requireProject": true,
+        "requirePeriod": true,
+        "actor": {
+          "actorId": "authenticated-user",
+          "role": "super",
+          "projectIds": [
+            "cinepolis"
+          ],
+          "shopperId": null
+        },
+        "expectedVersion": 2,
+        "idempotencyKey": "project.update:1q3qiky",
+        "payload": {
+          "periodId": "setup-i3-country-43772983839-1",
+          "name": "I3 QA Countries 43772983839 1 90c45452a6",
+          "countries": [
+            "GT"
+          ],
+          "currency": {
+            "GT": "Q",
+            "HN": "L"
+          },
+          "operationalSource": {
+            "readPolicy": "internal_live",
+            "writePolicy": "platform_only",
+            "mode": "internal",
+            "providerType": "internal_firestore",
+            "mappingRef": "internal-native-mapping"
+          },
+          "version": 2,
+          "status": "draft",
+          "projectId": "prj-369e6d061c9dc27ed725"
+        },
+        "source": "cx.data",
+        "requestedAt": null,
+        "authorization": {
+          "providerEnforcementRequired": true,
+          "permission": "project.update"
+        },
+        "audit": {
+          "reason": "connected-config-project-countries",
+          "correlationId": "project.update:1q3qiky",
+          "clientVersion": null
+        }
+      },
+      "paths": {
+        "receipt": "tenants/tya/commandReceipts/bc7ebfd76d8e931eb1534818d3a974fe5de0928c",
+        "audit": "tenants/tya/entityAuditTrail/project-742f3236eb5dfa0afc8ead1dec4a9604"
+      },
+      "sent": true,
+      "ack": {
+        "ok": true,
+        "status": "committed",
+        "committed": true,
+        "providerAck": true,
+        "successUiAllowed": true,
+        "localMutation": false,
+        "localStorageWrite": false,
+        "tenantId": "tya",
+        "projectId": "prj-369e6d061c9dc27ed725",
+        "periodId": "setup-i3-country-43772983839-1",
+        "commandType": "project.update",
+        "idempotencyKey": "project.update:1q3qiky",
+        "entityVersion": 3,
+        "entityReadback": {
+          "id": "prj-369e6d061c9dc27ed725",
+          "periodId": "setup-i3-country-43772983839-1",
+          "name": "I3 QA Countries 43772983839 1 90c45452a6",
+          "initialPeriodId": "setup-i3-country-43772983839-1",
+          "status": "draft",
+          "qaOnly": true,
+          "qaRunId": "43772983839",
+          "qaRunAttempt": "1",
+          "operationalSource": {
+            "mode": "internal",
+            "providerType": "internal_firestore",
+            "readPolicy": "internal_live",
+            "writePolicy": "platform_only",
+            "mappingRef": "internal-native-mapping"
+          },
+          "modelo": "unconfigured",
+          "billingModel": "project_configuration_required",
+          "projectModel": "unconfigured",
+          "localBilling": null,
+          "royaltyApplicable": false,
+          "regalias": 0,
+          "compensationModel": "project_configuration_required",
+          "financialModelReviewRequired": true,
+          "financialModelNote": "Modelo financiero pendiente de configuración; no se calculan ingresos, regalías ni margen.",
+          "financialModelContractVersion": "cxorbia.project-financial-model.v1",
+          "financialModelNormalizedAt": "2026-11-15T23:10:15.346Z",
+          "projectId": "prj-369e6d061c9dc27ed725",
+          "tenantId": "tya",
+          "normalizedName": "i3 qa countries 43772983839 1 90c45452a6",
+          "createdAt": "2026-11-15T23:10:15.642Z",
+          "createdBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+          "updatedBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+          "currency": {
+            "GT": "Q",
+            "HN": "L"
+          },
+          "countries": [
+            "GT"
+          ],
+          "version": 3,
+          "updatedAt": "2026-11-15T23:10:22.578Z"
+        },
+        "readbackVerified": true,
+        "idempotentReplay": true,
+        "providerWrites": 0,
+        "warnings": []
+      },
+      "readback": {
+        "project": {
+          "path": "tenants/tya/projects/prj-369e6d061c9dc27ed725",
+          "data": {
+            "periodId": "setup-i3-country-43772983839-1",
+            "name": "I3 QA Countries 43772983839 1 90c45452a6",
+            "initialPeriodId": "setup-i3-country-43772983839-1",
+            "status": "draft",
+            "qaOnly": true,
+            "qaRunId": "43772983839",
+            "qaRunAttempt": "1",
+            "operationalSource": {
+              "mode": "internal",
+              "providerType": "internal_firestore",
+              "readPolicy": "internal_live",
+              "writePolicy": "platform_only",
+              "mappingRef": "internal-native-mapping"
+            },
+            "modelo": "unconfigured",
+            "billingModel": "project_configuration_required",
+            "projectModel": "unconfigured",
+            "localBilling": null,
+            "royaltyApplicable": false,
+            "regalias": 0,
+            "compensationModel": "project_configuration_required",
+            "financialModelReviewRequired": true,
+            "financialModelNote": "Modelo financiero pendiente de configuración; no se calculan ingresos, regalías ni margen.",
+            "financialModelContractVersion": "cxorbia.project-financial-model.v1",
+            "financialModelNormalizedAt": "2026-11-15T23:10:15.346Z",
+            "id": "prj-369e6d061c9dc27ed725",
+            "projectId": "prj-369e6d061c9dc27ed725",
+            "tenantId": "tya",
+            "normalizedName": "i3 qa countries 43772983839 1 90c45452a6",
+            "createdAt": "2026-11-15T23:10:15.642Z",
+            "createdBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "updatedBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "currency": {
+              "GT": "Q",
+              "HN": "L"
+            },
+            "countries": [
+              "GT"
+            ],
+            "version": 3,
+            "updatedAt": "2026-11-15T23:10:22.578Z"
+          },
+          "updateTime": {
+            "seconds": 1794784222,
+            "nanoseconds": 614573000
+          }
+        },
+        "receipt": {
+          "path": "tenants/tya/commandReceipts/bc7ebfd76d8e931eb1534818d3a974fe5de0928c",
+          "data": {
+            "status": "committed",
+            "commandDigest": "0dd45f0dbe9f33f678003d8f736708cdf2b184d191be56191773fddbe50e8aaa",
+            "projectId": "prj-369e6d061c9dc27ed725",
+            "periodId": "setup-i3-country-43772983839-1",
+            "entityVersion": 3,
+            "commandType": "project.update",
+            "providerAck": true,
+            "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "updatedAt": "2026-11-15T23:10:22.578Z"
+          },
+          "updateTime": {
+            "seconds": 1794784222,
+            "nanoseconds": 614573000
+          }
+        },
+        "audit": {
+          "path": "tenants/tya/entityAuditTrail/project-742f3236eb5dfa0afc8ead1dec4a9604",
+          "data": {
+            "tenantId": "tya",
+            "projectId": "prj-369e6d061c9dc27ed725",
+            "periodId": "setup-i3-country-43772983839-1",
+            "entityType": "project",
+            "entityId": "prj-369e6d061c9dc27ed725",
+            "commandType": "project.update",
+            "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "actorRole": "super",
+            "idempotencyKey": "project.update:1q3qiky",
+            "createdAt": "2026-11-15T23:10:22.578Z"
+          },
+          "updateTime": {
+            "seconds": 1794784222,
+            "nanoseconds": 614573000
+          }
+        },
+        "validation": {
+          "pass": true,
+          "errors": []
+        }
+      },
+      "replayed": true
+    }
+  ]
+}

@@ -1,0 +1,200 @@
+{
+  "schemaVersion": "cxorbia.i3.p0.source-proof.v1",
+  "decision": "PASS_I3_F09_AND_PROTECTED_API_SOURCE_QA_NOT_DEV_CERTIFICATION",
+  "generatedAt": "2026-11-15T23:56:58.368552+00:00",
+  "sourceSha": "c54cdc8846642f2d5481e1b933ca5e5cc6c44c22",
+  "sourceTree": "a5dbf676882730ac62b32be08537c5464577243f",
+  "predecessorProductSourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
+  "sourceTestsPass": 256,
+  "sourceTestsFail": 0,
+  "registeredOwnerCount": 19,
+  "allowedProductFiles": [
+    "app/modules/cliente-insights.js",
+    "app/adapters/cxorbia-command-adapter-v1.js",
+    "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+    "app/core/backend-bulletins.js",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+    "app/sw.js",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+    "backend/runtime/hr-live-service/server.mjs"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs",
+    "tools/qa/cxorbia-i3-d07-sw-pdf-cross-origin.test.mjs",
+    "tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs",
+    "tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs",
+    "tools/qa/cxorbia-i3-shock-continuity-guard.mjs",
+    "tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs",
+    "tools/qa/cxorbia-i3-source-qa-evidence.mjs",
+    "tools/qa/cxorbia-i3-source-qa-evidence.test.mjs",
+    "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs",
+    "tools/qa/cxorbia-i3-client-collaboration-ui.test.mjs"
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_F09_PROTECTED_READ_PACKAGE_SCOPE_20261115.json",
+  "scopeReceiptBlob": "6db22c34297a079e7348903ff4fc83608dafeb61",
+  "authorizedScopes": [
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_F09_DURABLE_CLIENT_COLLABORATION_P0_SCOPE_20261115.json",
+      "gitBlob": "d54577ece0b31e1fa15ecdbadecb897aa95f05a9"
+    },
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_AUTHENTICATED_API_SW_CACHE_P0_SCOPE_20261115.json",
+      "gitBlob": "6f34d7a57833ec05b971dfd001423c238013cf03"
+    },
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_F09_CANONICAL_HR_PERIOD_AUTHORITY_SCOPE_20261115.json",
+      "gitBlob": "34cde1d97c7cd88d8a6ba9a6e13b155b106cdb14"
+    }
+  ],
+  "findings": [
+    {
+      "id": "VRM-346",
+      "priority": "P0_PROVEN",
+      "classification": "PERSISTENCE_FAILURE",
+      "owner": [
+        "app/modules/cliente-insights.js",
+        "app/adapters/cxorbia-command-adapter-v1.js",
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+        "app/core/backend-bulletins.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+        "backend/runtime/hr-live-service/server.mjs"
+      ]
+    },
+    {
+      "id": "VRM-347",
+      "priority": "P0_PROVEN",
+      "classification": "PERSISTENCE_FAILURE",
+      "owner": [
+        "app/sw.js"
+      ]
+    }
+  ],
+  "testEvidence": {
+    "existing-operation-regression.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_F09_PROTECTED_READ_SOURCE_QA_20261115/existing-operation-regression.tap",
+      "gitBlob": "5838662c6ab9bba7b394aa037e07c38f91b20903",
+      "sha256": "c18399285fb8c8c2c43870cf1d4c9aac2059784625707016443e3c670cc2b3bd"
+    },
+    "sw-before.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_F09_PROTECTED_READ_SOURCE_QA_20261115/sw-before.tap",
+      "gitBlob": "903e83827dcc4eb681ea2120c60ccd0808d7e19f",
+      "sha256": "54dc05820fd34da06dfde59bd13af75f983d2b0ba55f395edb294566e4434eb1"
+    },
+    "source-registry.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_F09_PROTECTED_READ_SOURCE_QA_20261115/source-registry.tap",
+      "gitBlob": "f502024c4f728f610a3f927af34cd76a79e0c020",
+      "sha256": "ac57a493365d6c4d40e869cfa0ef11dd41bf72d71c08139b55e564b778945690"
+    },
+    "f09-period-after.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_F09_PROTECTED_READ_SOURCE_QA_20261115/f09-period-after.tap",
+      "gitBlob": "398d0adc9458f62d001dce712cbdd00b8577597e",
+      "sha256": "9752127931614b3a7ababc6cc4be6f581a6d914ece313bc788bb275f954051f7"
+    },
+    "f09-authority-regressions.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_F09_PROTECTED_READ_SOURCE_QA_20261115/f09-authority-regressions.tap",
+      "gitBlob": "265bd58094eedc0a45d5d5c83dd29758bbb5b877",
+      "sha256": "ab14b1f75d944a3ce255f251680db8373e93d081242eecfd3c108f1aee0e6784"
+    },
+    "sw-before-reproduction.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_F09_PROTECTED_READ_SOURCE_QA_20261115/sw-before-reproduction.json",
+      "gitBlob": "c507696f359b8f7ad82b8ed57fa9cbfd82b6f942",
+      "sha256": "d2db750ce5ee40e0dd91098ea6f5daed1c63cc20c8d8d06a0700d52b922497d5"
+    },
+    "sw-after.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_F09_PROTECTED_READ_SOURCE_QA_20261115/sw-after.tap",
+      "gitBlob": "d8f6ae5055d7e1f1fb3f6b8e7ab92d28bd7475a6",
+      "sha256": "341655e3c2d8264320a10c83b3517e2450e213cb1421258eb3def685e2168da0"
+    },
+    "controls.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_F09_PROTECTED_READ_SOURCE_QA_20261115/controls.tap",
+      "gitBlob": "bdcc33c7cc5ae1209f193041b3bf6b60958df7a0",
+      "sha256": "8ff98aee8a60f76c2a9522867720e290fad15dc4bf7e6fdf04da8ed46ee6b6bf"
+    },
+    "f09-after.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_F09_PROTECTED_READ_SOURCE_QA_20261115/f09-after.tap",
+      "gitBlob": "a2371f43cbf50be2cb5ed8d40fa1b9be053eca27",
+      "sha256": "9a5570540068e5c84951a6f417c5842438ac7a47288a6965c42d7fdd76e98e47"
+    },
+    "f09-source-registry-v2.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_F09_PROTECTED_READ_SOURCE_QA_20261115/f09-source-registry-v2.tap",
+      "gitBlob": "13b4b5eee66428e5301e008b2e2f178c1f094ff5",
+      "sha256": "4a93aa8f8d27c2b4ba48ebafd3e3044c6c0a8fb5cabc523ed2d51c4d3e525a35"
+    },
+    "f09-before.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_F09_PROTECTED_READ_SOURCE_QA_20261115/f09-before.tap",
+      "gitBlob": "6f9ad855349a0361aae2dc7e46841f74e0ed9134",
+      "sha256": "d8d649b84daae90ccb4c40c63e2f4606b2da830b14ea52afbc12cb5a19c66ad5"
+    },
+    "f09-registry19-controls.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_F09_PROTECTED_READ_SOURCE_QA_20261115/f09-registry19-controls.tap",
+      "gitBlob": "426d57414265c9bc3ec63b499098386de8d3fac6",
+      "sha256": "46fb22046916917bb45775fbed851466960214fad9fff6f103f4793ffd24061e"
+    },
+    "shock-transition.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_F09_PROTECTED_READ_SOURCE_QA_20261115/shock-transition.tap",
+      "gitBlob": "dea20181bd44ec84f49b62863cc112a4f3424f8e",
+      "sha256": "56cb4cb1c6b3908b97f6e0d1216939e95effafcd2ce17e66a5a2b85a8db374f8"
+    },
+    "f09-period-before.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_F09_PROTECTED_READ_SOURCE_QA_20261115/f09-period-before.tap",
+      "gitBlob": "8fc655e843615bb39630734919e816c64b8c1591",
+      "sha256": "40540d4856dde5a66280e71ffd9dcdc0610a17d523ca28249dc232417251467b"
+    },
+    "regressions.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_F09_PROTECTED_READ_SOURCE_QA_20261115/regressions.tap",
+      "gitBlob": "3588dff3a2804cbebf6ba3d1fbe6efed8a3e3ac3",
+      "sha256": "15923d845376077db40b7da8826974664e91db784f82367db0824623ea4b8bb2"
+    }
+  },
+  "registeredSourceStats": {
+    "tests": 256,
+    "pass": 256,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0
+  },
+  "f09InitialBefore": {
+    "pass": 28,
+    "fail": 15,
+    "tests": 43
+  },
+  "f09FinalAfter": {
+    "pass": 80,
+    "fail": 0
+  },
+  "swBefore": {
+    "pass": 2,
+    "fail": 5
+  },
+  "swAfter": {
+    "pass": 8,
+    "fail": 0
+  },
+  "countsAreNotAdditive": true,
+  "productOwnerBlobs": {
+    "app/modules/cliente-insights.js": "f0f5f278117738eae1bf19453c144c95c536a341",
+    "app/adapters/cxorbia-command-adapter-v1.js": "d9c222e81c7e1cbae7dbcc817e67dc4a4c6b084e",
+    "app/adapters/cxorbia-cxdata-command-boundary-v1.js": "f4d4e19f3f6bb1087f21a0d4a04c623b93d8be74",
+    "app/core/backend-bulletins.js": "d3da9eb27deda9779057705dc31cee6f9a193cc7",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs": "913a6d98df276f582aa69152a3bfaa1e5b02c77b",
+    "app/sw.js": "5dc022b3dd08ba1a3eba701ddd8ec77776b45d9e",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs": "332dac08d6c7e33d6297f0fbd75dc02084ffe199",
+    "backend/runtime/hr-live-service/server.mjs": "b871735de6fbb547deb0e2595f81a69e2a7e5aa3"
+  },
+  "requiredLiveProof": "Exact paired runtime+Hosting, same HR revision; real Client UI NPS/note/meeting ACK/readback/lostACK replay/new-session privacy/Admin visibility/cleanup; authenticated resource focal; same-source C3 and PRE fixtures.",
+  "devPublished": false,
+  "production": false,
+  "hrWrites": 0,
+  "realPeriodWrites": 0,
+  "humanPassesPreserved": [
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ]
+}
