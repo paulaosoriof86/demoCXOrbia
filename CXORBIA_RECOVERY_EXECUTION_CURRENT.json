@@ -266,7 +266,7 @@
     "sourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
     "sourceTree": "e2d2fa981282ef9736aba9fa06aa9735bf486c43",
     "devRuntime": "cxorbia-live-hr-dev-00370-fl2",
-    "devHosting": "sites/cxorbia-backend-dev/versions/736c0fcb6a02171c",
+    "devHosting": "sites/cxorbia-backend-dev/versions/d3634e619b4ea61e",
     "lastNewProofs": [
       {
         "block": "B3",
@@ -656,7 +656,7 @@
       "E04",
       "F09"
     ],
-    "immediateAction": "I3-Q3: publish single source 90c45452a6bba0d2498c3cf792aa21c49219f0ac through existing Hosting-only DEV lane; verify24 served assets and unchanged runtime/production, consume exact ACK, then same-source C3 plus internal-country full UI lifecycle, authenticated resource focal and PRE-certification isolated fixtures. Preserve B4-B7 and ten scoped historical closures; complete only residual Q3/Q4/Q5 clauses before strict21, G20/G21 and immutable I4.",
+    "immediateAction": "I3-Q3: execute same-source C3 and authenticated functional lane for source 90c45452a6bba0d2498c3cf792aa21c49219f0ac on Hosting sites/cxorbia-backend-dev/versions/d3634e619b4ea61e. Complete internal-country add/remove UI ACK/readback/reload/replay/cleanup, authenticated safe Shopper resource parity and PRE-certification isolated fixtures. Preserve B4-B7,focalB3,ten scoped historical closures and four strictMATCH. Consume each complete domain monotonically; finish exact Q3/Q4/Q5 residuals before21/21,G20/G21 and immutableI4.",
     "noProduction": true,
     "latestFunctionalReadback": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2534_HUMAN_PASS_COUNTRY_REFRESH_FOCAL_HOLD_20261115.json",
@@ -678,17 +678,17 @@
       "fullPhaseAClosed": false
     },
     "currentHostingOnlySource": {
-      "receiptPath": "docs/checkpoints/CXORBIA_I3_INTERNAL_COUNTRY_HOSTING_DEV_RUN2533_ACK_20261115.json",
-      "receiptBlob": "a3b474ff04cf9cfe8d647a13cbbde85e3c5e9a4e",
-      "sourceSha": "e20b5a67057be2419750bbb5363df37af1089813",
-      "sourceTree": "15b61305d615c4ad348ab7018a306eb3312c99bf",
-      "runId": 43768008736,
-      "runNumber": 2533,
-      "hostingVersion": "sites/cxorbia-backend-dev/versions/736c0fcb6a02171c",
-      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794780861943000",
+      "receiptPath": "docs/checkpoints/CXORBIA_I3_INTERNAL_REFRESH_HOSTING_DEV_RUN2536_ACK_20261115.json",
+      "receiptBlob": "6e1ea5a74fad6a8053960ca161914e127ba9e399",
+      "sourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
+      "sourceTree": "e2d2fa981282ef9736aba9fa06aa9735bf486c43",
+      "runId": 43772550952,
+      "runNumber": 2536,
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/d3634e619b4ea61e",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794783814133000",
       "runtimeRevision": "cxorbia-live-hr-dev-00370-fl2",
       "runtimeDigest": "sha256:396cd23f895a98606fa9ca238132a5515065c07fec632cd73c00cc2e6d6c639e",
-      "verifiedServedAssetCount": 23,
+      "verifiedServedAssetCount": 24,
       "cloudRunDeploys": 0,
       "firestoreRulesDeploys": 0,
       "productionChanged": false
@@ -1086,7 +1086,7 @@
     "evolution": 6
   },
   "historicalNextExactActionPreS1": "S1 read-only reason/alias cohort classification, implement legacy-compatible deterministic normalizer in provider owner and bridge, run bounded GT/HN/history/Auth fixtures. Existing DEV serial materialization only after source QA; verify Stiven/Julissa Shopper role post-fix.",
-  "nextExactAction": "I3-Q3: publish single source 90c45452a6bba0d2498c3cf792aa21c49219f0ac through existing Hosting-only DEV lane; verify24 served assets and unchanged runtime/production, consume exact ACK, then same-source C3 plus internal-country full UI lifecycle, authenticated resource focal and PRE-certification isolated fixtures. Preserve B4-B7 and ten scoped historical closures; complete only residual Q3/Q4/Q5 clauses before strict21, G20/G21 and immutable I4.",
+  "nextExactAction": "I3-Q3: execute same-source C3 and authenticated functional lane for source 90c45452a6bba0d2498c3cf792aa21c49219f0ac on Hosting sites/cxorbia-backend-dev/versions/d3634e619b4ea61e. Complete internal-country add/remove UI ACK/readback/reload/replay/cleanup, authenticated safe Shopper resource parity and PRE-certification isolated fixtures. Preserve B4-B7,focalB3,ten scoped historical closures and four strictMATCH. Consume each complete domain monotonically; finish exact Q3/Q4/Q5 residuals before21/21,G20/G21 and immutableI4.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -1796,8 +1796,8 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261115-V319.json",
-    "gitBlob": "99ba700e694fb4964d06efd70dc6de7f6824a60f"
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261115-V320.json",
+    "gitBlob": "0162e85a19dc7a2c393d8efb98b81f3d5432323c"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -3795,11 +3795,10 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261115-V319.json",
-    "matrixBlob": "99ba700e694fb4964d06efd70dc6de7f6824a60f",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261115-V320.json",
+    "matrixBlob": "0162e85a19dc7a2c393d8efb98b81f3d5432323c",
     "classificationCounts": {
-      "COMPOSED_NOT_DEPLOYED": 2,
-      "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E": 4,
+      "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E": 6,
       "MATCH": 4,
       "SOURCE_FIXED_DEV_MATERIALIZED_ADMIN_B10_FOCAL_PASS_PENDING_SHOPPER_ROLE_PROVIDER_LINK": 1,
       "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN": 2,
@@ -3808,7 +3807,7 @@
       "SOURCE_FIXED_HOSTING_DEV_PUBLISHED_PENDING_AUTH_SHOPPER_B2_B3_E2E_HUMAN": 1
     },
     "derivedAt": "2026-11-15T22:56:11.759402+00:00",
-    "meaning": "Four complete domains unchanged; B4-B7 accepted4/9 preserved; ten historical scoped closures reconciled. New two-owner source proven locally, pending exact Hosting and live proof; predecessor2534 C3ready21/humanPASS/countryHOLD/focalFAIL."
+    "meaning": "Four strictMATCH and four acceptedB4-B7 blocks preserved; source90 exact DEV RUN2536,24assets,168sourceQA/13owners; same-source C3/live proof pending."
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
   "activeMethodologyGuard": {
@@ -4121,26 +4120,17 @@
     "scope": "LOCAL_ISOLATED_SOURCE_CONTRACTS_ONLY_NOT_I3_CERTIFICATION"
   },
   "currentExecutionReceipt": {
-    "path": "docs/checkpoints/CXORBIA_I3_RUN2534_HUMAN_PASS_COUNTRY_REFRESH_FOCAL_HOLD_20261115.json",
-    "gitBlob": "00210223061c499612e666cbd2203f10183199c2",
-    "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2534_HUMAN_PASS_COUNTRY_REFRESH_FOCAL_HOLD_20261115.json",
-    "receiptBlob": "00210223061c499612e666cbd2203f10183199c2",
-    "runId": 43768621656,
-    "runNumber": 2534,
-    "sourceSha": "e20b5a67057be2419750bbb5363df37af1089813",
-    "sourceTree": "15b61305d615c4ad348ab7018a306eb3312c99bf",
-    "decision": "HOLD_I3_HUMAN_PASS_COUNTRY_REFRESH_FUNCTIONAL_DEFECT_AND_FOCAL_RESOURCE_QA_MAPPING",
-    "humanDecision": "PASS_I3_HUMAN_LIVE_ACCEPTANCE",
-    "semanticDecision": "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE",
-    "focalDecision": "FAIL_PRE_I4_FOCAL_HUMAN_BROWSER",
-    "countryDecision": "HOLD_I3_PROJECT_COUNTRY_LIVE_PROOF",
-    "cleanupDecision": "PASS_OWNED_FIXTURE_CLEANUP",
-    "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
-    "production": false,
-    "fullPhaseAClosed": false
+    "path": "docs/checkpoints/CXORBIA_I3_INTERNAL_REFRESH_HOSTING_DEV_RUN2536_ACK_20261115.json",
+    "gitBlob": "6e1ea5a74fad6a8053960ca161914e127ba9e399",
+    "runId": 43772550952,
+    "runNumber": 2536,
+    "sourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
+    "sourceTree": "e2d2fa981282ef9736aba9fa06aa9735bf486c43",
+    "state": "PASS_EXACT_HOSTING_DEV_PENDING_C3_AND_FUNCTIONAL_E2E",
+    "production": false
   },
   "lastExecutionReceiptSemantics": "LATEST_PAIRED_DEV_MATERIALIZATION_NOT_CURRENT_HOSTING_OR_TERMINAL_CERTIFICATION",
-  "currentExecutionReceiptSemantics": "LATEST_VERIFIED_FUNCTIONAL_ATTEMPT_RUN2534_PREDECESSOR_HOLD_NOT_NEW_SOURCE_CERTIFICATION",
+  "currentExecutionReceiptSemantics": "LATEST_EXACT_HOSTING_ONLY_DEV_ACK_NOT_TERMINAL_OR_FUNCTIONAL_CERTIFICATION",
   "previousCurrentExecutionReceiptBeforeSealRepair20261029": {
     "path": "docs/checkpoints/CXORBIA_I3_B1_HARNESS_AND_CONTINUITY_REPAIR_20261029.json",
     "gitBlob": "feaaa103a1f773dfafa8f21b2c630f207bb3f99f",
@@ -5628,9 +5618,19 @@
     "sourceTree": "e2d2fa981282ef9736aba9fa06aa9735bf486c43",
     "sourceTestsPass": 168,
     "sourceTestsFail": 0,
-    "scope": "SOURCE_QA_ONLY_PENDING_EXACT_DEV_AND_LIVE_PROOF",
-    "devPublished": false,
-    "production": false
+    "scope": "SOURCE_QA_WITH_SEPARATE_EXACT_DEV_ACK_PENDING_FUNCTIONAL_PROOF",
+    "devPublished": true,
+    "production": false,
+    "devReceipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_INTERNAL_REFRESH_HOSTING_DEV_RUN2536_ACK_20261115.json",
+      "gitBlob": "6e1ea5a74fad6a8053960ca161914e127ba9e399",
+      "runId": 43772550952,
+      "runNumber": 2536,
+      "sourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
+      "sourceTree": "e2d2fa981282ef9736aba9fa06aa9735bf486c43",
+      "state": "PASS_EXACT_HOSTING_DEV_PENDING_C3_AND_FUNCTIONAL_E2E",
+      "production": false
+    }
   },
   "currentControlQaCorrection": {
     "path": "docs/checkpoints/CXORBIA_I3_RUN1966_D03_QA_CORRECTION_20261030.json",
@@ -5695,12 +5695,12 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261115-V319.json",
-      "gitBlob": "99ba700e694fb4964d06efd70dc6de7f6824a60f"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261115-V320.json",
+      "gitBlob": "0162e85a19dc7a2c393d8efb98b81f3d5432323c"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V644_2026-11-15.json",
-      "gitBlob": "7a67b6a16342d58d0dae28d40589a4f2b2ebe691"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V645_2026-11-15.json",
+      "gitBlob": "843a8211f1d1341392210a82a684072413d048ac"
     },
     "receipt": {
       "kind": "GITHUB_ACTIONS_C3_PRETERMINAL_NOT_CERTIFICATE",
@@ -6037,7 +6037,7 @@
     "sourceTree": "c13f89de52ea483f4d58cbb8b015c94f2d2ab751"
   },
   "previousExactNextActionBeforeRun2146": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "I3-Q3: publish single source 90c45452a6bba0d2498c3cf792aa21c49219f0ac through existing Hosting-only DEV lane; verify24 served assets and unchanged runtime/production, consume exact ACK, then same-source C3 plus internal-country full UI lifecycle, authenticated resource focal and PRE-certification isolated fixtures. Preserve B4-B7 and ten scoped historical closures; complete only residual Q3/Q4/Q5 clauses before strict21, G20/G21 and immutable I4.",
+  "exactNextAction": "I3-Q3: execute same-source C3 and authenticated functional lane for source 90c45452a6bba0d2498c3cf792aa21c49219f0ac on Hosting sites/cxorbia-backend-dev/versions/d3634e619b4ea61e. Complete internal-country add/remove UI ACK/readback/reload/replay/cleanup, authenticated safe Shopper resource parity and PRE-certification isolated fixtures. Preserve B4-B7,focalB3,ten scoped historical closures and four strictMATCH. Consume each complete domain monotonically; finish exact Q3/Q4/Q5 residuals before21/21,G20/G21 and immutableI4.",
   "previousExecutionReceiptBeforeRun1983Seal": {
     "path": "CXORBIA_I3_RUN1852_POST_DEPLOY_CONSISTENCY_SEAL_2026-10-24.json",
     "kind": "RUN1852_SOURCE_F283_DEV_PASS_ADMIN_THREE_VISIT_UI_PASS_DURABLE_HR_OPERATIONAL_PARITY_P0_OPEN",
@@ -6601,8 +6601,8 @@
     },
     "production": false
   },
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V644_2026-11-15.json",
-  "findingsLedgerExpectedGitBlob": "7a67b6a16342d58d0dae28d40589a4f2b2ebe691",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V645_2026-11-15.json",
+  "findingsLedgerExpectedGitBlob": "843a8211f1d1341392210a82a684072413d048ac",
   "nextFindingId": "VRM-346",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -7622,7 +7622,7 @@
     "sameArtifactAdminShopper": "PENDING",
     "production": false
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261115-V319.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261115-V320.json",
   "vrm301DevHostingAdminReadback20261104": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM301_DEV_HOSTING_RUN41801457655_ADMIN_READBACK_20261104.json",
     "receiptGitBlob": "b8138b76db5159956aa500fe30f2be0f99fc8fce",
@@ -8818,7 +8818,7 @@
     "sourceTestsFail": 0,
     "production": false
   },
-  "updatedAt": "2026-11-15T22:56:11.759402+00:00",
+  "updatedAt": "2026-11-15T23:05:40.672114+00:00",
   "previousCanonicalControlBeforeVrm313": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
@@ -10206,7 +10206,7 @@
       "production": false
     }
   },
-  "moduleTruthExpectedGitBlob": "99ba700e694fb4964d06efd70dc6de7f6824a60f",
+  "moduleTruthExpectedGitBlob": "0162e85a19dc7a2c393d8efb98b81f3d5432323c",
   "d08AcademyDispatchSourceProof": {
     "path": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_DISPATCH_SOURCE_PROOF_20261107.json",
     "gitBlob": "2ad9d960cb958e84368cbbd70a7e9f2fb7864d3f",
@@ -11696,7 +11696,7 @@
     "moduleMatches": 5,
     "production": false
   },
-  "status": "HOLD_I3_SCOPED_SOURCE_PROVEN_PENDING_HOSTING_DEV_AND_LIVE_Q3",
+  "status": "HOLD_I3_CURRENT_SOURCE_HOSTING_DEV_VERIFIED_C3_REPROOF_PENDING",
   "b11HrDateSemanticsSourceOnly20261107": {
     "findingId": "VRM-315",
     "scopePath": "docs/checkpoints/CXORBIA_I3_B11_HR_DATE_SEMANTICS_SOURCE_SCOPE_20261107.json",
@@ -12197,7 +12197,7 @@
     "production": "DO_NOT_TOUCH",
     "actualCertificationsUnchanged": true
   },
-  "activeBlocker": "P0_PROVEN_INTERNAL_REFRESH_SOURCE_FIXED_AND_PRECERTIFICATION_CONTROL_FIXED_PENDING_EXACT_DEV_AND_LIVE_PROOF",
+  "activeBlocker": "CURRENT_SOURCE_EXACT_DEV_RUN2536_PASS__C3_AND_AFFECTED_FUNCTIONAL_REPROOF_PENDING__PHASE_A_HOLD",
   "v597QaVoidCanonicalContinuity": {
     "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V597_2026-11-08.json",
     "gitBlob": "e77a25664f5d75e9f9d75985b833111f75a97fb6",
@@ -13446,17 +13446,17 @@
     "gate21": "HOLD"
   },
   "currentHostingOnlyDevMaterialization": {
-    "receiptPath": "docs/checkpoints/CXORBIA_I3_INTERNAL_COUNTRY_HOSTING_DEV_RUN2533_ACK_20261115.json",
-    "receiptBlob": "a3b474ff04cf9cfe8d647a13cbbde85e3c5e9a4e",
-    "sourceSha": "e20b5a67057be2419750bbb5363df37af1089813",
-    "sourceTree": "15b61305d615c4ad348ab7018a306eb3312c99bf",
-    "runId": 43768008736,
-    "runNumber": 2533,
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/736c0fcb6a02171c",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794780861943000",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_INTERNAL_REFRESH_HOSTING_DEV_RUN2536_ACK_20261115.json",
+    "receiptBlob": "6e1ea5a74fad6a8053960ca161914e127ba9e399",
+    "sourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
+    "sourceTree": "e2d2fa981282ef9736aba9fa06aa9735bf486c43",
+    "runId": 43772550952,
+    "runNumber": 2536,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/d3634e619b4ea61e",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794783814133000",
     "runtimeRevision": "cxorbia-live-hr-dev-00370-fl2",
     "runtimeDigest": "sha256:396cd23f895a98606fa9ca238132a5515065c07fec632cd73c00cc2e6d6c639e",
-    "verifiedServedAssetCount": 23,
+    "verifiedServedAssetCount": 24,
     "cloudRunDeploys": 0,
     "firestoreRulesDeploys": 0,
     "productionChanged": false
@@ -15455,8 +15455,18 @@
     "sourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
     "sourceTree": "e2d2fa981282ef9736aba9fa06aa9735bf486c43",
     "sourceTestsPass": 168,
-    "devPublished": false,
-    "production": false
+    "devPublished": true,
+    "production": false,
+    "devReceipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_INTERNAL_REFRESH_HOSTING_DEV_RUN2536_ACK_20261115.json",
+      "gitBlob": "6e1ea5a74fad6a8053960ca161914e127ba9e399",
+      "runId": 43772550952,
+      "runNumber": 2536,
+      "sourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
+      "sourceTree": "e2d2fa981282ef9736aba9fa06aa9735bf486c43",
+      "state": "PASS_EXACT_HOSTING_DEV_PENDING_C3_AND_FUNCTIONAL_E2E",
+      "production": false
+    }
   },
   "historicalClosureReconciliation20261115": {
     "path": "docs/checkpoints/CXORBIA_I3_HISTORICAL_CLOSURE_RECONCILIATION_20261115.json",
@@ -15631,13 +15641,30 @@
     "production": false,
     "c3RunId": 43768621656
   },
-  "pendingDevSuccessor": {
-    "state": "P0_PROVEN_PENDING_DEV_MATERIALIZATION",
-    "scope": "HOSTING_ONLY",
+  "tenantReadonlyAcceptanceMappingRepair20261115": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2535_TENANT_ACCEPTANCE_MAPPING_REPAIR_20261115.json",
+    "gitBlob": "e7de376f28d1c9b762ea3ed7221faf15a454c20a",
+    "runId": 43772267273,
+    "decision": "CONTROL_MAPPING_REPAIRED_PENDING_REMOTE_RECHECK",
+    "production": false
+  },
+  "run2536CurrentSourceQa": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2536_SOURCE_QA_20261115/source-qa-receipt.json",
+    "gitBlob": "9436b50175e258baa97acc24052c94d7bf6ab823",
+    "sha256": "e7dc0d0e6b924758553c43de91c328a9680fe565816a84c7b4199b399e99ee61",
+    "artifactId": 14184563438,
+    "artifactDigest": "sha256:0d7ebbdf259693c13ed2d6fc8638dabe5ed0b7cccae17304770b880434bbfa7d",
+    "runId": 43772550952,
     "sourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
     "sourceTree": "e2d2fa981282ef9736aba9fa06aa9735bf486c43",
-    "predecessorProductSourceSha": "e20b5a67057be2419750bbb5363df37af1089813",
-    "servingHosting": {
+    "controlSha": "b3947c50156ef3c41d948ea616fbec734c7bf6f4",
+    "testsPass": 168,
+    "testsFail": 0,
+    "owners": 13,
+    "scope": "SOURCE_QA_ONLY_NOT_E2E_OR_HUMAN_ACCEPTANCE"
+  },
+  "historicalServingBeforeRun2536": {
+    "hosting": {
       "receiptPath": "docs/checkpoints/CXORBIA_I3_INTERNAL_COUNTRY_HOSTING_DEV_RUN2533_ACK_20261115.json",
       "receiptBlob": "a3b474ff04cf9cfe8d647a13cbbde85e3c5e9a4e",
       "sourceSha": "e20b5a67057be2419750bbb5363df37af1089813",
@@ -15652,57 +15679,19 @@
       "cloudRunDeploys": 0,
       "firestoreRulesDeploys": 0,
       "productionChanged": false
-    },
-    "servingRuntimeSeal": {
-      "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-      "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
-      "runId": 43091136067,
-      "runNumber": 2428,
-      "sourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
-      "sourceTree": "0f0d5b080b249191696ffad6a17936bdb4c347db",
-      "artifactDigest": "sha256:d78d58c4f96963e73ae364560f7eb82949d3e4d4bacf777e040f2d656d94d859",
-      "runtimeRevision": "cxorbia-live-hr-dev-00370-fl2",
-      "runtimeDigest": "sha256:396cd23f895a98606fa9ca238132a5515065c07fec632cd73c00cc2e6d6c639e",
-      "hostingVersion": "sites/cxorbia-backend-dev/versions/097e92b33464c10a",
-      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794426954796000",
-      "hrRevision": "7b7b62269233a3c7fbf596e38a2e7343622778db6b62d61eefda7e233b6a0636",
-      "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/4b50c97e-3729-41b8-8899-f5c02d6b9b62",
-      "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2428_CURRENT_SOURCE_DEV_MATERIALIZATION_20261111.json",
-      "receiptBlob": "2ce9d2e159dbae98b657ba1556d013d416e364e2",
-      "liveE2e": "PROVIDER_RUNTIME_HOSTING_HR_PASS__CHROME_FOCAL_RUN2382_RUN2387__NO_NEW_FULL_B1_B9_E2E",
-      "humanAcceptance": "B4_B5_B6_B7_PASS_PRESERVED__B1_B2_B3_B8_B9_PENDING",
-      "gate20": "HOLD",
-      "gate21": "HOLD",
-      "production": false
-    },
-    "proofReceiptPath": "docs/checkpoints/CXORBIA_I3_INTERNAL_REFRESH_PACKAGE_SOURCE_PROOF_20261115.json",
-    "proofReceiptBlob": "9064aec092f85336e7609c4268e373badb121e51",
-    "sourceTestsPass": 168,
-    "sourceTestsFail": 0,
-    "allowedProductFiles": [
-      "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
-      "app/adapters/tya-c6-unified-human-runtime-v1.js"
-    ],
-    "allowedTestFiles": [
-      "tools/qa/cxorbia-i3-human-project-scope.test.mjs",
-      "tools/qa/cxorbia-i3-live-fixture-contract.mjs",
-      "tools/qa/cxorbia-i3-live-fixture-contract.test.mjs",
-      "tools/qa/cxorbia-i3-source-qa-evidence.mjs",
-      "tools/qa/cxorbia-i3-source-qa-evidence.test.mjs",
-      "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
-      "tools/qa/cxorbia-pre-i4-resource-read-contract.mjs",
-      "tools/qa/cxorbia-pre-i4-resource-read-contract.test.mjs"
-    ],
-    "devPublished": false,
-    "production": false,
-    "rulesDeploys": 0,
-    "storageRulesDeploys": 0
+    }
   },
-  "tenantReadonlyAcceptanceMappingRepair20261115": {
-    "path": "docs/checkpoints/CXORBIA_I3_RUN2535_TENANT_ACCEPTANCE_MAPPING_REPAIR_20261115.json",
-    "gitBlob": "e7de376f28d1c9b762ea3ed7221faf15a454c20a",
-    "runId": 43772267273,
-    "decision": "CONTROL_MAPPING_REPAIRED_PENDING_REMOTE_RECHECK",
+  "i3Q2HostingReleaseC3Pending": {
+    "state": "DEV_HOSTING_VERIFIED_C3_PENDING",
+    "sourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
+    "sourceTree": "e2d2fa981282ef9736aba9fa06aa9735bf486c43",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/d3634e619b4ea61e",
+    "runtimeRevision": "cxorbia-live-hr-dev-00370-fl2",
+    "previousC3SourceSha": "e20b5a67057be2419750bbb5363df37af1089813",
+    "previousC3SourceTree": "15b61305d615c4ad348ab7018a306eb3312c99bf",
+    "previousHostingVersion": "sites/cxorbia-backend-dev/versions/736c0fcb6a02171c",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_INTERNAL_REFRESH_HOSTING_DEV_RUN2536_ACK_20261115.json",
+    "receiptBlob": "6e1ea5a74fad6a8053960ca161914e127ba9e399",
     "production": false
   }
 }
