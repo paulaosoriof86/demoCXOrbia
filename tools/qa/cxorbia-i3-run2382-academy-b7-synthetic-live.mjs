@@ -28,12 +28,13 @@ async function runClientCollaborationQa(){
   const request=async(url,options={})=>{const r=await fetch(url,{...options,signal:AbortSignal.timeout(90000)});const b=await r.json().catch(()=>({}));return {http:r.status,...b};};
   const hrMeta=()=>request(host+'/api/'+encodeURIComponent(tenantId)+'/'+encodeURIComponent(projectId)+'/hr-live?format=meta&f09='+runId+'-'+Date.now(),{headers:{'cache-control':'no-cache, no-store'}});
   const planned=[['a','cliente'],['b','cliente'],['admin','admin']].map(([label,role])=>({uid:tag+'_'+label,label,role,name:'QA F09 '+runId+' '+label,memberPath:tenant.collection('users').doc(tag+'_'+label).path}));
-  const contexts=[],records=new Map();let browser=null,periodId='',projectBefore='',periodBefore='',productionBefore='';
+  const contexts=[],records=new Map();let browser=null,periodId='',periodIds=[],projectBefore='',periodBefore='',productionBefore='';
   const authIdentity=user=>({uid:user.uid,displayName:user.displayName||'',disabled:user.disabled,email:user.email||null,emailVerified:user.emailVerified,phoneNumber:user.phoneNumber||null,photoURL:user.photoURL||null,creationTime:user.metadata.creationTime,providerData:user.providerData||[],mfa:user.multiFactor?.enrolledFactors||[]});
   const getPeriod=async()=>{
     const h=await request(host+'/api/'+encodeURIComponent(tenantId)+'/'+encodeURIComponent(projectId)+'/hr-live?format=json&f09='+runId,{headers:{'cache-control':'no-cache, no-store'}});
     const snap=h.snapshot||h.data||h,key=s(snap.source?.currentCalendarPeriodKey),p=(snap.periods||[]).find(x=>s(x.key||x.periodKey)===key);
-    check(h.http===200&&p?.id&&key,'SOURCE_FAILURE:F09_ACTIVE_HR_PERIOD_MISSING');return s(p.id);
+    check(h.http===200&&p?.id&&key&&snap.sourceSafe===true&&snap.imported===false&&snap.tenantId===tenantId&&snap.projectId===projectId&&p.projectId===projectId&&h._runtime?.revision===expectedHr&&h._runtime?.cacheOrigin==='runtime_refresh','SOURCE_FAILURE:F09_ACTIVE_HR_PERIOD_MISSING');
+    result.hrPeriodAuthority={id:s(p.id),key,sourceRevision:h._runtime.revision,authority:'current_server_hr_snapshot'};return s(p.id);
   };
   function commandPaths(c,uid){
     const kind={'client.nps.submit':'nps','client.note.create':'note','client.meeting.request':'meeting'}[c.commandType];
@@ -66,11 +67,14 @@ async function runClientCollaborationQa(){
     const initial=await hrMeta();check(initial.http===200&&initial.revision===expectedHr&&initial.hrWrites===false&&initial.production===false,'PROVIDER_FAILURE:F09_HR_PREFLIGHT');result.hrBefore=initial.revision;
     productionBefore=hash(await (await fetch('https://tya-plataforma.web.app/',{cache:'no-store'})).text());
     periodId=await getPeriod();result.periodId=periodId;
-    const [pr,pe]=await Promise.all([project.get(),project.collection('periods').doc(periodId).get()]);
-    check(pr.exists&&pe.exists&&pr.data().tenantId===tenantId&&pe.data().tenantId===tenantId&&pe.data().projectId===projectId,'SOURCE_FAILURE:F09_EXACT_PROJECT_PERIOD_REQUIRED');
-    check([pr.data(),pe.data()].every(x=>x.active!==false&&!['inactive','closed','archived','inactivo','cerrado','archivado'].includes(s(x.status))&&!['inactivo','cerrado','archivado'].includes(s(x.state))),'SOURCE_FAILURE:F09_PERIOD_NOT_WRITABLE');
-    projectBefore=hash(stable(pr.data()));periodBefore=hash(stable(pe.data()));
-    result.preflight={exactProject:true,exactPeriod:true,projectSha256:projectBefore,periodSha256:periodBefore};
+    periodIds=[...new Set([periodId,result.hrPeriodAuthority.key])];
+    const pr=await project.get(),periodDocs=await Promise.all(periodIds.map(id=>project.collection('periods').doc(id).get())),present=periodDocs.filter(x=>x.exists);
+    check(pr.exists&&pr.data().tenantId===tenantId&&present.length<=1&&present.every(x=>(x.data().tenantId===undefined||x.data().tenantId===tenantId)&&(x.data().projectId===undefined||x.data().projectId===projectId)),'SOURCE_FAILURE:F09_EXACT_PROJECT_PERIOD_REQUIRED');
+    check([pr.data(),...present.map(x=>x.data())].every(x=>x.active!==false&&['status','state'].every(k=>!['inactive','deleted','closed','archived','inactivo','cerrado','archivado'].includes(s(x[k]).toLowerCase()))),'SOURCE_FAILURE:F09_PERIOD_NOT_WRITABLE');
+    const mode=s(pr.data().operationalSource?.mode||pr.data().routeSource?.mode||pr.data().routeSource);
+    check(present.length||!mode||mode==='external','SOURCE_FAILURE:F09_EXTERNAL_PERIOD_AUTHORITY_REQUIRED');
+    projectBefore=hash(stable(pr.data()));periodBefore=hash(stable(periodDocs.map(x=>({id:x.id,exists:x.exists,data:x.exists?x.data():null}))));
+    result.preflight={exactProject:true,exactPeriod:true,periodAuthority:present.length?'project_period_metadata':'current_server_hr_snapshot',projectSourceMode:mode||'server_hr_exact_scope_legacy_metadata_absent',projectSha256:projectBefore,periodSha256:periodBefore};
     for(const identity of planned){
       check(!(await db.doc(identity.memberPath).get()).exists,'SOURCE_FAILURE:F09_MEMBER_COLLISION');
       try{await auth.getUser(identity.uid);throw Error('SOURCE_FAILURE:F09_AUTH_COLLISION');}catch(error){if(error.code!=='auth/user-not-found')throw error;}
@@ -186,7 +190,7 @@ async function runClientCollaborationQa(){
       const remaining=await Promise.all([...known,...ownedIdentities.map(x=>x.memberPath)].map(p=>db.doc(p).get()));check(remaining.every(x=>!x.exists),'PERSISTENCE_FAILURE:F09_DOC_RESIDUE');
       for(const x of ownedIdentities){try{await auth.getUser(x.uid);throw Error('AUTH_FAILURE:F09_AUTH_RESIDUE');}catch(error){if(error.code!=='auth/user-not-found')throw error;}}
       result.cleanup={ok:true,deletedDocuments:deleted,deletedAuth:authDeleted,remainingDocuments:0,remainingAuth:0};
-      if(projectBefore&&periodBefore){const [pr,pe]=await Promise.all([project.get(),project.collection('periods').doc(periodId).get()]);check(hash(stable(pr.data()))===projectBefore&&hash(stable(pe.data()))===periodBefore,'PERSISTENCE_FAILURE:F09_REAL_PROJECT_PERIOD_CHANGED');result.realProjectPeriodUnchanged=true;}
+      if(projectBefore&&periodBefore){const pr=await project.get(),periodDocs=await Promise.all(periodIds.map(id=>project.collection('periods').doc(id).get()));check(hash(stable(pr.data()))===projectBefore&&hash(stable(periodDocs.map(x=>({id:x.id,exists:x.exists,data:x.exists?x.data():null}))))===periodBefore,'PERSISTENCE_FAILURE:F09_REAL_PROJECT_PERIOD_CHANGED');result.realProjectPeriodUnchanged=true;}
       const after=await hrMeta();result.hrAfter=after.revision;check(after.revision===expectedHr&&after.hrWrites===false,'PROVIDER_FAILURE:F09_HR_CHANGED');
       if(productionBefore){result.productionIndexUnchanged=hash(await (await fetch('https://tya-plataforma.web.app/',{cache:'no-store'})).text())===productionBefore;check(result.productionIndexUnchanged,'ENVIRONMENT_FAILURE:F09_PRODUCTION_INDEX_DRIFT');}
       const {execFileSync}=await import('node:child_process');

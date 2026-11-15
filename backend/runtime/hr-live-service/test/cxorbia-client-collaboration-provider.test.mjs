@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createOperationalCommandProvider} from '../../cxorbia-operational-command-provider-v1.mjs';
+import {createProviderForCommand,maybeHandleCxorbiaCommandRuntimeRequest} from '../cxorbia-command-runtime-v1.mjs';
+import {Readable} from 'node:stream';
+import {readFileSync} from 'node:fs';
 const clone=x=>x===undefined?undefined:structuredClone(x);
 class Ref{constructor(db,path){this.db=db;this.path=path;this.id=path.split('/').at(-1);}collection(n){return new Col(this.db,this.path+'/'+n);}async get(){if(this.db.failReadback&&this.path.includes('/bulletins/'))throw Error('READBACK_FAILED');return snap(this.id,this.db.rows.get(this.path));}}
 class Col{constructor(db,path){this.db=db;this.path=path;}doc(id){return new Ref(this.db,this.path+'/'+id);}}
@@ -18,8 +21,33 @@ function fixture(){const db=new DB();const users={a:{uid:'client-a',role:'client
  db.rows.set('tenants/tenant-a/projects/project-a',{id:'project-a',tenantId:'tenant-a',status:'active',timeZone:'UTC'});db.rows.set('tenants/tenant-a/projects/project-a/periods/period-a',{id:'period-a',tenantId:'tenant-a',projectId:'project-a',state:'activo'});
  const auth={verifyIdToken:async token=>{assert.ok(users[token]);return clone(users[token]);}},p=createOperationalCommandProvider({db,auth,policy});
  const command=(kind,key='request-000000001')=>{const [commandType,entityType,payload]=types[kind];return {version:'cxorbia-command-adapter-v1',commandType,entityType,entityId:null,...scope,expectedVersion:'absent',idempotencyKey:commandType+':'+key,payload:{...payload,periodId:scope.periodId,clientRequestId:key},actor:{actorId:'client-a',role:'cliente',projectIds:['project-a']},authorization:{providerEnforcementRequired:true,permission:commandType}};};
- return {db,users,p,command,records:()=>[...db.rows.entries()].filter(([path])=>path.includes('/bulletins/')).map(([,v])=>v)};
+ return {db,users,auth,p,command,records:()=>[...db.rows.entries()].filter(([path])=>path.includes('/bulletins/')).map(([,v])=>v)};
 }
+function externalFixture(){const x=fixture();x.db.rows.delete('tenants/tenant-a/projects/project-a/periods/period-a');x.db.rows.get('tenants/tenant-a/projects/project-a').operationalSource={mode:'external',providerType:'google_sheets'};
+ const hrSnapshot={sourceSafe:true,imported:false,tenantId:'tenant-a',projectId:'project-a',periods:[{id:'project-a-2026-11',key:'2026-11',projectId:'project-a'}]},hrRevision='b'.repeat(64),c=x.command('note');c.periodId='project-a-2026-11';c.payload.periodId=c.periodId;
+ return {...x,hrSnapshot,hrRevision,c,provider:()=>createProviderForCommand(c,{auth:x.auth,db:x.db,operationalPolicy:policy,hrSnapshot,hrRevision}).provider};
+}
+test('Client commands accept exact current server HR period without creating optional Firestore metadata',async()=>{const x=externalFixture(),r=await x.provider().execute('a',x.c);assert.equal(r.ok,true,JSON.stringify(r));assert.equal(x.records().length,1);assert.equal([...x.db.rows.keys()].filter(k=>k.includes('/periods/')).length,0);});
+test('legacy project without explicit source metadata may use only its exact server HR scope',async()=>{const x=externalFixture();delete x.db.rows.get('tenants/tenant-a/projects/project-a').operationalSource;assert.equal((await x.provider().execute('a',x.c)).ok,true);});
+for(const [label,mutate] of [
+ ['internal project',x=>x.db.rows.get('tenants/tenant-a/projects/project-a').operationalSource.mode='internal'],
+ ['foreign snapshot',x=>x.hrSnapshot.projectId='project-b'],['foreign tenant',x=>x.hrSnapshot.tenantId='tenant-b'],
+ ['unsafe snapshot',x=>x.hrSnapshot.sourceSafe=false],['imported snapshot',x=>x.hrSnapshot.imported=true],
+ ['unknown period',x=>x.hrSnapshot.periods=[]],['duplicate period',x=>x.hrSnapshot.periods.push(clone(x.hrSnapshot.periods[0]))],
+ ['foreign period',x=>x.hrSnapshot.periods[0].projectId='project-b'],['closed HR period',x=>x.hrSnapshot.periods[0].state='closed'],
+ ['closed canonical metadata',x=>x.db.rows.set('tenants/tenant-a/projects/project-a/periods/'+x.c.periodId,{tenantId:'tenant-a',projectId:'project-a',state:'cerrado'})],
+ ['closed key metadata',x=>x.db.rows.set('tenants/tenant-a/projects/project-a/periods/2026-11',{tenantId:'tenant-a',projectId:'project-a',state:'cerrado'})],
+ ['ambiguous metadata',x=>{for(const k of [x.c.periodId,'2026-11'])x.db.rows.set('tenants/tenant-a/projects/project-a/periods/'+k,{tenantId:'tenant-a',projectId:'project-a',state:'activo'});}],
+])test('HR period authority denies '+label,async()=>{const x=externalFixture();mutate(x);const r=await x.provider().execute('a',x.c);assert.equal(r.ok,false,JSON.stringify(r));assert.equal(x.records().length,0);});
+test('missing trusted server revision cannot authorize an absent period',async()=>{const x=externalFixture(),p=createOperationalCommandProvider({auth:x.auth,db:x.db,policy,hrSnapshot:x.hrSnapshot,hrRevision:''});assert.equal((await p.execute('a',x.c)).ok,false);});
+test('command runtime passes the parsed command to server configuration before provider selection',async()=>{const x=externalFixture(),req=Readable.from([JSON.stringify(x.c)]);req.method='POST';req.headers={authorization:'Bearer a'};let configured=null,body=null;const res={setHeader(){},end(v){body=JSON.parse(v);}};await maybeHandleCxorbiaCommandRuntimeRequest(req,res,new URL('http://localhost/v1/cxorbia/commands'),{configure:async command=>{configured=command;}});assert.deepEqual(configured,x.c);assert.ok(body);});
+const actualServerConfigure=readFileSync(new URL('../server.mjs',import.meta.url),'utf8').split('configure:async command=>{')[1]?.split('},\n      hrSnapshotReconcile:')[0];
+test('actual server callback refreshes HR before each Client flow and retains other command behavior',async()=>{
+ assert.ok(actualServerConfigure);for(const commandType of [...Object.values(types).map(x=>x[0]),'visit.assign']){const seen=[],cache={snapshot:'old'};const configure=Function('buildSnapshot','configureCommandRuntime','cache','return async command=>{'+actualServerConfigure+'}')(
+ async()=>{seen.push('refresh');cache.snapshot='fresh';},snapshot=>seen.push(snapshot),cache);await configure({commandType});assert.deepEqual(seen,commandType.startsWith('client.')?['refresh','fresh']:['old']);}
+});
+test('actual server callback never reuses old HR when the Client refresh fails',async()=>{const seen=[];const configure=Function('buildSnapshot','configureCommandRuntime','cache','return async command=>{'+actualServerConfigure+'}')(
+ async()=>{throw Error('HR_DOWN');},snapshot=>seen.push(snapshot),{snapshot:'old'});await assert.rejects(configure({commandType:'client.note.create'}),/HR_DOWN/);assert.deepEqual(seen,[]);});
 for(const kind of Object.keys(types))test(`${kind}: token-owned durable entity, independent readback, audit and zero-write replay`,async()=>{
  const x=fixture(),c=x.command(kind),r=await x.p.execute('a',c);assert.equal(r.ok,true,JSON.stringify(r));assert.equal(r.providerAck,true);assert.equal(r.readbackVerified,true);assert.equal(r.actorUid,'client-a');assert.equal(x.records().length,1);const row=x.records()[0];assert.equal(row.requesterUid,'client-a');assert.equal(row.projectId,'project-a');assert.equal(row.periodId,'period-a');assert.equal(row.version,1);assert.deepEqual(row.targetUserIds,['client-a']);assert.notEqual(row.targetAll,true);assert.equal(row.targetProjectIds?.length||0,0);assert.equal(row.requesterName,'Nombre verificado');
  const replay=await x.p.execute('a',c);assert.equal(replay.ok,true);assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);assert.equal(x.records().length,1);assert.equal([...x.db.rows.keys()].filter(x=>x.includes('/entityAuditTrail/')).length,1);

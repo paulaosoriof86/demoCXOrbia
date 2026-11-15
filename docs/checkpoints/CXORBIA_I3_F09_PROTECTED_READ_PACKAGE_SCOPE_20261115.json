@@ -15,6 +15,10 @@
     {
       "path": "docs/checkpoints/CXORBIA_I3_AUTHENTICATED_API_SW_CACHE_P0_SCOPE_20261115.json",
       "gitBlob": "6f34d7a57833ec05b971dfd001423c238013cf03"
+    },
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_F09_CANONICAL_HR_PERIOD_AUTHORITY_SCOPE_20261115.json",
+      "gitBlob": "34cde1d97c7cd88d8a6ba9a6e13b155b106cdb14"
     }
   ],
   "allowedProductFiles": [
@@ -23,7 +27,9 @@
     "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
     "app/core/backend-bulletins.js",
     "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
-    "app/sw.js"
+    "app/sw.js",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+    "backend/runtime/hr-live-service/server.mjs"
   ],
   "allowedTestFiles": [
     "backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs",
@@ -51,5 +57,6 @@
     "B6",
     "B7"
   ],
-  "strictDomainProgressPreserved": "RUN2537 tenant-domain PASS yields5/21, unaffected owner hashes retained."
+  "strictDomainProgressPreserved": "RUN2537 tenant-domain PASS yields5/21, unaffected owner hashes retained.",
+  "periodAuthorityCorrection": "Canonical HR periods do not require duplicate optional Firestore metadata; exact server revision and metadata closure guards preserve authority. Existing runtime dispatch refreshed only for Client commands."
 }

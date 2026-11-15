@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-proven-scope.v1",
+  "findingId": "VRM-346",
+  "classification": "MAPPING_FAILURE",
+  "priority": "P0_PROVEN",
+  "generatedAt": "2026-11-15T23:52:09.448863+00:00",
+  "iteration": "I3",
+  "moduleTruthBeforeEdit": [
+    {
+      "path": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+      "domain": "persistence-command-ack-boundary",
+      "approvedSource": "672e7f624b1d0328ed1bb25b778ce4b44d52489c",
+      "approvedBlob": "93634ee52f17103a878d52f345443fe4bbd9850f",
+      "f9Source": null,
+      "f9Blob": null,
+      "servedSource": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
+      "servedBlob": "fb9997ad29e55fdc5945ce79249ea12c2987416b",
+      "headSource": "97bd5772a398be027bcb9dbfbc9e2352b6f0cc60",
+      "headBlob": "b61cefac552a2d9173d90eb91eb95e81a47dcee5",
+      "classification": "TRUE_FUNCTIONAL_DEFECT"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+      "domain": "persistence-command-ack-boundary",
+      "approvedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "b1d2cd588fd7409ededba4dea1fdece0d08df91a",
+      "f9Source": null,
+      "f9Blob": null,
+      "servedSource": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
+      "servedBlob": "3a6d245f7439d753f602e8752c0beea52dd34ab3",
+      "headSource": "97bd5772a398be027bcb9dbfbc9e2352b6f0cc60",
+      "headBlob": "3a6d245f7439d753f602e8752c0beea52dd34ab3",
+      "classification": "APPROVED_NOT_COMPOSED"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/server.mjs",
+      "domain": "canonical-hr-state-adapters",
+      "approvedSource": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "approvedBlob": "245157d6812321bec99d1d3d2d4e03261b4f21fa",
+      "f9Source": null,
+      "f9Blob": null,
+      "servedSource": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
+      "servedBlob": "e202fbad0ec42528cd17ae76c1d2f846598ea9db",
+      "headSource": "97bd5772a398be027bcb9dbfbc9e2352b6f0cc60",
+      "headBlob": "e202fbad0ec42528cd17ae76c1d2f846598ea9db",
+      "classification": "APPROVED_NOT_COMPOSED"
+    }
+  ],
+  "evidence": {
+    "runId": 43772983839,
+    "artifactId": 14185735011,
+    "artifactDigest": "sha256:5fa655a62587952c2d96f592e76e7ab8350dabceaecb52d0862ac1e4f4019875",
+    "semanticPeriodDocPath": null,
+    "hrPeriodId": "cinepolis-2026-11",
+    "hrPeriodProjectId": "cinepolis",
+    "revision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "failure": "F09 currently denies an external HR operational period unless duplicate Firestore metadata exists."
+  },
+  "allowedProductFiles": [
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+    "backend/runtime/hr-live-service/server.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs",
+    "tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs",
+    "tools/qa/cxorbia-i3-source-qa-evidence.mjs",
+    "tools/qa/cxorbia-i3-source-qa-evidence.test.mjs"
+  ],
+  "requiredRepair": "Existing period metadata remains authoritative for closure/denial. Missing optional metadata may use exact current server HR period and revision only for external authority; never caller data or fabricated period docs. Refresh HR for only three Client commands and pass same snapshot/revision to existing provider. Verify canonical/key metadata aliases; deny ambiguity and closed/foreign periods.",
+  "production": false,
+  "hrWrites": 0,
+  "realPeriodWrites": 0
+}

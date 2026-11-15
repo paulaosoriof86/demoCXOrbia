@@ -1,0 +1,164 @@
+✖ Client commands accept exact current server HR period without creating optional Firestore metadata (7.980852ms)
+✖ legacy project without explicit source metadata may use only its exact server HR scope (0.923204ms)
+✔ HR period authority denies internal project (0.820743ms)
+✔ HR period authority denies foreign snapshot (0.734976ms)
+✔ HR period authority denies foreign tenant (2.938742ms)
+✔ HR period authority denies unsafe snapshot (0.413681ms)
+✔ HR period authority denies imported snapshot (0.302206ms)
+✔ HR period authority denies unknown period (0.301115ms)
+✔ HR period authority denies duplicate period (0.544325ms)
+✔ HR period authority denies foreign period (0.500199ms)
+✔ HR period authority denies closed HR period (0.294665ms)
+✔ HR period authority denies closed canonical metadata (0.320623ms)
+✔ HR period authority denies closed key metadata (0.250019ms)
+✖ HR period authority denies ambiguous metadata (2.049839ms)
+✔ missing trusted server revision cannot authorize an absent period (0.402936ms)
+✖ command runtime passes the parsed command to server configuration before provider selection (3.833124ms)
+✔ nps: token-owned durable entity, independent readback, audit and zero-write replay (1.13003ms)
+✔ note: token-owned durable entity, independent readback, audit and zero-write replay (0.562751ms)
+✔ meeting: token-owned durable entity, independent readback, audit and zero-write replay (23.373407ms)
+✔ canonical active Client membership without an active boolean remains valid (0.483744ms)
+✔ canonical client role alias uses its exact staff membership (0.31184ms)
+✔ same received key in another authorized period preserves separate durable audit entries (1.36718ms)
+✔ lost readback after commit reports pending proof and retry recovers the one durable entity (1.21131ms)
+✔ concurrent replay produces one entity, one receipt and one audit (1.273812ms)
+✔ changed payload and another actor cannot adopt an existing idempotency receipt (1.708795ms)
+✔ client collaboration denies staff preview (0.270109ms)
+✔ client collaboration denies shopper (0.211262ms)
+✔ client collaboration denies wrong tenant (0.152986ms)
+✔ client collaboration denies wrong project (0.213326ms)
+✔ client collaboration denies missing period (0.531135ms)
+✔ client collaboration denies inactive membership (0.195048ms)
+✔ client collaboration denies inactive status (0.199375ms)
+✔ client collaboration denies foreign member project (0.221868ms)
+✔ client collaboration denies wrong namespace (0.177902ms)
+✔ client collaboration denies missing namespace (0.236069ms)
+✔ client collaboration denies closed period (0.487701ms)
+✔ client collaboration denies archived period (0.468082ms)
+✔ client collaboration denies foreign period (0.572306ms)
+✔ client collaboration denies spoofed author (0.183431ms)
+✔ client collaboration denies spoofed recipients (0.501581ms)
+✔ client collaboration denies wrong entity (0.158164ms)
+✔ client collaboration denies chosen entity id (0.149691ms)
+✔ client collaboration denies wrong permission (1.248675ms)
+✔ client collaboration denies wrong payload period (0.126137ms)
+✔ client collaboration denies missing request id (0.084415ms)
+✔ client collaboration denies empty note (0.085005ms)
+✔ client collaboration denies excessive note (0.119666ms)
+✔ NPS rejects invalid numeric score -1 (0.103292ms)
+✔ NPS rejects invalid numeric score 11 (0.119096ms)
+✔ NPS rejects invalid numeric score 9.5 (0.077244ms)
+✔ NPS rejects invalid numeric score "9" (0.095331ms)
+✔ NPS rejects invalid numeric score null (0.057746ms)
+✔ meeting rejects invalid request {"date":"2026-02-30"} (0.117924ms)
+✔ meeting rejects invalid request {"date":"2001-01-01"} (0.374223ms)
+✔ meeting rejects invalid request {"time":"25:00"} (0.103443ms)
+✔ meeting rejects invalid request {"mode":"Calendar invitation sent"} (0.099407ms)
+ℹ tests 56
+ℹ suites 0
+ℹ pass 52
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 237.253051
+
+✖ failing tests:
+
+test at backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:29:1
+✖ Client commands accept exact current server HR period without creating optional Firestore metadata (7.980852ms)
+  AssertionError [ERR_ASSERTION]: {"ok":false,"status":"blocked","committed":false,"providerAck":false,"successUiAllowed":false,"localMutation":false,"localStorageWrite":false,"providerWrites":0,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-11","commandType":"client.note.create","entityId":null,"code":"OPS_CLIENT_PROJECT_PERIOD_DENIED"}
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:29:188)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:30:1
+✖ legacy project without explicit source metadata may use only its exact server HR scope (0.923204ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:30:216)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:40:3
+✖ HR period authority denies ambiguous metadata (2.049839ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-11","commandType":"client.note.create","entityType":"clientNote","entityId":"client-note-92d397d854536442474a43566a8b248a","idempotencyKey":"client.note.create:request-000000001","providerWrites":3,"readbackVerified":true,"actorUid":"client-a"}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:40:141)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:42:1
+✖ command runtime passes the parsed command to server configuration before provider selection (3.833124ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + undefined
+  - {
+  -   actor: {
+  -     actorId: 'client-a',
+  -     projectIds: [
+  -       'project-a'
+  -     ],
+  -     role: 'cliente'
+  -   },
+  -   authorization: {
+  -     permission: 'client.note.create',
+  -     providerEnforcementRequired: true
+  -   },
+  -   commandType: 'client.note.create',
+  -   entityId: null,
+  -   entityType: 'clientNote',
+  -   expectedVersion: 'absent',
+  -   idempotencyKey: 'client.note.create:request-000000001',
+  -   payload: {
+  -     clientRequestId: 'request-000000001',
+  -     detail: 'Detalle',
+  -     periodId: 'project-a-2026-11',
+  -     subject: 'Hallazgo'
+  -   },
+  -   periodId: 'project-a-2026-11',
+  -   projectId: 'project-a',
+  -   tenantId: 'tenant-a',
+  -   version: 'cxorbia-command-adapter-v1'
+  - }
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:42:477)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: { version: 'cxorbia-command-adapter-v1', commandType: 'client.note.create', entityType: 'clientNote', entityId: null, tenantId: 'tenant-a', projectId: 'project-a', periodId: 'project-a-2026-11', expectedVersion: 'absent', idempotencyKey: 'client.note.create:request-000000001', payload: { subject: 'Hallazgo', detail: 'Detalle', periodId: 'project-a-2026-11', clientRequestId: 'request-000000001' }, actor: { actorId: 'client-a', role: 'cliente', projectIds: [Array] }, authorization: { providerEnforcementRequired: true, permission: 'client.note.create' } },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

@@ -1,0 +1,190 @@
+TAP version 13
+# Subtest: same-run proof returns every registered owner without functional acceptance
+ok 1 - same-run proof returns every registered owner without functional acceptance
+  ---
+  duration_ms: 3.866744
+  type: 'test'
+  ...
+# Subtest: rejects a different sourceSha
+ok 2 - rejects a different sourceSha
+  ---
+  duration_ms: 1.35348
+  type: 'test'
+  ...
+# Subtest: rejects a different sourceTree
+ok 3 - rejects a different sourceTree
+  ---
+  duration_ms: 0.254276
+  type: 'test'
+  ...
+# Subtest: rejects a different controlSha
+ok 4 - rejects a different controlSha
+  ---
+  duration_ms: 0.168519
+  type: 'test'
+  ...
+# Subtest: rejects a different runId
+ok 5 - rejects a different runId
+  ---
+  duration_ms: 0.314114
+  type: 'test'
+  ...
+# Subtest: rejects a different runAttempt
+ok 6 - rejects a different runAttempt
+  ---
+  duration_ms: 0.318751
+  type: 'test'
+  ...
+# Subtest: missing attempt is rejected even if both receipt and expectation omit it
+ok 7 - missing attempt is rejected even if both receipt and expectation omit it
+  ---
+  duration_ms: 0.601439
+  type: 'test'
+  ...
+# Subtest: a failed-only consumer retry reuses the exact successful producer attempt
+ok 8 - a failed-only consumer retry reuses the exact successful producer attempt
+  ---
+  duration_ms: 1.374451
+  type: 'test'
+  ...
+# Subtest: rejects modified owner blob
+ok 9 - rejects modified owner blob
+  ---
+  duration_ms: 0.583983
+  type: 'test'
+  ...
+# Subtest: rejects modified test blob
+ok 10 - rejects modified test blob
+  ---
+  duration_ms: 0.868092
+  type: 'test'
+  ...
+# Subtest: rejects missing coverage
+ok 11 - rejects missing coverage
+  ---
+  duration_ms: 0.572716
+  type: 'test'
+  ...
+# Subtest: rejects duplicate coverage
+ok 12 - rejects duplicate coverage
+  ---
+  duration_ms: 0.307144
+  type: 'test'
+  ...
+# Subtest: rejects foreign-owner coverage
+ok 13 - rejects foreign-owner coverage
+  ---
+  duration_ms: 0.334234
+  type: 'test'
+  ...
+# Subtest: rejects foreign-test coverage
+ok 14 - rejects foreign-test coverage
+  ---
+  duration_ms: 0.448643
+  type: 'test'
+  ...
+# Subtest: rejects registry coverage
+ok 15 - rejects registry coverage
+  ---
+  duration_ms: 0.35158
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence exit
+ok 16 - rejects invalid test evidence exit
+  ---
+  duration_ms: 0.497005
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence zero
+ok 17 - rejects invalid test evidence zero
+  ---
+  duration_ms: 0.367823
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence fail
+ok 18 - rejects invalid test evidence fail
+  ---
+  duration_ms: 0.244721
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence cancelled
+ok 19 - rejects invalid test evidence cancelled
+  ---
+  duration_ms: 0.23675
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence skipped
+ok 20 - rejects invalid test evidence skipped
+  ---
+  duration_ms: 0.300003
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence todo
+ok 21 - rejects invalid test evidence todo
+  ---
+  duration_ms: 0.245343
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence summary
+ok 22 - rejects invalid test evidence summary
+  ---
+  duration_ms: 1.665281
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence log
+ok 23 - rejects invalid test evidence log
+  ---
+  duration_ms: 0.173716
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence hash
+ok 24 - rejects invalid test evidence hash
+  ---
+  duration_ms: 0.18289
+  type: 'test'
+  ...
+# Subtest: rejects altered production
+ok 25 - rejects altered production
+  ---
+  duration_ms: 0.162009
+  type: 'test'
+  ...
+# Subtest: rejects altered scope
+ok 26 - rejects altered scope
+  ---
+  duration_ms: 0.092657
+  type: 'test'
+  ...
+# Subtest: rejects a digest mismatch before looking up source blobs
+ok 27 - rejects a digest mismatch before looking up source blobs
+  ---
+  duration_ms: 0.333373
+  type: 'test'
+  ...
+# Subtest: workflow carries the same-run receipt through both C3 invocations
+ok 28 - workflow carries the same-run receipt through both C3 invocations
+  ---
+  duration_ms: 5.4692
+  type: 'test'
+  ...
+# Subtest: computed 21/21 source evidence enables the next job without changing four integral MATCH
+ok 29 - computed 21/21 source evidence enables the next job without changing four integral MATCH
+  ---
+  duration_ms: 1.489741
+  type: 'test'
+  ...
+# Subtest: one missing source proof keeps the consumer disabled and rejects a stale optimistic counter
+ok 30 - one missing source proof keeps the consumer disabled and rejects a stale optimistic counter
+  ---
+  duration_ms: 0.706864
+  type: 'test'
+  ...
+1..30
+# tests 30
+# suites 0
+# pass 30
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 121.551102

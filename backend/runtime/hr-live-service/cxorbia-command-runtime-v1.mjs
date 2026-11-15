@@ -402,7 +402,7 @@ export function createProviderForCommand(command,overrides={}){
     catch(error){return {provider:null,kind,error:'ACADEMY_COMMAND_PROVIDER_POLICY_INVALID',detail:str(error?.message||error)};}
   }
   if(!operationalPolicy)return {provider:null,kind,error:'OPERATIONAL_COMMAND_PROVIDER_NOT_CONFIGURED'};
-  try{return {provider:createOperationalCommandProvider({auth,db,policy:operationalPolicy}),kind};}
+  try{return {provider:createOperationalCommandProvider({auth,db,policy:operationalPolicy,hrSnapshot,hrRevision}),kind};}
   catch(error){return {provider:null,kind,error:'OPERATIONAL_COMMAND_PROVIDER_POLICY_INVALID',detail:str(error?.message||error)};}
 }
 
@@ -428,7 +428,7 @@ export async function maybeHandleCxorbiaCommandRuntimeRequest(req,res,url,{hrSna
       const result=await hrSnapshotReconcile({req,command});
       return json(res,result?.httpStatus||(result?.ok===true?200:409),result);
     }
-    if(configure)await configure();
+    if(configure)await configure(command);
     const {provider,error,kind,detail}=createProviderForCommand(command);
     if(!provider)return json(res,409,blocked(error,{providerKind:kind,detail:detail||null,commandType:command?.commandType||null,tenantId:command?.tenantId||null,projectId:command?.projectId||null,periodId:command?.periodId||null}));
     const result=await provider.execute(token,command);

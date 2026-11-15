@@ -521,7 +521,10 @@ const server=http.createServer(async(req,res)=>{
   }
   if(isCxorbiaCommandRuntimePath(url.pathname)){
     await maybeHandleCxorbiaCommandRuntimeRequest(req,res,url,{
-      configure:()=>configureCommandRuntime(cache?.snapshot),
+      configure:async command=>{
+        if(['client.nps.submit','client.note.create','client.meeting.request'].includes(command?.commandType))await buildSnapshot();
+        configureCommandRuntime(cache?.snapshot);
+      },
       hrSnapshotReconcile:async input=>{
         const result=await explicitHrReconciliation(input);
         if(result.stages?.shoppers)lastShopperReconciliation={...result.stages.shoppers,sourceRevision:result.sourceRevision,receiptPath:result.receiptPath};

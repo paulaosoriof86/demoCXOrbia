@@ -108,12 +108,25 @@ function validateClientCollaboration(command){
   }
 }
 
-async function clientCollaborationContext(tx,r,command,actor){
+async function clientCollaborationContext(tx,r,command,actor,hrSnapshot,hrRevision){
   const member=await tx.get(r.tenant.collection('users').doc(actor.uid)),m=member.exists?member.data():null;
   if(!m||m.active===false||!(m.active===true||m.status==='active')||['inactive','disabled','deleted','revoked'].includes(str(m.status))||str(m.tenantId)!==command.tenantId||str(m.role)!==actor.role||str(m.authNamespace)!=='staff'||!arr(m.projectIds).includes(command.projectId))throw new Error('OPS_CLIENT_MEMBERSHIP_REVOKED');
-  const project=await tx.get(r.project),period=await tx.get(r.project.collection('periods').doc(command.periodId));
-  const pr=project.exists?project.data():null,pe=period.exists?period.data():null;
-  if(!pr||!pe||str(pr.tenantId)!==command.tenantId||str(pe.tenantId)!==command.tenantId||str(pe.projectId)!==command.projectId||[pr,pe].some(x=>x.active===false||['inactive','deleted','archived','closed','inactivo','cerrado','archivado'].includes(str(x.status))||['inactivo','cerrado','archivado'].includes(str(x.state))))throw new Error('OPS_CLIENT_PROJECT_PERIOD_DENIED');
+  const project=await tx.get(r.project),pr=project.exists?project.data():null;
+  const disabled=x=>x.active===false||['status','state'].some(k=>['inactive','deleted','archived','closed','inactivo','cerrado','archivado'].includes(str(x[k]).toLowerCase()));
+  if(!pr||str(pr.tenantId)!==command.tenantId||disabled(pr))throw new Error('OPS_CLIENT_PROJECT_PERIOD_DENIED');
+  const ids=[command.periodId],prefix=command.projectId+'-';
+  if(command.periodId.startsWith(prefix)&&command.periodId.length>prefix.length)ids.push(command.periodId.slice(prefix.length));
+  const periods=[];for(const id of ids){const doc=await tx.get(r.project.collection('periods').doc(id));if(doc.exists)periods.push(doc.data());}
+  if(periods.length>1||periods.some(pe=>(pe.tenantId!==undefined&&str(pe.tenantId)!==command.tenantId)||(pe.projectId!==undefined&&str(pe.projectId)!==command.projectId)||disabled(pe)))throw new Error('OPS_CLIENT_PROJECT_PERIOD_DENIED');
+  if(!periods.length){
+    // HR owns operational periods. Firestore metadata is optional; an explicit
+    // internal project or a closed metadata alias never inherits HR authority.
+    const mode=str(pr.operationalSource?.mode||pr.routeSource?.mode||pr.routeSource);
+    if((mode&&mode!=='external')||hrSnapshot?.sourceSafe!==true||hrSnapshot.imported!==false||!/^[a-f0-9]{64}$/.test(str(hrRevision))||
+      str(hrSnapshot.tenantId||hrSnapshot.tenantConfig?.tenantId)!==command.tenantId||str(hrSnapshot.projectId||hrSnapshot.projectConfig?.projectId)!==command.projectId)throw new Error('OPS_CLIENT_PERIOD_AUTHORITY_REQUIRED');
+    const matches=arr(hrSnapshot.periods).filter(pe=>str(pe.id||pe.periodId||command.projectId+'-'+str(pe.key))===command.periodId);
+    if(matches.length!==1||matches.some(pe=>(pe.tenantId!==undefined&&str(pe.tenantId)!==command.tenantId)||(pe.projectId!==undefined&&str(pe.projectId)!==command.projectId)||disabled(pe)))throw new Error('OPS_CLIENT_PROJECT_PERIOD_DENIED');
+  }
   return {member:m,project:pr};
 }
 
@@ -372,10 +385,10 @@ async function reconcileVisitDoc({db,policy,candidate,sourceRevision}){
   });
 }
 
-async function transactionExecute(db,command,actor){
+async function transactionExecute(db,command,actor,hrSnapshot,hrRevision){
   const r=refs(db,command),digest=sha(clean(command));
   return db.runTransaction(async tx=>{
-    const clientContext=CLIENT_COLLABORATION[command.commandType]?await clientCollaborationContext(tx,r,command,actor):null;
+    const clientContext=CLIENT_COLLABORATION[command.commandType]?await clientCollaborationContext(tx,r,command,actor,hrSnapshot,hrRevision):null;
     const prior=await tx.get(r.receipt);
     if(prior.exists){
       const p=prior.data()||{};
@@ -738,7 +751,7 @@ async function transactionExecute(db,command,actor){
   });
 }
 
-export function createOperationalCommandProvider({auth,db,policy}={}){
+export function createOperationalCommandProvider({auth,db,policy,hrSnapshot=null,hrRevision=''}={}){
   const pv=validateProviderPolicy(policy);if(!pv.ok)throw new Error('OPS_PROVIDER_POLICY_INVALID:'+pv.errors.join(','));
   if(!auth?.verifyIdToken||!db?.collection||!db?.runTransaction)throw new Error('OPS_PROVIDER_DEPENDENCIES_MISSING');
   return Object.freeze({
@@ -750,7 +763,7 @@ export function createOperationalCommandProvider({auth,db,policy}={}){
       let actor;
       try{actor=await exactActor(auth,db,token,command);}catch(error){return blocked(command,'OPS_ACTOR_DENIED',{error:str(error?.message||error)});}
       try{
-        const result=await transactionExecute(db,command,actor);
+        const result=await transactionExecute(db,command,actor,hrSnapshot,hrRevision);
         return CLIENT_COLLABORATION[command.commandType]?await verifyClientCollaborationReadback(db,command,actor,result):result;
       }catch(error){return blocked(command,str(error?.message||error));}
     },
