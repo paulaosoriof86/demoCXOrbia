@@ -1,0 +1,196 @@
+TAP version 13
+# Subtest: VRM297 released projection removes every answer, explanation and source secret
+ok 1 - VRM297 released projection removes every answer, explanation and source secret
+  ---
+  duration_ms: 2.176761
+  type: 'test'
+  ...
+# Subtest: VRM297 never projects pending, another tenant, hidden, or conflicting legacy type
+ok 2 - VRM297 never projects pending, another tenant, hidden, or conflicting legacy type
+  ---
+  duration_ms: 0.342636
+  type: 'test'
+  ...
+# Subtest: VRM297 server read preserves ordinary PDFs and published exam but no draft or key
+ok 3 - VRM297 server read preserves ordinary PDFs and published exam but no draft or key
+  ---
+  duration_ms: 1.318748
+  type: 'test'
+  ...
+# Subtest: VRM297 practice grades only on the backend and does not create attempts
+ok 4 - VRM297 practice grades only on the backend and does not create attempts
+  ---
+  duration_ms: 0.586827
+  type: 'test'
+  ...
+# Subtest: VRM297 authenticated HTTP GET is scoped and practice POST is non-persistent
+ok 5 - VRM297 authenticated HTTP GET is scoped and practice POST is non-persistent
+  ---
+  duration_ms: 4.093188
+  type: 'test'
+  ...
+# Subtest: VRM312 project instructive and published bank remain visible for new period with safe projection
+ok 6 - VRM312 project instructive and published bank remain visible for new period with safe projection
+  ---
+  duration_ms: 0.636771
+  type: 'test'
+  ...
+# Subtest: VRM312 generic project PDF survives period changes without relying on its title
+ok 7 - VRM312 generic project PDF survives period changes without relying on its title
+  ---
+  duration_ms: 0.227306
+  type: 'test'
+  ...
+# Subtest: VRM316 R5 shopper projection preserves Admin requirement defaults across periods
+ok 8 - VRM316 R5 shopper projection preserves Admin requirement defaults across periods
+  ---
+  duration_ms: 1.176098
+  type: 'test'
+  ...
+# Subtest: VRM297 Shopper loads only the authenticated GET projection and caches no key
+ok 9 - VRM297 Shopper loads only the authenticated GET projection and caches no key
+  ---
+  duration_ms: 6.061205
+  type: 'test'
+  ...
+# Subtest: VRM297 frontend fails closed if server projection unexpectedly carries keys
+ok 10 - VRM297 frontend fails closed if server projection unexpectedly carries keys
+  ---
+  duration_ms: 1.952485
+  type: 'test'
+  ...
+# Subtest: VRM297 preview submits only chosen options, never client-side answer keys
+ok 11 - VRM297 preview submits only chosen options, never client-side answer keys
+  ---
+  duration_ms: 2.272658
+  type: 'test'
+  ...
+# Subtest: approved Shopper projection with current authenticated provider ACK and exact visible guide passes
+ok 12 - approved Shopper projection with current authenticated provider ACK and exact visible guide passes
+  ---
+  duration_ms: 2.50467
+  type: 'test'
+  ...
+# Subtest: operator continues to require Firestore authority on the exact current scope
+ok 13 - operator continues to require Firestore authority on the exact current scope
+  ---
+  duration_ms: 0.476454
+  type: 'test'
+  ...
+# Subtest: real server output preserves reusable project resources and published banks from prior periods
+ok 14 - real server output preserves reusable project resources and published banks from prior periods
+  ---
+  duration_ms: 1.140545
+  type: 'test'
+  ...
+# Subtest: cross-period resource does not inherit when it is QA, visit-scoped or stored elsewhere {"qaOnly":true}
+ok 15 - cross-period resource does not inherit when it is QA, visit-scoped or stored elsewhere {"qaOnly":true}
+  ---
+  duration_ms: 0.384187
+  type: 'test'
+  ...
+# Subtest: cross-period resource does not inherit when it is QA, visit-scoped or stored elsewhere {"visitId":"specific-visit"}
+ok 16 - cross-period resource does not inherit when it is QA, visit-scoped or stored elsewhere {"visitId":"specific-visit"}
+  ---
+  duration_ms: 0.218072
+  type: 'test'
+  ...
+# Subtest: cross-period resource does not inherit when it is QA, visit-scoped or stored elsewhere {"tipo":"pdf","storagePath":"tenants/other/projects/p/periods/p-2026-10/resources/file.pdf"}
+ok 17 - cross-period resource does not inherit when it is QA, visit-scoped or stored elsewhere {"tipo":"pdf","storagePath":"tenants/other/projects/p/periods/p-2026-10/resources/file.pdf"}
+  ---
+  duration_ms: 0.215508
+  type: 'test'
+  ...
+# Subtest: resource authority rejects source label alone
+ok 18 - resource authority rejects source label alone
+  ---
+  duration_ms: 0.408673
+  type: 'test'
+  ...
+# Subtest: resource authority rejects missing remote ACK
+ok 19 - resource authority rejects missing remote ACK
+  ---
+  duration_ms: 0.235809
+  type: 'test'
+  ...
+# Subtest: resource authority rejects another principal
+ok 20 - resource authority rejects another principal
+  ---
+  duration_ms: 0.199205
+  type: 'test'
+  ...
+# Subtest: resource authority rejects another shopper
+ok 21 - resource authority rejects another shopper
+  ---
+  duration_ms: 0.299362
+  type: 'test'
+  ...
+# Subtest: resource authority rejects stale period
+ok 22 - resource authority rejects stale period
+  ---
+  duration_ms: 0.201378
+  type: 'test'
+  ...
+# Subtest: resource authority rejects another project endpoint
+ok 23 - resource authority rejects another project endpoint
+  ---
+  duration_ms: 0.187217
+  type: 'test'
+  ...
+# Subtest: resource authority rejects missing authorization
+ok 24 - resource authority rejects missing authorization
+  ---
+  duration_ms: 0.173987
+  type: 'test'
+  ...
+# Subtest: resource authority rejects service worker response
+ok 25 - resource authority rejects service worker response
+  ---
+  duration_ms: 0.212454
+  type: 'test'
+  ...
+# Subtest: resource authority rejects answer key leak
+ok 26 - resource authority rejects answer key leak
+  ---
+  duration_ms: 0.263389
+  type: 'test'
+  ...
+# Subtest: resource authority rejects hidden key in project resource
+ok 27 - resource authority rejects hidden key in project resource
+  ---
+  duration_ms: 0.220736
+  type: 'test'
+  ...
+# Subtest: resource authority rejects changed visible version
+ok 28 - resource authority rejects changed visible version
+  ---
+  duration_ms: 0.195289
+  type: 'test'
+  ...
+# Subtest: resource authority rejects unknown visible row
+ok 29 - resource authority rejects unknown visible row
+  ---
+  duration_ms: 0.26389
+  type: 'test'
+  ...
+# Subtest: resource authority rejects wrong resource tenant
+ok 30 - resource authority rejects wrong resource tenant
+  ---
+  duration_ms: 0.217091
+  type: 'test'
+  ...
+# Subtest: resource authority rejects duplicate provider row
+ok 31 - resource authority rejects duplicate provider row
+  ---
+  duration_ms: 0.187417
+  type: 'test'
+  ...
+1..31
+# tests 31
+# suites 0
+# pass 31
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 150.835701

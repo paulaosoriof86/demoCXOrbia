@@ -8,7 +8,12 @@ import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { chromium } from 'playwright';
 import { settleCustomRoleAuth, settleVisibleShopperAuth } from './RECOVERY-I3-BROWSER-AUTH-LIFECYCLE-20260919.mjs';
-import { requireProviderAck, requireExactCommandReceipt, reservationLifecyclePassed, restoreAssignment } from '../../tools/qa/cxorbia-i3-live-fixture-contract.mjs';
+import { requireProviderAck, requireExactCommandReceipt, reservationLifecyclePassed, restoreAssignment,
+  readFixturePrerequisites,fixtureExpected,fixtureFileHash,FIXTURE_INPUT_FILES,
+  validateFixtureHrObservation,validateFixtureDevIdentity,commandDigest,sameDocument,
+  fixturePlatformIdentityLinkId,fixtureApplicationId,dispatchTrackedFixtureCreation,requireFixtureCreationReceipt,
+  fixtureAuthSnapshot,requireFixtureShopperOwnership,requireFixtureApplicationOwnership,fixtureProposedDate,
+  deleteOwnedFixtureDocuments } from '../../tools/qa/cxorbia-i3-live-fixture-contract.mjs';
 
 const E = process.env;
 const PROJECT = E.PROJECT;
@@ -22,6 +27,8 @@ const SOURCE_DIR = E.SOURCE_DIR;
 const PRIOR_DIR = E.PRIOR_DIR;
 const PRIOR_RUN_ID = E.PRIOR_RUN_ID;
 const CERTIFIED_ARTIFACT_SHA256 = E.CERTIFIED_ARTIFACT_SHA256;
+const FIXTURE_STAGE=E.I3_FIXTURE_STAGE||'CERTIFIED';
+if(!['CERTIFIED','PRE_CERTIFICATION'].includes(FIXTURE_STAGE))throw new Error('RELEASE_COMPOSITION_FAILURE:LIVE_FIXTURE_STAGE_INVALID');
 const OUT = E.OUT || '.tmp/recovery-i3-live-fixtures';
 const RUN_ID = String(E.GITHUB_RUN_ID || 'local');
 const PREVIEW = 'YES_PAULA_20260628_PREVIEW_DEV';
@@ -36,11 +43,13 @@ const tests = [];
 const cleanupTargets = { docs: new Set(), authUids: new Set(), receipts: new Set(), audits: new Set() };
 const assignmentRestorations = [];
 const guardedSyntheticDocs = new Map();
+const creationJournals=[],preparedCommands=new Map(),ownedSnapshots=new Map();
 let fixtureShopperIds = [];
 let reservationEvidence = null;
 let browser = null;
 let failure = null;
 let cleanupFailure = null;
+let fixtureBinding=null,prerequisitesSha256=null,finalDevIdentityVerified=false,finalHrRevision=null,finalEvidence=null;
 fs.mkdirSync(OUT, { recursive: true });
 
 function classify(error) {
@@ -81,9 +90,19 @@ function command(type, entityType, entityId, idempotencyKey, payload, expectedVe
     audit: { reason: 'I3 live fixture run ' + RUN_ID }
   };
 }
-function trackCommand(c) {
+function trackCommand(c,actorUid,targetId=str(c.entityId)) {
   cleanupTargets.receipts.add(commandReceiptId(c));
   if (!c.commandType.startsWith('shopper.')) cleanupTargets.audits.add(commandAuditId(c));
+  preparedCommands.set(commandReceiptId(c),{command:c,actorUid,targetId});
+}
+async function commandPathsAbsent(c){
+  const receipt=await tenant.collection('commandReceipts').doc(commandReceiptId(c)).get();
+  const audit=c.commandType.startsWith('shopper.')?null:await tenant.collection('entityAuditTrail').doc(commandAuditId(c)).get();
+  return !receipt.exists&&!audit?.exists;
+}
+async function prepareCommand(c,actorUid){
+  if(!await commandPathsAbsent(c))throw new Error('PERSISTENCE_FAILURE:FIXTURE_COMMAND_PREFLIGHT_COLLISION');
+  trackCommand(c,actorUid);
 }
 function manualShopperId(key) {
   return 'shopper_manual_' + sha(TENANT + '\0' + PROJECT_ID + '\0' + key).slice(0, 24);
@@ -98,6 +117,56 @@ async function authMissing(uid) {
 async function emailMissing(email) {
   try { await auth.getUserByEmail(email); return false; }
   catch (e) { if (str(e?.code) === 'auth/user-not-found') return true; throw e; }
+}
+function persistCreationJournals(){
+  fs.writeFileSync(path.join(OUT,'creation-recovery-journal.json'),JSON.stringify(creationJournals,null,2)+'\n');
+}
+function pinOwnedSnapshot(snapshot){
+  const previous=ownedSnapshots.get(snapshot.ref.path);
+  if(previous&&(!snapshot.updateTime.isEqual(previous.updateTime)||!sameDocument(snapshot.data(),previous.data)))
+    throw new Error('PERSISTENCE_FAILURE:FIXTURE_CLEANUP_CONCURRENT_DOCUMENT');
+  ownedSnapshots.set(snapshot.ref.path,{data:snapshot.data(),updateTime:snapshot.updateTime});
+  guardedSyntheticDocs.set(snapshot.ref.path,snapshot.updateTime);
+}
+function timeAtMost(a,b){return a.seconds<b.seconds||(a.seconds===b.seconds&&a.nanoseconds<=b.nanoseconds);}
+async function resolveCreationJournal(j){
+  if(!j.submitted)return;
+  const receipt=await tenant.collection('commandReceipts').doc(j.receiptId).get();
+  requireFixtureCreationReceipt(j,receipt.data());
+  pinOwnedSnapshot(receipt);
+  const snapshots=await Promise.all(j.docPaths.map(p=>db.doc(p).get()));
+  if(j.kind==='shopper'){
+    if(snapshots.some(s=>!s.exists))throw new Error('PERSISTENCE_FAILURE:FIXTURE_SHOPPER_PARTIAL_CREATION');
+    const user=await auth.getUser(j.fixture.uid);
+    requireFixtureShopperOwnership(j,Object.fromEntries(['profile','membership','crosswalk','link'].map((k,i)=>[k,snapshots[i].data()])),user);
+    if(!snapshots[0].updateTime.isEqual(snapshots[2].updateTime)||!snapshots[0].updateTime.isEqual(snapshots[3].updateTime)||
+      !timeAtMost(snapshots[1].updateTime,snapshots[0].updateTime)||snapshots.some(s=>!timeAtMost(s.updateTime,receipt.updateTime)))
+      throw new Error('PERSISTENCE_FAILURE:FIXTURE_SHOPPER_CREATE_VERSION_CONFLICT');
+    const currentAuth=fixtureAuthSnapshot(user);
+    if(j.authSnapshot&&!sameDocument(j.authSnapshot,currentAuth))throw new Error('PERSISTENCE_FAILURE:FIXTURE_AUTH_OWNERSHIP_CHANGED');
+    j.authSnapshot=currentAuth;
+  }else{
+    const audit=await tenant.collection('entityAuditTrail').doc(commandAuditId(j.command)).get();
+    if(!audit.exists||!audit.updateTime.isEqual(receipt.updateTime))throw new Error('PERSISTENCE_FAILURE:FIXTURE_APPLICATION_AUDIT_VERSION');
+    const a=audit.data();
+    if(!(a.actorUid===j.actorUid&&a.tenantId===TENANT&&a.projectId===PROJECT_ID&&a.periodId===j.command.periodId&&
+      a.commandType===j.command.commandType&&a.idempotencyKey===j.command.idempotencyKey))
+      throw new Error('PERSISTENCE_FAILURE:FIXTURE_APPLICATION_AUDIT_SCOPE');
+    pinOwnedSnapshot(audit);
+    if(snapshots[0].exists){
+      requireFixtureApplicationOwnership(j,snapshots[0].data());
+      if(!snapshots[0].updateTime.isEqual(receipt.updateTime))throw new Error('PERSISTENCE_FAILURE:FIXTURE_APPLICATION_CREATE_VERSION_CONFLICT');
+    }else{
+      if(!j.deleteCommand)throw new Error('PERSISTENCE_FAILURE:FIXTURE_APPLICATION_UNEXPLAINED_ABSENCE');
+      const deleted=await tenant.collection('commandReceipts').doc(commandReceiptId(j.deleteCommand)).get();
+      requireExactCommandReceipt(deleted.data(),j.deleteCommand,j.actorUid);pinOwnedSnapshot(deleted);
+      j.deletedThroughProvider=true;
+    }
+  }
+  for(const s of snapshots)if(s.exists)pinOwnedSnapshot(s);
+  j.outcome='COMMITTED_DURABLE_READBACK';j.requestResolved=true;
+  j.ownedDocumentVersions=Object.fromEntries(snapshots.filter(s=>s.exists).map(s=>[s.ref.path,s.updateTime.toDate().toISOString()]));
+  persistCreationJournals();
 }
 async function firebaseApiKey() {
   const r = await fetch(HOST + '/__/firebase/init.json?ts=' + Date.now(), { cache: 'no-store' });
@@ -143,10 +212,11 @@ async function visibleShopperLogin(f) {
   const page = await context.newPage();
   try {
     const settled = await settleVisibleShopperAuth({
-      page, expectedUid: f.id, rawShopperId: f.id, canonicalShopperId: f.id,
+      page, expectedUid: f.uid, rawShopperId: f.id, canonicalShopperId: f.id,
       tenantId: TENANT, projectId: PROJECT_ID, baseUrl: productUrl(),
       login: f.credential.login, password: f.credential.password
     });
+    if(settled.authPrincipal?.uid!==f.uid)throw new Error('AUTH_FAILURE:FIXTURE_VISIBLE_PRINCIPAL_UID_MISMATCH');
     const p = settled.profile || {};
     const c = settled.context || {};
     return { role: c.role, tenantId: c.tenantId, projectIds: c.projectIds || [], shopperId: c.shopperId,
@@ -392,7 +462,7 @@ async function runReservationLifecycle({staff, staffToken, shopper, shopperToken
     shopperId:shopper.id,branchId:'qa-i3-reserva|qa',visitId,hrRowId:visitId,sourceRevision:hrRevision,
     status:'solicitada',periodo:periodKey,sucursal:'QA I3 RESERVA',ciudad:'QA',pais:shopper.profile.pais
   },'absent',periodId);
-  trackCommand(create);
+  await prepareCommand(create,shopper.uid);
   requireProviderAck(await executeHttp(shopperToken,create),'RESERVATION_CREATE');
   ev.createAck=true;
   const createdSnap=await reservationRef.get(),created=createdSnap.data();
@@ -403,7 +473,7 @@ async function runReservationLifecycle({staff, staffToken, shopper, shopperToken
   ev.createReload=await adminReservationReadback(staff.id,reservationId,'solicitada',periodId,periodKey);
   if(!ev.createReload.ok)throw new Error('FUNCTIONAL_DEFECT:RESERVATION_CREATE_RELOAD');
   const change=command('reservation.status.update','reservation',reservationId,key+'-status',{status:'cruzada',shopperId:shopper.id,visitId,hrRowId:visitId},created.version,periodId);
-  trackCommand(change);requireProviderAck(await executeHttp(staffToken,change),'RESERVATION_STATUS');
+  await prepareCommand(change,staff.id);requireProviderAck(await executeHttp(staffToken,change),'RESERVATION_STATUS');
   ev.statusAck=true;
   const [crossed,assigned]=await Promise.all([reservationRef.get(),visitRef.get()]);
   if(!(crossed.data()?.status==='cruzada' && crossed.data()?.shopperId===shopper.id && crossed.data()?.version===2 && assigned.data()?.shopperId===shopper.id && assigned.data()?.version===2))throw new Error('PERSISTENCE_FAILURE:RESERVATION_STATUS_READBACK');
@@ -414,7 +484,7 @@ async function runReservationLifecycle({staff, staffToken, shopper, shopperToken
   const replay=requireProviderAck(await executeHttp(staffToken,change),'RESERVATION_STATUS_REPLAY');
   if(!(replay.idempotentReplay===true && replay.providerWrites===0 && (await reservationRef.get()).data()?.version===2 && (await visitRef.get()).data()?.version===2))throw new Error('PERSISTENCE_FAILURE:RESERVATION_STATUS_REPLAY_WRITES');
   const remove=command('reservation.delete','reservation',reservationId,key+'-delete',{},crossed.data().version,periodId);
-  trackCommand(remove);requireProviderAck(await executeHttp(staffToken,remove),'RESERVATION_DELETE');
+  await prepareCommand(remove,staff.id);requireProviderAck(await executeHttp(staffToken,remove),'RESERVATION_DELETE');
   ev.deleteAck=true;ev.deleted=!(await reservationRef.get()).exists;
   if(!ev.deleted)throw new Error('PERSISTENCE_FAILURE:RESERVATION_DELETE_READBACK');
   await receipt(remove,staff.id);
@@ -443,21 +513,48 @@ async function restoreAllAssignments() {
 }
 async function cleanupAll() {
   if(assignmentRestorations.some(j=>j.restored!==true))throw new Error('PERSISTENCE_FAILURE:CLEANUP_BLOCKED_PENDING_ASSIGNMENT_RESTORATION');
-  for(const id of fixtureShopperIds){
-    const references=await project.collection('visits').where('shopperId','==',id).get();
-    if(references.docs.some(d=>!cleanupTargets.docs.has(d.ref.path)))throw new Error('PERSISTENCE_FAILURE:CLEANUP_BLOCKED_COMMERCIAL_VISIT_REFERENCE');
+  // Resolve every submitted creation before deleting any resource or evidence.
+  for(const j of creationJournals)await resolveCreationJournal(j);
+  const referenceQueries=fixtureShopperIds.flatMap(id=>['visits','postulations','reservations'].map(collection=>({
+    query:project.collection(collection).where('shopperId','==',id),label:collection})));
+  const removals=new Map();
+  for(const [id,j] of preparedCommands){
+    const r=await tenant.collection('commandReceipts').doc(id).get();
+    if(!r.exists)continue;
+    const value=r.data();
+    if(!(value.status==='committed'&&value.providerAck===true&&value.commandDigest===commandDigest(j.command)&&
+      value.commandType===j.command.commandType&&value.actorUid===j.actorUid&&str(value.entityId||value.shopperId)===j.targetId))
+      throw new Error('PERSISTENCE_FAILURE:FIXTURE_CLEANUP_RECEIPT_OWNERSHIP');
+    pinOwnedSnapshot(r);removals.set(r.ref.path,r);
+    if(!j.command.commandType.startsWith('shopper.')){
+      const a=await tenant.collection('entityAuditTrail').doc(commandAuditId(j.command)).get(),v=a.data();
+      if(!a.exists||!a.updateTime.isEqual(r.updateTime)||v.actorUid!==j.actorUid||v.tenantId!==j.command.tenantId||
+        v.projectId!==j.command.projectId||v.periodId!==j.command.periodId||v.commandType!==j.command.commandType||
+        v.idempotencyKey!==j.command.idempotencyKey)throw new Error('PERSISTENCE_FAILURE:FIXTURE_CLEANUP_AUDIT_OWNERSHIP');
+      pinOwnedSnapshot(a);removals.set(a.ref.path,a);
+    }
   }
   for (const p of [...cleanupTargets.docs].reverse()) {
     const r=db.doc(p),s=await r.get();if(!s.exists)continue;
-    if(guardedSyntheticDocs.has(p)){
-      const ownedTime=guardedSyntheticDocs.get(p);
-      if(!ownedTime || !s.updateTime.isEqual(ownedTime))throw new Error('PERSISTENCE_FAILURE:SYNTHETIC_CLEANUP_OWNERSHIP_OR_CONCURRENCY_CONFLICT');
-      await r.delete({lastUpdateTime:ownedTime});
-    }else await r.delete();
+    const ownedTime=guardedSyntheticDocs.get(p),owned=ownedSnapshots.get(p);
+    if(!ownedTime||!s.updateTime.isEqual(ownedTime)||(owned&&!sameDocument(s.data(),owned.data)))
+      throw new Error('PERSISTENCE_FAILURE:SYNTHETIC_CLEANUP_OWNERSHIP_OR_CONCURRENCY_CONFLICT');
+    removals.set(p,s);
   }
-  for (const id of cleanupTargets.receipts) { const r = tenant.collection('commandReceipts').doc(id); if ((await r.get()).exists) await r.delete(); }
-  for (const id of cleanupTargets.audits) { const r = tenant.collection('entityAuditTrail').doc(id); if ((await r.get()).exists) await r.delete(); }
-  for (const uid of cleanupTargets.authUids) { try { await auth.deleteUser(uid); } catch (e) { if (str(e?.code) !== 'auth/user-not-found') throw e; } }
+  // Re-read references and owned versions within the same Firestore transaction.
+  for(const j of creationJournals.filter(j=>j.kind==='shopper'&&j.submitted)){
+    if(!sameDocument(fixtureAuthSnapshot(await auth.getUser(j.fixture.uid)),j.authSnapshot))
+      throw new Error('PERSISTENCE_FAILURE:FIXTURE_AUTH_CHANGED_BEFORE_CLEANUP');
+  }
+  await deleteOwnedFixtureDocuments(db,{referenceQueries,ownedPaths:cleanupTargets.docs,removals:[...removals.values()]});
+  for(const uid of cleanupTargets.authUids){
+    const j=creationJournals.find(j=>j.fixture?.uid===uid);
+    if(!j?.requestResolved)throw new Error('PERSISTENCE_FAILURE:FIXTURE_AUTH_DELETE_WITHOUT_DURABLE_OWNER');
+    const user=await auth.getUser(uid);
+    if(!sameDocument(fixtureAuthSnapshot(user),j.authSnapshot))throw new Error('PERSISTENCE_FAILURE:FIXTURE_AUTH_CHANGED_BEFORE_DELETE');
+    await auth.deleteUser(uid);
+  }
+  for(const j of creationJournals)j.cleanupCompleted=true;persistCreationJournals();
 }
 async function absenceReadback() {
   const out = { docs: {}, auth: {} };
@@ -465,8 +562,39 @@ async function absenceReadback() {
   for (const id of cleanupTargets.receipts) out.docs['receipt:' + id] = !(await tenant.collection('commandReceipts').doc(id).get()).exists;
   for (const id of cleanupTargets.audits) out.docs['audit:' + id] = !(await tenant.collection('entityAuditTrail').doc(id).get()).exists;
   for (const uid of cleanupTargets.authUids) out.auth[uid] = await authMissing(uid);
-  out.ok = Object.values(out.docs).every(Boolean) && Object.values(out.auth).every(Boolean);
+  out.creationJournalsResolved=creationJournals.every(j=>!j.submitted||(j.requestResolved===true&&j.cleanupCompleted===true));
+  out.ok = !cleanupFailure&&out.creationJournalsResolved&&Object.values(out.docs).every(Boolean)&&Object.values(out.auth).every(Boolean);
   return out;
+}
+async function finalFixtureIdentityReadback(){
+  if(!fixtureBinding)return;
+  if(!/^[a-z0-9-]+$/.test(E.REGION||'')||!E.SERVICE)throw new Error('ENVIRONMENT_FAILURE:FIXTURE_DEV_READBACK_ENV');
+  const token=await getApps()[0].options.credential.getAccessToken();
+  const cloudJson=async url=>{
+    const response=await fetch(url,{headers:{authorization:'Bearer '+token.access_token}});
+    if(!response.ok)throw new Error('PROVIDER_FAILURE:FIXTURE_FINAL_READBACK_HTTP_'+response.status);
+    return response.json();
+  };
+  const base='https://'+E.REGION+'-run.googleapis.com/apis/serving.knative.dev/v1/namespaces/'+encodeURIComponent(PROJECT);
+  const service=await cloudJson(base+'/services/'+encodeURIComponent(E.SERVICE));
+  const revision=await cloudJson(base+'/revisions/'+encodeURIComponent(fixtureBinding.runtimeRevision));
+  const hosting=await cloudJson('https://firebasehosting.googleapis.com/v1beta1/sites/'+encodeURIComponent(PROJECT)+'/channels/live');
+  validateFixtureDevIdentity(fixtureBinding,{service,revision,hosting});
+  const hrRead=async format=>{
+    const response=await fetch(HOST+'/api/'+encodeURIComponent(TENANT)+'/'+encodeURIComponent(PROJECT_ID)+'/hr-live?format='+format+'&fixtureFinal='+RUN_ID+'&ts='+Date.now(),{cache:'no-store',headers:{'cache-control':'no-cache, no-store, max-age=0'}});
+    if(!response.ok)throw new Error('PROVIDER_FAILURE:FIXTURE_FINAL_HR_HTTP_'+response.status);
+    return response.json();
+  };
+  const hr=await hrRead('json'),meta=await hrRead('meta'),snapshot=hr.snapshot||hr.data||hr;
+  finalHrRevision=str(snapshot._runtime?.revision||snapshot.sourceRevision);
+  if(finalHrRevision!==fixtureBinding.hrRevision)throw new Error('SOURCE_FAILURE:LIVE_FIXTURE_FINAL_HR_CHANGED');
+  validateFixtureHrObservation(meta,finalHrRevision);
+  finalEvidence={};
+  for(const [key,value] of Object.entries({service,revision,hosting,hr,meta})){
+    const file='final-'+key+'.json',raw=JSON.stringify(value,null,2)+'\n';fs.writeFileSync(path.join(OUT,file),raw);
+    finalEvidence[key]={path:file,sha256:fixtureFileHash(raw)};
+  }
+  finalDevIdentityVerified=true;
 }
 
 if (!PROJECT || !HOST || !TENANT || !PROJECT_ID || !PERIOD_ID || !SOURCE_SHA || !SOURCE_TREE || !SOURCE_DIR || !PRIOR_DIR) throw new Error('ENVIRONMENT_FAILURE:LIVE_FIXTURE_ENV_INCOMPLETE');
@@ -481,18 +609,20 @@ let certificationHrEvidenceRevision = '';
 let certificationManifestHrRevision = '';
 
 try {
-  const manifest = readPrior('i3-certification-manifest.json');
-  const human = readPrior('human-live-acceptance.json');
-  const probes = readPrior('i3-functional-probes.json');
+  const prerequisites=FIXTURE_STAGE==='PRE_CERTIFICATION'?readFixturePrerequisites(PRIOR_DIR,fixtureExpected(E)):null;
+  if(prerequisites){fixtureBinding=prerequisites.binding;prerequisitesSha256=prerequisites.sha256;}
+  const manifest = prerequisites?null:readPrior('i3-certification-manifest.json');
+  const human = prerequisites?.data.human||readPrior('human-live-acceptance.json');
+  const probes = prerequisites?.data.probes||readPrior('i3-functional-probes.json');
   const probe = probes.probe || {};
-  if (!(manifest.decision === 'PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21' && manifest.i3CertificationSourceSha === SOURCE_SHA && manifest.i3CertificationSourceTree === SOURCE_TREE && manifest.artifactSha256 === CERTIFIED_ARTIFACT_SHA256 && manifest.buildCount === 1 && manifest.rebuildAfterCertification === false && manifest.production === false && human.decision === 'PASS_I3_HUMAN_LIVE_ACCEPTANCE' && probes.decision === 'PASS_I3_ATOMIC_FUNCTIONAL_PROBES' && human.routeInventory?.expectedRoleRouteEntries === 56)) throw new Error('RELEASE_COMPOSITION_FAILURE:CURRENT_CERTIFICATION_BINDING_MISMATCH');
+  if (!prerequisites&&!(manifest.decision === 'PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21' && manifest.i3CertificationSourceSha === SOURCE_SHA && manifest.i3CertificationSourceTree === SOURCE_TREE && manifest.artifactSha256 === CERTIFIED_ARTIFACT_SHA256 && manifest.buildCount === 1 && manifest.rebuildAfterCertification === false && manifest.production === false && human.decision === 'PASS_I3_HUMAN_LIVE_ACCEPTANCE' && probes.decision === 'PASS_I3_ATOMIC_FUNCTIONAL_PROBES' && human.routeInventory?.expectedRoleRouteEntries === 56)) throw new Error('RELEASE_COMPOSITION_FAILURE:CURRENT_CERTIFICATION_BINDING_MISMATCH');
 
   const shopperRoutes = arr(human.routes).filter((x) => x.role === 'shopper' && !x.failed);
   const clientRoutes = arr(human.routes).filter((x) => x.role === 'cliente' && !x.failed);
   const historyOk = arr(human.historyCandidates).length > 0 && shopperRoutes.some((x) => x.id === 'miperfil') && shopperRoutes.some((x) => x.id === 'misvisitas') && probe.dashboardPeriodsOk === true;
-  record('6_HISTORICO_KPIS', 'Same live HR revision drives profile/history/multiple periods/KPIs', { historyCandidates: human.historyCandidates, dashboardPeriodsOk: probe.dashboardPeriodsOk }, { priorRunId: PRIOR_RUN_ID, sourceSha: SOURCE_SHA }, 'No HR fixture written', 'No HR cleanup required', historyOk, { fromCurrentCertificationArtifact: true });
+  record('6_HISTORICO_KPIS', 'Same-run human evidence contains profile/history and period selection checks', { historyCandidates: human.historyCandidates, dashboardPeriodsOk: probe.dashboardPeriodsOk }, { priorRunId: PRIOR_RUN_ID, sourceSha: SOURCE_SHA }, 'No HR fixture written', 'No HR cleanup required', historyOk, { fromCurrentCertificationArtifact: !prerequisites,fromSameRunHumanEvidence:Boolean(prerequisites) });
   if(!(probe.reservations?.ok===true && probe.reservations?.source==='durable_provider'))throw new Error('PROVIDER_FAILURE:RESERVATION_READINESS');
-  record('10_CLIENTE', 'Client login/scope/authorized modules; no cross-role access', { clientRouteCount: clientRoutes.length, decision: human.decision }, { priorRunId: PRIOR_RUN_ID, sourceSha: SOURCE_SHA }, 'No client mutation', 'No cleanup required', clientRoutes.length > 0, { fromCurrentCertificationArtifact: true });
+  record('10_CLIENTE', 'Same-run human evidence includes successful authorized client routes; negative access and CRUD remain separate', { clientRouteCount: clientRoutes.length, decision: human.decision }, { priorRunId: PRIOR_RUN_ID, sourceSha: SOURCE_SHA }, 'No client mutation', 'No cleanup required', clientRoutes.length > 0, { fromCurrentCertificationArtifact: !prerequisites,fromSameRunHumanEvidence:Boolean(prerequisites) });
 
   const apiKey = await firebaseApiKey();
   const members = (await tenant.collection('users').get()).docs.map((d) => ({ id: d.id, ...(d.data() || {}) }));
@@ -501,16 +631,16 @@ try {
   await auth.getUser(staff.id);
   const staffToken = await customTokenToIdToken(await auth.createCustomToken(staff.id), apiKey);
 
-  const certificationHrPath = findFile(PRIOR_DIR, 'hr-current-live.json');
+  const certificationHrPath = prerequisites?path.join(PRIOR_DIR,FIXTURE_INPUT_FILES.hr):findFile(PRIOR_DIR, 'hr-current-live.json');
   if (!certificationHrPath) throw new Error('SOURCE_FAILURE:CERTIFICATION_HR_EVIDENCE_MISSING:hr-current-live.json');
   const certificationHrRaw = fs.readFileSync(certificationHrPath, 'utf8');
   const proofPayload = JSON.parse(certificationHrRaw);
   const proofHr = proofPayload.snapshot || proofPayload.data || proofPayload;
   certificationHrEvidenceRevision = str(proofHr?._runtime?.revision || proofHr?.sourceRevision || proofPayload?._runtime?.revision);
-  certificationManifestHrRevision = str(manifest.certificationHrRevision);
+  certificationManifestHrRevision = str(fixtureBinding?.hrRevision||manifest.certificationHrRevision);
   if (!/^[a-f0-9]{64}$/.test(certificationHrEvidenceRevision)) throw new Error('SOURCE_FAILURE:CERTIFICATION_HR_EVIDENCE_REVISION_INVALID');
   if (!/^[a-f0-9]{64}$/.test(certificationManifestHrRevision)) throw new Error('SOURCE_FAILURE:CERTIFICATION_HR_MANIFEST_REVISION_INVALID');
-  if (sha(certificationHrRaw) !== str(manifest.certificationHrEvidenceSha256)) throw new Error('RELEASE_COMPOSITION_FAILURE:CERTIFICATION_HR_EVIDENCE_HASH_MISMATCH');
+  if (sha(certificationHrRaw) !== str(fixtureBinding?.evidence.hr.sha256||manifest.certificationHrEvidenceSha256)) throw new Error('RELEASE_COMPOSITION_FAILURE:CERTIFICATION_HR_EVIDENCE_HASH_MISMATCH');
   if (certificationHrEvidenceRevision !== certificationManifestHrRevision) throw new Error('RELEASE_COMPOSITION_FAILURE:CERTIFICATION_HR_EVIDENCE_REVISION_MISMATCH');
   if (str(human.sourceRevision) !== certificationManifestHrRevision) throw new Error('RELEASE_COMPOSITION_FAILURE:CERTIFICATION_HR_HUMAN_MISMATCH');
 
@@ -521,15 +651,14 @@ try {
   const hr = hrPayload.snapshot || hrPayload.data || hrPayload;
   hrRevision = str(hr?._runtime?.revision || hr?.sourceRevision || hrPayload?._runtime?.revision);
   if (!/^[a-f0-9]{64}$/.test(hrRevision)) throw new Error('SOURCE_FAILURE:LIVE_FIXTURE_HR_REVISION_INVALID');
+  if(fixtureBinding&&hrRevision!==fixtureBinding.hrRevision)throw new Error('SOURCE_FAILURE:LIVE_FIXTURE_SAME_RUN_HR_CHANGED');
   fs.writeFileSync(path.join(OUT, 'hr-live-fixture.json'), JSON.stringify(hrPayload, null, 2) + '\n');
 
   const metaResp = await fetch(HOST + '/api/' + encodeURIComponent(TENANT) + '/' + encodeURIComponent(PROJECT_ID) + '/hr-live?format=meta&livefixture=' + encodeURIComponent(RUN_ID) + '&ts=' + Date.now(), { cache: 'no-store', headers: { 'cache-control': 'no-cache, no-store, max-age=0' } });
   if (!metaResp.ok) throw new Error('PROVIDER_FAILURE:LIVE_FIXTURE_HR_META_HTTP_' + metaResp.status);
   const hrMeta = await metaResp.json();
   if (str(hrMeta.revision) !== hrRevision) throw new Error('PROVIDER_FAILURE:LIVE_FIXTURE_HR_META_REVISION_MISMATCH');
-  if (!(hrMeta.ok === true && hrMeta.revisionStable === true && hrMeta.sourceSafe === true && hrMeta.shopperReconciliation?.providerAck === true && hrMeta.visitReconciliation?.providerAck === true && hrMeta.hrWrites === false && hrMeta.production === false && hrMeta.refreshError == null)) {
-    throw new Error('PROVIDER_FAILURE:LIVE_FIXTURE_HR_HEALTH_INVALID');
-  }
+  validateFixtureHrObservation(hrMeta,hrRevision);
   fs.writeFileSync(path.join(OUT, 'hr-live-fixture-meta.json'), JSON.stringify(hrMeta, null, 2) + '\n');
 
   const suffix = RUN_ID.slice(-6);
@@ -547,6 +676,13 @@ try {
     if (!f.credential.ok || !(await authMissing(f.uid)) || !(await emailMissing(f.internalEmail)) || (await tenant.collection('shoppers').doc(f.id).get()).exists) throw new Error('ENVIRONMENT_FAILURE:FIXTURE_COLLISION:' + f.testId);
   }
   fixtureShopperIds=fixtureDefs.map(f=>f.id);
+  let authPageToken;
+  do{
+    const page=await auth.listUsers(1000,authPageToken);
+    if(page.users.some(u=>u.customClaims?.tenantId===TENANT&&fixtureShopperIds.includes(str(u.customClaims?.shopperId))))
+      throw new Error('ENVIRONMENT_FAILURE:FIXTURE_EXISTING_AUTH_PRINCIPAL');
+    authPageToken=page.pageToken;
+  }while(authPageToken);
   const accent = fixtureDefs.find((x) => x.testId === '3_NOMBRE_TILDE');
   const compound = fixtureDefs.find((x) => x.testId === '4_NOMBRE_COMPUESTO');
   const exactAccent = shopperModule.shopperCredentialRule({ firstName: 'César', lastName: 'Castillo', nombre: 'César Castillo' });
@@ -555,15 +691,22 @@ try {
   if (compound.credential.login.includes('maria') || compound.credential.login.includes('lopez') || compound.credential.login.split('.').length !== 2) throw new Error('FUNCTIONAL_DEFECT:COMPOUND_CREDENTIAL_RULE');
 
   for (const f of fixtureDefs) {
-    const c = command('shopper.create', 'shopper', null, f.key, { profile: f.profile }); trackCommand(c);
-    const ack = await executeHttp(staffToken, c);
-    if (!(ack.ok === true && ack.providerAck === true && ack.entityId === f.id)) throw new Error('PROVIDER_FAILURE:SHOPPER_CREATE:' + f.testId + ':' + str(ack.code));
-    cleanupTargets.authUids.add(f.uid);
-    cleanupTargets.docs.add('tenants/' + TENANT + '/users/' + f.uid);
-    cleanupTargets.docs.add('tenants/' + TENANT + '/shoppers/' + f.id);
-    cleanupTargets.docs.add('tenants/' + TENANT + '/shopperIdentityCrosswalk/' + f.id);
-    if (!str(ack.identityLinkId) || ack.platformCreatedAuthority !== true) throw new Error('PERSISTENCE_FAILURE:SHOPPER_PLATFORM_IDENTITY_AUTHORITY_ACK:' + f.testId);
-    cleanupTargets.docs.add('tenants/' + TENANT + '/shopperIdentityLinks/' + str(ack.identityLinkId));
+    const c=command('shopper.create','shopper',null,f.key,{profile:f.profile}),linkId=fixturePlatformIdentityLinkId(TENANT,f.id);
+    const j={kind:'shopper',entityId:f.id,command:c,actorUid:staff.id,receiptId:commandReceiptId(c),
+      fixture:{uid:f.uid,internalEmail:f.internalEmail,visibleLogin:f.credential.login,profile:f.profile,identityLinkId:linkId},
+      docPaths:['shoppers/'+f.id,'users/'+f.uid,'shopperIdentityCrosswalk/'+f.id,'shopperIdentityLinks/'+linkId].map(p=>'tenants/'+TENANT+'/'+p)};
+    const ack=await dispatchTrackedFixtureCreation({journal:j,
+      checkAbsence:async()=>{
+        const snapshots=await Promise.all(j.docPaths.map(p=>db.doc(p).get()));
+        const members=await tenant.collection('users').where('shopperId','==',f.id).get();
+        return snapshots.every(s=>!s.exists)&&members.empty&&await authMissing(f.uid)&&await emailMissing(f.internalEmail)&&await commandPathsAbsent(c);
+      },
+      register:()=>{creationJournals.push(j);cleanupTargets.authUids.add(f.uid);for(const p of j.docPaths)cleanupTargets.docs.add(p);trackCommand(c,staff.id,f.id);},
+      persist:persistCreationJournals,send:()=>executeHttp(staffToken,c)});
+    requireProviderAck(ack,'SHOPPER_CREATE:'+f.testId);
+    if(ack.entityId!==f.id||ack.uidFingerprint!==shopperModule.providerUidFingerprint(f.uid)||ack.identityLinkId!==linkId||ack.platformCreatedAuthority!==true)
+      throw new Error('PERSISTENCE_FAILURE:SHOPPER_PLATFORM_IDENTITY_AUTHORITY_ACK:'+f.testId);
+    await resolveCreationJournal(j);
     const [ps, ms, ls] = await Promise.all([
       tenant.collection('shoppers').doc(f.id).get(),
       tenant.collection('users').doc(f.uid).get(),
@@ -692,10 +835,12 @@ try {
     availability.push({ visit, id, durableId, ref, durable, durableAvailable, pendingPlatform, periodKey, periodId:fixturePeriodId });
   }
   const canonicalAvailable = availability.filter((x) => x.durableAvailable).sort((a,b)=>b.periodKey.localeCompare(a.periodKey)||a.id.localeCompare(b.id));
-  const activeAvailable = canonicalAvailable.filter((x)=>x.periodKey===activePeriodKey);
-  const available = activeAvailable.length ? activeAvailable : canonicalAvailable;
-  if (available.length < 1) throw new Error('ENVIRONMENT_FAILURE:NO_CANONICAL_AVAILABLE_VISIT_ANY_HR_PERIOD');
-  const assignCandidate = available[0], postCandidate = available[1] || available[0];
+  const projectConfig=(await project.get()).data()||{};
+  const currentWindowAvailable=canonicalAvailable.map(x=>({...x,proposedDate:fixtureProposedDate(x.visit,projectConfig)})).filter(x=>x.proposedDate);
+  const postCandidate=currentWindowAvailable.find(x=>x.periodKey===activePeriodKey)||currentWindowAvailable[0];
+  if(!postCandidate)throw new Error('ENVIRONMENT_FAILURE:NO_AVAILABLE_HR_VISIT_WITH_CURRENT_PROPOSAL_WINDOW');
+  const available=canonicalAvailable.filter(x=>x.periodId===postCandidate.periodId);
+  const assignCandidate=available.find(x=>x.id!==postCandidate.id)||postCandidate;
   const fixturePeriodId=assignCandidate.periodId, fixturePeriodKey=assignCandidate.periodKey;
   if(postCandidate.periodId!==fixturePeriodId) throw new Error('ENVIRONMENT_FAILURE:AVAILABLE_VISITS_SPAN_PERIODS_WITHOUT_SHARED_FIXTURE_PERIOD');
   const fallbackUsed=fixturePeriodId!==PERIOD_ID;
@@ -711,7 +856,7 @@ try {
 
   const gt = fixtureDefs.find((x) => x.testId === '1_SHOPPER_GT');
   const assignCommand = command('visit.assign', 'visit', assignId, 'i3-assign-' + RUN_ID, { visitId: assignId, hrRowId: assignBefore.hrRowId || assignVisit.hrRowId || null, shopperId: gt.id, assignmentSource: 'platform' }, assignVersion, fixturePeriodId);
-  trackCommand(assignCommand);
+  await prepareCommand(assignCommand,staff.id);
   const recovery={ref:assignRef,receiptRef:tenant.collection('commandReceipts').doc(commandReceiptId(assignCommand)),beforeData:assignBefore,beforeUpdateTime:freshAssign.updateTime,command:assignCommand,actorUid:staff.id,submitted:false,requestResolved:false,restored:false};
   assignmentRestorations.push(recovery);
   fs.writeFileSync(path.join(OUT,'assignment-recovery-before-post.json'),JSON.stringify({visitPath:assignRef.path,receiptPath:recovery.receiptRef.path,beforeData:assignBefore,command:assignCommand,actorUid:staff.id,production:false},null,2)+'\n');
@@ -732,16 +877,24 @@ try {
 
   const shopperToken = await passwordToIdToken(gt.internalEmail, gt.credential.password, apiKey);
   await runReservationLifecycle({staff,staffToken,shopper:gt,shopperToken,periodId:fixturePeriodId,periodKey:fixturePeriodKey});
-  const createPost = command('application.create', 'application', null, 'i3-post-create-' + RUN_ID, { visitId: postId, hrRowId: postBefore.hrRowId || postVisit.hrRowId || null, shopperId: gt.id, proposedDate: str(postVisit.disponibleDesde||postVisit.measurementWindowStart||postVisit.availableFromRaw)||null, note: 'I3 live fixture' }, 'absent', fixturePeriodId);
-  trackCommand(createPost);
-  const postAck = await executeHttp(shopperToken, createPost);
-  if (!(postAck.ok === true && postAck.providerAck === true && postAck.entityId)) throw new Error('PROVIDER_FAILURE:POSTULATION_CREATE:' + str(postAck.code));
-  const postulationRef = project.collection('postulations').doc(postAck.entityId); cleanupTargets.docs.add(postulationRef.path);
+  const createPost=command('application.create','application',null,'i3-post-create-'+RUN_ID,{visitId:postId,
+    hrRowId:postBefore.hrRowId||postVisit.hrRowId||null,shopperId:gt.id,proposedDate:postCandidate.proposedDate,note:'I3 live fixture'},'absent',fixturePeriodId);
+  const postulationId=fixtureApplicationId(createPost),postulationRef=project.collection('postulations').doc(postulationId);
+  const postJournal={kind:'application',command:createPost,entityId:postulationId,actorUid:gt.uid,
+    receiptId:commandReceiptId(createPost),docPaths:[postulationRef.path]};
+  const postAck=await dispatchTrackedFixtureCreation({journal:postJournal,
+    checkAbsence:async()=>!(await postulationRef.get()).exists&&await commandPathsAbsent(createPost),
+    register:()=>{creationJournals.push(postJournal);cleanupTargets.docs.add(postulationRef.path);trackCommand(createPost,gt.uid,postulationId);},
+    persist:persistCreationJournals,send:()=>executeHttp(shopperToken,createPost)});
+  requireProviderAck(postAck,'POSTULATION_CREATE');
+  if(postAck.entityId!==postulationId)throw new Error('PERSISTENCE_FAILURE:POSTULATION_CREATE_ENTITY_MISMATCH');
+  await resolveCreationJournal(postJournal);
   const postData = (await postulationRef.get()).data() || {};
   const adminPresent = await adminPostulationReadback(staff.id, postAck.entityId, true, fixturePeriodId);
   const deletePost = command('application.delete', 'application', postAck.entityId, 'i3-post-delete-' + RUN_ID, { applicationId: postAck.entityId, visitId: postId }, postData.version ?? postData.updatedAt ?? 'source-current', fixturePeriodId);
-  trackCommand(deletePost);
-  const deleteAck = await executeHttp(shopperToken, deletePost);
+  await prepareCommand(deletePost,gt.uid);postJournal.deleteCommand=deletePost;persistCreationJournals();
+  const deleteAck=requireProviderAck(await executeHttp(shopperToken,deletePost),'POSTULATION_DELETE');
+  await resolveCreationJournal(postJournal);
   const absentPost = !(await postulationRef.get()).exists;
   const adminAbsent = await adminPostulationReadback(staff.id, postAck.entityId, false, fixturePeriodId);
   if (!(adminPresent.ok && deleteAck.ok === true && deleteAck.providerAck === true && absentPost && adminAbsent.ok)) throw new Error('PERSISTENCE_FAILURE:POSTULATION_DELETE_OR_REAPPEAR');
@@ -763,6 +916,7 @@ try {
     if (t.absenceReadback === 'Shared absence readback pending') t.absenceReadback = { sharedAbsenceReadback: absence.ok };
   }
   if (cleanupFailure || !absence.ok) failure = failure || new Error('PERSISTENCE_FAILURE:CLEANUP_INCOMPLETE');
+  if(!failure){try{await finalFixtureIdentityReadback();}catch(e){failure=e;}}
   const required = ['1_SHOPPER_GT','2_SHOPPER_HN','3_NOMBRE_TILDE','4_NOMBRE_COMPUESTO','5_PERFIL_ADMIN','6_HISTORICO_KPIS','7_DISPONIBILIDAD_ASIGNACION','8_POSTULACION','9_RESERVA','10_CLIENTE'];
   const missing = required.filter((id) => !tests.some((t) => t.id === id && t.ok));
   if (missing.length && !failure) failure = new Error('FUNCTIONAL_DEFECT:MISSING_REQUIRED_TESTS:' + missing.join(','));
@@ -770,16 +924,20 @@ try {
     schemaVersion: 'cxorbia.i3.live-fixtures.v2',
     decision: failure ? 'HOLD_I3_LIVE_FIXTURES_V2' : 'PASS_I3_LIVE_FIXTURES_V2',
     generatedAt: new Date().toISOString(), priorRunId: PRIOR_RUN_ID,
-    certificationSourceSha: SOURCE_SHA, certificationSourceTree: SOURCE_TREE, certifiedArtifactSha256: CERTIFIED_ARTIFACT_SHA256,
+    certificationSourceSha: SOURCE_SHA, certificationSourceTree: SOURCE_TREE,
+    ...(fixtureBinding?{proofStage:FIXTURE_STAGE,certifiedAtExecution:false,phaseAComplete:false,sourceSha:SOURCE_SHA,sourceTree:SOURCE_TREE,
+      artifactSha256:fixtureBinding.artifactSha256,runtimeRevision:fixtureBinding.runtimeRevision,runtimeDigest:fixtureBinding.runtimeDigest,
+      hostingVersion:fixtureBinding.hostingVersion,runId:RUN_ID,runAttempt:fixtureBinding.runAttempt,controlHeadSha:fixtureBinding.controlHeadSha,
+      prerequisitesSha256,finalDevIdentityVerified,finalHrRevision,finalEvidence,prerequisiteHrRevision:certificationManifestHrRevision}:
+      {proofStage:FIXTURE_STAGE,certifiedAtExecution:true,certifiedArtifactSha256:CERTIFIED_ARTIFACT_SHA256}),
     buildCountThisRun: 0, deployCountThisRun: 0, rebuildAfterCertification: false, productSourceChanged: false,
     production: false, hrWrites: 0, fuzzyMatching: false, hrRevision, liveFixtureHrRevision: hrRevision,
-    certificationHrEvidenceRevision,
-    certificationManifestHrRevision,
-    crossRunHrRevisionEqualityRequired: false, sameRevisionWithinThisLiveFixtureRun: true, tests, cleanup: absence,
+    ...(fixtureBinding?{}:{certificationHrEvidenceRevision,certificationManifestHrRevision}),
+    crossRunHrRevisionEqualityRequired: false,sameRunPrerequisiteHrEqualityRequired:Boolean(fixtureBinding),sameRevisionWithinThisLiveFixtureRun: true, tests, cleanup: absence,
     classification: failure ? classify(failure) : null, code: failure ? str(failure.message).slice(0, 900) : null,
     cleanupError: cleanupFailure ? str(cleanupFailure.message).slice(0, 400) : null
   };
   fs.writeFileSync(path.join(OUT, 'i3-live-fixtures-result.json'), JSON.stringify(result, null, 2) + '\n');
   console.log(result.decision + ' tests=' + tests.filter((x) => x.ok).length + '/10 cleanup=' + absence.ok + ' build=0 deploy=0 production=false');
-  if (failure) { console.error(result.classification + ':' + result.code); }
+  if (failure) { console.error(result.classification + ':' + result.code); process.exitCode=1; }
 }

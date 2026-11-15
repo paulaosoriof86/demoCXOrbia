@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "cxorbia.i3.verified-terminal-attempt.v1",
+  "generatedAt": "2026-11-15T22:56:11.759402+00:00",
+  "decision": "HOLD_I3_HUMAN_PASS_COUNTRY_REFRESH_FUNCTIONAL_DEFECT_AND_FOCAL_RESOURCE_QA_MAPPING",
+  "runId": 43768621656,
+  "runNumber": 2534,
+  "runAttempt": 1,
+  "url": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43768621656",
+  "jobId": 132979838733,
+  "controlSha": "e06c36e0d1fb02e59c87a5f268f32906222d2bea",
+  "sourceSha": "e20b5a67057be2419750bbb5363df37af1089813",
+  "sourceTree": "15b61305d615c4ad348ab7018a306eb3312c99bf",
+  "terminalArtifactId": 14183936298,
+  "terminalArtifactDigest": "sha256:b5489bf661e06a7625557af1315d51a36284915bc893dbcbde14ee61d93496d5",
+  "artifactDigestIndependentlyVerified": true,
+  "files": {
+    "current-preterminal-result.json": {
+      "sha256": "1e6d23f2a240ccd81b3787497322a7f589b4df044f655a66f31cf127c7be8e07",
+      "bytes": 1998
+    },
+    "current-preterminal-matrix.json": {
+      "sha256": "ca137b1a0517a6e4b4481e7d8e2ca4e6f134eb82c0034b89db7cff64f3b8a770",
+      "bytes": 1303787
+    },
+    "source-qa/source-qa-receipt.json": {
+      "sha256": "8a43bf04712a960949bb785855845efcd6d453fd21e76ee4bafb86b0e3e25461",
+      "bytes": 5017
+    },
+    "full-human-acceptance/human-live-acceptance.json": {
+      "sha256": "7f271b41b97e79ce28663539271b74a4462ccf8da54bfc50b328c740ca3a745b",
+      "bytes": 61821
+    },
+    "full-human-acceptance/i3-functional-probes.json": {
+      "sha256": "5c3ad29c44ad104f41f31a187ac4be9ce2e10db330f344beba28ddb8994a1923",
+      "bytes": 1298
+    },
+    "full-human-acceptance/tenant-readonly/project-country-live-proof.json": {
+      "sha256": "471786320f13a83aa934ee14a28a7e6b25fc914daebb60becb2e6a52e1bb0249",
+      "bytes": 23151
+    },
+    "semantic/browser-focal.json": {
+      "sha256": "4174001044afeff27c5ee09e1ba268ff2250d1ddabe36fd4c50dbad2c40ae3a5",
+      "bytes": 36260
+    },
+    "semantic/hr-contrast.json": {
+      "sha256": "ef58c5433cad2faeafe16eca6c12479c39fbadb62476d9bafd5b4ae46cd72bd2",
+      "bytes": 38778
+    },
+    "module-truth-progress.json": {
+      "sha256": "51fbc04d07c99f1789c36d85d0414698af723e3a8960920b2a7c149e258c9404",
+      "bytes": 1377107
+    }
+  },
+  "human": {
+    "decision": "PASS_I3_HUMAN_LIVE_ACCEPTANCE",
+    "observations": 90,
+    "screenshots": 93,
+    "issues": 0,
+    "pageErrors": 0
+  },
+  "functionalProbesDecision": "PASS_I3_ATOMIC_FUNCTIONAL_PROBES",
+  "semanticDecision": "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE",
+  "focalDecision": "FAIL_PRE_I4_FOCAL_HUMAN_BROWSER",
+  "focalFailure": {
+    "reported": "PERSISTENCE_FAILURE:RESOURCE_CONNECTED_READ_NOT_READY:{\"count\":1,\"names\":[\"Instructivo Shopper Cinépolis\"],\"rows\":[{\"id\":\"res-1olqhkg\",\"name\":\"Instructivo Shopper Cinépolis\",\"meta\":\"Instructivo Shopper.pdf\",\"resourceType\":\"project_resource\",\"source\":\"\",\"demo\":false,\"status\":\"active\"}],\"staticResourceSeedIds\":[],\"status\":{\"source\":\"verified-server-projection\",\"status\":\"ready\",\"tenantId\":\"tya\",\"projectId\":\"cinepolis\",\"periodId\":\"cinepolis-2026-11\",\"count\":3,\"at\":\"2026-11-15T22:29:04.476Z\"},\"storage\":{\"authorized\":true,\"configured\":true,\"available\":true,\"reason\":null}}",
+    "classification": "MAPPING_FAILURE",
+    "findingId": "VRM-344",
+    "actualProjection": "verified-server-projection",
+    "requiredRepair": "Verify authenticated provider response, exact scope, safe fields and visible row parity instead of forcing the Admin Firestore label on Shopper."
+  },
+  "country": {
+    "decision": "HOLD_I3_PROJECT_COUNTRY_LIVE_PROOF",
+    "projectId": "prj-63f5d7204c4000dab4b8",
+    "partialProof": "Real Admin UI created isolated GT project and added HN; committed project.update receipt and durable project version2 preserve GT/HN and currencies. Refresh readiness timed out before replay/reload/remove.",
+    "error": "page.waitForFunction: Timeout 120000ms exceeded.",
+    "cleanupDecision": "PASS_OWNED_FIXTURE_CLEANUP",
+    "deleted": 5,
+    "remaining": 0,
+    "commercialProjectUnchanged": true,
+    "returnedToCommercialProject": true,
+    "findingId": "VRM-345",
+    "fullCountryCyclePassed": false
+  },
+  "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+  "periodId": "cinepolis-2026-11",
+  "moduleCount": 21,
+  "matchModules": 4,
+  "sourceReadyModules": 21,
+  "pendingOwnerFiles": 0,
+  "liveFixtures": "NOT_REACHED",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "phaseAComplete": false,
+  "production": false,
+  "i4Authorized": false,
+  "interpretation": "C3 and human PASS belong to e20 source; they do not certify the new pending source or all21 domains."
+}

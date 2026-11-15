@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "cxorbia.i3.control-repair-scope.v1",
+  "findingId": "VRM-344",
+  "priority": "P0_PROVEN",
+  "iteration": "I3",
+  "classification": "MAPPING_FAILURE",
+  "observedRunId": "43768621656",
+  "observedJobId": "132979838733",
+  "diagnosticsArtifactId": "14183936298",
+  "diagnosticsArtifactSha256": "b5489bf661e06a7625557af1315d51a36284915bc893dbcbde14ee61d93496d5",
+  "observed": "The focal QA requires resources.status.source=firestore for every role. The approved Shopper security contract intentionally serves resources through the authenticated server projection, which redacts certification answer keys; the current ready resource was rejected solely for source=verified-server-projection.",
+  "requiredRepair": "Validate the current authenticated GET, exact tenant/project/period/UID, remote ACK, safe projection, and visible row identity/version. Preserve direct Firestore authority for operators and reject a label alone, cache/seed, missing ACK, wrong scope, unsafe keys or a different principal.",
+  "allowedControlFiles": [
+    "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
+    "tools/qa/cxorbia-pre-i4-resource-read-contract.mjs",
+    "tools/qa/cxorbia-pre-i4-resource-read-contract.test.mjs",
+    ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+  ],
+  "productChanges": false,
+  "production": false
+}

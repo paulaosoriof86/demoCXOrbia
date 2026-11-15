@@ -1,0 +1,135 @@
+{
+  "schemaVersion": "cxorbia.i3.p0.source-proof.v1",
+  "decision": "PASS_I3_P0_SOURCE_QA_NOT_DEV_CERTIFICATION",
+  "generatedAt": "2026-11-15T22:56:11.759402+00:00",
+  "sourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
+  "sourceTree": "e2d2fa981282ef9736aba9fa06aa9735bf486c43",
+  "predecessorProductSourceSha": "e20b5a67057be2419750bbb5363df37af1089813",
+  "sourceTestsPass": 168,
+  "sourceTestsFail": 0,
+  "registeredOwnerCount": 13,
+  "allowedProductFiles": [
+    "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+    "app/adapters/tya-c6-unified-human-runtime-v1.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-human-project-scope.test.mjs",
+    "tools/qa/cxorbia-i3-live-fixture-contract.mjs",
+    "tools/qa/cxorbia-i3-live-fixture-contract.test.mjs",
+    "tools/qa/cxorbia-i3-source-qa-evidence.mjs",
+    "tools/qa/cxorbia-i3-source-qa-evidence.test.mjs",
+    "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
+    "tools/qa/cxorbia-pre-i4-resource-read-contract.mjs",
+    "tools/qa/cxorbia-pre-i4-resource-read-contract.test.mjs"
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_INTERNAL_REFRESH_AUTHORITY_P0_SCOPE_20261115.json",
+  "scopeReceiptBlob": "70fea579cf0d7ed0bcb332952b8dc18174b53c4d",
+  "authorizedScopes": {
+    "VRM-342": {
+      "path": "docs/checkpoints/CXORBIA_I3_PRECERTIFICATION_FIXTURE_ORDER_SCOPE_20261115.json",
+      "gitBlob": "139b026575fc713d105f03a82fc9044b71486d2e"
+    },
+    "VRM-343": {
+      "path": "docs/checkpoints/CXORBIA_I3_FIXTURE_CREATION_CLEANUP_SCOPE_20261115.json",
+      "gitBlob": "322efdae08404f86900ccd135c9d9f03408232e1"
+    },
+    "VRM-344": {
+      "path": "docs/checkpoints/CXORBIA_I3_RESOURCE_FOCAL_QA_SCOPE_20261115.json",
+      "gitBlob": "50d40c8bd567a08abf1f5a3114876890ea333ef2"
+    },
+    "VRM-345": {
+      "path": "docs/checkpoints/CXORBIA_I3_INTERNAL_REFRESH_AUTHORITY_P0_SCOPE_20261115.json",
+      "gitBlob": "70fea579cf0d7ed0bcb332952b8dc18174b53c4d"
+    }
+  },
+  "findings": [
+    {
+      "id": "VRM-345",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "owners": [
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "app/adapters/tya-c6-unified-human-runtime-v1.js"
+      ]
+    }
+  ],
+  "testEvidence": {
+    "source.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_INTERNAL_REFRESH_PACKAGE_SOURCE_QA_20261115/source.tap",
+      "gitBlob": "52d17b4299b8711b00bfa25e16d12274d00f3f1f",
+      "sha256": "8661a4575e4680bdb195289d46c2d727b6db221006777928be3d8103698fb7c5"
+    },
+    "internal-refresh-before.txt": {
+      "path": "docs/checkpoints/CXORBIA_I3_INTERNAL_REFRESH_PACKAGE_SOURCE_QA_20261115/internal-refresh-before.txt",
+      "gitBlob": "dc936b788f5d1e98799639a68ab999444eab2544",
+      "sha256": "b45492a0376b4741cc5a2fa65e872972323eca35d96ea3052d80882b4a922154"
+    },
+    "internal-refresh-after.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_INTERNAL_REFRESH_PACKAGE_SOURCE_QA_20261115/internal-refresh-after.tap",
+      "gitBlob": "a5d232ad7ec39775334c6e766fc59c5d1e36b5d0",
+      "sha256": "a4ce14095dd82dbe7354e74e6261c465a5e177489383a9b095366a4a5226ba09"
+    },
+    "fixture-contract.txt": {
+      "path": "docs/checkpoints/CXORBIA_I3_INTERNAL_REFRESH_PACKAGE_SOURCE_QA_20261115/fixture-contract.txt",
+      "gitBlob": "643cbcbff9b34ddbb7c1031fb3f7c13dfd570332",
+      "sha256": "f48055f5f3f0aa35034f16b74f07b70a4b66d553549fc0b5a5c7479d885faf75"
+    },
+    "resource-focal.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_INTERNAL_REFRESH_PACKAGE_SOURCE_QA_20261115/resource-focal.tap",
+      "gitBlob": "06db10ee10a205ff46fb5428d747f65da30841c7",
+      "sha256": "33759c43e1504a91bdb07318fbbda750a38f7b20178a01503ca08d0a2eed45ac"
+    },
+    "canonical-test-commands.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_INTERNAL_REFRESH_PACKAGE_SOURCE_QA_20261115/canonical-test-commands.json",
+      "gitBlob": "15486c1e1179ecf8ecbfbb0d306a96e5aa1a057e",
+      "sha256": "517184d8e029d7d73f789afc7a989107e5ad3933c36b0ea242c96fcc23ee1589"
+    }
+  },
+  "registeredSourceStats": {
+    "tests": 168,
+    "pass": 168,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0
+  },
+  "scopedRegression": {
+    "before": {
+      "pass": 24,
+      "fail": 1
+    },
+    "after": {
+      "pass": 25,
+      "fail": 0
+    },
+    "combinedWithSourceRegistry": {
+      "pass": 55,
+      "fail": 0
+    }
+  },
+  "controlFixtureContract": {
+    "pass": 105,
+    "fail": 0
+  },
+  "resourceProjectionContract": {
+    "pass": 31,
+    "fail": 0
+  },
+  "countsAreNotAdditive": true,
+  "productOwnerBlobs": {
+    "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js": "7b2c430814c93841c8392a16c029ce06d686e995",
+    "app/adapters/tya-c6-unified-human-runtime-v1.js": "24e71f22fa5d678e79cde0d131d1ff0b4ce0be8b"
+  },
+  "requiredLiveProof": "Complete isolated internal-country add/remove/reload/replay/cleanup; exact principal/authority/C6 readiness; new source QA and focal plus PRE fixtures.",
+  "devPublished": false,
+  "production": false,
+  "authWrites": 0,
+  "hrWrites": 0,
+  "paymentWrites": 0,
+  "humanPassesPreserved": [
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ]
+}

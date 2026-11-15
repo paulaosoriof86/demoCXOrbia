@@ -1,0 +1,52 @@
+✔ normal human entry preserves the configured authorized tenant and project (4.034211ms)
+✔ authenticated exact internal project can configure countries before periods or visits exist (0.939037ms)
+✔ internal entry rejects unauthenticated principal (0.932067ms)
+✔ internal entry rejects different uid (0.698361ms)
+✔ internal entry rejects different tenant (1.622697ms)
+✔ internal entry rejects different project (0.733895ms)
+✔ internal entry rejects different namespace (0.759252ms)
+✔ internal entry rejects missing authorized project (0.724009ms)
+✔ internal entry rejects external record with internal flag (0.868554ms)
+✔ internal entry rejects non atomic authority (0.840281ms)
+✔ internal entry rejects old session generation (0.788335ms)
+✔ internal entry rejects missing session generation (0.634016ms)
+✔ internal entry rejects wrong internal source ref (0.626105ms)
+✔ internal flag never bypasses shopper exact identity requirements (0.620577ms)
+✔ external HR authority retains revision, period and nonempty operational requirements (2.735872ms)
+✔ external shopper authority still requires the exact signed-in identity (1.328182ms)
+✔ an initially blocked human shell releases after the actual internal authority producer completes (3.825562ms)
+✔ cold internal project without a period mounts configuration through the real router start resolver (2.214733ms)
+✔ deferred internal publication selects configuration before mounting a no-period project (1.139523ms)
+✔ initial internal setup never grants configuration access to a role without permission (0.816206ms)
+✔ deferred operational request does not replay Mi Dia after selecting safe configuration (1.075139ms)
+✔ explicit permitted period-free view survives initial setup without enlarging permissions (1.534948ms)
+✔ an actual internal period preserves the selected operational view (0.675347ms)
+✔ external HR mount keeps its existing operational selection (0.556803ms)
+✖ internal country update refresh releases C6 after the real Corte4 source transition (3.490026ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 24
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 122.083836
+
+✖ failing tests:
+
+test at tools/qa/cxorbia-i3-human-project-scope.test.mjs:128:1
+✖ internal country update refresh releases C6 after the real Corte4 source transition (3.490026ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-human-project-scope.test.mjs:158:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

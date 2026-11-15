@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "cxorbia.i3.control-repair-scope.v1",
+  "findingId": "VRM-342",
+  "priority": "P0_PROVEN",
+  "iteration": "I3",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "observedSource": "f9080874ae1130078a92fcdacbec6e7ae4a3dfe9",
+  "observed": "Strict21 closure and certificate precede the live fixtures that supply pending Q3 evidence; runner additionally demands reconciliation ACK from read-only HR observation.",
+  "requiredRepair": "Build the one deterministic TAR once; bind same-run source/dev/HR evidence before fixtures without certification; execute fixtures and cleanup before strict finalizer; preserve every strict21/G20/G21 requirement; verify sealed fixture bytes afterwards without repeating writes. Reuse existing HR observation validator. Keep the same lane serial and prevent a later push from cancelling a run with active synthetic writes.",
+  "allowedControlFiles": [
+    ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    ".github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml",
+    ".github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs",
+    "tools/qa/cxorbia-i3-live-fixture-contract.mjs",
+    "tools/qa/cxorbia-i3-live-fixture-contract.test.mjs"
+  ],
+  "productChanges": false,
+  "production": false,
+  "generatedAt": "2026-11-15T22:15:03.424102+00:00"
+}

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "cxorbia.i3.control-repair-scope.v1",
+  "findingId": "VRM-343",
+  "priority": "P0_PROVEN",
+  "iteration": "I3",
+  "classification": "PERSISTENCE_FAILURE",
+  "observedSource": "e06c36e0d1fb02e59c87a5f268f32906222d2bea",
+  "observed": "The live-fixture runner registers shopper Auth/profile/membership/crosswalk/link and application paths only after receiving HTTP ACK. Both providers may commit before a lost response; shopper creation can partially write before returning blocked. The old cleanup could omit these resources, delete their receipt, and incorrectly report absence.",
+  "requiredRepair": "Preflight every deterministic target, persist intent and register before POST, resolve through exact committed receipt and independent ownership/version readback, preserve ambiguous resources and evidence, check shopper references before atomic conditional Firestore cleanup, and report cleanup failure honestly. Select a non-past proposed date within the explicit HR visit window instead of copying a stale lower bound.",
+  "allowedControlFiles": [
+    ".github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs",
+    "tools/qa/cxorbia-i3-live-fixture-contract.mjs",
+    "tools/qa/cxorbia-i3-live-fixture-contract.test.mjs"
+  ],
+  "providerEvidence": [
+    "backend/runtime/cxorbia-shopper-command-provider-v1.mjs: ensureShopperIdentity, persistManualProfile, final command receipt",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs: application.create atomic transaction and localToday constraint"
+  ],
+  "productChanges": false,
+  "production": false
+}

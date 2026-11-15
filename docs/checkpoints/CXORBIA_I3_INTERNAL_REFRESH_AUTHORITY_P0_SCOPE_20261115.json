@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-proven-scope.v1",
+  "findingId": "VRM-345",
+  "priority": "P0_PROVEN",
+  "iteration": "I3",
+  "classification": "FUNCTIONAL_DEFECT",
+  "observedRunId": "43768621656",
+  "observedSource": "e20b5a67057be2419750bbb5363df37af1089813",
+  "moduleTruthBeforeEdit": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261115-V317.json",
+    "gitBlob": "eb84ab063b4eabb3ad756fdc00773cc9fa97d4fc",
+    "owners": [
+      {
+        "path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "module": "canonical-hr-state-adapters",
+        "lastApprovedBlob": "9646c36c89917d7e910f1a4dcfcfa5c6ed44a6a9",
+        "lastApprovedSource": "792f223b14c24c061c0e0a1ba82afafedd9808c6",
+        "f9Source": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+        "f9Blob": "4ff03ce4a4ab3cc680be32cc71f32d406cdb9307",
+        "sourceSuccessor": "e20b5a67057be2419750bbb5363df37af1089813",
+        "head": "e06c36e0d1fb02e59c87a5f268f32906222d2bea",
+        "currentBlob": "9646c36c89917d7e910f1a4dcfcfa5c6ed44a6a9",
+        "liveSha256": "9a79ade2ff214fce0cd0b7c1a23a80f2921ad3abc11bcc6e009088a7f98917aa",
+        "sourceEqualsLive": true,
+        "classification": "TRUE_FUNCTIONAL_DEFECT",
+        "finding": "Authorized internal project refresh can leave C6 readiness blocked after durable country update despite restored exact authority."
+      },
+      {
+        "path": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+        "module": "human-runtime-domain-consistency",
+        "lastApprovedBlob": "630cb1ac7bff4124cae28c281ae8186ee7c7c28a",
+        "lastApprovedSource": "792f223b14c24c061c0e0a1ba82afafedd9808c6",
+        "f9Source": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+        "f9Blob": "3acc508ac242407ea688b6a4ba964409af1125ba",
+        "sourceSuccessor": "e20b5a67057be2419750bbb5363df37af1089813",
+        "head": "e06c36e0d1fb02e59c87a5f268f32906222d2bea",
+        "currentBlob": "f7fbbe30fe71adac5e3332247da58c0274f038cc",
+        "liveSha256": "814a6404bc03e64b09521e677ffb368eb290b8ca9acba1923d7335e1a1c537b8",
+        "sourceEqualsLive": true,
+        "classification": "TRUE_FUNCTIONAL_DEFECT",
+        "finding": "Authorized internal project refresh can leave C6 readiness blocked after durable country update despite restored exact authority."
+      }
+    ]
+  },
+  "reproduction": "Real C6, protected authority bridge and Corte4 read-only enforcer; project/shoppers/visit-flow/backend-ready events during refresh. Exact internal source and authority recover, but the C6 gate stays ready:false,blocked:true after the final internal publication.",
+  "beforeTest": {
+    "path": "tools/qa/cxorbia-i3-human-project-scope.test.mjs",
+    "pass": 24,
+    "fail": 1,
+    "failedCase": "internal country update refresh releases C6 after the real Corte4 source transition"
+  },
+  "requiredRepair": "Publish an explicit internal-project-authority-ready event after atomic authority/scope/session publication. Wake only C6 release, which revalidates exact UID/tenant/project/session generation and permissions. No HR-ready event or fabricated HR revision; avoid duplicate release when already ready.",
+  "allowedProductFiles": [
+    "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+    "app/adapters/tya-c6-unified-human-runtime-v1.js"
+  ],
+  "allowedQaFiles": [
+    "tools/qa/cxorbia-i3-human-project-scope.test.mjs",
+    "tools/qa/cxorbia-i3-source-qa-evidence.mjs",
+    "tools/qa/cxorbia-i3-source-qa-evidence.test.mjs"
+  ],
+  "baselinePreserved": {
+    "externalHrAuthority": true,
+    "b4ToB7HumanAcceptance": true,
+    "runtimeDigest": "sha256:396cd23f895a98606fa9ca238132a5515065c07fec632cd73c00cc2e6d6c639e"
+  },
+  "providerWrites": 0,
+  "production": false
+}

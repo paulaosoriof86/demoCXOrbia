@@ -1,0 +1,322 @@
+{
+  "schemaVersion": "cxorbia.i3.historical-closure-reconciliation.v1",
+  "generatedAt": "2026-11-15T22:56:11.759402+00:00",
+  "decision": "PASS_TEN_SCOPED_HISTORICAL_ADJUDICATIONS_NO_DOMAIN_PROMOTION",
+  "evidenceBasedOn": {
+    "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V642_2026-11-15.json",
+    "gitBlob": "6c85ec7a58b4254889030ee27a856cdf303c8bae"
+  },
+  "adjudications": {
+    "VRM-198": {
+      "previousState": "CONTROL_GUARD_FIXED_RUN980",
+      "previousLedger": {
+        "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V642_2026-11-15.json",
+        "gitBlob": "6c85ec7a58b4254889030ee27a856cdf303c8bae",
+        "jsonPointer": "/findings/VRM-198"
+      },
+      "state": "FIXED_PROVEN_HISTORICAL_CONTROL_GUARD_RUN980",
+      "evidence": [
+        {
+          "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V642_2026-11-15.json",
+          "gitBlob": "6c85ec7a58b4254889030ee27a856cdf303c8bae",
+          "jsonPointer": "/findings/VRM-198/evidence"
+        }
+      ],
+      "scopeAndResidual": "Historical control guard only; current release still requires all exact gates.",
+      "historicalProofPreserved": true,
+      "newCurrentSourceExecution": false,
+      "moduleMatchPromotion": false,
+      "fullDomain": false,
+      "production": false
+    },
+    "VRM-214": {
+      "previousState": "POSTWRITE_DURABLE_READBACK_PASS_RUN1066",
+      "previousLedger": {
+        "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V642_2026-11-15.json",
+        "gitBlob": "6c85ec7a58b4254889030ee27a856cdf303c8bae",
+        "jsonPointer": "/findings/VRM-214"
+      },
+      "state": "FIXED_PROVEN_HISTORICAL_JULISSA_TOPOLOGY_RUN1066",
+      "evidence": [
+        {
+          "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V642_2026-11-15.json",
+          "gitBlob": "6c85ec7a58b4254889030ee27a856cdf303c8bae",
+          "jsonPointer": "/findings/VRM-214/postWriteReadback"
+        },
+        {
+          "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V642_2026-11-15.json",
+          "gitBlob": "6c85ec7a58b4254889030ee27a856cdf303c8bae",
+          "jsonPointer": "/findings/VRM-214/evidence/authorizedAdminConfirmation"
+        }
+      ],
+      "scopeAndResidual": "Exact approved Julissa topology and preserved history; replay defectVRM216 remains independently adjudicated; no new fusion.",
+      "historicalProofPreserved": true,
+      "newCurrentSourceExecution": false,
+      "moduleMatchPromotion": false,
+      "fullDomain": false,
+      "production": false
+    },
+    "VRM-217": {
+      "previousState": "POST_SWEEP_READBACK_PASS_RUN1083_NO_MORE_CREDENTIAL_SWEEP",
+      "previousLedger": {
+        "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V642_2026-11-15.json",
+        "gitBlob": "6c85ec7a58b4254889030ee27a856cdf303c8bae",
+        "jsonPointer": "/findings/VRM-217"
+      },
+      "state": "FIXED_PROVEN_BOUNDED_CREDENTIAL_PARTITION_RUN1083",
+      "evidence": [
+        {
+          "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V642_2026-11-15.json",
+          "gitBlob": "6c85ec7a58b4254889030ee27a856cdf303c8bae",
+          "jsonPointer": "/findings/VRM-217/postRun1082Readback"
+        },
+        {
+          "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V642_2026-11-15.json",
+          "gitBlob": "6c85ec7a58b4254889030ee27a856cdf303c8bae",
+          "jsonPointer": "/findings/VRM-217/result"
+        }
+      ],
+      "scopeAndResidual": "Bounded sweep complete; three exact RUN2222 Auth exceptions remain separate. No broad sweep.",
+      "historicalProofPreserved": true,
+      "newCurrentSourceExecution": false,
+      "moduleMatchPromotion": false,
+      "fullDomain": false,
+      "production": false
+    },
+    "VRM-226": {
+      "previousState": "SUPERSEDED_BY_VRM-229",
+      "previousLedger": {
+        "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V642_2026-11-15.json",
+        "gitBlob": "6c85ec7a58b4254889030ee27a856cdf303c8bae",
+        "jsonPointer": "/findings/VRM-226"
+      },
+      "state": "FIXED_PROVEN_SUPERSEDED_BY_VRM229_RUN1114",
+      "evidence": [
+        {
+          "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V642_2026-11-15.json",
+          "gitBlob": "6c85ec7a58b4254889030ee27a856cdf303c8bae",
+          "jsonPointer": "/findings/VRM-226/successor"
+        },
+        {
+          "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V642_2026-11-15.json",
+          "gitBlob": "6c85ec7a58b4254889030ee27a856cdf303c8bae",
+          "jsonPointer": "/findings/VRM-229/liveClosure"
+        },
+        {
+          "path": "CXORBIA_I3_SHOPPER_HUMAN_IDENTITY_AUTHORITY_2026-10-04.json",
+          "gitBlob": "5bfac14e001520fb7dae642769955d4fa3143eb2",
+          "jsonPointer": "/persons"
+        }
+      ],
+      "scopeAndResidual": "Only eight explicitly approved groups; preserve successor and supersession chain; no new merging authority.",
+      "historicalProofPreserved": true,
+      "newCurrentSourceExecution": false,
+      "moduleMatchPromotion": false,
+      "fullDomain": false,
+      "production": false
+    },
+    "VRM-235": {
+      "previousState": "SUPERSEDED_BY_VRM-236",
+      "previousLedger": {
+        "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V642_2026-11-15.json",
+        "gitBlob": "6c85ec7a58b4254889030ee27a856cdf303c8bae",
+        "jsonPointer": "/findings/VRM-235"
+      },
+      "state": "FIXED_PROVEN_CONTROL_FALSE_NEGATIVE_VRM236_RUN1123",
+      "evidence": [
+        {
+          "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V642_2026-11-15.json",
+          "gitBlob": "6c85ec7a58b4254889030ee27a856cdf303c8bae",
+          "jsonPointer": "/findings/VRM-235/closureEvidence"
+        },
+        {
+          "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V642_2026-11-15.json",
+          "gitBlob": "6c85ec7a58b4254889030ee27a856cdf303c8bae",
+          "jsonPointer": "/findings/VRM-236/closureEvidence"
+        }
+      ],
+      "scopeAndResidual": "Client Auth control false-negative only; durable F09 collaboration and CRMCRUD remain separate.",
+      "historicalProofPreserved": true,
+      "newCurrentSourceExecution": false,
+      "moduleMatchPromotion": false,
+      "fullDomain": false,
+      "production": false
+    },
+    "VRM-259": {
+      "previousState": "LIVE_E2E_PASS_HUMAN_B7_PENDING",
+      "previousLedger": {
+        "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V642_2026-11-15.json",
+        "gitBlob": "6c85ec7a58b4254889030ee27a856cdf303c8bae",
+        "jsonPointer": "/findings/VRM-259"
+      },
+      "state": "FIXED_PROVEN_BADGE_RUN1537_B7_ACCEPTED_20261111",
+      "evidence": [
+        {
+          "path": "CXORBIA_I3_RUN1537_VRM259_SAME_ARTIFACT_READBACK_2026-10-13.json",
+          "gitBlob": "89489467db37a4cadb81f1a1aef51b08d959e41a",
+          "jsonPointer": "/sameArtifactE2E/badge"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_HUMAN_PASS_B7_NO_LOOP_ACCOUNTING_20261111.json",
+          "gitBlob": "3af2e49ac97fcac3341fa18ce5af61061acfce47",
+          "jsonPointer": "/exactHumanDecision"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_HUMAN_PASS_B7_NO_LOOP_ACCOUNTING_20261111.json",
+          "gitBlob": "3af2e49ac97fcac3341fa18ce5af61061acfce47",
+          "jsonPointer": "/after"
+        }
+      ],
+      "scopeAndResidual": "Badge and humanB7 accepted. B11/B14 independent externalHR obligations remain; do not request B7 acceptance again.",
+      "historicalProofPreserved": true,
+      "newCurrentSourceExecution": false,
+      "moduleMatchPromotion": false,
+      "fullDomain": false,
+      "production": false
+    },
+    "VRM-295": {
+      "previousState": "FOCAL_DEV_UI_PASS_TWO_INDEPENDENT_SESSIONS_GLOBAL_I3_HOLD",
+      "previousLedger": {
+        "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V642_2026-11-15.json",
+        "gitBlob": "6c85ec7a58b4254889030ee27a856cdf303c8bae",
+        "jsonPointer": "/findings/VRM-295"
+      },
+      "state": "FIXED_PROVEN_CRM_ACCOUNT_PROJECTION_TWO_SESSIONS",
+      "evidence": [
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_G03_CUENTAS_ONE_TWO_SESSIONS_FOCAL_PASS_20261101.json",
+          "gitBlob": "a3f9c9970b9bc146e6562cd7626cd71b31e06252",
+          "jsonPointer": "/authenticatedE2E"
+        }
+      ],
+      "scopeAndResidual": "Existing account visibility in two independent Admin sessions; not all CRMCRUD or all-domain human acceptance.",
+      "historicalProofPreserved": true,
+      "newCurrentSourceExecution": false,
+      "moduleMatchPromotion": false,
+      "fullDomain": false,
+      "production": false
+    },
+    "VRM-307": {
+      "previousState": "DEV_MATERIALIZED_PASS_RUN2202_GROUP_PROVIDER_READBACK_PENDING",
+      "previousLedger": {
+        "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V642_2026-11-15.json",
+        "gitBlob": "6c85ec7a58b4254889030ee27a856cdf303c8bae",
+        "jsonPointer": "/findings/VRM-307"
+      },
+      "state": "FIXED_PROVEN_APPROVED_IDENTITY_GROUPS_DURABLE_READBACK",
+      "evidence": [
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_VRM307_TWO_GROUPS_FINAL_DEV_READBACK_20261106.json",
+          "gitBlob": "78d2046250f389da09afad16e5246920539882a4",
+          "jsonPointer": "/jhennypherMurga"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_VRM307_TWO_GROUPS_FINAL_DEV_READBACK_20261106.json",
+          "gitBlob": "78d2046250f389da09afad16e5246920539882a4",
+          "jsonPointer": "/rocioVilca"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_VRM307_TWO_GROUPS_FINAL_DEV_READBACK_20261106.json",
+          "gitBlob": "78d2046250f389da09afad16e5246920539882a4",
+          "jsonPointer": "/independentPostSuccessReadback"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN2387_GT_HN_KEEPER_ROLES_PDF_READONLY_20261110.json",
+          "gitBlob": "64485a06ea1c0478d3b2c918e974ec2f5b9e43f0",
+          "jsonPointer": "/run"
+        }
+      ],
+      "scopeAndResidual": "Only two approved groups; provider/replay/independent readback and scoped GT/HN sessions preserved. Profile edit and other identities remain separate.",
+      "historicalProofPreserved": true,
+      "newCurrentSourceExecution": false,
+      "moduleMatchPromotion": false,
+      "fullDomain": false,
+      "production": false
+    },
+    "VRM-320": {
+      "previousState": "FIXED_EXACT_SOURCE_DEV_RUN2322_TECHNICAL_PASS_PENDING_AUTHENTICATED_B3",
+      "previousLedger": {
+        "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V642_2026-11-15.json",
+        "gitBlob": "6c85ec7a58b4254889030ee27a856cdf303c8bae",
+        "jsonPointer": "/findings/VRM-320"
+      },
+      "state": "FIXED_PROVEN_FOCAL_PAYMENT_HISTORY_PAULA_20261109",
+      "evidence": [
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_VRM320_B3_HUMAN_VISUAL_PASS_CHROME_E2E_20261109.json",
+          "gitBlob": "9d489c2bfae709567efa45a74a501d1c67aec59b",
+          "jsonPointer": "/chromeE2E"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_VRM320_B3_HUMAN_VISUAL_PASS_CHROME_E2E_20261109.json",
+          "gitBlob": "9d489c2bfae709567efa45a74a501d1c67aec59b",
+          "jsonPointer": "/userDecision"
+        }
+      ],
+      "scopeAndResidual": "Historical confirmed-payment display and focal Paula visualPASS only; B3 UI/camera/GPS and B8 independent.",
+      "historicalProofPreserved": true,
+      "newCurrentSourceExecution": false,
+      "moduleMatchPromotion": false,
+      "fullDomain": false,
+      "production": false
+    },
+    "VRM-328": {
+      "previousState": "SOURCE_PUBLISHED_HOSTING_DEV_PENDING_SHOPPER_E2E_HUMAN",
+      "previousLedger": {
+        "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V642_2026-11-15.json",
+        "gitBlob": "6c85ec7a58b4254889030ee27a856cdf303c8bae",
+        "jsonPointer": "/findings/VRM-328"
+      },
+      "state": "FIXED_PROVEN_FOCAL_PROFILE_ACTIVE_HISTORY_20261113",
+      "evidence": [
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_VRM328_CHROME_TWO_SHOPPERS_DEV_E2E_20261111.json",
+          "gitBlob": "1cf2ef705a31dbb137cc0b60b5ef6856f583d650",
+          "jsonPointer": "/actors"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_VRM328_CHROME_TWO_SHOPPERS_DEV_E2E_20261111.json",
+          "gitBlob": "1cf2ef705a31dbb137cc0b60b5ef6856f583d650",
+          "jsonPointer": "/regressionOutcome"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_B2_B3_AUTHENTICATED_STIVEN_CURRENT_DEV_UI_PARITY_READBACK_20261113.json",
+          "gitBlob": "9096a467a84e1b68bfd5e2a2998beb448c1e555c",
+          "jsonPointer": "/observations/afterReload"
+        }
+      ],
+      "scopeAndResidual": "Exact active/history parity for the two shoppers plus Stiven reload; not completeB2/B3,profileCRUD or finance.",
+      "historicalProofPreserved": true,
+      "newCurrentSourceExecution": false,
+      "moduleMatchPromotion": false,
+      "fullDomain": false,
+      "production": false
+    }
+  },
+  "functionalBlocks": {
+    "passed": [
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ],
+    "count": 4,
+    "total": 9,
+    "receipts": [
+      {
+        "path": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_FUNCTIONAL_BLOCK_ACCEPTANCE_20261110.json",
+        "gitBlob": "d30a2bf0d4fca2968310c7405a77d5c278516a31"
+      },
+      {
+        "path": "docs/checkpoints/CXORBIA_I3_HUMAN_PASS_B7_NO_LOOP_ACCOUNTING_20261111.json",
+        "gitBlob": "3af2e49ac97fcac3341fa18ce5af61061acfce47"
+      }
+    ]
+  },
+  "strictDomains": {
+    "match": 4,
+    "total": 21
+  },
+  "productChangedByAccounting": false,
+  "production": false
+}

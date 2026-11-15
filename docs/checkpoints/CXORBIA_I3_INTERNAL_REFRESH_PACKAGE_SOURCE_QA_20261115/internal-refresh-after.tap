@@ -1,0 +1,340 @@
+TAP version 13
+# Subtest: normal human entry preserves the configured authorized tenant and project
+ok 1 - normal human entry preserves the configured authorized tenant and project
+  ---
+  duration_ms: 5.623908
+  type: 'test'
+  ...
+# Subtest: authenticated exact internal project can configure countries before periods or visits exist
+ok 2 - authenticated exact internal project can configure countries before periods or visits exist
+  ---
+  duration_ms: 1.57751
+  type: 'test'
+  ...
+# Subtest: internal entry rejects unauthenticated principal
+ok 3 - internal entry rejects unauthenticated principal
+  ---
+  duration_ms: 1.395912
+  type: 'test'
+  ...
+# Subtest: internal entry rejects different uid
+ok 4 - internal entry rejects different uid
+  ---
+  duration_ms: 1.437293
+  type: 'test'
+  ...
+# Subtest: internal entry rejects different tenant
+ok 5 - internal entry rejects different tenant
+  ---
+  duration_ms: 2.70744
+  type: 'test'
+  ...
+# Subtest: internal entry rejects different project
+ok 6 - internal entry rejects different project
+  ---
+  duration_ms: 1.271619
+  type: 'test'
+  ...
+# Subtest: internal entry rejects different namespace
+ok 7 - internal entry rejects different namespace
+  ---
+  duration_ms: 1.52332
+  type: 'test'
+  ...
+# Subtest: internal entry rejects missing authorized project
+ok 8 - internal entry rejects missing authorized project
+  ---
+  duration_ms: 1.330336
+  type: 'test'
+  ...
+# Subtest: internal entry rejects external record with internal flag
+ok 9 - internal entry rejects external record with internal flag
+  ---
+  duration_ms: 1.358226
+  type: 'test'
+  ...
+# Subtest: internal entry rejects non atomic authority
+ok 10 - internal entry rejects non atomic authority
+  ---
+  duration_ms: 1.598111
+  type: 'test'
+  ...
+# Subtest: internal entry rejects old session generation
+ok 11 - internal entry rejects old session generation
+  ---
+  duration_ms: 1.37441
+  type: 'test'
+  ...
+# Subtest: internal entry rejects missing session generation
+ok 12 - internal entry rejects missing session generation
+  ---
+  duration_ms: 1.350575
+  type: 'test'
+  ...
+# Subtest: internal entry rejects wrong internal source ref
+ok 13 - internal entry rejects wrong internal source ref
+  ---
+  duration_ms: 1.418075
+  type: 'test'
+  ...
+# Subtest: internal flag never bypasses shopper exact identity requirements
+ok 14 - internal flag never bypasses shopper exact identity requirements
+  ---
+  duration_ms: 1.274503
+  type: 'test'
+  ...
+# Subtest: external HR authority retains revision, period and nonempty operational requirements
+ok 15 - external HR authority retains revision, period and nonempty operational requirements
+  ---
+  duration_ms: 6.262772
+  type: 'test'
+  ...
+# Subtest: external shopper authority still requires the exact signed-in identity
+ok 16 - external shopper authority still requires the exact signed-in identity
+  ---
+  duration_ms: 2.601834
+  type: 'test'
+  ...
+# Subtest: an initially blocked human shell releases after the actual internal authority producer completes
+ok 17 - an initially blocked human shell releases after the actual internal authority producer completes
+  ---
+  duration_ms: 7.467712
+  type: 'test'
+  ...
+# Subtest: cold internal project without a period mounts configuration through the real router start resolver
+ok 18 - cold internal project without a period mounts configuration through the real router start resolver
+  ---
+  duration_ms: 2.943739
+  type: 'test'
+  ...
+# Subtest: deferred internal publication selects configuration before mounting a no-period project
+ok 19 - deferred internal publication selects configuration before mounting a no-period project
+  ---
+  duration_ms: 1.529579
+  type: 'test'
+  ...
+# Subtest: initial internal setup never grants configuration access to a role without permission
+ok 20 - initial internal setup never grants configuration access to a role without permission
+  ---
+  duration_ms: 0.897205
+  type: 'test'
+  ...
+# Subtest: deferred operational request does not replay Mi Dia after selecting safe configuration
+ok 21 - deferred operational request does not replay Mi Dia after selecting safe configuration
+  ---
+  duration_ms: 1.240662
+  type: 'test'
+  ...
+# Subtest: explicit permitted period-free view survives initial setup without enlarging permissions
+ok 22 - explicit permitted period-free view survives initial setup without enlarging permissions
+  ---
+  duration_ms: 2.020435
+  type: 'test'
+  ...
+# Subtest: an actual internal period preserves the selected operational view
+ok 23 - an actual internal period preserves the selected operational view
+  ---
+  duration_ms: 0.821694
+  type: 'test'
+  ...
+# Subtest: external HR mount keeps its existing operational selection
+ok 24 - external HR mount keeps its existing operational selection
+  ---
+  duration_ms: 0.687886
+  type: 'test'
+  ...
+# Subtest: internal country update refresh releases C6 after the real Corte4 source transition
+ok 25 - internal country update refresh releases C6 after the real Corte4 source transition
+  ---
+  duration_ms: 3.272745
+  type: 'test'
+  ...
+# Subtest: same-run proof returns every registered owner without functional acceptance
+ok 26 - same-run proof returns every registered owner without functional acceptance
+  ---
+  duration_ms: 4.688987
+  type: 'test'
+  ...
+# Subtest: rejects a different sourceSha
+ok 27 - rejects a different sourceSha
+  ---
+  duration_ms: 0.394823
+  type: 'test'
+  ...
+# Subtest: rejects a different sourceTree
+ok 28 - rejects a different sourceTree
+  ---
+  duration_ms: 0.202799
+  type: 'test'
+  ...
+# Subtest: rejects a different controlSha
+ok 29 - rejects a different controlSha
+  ---
+  duration_ms: 0.247095
+  type: 'test'
+  ...
+# Subtest: rejects a different runId
+ok 30 - rejects a different runId
+  ---
+  duration_ms: 0.663891
+  type: 'test'
+  ...
+# Subtest: rejects a different runAttempt
+ok 31 - rejects a different runAttempt
+  ---
+  duration_ms: 0.274365
+  type: 'test'
+  ...
+# Subtest: missing attempt is rejected even if both receipt and expectation omit it
+ok 32 - missing attempt is rejected even if both receipt and expectation omit it
+  ---
+  duration_ms: 0.566847
+  type: 'test'
+  ...
+# Subtest: a failed-only consumer retry reuses the exact successful producer attempt
+ok 33 - a failed-only consumer retry reuses the exact successful producer attempt
+  ---
+  duration_ms: 1.243267
+  type: 'test'
+  ...
+# Subtest: rejects modified owner blob
+ok 34 - rejects modified owner blob
+  ---
+  duration_ms: 0.707085
+  type: 'test'
+  ...
+# Subtest: rejects modified test blob
+ok 35 - rejects modified test blob
+  ---
+  duration_ms: 0.442614
+  type: 'test'
+  ...
+# Subtest: rejects missing coverage
+ok 36 - rejects missing coverage
+  ---
+  duration_ms: 0.401373
+  type: 'test'
+  ...
+# Subtest: rejects duplicate coverage
+ok 37 - rejects duplicate coverage
+  ---
+  duration_ms: 0.290859
+  type: 'test'
+  ...
+# Subtest: rejects foreign-owner coverage
+ok 38 - rejects foreign-owner coverage
+  ---
+  duration_ms: 0.332822
+  type: 'test'
+  ...
+# Subtest: rejects foreign-test coverage
+ok 39 - rejects foreign-test coverage
+  ---
+  duration_ms: 0.258122
+  type: 'test'
+  ...
+# Subtest: rejects registry coverage
+ok 40 - rejects registry coverage
+  ---
+  duration_ms: 0.240646
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence exit
+ok 41 - rejects invalid test evidence exit
+  ---
+  duration_ms: 0.408313
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence zero
+ok 42 - rejects invalid test evidence zero
+  ---
+  duration_ms: 0.276899
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence fail
+ok 43 - rejects invalid test evidence fail
+  ---
+  duration_ms: 0.2301
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence cancelled
+ok 44 - rejects invalid test evidence cancelled
+  ---
+  duration_ms: 0.249619
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence skipped
+ok 45 - rejects invalid test evidence skipped
+  ---
+  duration_ms: 0.243891
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence todo
+ok 46 - rejects invalid test evidence todo
+  ---
+  duration_ms: 0.230861
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence summary
+ok 47 - rejects invalid test evidence summary
+  ---
+  duration_ms: 1.928269
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence log
+ok 48 - rejects invalid test evidence log
+  ---
+  duration_ms: 0.128099
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence hash
+ok 49 - rejects invalid test evidence hash
+  ---
+  duration_ms: 0.175719
+  type: 'test'
+  ...
+# Subtest: rejects altered production
+ok 50 - rejects altered production
+  ---
+  duration_ms: 0.174147
+  type: 'test'
+  ...
+# Subtest: rejects altered scope
+ok 51 - rejects altered scope
+  ---
+  duration_ms: 0.091084
+  type: 'test'
+  ...
+# Subtest: rejects a digest mismatch before looking up source blobs
+ok 52 - rejects a digest mismatch before looking up source blobs
+  ---
+  duration_ms: 0.350939
+  type: 'test'
+  ...
+# Subtest: workflow carries the same-run receipt through both C3 invocations
+ok 53 - workflow carries the same-run receipt through both C3 invocations
+  ---
+  duration_ms: 4.680455
+  type: 'test'
+  ...
+# Subtest: computed 21/21 source evidence enables the next job without changing four integral MATCH
+ok 54 - computed 21/21 source evidence enables the next job without changing four integral MATCH
+  ---
+  duration_ms: 1.181365
+  type: 'test'
+  ...
+# Subtest: one missing source proof keeps the consumer disabled and rejects a stale optimistic counter
+ok 55 - one missing source proof keeps the consumer disabled and rejects a stale optimistic counter
+  ---
+  duration_ms: 0.692593
+  type: 'test'
+  ...
+1..55
+# tests 55
+# suites 0
+# pass 55
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 195.43738

@@ -18,16 +18,26 @@ test('C3 21-domain inventory is canonical, unique and exact (historical 20 + bra
   assert.throws(()=>assertCanonicalModuleCoverage([...modules.slice(0,20),modules[0]]),/C3_CANONICAL_21_DOMAIN_SET/);
   assert.throws(()=>assertCanonicalModuleCoverage([...modules.slice(0,20),{domain:'other',classification:'MATCH'}]),/C3_CANONICAL_21_DOMAIN_SET/);
 });
-test('B4-B6 prior functional PASS stays visible without fabricating 21-domain MATCH',()=>{
+test('B4-B7 prior functional PASS stays visible without fabricating 21-domain MATCH',()=>{
   const a=current.functionalBlockCertificationAccounting20261110;
   assert.ok(a,'B4_B5_B6_ACCOUNTING_MISSING_FROM_CURRENT_CANONICAL_MATRIX');
   const receipt=JSON.parse(fs.readFileSync(a.source,'utf8'));
   const acceptedBlocks=Object.values(receipt.blocks).filter(x=>x.blockFunctionalLocked===true);
+  assert.equal(acceptedBlocks.length,3,'ORIGINAL_B4_B5_B6_ACCEPTANCE_MUST_REMAIN_IMMUTABLE');
+  const b7=JSON.parse(fs.readFileSync(a.b7AcceptanceReceipt.path,'utf8'));
+  assert.equal(b7.decision,'PRESERVE_HUMAN_PASS_B7_FIX_ACCOUNTING_MECHANISM_NO_PRODUCT_CHANGES');
+  assert.equal(b7.after.b7Human,'PASS_EXPLICIT_PAULA_20261111');
+  assert.deepEqual(b7.after.humanPassed,['B4','B5','B6','B7']);
+  assert.equal(b7.after.b7TerminalArtifactCertified,false);
+  const blob=spawnSync('git',['hash-object',a.b7AcceptanceReceipt.path],{encoding:'utf8'});
+  assert.equal(blob.status,0);
+  assert.equal(blob.stdout.trim(),a.b7AcceptanceReceipt.gitBlob);
   const domainMatches=modules.filter(x=>x.classification==='MATCH');
-  assert.equal(a.functionalBlockPassCount,acceptedBlocks.length);
+  assert.equal(a.functionalBlockPassCount,acceptedBlocks.length+1);
+  assert.equal(a.functionalBlockPassCount,b7.after.humanCount);
   assert.equal(a.functionalBlockPassCount,a.certifiedFunctionalBlocks.length);
   assert.deepEqual(a.certifiedFunctionalBlocks.slice().sort(),[
-    'B4_CERTIFICACIONES','B5_BENEFICIOS','B6_DASHBOARD_VISITAS_DETALLE'
+    'B4_CERTIFICACIONES','B5_BENEFICIOS','B6_DASHBOARD_VISITAS_DETALLE','B7_OPERACION_VISITAS_POSTULACIONES_RESERVAS'
   ].sort());
   assert.equal(a.domainMatchCount,domainMatches.length);
   assert.equal(a.domainPendingCount,modules.length-domainMatches.length);

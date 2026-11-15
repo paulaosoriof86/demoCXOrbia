@@ -1,0 +1,237 @@
+[
+  {
+    "index": 1,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs"
+  },
+  {
+    "index": 2,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-live-fixture-contract.test.mjs tools/qa/cxorbia-i3-c3-finalize-module-truth.test.mjs tools/qa/cxorbia-i3-tenant-readonly-acceptance.test.mjs tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs tools/qa/cxorbia-pre-i4-focal-hr-reference.test.mjs tools/qa/cxorbia-i3-project-country-live-proof.test.mjs tools/qa/cxorbia-pre-i4-resource-read-contract.test.mjs"
+  },
+  {
+    "index": 3,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-r22-alias-notice-scope-transversal.test.mjs"
+  },
+  {
+    "index": 4,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-r22-tablon-provider-ack-source.test.mjs"
+  },
+  {
+    "index": 5,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-r20-pwa-auth-no-interrupt.test.mjs"
+  },
+  {
+    "index": 6,
+    "exitCode": 0,
+    "command": "node backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs"
+  },
+  {
+    "index": 7,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-b10-external-provider-routing.test.mjs"
+  },
+  {
+    "index": 8,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-admin-identity-review-notice.test.mjs"
+  },
+  {
+    "index": 9,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-q2-shopper-admin-command-contract-source.test.mjs"
+  },
+  {
+    "index": 10,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-q2-cxdata-readonly-owner-source.test.mjs"
+  },
+  {
+    "index": 11,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-q2-hr-static-builder-source.test.mjs"
+  },
+  {
+    "index": 12,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-q2-eight-remaining-owner-source.test.mjs"
+  },
+  {
+    "index": 13,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-postulaciones-country-options-unified.test.mjs tools/qa/cxorbia-i3-d06-misvisitas-cross-period-classification.test.mjs tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs tools/qa/cxorbia-i3-shoppers-bridge-authority.test.mjs tools/qa/cxorbia-i3-visitas-effective-availability.test.mjs tools/qa/cxorbia-i3-available-visits-active-period-scope.test.mjs tools/qa/cxorbia-i3-period-project-client-parity.test.mjs tools/qa/cxorbia-i3-r22-notification-route-ack-source.test.mjs tools/qa/cxorbia-i3-vrm302-admin-shoppers-modal-binding.test.mjs tools/qa/cxorbia-i3-shopper-identity-review-rail-notice.test.mjs"
+  },
+  {
+    "index": 14,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-certification-project-continuity.test.mjs"
+  },
+  {
+    "index": 15,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-vrm280-exact-shopper-session-fallback.test.mjs tools/qa/cxorbia-i3-b7-hf13-whatsapp-draft-source.test.mjs tools/qa/cxorbia-i3-vrm304-adjudicated-supersession.test.mjs tools/qa/cxorbia-i3-d04e03-shopper-relogin-pdf-source.test.mjs tools/qa/cxorbia-i3-r20-no-visit-shopper-auth-gate.test.mjs tools/qa/cxorbia-i3-r22-read-status-source-20261014.test.mjs tools/qa/cxorbia-i3-certification-project-continuity.test.mjs tools/qa/cxorbia-i3-hr-source-operational-readback.test.mjs tools/qa/cxorbia-i3-d07-viewer-single-flight.test.mjs tools/qa/cxorbia-i3-g03-crm-composition-provider-parity.test.mjs tools/qa/cxorbia-i3-b2-b3-active-history-parity.test.mjs tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs tools/qa/cxorbia-i3-shopper-registration-provider-ack.test.mjs tools/qa/cxorbia-i3-admin-identity-review-notice.test.mjs tools/qa/cxorbia-i3-v01-cross-module-legibility.test.mjs tools/qa/cxorbia-i3-b7-reschedule-bulletin-target-source-20261014.test.mjs tools/qa/cxorbia-i3-shopper-create-phone-dial-review.test.mjs tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs tools/qa/cxorbia-i3-work-uat-d05-canonical-source-proof.test.mjs tools/qa/cxorbia-i3-d04-versioned-bank-review.test.mjs tools/qa/cxorbia-i3-b8-finance-human-copy.test.mjs tools/qa/cxorbia-i3-work-uat-reservations-firestore-source.test.mjs"
+  },
+  {
+    "index": 16,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-work-uat-vrm286-project-period-visit-count.test.mjs tools/qa/cxorbia-i3-work-uat-misvisitas-payment-source.test.mjs tools/qa/cxorbia-i3-work-uat-q2-finance-adapters-source-proof.test.mjs tools/qa/cxorbia-i3-work-uat-project-wizard-required-fields.test.mjs tools/qa/cxorbia-i3-work-uat-reservations-firestore-source.test.mjs tools/qa/cxorbia-i3-work-uat-vrm285-resource-viewer.test.mjs tools/qa/cxorbia-i3-work-uat-u22-shopper-controls.test.mjs tools/qa/cxorbia-i3-work-uat-d05-canonical-source-proof.test.mjs tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs tools/qa/cxorbia-i3-work-uat-a09b11-three-visit-assignment.test.mjs"
+  },
+  {
+    "index": 17,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-b2-b3-active-history-parity.test.mjs"
+  },
+  {
+    "index": 18,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-visitas-effective-availability.test.mjs"
+  },
+  {
+    "index": 19,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-e03-visita-payment-human-state.test.mjs"
+  },
+  {
+    "index": 20,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-vrm301-idempotent-visit-detail.test.mjs"
+  },
+  {
+    "index": 21,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-vrm302-admin-shoppers-modal-binding.test.mjs"
+  },
+  {
+    "index": 22,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-vrm304-adjudicated-supersession.test.mjs"
+  },
+  {
+    "index": 23,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-vrm308-hn-country-alias-normalization.test.mjs"
+  },
+  {
+    "index": 24,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/hr-source/tya-resolve-live-month-tabs.test.mjs"
+  },
+  {
+    "index": 25,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-vrm300-traffic.test.mjs"
+  },
+  {
+    "index": 26,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-terminal-module-domain-coverage.test.mjs"
+  },
+  {
+    "index": 27,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs"
+  },
+  {
+    "index": 28,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-source-qa-evidence.test.mjs tools/qa/cxorbia-i3-terminal-hr-observation.test.mjs tools/qa/cxorbia-i3-terminal-human-contract.test.mjs"
+  },
+  {
+    "index": 29,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-period-project-client-parity.test.mjs"
+  },
+  {
+    "index": 30,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-g03-rutas-effective-hr-source-truth.test.mjs"
+  },
+  {
+    "index": 31,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs"
+  },
+  {
+    "index": 32,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-b1-cold-login-parallel-source.test.mjs"
+  },
+  {
+    "index": 33,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap backend/runtime/hr-live-service/test/cxorbia-i3-b7-temporal-reconcile.test.mjs"
+  },
+  {
+    "index": 34,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-b7-cancel-reason-human-source-20261014.test.mjs"
+  },
+  {
+    "index": 35,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs"
+  },
+  {
+    "index": 36,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-b7-reschedule-bulletin-target-source-20261014.test.mjs"
+  },
+  {
+    "index": 37,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs"
+  },
+  {
+    "index": 38,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-b7-hf13-whatsapp-draft-source.test.mjs"
+  },
+  {
+    "index": 39,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-r07-cancel-ack-readback-source-20261014.test.mjs"
+  },
+  {
+    "index": 40,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-r22-read-status-source-20261014.test.mjs"
+  },
+  {
+    "index": 41,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap backend/runtime/hr-live-service/test/cxorbia-i3-r08-vertex-safe-diagnostic.test.mjs"
+  },
+  {
+    "index": 42,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-b7-hf15-assignment-actions-source.test.mjs"
+  },
+  {
+    "index": 43,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-b7-hf16-pending-count-parity-source.test.mjs"
+  },
+  {
+    "index": 44,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-r05-r06-postulaciones-owner-source.test.mjs"
+  },
+  {
+    "index": 45,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-r20-no-visit-shopper-auth-gate.test.mjs"
+  },
+  {
+    "index": 46,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap backend/runtime/hr-live-service/test/cxorbia-i3-phasea-completion-source-contract.test.mjs"
+  },
+  {
+    "index": 47,
+    "exitCode": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-g03-crm-protected-tombstone-parity.test.mjs"
+  }
+]

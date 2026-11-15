@@ -37,7 +37,7 @@ defaults:
    shell: bash
 concurrency:
   group: cxorbia-recovery-i3-dev-certification
-  cancel-in-progress: true
+  cancel-in-progress: false
 env:
   CANDIDATE_DESCRIPTOR: CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
   PROJECT: cxorbia-backend-dev
@@ -83,7 +83,7 @@ jobs:
       set -Eeuo pipefail
       mkdir -p .tmp/canonical-candidate-authority
       node --test tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs
-      node --test tools/qa/cxorbia-i3-live-fixture-contract.test.mjs tools/qa/cxorbia-i3-c3-finalize-module-truth.test.mjs tools/qa/cxorbia-i3-tenant-readonly-acceptance.test.mjs tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs tools/qa/cxorbia-pre-i4-focal-hr-reference.test.mjs tools/qa/cxorbia-i3-project-country-live-proof.test.mjs
+      node --test tools/qa/cxorbia-i3-live-fixture-contract.test.mjs tools/qa/cxorbia-i3-c3-finalize-module-truth.test.mjs tools/qa/cxorbia-i3-tenant-readonly-acceptance.test.mjs tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs tools/qa/cxorbia-pre-i4-focal-hr-reference.test.mjs tools/qa/cxorbia-i3-project-country-live-proof.test.mjs tools/qa/cxorbia-pre-i4-resource-read-contract.test.mjs
       node --test tools/qa/cxorbia-i3-r22-alias-notice-scope-transversal.test.mjs
       node --test tools/qa/cxorbia-i3-r22-tablon-provider-ack-source.test.mjs
       node --test tools/qa/cxorbia-i3-r20-pwa-auth-no-interrupt.test.mjs
@@ -3067,6 +3067,21 @@ jobs:
       test "$(jq -r '.decision' "$OUT/semantic/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
       test "$(jq -r '.sourceSha' "$OUT/semantic/browser-focal.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
       test "$(jq -r '.hrRevision' "$OUT/semantic/browser-focal.json")" = "$CURRENT_LIVE_HR_REVISION"
+   - name: Execute current functional fixtures before strict certification
+     run: |
+      set -Eeuo pipefail
+      PERIOD_ID="$(jq -er '.currentPeriodId' "$OUT/semantic/hr-contrast.json")"
+      test "$(jq -er '.periodId' "$OUT/semantic/browser-focal.json")" = "$PERIOD_ID"
+      export PERIOD_ID
+      echo "PERIOD_ID=$PERIOD_ID" >> "$GITHUB_ENV"
+      tar -C "$SOURCE_DIR" --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner -cf "$OUT/cxorbia-i3-certified-source.tar" .
+      ARTIFACT_SHA256="$(sha256sum "$OUT/cxorbia-i3-certified-source.tar"|awk '{print $1}')"
+      echo "$ARTIFACT_SHA256  cxorbia-i3-certified-source.tar" > "$OUT/cxorbia-i3-certified-source.tar.sha256"
+      export ARTIFACT_SHA256
+      echo "ARTIFACT_SHA256=$ARTIFACT_SHA256" >> "$GITHUB_ENV"
+      node tools/qa/cxorbia-i3-live-fixture-contract.mjs prepare "$OUT"
+      I3_FIXTURE_STAGE=PRE_CERTIFICATION PRIOR_DIR="$OUT" PRIOR_RUN_ID="$GITHUB_RUN_ID" OUT="$OUT/live-fixtures" node "$GITHUB_WORKSPACE/.github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs"
+      node tools/qa/cxorbia-i3-live-fixture-contract.mjs verify-live "$OUT"
    - run: |
       set -Eeuo pipefail
       LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")"
@@ -3122,9 +3137,9 @@ jobs:
       jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg human "$HUMAN_SHA" --arg probes "$PROBES_SHA" --arg focal "$FOCAL_SHA" --arg matrix "$MATRIX_SHA" --arg routes "$ROUTE_SHA" '{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",gate:20,mode:"CURRENT_TERMINAL_FULL_CANONICAL_SEMANTIC",sourceSha:$source,fullHumanAcceptanceSha256:$human,functionalProbesSha256:$probes,hardenedFocalSha256:$focal,moduleTruthSha256:$matrix,routeInventorySha256:$routes,expectedRoleRouteEntries:56,production:false}' > "$OUT/gate20-semantic-shopper.json"
    - run: |
       set -Eeuo pipefail
-      tar -C "$SOURCE_DIR" --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner -cf "$OUT/cxorbia-i3-certified-source.tar" .
-      ARTIFACT_SHA256="$(sha256sum "$OUT/cxorbia-i3-certified-source.tar"|awk '{print $1}')"
-      echo "$ARTIFACT_SHA256  cxorbia-i3-certified-source.tar" > "$OUT/cxorbia-i3-certified-source.tar.sha256"
+      test "$(sha256sum "$OUT/cxorbia-i3-certified-source.tar"|awk '{print $1}')" = "$ARTIFACT_SHA256"
+      LIVE_SHA="$(sha256sum "$OUT/live-fixtures/i3-live-fixtures-result.json"|awk '{print $1}')"
+      BINDING_SHA="$(sha256sum "$OUT/live-fixture-prerequisites.json"|awk '{print $1}')"
       GATE20_SHA="$(sha256sum "$OUT/gate20/gate20-browser-visual.json"|awk '{print $1}')"
       SEM20_SHA="$(sha256sum "$OUT/gate20-semantic-shopper.json"|awk '{print $1}')"
       HUMAN_SHA="$(sha256sum "$OUT/full-human-acceptance/human-live-acceptance.json"|awk '{print $1}')"
@@ -3136,7 +3151,8 @@ jobs:
       RUNTIME_SHA="$(sha256sum "$OUT/runtime-revision.json"|awk '{print $1}')"
       HOSTING_SHA="$(sha256sum "$OUT/hosting-live-channel.json"|awk '{print $1}')"
       ATOMIC_SHA="$(sha256sum "$OUT/atomic-p0-source-contract.json"|awk '{print $1}')"
-      jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg control "$GITHUB_SHA" --arg artifact "$ARTIFACT_SHA256" --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg image "$SOURCE_IMMUTABLE_IMAGE" --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hostingVersion "$HOSTING_VERSION_NAME" --arg hostingTime "$HOSTING_RELEASE_TIME" --arg hr "$CURRENT_LIVE_HR_REVISION" --arg hrSha "$HR_SHA" --arg hrMetaSha "$HR_META_SHA" --arg rulesSha "$RULES_SHA" --arg runtimeSha "$RUNTIME_SHA" --arg hostingSha "$HOSTING_SHA" --arg gate20Sha "$GATE20_SHA" --arg semantic20Sha "$SEM20_SHA" --arg humanSha "$HUMAN_SHA" --arg probesSha "$PROBES_SHA" --arg routesSha "$ROUTE_SHA" --arg moduleTruthSha "$MODULE_TRUTH_MATRIX_SHA256" --arg atomicSha "$ATOMIC_SHA" --slurpfile moduleTruth "$OUT/module-truth-matrix.json" '{schemaVersion:"cxorbia.i3.terminal-certification.v2",decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,buildCount:1,artifactPackCount:1,runtimeBuilds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,rebuildAfterCertification:false,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingTime,certificationHrRevision:$hr,certificationHrEvidenceSha256:$hrSha,certificationHrMetaSha256:$hrMetaSha,firestoreParityEvidenceSha256:$rulesSha,runtimeEvidenceSha256:$runtimeSha,hostingEvidenceSha256:$hostingSha,atomicP0:{decision:"PASS_I3_ATOMIC_P0_SOURCE_CONTRACT",evidenceSha256:$atomicSha},fullHumanAcceptance:{decision:"PASS_I3_HUMAN_LIVE_ACCEPTANCE",evidenceSha256:$humanSha,functionalProbesSha256:$probesSha,routeInventorySha256:$routesSha,expectedRoleRouteEntries:56,beforeArtifact:true},gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},gate20Semantic:{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",sourceSha:$source,evidenceSha256:$semantic20Sha},moduleTruthEvidenceSha256:$moduleTruthSha,moduleTruth:$moduleTruth[0],pendingTerminalFindingsClosedByThisProof:["VRM-034","VRM-035","VRM-041","VRM-043","VRM-069","VRM-070","VRM-071","VRM-073"],sameRevisionWithinCertificationProof:true,production:false}' > "$OUT/i3-certification-manifest.json"
+      jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg control "$GITHUB_SHA" --arg artifact "$ARTIFACT_SHA256" --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg image "$SOURCE_IMMUTABLE_IMAGE" --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hostingVersion "$HOSTING_VERSION_NAME" --arg hostingTime "$HOSTING_RELEASE_TIME" --arg hr "$CURRENT_LIVE_HR_REVISION" --arg hrSha "$HR_SHA" --arg hrMetaSha "$HR_META_SHA" --arg rulesSha "$RULES_SHA" --arg runtimeSha "$RUNTIME_SHA" --arg hostingSha "$HOSTING_SHA" --arg gate20Sha "$GATE20_SHA" --arg semantic20Sha "$SEM20_SHA" --arg humanSha "$HUMAN_SHA" --arg probesSha "$PROBES_SHA" --arg routesSha "$ROUTE_SHA" --arg moduleTruthSha "$MODULE_TRUTH_MATRIX_SHA256" --arg atomicSha "$ATOMIC_SHA" --arg run "$GITHUB_RUN_ID" --arg attempt "$GITHUB_RUN_ATTEMPT" --arg liveSha "$LIVE_SHA" --arg bindingSha "$BINDING_SHA" --slurpfile moduleTruth "$OUT/module-truth-matrix.json" '{schemaVersion:"cxorbia.i3.terminal-certification.v2",decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,runId:$run,runAttempt:$attempt,liveFixtures:{decision:"PASS_I3_LIVE_FIXTURES_V2",proofStage:"PRE_CERTIFICATION",certifiedAtExecution:false,beforeCertification:true,evidenceSha256:$liveSha,prerequisitesSha256:$bindingSha},artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,buildCount:1,artifactPackCount:1,runtimeBuilds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,rebuildAfterCertification:false,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingTime,certificationHrRevision:$hr,certificationHrEvidenceSha256:$hrSha,certificationHrMetaSha256:$hrMetaSha,firestoreParityEvidenceSha256:$rulesSha,runtimeEvidenceSha256:$runtimeSha,hostingEvidenceSha256:$hostingSha,atomicP0:{decision:"PASS_I3_ATOMIC_P0_SOURCE_CONTRACT",evidenceSha256:$atomicSha},fullHumanAcceptance:{decision:"PASS_I3_HUMAN_LIVE_ACCEPTANCE",evidenceSha256:$humanSha,functionalProbesSha256:$probesSha,routeInventorySha256:$routesSha,expectedRoleRouteEntries:56,beforeArtifact:true},gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},gate20Semantic:{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",sourceSha:$source,evidenceSha256:$semantic20Sha},moduleTruthEvidenceSha256:$moduleTruthSha,moduleTruth:$moduleTruth[0],pendingTerminalFindingsClosedByThisProof:["VRM-034","VRM-035","VRM-041","VRM-043","VRM-069","VRM-070","VRM-071","VRM-073"],sameRevisionWithinCertificationProof:true,production:false}' > "$OUT/i3-certification-manifest.json"
+      node tools/qa/cxorbia-i3-live-fixture-contract.mjs verify-sealed "$OUT" "$OUT/sealed-fixtures"
       cp "$OUT/i3-certification-manifest.json" "$OUT/result.json"
    - uses: actions/upload-artifact@v4
      with:
@@ -3160,11 +3176,8 @@ jobs:
    needs: [canonical-candidate-authority, certify]
    if: ${{ needs.certify.result=='success' }}
    runs-on: ubuntu-24.04
-   timeout-minutes: 55
-   permissions:
-    contents: read
-    actions: read
-    id-token: write
+   timeout-minutes: 15
+   permissions: {contents: read, actions: read}
    env:
     OUT: .tmp/recovery-i3-live-fixtures-v2
     I3_CERTIFICATION_SOURCE_SHA: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
@@ -3174,40 +3187,15 @@ jobs:
      with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
      with: {node-version: '24'}
-   - run: |
-      set -Eeuo pipefail
-      npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
-      npx playwright install chromium >/dev/null 2>&1
-   - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
    - env:
       GH_TOKEN: ${{ github.token }}
      run: |
       set -Eeuo pipefail
-      mkdir -p "$OUT"
-      CERT="$RUNNER_TEMP/cxorbia-terminal-cert"; SOURCE_DIR="$RUNNER_TEMP/cxorbia-terminal-fixture-source"
-      rm -rf "$CERT" "$SOURCE_DIR"; mkdir -p "$CERT" "$SOURCE_DIR"
+      CERT="$RUNNER_TEMP/cxorbia-terminal-cert"
+      mkdir -p "$CERT" "$OUT"
       gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "cxorbia-recovery-i3-single-source-certification-$GITHUB_RUN_ID" --dir "$CERT"
-      test "$(jq -r '.decision' "$CERT/result.json")" = "PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21"
-      test "$(jq -r '.i3CertificationSourceSha' "$CERT/result.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
-      test "$(jq -r '.i3CertificationSourceTree' "$CERT/result.json")" = "$I3_CERTIFICATION_SOURCE_TREE"
-      EXPECTED="$(jq -r '.artifactSha256' "$CERT/result.json")"
-      test "$(sha256sum "$CERT/cxorbia-i3-certified-source.tar"|awk '{print $1}')" = "$EXPECTED"
-      tar -xf "$CERT/cxorbia-i3-certified-source.tar" -C "$SOURCE_DIR"
-      echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
-      echo "CERT_DIR=$CERT" >> "$GITHUB_ENV"
-      echo "CERTIFIED_ARTIFACT_SHA256=$EXPECTED" >> "$GITHUB_ENV"
-   - run: |
-      set -Eeuo pipefail
-      PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" PERIOD_ID="$PERIOD_ID" I3_CERTIFICATION_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" I3_CERTIFICATION_SOURCE_TREE="$I3_CERTIFICATION_SOURCE_TREE" SOURCE_DIR="$SOURCE_DIR" PRIOR_DIR="$CERT_DIR" PRIOR_RUN_ID="$GITHUB_RUN_ID" CERTIFIED_ARTIFACT_SHA256="$CERTIFIED_ARTIFACT_SHA256" OUT="$OUT" node "$GITHUB_WORKSPACE/.github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs"
-      test "$(jq -r '.decision' "$OUT/i3-live-fixtures-result.json")" = "PASS_I3_LIVE_FIXTURES_V2"
-      test "$(jq -r '.cleanup.ok' "$OUT/i3-live-fixtures-result.json")" = "true"
-      test "$(jq '[.tests[]|select(.ok==true)]|length' "$OUT/i3-live-fixtures-result.json")" = "10"
-      test "$(jq -r '.buildCountThisRun' "$OUT/i3-live-fixtures-result.json")" = "0"
-      test "$(jq -r '.deployCountThisRun' "$OUT/i3-live-fixtures-result.json")" = "0"
+      node tools/qa/cxorbia-i3-live-fixture-contract.mjs verify-sealed "$CERT" "$OUT"
    - uses: actions/upload-artifact@v4
-     if: always()
      with:
       name: cxorbia-recovery-i3-live-fixtures-v2-${{ github.run_id }}
       path: ${{ env.OUT }}
@@ -3215,7 +3203,7 @@ jobs:
       retention-days: 30
       compression-level: 0
    - if: always()
-     run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-terminal-cert" "$RUNNER_TEMP/cxorbia-terminal-fixture-source"
+     run: rm -rf "$RUNNER_TEMP/cxorbia-terminal-cert"
   gate21:
    needs: [certify, live-fixtures]
    if: ${{ needs.certify.result=='success'&&needs.live-fixtures.result=='success' }}
@@ -6637,7 +6625,7 @@ jobs:
     SOURCE_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
     EVIDENCE: .tmp/i3-current-source-hosting-dev
     PRODUCTION_URL: https://tya-plataforma.web.app/
-    ASSET_FILES: adapters/tya-c6-unified-human-runtime-v1.js adapters/cxorbia-cxdata-command-boundary-v1.js index-backend-dev.html core/backend-firebase.js core/router.js adapters/tya-live-source-refresh-watch-v2.js modules/hr-source.js modules/shoppers.js modules/beneficios.js modules/clientes.js modules/historico.js modules/visitas.js modules/cuestionario-shopper.js modules/cert.js core/data.js core/backend-certifications.js modules/midia.js modules/misvisitas.js core/finanzas-core.js modules/marca.js modules/administrabilidad.js modules/configuracion.js modules/cliente-insights.js
+    ASSET_FILES: adapters/tya-protected-auth-hr-authority-bridge-v2.js adapters/tya-c6-unified-human-runtime-v1.js adapters/cxorbia-cxdata-command-boundary-v1.js index-backend-dev.html core/backend-firebase.js core/router.js adapters/tya-live-source-refresh-watch-v2.js modules/hr-source.js modules/shoppers.js modules/beneficios.js modules/clientes.js modules/historico.js modules/visitas.js modules/cuestionario-shopper.js modules/cert.js core/data.js core/backend-certifications.js modules/midia.js modules/misvisitas.js core/finanzas-core.js modules/marca.js modules/administrabilidad.js modules/configuracion.js modules/cliente-insights.js
    steps:
    - uses: actions/checkout@v4
      with: {fetch-depth: 0}
@@ -6654,7 +6642,7 @@ jobs:
       git merge-base --is-ancestor "$SOURCE" "$GITHUB_SHA"
       git diff --quiet "$SOURCE" "$GITHUB_SHA" -- app backend tools firebase.json .firebaserc firestore.rules storage.rules ':!tools/qa/cxorbia-i3-vrm302-admin-shoppers-modal-binding.test.mjs' ':!tools/qa/cxorbia-i3-certification-project-continuity.test.mjs' ':!tools/qa/cxorbia-i3-current-authority-alias-guard.mjs' ':!tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs' ':!tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs' ':!tools/qa/cxorbia-i3-shock-continuity-guard.mjs' ':!tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs' ':!tools/qa/cxorbia-i3-terminal-module-domain-coverage.test.mjs'
       # Q2 result writer extraction: exact QA-only dependency assertion, no product exception.
-      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-terminal-module-domain-coverage.test.mjs")" = "d737024e1e4d84749e1ba4072b51a977955e8a07"
+      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-terminal-module-domain-coverage.test.mjs")" = "69abb51282b7190394d6f923a0e11b34f5579a51"
       # VRM-322: pin the one QA-only assertion correction so no product drift can hide behind its exclusion.
       test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-certification-project-continuity.test.mjs")" = "1d663cc151e638150185eb51b82566455e09f18b"
       # VRM-328/329/330: updated canonical-source alias controls are QA-only;
