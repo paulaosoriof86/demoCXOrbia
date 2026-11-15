@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "cxorbia.i3.same-run-source-qa.v1",
+  "decision": "PASS_I3_SAME_RUN_PATH_BOUND_SOURCE_QA",
+  "sourceSha": "fdc73f7fe925db9edae1e2f73561f7496c451508",
+  "sourceTree": "5bbc8da456c58ce116e6506e6d56bfc0a2c36d33",
+  "controlSha": "269c515344e52fb013872c951fb81eaa8af4e646",
+  "runId": 43739435360,
+  "runAttempt": 1,
+  "registrySha256": "71f8e3a1d3dfc1ef77af508805317c68ca6b64365c06ae245698639cce04a199",
+  "scope": "SOURCE_QA_ONLY_NOT_E2E_OR_HUMAN_ACCEPTANCE",
+  "production": false,
+  "suites": [
+    {
+      "id": "frontend-behavior",
+      "owners": [
+        {
+          "path": "app/core/programa.js",
+          "gitBlob": "3560737099f97e0a4774420c10073e108da2677c"
+        },
+        {
+          "path": "app/core/ui.js",
+          "gitBlob": "4947c325a17c95086ae6006615b651aa39097d7c"
+        },
+        {
+          "path": "app/modules/periodos.js",
+          "gitBlob": "25d39e553da379d113dad8a6db8a1d70554c4cd7"
+        },
+        {
+          "path": "app/modules/configuracion.js",
+          "gitBlob": "d8573c95c0bc82bcf42443f7eaab4eb8f4740eaf"
+        },
+        {
+          "path": "app/modules/cliente-insights.js",
+          "gitBlob": "f0b478fede6fb8ef88a5b9868d77883bec4583b6"
+        }
+      ],
+      "tests": [
+        {
+          "path": "tools/qa/cxorbia-i3-q2-frontend-owner-behavior.test.mjs",
+          "gitBlob": "7def608c26a1ae27a29306e9d664a71297b6c544"
+        },
+        {
+          "path": "tools/qa/cxorbia-i3-e04-benchmark-source.test.mjs",
+          "gitBlob": "71ae40362db01bd57fede699a02e82096c4b5efb"
+        }
+      ],
+      "exitCode": 0,
+      "stats": {
+        "tests": 11,
+        "pass": 11,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "logFile": "frontend-behavior.tap",
+      "logSha256": "5203e3adadc415acd4361429fe4c7619b2728b3a6e9c1b1e80eeae503918dd72"
+    },
+    {
+      "id": "finance-ack-boundary",
+      "owners": [
+        {
+          "path": "app/core/backend-finance-benefits.js",
+          "gitBlob": "66856002901be88aefb38acc0aaab635a8872c2b"
+        },
+        {
+          "path": "app/core/backend-cxdata-finance-read.js",
+          "gitBlob": "2a7cd3ffbd2bf0999b149b3095218b7d3d09276b"
+        },
+        {
+          "path": "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+          "gitBlob": "d345acb084d63c7f74847eef5be03c05cd70d458"
+        },
+        {
+          "path": "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+          "gitBlob": "57aefc43bf0f1bf31fdeea4eb3e80119c9cd82ff"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
+          "gitBlob": "538f41d46351fb488285a3303c2c60070609e537"
+        }
+      ],
+      "exitCode": 0,
+      "stats": {
+        "tests": 86,
+        "pass": 86,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "logFile": "finance-ack-boundary.tap",
+      "logSha256": "7d56ad55c31acd79f0414a20e0c4b13b73905735d59430fdd8ec35905c6ecc5e"
+    },
+    {
+      "id": "external-hr-source",
+      "owners": [
+        {
+          "path": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+          "gitBlob": "a3874143a481c159a9d2a11984966bfe813f5248"
+        },
+        {
+          "path": "tools/hr-source/tya-enforce-live-tab-registry.mjs",
+          "gitBlob": "3ff548f1ef9d4af2ad899a2e58d948dfe92aa586"
+        }
+      ],
+      "tests": [
+        {
+          "path": "tools/hr-source/tya-resolve-live-month-tabs.test.mjs",
+          "gitBlob": "6149776378bfaac393d5a4a26bfa8796724cc6b1"
+        },
+        {
+          "path": "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+          "gitBlob": "d5d7a0e8312159e1df00b30385431cd4d7979006"
+        }
+      ],
+      "exitCode": 0,
+      "stats": {
+        "tests": 25,
+        "pass": 25,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "logFile": "external-hr-source.tap",
+      "logSha256": "1e1c76bba23a38cd4dc5a2a800d82d622a661195d323744924db37e7fbd49be1"
+    }
+  ]
+}

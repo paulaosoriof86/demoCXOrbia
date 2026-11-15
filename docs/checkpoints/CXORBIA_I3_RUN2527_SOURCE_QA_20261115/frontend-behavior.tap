@@ -1,0 +1,76 @@
+TAP version 13
+# Subtest: F12 never uses invented industry averages or top performer constants
+ok 1 - F12 never uses invented industry averages or top performer constants
+  ---
+  duration_ms: 2.176601
+  type: 'test'
+  ...
+# Subtest: F12 only shows comparison after source, revision, sample and methodology verified
+ok 2 - F12 only shows comparison after source, revision, sample and methodology verified
+  ---
+  duration_ms: 1.839098
+  type: 'test'
+  ...
+# Subtest: F12 preserves a verified zero benchmark without treating it as missing
+ok 3 - F12 preserves a verified zero benchmark without treating it as missing
+  ---
+  duration_ms: 0.554763
+  type: 'test'
+  ...
+# Subtest: configuration protected authority never becomes local editing when command writes are off
+ok 4 - configuration protected authority never becomes local editing when command writes are off
+  ---
+  duration_ms: 8.799347
+  type: 'test'
+  ...
+# Subtest: protected users with command gate off cannot load local roles or expose a local save
+ok 5 - protected users with command gate off cannot load local roles or expose a local save
+  ---
+  duration_ms: 1.473342
+  type: 'test'
+  ...
+# Subtest: project configuration requires provider ACK and independent project readback
+ok 6 - project configuration requires provider ACK and independent project readback
+  ---
+  duration_ms: 1.598793
+  type: 'test'
+  ...
+# Subtest: questionnaire program is isolated by period, cloned and published only after durable ACK
+ok 7 - questionnaire program is isolated by period, cloned and published only after durable ACK
+  ---
+  duration_ms: 3.164965
+  type: 'test'
+  ...
+# Subtest: program with no write authority reports draft-only without inventing a durable save
+ok 8 - program with no write authority reports draft-only without inventing a durable save
+  ---
+  duration_ms: 1.127601
+  type: 'test'
+  ...
+# Subtest: period creation waits for ACK and reload before switching the active period
+ok 9 - period creation waits for ACK and reload before switching the active period
+  ---
+  duration_ms: 1.44647
+  type: 'test'
+  ...
+# Subtest: period close refuses incomplete ACK without applying or closing the dialog
+ok 10 - period close refuses incomplete ACK without applying or closing the dialog
+  ---
+  duration_ms: 0.982241
+  type: 'test'
+  ...
+# Subtest: shared modal replaces previous dialog, closes only the top on Escape and restores focus
+ok 11 - shared modal replaces previous dialog, closes only the top on Escape and restores focus
+  ---
+  duration_ms: 1.27244
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 66.141503
