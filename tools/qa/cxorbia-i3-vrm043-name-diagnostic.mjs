@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
 import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
@@ -13,12 +15,87 @@ const TENANT=String(process.env.TENANT_ID||'tya');
 const PROJ=String(process.env.PROJECT_ID||'cinepolis');
 const OUT=String(process.env.VRM043_OUT||'.tmp/vrm043-name-diagnostic');
 const EXPECTED_REV=String(process.env.VRM043_EXPECTED_HR_REVISION||'').trim();
+const AUTHORITY_SCOPE=String(process.env.VRM043_AUTHORITY_READBACK_SCOPE||'').trim();
 const VRM082_TARGET_IDS=String(process.env.VRM082_TARGET_IDS||'').split(',').map(v=>v.trim()).filter(Boolean);
 const PRE='YES_PAULA_20260628_PREVIEW_DEV',PROT='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
 const norm=v=>String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
 fs.mkdirSync(OUT,{recursive:true});
 if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
-const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(TENANT);
+const db=getFirestore(),tenant=db.collection('tenants').doc(TENANT);
+if(AUTHORITY_SCOPE){
+  const scope=JSON.parse(fs.readFileSync(AUTHORITY_SCOPE,'utf8'));
+  const descriptor=JSON.parse(fs.readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8'));
+  const refs=scope.references||[],safeId=v=>typeof v==='string'&&/^[a-zA-Z0-9_-]+$/.test(v);
+  if(scope.schemaVersion!=='cxorbia.i3.vrm043.exact-six-reference-readback.v2'||scope.findingId!=='VRM-043'||
+    PROJECT!=='cxorbia-backend-dev'||scope.firebaseProject!==PROJECT||scope.tenantId!==TENANT||scope.projectId!==PROJ||
+    scope.readOnly!==true||scope.production!==false||scope.sourceSha!==descriptor.productSourceSha||
+    scope.sourceTree!==descriptor.productSourceTree||refs.length!==6||new Set(refs.map(x=>x.sourceShopperId)).size!==6||
+    refs.some(x=>!safeId(x.sourceShopperId)||!safeId(x.observedCanonicalShopperId))||
+    new Set(refs.map(x=>x.observedCanonicalShopperId)).size!==5||
+    !Array.isArray(scope.identityLinkSeeds)||scope.identityLinkSeeds.length!==5||new Set(scope.identityLinkSeeds).size!==5||scope.identityLinkSeeds.some(x=>!safeId(x)))
+    throw new Error('SOURCE_FAILURE:VRM043_AUTHORITY_SCOPE_INVALID');
+  const controlSha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+  const actualSourceTree=execFileSync('git',['rev-parse',scope.sourceSha+'^{tree}'],{encoding:'utf8'}).trim();
+  if(actualSourceTree!==scope.sourceTree)throw new Error('RELEASE_COMPOSITION_FAILURE:VRM043_SOURCE_TREE_MISMATCH');
+  const singleFields=['sourceShopperId','sourceIdentityKey','sourceSubjectId','sourceId','sourceKey','legacyShopperId','externalShopperId','sourceIdentity.sourceShopperId','sourceIdentity.shopperId'];
+  const arrayFields=['sourceIdentityAliases','identityAliases','aliases','exactAliases','sourceAliases'];
+  const fields=['schemaVersion','identityLinkId','tenantId','projectId','projectIds','projectScope','periodId','periodKey','periodScope','periodIndependent',
+    'canonicalShopperId','canonicalId','shopperId','profileId','sourceSystem','sourceType','sourceStableKey','identityMode',
+    ...singleFields.filter(x=>!x.includes('.')),...arrayFields,'status','state','authorityType','authorityRef','adjudicationId','providerAckRef','migrationAuthorityRef','identityAuthorityRef','commandId','idempotencyKey',
+    'humanConfirmed','providerAck','sourceSafe','fuzzyMatching','commandType','commandDigest','identityConsolidated','sourceRevision','createdAt','updatedAt'];
+  const nested={scope:['tenantId','projectId','periodId','periodKey','periodScope'],authority:['type','authorityRef','adjudicationId','providerAckRef','evidenceRef','providerRef','commandId'],sourceIdentity:['sourceShopperId','shopperId']};
+  const rawData=new Map(),documents=new Map(),queries=[];
+  let exactDocumentReads=0;
+  const timestamp=x=>typeof x?.toDate==='function'?x.toDate().toISOString():null;
+  function capture(doc){
+    const key=doc.ref.path,data=doc.exists?(doc.data()||{}):{};
+    rawData.set(key,data);
+    const projected={};for(const field of fields)if(Object.hasOwn(data,field))projected[field]=data[field];
+    for(const [box,keys] of Object.entries(nested))if(data[box]&&typeof data[box]==='object'){
+      projected[box]={};for(const key of keys)if(Object.hasOwn(data[box],key))projected[box][key]=data[box][key];
+    }
+    const flags={};for(const flag of ['humanConfirmed','providerAck','sourceSafe','fuzzyMatching'])flags[flag]={present:Object.hasOwn(data,flag),value:Object.hasOwn(data,flag)?data[flag]:null};
+    documents.set(key,{path:key,id:doc.id,exists:doc.exists,readAt:timestamp(doc.readTime),updatedAt:timestamp(doc.updateTime),
+      rawSha256:doc.exists?crypto.createHash('sha256').update(JSON.stringify(data)).digest('hex'):null,fields:projected,flags});
+    return key;
+  }
+  const links=tenant.collection('shopperIdentityLinks'),cross=tenant.collection('shopperIdentityCrosswalk');
+  const initial=[...scope.identityLinkSeeds.map(id=>links.doc(id)),...refs.map(x=>cross.doc(x.sourceShopperId))];
+  exactDocumentReads+=initial.length;for(const doc of await db.getAll(...initial))capture(doc);
+  const tasks=[];
+  for(const ref of refs){
+    for(const field of singleFields)tasks.push({collection:links,field,operator:'==',value:ref.sourceShopperId});
+    for(const field of arrayFields)tasks.push({collection:links,field,operator:'array-contains',value:ref.sourceShopperId});
+    for(const field of ['sourceStableKey','sourceShopperId'])tasks.push({collection:cross,field,operator:'==',value:ref.sourceShopperId});
+  }
+  for(let i=0;i<tasks.length;i+=8)await Promise.all(tasks.slice(i,i+8).map(async task=>{
+    const found=await task.collection.where(task.field,task.operator,task.value).limit(50).get();
+    if(found.size===50)throw new Error('SOURCE_FAILURE:VRM043_BOUNDED_QUERY_TRUNCATED');
+    queries.push({collection:task.collection.path,field:task.field,operator:task.operator,value:task.value,paths:found.docs.map(capture),readAt:timestamp(found.readTime)});
+  }));
+  const receiptIds=new Set();
+  for(const [docPath,data] of rawData)if(!docPath.includes('/commandReceipts/')){
+    for(const value of [data.authorityRef,data.adjudicationId,data.providerAckRef,data.migrationAuthorityRef,data.identityAuthorityRef,data.authority?.authorityRef,data.authority?.adjudicationId,data.authority?.providerAckRef,data.authority?.evidenceRef,data.authority?.providerRef,data.authority?.commandId])
+      if(typeof value==='string'&&/^[a-f0-9]{40}$/.test(value))receiptIds.add(value);
+  }
+  if(receiptIds.size){exactDocumentReads+=receiptIds.size;for(const doc of await db.getAll(...[...receiptIds].map(id=>tenant.collection('commandReceipts').doc(id))))capture(doc);}
+  const records=[...documents.values()].sort((a,b)=>a.path.localeCompare(b.path));
+  const rows=refs.map(ref=>({sourceShopperId:ref.sourceShopperId,observedCanonicalShopperId:ref.observedCanonicalShopperId,
+    exactMatches:queries.filter(q=>q.value===ref.sourceShopperId&&q.paths.length).map(({collection,field,operator,paths})=>({collection,field,operator,paths})),
+    crosswalkPath:cross.doc(ref.sourceShopperId).path}));
+  const report={schemaVersion:'cxorbia.i3.vrm043.focal-authority-readback.v1',decision:'PASS_VRM043_NAME_DIAGNOSTIC',
+    captureCompleted:true,functionalState:'HOLD_PENDING_RAW_AUTHORITY_REVIEW',mode:'EXACT_SIX_REFERENCE_DURABLE_AUTHORITY_READBACK',
+    generatedAt:new Date().toISOString(),controlSha,sourceSha:scope.sourceSha,sourceTree:scope.sourceTree,
+    firebaseProject:PROJECT,tenantId:TENANT,projectId:PROJ,scopeFile:AUTHORITY_SCOPE,
+    priorHrContext:{runId:scope.runId,sourceRevision:scope.sourceRevision,freshHrRead:false},
+    referenceCount:rows.length,rows,documents:records,queries:queries.sort((a,b)=>(a.collection+a.value+a.field).localeCompare(b.collection+b.value+b.field)),
+    reads:{exactDocumentReads,queries:queries.length,queryDocumentsReturned:queries.reduce((n,q)=>n+q.paths.length,0),uniqueDocuments:records.length},
+    providerWrites:0,authWrites:0,hrWrites:0,deploys:0,browserSessions:0,production:false,authorizationI4:false};
+  fs.writeFileSync(path.join(OUT,'vrm043-name-diagnostic.json'),JSON.stringify(report,null,2)+'\n');
+  console.log(JSON.stringify({decision:report.decision,mode:report.mode,functionalState:report.functionalState,referenceCount:rows.length,reads:report.reads}));
+  process.exit(0);
+}
+const auth=getAuth();
 const members=(await tenant.collection('users').get()).docs.map(d=>({id:d.id,...(d.data()||{})}));
 const staff=members.find(m=>m.active===true&&String(m.authNamespace)==='staff'&&String(m.role)==='super')||
   members.find(m=>m.active===true&&String(m.authNamespace)==='staff'&&['admin','ops','coordinador'].includes(String(m.role)));

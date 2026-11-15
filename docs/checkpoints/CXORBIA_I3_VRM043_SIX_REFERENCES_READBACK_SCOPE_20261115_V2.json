@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm043.exact-six-reference-readback.v2",
+  "findingId": "VRM-043",
+  "classification": "MAPPING_FAILURE",
+  "state": "HOLD_PENDING_RAW_DURABLE_AUTHORITY_READBACK",
+  "sourceSha": "fdc73f7fe925db9edae1e2f73561f7496c451508",
+  "sourceTree": "5bbc8da456c58ce116e6506e6d56bfc0a2c36d33",
+  "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+  "runId": 43739435360,
+  "references": [
+    {
+      "sourceShopperId": "shopper_gt_3106d9d44b",
+      "observedCanonicalShopperId": "shp-0780f6f085b1",
+      "approvedTenantAdjudicationPresent": false
+    },
+    {
+      "sourceShopperId": "shopper_gt_3426ec3ff3",
+      "observedCanonicalShopperId": "shopper_gt_5eb6ba4913",
+      "approvedTenantAdjudicationPresent": false
+    },
+    {
+      "sourceShopperId": "shopper_gt_5f3d6952c5",
+      "observedCanonicalShopperId": "shopper_gt_338ec57592",
+      "approvedTenantAdjudicationPresent": false
+    },
+    {
+      "sourceShopperId": "shopper_gt_d5ebad6b6c",
+      "observedCanonicalShopperId": "shopper_gt_2e8200a26e",
+      "approvedTenantAdjudicationPresent": false
+    },
+    {
+      "sourceShopperId": "shopper_gt_f65cbc6391",
+      "observedCanonicalShopperId": "shp-58a449f10a07",
+      "approvedTenantAdjudicationPresent": false
+    },
+    {
+      "sourceShopperId": "shopper_gt_fc5d6fb927",
+      "observedCanonicalShopperId": "shopper_gt_2e8200a26e",
+      "approvedTenantAdjudicationPresent": false
+    }
+  ],
+  "referenceCount": 6,
+  "distinctObservedCanonicalTargets": 5,
+  "acceptanceOwner": "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs",
+  "diagnosticOwner": "tools/qa/cxorbia-i3-terminal-human-contract.mjs",
+  "observabilityGap": "Historical confirmed adjudication links may omit providerAck while retaining authorityRef to a committed commandReceipts record. Capture absent/false/true and receipt linkage before any QA predicate change.",
+  "requiredReadOnlyEvidence": [
+    "Exact shopperIdentityLinks and shopperIdentityCrosswalk records for these six source IDs, including exact field and canonical target. identityResolutionLinks in V1 was a logical label, not the physical collection.",
+    "Preserve absent/false/true separately for humanConfirmed, providerAck, sourceSafe and fuzzyMatching.",
+    "Read tenant/project/period scope, status, authorityType, authorityRef, adjudicationId, providerAckRef, commandId, idempotencyKey and nested authority references when present.",
+    "Read only the referenced durable command/adjudication receipts and check operation, committed state, exact alias/target, scope and provider ACK."
+  ],
+  "forbiddenInferences": [
+    "Do not approve by shared destination alone.",
+    "Do not infer identity by name normalization or fuzzy matching.",
+    "Do not treat absent providerAck as proof of no remote ACK.",
+    "Do not create or reimport identity data to make the test pass."
+  ],
+  "nextDecisionRule": "If current durable authority already proves an exact alias, repair only the QA reader/diagnostic owner with positive and negative tests. If authority is missing, retain HOLD and resolve under the existing functional contract and authorization; no silent alias acceptance.",
+  "readOnly": true,
+  "providerWritesAuthorizedByThisReceipt": false,
+  "production": false,
+  "authorizationI4": false,
+  "supersedesScopeOnly": "docs/checkpoints/CXORBIA_I3_VRM043_SIX_REFERENCES_READBACK_SCOPE_20261115.json",
+  "firebaseProject": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "physicalCollections": {
+    "links": "shopperIdentityLinks",
+    "crosswalk": "shopperIdentityCrosswalk",
+    "receipts": "commandReceipts"
+  },
+  "identityLinkSeeds": [
+    "irl_2f2f53fe53b3753d4a7a08d551a7b3bc",
+    "irl_76bb2eb1b3957d2ca8a1c7636c5765df",
+    "irl_24ebeb57ca3959978c33297395d6e390",
+    "irl_1d608be65358a5919068e583f659277f",
+    "irl_b589b8cd5e53950d363696dbeeb60b0d"
+  ],
+  "seedAuthority": {
+    "findingId": "VRM-229",
+    "runId": 37211579195,
+    "historicalControlSha": "4d030d3302e4dc96e37eac81c5be689004fbf794",
+    "humanAuthorityFile": "CXORBIA_I3_SHOPPER_HUMAN_IDENTITY_AUTHORITY_2026-10-04.json",
+    "executionPackage": "tools/qa/cxorbia-i3-vrm229-paula-confirmed-identity-consolidation.mjs",
+    "seedLimit": "Candidate paths only. Exact aliases, conflict queries and current durable receipts are still required."
+  }
+}

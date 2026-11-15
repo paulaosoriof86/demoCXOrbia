@@ -2829,6 +2829,7 @@ jobs:
     PROJECT_ID: cinepolis
     VRM043_OUT: .tmp/vrm043-name-diagnostic
     VRM043_ORACLE: operational-names-v2
+    VRM043_AUTHORITY_READBACK_SCOPE: ${{ contains(github.event.head_commit.message, '[vrm-043-authority-readback]') && 'docs/checkpoints/CXORBIA_I3_VRM043_SIX_REFERENCES_READBACK_SCOPE_20261115_V2.json' || '' }}
    steps:
    - name: step
      uses: actions/checkout@v4
@@ -2844,14 +2845,16 @@ jobs:
      run: |
       set -Eeuo pipefail
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
-      npx playwright install chromium >/dev/null 2>&1
+      if [ -z "$VRM043_AUTHORITY_READBACK_SCOPE" ]; then npx playwright install chromium >/dev/null 2>&1; fi
    - name: step
      run: |
       set -Eeuo pipefail
       mkdir -p "$VRM043_OUT"
       node tools/qa/cxorbia-i3-vrm043-name-diagnostic.mjs | tee "$VRM043_OUT/console.log"
       test "$(jq -r '.decision' "$VRM043_OUT/vrm043-name-diagnostic.json")" = "PASS_VRM043_NAME_DIAGNOSTIC"
-      test "$(jq -r '.sourceRevision' "$VRM043_OUT/vrm043-name-diagnostic.json")" = "$(jq -r '.sourceRevision' "$VRM043_OUT/vrm043-name-diagnostic.json")"
+      if [ -n "$VRM043_AUTHORITY_READBACK_SCOPE" ]; then
+       jq -e '.captureCompleted == true and .referenceCount == 6 and .providerWrites == 0 and .authWrites == 0 and .browserSessions == 0 and .production == false' "$VRM043_OUT/vrm043-name-diagnostic.json" >/dev/null
+      fi
    - name: step
      if: always()
      uses: actions/upload-artifact@v4
