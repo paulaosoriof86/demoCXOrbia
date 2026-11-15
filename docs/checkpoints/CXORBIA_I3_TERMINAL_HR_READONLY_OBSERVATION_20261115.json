@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "cxorbia.i3.terminal-hr-get-contract-reproduction.v1",
+  "url": "https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live?format=meta",
+  "observedAt": "2026-11-15T16:13:43.724300+00:00",
+  "observation": {
+    "ok": true,
+    "revision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "revisionStable": true,
+    "sourceSafe": true,
+    "refreshError": null,
+    "writes": false,
+    "hrWrites": false,
+    "production": false,
+    "shopperReconciliation": null,
+    "visitReconciliation": null,
+    "refreshStartedAt": "2026-11-15T16:10:18.589Z",
+    "refreshFinishedAt": "2026-11-15T16:10:22.058Z"
+  },
+  "priorPredicateWouldPass": false,
+  "classification": "MAPPING_FAILURE",
+  "owner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml:certify HR preflight",
+  "expected": "Accept source-safe read-only HR observation and stable revision; require command ACK only on its separate durable command proof.",
+  "sourceTestsPass": 11,
+  "sourceTestsFail": 0,
+  "production": false
+}

@@ -137,7 +137,7 @@ jobs:
       echo "status=$STATUS" >> "$GITHUB_OUTPUT"
       node --test tools/qa/cxorbia-i3-terminal-module-domain-coverage.test.mjs
       node --test tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs
-      node --test tools/qa/cxorbia-i3-source-qa-evidence.test.mjs
+      node --test tools/qa/cxorbia-i3-source-qa-evidence.test.mjs tools/qa/cxorbia-i3-terminal-hr-observation.test.mjs
       node --test tools/qa/cxorbia-i3-period-project-client-parity.test.mjs
       node --test tools/qa/cxorbia-i3-g03-rutas-effective-hr-source-truth.test.mjs
       node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
@@ -3125,7 +3125,7 @@ jobs:
         jq -c --argjson attempt "$attempt" '{attempt:$attempt,ok,revision,revisionStable,sourceSafe,refreshError,hrWrites,production,shopperProviderAck:(.shopperReconciliation.providerAck//null),visitProviderAck:(.visitReconciliation.providerAck//null),refreshStartedAt,refreshFinishedAt}' "$OUT/hr-current-live-meta.json" | tee -a "$OUT/hr-meta-attempts.ndjson"
         REV="$(jq -r '.revision // empty' "$OUT/hr-current-live-meta.json")"
         META_OK=0
-        if [[ "$REV" =~ ^[0-9a-f]{64}$ ]] && [[ "$(jq -r '.ok' "$OUT/hr-current-live-meta.json")" == "true" ]] && [[ "$(jq -r '.sourceSafe' "$OUT/hr-current-live-meta.json")" == "true" ]] && [[ "$(jq -r '.shopperReconciliation.providerAck' "$OUT/hr-current-live-meta.json")" == "true" ]] && [[ "$(jq -r '.visitReconciliation.providerAck' "$OUT/hr-current-live-meta.json")" == "true" ]] && [[ "$(jq -r '.hrWrites' "$OUT/hr-current-live-meta.json")" == "false" ]] && [[ "$(jq -r '.production' "$OUT/hr-current-live-meta.json")" == "false" ]] && [[ "$(jq -r '.refreshError == null' "$OUT/hr-current-live-meta.json")" == "true" ]]; then META_OK=1; fi
+        if node tools/qa/cxorbia-i3-terminal-hr-observation.mjs "$OUT/hr-current-live-meta.json" >/dev/null; then META_OK=1; fi
         if [[ "$META_OK" = "1" && "$REV" = "$PREV_REV" && -n "$REV" ]]; then HR_META_OK=1; STABLE_REV="$REV"; break; fi
         if [[ "$META_OK" = "1" ]]; then PREV_REV="$REV"; else PREV_REV=""; fi
         sleep 8
@@ -3136,7 +3136,7 @@ jobs:
       SNAP_REV="$(jq -r '._runtime.revision // .sourceRevision // empty' "$OUT/hr-current-live.json")"
       test "$SNAP_REV" = "$CURRENT_LIVE_HR_REVISION"
       jq -e '.sourceSafe==true and .production==false and .hrWrites==false' "$OUT/hr-current-live.json" >/dev/null 2>&1 || true
-      jq -n -S --arg revision "$CURRENT_LIVE_HR_REVISION" --argjson attempts "$(wc -l < "$OUT/hr-meta-attempts.ndjson")" '{decision:"PASS_TERMINAL_HR_STABLE_REVISION",revision:$revision,stabilityMethod:"two_consecutive_valid_meta_reads_plus_exact_snapshot_revision",attempts:$attempts,production:false}' > "$OUT/hr-stability-proof.json"
+      jq -n -S --arg revision "$CURRENT_LIVE_HR_REVISION" --argjson attempts "$(wc -l < "$OUT/hr-meta-attempts.ndjson")" '{decision:"PASS_TERMINAL_HR_STABLE_REVISION",revision:$revision,stabilityMethod:"two_consecutive_valid_meta_reads_plus_exact_snapshot_revision",scope:"HR_OBSERVATION_ONLY_NOT_COMMAND_RECONCILIATION",reconciliationCertified:false,attempts:$attempts,production:false}' > "$OUT/hr-stability-proof.json"
       echo "CURRENT_LIVE_HR_REVISION=$CURRENT_LIVE_HR_REVISION" >> "$GITHUB_ENV"
       echo "DEV_REVISION=$DEV_REVISION" >> "$GITHUB_ENV"
       echo "RUNTIME_DIGEST=$RUNTIME_DIGEST" >> "$GITHUB_ENV"
