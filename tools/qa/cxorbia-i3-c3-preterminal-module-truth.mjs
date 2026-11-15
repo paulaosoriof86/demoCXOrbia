@@ -1,8 +1,9 @@
 import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {assertCanonicalModuleCoverage} from './cxorbia-i3-terminal-module-domain-coverage.mjs';
-import {assessPreterminalSourceReadiness} from './cxorbia-i3-preterminal-source-readiness.mjs';
+import {assessPreterminalSourceReadiness,resolveModuleSourceOwners} from './cxorbia-i3-preterminal-source-readiness.mjs';
 import {collectPathBoundLedgerSourceProofs} from './cxorbia-i3-c3-ledger-source-proofs.mjs';
+import {readSameRunSourceQa} from './cxorbia-i3-source-qa-evidence.mjs';
 
 const descriptor=JSON.parse(fs.readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8'));
 const TEMPLATE=process.env.TEMPLATE||descriptor.moduleTruthPath;
@@ -32,8 +33,15 @@ if(TREE&&git('rev-parse',SOURCE+'^{tree}')!==TREE)throw new Error('RELEASE_COMPO
 
 const findings=ledger.findings||{};
 const scopedLedgerProofs=collectPathBoundLedgerSourceProofs(ledger);
+const sameRunReceipt=process.env.C3_SOURCE_QA_RECEIPT;
+if(process.env.C3_SOURCE_QA_REQUIRED==='true'&&!sameRunReceipt)
+  throw new Error('RELEASE_COMPOSITION_FAILURE:C3_SAME_RUN_SOURCE_QA_MISSING');
+const sameRunProofs=sameRunReceipt?readSameRunSourceQa(sameRunReceipt,{
+  sourceSha:SOURCE,sourceTree:TREE,controlSha:process.env.GITHUB_SHA,
+  runId:Number(process.env.GITHUB_RUN_ID),runAttempt:Number(process.env.GITHUB_RUN_ATTEMPT||1)
+},process.env.C3_SOURCE_QA_SHA256):[];
 const scopedProofsByPath=new Map();
-for(const proof of scopedLedgerProofs){
+for(const proof of [...scopedLedgerProofs,...sameRunProofs]){
   if(!scopedProofsByPath.has(proof.path))scopedProofsByPath.set(proof.path,[]);
   scopedProofsByPath.get(proof.path).push(proof);
 }
@@ -135,6 +143,9 @@ const sourceFiles=(m.sourceFiles||[]).map(orig=>{
       ledgerLocation:scopedProof.ledgerLocation,sourceSha:scopedProof.sourceSha,
       runId:scopedProof.runId,decision:scopedProof.decision,scope:'SOURCE_QA_ONLY_HUMAN_NOT_APPROVED'
     };
+    const sameRunProof=matchingScopedProofs.find(x=>x.sameRunEvidence);
+    if(sameRunProof)f.preTerminalSameRunSourceProof={...sameRunProof.sameRunEvidence,
+      sourceSha:sameRunProof.sourceSha,runId:sameRunProof.runId,decision:sameRunProof.decision};
     authorityRows.push({path:f.path,domain:f.domain,matchedSource:matched,classification:f.classification});
   }else if(findingEntries.length){
     const states=findingEntries.map(([id,v])=>({id,state:String(v?.state||'')}));
@@ -163,23 +174,18 @@ const sourceFiles=(m.sourceFiles||[]).map(orig=>{
 });
 if(unauthorized.length)throw new Error('RELEASE_COMPOSITION_FAILURE:UNAUTHORIZED_MODULE_DRIFT:'+JSON.stringify(unauthorized));
 
-const byDomain=new Map();
-for(const f of sourceFiles.filter(x=>x.phaseAAuthority===true)){
-  if(!byDomain.has(f.domain))byDomain.set(f.domain,[]);
-  byDomain.get(f.domain).push(f);
-}
 const modules=(m.modules||[]).map(mod=>{
-  const files=byDomain.get(mod.domain)||[];
+  const {files,missing}=resolveModuleSourceOwners(mod,sourceFiles);
   const pending=files.filter(x=>x.classification!=='MATCH');
-  const notApproved=mappingPending.filter(x=>x.domain===mod.domain);
+  const notApproved=mappingPending.filter(x=>x.domain===mod.domain||(mod.owners||[]).includes(x.path));
   return {...mod,
     preTerminalHistoricalClassification:mod.classification,
     historicalMatchPreserved:mod.classification==='MATCH',
-    classification:mod.classification==='MATCH'?'MATCH':notApproved.length?'PENDING_OWNER_APPROVAL_MAPPING':pending.length?'PENDING_OWNER_PROOF_SERVED':mod.classification,
-    currentOwnerProofStatus:notApproved.length?'PENDING_APPROVAL_MAPPING':pending.length?'PENDING_PATH_BOUND_OWNER_PROOF':'PATH_BOUND_OWNER_PROVEN',
+    classification:mod.classification==='MATCH'?'MATCH':notApproved.length||missing.length?'PENDING_OWNER_APPROVAL_MAPPING':pending.length?'PENDING_OWNER_PROOF_SERVED':mod.classification,
+    currentOwnerProofStatus:notApproved.length||missing.length?'PENDING_APPROVAL_MAPPING':pending.length?'PENDING_PATH_BOUND_OWNER_PROOF':'PATH_BOUND_OWNER_PROVEN',
     currentCandidateSource:SOURCE,
     lastServedSource:LAST_SERVED,
-    pendingTerminalFiles:[...pending.map(x=>x.path),...notApproved.map(x=>x.path)],
+    pendingTerminalFiles:[...new Set([...pending.map(x=>x.path),...notApproved.map(x=>x.path),...missing])],
     ownerAuthorityCount:files.length
   };
 });
@@ -253,6 +259,13 @@ const out={...m,
     unauthorizedFileCount:0,
     pathBoundAuthority:true,
     globalCandidateSelfApproval:false,
+    sameRunSourceQa:sameRunReceipt?{
+      receiptSha256:process.env.C3_SOURCE_QA_SHA256,
+      controlSha:process.env.GITHUB_SHA,runId:Number(process.env.GITHUB_RUN_ID),
+      pathCount:sameRunProofs.length,
+      acceptedPaths:sourceFiles.filter(x=>x.preTerminalSameRunSourceProof).map(x=>x.path),
+      scope:'SOURCE_QA_ONLY_NOT_E2E_OR_HUMAN_ACCEPTANCE'
+    }:null,
     loadOrderPass:true,
     production:false
   },

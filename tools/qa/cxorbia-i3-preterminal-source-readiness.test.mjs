@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {assessPreterminalSourceReadiness as assess} from './cxorbia-i3-preterminal-source-readiness.mjs';
+import {assessPreterminalSourceReadiness as assess,resolveModuleSourceOwners} from './cxorbia-i3-preterminal-source-readiness.mjs';
 import {collectPathBoundLedgerSourceProofs} from './cxorbia-i3-c3-ledger-source-proofs.mjs';
 
 const sample=()=>{
@@ -54,12 +54,33 @@ test('a historically MATCH domain without active owner remains source-ready',()=
   assert.equal(r.sourceReadyModuleCount,21);
 });
 
+test('shared declared owners enable a module without inventing a second inventory row',()=>{
+  const s=sample();const shared=s.sourceFiles[0].path;
+  s.modules[20].owners=[shared,shared];s.sourceFiles=s.sourceFiles.filter(x=>x.domain!=='domain-20');
+  const before=s.modules.map(x=>x.classification),count=s.sourceFiles.length;
+  assert.equal(resolveModuleSourceOwners(s.modules[20],s.sourceFiles).files.length,1);
+  assert.equal(assess(s).sourceReadyModuleCount,21);assert.equal(assess(s).terminalEligible,true);
+  assert.equal(s.sourceFiles.length,count);assert.deepEqual(s.modules.map(x=>x.classification),before);
+});
+test('a shared unproven owner blocks both modules; an absent or excluded owner never passes vacuously',()=>{
+  const s=sample();s.modules[20].owners=[s.sourceFiles[0].path];
+  s.sourceFiles[0].provenanceIndependent=false;
+  assert.equal(assess(s).sourceReadyModuleCount,19);
+  for(const excluded of [false,true]){
+    const x=sample();x.modules[20].owners=['app/missing.js'];
+    if(excluded)x.sourceFiles.push({path:'app/missing.js',domain:'domain-20',phaseAAuthority:false});
+    assert.equal(assess(x).sourceReadyModuleCount,20);assert.equal(assess(x).terminalEligible,false);
+  }
+});
+
 test('the terminal workflow uses current source-ready proof, never the old 21-MATCH prerequisite',()=>{
   const wf=readFileSync(new URL('../../.github/workflows/cxorbia-recovery-i3-dev-certification.yml',import.meta.url),'utf8');
   const pre=wf.split('  c3-preterminal-module-truth:')[1]?.split('  vrm043-name-diagnostic:')[0]||'';
   const terminal=wf.split('  certify:')[1]?.split('  live-fixtures:')[0]||'';
   assert.match(pre,/terminal_ready:.*c3_gate/);
-  assert.match(pre,/PASS_C3_PRETERMINAL_SOURCE_READY_EXACT_DEV/);
+  assert.match(pre,/node tools\/qa\/cxorbia-i3-c3-preterminal-result\.mjs/);
+  const finalizer=readFileSync(new URL('./cxorbia-i3-c3-preterminal-result.mjs',import.meta.url),'utf8');
+  assert.match(finalizer,/PASS_C3_PRETERMINAL_SOURCE_READY_EXACT_DEV/);
   assert.match(terminal,/needs: \[canonical-candidate-authority, c3-preterminal-module-truth\]/);
   assert.match(terminal,/PRETERM_RUN_ID="\$GITHUB_RUN_ID"/);
   assert.match(terminal,/sourceReadyModules.*"21"/);

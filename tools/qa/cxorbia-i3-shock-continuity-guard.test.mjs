@@ -1,7 +1,22 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {validateShockContinuity, classifyModules, findNewerDevProviderReceipt} from './cxorbia-i3-shock-continuity-guard.mjs';
+import {validateShockContinuity, classifyModules, findNewerDevProviderReceipt,hasVerifiedHostingAssets} from './cxorbia-i3-shock-continuity-guard.mjs';
+import crypto from 'node:crypto';
+
+test('Hosting receipt verifies actual hashes and the changed owner, not a frozen count',()=>{
+  const bytes='fixture content\n',hash=crypto.createHash('sha256').update(bytes).digest('hex');
+  const servedSha256=Object.fromEntries(Array.from({length:19},(_,i)=>['asset-'+i+'.js',hash]));
+  servedSha256['modules/configuracion.js']=hash;
+  const receipt={sourceSha:'new-source',verifiedServedAssetCount:20,servedSha256};
+  const read=args=>args[0]==='diff'?'app/modules/configuracion.js\n':bytes;
+  assert.equal(hasVerifiedHostingAssets(receipt,'prior',read),true);
+  const missing=structuredClone(receipt);delete missing.servedSha256['modules/configuracion.js'];missing.verifiedServedAssetCount=19;
+  assert.equal(hasVerifiedHostingAssets(missing,'prior',read),false);
+  const drift=structuredClone(receipt);drift.servedSha256['modules/configuracion.js']='0'.repeat(64);
+  assert.equal(hasVerifiedHostingAssets(drift,'prior',read),false);
+  assert.equal(hasVerifiedHostingAssets({...receipt,verifiedServedAssetCount:19},'prior',read),false);
+});
 
 const freeze = 'CXORBIA_I3_PLAN_CHOQUE_CIERRE_MONOTONICO_FROZEN_2026-10-28.md';
 const mk = () => {

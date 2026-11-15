@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
+import crypto from 'node:crypto';
 
 const DESCRIPTOR = 'CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json';
 const POINTER = 'CXORBIA_RECOVERY_EXECUTION_CURRENT.json';
@@ -9,6 +10,19 @@ const FREEZE = 'CXORBIA_I3_PLAN_CHOQUE_CIERRE_MONOTONICO_FROZEN_2026-10-28.md';
 const EXPECTED_BRANCH = 'recovery/cxorbia-phase-a-20260831';
 
 const readJson = (p) => JSON.parse(fs.readFileSync(p, 'utf8'));
+
+export function hasVerifiedHostingAssets(receipt,previousSourceSha,
+  gitRead=args=>execFileSync('git',args,{encoding:'utf8'})){
+  try{
+    const assets=Object.entries(receipt.servedSha256||{});
+    if(assets.length<19||receipt.verifiedServedAssetCount!==assets.length)return false;
+    const changed=gitRead(['diff','--name-only','--diff-filter=ACMRT',previousSourceSha,receipt.sourceSha,'--','app'])
+      .trim().split('\n').filter(Boolean).map(x=>x.replace(/^app\//,''));
+    if(changed.some(p=>!Object.hasOwn(receipt.servedSha256,p)))return false;
+    return assets.every(([p,hash])=>!p.startsWith('/')&&!p.includes('..')&&/^[a-f0-9]{64}$/.test(hash)&&
+      crypto.createHash('sha256').update(gitRead(['show',receipt.sourceSha+':app/'+p])).digest('hex')===hash);
+  }catch{return false;}
+}
 
 export function validatePendingDevSuccessor({descriptor:d,pointer:p,matrix:m,gitBlob,
   gitRead=args=>execFileSync('git',args,{encoding:'utf8'}).trim(),
@@ -323,7 +337,7 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
       x.receiptPath&&x.receiptBlob===gitBlob(x.receiptPath)&&
       receipt.sourceSha===x.sourceSha&&receipt.sourceTree===x.sourceTree&&
       receipt.hostingAfter===x.hostingVersion&&receipt.runtimeRevision===x.runtimeRevision&&
-      receipt.verifiedServedAssetCount===19&&receipt.productionUnchanged===true&&
+      hasVerifiedHostingAssets(receipt,x.previousC3SourceSha)&&receipt.productionUnchanged===true&&
       m.productSource?.authorityState==='HOSTING_DEV_MATERIALIZED_PENDING_C3_E2E',
       'RELEASE_COMPOSITION_FAILURE:HOSTING_DEV_C3_TRANSITION_RECEIPT');
   }

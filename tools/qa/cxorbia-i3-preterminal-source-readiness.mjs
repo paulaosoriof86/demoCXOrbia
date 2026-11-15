@@ -1,5 +1,12 @@
 // Evidence readiness is not module certification. This gate may open I3
 // terminal E2E while preserving non-MATCH module statuses for the finalizer.
+export function resolveModuleSourceOwners(module,sourceFiles=[]){
+  const declared=Array.isArray(module?.owners)?module.owners:[];
+  const active=sourceFiles.filter(x=>x.phaseAAuthority===true);
+  const files=active.filter(x=>x.domain===module?.domain||declared.includes(x.path));
+  const missing=[...new Set(declared.filter(path=>!files.some(x=>x.path===path)))];
+  return {files,missing};
+}
 export function assessPreterminalSourceReadiness({modules, sourceFiles, pendingMappingApprovalFiles=[], pendingBlobProvenanceFiles=[], unauthorizedFileCount=0}={}) {
   const blockers=[];
   if(!Array.isArray(modules)||modules.length!==21)blockers.push('MODULE_DOMAIN_COUNT');
@@ -20,11 +27,11 @@ export function assessPreterminalSourceReadiness({modules, sourceFiles, pendingM
   if(unauthorizedFileCount!==0)blockers.push('UNAUTHORIZED_SOURCE_DRIFT');
   const sourceReadyModules=[];
   for(const mod of rows){
-    const ownerFiles=active.filter(x=>x.domain===mod.domain);
+    const {files:ownerFiles,missing}=resolveModuleSourceOwners(mod,files);
     const ownerReady=ownerFiles.every(x=>x.classification==='MATCH'&&
       x.provenanceIndependent===true&&!!x.currentBlob&&x.approvedBlob===x.currentBlob);
     const historicalNoFileMatch=ownerFiles.length===0&&mod.classification==='MATCH';
-    const moduleReady=mod.currentOwnerProofStatus==='PATH_BOUND_OWNER_PROVEN'&&
+    const moduleReady=missing.length===0&&mod.currentOwnerProofStatus==='PATH_BOUND_OWNER_PROVEN'&&
       Array.isArray(mod.pendingTerminalFiles)&&mod.pendingTerminalFiles.length===0&&
       ownerReady&&(ownerFiles.length>0||historicalNoFileMatch);
     if(moduleReady)sourceReadyModules.push(mod.domain);

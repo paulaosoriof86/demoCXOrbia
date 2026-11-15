@@ -73,6 +73,7 @@ jobs:
     source_sha: ${{ steps.authority.outputs.source_sha }}
     source_tree: ${{ steps.authority.outputs.source_tree }}
     status: ${{ steps.authority.outputs.status }}
+    source_qa_sha256: ${{ steps.source_qa.outputs.source_qa_sha256 }}
    steps:
    - uses: actions/checkout@v4
      with: {fetch-depth: 0}
@@ -136,6 +137,7 @@ jobs:
       echo "status=$STATUS" >> "$GITHUB_OUTPUT"
       node --test tools/qa/cxorbia-i3-terminal-module-domain-coverage.test.mjs
       node --test tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs
+      node --test tools/qa/cxorbia-i3-source-qa-evidence.test.mjs
       node --test tools/qa/cxorbia-i3-period-project-client-parity.test.mjs
       node --test tools/qa/cxorbia-i3-g03-rutas-effective-hr-source-truth.test.mjs
       node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
@@ -160,6 +162,16 @@ jobs:
       node --test tools/qa/cxorbia-i3-r20-no-visit-shopper-auth-gate.test.mjs
       bash -n .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh
       node --test backend/runtime/hr-live-service/test/cxorbia-i3-phasea-completion-source-contract.test.mjs
+   - name: Execute exact owner suites and seal same-run Q2 evidence
+     id: source_qa
+     run: node tools/qa/cxorbia-i3-source-qa-evidence.mjs
+   - name: Preserve same-run owner test evidence
+     uses: actions/upload-artifact@v4
+     with:
+      name: cxorbia-i3-source-qa-${{ github.run_id }}
+      path: .tmp/canonical-source-qa/
+      if-no-files-found: error
+      retention-days: 30
    - if: ${{ steps.authority.outputs.status=='HOLD_VRM134_A05_DEV_TRAFFIC_REQUIRED' }}
      uses: google-github-actions/auth@v2
      with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
@@ -2685,10 +2697,18 @@ jobs:
     C3_AUTH_STATUS: ${{ needs.canonical-candidate-authority.outputs.status }}
     C3_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
     C3_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+    C3_SOURCE_QA_REQUIRED: 'true'
+    C3_SOURCE_QA_RECEIPT: .tmp/c3-preterminal-module-truth/source-qa/source-qa-receipt.json
+    C3_SOURCE_QA_SHA256: ${{ needs.canonical-candidate-authority.outputs.source_qa_sha256 }}
    steps:
    - name: step
      uses: actions/checkout@v4
      with: {fetch-depth: 0}
+   - name: Consume exact owner evidence from this run
+     uses: actions/download-artifact@v4
+     with:
+      name: cxorbia-i3-source-qa-${{ github.run_id }}
+      path: .tmp/c3-preterminal-module-truth/source-qa/
    - name: step
      run: |
       set -Eeuo pipefail
@@ -2782,28 +2802,9 @@ jobs:
       curl -fsSL --retry 5 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/__c3_truth__/admin/dashboard?c3truth=${GITHUB_RUN_ID}" -o "$C3_OUT/remote/deep.html"
       cmp "$RUNNER_TEMP/app/index-backend-dev.html" "$C3_OUT/remote/deep.html"
       printf '%s\n' "$n" > "$C3_OUT/active-browser-owner-count.txt"
-   - name: step
+   - name: Publish the computed C3 result and next-block signal
      id: c3_gate
-     run: |
-      set -Eeuo pipefail
-      MATRIX_SHA="$(sha256sum "$C3_OUT/module-truth-preterminal.json"|awk '{print $1}')"
-      SOURCE_READY_COUNT="$(jq '.preTerminalComposition.sourceReadyModuleCount' "$C3_OUT/module-truth-preterminal.json")"
-      MATCH_COUNT="$(jq '.preTerminalComposition.matchModules|length' "$C3_OUT/module-truth-preterminal.json")"
-      PENDING_COUNT="$(jq '.preTerminalComposition.pendingFileCount' "$C3_OUT/module-truth-preterminal.json")"
-      TERMINAL_ELIGIBLE="$(jq -r '.preTerminalComposition.terminalEligible' "$C3_OUT/module-truth-preterminal.json")"
-      jq -n -S \
-        --arg status "$C3_AUTH_STATUS" --arg source "$C3_SOURCE" --arg tree "$C3_TREE" --arg matrix "$MATRIX_SHA" \
-        --arg hosting "$EXPECTED_HOSTING_VERSION" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" \
-        --arg rules "$(jq -r '.sha256' "$C3_OUT/firestore-live-parity.json")" \
-        --argjson owners "$(cat "$C3_OUT/active-browser-owner-count.txt")" \
-        --argjson matches "$MATCH_COUNT" --argjson pending "$PENDING_COUNT" --argjson sourceReady "$SOURCE_READY_COUNT" --arg eligible "$TERMINAL_ELIGIBLE" \
-        '{decision:(if $sourceReady==21 and $pending==0 and $eligible=="true" then "PASS_C3_PRETERMINAL_SOURCE_READY_EXACT_DEV" else "HOLD_C3_PRETERMINAL_SOURCE_EVIDENCE_PENDING" end),status:$status,sourceSha:$source,sourceTree:$tree,moduleTruthSha256:$matrix,moduleCount:21,matchModules:$matches,nonMatchModules:(21-$matches),sourceReadyModules:$sourceReady,pendingFiles:$pending,terminalEligible:($eligible=="true"),activeBrowserOwners:$owners,hostingVersion:$hosting,runtimeRevision:$runtime,runtimeDigest:$digest,firestoreRulesSha256:$rules,allApprovedOwnersLoaded:true,duplicateScripts:0,builds:0,deploys:0,writes:0,production:false}' \
-        > "$C3_OUT/result.json"
-      if jq -e '.decision=="PASS_C3_PRETERMINAL_SOURCE_READY_EXACT_DEV"' "$C3_OUT/result.json" >/dev/null; then
-        echo "terminal_ready=true" >> "$GITHUB_OUTPUT"
-      else
-        echo "terminal_ready=false" >> "$GITHUB_OUTPUT"
-      fi
+     run: node tools/qa/cxorbia-i3-c3-preterminal-result.mjs
    - name: step
      if: always()
      uses: actions/upload-artifact@v4
@@ -3006,6 +3007,8 @@ jobs:
    env:
     I3_CERTIFICATION_SOURCE_SHA: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
     I3_CERTIFICATION_SOURCE_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+    C3_SOURCE_QA_REQUIRED: 'true'
+    C3_SOURCE_QA_SHA256: ${{ needs.canonical-candidate-authority.outputs.source_qa_sha256 }}
    steps:
    - name: step
      uses: actions/checkout@v4
@@ -3058,6 +3061,8 @@ jobs:
        test "$(jq -r '.moduleCount' "$PRIOR/result.json")" = "21"
       test "$(jq -r '.pendingFiles' "$PRIOR/result.json")" = "0"
       cp "$PRIOR/result.json" "$OUT/current-preterminal-result.json"
+      cp -R "$PRIOR/source-qa" "$OUT/source-qa"
+      echo "C3_SOURCE_QA_RECEIPT=$OUT/source-qa/source-qa-receipt.json" >> "$GITHUB_ENV"
    - name: step
      run: |
       set -Eeuo pipefail
@@ -7016,7 +7021,7 @@ jobs:
     SOURCE_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
     EVIDENCE: .tmp/i3-current-source-hosting-dev
     PRODUCTION_URL: https://tya-plataforma.web.app/
-    ASSET_FILES: index-backend-dev.html core/backend-firebase.js core/router.js adapters/tya-live-source-refresh-watch-v2.js modules/hr-source.js modules/shoppers.js modules/beneficios.js modules/clientes.js modules/historico.js modules/visitas.js modules/cuestionario-shopper.js modules/cert.js core/data.js core/backend-certifications.js modules/midia.js modules/misvisitas.js core/finanzas-core.js modules/marca.js modules/administrabilidad.js
+    ASSET_FILES: index-backend-dev.html core/backend-firebase.js core/router.js adapters/tya-live-source-refresh-watch-v2.js modules/hr-source.js modules/shoppers.js modules/beneficios.js modules/clientes.js modules/historico.js modules/visitas.js modules/cuestionario-shopper.js modules/cert.js core/data.js core/backend-certifications.js modules/midia.js modules/misvisitas.js core/finanzas-core.js modules/marca.js modules/administrabilidad.js modules/configuracion.js
    steps:
    - uses: actions/checkout@v4
      with: {fetch-depth: 0}
@@ -7038,11 +7043,11 @@ jobs:
       # their exact blobs are pinned, so the exclusion cannot hide source drift.
       test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.mjs")" = "bc3ac43c425e1146e524527d76664a350346b976"
       test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs")" = "80431256991a532257b58850f84194557a853f08"
-      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-shock-continuity-guard.mjs")" = "29f95daf0c40bd9347eaa93304efd5d302378b48"
+      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-shock-continuity-guard.mjs")" = "debb28d8391df034b759ed57762ac508a475e10d"
       test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs")" = "13ebf8493f879a73cd0942c751484995fcbb72c4"
       # The pending-source/predecessor C3 accounting assertion is corrected at
       # this exact QA blob; no browser/backend source change is exempted.
-      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs")" = "139fc5c5a622eaf21c9ac594bf4fa2fd9f29af45"
+      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs")" = "605ada08330e6de7bf0f7a949f204621e6fcb4de"
       [[ "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" == HOLD_I3_* ]]
       test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$SOURCE"
       test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$SOURCE_TREE"
@@ -7125,6 +7130,22 @@ jobs:
       sha256sum "$EVIDENCE/production-after.html" | awk '{print $1}' > "$EVIDENCE/production-after.sha256"
       cmp -s "$EVIDENCE/production-before.sha256" "$EVIDENCE/production-after.sha256"
       jq -n -S --arg source "$SOURCE" --arg tree "$SOURCE_TREE" --arg before "$BEFORE" --arg after "$AFTER" --arg rev "$EXPECTED_RUNTIME_REVISION" --arg digest "$(jq -r '.status.imageDigest' "$EVIDENCE/revision-after.json")" --arg prod "$(cat "$EVIDENCE/production-after.sha256")" '{decision:"PASS_I3_CURRENT_SOURCE_HOSTING_DEV_ONLY",sourceSha:$source,sourceTree:$tree,hostingBefore:$before,hostingAfter:$after,runtimeRevision:$rev,runtimeDigest:$digest,productionIndexSha256:$prod,hostingDeploys:1,cloudRunBuilds:0,cloudRunDeploys:0,rulesDeploys:0,hrWrites:0,firestoreDirectWrites:0,productionDeploys:0,productionUnchanged:true,phaseAComplete:false,gate20:"HOLD",gate21:"HOLD"}' > "$EVIDENCE/readback.json"
+      node --input-type=module <<'NODE'
+      import fs from 'node:fs';
+      import crypto from 'node:crypto';
+      const dir=process.env.EVIDENCE,sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+      const receipt=JSON.parse(fs.readFileSync(dir+'/readback.json'));
+      receipt.servedSha256={};
+      for(const file of process.env.ASSET_FILES.trim().split(/\s+/)){
+        const served=fs.readFileSync(dir+'/served-'+file.replaceAll('/','-'));
+        const source=fs.readFileSync(process.env.SOURCE_DIR+'/app/'+file);
+        if(!served.equals(source))throw new Error('HOSTING_ASSET_BYTES_MISMATCH:'+file);
+        receipt.servedSha256[file]=sha(served);
+      }
+      receipt.verifiedServedAssetCount=Object.keys(receipt.servedSha256).length;
+      receipt.sourceHostedExact=true;
+      fs.writeFileSync(dir+'/readback.json',JSON.stringify(receipt,null,2)+'\n');
+      NODE
    - uses: actions/upload-artifact@v4
      if: always()
      with: {name: "cxorbia-i3-current-source-hosting-dev-${{ github.run_id }}", path: .tmp/i3-current-source-hosting-dev/, if-no-files-found: warn, retention-days: 30}

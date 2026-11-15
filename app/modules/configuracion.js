@@ -204,12 +204,15 @@ CX.module('cuestionarios', ({data,ui})=>{
 });
 
 /* ---------- Recovery I3 VRM-080: administración conectada durable ---------- */
-const _cfgConnectedAuthority=()=>!!(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority()&&window.CX_PROTECTED_DEV_RUNTIME===true&&CX.BACKEND?.enableCommandWrites===true);
+// Canonical ownership survives a disabled write gate; it never becomes demo/local authority.
+const _cfgCanonicalAuthority=()=>!!(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority()&&window.CX_PROTECTED_DEV_RUNTIME===true);
+const _cfgConnectedAuthority=()=>_cfgCanonicalAuthority()&&CX.BACKEND?.enableCommandWrites===true;
 const _cfgEsc=v=>String(v==null?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const _cfgOpId=pfx=>(pfx||'cfg')+'-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);
 const _cfgClone=v=>JSON.parse(JSON.stringify(v));
 const _cfgStable=v=>Array.isArray(v)?v.map(_cfgStable):(v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,_cfgStable(v[k])])):v);
 async function _cfgUserAdminRequest(suffix,method,body){
+  if((method||'GET')!=='GET'&&!_cfgConnectedAuthority())throw new Error('USER_ADMIN_CONNECTED_WRITE_AUTHORITY_REQUIRED');
   const tenant=String(window.CX_TENANT_RUNTIME_CONFIG?.tenantId||CX.BRAND?.id||'').trim();
   const user=window.firebase?.auth?.().currentUser;if(!tenant||!user)throw new Error('AUTHORITY_USER_ADMIN_AUTH_REQUIRED');
   const token=await user.getIdToken(true);const m=method||'GET';
@@ -317,6 +320,9 @@ let _uState=null;
 const _U_KEY='cx_users', _UR_KEY='cx_custom_roles';
 function _uSave(st){ try{ localStorage.setItem(_U_KEY, JSON.stringify(st.users)); localStorage.setItem(_UR_KEY, JSON.stringify(st.customRoles||[])); }catch(e){} }
 CX.module('usuarios', ({ui})=>{
+  if(_cfgCanonicalAuthority()&&!_cfgConnectedAuthority()){
+    const host=ui.el('div');host.innerHTML=ui.ph('Usuarios & Permisos','Administración conectada')+'<div class="card card-p" data-connected-users="readonly"><div class="card-t">Usuarios y permisos en solo lectura</div><p>La edición está deshabilitada. Los usuarios, roles y permisos conservan su autoridad remota; no se guardan cambios locales.</p></div>';return host;
+  }
   if(_cfgConnectedAuthority()) return _connectedUsersModule(ui);
   if(!_uState){
     let savedUsers=null, savedRoles=null;
@@ -501,7 +507,7 @@ let _cfgTab='centro', _cfgMode='proveedor';
 CX.module('config', ({data,ui})=>{
   const p=data.period();
   const host=ui.el('div');
-  const connected=_cfgConnectedAuthority();
+  const connected=_cfgCanonicalAuthority();
   const plan=CX.session.plan||p.plan||'estandar';
 
   const draw=()=>{
@@ -712,6 +718,10 @@ CX.module('config', ({data,ui})=>{
   };
 
   const drawPaises=(body)=>{
+    if(connected&&!_cfgConnectedAuthority()){
+      const record=(data.__backendAllProjectRecords||[]).find(x=>String(x.id||x.projectId||'')===String(data.currentProjectId||p.projectId||''))||p;
+      body.innerHTML='<div class="card card-p" data-config-locked="paises"><div class="card-t">Países del proyecto</div><p>'+_cfgEsc((record.countries||[]).join(', '))+'</p><p>La edición está deshabilitada. Se conserva la configuración confirmada por el proveedor.</p></div>';return;
+    }
     if(connected){
       const rootId=String(data.currentProjectId||p.projectId||'').trim();
       const record=(data.__backendAllProjectRecords||[]).find(x=>String(x.id||x.projectId||'')===rootId)||p;
