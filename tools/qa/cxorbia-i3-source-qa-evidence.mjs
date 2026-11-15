@@ -8,8 +8,10 @@ import {fileURLToPath} from 'node:url';
 export const SOURCE_OWNER_SUITES=Object.freeze([
   {id:'human-project-scope',owners:['app/adapters/tya-c6-unified-human-runtime-v1.js','app/adapters/tya-protected-auth-hr-authority-bridge-v2.js'],
     tests:['tools/qa/cxorbia-i3-human-project-scope.test.mjs']},
-  {id:'frontend-behavior',owners:['app/core/programa.js','app/core/ui.js','app/modules/periodos.js','app/modules/configuracion.js','app/modules/cliente-insights.js'],
-    tests:['tools/qa/cxorbia-i3-q2-frontend-owner-behavior.test.mjs','tools/qa/cxorbia-i3-e04-benchmark-source.test.mjs']},
+  {id:'frontend-behavior',owners:['app/core/programa.js','app/core/ui.js','app/modules/periodos.js','app/modules/configuracion.js','app/modules/cliente-insights.js',
+    'app/adapters/cxorbia-command-adapter-v1.js','app/core/backend-bulletins.js','backend/runtime/cxorbia-operational-command-provider-v1.mjs','app/sw.js'],
+    tests:['tools/qa/cxorbia-i3-q2-frontend-owner-behavior.test.mjs','tools/qa/cxorbia-i3-e04-benchmark-source.test.mjs',
+      'tools/qa/cxorbia-i3-client-collaboration-ui.test.mjs','backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs','tools/qa/cxorbia-i3-d07-sw-pdf-cross-origin.test.mjs']},
   {id:'finance-ack-boundary',owners:['app/core/backend-finance-benefits.js','app/core/backend-cxdata-finance-read.js',
     'app/adapters/cxorbia-cxdata-command-boundary-v1.js','backend/runtime/cxorbia-finance-command-provider-v1.mjs'],
     tests:['backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs','tools/qa/cxorbia-i3-b8-historical-command-boundary.test.mjs']},

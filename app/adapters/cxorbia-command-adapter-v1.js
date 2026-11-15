@@ -95,6 +95,13 @@
       if(!['super','admin','ops','coordinador','shopper','cliente','client'].includes(actor.role))return{ok:false,code:'COMMAND_ACADEMY_LEARNER_ROLE_DENIED'};
       return{ok:true}; // Provider binds the owner to the verified token, never the payload.
     }
+    const clientEntity={'client.nps.submit':'clientNps','client.note.create':'clientNote','client.meeting.request':'clientMeeting'}[command.commandType];
+    if(clientEntity){
+      const auth=currentAuthContext();
+      if(!auth||auth.authenticated!==true||!['cliente','client'].includes(str(auth.role))||str(auth.authNamespace)!=='staff'||CX.session?.user?.clientPreviewReadOnly===true)return{ok:false,code:'COMMAND_CLIENT_SELF_REQUIRED'};
+      if(str(auth.tenantId)!==command.tenantId||!arr(auth.projectIds).map(str).includes(command.projectId)||command.entityType!==clientEntity||command.authorization?.permission!==command.commandType||command.entityId||command.expectedVersion!=='absent')return{ok:false,code:'COMMAND_CLIENT_SELF_SCOPE_DENIED'};
+      return{ok:true};
+    }
     if(actor.role==='shopper'){
       const allowed=new Set(['visit.state.update','visit.reschedule','visit.cancel','visit.questionnaire.submit','visit.checkin.evidence','resource.read.receipt','application.create','reservation.create','reservation.delete','shopper.update','support.ticket.create']);
       if(!allowed.has(command.commandType))return{ok:false,code:'COMMAND_ROLE_DENIED'};

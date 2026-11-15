@@ -268,6 +268,37 @@ window.CX = window.CX || {};
 
   function cachedSupportTickets(){return supportTicketCache.map(x=>Object.assign({},x));}
 
+  function clientCollaborationScope(){
+    const auth=CX.backendAuth?.context?.()||{},context=CX.data?.ctx?.()||{};
+    const state=window.CX_BACKEND_AUTHORIZED_STATE||{},principal=state.principal||{};
+    const scope={tenantId:String(auth.tenantId||''),projectId:String(context.projectId||CX.data?.currentProjectId||''),periodId:String(context.periodId||CX.data?.period?.()?.id||CX.data?.currentPeriodId||''),actorUid:uid(),role:String(auth.role||''),generation:String(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.sessionGeneration||'')};
+    const client=['cliente','client'].includes(scope.role),operator=['super','admin','ops','coordinador'].includes(scope.role);
+    const principalBound=String(principal.actorUid||'')===scope.actorUid&&String(state.tenantId||'')===scope.tenantId&&String(principal.tenantId||'')===scope.tenantId&&String(principal.role||'')===scope.role&&principal.authNamespace===auth.authNamespace&&JSON.stringify((principal.projectIds||[]).map(String).sort())===JSON.stringify((auth.projectIds||[]).map(String).sort());
+    if(auth.authenticated!==true||!scope.actorUid||!principalBound||auth.authNamespace!=='staff'||(!client&&!operator)||!scope.tenantId||!scope.projectId||!scope.periodId||(scope.role!=='super'&&!(auth.projectIds||[]).map(String).includes(scope.projectId)))throw new Error('CLIENT_COLLABORATION_SCOPE_DENIED');
+    return scope;
+  }
+
+  async function listClientCollaboration(){
+    const scope=clientCollaborationScope(),database=db();
+    if(!database)throw new Error('CLIENT_COLLABORATION_SERVER_UNAVAILABLE');
+    const c=database.collection(col.tenants||'tenants').doc(scope.tenantId).collection(col.bulletins||'bulletins');
+    const client=['cliente','client'].includes(scope.role);
+    const q=client?c.where('targetUserIds','array-contains',scope.actorUid):c.where('status','==','active');
+    const snapshot=await q.get({source:'server'});
+    if(snapshot.metadata?.fromCache===true)throw new Error('CLIENT_COLLABORATION_SERVER_READ_REQUIRED');
+    if(JSON.stringify(clientCollaborationScope())!==JSON.stringify(scope))throw new Error('CLIENT_COLLABORATION_SESSION_CHANGED');
+    const entries=[];
+    snapshot.forEach(doc=>{
+      const row=doc.data()||{};
+      if(row.entityType!=='client_collaboration'||row.status!=='active'||row.tenantId!==scope.tenantId||row.projectId!==scope.projectId||row.periodId!==scope.periodId||!['nps','note','meeting'].includes(row.kind)||(client&&row.requesterUid!==scope.actorUid))return;
+      const fields=['kind','tenantId','projectId','periodId','requesterUid','requesterName','createdAt','version','score','comment','subject','detail','date','time','mode','timeZone'];
+      const value={id:doc.id,status:String(row.collaborationStatus||'pending')};
+      fields.forEach(k=>{if(row[k]!==undefined)value[k]=row[k];});entries.push(value);
+    });
+    entries.sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||''))||String(a.id).localeCompare(String(b.id)));
+    return {ok:true,source:'firestore_server',...scope,entries};
+  }
+
 
   function patchNotifWrites(){
     if(!CX.notif || CX.notif.__backendBulletinsWrapped) return;
@@ -374,7 +405,7 @@ window.CX = window.CX || {};
     setTimeout(()=>{ if(!loaded) load().catch(()=>{}); }, 2500);
   }
 
-  CX.backendBulletins = {load, markRead, markAllRead, isRead, readIds, refreshReads, createBulletin, listSupportTickets, cachedSupportTickets, pushDurable:(n)=>CX.notif?.pushDurable?.(n)};
+  CX.backendBulletins = {load, markRead, markAllRead, isRead, readIds, refreshReads, createBulletin, listSupportTickets, cachedSupportTickets, listClientCollaboration, pushDurable:(n)=>CX.notif?.pushDurable?.(n)};
 
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();

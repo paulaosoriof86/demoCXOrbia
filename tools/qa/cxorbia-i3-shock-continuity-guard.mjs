@@ -326,6 +326,25 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
   if(c3AfterHostingD||c3AfterHostingP){
     const x=c3AfterHostingD||{};
     const receipt=x.receiptPath&&fs.existsSync(x.receiptPath)?readJson(x.receiptPath):{};
+    if(x.state==='DEV_RUNTIME_AND_HOSTING_VERIFIED_C3_PENDING'){
+      const materialization=receipt.materialization||{};
+      check(JSON.stringify(x)===JSON.stringify(c3AfterHostingP||null)&&x.production===false&&
+        x.sourceSha===d.productSourceSha&&x.sourceTree===d.productTreeAuthority&&
+        x.hostingVersion===currentDev.hostingVersion&&x.runtimeRevision===currentDev.runtimeRevision&&
+        x.previousC3SourceSha===d.currentC3PreterminalAudit?.sourceSha&&
+        x.previousC3SourceTree===d.currentC3PreterminalAudit?.sourceTree&&
+        x.previousHostingVersion===d.currentC3PreterminalAudit?.hostingVersion&&
+        x.previousRuntimeRevision===d.currentC3PreterminalAudit?.runtimeRevision&&
+        x.receiptPath&&x.receiptBlob===gitBlob(x.receiptPath)&&
+        seal.mode==='CURRENT_SOURCE_SERVING'&&seal.receiptPath===x.receiptPath&&seal.receiptBlob===x.receiptBlob&&
+        JSON.stringify(d.currentMaterialization)===JSON.stringify(currentDev)&&
+        JSON.stringify(materialization)===JSON.stringify(currentDev)&&materialization.production===false&&
+        receipt.source?.sha===x.sourceSha&&receipt.source?.tree===x.sourceTree&&
+        ['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion','hostingRelease','runId','artifactDigest'].every(k=>materialization[k]&&materialization[k]===seal[k])&&
+        hasVerifiedHostingAssets({...receipt,sourceSha:receipt.source?.sha},x.previousC3SourceSha,gitRead)&&receipt.productionUnchanged===true&&
+        m.productSource?.authorityState==='RUNTIME_AND_HOSTING_DEV_MATERIALIZED_PENDING_C3_E2E',
+        'RELEASE_COMPOSITION_FAILURE:PAIRED_DEV_C3_TRANSITION_RECEIPT');
+    }else{
     check(JSON.stringify(x)===JSON.stringify(c3AfterHostingP||null)&&
       x.state==='DEV_HOSTING_VERIFIED_C3_PENDING'&&x.production===false&&
       x.sourceSha===d.productSourceSha&&x.sourceTree===d.productTreeAuthority&&
@@ -340,6 +359,7 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
       hasVerifiedHostingAssets(receipt,x.previousC3SourceSha)&&receipt.productionUnchanged===true&&
       m.productSource?.authorityState==='HOSTING_DEV_MATERIALIZED_PENDING_C3_E2E',
       'RELEASE_COMPOSITION_FAILURE:HOSTING_DEV_C3_TRANSITION_RECEIPT');
+    }
   }
   check(p.progressByStageSemantics === 'HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY',
     'MAPPING_FAILURE:STALE_PROGRESS_AS_LIVE');

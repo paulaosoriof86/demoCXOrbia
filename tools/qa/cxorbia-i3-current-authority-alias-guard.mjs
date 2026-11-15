@@ -32,7 +32,7 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
   const hostingP=p?.currentHostingOnlyDevMaterialization||{};
   const pending=d?.pendingDevSuccessor||{};
   const pendingHostingOnly=pending.state==='P0_PROVEN_PENDING_DEV_MATERIALIZATION'&&
-    pending.scope==='HOSTING_ONLY'&&pending.production===false&&pending.devPublished===false&&
+    ['HOSTING_ONLY','RUNTIME_AND_HOSTING'].includes(pending.scope)&&pending.production===false&&pending.devPublished===false&&
     JSON.stringify(pending)===JSON.stringify(p?.pendingDevSuccessor||null)&&
     pending.sourceSha===source&&pending.sourceTree===tree&&
     pending.predecessorProductSourceSha===hosting.sourceSha&&
@@ -63,6 +63,18 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
     preC3.hostingVersion===hosting.hostingVersion&&
     preC3.runtimeRevision===hosting.runtimeRevision&&
     preC3.production===false;
+  const c3PredecessorAfterPaired=postDeploy.mode==='CURRENT_SOURCE_SERVING'&&
+    p?.postDeployRunSeal?.mode===postDeploy.mode&&
+    preC3.state==='DEV_RUNTIME_AND_HOSTING_VERIFIED_C3_PENDING'&&
+    JSON.stringify(preC3)===JSON.stringify(p?.i3Q2HostingReleaseC3Pending||null)&&
+    JSON.stringify(preC3)===JSON.stringify(l?.i3Q2HostingReleaseC3Pending||null)&&
+    preC3.sourceSha===source&&preC3.sourceTree===tree&&
+    preC3.hostingVersion===seal.hostingVersion&&preC3.runtimeRevision===seal.runtimeRevision&&
+    postDeploy.sourceSha===source&&postDeploy.sourceTree===tree&&
+    postDeploy.hostingVersion===seal.hostingVersion&&postDeploy.runtimeRevision===seal.runtimeRevision&&
+    current.sourceMaterialized===true&&current.materializationScope==='RUNTIME_AND_HOSTING'&&
+    typeof preC3.previousRuntimeRevision==='string'&&preC3.production===false;
+  const c3PredecessorAfterServing=c3PredecessorAfterHosting||c3PredecessorAfterPaired;
   check(Boolean(ledgerPath)&&p?.findingsLedgerPath===ledgerPath,'CURRENT_LEDGER_PATH_DESYNC');
   check(Boolean(d?.findingsLedgerExpectedGitBlob)&&p?.findingsLedgerExpectedGitBlob===d.findingsLedgerExpectedGitBlob,'CURRENT_LEDGER_BLOB_DESYNC');
   check(l?.governance?.findingCount===count&&l?.findingCount===count,'CURRENT_FINDING_COUNT_DESYNC');
@@ -87,20 +99,21 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
   const c3=d?.currentC3PreterminalAudit||{};
   const sameProof=JSON.stringify(c3)===JSON.stringify(p?.currentC3PreterminalAudit||null)&&
     JSON.stringify(c3)===JSON.stringify(l?.currentC3PreterminalAudit||null);
-  const currentlyServedHosting=c3PredecessorAfterHosting?preC3.previousHostingVersion:
+  const currentlyServedHosting=c3PredecessorAfterServing?preC3.previousHostingVersion:
     ((hostingOnlyServing||pendingHostingOnly)?hosting.hostingVersion:seal.hostingVersion);
   // A source successor must not inherit or fabricate a current-source C3 receipt.
   // While the exact Hosting-only predecessor is still served, the previous C3
   // remains historical with its own source, tree and successful run identity.
-  const c3Source=c3PredecessorAfterHosting?preC3.previousC3SourceSha:(pendingHostingOnly?hosting.sourceSha:source);
-  const c3Tree=c3PredecessorAfterHosting?preC3.previousC3SourceTree:(pendingHostingOnly?hosting.sourceTree:tree);
+  const c3Source=c3PredecessorAfterServing?preC3.previousC3SourceSha:(pendingHostingOnly?hosting.sourceSha:source);
+  const c3Tree=c3PredecessorAfterServing?preC3.previousC3SourceTree:(pendingHostingOnly?hosting.sourceTree:tree);
+  const c3Runtime=c3PredecessorAfterPaired?preC3.previousRuntimeRevision:seal.runtimeRevision;
   check(sameProof&&c3.schemaVersion==='cxorbia.i3.current-c3-preterminal-audit.v1'&&
     Number.isInteger(c3.runId)&&c3.runId>0&&
     c3.moduleCount===21&&c3.matchModules>=0&&c3.matchModules<=21&&
     c3.sourceReadyModules>=0&&c3.sourceReadyModules<=21&&
     Array.isArray(c3.sourceReadyDomainNames)&&c3.sourceReadyDomainNames.length===c3.sourceReadyModules&&
     c3.pendingFiles>=0&&c3.sourceSha===c3Source&&c3.sourceTree===c3Tree&&
-    c3.hostingVersion===currentlyServedHosting&&c3.runtimeRevision===seal.runtimeRevision&&
+    c3.hostingVersion===currentlyServedHosting&&c3.runtimeRevision===c3Runtime&&
     c3.production===false&&/^(HOLD|PASS)_/.test(c3.decision||'')&&
     JSON.stringify(d?.lastModuleTruthProof||null)===JSON.stringify(c3)&&
     JSON.stringify(d?.c3PreterminalProof||null)===JSON.stringify(c3)&&

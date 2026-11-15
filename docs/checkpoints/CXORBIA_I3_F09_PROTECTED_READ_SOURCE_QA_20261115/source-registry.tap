@@ -1,0 +1,1442 @@
+TAP version 13
+# Subtest: nps: token-owned durable entity, independent readback, audit and zero-write replay
+ok 1 - nps: token-owned durable entity, independent readback, audit and zero-write replay
+  ---
+  duration_ms: 18.249041
+  type: 'test'
+  ...
+# Subtest: note: token-owned durable entity, independent readback, audit and zero-write replay
+ok 2 - note: token-owned durable entity, independent readback, audit and zero-write replay
+  ---
+  duration_ms: 1.528098
+  type: 'test'
+  ...
+# Subtest: meeting: token-owned durable entity, independent readback, audit and zero-write replay
+ok 3 - meeting: token-owned durable entity, independent readback, audit and zero-write replay
+  ---
+  duration_ms: 29.306828
+  type: 'test'
+  ...
+# Subtest: canonical active Client membership without an active boolean remains valid
+ok 4 - canonical active Client membership without an active boolean remains valid
+  ---
+  duration_ms: 0.942262
+  type: 'test'
+  ...
+# Subtest: canonical client role alias uses its exact staff membership
+ok 5 - canonical client role alias uses its exact staff membership
+  ---
+  duration_ms: 0.973999
+  type: 'test'
+  ...
+# Subtest: same received key in another authorized period preserves separate durable audit entries
+ok 6 - same received key in another authorized period preserves separate durable audit entries
+  ---
+  duration_ms: 2.137157
+  type: 'test'
+  ...
+# Subtest: lost readback after commit reports pending proof and retry recovers the one durable entity
+ok 7 - lost readback after commit reports pending proof and retry recovers the one durable entity
+  ---
+  duration_ms: 5.202085
+  type: 'test'
+  ...
+# Subtest: concurrent replay produces one entity, one receipt and one audit
+ok 8 - concurrent replay produces one entity, one receipt and one audit
+  ---
+  duration_ms: 3.098127
+  type: 'test'
+  ...
+# Subtest: changed payload and another actor cannot adopt an existing idempotency receipt
+ok 9 - changed payload and another actor cannot adopt an existing idempotency receipt
+  ---
+  duration_ms: 1.255585
+  type: 'test'
+  ...
+# Subtest: client collaboration denies staff preview
+ok 10 - client collaboration denies staff preview
+  ---
+  duration_ms: 0.397558
+  type: 'test'
+  ...
+# Subtest: client collaboration denies shopper
+ok 11 - client collaboration denies shopper
+  ---
+  duration_ms: 0.213044
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong tenant
+ok 12 - client collaboration denies wrong tenant
+  ---
+  duration_ms: 0.099407
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong project
+ok 13 - client collaboration denies wrong project
+  ---
+  duration_ms: 0.100208
+  type: 'test'
+  ...
+# Subtest: client collaboration denies missing period
+ok 14 - client collaboration denies missing period
+  ---
+  duration_ms: 0.441492
+  type: 'test'
+  ...
+# Subtest: client collaboration denies inactive membership
+ok 15 - client collaboration denies inactive membership
+  ---
+  duration_ms: 0.122111
+  type: 'test'
+  ...
+# Subtest: client collaboration denies inactive status
+ok 16 - client collaboration denies inactive status
+  ---
+  duration_ms: 0.132706
+  type: 'test'
+  ...
+# Subtest: client collaboration denies foreign member project
+ok 17 - client collaboration denies foreign member project
+  ---
+  duration_ms: 0.150402
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong namespace
+ok 18 - client collaboration denies wrong namespace
+  ---
+  duration_ms: 0.362045
+  type: 'test'
+  ...
+# Subtest: client collaboration denies missing namespace
+ok 19 - client collaboration denies missing namespace
+  ---
+  duration_ms: 0.203921
+  type: 'test'
+  ...
+# Subtest: client collaboration denies closed period
+ok 20 - client collaboration denies closed period
+  ---
+  duration_ms: 0.314645
+  type: 'test'
+  ...
+# Subtest: client collaboration denies archived period
+ok 21 - client collaboration denies archived period
+  ---
+  duration_ms: 0.306773
+  type: 'test'
+  ...
+# Subtest: client collaboration denies foreign period
+ok 22 - client collaboration denies foreign period
+  ---
+  duration_ms: 0.278151
+  type: 'test'
+  ...
+# Subtest: client collaboration denies spoofed author
+ok 23 - client collaboration denies spoofed author
+  ---
+  duration_ms: 0.131074
+  type: 'test'
+  ...
+# Subtest: client collaboration denies spoofed recipients
+ok 24 - client collaboration denies spoofed recipients
+  ---
+  duration_ms: 0.077835
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong entity
+ok 25 - client collaboration denies wrong entity
+  ---
+  duration_ms: 0.065536
+  type: 'test'
+  ...
+# Subtest: client collaboration denies chosen entity id
+ok 26 - client collaboration denies chosen entity id
+  ---
+  duration_ms: 0.162169
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong permission
+ok 27 - client collaboration denies wrong permission
+  ---
+  duration_ms: 0.202349
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong payload period
+ok 28 - client collaboration denies wrong payload period
+  ---
+  duration_ms: 0.133077
+  type: 'test'
+  ...
+# Subtest: client collaboration denies missing request id
+ok 29 - client collaboration denies missing request id
+  ---
+  duration_ms: 0.126567
+  type: 'test'
+  ...
+# Subtest: client collaboration denies empty note
+ok 30 - client collaboration denies empty note
+  ---
+  duration_ms: 0.132236
+  type: 'test'
+  ...
+# Subtest: client collaboration denies excessive note
+ok 31 - client collaboration denies excessive note
+  ---
+  duration_ms: 0.131625
+  type: 'test'
+  ...
+# Subtest: NPS rejects invalid numeric score -1
+ok 32 - NPS rejects invalid numeric score -1
+  ---
+  duration_ms: 0.202619
+  type: 'test'
+  ...
+# Subtest: NPS rejects invalid numeric score 11
+ok 33 - NPS rejects invalid numeric score 11
+  ---
+  duration_ms: 0.103784
+  type: 'test'
+  ...
+# Subtest: NPS rejects invalid numeric score 9.5
+ok 34 - NPS rejects invalid numeric score 9.5
+  ---
+  duration_ms: 0.495231
+  type: 'test'
+  ...
+# Subtest: NPS rejects invalid numeric score "9"
+ok 35 - NPS rejects invalid numeric score "9"
+  ---
+  duration_ms: 0.145816
+  type: 'test'
+  ...
+# Subtest: NPS rejects invalid numeric score null
+ok 36 - NPS rejects invalid numeric score null
+  ---
+  duration_ms: 0.103403
+  type: 'test'
+  ...
+# Subtest: meeting rejects invalid request {"date":"2026-02-30"}
+ok 37 - meeting rejects invalid request {"date":"2026-02-30"}
+  ---
+  duration_ms: 0.240335
+  type: 'test'
+  ...
+# Subtest: meeting rejects invalid request {"date":"2001-01-01"}
+ok 38 - meeting rejects invalid request {"date":"2001-01-01"}
+  ---
+  duration_ms: 0.833471
+  type: 'test'
+  ...
+# Subtest: meeting rejects invalid request {"time":"25:00"}
+ok 39 - meeting rejects invalid request {"time":"25:00"}
+  ---
+  duration_ms: 0.123111
+  type: 'test'
+  ...
+# Subtest: meeting rejects invalid request {"mode":"Calendar invitation sent"}
+ok 40 - meeting rejects invalid request {"mode":"Calendar invitation sent"}
+  ---
+  duration_ms: 0.116792
+  type: 'test'
+  ...
+# Subtest: VRM-151 command runtime routes finance.historical.reconcile to finance provider
+ok 41 - VRM-151 command runtime routes finance.historical.reconcile to finance provider
+  ---
+  duration_ms: 4.874221
+  type: 'test'
+  ...
+# Subtest: ADMIN-004 reconcile uses project-country honorarium when HR is blank and never confirms external payment
+ok 42 - ADMIN-004 reconcile uses project-country honorarium when HR is blank and never confirms external payment
+  ---
+  duration_ms: 15.763469
+  type: 'test'
+  ...
+# Subtest: ADMIN-004 explicit HR honorarium has precedence and reconciliation is idempotent
+ok 43 - ADMIN-004 explicit HR honorarium has precedence and reconciliation is idempotent
+  ---
+  duration_ms: 2.229404
+  type: 'test'
+  ...
+# Subtest: VRM-151 historical reconciliation uses canonical submitted visit, exact amount and idempotent durable status without bank or HR writes
+ok 44 - VRM-151 historical reconciliation uses canonical submitted visit, exact amount and idempotent durable status without bank or HR writes
+  ---
+  duration_ms: 12.534649
+  type: 'test'
+  ...
+# Subtest: VRM-152 historical reconciliation completes every transaction read before the first write
+ok 45 - VRM-152 historical reconciliation completes every transaction read before the first write
+  ---
+  duration_ms: 1.169678
+  type: 'test'
+  ...
+# Subtest: VRM-153 historical reconciliation uses exact HR revision for reimbursement authority when durable Firestore copy is incomplete
+ok 46 - VRM-153 historical reconciliation uses exact HR revision for reimbursement authority when durable Firestore copy is incomplete
+  ---
+  duration_ms: 0.557314
+  type: 'test'
+  ...
+# Subtest: VRM-153 historical reconciliation fails closed when command HR revision differs from runtime HR authority
+ok 47 - VRM-153 historical reconciliation fails closed when command HR revision differs from runtime HR authority
+  ---
+  duration_ms: 0.600748
+  type: 'test'
+  ...
+# Subtest: VRM-151 historical reconciliation records paid status but keeps amount null and review-required when reimbursement source is incomplete
+ok 48 - VRM-151 historical reconciliation records paid status but keeps amount null and review-required when reimbursement source is incomplete
+  ---
+  duration_ms: 4.079052
+  type: 'test'
+  ...
+# Subtest: VRM-151 historical reconciliation writes the live visitId canonical owner before legacy hrRowId duplicate
+ok 49 - VRM-151 historical reconciliation writes the live visitId canonical owner before legacy hrRowId duplicate
+  ---
+  duration_ms: 0.698893
+  type: 'test'
+  ...
+# Subtest: VRM-153 exact pending-to-paid supersession retains the prior audit record, one active visit and zero bank writes
+ok 50 - VRM-153 exact pending-to-paid supersession retains the prior audit record, one active visit and zero bank writes
+  ---
+  duration_ms: 1.139894
+  type: 'test'
+  ...
+# Subtest: VRM-153 rejects unapproved overwrite, downgrade and future-dated proof without writes
+ok 51 - VRM-153 rejects unapproved overwrite, downgrade and future-dated proof without writes
+  ---
+  duration_ms: 0.990703
+  type: 'test'
+  ...
+# Subtest: VRM-153 cross-project prior reconciliation blocks the whole transaction
+ok 52 - VRM-153 cross-project prior reconciliation blocks the whole transaction
+  ---
+  duration_ms: 0.674567
+  type: 'test'
+  ...
+# Subtest: VRM-153 supersession completes every Firestore read before any write in two-visit transaction
+ok 53 - VRM-153 supersession completes every Firestore read before any write in two-visit transaction
+  ---
+  duration_ms: 1.039485
+  type: 'test'
+  ...
+# Subtest: VRM-153 exact same-human HR alias supersession requires transactional trusted identity link and preserves prior ID
+ok 54 - VRM-153 exact same-human HR alias supersession requires transactional trusted identity link and preserves prior ID
+  ---
+  duration_ms: 1.462431
+  type: 'test'
+  ...
+# Subtest: VRM-153 explicit HR alias without permitted scoped link is not financial identity proof
+ok 55 - VRM-153 explicit HR alias without permitted scoped link is not financial identity proof
+  ---
+  duration_ms: 0.714175
+  type: 'test'
+  ...
+# Subtest: VRM-153 initial exact historically-paid August row preserves authorized October 2 payment date without bank transfer
+ok 56 - VRM-153 initial exact historically-paid August row preserves authorized October 2 payment date without bank transfer
+  ---
+  duration_ms: 0.545085
+  type: 'test'
+  ...
+# Subtest: VRM-153 historical payment date rejects pending, future date, missing source authority without writes
+ok 57 - VRM-153 historical payment date rejects pending, future date, missing source authority without writes
+  ---
+  duration_ms: 0.816356
+  type: 'test'
+  ...
+# Subtest: VRM-151 historical reconciliation rejects non-submitted visits even when the historical month is marked paid
+ok 58 - VRM-151 historical reconciliation rejects non-submitted visits even when the historical month is marked paid
+  ---
+  duration_ms: 0.490985
+  type: 'test'
+  ...
+# Subtest: ADMIN-004 missing config fails closed and payment batch rejects unreconciled visit
+ok 59 - ADMIN-004 missing config fails closed and payment batch rejects unreconciled visit
+  ---
+  duration_ms: 0.991184
+  type: 'test'
+  ...
+# Subtest: HF-20261012-27 payment batch rejects financially exact visits until operational state is submitted/validated
+ok 60 - HF-20261012-27 payment batch rejects financially exact visits until operational state is submitted/validated
+  ---
+  duration_ms: 0.982321
+  type: 'test'
+  ...
+# Subtest: HF-20261012-27 payment batch rejects internal duplicate and external payment duplicates
+ok 61 - HF-20261012-27 payment batch rejects internal duplicate and external payment duplicates
+  ---
+  duration_ms: 0.623631
+  type: 'test'
+  ...
+# Subtest: HF-20261012-27 payment batch records only selected eligible visits, separates currencies and is idempotent
+ok 62 - HF-20261012-27 payment batch records only selected eligible visits, separates currencies and is idempotent
+  ---
+  duration_ms: 1.121407
+  type: 'test'
+  ...
+# Subtest: HF-20261012-27 UI exposes one liquidation eligibility owner for row actions, detail and selection
+ok 63 - HF-20261012-27 UI exposes one liquidation eligibility owner for row actions, detail and selection
+  ---
+  duration_ms: 1.183108
+  type: 'test'
+  ...
+# Subtest: HF-20261012-21 finance dashboard exposes compact KPI hierarchy and five financial states without mixing country currencies
+ok 64 - HF-20261012-21 finance dashboard exposes compact KPI hierarchy and five financial states without mixing country currencies
+  ---
+  duration_ms: 0.459509
+  type: 'test'
+  ...
+# Subtest: ADMIN-004 project.update boundary sends the canonical current version in the provider payload
+ok 65 - ADMIN-004 project.update boundary sends the canonical current version in the provider payload
+  ---
+  duration_ms: 0.335235
+  type: 'test'
+  ...
+# Subtest: ADMIN-004 command boundary parses as JavaScript after project.update version fix
+ok 66 - ADMIN-004 command boundary parses as JavaScript after project.update version fix
+  ---
+  duration_ms: 0.902203
+  type: 'test'
+  ...
+# Subtest: ADMIN-004 backend refresh invalidates HR authority then awaits atomic recomposition and readback
+ok 67 - ADMIN-004 backend refresh invalidates HR authority then awaits atomic recomposition and readback
+  ---
+  duration_ms: 0.377027
+  type: 'test'
+  ...
+# Subtest: ADMIN-004 unified human runtime preserves canonical project-country honorarium on HR-owned operational visits
+ok 68 - ADMIN-004 unified human runtime preserves canonical project-country honorarium on HR-owned operational visits
+  ---
+  duration_ms: 0.211633
+  type: 'test'
+  ...
+# Subtest: HF-20261012-26 durable budget create, readback, update, delete and exact idempotency without bank truth
+ok 69 - HF-20261012-26 durable budget create, readback, update, delete and exact idempotency without bank truth
+  ---
+  duration_ms: 2.615864
+  type: 'test'
+  ...
+# Subtest: HF-20261012-26 budget fail-closed country, currency, role, scope, amount, and no client writes
+ok 70 - HF-20261012-26 budget fail-closed country, currency, role, scope, amount, and no client writes
+  ---
+  duration_ms: 2.150197
+  type: 'test'
+  ...
+# Subtest: HF-20261012-22 provider diagnostic returns remote error codes without exposing raw exception/Pll
+ok 71 - HF-20261012-22 provider diagnostic returns remote error codes without exposing raw exception/Pll
+  ---
+  duration_ms: 1.161706
+  type: 'test'
+  ...
+# Subtest: HF-20261012-22 ACK never shown as full reconciliation until unique exact protected readback
+ok 72 - HF-20261012-22 ACK never shown as full reconciliation until unique exact protected readback
+  ---
+  duration_ms: 0.932317
+  type: 'test'
+  ...
+# Subtest: HF-20261012-23 independent source, obligation, internal ledger and external paid states
+ok 73 - HF-20261012-23 independent source, obligation, internal ledger and external paid states
+  ---
+  duration_ms: 0.626886
+  type: 'test'
+  ...
+# Subtest: HF-20261012-25 monthly CxP CxC provider ledger, client protections and UI readback
+ok 74 - HF-20261012-25 monthly CxP CxC provider ledger, client protections and UI readback
+  ---
+  duration_ms: 1.098453
+  type: 'test'
+  ...
+# Subtest: HF-20261012-25 CxC internal collection uses existing durable finance.account.apply with no bank claim
+ok 75 - HF-20261012-25 CxC internal collection uses existing durable finance.account.apply with no bank claim
+  ---
+  duration_ms: 1.414259
+  type: 'test'
+  ...
+# Subtest: HF24 missing finance read provider fails closed instead of returning successful empty finances
+ok 76 - HF24 missing finance read provider fails closed instead of returning successful empty finances
+  ---
+  duration_ms: 1.533265
+  type: 'test'
+  ...
+# Subtest: HF24 finance creation requires unique tenant scoped remote readback after provider ACK
+ok 77 - HF24 finance creation requires unique tenant scoped remote readback after provider ACK
+  ---
+  duration_ms: 0.637923
+  type: 'test'
+  ...
+# Subtest: HF-20261012-25 B8 CxP internal abono never announces a confirmed external payment
+ok 78 - HF-20261012-25 B8 CxP internal abono never announces a confirmed external payment
+  ---
+  duration_ms: 0.772892
+  type: 'test'
+  ...
+# Subtest: I3 B8 budget safe provider ACK and canonical destination projects
+ok 79 - I3 B8 budget safe provider ACK and canonical destination projects
+  ---
+  duration_ms: 0.750519
+  type: 'test'
+  ...
+# Subtest: R12 remote operating revenue does not count remittances, advances, financing or CxC recovery
+ok 80 - R12 remote operating revenue does not count remittances, advances, financing or CxC recovery
+  ---
+  duration_ms: 0.889654
+  type: 'test'
+  ...
+# Subtest: R09 ordinary finance screens use human explanations while preserving provider audit code
+ok 81 - R09 ordinary finance screens use human explanations while preserving provider audit code
+  ---
+  duration_ms: 2.207441
+  type: 'test'
+  ...
+# Subtest: C04 project-scoped account and movement remain available to a project-limited Admin
+ok 82 - C04 project-scoped account and movement remain available to a project-limited Admin
+  ---
+  duration_ms: 1.668345
+  type: 'test'
+  ...
+# Subtest: C04 Global movement/account use the tenant ledger, explicit country/currency and exact replay without bank or HR writes
+ok 83 - C04 Global movement/account use the tenant ledger, explicit country/currency and exact replay without bank or HR writes
+  ---
+  duration_ms: 2.556297
+  type: 'test'
+  ...
+# Subtest: C04 Global financing remains non-operating and creates only a linked Global CxP
+ok 84 - C04 Global financing remains non-operating and creates only a linked Global CxP
+  ---
+  duration_ms: 0.36511
+  type: 'test'
+  ...
+# Subtest: C04 Global collection changes only the exact account and replay preserves balance/version/movement
+ok 85 - C04 Global collection changes only the exact account and replay preserves balance/version/movement
+  ---
+  duration_ms: 1.856253
+  type: 'test'
+  ...
+# Subtest: C04 Global is denied for project-only/missing entitlements, disallowed roles, inactive membership and country restriction
+    # Subtest: specific-projects
+    ok 1 - specific-projects
+      ---
+      duration_ms: 0.253685
+      type: 'test'
+      ...
+    # Subtest: missing-entitlement
+    ok 2 - missing-entitlement
+      ---
+      duration_ms: 0.170061
+      type: 'test'
+      ...
+    # Subtest: ops
+    ok 3 - ops
+      ---
+      duration_ms: 0.171534
+      type: 'test'
+      ...
+    # Subtest: coordinador
+    ok 4 - coordinador
+      ---
+      duration_ms: 0.191963
+      type: 'test'
+      ...
+    # Subtest: shopper
+    ok 5 - shopper
+      ---
+      duration_ms: 0.190993
+      type: 'test'
+      ...
+    # Subtest: client
+    ok 6 - client
+      ---
+      duration_ms: 0.184222
+      type: 'test'
+      ...
+    # Subtest: inactive
+    ok 7 - inactive
+      ---
+      duration_ms: 0.152124
+      type: 'test'
+      ...
+    # Subtest: country
+    ok 8 - country
+      ---
+      duration_ms: 0.447521
+      type: 'test'
+      ...
+    1..8
+ok 86 - C04 Global is denied for project-only/missing entitlements, disallowed roles, inactive membership and country restriction
+  ---
+  duration_ms: 2.651958
+  type: 'test'
+  ...
+# Subtest: C04 Global never bypasses project command scope, tenant allowlist, version or project-only visit/budget contracts
+    # Subtest: missing-global
+    ok 1 - missing-global
+      ---
+      duration_ms: 0.215779
+      type: 'test'
+      ...
+    # Subtest: fake-global-project
+    ok 2 - fake-global-project
+      ---
+      duration_ms: 0.14186
+      type: 'test'
+      ...
+    # Subtest: global-with-project
+    ok 3 - global-with-project
+      ---
+      duration_ms: 0.110243
+      type: 'test'
+      ...
+    # Subtest: global-wrong-period
+    ok 4 - global-wrong-period
+      ---
+      duration_ms: 0.141148
+      type: 'test'
+      ...
+    # Subtest: global-payload-period
+    ok 5 - global-payload-period
+      ---
+      duration_ms: 0.213806
+      type: 'test'
+      ...
+    # Subtest: global-date-period
+    ok 6 - global-date-period
+      ---
+      duration_ms: 0.149841
+      type: 'test'
+      ...
+    # Subtest: global-no-date
+    ok 7 - global-no-date
+      ---
+      duration_ms: 0.12877
+      type: 'test'
+      ...
+    # Subtest: global-invalid-date
+    ok 8 - global-invalid-date
+      ---
+      duration_ms: 0.093167
+      type: 'test'
+      ...
+    # Subtest: global-project-destination
+    ok 9 - global-project-destination
+      ---
+      duration_ms: 0.106417
+      type: 'test'
+      ...
+    # Subtest: global-visit-link
+    ok 10 - global-visit-link
+      ---
+      duration_ms: 0.100408
+      type: 'test'
+      ...
+    # Subtest: global-unbounded-version
+    ok 11 - global-unbounded-version
+      ---
+      duration_ms: 0.104544
+      type: 'test'
+      ...
+    # Subtest: global-budget
+    ok 12 - global-budget
+      ---
+      duration_ms: 0.115
+      type: 'test'
+      ...
+    # Subtest: global-reconcile
+    ok 13 - global-reconcile
+      ---
+      duration_ms: 0.279743
+      type: 'test'
+      ...
+    # Subtest: foreign-tenant
+    ok 14 - foreign-tenant
+      ---
+      duration_ms: 0.129972
+      type: 'test'
+      ...
+    # Subtest: project-policy-still-denied
+    ok 15 - project-policy-still-denied
+      ---
+      duration_ms: 0.093488
+      type: 'test'
+      ...
+    1..15
+ok 87 - C04 Global never bypasses project command scope, tenant allowlist, version or project-only visit/budget contracts
+  ---
+  duration_ms: 3.784501
+  type: 'test'
+  ...
+# Subtest: C04 Global account application refuses wrong account tenant/project/month/marker and country
+    # Subtest: tenant
+    ok 1 - tenant
+      ---
+      duration_ms: 2.866555
+      type: 'test'
+      ...
+    # Subtest: project
+    ok 2 - project
+      ---
+      duration_ms: 0.347934
+      type: 'test'
+      ...
+    # Subtest: period
+    ok 3 - period
+      ---
+      duration_ms: 0.420081
+      type: 'test'
+      ...
+    # Subtest: marker
+    ok 4 - marker
+      ---
+      duration_ms: 0.777058
+      type: 'test'
+      ...
+    # Subtest: country
+    ok 5 - country
+      ---
+      duration_ms: 0.366872
+      type: 'test'
+      ...
+    # Subtest: internal-id
+    ok 6 - internal-id
+      ---
+      duration_ms: 0.313383
+      type: 'test'
+      ...
+    # Subtest: missing-id
+    ok 7 - missing-id
+      ---
+      duration_ms: 0.293764
+      type: 'test'
+      ...
+    1..7
+ok 88 - C04 Global account application refuses wrong account tenant/project/month/marker and country
+  ---
+  duration_ms: 6.085571
+  type: 'test'
+  ...
+# Subtest: C04 command boundary carries explicit Global scope and keeps project cache/commands independent
+ok 89 - C04 command boundary carries explicit Global scope and keeps project cache/commands independent
+  ---
+  duration_ms: 4.015213
+  type: 'test'
+  ...
+# Subtest: C04 Global reader filters Global-only/month and requires server-confirmed snapshot without pending local writes
+    # Subtest: {"fromCache":true,"hasPendingWrites":false}
+    ok 1 - {"fromCache":true,"hasPendingWrites":false}
+      ---
+      duration_ms: 1.028019
+      type: 'test'
+      ...
+    # Subtest: {"fromCache":false,"hasPendingWrites":true}
+    ok 2 - {"fromCache":false,"hasPendingWrites":true}
+      ---
+      duration_ms: 17.01005
+      type: 'test'
+      ...
+    # Subtest: {}
+    ok 3 - {}
+      ---
+      duration_ms: 2.036819
+      type: 'test'
+      ...
+    1..3
+ok 90 - C04 Global reader filters Global-only/month and requires server-confirmed snapshot without pending local writes
+  ---
+  duration_ms: 27.47385
+  type: 'test'
+  ...
+# Subtest: C04 Global UI currency/month/readback preserve actual row scope, cents and linked account update
+ok 91 - C04 Global UI currency/month/readback preserve actual row scope, cents and linked account update
+  ---
+  duration_ms: 3.083646
+  type: 'test'
+  ...
+# Subtest: C04 real Movimientos draw/scope/export use isolated remote ledgers, never the legacy local balance
+ok 92 - C04 real Movimientos draw/scope/export use isolated remote ledgers, never the legacy local balance
+  ---
+  duration_ms: 59.447197
+  type: 'test'
+  ...
+# Subtest: C04 failed Global read shows no monetary fallback and currency keys cannot corrupt aggregation
+ok 93 - C04 failed Global read shows no monetary fallback and currency keys cannot corrupt aggregation
+  ---
+  duration_ms: 4.523693
+  type: 'test'
+  ...
+# Subtest: VRM-134 coalesces independent protected HR and principal reads without returning before both
+ok 94 - VRM-134 coalesces independent protected HR and principal reads without returning before both
+  ---
+  duration_ms: 7.017097
+  type: 'test'
+  ...
+# Subtest: VRM-134 rejects protected request if principal check fails
+ok 95 - VRM-134 rejects protected request if principal check fails
+  ---
+  duration_ms: 2.239449
+  type: 'test'
+  ...
+# Subtest: VRM-134 public HR read never calls protected identity and retains freshness route
+ok 96 - VRM-134 public HR read never calls protected identity and retains freshness route
+  ---
+  duration_ms: 0.342185
+  type: 'test'
+  ...
+# Subtest: VRM-134 exposes non-sensitive source refresh stages and protected timing only to verified path
+ok 97 - VRM-134 exposes non-sensitive source refresh stages and protected timing only to verified path
+  ---
+  duration_ms: 4.473959
+  type: 'test'
+  ...
+# Subtest: VRM-134 protected metadata read verifies identity and HR without repeating protected Firestore overlay
+ok 98 - VRM-134 protected metadata read verifies identity and HR without repeating protected Firestore overlay
+  ---
+  duration_ms: 0.327774
+  type: 'test'
+  ...
+# Subtest: VRM-134 registry identity and live HR read start concurrently, then both settle before validation
+ok 99 - VRM-134 registry identity and live HR read start concurrently, then both settle before validation
+  ---
+  duration_ms: 0.46692
+  type: 'test'
+  ...
+# Subtest: VRM-134 source read failure waits for the other process before cleanup
+ok 100 - VRM-134 source read failure waits for the other process before cleanup
+  ---
+  duration_ms: 0.404237
+  type: 'test'
+  ...
+# Subtest: VRM-134 R20 reads 36 tabs in three bounded waves and preserves response order
+ok 101 - VRM-134 R20 reads 36 tabs in three bounded waves and preserves response order
+  ---
+  duration_ms: 15.954601
+  type: 'test'
+  ...
+# Subtest: VRM-134 R20 covers small and partial waves without extra or missing tabs
+ok 102 - VRM-134 R20 covers small and partial waves without extra or missing tabs
+  ---
+  duration_ms: 6.34202
+  type: 'test'
+  ...
+# Subtest: VRM-134 R20 failed batch waits for its peer and starts no later wave
+ok 103 - VRM-134 R20 failed batch waits for its peer and starts no later wave
+  ---
+  duration_ms: 0.877747
+  type: 'test'
+  ...
+# Subtest: VRM-134 R20 authentication and missing metadata fail before batch reads
+ok 104 - VRM-134 R20 authentication and missing metadata fail before batch reads
+  ---
+  duration_ms: 0.496113
+  type: 'test'
+  ...
+# Subtest: VRM-134 identity batching preserves chronological latest nonempty contacts
+ok 105 - VRM-134 identity batching preserves chronological latest nonempty contacts
+  ---
+  duration_ms: 34.313314
+  type: 'test'
+  ...
+# Subtest: VRM-134 identity failure waits for its peer and never publishes a partial identity file
+ok 106 - VRM-134 identity failure waits for its peer and never publishes a partial identity file
+  ---
+  duration_ms: 7.832411
+  type: 'test'
+  ...
+# Subtest: VRM-134 identity registry-only route performs no batch reads and retains auth boundary
+ok 107 - VRM-134 identity registry-only route performs no batch reads and retains auth boundary
+  ---
+  duration_ms: 0.335757
+  type: 'test'
+  ...
+# Subtest: octubre se conserva y noviembre sin año abre 2026 GT/HN desde metadatos vivos
+ok 108 - octubre se conserva y noviembre sin año abre 2026 GT/HN desde metadatos vivos
+  ---
+  duration_ms: 2.26036
+  type: 'test'
+  ...
+# Subtest: histórico de noviembre 2025 no se confunde con noviembre 2026
+ok 109 - histórico de noviembre 2025 no se confunde con noviembre 2026
+  ---
+  duration_ms: 0.978536
+  type: 'test'
+  ...
+# Subtest: un diciembre sin año seguido de enero sin año reconoce el cambio anual
+ok 110 - un diciembre sin año seguido de enero sin año reconoce el cambio anual
+  ---
+  duration_ms: 0.146206
+  type: 'test'
+  ...
+# Subtest: el orden real del provider prevalece sobre el orden del array
+ok 111 - el orden real del provider prevalece sobre el orden del array
+  ---
+  duration_ms: 0.139296
+  type: 'test'
+  ...
+# Subtest: un año no se adivina cuando falta un mes anterior con año explícito
+ok 112 - un año no se adivina cuando falta un mes anterior con año explícito
+  ---
+  duration_ms: 0.428453
+  type: 'test'
+  ...
+# Subtest: saltos ambiguos de meses sin año son fail closed
+ok 113 - saltos ambiguos de meses sin año son fail closed
+  ---
+  duration_ms: 0.139706
+  type: 'test'
+  ...
+# Subtest: nombres alternativos del mismo mes y país no duplican visitas
+ok 114 - nombres alternativos del mismo mes y país no duplican visitas
+  ---
+  duration_ms: 0.148619
+  type: 'test'
+  ...
+# Subtest: el nombre físico de la pestaña permanece exacto y las pestañas no mensuales se excluyen
+ok 115 - el nombre físico de la pestaña permanece exacto y las pestañas no mensuales se excluyen
+  ---
+  duration_ms: 0.129982
+  type: 'test'
+  ...
+# Subtest: registro HR en DEV acepta pestañas noviembre sin año y conserva octubre
+ok 116 - registro HR en DEV acepta pestañas noviembre sin año y conserva octubre
+  ---
+  duration_ms: 158.580251
+  type: 'test'
+  ...
+# Subtest: Cloud Run usa token de metadatos para lectura independiente de Sheets sin secret adicional
+ok 117 - Cloud Run usa token de metadatos para lectura independiente de Sheets sin secret adicional
+  ---
+  duration_ms: 149.679827
+  type: 'test'
+  ...
+# Subtest: si el proveedor ya tiene noviembre, un fallback que solo ve octubre se rechaza
+ok 118 - si el proveedor ya tiene noviembre, un fallback que solo ve octubre se rechaza
+  ---
+  duration_ms: 91.250684
+  type: 'test'
+  ...
+# Subtest: B8 historical paid command carries exact HR revision, date and Paula authority to the provider
+ok 119 - B8 historical paid command carries exact HR revision, date and Paula authority to the provider
+  ---
+  duration_ms: 14.619168
+  type: 'test'
+  ...
+# Subtest: B8 historical pending command does not infer a payment date or authorization
+ok 120 - B8 historical pending command does not infer a payment date or authorization
+  ---
+  duration_ms: 2.279167
+  type: 'test'
+  ...
+# Subtest: B8 explicit supersession proof is forwarded intact, without mutating input
+ok 121 - B8 explicit supersession proof is forwarded intact, without mutating input
+  ---
+  duration_ms: 8.614061
+  type: 'test'
+  ...
+# Subtest: caller cannot override current HR revision: wrong-revision
+ok 122 - caller cannot override current HR revision: wrong-revision
+  ---
+  duration_ms: 1.834721
+  type: 'test'
+  ...
+# Subtest: caller cannot override current HR revision: undefined
+ok 123 - caller cannot override current HR revision: undefined
+  ---
+  duration_ms: 1.36737
+  type: 'test'
+  ...
+# Subtest: caller cannot override current HR revision: 123
+ok 124 - caller cannot override current HR revision: 123
+  ---
+  duration_ms: 7.954452
+  type: 'test'
+  ...
+# Subtest: caller cannot override current HR revision: null
+ok 125 - caller cannot override current HR revision: null
+  ---
+  duration_ms: 1.245801
+  type: 'test'
+  ...
+# Subtest: missing current HR revision blocks before sending a command
+ok 126 - missing current HR revision blocks before sending a command
+  ---
+  duration_ms: 1.311998
+  type: 'test'
+  ...
+# Subtest: invalid historical metadata blocked: future
+ok 127 - invalid historical metadata blocked: future
+  ---
+  duration_ms: 1.369904
+  type: 'test'
+  ...
+# Subtest: invalid historical metadata blocked: invalid day
+ok 128 - invalid historical metadata blocked: invalid day
+  ---
+  duration_ms: 6.982707
+  type: 'test'
+  ...
+# Subtest: invalid historical metadata blocked: date without authority
+ok 129 - invalid historical metadata blocked: date without authority
+  ---
+  duration_ms: 1.221916
+  type: 'test'
+  ...
+# Subtest: invalid historical metadata blocked: authority without date
+ok 130 - invalid historical metadata blocked: authority without date
+  ---
+  duration_ms: 10.037118
+  type: 'test'
+  ...
+# Subtest: invalid historical metadata blocked: pending with paid date
+ok 131 - invalid historical metadata blocked: pending with paid date
+  ---
+  duration_ms: 0.650721
+  type: 'test'
+  ...
+# Subtest: invalid historical metadata blocked: array supersession
+ok 132 - invalid historical metadata blocked: array supersession
+  ---
+  duration_ms: 0.550273
+  type: 'test'
+  ...
+# Subtest: invalid historical metadata blocked: foreign identity map
+ok 133 - invalid historical metadata blocked: foreign identity map
+  ---
+  duration_ms: 0.704591
+  type: 'test'
+  ...
+# Subtest: supersession forwards only allowlisted fields and never authority, amount or ACK from the caller
+ok 134 - supersession forwards only allowlisted fields and never authority, amount or ACK from the caller
+  ---
+  duration_ms: 2.369751
+  type: 'test'
+  ...
+# Subtest: identical historical calls generate the same idempotency key without changing context or input
+ok 135 - identical historical calls generate the same idempotency key without changing context or input
+  ---
+  duration_ms: 0.86001
+  type: 'test'
+  ...
+# Subtest: nps: failed provider never closes the form or announces success
+ok 136 - nps: failed provider never closes the form or announces success
+  ---
+  duration_ms: 7.229821
+  type: 'test'
+  ...
+# Subtest: note: failed provider never closes the form or announces success
+ok 137 - note: failed provider never closes the form or announces success
+  ---
+  duration_ms: 1.900007
+  type: 'test'
+  ...
+# Subtest: meeting: failed provider never closes the form or announces success
+ok 138 - meeting: failed provider never closes the form or announces success
+  ---
+  duration_ms: 4.588659
+  type: 'test'
+  ...
+# Subtest: all three successful commands require server readback and survive a new authorized session
+ok 139 - all three successful commands require server readback and survive a new authorized session
+  ---
+  duration_ms: 12.456894
+  type: 'test'
+  ...
+# Subtest: committed but unreadable write holds the modal; retry uses the same key and creates no duplicate
+ok 140 - committed but unreadable write holds the modal; retry uses the same key and creates no duplicate
+  ---
+  duration_ms: 4.071575
+  type: 'test'
+  ...
+# Subtest: two concurrent clicks invoke only one command and acknowledge once
+ok 141 - two concurrent clicks invoke only one command and acknowledge once
+  ---
+  duration_ms: 3.524718
+  type: 'test'
+  ...
+# Subtest: a late ACK after changing uid never publishes into the new context
+ok 142 - a late ACK after changing uid never publishes into the new context
+  ---
+  duration_ms: 4.6094
+  type: 'test'
+  ...
+# Subtest: a late ACK after changing projectId never publishes into the new context
+ok 143 - a late ACK after changing projectId never publishes into the new context
+  ---
+  duration_ms: 1.922781
+  type: 'test'
+  ...
+# Subtest: a late ACK after changing periodId never publishes into the new context
+ok 144 - a late ACK after changing periodId never publishes into the new context
+  ---
+  duration_ms: 6.688611
+  type: 'test'
+  ...
+# Subtest: a late ACK after changing generation never publishes into the new context
+ok 145 - a late ACK after changing generation never publishes into the new context
+  ---
+  duration_ms: 1.975068
+  type: 'test'
+  ...
+# Subtest: UI refuses an apparently successful ACK with wrong proof {"readbackVerified":false}
+ok 146 - UI refuses an apparently successful ACK with wrong proof {"readbackVerified":false}
+  ---
+  duration_ms: 2.515737
+  type: 'test'
+  ...
+# Subtest: UI refuses an apparently successful ACK with wrong proof {"actorUid":"other"}
+ok 147 - UI refuses an apparently successful ACK with wrong proof {"actorUid":"other"}
+  ---
+  duration_ms: 1.257818
+  type: 'test'
+  ...
+# Subtest: UI refuses an apparently successful ACK with wrong proof {"projectId":"other"}
+ok 148 - UI refuses an apparently successful ACK with wrong proof {"projectId":"other"}
+  ---
+  duration_ms: 1.33299
+  type: 'test'
+  ...
+# Subtest: UI refuses an apparently successful ACK with wrong proof {"periodId":"other"}
+ok 149 - UI refuses an apparently successful ACK with wrong proof {"periodId":"other"}
+  ---
+  duration_ms: 1.898916
+  type: 'test'
+  ...
+# Subtest: UI refuses an apparently successful ACK with wrong proof {"tenantId":"other"}
+ok 150 - UI refuses an apparently successful ACK with wrong proof {"tenantId":"other"}
+  ---
+  duration_ms: 1.397866
+  type: 'test'
+  ...
+# Subtest: UI refuses mismatched independent read {"actorUid":"other"}
+ok 151 - UI refuses mismatched independent read {"actorUid":"other"}
+  ---
+  duration_ms: 1.22519
+  type: 'test'
+  ...
+# Subtest: UI refuses mismatched independent read {"projectId":"other"}
+ok 152 - UI refuses mismatched independent read {"projectId":"other"}
+  ---
+  duration_ms: 1.562118
+  type: 'test'
+  ...
+# Subtest: UI refuses mismatched independent read {"periodId":"other"}
+ok 153 - UI refuses mismatched independent read {"periodId":"other"}
+  ---
+  duration_ms: 3.326224
+  type: 'test'
+  ...
+# Subtest: UI refuses mismatched independent read {"source":"local_cache"}
+ok 154 - UI refuses mismatched independent read {"source":"local_cache"}
+  ---
+  duration_ms: 1.466467
+  type: 'test'
+  ...
+# Subtest: durable text is escaped and the administrative client preview never writes
+ok 155 - durable text is escaped and the administrative client preview never writes
+  ---
+  duration_ms: 3.414915
+  type: 'test'
+  ...
+# Subtest: a Firebase UID not bound to the authorized backend principal cannot submit
+ok 156 - a Firebase UID not bound to the authorized backend principal cannot submit
+  ---
+  duration_ms: 1.925364
+  type: 'test'
+  ...
+# Subtest: real UI, boundary, adapter, provider and server reader persist all three flows across independent sessions with private scope
+ok 157 - real UI, boundary, adapter, provider and server reader persist all three flows across independent sessions with private scope
+  ---
+  duration_ms: 68.692126
+  type: 'test'
+  ...
+# Subtest: D07 authenticated Storage PDF GET bypasses service worker interception and CacheStorage
+ok 158 - D07 authenticated Storage PDF GET bypasses service worker interception and CacheStorage
+  ---
+  duration_ms: 3.217484
+  type: 'test'
+  ...
+# Subtest: D07 unrelated cross-origin resources bypass PWA cache while same-origin runtime remains fail-closed
+ok 159 - D07 unrelated cross-origin resources bypass PWA cache while same-origin runtime remains fail-closed
+  ---
+  duration_ms: 1.144421
+  type: 'test'
+  ...
+# Subtest: protected API is native-network-only: /api/tenants/t/projects/p/certifications/shopper-resources?periodId=x
+ok 160 - protected API is native-network-only: /api/tenants/t/projects/p/certifications/shopper-resources?periodId=x
+  ---
+  duration_ms: 1.777046
+  type: 'test'
+  ...
+# Subtest: protected API is native-network-only: /v1/cxorbia/commands
+ok 161 - protected API is native-network-only: /v1/cxorbia/commands
+  ---
+  duration_ms: 0.585855
+  type: 'test'
+  ...
+# Subtest: protected API is native-network-only: /api/hr-live
+ok 162 - protected API is native-network-only: /api/hr-live
+  ---
+  duration_ms: 0.642729
+  type: 'test'
+  ...
+# Subtest: API requests without explicit no-store force a fresh fetch and never cache
+ok 163 - API requests without explicit no-store force a fresh fetch and never cache
+  ---
+  duration_ms: 0.637051
+  type: 'test'
+  ...
+# Subtest: Authorization on another path forces no-store; explicit no-store bypasses the worker
+ok 164 - Authorization on another path forces no-store; explicit no-store bypasses the worker
+  ---
+  duration_ms: 0.732152
+  type: 'test'
+  ...
+# Subtest: offline API and a changed principal never receive the stale private cache entry
+ok 165 - offline API and a changed principal never receive the stale private cache entry
+  ---
+  duration_ms: 1.202907
+  type: 'test'
+  ...
+# Subtest: F12 never uses invented industry averages or top performer constants
+ok 166 - F12 never uses invented industry averages or top performer constants
+  ---
+  duration_ms: 7.530505
+  type: 'test'
+  ...
+# Subtest: F12 only shows comparison after source, revision, sample and methodology verified
+ok 167 - F12 only shows comparison after source, revision, sample and methodology verified
+  ---
+  duration_ms: 1.689005
+  type: 'test'
+  ...
+# Subtest: F12 preserves a verified zero benchmark without treating it as missing
+ok 168 - F12 preserves a verified zero benchmark without treating it as missing
+  ---
+  duration_ms: 0.693114
+  type: 'test'
+  ...
+# Subtest: normal human entry preserves the configured authorized tenant and project
+ok 169 - normal human entry preserves the configured authorized tenant and project
+  ---
+  duration_ms: 5.704197
+  type: 'test'
+  ...
+# Subtest: authenticated exact internal project can configure countries before periods or visits exist
+ok 170 - authenticated exact internal project can configure countries before periods or visits exist
+  ---
+  duration_ms: 1.627284
+  type: 'test'
+  ...
+# Subtest: internal entry rejects unauthenticated principal
+ok 171 - internal entry rejects unauthenticated principal
+  ---
+  duration_ms: 1.612282
+  type: 'test'
+  ...
+# Subtest: internal entry rejects different uid
+ok 172 - internal entry rejects different uid
+  ---
+  duration_ms: 1.412597
+  type: 'test'
+  ...
+# Subtest: internal entry rejects different tenant
+ok 173 - internal entry rejects different tenant
+  ---
+  duration_ms: 4.905326
+  type: 'test'
+  ...
+# Subtest: internal entry rejects different project
+ok 174 - internal entry rejects different project
+  ---
+  duration_ms: 1.844094
+  type: 'test'
+  ...
+# Subtest: internal entry rejects different namespace
+ok 175 - internal entry rejects different namespace
+  ---
+  duration_ms: 1.256186
+  type: 'test'
+  ...
+# Subtest: internal entry rejects missing authorized project
+ok 176 - internal entry rejects missing authorized project
+  ---
+  duration_ms: 1.539745
+  type: 'test'
+  ...
+# Subtest: internal entry rejects external record with internal flag
+ok 177 - internal entry rejects external record with internal flag
+  ---
+  duration_ms: 1.321943
+  type: 'test'
+  ...
+# Subtest: internal entry rejects non atomic authority
+ok 178 - internal entry rejects non atomic authority
+  ---
+  duration_ms: 1.565152
+  type: 'test'
+  ...
+# Subtest: internal entry rejects old session generation
+ok 179 - internal entry rejects old session generation
+  ---
+  duration_ms: 1.415932
+  type: 'test'
+  ...
+# Subtest: internal entry rejects missing session generation
+ok 180 - internal entry rejects missing session generation
+  ---
+  duration_ms: 1.938394
+  type: 'test'
+  ...
+# Subtest: internal entry rejects wrong internal source ref
+ok 181 - internal entry rejects wrong internal source ref
+  ---
+  duration_ms: 1.281543
+  type: 'test'
+  ...
+# Subtest: internal flag never bypasses shopper exact identity requirements
+ok 182 - internal flag never bypasses shopper exact identity requirements
+  ---
+  duration_ms: 1.267021
+  type: 'test'
+  ...
+# Subtest: external HR authority retains revision, period and nonempty operational requirements
+ok 183 - external HR authority retains revision, period and nonempty operational requirements
+  ---
+  duration_ms: 8.437646
+  type: 'test'
+  ...
+# Subtest: external shopper authority still requires the exact signed-in identity
+ok 184 - external shopper authority still requires the exact signed-in identity
+  ---
+  duration_ms: 3.193568
+  type: 'test'
+  ...
+# Subtest: an initially blocked human shell releases after the actual internal authority producer completes
+ok 185 - an initially blocked human shell releases after the actual internal authority producer completes
+  ---
+  duration_ms: 9.007659
+  type: 'test'
+  ...
+# Subtest: cold internal project without a period mounts configuration through the real router start resolver
+ok 186 - cold internal project without a period mounts configuration through the real router start resolver
+  ---
+  duration_ms: 3.126749
+  type: 'test'
+  ...
+# Subtest: deferred internal publication selects configuration before mounting a no-period project
+ok 187 - deferred internal publication selects configuration before mounting a no-period project
+  ---
+  duration_ms: 1.765779
+  type: 'test'
+  ...
+# Subtest: initial internal setup never grants configuration access to a role without permission
+ok 188 - initial internal setup never grants configuration access to a role without permission
+  ---
+  duration_ms: 2.160722
+  type: 'test'
+  ...
+# Subtest: deferred operational request does not replay Mi Dia after selecting safe configuration
+ok 189 - deferred operational request does not replay Mi Dia after selecting safe configuration
+  ---
+  duration_ms: 7.550975
+  type: 'test'
+  ...
+# Subtest: explicit permitted period-free view survives initial setup without enlarging permissions
+ok 190 - explicit permitted period-free view survives initial setup without enlarging permissions
+  ---
+  duration_ms: 3.96618
+  type: 'test'
+  ...
+# Subtest: an actual internal period preserves the selected operational view
+ok 191 - an actual internal period preserves the selected operational view
+  ---
+  duration_ms: 1.744728
+  type: 'test'
+  ...
+# Subtest: external HR mount keeps its existing operational selection
+ok 192 - external HR mount keeps its existing operational selection
+  ---
+  duration_ms: 1.396003
+  type: 'test'
+  ...
+# Subtest: internal country update refresh releases C6 after the real Corte4 source transition
+ok 193 - internal country update refresh releases C6 after the real Corte4 source transition
+  ---
+  duration_ms: 5.427307
+  type: 'test'
+  ...
+# Subtest: configuration protected authority never becomes local editing when command writes are off
+ok 194 - configuration protected authority never becomes local editing when command writes are off
+  ---
+  duration_ms: 15.27667
+  type: 'test'
+  ...
+# Subtest: protected users with command gate off cannot load local roles or expose a local save
+ok 195 - protected users with command gate off cannot load local roles or expose a local save
+  ---
+  duration_ms: 1.768573
+  type: 'test'
+  ...
+# Subtest: project configuration requires provider ACK and independent project readback
+ok 196 - project configuration requires provider ACK and independent project readback
+  ---
+  duration_ms: 1.408321
+  type: 'test'
+  ...
+# Subtest: connected Add Country UI includes the configured currency for the new country
+ok 197 - connected Add Country UI includes the configured currency for the new country
+  ---
+  duration_ms: 1.477924
+  type: 'test'
+  ...
+# Subtest: connected project countries work before the first period exists, using the durable project scope
+ok 198 - connected project countries work before the first period exists, using the durable project scope
+  ---
+  duration_ms: 3.478489
+  type: 'test'
+  ...
+# Subtest: adding a country preserves explicit project currency and requires independent currency readback
+ok 199 - adding a country preserves explicit project currency and requires independent currency readback
+  ---
+  duration_ms: 1.34028
+  type: 'test'
+  ...
+# Subtest: unknown country without configured currency fails before calling the provider
+ok 200 - unknown country without configured currency fails before calling the provider
+  ---
+  duration_ms: 1.019286
+  type: 'test'
+  ...
+# Subtest: questionnaire program is isolated by period, cloned and published only after durable ACK
+ok 201 - questionnaire program is isolated by period, cloned and published only after durable ACK
+  ---
+  duration_ms: 2.567834
+  type: 'test'
+  ...
+# Subtest: program with no write authority reports draft-only without inventing a durable save
+ok 202 - program with no write authority reports draft-only without inventing a durable save
+  ---
+  duration_ms: 1.3401
+  type: 'test'
+  ...
+# Subtest: period creation waits for ACK and reload before switching the active period
+ok 203 - period creation waits for ACK and reload before switching the active period
+  ---
+  duration_ms: 2.101565
+  type: 'test'
+  ...
+# Subtest: period close refuses incomplete ACK without applying or closing the dialog
+ok 204 - period close refuses incomplete ACK without applying or closing the dialog
+  ---
+  duration_ms: 1.104802
+  type: 'test'
+  ...
+# Subtest: shared modal replaces previous dialog, closes only the top on Escape and restores focus
+ok 205 - shared modal replaces previous dialog, closes only the top on Escape and restores focus
+  ---
+  duration_ms: 2.837892
+  type: 'test'
+  ...
+1..205
+# tests 238
+# suites 0
+# pass 238
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 574.771693

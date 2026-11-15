@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-scoped-package.v1",
+  "iteration": "I3",
+  "sourcePredecessor": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
+  "generatedAt": "2026-11-15T23:44:05.395091+00:00",
+  "findings": [
+    "VRM-346",
+    "VRM-347"
+  ],
+  "preEditModuleTruthScopes": [
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_F09_DURABLE_CLIENT_COLLABORATION_P0_SCOPE_20261115.json",
+      "gitBlob": "d54577ece0b31e1fa15ecdbadecb897aa95f05a9"
+    },
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_AUTHENTICATED_API_SW_CACHE_P0_SCOPE_20261115.json",
+      "gitBlob": "6f34d7a57833ec05b971dfd001423c238013cf03"
+    }
+  ],
+  "allowedProductFiles": [
+    "app/modules/cliente-insights.js",
+    "app/adapters/cxorbia-command-adapter-v1.js",
+    "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+    "app/core/backend-bulletins.js",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+    "app/sw.js"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs",
+    "tools/qa/cxorbia-i3-client-collaboration-ui.test.mjs",
+    "tools/qa/cxorbia-i3-source-qa-evidence.mjs",
+    "tools/qa/cxorbia-i3-source-qa-evidence.test.mjs",
+    "tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs",
+    "tools/qa/cxorbia-i3-d07-sw-pdf-cross-origin.test.mjs",
+    "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+  ],
+  "allowedControlFiles": [
+    ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs",
+    "tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs",
+    "tools/qa/cxorbia-i3-shock-continuity-guard.mjs",
+    "tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs"
+  ],
+  "interpretation": "Union of two independently documented P0 scopes; source tests do not prove live closure. Existing paired DEV lane only.",
+  "production": false,
+  "humanAcceptancePreserved": [
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ],
+  "strictDomainProgressPreserved": "RUN2537 tenant-domain PASS yields5/21, unaffected owner hashes retained."
+}

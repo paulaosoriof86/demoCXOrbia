@@ -1,0 +1,98 @@
+{
+  "mode": "VM_ONLY_NO_EXTERNAL_CALLS_NO_REPO_WRITES",
+  "sourcePath": "/tmp/run2537-audit/sw-before-c7079ab9.js",
+  "swSha256": "c7079ab953ff6c6ab5de5a11eada0af0c132cd03231ff3055a4a5a36632f6b7b",
+  "assertions": 19,
+  "result": "PASS_REPRODUCED_CURRENT_CACHE_BEHAVIOR",
+  "cacheModel": "Cache matching is URL-based for identical method and Origin; Authorization is not a Vary header in the actual server response. This is a local model, not a live browser observation.",
+  "apiOnline": {
+    "intercepted": true,
+    "status": 200,
+    "body": "{\"ok\":true,\"sequence\":1,\"syntheticPrincipal\":\"A\"}",
+    "events": [
+      {
+        "type": "network",
+        "url": "https://cxorbia-backend-dev.web.app/api/tenants/tya/projects/cinepolis/certifications/shopper-resources?periodId=cinepolis-2026-11",
+        "method": "GET",
+        "syntheticActor": "A",
+        "requestCache": "no-store"
+      },
+      {
+        "type": "put",
+        "namespace": "cxorbia-READ_ONLY_VM_REPRO",
+        "url": "https://cxorbia-backend-dev.web.app/api/tenants/tya/projects/cinepolis/certifications/shopper-resources?periodId=cinepolis-2026-11",
+        "cacheControl": "no-store, no-cache, must-revalidate, max-age=0",
+        "vary": "Origin"
+      }
+    ]
+  },
+  "apiOfflineSamePrincipal": {
+    "intercepted": true,
+    "status": 200,
+    "body": "{\"ok\":true,\"sequence\":1,\"syntheticPrincipal\":\"A\"}",
+    "events": [
+      {
+        "type": "network",
+        "url": "https://cxorbia-backend-dev.web.app/api/tenants/tya/projects/cinepolis/certifications/shopper-resources?periodId=cinepolis-2026-11",
+        "method": "GET",
+        "syntheticActor": "A",
+        "requestCache": "no-store"
+      },
+      {
+        "type": "cacheMatch",
+        "url": "https://cxorbia-backend-dev.web.app/api/tenants/tya/projects/cinepolis/certifications/shopper-resources?periodId=cinepolis-2026-11"
+      }
+    ]
+  },
+  "apiOfflineDifferentPrincipal": {
+    "intercepted": true,
+    "status": 200,
+    "body": "{\"ok\":true,\"sequence\":1,\"syntheticPrincipal\":\"A\"}",
+    "events": [
+      {
+        "type": "network",
+        "url": "https://cxorbia-backend-dev.web.app/api/tenants/tya/projects/cinepolis/certifications/shopper-resources?periodId=cinepolis-2026-11",
+        "method": "GET",
+        "syntheticActor": "B",
+        "requestCache": "no-store"
+      },
+      {
+        "type": "cacheMatch",
+        "url": "https://cxorbia-backend-dev.web.app/api/tenants/tya/projects/cinepolis/certifications/shopper-resources?periodId=cinepolis-2026-11"
+      }
+    ]
+  },
+  "criticalOffline": {
+    "intercepted": true,
+    "rejected": "SYNTHETIC_NETWORK_OFFLINE",
+    "events": [
+      {
+        "type": "network",
+        "url": "https://cxorbia-backend-dev.web.app/modules/documentos.js",
+        "method": "GET",
+        "syntheticActor": "A",
+        "requestCache": "no-store",
+        "options": {
+          "cache": "no-store"
+        }
+      }
+    ]
+  },
+  "foreignBypass": {
+    "intercepted": false,
+    "events": []
+  },
+  "postBypass": {
+    "intercepted": false,
+    "events": []
+  },
+  "activate": {
+    "before": [
+      "legacy-cache",
+      "cxorbia-READ_ONLY_VM_REPRO"
+    ],
+    "after": [],
+    "allNamespacesPurged": true,
+    "claimedAfterPurge": true
+  }
+}

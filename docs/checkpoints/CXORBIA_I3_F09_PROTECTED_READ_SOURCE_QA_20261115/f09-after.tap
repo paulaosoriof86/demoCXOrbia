@@ -1,0 +1,382 @@
+TAP version 13
+# Subtest: nps: token-owned durable entity, independent readback, audit and zero-write replay
+ok 1 - nps: token-owned durable entity, independent readback, audit and zero-write replay
+  ---
+  duration_ms: 12.097592
+  type: 'test'
+  ...
+# Subtest: note: token-owned durable entity, independent readback, audit and zero-write replay
+ok 2 - note: token-owned durable entity, independent readback, audit and zero-write replay
+  ---
+  duration_ms: 1.244118
+  type: 'test'
+  ...
+# Subtest: meeting: token-owned durable entity, independent readback, audit and zero-write replay
+ok 3 - meeting: token-owned durable entity, independent readback, audit and zero-write replay
+  ---
+  duration_ms: 28.242734
+  type: 'test'
+  ...
+# Subtest: canonical active Client membership without an active boolean remains valid
+ok 4 - canonical active Client membership without an active boolean remains valid
+  ---
+  duration_ms: 0.666595
+  type: 'test'
+  ...
+# Subtest: canonical client role alias uses its exact staff membership
+ok 5 - canonical client role alias uses its exact staff membership
+  ---
+  duration_ms: 0.828525
+  type: 'test'
+  ...
+# Subtest: same received key in another authorized period preserves separate durable audit entries
+ok 6 - same received key in another authorized period preserves separate durable audit entries
+  ---
+  duration_ms: 2.387678
+  type: 'test'
+  ...
+# Subtest: lost readback after commit reports pending proof and retry recovers the one durable entity
+ok 7 - lost readback after commit reports pending proof and retry recovers the one durable entity
+  ---
+  duration_ms: 4.35867
+  type: 'test'
+  ...
+# Subtest: concurrent replay produces one entity, one receipt and one audit
+ok 8 - concurrent replay produces one entity, one receipt and one audit
+  ---
+  duration_ms: 0.678943
+  type: 'test'
+  ...
+# Subtest: changed payload and another actor cannot adopt an existing idempotency receipt
+ok 9 - changed payload and another actor cannot adopt an existing idempotency receipt
+  ---
+  duration_ms: 1.406868
+  type: 'test'
+  ...
+# Subtest: client collaboration denies staff preview
+ok 10 - client collaboration denies staff preview
+  ---
+  duration_ms: 0.445468
+  type: 'test'
+  ...
+# Subtest: client collaboration denies shopper
+ok 11 - client collaboration denies shopper
+  ---
+  duration_ms: 0.207026
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong tenant
+ok 12 - client collaboration denies wrong tenant
+  ---
+  duration_ms: 0.118635
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong project
+ok 13 - client collaboration denies wrong project
+  ---
+  duration_ms: 0.224973
+  type: 'test'
+  ...
+# Subtest: client collaboration denies missing period
+ok 14 - client collaboration denies missing period
+  ---
+  duration_ms: 0.279964
+  type: 'test'
+  ...
+# Subtest: client collaboration denies inactive membership
+ok 15 - client collaboration denies inactive membership
+  ---
+  duration_ms: 0.121009
+  type: 'test'
+  ...
+# Subtest: client collaboration denies inactive status
+ok 16 - client collaboration denies inactive status
+  ---
+  duration_ms: 0.112947
+  type: 'test'
+  ...
+# Subtest: client collaboration denies foreign member project
+ok 17 - client collaboration denies foreign member project
+  ---
+  duration_ms: 0.108751
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong namespace
+ok 18 - client collaboration denies wrong namespace
+  ---
+  duration_ms: 0.190522
+  type: 'test'
+  ...
+# Subtest: client collaboration denies missing namespace
+ok 19 - client collaboration denies missing namespace
+  ---
+  duration_ms: 0.191022
+  type: 'test'
+  ...
+# Subtest: client collaboration denies closed period
+ok 20 - client collaboration denies closed period
+  ---
+  duration_ms: 0.245272
+  type: 'test'
+  ...
+# Subtest: client collaboration denies archived period
+ok 21 - client collaboration denies archived period
+  ---
+  duration_ms: 0.290309
+  type: 'test'
+  ...
+# Subtest: client collaboration denies foreign period
+ok 22 - client collaboration denies foreign period
+  ---
+  duration_ms: 0.302327
+  type: 'test'
+  ...
+# Subtest: client collaboration denies spoofed author
+ok 23 - client collaboration denies spoofed author
+  ---
+  duration_ms: 0.356507
+  type: 'test'
+  ...
+# Subtest: client collaboration denies spoofed recipients
+ok 24 - client collaboration denies spoofed recipients
+  ---
+  duration_ms: 0.087169
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong entity
+ok 25 - client collaboration denies wrong entity
+  ---
+  duration_ms: 0.069482
+  type: 'test'
+  ...
+# Subtest: client collaboration denies chosen entity id
+ok 26 - client collaboration denies chosen entity id
+  ---
+  duration_ms: 0.073909
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong permission
+ok 27 - client collaboration denies wrong permission
+  ---
+  duration_ms: 0.178343
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong payload period
+ok 28 - client collaboration denies wrong payload period
+  ---
+  duration_ms: 0.091715
+  type: 'test'
+  ...
+# Subtest: client collaboration denies missing request id
+ok 29 - client collaboration denies missing request id
+  ---
+  duration_ms: 0.175259
+  type: 'test'
+  ...
+# Subtest: client collaboration denies empty note
+ok 30 - client collaboration denies empty note
+  ---
+  duration_ms: 0.087369
+  type: 'test'
+  ...
+# Subtest: client collaboration denies excessive note
+ok 31 - client collaboration denies excessive note
+  ---
+  duration_ms: 0.078516
+  type: 'test'
+  ...
+# Subtest: NPS rejects invalid numeric score -1
+ok 32 - NPS rejects invalid numeric score -1
+  ---
+  duration_ms: 0.180757
+  type: 'test'
+  ...
+# Subtest: NPS rejects invalid numeric score 11
+ok 33 - NPS rejects invalid numeric score 11
+  ---
+  duration_ms: 0.062783
+  type: 'test'
+  ...
+# Subtest: NPS rejects invalid numeric score 9.5
+ok 34 - NPS rejects invalid numeric score 9.5
+  ---
+  duration_ms: 0.073809
+  type: 'test'
+  ...
+# Subtest: NPS rejects invalid numeric score "9"
+ok 35 - NPS rejects invalid numeric score "9"
+  ---
+  duration_ms: 0.071465
+  type: 'test'
+  ...
+# Subtest: NPS rejects invalid numeric score null
+ok 36 - NPS rejects invalid numeric score null
+  ---
+  duration_ms: 0.072007
+  type: 'test'
+  ...
+# Subtest: meeting rejects invalid request {"date":"2026-02-30"}
+ok 37 - meeting rejects invalid request {"date":"2026-02-30"}
+  ---
+  duration_ms: 0.123262
+  type: 'test'
+  ...
+# Subtest: meeting rejects invalid request {"date":"2001-01-01"}
+ok 38 - meeting rejects invalid request {"date":"2001-01-01"}
+  ---
+  duration_ms: 0.48083
+  type: 'test'
+  ...
+# Subtest: meeting rejects invalid request {"time":"25:00"}
+ok 39 - meeting rejects invalid request {"time":"25:00"}
+  ---
+  duration_ms: 0.202609
+  type: 'test'
+  ...
+# Subtest: meeting rejects invalid request {"mode":"Calendar invitation sent"}
+ok 40 - meeting rejects invalid request {"mode":"Calendar invitation sent"}
+  ---
+  duration_ms: 0.136802
+  type: 'test'
+  ...
+# Subtest: nps: failed provider never closes the form or announces success
+ok 41 - nps: failed provider never closes the form or announces success
+  ---
+  duration_ms: 6.333857
+  type: 'test'
+  ...
+# Subtest: note: failed provider never closes the form or announces success
+ok 42 - note: failed provider never closes the form or announces success
+  ---
+  duration_ms: 2.546442
+  type: 'test'
+  ...
+# Subtest: meeting: failed provider never closes the form or announces success
+ok 43 - meeting: failed provider never closes the form or announces success
+  ---
+  duration_ms: 3.125087
+  type: 'test'
+  ...
+# Subtest: all three successful commands require server readback and survive a new authorized session
+ok 44 - all three successful commands require server readback and survive a new authorized session
+  ---
+  duration_ms: 5.586283
+  type: 'test'
+  ...
+# Subtest: committed but unreadable write holds the modal; retry uses the same key and creates no duplicate
+ok 45 - committed but unreadable write holds the modal; retry uses the same key and creates no duplicate
+  ---
+  duration_ms: 1.93549
+  type: 'test'
+  ...
+# Subtest: two concurrent clicks invoke only one command and acknowledge once
+ok 46 - two concurrent clicks invoke only one command and acknowledge once
+  ---
+  duration_ms: 1.923752
+  type: 'test'
+  ...
+# Subtest: a late ACK after changing uid never publishes into the new context
+ok 47 - a late ACK after changing uid never publishes into the new context
+  ---
+  duration_ms: 1.88133
+  type: 'test'
+  ...
+# Subtest: a late ACK after changing projectId never publishes into the new context
+ok 48 - a late ACK after changing projectId never publishes into the new context
+  ---
+  duration_ms: 1.921949
+  type: 'test'
+  ...
+# Subtest: a late ACK after changing periodId never publishes into the new context
+ok 49 - a late ACK after changing periodId never publishes into the new context
+  ---
+  duration_ms: 3.387684
+  type: 'test'
+  ...
+# Subtest: a late ACK after changing generation never publishes into the new context
+ok 50 - a late ACK after changing generation never publishes into the new context
+  ---
+  duration_ms: 1.246511
+  type: 'test'
+  ...
+# Subtest: UI refuses an apparently successful ACK with wrong proof {"readbackVerified":false}
+ok 51 - UI refuses an apparently successful ACK with wrong proof {"readbackVerified":false}
+  ---
+  duration_ms: 1.293952
+  type: 'test'
+  ...
+# Subtest: UI refuses an apparently successful ACK with wrong proof {"actorUid":"other"}
+ok 52 - UI refuses an apparently successful ACK with wrong proof {"actorUid":"other"}
+  ---
+  duration_ms: 1.230718
+  type: 'test'
+  ...
+# Subtest: UI refuses an apparently successful ACK with wrong proof {"projectId":"other"}
+ok 53 - UI refuses an apparently successful ACK with wrong proof {"projectId":"other"}
+  ---
+  duration_ms: 1.215015
+  type: 'test'
+  ...
+# Subtest: UI refuses an apparently successful ACK with wrong proof {"periodId":"other"}
+ok 54 - UI refuses an apparently successful ACK with wrong proof {"periodId":"other"}
+  ---
+  duration_ms: 1.109829
+  type: 'test'
+  ...
+# Subtest: UI refuses an apparently successful ACK with wrong proof {"tenantId":"other"}
+ok 55 - UI refuses an apparently successful ACK with wrong proof {"tenantId":"other"}
+  ---
+  duration_ms: 1.089108
+  type: 'test'
+  ...
+# Subtest: UI refuses mismatched independent read {"actorUid":"other"}
+ok 56 - UI refuses mismatched independent read {"actorUid":"other"}
+  ---
+  duration_ms: 1.33387
+  type: 'test'
+  ...
+# Subtest: UI refuses mismatched independent read {"projectId":"other"}
+ok 57 - UI refuses mismatched independent read {"projectId":"other"}
+  ---
+  duration_ms: 1.186884
+  type: 'test'
+  ...
+# Subtest: UI refuses mismatched independent read {"periodId":"other"}
+ok 58 - UI refuses mismatched independent read {"periodId":"other"}
+  ---
+  duration_ms: 1.405005
+  type: 'test'
+  ...
+# Subtest: UI refuses mismatched independent read {"source":"local_cache"}
+ok 59 - UI refuses mismatched independent read {"source":"local_cache"}
+  ---
+  duration_ms: 1.122248
+  type: 'test'
+  ...
+# Subtest: durable text is escaped and the administrative client preview never writes
+ok 60 - durable text is escaped and the administrative client preview never writes
+  ---
+  duration_ms: 2.21363
+  type: 'test'
+  ...
+# Subtest: a Firebase UID not bound to the authorized backend principal cannot submit
+ok 61 - a Firebase UID not bound to the authorized backend principal cannot submit
+  ---
+  duration_ms: 1.129669
+  type: 'test'
+  ...
+# Subtest: real UI, boundary, adapter, provider and server reader persist all three flows across independent sessions with private scope
+ok 62 - real UI, boundary, adapter, provider and server reader persist all three flows across independent sessions with private scope
+  ---
+  duration_ms: 57.660474
+  type: 'test'
+  ...
+1..62
+# tests 62
+# suites 0
+# pass 62
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 294.364493

@@ -5,9 +5,58 @@
 CX.module('cli_insights', ({data,ui})=>{
   const host=ui.el('div');
   const p=data.period();
-  const K='cx_cli_insights_'+p.id;
-  const load=()=>{try{return JSON.parse(localStorage.getItem(K)||'{}');}catch(e){return {};}};
-  const save=(o)=>{try{localStorage.setItem(K,JSON.stringify(o));}catch(e){} };
+  let entries=[],readState='loading';
+  const str=v=>String(v??'');
+  const context=()=>{
+    const auth=CX.backendAuth?.context?.()||{},c=data.ctx?.()||{};
+    const actorUid=window.firebase?.auth?.()?.currentUser?.uid||'';
+    const state=window.CX_BACKEND_AUTHORIZED_STATE||{},principal=state.principal||{},projectIds=(auth.projectIds||[]).map(str).sort();
+    const projectId=str(c.projectId||data.currentProjectId);
+    const principalBound=!!actorUid&&str(principal.actorUid)===actorUid&&str(state.tenantId)===str(auth.tenantId)&&str(principal.tenantId)===str(auth.tenantId)&&str(principal.role)===str(auth.role)&&str(principal.authNamespace)===str(auth.authNamespace)&&JSON.stringify((principal.projectIds||[]).map(str).sort())===JSON.stringify(projectIds);
+    return {actorUid,role:str(auth.role),namespace:str(auth.authNamespace),tenantId:str(auth.tenantId),projectId,periodId:str(c.periodId||data.period()?.id),projectIds:projectIds.join('|'),generation:str(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.sessionGeneration||''),authenticated:auth.authenticated===true&&principalBound&&(auth.role==='super'||projectIds.includes(projectId))};
+  };
+  const sameContext=c=>JSON.stringify(context())===JSON.stringify(c);
+  const canWrite=c=>c.authenticated&&!!c.actorUid&&!!c.tenantId&&!!c.projectId&&!!c.periodId&&c.namespace==='staff'&&['cliente','client'].includes(c.role)&&CX.session?.user?.clientPreviewReadOnly!==true;
+  const requireClient=()=>{const c=context();if(!canWrite(c)){ui.toast('Esta vista permite consultar; responde desde tu sesión de Cliente.','warn');return null;}return c;};
+  const scopeMatches=(value,c)=>value&&['tenantId','projectId','periodId'].every(k=>str(value[k])===c[k])&&str(value.actorUid)===c.actorUid;
+  async function readEntries(c){
+    if(!sameContext(c)||!CX.backendBulletins?.listClientCollaboration)throw Error('CLIENT_READ_UNAVAILABLE');
+    const result=await CX.backendBulletins.listClientCollaboration();
+    if(!sameContext(c)||!result?.ok||result.source!=='firestore_server'||!scopeMatches(result,c)||!Array.isArray(result.entries))throw Error('CLIENT_READ_SCOPE_MISMATCH');
+    const own=['cliente','client'].includes(c.role);
+    if(result.entries.some(x=>!x.id||!['nps','note','meeting'].includes(x.kind)||['tenantId','projectId','periodId'].some(k=>str(x[k])!==c[k])||(own&&str(x.requesterUid)!==c.actorUid)||(x.kind==='nps'&&(!Number.isInteger(x.score)||x.score<0||x.score>10))))throw Error('CLIENT_ENTRY_SCOPE_MISMATCH');
+    return result.entries;
+  }
+  async function refresh(){
+    const c=context();entries=[];readState='loading';draw();
+    try{const rows=await readEntries(c);if(!sameContext(c))return;entries=rows;readState='ready';}
+    catch(_){if(!sameContext(c)){entries=[];readState='changed';}else readState='error';}
+    draw();
+  }
+  function modalWriter(c,kind,method,close){
+    const clientRequestId=window.crypto?.randomUUID?.();let pending=false,request=null;
+    return async(payload,button)=>{
+      if(pending)return;
+      if(!sameContext(c)||!canWrite(context())){entries=[];readState='changed';draw();return;}
+      if(!clientRequestId||typeof data[method]!=='function'){ui.toast('No fue posible preparar el registro. Conserva el formulario y reintenta.','warn');return;}
+      if(request&&JSON.stringify(payload)!==JSON.stringify(request)){ui.toast('Hay un envío pendiente de confirmar. Reintenta con el mismo contenido para evitar duplicados.','warn');return;}
+      request=request||payload;pending=true;if(button)button.disabled=true;
+      try{
+        const ack=await data[method]({...request,clientRequestId},{ackAware:true});
+        if(!sameContext(c)){entries=[];readState='changed';draw();return;}
+        if(!ack?.ok||ack.status!=='committed'||ack.providerAck!==true||ack.successUiAllowed!==true||ack.readbackVerified!==true||!scopeMatches(ack,c)||!ack.entityId){
+          if(ack?.mutationCommitted!==true&&ack?.providerWrites===0)request=null;
+          throw Error('CLIENT_ACK_NOT_VERIFIED');
+        }
+        const rows=await readEntries(c);
+        if(!rows.some(x=>str(x.id)===str(ack.entityId)&&x.kind===kind&&str(x.requesterUid)===c.actorUid))throw Error('CLIENT_ENTITY_NOT_READ_BACK');
+        if(!sameContext(c))return;
+        entries=rows;readState='ready';close();draw();
+        ui.toast(kind==='meeting'?'Solicitud registrada; la consultora debe confirmar la reunión.':kind==='note'?'Anotación registrada y disponible para la consultora.':'Calificación registrada. Gracias por tu respuesta.','ok');
+      }catch(_){if(sameContext(c))ui.toast('El registro aún no está confirmado. Se conserva el formulario; reintenta para verificarlo sin duplicar.','warn');}
+      finally{pending=false;if(button)button.disabled=false;}
+    };
+  }
 
   /* score vivo del programa para el benchmark — Bloque 1 (auditoría V100): sin visitas evaluadas
      reales, NUNCA se fabrica un promedio (antes caía a 74 fijo) — se devuelve null y la UI muestra
@@ -26,21 +75,21 @@ CX.module('cli_insights', ({data,ui})=>{
   const esc=(v)=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
   const draw=()=>{
-    const st=load();
     const mio=scoreProg();
     const delta=mio==null||refInd==null?null:mio-refInd;
-    const nps=st.nps||{promotores:0,neutros:0,detractores:0,respuestas:0};
+    const nps=entries.filter(x=>x.kind==='nps').reduce((a,x)=>{a.respuestas++;if(x.score>=9)a.promotores++;else if(x.score>=7)a.neutros++;else a.detractores++;return a;},{promotores:0,neutros:0,detractores:0,respuestas:0});
     const npsScore=nps.respuestas? Math.round(((nps.promotores-nps.detractores)/nps.respuestas)*100):null;
-    const notas=st.notas||[];
-    const reuniones=st.reuniones||[];
+    const notas=entries.filter(x=>x.kind==='note');
+    const reuniones=entries.filter(x=>x.kind==='meeting');
 
     host.innerHTML=`
       ${ui.ph('Insights & Benchmark', p.name+' · cómo te comparas con tu industria y qué opinas del programa')}
+      ${readState==='ready'?'':`<div class="card card-p" role="status" style="margin-bottom:12px">${readState==='loading'?'Consultando tus registros…':readState==='changed'?'La sesión o el proyecto cambió. Abre de nuevo esta vista para consultar tus registros.':'No fue posible confirmar los registros del servidor. No se muestran datos almacenados en este navegador.'} ${readState==='error'?'<button class="btn btn-soft btn-sm" id="clientReadRetry">Reintentar lectura</button>':''}</div>`}
       <div class="grid g4" style="margin-bottom:16px">
         <div class="card card-p"><div class="card-t" style="font-size:12px">Tu score</div><div style="font-size:30px;font-weight:800;color:var(--brand)">${mio==null?ui.statusBdg('pending_source'):mio}</div><div style="font-size:11px;color:var(--t3)">promedio del programa</div></div>
-        <div class="card card-p"><div class="card-t" style="font-size:12px">Promedio ${industria}</div><div style="font-size:30px;font-weight:800;color:var(--t2)">${refInd==null?ui.statusBdg('pending_source'):refInd}</div><div style="font-size:11px;color:var(--t3)">${benchmarkReady?'fuente validada '+esc(benchmark.asOf):'referencia sectorial pendiente'}</div></div>
+        <div class="card card-p"><div class="card-t" style="font-size:12px">Promedio ${esc(industria)}</div><div style="font-size:30px;font-weight:800;color:var(--t2)">${refInd==null?ui.statusBdg('pending_source'):refInd}</div><div style="font-size:11px;color:var(--t3)">${benchmarkReady?'fuente validada '+esc(benchmark.asOf):'referencia sectorial pendiente'}</div></div>
         <div class="card card-p" style="border-left:3px solid var(--${(delta==null||delta>=0)?'green':'red'})"><div class="card-t" style="font-size:12px">Diferencia</div><div style="font-size:30px;font-weight:800;color:var(--${(delta==null||delta>=0)?'green':'red'})">${delta==null?'—':(delta>=0?'+':'')+delta}</div><div style="font-size:11px;color:var(--t3)">${delta==null?'sin comparación válida':(delta>=0?'por encima del sector':'bajo el sector')}</div></div>
-        <div class="card card-p"><div class="card-t" style="font-size:12px">NPS del programa</div><div style="font-size:30px;font-weight:800;color:${npsScore==null?'var(--t3)':npsScore>=50?'var(--green)':npsScore>=0?'var(--amber)':'var(--red)'}">${npsScore==null?'—':npsScore}</div><div style="font-size:11px;color:var(--t3)">${nps.respuestas} respuesta(s)</div></div>
+        <div class="card card-p"><div class="card-t" style="font-size:12px">NPS del programa</div><div style="font-size:30px;font-weight:800;color:${npsScore==null?'var(--t3)':npsScore>=50?'var(--green)':npsScore>=0?'var(--amber)':'var(--red)'}">${npsScore==null?'—':npsScore}</div><div style="font-size:11px;color:var(--t3)">${readState==='ready'?nps.respuestas+' respuesta(s)':'Lectura pendiente'}</div></div>
       </div>
 
       <div class="grid g2" style="gap:14px;margin-bottom:16px">
@@ -61,7 +110,7 @@ CX.module('cli_insights', ({data,ui})=>{
               <div style="text-align:center;padding:9px;background:#f0fdf4;border-radius:8px"><div style="font-size:18px;font-weight:800;color:var(--green)">${nps.promotores}</div><div style="font-size:10px;color:var(--t3)">Promotores</div></div>
               <div style="text-align:center;padding:9px;background:#fffbeb;border-radius:8px"><div style="font-size:18px;font-weight:800;color:var(--amber)">${nps.neutros}</div><div style="font-size:10px;color:var(--t3)">Neutros</div></div>
               <div style="text-align:center;padding:9px;background:#fef2f2;border-radius:8px"><div style="font-size:18px;font-weight:800;color:var(--red)">${nps.detractores}</div><div style="font-size:10px;color:var(--t3)">Detractores</div></div>
-            </div>`:'<div style="font-size:12.5px;color:var(--t3);padding:12px 0">Aún no has calificado el programa. Tu opinión ayuda a la consultora a mejorar el servicio.</div>'}
+            </div>`:`<div style="font-size:12.5px;color:var(--t3);padding:12px 0">${readState==='ready'?'No hay respuestas registradas en esta vista. Tu opinión ayuda a la consultora a mejorar el servicio.':'Las respuestas se mostrarán al confirmar la lectura.'}</div>`}
           <div style="margin-top:8px;font-size:11.5px;color:var(--t3)">El NPS mide tu satisfacción con el programa de evaluación en sí (no con tus sucursales).</div>
         </div>
       </div>
@@ -90,50 +139,42 @@ CX.module('cli_insights', ({data,ui})=>{
 
       <div class="card card-p" style="margin-bottom:16px">
         <div class="between" style="margin-bottom:12px"><div class="card-t">💬 Anotaciones colaborativas</div><button class="btn btn-soft btn-sm" id="notaBtn">＋ Anotar sobre un resultado</button></div>
-        ${notas.length?notas.map((n,i)=>`<div class="between" style="padding:8px 0;border-bottom:1px solid var(--border-2)"><div><b style="font-size:12.5px">${n.tema}</b><div style="font-size:12px;color:var(--t2)">${n.txt}</div><div style="font-size:10.5px;color:var(--t3)">${n.por} · ${n.fecha}</div></div>${n.estado?`<span class="bdg bdg-${n.estado==='resuelto'?'g':'a'}">${n.estado}</span>`:''}</div>`).join(''):'<div style="font-size:12.5px;color:var(--t3);padding:10px 0">Sin anotaciones. Comenta sobre un hallazgo o resultado; la consultora lo verá y responderá.</div>'}
+        ${notas.length?notas.map(n=>`<div class="between" style="padding:8px 0;border-bottom:1px solid var(--border-2)"><div><b style="font-size:12.5px">${esc(n.subject)}</b><div style="font-size:12px;color:var(--t2)">${esc(n.detail)}</div><div style="font-size:10.5px;color:var(--t3)">${esc(n.requesterName)} · ${esc(str(n.createdAt).slice(0,10))}</div></div><span class="bdg bdg-a">${n.status==='pending'?'Pendiente':esc(n.status)}</span></div>`).join(''):`<div style="font-size:12.5px;color:var(--t3);padding:10px 0">${readState==='ready'?'Sin anotaciones registradas para esta vista.':'Las anotaciones se mostrarán al confirmar la lectura.'}</div>`}
       </div>
 
       <div class="card card-p">
-        <div class="between" style="margin-bottom:12px"><div class="card-t">📅 Reuniones de revisión con la consultora</div><button class="btn btn-pr btn-sm" id="reuBtn">＋ Agendar reunión</button></div>
-        ${reuniones.length?reuniones.map(r=>`<div class="between" style="padding:8px 0;border-bottom:1px solid var(--border-2)"><div><b style="font-size:12.5px">${r.tema}</b><div style="font-size:11.5px;color:var(--t3)">${r.fecha} ${r.hora} · ${r.modo}</div></div><span class="bdg bdg-b">${r.estado||'Solicitada'}</span></div>`).join(''):'<div style="font-size:12.5px;color:var(--t3);padding:10px 0">Sin reuniones. Agenda una sesión de revisión de resultados con tu consultora.</div>'}
+        <div class="between" style="margin-bottom:12px"><div class="card-t">📅 Reuniones de revisión con la consultora</div><button class="btn btn-pr btn-sm" id="reuBtn">＋ Solicitar reunión</button></div>
+        ${reuniones.length?reuniones.map(r=>`<div class="between" style="padding:8px 0;border-bottom:1px solid var(--border-2)"><div><b style="font-size:12.5px">${esc(r.subject)}</b><div style="font-size:11.5px;color:var(--t3)">${esc(r.date)} ${esc(r.time)} · ${esc(r.mode)}${r.timeZone?' · '+esc(r.timeZone):''}</div></div><span class="bdg bdg-b">${r.status==='pending'?'Solicitada':esc(r.status)}</span></div>`).join(''):`<div style="font-size:12.5px;color:var(--t3);padding:10px 0">${readState==='ready'?'Sin solicitudes de reunión registradas para esta vista.':'Las solicitudes se mostrarán al confirmar la lectura.'}</div>`}
       </div>`;
 
-    host.querySelector('#npsBtn').addEventListener('click',()=>ui.modal('😊 Califica el programa',`
+    if(readState==='error')host.querySelector('#clientReadRetry').addEventListener('click',refresh);
+    host.querySelector('#npsBtn').addEventListener('click',()=>{const c=requireClient();if(!c)return;ui.modal('😊 Califica el programa',`
       <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Del 0 al 10, ¿qué tan probable es que recomiendes este programa de evaluación a otra empresa?</p>
       <div class="flex wrap" style="gap:6px;justify-content:center" id="npsScale">${Array.from({length:11},(_,i)=>`<button class="btn btn-ghost btn-sm npsN" data-n="${i}" style="min-width:38px">${i}</button>`).join('')}</div>
       <textarea class="inp" id="npsCom" rows="2" placeholder="¿Por qué? (opcional)" style="margin-top:12px"></textarea>
-    `,{onMount:(ov,close)=>ov.querySelectorAll('.npsN').forEach(b=>b.addEventListener('click',()=>{
-      const n=+b.dataset.n; const st2=load(); st2.nps=st2.nps||{promotores:0,neutros:0,detractores:0,respuestas:0};
-      if(n>=9)st2.nps.promotores++; else if(n>=7)st2.nps.neutros++; else st2.nps.detractores++;
-      st2.nps.respuestas++; st2.nps.comentarios=st2.nps.comentarios||[]; const c=ov.querySelector('#npsCom').value.trim(); if(c)st2.nps.comentarios.push({n,c});
-      save(st2); close(); draw(); ui.toast('¡Gracias por tu calificación!','ok');
-    }))}));
+    `,{onMount:(ov,close)=>{const submit=modalWriter(c,'nps','submitClientNps',close);ov.querySelectorAll('.npsN').forEach(b=>b.addEventListener('click',()=>submit({score:+b.dataset.n,comment:ov.querySelector('#npsCom').value.trim()},b)));}});});
 
-    host.querySelector('#notaBtn').addEventListener('click',()=>ui.modal('💬 Anotar sobre un resultado',`
+    host.querySelector('#notaBtn').addEventListener('click',()=>{const c=requireClient();if(!c)return;ui.modal('💬 Anotar sobre un resultado',`
       <label class="lbl">Sobre qué (sucursal, hallazgo, sección)</label><input class="inp" id="ntTema" placeholder="Ej. Sucursal Centro · tiempos de espera" style="margin-bottom:8px">
       <label class="lbl">Tu comentario</label><textarea class="inp" id="ntTxt" rows="3" placeholder="Ej. Ya corregimos esto, revisar en la próxima ronda" style="margin-bottom:10px"></textarea>
       <div style="text-align:right"><button class="btn btn-pr btn-sm" id="ntOk">Enviar a la consultora</button></div>
-    `,{onMount:(ov,close)=>ov.querySelector('#ntOk').addEventListener('click',()=>{
+    `,{onMount:(ov,close)=>{const submit=modalWriter(c,'note','createClientNote',close);ov.querySelector('#ntOk').addEventListener('click',()=>{
       const tema=(ov.querySelector('#ntTema').value||'').trim(); const txt=(ov.querySelector('#ntTxt').value||'').trim();
       if(!tema||!txt){ui.toast('Completa el tema y el comentario','warn');return;}
-      const st2=load(); st2.notas=st2.notas||[]; st2.notas.unshift({tema,txt,por:(CX.session.user&&CX.session.user.name)||'Cliente',fecha:new Date().toISOString().slice(0,10),estado:'pendiente'});
-      save(st2); if(CX.notif&&CX.notif.push)CX.notif.push({to:'admin',tipo:'nota_cliente',icon:'💬',tono:'b',titulo:'Anotación del cliente',txt:tema,nav:'informes'});
-      close(); draw(); ui.toast('Anotación enviada a la consultora','ok');
-    })}));
+      return submit({subject:tema,detail:txt},ov.querySelector('#ntOk'));
+    });}});});
 
-    host.querySelector('#reuBtn').addEventListener('click',()=>ui.modal('📅 Agendar reunión de revisión',`
+    host.querySelector('#reuBtn').addEventListener('click',()=>{const c=requireClient();if(!c)return;ui.modal('📅 Solicitar reunión de revisión',`
       <label class="lbl">Tema</label><input class="inp" id="ruTema" placeholder="Ej. Revisión de resultados del periodo" style="margin-bottom:8px">
       <div class="grid g2" style="gap:8px;margin-bottom:8px"><div><label class="lbl">Fecha</label><input class="inp" id="ruF" type="date" value="${new Date(Date.now()+3*864e5).toISOString().slice(0,10)}"></div><div><label class="lbl">Hora</label><input class="inp" id="ruH" type="time" value="10:00"></div></div>
       <label class="lbl">Modalidad</label><select class="sel" id="ruM" style="margin-bottom:10px"><option>Videollamada (Meet/Teams)</option><option>Presencial</option><option>Telefónica</option></select>
       <div style="text-align:right"><button class="btn btn-pr btn-sm" id="ruOk">Solicitar reunión</button></div>
-    `,{onMount:(ov,close)=>ov.querySelector('#ruOk').addEventListener('click',()=>{
+    `,{onMount:(ov,close)=>{const submit=modalWriter(c,'meeting','requestClientMeeting',close);ov.querySelector('#ruOk').addEventListener('click',()=>{
       const tema=(ov.querySelector('#ruTema').value||'').trim(); if(!tema){ui.toast('Pon un tema','warn');return;}
-      const st2=load(); st2.reuniones=st2.reuniones||[]; st2.reuniones.unshift({tema,fecha:ov.querySelector('#ruF').value,hora:ov.querySelector('#ruH').value,modo:ov.querySelector('#ruM').value,estado:'Solicitada'});
-      save(st2); if(CX.notif&&CX.notif.push)CX.notif.push({to:'admin',tipo:'reunion_cliente',icon:'📅',tono:'a',titulo:'El cliente solicita reunión',txt:tema,nav:'crm'});
-      close(); draw(); ui.toast('Reunión solicitada · la consultora confirmará','ok',3500);
-    })}));
+      return submit({subject:tema,date:ov.querySelector('#ruF').value,time:ov.querySelector('#ruH').value,mode:ov.querySelector('#ruM').value},ov.querySelector('#ruOk'));
+    });}});});
   };
 
-  draw();
+  draw();refresh();
   return host;
 });

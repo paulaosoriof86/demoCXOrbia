@@ -69,10 +69,10 @@ if(String(mt.exactNextAction||'')!==d.exactNextAction||String(mt.nextExactAction
   fail('MAPPING_FAILURE:CURRENT_MODULE_TRUTH_NEXT_ACTION_DESYNC');
 const c3=d.currentC3PreterminalAudit||{};
 const pendingHostingOnly=d.pendingDevSuccessor?.state==='P0_PROVEN_PENDING_DEV_MATERIALIZATION'&&
-  d.pendingDevSuccessor.scope==='HOSTING_ONLY'&&
+  ['HOSTING_ONLY','RUNTIME_AND_HOSTING'].includes(d.pendingDevSuccessor.scope)&&
   d.pendingDevSuccessor.sourceSha===d.productSourceSha&&
   d.currentHostingOnlyDevMaterialization?.sourceSha===d.pendingDevSuccessor.predecessorProductSourceSha&&
-  mt.productSource?.authorityState==='SOURCE_ONLY_PROVEN_PENDING_HOSTING_ONLY_DEV';
+  mt.productSource?.authorityState===('SOURCE_ONLY_PROVEN_PENDING_'+d.pendingDevSuccessor.scope+'_DEV');
 const preC3=d.i3Q2HostingReleaseC3Pending||{};
 const c3AfterHosting=preC3.state==='DEV_HOSTING_VERIFIED_C3_PENDING'&&
   preC3.sourceSha===d.productSourceSha&&
@@ -81,10 +81,17 @@ const c3AfterHosting=preC3.state==='DEV_HOSTING_VERIFIED_C3_PENDING'&&
   preC3.previousC3SourceTree===c3.sourceTree&&
   preC3.previousHostingVersion===c3.hostingVersion&&
   mt.productSource?.authorityState==='HOSTING_DEV_MATERIALIZED_PENDING_C3_E2E';
+const c3AfterPaired=preC3.state==='DEV_RUNTIME_AND_HOSTING_VERIFIED_C3_PENDING'&&
+  preC3.sourceSha===d.productSourceSha&&preC3.sourceTree===d.productTreeAuthority&&
+  preC3.hostingVersion===d.currentMaterialization?.hostingVersion&&
+  preC3.runtimeRevision===d.currentMaterialization?.runtimeRevision&&
+  preC3.previousC3SourceSha===c3.sourceSha&&preC3.previousC3SourceTree===c3.sourceTree&&
+  preC3.previousHostingVersion===c3.hostingVersion&&preC3.previousRuntimeRevision===c3.runtimeRevision&&
+  mt.productSource?.authorityState==='RUNTIME_AND_HOSTING_DEV_MATERIALIZED_PENDING_C3_E2E';
 const c3PredecessorOnly=(pendingHostingOnly&&
   c3.sourceSha===d.currentHostingOnlyDevMaterialization.sourceSha&&
   c3.sourceTree===d.currentHostingOnlyDevMaterialization.sourceTree&&
-  c3.hostingVersion===d.currentHostingOnlyDevMaterialization.hostingVersion)||c3AfterHosting;
+  c3.hostingVersion===d.currentHostingOnlyDevMaterialization.hostingVersion)||c3AfterHosting||c3AfterPaired;
 if(JSON.stringify(mt.currentC3PreterminalAudit||null)!==JSON.stringify(c3)||
    c3.moduleCount!==modules.length||(!c3PredecessorOnly&&c3.matchModules!==modules.filter(x=>x.classification==='MATCH').length)||
    (!c3PredecessorOnly&&(c3.sourceSha!==d.productSourceSha||c3.sourceTree!==d.productTreeAuthority)))

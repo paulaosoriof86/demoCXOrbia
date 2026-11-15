@@ -11,11 +11,16 @@ export const VERSION='cxorbia-operational-command-provider-v1';
 export const COMMAND_TYPES=Object.freeze([
   'application.create','application.status.update','application.delete','reservation.create','reservation.status.update','reservation.delete',
   'visit.assign','visit.reassign','visit.state.update','visit.reschedule','visit.cancel','visit.questionnaire.submit','visit.checkin.evidence','resource.read.receipt','visit.sync.confirm',
-  'support.ticket.create','support.ticket.update'
+  'support.ticket.create','support.ticket.update','client.nps.submit','client.note.create','client.meeting.request'
 ]);
 export const OPERATOR_ROLES=Object.freeze(['super','admin','ops','coordinador']);
 export const APPLICATION_STATES=Object.freeze(['pendiente','aprobada','rechazada','standby','cancelada']);
 export const RESERVATION_STATES=Object.freeze(['solicitada','asignada','aprobada','rechazada','cruzada','cancelada']);
+const CLIENT_COLLABORATION=Object.freeze({
+  'client.nps.submit':{entityType:'clientNps',kind:'nps',fields:['score','comment']},
+  'client.note.create':{entityType:'clientNote',kind:'note',fields:['subject','detail']},
+  'client.meeting.request':{entityType:'clientMeeting',kind:'meeting',fields:['subject','date','time','mode']}
+});
 
 const str=v=>String(v==null?'':v).trim();
 const arr=v=>Array.isArray(v)?v:[];
@@ -59,7 +64,9 @@ async function exactActor(auth,db,token,command){
   const decoded=await auth.verifyIdToken(token,true);
   const role=str(decoded.role),namespace=str(decoded.authNamespace||'staff');
   if(str(decoded.tenantId)!==str(command.tenantId))throw new Error('OPS_ACTOR_TENANT_DENIED');
-  if(!OPERATOR_ROLES.includes(role)&&role!=='shopper')throw new Error('OPS_ACTOR_ROLE_DENIED');
+  const clientCollaboration=!!CLIENT_COLLABORATION[command.commandType];
+  if(clientCollaboration){if(!['cliente','client'].includes(role)||str(decoded.authNamespace)!=='staff')throw new Error('OPS_CLIENT_SELF_ONLY');}
+  else if(!OPERATOR_ROLES.includes(role)&&role!=='shopper')throw new Error('OPS_ACTOR_ROLE_DENIED');
   if(role==='shopper'&&namespace!=='shopper')throw new Error('OPS_ACTOR_NAMESPACE_DENIED');
   if(OPERATOR_ROLES.includes(role)&&namespace!=='staff')throw new Error('OPS_ACTOR_NAMESPACE_DENIED');
   const tokenProjects=arr(decoded.projectIds).map(str);
@@ -67,7 +74,8 @@ async function exactActor(auth,db,token,command){
   const member=await db.collection('tenants').doc(command.tenantId).collection('users').doc(decoded.uid).get();
   if(!member.exists)throw new Error('OPS_ACTOR_MEMBERSHIP_MISSING');
   const m=member.data()||{};
-  if(m.active!==true||str(m.tenantId)!==str(command.tenantId)||str(m.role)!==role||str(m.authNamespace)!==namespace)throw new Error('OPS_ACTOR_MEMBERSHIP_INVALID');
+  const active=clientCollaboration?(m.active!==false&&(m.active===true||m.status==='active')&&!['inactive','disabled','deleted','revoked'].includes(str(m.status))):m.active===true;
+  if(!active||str(m.tenantId)!==str(command.tenantId)||str(m.role)!==role||str(m.authNamespace)!==namespace)throw new Error('OPS_ACTOR_MEMBERSHIP_INVALID');
   const memberProjects=arr(m.projectIds).map(str);
   if(role!=='super'&&!memberProjects.includes(str(command.projectId)))throw new Error('OPS_ACTOR_MEMBERSHIP_PROJECT_DENIED');
   const rawShopperId=role==='shopper'?str(decoded.shopperId||m.shopperId):null;
@@ -84,13 +92,48 @@ async function exactActor(auth,db,token,command){
   return {uid:decoded.uid,role,namespace,tenantId:command.tenantId,projectId:command.projectId,shopperId,rawShopperId};
 }
 
+function validateClientCollaboration(command){
+  const spec=CLIENT_COLLABORATION[command.commandType],p=command.payload||{};
+  if(!spec)return;
+  if(command.entityType!==spec.entityType||command.entityId||command.expectedVersion!=='absent'||command.authorization?.permission!==command.commandType)throw new Error('OPS_CLIENT_CONTRACT_INVALID');
+  if(Object.keys(p).some(k=>!['periodId','clientRequestId',...spec.fields].includes(k)))throw new Error('OPS_CLIENT_PAYLOAD_FIELD_DENIED');
+  if(str(p.periodId)!==str(command.periodId)||![command.tenantId,command.projectId,command.periodId].every(v=>typeof v==='string'&&v.length<=160&&!/[\/\x00-\x1f]/.test(v)))throw new Error('OPS_CLIENT_SCOPE_INVALID');
+  if(typeof p.clientRequestId!=='string'||!/^[a-zA-Z0-9_-]{8,128}$/.test(p.clientRequestId)||str(command.idempotencyKey).length>300)throw new Error('OPS_CLIENT_REQUEST_ID_REQUIRED');
+  const text=(key,max,required=false)=>{if((p[key]!==undefined&&typeof p[key]!=='string')||(required&&!str(p[key]))||str(p[key]).length>max)throw new Error('OPS_CLIENT_'+key.toUpperCase()+'_INVALID');};
+  if(spec.kind==='nps'){if(!Number.isInteger(p.score)||p.score<0||p.score>10)throw new Error('OPS_CLIENT_NPS_INVALID');text('comment',4000);}
+  else{text('subject',240,true);if(spec.kind==='note')text('detail',12000,true);}
+  if(spec.kind==='meeting'){
+    if(typeof p.date!=='string'||!/^20\d{2}-\d{2}-\d{2}$/.test(p.date)||!Number.isFinite(Date.parse(p.date+'T00:00:00Z'))||new Date(p.date+'T00:00:00Z').toISOString().slice(0,10)!==p.date)throw new Error('OPS_CLIENT_MEETING_DATE_INVALID');
+    if(typeof p.time!=='string'||!/^([01]\d|2[0-3]):[0-5]\d$/.test(p.time)||!['Videollamada (Meet/Teams)','Presencial','Telefónica'].includes(p.mode))throw new Error('OPS_CLIENT_MEETING_DETAILS_INVALID');
+  }
+}
+
+async function clientCollaborationContext(tx,r,command,actor){
+  const member=await tx.get(r.tenant.collection('users').doc(actor.uid)),m=member.exists?member.data():null;
+  if(!m||m.active===false||!(m.active===true||m.status==='active')||['inactive','disabled','deleted','revoked'].includes(str(m.status))||str(m.tenantId)!==command.tenantId||str(m.role)!==actor.role||str(m.authNamespace)!=='staff'||!arr(m.projectIds).includes(command.projectId))throw new Error('OPS_CLIENT_MEMBERSHIP_REVOKED');
+  const project=await tx.get(r.project),period=await tx.get(r.project.collection('periods').doc(command.periodId));
+  const pr=project.exists?project.data():null,pe=period.exists?period.data():null;
+  if(!pr||!pe||str(pr.tenantId)!==command.tenantId||str(pe.tenantId)!==command.tenantId||str(pe.projectId)!==command.projectId||[pr,pe].some(x=>x.active===false||['inactive','deleted','archived','closed','inactivo','cerrado','archivado'].includes(str(x.status))||['inactivo','cerrado','archivado'].includes(str(x.state))))throw new Error('OPS_CLIENT_PROJECT_PERIOD_DENIED');
+  return {member:m,project:pr};
+}
+
+async function verifyClientCollaborationReadback(db,command,actor,result){
+  const r=refs(db,command);
+  try{
+    const [entity,receipt]=await Promise.all([r.bulletins.doc(result.entityId).get(),r.receipt.get()]);
+    const row=entity.exists?entity.data():null,proof=receipt.exists?receipt.data():null;
+    if(!row||!proof||row.entityType!=='client_collaboration'||row.kind!==CLIENT_COLLABORATION[command.commandType].kind||row.requesterUid!==actor.uid||row.tenantId!==command.tenantId||row.projectId!==command.projectId||row.periodId!==command.periodId||row.idempotencyKey!==command.idempotencyKey||row.version!==1||JSON.stringify(row.targetUserIds)!==JSON.stringify([actor.uid])||row.targetAll===true||arr(row.targetProjectIds).length||proof.actorUid!==actor.uid||proof.entityId!==result.entityId||proof.commandDigest!==sha(clean(command))||proof.status!=='committed')throw new Error('OPS_CLIENT_READBACK_SCOPE_MISMATCH');
+    return {...result,readbackVerified:true,actorUid:actor.uid};
+  }catch(error){return blocked(command,'OPS_CLIENT_READBACK_PENDING',{mutationCommitted:true,providerWrites:result.providerWrites,entityId:result.entityId,actorUid:actor.uid,idempotentReplay:result.idempotentReplay===true,error:str(error?.message||error)});}
+}
+
 function refs(db,command){
   const tenant=db.collection('tenants').doc(command.tenantId),project=tenant.collection('projects').doc(command.projectId);
   return {
     tenant,project,visits:project.collection('visits'),applications:project.collection('postulations'),reservations:project.collection('reservations'),
     visitEvidence:project.collection('visitEvidence'),resourceReadReceipts:project.collection('resourceReadReceipts'),resources:tenant.collection('resources'),bulletins:tenant.collection('bulletins'),
     receipt:tenant.collection('commandReceipts').doc(receiptId(command)),
-    audit:tenant.collection('entityAuditTrail').doc(auditId(command)),
+    audit:tenant.collection('entityAuditTrail').doc(CLIENT_COLLABORATION[command.commandType]?'client-'+receiptId(command):auditId(command)),
     review:tenant.collection('reviewQueue').doc('ops-'+auditId(command))
   };
 }
@@ -332,16 +375,39 @@ async function reconcileVisitDoc({db,policy,candidate,sourceRevision}){
 async function transactionExecute(db,command,actor){
   const r=refs(db,command),digest=sha(clean(command));
   return db.runTransaction(async tx=>{
+    const clientContext=CLIENT_COLLABORATION[command.commandType]?await clientCollaborationContext(tx,r,command,actor):null;
     const prior=await tx.get(r.receipt);
     if(prior.exists){
       const p=prior.data()||{};
+      if(clientContext&&p.actorUid!==actor.uid)throw new Error('OPS_CLIENT_RECEIPT_ACTOR_DENIED');
       if(p.commandDigest!==digest)throw new Error('OPS_IDEMPOTENCY_KEY_REUSED_DIFFERENT_PAYLOAD');
       if(p.status==='committed')return ack(command,p.entityId,{idempotentReplay:true,providerWrites:0});
     }
     const payload=clean(command.payload||{});
     let entityId=str(command.entityId),providerWrites=0,auditEntityType=command.entityType,notificationTargetShopperId=null;
 
-    if(command.commandType==='application.create'){
+    if(clientContext){
+      const spec=CLIENT_COLLABORATION[command.commandType];
+      if(spec.kind==='meeting'){
+        const timezone=str(clientContext.project.timeZone||clientContext.project.timezone||'UTC');
+        const parts=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:timezone,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date()).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
+        if(payload.date+'T'+payload.time<=`${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}`)throw new Error('OPS_CLIENT_MEETING_IN_PAST');
+      }
+      entityId='client-'+spec.kind+'-'+sha([command.tenantId,command.projectId,command.periodId,actor.uid,command.commandType,command.idempotencyKey]).slice(0,32);
+      const ref=r.bulletins.doc(entityId),existing=await tx.get(ref);
+      if(existing.exists)throw new Error('OPS_CLIENT_ENTITY_WITHOUT_RECEIPT');
+      const titles={nps:'Calificación del programa',note:'Anotación del cliente',meeting:'Solicitud de reunión del cliente'};
+      const values=Object.fromEntries(spec.fields.filter(k=>payload[k]!==undefined).map(k=>[k,typeof payload[k]==='string'?str(payload[k]):payload[k]]));
+      const requesterName=str(clientContext.member.name||clientContext.member.displayName)||actor.uid;
+      const body=requesterName+' · '+(spec.kind==='nps'?('Calificación: '+payload.score+'/10'+(str(payload.comment)?' · '+str(payload.comment):'')):str(payload.subject)+' · '+(spec.kind==='note'?str(payload.detail):payload.date+' '+payload.time+' · '+payload.mode+' · '+str(clientContext.project.timeZone||clientContext.project.timezone||'UTC')+' · Pendiente de confirmación'));
+      tx.create(ref,{id:entityId,entityId,entityType:'client_collaboration',kind:spec.kind,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,
+        status:'active',collaborationStatus:'pending',type:'request',title:titles[spec.kind],body,
+        targetUserIds:[actor.uid],targetRoles:['admin'],actionRoute:'tablon',requesterUid:actor.uid,requesterName,
+        ...values,...(spec.kind==='meeting'?{timeZone:str(clientContext.project.timeZone||clientContext.project.timezone||'UTC')}:{}),
+        operational:true,idempotencyKey:command.idempotencyKey,version:1,createdBy:actor.uid,createdAt:now(),updatedAt:now()});
+      providerWrites++;auditEntityType=spec.entityType;
+    }
+    else if(command.commandType==='application.create'){
       if(actor.role!=='shopper')throw new Error('OPS_APPLICATION_CREATE_SHOPPER_ONLY');
       const visitId=str(payload.visitId);if(!visitId)throw new Error('OPS_VISIT_ID_REQUIRED');
       const resolved=await resolveVisitDocument(tx,r.visits,visitId,payload.hrRowId),vRef=resolved.ref,vSnap=resolved.snap,v=resolved.data;assertPeriod(command,v);
@@ -679,10 +745,14 @@ export function createOperationalCommandProvider({auth,db,policy}={}){
     version:VERSION,
     async execute(token,command){
       const cv=validateCommand(command);if(!cv.ok)return blocked(command,'OPS_COMMAND_INVALID',{errors:cv.errors});
+      try{validateClientCollaboration(command);}catch(error){return blocked(command,str(error?.message||error));}
       if(!scopeAllowed(policy,command))return blocked(command,'OPS_COMMAND_SCOPE_DENIED');
       let actor;
       try{actor=await exactActor(auth,db,token,command);}catch(error){return blocked(command,'OPS_ACTOR_DENIED',{error:str(error?.message||error)});}
-      try{return await transactionExecute(db,command,actor);}catch(error){return blocked(command,str(error?.message||error));}
+      try{
+        const result=await transactionExecute(db,command,actor);
+        return CLIENT_COLLABORATION[command.commandType]?await verifyClientCollaborationReadback(db,command,actor,result):result;
+      }catch(error){return blocked(command,str(error?.message||error));}
     },
     async reconcileSnapshot(snapshot,{sourceRevision}={}){
       const {scope,visits}=visitsFromSnapshot(snapshot);

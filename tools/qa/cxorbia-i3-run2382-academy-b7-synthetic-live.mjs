@@ -10,6 +10,199 @@ import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
 import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
 
+async function runClientCollaborationQa(){
+  const e=process.env,s=v=>String(v??'').trim(),hash=v=>crypto.createHash('sha256').update(typeof v==='string'?v:JSON.stringify(v)).digest('hex');
+  const stable=v=>Array.isArray(v)?v.map(stable):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,stable(v[k])])):v;
+  const check=(yes,code)=>{if(!yes)throw Error(code);};
+  const runId=s(e.GITHUB_RUN_ID),attempt=s(e.GITHUB_RUN_ATTEMPT||'1'),sourceSha=s(e.FOCAL_SOURCE),sourceTree=s(e.FOCAL_TREE);
+  const projectName=s(e.PROJECT),tenantId=s(e.TENANT_ID),projectId=s(e.PROJECT_ID),host=s(e.HOSTING_URL).replace(/\/$/,'');
+  const out=s(e.QA_OUT),expectedHr=s(e.EXPECTED_HR_REVISION),tag='qa_f09_'+runId+'_'+attempt;
+  check(e.CXORBIA_I3_QA_ISOLATED_WRITE_GATE==='PAULA_AUTHORIZED_F09_DEV_ONLY'&&projectName==='cxorbia-backend-dev'&&host==='https://cxorbia-backend-dev.web.app'&&tenantId&&projectId&&out&&/^\d{8,}$/.test(runId)&&/^[a-f0-9]{40}$/.test(sourceSha)&&/^[a-f0-9]{40}$/.test(sourceTree)&&/^[a-f0-9]{64}$/.test(expectedHr),'SOURCE_FAILURE:F09_SCOPE_GATE_DENIED');
+  fs.mkdirSync(out,{recursive:true});
+  if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:projectName});
+  const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(tenantId),project=tenant.collection('projects').doc(projectId);
+  const result={schemaVersion:'cxorbia.i3.f09.client-collaboration-live.v1',decision:'HOLD',sourceSha,sourceTree,runId,runAttempt:attempt,production:false,tenantId,projectId,periodId:null,
+    runtimeRevision:s(e.DEV_REVISION),runtimeDigest:s(e.RUNTIME_DIGEST),hostingVersion:s(e.HOSTING_VERSION_NAME),hrBefore:null,hrAfter:null,
+    ui:{},readback:{},creationJournal:[],identities:[],cleanup:{ok:false},safety:{hrWrites:0,realMemberWrites:0,calendarCalls:0,emailCalls:0,paymentWrites:0,productionDeploys:0}};
+  const save=()=>fs.writeFileSync(out+'/result.json',JSON.stringify(result,null,2)+'\n');save();
+  const request=async(url,options={})=>{const r=await fetch(url,{...options,signal:AbortSignal.timeout(90000)});const b=await r.json().catch(()=>({}));return {http:r.status,...b};};
+  const hrMeta=()=>request(host+'/api/'+encodeURIComponent(tenantId)+'/'+encodeURIComponent(projectId)+'/hr-live?format=meta&f09='+runId+'-'+Date.now(),{headers:{'cache-control':'no-cache, no-store'}});
+  const planned=[['a','cliente'],['b','cliente'],['admin','admin']].map(([label,role])=>({uid:tag+'_'+label,label,role,name:'QA F09 '+runId+' '+label,memberPath:tenant.collection('users').doc(tag+'_'+label).path}));
+  const contexts=[],records=new Map();let browser=null,periodId='',projectBefore='',periodBefore='',productionBefore='';
+  const authIdentity=user=>({uid:user.uid,displayName:user.displayName||'',disabled:user.disabled,email:user.email||null,emailVerified:user.emailVerified,phoneNumber:user.phoneNumber||null,photoURL:user.photoURL||null,creationTime:user.metadata.creationTime,providerData:user.providerData||[],mfa:user.multiFactor?.enrolledFactors||[]});
+  const getPeriod=async()=>{
+    const h=await request(host+'/api/'+encodeURIComponent(tenantId)+'/'+encodeURIComponent(projectId)+'/hr-live?format=json&f09='+runId,{headers:{'cache-control':'no-cache, no-store'}});
+    const snap=h.snapshot||h.data||h,key=s(snap.source?.currentCalendarPeriodKey),p=(snap.periods||[]).find(x=>s(x.key||x.periodKey)===key);
+    check(h.http===200&&p?.id&&key,'SOURCE_FAILURE:F09_ACTIVE_HR_PERIOD_MISSING');return s(p.id);
+  };
+  function commandPaths(c,uid){
+    const kind={'client.nps.submit':'nps','client.note.create':'note','client.meeting.request':'meeting'}[c.commandType];
+    check(kind&&c.tenantId===tenantId&&c.projectId===projectId&&c.periodId===periodId,'SOURCE_FAILURE:F09_COMMAND_SCOPE');
+    const rid=hash(`${tenantId}\0${projectId}\0${periodId}\0${c.idempotencyKey}`).slice(0,40);
+    const id='client-'+kind+'-'+hash([tenantId,projectId,periodId,uid,c.commandType,c.idempotencyKey]).slice(0,32);
+    return {uid,kind,id,commandDigest:hash(stable(c)),command:c,entityPath:tenant.collection('bulletins').doc(id).path,receiptPath:tenant.collection('commandReceipts').doc(rid).path,auditPath:tenant.collection('entityAuditTrail').doc('client-'+rid).path};
+  }
+  async function track(c,uid){
+    const record=commandPaths(c,uid),old=records.get(record.receiptPath);
+    if(old){check(old.uid===uid&&old.commandDigest===record.commandDigest,'SOURCE_FAILURE:F09_REPLAY_PLAN_CHANGED');return old;}
+    const existing=await Promise.all([record.entityPath,record.receiptPath,record.auditPath].map(p=>db.doc(p).get()));
+    check(existing.every(x=>!x.exists),'SOURCE_FAILURE:F09_ENTITY_COLLISION');
+    records.set(record.receiptPath,record);result.creationJournal.push(record);save();return record;
+  }
+  function ownedEntity(row,record){
+    const fields={nps:['score','comment'],note:['subject','detail'],meeting:['subject','date','time','mode']}[record.kind];
+    return row&&row.id===record.id&&row.entityType==='client_collaboration'&&row.status==='active'&&row.collaborationStatus==='pending'&&row.createdBy===record.uid&&row.idempotencyKey===record.command.idempotencyKey&&row.requesterUid===record.uid&&row.tenantId===tenantId&&row.projectId===projectId&&row.periodId===periodId&&row.kind===record.kind&&row.version===1&&row.requesterName===planned.find(x=>x.uid===record.uid)?.name&&fields.every(k=>record.command.payload[k]===undefined?row[k]===undefined:row[k]===(typeof record.command.payload[k]==='string'?s(record.command.payload[k]):record.command.payload[k]));
+  }
+  async function verifyRecord(record,ack){
+    check(ack?.ok===true&&ack.providerAck===true&&ack.status==='committed'&&ack.readbackVerified===true&&ack.actorUid===record.uid&&ack.entityId===record.id&&ack.tenantId===tenantId&&ack.projectId===projectId&&ack.periodId===periodId,'PERSISTENCE_FAILURE:F09_PROVIDER_ACK');
+    const [entity,receipt,audit]=await Promise.all([record.entityPath,record.receiptPath,record.auditPath].map(p=>db.doc(p).get()));
+    const r=entity.data(),c=receipt.data(),a=audit.data();
+    check(entity.exists&&receipt.exists&&audit.exists&&r.requesterUid===record.uid&&r.tenantId===tenantId&&r.projectId===projectId&&r.periodId===periodId&&r.version===1&&r.kind===record.kind&&r.actionRoute==='tablon'&&JSON.stringify(r.targetUserIds)===JSON.stringify([record.uid])&&r.targetAll!==true&&!(r.targetProjectIds||[]).length&&c.actorUid===record.uid&&c.commandDigest===record.commandDigest&&c.entityId===record.id&&a.actorUid===record.uid&&a.idempotencyKey===record.command.idempotencyKey,'PERSISTENCE_FAILURE:F09_INDEPENDENT_READBACK');
+    check(ownedEntity(r,record),'PERSISTENCE_FAILURE:F09_ENTITY_PAYLOAD_DRIFT');
+    for(const [field,value] of [['entitySha256',r],['receiptSha256',c],['auditSha256',a]]){const digest=hash(stable(value));check(!record[field]||record[field]===digest,'PERSISTENCE_FAILURE:F09_REPLAY_READBACK_CHANGED');record[field]=digest;}
+    return {entityId:record.id,kind:record.kind,providerAck:true,readbackVerified:true,actorExact:true,version:1,receiptAndAudit:true,privateRecipient:true};
+  }
+  try{
+    const initial=await hrMeta();check(initial.http===200&&initial.revision===expectedHr&&initial.hrWrites===false&&initial.production===false,'PROVIDER_FAILURE:F09_HR_PREFLIGHT');result.hrBefore=initial.revision;
+    productionBefore=hash(await (await fetch('https://tya-plataforma.web.app/',{cache:'no-store'})).text());
+    periodId=await getPeriod();result.periodId=periodId;
+    const [pr,pe]=await Promise.all([project.get(),project.collection('periods').doc(periodId).get()]);
+    check(pr.exists&&pe.exists&&pr.data().tenantId===tenantId&&pe.data().tenantId===tenantId&&pe.data().projectId===projectId,'SOURCE_FAILURE:F09_EXACT_PROJECT_PERIOD_REQUIRED');
+    check([pr.data(),pe.data()].every(x=>x.active!==false&&!['inactive','closed','archived','inactivo','cerrado','archivado'].includes(s(x.status))&&!['inactivo','cerrado','archivado'].includes(s(x.state))),'SOURCE_FAILURE:F09_PERIOD_NOT_WRITABLE');
+    projectBefore=hash(stable(pr.data()));periodBefore=hash(stable(pe.data()));
+    result.preflight={exactProject:true,exactPeriod:true,projectSha256:projectBefore,periodSha256:periodBefore};
+    for(const identity of planned){
+      check(!(await db.doc(identity.memberPath).get()).exists,'SOURCE_FAILURE:F09_MEMBER_COLLISION');
+      try{await auth.getUser(identity.uid);throw Error('SOURCE_FAILURE:F09_AUTH_COLLISION');}catch(error){if(error.code!=='auth/user-not-found')throw error;}
+    }
+    result.identities=planned.map(x=>({...x,state:'PLANNED_ABSENT'}));save();
+    for(const identity of planned){
+      const claims={tenantId,projectIds:[projectId],role:identity.role,authNamespace:'staff',qaSynthetic:true,qaRunId:runId,qaRunAttempt:attempt,qaPurpose:'F09'};
+      const entry=result.identities.find(x=>x.uid===identity.uid);
+      entry.expectedClaims=claims;entry.state='AUTH_CREATE_DISPATCHED';save();
+      const created=await auth.createUser({uid:identity.uid,displayName:identity.name,disabled:false});
+      entry.authIdentity=authIdentity(created);entry.state='AUTH_CREATED';save();
+      entry.state='CLAIMS_DISPATCHED';save();
+      await auth.setCustomUserClaims(identity.uid,claims);
+      entry.memberCreateDispatched=true;save();
+      await db.doc(identity.memberPath).create({uid:identity.uid,...claims,name:identity.name,active:true,status:'active'});
+      const read=await auth.getUser(identity.uid);check(JSON.stringify(stable(read.customClaims||{}))===JSON.stringify(stable(claims)),'AUTH_FAILURE:F09_CREATED_IDENTITY_READBACK');
+      check(JSON.stringify(stable(entry.authIdentity))===JSON.stringify(stable(authIdentity(read))),'AUTH_FAILURE:F09_CREATED_IDENTITY_CHANGED');entry.state='CREATED_VERIFIED';save();
+    }
+    const {chromium}=await import('playwright');browser=await chromium.launch({headless:true});
+    const url=host+'/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId='+encodeURIComponent(projectId)+'&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV';
+    async function session(identity){
+      const ctx=await browser.newContext({viewport:{width:1440,height:1000}});contexts.push(ctx);const page=await ctx.newPage();
+      for(let i=0;i<3;i++){
+        await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});await page.waitForFunction(()=>window.firebase?.apps?.length>0,null,{timeout:90000});
+        const token=await auth.createCustomToken(identity.uid);
+        try{await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(t);},token);}catch(error){if(!/context was destroyed|navigation|network|interrupted/i.test(String(error)))throw error;}
+        await page.waitForLoadState('domcontentloaded');if(await page.evaluate(uid=>window.firebase?.auth?.().currentUser?.uid===uid,identity.uid).catch(()=>false))break;
+      }
+      await page.goto('about:blank');await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
+      await page.waitForFunction(uid=>window.firebase?.auth?.().currentUser?.uid===uid&&typeof window.CX?.backendAuth?.ensureAuthenticated==='function',identity.uid,{timeout:90000});
+      await page.evaluate(()=>CX.backendAuth.ensureAuthenticated());
+      await page.waitForFunction(({uid,role,tenantId,projectId,periodId,hr})=>{
+        const a=CX.backendAuth.context()||{},p=window.CX_BACKEND_AUTHORIZED_STATE?.principal||{},g=window.CX_C6_HR_AUTHORITY_GATE||{},d=CX.data;
+        return a.authenticated===true&&a.role===role&&a.authNamespace==='staff'&&a.tenantId===tenantId&&firebase.auth().currentUser?.uid===uid&&p.actorUid===uid&&p.role===role&&p.tenantId===tenantId&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&!g.blocked&&d.currentProjectId===projectId&&d.currentPeriodId===periodId&&d.previewMeta?.sourceRevision===hr;
+      },{uid:identity.uid,role:identity.role,tenantId,projectId,periodId,hr:expectedHr},{timeout:150000});
+      return {ctx,page};
+    }
+    const a=await session(planned[0]);let dropNoteAck=true,droppedResolve;
+    const droppedPromise=new Promise(resolve=>{droppedResolve=resolve;});
+    await a.page.route('**/v1/cxorbia/commands',async route=>{
+      const c=route.request().postDataJSON();if(!String(c?.commandType||'').startsWith('client.'))return route.continue();
+      try{
+        const record=await track(c,planned[0].uid);
+        if(c.commandType==='client.note.create'&&dropNoteAck){
+          dropNoteAck=false;const response=await route.fetch({timeout:90000}),ack=await response.json();
+          result.ui.noteCommittedBeforeAckLoss=await verifyRecord(record,ack);save();await route.abort('failed');droppedResolve(true);return;
+        }
+        await route.continue();
+      }catch(error){result.interceptionError=String(error?.message||error);save();await route.abort('failed').catch(()=>{});droppedResolve(false);}
+    });
+    await a.page.evaluate(()=>CX.router.nav('cli_insights'));
+    await a.page.waitForFunction(()=>document.body.innerText.includes('0 respuesta(s)'));
+    const noteSubject='QA F09 '+runId+' nota',noteDetail='Detalle verificable de la solicitud',meetingSubject='QA F09 '+runId+' reunión';
+    const responseFor=type=>a.page.waitForResponse(r=>{try{return r.url().endsWith('/v1/cxorbia/commands')&&r.request().postDataJSON()?.commandType===type;}catch(_){return false;}},{timeout:90000});
+    async function submit(type,click){const [response]=await Promise.all([responseFor(type),click()]);const ack=await response.json();const record=[...records.values()].find(x=>x.command.commandType===type);result.ui[type]=await verifyRecord(record,ack);save();return {ack,record};}
+    await a.page.locator('#npsBtn').click();await a.page.locator('#npsCom').fill('QA F09 '+runId+' programa');
+    await submit('client.nps.submit',()=>a.page.locator('.npsN[data-n="9"]').click());await a.page.locator('#npsCom').waitFor({state:'hidden',timeout:30000});
+    await a.page.locator('#notaBtn').click();await a.page.locator('#ntTema').fill(noteSubject);await a.page.locator('#ntTxt').fill(noteDetail);await a.page.locator('#ntOk').click();
+    check(await Promise.race([droppedPromise,new Promise(resolve=>setTimeout(()=>resolve(false),90000))]),'PERSISTENCE_FAILURE:F09_LOST_ACK_SETUP');
+    await a.page.waitForFunction(()=>document.querySelector('#ntOk')?.disabled===false);check(await a.page.locator('#ntOk').count()===1,'PERSISTENCE_FAILURE:F09_FALSE_SUCCESS_AFTER_LOST_ACK');
+    const note=await submit('client.note.create',()=>a.page.locator('#ntOk').click());
+    check(note.ack.idempotentReplay===true&&note.ack.providerWrites===0,'PERSISTENCE_FAILURE:F09_LOST_ACK_RETRY_DUPLICATE');result.ui.lostAckRecoveredSameEntity=true;
+    await a.page.locator('#ntOk').waitFor({state:'hidden',timeout:30000});
+    const timezone=s(pr.data().timeZone||pr.data().timezone||'UTC'),dateParts=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:timezone,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(Date.now()+7*86400000)).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
+    const meetingDate=dateParts.year+'-'+dateParts.month+'-'+dateParts.day;
+    await a.page.locator('#reuBtn').click();await a.page.locator('#ruTema').fill(meetingSubject);await a.page.locator('#ruF').fill(meetingDate);await a.page.locator('#ruH').fill('12:00');await a.page.locator('#ruM').selectOption({label:'Presencial'});
+    await submit('client.meeting.request',()=>a.page.locator('#ruOk').click());await a.page.locator('#ruOk').waitFor({state:'hidden',timeout:30000});
+    await a.page.screenshot({path:out+'/cliente-after.png',fullPage:true});await a.ctx.close();
+    const second=await session(planned[0]);await second.page.evaluate(()=>CX.router.nav('cli_insights'));
+    await second.page.waitForFunction(({note,meeting})=>document.body.innerText.includes(note)&&document.body.innerText.includes(meeting)&&document.body.innerText.includes('1 respuesta(s)'),{note:noteSubject,meeting:meetingSubject},{timeout:30000});
+    const fresh=await second.page.evaluate(()=>CX.backendBulletins.listClientCollaboration());check(fresh.source==='firestore_server'&&fresh.entries.length===3&&fresh.entries.every(x=>x.requesterUid===planned[0].uid),'PERSISTENCE_FAILURE:F09_NEW_SESSION_READ');
+    result.readback.newIndependentClientSession={ok:true,count:3,ids:fresh.entries.map(x=>x.id).sort()};await second.page.screenshot({path:out+'/cliente-new-session.png',fullPage:true});
+    const b=await session(planned[1]);await b.page.evaluate(()=>CX.router.nav('cli_insights'));
+    const other=await b.page.evaluate(()=>CX.backendBulletins.listClientCollaboration());check(other.entries.length===0,'AUTH_FAILURE:F09_OTHER_CLIENT_LEAK');
+    const denied=await b.page.evaluate(async path=>{try{await firebase.firestore().doc(path).get({source:'server'});return false;}catch(error){return String(error?.code||'').includes('permission-denied');}},note.record.entityPath);check(denied,'AUTH_FAILURE:F09_FOREIGN_DOCUMENT_READ_ALLOWED');
+    result.readback.otherClient={zeroRows:true,directDocumentPermissionDenied:true};
+    const admin=await session(planned[2]);const adminRows=await admin.page.evaluate(()=>CX.backendBulletins.listClientCollaboration());
+    check([...records.values()].every(r=>adminRows.entries.some(x=>x.id===r.id&&x.requesterUid===planned[0].uid)),'AUTH_FAILURE:F09_ADMIN_READ_MISSING');
+    await admin.page.evaluate(async()=>{await CX.backendBulletins.load();CX.router.nav('tablon');});
+    await admin.page.waitForFunction(({note,meeting,detail})=>document.body.innerText.includes(note)&&document.body.innerText.includes(meeting)&&document.body.innerText.includes(detail),{note:noteSubject,meeting:meetingSubject,detail:noteDetail},{timeout:30000});
+    const adminDenied=await admin.page.evaluate(()=>CX.data.createClientNote({subject:'No suplantar',detail:'Prueba negativa',clientRequestId:'qa-admin-denied-001'},{ackAware:true}));check(adminDenied.ok===false&&adminDenied.providerAck===false,'AUTH_FAILURE:F09_ADMIN_SELF_IMPERSONATION');
+    result.readback.admin={sameThreeRecords:true,tablonContentVisible:true,clientWriteDenied:true};await admin.page.screenshot({path:out+'/admin-tablon.png',fullPage:true});
+    check(records.size===3,'PERSISTENCE_FAILURE:F09_ENTITY_COUNT');result.functionalPass=true;
+  }catch(error){result.error=String(error?.message||error);result.classification=result.error.split(':')[0];}
+  finally{
+    await Promise.allSettled(contexts.map(c=>c.close()));if(browser)await browser.close().catch(()=>{});
+    try{
+      const ownedIdentities=result.identities,ids=ownedIdentities.map(x=>x.uid),known=new Set([...records.values()].flatMap(x=>[x.entityPath,x.receiptPath,x.auditPath]));
+      let deleted=0;
+      await db.runTransaction(async tx=>{
+        for(const [collection,field] of [['bulletins','requesterUid'],['commandReceipts','actorUid'],['entityAuditTrail','actorUid']]){
+          if(!ids.length)continue;const refs=await tx.get(tenant.collection(collection).where(field,'in',ids));check(refs.docs.every(d=>known.has(d.ref.path)),'PERSISTENCE_FAILURE:F09_UNEXPECTED_FIXTURE_REFERENCE');
+        }
+        const docs=[];for(const record of records.values()){
+          const [en,re,au]=await Promise.all([record.entityPath,record.receiptPath,record.auditPath].map(p=>tx.get(db.doc(p))));
+          if(!en.exists&&!re.exists&&!au.exists)continue;
+          check(en.exists&&re.exists&&au.exists&&en.data().requesterUid===record.uid&&en.data().projectId===projectId&&en.data().periodId===periodId&&en.data().version===1&&re.data().actorUid===record.uid&&re.data().commandDigest===record.commandDigest&&re.data().entityId===record.id&&au.data().actorUid===record.uid&&au.data().idempotencyKey===record.command.idempotencyKey,'PERSISTENCE_FAILURE:F09_CLEANUP_OWNERSHIP');
+          check(ownedEntity(en.data(),record),'PERSISTENCE_FAILURE:F09_CLEANUP_PAYLOAD_CHANGED');
+          check((!record.entitySha256||hash(stable(en.data()))===record.entitySha256)&&(!record.receiptSha256||hash(stable(re.data()))===record.receiptSha256)&&(!record.auditSha256||hash(stable(au.data()))===record.auditSha256),'PERSISTENCE_FAILURE:F09_CLEANUP_CONCURRENT_CHANGE');
+          docs.push(en.ref,re.ref,au.ref);
+        }
+        for(const identity of ownedIdentities){const member=await tx.get(db.doc(identity.memberPath));if(!member.exists)continue;const row=member.data();check(identity.memberCreateDispatched===true&&row.qaSynthetic===true&&row.qaRunId===runId&&row.qaRunAttempt===attempt&&row.qaPurpose==='F09'&&row.role===identity.role&&row.authNamespace==='staff'&&row.tenantId===tenantId&&row.name===identity.name&&JSON.stringify(row.projectIds)===JSON.stringify([projectId]),'PERSISTENCE_FAILURE:F09_MEMBER_OWNERSHIP');docs.push(member.ref);}
+        for(const ref of docs)tx.delete(ref);deleted=docs.length;
+      });
+      let authDeleted=0;for(const identity of ownedIdentities){
+        try{const user=await auth.getUser(identity.uid),c=user.customClaims||{};
+          const exactClaims=JSON.stringify(stable(c))===JSON.stringify(stable(identity.expectedClaims));
+          const initialClaims=['AUTH_CREATED','CLAIMS_DISPATCHED'].includes(identity.state)&&Object.keys(c).length===0;
+          check(identity.authIdentity&&JSON.stringify(stable(authIdentity(user)))===JSON.stringify(stable(identity.authIdentity))&&(exactClaims||initialClaims),'AUTH_FAILURE:F09_AUTH_CLEANUP_OWNERSHIP');
+          await auth.deleteUser(identity.uid);authDeleted++;
+        }catch(error){if(error.code!=='auth/user-not-found')throw error;}
+      }
+      const remaining=await Promise.all([...known,...ownedIdentities.map(x=>x.memberPath)].map(p=>db.doc(p).get()));check(remaining.every(x=>!x.exists),'PERSISTENCE_FAILURE:F09_DOC_RESIDUE');
+      for(const x of ownedIdentities){try{await auth.getUser(x.uid);throw Error('AUTH_FAILURE:F09_AUTH_RESIDUE');}catch(error){if(error.code!=='auth/user-not-found')throw error;}}
+      result.cleanup={ok:true,deletedDocuments:deleted,deletedAuth:authDeleted,remainingDocuments:0,remainingAuth:0};
+      if(projectBefore&&periodBefore){const [pr,pe]=await Promise.all([project.get(),project.collection('periods').doc(periodId).get()]);check(hash(stable(pr.data()))===projectBefore&&hash(stable(pe.data()))===periodBefore,'PERSISTENCE_FAILURE:F09_REAL_PROJECT_PERIOD_CHANGED');result.realProjectPeriodUnchanged=true;}
+      const after=await hrMeta();result.hrAfter=after.revision;check(after.revision===expectedHr&&after.hrWrites===false,'PROVIDER_FAILURE:F09_HR_CHANGED');
+      if(productionBefore){result.productionIndexUnchanged=hash(await (await fetch('https://tya-plataforma.web.app/',{cache:'no-store'})).text())===productionBefore;check(result.productionIndexUnchanged,'ENVIRONMENT_FAILURE:F09_PRODUCTION_INDEX_DRIFT');}
+      const {execFileSync}=await import('node:child_process');
+      const runtime=JSON.parse(execFileSync('gcloud',['run','services','describe',e.SERVICE,'--project',projectName,'--region',e.REGION,'--format=json'],{encoding:'utf8'}));
+      check(runtime.status.latestReadyRevisionName===result.runtimeRevision&&(runtime.status.traffic||[]).filter(x=>Number(x.percent||0)>0).every(x=>x.revisionName===result.runtimeRevision)&&(runtime.status.traffic||[]).reduce((a,x)=>a+Number(x.percent||0),0)===100,'ENVIRONMENT_FAILURE:F09_RUNTIME_TRAFFIC_DRIFT');
+      result.runtimeTrafficExact=true;
+    }catch(error){result.cleanup.error=String(error?.message||error);result.cleanup.ok=false;result.cleanup.unverifiedAuthIdentities=result.identities.map(x=>x.uid);}
+    if(result.functionalPass&&result.cleanup.ok)result.decision='PASS_I3_F09_UI_PROVIDER_NEW_SESSION_PRIVACY_REPLAY_CLEANUP';save();
+  }
+  console.log(JSON.stringify({decision:result.decision,sourceSha,runId,periodId,records:records.size,cleanup:result.cleanup,error:result.error||null}));
+  if(result.decision!=='PASS_I3_F09_UI_PROVIDER_NEW_SESSION_PRIVACY_REPLAY_CLEANUP')process.exitCode=2;
+}
+
+if(process.env.CXORBIA_I3_QA_SCOPE==='F09_CLIENT_COLLABORATION'){
+  await runClientCollaborationQa();
+}else{
 const env=process.env,str=v=>String(v??'').trim(),sha=v=>crypto.createHash('sha256').update(typeof v==='string'?v:JSON.stringify(v),'utf8').digest('hex');
 const runId=str(env.GITHUB_RUN_ID),sourceSha=str(env.FOCAL_SOURCE),expectedHr=str(env.EXPECTED_HR_REVISION);
 const host=str(env.HOSTING_URL||'https://cxorbia-backend-dev.web.app').replace(/\/$/,'');
@@ -213,4 +406,6 @@ async function identityTokenStaff(uid,key){
   const decoded=await auth.verifyIdToken(r.idToken,true);
   ensure(['admin','super'].includes(decoded.role)&&decoded.tenantId===tenantId&&decoded.authNamespace==='staff',
     'AUTH_FAILURE','ADMIN_ROLE_CLAIMS');return r.idToken;
+}
+
 }

@@ -1,0 +1,58 @@
+TAP version 13
+# Subtest: D07 authenticated Storage PDF GET bypasses service worker interception and CacheStorage
+ok 1 - D07 authenticated Storage PDF GET bypasses service worker interception and CacheStorage
+  ---
+  duration_ms: 2.401488
+  type: 'test'
+  ...
+# Subtest: D07 unrelated cross-origin resources bypass PWA cache while same-origin runtime remains fail-closed
+ok 2 - D07 unrelated cross-origin resources bypass PWA cache while same-origin runtime remains fail-closed
+  ---
+  duration_ms: 0.776307
+  type: 'test'
+  ...
+# Subtest: protected API is native-network-only: /api/tenants/t/projects/p/certifications/shopper-resources?periodId=x
+ok 3 - protected API is native-network-only: /api/tenants/t/projects/p/certifications/shopper-resources?periodId=x
+  ---
+  duration_ms: 1.08961
+  type: 'test'
+  ...
+# Subtest: protected API is native-network-only: /v1/cxorbia/commands
+ok 4 - protected API is native-network-only: /v1/cxorbia/commands
+  ---
+  duration_ms: 0.603952
+  type: 'test'
+  ...
+# Subtest: protected API is native-network-only: /api/hr-live
+ok 5 - protected API is native-network-only: /api/hr-live
+  ---
+  duration_ms: 0.547819
+  type: 'test'
+  ...
+# Subtest: API requests without explicit no-store force a fresh fetch and never cache
+ok 6 - API requests without explicit no-store force a fresh fetch and never cache
+  ---
+  duration_ms: 0.656981
+  type: 'test'
+  ...
+# Subtest: Authorization on another path forces no-store; explicit no-store bypasses the worker
+ok 7 - Authorization on another path forces no-store; explicit no-store bypasses the worker
+  ---
+  duration_ms: 0.65
+  type: 'test'
+  ...
+# Subtest: offline API and a changed principal never receive the stale private cache entry
+ok 8 - offline API and a changed principal never receive the stale private cache entry
+  ---
+  duration_ms: 1.096961
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 134.130448

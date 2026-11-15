@@ -1,0 +1,586 @@
+TAP version 13
+# Subtest: nps: token-owned durable entity, independent readback, audit and zero-write replay
+not ok 1 - nps: token-owned durable entity, independent readback, audit and zero-write replay
+  ---
+  duration_ms: 5.579765
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:23:38'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"ok":false,"status":"blocked","committed":false,"providerAck":false,"successUiAllowed":false,"localMutation":false,"localStorageWrite":false,"providerWrites":0,"tenantId":"tenant-a","projectId":"project-a","periodId":"period-a","commandType":"client.nps.submit","entityId":null,"code":"OPS_COMMAND_INVALID","errors":["command-type"]}
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:24:72)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: note: token-owned durable entity, independent readback, audit and zero-write replay
+not ok 2 - note: token-owned durable entity, independent readback, audit and zero-write replay
+  ---
+  duration_ms: 0.59586
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:23:38'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"ok":false,"status":"blocked","committed":false,"providerAck":false,"successUiAllowed":false,"localMutation":false,"localStorageWrite":false,"providerWrites":0,"tenantId":"tenant-a","projectId":"project-a","periodId":"period-a","commandType":"client.note.create","entityId":null,"code":"OPS_COMMAND_INVALID","errors":["command-type"]}
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:24:72)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: meeting: token-owned durable entity, independent readback, audit and zero-write replay
+not ok 3 - meeting: token-owned durable entity, independent readback, audit and zero-write replay
+  ---
+  duration_ms: 0.463726
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:23:38'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"ok":false,"status":"blocked","committed":false,"providerAck":false,"successUiAllowed":false,"localMutation":false,"localStorageWrite":false,"providerWrites":0,"tenantId":"tenant-a","projectId":"project-a","periodId":"period-a","commandType":"client.meeting.request","entityId":null,"code":"OPS_COMMAND_INVALID","errors":["command-type"]}
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:24:72)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: canonical active Client membership without an active boolean remains valid
+not ok 4 - canonical active Client membership without an active boolean remains valid
+  ---
+  duration_ms: 0.542993
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:27:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:27:181)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: lost readback after commit reports pending proof and retry recovers the one durable entity
+not ok 5 - lost readback after commit reports pending proof and retry recovers the one durable entity
+  ---
+  duration_ms: 0.648559
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:28:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + undefined
+    - true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:29:177)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: concurrent replay produces one entity, one receipt and one audit
+not ok 6 - concurrent replay produces one entity, one receipt and one audit
+  ---
+  duration_ms: 7.998238
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:31:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+    
+      assert.ok(rs.every(x=>x.ok))
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:31:196)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: changed payload and another actor cannot adopt an existing idempotency receipt
+not ok 7 - changed payload and another actor cannot adopt an existing idempotency receipt
+  ---
+  duration_ms: 0.751711
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:32:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:32:142)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: client collaboration denies staff preview
+ok 8 - client collaboration denies staff preview
+  ---
+  duration_ms: 0.593817
+  type: 'test'
+  ...
+# Subtest: client collaboration denies shopper
+ok 9 - client collaboration denies shopper
+  ---
+  duration_ms: 0.412079
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong tenant
+ok 10 - client collaboration denies wrong tenant
+  ---
+  duration_ms: 0.515452
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong project
+ok 11 - client collaboration denies wrong project
+  ---
+  duration_ms: 0.322036
+  type: 'test'
+  ...
+# Subtest: client collaboration denies missing period
+ok 12 - client collaboration denies missing period
+  ---
+  duration_ms: 0.299042
+  type: 'test'
+  ...
+# Subtest: client collaboration denies inactive membership
+ok 13 - client collaboration denies inactive membership
+  ---
+  duration_ms: 0.314745
+  type: 'test'
+  ...
+# Subtest: client collaboration denies inactive status
+ok 14 - client collaboration denies inactive status
+  ---
+  duration_ms: 0.233635
+  type: 'test'
+  ...
+# Subtest: client collaboration denies foreign member project
+ok 15 - client collaboration denies foreign member project
+  ---
+  duration_ms: 0.257271
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong namespace
+ok 16 - client collaboration denies wrong namespace
+  ---
+  duration_ms: 0.202479
+  type: 'test'
+  ...
+# Subtest: client collaboration denies foreign period
+ok 17 - client collaboration denies foreign period
+  ---
+  duration_ms: 0.407852
+  type: 'test'
+  ...
+# Subtest: client collaboration denies spoofed author
+ok 18 - client collaboration denies spoofed author
+  ---
+  duration_ms: 0.285442
+  type: 'test'
+  ...
+# Subtest: client collaboration denies spoofed recipients
+ok 19 - client collaboration denies spoofed recipients
+  ---
+  duration_ms: 0.23675
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong entity
+ok 20 - client collaboration denies wrong entity
+  ---
+  duration_ms: 0.373673
+  type: 'test'
+  ...
+# Subtest: client collaboration denies chosen entity id
+ok 21 - client collaboration denies chosen entity id
+  ---
+  duration_ms: 0.181008
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong permission
+ok 22 - client collaboration denies wrong permission
+  ---
+  duration_ms: 0.154348
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong payload period
+ok 23 - client collaboration denies wrong payload period
+  ---
+  duration_ms: 0.145985
+  type: 'test'
+  ...
+# Subtest: client collaboration denies missing request id
+ok 24 - client collaboration denies missing request id
+  ---
+  duration_ms: 0.130894
+  type: 'test'
+  ...
+# Subtest: client collaboration denies empty note
+ok 25 - client collaboration denies empty note
+  ---
+  duration_ms: 0.110724
+  type: 'test'
+  ...
+# Subtest: client collaboration denies excessive note
+ok 26 - client collaboration denies excessive note
+  ---
+  duration_ms: 0.073909
+  type: 'test'
+  ...
+# Subtest: NPS rejects invalid numeric score -1
+ok 27 - NPS rejects invalid numeric score -1
+  ---
+  duration_ms: 0.088711
+  type: 'test'
+  ...
+# Subtest: NPS rejects invalid numeric score 11
+ok 28 - NPS rejects invalid numeric score 11
+  ---
+  duration_ms: 0.044405
+  type: 'test'
+  ...
+# Subtest: NPS rejects invalid numeric score 9.5
+ok 29 - NPS rejects invalid numeric score 9.5
+  ---
+  duration_ms: 0.153577
+  type: 'test'
+  ...
+# Subtest: NPS rejects invalid numeric score "9"
+ok 30 - NPS rejects invalid numeric score "9"
+  ---
+  duration_ms: 0.064675
+  type: 'test'
+  ...
+# Subtest: NPS rejects invalid numeric score null
+ok 31 - NPS rejects invalid numeric score null
+  ---
+  duration_ms: 0.073179
+  type: 'test'
+  ...
+# Subtest: meeting rejects invalid request {"date":"2026-02-30"}
+ok 32 - meeting rejects invalid request {"date":"2026-02-30"}
+  ---
+  duration_ms: 0.092917
+  type: 'test'
+  ...
+# Subtest: meeting rejects invalid request {"date":"2001-01-01"}
+ok 33 - meeting rejects invalid request {"date":"2001-01-01"}
+  ---
+  duration_ms: 0.070955
+  type: 'test'
+  ...
+# Subtest: meeting rejects invalid request {"time":"25:00"}
+ok 34 - meeting rejects invalid request {"time":"25:00"}
+  ---
+  duration_ms: 0.046959
+  type: 'test'
+  ...
+# Subtest: meeting rejects invalid request {"mode":"Calendar invitation sent"}
+ok 35 - meeting rejects invalid request {"mode":"Calendar invitation sent"}
+  ---
+  duration_ms: 0.058516
+  type: 'test'
+  ...
+# Subtest: nps: failed provider never closes the form or announces success
+not ok 36 - nps: failed provider never closes the form or announces success
+  ---
+  duration_ms: 15.326827
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-client-collaboration-ui.test.mjs:47:44'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    1 !== 0
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 1
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-client-collaboration-ui.test.mjs:49:10)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: note: failed provider never closes the form or announces success
+not ok 37 - note: failed provider never closes the form or announces success
+  ---
+  duration_ms: 4.993628
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-client-collaboration-ui.test.mjs:47:44'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    1 !== 0
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 1
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-client-collaboration-ui.test.mjs:49:10)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: meeting: failed provider never closes the form or announces success
+not ok 38 - meeting: failed provider never closes the form or announces success
+  ---
+  duration_ms: 2.533784
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-client-collaboration-ui.test.mjs:47:44'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    1 !== 0
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 1
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-client-collaboration-ui.test.mjs:49:10)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: all three successful commands require server readback and survive a new authorized session
+not ok 39 - all three successful commands require server readback and survive a new authorized session
+  ---
+  duration_ms: 8.218323
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-client-collaboration-ui.test.mjs:51:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    0 !== 3
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 3
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-client-collaboration-ui.test.mjs:54:94)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: committed but unreadable write holds the modal; retry uses the same key and creates no duplicate
+not ok 40 - committed but unreadable write holds the modal; retry uses the same key and creates no duplicate
+  ---
+  duration_ms: 2.218197
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-client-collaboration-ui.test.mjs:58:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    0 !== 1
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-client-collaboration-ui.test.mjs:59:115)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: two concurrent clicks invoke only one command and acknowledge once
+not ok 41 - two concurrent clicks invoke only one command and acknowledge once
+  ---
+  duration_ms: 2.213971
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-client-collaboration-ui.test.mjs:62:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    0 !== 1
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-client-collaboration-ui.test.mjs:63:176)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: a late ACK after an identity or scope switch does not close or publish into the new session
+not ok 42 - a late ACK after an identity or scope switch does not close or publish into the new session
+  ---
+  duration_ms: 2.295802
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-client-collaboration-ui.test.mjs:65:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    1 !== 0
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 1
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-client-collaboration-ui.test.mjs:66:258)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: durable text is escaped and the administrative client preview never writes
+not ok 43 - durable text is escaped and the administrative client preview never writes
+  ---
+  duration_ms: 1.850935
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-client-collaboration-ui.test.mjs:68:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /&lt;img/. Input:
+    
+    '\n' +
+      '      \n' +
+      '      <div class="grid g4" style="margin-bottom:16px">\n' +
+      '        <div class="card card-p"><div class="card-t" style="font-size:12px">Tu score</div><div style="font-size:30px;font-weight:800;color:var(--brand)"><span>pendiente</span></div><div style="font-size:11px;color:var(--t3)">promedio del programa</div></div>\n' +
+      '        <div class="card card-p"><div class="card-t" style="font-size:12px">Promedio Retail</div><div style="font-size:30px;font-weight:800;color:var(--t2)"><span>pendiente</span></div><div style="font-size:11px;color:var(--t3)">referencia sectorial pendiente</div></div>\n' +
+      '        <div class="card card-p" style="border-left:3px solid var(--green)"><div class="card-t" style="font-size:12px">Diferencia</div><div style="font-size:30px;font-weight:800;color:var(--green)">—</div><div style="font-size:11px;color:var(--t3)">sin comparación válida</div></div>\n' +
+      '        <div class="card card-p"><div class="card-t" style="font-size:12px">NPS del programa</div><div style="font-size:30px;font-weight:800;color:var(--t3)">—</div><div style="font-size:11px;color:var(--t3)">0 respuesta(s)</div></div>\n' +
+      '      </div>\n' +
+      '\n' +
+      '      <div class="grid g2" style="gap:14px;margin-bottom:16px">\n' +
+      '        <div class="card card-p">\n' +
+      '          <div class="card-t" style="margin-bottom:12px">Benchmark vs industria (Retail)</div>\n' +
+      '          <div style="font-size:12.5px;color:var(--t2);background:var(--panel-2);border-radius:8px;padding:10px 12px"><span>pendiente</span> Referencia sectorial pendiente de fuente, revisión, muestra y metodología verificadas para este proyecto y período. No se emiten comparaciones ni juicios de desempeño.</div>\n' +
+      '        </div>\n' +
+      '        <div class="card card-p">\n' +
+      '          <div class="between" style="margin-bottom:12px"><div class="card-t">😊 NPS · ¿Recomendarías el programa?</div><button class="btn btn-pr btn-sm" id="npsBtn">Responder NPS</button></div>\n' +
+      '          <div style="font-size:12.5px;color:var(--t3);padding:12px 0">Aún no has calificado el programa. Tu opinión ayuda a la consultora a mejorar el servicio.</div>\n' +
+      '          <div style="margin-top:8px;font-size:11.5px;color:var(--t3)">El NPS mide tu satisfacción con el programa de evaluación en sí (no con tus sucursales).</div>\n' +
+      '        </div>\n' +
+      '      </div>\n' +
+      '\n' +
+      '      <div class="grid g2" style="gap:14px;margin-bottom:16px">\n' +
+      '          <div class="card card-p"><div class="card-t" style="margin-bottom:10px">🚨 Sucursales con alerta</div>\n' +
+      '            <div style="font-size:12.5px;color:var(--t3)">No hay alerta sectorial sin benchmark verificable.</div>\n' +
+      '          </div>\n' +
+      '          <div class="card card-p"><div class="card-t" style="margin-bottom:10px">💡 Oportunidades de mejora</div>\n' +
+      '            <div style="font-size:12.5px;color:var(--t3)">No se emiten recomendaciones o juicios de salud sectoriales sin una fuente validada.</div>\n' +
+      '          </div>\n' +
+      '        </div>\n' +
+      '\n' +
+      '      <div class="card card-p" style="margin-bottom:16px">\n' +
+      '        <div class="between" style="margin-bottom:12px"><div class="card-t">💬 Anotaciones colaborativas</div><button class="btn btn-soft btn-sm" id="notaBtn">＋ Anotar sobre un resultado</button></div>\n' +
+      '        <div style="font-size:12.5px;color:var(--t3);padding:10px 0">Sin anotaciones. Comenta sobre un hallazgo o resultado; la consultora lo verá y responderá.</div>\n' +
+      '      </div>\n' +
+      '\n' +
+      '      <div class="card card-p">\n' +
+      '        <div class="between" style="margin-bottom:12px"><div class="card-t">📅 Reuniones de revisión con la consultora</div><button class="btn btn-pr btn-sm" id="reuBtn">＋ Agendar reunión</button></div>\n' +
+      '        <div style="font-size:12.5px;color:var(--t3);padding:10px 0">Sin reuniones. Agenda una sesión de revisión de resultados con tu consultora.</div>\n' +
+      '      </div>'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    
+          
+          <div class="grid g4" style="margin-bottom:16px">
+            <div class="card card-p"><div class="card-t" style="font-size:12px">Tu score</div><div style="font-size:30px;font-weight:800;color:var(--brand)"><span>pendiente</span></div><div style="font-size:11px;color:var(--t3)">promedio del programa</div></div>
+            <div class="card card-p"><div class="card-t" style="font-size:12px">Promedio Retail</div><div style="font-size:30px;font-weight:800;color:var(--t2)"><span>pendiente</span></div><div style="font-size:11px;color:var(--t3)">referencia sectorial pendiente</div></div>
+            <div class="card card-p" style="border-left:3px solid var(--green)"><div class="card-t" style="font-size:12px">Diferencia</div><div style="font-size:30px;font-weight:800;color:var(--green)">—</div><div style="font-size:11px;color:var(--t3)">sin comparación válida</div></div>
+            <div class="card card-p"><div class="card-t" style="font-size:12px">NPS del programa</div><div style="font-size:30px;font-weight:800;color:var(--t3)">—</div><div style="font-size:11px;color:var(--t3)">0 respuesta(s)</div></div>
+          </div>
+    
+          <div class="grid g2" style="gap:14px;margin-bottom:16px">
+            <div class="card card-p">
+              <div class="card-t" style="margin-bottom:12px">Benchmark vs industria (Retail)</div>
+              <div style="font-size:12.5px;color:var(--t2);background:var(--panel-2);border-radius:8px;padding:10px 12px"><span>pendiente</span> Referencia sectorial pendiente de fuente, revisión, muestra y metodología verificadas para este proyecto y período. No se emiten comparaciones ni juicios de desempeño.</div>
+            </div>
+            <div class="card card-p">
+              <div class="between" style="margin-bottom:12px"><div class="card-t">😊 NPS · ¿Recomendarías el programa?</div><button class="btn btn-pr btn-sm" id="npsBtn">Responder NPS</button></div>
+              <div style="font-size:12.5px;color:var(--t3);padding:12px 0">Aún no has calificado el programa. Tu opinión ayuda a la consultora a mejorar el servicio.</div>
+              <div style="margin-top:8px;font-size:11.5px;color:var(--t3)">El NPS mide tu satisfacción con el programa de evaluación en sí (no con tus sucursales).</div>
+            </div>
+          </div>
+    
+          <div class="grid g2" style="gap:14px;margin-bottom:16px">
+              <div class="card card-p"><div class="card-t" style="margin-bottom:10px">🚨 Sucursales con alerta</div>
+                <div style="font-size:12.5px;color:var(--t3)">No hay alerta sectorial sin benchmark verificable.</div>
+              </div>
+              <div class="card card-p"><div class="card-t" style="margin-bottom:10px">💡 Oportunidades de mejora</div>
+                <div style="font-size:12.5px;color:var(--t3)">No se emiten recomendaciones o juicios de salud sectoriales sin una fuente validada.</div>
+              </div>
+            </div>
+    
+          <div class="card card-p" style="margin-bottom:16px">
+            <div class="between" style="margin-bottom:12px"><div class="card-t">💬 Anotaciones colaborativas</div><button class="btn btn-soft btn-sm" id="notaBtn">＋ Anotar sobre un resultado</button></div>
+            <div style="font-size:12.5px;color:var(--t3);padding:10px 0">Sin anotaciones. Comenta sobre un hallazgo o resultado; la consultora lo verá y responderá.</div>
+          </div>
+    
+          <div class="card card-p">
+            <div class="between" style="margin-bottom:12px"><div class="card-t">📅 Reuniones de revisión con la consultora</div><button class="btn btn-pr btn-sm" id="reuBtn">＋ Agendar reunión</button></div>
+            <div style="font-size:12.5px;color:var(--t3);padding:10px 0">Sin reuniones. Agenda una sesión de revisión de resultados con tu consultora.</div>
+          </div>
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-client-collaboration-ui.test.mjs:70:51)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+1..43
+# tests 43
+# suites 0
+# pass 28
+# fail 15
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 183.877724

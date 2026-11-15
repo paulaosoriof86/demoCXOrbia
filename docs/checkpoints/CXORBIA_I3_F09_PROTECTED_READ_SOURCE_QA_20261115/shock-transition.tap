@@ -1,0 +1,226 @@
+TAP version 13
+# Subtest: Hosting receipt verifies actual hashes and the changed owner, not a frozen count
+ok 1 - Hosting receipt verifies actual hashes and the changed owner, not a frozen count
+  ---
+  duration_ms: 2.742502
+  type: 'test'
+  ...
+# Subtest: paired DEV transition binds current receipt, prior C3 runtime and every changed served asset
+ok 2 - paired DEV transition binds current receipt, prior C3 runtime and every changed served asset
+  ---
+  duration_ms: 45.677991
+  type: 'test'
+  ...
+# Subtest: same source, pointers, counts and frozen priority pass
+ok 3 - same source, pointers, counts and frozen priority pass
+  ---
+  duration_ms: 2.386495
+  type: 'test'
+  ...
+# Subtest: independent RUN2382 DEV provider receipt detects a falsely pending already-served source
+ok 4 - independent RUN2382 DEV provider receipt detects a falsely pending already-served source
+  ---
+  duration_ms: 0.596361
+  type: 'test'
+  ...
+# Subtest: current source serving cannot retain SOURCE_ONLY matrix classification
+ok 5 - current source serving cannot retain SOURCE_ONLY matrix classification
+  ---
+  duration_ms: 4.237961
+  type: 'test'
+  ...
+# Subtest: stale next action fails closed
+ok 6 - stale next action fails closed
+  ---
+  duration_ms: 4.030273
+  type: 'test'
+  ...
+# Subtest: legacy next-action field may not silently contradict the authoritative pointer
+ok 7 - legacy next-action field may not silently contradict the authoritative pointer
+  ---
+  duration_ms: 4.465426
+  type: 'test'
+  ...
+# Subtest: descriptor compatibility next-action cannot reactivate a completed historical block
+ok 8 - descriptor compatibility next-action cannot reactivate a completed historical block
+  ---
+  duration_ms: 3.053761
+  type: 'test'
+  ...
+# Subtest: rewriting prose does not erase a proven fusion or verified DEV receipt
+ok 9 - rewriting prose does not erase a proven fusion or verified DEV receipt
+  ---
+  duration_ms: 3.351661
+  type: 'test'
+  ...
+# Subtest: current fusion proof is structured, not counted by a sentence
+ok 10 - current fusion proof is structured, not counted by a sentence
+  ---
+  duration_ms: 3.246826
+  type: 'test'
+  ...
+# Subtest: frozen B8/B9 gates validate structured scope rather than specific prose words
+ok 11 - frozen B8/B9 gates validate structured scope rather than specific prose words
+  ---
+  duration_ms: 5.196667
+  type: 'test'
+  ...
+# Subtest: current checkpoint and handoff cannot silently carry a predecessor DEV version
+ok 12 - current checkpoint and handoff cannot silently carry a predecessor DEV version
+  ---
+  duration_ms: 5.926976
+  type: 'test'
+  ...
+# Subtest: current V5 checkpoint supersedes old receipt without erasing its historical identity proof
+ok 13 - current V5 checkpoint supersedes old receipt without erasing its historical identity proof
+  ---
+  duration_ms: 3.633663
+  type: 'test'
+  ...
+# Subtest: a verified old DEV seal is allowed while a new P0 source awaits materialization, without claiming it is served
+ok 14 - a verified old DEV seal is allowed while a new P0 source awaits materialization, without claiming it is served
+  ---
+  duration_ms: 2.979672
+  type: 'test'
+  ...
+# Subtest: newer Hosting-only receipt is independently pinned while previous paired runtime seal remains intact
+ok 15 - newer Hosting-only receipt is independently pinned while previous paired runtime seal remains intact
+  ---
+  duration_ms: 1.886687
+  type: 'test'
+  ...
+# Subtest: one exact source-tested successor can await Hosting-only DEV without falsifying prior Hosting
+ok 16 - one exact source-tested successor can await Hosting-only DEV without falsifying prior Hosting
+  ---
+  duration_ms: 2.198608
+  type: 'test'
+  ...
+# Subtest: a pending source cannot claim an unrelated or unproven previous Hosting deployment
+ok 17 - a pending source cannot claim an unrelated or unproven previous Hosting deployment
+  ---
+  duration_ms: 7.083935
+  type: 'test'
+  ...
+# Subtest: a newer Hosting deployment cannot retain stale source-only or pending-materialization status
+ok 18 - a newer Hosting deployment cannot retain stale source-only or pending-materialization status
+  ---
+  duration_ms: 3.881815
+  type: 'test'
+  ...
+# Subtest: a newer Hosting receipt mismatched across descriptor, pointer or provider is not a green control
+ok 19 - a newer Hosting receipt mismatched across descriptor, pointer or provider is not a green control
+  ---
+  duration_ms: 4.617561
+  type: 'test'
+  ...
+# Subtest: V5 current checkpoint cannot claim more fused profiles than the approved cohort
+ok 20 - V5 current checkpoint cannot claim more fused profiles than the approved cohort
+  ---
+  duration_ms: 1.883993
+  type: 'test'
+  ...
+# Subtest: lost receipt or divergent fusion status fails closed
+ok 21 - lost receipt or divergent fusion status fails closed
+  ---
+  duration_ms: 3.159217
+  type: 'test'
+  ...
+# Subtest: stale module counts fail closed
+ok 22 - stale module counts fail closed
+  ---
+  duration_ms: 1.554276
+  type: 'test'
+  ...
+# Subtest: a legacy direct matrix path cannot silently point at a superseded version
+ok 23 - a legacy direct matrix path cannot silently point at a superseded version
+  ---
+  duration_ms: 1.475169
+  type: 'test'
+  ...
+# Subtest: top-level compatibility blob anchors cannot point at an older root document
+ok 24 - top-level compatibility blob anchors cannot point at an older root document
+  ---
+  duration_ms: 4.588588
+  type: 'test'
+  ...
+# Subtest: matrix-reported counts must match actual module classifications
+ok 25 - matrix-reported counts must match actual module classifications
+  ---
+  duration_ms: 1.629767
+  type: 'test'
+  ...
+# Subtest: a current Hosting receipt rejects a matrix that still claims source-only predecessor
+ok 26 - a current Hosting receipt rejects a matrix that still claims source-only predecessor
+  ---
+  duration_ms: 1.549639
+  type: 'test'
+  ...
+# Subtest: different source and frozen document bytes fail closed
+ok 27 - different source and frozen document bytes fail closed
+  ---
+  duration_ms: 1.816944
+  type: 'test'
+  ...
+# Subtest: premature production and stale progress authority fail closed
+ok 28 - premature production and stale progress authority fail closed
+  ---
+  duration_ms: 1.439176
+  type: 'test'
+  ...
+# Subtest: the frozen shock status schedules the existing source proof after authority and has no cloud permissions
+ok 29 - the frozen shock status schedules the existing source proof after authority and has no cloud permissions
+  ---
+  duration_ms: 3.693767
+  type: 'test'
+  ...
+# Subtest: source-proof accepts shock without weakening materialization guards or reporting invented closure counts
+ok 30 - source-proof accepts shock without weakening materialization guards or reporting invented closure counts
+  ---
+  duration_ms: 0.44664
+  type: 'test'
+  ...
+# Subtest: the canonical workflow remains within the enforced 500 KB file limit
+ok 31 - the canonical workflow remains within the enforced 500 KB file limit
+  ---
+  duration_ms: 0.15534
+  type: 'test'
+  ...
+# Subtest: one proven runtime/Hosting successor retains immutable serving receipts while waiting for DEV
+ok 32 - one proven runtime/Hosting successor retains immutable serving receipts while waiting for DEV
+  ---
+  duration_ms: 2.032253
+  type: 'test'
+  ...
+# Subtest: runtime/Hosting pending transition rejects tree, ancestry, committed proof or extra product drift
+ok 33 - runtime/Hosting pending transition rejects tree, ancestry, committed proof or extra product drift
+  ---
+  duration_ms: 13.358215
+  type: 'test'
+  ...
+# Subtest: one exact browser-owner P0 successor can await Hosting-only DEV with prior runtime unchanged
+ok 34 - one exact browser-owner P0 successor can await Hosting-only DEV with prior runtime unchanged
+  ---
+  duration_ms: 5.988376
+  type: 'test'
+  ...
+# Subtest: VRM313: a proven paired predecessor retains its exact materialization receipt through the pending source transition
+ok 35 - VRM313: a proven paired predecessor retains its exact materialization receipt through the pending source transition
+  ---
+  duration_ms: 2.106822
+  type: 'test'
+  ...
+# Subtest: VRM313: paired predecessor source, artifact, runtime, hosting and receipt cannot be fabricated
+ok 36 - VRM313: paired predecessor source, artifact, runtime, hosting and receipt cannot be fabricated
+  ---
+  duration_ms: 10.992129
+  type: 'test'
+  ...
+1..36
+# tests 36
+# suites 0
+# pass 36
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 310.099456

@@ -18,6 +18,28 @@ test('Hosting receipt verifies actual hashes and the changed owner, not a frozen
   assert.equal(hasVerifiedHostingAssets({...receipt,verifiedServedAssetCount:19},'prior',read),false);
 });
 
+test('paired DEV transition binds current receipt, prior C3 runtime and every changed served asset',t=>{
+ const dir=fs.mkdtempSync('/tmp/cxorbia-paired-transition-');t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
+ const path=dir+'/paired.json',a=mk(),d=a.descriptor,p=a.pointer,m=a.matrix,bytes='tested bytes\n',hash=crypto.createHash('sha256').update(bytes).digest('hex');
+ const materialization={runId:3,runNumber:3,sourceSha:'source',sourceTree:'tree',runtimeRevision:'runtime-new',runtimeDigest:'sha256:new',hostingVersion:'hosting-new',hostingRelease:'release-new',artifactDigest:'sha256:artifact',production:false};
+ d.productTreeAuthority='tree';d.currentMaterialization={...materialization};p.currentDevMaterialization={...materialization};p.currentCanonicalCheckpoint={path:'prior',verifiedTotal:83,remaining:0};p.continuityHandoff={path:'prior'};
+ d.currentC3PreterminalAudit={sourceSha:'prior-source',sourceTree:'prior-tree',runtimeRevision:'runtime-prior',hostingVersion:'hosting-prior'};
+ const transition={state:'DEV_RUNTIME_AND_HOSTING_VERIFIED_C3_PENDING',sourceSha:'source',sourceTree:'tree',runtimeRevision:'runtime-new',hostingVersion:'hosting-new',previousC3SourceSha:'prior-source',previousC3SourceTree:'prior-tree',previousHostingVersion:'hosting-prior',previousRuntimeRevision:'runtime-prior',receiptPath:path,receiptBlob:'receipt-new',production:false};
+ d.i3Q2HostingReleaseC3Pending={...transition};p.i3Q2HostingReleaseC3Pending={...transition};
+ d.postDeployRunSeal={...materialization,mode:'CURRENT_SOURCE_SERVING',receiptPath:path,receiptBlob:'receipt-new'};p.postDeployRunSeal={...d.postDeployRunSeal};
+ m.productSource.authorityState='RUNTIME_AND_HOSTING_DEV_MATERIALIZED_PENDING_C3_E2E';d.status='HOLD_I3_F09_DEV_MATERIALIZED_C3_REPROOF_PENDING';
+ const servedSha256=Object.fromEntries(Array.from({length:19},(_,i)=>['asset-'+i+'.js',hash]));
+ const receipt={source:{sha:'source',tree:'tree'},materialization,verifiedServedAssetCount:19,servedSha256,productionUnchanged:true};
+ fs.writeFileSync(path,JSON.stringify(receipt));const blob=a.gitBlob;a.gitBlob=f=>f===path?'receipt-new':blob(f);a.gitRead=args=>args[0]==='diff'?'app/asset-0.js\n':bytes;
+ const good=validateShockContinuity(a);assert.equal(good.pass,true,JSON.stringify(good));
+ for(const field of ['previousRuntimeRevision','previousHostingVersion','sourceTree','receiptBlob']){
+  d.i3Q2HostingReleaseC3Pending[field]='fabricated';p.i3Q2HostingReleaseC3Pending[field]='fabricated';
+  assert.match(validateShockContinuity(a).failures.join(' '),/PAIRED_DEV_C3_TRANSITION_RECEIPT/);d.i3Q2HostingReleaseC3Pending[field]=transition[field];p.i3Q2HostingReleaseC3Pending[field]=transition[field];
+ }
+ receipt.materialization={...materialization,runtimeDigest:'wrong'};fs.writeFileSync(path,JSON.stringify(receipt));assert.match(validateShockContinuity(a).failures.join(' '),/PAIRED_DEV_C3_TRANSITION_RECEIPT/);
+ receipt.materialization=materialization;delete receipt.servedSha256['asset-0.js'];receipt.verifiedServedAssetCount=18;fs.writeFileSync(path,JSON.stringify(receipt));assert.match(validateShockContinuity(a).failures.join(' '),/PAIRED_DEV_C3_TRANSITION_RECEIPT/);
+});
+
 const freeze = 'CXORBIA_I3_PLAN_CHOQUE_CIERRE_MONOTONICO_FROZEN_2026-10-28.md';
 const mk = () => {
   const modules = Array.from({length: 21}, (_, i) => ({domain: `domain-${i}`, classification: i < 5 ? 'MATCH' : 'SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN'}));

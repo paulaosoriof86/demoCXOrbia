@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-proven-scope.v1",
+  "findingId": "VRM-347",
+  "priority": "P0_PROVEN",
+  "iteration": "I3",
+  "classification": "PERSISTENCE_FAILURE",
+  "generatedAt": "2026-11-15T23:26:28.238441+00:00",
+  "moduleTruthBeforeEdit": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261115-V320.json",
+    "gitBlob": "0162e85a19dc7a2c393d8efb98b81f3d5432323c",
+    "domain": "base-router-shell-cache",
+    "lastApprovedSource": "8f02e305be6d3c4a5ec4890c47d80cb34300f137",
+    "lastApprovedBlob": "55fbaa454de7927b3952445f33cbf81edca8cc26",
+    "f9Source": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "f9Blob": "643c2e63fa301f6822b298fcc422077b74934628",
+    "sourceSuccessor": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
+    "head": "f2d989af545fa7d462972a8fb4daf0cbdcacc1bd",
+    "sourceBlob": "55fbaa454de7927b3952445f33cbf81edca8cc26",
+    "liveSha256": "c7079ab953ff6c6ab5de5a11eada0af0c132cd03231ff3055a4a5a36632f6b7b",
+    "sourceEqualsLive": true,
+    "classification": "TRUE_FUNCTIONAL_DEFECT"
+  },
+  "reproduction": {
+    "method": "VM executing actual served/source Service Worker; nineteen assertions reproduce authenticated no-store response caching and offline return including token switch with sameURL. Controlled local model, not a demonstrated live cross-user disclosure.",
+    "productionWrites": 0,
+    "initialScriptSha256": "ed0b7de536412eb519ffb769ad3c6abdd8853aefaf62966e22fe97acbd9509bd",
+    "initialResultSha256": "c1e423f06557062e74393996bc7169443071dcd60f09d713e4b5d3fd1a44fd1d",
+    "scriptSha256": "4ff54172f10fc7d4df86597db2b2b5c3c5ada61c0a874ab86c5f34a78278d133",
+    "resultSha256": "d2db750ce5ee40e0dd91098ea6f5daed1c63cc20c8d8d06a0700d52b922497d5",
+    "verifiedReplayNote": "The frozen reproduction pins the pre-edit worker bytes; replay passed the same nineteen assertions. Initial and frozen-replay hashes are retained separately.",
+    "resultPath": "docs/checkpoints/CXORBIA_I3_F09_PROTECTED_READ_SOURCE_QA_20261115/sw-before-reproduction.json"
+  },
+  "requiredRepair": "API/v1/authenticated GET: native passthrough when request cache=no-store, otherwise fetch(no-store) only; never CacheStorage read/write. Preserve activation purge/runtime fail-closed/third-party. Keep strict focalguard; save sanitized response diagnostics before validation.",
+  "allowedProductFiles": [
+    "app/sw.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-d07-sw-pdf-cross-origin.test.mjs",
+    "tools/qa/cxorbia-i3-source-qa-evidence.mjs",
+    "tools/qa/cxorbia-i3-source-qa-evidence.test.mjs",
+    "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+  ],
+  "allowedControlFiles": [
+    ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+  ],
+  "production": false,
+  "hrWrites": 0
+}

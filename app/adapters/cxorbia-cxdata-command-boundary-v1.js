@@ -309,6 +309,18 @@
       const cmd=buildBase('finance.budget.delete','financeBudget',id,{budgetId:id},versionOf(current),Object.assign({permission:'finance.budget.delete'},meta));
       return execute(cmd,meta);
     };
+    [['submitClientNps','client.nps.submit','clientNps',['score','comment']],['createClientNote','client.note.create','clientNote',['subject','detail']],['requestClientMeeting','client.meeting.request','clientMeeting',['subject','date','time','mode']]].forEach(([method,type,entityType,fields])=>{
+      D[method]=function(rec,meta){
+        rec=rec||{};meta=commandMeta(meta);const c=ctx();
+        const payload={clientRequestId:str(rec.clientRequestId)};
+        fields.forEach(key=>{if(rec[key]!==undefined)payload[key]=rec[key];});
+        const cmd=buildBase(type,entityType,null,payload,'absent',{permission:type});
+        const actorUid=str(root.firebase?.auth?.()?.currentUser?.uid);
+        cmd.actor.actorId=actorUid;
+        cmd.idempotencyKey=type+':'+hash([c.tenantId,c.projectId,c.periodId,actorUid,payload.clientRequestId]);
+        return execute(cmd,meta);
+      };
+    });
     D.createSupportTicket=function(rec,meta){
       rec=rec||{};meta=commandMeta(meta);const c=ctx();
       const payload={subject:str(rec.asunto||rec.subject),detail:str(rec.detalle||rec.detail),supportType:str(rec.tipo||rec.supportType||'Plataforma'),priority:str(rec.prio||rec.priority||'media'),requesterName:str(rec.de||rec.requesterName),clientRequestId:str(rec.clientRequestId)};

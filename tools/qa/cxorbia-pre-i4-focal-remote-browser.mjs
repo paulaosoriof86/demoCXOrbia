@@ -195,6 +195,13 @@ async function signInMember(member,kind,route,options={}){
           resourceRemote={url:response.url(),method:response.request().method(),status:response.status(),
             authorizationPresent:/^Bearer\s+\S+/.test(headers.authorization||''),
             fromServiceWorker:response.fromServiceWorker(),body:await response.json()};
+          fs.writeFileSync(OUT+'/resource-network-'+kind+'.json',JSON.stringify({
+            sourceSha,principalFingerprint:fp(member.id),tenantId,projectId,periodId,
+            url:resourceRemote.url,method:resourceRemote.method,status:resourceRemote.status,
+            authorizationPresent:resourceRemote.authorizationPresent,fromServiceWorker:resourceRemote.fromServiceWorker,
+            bodySha256:crypto.createHash('sha256').update(JSON.stringify(resourceRemote.body)).digest('hex'),
+            providerAck:resourceRemote.body?.providerAck===true,production:false
+          },null,2)+'\n');
         }else await load();
       }catch(error){
         const msg=String(error&&error.message||error||'unknown').slice(0,700);

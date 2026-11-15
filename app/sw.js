@@ -56,7 +56,18 @@ self.addEventListener('fetch', e => {
      PDF bytes must never enter this PWA's CacheStorage. Let the browser perform
      the native authenticated CORS transaction without a service-worker hop. */
   try {
-    if (new URL(e.request.url).origin !== self.location.origin) return;
+    const url = new URL(e.request.url);
+    if (url.origin !== self.location.origin) return;
+    /* I3 P0: authenticated/provider reads belong to the native network path.
+       CacheStorage does not honor HTTP no-store and cannot be principal authority.
+       Do not intercept, store, or fall back to an earlier actor's API response. */
+    if (url.pathname === '/api' || url.pathname.startsWith('/api/') ||
+        url.pathname === '/v1' || url.pathname.startsWith('/v1/') ||
+        e.request.headers.has('authorization')) {
+      if (e.request.cache !== 'no-store') e.respondWith(fetch(e.request, {cache:'no-store'}));
+      return;
+    }
+    if (e.request.cache === 'no-store') return;
   } catch (_) { return; }
 
   /* I3 legal P0: estas rutas participan en la construcción de una aceptación
