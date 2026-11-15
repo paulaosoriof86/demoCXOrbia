@@ -74,7 +74,7 @@ CX.module('cli_insights', ({data,ui})=>{
         const alerta=refInd==null?[]:sucs.filter(s=>s.score<refInd).slice(0,6);
         const top=sucs.slice().reverse().slice(0,3);
         return `<div class="grid g2" style="gap:14px;margin-bottom:16px">
-          <div class="card card-p"><div class="card-t" style="margin-bottom:10px">🚨 Sucursales con alerta (bajo el promedio ${refInd})</div>
+          <div class="card card-p"><div class="card-t" style="margin-bottom:10px">🚨 Sucursales con alerta${refInd==null?'':` (bajo el promedio ${refInd})`}</div>
             ${refInd==null?'<div style="font-size:12.5px;color:var(--t3)">No hay alerta sectorial sin benchmark verificable.</div>':alerta.length?alerta.map(s=>`<div class="between" style="padding:6px 0;border-bottom:1px solid var(--border-2)"><span style="font-size:12.5px">${s.n} <span style="color:var(--t3);font-size:11px">· ${s.visitas} visita(s)</span></span><b style="color:var(--${s.score<refInd-10?'red':'amber'})">${s.score}</b></div>`).join(''):'<div style="font-size:12.5px;color:var(--t3)">Ninguna sucursal bajo el promedio del sector. 👏</div>'}
           </div>
           <div class="card card-p"><div class="card-t" style="margin-bottom:10px">💡 Oportunidades de mejora</div>

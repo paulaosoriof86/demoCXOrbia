@@ -6,8 +6,8 @@ import {execFileSync,spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 
 export const SOURCE_OWNER_SUITES=Object.freeze([
-  {id:'frontend-behavior',owners:['app/core/programa.js','app/core/ui.js','app/modules/periodos.js','app/modules/configuracion.js'],
-    tests:['tools/qa/cxorbia-i3-q2-frontend-owner-behavior.test.mjs']},
+  {id:'frontend-behavior',owners:['app/core/programa.js','app/core/ui.js','app/modules/periodos.js','app/modules/configuracion.js','app/modules/cliente-insights.js'],
+    tests:['tools/qa/cxorbia-i3-q2-frontend-owner-behavior.test.mjs','tools/qa/cxorbia-i3-e04-benchmark-source.test.mjs']},
   {id:'finance-ack-boundary',owners:['app/core/backend-finance-benefits.js','app/core/backend-cxdata-finance-read.js',
     'app/adapters/cxorbia-cxdata-command-boundary-v1.js','backend/runtime/cxorbia-finance-command-provider-v1.mjs'],
     tests:['backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs']},
@@ -86,7 +86,7 @@ export function runSourceQa(){
   if(!Number.isSafeInteger(runId)||runId<=0||!Number.isSafeInteger(runAttempt)||runAttempt<=0)fail('GITHUB_RUN_REQUIRED');
   if(process.env.GITHUB_SHA!==controlSha)fail('CONTROL_CHECKOUT');
   if(git('rev-parse',sourceSha+'^{tree}')!==sourceTree)fail('SOURCE_TREE');
-  // All product dependencies must be unchanged, not only the ten direct owners.
+  // All product dependencies must be unchanged, not only the registered direct owners.
   execFileSync('git',['diff','--exit-code',sourceSha,'--','app','backend','firebase.json','.firebaserc',
     'firestore.rules','storage.rules','tools/hr-source',':(exclude)backend/runtime/hr-live-service/test/**'],{stdio:'pipe'});
   const out=process.env.SOURCE_QA_OUT||'.tmp/canonical-source-qa';fs.mkdirSync(out,{recursive:true});

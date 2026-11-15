@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {collectTenantAdjudications,currentHrPeriodId,representativeHrExpectation,representativeMatchesHr} from './tools/qa/cxorbia-i3-terminal-human-contract.mjs';
 import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';import {pathToFileURL} from 'node:url';import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';import {getAuth} from 'firebase-admin/auth';import {getFirestore} from 'firebase-admin/firestore';import {chromium} from 'playwright';import { settleCustomRoleAuth, settleVisibleShopperAuth } from './.github/control/RECOVERY-I3-BROWSER-AUTH-LIFECYCLE-20260919.mjs';
 const PROJECT=process.env.PROJECT,HOST=String(process.env.HOSTING_URL).replace(/\/$/,''),TENANT=process.env.TENANT_ID,PROJ=process.env.PROJECT_ID,SOURCE=process.env.I3_CERTIFICATION_SOURCE_SHA,SOURCE_DIR=process.env.SOURCE_DIR,OUT=process.env.ACCEPTANCE_OUT||'.tmp/recovery-i3-human-live-acceptance',PINNED_REV=String(process.env.CX_I3_PINNED_HR_REVISION||'').trim();if(!/^[a-f0-9]{64}$/.test(PINNED_REV))throw new Error('RELEASE_COMPOSITION_FAILURE:PINNED_HR_REVISION_MISSING');const PRE='YES_PAULA_20260628_PREVIEW_DEV',PROT='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
 const ROUTE_INVENTORY=JSON.parse(fs.readFileSync(path.join(process.cwd(),'CXORBIA_CANONICAL_ROUTE_INVENTORY_2026-09-18.json'),'utf8'));if(ROUTE_INVENTORY?.counts?.roleRouteEntries!==56)throw new Error('RELEASE_COMPOSITION_FAILURE:ROUTE_INVENTORY_INVALID');
@@ -142,12 +143,9 @@ const currentPeriodKey=str(hr?.source?.currentCalendarPeriodKey||'');
 const expectedOutOfRange=visits.filter(v=>str(v?.periodKey)===currentPeriodKey&&(v?.outOfRange===true||v?.canonicalFacets?.outOfRange===true)).length;
 const hrNameRows=identityShoppers.map(x=>({id:str(x?.shopperId||x?.id),name:str(x?.nombre||x?.name||x?.displayName||x?.fullName)})).filter(x=>x.id&&humanAuthorityName(x.name));
 const unresolvedIdentityIds=identityShoppers.map(x=>({id:str(x?.shopperId||x?.id),name:str(x?.nombre||x?.name||x?.displayName||x?.fullName)})).filter(x=>x.id&&!humanAuthorityName(x.name)).map(x=>x.id);
-const tenantAdjudications={};
-for(const l of links){
- const st=str(l?.status||l?.state).toLowerCase(),au=str(l?.authorityType||l?.authority?.type).toLowerCase(),to=str(l?.canonicalShopperId||l?.canonicalId||l?.shopperId||l?.profileId);
- if(str(l?.tenantId||l?.scope?.tenantId)!==TENANT||!['active','confirmed','approved','materialized'].includes(st)||au!=='tenant_adjudication'||!to)continue;
- for(const source of [l?.sourceShopperId,l?.sourceIdentity?.sourceShopperId,l?.sourceIdentity?.shopperId,l?.sourceIdentityKey,l?.sourceSubjectId,l?.sourceId,l?.sourceKey,l?.legacyShopperId,l?.externalShopperId,...arr(l?.sourceIdentityAliases),...arr(l?.identityAliases),...arr(l?.aliases)].map(str).filter(Boolean))tenantAdjudications[source]=to;
-}
+const adjudicationAuthority=collectTenantAdjudications(links,{tenantId:TENANT,projectId:PROJ,crossTargets});
+const tenantAdjudications=adjudicationAuthority.targets;
+write('tenant-adjudication-authority.json',{sourceSha:SOURCE,sourceRevision:revision,production:false,scope:'EXISTING_DURABLE_ADJUDICATION_READ_ONLY',...adjudicationAuthority});
 const summary=await p.evaluate(({projectId,hrNameRows,unresolvedIdentityIds,expectedOutOfRange,tenantAdjudications})=>{
  const d=window.CX?.data||{},list=Array.isArray(d.shoppers)?d.shoppers:[],trustedPlatformAuthorities=new Set(['provider_exact','tenant_adjudication','platform_created','migrated_exact']);
  const isAuthorizedPlatform=x=>x?.__fullProfilePlatformOnly===true&&x?.__authorizedExactPlatformIdentity===true;
@@ -264,12 +262,13 @@ const probe=await p.evaluate(async expectedDurablePosts=>{
       await p.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,null,{timeout:150000});
       const st=await p.evaluate(()=>{
         const q=window.CX_TYA_CANONICAL_SHOPPER_PORTAL?.resolveExactSessionShopper?.(window.CX.data)||{},row=q.row||{},key=String(row.id||row.shopperId||q.canonical||''),allVisits=key&&window.CX.data.visitsForShopper?window.CX.data.visitsForShopper(key,false):[],current=allVisits.filter(v=>String(window.CX.data.recordPeriodId?window.CX.data.recordPeriodId(v):(v.periodId||v.projectId)||'')===String(window.CX.data.currentPeriodId||'')),body=String(document.body?.innerText||'');
-        return{identity:q.ok===true,key,name:String(row.nombre||row.name||''),nameRendered:Boolean(String(row.nombre||row.name||''))&&body.includes(String(row.nombre||row.name||'')),country:String(row.pais||row.country||''),history:allVisits.length,currentVisits:current.length,periodId:String(window.CX.data.currentPeriodId||''),authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true};
+        return{identity:q.ok===true,key,name:String(row.nombre||row.name||''),nameRendered:Boolean(String(row.nombre||row.name||''))&&body.includes(String(row.nombre||row.name||'')),country:String(row.pais||row.country||''),history:allVisits.length,confirmedHistory:allVisits.filter(v=>v.__pendingPlatformAssignmentOverlay!==true).length,currentVisits:current.length,confirmedCurrentVisits:current.filter(v=>v.__pendingPlatformAssignmentOverlay!==true).length,pendingCurrentVisits:current.filter(v=>v.__pendingPlatformAssignmentOverlay===true).length,periodId:String(window.CX.data.currentPeriodId||''),revision:String(window.CX.data.previewMeta?.sourceRevision||''),authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true};
       });
       const routeChecks=[];
       for(const id of ['midia','miperfil','misvisitas','beneficios']){const before=issues.length;await route(p,'shopper',id,id,'rep-'+loginName.replace('.','-'));routeChecks.push({id,ok:issues.length===before});}
-      proof.ok=st.identity&&st.authority&&st.nameRendered&&!!st.country&&st.history>0&&st.currentVisits>0&&routeChecks.every(x=>x.ok);
-      Object.assign(proof,st,{routeChecks});
+      const expected=representativeHrExpectation({visits,periods,periodId:currentHrPeriodId(hr),canonicalShopperId:candidate.can,resolve,revision});
+      proof.ok=representativeMatchesHr(st,expected,routeChecks);
+      Object.assign(proof,st,{routeChecks,expected});
       if(!proof.ok)issues.push({classification:'FUNCTIONAL_DEFECT',code:'REPRESENTATIVE_SHOPPER_LIVE_FAIL',login:loginName,proof});
     }catch(e){proof.ok=false;proof.errorClass='AUTH_OR_ROUTE';issues.push({classification:'AUTH_FAILURE',code:'REPRESENTATIVE_SHOPPER_AUTH_OR_ROUTE_FAIL',login:loginName,error:str(e?.message||e).slice(0,300)});}
     await c.close();representativeProofs.push(proof);

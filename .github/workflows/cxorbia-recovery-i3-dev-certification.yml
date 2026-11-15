@@ -138,7 +138,7 @@ jobs:
       echo "status=$STATUS" >> "$GITHUB_OUTPUT"
       node --test tools/qa/cxorbia-i3-terminal-module-domain-coverage.test.mjs
       node --test tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs
-      node --test tools/qa/cxorbia-i3-source-qa-evidence.test.mjs tools/qa/cxorbia-i3-terminal-hr-observation.test.mjs
+      node --test tools/qa/cxorbia-i3-source-qa-evidence.test.mjs tools/qa/cxorbia-i3-terminal-hr-observation.test.mjs tools/qa/cxorbia-i3-terminal-human-contract.test.mjs
       node --test tools/qa/cxorbia-i3-period-project-client-parity.test.mjs
       node --test tools/qa/cxorbia-i3-g03-rutas-effective-hr-source-truth.test.mjs
       node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
@@ -7025,7 +7025,7 @@ jobs:
     SOURCE_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
     EVIDENCE: .tmp/i3-current-source-hosting-dev
     PRODUCTION_URL: https://tya-plataforma.web.app/
-    ASSET_FILES: index-backend-dev.html core/backend-firebase.js core/router.js adapters/tya-live-source-refresh-watch-v2.js modules/hr-source.js modules/shoppers.js modules/beneficios.js modules/clientes.js modules/historico.js modules/visitas.js modules/cuestionario-shopper.js modules/cert.js core/data.js core/backend-certifications.js modules/midia.js modules/misvisitas.js core/finanzas-core.js modules/marca.js modules/administrabilidad.js modules/configuracion.js
+    ASSET_FILES: index-backend-dev.html core/backend-firebase.js core/router.js adapters/tya-live-source-refresh-watch-v2.js modules/hr-source.js modules/shoppers.js modules/beneficios.js modules/clientes.js modules/historico.js modules/visitas.js modules/cuestionario-shopper.js modules/cert.js core/data.js core/backend-certifications.js modules/midia.js modules/misvisitas.js core/finanzas-core.js modules/marca.js modules/administrabilidad.js modules/configuracion.js modules/cliente-insights.js
    steps:
    - uses: actions/checkout@v4
      with: {fetch-depth: 0}

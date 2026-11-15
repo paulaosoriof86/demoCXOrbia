@@ -24,6 +24,8 @@ test('F12 never uses invented industry averages or top performer constants',()=>
  assert.match(html,/Referencia sectorial pendiente/);
  assert.match(html,/sin benchmark verificable/i);
  assert.doesNotMatch(html,/Resultado por encima de la referencia sectorial validada/);
+ assert.doesNotMatch(html,/\b(?:null|undefined)\b/);
+ assert.match(html,/Sucursales con alerta<\/div>/);
 });
 test('F12 only shows comparison after source, revision, sample and methodology verified',()=>{
  const benchmark={status:'verified',industry:'Retail',sourceId:'panel-industry',sourceRevision:'rev7',asOf:'2026-10-01',methodology:'muestra externa',sampleSize:100,meanScore:73,topPerformerScore:88};
@@ -31,9 +33,16 @@ test('F12 only shows comparison after source, revision, sample and methodology v
  assert.match(html,/panel-industry/);
  assert.match(html,/rev7/);
  assert.match(html,/73/);
+ assert.match(html,/Sucursales con alerta \(bajo el promedio 73\)/);
  assert.match(html,/88/);
  assert.match(html,/Resultado por encima de la referencia sectorial validada/);
  const missing={...benchmark,sourceRevision:''};
  const htmlMissing=render(missing);
  assert.match(htmlMissing,/Referencia sectorial pendiente/);
+ assert.doesNotMatch(htmlMissing,/\b(?:null|undefined)\b/);
+});
+test('F12 preserves a verified zero benchmark without treating it as missing',()=>{
+ const html=render({status:'verified',industry:'Retail',sourceId:'panel-industry',sourceRevision:'rev-zero',asOf:'2026-10-01',methodology:'muestra externa',sampleSize:100,meanScore:0});
+ assert.match(html,/Sucursales con alerta \(bajo el promedio 0\)/);
+ assert.doesNotMatch(html,/\b(?:null|undefined)\b/);
 });

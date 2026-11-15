@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "cxorbia.i3.terminal-attempt-receipt.v1",
+  "decision": "HOLD_I3_Q3_FUNCTIONAL_GATE_WITH_Q2_GO_PRESERVED",
+  "runId": 43735893269,
+  "runNumber": 2525,
+  "jobId": 132878803730,
+  "controlSha": "aacebcaa3d9f16abca9a69b69e148fdc623e3055",
+  "sourceSha": "c44d93a9f8ee69dbff189acc6f3517de850408d0",
+  "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/ca8ed29218ca0d7d",
+  "runtimeRevision": "cxorbia-live-hr-dev-00370-fl2",
+  "runtimeDigest": "sha256:396cd23f895a98606fa9ca238132a5515065c07fec632cd73c00cc2e6d6c639e",
+  "diagnosticsArtifactId": 14170815543,
+  "diagnosticsZipSha256": "2f0bdd1bc9b731904fe3b1961a3103615198b6c0e66b891aec12b19631ed8b83",
+  "environmentRepair": {
+    "ubuntu": "24.04",
+    "browserInstall": "PASS",
+    "sourceRegressionTests": "PASS",
+    "exactDevComposition": "PASS",
+    "hrReadOnlyStableObservation": "PASS"
+  },
+  "q2": {
+    "state": "GO",
+    "sourceReadyModules": 21,
+    "pendingFiles": 0,
+    "strictMatchModules": 4,
+    "receiptTransportedIntoConsumerSha256": "e20e8e5488630921bc9d078aa4ec2c1782d45522ac526183030b313d627a1e79",
+    "producerRunAttempt": 1,
+    "enabledBlock": "I3-Q3",
+    "consumerActuallyExecuted": true
+  },
+  "functionalObservations": {
+    "routeObservations": 90,
+    "uniqueRoleRouteEntries": 56,
+    "screenshots": 93,
+    "javascriptPageErrors": 0,
+    "probeDecision": "PASS_I3_ATOMIC_FUNCTIONAL_PROBES",
+    "paulaSpecificProofPassed": true,
+    "notCrudCertification": true
+  },
+  "issues": [
+    {
+      "classification": "MAPPING_FAILURE",
+      "code": "ADMIN_REAL_SHOPPER_IDENTITY_NOT_RENDERABLE",
+      "caseCount": 7
+    },
+    {
+      "classification": "VISUAL_DEFECT",
+      "code": "HUMAN_UNDEFINED_NULL_VISIBLE",
+      "role": "cliente",
+      "id": "cli_insights"
+    },
+    {
+      "classification": "FUNCTIONAL_DEFECT",
+      "code": "REPRESENTATIVE_SHOPPER_LIVE_FAIL"
+    },
+    {
+      "classification": "FUNCTIONAL_DEFECT",
+      "code": "REPRESENTATIVE_SHOPPER_LIVE_FAIL"
+    }
+  ],
+  "exactRemediation": {
+    "productOwner": "app/modules/cliente-insights.js",
+    "findingId": "VRM-331",
+    "controlOwner": "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs",
+    "controlDefects": [
+      "Adjudication index omitted provider exactAliases/sourceAliases; accept only proven active durable authority",
+      "Representative gate required currentVisits>0 although pinned HR independently confirms zero; compare exact HR counts"
+    ],
+    "identityDataChanges": 0,
+    "unprovenIdentityOverrideAllowed": false
+  },
+  "production": false,
+  "authorizationI4": false,
+  "phaseAComplete": false
+}

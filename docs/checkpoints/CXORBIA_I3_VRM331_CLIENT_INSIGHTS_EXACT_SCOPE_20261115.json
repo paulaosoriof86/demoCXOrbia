@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "cxorbia.i3.p0.exact-scope.v1",
+  "findingId": "VRM-331",
+  "priority": "P0_PROVEN",
+  "classification": "VISUAL_DEFECT",
+  "expectedParentSha": "aacebcaa3d9f16abca9a69b69e148fdc623e3055",
+  "servingSourceSha": "c44d93a9f8ee69dbff189acc6f3517de850408d0",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261115-V308.json",
+  "moduleDomain": "client-portal-reportkit",
+  "allowedProductFiles": [
+    "app/modules/cliente-insights.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-e04-benchmark-source.test.mjs"
+  ],
+  "reproduction": "RUN2525 authenticated client cli_insights renders Sucursales con alerta (bajo el promedio null) when the external sector reference is unavailable. Terminal visual gate rejects literal null. Same source VM reproduces absent and incomplete benchmark cases.",
+  "expected": "Unavailable benchmark keeps the neutral heading and pending-source body; verified zero and positive benchmarks retain their exact numeric heading.",
+  "officialEvidence": {
+    "runId": 43735893269,
+    "jobId": 132878803730,
+    "artifactId": 14170815543,
+    "artifactSha256": "2f0bdd1bc9b731904fe3b1961a3103615198b6c0e66b891aec12b19631ed8b83",
+    "screenshotPath": "full-human-acceptance/desktop-cliente-cli_insights.png",
+    "screenshotSha256": "539fb42c315a984b08eb26badc5ce9137d44d6d1165e825c08824815288bf1b1"
+  },
+  "observedBefore": {
+    "tests": 3,
+    "pass": 1,
+    "fail": 2,
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM331_CLIENT_INSIGHTS_BEFORE_20261115.tap",
+    "gitBlob": "13fc6bcd75d038e41768712f49a7ad5405cdb98d"
+  },
+  "preservedContract": "F12 absent-source benchmark never invents comparison, scores or recommendations; no edits to data or business actions.",
+  "production": false,
+  "authorizationI4": false
+}

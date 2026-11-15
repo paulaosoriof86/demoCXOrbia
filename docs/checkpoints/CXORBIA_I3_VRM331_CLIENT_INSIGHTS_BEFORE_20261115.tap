@@ -1,0 +1,220 @@
+TAP version 13
+# Subtest: F12 never uses invented industry averages or top performer constants
+not ok 1 - F12 never uses invented industry averages or top performer constants
+  ---
+  duration_ms: 4.779432
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-e04-benchmark-source.test.mjs:19:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input was expected to not match the regular expression /\b(?:null|undefined)\b/. Input:
+    
+    '\n' +
+      '      \n' +
+      '      <div class="grid g4" style="margin-bottom:16px">\n' +
+      '        <div class="card card-p"><div class="card-t" style="font-size:12px">Tu score</div><div style="font-size:30px;font-weight:800;color:var(--brand)">92</div><div style="font-size:11px;color:var(--t3)">promedio del programa</div></div>\n' +
+      '        <div class="card card-p"><div class="card-t" style="font-size:12px">Promedio Retail</div><div style="font-size:30px;font-weight:800;color:var(--t2)"><status>pendiente</status></div><div style="font-size:11px;color:var(--t3)">referencia sectorial pendiente</div></div>\n' +
+      '        <div class="card card-p" style="border-left:3px solid var(--green)"><div class="card-t" style="font-size:12px">Diferencia</div><div style="font-size:30px;font-weight:800;color:var(--green)">—</div><div style="font-size:11px;color:var(--t3)">sin comparación válida</div></div>\n' +
+      '        <div class="card card-p"><div class="card-t" style="font-size:12px">NPS del programa</div><div style="font-size:30px;font-weight:800;color:var(--t3)">—</div><div style="font-size:11px;color:var(--t3)">0 respuesta(s)</div></div>\n' +
+      '      </div>\n' +
+      '\n' +
+      '      <div class="grid g2" style="gap:14px;margin-bottom:16px">\n' +
+      '        <div class="card card-p">\n' +
+      '          <div class="card-t" style="margin-bottom:12px">Benchmark vs industria (Retail)</div>\n' +
+      '          <div style="font-size:12.5px;color:var(--t2);background:var(--panel-2);border-radius:8px;padding:10px 12px"><status>pendiente</status> Referencia sectorial pendiente de fuente, revisión, muestra y metodología verificadas para este proyecto y período. No se emiten comparaciones ni juicios de desempeño.</div>\n' +
+      '        </div>\n' +
+      '        <div class="card card-p">\n' +
+      '          <div class="between" style="margin-bottom:12px"><div class="card-t">😊 NPS · ¿Recomendarías el programa?</div><button class="btn btn-pr btn-sm" id="npsBtn">Responder NPS</button></div>\n' +
+      '          <div style="font-size:12.5px;color:var(--t3);padding:12px 0">Aún no has calificado el programa. Tu opinión ayuda a la consultora a mejorar el servicio.</div>\n' +
+      '          <div style="margin-top:8px;font-size:11.5px;color:var(--t3)">El NPS mide tu satisfacción con el programa de evaluación en sí (no con tus sucursales).</div>\n' +
+      '        </div>\n' +
+      '      </div>\n' +
+      '\n' +
+      '      <div class="grid g2" style="gap:14px;margin-bottom:16px">\n' +
+      '          <div class="card card-p"><div class="card-t" style="margin-bottom:10px">🚨 Sucursales con alerta (bajo el promedio null)</div>\n' +
+      '            <div style="font-size:12.5px;color:var(--t3)">No hay alerta sectorial sin benchmark verificable.</div>\n' +
+      '          </div>\n' +
+      '          <div class="card card-p"><div class="card-t" style="margin-bottom:10px">💡 Oportunidades de mejora</div>\n' +
+      '            <div style="font-size:12.5px;color:var(--t3)">No se emiten recomendaciones o juicios de salud sectoriales sin una fuente validada.</div>\n' +
+      '          </div>\n' +
+      '        </div>\n' +
+      '\n' +
+      '      <div class="card card-p" style="margin-bottom:16px">\n' +
+      '        <div class="between" style="margin-bottom:12px"><div class="card-t">💬 Anotaciones colaborativas</div><button class="btn btn-soft btn-sm" id="notaBtn">＋ Anotar sobre un resultado</button></div>\n' +
+      '        <div style="font-size:12.5px;color:var(--t3);padding:10px 0">Sin anotaciones. Comenta sobre un hallazgo o resultado; la consultora lo verá y responderá.</div>\n' +
+      '      </div>\n' +
+      '\n' +
+      '      <div class="card card-p">\n' +
+      '        <div class="between" style="margin-bottom:12px"><div class="card-t">📅 Reuniones de revisión con la consultora</div><button class="btn btn-pr btn-sm" id="reuBtn">＋ Agendar reunión</button></div>\n' +
+      '        <div style="font-size:12.5px;color:var(--t3);padding:10px 0">Sin reuniones. Agenda una sesión de revisión de resultados con tu consultora.</div>\n' +
+      '      </div>'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    
+          
+          <div class="grid g4" style="margin-bottom:16px">
+            <div class="card card-p"><div class="card-t" style="font-size:12px">Tu score</div><div style="font-size:30px;font-weight:800;color:var(--brand)">92</div><div style="font-size:11px;color:var(--t3)">promedio del programa</div></div>
+            <div class="card card-p"><div class="card-t" style="font-size:12px">Promedio Retail</div><div style="font-size:30px;font-weight:800;color:var(--t2)"><status>pendiente</status></div><div style="font-size:11px;color:var(--t3)">referencia sectorial pendiente</div></div>
+            <div class="card card-p" style="border-left:3px solid var(--green)"><div class="card-t" style="font-size:12px">Diferencia</div><div style="font-size:30px;font-weight:800;color:var(--green)">—</div><div style="font-size:11px;color:var(--t3)">sin comparación válida</div></div>
+            <div class="card card-p"><div class="card-t" style="font-size:12px">NPS del programa</div><div style="font-size:30px;font-weight:800;color:var(--t3)">—</div><div style="font-size:11px;color:var(--t3)">0 respuesta(s)</div></div>
+          </div>
+    
+          <div class="grid g2" style="gap:14px;margin-bottom:16px">
+            <div class="card card-p">
+              <div class="card-t" style="margin-bottom:12px">Benchmark vs industria (Retail)</div>
+              <div style="font-size:12.5px;color:var(--t2);background:var(--panel-2);border-radius:8px;padding:10px 12px"><status>pendiente</status> Referencia sectorial pendiente de fuente, revisión, muestra y metodología verificadas para este proyecto y período. No se emiten comparaciones ni juicios de desempeño.</div>
+            </div>
+            <div class="card card-p">
+              <div class="between" style="margin-bottom:12px"><div class="card-t">😊 NPS · ¿Recomendarías el programa?</div><button class="btn btn-pr btn-sm" id="npsBtn">Responder NPS</button></div>
+              <div style="font-size:12.5px;color:var(--t3);padding:12px 0">Aún no has calificado el programa. Tu opinión ayuda a la consultora a mejorar el servicio.</div>
+              <div style="margin-top:8px;font-size:11.5px;color:var(--t3)">El NPS mide tu satisfacción con el programa de evaluación en sí (no con tus sucursales).</div>
+            </div>
+          </div>
+    
+          <div class="grid g2" style="gap:14px;margin-bottom:16px">
+              <div class="card card-p"><div class="card-t" style="margin-bottom:10px">🚨 Sucursales con alerta (bajo el promedio null)</div>
+                <div style="font-size:12.5px;color:var(--t3)">No hay alerta sectorial sin benchmark verificable.</div>
+              </div>
+              <div class="card card-p"><div class="card-t" style="margin-bottom:10px">💡 Oportunidades de mejora</div>
+                <div style="font-size:12.5px;color:var(--t3)">No se emiten recomendaciones o juicios de salud sectoriales sin una fuente validada.</div>
+              </div>
+            </div>
+    
+          <div class="card card-p" style="margin-bottom:16px">
+            <div class="between" style="margin-bottom:12px"><div class="card-t">💬 Anotaciones colaborativas</div><button class="btn btn-soft btn-sm" id="notaBtn">＋ Anotar sobre un resultado</button></div>
+            <div style="font-size:12.5px;color:var(--t3);padding:10px 0">Sin anotaciones. Comenta sobre un hallazgo o resultado; la consultora lo verá y responderá.</div>
+          </div>
+    
+          <div class="card card-p">
+            <div class="between" style="margin-bottom:12px"><div class="card-t">📅 Reuniones de revisión con la consultora</div><button class="btn btn-pr btn-sm" id="reuBtn">＋ Agendar reunión</button></div>
+            <div style="font-size:12.5px;color:var(--t3);padding:10px 0">Sin reuniones. Agenda una sesión de revisión de resultados con tu consultora.</div>
+          </div>
+  operator: 'doesNotMatch'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-e04-benchmark-source.test.mjs:27:9)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.start (node:internal/test_runner/test:1262:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+  ...
+# Subtest: F12 only shows comparison after source, revision, sample and methodology verified
+not ok 2 - F12 only shows comparison after source, revision, sample and methodology verified
+  ---
+  duration_ms: 2.504591
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-e04-benchmark-source.test.mjs:30:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input was expected to not match the regular expression /\b(?:null|undefined)\b/. Input:
+    
+    '\n' +
+      '      \n' +
+      '      <div class="grid g4" style="margin-bottom:16px">\n' +
+      '        <div class="card card-p"><div class="card-t" style="font-size:12px">Tu score</div><div style="font-size:30px;font-weight:800;color:var(--brand)">92</div><div style="font-size:11px;color:var(--t3)">promedio del programa</div></div>\n' +
+      '        <div class="card card-p"><div class="card-t" style="font-size:12px">Promedio Retail</div><div style="font-size:30px;font-weight:800;color:var(--t2)"><status>pendiente</status></div><div style="font-size:11px;color:var(--t3)">referencia sectorial pendiente</div></div>\n' +
+      '        <div class="card card-p" style="border-left:3px solid var(--green)"><div class="card-t" style="font-size:12px">Diferencia</div><div style="font-size:30px;font-weight:800;color:var(--green)">—</div><div style="font-size:11px;color:var(--t3)">sin comparación válida</div></div>\n' +
+      '        <div class="card card-p"><div class="card-t" style="font-size:12px">NPS del programa</div><div style="font-size:30px;font-weight:800;color:var(--t3)">—</div><div style="font-size:11px;color:var(--t3)">0 respuesta(s)</div></div>\n' +
+      '      </div>\n' +
+      '\n' +
+      '      <div class="grid g2" style="gap:14px;margin-bottom:16px">\n' +
+      '        <div class="card card-p">\n' +
+      '          <div class="card-t" style="margin-bottom:12px">Benchmark vs industria (Retail)</div>\n' +
+      '          <div style="font-size:12.5px;color:var(--t2);background:var(--panel-2);border-radius:8px;padding:10px 12px"><status>pendiente</status> Referencia sectorial pendiente de fuente, revisión, muestra y metodología verificadas para este proyecto y período. No se emiten comparaciones ni juicios de desempeño.</div>\n' +
+      '        </div>\n' +
+      '        <div class="card card-p">\n' +
+      '          <div class="between" style="margin-bottom:12px"><div class="card-t">😊 NPS · ¿Recomendarías el programa?</div><button class="btn btn-pr btn-sm" id="npsBtn">Responder NPS</button></div>\n' +
+      '          <div style="font-size:12.5px;color:var(--t3);padding:12px 0">Aún no has calificado el programa. Tu opinión ayuda a la consultora a mejorar el servicio.</div>\n' +
+      '          <div style="margin-top:8px;font-size:11.5px;color:var(--t3)">El NPS mide tu satisfacción con el programa de evaluación en sí (no con tus sucursales).</div>\n' +
+      '        </div>\n' +
+      '      </div>\n' +
+      '\n' +
+      '      <div class="grid g2" style="gap:14px;margin-bottom:16px">\n' +
+      '          <div class="card card-p"><div class="card-t" style="margin-bottom:10px">🚨 Sucursales con alerta (bajo el promedio null)</div>\n' +
+      '            <div style="font-size:12.5px;color:var(--t3)">No hay alerta sectorial sin benchmark verificable.</div>\n' +
+      '          </div>\n' +
+      '          <div class="card card-p"><div class="card-t" style="margin-bottom:10px">💡 Oportunidades de mejora</div>\n' +
+      '            <div style="font-size:12.5px;color:var(--t3)">No se emiten recomendaciones o juicios de salud sectoriales sin una fuente validada.</div>\n' +
+      '          </div>\n' +
+      '        </div>\n' +
+      '\n' +
+      '      <div class="card card-p" style="margin-bottom:16px">\n' +
+      '        <div class="between" style="margin-bottom:12px"><div class="card-t">💬 Anotaciones colaborativas</div><button class="btn btn-soft btn-sm" id="notaBtn">＋ Anotar sobre un resultado</button></div>\n' +
+      '        <div style="font-size:12.5px;color:var(--t3);padding:10px 0">Sin anotaciones. Comenta sobre un hallazgo o resultado; la consultora lo verá y responderá.</div>\n' +
+      '      </div>\n' +
+      '\n' +
+      '      <div class="card card-p">\n' +
+      '        <div class="between" style="margin-bottom:12px"><div class="card-t">📅 Reuniones de revisión con la consultora</div><button class="btn btn-pr btn-sm" id="reuBtn">＋ Agendar reunión</button></div>\n' +
+      '        <div style="font-size:12.5px;color:var(--t3);padding:10px 0">Sin reuniones. Agenda una sesión de revisión de resultados con tu consultora.</div>\n' +
+      '      </div>'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    
+          
+          <div class="grid g4" style="margin-bottom:16px">
+            <div class="card card-p"><div class="card-t" style="font-size:12px">Tu score</div><div style="font-size:30px;font-weight:800;color:var(--brand)">92</div><div style="font-size:11px;color:var(--t3)">promedio del programa</div></div>
+            <div class="card card-p"><div class="card-t" style="font-size:12px">Promedio Retail</div><div style="font-size:30px;font-weight:800;color:var(--t2)"><status>pendiente</status></div><div style="font-size:11px;color:var(--t3)">referencia sectorial pendiente</div></div>
+            <div class="card card-p" style="border-left:3px solid var(--green)"><div class="card-t" style="font-size:12px">Diferencia</div><div style="font-size:30px;font-weight:800;color:var(--green)">—</div><div style="font-size:11px;color:var(--t3)">sin comparación válida</div></div>
+            <div class="card card-p"><div class="card-t" style="font-size:12px">NPS del programa</div><div style="font-size:30px;font-weight:800;color:var(--t3)">—</div><div style="font-size:11px;color:var(--t3)">0 respuesta(s)</div></div>
+          </div>
+    
+          <div class="grid g2" style="gap:14px;margin-bottom:16px">
+            <div class="card card-p">
+              <div class="card-t" style="margin-bottom:12px">Benchmark vs industria (Retail)</div>
+              <div style="font-size:12.5px;color:var(--t2);background:var(--panel-2);border-radius:8px;padding:10px 12px"><status>pendiente</status> Referencia sectorial pendiente de fuente, revisión, muestra y metodología verificadas para este proyecto y período. No se emiten comparaciones ni juicios de desempeño.</div>
+            </div>
+            <div class="card card-p">
+              <div class="between" style="margin-bottom:12px"><div class="card-t">😊 NPS · ¿Recomendarías el programa?</div><button class="btn btn-pr btn-sm" id="npsBtn">Responder NPS</button></div>
+              <div style="font-size:12.5px;color:var(--t3);padding:12px 0">Aún no has calificado el programa. Tu opinión ayuda a la consultora a mejorar el servicio.</div>
+              <div style="margin-top:8px;font-size:11.5px;color:var(--t3)">El NPS mide tu satisfacción con el programa de evaluación en sí (no con tus sucursales).</div>
+            </div>
+          </div>
+    
+          <div class="grid g2" style="gap:14px;margin-bottom:16px">
+              <div class="card card-p"><div class="card-t" style="margin-bottom:10px">🚨 Sucursales con alerta (bajo el promedio null)</div>
+                <div style="font-size:12.5px;color:var(--t3)">No hay alerta sectorial sin benchmark verificable.</div>
+              </div>
+              <div class="card card-p"><div class="card-t" style="margin-bottom:10px">💡 Oportunidades de mejora</div>
+                <div style="font-size:12.5px;color:var(--t3)">No se emiten recomendaciones o juicios de salud sectoriales sin una fuente validada.</div>
+              </div>
+            </div>
+    
+          <div class="card card-p" style="margin-bottom:16px">
+            <div class="between" style="margin-bottom:12px"><div class="card-t">💬 Anotaciones colaborativas</div><button class="btn btn-soft btn-sm" id="notaBtn">＋ Anotar sobre un resultado</button></div>
+            <div style="font-size:12.5px;color:var(--t3);padding:10px 0">Sin anotaciones. Comenta sobre un hallazgo o resultado; la consultora lo verá y responderá.</div>
+          </div>
+    
+          <div class="card card-p">
+            <div class="between" style="margin-bottom:12px"><div class="card-t">📅 Reuniones de revisión con la consultora</div><button class="btn btn-pr btn-sm" id="reuBtn">＋ Agendar reunión</button></div>
+            <div style="font-size:12.5px;color:var(--t3);padding:10px 0">Sin reuniones. Agenda una sesión de revisión de resultados con tu consultora.</div>
+          </div>
+  operator: 'doesNotMatch'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-e04-benchmark-source.test.mjs:42:9)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: F12 preserves a verified zero benchmark without treating it as missing
+ok 3 - F12 preserves a verified zero benchmark without treating it as missing
+  ---
+  duration_ms: 1.329314
+  type: 'test'
+  ...
+1..3
+# tests 3
+# suites 0
+# pass 1
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 145.161883

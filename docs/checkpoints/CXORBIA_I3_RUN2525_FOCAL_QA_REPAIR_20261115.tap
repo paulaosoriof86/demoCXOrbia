@@ -1,0 +1,370 @@
+TAP version 13
+# Subtest: F12 never uses invented industry averages or top performer constants
+ok 1 - F12 never uses invented industry averages or top performer constants
+  ---
+  duration_ms: 4.39232
+  type: 'test'
+  ...
+# Subtest: F12 only shows comparison after source, revision, sample and methodology verified
+ok 2 - F12 only shows comparison after source, revision, sample and methodology verified
+  ---
+  duration_ms: 2.407958
+  type: 'test'
+  ...
+# Subtest: F12 preserves a verified zero benchmark without treating it as missing
+ok 3 - F12 preserves a verified zero benchmark without treating it as missing
+  ---
+  duration_ms: 1.310687
+  type: 'test'
+  ...
+# Subtest: configuration protected authority never becomes local editing when command writes are off
+ok 4 - configuration protected authority never becomes local editing when command writes are off
+  ---
+  duration_ms: 15.961482
+  type: 'test'
+  ...
+# Subtest: protected users with command gate off cannot load local roles or expose a local save
+ok 5 - protected users with command gate off cannot load local roles or expose a local save
+  ---
+  duration_ms: 2.677176
+  type: 'test'
+  ...
+# Subtest: project configuration requires provider ACK and independent project readback
+ok 6 - project configuration requires provider ACK and independent project readback
+  ---
+  duration_ms: 2.594803
+  type: 'test'
+  ...
+# Subtest: questionnaire program is isolated by period, cloned and published only after durable ACK
+ok 7 - questionnaire program is isolated by period, cloned and published only after durable ACK
+  ---
+  duration_ms: 5.565122
+  type: 'test'
+  ...
+# Subtest: program with no write authority reports draft-only without inventing a durable save
+ok 8 - program with no write authority reports draft-only without inventing a durable save
+  ---
+  duration_ms: 1.386869
+  type: 'test'
+  ...
+# Subtest: period creation waits for ACK and reload before switching the active period
+ok 9 - period creation waits for ACK and reload before switching the active period
+  ---
+  duration_ms: 1.878916
+  type: 'test'
+  ...
+# Subtest: period close refuses incomplete ACK without applying or closing the dialog
+ok 10 - period close refuses incomplete ACK without applying or closing the dialog
+  ---
+  duration_ms: 1.14432
+  type: 'test'
+  ...
+# Subtest: shared modal replaces previous dialog, closes only the top on Escape and restores focus
+ok 11 - shared modal replaces previous dialog, closes only the top on Escape and restores focus
+  ---
+  duration_ms: 2.236174
+  type: 'test'
+  ...
+# Subtest: same-run proof returns exactly eleven registered owners without functional acceptance
+ok 12 - same-run proof returns exactly eleven registered owners without functional acceptance
+  ---
+  duration_ms: 4.502892
+  type: 'test'
+  ...
+# Subtest: rejects a different sourceSha
+ok 13 - rejects a different sourceSha
+  ---
+  duration_ms: 0.684661
+  type: 'test'
+  ...
+# Subtest: rejects a different sourceTree
+ok 14 - rejects a different sourceTree
+  ---
+  duration_ms: 0.969553
+  type: 'test'
+  ...
+# Subtest: rejects a different controlSha
+ok 15 - rejects a different controlSha
+  ---
+  duration_ms: 0.163001
+  type: 'test'
+  ...
+# Subtest: rejects a different runId
+ok 16 - rejects a different runId
+  ---
+  duration_ms: 0.225162
+  type: 'test'
+  ...
+# Subtest: rejects a different runAttempt
+ok 17 - rejects a different runAttempt
+  ---
+  duration_ms: 0.225784
+  type: 'test'
+  ...
+# Subtest: missing attempt is rejected even if both receipt and expectation omit it
+ok 18 - missing attempt is rejected even if both receipt and expectation omit it
+  ---
+  duration_ms: 0.495151
+  type: 'test'
+  ...
+# Subtest: a failed-only consumer retry reuses the exact successful producer attempt
+ok 19 - a failed-only consumer retry reuses the exact successful producer attempt
+  ---
+  duration_ms: 1.234984
+  type: 'test'
+  ...
+# Subtest: rejects modified owner blob
+ok 20 - rejects modified owner blob
+  ---
+  duration_ms: 0.74448
+  type: 'test'
+  ...
+# Subtest: rejects modified test blob
+ok 21 - rejects modified test blob
+  ---
+  duration_ms: 0.54788
+  type: 'test'
+  ...
+# Subtest: rejects missing coverage
+ok 22 - rejects missing coverage
+  ---
+  duration_ms: 0.526137
+  type: 'test'
+  ...
+# Subtest: rejects duplicate coverage
+ok 23 - rejects duplicate coverage
+  ---
+  duration_ms: 0.330959
+  type: 'test'
+  ...
+# Subtest: rejects foreign-owner coverage
+ok 24 - rejects foreign-owner coverage
+  ---
+  duration_ms: 0.317058
+  type: 'test'
+  ...
+# Subtest: rejects foreign-test coverage
+ok 25 - rejects foreign-test coverage
+  ---
+  duration_ms: 0.246344
+  type: 'test'
+  ...
+# Subtest: rejects registry coverage
+ok 26 - rejects registry coverage
+  ---
+  duration_ms: 0.508221
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence exit
+ok 27 - rejects invalid test evidence exit
+  ---
+  duration_ms: 0.410837
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence zero
+ok 28 - rejects invalid test evidence zero
+  ---
+  duration_ms: 0.22984
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence fail
+ok 29 - rejects invalid test evidence fail
+  ---
+  duration_ms: 0.206024
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence cancelled
+ok 30 - rejects invalid test evidence cancelled
+  ---
+  duration_ms: 0.220866
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence skipped
+ok 31 - rejects invalid test evidence skipped
+  ---
+  duration_ms: 0.235318
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence todo
+ok 32 - rejects invalid test evidence todo
+  ---
+  duration_ms: 0.196631
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence summary
+ok 33 - rejects invalid test evidence summary
+  ---
+  duration_ms: 0.269558
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence log
+ok 34 - rejects invalid test evidence log
+  ---
+  duration_ms: 0.218082
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence hash
+ok 35 - rejects invalid test evidence hash
+  ---
+  duration_ms: 0.254717
+  type: 'test'
+  ...
+# Subtest: rejects altered production
+ok 36 - rejects altered production
+  ---
+  duration_ms: 0.347614
+  type: 'test'
+  ...
+# Subtest: rejects altered scope
+ok 37 - rejects altered scope
+  ---
+  duration_ms: 0.205293
+  type: 'test'
+  ...
+# Subtest: rejects a digest mismatch before looking up source blobs
+ok 38 - rejects a digest mismatch before looking up source blobs
+  ---
+  duration_ms: 1.735974
+  type: 'test'
+  ...
+# Subtest: workflow carries the same-run receipt through both C3 invocations
+ok 39 - workflow carries the same-run receipt through both C3 invocations
+  ---
+  duration_ms: 4.579436
+  type: 'test'
+  ...
+# Subtest: computed 21/21 source evidence enables the next job without changing four integral MATCH
+ok 40 - computed 21/21 source evidence enables the next job without changing four integral MATCH
+  ---
+  duration_ms: 1.491283
+  type: 'test'
+  ...
+# Subtest: one missing source proof keeps the consumer disabled and rejects a stale optimistic counter
+ok 41 - one missing source proof keeps the consumer disabled and rejects a stale optimistic counter
+  ---
+  duration_ms: 0.75757
+  type: 'test'
+  ...
+# Subtest: confirmed provider exact aliases reach the existing tenant adjudication check
+ok 42 - confirmed provider exact aliases reach the existing tenant adjudication check
+  ---
+  duration_ms: 2.205339
+  type: 'test'
+  ...
+# Subtest: new alias requires its confirmed provider authority: providerAck
+ok 43 - new alias requires its confirmed provider authority: providerAck
+  ---
+  duration_ms: 0.349877
+  type: 'test'
+  ...
+# Subtest: new alias requires its confirmed provider authority: humanConfirmed
+ok 44 - new alias requires its confirmed provider authority: humanConfirmed
+  ---
+  duration_ms: 0.185895
+  type: 'test'
+  ...
+# Subtest: new alias requires its confirmed provider authority: fuzzyMatching
+ok 45 - new alias requires its confirmed provider authority: fuzzyMatching
+  ---
+  duration_ms: 0.14214
+  type: 'test'
+  ...
+# Subtest: new alias requires its confirmed provider authority: authorityRef
+ok 46 - new alias requires its confirmed provider authority: authorityRef
+  ---
+  duration_ms: 0.171563
+  type: 'test'
+  ...
+# Subtest: untrusted or out-of-scope adjudication is rejected {"tenantId":"foreign"}
+ok 47 - untrusted or out-of-scope adjudication is rejected {"tenantId":"foreign"}
+  ---
+  duration_ms: 0.219845
+  type: 'test'
+  ...
+# Subtest: untrusted or out-of-scope adjudication is rejected {"projectScope":"foreign"}
+ok 48 - untrusted or out-of-scope adjudication is rejected {"projectScope":"foreign"}
+  ---
+  duration_ms: 0.18216
+  type: 'test'
+  ...
+# Subtest: untrusted or out-of-scope adjudication is rejected {"status":"inactive"}
+ok 49 - untrusted or out-of-scope adjudication is rejected {"status":"inactive"}
+  ---
+  duration_ms: 0.126557
+  type: 'test'
+  ...
+# Subtest: untrusted or out-of-scope adjudication is rejected {"authorityType":"provider_auto_compatible"}
+ok 50 - untrusted or out-of-scope adjudication is rejected {"authorityType":"provider_auto_compatible"}
+  ---
+  duration_ms: 0.163111
+  type: 'test'
+  ...
+# Subtest: untrusted or out-of-scope adjudication is rejected {"sourceSafe":false}
+ok 51 - untrusted or out-of-scope adjudication is rejected {"sourceSafe":false}
+  ---
+  duration_ms: 0.220576
+  type: 'test'
+  ...
+# Subtest: conflicting links and crosswalks cannot be approved by last-write-wins
+ok 52 - conflicting links and crosswalks cannot be approved by last-write-wins
+  ---
+  duration_ms: 0.383988
+  type: 'test'
+  ...
+# Subtest: tenant-wide project scope is accepted but foreign and period-limited aliases are not
+ok 53 - tenant-wide project scope is accepted but foreign and period-limited aliases are not
+  ---
+  duration_ms: 1.230868
+  type: 'test'
+  ...
+# Subtest: zero current visits passes only when independent pinned HR also has zero
+ok 54 - zero current visits passes only when independent pinned HR also has zero
+  ---
+  duration_ms: 0.348505
+  type: 'test'
+  ...
+# Subtest: pinned HR periods use key while frontend periods may use periodKey
+ok 55 - pinned HR periods use key while frontend periods may use periodKey
+  ---
+  duration_ms: 0.126336
+  type: 'test'
+  ...
+# Subtest: the expected current period comes from external HR, never the observed UI period
+ok 56 - the expected current period comes from external HR, never the observed UI period
+  ---
+  duration_ms: 0.598884
+  type: 'test'
+  ...
+# Subtest: missing or invented current visits fail the same HR expectation
+ok 57 - missing or invented current visits fail the same HR expectation
+  ---
+  duration_ms: 0.147598
+  type: 'test'
+  ...
+# Subtest: pending platform assignment is recorded separately and is not represented as HR confirmed
+ok 58 - pending platform assignment is recorded separately and is not represented as HR confirmed
+  ---
+  duration_ms: 0.264381
+  type: 'test'
+  ...
+# Subtest: revision, period, identity, history and every required route remain mandatory
+ok 59 - revision, period, identity, history and every required route remain mandatory
+  ---
+  duration_ms: 0.256018
+  type: 'test'
+  ...
+# Subtest: live acceptance uses these predicates and records name-free adjudication evidence
+ok 60 - live acceptance uses these predicates and records name-free adjudication evidence
+  ---
+  duration_ms: 0.604042
+  type: 'test'
+  ...
+1..60
+# tests 60
+# suites 0
+# pass 60
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 177.631803
