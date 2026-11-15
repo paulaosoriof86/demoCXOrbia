@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "cxorbia.i3.control-mapping-repair.v1",
+  "generatedAt": "2026-11-15T23:01:12.564011+00:00",
+  "classification": "MAPPING_FAILURE",
+  "findingId": "VRM-340",
+  "runId": 43772267273,
+  "runNumber": 2535,
+  "jobId": 132990598365,
+  "controlSha": "f85da8e5a3aaaa30a5d8f97ffe9cecb258c836e9",
+  "sourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
+  "sourceTree": "e2d2fa981282ef9736aba9fa06aa9735bf486c43",
+  "observed": "Canonical lineage PASS; combined test command234PASS/6FAIL because metadata reconciliation replaced the preserved tenant readonly acceptance dimension with unrelated B4-B7/general pending text. Hosting job skipped.",
+  "before": "B4_B7_AND_FOCAL_B3_ACCEPTANCE_PRESERVED_INTEGRAL_OTHER_SCOPE_PENDING",
+  "after": "PRIOR_MATCH_PRESERVED",
+  "evidence": {
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261115-V318.json",
+    "matrixBlob": "b0152d2f707b8c8563e2775365e70ab278c3e384",
+    "jsonPointer": "/modules/domain=tenant-admin-config-branding/priorEvidenceBeforeCountryHistorical20261115/currentEvidenceDimensions/human",
+    "validator": "tools/qa/cxorbia-i3-tenant-readonly-acceptance.mjs",
+    "contractUnchanged": true,
+    "ownersUnchanged": true
+  },
+  "repairScope": "Restore exact previously approved readonly human dimension. Country provider-write lifecycle still pending. No new human/domain acceptance.",
+  "productChanges": 0,
+  "sourceChanged": false,
+  "hostingDeploys": 0,
+  "runtimeDeploys": 0,
+  "production": false,
+  "matchModules": 4,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "localReproof": {
+    "tests": 240,
+    "pass": 240,
+    "fail": 0,
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2535_CONTROL_REPAIR_TESTS_20261115.tap",
+    "gitBlob": "17ce98c1c63a3e4f839a04a05c0e085cc07997fc"
+  }
+}

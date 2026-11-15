@@ -224,8 +224,8 @@
   "productSourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
   "productTreeAuthority": "e2d2fa981282ef9736aba9fa06aa9735bf486c43",
   "predecessorProductSourceSha": "e20b5a67057be2419750bbb5363df37af1089813",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V643_2026-11-15.json",
-  "findingsLedgerExpectedGitBlob": "6c327aab819edf6eb26ff8299c7330dffe495fec",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V644_2026-11-15.json",
+  "findingsLedgerExpectedGitBlob": "7a67b6a16342d58d0dae28d40589a4f2b2ebe691",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -244,7 +244,7 @@
     "observedC3ArtifactDigest": "sha256:515da7c9963e851fc1b3bec03bc00624955592cd900e88346b0b46df12f7d083",
     "observedResult": "THREE_PATHS_MATCHED_PRETERMINAL_HOLD"
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261115-V318.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261115-V319.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -3431,7 +3431,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "b0152d2f707b8c8563e2775365e70ab278c3e384",
+  "moduleTruthExpectedGitBlob": "99ba700e694fb4964d06efd70dc6de7f6824a60f",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -19252,12 +19252,12 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261115-V318.json",
-      "gitBlob": "b0152d2f707b8c8563e2775365e70ab278c3e384"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261115-V319.json",
+      "gitBlob": "99ba700e694fb4964d06efd70dc6de7f6824a60f"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V643_2026-11-15.json",
-      "gitBlob": "6c327aab819edf6eb26ff8299c7330dffe495fec"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V644_2026-11-15.json",
+      "gitBlob": "7a67b6a16342d58d0dae28d40589a4f2b2ebe691"
     },
     "receipt": {
       "kind": "GITHUB_ACTIONS_C3_PRETERMINAL_NOT_CERTIFICATE",
@@ -24180,5 +24180,12 @@
     "production": false,
     "rulesDeploys": 0,
     "storageRulesDeploys": 0
+  },
+  "tenantReadonlyAcceptanceMappingRepair20261115": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2535_TENANT_ACCEPTANCE_MAPPING_REPAIR_20261115.json",
+    "gitBlob": "e7de376f28d1c9b762ea3ed7221faf15a454c20a",
+    "runId": 43772267273,
+    "decision": "CONTROL_MAPPING_REPAIRED_PENDING_REMOTE_RECHECK",
+    "production": false
   }
 }

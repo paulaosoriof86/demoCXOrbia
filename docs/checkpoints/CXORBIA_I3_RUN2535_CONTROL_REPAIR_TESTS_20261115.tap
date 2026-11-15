@@ -1,0 +1,1450 @@
+TAP version 13
+# Subtest: approved readonly evidence uses no fabricated mutation ACK
+ok 1 - approved readonly evidence uses no fabricated mutation ACK
+  ---
+  duration_ms: 2.205158
+  type: 'test'
+  ...
+# Subtest: readonly rejects different contract
+ok 2 - readonly rejects different contract
+  ---
+  duration_ms: 0.363397
+  type: 'test'
+  ...
+# Subtest: readonly rejects missing owner
+ok 3 - readonly rejects missing owner
+  ---
+  duration_ms: 0.288796
+  type: 'test'
+  ...
+# Subtest: readonly rejects different owner bytes
+ok 4 - readonly rejects different owner bytes
+  ---
+  duration_ms: 0.293804
+  type: 'test'
+  ...
+# Subtest: readonly rejects only navigation, no reload
+ok 5 - readonly rejects only navigation, no reload
+  ---
+  duration_ms: 0.274806
+  type: 'test'
+  ...
+# Subtest: readonly rejects missing route
+ok 6 - readonly rejects missing route
+  ---
+  duration_ms: 0.315186
+  type: 'test'
+  ...
+# Subtest: readonly rejects demo control found
+ok 7 - readonly rejects demo control found
+  ---
+  duration_ms: 0.322266
+  type: 'test'
+  ...
+# Subtest: readonly rejects changed local authority
+ok 8 - readonly rejects changed local authority
+  ---
+  duration_ms: 0.251822
+  type: 'test'
+  ...
+# Subtest: readonly rejects a real mutation
+ok 9 - readonly rejects a real mutation
+  ---
+  duration_ms: 0.313593
+  type: 'test'
+  ...
+# Subtest: readonly rejects fake provider ACK
+ok 10 - readonly rejects fake provider ACK
+  ---
+  duration_ms: 0.403196
+  type: 'test'
+  ...
+# Subtest: readonly rejects real write branch cannot be called readonly
+ok 11 - readonly rejects real write branch cannot be called readonly
+  ---
+  duration_ms: 0.272753
+  type: 'test'
+  ...
+# Subtest: readonly rejects changed principal
+ok 12 - readonly rejects changed principal
+  ---
+  duration_ms: 0.241557
+  type: 'test'
+  ...
+# Subtest: only the exact authorized automatic HR reconciliation is separated from configuration mutations
+ok 13 - only the exact authorized automatic HR reconciliation is separated from configuration mutations
+  ---
+  duration_ms: 1.182156
+  type: 'test'
+  ...
+# Subtest: valid domain progress persists while another domain and global gates remain HOLD
+ok 14 - valid domain progress persists while another domain and global gates remain HOLD
+  ---
+  duration_ms: 7.963254
+  type: 'test'
+  ...
+# Subtest: an old source receipt is retained as history without blocking valid current receipt
+ok 15 - an old source receipt is retained as history without blocking valid current receipt
+  ---
+  duration_ms: 3.259104
+  type: 'test'
+  ...
+# Subtest: one owner cannot certify a domain with three owners even when pendingTerminalFiles is empty
+ok 16 - one owner cannot certify a domain with three owners even when pendingTerminalFiles is empty
+  ---
+  duration_ms: 2.690795
+  type: 'test'
+  ...
+# Subtest: priority P0_PROVEN is a blocker even without severity property
+ok 17 - priority P0_PROVEN is a blocker even without severity property
+  ---
+  duration_ms: 1.260342
+  type: 'test'
+  ...
+# Subtest: readonly proof does not bypass a real enabled write branch
+ok 18 - readonly proof does not bypass a real enabled write branch
+  ---
+  duration_ms: 1.11012
+  type: 'test'
+  ...
+# Subtest: diagnostic supersession is not proof of P0 closure
+ok 19 - diagnostic supersession is not proof of P0 closure
+  ---
+  duration_ms: 1.261734
+  type: 'test'
+  ...
+# Subtest: source identity corruption still aborts before any progress promotion
+ok 20 - source identity corruption still aborts before any progress promotion
+  ---
+  duration_ms: 1.389702
+  type: 'test'
+  ...
+# Subtest: missing HR revision in PASS-shaped proofs cannot produce global GO
+ok 21 - missing HR revision in PASS-shaped proofs cannot produce global GO
+  ---
+  duration_ms: 1.36026
+  type: 'test'
+  ...
+# Subtest: current aliases agree with descriptor-selected ledger and current DEV seal
+ok 22 - current aliases agree with descriptor-selected ledger and current DEV seal
+  ---
+  duration_ms: 3.704062
+  type: 'test'
+  ...
+# Subtest: current functional accounting follows the new source while original human evidence stays historical
+ok 23 - current functional accounting follows the new source while original human evidence stays historical
+  ---
+  duration_ms: 1.121217
+  type: 'test'
+  ...
+# Subtest: pending source preserves old served DEV seal while pointers target new source
+ok 24 - pending source preserves old served DEV seal while pointers target new source
+  ---
+  duration_ms: 0.484075
+  type: 'test'
+  ...
+# Subtest: current Hosting-only DEV supersedes the business phase-lock Hosting without inventing a Cloud Run deploy
+ok 25 - current Hosting-only DEV supersedes the business phase-lock Hosting without inventing a Cloud Run deploy
+  ---
+  duration_ms: 0.593717
+  type: 'test'
+  ...
+# Subtest: new bounded Hosting-only source keeps prior C3 and Hosting facts until new source is actually served
+ok 26 - new bounded Hosting-only source keeps prior C3 and Hosting facts until new source is actually served
+  ---
+  duration_ms: 0.699723
+  type: 'test'
+  ...
+# Subtest: Hosting-only ACK preserves the old C3 as historical until the new-source C3 audit runs
+ok 27 - Hosting-only ACK preserves the old C3 as historical until the new-source C3 audit runs
+  ---
+  duration_ms: 1.768883
+  type: 'test'
+  ...
+# Subtest: Hosting-only receipt rejects stale phase-lock Hosting
+ok 28 - Hosting-only receipt rejects stale phase-lock Hosting
+  ---
+  duration_ms: 0.372961
+  type: 'test'
+  ...
+# Subtest: Hosting-only receipt rejects fabricated Hosting source
+ok 29 - Hosting-only receipt rejects fabricated Hosting source
+  ---
+  duration_ms: 0.241446
+  type: 'test'
+  ...
+# Subtest: Hosting-only receipt rejects falsified release continuity
+ok 30 - Hosting-only receipt rejects falsified release continuity
+  ---
+  duration_ms: 0.380552
+  type: 'test'
+  ...
+# Subtest: pending predecessor rejects falsified source materialization
+ok 31 - pending predecessor rejects falsified source materialization
+  ---
+  duration_ms: 0.565555
+  type: 'test'
+  ...
+# Subtest: pending predecessor rejects changed predecessor seal
+ok 32 - pending predecessor rejects changed predecessor seal
+  ---
+  duration_ms: 0.366882
+  type: 'test'
+  ...
+# Subtest: pending predecessor rejects stale phase lock source
+ok 33 - pending predecessor rejects stale phase lock source
+  ---
+  duration_ms: 0.335105
+  type: 'test'
+  ...
+# Subtest: pending predecessor rejects stale current source alias
+ok 34 - pending predecessor rejects stale current source alias
+  ---
+  duration_ms: 0.293964
+  type: 'test'
+  ...
+# Subtest: rejects stale top-level count
+ok 35 - rejects stale top-level count
+  ---
+  duration_ms: 0.393761
+  type: 'test'
+  ...
+# Subtest: rejects stale pointer next ID
+ok 36 - rejects stale pointer next ID
+  ---
+  duration_ms: 0.305351
+  type: 'test'
+  ...
+# Subtest: rejects stale top-level source
+ok 37 - rejects stale top-level source
+  ---
+  duration_ms: 0.296518
+  type: 'test'
+  ...
+# Subtest: rejects stale current truth
+ok 38 - rejects stale current truth
+  ---
+  duration_ms: 0.273434
+  type: 'test'
+  ...
+# Subtest: rejects stale nested B1-B9 runtime
+ok 39 - rejects stale nested B1-B9 runtime
+  ---
+  duration_ms: 0.259323
+  type: 'test'
+  ...
+# Subtest: rejects stale nested B1-B9 hosting
+ok 40 - rejects stale nested B1-B9 hosting
+  ---
+  duration_ms: 0.315746
+  type: 'test'
+  ...
+# Subtest: rejects stale current DEV source
+ok 41 - rejects stale current DEV source
+  ---
+  duration_ms: 0.327294
+  type: 'test'
+  ...
+# Subtest: rejects old next action
+ok 42 - rejects old next action
+  ---
+  duration_ms: 0.271531
+  type: 'test'
+  ...
+# Subtest: rejects contradictory blocker
+ok 43 - rejects contradictory blocker
+  ---
+  duration_ms: 0.218502
+  type: 'test'
+  ...
+# Subtest: rejects outdated pointer ledger
+ok 44 - rejects outdated pointer ledger
+  ---
+  duration_ms: 0.192223
+  type: 'test'
+  ...
+# Subtest: rejects outdated blob
+ok 45 - rejects outdated blob
+  ---
+  duration_ms: 0.16915
+  type: 'test'
+  ...
+# Subtest: rejects stale timestamp
+ok 46 - rejects stale timestamp
+  ---
+  duration_ms: 0.19623
+  type: 'test'
+  ...
+# Subtest: current authority rejects archived 20-domain receipt reused as current
+ok 47 - current authority rejects archived 20-domain receipt reused as current
+  ---
+  duration_ms: 0.246664
+  type: 'test'
+  ...
+# Subtest: current authority rejects C3 pointer retains an older run
+ok 48 - current authority rejects C3 pointer retains an older run
+  ---
+  duration_ms: 0.188007
+  type: 'test'
+  ...
+# Subtest: current authority rejects descriptor C3 legacy alias retains 20-domain receipt
+ok 49 - current authority rejects descriptor C3 legacy alias retains 20-domain receipt
+  ---
+  duration_ms: 0.168099
+  type: 'test'
+  ...
+# Subtest: current authority rejects C3 ledger retains an old source
+ok 50 - current authority rejects C3 ledger retains an old source
+  ---
+  duration_ms: 0.169751
+  type: 'test'
+  ...
+# Subtest: current authority rejects C3 wrong hosted version
+ok 51 - current authority rejects C3 wrong hosted version
+  ---
+  duration_ms: 0.162931
+  type: 'test'
+  ...
+# Subtest: current authority rejects C3 fabricated all-ready count
+ok 52 - current authority rejects C3 fabricated all-ready count
+  ---
+  duration_ms: 0.186325
+  type: 'test'
+  ...
+# Subtest: reject accumulated alias drift: stale current focal
+ok 53 - reject accumulated alias drift: stale current focal
+  ---
+  duration_ms: 0.234015
+  type: 'test'
+  ...
+# Subtest: reject accumulated alias drift: stale current semantic
+ok 54 - reject accumulated alias drift: stale current semantic
+  ---
+  duration_ms: 0.17618
+  type: 'test'
+  ...
+# Subtest: reject accumulated alias drift: technical count contradicted by current C3
+ok 55 - reject accumulated alias drift: technical count contradicted by current C3
+  ---
+  duration_ms: 0.215469
+  type: 'test'
+  ...
+# Subtest: reject accumulated alias drift: stale matrix hash
+ok 56 - reject accumulated alias drift: stale matrix hash
+  ---
+  duration_ms: 0.183281
+  type: 'test'
+  ...
+# Subtest: reject accumulated alias drift: stale nested current pointer
+ok 57 - reject accumulated alias drift: stale nested current pointer
+  ---
+  duration_ms: 0.185704
+  type: 'test'
+  ...
+# Subtest: reject ok=false
+ok 58 - reject ok=false
+  ---
+  duration_ms: 3.102574
+  type: 'test'
+  ...
+# Subtest: reject ok=undefined
+ok 59 - reject ok=undefined
+  ---
+  duration_ms: 0.254376
+  type: 'test'
+  ...
+# Subtest: reject ok=true
+ok 60 - reject ok=true
+  ---
+  duration_ms: 0.130973
+  type: 'test'
+  ...
+# Subtest: reject committed=false
+ok 61 - reject committed=false
+  ---
+  duration_ms: 0.18893
+  type: 'test'
+  ...
+# Subtest: reject committed=undefined
+ok 62 - reject committed=undefined
+  ---
+  duration_ms: 0.152946
+  type: 'test'
+  ...
+# Subtest: reject committed=true
+ok 63 - reject committed=true
+  ---
+  duration_ms: 0.106888
+  type: 'test'
+  ...
+# Subtest: reject providerAck=false
+ok 64 - reject providerAck=false
+  ---
+  duration_ms: 0.232122
+  type: 'test'
+  ...
+# Subtest: reject providerAck=undefined
+ok 65 - reject providerAck=undefined
+  ---
+  duration_ms: 0.33176
+  type: 'test'
+  ...
+# Subtest: reject providerAck=true
+ok 66 - reject providerAck=true
+  ---
+  duration_ms: 0.159916
+  type: 'test'
+  ...
+# Subtest: reject successUiAllowed=false
+ok 67 - reject successUiAllowed=false
+  ---
+  duration_ms: 0.231322
+  type: 'test'
+  ...
+# Subtest: reject successUiAllowed=undefined
+ok 68 - reject successUiAllowed=undefined
+  ---
+  duration_ms: 0.144884
+  type: 'test'
+  ...
+# Subtest: reject successUiAllowed=true
+ok 69 - reject successUiAllowed=true
+  ---
+  duration_ms: 0.119176
+  type: 'test'
+  ...
+# Subtest: read-only reservation readiness never proves CRUD
+ok 70 - read-only reservation readiness never proves CRUD
+  ---
+  duration_ms: 0.178433
+  type: 'test'
+  ...
+# Subtest: complete observed reservation lifecycle qualifies
+ok 71 - complete observed reservation lifecycle qualifies
+  ---
+  duration_ms: 0.147507
+  type: 'test'
+  ...
+# Subtest: no reservation PASS without created
+ok 72 - no reservation PASS without created
+  ---
+  duration_ms: 0.108501
+  type: 'test'
+  ...
+# Subtest: no reservation PASS without createAck
+ok 73 - no reservation PASS without createAck
+  ---
+  duration_ms: 0.074961
+  type: 'test'
+  ...
+# Subtest: no reservation PASS without statusAck
+ok 74 - no reservation PASS without statusAck
+  ---
+  duration_ms: 0.068311
+  type: 'test'
+  ...
+# Subtest: no reservation PASS without deleted
+ok 75 - no reservation PASS without deleted
+  ---
+  duration_ms: 0.393181
+  type: 'test'
+  ...
+# Subtest: no reservation PASS without deleteAck
+ok 76 - no reservation PASS without deleteAck
+  ---
+  duration_ms: 0.092767
+  type: 'test'
+  ...
+# Subtest: no reservation PASS without independentFirestoreReadback
+ok 77 - no reservation PASS without independentFirestoreReadback
+  ---
+  duration_ms: 0.071937
+  type: 'test'
+  ...
+# Subtest: no reservation PASS without reloadReadback
+ok 78 - no reservation PASS without reloadReadback
+  ---
+  duration_ms: 0.071695
+  type: 'test'
+  ...
+# Subtest: no reservation PASS without absentAfterReload
+ok 79 - no reservation PASS without absentAfterReload
+  ---
+  duration_ms: 0.197933
+  type: 'test'
+  ...
+# Subtest: no reservation PASS without idempotentReplay
+ok 80 - no reservation PASS without idempotentReplay
+  ---
+  duration_ms: 0.108811
+  type: 'test'
+  ...
+# Subtest: no reservation PASS without cleanupVerified
+ok 81 - no reservation PASS without cleanupVerified
+  ---
+  duration_ms: 0.089953
+  type: 'test'
+  ...
+# Subtest: lost HTTP response after committed assignment still restores exact before image
+ok 82 - lost HTTP response after committed assignment still restores exact before image
+  ---
+  duration_ms: 3.983164
+  type: 'test'
+  ...
+# Subtest: restore fails closed: later same-millisecond write
+ok 83 - restore fails closed: later same-millisecond write
+  ---
+  duration_ms: 0.400942
+  type: 'test'
+  ...
+# Subtest: restore fails closed: different target
+ok 84 - restore fails closed: different target
+  ---
+  duration_ms: 0.17601
+  type: 'test'
+  ...
+# Subtest: restore fails closed: different actor
+ok 85 - restore fails closed: different actor
+  ---
+  duration_ms: 0.192835
+  type: 'test'
+  ...
+# Subtest: restore fails closed: different digest
+ok 86 - restore fails closed: different digest
+  ---
+  duration_ms: 0.314845
+  type: 'test'
+  ...
+# Subtest: restore fails closed: false provider ACK
+ok 87 - restore fails closed: false provider ACK
+  ---
+  duration_ms: 0.301545
+  type: 'test'
+  ...
+# Subtest: restore fails closed: unrelated field edited
+ok 88 - restore fails closed: unrelated field edited
+  ---
+  duration_ms: 0.179715
+  type: 'test'
+  ...
+# Subtest: restore fails closed: different assigned shopper
+ok 89 - restore fails closed: different assigned shopper
+  ---
+  duration_ms: 0.23701
+  type: 'test'
+  ...
+# Subtest: restore fails closed: later version
+ok 90 - restore fails closed: later version
+  ---
+  duration_ms: 0.158464
+  type: 'test'
+  ...
+# Subtest: restore fails closed: missing receipt
+ok 91 - restore fails closed: missing receipt
+  ---
+  duration_ms: 0.224692
+  type: 'test'
+  ...
+# Subtest: restore fails closed: missing visit
+ok 92 - restore fails closed: missing visit
+  ---
+  duration_ms: 0.158334
+  type: 'test'
+  ...
+# Subtest: ambiguous in-flight request is not called clean merely because before image remains
+ok 93 - ambiguous in-flight request is not called clean merely because before image remains
+  ---
+  duration_ms: 0.166325
+  type: 'test'
+  ...
+# Subtest: known blocked command leaves exact before image without writes
+ok 94 - known blocked command leaves exact before image without writes
+  ---
+  duration_ms: 0.150221
+  type: 'test'
+  ...
+# Subtest: committed HTTP ACK without durable receipt does not authorize cleanup
+ok 95 - committed HTTP ACK without durable receipt does not authorize cleanup
+  ---
+  duration_ms: 0.133457
+  type: 'test'
+  ...
+# Subtest: readback error prevents fixture cleanup authorization
+ok 96 - readback error prevents fixture cleanup authorization
+  ---
+  duration_ms: 0.319602
+  type: 'test'
+  ...
+# Subtest: lost creation response preserves every registered target and durable intent before POST
+ok 97 - lost creation response preserves every registered target and durable intent before POST
+  ---
+  duration_ms: 0.369025
+  type: 'test'
+  ...
+# Subtest: preexisting identity-link or postulation blocks registration and dispatch
+ok 98 - preexisting identity-link or postulation blocks registration and dispatch
+  ---
+  duration_ms: 0.140338
+  type: 'test'
+  ...
+# Subtest: provider blocked with zero reported writes cannot certify a partial creation clean
+ok 99 - provider blocked with zero reported writes cannot certify a partial creation clean
+  ---
+  duration_ms: 0.197392
+  type: 'test'
+  ...
+# Subtest: exact committed receipt resolves a lost creation response; unrelated actor or entity does not
+ok 100 - exact committed receipt resolves a lost creation response; unrelated actor or entity does not
+  ---
+  duration_ms: 0.252223
+  type: 'test'
+  ...
+# Subtest: empty or wrong-provider receipt cannot resolve an ambiguous creation
+ok 101 - empty or wrong-provider receipt cannot resolve an ambiguous creation
+  ---
+  duration_ms: 0.399019
+  type: 'test'
+  ...
+# Subtest: committed synthetic shopper ownership binds all four docs and complete Auth claims
+ok 102 - committed synthetic shopper ownership binds all four docs and complete Auth claims
+  ---
+  duration_ms: 0.664302
+  type: 'test'
+  ...
+# Subtest: Auth snapshot preserves observable concurrent edits while allowing ordinary sign-ins
+ok 103 - Auth snapshot preserves observable concurrent edits while allowing ordinary sign-ins
+  ---
+  duration_ms: 0.25757
+  type: 'test'
+  ...
+# Subtest: cleanup checks new commercial references inside the same transaction before deleting any identity
+ok 104 - cleanup checks new commercial references inside the same transaction before deleting any identity
+  ---
+  duration_ms: 0.386662
+  type: 'test'
+  ...
+# Subtest: cleanup transaction verifies all owned versions before its first delete
+ok 105 - cleanup transaction verifies all owned versions before its first delete
+  ---
+  duration_ms: 0.292201
+  type: 'test'
+  ...
+# Subtest: cleanup preserves identity with foreign UID
+ok 106 - cleanup preserves identity with foreign UID
+  ---
+  duration_ms: 0.186064
+  type: 'test'
+  ...
+# Subtest: cleanup preserves identity with additional privilege
+ok 107 - cleanup preserves identity with additional privilege
+  ---
+  duration_ms: 0.143973
+  type: 'test'
+  ...
+# Subtest: cleanup preserves identity with another project
+ok 108 - cleanup preserves identity with another project
+  ---
+  duration_ms: 0.134048
+  type: 'test'
+  ...
+# Subtest: cleanup preserves identity with another receipt
+ok 109 - cleanup preserves identity with another receipt
+  ---
+  duration_ms: 0.186275
+  type: 'test'
+  ...
+# Subtest: cleanup preserves identity with HR adoption
+ok 110 - cleanup preserves identity with HR adoption
+  ---
+  duration_ms: 0.10197
+  type: 'test'
+  ...
+# Subtest: cleanup preserves identity with profile changed
+ok 111 - cleanup preserves identity with profile changed
+  ---
+  duration_ms: 0.087229
+  type: 'test'
+  ...
+# Subtest: application cleanup binds exact period, HR row and business payload
+ok 112 - application cleanup binds exact period, HR row and business payload
+  ---
+  duration_ms: 0.262858
+  type: 'test'
+  ...
+# Subtest: application date uses current project-local day inside explicit HR window
+ok 113 - application date uses current project-local day inside explicit HR window
+  ---
+  duration_ms: 24.560612
+  type: 'test'
+  ...
+# Subtest: preflight resource identifiers include tenant, project, target and idempotency authority
+ok 114 - preflight resource identifiers include tenant, project, target and idempotency authority
+  ---
+  duration_ms: 0.351629
+  type: 'test'
+  ...
+# Subtest: same-run DEV and source-ready21 allow functional evidence while integral MATCH stays4 and no certificate exists
+ok 115 - same-run DEV and source-ready21 allow functional evidence while integral MATCH stays4 and no certificate exists
+  ---
+  duration_ms: 1.222646
+  type: 'test'
+  ...
+# Subtest: fixture rejects mismatched expected sourceSha
+ok 116 - fixture rejects mismatched expected sourceSha
+  ---
+  duration_ms: 0.353582
+  type: 'test'
+  ...
+# Subtest: fixture rejects mismatched expected sourceTree
+ok 117 - fixture rejects mismatched expected sourceTree
+  ---
+  duration_ms: 0.217912
+  type: 'test'
+  ...
+# Subtest: fixture rejects mismatched expected controlHeadSha
+ok 118 - fixture rejects mismatched expected controlHeadSha
+  ---
+  duration_ms: 0.152074
+  type: 'test'
+  ...
+# Subtest: fixture rejects mismatched expected runId
+ok 119 - fixture rejects mismatched expected runId
+  ---
+  duration_ms: 0.167007
+  type: 'test'
+  ...
+# Subtest: fixture rejects mismatched expected runAttempt
+ok 120 - fixture rejects mismatched expected runAttempt
+  ---
+  duration_ms: 0.193325
+  type: 'test'
+  ...
+# Subtest: fixture rejects mismatched expected firebaseProject
+ok 121 - fixture rejects mismatched expected firebaseProject
+  ---
+  duration_ms: 0.130593
+  type: 'test'
+  ...
+# Subtest: fixture rejects mismatched expected hostingUrl
+ok 122 - fixture rejects mismatched expected hostingUrl
+  ---
+  duration_ms: 0.12857
+  type: 'test'
+  ...
+# Subtest: fixture rejects mismatched expected tenantId
+ok 123 - fixture rejects mismatched expected tenantId
+  ---
+  duration_ms: 0.16904
+  type: 'test'
+  ...
+# Subtest: fixture rejects mismatched expected projectId
+ok 124 - fixture rejects mismatched expected projectId
+  ---
+  duration_ms: 0.181838
+  type: 'test'
+  ...
+# Subtest: fixture rejects mismatched expected periodId
+ok 125 - fixture rejects mismatched expected periodId
+  ---
+  duration_ms: 0.136672
+  type: 'test'
+  ...
+# Subtest: fixture rejects mismatched expected artifactSha256
+ok 126 - fixture rejects mismatched expected artifactSha256
+  ---
+  duration_ms: 0.160527
+  type: 'test'
+  ...
+# Subtest: fixture rejects mismatched expected runtimeRevision
+ok 127 - fixture rejects mismatched expected runtimeRevision
+  ---
+  duration_ms: 0.157513
+  type: 'test'
+  ...
+# Subtest: fixture rejects mismatched expected runtimeDigest
+ok 128 - fixture rejects mismatched expected runtimeDigest
+  ---
+  duration_ms: 0.115981
+  type: 'test'
+  ...
+# Subtest: fixture rejects mismatched expected hostingVersion
+ok 129 - fixture rejects mismatched expected hostingVersion
+  ---
+  duration_ms: 0.180156
+  type: 'test'
+  ...
+# Subtest: fixture rejects mismatched expected hrRevision
+ok 130 - fixture rejects mismatched expected hrRevision
+  ---
+  duration_ms: 0.147899
+  type: 'test'
+  ...
+# Subtest: functional input cannot claim certified
+ok 131 - functional input cannot claim certified
+  ---
+  duration_ms: 0.160397
+  type: 'test'
+  ...
+# Subtest: functional input cannot claim phaseAComplete
+ok 132 - functional input cannot claim phaseAComplete
+  ---
+  duration_ms: 0.143341
+  type: 'test'
+  ...
+# Subtest: functional input cannot claim production
+ok 133 - functional input cannot claim production
+  ---
+  duration_ms: 0.103393
+  type: 'test'
+  ...
+# Subtest: TAR bytes are hashed as binary; altered archive is rejected
+ok 134 - TAR bytes are hashed as binary; altered archive is rejected
+  ---
+  duration_ms: 0.204632
+  type: 'test'
+  ...
+# Subtest: a path outside the exact evidence inventory cannot be read
+ok 135 - a path outside the exact evidence inventory cannot be read
+  ---
+  duration_ms: 0.419861
+  type: 'test'
+  ...
+# Subtest: changing a file after binding fails even if its semantic values look correct
+ok 136 - changing a file after binding fails even if its semantic values look correct
+  ---
+  duration_ms: 0.526388
+  type: 'test'
+  ...
+# Subtest: pre-certification proof rejects older source
+ok 137 - pre-certification proof rejects older source
+  ---
+  duration_ms: 0.606706
+  type: 'test'
+  ...
+# Subtest: pre-certification proof rejects incomplete source coverage
+ok 138 - pre-certification proof rejects incomplete source coverage
+  ---
+  duration_ms: 0.587218
+  type: 'test'
+  ...
+# Subtest: pre-certification proof rejects other source QA attempt
+ok 139 - pre-certification proof rejects other source QA attempt
+  ---
+  duration_ms: 1.151021
+  type: 'test'
+  ...
+# Subtest: pre-certification proof rejects human different HR
+ok 140 - pre-certification proof rejects human different HR
+  ---
+  duration_ms: 0.48711
+  type: 'test'
+  ...
+# Subtest: pre-certification proof rejects focal stale September
+ok 141 - pre-certification proof rejects focal stale September
+  ---
+  duration_ms: 0.419339
+  type: 'test'
+  ...
+# Subtest: pre-certification proof rejects oracle other project
+ok 142 - pre-certification proof rejects oracle other project
+  ---
+  duration_ms: 0.454481
+  type: 'test'
+  ...
+# Subtest: pre-certification proof rejects HR unstable
+ok 143 - pre-certification proof rejects HR unstable
+  ---
+  duration_ms: 0.565665
+  type: 'test'
+  ...
+# Subtest: pre-certification proof rejects runtime has no traffic
+ok 144 - pre-certification proof rejects runtime has no traffic
+  ---
+  duration_ms: 0.444787
+  type: 'test'
+  ...
+# Subtest: pre-certification proof rejects another Hosting
+ok 145 - pre-certification proof rejects another Hosting
+  ---
+  duration_ms: 0.474892
+  type: 'test'
+  ...
+# Subtest: read-only HR health permits absent mutation ACK; writes and another revision are rejected
+ok 146 - read-only HR health permits absent mutation ACK; writes and another revision are rejected
+  ---
+  duration_ms: 0.342857
+  type: 'test'
+  ...
+# Subtest: sealed verification links unchanged functional evidence and TAR to the later certificate without new mutations
+ok 147 - sealed verification links unchanged functional evidence and TAR to the later certificate without new mutations
+  ---
+  duration_ms: 1.002602
+  type: 'test'
+  ...
+# Subtest: sealed receipt rejects four matches presented as certificate
+ok 148 - sealed receipt rejects four matches presented as certificate
+  ---
+  duration_ms: 0.416605
+  type: 'test'
+  ...
+# Subtest: sealed receipt rejects altered fixture hash
+ok 149 - sealed receipt rejects altered fixture hash
+  ---
+  duration_ms: 0.313674
+  type: 'test'
+  ...
+# Subtest: sealed receipt rejects repacked TAR
+ok 150 - sealed receipt rejects repacked TAR
+  ---
+  duration_ms: 0.291941
+  type: 'test'
+  ...
+# Subtest: sealed receipt rejects cleanup failure
+ok 151 - sealed receipt rejects cleanup failure
+  ---
+  duration_ms: 0.292652
+  type: 'test'
+  ...
+# Subtest: sealed receipt rejects nine tests
+ok 152 - sealed receipt rejects nine tests
+  ---
+  duration_ms: 0.365029
+  type: 'test'
+  ...
+# Subtest: sealed receipt rejects duplicate test
+ok 153 - sealed receipt rejects duplicate test
+  ---
+  duration_ms: 0.372841
+  type: 'test'
+  ...
+# Subtest: sealed receipt rejects HR changed during tests
+ok 154 - sealed receipt rejects HR changed during tests
+  ---
+  duration_ms: 0.317619
+  type: 'test'
+  ...
+# Subtest: sealed receipt rejects different run
+ok 155 - sealed receipt rejects different run
+  ---
+  duration_ms: 0.292832
+  type: 'test'
+  ...
+# Subtest: sealed receipt rejects different source
+ok 156 - sealed receipt rejects different source
+  ---
+  duration_ms: 0.35196
+  type: 'test'
+  ...
+# Subtest: sealed receipt rejects pretended prior certification
+ok 157 - sealed receipt rejects pretended prior certification
+  ---
+  duration_ms: 0.302858
+  type: 'test'
+  ...
+# Subtest: sealed receipt rejects unresolved creation journal
+ok 158 - sealed receipt rejects unresolved creation journal
+  ---
+  duration_ms: 0.271892
+  type: 'test'
+  ...
+# Subtest: sealed receipt rejects missing final identity files
+ok 159 - sealed receipt rejects missing final identity files
+  ---
+  duration_ms: 0.550353
+  type: 'test'
+  ...
+# Subtest: sealed receipt rejects altered final Hosting readback
+ok 160 - sealed receipt rejects altered final Hosting readback
+  ---
+  duration_ms: 0.584514
+  type: 'test'
+  ...
+# Subtest: sealed receipt rejects unread final identity
+ok 161 - sealed receipt rejects unread final identity
+  ---
+  duration_ms: 0.395624
+  type: 'test'
+  ...
+# Subtest: single workflow gathers fixtures before strict21 and only verifies them after certification
+ok 162 - single workflow gathers fixtures before strict21 and only verifies them after certification
+  ---
+  duration_ms: 4.426439
+  type: 'test'
+  ...
+# Subtest: approved readonly evidence uses no fabricated mutation ACK
+ok 163 - approved readonly evidence uses no fabricated mutation ACK
+  ---
+  duration_ms: 2.879484
+  type: 'test'
+  ...
+# Subtest: readonly rejects different contract
+ok 164 - readonly rejects different contract
+  ---
+  duration_ms: 0.371208
+  type: 'test'
+  ...
+# Subtest: readonly rejects missing owner
+ok 165 - readonly rejects missing owner
+  ---
+  duration_ms: 0.373161
+  type: 'test'
+  ...
+# Subtest: readonly rejects different owner bytes
+ok 166 - readonly rejects different owner bytes
+  ---
+  duration_ms: 0.351159
+  type: 'test'
+  ...
+# Subtest: readonly rejects only navigation, no reload
+ok 167 - readonly rejects only navigation, no reload
+  ---
+  duration_ms: 0.3786
+  type: 'test'
+  ...
+# Subtest: readonly rejects missing route
+ok 168 - readonly rejects missing route
+  ---
+  duration_ms: 0.396386
+  type: 'test'
+  ...
+# Subtest: readonly rejects demo control found
+ok 169 - readonly rejects demo control found
+  ---
+  duration_ms: 0.379771
+  type: 'test'
+  ...
+# Subtest: readonly rejects changed local authority
+ok 170 - readonly rejects changed local authority
+  ---
+  duration_ms: 0.251782
+  type: 'test'
+  ...
+# Subtest: readonly rejects a real mutation
+ok 171 - readonly rejects a real mutation
+  ---
+  duration_ms: 0.511966
+  type: 'test'
+  ...
+# Subtest: readonly rejects fake provider ACK
+ok 172 - readonly rejects fake provider ACK
+  ---
+  duration_ms: 0.491616
+  type: 'test'
+  ...
+# Subtest: readonly rejects real write branch cannot be called readonly
+ok 173 - readonly rejects real write branch cannot be called readonly
+  ---
+  duration_ms: 0.376346
+  type: 'test'
+  ...
+# Subtest: readonly rejects changed principal
+ok 174 - readonly rejects changed principal
+  ---
+  duration_ms: 0.293724
+  type: 'test'
+  ...
+# Subtest: only the exact authorized automatic HR reconciliation is separated from configuration mutations
+ok 175 - only the exact authorized automatic HR reconciliation is separated from configuration mutations
+  ---
+  duration_ms: 1.05613
+  type: 'test'
+  ...
+# Subtest: project identity, command paths and stable digest match the provider contract
+ok 176 - project identity, command paths and stable digest match the provider contract
+  ---
+  duration_ms: 0.857947
+  type: 'test'
+  ...
+# Subtest: real ACK needs exact independent project, receipt and audit ownership
+ok 177 - real ACK needs exact independent project, receipt and audit ownership
+  ---
+  duration_ms: 0.372741
+  type: 'test'
+  ...
+# Subtest: rejects fake ACK
+ok 178 - rejects fake ACK
+  ---
+  duration_ms: 0.23663
+  type: 'test'
+  ...
+# Subtest: rejects foreign tenant
+ok 179 - rejects foreign tenant
+  ---
+  duration_ms: 0.190161
+  type: 'test'
+  ...
+# Subtest: rejects foreign project
+ok 180 - rejects foreign project
+  ---
+  duration_ms: 0.209449
+  type: 'test'
+  ...
+# Subtest: rejects unowned fixture
+ok 181 - rejects unowned fixture
+  ---
+  duration_ms: 0.177562
+  type: 'test'
+  ...
+# Subtest: rejects other run
+ok 182 - rejects other run
+  ---
+  duration_ms: 0.241567
+  type: 'test'
+  ...
+# Subtest: rejects wrong actor
+ok 183 - rejects wrong actor
+  ---
+  duration_ms: 0.203561
+  type: 'test'
+  ...
+# Subtest: rejects commercial period
+ok 184 - rejects commercial period
+  ---
+  duration_ms: 0.272803
+  type: 'test'
+  ...
+# Subtest: rejects external source
+ok 185 - rejects external source
+  ---
+  duration_ms: 0.254847
+  type: 'test'
+  ...
+# Subtest: rejects newer foreign version
+ok 186 - rejects newer foreign version
+  ---
+  duration_ms: 0.22324
+  type: 'test'
+  ...
+# Subtest: rejects wrong command digest
+ok 187 - rejects wrong command digest
+  ---
+  duration_ms: 0.180807
+  type: 'test'
+  ...
+# Subtest: rejects receipt absent
+ok 188 - rejects receipt absent
+  ---
+  duration_ms: 0.158724
+  type: 'test'
+  ...
+# Subtest: rejects audit foreign actor
+ok 189 - rejects audit foreign actor
+  ---
+  duration_ms: 0.167417
+  type: 'test'
+  ...
+# Subtest: rejects missing country
+ok 190 - rejects missing country
+  ---
+  duration_ms: 0.165003
+  type: 'test'
+  ...
+# Subtest: rejects missing currency
+ok 191 - rejects missing currency
+  ---
+  duration_ms: 0.156811
+  type: 'test'
+  ...
+# Subtest: domain proof combines readonly obligations and actual provider mutation without pretending the write branch is readonly
+ok 192 - domain proof combines readonly obligations and actual provider mutation without pretending the write branch is readonly
+  ---
+  duration_ms: 1.11732
+  type: 'test'
+  ...
+# Subtest: no domain promotion without actionReal
+ok 193 - no domain promotion without actionReal
+  ---
+  duration_ms: 0.2842
+  type: 'test'
+  ...
+# Subtest: no domain promotion without providerAck
+ok 194 - no domain promotion without providerAck
+  ---
+  duration_ms: 0.313724
+  type: 'test'
+  ...
+# Subtest: no domain promotion without durableReadback
+ok 195 - no domain promotion without durableReadback
+  ---
+  duration_ms: 0.354514
+  type: 'test'
+  ...
+# Subtest: no domain promotion without reloadProof
+ok 196 - no domain promotion without reloadProof
+  ---
+  duration_ms: 0.302116
+  type: 'test'
+  ...
+# Subtest: no domain promotion without noDuplicateRegression
+ok 197 - no domain promotion without noDuplicateRegression
+  ---
+  duration_ms: 0.198022
+  type: 'test'
+  ...
+# Subtest: no domain promotion without cleanupVerified
+ok 198 - no domain promotion without cleanupVerified
+  ---
+  duration_ms: 0.218873
+  type: 'test'
+  ...
+# Subtest: no domain promotion without samePrincipal
+ok 199 - no domain promotion without samePrincipal
+  ---
+  duration_ms: 0.295356
+  type: 'test'
+  ...
+# Subtest: no domain promotion without commercialProjectUnchanged
+ok 200 - no domain promotion without commercialProjectUnchanged
+  ---
+  duration_ms: 0.198133
+  type: 'test'
+  ...
+# Subtest: unknown navigation writes, wrong source and incomplete readonly evidence still block the composed proof
+ok 201 - unknown navigation writes, wrong source and incomplete readonly evidence still block the composed proof
+  ---
+  duration_ms: 0.536943
+  type: 'test'
+  ...
+# Subtest: approved readonly evidence uses no fabricated mutation ACK
+ok 202 - approved readonly evidence uses no fabricated mutation ACK
+  ---
+  duration_ms: 2.992682
+  type: 'test'
+  ...
+# Subtest: readonly rejects different contract
+ok 203 - readonly rejects different contract
+  ---
+  duration_ms: 0.556973
+  type: 'test'
+  ...
+# Subtest: readonly rejects missing owner
+ok 204 - readonly rejects missing owner
+  ---
+  duration_ms: 0.472769
+  type: 'test'
+  ...
+# Subtest: readonly rejects different owner bytes
+ok 205 - readonly rejects different owner bytes
+  ---
+  duration_ms: 0.424427
+  type: 'test'
+  ...
+# Subtest: readonly rejects only navigation, no reload
+ok 206 - readonly rejects only navigation, no reload
+  ---
+  duration_ms: 0.498657
+  type: 'test'
+  ...
+# Subtest: readonly rejects missing route
+ok 207 - readonly rejects missing route
+  ---
+  duration_ms: 0.419529
+  type: 'test'
+  ...
+# Subtest: readonly rejects demo control found
+ok 208 - readonly rejects demo control found
+  ---
+  duration_ms: 0.461832
+  type: 'test'
+  ...
+# Subtest: readonly rejects changed local authority
+ok 209 - readonly rejects changed local authority
+  ---
+  duration_ms: 0.42636
+  type: 'test'
+  ...
+# Subtest: readonly rejects a real mutation
+ok 210 - readonly rejects a real mutation
+  ---
+  duration_ms: 0.65632
+  type: 'test'
+  ...
+# Subtest: readonly rejects fake provider ACK
+ok 211 - readonly rejects fake provider ACK
+  ---
+  duration_ms: 0.629179
+  type: 'test'
+  ...
+# Subtest: readonly rejects real write branch cannot be called readonly
+ok 212 - readonly rejects real write branch cannot be called readonly
+  ---
+  duration_ms: 0.398629
+  type: 'test'
+  ...
+# Subtest: readonly rejects changed principal
+ok 213 - readonly rejects changed principal
+  ---
+  duration_ms: 0.387051
+  type: 'test'
+  ...
+# Subtest: only the exact authorized automatic HR reconciliation is separated from configuration mutations
+ok 214 - only the exact authorized automatic HR reconciliation is separated from configuration mutations
+  ---
+  duration_ms: 1.941649
+  type: 'test'
+  ...
+# Subtest: same HR realizes GT300/654/partial and HN400/380/partial, independently of payable candidates
+ok 215 - same HR realizes GT300/654/partial and HN400/380/partial, independently of payable candidates
+  ---
+  duration_ms: 3.686616
+  type: 'test'
+  ...
+# Subtest: absence is never a known zero; a literal numeric zero remains valid
+ok 216 - absence is never a known zero; a literal numeric zero remains valid
+  ---
+  duration_ms: 0.470585
+  type: 'test'
+  ...
+# Subtest: explicit HR takes precedence, then authorized period, then project; missing authority yields null
+ok 217 - explicit HR takes precedence, then authorized period, then project; missing authority yields null
+  ---
+  duration_ms: 0.645805
+  type: 'test'
+  ...
+# Subtest: period scope, cancellations and independent confirmation facets remain enforced
+ok 218 - period scope, cancellations and independent confirmation facets remain enforced
+  ---
+  duration_ms: 0.470986
+  type: 'test'
+  ...
+# Subtest: an empty country has no fabricated accrued amount
+ok 219 - an empty country has no fabricated accrued amount
+  ---
+  duration_ms: 0.397387
+  type: 'test'
+  ...
+# Subtest: config must belong to the exact independently read project version and values
+ok 220 - config must belong to the exact independently read project version and values
+  ---
+  duration_ms: 1.108737
+  type: 'test'
+  ...
+# Subtest: approved Shopper projection with current authenticated provider ACK and exact visible guide passes
+ok 221 - approved Shopper projection with current authenticated provider ACK and exact visible guide passes
+  ---
+  duration_ms: 2.960764
+  type: 'test'
+  ...
+# Subtest: operator continues to require Firestore authority on the exact current scope
+ok 222 - operator continues to require Firestore authority on the exact current scope
+  ---
+  duration_ms: 0.685543
+  type: 'test'
+  ...
+# Subtest: real server output preserves reusable project resources and published banks from prior periods
+ok 223 - real server output preserves reusable project resources and published banks from prior periods
+  ---
+  duration_ms: 1.244528
+  type: 'test'
+  ...
+# Subtest: cross-period resource does not inherit when it is QA, visit-scoped or stored elsewhere {"qaOnly":true}
+ok 224 - cross-period resource does not inherit when it is QA, visit-scoped or stored elsewhere {"qaOnly":true}
+  ---
+  duration_ms: 0.281215
+  type: 'test'
+  ...
+# Subtest: cross-period resource does not inherit when it is QA, visit-scoped or stored elsewhere {"visitId":"specific-visit"}
+ok 225 - cross-period resource does not inherit when it is QA, visit-scoped or stored elsewhere {"visitId":"specific-visit"}
+  ---
+  duration_ms: 0.310539
+  type: 'test'
+  ...
+# Subtest: cross-period resource does not inherit when it is QA, visit-scoped or stored elsewhere {"tipo":"pdf","storagePath":"tenants/other/projects/p/periods/p-2026-10/resources/file.pdf"}
+ok 226 - cross-period resource does not inherit when it is QA, visit-scoped or stored elsewhere {"tipo":"pdf","storagePath":"tenants/other/projects/p/periods/p-2026-10/resources/file.pdf"}
+  ---
+  duration_ms: 0.255447
+  type: 'test'
+  ...
+# Subtest: resource authority rejects source label alone
+ok 227 - resource authority rejects source label alone
+  ---
+  duration_ms: 0.276679
+  type: 'test'
+  ...
+# Subtest: resource authority rejects missing remote ACK
+ok 228 - resource authority rejects missing remote ACK
+  ---
+  duration_ms: 3.155982
+  type: 'test'
+  ...
+# Subtest: resource authority rejects another principal
+ok 229 - resource authority rejects another principal
+  ---
+  duration_ms: 1.188666
+  type: 'test'
+  ...
+# Subtest: resource authority rejects another shopper
+ok 230 - resource authority rejects another shopper
+  ---
+  duration_ms: 0.322397
+  type: 'test'
+  ...
+# Subtest: resource authority rejects stale period
+ok 231 - resource authority rejects stale period
+  ---
+  duration_ms: 0.252233
+  type: 'test'
+  ...
+# Subtest: resource authority rejects another project endpoint
+ok 232 - resource authority rejects another project endpoint
+  ---
+  duration_ms: 0.212804
+  type: 'test'
+  ...
+# Subtest: resource authority rejects missing authorization
+ok 233 - resource authority rejects missing authorization
+  ---
+  duration_ms: 0.217552
+  type: 'test'
+  ...
+# Subtest: resource authority rejects service worker response
+ok 234 - resource authority rejects service worker response
+  ---
+  duration_ms: 0.23029
+  type: 'test'
+  ...
+# Subtest: resource authority rejects answer key leak
+ok 235 - resource authority rejects answer key leak
+  ---
+  duration_ms: 0.279553
+  type: 'test'
+  ...
+# Subtest: resource authority rejects hidden key in project resource
+ok 236 - resource authority rejects hidden key in project resource
+  ---
+  duration_ms: 0.237651
+  type: 'test'
+  ...
+# Subtest: resource authority rejects changed visible version
+ok 237 - resource authority rejects changed visible version
+  ---
+  duration_ms: 0.19588
+  type: 'test'
+  ...
+# Subtest: resource authority rejects unknown visible row
+ok 238 - resource authority rejects unknown visible row
+  ---
+  duration_ms: 0.182269
+  type: 'test'
+  ...
+# Subtest: resource authority rejects wrong resource tenant
+ok 239 - resource authority rejects wrong resource tenant
+  ---
+  duration_ms: 0.174558
+  type: 'test'
+  ...
+# Subtest: resource authority rejects duplicate provider row
+ok 240 - resource authority rejects duplicate provider row
+  ---
+  duration_ms: 0.164333
+  type: 'test'
+  ...
+1..240
+# tests 240
+# suites 0
+# pass 240
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 316.807651
