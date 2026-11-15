@@ -444,6 +444,10 @@
     };
     router.__c6HumanAuthorityGate=true;
     window.addEventListener('cx:protected-auth-hr-authority-ready',()=>setTimeout(()=>release('protected_auth_hr_authority_ready'),0));
+    window.addEventListener('cx:protected-internal-project-ready',()=>setTimeout(()=>{
+      const gate=window.CX_C6_HR_AUTHORITY_GATE||{};
+      if(gate.ready!==true||gate.blocked===true)release('protected_internal_project_ready');
+    },0));
     window.addEventListener('cx:protected-auth-hr-authority-blocked',()=>{if(CX.session?.role&&!humanAuthorityReady())showGate('protected_auth_hr_authority_blocked');});
     window.addEventListener('cx:live-source-updated',()=>{if(humanAuthorityReady())setTimeout(()=>release('live_source_updated'),0);});
     if(CX.bus?.on)CX.bus.on('backend-auth-ready',()=>{

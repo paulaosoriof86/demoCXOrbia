@@ -125,3 +125,41 @@ test('external HR mount keeps its existing operational selection',()=>{
   const f=fixture({internal:false});f.cx.session.view='dashboard';f.cx.router.mount();
   assert.equal(f.cx.session.view,'dashboard');assert.deepEqual(f.calls,['mount']);
 });
+test('internal country update refresh releases C6 after the real Corte4 source transition',async()=>{
+  const timers=[],bus={},events={},eventErrors=[],publishedEvents=[];
+  const f=fixture({mutate:f=>{
+    f.cx.bus={on:(k,cb)=>{(bus[k]??=[]).push(cb);},emit:(k,v)=>{for(const cb of bus[k]||[]){try{cb(v);}catch(e){eventErrors.push(e.message);}}}};
+    f.env.setTimeout=cb=>{timers.push(cb);return timers.length;};f.env.clearTimeout=()=>{};
+    f.env.addEventListener=(k,cb)=>{(events[k]??=[]).push(cb);};
+    f.env.dispatchEvent=ev=>{publishedEvents.push(ev.type);for(const cb of events[ev.type]||[])cb(ev);};
+    f.env.CustomEvent=class{constructor(type,options){this.type=type;this.detail=options?.detail;}};
+    f.env.CX_BACKEND_LAST_STATE={source:'firestore',empty:false,counts:{projects:1}};
+    f.cx.router._reRender=()=>f.cx.router.nav(f.cx.session.view);
+    f.cx.backend={authContext:()=>f.ctx,refresh:async()=>{
+      const record={...f.record,version:2,countries:['GT','HN'],currency:{GT:'Q',HN:'L'}};
+      f.env.CX_BACKEND_AUTHORIZED_STATE={...f.authorized,projects:[record]};
+      f.data.__backendAllProjectRecords=[record];f.data.projects=[record];
+      f.env.CX_BACKEND_LAST_STATE={source:'firestore',empty:false,counts:{projects:1}};
+      f.cx.bus.emit('project',{source:'firestore'});f.cx.bus.emit('shoppers',{});f.cx.bus.emit('visit-flow',{});
+      f.cx.bus.emit('backend-ready',{source:'firestore',empty:false,counts:{projects:1}});
+    }};
+  }});
+  for(const ev of ['project','shoppers','visit-flow'])f.cx.bus.on(ev,()=>f.cx.router.nav(f.cx.session.view));
+  vm.runInContext(fs.readFileSync('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js','utf8'),f.env);
+  vm.runInContext(fs.readFileSync('app/core/backend-cxdata-readonly-corte4.js','utf8'),f.env);
+  f.cx.bus.on('backend-ready',f.env.CX_CORTE4_ENFORCE_READONLY);
+  await f.cx.backend.refresh();
+  for(let i=0;timers.length&&i<20;i++){timers.shift()();await Promise.resolve();await Promise.resolve();}
+  assert.deepEqual(eventErrors,[]);
+  assert.equal(f.env.CX_PROTECTED_AUTH_HR_AUTHORITY.applied,true);
+  assert.equal(f.env.CX_PROTECTED_AUTH_HR_AUTHORITY.internalProjectAuthority,true);
+  assert.equal(f.env.CX_PROTECTED_AUTH_HR_AUTHORITY.hrAuthority,false);
+  assert.equal(f.cx.dataSource.sourceRef,'firestore-internal:tenant-a:project-a');
+  assert.equal(f.data.currentProjectId,'project-a');assert.equal(f.data.currentPeriodId,'');
+  assert.equal(f.env.CX_C6_HR_AUTHORITY_GATE.ready,true);
+  assert.equal(f.env.CX_C6_HR_AUTHORITY_GATE.blocked,false);
+  assert.equal(f.cx.session.view,'config');
+  assert.equal(publishedEvents.includes('cx:protected-auth-hr-authority-ready'),false);
+  assert.equal(publishedEvents.includes('cx:protected-internal-project-ready'),true);
+  assert.equal(f.calls.filter(x=>x==='mount').length,1);
+});

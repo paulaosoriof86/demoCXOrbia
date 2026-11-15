@@ -185,7 +185,15 @@ async function reconcile(reason){
  if(reconciling){bootForce=true;return {ok:false,skipped:true,reason:'reconcile_in_progress_forced_retry'};}
  const c=context(),scope=resolveScope(c);if(!authorized(c,scope))return {ok:false,skipped:true,reason:'principal_or_project_not_ready'};if(!backendReady())return {ok:false,skipped:true,reason:'protected_backend_not_ready'};
  const sessionStamp=sessionGenerationStamp(c,scope),source=operationalSource(scope);
- if(source?.mode==='internal'){assertSessionGeneration(sessionStamp);CX.data.currentProjectId=scope.projectId;CX.data.sourceMode='firestore_internal_project_authority_dev';CX.data.previewMeta=Object.assign({},CX.data.previewMeta||{},{tenantId:scope.tenantId,projectId:scope.projectId,hrAuthority:false,internalProjectAuthority:true,readOnly:true,production:false,atomicPublication:true});if(CX.dataSource){CX.dataSource.mode='connected';CX.dataSource.status='ready';CX.dataSource.sourceRef='firestore-internal:'+scope.tenantId+':'+scope.projectId;CX.dataSource.blockers=[];}window.CX_PROTECTED_AUTH_HR_AUTHORITY={applied:true,version:'v2-internal-project-firestore-authority',tenantId:scope.tenantId,projectId:scope.projectId,internalProjectAuthority:true,sessionGeneration:sessionStamp,atomicPublication:true,providerWrites:0,authWrites:0,rulesDeploys:0,production:false,at:new Date().toISOString()};return {ok:true,result:window.CX_PROTECTED_AUTH_HR_AUTHORITY};}
+ if(source?.mode==='internal'){
+  assertSessionGeneration(sessionStamp);CX.data.currentProjectId=scope.projectId;CX.data.sourceMode='firestore_internal_project_authority_dev';
+  CX.data.previewMeta=Object.assign({},CX.data.previewMeta||{},{tenantId:scope.tenantId,projectId:scope.projectId,hrAuthority:false,internalProjectAuthority:true,readOnly:true,production:false,atomicPublication:true});
+  if(CX.dataSource){CX.dataSource.mode='connected';CX.dataSource.status='ready';CX.dataSource.sourceRef='firestore-internal:'+scope.tenantId+':'+scope.projectId;CX.dataSource.blockers=[];}
+  window.CX_PROTECTED_AUTH_HR_AUTHORITY={applied:true,version:'v2-internal-project-firestore-authority',tenantId:scope.tenantId,projectId:scope.projectId,hrAuthority:false,internalProjectAuthority:true,sessionGeneration:sessionStamp,atomicPublication:true,providerWrites:0,authWrites:0,rulesDeploys:0,production:false,at:new Date().toISOString()};
+  // Complete the internal publication without waking HR-only consumers.
+  try{window.dispatchEvent(new CustomEvent('cx:protected-internal-project-ready',{detail:clone(window.CX_PROTECTED_AUTH_HR_AUTHORITY)}));}catch(_){}
+  return {ok:true,result:window.CX_PROTECTED_AUTH_HR_AUTHORITY};
+ }
  if(!depsReady())return {ok:false,skipped:true,reason:'runtime_dependencies_not_ready'};
  let state=samePrincipal(lastProtectedState,c)?lastProtectedState:capture();if(!state)state={role:str(c.role),authNamespace:str(c.authNamespace),shopperId:str(c.shopperId),actorUid:principalUid(),tenantId:scope.tenantId,projectId:scope.projectId,projects:[],visits:[],shoppers:[],posts:[],reservations:[],certifications:[],liquidations:[],capturedAt:new Date().toISOString()};
  reconciling=true;

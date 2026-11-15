@@ -5,6 +5,7 @@ import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { chromium } from 'playwright';
 import {assertFocalConfigAuthority,buildFocalHrReference,knownAmount} from './cxorbia-pre-i4-focal-hr-reference.mjs';
+import {validateFocalResourceRead} from './cxorbia-pre-i4-resource-read-contract.mjs';
 // PRE-I4 FAST-PATH CONTROL: routed HR authority settle; product source remains immutable.
 
 const OUT=process.env.PREI4_OUT;
@@ -183,9 +184,18 @@ async function signInMember(member,kind,route,options={}){
       throw new Error((/Missing or insufficient permissions|permission-denied/i.test(msg)?'AUTH_FAILURE':'FUNCTIONAL_DEFECT')+':'+kind+'_ROUTE_'+r+':'+msg);
     }
     const routeSettleMs=await waitForRouteSettle(page,r,kind);
+    let resourceRemote=null;
     if(r==='documentos'){
       try{
-        await page.evaluate(async()=>{if(window.CX?.backendResources?.load)await window.CX.backendResources.load({projectId:window.CX.data.currentProjectId,periodId:window.CX.data.currentPeriodId});});
+        const load=()=>page.evaluate(async()=>{if(window.CX?.backendResources?.load)await window.CX.backendResources.load({projectId:window.CX.data.currentProjectId,periodId:window.CX.data.currentPeriodId});});
+        if(kind==='shopper'){
+          const endpoint=ROOT+'/api/tenants/'+encodeURIComponent(tenantId)+'/projects/'+encodeURIComponent(projectId)+'/certifications/shopper-resources?periodId='+encodeURIComponent(periodId);
+          const [response]=await Promise.all([page.waitForResponse(res=>res.url()===endpoint&&res.request().method()==='GET',{timeout:30000}),load()]);
+          const headers=await response.request().allHeaders();
+          resourceRemote={url:response.url(),method:response.request().method(),status:response.status(),
+            authorizationPresent:/^Bearer\s+\S+/.test(headers.authorization||''),
+            fromServiceWorker:response.fromServiceWorker(),body:await response.json()};
+        }else await load();
       }catch(error){
         const msg=String(error&&error.message||error||'unknown').slice(0,700);
         throw new Error((/Missing or insufficient permissions|permission-denied/i.test(msg)?'AUTH_FAILURE':'FUNCTIONAL_DEFECT')+':'+kind+'_ROUTE_'+r+'_RESOURCE_LOAD:'+msg);
@@ -292,7 +302,7 @@ async function signInMember(member,kind,route,options={}){
       const resources=window.CX?.backendResources?.list?.({projectId:d.currentProjectId,periodId:d.currentPeriodId,resourceType:'project_resource'})||[];
       const resourceRows=resources.map(x=>({
         id:String(x?.id||''),name:String(x?.n||x?.name||''),meta:String(x?.meta||''),resourceType:String(x?.resourceType||''),
-        source:String(x?.source||x?.origin||''),demo:x?.demo===true,status:String(x?.status||'')
+        source:String(x?.source||x?.origin||''),demo:x?.demo===true,status:String(x?.status||''),version:Number(x?.version||0)
       }));
       const isStaticResourceSeed=x=>/^demo(?:-|$)/i.test(String(x?.id||''))||x?.demo===true||['demo','static_seed','seed','local_demo'].includes(String(x?.source||'').toLowerCase());
       if(isStaticResourceSeed({id:'res-real-1',name:'Checklist de visita',source:'firestore'})||!isStaticResourceSeed({id:'demo-d1',name:'Instructivo general (demo)',source:'demo'}))throw new Error('RELEASE_COMPOSITION_FAILURE:RESOURCE_SEED_DETECTOR_SELFTEST');
@@ -321,7 +331,9 @@ async function signInMember(member,kind,route,options={}){
         liquidations:Array.isArray(liqs)?{count:liqs.length,GT:liqs.filter(x=>x.pais==='GT').length,HN:liqs.filter(x=>x.pais==='HN').length,paymentsConfirmed:liqs.filter(x=>x.paymentConfirmed===true).length,liquidationsConfirmed:liqs.filter(x=>x.liquidationConfirmed===true).length}:null,
         shopper:kind==='shopper'?{stats:typeof d.shopperStats==='function'?d.shopperStats(sid):null,ownCount:own.length,duplicateVisits:own.length-new Set(own.map(v=>String(v.id||v.visitId))).size,postCount:postRows.length,postBranchRowsVisible:postRows.length===shopperVisibleAppRows.length&&postRows.every(x=>!!x.sucursal&&shopperVisibleAppRows.some(y=>y.state===String(x.syncState||'')&&y.text.includes(norm(x.sucursal)))),postRows,visibleAppStates:shopperVisibleAppStates,misvisitasDiagnostics,profileName:sessionProfileName,profileVisible,benefitExpectedCount:ownBenefits.length,benefitBranchVisibleCount}:null,
         postulationSync:r==='postulaciones'?{expectedStates:periodPostRows.map(x=>x.syncState).sort(),visibleStates:adminVisiblePostSyncStates.slice().sort(),expectedConflicts:periodPostRows.filter(x=>x.syncState==='conflict_review_required').length,visibleConflicts:adminVisiblePostSyncStates.filter(x=>x==='conflict_review_required').length}:null,
-        resources:r==='documentos'?{count:resourceRows.length,names:resourceRows.map(x=>x.name),rows:resourceRows,staticResourceSeedIds,status:window.CX_BACKEND_RESOURCES_STATUS||null,storage:window.CX?.backendResources?.storageStatus?.()||null}:null,
+        resources:r==='documentos'?{count:resourceRows.length,names:resourceRows.map(x=>x.name),rows:resourceRows,staticResourceSeedIds,status:window.CX_BACKEND_RESOURCES_STATUS||null,storage:window.CX?.backendResources?.storageStatus?.()||null,
+          principal:{uid:String(window.firebase?.auth?.().currentUser?.uid||''),authenticated:c.authenticated===true,
+            role:String(c.role||''),authNamespace:String(c.authNamespace||''),tenantId:String(c.tenantId||''),shopperId:String(c.shopperId||'')}}:null,
         certification:r==='cert'?{sourceStatus:String(certEvidence.sourceStatus||''),evidenceCandidateCount:Number(certEvidence.evidenceCandidateCount||0),carryoverConfirmed:Number(certEvidence.carryoverConfirmed||0),eligibilityGranted:Number(certEvidence.eligibilityGranted||0),bank:window.CX?.certStore?.bank?.(d.currentPeriodId)||null}:null,
         mobileIdentity:(()=>{const el=document.getElementById('tbRoleIdentity');return el?{text:String(el.innerText||''),visible:getComputedStyle(el).display!=='none'}:null;})(),
         scrollWidth:document.documentElement.scrollWidth,innerWidth:window.innerWidth
@@ -396,8 +408,8 @@ async function signInMember(member,kind,route,options={}){
     }
     if(r==='documentos'){
       if(info.bodyHasStaticSeed)throw new Error('PERSISTENCE_FAILURE:STATIC_RESOURCE_SEED_VISIBLE:'+JSON.stringify(info.resources));
-      if(info.resources?.status?.status!=='ready'||info.resources?.status?.source!=='firestore')throw new Error('PERSISTENCE_FAILURE:RESOURCE_CONNECTED_READ_NOT_READY:'+JSON.stringify(info.resources));
-      if(kind==='shopper'&&info.resources?.status?.status!=='ready')throw new Error('AUTH_FAILURE:SHOPPER_RESOURCE_READ_NOT_READY:'+JSON.stringify(info.resources));
+      info.resources.authorityProof=validateFocalResourceRead({resources:info.resources,principal:info.resources?.principal,
+        expected:{kind,uid:member.id,shopperId:member.shopperId,tenantId,projectId,periodId,origin:ROOT},remote:resourceRemote});
     }
     if(r==='cert'){
       if(info.bodyHasDemoApproval||!info.certification||/demo/i.test(String(info.certification?.sourceStatus||'')))throw new Error('MAPPING_FAILURE:CERTIFICATION_FALSE_AUTHORITY:'+JSON.stringify(info.certification));
