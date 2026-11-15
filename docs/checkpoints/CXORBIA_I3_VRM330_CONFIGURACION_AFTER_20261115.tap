@@ -1,0 +1,58 @@
+TAP version 13
+# Subtest: configuration protected authority never becomes local editing when command writes are off
+ok 1 - configuration protected authority never becomes local editing when command writes are off
+  ---
+  duration_ms: 9.616579
+  type: 'test'
+  ...
+# Subtest: protected users with command gate off cannot load local roles or expose a local save
+ok 2 - protected users with command gate off cannot load local roles or expose a local save
+  ---
+  duration_ms: 1.387332
+  type: 'test'
+  ...
+# Subtest: project configuration requires provider ACK and independent project readback
+ok 3 - project configuration requires provider ACK and independent project readback
+  ---
+  duration_ms: 1.327394
+  type: 'test'
+  ...
+# Subtest: questionnaire program is isolated by period, cloned and published only after durable ACK
+ok 4 - questionnaire program is isolated by period, cloned and published only after durable ACK
+  ---
+  duration_ms: 9.858945
+  type: 'test'
+  ...
+# Subtest: program with no write authority reports draft-only without inventing a durable save
+ok 5 - program with no write authority reports draft-only without inventing a durable save
+  ---
+  duration_ms: 1.701738
+  type: 'test'
+  ...
+# Subtest: period creation waits for ACK and reload before switching the active period
+ok 6 - period creation waits for ACK and reload before switching the active period
+  ---
+  duration_ms: 2.071325
+  type: 'test'
+  ...
+# Subtest: period close refuses incomplete ACK without applying or closing the dialog
+ok 7 - period close refuses incomplete ACK without applying or closing the dialog
+  ---
+  duration_ms: 1.359762
+  type: 'test'
+  ...
+# Subtest: shared modal replaces previous dialog, closes only the top on Escape and restores focus
+ok 8 - shared modal replaces previous dialog, closes only the top on Escape and restores focus
+  ---
+  duration_ms: 2.498517
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 116.659662

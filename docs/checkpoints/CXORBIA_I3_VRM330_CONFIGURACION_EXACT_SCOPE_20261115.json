@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "cxorbia.i3.p0.exact-scope.v1",
+  "findingId": "VRM-330",
+  "priority": "P0_PROVEN",
+  "classification": "FUNCTIONAL_DEFECT",
+  "expectedParentSha": "0dc53acc299e62fa65cf2a034189a4c28f8d9c2b",
+  "servingSourceSha": "7d8aa5f8208f059c3ff643f72ab42a6866301e6e",
+  "allowedProductFiles": [
+    "app/modules/configuracion.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-q2-frontend-owner-behavior.test.mjs"
+  ],
+  "reproduction": "Canonical tenant + protected runtime + enableCommandWrites=false entered local NDA/user/config branches; NDA updated local state and showed success without provider ACK.",
+  "expected": "Protected configuration is read-only when remote writes are unavailable; no browser-local operational success.",
+  "observedBefore": {
+    "tests": 8,
+    "pass": 6,
+    "fail": 2,
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM330_CONFIGURACION_BEFORE_20261115.tap",
+    "gitBlob": "4fe349295d8c6e04819341086e869c241e82adfd"
+  },
+  "sameRootAs": "VRM-330 protected Marca/Administrabilidad write-gate fallback",
+  "production": false,
+  "authorizationI4": false
+}

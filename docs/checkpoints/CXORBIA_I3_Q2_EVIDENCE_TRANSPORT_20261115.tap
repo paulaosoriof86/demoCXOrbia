@@ -1,0 +1,526 @@
+TAP version 13
+# Subtest: 21 source-ready domains can enter terminal E2E while 16 remain uncertified
+ok 1 - 21 source-ready domains can enter terminal E2E while 16 remain uncertified
+  ---
+  duration_ms: 2.333657
+  type: 'test'
+  ...
+# Subtest: unproven current owner cannot be source-ready
+ok 2 - unproven current owner cannot be source-ready
+  ---
+  duration_ms: 0.454551
+  type: 'test'
+  ...
+# Subtest: missing approval, unmapped owner or blob provenance blocks terminal
+ok 3 - missing approval, unmapped owner or blob provenance blocks terminal
+  ---
+  duration_ms: 0.705081
+  type: 'test'
+  ...
+# Subtest: duplicate domains and duplicate loaded owners block terminal
+ok 4 - duplicate domains and duplicate loaded owners block terminal
+  ---
+  duration_ms: 0.50795
+  type: 'test'
+  ...
+# Subtest: a historically MATCH domain without active owner remains source-ready
+ok 5 - a historically MATCH domain without active owner remains source-ready
+  ---
+  duration_ms: 1.012826
+  type: 'test'
+  ...
+# Subtest: shared declared owners enable a module without inventing a second inventory row
+ok 6 - shared declared owners enable a module without inventing a second inventory row
+  ---
+  duration_ms: 0.996171
+  type: 'test'
+  ...
+# Subtest: a shared unproven owner blocks both modules; an absent or excluded owner never passes vacuously
+ok 7 - a shared unproven owner blocks both modules; an absent or excluded owner never passes vacuously
+  ---
+  duration_ms: 0.371829
+  type: 'test'
+  ...
+# Subtest: the terminal workflow uses current source-ready proof, never the old 21-MATCH prerequisite
+ok 8 - the terminal workflow uses current source-ready proof, never the old 21-MATCH prerequisite
+  ---
+  duration_ms: 1.866948
+  type: 'test'
+  ...
+# Subtest: C3 recovers exact-owner source proof without promoting pending human acceptance
+ok 9 - C3 recovers exact-owner source proof without promoting pending human acceptance
+  ---
+  duration_ms: 0.556472
+  type: 'test'
+  ...
+# Subtest: C3 recognizes Academy source-count QA only within its explicit owner scope
+ok 10 - C3 recognizes Academy source-count QA only within its explicit owner scope
+  ---
+  duration_ms: 0.307374
+  type: 'test'
+  ...
+# Subtest: C3 preserves exact QA receipt file and Git blob binding for scoped Q2 evidence
+ok 11 - C3 preserves exact QA receipt file and Git blob binding for scoped Q2 evidence
+  ---
+  duration_ms: 0.197932
+  type: 'test'
+  ...
+# Subtest: C3 rejects mere green status, failing QA, wrong source, production proof and unowned paths
+ok 12 - C3 rejects mere green status, failing QA, wrong source, production proof and unowned paths
+  ---
+  duration_ms: 0.37202
+  type: 'test'
+  ...
+# Subtest: C3 preserves cumulative independent F12 and D08 receipts across control versions
+ok 13 - C3 preserves cumulative independent F12 and D08 receipts across control versions
+  ---
+  duration_ms: 103.092473
+  type: 'test'
+  ...
+# Subtest: I3 current authority aliases are bound to the same C3 source, matrix, ledger and receipt
+ok 14 - I3 current authority aliases are bound to the same C3 source, matrix, ledger and receipt
+  ---
+  duration_ms: 45.47154
+  type: 'test'
+  ...
+# Subtest: configuration protected authority never becomes local editing when command writes are off
+ok 15 - configuration protected authority never becomes local editing when command writes are off
+  ---
+  duration_ms: 15.011354
+  type: 'test'
+  ...
+# Subtest: protected users with command gate off cannot load local roles or expose a local save
+ok 16 - protected users with command gate off cannot load local roles or expose a local save
+  ---
+  duration_ms: 2.513724
+  type: 'test'
+  ...
+# Subtest: project configuration requires provider ACK and independent project readback
+ok 17 - project configuration requires provider ACK and independent project readback
+  ---
+  duration_ms: 2.746427
+  type: 'test'
+  ...
+# Subtest: questionnaire program is isolated by period, cloned and published only after durable ACK
+ok 18 - questionnaire program is isolated by period, cloned and published only after durable ACK
+  ---
+  duration_ms: 5.141574
+  type: 'test'
+  ...
+# Subtest: program with no write authority reports draft-only without inventing a durable save
+ok 19 - program with no write authority reports draft-only without inventing a durable save
+  ---
+  duration_ms: 1.316074
+  type: 'test'
+  ...
+# Subtest: period creation waits for ACK and reload before switching the active period
+ok 20 - period creation waits for ACK and reload before switching the active period
+  ---
+  duration_ms: 2.350372
+  type: 'test'
+  ...
+# Subtest: period close refuses incomplete ACK without applying or closing the dialog
+ok 21 - period close refuses incomplete ACK without applying or closing the dialog
+  ---
+  duration_ms: 1.160404
+  type: 'test'
+  ...
+# Subtest: shared modal replaces previous dialog, closes only the top on Escape and restores focus
+ok 22 - shared modal replaces previous dialog, closes only the top on Escape and restores focus
+  ---
+  duration_ms: 2.144643
+  type: 'test'
+  ...
+# Subtest: Hosting receipt verifies actual hashes and the changed owner, not a frozen count
+ok 23 - Hosting receipt verifies actual hashes and the changed owner, not a frozen count
+  ---
+  duration_ms: 2.960092
+  type: 'test'
+  ...
+# Subtest: same source, pointers, counts and frozen priority pass
+ok 24 - same source, pointers, counts and frozen priority pass
+  ---
+  duration_ms: 18.81931
+  type: 'test'
+  ...
+# Subtest: independent RUN2382 DEV provider receipt detects a falsely pending already-served source
+ok 25 - independent RUN2382 DEV provider receipt detects a falsely pending already-served source
+  ---
+  duration_ms: 3.509779
+  type: 'test'
+  ...
+# Subtest: current source serving cannot retain SOURCE_ONLY matrix classification
+ok 26 - current source serving cannot retain SOURCE_ONLY matrix classification
+  ---
+  duration_ms: 2.121924
+  type: 'test'
+  ...
+# Subtest: stale next action fails closed
+ok 27 - stale next action fails closed
+  ---
+  duration_ms: 1.657549
+  type: 'test'
+  ...
+# Subtest: legacy next-action field may not silently contradict the authoritative pointer
+ok 28 - legacy next-action field may not silently contradict the authoritative pointer
+  ---
+  duration_ms: 5.91348
+  type: 'test'
+  ...
+# Subtest: descriptor compatibility next-action cannot reactivate a completed historical block
+ok 29 - descriptor compatibility next-action cannot reactivate a completed historical block
+  ---
+  duration_ms: 5.991361
+  type: 'test'
+  ...
+# Subtest: rewriting prose does not erase a proven fusion or verified DEV receipt
+ok 30 - rewriting prose does not erase a proven fusion or verified DEV receipt
+  ---
+  duration_ms: 3.225214
+  type: 'test'
+  ...
+# Subtest: current fusion proof is structured, not counted by a sentence
+ok 31 - current fusion proof is structured, not counted by a sentence
+  ---
+  duration_ms: 6.521163
+  type: 'test'
+  ...
+# Subtest: frozen B8/B9 gates validate structured scope rather than specific prose words
+ok 32 - frozen B8/B9 gates validate structured scope rather than specific prose words
+  ---
+  duration_ms: 6.887645
+  type: 'test'
+  ...
+# Subtest: current checkpoint and handoff cannot silently carry a predecessor DEV version
+ok 33 - current checkpoint and handoff cannot silently carry a predecessor DEV version
+  ---
+  duration_ms: 6.444801
+  type: 'test'
+  ...
+# Subtest: current V5 checkpoint supersedes old receipt without erasing its historical identity proof
+ok 34 - current V5 checkpoint supersedes old receipt without erasing its historical identity proof
+  ---
+  duration_ms: 2.62629
+  type: 'test'
+  ...
+# Subtest: a verified old DEV seal is allowed while a new P0 source awaits materialization, without claiming it is served
+ok 35 - a verified old DEV seal is allowed while a new P0 source awaits materialization, without claiming it is served
+  ---
+  duration_ms: 2.543717
+  type: 'test'
+  ...
+# Subtest: newer Hosting-only receipt is independently pinned while previous paired runtime seal remains intact
+ok 36 - newer Hosting-only receipt is independently pinned while previous paired runtime seal remains intact
+  ---
+  duration_ms: 1.607003
+  type: 'test'
+  ...
+# Subtest: one exact source-tested successor can await Hosting-only DEV without falsifying prior Hosting
+ok 37 - one exact source-tested successor can await Hosting-only DEV without falsifying prior Hosting
+  ---
+  duration_ms: 1.948098
+  type: 'test'
+  ...
+# Subtest: a pending source cannot claim an unrelated or unproven previous Hosting deployment
+ok 38 - a pending source cannot claim an unrelated or unproven previous Hosting deployment
+  ---
+  duration_ms: 5.502519
+  type: 'test'
+  ...
+# Subtest: a newer Hosting deployment cannot retain stale source-only or pending-materialization status
+ok 39 - a newer Hosting deployment cannot retain stale source-only or pending-materialization status
+  ---
+  duration_ms: 2.894456
+  type: 'test'
+  ...
+# Subtest: a newer Hosting receipt mismatched across descriptor, pointer or provider is not a green control
+ok 40 - a newer Hosting receipt mismatched across descriptor, pointer or provider is not a green control
+  ---
+  duration_ms: 3.707407
+  type: 'test'
+  ...
+# Subtest: V5 current checkpoint cannot claim more fused profiles than the approved cohort
+ok 41 - V5 current checkpoint cannot claim more fused profiles than the approved cohort
+  ---
+  duration_ms: 1.479105
+  type: 'test'
+  ...
+# Subtest: lost receipt or divergent fusion status fails closed
+ok 42 - lost receipt or divergent fusion status fails closed
+  ---
+  duration_ms: 2.841859
+  type: 'test'
+  ...
+# Subtest: stale module counts fail closed
+ok 43 - stale module counts fail closed
+  ---
+  duration_ms: 1.310987
+  type: 'test'
+  ...
+# Subtest: a legacy direct matrix path cannot silently point at a superseded version
+ok 44 - a legacy direct matrix path cannot silently point at a superseded version
+  ---
+  duration_ms: 1.3468
+  type: 'test'
+  ...
+# Subtest: top-level compatibility blob anchors cannot point at an older root document
+ok 45 - top-level compatibility blob anchors cannot point at an older root document
+  ---
+  duration_ms: 3.97391
+  type: 'test'
+  ...
+# Subtest: matrix-reported counts must match actual module classifications
+ok 46 - matrix-reported counts must match actual module classifications
+  ---
+  duration_ms: 1.477843
+  type: 'test'
+  ...
+# Subtest: a current Hosting receipt rejects a matrix that still claims source-only predecessor
+ok 47 - a current Hosting receipt rejects a matrix that still claims source-only predecessor
+  ---
+  duration_ms: 1.467107
+  type: 'test'
+  ...
+# Subtest: different source and frozen document bytes fail closed
+ok 48 - different source and frozen document bytes fail closed
+  ---
+  duration_ms: 1.412627
+  type: 'test'
+  ...
+# Subtest: premature production and stale progress authority fail closed
+ok 49 - premature production and stale progress authority fail closed
+  ---
+  duration_ms: 1.359959
+  type: 'test'
+  ...
+# Subtest: the frozen shock status schedules the existing source proof after authority and has no cloud permissions
+ok 50 - the frozen shock status schedules the existing source proof after authority and has no cloud permissions
+  ---
+  duration_ms: 4.285961
+  type: 'test'
+  ...
+# Subtest: source-proof accepts shock without weakening materialization guards or reporting invented closure counts
+ok 51 - source-proof accepts shock without weakening materialization guards or reporting invented closure counts
+  ---
+  duration_ms: 0.542711
+  type: 'test'
+  ...
+# Subtest: the canonical workflow remains within the enforced 500 KB file limit
+ok 52 - the canonical workflow remains within the enforced 500 KB file limit
+  ---
+  duration_ms: 0.140557
+  type: 'test'
+  ...
+# Subtest: one proven runtime/Hosting successor retains immutable serving receipts while waiting for DEV
+ok 53 - one proven runtime/Hosting successor retains immutable serving receipts while waiting for DEV
+  ---
+  duration_ms: 1.86131
+  type: 'test'
+  ...
+# Subtest: runtime/Hosting pending transition rejects tree, ancestry, committed proof or extra product drift
+ok 54 - runtime/Hosting pending transition rejects tree, ancestry, committed proof or extra product drift
+  ---
+  duration_ms: 11.974268
+  type: 'test'
+  ...
+# Subtest: one exact browser-owner P0 successor can await Hosting-only DEV with prior runtime unchanged
+ok 55 - one exact browser-owner P0 successor can await Hosting-only DEV with prior runtime unchanged
+  ---
+  duration_ms: 5.786768
+  type: 'test'
+  ...
+# Subtest: VRM313: a proven paired predecessor retains its exact materialization receipt through the pending source transition
+ok 56 - VRM313: a proven paired predecessor retains its exact materialization receipt through the pending source transition
+  ---
+  duration_ms: 1.550811
+  type: 'test'
+  ...
+# Subtest: VRM313: paired predecessor source, artifact, runtime, hosting and receipt cannot be fabricated
+ok 57 - VRM313: paired predecessor source, artifact, runtime, hosting and receipt cannot be fabricated
+  ---
+  duration_ms: 9.507574
+  type: 'test'
+  ...
+# Subtest: same-run proof returns exactly ten registered owners without functional acceptance
+ok 58 - same-run proof returns exactly ten registered owners without functional acceptance
+  ---
+  duration_ms: 3.640558
+  type: 'test'
+  ...
+# Subtest: rejects a different sourceSha
+ok 59 - rejects a different sourceSha
+  ---
+  duration_ms: 0.659064
+  type: 'test'
+  ...
+# Subtest: rejects a different sourceTree
+ok 60 - rejects a different sourceTree
+  ---
+  duration_ms: 1.493186
+  type: 'test'
+  ...
+# Subtest: rejects a different controlSha
+ok 61 - rejects a different controlSha
+  ---
+  duration_ms: 0.273725
+  type: 'test'
+  ...
+# Subtest: rejects a different runId
+ok 62 - rejects a different runId
+  ---
+  duration_ms: 0.253214
+  type: 'test'
+  ...
+# Subtest: rejects a different runAttempt
+ok 63 - rejects a different runAttempt
+  ---
+  duration_ms: 0.207096
+  type: 'test'
+  ...
+# Subtest: missing attempt is rejected even if both receipt and expectation omit it
+ok 64 - missing attempt is rejected even if both receipt and expectation omit it
+  ---
+  duration_ms: 0.707986
+  type: 'test'
+  ...
+# Subtest: rejects modified owner blob
+ok 65 - rejects modified owner blob
+  ---
+  duration_ms: 0.615579
+  type: 'test'
+  ...
+# Subtest: rejects modified test blob
+ok 66 - rejects modified test blob
+  ---
+  duration_ms: 0.517745
+  type: 'test'
+  ...
+# Subtest: rejects missing coverage
+ok 67 - rejects missing coverage
+  ---
+  duration_ms: 0.625424
+  type: 'test'
+  ...
+# Subtest: rejects duplicate coverage
+ok 68 - rejects duplicate coverage
+  ---
+  duration_ms: 0.442143
+  type: 'test'
+  ...
+# Subtest: rejects foreign-owner coverage
+ok 69 - rejects foreign-owner coverage
+  ---
+  duration_ms: 0.382996
+  type: 'test'
+  ...
+# Subtest: rejects foreign-test coverage
+ok 70 - rejects foreign-test coverage
+  ---
+  duration_ms: 0.267966
+  type: 'test'
+  ...
+# Subtest: rejects registry coverage
+ok 71 - rejects registry coverage
+  ---
+  duration_ms: 0.245943
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence exit
+ok 72 - rejects invalid test evidence exit
+  ---
+  duration_ms: 0.523703
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence zero
+ok 73 - rejects invalid test evidence zero
+  ---
+  duration_ms: 0.319032
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence fail
+ok 74 - rejects invalid test evidence fail
+  ---
+  duration_ms: 0.34491
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence cancelled
+ok 75 - rejects invalid test evidence cancelled
+  ---
+  duration_ms: 0.248697
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence skipped
+ok 76 - rejects invalid test evidence skipped
+  ---
+  duration_ms: 0.232032
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence todo
+ok 77 - rejects invalid test evidence todo
+  ---
+  duration_ms: 0.327604
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence summary
+ok 78 - rejects invalid test evidence summary
+  ---
+  duration_ms: 0.252343
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence log
+ok 79 - rejects invalid test evidence log
+  ---
+  duration_ms: 0.295196
+  type: 'test'
+  ...
+# Subtest: rejects invalid test evidence hash
+ok 80 - rejects invalid test evidence hash
+  ---
+  duration_ms: 0.226254
+  type: 'test'
+  ...
+# Subtest: rejects altered production
+ok 81 - rejects altered production
+  ---
+  duration_ms: 0.283229
+  type: 'test'
+  ...
+# Subtest: rejects altered scope
+ok 82 - rejects altered scope
+  ---
+  duration_ms: 0.225594
+  type: 'test'
+  ...
+# Subtest: rejects a digest mismatch before looking up source blobs
+ok 83 - rejects a digest mismatch before looking up source blobs
+  ---
+  duration_ms: 0.340363
+  type: 'test'
+  ...
+# Subtest: workflow carries the same-run receipt through both C3 invocations
+ok 84 - workflow carries the same-run receipt through both C3 invocations
+  ---
+  duration_ms: 4.144312
+  type: 'test'
+  ...
+# Subtest: computed 21/21 source evidence enables the next job without changing four integral MATCH
+ok 85 - computed 21/21 source evidence enables the next job without changing four integral MATCH
+  ---
+  duration_ms: 3.683061
+  type: 'test'
+  ...
+# Subtest: one missing source proof keeps the consumer disabled and rejects a stale optimistic counter
+ok 86 - one missing source proof keeps the consumer disabled and rejects a stale optimistic counter
+  ---
+  duration_ms: 1.020066
+  type: 'test'
+  ...
+1..86
+# tests 86
+# suites 0
+# pass 86
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 279.213629

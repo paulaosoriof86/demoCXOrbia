@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "cxorbia.i3.p0.source-proof.v1",
+  "sourceSha": "c44d93a9f8ee69dbff189acc6f3517de850408d0",
+  "sourceTree": "afb951daceef708197cd47ba6e951929c56af935",
+  "predecessorProductSourceSha": "7d8aa5f8208f059c3ff643f72ab42a6866301e6e",
+  "sourceTestsPass": 8,
+  "sourceTestsFail": 0,
+  "allowedProductFiles": [
+    "app/modules/configuracion.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-q2-frontend-owner-behavior.test.mjs"
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM330_CONFIGURACION_EXACT_SCOPE_20261115.json",
+  "scopeReceiptBlob": "0424b0d10cec169bea449027133e218acbf17dc1",
+  "findings": [
+    {
+      "id": "VRM-330",
+      "priority": "P0_PROVEN"
+    }
+  ],
+  "sourceQaScope": "LOCAL_SYNTHETIC_BEHAVIOR_NO_EXTERNAL_WRITES_NOT_TERMINAL_E2E",
+  "sourceTestReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM330_CONFIGURACION_AFTER_20261115.tap",
+    "gitBlob": "fc1dc07291d1d9f5330b42c71541a26b4387052a"
+  },
+  "transportGuardReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_Q2_EVIDENCE_TRANSPORT_20261115.tap",
+    "gitBlob": "8c078ea27913b577679a9388f7f8581c31c1121b",
+    "pass": 86,
+    "fail": 0
+  },
+  "devPublished": false,
+  "humanAcceptance": "PENDING",
+  "production": false,
+  "updatedAt": "2026-11-15T16:01:02.900676+00:00"
+}

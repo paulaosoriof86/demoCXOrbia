@@ -1,0 +1,48 @@
+✖ configuration protected authority never becomes local editing when command writes are off (5.709635ms)
+✖ protected users with command gate off cannot load local roles or expose a local save (2.512862ms)
+✔ project configuration requires provider ACK and independent project readback (3.293325ms)
+✔ questionnaire program is isolated by period, cloned and published only after durable ACK (3.553329ms)
+✔ program with no write authority reports draft-only without inventing a durable save (2.181844ms)
+✔ period creation waits for ACK and reload before switching the active period (1.806879ms)
+✔ period close refuses incomplete ACK without applying or closing the dialog (1.065243ms)
+✔ shared modal replaces previous dialog, closes only the top on Escape and restores focus (1.524662ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 6
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 131.060412
+
+✖ failing tests:
+
+test at tools/qa/cxorbia-i3-q2-frontend-owner-behavior.test.mjs:40:1
+✖ configuration protected authority never becomes local editing when command writes are off (5.709635ms)
+  AssertionError [ERR_ASSERTION]: nda requires a read-only surface
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-q2-frontend-owner-behavior.test.mjs:44:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '<div class="card card-p">\n      <div class="card-t" style="margin-bottom:10px">NDA / Acuerdo de confidencialidad</div>\n      <textarea class="inp" id="cfg_nda" rows="6">Original</textarea>\n      <div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="saveNDA">Guardar NDA</button></div>\n    </div>',
+    expected: /data-config-locked=/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-q2-frontend-owner-behavior.test.mjs:50:1
+✖ protected users with command gate off cannot load local roles or expose a local save (2.512862ms)
+  TypeError [Error]: CX.ROLES is not iterable
+      at allRoles (app/modules/configuracion.js:351:29)
+      at draw (app/modules/configuracion.js:356:17)
+      at Object.usuarios (app/modules/configuracion.js:495:3)
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-q2-frontend-owner-behavior.test.mjs:51:42)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)

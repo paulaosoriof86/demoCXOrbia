@@ -98,7 +98,9 @@ test('C3 preterminal can audit the HOLD candidate without pretending it is 21/21
   assert.match(pre,/PRESERVED_NON_AUTHORITY/);
   assert.match(pre,/historicalMatchPreserved/);
   assert.match(pre,/terminalEligible:/);
-  assert.match(job,/HOLD_C3_PRETERMINAL_SOURCE_EVIDENCE_PENDING/);
+  assert.match(job,/node tools\/qa\/cxorbia-i3-c3-preterminal-result\.mjs/);
+  const resultWriter=fs.readFileSync('tools/qa/cxorbia-i3-c3-preterminal-result.mjs','utf8');
+  assert.match(resultWriter,/HOLD_C3_PRETERMINAL_SOURCE_EVIDENCE_PENDING/);
   assert.match(job,/C3_AUTH_STATUS/);
   assert.match(final,/C3_PENDING_SOURCE_APPROVAL_MAPPING/);
   assert.match(final,/if\(cls==='MATCH'&&!pending\.length\)continue/);
