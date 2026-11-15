@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm043.durable-authority-reader-fix.v1",
+  "generatedAt": "2026-11-15T19:46:11.990986+00:00",
+  "iteration": "I3",
+  "state": "HOLD",
+  "decision": "GO_SIX_REFERENCE_DURABLE_AUTHORITY_AND_QA_REPLAY__HOLD_TERMINAL_REPROOF",
+  "findingId": "VRM-043",
+  "classification": "MAPPING_FAILURE",
+  "productDefect": false,
+  "productSourceChanged": false,
+  "sourceSha": "fdc73f7fe925db9edae1e2f73561f7496c451508",
+  "sourceTree": "5bbc8da456c58ce116e6506e6d56bfc0a2c36d33",
+  "controlSha": "386d4feb951e6ccf32b0a5e41a28e3c6c0a198fc",
+  "runId": 43753750350,
+  "runNumber": 2529,
+  "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43753750350",
+  "jobId": 132933401271,
+  "jobConclusion": "success",
+  "artifactId": 14177516920,
+  "artifactDigest": "sha256:db4e3443192d897599e2765aefcfbbcb621b016aaff74a6cbb1ebd17df93f83a",
+  "artifactDigestVerified": true,
+  "rawReadback": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM043_RUN2529_RAW_AUTHORITY_20261115.json",
+    "gitBlob": "a6f274a83f9905fb11b8010d9043abb22e3a18ca",
+    "sha256": "4ff7a16902825b33594a8870c51b440d70f5255caef86e7117a086a7b0e0b422"
+  },
+  "localQaReplay": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM043_RUN2529_QA_REPLAY_20261115.json",
+    "gitBlob": "ead7237e852c5577146295b5a535b0214dd6ec51",
+    "beforeResolved": 0,
+    "afterResolved": 6,
+    "references": 6,
+    "testsPassed": 53,
+    "testsFailed": 0
+  },
+  "liveEvidence": {
+    "exactQueries": 96,
+    "uniqueDocuments": 16,
+    "links": 5,
+    "committedReceipts": 5,
+    "exactCrosswalks": 6,
+    "sourceAliasPairs": 6,
+    "deterministicAliasSetLinkHashesPass": 5,
+    "conflictingMatches": 0,
+    "linkProviderAckAbsent": 5,
+    "receiptProviderAckTrue": 5,
+    "historicalHumanAuthorityDate": "2026-10-04"
+  },
+  "rootCause": "Historical approved links omit providerAck. The provider persisted ACK in commandReceipts/{authorityRef}; the QA helper required an inline flag and omitted six exact approved aliases.",
+  "fixOwners": [
+    "tools/qa/cxorbia-i3-terminal-human-contract.mjs",
+    "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs"
+  ],
+  "fixContract": "Only absent inline ACK may use exact committed receipt. Physical paths, tenant/project scope, human authority, period independence, target/link linkage, alias-set link hash and conflicts are checked. Explicit false/null/string remains rejected.",
+  "notClaimed": [
+    "No command payload digest recomputed",
+    "No fresh HR revision read in diagnostic",
+    "No new human UI or full Q3 acceptance",
+    "No full domain MATCH promotion"
+  ],
+  "physicalCollectionCorrection": "shopperIdentityLinks; identityResolutionLinks in prior logical scope was not the physical collection",
+  "providerWrites": 0,
+  "authWrites": 0,
+  "hrWrites": 0,
+  "deploys": 0,
+  "production": false,
+  "authorizationI4": false,
+  "preservedHumanPassBlocks": [
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ],
+  "strictMatchModules": 4,
+  "sourceReadyModules": 21,
+  "gate20": "HOLD",
+  "gate21": "HOLD"
+}

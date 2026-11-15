@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "cxorbia.i3.focal-qa-consumer-scope.v1",
+  "iteration": "I3",
+  "status": "HOLD",
+  "observedAt": "2026-11-15T20:54:32.563023+00:00",
+  "expectedRemoteParentSha": "386d4feb951e6ccf32b0a5e41a28e3c6c0a198fc",
+  "pendingLocalParentSha": "0ccccc1727f1414d7de9e124e1c74e55612f083d",
+  "productSourceSha": "fdc73f7fe925db9edae1e2f73561f7496c451508",
+  "authority": "Paula current instruction: publish pending package, repair proven root causes, advance consistent functional blocks; AGENTS section4 direct sole writer and frozen plan G01/G03/G04/G06/V03/V04",
+  "provenFailures": [
+    {
+      "classification": "FUNCTIONAL_DEFECT",
+      "owner": ".github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs",
+      "before": "Case9 accepts read-only readiness where created/statusAck/deleted are false; case7 restoration skipped on post-commit exception and source-current bypasses version concurrency",
+      "repair": "Execute synthetic reservation provider lifecycle with actual reload; unconditional exact-receipt guarded assignment restoration before fixture cleanup"
+    },
+    {
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "owner": "tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs",
+      "before": "No partial output, no current owner receipts producer, readonly forced ACK, module promoted on one owner overlap, priority P0_PROVEN omitted",
+      "repair": "Persist per-domain HOLD progress; exact approved readonly contract; full owner scope; include priority; retain final21 gates"
+    },
+    {
+      "classification": "SOURCE_FAILURE",
+      "owner": "tools/qa/cxorbia-i3-current-authority-alias-guard.mjs",
+      "before": "Current aliases carry stale receipt/version/count despite correct active source and currentTruth",
+      "repair": "Normalize mutable aliases in new matrix/ledger and enforce equality without altering immutable paired runtime seal"
+    }
+  ],
+  "beforeBlobs": {
+    ".github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs": "30602e2aa96359d829de72c1afb7dfa02831f973",
+    ".github/workflows/cxorbia-recovery-i3-dev-certification.yml": "7eb44f93fccd561582d7b88dffef51f0850d5324",
+    "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs": "82075ba4161684ce1cec703e31659c53d15f175a",
+    "tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs": "358f1bf71a3be3c3c50a753f5c4fc9b3a7ca7f7d",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.mjs": "bc3ac43c425e1146e524527d76664a350346b976"
+  },
+  "allowlist": [
+    ".github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs",
+    ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs",
+    "tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.mjs",
+    "tools/qa/cxorbia-i3-live-fixture-contract.mjs",
+    "tools/qa/cxorbia-i3-live-fixture-contract.test.mjs",
+    "tools/qa/cxorbia-i3-c3-finalize-module-truth.test.mjs",
+    "tools/qa/cxorbia-i3-tenant-readonly-acceptance.mjs",
+    "tools/qa/cxorbia-i3-tenant-readonly-acceptance.test.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs",
+    "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "CXORBIA_RECOVERY_EXECUTION_CURRENT.json",
+    "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261115-V313.json",
+    "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V637_2026-11-15.json",
+    "docs/checkpoints/CXORBIA_I3_QA_CONSUMER_COHERENCE_*",
+    "tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs"
+  ],
+  "productChanges": false,
+  "production": false,
+  "hrWrites": 0,
+  "humanPassesPreserved": [
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ],
+  "releasePromotionAuthorized": false
+}

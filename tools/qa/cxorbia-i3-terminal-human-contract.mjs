@@ -1,9 +1,51 @@
 // Terminal QA predicates only. No provider mutation or identity adjudication.
+import crypto from 'node:crypto';
 const str=v=>String(v??'').trim();
 const arr=v=>Array.isArray(v)?v:[];
 const active=new Set(['active','confirmed','approved','materialized']);
 
-export function collectTenantAdjudications(links,{tenantId,projectId,crossTargets=new Map()}={}){
+function historicalReceiptCandidate(link,{tenantId,projectId}){
+  const target=str(link.canonicalShopperId),ref=str(link.authorityRef),id=str(link.identityLinkId);
+  const aliases=arr(link.exactAliases),other=arr(link.sourceAliases);
+  const exact=[...new Set(aliases.map(str))].sort(),same=[...new Set(other.map(str))].sort();
+  if(Object.hasOwn(link,'providerAck')||link.schemaVersion!=='cxorbia.shopper-identity-link.v1'||
+    str(link.tenantId)!==tenantId||str(link.projectScope)!==projectId||!target||
+    !active.has(str(link.status).toLowerCase())||(str(link.state)&&!active.has(str(link.state).toLowerCase()))||
+    str(link.authorityType)!=='tenant_adjudication'||link.humanConfirmed!==true||link.sourceSafe!==true||
+    link.fuzzyMatching!==false||link.periodIndependent!==true||!exact.length||
+    aliases.some(x=>typeof x!=='string'||!x||x!==str(x))||other.some(x=>typeof x!=='string'||!x||x!==str(x))||
+    exact.length!==aliases.length||same.length!==other.length||JSON.stringify(exact)!==JSON.stringify(same)||
+    [link.periodId,link.periodKey,link.periodScope,link.scope?.periodId,link.scope?.periodKey,link.scope?.periodScope].some(x=>str(x))||
+    [link.projectId,link.scope?.projectId].some(x=>str(x)&&str(x)!==projectId)||
+    (str(link.scope?.tenantId)&&str(link.scope.tenantId)!==tenantId)||
+    !/^[a-f0-9]{40}$/.test(ref)||str(link.adjudicationId)!==ref||str(link.id)!==id||
+    str(link._documentPath)!=='tenants/'+tenantId+'/shopperIdentityLinks/'+id)return null;
+  // The historical provider bound this exact alias set to the durable link ID.
+  // This prevents a later unacknowledged alias addition from reusing an old ACK.
+  const expected='irl_'+crypto.createHash('sha256').update([tenantId,projectId,target,...exact].join('\0')).digest('hex').slice(0,32);
+  return expected===id?{target,ref,id}:null;
+}
+
+export function tenantAdjudicationReceiptRefs(links,scope){
+  return [...new Set(arr(links).map(link=>historicalReceiptCandidate(link,scope)?.ref).filter(Boolean))].sort();
+}
+
+function historicalReceiptProof(link,{tenantId,projectId,commandReceipts}){
+  const candidate=historicalReceiptCandidate(link,{tenantId,projectId});if(!candidate)return null;
+  const {target,ref,id}=candidate,entry=commandReceipts.get(ref),receipt=entry?.data;
+  if(entry?.exists!==true||entry.id!==ref||entry.path!=='tenants/'+tenantId+'/commandReceipts/'+ref||!receipt||
+    receipt.status!=='committed'||receipt.commandType!=='shopper.identity.adjudicate'||receipt.providerAck!==true||
+    receipt.identityConsolidated!==true||str(receipt.identityLinkId)!==id||str(receipt.shopperId)!==target||
+    !/^[a-f0-9]{64}$/.test(str(receipt.commandDigest))||
+    [receipt.tenantId,receipt.scope?.tenantId].some(x=>str(x)&&str(x)!==tenantId)||
+    [receipt.projectId,receipt.projectScope,receipt.scope?.projectId].some(x=>str(x)&&str(x)!==projectId)||
+    [receipt.periodId,receipt.periodKey,receipt.periodScope,receipt.scope?.periodId,receipt.scope?.periodKey,receipt.scope?.periodScope].some(x=>str(x)))return null;
+  return {mode:'REFERENCED_COMMITTED_COMMAND_RECEIPT',receiptId:ref,receiptPath:entry.path,
+    commandType:receipt.commandType,identityLinkId:id,canonicalShopperId:target,
+    exactAliasSetBoundToLinkId:true,commandDigestFormatValid:true,payloadDigestRecomputed:false};
+}
+
+export function collectTenantAdjudications(links,{tenantId,projectId,crossTargets=new Map(),commandReceipts=new Map()}={}){
   const candidates=new Map();
   for(const link of arr(links)){
     const target=str(link.canonicalShopperId||link.canonicalId||link.shopperId||link.profileId);
@@ -20,7 +62,9 @@ export function collectTenantAdjudications(links,{tenantId,projectId,crossTarget
     // fields. Require its durable acknowledgement and human authority before
     // accepting an alias that the old gate omitted.
     const authorityRef=str(link.authorityRef||link.adjudicationId);
-    if(link.humanConfirmed===true&&link.providerAck===true&&link.fuzzyMatching===false&&authorityRef&&
+    const receiptProof=historicalReceiptProof(link,{tenantId,projectId,commandReceipts});
+    const providerAck=link.providerAck===true||!!receiptProof;
+    if(link.humanConfirmed===true&&providerAck&&link.fuzzyMatching===false&&authorityRef&&
       ![link.periodId,link.periodKey,link.periodScope].some(x=>str(x)))
       for(const field of ['exactAliases','sourceAliases'])for(const value of arr(link[field]))tokens.push([field,value]);
     for(const [field,value] of tokens){
@@ -29,7 +73,9 @@ export function collectTenantAdjudications(links,{tenantId,projectId,crossTarget
       candidates.get(sourceId).push({sourceId,canonicalId:target,linkId:str(link.identityLinkId||link.id),
         matchedTokenField:field,authorityType:'tenant_adjudication',authorityRef:authorityRef||null,
         status:str(link.status||link.state),tenantId,projectScope:scope||null,
-        humanConfirmed:link.humanConfirmed===true,providerAck:link.providerAck===true});
+        humanConfirmed:link.humanConfirmed===true,providerAck,
+        linkProviderAck:{present:Object.hasOwn(link,'providerAck'),value:Object.hasOwn(link,'providerAck')?link.providerAck:null},
+        providerAckEvidence:receiptProof||(link.providerAck===true?{mode:'EXPLICIT_LINK_ACK'}:null)});
     }
   }
   const targets={},evidence=[],rejected=[];

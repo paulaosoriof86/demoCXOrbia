@@ -11,6 +11,12 @@ const fixture=()=>{
   d.currentC3PreterminalAudit={...c3};d.lastModuleTruthProof={...c3};d.c3PreterminalProof={...c3};
   p.currentC3PreterminalAudit={...c3};
   l.currentC3PreterminalAudit={...c3};l.lastModuleTruthProof={...c3};l.c3PreterminalProof={...c3};
+  d.currentExecutionReceipt={runId:100,path:'receipt.json'};p.currentExecutionReceipt={...d.currentExecutionReceipt};
+  d.currentExecutionReceiptSemantics=p.currentExecutionReceiptSemantics='LATEST_FOCAL_NOT_GLOBAL';
+  d.phaseAHumanAcceptanceCurrent20261111={technicalDomainMatches:5};p.activePhaseAClosureLock20261110.strictDomainMatches=5;l.currentTruth.moduleMatch=5;
+  d.moduleTruthExpectedGitBlob='e'.repeat(40);l.currentTruth.moduleTruthGitBlob=d.moduleTruthExpectedGitBlob;
+  d.currentCanonicalControl={matrix:{path:d.moduleTruthPath,gitBlob:d.moduleTruthExpectedGitBlob},ledger:{path:d.findingsLedgerPath,gitBlob:d.findingsLedgerExpectedGitBlob}};
+  p.currentCanonicalControl=structuredClone(d.currentCanonicalControl);
   return {descriptor:d,pointer:p,ledger:l};
 };
 
@@ -151,3 +157,11 @@ for(const [name,change] of [
   assert.equal(r.pass,false,JSON.stringify(r));
   assert.ok(r.failures.includes('CURRENT_C3_PROOF_DESYNC'),JSON.stringify(r));
 });
+
+for(const [name,mutate,code] of [
+ ['stale current focal',v=>v.descriptor.currentExecutionReceipt.runId=1,'CURRENT_EXECUTION_RECEIPT_DESYNC'],
+ ['stale current semantic',v=>v.descriptor.currentExecutionReceiptSemantics='OLD','CURRENT_EXECUTION_RECEIPT_SEMANTICS_DESYNC'],
+ ['technical count contradicted by current C3',v=>v.descriptor.phaseAHumanAcceptanceCurrent20261111.technicalDomainMatches=4,'CURRENT_TECHNICAL_DOMAIN_COUNT_DESYNC'],
+ ['stale matrix hash',v=>v.ledger.currentTruth.moduleTruthGitBlob='old','CURRENT_TRUTH_MATRIX_BLOB_DESYNC'],
+ ['stale nested current pointer',v=>v.pointer.currentCanonicalControl.matrix.path='old.json','CURRENT_CANONICAL_CONTROL_POINTER_DESYNC']
+])test('reject accumulated alias drift: '+name,()=>{const v=fixture();mutate(v);assert.ok(validateCurrentAuthorityAliases(v).failures.includes(code));});

@@ -1,7 +1,7 @@
 /* Current control-plane compatibility aliases must not contradict the canonical
    descriptor-selected ledger and DEV seal. Historical nested evidence is immutable;
    only explicitly current top-level fields are compared here. */
-export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l}){
+export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l,matrix:m}){
   const failures=[];
   const check=(condition,code)=>{if(!condition)failures.push(code);};
   const ids=Object.keys(l?.findings||{}).sort();
@@ -108,5 +108,15 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
     JSON.stringify(l?.c3PreterminalProof||null)===JSON.stringify(c3),
     'CURRENT_C3_PROOF_DESYNC');
   check(Boolean(d?.updatedAt)&&d.updatedAt===p?.updatedAt&&p.updatedAt===l?.updatedAt,'CURRENT_CONTROL_UPDATED_AT_DESYNC');
+  check(Boolean(d?.currentExecutionReceipt)&&JSON.stringify(d.currentExecutionReceipt)===JSON.stringify(p?.currentExecutionReceipt),'CURRENT_EXECUTION_RECEIPT_DESYNC');
+  check(Boolean(d?.currentExecutionReceiptSemantics)&&d.currentExecutionReceiptSemantics===p?.currentExecutionReceiptSemantics,'CURRENT_EXECUTION_RECEIPT_SEMANTICS_DESYNC');
+  check(d?.phaseAHumanAcceptanceCurrent20261111?.technicalDomainMatches===phaseLock.strictDomainMatches && phaseLock.strictDomainMatches===current.moduleMatch && current.moduleMatch===c3.matchModules,'CURRENT_TECHNICAL_DOMAIN_COUNT_DESYNC');
+  check(Boolean(d?.moduleTruthExpectedGitBlob)&&current.moduleTruthGitBlob===d.moduleTruthExpectedGitBlob,'CURRENT_TRUTH_MATRIX_BLOB_DESYNC');
+  for(const control of [d,p])check(control?.currentCanonicalControl?.matrix?.path===d.moduleTruthPath && control?.currentCanonicalControl?.matrix?.gitBlob===d.moduleTruthExpectedGitBlob && control?.currentCanonicalControl?.ledger?.path===d.findingsLedgerPath && control?.currentCanonicalControl?.ledger?.gitBlob===d.findingsLedgerExpectedGitBlob,'CURRENT_CANONICAL_CONTROL_POINTER_DESYNC');
+  if(m){
+    const actual=(m.modules||[]).filter(x=>x.classification==='MATCH').length;
+    check(actual===current.moduleMatch && m.integralCertificationUnchanged?.match===actual,'CURRENT_MATRIX_MATCH_COUNT_DESYNC');
+    check(m.version===(String(d.moduleTruthPath).match(/-(V\d+)\.json$/)||[])[1],'CURRENT_MATRIX_VERSION_DESYNC');
+  }
   return {pass:failures.length===0,failures,findingCount:count,nextFindingId:next,ledgerPath,sourceSha:source,devRunId:seal?.runId||null};
 }

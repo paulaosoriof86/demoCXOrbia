@@ -83,7 +83,7 @@ jobs:
       set -Eeuo pipefail
       mkdir -p .tmp/canonical-candidate-authority
       node --test tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs
-      node --test tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs
+      node --test tools/qa/cxorbia-i3-live-fixture-contract.test.mjs tools/qa/cxorbia-i3-c3-finalize-module-truth.test.mjs tools/qa/cxorbia-i3-tenant-readonly-acceptance.test.mjs tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs
       node --test tools/qa/cxorbia-i3-r22-alias-notice-scope-transversal.test.mjs
       node --test tools/qa/cxorbia-i3-r22-tablon-provider-ack-source.test.mjs
       node --test tools/qa/cxorbia-i3-r20-pwa-auth-no-interrupt.test.mjs
@@ -3068,6 +3068,7 @@ jobs:
        test "$(jq -r '.moduleCount' "$PRIOR/result.json")" = "21"
       test "$(jq -r '.pendingFiles' "$PRIOR/result.json")" = "0"
       cp "$PRIOR/result.json" "$OUT/current-preterminal-result.json"
+      cp "$PRIOR/module-truth-preterminal.json" "$OUT/current-preterminal-matrix.json"
       cp -R "$PRIOR/source-qa" "$OUT/source-qa"
       echo "C3_SOURCE_QA_RECEIPT=$OUT/source-qa/source-qa-receipt.json" >> "$GITHUB_ENV"
    - name: step
@@ -3164,6 +3165,14 @@ jobs:
       test "$(jq '[.routes[]|select(.undefinedVisible==true or .technicalVisible==true or .qaReservationVisible==true)]|length' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "0"
       test "$(jq -r '.probe.reservations.ok' "$OUT/full-human-acceptance/i3-functional-probes.json")" = "true"
       test "$(jq '.probe.reservations.qaResidueIds|length' "$OUT/full-human-acceptance/i3-functional-probes.json")" = "0"
+   - name: Preserve current per-domain progress without promoting global gates
+     if: always()
+     run: |
+      set -Eeuo pipefail
+      test -s "$OUT/current-preterminal-matrix.json" || exit 0
+      test -n "${DEV_REVISION:-}" && test -n "${HOSTING_VERSION_NAME:-}" || exit 0
+      C3_MODE=progress C3_PRETERMINAL="$OUT/current-preterminal-matrix.json" C3_LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")" C3_HUMAN="$OUT/full-human-acceptance/human-live-acceptance.json" C3_ADDITIONAL_RECEIPTS="$OUT/full-human-acceptance/tenant-readonly/tenant-admin-config-branding-readonly.json" C3_FINAL_MATRIX="$OUT/module-truth-progress.json" C3_SOURCE="$I3_CERTIFICATION_SOURCE_SHA" C3_TREE="$I3_CERTIFICATION_SOURCE_TREE" C3_RUNTIME_REVISION="$DEV_REVISION" C3_RUNTIME_DIGEST="$RUNTIME_DIGEST" C3_HOSTING_VERSION="$HOSTING_VERSION_NAME" node tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs > "$OUT/module-truth-progress.log"
+      test "$(jq -r '.phaseAComplete' "$OUT/module-truth-progress.json")" = "false"
    - name: step
      run: |
       set -Eeuo pipefail
@@ -3205,7 +3214,7 @@ jobs:
       test "$n" -gt 0
       jq -n -S '{decision:"PASS_C3_PENDING_OWNER_BYTE_PARITY",mismatches:0,rows:[],production:false}' > "$OUT/pending-owner-parity.json"
       jq -n -S '{decision:"PASS_C3_QA_RESERVATION_CLEANUP",mode:"CURRENT_TERMINAL_ACCEPTANCE_ZERO_RESIDUE",before:0,deletedIds:[],after:0,ambiguous:0,writes:0,production:false}' > "$OUT/qa-reservation-cleanup.json"
-      C3_PRETERMINAL="$OUT/module-truth-preterminal.json" C3_FOCAL="$OUT/semantic/browser-focal.json" C3_HUMAN="$OUT/full-human-acceptance/human-live-acceptance.json" C3_QA="$OUT/qa-reservation-cleanup.json" C3_PARITY="$OUT/pending-owner-parity.json" C3_LEDGER="$TERMINAL_LEDGER" C3_FINAL_MATRIX="$OUT/module-truth-matrix.json" C3_SOURCE="$I3_CERTIFICATION_SOURCE_SHA" C3_TREE="$I3_CERTIFICATION_SOURCE_TREE" C3_RUNTIME_REVISION="$DEV_REVISION" C3_RUNTIME_DIGEST="$RUNTIME_DIGEST" C3_HOSTING_VERSION="$HOSTING_VERSION_NAME" node tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs > "$OUT/module-truth-terminal-console.log"
+      C3_PRETERMINAL="$OUT/module-truth-preterminal.json" C3_FOCAL="$OUT/semantic/browser-focal.json" C3_HUMAN="$OUT/full-human-acceptance/human-live-acceptance.json" C3_QA="$OUT/qa-reservation-cleanup.json" C3_PARITY="$OUT/pending-owner-parity.json" C3_LEDGER="$TERMINAL_LEDGER" C3_ADDITIONAL_RECEIPTS="$OUT/full-human-acceptance/tenant-readonly/tenant-admin-config-branding-readonly.json" C3_FINAL_MATRIX="$OUT/module-truth-matrix.json" C3_SOURCE="$I3_CERTIFICATION_SOURCE_SHA" C3_TREE="$I3_CERTIFICATION_SOURCE_TREE" C3_RUNTIME_REVISION="$DEV_REVISION" C3_RUNTIME_DIGEST="$RUNTIME_DIGEST" C3_HOSTING_VERSION="$HOSTING_VERSION_NAME" node tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs > "$OUT/module-truth-terminal-console.log"
       test "$(jq -r '.terminalClosure.decision' "$OUT/module-truth-matrix.json")" = "PASS_C3_TERMINAL_MODULE_TRUTH_21_21"
        node tools/qa/cxorbia-i3-terminal-module-domain-coverage.mjs "$OUT/module-truth-matrix.json" --require-match
       test "$(jq -r '.phaseAComplete' "$OUT/module-truth-matrix.json")" = "true"
@@ -3271,7 +3280,7 @@ jobs:
   live-fixtures:
    needs: [canonical-candidate-authority, certify]
    if: ${{ needs.certify.result=='success' }}
-   runs-on: ubuntu-latest
+   runs-on: ubuntu-24.04
    timeout-minutes: 55
    permissions:
     contents: read
@@ -3323,6 +3332,7 @@ jobs:
       test "$(jq -r '.buildCountThisRun' "$OUT/i3-live-fixtures-result.json")" = "0"
       test "$(jq -r '.deployCountThisRun' "$OUT/i3-live-fixtures-result.json")" = "0"
    - uses: actions/upload-artifact@v4
+     if: always()
      with:
       name: cxorbia-recovery-i3-live-fixtures-v2-${{ github.run_id }}
       path: ${{ env.OUT }}

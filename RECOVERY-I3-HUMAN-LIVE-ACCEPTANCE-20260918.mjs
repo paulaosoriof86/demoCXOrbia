@@ -1,14 +1,15 @@
 #!/usr/bin/env node
-import {collectTenantAdjudications,currentHrPeriodId,representativeHrExpectation,representativeMatchesHr} from './tools/qa/cxorbia-i3-terminal-human-contract.mjs';
+import {proveTenantReadonly} from './tools/qa/cxorbia-i3-tenant-readonly-acceptance.mjs';
+import {collectTenantAdjudications,tenantAdjudicationReceiptRefs,currentHrPeriodId,representativeHrExpectation,representativeMatchesHr} from './tools/qa/cxorbia-i3-terminal-human-contract.mjs';
 import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';import {pathToFileURL} from 'node:url';import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';import {getAuth} from 'firebase-admin/auth';import {getFirestore} from 'firebase-admin/firestore';import {chromium} from 'playwright';import { settleCustomRoleAuth, settleVisibleShopperAuth } from './.github/control/RECOVERY-I3-BROWSER-AUTH-LIFECYCLE-20260919.mjs';
 const PROJECT=process.env.PROJECT,HOST=String(process.env.HOSTING_URL).replace(/\/$/,''),TENANT=process.env.TENANT_ID,PROJ=process.env.PROJECT_ID,SOURCE=process.env.I3_CERTIFICATION_SOURCE_SHA,SOURCE_DIR=process.env.SOURCE_DIR,OUT=process.env.ACCEPTANCE_OUT||'.tmp/recovery-i3-human-live-acceptance',PINNED_REV=String(process.env.CX_I3_PINNED_HR_REVISION||'').trim();if(!/^[a-f0-9]{64}$/.test(PINNED_REV))throw new Error('RELEASE_COMPOSITION_FAILURE:PINNED_HR_REVISION_MISSING');const PRE='YES_PAULA_20260628_PREVIEW_DEV',PROT='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
 const ROUTE_INVENTORY=JSON.parse(fs.readFileSync(path.join(process.cwd(),'CXORBIA_CANONICAL_ROUTE_INVENTORY_2026-09-18.json'),'utf8'));if(ROUTE_INVENTORY?.counts?.roleRouteEntries!==56)throw new Error('RELEASE_COMPOSITION_FAILURE:ROUTE_INVENTORY_INVALID');
-const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[],hash=v=>crypto.createHash('sha256').update(String(v)).digest('hex'),safe=v=>str(v).toLowerCase().replace(/[^a-z0-9_-]+/g,'-').slice(0,80)||'route';fs.mkdirSync(OUT,{recursive:true});const write=(n,o)=>fs.writeFileSync(path.join(OUT,n),JSON.stringify(o,null,2)+'\n');async function docs(r){const s=await r.get();return s.docs.map(d=>({id:d.id,...(d.data()||{})}))}
+const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[],hash=v=>crypto.createHash('sha256').update(String(v)).digest('hex'),safe=v=>str(v).toLowerCase().replace(/[^a-z0-9_-]+/g,'-').slice(0,80)||'route';fs.mkdirSync(OUT,{recursive:true});const write=(n,o)=>fs.writeFileSync(path.join(OUT,n),JSON.stringify(o,null,2)+'\n');async function docs(r,documentMetadata=false){const s=await r.get();return s.docs.map(d=>documentMetadata?{...(d.data()||{}),id:d.id,_documentPath:d.ref.path}:{id:d.id,...(d.data()||{})})}
 if(!SOURCE_DIR)throw new Error('SOURCE_FAILURE:CERTIFICATION_SOURCE_DIR_MISSING');
 const credentialMod=await import(pathToFileURL(path.join(SOURCE_DIR,'backend/runtime/cxorbia-shopper-command-provider-v1.mjs')).href);
 const cred=p=>{const c=credentialMod.shopperCredentialRule(p);return c?.ok?c:null;};
 const vkey=v=>str(v?.hrRowId)||(str(v?.sourceTab)&&str(v?.sourceRow)?str(v.sourceTab)+'::'+str(v.sourceRow):'')||str(v?.visitId||v?.id);
-if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(TENANT);const [members,profiles,links,cross,legalContents,receipts]=await Promise.all([docs(tenant.collection('users')),docs(tenant.collection('shoppers')),docs(tenant.collection('shopperIdentityLinks')),docs(tenant.collection('shopperIdentityCrosswalk')),docs(tenant.collection('legalContents')),docs(tenant.collection('legalAcceptances'))]);
+if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(TENANT);const [members,profiles,links,cross,legalContents,receipts]=await Promise.all([docs(tenant.collection('users')),docs(tenant.collection('shoppers')),docs(tenant.collection('shopperIdentityLinks'),true),docs(tenant.collection('shopperIdentityCrosswalk')),docs(tenant.collection('legalContents')),docs(tenant.collection('legalAcceptances'))]);
 const hrPinnedFile=str(process.env.CX_I3_PINNED_HR_FILE);if(!hrPinnedFile||!fs.existsSync(hrPinnedFile))throw new Error('RELEASE_COMPOSITION_FAILURE:PINNED_HR_FILE_MISSING');
 const hp=JSON.parse(fs.readFileSync(hrPinnedFile,'utf8'));
 const hr=hp?.snapshot||hp?.data||hp,visits=arr(hr?.visits),shoppers=arr(hr?.shoppers),periods=arr(hr?.periods),revision=str(hr?.sourceRevision||hr?._runtime?.revision||hp?._runtime?.revision);if(!(hr?.sourceSafe===true&&visits.length&&periods.length&&new Set(visits.map(vkey)).size===visits.length&&/^[a-f0-9]{64}$/.test(revision)))throw new Error('PROVIDER_FAILURE:PINNED_HR_INVALID');if(revision!==PINNED_REV)throw new Error('RELEASE_COMPOSITION_FAILURE:PINNED_HR_FILE_REVISION_MISMATCH');
@@ -139,13 +140,20 @@ try{
    await p.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,null,{timeout:150000});
  }catch(e){throw new Error('AUTH_FAILURE:FAST_ACCEPTED_SHOPPER_VISIBLE_LOGIN:'+str(e?.message||e).slice(0,420));}finally{await c.close()}}
  {const {c,p}=await ctx();await custom(p,staff,'admin');
+if(process.env.DEV_REVISION&&process.env.HOSTING_VERSION_NAME){
+ await proveTenantReadonly({page:p,staffUid:staff.id,tenantId:TENANT,projectId:PROJ,sourceSha:SOURCE,sourceTree:process.env.I3_CERTIFICATION_SOURCE_TREE,sourceDir:SOURCE_DIR,host:HOST,out:path.join(OUT,'tenant-readonly'),identity:{runtimeRevision:process.env.DEV_REVISION,runtimeDigest:process.env.RUNTIME_DIGEST,hostingVersion:process.env.HOSTING_VERSION_NAME}});
+ await p.evaluate(()=>window.CX.router.nav('dashboard'));
+}
 const currentPeriodKey=str(hr?.source?.currentCalendarPeriodKey||'');
 const expectedOutOfRange=visits.filter(v=>str(v?.periodKey)===currentPeriodKey&&(v?.outOfRange===true||v?.canonicalFacets?.outOfRange===true)).length;
 const hrNameRows=identityShoppers.map(x=>({id:str(x?.shopperId||x?.id),name:str(x?.nombre||x?.name||x?.displayName||x?.fullName)})).filter(x=>x.id&&humanAuthorityName(x.name));
 const unresolvedIdentityIds=identityShoppers.map(x=>({id:str(x?.shopperId||x?.id),name:str(x?.nombre||x?.name||x?.displayName||x?.fullName)})).filter(x=>x.id&&!humanAuthorityName(x.name)).map(x=>x.id);
-const adjudicationAuthority=collectTenantAdjudications(links,{tenantId:TENANT,projectId:PROJ,crossTargets});
+const adjudicationReceiptRefs=tenantAdjudicationReceiptRefs(links,{tenantId:TENANT,projectId:PROJ});
+const adjudicationReceiptDocs=adjudicationReceiptRefs.length?await db.getAll(...adjudicationReceiptRefs.map(id=>tenant.collection('commandReceipts').doc(id))):[];
+const adjudicationReceipts=new Map(adjudicationReceiptDocs.map(doc=>[doc.id,{id:doc.id,path:doc.ref.path,exists:doc.exists,data:doc.exists?(doc.data()||{}):null}]));
+const adjudicationAuthority=collectTenantAdjudications(links,{tenantId:TENANT,projectId:PROJ,crossTargets,commandReceipts:adjudicationReceipts});
 const tenantAdjudications=adjudicationAuthority.targets;
-write('tenant-adjudication-authority.json',{sourceSha:SOURCE,sourceRevision:revision,production:false,scope:'EXISTING_DURABLE_ADJUDICATION_READ_ONLY',...adjudicationAuthority});
+write('tenant-adjudication-authority.json',{sourceSha:SOURCE,sourceRevision:revision,production:false,scope:'EXISTING_DURABLE_ADJUDICATION_READ_ONLY',referencedReceiptReads:adjudicationReceiptDocs.length,...adjudicationAuthority});
 const summary=await p.evaluate(({projectId,hrNameRows,unresolvedIdentityIds,expectedOutOfRange,tenantAdjudications})=>{
  const d=window.CX?.data||{},list=Array.isArray(d.shoppers)?d.shoppers:[],trustedPlatformAuthorities=new Set(['provider_exact','tenant_adjudication','platform_created','migrated_exact']);
  const isAuthorizedPlatform=x=>x?.__fullProfilePlatformOnly===true&&x?.__authorizedExactPlatformIdentity===true;

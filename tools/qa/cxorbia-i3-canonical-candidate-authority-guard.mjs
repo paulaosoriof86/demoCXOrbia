@@ -45,7 +45,7 @@ for(let i=0;i<ids.length;i++){
 }
 const next='VRM-'+String(ids.length+1).padStart(3,'0');
 if(l.governance?.nextFindingId!==next||d.nextFindingId!==next)fail('MAPPING_FAILURE:NEXT_FINDING_ID',JSON.stringify({ledger:l.governance?.nextFindingId,descriptor:d.nextFindingId,expected:next}));
-const aliasReadback=validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l});
+const aliasReadback=validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l,matrix:readJson(d.moduleTruthPath)});
 if(!aliasReadback.pass)fail('MAPPING_FAILURE:CURRENT_AUTHORITY_ALIASES',aliasReadback.failures.join(','));
 if(l.canonicalFunctionalCandidate?.sourceSha!==d.productSourceSha)fail('RELEASE_COMPOSITION_FAILURE:LEDGER_DESCRIPTOR_SOURCE_MISMATCH');
 

@@ -1,0 +1,573 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm043.raw-authority-qa-replay.v1",
+  "generatedAt": "2026-11-15T19:45:34.461Z",
+  "decision": "PASS_SIX_EXACT_REFERENCES_WITH_DURABLE_RECEIPT_PROOF",
+  "scope": "LOCAL_REPLAY_OF_VERIFIED_LIVE_RUN2529_NOT_NEW_BROWSER_ACCEPTANCE",
+  "rawReadbackSha256": "4ff7a16902825b33594a8870c51b440d70f5255caef86e7117a086a7b0e0b422",
+  "rawRunId": 43753750350,
+  "controlSha": "386d4feb951e6ccf32b0a5e41a28e3c6c0a198fc",
+  "sourceSha": "fdc73f7fe925db9edae1e2f73561f7496c451508",
+  "sourceTree": "5bbc8da456c58ce116e6506e6d56bfc0a2c36d33",
+  "previousReaderResolved": 0,
+  "currentReaderResolved": 6,
+  "total": 6,
+  "referencedReceipts": 5,
+  "conflictingExactQueries": 0,
+  "rows": [
+    {
+      "sourceShopperId": "shopper_gt_3106d9d44b",
+      "observedCanonicalShopperId": "shp-0780f6f085b1",
+      "exactMatches": [
+        {
+          "collection": "tenants/tya/shopperIdentityLinks",
+          "field": "sourceAliases",
+          "operator": "array-contains",
+          "paths": [
+            "tenants/tya/shopperIdentityLinks/irl_2f2f53fe53b3753d4a7a08d551a7b3bc"
+          ]
+        },
+        {
+          "collection": "tenants/tya/shopperIdentityCrosswalk",
+          "field": "sourceStableKey",
+          "operator": "==",
+          "paths": [
+            "tenants/tya/shopperIdentityCrosswalk/shopper_gt_3106d9d44b"
+          ]
+        },
+        {
+          "collection": "tenants/tya/shopperIdentityLinks",
+          "field": "exactAliases",
+          "operator": "array-contains",
+          "paths": [
+            "tenants/tya/shopperIdentityLinks/irl_2f2f53fe53b3753d4a7a08d551a7b3bc"
+          ]
+        }
+      ],
+      "crosswalkPath": "tenants/tya/shopperIdentityCrosswalk/shopper_gt_3106d9d44b",
+      "beforeTarget": null,
+      "afterTarget": "shp-0780f6f085b1",
+      "evidence": [
+        {
+          "sourceId": "shopper_gt_3106d9d44b",
+          "canonicalId": "shp-0780f6f085b1",
+          "linkId": "irl_2f2f53fe53b3753d4a7a08d551a7b3bc",
+          "matchedTokenField": "exactAliases",
+          "authorityType": "tenant_adjudication",
+          "authorityRef": "bdf78d5f17feae26b2eb12a2426d8556343e6dca",
+          "status": "active",
+          "tenantId": "tya",
+          "projectScope": "cinepolis",
+          "humanConfirmed": true,
+          "providerAck": true,
+          "linkProviderAck": {
+            "present": false,
+            "value": null
+          },
+          "providerAckEvidence": {
+            "mode": "REFERENCED_COMMITTED_COMMAND_RECEIPT",
+            "receiptId": "bdf78d5f17feae26b2eb12a2426d8556343e6dca",
+            "receiptPath": "tenants/tya/commandReceipts/bdf78d5f17feae26b2eb12a2426d8556343e6dca",
+            "commandType": "shopper.identity.adjudicate",
+            "identityLinkId": "irl_2f2f53fe53b3753d4a7a08d551a7b3bc",
+            "canonicalShopperId": "shp-0780f6f085b1",
+            "exactAliasSetBoundToLinkId": true,
+            "commandDigestFormatValid": true,
+            "payloadDigestRecomputed": false
+          }
+        },
+        {
+          "sourceId": "shopper_gt_3106d9d44b",
+          "canonicalId": "shp-0780f6f085b1",
+          "linkId": "irl_2f2f53fe53b3753d4a7a08d551a7b3bc",
+          "matchedTokenField": "sourceAliases",
+          "authorityType": "tenant_adjudication",
+          "authorityRef": "bdf78d5f17feae26b2eb12a2426d8556343e6dca",
+          "status": "active",
+          "tenantId": "tya",
+          "projectScope": "cinepolis",
+          "humanConfirmed": true,
+          "providerAck": true,
+          "linkProviderAck": {
+            "present": false,
+            "value": null
+          },
+          "providerAckEvidence": {
+            "mode": "REFERENCED_COMMITTED_COMMAND_RECEIPT",
+            "receiptId": "bdf78d5f17feae26b2eb12a2426d8556343e6dca",
+            "receiptPath": "tenants/tya/commandReceipts/bdf78d5f17feae26b2eb12a2426d8556343e6dca",
+            "commandType": "shopper.identity.adjudicate",
+            "identityLinkId": "irl_2f2f53fe53b3753d4a7a08d551a7b3bc",
+            "canonicalShopperId": "shp-0780f6f085b1",
+            "exactAliasSetBoundToLinkId": true,
+            "commandDigestFormatValid": true,
+            "payloadDigestRecomputed": false
+          }
+        }
+      ]
+    },
+    {
+      "sourceShopperId": "shopper_gt_3426ec3ff3",
+      "observedCanonicalShopperId": "shopper_gt_5eb6ba4913",
+      "exactMatches": [
+        {
+          "collection": "tenants/tya/shopperIdentityCrosswalk",
+          "field": "sourceStableKey",
+          "operator": "==",
+          "paths": [
+            "tenants/tya/shopperIdentityCrosswalk/shopper_gt_3426ec3ff3"
+          ]
+        },
+        {
+          "collection": "tenants/tya/shopperIdentityLinks",
+          "field": "sourceAliases",
+          "operator": "array-contains",
+          "paths": [
+            "tenants/tya/shopperIdentityLinks/irl_76bb2eb1b3957d2ca8a1c7636c5765df"
+          ]
+        },
+        {
+          "collection": "tenants/tya/shopperIdentityLinks",
+          "field": "exactAliases",
+          "operator": "array-contains",
+          "paths": [
+            "tenants/tya/shopperIdentityLinks/irl_76bb2eb1b3957d2ca8a1c7636c5765df"
+          ]
+        }
+      ],
+      "crosswalkPath": "tenants/tya/shopperIdentityCrosswalk/shopper_gt_3426ec3ff3",
+      "beforeTarget": null,
+      "afterTarget": "shopper_gt_5eb6ba4913",
+      "evidence": [
+        {
+          "sourceId": "shopper_gt_3426ec3ff3",
+          "canonicalId": "shopper_gt_5eb6ba4913",
+          "linkId": "irl_76bb2eb1b3957d2ca8a1c7636c5765df",
+          "matchedTokenField": "exactAliases",
+          "authorityType": "tenant_adjudication",
+          "authorityRef": "dc04d0a8a27f3d950d40db1b949c4ea42d31eee7",
+          "status": "active",
+          "tenantId": "tya",
+          "projectScope": "cinepolis",
+          "humanConfirmed": true,
+          "providerAck": true,
+          "linkProviderAck": {
+            "present": false,
+            "value": null
+          },
+          "providerAckEvidence": {
+            "mode": "REFERENCED_COMMITTED_COMMAND_RECEIPT",
+            "receiptId": "dc04d0a8a27f3d950d40db1b949c4ea42d31eee7",
+            "receiptPath": "tenants/tya/commandReceipts/dc04d0a8a27f3d950d40db1b949c4ea42d31eee7",
+            "commandType": "shopper.identity.adjudicate",
+            "identityLinkId": "irl_76bb2eb1b3957d2ca8a1c7636c5765df",
+            "canonicalShopperId": "shopper_gt_5eb6ba4913",
+            "exactAliasSetBoundToLinkId": true,
+            "commandDigestFormatValid": true,
+            "payloadDigestRecomputed": false
+          }
+        },
+        {
+          "sourceId": "shopper_gt_3426ec3ff3",
+          "canonicalId": "shopper_gt_5eb6ba4913",
+          "linkId": "irl_76bb2eb1b3957d2ca8a1c7636c5765df",
+          "matchedTokenField": "sourceAliases",
+          "authorityType": "tenant_adjudication",
+          "authorityRef": "dc04d0a8a27f3d950d40db1b949c4ea42d31eee7",
+          "status": "active",
+          "tenantId": "tya",
+          "projectScope": "cinepolis",
+          "humanConfirmed": true,
+          "providerAck": true,
+          "linkProviderAck": {
+            "present": false,
+            "value": null
+          },
+          "providerAckEvidence": {
+            "mode": "REFERENCED_COMMITTED_COMMAND_RECEIPT",
+            "receiptId": "dc04d0a8a27f3d950d40db1b949c4ea42d31eee7",
+            "receiptPath": "tenants/tya/commandReceipts/dc04d0a8a27f3d950d40db1b949c4ea42d31eee7",
+            "commandType": "shopper.identity.adjudicate",
+            "identityLinkId": "irl_76bb2eb1b3957d2ca8a1c7636c5765df",
+            "canonicalShopperId": "shopper_gt_5eb6ba4913",
+            "exactAliasSetBoundToLinkId": true,
+            "commandDigestFormatValid": true,
+            "payloadDigestRecomputed": false
+          }
+        }
+      ]
+    },
+    {
+      "sourceShopperId": "shopper_gt_5f3d6952c5",
+      "observedCanonicalShopperId": "shopper_gt_338ec57592",
+      "exactMatches": [
+        {
+          "collection": "tenants/tya/shopperIdentityLinks",
+          "field": "sourceAliases",
+          "operator": "array-contains",
+          "paths": [
+            "tenants/tya/shopperIdentityLinks/irl_24ebeb57ca3959978c33297395d6e390"
+          ]
+        },
+        {
+          "collection": "tenants/tya/shopperIdentityCrosswalk",
+          "field": "sourceStableKey",
+          "operator": "==",
+          "paths": [
+            "tenants/tya/shopperIdentityCrosswalk/shopper_gt_5f3d6952c5"
+          ]
+        },
+        {
+          "collection": "tenants/tya/shopperIdentityLinks",
+          "field": "exactAliases",
+          "operator": "array-contains",
+          "paths": [
+            "tenants/tya/shopperIdentityLinks/irl_24ebeb57ca3959978c33297395d6e390"
+          ]
+        }
+      ],
+      "crosswalkPath": "tenants/tya/shopperIdentityCrosswalk/shopper_gt_5f3d6952c5",
+      "beforeTarget": null,
+      "afterTarget": "shopper_gt_338ec57592",
+      "evidence": [
+        {
+          "sourceId": "shopper_gt_5f3d6952c5",
+          "canonicalId": "shopper_gt_338ec57592",
+          "linkId": "irl_24ebeb57ca3959978c33297395d6e390",
+          "matchedTokenField": "exactAliases",
+          "authorityType": "tenant_adjudication",
+          "authorityRef": "47cf3e55553004414ccb5dface35dbf733f84afd",
+          "status": "active",
+          "tenantId": "tya",
+          "projectScope": "cinepolis",
+          "humanConfirmed": true,
+          "providerAck": true,
+          "linkProviderAck": {
+            "present": false,
+            "value": null
+          },
+          "providerAckEvidence": {
+            "mode": "REFERENCED_COMMITTED_COMMAND_RECEIPT",
+            "receiptId": "47cf3e55553004414ccb5dface35dbf733f84afd",
+            "receiptPath": "tenants/tya/commandReceipts/47cf3e55553004414ccb5dface35dbf733f84afd",
+            "commandType": "shopper.identity.adjudicate",
+            "identityLinkId": "irl_24ebeb57ca3959978c33297395d6e390",
+            "canonicalShopperId": "shopper_gt_338ec57592",
+            "exactAliasSetBoundToLinkId": true,
+            "commandDigestFormatValid": true,
+            "payloadDigestRecomputed": false
+          }
+        },
+        {
+          "sourceId": "shopper_gt_5f3d6952c5",
+          "canonicalId": "shopper_gt_338ec57592",
+          "linkId": "irl_24ebeb57ca3959978c33297395d6e390",
+          "matchedTokenField": "sourceAliases",
+          "authorityType": "tenant_adjudication",
+          "authorityRef": "47cf3e55553004414ccb5dface35dbf733f84afd",
+          "status": "active",
+          "tenantId": "tya",
+          "projectScope": "cinepolis",
+          "humanConfirmed": true,
+          "providerAck": true,
+          "linkProviderAck": {
+            "present": false,
+            "value": null
+          },
+          "providerAckEvidence": {
+            "mode": "REFERENCED_COMMITTED_COMMAND_RECEIPT",
+            "receiptId": "47cf3e55553004414ccb5dface35dbf733f84afd",
+            "receiptPath": "tenants/tya/commandReceipts/47cf3e55553004414ccb5dface35dbf733f84afd",
+            "commandType": "shopper.identity.adjudicate",
+            "identityLinkId": "irl_24ebeb57ca3959978c33297395d6e390",
+            "canonicalShopperId": "shopper_gt_338ec57592",
+            "exactAliasSetBoundToLinkId": true,
+            "commandDigestFormatValid": true,
+            "payloadDigestRecomputed": false
+          }
+        }
+      ]
+    },
+    {
+      "sourceShopperId": "shopper_gt_d5ebad6b6c",
+      "observedCanonicalShopperId": "shopper_gt_2e8200a26e",
+      "exactMatches": [
+        {
+          "collection": "tenants/tya/shopperIdentityCrosswalk",
+          "field": "sourceStableKey",
+          "operator": "==",
+          "paths": [
+            "tenants/tya/shopperIdentityCrosswalk/shopper_gt_d5ebad6b6c"
+          ]
+        },
+        {
+          "collection": "tenants/tya/shopperIdentityLinks",
+          "field": "sourceAliases",
+          "operator": "array-contains",
+          "paths": [
+            "tenants/tya/shopperIdentityLinks/irl_1d608be65358a5919068e583f659277f"
+          ]
+        },
+        {
+          "collection": "tenants/tya/shopperIdentityLinks",
+          "field": "exactAliases",
+          "operator": "array-contains",
+          "paths": [
+            "tenants/tya/shopperIdentityLinks/irl_1d608be65358a5919068e583f659277f"
+          ]
+        }
+      ],
+      "crosswalkPath": "tenants/tya/shopperIdentityCrosswalk/shopper_gt_d5ebad6b6c",
+      "beforeTarget": null,
+      "afterTarget": "shopper_gt_2e8200a26e",
+      "evidence": [
+        {
+          "sourceId": "shopper_gt_d5ebad6b6c",
+          "canonicalId": "shopper_gt_2e8200a26e",
+          "linkId": "irl_1d608be65358a5919068e583f659277f",
+          "matchedTokenField": "exactAliases",
+          "authorityType": "tenant_adjudication",
+          "authorityRef": "3f980fa7833f846c452b89cba5f8745755e430dc",
+          "status": "active",
+          "tenantId": "tya",
+          "projectScope": "cinepolis",
+          "humanConfirmed": true,
+          "providerAck": true,
+          "linkProviderAck": {
+            "present": false,
+            "value": null
+          },
+          "providerAckEvidence": {
+            "mode": "REFERENCED_COMMITTED_COMMAND_RECEIPT",
+            "receiptId": "3f980fa7833f846c452b89cba5f8745755e430dc",
+            "receiptPath": "tenants/tya/commandReceipts/3f980fa7833f846c452b89cba5f8745755e430dc",
+            "commandType": "shopper.identity.adjudicate",
+            "identityLinkId": "irl_1d608be65358a5919068e583f659277f",
+            "canonicalShopperId": "shopper_gt_2e8200a26e",
+            "exactAliasSetBoundToLinkId": true,
+            "commandDigestFormatValid": true,
+            "payloadDigestRecomputed": false
+          }
+        },
+        {
+          "sourceId": "shopper_gt_d5ebad6b6c",
+          "canonicalId": "shopper_gt_2e8200a26e",
+          "linkId": "irl_1d608be65358a5919068e583f659277f",
+          "matchedTokenField": "sourceAliases",
+          "authorityType": "tenant_adjudication",
+          "authorityRef": "3f980fa7833f846c452b89cba5f8745755e430dc",
+          "status": "active",
+          "tenantId": "tya",
+          "projectScope": "cinepolis",
+          "humanConfirmed": true,
+          "providerAck": true,
+          "linkProviderAck": {
+            "present": false,
+            "value": null
+          },
+          "providerAckEvidence": {
+            "mode": "REFERENCED_COMMITTED_COMMAND_RECEIPT",
+            "receiptId": "3f980fa7833f846c452b89cba5f8745755e430dc",
+            "receiptPath": "tenants/tya/commandReceipts/3f980fa7833f846c452b89cba5f8745755e430dc",
+            "commandType": "shopper.identity.adjudicate",
+            "identityLinkId": "irl_1d608be65358a5919068e583f659277f",
+            "canonicalShopperId": "shopper_gt_2e8200a26e",
+            "exactAliasSetBoundToLinkId": true,
+            "commandDigestFormatValid": true,
+            "payloadDigestRecomputed": false
+          }
+        }
+      ]
+    },
+    {
+      "sourceShopperId": "shopper_gt_f65cbc6391",
+      "observedCanonicalShopperId": "shp-58a449f10a07",
+      "exactMatches": [
+        {
+          "collection": "tenants/tya/shopperIdentityCrosswalk",
+          "field": "sourceStableKey",
+          "operator": "==",
+          "paths": [
+            "tenants/tya/shopperIdentityCrosswalk/shopper_gt_f65cbc6391"
+          ]
+        },
+        {
+          "collection": "tenants/tya/shopperIdentityLinks",
+          "field": "exactAliases",
+          "operator": "array-contains",
+          "paths": [
+            "tenants/tya/shopperIdentityLinks/irl_b589b8cd5e53950d363696dbeeb60b0d"
+          ]
+        },
+        {
+          "collection": "tenants/tya/shopperIdentityLinks",
+          "field": "sourceAliases",
+          "operator": "array-contains",
+          "paths": [
+            "tenants/tya/shopperIdentityLinks/irl_b589b8cd5e53950d363696dbeeb60b0d"
+          ]
+        }
+      ],
+      "crosswalkPath": "tenants/tya/shopperIdentityCrosswalk/shopper_gt_f65cbc6391",
+      "beforeTarget": null,
+      "afterTarget": "shp-58a449f10a07",
+      "evidence": [
+        {
+          "sourceId": "shopper_gt_f65cbc6391",
+          "canonicalId": "shp-58a449f10a07",
+          "linkId": "irl_b589b8cd5e53950d363696dbeeb60b0d",
+          "matchedTokenField": "exactAliases",
+          "authorityType": "tenant_adjudication",
+          "authorityRef": "4e38f4a9168b29f2cacef526ac57155c587bb7db",
+          "status": "active",
+          "tenantId": "tya",
+          "projectScope": "cinepolis",
+          "humanConfirmed": true,
+          "providerAck": true,
+          "linkProviderAck": {
+            "present": false,
+            "value": null
+          },
+          "providerAckEvidence": {
+            "mode": "REFERENCED_COMMITTED_COMMAND_RECEIPT",
+            "receiptId": "4e38f4a9168b29f2cacef526ac57155c587bb7db",
+            "receiptPath": "tenants/tya/commandReceipts/4e38f4a9168b29f2cacef526ac57155c587bb7db",
+            "commandType": "shopper.identity.adjudicate",
+            "identityLinkId": "irl_b589b8cd5e53950d363696dbeeb60b0d",
+            "canonicalShopperId": "shp-58a449f10a07",
+            "exactAliasSetBoundToLinkId": true,
+            "commandDigestFormatValid": true,
+            "payloadDigestRecomputed": false
+          }
+        },
+        {
+          "sourceId": "shopper_gt_f65cbc6391",
+          "canonicalId": "shp-58a449f10a07",
+          "linkId": "irl_b589b8cd5e53950d363696dbeeb60b0d",
+          "matchedTokenField": "sourceAliases",
+          "authorityType": "tenant_adjudication",
+          "authorityRef": "4e38f4a9168b29f2cacef526ac57155c587bb7db",
+          "status": "active",
+          "tenantId": "tya",
+          "projectScope": "cinepolis",
+          "humanConfirmed": true,
+          "providerAck": true,
+          "linkProviderAck": {
+            "present": false,
+            "value": null
+          },
+          "providerAckEvidence": {
+            "mode": "REFERENCED_COMMITTED_COMMAND_RECEIPT",
+            "receiptId": "4e38f4a9168b29f2cacef526ac57155c587bb7db",
+            "receiptPath": "tenants/tya/commandReceipts/4e38f4a9168b29f2cacef526ac57155c587bb7db",
+            "commandType": "shopper.identity.adjudicate",
+            "identityLinkId": "irl_b589b8cd5e53950d363696dbeeb60b0d",
+            "canonicalShopperId": "shp-58a449f10a07",
+            "exactAliasSetBoundToLinkId": true,
+            "commandDigestFormatValid": true,
+            "payloadDigestRecomputed": false
+          }
+        }
+      ]
+    },
+    {
+      "sourceShopperId": "shopper_gt_fc5d6fb927",
+      "observedCanonicalShopperId": "shopper_gt_2e8200a26e",
+      "exactMatches": [
+        {
+          "collection": "tenants/tya/shopperIdentityLinks",
+          "field": "sourceAliases",
+          "operator": "array-contains",
+          "paths": [
+            "tenants/tya/shopperIdentityLinks/irl_1d608be65358a5919068e583f659277f"
+          ]
+        },
+        {
+          "collection": "tenants/tya/shopperIdentityCrosswalk",
+          "field": "sourceStableKey",
+          "operator": "==",
+          "paths": [
+            "tenants/tya/shopperIdentityCrosswalk/shopper_gt_fc5d6fb927"
+          ]
+        },
+        {
+          "collection": "tenants/tya/shopperIdentityLinks",
+          "field": "exactAliases",
+          "operator": "array-contains",
+          "paths": [
+            "tenants/tya/shopperIdentityLinks/irl_1d608be65358a5919068e583f659277f"
+          ]
+        }
+      ],
+      "crosswalkPath": "tenants/tya/shopperIdentityCrosswalk/shopper_gt_fc5d6fb927",
+      "beforeTarget": null,
+      "afterTarget": "shopper_gt_2e8200a26e",
+      "evidence": [
+        {
+          "sourceId": "shopper_gt_fc5d6fb927",
+          "canonicalId": "shopper_gt_2e8200a26e",
+          "linkId": "irl_1d608be65358a5919068e583f659277f",
+          "matchedTokenField": "exactAliases",
+          "authorityType": "tenant_adjudication",
+          "authorityRef": "3f980fa7833f846c452b89cba5f8745755e430dc",
+          "status": "active",
+          "tenantId": "tya",
+          "projectScope": "cinepolis",
+          "humanConfirmed": true,
+          "providerAck": true,
+          "linkProviderAck": {
+            "present": false,
+            "value": null
+          },
+          "providerAckEvidence": {
+            "mode": "REFERENCED_COMMITTED_COMMAND_RECEIPT",
+            "receiptId": "3f980fa7833f846c452b89cba5f8745755e430dc",
+            "receiptPath": "tenants/tya/commandReceipts/3f980fa7833f846c452b89cba5f8745755e430dc",
+            "commandType": "shopper.identity.adjudicate",
+            "identityLinkId": "irl_1d608be65358a5919068e583f659277f",
+            "canonicalShopperId": "shopper_gt_2e8200a26e",
+            "exactAliasSetBoundToLinkId": true,
+            "commandDigestFormatValid": true,
+            "payloadDigestRecomputed": false
+          }
+        },
+        {
+          "sourceId": "shopper_gt_fc5d6fb927",
+          "canonicalId": "shopper_gt_2e8200a26e",
+          "linkId": "irl_1d608be65358a5919068e583f659277f",
+          "matchedTokenField": "sourceAliases",
+          "authorityType": "tenant_adjudication",
+          "authorityRef": "3f980fa7833f846c452b89cba5f8745755e430dc",
+          "status": "active",
+          "tenantId": "tya",
+          "projectScope": "cinepolis",
+          "humanConfirmed": true,
+          "providerAck": true,
+          "linkProviderAck": {
+            "present": false,
+            "value": null
+          },
+          "providerAckEvidence": {
+            "mode": "REFERENCED_COMMITTED_COMMAND_RECEIPT",
+            "receiptId": "3f980fa7833f846c452b89cba5f8745755e430dc",
+            "receiptPath": "tenants/tya/commandReceipts/3f980fa7833f846c452b89cba5f8745755e430dc",
+            "commandType": "shopper.identity.adjudicate",
+            "identityLinkId": "irl_1d608be65358a5919068e583f659277f",
+            "canonicalShopperId": "shopper_gt_2e8200a26e",
+            "exactAliasSetBoundToLinkId": true,
+            "commandDigestFormatValid": true,
+            "payloadDigestRecomputed": false
+          }
+        }
+      ]
+    }
+  ],
+  "tests": {
+    "passed": 53,
+    "failed": 0
+  },
+  "providerWrites": 0,
+  "production": false,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false
+}

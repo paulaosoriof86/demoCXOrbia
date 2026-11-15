@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {collectTenantAdjudications,currentHrPeriodId,representativeHrExpectation,representativeMatchesHr} from './cxorbia-i3-terminal-human-contract.mjs';
+import crypto from 'node:crypto';
+import {collectTenantAdjudications,tenantAdjudicationReceiptRefs,currentHrPeriodId,representativeHrExpectation,representativeMatchesHr} from './cxorbia-i3-terminal-human-contract.mjs';
 const link=()=>({id:'link-proof',tenantId:'tenant-a',projectScope:'project-a',canonicalShopperId:'canonical-a',
   sourceIdentityKey:'first-alias',exactAliases:['first-alias','second-alias'],sourceAliases:['first-alias','second-alias'],
   status:'active',authorityType:'tenant_adjudication',authorityRef:'durable-receipt',providerAck:true,
@@ -34,6 +35,60 @@ test('tenant-wide project scope is accepted but foreign and period-limited alias
   assert.equal(collectTenantAdjudications([{...link(),projectScope:'',projectId:'foreign-project'}],scope).targets['second-alias'],undefined);
   for(const field of ['periodId','periodKey','periodScope'])
     assert.equal(collectTenantAdjudications([{...link(),[field]:'old-period'}],scope).targets['second-alias'],undefined);
+});
+function historicalFixture(target='canonical-a',ref='a'.repeat(40)){
+  const old={...link(),schemaVersion:'cxorbia.shopper-identity-link.v1',canonicalShopperId:target,
+    periodIndependent:true,authorityRef:ref,adjudicationId:ref,createdAt:'2026-10-04T15:05:00.000Z'};
+  delete old.providerAck;
+  old.id='irl_'+crypto.createHash('sha256').update(['tenant-a','project-a',target,...old.exactAliases.slice().sort()].join('\0')).digest('hex').slice(0,32);
+  old.identityLinkId=old.id;old._documentPath='tenants/tenant-a/shopperIdentityLinks/'+old.id;
+  const receipt={id:ref,path:'tenants/tenant-a/commandReceipts/'+ref,exists:true,data:{status:'committed',
+    providerAck:true,commandType:'shopper.identity.adjudicate',shopperId:target,identityLinkId:old.id,
+    identityConsolidated:true,commandDigest:'c'.repeat(64),updatedAt:'2026-10-04T15:05:10.000Z'}};
+  return {old,receipt,commandReceipts:new Map([[ref,receipt]])};
+}
+test('historical absent link ACK resolves only through its exact committed receipt and bound alias set',()=>{
+  const f=historicalFixture(),result=collectTenantAdjudications([f.old],{...scope,commandReceipts:f.commandReceipts});
+  assert.equal(result.targets['second-alias'],'canonical-a');
+  const proof=result.evidence.find(x=>x.sourceId==='second-alias');
+  assert.equal(proof.providerAck,true);assert.deepEqual(proof.linkProviderAck,{present:false,value:null});
+  assert.equal(proof.providerAckEvidence.mode,'REFERENCED_COMMITTED_COMMAND_RECEIPT');
+  assert.equal(proof.providerAckEvidence.exactAliasSetBoundToLinkId,true);
+  assert.equal(proof.providerAckEvidence.payloadDigestRecomputed,false);
+  assert.deepEqual(tenantAdjudicationReceiptRefs([f.old,f.old],scope),[f.old.authorityRef]);
+  assert.equal(collectTenantAdjudications([f.old],scope).targets['second-alias'],undefined);
+});
+for(const value of [false,null,'true',undefined])test('present link ACK never uses historical fallback: '+String(value),()=>{
+  const f=historicalFixture();f.old.providerAck=value;
+  assert.equal(collectTenantAdjudications([f.old],{...scope,commandReceipts:f.commandReceipts}).targets['second-alias'],undefined);
+  assert.deepEqual(tenantAdjudicationReceiptRefs([f.old],scope),[]);
+});
+for(const delta of [{exists:false},{id:'other'},{path:'tenants/other/commandReceipts/'+'a'.repeat(40)},
+  {path:'tenants/tenant-a/other/'+'a'.repeat(40)}])test('receipt transport metadata must be exact '+JSON.stringify(delta),()=>{
+  const f=historicalFixture();Object.assign(f.receipt,delta);
+  assert.equal(collectTenantAdjudications([f.old],{...scope,commandReceipts:f.commandReceipts}).targets['second-alias'],undefined);
+});
+for(const delta of [{status:'pending'},{commandType:'shopper.profile.update'},{providerAck:false},{providerAck:'true'},
+  {identityConsolidated:false},{identityLinkId:'other'},{shopperId:'other'},{commandDigest:'bad'},
+  {tenantId:'other'},{projectId:'other'},{scope:{tenantId:'other'}},{scope:{periodId:'old'}}])
+test('unrelated or incomplete receipt cannot authorize an alias '+JSON.stringify(delta),()=>{
+  const f=historicalFixture();Object.assign(f.receipt.data,delta);
+  assert.equal(collectTenantAdjudications([f.old],{...scope,commandReceipts:f.commandReceipts}).targets['second-alias'],undefined);
+});
+for(const mutate of [x=>x.exactAliases.push('invented'),x=>x.sourceAliases.push('invented'),
+  x=>{x.exactAliases.push('invented');x.sourceAliases.push('invented');},x=>x.id='payload-id',
+  x=>delete x._documentPath,x=>x.adjudicationId='b'.repeat(40),x=>x.periodIndependent=false,
+  x=>x.scope={projectId:'other'},x=>x.scope={tenantId:'other'},x=>x.scope={periodScope:'old'},
+  x=>x.state='inactive',x=>x.sourceSafe=false])test('historical alias authority rejects mutation '+mutate.toString(),()=>{
+  const f=historicalFixture();mutate(f.old);
+  assert.equal(collectTenantAdjudications([f.old],{...scope,commandReceipts:f.commandReceipts}).targets['second-alias'],undefined);
+});
+test('historical receipt authority preserves link and exact crosswalk conflict rejection',()=>{
+  const a=historicalFixture(),b=historicalFixture('canonical-b','b'.repeat(40));
+  const commandReceipts=new Map([...a.commandReceipts,...b.commandReceipts]);
+  assert.equal(collectTenantAdjudications([a.old,b.old],{...scope,commandReceipts}).targets['second-alias'],undefined);
+  assert.equal(collectTenantAdjudications([a.old],{...scope,commandReceipts,
+    crossTargets:new Map([['second-alias',new Set(['canonical-a','canonical-b'])]])}).targets['second-alias'],undefined);
 });
 const revision='f'.repeat(64),periodId='period-current';
 const input={visits:[{shopperId:'first-alias',periodKey:'2026-10'}],periods:[{id:periodId,periodKey:'2026-11'}],

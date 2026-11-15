@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "cxorbia.i3.qa-consumer-corrections.local-proof.v1",
+  "status": "GO_LOCAL_FOCAL_TESTS__HOLD_REMOTE_EXECUTION",
+  "generatedAt": "2026-11-15T21:06:09.251103+00:00",
+  "scopeReceipt": "docs/checkpoints/CXORBIA_I3_QA_CONSUMER_COHERENCE_SCOPE_20261115.json",
+  "expectedRemoteParent": "386d4feb951e6ccf32b0a5e41a28e3c6c0a198fc",
+  "pendingPackageIntegrated": "0ccccc1727f1414d7de9e124e1c74e55612f083d",
+  "sourceSha": "fdc73f7fe925db9edae1e2f73561f7496c451508",
+  "sourceTree": "5bbc8da456c58ce116e6506e6d56bfc0a2c36d33",
+  "tests": {
+    "executed": 223,
+    "passed": 223,
+    "failed": 0,
+    "logSha256": "74b628c1e701528f6e387d2e932573e4d09cad00c7a966dd6845dd93d1b93693",
+    "families": [
+      "terminal-human-ACK",
+      "live-fixture-contract",
+      "incremental-terminal-consumer",
+      "tenant-readonly-contract",
+      "authority-aliases",
+      "terminal-domain-coverage",
+      "shock-continuity",
+      "human-pass-monotonic",
+      "preterminal-source-readiness"
+    ]
+  },
+  "before": {
+    "reservationReadinessPredicateAcceptsCreatedFalse": true,
+    "assignmentRestoreOutsideFinally": true,
+    "liveFixtureRunner": "ubuntu-latest",
+    "currentAliasesContradictSelectedTruth": true
+  },
+  "after": {
+    "reservationPassRequiresProviderLifecycleAndCleanup": true,
+    "assignmentFinallyRestorationExactReceiptAndConcurrencyGuard": true,
+    "cleanupRequiresRestoredReferencesAndSyntheticOwnership": true,
+    "liveFixtureRunner": "ubuntu-24.04",
+    "incrementalPerDomainReportPersistsOnHold": true,
+    "readonlyCannotClaimMutationAck": true,
+    "enabledCountryWriteBranchStillRequiresEvidence": true,
+    "all21GateRequirementPreserved": true,
+    "missingHrRevisionCannotYieldGo": true,
+    "projectionCapturedAfterEntireReloadSweep": true
+  },
+  "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261115-V313.json",
+  "matrixGitBlob": "507a0e5bf77b524dc08df884a979b61e1b7a1cbe",
+  "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V637_2026-11-15.json",
+  "ledgerGitBlob": "b872f67a6bcda4d96eddfe1d5a8198b3944c1196",
+  "strictMatch": 4,
+  "sourceReady": 21,
+  "humanPassesPreserved": [
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ],
+  "productChanges": false,
+  "remoteWritesThisLocalProof": 0,
+  "production": false,
+  "limitations": [
+    "Local tests are not live provider acceptance",
+    "Current readonly browser receipt has not executed yet",
+    "Full I3 remains HOLD until functional contracts and Gate20/21 pass"
+  ]
+}

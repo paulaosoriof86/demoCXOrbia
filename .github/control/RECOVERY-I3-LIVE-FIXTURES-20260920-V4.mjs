@@ -8,6 +8,7 @@ import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { chromium } from 'playwright';
 import { settleCustomRoleAuth, settleVisibleShopperAuth } from './RECOVERY-I3-BROWSER-AUTH-LIFECYCLE-20260919.mjs';
+import { requireProviderAck, requireExactCommandReceipt, reservationLifecyclePassed, restoreAssignment } from '../../tools/qa/cxorbia-i3-live-fixture-contract.mjs';
 
 const E = process.env;
 const PROJECT = E.PROJECT;
@@ -33,6 +34,10 @@ const sha = (v) => crypto.createHash('sha256').update(String(v), 'utf8').digest(
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const tests = [];
 const cleanupTargets = { docs: new Set(), authUids: new Set(), receipts: new Set(), audits: new Set() };
+const assignmentRestorations = [];
+const guardedSyntheticDocs = new Map();
+let fixtureShopperIds = [];
+let reservationEvidence = null;
 let browser = null;
 let failure = null;
 let cleanupFailure = null;
@@ -329,8 +334,127 @@ async function adminAvailableVisitReadback(staffUid, periodId) {
     });
   } finally { await context.close(); }
 }
+async function adminReservationReadback(staffUid, id, expectedStatus, periodId, periodKey) {
+  const {context, page} = await adminPage(staffUid);
+  const capture = async () => {
+    await page.waitForFunction(uid => window.CX?.backendAuth?.context?.().authenticated === true && window.firebase?.auth?.().currentUser?.uid === uid && window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied === true && Array.isArray(window.CX?.data?.__protectedReservations) && typeof window.CX?.data?.setCurrentPeriod === 'function', staffUid, {timeout:150000});
+    await page.evaluate(pid => { if (String(window.CX.data.currentPeriodId) !== pid && window.CX.data.setCurrentPeriod(pid) === false) throw new Error('PERIOD_SWITCH_REJECTED'); }, periodId);
+    await page.evaluate(() => window.CX.router.nav('reservas'));
+    await page.waitForFunction(() => window.CX?.session?.view === 'reservas' && typeof window.CX?.reservas?.list === 'function', null, {timeout:30000});
+    await page.waitForTimeout(1000);
+    return page.evaluate(({id, expectedStatus, periodId, periodKey, tenantId, projectId}) => {
+      const matches = window.CX.reservas.list().filter(r => String(r.id || r.reservationId) === id);
+      const controls = [...document.querySelectorAll('select.rEst')].filter(e => e.dataset.id === id);
+      const ctx = window.CX.backendAuth.context(), row = matches[0];
+      const scopeOk = ctx.authenticated === true && ctx.tenantId === tenantId && ['admin','super'].includes(ctx.role) && String(window.CX.data.currentProjectId) === projectId && String(window.CX.data.currentPeriodId) === periodId;
+      const ok = scopeOk && (expectedStatus === null ? matches.length === 0 && controls.length === 0 :
+        matches.length === 1 && controls.length === 1 && controls[0].value === expectedStatus &&
+        String(row.status || row.estado) === expectedStatus && row.projectId === projectId && row.periodId === periodId && row.periodo === periodKey);
+      return {ok, scopeOk, count:matches.length, controlCount:controls.length, status:row?.status || row?.estado || null};
+    }, {id, expectedStatus, periodId, periodKey, tenantId:TENANT, projectId:PROJECT_ID});
+  };
+  try {
+    const initial = await capture();
+    await page.reload({waitUntil:'domcontentloaded', timeout:90000});
+    const afterReload = await capture();
+    return {ok:initial.ok && afterReload.ok, reloadExecuted:true, initial, afterReload};
+  } finally { await context.close(); }
+}
+async function runReservationLifecycle({staff, staffToken, shopper, shopperToken, periodId, periodKey}) {
+  const key = 'i3-reservation-' + RUN_ID + '-' + String(E.GITHUB_RUN_ATTEMPT || '1');
+  const visitId = key + '-visit', reservationId = key + '-reservation';
+  const visitRef = project.collection('visits').doc(visitId), reservationRef = project.collection('reservations').doc(reservationId);
+  if ((await visitRef.get()).exists || (await reservationRef.get()).exists) throw new Error('ENVIRONMENT_FAILURE:RESERVATION_FIXTURE_COLLISION');
+  const ev = reservationEvidence = {operationKind:'SYNTHETIC_PROVIDER_LIFECYCLE', sourceSha:SOURCE_SHA, sourceTree:SOURCE_TREE,
+    tenantId:TENANT, projectId:PROJECT_ID, periodId, hrRevision, production:false, hrWrites:0, commercialVisitWrites:0,
+    created:false,createAck:false,statusAck:false,deleted:false,deleteAck:false,independentFirestoreReadback:false,
+    reloadReadback:false,absentAfterReload:false,idempotentReplay:false,cleanupVerified:false,duplicateCount:null,receipts:[]};
+  const persist = () => fs.writeFileSync(path.join(OUT, 'reservation-lifecycle.json'), JSON.stringify(ev,null,2)+'\n');
+  persist();
+  // Collision checked first; register all owned resources before any provider POST.
+  cleanupTargets.docs.add(visitRef.path); cleanupTargets.docs.add(reservationRef.path);
+  guardedSyntheticDocs.set(visitRef.path,null);guardedSyntheticDocs.set(reservationRef.path,null);
+  const future = new Date(Date.now()+7*86400000).toISOString().slice(0,10);
+  const visitCreated=await visitRef.create({id:visitId,visitId,hrRowId:visitId,tenantId:TENANT,projectId:PROJECT_ID,periodId,periodKey,
+    sucursal:'QA I3 RESERVA',ciudad:'QA',pais:shopper.profile.pais,disponibleDesde:future,shopperId:null,
+    estado:'disponible',status:'disponible',assignmentSource:'hr',assignmentSyncStatus:'synced',
+    qaSynthetic:true,qaRunId:RUN_ID,hrSourceRevision:hrRevision,version:1});
+  guardedSyntheticDocs.set(visitRef.path,visitCreated.writeTime);
+  const receipt = async (c, uid) => {
+    const [r,a] = await Promise.all([tenant.collection('commandReceipts').doc(commandReceiptId(c)).get(),tenant.collection('entityAuditTrail').doc(commandAuditId(c)).get()]);
+    if (!r.exists || !a.exists) throw new Error('PERSISTENCE_FAILURE:RESERVATION_RECEIPT_AUDIT_MISSING');
+    requireExactCommandReceipt(r.data(),c,uid);
+    const audit = a.data();
+    if (!(audit.tenantId === TENANT && audit.projectId === PROJECT_ID && audit.periodId === periodId && audit.actorUid === uid && audit.commandType === c.commandType && audit.idempotencyKey === c.idempotencyKey)) throw new Error('PERSISTENCE_FAILURE:RESERVATION_AUDIT_SCOPE');
+    ev.receipts.push({receiptId:r.id, auditId:a.id, commandDigest:r.data().commandDigest, commandType:c.commandType, providerAck:r.data().providerAck});
+  };
+  const create = command('reservation.create','reservation',reservationId,key+'-create',{
+    shopperId:shopper.id,branchId:'qa-i3-reserva|qa',visitId,hrRowId:visitId,sourceRevision:hrRevision,
+    status:'solicitada',periodo:periodKey,sucursal:'QA I3 RESERVA',ciudad:'QA',pais:shopper.profile.pais
+  },'absent',periodId);
+  trackCommand(create);
+  requireProviderAck(await executeHttp(shopperToken,create),'RESERVATION_CREATE');
+  ev.createAck=true;
+  const createdSnap=await reservationRef.get(),created=createdSnap.data();
+  ev.created=!!created && created.shopperId===shopper.id && created.projectId===PROJECT_ID && created.periodId===periodId && created.visitId===visitId && created.status==='solicitada' && created.version===1;
+  if(!ev.created)throw new Error('PERSISTENCE_FAILURE:RESERVATION_CREATE_READBACK');
+  await receipt(create,shopper.uid);
+  guardedSyntheticDocs.set(reservationRef.path,createdSnap.updateTime);
+  ev.createReload=await adminReservationReadback(staff.id,reservationId,'solicitada',periodId,periodKey);
+  if(!ev.createReload.ok)throw new Error('FUNCTIONAL_DEFECT:RESERVATION_CREATE_RELOAD');
+  const change=command('reservation.status.update','reservation',reservationId,key+'-status',{status:'cruzada',shopperId:shopper.id,visitId,hrRowId:visitId},created.version,periodId);
+  trackCommand(change);requireProviderAck(await executeHttp(staffToken,change),'RESERVATION_STATUS');
+  ev.statusAck=true;
+  const [crossed,assigned]=await Promise.all([reservationRef.get(),visitRef.get()]);
+  if(!(crossed.data()?.status==='cruzada' && crossed.data()?.shopperId===shopper.id && crossed.data()?.version===2 && assigned.data()?.shopperId===shopper.id && assigned.data()?.version===2))throw new Error('PERSISTENCE_FAILURE:RESERVATION_STATUS_READBACK');
+  await receipt(change,staff.id);
+  guardedSyntheticDocs.set(reservationRef.path,crossed.updateTime);guardedSyntheticDocs.set(visitRef.path,assigned.updateTime);
+  ev.statusReload=await adminReservationReadback(staff.id,reservationId,'cruzada',periodId,periodKey);
+  if(!ev.statusReload.ok)throw new Error('FUNCTIONAL_DEFECT:RESERVATION_STATUS_RELOAD');
+  const replay=requireProviderAck(await executeHttp(staffToken,change),'RESERVATION_STATUS_REPLAY');
+  if(!(replay.idempotentReplay===true && replay.providerWrites===0 && (await reservationRef.get()).data()?.version===2 && (await visitRef.get()).data()?.version===2))throw new Error('PERSISTENCE_FAILURE:RESERVATION_STATUS_REPLAY_WRITES');
+  const remove=command('reservation.delete','reservation',reservationId,key+'-delete',{},crossed.data().version,periodId);
+  trackCommand(remove);requireProviderAck(await executeHttp(staffToken,remove),'RESERVATION_DELETE');
+  ev.deleteAck=true;ev.deleted=!(await reservationRef.get()).exists;
+  if(!ev.deleted)throw new Error('PERSISTENCE_FAILURE:RESERVATION_DELETE_READBACK');
+  await receipt(remove,staff.id);
+  ev.deleteReload=await adminReservationReadback(staff.id,reservationId,null,periodId,periodKey);
+  ev.absentAfterReload=ev.deleteReload.ok;
+  const deleteReplay=requireProviderAck(await executeHttp(staffToken,remove),'RESERVATION_DELETE_REPLAY');
+  ev.idempotentReplay=deleteReplay.idempotentReplay===true && deleteReplay.providerWrites===0 && !(await reservationRef.get()).exists;
+  ev.independentFirestoreReadback=ev.created && ev.deleted;
+  ev.reloadReadback=ev.createReload.ok && ev.statusReload.ok && ev.deleteReload.ok;
+  ev.duplicateCount=ev.createReload.afterReload.count===1 && ev.deleteReload.afterReload.count===0 ? 0 : null;
+  persist();
+  if(!(ev.absentAfterReload && ev.idempotentReplay))throw new Error('PERSISTENCE_FAILURE:RESERVATION_DELETE_REAPPEARED');
+}
+async function restoreAllAssignments() {
+  for (const j of assignmentRestorations) {
+    try { await restoreAssignment(db,j); }
+    catch (e) { j.error=str(e.message); throw e; }
+    finally {
+      fs.writeFileSync(path.join(OUT,'assignment-restoration.json'),JSON.stringify(assignmentRestorations.map(x=>({
+        visitPath:x.ref.path,receiptPath:x.receiptRef.path,beforeData:x.beforeData,command:x.command,
+        actorUid:x.actorUid,submitted:x.submitted,outcome:x.outcome||'AMBIGUOUS',restored:x.restored===true,
+        result:x.result||null,error:x.error||null
+      })),null,2)+'\n');
+    }
+  }
+}
 async function cleanupAll() {
-  for (const p of [...cleanupTargets.docs].reverse()) { const r = db.doc(p); if ((await r.get()).exists) await r.delete(); }
+  if(assignmentRestorations.some(j=>j.restored!==true))throw new Error('PERSISTENCE_FAILURE:CLEANUP_BLOCKED_PENDING_ASSIGNMENT_RESTORATION');
+  for(const id of fixtureShopperIds){
+    const references=await project.collection('visits').where('shopperId','==',id).get();
+    if(references.docs.some(d=>!cleanupTargets.docs.has(d.ref.path)))throw new Error('PERSISTENCE_FAILURE:CLEANUP_BLOCKED_COMMERCIAL_VISIT_REFERENCE');
+  }
+  for (const p of [...cleanupTargets.docs].reverse()) {
+    const r=db.doc(p),s=await r.get();if(!s.exists)continue;
+    if(guardedSyntheticDocs.has(p)){
+      const ownedTime=guardedSyntheticDocs.get(p);
+      if(!ownedTime || !s.updateTime.isEqual(ownedTime))throw new Error('PERSISTENCE_FAILURE:SYNTHETIC_CLEANUP_OWNERSHIP_OR_CONCURRENCY_CONFLICT');
+      await r.delete({lastUpdateTime:ownedTime});
+    }else await r.delete();
+  }
   for (const id of cleanupTargets.receipts) { const r = tenant.collection('commandReceipts').doc(id); if ((await r.get()).exists) await r.delete(); }
   for (const id of cleanupTargets.audits) { const r = tenant.collection('entityAuditTrail').doc(id); if ((await r.get()).exists) await r.delete(); }
   for (const uid of cleanupTargets.authUids) { try { await auth.deleteUser(uid); } catch (e) { if (str(e?.code) !== 'auth/user-not-found') throw e; } }
@@ -367,8 +491,7 @@ try {
   const clientRoutes = arr(human.routes).filter((x) => x.role === 'cliente' && !x.failed);
   const historyOk = arr(human.historyCandidates).length > 0 && shopperRoutes.some((x) => x.id === 'miperfil') && shopperRoutes.some((x) => x.id === 'misvisitas') && probe.dashboardPeriodsOk === true;
   record('6_HISTORICO_KPIS', 'Same live HR revision drives profile/history/multiple periods/KPIs', { historyCandidates: human.historyCandidates, dashboardPeriodsOk: probe.dashboardPeriodsOk }, { priorRunId: PRIOR_RUN_ID, sourceSha: SOURCE_SHA }, 'No HR fixture written', 'No HR cleanup required', historyOk, { fromCurrentCertificationArtifact: true });
-  const reservationOk = probe.reservations?.ok === true && probe.reservations?.source === 'durable_provider';
-  record('9_RESERVA', 'create/status/delete with provider ACK and durable readback', probe.reservations || null, { priorRunId: PRIOR_RUN_ID, sourceSha: SOURCE_SHA }, 'Current certification reservation cleanup already executed', 'Current certification evidence reports deleted=true', reservationOk, { fromCurrentCertificationArtifact: true });
+  if(!(probe.reservations?.ok===true && probe.reservations?.source==='durable_provider'))throw new Error('PROVIDER_FAILURE:RESERVATION_READINESS');
   record('10_CLIENTE', 'Client login/scope/authorized modules; no cross-role access', { clientRouteCount: clientRoutes.length, decision: human.decision }, { priorRunId: PRIOR_RUN_ID, sourceSha: SOURCE_SHA }, 'No client mutation', 'No cleanup required', clientRoutes.length > 0, { fromCurrentCertificationArtifact: true });
 
   const apiKey = await firebaseApiKey();
@@ -423,6 +546,7 @@ try {
     f.internalEmail = internalEmail(f.credential.login);
     if (!f.credential.ok || !(await authMissing(f.uid)) || !(await emailMissing(f.internalEmail)) || (await tenant.collection('shoppers').doc(f.id).get()).exists) throw new Error('ENVIRONMENT_FAILURE:FIXTURE_COLLISION:' + f.testId);
   }
+  fixtureShopperIds=fixtureDefs.map(f=>f.id);
   const accent = fixtureDefs.find((x) => x.testId === '3_NOMBRE_TILDE');
   const compound = fixtureDefs.find((x) => x.testId === '4_NOMBRE_COMPUESTO');
   const exactAccent = shopperModule.shopperCredentialRule({ firstName: 'César', lastName: 'Castillo', nombre: 'César Castillo' });
@@ -579,24 +703,35 @@ try {
   const assignId = assignCandidate.id, postId = postCandidate.id;
   const assignDurableId = assignCandidate.durableId, postDurableId = postCandidate.durableId;
   const assignRef = assignCandidate.ref, postRef = postCandidate.ref;
-  const assignBefore = assignCandidate.durable, postBefore = postCandidate.durable;
+  const freshAssign=await assignRef.get();
+  const assignBefore = freshAssign.data(), postBefore = postCandidate.durable;
+  if(!freshAssign.exists || str(assignBefore.shopperId) || !['disponible','available'].includes(str(assignBefore.estado||assignBefore.status).toLowerCase()))throw new Error('PERSISTENCE_FAILURE:ASSIGNMENT_FRESH_AVAILABILITY_CHANGED');
+  const assignVersion=assignBefore.version??assignBefore.updatedAt??assignBefore.lastSyncedAt;
+  if(assignVersion==null || assignVersion==='source-current' || assignVersion==='absent')throw new Error('PERSISTENCE_FAILURE:ASSIGNMENT_CONCURRENCY_VERSION_MISSING');
 
   const gt = fixtureDefs.find((x) => x.testId === '1_SHOPPER_GT');
-  const assignCommand = command('visit.assign', 'visit', assignId, 'i3-assign-' + RUN_ID, { visitId: assignId, hrRowId: assignBefore.hrRowId || assignVisit.hrRowId || null, shopperId: gt.id, assignmentSource: 'platform' }, 'source-current', fixturePeriodId);
+  const assignCommand = command('visit.assign', 'visit', assignId, 'i3-assign-' + RUN_ID, { visitId: assignId, hrRowId: assignBefore.hrRowId || assignVisit.hrRowId || null, shopperId: gt.id, assignmentSource: 'platform' }, assignVersion, fixturePeriodId);
   trackCommand(assignCommand);
+  const recovery={ref:assignRef,receiptRef:tenant.collection('commandReceipts').doc(commandReceiptId(assignCommand)),beforeData:assignBefore,beforeUpdateTime:freshAssign.updateTime,command:assignCommand,actorUid:staff.id,submitted:false,requestResolved:false,restored:false};
+  assignmentRestorations.push(recovery);
+  fs.writeFileSync(path.join(OUT,'assignment-recovery-before-post.json'),JSON.stringify({visitPath:assignRef.path,receiptPath:recovery.receiptRef.path,beforeData:assignBefore,command:assignCommand,actorUid:staff.id,production:false},null,2)+'\n');
+  recovery.submitted=true;
   const assignAck = await executeHttp(staffToken, assignCommand);
+  recovery.outcome=assignAck.ok===true && assignAck.committed===true && assignAck.providerAck===true ? 'COMMITTED_ACK' :
+    assignAck.ok===false && assignAck.status==='blocked' && assignAck.committed===false && assignAck.providerAck===false && assignAck.providerWrites===0 ? 'BLOCKED_NO_WRITES' : 'AMBIGUOUS';
   const assignAfter = (await assignRef.get()).data() || {};
   const owned = await project.collection('visits').where('shopperId', '==', gt.id).get();
   const exactOwned = owned.docs.filter((d) => d.id === assignDurableId).length;
   const shopperVisit = await shopperVisitReadback(gt, assignId, fixturePeriodId);
   const assignedOk = assignAck.ok === true && assignAck.providerAck === true && str(assignAfter.shopperId) === gt.id && !['disponible','available'].includes(str(assignAfter.estado || assignAfter.status).toLowerCase()) && exactOwned === 1 && shopperVisit.mineCount === 1 && shopperVisit.assigned === true && shopperVisit.available === false;
   if (!assignedOk) throw new Error('PROVIDER_FAILURE:ASSIGNMENT_ACK_OR_READBACK');
-  await assignRef.set(assignBefore, { merge: false });
+  await restoreAllAssignments();
   cleanupTargets.receipts.add(commandReceiptId(assignCommand)); cleanupTargets.audits.add(commandAuditId(assignCommand));
   const restored = (await assignRef.get()).data() || {};
   record('7_DISPONIBILIDAD_ASIGNACION', 'Active-period HR/UI availability parity + canonical HR-eligible durable visit (active preferred; latest-period fallback only when active is exhausted) → provider ACK assignment → removed from available state → appears exactly once to shopper', { providerAck: assignAck.providerAck, shopperId: assignAfter.shopperId, state: assignAfter.estado || assignAfter.status, exactOwned, shopperVisible: shopperVisit, activePeriodKey, activePeriodId:PERIOD_ID, activeHrAvailable:rawAvailableActive.length, activeUiAvailability, fixturePeriodId, fixturePeriodKey, fallbackUsed, rawHrAvailableAll:rawAvailableAll.length, canonicalAvailableAll:canonicalAvailable.length, canonicalAvailableSelectedPeriod:available.filter(x=>x.periodId===fixturePeriodId).length, pendingPlatformExcluded: availability.filter((x) => x.pendingPlatform).length, sourceVisitId: assignId, durableVisitId: assignDurableId }, { assignmentSource: assignAfter.assignmentSource, assignmentSyncStatus: assignAfter.assignmentSyncStatus, hrRowId: assignAfter.hrRowId || null, hrSourceRevision: assignBefore.hrSourceRevision || null }, 'Original DEV Firestore visit snapshot restored; HR untouched', { shopperId: restored.shopperId || null, state: restored.estado || restored.status }, !str(restored.shopperId) && ['disponible','available'].includes(str(restored.estado || restored.status).toLowerCase()));
 
   const shopperToken = await passwordToIdToken(gt.internalEmail, gt.credential.password, apiKey);
+  await runReservationLifecycle({staff,staffToken,shopper:gt,shopperToken,periodId:fixturePeriodId,periodKey:fixturePeriodKey});
   const createPost = command('application.create', 'application', null, 'i3-post-create-' + RUN_ID, { visitId: postId, hrRowId: postBefore.hrRowId || postVisit.hrRowId || null, shopperId: gt.id, proposedDate: str(postVisit.disponibleDesde||postVisit.measurementWindowStart||postVisit.availableFromRaw)||null, note: 'I3 live fixture' }, 'absent', fixturePeriodId);
   trackCommand(createPost);
   const postAck = await executeHttp(shopperToken, createPost);
@@ -615,9 +750,14 @@ try {
   failure = e;
 } finally {
   try { if (browser) await browser.close(); } catch {}
-  try { await cleanupAll(); } catch (e) { cleanupFailure = e; }
+  try { await restoreAllAssignments(); await cleanupAll(); } catch (e) { cleanupFailure = e; }
   let absence = { ok: false };
   try { absence = await absenceReadback(); } catch (e) { absence = { ok: false, error: str(e?.message || e) }; }
+  if(reservationEvidence){
+    reservationEvidence.cleanupVerified=absence.ok && !cleanupFailure;
+    fs.writeFileSync(path.join(OUT,'reservation-lifecycle.json'),JSON.stringify(reservationEvidence,null,2)+'\n');
+    record('9_RESERVA','Synthetic create/status/delete through provider with independent persistence, actual reload, replay and verified cleanup',reservationEvidence,{receipts:reservationEvidence.receipts},'Shared fixture cleanup',absence,reservationLifecyclePassed(reservationEvidence),{fromCurrentCertificationArtifact:false,fromCurrentLiveFixtureRun:true});
+  }
   for (const t of tests) {
     if (t.cleanup === 'Shared synthetic cleanup pending') t.cleanup = 'Synthetic shopper/profile/crosswalk/Auth teardown executed after all tests';
     if (t.absenceReadback === 'Shared absence readback pending') t.absenceReadback = { sharedAbsenceReadback: absence.ok };
