@@ -386,21 +386,36 @@
     if(!router||router.__c6HumanAuthorityGate===true)return;
     const originalMount=router.mount.bind(router),originalNav=router.nav.bind(router);
     let pendingView=null,replaying=false;
+    const prepareInitialView=requested=>{
+      if(!humanAuthorityReady()||window.CX_PROTECTED_AUTH_HR_AUTHORITY?.internalProjectAuthority!==true||CX.data?.period?.())return requested;
+      const role=CX.session?.role,effectiveRole=CX.session?.testRole||role;
+      const allowed=id=>CX.MODULES?.[id]?.roles?.includes(role)&&CX.moduleEnabled?.(id)===true
+        &&CX.roleCanAccess?.(effectiveRole,id)===true&&CX.moduleVisibleForProfile?.(id,role)===true
+        &&(!CX.MODULES[id].superOnly||CX.session?.hasTechAccess?.()===true);
+      // A new internal project has no operational period yet. Open a real,
+      // permitted setup view before the router's default operational module.
+      const safe=['config','administrabilidad','marca'];
+      const target=safe.includes(requested)&&allowed(requested)?requested:allowed('config')?'config':null;
+      if(!target)return false;
+      CX.session.view=target;
+      return target;
+    };
     const showGate=reason=>{
       const app=document.getElementById('app'),rail=document.getElementById('rail'),view=document.getElementById('view'),crumb=document.getElementById('crumb');
       if(app)app.classList.add('on');
       if(rail)rail.innerHTML='';
       if(crumb)crumb.textContent='Sincronizando operación';
       const stopped=window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE?.exhausted===true;
-      const copy=stopped?'<div class="card-t">No fue posible validar el acceso</div><div class="muted" style="margin-top:8px;line-height:1.55">No se confirmó la identidad o la fuente operacional de tu cuenta. No se mostrarán datos de otro shopper. Solicita a Coordinación que revise tu acceso.</div>':'<div class="card-t">Validando fuente operacional</div><div class="muted" style="margin-top:8px;line-height:1.55">CXOrbia está cargando la autoridad HR viva y el contexto exacto de proyecto y periodo. Ningún módulo operativo se mostrará con un slice transitorio.</div>';
+      const copy=reason==='internal_project_setup_requires_config_authority'?'<div class="card-t">Proyecto pendiente de configuración</div><div class="muted" style="margin-top:8px;line-height:1.55">Este proyecto aún no tiene un periodo operativo. Un administrador autorizado debe completar su configuración.</div>':stopped?'<div class="card-t">No fue posible validar el acceso</div><div class="muted" style="margin-top:8px;line-height:1.55">No se confirmó la identidad o la fuente operacional de tu cuenta. No se mostrarán datos de otro shopper. Solicita a Coordinación que revise tu acceso.</div>':'<div class="card-t">Validando fuente operacional</div><div class="muted" style="margin-top:8px;line-height:1.55">CXOrbia está cargando la autoridad HR viva y el contexto exacto de proyecto y periodo. Ningún módulo operativo se mostrará con un slice transitorio.</div>';
       if(view)view.innerHTML='<div class="card card-p" data-cx-human-authority-gate="'+(stopped?'blocked':'pending')+'" style="max-width:720px;margin:40px auto">'+copy+'</div>';
       window.CX_C6_HR_AUTHORITY_GATE={ready:false,blocked:true,reason:reason||'pending_hr_authority',pendingView:pendingView||CX.session?.view||null,providerWrites:0,production:false,at:new Date().toISOString()};
     };
     const release=reason=>{
       if(replaying||!CX.session?.role||!humanAuthorityReady())return false;
       replaying=true;
-      const requested=pendingView||CX.session?.view||null;
+      const requested=prepareInitialView(pendingView||CX.session?.view||null);
       try{
+        if(requested===false){showGate('internal_project_setup_requires_config_authority');return false;}
         originalMount();
         if(requested&&CX.MODULES?.[requested]&&CX.session?.view!==requested)originalNav(requested);
         window.CX_C6_HR_AUTHORITY_GATE={ready:true,blocked:false,reason:reason||'hr_authority_ready',pendingView:null,periodId:str(CX.data?.currentPeriodId),projectId:str(CX.data?.currentProjectId),sourceRevision:CX.data?.previewMeta?.sourceRevision||null,providerWrites:0,production:false,at:new Date().toISOString()};
@@ -415,6 +430,7 @@
         requestHumanAuthority('c6_mount_waiting_hr_authority',()=>release('internal_project_authority_ready'));
         return;
       }
+      if(CX.session?.role&&prepareInitialView(CX.session?.view||null)===false){showGate('internal_project_setup_requires_config_authority');return;}
       return originalMount(...arguments);
     };
     router.nav=function(id){

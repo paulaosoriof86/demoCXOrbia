@@ -1,0 +1,170 @@
+TAP version 13
+# Subtest: normal human entry preserves the configured authorized tenant and project
+ok 1 - normal human entry preserves the configured authorized tenant and project
+  ---
+  duration_ms: 6.603265
+  type: 'test'
+  ...
+# Subtest: authenticated exact internal project can configure countries before periods or visits exist
+ok 2 - authenticated exact internal project can configure countries before periods or visits exist
+  ---
+  duration_ms: 1.408952
+  type: 'test'
+  ...
+# Subtest: internal entry rejects unauthenticated principal
+ok 3 - internal entry rejects unauthenticated principal
+  ---
+  duration_ms: 1.363784
+  type: 'test'
+  ...
+# Subtest: internal entry rejects different uid
+ok 4 - internal entry rejects different uid
+  ---
+  duration_ms: 1.447388
+  type: 'test'
+  ...
+# Subtest: internal entry rejects different tenant
+ok 5 - internal entry rejects different tenant
+  ---
+  duration_ms: 1.501669
+  type: 'test'
+  ...
+# Subtest: internal entry rejects different project
+ok 6 - internal entry rejects different project
+  ---
+  duration_ms: 2.157136
+  type: 'test'
+  ...
+# Subtest: internal entry rejects different namespace
+ok 7 - internal entry rejects different namespace
+  ---
+  duration_ms: 1.386479
+  type: 'test'
+  ...
+# Subtest: internal entry rejects missing authorized project
+ok 8 - internal entry rejects missing authorized project
+  ---
+  duration_ms: 1.39477
+  type: 'test'
+  ...
+# Subtest: internal entry rejects external record with internal flag
+ok 9 - internal entry rejects external record with internal flag
+  ---
+  duration_ms: 1.856432
+  type: 'test'
+  ...
+# Subtest: internal entry rejects non atomic authority
+ok 10 - internal entry rejects non atomic authority
+  ---
+  duration_ms: 1.600534
+  type: 'test'
+  ...
+# Subtest: internal entry rejects old session generation
+ok 11 - internal entry rejects old session generation
+  ---
+  duration_ms: 1.466346
+  type: 'test'
+  ...
+# Subtest: internal entry rejects missing session generation
+ok 12 - internal entry rejects missing session generation
+  ---
+  duration_ms: 1.349693
+  type: 'test'
+  ...
+# Subtest: internal entry rejects wrong internal source ref
+ok 13 - internal entry rejects wrong internal source ref
+  ---
+  duration_ms: 1.47575
+  type: 'test'
+  ...
+# Subtest: internal flag never bypasses shopper exact identity requirements
+ok 14 - internal flag never bypasses shopper exact identity requirements
+  ---
+  duration_ms: 1.215165
+  type: 'test'
+  ...
+# Subtest: external HR authority retains revision, period and nonempty operational requirements
+ok 15 - external HR authority retains revision, period and nonempty operational requirements
+  ---
+  duration_ms: 5.928077
+  type: 'test'
+  ...
+# Subtest: external shopper authority still requires the exact signed-in identity
+ok 16 - external shopper authority still requires the exact signed-in identity
+  ---
+  duration_ms: 2.854998
+  type: 'test'
+  ...
+# Subtest: an initially blocked human shell releases after the actual internal authority producer completes
+ok 17 - an initially blocked human shell releases after the actual internal authority producer completes
+  ---
+  duration_ms: 5.148536
+  type: 'test'
+  ...
+# Subtest: cold internal project without a period mounts configuration through the real router start resolver
+not ok 18 - cold internal project without a period mounts configuration through the real router start resolver
+  ---
+  duration_ms: 7.176081
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-human-project-scope.test.mjs:85:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Got unwanted exception.
+    Actual message: "Cannot read properties of undefined (reading 'periodo')"
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual:
+  error: "Cannot read properties of undefined (reading 'periodo')"
+  name: 'TypeError'
+  stack: |-
+    Object.midia (evalmachine.<anonymous>:161:121)
+    cx.router.nav (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-human-project-scope.test.mjs:43:87)
+    router.nav (evalmachine.<anonymous>:427:14)
+    Object.mount (evalmachine.<anonymous>:94:10)
+    router.mount (evalmachine.<anonymous>:418:14)
+    file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-human-project-scope.test.mjs:87:39
+    getActual (node:assert:611:5)
+    strict.doesNotThrow (node:assert:779:32)
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-human-project-scope.test.mjs:87:10)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+  operator: 'doesNotThrow'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-human-project-scope.test.mjs:87:10)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: deferred internal publication selects configuration before mounting a no-period project
+not ok 19 - deferred internal publication selects configuration before mounting a no-period project
+  ---
+  duration_ms: 2.445262
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-human-project-scope.test.mjs:91:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-human-project-scope.test.mjs:97:10)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+1..19
+# tests 19
+# suites 0
+# pass 17
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 198.205759

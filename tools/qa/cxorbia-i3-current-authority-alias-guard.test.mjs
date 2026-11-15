@@ -15,7 +15,7 @@ const fixture=()=>{
   d.currentExecutionReceiptSemantics=p.currentExecutionReceiptSemantics='LATEST_FOCAL_NOT_GLOBAL';
   d.phaseAHumanAcceptanceCurrent20261111={technicalDomainMatches:5};p.activePhaseAClosureLock20261110.strictDomainMatches=5;l.currentTruth.moduleMatch=5;
   d.moduleTruthExpectedGitBlob='e'.repeat(40);l.currentTruth.moduleTruthGitBlob=d.moduleTruthExpectedGitBlob;
-  d.currentCanonicalControl={matrix:{path:d.moduleTruthPath,gitBlob:d.moduleTruthExpectedGitBlob},ledger:{path:d.findingsLedgerPath,gitBlob:d.findingsLedgerExpectedGitBlob}};
+  d.currentCanonicalControl={sourceSha:source,sourceTree:tree,matrix:{path:d.moduleTruthPath,gitBlob:d.moduleTruthExpectedGitBlob},ledger:{path:d.findingsLedgerPath,gitBlob:d.findingsLedgerExpectedGitBlob}};
   p.currentCanonicalControl=structuredClone(d.currentCanonicalControl);
   return {descriptor:d,pointer:p,ledger:l};
 };
@@ -35,6 +35,22 @@ const pendingFixture=()=>{
   v.ledger.currentTruth.sourceMaterialized=false;
   return v;
 };
+test('current functional accounting follows the new source while original human evidence stays historical',()=>{
+  const v=fixture();v.descriptor.moduleTruthPath='matrix-V294.json';
+  v.ledger.currentTruth.moduleTruthPath=v.descriptor.moduleTruthPath;
+  for(const control of [v.descriptor,v.pointer])control.currentCanonicalControl.matrix.path=v.descriptor.moduleTruthPath;
+  v.matrix={version:'V294',modules:Array.from({length:21},(_,i)=>({classification:i<5?'MATCH':'HOLD'})),
+    integralCertificationUnchanged:{match:5},functionalBlockCertificationAccounting20261110:{
+      currentProductSourceSha:v.descriptor.productSourceSha,domainMatchCount:5,domainCount:21,domainPendingCount:16,
+      latestReadback:{sourceSha:'a'.repeat(40)}}};
+  assert.equal(validateCurrentAuthorityAliases(v).pass,true,JSON.stringify(validateCurrentAuthorityAliases(v)));
+  v.matrix.functionalBlockCertificationAccounting20261110.currentProductSourceSha='a'.repeat(40);
+  assert.ok(validateCurrentAuthorityAliases(v).failures.includes('CURRENT_FUNCTIONAL_ACCOUNTING_SOURCE_DESYNC'));
+  v.matrix.functionalBlockCertificationAccounting20261110.currentProductSourceSha=v.descriptor.productSourceSha;
+  v.matrix.functionalBlockCertificationAccounting20261110.domainMatchCount=6;
+  assert.ok(validateCurrentAuthorityAliases(v).failures.includes('CURRENT_FUNCTIONAL_ACCOUNTING_COUNT_DESYNC'));
+  assert.equal(v.matrix.functionalBlockCertificationAccounting20261110.latestReadback.sourceSha,'a'.repeat(40));
+});
 test('pending source preserves old served DEV seal while pointers target new source',()=>{
   const r=validateCurrentAuthorityAliases(pendingFixture());
   assert.equal(r.pass,true,JSON.stringify(r));

@@ -107,6 +107,7 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
     JSON.stringify(l?.lastModuleTruthProof||null)===JSON.stringify(c3)&&
     JSON.stringify(l?.c3PreterminalProof||null)===JSON.stringify(c3),
     'CURRENT_C3_PROOF_DESYNC');
+  for(const control of [d,p])check(control?.currentCanonicalControl?.sourceSha===c3Source&&control?.currentCanonicalControl?.sourceTree===c3Tree,'CURRENT_CANONICAL_C3_SOURCE_DESYNC');
   check(Boolean(d?.updatedAt)&&d.updatedAt===p?.updatedAt&&p.updatedAt===l?.updatedAt,'CURRENT_CONTROL_UPDATED_AT_DESYNC');
   check(Boolean(d?.currentExecutionReceipt)&&JSON.stringify(d.currentExecutionReceipt)===JSON.stringify(p?.currentExecutionReceipt),'CURRENT_EXECUTION_RECEIPT_DESYNC');
   check(Boolean(d?.currentExecutionReceiptSemantics)&&d.currentExecutionReceiptSemantics===p?.currentExecutionReceiptSemantics,'CURRENT_EXECUTION_RECEIPT_SEMANTICS_DESYNC');
@@ -117,6 +118,12 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
     const actual=(m.modules||[]).filter(x=>x.classification==='MATCH').length;
     check(actual===current.moduleMatch && m.integralCertificationUnchanged?.match===actual,'CURRENT_MATRIX_MATCH_COUNT_DESYNC');
     check(m.version===(String(d.moduleTruthPath).match(/-(V\d+)\.json$/)||[])[1],'CURRENT_MATRIX_VERSION_DESYNC');
+    const accounting=m.functionalBlockCertificationAccounting20261110;
+    if(accounting){
+      check(accounting.currentProductSourceSha===source,'CURRENT_FUNCTIONAL_ACCOUNTING_SOURCE_DESYNC');
+      check(accounting.domainMatchCount===actual&&accounting.domainCount===m.modules.length&&
+        accounting.domainPendingCount===m.modules.length-actual,'CURRENT_FUNCTIONAL_ACCOUNTING_COUNT_DESYNC');
+    }
   }
   return {pass:failures.length===0,failures,findingCount:count,nextFindingId:next,ledgerPath,sourceSha:source,devRunId:seal?.runId||null};
 }

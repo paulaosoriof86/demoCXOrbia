@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "cxorbia.i3.current-accounting-repair.v1",
+  "iteration": "I3",
+  "classification": "MAPPING_FAILURE",
+  "runId": 43766949193,
+  "runNumber": 2532,
+  "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43766949193",
+  "controlSha": "6ed5277dfa40c633d8e20802f7ca00a03898b3bb",
+  "sourceSha": "5f66282e4c47b13a8d15a4b2449430c509dce785",
+  "sourceTree": "80eb90c13b63be0cbfd9c11a89090092552df690",
+  "failure": {
+    "test": "tools/qa/cxorbia-i3-terminal-module-domain-coverage.test.mjs",
+    "assertion": "functionalBlockCertificationAccounting20261110.currentProductSourceSha === descriptor.productSourceSha",
+    "actual": "fdc73f7fe925db9edae1e2f73561f7496c451508",
+    "expected": "5f66282e4c47b13a8d15a4b2449430c509dce785"
+  },
+  "workflowParsed": true,
+  "canonicalJobId": 132974116413,
+  "hostingJobStarted": false,
+  "deploys": 0,
+  "production": false,
+  "correction": "Advance the explicitly current accounting source in a successor matrix; preserve original receipts and counts. Add the same invariant to the existing authority-alias guard. Existing failing test remains unchanged.",
+  "readAt": "2026-11-15T22:04:30.382390+00:00"
+}

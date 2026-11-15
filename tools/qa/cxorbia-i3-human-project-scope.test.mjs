@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 const source=fs.readFileSync('app/adapters/tya-c6-unified-human-runtime-v1.js','utf8');
-function fixture({internal=true,role='super',mutate}={}){
+function fixture({internal=true,role='super',realMount=false,mutate}={}){
   const calls=[],listeners={},uid='exact-user',tenantId='tenant-a',projectId='project-a';
   const ctx={authenticated:true,tenantId,role,authNamespace:role==='shopper'?'shopper':'staff',shopperId:role==='shopper'?'shopper-a':'',projectIds:[projectId]};
   const record={id:projectId,projectId,tenantId,operationalSource:{mode:internal?'internal':'external'},honorario:{SV:15},currency:{SV:'USD'}};
@@ -17,14 +17,33 @@ function fixture({internal=true,role='super',mutate}={}){
   const authorized={tenantId,principal:{actorUid:uid,tenantId,role,authNamespace:ctx.authNamespace,shopperId:ctx.shopperId,projectIds:[projectId]},projects:[record]};
   const cx={BACKEND:{tenantId,defaultProjectId:projectId,previewProjectIds:[projectId]},BRAND:{id:tenantId},session,data,
     dataSource:{sourceRef:internal?'firestore-internal:'+tenantId+':'+projectId:'hr-live-all-periods+firestore-authenticated-exact-overlay'},
-    backendAuth:{context:()=>ctx},MODULES:{config:{}},modules:{},router:{mount(){calls.push('mount');},nav(v){calls.push(v);}},bus:{on(){}}};
+    backendAuth:{context:()=>ctx},MODULES:{config:{roles:[role]}},moduleEnabled:()=>true,roleCanAccess:()=>true,moduleVisibleForProfile:()=>true,
+    modules:{},router:{mount(){calls.push('mount');},nav(v){calls.push(v);}},bus:{on(){}}};
   const env={console,URLSearchParams,Date,JSON,Math,Set,Map,CX:cx,
     location:{search:'?cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV&cxProjectId='+projectId},
     document:{readyState:'loading',addEventListener(k,f){listeners[k]=f;},getElementById(){return null;}},
     addEventListener(){},localStorage:{getItem(){return null;},removeItem(){}},setTimeout(){return 1;},
     firebase:{auth:()=>({currentUser:{uid}})},CX_PROTECTED_AUTH_HR_AUTHORITY:authority,CX_BACKEND_AUTHORIZED_STATE:authorized};
   env.window=env;const f={env,cx,ctx,data,authority,authorized,record,calls,listeners};if(mutate)mutate(f);
-  vm.createContext(env);vm.runInContext(source,env);return f;
+  vm.createContext(env);
+  if(realMount){
+    // Use the production router's start selection and the actual period-dependent
+    // Mi Dia owner. A mount stub alone hid the first-render failure.
+    env.document.body={classList:{toggle(){}}};env.document.querySelectorAll=()=>[];
+    cx.session.role='admin';cx.session.view=null;cx.session.user.name='QA Admin';
+    cx.NAV={admin:[{items:['midia','config']}]};
+    cx.MODULES={midia:{roles:['admin']},config:{roles:['admin']}};
+    cx.moduleEnabled=()=>true;cx.roleCanAccess=()=>true;cx.moduleVisibleForProfile=()=>true;
+    data.scopePaises=()=>null;data.periodMonth=()=>null;data.programBase=()=>'';
+    data.kpis=()=>({postPend:0,sinAsignar:{t:0},cuestPend:{t:0},fueraRango:{t:0}});
+    cx.module=(id,render)=>{cx.modules[id]=render;};
+    vm.runInContext(fs.readFileSync('app/core/router.js','utf8'),env);
+    vm.runInContext(fs.readFileSync('app/modules/midia.js','utf8'),env);
+    cx.modules.config=()=>'<div>Project configuration</div>';
+    cx.router.buildRail=()=>{};
+    cx.router.nav=function(id){cx.session.view=id;calls.push(id);return cx.modules[id]({data,role:'admin',ui:{}});};
+  }
+  vm.runInContext(source,env);return f;
 }
 test('normal human entry preserves the configured authorized tenant and project',()=>{
   const f=fixture();assert.equal(f.cx.BACKEND.tenantId,'tenant-a');assert.equal(f.cx.BACKEND.defaultProjectId,'project-a');
@@ -63,4 +82,46 @@ test('an initially blocked human shell releases after the actual internal author
   assert.equal(f.env.CX_PROTECTED_AUTH_HR_AUTHORITY.internalProjectAuthority,true);
   assert.equal(f.env.CX_C6_HR_AUTHORITY_GATE.ready,true);assert.equal(f.env.CX_C6_HR_AUTHORITY_GATE.blocked,false);
   assert.deepEqual(f.calls,['mount']);
+});
+test('cold internal project without a period mounts configuration through the real router start resolver',()=>{
+  const f=fixture({realMount:true});
+  assert.doesNotThrow(()=>f.cx.router.mount());
+  assert.deepEqual(f.calls,['config']);assert.equal(f.cx.session.view,'config');
+  assert.equal(f.data.currentPeriodId,'');assert.equal(f.data.period(),undefined);assert.equal(f.data._visitas.length,0);
+});
+test('deferred internal publication selects configuration before mounting a no-period project',async()=>{
+  const f=fixture({realMount:true,mutate:f=>{f.authority.applied=false;}});
+  f.env.CX_BACKEND_LAST_STATE={source:'firestore',empty:false,counts:{projects:1}};f.env.clearTimeout=()=>{};
+  vm.runInContext(fs.readFileSync('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js','utf8'),f.env);
+  f.cx.router.mount();assert.deepEqual(f.calls,[]);
+  await Promise.resolve();await Promise.resolve();
+  assert.equal(f.env.CX_C6_HR_AUTHORITY_GATE.ready,true);assert.deepEqual(f.calls,['config']);
+  assert.equal(f.data.currentPeriodId,'');
+});
+test('initial internal setup never grants configuration access to a role without permission',()=>{
+  const f=fixture({realMount:true});f.cx.roleCanAccess=()=>false;
+  f.cx.router.mount();assert.deepEqual(f.calls,[]);
+  assert.equal(f.env.CX_C6_HR_AUTHORITY_GATE.blocked,true);
+  assert.equal(f.env.CX_C6_HR_AUTHORITY_GATE.reason,'internal_project_setup_requires_config_authority');
+});
+test('deferred operational request does not replay Mi Dia after selecting safe configuration',async()=>{
+  const f=fixture({realMount:true,mutate:f=>{f.authority.applied=false;}});
+  f.env.CX_BACKEND_LAST_STATE={source:'firestore',empty:false,counts:{projects:1}};f.env.clearTimeout=()=>{};
+  vm.runInContext(fs.readFileSync('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js','utf8'),f.env);
+  f.cx.router.nav('midia');await Promise.resolve();await Promise.resolve();
+  assert.equal(f.env.CX_C6_HR_AUTHORITY_GATE.ready,true);assert.deepEqual(f.calls,['config']);
+});
+test('explicit permitted period-free view survives initial setup without enlarging permissions',()=>{
+  const f=fixture({realMount:true});f.cx.MODULES.marca={roles:['admin']};f.cx.modules.marca=()=>'';f.cx.session.view='marca';
+  f.cx.router.mount();assert.deepEqual(f.calls,['marca']);
+  const restricted=fixture({realMount:true});restricted.cx.MODULES.config.superOnly=true;
+  restricted.cx.router.mount();assert.deepEqual(restricted.calls,[]);assert.equal(restricted.env.CX_C6_HR_AUTHORITY_GATE.blocked,true);
+});
+test('an actual internal period preserves the selected operational view',()=>{
+  const f=fixture();f.data.currentPeriodId='period-a';f.data.period=()=>({id:'period-a'});f.cx.session.view='midia';
+  f.cx.router.mount();assert.equal(f.cx.session.view,'midia');assert.deepEqual(f.calls,['mount']);
+});
+test('external HR mount keeps its existing operational selection',()=>{
+  const f=fixture({internal:false});f.cx.session.view='dashboard';f.cx.router.mount();
+  assert.equal(f.cx.session.view,'dashboard');assert.deepEqual(f.calls,['mount']);
 });

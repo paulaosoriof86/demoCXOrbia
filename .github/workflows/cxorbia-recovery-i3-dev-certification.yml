@@ -6659,8 +6659,8 @@ jobs:
       test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-certification-project-continuity.test.mjs")" = "1d663cc151e638150185eb51b82566455e09f18b"
       # VRM-328/329/330: updated canonical-source alias controls are QA-only;
       # their exact blobs are pinned, so the exclusion cannot hide source drift.
-      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.mjs")" = "8088dd67b588c118e4727b3e6bbdd061261a30bb"
-      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs")" = "c7f97d121d610fcd6c823cb0613d2d0c1e737c9e"
+      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.mjs")" = "6985b57531eacdf319bd33f9359a585435ca570a"
+      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs")" = "1f6d08b943f3c29e1c0d37fbef88660b5ba6766c"
       test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-shock-continuity-guard.mjs")" = "debb28d8391df034b759ed57762ac508a475e10d"
       test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs")" = "b072dfd8402f22aea7d9c426c4a6a6c3dd873e0a"
       # The pending-source/predecessor C3 accounting assertion is corrected at

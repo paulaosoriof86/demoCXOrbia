@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "cxorbia.i3.p0.scope.v1",
+  "iteration": "I3",
+  "classification": "FUNCTIONAL_DEFECT",
+  "priority": "P0_PROVEN",
+  "findingId": "VRM-341",
+  "owner": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+  "observedFailure": "Normal internal-project authority releases the real router before a safe initial view exists; default Mi Dia dereferences absent period. Both cold and deferred publication fail.",
+  "beforeEvidence": "docs/checkpoints/CXORBIA_I3_INTERNAL_NO_PERIOD_BEFORE_20261115.tap",
+  "allowedProductFiles": [
+    "app/modules/configuracion.js",
+    "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+    "app/adapters/tya-c6-unified-human-runtime-v1.js"
+  ],
+  "additionalProductDelta": [
+    "app/adapters/tya-c6-unified-human-runtime-v1.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-q2-frontend-owner-behavior.test.mjs",
+    "tools/qa/cxorbia-i3-b8-historical-command-boundary.test.mjs",
+    "tools/qa/cxorbia-i3-human-project-scope.test.mjs"
+  ],
+  "scopePredecessor": "docs/checkpoints/CXORBIA_I3_COUNTRY_HISTORICAL_P0_SCOPE_20261115.json",
+  "sourcePredecessor": "5f66282e4c47b13a8d15a4b2449430c509dce785",
+  "servingPredecessor": "fdc73f7fe925db9edae1e2f73561f7496c451508",
+  "requiredCorrection": "Only exact authenticated internal authority with no period chooses an already permitted configuration view before mount/release. Never invent a period, visits, authorization or HR-ready event.",
+  "production": false,
+  "generatedAt": "2026-11-15T22:07:39.042550+00:00"
+}
