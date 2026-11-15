@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "cxorbia.i3.p0.source-proof.v1",
+  "decision": "PASS_I3_P0_SOURCE_QA_NOT_DEV_CERTIFICATION",
+  "generatedAt": "2026-11-15T22:12:06.173854+00:00",
+  "sourceSha": "e20b5a67057be2419750bbb5363df37af1089813",
+  "sourceTree": "15b61305d615c4ad348ab7018a306eb3312c99bf",
+  "predecessorProductSourceSha": "fdc73f7fe925db9edae1e2f73561f7496c451508",
+  "sourceTestsPass": 167,
+  "sourceTestsFail": 0,
+  "allowedProductFiles": [
+    "app/modules/configuracion.js",
+    "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+    "app/adapters/tya-c6-unified-human-runtime-v1.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-q2-frontend-owner-behavior.test.mjs",
+    "tools/qa/cxorbia-i3-b8-historical-command-boundary.test.mjs",
+    "tools/qa/cxorbia-i3-human-project-scope.test.mjs"
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_INTERNAL_NO_PERIOD_P0_SCOPE_20261115.json",
+  "scopeReceiptBlob": "f04ce86ae6dcd9c4687b170ead54733744e8f243",
+  "findings": [
+    {
+      "id": "VRM-335",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "owner": "app/modules/configuracion.js"
+    },
+    {
+      "id": "VRM-336",
+      "priority": "P0_PROVEN",
+      "classification": "MAPPING_FAILURE",
+      "owner": "app/adapters/cxorbia-cxdata-command-boundary-v1.js"
+    },
+    {
+      "id": "VRM-337",
+      "priority": "P0_PROVEN",
+      "classification": "MAPPING_FAILURE",
+      "owner": "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+    },
+    {
+      "id": "VRM-338",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "owner": "app/adapters/tya-c6-unified-human-runtime-v1.js"
+    },
+    {
+      "id": "VRM-341",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "owner": "app/adapters/tya-c6-unified-human-runtime-v1.js"
+    }
+  ],
+  "tests": {
+    "source": {
+      "path": "docs/checkpoints/CXORBIA_I3_INTERNAL_NO_PERIOD_SOURCE_TESTS_20261115.tap",
+      "gitBlob": "b7fc78b9450bfa49a0e1e71a3f34683b853aa105",
+      "sha256": "9c07b90c5448997e190f1bbab4a6935bf6309682a322cc2f139a1be9e8e2ccf4",
+      "stats": {
+        "tests": 167,
+        "pass": 167,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "todo": 0
+      }
+    }
+  },
+  "beforeFailureEvidence": "docs/checkpoints/CXORBIA_I3_INTERNAL_NO_PERIOD_BEFORE_20261115.tap",
+  "priorApprovedSourceProof": {
+    "path": "docs/checkpoints/CXORBIA_I3_COUNTRY_HISTORICAL_P0_SOURCE_PROOF_20261115.json",
+    "sourceSha": "5f66282e4c47b13a8d15a4b2449430c509dce785",
+    "gitBlob": "4d5a1351c788eeb73264c9c7dbe8293b1cb169e8"
+  },
+  "productOwnerBlobs": {
+    "app/modules/configuracion.js": "33bd5e8d14860f50b706f7d4194c3754424cb8ea",
+    "app/adapters/cxorbia-cxdata-command-boundary-v1.js": "d91deccf7bcbe06b207ac1e53ddeb545996fb977",
+    "app/adapters/tya-c6-unified-human-runtime-v1.js": "f7fbbe30fe71adac5e3332247da58c0274f038cc"
+  },
+  "devPublished": false,
+  "production": false,
+  "authWrites": 0,
+  "hrWrites": 0,
+  "paymentWrites": 0,
+  "humanPassesPreserved": [
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ]
+}
