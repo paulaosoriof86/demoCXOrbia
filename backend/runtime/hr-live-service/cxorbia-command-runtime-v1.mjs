@@ -371,7 +371,7 @@ export function createHrSnapshotReconciler({
         stages,...effects,identityReviewRequired:review,viewRefreshVerified:false,controlWrites
       };
       await leasePatch(tx=>{
-        tx.set(receiptRef,{status,result,completedAt:stamp()},{merge:true});
+        tx.set(receiptRef,{status,result,completedAt:stamp()},{mergeFields:['status','result','completedAt']});
         tx.set(lockRef,{status:complete?'committed':'partial'},{merge:true});
       });
       if(complete)return await readCommitted();
@@ -384,7 +384,7 @@ export function createHrSnapshotReconciler({
       const result={...stop(hrCode(error)),...effects,status:'partial',committed:false,providerAck:false,readbackVerified:false,successUiAllowed:false};
       try{
         await leasePatch(tx=>{
-          tx.set(receiptRef,{status:'partial',result,completedAt:stamp()},{merge:true});
+          tx.set(receiptRef,{status:'partial',result,completedAt:stamp()},{mergeFields:['status','result','completedAt']});
           tx.set(lockRef,{status:'partial'},{merge:true});
         });
         result.receiptReadbackVerified=(await receiptRef.get()).data()?.status==='partial';

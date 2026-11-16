@@ -72,6 +72,28 @@ class MemDoc{
   async get(){return new MemSnapshot(this,this.db.store.get(this.path));}
   async set(value,options){return this.db.direct([{type:'set',ref:this,value,options}]);}
 }
+
+const plainMap=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
+function firestoreMergeFields(prior,value,options={}){
+  const merge=(old,patch)=>{
+    if(!plainMap(patch)||Object.keys(patch).length===0)return copy(patch);
+    const out=plainMap(old)?copy(old):{};
+    for(const [key,next]of Object.entries(patch))out[key]=plainMap(next)&&Object.keys(next).length?merge(out[key],next):copy(next);
+    return out;
+  };
+  if(options.mergeFields){
+    const out=copy(prior||{});
+    for(const field of options.mergeFields){
+      const parts=field.split('.');let src=value,dest=out;
+      for(let i=0;i<parts.length-1;i++){src=src?.[parts[i]];if(!plainMap(dest[parts[i]]))dest[parts[i]]={};dest=dest[parts[i]];}
+      const leaf=parts.at(-1);if(!src||!Object.hasOwn(src,leaf))throw Error('INVALID_MERGE_FIELD');
+      dest[leaf]=copy(src[leaf]);
+    }
+    return out;
+  }
+  return options.merge?merge(prior||{},value):copy(value);
+}
+
 class MemFirestore{
   constructor(){this.store=new Map();this.versions=new Map();this.log=[];this.callbackCount=0;this.beforeCommit=null;this.afterCommit=null;this.maxAttempts=5;}
   collection(name){return new MemCollection(this,name);}
@@ -82,7 +104,7 @@ class MemFirestore{
     for(const op of ops){
       const path=op.ref.path,prior=pending.has(path)?pending.get(path):this.store.get(path);
       if(op.type==='create'&&prior!==undefined)throw Error('ALREADY_EXISTS');
-      const next=op.options?.merge?{...copy(prior||{}),...copy(op.value)}:copy(op.value);pending.set(path,next);
+      const next=firestoreMergeFields(prior,op.value,op.options);pending.set(path,next);
     }
     for(const [path,value]of pending){this.store.set(path,value);this.versions.set(path,(this.versions.get(path)||0)+1);}
     this.log.push(...ops.map(op=>({type:op.type,path:op.ref.path,value:copy(op.value)})));
@@ -234,6 +256,8 @@ test('G05 retries only unfinished stage without repeating completed shopper effe
   const before=f.auth.log.length,business=f.db.log.filter(x=>!x.path.includes('/commandReceipts/')).length;fail=false;
   const second=await f.run('g05-stage-retry-0001');assert.equal(second.ok,true);assert.equal(f.auth.log.length,before);assert.equal(f.db.log.filter(x=>!x.path.includes('/commandReceipts/')).length,business);
   assert.deepEqual(second.applicationWritesThisAttempt,{auth:0,firestore:0});
+  assert.equal(Object.hasOwn(second.stages.visits,'code'),false);
+  assert.equal(Object.hasOwn(f.db.read(second.receiptPath).result.stages.visits,'code'),false);
 });
 test('G05 idempotency binds revision and actor; confirmed replay only reauthorizes and reads receipt',async()=>{
   const f=await setup(),first=await f.run('g05-digest-reuse-0001');assert.equal(first.ok,true);const before=f.db.log.length,reads=f.readCalls(),verified=f.principalCalls();
@@ -417,4 +441,54 @@ for(const altered of [false,true])test('HR349 Auth predecessor '+(altered?'rejec
   const result=await f.run('hr349-auth-digest-new-0002');assert.equal(result.ok,!altered,result.code);assert.equal(f.auth.log.length,a);
   if(altered){assert.equal(result.code,'HR_RECONCILIATION_PREDECESSOR_JOURNAL_INVALID');assert.equal(f.db.log.length,n);}else assert.equal(result.predecessorReconciliation.authWrites,1);
   assert.deepEqual([...f.db.store].filter(([p])=>p===first.receiptPath||p.startsWith(first.receiptPath+'/')),old);
+});
+
+test('VRM-355 Firestore double distinguishes recursive merge from whole-map mergeFields',async()=>{
+  const db=new MemFirestore(),ref=db.collection('receipts').doc('one');
+  db.seed(ref.path,{rootKeep:1,result:{stages:{shoppers:{ok:false,code:'OLD_ERROR'}},legacyOnly:true},nested:{a:1,b:2},array:[1,2]});
+  await ref.set({result:{stages:{shoppers:{ok:true}}},nested:{a:3},array:[3]},{merge:true});
+  assert.equal(db.read(ref.path).result.stages.shoppers.code,'OLD_ERROR');
+  assert.deepEqual(db.read(ref.path).nested,{a:3,b:2});assert.deepEqual(db.read(ref.path).array,[3]);
+  await ref.set({result:{stages:{shoppers:{ok:true}}}},{mergeFields:['result']});
+  assert.deepEqual(db.read(ref.path).result,{stages:{shoppers:{ok:true}}});assert.equal(db.read(ref.path).rootKeep,1);
+  await ref.set({nested:{}},{merge:true});assert.deepEqual(db.read(ref.path).nested,{});
+});
+const vrm355NoEffects=()=>({reconcileSnapshot:async()=>({ok:true,providerAck:true,status:'committed',providerWrites:0})});
+test('VRM-355 recovered shoppers receipt removes prior UID failure and preserves immutable metadata and no-write replay',async()=>{
+  let fail=true;
+  const f=await setup({shopperProviderFactory:()=>({reconcileSnapshot:async()=>{if(fail)throw Error('SHOPPER_CROSSWALK_UID_CONFLICT');return{ok:true,providerAck:true,status:'committed',providerWrites:0};}}),operationalProviderFactory:vrm355NoEffects});
+  const key='vrm355-shoppers-retry-0001',first=await f.run(key);
+  assert.equal(first.status,'partial');assert.equal(first.stages.shoppers.code,'SHOPPER_CROSSWALK_UID_CONFLICT');
+  const old=f.db.read(first.receiptPath),rootKeep={authority:'preserve-root'},predecessor={scope:'synthetic-existing-predecessor'};
+  f.db.seed(first.receiptPath,{...old,rootKeep,predecessorReconciliation:predecessor});
+  fail=false;const second=await f.run(key),durable=f.db.read(first.receiptPath);
+  assert.equal(second.ok,true);assert.equal(second.status,'committed');
+  assert.equal(Object.hasOwn(second.stages.shoppers,'code'),false,'response must not retain prior failure');
+  assert.equal(Object.hasOwn(durable.result.stages.shoppers,'code'),false,'durable receipt must not retain prior failure');
+  for(const k of ['version','digest','actorUid','idempotencyKey','tenantId','projectId','sourceRevision'])assert.deepEqual(durable[k],old[k],k);
+  assert.deepEqual(durable.rootKeep,rootKeep);assert.deepEqual(durable.predecessorReconciliation,predecessor);
+  assert.equal(f.db.read(first.receiptPath+'/stages/visits').status,'committed');
+  assert.equal(f.db.read(first.receiptPath+'/stages/shoppers').status,'committed');
+  const n=f.db.log.length,a=f.auth.log.length,replay=await f.run(key);
+  assert.equal(replay.idempotentReplay,true);assert.equal(Object.hasOwn(replay.stages.shoppers,'code'),false);
+  assert.deepEqual(replay.applicationWritesThisAttempt,{auth:0,firestore:0});assert.equal(f.db.log.length,n);assert.equal(f.auth.log.length,a);
+});
+test('VRM-355 error terminal path replaces stale result without removing root metadata or stages',async()=>{
+  const f=await setup({shopperProviderFactory:vrm355NoEffects,operationalProviderFactory:vrm355NoEffects});let injected=false,receiptPath;
+  f.db.afterCommit=({db,ops})=>{
+    const op=ops.find(op=>op.value?.result?.status==='committed');
+    if(op&&!injected){injected=true;receiptPath=op.ref.path;db.seed(receiptPath,{...db.read(receiptPath),rootKeep:'retained'});throw Error('VRM355_AFTER_TERMINAL_WRITE_FAILURE');}
+  };
+  const result=await f.run('vrm355-error-terminal-0001'),durable=f.db.read(receiptPath);
+  assert.equal(injected,true);assert.equal(result.status,'partial');assert.equal(result.code,'VRM355_AFTER_TERMINAL_WRITE_FAILURE');
+  assert.equal(Object.hasOwn(durable.result,'stages'),false,'catch result must not retain prior success stages');
+  assert.equal(durable.result.providerAck,false);assert.equal(durable.result.committed,false);assert.equal(durable.rootKeep,'retained');
+  assert.equal(f.db.read(receiptPath+'/stages/shoppers').status,'committed');assert.equal(f.db.read(receiptPath+'/stages/visits').status,'committed');
+});
+test('VRM-355 committed historical receipt is not silently rewritten by replay',async()=>{
+  const f=await setup({shopperProviderFactory:vrm355NoEffects,operationalProviderFactory:vrm355NoEffects}),key='vrm355-history-replay-0001';
+  const first=await f.run(key),old=f.db.read(first.receiptPath);old.result.stages.shoppers.code='HISTORICAL_STALE_CODE';
+  f.db.seed(first.receiptPath,old);const before=copy([...f.db.store]),n=f.db.log.length;
+  const replay=await f.run(key);assert.equal(replay.idempotentReplay,true);assert.equal(replay.stages.shoppers.code,'HISTORICAL_STALE_CODE');
+  assert.deepEqual([...f.db.store],before);assert.equal(f.db.log.length,n);
 });

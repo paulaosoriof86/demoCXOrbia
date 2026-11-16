@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-proven-package-scope.v1",
+  "createdAt": "2026-11-16T07:04:03Z",
+  "iteration": "I3",
+  "state": "EXISTING_TWO_PRE_EDIT_SCOPES_PACKAGED_SINGLE_CANDIDATE",
+  "sourceSha": "38f16525c791b355e8f68a6f798defd9bc89ab37",
+  "sourceTree": "9c67dbf660131539fa9c635c699b30229ca199d2",
+  "controlHead": "88cd62824d9c3d0133413509590ce8e90f6c451f",
+  "findings": [
+    {
+      "id": "VRM-354",
+      "priority": "P0_PROVEN",
+      "scope": {
+        "path": "docs/checkpoints/CXORBIA_I3_VRM354_CANONICAL_FULL_NAME_P0_SCOPE_20261116.json",
+        "gitBlob": "59c20b42b12070fabb6426949adda9ec4e34441c",
+        "sha256": "5fc90e70f7f99cee4a8eed898384e897d38372aa1b1febfe8848f21b2c0aa149"
+      }
+    },
+    {
+      "id": "VRM-355",
+      "priority": "P0_PROVEN",
+      "scope": {
+        "path": "docs/checkpoints/CXORBIA_I3_VRM355_RECEIPT_RESULT_REPLACEMENT_P0_SCOPE_20261116.json",
+        "gitBlob": "87a8cb3a4fd78c6572c996ea35af710df27aba88",
+        "sha256": "9abe7c91b141ba648607118453f89c6984a19e7551e649e33fe04d4746208bb6"
+      }
+    }
+  ],
+  "allowedProductFiles": [
+    "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs",
+    "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs"
+  ],
+  "production": false,
+  "hrWrites": false,
+  "authMutationForNameRepair": false,
+  "credentialRuleChange": false,
+  "rulesDeploys": 0,
+  "storageRulesDeploys": 0,
+  "newDeploymentLane": false,
+  "scopeSemantics": "Both owner-level MODULE_TRUTH/P0 scopes were committed before these product edits. This packages only their proven corrections for one existing paired DEV deployment."
+}

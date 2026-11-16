@@ -1906,3 +1906,174 @@ test('VRM-353 / postcommit Auth project drift refuses ACK and retains actual wri
     assert.equal(error.message,'SHOPPER_RETIRED_KEEPER_POSTCOMMIT_READBACK_CONFLICT');assert.equal(error.providerAck,false);assert.equal(error.confirmedRepairWrites,3);return true;
   });
 });
+test('VRM-354 / preserve complete canonical name when credential components are shortened',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  const alias='shopper_gt_mishael_alias',canonical='shopper_gt_milton_canonical',uid=stableShopperUid('tenant-a',canonical);
+  const pp=paths(canonical),aliasCross=paths(alias).cross;
+  const visibleLogin='milton.depaz',email=internalEmailTest('tenant-a',visibleLogin);
+  auth.seed({uid,email,disabled:false,customClaims:{authNamespace:'shopper',projectIds:['project-a'],role:'shopper',shopperId:canonical,tenantId:'tenant-a'}});
+  db.seed(pp.profile,{
+    id:canonical,shopperId:canonical,tenantId:'tenant-a',projectIds:['project-a'],sourceType:'hr_external',
+    nombre:'Milton Javier De Paz Morales',firstName:'Milton',lastName:'De Paz',visibleLogin,username:visibleLogin,user:visibleLogin,
+    credentialRuleVersion:CREDENTIAL_RULE_VERSION,identityAuthority:'tenant_adjudication',
+    identityAuthorityRef:'tenant-owner-adjudication',hrSourceRevision:'older-revision'
+  });
+  db.seed(`${pp.users}/${uid}`,{
+    active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:canonical,projectIds:['project-a'],
+    providerUidFingerprint:providerUidFingerprint(uid),visibleLogin,credentialRuleVersion:CREDENTIAL_RULE_VERSION
+  });
+  db.seed(aliasCross,{
+    tenantId:'tenant-a',shopperId:canonical,canonicalShopperId:canonical,sourceStableKey:alias,projectIds:['project-a'],
+    providerUidFingerprint:providerUidFingerprint(uid),identityMode:'provider_exact_identity_link',sourceType:'hr_external'
+  });
+  db.seed('tenants/tenant-a/shopperIdentityLinks/tenant-adjudicated-alias',{
+    tenantId:'tenant-a',projectId:'project-a',projectScope:'project-a',canonicalShopperId:canonical,
+    sourceSystem:'hr_external',sourceIdentity:{legacyId:alias},status:'confirmed',authorityType:'tenant_adjudication',
+    authorityRef:'tenant-owner-adjudication',periodIndependent:true
+  });
+  const snap=snapshot({shopperId:alias,shopperCode:'TYA_GT_MISHAEL_ALIAS'});
+  snap.visits[0].shopper='Mishael De Paz';
+  const result=await p.reconcileSnapshot(snap,{sourceRevision:'fresh-alias-revision'});
+  assert.equal(result.ok,true);
+  const profile=db.get(pp.profile);
+  assert.equal(profile.nombre,'Milton Javier De Paz Morales');
+  assert.equal(profile.firstName,'Milton');
+  assert.equal(profile.lastName,'De Paz');
+  assert.equal(profile.visibleLogin,'milton.depaz');
+  assert.equal(profile.identityAuthority,'tenant_adjudication');
+  assert.equal(profile.identityAuthorityRef,'tenant-owner-adjudication');
+  assert.equal(profile.hrSourceRevision,'fresh-alias-revision');
+  assert.ok(profile.sourceShopperIds.includes(alias));
+  assert.ok(profile.exactAliases.includes(alias));
+  assert.equal(db.get(aliasCross).shopperId,canonical);
+});
+
+async function canonicalFullNameFixture({canonical='canonical-name-person',alias='hr-name-alias',truncated=true,explicit=true,privateNames=true}={}){
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),tenant='tenant-a',project='project-a',prefix='tenants/'+tenant;
+  const uid='canonical-name-keeper',login='persona.prueba',fullName='Persona Elena Prueba García',aliasName='Persona Elisa Prueba Ríos',revision='same-name-hr-revision';
+  db.seed(prefix+'/users/admin-1',{active:true,tenantId:tenant,role:'super',authNamespace:'staff',projectIds:[project]});
+  const profilePath=prefix+'/shoppers/'+canonical,crossPath=prefix+'/shopperIdentityCrosswalk/'+canonical,memberPath=prefix+'/users/'+uid;
+  const credential={visibleLogin:login,username:login,user:login,credentialRuleVersion:CREDENTIAL_RULE_VERSION,credentialSweepVersion:DURABLE_CREDENTIAL_SWEEP_VERSION,credentialPasswordProofVersion:CREDENTIAL_PASSWORD_PROOF_VERSION,credentialPasswordRuleVersion:CREDENTIAL_RULE_VERSION};
+  auth.seed({uid,email:internalEmailTest(tenant,login),password:'Existing-Keeper-Password',disabled:false,customClaims:{tenantId:tenant,shopperId:canonical,authNamespace:'shopper',role:'shopper',projectIds:[project]}});
+  db.seed(profilePath,{id:canonical,shopperId:canonical,tenantId:tenant,projectIds:[project],sourceType:'hr_external',nombre:fullName,firstName:'Persona',lastName:'Prueba',country:'GT',pais:'GT',hrSourceRevision:revision,...credential});
+  db.seed(memberPath,{active:true,status:'active',tenantId:tenant,shopperId:canonical,role:'shopper',authNamespace:'shopper',projectIds:[project],providerUidFingerprint:providerUidFingerprint(uid),...credential});
+  db.seed(crossPath,{tenantId:tenant,shopperId:canonical,projectIds:[project],sourceStableKey:canonical,sourceType:'hr_external',identityMode:'stable_hr_shopper_id',providerUidFingerprint:providerUidFingerprint(uid),fuzzyMatching:false});
+  db.seed(prefix+'/shoppers/'+alias,{id:alias,shopperId:alias,tenantId:tenant,projectIds:[project],sourceType:'hr_external',nombre:aliasName,country:'GT',pais:'GT'});
+  const command={version:'cxorbia-command-adapter-v1',commandType:'shopper.identity.adjudicate',tenantId:tenant,projectId:project,periodId:'project-a-2026-11',entityId:canonical,idempotencyKey:'vrm354-approved-keeper-'+canonical,authorization:{providerEnforcementRequired:true,permission:'shopper.identity.adjudicate'},payload:{canonicalShopperId:canonical,aliasShopperIds:[alias],humanConfirmed:true,reason:'exact_synthetic_name_regression'}};
+  const ack=await p.execute('staff-token',command);assert.equal(ack.ok,true,JSON.stringify(ack));assert.equal(ack.identityConsolidated,true);
+  if(truncated)db.seed(profilePath,{...db.get(profilePath),nombre:'Persona Prueba'});
+  const hr=snapshot({shopperId:alias,shopperCode:alias});hr.visits[0].shopper=aliasName;
+  hr.shoppers=[...(explicit?[{shopperId:canonical,nombre:privateNames?'Shopper protegido':fullName,pais:'GT',country:'GT'}]:[]),{shopperId:alias,nombre:privateNames?'Shopper protegido':aliasName,pais:'GT',country:'GT'}];
+  const identity=privateNames?new Map([[canonical,{displayName:fullName,country:'GT'}],[alias,{displayName:aliasName,country:'GT'}]]):undefined;
+  return{auth,db,p,tenant,project,prefix,uid,canonical,alias,profilePath,crossPath,memberPath,fullName,aliasName,revision,hr,identity,receiptPath:prefix+'/commandReceipts/'+db.get(profilePath).identityAuthorityRef,linkPath:prefix+'/shopperIdentityLinks/'+ack.identityLinkId};
+}
+for(const canonical of ['a-canonical-name','z-canonical-name'])test('VRM-354 / exact current canonical HR restores full name with stable alias order '+canonical,async()=>{
+  const f=await canonicalFullNameFixture({canonical,alias:'m-hr-alias'}),beforeAuth=authEffects(f.auth);
+  const first=await f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision,identityByShopperId:f.identity});
+  assert.equal(first.ok,true);assert.equal(first.providerAck,true);assert.equal(first.canonicalFullNamesRestored,1);
+  assert.equal(f.db.get(f.profilePath).nombre,f.fullName);assert.equal(f.db.get(f.profilePath).firstName,'Persona');assert.equal(f.db.get(f.profilePath).lastName,'Prueba');assert.deepEqual(authEffects(f.auth),beforeAuth);
+  const after=durableState(f.db),replay=await f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision,identityByShopperId:f.identity});
+  assert.equal(replay.providerWrites,0);assert.equal(replay.canonicalFullNamesRestored,0);assert.deepEqual(durableState(f.db),after);assert.deepEqual(authEffects(f.auth),beforeAuth);
+});
+test('VRM-354 / same-revision direct canonical entry restores full name before replay short-circuit',async()=>{
+  const f=await canonicalFullNameFixture();f.hr.visits=[];f.hr.shoppers=f.hr.shoppers.filter(x=>x.shopperId===f.canonical);
+  const beforeAuth=authEffects(f.auth),first=await f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision,identityByShopperId:f.identity});
+  assert.equal(first.canonicalFullNamesRestored,1);assert.equal(f.db.get(f.profilePath).nombre,f.fullName);assert.equal(f.db.get(f.profilePath).firstName,'Persona');assert.equal(f.db.get(f.profilePath).lastName,'Prueba');assert.deepEqual(authEffects(f.auth),beforeAuth);
+  const replay=await f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision,identityByShopperId:f.identity});assert.equal(replay.providerWrites,0);
+});
+test('VRM-354 / explicit current canonical HR row is eligible without private-name fallback',async()=>{
+  const f=await canonicalFullNameFixture({privateNames:false}),beforeAuth=authEffects(f.auth);
+  const result=await f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision});
+  assert.equal(result.canonicalFullNamesRestored,1);assert.equal(f.db.get(f.profilePath).nombre,f.fullName);assert.equal(f.db.get(f.profilePath).firstName,'Persona');assert.equal(f.db.get(f.profilePath).lastName,'Prueba');assert.deepEqual(authEffects(f.auth),beforeAuth);
+});
+test('VRM-354 / protected or missing canonical name cannot be guessed from an alias or historical visit',async()=>{
+  for(const mode of ['protected','absent','historical-visit-only']){
+    const f=await canonicalFullNameFixture({explicit:mode==='protected'});
+    if(mode==='historical-visit-only')f.hr.visits.push({...f.hr.visits[0],visitId:'historical-canonical',id:'historical-canonical',shopperId:f.canonical,shopper:f.fullName});
+    const beforeAuth=authEffects(f.auth),result=await f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision});
+    assert.equal(result.canonicalFullNamesRestored,0,mode);assert.equal(f.db.get(f.profilePath).nombre,'Persona Prueba',mode);assert.deepEqual(authEffects(f.auth),beforeAuth,mode);
+  }
+});
+test('VRM-354 / an externally approved name anchor is never replaced by a different canonical HR label',async()=>{
+  const f=await canonicalFullNameFixture();f.db.seed(f.profilePath,{...f.db.get(f.profilePath),externalHrIdentityAnchors:[f.alias]});
+  const result=await f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision,identityByShopperId:f.identity});
+  assert.equal(result.canonicalFullNamesRestored,0);assert.equal(f.db.get(f.profilePath).nombre,'Persona Prueba');
+});
+test('VRM-354 / full canonical name and signed self-display fields survive alias-only refresh',async()=>{
+  const f=await canonicalFullNameFixture({truncated:false,explicit:false});f.db.seed(f.profilePath,{...f.db.get(f.profilePath),displayFirstName:'Nombre',displayLastName:'Preferido',displayNameAuthority:'shopper_self_profile',displayNameActorUid:f.uid,displayNameUpdatedAt:'2026-11-01T00:00:00Z',selfManagedFields:['displayFirstName','displayLastName']});
+  const beforeAuth=authEffects(f.auth),result=await f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision,identityByShopperId:f.identity});
+  assert.equal(result.ok,true);const row=f.db.get(f.profilePath);assert.equal(row.nombre,f.fullName);assert.equal(row.displayFirstName,'Nombre');assert.equal(row.displayLastName,'Preferido');assert.equal(row.displayNameAuthority,'shopper_self_profile');assert.deepEqual(authEffects(f.auth),beforeAuth);
+});
+const unsafeCanonicalNameAuthorities=[
+ ['receipt missing',f=>f.db._store.delete(f.receiptPath)],
+ ['receipt pending',f=>f.db.seed(f.receiptPath,{...f.db.get(f.receiptPath),status:'pending'})],
+ ['receipt ACK absent',f=>f.db.seed(f.receiptPath,{...f.db.get(f.receiptPath),providerAck:false})],
+ ['receipt canonical differs',f=>f.db.seed(f.receiptPath,{...f.db.get(f.receiptPath),shopperId:'other'})],
+ ['receipt keeper differs',f=>f.db.seed(f.receiptPath,{...f.db.get(f.receiptPath),keeperUidFingerprint:providerUidFingerprint('other')})],
+ ['link wrong project',f=>f.db.seed(f.linkPath,{...f.db.get(f.linkPath),projectScope:'other-project'})],
+ ['link human false',f=>f.db.seed(f.linkPath,{...f.db.get(f.linkPath),humanConfirmed:false})],
+ ['link ACK false',f=>f.db.seed(f.linkPath,{...f.db.get(f.linkPath),providerAck:false})],
+ ['link fuzzy true',f=>f.db.seed(f.linkPath,{...f.db.get(f.linkPath),fuzzyMatching:true})]
+];
+for(const [label,mutate]of unsafeCanonicalNameAuthorities)test('VRM-354 / canonical full-name repair rejects '+label+' with zero effects',async()=>{
+  const f=await canonicalFullNameFixture();mutate(f);const before=durableState(f.db),beforeAuth=authEffects(f.auth);
+  await assert.rejects(()=>f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision,identityByShopperId:f.identity}),/SHOPPER_CANONICAL_NAME_AUTHORITY_CHANGED/);
+  assert.deepEqual(durableState(f.db),before);assert.deepEqual(authEffects(f.auth),beforeAuth);
+});
+test('VRM-354 / changed authority during transaction refuses a stale full-name repair',async()=>{
+  const f=await canonicalFullNameFixture(),run=f.db.runTransaction.bind(f.db),beforeAuth=authEffects(f.auth);
+  f.db.runTransaction=async cb=>{f.db.seed(f.profilePath,{...f.db.get(f.profilePath),identityAuthorityRef:'f'.repeat(40)});return run(cb);};
+  await assert.rejects(()=>f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision,identityByShopperId:f.identity}),/SHOPPER_CANONICAL_NAME_AUTHORITY_CHANGED/);
+  assert.equal(f.db.get(f.profilePath).nombre,'Persona Prueba');assert.deepEqual(authEffects(f.auth),beforeAuth);
+});
+test('VRM-354 / postcommit readback drift refuses ACK and preserves actual write count',async()=>{
+  const f=await canonicalFullNameFixture(),run=f.db.runTransaction.bind(f.db);
+  f.db.runTransaction=async cb=>{const result=await run(cb);f.auth.users.get(f.uid).customClaims.projectIds.push('changed-project');return result;};
+  await assert.rejects(()=>f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision,identityByShopperId:f.identity}),error=>{
+    assert.equal(error.message,'SHOPPER_CANONICAL_NAME_POSTCOMMIT_READBACK_CONFLICT');assert.equal(error.providerAck,false);assert.equal(error.confirmedRepairWrites,3);return true;
+  });
+});
+
+test('VRM-354 / mismatched current HR revision rejects full-name repair before effects',async()=>{
+  const f=await canonicalFullNameFixture();f.hr.sourceRevision='different-current-revision';
+  const before=durableState(f.db),beforeAuth=authEffects(f.auth);
+  await assert.rejects(()=>f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision,identityByShopperId:f.identity}),/SHOPPER_HR_NAME_REVISION_MISMATCH/);
+  assert.deepEqual(durableState(f.db),before);assert.deepEqual(authEffects(f.auth),beforeAuth);
+});
+test('VRM-354 / duplicate canonical HR rows never authorize name restoration',async()=>{
+  const f=await canonicalFullNameFixture();f.hr.shoppers.push({...f.hr.shoppers[0]});
+  const beforeAuth=authEffects(f.auth),result=await f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision,identityByShopperId:f.identity});
+  assert.equal(result.canonicalFullNamesRestored,0);assert.equal(f.db.get(f.profilePath).nombre,'Persona Prueba');assert.deepEqual(authEffects(f.auth),beforeAuth);
+});
+test('VRM-354 / a different canonical country cannot authorize current full-name restoration',async()=>{
+  const f=await canonicalFullNameFixture();f.hr.shoppers[0].pais='HN';f.hr.shoppers[0].country='HN';
+  const beforeAuth=authEffects(f.auth),result=await f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision,identityByShopperId:f.identity});
+  assert.equal(result.canonicalFullNamesRestored,0);assert.equal(f.db.get(f.profilePath).nombre,'Persona Prueba');assert.deepEqual(authEffects(f.auth),beforeAuth);
+});
+
+for(const [label,change]of [
+ ['profile project expansion',f=>f.db.seed(f.profilePath,{...f.db.get(f.profilePath),projectIds:[f.project,'unapproved-project']})],
+ ['membership project expansion',f=>f.db.seed(f.memberPath,{...f.db.get(f.memberPath),projectIds:[f.project,'unapproved-project']})],
+ ['crosswalk project expansion',f=>f.db.seed(f.crossPath,{...f.db.get(f.crossPath),projectIds:[f.project,'unapproved-project']})],
+ ['credential proof missing',f=>f.db.seed(f.memberPath,{...f.db.get(f.memberPath),credentialPasswordProofVersion:'unverified'})],
+ ['keeper login mismatch',f=>f.db.seed(f.profilePath,{...f.db.get(f.profilePath),username:'other.login',user:'other.login',visibleLogin:'other.login'})]
+])test('VRM-354 / name repair preflight refuses '+label+' before any Auth or durable write',async()=>{
+  const f=await canonicalFullNameFixture();f.hr.visits=[];f.hr.shoppers=f.hr.shoppers.filter(x=>x.shopperId===f.canonical);change(f);
+  const before=durableState(f.db),beforeAuth=authEffects(f.auth);
+  await assert.rejects(()=>f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision,identityByShopperId:f.identity}),/SHOPPER_CANONICAL_NAME_AUTHORITY_CHANGED/);
+  assert.deepEqual(durableState(f.db),before);assert.deepEqual(authEffects(f.auth),beforeAuth);
+});
+for(const field of ['profilePath','memberPath','crossPath'])test('VRM-354 / transaction rejects concurrent project expansion in '+field,async()=>{
+  const f=await canonicalFullNameFixture();f.hr.visits=[];f.hr.shoppers=f.hr.shoppers.filter(x=>x.shopperId===f.canonical);
+  const run=f.db.runTransaction.bind(f.db),beforeAuth=authEffects(f.auth);
+  f.db.runTransaction=async cb=>{f.db.seed(f[field],{...f.db.get(f[field]),projectIds:[f.project,'concurrent-project']});return run(cb);};
+  await assert.rejects(()=>f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision,identityByShopperId:f.identity}),/SHOPPER_CANONICAL_NAME_AUTHORITY_CHANGED/);
+  assert.equal(f.db.get(f.profilePath).nombre,'Persona Prueba');assert.deepEqual(authEffects(f.auth),beforeAuth);
+});
+test('VRM-354 / transaction cannot newly enter name repair without a protected preflight',async()=>{
+  const f=await canonicalFullNameFixture({truncated:false});f.hr.visits=[];f.hr.shoppers=f.hr.shoppers.filter(x=>x.shopperId===f.canonical);
+  const run=f.db.runTransaction.bind(f.db),beforeAuth=authEffects(f.auth);
+  f.db.runTransaction=async cb=>{f.db.seed(f.profilePath,{...f.db.get(f.profilePath),nombre:'Persona Prueba'});return run(cb);};
+  await assert.rejects(()=>f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision,identityByShopperId:f.identity}),/SHOPPER_CANONICAL_NAME_AUTHORITY_CHANGED/);
+  assert.equal(f.db.get(f.profilePath).nombre,'Persona Prueba');assert.deepEqual(authEffects(f.auth),beforeAuth);
+});
