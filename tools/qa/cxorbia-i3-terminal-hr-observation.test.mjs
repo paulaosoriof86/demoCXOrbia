@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import {createHash} from 'node:crypto';
 import {providerUidFingerprint,stableShopperUid} from '../../backend/runtime/cxorbia-shopper-command-provider-v1.mjs';
 import {validateTerminalHrObservation} from './cxorbia-i3-terminal-hr-observation.mjs';
-import {b14PredecessorReadOnly,b14PrincipalOf,b14DiagnosticError,b14RuntimeAuthority,b14WorkbookFromReaders,b14CapabilityVerdict,b14BindingProjection,b14ProjectSourceProjection,b14IntegrationCandidates,b14LeaseReceiptPath,hrCrosswalkUidDiagnosis,hrCrosswalkUidReadOnly,hrUidAuthorityProjection,validateHrUidDiagnosticBinding} from './cxorbia-i3-hr-ack-exact-same-revision.mjs';
+import {b14ReadJournalPage,b14SummarizeCurrentJournal,b14PredecessorReadOnly,b14PrincipalOf,b14DiagnosticError,b14RuntimeAuthority,b14WorkbookFromReaders,b14CapabilityVerdict,b14BindingProjection,b14ProjectSourceProjection,b14IntegrationCandidates,b14LeaseReceiptPath,hrCrosswalkUidDiagnosis,hrCrosswalkUidReadOnly,hrUidAuthorityProjection,validateHrUidDiagnosticBinding} from './cxorbia-i3-hr-ack-exact-same-revision.mjs';
 const valid=()=>({ok:true,revision:'a'.repeat(64),sourceSafe:true,refreshError:null,
   writes:false,hrWrites:false,production:false,shopperReconciliation:null,visitReconciliation:null});
 test('G05 valid read-only observation passes without inventing reconciliation ACK',()=>{
@@ -326,4 +326,73 @@ for(const [name,change] of [
  ['missing paired build',f=>f.receipt.materialization.builds=0]
 ])test('HR UID readonly gate rejects '+name,()=>{
  const f=hrUidBindingFixture();change(f);assert.throws(()=>validateHrUidDiagnosticBinding(f),/HR_UID_READONLY_/);
+});
+
+
+const currentJournalStable=v=>Array.isArray(v)?v.map(currentJournalStable):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,currentJournalStable(v[k])])):v;
+const currentJournalHash=v=>createHash('sha256').update(JSON.stringify(currentJournalStable(v))).digest('hex');
+function currentJournalFixture({auth=false,oldAttempt=false,credentialPending=false}={}){
+ const tenantId='tenant-safe',projectId='project-safe',revision='e'.repeat(64),actorUid='private-actor-uid',idempotencyKey='private-native-command-key',attemptId='attempt-new',stamp='2026-11-16T07:00:00.000Z',system=auth?'auth':'firestore';
+ const receiptPath='tenants/'+tenantId+'/commandReceipts/hr-'+currentJournalHash([projectId,idempotencyKey]);
+ const op={entity:auth?'private-shopper-uid':'tenants/'+tenantId+'/shoppers/private-shopper-id',operation:auth?'updateUser':'set',fields:['active'],expectedDigest:'f'.repeat(64)};
+ const effect={stage:'shoppers',system,attemptId:oldAttempt?'attempt-old':attemptId,sourceRevision:revision,operations:[op],providerAck:true,readbackVerified:true,credentialAuthenticationPending:credentialPending,committedAt:stamp,readbackAt:stamp,...(auth?{readbackDigest:op.expectedDigest}:{})};
+ const intent={stage:effect.stage,system,attemptId:effect.attemptId,status:'pending',startedAt:stamp,operations:auth?[structuredClone(op)]:[]};
+ const receipt={version:'cxorbia.hr-reconciliation-receipt.v1',tenantId,projectId,sourceRevision:revision,actorUid,idempotencyKey,attemptId,status:'committed',digest:currentJournalHash({actorUid,scope:{tenantId,projectId},sourceRevision:revision,commandType:'hr.snapshot.reconcile'})};
+ receipt.result={commandType:'hr.snapshot.reconcile',tenantId,projectId,sourceRevision:revision,receiptPath,receiptBinding:{tenantId,projectId,sourceRevision:revision,actorUid,idempotencyKey,commandType:'hr.snapshot.reconcile'},providerWritesScope:'cumulative_command_effects',intentCollectionPath:receiptPath+'/intents',effectCollectionPath:receiptPath+'/effects',status:'committed',ok:true,committed:true,providerAck:true,readbackVerified:false,authWrites:auth?1:0,firestoreWrites:auth?0:1,confirmedProviderWrites:1,providerWrites:1,unresolvedEffects:0,unverifiedEffects:0,credentialAuthenticationPending:credentialPending,credentialReadback:credentialPending?'PROVIDER_ACK_ONLY_AUTHENTICATION_GATE_PENDING':'NO_CREDENTIAL_CHANGE',applicationWritesThisAttempt:{auth:!oldAttempt&&auth?1:0,firestore:!oldAttempt&&!auth?1:0}};
+ return {receipt,receiptPath,tenantId,projectId,revision,intents:[{id:'private-operation-id',data:intent}],effects:[{id:'private-operation-id',data:effect}],complete:true};
+}
+function journalPagesFixture(count,{repeat=false,failPage=0}={}){
+ const docs=Array.from({length:count},(_,n)=>({id:String(n).padStart(6,'0'),ref:{path:'safe/collection/'+n},data:()=>({n})})),calls=[],cursors=[];
+ const query={startAfter(cursor){cursors.push(cursor);return make(cursor);},limit(size){return {size,cursor:null};}};
+ const make=cursor=>({limit:size=>({size,cursor})});
+ const tx={get:async q=>{calls.push(q);if(calls.length===failPage)throw Error('server page unavailable');const start=q.cursor?docs.indexOf(q.cursor)+1:0;const page=repeat&&q.cursor?docs.slice(0,q.size):docs.slice(start,start+q.size);return {size:page.length,docs:page};}};
+ return {docs,calls,cursors,query,tx};
+}
+for(const n of [0,500,501])test('current journal pagination reads every document and proves end '+n,async()=>{
+ const f=journalPagesFixture(n),r=await b14ReadJournalPage(f.tx,f.query);
+ assert.equal(r.complete,true);assert.equal(r.size,n);assert.equal(r.pages,n>=500?2:1);assert.equal(new Set(r.docs.map(d=>d.id)).size,n);
+ if(n>=500)assert.equal(f.cursors[0],f.docs[499]);
+});
+test('current journal pagination rejects repeated cursor records',async()=>{const f=journalPagesFixture(501,{repeat:true});await assert.rejects(()=>b14ReadJournalPage(f.tx,f.query),/CURSOR_REPEATED/);});
+test('current journal pagination propagates later server failure',async()=>{const f=journalPagesFixture(501,{failPage:2});await assert.rejects(()=>b14ReadJournalPage(f.tx,f.query),/server page unavailable/);});
+test('current journal pagination does not label a full final page complete',async()=>{const f=journalPagesFixture(100);await assert.rejects(()=>b14ReadJournalPage(f.tx,f.query,{pageSize:1,maxPages:100}),/PAGE_LIMIT/);});
+test('current journal pagination rejects invalid options before IO',async()=>{const f=journalPagesFixture(1);await assert.rejects(()=>b14ReadJournalPage(f.tx,f.query,{pageSize:501}),/PAGINATION_OPTIONS/);assert.equal(f.calls.length,0);});
+for(const options of [{},{auth:true},{auth:true,oldAttempt:true},{auth:true,credentialPending:true}])test('current journal verifies exact operations including cumulative earlier attempt '+JSON.stringify(options),()=>{
+ const f=currentJournalFixture(options),r=b14SummarizeCurrentJournal(f);
+ assert.equal(r.journalVerified,true);assert.equal(r.receiptTerminalCommitted,true);assert.equal(r.confirmedProviderWritesObserved,1);
+ assert.equal(r.authenticationVerified,false);assert.equal(r.remoteHrAck,false);assert.equal(r.b14Closed,false);assert.equal(r.writes,0);
+ assert.equal(r.decision,options.credentialPending?'VERIFIED_COMMITTED_JOURNAL_AUTHENTICATION_PENDING':'VERIFIED_COMMITTED_JOURNAL_NO_CREDENTIAL_CHANGE');
+ for(const secret of ['private-actor-uid','private-native-command-key','private-shopper-uid','private-shopper-id','private-operation-id',f.receiptPath])assert.equal(JSON.stringify(r).includes(secret),false);
+});
+for(const [label,change]of [
+ ['wrong receipt actor',f=>{f.receipt.result.receiptBinding.actorUid='foreign';}],
+ ['wrong receipt counts',f=>{f.receipt.result.providerWrites=0;}],
+ ['wrong effect system',f=>{f.effects[0].data.system='auth';}],
+ ['wrong effect stage',f=>{f.effects[0].data.stage='visits';}],
+ ['wrong effect attempt',f=>{f.effects[0].data.attemptId='not-intent';}],
+ ['wrong effect revision',f=>{f.effects[0].data.sourceRevision='b'.repeat(64);}],
+ ['unsafe entity path',f=>{f.effects[0].data.operations[0].entity='tenants/foreign/shoppers/private';}],
+ ['orphan effect',f=>{f.effects[0].id='orphan';}],
+ ['duplicate intent',f=>{f.intents.push(structuredClone(f.intents[0]));}],
+ ['duplicate effect',f=>{f.effects.push(structuredClone(f.effects[0]));}],
+ ['pending without effect',f=>{f.effects=[];}],
+ ['uncertain without effect',f=>{f.effects=[];f.intents[0].data.status='uncertain';}],
+ ['missing effect ACK',f=>{f.effects[0].data.providerAck=false;}],
+ ['incomplete journal',f=>{f.complete=false;}]
+])test('current journal refuses '+label,()=>{const f=currentJournalFixture();change(f);assert.equal(b14SummarizeCurrentJournal(f).journalVerified,false);});
+for(const [label,change]of [
+ ['operation differs',f=>{f.effects[0].data.operations[0].fields=['other'];}],
+ ['readback differs',f=>{f.effects[0].data.readbackDigest='b'.repeat(64);}]
+])test('current journal refuses Auth '+label,()=>{const f=currentJournalFixture({auth:true});change(f);assert.equal(b14SummarizeCurrentJournal(f).journalVerified,false);});
+test('current journal counts a finished Firestore no_effect separately from unresolved Auth',()=>{
+ const f=currentJournalFixture(),r=f.receipt.result;f.effects=[];f.intents[0].data.status='no_effect';f.intents[0].data.finishedAt='2026-11-16T07:00:01.000Z';
+ Object.assign(r,{firestoreWrites:0,providerWrites:0,confirmedProviderWrites:0,applicationWritesThisAttempt:{auth:0,firestore:0}});
+ assert.equal(b14SummarizeCurrentJournal(f).journalVerified,true);
+ f.intents[0].data.system='auth';assert.equal(b14SummarizeCurrentJournal(f).journalVerified,false);
+});
+test('current journal detects an unverified effect beyond the old 501 document bound',()=>{
+ const f=currentJournalFixture(),intent=f.intents[0],effect=f.effects[0];
+ f.intents=Array.from({length:502},(_,i)=>({id:'i'+i,data:structuredClone(intent.data)}));f.effects=Array.from({length:502},(_,i)=>({id:'i'+i,data:structuredClone(effect.data)}));f.effects[501].data.readbackVerified=false;
+ Object.assign(f.receipt.result,{firestoreWrites:502,providerWrites:502,confirmedProviderWrites:502,unverifiedEffects:1,applicationWritesThisAttempt:{auth:0,firestore:502}});
+ const r=b14SummarizeCurrentJournal(f);assert.equal(r.complete,true);assert.equal(r.effectsObserved,502);assert.equal(r.unverifiedEffectsObserved,1);assert.equal(r.countsMatch,true);assert.equal(r.journalVerified,false);
 });

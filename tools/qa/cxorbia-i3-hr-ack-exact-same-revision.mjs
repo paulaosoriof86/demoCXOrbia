@@ -81,6 +81,64 @@ export async function b14PredecessorReadOnly(tx,{receipt,receiptRef,tenantId,pro
   out.decision=out.independentHistoricalReadback?(out.successorTerminalCommitted?'PASS_VERIFIED_PREDECESSOR_HISTORY_AND_COMMITTED_SUCCESSOR':'VERIFIED_PREDECESSOR_HISTORY_SUCCESSOR_NOT_COMMITTED'):'HOLD_PREDECESSOR_READBACK_UNVERIFIED';
   return out;
 }
+
+// QA readback of the complete current command journal. This does not run HR
+// reconciliation, prove authentication, or provide external HR writer ACK.
+export async function b14ReadJournalPage(tx,query,{pageSize=500,maxPages=100}={}){
+  if(!Number.isInteger(pageSize)||pageSize<1||pageSize>500||!Number.isInteger(maxPages)||maxPages<1||maxPages>100)throw Error('SOURCE_FAILURE:B14_JOURNAL_PAGINATION_OPTIONS');
+  const docs=[],seen=new Set();let cursor=null;
+  for(let pages=1;pages<=maxPages;pages++){
+    const page=await tx.get((cursor?query.startAfter(cursor):query).limit(pageSize));
+    if(!Array.isArray(page?.docs)||page.size!==page.docs.length||page.size>pageSize)throw Error('SOURCE_FAILURE:B14_JOURNAL_PAGE_SHAPE');
+    for(const doc of page.docs){
+      if(typeof doc?.ref?.path!=='string'||!doc.ref.path||typeof doc.id!=='string'||!doc.id||seen.has(doc.ref.path))throw Error('SOURCE_FAILURE:B14_JOURNAL_CURSOR_REPEATED');
+      seen.add(doc.ref.path);docs.push(doc);
+    }
+    if(page.size<pageSize)return {docs,size:docs.length,pages,complete:true};
+    const next=page.docs.at(-1);if(!next||next.ref.path===cursor?.ref?.path)throw Error('SOURCE_FAILURE:B14_JOURNAL_CURSOR_NOT_ADVANCED');cursor=next;
+  }
+  throw Error('SOURCE_FAILURE:B14_JOURNAL_PAGE_LIMIT');
+}
+export function b14SummarizeCurrentJournal({receipt,receiptPath,tenantId,projectId,revision,intents,effects,complete}){
+  const errors=new Set(),issue=code=>errors.add(code),sha=v=>b14sha(JSON.stringify(b14stable(v)));
+  const hash=v=>typeof v==='string'&&/^[a-f0-9]{64}$/.test(v),text=v=>typeof v==='string'&&v.length>0,date=v=>typeof v==='string'&&Number.isFinite(Date.parse(v));
+  const knownStage=v=>['visits','shoppers'].includes(v),knownSystem=v=>['auth','firestore'].includes(v);
+  const r=receipt||{},result=r.result||{},expectedBinding={tenantId,projectId,sourceRevision:revision,actorUid:r.actorUid,idempotencyKey:r.idempotencyKey,commandType:'hr.snapshot.reconcile'};
+  const receiptBindingMatches=Boolean(b14LeaseReceiptPath(receiptPath,tenantId)&&r.version==='cxorbia.hr-reconciliation-receipt.v1'&&r.tenantId===tenantId&&r.projectId===projectId&&hash(revision)&&r.sourceRevision===revision&&text(r.actorUid)&&typeof r.idempotencyKey==='string'&&r.idempotencyKey.length>=16&&r.idempotencyKey.length<=200&&text(r.attemptId)&&receiptPath==='tenants/'+tenantId+'/commandReceipts/hr-'+sha([projectId,r.idempotencyKey])&&r.digest===sha({actorUid:r.actorUid,scope:{tenantId,projectId},sourceRevision:revision,commandType:'hr.snapshot.reconcile'})&&result.commandType==='hr.snapshot.reconcile'&&result.tenantId===tenantId&&result.projectId===projectId&&result.sourceRevision===revision&&result.receiptPath===receiptPath&&sha(result.receiptBinding||null)===sha(expectedBinding)&&result.providerWritesScope==='cumulative_command_effects'&&result.intentCollectionPath===receiptPath+'/intents'&&result.effectCollectionPath===receiptPath+'/effects');
+  if(!receiptBindingMatches)issue('RECEIPT_BINDING_MISMATCH');
+  const index=(rows,kind)=>{const m=new Map();if(!Array.isArray(rows)){issue(kind+'_COLLECTION_INVALID');return m;}for(const row of rows){if(!text(row?.id)||!row.data||typeof row.data!=='object'||Array.isArray(row.data)||m.has(row.id)){issue(kind+'_RECORD_INVALID');continue;}m.set(row.id,row.data);}return m;};
+  const byIntent=index(intents,'INTENT'),byEffect=index(effects,'EFFECT');
+  const allowedPath=(entity,stage)=>{const p=String(entity||'').split('/');if(p[0]!=='tenants'||p[1]!==tenantId)return false;
+    if(p.length===4&&['shoppers','users','shopperIdentityCrosswalk','shopperIdentityReviews','reviewQueue'].includes(p[2]))return true;
+    if(p.length===6&&p[2]==='projects'&&p[3]===projectId&&p[4]==='visits')return true;
+    return stage==='shoppers'&&(p.length===4&&['shopperIdentityLinks','paymentReconciliations'].includes(p[2])||p.length===6&&p[2]==='projects'&&p[3]===projectId&&['certifications','liquidations','postulations','reservations'].includes(p[4]));};
+  const validOps=(ops,system,stage)=>Array.isArray(ops)&&ops.every(op=>op&&text(op.entity)&&Array.isArray(op.fields)&&op.fields.every(text)&&new Set(op.fields).size===op.fields.length&&hash(op.expectedDigest)&&(system==='auth'?['createUser','updateUser','setCustomUserClaims'].includes(op.operation):system==='firestore'&&['set','create'].includes(op.operation)&&allowedPath(op.entity,stage)));
+  let unresolved=0,unverified=0,orphanEffects=0,authWrites=0,firestoreWrites=0,credentialPending=false,operationsCountable=true;const applicationWritesThisAttempt={auth:0,firestore:0};
+  for(const [id,intent]of byIntent){
+    if(!knownStage(intent.stage)||!knownSystem(intent.system)||!text(intent.attemptId)||!date(intent.startedAt)||!validOps(intent.operations,intent.system,intent.stage)||Object.hasOwn(intent,'sourceRevision')&&intent.sourceRevision!==revision)issue('INTENT_SCHEMA_INVALID');
+    const effect=byEffect.get(id);
+    if(!effect){if(!(['no_effect','failed_before_write'].includes(intent.status)&&date(intent.finishedAt)&&!(intent.system==='auth'&&intent.status==='no_effect')))unresolved++;continue;}
+    if(intent.status!=='pending'||effect.system!==intent.system||effect.stage!==intent.stage||effect.attemptId!==intent.attemptId||effect.sourceRevision!==revision)issue('INTENT_EFFECT_BINDING_MISMATCH');
+    if(effect.system==='auth'){if(!Array.isArray(effect.operations)||effect.operations.length!==1||sha(intent.operations)!==sha(effect.operations)||effect.readbackDigest!==effect.operations[0]?.expectedDigest)issue('AUTH_OPERATION_OR_READBACK_DIGEST_MISMATCH');}
+    else if(effect.system==='firestore'&&(!Array.isArray(intent.operations)||intent.operations.length!==0))issue('FIRESTORE_INTENT_OPERATIONS_INVALID');
+  }
+  for(const [id,effect]of byEffect){
+    if(!byIntent.has(id))orphanEffects++;
+    if(!knownStage(effect.stage)||!knownSystem(effect.system)||!text(effect.attemptId)||effect.sourceRevision!==revision||!date(effect.committedAt)||!validOps(effect.operations,effect.system,effect.stage)||!Array.isArray(effect.operations)||effect.operations.length===0)issue('EFFECT_SCHEMA_INVALID');
+    if(effect.providerAck!==true)issue('EFFECT_PROVIDER_ACK_MISSING');
+    if(effect.readbackVerified!==true)unverified++;else if(!date(effect.readbackAt))issue('EFFECT_READBACK_TIME_INVALID');
+    if(effect.credentialAuthenticationPending===true)credentialPending=true;
+    if(effect.system==='auth'&&typeof effect.credentialAuthenticationPending!=='boolean')issue('AUTH_CREDENTIAL_PENDING_STATE_MISSING');
+    if(knownSystem(effect.system)&&Array.isArray(effect.operations)){const n=effect.operations.length;if(effect.system==='auth')authWrites+=n;else firestoreWrites+=n;if(effect.attemptId===r.attemptId)applicationWritesThisAttempt[effect.system]+=n;}else operationsCountable=false;
+  }
+  if(orphanEffects)issue('ORPHAN_EFFECTS');if(complete!==true)issue('JOURNAL_INCOMPLETE');
+  const confirmed=authWrites+firestoreWrites,countsMatch=Boolean(complete===true&&operationsCountable&&result.authWrites===authWrites&&result.firestoreWrites===firestoreWrites&&result.confirmedProviderWrites===confirmed&&result.providerWrites===(unresolved?null:confirmed)&&result.unresolvedEffects===unresolved&&result.unverifiedEffects===unverified&&result.credentialAuthenticationPending===credentialPending&&result.credentialReadback===(credentialPending?'PROVIDER_ACK_ONLY_AUTHENTICATION_GATE_PENDING':'NO_CREDENTIAL_CHANGE')&&sha(result.applicationWritesThisAttempt||null)===sha(applicationWritesThisAttempt));
+  if(!countsMatch)issue('RECEIPT_JOURNAL_COUNTS_MISMATCH');
+  const receiptTerminalCommitted=Boolean(receiptBindingMatches&&['committed','committed_with_identity_review'].includes(r.status)&&result.status===r.status&&result.ok===true&&result.committed===true&&result.providerAck===true),journalVerified=complete===true&&errors.size===0&&countsMatch&&unresolved===0&&unverified===0;
+  const entries=m=>[...m].sort(([a],[b])=>a.localeCompare(b));
+  return {complete:complete===true,intentsObserved:byIntent.size,effectsObserved:byEffect.size,unresolvedIntentsObserved:complete===true?unresolved:null,unverifiedEffectsObserved:unverified,orphanEffectsObserved:orphanEffects,authWritesObserved:operationsCountable?authWrites:null,firestoreWritesObserved:operationsCountable?firestoreWrites:null,confirmedProviderWritesObserved:operationsCountable?confirmed:null,applicationWritesThisAttemptObserved:applicationWritesThisAttempt,credentialAuthenticationPending:credentialPending?true:complete===true?false:null,receiptBindingMatches,countsMatch,journalVerified,receiptTerminalCommitted,journalProjectionSha256:sha({intents:entries(byIntent),effects:entries(byEffect)}),errors:[...errors].sort(),decision:journalVerified&&receiptTerminalCommitted?(credentialPending?'VERIFIED_COMMITTED_JOURNAL_AUTHENTICATION_PENDING':'VERIFIED_COMMITTED_JOURNAL_NO_CREDENTIAL_CHANGE'):'HOLD_CURRENT_JOURNAL_UNVERIFIED',scope:'READ_ONLY_CURRENT_JOURNAL_NOT_REMOTE_HR_ACK_OR_LOGIN',authenticationVerified:false,remoteHrAck:false,b14Closed:false,writes:0};
+}
+
 export async function b14ReconciliationLeaseReadOnly(db,tenantId,projectId,revision){
   const state=v=>typeof v==='string'&&/^[A-Za-z0-9_:-]{1,160}$/.test(v)?v:null,counts=v=>Object.fromEntries(Object.entries(v||{}).filter(([,x])=>typeof x==='boolean'||typeof x==='number'&&Number.isFinite(x)));
   const lockRef=db.doc('tenants/'+tenantId+'/commandReceipts/hr-scope-'+b14sha(JSON.stringify(tenantId)));
@@ -89,12 +147,16 @@ export async function b14ReconciliationLeaseReadOnly(db,tenantId,projectId,revis
     const result={exists:lock.exists,status:state(l.status),projectMatches:l.projectId===projectId,expiresAt:Number.isFinite(l.expiresAt)?l.expiresAt:null,expired:Number.isFinite(l.expiresAt)?l.expiresAt<Date.now():null,updateTime:lock.updateTime?.toDate().toISOString()||null,receiptPathHash:l.receiptPath?b14sha(l.receiptPath):null,scope:'READONLY_METADATA_NOT_LEASE_RELEASE_OR_RETRY',writes:0};
     if(!lock.exists||l.projectId!==projectId)return result;
     const receiptPath=b14LeaseReceiptPath(l.receiptPath,tenantId);if(!receiptPath){result.receiptReference='INVALID_SCOPED_REFERENCE';return result;}
-    const ref=db.doc(receiptPath),[doc]=await tx.getAll(ref,{fieldMask:['version','digest','actorUid','tenantId','projectId','sourceRevision','idempotencyKey','status','attemptId','startedAt','completedAt','updatedAt','error','predecessorReconciliation','result.predecessorReconciliation','result.ok','result.status','result.code','result.committed','result.providerAck','result.sourceRevision','result.receiptPath','result.receiptBinding','result.unresolvedEffects','result.unverifiedEffects','result.confirmedProviderWrites','result.providerWrites','result.applicationWritesThisAttempt','result.stages']}),row=doc.data()||{};
+    const ref=db.doc(receiptPath),[doc]=await tx.getAll(ref,{fieldMask:['version','digest','actorUid','tenantId','projectId','sourceRevision','idempotencyKey','status','attemptId','startedAt','completedAt','updatedAt','error','predecessorReconciliation','result.predecessorReconciliation','result.ok','result.status','result.code','result.committed','result.providerAck','result.sourceRevision','result.receiptPath','result.receiptBinding','result.unresolvedEffects','result.unverifiedEffects','result.confirmedProviderWrites','result.providerWrites','result.applicationWritesThisAttempt','result.stages','result.commandType','result.tenantId','result.projectId','result.providerWritesScope','result.intentCollectionPath','result.effectCollectionPath','result.authWrites','result.firestoreWrites','result.credentialAuthenticationPending','result.credentialReadback']}),row=doc.data()||{};
     const stages=await tx.getAll(ref.collection('stages').doc('visits'),ref.collection('stages').doc('shoppers'),{fieldMask:['status','sourceRevision','attemptId','completedAt','summary']});
-    const intents=await tx.get(ref.collection('intents').select('status','stage','system','attemptId').limit(501));
-    const effects=await tx.get(ref.collection('effects').select('stage','system','attemptId','readbackVerified','credentialAuthenticationPending').limit(501));
-    const complete=intents.size<501&&effects.size<501,effectIds=new Set(effects.docs.map(x=>x.id));
-    result.receipt={exists:doc.exists,updateTime:doc.updateTime?.toDate().toISOString()||null,status:state(row.status),tenantMatches:row.tenantId===tenantId,projectMatches:row.projectId===projectId,sourceRevision:row.sourceRevision||null,currentRevisionMatches:row.sourceRevision===revision,actorUidHash:row.actorUid?b14sha(row.actorUid):null,idempotencyKeyHash:row.idempotencyKey?b14sha(row.idempotencyKey):null,digestMatches:!!row.actorUid&&row.digest===b14sha(JSON.stringify(b14stable({actorUid:row.actorUid,scope:{tenantId,projectId},sourceRevision:row.sourceRevision,commandType:'hr.snapshot.reconcile'}))),leaseAttemptMatches:!!l.attemptId&&row.attemptId===l.attemptId,errorCode:state(row.result?.code),stageResults:Object.fromEntries(['visits','shoppers'].map(k=>[k,{...counts(row.result?.stages?.[k]),status:state(row.result?.stages?.[k]?.status),code:state(row.result?.stages?.[k]?.code)}])),result:counts(row.result),applicationWritesThisAttempt:counts(row.result?.applicationWritesThisAttempt),stages:stages.map((x,i)=>({name:['visits','shoppers'][i],exists:x.exists,status:state(x.data()?.status),sourceRevision:x.data()?.sourceRevision||null,summary:counts(x.data()?.summary)})),journal:{complete,intentsObserved:intents.size,effectsObserved:effects.size,unresolvedIntentsObserved:complete?intents.docs.filter(x=>!effectIds.has(x.id)&&!['no_effect','failed_before_write'].includes(x.data()?.status)).length:null,unverifiedEffectsObserved:effects.docs.filter(x=>x.data()?.readbackVerified!==true).length,credentialAuthenticationPending:effects.docs.some(x=>x.data()?.credentialAuthenticationPending===true)}};
+    const [intentPages,effectPages]=await Promise.all([
+      b14ReadJournalPage(tx,ref.collection('intents').select('status','stage','system','attemptId','startedAt','finishedAt','operations','sourceRevision')),
+      b14ReadJournalPage(tx,ref.collection('effects').select('stage','system','attemptId','sourceRevision','operations','providerAck','readbackVerified','credentialAuthenticationPending','committedAt','readbackAt','readbackDigest'))
+    ]);
+    const records=p=>p.docs.map(d=>({id:d.id,data:d.data()}));
+    const journal=b14SummarizeCurrentJournal({receipt:row,receiptPath:ref.path,tenantId,projectId,revision,intents:records(intentPages),effects:records(effectPages),complete:intentPages.complete&&effectPages.complete});
+    journal.pages={intents:intentPages.pages,effects:effectPages.pages};
+    result.receipt={exists:doc.exists,updateTime:doc.updateTime?.toDate().toISOString()||null,status:state(row.status),tenantMatches:row.tenantId===tenantId,projectMatches:row.projectId===projectId,sourceRevision:row.sourceRevision||null,currentRevisionMatches:row.sourceRevision===revision,actorUidHash:row.actorUid?b14sha(row.actorUid):null,idempotencyKeyHash:row.idempotencyKey?b14sha(row.idempotencyKey):null,digestMatches:!!row.actorUid&&row.digest===b14sha(JSON.stringify(b14stable({actorUid:row.actorUid,scope:{tenantId,projectId},sourceRevision:row.sourceRevision,commandType:'hr.snapshot.reconcile'}))),leaseAttemptMatches:!!l.attemptId&&row.attemptId===l.attemptId,errorCode:state(row.result?.code),stageResults:Object.fromEntries(['visits','shoppers'].map(k=>[k,{...counts(row.result?.stages?.[k]),status:state(row.result?.stages?.[k]?.status),code:state(row.result?.stages?.[k]?.code)}])),result:counts(row.result),applicationWritesThisAttempt:counts(row.result?.applicationWritesThisAttempt),stages:stages.map((x,i)=>({name:['visits','shoppers'][i],exists:x.exists,status:state(x.data()?.status),sourceRevision:x.data()?.sourceRevision||null,summary:counts(x.data()?.summary)})),journal};
     result.receipt.predecessorReconciliation=await b14PredecessorReadOnly(tx,{receipt:row,receiptRef:ref,tenantId,projectId,revision,db});
     result.activeNonCommittedLease=!!l.receiptPath&&l.status!=='committed';result.successorEligibility='ONLY_RUNTIME_FULL_TRANSACTION_VALIDATION_CAN_AUTHORIZE';result.resumeAgainstCurrentRevisionPossible=row.sourceRevision===revision&&row.tenantId===tenantId&&row.projectId===projectId;
     return result;

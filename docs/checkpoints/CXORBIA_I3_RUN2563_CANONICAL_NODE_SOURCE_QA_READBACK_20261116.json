@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "cxorbia.i3.current-source-node-ci-log-readback.v1",
+  "sourceSha": "66312f88a70bd123b137c7a031a1f456969465f5",
+  "sourceTree": "38eba9364e0a7cbf1e505f84375959d19918391d",
+  "runId": 43821946355,
+  "runNumber": 2563,
+  "jobId": 133146802469,
+  "controlHead": "319f17c48b69172457b2623f6e404e69509350ed",
+  "decision": "PASS_CANONICAL_NODE_CI_AND_SAME_RUN_OWNER_QA",
+  "canonical": {
+    "testSummaries": 46,
+    "tests": 1508,
+    "pass": 1508,
+    "fail": 0,
+    "shopperProvider": {
+      "tests": 142,
+      "pass": 142,
+      "fail": 0
+    }
+  },
+  "sameRunOwnerQa": {
+    "owners": 22,
+    "testPass": 586,
+    "testFail": 0,
+    "receiptSha256": "6c19a5e46c6cf5b2015ff2613f9785ce36344f30bf0852c4d9d8f0190bc2409a",
+    "artifactId": 14204159795,
+    "artifactDigest": "sha256:680e065a020203bde99bfdb25cd6f394e6e21f02fa8833b56214cb2c2f55fdb6"
+  },
+  "counting": "OVERLAPPING_SUITES_REPORTED_SEPARATELY_NOT_ADDED_AS_UNIQUE_TESTS",
+  "rawLogSha256": "a6088c7a31172918704f1841dbacb3c4013aafbf067724240dfcf72b3cff6741",
+  "artifactDownloadedIndependently": false,
+  "sourceOnlyNotE2e": true,
+  "production": false,
+  "verifiedAt": "2026-11-16T07:25:06Z"
+}

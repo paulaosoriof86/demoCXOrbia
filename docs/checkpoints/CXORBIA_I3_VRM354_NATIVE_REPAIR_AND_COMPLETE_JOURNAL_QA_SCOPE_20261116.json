@@ -1,0 +1,314 @@
+{
+  "schemaVersion": "cxorbia.i3.native-name-repair-qa-scope.v1",
+  "createdAt": "2026-11-16T07:25:06Z",
+  "production": false,
+  "sourceSha": "66312f88a70bd123b137c7a031a1f456969465f5",
+  "sourceTree": "38eba9364e0a7cbf1e505f84375959d19918391d",
+  "materializationReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2563_VRM354_VRM355_PAIRED_DEV_ACK_20261116.json",
+    "gitBlob": "d9739787f0e9d6b366353a83e1a7fc723958764a",
+    "sha256": "3e629067e0d7760f21927585b7be7e20b7a9c657f2635f92f93c2e1268c45769",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2563_VRM354_VRM355_PAIRED_DEV_ACK_20261116.json",
+    "runId": 43821946355,
+    "runNumber": 2563,
+    "sourceSha": "66312f88a70bd123b137c7a031a1f456969465f5",
+    "sourceTree": "38eba9364e0a7cbf1e505f84375959d19918391d",
+    "state": "PASS_EXACT_PAIRED_DEV_VRM354_VRM355_NATIVE_REPAIR_READBACK_PENDING",
+    "kind": "EXACT_PAIRED_DEV_ACK_NOT_NATIVE_REPAIR_OR_TERMINAL_CERTIFICATE",
+    "artifactId": 14204423509,
+    "artifactDigest": "sha256:492cc8a133711bc2fd4fd58fc57620b21383f41cb77a1254714acd10a49cf89b",
+    "production": false,
+    "receiptBlob": "d9739787f0e9d6b366353a83e1a7fc723958764a"
+  },
+  "productFilesChanged": 0,
+  "workflowFilesChanged": 0,
+  "rebuilds": 0,
+  "purpose": "Run the existing authenticated Admin synchronization exactly once after verified automatic replay, prove the canonical complete name, preserve credentials and claims, verify the complete journal and repeat the exact captured command without new writes.",
+  "qaFileGitBlobs": {
+    "tools/qa/cxorbia-i3-hr-ack-exact-same-revision.mjs": "c21727de39d059d834803a60a1239f83074d7044",
+    "tools/qa/cxorbia-i3-terminal-hr-observation.test.mjs": "78c3f793b357fdde5d9cde5ed8a8256487002b9e",
+    "tools/qa/cxorbia-i3-canonical-name-repair-live.mjs": "1b8b0568bbc472536417159608d311d5b1f48550",
+    "tools/qa/cxorbia-i3-terminal-human-contract.test.mjs": "97f6be88dded51d8c0a68b785df6a6f2280621be",
+    "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs": "917b549102178d2d04ac2359203f682064819d89"
+  },
+  "checks": {
+    "journal": {
+      "environment": "V8_JS_EXECUTION_NOT_NODE_CI",
+      "tests": 29,
+      "pass": 29,
+      "fail": 0,
+      "results": [
+        {
+          "name": "current journal pagination reads every document and proves end 0",
+          "pass": true
+        },
+        {
+          "name": "current journal pagination reads every document and proves end 500",
+          "pass": true
+        },
+        {
+          "name": "current journal pagination reads every document and proves end 501",
+          "pass": true
+        },
+        {
+          "name": "current journal pagination rejects repeated cursor records",
+          "pass": true
+        },
+        {
+          "name": "current journal pagination propagates later server failure",
+          "pass": true
+        },
+        {
+          "name": "current journal pagination does not label a full final page complete",
+          "pass": true
+        },
+        {
+          "name": "current journal pagination rejects invalid options before IO",
+          "pass": true
+        },
+        {
+          "name": "current journal verifies exact operations including cumulative earlier attempt {}",
+          "pass": true
+        },
+        {
+          "name": "current journal verifies exact operations including cumulative earlier attempt {\"auth\":true}",
+          "pass": true
+        },
+        {
+          "name": "current journal verifies exact operations including cumulative earlier attempt {\"auth\":true,\"oldAttempt\":true}",
+          "pass": true
+        },
+        {
+          "name": "current journal verifies exact operations including cumulative earlier attempt {\"auth\":true,\"credentialPending\":true}",
+          "pass": true
+        },
+        {
+          "name": "current journal refuses wrong receipt actor",
+          "pass": true
+        },
+        {
+          "name": "current journal refuses wrong receipt counts",
+          "pass": true
+        },
+        {
+          "name": "current journal refuses wrong effect system",
+          "pass": true
+        },
+        {
+          "name": "current journal refuses wrong effect stage",
+          "pass": true
+        },
+        {
+          "name": "current journal refuses wrong effect attempt",
+          "pass": true
+        },
+        {
+          "name": "current journal refuses wrong effect revision",
+          "pass": true
+        },
+        {
+          "name": "current journal refuses unsafe entity path",
+          "pass": true
+        },
+        {
+          "name": "current journal refuses orphan effect",
+          "pass": true
+        },
+        {
+          "name": "current journal refuses duplicate intent",
+          "pass": true
+        },
+        {
+          "name": "current journal refuses duplicate effect",
+          "pass": true
+        },
+        {
+          "name": "current journal refuses pending without effect",
+          "pass": true
+        },
+        {
+          "name": "current journal refuses uncertain without effect",
+          "pass": true
+        },
+        {
+          "name": "current journal refuses missing effect ACK",
+          "pass": true
+        },
+        {
+          "name": "current journal refuses incomplete journal",
+          "pass": true
+        },
+        {
+          "name": "current journal refuses Auth operation differs",
+          "pass": true
+        },
+        {
+          "name": "current journal refuses Auth readback differs",
+          "pass": true
+        },
+        {
+          "name": "current journal counts a finished Firestore no_effect separately from unresolved Auth",
+          "pass": true
+        },
+        {
+          "name": "current journal detects an unverified effect beyond the old 501 document bound",
+          "pass": true
+        }
+      ]
+    },
+    "nativeProof": {
+      "environment": "V8_JS_EXECUTION_NOT_NODE_CI",
+      "tests": 36,
+      "pass": 36,
+      "fail": 0,
+      "results": [
+        {
+          "name": "VRM354 name hash matches the existing independent QA normalization",
+          "pass": true
+        },
+        {
+          "name": "VRM354 absent request is inert and exact DEV request passes",
+          "pass": true
+        },
+        {
+          "name": "VRM354 blocks request environment drift PROJECT",
+          "pass": true
+        },
+        {
+          "name": "VRM354 blocks request environment drift HOSTING_URL",
+          "pass": true
+        },
+        {
+          "name": "VRM354 blocks request environment drift I3_CERTIFICATION_SOURCE_SHA",
+          "pass": true
+        },
+        {
+          "name": "VRM354 blocks request environment drift I3_CERTIFICATION_SOURCE_TREE",
+          "pass": true
+        },
+        {
+          "name": "VRM354 blocks request environment drift DEV_REVISION",
+          "pass": true
+        },
+        {
+          "name": "VRM354 blocks request environment drift RUNTIME_DIGEST",
+          "pass": true
+        },
+        {
+          "name": "VRM354 blocks request environment drift HOSTING_VERSION_NAME",
+          "pass": true
+        },
+        {
+          "name": "VRM354 blocks request environment drift CX_I3_PINNED_HR_REVISION",
+          "pass": true
+        },
+        {
+          "name": "VRM354 blocks request environment drift TENANT_ID",
+          "pass": true
+        },
+        {
+          "name": "VRM354 blocks request environment drift PROJECT_ID",
+          "pass": true
+        },
+        {
+          "name": "VRM354 blocks one enabled alias",
+          "pass": true
+        },
+        {
+          "name": "VRM354 blocks different request",
+          "pass": true
+        },
+        {
+          "name": "VRM354 blocks predecessor serving",
+          "pass": true
+        },
+        {
+          "name": "VRM354 blocks wrong current materialization",
+          "pass": true
+        },
+        {
+          "name": "VRM354 blocks wrong owner",
+          "pass": true
+        },
+        {
+          "name": "VRM354 accepts one captured native command and only the explained native scope-busy resume",
+          "pass": true
+        },
+        {
+          "name": "VRM354 rejects native command different project",
+          "pass": true
+        },
+        {
+          "name": "VRM354 rejects native command different revision",
+          "pass": true
+        },
+        {
+          "name": "VRM354 rejects native command automatic key flow",
+          "pass": true
+        },
+        {
+          "name": "VRM354 rejects native command nonempty payload",
+          "pass": true
+        },
+        {
+          "name": "VRM354 rejects native command foreign actor",
+          "pass": true
+        },
+        {
+          "name": "VRM354 rejects native command missing provider enforcement",
+          "pass": true
+        },
+        {
+          "name": "VRM354 rejects native command period flow",
+          "pass": true
+        },
+        {
+          "name": "VRM354 replay permits cumulative provider writes while requiring zero new writes",
+          "pass": true
+        },
+        {
+          "name": "VRM354 replay rejects Auth write",
+          "pass": true
+        },
+        {
+          "name": "VRM354 replay rejects Firestore write",
+          "pass": true
+        },
+        {
+          "name": "VRM354 replay rejects control write",
+          "pass": true
+        },
+        {
+          "name": "VRM354 replay rejects missing replay",
+          "pass": true
+        },
+        {
+          "name": "VRM354 replay rejects wrong binding",
+          "pass": true
+        },
+        {
+          "name": "VRM354 replay rejects stale stage code",
+          "pass": true
+        },
+        {
+          "name": "VRM354 replay rejects partial stage",
+          "pass": true
+        },
+        {
+          "name": "VRM354 replay rejects missing independent readback",
+          "pass": true
+        },
+        {
+          "name": "VRM354 stored readback false is allowed only for the independently read durable row",
+          "pass": true
+        },
+        {
+          "name": "VRM354 name-only change preserves the invariant but credential, authority or claims drift does not",
+          "pass": true
+        }
+      ]
+    }
+  },
+  "scope": "CONTROL_QA_ONLY_PENDING_CANONICAL_NODE_AND_LIVE_EXECUTION",
+  "noFullDomainPromotion": true
+}
