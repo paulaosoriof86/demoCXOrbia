@@ -224,8 +224,8 @@
   "productSourceSha": "c54cdc8846642f2d5481e1b933ca5e5cc6c44c22",
   "productTreeAuthority": "a5dbf676882730ac62b32be08537c5464577243f",
   "predecessorProductSourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V647_2026-11-16.json",
-  "findingsLedgerExpectedGitBlob": "07a79e06e75f74d83b12045350d8f68fce6dbc99",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V648_2026-11-16.json",
+  "findingsLedgerExpectedGitBlob": "d5fb89a49d6e4f129c74ac9dfeb5b18bea201874",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -15548,13 +15548,13 @@
     }
   },
   "currentExecutionReceipt": {
-    "path": "docs/checkpoints/CXORBIA_I3_RUN2538_DEPENDENCY_PREPARATION_REPAIR_20261116.json",
-    "gitBlob": "40b1b89251999e2fc516a8a974799fab21050825",
-    "runId": 43777760453,
-    "runNumber": 2538,
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2539_BROWSER_RUNNER_ENV_REPAIR_20261116.json",
+    "gitBlob": "83354918d7776777bd75520e9bd237aeb79e9d93",
+    "runId": 43778364411,
+    "runNumber": 2539,
     "sourceSha": "c54cdc8846642f2d5481e1b933ca5e5cc6c44c22",
     "sourceTree": "a5dbf676882730ac62b32be08537c5464577243f",
-    "decision": "HOLD_DEPENDENCY_PREPARATION_NO_DEPLOY",
+    "decision": "HOLD_RUNNER_ENVIRONMENT_NO_DEPLOY",
     "production": false
   },
   "currentSuccessorDevMaterializationRequest": {
@@ -18284,7 +18284,7 @@
     "sourceTestsFail": 0,
     "production": false
   },
-  "updatedAt": "2026-11-16T00:04:33.902737+00:00",
+  "updatedAt": "2026-11-16T00:09:51.276938+00:00",
   "previousCurrentMaterializationBeforeRun2248": {
     "builds": 1,
     "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
@@ -19311,8 +19311,8 @@
       "gitBlob": "44d3dfa3a18d91132b2c4f3f6d9a2e6790f4e1dd"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V647_2026-11-16.json",
-      "gitBlob": "07a79e06e75f74d83b12045350d8f68fce6dbc99"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V648_2026-11-16.json",
+      "gitBlob": "d5fb89a49d6e4f129c74ac9dfeb5b18bea201874"
     },
     "receipt": {
       "kind": "GITHUB_ACTIONS_C3_AND_SAME_RUN_PROGRESS_NOT_CERTIFICATE",
@@ -20604,7 +20604,7 @@
     "artifactDigest": "sha256:d5dc0a33053e9061cf8dd9fd8bcc21b5a5b8b1e5e055d85caa455538565a952a",
     "production": false
   },
-  "currentExecutionReceiptSemantics": "LATEST_CURRENT_SOURCE_CANONICAL_QA_PASS_PAIRED_PREPARATION_FAILED_NO_DEPLOY_RETRY_SAME_SOURCE",
+  "currentExecutionReceiptSemantics": "LATEST_PAIRED_ATTEMPT_BROWSER_OS_INCOMPATIBLE_NO_DEPLOY_PINNED_UBUNTU24_RETRY_SAME_SOURCE",
   "latestFocalBrowserReadback": {
     "path": "docs/checkpoints/CXORBIA_I3_D09_SHOPPER_SCOPED_READONLY_20261107.json",
     "gitBlob": "dc76c8351c899fba8e3bc46af732ddc7e5d74e60",
@@ -24534,5 +24534,15 @@
     "pass": 256,
     "fail": 0,
     "owners": 19
+  },
+  "browserRunnerEnvironmentRepair20261116": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2539_BROWSER_RUNNER_ENV_REPAIR_20261116.json",
+    "gitBlob": "83354918d7776777bd75520e9bd237aeb79e9d93",
+    "runId": 43778364411,
+    "runNumber": 2539,
+    "sourceSha": "c54cdc8846642f2d5481e1b933ca5e5cc6c44c22",
+    "sourceTree": "a5dbf676882730ac62b32be08537c5464577243f",
+    "decision": "HOLD_RUNNER_ENVIRONMENT_NO_DEPLOY",
+    "production": false
   }
 }

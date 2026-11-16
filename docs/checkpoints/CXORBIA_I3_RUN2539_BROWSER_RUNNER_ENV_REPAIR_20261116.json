@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "cxorbia.i3.scoped-control-failure-repair.v1",
+  "generatedAt": "2026-11-16T00:09:51.276938+00:00",
+  "classification": "ENVIRONMENT_FAILURE",
+  "runId": 43778364411,
+  "runNumber": 2539,
+  "controlSha": "520136cdf239f7a0eebf95431b6894ec5612845a",
+  "sourceSha": "c54cdc8846642f2d5481e1b933ca5e5cc6c44c22",
+  "sourceTree": "a5dbf676882730ac62b32be08537c5464577243f",
+  "canonicalJob": {
+    "id": 133009733679,
+    "conclusion": "success"
+  },
+  "pairedJob": {
+    "id": 133009911079,
+    "conclusion": "failure",
+    "stepNumber": 8,
+    "dependencyInstallation": "PASS",
+    "exactFailure": "Playwright does not support chromium on ubuntu26.04-x64",
+    "browserInstallLog": "Failed to install browsers\nError: ERROR: Playwright does not support chromium on ubuntu26.04-x64\n",
+    "browserInstallLogSha256": "436929d8531e650d37469da84e813e8ddd75712fdb41d1e55707c23aa03206b1"
+  },
+  "artifact": {
+    "id": 14187536489,
+    "digest": "sha256:9d3af22c52beb1585bf375f1ca6ad67c34d0acf267c74dbc36212130c3a9b61b",
+    "independentlyVerified": true
+  },
+  "repair": {
+    "owner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "job": "vrm154-156-dev-materialization",
+    "before": "ubuntu-latest resolved to Ubuntu26.04",
+    "after": "ubuntu-24.04",
+    "sameEnvironmentAs": [
+      "canonical-candidate-authority",
+      "certify"
+    ],
+    "playwrightVersionUnchanged": "1.56.1",
+    "sameProductSource": true,
+    "newWorkflow": false
+  },
+  "runtimeDeploys": 0,
+  "hostingDeploys": 0,
+  "hrWrites": 0,
+  "authWrites": 0,
+  "production": false,
+  "state": "HOLD_SAME_SOURCE_DEPLOY_PENDING_PINNED_RUNNER_RETRY"
+}
