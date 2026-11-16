@@ -25313,33 +25313,15 @@
     "c3RunId": 43786809287
   },
   "lastControlPlaneAttempt": {
-    "path": "docs/checkpoints/CXORBIA_I3_RUN2544_CONTROL_REPAIR_20261116/receipt.json",
-    "gitBlob": "fe2df6ce66601ac9ff208df1cd974912da9ba80c",
-    "runId": 43790780465,
-    "runNumber": 2544,
-    "state": "CONTROL_REPAIR_VERIFIED_RUN2545",
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2549_SECONDARY_MATRIX_POINTER_REPAIR_20261116.json",
+    "gitBlob": "78f80f78e501b6faeffed8139e59ff8c2c176dfe",
+    "runId": 43804510375,
+    "runNumber": 2549,
     "classification": "MAPPING_FAILURE",
-    "liveExecuted": false,
-    "production": false,
-    "outcome": {
-      "state": "CONTROL_REPAIR_CANONICAL_CI_AND_PAIRED_DEV_PASS_RUN2545",
-      "runId": 43791736690,
-      "receipt": {
-        "path": "docs/checkpoints/CXORBIA_I3_RUN2545_PAIRED_DEV_AND_NOTIFICATION_CYCLE_ACK_20261116.json",
-        "gitBlob": "f3073ec2b05f608f313e4289a0d2e6948f7e29de",
-        "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2545_PAIRED_DEV_AND_NOTIFICATION_CYCLE_ACK_20261116.json",
-        "receiptBlob": "f3073ec2b05f608f313e4289a0d2e6948f7e29de",
-        "runId": 43791736690,
-        "runNumber": 2545,
-        "sourceSha": "f2fcb6200843971485ef2b092240c5497148038b",
-        "sourceTree": "41c4a8c884808a6722ff7b7217eda0ea5fbf7ef3",
-        "state": "PASS_EXACT_PAIRED_DEV_AND_VRM143_SCOPED_LIVE_CYCLE",
-        "kind": "EXACT_PAIRED_DEV_ACK_WITH_SCOPED_NOTIFICATION_LIVE_PROOF_NOT_TERMINAL_CERTIFICATE",
-        "artifactId": 14193062315,
-        "artifactDigest": "sha256:02f4effe48ed09b71a3d36387b4c219fc95bd85922fdea70b1820aace1bba9cb",
-        "production": false
-      }
-    }
+    "state": "CONTROL_ONLY_FAILURE_CORRECTED_PENDING_CANONICAL_REPROOF",
+    "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+    "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+    "production": false
   },
   "run2545CurrentSourceQa": {
     "path": "docs/checkpoints/CXORBIA_I3_RUN2545_VERIFIED_EVIDENCE_20261116/source-qa/source-qa-receipt.json",

@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "cxorbia.i3.control-only-failure-repair.v1",
+  "generatedAt": "2026-11-16T04:33:39Z",
+  "runId": 43804510375,
+  "runNumber": 2549,
+  "jobId": 133092072009,
+  "controlSha": "c87b7ae8c13d4fe14eed6a57a2ce8358e72b7952",
+  "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+  "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+  "classification": "MAPPING_FAILURE",
+  "failedChecks": [
+    "MAPPING_FAILURE:LEGACY_ROOT_DOCUMENT_BLOB_DESYNC",
+    "MAPPING_FAILURE:CLASSIFICATION_SNAPSHOT_AUTHORITY"
+  ],
+  "owner": "CXORBIA_RECOVERY_EXECUTION_CURRENT.json",
+  "cause": "Root publication omitted secondary pointer matrix blob and active shock matrix path/blob while advancing descriptor and primary pointer to immutable M330.",
+  "correction": {
+    "moduleTruthExpectedGitBlob": {
+      "before": "80dda7f30562a308ff58ad1436dfdd7713836214",
+      "after": "d9da7c60013650d6d817df4ba9ea0968938c4733"
+    },
+    "activeShockModuleTruth": {
+      "before": {
+        "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+        "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261116-V329.json",
+        "matrixBlob": "80dda7f30562a308ff58ad1436dfdd7713836214",
+        "classificationCounts": {
+          "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E": 3,
+          "MATCH": 5,
+          "SOURCE_FIXED_DEV_MATERIALIZED_ADMIN_B10_FOCAL_PASS_PENDING_SHOPPER_ROLE_PROVIDER_LINK": 1,
+          "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN": 2,
+          "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_AUTHENTICATED_ADMIN_SHOPPER_E2E": 1,
+          "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 8,
+          "SOURCE_FIXED_HOSTING_DEV_PUBLISHED_PENDING_AUTH_SHOPPER_B2_B3_E2E_HUMAN": 1
+        },
+        "derivedAt": "2026-11-16T03:40:48.481598+00:00",
+        "meaning": "RUN2547 source06exactruntimeHosting39assets and440canonicalQA21owners. VRM350HTTPnegative two sessionsPASS0writes; positive/replay realHRfactoryMEMORYONLY notHTTPpersistentproof. VRM143cyclesPASS29doc2Authcleanup0. HR349fixdeployed but automaticreconcile notinvoked; durablecdc/externalfbaf remains. C3RUN2546F2 remains historicaluntilsame-sourceC3.5/21complete and4/9B4-B7 unchanged."
+      },
+      "after": {
+        "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+        "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261116-V330.json",
+        "matrixBlob": "d9da7c60013650d6d817df4ba9ea0968938c4733"
+      }
+    }
+  },
+  "executedBeforeGuard": {
+    "nodeSuites": 15,
+    "tests": 859,
+    "passed": 859,
+    "failed": 0,
+    "includesActualReservationWaitTests": true,
+    "includesCurrentModuleAliasTests": true
+  },
+  "hrIdentityIoSuiteExecuted": false,
+  "c3Started": false,
+  "certifyStarted": false,
+  "productChanges": 0,
+  "qaChanges": 0,
+  "workflowChanges": 0,
+  "gatesRemoved": 0,
+  "builds": 0,
+  "runtimeDeploys": 0,
+  "hostingDeploys": 0,
+  "hrWrites": 0,
+  "production": false,
+  "terminalCertified": false,
+  "phaseAComplete": false
+}
