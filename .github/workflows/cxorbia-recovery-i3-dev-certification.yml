@@ -167,7 +167,11 @@ jobs:
      run: node tools/qa/cxorbia-i3-source-qa-evidence.mjs
    - name: Preserve same-run owner test evidence
      uses: actions/upload-artifact@v4
-     with: {name: 'cxorbia-i3-source-qa-${{ github.run_id }}-${{ steps.source_qa.outputs.source_qa_run_attempt }}', path: .tmp/canonical-source-qa/, if-no-files-found: error, retention-days: 30}
+     with:
+      name: cxorbia-i3-source-qa-${{ github.run_id }}-${{ steps.source_qa.outputs.source_qa_run_attempt }}
+      path: .tmp/canonical-source-qa/
+      if-no-files-found: error
+      retention-days: 30
    - if: ${{ steps.authority.outputs.status=='HOLD_VRM134_A05_DEV_TRAFFIC_REQUIRED' }}
      uses: google-github-actions/auth@v2
      with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
@@ -2383,7 +2387,9 @@ jobs:
      with: {fetch-depth: 0}
    - name: Consume exact owner evidence from this run
      uses: actions/download-artifact@v4
-     with: {name: 'cxorbia-i3-source-qa-${{ github.run_id }}-${{ needs.canonical-candidate-authority.outputs.source_qa_run_attempt }}', path: .tmp/c3-preterminal-module-truth/source-qa/}
+     with:
+      name: cxorbia-i3-source-qa-${{ github.run_id }}-${{ needs.canonical-candidate-authority.outputs.source_qa_run_attempt }}
+      path: .tmp/c3-preterminal-module-truth/source-qa/
    - run: |
       set -Eeuo pipefail
       mkdir -p "$C3_OUT"

@@ -14,6 +14,9 @@ const fixture=()=>{
   d.currentExecutionReceipt={runId:100,path:'receipt.json'};p.currentExecutionReceipt={...d.currentExecutionReceipt};
   d.currentExecutionReceiptSemantics=p.currentExecutionReceiptSemantics='LATEST_FOCAL_NOT_GLOBAL';
   d.phaseAHumanAcceptanceCurrent20261111={technicalDomainMatches:5};p.activePhaseAClosureLock20261110.strictDomainMatches=5;l.currentTruth.moduleMatch=5;
+  p.activePhaseAClosureLock20261110.phaseABlocksHumanPassed=4;
+  p.activePhaseAClosureLock20261110.currentAccountingSemantics={humanFunctionalBlocks:{passed:4,total:9},strictOwnerDomainMatch:{matched:5,total:21}};
+  for(const object of [d.currentC3PreterminalAudit,d.lastModuleTruthProof,d.c3PreterminalProof,p.currentC3PreterminalAudit,l.currentC3PreterminalAudit,l.lastModuleTruthProof,l.c3PreterminalProof])Object.assign(object,{pendingOwnerProofFiles:87,pendingBlobProvenanceFiles:0,pendingMappingApprovalFiles:0});
   d.moduleTruthExpectedGitBlob='e'.repeat(40);l.currentTruth.moduleTruthGitBlob=d.moduleTruthExpectedGitBlob;
   d.currentCanonicalControl={sourceSha:source,sourceTree:tree,matrix:{path:d.moduleTruthPath,gitBlob:d.moduleTruthExpectedGitBlob},ledger:{path:d.findingsLedgerPath,gitBlob:d.findingsLedgerExpectedGitBlob}};
   p.currentCanonicalControl=structuredClone(d.currentCanonicalControl);
@@ -319,3 +322,11 @@ for(const [name,change]of [
  ['unknown kind',v=>{v.pointer.lastExecutionReceipt.kind='OTHER';}],
  ...['production','terminalCertified','phaseAComplete','i4Authorized'].map(k=>[k+' claimed',v=>{v.receipt[k]=true;}])
 ])test('C3 attempt successor rejects '+name,()=>{const v=latestC3AttemptFixture();change(v);assert.equal(validateLatestExecutionSource(v).pass,false);});
+
+for(const [name,change,code]of [
+ ['stale nested strict4 versus actual5',v=>{v.pointer.activePhaseAClosureLock20261110.currentAccountingSemantics.strictOwnerDomainMatch.matched=4;},'CURRENT_PHASE_LOCK_NESTED_ACCOUNTING_DESYNC'],
+ ['human count replaced by technical count',v=>{v.pointer.activePhaseAClosureLock20261110.currentAccountingSemantics.humanFunctionalBlocks.passed=5;},'CURRENT_PHASE_LOCK_NESTED_ACCOUNTING_DESYNC'],
+ ['missing C3 component',v=>{delete v.descriptor.currentC3PreterminalAudit.pendingOwnerProofFiles;},'CURRENT_C3_PENDING_BREAKDOWN_DESYNC'],
+ ['C3 components do not sum to pending',v=>{v.descriptor.currentC3PreterminalAudit.pendingMappingApprovalFiles=1;},'CURRENT_C3_PENDING_BREAKDOWN_DESYNC'],
+ ['negative C3 pending component',v=>{v.descriptor.currentC3PreterminalAudit.pendingBlobProvenanceFiles=-1;},'CURRENT_C3_PENDING_BREAKDOWN_DESYNC']
+])test('single canonical guard rejects '+name,()=>{const v=fixture();change(v);const r=validateCurrentAuthorityAliases(v);assert.equal(r.pass,false);assert.ok(r.failures.includes(code),JSON.stringify(r));});

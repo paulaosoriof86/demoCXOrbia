@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "cxorbia.i3.control-failure-repair.v1",
+  "classification": "MAPPING_FAILURE",
+  "state": "CONTROL_FIXED_PENDING_EXISTING_PAIRED_CI",
+  "runId": 43790780465,
+  "runNumber": 2544,
+  "controlSha": "02215dda2a8cf4cac8a6f9c8c6ff37b1f56eb3b5",
+  "sourceSha": "f2fcb6200843971485ef2b092240c5497148038b",
+  "canonicalJobId": 133048461866,
+  "auxiliaryRunId": 43790780422,
+  "auxiliaryJobId": 133048459671,
+  "failures": [
+    "RUN2543C3 control omitted three component counts;0!=NaN",
+    "Nested strict counter4 contradicted canonical5; protectedhumanB4-B7 still4/9"
+  ],
+  "rawLogs": [
+    {
+      "jobId": 133048461866,
+      "sha256": "422e6f836dab1c780c0db6efa9d050a6d47ea77f508fa2417d972b2b5d914e2b"
+    },
+    {
+      "jobId": 133048459671,
+      "sha256": "43be8b1f6424903841aee060197d13fa184ff01651f119d3ab65dbfad3ad8430"
+    }
+  ],
+  "execution": {
+    "jobs": 109,
+    "failed": 1,
+    "skipped": 108,
+    "pairedDevExecuted": false,
+    "artifacts": 0,
+    "builds": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0,
+    "hrWrites": 0,
+    "productionDeploys": 0
+  },
+  "repair": {
+    "componentCountsAuthority": {
+      "artifactId": 14191010658,
+      "matrixSha256": "b1213b77e084317e16d481fe8dd34d3193011845d22d56baae1e24b02a4d3b4c",
+      "jsonPointer": "/preTerminalComposition",
+      "meaning": "Component counts from exact downloaded matrix arrays; omitted control fields completed, original C3 unchanged."
+    },
+    "strictCountAuthority": "COUNT(current matrix modules where classification=MATCH)",
+    "strictCount": 5,
+    "protectedHumanBlocks": [
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ],
+    "humanCount": 4,
+    "humanTotal": 9,
+    "canonicalGuardNowChecksNestedCountsAndComponents": true,
+    "guardTests": 94,
+    "guardPass": 94,
+    "guardFail": 0,
+    "humanMonotonicTests": {
+      "tests": 7,
+      "pass": 7,
+      "fail": 0
+    },
+    "postGuardRequiredTests": {
+      "tests": 422,
+      "pass": 422,
+      "fail": 0
+    },
+    "workflowArtifactNameFormatting": {
+      "semanticChange": false,
+      "sourceQaArtifactMappingsRestored": 2,
+      "workflowBytes": 508404,
+      "reason": "Preserve existing source QA static name assertions while retaining semantic-safe compact format elsewhere."
+    }
+  },
+  "auditSuccessor": {
+    "path": "docs/checkpoints/CXORBIA_I3_CURRENT_C3_RUN2543_AUDIT_V2_20261116.json",
+    "gitBlob": "c6ffd4958cf131e93f003103a59301fba5760d5f"
+  },
+  "regressionEvidence": [
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2544_CONTROL_REPAIR_20261116/canonical-alias-regression.tap",
+      "gitBlob": "6aa39d09074fc2a8d0f6bd8604817d82e1e9e726"
+    },
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2544_CONTROL_REPAIR_20261116/human-monotonic-after.tap",
+      "gitBlob": "e04f633e497f7803dba2c106501a9f672d6256f4"
+    },
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2544_CONTROL_REPAIR_20261116/post-guard-required-tests.log",
+      "gitBlob": "9e9839bbad38c156dfd965cc65de823e2d08232b"
+    }
+  ],
+  "productChanged": false,
+  "productSourceUnchanged": true,
+  "production": false,
+  "phaseAComplete": false
+}

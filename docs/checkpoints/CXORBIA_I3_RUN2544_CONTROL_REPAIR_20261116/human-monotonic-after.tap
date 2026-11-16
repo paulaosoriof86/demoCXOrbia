@@ -1,0 +1,15 @@
+✔ positive: carries B4-B7, keeps human PASS separate from strict domains (146.732942ms)
+✔ negative: B7 PASS cannot be silently deleted (141.799905ms)
+✔ negative: mixing 4 human blocks with 5 strict domains is rejected (84.576194ms)
+✔ negative: descriptor must not silently disagree with current human PASS (72.677108ms)
+✔ negative: a stale root matrix blob cannot disagree with the canonical descriptor (84.510058ms)
+✔ negative: a superseded root ledger cannot masquerade as the current ledger (79.328655ms)
+✔ negative: newly acquired acceptance cannot disappear at next commit (150.33185ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 848.721557

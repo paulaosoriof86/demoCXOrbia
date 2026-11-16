@@ -1,0 +1,602 @@
+✔ C3 21-domain inventory is canonical, unique and exact (historical 20 + branding) (3.108572ms)
+✔ B4-B7 prior functional PASS stays visible without fabricating 21-domain MATCH (6.077919ms)
+✔ C3 never upgrades a pending domain from file-byte parity or an historical 20/20 receipt (0.801885ms)
+✔ Current matrix product authority equals the descriptor; previous terminal 20/20 is not current 21/21 (0.163992ms)
+✔ Terminal jobs and Gate21 require the same 21-domain contract, never legacy 20 (3.598125ms)
+✔ C3 preterminal can audit the HOLD candidate without pretending it is 21/21 certified (2.313408ms)
+✔ legacy rutas.js is preserved but never counted or loaded as a current Phase A owner (0.716418ms)
+✔ C3 finalizer preserves historical MATCH but cannot skip missing current-owner receipts (208.68143ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 410.696293
+✔ 21 source-ready domains can enter terminal E2E while 16 remain uncertified (1.753701ms)
+✔ unproven current owner cannot be source-ready (0.460991ms)
+✔ missing approval, unmapped owner or blob provenance blocks terminal (0.423425ms)
+✔ duplicate domains and duplicate loaded owners block terminal (0.363167ms)
+✔ a historically MATCH domain without active owner remains source-ready (0.743769ms)
+✔ shared declared owners enable a module without inventing a second inventory row (0.351279ms)
+✔ a shared unproven owner blocks both modules; an absent or excluded owner never passes vacuously (0.373612ms)
+✔ the terminal workflow uses current source-ready proof, never the old 21-MATCH prerequisite (1.714803ms)
+✔ C3 recovers exact-owner source proof without promoting pending human acceptance (0.591934ms)
+✔ C3 recognizes Academy source-count QA only within its explicit owner scope (0.281095ms)
+✔ C3 preserves exact QA receipt file and Git blob binding for scoped Q2 evidence (0.193356ms)
+✔ C3 rejects mere green status, failing QA, wrong source, production proof and unowned paths (0.186566ms)
+✔ C3 preserves cumulative independent F12 and D08 receipts across control versions (88.668279ms)
+✔ I3 current authority aliases are bound to the same C3 source, matrix, ledger and receipt (42.046771ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 225.027757
+✔ same-run proof returns every registered owner without functional acceptance (4.022442ms)
+✔ rejects a different sourceSha (1.460978ms)
+✔ rejects a different sourceTree (0.261716ms)
+✔ rejects a different controlSha (0.178524ms)
+✔ rejects a different runId (0.359912ms)
+✔ rejects a different runAttempt (0.283499ms)
+✔ missing attempt is rejected even if both receipt and expectation omit it (0.531485ms)
+✔ a failed-only consumer retry reuses the exact successful producer attempt (1.308053ms)
+✔ rejects modified owner blob (0.595489ms)
+✔ rejects modified test blob (0.515631ms)
+✔ rejects missing coverage (0.516613ms)
+✔ rejects duplicate coverage (0.362656ms)
+✔ rejects foreign-owner coverage (0.319872ms)
+✔ rejects foreign-test coverage (0.258983ms)
+✔ rejects registry coverage (0.304861ms)
+✔ rejects invalid test evidence exit (0.41301ms)
+✔ rejects invalid test evidence zero (0.269077ms)
+✔ rejects invalid test evidence fail (0.240575ms)
+✔ rejects invalid test evidence cancelled (0.250821ms)
+✔ rejects invalid test evidence skipped (0.245222ms)
+✔ rejects invalid test evidence todo (0.314725ms)
+✔ rejects invalid test evidence summary (2.016468ms)
+✔ rejects invalid test evidence log (0.20988ms)
+✔ rejects invalid test evidence hash (0.176951ms)
+✔ rejects altered production (0.186766ms)
+✔ rejects altered scope (0.15562ms)
+✔ rejects a digest mismatch before looking up source blobs (0.332952ms)
+✔ workflow carries the same-run receipt through both C3 invocations (3.474934ms)
+✔ computed 21/21 source evidence enables the next job without changing four integral MATCH (1.143239ms)
+✔ one missing source proof keeps the consumer disabled and rejects a stale optimistic counter (0.744901ms)
+✔ G05 valid read-only observation passes without inventing reconciliation ACK (1.451935ms)
+✔ invalid HR observation remains blocked: ok=false (0.427081ms)
+✔ invalid HR observation remains blocked: revision=stale (0.167778ms)
+✔ invalid HR observation remains blocked: sourceSafe=false (0.170401ms)
+✔ invalid HR observation remains blocked: refreshError=timeout (0.172315ms)
+✔ invalid HR observation remains blocked: writes=true (0.153747ms)
+✔ invalid HR observation remains blocked: hrWrites=true (0.155179ms)
+✔ invalid HR observation remains blocked: production=true (0.129581ms)
+✔ invalid HR observation remains blocked: writes=undefined (0.224692ms)
+✔ an old ACK cannot disguise invalid current HR observation (0.321615ms)
+✔ active terminal preflight invokes the observation predicate and preserves revision stability (4.878436ms)
+✔ B14 runtime authority rejects another revision or image and never projects env values (0.766762ms)
+✔ B14 does not substitute source fallback when runtime override exists: FIREBASE_SERVICE_ACCOUNT_JSON (0.151013ms)
+✔ B14 does not substitute source fallback when runtime override exists: CXORBIA_HR_LIVE_SHEET_ID (0.086758ms)
+✔ B14 uses only the agreeing sealed reader constants with no override (0.282998ms)
+✔ B14 principal resolution uses only public identity accessors, never credentials (0.183992ms)
+✔ B14 canEdit cannot certify an ACK, write execution or domain completion (0.130423ms)
+✔ B14 wrong identity, wrong workbook and missing metadata cannot prove edit capability (0.161258ms)
+✔ B14 permission diagnostics retain status/reason and exclude tokens, headers and error payloads (0.809055ms)
+✔ B14 binding requires exact tenant/project/workbook and never exposes secretRef payload (0.322706ms)
+✔ B14 mode keeps the existing HR read-only CLI contract operational (112.399235ms)
+✔ confirmed provider exact aliases reach the existing tenant adjudication check (2.921195ms)
+✔ new alias requires its confirmed provider authority: providerAck (0.252854ms)
+✔ new alias requires its confirmed provider authority: humanConfirmed (0.160708ms)
+✔ new alias requires its confirmed provider authority: fuzzyMatching (0.119216ms)
+✔ new alias requires its confirmed provider authority: authorityRef (0.208898ms)
+✔ untrusted or out-of-scope adjudication is rejected {"tenantId":"foreign"} (0.164944ms)
+✔ untrusted or out-of-scope adjudication is rejected {"projectScope":"foreign"} (0.1825ms)
+✔ untrusted or out-of-scope adjudication is rejected {"status":"inactive"} (0.116172ms)
+✔ untrusted or out-of-scope adjudication is rejected {"authorityType":"provider_auto_compatible"} (0.266333ms)
+✔ untrusted or out-of-scope adjudication is rejected {"sourceSafe":false} (0.236449ms)
+✔ conflicting links and crosswalks cannot be approved by last-write-wins (0.400151ms)
+✔ tenant-wide project scope is accepted but foreign and period-limited aliases are not (0.429124ms)
+✔ historical absent link ACK resolves only through its exact committed receipt and bound alias set (1.466647ms)
+✔ present link ACK never uses historical fallback: false (0.290459ms)
+✔ present link ACK never uses historical fallback: null (0.262839ms)
+✔ present link ACK never uses historical fallback: true (0.175319ms)
+✔ present link ACK never uses historical fallback: undefined (0.397988ms)
+✔ receipt transport metadata must be exact {"exists":false} (0.343307ms)
+✔ receipt transport metadata must be exact {"id":"other"} (0.325671ms)
+✔ receipt transport metadata must be exact {"path":"tenants/other/commandReceipts/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"} (0.279392ms)
+✔ receipt transport metadata must be exact {"path":"tenants/tenant-a/other/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"} (0.263699ms)
+✔ unrelated or incomplete receipt cannot authorize an alias {"status":"pending"} (0.376506ms)
+✔ unrelated or incomplete receipt cannot authorize an alias {"commandType":"shopper.profile.update"} (0.172114ms)
+✔ unrelated or incomplete receipt cannot authorize an alias {"providerAck":false} (0.234196ms)
+✔ unrelated or incomplete receipt cannot authorize an alias {"providerAck":"true"} (0.148389ms)
+✔ unrelated or incomplete receipt cannot authorize an alias {"identityConsolidated":false} (0.227486ms)
+✔ unrelated or incomplete receipt cannot authorize an alias {"identityLinkId":"other"} (0.164143ms)
+✔ unrelated or incomplete receipt cannot authorize an alias {"shopperId":"other"} (0.23685ms)
+✔ unrelated or incomplete receipt cannot authorize an alias {"commandDigest":"bad"} (0.284229ms)
+✔ unrelated or incomplete receipt cannot authorize an alias {"tenantId":"other"} (0.272312ms)
+✔ unrelated or incomplete receipt cannot authorize an alias {"projectId":"other"} (0.206115ms)
+✔ unrelated or incomplete receipt cannot authorize an alias {"scope":{"tenantId":"other"}} (0.288046ms)
+✔ unrelated or incomplete receipt cannot authorize an alias {"scope":{"periodId":"old"}} (2.429819ms)
+✔ historical alias authority rejects mutation x=>x.exactAliases.push('invented') (0.198503ms)
+✔ historical alias authority rejects mutation x=>x.sourceAliases.push('invented') (0.088811ms)
+✔ historical alias authority rejects mutation x=>{x.exactAliases.push('invented');x.sourceAliases.push('invented');} (0.086017ms)
+✔ historical alias authority rejects mutation x=>x.id='payload-id' (0.144934ms)
+✔ historical alias authority rejects mutation x=>delete x._documentPath (0.105536ms)
+✔ historical alias authority rejects mutation x=>x.adjudicationId='b'.repeat(40) (0.077524ms)
+✔ historical alias authority rejects mutation x=>x.periodIndependent=false (0.177402ms)
+✔ historical alias authority rejects mutation x=>x.scope={projectId:'other'} (0.099147ms)
+✔ historical alias authority rejects mutation x=>x.scope={tenantId:'other'} (0.081601ms)
+✔ historical alias authority rejects mutation x=>x.scope={periodScope:'old'} (0.174308ms)
+✔ historical alias authority rejects mutation x=>x.state='inactive' (0.301315ms)
+✔ historical alias authority rejects mutation x=>x.sourceSafe=false (0.2502ms)
+✔ historical receipt authority preserves link and exact crosswalk conflict rejection (0.369005ms)
+✔ zero current visits passes only when independent pinned HR also has zero (0.337899ms)
+✔ pinned HR periods use key while frontend periods may use periodKey (0.087179ms)
+✔ the expected current period comes from external HR, never the observed UI period (0.531155ms)
+✔ missing or invented current visits fail the same HR expectation (0.192394ms)
+✔ pending platform assignment is recorded separately and is not represented as HR confirmed (0.081761ms)
+✔ revision, period, identity, history and every required route remain mandatory (0.247656ms)
+✔ live acceptance uses these predicates and records name-free adjudication evidence (0.482413ms)
+ℹ tests 104
+ℹ suites 0
+ℹ pass 104
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 237.964383
+✔ P0: periodo y Dashboard usan la misma definición canónica de realizada por fecha/facets (11.635739ms)
+✔ P0: cliente agrupa un proyecto de negocio con dos periodos y conserva sus tres visitas (6.007895ms)
+✔ P0: Histórico muestra países y desglose del periodo usando periodId, no projectId (7.574779ms)
+✔ P0: configuración de proyecto también selecciona por recordPeriodId; formularios conservan periodos (0.711021ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 120.685915
+✔ G03: canonical Hojas de Ruta shows actual external provider authority and source revision, never fake local selector (3.60151ms)
+✔ G03: canonical Hojas de Ruta without revision must not claim fresh provider read (1.330135ms)
+✔ G03: legacy noncanonical HR preview keeps its existing controls without changing data contracts (1.324257ms)
+✔ B11: canonical HR Admin separates available-from and actual scheduled dates; unbooked visits cannot look booked (1.569508ms)
+✔ B11: canonical source preserves distinct scheduled and available dates from live HR without modifying any row (2.42376ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 131.345221
+✔ Gate 6 / 1 initial HR shopper creates one durable identity (8.938724ms)
+✔ I3 P0 / country-scoped HR shopper claims preserve Honduras and Guatemala (3.179127ms)
+✔ I3 P0 / conflicting HR country cannot silently relabel a stable shopper ID (0.76473ms)
+✔ Gate 6 / 2 exact replay is idempotent and creates no duplicate (2.446994ms)
+✔ Gate 6 / 3 HR-managed update preserves uid and non-HR-managed profile fields (1.464724ms)
+✔ Gate 6 / 4 existing shopper membership and crosswalk are reused (1.156038ms)
+✔ Gate 6 / 5 partial failure and identity conflict fail closed with safe retry (1.80066ms)
+✔ Gate 6 / owner credential rule materializes visible login and deterministic Auth password without persisting the secret (0.799851ms)
+✔ Gate 6 / credential rule strips accents from password and uses first name + first surname (0.263659ms)
+✔ Gate 6 / protected HR snapshot uses the trusted ephemeral identity map for the owner credential rule (1.297146ms)
+✔ Gate 6 / trusted exact identity link reuses one canonical Auth for an HR technical alias (1.419677ms)
+✔ VRM-081 / exact existing Auth + membership survives incomplete HR name without fabricated credential (0.996181ms)
+✔ VRM-081 / distinct current shoppers keep unique base holder and receive deterministic suffixes idempotently (10.761096ms)
+✔ VRM-081 / collision group with no unique unsuffixed holder suffixes every member instead of choosing by name (0.98127ms)
+✔ VRM-081 / deterministic suffix escalates 4 to 6 to 8 without overwriting existing holders (0.780433ms)
+✔ VRM-081 / proven exact alias self-crosswalk migrates the same principal to canonical idempotently (5.621064ms)
+✔ VRM-081 / dual exact principals preserve canonical and retire historical alias idempotently (2.544519ms)
+✔ VRM-081 / two alias-only exact principals choose deterministic non-credential keeper and retire the other (1.551672ms)
+✔ VRM-081 / multiple credential-bearing alias principals remain fail closed (0.888482ms)
+✔ VRM-081 / exact alias with no prior membership or Auth materializes one canonical principal only (1.288473ms)
+✔ VRM-081 / conflicting exact identity links fail closed and never merge by name (0.322937ms)
+✔ VRM-168 / stale tenant adjudication cannot override a live exact HR and Auth principal (1.741723ms)
+✔ Gate 8 / durable legacy shoppers converge to the frozen credential rule outside the current HR snapshot (1.47551ms)
+✔ Gate 8 / first-name.first-surname remains idempotent after profile normalization (0.255558ms)
+✔ Gate 6 / optional HR contact fields materialize from the private exact identity runtime without becoming credential requirements (1.871895ms)
+✔ PRE-I4 VRM-033 technical shopper IDs never become durable human names and exact HR identity restores the name (0.79861ms)
+✔ VRM-044 shopper.create closes Auth membership profile crosswalk and platform_created identity link idempotently (2.145059ms)
+✔ I3 P0 cohort / manual registration detects existing HR-owned identity before any new Auth or write (0.330659ms)
+✔ I3 P0 cohort / manual registration with no country still blocks an exact name-and-phone collision (0.33844ms)
+✔ I3 P0 / same name and country with changed or absent phone requires human review before Auth (0.461512ms)
+✔ I3 P0 / shared phone and country with changed surname requires identity review (0.264101ms)
+✔ I3 P0 / explicit different country does not silently merge or block same human name (0.682398ms)
+✔ I3 P0 cohort / duplicate of existing platform-created principal requires review (0.487831ms)
+✔ I3 A01–A04 / normalized compatible legacy names merge automatically with real provider ACK and stable UID/history (2.735461ms)
+✔ I3 A02 / a second active UID blocks automatic name merge but does not block the HR reconciliation (0.96134ms)
+✔ I3 A01–A04 / compatible Honduras names with a missing alias phone preserve the existing login (1.332469ms)
+✔ I3 A02 / phone contradictions, different country and explicit distinct decision remain isolated (1.982158ms)
+✔ I3 A03 / provider transaction failure never advertises automatic ACK or changes the keeper principal (0.889704ms)
+✔ PRE-I4 ADMIN-003 tenant-adjudicated canonical name survives fresh exact HR alias reconciliation (1.294042ms)
+✔ PRE-I4 ADMIN-003 same-revision stale tenant-adjudicated alias is repaired before idempotent short-circuit (1.040166ms)
+✔ VRM-185 / admin identity adjudication keeps the unique password-proof principal and preserves HR provenance (1.739179ms)
+✔ I3 P0 / corrected HR spelling must not silently change adjudicated keeper login or password on reconciliation (1.815552ms)
+✔ I3 P0 / approved exact human joins an HR-only source ID to an existing keeper without new Auth (2.327348ms)
+✔ I3 P0 / HR-only alias refuses stale revision or a link to another human without any write (0.667115ms)
+✔ VRM-197 / multiple password-proof principals choose the unique canonical visible-login keeper (1.430333ms)
+✔ VRM-185 / admin identity adjudication fails closed when multiple principals have password proof (1.709385ms)
+✔ VRM-217 reconcile backfills password-proof and sweep metadata even when login is already exact (1.066125ms)
+✔ VRM-217 durable credential sweep uses deterministic technical suffix under an exact base-login collision (0.852349ms)
+✔ VRM-219 selective exact adjudication remaps authoritative rows while preserving historical alias visits (0.830607ms)
+✔ VRM-220 / exact trusted identity link recovers a missing canonical profile without guessing (1.137781ms)
+✔ VRM-220 / missing canonical profile stays fail-closed without one exact trusted identity authority (0.291791ms)
+✔ VRM-221 keep-separate persists durable decision with zero identity remap and exact replay (0.937305ms)
+✔ VRM-221 delete blocks current HR identity and preserves Auth/profile/HR authority (0.783507ms)
+✔ VRM-221 safe delete retires platform orphan, disables Auth and preserves tombstone with replay (1.046065ms)
+✔ VRM-227 same-human merge durably closes matching active identity review and replay stays exact (1.148046ms)
+✔ I3 B2 signed shopper display-only provider ACK and fresh read-model rehydrate (8.000027ms)
+✔ HF-20261012-02 newest-first profile history with stable identity tie-break (0.526618ms)
+✔ HF-20261012-04 Admin display correction has exact staff authority, provider ACK, readback, replay and HR/Auth isolation (2.567433ms)
+✔ HF-20261012-04 Admin UI and Shopper portal consume signed display authority without HR/name/login patch (1.067077ms)
+✔ I3 P0 / new HR id with diacritics and case reuses single canonical shopper, durable crosswalk and existing login (3.160058ms)
+✔ I3 P0 / protected November HR without phone links one unique strong-name GT keeper and preserves Auth (2.226789ms)
+✔ I3 P0 / masked HR reuses the one keeper from a verified durable exact review even without PII map (3.435165ms)
+✔ I3 P0 / masked HR review without independent exact fingerprint does not guess identity (2.128995ms)
+✔ I3 P0 / missing HR phone with two same-name keepers stays in review without guessing Auth UID (2.359695ms)
+✔ I3 P0 / genuinely new HR person still creates identity with no manual review (0.839731ms)
+✔ I3 P0 / exact incoming HR match with explicit distinct decision never links the canonical shopper (1.108898ms)
+ℹ tests 66
+ℹ suites 0
+ℹ pass 66
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 216.810669
+✔ B1 cold shopper: three scoped visit reads overlap but keep historical merge priority (17.993009ms)
+✔ B1 cold shopper: one denied secondary query remains isolated as before (1.148287ms)
+✔ B1 cold shopper: postulations, reservations and visit reads begin together but map only after visit joins (13.279446ms)
+✔ B1 cold shopper: canonical periods overlap project-scoped records (0.415944ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 110.443808
+✔ VRM-134 coalesces independent protected HR and principal reads without returning before both (1.621406ms)
+✔ VRM-134 rejects protected request if principal check fails (0.551254ms)
+✔ VRM-134 public HR read never calls protected identity and retains freshness route (0.219284ms)
+✔ VRM-134 exposes non-sensitive source refresh stages and protected timing only to verified path (0.21623ms)
+✔ VRM-134 protected metadata read verifies identity and HR without repeating protected Firestore overlay (0.191703ms)
+✔ VRM-134 registry identity and live HR read start concurrently, then both settle before validation (0.321755ms)
+✔ VRM-134 source read failure waits for the other process before cleanup (0.268627ms)
+✔ VRM-134 R20 reads 36 tabs in three bounded waves and preserves response order (3.092648ms)
+✔ VRM-134 R20 covers small and partial waves without extra or missing tabs (2.079571ms)
+✔ VRM-134 R20 failed batch waits for its peer and starts no later wave (0.510945ms)
+✔ VRM-134 R20 authentication and missing metadata fail before batch reads (0.30435ms)
+✔ VRM-134 identity batching preserves chronological latest nonempty contacts (9.207782ms)
+✔ VRM-134 identity failure waits for its peer and never publishes a partial identity file (0.94709ms)
+✔ VRM-134 identity registry-only route performs no batch reads and retains auth boundary (0.355185ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 100.643784
+✔ I3 B7: stale durable date blocks before HR reconciliation, then HR date enables ACK with idempotent replay (33.354442ms)
+✔ I3 B7: removal of HR future fields invalidates stale window, never fabricates available dates (0.829105ms)
+✔ I3 B7 dashboard and postulations share the same scoped direct request modal (6.858733ms)
+✔ I3 B7 shared agenda modal reviews exact durable pending date with provider ACK (4.34553ms)
+✔ I3 B7 direct contextual menu uses existing Postulaciones owner, scoped assignment and ACK (3.641238ms)
+✔ I3 B7 cancellation modal fails closed before remote ACK (3.116444ms)
+✔ I3 B7 filter applies search to both posts and HR assignments and closes stale KPI modals (1.00826ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 139.499212
+✔ B7 cancellation reason human presentation preserves free-text (1.136209ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 74.522577
+✔ B7 durable shopper notices require Firestore server readback and post-hydration reload (1.109229ms)
+✔ VRM143 mapper preserves canonical lifecycle dates, explicit action and cycle through reload (14.558016ms)
+✔ VRM143 shared feed correctly handles current information (1.535959ms)
+✔ VRM143 shared feed correctly handles resolved (1.580986ms)
+✔ VRM143 shared feed correctly handles expired (0.895522ms)
+✔ VRM143 shared feed correctly handles future expiry (0.878408ms)
+✔ VRM143 shared feed correctly handles historical date without period (0.86632ms)
+✔ VRM143 shared feed correctly handles foreign project actionable (0.765291ms)
+✔ VRM143 historical terminal cancellation stays in history but is never reactivated by operational flag (1.358407ms)
+✔ VRM143 exact historical cancel pending_review remains visible even read (1.716856ms)
+✔ VRM143 exact historical cancel approved_pending_hr remains visible even read (0.90728ms)
+✔ VRM143 exact historical reprog pending_review remains visible even read (1.734332ms)
+✔ VRM143 newer request cannot reactivate either older request or its decision, including equal timestamps (1.662536ms)
+✔ VRM143 historical exception denies no cycle (0.925577ms)
+✔ VRM143 historical exception denies different cycle (0.878368ms)
+✔ VRM143 historical exception denies other recipient (0.756227ms)
+✔ VRM143 historical exception denies other project (0.75778ms)
+✔ VRM143 historical exception denies other entity (0.851858ms)
+✔ VRM143 historical exception denies other period (0.660866ms)
+✔ VRM143 historical exception denies other tenant (0.706714ms)
+✔ VRM143 duplicate matching entity cannot certify a historical actionable notice (0.757799ms)
+✔ VRM143 same-period decision remains informative after terminal resolution of request (0.725001ms)
+✔ VRM143 current legacy decision remains informative without inventing a historic cycle (0.756117ms)
+✔ VRM143 approved assignment notice retains its exact pending visit obligation (0.721125ms)
+✔ VRM143 historical request from previous or absent owner is informational only: shopper s2 (0.911476ms)
+✔ VRM143 historical request from previous or absent owner is informational only: admin s2 (0.788445ms)
+✔ VRM143 historical request from previous or absent owner is informational only: shopper null (0.747604ms)
+✔ VRM143 historical request from previous or absent owner is informational only: admin null (0.634377ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 127.374872
+✔ B7 request new date closes stale pending request with provider ACK/readback before success (0.764289ms)
+✔ B7 reschedule decision targets the exact shopper (0.193266ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 79.920932
+✔ VRM-151 command runtime routes finance.historical.reconcile to finance provider (1.271978ms)
+✔ ADMIN-004 reconcile uses project-country honorarium when HR is blank and never confirms external payment (4.111264ms)
+✔ ADMIN-004 explicit HR honorarium has precedence and reconciliation is idempotent (0.717069ms)
+✔ VRM-151 historical reconciliation uses canonical submitted visit, exact amount and idempotent durable status without bank or HR writes (1.255285ms)
+✔ VRM-152 historical reconciliation completes every transaction read before the first write (1.700121ms)
+✔ VRM-153 historical reconciliation uses exact HR revision for reimbursement authority when durable Firestore copy is incomplete (0.408213ms)
+✔ VRM-153 historical reconciliation fails closed when command HR revision differs from runtime HR authority (0.530194ms)
+✔ VRM-151 historical reconciliation records paid status but keeps amount null and review-required when reimbursement source is incomplete (1.0352ms)
+✔ VRM-151 historical reconciliation writes the live visitId canonical owner before legacy hrRowId duplicate (0.714215ms)
+✔ VRM-153 exact pending-to-paid supersession retains the prior audit record, one active visit and zero bank writes (1.199392ms)
+✔ VRM-153 rejects unapproved overwrite, downgrade and future-dated proof without writes (1.089128ms)
+✔ VRM-153 cross-project prior reconciliation blocks the whole transaction (0.823086ms)
+✔ VRM-153 supersession completes every Firestore read before any write in two-visit transaction (1.460106ms)
+✔ VRM-153 exact same-human HR alias supersession requires transactional trusted identity link and preserves prior ID (1.674544ms)
+✔ VRM-153 explicit HR alias without permitted scoped link is not financial identity proof (0.961951ms)
+✔ VRM-153 initial exact historically-paid August row preserves authorized October 2 payment date without bank transfer (0.749988ms)
+✔ VRM-153 historical payment date rejects pending, future date, missing source authority without writes (0.811309ms)
+✔ VRM-151 historical reconciliation rejects non-submitted visits even when the historical month is marked paid (0.387612ms)
+✔ ADMIN-004 missing config fails closed and payment batch rejects unreconciled visit (0.829565ms)
+✔ HF-20261012-27 payment batch rejects financially exact visits until operational state is submitted/validated (0.834874ms)
+✔ HF-20261012-27 payment batch rejects internal duplicate and external payment duplicates (0.724069ms)
+✔ HF-20261012-27 payment batch records only selected eligible visits, separates currencies and is idempotent (1.106955ms)
+✔ HF-20261012-27 UI exposes one liquidation eligibility owner for row actions, detail and selection (0.835524ms)
+✔ HF-20261012-21 finance dashboard exposes compact KPI hierarchy and five financial states without mixing country currencies (0.481491ms)
+✔ ADMIN-004 project.update boundary sends the canonical current version in the provider payload (0.342546ms)
+✔ ADMIN-004 command boundary parses as JavaScript after project.update version fix (0.87976ms)
+✔ ADMIN-004 backend refresh invalidates HR authority then awaits atomic recomposition and readback (0.815083ms)
+✔ ADMIN-004 unified human runtime preserves canonical project-country honorarium on HR-owned operational visits (0.306583ms)
+✔ HF-20261012-26 durable budget create, readback, update, delete and exact idempotency without bank truth (2.304333ms)
+✔ HF-20261012-26 budget fail-closed country, currency, role, scope, amount, and no client writes (1.57049ms)
+✔ HF-20261012-22 provider diagnostic returns remote error codes without exposing raw exception/Pll (0.896224ms)
+✔ HF-20261012-22 ACK never shown as full reconciliation until unique exact protected readback (0.804699ms)
+✔ HF-20261012-23 independent source, obligation, internal ledger and external paid states (0.602731ms)
+✔ HF-20261012-25 monthly CxP CxC provider ledger, client protections and UI readback (0.865018ms)
+✔ HF-20261012-25 CxC internal collection uses existing durable finance.account.apply with no bank claim (0.810458ms)
+✔ HF24 missing finance read provider fails closed instead of returning successful empty finances (1.410063ms)
+✔ HF24 finance creation requires unique tenant scoped remote readback after provider ACK (0.609751ms)
+✔ HF-20261012-25 B8 CxP internal abono never announces a confirmed external payment (0.701937ms)
+✔ I3 B8 budget safe provider ACK and canonical destination projects (0.654597ms)
+✔ R12 remote operating revenue does not count remittances, advances, financing or CxC recovery (0.871147ms)
+✔ R09 ordinary finance screens use human explanations while preserving provider audit code (0.960379ms)
+✔ C04 project-scoped account and movement remain available to a project-limited Admin (1.258039ms)
+✔ C04 Global movement/account use the tenant ledger, explicit country/currency and exact replay without bank or HR writes (1.608556ms)
+✔ C04 Global financing remains non-operating and creates only a linked Global CxP (0.374533ms)
+✔ C04 Global collection changes only the exact account and replay preserves balance/version/movement (1.490562ms)
+▶ C04 Global is denied for project-only/missing entitlements, disallowed roles, inactive membership and country restriction
+  ✔ specific-projects (0.246684ms)
+  ✔ missing-entitlement (0.217161ms)
+  ✔ ops (0.169561ms)
+  ✔ coordinador (0.160047ms)
+  ✔ shopper (0.157002ms)
+  ✔ client (0.129562ms)
+  ✔ inactive (0.167047ms)
+  ✔ country (0.481842ms)
+✔ C04 Global is denied for project-only/missing entitlements, disallowed roles, inactive membership and country restriction (2.543798ms)
+▶ C04 Global never bypasses project command scope, tenant allowlist, version or project-only visit/budget contracts
+  ✔ missing-global (0.222058ms)
+  ✔ fake-global-project (0.117644ms)
+  ✔ global-with-project (0.096272ms)
+  ✔ global-wrong-period (0.098917ms)
+  ✔ global-payload-period (0.150051ms)
+  ✔ global-date-period (0.110053ms)
+  ✔ global-no-date (0.091476ms)
+  ✔ global-invalid-date (0.160707ms)
+  ✔ global-project-destination (0.106527ms)
+  ✔ global-visit-link (0.095811ms)
+  ✔ global-unbounded-version (0.154087ms)
+  ✔ global-budget (0.10122ms)
+  ✔ global-reconcile (0.127268ms)
+  ✔ foreign-tenant (0.145165ms)
+  ✔ project-policy-still-denied (0.090484ms)
+✔ C04 Global never bypasses project command scope, tenant allowlist, version or project-only visit/budget contracts (3.200839ms)
+▶ C04 Global account application refuses wrong account tenant/project/month/marker and country
+  ✔ tenant (0.64296ms)
+  ✔ project (1.25878ms)
+  ✔ period (0.443225ms)
+  ✔ marker (0.358279ms)
+  ✔ country (0.308936ms)
+  ✔ internal-id (0.284721ms)
+  ✔ missing-id (0.31808ms)
+✔ C04 Global account application refuses wrong account tenant/project/month/marker and country (4.135419ms)
+✔ C04 command boundary carries explicit Global scope and keeps project cache/commands independent (3.79792ms)
+▶ C04 Global reader filters Global-only/month and requires server-confirmed snapshot without pending local writes
+  ✔ {"fromCache":true,"hasPendingWrites":false} (0.775456ms)
+  ✔ {"fromCache":false,"hasPendingWrites":true} (0.641608ms)
+  ✔ {} (0.618574ms)
+✔ C04 Global reader filters Global-only/month and requires server-confirmed snapshot without pending local writes (6.686528ms)
+✔ C04 Global UI currency/month/readback preserve actual row scope, cents and linked account update (1.495208ms)
+✔ C04 real Movimientos draw/scope/export use isolated remote ledgers, never the legacy local balance (42.988774ms)
+✔ C04 failed Global read shows no monetary fallback and currency keys cannot corrupt aggregation (4.525025ms)
+ℹ tests 86
+ℹ suites 0
+ℹ pass 86
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 206.068131
+✔ HF13 valid international number opens wa.me with encoded draft, not sent (1.464593ms)
+✔ HF13 malformed or local-only number fails closed without browser/open log (0.468492ms)
+✔ HF13 no exact shopper or popup-blocked does not assert success (0.17561ms)
+✔ HF13 all individual Dashboard paths use exact helper; no fake prepared log (0.278872ms)
+✔ HF28 connected automation templates use tenant Firestore ACK/readback and no localStorage truth (4.522191ms)
+✔ B7 mass WhatsApp paths reuse exact recipient helper and never declare delivery (0.152235ms)
+✔ B7 Postulaciones WhatsApp uses validated international number, opens only a manual draft and never claims sent (2.29535ms)
+✔ B7 review of real pending reschedule opens the existing decision owner and requires same visit readback (0.434452ms)
+✔ R01 Dashboard individual WhatsApp uses only the exact authorized shopper profile when the visit phone is absent (0.259573ms)
+✔ R01 never guesses identity by name and rejects conflicting exact phone sources (0.301185ms)
+✔ R01 rejects a getShopper mismatch or a local-only phone even if the visible name matches (0.200065ms)
+✔ R01 individual KPI WhatsApp resolves the exact rendered HR drill row, not an unrelated pool (0.180186ms)
+✔ R01 individual Dashboard WhatsApp button preserves exact visit ID for its click handler (0.229349ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 93.111392
+✔ R07 safe provider failure code and human wording (0.82527ms)
+✔ R07 exact independent identity, HR row and status checks (0.221137ms)
+✔ R07 no optimistic success before remote refresh and readback (0.146045ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 76.63664
+✔ R22 server readback must precede local unread mutation (0.801393ms)
+✔ R22 mark-all read only after provider succeeds; failed provider leaves local state untouched (0.133898ms)
+✔ R22 Mi Día and Tablón await read and visit-scoped route (0.163802ms)
+✔ R22 cross-surface text/identity/action parity without raw HR IDs (0.148379ms)
+✔ R22 exact historical visits retain deep-link target and read-only detail (0.64296ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 75.17139
+✔ R08 safe Vertex diagnostics preserve finishReason and shape, never output PDF text (1.193853ms)
+✔ R08 exact 15 valid, 14 incomplete and malformed JSON blocked (0.689529ms)
+✔ R08 exact 15-question bank validates four unique options, explanation, no duplicate questions (0.512708ms)
+✔ R08 bounded response retry succeeds on second valid provider response only (0.365791ms)
+✔ R08 two invalid responses fail closed; provider errors never trigger a blind retry (0.401623ms)
+✔ D03 Gemini 2.5 Flash JSON generation disables costly thinking only for supported model (0.73728ms)
+✔ D03 one-bounded-generation deadline leaves room under 60-second Hosting timeout (0.14945ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 105.368589
+✔ HF15: cards are grouped by exact country+branch; HR vs platform retain origin (7.697921ms)
+✔ HF15: source-provided text is HTML-escaped and no posts are synthesized (0.527249ms)
+✔ HF15: assignments empty state is honest, without fictional rows (0.194507ms)
+✔ HF15: per-card action dispatches exact visit to canonical owner (0.362426ms)
+✔ HF15: missing exact visit cannot invoke action (0.29787ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 90.126427
+✔ HF16 derives active postulations from shared data authority (0.858067ms)
+✔ HF16 state and status fallback/casing agree with rail canonical count (0.43369ms)
+✔ HF16 history, assignment transitions and archived never inflate count (1.419577ms)
+✔ HF17 retains cumulative stage and active-agenda distinction until exact HR parity (0.316578ms)
+✔ VRM259 late consistency bridge cannot override period scoped canonical pending count (0.21011ms)
+✔ HUMAN 2026-10-13: assigned visits expose approved quick actions, no single generic Manage bottleneck (0.401704ms)
+✔ HUMAN 2026-10-13: shared contrast and type sizes are protected in actual source (0.621839ms)
+✔ B7 reschedule rejection survives error and ACK needs exact refreshed visit (0.157262ms)
+✔ B7 actionable 7-KPI owner derives each operational count from current visit and durable request, never post.reprog (0.422414ms)
+✔ B7 KPI drilldown delegates to existing role-scoped provider owners, not a generic postulation modal (0.342817ms)
+✔ B7 expired shopper proposal is blocked in both Admin entrypoints without attempting provider approval (15.839438ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 105.628488
+✔ R05 owner forces exclusive modal, preserving other options (1.992433ms)
+✔ R05 all 18 Postulaciones modals use one exclusive owner (0.3315ms)
+✔ R05 profile and historical visits follow exclusive modal transitions (0.231251ms)
+✔ R06 assignment cards remain under shared search and filters (0.159125ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 79.041239
+✔ R20 authenticated exact shopper with zero assigned visits remains eligible (0.875092ms)
+✔ R20 rejects missing or ambiguous exact shopper profile (0.194948ms)
+✔ R20 refuses shopper without country authority (0.166476ms)
+✔ R20 legacy valid shopper with visits preserves derived period provenance (0.188679ms)
+✔ R20 retains claims/tenant/namespace exact checks but no artificial assignment gate (0.260585ms)
+✔ R20 terminal identity failure stops retry and renders safe explanatory state (0.190081ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 79.596699
+✔ R22 role and exact shopper visit select action without fuzzy fallback (2.551008ms)
+✔ R22 notification click awaits durable read ACK and targets exact action (0.809837ms)
+✔ R22 raw technical HR IDs are presentation only, never persisted as titles (0.109532ms)
+✔ B10: live provider declaration never silently displays internal questionnaire (3.499669ms)
+✔ B10: explicit source conflict blocks instead of choosing internal form (1.382983ms)
+✔ B10: explicitly configured internal project remains internal (0.902603ms)
+✔ B10: provider mapping is generic and independent of global project names (0.862654ms)
+✔ B10: configured per-visit link never falls back to unrelated global link (1.719981ms)
+✔ B10: explicitly configured general external URL is preserved (1.413107ms)
+✔ B10 Admin: provider-pending source is visibly selected and survives unrelated save (3.170934ms)
+✔ B10 Admin: source conflict and unknown successor mode never silently become internal (3.252485ms)
+✔ B10 Admin: declared external provider cannot be silently switched to internal (1.02233ms)
+✔ B10 Admin: authorized internal project remains configurable as internal (0.747264ms)
+✔ B10 Admin: per-visit mode retains HR field and removes unrelated general URL (0.699032ms)
+✔ benefits and profile expose report-like hierarchy plus clickable historical detail (0.391819ms)
+✔ shopper visit actions are durable and tenant-date gated (0.204061ms)
+✔ certification source supports durable self-admin, multi-cert, recertification and exact-count AI (0.598484ms)
+✔ finance UI exposes individual and batch internal payment, durable support and reconciliation without false bank confirmation (1.016121ms)
+✔ frozen historical payment cut is explicit and September remains non-inferred (0.268567ms)
+✔ admin dashboard/postulations and reservation source expose real interaction owners (0.907991ms)
+✔ admin shopper source exposes banking/profile workflow with provider ACK governance (0.361824ms)
+✔ B2 self-display name validation uses real Unicode escapes and preserves HR identity (0.590201ms)
+✔ I3 Phase A existing DEV runner has one artifact, runtime build, rules and hosting in one guarded lane (1.07605ms)
+✔ I3 Phase A exact source TAR is verified from repository workdir without duplicated output prefix (7.370287ms)
+✔ I3 DEV previously-published artifact uses same job in readback-only mode with no extra build (0.955311ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 128.420051

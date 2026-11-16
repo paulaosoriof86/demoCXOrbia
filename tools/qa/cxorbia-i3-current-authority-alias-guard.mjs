@@ -15,6 +15,10 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
   const seal=l?.currentMaterialization||{};
   const currentDev=p?.currentDevMaterialization||{};
   const phaseLock=p?.activePhaseAClosureLock20261110||{};
+  check(phaseLock.currentAccountingSemantics?.strictOwnerDomainMatch?.matched===phaseLock.strictDomainMatches&&
+    phaseLock.currentAccountingSemantics?.strictOwnerDomainMatch?.total===21&&
+    phaseLock.currentAccountingSemantics?.humanFunctionalBlocks?.passed===phaseLock.phaseABlocksHumanPassed&&
+    phaseLock.currentAccountingSemantics?.humanFunctionalBlocks?.total===9,'CURRENT_PHASE_LOCK_NESTED_ACCOUNTING_DESYNC');
   // A source-proven successor can precede its DEV deployment. In that state
   // the materialization is immutable evidence of the *served predecessor*;
   // forcing its source/tree aliases to match the new source would falsify DEV.
@@ -106,6 +110,9 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
   // terminal evidence. A stale lastModuleTruthProof previously survived every
   // canonical CI run and caused later conversations to re-enter old gates.
   const c3=d?.currentC3PreterminalAudit||{};
+  const pendingBreakdown=['pendingOwnerProofFiles','pendingBlobProvenanceFiles','pendingMappingApprovalFiles'];
+  check(pendingBreakdown.every(k=>Number.isInteger(c3[k])&&c3[k]>=0)&&
+    pendingBreakdown.reduce((n,k)=>n+c3[k],0)===c3.pendingFiles,'CURRENT_C3_PENDING_BREAKDOWN_DESYNC');
   const sameProof=JSON.stringify(c3)===JSON.stringify(p?.currentC3PreterminalAudit||null)&&
     JSON.stringify(c3)===JSON.stringify(l?.currentC3PreterminalAudit||null);
   const currentlyServedHosting=c3PredecessorAfterServing?preC3.previousHostingVersion:
