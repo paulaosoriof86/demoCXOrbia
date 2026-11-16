@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import {collectTenantAdjudications,tenantAdjudicationReceiptRefs,currentHrPeriodId,representativeHrExpectation,representativeMatchesHr} from './cxorbia-i3-terminal-human-contract.mjs';
-import {canonicalNameHash,validateNameRepairRequest,nameRepairInvariant,validateNameRepairCommand,validateNameRepairSequence,validateNameRepairAck,validateNameRepairRecovery} from './cxorbia-i3-canonical-name-repair-live.mjs';
+import {canonicalNameHash,validateNameRepairRequest,nameRepairInvariant,validateNameRepairCommand,validateNameRepairSequence,validateNameRepairAck,validateNameRepairRecovery,selectNameRepairReceipt,allowNameRepairAbsentRetry} from './cxorbia-i3-canonical-name-repair-live.mjs';
 const link=()=>({id:'link-proof',tenantId:'tenant-a',projectScope:'project-a',canonicalShopperId:'canonical-a',
   sourceIdentityKey:'first-alias',exactAliases:['first-alias','second-alias'],sourceAliases:['first-alias','second-alias'],
   status:'active',authorityType:'tenant_adjudication',authorityRef:'durable-receipt',providerAck:true,
@@ -242,3 +242,29 @@ for(const [label,change]of [
  ['result binding drift',f=>{f.row.result.receiptBinding.actorUid='foreign';}],
  ['different recovery scope',f=>{f.r.recovery.mode='CLICK_AGAIN';}]
 ])test('VRM354 recovery refuses '+label,()=>{const f=repairRecoveryFixture();change(f);assert.throws(()=>validateNameRepairRecovery(f),/VRM354_/);});
+
+function absentNativeFixture(){
+ const f=repairRecoveryFixture();Object.assign(f.r.recovery,{allowSingleNativeAttemptOnlyAfterProvenAbsent:true,precedingReceiptPathHash:'c'.repeat(64),precedingReceiptUpdateTime:'2026-11-16T06:15:55.303Z'});
+ return {...f,selection:{complete:true,observed:2,matchingCount:0},nameSha256:f.r.beforeNameSha256,invariantSha256:f.r.recovery.beforeInvariantSha256,runAttempt:'1',lease:{status:'committed',receiptPathHash:f.r.recovery.precedingReceiptPathHash,updateTime:f.r.recovery.precedingReceiptUpdateTime,receipt:{status:'committed',actorUidHash:f.r.actorUidHash,sourceRevision:f.r.hrRevision,journal:{journalVerified:true}}}};
+}
+test('VRM354 exact recovery discovery finds the original key without relying on latest lease',()=>{
+ const f=repairRecoveryFixture();const out=selectNameRepairReceipt([{id:'original',data:f.row}],{r:f.r,actorUid:f.actorUid,complete:true});assert.equal(out.match.id,'original');assert.equal(out.matchingCount,1);
+ assert.throws(()=>selectNameRepairReceipt([{id:'a',data:f.row},{id:'b',data:f.row}],{r:f.r,actorUid:f.actorUid,complete:true}),/DUPLICATE_KEY/);
+ assert.throws(()=>selectNameRepairReceipt([],{r:f.r,actorUid:f.actorUid,complete:false}),/DISCOVERY_INCOMPLETE/);
+});
+test('VRM354 only complete key absence with unchanged committed lease and unchanged identity permits one new native attempt',()=>{
+ const f=absentNativeFixture(),out=allowNameRepairAbsentRetry(f);assert.equal(out.originalCommandApplicationEffects,0);assert.equal(out.freshNativeAttemptsAllowed,1);
+});
+for(const [label,change]of [
+ ['receipt found',f=>{f.selection.matchingCount=1;}],
+ ['empty authority query',f=>{f.selection.observed=0;}],
+ ['incomplete query',f=>{f.selection.complete=false;}],
+ ['lease changed',f=>{f.lease.updateTime='2026-11-16T07:33:10Z';}],
+ ['different lease',f=>{f.lease.receiptPathHash='d'.repeat(64);}],
+ ['running lease',f=>{f.lease.status='running';}],
+ ['unverified journal',f=>{f.lease.receipt.journal.journalVerified=false;}],
+ ['name already restored',f=>{f.nameSha256=f.r.expectedNameSha256;}],
+ ['identity changed',f=>{f.invariantSha256='d'.repeat(64);}],
+ ['workflow rerun',f=>{f.runAttempt='2';}],
+ ['not authorized in exact request',f=>{f.r.recovery.allowSingleNativeAttemptOnlyAfterProvenAbsent=false;}]
+])test('VRM354 absent original does not permit another native attempt for '+label,()=>{const f=absentNativeFixture();change(f);assert.throws(()=>allowNameRepairAbsentRetry(f),/VRM354_/);});

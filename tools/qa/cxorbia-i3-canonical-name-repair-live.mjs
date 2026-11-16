@@ -90,6 +90,24 @@ export function validateNameRepairRecovery({row,receiptPath,journal,r,actorUid})
  return {rowStatus:row.status,code:row.result?.code||null,stageResults:row.result?.stages||null,receiptPathHash:sha(receiptPath),idempotencyKeySha256:q.idempotencyKeySha256,journal,terminal:row.status==='committed'&&journal.receiptTerminalCommitted===true&&journal.journalVerified===true};
 }
 
+
+export function selectNameRepairReceipt(records,{r,actorUid,complete}){
+ requireProof(complete===true,'RECOVERY_DISCOVERY_INCOMPLETE');
+ const rows=arr(records).filter(x=>x?.data?.actorUid===actorUid&&x.data.tenantId===r.tenantId&&x.data.projectId===r.projectId&&x.data.sourceRevision===r.hrRevision);
+ requireProof(rows.length===arr(records).length,'RECOVERY_DISCOVERY_SCOPE');
+ const matches=rows.filter(x=>typeof x.data.idempotencyKey==='string'&&sha(x.data.idempotencyKey)===r.recovery.idempotencyKeySha256);
+ requireProof(matches.length<=1,'RECOVERY_DUPLICATE_KEY');
+ return {match:matches[0]||null,observed:rows.length,complete:true,matchingCount:matches.length};
+}
+export function allowNameRepairAbsentRetry({selection,lease,nameSha256,invariantSha256,r,runAttempt}){
+ const q=r.recovery;
+ requireProof(q.allowSingleNativeAttemptOnlyAfterProvenAbsent===true&&String(runAttempt)==='1','RECOVERY_ABSENT_RETRY_NOT_AUTHORIZED');
+ requireProof(selection.complete===true&&selection.matchingCount===0&&selection.observed>=1,'RECOVERY_ABSENCE_UNPROVEN');
+ requireProof(lease?.status==='committed'&&lease.receiptPathHash===q.precedingReceiptPathHash&&lease.updateTime===q.precedingReceiptUpdateTime&&lease.receipt?.status==='committed'&&lease.receipt.journal?.journalVerified===true&&lease.receipt.actorUidHash===r.actorUidHash&&lease.receipt.sourceRevision===r.hrRevision,'RECOVERY_PRECEDING_LEASE_CHANGED');
+ requireProof(nameSha256===r.beforeNameSha256&&invariantSha256===q.beforeInvariantSha256,'RECOVERY_ABSENT_IDENTITY_CHANGED');
+ return {originalReceiptAbsent:true,completeScopedReceiptQuery:true,originalLeaseUnchanged:true,originalTargetUnchanged:true,originalCommandApplicationEffects:0,effectAuthority:'EXACT_RUNTIME_OWNER_WRITES_REQUIRE_ATOMIC_RECEIPT_AND_LEASE_CREATION_NO_RECEIPT_DELETE_PATH',freshNativeAttemptsAllowed:1,remoteHrWritesAllowed:0};
+}
+
 export async function proveVrm354CanonicalNameRepair({db,auth,chromium,credentialRule,env=process.env}){
  const readJson=p=>JSON.parse(fs.readFileSync(p,'utf8'));
  const descriptor=readJson(env.CANDIDATE_DESCRIPTOR||'CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json'),pointer=readJson('CXORBIA_RECOVERY_EXECUTION_CURRENT.json');
@@ -135,19 +153,34 @@ export async function proveVrm354CanonicalNameRepair({db,auth,chromium,credentia
   proof.beforeInvariantSha256=invariant;
   let recovered=null,recoveredPath=null;
   const autoKey='hr-auto-v2-'+r.hrRevision.slice(0,32)+'-'+actor.id;
+  const discoverOriginalReceipt=async()=>{
+   const candidates=await db.runTransaction(async tx=>{
+    const q=tenant.collection('commandReceipts').where('actorUid','==',actor.id).where('sourceRevision','==',r.hrRevision).where('projectId','==',r.projectId).select('version','actorUid','tenantId','projectId','sourceRevision','idempotencyKey','status','attemptId','startedAt','completedAt','result.code');
+    const pages=await b14ReadJournalPage(tx,q,{pageSize:500,maxPages:20});
+    return {records:pages.docs.map(d=>({id:d.id,data:d.data()})),complete:pages.complete,pages:pages.pages};
+   },{readOnly:true});
+   return {...selectNameRepairReceipt(candidates.records,{r,actorUid:actor.id,complete:candidates.complete}),pages:candidates.pages};
+  };
   if(r.recovery){
-   const lockRef=tenant.collection('commandReceipts').doc('hr-scope-'+sha(JSON.stringify(r.tenantId))),lock=(await lockRef.get()).data();
-   const prefix='tenants/'+r.tenantId+'/commandReceipts/';
-   requireProof(typeof lock?.receiptPath==='string'&&lock.receiptPath.startsWith(prefix)&&/^hr-[a-f0-9]{64}$/.test(lock.receiptPath.slice(prefix.length)),'RECOVERY_SCOPED_RECEIPT');
-   recoveredPath=lock.receiptPath;recovered=await readReceipt(db,recoveredPath,r);
-   proof.recovery=validateNameRepairRecovery({row:recovered.row,receiptPath:recoveredPath,journal:recovered.journal,r,actorUid:actor.id});
-   proof.recovery.receiptSeal=recovered.seal;proof.recovery.receiptUpdateTime=recovered.updateTime;proof.recovery.currentNameSha256=beforeHash;proof.recovery.invariantMatchesOriginal=invariant===r.recovery.beforeInvariantSha256;
+   proof.recoveryLease=await b14ReconciliationLeaseReadOnly(db,r.tenantId,r.projectId,r.hrRevision);
+   const selection=await discoverOriginalReceipt();
+   proof.recoveryDiscovery={complete:selection.complete,observed:selection.observed,matchingCount:selection.matchingCount,pages:selection.pages,keySha256:r.recovery.idempotencyKeySha256,scope:'EXACT_ACTOR_PROJECT_HR_REVISION_ALL_PAGES_READONLY'};
    save();
-   requireProof(proof.recovery.invariantMatchesOriginal,'RECOVERY_IDENTITY_DRIFT');
-   if(!proof.recovery.terminal)throw Error('PROVIDER_FAILURE:VRM354_NATIVE_RECEIPT_NOT_COMMITTED');
-   requireProof(beforeHash===r.expectedNameSha256,'RECOVERY_NAME_NOT_RESTORED');
-   requireProof(recovered.journal.authWritesObserved===0,'RECOVERY_UNEXPECTED_AUTH_WRITE');
-   requireProof((recovered.row.result?.stages?.shoppers?.canonicalFullNamesRestored||0)>=1,'RECOVERY_RESTORATION_NOT_RECORDED');
+   if(!selection.match){
+    proof.absentOriginalCommand=allowNameRepairAbsentRetry({selection,lease:proof.recoveryLease,nameSha256:beforeHash,invariantSha256:invariant,r,runAttempt:env.GITHUB_RUN_ATTEMPT});
+    proof.precedingJournal=proof.recoveryLease;
+    save();
+   }else{
+    recoveredPath=tenant.collection('commandReceipts').doc(selection.match.id).path;recovered=await readReceipt(db,recoveredPath,r);
+    proof.recovery=validateNameRepairRecovery({row:recovered.row,receiptPath:recoveredPath,journal:recovered.journal,r,actorUid:actor.id});
+    proof.recovery.receiptSeal=recovered.seal;proof.recovery.receiptUpdateTime=recovered.updateTime;proof.recovery.currentNameSha256=beforeHash;proof.recovery.invariantMatchesOriginal=invariant===r.recovery.beforeInvariantSha256;
+    save();
+    requireProof(proof.recovery.invariantMatchesOriginal,'RECOVERY_IDENTITY_DRIFT');
+    if(!proof.recovery.terminal)throw Error('PROVIDER_FAILURE:VRM354_NATIVE_RECEIPT_NOT_COMMITTED');
+    requireProof(beforeHash===r.expectedNameSha256,'RECOVERY_NAME_NOT_RESTORED');
+    requireProof(recovered.journal.authWritesObserved===0,'RECOVERY_UNEXPECTED_AUTH_WRITE');
+    requireProof((recovered.row.result?.stages?.shoppers?.canonicalFullNamesRestored||0)>=1,'RECOVERY_RESTORATION_NOT_RECORDED');
+   }
   }else{
    proof.precedingJournal=await b14ReconciliationLeaseReadOnly(db,r.tenantId,r.projectId,r.hrRevision);
    const prior=proof.precedingJournal.receipt;
@@ -194,15 +227,23 @@ export async function proveVrm354CanonicalNameRepair({db,auth,chromium,credentia
    const task=(async()=>{try{const response=await request.response();requireProof(response,'NATIVE_RESPONSE_MISSING');entry.response=await response.json();entry.httpStatus=response.status();}catch(_){entry.captureError='NATIVE_RESPONSE_UNAVAILABLE';}})();pending.push(task);
   };
   page.on('request',onRequest);
+  if(proof.absentOriginalCommand){const finalSelection=await discoverOriginalReceipt(),finalLease=await b14ReconciliationLeaseReadOnly(db,r.tenantId,r.projectId,r.hrRevision);allowNameRepairAbsentRetry({selection:finalSelection,lease:finalLease,nameSha256:beforeHash,invariantSha256:invariant,r,runAttempt:env.GITHUB_RUN_ATTEMPT});proof.absenceRecheckedImmediatelyBeforeClick=true;}
   proof.nativeClicks=1;await page.locator('#hsSync').click();
   await page.waitForFunction(({rev,lastAt})=>{const x=window.CX?.backendHrSourceBridge?.last;return x?.kind==='sync-request'&&x.payload?.sourceRevision===rev&&x.at!==lastAt&&typeof x.response?.ok==='boolean';},{rev:r.hrRevision,lastAt:capture.lastAt},{timeout:180000});
   armed=false;page.off('request',onRequest);await Promise.all(pending);
   requireProof(errors.length===0,'UNEXPECTED_HR_COMMAND');
   const final=validateNameRepairSequence(events,r,capture.actor);requireProof(!final.captureError,'NATIVE_RESPONSE_UNAVAILABLE');
-  command=final.command;nativeResponse=final.response;proof.nativeCommandCount=events.length;proof.commandSha256=sha(command);proof.idempotencyKeySha256=sha(command.idempotencyKey);
+  command=final.command;nativeResponse=final.response;proof.nativeHttpStatus=final.httpStatus;proof.nativeCommandCount=events.length;proof.commandSha256=sha(command);proof.idempotencyKeySha256=sha(command.idempotencyKey);
 
   }
   proof.nativeResponseSummary={ok:nativeResponse?.ok,status:nativeResponse?.status,code:nativeResponse?.code,committed:nativeResponse?.committed,providerAck:nativeResponse?.providerAck,unresolvedEffects:nativeResponse?.unresolvedEffects,unverifiedEffects:nativeResponse?.unverifiedEffects,stageResults:nativeResponse?.stages||null};
+  save();
+  const observedPath='tenants/'+r.tenantId+'/commandReceipts/hr-'+sha(JSON.stringify([r.projectId,command.idempotencyKey])),observedDoc=await db.doc(observedPath).get();
+  if(observedDoc.exists){
+   const obs=await readReceipt(db,observedPath,r);
+   proof.nativeDurableObservation={exists:true,receiptPathHash:sha(observedPath),updateTime:obs.updateTime,status:obs.row.status,code:obs.row.result?.code||null,stageResults:obs.row.result?.stages||null,journal:obs.journal,seal:obs.seal};
+  }else proof.nativeDurableObservation={exists:false,receiptPathHash:sha(observedPath),scope:'EXACT_CAPTURED_COMMAND_RECEIPT_READBACK_NOT_UNSCOPED_ABSENCE'};
+  const postAttemptTarget=await getTarget();proof.postAttemptNameSha256=canonicalNameHash(postAttemptTarget.profile.nombre);proof.postAttemptInvariantSha256=nameRepairInvariant(postAttemptTarget.profile,postAttemptTarget.member,postAttemptTarget.user);
   save();
   proof.commandAck=validateNameRepairAck(nativeResponse,command,r,actor.id,{durable:!!recovered});
   const receiptPath='tenants/'+r.tenantId+'/commandReceipts/hr-'+sha(JSON.stringify([r.projectId,command.idempotencyKey])),durable=await readReceipt(db,receiptPath,r);

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "cxorbia.i3.native-receipt-readback-attempt.v1",
+  "runId": 43825677980,
+  "runNumber": 2565,
+  "jobId": 133159587127,
+  "sourceSha": "66312f88a70bd123b137c7a031a1f456969465f5",
+  "sourceTree": "38eba9364e0a7cbf1e505f84375959d19918391d",
+  "rawLogLine": "2026-11-16T07:46:06.7114196Z I3_VRM354_NATIVE_REPAIR=***\"schemaVersion\":\"cxorbia.i3.canonical-name-native-repair-live.v1\",\"findingIds\":[\"VRM-354\",\"VRM-355\"],\"decision\":\"HOLD\",\"sourceSha\":\"66312f88a70bd123b137c7a031a1f456969465f5\",\"sourceTree\":\"38eba9364e0a7cbf1e505f84375959d19918391d\",\"runtimeRevision\":\"cxorbia-live-hr-dev-00376-szw\",\"runtimeDigest\":\"sha256:d0fc508c6ecd6b318169a2b97b942a1467f8bf5ecf5f4db569e443bbe3eef271\",\"hostingVersion\":\"sites/cxorbia-backend-dev/versions/0da0b63b6cc8cc0c\",\"hrRevision\":\"fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630\",\"production\":false,\"nativeClicks\":0,\"remoteHrWrites\":0,\"credentialResets\":0,\"directRepairWrites\":0,\"startedAt\":\"2026-11-16T07:45:59.630Z\",\"independentHrBefore\":***\"revision\":\"fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630\",\"nameSha256\":\"0a363269ad6d69dfac1199d532cfebc6ec9741a1994d02dbcadf3e5aafab5aab\",\"uniqueCanonicalRow\":true***,\"beforeNameSha256\":\"1df6d5200c82c73de6f64709b3f378b5bec6b52c486ae16fef743d1365d412fa\",\"expectedNameSha256\":\"0a363269ad6d69dfac1199d532cfebc6ec9741a1994d02dbcadf3e5aafab5aab\",\"beforeInvariantSha256\":\"d4411eb79c7476eaa9ad9b55c5e80f24003dbbb5b778e888744b52daa62bf6e3\",\"failureCode\":\"RELEASE_COMPOSITION_FAILURE:VRM354_RECOVERY_BINDING\",\"completedAt\":\"2026-11-16T07:46:06.710Z\",\"retryPolicy\":\"READ_CAPTURED_NATIVE_RECEIPT_AND_REPLAY_SAME_KEY_ONLY_NO_FRESH_CLICK\"***",
+  "masking": "PROVIDER_MASKED_JSON_BRACES_PRESERVED_NOT_REPARSED",
+  "nativeClicks": 0,
+  "commandExecutions": 0,
+  "applicationWrites": 0,
+  "failureCode": "RELEASE_COMPOSITION_FAILURE:VRM354_RECOVERY_BINDING",
+  "currentNameSha256": "1df6d5200c82c73de6f64709b3f378b5bec6b52c486ae16fef743d1365d412fa",
+  "currentInvariantSha256": "d4411eb79c7476eaa9ad9b55c5e80f24003dbbb5b778e888744b52daa62bf6e3",
+  "conclusion": "CURRENT_LEASE_RECEIPT_DID_NOT_MATCH_ORIGINAL_NATIVE_COMMAND; ORIGINAL_RECEIPT_NOT_YET_DISCOVERED; NO_NO_EFFECT_CLAIM",
+  "production": false
+}

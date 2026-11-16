@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "cxorbia.i3.b14-missing-project-binding-readback.v1",
+  "sourceSha": "66312f88a70bd123b137c7a031a1f456969465f5",
+  "sourceTree": "38eba9364e0a7cbf1e505f84375959d19918391d",
+  "runId": 43825677980,
+  "jobId": 133159587127,
+  "projectVersion": 5,
+  "projectUpdateTime": "2026-11-06T14:47:13.322Z",
+  "sourceSelected": "operationalSource",
+  "selectionComplete": true,
+  "mode": "external",
+  "providerType": "google_sheets",
+  "readPolicy": "external_live",
+  "writePolicy": "external_read_only",
+  "referencePresent": true,
+  "referenceHash": "46254408919385d91e4019d0e9a704629206e81fa2981f56f855981950ab450c",
+  "mappingRefHash": "bb18e0a8469d6a086a65b04ed3d663863cd995af104201567b0d49eb4805bde4",
+  "explicitBindingDocumentExists": false,
+  "projectIntegrationDiscovery": {
+    "projectId": {
+      "count": 0,
+      "complete": true
+    },
+    "projectIds": {
+      "count": 0,
+      "complete": true
+    }
+  },
+  "runtimeReaderWorkbookHash": "796d2ae2b7d3f948efce7d799ddb7c81684b94e274116c24322d5f742136b90e",
+  "runtimeReaderWorkbookAuthority": "EXACT_RUNTIME_READER_FALLBACK_ENV_OVERRIDE_ABSENT",
+  "accessConclusion": "METADATA_EDIT_CAPABILITY_OBSERVED",
+  "bindingToReaderMatch": "UNRESOLVED",
+  "sourceConfigGuardPass": true,
+  "bindingUnchanged": true,
+  "runtimeUnchanged": true,
+  "hostingUnchanged": true,
+  "hrRevisionUnchanged": true,
+  "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+  "b14Closed": false,
+  "providerAck": false,
+  "writes": 0,
+  "production": false,
+  "rawLogLine": "2026-11-16T07:45:59.1367804Z I3_B14_CAPABILITY=***\"decision\":\"HOLD\",\"observationComplete\":true,\"accessConclusion\":\"METADATA_EDIT_CAPABILITY_OBSERVED\",\"bindingToReaderMatch\":\"UNRESOLVED\",\"project\":***\"version\":5,\"exists\":true,\"updateTime\":\"2026-11-06T14:47:13.322Z\",\"sourceSelected\":\"operationalSource\",\"selectionComplete\":true,\"operationalSource\":***\"mode\":***\"present\":true,\"valueHash\":\"3c4623849a49a53911c4a3e48d8cead8a1858960bccdea7a1b978d73ec2f06d7\",\"value\":\"external\"***,\"authority\":***\"present\":true,\"valueHash\":\"532185557da80f4fc3276c93b2961fd93e87487c5062a4e0f597e1d32c4ad4d8\",\"value\":\"external_source\"***,\"providerType\":***\"present\":true,\"valueHash\":\"c71caf7afdcc481a1789d27dcc1b9a2b4fcb6318d2db778adc971153835b63ee\",\"value\":\"google_sheets\"***,\"readPolicy\":***\"present\":true,\"valueHash\":\"22acc0bf619cf3909d542071f792e6966592592c299de3b6275544d0ac58141a\",\"value\":\"external_live\"***,\"writePolicy\":***\"present\":true,\"valueHash\":\"fd262d83d4066b721bfd22370683b3d6f242adbfebea011b1d9571650074bedf\",\"value\":\"external_read_only\"***,\"providerBindingId\":***\"present\":true,\"valueHash\":\"46254408919385d91e4019d0e9a704629206e81fa2981f56f855981950ab450c\"***,\"integrationSettingId\":***\"present\":false,\"valueHash\":null***,\"providerRef\":***\"present\":true,\"valueHash\":\"46254408919385d91e4019d0e9a704629206e81fa2981f56f855981950ab450c\"***,\"mappingRef\":***\"present\":true,\"valueHash\":\"bb18e0a8469d6a086a65b04ed3d663863cd995af104201567b0d49eb4805bde4\"***,\"secretRef\":***\"present\":false,\"valueHash\":null***,\"routeSource\":***\"mode\":***\"present\":false,\"valueHash\":null,\"value\":null***,\"authority\":***\"present\":false,\"valueHash\":null,\"value\":null***,\"providerType\":***\"present\":false,\"valueHash\":null,\"value\":null***,\"readPolicy\":***\"present\":false,\"valueHash\":null,\"value\":null***,\"writePolicy\":***\"present\":false,\"valueHash\":null,\"value\":null***,\"providerBindingId\":***\"present\":false,\"valueHash\":null***,\"integrationSettingId\":***\"present\":false,\"valueHash\":null***,\"providerRef\":***\"present\":false,\"valueHash\":null***,\"mappingRef\":***\"present\":false,\"valueHash\":null***,\"secretRef\":***\"present\":false,\"valueHash\":null***,\"observedSourceConfigGuard\":***\"external\":true,\"externalLive\":true,\"providerReferencePresent\":true,\"mappingReferencePresent\":true***,\"sourceConfigGuardPass\":true,\"selectedReferenceKind\":\"providerBindingId\",\"selectedReferenceHash\":\"46254408919385d91e4019d0e9a704629206e81fa2981f56f855981950ab450c\",\"operationalSourceShadowsValidRoute\":false,\"scope\":\"PERSISTED_SOURCE_CONFIG_ONLY_NOT_AUTH_SESSION_OR_REMOTE_ACK\"***,\"explicitIntegrationCandidates\":[***\"source\":\"operationalSource\",\"referenceKind\":\"providerBindingId\",\"idHash\":\"46254408919385d91e4019d0e9a704629206e81fa2981f56f855981950ab450c\",\"sourceSelected\":true,\"validId\":true,\"scope\":\"CANDIDATE_REFERENCE_NOT_PROVEN_RUNTIME_RESOLUTION\"***,***\"source\":\"operationalSource\",\"referenceKind\":\"providerRef\",\"idHash\":\"46254408919385d91e4019d0e9a704629206e81fa2981f56f855981950ab450c\",\"sourceSelected\":true,\"validId\":true,\"scope\":\"CANDIDATE_REFERENCE_NOT_PROVEN_RUNTIME_RESOLUTION\"***],\"integrationMetadata\":[***\"idHash\":\"46254408919385d91e4019d0e9a704629206e81fa2981f56f855981950ab450c\",\"exists\":false,\"explicitlyReferenced\":true,\"selectedSourceReference\":true,\"referenceKinds\":[\"operationalSource.providerBindingId\",\"operationalSource.providerRef\"],\"updateTime\":null,\"scopeMatches\":false,\"enabled\":null,\"hrWritesEnabled\":null,\"workbookReferencePresent\":false,\"workbookMatches\":null,\"refs\":***\"providerBindingId\":***\"present\":false,\"sha256\":null***,\"mappingRef\":***\"present\":false,\"sha256\":null***,\"secretRef\":***\"present\":false,\"sha256\":null***,\"sourceRef\":***\"present\":false,\"sha256\":null***],\"integrationDiscovery\":[***\"ok\":true,\"count\":0,\"complete\":true***,***\"ok\":true,\"count\":0,\"complete\":true***],\"workbook\":***\"resolved\":true,\"reason\":null,\"idSha256\":\"796d2ae2b7d3f948efce7d799ddb7c81684b94e274116c24322d5f742136b90e\",\"authority\":\"EXACT_RUNTIME_READER_FALLBACK_ENV_OVERRIDE_ABSENT\"***,\"readerBlobs\":[***\"path\":\"tools/hr-source/tya-build-live-hr-source-safe-r20.mjs\",\"gitBlob\":\"a3874143a481c159a9d2a11984966bfe813f5248\",\"runtimeSourceMatchesProductReader\":true***,***\"path\":\"tools/hr-source/tya-live-provider-registry-identity-dev.mjs\",\"gitBlob\":\"bc60ad69d611f96b614a968fc4a9b4a5b9abd63a\",\"runtimeSourceMatchesProductReader\":true***],\"hrRevisionBefore\":\"fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630\",\"hrRevisionAfter\":\"fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630\",\"runtimeRevision\":\"cxorbia-live-hr-dev-00376-szw\",\"runtimeDigest\":\"sha256:d0fc508c6ecd6b318169a2b97b942a1467f8bf5ecf5f4db569e443bbe3eef271\",\"hostingVersion\":\"sites/cxorbia-backend-dev/versions/0da0b63b6cc8cc0c\",\"bindingUnchanged\":true,\"runtimeUnchanged\":true,\"hostingUnchanged\":true,\"error\":null,\"stabilityError\":null,\"safety\":***\"hrWrites\":0,\"firestoreWrites\":0,\"authAdminWrites\":0,\"iamPolicyWrites\":0,\"secretPayloadReads\":0,\"apiEnables\":0,\"production\":false***,\"b14Closed\":false,\"providerAck\":false,\"production\":false***",
+  "classification": "MAPPING_FAILURE",
+  "observedGap": "PERSISTED_PROJECT_REFERENCE_POINTS_TO_ABSENT_INTEGRATION_DOCUMENT; SERVED_READER_USES_GLOBAL_SOURCE_FALLBACK",
+  "scope": "READ_ONLY_EXACT_PROJECT_AND_RUNTIME_BINDING_NO_EXTERNAL_WRITE_ACK",
+  "noIamRequestJustified": true
+}

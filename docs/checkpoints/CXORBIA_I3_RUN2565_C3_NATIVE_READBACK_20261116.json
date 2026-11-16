@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "cxorbia.i3.c3-certify-attempt-readback.v1",
+  "kind": "C3_PRETERMINAL_AND_CERTIFY_ATTEMPT_NOT_TERMINAL_CERTIFICATE",
+  "decision": "HOLD_I3_CURRENT_C3_PASS_NATIVE_RECEIPT_DISCOVERY_REQUIRED",
+  "strictCertificationStatus": "HOLD",
+  "sourceSha": "66312f88a70bd123b137c7a031a1f456969465f5",
+  "sourceTree": "38eba9364e0a7cbf1e505f84375959d19918391d",
+  "runId": 43825677980,
+  "runNumber": 2565,
+  "controlSha": "acf89dd5e9598a74ea5251f600f5fa7d63301867",
+  "artifactId": 14206656155,
+  "artifactDigest": "sha256:32a3614798d08fa37d442a9e1374b575b2a48470d80c1b19881c28141119a0f6",
+  "runtimeRevision": "cxorbia-live-hr-dev-00376-szw",
+  "runtimeDigest": "sha256:d0fc508c6ecd6b318169a2b97b942a1467f8bf5ecf5f4db569e443bbe3eef271",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/0da0b63b6cc8cc0c",
+  "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+  "c3Decision": "PASS_C3_PRETERMINAL_SOURCE_READY_EXACT_DEV",
+  "moduleCount": 21,
+  "matchModules": 5,
+  "nonMatchModules": 16,
+  "sourceReadyModules": 21,
+  "pendingFiles": 0,
+  "sourceQa": {
+    "jobId": 133158852691,
+    "conclusion": "success",
+    "testsPassed": 1584,
+    "testsFailed": 0,
+    "tapSummaries": 46,
+    "overlappingOwnerQaTests": 586,
+    "ownerCount": 22,
+    "receiptSha256": "7b948bea2145ac0e65b91daa4cc0f50ca3d3c97ef90c161750c8ca4955d8431f",
+    "artifactId": 14206586898,
+    "artifactDigest": "sha256:c310a1834f2369d512fd65356a0e883f822d5ec441f2b2a3f07d64e96a803617"
+  },
+  "certify": {
+    "jobId": 133159587127,
+    "conclusion": "failure",
+    "nativeClicks": 0,
+    "nativeCommands": 0,
+    "errorCode": "RELEASE_COMPOSITION_FAILURE:VRM354_RECOVERY_BINDING",
+    "durableNativeResult": "CURRENT_LEASE_DOES_NOT_MATCH_ORIGINAL_COMMAND_SCOPE_COMPLETE_ORIGINAL_KEY_DISCOVERY_REQUIRED",
+    "humanFlow": "STOPPED_AT_NATIVE_REPAIR_PREFLIGHT",
+    "focal": "SKIPPED",
+    "pre": "SKIPPED",
+    "diagnosticArtifactId": 14206587416,
+    "diagnosticArtifactDigest": "sha256:a1664f03240b3e80d7a6f03a09c89944a8bb01cef9022c9c2c0f0635870e3496"
+  },
+  "proofs": {
+    "audit": {
+      "path": "CXORBIA_I3_CURRENT_C3_RUN2565_AUDIT_20261116.json",
+      "gitBlob": "84070dde5aa6d2db9293075d52aae466261df167",
+      "sha256": "045482a84ef680da47ea701524a83233f8b2bed2be6cc1288bd80c277c66eb93"
+    },
+    "rawNative": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2565_NATIVE_READBACK_ATTEMPT_20261116.json",
+      "gitBlob": "a19aa743a8917fa7e502b21b6e907a31ac711450",
+      "sha256": "dc91b9c4430b2c85904ae97f44ad3fa4ae32beabdad1d8e966750435fa24f81d"
+    },
+    "b14": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2565_B14_MISSING_PROJECT_BINDING_READBACK_20261116.json",
+      "gitBlob": "e4d6d18a975db73f6dc5cad6bb28a41f1eec612d",
+      "sha256": "9d7855a34110acb5208edfb0e23322ae895f796c660ebab8ee30d5aa1b7ece2f"
+    },
+    "c3Result": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2565_C3_RESULT_LOG_READBACK_20261116.json",
+      "gitBlob": "2479611166a75d809ca0661c88b0648dd05bf60b",
+      "sha256": "8f13db16a3990ef6f7dfea38decd91b7ec59244e40aeef9b597d025863de4b35"
+    }
+  },
+  "builds": 0,
+  "runtimeDeploys": 0,
+  "hostingDeploys": 0,
+  "rulesDeploys": 0,
+  "hrWrites": 0,
+  "productionDeploys": 0,
+  "nativeApplicationWrites": 0,
+  "production": false,
+  "terminalCertified": false,
+  "phaseAComplete": false,
+  "i4Authorized": false,
+  "b14Closed": false,
+  "createdAt": "2026-11-16T07:50:26Z"
+}
