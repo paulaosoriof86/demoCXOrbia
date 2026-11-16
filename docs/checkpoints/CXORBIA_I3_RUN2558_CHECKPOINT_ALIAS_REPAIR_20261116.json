@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "cxorbia.i3.control-alias-repair.v1",
+  "observedAt": "2026-11-16 06:32:36 UTC",
+  "runId": 43816961554,
+  "runNumber": 2558,
+  "controlSource": "164fa6dad623d9253f9cb5c698f3e19db7421829",
+  "classification": "MAPPING_FAILURE",
+  "code": "SHOCK_CONTINUITY_DEV_HOSTING_REALITY_STALE",
+  "rootCause": "currentCanonicalCheckpoint was incorrectly advanced to C3 functional attempt while continuityHandoff retains immutable paired DEV receipt; no hosting/runtime drift was observed.",
+  "correction": "Restore currentCanonicalCheckpoint to the RUN2556 paired DEV authority. Keep currentExecutionReceipt and currentC3PreterminalAudit on RUN2557. No test or guard relaxation.",
+  "canonicalNodeTests": {
+    "total": 1477,
+    "pass": 1477,
+    "fail": 0
+  },
+  "readOnlyDiagnosticExecuted": false,
+  "productChanges": 0,
+  "builds": 0,
+  "deploys": 0,
+  "providerWrites": 0,
+  "production": false,
+  "nextExactAction": "Rerun the existing exact HR/UID/name read-only request."
+}

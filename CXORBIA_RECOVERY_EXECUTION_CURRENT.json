@@ -790,21 +790,68 @@
     "lastIndependentProviderReadbackRunId": 42128661278
   },
   "currentCanonicalCheckpoint": {
-    "path": "docs/checkpoints/CXORBIA_I3_RUN2557_C3_CERTIFY_ATTEMPT_20261116.json",
-    "gitBlob": "ed6b81e294a3e0ad2de0f775965eba59f8eec5d5",
-    "sha256": "245fc7cac8d092edeaa159fb256eb29ba9fbb71a2908a3457a28af42df54069d",
-    "kind": "C3_PRETERMINAL_AND_CERTIFY_ATTEMPT_NOT_TERMINAL_CERTIFICATE",
-    "decision": "HOLD_I3_C3_PASS_SINGLE_VISIBLE_NAME_AUTHORITY_MISMATCH",
-    "runId": 43814920143,
-    "runNumber": 2557,
-    "sourceSha": "38f16525c791b355e8f68a6f798defd9bc89ab37",
-    "sourceTree": "9c67dbf660131539fa9c635c699b30229ca199d2",
-    "artifactId": 14201174635,
-    "artifactDigest": "sha256:75026c5f31d717b68a112a3208400712ac0cad374415a9414e095efedfe4b4e4",
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2556_VRM353_PAIRED_DEV_ACK_20261116.json",
+    "checkpointGitBlob": "2133bb4358d6a25a4d7a3e90bdc9154250e4534b",
+    "status": "HOLD_I3_DEV_MATERIALIZED_HR349_SHOPPER_CONFLICT_PRE_QA_FIXED_PENDING_REPROOF",
+    "verifiedTotal": 83,
+    "remaining": 0,
+    "approvedAdditionalGroupsProviderPass": 2,
+    "productSourceSha": "38f16525c791b355e8f68a6f798defd9bc89ab37",
+    "productSourceTree": "9c67dbf660131539fa9c635c699b30229ca199d2",
+    "devServedCurrentSourceSha": "38f16525c791b355e8f68a6f798defd9bc89ab37",
+    "devMaterialization": "PASS_RUN43813660215",
+    "devMaterializationRunId": 43813660215,
+    "devHostingVersion": "sites/cxorbia-backend-dev/versions/0c72262d14d05f85",
+    "devRuntimeRevision": "cxorbia-live-hr-dev-00375-c2k",
+    "moduleMatches": 5,
+    "moduleTotal": 21,
     "production": false,
-    "terminalCertified": false,
-    "phaseAComplete": false,
-    "i4Authorized": false
+    "gitBlob": "2133bb4358d6a25a4d7a3e90bdc9154250e4534b",
+    "historicalStaleFieldsBeforeSealCorrection20261111": {
+      "checkpointGitBlob": "f12edc777a46e3750ed5710e6931fe70e21fa1de",
+      "productSourceSha": "ed5b708c17b481bde00cb95dda3b426a0e27a890",
+      "productSourceTree": "6cb5a48d23eec8110dc6ee17f0fa947027011f19",
+      "devMaterializationRunId": 42437035543,
+      "devRuntimeRevision": "cxorbia-live-hr-dev-00359-rkd",
+      "devHostingVersion": "sites/cxorbia-backend-dev/versions/e5c9e4ce2f6c689b",
+      "state": "HISTORICAL_NOT_CURRENT_AUTHORITY"
+    },
+    "authorityScope": "EXACT_PAIRED_DEV_RUN2556_NODE_SOURCE_PROVEN_LIVE_P0_REPAIR_PENDING",
+    "moduleMatchesScope": "FIVE_PRIOR_COMPLETE_DOMAINS_PRESERVED_NEW_SOURCE_C3_PENDING",
+    "latestFunctionalReadback": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2551_C3_CERTIFY_ATTEMPT_20261116.json",
+      "gitBlob": "cf0d8854f8941ebd1786c84742b2c02d9561dad9",
+      "kind": "C3_PRETERMINAL_AND_CERTIFY_ATTEMPT_NOT_TERMINAL_CERTIFICATE",
+      "decision": "HOLD_I3_PRE10_PASS_FINAL_HR_503_AND_TWO_UID_CONFLICTS",
+      "runId": 43805464612,
+      "runNumber": 2551,
+      "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+      "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+      "artifactId": 14198371529,
+      "artifactDigest": "sha256:bbc99529e7d35809863584693750033b7fe692c38114866d053a11464dcef1dc",
+      "production": false,
+      "terminalCertified": false,
+      "phaseAComplete": false,
+      "i4Authorized": false
+    },
+    "historicalBeforeRun2545Consumption": {
+      "currentHostingOnlySource": {
+        "receiptPath": "docs/checkpoints/CXORBIA_I3_B11_HOSTING_DEV_RUN2542_ACK_20261116.json",
+        "receiptBlob": "29cc77b7d17b206c651adf7d66c30d210c9fbcb7",
+        "sourceSha": "ef708259616da70b5adea2fa85d9abc34a5222c2",
+        "sourceTree": "b7adbf36633d8ec614d70232cecf28a4f2e81d58",
+        "runId": 43783783015,
+        "runNumber": 2542,
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/39c320c9d9f35f97",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794790993861000",
+        "runtimeRevision": "cxorbia-live-hr-dev-00372-56c",
+        "runtimeDigest": "sha256:d5ada4fe17a7e5e00a51bc09b601fbabcfd2f1b3203b8a379f86daa4207f5fe2",
+        "verifiedServedAssetCount": 28,
+        "cloudRunDeploys": 0,
+        "firestoreRulesDeploys": 0,
+        "productionChanged": false
+      }
+    }
   },
   "continuityHandoff": {
     "authority": "IMMUTABLE_PAIRED_RUNTIME_HOSTING_SEAL_REFERENCE__CURRENT_PROGRESS_IN_CURRENT_C3_AND_CURRENT_EXECUTION_RECEIPT",
@@ -18771,5 +18818,12 @@
       "phaseAComplete": false,
       "i4Authorized": false
     }
+  },
+  "lastControlCorrection": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2558_CHECKPOINT_ALIAS_REPAIR_20261116.json",
+    "gitBlob": "335ba335b41238b899d1da3275407e2ad4a05b40",
+    "sha256": "54f9c4670ca05b3166a6ce0d11163a701dff5963077b17934c8d7264ecfc8499",
+    "runId": 43816961554,
+    "runNumber": 2558
   }
 }
