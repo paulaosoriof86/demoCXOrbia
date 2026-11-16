@@ -5921,15 +5921,16 @@
       "gitBlob": "ad1aa9d00cd5543db894b14b7b57b06ec4a3f200"
     },
     "receipt": {
-      "path": "docs/checkpoints/CXORBIA_I3_RUN2554_UID_AUTHORITY_AND_CANONICAL_QA_READBACK_20261116.json",
-      "gitBlob": "30c2f3f0276134327a686caf9b83970fe6bb4f41",
-      "sha256": "9719d39652c761d09b0357909511d8fe73a33f5249c0d9ada62e7b6084a7b4bb",
-      "kind": "HR_UID_AUTHORITY_READ_ONLY_NOT_TERMINAL_CERTIFICATE",
-      "decision": "PASS_READONLY_EXACT_KEEPER_AUTHORITY_CHAIN_P0_PROVEN_REPAIR_PENDING",
-      "runId": 43809622074,
-      "runNumber": 2554,
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2551_C3_CERTIFY_ATTEMPT_20261116.json",
+      "gitBlob": "cf0d8854f8941ebd1786c84742b2c02d9561dad9",
+      "kind": "C3_PRETERMINAL_AND_CERTIFY_ATTEMPT_NOT_TERMINAL_CERTIFICATE",
+      "decision": "HOLD_I3_PRE10_PASS_FINAL_HR_503_AND_TWO_UID_CONFLICTS",
+      "runId": 43805464612,
+      "runNumber": 2551,
       "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
       "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+      "artifactId": 14198371529,
+      "artifactDigest": "sha256:bbc99529e7d35809863584693750033b7fe692c38114866d053a11464dcef1dc",
       "production": false,
       "terminalCertified": false,
       "phaseAComplete": false,
@@ -18306,5 +18307,11 @@
     "production": false,
     "rulesDeploys": 0,
     "storageRulesDeploys": 0
-  }
+  },
+  "run2555CanonicalReceiptAliasRepair": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2555_C3_CONTROL_RECEIPT_ALIAS_REPAIR_20261116.json",
+    "gitBlob": "5d529cd9eab03ac0d6c21d34c177dcbb0c7173ff",
+    "sha256": "5f0b6f3d81e625eb2289c653fafeed5b151a2b7efd5b39fe2c621053ffe9020c"
+  },
+  "controlOnlyUpdatedAt": "2026-11-16T05:58:18Z"
 }
