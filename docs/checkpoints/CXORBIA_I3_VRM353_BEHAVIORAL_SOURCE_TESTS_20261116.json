@@ -1,0 +1,479 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm353.behavioral-source-tests.v1",
+  "observedAt": "2026-11-16T05:55:14Z",
+  "sourceSha": "38f16525c791b355e8f68a6f798defd9bc89ab37",
+  "sourceTree": "9c67dbf660131539fa9c635c699b30229ca199d2",
+  "productOwner": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+  "productOwnerGitBlob": "8433b76db66af3a2605228c3904bb4622bb26562",
+  "testOwner": "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs",
+  "testGitBlob": "730f44e809701ed04d688472ba93133c061a4eac",
+  "tests": 107,
+  "pass": 107,
+  "fail": 0,
+  "newRegressionTests": 45,
+  "environment": "V8_BEHAVIORAL_MODULE_EXECUTION_WITH_ASSERT_CRYPTO_AND_STRUCTUREDCLONE_SHIMS_NOT_NODE_CI",
+  "canonicalNodeCi": "PENDING_MANDATORY_BEFORE_EXISTING_PAIRED_DEV_JOB",
+  "excludedFromV8": [
+    "test('I3 B2 signed shopper display-only provider ACK and fresh read-model rehydrate',async()=>{",
+    "test('HF-20261012-02 newest-first profile history with stable identity tie-break',async()=>{",
+    "test('HF-20261012-04 Admin display correction has exact staff authority, provider ACK, readback, replay and HR/Auth isolation',async()=>{",
+    "test('HF-20261012-04 Admin UI and Shopper portal consume signed display authority without HR/name/login patch',async()=>{"
+  ],
+  "testsExecuted": [
+    {
+      "name": "Gate 6 / 1 initial HR shopper creates one durable identity",
+      "pass": true
+    },
+    {
+      "name": "I3 P0 / country-scoped HR shopper claims preserve Honduras and Guatemala",
+      "pass": true
+    },
+    {
+      "name": "I3 P0 / conflicting HR country cannot silently relabel a stable shopper ID",
+      "pass": true
+    },
+    {
+      "name": "Gate 6 / 2 exact replay is idempotent and creates no duplicate",
+      "pass": true
+    },
+    {
+      "name": "Gate 6 / 3 HR-managed update preserves uid and non-HR-managed profile fields",
+      "pass": true
+    },
+    {
+      "name": "Gate 6 / 4 existing shopper membership and crosswalk are reused",
+      "pass": true
+    },
+    {
+      "name": "Gate 6 / 5 partial failure and identity conflict fail closed with safe retry",
+      "pass": true
+    },
+    {
+      "name": "Gate 6 / owner credential rule materializes visible login and deterministic Auth password without persisting the secret",
+      "pass": true
+    },
+    {
+      "name": "Gate 6 / credential rule strips accents from password and uses first name + first surname",
+      "pass": true
+    },
+    {
+      "name": "Gate 6 / protected HR snapshot uses the trusted ephemeral identity map for the owner credential rule",
+      "pass": true
+    },
+    {
+      "name": "Gate 6 / trusted exact identity link reuses one canonical Auth for an HR technical alias",
+      "pass": true
+    },
+    {
+      "name": "VRM-081 / exact existing Auth + membership survives incomplete HR name without fabricated credential",
+      "pass": true
+    },
+    {
+      "name": "VRM-081 / distinct current shoppers keep unique base holder and receive deterministic suffixes idempotently",
+      "pass": true
+    },
+    {
+      "name": "VRM-081 / collision group with no unique unsuffixed holder suffixes every member instead of choosing by name",
+      "pass": true
+    },
+    {
+      "name": "VRM-081 / deterministic suffix escalates 4 to 6 to 8 without overwriting existing holders",
+      "pass": true
+    },
+    {
+      "name": "VRM-081 / proven exact alias self-crosswalk migrates the same principal to canonical idempotently",
+      "pass": true
+    },
+    {
+      "name": "VRM-081 / dual exact principals preserve canonical and retire historical alias idempotently",
+      "pass": true
+    },
+    {
+      "name": "VRM-081 / two alias-only exact principals choose deterministic non-credential keeper and retire the other",
+      "pass": true
+    },
+    {
+      "name": "VRM-081 / multiple credential-bearing alias principals remain fail closed",
+      "pass": true
+    },
+    {
+      "name": "VRM-081 / exact alias with no prior membership or Auth materializes one canonical principal only",
+      "pass": true
+    },
+    {
+      "name": "VRM-081 / conflicting exact identity links fail closed and never merge by name",
+      "pass": true
+    },
+    {
+      "name": "VRM-168 / stale tenant adjudication cannot override a live exact HR and Auth principal",
+      "pass": true
+    },
+    {
+      "name": "Gate 8 / durable legacy shoppers converge to the frozen credential rule outside the current HR snapshot",
+      "pass": true
+    },
+    {
+      "name": "Gate 8 / first-name.first-surname remains idempotent after profile normalization",
+      "pass": true
+    },
+    {
+      "name": "Gate 6 / optional HR contact fields materialize from the private exact identity runtime without becoming credential requirements",
+      "pass": true
+    },
+    {
+      "name": "PRE-I4 VRM-033 technical shopper IDs never become durable human names and exact HR identity restores the name",
+      "pass": true
+    },
+    {
+      "name": "VRM-044 shopper.create closes Auth membership profile crosswalk and platform_created identity link idempotently",
+      "pass": true
+    },
+    {
+      "name": "I3 P0 cohort / manual registration detects existing HR-owned identity before any new Auth or write",
+      "pass": true
+    },
+    {
+      "name": "I3 P0 cohort / manual registration with no country still blocks an exact name-and-phone collision",
+      "pass": true
+    },
+    {
+      "name": "I3 P0 / same name and country with changed or absent phone requires human review before Auth",
+      "pass": true
+    },
+    {
+      "name": "I3 P0 / shared phone and country with changed surname requires identity review",
+      "pass": true
+    },
+    {
+      "name": "I3 P0 / explicit different country does not silently merge or block same human name",
+      "pass": true
+    },
+    {
+      "name": "I3 P0 cohort / duplicate of existing platform-created principal requires review",
+      "pass": true
+    },
+    {
+      "name": "I3 A01–A04 / normalized compatible legacy names merge automatically with real provider ACK and stable UID/history",
+      "pass": true
+    },
+    {
+      "name": "I3 A02 / a second active UID blocks automatic name merge but does not block the HR reconciliation",
+      "pass": true
+    },
+    {
+      "name": "I3 A01–A04 / compatible Honduras names with a missing alias phone preserve the existing login",
+      "pass": true
+    },
+    {
+      "name": "I3 A02 / phone contradictions, different country and explicit distinct decision remain isolated",
+      "pass": true
+    },
+    {
+      "name": "I3 A03 / provider transaction failure never advertises automatic ACK or changes the keeper principal",
+      "pass": true
+    },
+    {
+      "name": "PRE-I4 ADMIN-003 tenant-adjudicated canonical name survives fresh exact HR alias reconciliation",
+      "pass": true
+    },
+    {
+      "name": "PRE-I4 ADMIN-003 same-revision stale tenant-adjudicated alias is repaired before idempotent short-circuit",
+      "pass": true
+    },
+    {
+      "name": "VRM-185 / admin identity adjudication keeps the unique password-proof principal and preserves HR provenance",
+      "pass": true
+    },
+    {
+      "name": "I3 P0 / corrected HR spelling must not silently change adjudicated keeper login or password on reconciliation",
+      "pass": true
+    },
+    {
+      "name": "I3 P0 / approved exact human joins an HR-only source ID to an existing keeper without new Auth",
+      "pass": true
+    },
+    {
+      "name": "I3 P0 / HR-only alias refuses stale revision or a link to another human without any write",
+      "pass": true
+    },
+    {
+      "name": "VRM-197 / multiple password-proof principals choose the unique canonical visible-login keeper",
+      "pass": true
+    },
+    {
+      "name": "VRM-185 / admin identity adjudication fails closed when multiple principals have password proof",
+      "pass": true
+    },
+    {
+      "name": "VRM-217 reconcile backfills password-proof and sweep metadata even when login is already exact",
+      "pass": true
+    },
+    {
+      "name": "VRM-217 durable credential sweep uses deterministic technical suffix under an exact base-login collision",
+      "pass": true
+    },
+    {
+      "name": "VRM-219 selective exact adjudication remaps authoritative rows while preserving historical alias visits",
+      "pass": true
+    },
+    {
+      "name": "VRM-220 / exact trusted identity link recovers a missing canonical profile without guessing",
+      "pass": true
+    },
+    {
+      "name": "VRM-220 / missing canonical profile stays fail-closed without one exact trusted identity authority",
+      "pass": true
+    },
+    {
+      "name": "VRM-221 keep-separate persists durable decision with zero identity remap and exact replay",
+      "pass": true
+    },
+    {
+      "name": "VRM-221 delete blocks current HR identity and preserves Auth/profile/HR authority",
+      "pass": true
+    },
+    {
+      "name": "VRM-221 safe delete retires platform orphan, disables Auth and preserves tombstone with replay",
+      "pass": true
+    },
+    {
+      "name": "VRM-227 same-human merge durably closes matching active identity review and replay stays exact",
+      "pass": true
+    },
+    {
+      "name": "I3 P0 / new HR id with diacritics and case reuses single canonical shopper, durable crosswalk and existing login",
+      "pass": true
+    },
+    {
+      "name": "I3 P0 / protected November HR without phone links one unique strong-name GT keeper and preserves Auth",
+      "pass": true
+    },
+    {
+      "name": "I3 P0 / masked HR reuses the one keeper from a verified durable exact review even without PII map",
+      "pass": true
+    },
+    {
+      "name": "I3 P0 / masked HR review without independent exact fingerprint does not guess identity",
+      "pass": true
+    },
+    {
+      "name": "I3 P0 / missing HR phone with two same-name keepers stays in review without guessing Auth UID",
+      "pass": true
+    },
+    {
+      "name": "I3 P0 / genuinely new HR person still creates identity with no manual review",
+      "pass": true
+    },
+    {
+      "name": "I3 P0 / exact incoming HR match with explicit distinct decision never links the canonical shopper",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / second adjudication carries the omitted earlier alias to the new keeper",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / repairs an older tenant_adjudication alias using current human keeper authority and replays without writes",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / repairs an older provider_auto_compatible alias using current human keeper authority and replays without writes",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / receipt absent rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / receipt pending rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / receipt ACK false rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / receipt keeper differs rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / receipt canonical differs rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / receipt actor differs rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / profile authority differs rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / canonical cross authority differs rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / canonical cross keeper differs rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / receipt link wrong project rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / receipt link human false rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / receipt link ACK false rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / receipt link inactive rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / old Auth enabled rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / old Auth wrong tenant rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / retirement target canonical differs rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / retirement target keeper differs rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / retired member active rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / duplicate retired fingerprint rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / keeper Auth disabled rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / keeper Auth wrong shopper rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / distinct pair rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / distinct larger group rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / source key differs rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / crosswalk tenant differs rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / source mapping changes rejects before any repair or credential effect",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / current authority changes after preflight and is rejected transactionally",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / postcommit Auth drift reports real repair writes and refuses ACK",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / unrelated project distinct decision and unrelated bindings remain intact",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / failed repair transaction leaves both durable identity and Auth intact",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / preventive source-key conflict rejects before retiring a principal",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / preventive distinct conflict rejects before retiring a principal",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / preventive budget conflict rejects before retiring a principal",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / preventive transaction rejects concurrent crosswalk drift",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / preventive transaction rejects concurrent new-alias drift",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / preventive transaction rejects concurrent mapping drift",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / preventive transaction rejects concurrent distinct drift",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / concurrent profile project expansion cannot create a cross-provider scope mismatch",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / concurrent member project expansion cannot create a cross-provider scope mismatch",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / concurrent cross project expansion cannot create a cross-provider scope mismatch",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / concurrent auth project expansion cannot create a cross-provider scope mismatch",
+      "pass": true
+    },
+    {
+      "name": "VRM-353 / postcommit Auth project drift refuses ACK and retains actual write count",
+      "pass": true
+    }
+  ],
+  "causalBaseline": {
+    "ownerGitBlob": "d440d496e4dc2d7c33b4a7a70d11973cbd24666c",
+    "tests": 3,
+    "pass": 0,
+    "fail": 3,
+    "results": [
+      {
+        "name": "VRM-353 / second adjudication carries the omitted earlier alias to the new keeper",
+        "pass": false,
+        "error": "equal failed \"546569144417129f3c3c9ee85e547f76dfab2e28a786e93e5c274424933559cb\" !== \"fbeaab5e21ed309c69846e476b84335d109adf9951183c29d759ad9f5a749b50\""
+      },
+      {
+        "name": "VRM-353 / repairs an older tenant_adjudication alias using current human keeper authority and replays without writes",
+        "pass": false,
+        "error": "SHOPPER_CROSSWALK_UID_CONFLICT"
+      },
+      {
+        "name": "VRM-353 / repairs an older provider_auto_compatible alias using current human keeper authority and replays without writes",
+        "pass": false,
+        "error": "SHOPPER_CROSSWALK_UID_CONFLICT"
+      }
+    ]
+  },
+  "providerEnvironment": "SYNTHETIC_FAKE_AUTH_AND_FIRESTORE_NO_REAL_PROVIDER",
+  "production": false,
+  "devPublished": false,
+  "concurrentProjectScopeProof": "Fresh keeper claims digest matches complete transaction project union and final result; project drift rejects, postcommit drift retains confirmed writes."
+}

@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "cxorbia.i3.p0.source-proof.v1",
+  "decision": "PASS_SCOPED_V8_BEHAVIORAL_SOURCE_QA_NODE_CI_AND_DEV_PENDING",
+  "generatedAt": "2026-11-16T05:55:14Z",
+  "sourceSha": "38f16525c791b355e8f68a6f798defd9bc89ab37",
+  "sourceTree": "9c67dbf660131539fa9c635c699b30229ca199d2",
+  "predecessorProductSourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+  "sourceTestsPass": 107,
+  "sourceTestsFail": 0,
+  "allowedProductFiles": [
+    "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs",
+    "tools/qa/cxorbia-i3-source-qa-evidence.mjs",
+    "tools/qa/cxorbia-i3-source-qa-evidence.test.mjs"
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM353_RETIRED_KEEPER_CROSSWALK_P0_SCOPE_20261116.json",
+  "scopeReceiptBlob": "b01e52d1b31572dfd130d09bee8119e5c12c2c07",
+  "findings": [
+    {
+      "id": "VRM-353",
+      "priority": "P0_PROVEN",
+      "classification": "PERSISTENCE_FAILURE",
+      "owner": [
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+      ]
+    }
+  ],
+  "productOwnerBlobs": {
+    "backend/runtime/cxorbia-shopper-command-provider-v1.mjs": "8433b76db66af3a2605228c3904bb4622bb26562"
+  },
+  "testEvidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM353_BEHAVIORAL_SOURCE_TESTS_20261116.json",
+    "gitBlob": "4c84de627d43a99b4899f0502c57288791a6a3df",
+    "sha256": "c0380d70285b1ec584675482d32b8740b361b8964411c37f8b71c2176d78209c"
+  },
+  "qaControlOnlyChange": {
+    "path": "tools/qa/cxorbia-i3-source-qa-evidence.mjs",
+    "gitBlob": "601f6849e5f4e0dbe72f133863c752dd2077d193",
+    "purpose": "Register the actual shopper provider test suite in the existing same-run Q2 producer; no new job/workflow.",
+    "affectedAssertionOwner": "tools/qa/cxorbia-i3-source-qa-evidence.test.mjs",
+    "affectedAssertionBlob": "e0b17ef57b88d5c6e165e0a94da527c140fc7e2b",
+    "meaning": "22 exact registered source owner paths; frozen domain denominator remains21."
+  },
+  "canonicalNodeCi": "PENDING_MANDATORY_BEFORE_PAIRED_DEV",
+  "devPublished": false,
+  "production": false,
+  "hrWrites": 0
+}
