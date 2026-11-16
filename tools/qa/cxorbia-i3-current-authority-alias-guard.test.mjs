@@ -284,3 +284,38 @@ for(const [name,change]of [
 test('paired predecessor latest receipt remains accepted without fabricating a Hosting ACK',()=>{
  const v=latestHostingAckFixture();v.pointer.lastExecutionReceipt={kind:'CI_EXACT_DEV_MATERIALIZATION_NOT_HUMAN_ACCEPTANCE',sourceSha:v.descriptor.postDeployRunSeal.sourceSha,sourceTree:'1'.repeat(40),path:'paired.json',gitBlob:'2'.repeat(40),runId:1,runNumber:1,production:false};assert.equal(validateLatestExecutionSource(v).pass,true);assert.equal(validateLatestExecutionSource(v).hostingOnly,false);
 });
+
+const latestC3AttemptFixture=()=>{
+ const v=latestHostingAckFixture(),d=v.descriptor,p=v.pointer,h=d.currentHostingOnlyDevMaterialization;
+ d.productSourceSha='1'.repeat(40);d.productTreeAuthority='2'.repeat(40);
+ const kind='C3_PRETERMINAL_AND_CERTIFY_ATTEMPT_NOT_TERMINAL_CERTIFICATE';
+ const r={schemaVersion:'cxorbia.i3.c3-certify-attempt-readback.v1',kind,decision:'HOLD_I3_PRE_FIXTURES_DURABLE_REVISION_DIVERGENCE',strictCertificationStatus:'HOLD',sourceSha:h.sourceSha,sourceTree:h.sourceTree,runId:3,runNumber:3,artifactId:300,artifactDigest:'sha256:'+'3'.repeat(64),runtimeRevision:h.runtimeRevision,runtimeDigest:h.runtimeDigest,hostingVersion:h.hostingVersion,c3Decision:'PASS_C3_PRETERMINAL_SOURCE_READY_EXACT_DEV',moduleCount:21,matchModules:5,sourceReadyModules:21,pendingFiles:0,builds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,hrWrites:0,productionDeploys:0,production:false,terminalCertified:false,phaseAComplete:false,i4Authorized:false};
+ const audit={...r,decision:r.c3Decision};d.currentC3PreterminalAudit=audit;p.currentC3PreterminalAudit=structuredClone(audit);
+ const pending={state:'P0_PROVEN_PENDING_DEV_MATERIALIZATION',scope:'RUNTIME_AND_HOSTING',sourceSha:d.productSourceSha,sourceTree:d.productTreeAuthority,predecessorProductSourceSha:h.sourceSha,servingHosting:structuredClone(h),servingRuntimeSeal:structuredClone(d.postDeployRunSeal),production:false,devPublished:false};d.pendingDevSuccessor=pending;p.pendingDevSuccessor=structuredClone(pending);
+ const latest={kind,decision:r.decision,path:'c3-attempt.json',gitBlob:'4'.repeat(40),...Object.fromEntries(['sourceSha','sourceTree','runId','runNumber','artifactId','artifactDigest','production','terminalCertified','phaseAComplete','i4Authorized'].map(k=>[k,r[k]]))};
+ p.lastExecutionReceipt=latest;p.currentExecutionReceipt=structuredClone(latest);d.currentExecutionReceipt=structuredClone(latest);
+ v.receipt=r;v.gitBlob=path=>path==='c3-attempt.json'?'4'.repeat(40):'';v.readJson=path=>path==='c3-attempt.json'?r:{};return v;
+};
+test('current C3 attempt preserves exact serving predecessor while one runtime+Hosting successor is pending',()=>{
+ const v=latestC3AttemptFixture(),before=JSON.stringify(v.descriptor.postDeployRunSeal),r=validateLatestExecutionSource(v);assert.equal(r.pass,true,JSON.stringify(r));assert.equal(r.c3Attempt,true);assert.equal(JSON.stringify(v.descriptor.postDeployRunSeal),before);
+});
+for(const [name,change]of [
+ ['candidate relabel',v=>{v.receipt.sourceSha=v.pointer.lastExecutionReceipt.sourceSha=v.descriptor.productSourceSha;}],
+ ['candidate tree relabel',v=>{v.receipt.sourceTree=v.pointer.lastExecutionReceipt.sourceTree=v.descriptor.productTreeAuthority;}],
+ ['wrong run',v=>{v.pointer.lastExecutionReceipt.runId=4;}],
+ ['missing receipt blob',v=>{delete v.pointer.lastExecutionReceipt.gitBlob;}],
+ ['changed receipt blob',v=>{v.gitBlob=()=>'5'.repeat(40);}],
+ ['unreadable receipt',v=>{v.readJson=()=>{throw Error('missing');};}],
+ ['wrong Hosting',v=>{v.receipt.hostingVersion='other';}],
+ ['wrong runtime',v=>{v.receipt.runtimeRevision='other';}],
+ ['wrong digest',v=>{v.receipt.runtimeDigest='other';}],
+ ['pending missing',v=>{delete v.descriptor.pendingDevSuccessor;}],
+ ['pending pointers differ',v=>{v.pointer.pendingDevSuccessor.sourceSha='6'.repeat(40);}],
+ ['pending wrongly published',v=>{v.descriptor.pendingDevSuccessor.devPublished=true;}],
+ ['serving Hosting changed',v=>{v.descriptor.pendingDevSuccessor.servingHosting.hostingVersion='other';}],
+ ['C3 artifact changed',v=>{v.descriptor.currentC3PreterminalAudit.artifactId=400;}],
+ ['promoted complete count',v=>{v.receipt.matchModules=21;}],
+ ['runtime deployment',v=>{v.receipt.runtimeDeploys=1;}],
+ ['unknown kind',v=>{v.pointer.lastExecutionReceipt.kind='OTHER';}],
+ ...['production','terminalCertified','phaseAComplete','i4Authorized'].map(k=>[k+' claimed',v=>{v.receipt[k]=true;}])
+])test('C3 attempt successor rejects '+name,()=>{const v=latestC3AttemptFixture();change(v);assert.equal(validateLatestExecutionSource(v).pass,false);});

@@ -167,11 +167,7 @@ jobs:
      run: node tools/qa/cxorbia-i3-source-qa-evidence.mjs
    - name: Preserve same-run owner test evidence
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-source-qa-${{ github.run_id }}-${{ steps.source_qa.outputs.source_qa_run_attempt }}
-      path: .tmp/canonical-source-qa/
-      if-no-files-found: error
-      retention-days: 30
+     with: {name: 'cxorbia-i3-source-qa-${{ github.run_id }}-${{ steps.source_qa.outputs.source_qa_run_attempt }}', path: .tmp/canonical-source-qa/, if-no-files-found: error, retention-days: 30}
    - if: ${{ steps.authority.outputs.status=='HOLD_VRM134_A05_DEV_TRAFFIC_REQUIRED' }}
      uses: google-github-actions/auth@v2
      with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
@@ -240,12 +236,7 @@ jobs:
       test "$(jq -r '.hrWrites' "$FOCAL_OUT/result.json")" = "0"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm143-151-source-reproof-${{ github.run_id }}
-      path: .tmp/vrm143-151-source-reproof
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm143-151-source-reproof-${{ github.run_id }}', path: .tmp/vrm143-151-source-reproof, if-no-files-found: error, retention-days: 30, compression-level: 0}
 
   i3-b3-schedule-two-shopper-dev-qa:
    needs: canonical-candidate-authority
@@ -288,11 +279,9 @@ jobs:
       [[ "$EXPECTED_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
       echo "EXPECTED_HR_REVISION=$EXPECTED_HR_REVISION" >> "$GITHUB_ENV"
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: '${{ env.PROJECT }}'
+     with: {project_id: '${{ env.PROJECT }}'}
    - name: Assert unchanged Cloud Run and Hosting RUN2437 DEV artifact
      run: |
       set -Eeuo pipefail
@@ -381,11 +370,7 @@ jobs:
       jq -e '.decision=="PASS_I3_B3_SYNTHETIC_CHECKIN_STORAGE_SDK_PROVIDER_ACK_DEV" and .storageSdkUploadAck==true and .storageReadback==true and .storageObjectExists==true and .otherShopperDenied==true and .missingStorageAckDenied==true and .providerAck==true and .independentFirestoreReadback==true and .receiptAuditDurable==true and .idempotentReplay==true and .cleaned==true and .hrBefore==.hrAfter and .safety.syntheticVisitsCreated==1 and .safety.syntheticVisitsDeleted==1 and .safety.evidenceDocsCreated==1 and .safety.evidenceDocsDeleted==1 and .safety.storageObjectsUploaded==1 and .safety.storageObjectsDeleted==1 and .safety.hrWrites==0 and .safety.commercialVisitWrites==0 and .safety.paymentWrites==0 and .safety.authWrites==0 and .safety.production==false and .humanAcceptance==false' "$B3_OUT/checkin-result.json" >/dev/null
    - uses: actions/upload-artifact@v4
      if: always()
-     with:
-      name: cxorbia-i3-b3-schedule-two-shopper-${{ github.run_id }}
-      path: .tmp/i3-b3-schedule-two-shopper/
-      if-no-files-found: warn
-      retention-days: 30
+     with: {name: 'cxorbia-i3-b3-schedule-two-shopper-${{ github.run_id }}', path: .tmp/i3-b3-schedule-two-shopper/, if-no-files-found: warn, retention-days: 30}
 
   i3-b7-reservation-to-visit-two-role-dev-qa:
    needs: canonical-candidate-authority
@@ -422,11 +407,9 @@ jobs:
       mkdir -p "$B7_OUT"
       echo "EXPECTED_HR_REVISION=$(jq -r '.providerReceipt.hrRevision' "$P")" >> "$GITHUB_ENV"
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: '${{ env.PROJECT }}'
+     with: {project_id: '${{ env.PROJECT }}'}
    - name: Verify unchanged RUN2382 Cloud Run and Hosting
      run: |
       set -Eeuo pipefail
@@ -447,11 +430,7 @@ jobs:
       jq -e '.decision=="PASS_I3_B7_RESERVATION_TO_VISIT_TWO_ROLE_DEV" and .shopperReserveAck==true and .adminCrossAck==true and .visitAssignedPersisted==true and .reservationCrossedPersisted==true and .receiptAuditPersisted==true and .idempotentReplay==true and .cleaned==true and .hrBefore==.hrAfter and .safety.syntheticVisitsCreated==1 and .safety.syntheticVisitsDeleted==1 and .safety.syntheticReservationsCreated==1 and .safety.syntheticReservationsDeleted==1 and .safety.hrWrites==0 and .safety.paymentsWritten==0 and .safety.production==false' "$B7_OUT/result.json" >/dev/null
    - uses: actions/upload-artifact@v4
      if: always()
-     with:
-      name: cxorbia-i3-b7-reservation-to-visit-${{ github.run_id }}
-      path: .tmp/i3-b7-reservation-to-visit/
-      if-no-files-found: warn
-      retention-days: 30
+     with: {name: 'cxorbia-i3-b7-reservation-to-visit-${{ github.run_id }}', path: .tmp/i3-b7-reservation-to-visit/, if-no-files-found: warn, retention-days: 30}
   i3-b7-shopper-notice-unread-route-dev-qa:
    needs: canonical-candidate-authority
    if: ${{ github.event_name=='push' && contains(github.event.head_commit.message,'[i3-b7-shopper-notice-e2e-once]') && needs.canonical-candidate-authority.result=='success' }}
@@ -486,11 +465,9 @@ jobs:
       mkdir -p "$B7_OUT"
       echo "EXPECTED_HR_REVISION=$(jq -r '.providerReceipt.hrRevision' "$P")" >> "$GITHUB_ENV"
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: '${{ env.PROJECT }}'
+     with: {project_id: '${{ env.PROJECT }}'}
    - name: Verify runtime and Hosting still match the pinned DEV artifact
      run: |
       set -Eeuo pipefail
@@ -512,11 +489,7 @@ jobs:
       jq -e '.decision=="PASS_I3_B7_SHOPPER_NOTICE_UNREAD_RELOAD_ROUTE_DEV" and ([.stages[]|select(.!=true)]|length)==0 and .hrBefore==.hrAfter and .safety.noticesCreated==1 and .safety.noticesDeleted==1 and .safety.readReceiptsCreated==1 and .safety.readReceiptsDeleted==1 and .safety.hrWrites==0 and .safety.visitWrites==0 and .safety.authWrites==0 and .safety.financialWrites==0 and .safety.production==false' "$B7_OUT/result.json" >/dev/null
    - uses: actions/upload-artifact@v4
      if: always()
-     with:
-      name: cxorbia-i3-b7-notice-unread-route-${{ github.run_id }}
-      path: .tmp/i3-b7-shopper-notice/
-      if-no-files-found: warn
-      retention-days: 30
+     with: {name: 'cxorbia-i3-b7-notice-unread-route-${{ github.run_id }}', path: .tmp/i3-b7-shopper-notice/, if-no-files-found: warn, retention-days: 30}
 
   vrm143-151-dev-materialization:
    needs: canonical-candidate-authority
@@ -546,11 +519,9 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       SOURCE_DIR="$RUNNER_TEMP/cxorbia-vrm143-151-source"
@@ -617,12 +588,7 @@ jobs:
       jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg runtime "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg hosting "$HOSTING_VERSION_NAME" --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hr "$HR_REVISION" '{decision:"PASS_VRM143_151_EXACT_DEV_MATERIALIZATION",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hostingRelease:$hostingRelease,hrRevision:$hr,builds:1,runtimeDeploys:1,hostingDeploys:1,hrWrites:0,production:false}' > "$FOCAL_OUT/result.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm143-151-dev-materialization-${{ github.run_id }}
-      path: .tmp/vrm143-151-dev-materialization
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm143-151-dev-materialization-${{ github.run_id }}', path: .tmp/vrm143-151-dev-materialization, if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm151-historical-dry-run:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM151_HISTORICAL_DRY_RUN_REQUIRED' }}
@@ -649,8 +615,7 @@ jobs:
       node --check tools/qa/cxorbia-vrm151-historical-reconciliation-dry-run.mjs
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       set +e
@@ -666,12 +631,7 @@ jobs:
       cat "$DRY_OUT/result.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm151-historical-dry-run-${{ github.run_id }}
-      path: .tmp/vrm151-historical-dry-run
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm151-historical-dry-run-${{ github.run_id }}', path: .tmp/vrm151-historical-dry-run, if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm151-historical-amount-diagnostic:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM151_HISTORICAL_AMOUNT_DIAGNOSTIC_REQUIRED' }}
@@ -697,8 +657,7 @@ jobs:
       node --check tools/qa/cxorbia-vrm151-historical-amount-diagnostic.mjs
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" node tools/qa/cxorbia-vrm151-historical-amount-diagnostic.mjs | tee "$DIAG_OUT/result.json"
@@ -707,12 +666,7 @@ jobs:
       test "$(jq -r '.bankWrites' "$DIAG_OUT/result.json")" = "0"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm151-historical-amount-diagnostic-${{ github.run_id }}
-      path: .tmp/vrm151-historical-amount-diagnostic
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm151-historical-amount-diagnostic-${{ github.run_id }}', path: .tmp/vrm151-historical-amount-diagnostic, if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm151-canonical-owner-diagnostic:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM151_CANONICAL_VISIT_OWNER_DIAGNOSTIC_REQUIRED' }}
@@ -739,8 +693,7 @@ jobs:
       node --check tools/qa/cxorbia-vrm151-canonical-owner-diagnostic.mjs
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HR_URL="$OWNER_HR_URL" OUT="$OWNER_OUT" node tools/qa/cxorbia-vrm151-canonical-owner-diagnostic.mjs | tee "$OWNER_OUT/console.log"
@@ -749,12 +702,7 @@ jobs:
       test "$(jq -r '.bankWrites' "$OWNER_OUT/result.json")" = "0"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm151-canonical-owner-diagnostic-${{ github.run_id }}
-      path: .tmp/vrm151-canonical-owner-diagnostic
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm151-canonical-owner-diagnostic-${{ github.run_id }}', path: .tmp/vrm151-canonical-owner-diagnostic, if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm151-seven-exceptions-diagnostic:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM151_SEVEN_REIMBURSEMENT_EXCEPTIONS_DIAGNOSTIC_REQUIRED' }}
@@ -781,8 +729,7 @@ jobs:
       node --check tools/qa/cxorbia-vrm151-seven-exceptions-diagnostic.mjs
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       PROJECT="$PROJECT" HR_URL="$EXC_HR_URL" OUT="$EXC_OUT" node tools/qa/cxorbia-vrm151-seven-exceptions-diagnostic.mjs | tee "$EXC_OUT/console.log"
@@ -793,12 +740,7 @@ jobs:
       test "$(jq -r '.bankWrites' "$EXC_OUT/result.json")" = "0"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm151-seven-exceptions-${{ github.run_id }}
-      path: .tmp/vrm151-seven-exceptions
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm151-seven-exceptions-${{ github.run_id }}', path: .tmp/vrm151-seven-exceptions, if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm151-payment-eligibility-diagnostic:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM151_PAYMENT_ELIGIBILITY_DIAGNOSTIC_REQUIRED' }}
@@ -832,12 +774,7 @@ jobs:
       test "$(jq -r '.bankWrites' "$ELIG_OUT/result.json")" = "0"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm151-payment-eligibility-${{ github.run_id }}
-      path: .tmp/vrm151-payment-eligibility
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm151-payment-eligibility-${{ github.run_id }}', path: .tmp/vrm151-payment-eligibility, if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm151-provider-source-reproof:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM151_PROVIDER_SOURCE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM151_ROUTER_SOURCE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM151_CANONICAL_OWNER_SOURCE_REPROOF_REQUIRED' }}
@@ -892,12 +829,7 @@ jobs:
       NODE
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm151-provider-source-reproof-${{ github.run_id }}
-      path: .tmp/vrm151-provider-source-reproof
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm151-provider-source-reproof-${{ github.run_id }}', path: .tmp/vrm151-provider-source-reproof, if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm151-runtime-only-dev-materialization:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_I3_NOVEMBER_HR_SOURCE_PROVEN_DEV_RUNTIME_PENDING_5_MATCH' }}
@@ -927,11 +859,9 @@ jobs:
       node --test tools/hr-source/tya-resolve-live-month-tabs.test.mjs | tee "$VOUT/source-tests.log"
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       SOURCE_DIR="$RUNNER_TEMP/cxorbia-vrm151-source"
@@ -981,12 +911,7 @@ jobs:
       jq -n -S --arg source "$SRC" --arg tree "$FTREE" --arg runtime "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg hosting "$EXPECTED_HOSTING_VERSION" --arg hr "$HR_REVISION" '{decision:"PASS_I3_HR_NOVEMBER_RUNTIME_ONLY_DEV_MATERIALIZATION",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,builds:1,runtimeDeploys:1,hostingDeploys:0,hrWrites:0,bankWrites:0,production:false}' > "$VOUT/result.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm151-runtime-materialization-${{ github.run_id }}
-      path: .tmp/vrm151-runtime-only-materialization
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm151-runtime-materialization-${{ github.run_id }}', path: .tmp/vrm151-runtime-only-materialization, if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm151-final-canonical-dry-run:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM151_FINAL_CANONICAL_DRY_RUN_REQUIRED' }}
@@ -1017,8 +942,7 @@ jobs:
       node --check tools/qa/cxorbia-vrm151-final-canonical-dry-run.mjs
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HR_URL="$DRY_HR_URL" OUT="$DRY_OUT" node tools/qa/cxorbia-vrm151-final-canonical-dry-run.mjs | tee "$DRY_OUT/console.log"
@@ -1035,12 +959,7 @@ jobs:
       test "$(jq -r '.financialMovementWrites' "$DRY_OUT/result.json")" = "0"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm151-final-canonical-dry-run-${{ github.run_id }}
-      path: .tmp/vrm151-final-canonical-dry-run
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm151-final-canonical-dry-run-${{ github.run_id }}', path: .tmp/vrm151-final-canonical-dry-run, if-no-files-found: error, retention-days: 30, compression-level: 0}
   prei4-admin-008-mapping-reproof:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED' }}
@@ -1070,12 +989,7 @@ jobs:
       test "$(jq -r '.decision' .tmp/prei4-admin-008/assignment-self-test.json)" = "PASS_R20_SHOPPER_ASSIGNMENT_CLASSIFICATION"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-prei4-admin-008-mapping-reproof-${{ github.run_id }}
-      path: .tmp/prei4-admin-008
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-prei4-admin-008-mapping-reproof-${{ github.run_id }}', path: .tmp/prei4-admin-008, if-no-files-found: error, retention-days: 30, compression-level: 0}
   prei4-admin-008-runtime-materialization:
    needs: canonical-candidate-authority
    if: ${{ false }}
@@ -1110,8 +1024,7 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 google-auth-library@9.15.1 pdfjs-dist@3.11.174 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       node tools/qa/cxorbia-prei4-admin002-postulation-semantic-forensic.mjs | tee "$PREI4_002_OUT/console.log"
@@ -1122,13 +1035,7 @@ jobs:
       test "$(jq -r '.deploys' "$PREI4_002_OUT/result.json")" = "0"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-prei4-admin-002-diagnostic-${{ github.run_id }}
-      path: ${{ env.PREI4_002_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
-      include-hidden-files: true
+     with: {name: 'cxorbia-prei4-admin-002-diagnostic-${{ github.run_id }}', path: '${{ env.PREI4_002_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0, include-hidden-files: true}
   prei4-admin-002-source-reproof:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[prei4-admin-002-source]') }}
@@ -1167,13 +1074,7 @@ jobs:
       test "$(jq -r '.deploys' "$PREI4_002_SOURCE_OUT/result.json")" = "0"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-prei4-admin-002-source-${{ github.run_id }}
-      path: ${{ env.PREI4_002_SOURCE_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
-      include-hidden-files: true
+     with: {name: 'cxorbia-prei4-admin-002-source-${{ github.run_id }}', path: '${{ env.PREI4_002_SOURCE_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0, include-hidden-files: true}
   prei4-admin-002-hosting-live-reproof:
    needs: canonical-candidate-authority
    if: ${{ false }}
@@ -1206,8 +1107,7 @@ jobs:
       node --check tools/qa/cxorbia-prei4-admin003-identity-forensic-readonly.mjs
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       node tools/qa/cxorbia-prei4-admin003-identity-forensic-readonly.mjs | tee "$PREI4_003_OUT/console.log"
@@ -1218,13 +1118,7 @@ jobs:
       test "$(jq -r '.safety.deploys' "$PREI4_003_OUT/result.json")" = "0"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-prei4-admin-003-diagnostic-${{ github.run_id }}
-      path: ${{ env.PREI4_003_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
-      include-hidden-files: true
+     with: {name: 'cxorbia-prei4-admin-003-diagnostic-${{ github.run_id }}', path: '${{ env.PREI4_003_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0, include-hidden-files: true}
   prei4-admin-003-owner-diagnostic:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_003_OWNER_DIAGNOSTIC_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[prei4-admin-003-owner]') }}
@@ -1252,8 +1146,7 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       node tools/qa/cxorbia-prei4-admin003-owner-diagnostic-readonly.mjs | tee "$PREI4_003_OWNER_OUT/console.log"
@@ -1264,13 +1157,7 @@ jobs:
       test "$(jq -r '.safety.deploys' "$PREI4_003_OWNER_OUT/result.json")" = "0"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-prei4-admin-003-owner-${{ github.run_id }}
-      path: ${{ env.PREI4_003_OWNER_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
-      include-hidden-files: true
+     with: {name: 'cxorbia-prei4-admin-003-owner-${{ github.run_id }}', path: '${{ env.PREI4_003_OWNER_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0, include-hidden-files: true}
   prei4-admin-003-source-reproof:
    needs: canonical-candidate-authority
    if: ${{ (needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_003_SOURCE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED')&&github.event_name=='push'&&contains(github.event.head_commit.message, '[prei4-admin-003-source]') }}
@@ -1310,13 +1197,7 @@ jobs:
       jq -n -S --arg source "$PREI4_003_SOURCE" --arg tree "$PREI4_003_TREE" '{decision:"PASS_PREI4_ADMIN_003_SOURCE",sourceSha:$source,sourceTree:$tree,owners:3,tenantAdjudicationPrecedence:true,sameNameAutoMerge:false,writes:0,deploys:0,production:false}' > "$PREI4_003_SOURCE_OUT/result.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-prei4-admin-003-source-${{ github.run_id }}
-      path: ${{ env.PREI4_003_SOURCE_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
-      include-hidden-files: true
+     with: {name: 'cxorbia-prei4-admin-003-source-${{ github.run_id }}', path: '${{ env.PREI4_003_SOURCE_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0, include-hidden-files: true}
   prei4-cumulative-regression-source-guard:
    needs: canonical-candidate-authority
    if: ${{ contains(fromJSON('["HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED","HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED","HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED","HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED","HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED","HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status)&&github.event_name=='push'&&(contains(github.event.head_commit.message, '[prei4-cumulative-regression]')||contains(github.event.head_commit.message, '[prei4-content-001-source]')) }}
@@ -1369,13 +1250,7 @@ jobs:
       test "$(jq -r '.writes' "$CUM_OUT/result.json")" = "0"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-prei4-cumulative-regression-${{ github.run_id }}
-      path: ${{ env.CUM_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
-      include-hidden-files: true
+     with: {name: 'cxorbia-prei4-cumulative-regression-${{ github.run_id }}', path: '${{ env.CUM_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0, include-hidden-files: true}
   prei4-admin-004-hosting-materialization-live:
    needs: canonical-candidate-authority
    if: ${{ (needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED')&&github.event_name=='push'&&contains(github.event.head_commit.message, '[prei4-admin-004-finance-live-resume]') }}
@@ -1392,20 +1267,13 @@ jobs:
    - uses: actions/setup-node@v4
      with: {node-version: '24'}
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: bash tools/qa/cxorbia-prei4-admin004-hosting-config-resume.sh
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-prei4-admin-004-hosting-materialization-${{ github.run_id }}
-      path: ${{ env.PREI4_004_RESUME_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-prei4-admin-004-hosting-materialization-${{ github.run_id }}', path: '${{ env.PREI4_004_RESUME_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0}
   prei4-admin-004-cumulative-dev-materialization:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[prei4-content-001-live]') }}
@@ -1422,21 +1290,13 @@ jobs:
    - uses: actions/setup-node@v4
      with: {node-version: '24'}
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: bash tools/qa/cxorbia-prei4-content001-dev-materialize.sh
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-prei4-content-001-cumulative-live-${{ github.run_id }}
-      path: ${{ env.PREI4_CONTENT001_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
-      include-hidden-files: true
+     with: {name: 'cxorbia-prei4-content-001-cumulative-live-${{ github.run_id }}', path: '${{ env.PREI4_CONTENT001_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0, include-hidden-files: true}
   prei4-admin-003-cumulative-live-reproof:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_RESUME_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[prei4-admin-003-live]') }}
@@ -1462,11 +1322,9 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       mkdir -p "$PREI4_003_RESUME_OUT"
@@ -1479,13 +1337,7 @@ jobs:
       test "$(jq -r '.production' "$PREI4_003_RESUME_OUT/result.json")" = "false"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-prei4-admin-003-resume-${{ github.run_id }}
-      path: ${{ env.PREI4_003_RESUME_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
-      include-hidden-files: true
+     with: {name: 'cxorbia-prei4-admin-003-resume-${{ github.run_id }}', path: '${{ env.PREI4_003_RESUME_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0, include-hidden-files: true}
   i3-finance-focal-reproof:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_I3_FINANCE_FOCAL_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_I3_VRM174_HISTORICAL_PAYMENT_REPROOF_REQUIRED' }}
@@ -1513,11 +1365,9 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       R="$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")"
@@ -1554,12 +1404,7 @@ jobs:
       fi
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-finance-focal-${{ github.run_id }}
-      path: .tmp/i3-finance-focal
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-i3-finance-focal-${{ github.run_id }}', path: .tmp/i3-finance-focal, if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm085-postulation-sync-diagnostic:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm-085-diagnostic]') }}
@@ -1597,8 +1442,7 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       VRM085_TARGET_HR_FILE="$VRM085_OUT/run574/hr-current-live.json" \
@@ -1611,13 +1455,7 @@ jobs:
       test "$(jq -r '.summary.humanStep10SameRowSemanticCoverage' "$VRM085_OUT/result.json")" = "false"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-vrm085-diagnostic-${{ github.run_id }}
-      path: ${{ env.VRM085_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
-      include-hidden-files: true
+     with: {name: 'cxorbia-i3-vrm085-diagnostic-${{ github.run_id }}', path: '${{ env.VRM085_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0, include-hidden-files: true}
   vrm085-control-reproof:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm-085-reproof]') }}
@@ -1657,8 +1495,7 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       PREI4_OUT="$VRM085_REPROOF_OUT/semantic" CXORBIA_PREI4_ROOT="$VRM085_ROOT" CXORBIA_PREI4_SOURCE_SHA="$VRM085_SOURCE" CXORBIA_PREI4_SCOPE="vrm085_postulation_sync" node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs | tee "$VRM085_REPROOF_OUT/focal-console.log"
@@ -1670,13 +1507,7 @@ jobs:
       jq -n -S --arg source "$VRM085_SOURCE" --arg tree "$VRM085_TREE" --arg hr "$VRM085_TARGET_HR_REVISION" --arg control "$GITHUB_SHA" '{decision:"PASS_VRM085_CONTROL_ONLY_FOCAL_REPROOF",sourceSha:$source,sourceTree:$tree,hrRevision:$hr,controlHeadSha:$control,provenOwner:"tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",productChanged:false,builds:0,deploys:0,writes:0,production:false}' > "$VRM085_REPROOF_OUT/result.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-vrm085-reproof-${{ github.run_id }}
-      path: ${{ env.VRM085_REPROOF_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
-      include-hidden-files: true
+     with: {name: 'cxorbia-i3-vrm085-reproof-${{ github.run_id }}', path: '${{ env.VRM085_REPROOF_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0, include-hidden-files: true}
   vrm086-exact-alias-control-reproof:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm-086-reproof]') }}
@@ -1717,8 +1548,7 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       PREI4_OUT="$VRM086_OUT/semantic" CXORBIA_PREI4_ROOT="$VRM086_ROOT" CXORBIA_PREI4_SOURCE_SHA="$VRM086_SOURCE" CXORBIA_PREI4_SCOPE="vrm086_identity_alias" node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs | tee "$VRM086_OUT/focal-console.log"
@@ -1732,13 +1562,7 @@ jobs:
       jq -n -S --arg source "$VRM086_SOURCE" --arg tree "$VRM086_TREE" --arg hr "$VRM086_TARGET_HR_REVISION" --arg control "$GITHUB_SHA" '{decision:"PASS_VRM086_CONTROL_ONLY_EXACT_ALIAS_REPROOF",sourceSha:$source,sourceTree:$tree,hrRevision:$hr,controlHeadSha:$control,provenOwner:"tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",productChanged:false,builds:0,deploys:0,writes:0,production:false}' > "$VRM086_OUT/result.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-vrm086-reproof-${{ github.run_id }}
-      path: ${{ env.VRM086_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
-      include-hidden-files: true
+     with: {name: 'cxorbia-i3-vrm086-reproof-${{ github.run_id }}', path: '${{ env.VRM086_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0, include-hidden-files: true}
   vrm088-live-fixture-availability-reproof:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm-088-reproof]') }}
@@ -1777,8 +1601,7 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - env:
       GH_TOKEN: ${{ github.token }}
      run: |
@@ -1815,13 +1638,7 @@ jobs:
       jq -n -S --arg source "$VRM088_SOURCE" --arg tree "$VRM088_TREE" --arg artifact "$VRM088_ARTIFACT_SHA256" --arg run "$VRM088_CERT_RUN_ID" --arg control "$GITHUB_SHA" '{decision:"PASS_VRM088_AVAILABILITY_AWARE_LIVE_FIXTURE_REPROOF",sourceSha:$source,sourceTree:$tree,certifiedArtifactSha256:$artifact,certificationRunId:$run,controlHeadSha:$control,activePeriodAvailable:0,fallbackPeriodId:"cinepolis-2026-08",testsPassed:10,cleanup:true,hrWrites:0,builds:0,deploys:0,production:false}' > "$VRM088_OUT/vrm088-result.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-vrm088-reproof-${{ github.run_id }}
-      path: ${{ env.VRM088_OUT }}
-      if-no-files-found: warn
-      retention-days: 30
-      compression-level: 0
-      include-hidden-files: true
+     with: {name: 'cxorbia-i3-vrm088-reproof-${{ github.run_id }}', path: '${{ env.VRM088_OUT }}', if-no-files-found: warn, retention-days: 30, compression-level: 0, include-hidden-files: true}
    - if: always()
      run: rm -rf node_modules "$RUNNER_TEMP/vrm088-cert" "$RUNNER_TEMP/vrm088-source"
   gate21-same-certified-artifact-after-vrm088:
@@ -1930,13 +1747,7 @@ jobs:
       test "$(jq -r '.verdict' "$G21_OUT/GATE21_RELEASE_MANIFEST.json")" = "PASS_GATE21_ARTIFACT_FINGERPRINT"
       sha256sum "$G21_OUT/GATE21_RELEASE_MANIFEST.json" > "$G21_OUT/GATE21_RELEASE_MANIFEST.sha256"
    - uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-recovery-i3-gate21-final-${{ github.run_id }}
-      path: ${{ env.G21_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
-      include-hidden-files: true
+     with: {name: 'cxorbia-recovery-i3-gate21-final-${{ github.run_id }}', path: '${{ env.G21_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0, include-hidden-files: true}
   vrm083-hr-browser-revision-diagnostic:
    needs: canonical-candidate-authority
    if: ${{ github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm-083-hr-browser-revision-diagnostic]') }}
@@ -1967,8 +1778,7 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set +e
       node tools/qa/cxorbia-i3-vrm083-hr-browser-revision-diagnostic.mjs | tee "$VRM083_OUT/console.log"
@@ -1977,13 +1787,7 @@ jobs:
       exit 0
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-vrm083-hr-browser-revision-${{ github.run_id }}
-      path: ${{ env.VRM083_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
-      include-hidden-files: true
+     with: {name: 'cxorbia-i3-vrm083-hr-browser-revision-${{ github.run_id }}', path: '${{ env.VRM083_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0, include-hidden-files: true}
   vrm083-runtime-materialization:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm-083-runtime]') }}
@@ -2018,11 +1822,9 @@ jobs:
       cd "$GITHUB_WORKSPACE"
       echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       TOKEN="$(gcloud auth print-access-token)"
@@ -2073,13 +1875,7 @@ jobs:
       jq -n -S --arg source "$VRM083_SOURCE" --arg tree "$VRM083_TREE" --arg runtime "$VRM083_RUNTIME_REVISION" --arg digest "$VRM083_RUNTIME_DIGEST" --arg hosting "$AFTER" --arg hr "$VRM083_HR_REVISION" '{decision:"PASS_I3_VRM083_RUNTIME_MATERIALIZATION_AND_PROTECTED_SHOPPER_REPROOF",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,authWrites:0,firestoreWrites:0,hrWrites:0,builds:1,runtimeDeploys:1,hostingDeploys:0,production:false}' > "$VRM083_OUT/result.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-vrm083-runtime-${{ github.run_id }}
-      path: ${{ env.VRM083_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
-      include-hidden-files: true
+     with: {name: 'cxorbia-i3-vrm083-runtime-${{ github.run_id }}', path: '${{ env.VRM083_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0, include-hidden-files: true}
    - if: always()
      run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-vrm083-source"
   vrm083-runtime-readback:
@@ -2115,11 +1911,9 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM083_OUT/runtime.json"
@@ -2147,13 +1941,7 @@ jobs:
       jq -n -S --arg source "$VRM083_SOURCE" --arg tree "$VRM083_TREE" --arg runtime "$VRM083_EXPECTED_RUNTIME" --arg digest "$VRM083_EXPECTED_DIGEST" --arg hosting "$VRM083_EXPECTED_HOSTING" --arg hr "$HR" '{decision:"PASS_I3_VRM083_EXISTING_RUNTIME_PROTECTED_SHOPPER_READBACK",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,builds:0,runtimeDeploys:0,hostingDeploys:0,authWrites:0,firestoreWrites:0,hrWrites:0,production:false}' > "$VRM083_OUT/result.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-vrm083-readback-${{ github.run_id }}
-      path: ${{ env.VRM083_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
-      include-hidden-files: true
+     with: {name: 'cxorbia-i3-vrm083-readback-${{ github.run_id }}', path: '${{ env.VRM083_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0, include-hidden-files: true}
    - if: always()
      run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-vrm083-readback-source"
   vrm084-benefits-human-label-hosting:
@@ -2192,11 +1980,9 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM084_OUT/runtime.json"
@@ -2238,13 +2024,7 @@ jobs:
       jq -n -S --arg source "$VRM084_SOURCE" --arg tree "$VRM084_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$VRM084_HOSTING_VERSION" --arg hr "$HR" --argjson hostingDeploys "$VRM084_HOSTING_DEPLOYED" '{decision:"PASS_I3_VRM084_OWNER_RECEIPT",moduleDomain:"finance-benefits-reimbursements",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,ownerPaths:["app/modules/beneficios.js"],actionReal:true,providerAck:true,durableReadback:true,reloadProof:true,noDuplicateRegression:true,technicalLanguageVisible:false,humanPaymentLabelVisible:true,builds:0,runtimeDeploys:0,hostingDeploys:$hostingDeploys,hrWrites:0,authWrites:0,production:false}' > "$VRM084_OUT/owner-receipt.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-vrm084-${{ github.run_id }}
-      path: ${{ env.VRM084_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
-      include-hidden-files: true
+     with: {name: 'cxorbia-i3-vrm084-${{ github.run_id }}', path: '${{ env.VRM084_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0, include-hidden-files: true}
   vrm076-terminal-module-truth-finalizer:
    if: ${{ github.event_name=='push'&&(contains(github.event.head_commit.message, '[vrm-076-finalizer]')||contains(github.event.head_commit.message, '[vrm-087-finalizer]')) }}
    runs-on: ubuntu-latest
@@ -2327,12 +2107,7 @@ jobs:
       jq -n -S --arg source "$GITHUB_SHA" '{decision:"PASS_I3_VRM087_FINALIZER_RECEIPT_SCOPE_SELFTEST",controlSourceSha:$source,openP0Rejected:true,missingReceiptRejected:true,multiDomainReceiptRequired:true,hrIndependentNullAccepted:true,nullHrWithoutIndependenceRejected:true,staleRequiredReceiptRejected:true,staleHistoricalReceiptIgnoredWhenNoPromotionNeeded:true,wrongPromotionPrevented:true,ownerReceiptPromotionProven:true,builds:0,deploys:0,writes:0,production:false}' > "$T/result.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-vrm076-finalizer-${{ github.run_id }}
-      path: ${{ runner.temp }}/vrm076
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-i3-vrm076-finalizer-${{ github.run_id }}', path: '${{ runner.temp }}/vrm076', if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm077-postulation-hr-conflict-live:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM077_HOSTING_REPROOF_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm-077-reproof]') }}
@@ -2373,11 +2148,9 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM077_OUT/runtime.json"
@@ -2443,13 +2216,7 @@ jobs:
       jq -n -S --arg source "$VRM077_SOURCE" --arg tree "$VRM077_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$VRM077_HOSTING_VERSION" --arg hr "$HR" --arg hostingDeploys "$VRM077_HOSTING_DEPLOYED" '{decision:"PASS_I3_VRM077_OWNER_SPECIFIC_RECEIPT",moduleDomain:"postulations-visits-reservations",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,ownerPaths:["app/modules/postulaciones.js","app/modules/misvisitas.js"],actionReal:true,providerAck:true,durableReadback:true,reloadProof:true,noDuplicateRegression:true,production:false,builds:0,runtimeDeploys:0,hostingDeploys:($hostingDeploys|tonumber),hrWrites:0}' > "$VRM077_OUT/owner-receipt.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-vrm077-${{ github.run_id }}
-      path: ${{ env.VRM077_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
-      include-hidden-files: true
+     with: {name: 'cxorbia-i3-vrm077-${{ github.run_id }}', path: '${{ env.VRM077_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0, include-hidden-files: true}
   vrm078-external-project-live:
    needs: canonical-candidate-authority
    if: ${{ false }}
@@ -2497,8 +2264,7 @@ jobs:
       ! grep -Eq 'auth\.(createUser|updateUser|deleteUser|setCustomUserClaims)\(' tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       HR="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
@@ -2508,12 +2274,7 @@ jobs:
       test "$(jq -r '.production' "$VRM217_OUT/result.json")" = "false"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm217-219-population-root-${{ github.run_id }}
-      path: .tmp/i3-vrm217-219-root
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm217-219-population-root-${{ github.run_id }}', path: .tmp/i3-vrm217-219-root, if-no-files-found: error, retention-days: 30, compression-level: 0}
   v70-vrm069-operational-visit-key-runtime:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM069_RUNTIME_MATERIALIZATION_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[v70-vrm069-runtime]') }}
@@ -2547,11 +2308,9 @@ jobs:
       git archive "$V70_SOURCE" | tar -x -C "$SOURCE_DIR"
       echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       TOKEN="$(gcloud auth print-access-token)"
@@ -2601,12 +2360,7 @@ jobs:
       jq -n -S --arg source "$V70_SOURCE" --arg tree "$V70_TREE" --arg runtime "$V70_RUNTIME_REVISION" --arg digest "$V70_RUNTIME_DIGEST" --arg hosting "$EXPECTED_HOSTING_VERSION" --arg hr "$V70_HR_REVISION" '{decision:"PASS_I3_V70_VRM069_070_OPERATIONAL_VISIT_KEY_RUNTIME",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,cacheMs:3600000,sourceSafe:true,shopperProviderAck:true,visitProviderAck:true,visitCount:704,builds:1,runtimeDeploys:1,hostingDeploys:0,rulesDeploys:0,hrWrites:0,production:false}' > "$V70_OUT/result.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-v70-vrm069-runtime-${{ github.run_id }}
-      path: ${{ env.V70_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-i3-v70-vrm069-runtime-${{ github.run_id }}', path: '${{ env.V70_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0}
   c3-preterminal-module-truth:
    needs: canonical-candidate-authority
    if: ${{ github.event_name=='workflow_dispatch'||(github.event_name=='push'&&contains(github.event.head_commit.message, '[c3-preterminal-module-truth]')) }}
@@ -2629,9 +2383,7 @@ jobs:
      with: {fetch-depth: 0}
    - name: Consume exact owner evidence from this run
      uses: actions/download-artifact@v4
-     with:
-      name: cxorbia-i3-source-qa-${{ github.run_id }}-${{ needs.canonical-candidate-authority.outputs.source_qa_run_attempt }}
-      path: .tmp/c3-preterminal-module-truth/source-qa/
+     with: {name: 'cxorbia-i3-source-qa-${{ github.run_id }}-${{ needs.canonical-candidate-authority.outputs.source_qa_run_attempt }}', path: .tmp/c3-preterminal-module-truth/source-qa/}
    - run: |
       set -Eeuo pipefail
       mkdir -p "$C3_OUT"
@@ -2665,8 +2417,7 @@ jobs:
       git archive "$C3_SOURCE" | tar -x -C "$RUNNER_TEMP"
       echo "C3_SOURCE_DIR=$RUNNER_TEMP/app" >> "$GITHUB_ENV"
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
      with: {project_id: cxorbia-backend-dev}
    - run: |
@@ -2723,12 +2474,7 @@ jobs:
      run: node tools/qa/cxorbia-i3-c3-preterminal-result.mjs
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-c3-preterminal-module-truth-${{ github.run_id }}-${{ github.run_attempt }}
-      path: ${{ env.C3_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-c3-preterminal-module-truth-${{ github.run_id }}-${{ github.run_attempt }}', path: '${{ env.C3_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm043-name-diagnostic:
    needs: canonical-candidate-authority
    if: ${{ github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm-043-name-diagnostic]') }}
@@ -2748,8 +2494,7 @@ jobs:
    - uses: actions/setup-node@v4
      with: {node-version: '24'}
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
@@ -2764,12 +2509,7 @@ jobs:
       fi
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm043-name-diagnostic-${{ github.run_id }}
-      path: ${{ env.VRM043_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm043-name-diagnostic-${{ github.run_id }}', path: '${{ env.VRM043_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0}
    - if: always()
      run: rm -rf node_modules
   vrm043-control-proof:
@@ -2794,11 +2534,9 @@ jobs:
    - uses: actions/setup-node@v4
      with: {node-version: '24'}
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
@@ -2888,12 +2626,7 @@ jobs:
         > "$PROOF_OUT/final.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm043-control-proof-${{ github.run_id }}
-      path: ${{ env.PROOF_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm043-control-proof-${{ github.run_id }}', path: '${{ env.PROOF_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0}
    - if: always()
      run: rm -rf node_modules "$RUNNER_TEMP/vrm043-source"
   certify:
@@ -2963,11 +2696,9 @@ jobs:
       node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs | tee "$OUT/source-regressions.log"
       node --test --test-name-pattern="exact HR durable key" backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs | tee "$OUT/operational-visit-key-regression.log"
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       SOURCE_DIR="$RUNNER_TEMP/cxorbia-i3-terminal-source"
@@ -3154,21 +2885,10 @@ jobs:
       node tools/qa/cxorbia-i3-live-fixture-contract.mjs verify-sealed "$OUT" "$OUT/sealed-fixtures"
       cp "$OUT/i3-certification-manifest.json" "$OUT/result.json"
    - uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-recovery-i3-single-source-certification-${{ github.run_id }}
-      path: ${{ env.OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
-      include-hidden-files: true
+     with: {name: 'cxorbia-recovery-i3-single-source-certification-${{ github.run_id }}', path: '${{ env.OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 6, include-hidden-files: true}
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-recovery-i3-terminal-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}
-      path: ${{ env.OUT }}
-      if-no-files-found: warn
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-recovery-i3-terminal-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}', path: '${{ env.OUT }}', if-no-files-found: warn, retention-days: 30, compression-level: 6}
    - if: always()
      run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-i3-terminal-source" "$RUNNER_TEMP/cxorbia-current-module-truth"
   live-fixtures:
@@ -3195,12 +2915,7 @@ jobs:
       gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "cxorbia-recovery-i3-single-source-certification-$GITHUB_RUN_ID" --dir "$CERT"
       node tools/qa/cxorbia-i3-live-fixture-contract.mjs verify-sealed "$CERT" "$OUT"
    - uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-recovery-i3-live-fixtures-v2-${{ github.run_id }}
-      path: ${{ env.OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-recovery-i3-live-fixtures-v2-${{ github.run_id }}', path: '${{ env.OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0}
    - if: always()
      run: rm -rf "$RUNNER_TEMP/cxorbia-terminal-cert"
   gate21:
@@ -3224,8 +2939,7 @@ jobs:
    - uses: actions/setup-node@v4
      with: {node-version: '24'}
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - run: |
       set -Eeuo pipefail
@@ -3265,11 +2979,7 @@ jobs:
       console.log(JSON.stringify(safe));
       NODE
    - uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-pre-i4-vrm039-config-${{ github.run_id }}
-      path: .tmp/vrm039-config
-      if-no-files-found: error
-      retention-days: 30
+     with: {name: 'cxorbia-pre-i4-vrm039-config-${{ github.run_id }}', path: .tmp/vrm039-config, if-no-files-found: error, retention-days: 30}
   pre-i4-vrm037-042-source-proof:
    needs: canonical-candidate-authority
    if: ${{ github.event_name=='push'&&contains(github.event.head_commit.message, '[pre-i4-vrm037-042-source-proof]') }}
@@ -3302,8 +3012,7 @@ jobs:
       node --check app/modules/shoppers.js
       node --test backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs | tee "$PROOF_OUT/regression.log"
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - env:
       GH_TOKEN: ${{ github.token }}
@@ -3352,12 +3061,7 @@ jobs:
       NODE
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-pre-i4-vrm037-042-source-proof-${{ github.run_id }}
-      path: ${{ env.PROOF_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-pre-i4-vrm037-042-source-proof-${{ github.run_id }}', path: '${{ env.PROOF_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0}
    - run: |
       set -Eeuo pipefail
       test "$(jq -r '.decision' "$PROOF_OUT/live-source-proof.json")" = "PASS_PRE_I4_VRM037_042_LIVE_SOURCE_PROOF"
@@ -3381,8 +3085,7 @@ jobs:
    - uses: actions/setup-node@v4
      with: {node-version: '24'}
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
@@ -3478,12 +3181,7 @@ jobs:
       NODE
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-pre-i4-vrm037-diagnostic-${{ github.run_id }}
-      path: ${{ env.DIAG_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-pre-i4-vrm037-diagnostic-${{ github.run_id }}', path: '${{ env.DIAG_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm044-focal-reproof:
    if: ${{ github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm044-focal]') }}
    runs-on: ubuntu-latest
@@ -3521,11 +3219,7 @@ jobs:
       cd "$GITHUB_WORKSPACE"
       jq -n -S --arg source "$VRM044_SOURCE" --arg tree "$VRM044_TREE"             '{decision:"PASS_VRM044_FOCAL_SOURCE_REPROOF",sourceSha:$source,sourceTree:$tree,tests:"provider+semantic",builds:0,deploys:0,production:false}'             > "$VRM044_OUT/result.json"
    - uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm044-focal-reproof
-      path: .tmp/vrm044-focal-reproof
-      if-no-files-found: error
-      retention-days: 30
+     with: {name: cxorbia-vrm044-focal-reproof, path: .tmp/vrm044-focal-reproof, if-no-files-found: error, retention-days: 30}
   vrm044-dev-materialization:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='READY_FOR_VRM044_DEV_MATERIALIZATION'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm044-materialize]') }}
@@ -3555,11 +3249,9 @@ jobs:
      with: {node-version: '24'}
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       SOURCE_DIR="$RUNNER_TEMP/cxorbia-vrm044-source"
@@ -3620,12 +3312,7 @@ jobs:
       jq -n -S             --arg source "$VRM044_SOURCE" --arg tree "$VRM044_TREE"             --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST"             --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hostingVersion "$HOSTING_VERSION_NAME" --arg hostingReleaseTime "$HOSTING_RELEASE_TIME"             --arg hrRevision "$HR_REVISION"             '{decision:"PASS_VRM044_EXACT_DEV_MATERIALIZATION",sourceSha:$source,sourceTree:$tree,runtimeRevision:$revision,runtimeDigest:$digest,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingReleaseTime,hrRevision:$hrRevision,builds:1,runtimeDeploys:1,hostingDeploys:1,production:false}'             > "$VRM044_OUT/result.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm044-dev-materialization-${{ github.run_id }}
-      path: .tmp/vrm044-dev-materialization
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm044-dev-materialization-${{ github.run_id }}', path: .tmp/vrm044-dev-materialization, if-no-files-found: error, retention-days: 30, compression-level: 0}
    - if: always()
      run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-vrm044-source"
   v21-paula-remediation-dev:
@@ -3675,11 +3362,9 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-v21-${V21_SOURCE:0:12}-${GITHUB_RUN_ID}"
@@ -3738,12 +3423,7 @@ jobs:
       jq -n -S --arg source "$V21_SOURCE" --arg tree "$V21_TREE" --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg hostingVersion "$HOSTING_VERSION_NAME" --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hrRevision "$HR_REVISION" '{decision:"PASS_I3_V21_DEV_MATERIALIZATION_AND_FOCAL",sourceSha:$source,sourceTree:$tree,runtimeRevision:$revision,runtimeDigest:$digest,hostingVersion:$hostingVersion,hostingRelease:$hostingRelease,hrRevision:$hrRevision,builds:1,runtimeDeploys:1,hostingDeploys:1,rulesDeploys:0,production:false}' > "$V21_OUT/result.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-v21-paula-remediation-${{ github.run_id }}
-      path: ${{ env.V21_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-i3-v21-paula-remediation-${{ github.run_id }}', path: '${{ env.V21_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0}
    - if: always()
      run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-v21-source"
   v21-paula-remediation-readback:
@@ -3778,11 +3458,9 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$V21_OUT/runtime.json"
@@ -3826,12 +3504,7 @@ jobs:
       jq -n -S --arg source "$V21_SOURCE" --arg tree "$V21_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$EXPECTED_HOSTING_VERSION" --arg hr "$HR_REVISION" '{decision:"PASS_I3_V21_STABLE_READBACK_AND_LIVE_FOCAL",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,builds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,production:false}' > "$V21_OUT/result.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-v21-readback-${{ github.run_id }}
-      path: ${{ env.V21_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-i3-v21-readback-${{ github.run_id }}', path: '${{ env.V21_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0}
    - if: always()
      run: rm -rf node_modules
   v25-second-visual-forensic:
@@ -3847,8 +3520,7 @@ jobs:
      with: {node-version: '24'}
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       V25_OUT="$V25_OUT" node tools/qa/cxorbia-i3-v25-visual-forensic.mjs | tee "$V25_OUT.log"
@@ -3882,8 +3554,7 @@ jobs:
      with: {node-version: '24'}
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       V26_OUT="$V26_OUT" V26_HR_URL="$V26_HR_URL" node tools/qa/cxorbia-i3-v26-identity-assignment-reconcile.mjs | tee "$V26_OUT.log"
@@ -3915,8 +3586,7 @@ jobs:
      with: {node-version: '24'}
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       V27_OUT="$V27_OUT" V27_HR_URL="$V27_HR_URL" node tools/qa/cxorbia-i3-v27-duplicate-visit-owner-proof.mjs | tee "$V27_OUT.log"
@@ -3974,11 +3644,9 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-v28-${V28_SOURCE:0:12}-${GITHUB_RUN_ID}"
@@ -4029,12 +3697,7 @@ jobs:
       jq -n -S             --arg source "$V28_SOURCE" --arg tree "$V28_TREE"             --arg runtime "$V28_RUNTIME_REVISION" --arg digest "$V28_RUNTIME_DIGEST"             --arg hosting "$V28_HOSTING_VERSION"             --arg hr "$(jq -r '.hrRevision' "$V28_OUT/repair-result.json")"             --argjson shopperReadyMs "$(jq -r '.shopper.readyMs' "$V28_OUT/live-reproof.json")"             --argjson adminReadyMs "$(jq -r '.admin.readyMs' "$V28_OUT/live-reproof.json")"             '{decision:"PASS_I3_V28_CUMULATIVE_REMEDIATION",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,shopperReadyMs:$shopperReadyMs,adminReadyMs:$adminReadyMs,builds:1,runtimeDeploys:1,hostingDeploys:1,rulesDeploys:0,production:false}' > "$V28_OUT/result.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-v28-remediation-${{ github.run_id }}
-      path: ${{ env.V28_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-i3-v28-remediation-${{ github.run_id }}', path: '${{ env.V28_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0}
    - if: always()
      run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-v28-source"
   v28-second-review-resume:
@@ -4069,11 +3732,9 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$V28_OUT/runtime.json"
@@ -4112,12 +3773,7 @@ jobs:
       jq -n -S --arg source "$V28_SOURCE" --arg tree "$V28_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$EXPECTED_HOSTING_VERSION" --arg hr "$(jq -r '.hrRevision' "$V28_OUT/repair-result.json")" --argjson shopperReadyMs "$(jq -r '.shopper.readyMs' "$V28_OUT/live-reproof.json")" --argjson adminReadyMs "$(jq -r '.admin.readyMs' "$V28_OUT/live-reproof.json")" '{decision:"PASS_I3_V28_CUMULATIVE_REMEDIATION_RESUME",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,shopperReadyMs:$shopperReadyMs,adminReadyMs:$adminReadyMs,builds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,production:false}' > "$V28_OUT/result.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-v28-resume-${{ github.run_id }}
-      path: ${{ env.V28_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-i3-v28-resume-${{ github.run_id }}', path: '${{ env.V28_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0}
    - if: always()
      run: rm -rf node_modules
   v33-profile-boundary-hosting-reproof:
@@ -4159,11 +3815,9 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$V33_OUT/runtime.json"
@@ -4203,12 +3857,7 @@ jobs:
       jq -n -S --arg source "$V33_SOURCE" --arg tree "$V33_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$HOSTING_VERSION" --argjson shopperReadyMs "$(jq -r '.shopper.readyMs' "$V33_OUT/live-reproof.json")" --argjson adminReadyMs "$(jq -r '.admin.readyMs' "$V33_OUT/live-reproof.json")" '{decision:"PASS_I3_V40_CUMULATIVE_LIVE_REPROOF",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,shopperReadyMs:$shopperReadyMs,adminReadyMs:$adminReadyMs,builds:0,runtimeDeploys:0,hostingDeploys:1,rulesDeploys:0,production:false}' > "$V33_OUT/result.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-v40-hosting-reproof-${{ github.run_id }}
-      path: ${{ env.V33_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-i3-v40-hosting-reproof-${{ github.run_id }}', path: '${{ env.V33_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0}
    - if: always()
      run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-v40-source"
   v41-second-review-cumulative-live-reproof:
@@ -4240,11 +3889,9 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$V41_OUT/runtime.json"
@@ -4269,12 +3916,7 @@ jobs:
       jq -n -S --arg source "$V41_SOURCE" --arg tree "$V41_TREE" --arg hosting "$EXPECTED_HOSTING_VERSION" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hr "$(jq -r '.hrRevision' "$V41_OUT/second-review-live-reproof.json")" '{decision:"PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",sourceSha:$source,sourceTree:$tree,hostingVersion:$hosting,runtimeRevision:$runtime,runtimeDigest:$digest,hrRevision:$hr,builds:0,deploys:0,production:false}' > "$V41_OUT/result.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-v41-second-review-${{ github.run_id }}
-      path: ${{ env.V41_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-i3-v41-second-review-${{ github.run_id }}', path: '${{ env.V41_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0}
    - if: always()
      run: rm -rf node_modules
   v42-milton-durable-diagnostic:
@@ -4301,8 +3943,7 @@ jobs:
      with: {node-version: '24'}
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       V42_OUT="$V42_OUT" V42_ROOT="$V42_ROOT" node tools/qa/cxorbia-i3-v42-milton-durable-diagnostic.mjs | tee "$V42_OUT/diagnostic.log"
@@ -4311,12 +3952,7 @@ jobs:
       test "$(jq -r '.deploys' "$V42_OUT/milton-durable-diagnostic.json")" = "0"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-v42-milton-diagnostic-${{ github.run_id }}
-      path: ${{ env.V42_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-i3-v42-milton-diagnostic-${{ github.run_id }}', path: '${{ env.V42_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0}
    - if: always()
      run: rm -rf node_modules
   v43-milton-durable-repair:
@@ -4342,8 +3978,7 @@ jobs:
      with: {node-version: '24'}
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       V43_OUT="$V43_OUT" node tools/qa/cxorbia-i3-v43-milton-durable-repair.mjs | tee "$V43_OUT/repair.log"
@@ -4356,12 +3991,7 @@ jobs:
       test "$(jq -r '.authWrites' "$V43_OUT/milton-durable-repair.json")" = "0"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-v43-milton-repair-${{ github.run_id }}
-      path: ${{ env.V43_OUT }}
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-i3-v43-milton-repair-${{ github.run_id }}', path: '${{ env.V43_OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 0}
    - if: always()
      run: rm -rf node_modules
   c3-terminal-dev-identity-readback:
@@ -4378,11 +4008,9 @@ jobs:
    - uses: actions/checkout@v4
      with: {fetch-depth: 0}
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       mkdir -p "$READBACK_OUT"
@@ -4448,12 +4076,7 @@ jobs:
       jq -e '.matches.runtimeRevision==true and .matches.runtimeDigest==true and .matches.hostingVersion==true' "$READBACK_OUT/result.json" >/dev/null
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-c3-terminal-dev-identity-readback-${{ github.run_id }}
-      path: .tmp/c3-terminal-dev-identity-readback
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-c3-terminal-dev-identity-readback-${{ github.run_id }}', path: .tmp/c3-terminal-dev-identity-readback, if-no-files-found: error, retention-days: 30, compression-level: 0}
   pre-i4-cert-res-capability-diagnostic:
    if: contains(github.event.head_commit.message, '[prei4-cert-res-diagnostic]')
    runs-on: ubuntu-latest
@@ -4461,20 +4084,13 @@ jobs:
    - uses: actions/checkout@v4
      with: {fetch-depth: 0}
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: bash tools/qa/cxorbia-prei4-cert-res-capability-diagnostic.sh
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-prei4-cert-res-capability
-      path: .tmp/prei4-cert-res-capability
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: cxorbia-prei4-cert-res-capability, path: .tmp/prei4-cert-res-capability, if-no-files-found: error, retention-days: 30, compression-level: 0}
   pre-i4-cert-res-credential-route-diagnostic:
    if: contains(github.event.head_commit.message, '[prei4-cert-res-credential-route]')
    runs-on: ubuntu-latest
@@ -4482,8 +4098,7 @@ jobs:
    - uses: actions/checkout@v4
      with: {fetch-depth: 0}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - env:
       DIAG_DIR: .tmp/prei4-cert-res-credential-route
       DEDICATED_CREATOR_JSON: ${{ secrets.CXORBIA_GCP_PROJECT_CREATOR_JSON }}
@@ -4492,12 +4107,7 @@ jobs:
      run: bash tools/qa/cxorbia-prei4-cert-res-credential-route-diagnostic.sh
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-prei4-cert-res-credential-route
-      path: .tmp/prei4-cert-res-credential-route
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: cxorbia-prei4-cert-res-credential-route, path: .tmp/prei4-cert-res-credential-route, if-no-files-found: error, retention-days: 30, compression-level: 0}
   pre-i4-cert-res-provider-activate:
    if: contains(github.event.head_commit.message, '[prei4-cert-res-provider-activate]')
    runs-on: ubuntu-latest
@@ -4506,20 +4116,13 @@ jobs:
    - uses: actions/checkout@v4
      with: {fetch-depth: 0}
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: bash tools/qa/cxorbia-prei4-cert-res-provider-activate.sh
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-prei4-cert-res-provider-activation
-      path: .tmp/prei4-cert-res-provider-activate
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: cxorbia-prei4-cert-res-provider-activation, path: .tmp/prei4-cert-res-provider-activate, if-no-files-found: error, retention-days: 30, compression-level: 0}
   pre-i4-cert-res-runtime-readiness:
    if: contains(github.event.head_commit.message, '[prei4-cert-res-runtime-readiness]')
    runs-on: ubuntu-latest
@@ -4528,20 +4131,13 @@ jobs:
    - uses: actions/checkout@v4
      with: {fetch-depth: 0}
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: bash tools/qa/cxorbia-prei4-cert-res-runtime-readiness.sh
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-prei4-cert-res-runtime-readiness
-      path: .tmp/prei4-cert-res-runtime-readiness
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: cxorbia-prei4-cert-res-runtime-readiness, path: .tmp/prei4-cert-res-runtime-readiness, if-no-files-found: error, retention-days: 30, compression-level: 0}
   pre-i4-cert-res-source-contract:
    if: contains(github.event.head_commit.message, '[prei4-cert-res-source]')
    runs-on: ubuntu-latest
@@ -4611,12 +4207,7 @@ jobs:
         > "$CERT_RES_OUT/result.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-prei4-cert-res-source-${{ github.run_id }}
-      path: .tmp/prei4-cert-res-source
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-prei4-cert-res-source-${{ github.run_id }}', path: .tmp/prei4-cert-res-source, if-no-files-found: error, retention-days: 30, compression-level: 0}
   pre-i4-cert-res-dev-materialization:
    needs: canonical-candidate-authority
    if: ${{ false }}
@@ -4651,11 +4242,9 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$CERT_RES_MAT_OUT/runtime.json"
@@ -4700,12 +4289,7 @@ jobs:
       jq -n -S --arg source "$CERT_RES_SOURCE" --arg tree "$CERT_RES_TREE" --arg hr "$HR_REVISION" --slurpfile live "$CERT_RES_MAT_OUT/cert-res-live.json" '{decision:"PASS_PREI4_CERT_RES_POST_MATERIALIZATION_LIVE",sourceSha:$source,sourceTree:$tree,runtimeRevision:"cxorbia-live-hr-dev-00235-57l",runtimeDigest:"sha256:71199bc92526864af7120c59298d002997792db467bb04936c10c26c02f5d06a",hostingVersion:"sites/cxorbia-backend-dev/versions/a0054d58a85a7d43",hrRevision:$hr,p0:{"PREI4-CERT-001":"PASS_LIVE","PREI4-CERT-002":"PASS_LIVE","PREI4-RES-001":"PASS_LIVE"},fixtureCleanup:$live[0].cleanup,builds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,hrWrites:0,production:false}' > "$CERT_RES_MAT_OUT/result.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-prei4-cert-res-live-resume-${{ github.run_id }}
-      path: .tmp/prei4-cert-res-live-resume
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-prei4-cert-res-live-resume-${{ github.run_id }}', path: .tmp/prei4-cert-res-live-resume, if-no-files-found: error, retention-days: 30, compression-level: 0}
   pre-i4-cert-res-runtime-only-rematerialize:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[prei4-cert-res-runtime-only]') }}
@@ -4724,20 +4308,13 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: bash tools/qa/cxorbia-prei4-cert-res-runtime-only.sh
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-prei4-cert-res-runtime-only-${{ github.run_id }}
-      path: .tmp/prei4-cert-res-runtime-only
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-prei4-cert-res-runtime-only-${{ github.run_id }}', path: .tmp/prei4-cert-res-runtime-only, if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm151-durable-historical-reconciliation:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM151_DURABLE_RECONCILIATION_REQUIRED' }}
@@ -4770,8 +4347,7 @@ jobs:
       node --check tools/qa/cxorbia-vrm151-durable-reconciliation-live.mjs
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HR_URL="$VRM151_DRY_HR_URL" OUT="$VRM151_DRY_OUT" node tools/qa/cxorbia-vrm151-final-canonical-dry-run.mjs > "$VRM151_DRY_OUT/console.log"
@@ -4795,12 +4371,7 @@ jobs:
       test "$(jq -r '.production' "$VRM151_WRITE_OUT/result.json")" = "false"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm151-durable-reconciliation-${{ github.run_id }}
-      path: .tmp/vrm151-durable-reconciliation
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm151-durable-reconciliation-${{ github.run_id }}', path: .tmp/vrm151-durable-reconciliation, if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm153-reconciliation-readback-diagnostic:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM153_RECONCILIATION_READBACK_DIAGNOSTIC_REQUIRED' }}
@@ -4823,8 +4394,7 @@ jobs:
       node --check tools/qa/cxorbia-vrm153-reconciliation-readback-diagnostic.mjs
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HR_URL="$VRM153_HR_URL" OUT="$VRM153_DRY_OUT" node tools/qa/cxorbia-vrm151-final-canonical-dry-run.mjs > "$VRM153_DRY_OUT/console.log"
@@ -4838,12 +4408,7 @@ jobs:
       test "$(jq -r '.writes' "$VRM153_OUT/result.json")" = "0"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm153-reconciliation-readback-${{ github.run_id }}
-      path: .tmp/vrm153-reconciliation-readback
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm153-reconciliation-readback-${{ github.run_id }}', path: .tmp/vrm153-reconciliation-readback, if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm154-156-frontend-source-reproof:
    needs: canonical-candidate-authority
    if: ${{ contains(fromJSON('["HOLD_VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED","HOLD_VRM187_SOURCE_REPROOF_REQUIRED","HOLD_VRM188_SOURCE_REPROOF_REQUIRED","HOLD_VRM189_SOURCE_REPROOF_REQUIRED","HOLD_VRM190_SOURCE_REPROOF_REQUIRED","HOLD_VRM191_SOURCE_REPROOF_REQUIRED","HOLD_VRM192_SOURCE_REPROOF_REQUIRED","HOLD_VRM216_SHARED_IDEMPOTENCY_SOURCE_REPROOF_REQUIRED","HOLD_VRM217_219_PROVIDER_SOURCE_REPROOF_REQUIRED","HOLD_VRM221_SOURCE_REPROOF_REQUIRED","HOLD_VRM227_SOURCE_REPROOF_REQUIRED","HOLD_VRM258_SOURCE_PROOF_REQUIRED","HOLD_VRM259_SOURCE_PROOF_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status) }}
@@ -4939,12 +4504,7 @@ jobs:
       grep -Fq "VRM-219 selective exact adjudication remaps authoritative rows while preserving historical alias visits" "$FOCAL_OUT/shopper-provider-vrm217-219.log"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm154-156-frontend-source-reproof-${{ github.run_id }}
-      path: .tmp/vrm154-156-frontend-source-reproof
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm154-156-frontend-source-reproof-${{ github.run_id }}', path: .tmp/vrm154-156-frontend-source-reproof, if-no-files-found: error, retention-days: 30, compression-level: 0}
    - run: |
       set -Eeuo pipefail
       node --check app/modules/postulaciones.js
@@ -4961,7 +4521,7 @@ jobs:
       test "$(jq -r '[.assertions[]|select(.name=="vrm168_existing_hr_identity_preserves_conflict_review")][0].ok' "$FOCAL_OUT/vrm258-canonical-read-model.json")" = "true"
   vrm154-156-dev-materialization:
    needs: canonical-candidate-authority
-   if: ${{ contains(fromJSON('["HOLD_VRM134_A05_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM154_156_DEV_MATERIALIZATION_REQUIRED","HOLD_V190_DEV_MATERIALIZATION_REQUIRED","HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM216_SHARED_IDEMPOTENCY_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM217_219_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM306_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM307_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM308_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM309_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM221_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM227_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM249_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM174_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM256_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM257_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM258_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM259_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_B7_CONTEXT_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_S1_AUTO_COMPATIBLE_IDENTITY_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_CERT_CARRYOVER_DEV_MATERIALIZATION_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status) || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_B11_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM317_D06_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM318_D06_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM319_D06_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM320_B3_DEV_MATERIALIZATION_REQUIRED' || (github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-paired-dev-once]') && contains(fromJSON('["HOLD_I3_B4_B7_COMPOSED_SOURCE_PENDING_CI_DEV_AND_ROLE_E2E","HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status)) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-paired-env-once]') && needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_F09_DEV_MATERIALIZED_C3_REPROOF_PENDING') }}
+   if: ${{ contains(fromJSON('["HOLD_VRM134_A05_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM154_156_DEV_MATERIALIZATION_REQUIRED","HOLD_V190_DEV_MATERIALIZATION_REQUIRED","HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM216_SHARED_IDEMPOTENCY_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM217_219_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM306_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM307_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM308_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM309_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM221_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM227_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM249_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM174_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM256_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM257_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM258_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM259_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_B7_CONTEXT_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_S1_AUTO_COMPATIBLE_IDENTITY_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_CERT_CARRYOVER_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_B11_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM317_D06_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM318_D06_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM319_D06_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM320_B3_DEV_MATERIALIZATION_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-paired-dev-once]') && contains(fromJSON('["HOLD_I3_B4_B7_COMPOSED_SOURCE_PENDING_CI_DEV_AND_ROLE_E2E","HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status)) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-paired-env-once]') && needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_F09_DEV_MATERIALIZED_C3_REPROOF_PENDING') }}
    runs-on: ubuntu-24.04
    timeout-minutes: 60
    env:
@@ -4970,7 +4530,7 @@ jobs:
     PAIR_ENV_ONLY: ${{ contains(github.event.head_commit.message, '[i3-paired-env-once]') }}
     FOCAL_OUT: .tmp/vrm154-156-dev-materialization
     ACTIVE_STATUS: ${{ needs.canonical-candidate-authority.outputs.status }}
-    PAIR_ASSET_FILES: core/data.js core/router.js core/tya-phase-a-source-safe-preview.js adapters/tya-live-source-inplace-apply.js adapters/tya-cumulative-read-model-v2.js adapters/tya-canonical-finance-read-model-v2.js adapters/tya-canonical-shopper-portal-v2.js adapters/tya-protected-auth-hr-authority-bridge-v2.js data/tya-hr-source-safe-periods.js modules/midia.js modules/misvisitas.js modules/visita-detalle.js modules/shoppers.js modules/postulaciones.js modules/beneficios.js modules/cert.js modules/academia.js styles/layout.css adapters/tya-c6-unified-human-runtime-v1.js adapters/cxorbia-cxdata-command-boundary-v1.js index-backend-dev.html core/backend-firebase.js adapters/tya-live-source-refresh-watch-v2.js modules/hr-source.js modules/clientes.js modules/historico.js modules/visitas.js modules/cuestionario-shopper.js core/backend-certifications.js core/finanzas-core.js modules/marca.js modules/administrabilidad.js modules/configuracion.js modules/cliente-insights.js adapters/cxorbia-command-adapter-v1.js core/backend-bulletins.js sw.js
+    PAIR_ASSET_FILES: core/data.js core/router.js core/tya-phase-a-source-safe-preview.js adapters/tya-live-source-inplace-apply.js adapters/tya-cumulative-read-model-v2.js adapters/tya-canonical-finance-read-model-v2.js adapters/tya-canonical-shopper-portal-v2.js adapters/tya-protected-auth-hr-authority-bridge-v2.js data/tya-hr-source-safe-periods.js modules/midia.js modules/misvisitas.js modules/visita-detalle.js modules/shoppers.js modules/postulaciones.js modules/beneficios.js modules/cert.js modules/academia.js styles/layout.css adapters/tya-c6-unified-human-runtime-v1.js adapters/cxorbia-cxdata-command-boundary-v1.js index-backend-dev.html core/backend-firebase.js adapters/tya-live-source-refresh-watch-v2.js modules/hr-source.js modules/clientes.js modules/historico.js modules/visitas.js modules/cuestionario-shopper.js core/backend-certifications.js core/finanzas-core.js modules/marca.js modules/administrabilidad.js modules/configuracion.js modules/cliente-insights.js adapters/cxorbia-command-adapter-v1.js core/backend-bulletins.js sw.js core/notif.js modules/dashboard.js
    steps:
    - uses: actions/checkout@v4
      with: {fetch-depth: 0}
@@ -5023,12 +4583,10 @@ jobs:
       set -Eeuo pipefail
       npm install --no-save --ignore-scripts --package-lock=false firebase-tools@14.12.0 firebase-admin@13.4.0 playwright@1.56.1 2>&1 | tee "$FOCAL_OUT/dependency-install.log"
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
-   - if: env.ACTIVE_STATUS == 'HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED' || env.PAIR_ENV_ONLY == 'true'
+     with: {project_id: '${{ env.PROJECT }}'}
+   - if: contains(fromJSON('["HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED"]'), env.ACTIVE_STATUS) || env.PAIR_ENV_ONLY == 'true'
      run: |
       set -Eeuo pipefail
       node --check tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
@@ -5040,6 +4598,7 @@ jobs:
       test "$(jq -r '.release.version.name' "$FOCAL_OUT/hosting-before.json")" = "$(jq -r '.currentHostingOnlyDevMaterialization.hostingVersion // .currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")"
       curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" > "$FOCAL_OUT/rules-before.json"
       curl -fsSL -H 'Cache-Control: no-cache' https://tya-plataforma.web.app/ -o "$FOCAL_OUT/production-before.html"
+      if [[ "$ACTIVE_STATUS" == HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED ]]; then QA_OUT="$FOCAL_OUT/hr-before" CXORBIA_I3_QA_SCOPE=HR_DURABLE_REVISION_READONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs; fi
    - run: |
       set -Eeuo pipefail
       SOURCE_DIR="$RUNNER_TEMP/cxorbia-vrm154-156-source"
@@ -5147,9 +4706,10 @@ jobs:
         HOLD_I3_VRM319_D06_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM319_D06_EXACT_DEV_MATERIALIZATION ;;
         HOLD_I3_VRM320_B3_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM320_B3_EXACT_DEV_MATERIALIZATION ;;
         HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_I3_F09_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_I3_VRM143_EXACT_DEV_MATERIALIZATION ;;
       esac
       jq -n -S --arg decision "$DECISION" --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg runtime "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg hosting "$HOSTING_VERSION_NAME" --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hr "$HR_REVISION" --argjson reuse "$PAIR_ENV_ONLY" '{decision:$decision,sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hostingRelease:$hostingRelease,hrRevision:$hr,builds:(if $reuse then 0 else 1 end),runtimeDeploys:1,hostingDeploys:(if $reuse then 0 else 1 end),storageRulesDeploys:0,scenarioDimensionsProven:true,production:false}' > "$FOCAL_OUT/result.json"
-   - if: env.ACTIVE_STATUS == 'HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED' || env.PAIR_ENV_ONLY == 'true'
+   - if: contains(fromJSON('["HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED"]'), env.ACTIVE_STATUS) || env.PAIR_ENV_ONLY == 'true'
      run: |
       set -Eeuo pipefail
       TOKEN="$(gcloud auth print-access-token)"
@@ -5164,15 +4724,15 @@ jobs:
       Object.assign(r,{verifiedServedAssetCount:Object.keys(r.servedSha256).length,sourceHostedExact:true,runtimeTrafficExact:true,productionUnchanged:true,productionIndexSha256:hash(fs.readFileSync(o+'/production-after.html')),firestoreRuleset:JSON.parse(fs.readFileSync(o+'/rules-after.json')).rulesetName,firestoreRulesDeploys:0,hrWrites:0});
       fs.writeFileSync(o+'/result.json',JSON.stringify(r,null,2)+'\n');
       NODE
+      if [[ "$ACTIVE_STATUS" == HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED ]]; then
+        QA_OUT="$FOCAL_OUT/hr-after" CXORBIA_I3_QA_SCOPE=HR_DURABLE_REVISION_READONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
+        EXPECTED_HR_REVISION="$HR_REVISION" QA_OUT="$FOCAL_OUT/notifications" CXORBIA_I3_QA_SCOPE=VRM143_NOTIFICATION_CYCLE CXORBIA_I3_QA_ISOLATED_WRITE_GATE=PAULA_AUTHORIZED_VRM143_DEV_ONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
+      else
       EXPECTED_HR_REVISION="$HR_REVISION" QA_OUT="$FOCAL_OUT/f09" CXORBIA_I3_QA_SCOPE=F09_CLIENT_COLLABORATION CXORBIA_I3_QA_ISOLATED_WRITE_GATE=PAULA_AUTHORIZED_F09_DEV_ONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
+      fi
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm154-156-dev-materialization-${{ github.run_id }}
-      path: .tmp/vrm154-156-dev-materialization
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm154-156-dev-materialization-${{ github.run_id }}', path: .tmp/vrm154-156-dev-materialization, if-no-files-found: error, retention-days: 30, compression-level: 6}
   vrm185-admin-live-adjudication:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_V190_LIVE_REPROOF_REQUIRED' }}
@@ -5198,8 +4758,7 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
    - run: |
       set -Eeuo pipefail
@@ -5236,12 +4795,7 @@ jobs:
       test "$(jq -r '.production' "$VRM185_ADMIN_OUT/result.json")" = "false"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm185-admin-live-adjudication-${{ github.run_id }}
-      path: .tmp/vrm185-admin-live-adjudication
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm185-admin-live-adjudication-${{ github.run_id }}', path: .tmp/vrm185-admin-live-adjudication, if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm157-dev-readback-only:
    needs: [canonical-candidate-authority, vrm185-admin-live-adjudication]
    if: ${{ always()&&needs.canonical-candidate-authority.result=='success'&&contains(fromJSON('["HOLD_I3_VRM300_READBACK_RUN2103","HOLD_VRM157_DEV_READBACK_ONLY_REQUIRED","HOLD_VRM154_156_LIVE_REPROOF_REQUIRED","HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED","HOLD_V190_LIVE_REPROOF_REQUIRED","HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status)&&(needs.canonical-candidate-authority.outputs.status!='HOLD_V190_LIVE_REPROOF_REQUIRED'||needs.vrm185-admin-live-adjudication.result=='success') }}
@@ -5277,8 +4831,7 @@ jobs:
       test -n "$EXPECTED_RUNTIME_REVISION"; test -n "$EXPECTED_HOSTING_VERSION"
       for N in EXPECTED_RUNTIME_REVISION EXPECTED_RUNTIME_DIGEST EXPECTED_HOSTING_VERSION EXPECTED_HR_REVISION; do echo "$N=${!N}" >> "$GITHUB_ENV"; done
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
    - run: |
       set -Eeuo pipefail
@@ -5355,12 +4908,7 @@ jobs:
       jq -n -S --arg decision "$DECISION" --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$EXPECTED_HOSTING_VERSION" --arg hr "$HR_REVISION" '{decision:$decision,sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,scenarioDimensionsProven:true,frontendBytesExact:true,builds:0,runtimeDeploys:0,hostingDeploys:0,writes:0,production:false}' > "$FOCAL_OUT/result.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm157-dev-readback-${{ github.run_id }}
-      path: .tmp/vrm157-dev-readback
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm157-dev-readback-${{ github.run_id }}', path: .tmp/vrm157-dev-readback, if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm153-durable-repair:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM153_AUTHORIZED_SCOPED_DEV_RECONCILIATION' }}
@@ -5385,8 +4933,7 @@ jobs:
       node --test backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs | tee "$VRM_OUT/source-tests.log"
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HR_URL="$VRM_HR_URL" OUT="$VRM_OUT/dry" node tools/qa/cxorbia-vrm151-final-canonical-dry-run.mjs > "$VRM_OUT/dry/console.log"
@@ -5397,12 +4944,7 @@ jobs:
       jq -e '.decision=="PASS_VRM153_RECONCILIATION_READBACK_MATCH" and .counts.records==643 and .counts.uniqueVisits==643 and .counts.paid==599 and .counts.pending==44 and .counts.amountReviewRequired==5 and .sourceRevision==.hrRevision and .writes==0' "$VRM_OUT/after/result.json" >/dev/null
    - uses: actions/upload-artifact@v4
      if: always()
-     with:
-      name: cxorbia-vrm153-paula-authorized-dev-41-${{ github.run_id }}
-      path: .tmp/vrm153-paula-authorized-dev-41
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm153-paula-authorized-dev-41-${{ github.run_id }}', path: .tmp/vrm153-paula-authorized-dev-41, if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm185-paula-identity-topology-readonly:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM185_PAULA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED' }}
@@ -5432,8 +4974,7 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
@@ -5448,12 +4989,7 @@ jobs:
       test "$(jq -r '.production' "$VRM185_OUT/result.json")" = "false"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm185-paula-identity-topology-${{ github.run_id }}
-      path: .tmp/vrm185-paula-identity-topology
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm185-paula-identity-topology-${{ github.run_id }}', path: .tmp/vrm185-paula-identity-topology, if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm185-global-identity-consolidation-plan:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM185_GLOBAL_IDENTITY_CONSOLIDATION_PLAN_REQUIRED' }}
@@ -5474,8 +5010,7 @@ jobs:
       git diff --quiet "${{ needs.canonical-candidate-authority.outputs.source_sha }}" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       REV="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
@@ -5486,12 +5021,7 @@ jobs:
       test "$(jq -r '.production' "$VRM185_GLOBAL_OUT/result.json")" = "false"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm185-global-identity-plan-${{ github.run_id }}
-      path: .tmp/vrm185-global-plan
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm185-global-identity-plan-${{ github.run_id }}', path: .tmp/vrm185-global-plan, if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm185-admin-provider-source-test:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM185_ADMIN_PROVIDER_SOURCE_TEST_REQUIRED' }}
@@ -5524,12 +5054,7 @@ jobs:
       }' > "$VRM185_SOURCE_OUT/result.json"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm185-vrm186-admin-provider-source-${{ github.run_id }}
-      path: .tmp/vrm185-admin-provider-source-test
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm185-vrm186-admin-provider-source-${{ github.run_id }}', path: .tmp/vrm185-admin-provider-source-test, if-no-files-found: error, retention-days: 30, compression-level: 0}
 
   phasea-rejected-checkpoint-source-proof:
    needs: canonical-candidate-authority
@@ -5631,8 +5156,7 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 google-auth-library@9.15.1 pdfjs-dist@3.11.174 2>&1 | tee "$PHASEA_LIVE_OUT/npm-install.log"
       npx --no-install playwright install chromium 2>&1 | tee "$PHASEA_LIVE_OUT/chromium-install.log"
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
    - run: |
       set -Eeuo pipefail
@@ -5766,12 +5290,7 @@ jobs:
       test "$(jq -r '[.cleanup.attempt,.cleanup.recert,.cleanup.bank,.cleanup.resource,.cleanup.binary]|all' "$P/cert-res/cert-res-live.json")" = "true"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-phasea-representative-live-${{ github.run_id }}
-      path: .tmp/phasea-representative-live
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-phasea-representative-live-${{ github.run_id }}', path: .tmp/phasea-representative-live, if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm267-support-focal-live:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_I3_VRM267_SUPPORT_FOCAL_LIVE_REQUIRED' }}
@@ -5786,11 +5305,9 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       mkdir -p "$VRM267_OUT"
@@ -5810,9 +5327,7 @@ jobs:
       test "$(jq -r '.decision' "$R")" = "PASS_VRM267_SUPPORT_FOCAL_LIVE"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-vrm267-support-focal-live-${{ github.run_id }}
-      path: .tmp/i3-vrm267-support-focal-live
+     with: {name: 'cxorbia-i3-vrm267-support-focal-live-${{ github.run_id }}', path: .tmp/i3-vrm267-support-focal-live}
 
   julissa-identity-topology-readonly:
    needs: canonical-candidate-authority
@@ -5838,8 +5353,7 @@ jobs:
       node --check tools/qa/cxorbia-i3-julissa-identity-topology-readonly.mjs
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
@@ -5849,12 +5363,7 @@ jobs:
       test "$(jq -r '.production' "$JULISSA_OUT/result.json")" = "false"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-julissa-identity-topology-${{ github.run_id }}
-      path: .tmp/i3-julissa-topology
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-julissa-identity-topology-${{ github.run_id }}', path: .tmp/i3-julissa-topology, if-no-files-found: error, retention-days: 30, compression-level: 0}
   julissa-identity-adjudication-write:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_JULISSA_IDENTITY_ADJUDICATION_REQUIRED' }}
@@ -5883,8 +5392,7 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
    - run: |
       set -Eeuo pipefail
@@ -5920,12 +5428,7 @@ jobs:
       test "$(jq -r '.production' "$JULISSA_WRITE_OUT/result.json")" = "false"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm214-julissa-adjudication-${{ github.run_id }}
-      path: .tmp/i3-vrm214-julissa-adjudication
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm214-julissa-adjudication-${{ github.run_id }}', path: .tmp/i3-vrm214-julissa-adjudication, if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm215-shopper-population-reproof:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED'||(contains(github.event.head_commit.message, '[i3-shopper-population-readonly]') && needs.canonical-candidate-authority.result == 'success') }}
@@ -5962,8 +5465,7 @@ jobs:
       if [ ! -e node_modules ]; then ln -s firebase/auth-dev-tools/node_modules node_modules; fi
       ./firebase/auth-dev-tools/node_modules/.bin/playwright install chromium
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
    - run: |
       set -Eeuo pipefail
@@ -6033,12 +5535,7 @@ jobs:
       test "$(jq -r '.production' "$R")" = "false"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm215-shopper-population-${{ github.run_id }}
-      path: .tmp/i3-vrm215-shopper-population
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm215-shopper-population-${{ github.run_id }}', path: .tmp/i3-vrm215-shopper-population, if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm217-durable-credential-sweep:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM217_DURABLE_CREDENTIAL_SWEEP_REQUIRED' }}
@@ -6066,8 +5563,7 @@ jobs:
       node --check tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       HR="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
@@ -6088,12 +5584,7 @@ jobs:
       test "$(jq -r '.writes' "$SWEEP_OUT/post/result.json")" = "0"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm217-durable-credential-sweep-${{ github.run_id }}
-      path: .tmp/i3-vrm217-sweep
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm217-durable-credential-sweep-${{ github.run_id }}', path: .tmp/i3-vrm217-sweep, if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm219-exact-alias-remap:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM219_REMAINING_EXACT_ALIAS_REMAP_REQUIRED' }}
@@ -6127,12 +5618,7 @@ jobs:
       node --check tools/qa/cxorbia-i3-vrm219-exact-alias-remap.mjs
       node --check tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs
    - uses: actions/download-artifact@v4
-     with:
-      name: cxorbia-vrm217-219-population-root-37190025557
-      path: .tmp/i3-vrm219-input
-      github-token: ${{ github.token }}
-      repository: ${{ github.repository }}
-      run-id: 37190025557
+     with: {name: cxorbia-vrm217-219-population-root-37190025557, path: .tmp/i3-vrm219-input, github-token: '${{ github.token }}', repository: '${{ github.repository }}', run-id: 37190025557}
    - run: |
       set -Eeuo pipefail
       test -f "$VRM219_INPUT/result.json"
@@ -6152,11 +5638,9 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       EXPECTED_RUNTIME="$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")"
@@ -6201,12 +5685,7 @@ jobs:
       test "$(jq -r '.visits.ambiguousAuthorityGroups' "$VRM219_OUT/post/result.json")" = "0"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm219-exact-alias-remap-${{ github.run_id }}
-      path: .tmp/i3-vrm219-remap
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm219-exact-alias-remap-${{ github.run_id }}', path: .tmp/i3-vrm219-remap, if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm226-human-identity-topology:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM226_USER_CONFIRMED_IDENTITY_TOPOLOGY_DIAGNOSTIC' }}
@@ -6235,8 +5714,7 @@ jobs:
       node --check tools/qa/cxorbia-i3-vrm226-human-identity-topology.mjs
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       mkdir -p "$VRM226_OUT"
@@ -6247,12 +5725,7 @@ jobs:
       test "$(jq -r '.production' "$VRM226_OUT/result.json")" = "false"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-vrm226-human-identity-topology-${{ github.run_id }}
-      path: .tmp/i3-vrm226-human-identity-topology
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-vrm226-human-identity-topology-${{ github.run_id }}', path: .tmp/i3-vrm226-human-identity-topology, if-no-files-found: error, retention-days: 30, compression-level: 0}
   admin-cluster-a-postulations-lifecycle:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED' }}
@@ -6281,11 +5754,9 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       EXPECTED_RUNTIME="$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")"
@@ -6323,12 +5794,7 @@ jobs:
       test "$(jq -r '.production' "$R")" = "false"
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-admin-cluster-a-postulations-${{ github.run_id }}
-      path: .tmp/i3-admin-cluster-a-postulations
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-i3-admin-cluster-a-postulations-${{ github.run_id }}', path: .tmp/i3-admin-cluster-a-postulations, if-no-files-found: error, retention-days: 30, compression-level: 0}
   vrm249-reservations-read-model-source-reproof:
    needs: canonical-candidate-authority
    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_I3_VRM249_SOURCE_REPROOF_REQUIRED' }}
@@ -6346,12 +5812,7 @@ jobs:
    - run: node control/qa/cxorbia-vrm249-reservations-read-model-source-reproof.mjs
    - if: always()
      uses: actions/upload-artifact@v4
-     with:
-      name: cxorbia-i3-vrm249-source-${{ github.run_id }}
-      path: .tmp/i3-vrm249-source
-      if-no-files-found: error
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-i3-vrm249-source-${{ github.run_id }}', path: .tmp/i3-vrm249-source, if-no-files-found: error, retention-days: 30, compression-level: 0}
 
 
   b1-oct07-authenticated-readonly-visual:
@@ -6379,8 +5840,7 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       npx playwright install chromium >/dev/null 2>&1
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
      with: {project_id: cxorbia-backend-dev}
    - run: |
@@ -6390,12 +5850,7 @@ jobs:
       jq -e '.decision=="PASS_B1_AUTHENTICATED_READONLY_UI_FOCAL" and .production==false and .testInitiatedWrites==0 and (.targets|length)==2' "$B1_VISUAL_OUT/result.json" >/dev/null
    - uses: actions/upload-artifact@v4
      if: always()
-     with:
-      name: cxorbia-i3-b1-oct07-auth-readonly-${{ github.run_id }}
-      path: .tmp/b1-oct07-readonly
-      if-no-files-found: warn
-      retention-days: 30
-      compression-level: 0
+     with: {name: 'cxorbia-i3-b1-oct07-auth-readonly-${{ github.run_id }}', path: .tmp/b1-oct07-readonly, if-no-files-found: warn, retention-days: 30, compression-level: 0}
 
   i3-a09b11-backend-only-dev-materialization:
    needs: canonical-candidate-authority
@@ -6438,11 +5893,9 @@ jobs:
       sha256sum backend/runtime/cxorbia-operational-command-provider-v1.mjs > "$GITHUB_WORKSPACE/$FOCAL_EVIDENCE/backend-source-sha256.txt"
       echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - name: DEV read-only preflight
      run: |
       set -Eeuo pipefail
@@ -6535,17 +5988,11 @@ jobs:
       git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
    - name: Fetch baseline
      uses: actions/download-artifact@v4
-     with:
-      name: cxorbia-i3-a09b11-backend-only-dev-40154645333
-      path: .tmp/i3-a09b11-post-deploy-readback/baseline
-      run-id: ${{ env.ORIGINAL_MATERIALIZATION_RUN }}
-      github-token: ${{ github.token }}
+     with: {name: cxorbia-i3-a09b11-backend-only-dev-40154645333, path: .tmp/i3-a09b11-post-deploy-readback/baseline, run-id: '${{ env.ORIGINAL_MATERIALIZATION_RUN }}', github-token: '${{ github.token }}'}
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - name: Verify active DEV
      run: |
       set -Eeuo pipefail
@@ -6619,11 +6066,9 @@ jobs:
       cd "$GITHUB_WORKSPACE"
       node --test tools/qa/cxorbia-i3-{d04e03-shopper-relogin-pdf-source,work-uat-vrm285-resource-viewer}.test.mjs
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - name: Preflight
      run: |
       set -Eeuo pipefail
@@ -6669,8 +6114,7 @@ jobs:
    - uses: actions/checkout@v4
      with: {fetch-depth: 0}
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 && node .github/control/vrm287-dev-two-visit.cjs
 
   vrm290-dev-hosting:
@@ -6745,11 +6189,9 @@ jobs:
       (cd "$SOURCE_DIR/app" && find . -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum) > "$EVIDENCE/source-hosting-files.sha256"
       sha256sum "$EVIDENCE/source-hosting-files.sha256" > "$EVIDENCE/source-hosting-manifest.sha256"
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: ${{ env.PROJECT }}
+     with: {project_id: '${{ env.PROJECT }}'}
    - run: |
       set -Eeuo pipefail
       gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$EVIDENCE/runtime-before.json"
@@ -6839,8 +6281,7 @@ jobs:
       git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules
       node --check firebase/auth-dev-tools/cxorbia-i3-dev-storage-cors-alias-focal.mjs
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - name: Install DEV metadata client
      run: |
       set -Eeuo pipefail
@@ -6852,11 +6293,7 @@ jobs:
       jq -e '(.decision=="PASS_DEV_ALIAS_CORS_PATCHED_AND_READ_BACK" or .decision=="PASS_DEV_ALIAS_CORS_ALREADY_CONFIGURED") and .safety.production==false and .safety.deploys==0 and .safety.hrWrites==0 and .safety.authWrites==0 and .safety.storageObjectWrites==0 and .safety.bucketMetadataWrites<=1' .tmp/cxorbia-i3-dev-storage-cors-alias-focal/result.json >/dev/null
    - uses: actions/upload-artifact@v4
      if: always()
-     with:
-      name: cxorbia-i3-dev-storage-cors-alias-focal-${{ github.run_id }}
-      path: .tmp/cxorbia-i3-dev-storage-cors-alias-focal/
-      if-no-files-found: warn
-      retention-days: 30
+     with: {name: 'cxorbia-i3-dev-storage-cors-alias-focal-${{ github.run_id }}', path: .tmp/cxorbia-i3-dev-storage-cors-alias-focal/, if-no-files-found: warn, retention-days: 30}
 
 
   i3-b4-bank-flags-readonly:
@@ -6878,8 +6315,7 @@ jobs:
       test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
       mkdir -p .tmp/i3-b4-required-bank-flags
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - name: Read exact Cinépolis bank requirements without attempts or question keys
      run: |
       set -Eeuo pipefail
@@ -6939,11 +6375,7 @@ jobs:
       NODE
    - uses: actions/upload-artifact@v4
      if: always()
-     with:
-      name: cxorbia-i3-b4-bank-flags-readonly-${{ github.run_id }}
-      path: .tmp/i3-b4-required-bank-flags/
-      if-no-files-found: warn
-      retention-days: 30
+     with: {name: 'cxorbia-i3-b4-bank-flags-readonly-${{ github.run_id }}', path: .tmp/i3-b4-required-bank-flags/, if-no-files-found: warn, retention-days: 30}
 
 
   i3-keeper-role-e2e-readonly:
@@ -6979,8 +6411,7 @@ jobs:
       echo "CXORBIA_PRODUCT_SOURCE_SHA=$SOURCE" >> "$GITHUB_ENV"
       echo "CXORBIA_HR_REVISION=$HR" >> "$GITHUB_ENV"
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - name: Install DEV-only read-only tooling
      run: |
       set -Eeuo pipefail
@@ -6993,11 +6424,7 @@ jobs:
       jq -e '.decision=="PASS_SCOPED_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E" and .safety.production==false and .safety.hrWrites==0 and .safety.directAuthWrites==0 and .safety.directFirestoreWrites==0' .tmp/cxorbia-i3-two-keepers-role-e2e-readonly/result.json >/dev/null
    - uses: actions/upload-artifact@v4
      if: always()
-     with:
-      name: cxorbia-i3-two-keepers-role-e2e-readonly-${{ github.run_id }}
-      path: .tmp/cxorbia-i3-two-keepers-role-e2e-readonly/result.json
-      if-no-files-found: warn
-      retention-days: 30
+     with: {name: 'cxorbia-i3-two-keepers-role-e2e-readonly-${{ github.run_id }}', path: .tmp/cxorbia-i3-two-keepers-role-e2e-readonly/result.json, if-no-files-found: warn, retention-days: 30}
 
   i3-run2382-academy-b7-isolated-dev-qa:
    needs: canonical-candidate-authority
@@ -7035,11 +6462,9 @@ jobs:
       mkdir -p "$QA_OUT"
       echo "EXPECTED_HR_REVISION=$(jq -r '.providerReceipt.hrRevision' "$P")" >> "$GITHUB_ENV"
    - uses: google-github-actions/auth@v2
-     with:
-      credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+     with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
-     with:
-      project_id: '${{ env.PROJECT }}'
+     with: {project_id: '${{ env.PROJECT }}'}
    - name: Assert Cloud Run and Hosting still serve the exact RUN2382 artifact
      run: |
       set -Eeuo pipefail
@@ -7071,9 +6496,5 @@ jobs:
       jq -e '.decision=="PASS_I3_B7_TWO_ROLE_DECISION_LIVE_DEV" and .providerAck==true and .hrBefore==.hrAfter and (.cases|length)==2 and (.rescheduleCases|length)==2 and ([.cleanup[]|select(.!=true)]|length)==0 and .production==false and .hrWrites==0 and .paymentWrites==0 and .deploys==0' "$QA_OUT/b7/result.json" >/dev/null
    - uses: actions/upload-artifact@v4
      if: always()
-     with:
-      name: cxorbia-i3-run2382-academy-b7-synthetic-${{ github.run_id }}
-      path: .tmp/i3-run2382-academy-b7-synthetic/
-      if-no-files-found: warn
-      retention-days: 30
+     with: {name: 'cxorbia-i3-run2382-academy-b7-synthetic-${{ github.run_id }}', path: .tmp/i3-run2382-academy-b7-synthetic/, if-no-files-found: warn, retention-days: 30}
 

@@ -36,6 +36,14 @@ window.CX = window.CX || {};
     }catch(_){ return 'vigente'; }
   }
 
+  function canonicalDate(value){
+    if(!value)return null;
+    try{
+      const date=value.toDate?value.toDate():new Date(typeof value==='object'&&Number.isFinite(value.seconds)?value.seconds*1000:value);
+      return Number.isFinite(date.getTime())?date.toISOString():null;
+    }catch(_){return null;}
+  }
+
   function tone(priority){
     return {urgent:'r', high:'a', normal:'b', low:'g'}[priority] || 'b';
   }
@@ -82,6 +90,14 @@ window.CX = window.CX || {};
       txt: d.body || d.text || '',
       displayText: noticeHumanCopy(d),
       fecha: nowLabel(d.createdAt || d.activeFrom),
+      createdAt: canonicalDate(d.createdAt || d.activeFrom),
+      activeFrom: canonicalDate(d.activeFrom),
+      resolvedAt: canonicalDate(d.resolvedAt),
+      expiredAt: canonicalDate(d.expiredAt),
+      actionRequired: d.actionRequired === true,
+      requestCycleId: d.requestCycleId || null,
+      tenantId: d.tenantId || null,
+      targetAll: d.targetAll === true,
       leida: readSet.has(d.id),
       nav: d.actionRoute || d.nav || '',
       para: d.targetLabel || '',

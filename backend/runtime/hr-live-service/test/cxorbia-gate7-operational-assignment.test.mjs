@@ -405,3 +405,65 @@ test('PRE-I4 VRM-013 / Postulaciones has no local-first edit reassign cancel or 
   assert.doesNotMatch(source,/data\.assignVisit&&data\.assignVisit\(x\.visitaId,sel\)/);
   assert.doesNotMatch(source,/v\.estado='disponible';v\.shopperId=null/);
 });
+
+// VRM143: exact cycles are provider-owned and survive retries without reviving old notices.
+import vm from 'node:vm';
+function requestCycleFixture(){
+ const db=new FakeFirestore();
+ const mergeMap=(a,b)=>{const out=clone(a)||{};for(const [k,v]of Object.entries(b)){out[k]=v&&typeof v==='object'&&!Array.isArray(v)&&a?.[k]&&typeof a[k]==='object'&&!Array.isArray(a[k])?mergeMap(a[k],v):clone(v);}return out;};
+ // Firestore merge preserves nested fields that are absent from a patch.
+ db._set=(p,v,options={},store=db._store)=>store.set(p,options.merge?mergeMap(store.get(p),v):clone(v));
+ const actor=token=>token==='shopper-token'?{uid:'shopper-1',role:'shopper',authNamespace:'shopper',shopperId:'shopper-a'}:{uid:'admin-1',role:'admin',authNamespace:'staff'};
+ for(const token of ['shopper-token','admin-token']){const a=actor(token);db.seed('tenants/tenant-a/users/'+a.uid,{...a,tenantId:'tenant-a',active:true,projectIds:['project-a']});}
+ const auth={verifyIdToken:async token=>({...actor(token),tenantId:'tenant-a',projectIds:['project-a']})};
+ db.seed('tenants/tenant-a/projects/project-a',{tenantId:'tenant-a',operationalSource:{mode:'external'},timeZone:'UTC'});
+ const v={id:'visit-cycle',visitId:'visit-cycle',hrRowId:'HR!cycle',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',periodKey:'2026-11',quincena:'2Q',shopperId:'shopper-a',estado:'agendada',status:'agendada',agendada:'2026-11-18',version:1,canonicalFacets:{available:false,assigned:true,scheduled:true,cancelled:false},hrManaged:{hrRowId:'HR!cycle',sourceRevision:'independent-hr'},currency:'GTQ',paidAmount:23,financeHistory:[{id:'immutable'}]};
+ db.seed(visitPath(v.id),v);const service=createOperationalCommandProvider({auth,db,policy});
+ const command=(type,version,key,payload)=>({version:'cxorbia-command-adapter-v1',commandType:type,entityType:'visit',entityId:v.id,tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',expectedVersion:version,idempotencyKey:key,payload:{visitId:v.id,hrRowId:v.hrRowId,...payload},authorization:{providerEnforcementRequired:true}});
+ const bulletins=()=>db.paths().filter(p=>p.includes('/bulletins/')).map(p=>db.get(p));
+ const snapshot=()=>JSON.stringify([...db._store]);
+ return {db,service,command,bulletins,snapshot,initial:v};
+}
+function actualRequestNoticeFeed(rows,visit,role){
+ const CX={BACKEND:{enabled:false,previewMode:false,tenantId:'tenant-a'},dataSource:{showFixtures:()=>false},session:{role,user:{shopperId:'shopper-a'}},backendAuth:{context:()=>({tenantId:'tenant-a',role,shopperId:'shopper-a'})},data:{currentProjectId:'project-a',currentPeriodId:'2026-12',period:()=>({periodo:'2026-12'}),_visitas:[visit]}};
+ const c=vm.createContext({CX,console,Set,Date,document:{readyState:'complete'}});c.window=c;c.addEventListener=()=>{};
+ vm.runInContext(fs.readFileSync(path.join(repoRoot,'app/core/notif.js'),'utf8'),c);
+ vm.runInContext(fs.readFileSync(path.join(repoRoot,'app/core/backend-bulletins.js'),'utf8').replace('  CX.backendBulletins = {','  CX.__normalizeNotice=normalize;\n  CX.backendBulletins = {'),c);
+ CX.notif._items=rows.map(d=>CX.__normalizeNotice({id:d.id,data:()=>d},new Set()));return CX.notif;
+}
+for(const [type,field]of [['visit.cancel','cancelRequest'],['visit.reschedule','rescheduleRequest']])test('VRM143 '+type+' two exact cycles, equal clock, durable notice and old replay',async t=>{
+ t.mock.timers.enable({apis:['Date'],now:new Date('2026-11-16T12:00:00Z')});
+ const f=requestCycleFixture(),{db,service}=f;
+ const otherField=field==='cancelRequest'?'rescheduleRequest':'cancelRequest';db.seed(visitPath(f.initial.id),{...f.initial,[otherField]:{status:'rejected',reason:'unrelated prior request',decidedAt:'2026-10-01T00:00:00Z'}});
+ const initial=db.get(visitPath(f.initial.id));
+ const request=f.command(type,1,type+'-request-1',{reason:'request one',requestOnly:type==='visit.cancel',requestedByShopper:type==='visit.reschedule',newDate:'2026-11-22',requestCycleId:'UNTRUSTED_CLIENT_CYCLE'});
+ const first=await service.execute('shopper-token',request);assert.equal(first.providerAck,true,JSON.stringify(first));assert.equal(first.providerWrites,4);
+ let row=db.get(visitPath(f.initial.id));const cycle1=row[field].requestCycleId;assert.match(cycle1,/^[a-f0-9]{40}$/);assert.notEqual(cycle1,request.payload.requestCycleId);assert.equal(f.bulletins()[0].requestCycleId,cycle1);assert.equal(f.bulletins()[0].createdAt,row[field].requestedAt);
+ const decision=f.command(type,2,type+'-decision-1',{decision:'rejected',reason:'decision one'});
+ const rejected=await service.execute('admin-token',decision);assert.equal(rejected.providerAck,true,JSON.stringify(rejected));assert.equal(rejected.providerWrites,4);
+ row=db.get(visitPath(f.initial.id));assert.equal(row[field].requestCycleId,cycle1);assert.equal(row[field].requestedAt,'2026-11-16T12:00:00.000Z');assert.equal(row[field].decidedBy,'admin-1');
+ const decisionNotice=f.bulletins().find(n=>n.idempotencyKey===decision.idempotencyKey);assert.equal(decisionNotice.requestCycleId,cycle1);assert.notEqual(decisionNotice.idempotencyKey,request.idempotencyKey);
+ const request2=f.command(type,3,type+'-request-2',{reason:'request two',requestOnly:type==='visit.cancel',requestedByShopper:type==='visit.reschedule',newDate:'2026-11-23'});
+ const second=await service.execute('shopper-token',request2);assert.equal(second.providerAck,true,JSON.stringify(second));assert.equal(second.providerWrites,4);row=db.get(visitPath(f.initial.id));
+ const cycle2=row[field].requestCycleId;assert.notEqual(cycle2,cycle1);assert.equal(row[field].requestedAt,'2026-11-16T12:00:00.000Z');assert.equal(row[field].status,'pending_review');assert.equal(row[field].reason,'request two');
+ for(const key of ['decidedAt','decidedBy','decisionReason'])assert.equal(row[field][key],null,'new cycle must clear '+key+' even under nested merge');
+ const clean=v=>{const r=clone(v);for(const k of [field,'version','updatedAt'])delete r[k];return r;};assert.deepEqual(clean(row),clean(initial));
+ for(const [token,c]of [['shopper-token',request],['admin-token',decision]]){const before=f.snapshot(),replay=await service.execute(token,c);assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);assert.equal(f.snapshot(),before);}
+ const all=f.bulletins(),current=all.find(n=>n.idempotencyKey===request2.idempotencyKey),adminFeed=actualRequestNoticeFeed(all,row,'admin'),shopperFeed=actualRequestNoticeFeed(all,row,'shopper');
+ assert.deepEqual(Array.from(adminFeed.for('admin'),n=>n.id),[current.id]);assert.equal(adminFeed.history('admin').length,2);assert.equal(shopperFeed.for('shopper').length,0);assert.equal(shopperFeed.history('shopper').length,1);
+});
+test('VRM143 external cancellation preserves exact pending HR cycle without fabricating availability',async t=>{
+ t.mock.timers.enable({apis:['Date'],now:new Date('2026-11-16T12:00:00Z')});const f=requestCycleFixture();
+ const request=f.command('visit.cancel',1,'pending-hr-request',{requestOnly:true,reason:'request'});assert.equal((await f.service.execute('shopper-token',request)).providerAck,true);
+ const cycle=f.db.get(visitPath(f.initial.id)).cancelRequest.requestCycleId,decision=f.command('visit.cancel',2,'pending-hr-decision',{decision:'approved',reason:'approved'});assert.equal((await f.service.execute('admin-token',decision)).providerAck,true);
+ const row=f.db.get(visitPath(f.initial.id));assert.equal(row.cancelRequest.status,'approved_pending_hr');assert.equal(row.cancelRequest.requestCycleId,cycle);assert.equal(f.bulletins().find(n=>n.idempotencyKey===decision.idempotencyKey).requestCycleId,cycle);
+ for(const k of ['shopperId','agendada','estado','hrManaged','canonicalFacets','financeHistory','paidAmount','currency'])assert.deepEqual(row[k],f.initial[k]);
+ const before=f.snapshot(),blocked=await f.service.execute('shopper-token',f.command('visit.cancel',3,'blocked-request',{requestOnly:true,reason:'second'}));assert.equal(blocked.code,'OPS_VISIT_REQUEST_ALREADY_PENDING');assert.equal(f.snapshot(),before);
+ const replay=await f.service.execute('admin-token',decision);assert.equal(replay.providerWrites,0);assert.equal(replay.idempotentReplay,true);assert.equal(f.snapshot(),before);
+ assert.equal(actualRequestNoticeFeed(f.bulletins(),row,'shopper').for('shopper').length,1);
+});
+test('VRM143 bulletin write failure rolls back request, receipt and audit together',async t=>{
+ t.mock.timers.enable({apis:['Date'],now:new Date('2026-11-16T12:00:00Z')});const f=requestCycleFixture(),set=f.db._set;
+ f.db._set=(p,...rest)=>{if(p.includes('/bulletins/'))throw new Error('SYNTHETIC_NOTICE_WRITE_FAILURE');return set(p,...rest);};
+ const before=f.snapshot(),result=await f.service.execute('shopper-token',f.command('visit.cancel',1,'atomic-request',{requestOnly:true,reason:'request'}));assert.equal(result.providerAck,false);assert.equal(result.code,'SYNTHETIC_NOTICE_WRITE_FAILURE');assert.equal(f.snapshot(),before);
+});

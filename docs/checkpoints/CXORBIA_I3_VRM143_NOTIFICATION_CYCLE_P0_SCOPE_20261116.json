@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "cxorbia.i3.exact-p0-scope.v1",
+  "createdAt": "2026-11-16T01:34:25.385775+00:00",
+  "iteration": "I3",
+  "state": "P0_PROVEN_PRE_EDIT",
+  "findingId": "VRM-143",
+  "classification": [
+    "MAPPING_FAILURE",
+    "FUNCTIONAL_DEFECT"
+  ],
+  "controlHead": "41282593f83bba3def61f75ab0d58f7892fd5aa7",
+  "productSourceSha": "ef708259616da70b5adea2fa85d9abc34a5222c2",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261116-V324.json",
+  "moduleTruthGitBlob": "c1dc4310bb09a211b831d14f8b02206b46cce6be",
+  "moduleTruthRows": [
+    {
+      "path": "app/core/notif.js",
+      "domain": "base-router-shell-cache",
+      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+      "latestApprovedBlob": "c86f8d98eac023fa6cd30d59f0a792edfc885f23",
+      "approvedSourceCommit": "7d8aa5f8208f059c3ff643f72ab42a6866301e6e",
+      "approvedBlob": "b544f25fdbb5894a96e61e31f10e92220f131985",
+      "lastServedBlob": "b544f25fdbb5894a96e61e31f10e92220f131985",
+      "sourceSuccessor": "ef708259616da70b5adea2fa85d9abc34a5222c2",
+      "sourceBlob": "b544f25fdbb5894a96e61e31f10e92220f131985",
+      "headBlob": "b544f25fdbb5894a96e61e31f10e92220f131985",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "diagnosticScope": "VRM143_NOTIFICATION_CANONICAL_VIGENCY_AND_EXACT_REQUEST_CYCLE",
+      "liveByteReadback": {
+        "urlPath": "core/notif.js",
+        "equalExactSource": true,
+        "sha256": "8a6dfb64125a553474ef1e7225d9a7355fe835daae4cf1022051bc5fef4bf140",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/39c320c9d9f35f97"
+      }
+    },
+    {
+      "path": "app/core/backend-bulletins.js",
+      "domain": "base-router-shell-cache",
+      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+      "latestApprovedBlob": "4f51dfa1b8e6287c9c2ef63f5b05e5fc9d2beedb",
+      "approvedSourceCommit": "792f223b14c24c061c0e0a1ba82afafedd9808c6",
+      "approvedBlob": "115685e316ce94641b6b32d6415eef5bede2db88",
+      "lastServedBlob": "d3da9eb27deda9779057705dc31cee6f9a193cc7",
+      "sourceSuccessor": "ef708259616da70b5adea2fa85d9abc34a5222c2",
+      "sourceBlob": "d3da9eb27deda9779057705dc31cee6f9a193cc7",
+      "headBlob": "d3da9eb27deda9779057705dc31cee6f9a193cc7",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "diagnosticScope": "VRM143_NOTIFICATION_CANONICAL_VIGENCY_AND_EXACT_REQUEST_CYCLE",
+      "liveByteReadback": {
+        "urlPath": "core/backend-bulletins.js",
+        "equalExactSource": true,
+        "sha256": "e07d4ff05b8cd2263ebfb47cbc8004ba0ec6c2c24b66ba8c7dcd0754298683e8",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/39c320c9d9f35f97"
+      }
+    },
+    {
+      "path": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+      "domain": "persistence-command-ack-boundary",
+      "latestApprovedSource": "672e7f624b1d0328ed1bb25b778ce4b44d52489c",
+      "latestApprovedBlob": "93634ee52f17103a878d52f345443fe4bbd9850f",
+      "f9ApprovedSource": null,
+      "f9ApprovedBlob": null,
+      "historicalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "approvedSourceCommit": "792f223b14c24c061c0e0a1ba82afafedd9808c6",
+      "approvedBlob": "fb9997ad29e55fdc5945ce79249ea12c2987416b",
+      "lastServedBlob": "913a6d98df276f582aa69152a3bfaa1e5b02c77b",
+      "sourceSuccessor": "ef708259616da70b5adea2fa85d9abc34a5222c2",
+      "sourceBlob": "913a6d98df276f582aa69152a3bfaa1e5b02c77b",
+      "headBlob": "913a6d98df276f582aa69152a3bfaa1e5b02c77b",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "diagnosticScope": "VRM143_NOTIFICATION_CANONICAL_VIGENCY_AND_EXACT_REQUEST_CYCLE",
+      "liveAuthority": {
+        "pairedReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2541_SAME_IMAGE_ENV_REPAIR_20261116.json",
+        "runtimeRevision": "cxorbia-live-hr-dev-00372-56c",
+        "runtimeDigest": "sha256:d5ada4fe17a7e5e00a51bc09b601fbabcfd2f1b3203b8a379f86daa4207f5fe2",
+        "pairedSource": "c54cdc8846642f2d5481e1b933ca5e5cc6c44c22",
+        "sameProviderBlobAsPaired": true
+      }
+    }
+  ],
+  "allowedProductFiles": [
+    "app/core/notif.js",
+    "app/core/backend-bulletins.js",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+  ],
+  "provenDefects": [
+    "backend-bulletins.normalize drops canonical createdAt/resolvedAt/expiredAt/actionRequired and only keeps human-readable date, defeating shared lifecycle filter.",
+    "notif._activeForRole grants operational/type actionability before project/period checks and does not resolve durable request status, making rejected historical notices current.",
+    "Two requests for same exact visit have no shared durable cycle identity between request subobject and bulletin; a later pending state cannot authenticate an older notice."
+  ],
+  "correction": [
+    "Preserve canonical validity and request-cycle metadata in existing mapper.",
+    "Apply recipient/project identity and exact cycle/status before granting historical actionability; keep authorized history and same-period informative decisions.",
+    "Create deterministic provider-owned requestCycleId from existing receipt identity; persist same ID in existing request and bulletin transaction; copy on decision; clear obsolete decision fields on new request."
+  ],
+  "invariants": [
+    "No new collection, command, workflow, project, data import, or localStorage authority.",
+    "Same provider transaction/write count and idempotent replay; no HR write or fabricated bidirectional ACK.",
+    "Accepted B4-B7 remain; only reproduced notification vigency scope reproof.",
+    "No product deploy while RUN2543 observes exact predecessor source; publish one complete successor after run settles.",
+    "Legacy records lacking exact cycle must not be linked by timestamp heuristic; preserve authorized history and expose residual if no exact evidence."
+  ],
+  "plannedTests": [
+    "VM actual normalize+CX.notif current/resolved/expired/historical actionable/second cycle equal timestamps/foreign recipient project entity/read-state/reload ISO Timestamp.",
+    "Provider same visit request-decision-request and replay, exact durable request/bulletin cycle, unchanged HR, no extra writes, nested map decision fields cleared.",
+    "Existing B7 two-role ACK and readback source regressions."
+  ],
+  "production": false,
+  "newDomainsCertified": 0,
+  "phaseAComplete": false
+}

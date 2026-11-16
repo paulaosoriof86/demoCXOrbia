@@ -26,6 +26,12 @@ CX.notif = {
 
   _validForRole(n,role){
     if(!n||n.to!==role)return false;
+    const scope=(()=>{try{return CX.backendAuth?.context?.()||{};}catch(_){return {};}})();
+    const tenant=String(scope.tenantId||CX.BACKEND?.tenantId||''),project=String(CX.data?.currentProjectId||'');
+    if(n.tenantId&&(!tenant||String(n.tenantId)!==tenant))return false;
+    if(n.projectId&&(!project||String(n.projectId)!==project))return false;
+    const projects=Array.isArray(n.targetProjectIds)?n.targetProjectIds.map(String).filter(Boolean):[];
+    if(projects.length&&(!project||!projects.includes(project)))return false;
     if(role!=='shopper'||n.source!=='firestore')return true;
     const ctx=(()=>{try{return CX.backendAuth?.context?.()||{};}catch(_){return {};}})();
     const sid=String(ctx.shopperId||(CX.session?.user&&CX.session.user.shopperId)||'');
@@ -54,16 +60,44 @@ CX.notif = {
     }
     return true;
   },
+  _visitForNotice(n){
+    if(n?.entityType!=='visit'||!n.entityId)return null;
+    const matches=(CX.data?._visitas||[]).filter(v=>[v?.id,v?.visitId,v?.hrRowId].filter(Boolean).map(String).includes(String(n.entityId)));
+    if(matches.length!==1)return null;
+    const visit=matches[0],period=String(visit.measurementPeriodId||visit.periodId||'');
+    // Some accepted HR rows retain projectId as their measurement-period alias.
+    const project=String(visit.operationalProjectId||(String(visit.projectId||'')!==period?visit.projectId:'')||'');
+    if(n.periodId&&period&&String(n.periodId)!==period)return null;
+    if(n.projectId&&project&&String(n.projectId)!==project)return null;
+    if(n.tenantId&&visit.tenantId&&String(n.tenantId)!==String(visit.tenantId))return null;
+    return visit;
+  },
   _actionable(n){
-    const types=new Set(['confirmar','cambio','reprog','agendar','cuestionario','pide_fecha','reserva_aprobada','reprog_aprobada','ajuste','cancel']);
-    return !!(n?.accion||n?.actionRequired===true||n?.operational===true||types.has(String(n?.tipo||'')));
+    const type=String(n?.tipo||''),visit=this._visitForNotice(n);
+    if(type==='cancel'||type==='reprog'){
+      const request=visit?.[type==='cancel'?'cancelRequest':'rescheduleRequest'];
+      if(!n.requestCycleId||String(request?.requestCycleId||'')!==String(n.requestCycleId))return false;
+      if(!request.requestedByShopperId||!visit.shopperId||String(request.requestedByShopperId)!==String(visit.shopperId))return false;
+      const targets=Array.isArray(n.targetShopperIds)?n.targetShopperIds.map(String):[];
+      if(request.requestedByShopperId&&targets.length&&!targets.includes(String(request.requestedByShopperId)))return false;
+      return request.status==='pending_review'||(type==='cancel'&&request.status==='approved_pending_hr');
+    }
+    if(n?.eventKey==='postulation_approved_visit_assigned'){
+      if(!visit)return false;
+      const facets=visit.canonicalFacets||{};
+      return facets.assigned===true&&facets.scheduled!==true&&!visit.agendada&&facets.cancelled!==true&&!visit.cancelled;
+    }
+    const types=new Set(['confirmar','cambio','agendar','cuestionario','pide_fecha','reserva_aprobada','reprog_aprobada','ajuste']);
+    return !!(n?.accion||n?.actionRequired===true||n?.operational===true||types.has(type));
   },
   _activeForRole(n){
-    if(!n||n.expiredAt)return false;
-    if(this._actionable(n)&&!n.resolvedAt)return true;
+    if(!n)return false;
     if(n.resolvedAt)return false;
+    if(n.expiredAt&&(!Number.isFinite(Date.parse(n.expiredAt))||Date.parse(n.expiredAt)<=Date.now()))return false;
+    if(n.activeFrom&&Date.parse(n.activeFrom)>Date.now())return false;
     const projectId=String(CX.data?.currentProjectId||'');
-    if(n.projectId&&projectId&&String(n.projectId)!==projectId)return false;
+    if(n.projectId&&(!projectId||String(n.projectId)!==projectId))return false;
+    if(this._actionable(n))return true;
     const periodId=String(CX.data?.currentPeriodId||'');
     if(n.periodId&&periodId&&String(n.periodId)!==periodId)return false;
     const ym=(s)=>{const m=String(s||'').match(/20\d{2}-[01]\d/);return m?m[0]:'';};

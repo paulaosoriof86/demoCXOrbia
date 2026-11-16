@@ -398,6 +398,7 @@ async function transactionExecute(db,command,actor,hrSnapshot,hrRevision){
     }
     const payload=clean(command.payload||{});
     let entityId=str(command.entityId),providerWrites=0,auditEntityType=command.entityType,notificationTargetShopperId=null;
+    let notificationRequestCycleId=null,notificationEventAt=null;
 
     if(clientContext){
       const spec=CLIENT_COLLABORATION[command.commandType];
@@ -619,13 +620,16 @@ async function transactionExecute(db,command,actor,hrSnapshot,hrRevision){
         const validatedDate=assertSchedulableDate(v,newDate,timezone);
         if(!str(payload.reason))throw new Error('OPS_RESCHEDULE_REASON_REQUIRED');
         if(str(v.rescheduleRequest?.status)==='pending_review'||str(v.cancelRequest?.status)==='pending_review')throw new Error('OPS_VISIT_REQUEST_ALREADY_PENDING');
-        tx.set(vRef,{rescheduleRequest:{status:'pending_review',newDate:validatedDate,reason:str(payload.reason),requestedByShopperId:actor.shopperId,requestedAt:now()},updatedAt:now(),version:Number(v.version||0)+1},{merge:true});
+        notificationRequestCycleId=receiptId(command);notificationEventAt=now();
+        tx.set(vRef,{rescheduleRequest:{status:'pending_review',requestCycleId:notificationRequestCycleId,newDate:validatedDate,reason:str(payload.reason),requestedByShopperId:actor.shopperId,requestedAt:notificationEventAt,decidedAt:null,decidedBy:null,decisionReason:null},updatedAt:notificationEventAt,version:Number(v.version||0)+1},{merge:true});
       }else{
         if(!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_RESCHEDULE_OPERATOR_ONLY');
         const decision=str(payload.decision||'approved').toLowerCase();if(!['approved','rejected'].includes(decision))throw new Error('OPS_RESCHEDULE_DECISION_INVALID');
         if(decision==='approved'&&!newDate)throw new Error('OPS_RESCHEDULE_DATE_REQUIRED');
         const validatedDate=decision==='approved'?assertSchedulableDate(v,newDate,timezone):null;
-        const patch={rescheduleRequest:{status:decision,newDate:validatedDate,reason:payload.reason||null,decidedBy:actor.uid,decidedAt:now()},updatedAt:now(),version:Number(v.version||0)+1};
+        const pending=v.rescheduleRequest?.status==='pending_review'?v.rescheduleRequest:null;
+        notificationRequestCycleId=pending?.requestCycleId||null;notificationEventAt=now();
+        const patch={rescheduleRequest:{status:decision,requestCycleId:notificationRequestCycleId,newDate:validatedDate,reason:payload.reason||null,requestedByShopperId:pending?.requestedByShopperId||null,requestedAt:pending?.requestedAt||null,decisionReason:payload.reason||null,decidedBy:actor.uid,decidedAt:notificationEventAt},updatedAt:notificationEventAt,version:Number(v.version||0)+1};
         if(decision==='approved'){patch.agendada=validatedDate;patch.estado='agendada';patch.status='agendada';patch.pendienteAgendamiento=false;if(str(payload.franjaCode))patch.franjaCode=str(payload.franjaCode);}
         tx.set(vRef,patch,{merge:true});
       }
@@ -640,8 +644,9 @@ async function transactionExecute(db,command,actor,hrSnapshot,hrRevision){
         if(str(payload.decision)||payload.releaseToAvailable===true)throw new Error('OPS_CANCEL_SHOPPER_DECISION_DENIED');
         if(!str(payload.reason))throw new Error('OPS_CANCEL_REASON_REQUIRED');
         if(str(v.cancelRequest?.status)==='pending_review'||str(v.cancelRequest?.status)==='approved_pending_hr'||str(v.rescheduleRequest?.status)==='pending_review')throw new Error('OPS_VISIT_REQUEST_ALREADY_PENDING');
-        tx.set(vRef,{cancelRequest:{status:'pending_review',reason:str(payload.reason),requestedByShopperId:actor.shopperId,requestedAt:now()},
-          updatedAt:now(),version:Number(v.version||0)+1},{merge:true});
+        notificationRequestCycleId=receiptId(command);notificationEventAt=now();
+        tx.set(vRef,{cancelRequest:{status:'pending_review',requestCycleId:notificationRequestCycleId,reason:str(payload.reason),requestedByShopperId:actor.shopperId,requestedAt:notificationEventAt,decidedAt:null,decidedBy:null,decisionReason:null},
+          updatedAt:notificationEventAt,version:Number(v.version||0)+1},{merge:true});
       }else{
         if(!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_CANCEL_OPERATOR_ONLY');
         if(payload.requestOnly===true)throw new Error('OPS_CANCEL_STAFF_REQUEST_IMPERSONATION_DENIED');
@@ -649,7 +654,8 @@ async function transactionExecute(db,command,actor,hrSnapshot,hrRevision){
         const decision=str(payload.decision).toLowerCase();
         if(decision){
           if(payload.releaseToAvailable===true)throw new Error('OPS_CANCEL_DECISION_CANNOT_AUTO_RELEASE');
-          const patch=planVisitCancelDecision(v,{decision,reason:payload.reason,actorUid:actor.uid,sourceMode});
+          notificationRequestCycleId=v.cancelRequest?.requestCycleId||null;notificationEventAt=now();
+          const patch=planVisitCancelDecision(v,{decision,reason:payload.reason,actorUid:actor.uid,sourceMode,at:notificationEventAt});
           tx.set(vRef,patch,{merge:true});
         }else{
           /* Existing direct Admin cancellation is only safe for an internal-owned route.
@@ -741,8 +747,9 @@ async function transactionExecute(db,command,actor,hrSnapshot,hrRevision){
         toRole:requested?'admin':'shopper',targetRoles:requested?['admin']:['shopper'],
         targetProjectIds:[command.projectId],targetShopperIds:requested?[]:[targetShopper].filter(Boolean),
         entityType:'visit',entityId,operational:true,eventKey:'durable_'+kind+'_request_decision',
+        requestCycleId:notificationRequestCycleId,
         idempotencyKey:command.idempotencyKey,type:kind,title,body,priority:'high',actionRoute:requested?'postulaciones':'misvisitas',
-        createdAt:now(),source:'cxorbia-operational-command-provider-v1'}, {merge:false});
+        createdAt:notificationEventAt||now(),source:'cxorbia-operational-command-provider-v1'}, {merge:false});
       providerWrites++;
     }
     tx.set(r.receipt,{status:'committed',commandDigest:digest,entityId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,updatedAt:now()});providerWrites++;

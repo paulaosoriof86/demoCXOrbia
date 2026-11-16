@@ -155,6 +155,27 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
 export function validateLatestExecutionSource({descriptor:d,pointer:p,gitBlob,readJson}){
   const latest=p.lastExecutionReceipt,seal=d.postDeployRunSeal||{},failures=[];
   const check=(ok,code)=>{if(!ok)failures.push(code);};
+  // A completed C3 observation belongs to the served frontend predecessor.
+  // Its failed certify attempt is current execution evidence, never a new-source
+  // or terminal certificate. Bind it before the paired-source compatibility path.
+  if(latest?.kind==='C3_PRETERMINAL_AND_CERTIFY_ATTEMPT_NOT_TERMINAL_CERTIFICATE'){
+    const h=d.currentHostingOnlyDevMaterialization||{},pending=d.pendingDevSuccessor||{},audit=d.currentC3PreterminalAudit||{};
+    check(seal.mode==='PREDECESSOR_SERVING_PENDING_SOURCE'&&pending.state==='P0_PROVEN_PENDING_DEV_MATERIALIZATION'&&pending.scope==='RUNTIME_AND_HOSTING','LATEST_C3_PENDING_STATE');
+    check(JSON.stringify(pending)===JSON.stringify(p.pendingDevSuccessor||null)&&pending.production===false&&pending.devPublished===false,'LATEST_C3_PENDING_POINTER');
+    check(pending.sourceSha===d.productSourceSha&&pending.sourceTree===d.productTreeAuthority&&pending.predecessorProductSourceSha===h.sourceSha&&h.sourceSha!==pending.sourceSha,'LATEST_C3_PENDING_SOURCE');
+    check(JSON.stringify(h)===JSON.stringify(p.currentHostingOnlyDevMaterialization||null)&&JSON.stringify(h)===JSON.stringify(pending.servingHosting||null)&&JSON.stringify(seal)===JSON.stringify(pending.servingRuntimeSeal||null),'LATEST_C3_SERVING_POINTER');
+    check(JSON.stringify(audit)===JSON.stringify(p.currentC3PreterminalAudit||null)&&audit.sourceSha===h.sourceSha&&audit.sourceTree===h.sourceTree&&audit.hostingVersion===h.hostingVersion&&audit.runtimeRevision===seal.runtimeRevision,'LATEST_C3_AUDIT_IDENTITY');
+    check(JSON.stringify(latest)===JSON.stringify(d.currentExecutionReceipt||null)&&JSON.stringify(latest)===JSON.stringify(p.currentExecutionReceipt||null),'LATEST_C3_EXECUTION_POINTER');
+    check(Boolean(latest.path&&latest.gitBlob)&&gitBlob(latest.path)===latest.gitBlob,'LATEST_C3_RECEIPT_BLOB');
+    let r={};try{r=readJson(latest.path);}catch{check(false,'LATEST_C3_RECEIPT_UNREADABLE');}
+    check(r.schemaVersion==='cxorbia.i3.c3-certify-attempt-readback.v1'&&r.kind===latest.kind&&r.decision===latest.decision&&r.strictCertificationStatus==='HOLD','LATEST_C3_RECEIPT_SCOPE');
+    for(const k of ['sourceSha','sourceTree','runId','runNumber','artifactId','artifactDigest'])check(Boolean(r[k])&&latest[k]===r[k]&&audit[k]===r[k],'LATEST_C3_RECEIPT_'+k);
+    check(r.runtimeRevision===seal.runtimeRevision&&r.runtimeDigest===seal.runtimeDigest&&r.runtimeRevision===h.runtimeRevision&&r.runtimeDigest===h.runtimeDigest&&r.hostingVersion===h.hostingVersion,'LATEST_C3_LIVE_IDENTITY');
+    check(r.c3Decision==='PASS_C3_PRETERMINAL_SOURCE_READY_EXACT_DEV'&&r.c3Decision===audit.decision&&r.moduleCount===21&&r.matchModules===audit.matchModules&&r.sourceReadyModules===audit.sourceReadyModules&&r.pendingFiles===0,'LATEST_C3_PROOF_IDENTITY');
+    for(const k of ['builds','runtimeDeploys','hostingDeploys','rulesDeploys','hrWrites','productionDeploys'])check(r[k]===0,'LATEST_C3_ZERO_'+k);
+    for(const k of ['production','terminalCertified','phaseAComplete','i4Authorized'])check(r[k]===false&&latest[k]===false,'LATEST_C3_NONTERMINAL_'+k);
+    return {pass:failures.length===0,failures,sourceSha:audit.sourceSha,hostingOnly:false,c3Attempt:true};
+  }
   const expected=seal.mode==='PREDECESSOR_SERVING_PENDING_SOURCE'?seal.sourceSha:d.productSourceSha;
   const isHostingAck=latest?.kind==='EXACT_HOSTING_ONLY_DEV_ACK_NOT_FUNCTIONAL_CERTIFICATE';
   if(!isHostingAck&&(!latest?.sourceSha||latest.sourceSha===expected))return {pass:true,failures,sourceSha:expected,hostingOnly:false};
