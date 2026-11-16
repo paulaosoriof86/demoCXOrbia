@@ -108,7 +108,7 @@ const identitySource=fs.readFileSync('tools/hr-source/tya-live-provider-registry
 function readerHelpers(text){
   const begin=text.indexOf('function hrRangeBatches('),end=text.indexOf('function reportHrSourceFailure(',begin);
   if(begin<0||end<begin)return {hrRangeBatches:()=>{throw Error('MISSING_VRM356_BATCH_HELPER');},validateHrRangeResponse:()=>{throw Error('MISSING_VRM356_RANGE_VALIDATOR');},readSheetsJson:()=>{throw Error('MISSING_VRM356_RETRY_HELPER');}};
-  return new Function('HR_SHEETS_READ_DEADLINE','HR_SHEETS_READ_STATS',text.slice(begin,end)+'\nreturn {hrRangeBatches,validateHrRangeResponse,readSheetsJson};')(75000,{attempts:0,successfulRequests:0,quotaRetries:0,responseBytes:0});
+  return new Function('HR_SHEETS_READ_DEADLINE','HR_SHEETS_READ_STATS',text.slice(begin,end)+'\nreturn {hrRangeBatches,validateHrRangeResponse,readSheetsJson,hrRangeForTab:typeof hrRangeForTab === "function" ? hrRangeForTab : undefined};')(75000,{attempts:0,successfulRequests:0,quotaRetries:0,responseBytes:0});
 }
 const r20Helpers=readerHelpers(r20Source),identityHelpers=readerHelpers(identitySource);
 function exactFunction(text,start,end){
@@ -129,11 +129,11 @@ function fixtureTabs(count){
 function expectedFixtureRanges(tabs){
   return tabs.map(tab=>"'"+tab.tabTitle.replace(/'/g,"''")+"'!A1:AI140");
 }
-function batchHarness(tabs,{emptyLastContact=false}={}){
+function batchHarness(tabs,{emptyLastContact=false,gridForTab=()=>({rowCount:1000,columnCount:35}),responseGridForTab=null}={}){
   const calls=[],pending=[],events=[],files=new Map();
   let active=0,maxActive=0;
   const byTitle=new Map(tabs.map((tab,index)=>[tab.tabTitle,{tab,index}]));
-  const metadata={properties:{title:'HR Guatemala - Sincronizacion Google Sheets'},sheets:tabs.map((tab,index)=>({properties:{title:tab.tabTitle,index}}))};
+  const metadata={properties:{title:'HR Guatemala - Sincronizacion Google Sheets'},sheets:tabs.map((tab,index)=>({properties:{title:tab.tabTitle,index,gridProperties:gridForTab(tab,index)}}))};
   async function get(query,token){
     assert.equal(token,'fixture-only','existing authentication token must reach each read');
     if(query.startsWith('?fields=')){events.push('metadata');return metadata;}
@@ -148,13 +148,19 @@ function batchHarness(tabs,{emptyLastContact=false}={}){
   }
   function response(entry){
     return {valueRanges:entry.ranges.map(range=>{
-      const match=range.match(/^'((?:[^']|'')+)'!A1:AI140$/);
-      assert.ok(match,'range syntax and configured bounds must remain unchanged');
+      const match=range.match(/^'((?:[^']|'')+)'!A1:([A-Z]+)(\d+)$/);
+      assert.ok(match,'quoted raw title and A1 bounds required');
       const title=match[1].replace(/''/g,"'");
       const found=byTitle.get(title);assert.ok(found,'every requested tab must come from discovery');
       const index=found.index;
+      const grid=(responseGridForTab||gridForTab)(found.tab,index);
+      const requestedColumn=[...match[2]].reduce((n,c)=>n*26+c.charCodeAt(0)-64,0);
+      assert.ok(requestedColumn<=35&&Number(match[3])<=140,'configured caps must remain unchanged');
+      let n=Math.min(requestedColumn,grid?.columnCount||requestedColumn),lastColumn='';
+      while(n>0){n--;lastColumn=String.fromCharCode(65+n%26)+lastColumn;n=Math.floor(n/26);}
+      const returnedRange="'"+title.replace(/'/g,"''")+"'!A1:"+lastColumn+Math.min(Number(match[3]),grid?.rowCount||Number(match[3]));
       const empty=emptyLastContact&&index>=tabs.length-2;
-      return {range,values:[['shopper','phone','mail'],['Synthetic Person',empty?'':'phone-'+index,empty?'':'mail-'+index]]};
+      return {range:returnedRange,values:[['shopper','phone','mail'],['Synthetic Person',empty?'':'phone-'+index,empty?'':'mail-'+index]]};
     })};
   }
   function resolve(entry){entry.done=true;entry.resolve(response(entry));}
@@ -169,18 +175,18 @@ function batchHarness(tabs,{emptyLastContact=false}={}){
     }
     return waves;
   }
-  return {tabs,calls,pending,events,files,get,response,resolve,drain,get maxActive(){return maxActive;}};
+  return {tabs,calls,pending,events,files,metadata,get,response,resolve,drain,get maxActive(){return maxActive;}};
 }
 function makeR20Reader(h,{authError=null,empty=false}={}){
-  return new Function('oauthToken','sheetsGet','resolveLiveMonthTabs','MAX_COL','MAX_ROW','fail','hrRangeBatches','validateHrRangeResponse',r20Owner+'\nreturn readFromSheetsApi;')(
+  return new Function('oauthToken','sheetsGet','resolveLiveMonthTabs','MAX_COL','MAX_ROW','fail','hrRangeBatches','validateHrRangeResponse','hrRangeForTab',r20Owner+'\nreturn readFromSheetsApi;')(
     async()=>{h.events.push('auth');if(authError)throw authError;return {token:'fixture-only',clientEmail:'fixture'};},
-    h.get,()=>empty?[]:h.tabs,'AI',140,message=>{throw new Error(message);},r20Helpers.hrRangeBatches,r20Helpers.validateHrRangeResponse
+    h.get,()=>empty?[]:h.tabs,'AI',140,message=>{throw new Error(message);},r20Helpers.hrRangeBatches,r20Helpers.validateHrRangeResponse,r20Helpers.hrRangeForTab
   );
 }
 function makeIdentityReader(h,{identityOutput=true,authError=null}={}){
   const dependencies={
     accessToken:async()=>{h.events.push('auth');if(authError)throw authError;return {token:'fixture-only',principal:'fixture@invalid.test',mode:'fixture'};},
-    sheets:h.get,hrRangeBatches:identityHelpers.hrRangeBatches,validateHrRangeResponse:identityHelpers.validateHrRangeResponse,
+    sheets:h.get,hrRangeBatches:identityHelpers.hrRangeBatches,validateHrRangeResponse:identityHelpers.validateHrRangeResponse,hrRangeForTab:identityHelpers.hrRangeForTab,
     HR_SHEETS_READ_STATS:{attempts:0,successfulRequests:0,quotaRetries:0,responseBytes:0},
     resolveLiveMonthTabs:()=>[...h.tabs].reverse(),
     currentPeriodDescriptor:()=>({periodKey:h.tabs.at(-1)?.key||'2026-01',tabs:[]}),
@@ -348,6 +354,44 @@ for(const [label,helper]of [['identity',identityHelpers],['R20',r20Helpers]]){
     assert.throws(()=>helper.validateHrRangeResponse({valueRanges:[{range:ranges[1]},{range:ranges[0]}]},ranges),/MISMATCH/);
     const value={valueRanges:[{range:ranges[0]},{range:ranges[1],values:[]}]};
     assert.equal(helper.validateHrRangeResponse(value,ranges),value);
+  });
+}
+for(const [label,helper,make]of [['identity',identityHelpers,makeIdentityReader],['R20',r20Helpers,makeR20Reader]]){
+  test('VRM356 '+label+' requests exact physical grid bounds before strict provider validation',async()=>{
+    const columns=[...Array(17).fill(34),...Array(9).fill(35),...Array(3).fill(30),...Array(4).fill(33),...Array(3).fill(31)];
+    const endByCount={30:'AD',31:'AE',33:'AG',34:'AH',35:'AI'};
+    const tabs=fixtureTabs(36);tabs[8].tabTitle="  fixture 'quoted' 8  ";
+    const h=batchHarness(tabs,{gridForTab:(_tab,i)=>({rowCount:1000,columnCount:columns[i]})});
+    const pending=make(h)();await h.drain();await pending;
+    assert.deepEqual(h.calls.flat(),tabs.map((tab,i)=>"'"+tab.tabTitle.replace(/'/g,"''")+"'!A1:"+endByCount[columns[i]]+'140'));
+    assert.equal(h.events.filter(x=>x==='metadata').length,1);
+    assert.equal(h.events.filter(x=>x==='batch').length,1);
+  });
+  test('VRM356 '+label+' intersects row and column caps without changing raw titles',()=>{
+    const title="  grid 'fixture'  ",meta={sheets:[{properties:{title,gridProperties:{rowCount:20,columnCount:30}}}]};
+    assert.equal(helper.hrRangeForTab(title,meta,'AI',140),"'  grid ''fixture''  '!A1:AD20");
+    assert.equal(helper.hrRangeForTab(title,meta,'Z',10),"'  grid ''fixture''  '!A1:Z10");
+    assert.throws(()=>helper.hrRangeForTab(title.trim(),meta,'AI',140),/GRID_METADATA_INVALID/);
+    for(const [maxCol,maxRow]of [['A0',140],['AI',0],['AI',1.5],['ZZZZ',140]]){
+      assert.throws(()=>helper.hrRangeForTab(title,meta,maxCol,maxRow),/RANGE_LIMIT_INVALID/);
+    }
+  });
+  test('VRM356 '+label+' rejects missing ambiguous or invalid geometry before any values request',async()=>{
+    for(const geometry of [undefined,{rowCount:1000},{rowCount:0,columnCount:35},{rowCount:1000,columnCount:0},{rowCount:1000,columnCount:34.5},{rowCount:'1000',columnCount:35}]){
+      const h=batchHarness(fixtureTabs(2),{gridForTab:()=>geometry});
+      const pending=make(h)();pending.catch(()=>{});await h.drain();
+      await assert.rejects(pending,/HR_SOURCE_RANGE_GRID_METADATA_INVALID/);
+      assert.equal(h.calls.length,0,'invalid metadata cannot cause a value read');
+    }
+    const h=batchHarness(fixtureTabs(2));h.metadata.sheets.push(structuredClone(h.metadata.sheets[0]));
+    const pending=make(h)();pending.catch(()=>{});await h.drain();
+    await assert.rejects(pending,/HR_SOURCE_RANGE_GRID_METADATA_INVALID/);
+    assert.equal(h.calls.length,0);
+  });
+  test('VRM356 '+label+' still rejects grid shrinkage after metadata instead of accepting shorter ranges',async()=>{
+    const h=batchHarness(fixtureTabs(2),{gridForTab:()=>({rowCount:1000,columnCount:34}),responseGridForTab:()=>({rowCount:1000,columnCount:33})});
+    const pending=make(h)();await h.drain();
+    await assert.rejects(pending,/HR_SOURCE_RANGE_RESPONSE_MISMATCH/);
   });
 }
 test('VRM356 four fresh observations consume16 independent Sheets reads instead of48 and preserve every tab',async()=>{

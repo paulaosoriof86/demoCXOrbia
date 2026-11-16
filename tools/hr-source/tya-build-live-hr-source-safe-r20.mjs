@@ -63,6 +63,19 @@ function hrRangeBatches(tabs,rangeForTab){
   if(batch.length)batches.push(batch);
   return batches;
 }
+function hrRangeForTab(title,metadata,maxColumn,maxRow){
+  const column=String(maxColumn||'').toUpperCase();
+  if(!/^[A-Z]{1,3}$/.test(column)||!Number.isSafeInteger(maxRow)||maxRow<1)throw new Error('HR_SOURCE_RANGE_LIMIT_INVALID');
+  if(typeof title!=='string'||!title.length||!Array.isArray(metadata?.sheets))throw new Error('HR_SOURCE_RANGE_GRID_METADATA_INVALID');
+  const matches=metadata.sheets.filter(sheet=>sheet.properties?.title===title);
+  const grid=matches.length===1?matches[0].properties.gridProperties:null;
+  if(!Number.isSafeInteger(grid?.rowCount)||grid.rowCount<1||!Number.isSafeInteger(grid?.columnCount)||grid.columnCount<1)throw new Error('HR_SOURCE_RANGE_GRID_METADATA_INVALID');
+  const configuredColumn=[...column].reduce((n,c)=>n*26+c.charCodeAt(0)-64,0);
+  let remaining=Math.min(configuredColumn,grid.columnCount),lastColumn='';
+  while(remaining>0){remaining--;lastColumn=String.fromCharCode(65+remaining%26)+lastColumn;remaining=Math.floor(remaining/26);}
+  // Bounds are the intersection at metadata observation; response count/order/title/bounds remain exact.
+  return "'"+title.replace(/'/g,"''")+"'!A1:"+lastColumn+Math.min(maxRow,grid.rowCount);
+}
 function validateHrRangeResponse(response,ranges){
   const normalize=range=>{
     const text=String(range||''),split=text.lastIndexOf('!');
@@ -168,10 +181,10 @@ async function mapLimit(items,limit,mapper){const results=new Array(items.length
 
 async function readFromSheetsApi(){
   const {token,clientEmail}=await oauthToken();
-  const metadata=await sheetsGet('?fields=properties(title),sheets(properties(title,index))',token);
+  const metadata=await sheetsGet('?fields=properties(title),sheets(properties(title,index,gridProperties(rowCount,columnCount)))',token);
   const tabs=resolveLiveMonthTabs((metadata.sheets||[]).map(sheet=>({title:sheet.properties?.title,index:sheet.properties?.index})));
   if(!tabs.length)fail('No monthly HR tabs detected through Sheets API.');
-  const rangeForTab=tab=>`'${tab.tabTitle.replace(/'/g,"''")}'!A1:${MAX_COL}${MAX_ROW}`;
+  const rangeForTab=tab=>hrRangeForTab(tab.tabTitle,metadata,MAX_COL,MAX_ROW);
   const plannedBatches=hrRangeBatches(tabs,rangeForTab),valueRanges=[];
   for(let index=0;index<plannedBatches.length;index+=2){
     const batches=plannedBatches.slice(index,index+2);

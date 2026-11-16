@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm356.exact-grid-range-source-proof.v1",
+  "findingId": "VRM-356",
+  "iteration": "I3",
+  "decision": "PASS_NODE_EXACT_OWNER_FIX_PENDING_LIVE_PREFLIGHT_AND_DEPLOY",
+  "observedAt": "2026-11-16T22:13:57.097908+00:00",
+  "controlParentSha": "7de5b05a8857cecbe18436f17ce2e8c4486d07bc",
+  "predecessorProductSourceSha": "da403803fffdf3472079b0939f3914cc0cceafff",
+  "servingProductSourceSha": "607ef20a5305209a46b8f61424f03475806f402d",
+  "scope": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM356_EXACT_GRID_RANGE_P0_SCOPE_20261116.json",
+    "gitBlob": "dee2145c8332eff2dfa890189f45b17f3a86c7f2",
+    "sha256": "a71b62fa849c8c40b2499445fe279d83d67c47eff5c29c9e73071bdcb062c468"
+  },
+  "files": [
+    {
+      "path": "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+      "beforeBlob": "d91149765c417af3b406ac3a320622ddc22e0296",
+      "afterBlob": "16753ae184e1c59426cc58c126214bc6742b0505",
+      "sha256": "b23b86dc7e9e42dae6fe24fae1574dca287724def035850d75b221c747ecc7be"
+    },
+    {
+      "path": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+      "beforeBlob": "92d899625e8a887ef3789e29fe388600c12f9c4c",
+      "afterBlob": "b2f8cf3f743730b5ce14e3fad31791ac34bd0291",
+      "sha256": "30a89ee2a0dbcff66b6e7ed73cb25aae3fda287848923d61dce9c2fc07e3a1c4"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+      "beforeBlob": "88b1f0d24319c277fe625d0bd870ea372fe3043d",
+      "afterBlob": "2fa007443f138a9ec635b307fe115f69dc8e468f",
+      "sha256": "11ef5f611cbac5b2348d5c31632daeb92bed52809fc37dcd13dff967a90237fa"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-vrm356-live-range-preflight.mjs",
+      "beforeBlob": "6da3b20fd043993cc22f195d8dd995adc49793a8",
+      "afterBlob": "bcef09d97e2f773b2cd944964fab188d7c69329b",
+      "sha256": "747742c522eef4bfdce2347ab04746809ba432b42a28ec757757662a9a984907"
+    }
+  ],
+  "nodeVersion": "v24.22.1",
+  "before": {
+    "tests": 49,
+    "pass": 43,
+    "fail": 6,
+    "cancelled": 0,
+    "tapSha256": "c203f6779a6bae3f165b86cfbcaf787ed0804e54090face2f63080c96f746ceb",
+    "failureNames": [
+      "VRM356 identity requests exact physical grid bounds before strict provider validation",
+      "VRM356 identity intersects row and column caps without changing raw titles",
+      "VRM356 identity rejects missing ambiguous or invalid geometry before any values request",
+      "VRM356 R20 requests exact physical grid bounds before strict provider validation",
+      "VRM356 R20 intersects row and column caps without changing raw titles",
+      "VRM356 R20 rejects missing ambiguous or invalid geometry before any values request"
+    ]
+  },
+  "after": {
+    "tests": 141,
+    "pass": 141,
+    "fail": 0,
+    "cancelled": 0,
+    "tapSha256": "0d400120d6c34879a5ce6349a654cbe64daf6ec68dbbd49941b22c02fcc76742",
+    "failureNames": []
+  },
+  "afterSuites": {
+    "latency": 49,
+    "g05": 92
+  },
+  "correction": "Construct exact quoted RAW-title ranges intersected with same metadata response positive integer gridProperties and existing MAX_ROW/MAX_COL. Preserve strict count/order/title/bounds response validation and fail closed on missing/ambiguous/invalid geometry. Existing preflight uses exact product helper.",
+  "requestsPerFreshCaptureAt36Tabs": 4,
+  "priorSource663RequestsPerFreshCaptureAt36Tabs": 12,
+  "sameMetadataObservationNotAtomicSnapshot": true,
+  "remainingConcurrencyLimit": "Geometry growth after initial metadata is not detected by this bounded two-GET reader; this fix does not claim transactional snapshot semantics or replace same external HR revision acceptance. Shrinking/reordered/clipped response mismatches still fail.",
+  "preserved": [
+    "body timeout and429 budget",
+    "cumulative prior journal effects",
+    "identity chronology and contact preservation",
+    "source mapping and IDs",
+    "human B4 B5 B6 B7",
+    "five full domains"
+  ],
+  "effects": {
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "deploys": 0,
+    "productionWrites": 0
+  },
+  "devPublished": false,
+  "terminalCertified": false,
+  "phaseAComplete": false,
+  "i4Authorized": false
+}

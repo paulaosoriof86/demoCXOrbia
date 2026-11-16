@@ -27,6 +27,19 @@ function hrRangeBatches(tabs,rangeForTab){
   if(batch.length)batches.push(batch);
   return batches;
 }
+function hrRangeForTab(title,metadata,maxColumn,maxRow){
+  const column=String(maxColumn||'').toUpperCase();
+  if(!/^[A-Z]{1,3}$/.test(column)||!Number.isSafeInteger(maxRow)||maxRow<1)throw new Error('HR_SOURCE_RANGE_LIMIT_INVALID');
+  if(typeof title!=='string'||!title.length||!Array.isArray(metadata?.sheets))throw new Error('HR_SOURCE_RANGE_GRID_METADATA_INVALID');
+  const matches=metadata.sheets.filter(sheet=>sheet.properties?.title===title);
+  const grid=matches.length===1?matches[0].properties.gridProperties:null;
+  if(!Number.isSafeInteger(grid?.rowCount)||grid.rowCount<1||!Number.isSafeInteger(grid?.columnCount)||grid.columnCount<1)throw new Error('HR_SOURCE_RANGE_GRID_METADATA_INVALID');
+  const configuredColumn=[...column].reduce((n,c)=>n*26+c.charCodeAt(0)-64,0);
+  let remaining=Math.min(configuredColumn,grid.columnCount),lastColumn='';
+  while(remaining>0){remaining--;lastColumn=String.fromCharCode(65+remaining%26)+lastColumn;remaining=Math.floor(remaining/26);}
+  // Bounds are the intersection at metadata observation; response count/order/title/bounds remain exact.
+  return "'"+title.replace(/'/g,"''")+"'!A1:"+lastColumn+Math.min(maxRow,grid.rowCount);
+}
 function validateHrRangeResponse(response,ranges){
   const normalize=range=>{
     const text=String(range||''),split=text.lastIndexOf('!');
@@ -171,7 +184,7 @@ function emailValue(value){return String(value??'').trim().toLowerCase();}
 
 async function main(){
   const auth=await accessToken();
-  const meta=await sheets('?fields=properties(title),sheets(properties(title,index))',auth.token);
+  const meta=await sheets('?fields=properties(title),sheets(properties(title,index,gridProperties(rowCount,columnCount)))',auth.token);
   const title=String(meta.properties?.title||'');
   if(title!=='HR Guatemala - Sincronizacion Google Sheets')throw new Error(`canonical_hr_title_mismatch:${title}`);
   const monthly=resolveLiveMonthTabs((meta.sheets||[]).map(s=>({title:s.properties?.title,index:s.properties?.index}))).map(tab=>({title:tab.tabTitle,country:tab.country,periodKey:tab.key}));
@@ -199,7 +212,7 @@ async function main(){
   if(IDENTITY_OUT){
     const identities=new Map(),identityTabs=[...monthly].sort((a,b)=>a.periodKey.localeCompare(b.periodKey)||a.country.localeCompare(b.country));
     // At most two bounded batchGet requests per wave; preserve chronological identity authority.
-    const rangeForTab=tab=>`'${tab.title.replace(/'/g,"''")}'!A1:${MAX_COL}${MAX_ROW}`;
+    const rangeForTab=tab=>hrRangeForTab(tab.title,meta,MAX_COL,MAX_ROW);
     const plannedBatches=hrRangeBatches(identityTabs,rangeForTab);
     for(let start=0;start<plannedBatches.length;start+=2){
       const batches=plannedBatches.slice(start,start+2);

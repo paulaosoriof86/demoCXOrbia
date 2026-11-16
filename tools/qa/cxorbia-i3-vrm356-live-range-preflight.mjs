@@ -47,14 +47,14 @@ try{
   const start=text.indexOf('function hrRangeBatches('),end=text.indexOf('function reportHrSourceFailure(',start);
   if(start<0||end<start)throw Error('VRM356_PREFLIGHT_HELPER_NOT_FOUND');
   const stats={attempts:0,successfulRequests:0,quotaRetries:0,responseBytes:0};
-  const helpers=new Function('HR_SHEETS_READ_DEADLINE','HR_SHEETS_READ_STATS',text.slice(start,end)+'\nreturn {hrRangeBatches,validateHrRangeResponse,readSheetsJson};')(performance.now()+75000,stats);
+  const helpers=new Function('HR_SHEETS_READ_DEADLINE','HR_SHEETS_READ_STATS',text.slice(start,end)+'\nreturn {hrRangeBatches,hrRangeForTab,validateHrRangeResponse,readSheetsJson};')(performance.now()+75000,stats);
   const base='https://sheets.googleapis.com/v4/spreadsheets/'+encodeURIComponent(sheetId);
   const read=suffix=>helpers.readSheetsJson(base+suffix,{headers:{Authorization:'Bearer '+token,'Cache-Control':'no-store'}});
   const meta=await read('?fields=properties(title),sheets(properties(title,index,gridProperties(rowCount,columnCount)))');
   const tabs=resolveLiveMonthTabs((meta.sheets||[]).map(s=>({title:s.properties?.title,index:s.properties?.index})));
   if(!tabs.length)throw Error('VRM356_PREFLIGHT_NO_MONTHLY_TABS');
   const ordered=rel.includes('registry-identity')?[...tabs].sort((a,b)=>String(a.key||a.periodKey).localeCompare(String(b.key||b.periodKey))||a.country.localeCompare(b.country)):tabs;
-  const rangeForTab=tab=>"'"+tab.tabTitle.replace(/'/g,"''")+"'!A1:"+maxCol+maxRow;
+  const rangeForTab=tab=>helpers.hrRangeForTab(tab.tabTitle,meta,maxCol,maxRow);
   const item={owner:rel,ownerBlob:sourceBlob,tabCount:ordered.length,batches:[],stats,pass:true};report.readers.push(item);
   for(const batch of helpers.hrRangeBatches(ordered,rangeForTab)){
     const ranges=batch.map(rangeForTab),query=ranges.map(r=>'ranges='+encodeURIComponent(r)).join('&');
