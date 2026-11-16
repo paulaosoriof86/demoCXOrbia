@@ -1,0 +1,167 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-pre-edit-scope.v1",
+  "findingId": "VRM-356",
+  "observedAt": "2026-11-16T08:39:41Z",
+  "iteration": "I3",
+  "decision": "P0_PROVEN_EXACT_OWNERS_AUTHORIZED_FOR_SCOPED_CORRECTION",
+  "classification": "PROVIDER_FAILURE",
+  "secondaryClassification": "FUNCTIONAL_DEFECT",
+  "scope": "VRM356 two reproduced boundary corrections within the existing reader/runtime scope",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadBeforeEdit": "ac2c8695ebab3d8e40f08a9294bce30387897aaf",
+  "productSource": "607ef20a5305209a46b8f61424f03475806f402d",
+  "moduleTruthMatrix": [
+    {
+      "path": "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+      "domain": "canonical-hr-state-adapters",
+      "latestApprovedSource": "e36a456e07a3b107cb7f75a0c53ffae029eb6de4",
+      "latestApprovedBlob": "bc60ad69d611f96b614a968fc4a9b4a5b9abd63a",
+      "F9": {
+        "source": null,
+        "blob": null
+      },
+      "sourceSuccessor": {
+        "source": "607ef20a5305209a46b8f61424f03475806f402d",
+        "blob": "e5ca376e039fc28501b6e849ff782ef2b0949490"
+      },
+      "HEAD": {
+        "sha": "ac2c8695ebab3d8e40f08a9294bce30387897aaf",
+        "blob": "e5ca376e039fc28501b6e849ff782ef2b0949490"
+      },
+      "live": {
+        "source": "66312f88a70bd123b137c7a031a1f456969465f5",
+        "blob": "bc60ad69d611f96b614a968fc4a9b4a5b9abd63a",
+        "runtimeRevision": "cxorbia-live-hr-dev-00376-szw",
+        "runtimeDigest": "sha256:d0fc508c6ecd6b318169a2b97b942a1467f8bf5ecf5f4db569e443bbe3eef271",
+        "successorDeployment": {
+          "source": "607ef20a5305209a46b8f61424f03475806f402d",
+          "runId": 43831591435,
+          "jobId": 133178372578,
+          "status": "completed",
+          "certificatePending": true
+        }
+      },
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "classificationScope": "VRM356_BODY_DEADLINE_AND_PRIOR_CUMULATIVE_EFFECTS_ONLY",
+      "preservedPriorAcceptance": true
+    },
+    {
+      "path": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+      "domain": "canonical-hr-state-adapters",
+      "latestApprovedSource": "06ab83008d1517f05c5fb51526570775c41b66bd",
+      "latestApprovedBlob": "a3874143a481c159a9d2a11984966bfe813f5248",
+      "F9": {
+        "source": null,
+        "blob": null
+      },
+      "sourceSuccessor": {
+        "source": "607ef20a5305209a46b8f61424f03475806f402d",
+        "blob": "84cfc0ddf844865f53297737e37ed1be043d1793"
+      },
+      "HEAD": {
+        "sha": "ac2c8695ebab3d8e40f08a9294bce30387897aaf",
+        "blob": "84cfc0ddf844865f53297737e37ed1be043d1793"
+      },
+      "live": {
+        "source": "66312f88a70bd123b137c7a031a1f456969465f5",
+        "blob": "a3874143a481c159a9d2a11984966bfe813f5248",
+        "runtimeRevision": "cxorbia-live-hr-dev-00376-szw",
+        "runtimeDigest": "sha256:d0fc508c6ecd6b318169a2b97b942a1467f8bf5ecf5f4db569e443bbe3eef271",
+        "successorDeployment": {
+          "source": "607ef20a5305209a46b8f61424f03475806f402d",
+          "runId": 43831591435,
+          "jobId": 133178372578,
+          "status": "completed",
+          "certificatePending": true
+        }
+      },
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "classificationScope": "VRM356_BODY_DEADLINE_AND_PRIOR_CUMULATIVE_EFFECTS_ONLY",
+      "preservedPriorAcceptance": true
+    },
+    {
+      "path": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+      "domain": "persistence-command-ack-boundary",
+      "latestApprovedSource": "66312f88a70bd123b137c7a031a1f456969465f5",
+      "latestApprovedBlob": "1ebbcafd8ee4e69728fb1ec7a86ea99597c468cb",
+      "F9": {
+        "source": null,
+        "blob": null
+      },
+      "sourceSuccessor": {
+        "source": "607ef20a5305209a46b8f61424f03475806f402d",
+        "blob": "95ac9d7f5a3f11037ac0bd581c50899fe0a1e5de"
+      },
+      "HEAD": {
+        "sha": "ac2c8695ebab3d8e40f08a9294bce30387897aaf",
+        "blob": "95ac9d7f5a3f11037ac0bd581c50899fe0a1e5de"
+      },
+      "live": {
+        "source": "66312f88a70bd123b137c7a031a1f456969465f5",
+        "blob": "1ebbcafd8ee4e69728fb1ec7a86ea99597c468cb",
+        "runtimeRevision": "cxorbia-live-hr-dev-00376-szw",
+        "runtimeDigest": "sha256:d0fc508c6ecd6b318169a2b97b942a1467f8bf5ecf5f4db569e443bbe3eef271",
+        "successorDeployment": {
+          "source": "607ef20a5305209a46b8f61424f03475806f402d",
+          "runId": 43831591435,
+          "jobId": 133178372578,
+          "status": "completed",
+          "certificatePending": true
+        }
+      },
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "classificationScope": "VRM356_BODY_DEADLINE_AND_PRIOR_CUMULATIVE_EFFECTS_ONLY",
+      "preservedPriorAcceptance": true
+    }
+  ],
+  "evidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM356_BODY_DEADLINE_AND_CUMULATIVE_EFFECTS_REPRODUCTION_20261116.json",
+    "gitBlob": "ab6a9f6dcde3dca9c7b039fb3ee9e7647c416fe4",
+    "sha256": "9e315c5a6c94171bb01bd98d1ddf8324ac9a44ac8dbdf5c0a14c9f687c86387c"
+  },
+  "allowedProductFiles": [
+    "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+  ],
+  "allowedQaFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+    "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs"
+  ],
+  "correctionContract": [
+    "Preserve the request AbortSignal and classify header/body timeout or fixed deadline expiration with the already allowlisted source-read error.",
+    "Observe429 before body consumption; malformed200JSON remains a failure without fallback; retry budget and source semantics unchanged.",
+    "Retain already verified prior cumulative journal effects when a fresh read fails, with zero applicationWritesThisAttempt; never modify a prior receipt or reacquire a lease on this path."
+  ],
+  "validationRequired": [
+    "Exact 9 causal failures at source607 pass after the bounded correction; existing suites retain PASS.",
+    "Canonical Node CI then existing single paired DEV lane, no concurrent deploy.",
+    "Fresh source sequence then canonical name/login/exact replay proof on the successor."
+  ],
+  "invariants": {
+    "production": false,
+    "productionAuthorization": false,
+    "newWorkflow": false,
+    "newCandidate": false,
+    "dataReimport": false,
+    "remoteHrWrites": false,
+    "credentialReset": false,
+    "uidOverwrite": false,
+    "fullDomainPromotion": false,
+    "humanAcceptancesPreserved": [
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ],
+    "fullDomains": 5,
+    "totalDomains": 21,
+    "methodology": "I3_P0_PROVEN_EXACT_OWNER_SINGLE_PACKAGE"
+  },
+  "parentScope": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM356_FRESH_HR_QUOTA_P0_SCOPE_20261116.json",
+    "gitBlob": "87de56ca541a02945dba3a56a7e70874a9e01103",
+    "sha256": "02b8b30483ec42d8e960564adb03f7195c4be15cdfea3995f871d574f4f3bb9a"
+  }
+}
