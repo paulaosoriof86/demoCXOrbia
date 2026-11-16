@@ -1,0 +1,145 @@
+{
+  "runId": 43798644730,
+  "runNumber": 2547,
+  "controlSha": "1eed4e2e9c0e5bcada67e7aa4559eefca06d9c41",
+  "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+  "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+  "workflowConclusion": "success",
+  "jobsObserved": 109,
+  "canonicalJobId": 133073214165,
+  "pairedJobId": 133073456472,
+  "sourceQa": {
+    "decision": "PASS_I3_SAME_RUN_PATH_BOUND_SOURCE_QA",
+    "receiptSha256": "81a1f7d58d9db2922c7d319b622d25b2ce90250b104e276dd01368e5b573b537",
+    "artifactId": 14195094488,
+    "artifactDigest": "sha256:3e76fe66c041b1a7e854da0b1c74811971dd6729a97b4dd277bcdb5cfe1b5eb9",
+    "owners": 21,
+    "testsPass": 440,
+    "testsFail": 0,
+    "scope": "SOURCE_QA_ONLY_NOT_E2E_OR_HUMAN_ACCEPTANCE"
+  },
+  "paired": {
+    "decision": "PASS_I3_VRM350_EXACT_DEV_MATERIALIZATION",
+    "runtimeRevision": "cxorbia-live-hr-dev-00374-nzx",
+    "runtimeDigest": "sha256:ab74d14500f01f92bed06559d2187e7a9ab656ffd8a8d7395d5b8a8a580a2cf1",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/d69dd2e668044dcb",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794800138744000",
+    "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+    "firestoreRulesDeploys": 0,
+    "storageRulesDeploys": 0,
+    "hrWrites": 0,
+    "productionUnchanged": true,
+    "productionIndexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+    "production": false
+  },
+  "pairedArtifact": {
+    "artifactId": 14195452260,
+    "artifactDigest": "sha256:6a55f0b408b35b9053495d069ca8f9790ec08178a39bd851ae890b8b93c74235"
+  },
+  "independentVerification": {
+    "servedAssetsGitAndDownloadedBytesMatched": 39,
+    "runtimeRevisionDigestAnd100PercentTrafficExact": true,
+    "hostingVersionAndReleaseExact": true,
+    "rulesUnchanged": true,
+    "productionBytesUnchanged": true,
+    "hrBeforeAfterBytesUnchanged": true,
+    "notificationsLiveIdentityMatches": true
+  },
+  "notifications": {
+    "decision": "PASS_VRM143_LIVE_PROVIDER_EXACT_CYCLE_AND_SERVED_CONSUMER",
+    "scope": "LIVE_DEV_PROVIDER_AND_EXACT_SERVED_SHARED_CONSUMER_NOT_BROWSER_UI_OR_FULL_DOMAIN",
+    "cases": 2,
+    "cleanup": {
+      "ok": true,
+      "documentsDeleted": 29,
+      "authDeleted": 2,
+      "remainingDocuments": 0,
+      "remainingAuth": 0
+    },
+    "legacyUnlinkedPending": 1
+  },
+  "syncConfirmation": {
+    "decision": "PASS_VRM350_SERVED_HTTP_REJECTS_UNOBSERVED_HR_AND_REAL_HR_FACTORY_POSITIVE_REPLAY",
+    "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "httpNegative": {
+      "scope": "LIVE_HTTP_OWNED_SYNTHETIC_VISIT_ABSENT_FROM_REAL_HR",
+      "cases": [
+        {
+          "freshSession": false,
+          "http": 409,
+          "code": "OPS_SYNC_CONFIRM_HR_ROW_NOT_UNIQUE",
+          "providerAck": false,
+          "hrProviderAck": false,
+          "providerWrites": 0,
+          "durableUnchanged": true,
+          "receiptAbsent": true,
+          "auditAbsent": true
+        },
+        {
+          "freshSession": true,
+          "http": 409,
+          "code": "OPS_SYNC_CONFIRM_HR_ROW_NOT_UNIQUE",
+          "providerAck": false,
+          "hrProviderAck": false,
+          "providerWrites": 0,
+          "durableUnchanged": true,
+          "receiptAbsent": true,
+          "auditAbsent": true
+        }
+      ]
+    },
+    "positive": {
+      "scope": "EXACT_PRODUCT_FACTORY_WITH_REAL_INDEPENDENT_HR_AND_MEMORY_ONLY_DURABLE_STATE_NOT_HTTP_OR_FIRESTORE_PERSISTENCE",
+      "initialMemoryWrites": 3,
+      "replayMemoryWrites": 0,
+      "hrProviderAck": false,
+      "proofSourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+      "visitFingerprint": "66cfa99ce7faffcb5c444a9e92fb290b98dfbac98a5d842b71d13e0630b1caab",
+      "periodId": "cinepolis-2025-06"
+    },
+    "commercialVisitWrites": 0,
+    "hrWrites": 0,
+    "fullDomain": false,
+    "b14Closed": false
+  },
+  "hrDurable": {
+    "decision": "HOLD_OBSERVED_DURABLE_REVISION_DIVERGENCE",
+    "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "durableRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
+    "revisionMatches": false,
+    "currentAutomaticReceiptsPresent": 0,
+    "oldLeaseStatus": "partial",
+    "scope": "READ_ONLY_NOT_RECONCILIATION"
+  },
+  "rawFiles": {
+    "paired/result.json": {
+      "path": "/tmp/run2547-monitor/paired/result.json",
+      "sha256": "185012764b167326928e7e54082f6da18c48a1b6e619e40428ebcd0fa76a4131"
+    },
+    "paired/notifications/result.json": {
+      "path": "/tmp/run2547-monitor/paired/notifications/result.json",
+      "sha256": "e8b9c124a62359e4863f9de44e04d6ec09ae16f13cafa3bec13402c4411a38d3"
+    },
+    "paired/hr-before/result.json": {
+      "path": "/tmp/run2547-monitor/paired/hr-before/result.json",
+      "sha256": "9012300b03123e816d202ae3de1b09e2a32d4cc45ea2257b14fbee060901a39a"
+    },
+    "paired/hr-after/result.json": {
+      "path": "/tmp/run2547-monitor/paired/hr-after/result.json",
+      "sha256": "9012300b03123e816d202ae3de1b09e2a32d4cc45ea2257b14fbee060901a39a"
+    },
+    "source-qa/source-qa-receipt.json": {
+      "path": "/tmp/run2547-monitor/source-qa/source-qa-receipt.json",
+      "sha256": "81a1f7d58d9db2922c7d319b622d25b2ce90250b104e276dd01368e5b573b537"
+    }
+  },
+  "terminalCertified": false,
+  "fullDomain": false,
+  "b14Closed": false,
+  "phaseAComplete": false,
+  "production": false
+}

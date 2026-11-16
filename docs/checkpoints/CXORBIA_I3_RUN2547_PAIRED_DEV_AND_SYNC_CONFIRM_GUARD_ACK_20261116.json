@@ -1,0 +1,279 @@
+{
+  "schemaVersion": "cxorbia.i3.current-source-dev-materialization.v1",
+  "verifiedAt": "2026-11-16T03:40:48.481598+00:00",
+  "source": {
+    "sha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+    "tree": "ad6093864ee4b734ab9692661f00b322abe863a9"
+  },
+  "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+  "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+  "materialization": {
+    "builds": 1,
+    "decision": "PASS_I3_VRM350_EXACT_DEV_MATERIALIZATION",
+    "hostingDeploys": 1,
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794800138744000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/d69dd2e668044dcb",
+    "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "production": false,
+    "runtimeDeploys": 1,
+    "runtimeDigest": "sha256:ab74d14500f01f92bed06559d2187e7a9ab656ffd8a8d7395d5b8a8a580a2cf1",
+    "runtimeRevision": "cxorbia-live-hr-dev-00374-nzx",
+    "scenarioDimensionsProven": true,
+    "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+    "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+    "storageRulesDeploys": 0,
+    "verifiedServedAssetCount": 39,
+    "sourceHostedExact": true,
+    "runtimeTrafficExact": true,
+    "productionUnchanged": true,
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+    "firestoreRulesDeploys": 0,
+    "hrWrites": 0,
+    "runId": 43798644730,
+    "runNumber": 2547,
+    "jobId": 133073456472,
+    "controlHeadAtDeploy": "1eed4e2e9c0e5bcada67e7aa4559eefca06d9c41",
+    "artifactId": 14195452260,
+    "artifactDigest": "sha256:6a55f0b408b35b9053495d069ca8f9790ec08178a39bd851ae890b8b93c74235",
+    "artifactDigestType": "GITHUB_ACTIONS_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2547_PAIRED_DEV_AND_SYNC_CONFIRM_GUARD_ACK_20261116.json",
+    "state": "PASS_EXACT_PAIRED_DEV_VRM350_SCOPED_LIVE_REJECTION_AND_VRM143_REGRESSION",
+    "humanAcceptance": "B4_B5_B6_B7_PASS_PRESERVED__NO_NEW_FULL_DOMAIN",
+    "fullTaskClosed": false
+  },
+  "servedSha256": {
+    "core/data.js": "f80436b1254a9eb6021b18b05aec82ec64c325c8b45130bc06880ef01914e76f",
+    "core/router.js": "d302cbadd2e427919330a8c4e81ebe04ca67e898dcc1f6a7e85445f4f74bb9c3",
+    "core/tya-phase-a-source-safe-preview.js": "0cc0db95bc0cf949db84c09bf951f489d5df15acb24d9991f4fb576e984596bf",
+    "adapters/tya-live-source-inplace-apply.js": "f39f4d5d47f07d6c5ae5fa22e48d314af0a57478c0e9e78dbfe74a26b5082ad8",
+    "adapters/tya-cumulative-read-model-v2.js": "748649c0326db6310c2276b343bdfdf8d7969e8ce4c63419560e4732c1a2eee7",
+    "adapters/tya-canonical-finance-read-model-v2.js": "acd44366661d26250e79fffd89fac27cdb503b2d4347d17b4b3f6e3d4a47b30f",
+    "adapters/tya-canonical-shopper-portal-v2.js": "214b1260a71f5612a269618eb9bed12263d00bf26a099d6ee73315bad61f1cc3",
+    "adapters/tya-protected-auth-hr-authority-bridge-v2.js": "c7ef63985272f465df147293f67c1e3cce0e8ebcdad38a9ddd17a9bc24dff51e",
+    "data/tya-hr-source-safe-periods.js": "82b87e084b5a763b6ac812fb37ab09da2070b05b72994df7d6e161de2f8a5fe0",
+    "modules/midia.js": "9084290ad4a627eae457d6e8a31f83a9348f49d0f1e991018120f913b3491e5c",
+    "modules/misvisitas.js": "a51799d5ac24f516d429b84ff8d79987dc3eeea6aea4c6484e39b01a43b56597",
+    "modules/visita-detalle.js": "c812eb418adc0262610bab498b93413abef30cec79d4a5b9f4ef6dbcf95c3b58",
+    "modules/shoppers.js": "b985cc833635944d48bd77f66a501cb6136a1dfc898f892de2501635a65f2150",
+    "modules/postulaciones.js": "cbc828e2d4d6a86f2ae37ccdb38c7d621fde2b16b3a4bb3b279a540dd647dcc3",
+    "modules/beneficios.js": "2c1763b65ef055eecd56e3622033d53c9946f679e758d06be797b7e854b6b419",
+    "modules/cert.js": "51b0a06b53cdf38437137a390cd624bb6270721b973eebd1d03e425dfce6f344",
+    "modules/academia.js": "438eade6566bd3b2b9fca24f029334b471779e3d62bdc2fb05d3b8c0d1b5a99b",
+    "styles/layout.css": "77c7befcefb48d4ba732fff0e3e03276bd55263ceebf63b90a4b809f74cdb6b1",
+    "adapters/tya-c6-unified-human-runtime-v1.js": "cb49d8ea742b96ca867d5eeb8de96e28a66a603134df40ea7ffa1dbad05751cf",
+    "adapters/cxorbia-cxdata-command-boundary-v1.js": "d3ff79efd31d5d1b1ad906d68cfbe2f3db6da18d75daf444aa701567f700c58b",
+    "index-backend-dev.html": "38460409bee133f1f746156de1e1e5fa3d5db0c7a22c6d0d0b36a64f947c0479",
+    "core/backend-firebase.js": "2aca1f072f3cbffb993bb149b155aaeb5a175210ccd8dcea578615a39e6441d3",
+    "adapters/tya-live-source-refresh-watch-v2.js": "3eb1d2e35bab4c80d7d7d8922969581d61a17e67f07e5b4aeaaea783a765c194",
+    "modules/hr-source.js": "62907bc1e18b46247c9e35ae299404e2f7e61cd8bcfbb0973adbc224f1983255",
+    "modules/clientes.js": "7260fa6c2ef5eccc0eea3cf43bc9cf5c06af2be4cc923742e45876e21480ad1e",
+    "modules/historico.js": "cab99b87798f385d6cf71cc63bef144b5fc7cb6c55bf31ba101817ade07e2819",
+    "modules/visitas.js": "4c8ec643438a3e812455781303fed798b4c1a267aecd079adc4bbc555efc999b",
+    "modules/cuestionario-shopper.js": "576272660a6b7cf96055587de39ee172df6ebc9147711a5cf0f17d0a8c943388",
+    "core/backend-certifications.js": "826b6775b2be46c606d271e04085fee2d4a34bab778c05fa6ad88dc00a1d05ad",
+    "core/finanzas-core.js": "c61e7f193992a4e6a60b9417a0ad3cdf3b82f3b06f5a569c25ce1caf0089b971",
+    "modules/marca.js": "bfeb16f3244149f870dc1b796978863b4da5bcbda9a8981af0497b214ec50836",
+    "modules/administrabilidad.js": "0e2e591c8d73f2faf7924eb8e38813fed77b92676ac01220b4dbc5c74ded9f5a",
+    "modules/configuracion.js": "6241a0f272cab3dc12476720d56d0fa6da6da4190cc352532022fd26f79df86d",
+    "modules/cliente-insights.js": "85f46c12b60042c72f24f220c225433b40caf732a638520ddecb606d0c135e51",
+    "adapters/cxorbia-command-adapter-v1.js": "e842f91fa880ee378534100550e54584da0b696fa12ee155336b4ea8ab77c2b4",
+    "core/backend-bulletins.js": "694aa14581e2f8dbe8bb5ef25295c9db80e7e2b94d3fcc47f1ab091871f593b6",
+    "sw.js": "f82b9d97fab9b153b3489585d8ab46a0102623c0f16704388b166348f8feabfa",
+    "core/notif.js": "1a5a3965483fe83b7faacb5153ce957d4358d013194a88e7dffe2b293422d0f7",
+    "modules/dashboard.js": "20d9f6856e473757901645cdba1082bf94b78bcf998cba64e0616a13412a46c8"
+  },
+  "verifiedServedAssetCount": 39,
+  "productionUnchanged": true,
+  "productionIndexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+  "production": false,
+  "i4Authorized": false,
+  "workflowUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43798644730",
+  "jobConclusion": "success",
+  "materializationConclusion": "PASS_I3_VRM350_EXACT_DEV_MATERIALIZATION",
+  "sourceQa": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2547_VERIFIED_EVIDENCE_20261116/source-qa/source-qa-receipt.json",
+    "gitBlob": "6915cd22a0405b14790438f261895a502bbee892",
+    "sha256": "81a1f7d58d9db2922c7d319b622d25b2ce90250b104e276dd01368e5b573b537",
+    "artifactId": 14195094488,
+    "artifactDigest": "sha256:3e76fe66c041b1a7e854da0b1c74811971dd6729a97b4dd277bcdb5cfe1b5eb9",
+    "runId": 43798644730,
+    "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+    "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+    "controlSha": "1eed4e2e9c0e5bcada67e7aa4559eefca06d9c41",
+    "testsPass": 440,
+    "testsFail": 0,
+    "owners": 21,
+    "scope": "SOURCE_QA_ONLY_NOT_FULL_DOMAIN"
+  },
+  "rawEvidence": {
+    "result.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2547_VERIFIED_EVIDENCE_20261116/result.json",
+      "gitBlob": "ed9d4ab05dcd32521b1666ec577d1bfc34307729",
+      "sha256": "185012764b167326928e7e54082f6da18c48a1b6e619e40428ebcd0fa76a4131"
+    },
+    "notifications/result.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2547_VERIFIED_EVIDENCE_20261116/notifications/result.json",
+      "gitBlob": "1ba0f3a52e73e1629f99188c99704da22e25f5e5",
+      "sha256": "e8b9c124a62359e4863f9de44e04d6ec09ae16f13cafa3bec13402c4411a38d3"
+    },
+    "hr-before/result.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2547_VERIFIED_EVIDENCE_20261116/hr-before/result.json",
+      "gitBlob": "597e72c1a877e50bf61a19d91c8f41451a8cdfd2",
+      "sha256": "9012300b03123e816d202ae3de1b09e2a32d4cc45ea2257b14fbee060901a39a"
+    },
+    "hr-after/result.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2547_VERIFIED_EVIDENCE_20261116/hr-after/result.json",
+      "gitBlob": "597e72c1a877e50bf61a19d91c8f41451a8cdfd2",
+      "sha256": "9012300b03123e816d202ae3de1b09e2a32d4cc45ea2257b14fbee060901a39a"
+    },
+    "runtime.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2547_VERIFIED_EVIDENCE_20261116/runtime.json",
+      "gitBlob": "b60c51b34b124933b3f2a59050055d0e07ff28ad",
+      "sha256": "86958a8535e2f02f8f11ce9ba1c402ffac6b15c0814bb63d90cfa1389e79fb5f"
+    },
+    "runtime-revision.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2547_VERIFIED_EVIDENCE_20261116/runtime-revision.json",
+      "gitBlob": "099e8f776bc504ba646bed562209eade95ea91f8",
+      "sha256": "6569d810bdda7d27118f84a0ee8fe9a2b68e05f6c3f67fc899d447c10a63dc2e"
+    },
+    "runtime-before.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2547_VERIFIED_EVIDENCE_20261116/runtime-before.json",
+      "gitBlob": "258b1c7689b8150bc37dcfcb930791c03da78ae3",
+      "sha256": "894cc7e1b9ae6383a30b22d059dc0f3edad12a9de2c08d91e804b142ff8454b0"
+    },
+    "hosting-live-channel.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2547_VERIFIED_EVIDENCE_20261116/hosting-live-channel.json",
+      "gitBlob": "8875c77cf472220dba590bae233829a5f9f07627",
+      "sha256": "d02b3ddd24471121057b84ea25a0ecaaa0b0b6311fcc69e76158634de65fa501"
+    },
+    "hr-meta.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2547_VERIFIED_EVIDENCE_20261116/hr-meta.json",
+      "gitBlob": "e978c8bc5b81820f7975895702072b739d90dc37",
+      "sha256": "e8f8522488e5bcb104053233fc4f3d72933178e1265145c814d2c14bdbce382c"
+    },
+    "source-contract.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2547_VERIFIED_EVIDENCE_20261116/source-contract.json",
+      "gitBlob": "87594004f60ee5fe7b725bc6e772309c8e3667ce",
+      "sha256": "bba978fe61379ee08eae45e50d96fa98ed0dc1a08e1f1fc851b372ac4a68444c"
+    }
+  },
+  "syncConfirmation": {
+    "decision": "PASS_VRM350_SERVED_HTTP_REJECTS_UNOBSERVED_HR_AND_REAL_HR_FACTORY_POSITIVE_REPLAY",
+    "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "httpNegative": {
+      "scope": "LIVE_HTTP_OWNED_SYNTHETIC_VISIT_ABSENT_FROM_REAL_HR",
+      "cases": [
+        {
+          "freshSession": false,
+          "http": 409,
+          "code": "OPS_SYNC_CONFIRM_HR_ROW_NOT_UNIQUE",
+          "providerAck": false,
+          "hrProviderAck": false,
+          "providerWrites": 0,
+          "durableUnchanged": true,
+          "receiptAbsent": true,
+          "auditAbsent": true
+        },
+        {
+          "freshSession": true,
+          "http": 409,
+          "code": "OPS_SYNC_CONFIRM_HR_ROW_NOT_UNIQUE",
+          "providerAck": false,
+          "hrProviderAck": false,
+          "providerWrites": 0,
+          "durableUnchanged": true,
+          "receiptAbsent": true,
+          "auditAbsent": true
+        }
+      ]
+    },
+    "positive": {
+      "scope": "EXACT_PRODUCT_FACTORY_WITH_REAL_INDEPENDENT_HR_AND_MEMORY_ONLY_DURABLE_STATE_NOT_HTTP_OR_FIRESTORE_PERSISTENCE",
+      "initialMemoryWrites": 3,
+      "replayMemoryWrites": 0,
+      "hrProviderAck": false,
+      "proofSourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+      "visitFingerprint": "66cfa99ce7faffcb5c444a9e92fb290b98dfbac98a5d842b71d13e0630b1caab",
+      "periodId": "cinepolis-2025-06"
+    },
+    "commercialVisitWrites": 0,
+    "hrWrites": 0,
+    "fullDomain": false,
+    "b14Closed": false
+  },
+  "notifications": {
+    "decision": "PASS_VRM143_LIVE_PROVIDER_EXACT_CYCLE_AND_SERVED_CONSUMER",
+    "cases": [
+      {
+        "type": "visit.cancel",
+        "cycle1": "51840851bb2fda3d6f5f587687cbb443ca3f1a5c",
+        "cycle2": "86a74b0d01d288fdab11a82becd3a7031db97cda",
+        "providerAck": true,
+        "independentDurableReadback": true,
+        "newSessionOldReplayZeroWrites": true,
+        "requestAndDecisionCycleExact": true,
+        "secondCycleClearsPriorDecision": true,
+        "oldNoticeNotReactivated": true,
+        "authorizedHistoryPreserved": true,
+        "unrelatedVisitFieldsPreserved": true,
+        "finalStatus": "approved_pending_hr",
+        "commands": 4,
+        "providerWrites": 16
+      },
+      {
+        "type": "visit.reschedule",
+        "cycle1": "30db7d8cec26e62636edbb08384ec97226717d4a",
+        "cycle2": "f9c3cc04d28eb8010b7650bded954ac239613724",
+        "providerAck": true,
+        "independentDurableReadback": true,
+        "newSessionOldReplayZeroWrites": true,
+        "requestAndDecisionCycleExact": true,
+        "secondCycleClearsPriorDecision": true,
+        "oldNoticeNotReactivated": true,
+        "authorizedHistoryPreserved": true,
+        "unrelatedVisitFieldsPreserved": true,
+        "finalStatus": "approved",
+        "commands": 4,
+        "providerWrites": 16
+      }
+    ],
+    "cleanup": {
+      "ok": true,
+      "documentsDeleted": 29,
+      "authDeleted": 2,
+      "remainingDocuments": 0,
+      "remainingAuth": 0
+    },
+    "legacyPendingWithoutCycle": {
+      "realVisitsRead": 2068,
+      "unlinkedPending": [
+        {
+          "visitHash": "340de83395ebeccf2ee2db45e400902ec78a84b4a6dbe2a673b44f96a5575b12",
+          "requestKind": "rescheduleRequest",
+          "periodId": "cinepolis-2026-09",
+          "status": "pending_review"
+        }
+      ],
+      "writes": 0,
+      "scope": "EXACT_CURRENT_PROJECT_DURABLE_REQUEST_METADATA_ONLY"
+    },
+    "fullDomain": false
+  },
+  "hrDurableReadback": {
+    "decision": "HOLD_OBSERVED_DURABLE_REVISION_DIVERGENCE",
+    "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "durableRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
+    "beforeAfterIdentical": true,
+    "reconciliationLockStatus": "partial",
+    "currentRevisionAutomaticReceiptsPresent": 0,
+    "commandPosts": 0,
+    "automaticReconciliationExecuted": false,
+    "historicalShopperStageError": "SHOPPER_CROSSWALK_UID_CONFLICT",
+    "historicalErrorIsNotCurrentSourceFailure": true,
+    "liveSuccessorReconciliationPending": true
+  },
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "phaseAComplete": false,
+  "newModuleMatches": 0
+}

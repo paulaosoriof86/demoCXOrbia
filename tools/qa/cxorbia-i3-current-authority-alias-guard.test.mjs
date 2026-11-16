@@ -20,6 +20,8 @@ const fixture=()=>{
   d.moduleTruthExpectedGitBlob='e'.repeat(40);l.currentTruth.moduleTruthGitBlob=d.moduleTruthExpectedGitBlob;
   d.currentCanonicalControl={sourceSha:source,sourceTree:tree,matrix:{path:d.moduleTruthPath,gitBlob:d.moduleTruthExpectedGitBlob},ledger:{path:d.findingsLedgerPath,gitBlob:d.findingsLedgerExpectedGitBlob}};
   p.currentCanonicalControl=structuredClone(d.currentCanonicalControl);
+  d.lastExecutionReceipt=structuredClone(d.currentExecutionReceipt);d.lastExecutionReceiptSemantics=d.currentExecutionReceiptSemantics;
+  p.activePhaseAClosureLock20261110.currentAccountingSemantics.strictOwnerDomainMatch.evidence={path:d.moduleTruthPath,gitBlob:d.moduleTruthExpectedGitBlob,runId:c3.runId,sourceSha:c3.sourceSha};
   return {descriptor:d,pointer:p,ledger:l};
 };
 
@@ -41,6 +43,7 @@ const pendingFixture=()=>{
 test('current functional accounting follows the new source while original human evidence stays historical',()=>{
   const v=fixture();v.descriptor.moduleTruthPath='matrix-V294.json';
   v.ledger.currentTruth.moduleTruthPath=v.descriptor.moduleTruthPath;
+  v.pointer.activePhaseAClosureLock20261110.currentAccountingSemantics.strictOwnerDomainMatch.evidence.path=v.descriptor.moduleTruthPath;
   for(const control of [v.descriptor,v.pointer])control.currentCanonicalControl.matrix.path=v.descriptor.moduleTruthPath;
   v.matrix={version:'V294',modules:Array.from({length:21},(_,i)=>({classification:i<5?'MATCH':'HOLD'})),
     integralCertificationUnchanged:{match:5},functionalBlockCertificationAccounting20261110:{
@@ -342,7 +345,7 @@ function completedPairedC3PendingFixture(){
  for(const x of [d,l]){x.lastModuleTruthProof=structuredClone(audit);x.c3PreterminalProof=structuredClone(audit);}
  for(const x of [d,p]){x.currentCanonicalControl.sourceSha=materialization.sourceSha;x.currentCanonicalControl.sourceTree=materialization.sourceTree;}
  Object.assign(d.pendingDevSuccessor,{scope:'RUNTIME_AND_HOSTING',servingPairedMaterialization:structuredClone(materialization),servingRuntimeSeal:structuredClone(d.postDeployRunSeal)});
- p.pendingDevSuccessor=structuredClone(d.pendingDevSuccessor);return v;
+ p.pendingDevSuccessor=structuredClone(d.pendingDevSuccessor);Object.assign(p.activePhaseAClosureLock20261110.currentAccountingSemantics.strictOwnerDomainMatch.evidence,{runId:audit.runId,sourceSha:audit.sourceSha});return v;
 }
 test('completed C3 for exact paired predecessor remains truthful while one source successor is pending',()=>{
  const v=completedPairedC3PendingFixture(),r=validateCurrentAuthorityAliases(v);assert.equal(r.pass,true,JSON.stringify(r));assert.equal(v.descriptor.i3Q2HostingReleaseC3Pending,undefined);assert.notEqual(v.descriptor.currentC3PreterminalAudit.sourceSha,v.descriptor.productSourceSha);
@@ -381,3 +384,26 @@ for(const [name,mutate]of [
  ['candidate relabel',v=>{v.receipt.sourceSha=v.descriptor.productSourceSha;}],
  ['terminal certificate claimed',v=>{v.receipt.terminalCertified=true;}]
 ])test('latest paired C3 attempt rejects '+name,()=>{const v=latestPairedC3AttemptFixture();mutate(v);assert.equal(validateLatestExecutionSource(v).pass,false);});
+
+for(const [target,key]of [['descriptor','currentSuccessorDevMaterialization'],['pointer','currentSuccessorDevReadbackRequest'],['ledger','currentSuccessorDevCertification']])test('reject current successor alias from another source at '+target+'.'+key,()=>{
+ const v=completedPairedC3PendingFixture();v[target][key]={sourceSha:'a'.repeat(40),sourceTree:'b'.repeat(40),executed:true,pending:false,production:false};assert.ok(validateCurrentAuthorityAliases(v).failures.includes('CURRENT_SUCCESSOR_IDENTITY_DESYNC'));
+});
+for(const [name,alter]of [
+ ['top source stale',v=>{v.descriptor.currentSuccessorDevReadbackRequest.sourceSha='a'.repeat(40);}],
+ ['nested receipt stale',v=>{v.descriptor.currentSuccessorDevReadbackRequest.receipt.sourceSha='a'.repeat(40);}],
+ ['tree stale',v=>{v.descriptor.currentSuccessorDevReadbackRequest.sourceTree='a'.repeat(40);}],
+ ['executed pending candidate',v=>{v.descriptor.currentSuccessorDevReadbackRequest.executed=true;}],
+ ['build claimed',v=>{v.descriptor.currentSuccessorDevReadbackRequest.builds=1;}]
+])test('current successor scope rejects '+name,()=>{
+ const v=completedPairedC3PendingFixture(),d=v.descriptor;d.currentSuccessorDevReadbackRequest={sourceSha:d.productSourceSha,sourceTree:d.productSourceTree,receipt:{sourceSha:d.productSourceSha,sourceTree:d.productSourceTree},executed:false,pending:true,production:false};assert.equal(validateCurrentAuthorityAliases(v).pass,true);alter(v);assert.equal(validateCurrentAuthorityAliases(v).pass,false);
+});
+for(const field of ['path','gitBlob','runId','sourceSha'])test('strict accounting evidence rejects stale '+field,()=>{
+ const v=completedPairedC3PendingFixture();v.pointer.activePhaseAClosureLock20261110.currentAccountingSemantics.strictOwnerDomainMatch.evidence[field]='stale';assert.ok(validateCurrentAuthorityAliases(v).failures.includes('CURRENT_STRICT_ACCOUNTING_EVIDENCE_DESYNC'));
+});
+for(const field of ['runId','sourceSha','sourceTree'])test('latest terminal attempt rejects stale '+field,()=>{
+ const v=completedPairedC3PendingFixture(),a=v.descriptor.currentC3PreterminalAudit;v.pointer.activePhaseAClosureLock20261110.latestTerminalAttempt={runId:a.runId,sourceSha:a.sourceSha,sourceTree:a.sourceTree};assert.equal(validateCurrentAuthorityAliases(v).pass,true);v.pointer.activePhaseAClosureLock20261110.latestTerminalAttempt[field]='stale';assert.ok(validateCurrentAuthorityAliases(v).failures.includes('CURRENT_TERMINAL_ATTEMPT_DESYNC'));
+});
+test('last execution alias cannot retain a materialization label for current C3 execution',()=>{const v=fixture();v.descriptor.lastExecutionReceiptSemantics='LATEST_OLD_MATERIALIZATION';assert.ok(validateCurrentAuthorityAliases(v).failures.includes('CURRENT_LAST_EXECUTION_ALIAS_DESYNC'));});
+test('old successor evidence remains valid history without becoming active authority',()=>{
+ const v=completedPairedC3PendingFixture();for(const x of [v.descriptor,v.pointer,v.ledger])x.historicalSupersededAliases={currentSuccessorDevMaterialization:{sourceSha:'a'.repeat(40),sourceTree:'b'.repeat(40),executed:true}};assert.equal(validateCurrentAuthorityAliases(v).pass,true);
+});

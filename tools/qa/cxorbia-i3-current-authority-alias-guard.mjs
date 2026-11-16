@@ -110,6 +110,25 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
   // terminal evidence. A stale lastModuleTruthProof previously survived every
   // canonical CI run and caused later conversations to re-enter old gates.
   const c3=d?.currentC3PreterminalAudit||{};
+  // Current aliases are checked only at the top level. Historical receipts may
+  // retain their original field names and identities without being reclassified.
+  for(const object of [d,p,l,m].filter(Boolean))for(const [key,value]of Object.entries(object)){
+    if(!key.startsWith('currentSuccessor')&&key!=='pendingDevSuccessorEvidence')continue;
+    const identities=[value,value?.receipt,value?.materialization].filter(v=>v&&typeof v==='object'&&('sourceSha'in v||'sourceTree'in v));
+    check(identities.length>0&&identities.every(v=>v.sourceSha===source&&v.sourceTree===tree),'CURRENT_SUCCESSOR_IDENTITY_DESYNC');
+    if(pending.state==='P0_PROVEN_PENDING_DEV_MATERIALIZATION')check(value?.executed===false&&value?.pending===true&&value?.production===false&&
+      [value,value?.materialization].filter(Boolean).every(v=>!v.builds&&!v.runtimeDeploys&&!v.hostingDeploys),'CURRENT_SUCCESSOR_EXECUTION_STATE_DESYNC');
+  }
+  if(d.lastExecutionReceipt||d.lastExecutionReceiptSemantics)check(JSON.stringify(d.lastExecutionReceipt)===JSON.stringify(d.currentExecutionReceipt)&&
+    d.lastExecutionReceiptSemantics===d.currentExecutionReceiptSemantics,'CURRENT_LAST_EXECUTION_ALIAS_DESYNC');
+  const accountingEvidence=phaseLock.currentAccountingSemantics?.strictOwnerDomainMatch?.evidence;
+  check(accountingEvidence?.path===d.moduleTruthPath&&accountingEvidence?.gitBlob===d.moduleTruthExpectedGitBlob&&
+    accountingEvidence?.runId===c3.runId&&accountingEvidence?.sourceSha===c3.sourceSha,'CURRENT_STRICT_ACCOUNTING_EVIDENCE_DESYNC');
+  if(phaseLock.latestTerminalAttempt){
+    const terminal=phaseLock.latestTerminalAttempt;
+    check(['runId','sourceSha','sourceTree'].every(k=>terminal[k]===c3[k])&&
+      (!(terminal.runNumber&&c3.runNumber)||terminal.runNumber===c3.runNumber),'CURRENT_TERMINAL_ATTEMPT_DESYNC');
+  }
   const pendingBreakdown=['pendingOwnerProofFiles','pendingBlobProvenanceFiles','pendingMappingApprovalFiles'];
   check(pendingBreakdown.every(k=>Number.isInteger(c3[k])&&c3[k]>=0)&&
     pendingBreakdown.reduce((n,k)=>n+c3[k],0)===c3.pendingFiles,'CURRENT_C3_PENDING_BREAKDOWN_DESYNC');

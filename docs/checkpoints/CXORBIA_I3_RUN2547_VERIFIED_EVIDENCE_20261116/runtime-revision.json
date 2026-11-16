@@ -1,0 +1,201 @@
+{
+  "apiVersion": "serving.knative.dev/v1",
+  "kind": "Revision",
+  "metadata": {
+    "annotations": {
+      "autoscaling.knative.dev/maxScale": "1",
+      "autoscaling.knative.dev/minScale": "1",
+      "run.googleapis.com/base-images": "{\"cxorbia-live-hr-dev-1\":\"us-central1-docker.pkg.dev/serverless-runtimes/google-24-full/runtimes/nodejs24\"}",
+      "run.googleapis.com/client-name": "gcloud",
+      "run.googleapis.com/client-version": "591.0.0",
+      "run.googleapis.com/operation-id": "0b87523e-dc27-422d-a440-419e98ff5379",
+      "run.googleapis.com/startup-cpu-boost": "true",
+      "serving.knative.dev/creator": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com"
+    },
+    "creationTimestamp": "2026-11-16T03:35:13.784012Z",
+    "generation": 1,
+    "labels": {
+      "client.knative.dev/nonce": "wvrfhqiyjg",
+      "cloud.googleapis.com/location": "us-central1",
+      "run.googleapis.com/startupProbeType": "Default",
+      "serving.knative.dev/configuration": "cxorbia-live-hr-dev",
+      "serving.knative.dev/configurationGeneration": "374",
+      "serving.knative.dev/route": "cxorbia-live-hr-dev",
+      "serving.knative.dev/service": "cxorbia-live-hr-dev",
+      "serving.knative.dev/serviceUid": "70b3de88-41ad-4f13-8e24-18d88858bc93"
+    },
+    "name": "cxorbia-live-hr-dev-00374-nzx",
+    "namespace": "87461567267",
+    "ownerReferences": [
+      {
+        "apiVersion": "serving.knative.dev/v1",
+        "blockOwnerDeletion": true,
+        "controller": true,
+        "kind": "Configuration",
+        "name": "cxorbia-live-hr-dev",
+        "uid": "26a8107d-eeed-4def-b65d-9e6519bc8860"
+      }
+    ],
+    "resourceVersion": "AAZgXHg6mP0",
+    "selfLink": "/apis/serving.knative.dev/v1/namespaces/87461567267/revisions/cxorbia-live-hr-dev-00374-nzx",
+    "uid": "800b2846-b308-4964-8c9f-08ab2bb192d9"
+  },
+  "spec": {
+    "containerConcurrency": 80,
+    "containers": [
+      {
+        "args": [
+          "backend/runtime/hr-live-service/server.mjs"
+        ],
+        "command": [
+          "node"
+        ],
+        "env": [
+          {
+            "name": "CXORBIA_LIVE_HR_CACHE_MS",
+            "value": "5000"
+          },
+          {
+            "name": "CXORBIA_HR_LIVE_MAX_ROW",
+            "value": "140"
+          },
+          {
+            "name": "CXORBIA_HR_LIVE_MAX_COL",
+            "value": "AI"
+          },
+          {
+            "name": "CXORBIA_HR_EARLIEST_PERIOD",
+            "value": "2025-06"
+          },
+          {
+            "name": "CXORBIA_DEV_OPERATIONAL_NAMES",
+            "value": "true"
+          },
+          {
+            "name": "CXORBIA_DEV_VISUAL_PROFILE_TOKEN_SHA256",
+            "value": "1db448b891e5d8392711f3567aba31fe70731a5e50e82bfc7a9ad0d6dba6ded3"
+          },
+          {
+            "name": "CXORBIA_DEV_VISUAL_PROFILE_TOKEN_EXPIRES_AT",
+            "value": "2026-08-02T00:29:13Z"
+          },
+          {
+            "name": "CXORBIA_G2B_SYNTHETIC_WRITE_ENABLED",
+            "value": "true"
+          },
+          {
+            "name": "CXORBIA_G2B_SYNTHETIC_WRITE_GATE",
+            "value": "PAULA_F5_SYNTHETIC_ACCEPTANCE_CANONICAL_WRITE_PATH"
+          },
+          {
+            "name": "CXORBIA_G2B_SYNTHETIC_REQUEST_ID",
+            "value": "CXORBIA-F5-SYNTHETIC-ACCEPTANCE-20260827-01"
+          },
+          {
+            "name": "CXORBIA_F5_SYNTHETIC_AUTHORIZATION_ID",
+            "value": "CXORBIA-F5-AUTH-20260827-02"
+          },
+          {
+            "name": "CXORBIA_F5_SYNTHETIC_EXPIRES_AT",
+            "value": "2026-08-27T15:53:16.136Z"
+          },
+          {
+            "name": "CXORBIA_RECOVERY_SOURCE_SHA",
+            "value": "06ab83008d1517f05c5fb51526570775c41b66bd"
+          },
+          {
+            "name": "CXORBIA_ENVIRONMENT",
+            "value": "DEV"
+          },
+          {
+            "name": "CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_ENABLED",
+            "value": "true"
+          },
+          {
+            "name": "CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_GATE",
+            "value": "PAULA_DEV_DEPLOY_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_RUNTIME"
+          },
+          {
+            "name": "CXORBIA_VISIT_RECONCILIATION_CONCURRENCY",
+            "value": "16"
+          }
+        ],
+        "image": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:ab74d14500f01f92bed06559d2187e7a9ab656ffd8a8d7395d5b8a8a580a2cf1",
+        "name": "cxorbia-live-hr-dev-1",
+        "ports": [
+          {
+            "containerPort": 8080,
+            "name": "http1"
+          }
+        ],
+        "resources": {
+          "limits": {
+            "cpu": "1",
+            "memory": "512Mi"
+          }
+        },
+        "startupProbe": {
+          "failureThreshold": 1,
+          "periodSeconds": 240,
+          "tcpSocket": {
+            "port": 8080
+          },
+          "timeoutSeconds": 240
+        }
+      }
+    ],
+    "runtimeClassName": "run.googleapis.com/linux-base-image-update",
+    "serviceAccountName": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com",
+    "timeoutSeconds": 120
+  },
+  "status": {
+    "conditions": [
+      {
+        "lastTransitionTime": "2026-11-16T03:35:29.334119Z",
+        "message": "Deploying revision succeeded in 15.55s.",
+        "status": "True",
+        "type": "Ready"
+      },
+      {
+        "lastTransitionTime": "2026-11-16T03:35:29.494705Z",
+        "severity": "Info",
+        "status": "True",
+        "type": "Active"
+      },
+      {
+        "lastTransitionTime": "2026-11-16T03:35:25.919071Z",
+        "message": "Containers became healthy in 2.01s.",
+        "status": "True",
+        "type": "ContainerHealthy"
+      },
+      {
+        "lastTransitionTime": "2026-11-16T03:35:23.293417Z",
+        "message": "Container image import completed in 8.73s.",
+        "status": "True",
+        "type": "ContainerReady"
+      },
+      {
+        "lastTransitionTime": "2026-11-16T03:35:29.289989Z",
+        "message": "Min instances provisioned successfully  in 5.69s.",
+        "status": "True",
+        "type": "MinInstancesProvisioned"
+      },
+      {
+        "lastTransitionTime": "2026-11-16T03:35:24.874764Z",
+        "message": "Provisioning imported containers completed in 1.58s. Checking container health. This will wait for up to 4m for the configured startup probe, including an initial delay of 0s.",
+        "status": "True",
+        "type": "ResourcesAvailable"
+      }
+    ],
+    "containerStatuses": [
+      {
+        "imageDigest": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:ab74d14500f01f92bed06559d2187e7a9ab656ffd8a8d7395d5b8a8a580a2cf1",
+        "name": "cxorbia-live-hr-dev-1"
+      }
+    ],
+    "desiredReplicas": 1,
+    "imageDigest": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:ab74d14500f01f92bed06559d2187e7a9ab656ffd8a8d7395d5b8a8a580a2cf1",
+    "logUrl": "https://console.cloud.google.com/logs/viewer?project=cxorbia-backend-dev&resource=cloud_run_revision/service_name/cxorbia-live-hr-dev/revision_name/cxorbia-live-hr-dev-00374-nzx&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22cxorbia-live-hr-dev%22%0Aresource.labels.revision_name%3D%22cxorbia-live-hr-dev-00374-nzx%22",
+    "observedGeneration": 1
+  }
+}

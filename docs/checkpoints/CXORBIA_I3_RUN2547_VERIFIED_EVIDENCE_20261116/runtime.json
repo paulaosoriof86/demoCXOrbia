@@ -1,0 +1,214 @@
+{
+  "apiVersion": "serving.knative.dev/v1",
+  "kind": "Service",
+  "metadata": {
+    "annotations": {
+      "run.googleapis.com/client-name": "gcloud",
+      "run.googleapis.com/client-version": "591.0.0",
+      "run.googleapis.com/ingress": "all",
+      "run.googleapis.com/ingress-status": "all",
+      "run.googleapis.com/maxScale": "20",
+      "run.googleapis.com/operation-id": "0b87523e-dc27-422d-a440-419e98ff5379",
+      "run.googleapis.com/urls": "[\"https://cxorbia-live-hr-dev-87461567267.us-central1.run.app\",\"https://cxorbia-live-hr-dev-mzgge2pnia-uc.a.run.app\"]",
+      "serving.knative.dev/creator": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com",
+      "serving.knative.dev/lastModifier": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com"
+    },
+    "creationTimestamp": "2026-07-21T00:53:40.989755Z",
+    "generation": 382,
+    "labels": {
+      "cloud.googleapis.com/location": "us-central1"
+    },
+    "name": "cxorbia-live-hr-dev",
+    "namespace": "87461567267",
+    "resourceVersion": "AAZgXHg7ZYA",
+    "selfLink": "/apis/serving.knative.dev/v1/namespaces/87461567267/services/cxorbia-live-hr-dev",
+    "uid": "70b3de88-41ad-4f13-8e24-18d88858bc93"
+  },
+  "spec": {
+    "template": {
+      "metadata": {
+        "annotations": {
+          "autoscaling.knative.dev/maxScale": "1",
+          "autoscaling.knative.dev/minScale": "1",
+          "run.googleapis.com/base-images": "{\"\":\"us-central1-docker.pkg.dev/serverless-runtimes/google-24-full/runtimes/nodejs24\"}",
+          "run.googleapis.com/client-name": "gcloud",
+          "run.googleapis.com/client-version": "591.0.0",
+          "run.googleapis.com/startup-cpu-boost": "true"
+        },
+        "labels": {
+          "client.knative.dev/nonce": "wvrfhqiyjg",
+          "run.googleapis.com/startupProbeType": "Default"
+        }
+      },
+      "spec": {
+        "containerConcurrency": 80,
+        "containers": [
+          {
+            "args": [
+              "backend/runtime/hr-live-service/server.mjs"
+            ],
+            "command": [
+              "node"
+            ],
+            "env": [
+              {
+                "name": "CXORBIA_LIVE_HR_CACHE_MS",
+                "value": "5000"
+              },
+              {
+                "name": "CXORBIA_HR_LIVE_MAX_ROW",
+                "value": "140"
+              },
+              {
+                "name": "CXORBIA_HR_LIVE_MAX_COL",
+                "value": "AI"
+              },
+              {
+                "name": "CXORBIA_HR_EARLIEST_PERIOD",
+                "value": "2025-06"
+              },
+              {
+                "name": "CXORBIA_DEV_OPERATIONAL_NAMES",
+                "value": "true"
+              },
+              {
+                "name": "CXORBIA_DEV_VISUAL_PROFILE_TOKEN_SHA256",
+                "value": "1db448b891e5d8392711f3567aba31fe70731a5e50e82bfc7a9ad0d6dba6ded3"
+              },
+              {
+                "name": "CXORBIA_DEV_VISUAL_PROFILE_TOKEN_EXPIRES_AT",
+                "value": "2026-08-02T00:29:13Z"
+              },
+              {
+                "name": "CXORBIA_G2B_SYNTHETIC_WRITE_ENABLED",
+                "value": "true"
+              },
+              {
+                "name": "CXORBIA_G2B_SYNTHETIC_WRITE_GATE",
+                "value": "PAULA_F5_SYNTHETIC_ACCEPTANCE_CANONICAL_WRITE_PATH"
+              },
+              {
+                "name": "CXORBIA_G2B_SYNTHETIC_REQUEST_ID",
+                "value": "CXORBIA-F5-SYNTHETIC-ACCEPTANCE-20260827-01"
+              },
+              {
+                "name": "CXORBIA_F5_SYNTHETIC_AUTHORIZATION_ID",
+                "value": "CXORBIA-F5-AUTH-20260827-02"
+              },
+              {
+                "name": "CXORBIA_F5_SYNTHETIC_EXPIRES_AT",
+                "value": "2026-08-27T15:53:16.136Z"
+              },
+              {
+                "name": "CXORBIA_RECOVERY_SOURCE_SHA",
+                "value": "06ab83008d1517f05c5fb51526570775c41b66bd"
+              },
+              {
+                "name": "CXORBIA_ENVIRONMENT",
+                "value": "DEV"
+              },
+              {
+                "name": "CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_ENABLED",
+                "value": "true"
+              },
+              {
+                "name": "CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_GATE",
+                "value": "PAULA_DEV_DEPLOY_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_RUNTIME"
+              },
+              {
+                "name": "CXORBIA_VISIT_RECONCILIATION_CONCURRENCY",
+                "value": "16"
+              }
+            ],
+            "image": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-vrm154-156-06ab83008d15-43798644730",
+            "ports": [
+              {
+                "containerPort": 8080,
+                "name": "http1"
+              }
+            ],
+            "resources": {
+              "limits": {
+                "cpu": "1",
+                "memory": "512Mi"
+              }
+            },
+            "startupProbe": {
+              "failureThreshold": 1,
+              "periodSeconds": 240,
+              "tcpSocket": {
+                "port": 8080
+              },
+              "timeoutSeconds": 240
+            }
+          }
+        ],
+        "runtimeClassName": "run.googleapis.com/linux-base-image-update",
+        "serviceAccountName": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com",
+        "timeoutSeconds": 120
+      }
+    },
+    "traffic": [
+      {
+        "latestRevision": true,
+        "percent": 100
+      },
+      {
+        "revisionName": "cxorbia-live-hr-dev-00329-xac",
+        "tag": "i3-a2be-40832567443"
+      },
+      {
+        "revisionName": "cxorbia-live-hr-dev-00330-fim",
+        "tag": "i3-a2be-40833285318"
+      }
+    ]
+  },
+  "status": {
+    "address": {
+      "url": "https://cxorbia-live-hr-dev-mzgge2pnia-uc.a.run.app"
+    },
+    "conditions": [
+      {
+        "lastTransitionTime": "2026-11-16T03:35:30.680192Z",
+        "status": "True",
+        "type": "Ready"
+      },
+      {
+        "severity": "Info",
+        "status": "True",
+        "type": "BaseImageValidated"
+      },
+      {
+        "lastTransitionTime": "2026-11-16T03:35:23.401744Z",
+        "status": "True",
+        "type": "ConfigurationsReady"
+      },
+      {
+        "lastTransitionTime": "2026-11-16T03:35:30.642073Z",
+        "status": "True",
+        "type": "RoutesReady"
+      }
+    ],
+    "latestCreatedRevisionName": "cxorbia-live-hr-dev-00374-nzx",
+    "latestReadyRevisionName": "cxorbia-live-hr-dev-00374-nzx",
+    "observedGeneration": 382,
+    "traffic": [
+      {
+        "revisionName": "cxorbia-live-hr-dev-00329-xac",
+        "tag": "i3-a2be-40832567443",
+        "url": "https://i3-a2be-40832567443---cxorbia-live-hr-dev-mzgge2pnia-uc.a.run.app"
+      },
+      {
+        "revisionName": "cxorbia-live-hr-dev-00330-fim",
+        "tag": "i3-a2be-40833285318",
+        "url": "https://i3-a2be-40833285318---cxorbia-live-hr-dev-mzgge2pnia-uc.a.run.app"
+      },
+      {
+        "latestRevision": true,
+        "percent": 100,
+        "revisionName": "cxorbia-live-hr-dev-00374-nzx"
+      }
+    ],
+    "url": "https://cxorbia-live-hr-dev-mzgge2pnia-uc.a.run.app"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "decision": "PASS_VRM154_156_FRONTEND_SOURCE_CONTRACT",
+  "genericProjectDrivenScenarioDimensions": true,
+  "liveRuntimeScenarioDimensionsPropagation": true,
+  "shopperVisitVisualCoherence": true,
+  "stableVisitCommandKey": true,
+  "profileVisualCoherence": true,
+  "academyVisualCoherence": true,
+  "certRouteNonRecursive": true,
+  "adminIdentityResolutionOnly": true,
+  "compatibleNameProviderAutoMergeWithAck": true,
+  "ambiguousNameReviewPreserved": true,
+  "documentResourceSuperAdmin": true,
+  "resourceBinaryProviderLifecycle": true,
+  "connectedTenantAdminReadOnly": true,
+  "humanRuntimeHonorariumAuthority": true,
+  "domainConsistencyCertificationEvidence": true,
+  "production": false,
+  "writes": 0
+}

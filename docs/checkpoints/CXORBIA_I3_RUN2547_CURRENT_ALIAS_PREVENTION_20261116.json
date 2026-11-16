@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "cxorbia.i3.current-authority-control-repair.v1",
+  "classification": "MAPPING_FAILURE",
+  "scope": "TOP_LEVEL_CURRENT_ALIASES_ONLY_HISTORY_PRESERVED",
+  "generatedAt": "2026-11-16T03:40:48.481598+00:00",
+  "productSourceUnchanged": "06ab83008d1517f05c5fb51526570775c41b66bd",
+  "owners": [
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs"
+  ],
+  "before": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2547_VERIFIED_EVIDENCE_20261116/current-alias-before.json",
+    "gitBlob": "ee53ecb19dc7ca8438980e1cdeb094195ece8de6",
+    "sha256": "ba8b38becd4348e9ad6c281a518588532aa669d533b1592c15cb5fbed6d97b49"
+  },
+  "tests": {
+    "pass": 133,
+    "fail": 0,
+    "skipped": 0,
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2547_VERIFIED_EVIDENCE_20261116/current-alias-guards.tap",
+    "gitBlob": "7563734020d883889fb9e3f2aaee2c3f392499e6",
+    "sha256": "d9ce729019320eda1c23df70568856c5ec2e91751d56111c8c0a4605379f02bb"
+  },
+  "archivedAliases": [
+    "descriptor.currentSuccessorDevMaterializationRequest",
+    "descriptor.currentSuccessorDevReadbackRequest",
+    "descriptor.currentSuccessorDevTrafficActivation",
+    "pointer.currentSuccessorDevMaterializationRequest",
+    "pointer.currentSuccessorDevObservation",
+    "pointer.currentSuccessorDevReadbackRequest",
+    "pointer.currentSuccessorDevTrafficActivation",
+    "pointer.currentSuccessorDevMaterialization"
+  ],
+  "prevention": [
+    "Current successor source/tree cannot contradict candidate ornestedreceipt",
+    "Unserved successor cannot claimexecutedbuild/deploy",
+    "Last executionlabel andreceipt agree",
+    "Accounting matrixblob andC3run/source agree",
+    "Latestterminalattempt exactC3 oromit/archive"
+  ],
+  "newDomainMatches": 0,
+  "production": false
+}

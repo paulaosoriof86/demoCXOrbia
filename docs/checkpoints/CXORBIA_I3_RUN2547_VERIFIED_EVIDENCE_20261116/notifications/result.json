@@ -1,0 +1,197 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm143.live-provider-served-consumer.v1",
+  "decision": "PASS_VRM143_LIVE_PROVIDER_EXACT_CYCLE_AND_SERVED_CONSUMER",
+  "runId": "43798644730",
+  "runAttempt": "1",
+  "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+  "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "periodId": "cinepolis-2026-11",
+  "runtimeRevision": "cxorbia-live-hr-dev-00374-nzx",
+  "runtimeDigest": "sha256:ab74d14500f01f92bed06559d2187e7a9ab656ffd8a8d7395d5b8a8a580a2cf1",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/d69dd2e668044dcb",
+  "hrBefore": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+  "hrAfter": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+  "cases": [
+    {
+      "type": "visit.cancel",
+      "cycle1": "51840851bb2fda3d6f5f587687cbb443ca3f1a5c",
+      "cycle2": "86a74b0d01d288fdab11a82becd3a7031db97cda",
+      "providerAck": true,
+      "independentDurableReadback": true,
+      "newSessionOldReplayZeroWrites": true,
+      "requestAndDecisionCycleExact": true,
+      "secondCycleClearsPriorDecision": true,
+      "oldNoticeNotReactivated": true,
+      "authorizedHistoryPreserved": true,
+      "unrelatedVisitFieldsPreserved": true,
+      "finalStatus": "approved_pending_hr",
+      "commands": 4,
+      "providerWrites": 16
+    },
+    {
+      "type": "visit.reschedule",
+      "cycle1": "30db7d8cec26e62636edbb08384ec97226717d4a",
+      "cycle2": "f9c3cc04d28eb8010b7650bded954ac239613724",
+      "providerAck": true,
+      "independentDurableReadback": true,
+      "newSessionOldReplayZeroWrites": true,
+      "requestAndDecisionCycleExact": true,
+      "secondCycleClearsPriorDecision": true,
+      "oldNoticeNotReactivated": true,
+      "authorizedHistoryPreserved": true,
+      "unrelatedVisitFieldsPreserved": true,
+      "finalStatus": "approved",
+      "commands": 4,
+      "providerWrites": 16
+    }
+  ],
+  "identities": [
+    {
+      "uid": "qa_vrm143_43798644730_1_shopper",
+      "role": "shopper",
+      "claims": {
+        "tenantId": "tya",
+        "projectIds": [
+          "cinepolis"
+        ],
+        "role": "shopper",
+        "authNamespace": "shopper",
+        "shopperId": "qa_vrm143_43798644730_1_shopper",
+        "qaSynthetic": true,
+        "qaRunId": "43798644730",
+        "qaRunAttempt": "1",
+        "qaPurpose": "VRM143"
+      },
+      "state": "VERIFIED",
+      "memberPath": "tenants/tya/users/qa_vrm143_43798644730_1_shopper",
+      "authIdentity": {
+        "uid": "qa_vrm143_43798644730_1_shopper",
+        "displayName": "QA VRM143 43798644730 shopper",
+        "disabled": false,
+        "email": null,
+        "emailVerified": false,
+        "phoneNumber": null,
+        "creationTime": "Mon, 16 Nov 2026 03:35:59 GMT",
+        "providerData": []
+      },
+      "memberCreated": true
+    },
+    {
+      "uid": "qa_vrm143_43798644730_1_admin",
+      "role": "admin",
+      "claims": {
+        "tenantId": "tya",
+        "projectIds": [
+          "cinepolis"
+        ],
+        "role": "admin",
+        "authNamespace": "staff",
+        "qaSynthetic": true,
+        "qaRunId": "43798644730",
+        "qaRunAttempt": "1",
+        "qaPurpose": "VRM143"
+      },
+      "state": "VERIFIED",
+      "memberPath": "tenants/tya/users/qa_vrm143_43798644730_1_admin",
+      "authIdentity": {
+        "uid": "qa_vrm143_43798644730_1_admin",
+        "displayName": "QA VRM143 43798644730 admin",
+        "disabled": false,
+        "email": null,
+        "emailVerified": false,
+        "phoneNumber": null,
+        "creationTime": "Mon, 16 Nov 2026 03:36:00 GMT",
+        "providerData": []
+      },
+      "memberCreated": true
+    }
+  ],
+  "cleanup": {
+    "ok": true,
+    "documentsDeleted": 29,
+    "authDeleted": 2,
+    "remainingDocuments": 0,
+    "remainingAuth": 0
+  },
+  "scope": "LIVE_DEV_PROVIDER_AND_EXACT_SERVED_SHARED_CONSUMER_NOT_BROWSER_UI_OR_FULL_DOMAIN",
+  "phaseAComplete": false,
+  "fullDomain": false,
+  "production": false,
+  "safety": {
+    "hrWrites": 0,
+    "realVisitWrites": 0,
+    "realMemberWrites": 0,
+    "paymentWrites": 0,
+    "calendarCalls": 0,
+    "emailCalls": 0,
+    "productionDeploys": 0
+  },
+  "legacyPendingCycleAudit": {
+    "realVisitsRead": 2068,
+    "unlinkedPending": [
+      {
+        "visitHash": "340de83395ebeccf2ee2db45e400902ec78a84b4a6dbe2a673b44f96a5575b12",
+        "requestKind": "rescheduleRequest",
+        "periodId": "cinepolis-2026-09",
+        "status": "pending_review"
+      }
+    ],
+    "writes": 0,
+    "scope": "EXACT_CURRENT_PROJECT_DURABLE_REQUEST_METADATA_ONLY"
+  },
+  "servedConsumerSha256": {
+    "core/notif.js": "1a5a3965483fe83b7faacb5153ce957d4358d013194a88e7dffe2b293422d0f7",
+    "core/backend-bulletins.js": "694aa14581e2f8dbe8bb5ef25295c9db80e7e2b94d3fcc47f1ab091871f593b6"
+  },
+  "syncConfirmation": {
+    "decision": "PASS_VRM350_SERVED_HTTP_REJECTS_UNOBSERVED_HR_AND_REAL_HR_FACTORY_POSITIVE_REPLAY",
+    "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "httpNegative": {
+      "scope": "LIVE_HTTP_OWNED_SYNTHETIC_VISIT_ABSENT_FROM_REAL_HR",
+      "cases": [
+        {
+          "freshSession": false,
+          "http": 409,
+          "code": "OPS_SYNC_CONFIRM_HR_ROW_NOT_UNIQUE",
+          "providerAck": false,
+          "hrProviderAck": false,
+          "providerWrites": 0,
+          "durableUnchanged": true,
+          "receiptAbsent": true,
+          "auditAbsent": true
+        },
+        {
+          "freshSession": true,
+          "http": 409,
+          "code": "OPS_SYNC_CONFIRM_HR_ROW_NOT_UNIQUE",
+          "providerAck": false,
+          "hrProviderAck": false,
+          "providerWrites": 0,
+          "durableUnchanged": true,
+          "receiptAbsent": true,
+          "auditAbsent": true
+        }
+      ]
+    },
+    "positive": {
+      "scope": "EXACT_PRODUCT_FACTORY_WITH_REAL_INDEPENDENT_HR_AND_MEMORY_ONLY_DURABLE_STATE_NOT_HTTP_OR_FIRESTORE_PERSISTENCE",
+      "initialMemoryWrites": 3,
+      "replayMemoryWrites": 0,
+      "hrProviderAck": false,
+      "proofSourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+      "visitFingerprint": "66cfa99ce7faffcb5c444a9e92fb290b98dfbac98a5d842b71d13e0630b1caab",
+      "periodId": "cinepolis-2025-06"
+    },
+    "commercialVisitWrites": 0,
+    "hrWrites": 0,
+    "fullDomain": false,
+    "b14Closed": false
+  },
+  "functionalPass": true,
+  "realProjectUnchanged": true,
+  "productionIndexUnchanged": true,
+  "runtimeTrafficExact": true,
+  "hostingVersionExact": true
+}

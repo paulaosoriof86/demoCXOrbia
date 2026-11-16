@@ -1,0 +1,291 @@
+{
+  "schemaVersion": "cxorbia.i3.hr-durable-diagnostic-readonly.v1",
+  "decision": "HOLD_OBSERVED_DURABLE_REVISION_DIVERGENCE",
+  "observationComplete": true,
+  "runId": "43798644730",
+  "candidateSourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+  "visitFingerprint": "bfc8f1788b902124e6",
+  "scope": "READ_ONLY_DIAGNOSIS_NOT_RECONCILIATION_OR_TERMINAL_CERTIFICATE",
+  "production": false,
+  "phaseAComplete": false,
+  "safety": {
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "commandPosts": 0,
+    "builds": 0,
+    "deploys": 0
+  },
+  "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+  "tenantIdHash": "e224a95e1203130b1f232e9e60d39da43dced7047f6f3223079d800ef95e1208",
+  "projectIdHash": "c82109c6ede0780423727c05458e077f91b462ad7135127f081a0020afe1c1c2",
+  "independentHR": {
+    "periodId": "cinepolis-2026-08",
+    "periodKey": "2026-08",
+    "state": "disponible",
+    "shopperPresent": false
+  },
+  "durable": {
+    "pathHash": "e5d5dde9b4b4944e3c331b3afa1aa9c592de3c9756b18c6ba038dbf718ee9c51",
+    "exists": true,
+    "updateTime": {
+      "seconds": 1793888879,
+      "nanoseconds": 220507000
+    },
+    "tenantMatches": true,
+    "projectMatches": true,
+    "periodId": "cinepolis-2026-08",
+    "periodMatches": true,
+    "hrSourceRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
+    "revisionMatches": false,
+    "state": "disponible",
+    "shopperPresent": false,
+    "assignmentSource": null,
+    "assignmentSyncStatus": null,
+    "version": 58
+  },
+  "reconciliationLock": {
+    "exists": true,
+    "updateTime": {
+      "seconds": 1793901697,
+      "nanoseconds": 273415000
+    },
+    "status": "partial",
+    "projectMatches": true,
+    "receiptPathHash": "b54a5056b05bb79eefe78403dd25bec0a44e13a0cafb9d482389086f6aa84f2e",
+    "expiresAt": 1793901811916
+  },
+  "actors": [
+    {
+      "uidHash": "625df6d4e4fc4937493507eb1ece6281a22903f1cab4a549909fdc471f2b8330",
+      "membershipExists": true,
+      "membershipUpdateTime": {
+        "seconds": 1786557527,
+        "nanoseconds": 979302000
+      },
+      "role": "admin",
+      "authNamespace": "staff",
+      "eligibleForAutomaticReconciliation": true,
+      "receipt": {
+        "pathHash": "ea4dc4f0a73dcd4f45e97fd90deea5dbada1bfea3a523f9f8c41738d0c85e271",
+        "exists": false,
+        "updateTime": null,
+        "status": null,
+        "startedAt": null,
+        "completedAt": null,
+        "sourceRevision": null,
+        "exactBinding": false,
+        "result": {},
+        "errorCode": null,
+        "stageResults": {
+          "visits": {
+            "code": null,
+            "status": null
+          },
+          "shoppers": {
+            "code": null,
+            "status": null
+          }
+        },
+        "predecessorReconciliation": {
+          "present": false,
+          "scope": "NO_PREDECESSOR_PROOF_ON_THIS_RECEIPT",
+          "writes": 0
+        },
+        "applicationWritesThisAttempt": {},
+        "stages": [
+          {
+            "name": "visits",
+            "exists": false,
+            "updateTime": null,
+            "status": null,
+            "sourceRevision": null,
+            "completedAt": null,
+            "counts": {},
+            "summaryStatus": null
+          },
+          {
+            "name": "shoppers",
+            "exists": false,
+            "updateTime": null,
+            "status": null,
+            "sourceRevision": null,
+            "completedAt": null,
+            "counts": {},
+            "summaryStatus": null
+          }
+        ]
+      }
+    },
+    {
+      "uidHash": "94816a0e1151d44ce7ec2116545d37f87ce1aef87cb482835f123ac7300216ce",
+      "membershipExists": true,
+      "membershipUpdateTime": {
+        "seconds": 1786557527,
+        "nanoseconds": 316301000
+      },
+      "role": "super",
+      "authNamespace": "staff",
+      "eligibleForAutomaticReconciliation": true,
+      "receipt": {
+        "pathHash": "d5290882ee08dc064875625399e4b89882d39a0a6752e6b6871543b84ad7d04a",
+        "exists": false,
+        "updateTime": null,
+        "status": null,
+        "startedAt": null,
+        "completedAt": null,
+        "sourceRevision": null,
+        "exactBinding": false,
+        "result": {},
+        "errorCode": null,
+        "stageResults": {
+          "visits": {
+            "code": null,
+            "status": null
+          },
+          "shoppers": {
+            "code": null,
+            "status": null
+          }
+        },
+        "predecessorReconciliation": {
+          "present": false,
+          "scope": "NO_PREDECESSOR_PROOF_ON_THIS_RECEIPT",
+          "writes": 0
+        },
+        "applicationWritesThisAttempt": {},
+        "stages": [
+          {
+            "name": "visits",
+            "exists": false,
+            "updateTime": null,
+            "status": null,
+            "sourceRevision": null,
+            "completedAt": null,
+            "counts": {},
+            "summaryStatus": null
+          },
+          {
+            "name": "shoppers",
+            "exists": false,
+            "updateTime": null,
+            "status": null,
+            "sourceRevision": null,
+            "completedAt": null,
+            "counts": {},
+            "summaryStatus": null
+          }
+        ]
+      }
+    }
+  ],
+  "reconciliationLeaseDetail": {
+    "exists": true,
+    "status": "partial",
+    "projectMatches": true,
+    "expiresAt": 1793901811916,
+    "expired": true,
+    "updateTime": "2026-11-05T18:01:37.273Z",
+    "receiptPathHash": "b54a5056b05bb79eefe78403dd25bec0a44e13a0cafb9d482389086f6aa84f2e",
+    "scope": "READONLY_METADATA_NOT_LEASE_RELEASE_OR_RETRY",
+    "writes": 0,
+    "receipt": {
+      "exists": true,
+      "updateTime": "2026-11-05T18:01:37.273Z",
+      "status": "partial",
+      "tenantMatches": true,
+      "projectMatches": true,
+      "sourceRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
+      "currentRevisionMatches": false,
+      "actorUidHash": "94816a0e1151d44ce7ec2116545d37f87ce1aef87cb482835f123ac7300216ce",
+      "idempotencyKeyHash": "328a6b732fc2a0a2884a4b6e5b33ad834aab72208e4cc99b2535691fa2303568",
+      "digestMatches": true,
+      "leaseAttemptMatches": true,
+      "errorCode": "HR_RECONCILIATION_PARTIAL",
+      "stageResults": {
+        "visits": {
+          "fuzzyMatching": false,
+          "providerAck": true,
+          "createdVisits": 0,
+          "idempotentReplays": 0,
+          "reconciliationDurationMs": 18719,
+          "hrWrites": 0,
+          "providerWrites": 792,
+          "visitCount": 792,
+          "reconciliationConcurrency": 16,
+          "reviewRequiredVisits": 0,
+          "conflicts": 0,
+          "ok": true,
+          "externalWrites": 0,
+          "status": "committed",
+          "code": null
+        },
+        "shoppers": {
+          "ok": false,
+          "status": null,
+          "code": "SHOPPER_CROSSWALK_UID_CONFLICT"
+        }
+      },
+      "result": {
+        "committed": false,
+        "unverifiedEffects": 0,
+        "providerAck": false,
+        "unresolvedEffects": 0,
+        "confirmedProviderWrites": 792,
+        "providerWrites": 792,
+        "ok": false
+      },
+      "applicationWritesThisAttempt": {
+        "auth": 0,
+        "firestore": 0
+      },
+      "stages": [
+        {
+          "name": "visits",
+          "exists": true,
+          "status": "committed",
+          "sourceRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
+          "summary": {
+            "ok": true,
+            "providerAck": true,
+            "visitCount": 792,
+            "createdVisits": 0,
+            "idempotentReplays": 0,
+            "reviewRequiredVisits": 0,
+            "conflicts": 0,
+            "providerWrites": 792,
+            "reconciliationConcurrency": 16,
+            "reconciliationDurationMs": 18719,
+            "hrWrites": 0,
+            "externalWrites": 0,
+            "fuzzyMatching": false
+          }
+        },
+        {
+          "name": "shoppers",
+          "exists": false,
+          "status": null,
+          "sourceRevision": null,
+          "summary": {}
+        }
+      ],
+      "journal": {
+        "complete": false,
+        "intentsObserved": 501,
+        "effectsObserved": 501,
+        "unresolvedIntentsObserved": null,
+        "unverifiedEffectsObserved": 0,
+        "credentialAuthenticationPending": false
+      },
+      "predecessorReconciliation": {
+        "present": false,
+        "scope": "NO_PREDECESSOR_PROOF_ON_THIS_RECEIPT",
+        "writes": 0
+      }
+    },
+    "activeNonCommittedLease": true,
+    "successorEligibility": "ONLY_RUNTIME_FULL_TRANSACTION_VALIDATION_CAN_AUTHORIZE",
+    "resumeAgainstCurrentRevisionPossible": false
+  },
+  "sourceRevisionAfter": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630"
+}

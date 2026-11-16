@@ -1,0 +1,226 @@
+{
+  "schemaVersion": "cxorbia.i3.same-run-source-qa.v1",
+  "decision": "PASS_I3_SAME_RUN_PATH_BOUND_SOURCE_QA",
+  "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+  "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+  "controlSha": "1eed4e2e9c0e5bcada67e7aa4559eefca06d9c41",
+  "runId": 43798644730,
+  "runAttempt": 1,
+  "registrySha256": "7818f63648891727a5a63b4e6c82a6acd9c07467be2fc43d19df3cb15ab6bb27",
+  "scope": "SOURCE_QA_ONLY_NOT_E2E_OR_HUMAN_ACCEPTANCE",
+  "production": false,
+  "suites": [
+    {
+      "id": "human-project-scope",
+      "owners": [
+        {
+          "path": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+          "gitBlob": "24e71f22fa5d678e79cde0d131d1ff0b4ce0be8b"
+        },
+        {
+          "path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+          "gitBlob": "7b2c430814c93841c8392a16c029ce06d686e995"
+        }
+      ],
+      "tests": [
+        {
+          "path": "tools/qa/cxorbia-i3-human-project-scope.test.mjs",
+          "gitBlob": "dad79a83856d4fec8a324eda71aec46aa5eab69b"
+        }
+      ],
+      "exitCode": 0,
+      "stats": {
+        "tests": 25,
+        "pass": 25,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "logFile": "human-project-scope.tap",
+      "logSha256": "9ce7dfd526e51c48e251a9102da0320a85fa532ae8f2d94add53caeea43da94a"
+    },
+    {
+      "id": "frontend-behavior",
+      "owners": [
+        {
+          "path": "app/core/programa.js",
+          "gitBlob": "3560737099f97e0a4774420c10073e108da2677c"
+        },
+        {
+          "path": "app/core/ui.js",
+          "gitBlob": "4947c325a17c95086ae6006615b651aa39097d7c"
+        },
+        {
+          "path": "app/modules/periodos.js",
+          "gitBlob": "25d39e553da379d113dad8a6db8a1d70554c4cd7"
+        },
+        {
+          "path": "app/modules/configuracion.js",
+          "gitBlob": "33bd5e8d14860f50b706f7d4194c3754424cb8ea"
+        },
+        {
+          "path": "app/modules/cliente-insights.js",
+          "gitBlob": "f0f5f278117738eae1bf19453c144c95c536a341"
+        },
+        {
+          "path": "app/adapters/cxorbia-command-adapter-v1.js",
+          "gitBlob": "d9c222e81c7e1cbae7dbcc817e67dc4a4c6b084e"
+        },
+        {
+          "path": "app/core/backend-bulletins.js",
+          "gitBlob": "de066f9d684b203b62175ca5a675b9ffea4202f1"
+        },
+        {
+          "path": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+          "gitBlob": "e39b79845219752e003e573da1aacf53fde287d1"
+        },
+        {
+          "path": "app/sw.js",
+          "gitBlob": "5dc022b3dd08ba1a3eba701ddd8ec77776b45d9e"
+        },
+        {
+          "path": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+          "gitBlob": "40f61ed3e17bf1ea027d1c3ab228d15d1b0f91f6"
+        },
+        {
+          "path": "backend/runtime/hr-live-service/server.mjs",
+          "gitBlob": "b295200df323c1aa9b6334d3483d2c2a0a323c2a"
+        },
+        {
+          "path": "app/modules/dashboard.js",
+          "gitBlob": "174edadcb33f00afaa7e36262ed27aba1209a80e"
+        },
+        {
+          "path": "app/core/notif.js",
+          "gitBlob": "376524ce5b8b58ba40ff1d3ccb0af959b674272d"
+        }
+      ],
+      "tests": [
+        {
+          "path": "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs",
+          "gitBlob": "c9da9922c7313211603ae1c0b4e00e7509bd72a7"
+        },
+        {
+          "path": "tools/qa/cxorbia-i3-q2-frontend-owner-behavior.test.mjs",
+          "gitBlob": "5663fa516114a1e075f49074044a429851381e9e"
+        },
+        {
+          "path": "tools/qa/cxorbia-i3-e04-benchmark-source.test.mjs",
+          "gitBlob": "71ae40362db01bd57fede699a02e82096c4b5efb"
+        },
+        {
+          "path": "tools/qa/cxorbia-i3-client-collaboration-ui.test.mjs",
+          "gitBlob": "451b1024d51f34e43af62146e521bf4741148653"
+        },
+        {
+          "path": "backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs",
+          "gitBlob": "1dd89e228c74f1ae986b56e09031f33ec08422b6"
+        },
+        {
+          "path": "tools/qa/cxorbia-i3-d07-sw-pdf-cross-origin.test.mjs",
+          "gitBlob": "cbd8257156e9922475f6c1db386206fc7e6739d3"
+        },
+        {
+          "path": "tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs",
+          "gitBlob": "632d972c0e4cdfd9bb8531825ac504e4b79beb21"
+        },
+        {
+          "path": "tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs",
+          "gitBlob": "689863b661ec68c153f3814a6cf66c69c6a9a4a7"
+        },
+        {
+          "path": "backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs",
+          "gitBlob": "a31f0690ad2fc15ec1f061ea5f5f6d449ec0ebf8"
+        }
+      ],
+      "exitCode": 0,
+      "stats": {
+        "tests": 287,
+        "pass": 287,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "logFile": "frontend-behavior.tap",
+      "logSha256": "d292b79455b1dbd88abd30c5cc0db5469e9b61d32384a8e63557a91a1f2fdfd9"
+    },
+    {
+      "id": "finance-ack-boundary",
+      "owners": [
+        {
+          "path": "app/core/backend-finance-benefits.js",
+          "gitBlob": "66856002901be88aefb38acc0aaab635a8872c2b"
+        },
+        {
+          "path": "app/core/backend-cxdata-finance-read.js",
+          "gitBlob": "2a7cd3ffbd2bf0999b149b3095218b7d3d09276b"
+        },
+        {
+          "path": "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+          "gitBlob": "f4d4e19f3f6bb1087f21a0d4a04c623b93d8be74"
+        },
+        {
+          "path": "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+          "gitBlob": "57aefc43bf0f1bf31fdeea4eb3e80119c9cd82ff"
+        }
+      ],
+      "tests": [
+        {
+          "path": "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
+          "gitBlob": "538f41d46351fb488285a3303c2c60070609e537"
+        },
+        {
+          "path": "tools/qa/cxorbia-i3-b8-historical-command-boundary.test.mjs",
+          "gitBlob": "e7e477df5f8cd38e6299a0ce4fdb425535ab60d8"
+        }
+      ],
+      "exitCode": 0,
+      "stats": {
+        "tests": 103,
+        "pass": 103,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "logFile": "finance-ack-boundary.tap",
+      "logSha256": "8f5514c9cf73b4b2d7c21da2fcdb21e9fc0c33cb7193920b6b3ef7074a20d512"
+    },
+    {
+      "id": "external-hr-source",
+      "owners": [
+        {
+          "path": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+          "gitBlob": "a3874143a481c159a9d2a11984966bfe813f5248"
+        },
+        {
+          "path": "tools/hr-source/tya-enforce-live-tab-registry.mjs",
+          "gitBlob": "3ff548f1ef9d4af2ad899a2e58d948dfe92aa586"
+        }
+      ],
+      "tests": [
+        {
+          "path": "tools/hr-source/tya-resolve-live-month-tabs.test.mjs",
+          "gitBlob": "6149776378bfaac393d5a4a26bfa8796724cc6b1"
+        },
+        {
+          "path": "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+          "gitBlob": "d5d7a0e8312159e1df00b30385431cd4d7979006"
+        }
+      ],
+      "exitCode": 0,
+      "stats": {
+        "tests": 25,
+        "pass": 25,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "logFile": "external-hr-source.tap",
+      "logSha256": "33abec23fd21476e634558cc80d3e36673f035c7a8bca952c4545bf11a767ff1"
+    }
+  ]
+}
