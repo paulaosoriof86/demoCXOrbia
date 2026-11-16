@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "cxorbia.i3.p0.source-proof.v1",
+  "decision": "PASS_SCOPED_V8_BEHAVIORAL_SOURCE_QA_NODE_CI_AND_DEV_PENDING",
+  "generatedAt": "2026-11-16T07:05:40Z",
+  "sourceSha": "66312f88a70bd123b137c7a031a1f456969465f5",
+  "sourceTree": "38eba9364e0a7cbf1e505f84375959d19918391d",
+  "predecessorProductSourceSha": "38f16525c791b355e8f68a6f798defd9bc89ab37",
+  "sourceTestsPass": 142,
+  "sourceTestsFail": 0,
+  "allowedProductFiles": [
+    "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs",
+    "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs"
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM354_VRM355_SINGLE_PACKAGE_SCOPE_20261116.json",
+  "scopeReceiptBlob": "9a4c44fe6059d9ce5de065e802381c9753c074f4",
+  "findings": [
+    {
+      "id": "VRM-354",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "owner": [
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+      ]
+    },
+    {
+      "id": "VRM-355",
+      "priority": "P0_PROVEN",
+      "classification": "PERSISTENCE_FAILURE",
+      "owner": [
+        "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+      ]
+    }
+  ],
+  "productOwnerBlobs": {
+    "backend/runtime/cxorbia-shopper-command-provider-v1.mjs": "e5e6ab0bc8850d4a9f5c7a5aa9774973d1465070",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs": "1ebbcafd8ee4e69728fb1ec7a86ea99597c468cb"
+  },
+  "testEvidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM354_VRM355_BEHAVIORAL_SOURCE_TESTS_20261116.json",
+    "gitBlob": "b21adab2b58193bee156bd5a2c3f2091f5704c8c",
+    "sha256": "20fdfb2ca736a43cb40ed242e654c49b510dd77c958da932679de2db17291539"
+  },
+  "testCountScope": "138provider V8 behavioral tests plus4actual-runtime receipt tests; not a Node CI count. Actual Node provider142expected; entire canonical CI required.",
+  "canonicalNodeCi": "PENDING_MANDATORY_BEFORE_PAIRED_DEV",
+  "devPublished": false,
+  "production": false,
+  "hrWrites": 0
+}
