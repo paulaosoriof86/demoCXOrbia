@@ -1,0 +1,217 @@
+{
+  "schemaVersion": "cxorbia.i3.preserved-contract-adjudication.v1",
+  "adjudicatedAt": "2026-11-16T01:05:33.254792+00:00",
+  "iteration": "I3",
+  "state": "HOLD_REMAINING_MIDIA_AND_TRANSVERSAL_B11",
+  "sourceSha": "ef708259616da70b5adea2fa85d9abc34a5222c2",
+  "sourceTree": "b7adbf36633d8ec614d70232cecf28a4f2e81d58",
+  "originalLiveSourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
+  "originalLiveRunId": 43772983839,
+  "originalArtifactId": 14185735011,
+  "originalArtifactDigest": "sha256:5fa655a62587952c2d96f592e76e7ab8350dabceaecb52d0862ac1e4f4019875",
+  "originalReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2537_PROGRESS_COUNTRY_REFRESH_AND_FOCAL_HOLD_20261115.json",
+    "gitBlob": "ca7fd916117a6fe3daebecd30cd8c57c2430dfee",
+    "jsonPointer": ""
+  },
+  "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+  "unchangedRenderOwnerBlobs": {
+    "app/modules/midia.js": "b17a2224170d23c3a9152628003115a1edfbd471",
+    "app/core/data.js": "c7fe15678c98c3c4a81c52225d60a84e0946d12f",
+    "app/core/notif.js": "b544f25fdbb5894a96e61e31f10e92220f131985",
+    "app/adapters/tya-canonical-shopper-portal-v2.js": "536566ee5e27878aa5c40891b710c34a818e9aad",
+    "app/styles/layout.css": "6f5b9bb04fbe4f21660e59aae6eb3d92e2a6bf7d"
+  },
+  "unchangedSelectorOwnerBlobs": {
+    "app/core/data.js": "c7fe15678c98c3c4a81c52225d60a84e0946d12f",
+    "app/modules/midia.js": "b17a2224170d23c3a9152628003115a1edfbd471",
+    "app/modules/postulaciones.js": "08f22e63957392036a697b81aa79858964026d4b"
+  },
+  "originalB7AcceptedSource": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+  "renderEvidence": {
+    "human-live-acceptance.json": {
+      "artifactId": 14185735011,
+      "artifactDigest": "sha256:5fa655a62587952c2d96f592e76e7ab8350dabceaecb52d0862ac1e4f4019875",
+      "pathWithinArtifact": "full-human-acceptance/human-live-acceptance.json",
+      "sha256": "fb3d67d2b126ac9f34fbd4fcd81ddaf282b220725bc4256d416b1705cf0b547f"
+    },
+    "rep-julissa-flores-shopper-midia.png": {
+      "artifactId": 14185735011,
+      "artifactDigest": "sha256:5fa655a62587952c2d96f592e76e7ab8350dabceaecb52d0862ac1e4f4019875",
+      "pathWithinArtifact": "full-human-acceptance/rep-julissa-flores-shopper-midia.png",
+      "sha256": "3c70b7d945c859cb5f83ef32e2cc38a1ed62087db06f1212d0bccb27a6775327"
+    },
+    "rep-paula-osorio-shopper-midia.png": {
+      "artifactId": 14185735011,
+      "artifactDigest": "sha256:5fa655a62587952c2d96f592e76e7ab8350dabceaecb52d0862ac1e4f4019875",
+      "pathWithinArtifact": "full-human-acceptance/rep-paula-osorio-shopper-midia.png",
+      "sha256": "10acf93ce76a3bbe15156d60f002da20063021a406a72f5c53b875e6d4f604a6"
+    }
+  },
+  "zeroVisitIndependentHr": {
+    "rawSnapshotSha256": "39ee96a58f61b838dc6eb5ff76398334a96befd0a1bbb9c7f1eb0dc0f0732429",
+    "canonicalShopperId": "shopper_gt_1440137b73",
+    "periodId": "cinepolis-2026-11",
+    "externalCurrentVisits": 0,
+    "currentVisits": 0,
+    "expectedAuthority": "pinned_hr_exact_identity",
+    "receiptPointer": "/representativeProofs/2"
+  },
+  "adjudications": {
+    "VRM-167": {
+      "state": "FIXED_PROVEN_CONTINUITY_SHARED_POSTULATION_SELECTOR_B7_B1",
+      "completeFinding": true,
+      "scope": "Original MiDia vs Postulaciones pending count mismatch; shared activePosts lifecycle selector and exact observed0/0, separate from HR33 assignments.",
+      "evidence": [
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_B7_B1_B3_VISUAL_READBACK_AND_DEV_NOTICE_20261110.json",
+          "gitBlob": "e139e9f1516deb1ebc917a7f42c27e1291250d46",
+          "jsonPointer": "/b1/adminMiDia/waitingApproval"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_B7_B1_B3_VISUAL_READBACK_AND_DEV_NOTICE_20261110.json",
+          "gitBlob": "e139e9f1516deb1ebc917a7f42c27e1291250d46",
+          "jsonPointer": "/b7/adminPostulaciones/platformPostulationsPending"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_B7_B1_B3_VISUAL_READBACK_AND_DEV_NOTICE_20261110.json",
+          "gitBlob": "e139e9f1516deb1ebc917a7f42c27e1291250d46",
+          "jsonPointer": "/b7/platformReservationPanel/independentFrom33HrAssignments"
+        },
+        {
+          "path": "CXORBIA_I3_RUN1537_VRM259_SAME_ARTIFACT_READBACK_2026-10-13.json",
+          "gitBlob": "89489467db37a4cadb81f1a1aef51b08d959e41a",
+          "jsonPointer": "/sameArtifactE2E/badge"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_HUMAN_PASS_B7_NO_LOOP_ACCOUNTING_20261111.json",
+          "gitBlob": "3af2e49ac97fcac3341fa18ce5af61061acfce47",
+          "jsonPointer": ""
+        }
+      ],
+      "newHumanApproval": false
+    },
+    "VRM-144": {
+      "state": "FIXED_PROVEN_CURRENT_ARTIFACT_VISUAL_ORDER_RUN2537",
+      "completeFinding": true,
+      "scope": "Next visit and actions precede progress, notifications and schedule in exact preserved Julissa rendered screen.",
+      "evidence": [
+        {
+          "sha256": "3c70b7d945c859cb5f83ef32e2cc38a1ed62087db06f1212d0bccb27a6775327",
+          "artifactId": 14185735011,
+          "artifactDigest": "sha256:5fa655a62587952c2d96f592e76e7ab8350dabceaecb52d0862ac1e4f4019875",
+          "pathWithinArtifact": "full-human-acceptance/rep-julissa-flores-shopper-midia.png"
+        },
+        {
+          "jsonPointer": "/representativeProofs/0",
+          "artifactId": 14185735011,
+          "artifactDigest": "sha256:5fa655a62587952c2d96f592e76e7ab8350dabceaecb52d0862ac1e4f4019875",
+          "pathWithinArtifact": "full-human-acceptance/human-live-acceptance.json",
+          "sha256": "fb3d67d2b126ac9f34fbd4fcd81ddaf282b220725bc4256d416b1705cf0b547f"
+        }
+      ],
+      "newHumanApproval": false
+    },
+    "VRM-097": {
+      "completeFinding": false,
+      "provenClauses": [
+        "No invented progress or scheduling CTA when independent current HR contains zero visits",
+        "Positive current visit/progress case preserved"
+      ],
+      "pendingClauses": [
+        "Notification validity and resolved/historical event handling"
+      ],
+      "evidence": [
+        {
+          "jsonPointer": "/representativeProofs/2",
+          "artifactId": 14185735011,
+          "artifactDigest": "sha256:5fa655a62587952c2d96f592e76e7ab8350dabceaecb52d0862ac1e4f4019875",
+          "pathWithinArtifact": "full-human-acceptance/human-live-acceptance.json",
+          "sha256": "fb3d67d2b126ac9f34fbd4fcd81ddaf282b220725bc4256d416b1705cf0b547f"
+        },
+        {
+          "sha256": "10acf93ce76a3bbe15156d60f002da20063021a406a72f5c53b875e6d4f604a6",
+          "artifactId": 14185735011,
+          "artifactDigest": "sha256:5fa655a62587952c2d96f592e76e7ab8350dabceaecb52d0862ac1e4f4019875",
+          "pathWithinArtifact": "full-human-acceptance/rep-paula-osorio-shopper-midia.png"
+        }
+      ]
+    },
+    "VRM-127": {
+      "completeFinding": false,
+      "provenClauses": [
+        "Atomic durable notification with exact recipient",
+        "Replay without duplicates",
+        "Other Shopper excluded",
+        "Unread/reload/navigation/markRead ACK/read after reload"
+      ],
+      "pendingClauses": [
+        "Archive/delete ownership lifecycle",
+        "Resolved and historical notifications no longer counted current"
+      ],
+      "evidence": [
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_B4_B7_P0_COMPOSED_SOURCE_PROOF_20261110.json",
+          "gitBlob": "38af9657f6079468be4a8464f31c7ffcef39cad1",
+          "jsonPointer": "/findings/1"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN2391_B7_DECISION_AND_ACADEMY_REPEAT_DEV_QA_20261110.json",
+          "gitBlob": "0d609a7c59bfa5e563cdd45a0f954342f5f62930",
+          "jsonPointer": "/evidence"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN2409_B7_SHOPPER_NOTICE_UNREAD_ROUTE_DEV_QA_20261110.json",
+          "gitBlob": "9a65aaaae521125807e88d3bc5cd6d2b058a5e5b",
+          "jsonPointer": "/test"
+        }
+      ]
+    },
+    "VRM-143": {
+      "completeFinding": false,
+      "provenClauses": [
+        "Current unread notification and durable read transition preserved from B7"
+      ],
+      "pendingClauses": [
+        "Current event remains visible",
+        "Historical resolved event excluded from current unread",
+        "Older unresolved actionable event retained"
+      ],
+      "observation": "October notice visible in November image alone does not establish a defect without its event lifecycle metadata."
+    },
+    "VRM-165": {
+      "completeFinding": false,
+      "provenClauses": [
+        "MiDia progress is ordered cards with distinct states, not the prior unstructured vertical list"
+      ],
+      "pendingClauses": [
+        "MiPerfil separate prior human rejection and remaining surface-specific acceptance"
+      ],
+      "newHumanApproval": false
+    },
+    "VRM-121": {
+      "completeFinding": false,
+      "pendingClauses": [
+        "Consume planned B11 live asign/sinasign/sinagend exact ID sets for current HR, without forcing historical September counts"
+      ]
+    },
+    "VRM-177": {
+      "completeFinding": false,
+      "preserved": "B4-B7 exact accepted action contracts remain closed",
+      "pendingClauses": [
+        "MiDia four KPI drilldowns and specific handoffs not already covered",
+        "Other domains remain separately accountable; no global closure inferred"
+      ]
+    }
+  },
+  "newDomainMatches": 0,
+  "fullDomain": false,
+  "phaseAComplete": false,
+  "builds": 0,
+  "deploys": 0,
+  "providerWrites": 0,
+  "production": false,
+  "newUserApprovalClaimed": false,
+  "method": "Read original accepted receipts; independently compare exact current Git owner bytes; root visually inspected the two preserved screens; adjudicate only the stated clauses without rewriting original evidence or repeating closed gates.",
+  "evidenceStorage": "Original Actions artifact and its verified ZIP digest; only necessary facts and hashes are published in this adjudication. Original receipt source/run remain unchanged."
+}

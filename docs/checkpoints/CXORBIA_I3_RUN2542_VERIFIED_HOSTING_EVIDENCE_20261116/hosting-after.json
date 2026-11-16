@@ -1,0 +1,103 @@
+{
+  "name": "sites/cxorbia-backend-dev/channels/live",
+  "url": "https://cxorbia-backend-dev.web.app",
+  "release": {
+    "name": "sites/cxorbia-backend-dev/channels/live/releases/1794790993861000",
+    "version": {
+      "name": "sites/cxorbia-backend-dev/versions/39c320c9d9f35f97",
+      "status": "FINALIZED",
+      "config": {
+        "headers": [
+          {
+            "headers": {
+              "Cache-Control": "no-store, no-cache, max-age=0, must-revalidate",
+              "Content-Type": "text/html; charset=utf-8"
+            },
+            "glob": "**/*.html"
+          },
+          {
+            "headers": {
+              "Cache-Control": "no-store, no-cache, max-age=0, must-revalidate",
+              "Content-Type": "application/javascript; charset=utf-8"
+            },
+            "glob": "**/*.js"
+          },
+          {
+            "headers": {
+              "Cache-Control": "no-store, no-cache, max-age=0, must-revalidate",
+              "Content-Type": "text/css; charset=utf-8"
+            },
+            "glob": "**/*.css"
+          },
+          {
+            "headers": {
+              "Cache-Control": "no-store, no-cache, max-age=0, must-revalidate",
+              "Content-Type": "application/json; charset=utf-8"
+            },
+            "glob": "**/*.json"
+          },
+          {
+            "headers": {
+              "Cache-Control": "no-store, no-cache, max-age=0, must-revalidate",
+              "Content-Type": "application/manifest+json; charset=utf-8"
+            },
+            "glob": "**/*.webmanifest"
+          }
+        ],
+        "redirects": [
+          {
+            "statusCode": 302,
+            "location": "/index-backend-dev.html",
+            "glob": "/"
+          }
+        ],
+        "rewrites": [
+          {
+            "glob": "/api/tenants/**",
+            "run": {
+              "serviceId": "cxorbia-live-hr-dev",
+              "region": "us-central1"
+            }
+          },
+          {
+            "glob": "/api/tya/cinepolis/hr-live",
+            "run": {
+              "serviceId": "cxorbia-live-hr-dev",
+              "region": "us-central1"
+            }
+          },
+          {
+            "glob": "/v1/cxorbia/commands",
+            "run": {
+              "serviceId": "cxorbia-live-hr-dev",
+              "region": "us-central1"
+            }
+          },
+          {
+            "glob": "**",
+            "path": "/index-backend-dev.html"
+          }
+        ]
+      },
+      "labels": {
+        "deployment-tool": "cli-firebase"
+      },
+      "createTime": "2026-11-16T01:03:09.734488Z",
+      "createUser": {
+        "email": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com"
+      },
+      "finalizeTime": "2026-11-16T01:03:13.969164Z",
+      "finalizeUser": {
+        "email": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com"
+      }
+    },
+    "type": "DEPLOY",
+    "releaseTime": "2026-11-16T01:03:13.861Z",
+    "releaseUser": {
+      "email": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com"
+    }
+  },
+  "createTime": "2026-06-28T00:51:03.300137632Z",
+  "updateTime": "2026-11-16T01:03:13.861Z",
+  "retainedReleaseCount": 2147483647
+}

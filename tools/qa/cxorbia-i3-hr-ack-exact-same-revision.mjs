@@ -1,7 +1,121 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {createRequire} from 'node:module';
+import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
+import {validateTerminalHrObservation} from './cxorbia-i3-terminal-hr-observation.mjs';
+const b14stable=v=>Array.isArray(v)?v.map(b14stable):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,b14stable(v[k])])):v;
+const b14sha=v=>createHash('sha256').update(typeof v==='string'?v:JSON.stringify(b14stable(v))).digest('hex');
+const b14str=v=>String(v??'').trim();
+const B14_READ_SCOPES=['https://www.googleapis.com/auth/spreadsheets.readonly','https://www.googleapis.com/auth/drive.metadata.readonly'];
+export async function b14PrincipalOf(client){
+  if(typeof client?.getTargetPrincipal==='function')return b14str(await client.getTargetPrincipal());
+  if(typeof client?.getServiceAccountEmail==='function')return b14str(await client.getServiceAccountEmail());
+  return typeof client?.email==='string'?client.email:null;
+}
+export function b14DiagnosticError(error){
+  const api=error?.response?.data?.error,safe=v=>typeof v==='string'&&/^[A-Za-z0-9_.:-]{1,160}$/.test(v)?v:null;
+  return {httpStatus:Number(error?.response?.status)||null,apiStatus:safe(api?.status),reason:safe(api?.details?.find(x=>x?.reason)?.reason||api?.errors?.find(x=>x?.reason)?.reason),code:safe(error?.code)||safe(/^B14_[A-Z0-9_]+$/.test(String(error?.message||''))?error.message:null)};
+}
+export function b14RuntimeAuthority(runtime,expected){
+  const containers=runtime?.spec?.containers||[],digest=b14str(runtime?.status?.imageDigest).match(/sha256:[a-f0-9]{64}$/)?.[0];
+  if(runtime?.metadata?.name!==expected.revision||digest!==expected.digest)throw Error('B14_RUNTIME_REVISION_OR_DIGEST_DRIFT');
+  if(containers.length!==1)throw Error('B14_READER_CONTAINER_UNRESOLVED');
+  const env=(containers[0].env||[]),names=env.map(x=>x.name).sort();
+  const secretRefs=env.filter(x=>x.valueFrom?.secretKeyRef).map(x=>({name:x.name,referenceHash:b14sha(JSON.stringify(x.valueFrom.secretKeyRef))}));
+  return {revision:expected.revision,digest,principal:b14str(runtime.spec.serviceAccountName),envNames:names,secretRefs,
+    credentialOverridePresent:names.includes('FIREBASE_SERVICE_ACCOUNT_JSON'),workbookOverridePresent:names.includes('CXORBIA_HR_LIVE_SHEET_ID')};
+}
+export function b14WorkbookFromReaders(readers,authority){
+  if(authority.credentialOverridePresent)return {resolved:false,reason:'EFFECTIVE_READER_IDENTITY_UNRESOLVED'};
+  if(authority.workbookOverridePresent)return {resolved:false,reason:'EFFECTIVE_WORKBOOK_OVERRIDE_UNRESOLVED'};
+  const ids=readers.map(x=>x.match(/(?:const|let)\s+SHEET_ID\s*=\s*process\.env\.CXORBIA_HR_LIVE_SHEET_ID\s*\|\|\s*['"]([A-Za-z0-9_-]+)['"]/)?.[1]);
+  if(ids.length!==2||ids.some(x=>!x)||new Set(ids).size!==1)return {resolved:false,reason:'SEALED_READER_WORKBOOK_DISAGREEMENT'};
+  return {resolved:true,id:ids[0],idSha256:b14sha(ids[0]),authority:'EXACT_RUNTIME_READER_FALLBACK_ENV_OVERRIDE_ABSENT'};
+}
+export function b14CapabilityVerdict({principalVerified,file,sheets,sheetId}){
+  const identity=principalVerified===true&&file?.id===sheetId&&sheets?.spreadsheetId===sheetId;
+  const canEdit=identity&&typeof file?.capabilities?.canEdit==='boolean'?file.capabilities.canEdit:null;
+  return {metadataIdentityVerified:identity,canEditObserved:canEdit,canModifyContentObserved:identity&&typeof file?.capabilities?.canModifyContent==='boolean'?file.capabilities.canModifyContent:null,
+    accessConclusion:!identity?'PROBE_IDENTITY_OR_METADATA_INCOMPLETE':file.trashed===true?'WORKBOOK_TRASHED':canEdit===true?'METADATA_EDIT_CAPABILITY_OBSERVED':canEdit===false?'METADATA_EDIT_CAPABILITY_FALSE':'EDIT_CAPABILITY_UNRESOLVED',providerAck:false,writeCapabilityExecuted:false,b14Closed:false};
+}
+export function b14BindingProjection(row,sheetId,tenantId,projectId){
+  const scope=row?.tenantId===tenantId&&(row.projectId===projectId||Array.isArray(row.projectIds)&&row.projectIds.includes(projectId));
+  const book=b14str(row?.sheetId||row?.spreadsheetId);
+  const refs=Object.fromEntries(['providerBindingId','mappingRef','secretRef','sourceRef'].map(k=>[k,{present:!!row?.[k],sha256:row?.[k]?b14sha(row[k]):null}]));
+  return {scopeMatches:scope,enabled:typeof row?.enabled==='boolean'?row.enabled:null,hrWritesEnabled:typeof row?.hrWritesEnabled==='boolean'?row.hrWritesEnabled:null,
+    workbookReferencePresent:!!book,workbookMatches:scope&&book&&sheetId?book===sheetId:null,refs};
+}
+async function runB14CapabilityOnly(args){
+  const [outDir,root,tenantId,projectId,runId]=args,e=process.env;
+  if(!outDir||root!=='https://cxorbia-backend-dev.web.app'||e.PROJECT!=='cxorbia-backend-dev'||!tenantId||!projectId||!/^\d{8,}$/.test(runId||'')||!e.SOURCE_DIR||!e.OUT)throw Error('SOURCE_FAILURE:B14_SCOPE_GATE');
+  fs.mkdirSync(outDir,{recursive:true});const read=f=>JSON.parse(fs.readFileSync(f,'utf8'));
+  const d=read(e.CANDIDATE_DESCRIPTOR||'CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json'),productSourceSha=e.I3_CERTIFICATION_SOURCE_SHA,runtimeSourceSha=d.currentMaterialization?.sourceSha;
+  const r={schemaVersion:'cxorbia.i3.b14.binding-capability-readonly.v1',decision:'HOLD',observationComplete:false,b14Closed:false,providerAck:false,productSourceSha,runtimeSourceSha,runtimeRevision:e.DEV_REVISION,runtimeDigest:e.RUNTIME_DIGEST,hostingVersion:e.HOSTING_VERSION_NAME,tenantId,projectId,runId,runAttempt:e.GITHUB_RUN_ATTEMPT||'1',hrRevisionBefore:e.CURRENT_LIVE_HR_REVISION,hrRevisionAfter:null,observedHrAccessMode:null,bindingToReaderMatch:'UNRESOLVED',runtimeBindingResolutionProven:false,safety:{hrWrites:0,firestoreWrites:0,authAdminWrites:0,iamPolicyWrites:0,secretPayloadReads:0,apiEnables:0,production:false}};
+  const save=()=>fs.writeFileSync(path.join(outDir,'b14-capability.json'),JSON.stringify(r,null,2)+'\n');save();
+  const requireHere=createRequire(import.meta.url),requireAdmin=createRequire(requireHere.resolve('firebase-admin/app'));
+  const {GoogleAuth,Impersonated}=requireAdmin('google-auth-library'),{initializeApp,applicationDefault,deleteApp}=requireHere('firebase-admin/app'),{getFirestore}=requireHere('firebase-admin/firestore');
+  const git=(...a)=>execFileSync('git',a,{encoding:'utf8'}).trim();let app,db,cloudClient,projectBefore,integrationDocs=[],stage='SEALED_AUTHORITY',drift=null;
+  const sourceFields=['mode','authority','providerType','readPolicy','writePolicy','providerBindingId','integrationSettingId','providerRef','mappingRef','secretRef'];
+  const projectMask=['id','tenantId','projectId','version',...sourceFields.map(k=>'operationalSource.'+k),...sourceFields.map(k=>'routeSource.'+k),'hrSourceAdmin.providerBindingId','hrSourceAdmin.sourceRef','hrSourceAdmin.mappingRef','hrSourceAdmin.estado'];
+  const integrationMask=['id','tenantId','projectId','projectIds','type','providerType','enabled','status','state','readPolicy','writePolicy','hrWritesEnabled','providerBindingId','mappingRef','secretRef','sourceRef','sheetId','spreadsheetId'];
+  const endpoint=root+'/api/'+encodeURIComponent(tenantId)+'/'+encodeURIComponent(projectId)+'/hr-live?format=meta&b14='+encodeURIComponent(runId);
+  const getJson=async(client,url,params={})=>{const u=new URL(url);if(u.protocol!=='https:'||!['www.googleapis.com','sheets.googleapis.com','firebasehosting.googleapis.com'].includes(u.hostname))throw Error('B14_METADATA_ENDPOINT_NOT_ALLOWED');return (await client.request({method:'GET',url,params,headers:{'Cache-Control':'no-store'},timeout:20000,retry:false,maxRedirects:0})).data;};
+  try{
+    if(productSourceSha!==d.productSourceSha||!/^([a-f0-9]{40})$/.test(runtimeSourceSha||'')||!/^[a-f0-9]{64}$/.test(r.hrRevisionBefore||''))throw Error('B14_SOURCE_SCOPE_DRIFT');
+    const raw=read(path.join(e.OUT,'hr-current-live.json')),snap=raw.snapshot||raw.data||raw;const hrRuntime=raw._runtime||snap._runtime;
+    if(snap.tenantId!==tenantId||snap.projectId!==projectId||hrRuntime?.revision!==r.hrRevisionBefore||snap.sourceSafe!==true)throw Error('B14_HR_SCOPE_DRIFT');r.observedHrAccessMode=snap.source?.accessMode||null;
+    const authority=b14RuntimeAuthority(read(path.join(e.OUT,'runtime-revision.json')),{revision:r.runtimeRevision,digest:r.runtimeDigest});
+    r.runtimeAuthority={...authority,principal:undefined,principalSha256:authority.principal?b14sha(authority.principal):null};
+    const files=['tools/hr-source/tya-build-live-hr-source-safe-r20.mjs','tools/hr-source/tya-live-provider-registry-identity-dev.mjs'];
+    r.readerBlobs=files.map(file=>{const current=git('rev-parse',productSourceSha+':'+file),served=git('rev-parse',runtimeSourceSha+':'+file);if(current!==served)throw Error('B14_RUNTIME_READER_SOURCE_DRIFT');return {path:file,gitBlob:current,runtimeSourceMatchesProductReader:true};});
+    const book=b14WorkbookFromReaders(files.map(f=>fs.readFileSync(path.join(e.SOURCE_DIR,f),'utf8')),authority);r.workbook={resolved:book.resolved,reason:book.reason||null,idSha256:book.idSha256||null,authority:book.authority||null};
+    stage='PROJECT_BINDING_METADATA';app=initializeApp({projectId:e.PROJECT,credential:applicationDefault()},'i3-b14-'+runId);db=getFirestore(app);
+    const projectRef=db.doc('tenants/'+tenantId+'/projects/'+projectId);[projectBefore]=await db.getAll(projectRef,{fieldMask:projectMask});if(!projectBefore.exists)throw Error('B14_PROJECT_MISSING');
+    const pr=projectBefore.data();if(pr.tenantId!==tenantId||pr.projectId&&pr.projectId!==projectId)throw Error('B14_PROJECT_SCOPE_MISMATCH');
+    const op=pr.operationalSource||{},route=pr.routeSource||{},settingId=b14str(op.integrationSettingId||route.integrationSettingId);
+    r.project={version:pr.version??null,exists:true,updateTime:projectBefore.updateTime.toDate().toISOString(),operationalSource:Object.fromEntries(sourceFields.map(k=>[k,{present:op[k]!==undefined,valueHash:op[k]===undefined?null:b14sha(op[k])}]))};
+    const col=db.collection('tenants/'+tenantId+'/integrationSettings'),byId=new Map();
+    if(settingId){if(!/^[A-Za-z0-9_-]{1,200}$/.test(settingId))r.explicitIntegrationReference='UNRESOLVED_ID_FORMAT';else{const [doc]=await db.getAll(col.doc(settingId),{fieldMask:integrationMask});byId.set(doc.id,doc);r.explicitIntegrationReference=doc.exists?'PRESENT_SCOPE_UNVERIFIED':'ABSENT';}}
+    const discovery=await Promise.allSettled([col.where('projectId','==',projectId).select(...integrationMask).limit(26).get(),col.where('projectIds','array-contains',projectId).select(...integrationMask).limit(26).get()]);
+    r.integrationDiscovery=discovery.map(x=>x.status==='fulfilled'?{ok:true,count:x.value.size,complete:x.value.size<26}:{ok:false,error:b14DiagnosticError(x.reason)});
+    for(const x of discovery)if(x.status==='fulfilled')for(const doc of x.value.docs)byId.set(doc.id,doc);integrationDocs=[...byId.values()];
+    r.integrationMetadata=integrationDocs.map(doc=>({idHash:b14sha(doc.id),exists:doc.exists,explicitlyReferenced:doc.id===settingId,updateTime:doc.updateTime?.toDate().toISOString()||null,...b14BindingProjection(doc.data()||{},book.id,tenantId,projectId)}));
+    if(r.integrationMetadata.some(x=>x.explicitlyReferenced&&x.scopeMatches&&x.workbookMatches===true))r.bindingToReaderMatch='METADATA_MATCH_ONLY_RUNTIME_STILL_ENV_FALLBACK';
+    if(!book.resolved){r.accessConclusion=book.reason;r.observationComplete=true;return;}
+    if(!authority.principal){r.accessConclusion='EFFECTIVE_READER_IDENTITY_UNRESOLVED';return;}
+    stage='READER_AUTHORIZATION';cloudClient=await new GoogleAuth({scopes:['https://www.googleapis.com/auth/cloud-platform']}).getClient();const cloudPrincipal=await b14PrincipalOf(cloudClient);
+    const adc=await new GoogleAuth({scopes:B14_READ_SCOPES}).getClient(),adcPrincipal=await b14PrincipalOf(adc);r.adcPrincipalSha256=cloudPrincipal?b14sha(cloudPrincipal):null;r.adcMatchesRuntime=adcPrincipal===authority.principal;r.usesImpersonation=!r.adcMatchesRuntime;
+    const client=r.usesImpersonation?new Impersonated({sourceClient:cloudClient,targetPrincipal:authority.principal,targetScopes:B14_READ_SCOPES,lifetime:600}):adc;
+    stage='ISSUE_EXACT_READER_TOKEN';await client.getAccessToken();r.readerTokenIssued=true;r.requestedScopes=B14_READ_SCOPES;
+    stage='PROVIDER_METADATA';const requests=await Promise.allSettled([
+      getJson(client,'https://www.googleapis.com/drive/v3/about',{fields:'user(permissionId,emailAddress)'}),
+      getJson(client,'https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(book.id),{supportsAllDrives:true,fields:'id,mimeType,trashed,version,modifiedTime,capabilities(canEdit,canModifyContent),contentRestrictions(readOnly)'}),
+      getJson(client,'https://sheets.googleapis.com/v4/spreadsheets/'+encodeURIComponent(book.id),{includeGridData:false,fields:'spreadsheetId,sheets(properties(sheetId,title),protectedRanges(protectedRangeId,range,warningOnly,requestingUserCanEdit,unprotectedRanges))'})]);
+    const [about,file,sheets]=requests.map(x=>x.status==='fulfilled'?x.value:null);r.providerMetadataRequests=requests.map((x,i)=>x.status==='fulfilled'?{provider:['drive_identity','drive_file','sheets_structure'][i],ok:true}:{provider:['drive_identity','drive_file','sheets_structure'][i],ok:false,error:b14DiagnosticError(x.reason)});
+    r.principalMatchesRuntime=about?.user?.emailAddress===authority.principal;
+    r.observedHrReaderIdentityLinked=r.principalMatchesRuntime&&r.observedHrAccessMode==='sheets_api_service_account';
+    Object.assign(r,b14CapabilityVerdict({principalVerified:r.principalMatchesRuntime,file,sheets,sheetId:book.id}));
+    r.driveMetadata=file?{mimeType:file.mimeType,trashed:file.trashed===true,version:file.version||null,modifiedTime:file.modifiedTime||null,contentRestrictions:(file.contentRestrictions||[]).map(x=>({readOnly:x.readOnly===true}))}:null;
+    r.sheetsMetadata=sheets?{sheetCount:sheets.sheets?.length||0,sheets:(sheets.sheets||[]).map(x=>({sheetId:x.properties?.sheetId,titleSha256:b14sha(x.properties?.title||''),protectedRanges:(x.protectedRanges||[]).map(v=>({id:v.protectedRangeId,range:v.range||null,warningOnly:v.warningOnly===true,requestingUserCanEdit:typeof v.requestingUserCanEdit==='boolean'?v.requestingUserCanEdit:null,unprotectedRanges:v.unprotectedRanges||[]}))}))}:null;
+    r.observationComplete=true;
+  }catch(error){r.error={stage,...b14DiagnosticError(error)};r.accessConclusion=stage==='ISSUE_EXACT_READER_TOKEN'?'PROBE_READER_IMPERSONATION_OR_TOKEN_UNAVAILABLE':'PROBE_INCOMPLETE';if(/DRIFT$|SCOPE_MISMATCH$/.test(error?.message||''))drift=error;}
+  finally{
+    try{
+      if(projectBefore&&db){const docs=[projectBefore,...integrationDocs],after=await db.getAll(...docs.map(x=>x.ref),{fieldMask:['id']});if(after.some((x,i)=>x.exists!==docs[i].exists||(x.exists&&!x.updateTime.isEqual(docs[i].updateTime))))throw Error('B14_BINDING_CHANGED_DURING_PROBE');r.bindingUnchanged=true;}
+      const metaResponse=await fetch(endpoint+'&after='+Date.now(),{headers:{'Cache-Control':'no-cache, no-store'},signal:AbortSignal.timeout(30000)});const meta=await metaResponse.json();validateTerminalHrObservation(meta);r.hrRevisionAfter=meta.revision;if(!metaResponse.ok||meta.revision!==r.hrRevisionBefore)throw Error('B14_HR_REVISION_DRIFT');
+      const service=JSON.parse(execFileSync('gcloud',['run','services','describe',e.SERVICE,'--project',e.PROJECT,'--region',e.REGION,'--format=json(status.latestReadyRevisionName,status.traffic)'],{encoding:'utf8'}));const active=(service.status?.traffic||[]).filter(x=>Number(x.percent)>0);if(service.status?.latestReadyRevisionName!==r.runtimeRevision||!active.length||active.some(x=>x.revisionName!==r.runtimeRevision)||active.reduce((n,x)=>n+Number(x.percent),0)!==100)throw Error('B14_RUNTIME_TRAFFIC_DRIFT');r.runtimeUnchanged=true;
+      if(!cloudClient)cloudClient=await new GoogleAuth({scopes:['https://www.googleapis.com/auth/cloud-platform']}).getClient();
+      const hosting=await getJson(cloudClient,'https://firebasehosting.googleapis.com/v1beta1/sites/'+encodeURIComponent(e.HOSTING_SITE)+'/channels/live',{fields:'release(version(name))'});if(hosting.release?.version?.name!==r.hostingVersion)throw Error('B14_HOSTING_DRIFT');r.hostingUnchanged=true;
+    }catch(error){r.stabilityError=b14DiagnosticError(error);drift=error;}
+    if(app)await deleteApp(app).catch(()=>{});r.observationComplete=r.observationComplete&&!r.stabilityError;r.b14Closed=false;r.providerAck=false;save();console.log(JSON.stringify({decision:r.decision,observationComplete:r.observationComplete,accessConclusion:r.accessConclusion,bindingToReaderMatch:r.bindingToReaderMatch,b14Closed:false,providerAck:false,production:false}));
+    if(drift)throw Error('PROVIDER_FAILURE:B14_DIAGNOSTIC_STABILITY_UNVERIFIED');
+  }
+}
 
-const [outDir,root,tenantId,projectId,runId]=process.argv.slice(2);
+async function runOriginalReadOnly(args){
+const [outDir,root,tenantId,projectId,runId]=args;
 if(!outDir||!root||!tenantId||!projectId||!runId)throw Error('HR_ACK_PREFLIGHT_ARGS_REQUIRED');
 fs.mkdirSync(outDir,{recursive:true});
 const origin=root.replace(/\/+$/,'');
@@ -50,3 +164,9 @@ const diagnostics={decision:passed?'PASS_HR_EXACT_REVISION_READ_ONLY':'HOLD_HR_E
 fs.writeFileSync(path.join(outDir,'hr-ack-preflight.json'),JSON.stringify(diagnostics,null,2)+'\n');
 console.log(JSON.stringify(diagnostics));
 if(!passed)throw Error('HR_READ_ONLY_META_TIMEOUT_SAME_REVISION');
+
+}
+if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
+ if(process.env.CXORBIA_I3_QA_SCOPE==='B14_CAPABILITY_ONLY')await runB14CapabilityOnly(process.argv.slice(2));
+ else await runOriginalReadOnly(process.argv.slice(2));
+}

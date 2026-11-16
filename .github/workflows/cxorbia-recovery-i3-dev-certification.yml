@@ -3035,6 +3035,7 @@ jobs:
    - run: |
       set -Eeuo pipefail
       mkdir -p "$OUT/full-human-acceptance" "$OUT/semantic" "$OUT/gate20"
+      CXORBIA_I3_QA_SCOPE=B14_CAPABILITY_ONLY node tools/qa/cxorbia-i3-hr-ack-exact-same-revision.mjs "$OUT/b14-capability" "$HOSTING_URL" "$TENANT_ID" "$PROJECT_ID" "$GITHUB_RUN_ID"
       if [[ "$(jq -r '.f09LiveVerificationPending // false' "$CANDIDATE_DESCRIPTOR")" == true ]]; then
         FOCAL_SOURCE="$I3_CERTIFICATION_SOURCE_SHA" FOCAL_TREE="$I3_CERTIFICATION_SOURCE_TREE" EXPECTED_HR_REVISION="$CURRENT_LIVE_HR_REVISION" QA_OUT="$OUT/f09" CXORBIA_I3_QA_SCOPE=F09_CLIENT_COLLABORATION CXORBIA_I3_QA_ISOLATED_WRITE_GATE=PAULA_AUTHORIZED_F09_DEV_ONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs || jq -e '.decision=="HOLD" and .hrBefore==env.CURRENT_LIVE_HR_REVISION and .cleanup.ok and .cleanup.remainingDocuments==0 and .cleanup.remainingAuth==0 and .realProjectPeriodUnchanged and .productionIndexUnchanged and .runtimeTrafficExact and .hrBefore==.hrAfter' "$OUT/f09/result.json" >/dev/null
       fi

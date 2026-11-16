@@ -1,0 +1,632 @@
+TAP version 13
+# Subtest: VRM-151 command runtime routes finance.historical.reconcile to finance provider
+ok 1 - VRM-151 command runtime routes finance.historical.reconcile to finance provider
+  ---
+  duration_ms: 0.847881
+  type: 'test'
+  ...
+# Subtest: ADMIN-004 reconcile uses project-country honorarium when HR is blank and never confirms external payment
+ok 2 - ADMIN-004 reconcile uses project-country honorarium when HR is blank and never confirms external payment
+  ---
+  duration_ms: 4.445322
+  type: 'test'
+  ...
+# Subtest: ADMIN-004 explicit HR honorarium has precedence and reconciliation is idempotent
+ok 3 - ADMIN-004 explicit HR honorarium has precedence and reconciliation is idempotent
+  ---
+  duration_ms: 0.88018
+  type: 'test'
+  ...
+# Subtest: VRM-151 historical reconciliation uses canonical submitted visit, exact amount and idempotent durable status without bank or HR writes
+ok 4 - VRM-151 historical reconciliation uses canonical submitted visit, exact amount and idempotent durable status without bank or HR writes
+  ---
+  duration_ms: 1.307074
+  type: 'test'
+  ...
+# Subtest: VRM-152 historical reconciliation completes every transaction read before the first write
+ok 5 - VRM-152 historical reconciliation completes every transaction read before the first write
+  ---
+  duration_ms: 1.180979
+  type: 'test'
+  ...
+# Subtest: VRM-153 historical reconciliation uses exact HR revision for reimbursement authority when durable Firestore copy is incomplete
+ok 6 - VRM-153 historical reconciliation uses exact HR revision for reimbursement authority when durable Firestore copy is incomplete
+  ---
+  duration_ms: 0.425603
+  type: 'test'
+  ...
+# Subtest: VRM-153 historical reconciliation fails closed when command HR revision differs from runtime HR authority
+ok 7 - VRM-153 historical reconciliation fails closed when command HR revision differs from runtime HR authority
+  ---
+  duration_ms: 0.562864
+  type: 'test'
+  ...
+# Subtest: VRM-151 historical reconciliation records paid status but keeps amount null and review-required when reimbursement source is incomplete
+ok 8 - VRM-151 historical reconciliation records paid status but keeps amount null and review-required when reimbursement source is incomplete
+  ---
+  duration_ms: 1.021617
+  type: 'test'
+  ...
+# Subtest: VRM-151 historical reconciliation writes the live visitId canonical owner before legacy hrRowId duplicate
+ok 9 - VRM-151 historical reconciliation writes the live visitId canonical owner before legacy hrRowId duplicate
+  ---
+  duration_ms: 0.779903
+  type: 'test'
+  ...
+# Subtest: VRM-153 exact pending-to-paid supersession retains the prior audit record, one active visit and zero bank writes
+ok 10 - VRM-153 exact pending-to-paid supersession retains the prior audit record, one active visit and zero bank writes
+  ---
+  duration_ms: 1.385514
+  type: 'test'
+  ...
+# Subtest: VRM-153 rejects unapproved overwrite, downgrade and future-dated proof without writes
+ok 11 - VRM-153 rejects unapproved overwrite, downgrade and future-dated proof without writes
+  ---
+  duration_ms: 2.389013
+  type: 'test'
+  ...
+# Subtest: VRM-153 cross-project prior reconciliation blocks the whole transaction
+ok 12 - VRM-153 cross-project prior reconciliation blocks the whole transaction
+  ---
+  duration_ms: 1.394677
+  type: 'test'
+  ...
+# Subtest: VRM-153 supersession completes every Firestore read before any write in two-visit transaction
+ok 13 - VRM-153 supersession completes every Firestore read before any write in two-visit transaction
+  ---
+  duration_ms: 0.778544
+  type: 'test'
+  ...
+# Subtest: VRM-153 exact same-human HR alias supersession requires transactional trusted identity link and preserves prior ID
+ok 14 - VRM-153 exact same-human HR alias supersession requires transactional trusted identity link and preserves prior ID
+  ---
+  duration_ms: 1.192951
+  type: 'test'
+  ...
+# Subtest: VRM-153 explicit HR alias without permitted scoped link is not financial identity proof
+ok 15 - VRM-153 explicit HR alias without permitted scoped link is not financial identity proof
+  ---
+  duration_ms: 0.573727
+  type: 'test'
+  ...
+# Subtest: VRM-153 initial exact historically-paid August row preserves authorized October 2 payment date without bank transfer
+ok 16 - VRM-153 initial exact historically-paid August row preserves authorized October 2 payment date without bank transfer
+  ---
+  duration_ms: 0.658904
+  type: 'test'
+  ...
+# Subtest: VRM-153 historical payment date rejects pending, future date, missing source authority without writes
+ok 17 - VRM-153 historical payment date rejects pending, future date, missing source authority without writes
+  ---
+  duration_ms: 0.792291
+  type: 'test'
+  ...
+# Subtest: VRM-151 historical reconciliation rejects non-submitted visits even when the historical month is marked paid
+ok 18 - VRM-151 historical reconciliation rejects non-submitted visits even when the historical month is marked paid
+  ---
+  duration_ms: 0.374344
+  type: 'test'
+  ...
+# Subtest: ADMIN-004 missing config fails closed and payment batch rejects unreconciled visit
+ok 19 - ADMIN-004 missing config fails closed and payment batch rejects unreconciled visit
+  ---
+  duration_ms: 0.702529
+  type: 'test'
+  ...
+# Subtest: HF-20261012-27 payment batch rejects financially exact visits until operational state is submitted/validated
+ok 20 - HF-20261012-27 payment batch rejects financially exact visits until operational state is submitted/validated
+  ---
+  duration_ms: 0.558589
+  type: 'test'
+  ...
+# Subtest: HF-20261012-27 payment batch rejects internal duplicate and external payment duplicates
+ok 21 - HF-20261012-27 payment batch rejects internal duplicate and external payment duplicates
+  ---
+  duration_ms: 0.574864
+  type: 'test'
+  ...
+# Subtest: HF-20261012-27 payment batch records only selected eligible visits, separates currencies and is idempotent
+ok 22 - HF-20261012-27 payment batch records only selected eligible visits, separates currencies and is idempotent
+  ---
+  duration_ms: 1.375078
+  type: 'test'
+  ...
+# Subtest: HF-20261012-27 UI exposes one liquidation eligibility owner for row actions, detail and selection
+ok 23 - HF-20261012-27 UI exposes one liquidation eligibility owner for row actions, detail and selection
+  ---
+  duration_ms: 0.627268
+  type: 'test'
+  ...
+# Subtest: HF-20261012-21 finance dashboard exposes compact KPI hierarchy and five financial states without mixing country currencies
+ok 24 - HF-20261012-21 finance dashboard exposes compact KPI hierarchy and five financial states without mixing country currencies
+  ---
+  duration_ms: 0.627256
+  type: 'test'
+  ...
+# Subtest: ADMIN-004 project.update boundary sends the canonical current version in the provider payload
+ok 25 - ADMIN-004 project.update boundary sends the canonical current version in the provider payload
+  ---
+  duration_ms: 0.175507
+  type: 'test'
+  ...
+# Subtest: ADMIN-004 command boundary parses as JavaScript after project.update version fix
+ok 26 - ADMIN-004 command boundary parses as JavaScript after project.update version fix
+  ---
+  duration_ms: 0.686536
+  type: 'test'
+  ...
+# Subtest: ADMIN-004 backend refresh invalidates HR authority then awaits atomic recomposition and readback
+ok 27 - ADMIN-004 backend refresh invalidates HR authority then awaits atomic recomposition and readback
+  ---
+  duration_ms: 0.255816
+  type: 'test'
+  ...
+# Subtest: ADMIN-004 unified human runtime preserves canonical project-country honorarium on HR-owned operational visits
+ok 28 - ADMIN-004 unified human runtime preserves canonical project-country honorarium on HR-owned operational visits
+  ---
+  duration_ms: 0.138176
+  type: 'test'
+  ...
+# Subtest: HF-20261012-26 durable budget create, readback, update, delete and exact idempotency without bank truth
+ok 29 - HF-20261012-26 durable budget create, readback, update, delete and exact idempotency without bank truth
+  ---
+  duration_ms: 1.363485
+  type: 'test'
+  ...
+# Subtest: HF-20261012-26 budget fail-closed country, currency, role, scope, amount, and no client writes
+ok 30 - HF-20261012-26 budget fail-closed country, currency, role, scope, amount, and no client writes
+  ---
+  duration_ms: 1.479269
+  type: 'test'
+  ...
+# Subtest: HF-20261012-22 provider diagnostic returns remote error codes without exposing raw exception/Pll
+ok 31 - HF-20261012-22 provider diagnostic returns remote error codes without exposing raw exception/Pll
+  ---
+  duration_ms: 1.0972
+  type: 'test'
+  ...
+# Subtest: HF-20261012-22 ACK never shown as full reconciliation until unique exact protected readback
+ok 32 - HF-20261012-22 ACK never shown as full reconciliation until unique exact protected readback
+  ---
+  duration_ms: 1.026415
+  type: 'test'
+  ...
+# Subtest: HF-20261012-23 independent source, obligation, internal ledger and external paid states
+ok 33 - HF-20261012-23 independent source, obligation, internal ledger and external paid states
+  ---
+  duration_ms: 0.803001
+  type: 'test'
+  ...
+# Subtest: HF-20261012-25 monthly CxP CxC provider ledger, client protections and UI readback
+ok 34 - HF-20261012-25 monthly CxP CxC provider ledger, client protections and UI readback
+  ---
+  duration_ms: 1.294711
+  type: 'test'
+  ...
+# Subtest: HF-20261012-25 CxC internal collection uses existing durable finance.account.apply with no bank claim
+ok 35 - HF-20261012-25 CxC internal collection uses existing durable finance.account.apply with no bank claim
+  ---
+  duration_ms: 0.901032
+  type: 'test'
+  ...
+# Subtest: HF24 missing finance read provider fails closed instead of returning successful empty finances
+ok 36 - HF24 missing finance read provider fails closed instead of returning successful empty finances
+  ---
+  duration_ms: 1.038795
+  type: 'test'
+  ...
+# Subtest: HF24 finance creation requires unique tenant scoped remote readback after provider ACK
+ok 37 - HF24 finance creation requires unique tenant scoped remote readback after provider ACK
+  ---
+  duration_ms: 0.896798
+  type: 'test'
+  ...
+# Subtest: HF-20261012-25 B8 CxP internal abono never announces a confirmed external payment
+ok 38 - HF-20261012-25 B8 CxP internal abono never announces a confirmed external payment
+  ---
+  duration_ms: 0.873866
+  type: 'test'
+  ...
+# Subtest: I3 B8 budget safe provider ACK and canonical destination projects
+ok 39 - I3 B8 budget safe provider ACK and canonical destination projects
+  ---
+  duration_ms: 0.840876
+  type: 'test'
+  ...
+# Subtest: R12 remote operating revenue does not count remittances, advances, financing or CxC recovery
+ok 40 - R12 remote operating revenue does not count remittances, advances, financing or CxC recovery
+  ---
+  duration_ms: 1.029809
+  type: 'test'
+  ...
+# Subtest: R09 ordinary finance screens use human explanations while preserving provider audit code
+ok 41 - R09 ordinary finance screens use human explanations while preserving provider audit code
+  ---
+  duration_ms: 1.114139
+  type: 'test'
+  ...
+# Subtest: C04 project-scoped account and movement remain available to a project-limited Admin
+ok 42 - C04 project-scoped account and movement remain available to a project-limited Admin
+  ---
+  duration_ms: 1.038047
+  type: 'test'
+  ...
+# Subtest: C04 Global movement/account use the tenant ledger, explicit country/currency and exact replay without bank or HR writes
+ok 43 - C04 Global movement/account use the tenant ledger, explicit country/currency and exact replay without bank or HR writes
+  ---
+  duration_ms: 1.459376
+  type: 'test'
+  ...
+# Subtest: C04 Global financing remains non-operating and creates only a linked Global CxP
+ok 44 - C04 Global financing remains non-operating and creates only a linked Global CxP
+  ---
+  duration_ms: 0.333238
+  type: 'test'
+  ...
+# Subtest: C04 Global collection changes only the exact account and replay preserves balance/version/movement
+ok 45 - C04 Global collection changes only the exact account and replay preserves balance/version/movement
+  ---
+  duration_ms: 1.653271
+  type: 'test'
+  ...
+# Subtest: C04 Global is denied for project-only/missing entitlements, disallowed roles, inactive membership and country restriction
+    # Subtest: specific-projects
+    ok 1 - specific-projects
+      ---
+      duration_ms: 0.385489
+      type: 'test'
+      ...
+    # Subtest: missing-entitlement
+    ok 2 - missing-entitlement
+      ---
+      duration_ms: 0.151587
+      type: 'test'
+      ...
+    # Subtest: ops
+    ok 3 - ops
+      ---
+      duration_ms: 0.123099
+      type: 'test'
+      ...
+    # Subtest: coordinador
+    ok 4 - coordinador
+      ---
+      duration_ms: 0.109379
+      type: 'test'
+      ...
+    # Subtest: shopper
+    ok 5 - shopper
+      ---
+      duration_ms: 0.137389
+      type: 'test'
+      ...
+    # Subtest: client
+    ok 6 - client
+      ---
+      duration_ms: 0.090963
+      type: 'test'
+      ...
+    # Subtest: inactive
+    ok 7 - inactive
+      ---
+      duration_ms: 0.102609
+      type: 'test'
+      ...
+    # Subtest: country
+    ok 8 - country
+      ---
+      duration_ms: 0.278563
+      type: 'test'
+      ...
+    1..8
+ok 46 - C04 Global is denied for project-only/missing entitlements, disallowed roles, inactive membership and country restriction
+  ---
+  duration_ms: 1.924696
+  type: 'test'
+  ...
+# Subtest: C04 Global never bypasses project command scope, tenant allowlist, version or project-only visit/budget contracts
+    # Subtest: missing-global
+    ok 1 - missing-global
+      ---
+      duration_ms: 0.136804
+      type: 'test'
+      ...
+    # Subtest: fake-global-project
+    ok 2 - fake-global-project
+      ---
+      duration_ms: 0.066393
+      type: 'test'
+      ...
+    # Subtest: global-with-project
+    ok 3 - global-with-project
+      ---
+      duration_ms: 0.054986
+      type: 'test'
+      ...
+    # Subtest: global-wrong-period
+    ok 4 - global-wrong-period
+      ---
+      duration_ms: 0.061562
+      type: 'test'
+      ...
+    # Subtest: global-payload-period
+    ok 5 - global-payload-period
+      ---
+      duration_ms: 0.05489
+      type: 'test'
+      ...
+    # Subtest: global-date-period
+    ok 6 - global-date-period
+      ---
+      duration_ms: 0.052493
+      type: 'test'
+      ...
+    # Subtest: global-no-date
+    ok 7 - global-no-date
+      ---
+      duration_ms: 0.049759
+      type: 'test'
+      ...
+    # Subtest: global-invalid-date
+    ok 8 - global-invalid-date
+      ---
+      duration_ms: 0.051153
+      type: 'test'
+      ...
+    # Subtest: global-project-destination
+    ok 9 - global-project-destination
+      ---
+      duration_ms: 0.058392
+      type: 'test'
+      ...
+    # Subtest: global-visit-link
+    ok 10 - global-visit-link
+      ---
+      duration_ms: 0.08745
+      type: 'test'
+      ...
+    # Subtest: global-unbounded-version
+    ok 11 - global-unbounded-version
+      ---
+      duration_ms: 0.058482
+      type: 'test'
+      ...
+    # Subtest: global-budget
+    ok 12 - global-budget
+      ---
+      duration_ms: 0.073634
+      type: 'test'
+      ...
+    # Subtest: global-reconcile
+    ok 13 - global-reconcile
+      ---
+      duration_ms: 0.060139
+      type: 'test'
+      ...
+    # Subtest: foreign-tenant
+    ok 14 - foreign-tenant
+      ---
+      duration_ms: 0.054748
+      type: 'test'
+      ...
+    # Subtest: project-policy-still-denied
+    ok 15 - project-policy-still-denied
+      ---
+      duration_ms: 0.11797
+      type: 'test'
+      ...
+    1..15
+ok 47 - C04 Global never bypasses project command scope, tenant allowlist, version or project-only visit/budget contracts
+  ---
+  duration_ms: 1.781129
+  type: 'test'
+  ...
+# Subtest: C04 Global account application refuses wrong account tenant/project/month/marker and country
+    # Subtest: tenant
+    ok 1 - tenant
+      ---
+      duration_ms: 0.570631
+      type: 'test'
+      ...
+    # Subtest: project
+    ok 2 - project
+      ---
+      duration_ms: 0.450986
+      type: 'test'
+      ...
+    # Subtest: period
+    ok 3 - period
+      ---
+      duration_ms: 0.46858
+      type: 'test'
+      ...
+    # Subtest: marker
+    ok 4 - marker
+      ---
+      duration_ms: 0.441538
+      type: 'test'
+      ...
+    # Subtest: country
+    ok 5 - country
+      ---
+      duration_ms: 0.431383
+      type: 'test'
+      ...
+    # Subtest: internal-id
+    ok 6 - internal-id
+      ---
+      duration_ms: 0.447852
+      type: 'test'
+      ...
+    # Subtest: missing-id
+    ok 7 - missing-id
+      ---
+      duration_ms: 2.315677
+      type: 'test'
+      ...
+    1..7
+ok 48 - C04 Global account application refuses wrong account tenant/project/month/marker and country
+  ---
+  duration_ms: 5.767123
+  type: 'test'
+  ...
+# Subtest: C04 command boundary carries explicit Global scope and keeps project cache/commands independent
+ok 49 - C04 command boundary carries explicit Global scope and keeps project cache/commands independent
+  ---
+  duration_ms: 3.52052
+  type: 'test'
+  ...
+# Subtest: C04 Global reader filters Global-only/month and requires server-confirmed snapshot without pending local writes
+    # Subtest: {"fromCache":true,"hasPendingWrites":false}
+    ok 1 - {"fromCache":true,"hasPendingWrites":false}
+      ---
+      duration_ms: 0.671691
+      type: 'test'
+      ...
+    # Subtest: {"fromCache":false,"hasPendingWrites":true}
+    ok 2 - {"fromCache":false,"hasPendingWrites":true}
+      ---
+      duration_ms: 0.616027
+      type: 'test'
+      ...
+    # Subtest: {}
+    ok 3 - {}
+      ---
+      duration_ms: 0.58504
+      type: 'test'
+      ...
+    1..3
+ok 50 - C04 Global reader filters Global-only/month and requires server-confirmed snapshot without pending local writes
+  ---
+  duration_ms: 5.932825
+  type: 'test'
+  ...
+# Subtest: C04 Global UI currency/month/readback preserve actual row scope, cents and linked account update
+ok 51 - C04 Global UI currency/month/readback preserve actual row scope, cents and linked account update
+  ---
+  duration_ms: 1.526996
+  type: 'test'
+  ...
+# Subtest: C04 real Movimientos draw/scope/export use isolated remote ledgers, never the legacy local balance
+ok 52 - C04 real Movimientos draw/scope/export use isolated remote ledgers, never the legacy local balance
+  ---
+  duration_ms: 48.644271
+  type: 'test'
+  ...
+# Subtest: C04 failed Global read shows no monetary fallback and currency keys cannot corrupt aggregation
+ok 53 - C04 failed Global read shows no monetary fallback and currency keys cannot corrupt aggregation
+  ---
+  duration_ms: 4.415125
+  type: 'test'
+  ...
+# Subtest: B8 historical paid command carries exact HR revision, date and Paula authority to the provider
+ok 54 - B8 historical paid command carries exact HR revision, date and Paula authority to the provider
+  ---
+  duration_ms: 2.996611
+  type: 'test'
+  ...
+# Subtest: B8 historical pending command does not infer a payment date or authorization
+ok 55 - B8 historical pending command does not infer a payment date or authorization
+  ---
+  duration_ms: 0.725695
+  type: 'test'
+  ...
+# Subtest: B8 explicit supersession proof is forwarded intact, without mutating input
+ok 56 - B8 explicit supersession proof is forwarded intact, without mutating input
+  ---
+  duration_ms: 1.244974
+  type: 'test'
+  ...
+# Subtest: caller cannot override current HR revision: wrong-revision
+ok 57 - caller cannot override current HR revision: wrong-revision
+  ---
+  duration_ms: 0.88405
+  type: 'test'
+  ...
+# Subtest: caller cannot override current HR revision: undefined
+ok 58 - caller cannot override current HR revision: undefined
+  ---
+  duration_ms: 1.346631
+  type: 'test'
+  ...
+# Subtest: caller cannot override current HR revision: 123
+ok 59 - caller cannot override current HR revision: 123
+  ---
+  duration_ms: 0.496603
+  type: 'test'
+  ...
+# Subtest: caller cannot override current HR revision: null
+ok 60 - caller cannot override current HR revision: null
+  ---
+  duration_ms: 0.553741
+  type: 'test'
+  ...
+# Subtest: missing current HR revision blocks before sending a command
+ok 61 - missing current HR revision blocks before sending a command
+  ---
+  duration_ms: 0.566705
+  type: 'test'
+  ...
+# Subtest: invalid historical metadata blocked: future
+ok 62 - invalid historical metadata blocked: future
+  ---
+  duration_ms: 0.770052
+  type: 'test'
+  ...
+# Subtest: invalid historical metadata blocked: invalid day
+ok 63 - invalid historical metadata blocked: invalid day
+  ---
+  duration_ms: 0.999879
+  type: 'test'
+  ...
+# Subtest: invalid historical metadata blocked: date without authority
+ok 64 - invalid historical metadata blocked: date without authority
+  ---
+  duration_ms: 0.819506
+  type: 'test'
+  ...
+# Subtest: invalid historical metadata blocked: authority without date
+ok 65 - invalid historical metadata blocked: authority without date
+  ---
+  duration_ms: 0.677125
+  type: 'test'
+  ...
+# Subtest: invalid historical metadata blocked: pending with paid date
+ok 66 - invalid historical metadata blocked: pending with paid date
+  ---
+  duration_ms: 0.523926
+  type: 'test'
+  ...
+# Subtest: invalid historical metadata blocked: array supersession
+ok 67 - invalid historical metadata blocked: array supersession
+  ---
+  duration_ms: 0.470734
+  type: 'test'
+  ...
+# Subtest: invalid historical metadata blocked: foreign identity map
+ok 68 - invalid historical metadata blocked: foreign identity map
+  ---
+  duration_ms: 0.589512
+  type: 'test'
+  ...
+# Subtest: supersession forwards only allowlisted fields and never authority, amount or ACK from the caller
+ok 69 - supersession forwards only allowlisted fields and never authority, amount or ACK from the caller
+  ---
+  duration_ms: 0.730956
+  type: 'test'
+  ...
+# Subtest: identical historical calls generate the same idempotency key without changing context or input
+ok 70 - identical historical calls generate the same idempotency key without changing context or input
+  ---
+  duration_ms: 0.677605
+  type: 'test'
+  ...
+1..70
+# tests 103
+# suites 0
+# pass 103
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 176.554494

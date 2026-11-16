@@ -149,3 +149,30 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
   }
   return {pass:failures.length===0,failures,findingCount:count,nextFindingId:next,ledgerPath,sourceSha:source,devRunId:seal?.runId||null};
 }
+
+// A new frontend-only ACK does not rewrite the immutable paired runtime seal.
+// Bind every latest-execution field to that exact committed Hosting receipt.
+export function validateLatestExecutionSource({descriptor:d,pointer:p,gitBlob,readJson}){
+  const latest=p.lastExecutionReceipt,seal=d.postDeployRunSeal||{},failures=[];
+  const check=(ok,code)=>{if(!ok)failures.push(code);};
+  const expected=seal.mode==='PREDECESSOR_SERVING_PENDING_SOURCE'?seal.sourceSha:d.productSourceSha;
+  const isHostingAck=latest?.kind==='EXACT_HOSTING_ONLY_DEV_ACK_NOT_FUNCTIONAL_CERTIFICATE';
+  if(!isHostingAck&&(!latest?.sourceSha||latest.sourceSha===expected))return {pass:true,failures,sourceSha:expected,hostingOnly:false};
+  const h=d.currentHostingOnlyDevMaterialization||{};
+  check(seal.mode==='PREDECESSOR_SERVING_PENDING_SOURCE'&&latest.kind==='EXACT_HOSTING_ONLY_DEV_ACK_NOT_FUNCTIONAL_CERTIFICATE','LATEST_EXECUTION_KIND');
+  check(JSON.stringify(h)===JSON.stringify(p.currentHostingOnlyDevMaterialization||null),'LATEST_HOSTING_POINTER');
+  check(h.sourceSha===d.productSourceSha&&h.sourceTree===d.productTreeAuthority,'LATEST_HOSTING_SOURCE');
+  check(h.runtimeRevision===seal.runtimeRevision&&h.runtimeDigest===seal.runtimeDigest,'LATEST_HOSTING_RUNTIME_SEAL');
+  check(Boolean(h.receiptPath&&h.receiptBlob)&&gitBlob(h.receiptPath)===h.receiptBlob,'LATEST_HOSTING_RECEIPT_BLOB');
+  let r={};try{r=readJson(h.receiptPath);}catch{check(false,'LATEST_HOSTING_RECEIPT_UNREADABLE');}
+  check(r.schemaVersion==='cxorbia.i3.hosting-only-dev-exact-ack.v1'&&r.decision==='PASS_I3_CURRENT_SOURCE_HOSTING_DEV_ONLY','LATEST_HOSTING_RECEIPT_DECISION');
+  for(const k of ['sourceSha','sourceTree','runNumber','runtimeRevision','runtimeDigest','hostingRelease'])check(r[k]===h[k],'LATEST_HOSTING_RECEIPT_'+k);
+  check(r.workflowRunId===h.runId&&r.hostingAfter===h.hostingVersion,'LATEST_HOSTING_RECEIPT_RUN_VERSION');
+  check(r.sourceHostedExact===true&&r.verifiedServedAssetCount>0&&r.verifiedServedAssetCount===Object.keys(r.servedSha256||{}).length,'LATEST_HOSTING_EXACT_ASSETS');
+  for(const k of ['cloudRunBuilds','cloudRunDeploys','rulesDeploys','hrWrites','productionDeploys','firestoreDirectWrites'])check(r[k]===0,'LATEST_HOSTING_ZERO_'+k);
+  check(r.hostingDeploys===1&&r.productionUnchanged===true&&r.production===false&&r.i4Authorized===false&&r.phaseAComplete===false,'LATEST_HOSTING_NONTERMINAL');
+  check(latest.path===h.receiptPath&&latest.gitBlob===h.receiptBlob&&latest.runId===h.runId&&latest.runNumber===h.runNumber,'LATEST_HOSTING_EXECUTION_IDENTITY');
+  for(const k of ['sourceSha','sourceTree','artifactId','artifactDigest'])check(Boolean(r[k])&&latest[k]===r[k],'LATEST_HOSTING_EXECUTION_'+k);
+  check(latest.production===false,'LATEST_HOSTING_EXECUTION_PRODUCTION');
+  return {pass:failures.length===0,failures,sourceSha:h.sourceSha,hostingOnly:true};
+}

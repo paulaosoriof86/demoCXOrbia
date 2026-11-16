@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "cxorbia.i3.control-qa-scope.v1",
+  "createdAt": "2026-11-16T01:20:12.957657+00:00",
+  "productSourceSha": "ef708259616da70b5adea2fa85d9abc34a5222c2",
+  "productSourceTree": "b7adbf36633d8ec614d70232cecf28a4f2e81d58",
+  "productDelta": [],
+  "qaOnly": true,
+  "allowedControlFiles": [
+    ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs",
+    "tools/qa/cxorbia-i3-hr-ack-exact-same-revision.mjs",
+    "tools/qa/cxorbia-i3-terminal-hr-observation.test.mjs",
+    "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+  ],
+  "exactBlobs": {
+    ".github/workflows/cxorbia-recovery-i3-dev-certification.yml": "b822acbc62983eab75c30a50f3f59de1f8f395ef",
+    "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs": "bba839899b000d38fcc1fbadb1c4188e2385666a",
+    "tools/qa/cxorbia-i3-hr-ack-exact-same-revision.mjs": "b0d6db9b91e6856f6d2edb99aa06ff0798c693a2",
+    "tools/qa/cxorbia-i3-terminal-hr-observation.test.mjs": "f4cc1cc1075827e4a45b6a6153b767676f5fdae9",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.mjs": "9b8222b3c2831d803e284ca14671c0464a1c9a45",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs": "d8753435c704e0f06c21f5133e1febf12c715bd9",
+    "tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs": "9cbb4e47f21a1ba9e0b1a804ca75a468353954d8"
+  },
+  "testEvidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_C3_FOCAL_PROGRESS_AND_B14_TESTS_20261116.tap",
+    "gitBlob": "5b38388d13aa0d1b310c8eceabba9d0eaeac99ac",
+    "tests": 21,
+    "pass": 21,
+    "fail": 0
+  },
+  "b11ProgressReceipt": "Store exact18 Dashboard stage observations immediately before any later route can fail; no fullB11/domain/global gate inferred. Country label and full IDsets remain mandatory.",
+  "b14Scope": "Read-only provider binding/identity/capability metadata from existing C3/certify; exactruntimeSA or already-permitted impersonation; no secret payload/cells/HR/Firestore/IAM writes; final HR, runtime,Hosting and configuration updateTime unchanged; canEdit does not imply remoteACK.",
+  "functionalStatus": "B14_HOLD_UNTIL_REAL_PROVIDER_ACK_REPLAY_CONCURRENCY_PROOF",
+  "newJobs": 0,
+  "newCandidates": 0,
+  "builds": 0,
+  "deploys": 0,
+  "production": false,
+  "latestHostingAckGuardRepair": {
+    "classification": "MAPPING_FAILURE",
+    "observedFailure": "POSTDEPLOY_SEAL_MISMATCH:latestQAProductSource",
+    "rootCause": "Latest exact Hosting-only source ACK compared to immutable paired predecessor source instead of its own exact immutable provider receipt.",
+    "scope": "CONTROL_QA_ONLY_NO_PRODUCT_CHANGE",
+    "preserved": "RUN2541 paired seal immutable; RUN2542 current Hosting ACK unchanged",
+    "proof": "67 focal alias tests PASS, including digest/receipt/run/asset/terminal and predecessor-relabel negative cases",
+    "testLogPath": "docs/checkpoints/CXORBIA_I3_RUN2542_LATEST_HOSTING_ACK_GUARD_TESTS_20261116.tap",
+    "controlOwnerBlobs": {
+      "tools/qa/cxorbia-i3-current-authority-alias-guard.mjs": "9b8222b3c2831d803e284ca14671c0464a1c9a45",
+      "tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs": "d8753435c704e0f06c21f5133e1febf12c715bd9",
+      "tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs": "9cbb4e47f21a1ba9e0b1a804ca75a468353954d8"
+    },
+    "testLogGitBlob": "b27f5eab430a2306a6a4af1f41d70ccbe9099c00"
+  }
+}

@@ -140,12 +140,13 @@ async function collectDashboardStageReadback(page){
     const chip=page.locator('[data-fase="'+country+'|'+stage+'"]');
     if(await chip.count()!==1)throw Error('FUNCTIONAL_DEFECT:B11_STAGE_TILE_MISSING:'+country+':'+stage);
     const label=await chip.evaluate(el=>String(el.firstElementChild?.textContent||'').trim());
+    const countryLabel=await chip.evaluate(el=>String(el.parentElement?.previousElementSibling?.textContent||'').trim().replace(/\s+\(\d+\)$/,''));
     if(!/^\d+$/.test(label))throw Error('FUNCTIONAL_DEFECT:B11_STAGE_COUNTER_INVALID');
     const visibleCount=Number(label);await chip.click();
     const modal=page.locator('.cx-ov[role="dialog"]');await modal.waitFor({state:'visible',timeout:15000});
     if(await modal.count()!==1||await modal.locator('#drBody').count()!==1)throw Error('FUNCTIONAL_DEFECT:B11_STAGE_DETAIL_NOT_OPEN');
     const title=String(await modal.getAttribute('aria-label')),parts=title.split(' · '),modalCount=Number(parts.at(-1));
-    if(parts.at(-2)!==stage||!/^\d+$/.test(parts.at(-1))||modalCount!==visibleCount)throw Error('FUNCTIONAL_DEFECT:B11_STAGE_MODAL_TITLE_COUNT');
+    if(!countryLabel||parts.slice(0,-2).join(' · ')!==countryLabel||parts.at(-2)!==stage||!/^\d+$/.test(parts.at(-1))||modalCount!==visibleCount)throw Error('FUNCTIONAL_DEFECT:B11_STAGE_MODAL_TITLE_COUNT');
     const modalIds=await modal.locator('#drBody tr[data-vrow]').evaluateAll(rows=>rows.map(el=>el.getAttribute('data-vrow')));
     const observed=await page.evaluate(()=>({projectId:CX.data.currentProjectId,periodId:CX.data.currentPeriodId,route:CX.session?.view,
       sourceRevision:CX.data.previewMeta?.sourceRevision,hrRevision:CX.data.__liveHrSourceRevision,authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true}));
@@ -375,7 +376,10 @@ async function signInMember(member,kind,route,options={}){
     if(pageErrors.length||info.debug||info.lab||info.blocked||info.technicalVisible||info.projectId!==projectId||info.periodId!==periodId||info.sourceRevision!==hrRevision||info.route!==r)throw new Error('FUNCTIONAL_DEFECT:'+kind+'_ROUTE_'+r+':'+JSON.stringify({pageErrors,info}));
     if(options.isMobile===true&&(info.scrollWidth>info.innerWidth+2||!info.mobileIdentity?.visible))throw new Error('VISUAL_DEFECT:'+kind+'_MOBILE_'+r+':'+JSON.stringify(info));
     if(r==='dashboard'){
-      if(kind==='admin'&&options.isMobile!==true)info.dashboardStages=await collectDashboardStageReadback(page);
+      if(kind==='admin'&&options.isMobile!==true){
+        info.dashboardStages=await collectDashboardStageReadback(page);evidence.dashboardStages=info.dashboardStages;
+        fs.writeFileSync(OUT+'/b11-dashboard-stages.json',JSON.stringify({schemaVersion:'cxorbia.i3.b11.dashboard-stage-live.v1',decision:'PASS_SCOPED_B11_CURRENT_PERIOD_STAGE_IDENTITIES',sourceSha,sourceTree:process.env.I3_CERTIFICATION_SOURCE_TREE||null,runtimeRevision:process.env.DEV_REVISION||null,runtimeDigest:process.env.RUNTIME_DIGEST||null,hostingVersion:process.env.HOSTING_VERSION_NAME||null,...info.dashboardStages,fullDomain:false,fullB11:false,phaseAComplete:false,production:false,providerWrites:0,hrWrites:0},null,2)+'\n');
+      }
       for(const [code,p] of [['GT',info.phaseGT],['HN',info.phaseHN]]){
         const e=reference?.countries?.[code];
         if(!e)throw new Error('SOURCE_FAILURE:DASHBOARD_REFERENCE_MISSING_'+code);

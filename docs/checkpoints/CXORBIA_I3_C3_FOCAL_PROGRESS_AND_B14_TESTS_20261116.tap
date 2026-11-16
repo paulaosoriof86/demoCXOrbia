@@ -1,0 +1,29 @@
+✔ G05 valid read-only observation passes without inventing reconciliation ACK (1.485574ms)
+✔ invalid HR observation remains blocked: ok=false (0.450385ms)
+✔ invalid HR observation remains blocked: revision=stale (0.181578ms)
+✔ invalid HR observation remains blocked: sourceSafe=false (0.131264ms)
+✔ invalid HR observation remains blocked: refreshError=timeout (0.150632ms)
+✔ invalid HR observation remains blocked: writes=true (0.153336ms)
+✔ invalid HR observation remains blocked: hrWrites=true (0.145695ms)
+✔ invalid HR observation remains blocked: production=true (0.207677ms)
+✔ invalid HR observation remains blocked: writes=undefined (0.208057ms)
+✔ an old ACK cannot disguise invalid current HR observation (1.142889ms)
+✔ active terminal preflight invokes the observation predicate and preserves revision stability (3.97345ms)
+✔ B14 runtime authority rejects another revision or image and never projects env values (0.676209ms)
+✔ B14 does not substitute source fallback when runtime override exists: FIREBASE_SERVICE_ACCOUNT_JSON (0.147067ms)
+✔ B14 does not substitute source fallback when runtime override exists: CXORBIA_HR_LIVE_SHEET_ID (0.106818ms)
+✔ B14 uses only the agreeing sealed reader constants with no override (0.281756ms)
+✔ B14 principal resolution uses only public identity accessors, never credentials (0.168449ms)
+✔ B14 canEdit cannot certify an ACK, write execution or domain completion (0.123923ms)
+✔ B14 wrong identity, wrong workbook and missing metadata cannot prove edit capability (0.147919ms)
+✔ B14 permission diagnostics retain status/reason and exclude tokens, headers and error payloads (0.766362ms)
+✔ B14 binding requires exact tenant/project/workbook and never exposes secretRef payload (0.283358ms)
+✔ B14 mode keeps the existing HR read-only CLI contract operational (138.597835ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 271.807916

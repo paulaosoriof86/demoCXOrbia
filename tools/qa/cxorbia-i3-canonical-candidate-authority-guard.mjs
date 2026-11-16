@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {validateShockContinuity} from './cxorbia-i3-shock-continuity-guard.mjs';
-import {validateCurrentAuthorityAliases} from './cxorbia-i3-current-authority-alias-guard.mjs';
+import {validateCurrentAuthorityAliases,validateLatestExecutionSource} from './cxorbia-i3-current-authority-alias-guard.mjs';
 
 const DESCRIPTOR='CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json';
 const WORKFLOW='.github/workflows/cxorbia-recovery-i3-dev-certification.yml';
@@ -244,8 +244,8 @@ if(fs.existsSync('CXORBIA_I3_ANTI_BUCLE_CIERRE_EXECUTION_LOCK_2026-10-21.json'))
  // lastExecutionReceipt advances with later read-only QA (RUN2151/2152/...) and
  // must not be mistaken for a replacement materialization or cause a false FAIL.
  same(s.receiptPath,t.receiptPath,'sealedMaterializationReceiptPath');
- if(p.lastExecutionReceipt?.sourceSha)
-   same(p.lastExecutionReceipt.sourceSha,s.mode==='PREDECESSOR_SERVING_PENDING_SOURCE'?s.sourceSha:d.productSourceSha,'latestQAProductSource');
+ const latestExecution=validateLatestExecutionSource({descriptor:d,pointer:p,gitBlob:path=>git('rev-parse','HEAD:'+path),readJson});
+ if(!latestExecution.pass)fail('RELEASE_COMPOSITION_FAILURE:POSTDEPLOY_SEAL_MISMATCH','latestQAProductSource:'+latestExecution.failures.join(','));
  same(s.sourceSha,receipt.source?.sha,'receiptSource');
  same(s.sourceTree,receipt.source?.tree,'receiptTree');
  // Accept the current materialization, never a hardcoded prior finding as release authority.

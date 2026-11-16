@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {validateCurrentAuthorityAliases} from './cxorbia-i3-current-authority-alias-guard.mjs';
+import {validateCurrentAuthorityAliases,validateLatestExecutionSource} from './cxorbia-i3-current-authority-alias-guard.mjs';
 
 const fixture=()=>{
   const action='source served DEV; next B8 and B9',blocker='B8_B9_HOLD',source='b'.repeat(40),tree='c'.repeat(40),blob='d'.repeat(40),path='ledger-v608.json';
@@ -255,3 +255,32 @@ for(const [name,mutate,code] of [
  ['stale matrix hash',v=>v.ledger.currentTruth.moduleTruthGitBlob='old','CURRENT_TRUTH_MATRIX_BLOB_DESYNC'],
  ['stale nested current pointer',v=>v.pointer.currentCanonicalControl.matrix.path='old.json','CURRENT_CANONICAL_CONTROL_POINTER_DESYNC']
 ])test('reject accumulated alias drift: '+name,()=>{const v=fixture();mutate(v);assert.ok(validateCurrentAuthorityAliases(v).failures.includes(code));});
+
+const latestHostingAckFixture=()=>{
+ const h={receiptPath:'hosting.json',receiptBlob:'b'.repeat(40),sourceSha:'c'.repeat(40),sourceTree:'d'.repeat(40),runId:2,runNumber:2,runtimeRevision:'runtime-1',runtimeDigest:'sha256:'+ 'e'.repeat(64),hostingVersion:'sites/dev/versions/2',hostingRelease:'release-2'};
+ const r={schemaVersion:'cxorbia.i3.hosting-only-dev-exact-ack.v1',decision:'PASS_I3_CURRENT_SOURCE_HOSTING_DEV_ONLY',sourceSha:h.sourceSha,sourceTree:h.sourceTree,runNumber:h.runNumber,workflowRunId:h.runId,runtimeRevision:h.runtimeRevision,runtimeDigest:h.runtimeDigest,hostingAfter:h.hostingVersion,hostingRelease:h.hostingRelease,artifactId:123,artifactDigest:'sha256:'+ 'f'.repeat(64),sourceHostedExact:true,verifiedServedAssetCount:1,servedSha256:{'app.js':'a'.repeat(64)},cloudRunBuilds:0,cloudRunDeploys:0,rulesDeploys:0,hrWrites:0,productionDeploys:0,firestoreDirectWrites:0,hostingDeploys:1,productionUnchanged:true,production:false,i4Authorized:false,phaseAComplete:false};
+ const d={productSourceSha:h.sourceSha,productTreeAuthority:h.sourceTree,postDeployRunSeal:{mode:'PREDECESSOR_SERVING_PENDING_SOURCE',sourceSha:'a'.repeat(40),runtimeRevision:h.runtimeRevision,runtimeDigest:h.runtimeDigest},currentHostingOnlyDevMaterialization:h};
+ const p={currentHostingOnlyDevMaterialization:structuredClone(h),lastExecutionReceipt:{kind:'EXACT_HOSTING_ONLY_DEV_ACK_NOT_FUNCTIONAL_CERTIFICATE',path:h.receiptPath,gitBlob:h.receiptBlob,runId:h.runId,runNumber:h.runNumber,sourceSha:h.sourceSha,sourceTree:h.sourceTree,artifactId:r.artifactId,artifactDigest:r.artifactDigest,production:false}};
+ return {descriptor:d,pointer:p,receipt:r,gitBlob:path=>path==='hosting.json'?'b'.repeat(40):'',readJson:path=>path==='hosting.json'?r:{}};
+};
+test('latest Hosting ACK advances to exact frontend source while paired runtime seal remains immutable',()=>{
+ const v=latestHostingAckFixture(),before=JSON.stringify(v.descriptor.postDeployRunSeal);assert.equal(validateLatestExecutionSource(v).pass,true);assert.equal(JSON.stringify(v.descriptor.postDeployRunSeal),before);
+});
+for(const [name,change]of [
+ ['runtime digest',v=>{v.descriptor.currentHostingOnlyDevMaterialization.runtimeDigest='wrong';v.pointer.currentHostingOnlyDevMaterialization.runtimeDigest='wrong';v.receipt.runtimeDigest='wrong';}],
+ ['predecessor source relabel',v=>{v.pointer.lastExecutionReceipt.sourceSha=v.descriptor.postDeployRunSeal.sourceSha;}],
+ ['missing source',v=>{delete v.pointer.lastExecutionReceipt.sourceSha;}],
+ ['receipt path',v=>{v.pointer.lastExecutionReceipt.path='other.json';}],
+ ['receipt blob',v=>{v.pointer.lastExecutionReceipt.gitBlob='wrong';}],
+ ['execution run',v=>{v.pointer.lastExecutionReceipt.runId=3;}],
+ ['receipt run',v=>{v.receipt.workflowRunId=3;}],
+ ['artifact digest',v=>{v.pointer.lastExecutionReceipt.artifactDigest='wrong';}],
+ ['receipt Hosting',v=>{v.receipt.hostingAfter='other';}],
+ ['runtime write',v=>{v.receipt.cloudRunDeploys=1;}],
+ ['terminal claim',v=>{v.receipt.phaseAComplete=true;}],
+ ['unverified assets',v=>{v.receipt.verifiedServedAssetCount=2;}],
+ ['unrelated latest kind',v=>{v.pointer.lastExecutionReceipt.kind='OTHER';}]
+])test('latest Hosting ACK rejects '+name+' even when source SHA agrees',()=>{const v=latestHostingAckFixture();change(v);assert.equal(validateLatestExecutionSource(v).pass,false);});
+test('paired predecessor latest receipt remains accepted without fabricating a Hosting ACK',()=>{
+ const v=latestHostingAckFixture();v.pointer.lastExecutionReceipt={kind:'CI_EXACT_DEV_MATERIALIZATION_NOT_HUMAN_ACCEPTANCE',sourceSha:v.descriptor.postDeployRunSeal.sourceSha,sourceTree:'1'.repeat(40),path:'paired.json',gitBlob:'2'.repeat(40),runId:1,runNumber:1,production:false};assert.equal(validateLatestExecutionSource(v).pass,true);assert.equal(validateLatestExecutionSource(v).hostingOnly,false);
+});

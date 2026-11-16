@@ -1,0 +1,134 @@
+{
+  "cloudRunBuilds": 0,
+  "cloudRunDeploys": 0,
+  "decision": "PASS_I3_CURRENT_SOURCE_HOSTING_DEV_ONLY",
+  "firestoreDirectWrites": 0,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "hostingAfter": "sites/cxorbia-backend-dev/versions/39c320c9d9f35f97",
+  "hostingBefore": "sites/cxorbia-backend-dev/versions/06d56b9d8b271d63",
+  "hostingDeploys": 1,
+  "hrWrites": 0,
+  "phaseAComplete": false,
+  "productionDeploys": 0,
+  "productionIndexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+  "productionUnchanged": true,
+  "rulesDeploys": 0,
+  "runtimeDigest": "sha256:d5ada4fe17a7e5e00a51bc09b601fbabcfd2f1b3203b8a379f86daa4207f5fe2",
+  "runtimeRevision": "cxorbia-live-hr-dev-00372-56c",
+  "sourceSha": "ef708259616da70b5adea2fa85d9abc34a5222c2",
+  "sourceTree": "b7adbf36633d8ec614d70232cecf28a4f2e81d58",
+  "servedSha256": {
+    "adapters/tya-protected-auth-hr-authority-bridge-v2.js": "c7ef63985272f465df147293f67c1e3cce0e8ebcdad38a9ddd17a9bc24dff51e",
+    "adapters/tya-c6-unified-human-runtime-v1.js": "cb49d8ea742b96ca867d5eeb8de96e28a66a603134df40ea7ffa1dbad05751cf",
+    "adapters/cxorbia-cxdata-command-boundary-v1.js": "d3ff79efd31d5d1b1ad906d68cfbe2f3db6da18d75daf444aa701567f700c58b",
+    "index-backend-dev.html": "38460409bee133f1f746156de1e1e5fa3d5db0c7a22c6d0d0b36a64f947c0479",
+    "core/backend-firebase.js": "2aca1f072f3cbffb993bb149b155aaeb5a175210ccd8dcea578615a39e6441d3",
+    "core/router.js": "d302cbadd2e427919330a8c4e81ebe04ca67e898dcc1f6a7e85445f4f74bb9c3",
+    "adapters/tya-live-source-refresh-watch-v2.js": "3eb1d2e35bab4c80d7d7d8922969581d61a17e67f07e5b4aeaaea783a765c194",
+    "modules/hr-source.js": "62907bc1e18b46247c9e35ae299404e2f7e61cd8bcfbb0973adbc224f1983255",
+    "modules/shoppers.js": "b985cc833635944d48bd77f66a501cb6136a1dfc898f892de2501635a65f2150",
+    "modules/beneficios.js": "2c1763b65ef055eecd56e3622033d53c9946f679e758d06be797b7e854b6b419",
+    "modules/clientes.js": "7260fa6c2ef5eccc0eea3cf43bc9cf5c06af2be4cc923742e45876e21480ad1e",
+    "modules/historico.js": "cab99b87798f385d6cf71cc63bef144b5fc7cb6c55bf31ba101817ade07e2819",
+    "modules/visitas.js": "4c8ec643438a3e812455781303fed798b4c1a267aecd079adc4bbc555efc999b",
+    "modules/cuestionario-shopper.js": "576272660a6b7cf96055587de39ee172df6ebc9147711a5cf0f17d0a8c943388",
+    "modules/cert.js": "51b0a06b53cdf38437137a390cd624bb6270721b973eebd1d03e425dfce6f344",
+    "core/data.js": "f80436b1254a9eb6021b18b05aec82ec64c325c8b45130bc06880ef01914e76f",
+    "core/backend-certifications.js": "826b6775b2be46c606d271e04085fee2d4a34bab778c05fa6ad88dc00a1d05ad",
+    "modules/midia.js": "9084290ad4a627eae457d6e8a31f83a9348f49d0f1e991018120f913b3491e5c",
+    "modules/misvisitas.js": "a51799d5ac24f516d429b84ff8d79987dc3eeea6aea4c6484e39b01a43b56597",
+    "core/finanzas-core.js": "c61e7f193992a4e6a60b9417a0ad3cdf3b82f3b06f5a569c25ce1caf0089b971",
+    "modules/marca.js": "bfeb16f3244149f870dc1b796978863b4da5bcbda9a8981af0497b214ec50836",
+    "modules/administrabilidad.js": "0e2e591c8d73f2faf7924eb8e38813fed77b92676ac01220b4dbc5c74ded9f5a",
+    "modules/configuracion.js": "6241a0f272cab3dc12476720d56d0fa6da6da4190cc352532022fd26f79df86d",
+    "modules/cliente-insights.js": "85f46c12b60042c72f24f220c225433b40caf732a638520ddecb606d0c135e51",
+    "modules/dashboard.js": "20d9f6856e473757901645cdba1082bf94b78bcf998cba64e0616a13412a46c8",
+    "adapters/cxorbia-command-adapter-v1.js": "e842f91fa880ee378534100550e54584da0b696fa12ee155336b4ea8ab77c2b4",
+    "core/backend-bulletins.js": "e07d4ff05b8cd2263ebfb47cbc8004ba0ec6c2c24b66ba8c7dcd0754298683e8",
+    "sw.js": "f82b9d97fab9b153b3489585d8ab46a0102623c0f16704388b166348f8feabfa"
+  },
+  "verifiedServedAssetCount": 28,
+  "sourceHostedExact": true,
+  "rawRuntimeDigest": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:d5ada4fe17a7e5e00a51bc09b601fbabcfd2f1b3203b8a379f86daa4207f5fe2",
+  "schemaVersion": "cxorbia.i3.hosting-only-dev-exact-ack.v1",
+  "workflowRunId": 43783783015,
+  "runNumber": 2542,
+  "workflowUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43783783015",
+  "jobId": 133026979381,
+  "controlSha": "9373479877a0ec4ee9a11a0a7abf01ca4f3abd4c",
+  "artifactId": 14189422625,
+  "artifactDigest": "sha256:295f0d3938f1b9e195580b93e1bab77d9f876fc9a61ef6fb91b8fc293fa99203",
+  "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794790993861000",
+  "sourceQa": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2542_SOURCE_QA_20261116/source-qa-receipt.json",
+    "gitBlob": "b483b8119280a091f1723f4dc5f3c8a013c0ffce",
+    "sha256": "89fb967c7876a1c6d487a0c55ea022f4943a049f9a143abf5f5ccc5308378488",
+    "artifactId": 14189532220,
+    "artifactDigest": "sha256:73e1dabfecea68a5cbf069ea6354078d9d02c86d839e3acf99e82fd5493634e7",
+    "runId": 43783783015,
+    "sourceSha": "ef708259616da70b5adea2fa85d9abc34a5222c2",
+    "sourceTree": "b7adbf36633d8ec614d70232cecf28a4f2e81d58",
+    "controlSha": "9373479877a0ec4ee9a11a0a7abf01ca4f3abd4c",
+    "testsPass": 266,
+    "testsFail": 0,
+    "owners": 20,
+    "scope": "SOURCE_QA_ONLY_NOT_E2E_OR_HUMAN_ACCEPTANCE"
+  },
+  "rawEvidence": {
+    "readback.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2542_VERIFIED_HOSTING_EVIDENCE_20261116/readback.json",
+      "gitBlob": "4ad2e3309a92177e8e002bd45a37afccbc9eb55f",
+      "sha256": "66f3f762efdf6cfd831d7ddf7bdbdda6902203b99dd39449b3d687de8a623963"
+    },
+    "hosting-before.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2542_VERIFIED_HOSTING_EVIDENCE_20261116/hosting-before.json",
+      "gitBlob": "f172f677905fd13c6c2f3e108a249ea5e3138151",
+      "sha256": "c4458ea35affbb5d35ffdcce349d634ad963a15c97f00eea48b76bade8d45743"
+    },
+    "hosting-after.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2542_VERIFIED_HOSTING_EVIDENCE_20261116/hosting-after.json",
+      "gitBlob": "48e25ab7b7a2b3f319b77bd457d75934777a011a",
+      "sha256": "a49a9d73ead1202cc976441b2b537c9503c8df23b24432eda4fc7b70da3f2fc6"
+    },
+    "runtime-before.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2542_VERIFIED_HOSTING_EVIDENCE_20261116/runtime-before.json",
+      "gitBlob": "9f159af0eed7e947bf3d60d542ab505240ec5536",
+      "sha256": "ab6b417800f94fd7bcc6d01dde4e71b404a98370e30fbf07d22367d156f7e95d"
+    },
+    "runtime-after.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2542_VERIFIED_HOSTING_EVIDENCE_20261116/runtime-after.json",
+      "gitBlob": "9f159af0eed7e947bf3d60d542ab505240ec5536",
+      "sha256": "ab6b417800f94fd7bcc6d01dde4e71b404a98370e30fbf07d22367d156f7e95d"
+    },
+    "revision-before.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2542_VERIFIED_HOSTING_EVIDENCE_20261116/revision-before.json",
+      "gitBlob": "beb49cd1f63d7edd54804451f3c554e94a983e41",
+      "sha256": "285919c59536168d359927a70f11fd23bb53f53843ca5066b00bffb7502c4809"
+    },
+    "revision-after.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2542_VERIFIED_HOSTING_EVIDENCE_20261116/revision-after.json",
+      "gitBlob": "beb49cd1f63d7edd54804451f3c554e94a983e41",
+      "sha256": "285919c59536168d359927a70f11fd23bb53f53843ca5066b00bffb7502c4809"
+    },
+    "source-hosting-files.sha256": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2542_VERIFIED_HOSTING_EVIDENCE_20261116/source-hosting-files.sha256",
+      "gitBlob": "6b0a4f55f3634cc55f3dc65cf87f8ae9188c9d05",
+      "sha256": "ef99acdd90c149b3bd05ecdd53a3a7d9d82846c994f87015290d016801414966"
+    },
+    "source-hosting-manifest.sha256": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2542_VERIFIED_HOSTING_EVIDENCE_20261116/source-hosting-manifest.sha256",
+      "gitBlob": "603366199f70a30bb4a6aca582968c1e4a8dce96",
+      "sha256": "37ae9d12bbed49a7a688545a2d5fe4b48349e821ef6a9b0b4003a6a659c55ae9"
+    }
+  },
+  "production": false,
+  "i4Authorized": false,
+  "authenticatedAdminShopperE2E": "PENDING_CURRENT_SUCCESSOR_REPROOF",
+  "b11StageLiveReadback": "PENDING_EXACT18_CASES",
+  "c3CurrentSourceReaudit": "PENDING",
+  "newModuleCertified": 0,
+  "humanAcceptance": "NO_NEW_ACCEPTANCE_B4_B7_PRESERVED",
+  "verification": "Both artifact ZIP digests independently verified;all28served files equal exactsourceGitbytes;unchanged runtime/revision/digest/traffic andproductionindex;266canonicalsourceQA20owners. No currentB11orF09functionalPASS inferred.",
+  "verifiedAt": "2026-11-16T01:10:37.869288+00:00"
+}
