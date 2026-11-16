@@ -255,7 +255,7 @@ async function runHrDurableRevisionDiagnostic(){
   const save=()=>fs.writeFileSync(out+'/result.json',JSON.stringify(r,null,2)+'\n');save();
   const endpoint=host+'/api/'+encodeURIComponent(tenantId)+'/'+encodeURIComponent(projectId)+'/hr-live',get=async format=>{const response=await fetch(endpoint+'?format='+format+'&hrdiag='+e.GITHUB_RUN_ID+'-'+Date.now(),{headers:{'cache-control':'no-cache, no-store'},signal:AbortSignal.timeout(90000)});check(response.ok,'PROVIDER_FAILURE:HR_DIAG_HTTP');return response.json();};
   const time=t=>t&&Number.isInteger(t.seconds)?{seconds:t.seconds,nanoseconds:t.nanoseconds}:null,stamp=t=>typeof t==='string'&&/^\d{4}-\d\d-\d\dT/.test(t)?t:time(t),state=v=>typeof v==='string'&&/^[A-Za-z0-9_-]{1,100}$/.test(v)?v:null,counts=o=>Object.fromEntries(Object.entries(o||{}).filter(([,v])=>typeof v==='boolean'||typeof v==='number'&&Number.isFinite(v)));
-  let exactBinding=null,readServing=null;
+  let exactBinding=null,readServing=null,nameTargets=[];
   try{
     if(e.QA_RO==='true'){
       const read=p=>JSON.parse(fs.readFileSync(p,'utf8')),git=(...args)=>execFileSync('git',args,{encoding:'utf8'}).trim();
@@ -266,6 +266,8 @@ async function runHrDurableRevisionDiagnostic(){
       exactBinding=validateHrUidDiagnosticBinding({descriptor:d,pointer:p,receipt,sourceSha:s(e.FOCAL_SOURCE),sourceTree:s(e.FOCAL_TREE),receiptBlob:git('hash-object',seal.receiptPath),treeExact:git('rev-parse',e.FOCAL_SOURCE+'^{tree}')===e.FOCAL_TREE,
         productDiffClean:!git('diff','--name-only',e.FOCAL_SOURCE,'HEAD','--','app','backend','firebase.json','.firebaserc','firestore.rules','storage.rules'),branchName:e.GITHUB_REF_NAME,writeGate:s(e.CXORBIA_I3_QA_ISOLATED_WRITE_GATE)});
       r.exactDevBinding=exactBinding;
+      nameTargets=Array.isArray(d.hrUidReadOnlyRequest?.nameAuthorityTargets)?d.hrUidReadOnlyRequest.nameAuthorityTargets:[];
+      check(nameTargets.length<=2&&nameTargets.every(x=>['sourceShopperId','canonicalShopperId'].every(k=>/^[A-Za-z0-9_-]{1,120}$/.test(s(x?.[k])))),'SOURCE_FAILURE:HR_NAME_DIAG_SCOPE');
       check(/^[a-z0-9-]+$/.test(e.REGION||'')&&e.SERVICE,'SOURCE_FAILURE:HR_UID_READONLY_RUNTIME_ENV');
       readServing=async()=>{
         const token=await getApps()[0].options.credential.getAccessToken(),base='https://'+e.REGION+'-run.googleapis.com/apis/serving.knative.dev/v1/namespaces/'+encodeURIComponent(e.PROJECT);
@@ -299,8 +301,45 @@ async function runHrDurableRevisionDiagnostic(){
       const l=lock.data()||{};return {tenantIdHash:hash(tenantId),projectIdHash:hash(projectId),independentHR:{periodId:expectedPeriodId,periodKey:s(live.periodKey),state:state(live.estado||live.status),shopperPresent:!!s(live.shopperId)},durable:{pathHash:hash(visitRef.path),exists:visit.exists,updateTime:time(visit.updateTime),tenantMatches:row.tenantId===tenantId,projectMatches:row.projectId===projectId,periodId:row.periodId||null,periodMatches:row.periodId===expectedPeriodId,hrSourceRevision:row.hrSourceRevision||null,revisionMatches:row.hrSourceRevision===revision,state:state(row.estado||row.status),shopperPresent:!!s(row.shopperId),assignmentSource:state(row.assignmentSource),assignmentSyncStatus:state(row.assignmentSyncStatus),version:Number.isFinite(row.version)?row.version:null},reconciliationLock:{exists:lock.exists,updateTime:time(lock.updateTime),status:state(l.status),projectMatches:l.projectId===projectId,receiptPathHash:l.receiptPath?hash(l.receiptPath):null,expiresAt:Number.isFinite(l.expiresAt)?l.expiresAt:null},actors};
     },{readOnly:true});
     Object.assign(r,observation);const {b14ReconciliationLeaseReadOnly,hrCrosswalkUidReadOnly}=await import('./cxorbia-i3-hr-ack-exact-same-revision.mjs');r.reconciliationLeaseDetail=await b14ReconciliationLeaseReadOnly(db,tenantId,projectId,revision);save();
-    if(r.reconciliationLeaseDetail.receipt?.stageResults?.shoppers?.code==='SHOPPER_CROSSWALK_UID_CONFLICT'){
+    if(e.QA_RO==='true'||r.reconciliationLeaseDetail.receipt?.stageResults?.shoppers?.code==='SHOPPER_CROSSWALK_UID_CONFLICT'){
       r.shopperCrosswalkDiagnosis=await hrCrosswalkUidReadOnly({db,auth:getAuth(),snapshot:{...hr,_runtime:response._runtime},tenantId,projectId,revision,sourceDir:s(e.SOURCE_DIR)||process.cwd()});save();
+    }
+
+    if(nameTargets.length){
+      const privateResponse=await get('json&view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV'),privateHr=privateResponse.snapshot||privateResponse.data||privateResponse;
+      check(privateResponse._runtime?.revision===revision&&privateHr.operationalIdentityPreview===true&&privateHr.operationalIdentityScope==='display_name_only'&&privateHr.shoppers?.length===hr.shoppers?.length,'SOURCE_FAILURE:HR_NAME_DIAG_INDEPENDENT_AUTHORITY');
+      const norm=v=>s(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').toLowerCase(),name=row=>s(row?.nombre||row?.name||row?.displayName||row?.fullName);
+      r.nameAuthorityDiagnosis=[];
+      for(const target of nameTargets){
+        const sourceId=s(target.sourceShopperId),canonicalId=s(target.canonicalShopperId),ids=[...new Set([sourceId,canonicalId])];
+        const sourceRows=privateHr.shoppers.filter(x=>s(x.shopperId||x.id)===sourceId),canonicalRows=privateHr.shoppers.filter(x=>s(x.shopperId||x.id)===canonicalId);
+        check(sourceRows.length===1&&canonicalRows.length===1,'SOURCE_FAILURE:HR_NAME_DIAG_EXACT_ID_COUNT');
+        const read=()=>db.runTransaction(async tx=>{
+          const profiles=await tx.getAll(...ids.map(id=>tenant.collection('shoppers').doc(id))),crosses=await tx.getAll(...ids.map(id=>tenant.collection('shopperIdentityCrosswalk').doc(id)));
+          const links=await tx.get(tenant.collection('shopperIdentityLinks').where('canonicalShopperId','==',canonicalId).limit(9));
+          check(links.size<9,'SOURCE_FAILURE:HR_NAME_DIAG_LINK_BOUND');
+          const project=(doc)=>({id:doc.id,path:doc.ref.path,exists:doc.exists,updateTime:time(doc.updateTime),data:doc.data()||{}});
+          const refs=[...new Set([...profiles.map(x=>s(x.data()?.identityAuthorityRef)),...links.docs.map(x=>s(x.data()?.authorityRef||x.data()?.adjudicationId))].filter(Boolean))];
+          check(refs.length<=8&&refs.every(x=>/^[A-Za-z0-9_-]{1,200}$/.test(x)),'SOURCE_FAILURE:HR_NAME_DIAG_RECEIPT_BOUND');
+          const receipts=refs.length?await tx.getAll(...refs.map(id=>tenant.collection('commandReceipts').doc(id))):[];
+          return{profiles:profiles.map(project),crosses:crosses.map(project),links:links.docs.map(project),receipts:receipts.map(project)};
+        },{readOnly:true});
+        const first=await read(),profile=first.profiles.find(x=>x.id===canonicalId),p=profile.data,full=name(p),firstLast=[s(p.firstName),s(p.lastName||p.apellido)].filter(Boolean).join(' ');
+        const {collectTenantAdjudications}=await import('./cxorbia-i3-terminal-human-contract.mjs');
+        const crossTargets=new Map(first.crosses.filter(x=>x.exists&&s(x.data.shopperId)).map(x=>[x.id,new Set([s(x.data.shopperId)])])),commandReceipts=new Map(first.receipts.map(x=>[x.id,x]));
+        const authority=collectTenantAdjudications(first.links.map(x=>({...x.data,id:x.id,_documentPath:x.path})),{tenantId,projectId,crossTargets,commandReceipts});
+        const second=await read();check(hash(first)===hash(second),'PERSISTENCE_FAILURE:HR_NAME_DIAG_CHANGED_DURING_READ');
+        r.nameAuthorityDiagnosis.push({sourceShopperId:sourceId,canonicalShopperId:canonicalId,hrRevision:revision,authorityReadStable:true,profileExists:profile.exists,profileUpdateTime:profile.updateTime,
+          sourceNamePresent:!!name(sourceRows[0]),canonicalHrNamePresent:!!name(canonicalRows[0]),profileNamePresent:!!full,
+          profileNameEqualsSourceHr:norm(full)===norm(name(sourceRows[0])),profileNameEqualsCanonicalHr:norm(full)===norm(name(canonicalRows[0])),sourceAndCanonicalHrNamesEqual:norm(name(sourceRows[0]))===norm(name(canonicalRows[0])),
+          profileNameEqualsFirstLast:norm(full)===norm(firstLast),firstLastEqualsCanonicalHr:norm(firstLast)===norm(name(canonicalRows[0])),firstLastEqualsSourceHr:norm(firstLast)===norm(name(sourceRows[0])),
+          profileNameHash:hash(norm(full)),sourceHrNameHash:hash(norm(name(sourceRows[0]))),canonicalHrNameHash:hash(norm(name(canonicalRows[0]))),firstLastHash:hash(norm(firstLast)),
+          profileIdentityAuthority:state(p.identityAuthority),profileAuthorityRefHash:p.identityAuthorityRef?hash(p.identityAuthorityRef):null,profileHrRevision:s(p.hrSourceRevision),profileSelfDisplayNameVerified:p.__selfDisplayNameVerified===true||p.selfDisplayNameVerified===true,displayNameAuthority:state(p.displayNameAuthority),
+          sourceAliasApprovedToCanonical:authority.targets[sourceId]===canonicalId,canonicalSelfApproved:authority.targets[canonicalId]===canonicalId,
+          links:authority.evidence.filter(x=>[sourceId,canonicalId].includes(x.sourceId)),rejected:authority.rejected,
+          referencedReceipts:first.receipts.map(x=>({idHash:hash(x.id),exists:x.exists,updateTime:x.updateTime,status:state(x.data.status),commandType:x.data.commandType==='shopper.identity.adjudicate'?'shopper.identity.adjudicate':null,providerAck:x.data.providerAck===true,identityConsolidated:x.data.identityConsolidated===true,canonicalMatches:s(x.data.shopperId)===canonicalId,keeperUidFingerprint:/^[a-f0-9]{64}$/.test(s(x.data.keeperUidFingerprint))?x.data.keeperUidFingerprint:null,commandDigest:/^[a-f0-9]{64}$/.test(s(x.data.commandDigest))?x.data.commandDigest:null,externalHrSourceLinks:Number.isInteger(x.data.externalHrSourceLinks)?x.data.externalHrSourceLinks:null})),
+          rawNamesPublished:false});
+      }save();
     }
     const after=await get('meta');validateTerminalHrObservation(after);r.sourceRevisionAfter=after.revision;check(after.revision===revision,'PROVIDER_FAILURE:HR_DIAG_REVISION_DRIFT');
     if(readServing)r.exactDevAfter=await readServing();

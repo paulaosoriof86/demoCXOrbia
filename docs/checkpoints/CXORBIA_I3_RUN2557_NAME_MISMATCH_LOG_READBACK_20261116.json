@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "cxorbia.i3.human-name-mismatch-readback.v1",
+  "runId": 43814920143,
+  "jobId": 133125427325,
+  "jobConclusion": "failure",
+  "sourceSha": "38f16525c791b355e8f68a6f798defd9bc89ab37",
+  "sourceTree": "9c67dbf660131539fa9c635c699b30229ca199d2",
+  "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+  "mismatch": {
+    "classification": "MAPPING_FAILURE",
+    "code": "ADMIN_REAL_SHOPPER_IDENTITY_NOT_RENDERABLE",
+    "count": 1,
+    "sourceShopperId": "shopper_gt_0a363269ad",
+    "renderedShopperId": "shopper_gt_0a363269ad",
+    "mappedShopperId": "shopper_gt_0a363269ad",
+    "lookupAuthority": "exact_live_id",
+    "exactDirectCount": 1,
+    "renderedRowExists": true,
+    "approvedTenantAdjudicationPresent": false,
+    "otherObservedApprovedAlias": {
+      "sourceId": "shopper_gt_f726f2eb34",
+      "canonicalId": "shopper_gt_0a363269ad"
+    },
+    "ownerNotYetProven": true,
+    "qaFalsePositiveNotAssumed": true,
+    "profileNameOrHumanDecisionNotChanged": true
+  },
+  "observedCounts": {
+    "visits": 792,
+    "shoppers": 198,
+    "hrCanonicalShoppers": 197,
+    "platformOnly": 1,
+    "duplicateShopperIds": 0,
+    "technicalPrimaryNames": 0,
+    "unresolvedAuthorityCount": 1,
+    "unresolvedReviewMismatches": 0
+  },
+  "rawEncodedLogLine": "2026-11-16T06:17:26.6532130Z I3_FIRST_BLOCKER=***\"classification\":\"MAPPING_FAILURE\",\"code\":\"ADMIN_REAL_SHOPPER_IDENTITY_NOT_RENDERABLE\",\"summary\":***\"visits\":792,\"shoppers\":198,\"hrShoppers\":197,\"expectedCanonicalHrShoppers\":197,\"rawHrReferences\":238,\"platformOnly\":1,\"platformBadFlags\":0,\"platformCrossProject\":0,\"duplicateShopperIds\":0,\"periods\":18,\"project\":\"cinepolis\",\"revision\":\"fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630\",\"protectedNames\":0,\"realNames\":198,\"technicalPrimaryNames\":0,\"nameMismatches\":[\"shopper_gt_0a363269ad\"],\"nameMismatchDetails\":[***\"sourceShopperId\":\"shopper_gt_0a363269ad\",\"renderedShopperId\":\"shopper_gt_0a363269ad\",\"mappedShopperId\":\"shopper_gt_0a363269ad\",\"lookupAuthority\":\"exact_live_id\",\"exactDirectCount\":1,\"approvedTenantAdjudicationPresent\":false,\"approvedTenantAdjudicationTarget\":null,\"renderedRowExists\":true,\"classification\":\"MAPPING_FAILURE_REQUIRES_EXACT_OWNER_PROOF\"***],\"tenantAdjudicationOverrides\":[***\"sourceId\":\"shopper_gt_018ca3e794\",\"canonicalId\":\"shopper_gt_bd74ace936\"***,***\"sourceId\":\"shopper_gt_0757b1eeb4\",\"canonicalId\":\"shopper_gt_7c8b7cbdbf\"***,***\"sourceId\":\"shopper_gt_0b2f66d821\",\"canonicalId\":\"shp-3669abbb015a\"***,***\"sourceId\":\"shopper_gt_0c0ba8856e\",\"canonicalId\":\"shopper_gt_2ace80aa68\"***,***\"sourceId\":\"shopper_gt_0e5eac2a4a\",\"canonicalId\":\"shp-08d2865bd6f8\"***,***\"sourceId\":\"shopper_gt_117b1b39de\",\"canonicalId\":\"shopper_gt_5eb6ba4913\"***,***\"sourceId\":\"shopper_gt_118bc2a3f6\",\"canonicalId\":\"shp-3669abbb015a\"***,***\"sourceId\":\"shopper_gt_17c3a1dfeb\",\"canonicalId\":\"shp-617c03c14233\"***,***\"sourceId\":\"shopper_gt_1f90bb8a75\",\"canonicalId\":\"shp-58a449f10a07\"***,***\"sourceId\":\"shopper_gt_2c6d1482e1\",\"canonicalId\":\"shopper_gt_338ec57592\"***,***\"sourceId\":\"shopper_gt_3023959720\",\"canonicalId\":\"shopper_gt_2e8200a26e\"***,***\"sourceId\":\"shopper_gt_3106d9d44b\",\"canonicalId\":\"shp-0780f6f085b1\"***,***\"sourceId\":\"shopper_gt_3426ec3ff3\",\"canonicalId\":\"shopper_gt_5eb6ba4913\"***,***\"sourceId\":\"shopper_gt_34d33a3054\",\"canonicalId\":\"shp-08d2865bd6f8\"***,***\"sourceId\":\"shopper_gt_350d7b017d\",\"canonicalId\":\"shp-5bf5c61e327d\"***,***\"sourceId\":\"shopper_gt_3528b0fb90\",\"canonicalId\":\"shp-97e82ee24afb\"***,***\"sourceId\":\"shopper_gt_3c14073969\",\"canonicalId\":\"shp-09f607e5c39f\"***,***\"sourceId\":\"shopper_gt_471d1b8dd5\",\"canonicalId\":\"shopper_gt_319cd82eaf\"***,***\"sourceId\":\"shopper_gt_5233bd64ee\",\"canonicalId\":\"shp-d3d494b5233b\"***,***\"sourceId\":\"shopper_gt_54b5ca83eb\",\"canonicalId\":\"shopper_gt_fdf0826c58\"***,***\"sourceId\":\"shopper_gt_5f3d6952c5\",\"canonicalId\":\"shopper_gt_338ec57592\"***,***\"sourceId\":\"shopper_gt_61501eaff4\",\"canonicalId\":\"shp-02fc264de8d6\"***,***\"sourceId\":\"shopper_gt_64265e8115\",\"canonicalId\":\"shp-6a8134bb3bde\"***,***\"sourceId\":\"shopper_gt_7f23f9a093\",\"canonicalId\":\"shp-b2e3d7bef69b\"***,***\"sourceId\":\"shopper_gt_81de8fb0a2\",\"canonicalId\":\"shopper_gt_bd74ace936\"***,***\"sourceId\":\"shopper_gt_833dc86954\",\"canonicalId\":\"shopper_manual_0128fa3781a58c3a9219fc54\"***,***\"sourceId\":\"shopper_gt_86254c4228\",\"canonicalId\":\"shopper_gt_0c198c1055\"***,***\"sourceId\":\"shopper_gt_9905177db9\",\"canonicalId\":\"shp-97e82ee24afb\"***,***\"sourceId\":\"shopper_gt_a27341e5f2\",\"canonicalId\":\"shp-3c2353c661eb\"***,***\"sourceId\":\"shopper_gt_a55e5b3e9b\",\"canonicalId\":\"shopper_gt_0b19085086\"***,***\"sourceId\":\"shopper_gt_b7afe05305\",\"canonicalId\":\"shopper_gt_37adac8f58\"***,***\"sourceId\":\"shopper_gt_c342b8c62e\",\"canonicalId\":\"shopper_gt_7c8b7cbdbf\"***,***\"sourceId\":\"shopper_gt_c80e9b53ec\",\"canonicalId\":\"shopper_gt_fdf0826c58\"***,***\"sourceId\":\"shopper_gt_cc094b28c2\",\"canonicalId\":\"shp-5bf5c61e327d\"***,***\"sourceId\":\"shopper_gt_ce6a976e54\",\"canonicalId\":\"shp-58a449f10a07\"***,***\"sourceId\":\"shopper_gt_d5ebad6b6c\",\"canonicalId\":\"shopper_gt_2e8200a26e\"***,***\"sourceId\":\"shopper_gt_dc08e0f710\",\"canonicalId\":\"shp-b1ccc3d673fb\"***,***\"sourceId\":\"shopper_gt_dc7098fd00\",\"canonicalId\":\"shp-09f607e5c39f\"***,***\"sourceId\":\"shopper_gt_e121686a7e\",\"canonicalId\":\"shp-b2e3d7bef69b\"***,***\"sourceId\":\"shopper_gt_eaa6f8aa33\",\"canonicalId\":\"shp-0780f6f085b1\"***,***\"sourceId\":\"shopper_gt_ee24b84bc7\",\"canonicalId\":\"shopper_gt_c73b3f0753\"***,***\"sourceId\":\"shopper_gt_ee7c8b2ee8\",\"canonicalId\":\"shp-02fc264de8d6\"***,***\"sourceId\":\"shopper_gt_f65cbc6391\",\"canonicalId\":\"shp-58a449f10a07\"***,***\"sourceId\":\"shopper_gt_f726f2eb34\",\"canonicalId\":\"shopper_gt_0a363269ad\"***,***\"sourceId\":\"shopper_gt_fa80514323\",\"canonicalId\":\"shp-6a8134bb3bde\"***,***\"sourceId\":\"shopper_gt_fc5d6fb927\",\"canonicalId\":\"shopper_gt_2e8200a26e\"***,***\"sourceId\":\"shopper_hn_03156fc84c\",\"canonicalId\":\"shopper_hn_08ca073ce4\"***,***\"sourceId\":\"shopper_hn_2d5d71b664\",\"canonicalId\":\"shp-bd52dbd547e6\"***,***\"sourceId\":\"shopper_hn_59bbac6a32\",\"canonicalId\":\"shp-6a435eeba1ed\"***,***\"sourceId\":\"shopper_hn_7a5a21048b\",\"canonicalId\":\"shopper_hn_634b09c120\"***,***\"sourceId\":\"shopper_hn_83460e68ba\",\"canonicalId\":\"shp-b40366080ab9\"***,***\"sourceId\":\"shopper_hn_99cb2f9b05\",\"canonicalId\":\"shopper_hn_ff2ec7a471\"***,***\"sourceId\":\"shopper_hn_a7da259c01\",\"canonicalId\":\"shp-6a435eeba1ed\"***,***\"sourceId\":\"shopper_hn_b5aabb7d48\",\"canonicalId\":\"shr-1780546721757-j04i\"***,***\"sourceId\":\"shopper_hn_ba49cafa91\",\"canonicalId\":\"shopper_hn_97aebe51ee\"***,***\"sourceId\":\"shopper_hn_c76575f9a1\",\"canonicalId\":\"shr-1780546721757-j04i\"***,***\"sourceId\":\"shopper_hn_d7025c0ded\",\"canonicalId\":\"shp-b40366080ab9\"***,***\"sourceId\":\"shopper_hn_d9d4214283\",\"canonicalId\":\"shp-bd52dbd547e6\"***,***\"sourceId\":\"shopper_hn_fc52fabe94\",\"canonicalId\":\"shopper_manual_17fe3567633211e77b951a6c\"***],\"unresolvedAuthorityCount\":1,\"unresolvedReviewMismatches\":[],\"runtimeOutOfRange\":3,\"expectedOutOfRange\":3***,\"identityAuthority\":\"operational_hr_display_name_only\"***",
+  "origin": "SEMANTIC_PROJECTION_FROM_EXACT_MASKED_JOB_LOG_LINE_NOT_ARTIFACT_EXTRACTION",
+  "jobLogSha256": "de046d3a1ae217c562e3affaa5929a52d80324f1c4b74268a60d98b15274d930",
+  "production": false,
+  "phaseAComplete": false
+}
