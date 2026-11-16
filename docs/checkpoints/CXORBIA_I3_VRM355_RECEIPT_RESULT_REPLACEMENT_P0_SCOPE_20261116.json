@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-proven-pre-edit-scope.v1",
+  "createdAt": "2026-11-16T06:58:57Z",
+  "iteration": "I3",
+  "findingId": "VRM-355",
+  "priority": "P0_PROVEN",
+  "classification": "PERSISTENCE_FAILURE",
+  "state": "PROVEN_BEFORE_PRODUCT_EDIT",
+  "sourceSha": "38f16525c791b355e8f68a6f798defd9bc89ab37",
+  "sourceTree": "9c67dbf660131539fa9c635c699b30229ca199d2",
+  "controlHead": "26bea72f9328235970107ed4c069a6d8a85545a0",
+  "owner": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+  "ownerGitBlob": "40f61ed3e17bf1ea027d1c3ab228d15d1b0f91f6",
+  "allowedProductFiles": [
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs"
+  ],
+  "evidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2561_HR_UID_NAME_READBACK_20261116.json",
+    "gitBlob": "60a1832c8106a11bb8c35d5bd1e49beebf51fd67",
+    "sha256": "6d4d8b68c031cabc61131d65631a8f16abe4df1763c7d9a4864ab2f40400dba8"
+  },
+  "cause": "Terminal receipt set(...,{merge:true}) recursively preserves result.stages.shoppers.code from a partial predecessor when new success summary omits code. Actual same receipt is committed, current stage committed and census238/238; nested old code remains. Test double incorrectly uses shallow merge and hides actual Firestore map semantics.",
+  "correction": "Replace only top-level status/result/completedAt with explicit mergeFields in the two existing terminal writes; retain lease guard, control-write counters and receipt identity/metadata. Correct the test double to Firestore recursive merge and field replacement, then prove partial-to-committed retry and catch output consistency.",
+  "historicalReceipt": "Existing already-committed receipt is immutable history and replay remains zero-write. A separately authorized existing native HR sync will produce a new receipt on the same revision after the paired DEV deployment; require coherent durable result. No silent history rewrite.",
+  "requiredTests": [
+    "Firestore fake deep merge retains omitted leaf but mergeFields replaces selected entire map",
+    "partial shopper UID conflict retry commits without old code in response/durable receipt/replay",
+    "root digest actor scope idempotency and predecessor preserved",
+    "catch replaces stale result content and retains other receipt fields",
+    "same command replay zero writes",
+    "canonical Node CI"
+  ],
+  "prohibited": [
+    "new reconciliation epoch",
+    "silent committed receipt rewrite",
+    "loss of old journal",
+    "credential reset",
+    "direct profile overwrite",
+    "new workflow or deploy lane",
+    "production deploy"
+  ],
+  "production": false
+}

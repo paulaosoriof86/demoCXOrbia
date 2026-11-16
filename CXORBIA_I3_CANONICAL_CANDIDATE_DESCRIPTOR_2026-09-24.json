@@ -224,8 +224,8 @@
   "productSourceSha": "38f16525c791b355e8f68a6f798defd9bc89ab37",
   "productTreeAuthority": "9c67dbf660131539fa9c635c699b30229ca199d2",
   "predecessorProductSourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V665_2026-11-16.json",
-  "findingsLedgerExpectedGitBlob": "5c258d3478a9b1fac9bd35589fc67350a3e5f396",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V666_2026-11-16.json",
+  "findingsLedgerExpectedGitBlob": "5f8b22fc168326c4d44b45481f07dd41273b69f5",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -244,11 +244,11 @@
     "observedC3ArtifactDigest": "sha256:515da7c9963e851fc1b3bec03bc00624955592cd900e88346b0b46df12f7d083",
     "observedResult": "THREE_PATHS_MATCHED_PRETERMINAL_HOLD"
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261116-V338.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261116-V339.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "C3_0_PATH_BOUND_SOURCE_PROOF_GAPS_0_OWNER_PROOF_0_BLOB_PROVENANCE_0_MAPPING__21_SOURCE_READY__VRM354_CANONICAL_FULL_NAME_LOSS_P0_PROVEN_EXACT_LIVE_READBACK_PENDING",
+  "activeBlocker": "C3_0_PATH_BOUND_SOURCE_PROOF_GAPS_0_OWNER_PROOF_0_BLOB_PROVENANCE_0_MAPPING__21_SOURCE_READY__VRM354_NAME_AND_VRM355_RESULT_P0_PROVEN__UID238_MATCH",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -350,7 +350,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-355",
+  "nextFindingId": "VRM-356",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -363,7 +363,7 @@
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
   "historicalExactNextActionPreS1": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "I3: consume the already requested exact DEV HR/UID/name readback; correct only VRM354 canonical full-name loss in the proven shopper provider, preserve ADMIN003 and keeper credentials, pass causal/Node tests and publish once through the existing paired DEV lane. Verify actual HR349 repair and unchanged identity, then rerun human/focal/PRE and complete the remaining frozen D08/C09/C10/B14/full-domain clauses before strict21/G20/G21 and I4.",
+  "exactNextAction": "I3: publish the single scoped VRM354 full-name and VRM355 receipt-result correction after causal/Node proofs; use the existing paired DEV lane once. Run existing native same-HR sync to restore the proven canonical name while preserving keeper Auth/login/claims, verify a new coherent receipt and exact-key zero-effect replay, complete the whole journal and actual login checks, then human/focal/PRE and remaining frozen D08/C09/C10/B14/full-domain clauses before strict21/G20/G21 and I4.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3519,7 +3519,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "41f803c159b8aed805571c95d2eaf0ea88d0f1d0",
+  "moduleTruthExpectedGitBlob": "bb63edb63a6ea45b94de051bece2c07fba508178",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -17758,7 +17758,7 @@
     "qaContinuityGuardState": "V23_INITIAL_CONTROL_FAIL_CORRECTION_PENDING"
   },
   "priorStatusBeforeRootRun2222": "HOLD_VRM309_DEV_MATERIALIZED_ROLE_E2E_PENDING",
-  "nextExactAction": "I3: consume the already requested exact DEV HR/UID/name readback; correct only VRM354 canonical full-name loss in the proven shopper provider, preserve ADMIN003 and keeper credentials, pass causal/Node tests and publish once through the existing paired DEV lane. Verify actual HR349 repair and unchanged identity, then rerun human/focal/PRE and complete the remaining frozen D08/C09/C10/B14/full-domain clauses before strict21/G20/G21 and I4.",
+  "nextExactAction": "I3: publish the single scoped VRM354 full-name and VRM355 receipt-result correction after causal/Node proofs; use the existing paired DEV lane once. Run existing native same-HR sync to restore the proven canonical name while preserving keeper Auth/login/claims, verify a new coherent receipt and exact-key zero-effect replay, complete the whole journal and actual login checks, then human/focal/PRE and remaining frozen D08/C09/C10/B14/full-domain clauses before strict21/G20/G21 and I4.",
   "i3Nov06SourceOnlyFocal": {
     "sourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
     "predecessorDevSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
@@ -18173,7 +18173,7 @@
     "sourceTestsFail": 0,
     "production": false
   },
-  "updatedAt": "2026-11-16T06:41:11Z",
+  "updatedAt": "2026-11-16T06:58:57Z",
   "previousCurrentMaterializationBeforeRun2248": {
     "builds": 1,
     "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
@@ -19196,12 +19196,12 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261116-V338.json",
-      "gitBlob": "41f803c159b8aed805571c95d2eaf0ea88d0f1d0"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261116-V339.json",
+      "gitBlob": "bb63edb63a6ea45b94de051bece2c07fba508178"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V665_2026-11-16.json",
-      "gitBlob": "5c258d3478a9b1fac9bd35589fc67350a3e5f396"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V666_2026-11-16.json",
+      "gitBlob": "5f8b22fc168326c4d44b45481f07dd41273b69f5"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2557_C3_CERTIFY_ATTEMPT_20261116.json",
@@ -27313,8 +27313,8 @@
     "i4Authorized": false
   },
   "hrUidReadOnlyRequest": {
-    "enabled": true,
-    "state": "REQUESTED_AFTER_RUN2557",
+    "enabled": false,
+    "state": "COMPLETED_RUN2561",
     "scope": "HR_DURABLE_REVISION_READONLY",
     "production": false,
     "providerWrites": 0,
@@ -27337,7 +27337,12 @@
         "sourceShopperId": "shopper_gt_f726f2eb34",
         "canonicalShopperId": "shopper_gt_0a363269ad"
       }
-    ]
+    ],
+    "readback": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2561_HR_UID_NAME_READBACK_20261116.json",
+      "gitBlob": "60a1832c8106a11bb8c35d5bd1e49beebf51fd67",
+      "sha256": "6d4d8b68c031cabc61131d65631a8f16abe4df1763c7d9a4864ab2f40400dba8"
+    }
   },
   "run2551QaCorrection": {
     "path": "docs/checkpoints/CXORBIA_I3_RUN2551_FINAL_HR_RETRY_AND_UID_AUTHORITY_QA_20261116.json",
@@ -27726,5 +27731,15 @@
     "path": "docs/checkpoints/CXORBIA_I3_VRM354_CANONICAL_FULL_NAME_P0_SCOPE_20261116.json",
     "gitBlob": "59c20b42b12070fabb6426949adda9ec4e34441c",
     "sha256": "5fc90e70f7f99cee4a8eed898384e897d38372aa1b1febfe8848f21b2c0aa149"
+  },
+  "run2561HrUidNameReadback": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2561_HR_UID_NAME_READBACK_20261116.json",
+    "gitBlob": "60a1832c8106a11bb8c35d5bd1e49beebf51fd67",
+    "sha256": "6d4d8b68c031cabc61131d65631a8f16abe4df1763c7d9a4864ab2f40400dba8"
+  },
+  "vrm355PreEditScope": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM355_RECEIPT_RESULT_REPLACEMENT_P0_SCOPE_20261116.json",
+    "gitBlob": "87a8cb3a4fd78c6572c996ea35af710df27aba88",
+    "sha256": "9abe7c91b141ba648607118453f89c6984a19e7551e649e33fe04d4746208bb6"
   }
 }
