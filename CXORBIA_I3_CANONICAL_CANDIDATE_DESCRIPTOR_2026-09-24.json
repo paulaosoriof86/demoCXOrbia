@@ -29496,5 +29496,20 @@
     "runId": 43969895087,
     "decision": "PASS_EXACT_DEV_C3_PENDING",
     "production": false
+  },
+  "c3Run2573ReadOnlyPreterminal": {
+    "state": "PASS_C3_PRETERMINAL_COMPOSITION_LOCAL_READONLY_NOT_TERMINAL",
+    "observedAt": "2026-11-16T23:32:20.179Z",
+    "sourceSha": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
+    "sourceTree": "b927ae81b1a3fd9eaf6f5ed2fe904a365678f3c7",
+    "moduleCount": 21,
+    "matchModules": 5,
+    "sourceReadyModuleCount": 21,
+    "pendingFileCount": 0,
+    "pendingMappingApprovalCount": 0,
+    "pendingBlobProvenanceCount": 0,
+    "terminalEligible": true,
+    "production": false,
+    "scope": "LOCAL_PRETERMINAL_PROOF_ONLY_TRIGGER_NATIVE_CANONICAL_GITHUB_C3"
   }
 }
