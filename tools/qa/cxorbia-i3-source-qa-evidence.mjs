@@ -6,6 +6,8 @@ import {execFileSync,spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 
 export const SOURCE_OWNER_SUITES=Object.freeze([
+  {id:'shopper-keeper-authority',owners:['backend/runtime/cxorbia-shopper-command-provider-v1.mjs'],
+    tests:['backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs']},
   {id:'human-project-scope',owners:['app/adapters/tya-c6-unified-human-runtime-v1.js','app/adapters/tya-protected-auth-hr-authority-bridge-v2.js'],
     tests:['tools/qa/cxorbia-i3-human-project-scope.test.mjs']},
   {id:'frontend-behavior',owners:['app/core/programa.js','app/core/ui.js','app/modules/periodos.js','app/modules/configuracion.js','app/modules/cliente-insights.js',

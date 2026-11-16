@@ -583,6 +583,76 @@ function snapshotCollisionPolicies({shoppers,exactIdentityMap,authUsers,tenantId
   return policies;
 }
 
+
+// VRM-353: a retired principal is not a new identity choice. Rebind an existing
+// exact alias only when the committed keeper adjudication and its retirement
+// targets agree. Every Firestore authority is re-read in the write transaction.
+function keeperLinkInScope(link,tenantId,projectId){
+  const scope=str(link?.projectScope||link?.scope?.projectId||link?.projectId||'*');
+  return str(link?.tenantId||link?.scope?.tenantId)===tenantId&&
+    ACTIVE_IDENTITY_LINK_STATES.has(str(link?.status||link?.state).toLowerCase())&&
+    TRUSTED_IDENTITY_AUTHORITIES.has(str(link?.authorityType||link?.authority?.type).toLowerCase())&&
+    !!str(link?.authorityRef||link?.authority?.evidenceRef||link?.authority?.adjudicationId||link?.authority?.providerRef||link?.authority?.commandId||link?.providerAckRef||link?.adjudicationId||link?.commandId||link?.idempotencyKey)&&
+    !(link?.periodKey||link?.periodId||link?.periodScope)&&
+    (scope==='*'||scope.toLowerCase()==='tenant'||scope===projectId)&&
+    str(link?.sourceSystem||link?.sourceNamespace||link?.sourceType||link?.sourceIdentity?.sourceSystem).toLowerCase().includes('hr');
+}
+async function retiredKeeperCrosswalkAuthority({auth,tenant,users,tenantId,projectId,shopperId,sourceShopperId,uid,profile,member,cross,read=ref=>ref.get(),expected=null}){
+  const conflict=()=>{throw new Error('SHOPPER_CROSSWALK_UID_CONFLICT');};
+  const fingerprint=providerUidFingerprint(uid),oldFingerprint=str(cross.providerUidFingerprint),authorityRef=str(profile.identityAuthorityRef);
+  if(sourceShopperId===shopperId||str(cross.tenantId)!==tenantId||str(cross.shopperId)!==shopperId||
+    str(cross.sourceStableKey)!==sourceShopperId||str(cross.sourceType)!=='hr_external'||
+    str(cross.identityMode)!=='provider_exact_identity_link'||cross.fuzzyMatching===true||
+    !/^[a-f0-9]{64}$/.test(oldFingerprint)||oldFingerprint===fingerprint||
+    str(profile.tenantId)!==tenantId||str(profile.shopperId||profile.id)!==shopperId||
+    !uniq(profile.projectIds).includes(projectId)||profile.identityState==='superseded_exact_alias'||
+    str(profile.identityAuthority)!=='tenant_adjudication'||!/^[a-f0-9]{40}$/.test(authorityRef)||
+    !exactShopperMembership(member,tenantId,shopperId,projectId)||
+    str(member.providerUidFingerprint)!==fingerprint||
+    (expected&&(expected.authorityRef!==authorityRef||expected.oldFingerprint!==oldFingerprint)))conflict();
+  const [canonicalCrossSnap,receiptSnap,retiredMatches,canonicalMembers,linkSnaps,decisionSnaps]=await Promise.all([
+    read(tenant.collection('shopperIdentityCrosswalk').doc(shopperId)),
+    read(tenant.collection('commandReceipts').doc(authorityRef)),
+    read(users.where('providerUidFingerprint','==',oldFingerprint).limit(2)),
+    read(users.where('shopperId','==',shopperId)),
+    read(tenant.collection('shopperIdentityLinks')),
+    read(tenant.collection('shopperIdentityReviewResolutions'))
+  ]);
+  const canonicalCross=canonicalCrossSnap.data()||{},receipt=receiptSnap.data()||{};
+  const active=arr(canonicalMembers.docs).filter(doc=>exactShopperMembership(doc.data()||{},tenantId,shopperId,projectId));
+  const retiredDocs=arr(retiredMatches.docs);
+  if(!canonicalCrossSnap.exists||str(canonicalCross.tenantId)!==tenantId||str(canonicalCross.shopperId)!==shopperId||
+    str(canonicalCross.sourceStableKey)!==shopperId||str(canonicalCross.providerUidFingerprint)!==fingerprint||
+    str(canonicalCross.identityAuthority)!=='tenant_adjudication'||str(canonicalCross.identityAuthorityRef)!==authorityRef||
+    !receiptSnap.exists||str(receipt.status)!=='committed'||str(receipt.commandType)!=='shopper.identity.adjudicate'||
+    receipt.providerAck!==true||receipt.identityConsolidated!==true||str(receipt.shopperId)!==shopperId||
+    str(receipt.keeperUidFingerprint)!==fingerprint||!str(receipt.actorUid)||!/^[a-f0-9]{64}$/.test(str(receipt.commandDigest))||
+    !/^irl_[a-f0-9]{32}$/.test(str(receipt.identityLinkId))||Number(receipt.retiredPrincipalCount)<1||
+    active.length!==1||active[0].id!==uid||retiredDocs.length!==1||retiredDocs[0].id===uid)conflict();
+  const oldDoc=retiredDocs[0],old=oldDoc.data()||{},links=arr(linkSnaps.docs);
+  const authorityLink=links.find(doc=>doc.id===receipt.identityLinkId)?.data()||{};
+  if(!keeperLinkInScope(authorityLink,tenantId,projectId)||str(authorityLink.canonicalShopperId)!==shopperId||
+    str(authorityLink.authorityType)!=='tenant_adjudication'||str(authorityLink.authorityRef)!==authorityRef||
+    authorityLink.providerAck!==true||authorityLink.humanConfirmed!==true||authorityLink.fuzzyMatching===true||
+    str(authorityLink.actorUidFingerprint)!==providerUidFingerprint(receipt.actorUid))conflict();
+  const sourceLinks=links.map(doc=>doc.data()||{}).filter(link=>keeperLinkInScope(link,tenantId,projectId)&&identityLinkTokens(link).includes(sourceShopperId));
+  if(!sourceLinks.length||sourceLinks.some(link=>str(link.canonicalShopperId||link.canonicalId||link.shopperId||link.profileId)!==shopperId))conflict();
+  if(arr(decisionSnaps.docs).some(doc=>{
+    const decision=doc.data()||{},ids=reviewIds(decision),scope=str(decision.projectScope||decision.projectId||'*');
+    return str(decision.status)==='resolved_distinct'&&(scope==='*'||scope==='tenant'||scope===projectId)&&
+      ids.includes(sourceShopperId)&&ids.includes(shopperId);
+  }))conflict();
+  if(str(old.tenantId)!==tenantId||str(old.role)!=='shopper'||str(old.authNamespace)!=='shopper'||
+    !uniq(old.projectIds).includes(projectId)||old.active!==false||str(old.status)!=='superseded'||
+    str(old.identityState)!=='superseded_exact_alias'||str(old.supersededByShopperId)!==shopperId||
+    str(old.supersededByUidFingerprint)!==fingerprint||str(old.providerUidFingerprint)!==oldFingerprint||
+    providerUidFingerprint(oldDoc.id)!==oldFingerprint)conflict();
+  const [keeperAuth,oldAuth]=await Promise.all([safeAuthByUid(auth,uid),safeAuthByUid(auth,oldDoc.id)]);
+  if(!keeperAuth||keeperAuth.disabled===true||!authPrincipalMatches(keeperAuth,tenantId,shopperId,projectId)||
+    !oldAuth||oldAuth.disabled!==true||!authPrincipalMatches(oldAuth,tenantId,str(old.shopperId),projectId))conflict();
+  return {authorityRef,oldFingerprint,retiredUid:oldDoc.id,retiredShopperId:str(old.shopperId),keeperUid:uid,keeperClaimsDigest:claimsDigest(keeperAuth.customClaims||{}),identityLinkId:receipt.identityLinkId};
+}
+
 async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers,collisionPolicy=null,aliasPolicy=null,repairStaleTenantAdjudicationCrosswalk=false}){
   const tenantId=str(candidate.tenantId),projectId=str(candidate.projectId),shopperId=str(candidate.shopperId),sourceShopperId=str(candidate.sourceShopperId||candidate.shopperId);
   if(!tenantId||!projectId||!shopperId||!sourceShopperId||!str(sourceRevision))throw new Error('SHOPPER_DURABLE_KEYS_REQUIRED');
@@ -647,16 +717,19 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers,
   });
   if(!credential.ok&&!exactExistingPrincipal)throw new Error(credential.reason);
 
+  let retiredKeeperRepair=null;
   if(crossBefore.exists){
     const crossTenantOk=str(existingCross.tenantId)===tenantId;
     const crossSourceOk=str(existingCross.sourceStableKey||sourceShopperId)===sourceShopperId;
     if(!exactAliasSelfMap&&!staleTenantAdjudicationCrosswalk&&(!crossTenantOk||str(existingCross.shopperId)!==shopperId||!crossSourceOk))throw new Error('SHOPPER_CROSSWALK_SCOPE_CONFLICT');
-    if(!exactAliasSelfMap&&!staleTenantAdjudicationCrosswalk&&str(existingCross.providerUidFingerprint)&&str(existingCross.providerUidFingerprint)!==providerUidFingerprint(uid))throw new Error('SHOPPER_CROSSWALK_UID_CONFLICT');
+    if(!exactAliasSelfMap&&!staleTenantAdjudicationCrosswalk&&str(existingCross.providerUidFingerprint)&&str(existingCross.providerUidFingerprint)!==providerUidFingerprint(uid)){
+      retiredKeeperRepair=await retiredKeeperCrosswalkAuthority({auth,tenant,users,tenantId,projectId,shopperId,sourceShopperId,uid,profile:existingProfile,member:existingMember,cross:existingCross});
+    }
   }
 
   let visibleLogin=str(existingMember.visibleLogin||existingProfile.visibleLogin||existingProfile.username||existingProfile.user).toLowerCase();
   let email=visibleLogin?internalEmail(tenantId,visibleLogin):str(user?.email).toLowerCase();
-  if(credential.ok){
+  if(credential.ok&&!retiredKeeperRepair){
     visibleLogin=verifiedKeeperLogin||await resolveVisibleLogin({
       auth,tenantId,shopperId,uid,baseLogin:credential.login,
       currentLogin:visibleLogin,currentEmail:str(user?.email),
@@ -680,7 +753,7 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers,
   }
   assertAuthIdentity(user,tenantId,aliasPrincipalMigration?sourceShopperId:shopperId);
 
-  if(credential.ok){
+  if(credential.ok&&!retiredKeeperRepair){
     const currentRule=str(existingMember.credentialRuleVersion||existingProfile.credentialRuleVersion);
     const currentLogin=str(existingMember.visibleLogin||existingProfile.visibleLogin||existingProfile.username||existingProfile.user).toLowerCase();
     const emailMatch=str(user.email).toLowerCase()===email.toLowerCase();
@@ -693,7 +766,8 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers,
 
   const currentClaims=user.customClaims||{},projectIds=uniq([...(currentClaims.projectIds||[]),...(existingMember.projectIds||[]),...(existingCross.projectIds||[]),...(existingProfile.projectIds||[]),...(dualPrincipalRetirement?(aliasMemberDoc.data()?.projectIds||[]):[]),projectId]);
   const claims=canonicalClaims(shopperId,tenantId,projectIds);
-  if(claimsDigest(currentClaims)!==claimsDigest(claims))await auth.setCustomUserClaims(uid,claims);
+  if(retiredKeeperRepair&&claimsDigest(currentClaims)!==claimsDigest(claims))throw new Error('SHOPPER_CROSSWALK_UID_CONFLICT');
+  if(!retiredKeeperRepair&&claimsDigest(currentClaims)!==claimsDigest(claims))await auth.setCustomUserClaims(uid,claims);
   if(dualPrincipalRetirement){
     if(!auth?.updateUser)throw new Error('SHOPPER_EXACT_ALIAS_AUTH_RETIRE_UNAVAILABLE');
     const retired=await auth.updateUser(aliasMemberDoc.id,{disabled:true});
@@ -719,8 +793,10 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers,
       repairStaleTenantAdjudicationCrosswalk===true&&sourceShopperId===shopperId&&crossSnap.exists&&txCrossTenantOk&&txCrossSourceOk&&
       str(cross.shopperId)!==shopperId&&str(cross.sourceType).toLowerCase()==='hr_external'&&
       txCrossMode==='provider_exact_identity_link'&&str(cross.migrationAuthorityType).toLowerCase()==='tenant_adjudication';
-    if(crossSnap.exists&&!txExactAliasSelfMap&&!txStaleTenantAdjudicationCrosswalk&&(str(cross.tenantId)!==tenantId||str(cross.shopperId)!==shopperId||str(cross.providerUidFingerprint)!==providerUidFingerprint(uid)))throw new Error('SHOPPER_CROSSWALK_CONFLICT');
+    const txRetiredKeeperRepair=retiredKeeperRepair?await retiredKeeperCrosswalkAuthority({auth,tenant,users,tenantId,projectId,shopperId,sourceShopperId,uid,profile,member,cross,read:ref=>tx.get(ref),expected:retiredKeeperRepair}):null;
+    if(crossSnap.exists&&!txExactAliasSelfMap&&!txStaleTenantAdjudicationCrosswalk&&!retiredKeeperRepair&&(str(cross.tenantId)!==tenantId||str(cross.shopperId)!==shopperId||str(cross.providerUidFingerprint)!==providerUidFingerprint(uid)))throw new Error('SHOPPER_CROSSWALK_CONFLICT');
     const unionProjects=uniq([...(profile.projectIds||[]),...(member.projectIds||[]),...(cross.projectIds||[]),...projectIds,projectId]);
+    if(txRetiredKeeperRepair&&txRetiredKeeperRepair.keeperClaimsDigest!==claimsDigest(canonicalClaims(shopperId,tenantId,unionProjects)))throw new Error('SHOPPER_CROSSWALK_UID_CONFLICT');
     const credentialCurrent=!credential.ok||(str(member.credentialRuleVersion)===CREDENTIAL_RULE_VERSION&&str(member.visibleLogin).toLowerCase()===visibleLogin&&str(member.credentialSweepVersion)===DURABLE_CREDENTIAL_SWEEP_VERSION&&str(member.credentialPasswordProofVersion)===CREDENTIAL_PASSWORD_PROOF_VERSION&&str(member.credentialPasswordRuleVersion)===CREDENTIAL_RULE_VERSION&&str(profile.credentialRuleVersion)===CREDENTIAL_RULE_VERSION&&str(profile.username||profile.user||profile.visibleLogin).toLowerCase()===visibleLogin&&str(profile.credentialSweepVersion)===DURABLE_CREDENTIAL_SWEEP_VERSION&&str(profile.credentialPasswordProofVersion)===CREDENTIAL_PASSWORD_PROOF_VERSION&&str(profile.credentialPasswordRuleVersion)===CREDENTIAL_RULE_VERSION);
     const crossCurrent=crossSnap.exists&&!txExactAliasSelfMap&&str(cross.shopperId)===shopperId&&str(cross.providerUidFingerprint)===providerUidFingerprint(uid);
     /* PRE-I4 cumulative anti-regression: same HR revision is not sufficient for idempotent replay
@@ -741,7 +817,7 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers,
     profilePatch.exactAliases=uniq([...(profile.exactAliases||[]),...(profilePatch.exactAliases||[])]);
     const selfManagedFields=uniq(profile.selfManagedFields||[]);
     selfManagedFields.forEach(key=>{if(Object.prototype.hasOwnProperty.call(profile,key))delete profilePatch[key];});
-    if(credential.ok){
+    if(credential.ok&&!retiredKeeperRepair){
       profilePatch.firstName=credential.firstName;
       profilePatch.lastName=credential.lastName;
       profilePatch.visibleLogin=visibleLogin;
@@ -762,8 +838,9 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers,
       if(adjudicatedLast)profilePatch.lastName=adjudicatedLast;
       if(adjudicatedName&&!technicalIdentityLabel(adjudicatedName,shopperId))profilePatch.nombre=adjudicatedName;
     }
-    const membership={active:true,tenantId,role:'shopper',authNamespace:'shopper',shopperId,projectIds:unionProjects,providerUidFingerprint:providerUidFingerprint(uid),claimsDigest:claimsDigest(canonicalClaims(shopperId,tenantId,unionProjects)),membershipVersion:'cxorbia-shopper-membership-v1',...(credential.ok?{visibleLogin,credentialRuleVersion:CREDENTIAL_RULE_VERSION,credentialState:'enrolled',credentialSweepVersion:DURABLE_CREDENTIAL_SWEEP_VERSION,credentialPasswordProofVersion:CREDENTIAL_PASSWORD_PROOF_VERSION,credentialPasswordRuleVersion:CREDENTIAL_RULE_VERSION,...(visibleLogin!==credential.login?{credentialDisambiguationPolicy:verifiedKeeperLogin?'verified_adjudicated_keeper_login':'deterministic_technical_suffix'}:{})}:{}),updatedAt:now()};
+    const membership={active:true,tenantId,role:'shopper',authNamespace:'shopper',shopperId,projectIds:unionProjects,providerUidFingerprint:providerUidFingerprint(uid),claimsDigest:claimsDigest(canonicalClaims(shopperId,tenantId,unionProjects)),membershipVersion:'cxorbia-shopper-membership-v1',...(credential.ok&&!retiredKeeperRepair?{visibleLogin,credentialRuleVersion:CREDENTIAL_RULE_VERSION,credentialState:'enrolled',credentialSweepVersion:DURABLE_CREDENTIAL_SWEEP_VERSION,credentialPasswordProofVersion:CREDENTIAL_PASSWORD_PROOF_VERSION,credentialPasswordRuleVersion:CREDENTIAL_RULE_VERSION,...(visibleLogin!==credential.login?{credentialDisambiguationPolicy:verifiedKeeperLogin?'verified_adjudicated_keeper_login':'deterministic_technical_suffix'}:{})}:{}),updatedAt:now()};
     const crosswalk={tenantId,shopperId,projectIds:unionProjects,authNamespace:'shopper',providerUidFingerprint:providerUidFingerprint(uid),sourceStableKey:sourceShopperId,identityMode:sourceShopperId===shopperId?'stable_hr_shopper_id':'provider_exact_identity_link',fuzzyMatching:false,sourceType:'hr_external',updatedAt:now()};
+    if(retiredKeeperRepair)Object.assign(crosswalk,{previousProviderUidFingerprint:retiredKeeperRepair.oldFingerprint,keeperSupersessionAuthority:'tenant_adjudication',keeperSupersessionAuthorityRef:retiredKeeperRepair.authorityRef,keeperSupersessionIdentityLinkId:retiredKeeperRepair.identityLinkId,keeperSupersessionRepairedAt:now()});
     if(txStaleTenantAdjudicationCrosswalk)Object.assign(crosswalk,{
       migrationAuthorityType:null,migrationAuthorityRef:null,migratedFromShopperId:null,
       identityRepairAuthority:'live_hr_exact_active_principal'
@@ -776,8 +853,21 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers,
       supersededByShopperId:shopperId,supersededByUidFingerprint:providerUidFingerprint(uid),
       supersededAt:now(),updatedAt:now()
     },{merge:true});
-    return {providerWrites:3+(credentialNormalized?1:0)+(dualPrincipalRetirement?2:0),idempotentReplay:false,projectIds:unionProjects,credentialNormalized,credentialRuleApplied:credential.ok,aliasMigrated:txExactAliasSelfMap,aliasPrincipalRetired:dualPrincipalRetirement,aliasAuthRetired,staleTenantAdjudicationCrosswalkRepaired:txStaleTenantAdjudicationCrosswalk};
+    return {providerWrites:3+(credentialNormalized?1:0)+(dualPrincipalRetirement?2:0),idempotentReplay:false,projectIds:unionProjects,credentialNormalized,credentialRuleApplied:credential.ok,aliasMigrated:txExactAliasSelfMap,aliasPrincipalRetired:dualPrincipalRetirement,aliasAuthRetired,staleTenantAdjudicationCrosswalkRepaired:txStaleTenantAdjudicationCrosswalk,retiredKeeperCrosswalkRepaired:!!retiredKeeperRepair};
   });
+  if(retiredKeeperRepair){
+    const [crossRead,keeperRead,oldRead]=await Promise.all([crossRef.get(),safeAuthByUid(auth,uid),safeAuthByUid(auth,retiredKeeperRepair.retiredUid)]);
+    const cross=crossRead.data()||{};
+    if(!crossRead.exists||str(cross.shopperId)!==shopperId||str(cross.providerUidFingerprint)!==providerUidFingerprint(uid)||
+      str(cross.keeperSupersessionAuthorityRef)!==retiredKeeperRepair.authorityRef||
+      !keeperRead||keeperRead.disabled===true||!authPrincipalMatches(keeperRead,tenantId,shopperId,projectId)||
+      claimsDigest(keeperRead.customClaims||{})!==claimsDigest(canonicalClaims(shopperId,tenantId,outcome.projectIds))||
+      !oldRead||oldRead.disabled!==true||!authPrincipalMatches(oldRead,tenantId,retiredKeeperRepair.retiredShopperId,projectId)){
+      const error=new Error('SHOPPER_RETIRED_KEEPER_POSTCOMMIT_READBACK_CONFLICT');
+      Object.assign(error,{providerAck:false,partial:true,providerWrites:Number(outcome.providerWrites||0),confirmedRepairWrites:Number(outcome.providerWrites||0)});
+      throw error;
+    }
+  }
   return {shopperId,sourceShopperId,uid,authCreated,visibleLogin:visibleLogin||null,aliasPrincipalMigrated:aliasPrincipalMigration,...outcome};
 }
 
@@ -1360,9 +1450,39 @@ async function durableIdentityAdjudication({auth,db,command,actor,canonicalShopp
   const keeperClaims=canonicalClaims(canonicalShopperId,tenantId,unionProjects),keeperUid=keeper.doc.id,keeperFingerprint=providerUidFingerprint(keeperUid);
   const otherPrincipals=principalRows.filter(x=>x.doc.id!==keeperUid);
   const canonicalCrossRef=tenant.collection('shopperIdentityCrosswalk').doc(canonicalShopperId);
+
+  const retiredFingerprints=new Set(otherPrincipals.map(row=>providerUidFingerprint(row.doc.id)));
+  const carriedQuery=tenant.collection('shopperIdentityCrosswalk').where('shopperId','==',canonicalShopperId).limit(381);
+  const carriedSnapshot=retiredFingerprints.size?await carriedQuery.get():{docs:[]};
+  if(arr(carriedSnapshot.docs).length>380)throw new Error('SHOPPER_IDENTITY_CARRIED_CROSSWALK_BUDGET_EXCEEDED');
+  const carriedCrosswalks=arr(carriedSnapshot.docs).filter(doc=>doc.id!==canonicalShopperId&&!allAliases.includes(doc.id)&&retiredFingerprints.has(str((doc.data()||{}).providerUidFingerprint)));
+  for(const doc of carriedCrosswalks){
+    const cross=doc.data()||{};
+    if(str(cross.tenantId)!==tenantId||str(cross.sourceStableKey)!==doc.id||
+      str(cross.sourceType)!=='hr_external'||str(cross.identityMode)!=='provider_exact_identity_link'||
+      cross.fuzzyMatching===true||!uniq(cross.projectIds).includes(projectId)||
+      uniq(cross.projectIds).some(id=>!unionProjects.includes(id))||existing.get(doc.id)!==canonicalShopperId)
+      throw new Error('SHOPPER_IDENTITY_CARRIED_CROSSWALK_UNSAFE');
+  }
+  const carriedCrossRefs=carriedCrosswalks.map(doc=>tenant.collection('shopperIdentityCrosswalk').doc(doc.id));
+  const verifyCarriedAuthority=(linkDocs,decisionDocs)=>{
+    for(const doc of carriedCrosswalks){
+      const mappings=arr(linkDocs).map(x=>x.data()||{}).filter(link=>keeperLinkInScope(link,tenantId,projectId)&&identityLinkTokens(link).includes(doc.id));
+      if(!mappings.length||mappings.some(link=>str(link.canonicalShopperId||link.canonicalId||link.shopperId||link.profileId)!==canonicalShopperId))
+        throw new Error('SHOPPER_IDENTITY_CARRIED_MAPPING_CONFLICT');
+      if(arr(decisionDocs).some(x=>{
+        const decision=x.data()||{},ids=reviewIds(decision),scope=str(decision.projectScope||decision.projectId||'*');
+        return str(decision.status)==='resolved_distinct'&&(scope==='*'||scope==='tenant'||scope===projectId)&&ids.includes(doc.id)&&ids.includes(canonicalShopperId);
+      }))throw new Error('SHOPPER_IDENTITY_CARRIED_DISTINCT_DECISION');
+    }
+  };
+  if(carriedCrosswalks.length){
+    const [links,decisions]=await Promise.all([tenant.collection('shopperIdentityLinks').get(),tenant.collection('shopperIdentityReviewResolutions').get()]);
+    verifyCarriedAuthority(links.docs,decisions.docs);
+  }
   const domainOptions={preserveHistoricalVisitRows:command.payload?.preserveHistoricalVisitRows===true,authoritativeVisitIds:uniq(command.payload?.authoritativeVisitIds||[])};
   const domainPlan=await adjudicationDomainPlan(tenant,projectId,allAliases,canonicalShopperId,domainOptions);
-  if(domainPlan.length>380)throw new Error('SHOPPER_IDENTITY_DOMAIN_WRITE_BUDGET_EXCEEDED');
+  if(domainPlan.length+carriedCrossRefs.length>380)throw new Error('SHOPPER_IDENTITY_DOMAIN_WRITE_BUDGET_EXCEEDED');
   const allLinks=await tenant.collection('shopperIdentityLinks').get(),staleLinkDocs=arr(allLinks?.docs).filter(doc=>{
     if(doc.id===linkId)return false;
     const l=doc.data()||{},status=str(l.status||l.state).toLowerCase(),authority=str(l.authorityType||l.authority?.type).toLowerCase(),target=str(l.canonicalShopperId||l.canonicalId||l.shopperId||l.profileId);
@@ -1382,6 +1502,15 @@ async function durableIdentityAdjudication({auth,db,command,actor,canonicalShopp
     await db.runTransaction(async tx=>{
       const readRefs=[canonicalRef,...profileRefs,...hrOnlyProfileRefs,...hrOnlyCrossRefs,keeper.ref,...otherPrincipals.map(x=>x.ref),canonicalCrossRef,...crossRefs,...staleLinkDocs.map(d=>tenant.collection('shopperIdentityLinks').doc(d.id)),...domainPlan.map(x=>x.ref),...activeReviewDocs.map(d=>reviews.doc(d.id))];
       const reads=await Promise.all(readRefs.map(ref=>tx.get(ref)));
+      const carriedReads=retiredFingerprints.size?await tx.get(carriedQuery):{docs:[]};
+      if(arr(carriedReads.docs).length>380)throw new Error('SHOPPER_IDENTITY_CARRIED_CROSSWALK_BUDGET_EXCEEDED');
+      const carriedCurrent=arr(carriedReads.docs).filter(doc=>doc.id!==canonicalShopperId&&!allAliases.includes(doc.id)&&retiredFingerprints.has(str((doc.data()||{}).providerUidFingerprint)));
+      if(sha(carriedCurrent.map(doc=>({id:doc.id,data:doc.data()})).sort((a,b)=>a.id.localeCompare(b.id)))!==sha(carriedCrosswalks.map(doc=>({id:doc.id,data:doc.data()})).sort((a,b)=>a.id.localeCompare(b.id))))throw new Error('SHOPPER_IDENTITY_CARRIED_CROSSWALK_CHANGED');
+      if(carriedCrosswalks.length){
+        if(sha(reads[0].data()||{})!==sha(canonical))throw new Error('SHOPPER_IDENTITY_CARRIED_KEEPER_AUTHORITY_CHANGED');
+        const [links,decisions]=await Promise.all([tx.get(tenant.collection('shopperIdentityLinks')),tx.get(tenant.collection('shopperIdentityReviewResolutions'))]);
+        verifyCarriedAuthority(links.docs,decisions.docs);
+      }
       if(!reads[0].exists&&!canonicalProfileRecovered)throw new Error('SHOPPER_IDENTITY_CANONICAL_PROFILE_MISSING_DURING_COMMIT');
       if(reads[0].exists&&canonicalProfileRecovered)throw new Error('SHOPPER_IDENTITY_CANONICAL_PROFILE_APPEARED_DURING_RECOVERY');
       let offset=1;
@@ -1404,6 +1533,7 @@ async function durableIdentityAdjudication({auth,db,command,actor,canonicalShopp
       tx.set(canonicalCrossRef,{tenantId,shopperId:canonicalShopperId,projectIds:unionProjects,authNamespace:'shopper',providerUidFingerprint:keeperFingerprint,sourceStableKey:canonicalShopperId,identityMode:'stable_hr_shopper_id',sourceType:'hr_external',fuzzyMatching:false,migrationAuthorityType:null,migrationAuthorityRef:null,migratedFromShopperId:null,identityAuthority:authorityType,identityAuthorityRef:authorityRef,updatedAt:stamp},{merge:true});
       crossRefs.forEach((ref,i)=>tx.set(ref,{tenantId,shopperId:canonicalShopperId,canonicalShopperId,projectIds:unionProjects,authNamespace:'shopper',providerUidFingerprint:keeperFingerprint,sourceStableKey:aliases[i],identityMode:'provider_exact_identity_link',sourceType:str((crossSnaps[i].data()||{}).sourceType||'hr_external'),fuzzyMatching:false,migrationAuthorityType:authorityType,migrationAuthorityRef:authorityRef,migratedFromShopperId:aliases[i],updatedAt:stamp},{merge:true}));
       hrOnlyCrossRefs.forEach((ref,i)=>tx.set(ref,{tenantId,shopperId:canonicalShopperId,canonicalShopperId,projectIds:unionProjects,authNamespace:'shopper',providerUidFingerprint:keeperFingerprint,sourceStableKey:hrOnlyIds[i],identityMode:'provider_exact_identity_link',sourceType:'hr_external',fuzzyMatching:false,migrationAuthorityType:authorityType,migrationAuthorityRef:authorityRef,migratedFromShopperId:hrOnlyIds[i],updatedAt:stamp},{merge:true}));
+      carriedCrossRefs.forEach((ref,i)=>tx.set(ref,{providerUidFingerprint:keeperFingerprint,previousProviderUidFingerprint:str((carriedCrosswalks[i].data()||{}).providerUidFingerprint),keeperSupersessionAuthority:authorityType,keeperSupersessionAuthorityRef:authorityRef,keeperSupersessionIdentityLinkId:linkId,keeperSupersessionRepairedAt:stamp,updatedAt:stamp},{merge:true}));
       tx.set(linkRef,existingNewLink.exists?{...link,createdAt:(existingNewLink.data()||{}).createdAt||stamp}:link,{merge:true});
       staleLinkDocs.forEach(doc=>tx.set(tenant.collection('shopperIdentityLinks').doc(doc.id),{status:'superseded',state:'superseded',supersededByIdentityLinkId:linkId,supersededAt:stamp,updatedAt:stamp},{merge:true}));
       domainPlan.forEach(item=>tx.set(item.ref,{...item.patch,identityConsolidatedAt:stamp},{merge:true}));
@@ -1444,8 +1574,12 @@ async function durableIdentityAdjudication({auth,db,command,actor,canonicalShopp
     if(!cross.exists||str((cross.data()||{}).shopperId)!==canonicalShopperId||str((cross.data()||{}).providerUidFingerprint)!==keeperFingerprint)
       throw new Error('SHOPPER_IDENTITY_EXTERNAL_HR_CROSSWALK_READBACK_MISMATCH:'+hrOnlyIds[i]);
   }
+  for(let i=0;i<carriedCrossRefs.length;i++){
+    const snap=await carriedCrossRefs[i].get(),cross=snap.data()||{},prior=carriedCrosswalks[i].data()||{};
+    if(!snap.exists||str(cross.shopperId)!==canonicalShopperId||str(cross.sourceStableKey)!==carriedCrosswalks[i].id||str(cross.providerUidFingerprint)!==keeperFingerprint||str(cross.keeperSupersessionAuthorityRef)!==authorityRef||!sameArray(cross.projectIds,prior.projectIds))throw new Error('SHOPPER_IDENTITY_CARRIED_CROSSWALK_READBACK_MISMATCH');
+  }
   const domainWrites=domainPlan.reduce((o,x)=>(o[x.name]=(o[x.name]||0)+1,o),{});
-  return {identityLinkId:linkId,canonicalShopperId,exactAliases:allAliases,externalHrSourceLinks:hrOnlyIds.length,providerWrites:1+domainPlan.length+profileRefs.length+crossRefs.length+hrOnlyCrossRefs.length+otherPrincipals.length+4+activeReviewDocs.length,authorityType,identityConsolidated:true,canonicalProfileRecovered,canonicalProfileRecoveredFromAliasId:canonicalProfileRecovered?canonicalProfileRecoveredFromAliasId:null,canonicalRecoveryAuthorityRef:canonicalProfileRecovered?canonicalRecoveryAuthorityRef:null,keeperUidFingerprint:keeperFingerprint,retiredPrincipalCount:otherPrincipals.length,domainWrites,resolvedIdentityReviews:activeReviewDocs.length,historicalVisitRowsPreserved:domainOptions.preserveHistoricalVisitRows===true,authoritativeVisitCount:domainOptions.authoritativeVisitIds.length,hrWrites:0,externalWrites:0};
+  return {identityLinkId:linkId,canonicalShopperId,exactAliases:allAliases,externalHrSourceLinks:hrOnlyIds.length,carriedKeeperCrosswalks:carriedCrossRefs.length,providerWrites:1+domainPlan.length+profileRefs.length+crossRefs.length+hrOnlyCrossRefs.length+carriedCrossRefs.length+otherPrincipals.length+4+activeReviewDocs.length,authorityType,identityConsolidated:true,canonicalProfileRecovered,canonicalProfileRecoveredFromAliasId:canonicalProfileRecovered?canonicalProfileRecoveredFromAliasId:null,canonicalRecoveryAuthorityRef:canonicalProfileRecovered?canonicalRecoveryAuthorityRef:null,keeperUidFingerprint:keeperFingerprint,retiredPrincipalCount:otherPrincipals.length,domainWrites,resolvedIdentityReviews:activeReviewDocs.length,historicalVisitRowsPreserved:domainOptions.preserveHistoricalVisitRows===true,authoritativeVisitCount:domainOptions.authoritativeVisitIds.length,hrWrites:0,externalWrites:0};
 }
 async function autoConsolidateCompatibleExistingProfiles({auth,db,scope,shoppers,sourceRevision,authUsers,exactIdentityMap}){
   const tenant=db.collection('tenants').doc(scope.tenantId),profilesSnap=await tenant.collection('shoppers').get();
@@ -1944,7 +2078,7 @@ export function createShopperCommandProvider({auth,db,policy,hrSnapshot=null,hrR
         const priority=p=>p?.mode==='ALIAS_KEEPER'?0:p?.mode==='ALIAS_RETIRE_AFTER_KEEPER'?2:1;
         return priority(pa)-priority(pb)||str(a.shopperId).localeCompare(str(b.shopperId));
       });
-      let created=0,replayed=0,writes=automaticIdentity.providerWrites,credentialNormalized=0,credentialRuleMissing=0,aliasMigrated=0,aliasPrincipalsRetired=0,staleTenantAdjudicationRepairs=0,identityReviewWrites=0,automaticIncomingAliases=0,automaticIncomingReviewsResolved=0;
+      let created=0,replayed=0,writes=automaticIdentity.providerWrites,credentialNormalized=0,credentialRuleMissing=0,aliasMigrated=0,aliasPrincipalsRetired=0,staleTenantAdjudicationRepairs=0,retiredKeeperCrosswalkRepairs=0,identityReviewWrites=0,automaticIncomingAliases=0,automaticIncomingReviewsResolved=0;
       const identityReviewQueue=[],identityMigrationQueue=[];
       const reviewableCredentialCollisions=new Set([
         'SHOPPER_VISIBLE_LOGIN_COLLISION','SHOPPER_AUTH_EMAIL_CONFLICT','SHOPPER_CREDENTIAL_NAME_INCOMPLETE',
@@ -2071,6 +2205,7 @@ export function createShopperCommandProvider({auth,db,policy,hrSnapshot=null,hrR
         if(result.aliasMigrated)aliasMigrated++;
         if(result.aliasPrincipalRetired)aliasPrincipalsRetired++;
         if(result.staleTenantAdjudicationCrosswalkRepaired)staleTenantAdjudicationRepairs++;
+        if(result.retiredKeeperCrosswalkRepaired)retiredKeeperCrosswalkRepairs++;
         if(!result.visibleLogin)credentialRuleMissing++;
         writes+=Number(result.providerWrites||0);
         const plan=incomingAliasPlans.get(source.shopperId);
@@ -2105,7 +2240,7 @@ export function createShopperCommandProvider({auth,db,policy,hrSnapshot=null,hrR
         automaticIdentityAmbiguousGroups:automaticIdentity.ambiguousGroups,
         automaticIdentityAuthority:'provider_auto_compatible',
         automaticIncomingHrAliases:automaticIncomingAliases,automaticIncomingReviewsResolved,
-        tenantAdjudicationSuppressed:suppressedTenantAdjudications.size,staleTenantAdjudicationRepairs,
+        tenantAdjudicationSuppressed:suppressedTenantAdjudications.size,staleTenantAdjudicationRepairs,retiredKeeperCrosswalkRepairs,
         authCreated:created,idempotentReplays:replayed,credentialNormalized,credentialRuleMissing,
         credentialRuleVersion:CREDENTIAL_RULE_VERSION,passwordProofVersion:CREDENTIAL_PASSWORD_PROOF_VERSION,identityReviewWrites,providerWrites:writes,hrWrites:0,externalWrites:0,fuzzyMatching:false
       };

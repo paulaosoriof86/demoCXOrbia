@@ -61,7 +61,11 @@ class FakeFirestore{
   async runTransaction(fn){
     const working=new Map([...this._store].map(([k,v])=>[k,clone(v)]));
     const tx={
-      get:async ref=>new Snapshot(ref.id,working.get(ref.path)),
+      get:async ref=>{
+        if(ref instanceof Query)return new Query({_store:working},ref.path,ref.field,ref.value,ref.cap).get();
+        if(ref instanceof CollectionRef)return new CollectionRef({_store:working},ref.path).get();
+        return new Snapshot(ref.id,working.get(ref.path));
+      },
       set:(ref,value,options={})=>this._set(ref.path,value,options,working)
     };
     const result=await fn(tx);
@@ -1714,3 +1718,191 @@ test('I3 P0 / exact incoming HR match with explicit distinct decision never link
   assert.equal(db.paths().filter(path=>path.includes('/shopperIdentityLinks/')).length,0);
 });
 
+
+
+// VRM-353 reproduces two approved keeper adjudications. The second command
+// deliberately omits the first HR alias, which formerly retained the retired UID.
+async function retiredKeeperFixture({stale=true,sourceAuthority='tenant_adjudication',beforeSecond=null}={}){
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  const tenant='tenant-a',project='project-a',canonical='canonical-person',alias='earlier-hr-alias',newIdentity='new-keeper-profile';
+  const oldUid='retired-keeper-uid',keeperUid='current-keeper-uid',prefix='tenants/'+tenant;
+  db.seed(prefix+'/users/admin-1',{active:true,tenantId:tenant,role:'super',authNamespace:'staff',projectIds:[project]});
+  const seedIdentity=(id,uid,login,strong=true)=>{
+    const base={tenantId:tenant,shopperId:id,projectIds:[project],nombre:'Persona Prueba',firstName:'Persona',lastName:'Prueba',country:'GT',pais:'GT',visibleLogin:login,username:login,user:login,credentialRuleVersion:CREDENTIAL_RULE_VERSION,credentialSweepVersion:DURABLE_CREDENTIAL_SWEEP_VERSION,credentialPasswordProofVersion:strong?CREDENTIAL_PASSWORD_PROOF_VERSION:undefined,credentialPasswordRuleVersion:strong?CREDENTIAL_RULE_VERSION:undefined};
+    db.seed(prefix+'/shoppers/'+id,{...base,id,sourceType:'hr_external',hrSourceRevision:'prior-hr'});
+    db.seed(prefix+'/shopperIdentityCrosswalk/'+id,{tenantId:tenant,shopperId:id,sourceStableKey:id,projectIds:[project],sourceType:'hr_external',identityMode:'stable_hr_shopper_id',providerUidFingerprint:providerUidFingerprint(uid),fuzzyMatching:false});
+    if(uid){
+      auth.seed({uid,email:internalEmailTest(tenant,login),password:'Preserve-This-Existing-Password',disabled:false,customClaims:{tenantId:tenant,shopperId:id,role:'shopper',authNamespace:'shopper',projectIds:[project]}});
+      db.seed(prefix+'/users/'+uid,{...base,active:true,status:'active',role:'shopper',authNamespace:'shopper',providerUidFingerprint:providerUidFingerprint(uid)});
+    }
+  };
+  seedIdentity(canonical,oldUid,'persona.prueba');
+  db.seed(prefix+'/shoppers/'+alias,{id:alias,shopperId:alias,tenantId:tenant,projectIds:[project],sourceType:'hr_external',nombre:'Persona Prueba',country:'GT',pais:'GT'});
+  const makeCommand=(aliases,key,keeper)=>({version:'cxorbia-command-adapter-v1',commandType:'shopper.identity.adjudicate',tenantId:tenant,projectId:project,periodId:'project-a-2026-11',entityId:canonical,idempotencyKey:key,authorization:{providerEnforcementRequired:true,permission:'shopper.identity.adjudicate'},payload:{canonicalShopperId:canonical,aliasShopperIds:aliases,humanConfirmed:true,reason:'exact_existing_keeper_test',...(keeper?{keeperShopperId:keeper,keeperAccessConfirmed:true}:{})}});
+  const firstCommand=makeCommand([alias],'vrm353-first-approved-keeper');
+  const first=await p.execute('staff-token',firstCommand);assert.equal(first.ok,true,JSON.stringify(first));
+  const oldCross=db.get(prefix+'/shopperIdentityCrosswalk/'+alias);
+  seedIdentity(newIdentity,keeperUid,'persona.prueba.keeper');
+  const secondCommand=makeCommand([newIdentity],'vrm353-second-approved-keeper',newIdentity);
+  if(beforeSecond)await beforeSecond({auth,db,p,tenant,project,canonical,alias,newIdentity,oldUid,keeperUid,prefix,first,secondCommand});
+  const second=await p.execute('staff-token',secondCommand);assert.equal(second.ok,true,JSON.stringify(second));
+  const profilePath=prefix+'/shoppers/'+canonical,crossPath=prefix+'/shopperIdentityCrosswalk/'+alias,canonicalCrossPath=prefix+'/shopperIdentityCrosswalk/'+canonical;
+  const authorityRef=db.get(profilePath).identityAuthorityRef,receiptPath=prefix+'/commandReceipts/'+authorityRef,linkPath=prefix+'/shopperIdentityLinks/'+second.identityLinkId;
+  if(stale)db.seed(crossPath,oldCross); // Exact legacy state produced before VRM-353.
+  if(sourceAuthority==='provider_auto_compatible'){
+    const firstLink=prefix+'/shopperIdentityLinks/'+first.identityLinkId;
+    db.seed(firstLink,{...db.get(firstLink),authorityType:'provider_auto_compatible',authorityRef:'automatic-source-reference-without-command-receipt',providerAck:false});
+    const cross=db.get(crossPath);delete cross.migrationAuthorityType;delete cross.migrationAuthorityRef;db.seed(crossPath,cross);
+  }
+  const hr=snapshot({shopperId:alias,shopperCode:alias});hr.visits[0].shopper='Persona Prueba';
+  return{auth,db,p,tenant,project,canonical,alias,newIdentity,oldUid,keeperUid,prefix,first,second,secondCommand,oldCross,profilePath,crossPath,canonicalCrossPath,authorityRef,receiptPath,linkPath,hr,revision:'current-hr-revision'};
+}
+const authEffects=auth=>({created:auth.created,updated:auth.updated,claims:auth.claimWrites,users:clone([...auth.users])});
+const durableState=db=>clone([...db._store].sort(([a],[b])=>a.localeCompare(b)));
+test('VRM-353 / second adjudication carries the omitted earlier alias to the new keeper',async()=>{
+  const f=await retiredKeeperFixture({stale:false}),{db,auth}=f,cross=db.get(f.crossPath);
+  assert.equal(cross.shopperId,f.canonical);assert.equal(cross.sourceStableKey,f.alias);
+  assert.equal(cross.providerUidFingerprint,providerUidFingerprint(f.keeperUid));
+  assert.equal(cross.previousProviderUidFingerprint,providerUidFingerprint(f.oldUid));
+  assert.equal(cross.keeperSupersessionAuthorityRef,f.authorityRef);
+  assert.deepEqual(cross.projectIds,['project-a']);
+  assert.equal((await auth.getUser(f.oldUid)).disabled,true);
+  const before=durableState(db),beforeAuth=authEffects(auth);
+  const replay=await f.p.execute('staff-token',f.secondCommand);
+  assert.equal(replay.ok,true);assert.equal(replay.providerWrites,0);assert.equal(replay.idempotentReplay,true);
+  assert.deepEqual(durableState(db),before);assert.deepEqual(authEffects(auth),beforeAuth);
+});
+for(const sourceAuthority of ['tenant_adjudication','provider_auto_compatible'])test('VRM-353 / repairs an older '+sourceAuthority+' alias using current human keeper authority and replays without writes',async()=>{
+  const f=await retiredKeeperFixture({sourceAuthority}),beforeAuth=authEffects(f.auth),receipt=f.db.get(f.receiptPath),link=f.db.get(f.linkPath),oldMember=f.db.get(f.prefix+'/users/'+f.oldUid),beforeProfile=f.db.get(f.profilePath);
+  const result=await f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision});
+  assert.equal(result.ok,true);assert.equal(result.providerAck,true);assert.equal(result.retiredKeeperCrosswalkRepairs,1);
+  assert.equal(result.providerWrites,3);assert.equal(result.authCreated,0);
+  const cross=f.db.get(f.crossPath),profile=f.db.get(f.profilePath);
+  assert.equal(cross.shopperId,f.canonical);assert.equal(cross.sourceStableKey,f.alias);
+  assert.equal(cross.providerUidFingerprint,providerUidFingerprint(f.keeperUid));
+  assert.equal(cross.previousProviderUidFingerprint,providerUidFingerprint(f.oldUid));
+  assert.equal(cross.keeperSupersessionAuthorityRef,f.authorityRef);
+  assert.equal(profile.hrSourceRevision,f.revision);
+  for(const key of ['visibleLogin','username','user','credentialRuleVersion','credentialSweepVersion','credentialPasswordProofVersion','credentialPasswordRuleVersion','identityAuthority','identityAuthorityRef'])assert.equal(profile[key],beforeProfile[key],key);
+  assert.deepEqual(authEffects(f.auth),beforeAuth);assert.deepEqual(f.db.get(f.receiptPath),receipt);assert.deepEqual(f.db.get(f.linkPath),link);assert.deepEqual(f.db.get(f.prefix+'/users/'+f.oldUid),oldMember);
+  const after=durableState(f.db);
+  const replay=await f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision});
+  assert.equal(replay.providerWrites,0);assert.equal(replay.retiredKeeperCrosswalkRepairs,0);
+  assert.deepEqual(durableState(f.db),after);assert.deepEqual(authEffects(f.auth),beforeAuth);
+});
+const unsafeRetiredKeeperMutations=[
+ ['receipt absent',f=>f.db._store.delete(f.receiptPath)],
+ ['receipt pending',f=>f.db.seed(f.receiptPath,{...f.db.get(f.receiptPath),status:'pending'})],
+ ['receipt ACK false',f=>f.db.seed(f.receiptPath,{...f.db.get(f.receiptPath),providerAck:false})],
+ ['receipt keeper differs',f=>f.db.seed(f.receiptPath,{...f.db.get(f.receiptPath),keeperUidFingerprint:providerUidFingerprint('unrelated')})],
+ ['receipt canonical differs',f=>f.db.seed(f.receiptPath,{...f.db.get(f.receiptPath),shopperId:'unrelated-person'})],
+ ['receipt actor differs',f=>f.db.seed(f.receiptPath,{...f.db.get(f.receiptPath),actorUid:'unrelated-actor'})],
+ ['profile authority differs',f=>f.db.seed(f.profilePath,{...f.db.get(f.profilePath),identityAuthorityRef:'b'.repeat(40)})],
+ ['canonical cross authority differs',f=>f.db.seed(f.canonicalCrossPath,{...f.db.get(f.canonicalCrossPath),identityAuthorityRef:'c'.repeat(40)})],
+ ['canonical cross keeper differs',f=>f.db.seed(f.canonicalCrossPath,{...f.db.get(f.canonicalCrossPath),providerUidFingerprint:providerUidFingerprint('unrelated')})],
+ ['receipt link wrong project',f=>f.db.seed(f.linkPath,{...f.db.get(f.linkPath),projectScope:'other-project'})],
+ ['receipt link human false',f=>f.db.seed(f.linkPath,{...f.db.get(f.linkPath),humanConfirmed:false})],
+ ['receipt link ACK false',f=>f.db.seed(f.linkPath,{...f.db.get(f.linkPath),providerAck:false})],
+ ['receipt link inactive',f=>f.db.seed(f.linkPath,{...f.db.get(f.linkPath),status:'superseded',state:'superseded'})],
+ ['old Auth enabled',f=>f.auth.users.get(f.oldUid).disabled=false],
+ ['old Auth wrong tenant',f=>f.auth.users.get(f.oldUid).customClaims.tenantId='other-tenant'],
+ ['retirement target canonical differs',f=>f.db.seed(f.prefix+'/users/'+f.oldUid,{...f.db.get(f.prefix+'/users/'+f.oldUid),supersededByShopperId:'other-person'})],
+ ['retirement target keeper differs',f=>f.db.seed(f.prefix+'/users/'+f.oldUid,{...f.db.get(f.prefix+'/users/'+f.oldUid),supersededByUidFingerprint:providerUidFingerprint('other')})],
+ ['retired member active',f=>f.db.seed(f.prefix+'/users/'+f.oldUid,{...f.db.get(f.prefix+'/users/'+f.oldUid),active:true})],
+ ['duplicate retired fingerprint',f=>f.db.seed(f.prefix+'/users/unrelated-retired',{...f.db.get(f.prefix+'/users/'+f.oldUid)})],
+ ['keeper Auth disabled',f=>f.auth.users.get(f.keeperUid).disabled=true],
+ ['keeper Auth wrong shopper',f=>f.auth.users.get(f.keeperUid).customClaims.shopperId='other-person'],
+ ['distinct pair',f=>f.db.seed(f.prefix+'/shopperIdentityReviewResolutions/distinct-pair',{tenantId:f.tenant,projectScope:f.project,status:'resolved_distinct',shopperIds:[f.alias,f.canonical]})],
+ ['distinct larger group',f=>f.db.seed(f.prefix+'/shopperIdentityReviewResolutions/distinct-group',{tenantId:f.tenant,projectScope:f.project,status:'resolved_distinct',shopperIds:[f.alias,'third-person',f.canonical]})],
+ ['source key differs',f=>f.db.seed(f.crossPath,{...f.db.get(f.crossPath),sourceStableKey:'different-source'})],
+ ['crosswalk tenant differs',f=>f.db.seed(f.crossPath,{...f.db.get(f.crossPath),tenantId:'other-tenant'})],
+ ['source mapping changes',f=>f.db.seed(f.prefix+'/shopperIdentityLinks/'+f.first.identityLinkId,{...f.db.get(f.prefix+'/shopperIdentityLinks/'+f.first.identityLinkId),canonicalShopperId:'other-person'})]
+];
+for(const[label,mutate]of unsafeRetiredKeeperMutations)test('VRM-353 / '+label+' rejects before any repair or credential effect',async()=>{
+  const f=await retiredKeeperFixture();mutate(f);
+  const state=durableState(f.db),effects=authEffects(f.auth);
+  await assert.rejects(()=>f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision}),/SHOPPER_/);
+  assert.deepEqual(durableState(f.db),state);assert.deepEqual(authEffects(f.auth),effects);
+});
+test('VRM-353 / current authority changes after preflight and is rejected transactionally',async()=>{
+  const f=await retiredKeeperFixture(),run=f.db.runTransaction.bind(f.db),effects=authEffects(f.auth),cross=f.db.get(f.crossPath);
+  f.db.runTransaction=async callback=>{
+    f.db.seed(f.profilePath,{...f.db.get(f.profilePath),identityAuthorityRef:'a'.repeat(40)});
+    return run(callback);
+  };
+  await assert.rejects(()=>f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision}),/SHOPPER_CROSSWALK_UID_CONFLICT/);
+  assert.deepEqual(f.db.get(f.crossPath),cross);assert.deepEqual(authEffects(f.auth),effects);
+});
+test('VRM-353 / postcommit Auth drift reports real repair writes and refuses ACK',async()=>{
+  const f=await retiredKeeperFixture(),run=f.db.runTransaction.bind(f.db);
+  f.db.runTransaction=async callback=>{const result=await run(callback);f.auth.users.get(f.oldUid).disabled=false;return result;};
+  await assert.rejects(()=>f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision}),error=>{
+    assert.equal(error.message,'SHOPPER_RETIRED_KEEPER_POSTCOMMIT_READBACK_CONFLICT');
+    assert.equal(error.providerAck,false);assert.equal(error.partial,true);assert.equal(error.confirmedRepairWrites,3);assert.equal(error.providerWrites,3);return true;
+  });
+  assert.equal(f.db.get(f.crossPath).providerUidFingerprint,providerUidFingerprint(f.keeperUid));
+});
+test('VRM-353 / unrelated project distinct decision and unrelated bindings remain intact',async()=>{
+  const f=await retiredKeeperFixture(),path=f.prefix+'/shopperIdentityReviewResolutions/other-project';
+  const decision={tenantId:f.tenant,projectScope:'unrelated-project',status:'resolved_distinct',shopperIds:[f.alias,f.canonical]};
+  f.db.seed(path,decision);f.db.seed(f.prefix+'/shopperIdentityCrosswalk/unrelated',{tenantId:f.tenant,shopperId:'other-person',sourceStableKey:'unrelated',providerUidFingerprint:'unrelated'});
+  const unrelated=f.db.get(f.prefix+'/shopperIdentityCrosswalk/unrelated');
+  assert.equal((await f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision})).ok,true);
+  assert.deepEqual(f.db.get(path),decision);assert.deepEqual(f.db.get(f.prefix+'/shopperIdentityCrosswalk/unrelated'),unrelated);
+});
+
+test('VRM-353 / failed repair transaction leaves both durable identity and Auth intact',async()=>{
+  const f=await retiredKeeperFixture(),before=durableState(f.db),authBefore=authEffects(f.auth);
+  f.db.failNextTransaction=true;
+  await assert.rejects(()=>f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision}),/SIMULATED_FIRESTORE_COMMIT_FAILURE/);
+  assert.deepEqual(durableState(f.db),before);assert.deepEqual(authEffects(f.auth),authBefore);
+});
+for(const kind of ['source-key','distinct','budget'])test('VRM-353 / preventive '+kind+' conflict rejects before retiring a principal',async()=>{
+  let captured,before,authBefore;
+  await assert.rejects(()=>retiredKeeperFixture({stale:false,beforeSecond:f=>{
+    captured=f;const path=f.prefix+'/shopperIdentityCrosswalk/'+f.alias;
+    if(kind==='source-key')f.db.seed(path,{...f.db.get(path),sourceStableKey:'different'});
+    if(kind==='distinct')f.db.seed(f.prefix+'/shopperIdentityReviewResolutions/distinct',{tenantId:f.tenant,projectScope:f.project,status:'resolved_distinct',shopperIds:[f.canonical,f.alias,'larger-group']});
+    if(kind==='budget')for(let i=0;i<381;i++)f.db.seed(f.prefix+'/shopperIdentityCrosswalk/budget-'+i,{shopperId:f.canonical,providerUidFingerprint:providerUidFingerprint(f.oldUid)});
+    before=durableState(f.db);authBefore=authEffects(f.auth);
+  }}),/SHOPPER_IDENTITY_CARRIED_/);
+  assert.deepEqual(durableState(captured.db),before);assert.deepEqual(authEffects(captured.auth),authBefore);
+});
+for(const kind of ['crosswalk','new-alias','mapping','distinct'])test('VRM-353 / preventive transaction rejects concurrent '+kind+' drift',async()=>{
+  let captured;
+  await assert.rejects(()=>retiredKeeperFixture({stale:false,beforeSecond:f=>{
+    captured=f;const run=f.db.runTransaction.bind(f.db);
+    f.db.runTransaction=async callback=>{
+      const crossPath=f.prefix+'/shopperIdentityCrosswalk/'+f.alias;
+      if(kind==='crosswalk')f.db.seed(crossPath,{...f.db.get(crossPath),providerUidFingerprint:providerUidFingerprint('unrelated-uid')});
+      if(kind==='new-alias')f.db.seed(f.prefix+'/shopperIdentityCrosswalk/concurrent-alias',{...f.db.get(crossPath),sourceStableKey:'concurrent-alias'});
+      if(kind==='mapping'){const path=f.prefix+'/shopperIdentityLinks/'+f.first.identityLinkId;f.db.seed(path,{...f.db.get(path),canonicalShopperId:'other-person'});}
+      if(kind==='distinct')f.db.seed(f.prefix+'/shopperIdentityReviewResolutions/concurrent-distinct',{tenantId:f.tenant,projectScope:f.project,status:'resolved_distinct',shopperIds:[f.canonical,f.alias]});
+      return run(callback);
+    };
+  }}),/SHOPPER_IDENTITY_CARRIED_/);
+  assert.equal((await captured.auth.getUser(captured.oldUid)).disabled,false);
+  assert.equal((await captured.auth.getUser(captured.keeperUid)).customClaims.shopperId,captured.newIdentity);
+  assert.equal(captured.db.get(captured.prefix+'/users/'+captured.oldUid).active,true);
+  assert.equal(captured.db.get(captured.prefix+'/shopperIdentityCrosswalk/'+captured.canonical).providerUidFingerprint,providerUidFingerprint(captured.oldUid));
+});
+
+for(const target of ['profile','member','cross','auth'])test('VRM-353 / concurrent '+target+' project expansion cannot create a cross-provider scope mismatch',async()=>{
+  const f=await retiredKeeperFixture(),run=f.db.runTransaction.bind(f.db),cross=f.db.get(f.crossPath),effects=authEffects(f.auth);
+  f.db.runTransaction=async callback=>{
+    const path=target==='profile'?f.profilePath:target==='member'?f.prefix+'/users/'+f.keeperUid:f.crossPath;
+    if(target==='auth')f.auth.users.get(f.keeperUid).customClaims.projectIds.push('other-project');
+    else f.db.seed(path,{...f.db.get(path),projectIds:[f.project,'other-project']});
+    return run(callback);
+  };
+  await assert.rejects(()=>f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision}),/SHOPPER_CROSSWALK_UID_CONFLICT/);
+  assert.equal(f.db.get(f.crossPath).providerUidFingerprint,cross.providerUidFingerprint);
+  assert.equal(f.auth.created,effects.created);assert.equal(f.auth.updated,effects.updated);assert.equal(f.auth.claimWrites,effects.claims);
+});
+test('VRM-353 / postcommit Auth project drift refuses ACK and retains actual write count',async()=>{
+  const f=await retiredKeeperFixture(),run=f.db.runTransaction.bind(f.db);
+  f.db.runTransaction=async callback=>{const result=await run(callback);f.auth.users.get(f.keeperUid).customClaims.projectIds.push('other-project');return result;};
+  await assert.rejects(()=>f.p.reconcileSnapshot(f.hr,{sourceRevision:f.revision}),error=>{
+    assert.equal(error.message,'SHOPPER_RETIRED_KEEPER_POSTCOMMIT_READBACK_CONFLICT');assert.equal(error.providerAck,false);assert.equal(error.confirmedRepairWrites,3);return true;
+  });
+});
