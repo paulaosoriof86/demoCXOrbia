@@ -862,7 +862,7 @@
     "status": "HOLD",
     "productSourceSha": "38f16525c791b355e8f68a6f798defd9bc89ab37",
     "productSourceTree": "9c67dbf660131539fa9c635c699b30229ca199d2",
-    "latestBatchRunId": 43814920143,
+    "latestBatchRunId": 43813660215,
     "verifiedCohortGroups": 83,
     "pendingCohortGroups": 0,
     "moduleMatches": 5,
@@ -18820,10 +18820,10 @@
     }
   },
   "lastControlCorrection": {
-    "path": "docs/checkpoints/CXORBIA_I3_RUN2558_CHECKPOINT_ALIAS_REPAIR_20261116.json",
-    "gitBlob": "335ba335b41238b899d1da3275407e2ad4a05b40",
-    "sha256": "54f9c4670ca05b3166a6ce0d11163a701dff5963077b17934c8d7264ecfc8499",
-    "runId": 43816961554,
-    "runNumber": 2558
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2559_HANDOFF_RUN_ALIAS_REPAIR_20261116.json",
+    "gitBlob": "e283ac6be1bf41d772841de826873c852b651640",
+    "sha256": "9de277e6e1f84827567709e3e0750df0504e8e4cc4fcafa39536249c4cd2fe3a",
+    "runId": 43817469969,
+    "runNumber": 2559
   }
 }

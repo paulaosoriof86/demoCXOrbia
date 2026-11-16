@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "cxorbia.i3.control-alias-repair.v1",
+  "observedAt": "2026-11-16 06:36:06 UTC",
+  "runId": 43817469969,
+  "runNumber": 2559,
+  "controlSource": "fd42da337cea84589036140eac24bc6e5e216e32",
+  "classification": "MAPPING_FAILURE",
+  "code": "SHOCK_CONTINUITY_CURRENT_CHECKPOINT_DEV_SEAL_DESYNC",
+  "rootCause": "continuityHandoff.latestBatchRunId was advanced to C3 RUN2557 although this handoff is bound to paired DEV RUN2556.",
+  "correction": "Restore latestBatchRunId to currentDevMaterialization.runId43813660215; currentExecutionReceipt/latestFunctionalReadback remain current C3 RUN2557.",
+  "verification": {
+    "fullShockContinuityFunction": "PASS_ALL_CURRENT_PREDICATES_IN_MEMORY",
+    "currentAuthorityAliases": "PASS",
+    "latestExecutionSource": "PASS",
+    "scope": "CONTROL_DATA_CHECKS_NOT_NODE_CI_OR_FUNCTIONAL_PROOF"
+  },
+  "correctsPriorReport": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2558_CHECKPOINT_ALIAS_REPAIR_20261116.json",
+    "incorrectClaim": "1477canonicaltests",
+    "actualRun2558": {
+      "tests": 883,
+      "pass": 883,
+      "fail": 0,
+      "summaries": 15
+    },
+    "reason": "1477belongs to completedRUN2557;RUN2558 stopped after883tests before later suites. Original receipt preserved and explicitly superseded for count."
+  },
+  "actualRun2559": {
+    "tests": 883,
+    "pass": 883,
+    "fail": 0,
+    "summaries": 15
+  },
+  "readOnlyDiagnosticExecuted": false,
+  "productChanges": 0,
+  "builds": 0,
+  "deploys": 0,
+  "providerWrites": 0,
+  "production": false,
+  "nextExactAction": "Execute same approved exact HR/UID/name read-only request."
+}
