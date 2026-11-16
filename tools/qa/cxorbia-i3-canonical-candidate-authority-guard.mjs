@@ -74,20 +74,29 @@ const pendingHostingOnly=d.pendingDevSuccessor?.state==='P0_PROVEN_PENDING_DEV_M
   d.currentHostingOnlyDevMaterialization?.sourceSha===d.pendingDevSuccessor.predecessorProductSourceSha&&
   mt.productSource?.authorityState===('SOURCE_ONLY_PROVEN_PENDING_'+d.pendingDevSuccessor.scope+'_DEV');
 const preC3=d.i3Q2HostingReleaseC3Pending||{};
+const pendingFromPaired=d.pendingDevSuccessor?.state==='P0_PROVEN_PENDING_DEV_MATERIALIZATION'&&
+  !d.currentHostingOnlyDevMaterialization&&Boolean(d.pendingDevSuccessor.servingPairedMaterialization)&&
+  d.pendingDevSuccessor.predecessorProductSourceSha===d.currentMaterialization?.sourceSha&&
+  d.pendingDevSuccessor.sourceSha===d.productSourceSha&&d.pendingDevSuccessor.sourceTree===d.productTreeAuthority&&
+  d.postDeployRunSeal?.mode==='PREDECESSOR_SERVING_PENDING_SOURCE'&&
+  JSON.stringify(d.pendingDevSuccessor.servingPairedMaterialization)===JSON.stringify(d.currentMaterialization)&&
+  mt.productSource?.authorityState===('SOURCE_ONLY_PROVEN_PENDING_'+d.pendingDevSuccessor.scope+'_DEV');
 const c3AfterHosting=preC3.state==='DEV_HOSTING_VERIFIED_C3_PENDING'&&
   preC3.sourceSha===d.productSourceSha&&
   preC3.hostingVersion===d.currentHostingOnlyDevMaterialization?.hostingVersion&&
   preC3.previousC3SourceSha===c3.sourceSha&&
   preC3.previousC3SourceTree===c3.sourceTree&&
   preC3.previousHostingVersion===c3.hostingVersion&&
+  (preC3.previousRuntimeRevision??d.currentMaterialization?.runtimeRevision)===c3.runtimeRevision&&
   mt.productSource?.authorityState==='HOSTING_DEV_MATERIALIZED_PENDING_C3_E2E';
 const c3AfterPaired=preC3.state==='DEV_RUNTIME_AND_HOSTING_VERIFIED_C3_PENDING'&&
-  preC3.sourceSha===d.productSourceSha&&preC3.sourceTree===d.productTreeAuthority&&
+  preC3.sourceSha===(pendingFromPaired?d.currentMaterialization.sourceSha:d.productSourceSha)&&
+  preC3.sourceTree===(pendingFromPaired?d.currentMaterialization.sourceTree:d.productTreeAuthority)&&
   preC3.hostingVersion===d.currentMaterialization?.hostingVersion&&
   preC3.runtimeRevision===d.currentMaterialization?.runtimeRevision&&
   preC3.previousC3SourceSha===c3.sourceSha&&preC3.previousC3SourceTree===c3.sourceTree&&
   preC3.previousHostingVersion===c3.hostingVersion&&preC3.previousRuntimeRevision===c3.runtimeRevision&&
-  mt.productSource?.authorityState==='RUNTIME_AND_HOSTING_DEV_MATERIALIZED_PENDING_C3_E2E';
+  (pendingFromPaired||mt.productSource?.authorityState==='RUNTIME_AND_HOSTING_DEV_MATERIALIZED_PENDING_C3_E2E');
 const c3PredecessorOnly=(pendingHostingOnly&&
   c3.sourceSha===d.currentHostingOnlyDevMaterialization.sourceSha&&
   c3.sourceTree===d.currentHostingOnlyDevMaterialization.sourceTree&&

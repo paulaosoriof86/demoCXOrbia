@@ -40,6 +40,15 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
     JSON.stringify(hosting)===JSON.stringify(hostingP)&&
     hosting.runtimeRevision===seal.runtimeRevision&&
     current?.sourceMaterialized===false;
+  const pendingFromPaired=pendingServing&&!d?.currentHostingOnlyDevMaterialization&&!p?.currentHostingOnlyDevMaterialization&&
+    pending.state==='P0_PROVEN_PENDING_DEV_MATERIALIZATION'&&['HOSTING_ONLY','RUNTIME_AND_HOSTING'].includes(pending.scope)&&
+    pending.production===false&&pending.devPublished===false&&pending.sourceSha===source&&pending.sourceTree===tree&&
+    pending.predecessorProductSourceSha===seal.sourceSha&&!pending.servingHosting&&
+    JSON.stringify(pending)===JSON.stringify(p?.pendingDevSuccessor||null)&&
+    JSON.stringify(pending.servingPairedMaterialization)===JSON.stringify(d?.currentMaterialization)&&
+    JSON.stringify(pending.servingPairedMaterialization)===JSON.stringify(seal)&&
+    JSON.stringify(pending.servingPairedMaterialization)===JSON.stringify(currentDev)&&
+    JSON.stringify(pending.servingRuntimeSeal)===JSON.stringify(postDeploy);
   const hostingOnlyServing=postDeploy.mode==='PREDECESSOR_SERVING_PENDING_SOURCE'&&
     p?.postDeployRunSeal?.mode===postDeploy.mode&&
     hosting.sourceSha===source&&hosting.sourceTree===tree&&
@@ -63,16 +72,16 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
     preC3.hostingVersion===hosting.hostingVersion&&
     preC3.runtimeRevision===hosting.runtimeRevision&&
     preC3.production===false;
-  const c3PredecessorAfterPaired=postDeploy.mode==='CURRENT_SOURCE_SERVING'&&
+  const c3PredecessorAfterPaired=(postDeploy.mode==='CURRENT_SOURCE_SERVING'||pendingFromPaired)&&
     p?.postDeployRunSeal?.mode===postDeploy.mode&&
     preC3.state==='DEV_RUNTIME_AND_HOSTING_VERIFIED_C3_PENDING'&&
     JSON.stringify(preC3)===JSON.stringify(p?.i3Q2HostingReleaseC3Pending||null)&&
     JSON.stringify(preC3)===JSON.stringify(l?.i3Q2HostingReleaseC3Pending||null)&&
-    preC3.sourceSha===source&&preC3.sourceTree===tree&&
+    preC3.sourceSha===(pendingFromPaired?seal.sourceSha:source)&&preC3.sourceTree===(pendingFromPaired?seal.sourceTree:tree)&&
     preC3.hostingVersion===seal.hostingVersion&&preC3.runtimeRevision===seal.runtimeRevision&&
-    postDeploy.sourceSha===source&&postDeploy.sourceTree===tree&&
+    postDeploy.sourceSha===preC3.sourceSha&&postDeploy.sourceTree===preC3.sourceTree&&
     postDeploy.hostingVersion===seal.hostingVersion&&postDeploy.runtimeRevision===seal.runtimeRevision&&
-    current.sourceMaterialized===true&&current.materializationScope==='RUNTIME_AND_HOSTING'&&
+    (pendingFromPaired||(current.sourceMaterialized===true&&current.materializationScope==='RUNTIME_AND_HOSTING'))&&
     typeof preC3.previousRuntimeRevision==='string'&&preC3.production===false;
   const c3PredecessorAfterServing=c3PredecessorAfterHosting||c3PredecessorAfterPaired;
   check(Boolean(ledgerPath)&&p?.findingsLedgerPath===ledgerPath,'CURRENT_LEDGER_PATH_DESYNC');
@@ -106,7 +115,7 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
   // remains historical with its own source, tree and successful run identity.
   const c3Source=c3PredecessorAfterServing?preC3.previousC3SourceSha:(pendingHostingOnly?hosting.sourceSha:source);
   const c3Tree=c3PredecessorAfterServing?preC3.previousC3SourceTree:(pendingHostingOnly?hosting.sourceTree:tree);
-  const c3Runtime=c3PredecessorAfterPaired?preC3.previousRuntimeRevision:seal.runtimeRevision;
+  const c3Runtime=c3PredecessorAfterServing?(preC3.previousRuntimeRevision??seal.runtimeRevision):seal.runtimeRevision;
   check(sameProof&&c3.schemaVersion==='cxorbia.i3.current-c3-preterminal-audit.v1'&&
     Number.isInteger(c3.runId)&&c3.runId>0&&
     c3.moduleCount===21&&c3.matchModules>=0&&c3.matchModules<=21&&

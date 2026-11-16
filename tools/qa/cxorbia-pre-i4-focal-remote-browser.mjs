@@ -4,7 +4,7 @@ import { applicationDefault, initializeApp, getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { chromium } from 'playwright';
-import {assertFocalConfigAuthority,buildFocalHrReference,knownAmount} from './cxorbia-pre-i4-focal-hr-reference.mjs';
+import {assertFocalConfigAuthority,buildFocalHrReference,knownAmount,buildFocalDashboardStageReference,assertFocalDashboardStageReadback} from './cxorbia-pre-i4-focal-hr-reference.mjs';
 import {validateFocalResourceRead} from './cxorbia-pre-i4-resource-read-contract.mjs';
 // PRE-I4 FAST-PATH CONTROL: routed HR authority settle; product source remains immutable.
 
@@ -34,6 +34,7 @@ const projectConfig=projectSnap.data()||{};
 const periodConfig=periodSnaps.docs.find(d=>d.id===periodId||String(d.data()?.key||d.data()?.periodKey||'')===periodKey)?.data()||{};
 assertFocalConfigAuthority({snapshot:hrSnapshot,projectId,projectConfig,projectExists:projectSnap.exists});
 const reference=buildFocalHrReference({snapshot:hrSnapshot,periodKey,countryCodes:['GT','HN'],projectConfig,periodConfig,configAuthority:'firestore_project_config'});
+const dashboardStageReference=buildFocalDashboardStageReference({snapshot:hrSnapshot,runtime:hrRuntime,tenantId,projectId,periodId,periodKey,sourceRevision:hrRevision,countryCodes:['GT','HN']});
 const members=(await tenant.collection('users').get()).docs.map(d=>({id:d.id,...(d.data()||{})}));
 const authExists=async m=>{try{await auth.getUser(m.id);return true;}catch(e){if(str(e?.code)==='auth/user-not-found')return false;throw e;}};
 let admin=null;
@@ -130,6 +131,30 @@ async function waitForRouteSettle(page,route,kind){
     throw new Error('FUNCTIONAL_DEFECT:'+kind+'_ROUTE_'+route+'_SETTLE_TIMEOUT:'+JSON.stringify({routeSettleMs:Date.now()-started,requiredStableMs:stableMs,state,error:String(error&&error.message||error||'timeout').slice(0,240)}));
   }
   return Date.now()-started;
+}
+
+async function collectDashboardStageReadback(page){
+  const stages=['total','asign','agend','sinagend','sinasign','real','cuest','submit','liq'],cases=[];
+  for(const country of Object.keys(dashboardStageReference.countries))for(const stage of stages){
+    if(await page.locator('.cx-ov[role="dialog"]').count())throw Error('FUNCTIONAL_DEFECT:B11_STAGE_PREVIOUS_MODAL_OPEN');
+    const chip=page.locator('[data-fase="'+country+'|'+stage+'"]');
+    if(await chip.count()!==1)throw Error('FUNCTIONAL_DEFECT:B11_STAGE_TILE_MISSING:'+country+':'+stage);
+    const label=await chip.evaluate(el=>String(el.firstElementChild?.textContent||'').trim());
+    if(!/^\d+$/.test(label))throw Error('FUNCTIONAL_DEFECT:B11_STAGE_COUNTER_INVALID');
+    const visibleCount=Number(label);await chip.click();
+    const modal=page.locator('.cx-ov[role="dialog"]');await modal.waitFor({state:'visible',timeout:15000});
+    if(await modal.count()!==1||await modal.locator('#drBody').count()!==1)throw Error('FUNCTIONAL_DEFECT:B11_STAGE_DETAIL_NOT_OPEN');
+    const title=String(await modal.getAttribute('aria-label')),parts=title.split(' · '),modalCount=Number(parts.at(-1));
+    if(parts.at(-2)!==stage||!/^\d+$/.test(parts.at(-1))||modalCount!==visibleCount)throw Error('FUNCTIONAL_DEFECT:B11_STAGE_MODAL_TITLE_COUNT');
+    const modalIds=await modal.locator('#drBody tr[data-vrow]').evaluateAll(rows=>rows.map(el=>el.getAttribute('data-vrow')));
+    const observed=await page.evaluate(()=>({projectId:CX.data.currentProjectId,periodId:CX.data.currentPeriodId,route:CX.session?.view,
+      sourceRevision:CX.data.previewMeta?.sourceRevision,hrRevision:CX.data.__liveHrSourceRevision,authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true}));
+    if(observed.projectId!==projectId||observed.periodId!==periodId||observed.route!=='dashboard'||observed.authority!==true||observed.hrRevision!==hrRevision)throw Error('MAPPING_FAILURE:B11_STAGE_CONTEXT_DRIFT');
+    const checked=assertFocalDashboardStageReadback({expectedIds:dashboardStageReference.countries[country][stage],visibleCount,modalIds,revision:observed.sourceRevision,expectedRevision:hrRevision});
+    cases.push({country,stage,visibleCount,modalCount,title,...checked});
+    await modal.locator('.cx-modal-h [data-x]').click();await modal.waitFor({state:'detached',timeout:10000});
+  }
+  return {scope:'CURRENT_PERIOD_DASHBOARD_CUMULATIVE_STAGES_ONLY_NOT_FULL_B11',tenantId,projectId,periodId,sourceRevision:hrRevision,expectedCases:stages.length*Object.keys(dashboardStageReference.countries).length,completedCases:cases.length,cases};
 }
 
 async function signInMember(member,kind,route,options={}){
@@ -350,6 +375,7 @@ async function signInMember(member,kind,route,options={}){
     if(pageErrors.length||info.debug||info.lab||info.blocked||info.technicalVisible||info.projectId!==projectId||info.periodId!==periodId||info.sourceRevision!==hrRevision||info.route!==r)throw new Error('FUNCTIONAL_DEFECT:'+kind+'_ROUTE_'+r+':'+JSON.stringify({pageErrors,info}));
     if(options.isMobile===true&&(info.scrollWidth>info.innerWidth+2||!info.mobileIdentity?.visible))throw new Error('VISUAL_DEFECT:'+kind+'_MOBILE_'+r+':'+JSON.stringify(info));
     if(r==='dashboard'){
+      if(kind==='admin'&&options.isMobile!==true)info.dashboardStages=await collectDashboardStageReadback(page);
       for(const [code,p] of [['GT',info.phaseGT],['HN',info.phaseHN]]){
         const e=reference?.countries?.[code];
         if(!e)throw new Error('SOURCE_FAILURE:DASHBOARD_REFERENCE_MISSING_'+code);

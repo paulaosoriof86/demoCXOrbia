@@ -3036,7 +3036,7 @@ jobs:
       set -Eeuo pipefail
       mkdir -p "$OUT/full-human-acceptance" "$OUT/semantic" "$OUT/gate20"
       if [[ "$(jq -r '.f09LiveVerificationPending // false' "$CANDIDATE_DESCRIPTOR")" == true ]]; then
-        FOCAL_SOURCE="$I3_CERTIFICATION_SOURCE_SHA" FOCAL_TREE="$I3_CERTIFICATION_SOURCE_TREE" EXPECTED_HR_REVISION="$CURRENT_LIVE_HR_REVISION" QA_OUT="$OUT/f09" CXORBIA_I3_QA_SCOPE=F09_CLIENT_COLLABORATION CXORBIA_I3_QA_ISOLATED_WRITE_GATE=PAULA_AUTHORIZED_F09_DEV_ONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
+        FOCAL_SOURCE="$I3_CERTIFICATION_SOURCE_SHA" FOCAL_TREE="$I3_CERTIFICATION_SOURCE_TREE" EXPECTED_HR_REVISION="$CURRENT_LIVE_HR_REVISION" QA_OUT="$OUT/f09" CXORBIA_I3_QA_SCOPE=F09_CLIENT_COLLABORATION CXORBIA_I3_QA_ISOLATED_WRITE_GATE=PAULA_AUTHORIZED_F09_DEV_ONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs || jq -e '.decision=="HOLD" and .hrBefore==env.CURRENT_LIVE_HR_REVISION and .cleanup.ok and .cleanup.remainingDocuments==0 and .cleanup.remainingAuth==0 and .realProjectPeriodUnchanged and .productionIndexUnchanged and .runtimeTrafficExact and .hrBefore==.hrAfter' "$OUT/f09/result.json" >/dev/null
       fi
       PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" I3_CERTIFICATION_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" SOURCE_DIR="$SOURCE_DIR" CX_I3_PINNED_HR_FILE="$OUT/hr-current-live.json" CX_I3_PINNED_HR_REVISION="$CURRENT_LIVE_HR_REVISION" ACCEPTANCE_OUT="$OUT/full-human-acceptance" node RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
       test "$(jq -r '.decision' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "PASS_I3_HUMAN_LIVE_ACCEPTANCE"
@@ -3081,6 +3081,7 @@ jobs:
       node tools/qa/cxorbia-i3-live-fixture-contract.mjs verify-live "$OUT"
    - run: |
       set -Eeuo pipefail
+      if [[ "$(jq -r '.f09LiveVerificationPending // false' "$CANDIDATE_DESCRIPTOR")" == true ]]; then jq -e '.decision=="PASS_I3_F09_UI_PROVIDER_NEW_SESSION_PRIVACY_REPLAY_CLEANUP"' "$OUT/f09/result.json" >/dev/null; fi
       LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")"
       TERMINAL_LEDGER="$OUT/terminal-evidence-ledger.json"
       jq '
@@ -6690,7 +6691,7 @@ jobs:
     SOURCE_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
     EVIDENCE: .tmp/i3-current-source-hosting-dev
     PRODUCTION_URL: https://tya-plataforma.web.app/
-    ASSET_FILES: adapters/tya-protected-auth-hr-authority-bridge-v2.js adapters/tya-c6-unified-human-runtime-v1.js adapters/cxorbia-cxdata-command-boundary-v1.js index-backend-dev.html core/backend-firebase.js core/router.js adapters/tya-live-source-refresh-watch-v2.js modules/hr-source.js modules/shoppers.js modules/beneficios.js modules/clientes.js modules/historico.js modules/visitas.js modules/cuestionario-shopper.js modules/cert.js core/data.js core/backend-certifications.js modules/midia.js modules/misvisitas.js core/finanzas-core.js modules/marca.js modules/administrabilidad.js modules/configuracion.js modules/cliente-insights.js
+    ASSET_FILES: adapters/tya-protected-auth-hr-authority-bridge-v2.js adapters/tya-c6-unified-human-runtime-v1.js adapters/cxorbia-cxdata-command-boundary-v1.js index-backend-dev.html core/backend-firebase.js core/router.js adapters/tya-live-source-refresh-watch-v2.js modules/hr-source.js modules/shoppers.js modules/beneficios.js modules/clientes.js modules/historico.js modules/visitas.js modules/cuestionario-shopper.js modules/cert.js core/data.js core/backend-certifications.js modules/midia.js modules/misvisitas.js core/finanzas-core.js modules/marca.js modules/administrabilidad.js modules/configuracion.js modules/cliente-insights.js modules/dashboard.js adapters/cxorbia-command-adapter-v1.js core/backend-bulletins.js sw.js
    steps:
    - uses: actions/checkout@v4
      with: {fetch-depth: 0}
@@ -6708,11 +6709,11 @@ jobs:
       git diff --quiet "$SOURCE" "$GITHUB_SHA" -- app backend tools firebase.json .firebaserc firestore.rules storage.rules ':!tools/qa/cxorbia-i3-vrm302-admin-shoppers-modal-binding.test.mjs' ':!tools/qa/cxorbia-i3-certification-project-continuity.test.mjs' ':!tools/qa/cxorbia-i3-current-authority-alias-guard.mjs' ':!tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs' ':!tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs' ':!tools/qa/cxorbia-i3-shock-continuity-guard.mjs' ':!tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs' ':!tools/qa/cxorbia-i3-terminal-module-domain-coverage.test.mjs'
       test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-terminal-module-domain-coverage.test.mjs")" = "69abb51282b7190394d6f923a0e11b34f5579a51"
       test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-certification-project-continuity.test.mjs")" = "1d663cc151e638150185eb51b82566455e09f18b"
-      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.mjs")" = "90e1e886deee3778c6e0151071a5477eada4dd20"
-      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs")" = "d627d516a2510368866e9f548d73c231e44efd66"
-      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-shock-continuity-guard.mjs")" = "a416e4411941f98b924d6eda67b844cbdccae019"
-      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs")" = "71be9da25e952e939561898e1dd2a1517bfefa70"
-      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs")" = "810fbe498e4c40b77b5cf051dd9767760695feef"
+      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.mjs")" = "a67508d2403eabe11b69f0ef0d2f358340919b86"
+      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs")" = "ba04db9064fe364b7190dc088157cfe0629c1ff5"
+      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-shock-continuity-guard.mjs")" = "b4853f5e2d95103ef69f26c50c5ccb7348f97a41"
+      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs")" = "62dd0657bc1385325d5cb1ee3b4ee9b72ecd5984"
+      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs")" = "a60621985a3dcb1c5eda83562f900e880c45cc16"
       [[ "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" == HOLD_I3_* ]]
       test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$SOURCE"
       test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$SOURCE_TREE"

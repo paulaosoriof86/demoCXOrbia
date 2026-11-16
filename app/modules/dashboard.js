@@ -84,10 +84,20 @@ CX.module('dashboard', ({data,ui})=>{
     fueraRango:phaseCount(BF.fueraRango),
     postPend:data._posts.filter(pp=>pp.estado==='pendiente'&&data.inScope(pp.pais)&&!pp._archived).length,
   };
-  const phaseFlow=(c)=>{const arr=pool().filter(x=>x.pais===c),hrArr=hrPool().filter(x=>x.pais===c);const t=arr.length||1;const n=fn=>arr.filter(fn).length,hn=fn=>hrArr.filter(fn).length;const pc=x=>Math.round(x/t*100);const f=x=>data.visitFacets(x);
-    const assigned=hn(x=>f(x).assigned&&!f(x).cancelled),scheduled=n(x=>f(x).scheduled&&!f(x).cancelled),real=n(x=>f(x).realized&&!f(x).cancelled);
-    const questionnaire=n(x=>f(x).questionnaire&&!f(x).cancelled),submitted=n(x=>f(x).submitted&&!f(x).cancelled),liquidated=n(x=>f(x).liquidationConfirmed&&!f(x).cancelled);
-    const sinAgend=hn(x=>f(x).assigned&&!f(x).scheduled&&!f(x).realized&&!f(x).cancelled),sinAsign=hn(x=>!f(x).assigned&&!f(x).realized&&!f(x).cancelled);
+  const phasePredicates={
+    total:()=>true,
+    asign:v=>{const f=data.visitFacets(v);return f.assigned&&!f.cancelled;},
+    agend:v=>{const f=data.visitFacets(v);return f.scheduled&&!f.cancelled;},
+    real:v=>{const f=data.visitFacets(v);return f.realized&&!f.cancelled;},
+    cuest:v=>{const f=data.visitFacets(v);return f.questionnaire&&!f.cancelled;},
+    submit:v=>{const f=data.visitFacets(v);return f.submitted&&!f.cancelled;},
+    liq:v=>{const f=data.visitFacets(v);return f.liquidationConfirmed&&!f.cancelled;},
+    sinagend:BF.sinAgendar,sinasign:BF.sinAsignar,
+  };
+  const phaseFlow=(c)=>{const arr=pool().filter(x=>x.pais===c),hrArr=hrPool().filter(x=>x.pais===c);const t=arr.length||1;const n=fn=>arr.filter(fn).length,hn=fn=>hrArr.filter(fn).length;const pc=x=>Math.round(x/t*100);
+    const assigned=hn(phasePredicates.asign),scheduled=n(phasePredicates.agend),real=n(phasePredicates.real);
+    const questionnaire=n(phasePredicates.cuest),submitted=n(phasePredicates.submit),liquidated=n(phasePredicates.liq);
+    const sinAgend=hn(phasePredicates.sinagend),sinAsign=hn(phasePredicates.sinasign);
     return {total:arr.length,asign:[assigned,pc(assigned)],agend:[scheduled,pc(scheduled)],sinAgend:[sinAgend,pc(sinAgend)],sinAsign:[sinAsign,pc(sinAsign)],
       real:[real,pc(real)],cuest:[questionnaire,pc(questionnaire)],submit:[submitted,pc(submitted)],liq:[liquidated,pc(liquidated)]};};
   const shoppersPool=ALL?data.shoppers.filter(s=>data.inScope(s.pais)):data.shoppersFor();
@@ -514,7 +524,7 @@ CX.module('dashboard', ({data,ui})=>{
     const hrAssignmentSource=id=>['asign','sinasign','sinagend'].includes(id)?hrPool:null;
     host.querySelectorAll('[data-kpi]').forEach(el=>el.addEventListener('click',()=>{const id=el.dataset.kpi;drill(el.querySelector('.k-l').textContent.replace(' ›',''),F[id]||F.total,WA[id],hrAssignmentSource(id));}));
     host.querySelectorAll('[data-alert]').forEach(el=>el.addEventListener('click',()=>{const id=el.dataset.alert;drill('Gestión: '+id,F[id]||F.total,WA[id]||'Gestionar con los involucrados.',hrAssignmentSource(id));}));
-    host.querySelectorAll('[data-fase]').forEach(el=>el.addEventListener('click',()=>{const[c,fk]=el.dataset.fase.split('|');drill(CX.paisLabel(c)+' · '+fk,v=>v.pais===c&&(F[fk]||F.total)(v),WA[fk],hrAssignmentSource(fk));}));
+    host.querySelectorAll('[data-fase]').forEach(el=>el.addEventListener('click',()=>{const[c,fk]=el.dataset.fase.split('|');drill(CX.paisLabel(c)+' · '+fk,v=>v.pais===c&&(phasePredicates[fk]||phasePredicates.total)(v),['sinasign','sinagend'].includes(fk)?WA[fk]:null,hrAssignmentSource(fk));}));
     const dx=host.querySelector('#dashExport');
     if(dx&&CX.reportKit){
       const dSpec=(ext)=>{

@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-proven-scope.v1",
+  "findingId": "VRM-348",
+  "priority": "P0_PROVEN",
+  "classification": "FUNCTIONAL_DEFECT",
+  "iteration": "I3",
+  "generatedAt": "2026-11-16T00:11:55.481713+00:00",
+  "moduleTruthBeforeEdit": {
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261115-V321.json",
+    "matrixBlob": "44d3dfa3a18d91132b2c4f3f6d9a2e6790f4e1dd",
+    "domain": "dashboard-operation",
+    "owner": "app/modules/dashboard.js",
+    "lastApprovedSource": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+    "lastApprovedBlob": "0b411b4de9c23dd2b944302f302d2a6b3e503b67",
+    "f9Source": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "f9Blob": "e879fc3f1dd5a7486762b197346cadd086e1d99d",
+    "sourceSuccessor": "c54cdc8846642f2d5481e1b933ca5e5cc6c44c22",
+    "sourceBlob": "c48d1c63d0628c637c4257bef1725dc4349b8668",
+    "head": "4c1f04c7a6612cfca362015341e66416e60b67bb",
+    "liveSha256": "44060d8d043cfaa57ad7f55618b1de217c4eb8e195111caf33ed82e6fa2cd81c",
+    "sourceEqualsLive": true,
+    "classification": "TRUE_FUNCTIONAL_DEFECT"
+  },
+  "evidence": {
+    "runId": 43772983839,
+    "hrSha256": "39ee96a58f61b838dc6eb5ff76398334a96befd0a1bbb9c7f1eb0dc0f0732429",
+    "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "inputFixture": "tools/qa/fixtures/cxorbia-i3-b11-run2537-stage-keysets.json",
+    "failure": "Stage tiles use cumulative scheduled/questionnaire/submitted counts but drilldown reuses pending-work predicates. HN questionnaire count1 opens wrong visit.",
+    "actualBefore": {
+      "GT": {
+        "agend": [
+          15,
+          10
+        ],
+        "cuest": [
+          5,
+          0
+        ],
+        "submit": [
+          4,
+          1
+        ]
+      },
+      "HN": {
+        "agend": [
+          5,
+          3
+        ],
+        "cuest": {
+          "counts": [
+            1,
+            1
+          ],
+          "expectedId": "hr_2026-11_hn_6_49fa8eca21",
+          "actualId": "hr_2026-11_hn_4_9402c9c858"
+        },
+        "submit": [
+          1,
+          0
+        ]
+      }
+    },
+    "method": "VM runs actual phaseFlow, F, stage listener and drill on independent HR fixture; no provider writes"
+  },
+  "allowedProductFiles": [
+    "app/modules/dashboard.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs",
+    "tools/qa/fixtures/cxorbia-i3-b11-run2537-stage-keysets.json",
+    "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
+    "tools/qa/cxorbia-pre-i4-focal-hr-reference.mjs",
+    "tools/qa/cxorbia-pre-i4-focal-hr-reference.test.mjs",
+    "tools/qa/cxorbia-i3-source-qa-evidence.mjs",
+    "tools/qa/cxorbia-i3-source-qa-evidence.test.mjs"
+  ],
+  "repair": "One shared set of cumulative stage predicates drives stage count and click handler. Pending KPI/alert predicates remain unchanged. Remove pending-questionnaire guidance from completed-questionnaire stage. Verify ID sets, not merely lengths.",
+  "production": false,
+  "hrWrites": 0,
+  "humanAcceptancePreserved": [
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ],
+  "fullB11ClosureNotInferred": true
+}

@@ -47,7 +47,6 @@ export function validatePendingDevSuccessor({descriptor:d,pointer:p,matrix:m,git
         JSON.stringify(pending.servingHosting)!==JSON.stringify(hosting)||
         !hosting.receiptPath||gitBlob(hosting.receiptPath)!==hosting.receiptBlob)return {present:true,pass:false};
     }else{
-      if(pending.scope==='HOSTING_ONLY')return {present:true,pass:false};
       const paired=d.currentMaterialization;
       if(p.currentHostingOnlyDevMaterialization||pending.servingHosting||!paired||
         JSON.stringify(seal)!==JSON.stringify(p.postDeployRunSeal)||
@@ -328,21 +327,24 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
     const receipt=x.receiptPath&&fs.existsSync(x.receiptPath)?readJson(x.receiptPath):{};
     if(x.state==='DEV_RUNTIME_AND_HOSTING_VERIFIED_C3_PENDING'){
       const materialization=receipt.materialization||{};
+      const pendingFromPaired=pendingDev.pass&&Boolean(d.pendingDevSuccessor?.servingPairedMaterialization)&&
+        d.pendingDevSuccessor.predecessorProductSourceSha===currentDev.sourceSha;
       check(JSON.stringify(x)===JSON.stringify(c3AfterHostingP||null)&&x.production===false&&
-        x.sourceSha===d.productSourceSha&&x.sourceTree===d.productTreeAuthority&&
+        x.sourceSha===(pendingFromPaired?currentDev.sourceSha:d.productSourceSha)&&
+        x.sourceTree===(pendingFromPaired?currentDev.sourceTree:d.productTreeAuthority)&&
         x.hostingVersion===currentDev.hostingVersion&&x.runtimeRevision===currentDev.runtimeRevision&&
         x.previousC3SourceSha===d.currentC3PreterminalAudit?.sourceSha&&
         x.previousC3SourceTree===d.currentC3PreterminalAudit?.sourceTree&&
         x.previousHostingVersion===d.currentC3PreterminalAudit?.hostingVersion&&
         x.previousRuntimeRevision===d.currentC3PreterminalAudit?.runtimeRevision&&
         x.receiptPath&&x.receiptBlob===gitBlob(x.receiptPath)&&
-        seal.mode==='CURRENT_SOURCE_SERVING'&&seal.receiptPath===x.receiptPath&&seal.receiptBlob===x.receiptBlob&&
+        seal.mode===(pendingFromPaired?'PREDECESSOR_SERVING_PENDING_SOURCE':'CURRENT_SOURCE_SERVING')&&seal.receiptPath===x.receiptPath&&seal.receiptBlob===x.receiptBlob&&
         JSON.stringify(d.currentMaterialization)===JSON.stringify(currentDev)&&
         JSON.stringify(materialization)===JSON.stringify(currentDev)&&materialization.production===false&&
         receipt.source?.sha===x.sourceSha&&receipt.source?.tree===x.sourceTree&&
         ['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion','hostingRelease','runId','artifactDigest'].every(k=>materialization[k]&&materialization[k]===seal[k])&&
         hasVerifiedHostingAssets({...receipt,sourceSha:receipt.source?.sha},x.previousC3SourceSha,gitRead)&&receipt.productionUnchanged===true&&
-        m.productSource?.authorityState==='RUNTIME_AND_HOSTING_DEV_MATERIALIZED_PENDING_C3_E2E',
+        (pendingFromPaired||m.productSource?.authorityState==='RUNTIME_AND_HOSTING_DEV_MATERIALIZED_PENDING_C3_E2E'),
         'RELEASE_COMPOSITION_FAILURE:PAIRED_DEV_C3_TRANSITION_RECEIPT');
     }else{
     check(JSON.stringify(x)===JSON.stringify(c3AfterHostingP||null)&&
@@ -353,6 +355,7 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
       x.previousC3SourceSha===d.currentC3PreterminalAudit?.sourceSha&&
       x.previousC3SourceTree===d.currentC3PreterminalAudit?.sourceTree&&
       x.previousHostingVersion===d.currentC3PreterminalAudit?.hostingVersion&&
+      (x.previousRuntimeRevision??currentDev.runtimeRevision)===d.currentC3PreterminalAudit?.runtimeRevision&&
       x.receiptPath&&x.receiptBlob===gitBlob(x.receiptPath)&&
       receipt.sourceSha===x.sourceSha&&receipt.sourceTree===x.sourceTree&&
       receipt.hostingAfter===x.hostingVersion&&receipt.runtimeRevision===x.runtimeRevision&&

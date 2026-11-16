@@ -463,6 +463,18 @@ const withPairedPendingSuccessor=()=>{
 test('VRM313: a proven paired predecessor retains its exact materialization receipt through the pending source transition',()=>{
  assert.equal(validateShockContinuity(withPairedPendingSuccessor()).pass,true);
 });
+test('Hosting-only after a paired receipt accepts browser owners and rejects a backend delta',()=>{
+ const a=withPairedPendingSuccessor(),browser=['app/modules/dashboard.js'];
+ const proof=JSON.parse(a.gitRead(['show','HEAD:proof.json']));proof.allowedProductFiles=browser;
+ for(const x of [a.descriptor,a.pointer])Object.assign(x.pendingDevSuccessor,{scope:'HOSTING_ONLY',allowedProductFiles:browser});
+ a.matrix.productSource.authorityState='SOURCE_ONLY_PROVEN_PENDING_HOSTING_ONLY_DEV';
+ const read=a.gitRead;
+ a.gitRead=args=>args[0]==='diff'?browser.join('\n'):
+  args[1]==='HEAD:proof.json'?JSON.stringify(proof):args[1]==='HEAD:scope.json'?JSON.stringify({allowedProductFiles:browser}):read(args);
+ const r=validateShockContinuity(a);assert.equal(r.pass,true,JSON.stringify(r.failures));
+ const allowedRead=a.gitRead;a.gitRead=args=>args[0]==='diff'?browser.join('\n')+'\nbackend/runtime/unapproved.mjs':allowedRead(args);
+ assert.match(validateShockContinuity(a).failures.join(' '),/PENDING_DEV_SUCCESSOR_UNPROVEN/);
+});
 test('VRM313: paired predecessor source, artifact, runtime, hosting and receipt cannot be fabricated',()=>{
  for(const mutate of [
   a=>{a.pointer.currentHostingOnlyDevMaterialization={sourceSha:'source'};},

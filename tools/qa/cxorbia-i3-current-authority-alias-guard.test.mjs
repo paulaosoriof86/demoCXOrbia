@@ -124,6 +124,58 @@ function pairedAfterDeployFixture(){
 test('paired ACK preserves the previous C3 runtime/source as historical until same-source verification',()=>{
  const v=pairedAfterDeployFixture();assert.equal(validateCurrentAuthorityAliases(v).pass,true,JSON.stringify(validateCurrentAuthorityAliases(v)));
 });
+function pairedPendingHostingFixture(){
+ const v=pairedAfterDeployFixture(),d=v.descriptor,p=v.pointer,l=v.ledger;
+ const source='2'.repeat(40),tree='3'.repeat(40),paired=structuredClone(l.currentMaterialization);
+ d.currentMaterialization=structuredClone(paired);
+ d.postDeployRunSeal.mode='PREDECESSOR_SERVING_PENDING_SOURCE';p.postDeployRunSeal=structuredClone(d.postDeployRunSeal);
+ d.productSourceSha=source;d.productSourceTree=tree;p.productTree=tree;
+ l.currentProductSourceSha=source;l.currentProductSourceTree=tree;
+ Object.assign(l.governance,{currentProductSourceSha:source,currentProductSourceTree:tree});
+ Object.assign(l.currentTruth,{productSourceSha:source,productTree:tree,sourceMaterialized:false});
+ p.activePhaseAClosureLock20261110.sourceSha=source;
+ const pending={state:'P0_PROVEN_PENDING_DEV_MATERIALIZATION',scope:'HOSTING_ONLY',sourceSha:source,sourceTree:tree,
+  predecessorProductSourceSha:paired.sourceSha,production:false,devPublished:false,
+  servingPairedMaterialization:paired,servingRuntimeSeal:structuredClone(d.postDeployRunSeal)};
+ d.pendingDevSuccessor=structuredClone(pending);p.pendingDevSuccessor=structuredClone(pending);return v;
+}
+test('Hosting-only source may follow an exact paired receipt while preserving its older C3',()=>{
+ const v=pairedPendingHostingFixture();assert.equal(validateCurrentAuthorityAliases(v).pass,true,JSON.stringify(validateCurrentAuthorityAliases(v)));
+ assert.notEqual(v.descriptor.currentC3PreterminalAudit.sourceSha,v.descriptor.pendingDevSuccessor.predecessorProductSourceSha);
+ assert.equal(v.descriptor.currentHostingOnlyDevMaterialization,undefined);
+});
+test('pending paired receipt also agrees with descriptor, not only pointer and ledger',()=>{
+ const v=pairedPendingHostingFixture();v.descriptor.currentMaterialization.runtimeDigest='fabricated';
+ assert.equal(validateCurrentAuthorityAliases(v).pass,false);
+});
+for(const field of ['sourceSha','sourceTree','runtimeRevision','hostingVersion'])test('pending Hosting from paired rejects altered '+field,()=>{
+ const v=pairedPendingHostingFixture();v.descriptor.pendingDevSuccessor.servingPairedMaterialization[field]='fabricated';
+ v.pointer.pendingDevSuccessor=structuredClone(v.descriptor.pendingDevSuccessor);
+ assert.equal(validateCurrentAuthorityAliases(v).pass,false);
+});
+function hostingAfterPairedFixture(){
+ const v=pairedPendingHostingFixture(),d=v.descriptor,p=v.pointer,l=v.ledger;
+ const h={sourceSha:d.productSourceSha,sourceTree:d.productSourceTree,hostingVersion:'hosting-373',
+  runtimeRevision:l.currentMaterialization.runtimeRevision,productionChanged:false};
+ d.currentHostingOnlyDevMaterialization=structuredClone(h);p.currentHostingOnlyDevMaterialization=structuredClone(h);
+ delete d.pendingDevSuccessor;delete p.pendingDevSuccessor;
+ Object.assign(l.currentTruth,{sourceMaterialized:true,materializationScope:'HOSTING_ONLY_WITH_PAIRED_PREDECESSOR'});
+ p.activePhaseAClosureLock20261110.devHosting=h.hostingVersion;
+ for(const x of [d,p,l])Object.assign(x.i3Q2HostingReleaseC3Pending,{state:'DEV_HOSTING_VERIFIED_C3_PENDING',
+  sourceSha:h.sourceSha,sourceTree:h.sourceTree,hostingVersion:h.hostingVersion,runtimeRevision:h.runtimeRevision});
+ return v;
+}
+test('Hosting after paired preserves the C3 previous runtime instead of relabelling its receipt',()=>{
+ const v=hostingAfterPairedFixture();assert.equal(validateCurrentAuthorityAliases(v).pass,true,JSON.stringify(validateCurrentAuthorityAliases(v)));
+ assert.notEqual(v.descriptor.currentC3PreterminalAudit.runtimeRevision,v.ledger.currentMaterialization.runtimeRevision);
+ for(const x of [v.descriptor,v.pointer,v.ledger])x.i3Q2HostingReleaseC3Pending.previousRuntimeRevision='fabricated';
+ assert.equal(validateCurrentAuthorityAliases(v).pass,false);
+});
+test('Hosting after a newer runtime requires the explicit historical C3 runtime',()=>{
+ const v=hostingAfterPairedFixture();
+ for(const x of [v.descriptor,v.pointer,v.ledger])delete x.i3Q2HostingReleaseC3Pending.previousRuntimeRevision;
+ assert.equal(validateCurrentAuthorityAliases(v).pass,false);
+});
 for(const field of ['previousRuntimeRevision','previousHostingVersion','previousC3SourceSha','sourceTree','runtimeRevision','hostingVersion'])test('paired transition rejects a falsified '+field,()=>{
  const v=pairedAfterDeployFixture();for(const x of [v.descriptor,v.pointer,v.ledger])x.i3Q2HostingReleaseC3Pending[field]='fabricated';assert.equal(validateCurrentAuthorityAliases(v).pass,false);
 });

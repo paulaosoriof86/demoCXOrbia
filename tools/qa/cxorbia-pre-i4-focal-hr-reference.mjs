@@ -5,6 +5,38 @@ const list=v=>Array.isArray(v)?v:[];
 const facet=v=>v?.canonicalFacets||{};
 const codeOf=v=>String(v?.pais||v?.country||'').toUpperCase();
 
+export function buildFocalDashboardStageReference({snapshot,runtime=snapshot?._runtime,tenantId,projectId,periodId,periodKey,sourceRevision,countryCodes}){
+  const fail=code=>{throw new Error('SOURCE_FAILURE:B11_STAGE_'+code);};
+  if(snapshot?.sourceSafe!==true||snapshot.imported!==false||snapshot.production!==false||snapshot.tenantId!==tenantId||snapshot.projectId!==projectId||
+    !/^[a-f0-9]{64}$/.test(String(sourceRevision))||runtime?.revision!==sourceRevision||runtime.revisionStable!==true||runtime.hrWrites!==false||runtime.imports!==false||
+    (snapshot._runtime&&snapshot._runtime.revision!==runtime.revision))fail('AUTHORITY');
+  const periods=list(snapshot.periods).filter(p=>String(p.id||p.periodId||'')===periodId&&String(p.key||p.periodKey||'')===periodKey);
+  if(periods.length!==1||periods[0].projectId!==projectId)fail('PERIOD');
+  const rows=list(snapshot.visits).filter(v=>String(v.periodKey||'')===periodKey&&!v._archived);
+  const countries=[...new Set(countryCodes||[])];
+  const keys=['assigned','scheduled','realized','questionnaire','submitted','liquidationConfirmed','cancelled'];
+  if(!countries.length||rows.some(v=>v.tenantId!==tenantId||v.projectId!==projectId||!countries.includes(codeOf(v))||
+    ![v.id,v.hrRowId].every(id=>typeof id==='string'&&id.trim()===id&&id.length>0)||keys.some(k=>typeof v.canonicalFacets?.[k]!=='boolean')))fail('ROW_SCOPE');
+  for(const field of ['id','hrRowId'])if(new Set(rows.map(v=>String(v[field]))).size!==rows.length)fail('DUPLICATE_'+field.toUpperCase());
+  const active=v=>facet(v).cancelled!==true;
+  const predicates={total:()=>true,asign:v=>active(v)&&facet(v).assigned===true,agend:v=>active(v)&&facet(v).scheduled===true,
+    real:v=>active(v)&&facet(v).realized===true,cuest:v=>active(v)&&facet(v).questionnaire===true,submit:v=>active(v)&&facet(v).submitted===true,
+    liq:v=>active(v)&&facet(v).liquidationConfirmed===true,sinasign:v=>active(v)&&!facet(v).assigned&&!facet(v).realized,
+    sinagend:v=>active(v)&&facet(v).assigned===true&&!facet(v).scheduled&&!facet(v).realized};
+  return {tenantId,projectId,periodId,periodKey,sourceRevision,authority:'independent_external_hr_revision',
+    countries:Object.fromEntries(countries.map(c=>[c,Object.fromEntries(Object.entries(predicates).map(([key,pred])=>[key,rows.filter(v=>codeOf(v)===c&&pred(v)).map(v=>String(v.id)).sort()]))]))};
+}
+
+export function assertFocalDashboardStageReadback({expectedIds,visibleCount,modalIds,revision,expectedRevision}){
+  const fail=code=>{throw new Error('FUNCTIONAL_DEFECT:B11_STAGE_'+code);};
+  const validIds=ids=>Array.isArray(ids)&&ids.every(id=>typeof id==='string'&&id.trim()===id&&id.length>0)&&new Set(ids).size===ids.length;
+  if(!/^[a-f0-9]{64}$/.test(String(expectedRevision))||!validIds(expectedIds))throw Error('SOURCE_FAILURE:B11_STAGE_REFERENCE');
+  if(revision!==expectedRevision)fail('REVISION_DRIFT');
+  if(!validIds(modalIds))fail('DUPLICATE_OR_INVALID_MODAL_IDS');
+  if(!Number.isSafeInteger(visibleCount)||visibleCount<0||visibleCount!==expectedIds.length||JSON.stringify([...modalIds].sort())!==JSON.stringify([...expectedIds].sort()))fail('COUNTER_DETAIL_KEYSET_MISMATCH');
+  return {pass:true,count:expectedIds.length,ids:[...modalIds].sort(),sourceRevision:revision};
+}
+
 export function assertFocalConfigAuthority({snapshot,projectId,projectConfig,projectExists}){
   if(String(snapshot?.projectId||'')!==projectId)throw new Error('SOURCE_FAILURE:FOCAL_PROJECT_SCOPE');
   if(!projectExists||snapshot.projectConfigAuthority!=='firestore_project_config')throw new Error('SOURCE_FAILURE:FOCAL_CONFIG_AUTHORITY');

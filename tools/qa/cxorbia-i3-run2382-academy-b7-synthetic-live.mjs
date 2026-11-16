@@ -108,6 +108,32 @@ async function runClientCollaborationQa(){
     const url=host+'/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId='+encodeURIComponent(projectId)+'&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV';
     async function session(identity){
       const ctx=await browser.newContext({viewport:{width:1440,height:1000}});contexts.push(ctx);const page=await ctx.newPage();
+      const redact=v=>String(v??'').replace(/Bearer\s+\S+|eyJ[A-Za-z0-9_.-]+/g,'[TOKEN]').replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi,'[EMAIL]').replace(/(https?:\/\/[^\s?#]+)[?#][^\s]*/g,'$1').slice(0,700);
+      const diagnostic={label:identity.label,role:identity.role,stage:'OPENING',network:[],pageErrors:[]};
+      (result.sessionDiagnostics??=[]).push(diagnostic);save();
+      page.on('pageerror',error=>{if(diagnostic.pageErrors.length<20)diagnostic.pageErrors.push(redact(error.message));});
+      page.on('requestfailed',r=>{if(diagnostic.network.length<80)diagnostic.network.push({path:new URL(r.url()).pathname,error:redact(r.failure()?.errorText)});});
+      page.on('response',r=>{const u=new URL(r.url());if(diagnostic.network.length<80&&(/\/api\/.*\/hr-live|\/v1\/cxorbia\//.test(u.pathname)||r.status()>=400))diagnostic.network.push({path:u.pathname,status:r.status()});});
+      const capture=async()=>{
+        diagnostic.observed=await page.evaluate(({uid,role,tenantId,projectId,periodId,hr})=>{
+          const w=window,a=w.CX?.backendAuth?.context?.()||{},p=w.CX_BACKEND_AUTHORIZED_STATE?.principal||{},g=w.CX_C6_HR_AUTHORITY_GATE||{},d=w.CX?.data||{},h=w.CX_PROTECTED_AUTH_HR_AUTHORITY||{};
+          const clean=v=>String(v??'').replace(/Bearer\s+\S+|eyJ[A-Za-z0-9_.-]+/g,'[TOKEN]').replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi,'[EMAIL]').replace(/(https?:\/\/[^\s?#]+)[?#][^\s]*/g,'$1').slice(0,500);
+          const pick=(o,keys)=>Object.fromEntries(keys.filter(k=>o&&['string','number','boolean'].includes(typeof o[k])).map(k=>[k,typeof o[k]==='string'?clean(o[k]):o[k]]));
+          const predicates={authenticated:a.authenticated===true,role:a.role===role,namespace:a.authNamespace==='staff',tenant:a.tenantId===tenantId,firebaseActor:w.firebase?.auth?.().currentUser?.uid===uid,principalActor:p.actorUid===uid,principalRole:p.role===role,principalTenant:p.tenantId===tenantId,hrApplied:h.applied===true,gateReady:g.ready===true,gateNotBlocked:!g.blocked,project:d.currentProjectId===projectId,period:d.currentPeriodId===periodId,hrRevision:d.previewMeta?.sourceRevision===hr};
+          const visible=id=>{const x=document.getElementById(id);return !!x&&getComputedStyle(x).display!=='none'&&getComputedStyle(x).visibility!=='hidden'&&x.getClientRects().length>0;};
+          return {predicates,failedPredicates:Object.keys(predicates).filter(k=>!predicates[k]),
+            expected:{role,tenantId,projectId,periodId,sourceRevision:hr},auth:pick(a,['authenticated','role','authNamespace','tenantId','projectId']),principal:pick(p,['role','authNamespace','tenantId','projectId']),
+            data:pick(d,['currentProjectId','currentPeriodId','__liveHrSourceRevision']),preview:pick(d.previewMeta,['sourceRevision','sourceRef','status']),
+            gate:pick(g,['ready','blocked','reason','error','status','projectId','periodId','sourceRevision']),
+            authority:{...pick(h,['applied','error','retryable','role','tenantId','projectId','sourceRevision','atomicPublication']),actorMatches:h.actorUid===uid},
+            reconcile:pick(w.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE,['attempts','attempt','authorized','protectedBackendReady','runtimeDependenciesReady','exhausted','lastAuthorityError','status']),
+            adminWiring:pick(w.CX_C6_LIVE_USER_ADMIN_WIRING,['status','code']),adminHandoff:pick(w.CX_C6_LIVE_USER_ADMIN_FRONTEND_HANDOFF,['status','error','appOn','loginHidden']),
+            backendState:{...pick(w.CX_BACKEND_LAST_STATE,['status','phase','error','code','source','empty','sourceRef','tenantId','projectId']),counts:Object.fromEntries(Object.entries(w.CX_BACKEND_LAST_STATE?.counts||{}).filter(([,v])=>Number.isFinite(v)))},
+            backendScope:{...pick(w.CX_BACKEND_PROJECT_SCOPE,['status','error','tenantId','projectId','mode','role','totalProjectRecords']),selectedProjectPresent:(w.CX_BACKEND_PROJECT_SCOPE?.activeProjectIds||[]).includes(projectId)},dataSource:pick(w.CX?.dataSource,['status','error','sourceRef','sourceRevision','projectId','periodId']),
+            session:pick(w.CX?.session,['role','view','projectId','periodId']),appVisible:visible('app'),loginVisible:visible('login'),gateText:clean(document.querySelector('[data-cx-human-authority-gate]')?.textContent)};
+        },{uid:identity.uid,role:identity.role,tenantId,projectId,periodId,hr:expectedHr}).catch(error=>({captureError:redact(error.message)}));save();
+      };
+      try{
       for(let i=0;i<3;i++){
         await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});await page.waitForFunction(()=>window.firebase?.apps?.length>0,null,{timeout:90000});
         const token=await auth.createCustomToken(identity.uid);
@@ -117,11 +143,14 @@ async function runClientCollaborationQa(){
       await page.goto('about:blank');await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
       await page.waitForFunction(uid=>window.firebase?.auth?.().currentUser?.uid===uid&&typeof window.CX?.backendAuth?.ensureAuthenticated==='function',identity.uid,{timeout:90000});
       await page.evaluate(()=>CX.backendAuth.ensureAuthenticated());
+      diagnostic.stage='AUTHENTICATED_WAITING_OPERATIONAL_CONTEXT';save();
       await page.waitForFunction(({uid,role,tenantId,projectId,periodId,hr})=>{
         const a=CX.backendAuth.context()||{},p=window.CX_BACKEND_AUTHORIZED_STATE?.principal||{},g=window.CX_C6_HR_AUTHORITY_GATE||{},d=CX.data;
         return a.authenticated===true&&a.role===role&&a.authNamespace==='staff'&&a.tenantId===tenantId&&firebase.auth().currentUser?.uid===uid&&p.actorUid===uid&&p.role===role&&p.tenantId===tenantId&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&!g.blocked&&d.currentProjectId===projectId&&d.currentPeriodId===periodId&&d.previewMeta?.sourceRevision===hr;
       },{uid:identity.uid,role:identity.role,tenantId,projectId,periodId,hr:expectedHr},{timeout:150000});
+      diagnostic.stage='READY';await capture();
       return {ctx,page};
+      }catch(error){diagnostic.failedAt=diagnostic.stage;diagnostic.stage='FAILED';diagnostic.error=redact(error.message);await capture();const gate=page.locator('[data-cx-human-authority-gate]').first();if(await gate.count())await gate.screenshot({path:out+'/session-'+identity.label+'-gate.png',timeout:5000}).catch(()=>{});save();throw error;}
     }
     const a=await session(planned[0]);let dropNoteAck=true,droppedResolve;
     const droppedPromise=new Promise(resolve=>{droppedResolve=resolve;});
