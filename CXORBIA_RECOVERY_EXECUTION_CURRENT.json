@@ -20485,5 +20485,32 @@
     "path": "docs/checkpoints/CXORBIA_I3_RUN2571_RAW_RANGE_GRID_CAUSE_READBACK_20261116.json",
     "gitBlob": "cd011829654efb7513911e3cf150ea8d2ea116f7",
     "sha256": "a97ed41a62b62e6571b88b64a0f909145ba2bc3a3337346e0a07437c77ed1fbb"
+  },
+  "run2572ExactSourceQa": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2572_EXACT_GRID_SOURCE_QA_AND_PAIRED_DISPATCH_20261116.json",
+    "gitBlob": "49e1eed4f1ca33103e27f0409183e023b1002aa6",
+    "sha256": "72db716bb1f9fa3b131768dfd22f0bf888bb3cc7e62837979ac157cc54c9acbd",
+    "sourceSha": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
+    "sourceTree": "b927ae81b1a3fd9eaf6f5ed2fe904a365678f3c7",
+    "runId": 43969397370,
+    "runNumber": 2572,
+    "canonicalTestsPass": 1655,
+    "ownerTestsPass": 627,
+    "production": false
+  },
+  "vrm356GridPairedDispatch": {
+    "state": "REQUESTED_EXISTING_SINGLE_PAIRED_LANE",
+    "observedAt": "2026-11-16T22:25:02.271046+00:00",
+    "sourceSha": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
+    "sourceTree": "b927ae81b1a3fd9eaf6f5ed2fe904a365678f3c7",
+    "preflightEnabled": true,
+    "requiredPushMarker": "[i3-paired-dev-once]",
+    "sourceQaEvidence": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2572_EXACT_GRID_SOURCE_QA_AND_PAIRED_DISPATCH_20261116.json",
+      "gitBlob": "49e1eed4f1ca33103e27f0409183e023b1002aa6",
+      "sha256": "72db716bb1f9fa3b131768dfd22f0bf888bb3cc7e62837979ac157cc54c9acbd"
+    },
+    "production": false,
+    "buildsExecutedByThisReceipt": 0
   }
 }

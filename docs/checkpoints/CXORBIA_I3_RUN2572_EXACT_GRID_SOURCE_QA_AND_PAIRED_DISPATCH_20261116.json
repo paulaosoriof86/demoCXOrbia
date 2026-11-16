@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm356.same-source-canonical-qa-dispatch.v1",
+  "observedAt": "2026-11-16T22:25:02.271046+00:00",
+  "iteration": "I3",
+  "decision": "PASS_CANONICAL_SOURCE_QA_PAIRED_DISPATCH_REQUIRED",
+  "sourceSha": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
+  "sourceTree": "b927ae81b1a3fd9eaf6f5ed2fe904a365678f3c7",
+  "runId": 43969397370,
+  "runNumber": 2572,
+  "controlSha": "fea18077134eb3a399948ca09db7740b82af6ccd",
+  "canonicalJobId": 133657256502,
+  "canonicalConclusion": "success",
+  "canonicalTests": {
+    "tests": 1655,
+    "pass": 1655,
+    "fail": 0
+  },
+  "sourceOwnerQa": {
+    "ownerCount": 23,
+    "pass": 627,
+    "fail": 0,
+    "receiptSha256": "6d7f1035552c4e8062c0a9d671e1e1565ee9555fd6751fba75593a03aa364536",
+    "testCountsAreNotAdditiveWithCanonicalSuites": true
+  },
+  "pairedJob": "SKIPPED_MISSING_EXISTING_PUSH_MARKER",
+  "dispatchCorrection": "Invoke existing i3-paired-dev-once marker with unchanged source/tree and verified current controls; no new workflow or bypass.",
+  "builds": 0,
+  "runtimeDeploys": 0,
+  "hostingDeploys": 0,
+  "hrWrites": 0,
+  "production": false,
+  "terminalCertified": false,
+  "phaseAComplete": false
+}
