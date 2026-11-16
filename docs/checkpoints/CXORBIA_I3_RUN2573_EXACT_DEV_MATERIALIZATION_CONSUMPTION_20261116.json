@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "cxorbia.i3.run2573.exact-dev-consumption.v1",
+  "observedAt": "2026-11-16T23:14:37.307Z",
+  "iteration": "I3",
+  "state": "HOLD",
+  "decision": "PASS_I3_VRM350_EXACT_DEV_MATERIALIZATION_RECEIPT_CONSUMED_FOR_CONTINUITY",
+  "scope": "CONTROL_ONLY_READBACK_OF_EXISTING_DEV_RUN_NOT_TERMINAL_C3_OR_GATE20_GATE21",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlParentSha": "6aaa9e528a288c64d59f5f35392c0be06ea2fd59",
+  "before": {
+    "activeMaterializationRunId": 43831591435,
+    "activeMaterializationRunNumber": 2567,
+    "sourceSha": "607ef20a5305209a46b8f61424f03475806f402d",
+    "runtimeRevision": "cxorbia-live-hr-dev-00377-rtx",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/f94923a419db6ff2",
+    "state": "HOLD_DEV_HR503_NOT_CERTIFIABLE",
+    "inconsistency": "LATEST_SUCCESSFUL_GITHUB_DEV_RUN2573_NOT_CONSUMED_IN_CURRENT_AND_DESCRIPTOR"
+  },
+  "after": {
+    "runId": 43969895087,
+    "runNumber": 2573,
+    "jobId": 133659403866,
+    "runConclusion": "success",
+    "jobConclusion": "success",
+    "sourceSha": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
+    "sourceTree": "b927ae81b1a3fd9eaf6f5ed2fe904a365678f3c7",
+    "runtimeRevision": "cxorbia-live-hr-dev-00378-76t",
+    "runtimeDigest": "sha256:59285b02c93684c7b6272ee8079c2702210833e1da634e413ead4375091646e7",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/41e4a0e90f5b5295",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794868204985000",
+    "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "verifiedServedAssetCount": 39,
+    "sourceHostedExact": true,
+    "runtimeTrafficExact": true,
+    "productionUnchanged": true,
+    "preflightProductReaders": 2,
+    "preflightDiscoveredTabsPerReader": 36,
+    "hrMeta": {
+      "ok": true,
+      "periodCount": 18,
+      "visitCount": 792,
+      "latestPeriodKey": "2026-11",
+      "refreshError": null
+    },
+    "durableRevisionReadback": "OBSERVED_DURABLE_REVISION_MATCH_NOT_FULL_RECONCILIATION",
+    "identityReadback": {
+      "examined": 238,
+      "matched": 238,
+      "missing": 0,
+      "uidConflicts": 0,
+      "authenticationVerified": false
+    },
+    "notificationFocal": {
+      "decision": "PASS_VRM143_LIVE_PROVIDER_EXACT_CYCLE_AND_SERVED_CONSUMER",
+      "syntheticCases": 2,
+      "cleanupRemainingDocuments": 0,
+      "cleanupRemainingAuth": 0
+    },
+    "artifactId": 14278656387,
+    "artifactZipSha256": "7dbc5131c8687174b85f1f35282c0cdd454ad581e3f36aff8af473955895374f"
+  },
+  "sourceQa": {
+    "canonicalTests": 1655,
+    "canonicalPass": 1655,
+    "canonicalFail": 0,
+    "ownerCount": 23,
+    "ownerPass": 627,
+    "ownerFail": 0,
+    "ownerTestsOverlapCanonical": true,
+    "sourceSha": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73"
+  },
+  "evidence": {
+    "workflowUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43969895087",
+    "jobUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43969895087/job/133659403866",
+    "artifactUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43969895087/artifacts/14278656387",
+    "priorSourceQaReceipt": "docs/checkpoints/CXORBIA_I3_RUN2572_EXACT_GRID_SOURCE_QA_AND_PAIRED_DISPATCH_20261116.json",
+    "priorSourceProof": "docs/checkpoints/CXORBIA_I3_VRM356_EXACT_GRID_RANGE_SOURCE_PROOF_20261116.json",
+    "evidenceLimit": "EXACT_DEV_AND_SCOPED_PROVIDER_READBACK_NOT_FULL_ADMIN_SHOPPER_E2E_OR_C3_TERMINAL"
+  },
+  "preserved": {
+    "moduleMatchesLastC3": 5,
+    "moduleCount": 21,
+    "nonMatch": 16,
+    "planChoqueClosedBlocks": [
+      0,
+      1
+    ],
+    "planChoqueTotalBlocks": 7,
+    "humanPassBlocks": [
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ],
+    "c3TerminalCertified": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "phaseAComplete": false,
+    "i4Authorized": false
+  },
+  "unresolved": [
+    "RUN2573_SAME_SOURCE_C3_CONSUMER_AND_FULL_DOMAIN_CERTIFICATION",
+    "VRM354_VRM355_NATIVE_FULL_NAME_RECEIPT_LOGIN_REPLAY",
+    "B14_EXPLICIT_PROJECT_PROVIDER_BINDING_MISSING",
+    "OTHER_FROZEN_Q3_Q4_Q5_CLAUSES"
+  ],
+  "nextExactAction": "I3-Q3: consume RUN2573 source42b4 exact DEV evidence in existing C3 certification lane; inspect exact native VRM354/355 receipt absence before at most one authorized DEV operation, prove login/full name/journal/zero-effect replay; resolve B14 project provider binding without global fallback; continue Q4/Q5 and strict G20/G21 only on final artifact.",
+  "safety": {
+    "productSourceChanged": false,
+    "newBuilds": 0,
+    "newRuntimeDeploys": 0,
+    "newHostingDeploys": 0,
+    "productionWrites": 0,
+    "hrWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0
+  }
+}
