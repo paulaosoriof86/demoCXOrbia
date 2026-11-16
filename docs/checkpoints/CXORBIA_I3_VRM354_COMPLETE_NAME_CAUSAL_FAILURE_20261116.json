@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "cxorbia.i3.causal-source-regression.v1",
+  "createdAt": "2026-11-16T06:38:33Z",
+  "sourceSha": "38f16525c791b355e8f68a6f798defd9bc89ab37",
+  "sourceTree": "9c67dbf660131539fa9c635c699b30229ca199d2",
+  "owner": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+  "ownerGitBlob": "8433b76db66af3a2605228c3904bb4622bb26562",
+  "ownerSha256": "6fd38a19d0b6f77cea5d2f8278504a4f8acb3a7c9a7fc4af83c19161bb2f7d14",
+  "environment": "V8_BEHAVIORAL_MODULE_EXECUTION_WITH_ASSERT_CRYPTO_AND_STRUCTUREDCLONE_SHIMS_NOT_NODE_CI",
+  "tests": 108,
+  "pass": 107,
+  "fail": 1,
+  "failures": [
+    {
+      "name": "VRM-354 / preserve complete canonical name when credential components are shortened",
+      "pass": false,
+      "error": "equal failed \"Milton De Paz\" !== \"Milton Javier De Paz Morales\"",
+      "stack": "Error: equal failed \"Milton De Paz\" !== \"Milton Javier De Paz Morales\"\n    at assert (eval at <anonymous> (exec_main.mjs:7:7), <anonymous>:7:34)\n    at assert.equal (eval at <anonymous> (exec_main.mjs:7:7), <anonymous>:7:108)\n    at Object.eval [as fn] (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:7:7)), <anonymous>:1812:10)\n    at async eval (eval at <anonymous> (exec_main.mjs:7:7), <anonymous>:15:44)\n    at async exec_main.mjs:7:1"
+    }
+  ],
+  "causalTest": "test('VRM-354 / preserve complete canonical name when credential components are shortened',async()=>{\n  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);\n  const alias='shopper_gt_mishael_alias',canonical='shopper_gt_milton_canonical',uid=stableShopperUid('tenant-a',canonical);\n  const pp=paths(canonical),aliasCross=paths(alias).cross;\n  const visibleLogin='milton.depaz',email=internalEmailTest('tenant-a',visibleLogin);\n  auth.seed({uid,email,disabled:false,customClaims:{authNamespace:'shopper',projectIds:['project-a'],role:'shopper',shopperId:canonical,tenantId:'tenant-a'}});\n  db.seed(pp.profile,{\n    id:canonical,shopperId:canonical,tenantId:'tenant-a',projectIds:['project-a'],sourceType:'hr_external',\n    nombre:'Milton Javier De Paz Morales',firstName:'Milton',lastName:'De Paz',visibleLogin,username:visibleLogin,user:visibleLogin,\n    credentialRuleVersion:CREDENTIAL_RULE_VERSION,identityAuthority:'tenant_adjudication',\n    identityAuthorityRef:'tenant-owner-adjudication',hrSourceRevision:'older-revision'\n  });\n  db.seed(`${pp.users}/${uid}`,{\n    active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:canonical,projectIds:['project-a'],\n    providerUidFingerprint:providerUidFingerprint(uid),visibleLogin,credentialRuleVersion:CREDENTIAL_RULE_VERSION\n  });\n  db.seed(aliasCross,{\n    tenantId:'tenant-a',shopperId:canonical,canonicalShopperId:canonical,sourceStableKey:alias,projectIds:['project-a'],\n    providerUidFingerprint:providerUidFingerprint(uid),identityMode:'provider_exact_identity_link',sourceType:'hr_external'\n  });\n  db.seed('tenants/tenant-a/shopperIdentityLinks/tenant-adjudicated-alias',{\n    tenantId:'tenant-a',projectId:'project-a',projectScope:'project-a',canonicalShopperId:canonical,\n    sourceSystem:'hr_external',sourceIdentity:{legacyId:alias},status:'confirmed',authorityType:'tenant_adjudication',\n    authorityRef:'tenant-owner-adjudication',periodIndependent:true\n  });\n  const snap=snapshot({shopperId:alias,shopperCode:'TYA_GT_MISHAEL_ALIAS'});\n  snap.visits[0].shopper='Mishael De Paz';\n  const result=await p.reconcileSnapshot(snap,{sourceRevision:'fresh-alias-revision'});\n  assert.equal(result.ok,true);\n  const profile=db.get(pp.profile);\n  assert.equal(profile.nombre,'Milton Javier De Paz Morales');\n  assert.equal(profile.firstName,'Milton');\n  assert.equal(profile.lastName,'De Paz');\n  assert.equal(profile.visibleLogin,'milton.depaz');\n  assert.equal(profile.identityAuthority,'tenant_adjudication');\n  assert.equal(profile.identityAuthorityRef,'tenant-owner-adjudication');\n  assert.equal(profile.hrSourceRevision,'fresh-alias-revision');\n  assert.ok(profile.sourceShopperIds.includes(alias));\n  assert.ok(profile.exactAliases.includes(alias));\n  assert.equal(db.get(aliasCross).shopperId,canonical);\n});\n",
+  "causalTestSha256": "a4d0224aa7f8bf73961b6035109969bec9f4fd46225e1951b728a1419983dd23",
+  "priorExistingSourceNodeProof": {
+    "runId": 43813660215,
+    "providerTests": 111,
+    "pass": 111,
+    "fail": 0
+  },
+  "liveCaseCauseConfirmed": false,
+  "production": false
+}

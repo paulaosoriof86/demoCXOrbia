@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "cxorbia.i3.control-alias-repair.v1",
+  "observedAt": "2026-11-16T06:41:11Z",
+  "runId": 43817878690,
+  "runNumber": 2560,
+  "classification": "MAPPING_FAILURE",
+  "code": "CURRENT_C3_BLOCKER_COUNTER_PREFIX_DESYNC",
+  "observed": {
+    "tests": 964,
+    "pass": 963,
+    "fail": 1,
+    "summaries": 26
+  },
+  "diagnosticExecuted": false,
+  "sourceQaExecuted": false,
+  "cause": "The current C3 blocker string lost its machine-readable pending/source-ready counter prefix when the functional symptom was added.",
+  "correction": "Restore the exact current audit counter prefix and retain the P0 functional explanation as suffix; execute the complete existing current-authority readiness assertion in memory before publishing.",
+  "productChanges": 0,
+  "providerWrites": 0,
+  "builds": 0,
+  "deploys": 0,
+  "production": false
+}

@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-proven-pre-edit-scope.v1",
+  "createdAt": "2026-11-16T06:38:33Z",
+  "iteration": "I3",
+  "findingId": "VRM-354",
+  "priority": "P0_PROVEN",
+  "classification": "FUNCTIONAL_DEFECT",
+  "state": "PROVEN_BEFORE_PRODUCT_EDIT",
+  "sourceSha": "38f16525c791b355e8f68a6f798defd9bc89ab37",
+  "sourceTree": "9c67dbf660131539fa9c635c699b30229ca199d2",
+  "controlHead": "41753fc8200f668d148196fc1af199349e2d19cc",
+  "owner": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+  "ownerGitBlob": "8433b76db66af3a2605228c3904bb4622bb26562",
+  "allowedProductFiles": [
+    "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs"
+  ],
+  "evidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM354_COMPLETE_NAME_CAUSAL_FAILURE_20261116.json",
+    "gitBlob": "b4e40af0c81250bb11ff44febb2a76b323cd650e",
+    "sha256": "26f07384f215983ee6de36bd735796aabe91ee04064a486c9a5b6135ff0e5309"
+  },
+  "liveSymptom": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2557_C3_CERTIFY_ATTEMPT_20261116.json",
+    "gitBlob": "ed6b81e294a3e0ad2de0f775965eba59f8eec5d5",
+    "sha256": "245fc7cac8d092edeaa159fb256eb29ba9fbb71a2908a3457a28af42df54069d",
+    "kind": "C3_PRETERMINAL_AND_CERTIFY_ATTEMPT_NOT_TERMINAL_CERTIFICATE",
+    "decision": "HOLD_I3_C3_PASS_SINGLE_VISIBLE_NAME_AUTHORITY_MISMATCH",
+    "runId": 43814920143,
+    "runNumber": 2557,
+    "sourceSha": "38f16525c791b355e8f68a6f798defd9bc89ab37",
+    "sourceTree": "9c67dbf660131539fa9c635c699b30229ca199d2",
+    "artifactId": 14201174635,
+    "artifactDigest": "sha256:75026c5f31d717b68a112a3208400712ac0cad374415a9414e095efedfe4b4e4",
+    "production": false,
+    "terminalCertified": false,
+    "phaseAComplete": false,
+    "i4Authorized": false
+  },
+  "cause": "durableUpsert reconstructs an adjudicated canonical human name from credential first-name/first-surname fields, truncating a legitimate full name; canonical same-revision short-circuit ignores name drift. Current source causal test fails precisely at the reduced name.",
+  "currentLiveCase": "Same single keeper HR/name readback already queued on exact current DEV; no attribution of its mismatch to this source defect until that readback.",
+  "correction": "Preserve the complete canonical display name using the same-revision exact canonical HR identity when present; prevent alias names or credential components from shortening it. Keep the approved ADMIN003 alias-clobber repair and verified keeper credentials intact. Include the authoritative name in idempotent replay validation and repair same-revision loss once.",
+  "requiredTests": [
+    "complete canonical name survives exact alias reconciliation",
+    "same-revision truncated canonical restores only from exact current canonical HR authority",
+    "same HR revision replay produces zero provider effects",
+    "canonical/alias processing order produces identical names and stable replay",
+    "ADMIN003 stale alias-clobber repair remains passing",
+    "missing/masked/cross-identity source never invents full name",
+    "verified keeper login/password/Auth claims remain unchanged",
+    "shopper self-display authority remains separate and unchanged",
+    "existing111provider tests and canonical CI pass"
+  ],
+  "prohibited": [
+    "new identity adjudication",
+    "guessing full name from alias or historical visit",
+    "changing credential rule or resetting passwords",
+    "blind direct Firestore profile overwrite",
+    "HR writes",
+    "new build/deploy lane",
+    "production deploy"
+  ],
+  "production": false,
+  "closure": "Exact owner source regression and CI, one existing DEV paired deployment, actual same-HR provider readback/visible-name check and no-op replay; no automatic full-domain or PhaseA promotion."
+}
