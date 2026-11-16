@@ -1,0 +1,64 @@
+{
+  "decision": "PASS_F09_QA_MEMBERSHIP_REAL_WIRING",
+  "productChanged": false,
+  "cases": [
+    {
+      "case": "original",
+      "expected": "MEMBERSHIP_ENTITLEMENT_MISMATCH",
+      "observed": "MEMBERSHIP_ENTITLEMENT_MISMATCH",
+      "membershipVerified": false,
+      "signedOut": 1,
+      "cleared": 1,
+      "pass": true
+    },
+    {
+      "case": "entitlement",
+      "expected": "MEMBERSHIP_CLAIMS_DIGEST_MISMATCH",
+      "observed": "MEMBERSHIP_CLAIMS_DIGEST_MISMATCH",
+      "membershipVerified": false,
+      "signedOut": 1,
+      "cleared": 1,
+      "pass": true
+    },
+    {
+      "case": "digest",
+      "expected": "MEMBERSHIP_PROVIDER_UID_MISMATCH",
+      "observed": "MEMBERSHIP_PROVIDER_UID_MISMATCH",
+      "membershipVerified": false,
+      "signedOut": 1,
+      "cleared": 1,
+      "pass": true
+    },
+    {
+      "case": "corrected",
+      "expected": null,
+      "observed": null,
+      "membershipVerified": true,
+      "signedOut": 0,
+      "cleared": 0,
+      "pass": true
+    },
+    {
+      "case": "badDigest",
+      "expected": "MEMBERSHIP_CLAIMS_DIGEST_MISMATCH",
+      "observed": "MEMBERSHIP_CLAIMS_DIGEST_MISMATCH",
+      "membershipVerified": false,
+      "signedOut": 1,
+      "cleared": 1,
+      "pass": true
+    },
+    {
+      "case": "badPrincipal",
+      "expected": "MEMBERSHIP_PROVIDER_UID_MISMATCH",
+      "observed": "MEMBERSHIP_PROVIDER_UID_MISMATCH",
+      "membershipVerified": false,
+      "signedOut": 1,
+      "cleared": 1,
+      "pass": true
+    }
+  ],
+  "wiringSha256": "08fae0ad38adbf25aaed4dea2c4ff238987151ad75ce7a12dfda259a03afad39",
+  "runnerSha256": "57a8adbb1c743ed32e2b773f2d2db98a7a2182deacbb1c1f4207d5b484213148",
+  "actualFixtureBuilderExecuted": true,
+  "remoteCalls": 0
+}

@@ -96,7 +96,6 @@ jobs:
       node --test tools/qa/cxorbia-i3-q2-eight-remaining-owner-source.test.mjs
       node --test tools/qa/cxorbia-i3-postulaciones-country-options-unified.test.mjs tools/qa/cxorbia-i3-d06-misvisitas-cross-period-classification.test.mjs tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs tools/qa/cxorbia-i3-shoppers-bridge-authority.test.mjs tools/qa/cxorbia-i3-visitas-effective-availability.test.mjs tools/qa/cxorbia-i3-available-visits-active-period-scope.test.mjs tools/qa/cxorbia-i3-period-project-client-parity.test.mjs tools/qa/cxorbia-i3-r22-notification-route-ack-source.test.mjs tools/qa/cxorbia-i3-vrm302-admin-shoppers-modal-binding.test.mjs tools/qa/cxorbia-i3-shopper-identity-review-rail-notice.test.mjs
       node --test tools/qa/cxorbia-i3-certification-project-continuity.test.mjs
-      # I3 Q2: 24 exact source owners, 22 current tests; source QA only, no E2E or deploy.
       node --test tools/qa/cxorbia-i3-vrm280-exact-shopper-session-fallback.test.mjs tools/qa/cxorbia-i3-b7-hf13-whatsapp-draft-source.test.mjs tools/qa/cxorbia-i3-vrm304-adjudicated-supersession.test.mjs tools/qa/cxorbia-i3-d04e03-shopper-relogin-pdf-source.test.mjs tools/qa/cxorbia-i3-r20-no-visit-shopper-auth-gate.test.mjs tools/qa/cxorbia-i3-r22-read-status-source-20261014.test.mjs tools/qa/cxorbia-i3-certification-project-continuity.test.mjs tools/qa/cxorbia-i3-hr-source-operational-readback.test.mjs tools/qa/cxorbia-i3-d07-viewer-single-flight.test.mjs tools/qa/cxorbia-i3-g03-crm-composition-provider-parity.test.mjs tools/qa/cxorbia-i3-b2-b3-active-history-parity.test.mjs tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs tools/qa/cxorbia-i3-shopper-registration-provider-ack.test.mjs tools/qa/cxorbia-i3-admin-identity-review-notice.test.mjs tools/qa/cxorbia-i3-v01-cross-module-legibility.test.mjs tools/qa/cxorbia-i3-b7-reschedule-bulletin-target-source-20261014.test.mjs tools/qa/cxorbia-i3-shopper-create-phone-dial-review.test.mjs tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs tools/qa/cxorbia-i3-work-uat-d05-canonical-source-proof.test.mjs tools/qa/cxorbia-i3-d04-versioned-bank-review.test.mjs tools/qa/cxorbia-i3-b8-finance-human-copy.test.mjs tools/qa/cxorbia-i3-work-uat-reservations-firestore-source.test.mjs
       node --test tools/qa/cxorbia-i3-work-uat-*.test.mjs
       node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs | tee .tmp/canonical-candidate-authority/result.json
@@ -2642,8 +2641,6 @@ jobs:
       test "$C3_TREE" = "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")"
       test "$(git rev-parse "$C3_SOURCE^{tree}")" = "$C3_TREE"
       LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")"
-      # Pin the actual latest DEV Hosting-only release when it matches the
-      # source; the paired predecessor remains archived for the audit trail.
       RECEIPT_JQ='if .currentHostingOnlyDevMaterialization.sourceSha==.productSourceSha and .currentHostingOnlyDevMaterialization.productionChanged==false then .currentHostingOnlyDevMaterialization else .currentMaterialization end'
       EXPECTED_RUNTIME_REVISION="$(jq -r "($RECEIPT_JQ).runtimeRevision" "$CANDIDATE_DESCRIPTOR")"
       EXPECTED_RUNTIME_DIGEST="$(jq -r "($RECEIPT_JQ).runtimeDigest" "$CANDIDATE_DESCRIPTOR")"
@@ -2932,13 +2929,10 @@ jobs:
           *) echo "C3_TERMINAL_FINDING_STATE_UNPROVEN:$id:$state" >&2; exit 1 ;;
         esac
       done
-      # Pin the actual latest DEV Hosting-only release when it matches the
-      # source; the paired predecessor remains archived for the audit trail.
       RECEIPT_JQ='if .currentHostingOnlyDevMaterialization.sourceSha==.productSourceSha and .currentHostingOnlyDevMaterialization.productionChanged==false then .currentHostingOnlyDevMaterialization else .currentMaterialization end'
       EXPECTED_RUNTIME_REVISION="$(jq -r "($RECEIPT_JQ).runtimeRevision" "$CANDIDATE_DESCRIPTOR")"
       EXPECTED_RUNTIME_DIGEST="$(jq -r "($RECEIPT_JQ).runtimeDigest" "$CANDIDATE_DESCRIPTOR")"
       EXPECTED_HOSTING_VERSION="$(jq -r "($RECEIPT_JQ).hostingVersion" "$CANDIDATE_DESCRIPTOR")"
-      # Take the same-run preterminal artifact; archived 20-module proof is not authority.
       PRETERM_RUN_ID="$GITHUB_RUN_ID"
       PRETERM_ARTIFACT="${{ needs.c3-preterminal-module-truth.outputs.artifact_name }}"
       test -n "$EXPECTED_RUNTIME_REVISION"; [[ "$EXPECTED_RUNTIME_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]; test -n "$EXPECTED_HOSTING_VERSION"
@@ -3041,6 +3035,9 @@ jobs:
    - run: |
       set -Eeuo pipefail
       mkdir -p "$OUT/full-human-acceptance" "$OUT/semantic" "$OUT/gate20"
+      if [[ "$(jq -r '.f09LiveVerificationPending // false' "$CANDIDATE_DESCRIPTOR")" == true ]]; then
+        FOCAL_SOURCE="$I3_CERTIFICATION_SOURCE_SHA" FOCAL_TREE="$I3_CERTIFICATION_SOURCE_TREE" EXPECTED_HR_REVISION="$CURRENT_LIVE_HR_REVISION" QA_OUT="$OUT/f09" CXORBIA_I3_QA_SCOPE=F09_CLIENT_COLLABORATION CXORBIA_I3_QA_ISOLATED_WRITE_GATE=PAULA_AUTHORIZED_F09_DEV_ONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
+      fi
       PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" I3_CERTIFICATION_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" SOURCE_DIR="$SOURCE_DIR" CX_I3_PINNED_HR_FILE="$OUT/hr-current-live.json" CX_I3_PINNED_HR_REVISION="$CURRENT_LIVE_HR_REVISION" ACCEPTANCE_OUT="$OUT/full-human-acceptance" node RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
       test "$(jq -r '.decision' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "PASS_I3_HUMAN_LIVE_ACCEPTANCE"
       test "$(jq -r '.sourceSha' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
@@ -4962,12 +4959,13 @@ jobs:
       test "$(jq -r '[.assertions[]|select(.name=="vrm168_existing_hr_identity_preserves_conflict_review")][0].ok' "$FOCAL_OUT/vrm258-canonical-read-model.json")" = "true"
   vrm154-156-dev-materialization:
    needs: canonical-candidate-authority
-   if: ${{ contains(fromJSON('["HOLD_VRM134_A05_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM154_156_DEV_MATERIALIZATION_REQUIRED","HOLD_V190_DEV_MATERIALIZATION_REQUIRED","HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM216_SHARED_IDEMPOTENCY_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM217_219_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM306_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM307_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM308_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM309_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM221_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM227_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM249_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM174_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM256_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM257_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM258_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM259_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_B7_CONTEXT_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_S1_AUTO_COMPATIBLE_IDENTITY_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_CERT_CARRYOVER_DEV_MATERIALIZATION_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status) || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_B11_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM317_D06_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM318_D06_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM319_D06_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM320_B3_DEV_MATERIALIZATION_REQUIRED' || (github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-paired-dev-once]') && contains(fromJSON('["HOLD_I3_B4_B7_COMPOSED_SOURCE_PENDING_CI_DEV_AND_ROLE_E2E","HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status)) }}
+   if: ${{ contains(fromJSON('["HOLD_VRM134_A05_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM154_156_DEV_MATERIALIZATION_REQUIRED","HOLD_V190_DEV_MATERIALIZATION_REQUIRED","HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM216_SHARED_IDEMPOTENCY_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM217_219_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM306_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM307_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM308_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM309_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM221_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM227_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM249_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM174_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM256_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM257_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM258_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM259_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_B7_CONTEXT_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_S1_AUTO_COMPATIBLE_IDENTITY_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_CERT_CARRYOVER_DEV_MATERIALIZATION_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status) || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_B11_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM317_D06_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM318_D06_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM319_D06_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM320_B3_DEV_MATERIALIZATION_REQUIRED' || (github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-paired-dev-once]') && contains(fromJSON('["HOLD_I3_B4_B7_COMPOSED_SOURCE_PENDING_CI_DEV_AND_ROLE_E2E","HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status)) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-paired-env-once]') && needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_F09_DEV_MATERIALIZED_C3_REPROOF_PENDING') }}
    runs-on: ubuntu-24.04
    timeout-minutes: 60
    env:
     FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
     FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+    PAIR_ENV_ONLY: ${{ contains(github.event.head_commit.message, '[i3-paired-env-once]') }}
     FOCAL_OUT: .tmp/vrm154-156-dev-materialization
     ACTIVE_STATUS: ${{ needs.canonical-candidate-authority.outputs.status }}
     PAIR_ASSET_FILES: core/data.js core/router.js core/tya-phase-a-source-safe-preview.js adapters/tya-live-source-inplace-apply.js adapters/tya-cumulative-read-model-v2.js adapters/tya-canonical-finance-read-model-v2.js adapters/tya-canonical-shopper-portal-v2.js adapters/tya-protected-auth-hr-authority-bridge-v2.js data/tya-hr-source-safe-periods.js modules/midia.js modules/misvisitas.js modules/visita-detalle.js modules/shoppers.js modules/postulaciones.js modules/beneficios.js modules/cert.js modules/academia.js styles/layout.css adapters/tya-c6-unified-human-runtime-v1.js adapters/cxorbia-cxdata-command-boundary-v1.js index-backend-dev.html core/backend-firebase.js adapters/tya-live-source-refresh-watch-v2.js modules/hr-source.js modules/clientes.js modules/historico.js modules/visitas.js modules/cuestionario-shopper.js core/backend-certifications.js core/finanzas-core.js modules/marca.js modules/administrabilidad.js modules/configuracion.js modules/cliente-insights.js adapters/cxorbia-command-adapter-v1.js core/backend-bulletins.js sw.js
@@ -5028,7 +5026,7 @@ jobs:
    - uses: google-github-actions/setup-gcloud@v2
      with:
       project_id: ${{ env.PROJECT }}
-   - if: env.ACTIVE_STATUS == 'HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED'
+   - if: env.ACTIVE_STATUS == 'HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED' || env.PAIR_ENV_ONLY == 'true'
      run: |
       set -Eeuo pipefail
       node --check tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
@@ -5050,14 +5048,25 @@ jobs:
       echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
    - run: |
       set -Eeuo pipefail
-      IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-vrm154-156-${FOCAL_SOURCE:0:12}-${GITHUB_RUN_ID}"
+      if [[ "$PAIR_ENV_ONLY" == true ]]; then
+        jq -e --arg s "$FOCAL_SOURCE" --arg t "$FOCAL_TREE" '.runtimeSourceLabelCorrectionPending==true and .currentMaterialization.sourceSha==$s and .currentMaterialization.sourceTree==$t' "$CANDIDATE_DESCRIPTOR" >/dev/null
+        DIGEST="$(jq -er '.currentMaterialization.runtimeDigest' "$CANDIDATE_DESCRIPTOR")"; [[ "$DIGEST" =~ ^sha256:[a-f0-9]{64}$ ]]
+        IMAGE_URI="gcr.io/$PROJECT/$SERVICE@$DIGEST"; BUILDS=0
+        test "$(gcloud run revisions describe "$(jq -r '.postDeployRunSeal.runtimeRevision' "$CANDIDATE_DESCRIPTOR")" --project "$PROJECT" --region "$REGION" --format='value(status.imageDigest)')" = "$IMAGE_URI"
+      else
+        IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-vrm154-156-${FOCAL_SOURCE:0:12}-${GITHUB_RUN_ID}"; BUILDS=1
+        gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
+      fi
       echo "$IMAGE_URI" > "$FOCAL_OUT/image-uri.txt"
-      gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
-      jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg image "$IMAGE_URI" '{decision:"PASS_VRM154_156_ONE_BUILD",sourceSha:$source,sourceTree:$tree,imageTag:$image,builds:1,production:false}' > "$FOCAL_OUT/build.json"
+      jq -n --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg image "$IMAGE_URI" --argjson builds "$BUILDS" '{sourceSha:$source,sourceTree:$tree,imageTag:$image,builds:$builds,production:false}' > "$FOCAL_OUT/build.json"
    - run: |
       set -Eeuo pipefail
       IMAGE_URI="$(cat "$FOCAL_OUT/image-uri.txt")"
-      gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --min-instances=1 --max-instances=1 --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE,$I3_HR_CACHE_PIN_NAME=$I3_HR_CACHE_PIN_VALUE" --quiet
+      if [[ "$PAIR_ENV_ONLY" == true ]]; then
+        gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --update-env-vars "CXORBIA_RECOVERY_SOURCE_SHA=$FOCAL_SOURCE" --quiet
+      else
+      gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --min-instances=1 --max-instances=1 --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE,$I3_HR_CACHE_PIN_NAME=$I3_HR_CACHE_PIN_VALUE,CXORBIA_RECOVERY_SOURCE_SHA=$FOCAL_SOURCE" --quiet
+      fi
       gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$FOCAL_OUT/runtime.json"
       DEV_REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$FOCAL_OUT/runtime.json")"
       test -n "$DEV_REVISION"
@@ -5067,8 +5076,10 @@ jobs:
       fi
       jq -e --arg r "$DEV_REVISION" '([.status.traffic[]?|select(.revisionName==$r and .percent==100)]|length)==1' "$FOCAL_OUT/runtime.json" >/dev/null
       gcloud run revisions describe "$DEV_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$FOCAL_OUT/runtime-revision.json"
+      test "$(jq -r '.spec.containers[0].env[]|select(.name=="CXORBIA_RECOVERY_SOURCE_SHA").value' "$FOCAL_OUT/runtime-revision.json")" = "$FOCAL_SOURCE"
       RAW="$(jq -r '.status.imageDigest // empty' "$FOCAL_OUT/runtime-revision.json")"
       if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
+      if [[ "$PAIR_ENV_ONLY" == true ]]; then test "$DIGEST" = "$(jq -r '.currentMaterialization.runtimeDigest' "$CANDIDATE_DESCRIPTOR")"; fi
       RUNTIME_URL="$(jq -r '.status.url // empty' "$FOCAL_OUT/runtime.json")"
       curl -fsS --retry 12 --retry-delay 3 "$RUNTIME_URL/health" > "$FOCAL_OUT/health.json"
       jq -e '.ok==true and .production==false and .hrWrites==false' "$FOCAL_OUT/health.json" >/dev/null
@@ -5076,14 +5087,17 @@ jobs:
       echo "RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
    - run: |
       set -Eeuo pipefail
+      if [[ "$PAIR_ENV_ONLY" != true ]]; then
       cd "$SOURCE_DIR"
       "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$FOCAL_OUT/hosting-deploy.log"
       cd "$GITHUB_WORKSPACE"
+      fi
       TOKEN="$(gcloud auth print-access-token)"
       curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$FOCAL_OUT/hosting-live-channel.json"
       HOSTING_RELEASE_NAME="$(jq -r '.release.name // empty' "$FOCAL_OUT/hosting-live-channel.json")"
       HOSTING_VERSION_NAME="$(jq -r '.release.version.name // empty' "$FOCAL_OUT/hosting-live-channel.json")"
       test -n "$HOSTING_VERSION_NAME"
+      if [[ "$PAIR_ENV_ONLY" == true ]]; then test "$HOSTING_VERSION_NAME" = "$(jq -r '.release.version.name' "$FOCAL_OUT/hosting-before.json")"; fi
       curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/$HOSTING_VERSION_NAME" > "$FOCAL_OUT/hosting-version.json"
       test "$(jq -r '.status // empty' "$FOCAL_OUT/hosting-version.json")" = "FINALIZED"
       for p in $PAIR_ASSET_FILES; do
@@ -5106,17 +5120,34 @@ jobs:
    - run: |
       set -Eeuo pipefail
       DECISION="PASS_VRM154_156_EXACT_DEV_MATERIALIZATION"
-      if [[ "$ACTIVE_STATUS" == "HOLD_VRM134_A05_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_VRM134_A05_EXACT_DEV_MATERIALIZATION"; elif [[ "$ACTIVE_STATUS" == "HOLD_V190_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_V190_EXACT_DEV_MATERIALIZATION"; elif [[ "$ACTIVE_STATUS" == "HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION"; elif [[ "$ACTIVE_STATUS" == "HOLD_VRM216_SHARED_IDEMPOTENCY_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_VRM216_EXACT_DEV_MATERIALIZATION"; elif [[ "$ACTIVE_STATUS" == "HOLD_VRM217_219_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_VRM217_219_EXACT_DEV_MATERIALIZATION"; elif [[ "$ACTIVE_STATUS" == "HOLD_VRM306_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_VRM306_EXACT_DEV_MATERIALIZATION"; elif [[ "$ACTIVE_STATUS" == "HOLD_VRM307_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_VRM307_EXACT_DEV_MATERIALIZATION"; elif [[ "$ACTIVE_STATUS" == "HOLD_VRM308_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_VRM308_EXACT_DEV_MATERIALIZATION"; elif [[ "$ACTIVE_STATUS" == "HOLD_I3_VRM249_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_VRM249_EXACT_DEV_MATERIALIZATION"; elif [[ "$ACTIVE_STATUS" == "HOLD_I3_VRM174_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_I3_VRM174_EXACT_DEV_MATERIALIZATION"; elif [[ "$ACTIVE_STATUS" == "HOLD_VRM256_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_VRM256_EXACT_DEV_MATERIALIZATION"; elif [[ "$ACTIVE_STATUS" == "HOLD_VRM257_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_VRM257_EXACT_DEV_MATERIALIZATION"; elif [[ "$ACTIVE_STATUS" == "HOLD_VRM258_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_VRM258_EXACT_DEV_MATERIALIZATION"; elif [[ "$ACTIVE_STATUS" == "HOLD_VRM259_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_VRM259_EXACT_DEV_MATERIALIZATION"; elif [[ "$ACTIVE_STATUS" == "HOLD_HUMAN_VISUAL_CHECKPOINT_REQUIRED_BEFORE_FURTHER_PRODUCT_MUTATION" ]]; then DECISION="PASS_HUMAN_VISUAL_CHECKPOINT_EXACT_DEV_MATERIALIZATION"; fi
-      if [[ "$ACTIVE_STATUS" == "HOLD_VRM309_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_VRM309_EXACT_DEV_MATERIALIZATION"; fi
-      if [[ "$ACTIVE_STATUS" == "HOLD_I3_B11_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_I3_B11_HR_DATE_SEMANTICS_EXACT_DEV_MATERIALIZATION"; fi
-      if [[ "$ACTIVE_STATUS" == "HOLD_I3_CERT_CARRYOVER_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_VRM316_CERT_CARRYOVER_EXACT_DEV_MATERIALIZATION"; fi
-      if [[ "$ACTIVE_STATUS" == "HOLD_I3_VRM317_D06_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_VRM317_D06_EXACT_DEV_MATERIALIZATION"; fi
-      if [[ "$ACTIVE_STATUS" == "HOLD_I3_VRM318_D06_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_VRM318_D06_EXACT_DEV_MATERIALIZATION"; fi
-      if [[ "$ACTIVE_STATUS" == "HOLD_I3_VRM319_D06_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_VRM319_D06_EXACT_DEV_MATERIALIZATION"; fi
-      if [[ "$ACTIVE_STATUS" == "HOLD_I3_VRM320_B3_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_VRM320_B3_EXACT_DEV_MATERIALIZATION"; fi
-      if [[ "$ACTIVE_STATUS" == "HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_I3_F09_EXACT_DEV_MATERIALIZATION"; fi
-      jq -n -S --arg decision "$DECISION" --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg runtime "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg hosting "$HOSTING_VERSION_NAME" --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hr "$HR_REVISION" '{decision:$decision,sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hostingRelease:$hostingRelease,hrRevision:$hr,builds:1,runtimeDeploys:1,hostingDeploys:1,storageRulesDeploys:0,scenarioDimensionsProven:true,production:false}' > "$FOCAL_OUT/result.json"
-   - if: env.ACTIVE_STATUS == 'HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED'
+      case "$ACTIVE_STATUS" in
+        HOLD_I3_F09_DEV_MATERIALIZED_C3_REPROOF_PENDING) DECISION=PASS_I3_F09_SAME_ARTIFACT_ENV_REPAIR ;;
+        HOLD_VRM134_A05_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM134_A05_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_V190_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_V190_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_VRM216_SHARED_IDEMPOTENCY_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM216_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_VRM217_219_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM217_219_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_VRM306_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM306_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_VRM307_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM307_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_VRM308_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM308_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_I3_VRM249_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM249_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_I3_VRM174_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_I3_VRM174_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_VRM256_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM256_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_VRM257_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM257_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_VRM258_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM258_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_VRM259_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM259_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_HUMAN_VISUAL_CHECKPOINT_REQUIRED_BEFORE_FURTHER_PRODUCT_MUTATION) DECISION=PASS_HUMAN_VISUAL_CHECKPOINT_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_VRM309_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM309_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_I3_B11_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_I3_B11_HR_DATE_SEMANTICS_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_I3_CERT_CARRYOVER_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM316_CERT_CARRYOVER_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_I3_VRM317_D06_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM317_D06_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_I3_VRM318_D06_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM318_D06_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_I3_VRM319_D06_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM319_D06_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_I3_VRM320_B3_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM320_B3_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_I3_F09_EXACT_DEV_MATERIALIZATION ;;
+      esac
+      jq -n -S --arg decision "$DECISION" --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg runtime "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg hosting "$HOSTING_VERSION_NAME" --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hr "$HR_REVISION" --argjson reuse "$PAIR_ENV_ONLY" '{decision:$decision,sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hostingRelease:$hostingRelease,hrRevision:$hr,builds:(if $reuse then 0 else 1 end),runtimeDeploys:1,hostingDeploys:(if $reuse then 0 else 1 end),storageRulesDeploys:0,scenarioDimensionsProven:true,production:false}' > "$FOCAL_OUT/result.json"
+   - if: env.ACTIVE_STATUS == 'HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED' || env.PAIR_ENV_ONLY == 'true'
      run: |
       set -Eeuo pipefail
       TOKEN="$(gcloud auth print-access-token)"
@@ -5952,9 +5983,6 @@ jobs:
       LIVE_HR_REVISION="$(jq -r '.revision' "$VRM215_OUT/hr-meta-1.json")"
       test "$LIVE_HR_REVISION" = "$(jq -r '.revision' "$VRM215_OUT/hr-meta-2.json")"
       test "$LIVE_HR_REVISION" = "$EXPECTED_HR_REVISION"
-      # HR metadata is a fresh content-hash snapshot: month/visit totals are dynamic, not fixtures.
-      # Last reconciliation ACK is process-local telemetry, may be null until an explicit command.
-      # Durable provider ACK and roles are independently sealed in the existing canonical receipts.
       jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .refreshError==null and (.visits|type)=="number" and .visits>0 and (.periods|type)=="number" and .periods>0 and .writes==false and .hrWrites==false and .imports==false and .production==false' "$VRM215_OUT/hr-meta-1.json" >/dev/null
       jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .refreshError==null and (.visits|type)=="number" and .visits>0 and (.periods|type)=="number" and .periods>0 and .writes==false and .hrWrites==false and .imports==false and .production==false' "$VRM215_OUT/hr-meta-2.json" >/dev/null
       test "$(jq -r '.visits' "$VRM215_OUT/hr-meta-1.json")" = "$(jq -r '.visits' "$VRM215_OUT/hr-meta-2.json")"
@@ -6678,18 +6706,12 @@ jobs:
       test "$(git rev-parse "$SOURCE^{tree}")" = "$SOURCE_TREE"
       git merge-base --is-ancestor "$SOURCE" "$GITHUB_SHA"
       git diff --quiet "$SOURCE" "$GITHUB_SHA" -- app backend tools firebase.json .firebaserc firestore.rules storage.rules ':!tools/qa/cxorbia-i3-vrm302-admin-shoppers-modal-binding.test.mjs' ':!tools/qa/cxorbia-i3-certification-project-continuity.test.mjs' ':!tools/qa/cxorbia-i3-current-authority-alias-guard.mjs' ':!tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs' ':!tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs' ':!tools/qa/cxorbia-i3-shock-continuity-guard.mjs' ':!tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs' ':!tools/qa/cxorbia-i3-terminal-module-domain-coverage.test.mjs'
-      # Q2 result writer extraction: exact QA-only dependency assertion, no product exception.
       test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-terminal-module-domain-coverage.test.mjs")" = "69abb51282b7190394d6f923a0e11b34f5579a51"
-      # VRM-322: pin the one QA-only assertion correction so no product drift can hide behind its exclusion.
       test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-certification-project-continuity.test.mjs")" = "1d663cc151e638150185eb51b82566455e09f18b"
-      # VRM-328/329/330: updated canonical-source alias controls are QA-only;
-      # their exact blobs are pinned, so the exclusion cannot hide source drift.
       test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.mjs")" = "90e1e886deee3778c6e0151071a5477eada4dd20"
       test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs")" = "d627d516a2510368866e9f548d73c231e44efd66"
       test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-shock-continuity-guard.mjs")" = "a416e4411941f98b924d6eda67b844cbdccae019"
       test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs")" = "71be9da25e952e939561898e1dd2a1517bfefa70"
-      # The pending-source/predecessor C3 accounting assertion is corrected at
-      # this exact QA blob; no browser/backend source change is exempted.
       test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs")" = "810fbe498e4c40b77b5cf051dd9767760695feef"
       [[ "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" == HOLD_I3_* ]]
       test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$SOURCE"
@@ -6701,8 +6723,6 @@ jobs:
       test "$(jq -r '.hosting.public' firebase.json)" = app
       test "$(jq -r '.projects.default' .firebaserc)" = "$PROJECT"
       test "$(jq -r '.hosting.rewrites[0].run.serviceId' firebase.json)" = "$SERVICE"
-      # Read the last verified runtime revision from the CURRENT control
-      # authority; an old hardcoded revision would abort safe DEV delivery.
       EXPECTED_RUNTIME_REVISION="$(jq -r '.currentHostingOnlyDevMaterialization.runtimeRevision // .currentDevMaterialization.runtimeRevision // empty' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)"
       test -n "$EXPECTED_RUNTIME_REVISION"
       test "$EXPECTED_RUNTIME_REVISION" = "$(jq -r '.currentDevMaterialization.runtimeRevision // empty' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)"

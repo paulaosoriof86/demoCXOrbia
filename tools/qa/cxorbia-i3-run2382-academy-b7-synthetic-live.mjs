@@ -75,13 +75,15 @@ async function runClientCollaborationQa(){
     check(present.length||!mode||mode==='external','SOURCE_FAILURE:F09_EXTERNAL_PERIOD_AUTHORITY_REQUIRED');
     projectBefore=hash(stable(pr.data()));periodBefore=hash(stable(periodDocs.map(x=>({id:x.id,exists:x.exists,data:x.exists?x.data():null}))));
     result.preflight={exactProject:true,exactPeriod:true,periodAuthority:present.length?'project_period_metadata':'current_server_hr_snapshot',projectSourceMode:mode||'server_hr_exact_scope_legacy_metadata_absent',projectSha256:projectBefore,periodSha256:periodBefore};
+    const canonicalAdminProjects=(await tenant.collection('projects').select('deleted').get()).docs.filter(x=>x.data().deleted!==true).map(x=>x.id).sort();
+    check(canonicalAdminProjects.includes(projectId),'SOURCE_FAILURE:F09_ADMIN_CANONICAL_PROJECT_SCOPE');
     for(const identity of planned){
       check(!(await db.doc(identity.memberPath).get()).exists,'SOURCE_FAILURE:F09_MEMBER_COLLISION');
       try{await auth.getUser(identity.uid);throw Error('SOURCE_FAILURE:F09_AUTH_COLLISION');}catch(error){if(error.code!=='auth/user-not-found')throw error;}
     }
     result.identities=planned.map(x=>({...x,state:'PLANNED_ABSENT'}));save();
     for(const identity of planned){
-      const claims={tenantId,projectIds:[projectId],role:identity.role,authNamespace:'staff',qaSynthetic:true,qaRunId:runId,qaRunAttempt:attempt,qaPurpose:'F09'};
+      const claims={tenantId,projectIds:identity.role==='admin'?canonicalAdminProjects:[projectId],role:identity.role,authNamespace:'staff',qaSynthetic:true,qaRunId:runId,qaRunAttempt:attempt,qaPurpose:'F09'};
       const entry=result.identities.find(x=>x.uid===identity.uid);
       entry.expectedClaims=claims;entry.state='AUTH_CREATE_DISPATCHED';save();
       const created=await auth.createUser({uid:identity.uid,displayName:identity.name,disabled:false});
@@ -89,7 +91,16 @@ async function runClientCollaborationQa(){
       entry.state='CLAIMS_DISPATCHED';save();
       await auth.setCustomUserClaims(identity.uid,claims);
       entry.memberCreateDispatched=true;save();
-      await db.doc(identity.memberPath).create({uid:identity.uid,...claims,name:identity.name,active:true,status:'active'});
+      const staffMembership=identity.role==='admin'?{
+        entitlementMode:'TYA_COMPLETE',
+        claimsDigest:hash({authNamespace:'staff',projectIds:[...new Set(claims.projectIds)].sort(),role:identity.role,tenantId}),
+        providerUidFingerprint:hash('cxorbia-provider-uid-v1\0'+identity.uid)
+      }:{};
+      const member={uid:identity.uid,...claims,name:identity.name,active:true,status:'active',...staffMembership};
+      entry.expectedMembershipSha256=hash(stable(member));save();
+      await db.doc(identity.memberPath).create(member);
+      const persistedMember=await db.doc(identity.memberPath).get();
+      check(persistedMember.exists&&JSON.stringify(stable(persistedMember.data()))===JSON.stringify(stable(member)),'AUTH_FAILURE:F09_CREATED_MEMBERSHIP_READBACK');
       const read=await auth.getUser(identity.uid);check(JSON.stringify(stable(read.customClaims||{}))===JSON.stringify(stable(claims)),'AUTH_FAILURE:F09_CREATED_IDENTITY_READBACK');
       check(JSON.stringify(stable(entry.authIdentity))===JSON.stringify(stable(authIdentity(read))),'AUTH_FAILURE:F09_CREATED_IDENTITY_CHANGED');entry.state='CREATED_VERIFIED';save();
     }
@@ -158,7 +169,7 @@ async function runClientCollaborationQa(){
     const adminDenied=await admin.page.evaluate(()=>CX.data.createClientNote({subject:'No suplantar',detail:'Prueba negativa',clientRequestId:'qa-admin-denied-001'},{ackAware:true}));check(adminDenied.ok===false&&adminDenied.providerAck===false,'AUTH_FAILURE:F09_ADMIN_SELF_IMPERSONATION');
     result.readback.admin={sameThreeRecords:true,tablonContentVisible:true,clientWriteDenied:true};await admin.page.screenshot({path:out+'/admin-tablon.png',fullPage:true});
     check(records.size===3,'PERSISTENCE_FAILURE:F09_ENTITY_COUNT');result.functionalPass=true;
-  }catch(error){result.error=String(error?.message||error);result.classification=result.error.split(':')[0];}
+  }catch(error){result.error=String(error?.message||error);result.classification=result.error.match(/(SOURCE_FAILURE|MAPPING_FAILURE|PROVIDER_FAILURE|PERSISTENCE_FAILURE|AUTH_FAILURE|FUNCTIONAL_DEFECT|VISUAL_DEFECT|RELEASE_COMPOSITION_FAILURE|ENVIRONMENT_FAILURE):/)?.[1]||(/MEMBERSHIP_|permission-denied/.test(result.error)?'AUTH_FAILURE':'FUNCTIONAL_DEFECT');}
   finally{
     await Promise.allSettled(contexts.map(c=>c.close()));if(browser)await browser.close().catch(()=>{});
     try{
@@ -176,7 +187,7 @@ async function runClientCollaborationQa(){
           check((!record.entitySha256||hash(stable(en.data()))===record.entitySha256)&&(!record.receiptSha256||hash(stable(re.data()))===record.receiptSha256)&&(!record.auditSha256||hash(stable(au.data()))===record.auditSha256),'PERSISTENCE_FAILURE:F09_CLEANUP_CONCURRENT_CHANGE');
           docs.push(en.ref,re.ref,au.ref);
         }
-        for(const identity of ownedIdentities){const member=await tx.get(db.doc(identity.memberPath));if(!member.exists)continue;const row=member.data();check(identity.memberCreateDispatched===true&&row.qaSynthetic===true&&row.qaRunId===runId&&row.qaRunAttempt===attempt&&row.qaPurpose==='F09'&&row.role===identity.role&&row.authNamespace==='staff'&&row.tenantId===tenantId&&row.name===identity.name&&JSON.stringify(row.projectIds)===JSON.stringify([projectId]),'PERSISTENCE_FAILURE:F09_MEMBER_OWNERSHIP');docs.push(member.ref);}
+        for(const identity of ownedIdentities){const member=await tx.get(db.doc(identity.memberPath));if(!member.exists)continue;const row=member.data();check(identity.memberCreateDispatched===true&&row.qaSynthetic===true&&row.qaRunId===runId&&row.qaRunAttempt===attempt&&row.qaPurpose==='F09'&&row.role===identity.role&&row.authNamespace==='staff'&&row.tenantId===tenantId&&row.name===identity.name&&JSON.stringify(row.projectIds)===JSON.stringify(identity.expectedClaims.projectIds)&&hash(stable(row))===identity.expectedMembershipSha256,'PERSISTENCE_FAILURE:F09_MEMBER_OWNERSHIP');docs.push(member.ref);}
         for(const ref of docs)tx.delete(ref);deleted=docs.length;
       });
       let authDeleted=0;for(const identity of ownedIdentities){
