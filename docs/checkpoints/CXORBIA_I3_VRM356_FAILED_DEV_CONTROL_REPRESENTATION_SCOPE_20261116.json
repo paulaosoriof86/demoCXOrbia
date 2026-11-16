@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "cxorbia.i3.qa-control-p0-scope.v1",
+  "findingId": "VRM-356",
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "MAPPING_FAILURE",
+  "observedAt": "2026-11-16T08:52:48Z",
+  "head": "da403803fffdf3472079b0939f3914cc0cceafff",
+  "productSource": "da403803fffdf3472079b0939f3914cc0cceafff",
+  "liveFailure": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2567_DEPLOYED_HR_RANGE_FAILURE_READBACK_20261116.json",
+    "gitBlob": "2eb2e8991c74edcc0a71010cf1ab4f4b6409230f",
+    "sha256": "6ac301b44eb6cf8a2ad51e72a54c40be8d568c0c2621c6123975068b6d425814"
+  },
+  "diagnosis": "The continuity checker represents a paired deployment only as successful transition. RUN2567 actually deployed exact runtime/Hosting and then failed HR. Its missing post-failure production byte observation must remain null; recording the failed live state and authorizing bounded DEV correction must not require an invented production PASS.",
+  "owners": [
+    {
+      "path": "tools/qa/cxorbia-i3-shock-continuity-guard.mjs",
+      "approvedBlob": "b4853f5e2d95103ef69f26c50c5ccb7348f97a41",
+      "HEAD": "b4853f5e2d95103ef69f26c50c5ccb7348f97a41",
+      "live": "QA_CONTROL_ONLY_NOT_RUNTIME",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "exactFunction": "validateShockContinuity paired DEV C3 transition"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs",
+      "approvedBlob": "bde5922f43d271b8755fc12e64529c3b2cfe0c44",
+      "HEAD": "bde5922f43d271b8755fc12e64529c3b2cfe0c44",
+      "live": "QA_ONLY",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "exactFunction": "failed materialization representation negative tests"
+    }
+  ],
+  "allowedQaFiles": [
+    "tools/qa/cxorbia-i3-shock-continuity-guard.mjs",
+    "tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs"
+  ],
+  "allowedProductFiles": [],
+  "correctionContract": [
+    "Retain all existing source lineage, byte hashes, receipt blobs and alias checks.",
+    "Permit only a nonterminal HOLD with exact failed DEV receipt, zero production deploys, no claimed production byte proof, disabled native writes, and explicitly enabled read-only pre-build gate.",
+    "The existing success/PASS transition continues to require productionUnchanged true.",
+    "No relaxation of C3, complete-domain acceptance, G20/G21, I4 or production authorization."
+  ],
+  "validationRequired": [
+    "Known failed paired receipt can be recorded without false production PASS.",
+    "PASS/GO/terminal/I4 claims, disabled read-only preflight, source mismatch, unknown failed receipt, production writes, missing exact byte provenance or enabled native repair remain rejected."
+  ],
+  "production": false,
+  "builds": 0,
+  "deploys": 0,
+  "fullDomainPromotion": false
+}
