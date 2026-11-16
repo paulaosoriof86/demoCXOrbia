@@ -2450,6 +2450,7 @@ jobs:
       const sha=x=>crypto.createHash('sha256').update(x).digest('hex');
       fs.writeFileSync(process.env.C3_OUT+'/firestore-live-parity.json',JSON.stringify({decision:'PASS_C3_LIVE_FIRESTORE_RULES_EXACT',liveRulesetName:r.name||null,sha256:sha(local),production:false},null,2)+'\n');
       NODE
+      cat "$C3_OUT/firestore-live-parity.json"
    - run: |
       set -Eeuo pipefail
       mkdir -p "$C3_OUT/remote"
@@ -4733,6 +4734,7 @@ jobs:
       Object.assign(r,{verifiedServedAssetCount:Object.keys(r.servedSha256).length,sourceHostedExact:true,runtimeTrafficExact:true,productionUnchanged:true,productionIndexSha256:hash(fs.readFileSync(o+'/production-after.html')),firestoreRuleset:JSON.parse(fs.readFileSync(o+'/rules-after.json')).rulesetName,firestoreRulesDeploys:0,hrWrites:0});
       fs.writeFileSync(o+'/result.json',JSON.stringify(r,null,2)+'\n');
       NODE
+      cat "$FOCAL_OUT/result.json"
       if [[ "$ACTIVE_STATUS" == HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED || "$ACTIVE_STATUS" == HOLD_I3_VRM350_DEV_MATERIALIZATION_REQUIRED ]]; then
         QA_OUT="$FOCAL_OUT/hr-after" CXORBIA_I3_QA_SCOPE=HR_DURABLE_REVISION_READONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
         EXPECTED_HR_REVISION="$HR_REVISION" QA_OUT="$FOCAL_OUT/notifications" CXORBIA_I3_QA_SCOPE=VRM143_NOTIFICATION_CYCLE CXORBIA_I3_QA_ISOLATED_WRITE_GATE=PAULA_AUTHORIZED_VRM143_DEV_ONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
