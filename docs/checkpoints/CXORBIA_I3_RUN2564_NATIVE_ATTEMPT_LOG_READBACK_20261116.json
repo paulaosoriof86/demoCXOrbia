@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "cxorbia.i3.native-attempt-log-readback.v1",
+  "runId": 43824232817,
+  "jobId": 133154993124,
+  "controlSha": "46b0cde565d8086c9452ba06ba853ba06e14f31f",
+  "logSource": "GITHUB_ACTIONS_DECODED_LOG",
+  "masking": "PROVIDER_MASKS_JSON_BRACES_AS_ASTERISKS_RAW_LINE_PRESERVED_NOT_REPARSED",
+  "rawNativeLogLine": "2026-11-16T07:33:37.7502455Z I3_VRM354_NATIVE_REPAIR=***\"schemaVersion\":\"cxorbia.i3.canonical-name-native-repair-live.v1\",\"findingIds\":[\"VRM-354\",\"VRM-355\"],\"decision\":\"HOLD\",\"sourceSha\":\"66312f88a70bd123b137c7a031a1f456969465f5\",\"sourceTree\":\"38eba9364e0a7cbf1e505f84375959d19918391d\",\"runtimeRevision\":\"cxorbia-live-hr-dev-00376-szw\",\"runtimeDigest\":\"sha256:d0fc508c6ecd6b318169a2b97b942a1467f8bf5ecf5f4db569e443bbe3eef271\",\"hostingVersion\":\"sites/cxorbia-backend-dev/versions/0da0b63b6cc8cc0c\",\"hrRevision\":\"fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630\",\"production\":false,\"nativeClicks\":1,\"remoteHrWrites\":0,\"credentialResets\":0,\"directRepairWrites\":0,\"startedAt\":\"2026-11-16T07:33:08.710Z\",\"independentHrBefore\":***\"revision\":\"fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630\",\"nameSha256\":\"0a363269ad6d69dfac1199d532cfebc6ec9741a1994d02dbcadf3e5aafab5aab\",\"uniqueCanonicalRow\":true***,\"beforeNameSha256\":\"1df6d5200c82c73de6f64709b3f378b5bec6b52c486ae16fef743d1365d412fa\",\"expectedNameSha256\":\"0a363269ad6d69dfac1199d532cfebc6ec9741a1994d02dbcadf3e5aafab5aab\",\"beforeInvariantSha256\":\"d4411eb79c7476eaa9ad9b55c5e80f24003dbbb5b778e888744b52daa62bf6e3\",\"precedingJournal\":***\"exists\":true,\"status\":\"committed\",\"projectMatches\":true,\"expiresAt\":1794809849827,\"expired\":true,\"updateTime\":\"2026-11-16T06:15:55.303Z\",\"receiptPathHash\":\"d5290882ee08dc064875625399e4b89882d39a0a6752e6b6871543b84ad7d04a\",\"scope\":\"READONLY_METADATA_NOT_LEASE_RELEASE_OR_RETRY\",\"writes\":0,\"receipt\":***\"exists\":true,\"updateTime\":\"2026-11-16T06:15:55.303Z\",\"status\":\"committed\",\"tenantMatches\":true,\"projectMatches\":true,\"sourceRevision\":\"fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630\",\"currentRevisionMatches\":true,\"actorUidHash\":\"94816a0e1151d44ce7ec2116545d37f87ce1aef87cb482835f123ac7300216ce\",\"idempotencyKeyHash\":\"0bad8490795f9b8af59a512dfb75e5710be0b101ed1488d72c6a00ae1eb5531b\",\"digestMatches\":true,\"leaseAttemptMatches\":true,\"errorCode\":\"HR_RECONCILIATION_COMMITTED\",\"stageResults\":***\"visits\":***\"fuzzyMatching\":false,\"providerAck\":true,\"createdVisits\":0,\"idempotentReplays\":0,\"reconciliationDurationMs\":17125,\"hrWrites\":0,\"providerWrites\":792,\"visitCount\":792,\"reconciliationConcurrency\":16,\"reviewRequiredVisits\":0,\"conflicts\":0,\"ok\":true,\"externalWrites\":0,\"status\":\"committed\",\"code\":null***,\"shoppers\":***\"automaticIdentityAliases\":0,\"reconciledShopperCount\":238,\"providerAck\":true,\"idempotentReplays\":40,\"staleTenantAdjudicationRepairs\":0,\"automaticIncomingReviewsResolved\":0,\"identityReviewCount\":0,\"credentialNormalized\":2,\"retiredKeeperCrosswalkRepairs\":2,\"tenantAdjudicationSuppressed\":0,\"automaticIdentityConsolidated\":0,\"identityHeldShopperCount\":0,\"authCreated\":2,\"identityReviewWrites\":0,\"ok\":true,\"automaticIncomingHrAliases\":1,\"aliasMigrated\":0,\"identityMigrationCount\":0,\"fuzzyMatching\":false,\"identityReviewRequired\":false,\"aliasPrincipalsRetired\":0,\"credentialRuleMissing\":1,\"shopperCount\":238,\"hrWrites\":0,\"identityMigrationRequired\":false,\"automaticIdentityAmbiguousGroups\":2,\"providerWrites\":597,\"externalWrites\":0,\"status\":\"committed\",\"code\":\"SHOPPER_CROSSWALK_UID_CONFLICT\"***,\"result\":***\"providerAck\":true,\"confirmedProviderWrites\":1397,\"credentialAuthenticationPending\":true,\"ok\":true,\"committed\":true,\"authWrites\":4,\"unverifiedEffects\":0,\"unresolvedEffects\":0,\"providerWrites\":1397,\"firestoreWrites\":1393***,\"applicationWritesThisAttempt\":***\"firestore\":595,\"auth\":4***,\"stages\":[***\"name\":\"visits\",\"exists\":true,\"status\":\"committed\",\"sourceRevision\":\"fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630\",\"summary\":***\"ok\":true,\"providerAck\":true,\"visitCount\":792,\"createdVisits\":0,\"idempotentReplays\":0,\"reviewRequiredVisits\":0,\"conflicts\":0,\"providerWrites\":792,\"reconciliationConcurrency\":16,\"reconciliationDurationMs\":17125,\"hrWrites\":0,\"externalWrites\":0,\"fuzzyMatching\":false***,***\"name\":\"shoppers\",\"exists\":true,\"status\":\"committed\",\"sourceRevision\":\"fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630\",\"summary\":***\"ok\":true,\"providerAck\":true,\"shopperCount\":238,\"reconciledShopperCount\":238,\"identityHeldShopperCount\":0,\"identityReviewRequired\":false,\"identityReviewCount\":0,\"identityMigrationRequired\":false,\"identityMigrationCount\":0,\"aliasMigrated\":0,\"aliasPrincipalsRetired\":0,\"automaticIdentityConsolidated\":0,\"automaticIdentityAliases\":0,\"automaticIdentityAmbiguousGroups\":2,\"automaticIncomingHrAliases\":1,\"automaticIncomingReviewsResolved\":0,\"tenantAdjudicationSuppressed\":0,\"staleTenantAdjudicationRepairs\":0,\"retiredKeeperCrosswalkRepairs\":2,\"authCreated\":2,\"idempotentReplays\":40,\"credentialNormalized\":2,\"credentialRuleMissing\":1,\"identityReviewWrites\":0,\"providerWrites\":597,\"hrWrites\":0,\"externalWrites\":0,\"fuzzyMatching\":false***],\"journal\":***\"complete\":true,\"intentsObserved\":1071,\"effectsObserved\":997,\"unresolvedIntentsObserved\":0,\"unverifiedEffectsObserved\":0,\"orphanEffectsObserved\":0,\"authWritesObserved\":4,\"firestoreWritesObserved\":1393,\"confirmedProviderWritesObserved\":1397,\"applicationWritesThisAttemptObserved\":***\"auth\":4,\"firestore\":595***,\"credentialAuthenticationPending\":true,\"receiptBindingMatches\":true,\"countsMatch\":true,\"journalVerified\":true,\"receiptTerminalCommitted\":true,\"journalProjectionSha256\":\"a57d4f7c7c766a0803c2d4404dad400a841b0b7948dc512e38c87214de8c8da6\",\"errors\":[],\"decision\":\"VERIFIED_COMMITTED_JOURNAL_AUTHENTICATION_PENDING\",\"scope\":\"READ_ONLY_CURRENT_JOURNAL_NOT_REMOTE_HR_ACK_OR_LOGIN\",\"authenticationVerified\":false,\"remoteHrAck\":false,\"b14Closed\":false,\"writes\":0,\"pages\":***\"intents\":3,\"effects\":2***,\"predecessorReconciliation\":***\"present\":true,\"schemaMatches\":true,\"receiptPathHash\":\"b54a5056b05bb79eefe78403dd25bec0a44e13a0cafb9d482389086f6aa84f2e\",\"sourceRevision\":\"cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac\",\"journalSeal\":\"7b43f8759e11ea17a3669c4e2be05a497790864e48ced14aa87a33e5fd78c358\",\"journalComplete\":true,\"proofInResultMatches\":true,\"successorRevisionMatches\":true,\"independentHistoricalReadback\":true,\"scope\":\"READONLY_FULL_HISTORICAL_JOURNAL_SEAL_NOT_REMOTE_HR_ACK\",\"writes\":0,\"successorScopeMatches\":true,\"successorBindingMatches\":true,\"successorTerminalCommitted\":true,\"oldReceiptExists\":true,\"oldReceiptStillPartial\":true,\"historicalBindingMatches\":true,\"journalSealMatches\":true,\"countsMatch\":true,\"intentsRead\":850,\"effectsRead\":792,\"confirmedProviderWrites\":792,\"authWrites\":0,\"firestoreWrites\":792,\"decision\":\"PASS_VERIFIED_PREDECESSOR_HISTORY_AND_COMMITTED_SUCCESSOR\"***,\"activeNonCommittedLease\":false,\"successorEligibility\":\"ONLY_RUNTIME_FULL_TRANSACTION_VALIDATION_CAN_AUTHORIZE\",\"resumeAgainstCurrentRevisionPossible\":true***,\"visibleLoginBefore\":***\"ok\":true,\"uidFingerprint\":\"ebdcb85796d7592d295105f4c813aa435167c9541b2d36b4d2b2d8e966cdfc87\",\"visiblePasswordLogin\":true,\"credentialReset\":false***,\"automaticReplay\":***\"idempotentReplay\":true,\"applicationWritesThisAttempt\":***\"auth\":0,\"firestore\":0***,\"samePreviousReceipt\":true***,\"nativeCommandCount\":1,\"commandSha256\":\"d6f7d05a884f75b769931793afb9cb13eb910f8c1c83a3f69a830e0fe9e9d151\",\"idempotencyKeySha256\":\"8447bd29dab8494dbe8b22753c543267542dc49ea58005ceaf310f227b73cc62\",\"failureCode\":\"RELEASE_COMPOSITION_FAILURE:VRM354_COMMITTED_ACK_REQUIRED\",\"completedAt\":\"2026-11-16T07:33:37.743Z\",\"retryPolicy\":\"READ_CAPTURED_NATIVE_RECEIPT_AND_REPLAY_SAME_KEY_ONLY_NO_FRESH_CLICK\"***",
+  "nativeClicks": 1,
+  "commandSha256": "d6f7d05a884f75b769931793afb9cb13eb910f8c1c83a3f69a830e0fe9e9d151",
+  "idempotencyKeySha256": "8447bd29dab8494dbe8b22753c543267542dc49ea58005ceaf310f227b73cc62",
+  "beforeInvariantSha256": "d4411eb79c7476eaa9ad9b55c5e80f24003dbbb5b778e888744b52daa62bf6e3",
+  "failureCode": "RELEASE_COMPOSITION_FAILURE:VRM354_COMMITTED_ACK_REQUIRED",
+  "startedAt": "2026-11-16T07:33:08.710Z",
+  "completedAt": "2026-11-16T07:33:37.743Z",
+  "target": {
+    "enabled": true,
+    "findingId": "VRM-354",
+    "scope": "EXISTING_ADMIN_HR_SYNC_EXACT_CANONICAL_NAME_REPAIR",
+    "production": false,
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "hostingUrl": "https://cxorbia-backend-dev.web.app",
+    "sourceSha": "66312f88a70bd123b137c7a031a1f456969465f5",
+    "sourceTree": "38eba9364e0a7cbf1e505f84375959d19918391d",
+    "runtimeRevision": "cxorbia-live-hr-dev-00376-szw",
+    "runtimeDigest": "sha256:d0fc508c6ecd6b318169a2b97b942a1467f8bf5ecf5f4db569e443bbe3eef271",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/0da0b63b6cc8cc0c",
+    "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "actorUidHash": "94816a0e1151d44ce7ec2116545d37f87ce1aef87cb482835f123ac7300216ce",
+    "canonicalShopperId": "shopper_gt_0a363269ad",
+    "targetUidFingerprint": "ebdcb85796d7592d295105f4c813aa435167c9541b2d36b4d2b2d8e966cdfc87",
+    "nameHashMethod": "NFD_DIACRITICS_STRIP_TRIM_COLLAPSE_WS_LOWER_V1",
+    "beforeNameSha256": "1df6d5200c82c73de6f64709b3f378b5bec6b52c486ae16fef743d1365d412fa",
+    "expectedNameSha256": "0a363269ad6d69dfac1199d532cfebc6ec9741a1994d02dbcadf3e5aafab5aab",
+    "authorityRefHash": "9b1014332aa13348aa1895694168a08cf4c0eb5c7b622d9adc685ea6cbdc4370",
+    "ownerGitBlobs": {
+      "backend/runtime/cxorbia-shopper-command-provider-v1.mjs": "e5e6ab0bc8850d4a9f5c7a5aa9774973d1465070",
+      "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs": "1ebbcafd8ee4e69728fb1ec7a86ea99597c468cb"
+    },
+    "qaScope": {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM354_NATIVE_REPAIR_AND_COMPLETE_JOURNAL_QA_SCOPE_20261116.json",
+      "gitBlob": "6213c9f69ccb33d91080b34898d8c7079e0cc381",
+      "sha256": "a2b71435805d02d28820c5bf0ec63448fdcfd3387a2e22ded35f57d3204e251e"
+    },
+    "preEditScopes": [
+      {
+        "path": "docs/checkpoints/CXORBIA_I3_VRM354_CANONICAL_FULL_NAME_P0_SCOPE_20261116.json",
+        "gitBlob": "59c20b42b12070fabb6426949adda9ec4e34441c",
+        "sha256": "5fc90e70f7f99cee4a8eed898384e897d38372aa1b1febfe8848f21b2c0aa149"
+      },
+      {
+        "path": "docs/checkpoints/CXORBIA_I3_VRM355_RECEIPT_RESULT_REPLACEMENT_P0_SCOPE_20261116.json",
+        "gitBlob": "87a8cb3a4fd78c6572c996ea35af710df27aba88",
+        "sha256": "9abe7c91b141ba648607118453f89c6984a19e7551e649e33fe04d4746208bb6"
+      }
+    ],
+    "materializationReceipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2563_VRM354_VRM355_PAIRED_DEV_ACK_20261116.json",
+      "gitBlob": "d9739787f0e9d6b366353a83e1a7fc723958764a",
+      "sha256": "3e629067e0d7760f21927585b7be7e20b7a9c657f2635f92f93c2e1268c45769",
+      "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2563_VRM354_VRM355_PAIRED_DEV_ACK_20261116.json",
+      "runId": 43821946355,
+      "runNumber": 2563,
+      "sourceSha": "66312f88a70bd123b137c7a031a1f456969465f5",
+      "sourceTree": "38eba9364e0a7cbf1e505f84375959d19918391d",
+      "state": "PASS_EXACT_PAIRED_DEV_VRM354_VRM355_NATIVE_REPAIR_READBACK_PENDING",
+      "kind": "EXACT_PAIRED_DEV_ACK_NOT_NATIVE_REPAIR_OR_TERMINAL_CERTIFICATE",
+      "artifactId": 14204423509,
+      "artifactDigest": "sha256:492cc8a133711bc2fd4fd58fc57620b21383f41cb77a1254714acd10a49cf89b",
+      "production": false,
+      "receiptBlob": "d9739787f0e9d6b366353a83e1a7fc723958764a"
+    }
+  },
+  "currentCommandOutcome": "UNKNOWN_UNTIL_DURABLE_RECEIPT_READBACK",
+  "precedingReceiptJournal": {
+    "scope": "AUTOMATIC_PREDECESSOR_RECEIPT_NOT_NEW_NATIVE_COMMAND",
+    "complete": true,
+    "intentsObserved": 1071,
+    "effectsObserved": 997,
+    "authWritesObserved": 4,
+    "firestoreWritesObserved": 1393,
+    "confirmedProviderWritesObserved": 1397,
+    "unresolvedIntentsObserved": 0,
+    "unverifiedEffectsObserved": 0,
+    "orphanEffectsObserved": 0,
+    "countsMatch": true,
+    "journalVerified": true,
+    "credentialAuthenticationPending": true,
+    "journalProjectionSha256": "a57d4f7c7c766a0803c2d4404dad400a841b0b7948dc512e38c87214de8c8da6"
+  },
+  "newNativeRepairProven": false,
+  "b14Closed": false,
+  "phaseAComplete": false,
+  "production": false
+}

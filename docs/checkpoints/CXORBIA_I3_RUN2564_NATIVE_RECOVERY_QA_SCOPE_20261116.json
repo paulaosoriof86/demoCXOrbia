@@ -1,0 +1,240 @@
+{
+  "schemaVersion": "cxorbia.i3.native-recovery-qa-scope.v1",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "evidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2564_NATIVE_ATTEMPT_LOG_READBACK_20261116.json",
+    "gitBlob": "3071116dbe402aaf8bbc28c82ad4f19245abaf09",
+    "sha256": "6410d8ded04a7df89d47ef620a5ae00771a91635620f5eb8cf97f9759a7df0ef"
+  },
+  "scope": "READ_EXACT_NATIVE_RECEIPT_AND_ONLY_TERMINAL_EFFECT_FREE_EXACT_COMMAND_REPLAY",
+  "productSourceUnchanged": "66312f88a70bd123b137c7a031a1f456969465f5",
+  "productTreeUnchanged": "38eba9364e0a7cbf1e505f84375959d19918391d",
+  "qaFiles": [
+    {
+      "path": "tools/qa/cxorbia-i3-canonical-name-repair-live.mjs",
+      "gitBlob": "d4ab6cdf1cfef36f34482a6eba5640d6e8a7b71c",
+      "sha256": "c8136cb148e55b2e0d9e8993b81498ce7bbfd08affcf59dd200824a199eb86c1"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-terminal-human-contract.test.mjs",
+      "gitBlob": "0a493a11a644a5b77926eb22521053c0e8eb1192",
+      "sha256": "8af98e2baef2dc36202340bfbec9805e4fe0cdfcf5ba96b2f98c8f0b730e57f6"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-hr-ack-exact-same-revision.mjs",
+      "gitBlob": "2996bc31e971b1266fd4fe96a662512af36df3f9",
+      "sha256": "0b378687779505766a5b45b5ea3b0269c4aa02732d2ca241de85cd134a94ba93"
+    }
+  ],
+  "sourceTests": {
+    "environment": "V8_JS_EXECUTION_NOT_NODE_CI",
+    "tests": 47,
+    "pass": 47,
+    "fail": 0,
+    "results": [
+      {
+        "name": "VRM354 name hash matches the existing independent QA normalization",
+        "pass": true
+      },
+      {
+        "name": "VRM354 absent request is inert and exact DEV request passes",
+        "pass": true
+      },
+      {
+        "name": "VRM354 blocks request environment drift PROJECT",
+        "pass": true
+      },
+      {
+        "name": "VRM354 blocks request environment drift HOSTING_URL",
+        "pass": true
+      },
+      {
+        "name": "VRM354 blocks request environment drift I3_CERTIFICATION_SOURCE_SHA",
+        "pass": true
+      },
+      {
+        "name": "VRM354 blocks request environment drift I3_CERTIFICATION_SOURCE_TREE",
+        "pass": true
+      },
+      {
+        "name": "VRM354 blocks request environment drift DEV_REVISION",
+        "pass": true
+      },
+      {
+        "name": "VRM354 blocks request environment drift RUNTIME_DIGEST",
+        "pass": true
+      },
+      {
+        "name": "VRM354 blocks request environment drift HOSTING_VERSION_NAME",
+        "pass": true
+      },
+      {
+        "name": "VRM354 blocks request environment drift CX_I3_PINNED_HR_REVISION",
+        "pass": true
+      },
+      {
+        "name": "VRM354 blocks request environment drift TENANT_ID",
+        "pass": true
+      },
+      {
+        "name": "VRM354 blocks request environment drift PROJECT_ID",
+        "pass": true
+      },
+      {
+        "name": "VRM354 blocks one enabled alias",
+        "pass": true
+      },
+      {
+        "name": "VRM354 blocks different request",
+        "pass": true
+      },
+      {
+        "name": "VRM354 blocks predecessor serving",
+        "pass": true
+      },
+      {
+        "name": "VRM354 blocks wrong current materialization",
+        "pass": true
+      },
+      {
+        "name": "VRM354 blocks wrong owner",
+        "pass": true
+      },
+      {
+        "name": "VRM354 accepts one captured native command and only the explained native scope-busy resume",
+        "pass": true
+      },
+      {
+        "name": "VRM354 rejects native command different project",
+        "pass": true
+      },
+      {
+        "name": "VRM354 rejects native command different revision",
+        "pass": true
+      },
+      {
+        "name": "VRM354 rejects native command automatic key flow",
+        "pass": true
+      },
+      {
+        "name": "VRM354 rejects native command nonempty payload",
+        "pass": true
+      },
+      {
+        "name": "VRM354 rejects native command foreign actor",
+        "pass": true
+      },
+      {
+        "name": "VRM354 rejects native command missing provider enforcement",
+        "pass": true
+      },
+      {
+        "name": "VRM354 rejects native command period flow",
+        "pass": true
+      },
+      {
+        "name": "VRM354 replay permits cumulative provider writes while requiring zero new writes",
+        "pass": true
+      },
+      {
+        "name": "VRM354 replay rejects Auth write",
+        "pass": true
+      },
+      {
+        "name": "VRM354 replay rejects Firestore write",
+        "pass": true
+      },
+      {
+        "name": "VRM354 replay rejects control write",
+        "pass": true
+      },
+      {
+        "name": "VRM354 replay rejects missing replay",
+        "pass": true
+      },
+      {
+        "name": "VRM354 replay rejects wrong binding",
+        "pass": true
+      },
+      {
+        "name": "VRM354 replay rejects stale stage code",
+        "pass": true
+      },
+      {
+        "name": "VRM354 replay rejects partial stage",
+        "pass": true
+      },
+      {
+        "name": "VRM354 replay rejects missing independent readback",
+        "pass": true
+      },
+      {
+        "name": "VRM354 stored readback false is allowed only for the independently read durable row",
+        "pass": true
+      },
+      {
+        "name": "VRM354 name-only change preserves the invariant but credential, authority or claims drift does not",
+        "pass": true
+      },
+      {
+        "name": "VRM354 accepts the runtime terminal stage with identity review without closing that review",
+        "pass": true
+      },
+      {
+        "name": "VRM354 recovery binds the exact captured command receipt and terminal journal",
+        "pass": true
+      },
+      {
+        "name": "VRM354 recovery observes a partial receipt but never treats it as an effect-free replay",
+        "pass": true
+      },
+      {
+        "name": "VRM354 recovery refuses new key",
+        "pass": true
+      },
+      {
+        "name": "VRM354 recovery refuses foreign actor",
+        "pass": true
+      },
+      {
+        "name": "VRM354 recovery refuses different revision",
+        "pass": true
+      },
+      {
+        "name": "VRM354 recovery refuses different receipt path",
+        "pass": true
+      },
+      {
+        "name": "VRM354 recovery refuses changed digest",
+        "pass": true
+      },
+      {
+        "name": "VRM354 recovery refuses partial journal",
+        "pass": true
+      },
+      {
+        "name": "VRM354 recovery refuses result binding drift",
+        "pass": true
+      },
+      {
+        "name": "VRM354 recovery refuses different recovery scope",
+        "pass": true
+      }
+    ]
+  },
+  "requiredGuards": [
+    "same original key SHA",
+    "same original stable wire command SHA before execute",
+    "read-only complete journal before any auth browser context",
+    "terminal committed receipt required before replay",
+    "partial receipt reports diagnostics and does not execute",
+    "same invariant from original before proof",
+    "no new click or key",
+    "no direct repair writes",
+    "B14 metadata projection contains only existing allowlisted masks/hashes"
+  ],
+  "nodeCi": "PENDING",
+  "builds": 0,
+  "deploys": 0,
+  "production": false
+}

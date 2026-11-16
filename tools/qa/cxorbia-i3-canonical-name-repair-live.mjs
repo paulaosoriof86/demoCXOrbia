@@ -64,7 +64,7 @@ export function validateNameRepairAck(result,command,r,actorUid,{replay=false,du
  requireProof(result?.ok===true&&result.status==='committed'&&result.committed===true&&result.providerAck===true&&result.unresolvedEffects===0&&result.unverifiedEffects===0,'COMMITTED_ACK_REQUIRED');
  requireProof(durable||result.readbackVerified===true&&result.successUiAllowed===true,'INDEPENDENT_READBACK_REQUIRED');
  requireProof(result.tenantId===r.tenantId&&result.projectId===r.projectId&&result.sourceRevision===r.hrRevision&&result.receiptPath===receiptPath&&sha(result.receiptBinding)===sha(binding),'RECEIPT_BINDING');
- for(const stage of ['visits','shoppers'])requireProof(result.stages?.[stage]?.ok===true&&result.stages[stage].status==='committed'&&result.stages[stage].providerAck===true&&!result.stages[stage].code,'STALE_OR_UNCOMMITTED_STAGE');
+ for(const stage of ['visits','shoppers'])requireProof(result.stages?.[stage]?.ok===true&&['committed','committed_with_identity_review'].includes(result.stages[stage].status)&&result.stages[stage].providerAck===true&&!result.stages[stage].code,'STALE_OR_UNCOMMITTED_STAGE');
  if(replay)requireProof(result.idempotentReplay===true&&result.applicationWritesThisAttempt?.auth===0&&result.applicationWritesThisAttempt?.firestore===0&&result.controlWrites===0,'REPLAY_NEW_WRITES');
  return {receiptPathHash:sha(receiptPath),idempotencyKeyHash:sha(command.idempotencyKey),providerWrites:result.providerWrites,applicationWritesThisAttempt:result.applicationWritesThisAttempt,canonicalFullNamesRestored:result.stages.shoppers.canonicalFullNamesRestored||0,receiptBindingVerified:true,readbackVerified:!durable,replay};
 }
@@ -77,6 +77,19 @@ async function readReceipt(db,receiptPath,r){
   return {row,journal,seal:sha({receipt:row,intents:ir,effects:er,stages:{visits:visits.data()??null,shoppers:shoppers.data()??null}}),updateTime:doc.updateTime?.toDate().toISOString()||null};
  },{readOnly:true});
 }
+
+export function validateNameRepairRecovery({row,receiptPath,journal,r,actorUid}){
+ const q=r.recovery;
+ requireProof(q?.mode==='READ_EXISTING_NATIVE_RECEIPT_THEN_COMMITTED_REPLAY_ONLY'&&q.runId===43824232817&&q.nativeClicks===1,'RECOVERY_SCOPE');
+ for(const k of ['idempotencyKeySha256','commandSha256','beforeInvariantSha256'])requireProof(/^[a-f0-9]{64}$/.test(q[k]),'RECOVERY_HASH');
+ const binding={tenantId:r.tenantId,projectId:r.projectId,sourceRevision:r.hrRevision,actorUid,idempotencyKey:row?.idempotencyKey,commandType:'hr.snapshot.reconcile'};
+ requireProof(row?.version==='cxorbia.hr-reconciliation-receipt.v1'&&row.actorUid===actorUid&&row.tenantId===r.tenantId&&row.projectId===r.projectId&&row.sourceRevision===r.hrRevision&&sha(row.idempotencyKey)===q.idempotencyKeySha256,'RECOVERY_BINDING');
+ requireProof(receiptPath==='tenants/'+r.tenantId+'/commandReceipts/hr-'+sha(JSON.stringify([r.projectId,row.idempotencyKey]))&&row.digest===sha({actorUid,scope:{tenantId:r.tenantId,projectId:r.projectId},sourceRevision:r.hrRevision,commandType:'hr.snapshot.reconcile'}),'RECOVERY_DIGEST');
+ if(row.result)requireProof(sha(row.result.receiptBinding)===sha(binding)&&row.result.receiptPath===receiptPath,'RECOVERY_RESULT_BINDING');
+ requireProof(journal?.complete===true&&journal.receiptBindingMatches===true,'RECOVERY_COMPLETE_JOURNAL');
+ return {rowStatus:row.status,code:row.result?.code||null,stageResults:row.result?.stages||null,receiptPathHash:sha(receiptPath),idempotencyKeySha256:q.idempotencyKeySha256,journal,terminal:row.status==='committed'&&journal.receiptTerminalCommitted===true&&journal.journalVerified===true};
+}
+
 export async function proveVrm354CanonicalNameRepair({db,auth,chromium,credentialRule,env=process.env}){
  const readJson=p=>JSON.parse(fs.readFileSync(p,'utf8'));
  const descriptor=readJson(env.CANDIDATE_DESCRIPTOR||'CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json'),pointer=readJson('CXORBIA_RECOVERY_EXECUTION_CURRENT.json');
@@ -115,13 +128,31 @@ export async function proveVrm354CanonicalNameRepair({db,auth,chromium,credentia
   const beforeHash=canonicalNameHash(before.profile.nombre);proof.beforeNameSha256=beforeHash;proof.expectedNameSha256=r.expectedNameSha256;
   requireProof(beforeHash===r.beforeNameSha256||beforeHash===r.expectedNameSha256,'UNEXPECTED_CURRENT_NAME');
   // A later run cannot invent a new transition or issue another fresh sync.
-  if(beforeHash===r.expectedNameSha256){proof.decision='ALREADY_CORRECT_REPAIR_RECEIPT_REUSE_REQUIRED';save();throw Error('SOURCE_FAILURE:VRM354_PRIOR_REPAIR_READBACK_REQUIRED');}
+  if(beforeHash===r.expectedNameSha256&&!r.recovery){proof.decision='ALREADY_CORRECT_REPAIR_RECEIPT_REUSE_REQUIRED';save();throw Error('SOURCE_FAILURE:VRM354_PRIOR_REPAIR_READBACK_REQUIRED');}
   const credentials=credentialRule(before.profile),login=str(before.member.visibleLogin||before.profile.visibleLogin||before.profile.username||before.profile.user).toLowerCase();
   requireProof(credentials?.ok===true&&login&&credentials.password,'EXISTING_CREDENTIALS');
   const invariant=nameRepairInvariant(before.profile,before.member,before.user);
-  proof.beforeInvariantSha256=invariant;proof.precedingJournal=await b14ReconciliationLeaseReadOnly(db,r.tenantId,r.projectId,r.hrRevision);
-  const prior=proof.precedingJournal.receipt,autoKey='hr-auto-v2-'+r.hrRevision.slice(0,32)+'-'+actor.id;
-  requireProof(prior?.status==='committed'&&prior.sourceRevision===r.hrRevision&&prior.actorUidHash===r.actorUidHash&&prior.idempotencyKeyHash===sha(autoKey)&&prior.journal?.journalVerified===true&&prior.journal?.receiptTerminalCommitted===true,'PRIOR_AUTOMATIC_RECEIPT');
+  proof.beforeInvariantSha256=invariant;
+  let recovered=null,recoveredPath=null;
+  const autoKey='hr-auto-v2-'+r.hrRevision.slice(0,32)+'-'+actor.id;
+  if(r.recovery){
+   const lockRef=tenant.collection('commandReceipts').doc('hr-scope-'+sha(JSON.stringify(r.tenantId))),lock=(await lockRef.get()).data();
+   const prefix='tenants/'+r.tenantId+'/commandReceipts/';
+   requireProof(typeof lock?.receiptPath==='string'&&lock.receiptPath.startsWith(prefix)&&/^hr-[a-f0-9]{64}$/.test(lock.receiptPath.slice(prefix.length)),'RECOVERY_SCOPED_RECEIPT');
+   recoveredPath=lock.receiptPath;recovered=await readReceipt(db,recoveredPath,r);
+   proof.recovery=validateNameRepairRecovery({row:recovered.row,receiptPath:recoveredPath,journal:recovered.journal,r,actorUid:actor.id});
+   proof.recovery.receiptSeal=recovered.seal;proof.recovery.receiptUpdateTime=recovered.updateTime;proof.recovery.currentNameSha256=beforeHash;proof.recovery.invariantMatchesOriginal=invariant===r.recovery.beforeInvariantSha256;
+   save();
+   requireProof(proof.recovery.invariantMatchesOriginal,'RECOVERY_IDENTITY_DRIFT');
+   if(!proof.recovery.terminal)throw Error('PROVIDER_FAILURE:VRM354_NATIVE_RECEIPT_NOT_COMMITTED');
+   requireProof(beforeHash===r.expectedNameSha256,'RECOVERY_NAME_NOT_RESTORED');
+   requireProof(recovered.journal.authWritesObserved===0,'RECOVERY_UNEXPECTED_AUTH_WRITE');
+   requireProof((recovered.row.result?.stages?.shoppers?.canonicalFullNamesRestored||0)>=1,'RECOVERY_RESTORATION_NOT_RECORDED');
+  }else{
+   proof.precedingJournal=await b14ReconciliationLeaseReadOnly(db,r.tenantId,r.projectId,r.hrRevision);
+   const prior=proof.precedingJournal.receipt;
+   requireProof(prior?.status==='committed'&&prior.sourceRevision===r.hrRevision&&prior.actorUidHash===r.actorUidHash&&prior.idempotencyKeyHash===sha(autoKey)&&prior.journal?.journalVerified===true&&prior.journal?.receiptTerminalCommitted===true,'PRIOR_AUTOMATIC_RECEIPT');
+  }
   const baseUrl=r.hostingUrl+'/index-backend-dev.html?'+new URLSearchParams({cxBackendPreview:'YES_PAULA_20260628_PREVIEW_DEV',cxProjectId:r.projectId,cxProtectedRuntime:'YES_PAULA_20260730_PROTECTED_DEV',cxHumanFullVisual:'YES_PAULA_20260731_FULL_PROFILE_DEV'});
   browser=await chromium.launch({headless:true});
   const visibleLogin=async()=>{
@@ -136,6 +167,15 @@ export async function proveVrm354CanonicalNameRepair({db,auth,chromium,credentia
   requireProof(auto?.idempotentReplay===true&&auto.applicationWritesThisAttempt?.auth===0&&auto.applicationWritesThisAttempt?.firestore===0&&auto.receiptBinding?.idempotencyKey===autoKey,'AUTOMATIC_REPLAY_NOT_EFFECT_FREE');
   const preClick=await getTarget();requireProof(canonicalNameHash(preClick.profile.nombre)===beforeHash&&nameRepairInvariant(preClick.profile,preClick.member,preClick.user)===invariant,'PRE_CLICK_IDENTITY_DRIFT');
   proof.automaticReplay={idempotentReplay:true,applicationWritesThisAttempt:{auth:0,firestore:0},samePreviousReceipt:true};
+  let command,nativeResponse;
+  if(recovered){
+   const built=await page.evaluate(({revision,tenantId,projectId,key})=>window.CX.commandAdapter.build({commandType:'hr.snapshot.reconcile',entityType:'hrSnapshot',entityId:revision,tenantId,projectId,periodId:null,requireProject:true,requirePeriod:false,expectedVersion:revision,idempotencyKey:key,payload:{},source:'hr-source-sync-request'}),{revision:r.hrRevision,tenantId:r.tenantId,projectId:r.projectId,key:recovered.row.idempotencyKey});
+   const currentActor=await page.evaluate(()=>window.CX.commandAdapter.currentActor());
+   requireProof(built.ok===true,'RECOVERY_BUILD_INVALID');command=validateNameRepairCommand(built.command,r,currentActor);
+   requireProof(sha(command)===r.recovery.commandSha256,'RECOVERY_WIRE_COMMAND_HASH');
+   proof.commandSha256=sha(command);proof.idempotencyKeySha256=sha(command.idempotencyKey);proof.nativeCommandCount=0;proof.originalNativeClicks=r.recovery.nativeClicks;
+   nativeResponse=recovered.row.result;
+  }else{
   await page.evaluate(()=>window.CX.router.nav('hrsource'));
   await page.locator('#hsSync').waitFor({state:'visible',timeout:60000});
   const capture=await page.evaluate(pid=>{
@@ -159,8 +199,12 @@ export async function proveVrm354CanonicalNameRepair({db,auth,chromium,credentia
   armed=false;page.off('request',onRequest);await Promise.all(pending);
   requireProof(errors.length===0,'UNEXPECTED_HR_COMMAND');
   const final=validateNameRepairSequence(events,r,capture.actor);requireProof(!final.captureError,'NATIVE_RESPONSE_UNAVAILABLE');
-  const command=final.command;proof.nativeCommandCount=events.length;proof.commandSha256=sha(command);proof.idempotencyKeySha256=sha(command.idempotencyKey);
-  proof.commandAck=validateNameRepairAck(final.response,command,r,actor.id);
+  command=final.command;nativeResponse=final.response;proof.nativeCommandCount=events.length;proof.commandSha256=sha(command);proof.idempotencyKeySha256=sha(command.idempotencyKey);
+
+  }
+  proof.nativeResponseSummary={ok:nativeResponse?.ok,status:nativeResponse?.status,code:nativeResponse?.code,committed:nativeResponse?.committed,providerAck:nativeResponse?.providerAck,unresolvedEffects:nativeResponse?.unresolvedEffects,unverifiedEffects:nativeResponse?.unverifiedEffects,stageResults:nativeResponse?.stages||null};
+  save();
+  proof.commandAck=validateNameRepairAck(nativeResponse,command,r,actor.id,{durable:!!recovered});
   const receiptPath='tenants/'+r.tenantId+'/commandReceipts/hr-'+sha(JSON.stringify([r.projectId,command.idempotencyKey])),durable=await readReceipt(db,receiptPath,r);
   validateNameRepairAck(durable.row.result,command,r,actor.id,{durable:true});
   requireProof(durable.journal.journalVerified&&durable.journal.receiptTerminalCommitted,'COMPLETE_JOURNAL');

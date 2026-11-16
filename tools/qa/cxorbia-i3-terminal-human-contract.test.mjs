@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import {collectTenantAdjudications,tenantAdjudicationReceiptRefs,currentHrPeriodId,representativeHrExpectation,representativeMatchesHr} from './cxorbia-i3-terminal-human-contract.mjs';
-import {canonicalNameHash,validateNameRepairRequest,nameRepairInvariant,validateNameRepairCommand,validateNameRepairSequence,validateNameRepairAck} from './cxorbia-i3-canonical-name-repair-live.mjs';
+import {canonicalNameHash,validateNameRepairRequest,nameRepairInvariant,validateNameRepairCommand,validateNameRepairSequence,validateNameRepairAck,validateNameRepairRecovery} from './cxorbia-i3-canonical-name-repair-live.mjs';
 const link=()=>({id:'link-proof',tenantId:'tenant-a',projectScope:'project-a',canonicalShopperId:'canonical-a',
   sourceIdentityKey:'first-alias',exactAliases:['first-alias','second-alias'],sourceAliases:['first-alias','second-alias'],
   status:'active',authorityType:'tenant_adjudication',authorityRef:'durable-receipt',providerAck:true,
@@ -212,3 +212,33 @@ test('VRM354 name-only change preserves the invariant but credential, authority 
  assert.notEqual(nameRepairInvariant({...p,firstName:'Changed'},m,u),baseline);assert.notEqual(nameRepairInvariant({...p,identityAuthorityRef:'different'},m,u),baseline);
  assert.notEqual(nameRepairInvariant(p,{...m,shopperLogin:'changed.login'},u),baseline);assert.notEqual(nameRepairInvariant(p,m,{...u,customClaims:{role:'admin'}}),baseline);
 });
+
+function repairRecoveryFixture(){
+ const f=nativeRepairFixture(),s=v=>typeof v==='string'?v:JSON.stringify((function stable(v){return Array.isArray(v)?v.map(stable):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,stable(v[k])])):v;})(v)),h=v=>crypto.createHash('sha256').update(s(v)).digest('hex');
+ f.r.recovery={mode:'READ_EXISTING_NATIVE_RECEIPT_THEN_COMMITTED_REPLAY_ONLY',runId:43824232817,nativeClicks:1,idempotencyKeySha256:h(f.command.idempotencyKey),commandSha256:h(f.command),beforeInvariantSha256:'a'.repeat(64)};
+ f.receiptPath=f.response.receiptPath;
+ f.row={version:'cxorbia.hr-reconciliation-receipt.v1',status:'committed',actorUid:f.actorUid,tenantId:f.r.tenantId,projectId:f.r.projectId,sourceRevision:f.r.hrRevision,idempotencyKey:f.command.idempotencyKey,result:f.response,digest:h({actorUid:f.actorUid,scope:{tenantId:f.r.tenantId,projectId:f.r.projectId},sourceRevision:f.r.hrRevision,commandType:'hr.snapshot.reconcile'})};
+ f.journal={complete:true,receiptBindingMatches:true,receiptTerminalCommitted:true,journalVerified:true};
+ return f;
+}
+test('VRM354 accepts the runtime terminal stage with identity review without closing that review',()=>{
+ const f=nativeRepairFixture();f.response.stages.shoppers.status='committed_with_identity_review';f.response.stages.shoppers.identityReviewCount=1;
+ assert.doesNotThrow(()=>validateNameRepairAck(f.response,f.command,f.r,f.actorUid));
+});
+test('VRM354 recovery binds the exact captured command receipt and terminal journal',()=>{
+ const f=repairRecoveryFixture();assert.equal(validateNameRepairRecovery(f).terminal,true);
+});
+test('VRM354 recovery observes a partial receipt but never treats it as an effect-free replay',()=>{
+ const f=repairRecoveryFixture();f.row.status='partial';f.row.result.status='partial';f.row.result.code='SHOPPER_NAME_REPAIR_AUTHORITY_CHANGED';f.journal.receiptTerminalCommitted=false;
+ const r=validateNameRepairRecovery(f);assert.equal(r.terminal,false);assert.equal(r.code,'SHOPPER_NAME_REPAIR_AUTHORITY_CHANGED');
+});
+for(const [label,change]of [
+ ['new key',f=>{f.row.idempotencyKey='different-retry-key';}],
+ ['foreign actor',f=>{f.row.actorUid='foreign-actor';}],
+ ['different revision',f=>{f.row.sourceRevision='b'.repeat(64);}],
+ ['different receipt path',f=>{f.receiptPath+='a';}],
+ ['changed digest',f=>{f.row.digest='b'.repeat(64);}],
+ ['partial journal',f=>{f.journal.complete=false;}],
+ ['result binding drift',f=>{f.row.result.receiptBinding.actorUid='foreign';}],
+ ['different recovery scope',f=>{f.r.recovery.mode='CLICK_AGAIN';}]
+])test('VRM354 recovery refuses '+label,()=>{const f=repairRecoveryFixture();change(f);assert.throws(()=>validateNameRepairRecovery(f),/VRM354_/);});
