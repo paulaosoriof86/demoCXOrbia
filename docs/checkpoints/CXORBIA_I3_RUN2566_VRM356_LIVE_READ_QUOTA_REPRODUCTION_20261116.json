@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "cxorbia.i3.fresh-hr-read-quota-reproduction.v1",
+  "findingId": "VRM-356",
+  "observedAt": "2026-11-16T08:16:36Z",
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "PROVIDER_FAILURE",
+  "sourceSha": "66312f88a70bd123b137c7a031a1f456969465f5",
+  "sourceTree": "38eba9364e0a7cbf1e505f84375959d19918391d",
+  "runId": 43826986260,
+  "runNumber": 2566,
+  "certifyJobId": 133163910102,
+  "nativeAttempt": {
+    "httpStatus": 403,
+    "code": "Command_failed__1_",
+    "nativeClicks": 1,
+    "newReceiptExists": false,
+    "commandSha256": "da4cee11be9c2ba14f7f0ad1db8fa9189c68288f5c9663d1c5bffe8bbb12ad35",
+    "idempotencyKeySha256": "15254023d05dc3ae827e2cd7981451a0a9f9825f9863fb1a437f1dfb0f77fd65",
+    "receiptPathHash": "0e3f953bfff963bbf1d95ec816166de4d75a79ff320b6cc68d4f59bf317f386e",
+    "targetNameChanged": false,
+    "targetInvariantChanged": false,
+    "applicationEffects": 0
+  },
+  "readOnlyReproduction": {
+    "endpoint": "https://cxorbia-live-hr-dev-87461567267.us-central1.run.app/api/tya/cinepolis/hr-live?format=meta&fresh=1",
+    "freshReads": 4,
+    "firstThree": "PASS_CURRENT_REVISION",
+    "fourthHttpStatus": 503,
+    "healthLastRefreshError": "Command failed (1): node tools/hr-source/tya-live-provider-registry-identity-dev.mjs\nError: HTTP_429:{\"error\":{\"code\":429,\"message\":\"Quota exceeded for quota metric 'Read requests' and limit 'Read requests per minute per user' of service 'sheets.googleapis.com' for consumer 'project_number:87461567267'.\",\"status\":\"RESOURCE_EXHAUSTED\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"r\n    at json (file:///workspace/tools/hr-source/tya-live-provider-registry-identity-dev.mjs:25:18)\n",
+    "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "classification": "PROVIDER_FAILURE",
+    "quota": "READ_REQUESTS_PER_MINUTE_PER_USER",
+    "upstreamStatus": 429,
+    "failingOwner": "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+    "zeroCommands": true
+  },
+  "cause": {
+    "readerRequestsPerFreshCurrent36Tabs": 12,
+    "readersIndependent": 2,
+    "defaultCacheMs": 5000,
+    "quotaRetryPresent": false,
+    "r20CatchCanStartGvizOnQuota": true,
+    "preAcquireCatchMapsAllErrorsTo403": true
+  },
+  "production": false,
+  "remoteHrWrites": 0,
+  "authWrites": 0,
+  "firestoreWrites": 0,
+  "phaseAComplete": false,
+  "fullDomainAcceptance": false,
+  "nextAction": "Correct exact four owners within VRM356; causal tests; existing single paired DEV lane; fresh GET proof then single native name repair only after exact absent receipt readback."
+}

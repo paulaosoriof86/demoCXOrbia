@@ -1,0 +1,180 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-pre-edit-scope.v1",
+  "findingId": "VRM-356",
+  "observedAt": "2026-11-16T08:16:36Z",
+  "iteration": "I3",
+  "decision": "P0_PROVEN_EXACT_OWNERS_AUTHORIZED_FOR_SCOPED_CORRECTION",
+  "classification": "PROVIDER_FAILURE",
+  "secondaryClassification": "FUNCTIONAL_DEFECT",
+  "scope": "Fresh HR quota recovery and error classification before reconciliation lease",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadBeforeEdit": "c047048ab164e2967b1c22b9414cb47178ef56b8",
+  "productSource": "66312f88a70bd123b137c7a031a1f456969465f5",
+  "moduleTruthMatrix": [
+    {
+      "path": "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+      "domain": "canonical-hr-state-adapters",
+      "latestApprovedSource": "e36a456e07a3b107cb7f75a0c53ffae029eb6de4",
+      "latestApprovedBlob": "bc60ad69d611f96b614a968fc4a9b4a5b9abd63a",
+      "F9": {
+        "source": null,
+        "blob": null
+      },
+      "sourceSuccessor": {
+        "source": "66312f88a70bd123b137c7a031a1f456969465f5",
+        "blob": "bc60ad69d611f96b614a968fc4a9b4a5b9abd63a"
+      },
+      "HEAD": {
+        "sha": "c047048ab164e2967b1c22b9414cb47178ef56b8",
+        "blob": "bc60ad69d611f96b614a968fc4a9b4a5b9abd63a"
+      },
+      "live": {
+        "source": "66312f88a70bd123b137c7a031a1f456969465f5",
+        "blob": "bc60ad69d611f96b614a968fc4a9b4a5b9abd63a",
+        "runtimeRevision": "cxorbia-live-hr-dev-00376-szw",
+        "runtimeDigest": "sha256:d0fc508c6ecd6b318169a2b97b942a1467f8bf5ecf5f4db569e443bbe3eef271"
+      },
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "classificationScope": "VRM356_REPRODUCED_FRESH_READ_QUOTA_AND_PRE_ACQUIRE_ERROR_MAPPING_ONLY",
+      "preservedPriorAcceptance": true
+    },
+    {
+      "path": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+      "domain": "canonical-hr-state-adapters",
+      "latestApprovedSource": "06ab83008d1517f05c5fb51526570775c41b66bd",
+      "latestApprovedBlob": "a3874143a481c159a9d2a11984966bfe813f5248",
+      "F9": {
+        "source": null,
+        "blob": null
+      },
+      "sourceSuccessor": {
+        "source": "66312f88a70bd123b137c7a031a1f456969465f5",
+        "blob": "a3874143a481c159a9d2a11984966bfe813f5248"
+      },
+      "HEAD": {
+        "sha": "c047048ab164e2967b1c22b9414cb47178ef56b8",
+        "blob": "a3874143a481c159a9d2a11984966bfe813f5248"
+      },
+      "live": {
+        "source": "66312f88a70bd123b137c7a031a1f456969465f5",
+        "blob": "a3874143a481c159a9d2a11984966bfe813f5248",
+        "runtimeRevision": "cxorbia-live-hr-dev-00376-szw",
+        "runtimeDigest": "sha256:d0fc508c6ecd6b318169a2b97b942a1467f8bf5ecf5f4db569e443bbe3eef271"
+      },
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "classificationScope": "VRM356_REPRODUCED_FRESH_READ_QUOTA_AND_PRE_ACQUIRE_ERROR_MAPPING_ONLY",
+      "preservedPriorAcceptance": true
+    },
+    {
+      "path": "backend/runtime/hr-live-service/server.mjs",
+      "domain": "canonical-hr-state-adapters",
+      "latestApprovedSource": "06ab83008d1517f05c5fb51526570775c41b66bd",
+      "latestApprovedBlob": "b295200df323c1aa9b6334d3483d2c2a0a323c2a",
+      "F9": {
+        "source": null,
+        "blob": null
+      },
+      "sourceSuccessor": {
+        "source": "66312f88a70bd123b137c7a031a1f456969465f5",
+        "blob": "b295200df323c1aa9b6334d3483d2c2a0a323c2a"
+      },
+      "HEAD": {
+        "sha": "c047048ab164e2967b1c22b9414cb47178ef56b8",
+        "blob": "b295200df323c1aa9b6334d3483d2c2a0a323c2a"
+      },
+      "live": {
+        "source": "66312f88a70bd123b137c7a031a1f456969465f5",
+        "blob": "b295200df323c1aa9b6334d3483d2c2a0a323c2a",
+        "runtimeRevision": "cxorbia-live-hr-dev-00376-szw",
+        "runtimeDigest": "sha256:d0fc508c6ecd6b318169a2b97b942a1467f8bf5ecf5f4db569e443bbe3eef271"
+      },
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "classificationScope": "VRM356_REPRODUCED_FRESH_READ_QUOTA_AND_PRE_ACQUIRE_ERROR_MAPPING_ONLY",
+      "preservedPriorAcceptance": true
+    },
+    {
+      "path": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+      "domain": "persistence-command-ack-boundary",
+      "latestApprovedSource": "66312f88a70bd123b137c7a031a1f456969465f5",
+      "latestApprovedBlob": "1ebbcafd8ee4e69728fb1ec7a86ea99597c468cb",
+      "F9": {
+        "source": null,
+        "blob": null
+      },
+      "sourceSuccessor": {
+        "source": "66312f88a70bd123b137c7a031a1f456969465f5",
+        "blob": "1ebbcafd8ee4e69728fb1ec7a86ea99597c468cb"
+      },
+      "HEAD": {
+        "sha": "c047048ab164e2967b1c22b9414cb47178ef56b8",
+        "blob": "1ebbcafd8ee4e69728fb1ec7a86ea99597c468cb"
+      },
+      "live": {
+        "source": "66312f88a70bd123b137c7a031a1f456969465f5",
+        "blob": "1ebbcafd8ee4e69728fb1ec7a86ea99597c468cb",
+        "runtimeRevision": "cxorbia-live-hr-dev-00376-szw",
+        "runtimeDigest": "sha256:d0fc508c6ecd6b318169a2b97b942a1467f8bf5ecf5f4db569e443bbe3eef271"
+      },
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "classificationScope": "VRM356_REPRODUCED_FRESH_READ_QUOTA_AND_PRE_ACQUIRE_ERROR_MAPPING_ONLY",
+      "preservedPriorAcceptance": true
+    }
+  ],
+  "evidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2566_VRM356_LIVE_READ_QUOTA_REPRODUCTION_20261116.json",
+    "gitBlob": "5942bc8202730f10dc93a2b07443130e06a936c7",
+    "sha256": "bb22afb4ec9bec4690cc9559210cc038fc759a6f23fa26a0b62c96425562456e"
+  },
+  "allowedProductFiles": [
+    "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+    "backend/runtime/hr-live-service/server.mjs",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+  ],
+  "allowedQaFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+    "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs",
+    "tools/qa/cxorbia-i3-g05-observation-no-writes.test.cjs",
+    "tools/qa/cxorbia-i3-canonical-name-repair-live.mjs",
+    "tools/qa/cxorbia-i3-terminal-human-contract.test.mjs"
+  ],
+  "correctionContract": [
+    "Batch up to 64 discovered ranges with a bounded encoded URL; all ranges retained in exact order and response cardinality checked.",
+    "Both independently authenticated readers retain independent metadata and values reads.",
+    "Retry only the same Sheets GET receiving429 with bounded attempts, monotonic total deadline, backoff/jitter and Retry-After; never retry writes.",
+    "No GViz fallback after exhausted quota; no stale snapshot accepted as fresh; no cache TTL or forceFresh relaxation.",
+    "Carry only allowlisted structured provider failure metadata through child process; no raw private response/browser output.",
+    "A typed source-read failure before lease is503 PROVIDER_FAILURE and zero application effects; genuine principal403 and post-acquire uncertainty unchanged.",
+    "Existing read-only single-flight and wait-for-both-before-cleanup behavior preserved.",
+    "Exact expected HR revision revalidated before acquiring a lease; revision drift remainsHOLD."
+  ],
+  "validationRequired": [
+    "Causal BEFORE fails for4fresh reads with quota; AFTER completes identical semantics.",
+    "36,65,129 and long/quoted range batching; no missing, duplicate or reordered ranges.",
+    "429 recovery and exhaustion; Retry-After, deadlines, non429 failures and no GViz quota fallback.",
+    "Runtime503 zero pre-acquire writes, actualAuth403, source drift409, unchanged committed replay.",
+    "Canonical Node CI; one exact paired DEV build/runtime/Hosting; exact readback.",
+    "Repeat readonlyfresh sequence atsameHRrevision; then exact native receipt+name+login+replay0writes."
+  ],
+  "invariants": {
+    "production": false,
+    "productionAuthorization": false,
+    "newWorkflow": false,
+    "newCandidate": false,
+    "dataReimport": false,
+    "remoteHrWrites": false,
+    "credentialReset": false,
+    "uidOverwrite": false,
+    "fullDomainPromotion": false,
+    "humanAcceptancesPreserved": [
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ],
+    "fullDomains": 5,
+    "totalDomains": 21,
+    "methodology": "I3_P0_PROVEN_EXACT_OWNER_SINGLE_PACKAGE"
+  }
+}
