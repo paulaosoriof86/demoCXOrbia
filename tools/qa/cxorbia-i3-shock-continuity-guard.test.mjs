@@ -526,3 +526,43 @@ for(const [label,mutate]of [
 ]){
  test('VRM356 failed DEV correction rejects '+label,()=>{const f=failedDevCorrectionFixture();mutate(f);assert.equal(failedDevReadbackAllowsCorrection(f),false);});
 }
+
+const withFailedPairedC3Pending=t=>{
+ const a=withPairedPendingSuccessor(),d=a.descriptor,p=a.pointer;
+ const dir=fs.mkdtempSync('/tmp/cxorbia-failed-paired-');t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
+ const file=dir+'/failed.json',blob='failed-paired-blob',f=failedDevCorrectionFixture();
+ const paired={...d.currentMaterialization,decision:f.receipt.decision,hrLiveVerified:false,materializationReceiptPath:file};
+ const seal={...d.postDeployRunSeal,...paired,receiptPath:file,receiptBlob:blob,certifiable:false};
+ d.currentMaterialization=structuredClone(paired);p.currentDevMaterialization=structuredClone(paired);
+ for(const obj of[d,p]){
+  obj.postDeployRunSeal=structuredClone(seal);obj.pendingDevSuccessor.servingPairedMaterialization=structuredClone(paired);obj.pendingDevSuccessor.servingRuntimeSeal=structuredClone(seal);
+  obj.vrm356FreshReadPreflight={...f.descriptor.vrm356FreshReadPreflight,sourceSha:d.productSourceSha,sourceTree:d.productTreeAuthority};
+  obj.vrm354CanonicalNameRepairRequest={enabled:false};
+ }
+ Object.assign(d,{status:f.descriptor.status,i4Authorized:false,i3Closed:false});
+ d.currentC3PreterminalAudit={sourceSha:'prior-c3',sourceTree:'prior-tree',runtimeRevision:'prior-runtime',hostingVersion:'prior-hosting'};
+ const x={state:'DEV_RUNTIME_AND_HOSTING_VERIFIED_C3_PENDING',sourceSha:paired.sourceSha,sourceTree:paired.sourceTree,runtimeRevision:paired.runtimeRevision,hostingVersion:paired.hostingVersion,
+  previousC3SourceSha:'prior-c3',previousC3SourceTree:'prior-tree',previousRuntimeRevision:'prior-runtime',previousHostingVersion:'prior-hosting',
+  receiptPath:file,receiptBlob:blob,production:false,hrLiveVerified:false,certifiable:false};
+ d.i3Q2HostingReleaseC3Pending=structuredClone(x);p.i3Q2HostingReleaseC3Pending=structuredClone(x);
+ const bytes='fixture served bytes\n',hash=crypto.createHash('sha256').update(bytes).digest('hex');
+ const receipt={...f.receipt,source:{sha:paired.sourceSha,tree:paired.sourceTree},materialization:paired,verifiedServedAssetCount:19,servedSha256:Object.fromEntries(Array.from({length:19},(_,i)=>['asset-'+i+'.js',hash]))};
+ const oldRead=a.gitRead,oldBlob=a.gitBlob;
+ a.gitRead=args=>args[0]==='show'&&args[1]==='HEAD:'+file?JSON.stringify(receipt):
+  args[0]==='diff'&&args.includes('--diff-filter=ACMRT')?'app/asset-0.js\n':
+  args[0]==='show'&&args[1].startsWith(paired.sourceSha+':app/')?bytes:oldRead(args);
+ a.gitBlob=target=>target===file?blob:oldBlob(target);
+ const persist=()=>fs.writeFileSync(file,JSON.stringify(receipt));persist();return {a,receipt,persist};
+};
+test('failed paired C3 remains HOLD only through the bounded correction path',t=>{
+ const f=withFailedPairedC3Pending(t),r=validateShockContinuity(f.a);assert.equal(r.pass,true,JSON.stringify(r.failures));
+});
+for(const [label,mutate]of[
+ ['production claim',f=>{f.receipt.productionUnchanged=true;}],
+ ['production claim plus disabled preflight',f=>{f.receipt.productionUnchanged=true;for(const o of[f.a.descriptor,f.a.pointer])o.vrm356FreshReadPreflight.enabled=false;}],
+ ['production claim plus enabled native repair',f=>{f.receipt.productionUnchanged=true;for(const o of[f.a.descriptor,f.a.pointer])o.vrm354CanonicalNameRepairRequest.enabled=true;}]
+])test('failed paired receipt cannot bypass correction restrictions: '+label,t=>{
+ const f=withFailedPairedC3Pending(t);mutate(f);f.persist();const r=validateShockContinuity(f.a);
+ assert.equal(r.pass,false);assert.ok(r.failures.includes('RELEASE_COMPOSITION_FAILURE:PAIRED_DEV_C3_TRANSITION_RECEIPT'));
+ assert.ok(!r.failures.includes('RELEASE_COMPOSITION_FAILURE:PENDING_DEV_SUCCESSOR_UNPROVEN'),'valid pending lineage must reach the actual C3 receipt branch');
+});

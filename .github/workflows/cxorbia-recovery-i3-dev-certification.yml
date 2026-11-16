@@ -4607,7 +4607,6 @@ jobs:
       test "$(jq -r '.release.version.name' "$FOCAL_OUT/hosting-before.json")" = "$(jq -r '.currentHostingOnlyDevMaterialization.hostingVersion // .currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")"
       curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" > "$FOCAL_OUT/rules-before.json"
       curl -fsSL -H 'Cache-Control: no-cache' https://tya-plataforma.web.app/ -o "$FOCAL_OUT/production-before.html"
-      if [[ "$ACTIVE_STATUS" == HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED || "$ACTIVE_STATUS" == HOLD_I3_VRM350_DEV_MATERIALIZATION_REQUIRED ]]; then QA_OUT="$FOCAL_OUT/hr-before" CXORBIA_I3_QA_SCOPE=HR_DURABLE_REVISION_READONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs; fi
    - run: |
       set -Eeuo pipefail
       SOURCE_DIR="$RUNNER_TEMP/cxorbia-vrm154-156-source"
@@ -4617,6 +4616,7 @@ jobs:
       test -f "$SOURCE_DIR/firebase.json"
       echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
       SOURCE_DIR="$SOURCE_DIR" node tools/qa/cxorbia-i3-vrm356-live-range-preflight.mjs
+      if [[ "$ACTIVE_STATUS" == HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED || "$ACTIVE_STATUS" == HOLD_I3_VRM350_DEV_MATERIALIZATION_REQUIRED ]] && ! jq -e '.pass==true and .knownFailedPredecessor==true' "$FOCAL_OUT/vrm356-raw-range-preflight.json" >/dev/null 2>&1; then QA_OUT="$FOCAL_OUT/hr-before" CXORBIA_I3_QA_SCOPE=HR_DURABLE_REVISION_READONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs; fi
    - run: |
       set -Eeuo pipefail
       if [[ "$PAIR_ENV_ONLY" == true ]]; then

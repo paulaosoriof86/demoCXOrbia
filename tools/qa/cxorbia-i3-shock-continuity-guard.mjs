@@ -362,7 +362,8 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
         receipt.source?.sha===x.sourceSha&&receipt.source?.tree===x.sourceTree&&
         ['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion','hostingRelease','runId','artifactDigest'].every(k=>materialization[k]&&materialization[k]===seal[k])&&
         hasVerifiedHostingAssets({...receipt,sourceSha:receipt.source?.sha},x.previousC3SourceSha,gitRead)&&
-        (receipt.productionUnchanged===true||failedDevReadbackAllowsCorrection({descriptor:d,pointer:p,receipt,transition:x,pendingFromPaired,pendingProven:pendingDev.pass}))&&
+        ((receipt.schemaVersion==='cxorbia.i3.paired-dev-failed-readback.v2'||receipt.jobConclusion==='failure'||receipt.materialization?.hrLiveVerified===false)
+          ?failedDevReadbackAllowsCorrection({descriptor:d,pointer:p,receipt,transition:x,pendingFromPaired,pendingProven:pendingDev.pass}):receipt.productionUnchanged===true)&&
         (pendingFromPaired||m.productSource?.authorityState==='RUNTIME_AND_HOSTING_DEV_MATERIALIZED_PENDING_C3_E2E'),
         'RELEASE_COMPOSITION_FAILURE:PAIRED_DEV_C3_TRANSITION_RECEIPT');
     }else{

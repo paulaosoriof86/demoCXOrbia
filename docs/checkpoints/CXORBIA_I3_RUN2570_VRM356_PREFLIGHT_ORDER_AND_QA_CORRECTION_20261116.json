@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm356.failed-preflight-order-readback.v1",
+  "findingId": "VRM-356",
+  "iteration": "I3",
+  "state": "HOLD",
+  "observedAt": "2026-11-16T09:02:47Z",
+  "runId": 43835130336,
+  "runNumber": 2570,
+  "controlSha": "f04d5eb0d94bf6fc206a785daaf6334fa76196fb",
+  "sourceSha": "da403803fffdf3472079b0939f3914cc0cceafff",
+  "sourceTree": "dfc56eb3909fa6f7c8cc3bb57b610c46cc838512",
+  "canonical": {
+    "jobId": 133189751481,
+    "conclusion": "success",
+    "tests": 1643,
+    "pass": 1643,
+    "fail": 0,
+    "ownerQa": {
+      "tests": 619,
+      "pass": 619,
+      "fail": 0,
+      "owners": 23,
+      "overlapsCanonical": true
+    },
+    "receiptSha256": "4bcf36674163a438b5a5569be460d3a924ed13dea9c043adaf527ec1a940f604"
+  },
+  "paired": {
+    "jobId": 133190179151,
+    "conclusion": "failure",
+    "failedStep": 8,
+    "code": "PROVIDER_FAILURE:HR_DIAG_HTTP",
+    "preflightExecuted": false,
+    "builds": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "hrWrites": 0
+  },
+  "artifact": {
+    "id": 14209523943,
+    "digest": "sha256:04f54235605690e7e6a8ec8aa1b76fc5b8f0da31ba724b099131e5aa8a3abacc",
+    "bytesInspected": false
+  },
+  "logSha256": "223a79fcedcdaa57f399d7c98b69399564912f96ed71aac7631aa7d3e27fd962",
+  "qaCorrection": {
+    "classification": "MAPPING_FAILURE",
+    "productChanged": false,
+    "workflow": "Move only HR-before observation after raw-range preflight; current runtime/Hosting/rules/production identity checks remain first. A candidate may replace the recorded broken predecessor only when the independent raw headers pass and exact oldHR503+rangefailure is observed; the successor fullHR gate remains mandatory.",
+    "auth": "Reuse existing GoogleAuth/Impersonated read-only Sheets authority bound to actual runtime serviceAccountName; noIAM changes or secrets reads.",
+    "guard": "Failed receipt always follows bounded nonterminal correction checks; productionUnchanged:true cannot bypass them.",
+    "guardCausalBefore": {
+      "tests": 60,
+      "pass": 57,
+      "fail": 3
+    },
+    "guardCausalAfter": {
+      "tests": 60,
+      "pass": 60,
+      "fail": 0
+    },
+    "scope": {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM356_FAILED_DEV_CONTROL_REPRESENTATION_SCOPE_20261116.json",
+      "gitBlob": "cc0c42ef33fb06b0b64dcaeb3943dea16c051f39",
+      "sha256": "af02698d67a44da78c7f8cce0626e600184b04caa2a53088ce5de767979bfccb"
+    }
+  },
+  "expectedFailedPredecessorObservationNotSuccess": true,
+  "production": false,
+  "phaseAComplete": false,
+  "fullDomains": 5,
+  "totalDomains": 21
+}
