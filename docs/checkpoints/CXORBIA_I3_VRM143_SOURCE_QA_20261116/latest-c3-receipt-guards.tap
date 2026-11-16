@@ -1,0 +1,544 @@
+TAP version 13
+# Subtest: current aliases agree with descriptor-selected ledger and current DEV seal
+ok 1 - current aliases agree with descriptor-selected ledger and current DEV seal
+  ---
+  duration_ms: 4.485517
+  type: 'test'
+  ...
+# Subtest: current functional accounting follows the new source while original human evidence stays historical
+ok 2 - current functional accounting follows the new source while original human evidence stays historical
+  ---
+  duration_ms: 0.742958
+  type: 'test'
+  ...
+# Subtest: pending source preserves old served DEV seal while pointers target new source
+ok 3 - pending source preserves old served DEV seal while pointers target new source
+  ---
+  duration_ms: 0.296899
+  type: 'test'
+  ...
+# Subtest: current Hosting-only DEV supersedes the business phase-lock Hosting without inventing a Cloud Run deploy
+ok 4 - current Hosting-only DEV supersedes the business phase-lock Hosting without inventing a Cloud Run deploy
+  ---
+  duration_ms: 0.342526
+  type: 'test'
+  ...
+# Subtest: new bounded Hosting-only source keeps prior C3 and Hosting facts until new source is actually served
+ok 5 - new bounded Hosting-only source keeps prior C3 and Hosting facts until new source is actually served
+  ---
+  duration_ms: 0.525717
+  type: 'test'
+  ...
+# Subtest: a paired runtime+Hosting successor preserves the exact currently served predecessor
+ok 6 - a paired runtime+Hosting successor preserves the exact currently served predecessor
+  ---
+  duration_ms: 0.792031
+  type: 'test'
+  ...
+# Subtest: paired ACK preserves the previous C3 runtime/source as historical until same-source verification
+ok 7 - paired ACK preserves the previous C3 runtime/source as historical until same-source verification
+  ---
+  duration_ms: 1.254783
+  type: 'test'
+  ...
+# Subtest: Hosting-only source may follow an exact paired receipt while preserving its older C3
+ok 8 - Hosting-only source may follow an exact paired receipt while preserving its older C3
+  ---
+  duration_ms: 1.10303
+  type: 'test'
+  ...
+# Subtest: pending paired receipt also agrees with descriptor, not only pointer and ledger
+ok 9 - pending paired receipt also agrees with descriptor, not only pointer and ledger
+  ---
+  duration_ms: 0.498126
+  type: 'test'
+  ...
+# Subtest: pending Hosting from paired rejects altered sourceSha
+ok 10 - pending Hosting from paired rejects altered sourceSha
+  ---
+  duration_ms: 0.796597
+  type: 'test'
+  ...
+# Subtest: pending Hosting from paired rejects altered sourceTree
+ok 11 - pending Hosting from paired rejects altered sourceTree
+  ---
+  duration_ms: 0.423896
+  type: 'test'
+  ...
+# Subtest: pending Hosting from paired rejects altered runtimeRevision
+ok 12 - pending Hosting from paired rejects altered runtimeRevision
+  ---
+  duration_ms: 0.369857
+  type: 'test'
+  ...
+# Subtest: pending Hosting from paired rejects altered hostingVersion
+ok 13 - pending Hosting from paired rejects altered hostingVersion
+  ---
+  duration_ms: 0.306623
+  type: 'test'
+  ...
+# Subtest: Hosting after paired preserves the C3 previous runtime instead of relabelling its receipt
+ok 14 - Hosting after paired preserves the C3 previous runtime instead of relabelling its receipt
+  ---
+  duration_ms: 0.529993
+  type: 'test'
+  ...
+# Subtest: Hosting after a newer runtime requires the explicit historical C3 runtime
+ok 15 - Hosting after a newer runtime requires the explicit historical C3 runtime
+  ---
+  duration_ms: 0.332902
+  type: 'test'
+  ...
+# Subtest: paired transition rejects a falsified previousRuntimeRevision
+ok 16 - paired transition rejects a falsified previousRuntimeRevision
+  ---
+  duration_ms: 0.289257
+  type: 'test'
+  ...
+# Subtest: paired transition rejects a falsified previousHostingVersion
+ok 17 - paired transition rejects a falsified previousHostingVersion
+  ---
+  duration_ms: 0.185674
+  type: 'test'
+  ...
+# Subtest: paired transition rejects a falsified previousC3SourceSha
+ok 18 - paired transition rejects a falsified previousC3SourceSha
+  ---
+  duration_ms: 3.033332
+  type: 'test'
+  ...
+# Subtest: paired transition rejects a falsified sourceTree
+ok 19 - paired transition rejects a falsified sourceTree
+  ---
+  duration_ms: 0.092286
+  type: 'test'
+  ...
+# Subtest: paired transition rejects a falsified runtimeRevision
+ok 20 - paired transition rejects a falsified runtimeRevision
+  ---
+  duration_ms: 0.121199
+  type: 'test'
+  ...
+# Subtest: paired transition rejects a falsified hostingVersion
+ok 21 - paired transition rejects a falsified hostingVersion
+  ---
+  duration_ms: 0.118685
+  type: 'test'
+  ...
+# Subtest: Hosting-only ACK preserves the old C3 as historical until the new-source C3 audit runs
+ok 22 - Hosting-only ACK preserves the old C3 as historical until the new-source C3 audit runs
+  ---
+  duration_ms: 0.37235
+  type: 'test'
+  ...
+# Subtest: Hosting-only receipt rejects stale phase-lock Hosting
+ok 23 - Hosting-only receipt rejects stale phase-lock Hosting
+  ---
+  duration_ms: 0.247526
+  type: 'test'
+  ...
+# Subtest: Hosting-only receipt rejects fabricated Hosting source
+ok 24 - Hosting-only receipt rejects fabricated Hosting source
+  ---
+  duration_ms: 0.100078
+  type: 'test'
+  ...
+# Subtest: Hosting-only receipt rejects falsified release continuity
+ok 25 - Hosting-only receipt rejects falsified release continuity
+  ---
+  duration_ms: 0.118075
+  type: 'test'
+  ...
+# Subtest: pending predecessor rejects falsified source materialization
+ok 26 - pending predecessor rejects falsified source materialization
+  ---
+  duration_ms: 0.161559
+  type: 'test'
+  ...
+# Subtest: pending predecessor rejects changed predecessor seal
+ok 27 - pending predecessor rejects changed predecessor seal
+  ---
+  duration_ms: 0.133697
+  type: 'test'
+  ...
+# Subtest: pending predecessor rejects stale phase lock source
+ok 28 - pending predecessor rejects stale phase lock source
+  ---
+  duration_ms: 0.090904
+  type: 'test'
+  ...
+# Subtest: pending predecessor rejects stale current source alias
+ok 29 - pending predecessor rejects stale current source alias
+  ---
+  duration_ms: 0.082422
+  type: 'test'
+  ...
+# Subtest: rejects stale top-level count
+ok 30 - rejects stale top-level count
+  ---
+  duration_ms: 0.242298
+  type: 'test'
+  ...
+# Subtest: rejects stale pointer next ID
+ok 31 - rejects stale pointer next ID
+  ---
+  duration_ms: 0.16925
+  type: 'test'
+  ...
+# Subtest: rejects stale top-level source
+ok 32 - rejects stale top-level source
+  ---
+  duration_ms: 0.101961
+  type: 'test'
+  ...
+# Subtest: rejects stale current truth
+ok 33 - rejects stale current truth
+  ---
+  duration_ms: 0.151013
+  type: 'test'
+  ...
+# Subtest: rejects stale nested B1-B9 runtime
+ok 34 - rejects stale nested B1-B9 runtime
+  ---
+  duration_ms: 0.085877
+  type: 'test'
+  ...
+# Subtest: rejects stale nested B1-B9 hosting
+ok 35 - rejects stale nested B1-B9 hosting
+  ---
+  duration_ms: 0.077925
+  type: 'test'
+  ...
+# Subtest: rejects stale current DEV source
+ok 36 - rejects stale current DEV source
+  ---
+  duration_ms: 0.110793
+  type: 'test'
+  ...
+# Subtest: rejects old next action
+ok 37 - rejects old next action
+  ---
+  duration_ms: 0.150853
+  type: 'test'
+  ...
+# Subtest: rejects contradictory blocker
+ok 38 - rejects contradictory blocker
+  ---
+  duration_ms: 0.148489
+  type: 'test'
+  ...
+# Subtest: rejects outdated pointer ledger
+ok 39 - rejects outdated pointer ledger
+  ---
+  duration_ms: 0.11536
+  type: 'test'
+  ...
+# Subtest: rejects outdated blob
+ok 40 - rejects outdated blob
+  ---
+  duration_ms: 0.143352
+  type: 'test'
+  ...
+# Subtest: rejects stale timestamp
+ok 41 - rejects stale timestamp
+  ---
+  duration_ms: 0.081861
+  type: 'test'
+  ...
+# Subtest: current authority rejects archived 20-domain receipt reused as current
+ok 42 - current authority rejects archived 20-domain receipt reused as current
+  ---
+  duration_ms: 0.104524
+  type: 'test'
+  ...
+# Subtest: current authority rejects C3 pointer retains an older run
+ok 43 - current authority rejects C3 pointer retains an older run
+  ---
+  duration_ms: 0.073429
+  type: 'test'
+  ...
+# Subtest: current authority rejects descriptor C3 legacy alias retains 20-domain receipt
+ok 44 - current authority rejects descriptor C3 legacy alias retains 20-domain receipt
+  ---
+  duration_ms: 0.079077
+  type: 'test'
+  ...
+# Subtest: current authority rejects C3 ledger retains an old source
+ok 45 - current authority rejects C3 ledger retains an old source
+  ---
+  duration_ms: 0.077424
+  type: 'test'
+  ...
+# Subtest: current authority rejects C3 wrong hosted version
+ok 46 - current authority rejects C3 wrong hosted version
+  ---
+  duration_ms: 0.06723
+  type: 'test'
+  ...
+# Subtest: current authority rejects C3 fabricated all-ready count
+ok 47 - current authority rejects C3 fabricated all-ready count
+  ---
+  duration_ms: 0.106647
+  type: 'test'
+  ...
+# Subtest: reject accumulated alias drift: stale current focal
+ok 48 - reject accumulated alias drift: stale current focal
+  ---
+  duration_ms: 0.130943
+  type: 'test'
+  ...
+# Subtest: reject accumulated alias drift: stale current semantic
+ok 49 - reject accumulated alias drift: stale current semantic
+  ---
+  duration_ms: 0.119346
+  type: 'test'
+  ...
+# Subtest: reject accumulated alias drift: technical count contradicted by current C3
+ok 50 - reject accumulated alias drift: technical count contradicted by current C3
+  ---
+  duration_ms: 0.077254
+  type: 'test'
+  ...
+# Subtest: reject accumulated alias drift: stale matrix hash
+ok 51 - reject accumulated alias drift: stale matrix hash
+  ---
+  duration_ms: 0.073869
+  type: 'test'
+  ...
+# Subtest: reject accumulated alias drift: stale nested current pointer
+ok 52 - reject accumulated alias drift: stale nested current pointer
+  ---
+  duration_ms: 0.072117
+  type: 'test'
+  ...
+# Subtest: latest Hosting ACK advances to exact frontend source while paired runtime seal remains immutable
+ok 53 - latest Hosting ACK advances to exact frontend source while paired runtime seal remains immutable
+  ---
+  duration_ms: 0.842034
+  type: 'test'
+  ...
+# Subtest: latest Hosting ACK rejects runtime digest even when source SHA agrees
+ok 54 - latest Hosting ACK rejects runtime digest even when source SHA agrees
+  ---
+  duration_ms: 0.126116
+  type: 'test'
+  ...
+# Subtest: latest Hosting ACK rejects predecessor source relabel even when source SHA agrees
+ok 55 - latest Hosting ACK rejects predecessor source relabel even when source SHA agrees
+  ---
+  duration_ms: 0.173186
+  type: 'test'
+  ...
+# Subtest: latest Hosting ACK rejects missing source even when source SHA agrees
+ok 56 - latest Hosting ACK rejects missing source even when source SHA agrees
+  ---
+  duration_ms: 0.123823
+  type: 'test'
+  ...
+# Subtest: latest Hosting ACK rejects receipt path even when source SHA agrees
+ok 57 - latest Hosting ACK rejects receipt path even when source SHA agrees
+  ---
+  duration_ms: 0.088411
+  type: 'test'
+  ...
+# Subtest: latest Hosting ACK rejects receipt blob even when source SHA agrees
+ok 58 - latest Hosting ACK rejects receipt blob even when source SHA agrees
+  ---
+  duration_ms: 0.136201
+  type: 'test'
+  ...
+# Subtest: latest Hosting ACK rejects execution run even when source SHA agrees
+ok 59 - latest Hosting ACK rejects execution run even when source SHA agrees
+  ---
+  duration_ms: 0.138284
+  type: 'test'
+  ...
+# Subtest: latest Hosting ACK rejects receipt run even when source SHA agrees
+ok 60 - latest Hosting ACK rejects receipt run even when source SHA agrees
+  ---
+  duration_ms: 0.161309
+  type: 'test'
+  ...
+# Subtest: latest Hosting ACK rejects artifact digest even when source SHA agrees
+ok 61 - latest Hosting ACK rejects artifact digest even when source SHA agrees
+  ---
+  duration_ms: 0.097754
+  type: 'test'
+  ...
+# Subtest: latest Hosting ACK rejects receipt Hosting even when source SHA agrees
+ok 62 - latest Hosting ACK rejects receipt Hosting even when source SHA agrees
+  ---
+  duration_ms: 0.086098
+  type: 'test'
+  ...
+# Subtest: latest Hosting ACK rejects runtime write even when source SHA agrees
+ok 63 - latest Hosting ACK rejects runtime write even when source SHA agrees
+  ---
+  duration_ms: 0.111174
+  type: 'test'
+  ...
+# Subtest: latest Hosting ACK rejects terminal claim even when source SHA agrees
+ok 64 - latest Hosting ACK rejects terminal claim even when source SHA agrees
+  ---
+  duration_ms: 0.168629
+  type: 'test'
+  ...
+# Subtest: latest Hosting ACK rejects unverified assets even when source SHA agrees
+ok 65 - latest Hosting ACK rejects unverified assets even when source SHA agrees
+  ---
+  duration_ms: 0.252663
+  type: 'test'
+  ...
+# Subtest: latest Hosting ACK rejects unrelated latest kind even when source SHA agrees
+ok 66 - latest Hosting ACK rejects unrelated latest kind even when source SHA agrees
+  ---
+  duration_ms: 0.086407
+  type: 'test'
+  ...
+# Subtest: paired predecessor latest receipt remains accepted without fabricating a Hosting ACK
+ok 67 - paired predecessor latest receipt remains accepted without fabricating a Hosting ACK
+  ---
+  duration_ms: 0.094089
+  type: 'test'
+  ...
+# Subtest: current C3 attempt preserves exact serving predecessor while one runtime+Hosting successor is pending
+ok 68 - current C3 attempt preserves exact serving predecessor while one runtime+Hosting successor is pending
+  ---
+  duration_ms: 0.420442
+  type: 'test'
+  ...
+# Subtest: C3 attempt successor rejects candidate relabel
+ok 69 - C3 attempt successor rejects candidate relabel
+  ---
+  duration_ms: 0.203411
+  type: 'test'
+  ...
+# Subtest: C3 attempt successor rejects candidate tree relabel
+ok 70 - C3 attempt successor rejects candidate tree relabel
+  ---
+  duration_ms: 0.188388
+  type: 'test'
+  ...
+# Subtest: C3 attempt successor rejects wrong run
+ok 71 - C3 attempt successor rejects wrong run
+  ---
+  duration_ms: 0.116803
+  type: 'test'
+  ...
+# Subtest: C3 attempt successor rejects missing receipt blob
+ok 72 - C3 attempt successor rejects missing receipt blob
+  ---
+  duration_ms: 0.113998
+  type: 'test'
+  ...
+# Subtest: C3 attempt successor rejects changed receipt blob
+ok 73 - C3 attempt successor rejects changed receipt blob
+  ---
+  duration_ms: 0.11527
+  type: 'test'
+  ...
+# Subtest: C3 attempt successor rejects unreadable receipt
+ok 74 - C3 attempt successor rejects unreadable receipt
+  ---
+  duration_ms: 0.235758
+  type: 'test'
+  ...
+# Subtest: C3 attempt successor rejects wrong Hosting
+ok 75 - C3 attempt successor rejects wrong Hosting
+  ---
+  duration_ms: 0.313934
+  type: 'test'
+  ...
+# Subtest: C3 attempt successor rejects wrong runtime
+ok 76 - C3 attempt successor rejects wrong runtime
+  ---
+  duration_ms: 0.319793
+  type: 'test'
+  ...
+# Subtest: C3 attempt successor rejects wrong digest
+ok 77 - C3 attempt successor rejects wrong digest
+  ---
+  duration_ms: 0.254526
+  type: 'test'
+  ...
+# Subtest: C3 attempt successor rejects pending missing
+ok 78 - C3 attempt successor rejects pending missing
+  ---
+  duration_ms: 0.287615
+  type: 'test'
+  ...
+# Subtest: C3 attempt successor rejects pending pointers differ
+ok 79 - C3 attempt successor rejects pending pointers differ
+  ---
+  duration_ms: 0.223309
+  type: 'test'
+  ...
+# Subtest: C3 attempt successor rejects pending wrongly published
+ok 80 - C3 attempt successor rejects pending wrongly published
+  ---
+  duration_ms: 0.284461
+  type: 'test'
+  ...
+# Subtest: C3 attempt successor rejects serving Hosting changed
+ok 81 - C3 attempt successor rejects serving Hosting changed
+  ---
+  duration_ms: 0.309437
+  type: 'test'
+  ...
+# Subtest: C3 attempt successor rejects C3 artifact changed
+ok 82 - C3 attempt successor rejects C3 artifact changed
+  ---
+  duration_ms: 0.525466
+  type: 'test'
+  ...
+# Subtest: C3 attempt successor rejects promoted complete count
+ok 83 - C3 attempt successor rejects promoted complete count
+  ---
+  duration_ms: 0.241037
+  type: 'test'
+  ...
+# Subtest: C3 attempt successor rejects runtime deployment
+ok 84 - C3 attempt successor rejects runtime deployment
+  ---
+  duration_ms: 0.214327
+  type: 'test'
+  ...
+# Subtest: C3 attempt successor rejects unknown kind
+ok 85 - C3 attempt successor rejects unknown kind
+  ---
+  duration_ms: 0.182971
+  type: 'test'
+  ...
+# Subtest: C3 attempt successor rejects production claimed
+ok 86 - C3 attempt successor rejects production claimed
+  ---
+  duration_ms: 0.224541
+  type: 'test'
+  ...
+# Subtest: C3 attempt successor rejects terminalCertified claimed
+ok 87 - C3 attempt successor rejects terminalCertified claimed
+  ---
+  duration_ms: 0.212514
+  type: 'test'
+  ...
+# Subtest: C3 attempt successor rejects phaseAComplete claimed
+ok 88 - C3 attempt successor rejects phaseAComplete claimed
+  ---
+  duration_ms: 0.184853
+  type: 'test'
+  ...
+# Subtest: C3 attempt successor rejects i4Authorized claimed
+ok 89 - C3 attempt successor rejects i4Authorized claimed
+  ---
+  duration_ms: 0.250941
+  type: 'test'
+  ...
+1..89
+# tests 89
+# suites 0
+# pass 89
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 191.126373

@@ -1,0 +1,117 @@
+{
+  "sourceSha": "ef708259616da70b5adea2fa85d9abc34a5222c2",
+  "sourceTree": "b7adbf36633d8ec614d70232cecf28a4f2e81d58",
+  "runtimeRevision": "cxorbia-live-hr-dev-00372-56c",
+  "runtimeDigest": "sha256:d5ada4fe17a7e5e00a51bc09b601fbabcfd2f1b3203b8a379f86daa4207f5fe2",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/39c320c9d9f35f97",
+  "moduleCount": 21,
+  "matchModules": 5,
+  "sourceReadyModules": 21,
+  "pendingFiles": 0,
+  "schemaVersion": "cxorbia.i3.c3-certify-attempt-readback.v1",
+  "kind": "C3_PRETERMINAL_AND_CERTIFY_ATTEMPT_NOT_TERMINAL_CERTIFICATE",
+  "decision": "HOLD_I3_PRE_FIXTURES_DURABLE_REVISION_DIVERGENCE",
+  "strictCertificationStatus": "HOLD",
+  "c3Decision": "PASS_C3_PRETERMINAL_SOURCE_READY_EXACT_DEV",
+  "generatedAt": "2026-11-16T02:10:17.074620+00:00",
+  "runId": 43786809287,
+  "runNumber": 2543,
+  "runAttempt": 1,
+  "controlSha": "41282593f83bba3def61f75ab0d58f7892fd5aa7",
+  "url": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43786809287",
+  "artifactId": 14191010658,
+  "artifactDigest": "sha256:39502e35eb9cff6bb96c10b992e03c8f7fc51e3952b4705de0f39c6283c1043d",
+  "c3ArtifactDigestIndependentlyVerified": true,
+  "c3JobId": 133036394368,
+  "certifyJobId": 133036764814,
+  "certifyConclusion": "failure",
+  "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+  "sourceQa": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2543_OBSERVED_EVIDENCE_20261116/source-qa/source-qa-receipt.json",
+    "gitBlob": "7e129ef4cf74b163549435fe537e12aa17d5bb8a",
+    "sha256": "249988f8d4841b996587b6cb7826abef7a6a5a6365760d487fd695f4adb63b1b",
+    "pass": 266,
+    "fail": 0,
+    "owners": 20
+  },
+  "observedEvidence": {
+    "c3Audit": {
+      "path": "docs/checkpoints/CXORBIA_I3_CURRENT_C3_RUN2543_AUDIT_20261116.json",
+      "gitBlob": "d5903db72ec7008da9a7f35ced45d63098b0aaf2"
+    },
+    "stdoutSelection": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2543_OBSERVED_EVIDENCE_20261116/certify-observed-lines.log",
+      "gitBlob": "00e46725e71d3d7cff13b06689538ada28909a16"
+    },
+    "fullJobLogSha256": "53f5c6a8a8656c4105a20536eaa8320ff2dcb4914823380e50599828ffeb426d",
+    "fullJobLogBytes": 122118,
+    "fullJobLogUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43786809287/job/133036764814",
+    "rawB11IdsInspected": false,
+    "terminalProgressJsonInspected": false
+  },
+  "steps": {
+    "B14": {
+      "observationComplete": true,
+      "accessConclusion": "METADATA_EDIT_CAPABILITY_OBSERVED",
+      "bindingToReaderMatch": "UNRESOLVED",
+      "providerAck": false,
+      "b14Closed": false
+    },
+    "F09": {
+      "decision": "PASS_I3_F09_UI_PROVIDER_NEW_SESSION_PRIVACY_REPLAY_CLEANUP",
+      "records": 3,
+      "cleanup": {
+        "ok": true,
+        "deletedDocuments": 12,
+        "deletedAuth": 3,
+        "remainingDocuments": 0,
+        "remainingAuth": 0
+      },
+      "evidenceScope": "EXACT_JOB_STDOUT_AND_SUCCESSFUL_STEP_NOT_FULL_DOMAIN"
+    },
+    "human": {
+      "decision": "PASS_I3_HUMAN_LIVE_ACCEPTANCE",
+      "evidenceScope": "EXACT_JOB_STDOUT_NOT_NEW_PAULA_APPROVAL"
+    },
+    "progress": {
+      "stepConclusion": "success",
+      "phaseAComplete": false,
+      "newMatchCountNotInferred": true
+    },
+    "semanticAndFocal": {
+      "stepConclusion": "success",
+      "requiredSemanticDecision": "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE",
+      "requiredFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+      "b11DetailedReceiptArtifactPath": "semantic/b11-dashboard-stages.json",
+      "b11DetailedReceiptInspected": false,
+      "b11FindingClosedByThisSummary": false
+    },
+    "PRE": {
+      "decision": "HOLD_I3_LIVE_FIXTURES_V2",
+      "testsPassed": 7,
+      "testsTotal": 10,
+      "cleanup": true,
+      "error": "PERSISTENCE_FAILURE:HR_DURABLE_REVISION_DIVERGENCE:bfc8f1788b902124e6",
+      "durableOwnerResolved": false
+    }
+  },
+  "terminalArtifact": {
+    "id": 14190943618,
+    "size": 957257906,
+    "reportedDigest": "sha256:5d7a8c32326f9bbb5efa08e65821e61bd47d3cc5d7f467cf4c9885039fc5182d",
+    "digestIndependentlyVerified": false,
+    "fullArtifactDownloaded": false,
+    "accessLimitation": "Connector maximum536870912bytes; public browser session cannot download Actions artifact. Existing next uploads compressed; no historical evidence fabricated.",
+    "name": "cxorbia-recovery-i3-terminal-diagnostics-43786809287-1"
+  },
+  "builds": 0,
+  "runtimeDeploys": 0,
+  "hostingDeploys": 0,
+  "rulesDeploys": 0,
+  "hrWrites": 0,
+  "productionDeploys": 0,
+  "production": false,
+  "terminalCertified": false,
+  "phaseAComplete": false,
+  "i4Authorized": false
+}

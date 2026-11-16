@@ -1,0 +1,293 @@
+✔ B7 durable shopper notices require Firestore server readback and post-hydration reload (1.468049ms)
+✖ VRM143 mapper preserves canonical lifecycle dates, explicit action and cycle through reload (28.049065ms)
+✔ VRM143 shared feed correctly handles current information (1.205691ms)
+✔ VRM143 shared feed correctly handles resolved (2.130317ms)
+✖ VRM143 shared feed correctly handles expired (1.669276ms)
+✔ VRM143 shared feed correctly handles future expiry (2.342591ms)
+✖ VRM143 shared feed correctly handles historical date without period (1.807259ms)
+✔ VRM143 shared feed correctly handles foreign project actionable (1.516771ms)
+✖ VRM143 historical terminal cancellation stays in history but is never reactivated by operational flag (2.175073ms)
+✔ VRM143 exact historical cancel pending_review remains visible even read (5.000426ms)
+✔ VRM143 exact historical cancel approved_pending_hr remains visible even read (1.818937ms)
+✔ VRM143 exact historical reprog pending_review remains visible even read (3.206316ms)
+✖ VRM143 newer request cannot reactivate either older request or its decision, including equal timestamps (2.451862ms)
+✖ VRM143 historical exception denies no cycle (1.259381ms)
+✖ VRM143 historical exception denies different cycle (1.248064ms)
+✔ VRM143 historical exception denies other recipient (1.3266ms)
+✔ VRM143 historical exception denies other project (1.1983ms)
+✔ VRM143 historical exception denies other entity (1.324927ms)
+✖ VRM143 historical exception denies other period (1.291058ms)
+✖ VRM143 historical exception denies other tenant (1.481538ms)
+✖ VRM143 duplicate matching entity cannot certify a historical actionable notice (1.512555ms)
+✖ VRM143 same-period decision remains informative after terminal resolution of request (1.166052ms)
+✖ VRM143 current legacy decision remains informative without inventing a historic cycle (1.264247ms)
+✔ VRM143 approved assignment notice retains its exact pending visit obligation (1.301142ms)
+ℹ tests 24
+ℹ suites 0
+ℹ pass 12
+ℹ fail 12
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 215.217068
+
+✖ failing tests:
+
+test at tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:30:1
+✖ VRM143 mapper preserves canonical lifecycle dates, explicit action and cycle through reload (28.049065ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - '2026-11-15T12:00:00.000Z'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:32:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: '2026-11-15T12:00:00.000Z',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:36:3
+✖ VRM143 shared feed correctly handles expired (1.669276ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:36:129)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:36:3
+✖ VRM143 shared feed correctly handles historical date without period (1.807259ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:36:129)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:37:1
+✖ VRM143 historical terminal cancellation stays in history but is never reactivated by operational flag (2.175073ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:39:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:44:1
+✖ VRM143 newer request cannot reactivate either older request or its decision, including equal timestamps (2.451862ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  +   'notice-a',
+  +   'decision-1',
+      'notice-2'
+    ]
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:45:410)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'notice-a', 'decision-1', 'notice-2' ],
+    expected: [ 'notice-2' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:49:3
+✖ VRM143 historical exception denies no cycle (1.259381ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:50:184)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:49:3
+✖ VRM143 historical exception denies different cycle (1.248064ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:50:184)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:49:3
+✖ VRM143 historical exception denies other period (1.291058ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:50:184)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:49:3
+✖ VRM143 historical exception denies other tenant (1.481538ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:50:184)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:52:1
+✖ VRM143 duplicate matching entity cannot certify a historical actionable notice (1.512555ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:53:181)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:55:1
+✖ VRM143 same-period decision remains informative after terminal resolution of request (1.166052ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:56:299)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:58:1
+✖ VRM143 current legacy decision remains informative without inventing a historic cycle (1.264247ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs:59:294)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

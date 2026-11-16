@@ -1,0 +1,5 @@
+2026-11-16T01:35:24.9856394Z ***"decision":"HOLD","observationComplete":true,"accessConclusion":"METADATA_EDIT_CAPABILITY_OBSERVED","bindingToReaderMatch":"UNRESOLVED","b14Closed":false,"providerAck":false,"production":false***
+2026-11-16T01:36:28.2907563Z ***"decision":"PASS_I3_F09_UI_PROVIDER_NEW_SESSION_PRIVACY_REPLAY_CLEANUP","sourceSha":"ef708259616da70b5adea2fa85d9abc34a5222c2","runId":"43786809287","periodId":"cinepolis-2026-11","records":3,"cleanup":***"ok":true,"deletedDocuments":12,"deletedAuth":3,"remainingDocuments":0,"remainingAuth":0***,"error":null***
+2026-11-16T01:41:12.5665522Z PASS_I3_HUMAN_LIVE_ACCEPTANCE
+2026-11-16T01:44:34.3101721Z HOLD_I3_LIVE_FIXTURES_V2 tests=7/10 cleanup=true build=0 deploy=0 production=false
+2026-11-16T01:44:34.3102857Z PERSISTENCE_FAILURE:PERSISTENCE_FAILURE:HR_DURABLE_REVISION_DIVERGENCE:bfc8f1788b902124e6

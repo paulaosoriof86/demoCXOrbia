@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "cxorbia.i3.qa.workflow-change.v1",
+  "withMappingCompactionSemanticEquality": true,
+  "compactedWithBlocks": 212,
+  "originalBytes": 509997,
+  "currentBytes": 508380,
+  "jobCountUnchanged": 109,
+  "functionalChanges": [
+    "Existing paired DEV status VRM143; same build/runtime/Hosting path",
+    "39 served assets include notif and Dashboard",
+    "Bounded readonly HR durable diagnostics before and after deploy",
+    "VRM143 isolated lifecycle QA with cleanup",
+    "Existing large diagnostics compression level6; no source/artifact content changes"
+  ]
+}

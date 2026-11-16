@@ -1,0 +1,146 @@
+{
+  "schemaVersion": "cxorbia.i3.p0.source-proof.v1",
+  "decision": "PASS_I3_VRM143_NOTIFICATION_CYCLE_SOURCE_QA_NOT_DEV_OR_FULL_DOMAIN",
+  "generatedAt": "2026-11-16T02:10:17.074620+00:00",
+  "sourceSha": "f2fcb6200843971485ef2b092240c5497148038b",
+  "sourceTree": "41c4a8c884808a6722ff7b7217eda0ea5fbf7ef3",
+  "predecessorProductSourceSha": "ef708259616da70b5adea2fa85d9abc34a5222c2",
+  "sourceTestsPass": 317,
+  "sourceTestsFail": 0,
+  "registeredOwnerCount": 21,
+  "allowedProductFiles": [
+    "app/core/notif.js",
+    "app/core/backend-bulletins.js",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+  ],
+  "allowedTestFiles": [
+    ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs",
+    "tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs",
+    "tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs",
+    "tools/qa/cxorbia-i3-hr-ack-exact-same-revision.mjs",
+    "tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs",
+    "tools/qa/cxorbia-i3-source-qa-evidence.mjs",
+    "tools/qa/cxorbia-i3-source-qa-evidence.test.mjs",
+    "tools/qa/cxorbia-i3-terminal-hr-observation.test.mjs",
+    "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM143_NOTIFICATION_CYCLE_P0_SCOPE_20261116.json",
+  "scopeReceiptBlob": "3d53fd15adf72f119acc8a8d10041b9d11039dac",
+  "findings": [
+    {
+      "id": "VRM-143",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "owner": [
+        "app/core/notif.js",
+        "app/core/backend-bulletins.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ]
+    }
+  ],
+  "testEvidence": {
+    "notices-provider-after.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM143_SOURCE_QA_20261116/notices-provider-after.tap",
+      "gitBlob": "6d7859d6da533fddf22d5f18fe0df9439d7ea6fd",
+      "sha256": "48fff648acf6afe96182b75d0a90d51df7d948bb2d5d44eb02f8f5abaef844ea"
+    },
+    "notices-before.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM143_SOURCE_QA_20261116/notices-before.tap",
+      "gitBlob": "da3305cef93b5d0d16e7b43dc7bc898137684c96",
+      "sha256": "cd6e9ca6c59b3fb123aa2ea19387e6e9e84dcf2b62944d7e31d01c8b898a392f"
+    },
+    "finance-ack-boundary.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM143_SOURCE_QA_20261116/finance-ack-boundary.tap",
+      "gitBlob": "74f4ddf2952abbf7827c26137782ea74deaaf3c8",
+      "sha256": "d4be252bfd4e28dfec8e59ad34e6675bf9ebe775a568e29308832037d3b74714"
+    },
+    "frontend-behavior.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM143_SOURCE_QA_20261116/frontend-behavior.tap",
+      "gitBlob": "0bca71b3a3d094d537d0cda3ce6d3aaf97166c55",
+      "sha256": "0c9317c898634ece90cdee07c601d9a8797d774ef14b2a37efd658499b7ff4e2"
+    },
+    "external-hr-source.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM143_SOURCE_QA_20261116/external-hr-source.tap",
+      "gitBlob": "a0f3e3c257ea9aaa9b6c54eb6991c977568b1d6b",
+      "sha256": "c22e15a388cf34c59edf8980bc72944ca4a1001aac6f81dd3dd8bb268d134f29"
+    },
+    "summary.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM143_SOURCE_QA_20261116/summary.json",
+      "gitBlob": "386771443505b8e7f20f128fbb77d499ca065aec",
+      "sha256": "e9769d1707b29b5b5a75e39d80eb03fc7cf3a32d02f3c46d1ce329f72da06e08"
+    },
+    "required-control-gates.log": {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM143_SOURCE_QA_20261116/required-control-gates.log",
+      "gitBlob": "4cb0dc9afa94580935d1c580c357bd1917766fa3",
+      "sha256": "829e6672f7deb53eed2fdb993028cf3d6f46e14595d83c04affe62bb77ca2cc8"
+    },
+    "workflow-change.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM143_SOURCE_QA_20261116/workflow-change.json",
+      "gitBlob": "fe723fef8e87e5dbc64fcdc5680b7dc429658b07",
+      "sha256": "eb46ecf391517a05ba4599c55ae6bb14f8e27df57d62811cda24a9d054e6566f"
+    },
+    "human-project-scope.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM143_SOURCE_QA_20261116/human-project-scope.tap",
+      "gitBlob": "1bdef48370ab0cccb5d0a1d1e039f6dfa3b94626",
+      "sha256": "8ab1cce15f0795297e5fb8c1be14de10b55f1d4b42cbdb5e2140a43567906e1a"
+    },
+    "latest-c3-receipt-guards.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM143_SOURCE_QA_20261116/latest-c3-receipt-guards.tap",
+      "gitBlob": "f5065bd3c1277d5d8658b9d143804bfde1855f0d",
+      "sha256": "80898a161941a612178d7cc49279e42af9f3b3cd02f874f058858bf59e6b4fe5"
+    }
+  },
+  "registeredSourceStats": {
+    "tests": 317,
+    "pass": 317,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0
+  },
+  "notificationBefore": {
+    "tests": 24,
+    "pass": 12,
+    "fail": 12
+  },
+  "notificationAndProviderAfter": {
+    "tests": 51,
+    "pass": 51,
+    "fail": 0
+  },
+  "latestC3ReceiptGuardTests": {
+    "tests": 89,
+    "pass": 89,
+    "fail": 0
+  },
+  "requiredControlGates": {
+    "tests": 742,
+    "pass": 742,
+    "fail": 0
+  },
+  "countsAreNotAdditive": true,
+  "productOwnerBlobs": {
+    "app/core/notif.js": "376524ce5b8b58ba40ff1d3ccb0af959b674272d",
+    "app/core/backend-bulletins.js": "de066f9d684b203b62175ca5a675b9ffea4202f1",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs": "3df2297177b8081f0f053ac66955ea221e83e0d8"
+  },
+  "requiredLiveProof": "Same existing paired DEV lane,39 exact served assets; actual provider request1/reject1/request2/new-session replay/approve2 for cancel and reschedule; exact durable request/bulletin cycle; shared exact served consumer historical/current checks; owned cleanup. Readonly independent HR/durable/automatic receipt/stages before and after deploy. Legacy unlinked pending cases remain explicit, no backfill guess. No browser/full-domain claim.",
+  "qaControlRepairs": [
+    "Latest actual C3 attempt bound to exact served predecessor instead of stale latestHosting label",
+    "Existing workflow parameter compaction preserves parsed mappings; same109jobs; paired status and safety only",
+    "Compression level6 for existing evidence artifacts to prevent transport size failure"
+  ],
+  "devPublished": false,
+  "production": false,
+  "hrWrites": 0,
+  "realPeriodWrites": 0,
+  "humanPassesPreserved": [
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ]
+}
