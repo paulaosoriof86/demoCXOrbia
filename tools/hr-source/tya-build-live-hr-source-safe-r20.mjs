@@ -49,6 +49,83 @@ const MONTHS=[
   {n:11,name:'NOVIEMBRE',short:'NOV',full:'Noviembre'}, {n:12,name:'DICIEMBRE',short:'DIC',full:'Diciembre'}
 ];
 
+
+const HR_SHEETS_READ_DEADLINE=performance.now()+75000;
+const HR_SHEETS_READ_STATS={attempts:0,successfulRequests:0,quotaRetries:0,responseBytes:0};
+function hrRangeBatches(tabs,rangeForTab){
+  const batches=[];let batch=[],encodedSize=0;
+  for(const tab of tabs){
+    const part='ranges='+encodeURIComponent(rangeForTab(tab));
+    if(part.length>6000)throw new Error('HR_SOURCE_RANGE_URL_TOO_LONG');
+    if(batch.length&&(batch.length>=64||encodedSize+part.length+1>6000)){batches.push(batch);batch=[];encodedSize=0;}
+    batch.push(tab);encodedSize+=part.length+1;
+  }
+  if(batch.length)batches.push(batch);
+  return batches;
+}
+function validateHrRangeResponse(response,ranges){
+  const normalize=range=>{
+    const text=String(range||''),split=text.lastIndexOf('!');
+    if(split<1)return '';
+    let title=text.slice(0,split);
+    if(title.startsWith("'")&&title.endsWith("'"))title=title.slice(1,-1).replace(/''/g,"'");
+    return title+'!'+text.slice(split+1).toUpperCase();
+  };
+  if(!Array.isArray(response?.valueRanges)||response.valueRanges.length!==ranges.length)throw new Error('HR_SOURCE_RANGE_RESPONSE_INCOMPLETE');
+  for(let i=0;i<ranges.length;i++){
+    if(normalize(response.valueRanges[i]?.range)!==normalize(ranges[i]))throw new Error('HR_SOURCE_RANGE_RESPONSE_MISMATCH');
+    if(response.valueRanges[i].values!==undefined&&!Array.isArray(response.valueRanges[i].values))throw new Error('HR_SOURCE_RANGE_VALUES_INVALID');
+  }
+  return response;
+}
+async function readSheetsJson(url,options={},io={}){
+  if(String(options.method||'GET').toUpperCase()!=='GET')throw new Error('HR_SOURCE_READ_METHOD_REQUIRED');
+  const fetchImpl=io.fetchImpl||fetch,now=io.now||(()=>performance.now()),wait=io.wait||(ms=>new Promise(resolve=>setTimeout(resolve,ms)));
+  const random=io.random||Math.random,wallNow=io.wallNow||Date.now;
+  const deadlineAt=io.deadlineAt??HR_SHEETS_READ_DEADLINE,stats=io.stats||HR_SHEETS_READ_STATS;
+  let attempts=0,quotaSeen=false;
+  const failure=()=>{
+    const code=quotaSeen?'HR_SOURCE_READ_QUOTA_EXHAUSTED':'HR_SOURCE_READ_DEADLINE_EXCEEDED';
+    const error=new Error(code);error.code=code;
+    error.hrSourceFailure={schemaVersion:'cxorbia.hr-source-read-failure.v1',code,upstreamStatus:quotaSeen?429:null,attempts,readOnly:true};
+    return error;
+  };
+  while(attempts<7){
+    const remaining=deadlineAt-now();
+    if(remaining<=0)throw failure();
+    attempts++;stats.attempts++;
+    let response;
+    try{
+      response=await fetchImpl(url,{...options,method:'GET',signal:AbortSignal.timeout(Math.max(1,Math.min(15000,Math.floor(remaining))))});
+    }catch(error){
+      if(error?.name==='TimeoutError'||now()>=deadlineAt)throw failure();
+      throw error;
+    }
+    let body=null;try{body=await response.json();}catch(error){if(response.ok)throw new Error('HR_SOURCE_READ_JSON_INVALID');}
+    if(response.ok){
+      stats.successfulRequests++;stats.responseBytes+=Buffer.byteLength(JSON.stringify(body),'utf8');
+      return body;
+    }
+    if(response.status!==429)throw new Error('HTTP_'+response.status+':'+JSON.stringify(body||{}).slice(0,300));
+    quotaSeen=true;
+    if(attempts>=7)throw failure();
+    const retryHeader=String(response.headers?.get?.('retry-after')||'').trim();
+    let retryAfter=0;
+    if(/^\d+(\.\d+)?$/.test(retryHeader))retryAfter=Number(retryHeader)*1000;
+    else if(retryHeader){const date=Date.parse(retryHeader);if(Number.isFinite(date))retryAfter=Math.max(0,date-wallNow());}
+    const backoff=Math.min(32000,1000*2**(attempts-1)+Math.floor(random()*1000));
+    const delay=Math.max(backoff,retryAfter);
+    if(!Number.isFinite(delay)||now()+delay>=deadlineAt)throw failure();
+    stats.quotaRetries++;await wait(delay);
+  }
+  throw failure();
+}
+function reportHrSourceFailure(error){
+  if(error?.hrSourceFailure?.schemaVersion==='cxorbia.hr-source-read-failure.v1'){
+    console.error('CXORBIA_HR_SOURCE_FAILURE='+JSON.stringify(error.hrSourceFailure));
+  }else console.error(error);
+}
+
 function fail(message){throw new Error(message);}
 function pad(value){return String(value).padStart(2,'0');}
 function safeHash(value,prefix){const raw=String(value||'').trim().toLowerCase();return raw?`${prefix}_${crypto.createHash('sha256').update(raw).digest('hex').slice(0,10)}`:'';}
@@ -74,7 +151,7 @@ async function oauthToken(fetchImpl=fetch,serviceAccountJson=SERVICE_ACCOUNT_JSO
   if(!json.access_token)fail('Google OAuth token missing');
   return {token:json.access_token,clientEmail:sa.client_email};
 }
-async function sheetsGet(pathAndQuery,token){const response=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}${pathAndQuery}`,{headers:{Authorization:`Bearer ${token}`,'Cache-Control':'no-cache, no-store','Pragma':'no-cache'}});const json=await response.json();if(!response.ok)fail(`Sheets API failed: HTTP ${response.status} ${JSON.stringify(json).slice(0,500)}`);return json;}
+async function sheetsGet(pathAndQuery,token){return readSheetsJson(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}${pathAndQuery}`,{headers:{Authorization:`Bearer ${token}`,'Cache-Control':'no-cache, no-store','Pragma':'no-cache'}});}
 
 function candidateTabs(){const [startYear,startMonth]=EARLIEST_PERIOD.split('-').map(Number);const local=tenantYearMonth();let endYear=local.year,endMonth=local.month+1;if(endMonth>12){endMonth-=12;endYear+=1;}const tabs=[];for(let year=startYear;year<endYear||(year===endYear&&startMonth<=endMonth);year++){const first=year===startYear?startMonth:1;const last=year===endYear?endMonth:12;for(let monthNumber=first;monthNumber<=last;monthNumber++){const month=MONTHS[monthNumber-1],yy=String(year).slice(-2);for(const country of ['GT','HN']){const title=`${month.name} ${yy}${country==='HN'?' HN':''}`;tabs.push({country,year,month:month.n,monthName:month.full,label:`${month.short} ${year}`,fullLabel:`${month.full} ${year}`,key:`${year}-${pad(month.n)}`,tabTitle:title});}}}return tabs;}
 
@@ -82,9 +159,27 @@ function parseCsv(text){const rows=[];let row=[],field='',quoted=false;for(let i
 async function fetchGvizTab(tab){const nonce=`${Date.now()}-${crypto.randomBytes(6).toString('hex')}`;const params=new URLSearchParams({tqx:'out:csv',sheet:tab.tabTitle,range:`A1:${MAX_COL}${MAX_ROW}`,tq:'select *',_cxnonce:nonce});const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?${params}`;const response=await fetch(url,{redirect:'follow',headers:{'Cache-Control':'no-cache, no-store, max-age=0','Pragma':'no-cache','Expires':'0','User-Agent':'CXOrbia-Phase-A-R20/1.0'}});const type=response.headers.get('content-type')||'';const text=await response.text();if(!response.ok||!type.includes('text/csv')||/^<!doctype html/i.test(text.trim())||/google visualization api query language/i.test(text.toLowerCase()))return null;const values=parseCsv(text).slice(0,MAX_ROW);return values.length?{range:tab.tabTitle,values,nonce}:null;}
 async function mapLimit(items,limit,mapper){const results=new Array(items.length);let cursor=0;async function worker(){while(true){const index=cursor++;if(index>=items.length)return;try{results[index]=await mapper(items[index],index);}catch(error){results[index]={error:String(error?.message||error)};}}}await Promise.all(Array.from({length:Math.min(limit,items.length)},worker));return results;}
 
-async function readFromSheetsApi(){const {token,clientEmail}=await oauthToken();const metadata=await sheetsGet('?fields=properties(title),sheets(properties(title,index))',token);const tabs=resolveLiveMonthTabs((metadata.sheets||[]).map(sheet=>({title:sheet.properties?.title,index:sheet.properties?.index})));if(!tabs.length)fail('No monthly HR tabs detected through Sheets API.');const valueRanges=[];for(let index=0;index<tabs.length;index+=16){const batches=[tabs.slice(index,index+8),tabs.slice(index+8,index+16)].filter(batch=>batch.length);const results=await Promise.allSettled(batches.map(async batch=>{const ranges=batch.map(tab=>`'${tab.tabTitle.replace(/'/g,"''")}'!A1:${MAX_COL}${MAX_ROW}`);const query=ranges.map(range=>`ranges=${encodeURIComponent(range)}`).join('&');return sheetsGet(`/values:batchGet?majorDimension=ROWS&valueRenderOption=FORMATTED_VALUE&${query}`,token);}));const failure=results.find(result=>result.status==='rejected');if(failure)throw failure.reason;for(const result of results)valueRanges.push(...(result.value.valueRanges||[]));}return {accessMode:'sheets_api_service_account',clientEmail,title:metadata.properties?.title||'HR Guatemala - Sincronizacion Google Sheets',tabs,valueRanges,cacheBustApplied:true};}
+async function readFromSheetsApi(){
+  const {token,clientEmail}=await oauthToken();
+  const metadata=await sheetsGet('?fields=properties(title),sheets(properties(title,index))',token);
+  const tabs=resolveLiveMonthTabs((metadata.sheets||[]).map(sheet=>({title:sheet.properties?.title,index:sheet.properties?.index})));
+  if(!tabs.length)fail('No monthly HR tabs detected through Sheets API.');
+  const rangeForTab=tab=>`'${tab.tabTitle.replace(/'/g,"''")}'!A1:${MAX_COL}${MAX_ROW}`;
+  const plannedBatches=hrRangeBatches(tabs,rangeForTab),valueRanges=[];
+  for(let index=0;index<plannedBatches.length;index+=2){
+    const batches=plannedBatches.slice(index,index+2);
+    const results=await Promise.allSettled(batches.map(async batch=>{
+      const ranges=batch.map(rangeForTab),query=ranges.map(range=>'ranges='+encodeURIComponent(range)).join('&');
+      const response=await sheetsGet('/values:batchGet?majorDimension=ROWS&valueRenderOption=FORMATTED_VALUE&'+query,token);
+      return validateHrRangeResponse(response,ranges);
+    }));
+    const failure=results.find(result=>result.status==='rejected');if(failure)throw failure.reason;
+    for(const result of results)valueRanges.push(...result.value.valueRanges);
+  }
+  return {accessMode:'sheets_api_service_account',clientEmail,title:metadata.properties?.title||'HR Guatemala - Sincronizacion Google Sheets',tabs,valueRanges,cacheBustApplied:true};
+}
 async function readFromGvizCsv(apiError){const candidates=candidateTabs();const fetched=await mapLimit(candidates,6,async tab=>({tab,valueRange:await fetchGvizTab(tab)}));const valid=fetched.filter(item=>item?.valueRange&&Array.isArray(item.valueRange.values)&&item.valueRange.values.length);const tabs=valid.map(item=>item.tab),valueRanges=valid.map(item=>item.valueRange);if(!tabs.length)fail(`GViz CSV did not expose any monthly HR tab after Sheets API failure: ${String(apiError?.message||apiError).slice(0,300)}`);return {accessMode:'public_gviz_csv_cache_busted',fallbackReason:String(apiError?.message||apiError||'').slice(0,500),clientEmail:serviceAccountInfo().clientEmail,title:'HR Guatemala - Sincronizacion Google Sheets',tabs,valueRanges,cacheBustApplied:true};}
-async function readLiveHr(){try{return await readFromSheetsApi();}catch(error){if(/^HR_MONTH_(YEAR_UNRESOLVED|YEAR_AMBIGUOUS|DUPLICATE):/.test(String(error?.message||error)))throw error;console.warn('[HR live] Sheets API unavailable; using per-tab GViz CSV read-only fallback.');console.warn(String(error?.message||error).slice(0,800));return readFromGvizCsv(error);}}
+async function readLiveHr(){try{return await readFromSheetsApi();}catch(error){if(error?.hrSourceFailure||/^HR_SOURCE_RANGE_|^HR_SOURCE_READ_JSON_INVALID/.test(String(error?.message||'')))throw error;if(/^HR_MONTH_(YEAR_UNRESOLVED|YEAR_AMBIGUOUS|DUPLICATE):/.test(String(error?.message||error)))throw error;console.warn('[HR live] Sheets API unavailable; using per-tab GViz CSV read-only fallback.');console.warn(String(error?.message||error).slice(0,800));return readFromGvizCsv(error);}}
 
 function keyText(value){return normalizedText(value).replace(/[^a-z0-9ñ]+/g,' ').replace(/\s+/g,' ').trim();}
 /* R20_TAB_SCOPED_HEADER_VARIANT — supports explicit full headers and declared tab-scoped compact headers without silent inference. */
@@ -214,7 +309,7 @@ function parseTab(tab,values,columnMap,cinemaRegistry){
 function buildPeriods(visits,tabs){const map=new Map();for(const tab of tabs)if(!map.has(tab.key))map.set(tab.key,{key:tab.key,id:`cinepolis-${tab.key}`,projectId:'cinepolis',label:tab.label,fullLabel:tab.fullLabel,year:tab.year,month:tab.month,visits:0,byCountry:{GT:0,HN:0}});for(const visit of visits){const row=map.get(visit.periodKey);if(row){row.visits++;row.byCountry[visit.country]=(row.byCountry[visit.country]||0)+1;}}return [...map.values()].sort((a,b)=>a.key.localeCompare(b.key));}
 function buildShoppers(visits){const map=new Map();for(const visit of visits){if(!visit.canonicalFacets?.assigned||!visit.shopperId)continue;const current=map.get(visit.shopperId)||{id:visit.shopperId,shopperId:visit.shopperId,code:visit.shopperCode,nombre:'Shopper protegido',pais:visit.country,ciudad:visit.ciudad||'',estado:null,status:null,rating:null,completion:null,preference:null,honorario:null,perfilCompleto:false,dataLevel:'protected_reference',operationalProfileAvailable:false,fullAuthorizedProfileAvailable:false,visitas:0,realizadas:0,submitidas:0,liquidationCandidates:0,liquidadas:0,pagadas:0,sourceSafe:true,piiProtected:true};current.visitas++;current.realizadas+=visit.canonicalFacets.realized?1:0;current.submitidas+=visit.canonicalFacets.submitted?1:0;current.liquidationCandidates+=visit.canonicalFacets.liquidationCandidate?1:0;current.liquidadas+=visit.canonicalFacets.liquidationConfirmed?1:0;current.pagadas+=visit.canonicalFacets.paymentConfirmed?1:0;map.set(visit.shopperId,current);}return [...map.values()].sort((a,b)=>String(a.code||'').localeCompare(String(b.code||'')));}
 
-async function main(){const columnMap=loadColumnMap(),cinemaRegistry=loadCinemaRegistry(),live=await readLiveHr(),visits=[],issues=[],diagnostics=[];for(let index=0;index<live.tabs.length;index++){const parsed=parseTab(live.tabs[index],live.valueRanges[index]?.values||[],columnMap,cinemaRegistry);visits.push(...parsed.visits);issues.push(...parsed.issues);diagnostics.push(parsed.diagnostic);}const blockers=issues.filter(issue=>issue.severity==='critical');if(blockers.length)fail(`R20 HR mapping HOLD: ${JSON.stringify(blockers).slice(0,5000)}`);const periods=buildPeriods(visits,live.tabs),history=validateCanonicalHistory(visits,periods);if(history.decision!=='PASS_CANONICAL_HISTORY')fail(`R20 canonical history HOLD: ${JSON.stringify(history.issues).slice(0,3000)}`);const shoppers=buildShoppers(visits),summaries=summarizeCanonicalPeriods(visits),byStatus={},byCountry={};for(const visit of visits){byStatus[visit.estado]=(byStatus[visit.estado]||0)+1;byCountry[visit.country]=(byCountry[visit.country]||0)+1;}const counts={periods:periods.length,tabs:live.tabs.length,visits:visits.length,shoppers:shoppers.length,byStatus,byCountry,assigned:visits.filter(v=>v.canonicalFacets.assigned).length,unassigned:visits.filter(v=>!v.canonicalFacets.assigned).length,scheduled:visits.filter(v=>v.canonicalFacets.scheduled).length,realized:visits.filter(v=>v.canonicalFacets.realized).length,questionnaireCompleted:visits.filter(v=>v.canonicalFacets.questionnaire).length,submitted:visits.filter(v=>v.canonicalFacets.submitted).length,liquidationCandidatesPendingFinancialMatch:visits.filter(v=>v.liquidationState==='candidate_pending_financial_match').length,liquidationConfirmed:visits.filter(v=>v.liquidationState==='confirmed').length,paymentConfirmed:visits.filter(v=>v.paymentState==='confirmed').length,reviewRequired:visits.filter(v=>v.reviewRequired===true).length};const info=serviceAccountInfo();const snapshot={generatedAt:GENERATED_AT,buildLabel:process.env.CXORBIA_DEV_BUILD_LABEL||'tya-live-hr-source-safe-r20',tenantId:'tya',tenantName:'TyA',projectId:'cinepolis',projectName:'Cinépolis',source:{type:'google_sheets_live_multitab',accessMode:live.accessMode,fallbackReason:live.fallbackReason||null,title:live.title,spreadsheetIdMasked:`${SHEET_ID.slice(0,6)}...${SHEET_ID.slice(-4)}`,serviceAccountProject:info.projectId||'cxorbia-backend-dev',serviceAccountEmailMasked:(live.clientEmail||'').replace(/^[^@]+/,'***'),cacheBustApplied:live.cacheBustApplied===true,sourceSafe:true,piiExcluded:['nombre_shopper','telefono','mail','dpi','banco','direccion_shopper','observaciones','hr_url_privada','workbook_crudo'],semanticNormalizer:'r15g+r20',columnMapContract:columnMap.contractId,cinemaIdentityRegistry:cinemaRegistry.contractId,columnResolver:columnMap.resolutionPolicy,mappingFailClosed:true,dateFormat:'YYYY-MM-DD',submissionLiquidationSeparated:true,canonicalStateAcrossAllDetectedPeriods:true,buildTimeSnapshot:true,runtimeLiveSync:false},tenantConfig:{tenantId:'tya',tenantName:'TyA',configurable:true},projectConfig:{projectId:'cinepolis',projectName:'Cinépolis',configurable:true,countries:['GT','HN'],questionnaireSource:'TyAOnline',hrSourceType:'google_sheets_live_multitab',scenarioDimensions:[{key:'escenario',label:'Medio de compra',icon:'🎟️',sourceField:'tipoCompra'},{key:'tipoCombo',label:'Combo',icon:'🍿',sourceField:'tipoCombo'}]},sourceSafe:true,imported:false,production:false,periods,visits,shoppers,counts,periodOperationalSummary:summaries,tabsRead:diagnostics,issues,normalization:{version:'R20-live',periodCount:periods.length,periodKeys:periods.map(row=>row.key),historyScope:'all_detected_hr_periods',cacheBustApplied:live.cacheBustApplied===true,rules:['sheets_api_or_per_tab_gviz_live_read','contract_driven_column_map','strict_unique_header_resolution','empty_or_placeholder_shopper_is_unassigned','valid_dates_by_period_context','submitted_is_not_liquidated_or_paid','financial_confirmation_requires_external_source','conflicts_require_review']},safeState:{writes:false,imports:false,deploy:false,production:false,providers:false,payments:false}};fs.mkdirSync(path.dirname(OUT_FILE),{recursive:true});fs.writeFileSync(OUT_FILE,['/* CXOrbia TyA live HR source-safe R20 payload; no PII/raw workbook. */','window.CX_TYA_HR_SOURCE_SAFE = ',JSON.stringify(snapshot,null,2),';'].join(''),'utf8');fs.mkdirSync(GATE_OUT,{recursive:true});fs.writeFileSync(path.join(GATE_OUT,'hr-header-column-diagnostics.source-safe.json'),JSON.stringify({schemaVersion:'3.0.0',sourceSafe:true,containsDataRows:false,containsPii:false,generatedAt:GENERATED_AT,accessMode:live.accessMode,cacheBustApplied:live.cacheBustApplied===true,historyScope:'all_detected_hr_periods',columnMapContract:columnMap.contractId,tabs:diagnostics,issues,blockers},null,2)+'\n','utf8');console.log(JSON.stringify({decision:'PASS_R20_LIVE_CANONICAL_HR_HISTORY',outFile:OUT_FILE,accessMode:live.accessMode,cacheBustApplied:live.cacheBustApplied===true,counts,periods:periods.map(row=>row.key),safeState:snapshot.safeState},null,2));}
+async function main(){const columnMap=loadColumnMap(),cinemaRegistry=loadCinemaRegistry(),live=await readLiveHr(),visits=[],issues=[],diagnostics=[];for(let index=0;index<live.tabs.length;index++){const parsed=parseTab(live.tabs[index],live.valueRanges[index]?.values||[],columnMap,cinemaRegistry);visits.push(...parsed.visits);issues.push(...parsed.issues);diagnostics.push(parsed.diagnostic);}const blockers=issues.filter(issue=>issue.severity==='critical');if(blockers.length)fail(`R20 HR mapping HOLD: ${JSON.stringify(blockers).slice(0,5000)}`);const periods=buildPeriods(visits,live.tabs),history=validateCanonicalHistory(visits,periods);if(history.decision!=='PASS_CANONICAL_HISTORY')fail(`R20 canonical history HOLD: ${JSON.stringify(history.issues).slice(0,3000)}`);const shoppers=buildShoppers(visits),summaries=summarizeCanonicalPeriods(visits),byStatus={},byCountry={};for(const visit of visits){byStatus[visit.estado]=(byStatus[visit.estado]||0)+1;byCountry[visit.country]=(byCountry[visit.country]||0)+1;}const counts={periods:periods.length,tabs:live.tabs.length,visits:visits.length,shoppers:shoppers.length,byStatus,byCountry,assigned:visits.filter(v=>v.canonicalFacets.assigned).length,unassigned:visits.filter(v=>!v.canonicalFacets.assigned).length,scheduled:visits.filter(v=>v.canonicalFacets.scheduled).length,realized:visits.filter(v=>v.canonicalFacets.realized).length,questionnaireCompleted:visits.filter(v=>v.canonicalFacets.questionnaire).length,submitted:visits.filter(v=>v.canonicalFacets.submitted).length,liquidationCandidatesPendingFinancialMatch:visits.filter(v=>v.liquidationState==='candidate_pending_financial_match').length,liquidationConfirmed:visits.filter(v=>v.liquidationState==='confirmed').length,paymentConfirmed:visits.filter(v=>v.paymentState==='confirmed').length,reviewRequired:visits.filter(v=>v.reviewRequired===true).length};const info=serviceAccountInfo();const snapshot={generatedAt:GENERATED_AT,buildLabel:process.env.CXORBIA_DEV_BUILD_LABEL||'tya-live-hr-source-safe-r20',tenantId:'tya',tenantName:'TyA',projectId:'cinepolis',projectName:'Cinépolis',source:{type:'google_sheets_live_multitab',accessMode:live.accessMode,fallbackReason:live.fallbackReason||null,title:live.title,spreadsheetIdMasked:`${SHEET_ID.slice(0,6)}...${SHEET_ID.slice(-4)}`,serviceAccountProject:info.projectId||'cxorbia-backend-dev',serviceAccountEmailMasked:(live.clientEmail||'').replace(/^[^@]+/,'***'),cacheBustApplied:live.cacheBustApplied===true,sourceSafe:true,piiExcluded:['nombre_shopper','telefono','mail','dpi','banco','direccion_shopper','observaciones','hr_url_privada','workbook_crudo'],semanticNormalizer:'r15g+r20',columnMapContract:columnMap.contractId,cinemaIdentityRegistry:cinemaRegistry.contractId,columnResolver:columnMap.resolutionPolicy,mappingFailClosed:true,dateFormat:'YYYY-MM-DD',submissionLiquidationSeparated:true,canonicalStateAcrossAllDetectedPeriods:true,buildTimeSnapshot:true,runtimeLiveSync:false},tenantConfig:{tenantId:'tya',tenantName:'TyA',configurable:true},projectConfig:{projectId:'cinepolis',projectName:'Cinépolis',configurable:true,countries:['GT','HN'],questionnaireSource:'TyAOnline',hrSourceType:'google_sheets_live_multitab',scenarioDimensions:[{key:'escenario',label:'Medio de compra',icon:'🎟️',sourceField:'tipoCompra'},{key:'tipoCombo',label:'Combo',icon:'🍿',sourceField:'tipoCombo'}]},sourceSafe:true,imported:false,production:false,periods,visits,shoppers,counts,periodOperationalSummary:summaries,tabsRead:diagnostics,issues,normalization:{version:'R20-live',periodCount:periods.length,periodKeys:periods.map(row=>row.key),historyScope:'all_detected_hr_periods',cacheBustApplied:live.cacheBustApplied===true,rules:['sheets_api_or_per_tab_gviz_live_read','contract_driven_column_map','strict_unique_header_resolution','empty_or_placeholder_shopper_is_unassigned','valid_dates_by_period_context','submitted_is_not_liquidated_or_paid','financial_confirmation_requires_external_source','conflicts_require_review']},safeState:{writes:false,imports:false,deploy:false,production:false,providers:false,payments:false}};fs.mkdirSync(path.dirname(OUT_FILE),{recursive:true});fs.writeFileSync(OUT_FILE,['/* CXOrbia TyA live HR source-safe R20 payload; no PII/raw workbook. */','window.CX_TYA_HR_SOURCE_SAFE = ',JSON.stringify(snapshot,null,2),';'].join(''),'utf8');fs.mkdirSync(GATE_OUT,{recursive:true});fs.writeFileSync(path.join(GATE_OUT,'hr-header-column-diagnostics.source-safe.json'),JSON.stringify({schemaVersion:'3.0.0',sourceSafe:true,containsDataRows:false,containsPii:false,generatedAt:GENERATED_AT,accessMode:live.accessMode,cacheBustApplied:live.cacheBustApplied===true,historyScope:'all_detected_hr_periods',columnMapContract:columnMap.contractId,tabs:diagnostics,issues,blockers},null,2)+'\n','utf8');console.log(JSON.stringify({decision:'PASS_R20_LIVE_CANONICAL_HR_HISTORY',providerReadStats:{...HR_SHEETS_READ_STATS},outFile:OUT_FILE,accessMode:live.accessMode,cacheBustApplied:live.cacheBustApplied===true,counts,periods:periods.map(row=>row.key),safeState:snapshot.safeState},null,2));}
 
 function mappingSelfTest(){const columnMap=loadColumnMap(),registry=loadCinemaRegistry();const hnHeader=['País','ID CINEMA','CIUDAD','DIRECCIÓN','Franja Horaria','Formato','Tipo Combo','Tipo Compra','Método Pago','Quincena','Shopper Asignado'];const hn=findHeader([hnHeader],{country:'HN'},columnMap);const known=hn?resolveShoppingIdentity('','2052004',{country:'HN'},hn,registry):{error:'header_not_found'};const unknown=hn?resolveShoppingIdentity('','2099999',{country:'HN'},hn,registry):{error:'header_not_found'};const gtHeader=['País','ID CINEMA','CIUDAD','Shopping','Quincena','Shopper Asignado'];const gt=findHeader([gtHeader],{country:'GT'},columnMap);const gtIdentity=gt?resolveShoppingIdentity('C. Prueba GT','1001',{country:'GT'},gt,registry):{error:'header_not_found'};const pass=hn?.variantId==='project_scoped_cinema_identity'&&known.shopping==='C. Mall Premier'&&known.error===null&&unknown.error==='cinema_identity_unknown'&&gt?.variantId==='full_identity'&&gtIdentity.shopping==='C. Prueba GT'&&gtIdentity.source==='column';const report={decision:pass?'PASS_R20_PROJECT_SCOPED_CINEMA_IDENTITY':'HOLD_R20_PROJECT_SCOPED_CINEMA_IDENTITY',hnVariant:hn?.variantId||null,known,unknown,gtVariant:gt?.variantId||null,gtIdentity,safeState:{writes:false,hrWrites:false,deploy:false,production:false}};console.log(JSON.stringify(report,null,2));if(!pass)process.exit(1);}
 async function providerAuthSelfTest(){
@@ -233,5 +328,5 @@ async function providerAuthSelfTest(){
 if(process.argv.includes('--provider-auth-self-test'))providerAuthSelfTest().catch(error=>{console.error(error);process.exit(1);});
 else if(process.argv.includes('--mapping-self-test'))mappingSelfTest();
 else if(process.argv.includes('--assignment-self-test'))assignmentSelfTest();
-else main().catch(error=>{console.error(`R20_LIVE_HR_BUILD_HOLD: ${String(error?.message||error)}`);process.exit(1);});
+else main().catch(error=>{reportHrSourceFailure(error);process.exit(1);});
 

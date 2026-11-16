@@ -13,6 +13,83 @@ const MAX_COL=process.env.CXORBIA_HR_LIVE_MAX_COL||'AI';
 const COLUMN_MAP=JSON.parse(fs.readFileSync(path.resolve('backend/contracts/tya-hr-column-map-r20-v1.json'),'utf8'));
 const MONTH_NAMES=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
 
+
+const HR_SHEETS_READ_DEADLINE=performance.now()+75000;
+const HR_SHEETS_READ_STATS={attempts:0,successfulRequests:0,quotaRetries:0,responseBytes:0};
+function hrRangeBatches(tabs,rangeForTab){
+  const batches=[];let batch=[],encodedSize=0;
+  for(const tab of tabs){
+    const part='ranges='+encodeURIComponent(rangeForTab(tab));
+    if(part.length>6000)throw new Error('HR_SOURCE_RANGE_URL_TOO_LONG');
+    if(batch.length&&(batch.length>=64||encodedSize+part.length+1>6000)){batches.push(batch);batch=[];encodedSize=0;}
+    batch.push(tab);encodedSize+=part.length+1;
+  }
+  if(batch.length)batches.push(batch);
+  return batches;
+}
+function validateHrRangeResponse(response,ranges){
+  const normalize=range=>{
+    const text=String(range||''),split=text.lastIndexOf('!');
+    if(split<1)return '';
+    let title=text.slice(0,split);
+    if(title.startsWith("'")&&title.endsWith("'"))title=title.slice(1,-1).replace(/''/g,"'");
+    return title+'!'+text.slice(split+1).toUpperCase();
+  };
+  if(!Array.isArray(response?.valueRanges)||response.valueRanges.length!==ranges.length)throw new Error('HR_SOURCE_RANGE_RESPONSE_INCOMPLETE');
+  for(let i=0;i<ranges.length;i++){
+    if(normalize(response.valueRanges[i]?.range)!==normalize(ranges[i]))throw new Error('HR_SOURCE_RANGE_RESPONSE_MISMATCH');
+    if(response.valueRanges[i].values!==undefined&&!Array.isArray(response.valueRanges[i].values))throw new Error('HR_SOURCE_RANGE_VALUES_INVALID');
+  }
+  return response;
+}
+async function readSheetsJson(url,options={},io={}){
+  if(String(options.method||'GET').toUpperCase()!=='GET')throw new Error('HR_SOURCE_READ_METHOD_REQUIRED');
+  const fetchImpl=io.fetchImpl||fetch,now=io.now||(()=>performance.now()),wait=io.wait||(ms=>new Promise(resolve=>setTimeout(resolve,ms)));
+  const random=io.random||Math.random,wallNow=io.wallNow||Date.now;
+  const deadlineAt=io.deadlineAt??HR_SHEETS_READ_DEADLINE,stats=io.stats||HR_SHEETS_READ_STATS;
+  let attempts=0,quotaSeen=false;
+  const failure=()=>{
+    const code=quotaSeen?'HR_SOURCE_READ_QUOTA_EXHAUSTED':'HR_SOURCE_READ_DEADLINE_EXCEEDED';
+    const error=new Error(code);error.code=code;
+    error.hrSourceFailure={schemaVersion:'cxorbia.hr-source-read-failure.v1',code,upstreamStatus:quotaSeen?429:null,attempts,readOnly:true};
+    return error;
+  };
+  while(attempts<7){
+    const remaining=deadlineAt-now();
+    if(remaining<=0)throw failure();
+    attempts++;stats.attempts++;
+    let response;
+    try{
+      response=await fetchImpl(url,{...options,method:'GET',signal:AbortSignal.timeout(Math.max(1,Math.min(15000,Math.floor(remaining))))});
+    }catch(error){
+      if(error?.name==='TimeoutError'||now()>=deadlineAt)throw failure();
+      throw error;
+    }
+    let body=null;try{body=await response.json();}catch(error){if(response.ok)throw new Error('HR_SOURCE_READ_JSON_INVALID');}
+    if(response.ok){
+      stats.successfulRequests++;stats.responseBytes+=Buffer.byteLength(JSON.stringify(body),'utf8');
+      return body;
+    }
+    if(response.status!==429)throw new Error('HTTP_'+response.status+':'+JSON.stringify(body||{}).slice(0,300));
+    quotaSeen=true;
+    if(attempts>=7)throw failure();
+    const retryHeader=String(response.headers?.get?.('retry-after')||'').trim();
+    let retryAfter=0;
+    if(/^\d+(\.\d+)?$/.test(retryHeader))retryAfter=Number(retryHeader)*1000;
+    else if(retryHeader){const date=Date.parse(retryHeader);if(Number.isFinite(date))retryAfter=Math.max(0,date-wallNow());}
+    const backoff=Math.min(32000,1000*2**(attempts-1)+Math.floor(random()*1000));
+    const delay=Math.max(backoff,retryAfter);
+    if(!Number.isFinite(delay)||now()+delay>=deadlineAt)throw failure();
+    stats.quotaRetries++;await wait(delay);
+  }
+  throw failure();
+}
+function reportHrSourceFailure(error){
+  if(error?.hrSourceFailure?.schemaVersion==='cxorbia.hr-source-read-failure.v1'){
+    console.error('CXORBIA_HR_SOURCE_FAILURE='+JSON.stringify(error.hrSourceFailure));
+  }else console.error(error);
+}
+
 function b64url(input){return Buffer.from(input).toString('base64url');}
 function signJwt(sa){
   const now=Math.floor(Date.now()/1000);
@@ -40,7 +117,7 @@ async function accessToken(){
   return {token:token.access_token,principal,mode:'cloud_run_metadata'};
 }
 async function sheets(pathAndQuery,token){
-  return json(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}${pathAndQuery}`,{headers:{Authorization:`Bearer ${token}`,'Cache-Control':'no-store'}});
+  return readSheetsJson(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}${pathAndQuery}`,{headers:{Authorization:`Bearer ${token}`,'Cache-Control':'no-store'}});
 }
 function normalized(value){return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase().replace(/[^a-z0-9ñ]+/g,' ').replace(/\s+/g,' ').trim();}
 function currentPeriodDescriptor(){
@@ -114,12 +191,15 @@ async function main(){
   let identityCount=0;
   if(IDENTITY_OUT){
     const identities=new Map(),identityTabs=[...monthly].sort((a,b)=>a.periodKey.localeCompare(b.periodKey)||a.country.localeCompare(b.country));
-    // Two batchGet requests per wave; apply rows chronologically, not by completion order.
-    for(let start=0;start<identityTabs.length;start+=16){
-      const batches=[identityTabs.slice(start,start+8),identityTabs.slice(start+8,start+16)].filter(batch=>batch.length);
+    // At most two bounded batchGet requests per wave; preserve chronological identity authority.
+    const rangeForTab=tab=>`'${tab.title.replace(/'/g,"''")}'!A1:${MAX_COL}${MAX_ROW}`;
+    const plannedBatches=hrRangeBatches(identityTabs,rangeForTab);
+    for(let start=0;start<plannedBatches.length;start+=2){
+      const batches=plannedBatches.slice(start,start+2);
       const results=await Promise.allSettled(batches.map(async batch=>{
-        const q=batch.map(tab=>`ranges=${encodeURIComponent(`'${tab.title.replace(/'/g,"''")}'!A1:${MAX_COL}${MAX_ROW}`)}`).join('&');
-        return sheets(`/values:batchGet?majorDimension=ROWS&valueRenderOption=FORMATTED_VALUE&${q}`,auth.token);
+        const ranges=batch.map(rangeForTab),q=ranges.map(range=>`ranges=${encodeURIComponent(range)}`).join('&');
+        const response=await sheets(`/values:batchGet?majorDimension=ROWS&valueRenderOption=FORMATTED_VALUE&${q}`,auth.token);
+        return validateHrRangeResponse(response,ranges);
       }));
       const failure=results.find(result=>result.status==='rejected');
       if(failure)throw failure.reason;
@@ -142,7 +222,7 @@ async function main(){
     const overlay={schemaVersion:'cxorbia.tya-operational-shopper-identity.v2',generatedAt:now,sourceTitle:title,displayIdentityOnly:false,containsContactData:true,contactDataOptional:true,containsGovernmentId:false,containsBankData:false,containsCredentials:false,identities:[...identities.values()].sort((a,b)=>a.shopperId.localeCompare(b.shopperId)),safety:{devOnly:true,ephemeralRuntimeFile:true,rawValuesLogged:false,hrWrites:0,firestoreWrites:0,authWrites:0,production:false,merge:false}};
     identityCount=overlay.identities.length;fs.mkdirSync(path.dirname(IDENTITY_OUT),{recursive:true});fs.writeFileSync(IDENTITY_OUT,JSON.stringify(overlay,null,2)+'\n','utf8');
   }
-  console.log(JSON.stringify({decision:'PASS_LIVE_PROVIDER_REGISTRY_AND_DEV_DISPLAY_IDENTITY',providerMode:auth.mode,totalTabs:(meta.sheets||[]).length,monthlyTabs:monthly.length,latestMonthlyTab:monthlyTabs.at(-1)||null,currentCalendarPeriodKey:current.periodKey,requiredCurrentPeriodTabsPresent:registry.requiredCurrentPeriodTabsPresent,identityCount,writes:0,production:false}));
+  console.log(JSON.stringify({decision:'PASS_LIVE_PROVIDER_REGISTRY_AND_DEV_DISPLAY_IDENTITY',providerMode:auth.mode,totalTabs:(meta.sheets||[]).length,monthlyTabs:monthly.length,latestMonthlyTab:monthlyTabs.at(-1)||null,currentCalendarPeriodKey:current.periodKey,requiredCurrentPeriodTabsPresent:registry.requiredCurrentPeriodTabsPresent,identityCount,providerReadStats:{...HR_SHEETS_READ_STATS},writes:0,production:false}));
 }
-main().catch(e=>{console.error(e.stack||e);process.exit(1);});
+main().catch(error=>{reportHrSourceFailure(error);process.exit(1);});
 

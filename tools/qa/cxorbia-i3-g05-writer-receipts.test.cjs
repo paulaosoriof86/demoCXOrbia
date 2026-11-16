@@ -492,3 +492,42 @@ test('VRM-355 committed historical receipt is not silently rewritten by replay',
   const replay=await f.run(key);assert.equal(replay.idempotentReplay,true);assert.equal(replay.stages.shoppers.code,'HISTORICAL_STALE_CODE');
   assert.deepEqual([...f.db.store],before);assert.equal(f.db.log.length,n);
 });
+
+
+test('VRM356 exhausted fresh source quota returns503 before receipt lease or provider effects',async()=>{
+  const failure={schemaVersion:'cxorbia.hr-source-read-failure.v1',code:'HR_SOURCE_READ_QUOTA_EXHAUSTED',upstreamStatus:429,attempts:7,readOnly:true,stage:'registryIdentity'};
+  const f=await setup({readSnapshot:async()=>{throw Object.assign(new Error(failure.code),{code:failure.code,hrSourceFailure:failure});}});
+  const result=await f.run('vrm356-source-quota-exhausted-0001');
+  assert.equal(result.httpStatus,503);assert.equal(result.code,failure.code);assert.equal(result.failureClassification,'PROVIDER_FAILURE');
+  assert.equal(result.providerWrites,0);assert.equal(result.authWrites,0);assert.equal(result.firestoreWrites,0);
+  assert.deepEqual(result.applicationWritesThisAttempt,{auth:0,firestore:0});
+  assert.equal(f.db.log.length,0);assert.equal(f.auth.log.length,0);assert.equal(f.effects().length,0);
+  assert.equal([...f.db.store.keys()].filter(p=>p.includes('/commandReceipts/')||p.includes('/reconciliationLeases/')).length,0);
+});
+test('VRM356 typed read deadline remains bounded provider failure and actual principal denial remains403',async()=>{
+  const failure={schemaVersion:'cxorbia.hr-source-read-failure.v1',code:'HR_SOURCE_READ_DEADLINE_EXCEEDED',upstreamStatus:null,attempts:0,readOnly:true};
+  const f=await setup({readSnapshot:async()=>{throw Object.assign(new Error(failure.code),{code:failure.code,hrSourceFailure:failure});}});
+  assert.equal((await f.run('vrm356-source-deadline-0001')).httpStatus,503);assert.equal(f.db.log.length,0);
+  let reads=0;const denied=await setup({verifyPrincipal:async()=>{throw new Error('AUTH_FAILURE:MEMBERSHIP_DENIED');},readSnapshot:async()=>{reads++;}});
+  assert.equal((await denied.run('vrm356-principal-denied-0001')).httpStatus,403);
+  assert.equal(reads,0);assert.equal(denied.db.log.length,0);assert.equal(denied.auth.log.length,0);
+});
+test('VRM356 untrusted error marker does not claim zero writes or bypass existing error path',async()=>{
+  const f=await setup({readSnapshot:async()=>{throw Object.assign(new Error('PROVIDER_FAILURE'),{code:'AUTH_DENIED',hrSourceFailure:{readOnly:true}});}});
+  const result=await f.run('vrm356-invalid-error-shape-0001');
+  assert.equal(result.httpStatus,403);assert.equal(result.sourceReadFailure,undefined);assert.equal(f.db.log.length,0);
+});
+test('VRM356 fresh read with a changed source revision still refuses the lease',async()=>{
+  const f=await setup();const command=f.command('vrm356-new-source-revision-0001');
+  f.current.revision='2'.repeat(64);
+  const result=await f.reconcile({req:{headers:{}},command});
+  assert.equal(result.httpStatus,409);assert.equal(result.committed,false);assert.equal(f.db.log.length,0);assert.equal(f.auth.log.length,0);
+});
+test('VRM356 a committed receipt is replayed without another fresh source read or write',async()=>{
+  const f=await setup(),key='vrm356-replay-before-read-0001';
+  assert.equal((await f.run(key)).ok,true);
+  const before={reads:f.readCalls(),db:f.db.log.length,auth:f.auth.log.length};
+  const replay=await f.run(key);
+  assert.equal(replay.idempotentReplay,true);assert.equal(f.readCalls(),before.reads);
+  assert.equal(f.db.log.length,before.db);assert.equal(f.auth.log.length,before.auth);
+});

@@ -197,7 +197,18 @@ export function createHrSnapshotReconciler({
         const effects=await summary();
         if(effects.unresolvedEffects||effects.unverifiedEffects)return stop('HR_RECONCILIATION_UNCERTAIN_EFFECTS_REQUIRE_READBACK',{...effects,status:'partial',committed:false});
       }
-      const current=await readSnapshot();
+      let current;
+      try{current=await readSnapshot();}
+      catch(error){
+        const failure=error?.hrSourceFailure;
+        const sourceReadFailure=failure?.schemaVersion==='cxorbia.hr-source-read-failure.v1'&&failure.readOnly===true&&failure.code===error?.code&&
+          Number.isInteger(failure.attempts)&&failure.attempts>=0&&failure.attempts<=7&&
+          ((failure.code==='HR_SOURCE_READ_QUOTA_EXHAUSTED'&&failure.upstreamStatus===429&&failure.attempts>=1)||
+           (failure.code==='HR_SOURCE_READ_DEADLINE_EXCEEDED'&&failure.upstreamStatus===null));
+        if(sourceReadFailure)return stop(failure.code,{httpStatus:503,failureClassification:'PROVIDER_FAILURE',providerWrites:0,authWrites:0,firestoreWrites:0,
+          applicationWritesThisAttempt:{auth:0,firestore:0},sourceReadFailure:{code:failure.code,upstreamStatus:failure.upstreamStatus,attempts:failure.attempts,stage:['registryIdentity','liveProviderRead'].includes(failure.stage)?failure.stage:null,readOnly:true}});
+        throw error;
+      }
       const actual={tenantId:str(current?.snapshot?.tenantId||current?.snapshot?.projectConfig?.tenantId),projectId:str(current?.snapshot?.projectId||current?.snapshot?.projectConfig?.projectId)};
       if(!current?.snapshot||current.revision!==sourceRevision||actual.tenantId!==scope.tenantId||actual.projectId!==scope.projectId)return stop('HR_RECONCILIATION_SOURCE_CHANGED',{httpStatus:409});
       // The HR snapshot is also served publicly and deliberately excludes provider

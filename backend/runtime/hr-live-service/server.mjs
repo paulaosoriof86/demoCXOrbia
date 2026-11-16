@@ -50,8 +50,20 @@ let lastRefreshStartedAt=null;
 let lastRefreshFinishedAt=null;
 let lastRefreshDurationMs=null;
 let lastRefreshStagesMs=null;
+let lastRefreshProviderReads=null;
 let lastShopperReconciliation=null;
 let lastVisitReconciliation=null;
+
+function parseHrSourceFailure(stderr,script){
+  if(!['tools/hr-source/tya-live-provider-registry-identity-dev.mjs','tools/hr-source/tya-build-live-hr-source-safe-r20.mjs'].includes(script))return null;
+  const markers=String(stderr||'').split(/\r?\n/).filter(line=>line.startsWith('CXORBIA_HR_SOURCE_FAILURE='));
+  if(markers.length!==1)return null;
+  let data;try{data=JSON.parse(markers[0].slice('CXORBIA_HR_SOURCE_FAILURE='.length));}catch{return null;}
+  if(!data||Object.keys(data).sort().join(',')!=='attempts,code,readOnly,schemaVersion,upstreamStatus')return null;
+  if(data.schemaVersion!=='cxorbia.hr-source-read-failure.v1'||data.readOnly!==true||!Number.isInteger(data.attempts)||data.attempts<0||data.attempts>7)return null;
+  if(data.code==='HR_SOURCE_READ_QUOTA_EXHAUSTED'?(data.upstreamStatus!==429||data.attempts<1):(data.code!=='HR_SOURCE_READ_DEADLINE_EXCEEDED'||data.upstreamStatus!==null))return null;
+  return {...data,stage:script.includes('registry-identity')?'registryIdentity':'liveProviderRead'};
+}
 
 function runNode(args,env){
   return new Promise((resolve,reject)=>{
@@ -62,6 +74,8 @@ function runNode(args,env){
     child.on('error',reject);
     child.on('close',code=>{
       if(code===0)return resolve({out,err});
+      const failure=parseHrSourceFailure(err,args[0]);
+      if(failure){const error=new Error(failure.code);error.code=failure.code;error.hrSourceFailure=failure;return reject(error);}
       reject(new Error(`Command failed (${code}): node ${args.join(' ')}\n${err.slice(-3000)}\n${out.slice(-1000)}`));
     });
   });
@@ -349,6 +363,12 @@ async function runIndependentHrSourceReads(timedNode){
   ]);
   const sourceReadFailure=sourceReadResults.find(result=>result.status==='rejected');
   if(sourceReadFailure)throw sourceReadFailure.reason;
+  const stats={};
+  for(const [index,result]of sourceReadResults.entries()){
+    let data;try{data=JSON.parse(result.value?.out||'null')?.providerReadStats;}catch{}
+    if(data&&['attempts','successfulRequests','quotaRetries','responseBytes'].every(key=>Number.isSafeInteger(data[key])&&data[key]>=0))stats[index===0?'registryIdentity':'liveProviderRead']={attempts:data.attempts,successfulRequests:data.successfulRequests,quotaRetries:data.quotaRetries,responseBytes:data.responseBytes};
+  }
+  return stats;
 }
 
 async function refreshSnapshot(){
@@ -379,7 +399,7 @@ async function refreshSnapshot(){
       try{return await runNode(args,env);}finally{stagesMs[label]=Date.now()-startedAt;}
     };
     try{
-      await runIndependentHrSourceReads(timedNode);
+      const providerReadStats=await runIndependentHrSourceReads(timedNode);
       await timedNode('tabRegistryGuard',['tools/hr-source/tya-enforce-live-tab-registry.mjs']);
       await timedNode('canonicalize',['tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs','--input',payload,'--out',payload,'--report-dir',path.join(dir,'canonical')]);
       await timedNode('reapplyState',['tools/hr-source/tya-reapply-canonical-state-r20.mjs','--input',payload,'--out',payload,'--report-dir',path.join(dir,'state')]);
@@ -390,6 +410,7 @@ async function refreshSnapshot(){
       stagesMs.durableProjectConfig=Date.now()-durableStartedAt;
       const next=materialize(configured,'runtime_refresh',parseIdentity(identityFile));
       lastRefreshStagesMs={...stagesMs};
+      lastRefreshProviderReads=providerReadStats;
       /* G05: observation publishes a fresh read and never schedules a durable writer. */
       cache=next;
       lastRefreshError=null;
@@ -467,6 +488,7 @@ function runtimeMeta(current){
     refreshFinishedAt:lastRefreshFinishedAt,
     refreshDurationMs:lastRefreshDurationMs,
     refreshStagesMs:lastRefreshStagesMs,
+    providerReadStats:lastRefreshProviderReads,
     refreshError:lastRefreshError,
     shopperReconciliation:lastShopperReconciliation,
     visitReconciliation:lastVisitReconciliation,
