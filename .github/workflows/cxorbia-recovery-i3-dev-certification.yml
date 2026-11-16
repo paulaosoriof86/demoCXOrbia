@@ -5019,7 +5019,9 @@ jobs:
       if [[ "$ACTIVE_STATUS" == "HOLD_I3_S1_AUTO_COMPATIBLE_IDENTITY_DEV_MATERIALIZATION_REQUIRED" || "$ACTIVE_STATUS" == "HOLD_VRM307_DEV_MATERIALIZATION_REQUIRED" || "$ACTIVE_STATUS" == "HOLD_VRM308_DEV_MATERIALIZATION_REQUIRED" || "$ACTIVE_STATUS" == "HOLD_VRM309_DEV_MATERIALIZATION_REQUIRED" ]]; then
         node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs tools/qa/cxorbia-i3-vrm304-adjudicated-supersession.test.mjs tools/qa/cxorbia-i3-vrm308-hn-country-alias-normalization.test.mjs > "$FOCAL_OUT/s1-auto-identity-contract-tests.log"
       fi
-   - run: npm install --no-save --ignore-scripts --package-lock=false firebase-tools@14.12.0 >/dev/null 2>&1
+   - run: |
+      set -Eeuo pipefail
+      npm install --no-save --ignore-scripts --package-lock=false firebase-tools@14.12.0 firebase-admin@13.4.0 playwright@1.56.1 2>&1 | tee "$FOCAL_OUT/dependency-install.log"
    - uses: google-github-actions/auth@v2
      with:
       credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
@@ -5030,8 +5032,7 @@ jobs:
      run: |
       set -Eeuo pipefail
       node --check tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
-      npm install --no-save --ignore-scripts --package-lock=false firebase-tools@14.12.0 firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
-      npx playwright install chromium >/dev/null 2>&1
+      npx playwright install chromium 2>&1 | tee "$FOCAL_OUT/browser-install.log"
       gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$FOCAL_OUT/runtime-before.json"
       test "$(jq -r '.status.latestReadyRevisionName' "$FOCAL_OUT/runtime-before.json")" = "$(jq -r '.postDeployRunSeal.runtimeRevision' "$CANDIDATE_DESCRIPTOR")"
       TOKEN="$(gcloud auth print-access-token)"

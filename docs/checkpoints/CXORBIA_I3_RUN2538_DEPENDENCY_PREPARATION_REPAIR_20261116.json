@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "cxorbia.i3.scoped-control-failure-repair.v1",
+  "generatedAt": "2026-11-16T00:04:33.902737+00:00",
+  "classification": "ENVIRONMENT_FAILURE",
+  "runId": 43777760453,
+  "runNumber": 2538,
+  "controlSha": "4c790f722dc50d07ac7a36ebd67ffcc62c657839",
+  "sourceSha": "c54cdc8846642f2d5481e1b933ca5e5cc6c44c22",
+  "sourceTree": "a5dbf676882730ac62b32be08537c5464577243f",
+  "canonicalJob": {
+    "id": 133007852655,
+    "conclusion": "success"
+  },
+  "pairedJob": {
+    "id": 133008072640,
+    "conclusion": "failure",
+    "failedStep": "dependency/browser preparation before runtime-before.json",
+    "exitCode": 1,
+    "actualSubcommandFailureUnavailable": "Both dependency and browser stderr were redirected to /dev/null; the artifact contains neither diagnostic. Do not invent the npm or Playwright error."
+  },
+  "artifact": {
+    "id": 14187151799,
+    "digest": "sha256:cbce64fa350b22248a8c04f6fff80f46b1a11024b812341da6cfa676e2f6a904",
+    "independentlyVerified": true,
+    "files": [
+      "finance-regression.log",
+      "source-contract.json",
+      "vrm168-regression.json",
+      "vrm174-finance-read-model.json",
+      "vrm256-midia-current-period.log",
+      "vrm257-benefits-payment-label.log",
+      "vrm259-postulations-rail-badge.log"
+    ]
+  },
+  "sourceQa": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2538_SOURCE_QA_20261116/source-qa-receipt.json",
+    "gitBlob": "764d6b2fe22340c7ed1fc7dc0f4e725906a64636",
+    "sha256": "6b5ce28e2cdc81f212bdb9f0b835c0b4098b86cf1ecf9115e021e5e201add12c",
+    "artifactId": 14186847529,
+    "artifactDigest": "sha256:13de22ed0c773a0f22bd4423549b4927a3272f9e677c71f2e9ac5bfaa358c157",
+    "pass": 256,
+    "fail": 0,
+    "owners": 19
+  },
+  "repair": {
+    "owner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "scope": "Existing paired job only",
+    "singlePinnedDependencyInstall": true,
+    "removeSecondInstall": true,
+    "persistDependencyAndBrowserLogs": true,
+    "sameSourceRetry": true,
+    "newWorkflow": false,
+    "localCombinedDependencyResolution": "PASS_DRY_RUN_NO_VERSION_CHANGE"
+  },
+  "runtimeDeploys": 0,
+  "hostingDeploys": 0,
+  "hrWrites": 0,
+  "authWrites": 0,
+  "production": false,
+  "state": "HOLD_SAME_SOURCE_DEPLOY_PENDING_RETRY"
+}
