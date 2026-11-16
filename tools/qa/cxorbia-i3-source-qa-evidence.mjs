@@ -19,7 +19,7 @@ export const SOURCE_OWNER_SUITES=Object.freeze([
   {id:'finance-ack-boundary',owners:['app/core/backend-finance-benefits.js','app/core/backend-cxdata-finance-read.js',
     'app/adapters/cxorbia-cxdata-command-boundary-v1.js','backend/runtime/cxorbia-finance-command-provider-v1.mjs'],
     tests:['backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs','tools/qa/cxorbia-i3-b8-historical-command-boundary.test.mjs']},
-  {id:'external-hr-source',owners:['tools/hr-source/tya-build-live-hr-source-safe-r20.mjs','tools/hr-source/tya-enforce-live-tab-registry.mjs'],
+  {id:'external-hr-source',owners:['tools/hr-source/tya-build-live-hr-source-safe-r20.mjs','tools/hr-source/tya-enforce-live-tab-registry.mjs','tools/hr-source/tya-live-provider-registry-identity-dev.mjs'],
     tests:['tools/hr-source/tya-resolve-live-month-tabs.test.mjs','backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs']}
 ]);
 const SHA=/^[0-9a-f]{40}$/;

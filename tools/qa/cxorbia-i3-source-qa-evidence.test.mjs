@@ -22,7 +22,7 @@ const fixture=()=>{
 test('same-run proof returns every registered owner without functional acceptance',()=>{
   const {receipt,context}=fixture(),proofs=validateSourceQaReceipt(receipt,context);
   assert.deepEqual(proofs.map(x=>x.path),SOURCE_OWNER_SUITES.flatMap(x=>x.owners));
-  assert.equal(new Set(proofs.map(x=>x.path)).size,22);
+  assert.equal(new Set(proofs.map(x=>x.path)).size,23);
   for(const proof of proofs){assert.equal(proof.sameRunEvidence.controlSha,receipt.controlSha);
     assert.equal(proof.sameRunEvidence.scope,'SOURCE_QA_ONLY_NOT_E2E_OR_HUMAN_ACCEPTANCE');
     assert.equal(proof.classification,undefined);assert.equal(proof.humanAcceptance,undefined);}
@@ -40,7 +40,7 @@ test('a failed-only consumer retry reuses the exact successful producer attempt'
   const env={GITHUB_SHA:x.receipt.controlSha,GITHUB_RUN_ID:String(x.receipt.runId),
     GITHUB_RUN_ATTEMPT:'2',C3_SOURCE_QA_RUN_ATTEMPT:'1'};
   x.context.expected=sourceQaExpectedIdentity(env,x.receipt.sourceSha,x.receipt.sourceTree);
-  assert.equal(validateSourceQaReceipt(x.receipt,x.context).length,22);
+  assert.equal(validateSourceQaReceipt(x.receipt,x.context).length,23);
   x.receipt.runAttempt=2;assert.throws(()=>validateSourceQaReceipt(x.receipt,x.context),/RUN_IDENTITY/);
   for(const bad of [undefined,'0','invalid']){
     const y=fixture();y.context.expected=sourceQaExpectedIdentity({...env,C3_SOURCE_QA_RUN_ATTEMPT:bad},y.receipt.sourceSha,y.receipt.sourceTree);

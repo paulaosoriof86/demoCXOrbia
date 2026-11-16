@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "cxorbia.i3.single-package-source-proof.v1",
+  "decision": "PASS_SCOPED_V8_VRM356_SOURCE_NODE_CI_DEV_PENDING",
+  "generatedAt": "2026-11-16T08:27:25Z",
+  "sourceSha": "607ef20a5305209a46b8f61424f03475806f402d",
+  "sourceTree": "1942991bb933dd6138fab5443093490c1668e601",
+  "predecessorProductSourceSha": "66312f88a70bd123b137c7a031a1f456969465f5",
+  "sourceTestsPass": 122,
+  "sourceTestsFail": 0,
+  "allowedProductFiles": [
+    "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+    "backend/runtime/hr-live-service/server.mjs",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+    "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs"
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM356_FRESH_HR_QUOTA_P0_SCOPE_20261116.json",
+  "scopeReceiptBlob": "87de56ca541a02945dba3a56a7e70874a9e01103",
+  "findings": [
+    {
+      "id": "VRM-356",
+      "priority": "P0_PROVEN",
+      "classification": "PROVIDER_FAILURE",
+      "scope": {
+        "path": "docs/checkpoints/CXORBIA_I3_VRM356_FRESH_HR_QUOTA_P0_SCOPE_20261116.json",
+        "gitBlob": "87de56ca541a02945dba3a56a7e70874a9e01103",
+        "sha256": "02b8b30483ec42d8e960564adb03f7195c4be15cdfea3995f871d574f4f3bb9a"
+      }
+    }
+  ],
+  "productOwnerBlobs": {
+    "tools/hr-source/tya-live-provider-registry-identity-dev.mjs": "e5ca376e039fc28501b6e849ff782ef2b0949490",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs": "84cfc0ddf844865f53297737e37ed1be043d1793",
+    "backend/runtime/hr-live-service/server.mjs": "edc293a7da5f499468ebaeb8967d58761030dc8a",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs": "95ac9d7f5a3f11037ac0bd581c50899fe0a1e5de"
+  },
+  "testEvidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM356_FRESH_HR_QUOTA_SOURCE_PROOF_20261116.json",
+    "gitBlob": "61049981c96ee2354704e031d79380273fd41a5a",
+    "sha256": "20ef4e3031e906259d569b1556d5e71a283b267b2376fb5d3f74a8424c67dc5c"
+  },
+  "testCountScope": "31_READER_LATENCY_AND_91_RUNTIME_PROVIDER_TESTS_IN_V8_NOT_NODE_CI",
+  "canonicalNodeCi": "PENDING",
+  "devPublished": false,
+  "production": false,
+  "hrWrites": 0
+}
