@@ -37,7 +37,11 @@ test('HF16 history, assignment transitions and archived never inflate count',()=
   assert.match(src,/setTimeout\(syncPendingRailBadge,0\)/);
 });
 test('HF17 retains cumulative stage and active-agenda distinction until exact HR parity',()=>{
-  assert.match(dashboardSource,/scheduled=n\(x=>f\(x\)\.scheduled&&!f\(x\)\.cancelled\)/);
+  const predicates=dashboardSource.slice(dashboardSource.indexOf('const phasePredicates='),dashboardSource.indexOf('const phaseFlow='));
+  const scheduled=new Function('data','BF',predicates+'return phasePredicates.agend;')({visitFacets:v=>v},{});
+  assert.equal(scheduled({scheduled:true,realized:true,cancelled:false}),true);
+  assert.equal(scheduled({scheduled:true,cancelled:true}),false);
+  assert.equal(scheduled({scheduled:false,cancelled:false}),false);
   assert.match(src,/const agendadas=operationalAssignments\.filter\(v=>\{const f=data\.visitFacets/);
   assert.match(src,/f\?f\.scheduled===true&&f\.realized!==true/);
   assert.match(dashboardSource,/\$\{cell\('Con fecha',f\.agend,'amber','agend'\)\}/);
