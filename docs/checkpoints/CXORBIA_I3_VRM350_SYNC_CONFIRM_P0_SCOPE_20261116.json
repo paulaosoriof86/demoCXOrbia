@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "cxorbia.i3.p0.preedit-owner-scope.v1",
+  "findingId": "VRM-350",
+  "priority": "P0_PROVEN",
+  "classification": "FUNCTIONAL_DEFECT",
+  "generatedAt": "2026-11-16T02:37:31.125769+00:00",
+  "sourceSha": "f2fcb6200843971485ef2b092240c5497148038b",
+  "sourceTree": "41c4a8c884808a6722ff7b7217eda0ea5fbf7ef3",
+  "headBeforeEdit": "f04880102646bd5405cbbd680aad841eb7776771",
+  "moduleTruthBeforeEdit": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261116-V326.json",
+    "gitBlob": "08623e431b8ed9bd62eb015eff44959875971b5e"
+  },
+  "servedDevReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2545_PAIRED_DEV_AND_NOTIFICATION_CYCLE_ACK_20261116.json",
+    "gitBlob": "f3073ec2b05f608f313e4289a0d2e6948f7e29de"
+  },
+  "beforeEvidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM350_SYNC_CONFIRM_BEFORE_20261116.json",
+    "gitBlob": "7f9345a0aa6ed40de09f5baa1dc1edb39927b363",
+    "sha256": "0f638184e4dfc4c278f8a573217d90cf427507cbd615ef8750b6738b22ab065d",
+    "scope": "OFFLINE_IN_MEMORY_NO_EXTERNAL_WRITES",
+    "cases": 2,
+    "contractFailures": 2
+  },
+  "allowedProductFiles": [
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+    "backend/runtime/hr-live-service/server.mjs"
+  ],
+  "ownerBlobs": {
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs": "3df2297177b8081f0f053ac66955ea221e83e0d8",
+    "backend/runtime/hr-live-service/server.mjs": "b871735de6fbb547deb0e2595f81a69e2a7e5aa3"
+  },
+  "rootCause": "visit.sync.confirm trusts payload HR identity/shopper and generic committed replay; it does not independently observe HR. Server does not force fresh HR for this command.",
+  "allowedCorrection": "Require server forceFresh HR snapshot+revision; exact unique row/period/shopper and allidentity bindings; concrete durable version for newcommit; server timestamp; shared trusted reflection evidence in existing3writes; replay validates actor/digest/proof/durable/freshHR with0writes; legacy receipts without proof HOLD. Keep hrProviderAck:false and documentwidehrSourceRevision unchanged.",
+  "prohibited": [
+    "Enable HRwriter or Make flags",
+    "Treat local providerAck as remote HRACK",
+    "Backfill legacy receipt without proof",
+    "Change HR epoch",
+    "Relax strict21/G20/G21",
+    "Modify unrelated product owners",
+    "Production deploy"
+  ],
+  "requiredTests": [
+    "BEFORE missing HR and unassigned HR blocked0writes",
+    "Exact realshape HR/durable alias and uniqueperiod success3writes",
+    "Invalid authority/scope/identity/period/concreteversion blocked0writes",
+    "Replay actor/digest/legacy/drift guards0writes",
+    "Fresh globalrevision sameassignment keeps originalproof and reportsrevalidation separately",
+    "Server forceFresh and refreshfailure doesnot usecache"
+  ],
+  "liveProofRequired": true,
+  "fullDomain": false,
+  "production": false
+}

@@ -158,6 +158,17 @@ async function collectDashboardStageReadback(page){
   return {scope:'CURRENT_PERIOD_DASHBOARD_CUMULATIVE_STAGES_ONLY_NOT_FULL_B11',tenantId,projectId,periodId,sourceRevision:hrRevision,expectedCases:stages.length*Object.keys(dashboardStageReference.countries).length,completedCases:cases.length,cases};
 }
 
+async function observeAutomaticHrReconciliation(page){
+  return page.evaluate(async()=>{
+    const C=window.CX||{},d=C.data||{},bridge=C.backendHrSourceBridge||{},context=C.backendAuth?.context?.()||{},user=window.firebase?.auth?.().currentUser;
+    const safe=v=>typeof v==='string'&&/^[A-Za-z0-9_:-]{1,160}$/.test(v)?v:null,hash=async v=>v?Array.from(new Uint8Array(await window.crypto.subtle.digest('SHA-256',new TextEncoder().encode(String(v))))).map(x=>x.toString(16).padStart(2,'0')).join(''):null;
+    const project=C.hrSource?._projectRecord?.(d.currentProjectId),source=project?.operationalSource||project?.routeSource||{},automatic=bridge.lastAutomatic,last=bridge.last||{},response=last.response||{};
+    let capture={};try{capture=bridge.captureSyncContext?.(d.currentProjectId)||{};}catch{capture={ok:false,code:'CAPTURE_READ_FAILED'};}
+    const selected=['providerBindingId','integrationSettingId','providerRef'].find(k=>source[k]),fields={};
+    for(const k of ['mode','authority','providerType','readPolicy','writePolicy','providerBindingId','integrationSettingId','providerRef','mappingRef'])fields[k]={present:Object.prototype.hasOwnProperty.call(source,k),type:typeof source[k],valueHash:await hash(source[k]),...(['mode','readPolicy','writePolicy'].includes(k)?{value:['external','internal','external_live','internal_only','read_only','bidirectional_gated'].includes(source[k])?source[k]:null}:{})};
+    return {scope:'PASSIVE_EXISTING_ADMIN_SESSION_NO_SYNC_CALL_OR_REFRESH',capture:{ok:capture.ok===true,code:safe(capture.code)},projectPresent:!!project,operationalSourcePresent:!!project&&Object.prototype.hasOwnProperty.call(project,'operationalSource'),operationalSourceType:typeof project?.operationalSource,routeSourcePresent:!!project&&Object.prototype.hasOwnProperty.call(project,'routeSource'),routeSourceType:typeof project?.routeSource,sourceSelected:project?.operationalSource?'operationalSource':project?.routeSource?'routeSource':'none',sourceFields:fields,selectedReferenceKind:selected||null,actorHash:await hash(user?.uid),authRole:safe(context.role),authNamespace:safe(context.authNamespace),currentSourceRevision:d.__liveHrSourceRevision||null,metaRevisionMatches:d.previewMeta?.sourceRevision===d.__liveHrSourceRevision,authorityApplied:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,commandWritesEnabled:C.BACKEND?.enableCommandWrites===true,commandAdapterAvailable:typeof C.commandAdapter?.execute==='function',lastAutomatic:automatic?{ok:automatic.ok===true,providerAck:automatic.providerAck===true,readbackVerified:automatic.readbackVerified===true,viewRefreshVerified:automatic.viewRefreshVerified===true,code:safe(automatic.code),sourceRevision:automatic.sourceRevision||null,projectMatches:automatic.projectId===d.currentProjectId,at:automatic.at||null}:null,lastCommand:{kind:safe(last.kind),idempotencyKeyHash:await hash(last.payload?.idempotencyKey),receiptPathHash:await hash(response.receiptPath),existingReceiptPathHash:await hash(response.existingReceiptPath),resumeKeyHash:await hash(response.resumeIdempotencyKey),code:safe(response.code),status:safe(response.status),providerAck:response.providerAck===true,unresolvedEffects:Number.isFinite(response.unresolvedEffects)?response.unresolvedEffects:null,unverifiedEffects:Number.isFinite(response.unverifiedEffects)?response.unverifiedEffects:null},observedAt:new Date().toISOString()};
+  });
+}
 async function signInMember(member,kind,route,options={}){
   const viewport=options.viewport||{width:1440,height:980};
   const ctx=await browser.newContext({viewport,isMobile:options.isMobile===true});
@@ -188,6 +199,9 @@ async function signInMember(member,kind,route,options={}){
   await page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});
   await page.waitForFunction(({kind,tenantId})=>{const c=window.CX?.backendAuth?.context?.()||{},role=String(c.role||'').toLowerCase();return c.authenticated===true&&c.tenantId===tenantId&&(kind==='shopper'?role==='shopper':role!=='shopper'&&role!=='cliente');},{kind,tenantId},{timeout:120000});
   await page.waitForFunction(({projectId,periodId,hrRevision})=>{const d=window.CX?.data||{},g=window.CX_C6_HR_AUTHORITY_GATE||{};return window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&g.blocked!==true&&String(d.currentProjectId||'')===projectId&&String(d.currentPeriodId||'')===periodId&&String(d.previewMeta?.sourceRevision||'')===hrRevision;},{projectId,periodId,hrRevision},{timeout:120000});
+  const passiveHrAuto=kind==='admin'?{sourceSha,phaseAComplete:false,production:false,initial:await observeAutomaticHrReconciliation(page)}:null;
+  const passivePath=passiveHrAuto?OUT+'/hr-auto-admin-'+fp(member.id)+'-'+Date.now()+'.json':null;
+  if(passivePath)fs.writeFileSync(passivePath,JSON.stringify(passiveHrAuto,null,2)+'\n');
   await page.evaluate(r=>{window.CX.router.nav(r);},route);
   const initialRouteSettleMs=await waitForRouteSettle(page,route,kind);
   await page.waitForTimeout(150);
@@ -475,13 +489,14 @@ async function signInMember(member,kind,route,options={}){
     if(backView!==routes[0])throw new Error('FUNCTIONAL_DEFECT:BROWSER_BACK_HISTORY:'+JSON.stringify({expected:routes[0],observed:backView,routeSettleMs:backSettleMs}));
   }
 
+  if(passiveHrAuto){passiveHrAuto.afterRoutes=await observeAutomaticHrReconciliation(page);fs.writeFileSync(passivePath,JSON.stringify(passiveHrAuto,null,2)+'\n');}
   await page.reload({waitUntil:'domcontentloaded',timeout:90000});
   await page.waitForFunction(({projectId,periodId,hrRevision})=>{const d=window.CX?.data||{};return window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&String(d.currentProjectId||'')===projectId&&String(d.currentPeriodId||'')===periodId&&String(d.previewMeta?.sourceRevision||'')===hrRevision;},{projectId,periodId,hrRevision},{timeout:120000});
   const refresh=await page.evaluate(()=>({debug:!!document.getElementById('cxBackendPreviewStatus'),lab:!!document.getElementById('cx-dev-lab'),blocked:String(document.body?.innerText||'').includes('Fuente de datos no disponible'),view:String(window.CX?.session?.view||''),source:String(window.CX?.dataSource?.sourceRef||'')}));
   if(refresh.debug||refresh.lab||refresh.blocked)throw new Error('RELEASE_COMPOSITION_FAILURE:'+kind+'_REFRESH_REGRESSION:'+JSON.stringify(refresh));
   const layout=await page.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,innerWidth:window.innerWidth,roleIdentity:(()=>{const el=document.getElementById('tbRoleIdentity');return el?{text:String(el.innerText||''),visible:getComputedStyle(el).display!=='none'}:null;})()}));
   await ctx.close();
-  return {principalFingerprint:fp(member.id),route,projectId:one.projectId,periodId:one.periodId,sourceRevision:one.sourceRevision,historyTotal:kind==='shopper'?Number(one.stats?.total||0):null,refreshPreserved:true,routes:routeEvidence,layout};
+  return {principalFingerprint:fp(member.id),route,projectId:one.projectId,periodId:one.periodId,sourceRevision:one.sourceRevision,historyTotal:kind==='shopper'?Number(one.stats?.total||0):null,refreshPreserved:true,routes:routeEvidence,layout,passiveHrAuto};
 }
 
 try{

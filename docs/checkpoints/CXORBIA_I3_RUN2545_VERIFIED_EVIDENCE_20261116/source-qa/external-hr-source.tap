@@ -1,0 +1,160 @@
+TAP version 13
+# Subtest: VRM-134 coalesces independent protected HR and principal reads without returning before both
+ok 1 - VRM-134 coalesces independent protected HR and principal reads without returning before both
+  ---
+  duration_ms: 2.197261
+  type: 'test'
+  ...
+# Subtest: VRM-134 rejects protected request if principal check fails
+ok 2 - VRM-134 rejects protected request if principal check fails
+  ---
+  duration_ms: 0.850896
+  type: 'test'
+  ...
+# Subtest: VRM-134 public HR read never calls protected identity and retains freshness route
+ok 3 - VRM-134 public HR read never calls protected identity and retains freshness route
+  ---
+  duration_ms: 0.237544
+  type: 'test'
+  ...
+# Subtest: VRM-134 exposes non-sensitive source refresh stages and protected timing only to verified path
+ok 4 - VRM-134 exposes non-sensitive source refresh stages and protected timing only to verified path
+  ---
+  duration_ms: 0.278745
+  type: 'test'
+  ...
+# Subtest: VRM-134 protected metadata read verifies identity and HR without repeating protected Firestore overlay
+ok 5 - VRM-134 protected metadata read verifies identity and HR without repeating protected Firestore overlay
+  ---
+  duration_ms: 0.352905
+  type: 'test'
+  ...
+# Subtest: VRM-134 registry identity and live HR read start concurrently, then both settle before validation
+ok 6 - VRM-134 registry identity and live HR read start concurrently, then both settle before validation
+  ---
+  duration_ms: 0.408699
+  type: 'test'
+  ...
+# Subtest: VRM-134 source read failure waits for the other process before cleanup
+ok 7 - VRM-134 source read failure waits for the other process before cleanup
+  ---
+  duration_ms: 0.46361
+  type: 'test'
+  ...
+# Subtest: VRM-134 R20 reads 36 tabs in three bounded waves and preserves response order
+ok 8 - VRM-134 R20 reads 36 tabs in three bounded waves and preserves response order
+  ---
+  duration_ms: 3.954727
+  type: 'test'
+  ...
+# Subtest: VRM-134 R20 covers small and partial waves without extra or missing tabs
+ok 9 - VRM-134 R20 covers small and partial waves without extra or missing tabs
+  ---
+  duration_ms: 4.371307
+  type: 'test'
+  ...
+# Subtest: VRM-134 R20 failed batch waits for its peer and starts no later wave
+ok 10 - VRM-134 R20 failed batch waits for its peer and starts no later wave
+  ---
+  duration_ms: 0.668575
+  type: 'test'
+  ...
+# Subtest: VRM-134 R20 authentication and missing metadata fail before batch reads
+ok 11 - VRM-134 R20 authentication and missing metadata fail before batch reads
+  ---
+  duration_ms: 0.337582
+  type: 'test'
+  ...
+# Subtest: VRM-134 identity batching preserves chronological latest nonempty contacts
+ok 12 - VRM-134 identity batching preserves chronological latest nonempty contacts
+  ---
+  duration_ms: 7.612511
+  type: 'test'
+  ...
+# Subtest: VRM-134 identity failure waits for its peer and never publishes a partial identity file
+ok 13 - VRM-134 identity failure waits for its peer and never publishes a partial identity file
+  ---
+  duration_ms: 1.367296
+  type: 'test'
+  ...
+# Subtest: VRM-134 identity registry-only route performs no batch reads and retains auth boundary
+ok 14 - VRM-134 identity registry-only route performs no batch reads and retains auth boundary
+  ---
+  duration_ms: 0.562407
+  type: 'test'
+  ...
+# Subtest: octubre se conserva y noviembre sin año abre 2026 GT/HN desde metadatos vivos
+ok 15 - octubre se conserva y noviembre sin año abre 2026 GT/HN desde metadatos vivos
+  ---
+  duration_ms: 2.34461
+  type: 'test'
+  ...
+# Subtest: histórico de noviembre 2025 no se confunde con noviembre 2026
+ok 16 - histórico de noviembre 2025 no se confunde con noviembre 2026
+  ---
+  duration_ms: 0.341067
+  type: 'test'
+  ...
+# Subtest: un diciembre sin año seguido de enero sin año reconoce el cambio anual
+ok 17 - un diciembre sin año seguido de enero sin año reconoce el cambio anual
+  ---
+  duration_ms: 0.130594
+  type: 'test'
+  ...
+# Subtest: el orden real del provider prevalece sobre el orden del array
+ok 18 - el orden real del provider prevalece sobre el orden del array
+  ---
+  duration_ms: 0.149994
+  type: 'test'
+  ...
+# Subtest: un año no se adivina cuando falta un mes anterior con año explícito
+ok 19 - un año no se adivina cuando falta un mes anterior con año explícito
+  ---
+  duration_ms: 0.384031
+  type: 'test'
+  ...
+# Subtest: saltos ambiguos de meses sin año son fail closed
+ok 20 - saltos ambiguos de meses sin año son fail closed
+  ---
+  duration_ms: 0.139138
+  type: 'test'
+  ...
+# Subtest: nombres alternativos del mismo mes y país no duplican visitas
+ok 21 - nombres alternativos del mismo mes y país no duplican visitas
+  ---
+  duration_ms: 0.178336
+  type: 'test'
+  ...
+# Subtest: el nombre físico de la pestaña permanece exacto y las pestañas no mensuales se excluyen
+ok 22 - el nombre físico de la pestaña permanece exacto y las pestañas no mensuales se excluyen
+  ---
+  duration_ms: 0.124765
+  type: 'test'
+  ...
+# Subtest: registro HR en DEV acepta pestañas noviembre sin año y conserva octubre
+ok 23 - registro HR en DEV acepta pestañas noviembre sin año y conserva octubre
+  ---
+  duration_ms: 49.863852
+  type: 'test'
+  ...
+# Subtest: Cloud Run usa token de metadatos para lectura independiente de Sheets sin secret adicional
+ok 24 - Cloud Run usa token de metadatos para lectura independiente de Sheets sin secret adicional
+  ---
+  duration_ms: 32.844409
+  type: 'test'
+  ...
+# Subtest: si el proveedor ya tiene noviembre, un fallback que solo ve octubre se rechaza
+ok 25 - si el proveedor ya tiene noviembre, un fallback que solo ve octubre se rechaza
+  ---
+  duration_ms: 40.881142
+  type: 'test'
+  ...
+1..25
+# tests 25
+# suites 0
+# pass 25
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 180.087662

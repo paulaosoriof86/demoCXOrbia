@@ -47,6 +47,41 @@ export function b14BindingProjection(row,sheetId,tenantId,projectId){
   return {scopeMatches:scope,enabled:typeof row?.enabled==='boolean'?row.enabled:null,hrWritesEnabled:typeof row?.hrWritesEnabled==='boolean'?row.hrWritesEnabled:null,
     workbookReferencePresent:!!book,workbookMatches:scope&&book&&sheetId?book===sheetId:null,refs};
 }
+export function b14ProjectSourceProjection(project,{parentPresenceComplete=true}={}){
+  const fields=['mode','authority','providerType','readPolicy','writePolicy','providerBindingId','integrationSettingId','providerRef','mappingRef','secretRef'];
+  const enums={mode:['internal','external'],authority:['internal','external','provider','hr'],providerType:['google_sheets','sheets','internal'],readPolicy:['internal','external_live'],writePolicy:['internal_only','read_only','bidirectional_gated','external']};
+  const projectSource=project?.operationalSource||project?.routeSource||{},selected=project?.operationalSource?'operationalSource':project?.routeSource?'routeSource':'none';
+  const guard=source=>({external:source?.mode==='external',externalLive:source?.readPolicy==='external_live',providerReferencePresent:!!b14str(source?.providerBindingId||source?.integrationSettingId||source?.providerRef),mappingReferencePresent:!!b14str(source?.mappingRef)});
+  const good=x=>Object.values(guard(x)).every(Boolean),projectFields=source=>Object.fromEntries(fields.map(k=>[k,{present:source?.[k]!==undefined,valueHash:source?.[k]===undefined?null:b14sha(source[k]),...(enums[k]?{value:enums[k].includes(source?.[k])?source[k]:null}:{})}]));
+  const chosen=['providerBindingId','integrationSettingId','providerRef'].find(k=>projectSource?.[k]),selectionComplete=parentPresenceComplete||fields.some(k=>project?.operationalSource?.[k]!==undefined);
+  return {sourceSelected:selectionComplete?selected:'UNRESOLVED_PARENT_PRESENCE',selectionComplete,operationalSource:projectFields(project?.operationalSource),routeSource:projectFields(project?.routeSource),observedSourceConfigGuard:guard(projectSource),sourceConfigGuardPass:selectionComplete?good(projectSource):null,selectedReferenceKind:selectionComplete?chosen||null:null,selectedReferenceHash:selectionComplete&&chosen?b14sha(projectSource[chosen]):null,operationalSourceShadowsValidRoute:selectionComplete?selected==='operationalSource'&&!good(projectSource)&&good(project?.routeSource):null,scope:'PERSISTED_SOURCE_CONFIG_ONLY_NOT_AUTH_SESSION_OR_REMOTE_ACK'};
+}
+export function b14IntegrationCandidates(project){
+  const selected=project?.operationalSource?'operationalSource':project?.routeSource?'routeSource':'none';
+  return ['operationalSource','routeSource'].flatMap(source=>['providerBindingId','integrationSettingId','providerRef'].filter(kind=>b14str(project?.[source]?.[kind])).map(kind=>({source,kind,id:b14str(project[source][kind]),selected:source===selected,validId:/^[A-Za-z0-9_-]{1,200}$/.test(b14str(project[source][kind]))})));
+}
+export function b14LeaseReceiptPath(value,tenantId){
+  const prefix='tenants/'+tenantId+'/commandReceipts/';
+  return typeof value==='string'&&value.startsWith(prefix)&&/^hr-[a-f0-9]{64}$/.test(value.slice(prefix.length))?value:null;
+}
+async function b14ReconciliationLeaseReadOnly(db,tenantId,projectId,revision){
+  const state=v=>typeof v==='string'&&/^[A-Za-z0-9_:-]{1,160}$/.test(v)?v:null,counts=v=>Object.fromEntries(Object.entries(v||{}).filter(([,x])=>typeof x==='boolean'||typeof x==='number'&&Number.isFinite(x)));
+  const lockRef=db.doc('tenants/'+tenantId+'/commandReceipts/hr-scope-'+b14sha(JSON.stringify(tenantId)));
+  return db.runTransaction(async tx=>{
+    const [lock]=await tx.getAll(lockRef,{fieldMask:['status','projectId','receiptPath','expiresAt','attemptId']});const l=lock.data()||{};
+    const result={exists:lock.exists,status:state(l.status),projectMatches:l.projectId===projectId,expiresAt:Number.isFinite(l.expiresAt)?l.expiresAt:null,expired:Number.isFinite(l.expiresAt)?l.expiresAt<Date.now():null,updateTime:lock.updateTime?.toDate().toISOString()||null,receiptPathHash:l.receiptPath?b14sha(l.receiptPath):null,scope:'READONLY_METADATA_NOT_LEASE_RELEASE_OR_RETRY',writes:0};
+    if(!lock.exists||l.projectId!==projectId)return result;
+    const receiptPath=b14LeaseReceiptPath(l.receiptPath,tenantId);if(!receiptPath){result.receiptReference='INVALID_SCOPED_REFERENCE';return result;}
+    const ref=db.doc(receiptPath),[doc]=await tx.getAll(ref,{fieldMask:['version','digest','actorUid','tenantId','projectId','sourceRevision','idempotencyKey','status','attemptId','startedAt','completedAt','updatedAt','error','result.ok','result.status','result.committed','result.providerAck','result.sourceRevision','result.unresolvedEffects','result.unverifiedEffects','result.confirmedProviderWrites','result.providerWrites','result.applicationWritesThisAttempt','result.stages']}),row=doc.data()||{};
+    const stages=await tx.getAll(ref.collection('stages').doc('visits'),ref.collection('stages').doc('shoppers'),{fieldMask:['status','sourceRevision','attemptId','completedAt','summary']});
+    const intents=await tx.get(ref.collection('intents').select('status','stage','system','attemptId').limit(501));
+    const effects=await tx.get(ref.collection('effects').select('stage','system','attemptId','readbackVerified','credentialAuthenticationPending').limit(501));
+    const complete=intents.size<501&&effects.size<501,effectIds=new Set(effects.docs.map(x=>x.id));
+    result.receipt={exists:doc.exists,updateTime:doc.updateTime?.toDate().toISOString()||null,status:state(row.status),tenantMatches:row.tenantId===tenantId,projectMatches:row.projectId===projectId,sourceRevision:row.sourceRevision||null,currentRevisionMatches:row.sourceRevision===revision,actorUidHash:row.actorUid?b14sha(row.actorUid):null,idempotencyKeyHash:row.idempotencyKey?b14sha(row.idempotencyKey):null,digestMatches:!!row.actorUid&&row.digest===b14sha(JSON.stringify(b14stable({actorUid:row.actorUid,scope:{tenantId,projectId},sourceRevision:row.sourceRevision,commandType:'hr.snapshot.reconcile'}))),leaseAttemptMatches:!!l.attemptId&&row.attemptId===l.attemptId,errorCode:state(typeof row.error==='string'?row.error:row.error?.code),result:counts(row.result),applicationWritesThisAttempt:counts(row.result?.applicationWritesThisAttempt),stages:stages.map((x,i)=>({name:['visits','shoppers'][i],exists:x.exists,status:state(x.data()?.status),sourceRevision:x.data()?.sourceRevision||null,summary:counts(x.data()?.summary)})),journal:{complete,intentsObserved:intents.size,effectsObserved:effects.size,unresolvedIntentsObserved:intents.docs.filter(x=>!effectIds.has(x.id)&&!['no_effect','failed_before_write'].includes(x.data()?.status)).length,unverifiedEffectsObserved:effects.docs.filter(x=>x.data()?.readbackVerified!==true).length,credentialAuthenticationPending:effects.docs.some(x=>x.data()?.credentialAuthenticationPending===true)}};
+    result.blocksDifferentReceiptByCurrentProvider=!!l.receiptPath&&l.status!=='committed';result.resumeAgainstCurrentRevisionPossible=row.sourceRevision===revision&&row.tenantId===tenantId&&row.projectId===projectId;
+    return result;
+  },{readOnly:true});
+}
 async function runB14CapabilityOnly(args){
   const [outDir,root,tenantId,projectId,runId]=args,e=process.env;
   if(!outDir||root!=='https://cxorbia-backend-dev.web.app'||e.PROJECT!=='cxorbia-backend-dev'||!tenantId||!projectId||!/^\d{8,}$/.test(runId||'')||!e.SOURCE_DIR||!e.OUT)throw Error('SOURCE_FAILURE:B14_SCOPE_GATE');
@@ -74,15 +109,18 @@ async function runB14CapabilityOnly(args){
     stage='PROJECT_BINDING_METADATA';app=initializeApp({projectId:e.PROJECT,credential:applicationDefault()},'i3-b14-'+runId);db=getFirestore(app);
     const projectRef=db.doc('tenants/'+tenantId+'/projects/'+projectId);[projectBefore]=await db.getAll(projectRef,{fieldMask:projectMask});if(!projectBefore.exists)throw Error('B14_PROJECT_MISSING');
     const pr=projectBefore.data();if(pr.tenantId!==tenantId||pr.projectId&&pr.projectId!==projectId)throw Error('B14_PROJECT_SCOPE_MISMATCH');
-    const op=pr.operationalSource||{},route=pr.routeSource||{},settingId=b14str(op.integrationSettingId||route.integrationSettingId);
-    r.project={version:pr.version??null,exists:true,updateTime:projectBefore.updateTime.toDate().toISOString(),operationalSource:Object.fromEntries(sourceFields.map(k=>[k,{present:op[k]!==undefined,valueHash:op[k]===undefined?null:b14sha(op[k])}]))};
+    const candidates=b14IntegrationCandidates(pr);
+    r.project={version:pr.version??null,exists:true,updateTime:projectBefore.updateTime.toDate().toISOString(),...b14ProjectSourceProjection(pr,{parentPresenceComplete:false})};
+    for(const candidate of candidates)candidate.selected=candidate.source===r.project.sourceSelected;
+    r.reconciliationLease=await b14ReconciliationLeaseReadOnly(db,tenantId,projectId,r.hrRevisionBefore);
     const col=db.collection('tenants/'+tenantId+'/integrationSettings'),byId=new Map();
-    if(settingId){if(!/^[A-Za-z0-9_-]{1,200}$/.test(settingId))r.explicitIntegrationReference='UNRESOLVED_ID_FORMAT';else{const [doc]=await db.getAll(col.doc(settingId),{fieldMask:integrationMask});byId.set(doc.id,doc);r.explicitIntegrationReference=doc.exists?'PRESENT_SCOPE_UNVERIFIED':'ABSENT';}}
+    r.explicitIntegrationCandidates=candidates.map(x=>({source:x.source,referenceKind:x.kind,idHash:b14sha(x.id),sourceSelected:x.selected,validId:x.validId,scope:'CANDIDATE_REFERENCE_NOT_PROVEN_RUNTIME_RESOLUTION'}));
+    for(const id of [...new Set(candidates.filter(x=>x.validId).map(x=>x.id))]){const [doc]=await db.getAll(col.doc(id),{fieldMask:integrationMask});byId.set(doc.id,doc);}
     const discovery=await Promise.allSettled([col.where('projectId','==',projectId).select(...integrationMask).limit(26).get(),col.where('projectIds','array-contains',projectId).select(...integrationMask).limit(26).get()]);
     r.integrationDiscovery=discovery.map(x=>x.status==='fulfilled'?{ok:true,count:x.value.size,complete:x.value.size<26}:{ok:false,error:b14DiagnosticError(x.reason)});
     for(const x of discovery)if(x.status==='fulfilled')for(const doc of x.value.docs)byId.set(doc.id,doc);integrationDocs=[...byId.values()];
-    r.integrationMetadata=integrationDocs.map(doc=>({idHash:b14sha(doc.id),exists:doc.exists,explicitlyReferenced:doc.id===settingId,updateTime:doc.updateTime?.toDate().toISOString()||null,...b14BindingProjection(doc.data()||{},book.id,tenantId,projectId)}));
-    if(r.integrationMetadata.some(x=>x.explicitlyReferenced&&x.scopeMatches&&x.workbookMatches===true))r.bindingToReaderMatch='METADATA_MATCH_ONLY_RUNTIME_STILL_ENV_FALLBACK';
+    r.integrationMetadata=integrationDocs.map(doc=>({idHash:b14sha(doc.id),exists:doc.exists,explicitlyReferenced:candidates.some(x=>x.id===doc.id),selectedSourceReference:candidates.some(x=>x.id===doc.id&&x.selected),referenceKinds:candidates.filter(x=>x.id===doc.id).map(x=>x.source+'.'+x.kind),updateTime:doc.updateTime?.toDate().toISOString()||null,...b14BindingProjection(doc.data()||{},book.id,tenantId,projectId)}));
+    const matching=r.integrationMetadata.filter(x=>x.selectedSourceReference&&x.scopeMatches&&x.workbookMatches===true);if(matching.length===1)r.bindingToReaderMatch='CANDIDATE_METADATA_MATCH_ONLY_RUNTIME_RESOLUTION_NOT_PROVEN';else if(matching.length>1)r.bindingToReaderMatch='AMBIGUOUS_CANDIDATE_METADATA_HOLD';
     if(!book.resolved){r.accessConclusion=book.reason;r.observationComplete=true;return;}
     if(!authority.principal){r.accessConclusion='EFFECTIVE_READER_IDENTITY_UNRESOLVED';return;}
     stage='READER_AUTHORIZATION';cloudClient=await new GoogleAuth({scopes:['https://www.googleapis.com/auth/cloud-platform']}).getClient();const cloudPrincipal=await b14PrincipalOf(cloudClient);

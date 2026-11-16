@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {validateTerminalHrObservation} from './cxorbia-i3-terminal-hr-observation.mjs';
-import {b14PrincipalOf,b14DiagnosticError,b14RuntimeAuthority,b14WorkbookFromReaders,b14CapabilityVerdict,b14BindingProjection} from './cxorbia-i3-hr-ack-exact-same-revision.mjs';
+import {b14PrincipalOf,b14DiagnosticError,b14RuntimeAuthority,b14WorkbookFromReaders,b14CapabilityVerdict,b14BindingProjection,b14ProjectSourceProjection,b14IntegrationCandidates,b14LeaseReceiptPath} from './cxorbia-i3-hr-ack-exact-same-revision.mjs';
 const valid=()=>({ok:true,revision:'a'.repeat(64),sourceSafe:true,refreshError:null,
   writes:false,hrWrites:false,production:false,shopperReconciliation:null,visitReconciliation:null});
 test('G05 valid read-only observation passes without inventing reconciliation ACK',()=>{
@@ -71,4 +71,16 @@ test('B14 mode keeps the existing HR read-only CLI contract operational',async t
  const dir=fs.mkdtempSync(path.join(tmpdir(),'cxorbia-b14-original-'));t.after(()=>{server.close();fs.rmSync(dir,{recursive:true,force:true});});
  const env={...process.env};delete env.CXORBIA_I3_QA_SCOPE;const child=spawn(process.execPath,['tools/qa/cxorbia-i3-hr-ack-exact-same-revision.mjs',dir,'http://127.0.0.1:'+server.address().port,'tenant','project','123456789'],{env});let err='';child.stderr.on('data',x=>{err+=x;});const [code]=await once(child,'exit');assert.equal(code,0,err);assert.equal(reads,2);
  const proof=JSON.parse(fs.readFileSync(path.join(dir,'hr-ack-preflight.json'),'utf8'));assert.equal(proof.decision,'PASS_HR_EXACT_REVISION_READ_ONLY');assert.equal(proof.reconciliationRequiredForRead,false);assert.equal(proof.hrWrites,false);
+});
+test('B14 metadata preserves operational-source precedence and diagnoses shadowed route without exposing references',()=>{
+ const route={mode:'external',readPolicy:'external_live',providerBindingId:'private-binding',mappingRef:'private-map'};
+ const r=b14ProjectSourceProjection({operationalSource:{},routeSource:route});assert.equal(r.sourceSelected,'operationalSource');assert.equal(r.sourceConfigGuardPass,false);assert.equal(r.operationalSourceShadowsValidRoute,true);assert.equal(JSON.stringify(r).includes('private-'),false);
+ const a=b14ProjectSourceProjection({routeSource:route});assert.equal(a.sourceConfigGuardPass,true);assert.equal(a.selectedReferenceKind,'providerBindingId');assert.equal(a.routeSource.mode.value,'external');
+ const masked=b14ProjectSourceProjection({routeSource:route},{parentPresenceComplete:false});assert.equal(masked.sourceSelected,'UNRESOLVED_PARENT_PRESENCE');assert.equal(masked.sourceConfigGuardPass,null);assert.equal(masked.selectedReferenceHash,null);
+});
+test('B14 alias candidates remain candidates and unsafe document paths are never read',()=>{
+ const r=b14IntegrationCandidates({operationalSource:{providerBindingId:'binding',integrationSettingId:'setting',providerRef:'external/path'},routeSource:{integrationSettingId:'route-setting'}});
+ assert.equal(r.length,4);assert.equal(r.find(x=>x.kind==='providerRef').validId,false);assert.equal(r.find(x=>x.source==='routeSource').selected,false);
+ const safe='tenants/t/commandReceipts/hr-'+'a'.repeat(64);assert.equal(b14LeaseReceiptPath(safe,'t'),safe);
+ for(const x of [safe.replace('tenants/t/','tenants/other/'),safe+'/stages/x','tenants/t/commandReceipts/../../secret'])assert.equal(b14LeaseReceiptPath(x,'t'),null);
 });

@@ -1,0 +1,234 @@
+{
+  "schemaVersion": "cxorbia.i3.current-source-dev-materialization.v1",
+  "verifiedAt": "2026-11-16T02:37:31.125769+00:00",
+  "source": {
+    "sha": "f2fcb6200843971485ef2b092240c5497148038b",
+    "tree": "41c4a8c884808a6722ff7b7217eda0ea5fbf7ef3"
+  },
+  "sourceSha": "f2fcb6200843971485ef2b092240c5497148038b",
+  "sourceTree": "41c4a8c884808a6722ff7b7217eda0ea5fbf7ef3",
+  "materialization": {
+    "builds": 1,
+    "decision": "PASS_I3_VRM143_EXACT_DEV_MATERIALIZATION",
+    "hostingDeploys": 1,
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794795989674000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/cd46b1801ecd0123",
+    "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "production": false,
+    "runtimeDeploys": 1,
+    "runtimeDigest": "sha256:6fe218e2573028ef5889d67b890d434f1a022067c8f39e6c028323c707805feb",
+    "runtimeRevision": "cxorbia-live-hr-dev-00373-fxw",
+    "scenarioDimensionsProven": true,
+    "sourceSha": "f2fcb6200843971485ef2b092240c5497148038b",
+    "sourceTree": "41c4a8c884808a6722ff7b7217eda0ea5fbf7ef3",
+    "storageRulesDeploys": 0,
+    "verifiedServedAssetCount": 39,
+    "sourceHostedExact": true,
+    "runtimeTrafficExact": true,
+    "productionUnchanged": true,
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+    "firestoreRulesDeploys": 0,
+    "hrWrites": 0,
+    "runId": 43791736690,
+    "runNumber": 2545,
+    "jobId": 133051721223,
+    "controlHeadAtDeploy": "f04880102646bd5405cbbd680aad841eb7776771",
+    "artifactId": 14193062315,
+    "artifactDigest": "sha256:02f4effe48ed09b71a3d36387b4c219fc95bd85922fdea70b1820aace1bba9cb",
+    "artifactDigestType": "GITHUB_ACTIONS_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2545_PAIRED_DEV_AND_NOTIFICATION_CYCLE_ACK_20261116.json",
+    "state": "PASS_EXACT_PAIRED_DEV_AND_VRM143_SCOPED_LIVE_CYCLE",
+    "humanAcceptance": "B4_B5_B6_B7_PASS_PRESERVED__NO_NEW_FULL_DOMAIN",
+    "fullTaskClosed": false
+  },
+  "servedSha256": {
+    "core/data.js": "f80436b1254a9eb6021b18b05aec82ec64c325c8b45130bc06880ef01914e76f",
+    "core/router.js": "d302cbadd2e427919330a8c4e81ebe04ca67e898dcc1f6a7e85445f4f74bb9c3",
+    "core/tya-phase-a-source-safe-preview.js": "0cc0db95bc0cf949db84c09bf951f489d5df15acb24d9991f4fb576e984596bf",
+    "adapters/tya-live-source-inplace-apply.js": "f39f4d5d47f07d6c5ae5fa22e48d314af0a57478c0e9e78dbfe74a26b5082ad8",
+    "adapters/tya-cumulative-read-model-v2.js": "748649c0326db6310c2276b343bdfdf8d7969e8ce4c63419560e4732c1a2eee7",
+    "adapters/tya-canonical-finance-read-model-v2.js": "acd44366661d26250e79fffd89fac27cdb503b2d4347d17b4b3f6e3d4a47b30f",
+    "adapters/tya-canonical-shopper-portal-v2.js": "214b1260a71f5612a269618eb9bed12263d00bf26a099d6ee73315bad61f1cc3",
+    "adapters/tya-protected-auth-hr-authority-bridge-v2.js": "c7ef63985272f465df147293f67c1e3cce0e8ebcdad38a9ddd17a9bc24dff51e",
+    "data/tya-hr-source-safe-periods.js": "82b87e084b5a763b6ac812fb37ab09da2070b05b72994df7d6e161de2f8a5fe0",
+    "modules/midia.js": "9084290ad4a627eae457d6e8a31f83a9348f49d0f1e991018120f913b3491e5c",
+    "modules/misvisitas.js": "a51799d5ac24f516d429b84ff8d79987dc3eeea6aea4c6484e39b01a43b56597",
+    "modules/visita-detalle.js": "c812eb418adc0262610bab498b93413abef30cec79d4a5b9f4ef6dbcf95c3b58",
+    "modules/shoppers.js": "b985cc833635944d48bd77f66a501cb6136a1dfc898f892de2501635a65f2150",
+    "modules/postulaciones.js": "cbc828e2d4d6a86f2ae37ccdb38c7d621fde2b16b3a4bb3b279a540dd647dcc3",
+    "modules/beneficios.js": "2c1763b65ef055eecd56e3622033d53c9946f679e758d06be797b7e854b6b419",
+    "modules/cert.js": "51b0a06b53cdf38437137a390cd624bb6270721b973eebd1d03e425dfce6f344",
+    "modules/academia.js": "438eade6566bd3b2b9fca24f029334b471779e3d62bdc2fb05d3b8c0d1b5a99b",
+    "styles/layout.css": "77c7befcefb48d4ba732fff0e3e03276bd55263ceebf63b90a4b809f74cdb6b1",
+    "adapters/tya-c6-unified-human-runtime-v1.js": "cb49d8ea742b96ca867d5eeb8de96e28a66a603134df40ea7ffa1dbad05751cf",
+    "adapters/cxorbia-cxdata-command-boundary-v1.js": "d3ff79efd31d5d1b1ad906d68cfbe2f3db6da18d75daf444aa701567f700c58b",
+    "index-backend-dev.html": "38460409bee133f1f746156de1e1e5fa3d5db0c7a22c6d0d0b36a64f947c0479",
+    "core/backend-firebase.js": "2aca1f072f3cbffb993bb149b155aaeb5a175210ccd8dcea578615a39e6441d3",
+    "adapters/tya-live-source-refresh-watch-v2.js": "3eb1d2e35bab4c80d7d7d8922969581d61a17e67f07e5b4aeaaea783a765c194",
+    "modules/hr-source.js": "62907bc1e18b46247c9e35ae299404e2f7e61cd8bcfbb0973adbc224f1983255",
+    "modules/clientes.js": "7260fa6c2ef5eccc0eea3cf43bc9cf5c06af2be4cc923742e45876e21480ad1e",
+    "modules/historico.js": "cab99b87798f385d6cf71cc63bef144b5fc7cb6c55bf31ba101817ade07e2819",
+    "modules/visitas.js": "4c8ec643438a3e812455781303fed798b4c1a267aecd079adc4bbc555efc999b",
+    "modules/cuestionario-shopper.js": "576272660a6b7cf96055587de39ee172df6ebc9147711a5cf0f17d0a8c943388",
+    "core/backend-certifications.js": "826b6775b2be46c606d271e04085fee2d4a34bab778c05fa6ad88dc00a1d05ad",
+    "core/finanzas-core.js": "c61e7f193992a4e6a60b9417a0ad3cdf3b82f3b06f5a569c25ce1caf0089b971",
+    "modules/marca.js": "bfeb16f3244149f870dc1b796978863b4da5bcbda9a8981af0497b214ec50836",
+    "modules/administrabilidad.js": "0e2e591c8d73f2faf7924eb8e38813fed77b92676ac01220b4dbc5c74ded9f5a",
+    "modules/configuracion.js": "6241a0f272cab3dc12476720d56d0fa6da6da4190cc352532022fd26f79df86d",
+    "modules/cliente-insights.js": "85f46c12b60042c72f24f220c225433b40caf732a638520ddecb606d0c135e51",
+    "adapters/cxorbia-command-adapter-v1.js": "e842f91fa880ee378534100550e54584da0b696fa12ee155336b4ea8ab77c2b4",
+    "core/backend-bulletins.js": "694aa14581e2f8dbe8bb5ef25295c9db80e7e2b94d3fcc47f1ab091871f593b6",
+    "sw.js": "f82b9d97fab9b153b3489585d8ab46a0102623c0f16704388b166348f8feabfa",
+    "core/notif.js": "1a5a3965483fe83b7faacb5153ce957d4358d013194a88e7dffe2b293422d0f7",
+    "modules/dashboard.js": "20d9f6856e473757901645cdba1082bf94b78bcf998cba64e0616a13412a46c8"
+  },
+  "verifiedServedAssetCount": 39,
+  "productionUnchanged": true,
+  "productionIndexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+  "production": false,
+  "i4Authorized": false,
+  "workflowUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43791736690",
+  "jobConclusion": "success",
+  "materializationConclusion": "PASS_I3_VRM143_EXACT_DEV_MATERIALIZATION",
+  "sourceQa": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2545_VERIFIED_EVIDENCE_20261116/source-qa/source-qa-receipt.json",
+    "gitBlob": "a22df7932b015c0c666104fbf0492064948288fb",
+    "sha256": "9642f18b4c1f7cb21d8d95ceb78542d90aa31af230364a68510f123fdf4530ca",
+    "artifactId": 14192194187,
+    "artifactDigest": "sha256:6b354cb4f9b13a71597496c2c6d3e6d9053f1ce0ea4bf56cf65d824e4a6fd741",
+    "runId": 43791736690,
+    "sourceSha": "f2fcb6200843971485ef2b092240c5497148038b",
+    "sourceTree": "41c4a8c884808a6722ff7b7217eda0ea5fbf7ef3",
+    "controlSha": "f04880102646bd5405cbbd680aad841eb7776771",
+    "testsPass": 317,
+    "testsFail": 0,
+    "owners": 21,
+    "scope": "SOURCE_QA_ONLY_NOT_FULL_DOMAIN"
+  },
+  "rawEvidence": {
+    "result.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2545_VERIFIED_EVIDENCE_20261116/result.json",
+      "gitBlob": "75df7fa15b1949eb92111f5c24a5d7d57e5aaaef",
+      "sha256": "406fb4df71d82cc872fabae96916b0ea93e020e4fbb42f66c0bb83aa6fa60de2"
+    },
+    "notifications/result.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2545_VERIFIED_EVIDENCE_20261116/notifications/result.json",
+      "gitBlob": "3ce798f8f7cfd2f0d18d6b9770086b0cce03bb4f",
+      "sha256": "10a2efdb489ac309d0120d9c71422ec07b1d8db062ed43f8483d8f190e33ea05"
+    },
+    "hr-before/result.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2545_VERIFIED_EVIDENCE_20261116/hr-before/result.json",
+      "gitBlob": "c448a0e88c897937134e0aad49c04f0ce1afea0a",
+      "sha256": "e451570d4cb7dc67b8a79736ef343c4817abd59e1f93f758e9687dcddc35356d"
+    },
+    "hr-after/result.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2545_VERIFIED_EVIDENCE_20261116/hr-after/result.json",
+      "gitBlob": "c448a0e88c897937134e0aad49c04f0ce1afea0a",
+      "sha256": "e451570d4cb7dc67b8a79736ef343c4817abd59e1f93f758e9687dcddc35356d"
+    },
+    "runtime.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2545_VERIFIED_EVIDENCE_20261116/runtime.json",
+      "gitBlob": "258b1c7689b8150bc37dcfcb930791c03da78ae3",
+      "sha256": "894cc7e1b9ae6383a30b22d059dc0f3edad12a9de2c08d91e804b142ff8454b0"
+    },
+    "runtime-revision.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2545_VERIFIED_EVIDENCE_20261116/runtime-revision.json",
+      "gitBlob": "2a1784f173ae02aa6defce56d62854059da0f673",
+      "sha256": "8645d603aa87750c2e03a91f111ccaac3f35c7a804c090c4e27a023ddee3a369"
+    },
+    "runtime-before.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2545_VERIFIED_EVIDENCE_20261116/runtime-before.json",
+      "gitBlob": "9f159af0eed7e947bf3d60d542ab505240ec5536",
+      "sha256": "ab6b417800f94fd7bcc6d01dde4e71b404a98370e30fbf07d22367d156f7e95d"
+    },
+    "hosting-live-channel.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2545_VERIFIED_EVIDENCE_20261116/hosting-live-channel.json",
+      "gitBlob": "3e264d3647ac091de664f3d5bb40c8589472b687",
+      "sha256": "92524d1ca5f00d8f8b99a9e729630b0ec2c26933619f7dd293aea2e39755609e"
+    },
+    "hr-meta.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2545_VERIFIED_EVIDENCE_20261116/hr-meta.json",
+      "gitBlob": "24ab282ede8ce05eeea6a4063a58e6daa9461f03",
+      "sha256": "4f5cc1d012cda5387271c969a6c777642c7febb476be31b8a7f4ed34eecdc574"
+    },
+    "source-contract.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2545_VERIFIED_EVIDENCE_20261116/source-contract.json",
+      "gitBlob": "87594004f60ee5fe7b725bc6e772309c8e3667ce",
+      "sha256": "bba978fe61379ee08eae45e50d96fa98ed0dc1a08e1f1fc851b372ac4a68444c"
+    }
+  },
+  "notifications": {
+    "decision": "PASS_VRM143_LIVE_PROVIDER_EXACT_CYCLE_AND_SERVED_CONSUMER",
+    "scope": "LIVE_DEV_PROVIDER_AND_EXACT_SERVED_SHARED_CONSUMER_NOT_BROWSER_UI_OR_FULL_DOMAIN",
+    "cases": [
+      {
+        "type": "visit.cancel",
+        "cycle1": "65b26464bff19ccfc62575d659de55c5e9f560ad",
+        "cycle2": "d254ace4925dd85bc5a71dcd00b092e08febff5c",
+        "providerAck": true,
+        "independentDurableReadback": true,
+        "newSessionOldReplayZeroWrites": true,
+        "requestAndDecisionCycleExact": true,
+        "secondCycleClearsPriorDecision": true,
+        "oldNoticeNotReactivated": true,
+        "authorizedHistoryPreserved": true,
+        "unrelatedVisitFieldsPreserved": true,
+        "finalStatus": "approved_pending_hr",
+        "commands": 4,
+        "providerWrites": 16
+      },
+      {
+        "type": "visit.reschedule",
+        "cycle1": "fc83ae420917e623f1f2d67e992b39a7fe85d430",
+        "cycle2": "7931c38c9a1e1a2ca91378d43da27a24a2d0df8e",
+        "providerAck": true,
+        "independentDurableReadback": true,
+        "newSessionOldReplayZeroWrites": true,
+        "requestAndDecisionCycleExact": true,
+        "secondCycleClearsPriorDecision": true,
+        "oldNoticeNotReactivated": true,
+        "authorizedHistoryPreserved": true,
+        "unrelatedVisitFieldsPreserved": true,
+        "finalStatus": "approved",
+        "commands": 4,
+        "providerWrites": 16
+      }
+    ],
+    "cleanup": {
+      "ok": true,
+      "documentsDeleted": 28,
+      "authDeleted": 2,
+      "remainingDocuments": 0,
+      "remainingAuth": 0
+    },
+    "legacyPendingWithoutCycle": {
+      "realVisitsRead": 2068,
+      "unlinkedPending": [
+        {
+          "visitHash": "340de83395ebeccf2ee2db45e400902ec78a84b4a6dbe2a673b44f96a5575b12",
+          "requestKind": "rescheduleRequest",
+          "periodId": "cinepolis-2026-09",
+          "status": "pending_review"
+        }
+      ],
+      "writes": 0,
+      "scope": "EXACT_CURRENT_PROJECT_DURABLE_REQUEST_METADATA_ONLY"
+    },
+    "fullDomain": false
+  },
+  "hrDurableReadback": {
+    "decision": "HOLD_OBSERVED_DURABLE_REVISION_DIVERGENCE",
+    "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "durableRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
+    "beforeAfterIdentical": true,
+    "reconciliationLockStatus": "partial",
+    "currentRevisionAutomaticReceiptsPresent": 0,
+    "currentRevisionAutomaticReceiptActorsRead": 2,
+    "productOwnerProven": false
+  },
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "phaseAComplete": false,
+  "newModuleMatches": 0,
+  "verification": "Two evidence ZIP hashes verified;39servedassets exact Git bytes; runtime100percent source label/digest exact; HR/rules/production unchanged. Provider request/reject/newcycle/freshsession/replay/approval and exactservedconsumer PASS with owned cleanup. One reallegacy unlinked request preserved; HR durable divergence remains."
+}

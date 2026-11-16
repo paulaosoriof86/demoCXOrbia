@@ -1,0 +1,30 @@
+{
+  "scope": "OFFLINE_IN_MEMORY_NO_PROVIDER_WRITES",
+  "sourceSha": "f2fcb6200843971485ef2b092240c5497148038b",
+  "cases": [
+    {
+      "name": "missing-independent-HR",
+      "providerAck": true,
+      "status": "committed",
+      "providerWrites": 3,
+      "syncBefore": "pending_hr",
+      "syncAfter": "synced",
+      "independentHrConfirms": false,
+      "expectedBlocked": true,
+      "contractPass": false
+    },
+    {
+      "name": "unassigned-independent-HR",
+      "providerAck": true,
+      "status": "committed",
+      "providerWrites": 3,
+      "syncBefore": "pending_hr",
+      "syncAfter": "synced",
+      "independentHrConfirms": false,
+      "expectedBlocked": true,
+      "contractPass": false
+    }
+  ],
+  "pass": 0,
+  "fail": 2
+}
