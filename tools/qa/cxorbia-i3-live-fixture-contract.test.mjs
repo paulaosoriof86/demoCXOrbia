@@ -5,7 +5,7 @@ import crypto from 'node:crypto';
 import vm from 'node:vm';
 import {commandDigest, requireProviderAck, reservationLifecyclePassed, restoreAssignment,
   FIXTURE_INPUT_FILES,FIXTURE_TEST_IDS,fixtureFileHash,validateFixturePrerequisites,
-  validateFixtureHrObservation,validateSealedFixtureReceipt,dispatchTrackedFixtureCreation,requireFixtureCreationReceipt,
+  validateFixtureHrObservation,readFixtureFinalHr,validateSealedFixtureReceipt,dispatchTrackedFixtureCreation,requireFixtureCreationReceipt,
   fixtureApplicationId,fixturePlatformIdentityLinkId,fixtureAuthSnapshot,requireFixtureShopperOwnership,
   requireFixtureApplicationOwnership,fixtureProposedDate,deleteOwnedFixtureDocuments} from './cxorbia-i3-live-fixture-contract.mjs';
 
@@ -316,4 +316,64 @@ for(const [name,alter]of [
  ['period setter unavailable',w=>{delete w.CX.data.setCurrentPeriod;}]
 ])test('reservation wait remains false without throwing: '+name,()=>{
  const w=readyReservationWindow();alter(w);assert.equal(reservationWait(w),false);
+});
+
+function finalHrRequestFixture(){
+  const revision='d'.repeat(64),observed=[],waits=[],calls=[];
+  const meta={ok:true,revision,revisionStable:true,sourceSafe:true,refreshError:null,writes:false,hrWrites:false,production:false};
+  const good=format=>({status:200,ok:true,json:async()=>format==='json'?{snapshot:{_runtime:{revision}}}:meta});
+  return{revision,meta,observed,waits,calls,good,
+    args:{expectedRevision:revision,onAttempt:row=>observed.push(row),wait:async ms=>waits.push(ms)}};
+}
+test('final HR 503 then live success preserves exact JSON/meta proof and records the retry',async()=>{
+  const f=finalHrRequestFixture();const out=await readFixtureFinalHr({...f.args,request:async(format,attempt)=>{f.calls.push([format,attempt]);return format==='json'&&attempt===1?{status:503,ok:false}:f.good(format);}});
+  assert.equal(out.revision,f.revision);assert.equal(out.hr.snapshot._runtime.revision,f.revision);assert.equal(out.meta.revision,f.revision);
+  assert.deepEqual(f.calls,[['json',1],['json',2],['meta',1]]);assert.deepEqual(f.waits,[1000]);
+  assert.deepEqual(f.observed[0],{format:'json',attempt:1,httpStatus:503,retryScheduled:true});
+});
+test('final HR retries meta independently without substituting the JSON snapshot for metadata',async()=>{
+  const f=finalHrRequestFixture();await readFixtureFinalHr({...f.args,request:async(format,attempt)=>{f.calls.push([format,attempt]);return format==='meta'&&attempt===1?{status:503,ok:false}:f.good(format);}});
+  assert.deepEqual(f.calls,[['json',1],['meta',1],['meta',2]]);assert.deepEqual(f.waits,[1000]);
+});
+for(const status of [429,502,503,504])test('final HR repeated '+status+' exhausts exactly four reads and remains HOLD',async()=>{
+  const f=finalHrRequestFixture();let cancelled=0;
+  await assert.rejects(readFixtureFinalHr({...f.args,request:async format=>{f.calls.push(format);return{status,ok:false,body:{cancel:async()=>cancelled++}};}}),new RegExp('FIXTURE_FINAL_HR_HTTP_'+status));
+  assert.equal(f.calls.length,4);assert.equal(cancelled,4);assert.deepEqual(f.waits,[1000,2000,4000]);assert.equal(f.observed.at(-1).retryScheduled,false);
+});
+for(const status of [400,401,403,404,500])test('final HR '+status+' is rejected without retry or auth substitution',async()=>{
+  const f=finalHrRequestFixture();await assert.rejects(readFixtureFinalHr({...f.args,request:async()=>{f.calls.push(1);return{status,ok:false};}}),new RegExp('FIXTURE_FINAL_HR_HTTP_'+status));
+  assert.equal(f.calls.length,1);assert.deepEqual(f.waits,[]);
+});
+for(const name of ['TypeError','AbortError','TimeoutError'])test('final HR '+name+' has a bounded transport retry',async()=>{
+  const f=finalHrRequestFixture();await readFixtureFinalHr({...f.args,request:async(format,attempt)=>{if(format==='json'&&attempt===1)throw Object.assign(new Error('untrusted provider details'),{name});return f.good(format);}});
+  assert.deepEqual(f.waits,[1000]);assert.equal(f.observed[0].transportError,name);assert.ok(!JSON.stringify(f.observed).includes('untrusted'));
+});
+test('final HR repeated transport timeout is not a success or an unbounded loop',async()=>{
+  const f=finalHrRequestFixture();let calls=0;await assert.rejects(readFixtureFinalHr({...f.args,request:async()=>{calls++;throw Object.assign(new Error('timeout'),{name:'TimeoutError'});}}),/FIXTURE_FINAL_HR_TRANSPORT_TimeoutError/);
+  assert.equal(calls,4);assert.deepEqual(f.waits,[1000,2000,4000]);
+});
+test('final HR arbitrary request error is not retried',async()=>{
+  const f=finalHrRequestFixture();await assert.rejects(readFixtureFinalHr({...f.args,request:async()=>{throw new Error('programming defect');}}),/NON_RETRYABLE_ERROR/);assert.deepEqual(f.waits,[]);
+});
+test('final HR invalid JSON is rejected without retry',async()=>{
+  const f=finalHrRequestFixture();await assert.rejects(readFixtureFinalHr({...f.args,request:async()=>({status:200,ok:true,json:async()=>{throw new SyntaxError('bad json');}})}),/JSON_INVALID/);assert.deepEqual(f.waits,[]);
+});
+test('final HR another snapshot revision fails immediately even after a transient 503',async()=>{
+  const f=finalHrRequestFixture();await assert.rejects(readFixtureFinalHr({...f.args,request:async(_,attempt)=>attempt===1?{status:503,ok:false}:{status:200,ok:true,json:async()=>({_runtime:{revision:'e'.repeat(64)}})}}),/FINAL_HR_CHANGED/);
+  assert.deepEqual(f.waits,[1000]);
+});
+for(const [name,mutate] of [
+  ['another meta revision',m=>m.revision='e'.repeat(64)],
+  ['unstable metadata',m=>m.revisionStable=false],
+  ['HR write',m=>m.hrWrites=true],
+  ['refresh error',m=>m.refreshError='error']
+])test('final HR cannot certify '+name,async()=>{
+  const f=finalHrRequestFixture();mutate(f.meta);
+  await assert.rejects(readFixtureFinalHr({...f.args,request:async format=>f.good(format)}),/SOURCE_FAILURE|RELEASE_COMPOSITION_FAILURE/);assert.deepEqual(f.waits,[]);
+});
+test('final HR invalid expected revision is rejected before network reads',async()=>{
+  let called=false;await assert.rejects(readFixtureFinalHr({expectedRevision:'',request:async()=>{called=true;}}),/REQUEST_BINDING/);assert.equal(called,false);
+});
+test('final HR inconsistent HTTP ok flag is rejected',async()=>{
+  const f=finalHrRequestFixture();await assert.rejects(readFixtureFinalHr({...f.args,request:async()=>({status:503,ok:true,json:async()=>f.meta})}),/HTTP_RESPONSE_INVALID/);assert.deepEqual(f.waits,[]);
 });

@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "cxorbia.i3.execution-observed-summary.v1",
+  "generatedAt": "2026-11-16T05:12:00Z",
+  "runId": 43805464612,
+  "runNumber": 2551,
+  "controlSha": "60c5167d686b4b257d66dff310d81de95834b1ed",
+  "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+  "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+  "workflowConclusion": "failure",
+  "jobs": {
+    "success": 2,
+    "failure": 1,
+    "skipped": 106
+  },
+  "canonical": {
+    "jobId": 133095105240,
+    "conclusion": "success",
+    "tapSummaries": 46,
+    "tests": 1374,
+    "passed": 1374,
+    "failed": 0
+  },
+  "sourceQa": {
+    "artifactId": 14198465801,
+    "artifactUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43805464612/artifacts/14198465801",
+    "artifactDigest": "sha256:9b4ad2c3005b985619019fd61e6342aad1d8fe3cb7e64e641ab2e647a2b1a6e1",
+    "artifactDigestIndependentlyVerified": false,
+    "member": "source-qa-receipt.json",
+    "sha256": "c08ee4220d575087737b4b75b6a17912f59a00f6a91ddbe5f5c85bdfcb47562f",
+    "sha256Authority": "C3_JOB_REPORTED_SOURCE_QA_RECEIPT_DIGEST",
+    "runId": 43805464612,
+    "runNumber": 2551,
+    "controlSha": "60c5167d686b4b257d66dff310d81de95834b1ed",
+    "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+    "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+    "testsPass": 440,
+    "testsFail": 0,
+    "owners": 21,
+    "scope": "SOURCE_QA_ONLY_NOT_FULL_DOMAIN_NOT_ADDITIVE_WITH_CANONICAL_TAP_TOTAL"
+  },
+  "c3": {
+    "path": "docs/checkpoints/CXORBIA_I3_CURRENT_C3_RUN2551_AUDIT_20261116.json",
+    "gitBlob": "bbd3edd90f57f716fca1ebf7aa1f9ed4aaae3aeb",
+    "sha256": "edf08ed979519fc5291f75cde5550c28b42276dfda327a7006146a814a154891"
+  },
+  "human": "PASS_I3_HUMAN_LIVE_ACCEPTANCE",
+  "semantic": "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE",
+  "focal": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+  "PRE": {
+    "decision": "HOLD_I3_LIVE_FIXTURES_V2",
+    "passed": 10,
+    "total": 10,
+    "passCountAuthority": "Runner prints tests.filter(x=>x.ok).length; successful final cleanup occurs before final HR readback.",
+    "cleanupReported": true,
+    "error": "PROVIDER_FAILURE:FIXTURE_FINAL_HR_HTTP_503",
+    "finalEvidenceComplete": false,
+    "rawArtifactReadback": false
+  },
+  "shopperUidDiagnosis": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2551_OBSERVED_EVIDENCE_20261116/hr-uid-semantic-log-projection.json",
+    "gitBlob": "80e3cdc23bd4d5faded7d75d4ada4bd9f7850a2e",
+    "sha256": "9c7f6b331d7505987b13ae807587403ed91249cf8f4ce3280df50af9e9610b90"
+  },
+  "artifacts": [
+    {
+      "id": 14198465801,
+      "name": "cxorbia-i3-source-qa-43805464612-1",
+      "bytes": 19569,
+      "digest": "sha256:9b4ad2c3005b985619019fd61e6342aad1d8fe3cb7e64e641ab2e647a2b1a6e1",
+      "independentlyVerified": false
+    },
+    {
+      "id": 14198371529,
+      "name": "cxorbia-c3-preterminal-module-truth-43805464612-1",
+      "bytes": 5360321,
+      "digest": "sha256:bbc99529e7d35809863584693750033b7fe692c38114866d053a11464dcef1dc",
+      "independentlyVerified": false
+    },
+    {
+      "id": 14198338920,
+      "name": "cxorbia-recovery-i3-terminal-diagnostics-43805464612-1",
+      "bytes": 241073614,
+      "digest": "sha256:3311f6a0a8eb082cc4814527e8129cf331316489443ea02722775465b259ed2c",
+      "independentlyVerified": false
+    }
+  ],
+  "scope": "GITHUB_METADATA_AND_JOB_LOG_READBACK_NOT_ORIGINAL_ARTIFACT_BYTES_OR_TERMINAL_CERTIFICATE",
+  "production": false,
+  "phaseAComplete": false,
+  "gate20": "HOLD",
+  "gate21": "HOLD"
+}

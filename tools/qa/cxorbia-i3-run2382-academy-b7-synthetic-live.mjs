@@ -6,6 +6,7 @@
  */
 import fs from 'node:fs';
 import crypto from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
 import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
@@ -254,8 +255,29 @@ async function runHrDurableRevisionDiagnostic(){
   const save=()=>fs.writeFileSync(out+'/result.json',JSON.stringify(r,null,2)+'\n');save();
   const endpoint=host+'/api/'+encodeURIComponent(tenantId)+'/'+encodeURIComponent(projectId)+'/hr-live',get=async format=>{const response=await fetch(endpoint+'?format='+format+'&hrdiag='+e.GITHUB_RUN_ID+'-'+Date.now(),{headers:{'cache-control':'no-cache, no-store'},signal:AbortSignal.timeout(90000)});check(response.ok,'PROVIDER_FAILURE:HR_DIAG_HTTP');return response.json();};
   const time=t=>t&&Number.isInteger(t.seconds)?{seconds:t.seconds,nanoseconds:t.nanoseconds}:null,stamp=t=>typeof t==='string'&&/^\d{4}-\d\d-\d\dT/.test(t)?t:time(t),state=v=>typeof v==='string'&&/^[A-Za-z0-9_-]{1,100}$/.test(v)?v:null,counts=o=>Object.fromEntries(Object.entries(o||{}).filter(([,v])=>typeof v==='boolean'||typeof v==='number'&&Number.isFinite(v)));
+  let exactBinding=null,readServing=null;
   try{
+    if(e.QA_RO==='true'){
+      const read=p=>JSON.parse(fs.readFileSync(p,'utf8')),git=(...args)=>execFileSync('git',args,{encoding:'utf8'}).trim();
+      const d=read(e.CANDIDATE_DESCRIPTOR||'CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json'),p=read('CXORBIA_RECOVERY_EXECUTION_CURRENT.json'),seal=d.postDeployRunSeal||{};
+      const {validateHrUidDiagnosticBinding}=await import('./cxorbia-i3-hr-ack-exact-same-revision.mjs'),{validateFixtureDevIdentity}=await import('./cxorbia-i3-live-fixture-contract.mjs');
+      check(typeof seal.receiptPath==='string'&&/^docs\/checkpoints\/[A-Za-z0-9_./-]+\.json$/.test(seal.receiptPath)&&!seal.receiptPath.split('/').includes('..'),'SOURCE_FAILURE:HR_UID_READONLY_RECEIPT_PATH');
+      const receipt=read(seal.receiptPath);
+      exactBinding=validateHrUidDiagnosticBinding({descriptor:d,pointer:p,receipt,sourceSha:s(e.FOCAL_SOURCE),sourceTree:s(e.FOCAL_TREE),receiptBlob:git('hash-object',seal.receiptPath),treeExact:git('rev-parse',e.FOCAL_SOURCE+'^{tree}')===e.FOCAL_TREE,
+        productDiffClean:!git('diff','--name-only',e.FOCAL_SOURCE,'HEAD','--','app','backend','firebase.json','.firebaserc','firestore.rules','storage.rules'),branchName:e.GITHUB_REF_NAME,writeGate:s(e.CXORBIA_I3_QA_ISOLATED_WRITE_GATE)});
+      r.exactDevBinding=exactBinding;
+      check(/^[a-z0-9-]+$/.test(e.REGION||'')&&e.SERVICE,'SOURCE_FAILURE:HR_UID_READONLY_RUNTIME_ENV');
+      readServing=async()=>{
+        const token=await getApps()[0].options.credential.getAccessToken(),base='https://'+e.REGION+'-run.googleapis.com/apis/serving.knative.dev/v1/namespaces/'+encodeURIComponent(e.PROJECT);
+        const readCloud=async url=>{const response=await fetch(url,{headers:{authorization:'Bearer '+token.access_token},signal:AbortSignal.timeout(30000)});check(response.ok,'PROVIDER_FAILURE:HR_UID_READONLY_CLOUD_HTTP_'+response.status);return response.json();};
+        const service=await readCloud(base+'/services/'+encodeURIComponent(e.SERVICE)),revision=await readCloud(base+'/revisions/'+encodeURIComponent(exactBinding.runtimeRevision)),hosting=await readCloud('https://firebasehosting.googleapis.com/v1beta1/sites/'+encodeURIComponent(e.PROJECT)+'/channels/live');
+        validateFixtureDevIdentity(exactBinding,{service,revision,hosting});
+        return{verified:true,runtimeRevision:exactBinding.runtimeRevision,runtimeDigest:exactBinding.runtimeDigest,hostingVersion:exactBinding.hostingVersion,serviceSha256:hash(service),revisionSha256:hash(revision),hostingSha256:hash(hosting),observedAt:new Date().toISOString()};
+      };
+      r.exactDevBefore=await readServing();save();
+    }
     const {b14PredecessorReadOnly}=await import('./cxorbia-i3-hr-ack-exact-same-revision.mjs');const {validateTerminalHrObservation}=await import('./cxorbia-i3-terminal-hr-observation.mjs'),before=await get('meta');validateTerminalHrObservation(before);const revision=before.revision;r.sourceRevision=revision;
+    if(exactBinding)check(revision===exactBinding.hrRevision,'SOURCE_FAILURE:HR_UID_READONLY_HR_CHANGED');
     const response=await get('json'),hr=response.snapshot||response.data||response;check(hr.tenantId===tenantId&&hr.projectId===projectId&&hr.sourceSafe===true&&hr.imported===false&&response._runtime?.revision===revision&&response._runtime?.cacheOrigin==='runtime_refresh','SOURCE_FAILURE:HR_DIAG_HR_SCOPE');
     const sourceId=v=>s(v.visitId||v.id||v.hrRowId||(s(v.sourceTab)&&s(v.sourceRow)?s(v.sourceTab)+'::'+s(v.sourceRow):'')),matches=(hr.visits||[]).filter(v=>hash(sourceId(v)).slice(0,18)===fingerprint);check(matches.length===1,'SOURCE_FAILURE:HR_DIAG_VISIT_NOT_EXACT');
     const live=matches[0],durableId=s(live.hrRowId||(s(live.sourceTab)&&s(live.sourceRow)?s(live.sourceTab)+'::'+s(live.sourceRow):'')||live.visitId||live.id),periods=(hr.periods||[]).filter(p=>s(p.key||p.periodKey)===s(live.periodKey));check(durableId&&!durableId.includes('/')&&periods.length===1,'MAPPING_FAILURE:HR_DIAG_DURABLE_PERIOD');const expectedPeriodId=s(periods[0].id||periods[0].periodId);check(expectedPeriodId,'MAPPING_FAILURE:HR_DIAG_PERIOD_ID');
@@ -281,6 +303,7 @@ async function runHrDurableRevisionDiagnostic(){
       r.shopperCrosswalkDiagnosis=await hrCrosswalkUidReadOnly({db,auth:getAuth(),snapshot:{...hr,_runtime:response._runtime},tenantId,projectId,revision,sourceDir:s(e.SOURCE_DIR)||process.cwd()});save();
     }
     const after=await get('meta');validateTerminalHrObservation(after);r.sourceRevisionAfter=after.revision;check(after.revision===revision,'PROVIDER_FAILURE:HR_DIAG_REVISION_DRIFT');
+    if(readServing)r.exactDevAfter=await readServing();
     r.observationComplete=true;r.decision=observation.durable.revisionMatches?'OBSERVED_DURABLE_REVISION_MATCH_NOT_FULL_RECONCILIATION':'HOLD_OBSERVED_DURABLE_REVISION_DIVERGENCE';
   }catch(error){r.error=String(error?.message||error).replace(/Bearer\s+\S+|eyJ[A-Za-z0-9_.-]+/g,'[TOKEN]').slice(0,1000);process.exitCode=2;}finally{save();}
   console.log(JSON.stringify(r));

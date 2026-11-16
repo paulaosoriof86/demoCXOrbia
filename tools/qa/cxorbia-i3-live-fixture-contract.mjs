@@ -224,6 +224,48 @@ export function validateFixtureHrObservation(meta,revision){
   requireBinding(meta.revisionStable===true&&r.revision===revision,'HR_STABLE_REVISION');
   return r;
 }
+
+export async function readFixtureFinalHr({request,expectedRevision,wait=ms=>new Promise(resolve=>setTimeout(resolve,ms)),onAttempt=()=>{}}){
+  if(typeof request!=='function'||!/^[a-f0-9]{64}$/.test(String(expectedRevision||'')))
+    throw new Error('SOURCE_FAILURE:FIXTURE_FINAL_HR_REQUEST_BINDING');
+  const maxAttempts=4,retryStatuses=new Set([429,502,503,504]),retryErrors=new Set(['TypeError','AbortError','TimeoutError']);
+  const output={};
+  for(const format of ['json','meta']){
+    for(let attempt=1;attempt<=maxAttempts;attempt++){
+      let response;
+      try{response=await request(format,attempt);}
+      catch(error){
+        const transient=retryErrors.has(String(error?.name||''));
+        onAttempt({format,attempt,httpStatus:null,transportError:transient?error.name:'NON_RETRYABLE_ERROR',retryScheduled:transient&&attempt<maxAttempts});
+        if(!transient||attempt===maxAttempts)throw new Error('PROVIDER_FAILURE:FIXTURE_FINAL_HR_TRANSPORT_'+(transient?error.name:'NON_RETRYABLE_ERROR'));
+        await wait(1000*2**(attempt-1));continue;
+      }
+      const httpStatus=Number(response?.status),ok=response?.ok===true;
+      if(!Number.isInteger(httpStatus)||httpStatus<100||httpStatus>599||ok!==(httpStatus>=200&&httpStatus<300))
+        throw new Error('PROVIDER_FAILURE:FIXTURE_FINAL_HR_HTTP_RESPONSE_INVALID');
+      if(!ok){
+        const retryScheduled=retryStatuses.has(httpStatus)&&attempt<maxAttempts;
+        onAttempt({format,attempt,httpStatus,retryScheduled});
+        // Release the response body; an error payload never supplies certification data.
+        try{await response.body?.cancel?.();}catch{}
+        if(!retryScheduled)throw new Error('PROVIDER_FAILURE:FIXTURE_FINAL_HR_HTTP_'+httpStatus);
+        await wait(1000*2**(attempt-1));continue;
+      }
+      let value;
+      try{value=await response.json();}
+      catch{onAttempt({format,attempt,httpStatus,retryScheduled:false,payloadAccepted:false});throw new Error('PROVIDER_FAILURE:FIXTURE_FINAL_HR_JSON_INVALID');}
+      onAttempt({format,attempt,httpStatus,retryScheduled:false,payloadAccepted:true});
+      if(format==='json'){
+        const snapshot=value?.snapshot||value?.data||value;
+        if(String(snapshot?._runtime?.revision||snapshot?.sourceRevision||'')!==expectedRevision)
+          throw new Error('SOURCE_FAILURE:LIVE_FIXTURE_FINAL_HR_CHANGED');
+      }else validateFixtureHrObservation(value,expectedRevision);
+      output[format]=value;break;
+    }
+  }
+  return{hr:output.json,meta:output.meta,revision:expectedRevision};
+}
+
 export function validateFixtureDevIdentity(b,{service,revision,hosting}){
   const serving=inspectServingDevRevision(service);
   requireBinding(serving.ok&&serving.ready===b.runtimeRevision&&revision?.metadata?.name===b.runtimeRevision,'RUNTIME_REVISION_TRAFFIC');

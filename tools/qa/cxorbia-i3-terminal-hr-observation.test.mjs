@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import {createHash} from 'node:crypto';
 import {providerUidFingerprint,stableShopperUid} from '../../backend/runtime/cxorbia-shopper-command-provider-v1.mjs';
 import {validateTerminalHrObservation} from './cxorbia-i3-terminal-hr-observation.mjs';
-import {b14PredecessorReadOnly,b14PrincipalOf,b14DiagnosticError,b14RuntimeAuthority,b14WorkbookFromReaders,b14CapabilityVerdict,b14BindingProjection,b14ProjectSourceProjection,b14IntegrationCandidates,b14LeaseReceiptPath,hrCrosswalkUidDiagnosis,hrCrosswalkUidReadOnly} from './cxorbia-i3-hr-ack-exact-same-revision.mjs';
+import {b14PredecessorReadOnly,b14PrincipalOf,b14DiagnosticError,b14RuntimeAuthority,b14WorkbookFromReaders,b14CapabilityVerdict,b14BindingProjection,b14ProjectSourceProjection,b14IntegrationCandidates,b14LeaseReceiptPath,hrCrosswalkUidDiagnosis,hrCrosswalkUidReadOnly,hrUidAuthorityProjection,validateHrUidDiagnosticBinding} from './cxorbia-i3-hr-ack-exact-same-revision.mjs';
 const valid=()=>({ok:true,revision:'a'.repeat(64),sourceSafe:true,refreshError:null,
   writes:false,hrWrites:false,production:false,shopperReconciliation:null,visitReconciliation:null});
 test('G05 valid read-only observation passes without inventing reconciliation ACK',()=>{
@@ -197,7 +197,7 @@ test('HR UID observer uses tenants and singular project claims with inferred sho
  assert.equal(hrCrosswalkUidDiagnosis(f).conflicts[0].uidSelectionBranch,'EXACT_RECOVERED_AUTH');
 });
 function uidDiagIoFixture(options={}){
- const f=uidDiagFixture(),collections={users:f.users,shopperIdentityLinks:f.links,shopperIdentityCrosswalk:f.crosswalks,shoppers:f.profiles};let transactions=0,authCalls=0;
+ const f=uidDiagFixture(),collections={users:f.users,shopperIdentityLinks:f.links,shopperIdentityCrosswalk:f.crosswalks,shoppers:f.profiles,shopperIdentityReviewResolutions:[]};let transactions=0,authCalls=0;
  const mutations=[];const failWrite=name=>()=>{mutations.push(name);throw Error('UNEXPECTED_WRITE_'+name);};
  const db={collection(name){assert.equal(name,'tenants');return{doc(id){assert.equal(id,f.tenantId);return{collection(collection){return{select(...mask){assert.ok(mask.length);assert.equal(mask.some(k=>/email|name|password|login|phone|credential/i.test(k)&&!['authNamespace','sourceNamespace'].includes(k)),false);return{collection,mask};}};}};}};},
  async runTransaction(fn,config){assert.deepEqual(config,{readOnly:true});transactions++;
@@ -224,4 +224,106 @@ test('HR UID IO rejects Auth claim drift and repeated page tokens',async()=>{
 test('HR UID IO rejects revision or tenant mismatch before reads',async()=>{
  const f=uidDiagIoFixture();f.args.snapshot._runtime.revision='b'.repeat(64);
  await assert.rejects(()=>hrCrosswalkUidReadOnly(f.args),/HR_UID_DIAG_SOURCE/);assert.deepEqual(f.stats(),{transactions:0,authCalls:0,mutations:[]});
+});
+
+function uidAuthorityFixture(){
+ const canonical='private-source-id',keeper='private-selected-uid',retired='private-old-uid',ref='private-receipt',linkId='private-current-link';
+ const f=uidDiagFixture();f.users.push(uidDiagMember(retired,canonical,{active:false,status:'superseded',identityState:'superseded_exact_alias',supersededByShopperId:canonical,supersededByUidFingerprint:providerUidFingerprint(keeper)}));
+ f.profiles[0].data.identityAuthorityRef=ref;Object.assign(f.crosswalks[0].data,{identityAuthorityRef:ref,identityAuthority:'tenant_adjudication',providerUidFingerprint:providerUidFingerprint(keeper)});
+ f.links=[uidDiagDoc('shopperIdentityLinks',linkId,{tenantId:f.tenantId,canonicalShopperId:canonical,projectScope:f.projectId,status:'active',authorityType:'tenant_adjudication',authorityRef:ref,providerAck:true,humanConfirmed:true})];
+ const receipt={...uidDiagDoc('commandReceipts',ref,{status:'committed',commandType:'shopper.identity.adjudicate',commandDigest:'a'.repeat(64),shopperId:canonical,providerAck:true,actorUid:'private-admin-uid',identityLinkId:linkId,identityConsolidated:true,keeperUidFingerprint:providerUidFingerprint(keeper),retiredPrincipalCount:1}),exists:true};
+ const conflict={sourceIdHash:uidDiagHash('private-alias-source'),canonicalIdHash:uidDiagHash(canonical),selectedUidHash:uidDiagHash(keeper),selectedUidFingerprint:providerUidFingerprint(keeper),linkEvidence:[],storedFingerprintMembershipOwners:[{uidHash:uidDiagHash(retired)}]};
+ return{...f,diagnosis:{conflicts:[conflict]},receipts:[receipt],resolutions:[]};
+}
+test('HR UID authority projection preserves exact keeper receipt, canonical crosswalk and retired target facts',()=>{
+ const f=uidAuthorityFixture(),r=hrUidAuthorityProjection(f)[0];
+ assert.equal(r.canonicalCrosswalk.keeperMatches,true);assert.equal(r.canonicalCrosswalk.profileAuthorityRefMatches,true);
+ assert.equal(r.retiredMembershipTargets[0].targetCanonicalMatches,true);assert.equal(r.retiredMembershipTargets[0].targetKeeperMatches,true);
+ const a=r.authorityReceipts[0];assert.equal(a.exists,true);assert.equal(a.keeperMatches,true);assert.equal(a.canonicalMatches,true);assert.equal(a.providerAck,true);assert.equal(a.identityConsolidated,true);
+ assert.equal(a.identityLink.scopeExact,true);assert.equal(a.identityLink.authorityRefMatches,true);assert.equal(a.identityLink.humanConfirmed,true);
+ assert.equal(r.repairAuthorized,undefined);
+ for(const value of ['private-source-id','private-selected-uid','private-old-uid','private-receipt','private-admin-uid','private-current-link'])assert.equal(JSON.stringify(r).includes(value),false);
+});
+for(const [name,change,path] of [
+ ['missing receipt',f=>f.receipts=[],r=>r.authorityReceipts[0].exists],
+ ['different keeper',f=>f.receipts[0].data.keeperUidFingerprint='b'.repeat(64),r=>r.authorityReceipts[0].keeperMatches],
+ ['missing keeper',f=>delete f.receipts[0].data.keeperUidFingerprint,r=>r.authorityReceipts[0].keeperMatches],
+ ['other canonical',f=>f.receipts[0].data.shopperId='private-other',r=>r.authorityReceipts[0].canonicalMatches],
+ ['uncommitted receipt',f=>f.receipts[0].data.status='partial',r=>r.authorityReceipts[0].status=== 'committed'],
+ ['missing ACK',f=>f.receipts[0].data.providerAck=false,r=>r.authorityReceipts[0].providerAck],
+ ['different authority',f=>f.links[0].data.authorityRef='private-other',r=>r.authorityReceipts[0].identityLink.authorityRefMatches],
+ ['foreign tenant',f=>f.links[0].data.tenantId='foreign',r=>r.authorityReceipts[0].identityLink.scopeExact],
+ ['foreign project',f=>f.links[0].data.projectScope='foreign',r=>r.authorityReceipts[0].identityLink.scopeExact],
+ ['period scoped link',f=>f.links[0].data.periodId='private-period',r=>r.authorityReceipts[0].identityLink.scopeExact],
+ ['retired target other keeper',f=>f.users[1].data.supersededByUidFingerprint='b'.repeat(64),r=>r.retiredMembershipTargets[0].targetKeeperMatches],
+ ['retired target other canonical',f=>f.users[1].data.supersededByShopperId='private-other',r=>r.retiredMembershipTargets[0].targetCanonicalMatches],
+ ['canonical crosswalk other authority',f=>f.crosswalks[0].data.identityAuthorityRef='private-other',r=>r.canonicalCrosswalk.profileAuthorityRefMatches]
+])test('HR UID authority projection does not invent '+name,()=>{
+ const f=uidAuthorityFixture();change(f);assert.equal(path(hrUidAuthorityProjection(f)[0]),false);
+});
+test('HR UID authority projection exposes same-project distinct decisions without identity remap',()=>{
+ const f=uidAuthorityFixture();f.resolutions=[uidDiagDoc('shopperIdentityReviewResolutions','private-resolution',{tenantId:f.tenantId,projectScope:f.projectId,status:'resolved_distinct',shopperIds:['private-alias-source','private-source-id'],evidenceFingerprint:'a'.repeat(64),identityRemap:false})];
+ const r=hrUidAuthorityProjection(f)[0];assert.equal(r.distinctDecisions.length,1);assert.equal(r.distinctDecisions[0].identityRemap,false);
+ f.resolutions[0].data.projectScope='other';assert.equal(hrUidAuthorityProjection(f)[0].distinctDecisions.length,0);
+});
+test('HR UID authority projection never treats malformed references or fingerprints as approved',()=>{
+ const f=uidAuthorityFixture();f.profiles[0].data.identityAuthorityRef='private/path/receipt';f.receipts=[];f.users[1].data.supersededByUidFingerprint='private-value';
+ const r=hrUidAuthorityProjection(f)[0];assert.equal(r.authorityReceipts[0].referenceValid,false);assert.equal(r.authorityReceipts[0].exists,false);assert.equal(r.retiredMembershipTargets[0].targetKeeperMatches,false);assert.equal(JSON.stringify(r).includes('private-value'),false);
+});
+
+function uidAuthorityIoFixture({receiptDrift=false}={}){
+ const f=uidAuthorityFixture(),alias='private-alias-source',canonical='private-source-id';
+ Object.assign(f.links[0].data,{sourceSystem:'hr_external',sourceIdentityKey:alias,exactAliases:[alias]});
+ f.crosswalks.push(uidDiagDoc('shopperIdentityCrosswalk',alias,{tenantId:f.tenantId,sourceStableKey:alias,shopperId:canonical,providerUidFingerprint:providerUidFingerprint('private-old-uid'),sourceType:'hr_external',identityMode:'provider_exact_identity_link'}));
+ f.authUsers[1].disabled=true;
+ const collections={users:f.users,shopperIdentityLinks:f.links,shopperIdentityCrosswalk:f.crosswalks,shoppers:f.profiles,shopperIdentityReviewResolutions:[]};
+ let txCount=0,receiptReads=0,writes=0;
+ const forbidden=()=>{writes++;throw Error('WRITE_FORBIDDEN');};
+ const db={collection(name){assert.equal(name,'tenants');return{doc(id){assert.equal(id,f.tenantId);return{collection(name){return{select:(...mask)=>({name,mask}),doc:id=>({id,path:'tenants/'+f.tenantId+'/'+name+'/'+id})};}};}};},
+ async runTransaction(fn,config){assert.deepEqual(config,{readOnly:true});txCount++;
+  return fn({get:async q=>({docs:collections[q.name].map(d=>({id:d.id,ref:{path:d.path},updateTime:uidDiagStamp,data:()=>structuredClone(d.data)}))}),
+   getAll:async(...args)=>{receiptReads++;const mask=args.pop();assert.ok(mask.fieldMask.includes('keeperUidFingerprint'));return args.map(ref=>{const d=f.receipts.find(x=>x.id===ref.id);return{id:ref.id,ref,exists:!!d,updateTime:{...uidDiagStamp,nanoseconds:uidDiagStamp.nanoseconds+(receiptDrift&&receiptReads===2?1:0)},data:()=>structuredClone(d?.data||{})};});},
+   set:forbidden,update:forbidden,delete:forbidden});}};
+ const auth={listUsers:async()=>({users:f.authUsers}),createUser:forbidden,updateUser:forbidden,deleteUser:forbidden,setCustomUserClaims:forbidden};
+ return{args:{db,auth,snapshot:{tenantId:f.tenantId,projectId:f.projectId,sourceSafe:true,imported:false,_runtime:{revision:'a'.repeat(64)},shoppers:[{shopperId:alias}],visits:[]},tenantId:f.tenantId,projectId:f.projectId,revision:'a'.repeat(64),sourceDir:process.cwd()},stats:()=>({txCount,receiptReads,writes})};
+}
+test('HR UID IO reads authority receipts twice under read-only transactions and exposes no principal identifiers',async()=>{
+ const f=uidAuthorityIoFixture(),r=await hrCrosswalkUidReadOnly(f.args);
+ assert.equal(r.authorityChains.length,1);assert.equal(r.authorityChains[0].authorityReceipts[0].keeperMatches,true);assert.equal(r.authorityChains[0].retiredMembershipTargets[0].targetKeeperMatches,true);
+ assert.deepEqual(f.stats(),{txCount:4,receiptReads:2,writes:0});assert.match(r.authorityReceiptsSha256,/^[a-f0-9]{64}$/);assert.equal(JSON.stringify(r).includes('private-selected-uid'),false);
+});
+test('HR UID IO refuses receipt nanosecond drift during authority readback',async()=>{
+ const f=uidAuthorityIoFixture({receiptDrift:true});await assert.rejects(()=>hrCrosswalkUidReadOnly(f.args),/HR_UID_DIAG_IDENTITY_CHANGED_DURING_READ/);assert.equal(f.stats().writes,0);
+});
+
+function hrUidBindingFixture(){
+ const sourceSha='a'.repeat(40),sourceTree='b'.repeat(40),seal={mode:'CURRENT_SOURCE_SERVING',sourceSha,sourceTree,runtimeRevision:'dev-r1',runtimeDigest:'sha256:'+'c'.repeat(64),hostingVersion:'sites/dev/versions/current',hrRevision:'d'.repeat(64),receiptPath:'docs/checkpoints/paired.json',receiptBlob:'e'.repeat(40)};
+ const material={...seal,builds:1,runtimeDeploys:1,hostingDeploys:1};
+ const descriptor={productSourceSha:sourceSha,productTreeAuthority:sourceTree,postDeployRunSeal:seal,currentMaterialization:material,hrUidReadOnlyRequest:{...seal,scope:'HR_DURABLE_REVISION_READONLY',enabled:true,production:false,providerWrites:0}};
+ const pointer={productSourceSha:sourceSha,productTree:sourceTree,postDeployRunSeal:structuredClone(seal),production:'DO_NOT_TOUCH',authorizationI4:false};
+ const receipt={schemaVersion:'cxorbia.i3.current-source-dev-materialization.v1',sourceSha,sourceTree,materialization:material,production:false,i4Authorized:false,productionUnchanged:true};
+ return{descriptor,pointer,receipt,sourceSha,sourceTree,receiptBlob:seal.receiptBlob,treeExact:true,productDiffClean:true,branchName:'recovery/cxorbia-phase-a-20260831',writeGate:''};
+}
+test('HR UID readonly gate accepts only the explicit current exact paired source and receipt',()=>{
+ const f=hrUidBindingFixture(),r=validateHrUidDiagnosticBinding(f);assert.equal(r.sourceSha,f.sourceSha);assert.equal(r.production,false);
+ assert.equal(r.scope,'EXACT_CURRENT_PAIRED_DEV_READ_ONLY');
+});
+for(const [name,change] of [
+ ['fixture write gate',f=>f.writeGate='PAULA_AUTHORIZED_RUN2382_DEV_ONLY'],
+ ['other branch',f=>f.branchName='main'],
+ ['product uncommitted drift',f=>f.productDiffClean=false],
+ ['wrong tree',f=>f.treeExact=false],
+ ['different source',f=>f.sourceSha='f'.repeat(40)],
+ ['foreign receipt blob',f=>f.receiptBlob='f'.repeat(40)],
+ ['pending successor',f=>f.descriptor.pendingDevSuccessor={sourceSha:'f'.repeat(40)}],
+ ['hosting-only state',f=>f.pointer.currentHostingOnlyDevMaterialization={}],
+ ['different served revision',f=>f.descriptor.postDeployRunSeal.runtimeRevision='dev-old'],
+ ['another pinned HR revision',f=>f.descriptor.hrUidReadOnlyRequest.hrRevision='f'.repeat(64)],
+ ['disabled request',f=>f.descriptor.hrUidReadOnlyRequest.enabled=false],
+ ['provider writes requested',f=>f.descriptor.hrUidReadOnlyRequest.providerWrites=1],
+ ['production authorized',f=>f.pointer.authorizationI4=true],
+ ['production receipt',f=>f.receipt.production=true],
+ ['missing paired build',f=>f.receipt.materialization.builds=0]
+])test('HR UID readonly gate rejects '+name,()=>{
+ const f=hrUidBindingFixture();change(f);assert.throws(()=>validateHrUidDiagnosticBinding(f),/HR_UID_READONLY_/);
 });

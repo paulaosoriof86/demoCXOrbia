@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "cxorbia.i3.qa-final-hr-and-authority-readback-repair.v1",
+  "generatedAt": "2026-11-16T05:14:26Z",
+  "parentControlSha": "60c5167d686b4b257d66dff310d81de95834b1ed",
+  "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+  "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+  "run2551Evidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2551_C3_CERTIFY_ATTEMPT_20261116.json",
+    "gitBlob": "cf0d8854f8941ebd1786c84742b2c02d9561dad9",
+    "kind": "C3_PRETERMINAL_AND_CERTIFY_ATTEMPT_NOT_TERMINAL_CERTIFICATE",
+    "decision": "HOLD_I3_PRE10_PASS_FINAL_HR_503_AND_TWO_UID_CONFLICTS",
+    "runId": 43805464612,
+    "runNumber": 2551,
+    "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+    "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+    "artifactId": 14198371529,
+    "artifactDigest": "sha256:bbc99529e7d35809863584693750033b7fe692c38114866d053a11464dcef1dc",
+    "production": false,
+    "terminalCertified": false,
+    "phaseAComplete": false,
+    "i4Authorized": false
+  },
+  "newFinding": "VRM-352",
+  "closedScopedFinding": "VRM-351",
+  "productChanges": 0,
+  "proofScope": "QA_SOURCE_PREPARED_WITH_V8_FOCUSED_CHECKS_PENDING_REAL_NODE_CI_AND_READ_ONLY_LIVE_AUTHORITY_CHAIN",
+  "finalHrReadRetry": {
+    "attemptsPerEndpoint": 4,
+    "delaysMs": [
+      1000,
+      2000,
+      4000
+    ],
+    "requestTimeoutMs": 30000,
+    "retryHttp": [
+      429,
+      502,
+      503,
+      504
+    ],
+    "sameExpectedRevisionMandatory": true,
+    "metadataValidatorUnchanged": true,
+    "noCachedSubstitution": true,
+    "v8Tests": 24,
+    "v8Pass": 24,
+    "nodeCi": false
+  },
+  "uidReadOnly": {
+    "job": "i3-run2382-academy-b7-isolated-dev-qa",
+    "marker": "[i3-hr-uid-readonly]",
+    "mode": "HR_DURABLE_REVISION_READONLY",
+    "newJobs": 0,
+    "newWorkflows": 0,
+    "legacyQaPathPreserved": true,
+    "fixtureWriteGateAbsent": true,
+    "exactPairedBindingBeforeAfter": true,
+    "authorityReceiptReadTwice": true,
+    "authPaginationCompleteAndStable": true,
+    "technicalDocumentReadTwice": true,
+    "receiptDriftRejects": true,
+    "hashesOnlyProjection": true,
+    "providerMutationCalls": 0,
+    "v8Tests": 54,
+    "v8Pass": 54,
+    "nodeCi": false,
+    "sourceParserInV8Stubbed": true
+  },
+  "changedQaFiles": [
+    {
+      "path": ".github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs",
+      "gitBlob": "6472cf26e46d6305907b4209226ea0e652d4a007",
+      "sha256": "8c3c4a574e4331c8a278e555217580739b68eb531a5ca048daea67cb43bc63cd",
+      "bytes": 75571
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-live-fixture-contract.mjs",
+      "gitBlob": "40bfee72071ff488657a318bb259e825373ffa27",
+      "sha256": "c9d34b0769bf7800f0eccdec247b17c27980037ba0e58e089c407997be85e10a",
+      "bytes": 26836
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-live-fixture-contract.test.mjs",
+      "gitBlob": "812178ac35c63032cefcc5bded6eccc652d99dd8",
+      "sha256": "446fc361970630753d1edeb1ed5d9149819656fdc55e2700f91ac227e33da8e6",
+      "bytes": 34348
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-hr-ack-exact-same-revision.mjs",
+      "gitBlob": "c137d2c9d5dab1c3ad0b04b848c031c9137e4e50",
+      "sha256": "cf40e723eb53a26f1731f6b21ddd5ad214be2311a8b380ab55fb43c4b258751b",
+      "bytes": 59106
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-terminal-hr-observation.test.mjs",
+      "gitBlob": "37486856db7fb9817027c5039afbbd7e06e00bf8",
+      "sha256": "9f285f2b00fa081576268871622dbbf417c3f5eb41dae5e89b68a2036f30bdf2",
+      "bytes": 39097
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs",
+      "gitBlob": "fa53635af8a370c1cdb008e201ba96335b64627b",
+      "sha256": "b828cb62274fdb1d773d4ab7c1473e03f5e135d26e384c49afed8aa524f59475",
+      "bytes": 90320
+    },
+    {
+      "path": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      "gitBlob": "68143bbf3e09ea85fe543b7ec1040ea1c8ca8b92",
+      "sha256": "92cd629bc768ce157ea81aa7922abfda9961157af566062df6c5182c647e7f82",
+      "bytes": 509385
+    }
+  ],
+  "workflowBytes": 509385,
+  "production": false,
+  "phaseAComplete": false,
+  "i4Authorized": false
+}

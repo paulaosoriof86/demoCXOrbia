@@ -164,15 +164,73 @@ export function hrCrosswalkUidDiagnosis({tenantId,projectId,sourceIds,users,link
   return{schemaVersion:'cxorbia.i3.hr-crosswalk-uid-readonly.v1',scope:'TECHNICAL_UID_GUARD_OBSERVATION_NOT_IDENTITY_REPAIR_OR_FULL_RECONCILIATION',decision:conflicts.length?'OBSERVED_CURRENT_CROSSWALK_UID_PREDICATES':unresolved.length?'HOLD_UID_DIAG_UNRESOLVED':'NO_UID_CONFLICT_PREDICATE_OBSERVED',sourceIdentityCount:uniq(sourceIds).length,checked,matched,absent,conflicts,unresolved,exceptions,firestoreWrites:0,authWrites:0,hrWrites:0,providerCommandCalls:0,fullReconciliationClosed:false};
 }
 
+
+
+export function validateHrUidDiagnosticBinding({descriptor:d,pointer:p,receipt,sourceSha,sourceTree,receiptBlob,treeExact,productDiffClean,branchName,writeGate}){
+  const check=(v,k)=>{if(!v)throw Error('RELEASE_COMPOSITION_FAILURE:HR_UID_READONLY_'+k);};
+  const seal=d?.postDeployRunSeal||{},q=d?.hrUidReadOnlyRequest||{},material=d?.currentMaterialization||{};
+  check(branchName==='recovery/cxorbia-phase-a-20260831'&&!writeGate&&p?.production==='DO_NOT_TOUCH'&&p.authorizationI4===false,'SCOPE');
+  check(/^[a-f0-9]{40}$/.test(sourceSha||'')&&/^[a-f0-9]{40}$/.test(sourceTree||'')&&treeExact===true&&productDiffClean===true&&d.productSourceSha===sourceSha&&d.productTreeAuthority===sourceTree&&p.productSourceSha===sourceSha&&p.productTree===sourceTree,'SOURCE');
+  check(seal.mode==='CURRENT_SOURCE_SERVING'&&!d.pendingDevSuccessor&&!p.pendingDevSuccessor&&!d.currentHostingOnlyDevMaterialization&&!p.currentHostingOnlyDevMaterialization&&JSON.stringify(seal)===JSON.stringify(p.postDeployRunSeal),'PAIRED_SEAL');
+  check(q.scope==='HR_DURABLE_REVISION_READONLY'&&q.enabled===true&&q.production===false&&q.providerWrites===0&&q.sourceSha===sourceSha&&q.sourceTree===sourceTree,'REQUEST');
+  check(receiptBlob===seal.receiptBlob&&receipt?.schemaVersion==='cxorbia.i3.current-source-dev-materialization.v1'&&receipt.production===false&&receipt.i4Authorized===false&&receipt.productionUnchanged===true,'RECEIPT');
+  for(const k of ['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion','hrRevision']){
+    check(Boolean(seal[k])&&seal[k]===material[k]&&seal[k]===receipt.materialization?.[k]&&seal[k]===q[k],'IDENTITY_'+k);
+  }
+  check(seal.sourceSha===sourceSha&&seal.sourceTree===sourceTree&&receipt.sourceSha===sourceSha&&receipt.sourceTree===sourceTree,'SERVED_SOURCE');
+  check(receipt.materialization.builds===1&&receipt.materialization.runtimeDeploys===1&&receipt.materialization.hostingDeploys===1,'PAIRED_DEPLOY');
+  return{sourceSha,sourceTree,runtimeRevision:seal.runtimeRevision,runtimeDigest:seal.runtimeDigest,hostingVersion:seal.hostingVersion,hrRevision:seal.hrRevision,receiptPath:seal.receiptPath,receiptBlob:seal.receiptBlob,production:false,scope:'EXACT_CURRENT_PAIRED_DEV_READ_ONLY'};
+}
+
+export function hrUidAuthorityProjection({diagnosis,users,links,crosswalks,profiles,receipts,resolutions,tenantId,projectId}){
+  const s=b14str,h=b14sha,a=v=>Array.isArray(v)?v:[],fp=v=>/^[a-f0-9]{64}$/.test(s(v))?s(v):null;
+  const projectMatches=v=>s(v.projectScope||v.scope?.projectId||v.projectId||'*')==='*'||s(v.projectScope||v.scope?.projectId||v.projectId).toLowerCase()==='tenant'||s(v.projectScope||v.scope?.projectId||v.projectId)===projectId;
+  const reference=v=>s(v.authorityRef||v.authority?.evidenceRef||v.authority?.adjudicationId||v.authority?.providerRef||v.authority?.commandId||v.providerAckRef||v.adjudicationId||v.commandId||v.idempotencyKey);
+  return diagnosis.conflicts.map(c=>{
+    const profile=profiles.find(x=>h(x.id)===c.canonicalIdHash),p=profile?.data||{},canonical=profile?.id||'';
+    const cross=crosswalks.find(x=>x.id===canonical),cr=cross?.data||{},selected=users.find(x=>h(x.id)===c.selectedUidHash);
+    const mappedLinks=links.filter(x=>c.linkEvidence.some(e=>e.pathHash===h(x.path)));
+    const refs=[...new Set([s(p.identityAuthorityRef),s(cr.identityAuthorityRef),...mappedLinks.map(x=>reference(x.data))].filter(Boolean))];
+    const prior=users.filter(x=>c.storedFingerprintMembershipOwners.some(o=>o.uidHash===h(x.id))).map(x=>{
+      const m=x.data;return{pathHash:h(x.path),updateTime:x.updateTime,uidHash:h(x.id),active:m.active===true,status:s(m.status)==='superseded'?'superseded':null,identityState:s(m.identityState)==='superseded_exact_alias'?'superseded_exact_alias':null,
+        supersededByShopperIdHash:s(m.supersededByShopperId)?h(s(m.supersededByShopperId)):null,supersededByUidFingerprint:fp(m.supersededByUidFingerprint),
+        targetCanonicalMatches:!!canonical&&s(m.supersededByShopperId)===canonical,targetKeeperMatches:fp(m.supersededByUidFingerprint)===c.selectedUidFingerprint&&!!fp(m.supersededByUidFingerprint)};
+    });
+    const receiptRows=refs.map(ref=>{
+      const doc=receipts.find(x=>x.id===ref),r=doc?.data||{},link=links.find(x=>x.id===s(r.identityLinkId)),l=link?.data||{};
+      const exactLink=!!link&&s(l.tenantId||l.scope?.tenantId)===tenantId&&s(l.canonicalShopperId||l.canonicalId||l.shopperId||l.profileId)===canonical&&projectMatches(l)&&!l.periodId&&!l.periodKey&&!l.periodScope;
+      return{referenceHash:h(ref),referenceValid:/^[A-Za-z0-9_-]{1,200}$/.test(ref),pathHash:doc?h(doc.path):null,exists:doc?.exists===true,updateTime:doc?.updateTime||null,
+        status:s(r.status)==='committed'?'committed':null,commandType:s(r.commandType)==='shopper.identity.adjudicate'?'shopper.identity.adjudicate':null,providerAck:r.providerAck===true,identityConsolidated:r.identityConsolidated===true,
+        canonicalMatches:!!canonical&&s(r.shopperId)===canonical,keeperUidFingerprint:fp(r.keeperUidFingerprint),keeperMatches:fp(r.keeperUidFingerprint)===c.selectedUidFingerprint&&!!fp(r.keeperUidFingerprint),
+        commandDigest:fp(r.commandDigest),actorUidHash:s(r.actorUid)?h(s(r.actorUid)):null,retiredPrincipalCount:Number.isInteger(r.retiredPrincipalCount)?r.retiredPrincipalCount:null,
+        isProfileAuthority:s(p.identityAuthorityRef)===ref,isCanonicalCrosswalkAuthority:s(cr.identityAuthorityRef)===ref,
+        identityLink:{exists:!!link,pathHash:link?h(link.path):null,updateTime:link?.updateTime||null,scopeExact:exactLink,
+          authorityRefMatches:!!link&&reference(l)===ref,authorityType:s(l.authorityType)==='tenant_adjudication'?'tenant_adjudication':s(l.authorityType)==='provider_auto_compatible'?'provider_auto_compatible':null,
+          active:['active','approved','confirmed','materialized'].includes(s(l.status||l.state).toLowerCase()),providerAck:l.providerAck===true,humanConfirmed:l.humanConfirmed===true,
+          canonicalMatches:!!canonical&&s(l.canonicalShopperId||l.canonicalId||l.shopperId||l.profileId)===canonical}};
+    });
+    const pair=new Set([c.sourceIdHash,c.canonicalIdHash]);
+    const distinct=resolutions.filter(x=>s(x.data.status)==='resolved_distinct'&&s(x.data.tenantId)===tenantId&&s(x.data.projectScope||x.data.projectId)===projectId&&a(x.data.shopperIds).filter(id=>pair.has(h(s(id)))).length>=2)
+      .map(x=>({pathHash:h(x.path),updateTime:x.updateTime,evidenceFingerprint:fp(x.data.evidenceFingerprint),identityRemap:x.data.identityRemap===true,shopperIdHashes:a(x.data.shopperIds).map(id=>h(s(id))).sort()}));
+    return{sourceIdHash:c.sourceIdHash,canonicalIdHash:c.canonicalIdHash,selectedUidFingerprint:c.selectedUidFingerprint,selectedMembershipUpdateTime:selected?.updateTime||null,
+      profileAuthorityRefHash:s(p.identityAuthorityRef)?h(s(p.identityAuthorityRef)):null,canonicalCrosswalk:{exists:!!cross,pathHash:cross?h(cross.path):null,updateTime:cross?.updateTime||null,
+        tenantMatches:s(cr.tenantId)===tenantId,shopperMatches:!!canonical&&s(cr.shopperId)===canonical,providerUidFingerprint:fp(cr.providerUidFingerprint),keeperMatches:fp(cr.providerUidFingerprint)===c.selectedUidFingerprint&&!!fp(cr.providerUidFingerprint),
+        identityAuthority:s(cr.identityAuthority)==='tenant_adjudication'?'tenant_adjudication':s(cr.identityAuthority)==='provider_auto_compatible'?'provider_auto_compatible':null,
+        identityAuthorityRefHash:s(cr.identityAuthorityRef)?h(s(cr.identityAuthorityRef)):null,profileAuthorityRefMatches:!!s(p.identityAuthorityRef)&&s(cr.identityAuthorityRef)===s(p.identityAuthorityRef)},
+      retiredMembershipTargets:prior,authorityReceipts:receiptRows,distinctDecisions:distinct,scope:'READ_ONLY_AUTHORITY_CHAIN_FACTS_NOT_REPAIR_AUTHORIZATION'};
+  });
+}
+
 export async function hrCrosswalkUidReadOnly({db,auth,snapshot,tenantId,projectId,revision,sourceDir}){
   if(!sourceDir||snapshot.tenantId!==tenantId||snapshot.projectId!==projectId||snapshot.sourceSafe!==true||snapshot.imported!==false||snapshot._runtime?.revision!==revision||!/^[a-f0-9]{64}$/.test(revision||''))throw Error('SOURCE_FAILURE:HR_UID_DIAG_SOURCE');
   const owner='backend/runtime/cxorbia-shopper-command-provider-v1.mjs',module=await import(pathToFileURL(path.join(sourceDir,owner)).href);
   const {shoppers}=module.shoppersFromSnapshot(snapshot),sourceIds=shoppers.map(x=>x.shopperId),tenant=db.collection('tenants').doc(tenantId);
   const keys=['shopperId','legacyShopperId','legacyId','externalShopperId','externalId','sourceId','sourceKey','hrRowId','personId','profileId','shopperDocId','sourceIdentityKey','sourceSubjectId','exactAliases','identityAliases','aliases','sourceAliases','sourceIdentityAliases'];
-  const masks={users:['shopperId','tenantId','active','status','identityState','role','authNamespace','projectIds','providerUidFingerprint'],
-    shopperIdentityCrosswalk:['tenantId','shopperId','sourceStableKey','projectIds','providerUidFingerprint','sourceType','identityMode','migrationAuthorityType','migrationAuthorityRef'],
+  const masks={users:['shopperId','tenantId','active','status','identityState','role','authNamespace','projectIds','providerUidFingerprint','supersededByShopperId','supersededByUidFingerprint'],
+    shopperIdentityCrosswalk:['tenantId','shopperId','sourceStableKey','projectIds','providerUidFingerprint','sourceType','identityMode','migrationAuthorityType','migrationAuthorityRef','identityAuthority','identityAuthorityRef'],
     shoppers:['tenantId','shopperId','projectIds','identityAuthority','identityAuthorityRef','status','identityState','supersededByShopperId','hrSourceRevision','providerUidFingerprint'],
-    shopperIdentityLinks:[...new Set(['tenantId','status','state','authorityType','authority.type','authority.evidenceRef','authority.adjudicationId','authority.providerRef','authority.commandId','authorityRef','providerAckRef','adjudicationId','commandId','idempotencyKey','projectScope','scope.tenantId','scope.projectId','projectId','periodId','periodKey','periodScope','canonicalShopperId','canonicalId','shopperId','profileId','sourceSystem','sourceNamespace','sourceType','sourceIdentity.sourceSystem',...['','sourceIdentity.','identity.','crosswalk.','profile.','exactIdentityAnchors.'].flatMap(prefix=>keys.map(k=>prefix+k))])]};
+    shopperIdentityReviewResolutions:['tenantId','projectScope','projectId','shopperIds','status','evidenceFingerprint','identityRemap'],
+    shopperIdentityLinks:[...new Set(['tenantId','status','state','providerAck','humanConfirmed','authorityType','authority.type','authority.evidenceRef','authority.adjudicationId','authority.providerRef','authority.commandId','authorityRef','providerAckRef','adjudicationId','commandId','idempotencyKey','projectScope','scope.tenantId','scope.projectId','projectId','periodId','periodKey','periodScope','canonicalShopperId','canonicalId','shopperId','profileId','sourceSystem','sourceNamespace','sourceType','sourceIdentity.sourceSystem',...['','sourceIdentity.','identity.','crosswalk.','profile.','exactIdentityAnchors.'].flatMap(prefix=>keys.map(k=>prefix+k))])]};
   const stamp=t=>{if(!Number.isInteger(t?.seconds)||!Number.isInteger(t?.nanoseconds)||t.nanoseconds<0||t.nanoseconds>=1e9)throw Error('SOURCE_FAILURE:HR_UID_DIAG_UPDATE_TIME');return{seconds:t.seconds,nanoseconds:t.nanoseconds};};
   const readDocs=()=>db.runTransaction(async tx=>{
     const output={};for(const [name,mask]of Object.entries(masks)){
@@ -187,8 +245,27 @@ export async function hrCrosswalkUidReadOnly({db,auth,snapshot,tenantId,projectI
   }while(token);return found.sort((x,y)=>x.uid.localeCompare(y.uid));};
   const before=await readDocs(),authBefore=await readAuth();
   const result=hrCrosswalkUidDiagnosis({tenantId,projectId,sourceIds,users:before.users,links:before.shopperIdentityLinks,crosswalks:before.shopperIdentityCrosswalk,profiles:before.shoppers,authUsers:authBefore,providerUidFingerprint:module.providerUidFingerprint,stableShopperUid:module.stableShopperUid});
-  const after=await readDocs(),authAfter=await readAuth();
-  if(b14sha(before)!==b14sha(after)||b14sha(authBefore)!==b14sha(authAfter))throw Error('PERSISTENCE_FAILURE:HR_UID_DIAG_IDENTITY_CHANGED_DURING_READ');
+  const refValues=new Set();
+  for(const c of result.conflicts){
+    const profile=before.shoppers.find(x=>b14sha(x.id)===c.canonicalIdHash),canonicalCross=before.shopperIdentityCrosswalk.find(x=>x.id===profile?.id);
+    for(const ref of [profile?.data.identityAuthorityRef,canonicalCross?.data.identityAuthorityRef])if(b14str(ref))refValues.add(b14str(ref));
+    for(const link of before.shopperIdentityLinks.filter(x=>c.linkEvidence.some(e=>e.pathHash===b14sha(x.path)))){
+      const l=link.data,ref=b14str(l.authorityRef||l.authority?.evidenceRef||l.authority?.adjudicationId||l.authority?.providerRef||l.authority?.commandId||l.providerAckRef||l.adjudicationId||l.commandId||l.idempotencyKey);
+      if(ref)refValues.add(ref);
+    }
+  }
+  const receiptIds=[...refValues].filter(ref=>/^[A-Za-z0-9_-]{1,200}$/.test(ref)).sort();
+  if(receiptIds.length>32)throw Error('SOURCE_FAILURE:HR_UID_DIAG_AUTHORITY_REFERENCE_BOUND');
+  const receiptMask=['status','commandType','commandDigest','shopperId','providerAck','actorUid','identityLinkId','identityConsolidated','keeperUidFingerprint','retiredPrincipalCount'];
+  const readReceipts=()=>!receiptIds.length?Promise.resolve([]):db.runTransaction(async tx=>{
+    const docs=await tx.getAll(...receiptIds.map(id=>tenant.collection('commandReceipts').doc(id)),{fieldMask:receiptMask});
+    return docs.map(doc=>({id:doc.id,path:doc.ref.path,exists:doc.exists,updateTime:doc.exists?stamp(doc.updateTime):null,data:doc.exists?doc.data():{}})).sort((x,y)=>x.id.localeCompare(y.id));
+  },{readOnly:true});
+  const receiptsBefore=await readReceipts();
+  result.authorityChains=hrUidAuthorityProjection({diagnosis:result,users:before.users,links:before.shopperIdentityLinks,crosswalks:before.shopperIdentityCrosswalk,profiles:before.shoppers,receipts:receiptsBefore,resolutions:before.shopperIdentityReviewResolutions,tenantId,projectId});
+  const after=await readDocs(),authAfter=await readAuth(),receiptsAfter=await readReceipts();
+  if(b14sha(before)!==b14sha(after)||b14sha(authBefore)!==b14sha(authAfter)||b14sha(receiptsBefore)!==b14sha(receiptsAfter))throw Error('PERSISTENCE_FAILURE:HR_UID_DIAG_IDENTITY_CHANGED_DURING_READ');
+  result.authorityReceiptsSha256=b14sha(receiptsBefore);
   return{...result,sourceRevision:revision,owner,ownerSourceScope:'ARCHIVED_OR_VERIFIED_CHECKED_OUT_CANDIDATE_PREDICATES_NOT_PRODUCT_EXECUTION',ownerSha256:b14sha(fs.readFileSync(path.join(sourceDir,owner),'utf8')),sourceIdSetSha256:b14sha(sourceIds.sort()),technicalDocumentsSha256:b14sha(before),authIdentityProjectionSha256:b14sha(authBefore),completeAuthPagination:true,independentReadStability:true,observedAt:new Date().toISOString()};
 }
 

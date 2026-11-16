@@ -10,7 +10,7 @@ import { chromium } from 'playwright';
 import { settleCustomRoleAuth, settleVisibleShopperAuth } from './RECOVERY-I3-BROWSER-AUTH-LIFECYCLE-20260919.mjs';
 import { requireProviderAck, requireExactCommandReceipt, reservationLifecyclePassed, restoreAssignment,
   readFixturePrerequisites,fixtureExpected,fixtureFileHash,FIXTURE_INPUT_FILES,
-  validateFixtureHrObservation,validateFixtureDevIdentity,commandDigest,sameDocument,
+  validateFixtureHrObservation,validateFixtureDevIdentity,readFixtureFinalHr,commandDigest,sameDocument,
   fixturePlatformIdentityLinkId,fixtureApplicationId,dispatchTrackedFixtureCreation,requireFixtureCreationReceipt,
   fixtureAuthSnapshot,requireFixtureShopperOwnership,requireFixtureApplicationOwnership,fixtureProposedDate,
   deleteOwnedFixtureDocuments } from '../../tools/qa/cxorbia-i3-live-fixture-contract.mjs';
@@ -50,6 +50,7 @@ let browser = null;
 let failure = null;
 let cleanupFailure = null;
 let fixtureBinding=null,prerequisitesSha256=null,finalDevIdentityVerified=false,finalHrRevision=null,finalEvidence=null;
+const finalHrReadAttempts=[];
 fs.mkdirSync(OUT, { recursive: true });
 
 function classify(error) {
@@ -580,15 +581,16 @@ async function finalFixtureIdentityReadback(){
   const revision=await cloudJson(base+'/revisions/'+encodeURIComponent(fixtureBinding.runtimeRevision));
   const hosting=await cloudJson('https://firebasehosting.googleapis.com/v1beta1/sites/'+encodeURIComponent(PROJECT)+'/channels/live');
   validateFixtureDevIdentity(fixtureBinding,{service,revision,hosting});
-  const hrRead=async format=>{
-    const response=await fetch(HOST+'/api/'+encodeURIComponent(TENANT)+'/'+encodeURIComponent(PROJECT_ID)+'/hr-live?format='+format+'&fixtureFinal='+RUN_ID+'&ts='+Date.now(),{cache:'no-store',headers:{'cache-control':'no-cache, no-store, max-age=0'}});
-    if(!response.ok)throw new Error('PROVIDER_FAILURE:FIXTURE_FINAL_HR_HTTP_'+response.status);
-    return response.json();
-  };
-  const hr=await hrRead('json'),meta=await hrRead('meta'),snapshot=hr.snapshot||hr.data||hr;
-  finalHrRevision=str(snapshot._runtime?.revision||snapshot.sourceRevision);
-  if(finalHrRevision!==fixtureBinding.hrRevision)throw new Error('SOURCE_FAILURE:LIVE_FIXTURE_FINAL_HR_CHANGED');
-  validateFixtureHrObservation(meta,finalHrRevision);
+  const {hr,meta,revision:observedHrRevision}=await readFixtureFinalHr({
+    expectedRevision:fixtureBinding.hrRevision,
+    request:(format,attempt)=>fetch(HOST+'/api/'+encodeURIComponent(TENANT)+'/'+encodeURIComponent(PROJECT_ID)+'/hr-live?format='+format+'&fixtureFinal='+RUN_ID+'&attempt='+attempt+'&ts='+Date.now(),{cache:'no-store',signal:AbortSignal.timeout(30000),headers:{'cache-control':'no-cache, no-store, max-age=0'}}),
+    onAttempt:attempt=>{
+      const row={...attempt,observedAt:new Date().toISOString()};finalHrReadAttempts.push(row);
+      fs.writeFileSync(path.join(OUT,'final-hr-read-attempts.json'),JSON.stringify({expectedRevision:fixtureBinding.hrRevision,attempts:finalHrReadAttempts,production:false},null,2)+'\n');
+      console.log('I3_FINAL_HR_READ_ATTEMPT='+JSON.stringify(row));
+    }
+  });
+  finalHrRevision=observedHrRevision;
   finalEvidence={};
   for(const [key,value] of Object.entries({service,revision,hosting,hr,meta})){
     const file='final-'+key+'.json',raw=JSON.stringify(value,null,2)+'\n';fs.writeFileSync(path.join(OUT,file),raw);
@@ -928,7 +930,7 @@ try {
     ...(fixtureBinding?{proofStage:FIXTURE_STAGE,certifiedAtExecution:false,phaseAComplete:false,sourceSha:SOURCE_SHA,sourceTree:SOURCE_TREE,
       artifactSha256:fixtureBinding.artifactSha256,runtimeRevision:fixtureBinding.runtimeRevision,runtimeDigest:fixtureBinding.runtimeDigest,
       hostingVersion:fixtureBinding.hostingVersion,runId:RUN_ID,runAttempt:fixtureBinding.runAttempt,controlHeadSha:fixtureBinding.controlHeadSha,
-      prerequisitesSha256,finalDevIdentityVerified,finalHrRevision,finalEvidence,prerequisiteHrRevision:certificationManifestHrRevision}:
+      prerequisitesSha256,finalDevIdentityVerified,finalHrRevision,finalEvidence,finalHrReadAttempts,prerequisiteHrRevision:certificationManifestHrRevision}:
       {proofStage:FIXTURE_STAGE,certifiedAtExecution:true,certifiedArtifactSha256:CERTIFIED_ARTIFACT_SHA256}),
     buildCountThisRun: 0, deployCountThisRun: 0, rebuildAfterCertification: false, productSourceChanged: false,
     production: false, hrWrites: 0, fuzzyMatching: false, hrRevision, liveFixtureHrRevision: hrRevision,
