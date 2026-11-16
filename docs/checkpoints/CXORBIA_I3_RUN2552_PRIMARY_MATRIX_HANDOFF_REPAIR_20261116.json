@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "cxorbia.i3.current-pointer-repair.v1",
+  "generatedAt": "2026-11-16T05:17:53Z",
+  "failedRunId": 43809061291,
+  "failedRunNumber": 2552,
+  "failedControlSha": "dd49b3594c39fb5265a672979dd491e62b7be492",
+  "classification": "MAPPING_FAILURE",
+  "errors": [
+    "MATRIX_PATH_DESYNC",
+    "MATRIX_BLOB_DESYNC",
+    "CURRENT_CHECKPOINT_DEV_SEAL_DESYNC"
+  ],
+  "rootCause": "Publication updated the root matrix aliases but omitted pointer.moduleTruthAuthority and continuityHandoff.immediateAction. The existing shock-continuity guard correctly rejected them before any focal provider read.",
+  "before": {
+    "moduleTruthAuthority": {
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261116-V331.json",
+      "gitBlob": "a65141c534c6391e802ce58aff79462127815750"
+    },
+    "immediateAction": "I3-Q3: use the existing C3/certify lane on the unchanged exact RUN2547 source06 runtime00374 Hostingd69d. Reprove PRE after the null-auth-context QA fix and collect the read-only current SHOPPER_CROSSWALK_UID_CONFLICT identity projection. Then isolate the exact conflicting crosswalk/membership/Auth authority, publish its bounded P0 MODULE_TRUTH before any product edit, repair the proved owner, and resume the same authorized current-revision receipt. Preserve the verified predecessor journal, 792 current-revision visits, VRM350 scoped HTTP rejection, VRM143 live regression, B11 18 cases, B4-B7 and five complete domains. Complete remaining D08/C09/C10/B14 contracts and strict21/G20/G21 before one certified immutable I4 replacement."
+  },
+  "after": {
+    "moduleTruthAuthority": {
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261116-V332.json",
+      "gitBlob": "935bb8001757e40f49a7fc8286fbf05f4e627b9a"
+    },
+    "immediateAction": "I3-Q3: run the existing isolated DEV QA job in HR_DURABLE_REVISION_READONLY mode against source06/runtime00374/Hostingd69d, with exact paired receipt checks before/after and no write gate. Read the two proven stale UID projections, current keeper adjudication receipts, retired membership targets and distinct-decision guards. Publish bounded product MODULE_TRUTH before repairing the exact shopper provider, then resume the same authorized current-revision reconciliation to committed/providerACK. RUN2551 PRE10/10 and null-auth fix are proven; repeat final exact HR readback after bounded transient-HTTP QA correction, then finish D08/C09/C10/B14 and strict21/G20/G21 before immutable I4 replacement."
+  },
+  "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261116-V332.json",
+  "matrixBlob": "935bb8001757e40f49a7fc8286fbf05f4e627b9a",
+  "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V659_2026-11-16.json",
+  "ledgerBlob": "428fec8a34dc368f69b3376c6fe7d91ee1f66edb",
+  "productSourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+  "productChanges": 0,
+  "deploys": 0,
+  "providerWrites": 0,
+  "production": false,
+  "terminalCertificate": false
+}
