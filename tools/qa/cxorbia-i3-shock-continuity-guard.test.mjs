@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {validateShockContinuity, classifyModules, findNewerDevProviderReceipt,hasVerifiedHostingAssets} from './cxorbia-i3-shock-continuity-guard.mjs';
+import {validateShockContinuity, classifyModules, findNewerDevProviderReceipt,hasVerifiedHostingAssets,failedDevReadbackAllowsCorrection} from './cxorbia-i3-shock-continuity-guard.mjs';
 import crypto from 'node:crypto';
 
 test('Hosting receipt verifies actual hashes and the changed owner, not a frozen count',()=>{
@@ -486,3 +486,43 @@ test('VRM313: paired predecessor source, artifact, runtime, hosting and receipt 
   a=>{a.descriptor.currentMaterialization.materializationReceiptPath='other.json';a.pointer.currentDevMaterialization.materializationReceiptPath='other.json';a.descriptor.pendingDevSuccessor.servingPairedMaterialization.materializationReceiptPath='other.json';a.pointer.pendingDevSuccessor=structuredClone(a.descriptor.pendingDevSuccessor);}
  ]){const a=withPairedPendingSuccessor();mutate(a);assert.match(validateShockContinuity(a).failures.join(' '),/PENDING_DEV_SUCCESSOR_UNPROVEN/);}
 });
+
+
+const failedDevCorrectionFixture=()=>{
+ const q={enabled:true,readsOnly:true,buildBeforePass:false,production:false,sourceSha:'successor',sourceTree:'tree-successor'};
+ return {pendingFromPaired:true,pendingProven:true,
+  descriptor:{status:'HOLD_I3_VRM350_DEV_MATERIALIZATION_REQUIRED',production:'DO_NOT_TOUCH',terminalCertificationAllowed:false,i4Authorized:false,i3Closed:false,
+   pendingDevSuccessor:{sourceSha:'successor',sourceTree:'tree-successor'},postDeployRunSeal:{hrLiveVerified:false,certifiable:false},
+   vrm356FreshReadPreflight:q,vrm354CanonicalNameRepairRequest:{enabled:false}},
+  pointer:{state:'HOLD',production:'DO_NOT_TOUCH',authorizationI4:false,vrm356FreshReadPreflight:structuredClone(q),vrm354CanonicalNameRepairRequest:{enabled:false}},
+  receipt:{schemaVersion:'cxorbia.i3.paired-dev-failed-readback.v2',jobConclusion:'failure',decision:'HOLD_EXACT_DEV_DEPLOYED_HR_RANGE_READ_FAILED',
+   materialization:{decision:'HOLD_EXACT_DEV_DEPLOYED_HR_RANGE_READ_FAILED',hrLiveVerified:false,production:false},productionUnchanged:null,productionDeploys:0,production:false,i4Authorized:false,phaseAComplete:false},
+  transition:{hrLiveVerified:false,certifiable:false}};
+};
+test('VRM356 a failed DEV readback can remain HOLD with unknown production byte-after only for proven bounded correction',()=>{
+ const f=failedDevCorrectionFixture();assert.equal(failedDevReadbackAllowsCorrection(f),true);
+ assert.equal(f.receipt.productionUnchanged,null,'unknown observation must never be relabeled as PASS');
+ assert.equal(f.descriptor.terminalCertificationAllowed,false);
+});
+for(const [label,mutate]of [
+ ['unproven successor',f=>{f.pendingProven=false;}],
+ ['nonpaired state',f=>{f.pendingFromPaired=false;}],
+ ['success receipt',f=>{f.receipt.jobConclusion='success';f.receipt.decision='PASS';}],
+ ['unknown receipt',f=>{f.receipt.schemaVersion='unrecognized';}],
+ ['production write',f=>{f.receipt.productionDeploys=1;}],
+ ['false production claim',f=>{f.receipt.productionUnchanged=true;}],
+ ['terminal promotion',f=>{f.descriptor.terminalCertificationAllowed=true;}],
+ ['GO candidate',f=>{f.descriptor.status='GO';}],
+ ['I4 authorization',f=>{f.descriptor.i4Authorized=true;}],
+ ['phase closure',f=>{f.receipt.phaseAComplete=true;}],
+ ['enabled native repair',f=>{f.descriptor.vrm354CanonicalNameRepairRequest.enabled=true;}],
+ ['disabled preflight',f=>{f.descriptor.vrm356FreshReadPreflight.enabled=false;}],
+ ['preflight mutation allowed',f=>{f.descriptor.vrm356FreshReadPreflight.readsOnly=false;}],
+ ['build before readback',f=>{f.descriptor.vrm356FreshReadPreflight.buildBeforePass=true;}],
+ ['preflight wrong source',f=>{f.descriptor.vrm356FreshReadPreflight.sourceSha='foreign';}],
+ ['preflight pointer drift',f=>{f.pointer.vrm356FreshReadPreflight.sourceTree='foreign';}],
+ ['live success invented',f=>{f.receipt.materialization.hrLiveVerified=true;}],
+ ['certifiable failed transition',f=>{f.transition.certifiable=true;}]
+]){
+ test('VRM356 failed DEV correction rejects '+label,()=>{const f=failedDevCorrectionFixture();mutate(f);assert.equal(failedDevReadbackAllowsCorrection(f),false);});
+}

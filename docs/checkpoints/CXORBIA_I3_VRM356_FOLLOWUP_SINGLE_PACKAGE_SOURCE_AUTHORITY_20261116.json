@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "cxorbia.i3.single-package-source-proof.v1",
+  "decision": "PASS_VRM356_BODY_DEADLINE_AND_CUMULATIVE_SOURCE_RAW_RANGE_LIVE_PENDING",
+  "generatedAt": "2026-11-16T08:47:58Z",
+  "sourceSha": "da403803fffdf3472079b0939f3914cc0cceafff",
+  "sourceTree": "dfc56eb3909fa6f7c8cc3bb57b610c46cc838512",
+  "predecessorProductSourceSha": "607ef20a5305209a46b8f61424f03475806f402d",
+  "sourceTestsPass": 133,
+  "sourceTestsFail": 0,
+  "allowedProductFiles": [
+    "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+    "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs"
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM356_RAW_RANGE_PREFLIGHT_SCOPE_20261116.json",
+  "scopeReceiptBlob": "c7c72cde604bb0aa83f691ee103ded4a2fa83c66",
+  "findings": [
+    {
+      "id": "VRM-356",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "scope": {
+        "path": "docs/checkpoints/CXORBIA_I3_VRM356_RAW_RANGE_PREFLIGHT_SCOPE_20261116.json",
+        "gitBlob": "c7c72cde604bb0aa83f691ee103ded4a2fa83c66",
+        "sha256": "188f6ead740ce942421686ed9ab12eb4560bfaa3b1b5d5886f6c8f1a6b7b7539"
+      }
+    }
+  ],
+  "productOwnerBlobs": {
+    "tools/hr-source/tya-live-provider-registry-identity-dev.mjs": "d91149765c417af3b406ac3a320622ddc22e0296",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs": "92d899625e8a887ef3789e29fe388600c12f9c4c",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs": "382789cdca22de0042ebbe8c3f0cd52a77f7ba0a"
+  },
+  "testEvidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM356_BODY_DEADLINE_CUMULATIVE_SOURCE_PROOF_20261116.json",
+    "gitBlob": "4be0a270d66c5768ff084c8bcf6a3853a3d04e81",
+    "sha256": "7fd0939617531fc9bc1499407376fe1c40eaa72846362f450f90249cc5d5f28f"
+  },
+  "testCountScope": "41_READER_LATENCY_AND_92_RUNTIME_PROVIDER_TESTS_V8_NODE_PENDING",
+  "canonicalNodeCi": "PENDING",
+  "devPublished": false,
+  "production": false,
+  "hrWrites": 0,
+  "rawRangePreflightRequired": true
+}

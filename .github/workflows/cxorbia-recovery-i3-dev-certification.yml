@@ -4616,6 +4616,7 @@ jobs:
       test -f "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml"
       test -f "$SOURCE_DIR/firebase.json"
       echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
+      SOURCE_DIR="$SOURCE_DIR" node tools/qa/cxorbia-i3-vrm356-live-range-preflight.mjs
    - run: |
       set -Eeuo pipefail
       if [[ "$PAIR_ENV_ONLY" == true ]]; then

@@ -107,6 +107,24 @@ export function findNewerDevProviderReceipt({sourceSha, sealedRunId, receipts}) 
   });
 }
 
+
+export function failedDevReadbackAllowsCorrection({descriptor:d,pointer:p,receipt:r,transition:x,pendingFromPaired,pendingProven}){
+  const q=d.vrm356FreshReadPreflight||{},pending=d.pendingDevSuccessor||{},materialization=r.materialization||{},seal=d.postDeployRunSeal||{};
+  return pendingFromPaired===true&&pendingProven===true&&
+    r.schemaVersion==='cxorbia.i3.paired-dev-failed-readback.v2'&&r.jobConclusion==='failure'&&
+    r.decision==='HOLD_EXACT_DEV_DEPLOYED_HR_RANGE_READ_FAILED'&&materialization.decision===r.decision&&
+    materialization.hrLiveVerified===false&&materialization.production===false&&
+    r.productionUnchanged===null&&r.productionDeploys===0&&r.production===false&&r.i4Authorized===false&&r.phaseAComplete===false&&
+    x.hrLiveVerified===false&&x.certifiable===false&&seal.hrLiveVerified===false&&seal.certifiable===false&&
+    /^HOLD_/.test(d.status||'')&&p.state==='HOLD'&&d.terminalCertificationAllowed===false&&
+    d.i4Authorized===false&&d.i3Closed===false&&p.authorizationI4!==true&&
+    d.production==='DO_NOT_TOUCH'&&p.production==='DO_NOT_TOUCH'&&
+    q.enabled===true&&q.readsOnly===true&&q.buildBeforePass===false&&q.production===false&&
+    q.sourceSha===pending.sourceSha&&q.sourceTree===pending.sourceTree&&
+    JSON.stringify(q)===JSON.stringify(p.vrm356FreshReadPreflight||null)&&
+    d.vrm354CanonicalNameRepairRequest?.enabled===false&&p.vrm354CanonicalNameRepairRequest?.enabled===false;
+}
+
 export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, gitBlob, freezePath = FREEZE,gitRead,gitAncestor}) {
   const failures = [];
   const check = (condition, code) => { if (!condition) failures.push(code); };
@@ -343,7 +361,8 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
         JSON.stringify(materialization)===JSON.stringify(currentDev)&&materialization.production===false&&
         receipt.source?.sha===x.sourceSha&&receipt.source?.tree===x.sourceTree&&
         ['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion','hostingRelease','runId','artifactDigest'].every(k=>materialization[k]&&materialization[k]===seal[k])&&
-        hasVerifiedHostingAssets({...receipt,sourceSha:receipt.source?.sha},x.previousC3SourceSha,gitRead)&&receipt.productionUnchanged===true&&
+        hasVerifiedHostingAssets({...receipt,sourceSha:receipt.source?.sha},x.previousC3SourceSha,gitRead)&&
+        (receipt.productionUnchanged===true||failedDevReadbackAllowsCorrection({descriptor:d,pointer:p,receipt,transition:x,pendingFromPaired,pendingProven:pendingDev.pass}))&&
         (pendingFromPaired||m.productSource?.authorityState==='RUNTIME_AND_HOSTING_DEV_MATERIALIZED_PENDING_C3_E2E'),
         'RELEASE_COMPOSITION_FAILURE:PAIRED_DEV_C3_TRANSITION_RECEIPT');
     }else{
