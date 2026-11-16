@@ -1,0 +1,124 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-pre-edit-scope.v1",
+  "findingId": "VRM-356",
+  "iteration": "I3",
+  "observedAt": "2026-11-16T09:11:30Z",
+  "decision": "P0_PROVEN_EXACT_TWO_READERS_GRID_BOUND_CORRECTION",
+  "classification": "FUNCTIONAL_DEFECT",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadBeforeEdit": "b811e8085bb9842f298269c8643a8b8c117397b0",
+  "productSource": "da403803fffdf3472079b0939f3914cc0cceafff",
+  "productTree": "dfc56eb3909fa6f7c8cc3bb57b610c46cc838512",
+  "parentScope": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM356_RAW_RANGE_PREFLIGHT_SCOPE_20261116.json",
+    "gitBlob": "c7c72cde604bb0aa83f691ee103ded4a2fa83c66",
+    "sha256": "188f6ead740ce942421686ed9ab12eb4560bfaa3b1b5d5886f6c8f1a6b7b7539"
+  },
+  "evidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2571_RAW_RANGE_GRID_CAUSE_READBACK_20261116.json",
+    "gitBlob": "cd011829654efb7513911e3cf150ea8d2ea116f7",
+    "sha256": "a97ed41a62b62e6571b88b64a0f909145ba2bc3a3337346e0a07437c77ed1fbb"
+  },
+  "moduleTruthMatrix": [
+    {
+      "path": "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+      "domain": "canonical-hr-state-adapters",
+      "latestApprovedSource": "e36a456e07a3b107cb7f75a0c53ffae029eb6de4",
+      "latestApprovedBlob": "bc60ad69d611f96b614a968fc4a9b4a5b9abd63a",
+      "F9": {
+        "source": null,
+        "blob": null
+      },
+      "sourceSuccessor": {
+        "source": "da403803fffdf3472079b0939f3914cc0cceafff",
+        "blob": "d91149765c417af3b406ac3a320622ddc22e0296"
+      },
+      "HEAD": {
+        "sha": "b811e8085bb9842f298269c8643a8b8c117397b0",
+        "blob": "d91149765c417af3b406ac3a320622ddc22e0296"
+      },
+      "live": {
+        "source": "607ef20a5305209a46b8f61424f03475806f402d",
+        "blob": "e5ca376e039fc28501b6e849ff782ef2b0949490",
+        "runtimeRevision": "cxorbia-live-hr-dev-00377-rtx",
+        "runtimeDigest": "sha256:5ae68b172443115ba668fed64acef6fe0ae5625a36bfaae07e79dac69e4cadff",
+        "hrLiveVerified": false
+      },
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "classificationScope": "REQUEST_BOUND_EXCEEDS_EXACT_LIVE_GRID_WITH_STRICT_RESPONSE_VALIDATION",
+      "preservedPriorAcceptance": true
+    },
+    {
+      "path": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+      "domain": "canonical-hr-state-adapters",
+      "latestApprovedSource": "06ab83008d1517f05c5fb51526570775c41b66bd",
+      "latestApprovedBlob": "a3874143a481c159a9d2a11984966bfe813f5248",
+      "F9": {
+        "source": null,
+        "blob": null
+      },
+      "sourceSuccessor": {
+        "source": "da403803fffdf3472079b0939f3914cc0cceafff",
+        "blob": "92d899625e8a887ef3789e29fe388600c12f9c4c"
+      },
+      "HEAD": {
+        "sha": "b811e8085bb9842f298269c8643a8b8c117397b0",
+        "blob": "92d899625e8a887ef3789e29fe388600c12f9c4c"
+      },
+      "live": {
+        "source": "607ef20a5305209a46b8f61424f03475806f402d",
+        "blob": "84cfc0ddf844865f53297737e37ed1be043d1793",
+        "runtimeRevision": "cxorbia-live-hr-dev-00377-rtx",
+        "runtimeDigest": "sha256:5ae68b172443115ba668fed64acef6fe0ae5625a36bfaae07e79dac69e4cadff",
+        "hrLiveVerified": false
+      },
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "classificationScope": "REQUEST_BOUND_EXCEEDS_EXACT_LIVE_GRID_WITH_STRICT_RESPONSE_VALIDATION",
+      "preservedPriorAcceptance": true
+    }
+  ],
+  "allowedProductFiles": [
+    "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs"
+  ],
+  "allowedQaFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+    "tools/qa/cxorbia-i3-vrm356-live-range-preflight.mjs"
+  ],
+  "correctionContract": [
+    "Read gridProperties(rowCount,columnCount) within the existing metadata GET; no extra provider request.",
+    "Construct each exact RAW-title A1 range as intersection of configured MAX_ROW/MAX_COL and the same metadata sheet physical grid.",
+    "Require one exact title match and positive integer geometry; invalid/missing/duplicate geometry fails closed before values read, without GViz or stored snapshot fallback.",
+    "Preserve strict exact range count/order/title/bounds validation. Later geometry drift fails closed; never accept arbitrary shorter response.",
+    "Reuse the exact product range constructor in the existing raw preflight, preventing independent QA request semantics.",
+    "Retain all published deadline/quota retry/cumulative journal fixes; same one package and paired deployment lane."
+  ],
+  "validationRequired": [
+    "Before/after causal fixture with heterogeneous physical column counts and actual provider clipping.",
+    "Exact row cap, shorter grid rows, quoted/untrimmed titles, duplicate/missing/invalid geometry, reordered or clipped-after-metadata response negatives.",
+    "Existing latency/quotas/body deadlines and identity chronology suites remain passing.",
+    "Canonical Node CI; raw headers PASS; same existing paired build/runtime/Hosting; complete successor HR read, same revision/identity, notification cleanup and production bytes unchanged."
+  ],
+  "invariants": {
+    "production": false,
+    "productionAuthorization": false,
+    "newWorkflow": false,
+    "newCandidate": false,
+    "dataReimport": false,
+    "remoteHrWrites": false,
+    "credentialReset": false,
+    "uidOverwrite": false,
+    "fullDomainPromotion": false,
+    "humanAcceptancesPreserved": [
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ],
+    "fullDomains": 5,
+    "totalDomains": 21,
+    "methodology": "I3_P0_PROVEN_EXACT_OWNER_SINGLE_PACKAGE",
+    "newJob": false
+  }
+}

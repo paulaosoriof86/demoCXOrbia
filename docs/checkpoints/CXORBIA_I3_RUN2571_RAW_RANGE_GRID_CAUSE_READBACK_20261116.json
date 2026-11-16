@@ -1,0 +1,824 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm356.raw-range-causal-readback.v1",
+  "findingId": "VRM-356",
+  "iteration": "I3",
+  "state": "P0_PROVEN_RANGE_REQUEST_EXCEEDS_PHYSICAL_GRID",
+  "classification": "FUNCTIONAL_DEFECT",
+  "observedAt": "2026-11-16T09:05:30.662Z",
+  "controlHead": "b811e8085bb9842f298269c8643a8b8c117397b0",
+  "productSource": "da403803fffdf3472079b0939f3914cc0cceafff",
+  "productTree": "dfc56eb3909fa6f7c8cc3bb57b610c46cc838512",
+  "runId": 43836329643,
+  "canonicalJob": {
+    "id": 133193755405,
+    "conclusion": "success",
+    "tests": 1647,
+    "pass": 1647,
+    "fail": 0
+  },
+  "preflightJob": {
+    "id": 133194170414,
+    "conclusion": "failure",
+    "failedStep": 9,
+    "decision": "HOLD_RAW_RANGE_MISMATCH_NO_BUILD_OR_DEPLOY"
+  },
+  "sourceOfObservations": "SCALARS_EXTRACTED_FROM_COMPLETE_GITHUB_JOB_LOG_WITH_MASKED_JSON_BRACES_NOT_RECONSTRUCTED_ARTIFACT_JSON",
+  "logSha256": "d8175b164b1b4c80119c3c2079dfef57778a5ee1a3d4a2d2f86807d8a4dab25a",
+  "rawPreflightLineSha256": "1d181eb6a7dc5fb4d17b34fa926604fcdd2257d9bf4f3aea00402dc2059162e9",
+  "readers": [
+    {
+      "owner": "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+      "ownerBlob": "d91149765c417af3b406ac3a320622ddc22e0296",
+      "requestedRanges": 36,
+      "receivedRanges": 36,
+      "sameTitleAndOrder": true,
+      "majorDimension": "ROWS",
+      "mismatchingBounds": 27,
+      "physicalColumnCounts": {
+        "30": 3,
+        "31": 3,
+        "33": 4,
+        "34": 17,
+        "35": 9
+      },
+      "requests": 2,
+      "quotaRetries": 0,
+      "headers": [
+        {
+          "index": 0,
+          "expectedTitleSha256": "1673a12e5dba786e87fc35b97c5b7e362aa9ccdbe8a83b776bdf9656969ac653",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "1673a12e5dba786e87fc35b97c5b7e362aa9ccdbe8a83b776bdf9656969ac653",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 1,
+          "expectedTitleSha256": "173321995ccf6c45bdcddded04644c45904846c08ac84a84f952e97463d2b55a",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "173321995ccf6c45bdcddded04644c45904846c08ac84a84f952e97463d2b55a",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 2,
+          "expectedTitleSha256": "92c6887d995eeb1b4bf66ad8e4d0867a158029f18432dfb0a8b11cb06b791f84",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "92c6887d995eeb1b4bf66ad8e4d0867a158029f18432dfb0a8b11cb06b791f84",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 3,
+          "expectedTitleSha256": "039a87f1278001c4ece82c73ae822351f54b1f6843d8b0cd21f30e998ed4e652",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "039a87f1278001c4ece82c73ae822351f54b1f6843d8b0cd21f30e998ed4e652",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 4,
+          "expectedTitleSha256": "54549be3c884031d6706d952ba4da126e30aab5b11908ce8249407cdcf7de7dc",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "54549be3c884031d6706d952ba4da126e30aab5b11908ce8249407cdcf7de7dc",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 5,
+          "expectedTitleSha256": "33affeba08767eacef9a498e2b90e3f8eb15d12f22596cc1cba1a081b821f21b",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "33affeba08767eacef9a498e2b90e3f8eb15d12f22596cc1cba1a081b821f21b",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 6,
+          "expectedTitleSha256": "d3cb7fd8187f1e4d4893adfc9a0848f76256308dc20f9bd3c19c82bd21d14a96",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "d3cb7fd8187f1e4d4893adfc9a0848f76256308dc20f9bd3c19c82bd21d14a96",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 7,
+          "expectedTitleSha256": "086bd1969d2c0e8a592528c2722a856009621c86ac62c385cb8f14b723186f97",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "086bd1969d2c0e8a592528c2722a856009621c86ac62c385cb8f14b723186f97",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 8,
+          "expectedTitleSha256": "ca0d670adfdcc4146613ba1f2a2a4876ae2a75bf2aba078bee226cfb7c16c052",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "ca0d670adfdcc4146613ba1f2a2a4876ae2a75bf2aba078bee226cfb7c16c052",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 9,
+          "expectedTitleSha256": "cc4eb8b76bc4eb162de434dced2e9a7a9edc1d63b9dbeece261b13eac632d07a",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "cc4eb8b76bc4eb162de434dced2e9a7a9edc1d63b9dbeece261b13eac632d07a",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 10,
+          "expectedTitleSha256": "38aabb9af64f08130dace315e2dbb5288ad84e3a19f7ac2156d40439ee61f977",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "38aabb9af64f08130dace315e2dbb5288ad84e3a19f7ac2156d40439ee61f977",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 11,
+          "expectedTitleSha256": "fdb867ff726371a7d6ab91d559c31cbc09d0e5b1e46e358d6cde41f343baaf4f",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "fdb867ff726371a7d6ab91d559c31cbc09d0e5b1e46e358d6cde41f343baaf4f",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 12,
+          "expectedTitleSha256": "74f39916cbff86a47c5b632f95f22b701b948f4603ec960693c12ca1fcd21361",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "74f39916cbff86a47c5b632f95f22b701b948f4603ec960693c12ca1fcd21361",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 13,
+          "expectedTitleSha256": "e04fc66fa596f9ffbd76f243ad2baef4b03493e084321c1b089619b693a32ea2",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "e04fc66fa596f9ffbd76f243ad2baef4b03493e084321c1b089619b693a32ea2",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 959,
+          "columnCount": 34
+        },
+        {
+          "index": 14,
+          "expectedTitleSha256": "94d5d45992567f9c6b22ae93dc5913c888ad45b250d30299433afaf5d6ea6a2f",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "94d5d45992567f9c6b22ae93dc5913c888ad45b250d30299433afaf5d6ea6a2f",
+          "actualBounds": "A1:AI140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 35
+        },
+        {
+          "index": 15,
+          "expectedTitleSha256": "541787fae6d758c0db7a8b7f2cb5c50d64f8178d532feedee7324f4e5e3a4ba4",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "541787fae6d758c0db7a8b7f2cb5c50d64f8178d532feedee7324f4e5e3a4ba4",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 959,
+          "columnCount": 34
+        },
+        {
+          "index": 16,
+          "expectedTitleSha256": "15882590f34d42806d6c15a562ca37a20a6698e6922919fda97611013f4812a7",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "15882590f34d42806d6c15a562ca37a20a6698e6922919fda97611013f4812a7",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 17,
+          "expectedTitleSha256": "eb05f74ab0c3fc1f20eb532de0baf0d250070243945b1884815630ac34c5d80f",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "eb05f74ab0c3fc1f20eb532de0baf0d250070243945b1884815630ac34c5d80f",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 959,
+          "columnCount": 34
+        },
+        {
+          "index": 18,
+          "expectedTitleSha256": "4c91ea9dfb1fb036b23cba27c9fc862f2983c2a160571982513546b99b4dfea7",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "4c91ea9dfb1fb036b23cba27c9fc862f2983c2a160571982513546b99b4dfea7",
+          "actualBounds": "A1:AI140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 35
+        },
+        {
+          "index": 19,
+          "expectedTitleSha256": "1bee659b0ad379ce0784c7e777e0446124a9bb2be3d53f67fba3e05354bc2489",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "1bee659b0ad379ce0784c7e777e0446124a9bb2be3d53f67fba3e05354bc2489",
+          "actualBounds": "A1:AI140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 35
+        },
+        {
+          "index": 20,
+          "expectedTitleSha256": "034554509016c2566cf219604b78f26adf5af5003fc8c808aec4e72c4c0f66ea",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "034554509016c2566cf219604b78f26adf5af5003fc8c808aec4e72c4c0f66ea",
+          "actualBounds": "A1:AI140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 35
+        },
+        {
+          "index": 21,
+          "expectedTitleSha256": "77c96af9a47595c0608aa6b1826ec5053a1946625870e45086703d65d8df81b2",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "77c96af9a47595c0608aa6b1826ec5053a1946625870e45086703d65d8df81b2",
+          "actualBounds": "A1:AI140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 35
+        },
+        {
+          "index": 22,
+          "expectedTitleSha256": "deb84fe50e76c19fddafe534e6ef21a3abec0cd9ace2805ae6522b126343b3a0",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "deb84fe50e76c19fddafe534e6ef21a3abec0cd9ace2805ae6522b126343b3a0",
+          "actualBounds": "A1:AI140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 35
+        },
+        {
+          "index": 23,
+          "expectedTitleSha256": "dd7321d995862c304b67559dd855886e575d47565fa57a8de9c5e9f8aa4a3ffb",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "dd7321d995862c304b67559dd855886e575d47565fa57a8de9c5e9f8aa4a3ffb",
+          "actualBounds": "A1:AI140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 35
+        },
+        {
+          "index": 24,
+          "expectedTitleSha256": "07a02b0c831cf5391df3db891c57393b101fa650065bb85d986a6dc8fff03f8c",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "07a02b0c831cf5391df3db891c57393b101fa650065bb85d986a6dc8fff03f8c",
+          "actualBounds": "A1:AI140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 35
+        },
+        {
+          "index": 25,
+          "expectedTitleSha256": "8e1b3b941ea8f34d701350ea67385d8b6aea030070e2e42ec56647a4d9bc45fc",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "8e1b3b941ea8f34d701350ea67385d8b6aea030070e2e42ec56647a4d9bc45fc",
+          "actualBounds": "A1:AI140",
+          "majorDimension": "ROWS",
+          "rowCount": 964,
+          "columnCount": 35
+        },
+        {
+          "index": 26,
+          "expectedTitleSha256": "b0cf27ba4d2acf6ed8e4b132b16420f5b5f989989215f115cd227d3cb6b7fb69",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "b0cf27ba4d2acf6ed8e4b132b16420f5b5f989989215f115cd227d3cb6b7fb69",
+          "actualBounds": "A1:AD140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 30
+        },
+        {
+          "index": 27,
+          "expectedTitleSha256": "d3af9e1179c47721bd3ffc71c69f73eea4f4397eb07cce8dbdc0b4ff4123002b",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "d3af9e1179c47721bd3ffc71c69f73eea4f4397eb07cce8dbdc0b4ff4123002b",
+          "actualBounds": "A1:AD140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 30
+        },
+        {
+          "index": 28,
+          "expectedTitleSha256": "9307c88fcc5ca72c7d390f72e11292dee7b2031964ba07bbe9eefccf8931bbe1",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "9307c88fcc5ca72c7d390f72e11292dee7b2031964ba07bbe9eefccf8931bbe1",
+          "actualBounds": "A1:AG140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 33
+        },
+        {
+          "index": 29,
+          "expectedTitleSha256": "4d66a2d09e8f25c971cfbc1844232a4deb91c01e632df989f8c7a34431e07897",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "4d66a2d09e8f25c971cfbc1844232a4deb91c01e632df989f8c7a34431e07897",
+          "actualBounds": "A1:AD140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 30
+        },
+        {
+          "index": 30,
+          "expectedTitleSha256": "149c29c69115a9bf8fadabf8999ff3ec5902229cc5d356573591610ab21db5e9",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "149c29c69115a9bf8fadabf8999ff3ec5902229cc5d356573591610ab21db5e9",
+          "actualBounds": "A1:AG140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 33
+        },
+        {
+          "index": 31,
+          "expectedTitleSha256": "06fdb5be04910b64e5d28b30c72df38b26bdc7c12bf5c05c03639b9405bf0fb0",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "06fdb5be04910b64e5d28b30c72df38b26bdc7c12bf5c05c03639b9405bf0fb0",
+          "actualBounds": "A1:AE140",
+          "majorDimension": "ROWS",
+          "rowCount": 963,
+          "columnCount": 31
+        },
+        {
+          "index": 32,
+          "expectedTitleSha256": "e6792d61233cd7d73372f77b3d205558f3d6606885edc6a08feffbbdc9a326d1",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "e6792d61233cd7d73372f77b3d205558f3d6606885edc6a08feffbbdc9a326d1",
+          "actualBounds": "A1:AG140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 33
+        },
+        {
+          "index": 33,
+          "expectedTitleSha256": "f931f27efb4c01687d10658b6039029c995fad73debe0e12cd77763efd0a63fa",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "f931f27efb4c01687d10658b6039029c995fad73debe0e12cd77763efd0a63fa",
+          "actualBounds": "A1:AE140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 31
+        },
+        {
+          "index": 34,
+          "expectedTitleSha256": "7c5b4aa0d9256170a2c255789c45b35c6d5a4206453407d67fc52a71e573fa55",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "7c5b4aa0d9256170a2c255789c45b35c6d5a4206453407d67fc52a71e573fa55",
+          "actualBounds": "A1:AG140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 33
+        },
+        {
+          "index": 35,
+          "expectedTitleSha256": "38d6701e5f2d5c9c7fd3f6fe1bd1cc5910bb7e719f2473e84709b86532fd194a",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "38d6701e5f2d5c9c7fd3f6fe1bd1cc5910bb7e719f2473e84709b86532fd194a",
+          "actualBounds": "A1:AE140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 31
+        }
+      ]
+    },
+    {
+      "owner": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+      "ownerBlob": "92d899625e8a887ef3789e29fe388600c12f9c4c",
+      "requestedRanges": 36,
+      "receivedRanges": 36,
+      "sameTitleAndOrder": true,
+      "majorDimension": "ROWS",
+      "mismatchingBounds": 27,
+      "physicalColumnCounts": {
+        "30": 3,
+        "31": 3,
+        "33": 4,
+        "34": 17,
+        "35": 9
+      },
+      "requests": 2,
+      "quotaRetries": 0,
+      "headers": [
+        {
+          "index": 0,
+          "expectedTitleSha256": "1673a12e5dba786e87fc35b97c5b7e362aa9ccdbe8a83b776bdf9656969ac653",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "1673a12e5dba786e87fc35b97c5b7e362aa9ccdbe8a83b776bdf9656969ac653",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 1,
+          "expectedTitleSha256": "173321995ccf6c45bdcddded04644c45904846c08ac84a84f952e97463d2b55a",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "173321995ccf6c45bdcddded04644c45904846c08ac84a84f952e97463d2b55a",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 2,
+          "expectedTitleSha256": "92c6887d995eeb1b4bf66ad8e4d0867a158029f18432dfb0a8b11cb06b791f84",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "92c6887d995eeb1b4bf66ad8e4d0867a158029f18432dfb0a8b11cb06b791f84",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 3,
+          "expectedTitleSha256": "039a87f1278001c4ece82c73ae822351f54b1f6843d8b0cd21f30e998ed4e652",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "039a87f1278001c4ece82c73ae822351f54b1f6843d8b0cd21f30e998ed4e652",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 4,
+          "expectedTitleSha256": "54549be3c884031d6706d952ba4da126e30aab5b11908ce8249407cdcf7de7dc",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "54549be3c884031d6706d952ba4da126e30aab5b11908ce8249407cdcf7de7dc",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 5,
+          "expectedTitleSha256": "33affeba08767eacef9a498e2b90e3f8eb15d12f22596cc1cba1a081b821f21b",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "33affeba08767eacef9a498e2b90e3f8eb15d12f22596cc1cba1a081b821f21b",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 6,
+          "expectedTitleSha256": "d3cb7fd8187f1e4d4893adfc9a0848f76256308dc20f9bd3c19c82bd21d14a96",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "d3cb7fd8187f1e4d4893adfc9a0848f76256308dc20f9bd3c19c82bd21d14a96",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 7,
+          "expectedTitleSha256": "086bd1969d2c0e8a592528c2722a856009621c86ac62c385cb8f14b723186f97",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "086bd1969d2c0e8a592528c2722a856009621c86ac62c385cb8f14b723186f97",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 8,
+          "expectedTitleSha256": "ca0d670adfdcc4146613ba1f2a2a4876ae2a75bf2aba078bee226cfb7c16c052",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "ca0d670adfdcc4146613ba1f2a2a4876ae2a75bf2aba078bee226cfb7c16c052",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 9,
+          "expectedTitleSha256": "cc4eb8b76bc4eb162de434dced2e9a7a9edc1d63b9dbeece261b13eac632d07a",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "cc4eb8b76bc4eb162de434dced2e9a7a9edc1d63b9dbeece261b13eac632d07a",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 10,
+          "expectedTitleSha256": "38aabb9af64f08130dace315e2dbb5288ad84e3a19f7ac2156d40439ee61f977",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "38aabb9af64f08130dace315e2dbb5288ad84e3a19f7ac2156d40439ee61f977",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 11,
+          "expectedTitleSha256": "fdb867ff726371a7d6ab91d559c31cbc09d0e5b1e46e358d6cde41f343baaf4f",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "fdb867ff726371a7d6ab91d559c31cbc09d0e5b1e46e358d6cde41f343baaf4f",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 12,
+          "expectedTitleSha256": "74f39916cbff86a47c5b632f95f22b701b948f4603ec960693c12ca1fcd21361",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "74f39916cbff86a47c5b632f95f22b701b948f4603ec960693c12ca1fcd21361",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 13,
+          "expectedTitleSha256": "e04fc66fa596f9ffbd76f243ad2baef4b03493e084321c1b089619b693a32ea2",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "e04fc66fa596f9ffbd76f243ad2baef4b03493e084321c1b089619b693a32ea2",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 959,
+          "columnCount": 34
+        },
+        {
+          "index": 14,
+          "expectedTitleSha256": "94d5d45992567f9c6b22ae93dc5913c888ad45b250d30299433afaf5d6ea6a2f",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "94d5d45992567f9c6b22ae93dc5913c888ad45b250d30299433afaf5d6ea6a2f",
+          "actualBounds": "A1:AI140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 35
+        },
+        {
+          "index": 15,
+          "expectedTitleSha256": "541787fae6d758c0db7a8b7f2cb5c50d64f8178d532feedee7324f4e5e3a4ba4",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "541787fae6d758c0db7a8b7f2cb5c50d64f8178d532feedee7324f4e5e3a4ba4",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 959,
+          "columnCount": 34
+        },
+        {
+          "index": 16,
+          "expectedTitleSha256": "15882590f34d42806d6c15a562ca37a20a6698e6922919fda97611013f4812a7",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "15882590f34d42806d6c15a562ca37a20a6698e6922919fda97611013f4812a7",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 34
+        },
+        {
+          "index": 17,
+          "expectedTitleSha256": "eb05f74ab0c3fc1f20eb532de0baf0d250070243945b1884815630ac34c5d80f",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "eb05f74ab0c3fc1f20eb532de0baf0d250070243945b1884815630ac34c5d80f",
+          "actualBounds": "A1:AH140",
+          "majorDimension": "ROWS",
+          "rowCount": 959,
+          "columnCount": 34
+        },
+        {
+          "index": 18,
+          "expectedTitleSha256": "4c91ea9dfb1fb036b23cba27c9fc862f2983c2a160571982513546b99b4dfea7",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "4c91ea9dfb1fb036b23cba27c9fc862f2983c2a160571982513546b99b4dfea7",
+          "actualBounds": "A1:AI140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 35
+        },
+        {
+          "index": 19,
+          "expectedTitleSha256": "1bee659b0ad379ce0784c7e777e0446124a9bb2be3d53f67fba3e05354bc2489",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "1bee659b0ad379ce0784c7e777e0446124a9bb2be3d53f67fba3e05354bc2489",
+          "actualBounds": "A1:AI140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 35
+        },
+        {
+          "index": 20,
+          "expectedTitleSha256": "034554509016c2566cf219604b78f26adf5af5003fc8c808aec4e72c4c0f66ea",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "034554509016c2566cf219604b78f26adf5af5003fc8c808aec4e72c4c0f66ea",
+          "actualBounds": "A1:AI140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 35
+        },
+        {
+          "index": 21,
+          "expectedTitleSha256": "77c96af9a47595c0608aa6b1826ec5053a1946625870e45086703d65d8df81b2",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "77c96af9a47595c0608aa6b1826ec5053a1946625870e45086703d65d8df81b2",
+          "actualBounds": "A1:AI140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 35
+        },
+        {
+          "index": 22,
+          "expectedTitleSha256": "deb84fe50e76c19fddafe534e6ef21a3abec0cd9ace2805ae6522b126343b3a0",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "deb84fe50e76c19fddafe534e6ef21a3abec0cd9ace2805ae6522b126343b3a0",
+          "actualBounds": "A1:AI140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 35
+        },
+        {
+          "index": 23,
+          "expectedTitleSha256": "dd7321d995862c304b67559dd855886e575d47565fa57a8de9c5e9f8aa4a3ffb",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "dd7321d995862c304b67559dd855886e575d47565fa57a8de9c5e9f8aa4a3ffb",
+          "actualBounds": "A1:AI140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 35
+        },
+        {
+          "index": 24,
+          "expectedTitleSha256": "07a02b0c831cf5391df3db891c57393b101fa650065bb85d986a6dc8fff03f8c",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "07a02b0c831cf5391df3db891c57393b101fa650065bb85d986a6dc8fff03f8c",
+          "actualBounds": "A1:AI140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 35
+        },
+        {
+          "index": 25,
+          "expectedTitleSha256": "8e1b3b941ea8f34d701350ea67385d8b6aea030070e2e42ec56647a4d9bc45fc",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "8e1b3b941ea8f34d701350ea67385d8b6aea030070e2e42ec56647a4d9bc45fc",
+          "actualBounds": "A1:AI140",
+          "majorDimension": "ROWS",
+          "rowCount": 964,
+          "columnCount": 35
+        },
+        {
+          "index": 26,
+          "expectedTitleSha256": "b0cf27ba4d2acf6ed8e4b132b16420f5b5f989989215f115cd227d3cb6b7fb69",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "b0cf27ba4d2acf6ed8e4b132b16420f5b5f989989215f115cd227d3cb6b7fb69",
+          "actualBounds": "A1:AD140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 30
+        },
+        {
+          "index": 27,
+          "expectedTitleSha256": "d3af9e1179c47721bd3ffc71c69f73eea4f4397eb07cce8dbdc0b4ff4123002b",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "d3af9e1179c47721bd3ffc71c69f73eea4f4397eb07cce8dbdc0b4ff4123002b",
+          "actualBounds": "A1:AD140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 30
+        },
+        {
+          "index": 28,
+          "expectedTitleSha256": "9307c88fcc5ca72c7d390f72e11292dee7b2031964ba07bbe9eefccf8931bbe1",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "9307c88fcc5ca72c7d390f72e11292dee7b2031964ba07bbe9eefccf8931bbe1",
+          "actualBounds": "A1:AG140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 33
+        },
+        {
+          "index": 29,
+          "expectedTitleSha256": "4d66a2d09e8f25c971cfbc1844232a4deb91c01e632df989f8c7a34431e07897",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "4d66a2d09e8f25c971cfbc1844232a4deb91c01e632df989f8c7a34431e07897",
+          "actualBounds": "A1:AD140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 30
+        },
+        {
+          "index": 30,
+          "expectedTitleSha256": "149c29c69115a9bf8fadabf8999ff3ec5902229cc5d356573591610ab21db5e9",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "149c29c69115a9bf8fadabf8999ff3ec5902229cc5d356573591610ab21db5e9",
+          "actualBounds": "A1:AG140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 33
+        },
+        {
+          "index": 31,
+          "expectedTitleSha256": "06fdb5be04910b64e5d28b30c72df38b26bdc7c12bf5c05c03639b9405bf0fb0",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "06fdb5be04910b64e5d28b30c72df38b26bdc7c12bf5c05c03639b9405bf0fb0",
+          "actualBounds": "A1:AE140",
+          "majorDimension": "ROWS",
+          "rowCount": 963,
+          "columnCount": 31
+        },
+        {
+          "index": 32,
+          "expectedTitleSha256": "e6792d61233cd7d73372f77b3d205558f3d6606885edc6a08feffbbdc9a326d1",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "e6792d61233cd7d73372f77b3d205558f3d6606885edc6a08feffbbdc9a326d1",
+          "actualBounds": "A1:AG140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 33
+        },
+        {
+          "index": 33,
+          "expectedTitleSha256": "f931f27efb4c01687d10658b6039029c995fad73debe0e12cd77763efd0a63fa",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "f931f27efb4c01687d10658b6039029c995fad73debe0e12cd77763efd0a63fa",
+          "actualBounds": "A1:AE140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 31
+        },
+        {
+          "index": 34,
+          "expectedTitleSha256": "7c5b4aa0d9256170a2c255789c45b35c6d5a4206453407d67fc52a71e573fa55",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "7c5b4aa0d9256170a2c255789c45b35c6d5a4206453407d67fc52a71e573fa55",
+          "actualBounds": "A1:AG140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 33
+        },
+        {
+          "index": 35,
+          "expectedTitleSha256": "38d6701e5f2d5c9c7fd3f6fe1bd1cc5910bb7e719f2473e84709b86532fd194a",
+          "expectedBounds": "A1:AI140",
+          "actualTitleSha256": "38d6701e5f2d5c9c7fd3f6fe1bd1cc5910bb7e719f2473e84709b86532fd194a",
+          "actualBounds": "A1:AE140",
+          "majorDimension": "ROWS",
+          "rowCount": 1000,
+          "columnCount": 31
+        }
+      ]
+    }
+  ],
+  "readerAuth": {
+    "scope": "https://www.googleapis.com/auth/spreadsheets.readonly",
+    "runtimePrincipalSha256": "ab70b5da53a2d545a74c8b39123df8e2a52f70128d1660360d87b2fed6d573fa",
+    "adcPrincipalSha256": "ab70b5da53a2d545a74c8b39123df8e2a52f70128d1660360d87b2fed6d573fa",
+    "sameRuntimePrincipal": true,
+    "usesImpersonation": false,
+    "tokenIssued": true
+  },
+  "causalConclusion": "Both readers request A1:AI140 for every monthly tab. Exact provider responses retain requested title/order/rows but clip the endpoint to each sheet physical grid. Requests must be constructed from the same metadata response gridProperties before calling batchGet; response equality stays strict.",
+  "productionObservation": {
+    "sha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+    "byteLength": 1659636,
+    "kind": "EXACT_EXISTING_PAIRED_STEP_HTTP_RESPONSE_BYTES_READ_ONLY",
+    "equalToLastVerifiedProductionIndex": true,
+    "doesNotRetroactivelySupplyRun2567AfterObservation": true
+  },
+  "artifact": {
+    "id": 14210539502,
+    "sha256": "2e553aee1201a665cf21b0627468669f22f46a756eb594805cfa68941e968369",
+    "bytes": 446664,
+    "artifactBytesInspected": false
+  },
+  "effects": {
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "builds": 0,
+    "deploys": 0,
+    "productionWrites": 0
+  },
+  "hrLiveVerified": false,
+  "phaseAComplete": false,
+  "fullDomains": 5,
+  "totalDomains": 21
+}
