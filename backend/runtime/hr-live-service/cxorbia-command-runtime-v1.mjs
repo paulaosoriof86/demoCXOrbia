@@ -193,9 +193,10 @@ export function createHrSnapshotReconciler({
       if(priorLock?.status==='running'&&priorLock.expiresAt>now()){
         return stop('HR_RECONCILIATION_IN_PROGRESS',{providerWrites:null,existingReceiptPath:priorLock.receiptPath});
       }
+      let priorEffects=null;
       if(previous){
-        const effects=await summary();
-        if(effects.unresolvedEffects||effects.unverifiedEffects)return stop('HR_RECONCILIATION_UNCERTAIN_EFFECTS_REQUIRE_READBACK',{...effects,status:'partial',committed:false});
+        priorEffects=await summary();
+        if(priorEffects.unresolvedEffects||priorEffects.unverifiedEffects)return stop('HR_RECONCILIATION_UNCERTAIN_EFFECTS_REQUIRE_READBACK',{...priorEffects,status:'partial',committed:false});
       }
       let current;
       try{current=await readSnapshot();}
@@ -205,7 +206,7 @@ export function createHrSnapshotReconciler({
           Number.isInteger(failure.attempts)&&failure.attempts>=0&&failure.attempts<=7&&
           ((failure.code==='HR_SOURCE_READ_QUOTA_EXHAUSTED'&&failure.upstreamStatus===429&&failure.attempts>=1)||
            (failure.code==='HR_SOURCE_READ_DEADLINE_EXCEEDED'&&failure.upstreamStatus===null));
-        if(sourceReadFailure)return stop(failure.code,{httpStatus:503,failureClassification:'PROVIDER_FAILURE',providerWrites:0,authWrites:0,firestoreWrites:0,
+        if(sourceReadFailure)return stop(failure.code,{httpStatus:503,failureClassification:'PROVIDER_FAILURE',...(priorEffects||{providerWrites:0,authWrites:0,firestoreWrites:0}),
           applicationWritesThisAttempt:{auth:0,firestore:0},sourceReadFailure:{code:failure.code,upstreamStatus:failure.upstreamStatus,attempts:failure.attempts,stage:['registryIdentity','liveProviderRead'].includes(failure.stage)?failure.stage:null,readOnly:true}});
         throw error;
       }

@@ -94,20 +94,27 @@ async function readSheetsJson(url,options={},io={}){
     const remaining=deadlineAt-now();
     if(remaining<=0)throw failure();
     attempts++;stats.attempts++;
+    const signal=AbortSignal.timeout(Math.max(1,Math.min(15000,Math.floor(remaining))));
     let response;
     try{
-      response=await fetchImpl(url,{...options,method:'GET',signal:AbortSignal.timeout(Math.max(1,Math.min(15000,Math.floor(remaining))))});
+      response=await fetchImpl(url,{...options,method:'GET',signal});
     }catch(error){
-      if(error?.name==='TimeoutError'||now()>=deadlineAt)throw failure();
+      if(signal.aborted||error?.name==='TimeoutError'||now()>=deadlineAt)throw failure();
       throw error;
     }
-    let body=null;try{body=await response.json();}catch(error){if(response.ok)throw new Error('HR_SOURCE_READ_JSON_INVALID');}
+    if(response.status===429)quotaSeen=true;
+    let body=null;
+    try{body=await response.json();}
+    catch(error){
+      if(signal.aborted||error?.name==='TimeoutError'||now()>=deadlineAt)throw failure();
+      if(response.ok)throw new Error('HR_SOURCE_READ_JSON_INVALID');
+    }
+    if(signal.aborted||now()>=deadlineAt)throw failure();
     if(response.ok){
       stats.successfulRequests++;stats.responseBytes+=Buffer.byteLength(JSON.stringify(body),'utf8');
       return body;
     }
     if(response.status!==429)throw new Error('HTTP_'+response.status+':'+JSON.stringify(body||{}).slice(0,300));
-    quotaSeen=true;
     if(attempts>=7)throw failure();
     const retryHeader=String(response.headers?.get?.('retry-after')||'').trim();
     let retryAfter=0;

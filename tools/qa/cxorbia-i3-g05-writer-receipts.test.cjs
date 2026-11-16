@@ -531,3 +531,24 @@ test('VRM356 a committed receipt is replayed without another fresh source read o
   assert.equal(replay.idempotentReplay,true);assert.equal(f.readCalls(),before.reads);
   assert.equal(f.db.log.length,before.db);assert.equal(f.auth.log.length,before.auth);
 });
+
+test('VRM356 failed fresh read on a partial receipt preserves cumulative effects with zero writes this attempt',async()=>{
+  let blocked=false,f;
+  const failure={schemaVersion:'cxorbia.hr-source-read-failure.v1',code:'HR_SOURCE_READ_QUOTA_EXHAUSTED',upstreamStatus:429,attempts:7,readOnly:true,stage:'registryIdentity'};
+  f=await setup({readSnapshot:async()=>{if(blocked)throw Object.assign(new Error(failure.code),{code:failure.code,hrSourceFailure:failure});return f.current;},
+    shopperProviderFactory:()=>({reconcileSnapshot:async()=>{throw Error('VRM356_SHOPPER_UNFINISHED');}})});
+  f.current.snapshot.shoppers=[];
+  f.current.snapshot.visits=[{id:'vrm356-visit',visitId:'vrm356-visit',hrRowId:'HR!2',sourceTab:'HR',sourceRow:2,tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',estado:'disponible',status:'disponible',canonicalFacets:{available:true,assigned:false}}];
+  const key='vrm356-partial-fresh-read-0001',first=await f.run(key);
+  assert.equal(first.status,'partial');assert.equal(first.firestoreWrites,1);
+  assert.equal(first.unresolvedEffects,0);assert.equal(first.unverifiedEffects,0);
+  const before=copy([...f.db.store]),writes=f.db.log.length,authWrites=f.auth.log.length;
+  blocked=true;const result=await f.run(key);
+  assert.equal(result.httpStatus,503);assert.equal(result.failureClassification,'PROVIDER_FAILURE');
+  assert.equal(result.providerWritesScope,'cumulative_command_effects');
+  for(const field of ['providerWrites','confirmedProviderWrites','authWrites','firestoreWrites','unresolvedEffects','unverifiedEffects','reviewWrites','credentialAuthenticationPending','credentialReadback']){
+    assert.equal(result[field],first[field],field+' must retain verified history');
+  }
+  assert.deepEqual(result.systems,first.systems);assert.deepEqual(result.applicationWritesThisAttempt,{auth:0,firestore:0});
+  assert.deepEqual([...f.db.store],before);assert.equal(f.db.log.length,writes);assert.equal(f.auth.log.length,authWrites);
+});

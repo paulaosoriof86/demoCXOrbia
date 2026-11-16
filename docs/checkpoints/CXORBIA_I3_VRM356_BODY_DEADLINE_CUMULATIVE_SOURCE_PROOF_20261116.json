@@ -1,0 +1,1171 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm356.followup-source-proof.v1",
+  "findingId": "VRM-356",
+  "iteration": "I3",
+  "state": "HOLD",
+  "observedAt": "2026-11-16T08:46:10Z",
+  "predecessorSource": "607ef20a5305209a46b8f61424f03475806f402d",
+  "scope": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM356_RAW_RANGE_PREFLIGHT_SCOPE_20261116.json",
+    "gitBlob": "c7c72cde604bb0aa83f691ee103ded4a2fa83c66",
+    "sha256": "188f6ead740ce942421686ed9ab12eb4560bfaa3b1b5d5886f6c8f1a6b7b7539"
+  },
+  "scopeCommit": "690fe2993be6ee4909d772d089ada42f4acc898e",
+  "owners": [
+    {
+      "path": "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+      "gitBlob": "d91149765c417af3b406ac3a320622ddc22e0296",
+      "sha256": "9ab664931d569290c81f220d56e34422aae2aed274ae53830e16c37566036a43"
+    },
+    {
+      "path": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+      "gitBlob": "92d899625e8a887ef3789e29fe388600c12f9c4c",
+      "sha256": "ce1310823b9213ceaa8f7f9d9a8bcf08922e27644e12205b69034d937d9464db"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+      "gitBlob": "382789cdca22de0042ebbe8c3f0cd52a77f7ba0a",
+      "sha256": "d3076c99e624db1c13fd635fe4284b821a2d28d5baeec8c9e1f93b90a9825675"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+      "gitBlob": "88b1f0d24319c277fe625d0bd870ea372fe3043d",
+      "sha256": "54ed889ce373e178bb6f87b00dc370550a330f0f532952c545d6858027a3c596"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs",
+      "gitBlob": "a9f09117384a305895ffd36bab133076aeeff87d",
+      "sha256": "fe5651b8fd7f468f51fc7a61adb401c7186db01ecb3107a1cff2dfb4f6568473"
+    }
+  ],
+  "tests": {
+    "latencyBefore": {
+      "mode": "before",
+      "environment": "V8_EXECUTED_REAL_SOURCE_WITH_SYNTHETIC_NETWORK_CLOCK_NOT_NODE_CI",
+      "tests": 41,
+      "pass": 33,
+      "fail": 8,
+      "results": [
+        {
+          "name": "VRM-134 coalesces independent protected HR and principal reads without returning before both",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 rejects protected request if principal check fails",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 public HR read never calls protected identity and retains freshness route",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 exposes non-sensitive source refresh stages and protected timing only to verified path",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 protected metadata read verifies identity and HR without repeating protected Firestore overlay",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 registry identity and live HR read start concurrently, then both settle before validation",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 source read failure waits for the other process before cleanup",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 R20 reads36 tabs in one bounded batch and preserves response order",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 R20 covers small and partial waves without extra or missing tabs",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 R20 failed batch waits for its peer and starts no later wave",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 R20 authentication and missing metadata fail before batch reads",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 identity batching preserves chronological latest nonempty contacts",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 identity failure waits for its peer and never publishes a partial identity file",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 identity registry-only route performs no batch reads and retains auth boundary",
+          "pass": true
+        },
+        {
+          "name": "VRM356 identity retries only the identical rejected Sheets GET and preserves its result",
+          "pass": true
+        },
+        {
+          "name": "VRM356 identity exhausted quota terminates after seven attempts within the global deadline",
+          "pass": true
+        },
+        {
+          "name": "VRM356 identity honors Retry-After seconds and HTTP date without exceeding deadline",
+          "pass": true
+        },
+        {
+          "name": "VRM356 identity rejects writes and does not retry non429 errors",
+          "pass": true
+        },
+        {
+          "name": "VRM356 identity cannot restart an expired global read budget",
+          "pass": true
+        },
+        {
+          "name": "VRM356 identity range batches preserve129 rows and bounded URLs including long quoted titles",
+          "pass": true
+        },
+        {
+          "name": "VRM356 identity rejects incomplete or reordered batch results and accepts a truly empty range",
+          "pass": true
+        },
+        {
+          "name": "VRM356 R20 retries only the identical rejected Sheets GET and preserves its result",
+          "pass": true
+        },
+        {
+          "name": "VRM356 R20 exhausted quota terminates after seven attempts within the global deadline",
+          "pass": true
+        },
+        {
+          "name": "VRM356 R20 honors Retry-After seconds and HTTP date without exceeding deadline",
+          "pass": true
+        },
+        {
+          "name": "VRM356 R20 rejects writes and does not retry non429 errors",
+          "pass": true
+        },
+        {
+          "name": "VRM356 R20 cannot restart an expired global read budget",
+          "pass": true
+        },
+        {
+          "name": "VRM356 R20 range batches preserve129 rows and bounded URLs including long quoted titles",
+          "pass": true
+        },
+        {
+          "name": "VRM356 R20 rejects incomplete or reordered batch results and accepts a truly empty range",
+          "pass": true
+        },
+        {
+          "name": "VRM356 four fresh observations consume16 independent Sheets reads instead of48 and preserve every tab",
+          "pass": true
+        },
+        {
+          "name": "VRM356 R20 exhausted quota and incomplete batches never fall back to GViz",
+          "pass": true
+        },
+        {
+          "name": "VRM356 child error marker retains safe provider metadata and rejects forged or raw stderr",
+          "pass": true
+        },
+        {
+          "name": "VRM356 identity preserves provider classification for body-timeout",
+          "pass": false,
+          "error": "equal failed undefined !== \"HR_SOURCE_READ_DEADLINE_EXCEEDED\"",
+          "stack": "Error: equal failed undefined !== \"HR_SOURCE_READ_DEADLINE_EXCEEDED\"\n    at assert (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:7:34)\n    at assert.equal (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:7:108)\n    at eval (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:403:16)\n    at assert.rejects (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:8:314)\n    at async Object.eval [as fn] (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:402:7)\n    at async eval (eval at <anonymous> (exec_main.mjs:2:7), <anonymous>:21:27)\n    at async exec_main.mjs:2:1"
+        },
+        {
+          "name": "VRM356 identity preserves provider classification for body-aborted-signal",
+          "pass": false,
+          "error": "equal failed undefined !== \"HR_SOURCE_READ_DEADLINE_EXCEEDED\"",
+          "stack": "Error: equal failed undefined !== \"HR_SOURCE_READ_DEADLINE_EXCEEDED\"\n    at assert (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:7:34)\n    at assert.equal (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:7:108)\n    at eval (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:403:16)\n    at assert.rejects (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:8:314)\n    at async Object.eval [as fn] (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:402:7)\n    at async eval (eval at <anonymous> (exec_main.mjs:2:7), <anonymous>:21:27)\n    at async exec_main.mjs:2:1"
+        },
+        {
+          "name": "VRM356 identity preserves provider classification for late-complete-body",
+          "pass": false,
+          "error": "Expected rejection",
+          "stack": "Error: Expected rejection\n    at assert (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:7:34)\n    at assert.rejects (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:8:109)\n    at async Object.eval [as fn] (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:402:7)\n    at async eval (eval at <anonymous> (exec_main.mjs:2:7), <anonymous>:21:27)\n    at async exec_main.mjs:2:1"
+        },
+        {
+          "name": "VRM356 identity preserves provider classification for 429-body-timeout",
+          "pass": false,
+          "error": "equal failed 7 !== 1",
+          "stack": "Error: equal failed 7 !== 1\n    at assert (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:7:34)\n    at assert.equal (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:7:108)\n    at eval (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:403:54)\n    at assert.rejects (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:8:314)\n    at async Object.eval [as fn] (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:402:7)\n    at async eval (eval at <anonymous> (exec_main.mjs:2:7), <anonymous>:21:27)\n    at async exec_main.mjs:2:1"
+        },
+        {
+          "name": "VRM356 identity malformed200 JSON remains an integrity failure without retry",
+          "pass": true
+        },
+        {
+          "name": "VRM356 R20 preserves provider classification for body-timeout",
+          "pass": false,
+          "error": "equal failed undefined !== \"HR_SOURCE_READ_DEADLINE_EXCEEDED\"",
+          "stack": "Error: equal failed undefined !== \"HR_SOURCE_READ_DEADLINE_EXCEEDED\"\n    at assert (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:7:34)\n    at assert.equal (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:7:108)\n    at eval (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:403:16)\n    at assert.rejects (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:8:314)\n    at async Object.eval [as fn] (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:402:7)\n    at async eval (eval at <anonymous> (exec_main.mjs:2:7), <anonymous>:21:27)\n    at async exec_main.mjs:2:1"
+        },
+        {
+          "name": "VRM356 R20 preserves provider classification for body-aborted-signal",
+          "pass": false,
+          "error": "equal failed undefined !== \"HR_SOURCE_READ_DEADLINE_EXCEEDED\"",
+          "stack": "Error: equal failed undefined !== \"HR_SOURCE_READ_DEADLINE_EXCEEDED\"\n    at assert (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:7:34)\n    at assert.equal (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:7:108)\n    at eval (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:403:16)\n    at assert.rejects (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:8:314)\n    at async Object.eval [as fn] (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:402:7)\n    at async eval (eval at <anonymous> (exec_main.mjs:2:7), <anonymous>:21:27)\n    at async exec_main.mjs:2:1"
+        },
+        {
+          "name": "VRM356 R20 preserves provider classification for late-complete-body",
+          "pass": false,
+          "error": "Expected rejection",
+          "stack": "Error: Expected rejection\n    at assert (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:7:34)\n    at assert.rejects (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:8:109)\n    at async Object.eval [as fn] (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:402:7)\n    at async eval (eval at <anonymous> (exec_main.mjs:2:7), <anonymous>:21:27)\n    at async exec_main.mjs:2:1"
+        },
+        {
+          "name": "VRM356 R20 preserves provider classification for 429-body-timeout",
+          "pass": false,
+          "error": "equal failed 7 !== 1",
+          "stack": "Error: equal failed 7 !== 1\n    at assert (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:7:34)\n    at assert.equal (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:7:108)\n    at eval (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:403:54)\n    at assert.rejects (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:8:314)\n    at async Object.eval [as fn] (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:2:7)), <anonymous>:402:7)\n    at async eval (eval at <anonymous> (exec_main.mjs:2:7), <anonymous>:21:27)\n    at async exec_main.mjs:2:1"
+        },
+        {
+          "name": "VRM356 R20 malformed200 JSON remains an integrity failure without retry",
+          "pass": true
+        }
+      ]
+    },
+    "latencyAfter": {
+      "mode": "after",
+      "environment": "V8_EXECUTED_REAL_SOURCE_WITH_SYNTHETIC_NETWORK_CLOCK_NOT_NODE_CI",
+      "tests": 41,
+      "pass": 41,
+      "fail": 0,
+      "results": [
+        {
+          "name": "VRM-134 coalesces independent protected HR and principal reads without returning before both",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 rejects protected request if principal check fails",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 public HR read never calls protected identity and retains freshness route",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 exposes non-sensitive source refresh stages and protected timing only to verified path",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 protected metadata read verifies identity and HR without repeating protected Firestore overlay",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 registry identity and live HR read start concurrently, then both settle before validation",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 source read failure waits for the other process before cleanup",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 R20 reads36 tabs in one bounded batch and preserves response order",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 R20 covers small and partial waves without extra or missing tabs",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 R20 failed batch waits for its peer and starts no later wave",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 R20 authentication and missing metadata fail before batch reads",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 identity batching preserves chronological latest nonempty contacts",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 identity failure waits for its peer and never publishes a partial identity file",
+          "pass": true
+        },
+        {
+          "name": "VRM-134 identity registry-only route performs no batch reads and retains auth boundary",
+          "pass": true
+        },
+        {
+          "name": "VRM356 identity retries only the identical rejected Sheets GET and preserves its result",
+          "pass": true
+        },
+        {
+          "name": "VRM356 identity exhausted quota terminates after seven attempts within the global deadline",
+          "pass": true
+        },
+        {
+          "name": "VRM356 identity honors Retry-After seconds and HTTP date without exceeding deadline",
+          "pass": true
+        },
+        {
+          "name": "VRM356 identity rejects writes and does not retry non429 errors",
+          "pass": true
+        },
+        {
+          "name": "VRM356 identity cannot restart an expired global read budget",
+          "pass": true
+        },
+        {
+          "name": "VRM356 identity range batches preserve129 rows and bounded URLs including long quoted titles",
+          "pass": true
+        },
+        {
+          "name": "VRM356 identity rejects incomplete or reordered batch results and accepts a truly empty range",
+          "pass": true
+        },
+        {
+          "name": "VRM356 R20 retries only the identical rejected Sheets GET and preserves its result",
+          "pass": true
+        },
+        {
+          "name": "VRM356 R20 exhausted quota terminates after seven attempts within the global deadline",
+          "pass": true
+        },
+        {
+          "name": "VRM356 R20 honors Retry-After seconds and HTTP date without exceeding deadline",
+          "pass": true
+        },
+        {
+          "name": "VRM356 R20 rejects writes and does not retry non429 errors",
+          "pass": true
+        },
+        {
+          "name": "VRM356 R20 cannot restart an expired global read budget",
+          "pass": true
+        },
+        {
+          "name": "VRM356 R20 range batches preserve129 rows and bounded URLs including long quoted titles",
+          "pass": true
+        },
+        {
+          "name": "VRM356 R20 rejects incomplete or reordered batch results and accepts a truly empty range",
+          "pass": true
+        },
+        {
+          "name": "VRM356 four fresh observations consume16 independent Sheets reads instead of48 and preserve every tab",
+          "pass": true
+        },
+        {
+          "name": "VRM356 R20 exhausted quota and incomplete batches never fall back to GViz",
+          "pass": true
+        },
+        {
+          "name": "VRM356 child error marker retains safe provider metadata and rejects forged or raw stderr",
+          "pass": true
+        },
+        {
+          "name": "VRM356 identity preserves provider classification for body-timeout",
+          "pass": true
+        },
+        {
+          "name": "VRM356 identity preserves provider classification for body-aborted-signal",
+          "pass": true
+        },
+        {
+          "name": "VRM356 identity preserves provider classification for late-complete-body",
+          "pass": true
+        },
+        {
+          "name": "VRM356 identity preserves provider classification for 429-body-timeout",
+          "pass": true
+        },
+        {
+          "name": "VRM356 identity malformed200 JSON remains an integrity failure without retry",
+          "pass": true
+        },
+        {
+          "name": "VRM356 R20 preserves provider classification for body-timeout",
+          "pass": true
+        },
+        {
+          "name": "VRM356 R20 preserves provider classification for body-aborted-signal",
+          "pass": true
+        },
+        {
+          "name": "VRM356 R20 preserves provider classification for late-complete-body",
+          "pass": true
+        },
+        {
+          "name": "VRM356 R20 preserves provider classification for 429-body-timeout",
+          "pass": true
+        },
+        {
+          "name": "VRM356 R20 malformed200 JSON remains an integrity failure without retry",
+          "pass": true
+        }
+      ]
+    },
+    "g05Before": {
+      "mode": "before",
+      "environment": "V8_EXECUTED_REAL_RUNTIME_AND_SHOPPER_OPERATIONAL_PROVIDERS_FAKE_AUTH_FIRESTORE_NOT_NODE_CI",
+      "tests": 92,
+      "pass": 91,
+      "fail": 1,
+      "results": [
+        {
+          "name": "G05 24 concurrent visits complete with five transaction attempts and one receipt per entity",
+          "pass": true
+        },
+        {
+          "name": "G05 changed verified principal is rejected before acquiring any lease",
+          "pass": true
+        },
+        {
+          "name": "G05 pending command key is offered only to its verified actor and same source",
+          "pass": true
+        },
+        {
+          "name": "G05 existing POST route dispatches fresh writer without requiring bootstrap cache",
+          "pass": true
+        },
+        {
+          "name": "G05 command route blocks non-POST before writes",
+          "pass": true
+        },
+        {
+          "name": "G05 command route blocks missing Bearer before writes",
+          "pass": true
+        },
+        {
+          "name": "G05 command route blocks unconfigured writer before writes",
+          "pass": true
+        },
+        {
+          "name": "G05 ordinary command still uses the existing provider configuration path",
+          "pass": true
+        },
+        {
+          "name": "G05 private durable HR source enables a sanitized public snapshot without leaking provider configuration",
+          "pass": true
+        },
+        {
+          "name": "G05 public snapshot cannot supply private authority when durable project config is absent",
+          "pass": true
+        },
+        {
+          "name": "G05 initial shopper records Auth, claims and Firestore by entity without credential persistence",
+          "pass": true
+        },
+        {
+          "name": "I3 A03 G05 auto-compatible shopper consolidation survives the protected HR journal and exact replay",
+          "pass": true
+        },
+        {
+          "name": "G05 claims-only effect counts even when historical provider reports an idempotent zero",
+          "pass": true
+        },
+        {
+          "name": "G05 direct identity review set is audited; new command over unchanged review is a no-op",
+          "pass": true
+        },
+        {
+          "name": "G05 Firestore callback retry records one committed effect and preserves concurrent fields",
+          "pass": true
+        },
+        {
+          "name": "G05 lost Auth ACK stays uncertain and retry cannot create a second principal",
+          "pass": true
+        },
+        {
+          "name": "G05 lost Firestore ACK retains atomically committed entity effects and pending readback",
+          "pass": true
+        },
+        {
+          "name": "G05 retries only unfinished stage without repeating completed shopper effects",
+          "pass": true
+        },
+        {
+          "name": "G05 idempotency binds revision and actor; confirmed replay only reauthorizes and reads receipt",
+          "pass": true
+        },
+        {
+          "name": "G05 writer waits for late visit worker after an earlier worker fails",
+          "pass": true
+        },
+        {
+          "name": "G05 operational conflict receipt counts reviewQueue and visit separately",
+          "pass": true
+        },
+        {
+          "name": "G05 invalid wrong version is rejected before authorization or writes",
+          "pass": true
+        },
+        {
+          "name": "G05 invalid missing revision is rejected before authorization or writes",
+          "pass": true
+        },
+        {
+          "name": "G05 invalid mutable snapshot payload is rejected before authorization or writes",
+          "pass": true
+        },
+        {
+          "name": "G05 invalid period command is rejected before authorization or writes",
+          "pass": true
+        },
+        {
+          "name": "G05 invalid path injection is rejected before authorization or writes",
+          "pass": true
+        },
+        {
+          "name": "G05 invalid missing idempotency is rejected before authorization or writes",
+          "pass": true
+        },
+        {
+          "name": "G05 verified shopper cannot invoke HR writer despite forged client admin",
+          "pass": true
+        },
+        {
+          "name": "G05 verified ops cannot invoke HR writer despite forged client admin",
+          "pass": true
+        },
+        {
+          "name": "G05 verified client cannot invoke HR writer despite forged client admin",
+          "pass": true
+        },
+        {
+          "name": "G05 unsafe snapshot cannot acquire a writer lease",
+          "pass": true
+        },
+        {
+          "name": "G05 imported snapshot cannot acquire a writer lease",
+          "pass": true
+        },
+        {
+          "name": "G05 writer snapshot cannot acquire a writer lease",
+          "pass": true
+        },
+        {
+          "name": "G05 wrong scope cannot acquire a writer lease",
+          "pass": true
+        },
+        {
+          "name": "G05 internal project cannot acquire a writer lease",
+          "pass": true
+        },
+        {
+          "name": "G05 missing binding cannot acquire a writer lease",
+          "pass": true
+        },
+        {
+          "name": "G05 active lease rejects duplicate and different key; partial lease cannot be bypassed",
+          "pass": true
+        },
+        {
+          "name": "G05 rechecks lease after delayed intent commit before dispatching Auth",
+          "pass": true
+        },
+        {
+          "name": "HR349 new revision succeeds after an expired verified partial without rewriting history; exact replay is zero writes",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for unexpired lease",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for expired running lease",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for same HR revision with another key",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for different tenant",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for different project",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for wrong lease project",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for wrong lease attempt",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for foreign receipt path",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for invalid expiry",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for wrong historical digest",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for wrong historical actor",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for wrong historical key",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for wrong result binding",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for unknown historical counts",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for counter disagreement",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for unfinished receipt",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for unverified effect",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for missing provider ACK",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for credential authentication pending",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for cross revision effect",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for cross attempt effect",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for unknown stage",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for cross stage effect",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for cross system effect",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for invalid operation digest",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for foreign business operation",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for empty effect operations",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for orphan effect",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for contradictory no effect intent",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for pending intent",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for uncertain intent",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for wrong stage revision",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for uncommitted stage",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for stage without ACK",
+          "pass": true
+        },
+        {
+          "name": "HR349 complete journal beyond 501 entries detects a late unverified effect and then permits a fully verified successor",
+          "pass": true
+        },
+        {
+          "name": "HR349 acquisition transaction retries and holds on new pending intent",
+          "pass": true
+        },
+        {
+          "name": "HR349 acquisition transaction retries and holds on changed readback",
+          "pass": true
+        },
+        {
+          "name": "HR349 acquisition transaction retries and holds on resumed old lease",
+          "pass": true
+        },
+        {
+          "name": "HR349 acquisition transaction retries and holds on removed intent",
+          "pass": true
+        },
+        {
+          "name": "HR349 two concurrent successors cannot both acquire or execute providers",
+          "pass": true
+        },
+        {
+          "name": "HR349 expired in-flight Auth cannot transfer lease and its late ACK stays in historical journal",
+          "pass": true
+        },
+        {
+          "name": "HR349 Auth predecessor accepts the exact verified non-credential operation",
+          "pass": true
+        },
+        {
+          "name": "HR349 Auth predecessor rejects a contradictory valid-shaped readback digest",
+          "pass": true
+        },
+        {
+          "name": "VRM-355 Firestore double distinguishes recursive merge from whole-map mergeFields",
+          "pass": true
+        },
+        {
+          "name": "VRM-355 recovered shoppers receipt removes prior UID failure and preserves immutable metadata and no-write replay",
+          "pass": true
+        },
+        {
+          "name": "VRM-355 error terminal path replaces stale result without removing root metadata or stages",
+          "pass": true
+        },
+        {
+          "name": "VRM-355 committed historical receipt is not silently rewritten by replay",
+          "pass": true
+        },
+        {
+          "name": "VRM356 exhausted fresh source quota returns503 before receipt lease or provider effects",
+          "pass": true
+        },
+        {
+          "name": "VRM356 typed read deadline remains bounded provider failure and actual principal denial remains403",
+          "pass": true
+        },
+        {
+          "name": "VRM356 untrusted error marker does not claim zero writes or bypass existing error path",
+          "pass": true
+        },
+        {
+          "name": "VRM356 fresh read with a changed source revision still refuses the lease",
+          "pass": true
+        },
+        {
+          "name": "VRM356 a committed receipt is replayed without another fresh source read or write",
+          "pass": true
+        },
+        {
+          "name": "VRM356 failed fresh read on a partial receipt preserves cumulative effects with zero writes this attempt",
+          "pass": false,
+          "error": "equal failed undefined !== \"cumulative_command_effects\"",
+          "stack": "Error: equal failed undefined !== \"cumulative_command_effects\"\n    at assert (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:3:7)), <anonymous>:7:34)\n    at assert.equal (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:3:7)), <anonymous>:7:108)\n    at Object.eval [as fn] (eval at <anonymous> (eval at <anonymous> (exec_main.mjs:3:7)), <anonymous>:546:10)\n    at async eval (eval at <anonymous> (exec_main.mjs:3:7), <anonymous>:25:27)\n    at async exec_main.mjs:3:1"
+        }
+      ]
+    },
+    "g05After": {
+      "mode": "after",
+      "environment": "V8_EXECUTED_REAL_RUNTIME_AND_SHOPPER_OPERATIONAL_PROVIDERS_FAKE_AUTH_FIRESTORE_NOT_NODE_CI",
+      "tests": 92,
+      "pass": 92,
+      "fail": 0,
+      "results": [
+        {
+          "name": "G05 24 concurrent visits complete with five transaction attempts and one receipt per entity",
+          "pass": true
+        },
+        {
+          "name": "G05 changed verified principal is rejected before acquiring any lease",
+          "pass": true
+        },
+        {
+          "name": "G05 pending command key is offered only to its verified actor and same source",
+          "pass": true
+        },
+        {
+          "name": "G05 existing POST route dispatches fresh writer without requiring bootstrap cache",
+          "pass": true
+        },
+        {
+          "name": "G05 command route blocks non-POST before writes",
+          "pass": true
+        },
+        {
+          "name": "G05 command route blocks missing Bearer before writes",
+          "pass": true
+        },
+        {
+          "name": "G05 command route blocks unconfigured writer before writes",
+          "pass": true
+        },
+        {
+          "name": "G05 ordinary command still uses the existing provider configuration path",
+          "pass": true
+        },
+        {
+          "name": "G05 private durable HR source enables a sanitized public snapshot without leaking provider configuration",
+          "pass": true
+        },
+        {
+          "name": "G05 public snapshot cannot supply private authority when durable project config is absent",
+          "pass": true
+        },
+        {
+          "name": "G05 initial shopper records Auth, claims and Firestore by entity without credential persistence",
+          "pass": true
+        },
+        {
+          "name": "I3 A03 G05 auto-compatible shopper consolidation survives the protected HR journal and exact replay",
+          "pass": true
+        },
+        {
+          "name": "G05 claims-only effect counts even when historical provider reports an idempotent zero",
+          "pass": true
+        },
+        {
+          "name": "G05 direct identity review set is audited; new command over unchanged review is a no-op",
+          "pass": true
+        },
+        {
+          "name": "G05 Firestore callback retry records one committed effect and preserves concurrent fields",
+          "pass": true
+        },
+        {
+          "name": "G05 lost Auth ACK stays uncertain and retry cannot create a second principal",
+          "pass": true
+        },
+        {
+          "name": "G05 lost Firestore ACK retains atomically committed entity effects and pending readback",
+          "pass": true
+        },
+        {
+          "name": "G05 retries only unfinished stage without repeating completed shopper effects",
+          "pass": true
+        },
+        {
+          "name": "G05 idempotency binds revision and actor; confirmed replay only reauthorizes and reads receipt",
+          "pass": true
+        },
+        {
+          "name": "G05 writer waits for late visit worker after an earlier worker fails",
+          "pass": true
+        },
+        {
+          "name": "G05 operational conflict receipt counts reviewQueue and visit separately",
+          "pass": true
+        },
+        {
+          "name": "G05 invalid wrong version is rejected before authorization or writes",
+          "pass": true
+        },
+        {
+          "name": "G05 invalid missing revision is rejected before authorization or writes",
+          "pass": true
+        },
+        {
+          "name": "G05 invalid mutable snapshot payload is rejected before authorization or writes",
+          "pass": true
+        },
+        {
+          "name": "G05 invalid period command is rejected before authorization or writes",
+          "pass": true
+        },
+        {
+          "name": "G05 invalid path injection is rejected before authorization or writes",
+          "pass": true
+        },
+        {
+          "name": "G05 invalid missing idempotency is rejected before authorization or writes",
+          "pass": true
+        },
+        {
+          "name": "G05 verified shopper cannot invoke HR writer despite forged client admin",
+          "pass": true
+        },
+        {
+          "name": "G05 verified ops cannot invoke HR writer despite forged client admin",
+          "pass": true
+        },
+        {
+          "name": "G05 verified client cannot invoke HR writer despite forged client admin",
+          "pass": true
+        },
+        {
+          "name": "G05 unsafe snapshot cannot acquire a writer lease",
+          "pass": true
+        },
+        {
+          "name": "G05 imported snapshot cannot acquire a writer lease",
+          "pass": true
+        },
+        {
+          "name": "G05 writer snapshot cannot acquire a writer lease",
+          "pass": true
+        },
+        {
+          "name": "G05 wrong scope cannot acquire a writer lease",
+          "pass": true
+        },
+        {
+          "name": "G05 internal project cannot acquire a writer lease",
+          "pass": true
+        },
+        {
+          "name": "G05 missing binding cannot acquire a writer lease",
+          "pass": true
+        },
+        {
+          "name": "G05 active lease rejects duplicate and different key; partial lease cannot be bypassed",
+          "pass": true
+        },
+        {
+          "name": "G05 rechecks lease after delayed intent commit before dispatching Auth",
+          "pass": true
+        },
+        {
+          "name": "HR349 new revision succeeds after an expired verified partial without rewriting history; exact replay is zero writes",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for unexpired lease",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for expired running lease",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for same HR revision with another key",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for different tenant",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for different project",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for wrong lease project",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for wrong lease attempt",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for foreign receipt path",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for invalid expiry",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for wrong historical digest",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for wrong historical actor",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for wrong historical key",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for wrong result binding",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for unknown historical counts",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for counter disagreement",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for unfinished receipt",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for unverified effect",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for missing provider ACK",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for credential authentication pending",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for cross revision effect",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for cross attempt effect",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for unknown stage",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for cross stage effect",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for cross system effect",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for invalid operation digest",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for foreign business operation",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for empty effect operations",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for orphan effect",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for contradictory no effect intent",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for pending intent",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for uncertain intent",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for wrong stage revision",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for uncommitted stage",
+          "pass": true
+        },
+        {
+          "name": "HR349 successor holds with zero writes for stage without ACK",
+          "pass": true
+        },
+        {
+          "name": "HR349 complete journal beyond 501 entries detects a late unverified effect and then permits a fully verified successor",
+          "pass": true
+        },
+        {
+          "name": "HR349 acquisition transaction retries and holds on new pending intent",
+          "pass": true
+        },
+        {
+          "name": "HR349 acquisition transaction retries and holds on changed readback",
+          "pass": true
+        },
+        {
+          "name": "HR349 acquisition transaction retries and holds on resumed old lease",
+          "pass": true
+        },
+        {
+          "name": "HR349 acquisition transaction retries and holds on removed intent",
+          "pass": true
+        },
+        {
+          "name": "HR349 two concurrent successors cannot both acquire or execute providers",
+          "pass": true
+        },
+        {
+          "name": "HR349 expired in-flight Auth cannot transfer lease and its late ACK stays in historical journal",
+          "pass": true
+        },
+        {
+          "name": "HR349 Auth predecessor accepts the exact verified non-credential operation",
+          "pass": true
+        },
+        {
+          "name": "HR349 Auth predecessor rejects a contradictory valid-shaped readback digest",
+          "pass": true
+        },
+        {
+          "name": "VRM-355 Firestore double distinguishes recursive merge from whole-map mergeFields",
+          "pass": true
+        },
+        {
+          "name": "VRM-355 recovered shoppers receipt removes prior UID failure and preserves immutable metadata and no-write replay",
+          "pass": true
+        },
+        {
+          "name": "VRM-355 error terminal path replaces stale result without removing root metadata or stages",
+          "pass": true
+        },
+        {
+          "name": "VRM-355 committed historical receipt is not silently rewritten by replay",
+          "pass": true
+        },
+        {
+          "name": "VRM356 exhausted fresh source quota returns503 before receipt lease or provider effects",
+          "pass": true
+        },
+        {
+          "name": "VRM356 typed read deadline remains bounded provider failure and actual principal denial remains403",
+          "pass": true
+        },
+        {
+          "name": "VRM356 untrusted error marker does not claim zero writes or bypass existing error path",
+          "pass": true
+        },
+        {
+          "name": "VRM356 fresh read with a changed source revision still refuses the lease",
+          "pass": true
+        },
+        {
+          "name": "VRM356 a committed receipt is replayed without another fresh source read or write",
+          "pass": true
+        },
+        {
+          "name": "VRM356 failed fresh read on a partial receipt preserves cumulative effects with zero writes this attempt",
+          "pass": true
+        }
+      ]
+    }
+  },
+  "testScope": "REAL_PUBLISHED_FUNCTIONS_WITH_SYNTHETIC_IO_NODE_CI_PENDING",
+  "causalFailuresFixed": 9,
+  "sourceTestsPass": 133,
+  "sourceTestsFail": 0,
+  "unresolvedLiveIssue": "RUN2567_RAW_RANGE_MISMATCH_CAUSE_PENDING_PREFLIGHT_NO_RELAXATION",
+  "production": false,
+  "fullDomains": 5,
+  "totalDomains": 21,
+  "fullDomainPromotion": false,
+  "phaseAComplete": false
+}

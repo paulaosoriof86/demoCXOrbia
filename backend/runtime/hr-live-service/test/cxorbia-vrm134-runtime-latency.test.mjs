@@ -386,3 +386,33 @@ test('VRM356 child error marker retains safe provider metadata and rejects forge
   assert.equal(parse('CXORBIA_HR_SOURCE_FAILURE='+JSON.stringify({...data,token:'must-never-leak'}),script),null);
   assert.equal(parse('CXORBIA_HR_SOURCE_FAILURE='+JSON.stringify({...data,code:'AUTH_DENIED'}),script),null);
 });
+
+for(const [label,reader]of [['identity',identitySource],['R20',r20Source]]){
+  const start=reader.indexOf('async function readSheetsJson('),end=reader.indexOf('function reportHrSourceFailure(',start);
+  const makeRead=signal=>new Function('HR_SHEETS_READ_DEADLINE','HR_SHEETS_READ_STATS','AbortSignal',reader.slice(start,end)+'\nreturn readSheetsJson;')(75000,{}, {timeout:()=>signal});
+  for(const scenario of ['body-timeout','body-aborted-signal','late-complete-body','429-body-timeout']){
+    test('VRM356 '+label+' preserves provider classification for '+scenario,async()=>{
+      let clock=0,calls=0;const signal={aborted:false},stats={attempts:0,successfulRequests:0,quotaRetries:0,responseBytes:0};
+      const quota=scenario==='429-body-timeout',expectedCode=quota?'HR_SOURCE_READ_QUOTA_EXHAUSTED':'HR_SOURCE_READ_DEADLINE_EXCEEDED';
+      const read=makeRead(signal),io={deadlineAt:75000,now:()=>clock,wait:async ms=>{clock+=ms;},random:()=>0,stats,fetchImpl:async()=>{
+        calls++;return {ok:!quota,status:quota?429:200,headers:{get:()=>null},json:async()=>{
+          if(scenario==='late-complete-body'){clock=75000;return {safe:true};}
+          if(scenario==='body-aborted-signal'){clock=15000;signal.aborted=true;throw Object.assign(new Error('Body stream closed'),{name:'AbortError'});}
+          clock=15000;throw Object.assign(new Error('Body timeout'),{name:'TimeoutError'});
+        }};
+      }};
+      await assert.rejects(read('https://sheets.googleapis.com/fixture',{},io),error=>{
+        assert.equal(error.code,expectedCode);assert.equal(error.hrSourceFailure.attempts,1);
+        assert.equal(error.hrSourceFailure.upstreamStatus,quota?429:null);assert.equal(error.hrSourceFailure.readOnly,true);return true;
+      });
+      assert.equal(calls,1);assert.equal(stats.successfulRequests,0);assert.equal(stats.quotaRetries,0);
+    });
+  }
+  test('VRM356 '+label+' malformed200 JSON remains an integrity failure without retry',async()=>{
+    let calls=0;const read=makeRead({aborted:false}),stats={attempts:0,successfulRequests:0,quotaRetries:0,responseBytes:0};
+    await assert.rejects(read('https://sheets.googleapis.com/fixture',{}, {deadlineAt:75000,now:()=>0,stats,fetchImpl:async()=>{
+      calls++;return {ok:true,status:200,json:async()=>{throw new SyntaxError('Unexpected token');}};
+    }}),error=>error.message==='HR_SOURCE_READ_JSON_INVALID'&&!error.hrSourceFailure);
+    assert.equal(calls,1);assert.equal(stats.successfulRequests,0);
+  });
+}
