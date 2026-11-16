@@ -1,0 +1,171 @@
+{
+  "schemaVersion": "cxorbia.i3.hr-keeper-authority.semantic-log-projection.v1",
+  "observedAt": "2026-11-16T05:22:43.343Z",
+  "runId": 43809622074,
+  "runNumber": 2554,
+  "headSha": "32f4e0ba19f3c68bb5aa30ab8997a1ca8077fd30",
+  "jobId": 133108397025,
+  "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+  "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+  "kind": "SEMANTIC_LOG_PROJECTION_NOT_ORIGINAL_ARTIFACT_JSON",
+  "rawArtifactIndependentlyDownloaded": false,
+  "artifact": {
+    "id": 14200052151,
+    "name": "cxorbia-i3-run2382-academy-b7-synthetic-43809622074",
+    "size_in_bytes": 13931,
+    "url": "https://api.github.com/repos/paulaosoriof86/demoCXOrbia/actions/artifacts/14200052151",
+    "archive_download_url": "https://api.github.com/repos/paulaosoriof86/demoCXOrbia/actions/artifacts/14200052151/zip",
+    "expired": false,
+    "created_at": "2026-11-16T05:22:44Z",
+    "expires_at": "2026-12-16T05:22:43Z",
+    "updated_at": "2026-11-16T05:22:44Z",
+    "digest": "sha256:6e5f3316282f435d6e91b0d71ec2a828b2ef690506ee2c4b8b7c866b935072be",
+    "workflow_run": {
+      "id": 43809622074,
+      "repository_id": 1275083916,
+      "head_repository_id": 1275083916,
+      "head_branch": "recovery/cxorbia-phase-a-20260831",
+      "head_sha": "32f4e0ba19f3c68bb5aa30ab8997a1ca8077fd30"
+    }
+  },
+  "decision": "OBSERVED_DURABLE_REVISION_MATCH_NOT_FULL_RECONCILIATION",
+  "observationComplete": true,
+  "production": false,
+  "exactDevBeforeAndAfterVerified": true,
+  "runtimeRevision": "cxorbia-live-hr-dev-00374-nzx",
+  "runtimeDigest": "sha256:ab74d14500f01f92bed06559d2187e7a9ab656ffd8a8d7395d5b8a8a580a2cf1",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/d69dd2e668044dcb",
+  "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+  "sourceIdentityCount": 238,
+  "checked": 235,
+  "matched": 233,
+  "absent": 3,
+  "conflicts": 2,
+  "completeAuthPagination": true,
+  "independentReadStability": true,
+  "authorityReceiptsSha256": "41be23e081e16471c2450b7ad0b97b4658e0a722402513e290011320d72ccfcc",
+  "ownerSha256": "2ce6beff7b95ae3d3c1bb97121996d88ebb9b86cf7d6aff8ee19e61f2915cf38",
+  "safety": {
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "commandPosts": 0,
+    "builds": 0,
+    "deploys": 0
+  },
+  "authoritySemantics": "Trusted provider receipts and exact current links observed; commandDigest and actor hash are stored facts, not independently recomputed historical authorization. Product repair must re-read all required authority and retirement records through the authorized provider.",
+  "cases": [
+    {
+      "sourceShopperIdHash": "1ab0b1bcb6ebe506c9e535cd1c3020e6371cf1e42ceff85831a515ea7b0b5168",
+      "canonicalShopperIdHash": "c6322c620eb4bda6fd090f0ad1c5696b7973ae9d8e8ef386676539a2213df279",
+      "retiredFingerprint": "2174488e5d7870f5d579a71c4255c53dda3675193c2912efead52dda64dc1c92",
+      "keeperFingerprint": "896de173dfc03b2e8f04531cf5ccd9d1513e2cbe2f603e2ed23da0901d1aa2d7",
+      "authorityRefHash": "713a369c5550212241b4df84344562ae709f30ae422320860bd11f0e88d14857",
+      "receiptPathHash": "afc379253d5c427bc72b3ab4f025a69c2b1dbb794fe6fc981ee9bad1a437d253",
+      "commandDigest": "b2b9c6480a8847e1eec4d41494f0ea56f8de2cae2225a270d0cdc5bc6a69a844",
+      "retiredPrincipalCount": 1,
+      "currentProfileAuthority": "tenant_adjudication",
+      "currentReceipt": {
+        "exists": true,
+        "status": "committed",
+        "commandType": "shopper.identity.adjudicate",
+        "providerAck": true,
+        "identityConsolidated": true,
+        "canonicalMatches": true,
+        "keeperMatches": true,
+        "isProfileAuthority": true,
+        "isCanonicalCrosswalkAuthority": true
+      },
+      "canonicalCrosswalk": {
+        "tenantMatches": true,
+        "shopperMatches": true,
+        "keeperMatches": true,
+        "profileAuthorityRefMatches": true
+      },
+      "currentReceiptIdentityLink": {
+        "exists": true,
+        "scopeExact": true,
+        "authorityRefMatches": true,
+        "active": true,
+        "providerAck": true,
+        "humanConfirmed": true,
+        "canonicalMatches": true
+      },
+      "selectedMember": {
+        "active": true,
+        "scopeExact": true
+      },
+      "selectedAuth": {
+        "enabled": true,
+        "scopeExact": true
+      },
+      "retiredMember": {
+        "active": false,
+        "status": "superseded",
+        "identityState": "superseded_exact_alias",
+        "targetCanonicalMatches": true,
+        "targetKeeperMatches": true
+      },
+      "retiredAuth": {
+        "disabled": true
+      },
+      "distinctDecisions": []
+    },
+    {
+      "sourceShopperIdHash": "eaf71bb12416674b1031e80c7c205367de57d8a8748e5c666ca30f534f70e068",
+      "canonicalShopperIdHash": "c9d975427aab4189bfb1788334bc1b6005527e932487c9fb2933336ef8bd80b1",
+      "retiredFingerprint": "b837562debc5572d051d4a0e8767c0b0509936ace604a5145d153cfa6c1c74f3",
+      "keeperFingerprint": "bc0a6700460d05764b3c768435f0fce96c67fcedf01b6e343b982a60fc9dec8e",
+      "authorityRefHash": "b252f4dc8def1e50fb251c775afba6975fece5fbc089ddd87932879939ee7dad",
+      "receiptPathHash": "781feaa751b7f596b81fd4cf507ba9e4786890e14e4450c8fa0b536dea513332",
+      "commandDigest": "2cebd65ca801ae585b2f101e4b5f0cce8345726d0e14f13b8df56ab35982ec24",
+      "retiredPrincipalCount": 2,
+      "currentProfileAuthority": "tenant_adjudication",
+      "currentReceipt": {
+        "exists": true,
+        "status": "committed",
+        "commandType": "shopper.identity.adjudicate",
+        "providerAck": true,
+        "identityConsolidated": true,
+        "canonicalMatches": true,
+        "keeperMatches": true,
+        "isProfileAuthority": true,
+        "isCanonicalCrosswalkAuthority": true
+      },
+      "canonicalCrosswalk": {
+        "tenantMatches": true,
+        "shopperMatches": true,
+        "keeperMatches": true,
+        "profileAuthorityRefMatches": true
+      },
+      "currentReceiptIdentityLink": {
+        "exists": true,
+        "scopeExact": true,
+        "authorityRefMatches": true,
+        "active": true,
+        "providerAck": true,
+        "humanConfirmed": true,
+        "canonicalMatches": true
+      },
+      "selectedMember": {
+        "active": true,
+        "scopeExact": true
+      },
+      "selectedAuth": {
+        "enabled": true,
+        "scopeExact": true
+      },
+      "retiredMember": {
+        "active": false,
+        "status": "superseded",
+        "identityState": "superseded_exact_alias",
+        "targetCanonicalMatches": true,
+        "targetKeeperMatches": true
+      },
+      "retiredAuth": {
+        "disabled": true
+      },
+      "distinctDecisions": []
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "cxorbia.i3.scoped-execution-readback.v1",
+  "kind": "HR_UID_AUTHORITY_READ_ONLY_NOT_TERMINAL_CERTIFICATE",
+  "decision": "PASS_READONLY_EXACT_KEEPER_AUTHORITY_CHAIN_P0_PROVEN_REPAIR_PENDING",
+  "runId": 43809622074,
+  "runNumber": 2554,
+  "headSha": "32f4e0ba19f3c68bb5aa30ab8997a1ca8077fd30",
+  "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+  "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+  "runConclusion": "success",
+  "canonicalJobId": 133108118988,
+  "diagnosticJobId": 133108397025,
+  "nodeTests": {
+    "tests": 1432,
+    "pass": 1432,
+    "fail": 0
+  },
+  "sourceQa": {
+    "pass": 440,
+    "fail": 0,
+    "owners": 21,
+    "overlapsNodeTotal": true,
+    "receiptSha256": "64af84893c47c47a9a9417495471448751d9def556ac28cc30e28a9322198579"
+  },
+  "authorityEvidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2554_UID_AUTHORITY_LOG_PROJECTION_20261116.json",
+    "gitBlob": "e21b098f8985603d0b52d3851e20a2ea92c9407a",
+    "sha256": "3c139dd3e633332f74626c22d0fddbd5ee9c0d20488e9d6ed9f4c1822b2d6c5f"
+  },
+  "p0Scope": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM353_RETIRED_KEEPER_CROSSWALK_P0_SCOPE_20261116.json",
+    "gitBlob": "b01e52d1b31572dfd130d09bee8119e5c12c2c07",
+    "sha256": "2463a04b63cacc085b50a0eb844567c51cae20ea7f88ec621d7d6328066dff34"
+  },
+  "artifacts": [
+    {
+      "id": 14200052151,
+      "name": "cxorbia-i3-run2382-academy-b7-synthetic-43809622074",
+      "size": 13931,
+      "digest": "sha256:6e5f3316282f435d6e91b0d71ec2a828b2ef690506ee2c4b8b7c866b935072be",
+      "verification": "PROVIDER_METADATA_ONLY_NOT_INDEPENDENTLY_DOWNLOADED"
+    },
+    {
+      "id": 14199294280,
+      "name": "cxorbia-i3-source-qa-43809622074-1",
+      "size": 19633,
+      "digest": "sha256:31da15349e28c591525603af08e6379f3f7658b2dd02664303add620cd62a7b6",
+      "verification": "PROVIDER_METADATA_ONLY_NOT_INDEPENDENTLY_DOWNLOADED"
+    }
+  ],
+  "sourceChanges": 0,
+  "builds": 0,
+  "deploys": 0,
+  "providerWrites": 0,
+  "production": false,
+  "phaseAComplete": false,
+  "terminalCertified": false,
+  "i4Authorized": false,
+  "updatedAt": "2026-11-16T05:33:30Z"
+}

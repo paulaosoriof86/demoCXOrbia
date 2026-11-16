@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-proven-pre-edit-scope.v1",
+  "createdAt": "2026-11-16T05:33:30Z",
+  "iteration": "I3",
+  "findingId": "VRM-353",
+  "priority": "P0_PROVEN",
+  "classification": "PERSISTENCE_FAILURE",
+  "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+  "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+  "controlHead": "32f4e0ba19f3c68bb5aa30ab8997a1ca8077fd30",
+  "production": false,
+  "state": "PROVEN_BEFORE_PRODUCT_EDIT",
+  "owner": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+  "ownerGitBlob": "d440d496e4dc2d7c33b4a7a70d11973cbd24666c",
+  "ownerSha256": "2ce6beff7b95ae3d3c1bb97121996d88ebb9b86cf7d6aff8ee19e61f2915cf38",
+  "allowedProductFiles": [
+    "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs"
+  ],
+  "evidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2554_UID_AUTHORITY_LOG_PROJECTION_20261116.json",
+    "gitBlob": "e21b098f8985603d0b52d3851e20a2ea92c9407a",
+    "sha256": "3c139dd3e633332f74626c22d0fddbd5ee9c0d20488e9d6ed9f4c1822b2d6c5f"
+  },
+  "cause": "durableIdentityAdjudication changes canonical keeper and retires former principals but updates only canonical, command alias and HR-only crosswalks; older exact crosswalks for the same canonical can retain a retired UID fingerprint. durableUpsert correctly rejects the stale binding, blocking current-revision reconciliation.",
+  "correction": "Within this owner, repair a stale exact alias binding only after current committed human adjudication, canonical crosswalk, active exact keeper, disabled retired Auth and explicit retired-membership superseded targets all agree; revalidate transactional records and exact mapping, reject contradictions/distinct decisions, preserve credentials and identity IDs, then require idempotent replay. Prevent recurrence by carrying forward existing exact canonical crosswalks for the retiring principals in the same adjudication transaction/readback.",
+  "requiredTests": [
+    "existing two-adjudication alias omitted from second command",
+    "same-canonical stale retired UID repairs and replay has zero effects",
+    "keeper credentials/Auth/claims unchanged by projection repair",
+    "missing or uncommitted current receipt rejects",
+    "scope, source key, canonical, fingerprint or retirement target mismatch rejects",
+    "retired principal still active rejects",
+    "ambiguous membership or contradictory/distinct mapping rejects",
+    "authority or keeper change during transaction rejects with no writes",
+    "unrelated tenant/project/crosswalk preserved",
+    "existing provider suite and canonical source QA pass"
+  ],
+  "prohibited": [
+    "new human identity decision",
+    "blind fingerprint overwrite",
+    "credential reset or Auth mutation solely for projection repair",
+    "legacy data import",
+    "HR writes",
+    "production deploy"
+  ],
+  "closure": "New source tests, one existing paired DEV deployment, exact provider readback on current HR revision, zero remaining conflicting bindings and replay. Full PhaseA remains dependent on all frozen contracts."
+}
