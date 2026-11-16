@@ -160,7 +160,8 @@
     "fullTaskClosed": false,
     "humanAcceptance": "B4_B5_B6_B7_PRESERVED_NOT_REOPENED_BY_READ_VALIDATOR_DEFECT",
     "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2573_EXACT_DEV_MATERIALIZATION_CONSUMPTION_20261116.json",
-    "productionUnchanged": true
+    "productionUnchanged": true,
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057"
   },
   "production": false,
   "productionUnchanged": true,
