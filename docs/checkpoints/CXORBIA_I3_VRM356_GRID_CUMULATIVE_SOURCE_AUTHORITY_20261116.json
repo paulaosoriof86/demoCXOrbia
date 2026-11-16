@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "cxorbia.i3.single-package-source-proof.v1",
+  "decision": "PASS_NODE_VRM356_GRID_BODY_DEADLINE_CUMULATIVE_SOURCE_PENDING_REAL_DEV",
+  "generatedAt": "2026-11-16T22:19:48.995096+00:00",
+  "sourceSha": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
+  "sourceTree": "b927ae81b1a3fd9eaf6f5ed2fe904a365678f3c7",
+  "predecessorProductSourceSha": "607ef20a5305209a46b8f61424f03475806f402d",
+  "sourceTestsPass": 141,
+  "sourceTestsFail": 0,
+  "allowedProductFiles": [
+    "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+    "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs",
+    "tools/qa/cxorbia-i3-vrm356-live-range-preflight.mjs"
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM356_RAW_RANGE_PREFLIGHT_SCOPE_20261116.json",
+  "scopeReceiptBlob": "c7c72cde604bb0aa83f691ee103ded4a2fa83c66",
+  "findings": [
+    {
+      "id": "VRM-356",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "scope": {
+        "path": "docs/checkpoints/CXORBIA_I3_VRM356_RAW_RANGE_PREFLIGHT_SCOPE_20261116.json",
+        "gitBlob": "c7c72cde604bb0aa83f691ee103ded4a2fa83c66",
+        "sha256": "188f6ead740ce942421686ed9ab12eb4560bfaa3b1b5d5886f6c8f1a6b7b7539"
+      },
+      "deltaScope": {
+        "path": "docs/checkpoints/CXORBIA_I3_VRM356_EXACT_GRID_RANGE_P0_SCOPE_20261116.json",
+        "gitBlob": "dee2145c8332eff2dfa890189f45b17f3a86c7f2",
+        "sha256": "a71b62fa849c8c40b2499445fe279d83d67c47eff5c29c9e73071bdcb062c468"
+      }
+    }
+  ],
+  "productOwnerBlobs": {
+    "tools/hr-source/tya-live-provider-registry-identity-dev.mjs": "16753ae184e1c59426cc58c126214bc6742b0505",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs": "b2f8cf3f743730b5ce14e3fad31791ac34bd0291",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs": "382789cdca22de0042ebbe8c3f0cd52a77f7ba0a"
+  },
+  "testEvidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM356_EXACT_GRID_RANGE_SOURCE_PROOF_20261116.json",
+    "gitBlob": "7f8a9a76745a78a7b6d5013a8cb7de719d96f81e",
+    "sha256": "fa817d9d82dfa90c20ef7f703b9399708b3c8200ae647fa3c89a6e07728af4fd"
+  },
+  "testCountScope": "49_READER_LATENCY_AND_92_RUNTIME_PROVIDER_TESTS_ACTUAL_NODE24_NO_NETWORK",
+  "canonicalNodeCi": "PENDING_FOR_NEW_SOURCE_EXACT_RUN",
+  "devPublished": false,
+  "production": false,
+  "hrWrites": 0,
+  "rawRangePreflightRequired": true,
+  "inheritedSourceEvidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM356_FOLLOWUP_SINGLE_PACKAGE_SOURCE_AUTHORITY_20261116.json",
+    "gitBlob": "2b7b773df191bc83098fc4ffa94fefd40c3e1167",
+    "sha256": "ccc272e4c05532902adfd4b2a55def4faad12ee3a3fa572871f28986e9e93e2a"
+  },
+  "deltaScopes": [
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM356_EXACT_GRID_RANGE_P0_SCOPE_20261116.json",
+      "gitBlob": "dee2145c8332eff2dfa890189f45b17f3a86c7f2",
+      "sha256": "a71b62fa849c8c40b2499445fe279d83d67c47eff5c29c9e73071bdcb062c468"
+    }
+  ],
+  "deltaCausalEvidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2571_RAW_RANGE_GRID_CAUSE_READBACK_20261116.json",
+    "gitBlob": "cd011829654efb7513911e3cf150ea8d2ea116f7",
+    "sha256": "a97ed41a62b62e6571b88b64a0f909145ba2bc3a3337346e0a07437c77ed1fbb"
+  },
+  "predecessorUndeployedSourceSha": "da403803fffdf3472079b0939f3914cc0cceafff"
+}
