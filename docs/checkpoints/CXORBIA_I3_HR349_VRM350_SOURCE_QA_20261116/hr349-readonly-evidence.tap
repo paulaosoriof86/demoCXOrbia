@@ -1,0 +1,220 @@
+TAP version 13
+# Subtest: G05 valid read-only observation passes without inventing reconciliation ACK
+ok 1 - G05 valid read-only observation passes without inventing reconciliation ACK
+  ---
+  duration_ms: 1.574697
+  type: 'test'
+  ...
+# Subtest: invalid HR observation remains blocked: ok=false
+ok 2 - invalid HR observation remains blocked: ok=false
+  ---
+  duration_ms: 0.421903
+  type: 'test'
+  ...
+# Subtest: invalid HR observation remains blocked: revision=stale
+ok 3 - invalid HR observation remains blocked: revision=stale
+  ---
+  duration_ms: 0.18267
+  type: 'test'
+  ...
+# Subtest: invalid HR observation remains blocked: sourceSafe=false
+ok 4 - invalid HR observation remains blocked: sourceSafe=false
+  ---
+  duration_ms: 0.140388
+  type: 'test'
+  ...
+# Subtest: invalid HR observation remains blocked: refreshError=timeout
+ok 5 - invalid HR observation remains blocked: refreshError=timeout
+  ---
+  duration_ms: 0.917585
+  type: 'test'
+  ...
+# Subtest: invalid HR observation remains blocked: writes=true
+ok 6 - invalid HR observation remains blocked: writes=true
+  ---
+  duration_ms: 0.093539
+  type: 'test'
+  ...
+# Subtest: invalid HR observation remains blocked: hrWrites=true
+ok 7 - invalid HR observation remains blocked: hrWrites=true
+  ---
+  duration_ms: 0.091034
+  type: 'test'
+  ...
+# Subtest: invalid HR observation remains blocked: production=true
+ok 8 - invalid HR observation remains blocked: production=true
+  ---
+  duration_ms: 0.070835
+  type: 'test'
+  ...
+# Subtest: invalid HR observation remains blocked: writes=undefined
+ok 9 - invalid HR observation remains blocked: writes=undefined
+  ---
+  duration_ms: 0.146116
+  type: 'test'
+  ...
+# Subtest: an old ACK cannot disguise invalid current HR observation
+ok 10 - an old ACK cannot disguise invalid current HR observation
+  ---
+  duration_ms: 0.30443
+  type: 'test'
+  ...
+# Subtest: active terminal preflight invokes the observation predicate and preserves revision stability
+ok 11 - active terminal preflight invokes the observation predicate and preserves revision stability
+  ---
+  duration_ms: 4.068811
+  type: 'test'
+  ...
+# Subtest: B14 runtime authority rejects another revision or image and never projects env values
+ok 12 - B14 runtime authority rejects another revision or image and never projects env values
+  ---
+  duration_ms: 0.747605
+  type: 'test'
+  ...
+# Subtest: B14 does not substitute source fallback when runtime override exists: FIREBASE_SERVICE_ACCOUNT_JSON
+ok 13 - B14 does not substitute source fallback when runtime override exists: FIREBASE_SERVICE_ACCOUNT_JSON
+  ---
+  duration_ms: 0.192725
+  type: 'test'
+  ...
+# Subtest: B14 does not substitute source fallback when runtime override exists: CXORBIA_HR_LIVE_SHEET_ID
+ok 14 - B14 does not substitute source fallback when runtime override exists: CXORBIA_HR_LIVE_SHEET_ID
+  ---
+  duration_ms: 0.067059
+  type: 'test'
+  ...
+# Subtest: B14 uses only the agreeing sealed reader constants with no override
+ok 15 - B14 uses only the agreeing sealed reader constants with no override
+  ---
+  duration_ms: 0.459008
+  type: 'test'
+  ...
+# Subtest: B14 principal resolution uses only public identity accessors, never credentials
+ok 16 - B14 principal resolution uses only public identity accessors, never credentials
+  ---
+  duration_ms: 0.141969
+  type: 'test'
+  ...
+# Subtest: B14 canEdit cannot certify an ACK, write execution or domain completion
+ok 17 - B14 canEdit cannot certify an ACK, write execution or domain completion
+  ---
+  duration_ms: 0.118405
+  type: 'test'
+  ...
+# Subtest: B14 wrong identity, wrong workbook and missing metadata cannot prove edit capability
+ok 18 - B14 wrong identity, wrong workbook and missing metadata cannot prove edit capability
+  ---
+  duration_ms: 0.163772
+  type: 'test'
+  ...
+# Subtest: B14 permission diagnostics retain status/reason and exclude tokens, headers and error payloads
+ok 19 - B14 permission diagnostics retain status/reason and exclude tokens, headers and error payloads
+  ---
+  duration_ms: 0.706094
+  type: 'test'
+  ...
+# Subtest: B14 binding requires exact tenant/project/workbook and never exposes secretRef payload
+ok 20 - B14 binding requires exact tenant/project/workbook and never exposes secretRef payload
+  ---
+  duration_ms: 0.366792
+  type: 'test'
+  ...
+# Subtest: B14 mode keeps the existing HR read-only CLI contract operational
+ok 21 - B14 mode keeps the existing HR read-only CLI contract operational
+  ---
+  duration_ms: 134.391786
+  type: 'test'
+  ...
+# Subtest: B14 metadata preserves operational-source precedence and diagnoses shadowed route without exposing references
+ok 22 - B14 metadata preserves operational-source precedence and diagnoses shadowed route without exposing references
+  ---
+  duration_ms: 0.629019
+  type: 'test'
+  ...
+# Subtest: B14 alias candidates remain candidates and unsafe document paths are never read
+ok 23 - B14 alias candidates remain candidates and unsafe document paths are never read
+  ---
+  duration_ms: 0.309667
+  type: 'test'
+  ...
+# Subtest: HR349 readonly proof verifies complete historical bytes without exposing identity or treating stored readback false as failure
+ok 24 - HR349 readonly proof verifies complete historical bytes without exposing identity or treating stored readback false as failure
+  ---
+  duration_ms: 1.443252
+  type: 'test'
+  ...
+# Subtest: HR349 readonly proof does not certify wrong successor digest
+ok 25 - HR349 readonly proof does not certify wrong successor digest
+  ---
+  duration_ms: 0.433961
+  type: 'test'
+  ...
+# Subtest: HR349 readonly proof does not certify wrong successor actor binding
+ok 26 - HR349 readonly proof does not certify wrong successor actor binding
+  ---
+  duration_ms: 0.401252
+  type: 'test'
+  ...
+# Subtest: HR349 readonly proof does not certify wrong successor receipt path
+ok 27 - HR349 readonly proof does not certify wrong successor receipt path
+  ---
+  duration_ms: 0.271871
+  type: 'test'
+  ...
+# Subtest: HR349 readonly proof does not certify historical mutation
+ok 28 - HR349 readonly proof does not certify historical mutation
+  ---
+  duration_ms: 0.259383
+  type: 'test'
+  ...
+# Subtest: HR349 readonly proof does not certify late added intent
+ok 29 - HR349 readonly proof does not certify late added intent
+  ---
+  duration_ms: 6.702212
+  type: 'test'
+  ...
+# Subtest: HR349 readonly proof does not certify contradictory result proof
+ok 30 - HR349 readonly proof does not certify contradictory result proof
+  ---
+  duration_ms: 0.482203
+  type: 'test'
+  ...
+# Subtest: HR349 readonly proof does not certify wrong current revision
+ok 31 - HR349 readonly proof does not certify wrong current revision
+  ---
+  duration_ms: 0.443395
+  type: 'test'
+  ...
+# Subtest: HR349 readonly proof does not certify foreign predecessor
+ok 32 - HR349 readonly proof does not certify foreign predecessor
+  ---
+  duration_ms: 0.230741
+  type: 'test'
+  ...
+# Subtest: HR349 readonly proof does not certify self predecessor
+ok 33 - HR349 readonly proof does not certify self predecessor
+  ---
+  duration_ms: 0.344759
+  type: 'test'
+  ...
+# Subtest: HR349 readonly proof does not certify counter disagreement
+ok 34 - HR349 readonly proof does not certify counter disagreement
+  ---
+  duration_ms: 0.308096
+  type: 'test'
+  ...
+# Subtest: HR349 running successor remains explicitly uncommitted even with a verified predecessor
+ok 35 - HR349 running successor remains explicitly uncommitted even with a verified predecessor
+  ---
+  duration_ms: 0.429314
+  type: 'test'
+  ...
+1..35
+# tests 35
+# suites 0
+# pass 35
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 272.125318

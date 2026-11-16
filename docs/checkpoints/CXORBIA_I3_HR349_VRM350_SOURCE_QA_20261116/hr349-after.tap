@@ -1,0 +1,502 @@
+TAP version 13
+# Subtest: G05 24 concurrent visits complete with five transaction attempts and one receipt per entity
+ok 1 - G05 24 concurrent visits complete with five transaction attempts and one receipt per entity
+  ---
+  duration_ms: 75.418486
+  type: 'test'
+  ...
+# Subtest: G05 changed verified principal is rejected before acquiring any lease
+ok 2 - G05 changed verified principal is rejected before acquiring any lease
+  ---
+  duration_ms: 0.718151
+  type: 'test'
+  ...
+# Subtest: G05 pending command key is offered only to its verified actor and same source
+ok 3 - G05 pending command key is offered only to its verified actor and same source
+  ---
+  duration_ms: 1.256296
+  type: 'test'
+  ...
+# Subtest: G05 existing POST route dispatches fresh writer without requiring bootstrap cache
+ok 4 - G05 existing POST route dispatches fresh writer without requiring bootstrap cache
+  ---
+  duration_ms: 7.773664
+  type: 'test'
+  ...
+# Subtest: G05 command route blocks non-POST before writes
+ok 5 - G05 command route blocks non-POST before writes
+  ---
+  duration_ms: 0.741806
+  type: 'test'
+  ...
+# Subtest: G05 command route blocks missing Bearer before writes
+ok 6 - G05 command route blocks missing Bearer before writes
+  ---
+  duration_ms: 0.308536
+  type: 'test'
+  ...
+# Subtest: G05 command route blocks unconfigured writer before writes
+ok 7 - G05 command route blocks unconfigured writer before writes
+  ---
+  duration_ms: 0.40613
+  type: 'test'
+  ...
+# Subtest: G05 ordinary command still uses the existing provider configuration path
+ok 8 - G05 ordinary command still uses the existing provider configuration path
+  ---
+  duration_ms: 0.353612
+  type: 'test'
+  ...
+# Subtest: G05 private durable HR source enables a sanitized public snapshot without leaking provider configuration
+ok 9 - G05 private durable HR source enables a sanitized public snapshot without leaking provider configuration
+  ---
+  duration_ms: 2.543417
+  type: 'test'
+  ...
+# Subtest: G05 public snapshot cannot supply private authority when durable project config is absent
+ok 10 - G05 public snapshot cannot supply private authority when durable project config is absent
+  ---
+  duration_ms: 0.589111
+  type: 'test'
+  ...
+# Subtest: G05 initial shopper records Auth, claims and Firestore by entity without credential persistence
+ok 11 - G05 initial shopper records Auth, claims and Firestore by entity without credential persistence
+  ---
+  duration_ms: 6.103377
+  type: 'test'
+  ...
+# Subtest: I3 A03 G05 auto-compatible shopper consolidation survives the protected HR journal and exact replay
+ok 12 - I3 A03 G05 auto-compatible shopper consolidation survives the protected HR journal and exact replay
+  ---
+  duration_ms: 10.685936
+  type: 'test'
+  ...
+# Subtest: G05 claims-only effect counts even when historical provider reports an idempotent zero
+ok 13 - G05 claims-only effect counts even when historical provider reports an idempotent zero
+  ---
+  duration_ms: 6.994783
+  type: 'test'
+  ...
+# Subtest: G05 direct identity review set is audited; new command over unchanged review is a no-op
+ok 14 - G05 direct identity review set is audited; new command over unchanged review is a no-op
+  ---
+  duration_ms: 5.813739
+  type: 'test'
+  ...
+# Subtest: G05 Firestore callback retry records one committed effect and preserves concurrent fields
+ok 15 - G05 Firestore callback retry records one committed effect and preserves concurrent fields
+  ---
+  duration_ms: 10.710263
+  type: 'test'
+  ...
+# Subtest: G05 lost Auth ACK stays uncertain and retry cannot create a second principal
+ok 16 - G05 lost Auth ACK stays uncertain and retry cannot create a second principal
+  ---
+  duration_ms: 4.141939
+  type: 'test'
+  ...
+# Subtest: G05 lost Firestore ACK retains atomically committed entity effects and pending readback
+ok 17 - G05 lost Firestore ACK retains atomically committed entity effects and pending readback
+  ---
+  duration_ms: 4.969241
+  type: 'test'
+  ...
+# Subtest: G05 retries only unfinished stage without repeating completed shopper effects
+ok 18 - G05 retries only unfinished stage without repeating completed shopper effects
+  ---
+  duration_ms: 8.092415
+  type: 'test'
+  ...
+# Subtest: G05 idempotency binds revision and actor; confirmed replay only reauthorizes and reads receipt
+ok 19 - G05 idempotency binds revision and actor; confirmed replay only reauthorizes and reads receipt
+  ---
+  duration_ms: 2.075677
+  type: 'test'
+  ...
+# Subtest: G05 writer waits for late visit worker after an earlier worker fails
+ok 20 - G05 writer waits for late visit worker after an earlier worker fails
+  ---
+  duration_ms: 1.771828
+  type: 'test'
+  ...
+# Subtest: G05 operational conflict receipt counts reviewQueue and visit separately
+ok 21 - G05 operational conflict receipt counts reviewQueue and visit separately
+  ---
+  duration_ms: 1.54992
+  type: 'test'
+  ...
+# Subtest: G05 invalid wrong version is rejected before authorization or writes
+ok 22 - G05 invalid wrong version is rejected before authorization or writes
+  ---
+  duration_ms: 0.264591
+  type: 'test'
+  ...
+# Subtest: G05 invalid missing revision is rejected before authorization or writes
+ok 23 - G05 invalid missing revision is rejected before authorization or writes
+  ---
+  duration_ms: 0.13521
+  type: 'test'
+  ...
+# Subtest: G05 invalid mutable snapshot payload is rejected before authorization or writes
+ok 24 - G05 invalid mutable snapshot payload is rejected before authorization or writes
+  ---
+  duration_ms: 0.122
+  type: 'test'
+  ...
+# Subtest: G05 invalid period command is rejected before authorization or writes
+ok 25 - G05 invalid period command is rejected before authorization or writes
+  ---
+  duration_ms: 0.121149
+  type: 'test'
+  ...
+# Subtest: G05 invalid path injection is rejected before authorization or writes
+ok 26 - G05 invalid path injection is rejected before authorization or writes
+  ---
+  duration_ms: 0.235518
+  type: 'test'
+  ...
+# Subtest: G05 invalid missing idempotency is rejected before authorization or writes
+ok 27 - G05 invalid missing idempotency is rejected before authorization or writes
+  ---
+  duration_ms: 0.321235
+  type: 'test'
+  ...
+# Subtest: G05 verified shopper cannot invoke HR writer despite forged client admin
+ok 28 - G05 verified shopper cannot invoke HR writer despite forged client admin
+  ---
+  duration_ms: 0.393802
+  type: 'test'
+  ...
+# Subtest: G05 verified ops cannot invoke HR writer despite forged client admin
+ok 29 - G05 verified ops cannot invoke HR writer despite forged client admin
+  ---
+  duration_ms: 0.315256
+  type: 'test'
+  ...
+# Subtest: G05 verified client cannot invoke HR writer despite forged client admin
+ok 30 - G05 verified client cannot invoke HR writer despite forged client admin
+  ---
+  duration_ms: 0.283339
+  type: 'test'
+  ...
+# Subtest: G05 unsafe snapshot cannot acquire a writer lease
+ok 31 - G05 unsafe snapshot cannot acquire a writer lease
+  ---
+  duration_ms: 0.597062
+  type: 'test'
+  ...
+# Subtest: G05 imported snapshot cannot acquire a writer lease
+ok 32 - G05 imported snapshot cannot acquire a writer lease
+  ---
+  duration_ms: 0.441082
+  type: 'test'
+  ...
+# Subtest: G05 writer snapshot cannot acquire a writer lease
+ok 33 - G05 writer snapshot cannot acquire a writer lease
+  ---
+  duration_ms: 0.428804
+  type: 'test'
+  ...
+# Subtest: G05 wrong scope cannot acquire a writer lease
+ok 34 - G05 wrong scope cannot acquire a writer lease
+  ---
+  duration_ms: 0.356747
+  type: 'test'
+  ...
+# Subtest: G05 internal project cannot acquire a writer lease
+ok 35 - G05 internal project cannot acquire a writer lease
+  ---
+  duration_ms: 0.414162
+  type: 'test'
+  ...
+# Subtest: G05 missing binding cannot acquire a writer lease
+ok 36 - G05 missing binding cannot acquire a writer lease
+  ---
+  duration_ms: 0.512276
+  type: 'test'
+  ...
+# Subtest: G05 active lease rejects duplicate and different key; partial lease cannot be bypassed
+ok 37 - G05 active lease rejects duplicate and different key; partial lease cannot be bypassed
+  ---
+  duration_ms: 2.28783
+  type: 'test'
+  ...
+# Subtest: G05 rechecks lease after delayed intent commit before dispatching Auth
+ok 38 - G05 rechecks lease after delayed intent commit before dispatching Auth
+  ---
+  duration_ms: 2.360367
+  type: 'test'
+  ...
+# Subtest: HR349 new revision succeeds after an expired verified partial without rewriting history; exact replay is zero writes
+ok 39 - HR349 new revision succeeds after an expired verified partial without rewriting history; exact replay is zero writes
+  ---
+  duration_ms: 7.767425
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for unexpired lease
+ok 40 - HR349 successor holds with zero writes for unexpired lease
+  ---
+  duration_ms: 2.452413
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for expired running lease
+ok 41 - HR349 successor holds with zero writes for expired running lease
+  ---
+  duration_ms: 2.526713
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for same HR revision with another key
+ok 42 - HR349 successor holds with zero writes for same HR revision with another key
+  ---
+  duration_ms: 2.756572
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for different tenant
+ok 43 - HR349 successor holds with zero writes for different tenant
+  ---
+  duration_ms: 7.900417
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for different project
+ok 44 - HR349 successor holds with zero writes for different project
+  ---
+  duration_ms: 1.355081
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for wrong lease project
+ok 45 - HR349 successor holds with zero writes for wrong lease project
+  ---
+  duration_ms: 1.135497
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for wrong lease attempt
+ok 46 - HR349 successor holds with zero writes for wrong lease attempt
+  ---
+  duration_ms: 1.42806
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for foreign receipt path
+ok 47 - HR349 successor holds with zero writes for foreign receipt path
+  ---
+  duration_ms: 1.075749
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for invalid expiry
+ok 48 - HR349 successor holds with zero writes for invalid expiry
+  ---
+  duration_ms: 1.159443
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for wrong historical digest
+ok 49 - HR349 successor holds with zero writes for wrong historical digest
+  ---
+  duration_ms: 3.078388
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for wrong historical actor
+ok 50 - HR349 successor holds with zero writes for wrong historical actor
+  ---
+  duration_ms: 1.25258
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for wrong historical key
+ok 51 - HR349 successor holds with zero writes for wrong historical key
+  ---
+  duration_ms: 1.23835
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for wrong result binding
+ok 52 - HR349 successor holds with zero writes for wrong result binding
+  ---
+  duration_ms: 1.180945
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for unknown historical counts
+ok 53 - HR349 successor holds with zero writes for unknown historical counts
+  ---
+  duration_ms: 1.447188
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for counter disagreement
+ok 54 - HR349 successor holds with zero writes for counter disagreement
+  ---
+  duration_ms: 1.629587
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for unfinished receipt
+ok 55 - HR349 successor holds with zero writes for unfinished receipt
+  ---
+  duration_ms: 1.39426
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for unverified effect
+ok 56 - HR349 successor holds with zero writes for unverified effect
+  ---
+  duration_ms: 1.697798
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for missing provider ACK
+ok 57 - HR349 successor holds with zero writes for missing provider ACK
+  ---
+  duration_ms: 1.962238
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for credential authentication pending
+ok 58 - HR349 successor holds with zero writes for credential authentication pending
+  ---
+  duration_ms: 5.176237
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for cross revision effect
+ok 59 - HR349 successor holds with zero writes for cross revision effect
+  ---
+  duration_ms: 2.252618
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for cross attempt effect
+ok 60 - HR349 successor holds with zero writes for cross attempt effect
+  ---
+  duration_ms: 2.172359
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for unknown stage
+ok 61 - HR349 successor holds with zero writes for unknown stage
+  ---
+  duration_ms: 1.208996
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for cross stage effect
+ok 62 - HR349 successor holds with zero writes for cross stage effect
+  ---
+  duration_ms: 1.405747
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for cross system effect
+ok 63 - HR349 successor holds with zero writes for cross system effect
+  ---
+  duration_ms: 1.266601
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for invalid operation digest
+ok 64 - HR349 successor holds with zero writes for invalid operation digest
+  ---
+  duration_ms: 1.297928
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for foreign business operation
+ok 65 - HR349 successor holds with zero writes for foreign business operation
+  ---
+  duration_ms: 1.345288
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for empty effect operations
+ok 66 - HR349 successor holds with zero writes for empty effect operations
+  ---
+  duration_ms: 1.214073
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for orphan effect
+ok 67 - HR349 successor holds with zero writes for orphan effect
+  ---
+  duration_ms: 1.382402
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for contradictory no effect intent
+ok 68 - HR349 successor holds with zero writes for contradictory no effect intent
+  ---
+  duration_ms: 1.391226
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for pending intent
+ok 69 - HR349 successor holds with zero writes for pending intent
+  ---
+  duration_ms: 1.543861
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for uncertain intent
+ok 70 - HR349 successor holds with zero writes for uncertain intent
+  ---
+  duration_ms: 6.253048
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for wrong stage revision
+ok 71 - HR349 successor holds with zero writes for wrong stage revision
+  ---
+  duration_ms: 1.533335
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for uncommitted stage
+ok 72 - HR349 successor holds with zero writes for uncommitted stage
+  ---
+  duration_ms: 3.687377
+  type: 'test'
+  ...
+# Subtest: HR349 successor holds with zero writes for stage without ACK
+ok 73 - HR349 successor holds with zero writes for stage without ACK
+  ---
+  duration_ms: 1.262185
+  type: 'test'
+  ...
+# Subtest: HR349 complete journal beyond 501 entries detects a late unverified effect and then permits a fully verified successor
+ok 74 - HR349 complete journal beyond 501 entries detects a late unverified effect and then permits a fully verified successor
+  ---
+  duration_ms: 169.447144
+  type: 'test'
+  ...
+# Subtest: HR349 acquisition transaction retries and holds on new pending intent
+ok 75 - HR349 acquisition transaction retries and holds on new pending intent
+  ---
+  duration_ms: 2.337173
+  type: 'test'
+  ...
+# Subtest: HR349 acquisition transaction retries and holds on changed readback
+ok 76 - HR349 acquisition transaction retries and holds on changed readback
+  ---
+  duration_ms: 2.011632
+  type: 'test'
+  ...
+# Subtest: HR349 acquisition transaction retries and holds on resumed old lease
+ok 77 - HR349 acquisition transaction retries and holds on resumed old lease
+  ---
+  duration_ms: 1.52312
+  type: 'test'
+  ...
+# Subtest: HR349 acquisition transaction retries and holds on removed intent
+ok 78 - HR349 acquisition transaction retries and holds on removed intent
+  ---
+  duration_ms: 1.748473
+  type: 'test'
+  ...
+# Subtest: HR349 two concurrent successors cannot both acquire or execute providers
+ok 79 - HR349 two concurrent successors cannot both acquire or execute providers
+  ---
+  duration_ms: 10.159889
+  type: 'test'
+  ...
+# Subtest: HR349 expired in-flight Auth cannot transfer lease and its late ACK stays in historical journal
+ok 80 - HR349 expired in-flight Auth cannot transfer lease and its late ACK stays in historical journal
+  ---
+  duration_ms: 2.70748
+  type: 'test'
+  ...
+# Subtest: HR349 Auth predecessor accepts the exact verified non-credential operation
+ok 81 - HR349 Auth predecessor accepts the exact verified non-credential operation
+  ---
+  duration_ms: 2.4511
+  type: 'test'
+  ...
+# Subtest: HR349 Auth predecessor rejects a contradictory valid-shaped readback digest
+ok 82 - HR349 Auth predecessor rejects a contradictory valid-shaped readback digest
+  ---
+  duration_ms: 1.449842
+  type: 'test'
+  ...
+1..82
+# tests 82
+# suites 0
+# pass 82
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 611.392228

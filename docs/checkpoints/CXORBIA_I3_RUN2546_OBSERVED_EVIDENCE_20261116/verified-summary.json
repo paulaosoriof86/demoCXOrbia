@@ -1,0 +1,210 @@
+{
+  "runId": 43794015448,
+  "runNumber": 2546,
+  "runStatus": "completed",
+  "runConclusion": "failure",
+  "controlSha": "998058d5272bf99c4e36b596dd6f67eab8737e66",
+  "sourceSha": "f2fcb6200843971485ef2b092240c5497148038b",
+  "sourceTree": "41c4a8c884808a6722ff7b7217eda0ea5fbf7ef3",
+  "runtimeRevision": "cxorbia-live-hr-dev-00373-fxw",
+  "runtimeDigest": "sha256:6fe218e2573028ef5889d67b890d434f1a022067c8f39e6c028323c707805feb",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/cd46b1801ecd0123",
+  "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+  "jobs": [
+    {
+      "id": 133058617888,
+      "name": "canonical-candidate-authority",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-16T02:44:56Z",
+      "completed_at": "2026-11-16T02:45:44Z"
+    },
+    {
+      "id": 133058880490,
+      "name": "c3-preterminal-module-truth",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-16T02:45:47Z",
+      "completed_at": "2026-11-16T02:47:07Z"
+    },
+    {
+      "id": 133059290694,
+      "name": "certify",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-16T02:47:09Z",
+      "completed_at": "2026-11-16T02:56:18Z"
+    }
+  ],
+  "sourceQa": {
+    "pass": 317,
+    "fail": 0,
+    "owners": 21
+  },
+  "c3": {
+    "decision": "PASS_C3_PRETERMINAL_SOURCE_READY_EXACT_DEV",
+    "moduleCount": 21,
+    "matchModules": 5,
+    "nonMatchModules": 16,
+    "sourceReadyModules": 21,
+    "pendingFiles": 0,
+    "activeBrowserOwners": 133,
+    "duplicateScripts": 0,
+    "builds": 0,
+    "deploys": 0,
+    "writes": 0
+  },
+  "human": {
+    "decision": "PASS_I3_HUMAN_LIVE_ACCEPTANCE",
+    "expectedRoleRouteEntries": 56,
+    "actualRouteEntries": 90,
+    "issues": [],
+    "pageErrors": []
+  },
+  "semanticDecision": "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE",
+  "focalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+  "dashboardStages": {
+    "decision": "PASS_SCOPED_B11_CURRENT_PERIOD_STAGE_IDENTITIES",
+    "completedCases": 18,
+    "expectedCases": 18,
+    "counts": {
+      "GT": {
+        "total": 34,
+        "asign": 26,
+        "agend": 15,
+        "sinagend": 11,
+        "sinasign": 8,
+        "real": 5,
+        "cuest": 5,
+        "submit": 4,
+        "liq": 0
+      },
+      "HN": {
+        "total": 10,
+        "asign": 7,
+        "agend": 5,
+        "sinagend": 2,
+        "sinasign": 3,
+        "real": 2,
+        "cuest": 1,
+        "submit": 1,
+        "liq": 0
+      }
+    },
+    "caseIdsUniqueAndCardinalityMatches": true,
+    "totalIdsExactlyMatchPinnedExternalHR": true,
+    "allCaseIdsWithinExactCountryPeriodScope": true,
+    "fullB11": false,
+    "fullDomain": false
+  },
+  "preFixtures": {
+    "decision": "HOLD_I3_LIVE_FIXTURES_V2",
+    "classification": "PERSISTENCE_FAILURE",
+    "code": "PERSISTENCE_FAILURE:HR_DURABLE_REVISION_DIVERGENCE:bfc8f1788b902124e6",
+    "passedIds": [
+      "6_HISTORICO_KPIS",
+      "10_CLIENTE",
+      "1_SHOPPER_GT",
+      "2_SHOPPER_HN",
+      "3_NOMBRE_TILDE",
+      "4_NOMBRE_COMPUESTO",
+      "5_PERFIL_ADMIN"
+    ],
+    "passed": 7,
+    "expectedTotal": 10,
+    "cleanup": {
+      "ok": true,
+      "documentsAbsent": 20,
+      "authAbsent": 4,
+      "creationJournalsResolved": true
+    },
+    "proofStage": "PRE_CERTIFICATION",
+    "certifiedAtExecution": false,
+    "finalDevIdentityVerified": false,
+    "finalHrRevision": null,
+    "artifactTarDigestDeclaredNotCertified": "d4703126b1650e0d555d5a5c1f4418f5f8b0647aba4c726c21984274e3472e99"
+  },
+  "b14": {
+    "decision": "HOLD",
+    "b14Closed": false,
+    "providerAck": false,
+    "bindingToReaderMatch": "UNRESOLVED",
+    "projectVersion": 5,
+    "sourceSelected": "operationalSource",
+    "sourceConfigGuardPass": true,
+    "leaseStatus": "partial",
+    "leaseExpired": true,
+    "leaseBlocksDifferentReceipt": true,
+    "leaseResumeAgainstCurrentRevisionPossible": false,
+    "leaseReceiptRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
+    "leaseReceiptWrites": 792,
+    "journalComplete": false,
+    "readOnlyScope": {
+      "hrWrites": 0,
+      "firestoreWrites": 0,
+      "authAdminWrites": 0,
+      "iamPolicyWrites": 0,
+      "secretPayloadReads": 0,
+      "apiEnables": 0,
+      "production": false
+    },
+    "passiveAutomaticReadbacks": [
+      {
+        "file": "semantic/hr-auto-admin-625df6d4e4fc4937-1794797569688.json",
+        "sha256": "5c92d1792f49cfb549eb0f775d2e43871ca3a2d0c4d7e16c0b22037e3d3472d8",
+        "initialAutomatic": null,
+        "afterRoutesAutomatic": {
+          "ok": false,
+          "providerAck": false,
+          "readbackVerified": false,
+          "viewRefreshVerified": false,
+          "code": "HR_RECONCILIATION_SCOPE_BUSY",
+          "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+          "projectMatches": true,
+          "at": "2026-11-16T02:52:50.224Z"
+        },
+        "afterRoutesCommand": {
+          "kind": "sync-request",
+          "idempotencyKeyHash": "de04946c04ffa371e85192a1ba2471abdd2a11bc0a0ddd8ff2c883c4c0f220c6",
+          "receiptPathHash": "ea4dc4f0a73dcd4f45e97fd90deea5dbada1bfea3a523f9f8c41738d0c85e271",
+          "existingReceiptPathHash": "b54a5056b05bb79eefe78403dd25bec0a44e13a0cafb9d482389086f6aa84f2e",
+          "resumeKeyHash": null,
+          "code": "HR_RECONCILIATION_SCOPE_BUSY",
+          "status": "blocked",
+          "providerAck": false,
+          "unresolvedEffects": null,
+          "unverifiedEffects": null
+        }
+      },
+      {
+        "file": "semantic/hr-auto-admin-625df6d4e4fc4937-1794797646499.json",
+        "sha256": "cbaca4cb7785be40b3bae0a8a3cc7e04f55bdef21b08ceca8f7d12141fceda01",
+        "initialAutomatic": null,
+        "afterRoutesAutomatic": {
+          "ok": false,
+          "providerAck": false,
+          "readbackVerified": false,
+          "viewRefreshVerified": false,
+          "code": "HR_RECONCILIATION_SCOPE_BUSY",
+          "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+          "projectMatches": true,
+          "at": "2026-11-16T02:54:06.959Z"
+        },
+        "afterRoutesCommand": {
+          "kind": "sync-request",
+          "idempotencyKeyHash": "de04946c04ffa371e85192a1ba2471abdd2a11bc0a0ddd8ff2c883c4c0f220c6",
+          "receiptPathHash": "ea4dc4f0a73dcd4f45e97fd90deea5dbada1bfea3a523f9f8c41738d0c85e271",
+          "existingReceiptPathHash": "b54a5056b05bb79eefe78403dd25bec0a44e13a0cafb9d482389086f6aa84f2e",
+          "resumeKeyHash": null,
+          "code": "HR_RECONCILIATION_SCOPE_BUSY",
+          "status": "blocked",
+          "providerAck": false,
+          "unresolvedEffects": null,
+          "unverifiedEffects": null
+        }
+      }
+    ]
+  },
+  "phaseAComplete": false,
+  "i4Authorized": false
+}

@@ -1,0 +1,996 @@
+TAP version 13
+# Subtest: Client commands accept exact current server HR period without creating optional Firestore metadata
+ok 1 - Client commands accept exact current server HR period without creating optional Firestore metadata
+  ---
+  duration_ms: 8.255892
+  type: 'test'
+  ...
+# Subtest: legacy project without explicit source metadata may use only its exact server HR scope
+ok 2 - legacy project without explicit source metadata may use only its exact server HR scope
+  ---
+  duration_ms: 0.890876
+  type: 'test'
+  ...
+# Subtest: HR period authority denies internal project
+ok 3 - HR period authority denies internal project
+  ---
+  duration_ms: 0.574839
+  type: 'test'
+  ...
+# Subtest: HR period authority denies foreign snapshot
+ok 4 - HR period authority denies foreign snapshot
+  ---
+  duration_ms: 0.323099
+  type: 'test'
+  ...
+# Subtest: HR period authority denies foreign tenant
+ok 5 - HR period authority denies foreign tenant
+  ---
+  duration_ms: 0.466014
+  type: 'test'
+  ...
+# Subtest: HR period authority denies unsafe snapshot
+ok 6 - HR period authority denies unsafe snapshot
+  ---
+  duration_ms: 0.297066
+  type: 'test'
+  ...
+# Subtest: HR period authority denies imported snapshot
+ok 7 - HR period authority denies imported snapshot
+  ---
+  duration_ms: 0.453904
+  type: 'test'
+  ...
+# Subtest: HR period authority denies unknown period
+ok 8 - HR period authority denies unknown period
+  ---
+  duration_ms: 0.313797
+  type: 'test'
+  ...
+# Subtest: HR period authority denies duplicate period
+ok 9 - HR period authority denies duplicate period
+  ---
+  duration_ms: 1.161341
+  type: 'test'
+  ...
+# Subtest: HR period authority denies foreign period
+ok 10 - HR period authority denies foreign period
+  ---
+  duration_ms: 0.610497
+  type: 'test'
+  ...
+# Subtest: HR period authority denies closed HR period
+ok 11 - HR period authority denies closed HR period
+  ---
+  duration_ms: 0.362637
+  type: 'test'
+  ...
+# Subtest: HR period authority denies closed canonical metadata
+ok 12 - HR period authority denies closed canonical metadata
+  ---
+  duration_ms: 0.422753
+  type: 'test'
+  ...
+# Subtest: HR period authority denies closed key metadata
+ok 13 - HR period authority denies closed key metadata
+  ---
+  duration_ms: 0.299643
+  type: 'test'
+  ...
+# Subtest: HR period authority denies ambiguous metadata
+ok 14 - HR period authority denies ambiguous metadata
+  ---
+  duration_ms: 0.30825
+  type: 'test'
+  ...
+# Subtest: missing trusted server revision cannot authorize an absent period
+ok 15 - missing trusted server revision cannot authorize an absent period
+  ---
+  duration_ms: 0.314782
+  type: 'test'
+  ...
+# Subtest: command runtime passes the parsed command to server configuration before provider selection
+ok 16 - command runtime passes the parsed command to server configuration before provider selection
+  ---
+  duration_ms: 3.840141
+  type: 'test'
+  ...
+# Subtest: actual server callback refreshes HR before each Client flow and retains other command behavior
+ok 17 - actual server callback refreshes HR before each Client flow and retains other command behavior
+  ---
+  duration_ms: 0.286136
+  type: 'test'
+  ...
+# Subtest: actual server callback never reuses old HR when the Client refresh fails
+ok 18 - actual server callback never reuses old HR when the Client refresh fails
+  ---
+  duration_ms: 0.321771
+  type: 'test'
+  ...
+# Subtest: nps: token-owned durable entity, independent readback, audit and zero-write replay
+ok 19 - nps: token-owned durable entity, independent readback, audit and zero-write replay
+  ---
+  duration_ms: 0.72444
+  type: 'test'
+  ...
+# Subtest: note: token-owned durable entity, independent readback, audit and zero-write replay
+ok 20 - note: token-owned durable entity, independent readback, audit and zero-write replay
+  ---
+  duration_ms: 0.421848
+  type: 'test'
+  ...
+# Subtest: meeting: token-owned durable entity, independent readback, audit and zero-write replay
+ok 21 - meeting: token-owned durable entity, independent readback, audit and zero-write replay
+  ---
+  duration_ms: 10.268105
+  type: 'test'
+  ...
+# Subtest: canonical active Client membership without an active boolean remains valid
+ok 22 - canonical active Client membership without an active boolean remains valid
+  ---
+  duration_ms: 0.417919
+  type: 'test'
+  ...
+# Subtest: canonical client role alias uses its exact staff membership
+ok 23 - canonical client role alias uses its exact staff membership
+  ---
+  duration_ms: 0.404835
+  type: 'test'
+  ...
+# Subtest: same received key in another authorized period preserves separate durable audit entries
+ok 24 - same received key in another authorized period preserves separate durable audit entries
+  ---
+  duration_ms: 0.643856
+  type: 'test'
+  ...
+# Subtest: lost readback after commit reports pending proof and retry recovers the one durable entity
+ok 25 - lost readback after commit reports pending proof and retry recovers the one durable entity
+  ---
+  duration_ms: 0.568064
+  type: 'test'
+  ...
+# Subtest: concurrent replay produces one entity, one receipt and one audit
+ok 26 - concurrent replay produces one entity, one receipt and one audit
+  ---
+  duration_ms: 1.018351
+  type: 'test'
+  ...
+# Subtest: changed payload and another actor cannot adopt an existing idempotency receipt
+ok 27 - changed payload and another actor cannot adopt an existing idempotency receipt
+  ---
+  duration_ms: 0.679295
+  type: 'test'
+  ...
+# Subtest: client collaboration denies staff preview
+ok 28 - client collaboration denies staff preview
+  ---
+  duration_ms: 0.199693
+  type: 'test'
+  ...
+# Subtest: client collaboration denies shopper
+ok 29 - client collaboration denies shopper
+  ---
+  duration_ms: 0.131045
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong tenant
+ok 30 - client collaboration denies wrong tenant
+  ---
+  duration_ms: 0.097631
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong project
+ok 31 - client collaboration denies wrong project
+  ---
+  duration_ms: 0.119384
+  type: 'test'
+  ...
+# Subtest: client collaboration denies missing period
+ok 32 - client collaboration denies missing period
+  ---
+  duration_ms: 0.322284
+  type: 'test'
+  ...
+# Subtest: client collaboration denies inactive membership
+ok 33 - client collaboration denies inactive membership
+  ---
+  duration_ms: 0.160637
+  type: 'test'
+  ...
+# Subtest: client collaboration denies inactive status
+ok 34 - client collaboration denies inactive status
+  ---
+  duration_ms: 0.130694
+  type: 'test'
+  ...
+# Subtest: client collaboration denies foreign member project
+ok 35 - client collaboration denies foreign member project
+  ---
+  duration_ms: 0.181093
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong namespace
+ok 36 - client collaboration denies wrong namespace
+  ---
+  duration_ms: 0.154272
+  type: 'test'
+  ...
+# Subtest: client collaboration denies missing namespace
+ok 37 - client collaboration denies missing namespace
+  ---
+  duration_ms: 0.143426
+  type: 'test'
+  ...
+# Subtest: client collaboration denies closed period
+ok 38 - client collaboration denies closed period
+  ---
+  duration_ms: 0.371644
+  type: 'test'
+  ...
+# Subtest: client collaboration denies archived period
+ok 39 - client collaboration denies archived period
+  ---
+  duration_ms: 0.36406
+  type: 'test'
+  ...
+# Subtest: client collaboration denies foreign period
+ok 40 - client collaboration denies foreign period
+  ---
+  duration_ms: 0.364932
+  type: 'test'
+  ...
+# Subtest: client collaboration denies spoofed author
+ok 41 - client collaboration denies spoofed author
+  ---
+  duration_ms: 0.133019
+  type: 'test'
+  ...
+# Subtest: client collaboration denies spoofed recipients
+ok 42 - client collaboration denies spoofed recipients
+  ---
+  duration_ms: 0.100981
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong entity
+ok 43 - client collaboration denies wrong entity
+  ---
+  duration_ms: 0.081477
+  type: 'test'
+  ...
+# Subtest: client collaboration denies chosen entity id
+ok 44 - client collaboration denies chosen entity id
+  ---
+  duration_ms: 0.079222
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong permission
+ok 45 - client collaboration denies wrong permission
+  ---
+  duration_ms: 0.080024
+  type: 'test'
+  ...
+# Subtest: client collaboration denies wrong payload period
+ok 46 - client collaboration denies wrong payload period
+  ---
+  duration_ms: 0.079815
+  type: 'test'
+  ...
+# Subtest: client collaboration denies missing request id
+ok 47 - client collaboration denies missing request id
+  ---
+  duration_ms: 0.119485
+  type: 'test'
+  ...
+# Subtest: client collaboration denies empty note
+ok 48 - client collaboration denies empty note
+  ---
+  duration_ms: 0.092549
+  type: 'test'
+  ...
+# Subtest: client collaboration denies excessive note
+ok 49 - client collaboration denies excessive note
+  ---
+  duration_ms: 0.116124
+  type: 'test'
+  ...
+# Subtest: NPS rejects invalid numeric score -1
+ok 50 - NPS rejects invalid numeric score -1
+  ---
+  duration_ms: 0.122356
+  type: 'test'
+  ...
+# Subtest: NPS rejects invalid numeric score 11
+ok 51 - NPS rejects invalid numeric score 11
+  ---
+  duration_ms: 0.067266
+  type: 'test'
+  ...
+# Subtest: NPS rejects invalid numeric score 9.5
+ok 52 - NPS rejects invalid numeric score 9.5
+  ---
+  duration_ms: 0.069862
+  type: 'test'
+  ...
+# Subtest: NPS rejects invalid numeric score "9"
+ok 53 - NPS rejects invalid numeric score "9"
+  ---
+  duration_ms: 0.067357
+  type: 'test'
+  ...
+# Subtest: NPS rejects invalid numeric score null
+ok 54 - NPS rejects invalid numeric score null
+  ---
+  duration_ms: 0.05669
+  type: 'test'
+  ...
+# Subtest: meeting rejects invalid request {"date":"2026-02-30"}
+ok 55 - meeting rejects invalid request {"date":"2026-02-30"}
+  ---
+  duration_ms: 0.126655
+  type: 'test'
+  ...
+# Subtest: meeting rejects invalid request {"date":"2001-01-01"}
+ok 56 - meeting rejects invalid request {"date":"2001-01-01"}
+  ---
+  duration_ms: 0.526747
+  type: 'test'
+  ...
+# Subtest: meeting rejects invalid request {"time":"25:00"}
+ok 57 - meeting rejects invalid request {"time":"25:00"}
+  ---
+  duration_ms: 0.117597
+  type: 'test'
+  ...
+# Subtest: meeting rejects invalid request {"mode":"Calendar invitation sent"}
+ok 58 - meeting rejects invalid request {"mode":"Calendar invitation sent"}
+  ---
+  duration_ms: 0.087658
+  type: 'test'
+  ...
+# (node:3656) ExperimentalWarning: The MockTimers API is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: PRE-I4 VRM-134 / bounded visit workers settle all writes before reporting a failure
+ok 59 - PRE-I4 VRM-134 / bounded visit workers settle all writes before reporting a failure
+  ---
+  duration_ms: 11.582281
+  type: 'test'
+  ...
+# Subtest: Gate 7 / visit HR reconciliation creates durable visits idempotently by revision
+ok 60 - Gate 7 / visit HR reconciliation creates durable visits idempotently by revision
+  ---
+  duration_ms: 1.774836
+  type: 'test'
+  ...
+# Subtest: Gate 7 / HR reconciliation updates durable operational state across revisions and repairs stale same-revision rows
+ok 61 - Gate 7 / HR reconciliation updates durable operational state across revisions and repairs stale same-revision rows
+  ---
+  duration_ms: 2.853794
+  type: 'test'
+  ...
+# Subtest: Gate 7 / HR reconciliation gives HR authority until external reflection is confirmed
+ok 62 - Gate 7 / HR reconciliation gives HR authority until external reflection is confirmed
+  ---
+  duration_ms: 2.160632
+  type: 'test'
+  ...
+# Subtest: Gate 7 / composer overlays durable platform pending assignment without taking HR-managed fields
+ok 63 - Gate 7 / composer overlays durable platform pending assignment without taking HR-managed fields
+  ---
+  duration_ms: 2.967393
+  type: 'test'
+  ...
+# Subtest: Gate 7 / composer marks HR versus durable shopper conflict without silent overwrite
+ok 64 - Gate 7 / composer marks HR versus durable shopper conflict without silent overwrite
+  ---
+  duration_ms: 0.72122
+  type: 'test'
+  ...
+# Subtest: Gate 7 / visit.assign requires provider ACK and replays idempotently
+ok 65 - Gate 7 / visit.assign requires provider ACK and replays idempotently
+  ---
+  duration_ms: 4.017926
+  type: 'test'
+  ...
+# Subtest: Gate 7 / approval atomically assigns visit and targets exactly one shopper notice without duplicate on replay
+ok 66 - Gate 7 / approval atomically assigns visit and targets exactly one shopper notice without duplicate on replay
+  ---
+  duration_ms: 1.290234
+  type: 'test'
+  ...
+# Subtest: Gate 7 / rejected applications never produce shopper approval bulletin
+ok 67 - Gate 7 / rejected applications never produce shopper approval bulletin
+  ---
+  duration_ms: 0.665756
+  type: 'test'
+  ...
+# Subtest: Gate 7 / shopper bulletin queries enforce exact recipient and project even when role query is broad
+ok 68 - Gate 7 / shopper bulletin queries enforce exact recipient and project even when role query is broad
+  ---
+  duration_ms: 1.156222
+  type: 'test'
+  ...
+# Subtest: Gate 7 / visit.assign resolves exact HR durable key when logical visitId differs and accepts source-current
+ok 69 - Gate 7 / visit.assign resolves exact HR durable key when logical visitId differs and accepts source-current
+  ---
+  duration_ms: 0.529735
+  type: 'test'
+  ...
+# Subtest: Gate 7 / visit.assign rejects a durable visit that is no longer HR-available
+ok 70 - Gate 7 / visit.assign rejects a durable visit that is no longer HR-available
+  ---
+  duration_ms: 0.451894
+  type: 'test'
+  ...
+# Subtest: Gate 7 / visitas UI does not declare assignment success before ACK
+ok 71 - Gate 7 / visitas UI does not declare assignment success before ACK
+  ---
+  duration_ms: 0.525727
+  type: 'test'
+  ...
+# Subtest: Gate 7 / unmatched platform-only shopper profiles stay review-only until exact HR crosswalk exists
+ok 72 - Gate 7 / unmatched platform-only shopper profiles stay review-only until exact HR crosswalk exists
+  ---
+  duration_ms: 1.737879
+  type: 'test'
+  ...
+# Subtest: PRE-I4 VRM-013 / canonical provider supports atomic reassignment with ACK and schedule decision
+ok 73 - PRE-I4 VRM-013 / canonical provider supports atomic reassignment with ACK and schedule decision
+  ---
+  duration_ms: 0.623361
+  type: 'test'
+  ...
+# Subtest: PRE-I4 VRM-013 / canonical provider reschedule decision is durable and idempotent
+ok 74 - PRE-I4 VRM-013 / canonical provider reschedule decision is durable and idempotent
+  ---
+  duration_ms: 10.312378
+  type: 'test'
+  ...
+# Subtest: PRE-I4 VRM-013 / internal-owned cancellation releases only after provider ACK
+ok 75 - PRE-I4 VRM-013 / internal-owned cancellation releases only after provider ACK
+  ---
+  duration_ms: 0.615251
+  type: 'test'
+  ...
+# Subtest: PRE-I4 VRM-013 / external-HR cancellation cannot fabricate availability without HR ACK
+ok 76 - PRE-I4 VRM-013 / external-HR cancellation cannot fabricate availability without HR ACK
+  ---
+  duration_ms: 0.503135
+  type: 'test'
+  ...
+# Subtest: PRE-I4 VRM-013 / Postulaciones has no local-first edit reassign cancel or reprogram success paths
+ok 77 - PRE-I4 VRM-013 / Postulaciones has no local-first edit reassign cancel or reprogram success paths
+  ---
+  duration_ms: 0.716887
+  type: 'test'
+  ...
+# Subtest: VRM143 visit.cancel two exact cycles, equal clock, durable notice and old replay
+ok 78 - VRM143 visit.cancel two exact cycles, equal clock, durable notice and old replay
+  ---
+  duration_ms: 9.054778
+  type: 'test'
+  ...
+# Subtest: VRM143 visit.reschedule two exact cycles, equal clock, durable notice and old replay
+ok 79 - VRM143 visit.reschedule two exact cycles, equal clock, durable notice and old replay
+  ---
+  duration_ms: 9.411217
+  type: 'test'
+  ...
+# Subtest: VRM143 external cancellation preserves exact pending HR cycle without fabricating availability
+ok 80 - VRM143 external cancellation preserves exact pending HR cycle without fabricating availability
+  ---
+  duration_ms: 2.754296
+  type: 'test'
+  ...
+# Subtest: VRM143 bulletin write failure rolls back request, receipt and audit together
+ok 81 - VRM143 bulletin write failure rolls back request, receipt and audit together
+  ---
+  duration_ms: 0.735533
+  type: 'test'
+  ...
+# Subtest: B7 durable shopper notices require Firestore server readback and post-hydration reload
+ok 82 - B7 durable shopper notices require Firestore server readback and post-hydration reload
+  ---
+  duration_ms: 1.198321
+  type: 'test'
+  ...
+# Subtest: VRM143 mapper preserves canonical lifecycle dates, explicit action and cycle through reload
+ok 83 - VRM143 mapper preserves canonical lifecycle dates, explicit action and cycle through reload
+  ---
+  duration_ms: 17.11495
+  type: 'test'
+  ...
+# Subtest: VRM143 shared feed correctly handles current information
+ok 84 - VRM143 shared feed correctly handles current information
+  ---
+  duration_ms: 3.734125
+  type: 'test'
+  ...
+# Subtest: VRM143 shared feed correctly handles resolved
+ok 85 - VRM143 shared feed correctly handles resolved
+  ---
+  duration_ms: 1.10429
+  type: 'test'
+  ...
+# Subtest: VRM143 shared feed correctly handles expired
+ok 86 - VRM143 shared feed correctly handles expired
+  ---
+  duration_ms: 0.990252
+  type: 'test'
+  ...
+# Subtest: VRM143 shared feed correctly handles future expiry
+ok 87 - VRM143 shared feed correctly handles future expiry
+  ---
+  duration_ms: 1.144014
+  type: 'test'
+  ...
+# Subtest: VRM143 shared feed correctly handles historical date without period
+ok 88 - VRM143 shared feed correctly handles historical date without period
+  ---
+  duration_ms: 1.010537
+  type: 'test'
+  ...
+# Subtest: VRM143 shared feed correctly handles foreign project actionable
+ok 89 - VRM143 shared feed correctly handles foreign project actionable
+  ---
+  duration_ms: 0.989468
+  type: 'test'
+  ...
+# Subtest: VRM143 historical terminal cancellation stays in history but is never reactivated by operational flag
+ok 90 - VRM143 historical terminal cancellation stays in history but is never reactivated by operational flag
+  ---
+  duration_ms: 1.397958
+  type: 'test'
+  ...
+# Subtest: VRM143 exact historical cancel pending_review remains visible even read
+ok 91 - VRM143 exact historical cancel pending_review remains visible even read
+  ---
+  duration_ms: 2.083624
+  type: 'test'
+  ...
+# Subtest: VRM143 exact historical cancel approved_pending_hr remains visible even read
+ok 92 - VRM143 exact historical cancel approved_pending_hr remains visible even read
+  ---
+  duration_ms: 1.043165
+  type: 'test'
+  ...
+# Subtest: VRM143 exact historical reprog pending_review remains visible even read
+ok 93 - VRM143 exact historical reprog pending_review remains visible even read
+  ---
+  duration_ms: 0.942388
+  type: 'test'
+  ...
+# Subtest: VRM143 newer request cannot reactivate either older request or its decision, including equal timestamps
+ok 94 - VRM143 newer request cannot reactivate either older request or its decision, including equal timestamps
+  ---
+  duration_ms: 1.960322
+  type: 'test'
+  ...
+# Subtest: VRM143 historical exception denies no cycle
+ok 95 - VRM143 historical exception denies no cycle
+  ---
+  duration_ms: 1.00372
+  type: 'test'
+  ...
+# Subtest: VRM143 historical exception denies different cycle
+ok 96 - VRM143 historical exception denies different cycle
+  ---
+  duration_ms: 0.922592
+  type: 'test'
+  ...
+# Subtest: VRM143 historical exception denies other recipient
+ok 97 - VRM143 historical exception denies other recipient
+  ---
+  duration_ms: 0.80762
+  type: 'test'
+  ...
+# Subtest: VRM143 historical exception denies other project
+ok 98 - VRM143 historical exception denies other project
+  ---
+  duration_ms: 0.872747
+  type: 'test'
+  ...
+# Subtest: VRM143 historical exception denies other entity
+ok 99 - VRM143 historical exception denies other entity
+  ---
+  duration_ms: 0.995851
+  type: 'test'
+  ...
+# Subtest: VRM143 historical exception denies other period
+ok 100 - VRM143 historical exception denies other period
+  ---
+  duration_ms: 0.976699
+  type: 'test'
+  ...
+# Subtest: VRM143 historical exception denies other tenant
+ok 101 - VRM143 historical exception denies other tenant
+  ---
+  duration_ms: 0.902305
+  type: 'test'
+  ...
+# Subtest: VRM143 duplicate matching entity cannot certify a historical actionable notice
+ok 102 - VRM143 duplicate matching entity cannot certify a historical actionable notice
+  ---
+  duration_ms: 0.986125
+  type: 'test'
+  ...
+# Subtest: VRM143 same-period decision remains informative after terminal resolution of request
+ok 103 - VRM143 same-period decision remains informative after terminal resolution of request
+  ---
+  duration_ms: 1.015923
+  type: 'test'
+  ...
+# Subtest: VRM143 current legacy decision remains informative without inventing a historic cycle
+ok 104 - VRM143 current legacy decision remains informative without inventing a historic cycle
+  ---
+  duration_ms: 1.035901
+  type: 'test'
+  ...
+# Subtest: VRM143 approved assignment notice retains its exact pending visit obligation
+ok 105 - VRM143 approved assignment notice retains its exact pending visit obligation
+  ---
+  duration_ms: 1.021325
+  type: 'test'
+  ...
+# Subtest: VRM143 historical request from previous or absent owner is informational only: shopper s2
+ok 106 - VRM143 historical request from previous or absent owner is informational only: shopper s2
+  ---
+  duration_ms: 1.759515
+  type: 'test'
+  ...
+# Subtest: VRM143 historical request from previous or absent owner is informational only: admin s2
+ok 107 - VRM143 historical request from previous or absent owner is informational only: admin s2
+  ---
+  duration_ms: 0.905384
+  type: 'test'
+  ...
+# Subtest: VRM143 historical request from previous or absent owner is informational only: shopper null
+ok 108 - VRM143 historical request from previous or absent owner is informational only: shopper null
+  ---
+  duration_ms: 0.896644
+  type: 'test'
+  ...
+# Subtest: VRM143 historical request from previous or absent owner is informational only: admin null
+ok 109 - VRM143 historical request from previous or absent owner is informational only: admin null
+  ---
+  duration_ms: 0.918299
+  type: 'test'
+  ...
+# Subtest: nps: failed provider never closes the form or announces success
+ok 110 - nps: failed provider never closes the form or announces success
+  ---
+  duration_ms: 5.296874
+  type: 'test'
+  ...
+# Subtest: note: failed provider never closes the form or announces success
+ok 111 - note: failed provider never closes the form or announces success
+  ---
+  duration_ms: 2.50587
+  type: 'test'
+  ...
+# Subtest: meeting: failed provider never closes the form or announces success
+ok 112 - meeting: failed provider never closes the form or announces success
+  ---
+  duration_ms: 1.987724
+  type: 'test'
+  ...
+# Subtest: all three successful commands require server readback and survive a new authorized session
+ok 113 - all three successful commands require server readback and survive a new authorized session
+  ---
+  duration_ms: 4.381608
+  type: 'test'
+  ...
+# Subtest: committed but unreadable write holds the modal; retry uses the same key and creates no duplicate
+ok 114 - committed but unreadable write holds the modal; retry uses the same key and creates no duplicate
+  ---
+  duration_ms: 2.289496
+  type: 'test'
+  ...
+# Subtest: two concurrent clicks invoke only one command and acknowledge once
+ok 115 - two concurrent clicks invoke only one command and acknowledge once
+  ---
+  duration_ms: 1.159198
+  type: 'test'
+  ...
+# Subtest: a late ACK after changing uid never publishes into the new context
+ok 116 - a late ACK after changing uid never publishes into the new context
+  ---
+  duration_ms: 1.361065
+  type: 'test'
+  ...
+# Subtest: a late ACK after changing projectId never publishes into the new context
+ok 117 - a late ACK after changing projectId never publishes into the new context
+  ---
+  duration_ms: 5.88053
+  type: 'test'
+  ...
+# Subtest: a late ACK after changing periodId never publishes into the new context
+ok 118 - a late ACK after changing periodId never publishes into the new context
+  ---
+  duration_ms: 1.26111
+  type: 'test'
+  ...
+# Subtest: a late ACK after changing generation never publishes into the new context
+ok 119 - a late ACK after changing generation never publishes into the new context
+  ---
+  duration_ms: 1.326373
+  type: 'test'
+  ...
+# Subtest: UI refuses an apparently successful ACK with wrong proof {"readbackVerified":false}
+ok 120 - UI refuses an apparently successful ACK with wrong proof {"readbackVerified":false}
+  ---
+  duration_ms: 1.109195
+  type: 'test'
+  ...
+# Subtest: UI refuses an apparently successful ACK with wrong proof {"actorUid":"other"}
+ok 121 - UI refuses an apparently successful ACK with wrong proof {"actorUid":"other"}
+  ---
+  duration_ms: 1.02502
+  type: 'test'
+  ...
+# Subtest: UI refuses an apparently successful ACK with wrong proof {"projectId":"other"}
+ok 122 - UI refuses an apparently successful ACK with wrong proof {"projectId":"other"}
+  ---
+  duration_ms: 0.992482
+  type: 'test'
+  ...
+# Subtest: UI refuses an apparently successful ACK with wrong proof {"periodId":"other"}
+ok 123 - UI refuses an apparently successful ACK with wrong proof {"periodId":"other"}
+  ---
+  duration_ms: 0.974147
+  type: 'test'
+  ...
+# Subtest: UI refuses an apparently successful ACK with wrong proof {"tenantId":"other"}
+ok 124 - UI refuses an apparently successful ACK with wrong proof {"tenantId":"other"}
+  ---
+  duration_ms: 0.979934
+  type: 'test'
+  ...
+# Subtest: UI refuses mismatched independent read {"actorUid":"other"}
+ok 125 - UI refuses mismatched independent read {"actorUid":"other"}
+  ---
+  duration_ms: 1.218245
+  type: 'test'
+  ...
+# Subtest: UI refuses mismatched independent read {"projectId":"other"}
+ok 126 - UI refuses mismatched independent read {"projectId":"other"}
+  ---
+  duration_ms: 1.091438
+  type: 'test'
+  ...
+# Subtest: UI refuses mismatched independent read {"periodId":"other"}
+ok 127 - UI refuses mismatched independent read {"periodId":"other"}
+  ---
+  duration_ms: 1.056873
+  type: 'test'
+  ...
+# Subtest: UI refuses mismatched independent read {"source":"local_cache"}
+ok 128 - UI refuses mismatched independent read {"source":"local_cache"}
+  ---
+  duration_ms: 2.777323
+  type: 'test'
+  ...
+# Subtest: durable text is escaped and the administrative client preview never writes
+ok 129 - durable text is escaped and the administrative client preview never writes
+  ---
+  duration_ms: 2.874255
+  type: 'test'
+  ...
+# Subtest: a Firebase UID not bound to the authorized backend principal cannot submit
+ok 130 - a Firebase UID not bound to the authorized backend principal cannot submit
+  ---
+  duration_ms: 0.770448
+  type: 'test'
+  ...
+# Subtest: real UI, boundary, adapter, provider and server reader persist all three flows across independent sessions with private scope
+ok 131 - real UI, boundary, adapter, provider and server reader persist all three flows across independent sessions with private scope
+  ---
+  duration_ms: 33.098308
+  type: 'test'
+  ...
+# Subtest: D07 authenticated Storage PDF GET bypasses service worker interception and CacheStorage
+ok 132 - D07 authenticated Storage PDF GET bypasses service worker interception and CacheStorage
+  ---
+  duration_ms: 19.603714
+  type: 'test'
+  ...
+# Subtest: D07 unrelated cross-origin resources bypass PWA cache while same-origin runtime remains fail-closed
+ok 133 - D07 unrelated cross-origin resources bypass PWA cache while same-origin runtime remains fail-closed
+  ---
+  duration_ms: 0.972035
+  type: 'test'
+  ...
+# Subtest: protected API is native-network-only: /api/tenants/t/projects/p/certifications/shopper-resources?periodId=x
+ok 134 - protected API is native-network-only: /api/tenants/t/projects/p/certifications/shopper-resources?periodId=x
+  ---
+  duration_ms: 1.17559
+  type: 'test'
+  ...
+# Subtest: protected API is native-network-only: /v1/cxorbia/commands
+ok 135 - protected API is native-network-only: /v1/cxorbia/commands
+  ---
+  duration_ms: 0.779989
+  type: 'test'
+  ...
+# Subtest: protected API is native-network-only: /api/hr-live
+ok 136 - protected API is native-network-only: /api/hr-live
+  ---
+  duration_ms: 0.880785
+  type: 'test'
+  ...
+# Subtest: API requests without explicit no-store force a fresh fetch and never cache
+ok 137 - API requests without explicit no-store force a fresh fetch and never cache
+  ---
+  duration_ms: 0.810775
+  type: 'test'
+  ...
+# Subtest: Authorization on another path forces no-store; explicit no-store bypasses the worker
+ok 138 - Authorization on another path forces no-store; explicit no-store bypasses the worker
+  ---
+  duration_ms: 0.852708
+  type: 'test'
+  ...
+# Subtest: offline API and a changed principal never receive the stale private cache entry
+ok 139 - offline API and a changed principal never receive the stale private cache entry
+  ---
+  duration_ms: 1.338859
+  type: 'test'
+  ...
+# Subtest: actual GT agend tile and modal represent the same independent HR identities
+ok 140 - actual GT agend tile and modal represent the same independent HR identities
+  ---
+  duration_ms: 4.752152
+  type: 'test'
+  ...
+# Subtest: actual GT cuest tile and modal represent the same independent HR identities
+ok 141 - actual GT cuest tile and modal represent the same independent HR identities
+  ---
+  duration_ms: 2.12504
+  type: 'test'
+  ...
+# Subtest: actual GT submit tile and modal represent the same independent HR identities
+ok 142 - actual GT submit tile and modal represent the same independent HR identities
+  ---
+  duration_ms: 1.563823
+  type: 'test'
+  ...
+# Subtest: actual HN agend tile and modal represent the same independent HR identities
+ok 143 - actual HN agend tile and modal represent the same independent HR identities
+  ---
+  duration_ms: 1.50986
+  type: 'test'
+  ...
+# Subtest: actual HN cuest tile and modal represent the same independent HR identities
+ok 144 - actual HN cuest tile and modal represent the same independent HR identities
+  ---
+  duration_ms: 1.287877
+  type: 'test'
+  ...
+# Subtest: actual HN submit tile and modal represent the same independent HR identities
+ok 145 - actual HN submit tile and modal represent the same independent HR identities
+  ---
+  duration_ms: 1.364207
+  type: 'test'
+  ...
+# Subtest: cumulative stage repair preserves pending KPI and alert identities
+ok 146 - cumulative stage repair preserves pending KPI and alert identities
+  ---
+  duration_ms: 2.470982
+  type: 'test'
+  ...
+# Subtest: stage counts and details exclude cancelled/archived records and retain HR-owned assignment source
+ok 147 - stage counts and details exclude cancelled/archived records and retain HR-owned assignment source
+  ---
+  duration_ms: 1.409835
+  type: 'test'
+  ...
+# Subtest: the dashboard assignment bucket uses its canonical visit-facet predicate
+ok 148 - the dashboard assignment bucket uses its canonical visit-facet predicate
+  ---
+  duration_ms: 0.315863
+  type: 'test'
+  ...
+# Subtest: realized, cancelled, and assigned visits cannot appear as pending assignments
+ok 149 - realized, cancelled, and assigned visits cannot appear as pending assignments
+  ---
+  duration_ms: 0.853586
+  type: 'test'
+  ...
+# Subtest: F12 never uses invented industry averages or top performer constants
+ok 150 - F12 never uses invented industry averages or top performer constants
+  ---
+  duration_ms: 3.394238
+  type: 'test'
+  ...
+# Subtest: F12 only shows comparison after source, revision, sample and methodology verified
+ok 151 - F12 only shows comparison after source, revision, sample and methodology verified
+  ---
+  duration_ms: 1.203402
+  type: 'test'
+  ...
+# Subtest: F12 preserves a verified zero benchmark without treating it as missing
+ok 152 - F12 preserves a verified zero benchmark without treating it as missing
+  ---
+  duration_ms: 0.601839
+  type: 'test'
+  ...
+# Subtest: configuration protected authority never becomes local editing when command writes are off
+ok 153 - configuration protected authority never becomes local editing when command writes are off
+  ---
+  duration_ms: 19.135352
+  type: 'test'
+  ...
+# Subtest: protected users with command gate off cannot load local roles or expose a local save
+ok 154 - protected users with command gate off cannot load local roles or expose a local save
+  ---
+  duration_ms: 1.649968
+  type: 'test'
+  ...
+# Subtest: project configuration requires provider ACK and independent project readback
+ok 155 - project configuration requires provider ACK and independent project readback
+  ---
+  duration_ms: 1.502295
+  type: 'test'
+  ...
+# Subtest: connected Add Country UI includes the configured currency for the new country
+ok 156 - connected Add Country UI includes the configured currency for the new country
+  ---
+  duration_ms: 2.115358
+  type: 'test'
+  ...
+# Subtest: connected project countries work before the first period exists, using the durable project scope
+ok 157 - connected project countries work before the first period exists, using the durable project scope
+  ---
+  duration_ms: 1.512899
+  type: 'test'
+  ...
+# Subtest: adding a country preserves explicit project currency and requires independent currency readback
+ok 158 - adding a country preserves explicit project currency and requires independent currency readback
+  ---
+  duration_ms: 3.775649
+  type: 'test'
+  ...
+# Subtest: unknown country without configured currency fails before calling the provider
+ok 159 - unknown country without configured currency fails before calling the provider
+  ---
+  duration_ms: 1.162336
+  type: 'test'
+  ...
+# Subtest: questionnaire program is isolated by period, cloned and published only after durable ACK
+ok 160 - questionnaire program is isolated by period, cloned and published only after durable ACK
+  ---
+  duration_ms: 2.395766
+  type: 'test'
+  ...
+# Subtest: program with no write authority reports draft-only without inventing a durable save
+ok 161 - program with no write authority reports draft-only without inventing a durable save
+  ---
+  duration_ms: 1.131072
+  type: 'test'
+  ...
+# Subtest: period creation waits for ACK and reload before switching the active period
+ok 162 - period creation waits for ACK and reload before switching the active period
+  ---
+  duration_ms: 1.623901
+  type: 'test'
+  ...
+# Subtest: period close refuses incomplete ACK without applying or closing the dialog
+ok 163 - period close refuses incomplete ACK without applying or closing the dialog
+  ---
+  duration_ms: 0.934784
+  type: 'test'
+  ...
+# Subtest: shared modal replaces previous dialog, closes only the top on Escape and restores focus
+ok 164 - shared modal replaces previous dialog, closes only the top on Escape and restores focus
+  ---
+  duration_ms: 1.457347
+  type: 'test'
+  ...
+1..164
+# tests 164
+# suites 0
+# pass 164
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 312.390104

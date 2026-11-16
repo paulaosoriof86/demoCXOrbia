@@ -1,0 +1,716 @@
+✔ Client commands accept exact current server HR period without creating optional Firestore metadata (8.563641ms)
+✔ legacy project without explicit source metadata may use only its exact server HR scope (3.531207ms)
+✔ HR period authority denies internal project (0.573277ms)
+✔ HR period authority denies foreign snapshot (0.315737ms)
+✔ HR period authority denies foreign tenant (0.400893ms)
+✔ HR period authority denies unsafe snapshot (0.301525ms)
+✔ HR period authority denies imported snapshot (0.299382ms)
+✔ HR period authority denies unknown period (0.35883ms)
+✔ HR period authority denies duplicate period (0.54203ms)
+✔ HR period authority denies foreign period (0.463215ms)
+✔ HR period authority denies closed HR period (0.335696ms)
+✔ HR period authority denies closed canonical metadata (0.395435ms)
+✔ HR period authority denies closed key metadata (0.298201ms)
+✔ HR period authority denies ambiguous metadata (0.370107ms)
+✔ missing trusted server revision cannot authorize an absent period (0.331159ms)
+✔ command runtime passes the parsed command to server configuration before provider selection (3.591004ms)
+✖ VRM350 actual server confirmation and replay force fresh HR before provider selection (1.381941ms)
+✖ VRM350 actual server confirmation never reuses cache on fresh HR failure (0.395124ms)
+✔ actual server callback refreshes HR before each Client flow and retains other command behavior (0.184843ms)
+✔ actual server callback never reuses old HR when the Client refresh fails (0.362936ms)
+✔ nps: token-owned durable entity, independent readback, audit and zero-write replay (0.951255ms)
+✔ note: token-owned durable entity, independent readback, audit and zero-write replay (1.474539ms)
+✔ meeting: token-owned durable entity, independent readback, audit and zero-write replay (23.437793ms)
+✔ canonical active Client membership without an active boolean remains valid (0.520919ms)
+✔ canonical client role alias uses its exact staff membership (0.560729ms)
+✔ same received key in another authorized period preserves separate durable audit entries (1.530971ms)
+✔ lost readback after commit reports pending proof and retry recovers the one durable entity (1.26582ms)
+✔ concurrent replay produces one entity, one receipt and one audit (1.304738ms)
+✔ changed payload and another actor cannot adopt an existing idempotency receipt (1.776365ms)
+✔ client collaboration denies staff preview (0.418889ms)
+✔ client collaboration denies shopper (0.247616ms)
+✔ client collaboration denies wrong tenant (0.154468ms)
+✔ client collaboration denies wrong project (0.179305ms)
+✔ client collaboration denies missing period (0.625113ms)
+✔ client collaboration denies inactive membership (0.207877ms)
+✔ client collaboration denies inactive status (0.198163ms)
+✔ client collaboration denies foreign member project (1.394571ms)
+✔ client collaboration denies wrong namespace (0.145135ms)
+✔ client collaboration denies missing namespace (0.163722ms)
+✔ client collaboration denies closed period (0.383036ms)
+✔ client collaboration denies archived period (0.347423ms)
+✔ client collaboration denies foreign period (0.217381ms)
+✔ client collaboration denies spoofed author (0.089472ms)
+✔ client collaboration denies spoofed recipients (0.077925ms)
+✔ client collaboration denies wrong entity (0.071696ms)
+✔ client collaboration denies chosen entity id (0.146066ms)
+✔ client collaboration denies wrong permission (0.075171ms)
+✔ client collaboration denies wrong payload period (0.070174ms)
+✔ client collaboration denies missing request id (0.072467ms)
+✔ client collaboration denies empty note (0.073789ms)
+✔ client collaboration denies excessive note (0.122421ms)
+✔ NPS rejects invalid numeric score -1 (0.097504ms)
+✔ NPS rejects invalid numeric score 11 (0.047921ms)
+✔ NPS rejects invalid numeric score 9.5 (0.066749ms)
+✔ NPS rejects invalid numeric score "9" (0.072908ms)
+✔ NPS rejects invalid numeric score null (0.082352ms)
+✔ meeting rejects invalid request {"date":"2026-02-30"} (0.112796ms)
+✔ meeting rejects invalid request {"date":"2001-01-01"} (0.344749ms)
+✔ meeting rejects invalid request {"time":"25:00"} (0.076203ms)
+✔ meeting rejects invalid request {"mode":"Calendar invitation sent"} (0.099357ms)
+✖ VRM350 sync confirmation blocks missing independent HR with zero writes (8.055751ms)
+✖ VRM350 sync confirmation blocks HR row unassigned with zero writes (0.582871ms)
+✖ VRM350 sync confirmation blocks different HR shopper with zero writes (0.504465ms)
+✖ VRM350 sync confirmation blocks missing trusted revision with zero writes (0.817518ms)
+✖ VRM350 sync confirmation blocks unsafe HR with zero writes (0.721456ms)
+✖ VRM350 sync confirmation blocks imported HR with zero writes (0.614257ms)
+✖ VRM350 sync confirmation blocks HR with writes with zero writes (3.105728ms)
+✖ VRM350 sync confirmation blocks foreign root tenant with zero writes (0.336507ms)
+✖ VRM350 sync confirmation blocks foreign root project with zero writes (0.625314ms)
+✖ VRM350 sync confirmation blocks foreign row tenant with zero writes (0.626256ms)
+✖ VRM350 sync confirmation blocks foreign row project with zero writes (0.358549ms)
+✖ VRM350 sync confirmation blocks duplicate exact row with zero writes (0.308445ms)
+✖ VRM350 sync confirmation blocks missing period catalog with zero writes (0.279393ms)
+✖ VRM350 sync confirmation blocks ambiguous period catalog with zero writes (0.244491ms)
+✖ VRM350 sync confirmation blocks foreign period scope with zero writes (0.44649ms)
+✖ VRM350 sync confirmation blocks explicit period contradicts key with zero writes (0.388895ms)
+✖ VRM350 sync confirmation blocks crossed command entity with zero writes (0.247065ms)
+✖ VRM350 sync confirmation blocks crossed payload identity with zero writes (0.349016ms)
+✖ VRM350 sync confirmation blocks crossed HR logical alias with zero writes (0.380342ms)
+✖ VRM350 sync confirmation blocks payload shopper contradiction with zero writes (0.519868ms)
+✔ VRM350 sync confirmation blocks stale durable version with zero writes (1.167164ms)
+✖ VRM350 sync confirmation blocks source-current version with zero writes (0.253164ms)
+✖ VRM350 sync confirmation blocks absent version with zero writes (0.346221ms)
+✖ VRM350 sync confirmation blocks foreign durable tenant with zero writes (0.367022ms)
+✖ VRM350 exact independent reflection keeps logical/durable aliases and writes one shared proof, no remote ACK (0.635899ms)
+✖ VRM350 real durable ID alias may be used instead of logical HR ID (0.427561ms)
+✖ VRM350 exact replay uses original version and proof with zero writes; changed global revision is separately observed (1.216046ms)
+✖ VRM350 replay blocks legacy receipt without rewriting evidence (4.197962ms)
+✖ VRM350 replay blocks receipt actor changed without rewriting evidence (0.763749ms)
+✖ VRM350 replay blocks receipt proof binding changed without rewriting evidence (0.462484ms)
+✖ VRM350 replay blocks HR reassigned without rewriting evidence (0.637081ms)
+✖ VRM350 replay blocks HR no longer assigned without rewriting evidence (0.681236ms)
+✖ VRM350 replay blocks durable reassigned without rewriting evidence (0.915363ms)
+✖ VRM350 replay blocks durable proof replaced without rewriting evidence (0.43992ms)
+✖ VRM350 replay blocks same key other actor without rewriting evidence (0.807212ms)
+✔ VRM350 replay blocks same key changed payload without rewriting evidence (0.895173ms)
+✔ PRE-I4 VRM-134 / bounded visit workers settle all writes before reporting a failure (11.096813ms)
+✔ Gate 7 / visit HR reconciliation creates durable visits idempotently by revision (1.708384ms)
+✔ Gate 7 / HR reconciliation updates durable operational state across revisions and repairs stale same-revision rows (3.954352ms)
+✔ Gate 7 / HR reconciliation gives HR authority until external reflection is confirmed (0.848954ms)
+✔ Gate 7 / composer overlays durable platform pending assignment without taking HR-managed fields (2.959212ms)
+✔ Gate 7 / composer marks HR versus durable shopper conflict without silent overwrite (0.531315ms)
+✔ Gate 7 / visit.assign requires provider ACK and replays idempotently (0.695667ms)
+✔ Gate 7 / approval atomically assigns visit and targets exactly one shopper notice without duplicate on replay (0.980248ms)
+✔ Gate 7 / rejected applications never produce shopper approval bulletin (0.31843ms)
+✔ Gate 7 / shopper bulletin queries enforce exact recipient and project even when role query is broad (2.249032ms)
+✔ Gate 7 / visit.assign resolves exact HR durable key when logical visitId differs and accepts source-current (0.259032ms)
+✔ Gate 7 / visit.assign rejects a durable visit that is no longer HR-available (0.386381ms)
+✔ Gate 7 / visitas UI does not declare assignment success before ACK (0.901502ms)
+✔ Gate 7 / unmatched platform-only shopper profiles stay review-only until exact HR crosswalk exists (1.011083ms)
+✔ PRE-I4 VRM-013 / canonical provider supports atomic reassignment with ACK and schedule decision (0.499508ms)
+✔ PRE-I4 VRM-013 / canonical provider reschedule decision is durable and idempotent (10.252785ms)
+✔ PRE-I4 VRM-013 / internal-owned cancellation releases only after provider ACK (0.445528ms)
+✔ PRE-I4 VRM-013 / external-HR cancellation cannot fabricate availability without HR ACK (0.369356ms)
+✔ PRE-I4 VRM-013 / Postulaciones has no local-first edit reassign cancel or reprogram success paths (0.780523ms)
+✔ VRM143 visit.cancel two exact cycles, equal clock, durable notice and old replay (11.476384ms)
+✔ VRM143 visit.reschedule two exact cycles, equal clock, durable notice and old replay (7.94037ms)
+✔ VRM143 external cancellation preserves exact pending HR cycle without fabricating availability (4.408322ms)
+✔ VRM143 bulletin write failure rolls back request, receipt and audit together (0.580677ms)
+ℹ tests 119
+ℹ suites 0
+ℹ pass 83
+ℹ fail 36
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 255.178893
+
+✖ failing tests:
+
+test at backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:45:1
+✖ VRM350 actual server confirmation and replay force fresh HR before provider selection (1.381941ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  +   'old',
+  +   'old'
+  -   {
+  -     forceFresh: true
+  -   },
+  -   'fresh',
+  -   {
+  -     forceFresh: true
+  -   },
+  -   'fresh'
+    ]
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:48:113)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'old', 'old' ],
+    expected: [ { forceFresh: true }, 'fresh', { forceFresh: true }, 'fresh' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:50:1
+✖ VRM350 actual server confirmation never reuses cache on fresh HR failure (0.395124ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs:53:2)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /FRESH_HR_DOWN/,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:113:3
+✖ VRM350 sync confirmation blocks missing independent HR with zero writes (8.055751ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","providerWrites":3}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:114:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:113:3
+✖ VRM350 sync confirmation blocks HR row unassigned with zero writes (0.582871ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","providerWrites":3}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:114:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:113:3
+✖ VRM350 sync confirmation blocks different HR shopper with zero writes (0.504465ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","providerWrites":3}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:114:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:113:3
+✖ VRM350 sync confirmation blocks missing trusted revision with zero writes (0.817518ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","providerWrites":3}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:114:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:113:3
+✖ VRM350 sync confirmation blocks unsafe HR with zero writes (0.721456ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","providerWrites":3}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:114:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:113:3
+✖ VRM350 sync confirmation blocks imported HR with zero writes (0.614257ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","providerWrites":3}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:114:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:113:3
+✖ VRM350 sync confirmation blocks HR with writes with zero writes (3.105728ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","providerWrites":3}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:114:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:113:3
+✖ VRM350 sync confirmation blocks foreign root tenant with zero writes (0.336507ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","providerWrites":3}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:114:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:113:3
+✖ VRM350 sync confirmation blocks foreign root project with zero writes (0.625314ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","providerWrites":3}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:114:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:113:3
+✖ VRM350 sync confirmation blocks foreign row tenant with zero writes (0.626256ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","providerWrites":3}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:114:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:113:3
+✖ VRM350 sync confirmation blocks foreign row project with zero writes (0.358549ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","providerWrites":3}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:114:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:113:3
+✖ VRM350 sync confirmation blocks duplicate exact row with zero writes (0.308445ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","providerWrites":3}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:114:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:113:3
+✖ VRM350 sync confirmation blocks missing period catalog with zero writes (0.279393ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","providerWrites":3}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:114:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:113:3
+✖ VRM350 sync confirmation blocks ambiguous period catalog with zero writes (0.244491ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","providerWrites":3}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:114:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:113:3
+✖ VRM350 sync confirmation blocks foreign period scope with zero writes (0.44649ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","providerWrites":3}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:114:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:113:3
+✖ VRM350 sync confirmation blocks explicit period contradicts key with zero writes (0.388895ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","providerWrites":3}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:114:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:113:3
+✖ VRM350 sync confirmation blocks crossed command entity with zero writes (0.247065ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","providerWrites":3}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:114:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:113:3
+✖ VRM350 sync confirmation blocks crossed payload identity with zero writes (0.349016ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"other-visit","idempotencyKey":"vrm350-exact-reflection-key","providerWrites":3}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:114:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:113:3
+✖ VRM350 sync confirmation blocks crossed HR logical alias with zero writes (0.380342ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","providerWrites":3}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:114:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:113:3
+✖ VRM350 sync confirmation blocks payload shopper contradiction with zero writes (0.519868ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","providerWrites":3}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:114:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:113:3
+✖ VRM350 sync confirmation blocks source-current version with zero writes (0.253164ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","providerWrites":3}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:114:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:113:3
+✖ VRM350 sync confirmation blocks absent version with zero writes (0.346221ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","providerWrites":3}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:114:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:113:3
+✖ VRM350 sync confirmation blocks foreign durable tenant with zero writes (0.367022ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","providerWrites":3}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:114:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:116:1
+✖ VRM350 exact independent reflection keeps logical/durable aliases and writes one shared proof, no remote ACK (0.635899ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - true
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:117:148)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:123:1
+✖ VRM350 real durable ID alias may be used instead of logical HR ID (0.427561ms)
+  TypeError [Error]: Cannot read properties of undefined (reading 'hrVisitId')
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:124:187)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:126:1
+✖ VRM350 exact replay uses original version and proof with zero writes; changed global revision is separately observed (1.216046ms)
+  TypeError [Error]: Cannot read properties of undefined (reading 'sourceRevision')
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:129:148)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:140:3
+✖ VRM350 replay blocks legacy receipt without rewriting evidence (4.197962ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","idempotentReplay":true,"providerWrites":0}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:141:126)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:140:3
+✖ VRM350 replay blocks receipt actor changed without rewriting evidence (0.763749ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","idempotentReplay":true,"providerWrites":0}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:141:126)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:140:3
+✖ VRM350 replay blocks receipt proof binding changed without rewriting evidence (0.462484ms)
+  TypeError [Error]: Cannot set properties of undefined (setting 'projectId')
+      at x.snapshot.visits.<computed>.shopperId (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:134:107)
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:141:72)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:140:3
+✖ VRM350 replay blocks HR reassigned without rewriting evidence (0.637081ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","idempotentReplay":true,"providerWrites":0}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:141:126)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:140:3
+✖ VRM350 replay blocks HR no longer assigned without rewriting evidence (0.681236ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","idempotentReplay":true,"providerWrites":0}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:141:126)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:140:3
+✖ VRM350 replay blocks durable reassigned without rewriting evidence (0.915363ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","idempotentReplay":true,"providerWrites":0}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:141:126)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:140:3
+✖ VRM350 replay blocks durable proof replaced without rewriting evidence (0.43992ms)
+  TypeError [Error]: Cannot set properties of undefined (setting 'sourceRevision')
+      at x.uid (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:137:77)
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:141:72)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:140:3
+✖ VRM350 replay blocks same key other actor without rewriting evidence (0.807212ms)
+  AssertionError [ERR_ASSERTION]: {"ok":true,"status":"committed","committed":true,"providerAck":true,"successUiAllowed":true,"localMutation":false,"localStorageWrite":false,"tenantId":"tenant-a","projectId":"project-a","periodId":"project-a-2026-09","commandType":"visit.sync.confirm","entityType":"visit","entityId":"hr_2026-09_gt_exact","idempotencyKey":"vrm350-exact-reflection-key","idempotentReplay":true,"providerWrites":0}
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs:141:126)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

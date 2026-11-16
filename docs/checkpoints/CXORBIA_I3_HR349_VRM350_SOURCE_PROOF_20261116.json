@@ -1,0 +1,169 @@
+{
+  "schemaVersion": "cxorbia.i3.p0.source-proof.v1",
+  "decision": "PASS_I3_HR349_VRM350_SOURCE_QA_NOT_DEV_OR_FULL_DOMAIN",
+  "generatedAt": "2026-11-16T03:25:48.733250+00:00",
+  "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+  "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+  "predecessorProductSourceSha": "f2fcb6200843971485ef2b092240c5497148038b",
+  "sourceTestsPass": 440,
+  "sourceTestsFail": 0,
+  "registeredOwnerCount": 21,
+  "allowedProductFiles": [
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+    "backend/runtime/hr-live-service/server.mjs",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+  ],
+  "allowedTestFiles": [
+    ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs",
+    "tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs",
+    "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs",
+    "tools/qa/cxorbia-i3-hr-ack-exact-same-revision.mjs",
+    "tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs",
+    "tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs",
+    "tools/qa/cxorbia-i3-source-qa-evidence.mjs",
+    "tools/qa/cxorbia-i3-terminal-hr-observation.test.mjs",
+    "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_HR349_VRM350_PACKAGE_AUTHORIZED_SCOPE_20261116.json",
+  "scopeReceiptBlob": "f93e8f2337e78a0ed5720efe771d53d3426a15df",
+  "findings": [
+    {
+      "id": "VRM-349",
+      "priority": "P0_PROVEN",
+      "classification": "PERSISTENCE_FAILURE",
+      "owner": [
+        "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+      ]
+    },
+    {
+      "id": "VRM-350",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "owner": [
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "backend/runtime/hr-live-service/server.mjs"
+      ]
+    }
+  ],
+  "testEvidence": {
+    "paired-c3-control-guards.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_HR349_VRM350_SOURCE_QA_20261116/paired-c3-control-guards.tap",
+      "gitBlob": "792b8a55cac11fb432d1e1e1ebc4f0786aa5dd53",
+      "sha256": "9172becbafaadd4379ca78bff8d3dc6e4e727bc920739f7e9fc2a2d2c794a82f"
+    },
+    "finance-ack-boundary.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_HR349_VRM350_SOURCE_QA_20261116/finance-ack-boundary.tap",
+      "gitBlob": "16769d4810cd775b3d0ed79666b07b2d19554770",
+      "sha256": "21fffa4febe8ad05763203ed78631e7f57be1f4934942fe258ea31f811a70ddc"
+    },
+    "vrm350-after.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_HR349_VRM350_SOURCE_QA_20261116/vrm350-after.tap",
+      "gitBlob": "08a4a59a53d2289b720a33c00141c3bce0e01f58",
+      "sha256": "4ccf9d01cf7f54066f84e77ed9a9d62430951eb50689f4cb04ffd69814d5bdee"
+    },
+    "frontend-behavior.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_HR349_VRM350_SOURCE_QA_20261116/frontend-behavior.tap",
+      "gitBlob": "16333d75750f19b0005135d6dcaa40f8bfd94d80",
+      "sha256": "245f48c30c585d5a03193a7d3373a0d2ee521f2c2787713fccdde23cd632f836"
+    },
+    "workflow-scope.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_HR349_VRM350_SOURCE_QA_20261116/workflow-scope.json",
+      "gitBlob": "ee8c8edbf9f956fb81638afeca1ca70bb714dafd",
+      "sha256": "378e3b3857a0486c210c305366d9eb59d53a8328db0e79d93d344cc2b4bb1119"
+    },
+    "external-hr-source.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_HR349_VRM350_SOURCE_QA_20261116/external-hr-source.tap",
+      "gitBlob": "35c90665c7e3de1ce6654a9eb6f97aba608cd550",
+      "sha256": "9dfe0a3ebbf51b830723a475825347c8b16bd9c6a2e759a49447e27b815215b7"
+    },
+    "hr349-after.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_HR349_VRM350_SOURCE_QA_20261116/hr349-after.tap",
+      "gitBlob": "0342951ba861217637e4607d052ea4c5b50b5a5e",
+      "sha256": "7521cc05d0656e07a0a1caa718cd3ac4b45cdccfac1427f6db09683c459fa6c0"
+    },
+    "summary.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_HR349_VRM350_SOURCE_QA_20261116/summary.json",
+      "gitBlob": "374d7901257dbe96e0246595f1a956ff4f011509",
+      "sha256": "f13680434771318e79e82b9859c6dc52349ed4909d3cf5df33db0c70d554d52d"
+    },
+    "vrm350-before.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_HR349_VRM350_SOURCE_QA_20261116/vrm350-before.tap",
+      "gitBlob": "de2d250480189d5e59007f45bdab5fcdb944de80",
+      "sha256": "cbc96e28a190354fa88dbb586e873a9f632b4ba196c7365e5771abd0956d9db5"
+    },
+    "human-project-scope.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_HR349_VRM350_SOURCE_QA_20261116/human-project-scope.tap",
+      "gitBlob": "5117db40fb4e31c392f7371274eeeb7adafb4e17",
+      "sha256": "9535d15ec1a67ae55292b8ad7eed21b846f859f039c8e1edc97e5c82a9c3aa69"
+    },
+    "hr349-before.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_HR349_VRM350_SOURCE_QA_20261116/hr349-before.tap",
+      "gitBlob": "28a0245eff28a8dbd9df7818fdfbd75d25053b76",
+      "sha256": "f4b87765b6000e97e1a1b9ee272af0c05ad3df25d3ad1c06a0b09b0a204fbfe1"
+    },
+    "hr349-readonly-evidence.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_HR349_VRM350_SOURCE_QA_20261116/hr349-readonly-evidence.tap",
+      "gitBlob": "2ab1a676ad7ea86382624b4459b4858190d88fd0",
+      "sha256": "9d625bd46eac164f73874bdea73c8ccf4e6472ea4b67fc70dab07c51714d2b3a"
+    }
+  },
+  "registeredSourceStats": {
+    "tests": 440,
+    "pass": 440,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0
+  },
+  "hr349Before": {
+    "tests": 80,
+    "pass": 73,
+    "fail": 7
+  },
+  "hr349After": {
+    "tests": 82,
+    "pass": 82,
+    "fail": 0
+  },
+  "vrm350Before": {
+    "tests": 119,
+    "pass": 83,
+    "fail": 36
+  },
+  "vrm350After": {
+    "tests": 122,
+    "pass": 122,
+    "fail": 0
+  },
+  "pairedC3GuardAfter": {
+    "tests": 116,
+    "pass": 116,
+    "fail": 0
+  },
+  "readOnlyProofTests": {
+    "tests": 35,
+    "pass": 35,
+    "fail": 0
+  },
+  "countsAreNotAdditive": true,
+  "productOwnerBlobs": {
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs": "e39b79845219752e003e573da1aacf53fde287d1",
+    "backend/runtime/hr-live-service/server.mjs": "b295200df323c1aa9b6334d3483d2c2a0a323c2a",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs": "40f61ed3e17bf1ea027d1c3ab228d15d1b0f91f6"
+  },
+  "requiredLiveProof": "Existing paired DEV lane one runtime/Hosting and39servedassets; realHTTP owned synthetic missingHR confirmation blocked0writes in two sessions; exact-source factory positive against independent realHR in memory only and replay0. Preserve VRM143 provider notice cycles and cleanup. Next C3 existing Admin automatic reconcile must safely succeed oldpartial with fulljournal proof and independent historical seal readback; current durable/sourceHR equality; exact PRE remains gate. No source-only claim of live closure or externalHRwriterACK.",
+  "devPublished": false,
+  "production": false,
+  "hrWrites": 0,
+  "realPeriodWrites": 0,
+  "humanPassesPreserved": [
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ]
+}
