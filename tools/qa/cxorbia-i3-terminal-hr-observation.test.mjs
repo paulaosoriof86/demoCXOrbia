@@ -2,8 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
+import {providerUidFingerprint,stableShopperUid} from '../../backend/runtime/cxorbia-shopper-command-provider-v1.mjs';
 import {validateTerminalHrObservation} from './cxorbia-i3-terminal-hr-observation.mjs';
-import {b14PredecessorReadOnly,b14PrincipalOf,b14DiagnosticError,b14RuntimeAuthority,b14WorkbookFromReaders,b14CapabilityVerdict,b14BindingProjection,b14ProjectSourceProjection,b14IntegrationCandidates,b14LeaseReceiptPath} from './cxorbia-i3-hr-ack-exact-same-revision.mjs';
+import {b14PredecessorReadOnly,b14PrincipalOf,b14DiagnosticError,b14RuntimeAuthority,b14WorkbookFromReaders,b14CapabilityVerdict,b14BindingProjection,b14ProjectSourceProjection,b14IntegrationCandidates,b14LeaseReceiptPath,hrCrosswalkUidDiagnosis,hrCrosswalkUidReadOnly} from './cxorbia-i3-hr-ack-exact-same-revision.mjs';
 const valid=()=>({ok:true,revision:'a'.repeat(64),sourceSafe:true,refreshError:null,
   writes:false,hrWrites:false,production:false,shopperReconciliation:null,visitReconciliation:null});
 test('G05 valid read-only observation passes without inventing reconciliation ACK',()=>{
@@ -120,4 +121,107 @@ for(const [name,alter]of [
 test('HR349 running successor remains explicitly uncommitted even with a verified predecessor',async()=>{
  const f=predecessorReadFixture();f.receipt.status='running';f.receipt.result.ok=false;f.receipt.result.committed=false;f.receipt.result.providerAck=false;
  const r=await b14PredecessorReadOnly(f.tx,f);assert.equal(r.independentHistoricalReadback,true);assert.equal(r.successorTerminalCommitted,false);assert.equal(r.decision,'VERIFIED_PREDECESSOR_HISTORY_SUCCESSOR_NOT_COMMITTED');
+});
+
+const uidDiagHash=v=>createHash('sha256').update(String(v)).digest('hex');
+const uidDiagStamp={seconds:1794787200,nanoseconds:123456789};
+const uidDiagDoc=(collection,id,data)=>({id,path:'tenants/tenant-safe/'+collection+'/'+id,updateTime:{...uidDiagStamp},data});
+const uidDiagMember=(uid='private-selected-uid',shopperId='private-source-id',extra={})=>uidDiagDoc('users',uid,{tenantId:'tenant-safe',shopperId,active:true,role:'shopper',authNamespace:'shopper',projectIds:['project-safe'],...extra});
+const uidDiagAuth=(uid='private-selected-uid',shopperId='private-source-id',extra={})=>({uid,disabled:false,email:'private@example.invalid',displayName:'Private Name',passwordHash:'private-password-hash',customClaims:{tenantId:'tenant-safe',shopperId,role:'shopper',authNamespace:'shopper',projectIds:['project-safe']},...extra});
+const uidDiagFixture=()=>({tenantId:'tenant-safe',projectId:'project-safe',sourceIds:['private-source-id'],users:[uidDiagMember()],links:[],crosswalks:[uidDiagDoc('shopperIdentityCrosswalk','private-source-id',{tenantId:'tenant-safe',sourceStableKey:'private-source-id',shopperId:'private-source-id',providerUidFingerprint:providerUidFingerprint('private-old-uid'),sourceType:'hr_external',identityMode:'stable_hr_shopper_id'})],profiles:[uidDiagDoc('shoppers','private-source-id',{tenantId:'tenant-safe',projectIds:['project-safe']})],authUsers:[uidDiagAuth(),uidDiagAuth('private-old-uid')],providerUidFingerprint,stableShopperUid});
+const uidDiagLink=(extra={})=>uidDiagDoc('shopperIdentityLinks','private-link-id',{tenantId:'tenant-safe',status:'active',authorityType:'provider_exact',authorityRef:'private-authority-ref',projectScope:'TENANT',canonicalShopperId:'private-canonical-id',sourceSystem:'hr',sourceId:'private-source-id',...extra});
+test('HR UID observer preserves membership selection and reports old owner only as evidence',()=>{
+ const f=uidDiagFixture(),r=hrCrosswalkUidDiagnosis(f),c=r.conflicts[0];
+ assert.equal(c.uidSelectionBranch,'CANONICAL_MEMBERSHIP');assert.equal(c.selectedUidFingerprint,providerUidFingerprint('private-selected-uid'));
+ assert.equal(c.storedFingerprintAuthOwners.length,1);assert.equal(c.selectedMembershipExact,true);
+ assert.equal(r.fullReconciliationClosed,false);for(const k of ['firestoreWrites','authWrites','hrWrites','providerCommandCalls'])assert.equal(r[k],0);
+ const text=JSON.stringify(r);for(const value of ['private-selected-uid','private-old-uid','private-source-id','private@example.invalid','Private Name','private-password-hash'])assert.equal(text.includes(value),false);
+});
+test('HR UID observer cannot hide a malformed nonempty fingerprint by sanitizing it',()=>{
+ const f=uidDiagFixture();f.crosswalks[0].data.providerUidFingerprint='private-invalid-fingerprint';
+ const r=hrCrosswalkUidDiagnosis(f);assert.equal(r.conflicts.length,1);assert.equal(r.matched,0);assert.equal(r.conflicts[0].storedUidFingerprint,null);
+ assert.equal(r.conflicts[0].storedUidFingerprintInvalidHash,uidDiagHash('private-invalid-fingerprint'));assert.equal(JSON.stringify(r).includes('private-invalid-fingerprint'),false);
+});
+test('HR UID observer trims owner inputs but does not normalize fingerprint case',()=>{
+ const f=uidDiagFixture(),fp=providerUidFingerprint('private-selected-uid');f.crosswalks[0].data.providerUidFingerprint=' '+fp+' ';
+ assert.equal(hrCrosswalkUidDiagnosis(f).matched,1);f.crosswalks[0].data.providerUidFingerprint=fp.toUpperCase();
+ assert.equal(hrCrosswalkUidDiagnosis(f).conflicts.length,1);
+});
+test('HR UID observer masks unexpected persisted metadata without changing selection',()=>{
+ const f=uidDiagFixture();for(const k of ['status','identityState','providerUidFingerprint'])f.users[0].data[k]='private-'+k;
+ for(const k of ['identityAuthority','identityAuthorityRef','hrSourceRevision','providerUidFingerprint'])f.profiles[0].data[k]='private-'+k;
+ for(const k of ['identityMode','migrationAuthorityType','migrationAuthorityRef'])f.crosswalks[0].data[k]='private-'+k;
+ f.authUsers[0].customClaims.role='private-role';f.authUsers[0].customClaims.authNamespace='private-namespace';
+ const r=hrCrosswalkUidDiagnosis(f);assert.equal(r.conflicts.length,1);
+ for(const k of ['status','identityState','providerUidFingerprint','identityAuthority','identityAuthorityRef','hrSourceRevision','identityMode','migrationAuthorityType','migrationAuthorityRef','role','namespace'])assert.equal(JSON.stringify(r).includes('private-'+k),false,k);
+});
+test('HR UID observer follows a TENANT link exactly',()=>{
+ const f=uidDiagFixture();f.links=[uidDiagLink()];f.crosswalks[0].data.shopperId='private-canonical-id';
+ f.users=[uidDiagMember('private-selected-uid','private-canonical-id')];f.profiles=[uidDiagDoc('shoppers','private-canonical-id',{})];
+ const c=hrCrosswalkUidDiagnosis(f).conflicts[0];assert.equal(c.canonicalIdHash,uidDiagHash('private-canonical-id'));assert.equal(c.linkEvidence.length,1);
+});
+for(const [name,delta]of [['other project',{projectScope:'project-foreign'}],['other tenant',{tenantId:'tenant-foreign'}],['period scoped',{periodId:'period-private'}],['untrusted authority',{authorityType:'untrusted'}]])
+ test('HR UID observer excludes '+name+' identity links',()=>{const f=uidDiagFixture();f.links=[uidDiagLink(delta)];const c=hrCrosswalkUidDiagnosis(f).conflicts[0];assert.equal(c.sourceIsCanonical,true);assert.equal(c.linkEvidence.length,0);});
+test('HR UID observer distinguishes exact alias self-map and source-scope conflicts',()=>{
+ const f=uidDiagFixture();f.links=[uidDiagLink()];f.profiles=[uidDiagDoc('shoppers','private-canonical-id',{})];
+ let r=hrCrosswalkUidDiagnosis(f);assert.equal(r.exceptions[0].reason,'EXACT_ALIAS_SELF_MAP_EXCEPTION');assert.equal(r.conflicts.length,0);
+ f.crosswalks[0].data.tenantId='foreign';r=hrCrosswalkUidDiagnosis(f);assert.equal(r.unresolved[0].reason,'CROSSWALK_SCOPE_PREDICATE');
+});
+test('HR UID observer suppresses adjudication only for the exact active source principal',()=>{
+ const f=uidDiagFixture();f.links=[uidDiagLink({authorityType:'tenant_adjudication'})];
+ Object.assign(f.crosswalks[0].data,{shopperId:'private-canonical-id',identityMode:'provider_exact_identity_link',migrationAuthorityType:'tenant_adjudication'});
+ let r=hrCrosswalkUidDiagnosis(f);assert.equal(r.exceptions[0].reason,'SUPPRESSED_TENANT_ADJUDICATION_EXCEPTION');
+ f.authUsers[0].disabled=true;r=hrCrosswalkUidDiagnosis(f);assert.equal(r.exceptions.length,0);assert.equal(r.conflicts[0].canonicalIdHash,uidDiagHash('private-canonical-id'));
+});
+test('HR UID observer keeps single inactive membership before a different exact Auth principal',()=>{
+ const f=uidDiagFixture();Object.assign(f.users[0].data,{active:false,status:'inactive'});
+ const c=hrCrosswalkUidDiagnosis(f).conflicts[0];assert.equal(c.membershipSelection,'SINGLE_FALLBACK');assert.equal(c.uidSelectionBranch,'CANONICAL_MEMBERSHIP');
+ assert.equal(c.selectedUidFingerprint,providerUidFingerprint('private-selected-uid'));
+});
+test('HR UID observer rejects ambiguous membership and conservative query bound',()=>{
+ const f=uidDiagFixture();f.users.push(uidDiagMember('private-second-uid'));assert.equal(hrCrosswalkUidDiagnosis(f).unresolved[0].reason,'MEMBERSHIP_DUPLICATE');
+ f.users=Array.from({length:8},(_,i)=>uidDiagMember('private-uid-'+i));assert.equal(hrCrosswalkUidDiagnosis(f).unresolved[0].reason,'MEMBERSHIP_QUERY_BOUND_REACHED');
+});
+test('HR UID observer selects active membership over a superseded alias',()=>{
+ const f=uidDiagFixture();f.users.push(uidDiagMember('private-alias-uid','private-source-id',{active:false,status:'superseded',identityState:'superseded_exact_alias'}));
+ assert.equal(hrCrosswalkUidDiagnosis(f).conflicts[0].selectedUidFingerprint,providerUidFingerprint('private-selected-uid'));
+});
+test('HR UID observer recovers only one enabled exact Auth principal',()=>{
+ const f=uidDiagFixture();f.users=[];f.authUsers=[uidDiagAuth()];let r=hrCrosswalkUidDiagnosis(f);assert.equal(r.conflicts[0].uidSelectionBranch,'EXACT_RECOVERED_AUTH');
+ f.authUsers.push(uidDiagAuth('private-other-uid'));assert.equal(hrCrosswalkUidDiagnosis(f).unresolved[0].reason,'AUTH_PRINCIPAL_AMBIGUOUS');
+ f.authUsers=[uidDiagAuth('private-selected-uid','private-source-id',{disabled:true})];assert.equal(hrCrosswalkUidDiagnosis(f).unresolved[0].reason,'AUTH_PRINCIPAL_DISABLED');
+ f.authUsers=[];r=hrCrosswalkUidDiagnosis(f);assert.equal(r.conflicts[0].uidSelectionBranch,'DETERMINISTIC_NEW_UID');
+});
+test('HR UID observer uses tenants and singular project claims with inferred shopper namespace',()=>{
+ const f=uidDiagFixture();f.users=[];f.authUsers=[uidDiagAuth('private-selected-uid','private-source-id',{customClaims:{tenants:['tenant-safe'],shopperId:'private-source-id',role:'shopper',projectId:'project-safe'}})];
+ assert.equal(hrCrosswalkUidDiagnosis(f).conflicts[0].uidSelectionBranch,'EXACT_RECOVERED_AUTH');
+});
+function uidDiagIoFixture(options={}){
+ const f=uidDiagFixture(),collections={users:f.users,shopperIdentityLinks:f.links,shopperIdentityCrosswalk:f.crosswalks,shoppers:f.profiles};let transactions=0,authCalls=0;
+ const mutations=[];const failWrite=name=>()=>{mutations.push(name);throw Error('UNEXPECTED_WRITE_'+name);};
+ const db={collection(name){assert.equal(name,'tenants');return{doc(id){assert.equal(id,f.tenantId);return{collection(collection){return{select(...mask){assert.ok(mask.length);assert.equal(mask.some(k=>/email|name|password|login|phone|credential/i.test(k)&&!['authNamespace','sourceNamespace'].includes(k)),false);return{collection,mask};}};}};}};},
+ async runTransaction(fn,config){assert.deepEqual(config,{readOnly:true});transactions++;
+  return fn({get:async query=>({docs:collections[query.collection].map(d=>({id:d.id,ref:{path:d.path},updateTime:{...uidDiagStamp,nanoseconds:uidDiagStamp.nanoseconds+(options.nanosecondDrift&&transactions===2?1:0)},data:()=>structuredClone(d.data)}))}),set:failWrite('set'),update:failWrite('update'),delete:failWrite('delete')});}};
+ const auth={createUser:failWrite('createUser'),updateUser:failWrite('updateUser'),deleteUser:failWrite('deleteUser'),setCustomUserClaims:failWrite('claims'),async listUsers(size,token){assert.equal(size,1000);authCalls++;
+  if(token&&options.repeatToken)return{users:[],pageToken:'next'};
+  const u=structuredClone(token?f.authUsers[1]:f.authUsers[0]);if(options.authDrift&&authCalls>2)u.customClaims.projectIds=['foreign'];
+  return{users:[u],...(token?{}:{pageToken:'next'})};}};
+ return{args:{db,auth,snapshot:{tenantId:f.tenantId,projectId:f.projectId,sourceSafe:true,imported:false,_runtime:{revision:'a'.repeat(64)},shoppers:[{shopperId:'private-source-id'}],visits:[]},tenantId:f.tenantId,projectId:f.projectId,revision:'a'.repeat(64),sourceDir:process.cwd()},stats:()=>({transactions,authCalls,mutations})};
+}
+test('HR UID IO uses read-only transactions, complete Auth pagination and stable second reads',async()=>{
+ const f=uidDiagIoFixture(),r=await hrCrosswalkUidReadOnly(f.args);
+ assert.equal(r.completeAuthPagination,true);assert.equal(r.independentReadStability,true);assert.equal(r.conflicts[0].storedFingerprintAuthOwners.length,1);
+ assert.deepEqual(f.stats(),{transactions:2,authCalls:4,mutations:[]});assert.deepEqual(r.conflicts[0].crossUpdateTime,uidDiagStamp);
+ assert.equal(JSON.stringify(r).includes('private-selected-uid'),false);assert.equal(JSON.stringify(r).includes('private@example.invalid'),false);
+});
+test('HR UID IO rejects nanosecond drift within the same millisecond',async()=>{
+ await assert.rejects(()=>hrCrosswalkUidReadOnly(uidDiagIoFixture({nanosecondDrift:true}).args),/HR_UID_DIAG_IDENTITY_CHANGED_DURING_READ/);
+});
+test('HR UID IO rejects Auth claim drift and repeated page tokens',async()=>{
+ await assert.rejects(()=>hrCrosswalkUidReadOnly(uidDiagIoFixture({authDrift:true}).args),/HR_UID_DIAG_IDENTITY_CHANGED_DURING_READ/);
+ await assert.rejects(()=>hrCrosswalkUidReadOnly(uidDiagIoFixture({repeatToken:true}).args),/HR_UID_DIAG_AUTH_PAGINATION/);
+});
+test('HR UID IO rejects revision or tenant mismatch before reads',async()=>{
+ const f=uidDiagIoFixture();f.args.snapshot._runtime.revision='b'.repeat(64);
+ await assert.rejects(()=>hrCrosswalkUidReadOnly(f.args),/HR_UID_DIAG_SOURCE/);assert.deepEqual(f.stats(),{transactions:0,authCalls:0,mutations:[]});
 });

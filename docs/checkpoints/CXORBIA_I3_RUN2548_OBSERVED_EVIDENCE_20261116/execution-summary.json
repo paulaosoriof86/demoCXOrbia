@@ -1,0 +1,205 @@
+{
+  "schemaVersion": "cxorbia.i3.run2548.recovered-verified-execution-summary.v1",
+  "generatedAt": "2026-11-16T04:24:07Z",
+  "runId": 43799873886,
+  "runNumber": 2548,
+  "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+  "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+  "controlSha": "c9ec5ee30a1cba7dd2fadc231fba7076199655de",
+  "c3": {
+    "path": "docs/checkpoints/CXORBIA_I3_CURRENT_C3_RUN2548_AUDIT_20261116.json",
+    "gitBlob": "83255d17c9982b1a74b0b435efb1919ef19e57f5",
+    "sha256": "692ce7c3463bf8a6e90767b5ac4fd8dbd8f46ba6b086cca2f4f39d37862fb54e"
+  },
+  "sourceQa": {
+    "artifactId": 14196440064,
+    "artifactUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43799873886/artifacts/14196440064",
+    "artifactDigest": "sha256:596fd101656d0d85926f75b0982b4f7b65c5ff8dd3e5e02cf3aaba573e4bd901",
+    "artifactDigestIndependentlyVerified": true,
+    "member": "source-qa-receipt.json",
+    "sha256": "332394b0468ac90825709320831fa03bd4af2151c67b0175267eb3dc2ea43ae6",
+    "runId": 43799873886,
+    "runNumber": 2548,
+    "controlSha": "c9ec5ee30a1cba7dd2fadc231fba7076199655de",
+    "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+    "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+    "testsPass": 440,
+    "testsFail": 0,
+    "owners": 21,
+    "scope": "SOURCE_QA_ONLY_NOT_FULL_DOMAIN"
+  },
+  "steps": {
+    "human": {
+      "decision": "PASS_I3_HUMAN_LIVE_ACCEPTANCE",
+      "expectedRoleRouteEntries": 56,
+      "actualRouteObservations": 90,
+      "screenshots": 93,
+      "automatedEvidenceNotNewPaulaBlockAcceptance": true
+    },
+    "progress": {
+      "stepConclusion": "success",
+      "phaseAComplete": false,
+      "matchModules": 5,
+      "newDomainMatches": 0
+    },
+    "semanticAndFocal": {
+      "stepConclusion": "success",
+      "semanticDecision": "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE",
+      "focalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+      "dashboardStages": {
+        "decision": "PASS_SCOPED_B11_CURRENT_PERIOD_STAGE_IDENTITIES",
+        "completedCases": 18,
+        "expectedCases": 18,
+        "rawIdsIndependentlyInspected": true,
+        "totalIdsExactlyMatchPinnedExternalHR": true,
+        "fullB11": false,
+        "fullDomain": false
+      }
+    },
+    "HR349": {
+      "decision": "OBSERVED_DURABLE_REVISION_MATCH_NOT_FULL_RECONCILIATION",
+      "artifactId": 14196298207,
+      "member": "hr-after-human/result.json",
+      "sha256": "2aad58f582c756ea351b1642c19221ccccb3e383187fab903c6eb046b7470e05",
+      "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+      "visitFingerprint": "bfc8f1788b902124e6",
+      "durableRevisionMatches": true,
+      "durableVersion": 59,
+      "visits": {
+        "committed": 792,
+        "newVisits": 0,
+        "conflicts": 0,
+        "hrWrites": 0
+      },
+      "successorReceipt": {
+        "pathHash": "d5290882ee08dc064875625399e4b89882d39a0a6752e6b6871543b84ad7d04a",
+        "actorUidHash": "94816a0e1151d44ce7ec2116545d37f87ce1aef87cb482835f123ac7300216ce",
+        "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+        "status": "partial",
+        "code": "HR_RECONCILIATION_PARTIAL",
+        "shoppersCode": "SHOPPER_CROSSWALK_UID_CONFLICT",
+        "confirmedProviderWrites": 798,
+        "unresolvedEffects": 0,
+        "unverifiedEffects": 0,
+        "committed": false,
+        "providerAck": false,
+        "lastAttemptApplicationWrites": 0,
+        "lastAttemptIsReplayNotCumulativeTotal": true,
+        "resumeSameCurrentRevisionPossible": true
+      },
+      "predecessorProof": {
+        "decision": "VERIFIED_PREDECESSOR_HISTORY_SUCCESSOR_NOT_COMMITTED",
+        "receiptPathHash": "b54a5056b05bb79eefe78403dd25bec0a44e13a0cafb9d482389086f6aa84f2e",
+        "sourceRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
+        "journalSeal": "7b43f8759e11ea17a3669c4e2be05a497790864e48ced14aa87a33e5fd78c358",
+        "intents": 850,
+        "effects": 792,
+        "firestoreWrites": 792,
+        "authWrites": 0,
+        "journalComplete": true,
+        "proofInResultMatches": true,
+        "successorScopeMatches": true,
+        "successorBindingMatches": true,
+        "independentHistoricalReadback": true,
+        "oldReceiptStillPartial": true,
+        "historicalBindingMatches": true,
+        "journalSealMatches": true,
+        "countsMatch": true
+      },
+      "fullReconciliationClosed": false,
+      "remoteHrAck": false
+    },
+    "PRE": {
+      "decision": "HOLD_I3_LIVE_FIXTURES_V2",
+      "rawClassification": "FUNCTIONAL_DEFECT",
+      "classification": "MAPPING_FAILURE",
+      "adjudication": "QA_HARNESS_NULL_AUTH_CONTEXT_DURING_RELOAD_NOT_PROOF_OF_PRODUCT_RESERVATION_DEFECT",
+      "code": "page.waitForFunction: TypeError: Cannot read properties of null (reading 'authenticated')",
+      "owner": ".github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs",
+      "function": "adminReservationReadback.capture",
+      "passedIds": [
+        "6_HISTORICO_KPIS",
+        "10_CLIENTE",
+        "1_SHOPPER_GT",
+        "2_SHOPPER_HN",
+        "3_NOMBRE_TILDE",
+        "4_NOMBRE_COMPUESTO",
+        "5_PERFIL_ADMIN",
+        "7_DISPONIBILIDAD_ASIGNACION"
+      ],
+      "passed": 8,
+      "expectedTotal": 10,
+      "reservationCreateAck": true,
+      "reservationLifecycleComplete": false,
+      "postulationReached": false,
+      "cleanup": {
+        "ok": true,
+        "documentsAbsent": 26,
+        "authAbsent": 4,
+        "creationJournalsResolved": true,
+        "residue": 0
+      },
+      "assignment": {
+        "activePeriodKey": "2026-11",
+        "independentHrAvailable": 11,
+        "uiAvailable": 11,
+        "fallback": false,
+        "providerAck": true,
+        "shopperMineCount": 1,
+        "shopperAllCount": 1,
+        "availableAfterAssignment": false,
+        "assignmentSource": "platform",
+        "assignmentSyncStatus": "pending_hr",
+        "remoteHrAck": false,
+        "originalDevVisitRestored": true,
+        "restorationSha256": "93d2e2b74131068af5280d99975c2a7546224ec6ff1e0178e911696b32504e27"
+      },
+      "proofStage": "PRE_CERTIFICATION",
+      "certifiedAtExecution": false,
+      "finalDevIdentityVerified": false,
+      "finalHrRevision": null,
+      "artifactMember": "live-fixtures/i3-live-fixtures-result.json",
+      "rawSha256": "7c86254c7301573d4be2a893396f2493e917d1423d2717738fad968d439d2968",
+      "artifactTarDigestDeclaredNotCertified": "1df2acfa600ad2e9eb54def7b77b0d2627736529ad93fe22cb00b978d438a52e"
+    },
+    "B14": {
+      "decision": "HOLD",
+      "b14Closed": false,
+      "providerAck": false,
+      "bindingToReaderMatch": "UNRESOLVED",
+      "writerImplemented": false,
+      "hrWrites": 0,
+      "scope": "BIDIRECTIONAL_ACK_IDEMPOTENCY_IS_STILL_A_REQUIRED_FROZEN_PHASE_A_CAPABILITY"
+    },
+    "F09": {
+      "run2548": "NO_NEW_FULL_CLIENT_DOMAIN_CLAIM",
+      "acceptedFunctionalReceipt": {
+        "path": "docs/checkpoints/CXORBIA_I3_RUN2543_C3_CERTIFY_ATTEMPT_20261116.json",
+        "gitBlob": "95f4e793563a0507567830c46226bd8bc9ed8075",
+        "kind": "C3_PRETERMINAL_AND_CERTIFY_ATTEMPT_NOT_TERMINAL_CERTIFICATE",
+        "decision": "HOLD_I3_PRE_FIXTURES_DURABLE_REVISION_DIVERGENCE",
+        "runId": 43786809287,
+        "runNumber": 2543,
+        "sourceSha": "ef708259616da70b5adea2fa85d9abc34a5222c2",
+        "sourceTree": "b7adbf36633d8ec614d70232cecf28a4f2e81d58",
+        "artifactId": 14191010658,
+        "artifactDigest": "sha256:39502e35eb9cff6bb96c10b992e03c8f7fc51e3952b4705de0f39c6283c1043d",
+        "production": false,
+        "terminalCertified": false,
+        "phaseAComplete": false,
+        "i4Authorized": false,
+        "scope": "RUN2543_F09_THREE_UI_ACTIONS_PROVIDER_NEW_SESSION_PRIVACY_REPLAY_CLEANUP_NOT_FULL_CLIENT_DOMAIN"
+      }
+    }
+  },
+  "provenance": {
+    "artifactBytesAndMembersVerifiedBeforeEnvironmentLoss": true,
+    "originalLocalVerifiedSummarySha256": "2a792aaa297f219d3a407f1f4f3b8d4a2b52e30203f5154c52d50dab8429a6d9",
+    "originalLocalShaManifestSha256": "d46e847252d8fe618927da5cf82148c8791656b03f5d87f6f3e0e1a373a92f31",
+    "originalManifestFiles": 223,
+    "c3RawResultRecoveredFromJobLogAndMatchedOriginalSha256": true,
+    "scope": "RECOVERED_SAFE_SUMMARY_OF_OBSERVED_EVIDENCE_NOT_SUBSTITUTE_FOR_RAW_ARTIFACT"
+  },
+  "production": false,
+  "terminalCertified": false
+}

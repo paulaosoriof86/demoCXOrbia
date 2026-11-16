@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
+import vm from 'node:vm';
 import {commandDigest, requireProviderAck, reservationLifecyclePassed, restoreAssignment,
   FIXTURE_INPUT_FILES,FIXTURE_TEST_IDS,fixtureFileHash,validateFixturePrerequisites,
   validateFixtureHrObservation,validateSealedFixtureReceipt,dispatchTrackedFixtureCreation,requireFixtureCreationReceipt,
@@ -295,4 +296,24 @@ test('single workflow gathers fixtures before strict21 and only verifies them af
   assert.equal((certify.match(/tar -C/g)||[]).length,1);assert.match(certify,/PASS_C3_TERMINAL_MODULE_TRUTH_21_21/);
   assert.match(certify,/verify-live/);assert.match(fixtures,/verify-sealed/);assert.doesNotMatch(fixtures,/RECOVERY-I3-LIVE-FIXTURES|credentials_json|npm install|tar -xf/);
   assert.match(workflow,/cancel-in-progress: false/);assert.ok(Buffer.byteLength(workflow)<510000);
+});
+
+const reservationHarness=fs.readFileSync(new URL('../../.github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs',import.meta.url),'utf8').split('async function adminReservationReadback(')[1].split('\nasync function ')[0];
+const reservationWaitExpression=reservationHarness.match(/await page\.waitForFunction\((uid => [^\n]+), staffUid, \{timeout:150000\}\);/)?.[1];
+assert.ok(reservationWaitExpression,'test must execute the actual reservation authentication wait');
+const reservationWait=window=>vm.runInNewContext('('+reservationWaitExpression+')',{window})('staff-uid');
+const readyReservationWindow=()=>({CX:{backendAuth:{context:()=>({authenticated:true})},data:{__protectedReservations:[],setCurrentPeriod:()=>true}},firebase:{auth:()=>({currentUser:{uid:'staff-uid'}})},CX_PROTECTED_AUTH_HR_AUTHORITY:{applied:true}});
+test('reservation wait requires the complete authenticated exact-UID state',()=>assert.equal(reservationWait(readyReservationWindow()),true));
+for(const [name,alter]of [
+ ['backend context null during reload',w=>{w.CX.backendAuth.context=()=>null;}],
+ ['backend context undefined during startup',w=>{w.CX.backendAuth.context=()=>undefined;}],
+ ['Firebase auth null during startup',w=>{w.firebase.auth=()=>null;}],
+ ['Firebase auth undefined during reload',w=>{w.firebase.auth=()=>undefined;}],
+ ['unauthenticated',w=>{w.CX.backendAuth.context=()=>({authenticated:false});}],
+ ['different UID',w=>{w.firebase.auth=()=>({currentUser:{uid:'other'}});}],
+ ['authority not applied',w=>{w.CX_PROTECTED_AUTH_HR_AUTHORITY.applied=false;}],
+ ['reservations not loaded',w=>{w.CX.data.__protectedReservations=null;}],
+ ['period setter unavailable',w=>{delete w.CX.data.setCurrentPeriod;}]
+])test('reservation wait remains false without throwing: '+name,()=>{
+ const w=readyReservationWindow();alter(w);assert.equal(reservationWait(w),false);
 });

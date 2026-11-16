@@ -100,6 +100,15 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
   check(Boolean(blocker)&&p?.activeBlocker===blocker&&l?.activeBlocker===blocker,'CURRENT_ACTIVE_BLOCKER_DESYNC');
   check(Boolean(current?.moduleTruthPath)&&current.moduleTruthPath===d?.moduleTruthPath,'CURRENT_TRUTH_MATRIX_DESYNC');
   check(Boolean(seal?.runId)&&current?.currentMaterializationRunId===seal.runId&&current?.currentMaterializationSourceSha===seal.sourceSha,'CURRENT_TRUTH_DEV_SEAL_DESYNC');
+  // Nested compatibility headers remain current authorities too. Preserve
+  // predecessor receipts only under explicit historical containers.
+  if(Object.prototype.hasOwnProperty.call(l?.governance||{},'currentMaterialization'))check(
+    JSON.stringify(l.governance.currentMaterialization)===JSON.stringify(d.currentMaterialization)&&
+    JSON.stringify(l.governance.currentMaterialization)===JSON.stringify(seal),'CURRENT_GOVERNANCE_MATERIALIZATION_DESYNC');
+  if(Object.prototype.hasOwnProperty.call(l?.governance||{},'postDeployRunSeal'))check(
+    JSON.stringify(l.governance.postDeployRunSeal)===JSON.stringify(postDeploy),'CURRENT_GOVERNANCE_SEAL_DESYNC');
+  if(Object.prototype.hasOwnProperty.call(current,'currentRuntimeRevision'))check(current.currentRuntimeRevision===seal.runtimeRevision,'CURRENT_TRUTH_RUNTIME_DESYNC');
+  if(Object.prototype.hasOwnProperty.call(current,'currentHostingVersion'))check(current.currentHostingVersion===((hostingOnlyServing||pendingHostingOnly)?hosting.hostingVersion:seal.hostingVersion),'CURRENT_TRUTH_HOSTING_DESYNC');
   // The business-facing B1-B9 lock must point to the very same served DEV
   // release as the control seal, not a historical valid predecessor.  Keeping
   // a stale nested DEV pointer was sufficient to restart deployment loops.
@@ -166,6 +175,27 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
   check(Boolean(d?.moduleTruthExpectedGitBlob)&&current.moduleTruthGitBlob===d.moduleTruthExpectedGitBlob,'CURRENT_TRUTH_MATRIX_BLOB_DESYNC');
   for(const control of [d,p])check(control?.currentCanonicalControl?.matrix?.path===d.moduleTruthPath && control?.currentCanonicalControl?.matrix?.gitBlob===d.moduleTruthExpectedGitBlob && control?.currentCanonicalControl?.ledger?.path===d.findingsLedgerPath && control?.currentCanonicalControl?.ledger?.gitBlob===d.findingsLedgerExpectedGitBlob,'CURRENT_CANONICAL_CONTROL_POINTER_DESYNC');
   if(m){
+    // This alias denotes the immutable paired runtime + Hosting receipt, even
+    // when a newer source or Hosting-only release is pending. Never leave a
+    // previous paired run labelled current beside a newer canonical DEV seal.
+    if(Object.prototype.hasOwnProperty.call(m,'currentMaterialization'))check(
+      Boolean(m.currentMaterialization)&&
+      JSON.stringify(m.currentMaterialization)===JSON.stringify(d.currentMaterialization)&&
+      JSON.stringify(m.currentMaterialization)===JSON.stringify(seal),
+      'CURRENT_MATRIX_MATERIALIZATION_DESYNC');
+    if(Object.prototype.hasOwnProperty.call(m.productSource||{},'devMaterializationReceiptPath'))check(
+      m.productSource.devMaterializationReceiptPath===postDeploy.receiptPath&&
+      m.productSource.devMaterializationReceiptGitBlob===postDeploy.receiptBlob,'CURRENT_MATRIX_DEV_RECEIPT_DESYNC');
+    if(!hostingOnlyServing&&!pendingHostingOnly)for(const mod of m.modules||[]){
+      if(Object.prototype.hasOwnProperty.call(mod,'currentMaterializationRunId'))check(mod.currentMaterializationRunId===seal.runId,'CURRENT_MODULE_DEV_RUN_DESYNC');
+      if(Object.prototype.hasOwnProperty.call(mod,'servedRuntimeRevision'))check(mod.servedRuntimeRevision===seal.runtimeRevision,'CURRENT_MODULE_RUNTIME_DESYNC');
+      if(Object.prototype.hasOwnProperty.call(mod,'servedHostingVersion'))check(mod.servedHostingVersion===seal.hostingVersion,'CURRENT_MODULE_HOSTING_DESYNC');
+      if(Object.prototype.hasOwnProperty.call(mod,'currentServingAuthority'))check(
+        mod.currentServingAuthority?.runId===seal.runId&&mod.currentServingAuthority?.sourceSha===seal.sourceSha&&
+        mod.currentServingAuthority?.sourceTree===seal.sourceTree&&
+        mod.currentServingAuthority?.path===postDeploy.receiptPath&&mod.currentServingAuthority?.gitBlob===postDeploy.receiptBlob,
+        'CURRENT_MODULE_SERVING_AUTHORITY_DESYNC');
+    }
     const actual=(m.modules||[]).filter(x=>x.classification==='MATCH').length;
     check(actual===current.moduleMatch && m.integralCertificationUnchanged?.match===actual,'CURRENT_MATRIX_MATCH_COUNT_DESYNC');
     check(m.version===(String(d.moduleTruthPath).match(/-(V\d+)\.json$/)||[])[1],'CURRENT_MATRIX_VERSION_DESYNC');
@@ -184,17 +214,26 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
 export function validateLatestExecutionSource({descriptor:d,pointer:p,gitBlob,readJson}){
   const latest=p.lastExecutionReceipt,seal=d.postDeployRunSeal||{},failures=[];
   const check=(ok,code)=>{if(!ok)failures.push(code);};
-  // A completed C3 observation belongs to the served frontend predecessor.
-  // Its failed certify attempt is current execution evidence, never a new-source
-  // or terminal certificate. Bind it before the paired-source compatibility path.
+  // A completed C3 observation belongs to the exact served source. Its attempt
+  // is execution evidence, never a terminal certificate or another deployment.
+  // This remains true when a separately proven source successor is pending.
   if(latest?.kind==='C3_PRETERMINAL_AND_CERTIFY_ATTEMPT_NOT_TERMINAL_CERTIFICATE'){
     const pending=d.pendingDevSuccessor||{},audit=d.currentC3PreterminalAudit||{};
-    const paired=!d.currentHostingOnlyDevMaterialization&&!p.currentHostingOnlyDevMaterialization&&Boolean(pending.servingPairedMaterialization);
+    const currentPaired=seal.mode==='CURRENT_SOURCE_SERVING';
+    const paired=!d.currentHostingOnlyDevMaterialization&&!p.currentHostingOnlyDevMaterialization&&
+      Boolean(currentPaired?d.currentMaterialization:pending.servingPairedMaterialization);
     const h=(paired?d.currentMaterialization:d.currentHostingOnlyDevMaterialization)||{};
-    check(seal.mode==='PREDECESSOR_SERVING_PENDING_SOURCE'&&pending.state==='P0_PROVEN_PENDING_DEV_MATERIALIZATION'&&pending.scope==='RUNTIME_AND_HOSTING','LATEST_C3_PENDING_STATE');
-    check(JSON.stringify(pending)===JSON.stringify(p.pendingDevSuccessor||null)&&pending.production===false&&pending.devPublished===false,'LATEST_C3_PENDING_POINTER');
-    check(pending.sourceSha===d.productSourceSha&&pending.sourceTree===d.productTreeAuthority&&pending.predecessorProductSourceSha===h.sourceSha&&h.sourceSha!==pending.sourceSha,'LATEST_C3_PENDING_SOURCE');
-    check(JSON.stringify(h)===JSON.stringify((paired?p.currentDevMaterialization:p.currentHostingOnlyDevMaterialization)||null)&&JSON.stringify(h)===JSON.stringify((paired?pending.servingPairedMaterialization:pending.servingHosting)||null)&&JSON.stringify(seal)===JSON.stringify(pending.servingRuntimeSeal||null),'LATEST_C3_SERVING_POINTER');
+    if(currentPaired){
+      check(paired&&!d.pendingDevSuccessor&&!p.pendingDevSuccessor,'LATEST_C3_CURRENT_PAIRED_STATE');
+      check(h.sourceSha===d.productSourceSha&&h.sourceTree===d.productTreeAuthority,'LATEST_C3_CURRENT_PAIRED_SOURCE');
+      check(JSON.stringify(h)===JSON.stringify(p.currentDevMaterialization||null)&&
+        JSON.stringify(seal)===JSON.stringify(p.postDeployRunSeal||null),'LATEST_C3_CURRENT_PAIRED_POINTER');
+    }else{
+      check(seal.mode==='PREDECESSOR_SERVING_PENDING_SOURCE'&&pending.state==='P0_PROVEN_PENDING_DEV_MATERIALIZATION'&&pending.scope==='RUNTIME_AND_HOSTING','LATEST_C3_PENDING_STATE');
+      check(JSON.stringify(pending)===JSON.stringify(p.pendingDevSuccessor||null)&&pending.production===false&&pending.devPublished===false,'LATEST_C3_PENDING_POINTER');
+      check(pending.sourceSha===d.productSourceSha&&pending.sourceTree===d.productTreeAuthority&&pending.predecessorProductSourceSha===h.sourceSha&&h.sourceSha!==pending.sourceSha,'LATEST_C3_PENDING_SOURCE');
+      check(JSON.stringify(h)===JSON.stringify((paired?p.currentDevMaterialization:p.currentHostingOnlyDevMaterialization)||null)&&JSON.stringify(h)===JSON.stringify((paired?pending.servingPairedMaterialization:pending.servingHosting)||null)&&JSON.stringify(seal)===JSON.stringify(pending.servingRuntimeSeal||null),'LATEST_C3_SERVING_POINTER');
+    }
     if(paired){
       check(!pending.servingHosting&&!d.i3Q2HostingReleaseC3Pending&&!p.i3Q2HostingReleaseC3Pending&&h.sourceSha===seal.sourceSha&&h.sourceTree===seal.sourceTree&&h.hostingVersion===seal.hostingVersion&&h.runtimeRevision===seal.runtimeRevision&&h.runtimeDigest===seal.runtimeDigest,'LATEST_C3_PAIRED_SEAL');
       check(Boolean(seal.receiptPath&&seal.receiptBlob)&&h.materializationReceiptPath===seal.receiptPath&&gitBlob(seal.receiptPath)===seal.receiptBlob,'LATEST_C3_PAIRED_RECEIPT_BLOB');

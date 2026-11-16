@@ -407,3 +407,102 @@ test('last execution alias cannot retain a materialization label for current C3 
 test('old successor evidence remains valid history without becoming active authority',()=>{
  const v=completedPairedC3PendingFixture();for(const x of [v.descriptor,v.pointer,v.ledger])x.historicalSupersededAliases={currentSuccessorDevMaterialization:{sourceSha:'a'.repeat(40),sourceTree:'b'.repeat(40),executed:true}};assert.equal(validateCurrentAuthorityAliases(v).pass,true);
 });
+
+function matrixMaterializationFixture(make=fixture){
+ const v=make(),d=v.descriptor,p=v.pointer,l=v.ledger;
+ d.moduleTruthPath='matrix-V330.json';l.currentTruth.moduleTruthPath=d.moduleTruthPath;
+ p.activePhaseAClosureLock20261110.currentAccountingSemantics.strictOwnerDomainMatch.evidence.path=d.moduleTruthPath;
+ for(const x of [d,p])x.currentCanonicalControl.matrix.path=d.moduleTruthPath;
+ d.currentMaterialization=structuredClone(l.currentMaterialization);
+ v.matrix={version:'V330',modules:Array.from({length:21},(_,i)=>({classification:i<5?'MATCH':'HOLD'})),
+  integralCertificationUnchanged:{match:5},currentMaterialization:structuredClone(l.currentMaterialization)};
+ return v;
+}
+for(const [name,make]of [
+ ['served current source',fixture],['unserved successor',pendingFixture],
+ ['Hosting only over paired runtime',hostingOnlyFixture],['paired DEV pending C3',pairedAfterDeployFixture],
+ ['pending source after completed C3',completedPairedC3PendingFixture],['Hosting after paired DEV',hostingAfterPairedFixture]
+])test('matrix materialization retains exact paired evidence during '+name,()=>{
+ const v=matrixMaterializationFixture(make);assert.equal(validateCurrentAuthorityAliases(v).pass,true,JSON.stringify(validateCurrentAuthorityAliases(v)));
+});
+for(const [name,alter]of [
+ ['old run',v=>{v.matrix.currentMaterialization.runId=1;}],
+ ['old source',v=>{v.matrix.currentMaterialization.sourceSha='0'.repeat(40);}],
+ ['old runtime',v=>{v.matrix.currentMaterialization.runtimeRevision='dev-old';}],
+ ['old Hosting',v=>{v.matrix.currentMaterialization.hostingVersion='hosting-old';}],
+ ['null current alias',v=>{v.matrix.currentMaterialization=null;}],
+ ['descriptor divergence',v=>{v.descriptor.currentMaterialization.hostingVersion='hosting-other';}],
+ ['ledger divergence',v=>{v.ledger.currentMaterialization.runId=2;}]
+])test('matrix current paired materialization rejects '+name,()=>{
+ const v=matrixMaterializationFixture();alter(v);
+ assert.ok(validateCurrentAuthorityAliases(v).failures.includes('CURRENT_MATRIX_MATERIALIZATION_DESYNC'));
+});
+test('matrix archival materialization retains its original evidence',()=>{
+ const v=matrixMaterializationFixture();v.matrix.historicalBeforeRun2548Consumption={currentMaterialization:{runId:1,sourceSha:'0'.repeat(40)}};
+ assert.equal(validateCurrentAuthorityAliases(v).pass,true);
+});
+
+function latestCurrentPairedC3AttemptFixture(){
+ const v=latestPairedC3AttemptFixture(),{descriptor:d,pointer:p}=v;
+ delete d.pendingDevSuccessor;delete p.pendingDevSuccessor;
+ d.productSourceSha=d.currentMaterialization.sourceSha;d.productTreeAuthority=d.currentMaterialization.sourceTree;
+ d.postDeployRunSeal.mode='CURRENT_SOURCE_SERVING';p.postDeployRunSeal=structuredClone(d.postDeployRunSeal);
+ return v;
+}
+test('current served paired source consumes its C3 attempt without inventing another successor or deploy',()=>{
+ const v=latestCurrentPairedC3AttemptFixture(),before=JSON.stringify(v.descriptor.currentMaterialization);
+ const result=validateLatestExecutionSource(v);assert.equal(result.pass,true,JSON.stringify(result));
+ assert.equal(result.c3Attempt,true);assert.equal(JSON.stringify(v.descriptor.currentMaterialization),before);
+ assert.equal(v.descriptor.pendingDevSuccessor,undefined);
+});
+for(const [name,alter]of [
+ ['descriptor source',v=>{v.descriptor.productSourceSha='0'.repeat(40);}],
+ ['descriptor tree',v=>{v.descriptor.productTreeAuthority='0'.repeat(40);}],
+ ['pending source retained',v=>{v.descriptor.pendingDevSuccessor={state:'P0_PROVEN_PENDING_DEV_MATERIALIZATION'};}],
+ ['pointer pending source retained',v=>{v.pointer.pendingDevSuccessor={state:'P0_PROVEN_PENDING_DEV_MATERIALIZATION'};}],
+ ['Hosting-only alias retained',v=>{v.descriptor.currentHostingOnlyDevMaterialization=structuredClone(v.descriptor.currentMaterialization);}],
+ ['pointer seal differs',v=>{v.pointer.postDeployRunSeal.runtimeDigest='other';}],
+ ['paired pointer differs',v=>{v.pointer.currentDevMaterialization.hostingVersion='other';}],
+ ['C3 transition retained',v=>{v.descriptor.i3Q2HostingReleaseC3Pending={state:'DEV_RUNTIME_AND_HOSTING_VERIFIED_C3_PENDING'};}],
+ ['changed paired receipt blob',v=>{v.gitBlob=path=>path==='c3-attempt.json'?'4'.repeat(40):'0'.repeat(40);}],
+ ['C3 receipt run',v=>{v.receipt.runId=999;}],
+ ['C3 receipt digest',v=>{v.receipt.runtimeDigest='other';}],
+ ['C3 count promoted',v=>{v.receipt.matchModules=21;}],
+ ['build invented',v=>{v.receipt.builds=1;}],
+ ['production claimed',v=>{v.receipt.production=true;}],
+ ['terminal claimed',v=>{v.receipt.terminalCertified=true;}]
+])test('current served C3 attempt rejects '+name,()=>{
+ const v=latestCurrentPairedC3AttemptFixture();alter(v);assert.equal(validateLatestExecutionSource(v).pass,false);
+});
+
+function nestedCurrentMaterializationFixture(){
+ const v=matrixMaterializationFixture();v.ledger.governance.currentMaterialization=structuredClone(v.descriptor.currentMaterialization);
+ v.ledger.governance.postDeployRunSeal=structuredClone(v.descriptor.postDeployRunSeal||{});
+ v.ledger.currentTruth.currentRuntimeRevision=v.ledger.currentMaterialization.runtimeRevision;
+ v.ledger.currentTruth.currentHostingVersion=v.ledger.currentMaterialization.hostingVersion;
+ return v;
+}
+test('nested current authority headers bind the same paired receipt and served runtime',()=>assert.equal(validateCurrentAuthorityAliases(nestedCurrentMaterializationFixture()).pass,true));
+for(const [code,alter]of [
+ ['CURRENT_GOVERNANCE_MATERIALIZATION_DESYNC',v=>{v.ledger.governance.currentMaterialization.runId=1;}],
+ ['CURRENT_GOVERNANCE_SEAL_DESYNC',v=>{v.ledger.governance.postDeployRunSeal.runtimeRevision='old';}],
+ ['CURRENT_TRUTH_RUNTIME_DESYNC',v=>{v.ledger.currentTruth.currentRuntimeRevision='old';}],
+ ['CURRENT_TRUTH_HOSTING_DESYNC',v=>{v.ledger.currentTruth.currentHostingVersion='old';}]
+])test('nested current headers reject '+code,()=>{const v=nestedCurrentMaterializationFixture();alter(v);assert.ok(validateCurrentAuthorityAliases(v).failures.includes(code));});
+
+function moduleServingAliasFixture(){
+ const v=matrixMaterializationFixture(),seal=v.ledger.currentMaterialization;
+ v.descriptor.postDeployRunSeal={receiptPath:'paired.json',receiptBlob:'e'.repeat(40)};
+ v.matrix.productSource={devMaterializationReceiptPath:'paired.json',devMaterializationReceiptGitBlob:'e'.repeat(40)};
+ Object.assign(v.matrix.modules[0],{currentMaterializationRunId:seal.runId,servedRuntimeRevision:seal.runtimeRevision,servedHostingVersion:seal.hostingVersion,
+ currentServingAuthority:{runId:seal.runId,sourceSha:seal.sourceSha,sourceTree:seal.sourceTree,path:'paired.json',gitBlob:'e'.repeat(40)}});
+ return v;
+}
+test('each current module serving alias binds the paired seal without promoting its classification',()=>assert.equal(validateCurrentAuthorityAliases(moduleServingAliasFixture()).pass,true));
+for(const [code,alter]of [
+ ['CURRENT_MATRIX_DEV_RECEIPT_DESYNC',v=>{v.matrix.productSource.devMaterializationReceiptPath='old.json';}],
+ ['CURRENT_MODULE_DEV_RUN_DESYNC',v=>{v.matrix.modules[0].currentMaterializationRunId=1;}],
+ ['CURRENT_MODULE_RUNTIME_DESYNC',v=>{v.matrix.modules[0].servedRuntimeRevision='old';}],
+ ['CURRENT_MODULE_HOSTING_DESYNC',v=>{v.matrix.modules[0].servedHostingVersion='old';}],
+ ['CURRENT_MODULE_SERVING_AUTHORITY_DESYNC',v=>{v.matrix.modules[0].currentServingAuthority.sourceSha='0'.repeat(40);}]
+])test('current module evidence rejects '+code,()=>{const v=moduleServingAliasFixture();alter(v);assert.ok(validateCurrentAuthorityAliases(v).failures.includes(code));});

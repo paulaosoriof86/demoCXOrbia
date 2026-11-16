@@ -1,0 +1,301 @@
+{
+  "schemaVersion": "cxorbia.i3.run2548.qa-control-recovery.v1",
+  "generatedAt": "2026-11-16T04:24:07Z",
+  "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+  "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+  "sourceUnchanged": true,
+  "productChanges": 0,
+  "production": false,
+  "classification": "MAPPING_FAILURE",
+  "cause": "Current aliases still described RUN2545/2546 beside verified RUN2547/2548; PRE reservation readiness dereferenced null auth context during reload.",
+  "codeFiles": [
+    {
+      "path": ".github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs",
+      "gitBlob": "49221159a612932be95e0b6070db48531c9967c4",
+      "sha256": "bdd55ee9bf08462852fed02087fb3ef6c333f83f2cbe2651f1ed2c0b41cddc29"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-live-fixture-contract.test.mjs",
+      "gitBlob": "940d5cc4bef726525cef1522e838f78e9dcc637a",
+      "sha256": "f111333e95f5faefbc2b32435f320816dd230339c258094cb4670d99cdabe1b4"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-current-authority-alias-guard.mjs",
+      "gitBlob": "82dcbc7253c9b69f4be0344cf55f5df552cb1604",
+      "sha256": "203146acc5572ec0a609d9bec2d9c2cbcd029e21f9a5f9b1484d9e9c1d91f591"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs",
+      "gitBlob": "179276807191e815a17f04b5090499c6f534b09b",
+      "sha256": "97d613ad749762dc010bd316db8b6161825bf9ab285957bc5adc8723d9645175"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-hr-ack-exact-same-revision.mjs",
+      "gitBlob": "29984ffdf56ba86e0db102af1b2ec4dec521fae9",
+      "sha256": "ff4076610f78904686b7edd9b547266b5f6713b61206114846b97f3163957601"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-terminal-hr-observation.test.mjs",
+      "gitBlob": "212163f9c412bd58c22b194e03cc5087a55e053d",
+      "sha256": "c10d86ef21e221f77ffac1e339fa467e6c0dfa450e8aaff2ae08a846e019848c"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs",
+      "gitBlob": "4bd1f8b70e513aa19cff4b9a7226274b21ab6be8",
+      "sha256": "063fef734873c8f9f5e1d5c88eb4112b79e5558b47fa924f0da5f6c590dd3b91"
+    }
+  ],
+  "aliasBefore": {
+    "pass": false,
+    "failures": [
+      "CURRENT_GOVERNANCE_MATERIALIZATION_DESYNC",
+      "CURRENT_GOVERNANCE_SEAL_DESYNC",
+      "CURRENT_TRUTH_RUNTIME_DESYNC",
+      "CURRENT_MATRIX_MATERIALIZATION_DESYNC",
+      "CURRENT_MATRIX_DEV_RECEIPT_DESYNC",
+      "CURRENT_MODULE_DEV_RUN_DESYNC",
+      "CURRENT_MODULE_RUNTIME_DESYNC",
+      "CURRENT_MODULE_HOSTING_DESYNC",
+      "CURRENT_MODULE_SERVING_AUTHORITY_DESYNC",
+      "CURRENT_MODULE_DEV_RUN_DESYNC",
+      "CURRENT_MODULE_RUNTIME_DESYNC",
+      "CURRENT_MODULE_HOSTING_DESYNC",
+      "CURRENT_MODULE_SERVING_AUTHORITY_DESYNC",
+      "CURRENT_MODULE_DEV_RUN_DESYNC",
+      "CURRENT_MODULE_RUNTIME_DESYNC",
+      "CURRENT_MODULE_HOSTING_DESYNC",
+      "CURRENT_MODULE_SERVING_AUTHORITY_DESYNC",
+      "CURRENT_MODULE_DEV_RUN_DESYNC",
+      "CURRENT_MODULE_RUNTIME_DESYNC",
+      "CURRENT_MODULE_HOSTING_DESYNC",
+      "CURRENT_MODULE_SERVING_AUTHORITY_DESYNC",
+      "CURRENT_MODULE_DEV_RUN_DESYNC",
+      "CURRENT_MODULE_RUNTIME_DESYNC",
+      "CURRENT_MODULE_HOSTING_DESYNC",
+      "CURRENT_MODULE_SERVING_AUTHORITY_DESYNC",
+      "CURRENT_MODULE_DEV_RUN_DESYNC",
+      "CURRENT_MODULE_RUNTIME_DESYNC",
+      "CURRENT_MODULE_HOSTING_DESYNC",
+      "CURRENT_MODULE_SERVING_AUTHORITY_DESYNC",
+      "CURRENT_MODULE_DEV_RUN_DESYNC",
+      "CURRENT_MODULE_RUNTIME_DESYNC",
+      "CURRENT_MODULE_HOSTING_DESYNC",
+      "CURRENT_MODULE_SERVING_AUTHORITY_DESYNC",
+      "CURRENT_MODULE_DEV_RUN_DESYNC",
+      "CURRENT_MODULE_RUNTIME_DESYNC",
+      "CURRENT_MODULE_HOSTING_DESYNC",
+      "CURRENT_MODULE_SERVING_AUTHORITY_DESYNC",
+      "CURRENT_MODULE_DEV_RUN_DESYNC",
+      "CURRENT_MODULE_RUNTIME_DESYNC",
+      "CURRENT_MODULE_HOSTING_DESYNC",
+      "CURRENT_MODULE_SERVING_AUTHORITY_DESYNC",
+      "CURRENT_MODULE_DEV_RUN_DESYNC",
+      "CURRENT_MODULE_RUNTIME_DESYNC",
+      "CURRENT_MODULE_HOSTING_DESYNC",
+      "CURRENT_MODULE_SERVING_AUTHORITY_DESYNC",
+      "CURRENT_MODULE_DEV_RUN_DESYNC",
+      "CURRENT_MODULE_RUNTIME_DESYNC",
+      "CURRENT_MODULE_HOSTING_DESYNC",
+      "CURRENT_MODULE_SERVING_AUTHORITY_DESYNC",
+      "CURRENT_MODULE_DEV_RUN_DESYNC",
+      "CURRENT_MODULE_RUNTIME_DESYNC",
+      "CURRENT_MODULE_HOSTING_DESYNC",
+      "CURRENT_MODULE_SERVING_AUTHORITY_DESYNC",
+      "CURRENT_MODULE_DEV_RUN_DESYNC",
+      "CURRENT_MODULE_RUNTIME_DESYNC",
+      "CURRENT_MODULE_HOSTING_DESYNC",
+      "CURRENT_MODULE_SERVING_AUTHORITY_DESYNC",
+      "CURRENT_MODULE_DEV_RUN_DESYNC",
+      "CURRENT_MODULE_RUNTIME_DESYNC",
+      "CURRENT_MODULE_HOSTING_DESYNC",
+      "CURRENT_MODULE_SERVING_AUTHORITY_DESYNC",
+      "CURRENT_MODULE_DEV_RUN_DESYNC",
+      "CURRENT_MODULE_RUNTIME_DESYNC",
+      "CURRENT_MODULE_HOSTING_DESYNC",
+      "CURRENT_MODULE_SERVING_AUTHORITY_DESYNC",
+      "CURRENT_MODULE_DEV_RUN_DESYNC",
+      "CURRENT_MODULE_RUNTIME_DESYNC",
+      "CURRENT_MODULE_HOSTING_DESYNC",
+      "CURRENT_MODULE_SERVING_AUTHORITY_DESYNC",
+      "CURRENT_MODULE_DEV_RUN_DESYNC",
+      "CURRENT_MODULE_RUNTIME_DESYNC",
+      "CURRENT_MODULE_HOSTING_DESYNC",
+      "CURRENT_MODULE_SERVING_AUTHORITY_DESYNC",
+      "CURRENT_MODULE_DEV_RUN_DESYNC",
+      "CURRENT_MODULE_RUNTIME_DESYNC",
+      "CURRENT_MODULE_HOSTING_DESYNC",
+      "CURRENT_MODULE_SERVING_AUTHORITY_DESYNC",
+      "CURRENT_MODULE_DEV_RUN_DESYNC",
+      "CURRENT_MODULE_RUNTIME_DESYNC",
+      "CURRENT_MODULE_HOSTING_DESYNC",
+      "CURRENT_MODULE_SERVING_AUTHORITY_DESYNC",
+      "CURRENT_MODULE_DEV_RUN_DESYNC",
+      "CURRENT_MODULE_RUNTIME_DESYNC",
+      "CURRENT_MODULE_HOSTING_DESYNC",
+      "CURRENT_MODULE_SERVING_AUTHORITY_DESYNC",
+      "CURRENT_MODULE_DEV_RUN_DESYNC",
+      "CURRENT_MODULE_RUNTIME_DESYNC",
+      "CURRENT_MODULE_HOSTING_DESYNC",
+      "CURRENT_MODULE_SERVING_AUTHORITY_DESYNC"
+    ],
+    "findingCount": 350,
+    "nextFindingId": "VRM-351",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V656_2026-11-16.json",
+    "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+    "devRunId": 43798644730
+  },
+  "recoveredAliasTests": {
+    "runtime": "V8_ISOLATE_STRICT_ASSERT_ADAPTER_NOT_NODE_TEST_RUNNER",
+    "tests": 174,
+    "passed": 174,
+    "failed": 0
+  },
+  "actualReservationPredicate": {
+    "runtime": "V8_ACTUAL_EXTRACTED_PREDICATE",
+    "before": [
+      {
+        "name": "ready",
+        "pass": true,
+        "actual": true,
+        "expected": true
+      },
+      {
+        "name": "backendNull",
+        "pass": false,
+        "error": "TypeError: Cannot read properties of null (reading 'authenticated')"
+      },
+      {
+        "name": "backendUndefined",
+        "pass": false,
+        "error": "TypeError: Cannot read properties of undefined (reading 'authenticated')"
+      },
+      {
+        "name": "authNull",
+        "pass": false,
+        "error": "TypeError: Cannot read properties of null (reading 'currentUser')"
+      },
+      {
+        "name": "authUndefined",
+        "pass": false,
+        "error": "TypeError: Cannot read properties of undefined (reading 'currentUser')"
+      },
+      {
+        "name": "unauthenticated",
+        "pass": true,
+        "actual": false,
+        "expected": false
+      },
+      {
+        "name": "foreignUid",
+        "pass": true,
+        "actual": false,
+        "expected": false
+      },
+      {
+        "name": "authorityAbsent",
+        "pass": true,
+        "actual": false,
+        "expected": false
+      },
+      {
+        "name": "reservationsUnloaded",
+        "pass": true,
+        "actual": false,
+        "expected": false
+      },
+      {
+        "name": "periodUnavailable",
+        "pass": true,
+        "actual": false,
+        "expected": false
+      }
+    ],
+    "after": [
+      {
+        "name": "ready",
+        "pass": true,
+        "actual": true,
+        "expected": true
+      },
+      {
+        "name": "backendNull",
+        "pass": true,
+        "actual": false,
+        "expected": false
+      },
+      {
+        "name": "backendUndefined",
+        "pass": true,
+        "actual": false,
+        "expected": false
+      },
+      {
+        "name": "authNull",
+        "pass": true,
+        "actual": false,
+        "expected": false
+      },
+      {
+        "name": "authUndefined",
+        "pass": true,
+        "actual": false,
+        "expected": false
+      },
+      {
+        "name": "unauthenticated",
+        "pass": true,
+        "actual": false,
+        "expected": false
+      },
+      {
+        "name": "foreignUid",
+        "pass": true,
+        "actual": false,
+        "expected": false
+      },
+      {
+        "name": "authorityAbsent",
+        "pass": true,
+        "actual": false,
+        "expected": false
+      },
+      {
+        "name": "reservationsUnloaded",
+        "pass": true,
+        "actual": false,
+        "expected": false
+      },
+      {
+        "name": "periodUnavailable",
+        "pass": true,
+        "actual": false,
+        "expected": false
+      }
+    ],
+    "securityConditionsRemoved": 0
+  },
+  "hrIdentityObserver": {
+    "purePredicateTests": 16,
+    "passed": 16,
+    "firestoreAuthIoTests": "PENDING_EXISTING_CANONICAL_NODE_CI",
+    "mutationsImplemented": 0,
+    "readOnlyTransactions": true,
+    "fullAuthPagination": true,
+    "stableSecondReads": true,
+    "nanosecondPrecision": true,
+    "rawIdentityOutputs": false,
+    "doesNotInvokeReconcileSnapshot": true,
+    "doesNotRepairIdentity": true
+  },
+  "environmentRecovery": {
+    "classification": "ENVIRONMENT_FAILURE",
+    "event": "LOCAL_EXEC_SERVER_DISCONNECTED_BEFORE_PUBLICATION",
+    "recoveredFourReviewedFilesMatchedObservedGitBlobPrefixes": true,
+    "hrHelperRecoveredFromObservedDiffAndAppliedReviewedPrivacyScopeAndTimestampCorrections": true,
+    "prior54TestResultNotClaimed": true
+  },
+  "verificationRequired": "Existing canonical-candidate-authority Node suites and C3/certify PRE on unchanged exact DEV. No new workflow, no gate removed.",
+  "phaseAComplete": false,
+  "terminalCertified": false,
+  "i4Authorized": false
+}

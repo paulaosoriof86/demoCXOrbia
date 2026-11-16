@@ -407,7 +407,7 @@ async function adminAvailableVisitReadback(staffUid, periodId) {
 async function adminReservationReadback(staffUid, id, expectedStatus, periodId, periodKey) {
   const {context, page} = await adminPage(staffUid);
   const capture = async () => {
-    await page.waitForFunction(uid => window.CX?.backendAuth?.context?.().authenticated === true && window.firebase?.auth?.().currentUser?.uid === uid && window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied === true && Array.isArray(window.CX?.data?.__protectedReservations) && typeof window.CX?.data?.setCurrentPeriod === 'function', staffUid, {timeout:150000});
+    await page.waitForFunction(uid => window.CX?.backendAuth?.context?.()?.authenticated === true && window.firebase?.auth?.()?.currentUser?.uid === uid && window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied === true && Array.isArray(window.CX?.data?.__protectedReservations) && typeof window.CX?.data?.setCurrentPeriod === 'function', staffUid, {timeout:150000});
     await page.evaluate(pid => { if (String(window.CX.data.currentPeriodId) !== pid && window.CX.data.setCurrentPeriod(pid) === false) throw new Error('PERIOD_SWITCH_REJECTED'); }, periodId);
     await page.evaluate(() => window.CX.router.nav('reservas'));
     await page.waitForFunction(() => window.CX?.session?.view === 'reservas' && typeof window.CX?.reservas?.list === 'function', null, {timeout:30000});
@@ -415,7 +415,7 @@ async function adminReservationReadback(staffUid, id, expectedStatus, periodId, 
     return page.evaluate(({id, expectedStatus, periodId, periodKey, tenantId, projectId}) => {
       const matches = window.CX.reservas.list().filter(r => String(r.id || r.reservationId) === id);
       const controls = [...document.querySelectorAll('select.rEst')].filter(e => e.dataset.id === id);
-      const ctx = window.CX.backendAuth.context(), row = matches[0];
+      const ctx = window.CX?.backendAuth?.context?.() || {}, row = matches[0];
       const scopeOk = ctx.authenticated === true && ctx.tenantId === tenantId && ['admin','super'].includes(ctx.role) && String(window.CX.data.currentProjectId) === projectId && String(window.CX.data.currentPeriodId) === periodId;
       const ok = scopeOk && (expectedStatus === null ? matches.length === 0 && controls.length === 0 :
         matches.length === 1 && controls.length === 1 && controls[0].value === expectedStatus &&
