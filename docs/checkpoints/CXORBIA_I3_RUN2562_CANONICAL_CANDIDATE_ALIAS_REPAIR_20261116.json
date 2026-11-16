@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "cxorbia.i3.control-reference-repair.v1",
+  "createdAt": "2026-11-16T07:09:29Z",
+  "iteration": "I3",
+  "runId": 43821479654,
+  "runNumber": 2562,
+  "jobId": 133145315148,
+  "head": "48a0e4fb0f4b9e3e2bff20a742edc0637e516e4e",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "observed": "LEDGER_DESCRIPTOR_SOURCE_MISMATCH",
+  "cause": "ledger.canonicalFunctionalCandidate.sourceSha retained38f while descriptor points to source663; scoped product source unchanged.",
+  "correction": "Advance only current canonicalFunctionalCandidate fields to publishedsource663 and bind current served predecessor to immutableRUN2556; preserve history. Validate the entire existing canonical authority guard before re-requesting the same unexecuted paired DEV lane.",
+  "canonicalTestsBeforeStop": {
+    "tests": 883,
+    "pass": 883,
+    "fail": 0,
+    "tapSummaries": 15,
+    "fullCanonicalSuiteComplete": false,
+    "shopper142NodeSuiteReached": false,
+    "sameRunSourceQaReached": false
+  },
+  "jobLogSha256": "f82bc860701205632f66b6c9717d087c57aabedb06dced16a405f8b7afe78f79",
+  "builds": 0,
+  "runtimeDeploys": 0,
+  "hostingDeploys": 0,
+  "production": false,
+  "sourceSha": "66312f88a70bd123b137c7a031a1f456969465f5",
+  "sourceTree": "38eba9364e0a7cbf1e505f84375959d19918391d"
+}
