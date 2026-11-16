@@ -1,0 +1,70 @@
+TAP version 13
+# Subtest: actual GT agend tile and modal represent the same independent HR identities
+ok 1 - actual GT agend tile and modal represent the same independent HR identities
+  ---
+  duration_ms: 8.100327
+  type: 'test'
+  ...
+# Subtest: actual GT cuest tile and modal represent the same independent HR identities
+ok 2 - actual GT cuest tile and modal represent the same independent HR identities
+  ---
+  duration_ms: 3.006471
+  type: 'test'
+  ...
+# Subtest: actual GT submit tile and modal represent the same independent HR identities
+ok 3 - actual GT submit tile and modal represent the same independent HR identities
+  ---
+  duration_ms: 4.561098
+  type: 'test'
+  ...
+# Subtest: actual HN agend tile and modal represent the same independent HR identities
+ok 4 - actual HN agend tile and modal represent the same independent HR identities
+  ---
+  duration_ms: 2.361779
+  type: 'test'
+  ...
+# Subtest: actual HN cuest tile and modal represent the same independent HR identities
+ok 5 - actual HN cuest tile and modal represent the same independent HR identities
+  ---
+  duration_ms: 4.381423
+  type: 'test'
+  ...
+# Subtest: actual HN submit tile and modal represent the same independent HR identities
+ok 6 - actual HN submit tile and modal represent the same independent HR identities
+  ---
+  duration_ms: 2.111299
+  type: 'test'
+  ...
+# Subtest: cumulative stage repair preserves pending KPI and alert identities
+ok 7 - cumulative stage repair preserves pending KPI and alert identities
+  ---
+  duration_ms: 2.40955
+  type: 'test'
+  ...
+# Subtest: stage counts and details exclude cancelled/archived records and retain HR-owned assignment source
+ok 8 - stage counts and details exclude cancelled/archived records and retain HR-owned assignment source
+  ---
+  duration_ms: 1.96331
+  type: 'test'
+  ...
+# Subtest: the dashboard assignment bucket uses its canonical visit-facet predicate
+ok 9 - the dashboard assignment bucket uses its canonical visit-facet predicate
+  ---
+  duration_ms: 0.365049
+  type: 'test'
+  ...
+# Subtest: realized, cancelled, and assigned visits cannot appear as pending assignments
+ok 10 - realized, cancelled, and assigned visits cannot appear as pending assignments
+  ---
+  duration_ms: 0.889123
+  type: 'test'
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 164.494097

@@ -1,0 +1,19 @@
+✔ HF16 derives active postulations from shared data authority (1.268924ms)
+✔ HF16 state and status fallback/casing agree with rail canonical count (0.765327ms)
+✔ HF16 history, assignment transitions and archived never inflate count (1.927412ms)
+✔ HF17 retains cumulative stage and active-agenda distinction until exact HR parity (0.699479ms)
+✔ VRM259 late consistency bridge cannot override period scoped canonical pending count (0.520202ms)
+✔ HUMAN 2026-10-13: assigned visits expose approved quick actions, no single generic Manage bottleneck (0.487003ms)
+✔ HUMAN 2026-10-13: shared contrast and type sizes are protected in actual source (0.582225ms)
+✔ B7 reschedule rejection survives error and ACK needs exact refreshed visit (0.273176ms)
+✔ B7 actionable 7-KPI owner derives each operational count from current visit and durable request, never post.reprog (0.563507ms)
+✔ B7 KPI drilldown delegates to existing role-scoped provider owners, not a generic postulation modal (0.590517ms)
+✔ B7 expired shopper proposal is blocked in both Admin entrypoints without attempting provider approval (28.143221ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 177.983738

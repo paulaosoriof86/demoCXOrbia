@@ -1,0 +1,160 @@
+TAP version 13
+# Subtest: normal human entry preserves the configured authorized tenant and project
+ok 1 - normal human entry preserves the configured authorized tenant and project
+  ---
+  duration_ms: 5.561668
+  type: 'test'
+  ...
+# Subtest: authenticated exact internal project can configure countries before periods or visits exist
+ok 2 - authenticated exact internal project can configure countries before periods or visits exist
+  ---
+  duration_ms: 1.902261
+  type: 'test'
+  ...
+# Subtest: internal entry rejects unauthenticated principal
+ok 3 - internal entry rejects unauthenticated principal
+  ---
+  duration_ms: 1.452897
+  type: 'test'
+  ...
+# Subtest: internal entry rejects different uid
+ok 4 - internal entry rejects different uid
+  ---
+  duration_ms: 1.443403
+  type: 'test'
+  ...
+# Subtest: internal entry rejects different tenant
+ok 5 - internal entry rejects different tenant
+  ---
+  duration_ms: 2.28718
+  type: 'test'
+  ...
+# Subtest: internal entry rejects different project
+ok 6 - internal entry rejects different project
+  ---
+  duration_ms: 1.321292
+  type: 'test'
+  ...
+# Subtest: internal entry rejects different namespace
+ok 7 - internal entry rejects different namespace
+  ---
+  duration_ms: 1.321723
+  type: 'test'
+  ...
+# Subtest: internal entry rejects missing authorized project
+ok 8 - internal entry rejects missing authorized project
+  ---
+  duration_ms: 1.349574
+  type: 'test'
+  ...
+# Subtest: internal entry rejects external record with internal flag
+ok 9 - internal entry rejects external record with internal flag
+  ---
+  duration_ms: 1.67869
+  type: 'test'
+  ...
+# Subtest: internal entry rejects non atomic authority
+ok 10 - internal entry rejects non atomic authority
+  ---
+  duration_ms: 1.541868
+  type: 'test'
+  ...
+# Subtest: internal entry rejects old session generation
+ok 11 - internal entry rejects old session generation
+  ---
+  duration_ms: 1.338768
+  type: 'test'
+  ...
+# Subtest: internal entry rejects missing session generation
+ok 12 - internal entry rejects missing session generation
+  ---
+  duration_ms: 1.24537
+  type: 'test'
+  ...
+# Subtest: internal entry rejects wrong internal source ref
+ok 13 - internal entry rejects wrong internal source ref
+  ---
+  duration_ms: 1.309345
+  type: 'test'
+  ...
+# Subtest: internal flag never bypasses shopper exact identity requirements
+ok 14 - internal flag never bypasses shopper exact identity requirements
+  ---
+  duration_ms: 1.278428
+  type: 'test'
+  ...
+# Subtest: external HR authority retains revision, period and nonempty operational requirements
+ok 15 - external HR authority retains revision, period and nonempty operational requirements
+  ---
+  duration_ms: 5.67144
+  type: 'test'
+  ...
+# Subtest: external shopper authority still requires the exact signed-in identity
+ok 16 - external shopper authority still requires the exact signed-in identity
+  ---
+  duration_ms: 2.553553
+  type: 'test'
+  ...
+# Subtest: an initially blocked human shell releases after the actual internal authority producer completes
+ok 17 - an initially blocked human shell releases after the actual internal authority producer completes
+  ---
+  duration_ms: 5.940488
+  type: 'test'
+  ...
+# Subtest: cold internal project without a period mounts configuration through the real router start resolver
+ok 18 - cold internal project without a period mounts configuration through the real router start resolver
+  ---
+  duration_ms: 3.122173
+  type: 'test'
+  ...
+# Subtest: deferred internal publication selects configuration before mounting a no-period project
+ok 19 - deferred internal publication selects configuration before mounting a no-period project
+  ---
+  duration_ms: 3.263582
+  type: 'test'
+  ...
+# Subtest: initial internal setup never grants configuration access to a role without permission
+ok 20 - initial internal setup never grants configuration access to a role without permission
+  ---
+  duration_ms: 1.629137
+  type: 'test'
+  ...
+# Subtest: deferred operational request does not replay Mi Dia after selecting safe configuration
+ok 21 - deferred operational request does not replay Mi Dia after selecting safe configuration
+  ---
+  duration_ms: 1.991473
+  type: 'test'
+  ...
+# Subtest: explicit permitted period-free view survives initial setup without enlarging permissions
+ok 22 - explicit permitted period-free view survives initial setup without enlarging permissions
+  ---
+  duration_ms: 5.402442
+  type: 'test'
+  ...
+# Subtest: an actual internal period preserves the selected operational view
+ok 23 - an actual internal period preserves the selected operational view
+  ---
+  duration_ms: 1.783415
+  type: 'test'
+  ...
+# Subtest: external HR mount keeps its existing operational selection
+ok 24 - external HR mount keeps its existing operational selection
+  ---
+  duration_ms: 1.311919
+  type: 'test'
+  ...
+# Subtest: internal country update refresh releases C6 after the real Corte4 source transition
+ok 25 - internal country update refresh releases C6 after the real Corte4 source transition
+  ---
+  duration_ms: 4.773794
+  type: 'test'
+  ...
+1..25
+# tests 25
+# suites 0
+# pass 25
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 209.8581

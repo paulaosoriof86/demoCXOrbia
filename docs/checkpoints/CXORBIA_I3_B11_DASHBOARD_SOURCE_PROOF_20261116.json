@@ -1,0 +1,153 @@
+{
+  "schemaVersion": "cxorbia.i3.p0.source-proof.v1",
+  "decision": "PASS_I3_B11_DASHBOARD_SOURCE_QA_NOT_DEV_OR_FULL_DOMAIN",
+  "generatedAt": "2026-11-16T00:56:16.529569+00:00",
+  "sourceSha": "ef708259616da70b5adea2fa85d9abc34a5222c2",
+  "sourceTree": "b7adbf36633d8ec614d70232cecf28a4f2e81d58",
+  "predecessorProductSourceSha": "c54cdc8846642f2d5481e1b933ca5e5cc6c44c22",
+  "sourceTestsPass": 266,
+  "sourceTestsFail": 0,
+  "registeredOwnerCount": 20,
+  "allowedProductFiles": [
+    "app/modules/dashboard.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-b7-hf16-pending-count-parity-source.test.mjs",
+    "tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs",
+    "tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs",
+    "tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs",
+    "tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs",
+    "tools/qa/cxorbia-i3-shock-continuity-guard.mjs",
+    "tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs",
+    "tools/qa/cxorbia-i3-source-qa-evidence.mjs",
+    "tools/qa/cxorbia-i3-source-qa-evidence.test.mjs",
+    "tools/qa/cxorbia-pre-i4-focal-hr-reference.mjs",
+    "tools/qa/cxorbia-pre-i4-focal-hr-reference.test.mjs",
+    "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
+    "tools/qa/fixtures/cxorbia-i3-b11-run2537-stage-keysets.json"
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_B11_DASHBOARD_STAGE_DRILLDOWN_P0_SCOPE_20261116.json",
+  "scopeReceiptBlob": "a2c1c8dbb52d4f4106517ef4ee47a0c0505d67d6",
+  "findings": [
+    {
+      "id": "VRM-348",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "owner": [
+        "app/modules/dashboard.js"
+      ]
+    }
+  ],
+  "testEvidence": {
+    "finance-ack-boundary.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_B11_SOURCE_QA_20261116/finance-ack-boundary.tap",
+      "gitBlob": "ead5632b4e107d53eaeacbbf9b8f4b4875e6147e",
+      "sha256": "7f4942cdc9cba69ae71c38d4c2cbe0e386244ad9bad51e31368bf347b58ba238"
+    },
+    "frontend-behavior.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_B11_SOURCE_QA_20261116/frontend-behavior.tap",
+      "gitBlob": "c31ef361d91963a0d9b8c4ce43858712e47bfc0b",
+      "sha256": "8aaa420b3ed19f313a64be155239974288d9e4c9115b24f460e64d128ea77835"
+    },
+    "stage-after.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_B11_SOURCE_QA_20261116/stage-after.tap",
+      "gitBlob": "4670c9e0af040312a91276a592387a818c97f24a",
+      "sha256": "011ebfb3d7a89c9b5c2798d2cc74a1fc5ad1a4b63f0208ac22a1228dccd8d931"
+    },
+    "external-hr-source.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_B11_SOURCE_QA_20261116/external-hr-source.tap",
+      "gitBlob": "6cc45123449d209dc511255e3f7dc4c6e030f1d2",
+      "sha256": "f8f7ae709fa95e2b475c69298e1df774e3263e63f891fc00cb14d2672246916d"
+    },
+    "summary.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_B11_SOURCE_QA_20261116/summary.json",
+      "gitBlob": "554f8b416182c0ac696f67375a9b0fa25be81df2",
+      "sha256": "9802a0468a3052406291dac7649dfb940a5d2623b75c6cf3da75b6faf32c1fe1"
+    },
+    "paired-hosting-guards.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_B11_SOURCE_QA_20261116/paired-hosting-guards.tap",
+      "gitBlob": "6f364097462f9724876c3dc55090866e0c915345",
+      "sha256": "3a08bd33441f4ad333cf9ce3b9a829d7c34e9496372321d8cd5e2f04cca45470"
+    },
+    "focal-control-source.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_B11_SOURCE_QA_20261116/focal-control-source.tap",
+      "gitBlob": "311a12e263afd97d4f93fb59c579814ee8210294",
+      "sha256": "66b5f95b67791d14a67f1c6bf589cbb3a7ec13b0f1e731814dcccb89268ca002"
+    },
+    "human-project-scope.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_B11_SOURCE_QA_20261116/human-project-scope.tap",
+      "gitBlob": "115f7d9a3de5cd07c8aed2dabdd381e321a74c97",
+      "sha256": "f2bb54e6e18a9e7fe626d735ffbd3543e8d7b9c6c024eb364073ea51ab455145"
+    },
+    "stage-before.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_B11_SOURCE_QA_20261116/stage-before.tap",
+      "gitBlob": "8abbbb97332f355eba44d8048dd69e7773fd9af8",
+      "sha256": "2c92d8c4aeed86310884ae0637671b987aabbb96a61a9bcbe7539583de9aab50"
+    },
+    "stage-hr-reference.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_B11_SOURCE_QA_20261116/stage-hr-reference.tap",
+      "gitBlob": "1455e3cf7d46a2026e8176a943bac918abeba6a3",
+      "sha256": "3a31acfc74a84bdc79be3e342bfaca6e77b440b4d6166cf0d3f0c04fb3659cf5"
+    },
+    "hf17-existing-cumulative-gate.tap": {
+      "path": "docs/checkpoints/CXORBIA_I3_B11_SOURCE_QA_20261116/hf17-existing-cumulative-gate.tap",
+      "gitBlob": "f39ac3e1d1d95325d23ac36d9ea66b065628158b",
+      "sha256": "2eec7e25a642613cc761192be1204cb6a2aa7f127ee9924072c5de2b01eaa36d"
+    }
+  },
+  "registeredSourceStats": {
+    "tests": 266,
+    "pass": 266,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0
+  },
+  "before": {
+    "tests": 10,
+    "pass": 3,
+    "fail": 7
+  },
+  "after": {
+    "tests": 10,
+    "pass": 10,
+    "fail": 0
+  },
+  "stageAndIndependentHrReference": {
+    "tests": 21,
+    "pass": 21,
+    "fail": 0
+  },
+  "focalControlChecks": {
+    "tests": 140,
+    "pass": 140,
+    "fail": 0
+  },
+  "countsAreNotAdditive": true,
+  "productOwnerBlobs": {
+    "app/modules/dashboard.js": "174edadcb33f00afaa7e36262ed27aba1209a80e"
+  },
+  "requiredLiveProof": "18 real dashboard stage clicks for GT/HN, exact counts and full visit IDs against independent HTTP HR at the same revision; preserve pool semantics, pending KPIs and context. No full B11 or Dashboard domain inferred.",
+  "qaControlRepairs": [
+    "paired predecessor to Hosting-only exact receipt chain with older C3 retained",
+    "F09 safe session predicate capture before cleanup; independent proof may proceed only with cleanup verified; strict terminal still requires F09 PASS"
+  ],
+  "devPublished": false,
+  "production": false,
+  "hrWrites": 0,
+  "realPeriodWrites": 0,
+  "humanPassesPreserved": [
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ],
+  "legacyCumulativeGate": {
+    "tests": 11,
+    "pass": 11,
+    "fail": 0,
+    "repair": "Execute actual shared cumulative predicate; preserve realized-but-scheduled, reject canceled/unscheduled. Prior textual inline assertion was obsolete; product behavior unchanged."
+  }
+}

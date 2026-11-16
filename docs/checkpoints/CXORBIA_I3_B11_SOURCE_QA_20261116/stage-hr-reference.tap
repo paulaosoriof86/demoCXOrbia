@@ -1,0 +1,29 @@
+✔ actual GT agend tile and modal represent the same independent HR identities (9.216428ms)
+✔ actual GT cuest tile and modal represent the same independent HR identities (3.836278ms)
+✔ actual GT submit tile and modal represent the same independent HR identities (5.825999ms)
+✔ actual HN agend tile and modal represent the same independent HR identities (2.36184ms)
+✔ actual HN cuest tile and modal represent the same independent HR identities (2.640301ms)
+✔ actual HN submit tile and modal represent the same independent HR identities (2.649345ms)
+✔ cumulative stage repair preserves pending KPI and alert identities (3.01143ms)
+✔ stage counts and details exclude cancelled/archived records and retain HR-owned assignment source (2.875689ms)
+✔ the dashboard assignment bucket uses its canonical visit-facet predicate (0.349447ms)
+✔ realized, cancelled, and assigned visits cannot appear as pending assignments (1.31972ms)
+✔ same HR realizes GT300/654/partial and HN400/380/partial, independently of payable candidates (2.613441ms)
+✔ absence is never a known zero; a literal numeric zero remains valid (0.390037ms)
+✔ explicit HR takes precedence, then authorized period, then project; missing authority yields null (0.448663ms)
+✔ period scope, cancellations and independent confirmation facets remain enforced (0.332462ms)
+✔ an empty country has no fabricated accrued amount (0.260675ms)
+✔ config must belong to the exact independently read project version and values (0.800743ms)
+✔ independent saved HR retains exact cumulative country sets, including equal-count HN wrong-ID regression (2.337454ms)
+✔ current-period stage reference excludes other periods and archives but retains cancelled total only (0.76498ms)
+✔ stage authority rejects foreign scope, duplicate identity, incomplete facets and changed revision (4.94043ms)
+✔ an actual envelope runtime may supply authority but conflicting copies fail (1.075829ms)
+✔ readback rejects duplicates, omissions, truncation, bad reference and observed revision drift (0.54816ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 155.919871

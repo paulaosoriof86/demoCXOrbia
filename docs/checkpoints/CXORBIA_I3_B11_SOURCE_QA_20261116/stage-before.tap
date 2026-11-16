@@ -1,0 +1,306 @@
+TAP version 13
+# Subtest: actual GT agend tile and modal represent the same independent HR identities
+not ok 1 - actual GT agend tile and modal represent the same independent HR identities
+  ---
+  duration_ms: 14.203793
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs:25:134'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      [
+    -   'hr_2026-11_gt_10_c1872b10c9',
+        'hr_2026-11_gt_11_8fe01c04f2',
+        'hr_2026-11_gt_12_79a52bcff3',
+    -   'hr_2026-11_gt_13_3e8d6f398f',
+        'hr_2026-11_gt_14_7f58175692',
+        'hr_2026-11_gt_15_47141778e6',
+    -   'hr_2026-11_gt_17_292cd1aab7',
+        'hr_2026-11_gt_23_8ed01e4363',
+        'hr_2026-11_gt_2_97b3975c30',
+        'hr_2026-11_gt_3_721920cea7',
+        'hr_2026-11_gt_4_b68c02a8ca',
+    -   'hr_2026-11_gt_5_03361f7387',
+        'hr_2026-11_gt_6_7cf9d422f8',
+        'hr_2026-11_gt_7_d2419e2f18',
+    -   'hr_2026-11_gt_9_f443083d7b'
+      ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'hr_2026-11_gt_10_c1872b10c9'
+    1: 'hr_2026-11_gt_11_8fe01c04f2'
+    2: 'hr_2026-11_gt_12_79a52bcff3'
+    3: 'hr_2026-11_gt_13_3e8d6f398f'
+    4: 'hr_2026-11_gt_14_7f58175692'
+    5: 'hr_2026-11_gt_15_47141778e6'
+    6: 'hr_2026-11_gt_17_292cd1aab7'
+    7: 'hr_2026-11_gt_23_8ed01e4363'
+    8: 'hr_2026-11_gt_2_97b3975c30'
+    9: 'hr_2026-11_gt_3_721920cea7'
+    10: 'hr_2026-11_gt_4_b68c02a8ca'
+    11: 'hr_2026-11_gt_5_03361f7387'
+    12: 'hr_2026-11_gt_6_7cf9d422f8'
+    13: 'hr_2026-11_gt_7_d2419e2f18'
+    14: 'hr_2026-11_gt_9_f443083d7b'
+  actual:
+    0: 'hr_2026-11_gt_11_8fe01c04f2'
+    1: 'hr_2026-11_gt_12_79a52bcff3'
+    2: 'hr_2026-11_gt_14_7f58175692'
+    3: 'hr_2026-11_gt_15_47141778e6'
+    4: 'hr_2026-11_gt_23_8ed01e4363'
+    5: 'hr_2026-11_gt_2_97b3975c30'
+    6: 'hr_2026-11_gt_3_721920cea7'
+    7: 'hr_2026-11_gt_4_b68c02a8ca'
+    8: 'hr_2026-11_gt_6_7cf9d422f8'
+    9: 'hr_2026-11_gt_7_d2419e2f18'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs:27:118)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.start (node:internal/test_runner/test:1262:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+  ...
+# Subtest: actual GT cuest tile and modal represent the same independent HR identities
+not ok 2 - actual GT cuest tile and modal represent the same independent HR identities
+  ---
+  duration_ms: 4.255516
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs:25:134'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+    + []
+    - [
+    -   'hr_2026-11_gt_10_c1872b10c9',
+    -   'hr_2026-11_gt_13_3e8d6f398f',
+    -   'hr_2026-11_gt_17_292cd1aab7',
+    -   'hr_2026-11_gt_5_03361f7387',
+    -   'hr_2026-11_gt_9_f443083d7b'
+    - ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'hr_2026-11_gt_10_c1872b10c9'
+    1: 'hr_2026-11_gt_13_3e8d6f398f'
+    2: 'hr_2026-11_gt_17_292cd1aab7'
+    3: 'hr_2026-11_gt_5_03361f7387'
+    4: 'hr_2026-11_gt_9_f443083d7b'
+  actual:
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs:27:118)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: actual GT submit tile and modal represent the same independent HR identities
+not ok 3 - actual GT submit tile and modal represent the same independent HR identities
+  ---
+  duration_ms: 6.237695
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs:25:134'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      [
+    +   'hr_2026-11_gt_13_3e8d6f398f'
+    -   'hr_2026-11_gt_10_c1872b10c9',
+    -   'hr_2026-11_gt_17_292cd1aab7',
+    -   'hr_2026-11_gt_5_03361f7387',
+    -   'hr_2026-11_gt_9_f443083d7b'
+      ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'hr_2026-11_gt_10_c1872b10c9'
+    1: 'hr_2026-11_gt_17_292cd1aab7'
+    2: 'hr_2026-11_gt_5_03361f7387'
+    3: 'hr_2026-11_gt_9_f443083d7b'
+  actual:
+    0: 'hr_2026-11_gt_13_3e8d6f398f'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs:27:118)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: actual HN agend tile and modal represent the same independent HR identities
+not ok 4 - actual HN agend tile and modal represent the same independent HR identities
+  ---
+  duration_ms: 2.793546
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs:25:134'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      [
+        'hr_2026-11_hn_2_b76dae85c0',
+        'hr_2026-11_hn_3_d8f4bbd104',
+    -   'hr_2026-11_hn_4_9402c9c858',
+        'hr_2026-11_hn_5_85265d5aa4',
+    -   'hr_2026-11_hn_6_49fa8eca21'
+      ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'hr_2026-11_hn_2_b76dae85c0'
+    1: 'hr_2026-11_hn_3_d8f4bbd104'
+    2: 'hr_2026-11_hn_4_9402c9c858'
+    3: 'hr_2026-11_hn_5_85265d5aa4'
+    4: 'hr_2026-11_hn_6_49fa8eca21'
+  actual:
+    0: 'hr_2026-11_hn_2_b76dae85c0'
+    1: 'hr_2026-11_hn_3_d8f4bbd104'
+    2: 'hr_2026-11_hn_5_85265d5aa4'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs:27:118)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: actual HN cuest tile and modal represent the same independent HR identities
+not ok 5 - actual HN cuest tile and modal represent the same independent HR identities
+  ---
+  duration_ms: 2.850321
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs:25:134'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      [
+    +   'hr_2026-11_hn_4_9402c9c858'
+    -   'hr_2026-11_hn_6_49fa8eca21'
+      ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'hr_2026-11_hn_6_49fa8eca21'
+  actual:
+    0: 'hr_2026-11_hn_4_9402c9c858'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs:27:118)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: actual HN submit tile and modal represent the same independent HR identities
+not ok 6 - actual HN submit tile and modal represent the same independent HR identities
+  ---
+  duration_ms: 2.893635
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs:25:134'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+    + []
+    - [
+    -   'hr_2026-11_hn_6_49fa8eca21'
+    - ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'hr_2026-11_hn_6_49fa8eca21'
+  actual:
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs:27:118)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: cumulative stage repair preserves pending KPI and alert identities
+ok 7 - cumulative stage repair preserves pending KPI and alert identities
+  ---
+  duration_ms: 3.610514
+  type: 'test'
+  ...
+# Subtest: stage counts and details exclude cancelled/archived records and retain HR-owned assignment source
+not ok 8 - stage counts and details exclude cancelled/archived records and retain HR-owned assignment source
+  ---
+  duration_ms: 3.322147
+  type: 'test'
+  location: '/workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs:38:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+    + []
+    - [
+    -   'live'
+    - ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'live'
+  actual:
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/f27b31fc0285/demoCXOrbia/tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs:43:102)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: the dashboard assignment bucket uses its canonical visit-facet predicate
+ok 9 - the dashboard assignment bucket uses its canonical visit-facet predicate
+  ---
+  duration_ms: 0.441312
+  type: 'test'
+  ...
+# Subtest: realized, cancelled, and assigned visits cannot appear as pending assignments
+ok 10 - realized, cancelled, and assigned visits cannot appear as pending assignments
+  ---
+  duration_ms: 1.520787
+  type: 'test'
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 3
+# fail 7
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 186.238459

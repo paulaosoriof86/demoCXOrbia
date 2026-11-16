@@ -1,0 +1,185 @@
+{
+  "schemaVersion": "cxorbia.i3.current-source-dev-materialization.v1",
+  "verifiedAt": "2026-11-16T00:52:57.018688+00:00",
+  "source": {
+    "sha": "c54cdc8846642f2d5481e1b933ca5e5cc6c44c22",
+    "tree": "a5dbf676882730ac62b32be08537c5464577243f"
+  },
+  "sourceSha": "c54cdc8846642f2d5481e1b933ca5e5cc6c44c22",
+  "sourceTree": "a5dbf676882730ac62b32be08537c5464577243f",
+  "materialization": {
+    "builds": 0,
+    "decision": "PASS_I3_F09_SAME_ARTIFACT_ENV_REPAIR",
+    "hostingDeploys": 0,
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794788133922000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/06d56b9d8b271d63",
+    "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "production": false,
+    "runtimeDeploys": 1,
+    "runtimeDigest": "sha256:d5ada4fe17a7e5e00a51bc09b601fbabcfd2f1b3203b8a379f86daa4207f5fe2",
+    "runtimeRevision": "cxorbia-live-hr-dev-00372-56c",
+    "scenarioDimensionsProven": true,
+    "sourceSha": "c54cdc8846642f2d5481e1b933ca5e5cc6c44c22",
+    "sourceTree": "a5dbf676882730ac62b32be08537c5464577243f",
+    "storageRulesDeploys": 0,
+    "verifiedServedAssetCount": 37,
+    "sourceHostedExact": true,
+    "runtimeTrafficExact": true,
+    "productionUnchanged": true,
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+    "firestoreRulesDeploys": 0,
+    "hrWrites": 0,
+    "runId": 43781102498,
+    "runNumber": 2541,
+    "jobId": 133018488348,
+    "controlHeadAtDeploy": "73018d8b81ed7f79461bb3b6f8601d4d7e6c27bb",
+    "artifactId": 14188378497,
+    "artifactDigest": "sha256:922b64e4247940647d99b675f3e4df3d677302576f1779976ffd98e0ab3768b3",
+    "artifactDigestType": "GITHUB_ACTIONS_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2541_SAME_IMAGE_ENV_REPAIR_20261116.json",
+    "state": "PASS_SAME_IMAGE_ENV_REPAIR_F09_CLIENT_PASS_ADMIN_OPERATIONAL_CONTEXT_HOLD",
+    "humanAcceptance": "B4_B5_B6_B7_PASS_PRESERVED__NO_NEW_FULL_DOMAIN",
+    "fullTaskClosed": false
+  },
+  "servedSha256": {
+    "core/data.js": "f80436b1254a9eb6021b18b05aec82ec64c325c8b45130bc06880ef01914e76f",
+    "core/router.js": "d302cbadd2e427919330a8c4e81ebe04ca67e898dcc1f6a7e85445f4f74bb9c3",
+    "core/tya-phase-a-source-safe-preview.js": "0cc0db95bc0cf949db84c09bf951f489d5df15acb24d9991f4fb576e984596bf",
+    "adapters/tya-live-source-inplace-apply.js": "f39f4d5d47f07d6c5ae5fa22e48d314af0a57478c0e9e78dbfe74a26b5082ad8",
+    "adapters/tya-cumulative-read-model-v2.js": "748649c0326db6310c2276b343bdfdf8d7969e8ce4c63419560e4732c1a2eee7",
+    "adapters/tya-canonical-finance-read-model-v2.js": "acd44366661d26250e79fffd89fac27cdb503b2d4347d17b4b3f6e3d4a47b30f",
+    "adapters/tya-canonical-shopper-portal-v2.js": "214b1260a71f5612a269618eb9bed12263d00bf26a099d6ee73315bad61f1cc3",
+    "adapters/tya-protected-auth-hr-authority-bridge-v2.js": "c7ef63985272f465df147293f67c1e3cce0e8ebcdad38a9ddd17a9bc24dff51e",
+    "data/tya-hr-source-safe-periods.js": "82b87e084b5a763b6ac812fb37ab09da2070b05b72994df7d6e161de2f8a5fe0",
+    "modules/midia.js": "9084290ad4a627eae457d6e8a31f83a9348f49d0f1e991018120f913b3491e5c",
+    "modules/misvisitas.js": "a51799d5ac24f516d429b84ff8d79987dc3eeea6aea4c6484e39b01a43b56597",
+    "modules/visita-detalle.js": "c812eb418adc0262610bab498b93413abef30cec79d4a5b9f4ef6dbcf95c3b58",
+    "modules/shoppers.js": "b985cc833635944d48bd77f66a501cb6136a1dfc898f892de2501635a65f2150",
+    "modules/postulaciones.js": "cbc828e2d4d6a86f2ae37ccdb38c7d621fde2b16b3a4bb3b279a540dd647dcc3",
+    "modules/beneficios.js": "2c1763b65ef055eecd56e3622033d53c9946f679e758d06be797b7e854b6b419",
+    "modules/cert.js": "51b0a06b53cdf38437137a390cd624bb6270721b973eebd1d03e425dfce6f344",
+    "modules/academia.js": "438eade6566bd3b2b9fca24f029334b471779e3d62bdc2fb05d3b8c0d1b5a99b",
+    "styles/layout.css": "77c7befcefb48d4ba732fff0e3e03276bd55263ceebf63b90a4b809f74cdb6b1",
+    "adapters/tya-c6-unified-human-runtime-v1.js": "cb49d8ea742b96ca867d5eeb8de96e28a66a603134df40ea7ffa1dbad05751cf",
+    "adapters/cxorbia-cxdata-command-boundary-v1.js": "d3ff79efd31d5d1b1ad906d68cfbe2f3db6da18d75daf444aa701567f700c58b",
+    "index-backend-dev.html": "38460409bee133f1f746156de1e1e5fa3d5db0c7a22c6d0d0b36a64f947c0479",
+    "core/backend-firebase.js": "2aca1f072f3cbffb993bb149b155aaeb5a175210ccd8dcea578615a39e6441d3",
+    "adapters/tya-live-source-refresh-watch-v2.js": "3eb1d2e35bab4c80d7d7d8922969581d61a17e67f07e5b4aeaaea783a765c194",
+    "modules/hr-source.js": "62907bc1e18b46247c9e35ae299404e2f7e61cd8bcfbb0973adbc224f1983255",
+    "modules/clientes.js": "7260fa6c2ef5eccc0eea3cf43bc9cf5c06af2be4cc923742e45876e21480ad1e",
+    "modules/historico.js": "cab99b87798f385d6cf71cc63bef144b5fc7cb6c55bf31ba101817ade07e2819",
+    "modules/visitas.js": "4c8ec643438a3e812455781303fed798b4c1a267aecd079adc4bbc555efc999b",
+    "modules/cuestionario-shopper.js": "576272660a6b7cf96055587de39ee172df6ebc9147711a5cf0f17d0a8c943388",
+    "core/backend-certifications.js": "826b6775b2be46c606d271e04085fee2d4a34bab778c05fa6ad88dc00a1d05ad",
+    "core/finanzas-core.js": "c61e7f193992a4e6a60b9417a0ad3cdf3b82f3b06f5a569c25ce1caf0089b971",
+    "modules/marca.js": "bfeb16f3244149f870dc1b796978863b4da5bcbda9a8981af0497b214ec50836",
+    "modules/administrabilidad.js": "0e2e591c8d73f2faf7924eb8e38813fed77b92676ac01220b4dbc5c74ded9f5a",
+    "modules/configuracion.js": "6241a0f272cab3dc12476720d56d0fa6da6da4190cc352532022fd26f79df86d",
+    "modules/cliente-insights.js": "85f46c12b60042c72f24f220c225433b40caf732a638520ddecb606d0c135e51",
+    "adapters/cxorbia-command-adapter-v1.js": "e842f91fa880ee378534100550e54584da0b696fa12ee155336b4ea8ab77c2b4",
+    "core/backend-bulletins.js": "e07d4ff05b8cd2263ebfb47cbc8004ba0ec6c2c24b66ba8c7dcd0754298683e8",
+    "sw.js": "f82b9d97fab9b153b3489585d8ab46a0102623c0f16704388b166348f8feabfa"
+  },
+  "verifiedServedAssetCount": 37,
+  "productionUnchanged": true,
+  "productionIndexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+  "production": false,
+  "i4Authorized": false,
+  "workflowUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43781102498",
+  "jobConclusion": "failure",
+  "materializationConclusion": "PASS_SAME_IMAGE_ENV_REPAIR",
+  "sourceQa": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2541_SOURCE_QA_20261116/source-qa-receipt.json",
+    "gitBlob": "d1ec6206cc595c53b1807d2674e7d40c2a7f9b59",
+    "sha256": "10b8509be8f6f1ccb791202532257425c6ca88ce8a4cc735c77b2e3023d5beb8",
+    "artifactId": 14188332663,
+    "artifactDigest": "sha256:0cc3ff91d158215fcaac2eb811548ca2197d5f43a14409a7cce2f0e253b0f402",
+    "runId": 43781102498,
+    "sourceSha": "c54cdc8846642f2d5481e1b933ca5e5cc6c44c22",
+    "sourceTree": "a5dbf676882730ac62b32be08537c5464577243f",
+    "controlSha": "73018d8b81ed7f79461bb3b6f8601d4d7e6c27bb",
+    "testsPass": 256,
+    "testsFail": 0,
+    "owners": 19,
+    "scope": "SOURCE_QA_ONLY_NOT_E2E_OR_HUMAN_ACCEPTANCE"
+  },
+  "rawEvidence": {
+    "result.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2541_VERIFIED_EVIDENCE_20261116/result.json",
+      "gitBlob": "72fa837d4bd6e7c13a494b0172cb2b7d188f3324",
+      "sha256": "a6b7fd1b0750f10803aa96c6afa44933d553209fa2c7857e775e734ee792c420"
+    },
+    "f09/result.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2541_VERIFIED_EVIDENCE_20261116/f09/result.json",
+      "gitBlob": "8c9460e89221c8a4b325545e6301be230d51f16f",
+      "sha256": "5313ccdd58091317f5b4631aa471ff048da35786642084ecf76590484a8183b1"
+    },
+    "runtime.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2541_VERIFIED_EVIDENCE_20261116/runtime.json",
+      "gitBlob": "9f159af0eed7e947bf3d60d542ab505240ec5536",
+      "sha256": "ab6b417800f94fd7bcc6d01dde4e71b404a98370e30fbf07d22367d156f7e95d"
+    },
+    "runtime-revision.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2541_VERIFIED_EVIDENCE_20261116/runtime-revision.json",
+      "gitBlob": "beb49cd1f63d7edd54804451f3c554e94a983e41",
+      "sha256": "285919c59536168d359927a70f11fd23bb53f53843ca5066b00bffb7502c4809"
+    },
+    "hosting-live-channel.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2541_VERIFIED_EVIDENCE_20261116/hosting-live-channel.json",
+      "gitBlob": "1e0f48d75482f82afcde5e70abb4de17c2432d98",
+      "sha256": "742318ccadb5fc8992bab624930ffb1a5522ce7b13e2af24de69f79f1b49e858"
+    },
+    "hr-meta.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2541_VERIFIED_EVIDENCE_20261116/hr-meta.json",
+      "gitBlob": "53990f447b51d43e614c3ed869f0b903ad533398",
+      "sha256": "cd80fb7f50eb1e682b3875c91620fd4cc7e621175c3584a1b69c14bbb82c10f5"
+    },
+    "source-contract.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2541_VERIFIED_EVIDENCE_20261116/source-contract.json",
+      "gitBlob": "87594004f60ee5fe7b725bc6e772309c8e3667ce",
+      "sha256": "bba978fe61379ee08eae45e50d96fa98ed0dc1a08e1f1fc851b372ac4a68444c"
+    }
+  },
+  "f09": {
+    "decision": "HOLD_ADMIN_OPERATIONAL_CONTEXT_TIMEOUT",
+    "classification": "FUNCTIONAL_DEFECT",
+    "classificationBasis": "Raw runner fallback only; product P0 owner not established. Do not infer product defect from timeout.",
+    "proven": {
+      "npsDurable": true,
+      "noteDurable": true,
+      "meetingRequestDurable": true,
+      "independentNewClientSession": true,
+      "otherClientIsolation": true,
+      "lostAckReplaySameEntityZeroWrites": true,
+      "adminEnsureAuthenticatedCompleted": true,
+      "cleanup": {
+        "ok": true,
+        "deletedDocuments": 12,
+        "deletedAuth": 3,
+        "remainingDocuments": 0,
+        "remainingAuth": 0
+      }
+    },
+    "pending": [
+      "admin_operational_context_predicate_diagnostics",
+      "admin_tablon_reception",
+      "admin_client_write_denial"
+    ],
+    "fullDomain": false,
+    "passwordLoginProven": false
+  },
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "phaseAComplete": false,
+  "newModuleMatches": 0,
+  "runtimeSourceLabel": {
+    "observed": "c54cdc8846642f2d5481e1b933ca5e5cc6c44c22",
+    "expected": "c54cdc8846642f2d5481e1b933ca5e5cc6c44c22",
+    "matches": true,
+    "fixed": true,
+    "imageDigestUnchanged": true,
+    "builds": 0,
+    "hostingDeploys": 0
+  },
+  "verification": "Actions ZIP digests independently verified;37served files equal exact Git bytes; runtime digest unchanged/label repaired/100%traffic exact; HR/rules/production unchanged. Admin Auth fixture now accepted; subsequent operational context wait lacks predicate diagnostics and remains HOLD."
+}
