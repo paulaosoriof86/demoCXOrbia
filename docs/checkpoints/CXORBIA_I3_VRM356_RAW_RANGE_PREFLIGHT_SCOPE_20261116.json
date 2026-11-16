@@ -1,0 +1,163 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-pre-edit-scope.v1",
+  "findingId": "VRM-356",
+  "observedAt": "2026-11-16T08:45:30Z",
+  "iteration": "I3",
+  "decision": "P0_PROVEN_EXACT_OWNERS_AUTHORIZED_FOR_SCOPED_CORRECTION",
+  "classification": "PROVIDER_FAILURE",
+  "secondaryClassification": "FUNCTIONAL_DEFECT",
+  "scope": "VRM356 same-owner body/cumulative correction plus read-only raw range preflight before next build",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadBeforeEdit": "67f15887e4ed9e2a2370ef25e4540f817efdf50a",
+  "productSource": "607ef20a5305209a46b8f61424f03475806f402d",
+  "moduleTruthMatrix": [
+    {
+      "path": "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+      "domain": "canonical-hr-state-adapters",
+      "latestApprovedSource": "e36a456e07a3b107cb7f75a0c53ffae029eb6de4",
+      "latestApprovedBlob": "bc60ad69d611f96b614a968fc4a9b4a5b9abd63a",
+      "F9": {
+        "source": null,
+        "blob": null
+      },
+      "sourceSuccessor": {
+        "source": "607ef20a5305209a46b8f61424f03475806f402d",
+        "blob": "e5ca376e039fc28501b6e849ff782ef2b0949490"
+      },
+      "HEAD": {
+        "sha": "ac2c8695ebab3d8e40f08a9294bce30387897aaf",
+        "blob": "e5ca376e039fc28501b6e849ff782ef2b0949490"
+      },
+      "live": {
+        "source": "607ef20a5305209a46b8f61424f03475806f402d",
+        "blob": "e5ca376e039fc28501b6e849ff782ef2b0949490",
+        "runtimeRevision": "cxorbia-live-hr-dev-00377-rtx",
+        "runtimeDigest": "sha256:5ae68b172443115ba668fed64acef6fe0ae5625a36bfaae07e79dac69e4cadff",
+        "hrLiveVerified": false
+      },
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "classificationScope": "VRM356_BODY_DEADLINE_AND_RAW_RANGE_MISMATCH",
+      "preservedPriorAcceptance": true
+    },
+    {
+      "path": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+      "domain": "canonical-hr-state-adapters",
+      "latestApprovedSource": "06ab83008d1517f05c5fb51526570775c41b66bd",
+      "latestApprovedBlob": "a3874143a481c159a9d2a11984966bfe813f5248",
+      "F9": {
+        "source": null,
+        "blob": null
+      },
+      "sourceSuccessor": {
+        "source": "607ef20a5305209a46b8f61424f03475806f402d",
+        "blob": "84cfc0ddf844865f53297737e37ed1be043d1793"
+      },
+      "HEAD": {
+        "sha": "ac2c8695ebab3d8e40f08a9294bce30387897aaf",
+        "blob": "84cfc0ddf844865f53297737e37ed1be043d1793"
+      },
+      "live": {
+        "source": "607ef20a5305209a46b8f61424f03475806f402d",
+        "blob": "84cfc0ddf844865f53297737e37ed1be043d1793",
+        "runtimeRevision": "cxorbia-live-hr-dev-00377-rtx",
+        "runtimeDigest": "sha256:5ae68b172443115ba668fed64acef6fe0ae5625a36bfaae07e79dac69e4cadff",
+        "hrLiveVerified": false
+      },
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "classificationScope": "VRM356_BODY_DEADLINE_AND_RAW_RANGE_MISMATCH",
+      "preservedPriorAcceptance": true
+    },
+    {
+      "path": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+      "domain": "persistence-command-ack-boundary",
+      "latestApprovedSource": "66312f88a70bd123b137c7a031a1f456969465f5",
+      "latestApprovedBlob": "1ebbcafd8ee4e69728fb1ec7a86ea99597c468cb",
+      "F9": {
+        "source": null,
+        "blob": null
+      },
+      "sourceSuccessor": {
+        "source": "607ef20a5305209a46b8f61424f03475806f402d",
+        "blob": "95ac9d7f5a3f11037ac0bd581c50899fe0a1e5de"
+      },
+      "HEAD": {
+        "sha": "ac2c8695ebab3d8e40f08a9294bce30387897aaf",
+        "blob": "95ac9d7f5a3f11037ac0bd581c50899fe0a1e5de"
+      },
+      "live": {
+        "source": "607ef20a5305209a46b8f61424f03475806f402d",
+        "blob": "95ac9d7f5a3f11037ac0bd581c50899fe0a1e5de",
+        "runtimeRevision": "cxorbia-live-hr-dev-00377-rtx",
+        "runtimeDigest": "sha256:5ae68b172443115ba668fed64acef6fe0ae5625a36bfaae07e79dac69e4cadff",
+        "hrLiveVerified": false
+      },
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "classificationScope": "VRM356_CUMULATIVE_EFFECTS_ONLY",
+      "preservedPriorAcceptance": true
+    }
+  ],
+  "evidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM356_BODY_DEADLINE_AND_CUMULATIVE_EFFECTS_REPRODUCTION_20261116.json",
+    "gitBlob": "ab6a9f6dcde3dca9c7b039fb3ee9e7647c416fe4",
+    "sha256": "9e315c5a6c94171bb01bd98d1ddf8324ac9a44ac8dbdf5c0a14c9f687c86387c"
+  },
+  "allowedProductFiles": [
+    "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+  ],
+  "allowedQaFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+    "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs",
+    "tools/qa/cxorbia-i3-vrm356-live-range-preflight.mjs",
+    ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+  ],
+  "correctionContract": [
+    "Preserve the request AbortSignal and classify header/body timeout or fixed deadline expiration with the already allowlisted source-read error.",
+    "Observe429 before body consumption; malformed200JSON remains a failure without fallback; retry budget and source semantics unchanged.",
+    "Retain already verified prior cumulative journal effects when a fresh read fails, with zero applicationWritesThisAttempt; never modify a prior receipt or reacquire a lease on this path."
+  ],
+  "validationRequired": [
+    "Exact 9 causal failures at source607 pass after the bounded correction; existing suites retain PASS.",
+    "Canonical Node CI then existing single paired DEV lane, no concurrent deploy.",
+    "Fresh source sequence then canonical name/login/exact replay proof on the successor."
+  ],
+  "invariants": {
+    "production": false,
+    "productionAuthorization": false,
+    "newWorkflow": false,
+    "newCandidate": false,
+    "dataReimport": false,
+    "remoteHrWrites": false,
+    "credentialReset": false,
+    "uidOverwrite": false,
+    "fullDomainPromotion": false,
+    "humanAcceptancesPreserved": [
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ],
+    "fullDomains": 5,
+    "totalDomains": 21,
+    "methodology": "I3_P0_PROVEN_EXACT_OWNER_SINGLE_PACKAGE",
+    "newJob": false
+  },
+  "parentScope": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM356_BODY_DEADLINE_CUMULATIVE_EFFECTS_P0_SCOPE_20261116.json",
+    "gitBlob": "7ba9e33ed5d4b5da1702b5f731f61938617e800a",
+    "sha256": "690c09bbccfe02484322b1679987b3d5ae4e2dd2bc6e2ed2e8db0ea91ac39f53"
+  },
+  "liveFailure": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2567_DEPLOYED_HR_RANGE_FAILURE_READBACK_20261116.json",
+    "gitBlob": "2eb2e8991c74edcc0a71010cf1ab4f4b6409230f",
+    "sha256": "6ac301b44eb6cf8a2ad51e72a54c40be8d568c0c2621c6123975068b6d425814"
+  },
+  "additionalContract": [
+    "Existing paired lane only: execute bounded authenticated GET metadata and batchGet range headers before build; no values, HR writes, commands or provider effects.",
+    "Reuse archived product helper and source resolver; no fallback, no accepted range mismatch, no invented actual range.",
+    "On any discrepancy emit index, coordinate bounds and title hashes only, fail before build/deploy.",
+    "Workflow change limited to one preflight invocation inside existing source archive step; no new workflow/job/candidate."
+  ]
+}
