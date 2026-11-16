@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "cxorbia.i3.control-only-source-readiness-mapping-repair.v1",
+  "generatedAt": "2026-11-16T04:39:44Z",
+  "runId": 43804849923,
+  "runNumber": 2550,
+  "jobId": 133093152194,
+  "controlSha": "2dc2acdd090925e725ce95d12e75a532fa248ac0",
+  "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+  "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+  "classification": "MAPPING_FAILURE",
+  "canonicalGuard": {
+    "decision": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+    "continuityPass": true,
+    "postCandidateProductDrift": false
+  },
+  "observedFailure": {
+    "owner": "tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs",
+    "subtest": "I3 current authority aliases are bound to the same C3 source, matrix, ledger and receipt",
+    "message": "descriptor stale C3 blocker counters",
+    "cause": "Current activeBlocker omitted required zero-gap/source-ready machine prefix after consumption of exact current C3."
+  },
+  "additionalSameOwnerMappingDefect": {
+    "cause": "Historical-Thursday comparison unconditionally dereferenced currentHostingOnlyDevMaterialization although current materialization is paired runtime and Hosting.",
+    "productDefect": false,
+    "correction": "Bind the actual served Hosting-only or paired identity, requiring source/tree/runtime/revision/digest/Hosting exactness and current paired seal when no Hosting-only receipt exists."
+  },
+  "testFileGitBlob": "117cf264b4db96215e4b3ca8cd8a96680c45e0c8",
+  "supplementalV8Check": {
+    "tests": 9,
+    "passed": 9,
+    "failed": 0,
+    "scope": "ACTUAL_CURRENT_RECORD_ASSERTION_AND_EIGHT_BOUND_IDENTITY_POSITIVE_NEGATIVE_CASES_NOT_NODE_CI"
+  },
+  "nodeCiBeforeFailure": {
+    "tests": 932,
+    "passed": 931,
+    "failed": 1,
+    "hrIdentityIoSuiteReached": false
+  },
+  "priorMatrixPreserved": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261116-V330.json",
+    "gitBlob": "d9da7c60013650d6d817df4ba9ea0968938c4733"
+  },
+  "priorLedgerPreserved": {
+    "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V657_2026-11-16.json",
+    "gitBlob": "072846bcb3509483c57d8cde35b2f5da34eddd6c"
+  },
+  "productChanges": 0,
+  "workflowChanges": 0,
+  "gatesRemoved": 0,
+  "production": false,
+  "builds": 0,
+  "runtimeDeploys": 0,
+  "hostingDeploys": 0,
+  "hrWrites": 0,
+  "phaseAComplete": false,
+  "terminalCertified": false
+}

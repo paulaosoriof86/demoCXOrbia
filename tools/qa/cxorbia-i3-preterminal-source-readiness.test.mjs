@@ -141,6 +141,41 @@ test('C3 preserves cumulative independent F12 and D08 receipts across control ve
   assert.ok(q2.every(x=>x.evidencePath&&/^[a-f0-9]{40}$/.test(x.evidenceGitBlob)));
 });
 
+
+function assertCurrentC3ServingIdentity(descriptor,audit){
+  const hostingOnly=descriptor.currentHostingOnlyDevMaterialization;
+  const served=hostingOnly||descriptor.currentMaterialization;
+  assert.ok(served,'C3 requires an exact served materialization');
+  assert.equal(audit.sourceSha,descriptor.productSourceSha,'C3 must audit the current candidate');
+  if(!hostingOnly)assert.equal(descriptor.postDeployRunSeal?.mode,'CURRENT_SOURCE_SERVING','paired C3 requires the current paired seal');
+  for(const key of ['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion']){
+    assert.ok(served[key],'served identity missing '+key);
+    assert.equal(audit[key],served[key],'C3 served identity drift '+key);
+  }
+  assert.equal(audit.runtimeRevision,descriptor.currentMaterialization.runtimeRevision,'C3 runtime differs from paired receipt');
+  assert.equal(audit.runtimeDigest,descriptor.currentMaterialization.runtimeDigest,'C3 digest differs from paired receipt');
+  assert.equal(audit.phaseAComplete,false);assert.equal(audit.i4Authorized,false);
+}
+const currentC3ServingFixture=()=>{
+ const served={sourceSha:'a'.repeat(40),sourceTree:'b'.repeat(40),runtimeRevision:'dev-current',runtimeDigest:'sha256:'+'c'.repeat(64),hostingVersion:'sites/dev/versions/current'};
+ return{descriptor:{productSourceSha:served.sourceSha,currentMaterialization:structuredClone(served),postDeployRunSeal:{mode:'CURRENT_SOURCE_SERVING'}},audit:{...served,phaseAComplete:false,i4Authorized:false}};
+};
+test('current C3 binds the exact paired runtime and Hosting without a Hosting-only alias',()=>{
+ const f=currentC3ServingFixture();assertCurrentC3ServingIdentity(f.descriptor,f.audit);
+});
+test('current C3 binds Hosting-only source and the unchanged paired runtime',()=>{
+ const f=currentC3ServingFixture();f.descriptor.currentHostingOnlyDevMaterialization=structuredClone(f.descriptor.currentMaterialization);
+ f.descriptor.currentMaterialization.sourceSha='d'.repeat(40);f.descriptor.currentMaterialization.sourceTree='e'.repeat(40);f.descriptor.currentMaterialization.hostingVersion='sites/dev/versions/previous';
+ f.descriptor.postDeployRunSeal.mode='PREDECESSOR_SERVING_PENDING_SOURCE';assertCurrentC3ServingIdentity(f.descriptor,f.audit);
+});
+for(const key of ['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'])test('current C3 rejects drift in '+key,()=>{
+ const f=currentC3ServingFixture();f.audit[key]='other';assert.throws(()=>assertCurrentC3ServingIdentity(f.descriptor,f.audit));
+});
+test('current paired C3 rejects a predecessor seal and terminal promotion',()=>{
+ const f=currentC3ServingFixture();f.descriptor.postDeployRunSeal.mode='PREDECESSOR_SERVING_PENDING_SOURCE';assert.throws(()=>assertCurrentC3ServingIdentity(f.descriptor,f.audit));
+ f.descriptor.postDeployRunSeal.mode='CURRENT_SOURCE_SERVING';f.audit.phaseAComplete=true;assert.throws(()=>assertCurrentC3ServingIdentity(f.descriptor,f.audit));
+});
+
 test('I3 current authority aliases are bound to the same C3 source, matrix, ledger and receipt',()=>{
   const descriptor=JSON.parse(readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8'));
   const execution=JSON.parse(readFileSync('CXORBIA_RECOVERY_EXECUTION_CURRENT.json','utf8'));
@@ -254,7 +289,7 @@ test('I3 current authority aliases are bound to the same C3 source, matrix, ledg
     assert.equal(thursday.totalPendingPaths,execution.previousC3PreterminalAudit?.pendingFiles);
     assert.ok(audit.runId>thursday.runId);
     assert.equal(audit.sourceSha,descriptor.productSourceSha);
-    assert.equal(audit.hostingVersion,descriptor.currentHostingOnlyDevMaterialization.hostingVersion);
+    assertCurrentC3ServingIdentity(descriptor,audit);
   }
   assert.equal(execution.executionReceiptThursday20261112.production,'DO_NOT_TOUCH');
   assert.equal(audit.phaseAComplete,false);

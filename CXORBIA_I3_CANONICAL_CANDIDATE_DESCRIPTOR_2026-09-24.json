@@ -224,8 +224,8 @@
   "productSourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
   "productTreeAuthority": "ad6093864ee4b734ab9692661f00b322abe863a9",
   "predecessorProductSourceSha": "f2fcb6200843971485ef2b092240c5497148038b",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V657_2026-11-16.json",
-  "findingsLedgerExpectedGitBlob": "072846bcb3509483c57d8cde35b2f5da34eddd6c",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V658_2026-11-16.json",
+  "findingsLedgerExpectedGitBlob": "ad1579fc68d694517f0b2af7ce2728bc00992cc0",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -244,11 +244,11 @@
     "observedC3ArtifactDigest": "sha256:515da7c9963e851fc1b3bec03bc00624955592cd900e88346b0b46df12f7d083",
     "observedResult": "THREE_PATHS_MATCHED_PRETERMINAL_HOLD"
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261116-V330.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261116-V331.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "I3_HR349_CURRENT_SHOPPER_UID_CONFLICT_VRM351_PRE_QA_REPROOF_AND_REMAINING_PHASE_A_CONTRACTS",
+  "activeBlocker": "C3_0_PATH_BOUND_SOURCE_PROOF_GAPS_0_OWNER_PROOF_0_BLOB_PROVENANCE_0_MAPPING__21_SOURCE_READY__I3_HR349_CURRENT_SHOPPER_UID_CONFLICT_VRM351_PRE_QA_REPROOF_AND_REMAINING_PHASE_A_CONTRACTS",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -3507,7 +3507,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "d9da7c60013650d6d817df4ba9ea0968938c4733",
+  "moduleTruthExpectedGitBlob": "a65141c534c6391e802ce58aff79462127815750",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12641,7 +12641,7 @@
     "sourceTestsFail": 0,
     "production": false
   },
-  "lastUpdatedAt": "2026-11-16T04:24:07Z",
+  "lastUpdatedAt": "2026-11-16T04:39:44Z",
   "a05SourceProof": {
     "recordedAt": "2026-10-17T12:00:37.826Z",
     "productSourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
@@ -18202,7 +18202,7 @@
     "sourceTestsFail": 0,
     "production": false
   },
-  "updatedAt": "2026-11-16T04:24:07Z",
+  "updatedAt": "2026-11-16T04:39:44Z",
   "previousCurrentMaterializationBeforeRun2248": {
     "builds": 1,
     "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
@@ -19225,12 +19225,12 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261116-V330.json",
-      "gitBlob": "d9da7c60013650d6d817df4ba9ea0968938c4733"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261116-V331.json",
+      "gitBlob": "a65141c534c6391e802ce58aff79462127815750"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V657_2026-11-16.json",
-      "gitBlob": "072846bcb3509483c57d8cde35b2f5da34eddd6c"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V658_2026-11-16.json",
+      "gitBlob": "ad1579fc68d694517f0b2af7ce2728bc00992cc0"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2548_C3_CERTIFY_ATTEMPT_20261116.json",
@@ -25313,12 +25313,12 @@
     "c3RunId": 43786809287
   },
   "lastControlPlaneAttempt": {
-    "path": "docs/checkpoints/CXORBIA_I3_RUN2549_SECONDARY_MATRIX_POINTER_REPAIR_20261116.json",
-    "gitBlob": "78f80f78e501b6faeffed8139e59ff8c2c176dfe",
-    "runId": 43804510375,
-    "runNumber": 2549,
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2550_SOURCE_READINESS_MAPPING_REPAIR_20261116.json",
+    "gitBlob": "e7304dabad284b668fee4feb04b342a7a2969ebb",
+    "runId": 43804849923,
+    "runNumber": 2550,
+    "state": "CONTROL_QA_MAPPING_FIXED_PENDING_EXISTING_CANONICAL_CI",
     "classification": "MAPPING_FAILURE",
-    "state": "CONTROL_ONLY_FAILURE_CORRECTED_PENDING_CANONICAL_REPROOF",
     "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
     "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
     "production": false
@@ -27123,5 +27123,19 @@
   "run2548QaControlRecovery": {
     "path": "docs/checkpoints/CXORBIA_I3_RUN2548_CURRENT_ALIAS_AND_PRE_QA_RECOVERY_20261116.json",
     "gitBlob": "3b9da3afe77b710eec1ce1ab5fd3faadf77c3235"
+  },
+  "historicalBeforeRun2550ReadinessRepair": {
+    "activeBlocker": "I3_HR349_CURRENT_SHOPPER_UID_CONFLICT_VRM351_PRE_QA_REPROOF_AND_REMAINING_PHASE_A_CONTRACTS",
+    "lastControlPlaneAttempt": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2549_SECONDARY_MATRIX_POINTER_REPAIR_20261116.json",
+      "gitBlob": "78f80f78e501b6faeffed8139e59ff8c2c176dfe",
+      "runId": 43804510375,
+      "runNumber": 2549,
+      "classification": "MAPPING_FAILURE",
+      "state": "CONTROL_ONLY_FAILURE_CORRECTED_PENDING_CANONICAL_REPROOF",
+      "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+      "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+      "production": false
+    }
   }
 }
