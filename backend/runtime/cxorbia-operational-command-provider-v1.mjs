@@ -151,7 +151,7 @@ function refs(db,command){
   };
 }
 function ack(command,entityId,extra={}){return {ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,localMutation:false,localStorageWrite:false,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,commandType:command.commandType,entityType:command.entityType,entityId:entityId||command.entityId||null,idempotencyKey:command.idempotencyKey,...extra};}
-function blocked(command,code,extra={}){return {ok:false,status:'blocked',committed:false,providerAck:false,successUiAllowed:false,localMutation:false,localStorageWrite:false,providerWrites:0,tenantId:command?.tenantId||null,projectId:command?.projectId||null,periodId:command?.periodId||null,commandType:command?.commandType||null,entityId:command?.entityId||null,code,...extra};}
+function blocked(command,code,extra={}){return {ok:false,status:'blocked',committed:false,providerAck:false,successUiAllowed:false,localMutation:false,localStorageWrite:false,providerWrites:0,tenantId:command?.tenantId||null,projectId:command?.projectId||null,periodId:command?.periodId||null,commandType:command?.commandType||null,entityId:command?.entityId||null,code,...(command?.commandType==='visit.sync.confirm'?{hrProviderAck:false,hrReflectionVerified:false}:{}),...extra};}
 function assertVersion(command,data){
   if(command.expectedVersion==='absent'||command.expectedVersion==='source-current')return;
   if(str(command.expectedVersion)!==str(versionOf(data)))throw new Error('OPS_EXPECTED_VERSION_CONFLICT');
@@ -167,6 +167,49 @@ async function resolveVisitDocument(tx,visits,visitId,hrRowId){
     return {ref,snap,data,durableVisitId:key,logicalVisitId:logical||key};
   }
   throw new Error('OPS_VISIT_MISSING');
+}
+/* A local assignment or caller-supplied HR value is never evidence of an
+   external reflection. The server injects this snapshot/revision after a fresh
+   read; this proof certifies that observation, not a remote HR write. */
+async function syncReflectionContext(tx,r,command,actor,snapshot,revision){
+  if(!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_SYNC_CONFIRM_OPERATOR_ONLY');
+  if(command.entityType!=='visit'||command.authorization?.permission!=='visit.sync.confirm')throw new Error('OPS_SYNC_CONFIRM_CONTRACT_INVALID');
+  if(snapshot?.sourceSafe!==true||snapshot?.imported!==false||Number(snapshot?.firestoreWrites||0)!==0||
+    !/^[a-f0-9]{64}$/.test(str(revision))||str(snapshot.tenantId)!==command.tenantId||str(snapshot.projectId)!==command.projectId||
+    (snapshot._runtime?.revision!==undefined&&snapshot._runtime.revision!==revision))throw new Error('OPS_SYNC_CONFIRM_INDEPENDENT_HR_REQUIRED');
+  const payload=command.payload||{},hrRowId=str(payload.hrRowId),visitId=str(payload.visitId||command.entityId);
+  if(!hrRowId||!visitId)throw new Error('OPS_SYNC_CONFIRM_EXACT_IDENTITY_REQUIRED');
+  const matches=arr(snapshot.visits).filter(row=>str(row?.hrRowId)===hrRowId);
+  if(matches.length!==1)throw new Error('OPS_SYNC_CONFIRM_HR_ROW_NOT_UNIQUE');
+  const hr=matches[0],hrVisitId=str(hr.id||hr.visitId),periodKey=str(hr.periodKey);
+  if(!hrVisitId||str(hr.tenantId)!==command.tenantId||str(hr.projectId)!==command.projectId||
+    (hr.visitId!==undefined&&![hrVisitId,hrRowId].includes(str(hr.visitId))))throw new Error('OPS_SYNC_CONFIRM_HR_SCOPE_MISMATCH');
+  const periods=arr(snapshot.periods).filter(period=>periodKey&&str(period.key||period.periodKey)===periodKey);
+  if(periods.length!==1)throw new Error('OPS_SYNC_CONFIRM_HR_PERIOD_NOT_UNIQUE');
+  const period=periods[0],periodId=str(period.id||period.periodId);
+  if(!periodId||periodId!==command.periodId||str(period.projectId)!==command.projectId||
+    (period.tenantId!==undefined&&str(period.tenantId)!==command.tenantId)||
+    (period.id&&period.periodId&&str(period.id)!==str(period.periodId))||
+    ['periodId','measurementPeriodId','measurementWindowProjectId'].some(k=>hr[k]!==undefined&&str(hr[k])!==periodId))throw new Error('OPS_SYNC_CONFIRM_HR_PERIOD_MISMATCH');
+  const resolved=await resolveVisitDocument(tx,r.visits,visitId,hrRowId),v=resolved.data,aliases=new Set([hrVisitId,hrRowId]);
+  const present=[command.entityId,payload.visitId,payload.visitaId,payload.entityId,payload.durableVisitId,payload.hrVisitId,v.id,v.visitId,resolved.durableVisitId].filter(x=>x!==undefined&&x!==null);
+  if(present.some(x=>!aliases.has(str(x)))||str(v.hrRowId)!==hrRowId||str(v.tenantId)!==command.tenantId||str(v.projectId)!==command.projectId||str(v.periodId)!==periodId||
+    (v.periodKey!==undefined&&str(v.periodKey)!==periodKey))throw new Error('OPS_SYNC_CONFIRM_IDENTITY_SCOPE_MISMATCH');
+  const shopperId=str(hr.shopperId);
+  if(!shopperId||str(v.shopperId)!==shopperId||['hrShopperId','shopperId'].some(k=>payload[k]!==undefined&&str(payload[k])!==shopperId))throw new Error('OPS_SYNC_CONFIRM_HR_ASSIGNMENT_NOT_REFLECTED');
+  return {resolved,identity:{tenantId:command.tenantId,projectId:command.projectId,periodId,hrRowId,hrVisitId,durableVisitId:resolved.durableVisitId,shopperId}};
+}
+function validateSyncReflectionReplay(prior,context,command,actor,digest){
+  const proof=prior.hrReflection,v=context.resolved.data;
+  if(prior.actorUid!==actor.uid)throw new Error('OPS_SYNC_CONFIRM_RECEIPT_ACTOR_DENIED');
+  if(prior.providerAck!==true||prior.hrProviderAck!==false||!proof||proof.schemaVersion!=='cxorbia.hr-assignment-reflection.v1'||proof.hrProviderAck!==false||
+    proof.proofScope!=='INDEPENDENT_HR_ASSIGNMENT_REFLECTION_ONLY'||!/^[a-f0-9]{64}$/.test(str(proof.sourceRevision))||
+    !Number.isFinite(Date.parse(proof.verifiedAt||''))||proof.actorUid!==actor.uid||proof.commandDigest!==digest||proof.idempotencyKey!==command.idempotencyKey||
+    Object.entries(context.identity).some(([k,value])=>proof[k]!==value)||prior.commandType!==command.commandType||
+    prior.entityId!==str(command.payload?.visitId||command.entityId)||!Number.isSafeInteger(proof.previousVersion)||proof.previousVersion<0||
+    str(command.expectedVersion)!==str(proof.previousVersion)||proof.committedVersion!==proof.previousVersion+1||
+    !Number.isSafeInteger(v.version)||v.version<proof.committedVersion||v.assignmentSyncStatus!=='synced'||!v.hrReflection||sha(v.hrReflection)!==sha(proof))throw new Error('OPS_SYNC_CONFIRM_REPLAY_PROOF_REQUIRED');
+  return proof;
 }
 function assertPeriod(command,data){if(str(data?.periodId)!==str(command.periodId))throw new Error('OPS_PERIOD_SCOPE_MISMATCH');}
 function isAvailable(v){const state=str(v?.estado||v?.status).toLowerCase();return ['disponible','available'].includes(state)&&!str(v?.shopperId);}
@@ -390,15 +433,20 @@ async function transactionExecute(db,command,actor,hrSnapshot,hrRevision){
   return db.runTransaction(async tx=>{
     const clientContext=CLIENT_COLLABORATION[command.commandType]?await clientCollaborationContext(tx,r,command,actor,hrSnapshot,hrRevision):null;
     const prior=await tx.get(r.receipt);
+    const syncContext=command.commandType==='visit.sync.confirm'?await syncReflectionContext(tx,r,command,actor,hrSnapshot,hrRevision):null;
     if(prior.exists){
       const p=prior.data()||{};
       if(clientContext&&p.actorUid!==actor.uid)throw new Error('OPS_CLIENT_RECEIPT_ACTOR_DENIED');
       if(p.commandDigest!==digest)throw new Error('OPS_IDEMPOTENCY_KEY_REUSED_DIFFERENT_PAYLOAD');
-      if(p.status==='committed')return ack(command,p.entityId,{idempotentReplay:true,providerWrites:0});
+      if(p.status==='committed'){
+        const reflection=syncContext?validateSyncReflectionReplay(p,syncContext,command,actor,digest):null;
+        return ack(command,p.entityId,{idempotentReplay:true,providerWrites:0,...(reflection?{hrReflectionVerified:true,hrProviderAck:false,hrReflection:reflection,hrRevalidationRevision:hrRevision}:{})});
+      }
     }
     const payload=clean(command.payload||{});
     let entityId=str(command.entityId),providerWrites=0,auditEntityType=command.entityType,notificationTargetShopperId=null;
     let notificationRequestCycleId=null,notificationEventAt=null;
+    let hrReflection=null;
 
     if(clientContext){
       const spec=CLIENT_COLLABORATION[command.commandType];
@@ -722,15 +770,11 @@ async function transactionExecute(db,command,actor,hrSnapshot,hrRevision){
       entityId='read-'+receiptKey;providerWrites+=2;auditEntityType='resourceReadReceipt';
     }
     else if(command.commandType==='visit.sync.confirm'){
-      if(!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_SYNC_CONFIRM_OPERATOR_ONLY');
-      const visitId=str(payload.visitId||entityId);if(!visitId)throw new Error('OPS_VISIT_ID_REQUIRED');entityId=visitId;
-      const resolved=await resolveVisitDocument(tx,r.visits,visitId,payload.hrRowId),vRef=resolved.ref,vSnap=resolved.snap,v=resolved.data;assertPeriod(command,v);assertVersion(command,v);
-      const expectedShopper=str(v.shopperId),observedShopper=str(payload.hrShopperId||payload.shopperId),expectedHr=str(v.hrRowId),observedHr=str(payload.hrRowId);
-      if(!expectedShopper||!observedShopper||expectedShopper!==observedShopper||!expectedHr||!observedHr||expectedHr!==observedHr){
-        tx.set(r.review,{tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,entityType:'visit',entityId:visitId,reviewType:'assignment_sync_conflict',status:'open',reason:'stable_identity_or_shopper_mismatch',expectedShopperId:expectedShopper,observedShopperId:observedShopper,expectedHrRowId:expectedHr,observedHrRowId:observedHr,automaticOverwrite:false,createdAt:now()});providerWrites++;
-        throw new Error('OPS_SYNC_CONFIRM_CONFLICT_REVIEW_REQUIRED');
-      }
-      tx.set(vRef,{assignmentSyncStatus:'synced',lastSyncedAt:payload.lastSyncedAt||now(),updatedAt:now(),version:Number(v.version||0)+1},{merge:true});providerWrites++;
+      const {resolved,identity}=syncContext,v=resolved.data;
+      if(!Number.isSafeInteger(v.version)||v.version<0||str(command.expectedVersion)!==str(v.version))throw new Error('OPS_SYNC_CONFIRM_CONCRETE_VERSION_REQUIRED');
+      entityId=str(payload.visitId||entityId);const at=now();
+      hrReflection={schemaVersion:'cxorbia.hr-assignment-reflection.v1',proofScope:'INDEPENDENT_HR_ASSIGNMENT_REFLECTION_ONLY',...identity,sourceRevision:hrRevision,actorUid:actor.uid,commandDigest:digest,idempotencyKey:command.idempotencyKey,previousVersion:v.version,committedVersion:v.version+1,verifiedAt:at,hrProviderAck:false};
+      tx.set(resolved.ref,{assignmentSyncStatus:'synced',lastSyncedAt:at,updatedAt:at,version:v.version+1,hrReflection},{mergeFields:['assignmentSyncStatus','lastSyncedAt','updatedAt','version','hrReflection']});providerWrites++;
       auditEntityType='visit';
     }
 
@@ -752,9 +796,9 @@ async function transactionExecute(db,command,actor,hrSnapshot,hrRevision){
         createdAt:notificationEventAt||now(),source:'cxorbia-operational-command-provider-v1'}, {merge:false});
       providerWrites++;
     }
-    tx.set(r.receipt,{status:'committed',commandDigest:digest,entityId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,updatedAt:now()});providerWrites++;
-    tx.set(r.audit,{tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,entityId,entityType:auditEntityType,commandType:command.commandType,actorUid:actor.uid,actorRole:actor.role,idempotencyKey:command.idempotencyKey,reason:command.audit?.reason||null,createdAt:now()},{merge:false});providerWrites++;
-    return ack(command,entityId,{providerWrites});
+    tx.set(r.receipt,{status:'committed',commandDigest:digest,entityId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,updatedAt:now(),...(hrReflection?{hrReflection,hrProviderAck:false}:{})});providerWrites++;
+    tx.set(r.audit,{tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,entityId,entityType:auditEntityType,commandType:command.commandType,actorUid:actor.uid,actorRole:actor.role,idempotencyKey:command.idempotencyKey,reason:command.audit?.reason||null,createdAt:now(),...(hrReflection?{hrReflection,hrProviderAck:false}:{})},{merge:false});providerWrites++;
+    return ack(command,entityId,{providerWrites,...(hrReflection?{hrReflectionVerified:true,hrProviderAck:false,hrReflection}:{})});
   });
 }
 

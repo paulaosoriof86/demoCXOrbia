@@ -2799,6 +2799,8 @@ jobs:
       test "$(jq -r '.decision' "$OUT/semantic/hr-contrast.json")" = "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE"
       test "$(jq -r '.sourceRevision' "$OUT/semantic/hr-contrast.json")" = "$CURRENT_LIVE_HR_REVISION"
       PREI4_OUT="$OUT/semantic" CXORBIA_PREI4_ROOT="$HOSTING_URL" CXORBIA_PREI4_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs | tee "$OUT/semantic/focal-console.log"
+      QA_OUT="$OUT/hr-after-human" FOCAL_SOURCE="$I3_CERTIFICATION_SOURCE_SHA" CXORBIA_I3_QA_SCOPE=HR_DURABLE_REVISION_READONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
+      jq -e --arg revision "$CURRENT_LIVE_HR_REVISION" '.sourceRevision == $revision and .sourceRevisionAfter == $revision' "$OUT/hr-after-human/result.json" >/dev/null
       test "$(jq -r '.decision' "$OUT/semantic/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
       test "$(jq -r '.sourceSha' "$OUT/semantic/browser-focal.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
       test "$(jq -r '.hrRevision' "$OUT/semantic/browser-focal.json")" = "$CURRENT_LIVE_HR_REVISION"
@@ -4527,7 +4529,7 @@ jobs:
       test "$(jq -r '[.assertions[]|select(.name=="vrm168_existing_hr_identity_preserves_conflict_review")][0].ok' "$FOCAL_OUT/vrm258-canonical-read-model.json")" = "true"
   vrm154-156-dev-materialization:
    needs: canonical-candidate-authority
-   if: ${{ contains(fromJSON('["HOLD_VRM134_A05_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM154_156_DEV_MATERIALIZATION_REQUIRED","HOLD_V190_DEV_MATERIALIZATION_REQUIRED","HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM216_SHARED_IDEMPOTENCY_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM217_219_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM306_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM307_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM308_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM309_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM221_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM227_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM249_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM174_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM256_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM257_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM258_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM259_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_B7_CONTEXT_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_S1_AUTO_COMPATIBLE_IDENTITY_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_CERT_CARRYOVER_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_B11_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM317_D06_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM318_D06_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM319_D06_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM320_B3_DEV_MATERIALIZATION_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-paired-dev-once]') && contains(fromJSON('["HOLD_I3_B4_B7_COMPOSED_SOURCE_PENDING_CI_DEV_AND_ROLE_E2E","HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status)) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-paired-env-once]') && needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_F09_DEV_MATERIALIZED_C3_REPROOF_PENDING') }}
+   if: ${{ contains(fromJSON('["HOLD_VRM134_A05_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM154_156_DEV_MATERIALIZATION_REQUIRED","HOLD_V190_DEV_MATERIALIZATION_REQUIRED","HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM216_SHARED_IDEMPOTENCY_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM217_219_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM306_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM307_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM308_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM309_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM221_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM227_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM249_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM174_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM256_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM257_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM258_DEV_MATERIALIZATION_REQUIRED","HOLD_VRM259_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_B7_CONTEXT_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_S1_AUTO_COMPATIBLE_IDENTITY_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_CERT_CARRYOVER_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_B11_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM317_D06_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM318_D06_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM319_D06_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM320_B3_DEV_MATERIALIZATION_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-paired-dev-once]') && contains(fromJSON('["HOLD_I3_B4_B7_COMPOSED_SOURCE_PENDING_CI_DEV_AND_ROLE_E2E","HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM350_DEV_MATERIALIZATION_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status)) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-paired-env-once]') && needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_F09_DEV_MATERIALIZED_C3_REPROOF_PENDING') }}
    runs-on: ubuntu-24.04
    timeout-minutes: 60
    env:
@@ -4592,7 +4594,7 @@ jobs:
      with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2
      with: {project_id: '${{ env.PROJECT }}'}
-   - if: contains(fromJSON('["HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED"]'), env.ACTIVE_STATUS) || env.PAIR_ENV_ONLY == 'true'
+   - if: contains(fromJSON('["HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM350_DEV_MATERIALIZATION_REQUIRED"]'), env.ACTIVE_STATUS) || env.PAIR_ENV_ONLY == 'true'
      run: |
       set -Eeuo pipefail
       node --check tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
@@ -4604,7 +4606,7 @@ jobs:
       test "$(jq -r '.release.version.name' "$FOCAL_OUT/hosting-before.json")" = "$(jq -r '.currentHostingOnlyDevMaterialization.hostingVersion // .currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")"
       curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" > "$FOCAL_OUT/rules-before.json"
       curl -fsSL -H 'Cache-Control: no-cache' https://tya-plataforma.web.app/ -o "$FOCAL_OUT/production-before.html"
-      if [[ "$ACTIVE_STATUS" == HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED ]]; then QA_OUT="$FOCAL_OUT/hr-before" CXORBIA_I3_QA_SCOPE=HR_DURABLE_REVISION_READONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs; fi
+      if [[ "$ACTIVE_STATUS" == HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED || "$ACTIVE_STATUS" == HOLD_I3_VRM350_DEV_MATERIALIZATION_REQUIRED ]]; then QA_OUT="$FOCAL_OUT/hr-before" CXORBIA_I3_QA_SCOPE=HR_DURABLE_REVISION_READONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs; fi
    - run: |
       set -Eeuo pipefail
       SOURCE_DIR="$RUNNER_TEMP/cxorbia-vrm154-156-source"
@@ -4713,9 +4715,10 @@ jobs:
         HOLD_I3_VRM320_B3_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM320_B3_EXACT_DEV_MATERIALIZATION ;;
         HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_I3_F09_EXACT_DEV_MATERIALIZATION ;;
         HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_I3_VRM143_EXACT_DEV_MATERIALIZATION ;;
+        HOLD_I3_VRM350_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_I3_VRM350_EXACT_DEV_MATERIALIZATION ;;
       esac
       jq -n -S --arg decision "$DECISION" --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg runtime "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg hosting "$HOSTING_VERSION_NAME" --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hr "$HR_REVISION" --argjson reuse "$PAIR_ENV_ONLY" '{decision:$decision,sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hostingRelease:$hostingRelease,hrRevision:$hr,builds:(if $reuse then 0 else 1 end),runtimeDeploys:1,hostingDeploys:(if $reuse then 0 else 1 end),storageRulesDeploys:0,scenarioDimensionsProven:true,production:false}' > "$FOCAL_OUT/result.json"
-   - if: contains(fromJSON('["HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED"]'), env.ACTIVE_STATUS) || env.PAIR_ENV_ONLY == 'true'
+   - if: contains(fromJSON('["HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM350_DEV_MATERIALIZATION_REQUIRED"]'), env.ACTIVE_STATUS) || env.PAIR_ENV_ONLY == 'true'
      run: |
       set -Eeuo pipefail
       TOKEN="$(gcloud auth print-access-token)"
@@ -4730,7 +4733,7 @@ jobs:
       Object.assign(r,{verifiedServedAssetCount:Object.keys(r.servedSha256).length,sourceHostedExact:true,runtimeTrafficExact:true,productionUnchanged:true,productionIndexSha256:hash(fs.readFileSync(o+'/production-after.html')),firestoreRuleset:JSON.parse(fs.readFileSync(o+'/rules-after.json')).rulesetName,firestoreRulesDeploys:0,hrWrites:0});
       fs.writeFileSync(o+'/result.json',JSON.stringify(r,null,2)+'\n');
       NODE
-      if [[ "$ACTIVE_STATUS" == HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED ]]; then
+      if [[ "$ACTIVE_STATUS" == HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED || "$ACTIVE_STATUS" == HOLD_I3_VRM350_DEV_MATERIALIZATION_REQUIRED ]]; then
         QA_OUT="$FOCAL_OUT/hr-after" CXORBIA_I3_QA_SCOPE=HR_DURABLE_REVISION_READONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
         EXPECTED_HR_REVISION="$HR_REVISION" QA_OUT="$FOCAL_OUT/notifications" CXORBIA_I3_QA_SCOPE=VRM143_NOTIFICATION_CYCLE CXORBIA_I3_QA_ISOLATED_WRITE_GATE=PAULA_AUTHORIZED_VRM143_DEV_ONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
       else

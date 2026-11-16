@@ -120,9 +120,12 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
   // A source successor must not inherit or fabricate a current-source C3 receipt.
   // While the exact Hosting-only predecessor is still served, the previous C3
   // remains historical with its own source, tree and successful run identity.
-  const c3Source=c3PredecessorAfterServing?preC3.previousC3SourceSha:(pendingHostingOnly?hosting.sourceSha:source);
-  const c3Tree=c3PredecessorAfterServing?preC3.previousC3SourceTree:(pendingHostingOnly?hosting.sourceTree:tree);
+  const c3Source=c3PredecessorAfterServing?preC3.previousC3SourceSha:(pendingFromPaired?seal.sourceSha:pendingHostingOnly?hosting.sourceSha:source);
+  const c3Tree=c3PredecessorAfterServing?preC3.previousC3SourceTree:(pendingFromPaired?seal.sourceTree:pendingHostingOnly?hosting.sourceTree:tree);
   const c3Runtime=c3PredecessorAfterServing?(preC3.previousRuntimeRevision??seal.runtimeRevision):seal.runtimeRevision;
+  if(pendingFromPaired&&!c3PredecessorAfterServing)check(!d.i3Q2HostingReleaseC3Pending&&!p.i3Q2HostingReleaseC3Pending&&!l.i3Q2HostingReleaseC3Pending&&
+    typeof seal.runtimeDigest==='string'&&c3.runtimeDigest===seal.runtimeDigest&&postDeploy.runtimeDigest===seal.runtimeDigest,
+    'CURRENT_COMPLETED_PAIRED_C3_IDENTITY_DESYNC');
   check(sameProof&&c3.schemaVersion==='cxorbia.i3.current-c3-preterminal-audit.v1'&&
     Number.isInteger(c3.runId)&&c3.runId>0&&
     c3.moduleCount===21&&c3.matchModules>=0&&c3.matchModules<=21&&
@@ -166,11 +169,21 @@ export function validateLatestExecutionSource({descriptor:d,pointer:p,gitBlob,re
   // Its failed certify attempt is current execution evidence, never a new-source
   // or terminal certificate. Bind it before the paired-source compatibility path.
   if(latest?.kind==='C3_PRETERMINAL_AND_CERTIFY_ATTEMPT_NOT_TERMINAL_CERTIFICATE'){
-    const h=d.currentHostingOnlyDevMaterialization||{},pending=d.pendingDevSuccessor||{},audit=d.currentC3PreterminalAudit||{};
+    const pending=d.pendingDevSuccessor||{},audit=d.currentC3PreterminalAudit||{};
+    const paired=!d.currentHostingOnlyDevMaterialization&&!p.currentHostingOnlyDevMaterialization&&Boolean(pending.servingPairedMaterialization);
+    const h=(paired?d.currentMaterialization:d.currentHostingOnlyDevMaterialization)||{};
     check(seal.mode==='PREDECESSOR_SERVING_PENDING_SOURCE'&&pending.state==='P0_PROVEN_PENDING_DEV_MATERIALIZATION'&&pending.scope==='RUNTIME_AND_HOSTING','LATEST_C3_PENDING_STATE');
     check(JSON.stringify(pending)===JSON.stringify(p.pendingDevSuccessor||null)&&pending.production===false&&pending.devPublished===false,'LATEST_C3_PENDING_POINTER');
     check(pending.sourceSha===d.productSourceSha&&pending.sourceTree===d.productTreeAuthority&&pending.predecessorProductSourceSha===h.sourceSha&&h.sourceSha!==pending.sourceSha,'LATEST_C3_PENDING_SOURCE');
-    check(JSON.stringify(h)===JSON.stringify(p.currentHostingOnlyDevMaterialization||null)&&JSON.stringify(h)===JSON.stringify(pending.servingHosting||null)&&JSON.stringify(seal)===JSON.stringify(pending.servingRuntimeSeal||null),'LATEST_C3_SERVING_POINTER');
+    check(JSON.stringify(h)===JSON.stringify((paired?p.currentDevMaterialization:p.currentHostingOnlyDevMaterialization)||null)&&JSON.stringify(h)===JSON.stringify((paired?pending.servingPairedMaterialization:pending.servingHosting)||null)&&JSON.stringify(seal)===JSON.stringify(pending.servingRuntimeSeal||null),'LATEST_C3_SERVING_POINTER');
+    if(paired){
+      check(!pending.servingHosting&&!d.i3Q2HostingReleaseC3Pending&&!p.i3Q2HostingReleaseC3Pending&&h.sourceSha===seal.sourceSha&&h.sourceTree===seal.sourceTree&&h.hostingVersion===seal.hostingVersion&&h.runtimeRevision===seal.runtimeRevision&&h.runtimeDigest===seal.runtimeDigest,'LATEST_C3_PAIRED_SEAL');
+      check(Boolean(seal.receiptPath&&seal.receiptBlob)&&h.materializationReceiptPath===seal.receiptPath&&gitBlob(seal.receiptPath)===seal.receiptBlob,'LATEST_C3_PAIRED_RECEIPT_BLOB');
+      let pairedReceipt={};try{pairedReceipt=readJson(seal.receiptPath);}catch{check(false,'LATEST_C3_PAIRED_RECEIPT_UNREADABLE');}
+      check(pairedReceipt.schemaVersion==='cxorbia.i3.current-source-dev-materialization.v1'&&pairedReceipt.production===false&&pairedReceipt.i4Authorized===false&&pairedReceipt.productionUnchanged===true,'LATEST_C3_PAIRED_RECEIPT_SCOPE');
+      for(const k of ['sourceSha','sourceTree','runId','runNumber','runtimeRevision','runtimeDigest','hostingVersion','artifactDigest'])check(Boolean(h[k])&&pairedReceipt.materialization?.[k]===h[k],'LATEST_C3_PAIRED_RECEIPT_'+k);
+      check(pairedReceipt.sourceSha===h.sourceSha&&pairedReceipt.sourceTree===h.sourceTree&&pairedReceipt.materialization?.builds===1&&pairedReceipt.materialization?.runtimeDeploys===1&&pairedReceipt.materialization?.hostingDeploys===1,'LATEST_C3_PAIRED_RECEIPT_IDENTITY');
+    }
     check(JSON.stringify(audit)===JSON.stringify(p.currentC3PreterminalAudit||null)&&audit.sourceSha===h.sourceSha&&audit.sourceTree===h.sourceTree&&audit.hostingVersion===h.hostingVersion&&audit.runtimeRevision===seal.runtimeRevision,'LATEST_C3_AUDIT_IDENTITY');
     check(JSON.stringify(latest)===JSON.stringify(d.currentExecutionReceipt||null)&&JSON.stringify(latest)===JSON.stringify(p.currentExecutionReceipt||null),'LATEST_C3_EXECUTION_POINTER');
     check(Boolean(latest.path&&latest.gitBlob)&&gitBlob(latest.path)===latest.gitBlob,'LATEST_C3_RECEIPT_BLOB');

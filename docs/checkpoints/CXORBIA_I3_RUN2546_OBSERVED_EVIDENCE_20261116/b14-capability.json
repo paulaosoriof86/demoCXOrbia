@@ -1,0 +1,565 @@
+{
+  "schemaVersion": "cxorbia.i3.b14.binding-capability-readonly.v1",
+  "decision": "HOLD",
+  "observationComplete": true,
+  "b14Closed": false,
+  "providerAck": false,
+  "productSourceSha": "f2fcb6200843971485ef2b092240c5497148038b",
+  "runtimeSourceSha": "f2fcb6200843971485ef2b092240c5497148038b",
+  "runtimeRevision": "cxorbia-live-hr-dev-00373-fxw",
+  "runtimeDigest": "sha256:6fe218e2573028ef5889d67b890d434f1a022067c8f39e6c028323c707805feb",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/cd46b1801ecd0123",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "runId": "43794015448",
+  "runAttempt": "1",
+  "hrRevisionBefore": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+  "hrRevisionAfter": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+  "observedHrAccessMode": "sheets_api_service_account",
+  "bindingToReaderMatch": "UNRESOLVED",
+  "runtimeBindingResolutionProven": false,
+  "safety": {
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authAdminWrites": 0,
+    "iamPolicyWrites": 0,
+    "secretPayloadReads": 0,
+    "apiEnables": 0,
+    "production": false
+  },
+  "runtimeAuthority": {
+    "revision": "cxorbia-live-hr-dev-00373-fxw",
+    "digest": "sha256:6fe218e2573028ef5889d67b890d434f1a022067c8f39e6c028323c707805feb",
+    "envNames": [
+      "CXORBIA_DEV_OPERATIONAL_NAMES",
+      "CXORBIA_DEV_VISUAL_PROFILE_TOKEN_EXPIRES_AT",
+      "CXORBIA_DEV_VISUAL_PROFILE_TOKEN_SHA256",
+      "CXORBIA_ENVIRONMENT",
+      "CXORBIA_F5_SYNTHETIC_AUTHORIZATION_ID",
+      "CXORBIA_F5_SYNTHETIC_EXPIRES_AT",
+      "CXORBIA_G2B_SYNTHETIC_REQUEST_ID",
+      "CXORBIA_G2B_SYNTHETIC_WRITE_ENABLED",
+      "CXORBIA_G2B_SYNTHETIC_WRITE_GATE",
+      "CXORBIA_HR_EARLIEST_PERIOD",
+      "CXORBIA_HR_LIVE_MAX_COL",
+      "CXORBIA_HR_LIVE_MAX_ROW",
+      "CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_ENABLED",
+      "CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_GATE",
+      "CXORBIA_LIVE_HR_CACHE_MS",
+      "CXORBIA_RECOVERY_SOURCE_SHA",
+      "CXORBIA_VISIT_RECONCILIATION_CONCURRENCY"
+    ],
+    "secretRefs": [],
+    "credentialOverridePresent": false,
+    "workbookOverridePresent": false,
+    "principalSha256": "ab70b5da53a2d545a74c8b39123df8e2a52f70128d1660360d87b2fed6d573fa"
+  },
+  "readerBlobs": [
+    {
+      "path": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+      "gitBlob": "a3874143a481c159a9d2a11984966bfe813f5248",
+      "runtimeSourceMatchesProductReader": true
+    },
+    {
+      "path": "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+      "gitBlob": "bc60ad69d611f96b614a968fc4a9b4a5b9abd63a",
+      "runtimeSourceMatchesProductReader": true
+    }
+  ],
+  "workbook": {
+    "resolved": true,
+    "reason": null,
+    "idSha256": "796d2ae2b7d3f948efce7d799ddb7c81684b94e274116c24322d5f742136b90e",
+    "authority": "EXACT_RUNTIME_READER_FALLBACK_ENV_OVERRIDE_ABSENT"
+  },
+  "project": {
+    "version": 5,
+    "exists": true,
+    "updateTime": "2026-11-06T14:47:13.322Z",
+    "sourceSelected": "operationalSource",
+    "selectionComplete": true,
+    "operationalSource": {
+      "mode": {
+        "present": true,
+        "valueHash": "3c4623849a49a53911c4a3e48d8cead8a1858960bccdea7a1b978d73ec2f06d7",
+        "value": "external"
+      },
+      "authority": {
+        "present": true,
+        "valueHash": "532185557da80f4fc3276c93b2961fd93e87487c5062a4e0f597e1d32c4ad4d8",
+        "value": null
+      },
+      "providerType": {
+        "present": true,
+        "valueHash": "c71caf7afdcc481a1789d27dcc1b9a2b4fcb6318d2db778adc971153835b63ee",
+        "value": "google_sheets"
+      },
+      "readPolicy": {
+        "present": true,
+        "valueHash": "22acc0bf619cf3909d542071f792e6966592592c299de3b6275544d0ac58141a",
+        "value": "external_live"
+      },
+      "writePolicy": {
+        "present": true,
+        "valueHash": "fd262d83d4066b721bfd22370683b3d6f242adbfebea011b1d9571650074bedf",
+        "value": null
+      },
+      "providerBindingId": {
+        "present": true,
+        "valueHash": "46254408919385d91e4019d0e9a704629206e81fa2981f56f855981950ab450c"
+      },
+      "integrationSettingId": {
+        "present": false,
+        "valueHash": null
+      },
+      "providerRef": {
+        "present": true,
+        "valueHash": "46254408919385d91e4019d0e9a704629206e81fa2981f56f855981950ab450c"
+      },
+      "mappingRef": {
+        "present": true,
+        "valueHash": "bb18e0a8469d6a086a65b04ed3d663863cd995af104201567b0d49eb4805bde4"
+      },
+      "secretRef": {
+        "present": false,
+        "valueHash": null
+      }
+    },
+    "routeSource": {
+      "mode": {
+        "present": false,
+        "valueHash": null,
+        "value": null
+      },
+      "authority": {
+        "present": false,
+        "valueHash": null,
+        "value": null
+      },
+      "providerType": {
+        "present": false,
+        "valueHash": null,
+        "value": null
+      },
+      "readPolicy": {
+        "present": false,
+        "valueHash": null,
+        "value": null
+      },
+      "writePolicy": {
+        "present": false,
+        "valueHash": null,
+        "value": null
+      },
+      "providerBindingId": {
+        "present": false,
+        "valueHash": null
+      },
+      "integrationSettingId": {
+        "present": false,
+        "valueHash": null
+      },
+      "providerRef": {
+        "present": false,
+        "valueHash": null
+      },
+      "mappingRef": {
+        "present": false,
+        "valueHash": null
+      },
+      "secretRef": {
+        "present": false,
+        "valueHash": null
+      }
+    },
+    "observedSourceConfigGuard": {
+      "external": true,
+      "externalLive": true,
+      "providerReferencePresent": true,
+      "mappingReferencePresent": true
+    },
+    "sourceConfigGuardPass": true,
+    "selectedReferenceKind": "providerBindingId",
+    "selectedReferenceHash": "46254408919385d91e4019d0e9a704629206e81fa2981f56f855981950ab450c",
+    "operationalSourceShadowsValidRoute": false,
+    "scope": "PERSISTED_SOURCE_CONFIG_ONLY_NOT_AUTH_SESSION_OR_REMOTE_ACK"
+  },
+  "reconciliationLease": {
+    "exists": true,
+    "status": "partial",
+    "projectMatches": true,
+    "expiresAt": 1793901811916,
+    "expired": true,
+    "updateTime": "2026-11-05T18:01:37.273Z",
+    "receiptPathHash": "b54a5056b05bb79eefe78403dd25bec0a44e13a0cafb9d482389086f6aa84f2e",
+    "scope": "READONLY_METADATA_NOT_LEASE_RELEASE_OR_RETRY",
+    "writes": 0,
+    "receipt": {
+      "exists": true,
+      "updateTime": "2026-11-05T18:01:37.273Z",
+      "status": "partial",
+      "tenantMatches": true,
+      "projectMatches": true,
+      "sourceRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
+      "currentRevisionMatches": false,
+      "actorUidHash": "94816a0e1151d44ce7ec2116545d37f87ce1aef87cb482835f123ac7300216ce",
+      "idempotencyKeyHash": "328a6b732fc2a0a2884a4b6e5b33ad834aab72208e4cc99b2535691fa2303568",
+      "digestMatches": true,
+      "leaseAttemptMatches": true,
+      "errorCode": null,
+      "result": {
+        "committed": false,
+        "providerWrites": 792,
+        "unverifiedEffects": 0,
+        "providerAck": false,
+        "ok": false,
+        "unresolvedEffects": 0,
+        "confirmedProviderWrites": 792
+      },
+      "applicationWritesThisAttempt": {
+        "auth": 0,
+        "firestore": 0
+      },
+      "stages": [
+        {
+          "name": "visits",
+          "exists": true,
+          "status": "committed",
+          "sourceRevision": "cdc40258e9806b5d0ff1e09dd19b19743b76ee3dd22ac7f849fac538c3340dac",
+          "summary": {
+            "ok": true,
+            "providerAck": true,
+            "visitCount": 792,
+            "createdVisits": 0,
+            "idempotentReplays": 0,
+            "reviewRequiredVisits": 0,
+            "conflicts": 0,
+            "providerWrites": 792,
+            "reconciliationConcurrency": 16,
+            "reconciliationDurationMs": 18719,
+            "hrWrites": 0,
+            "externalWrites": 0,
+            "fuzzyMatching": false
+          }
+        },
+        {
+          "name": "shoppers",
+          "exists": false,
+          "status": null,
+          "sourceRevision": null,
+          "summary": {}
+        }
+      ],
+      "journal": {
+        "complete": false,
+        "intentsObserved": 501,
+        "effectsObserved": 501,
+        "unresolvedIntentsObserved": 0,
+        "unverifiedEffectsObserved": 0,
+        "credentialAuthenticationPending": false
+      }
+    },
+    "blocksDifferentReceiptByCurrentProvider": true,
+    "resumeAgainstCurrentRevisionPossible": false
+  },
+  "explicitIntegrationCandidates": [
+    {
+      "source": "operationalSource",
+      "referenceKind": "providerBindingId",
+      "idHash": "46254408919385d91e4019d0e9a704629206e81fa2981f56f855981950ab450c",
+      "sourceSelected": true,
+      "validId": true,
+      "scope": "CANDIDATE_REFERENCE_NOT_PROVEN_RUNTIME_RESOLUTION"
+    },
+    {
+      "source": "operationalSource",
+      "referenceKind": "providerRef",
+      "idHash": "46254408919385d91e4019d0e9a704629206e81fa2981f56f855981950ab450c",
+      "sourceSelected": true,
+      "validId": true,
+      "scope": "CANDIDATE_REFERENCE_NOT_PROVEN_RUNTIME_RESOLUTION"
+    }
+  ],
+  "integrationDiscovery": [
+    {
+      "ok": true,
+      "count": 0,
+      "complete": true
+    },
+    {
+      "ok": true,
+      "count": 0,
+      "complete": true
+    }
+  ],
+  "integrationMetadata": [
+    {
+      "idHash": "46254408919385d91e4019d0e9a704629206e81fa2981f56f855981950ab450c",
+      "exists": false,
+      "explicitlyReferenced": true,
+      "selectedSourceReference": true,
+      "referenceKinds": [
+        "operationalSource.providerBindingId",
+        "operationalSource.providerRef"
+      ],
+      "updateTime": null,
+      "scopeMatches": false,
+      "enabled": null,
+      "hrWritesEnabled": null,
+      "workbookReferencePresent": false,
+      "workbookMatches": null,
+      "refs": {
+        "providerBindingId": {
+          "present": false,
+          "sha256": null
+        },
+        "mappingRef": {
+          "present": false,
+          "sha256": null
+        },
+        "secretRef": {
+          "present": false,
+          "sha256": null
+        },
+        "sourceRef": {
+          "present": false,
+          "sha256": null
+        }
+      }
+    }
+  ],
+  "adcPrincipalSha256": "ab70b5da53a2d545a74c8b39123df8e2a52f70128d1660360d87b2fed6d573fa",
+  "adcMatchesRuntime": true,
+  "usesImpersonation": false,
+  "readerTokenIssued": true,
+  "requestedScopes": [
+    "https://www.googleapis.com/auth/spreadsheets.readonly",
+    "https://www.googleapis.com/auth/drive.metadata.readonly"
+  ],
+  "providerMetadataRequests": [
+    {
+      "provider": "drive_identity",
+      "ok": true
+    },
+    {
+      "provider": "drive_file",
+      "ok": true
+    },
+    {
+      "provider": "sheets_structure",
+      "ok": true
+    }
+  ],
+  "principalMatchesRuntime": true,
+  "observedHrReaderIdentityLinked": true,
+  "metadataIdentityVerified": true,
+  "canEditObserved": true,
+  "canModifyContentObserved": true,
+  "accessConclusion": "METADATA_EDIT_CAPABILITY_OBSERVED",
+  "writeCapabilityExecuted": false,
+  "driveMetadata": {
+    "mimeType": "application/vnd.google-apps.spreadsheet",
+    "trashed": false,
+    "version": "5224",
+    "modifiedTime": "2026-11-11T20:55:49.264Z",
+    "contentRestrictions": []
+  },
+  "sheetsMetadata": {
+    "sheetCount": 38,
+    "sheets": [
+      {
+        "sheetId": 886339976,
+        "titleSha256": "1673a12e5dba786e87fc35b97c5b7e362aa9ccdbe8a83b776bdf9656969ac653",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 490115768,
+        "titleSha256": "173321995ccf6c45bdcddded04644c45904846c08ac84a84f952e97463d2b55a",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 958917054,
+        "titleSha256": "92c6887d995eeb1b4bf66ad8e4d0867a158029f18432dfb0a8b11cb06b791f84",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 1643101140,
+        "titleSha256": "039a87f1278001c4ece82c73ae822351f54b1f6843d8b0cd21f30e998ed4e652",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 1820028826,
+        "titleSha256": "54549be3c884031d6706d952ba4da126e30aab5b11908ce8249407cdcf7de7dc",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 1864830592,
+        "titleSha256": "33affeba08767eacef9a498e2b90e3f8eb15d12f22596cc1cba1a081b821f21b",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 52814525,
+        "titleSha256": "d3cb7fd8187f1e4d4893adfc9a0848f76256308dc20f9bd3c19c82bd21d14a96",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 1905034265,
+        "titleSha256": "086bd1969d2c0e8a592528c2722a856009621c86ac62c385cb8f14b723186f97",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 384240093,
+        "titleSha256": "ca0d670adfdcc4146613ba1f2a2a4876ae2a75bf2aba078bee226cfb7c16c052",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 604485523,
+        "titleSha256": "cc4eb8b76bc4eb162de434dced2e9a7a9edc1d63b9dbeece261b13eac632d07a",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 549550574,
+        "titleSha256": "38aabb9af64f08130dace315e2dbb5288ad84e3a19f7ac2156d40439ee61f977",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 1152719803,
+        "titleSha256": "fdb867ff726371a7d6ab91d559c31cbc09d0e5b1e46e358d6cde41f343baaf4f",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 1776548869,
+        "titleSha256": "74f39916cbff86a47c5b632f95f22b701b948f4603ec960693c12ca1fcd21361",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 520873746,
+        "titleSha256": "e04fc66fa596f9ffbd76f243ad2baef4b03493e084321c1b089619b693a32ea2",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 1208253848,
+        "titleSha256": "94d5d45992567f9c6b22ae93dc5913c888ad45b250d30299433afaf5d6ea6a2f",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 566516396,
+        "titleSha256": "541787fae6d758c0db7a8b7f2cb5c50d64f8178d532feedee7324f4e5e3a4ba4",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 613443334,
+        "titleSha256": "15882590f34d42806d6c15a562ca37a20a6698e6922919fda97611013f4812a7",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 1982279698,
+        "titleSha256": "eb05f74ab0c3fc1f20eb532de0baf0d250070243945b1884815630ac34c5d80f",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 438545684,
+        "titleSha256": "4c91ea9dfb1fb036b23cba27c9fc862f2983c2a160571982513546b99b4dfea7",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 1651111105,
+        "titleSha256": "1bee659b0ad379ce0784c7e777e0446124a9bb2be3d53f67fba3e05354bc2489",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 610838716,
+        "titleSha256": "034554509016c2566cf219604b78f26adf5af5003fc8c808aec4e72c4c0f66ea",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 1910224268,
+        "titleSha256": "77c96af9a47595c0608aa6b1826ec5053a1946625870e45086703d65d8df81b2",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 1216724880,
+        "titleSha256": "deb84fe50e76c19fddafe534e6ef21a3abec0cd9ace2805ae6522b126343b3a0",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 1766936329,
+        "titleSha256": "dd7321d995862c304b67559dd855886e575d47565fa57a8de9c5e9f8aa4a3ffb",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 1295998948,
+        "titleSha256": "07a02b0c831cf5391df3db891c57393b101fa650065bb85d986a6dc8fff03f8c",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 619853819,
+        "titleSha256": "8e1b3b941ea8f34d701350ea67385d8b6aea030070e2e42ec56647a4d9bc45fc",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 366177598,
+        "titleSha256": "b0cf27ba4d2acf6ed8e4b132b16420f5b5f989989215f115cd227d3cb6b7fb69",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 626800962,
+        "titleSha256": "d3af9e1179c47721bd3ffc71c69f73eea4f4397eb07cce8dbdc0b4ff4123002b",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 1079311640,
+        "titleSha256": "9307c88fcc5ca72c7d390f72e11292dee7b2031964ba07bbe9eefccf8931bbe1",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 679504701,
+        "titleSha256": "4d66a2d09e8f25c971cfbc1844232a4deb91c01e632df989f8c7a34431e07897",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 1908150145,
+        "titleSha256": "149c29c69115a9bf8fadabf8999ff3ec5902229cc5d356573591610ab21db5e9",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 1249909639,
+        "titleSha256": "06fdb5be04910b64e5d28b30c72df38b26bdc7c12bf5c05c03639b9405bf0fb0",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 1782312782,
+        "titleSha256": "e6792d61233cd7d73372f77b3d205558f3d6606885edc6a08feffbbdc9a326d1",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 2094845586,
+        "titleSha256": "f931f27efb4c01687d10658b6039029c995fad73debe0e12cd77763efd0a63fa",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 1384948963,
+        "titleSha256": "7c5b4aa0d9256170a2c255789c45b35c6d5a4206453407d67fc52a71e573fa55",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 1065354533,
+        "titleSha256": "38d6701e5f2d5c9c7fd3f6fe1bd1cc5910bb7e719f2473e84709b86532fd194a",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 2042799949,
+        "titleSha256": "56124fef51638609fe4da0b37168b5514a3bd444122df0a0039f881ed1058603",
+        "protectedRanges": []
+      },
+      {
+        "sheetId": 742764751,
+        "titleSha256": "060b12a6d3a9284bf387bc48db8f95b75a3d7c3c5208009097e661c4a16442a3",
+        "protectedRanges": []
+      }
+    ]
+  },
+  "bindingUnchanged": true,
+  "runtimeUnchanged": true,
+  "hostingUnchanged": true
+}

@@ -45,7 +45,7 @@ class FakeFirestore{
   collection(name){return new CollectionRef(this,name);}
   _set(path,value,options={},store=this._store){
     const prior=store.get(path);
-    store.set(path,options?.merge&&prior?{...clone(prior),...clone(value)}:clone(value));
+    store.set(path,(options?.merge||options?.mergeFields)&&prior?{...clone(prior),...clone(value)}:clone(value));
   }
   async runTransaction(fn){
     const working=new Map([...this._store].map(([k,v])=>[k,clone(v)]));
@@ -85,6 +85,67 @@ const hrSnapshot=()=>({
     assignmentState:'unassigned',schedulingState:'not_applicable',executionState:'not_realized',questionnaireState:'not_available',submissionState:'not_submitted',
     agendada:null,controlDia:null,cuestFecha:null,realizada:null,submit:false,submittedAt:null,boleto:0,comboAmt:0,sourceSnapshotAt:null,reviewRequired:false,reviewReasons:[],
     canonicalFacets:{available:true,assigned:false}}]
+});
+
+function syncReflectionFixture(){
+  const db=new FakeFirestore(),period='project-a-2026-09',rowId='HR!2',logicalId='hr_2026-09_gt_exact',uid='admin-1';
+  db.seed('tenants/tenant-a/users/'+uid,{active:true,tenantId:'tenant-a',role:'admin',authNamespace:'staff',projectIds:['project-a']});
+  db.seed(visitPath(rowId),{id:rowId,visitId:rowId,hrRowId:rowId,tenantId:'tenant-a',projectId:'project-a',periodId:period,periodKey:'2026-09',shopperId:'shopper-a',assignmentSource:'platform',assignmentSyncStatus:'pending_hr',version:4,hrSourceRevision:'b'.repeat(64),financeMarker:{paid:false,amount:123},unrelated:'preserve'});
+  const x={db,period,rowId,logicalId,uid,revision:'a'.repeat(64),snapshot:{sourceSafe:true,imported:false,firestoreWrites:0,tenantId:'tenant-a',projectId:'project-a',currentPeriodId:'different-current-period',periods:[{id:period,key:'2026-09',tenantId:'tenant-a',projectId:'project-a'}],visits:[{id:logicalId,hrRowId:rowId,tenantId:'tenant-a',projectId:'project-a',periodKey:'2026-09',shopperId:'shopper-a'}]},
+    command:{version:'cxorbia-command-adapter-v1',commandType:'visit.sync.confirm',entityType:'visit',entityId:logicalId,tenantId:'tenant-a',projectId:'project-a',periodId:period,idempotencyKey:'vrm350-exact-reflection-key',expectedVersion:4,authorization:{providerEnforcementRequired:true,permission:'visit.sync.confirm'},payload:{visitId:logicalId,hrRowId:rowId,hrShopperId:'shopper-a',lastSyncedAt:'1900-01-01T00:00:00Z'}}};
+  x.provider=()=>createOperationalCommandProvider({auth:{verifyIdToken:async()=>({uid:x.uid,tenantId:'tenant-a',role:'admin',authNamespace:'staff',projectIds:['project-a']})},db,policy,hrSnapshot:x.snapshot,hrRevision:x.revision});
+  x.run=()=>x.provider().execute('verified',x.command);x.row=()=>db.get(visitPath(rowId));x.receipt=()=>db.get(receiptPaths(db)[0]);x.all=()=>clone([...db._store]);return x;
+}
+for(const [label,mutate] of [
+  ['missing independent HR',x=>x.snapshot=null],['HR row unassigned',x=>x.snapshot.visits[0].shopperId=null],
+  ['different HR shopper',x=>x.snapshot.visits[0].shopperId='other'],['missing trusted revision',x=>x.revision=''],
+  ['unsafe HR',x=>x.snapshot.sourceSafe=false],['imported HR',x=>x.snapshot.imported=true],['HR with writes',x=>x.snapshot.firestoreWrites=1],
+  ['foreign root tenant',x=>x.snapshot.tenantId='foreign'],['foreign root project',x=>x.snapshot.projectId='foreign'],
+  ['foreign row tenant',x=>x.snapshot.visits[0].tenantId='foreign'],['foreign row project',x=>x.snapshot.visits[0].projectId='foreign'],
+  ['duplicate exact row',x=>x.snapshot.visits.push(clone(x.snapshot.visits[0]))],
+  ['missing period catalog',x=>x.snapshot.periods=[]],['ambiguous period catalog',x=>x.snapshot.periods.push(clone(x.snapshot.periods[0]))],
+  ['foreign period scope',x=>x.snapshot.periods[0].projectId='foreign'],['explicit period contradicts key',x=>x.snapshot.visits[0].periodId='foreign-period'],
+  ['crossed command entity',x=>x.command.entityId='other-visit'],['crossed payload identity',x=>x.command.payload.visitId='other-visit'],
+  ['crossed HR logical alias',x=>x.snapshot.visits[0].visitId='other-visit'],
+  ['payload shopper contradiction',x=>x.command.payload.shopperId='other'],
+  ['stale durable version',x=>x.command.expectedVersion=3],['source-current version',x=>x.command.expectedVersion='source-current'],['absent version',x=>x.command.expectedVersion='absent'],
+  ['foreign durable tenant',x=>{const row=x.row();row.tenantId='foreign';x.db.seed(visitPath(x.rowId),row);}],
+])test('VRM350 sync confirmation blocks '+label+' with zero writes',async()=>{
+  const x=syncReflectionFixture();mutate(x);const before=x.all(),r=await x.run();assert.equal(r.ok,false,JSON.stringify(r));assert.equal(r.providerAck,false);assert.equal(r.providerWrites,0);assert.deepEqual(x.all(),before);assert.equal(x.row().assignmentSyncStatus,'pending_hr');
+});
+test('VRM350 exact independent reflection keeps logical/durable aliases and writes one shared proof, no remote ACK',async()=>{
+  const x=syncReflectionFixture(),before=x.row(),r=await x.run();assert.equal(r.ok,true,JSON.stringify(r));assert.equal(r.providerWrites,3);assert.equal(r.hrReflectionVerified,true);assert.equal(r.hrProviderAck,false);
+  const row=x.row(),receipt=x.receipt(),audit=x.db.get(auditPaths(x.db)[0]),proof=row.hrReflection;
+  assert.equal(row.assignmentSyncStatus,'synced');assert.equal(row.version,5);assert.equal(row.hrSourceRevision,before.hrSourceRevision);assert.deepEqual(row.financeMarker,before.financeMarker);assert.equal(row.unrelated,before.unrelated);
+  assert.equal(proof.schemaVersion,'cxorbia.hr-assignment-reflection.v1');assert.equal(proof.sourceRevision,x.revision);assert.equal(proof.tenantId,'tenant-a');assert.equal(proof.projectId,'project-a');assert.equal(proof.periodId,x.period);assert.equal(proof.hrRowId,x.rowId);assert.equal(proof.hrVisitId,x.logicalId);assert.equal(proof.durableVisitId,x.rowId);assert.equal(proof.shopperId,'shopper-a');assert.equal(proof.actorUid,x.uid);assert.equal(proof.previousVersion,4);assert.equal(proof.committedVersion,5);assert.equal(proof.hrProviderAck,false);assert.equal(proof.idempotencyKey,x.command.idempotencyKey);assert.equal(proof.commandDigest,receipt.commandDigest);assert.equal(row.lastSyncedAt,proof.verifiedAt);assert.notEqual(row.lastSyncedAt,x.command.payload.lastSyncedAt);assert.ok(Number.isFinite(Date.parse(proof.verifiedAt)));
+  assert.deepEqual(proof,receipt.hrReflection);assert.deepEqual(proof,audit.hrReflection);assert.deepEqual(proof,r.hrReflection);
+});
+test('VRM350 real durable ID alias may be used instead of logical HR ID',async()=>{
+ const x=syncReflectionFixture();x.command.entityId=x.rowId;x.command.payload.visitId=x.rowId;const r=await x.run();assert.equal(r.ok,true,JSON.stringify(r));assert.equal(r.hrReflection.hrVisitId,x.logicalId);assert.equal(r.hrReflection.durableVisitId,x.rowId);
+});
+test('VRM350 exact replay uses original version and proof with zero writes; changed global revision is separately observed',async()=>{
+  const x=syncReflectionFixture();assert.equal((await x.run()).ok,true);const before=x.all(),proof=x.receipt().hrReflection;
+  let r=await x.run();assert.equal(r.ok,true,JSON.stringify(r));assert.equal(r.idempotentReplay,true);assert.equal(r.providerWrites,0);assert.deepEqual(x.all(),before);assert.deepEqual(r.hrReflection,proof);
+  x.revision='c'.repeat(64);r=await x.run();assert.equal(r.ok,true,JSON.stringify(r));assert.equal(r.providerWrites,0);assert.equal(r.hrReflection.sourceRevision,'a'.repeat(64));assert.equal(r.hrRevalidationRevision,x.revision);assert.deepEqual(x.all(),before);
+});
+test('VRM350 a fresh confirmation replaces the whole prior proof and preserves unrelated visit fields',async()=>{
+ const x=syncReflectionFixture();assert.equal((await x.run()).ok,true);const row=x.row();row.hrReflection.legacyExtra='must-not-survive';x.db.seed(visitPath(x.rowId),row);
+ const run=x.db.runTransaction.bind(x.db);let mergeFieldsSeen=false;x.db.runTransaction=fn=>run(tx=>fn({...tx,set:(ref,value,options)=>{if(ref.path===visitPath(x.rowId)){assert.deepEqual(options.mergeFields,['assignmentSyncStatus','lastSyncedAt','updatedAt','version','hrReflection']);mergeFieldsSeen=true;}return tx.set(ref,value,options);}}));
+ x.command.expectedVersion=5;x.command.idempotencyKey+='-new';assert.equal((await x.run()).ok,true);assert.equal(mergeFieldsSeen,true);assert.equal(x.row().hrReflection.legacyExtra,undefined);assert.equal(x.row().unrelated,'preserve');assert.equal(x.row().hrSourceRevision,'b'.repeat(64));
+});
+for(const [label,mutate]of[
+ ['receipt Firestore ACK contradicted',x=>{const p=receiptPaths(x.db)[0],r=x.db.get(p);r.providerAck=false;x.db.seed(p,r);}],
+ ['receipt remote HR ACK contradicted',x=>{const p=receiptPaths(x.db)[0],r=x.db.get(p);r.hrProviderAck=true;x.db.seed(p,r);}],
+ ['legacy receipt',x=>{const p=receiptPaths(x.db)[0],r=x.db.get(p);delete r.hrReflection;x.db.seed(p,r);}],
+ ['receipt actor changed',x=>{const p=receiptPaths(x.db)[0],r=x.db.get(p);r.actorUid='other';x.db.seed(p,r);}],
+ ['receipt proof binding changed',x=>{const p=receiptPaths(x.db)[0],r=x.db.get(p);r.hrReflection.projectId='foreign';x.db.seed(p,r);}],
+ ['HR reassigned',x=>x.snapshot.visits[0].shopperId='other'],['HR no longer assigned',x=>x.snapshot.visits[0].shopperId=null],
+ ['durable reassigned',x=>{const r=x.row();r.shopperId='other';x.db.seed(visitPath(x.rowId),r);}],
+ ['durable proof replaced',x=>{const r=x.row();r.hrReflection.sourceRevision='d'.repeat(64);x.db.seed(visitPath(x.rowId),r);}],
+ ['same key other actor',x=>{x.uid='admin-2';x.db.seed('tenants/tenant-a/users/admin-2',{active:true,tenantId:'tenant-a',role:'admin',authNamespace:'staff',projectIds:['project-a']});}],
+ ['same key changed payload',x=>x.command.payload.hrShopperId='other'],
+])test('VRM350 replay blocks '+label+' without rewriting evidence',async()=>{
+ const x=syncReflectionFixture();assert.equal((await x.run()).ok,true);mutate(x);const before=x.all(),r=await x.run();assert.equal(r.ok,false,JSON.stringify(r));assert.equal(r.providerWrites,0);assert.deepEqual(x.all(),before);
 });
 
 test('PRE-I4 VRM-134 / bounded visit workers settle all writes before reporting a failure',async()=>{

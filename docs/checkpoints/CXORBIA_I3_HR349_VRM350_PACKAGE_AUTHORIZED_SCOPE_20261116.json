@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "cxorbia.i3.p0.package-authorized-scope.v1",
+  "generatedAt": "2026-11-16T03:20:25.813801+00:00",
+  "scope": "MECHANICAL_UNION_OF_TWO_PRIOR_PROVEN_OWNER_SCOPES_NOT_NEW_AUTHORIZATION",
+  "sourceBeforeEdit": "f2fcb6200843971485ef2b092240c5497148038b",
+  "headBeforeSourcePublication": "998058d5272bf99c4e36b596dd6f67eab8737e66",
+  "allowedProductFiles": [
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+    "backend/runtime/hr-live-service/server.mjs",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+  ],
+  "preEditAuthorities": [
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM350_SYNC_CONFIRM_P0_SCOPE_20261116.json",
+      "gitBlob": "836c0ac19ab784aeb2e1826b33037f2862bbf71f",
+      "findingId": "VRM-350",
+      "allowedProductFiles": [
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "backend/runtime/hr-live-service/server.mjs"
+      ]
+    },
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM349_STALE_PARTIAL_LEASE_P0_SCOPE_20261116.json",
+      "gitBlob": "39ddc2379703735a3b3502d9c19764af9a166ebf",
+      "findingId": "VRM-349",
+      "allowedProductFiles": [
+        "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+      ]
+    }
+  ],
+  "oneSourcePackage": true,
+  "production": false,
+  "rulesChanges": false,
+  "hrWrites": 0,
+  "fullDomain": false
+}

@@ -58,11 +58,12 @@ class MemQuery{
   constructor(db,path,filters=[],cap=Infinity){Object.assign(this,{db,path,filters,cap});}
   where(field,op,value){assert.equal(op,'==');return new MemQuery(this.db,this.path,[...this.filters,[field,value]],this.cap);}
   limit(cap){return new MemQuery(this.db,this.path,this.filters,cap);}
-  async get(){
+  snapshot(values=this.db.store){
     const prefix=this.path+'/',depth=this.path.split('/').length+1;
-    const docs=[...this.db.store].filter(([path,value])=>path.startsWith(prefix)&&path.split('/').length===depth&&this.filters.every(([k,v])=>value[k]===v)).slice(0,this.cap).map(([path,value])=>new MemSnapshot(new MemDoc(this.db,path),value));
+    const docs=[...values].filter(([path,value])=>path.startsWith(prefix)&&path.split('/').length===depth&&this.filters.every(([k,v])=>value[k]===v)).sort(([a],[b])=>a.localeCompare(b)).slice(0,this.cap).map(([path,value])=>new MemSnapshot(new MemDoc(this.db,path),value));
     return {docs,size:docs.length,empty:!docs.length};
   }
+  async get(){return this.snapshot();}
 }
 class MemCollection extends MemQuery{doc(id){if(!id)throw Error('explicit id required');return new MemDoc(this.db,this.path+'/'+id);}}
 class MemDoc{
@@ -89,12 +90,13 @@ class MemFirestore{
   async direct(ops){if(this.beforeCommit)await this.beforeCommit({db:this,ops,reads:new Map(),attempt:1});this.apply(ops);if(this.afterCommit)await this.afterCommit({db:this,ops});return {writeTime:'synthetic'};}
   async runTransaction(fn){
     for(let attempt=1;attempt<=this.maxAttempts;attempt++){
-      const values=new Map([...this.store].map(([k,v])=>[k,copy(v)])),versions=new Map(this.versions),reads=new Map(),ops=[];
-      const tx={get:async ref=>{if(ops.length)throw Error('READ_AFTER_WRITE');reads.set(ref.path,versions.get(ref.path)||0);return new MemSnapshot(ref,values.get(ref.path));}};
+      const values=new Map([...this.store].map(([k,v])=>[k,copy(v)])),versions=new Map(this.versions),reads=new Map(),queries=[],ops=[];
+      const queryVersion=(query,store,vs)=>JSON.stringify(query.snapshot(store).docs.map(doc=>[doc.ref.path,vs.get(doc.ref.path)||0]));
+      const tx={get:async ref=>{if(ops.length)throw Error('READ_AFTER_WRITE');if(ref instanceof MemQuery){const snap=ref.snapshot(values);queries.push({ref,version:queryVersion(ref,values,versions)});for(const doc of snap.docs)reads.set(doc.ref.path,versions.get(doc.ref.path)||0);return snap;}reads.set(ref.path,versions.get(ref.path)||0);return new MemSnapshot(ref,values.get(ref.path));}};
       for(const type of ['set','create'])tx[type]=(ref,value,options)=>{ops.push({type,ref,value:copy(value),options});return tx;};
       this.callbackCount++;const result=await fn(tx);
       if(this.beforeCommit)await this.beforeCommit({db:this,ops,reads,attempt});
-      if([...reads].some(([p,v])=>(this.versions.get(p)||0)!==v))continue;
+      if([...reads].some(([p,v])=>(this.versions.get(p)||0)!==v)||queries.some(q=>q.version!==queryVersion(q.ref,this.store,this.versions)))continue;
       this.apply(ops);
       if(this.afterCommit)await this.afterCommit({db:this,ops});
       return result;
@@ -288,4 +290,131 @@ test('G05 rechecks lease after delayed intent commit before dispatching Auth',as
   const f=await setup({leaseMs:100});let delayed=false;
   f.db.afterCommit=({ops})=>{if(!delayed&&ops.some(op=>op.ref.path.includes('/intents/')&&op.value?.system==='auth')){delayed=true;f.advance(101);}};
   const result=await f.run('g05-expired-before-auth-0001');assert.equal(delayed,true);assert.equal(result.ok,false);assert.equal(f.auth.log.length,0);
+});
+
+// HR349: an expired partial receipt remains historical evidence. Only a complete,
+// transactionally settled journal may authorize a successor for a new HR revision.
+async function hr349Partial(options={}){
+  let fail=true,actorUid='admin-1';
+  const f=await setup({leaseMs:100,verifyPrincipal:async()=>({uid:actorUid,role:'admin',namespace:'staff'}),shopperProviderFactory:()=>({reconcileSnapshot:async()=>{if(fail)throw Error('HR349_SHOPPER_STAGE_UNFINISHED');return {ok:true,status:'committed',providerAck:true,providerWrites:0};}}),...options});
+  f.current.snapshot.shoppers=[];
+  f.current.snapshot.visits=[{id:'hr349-visit',visitId:'hr349-visit',hrRowId:'HR!2',sourceTab:'HR',sourceRow:2,tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',estado:'disponible',status:'disponible',canonicalFacets:{available:true,assigned:false}}];
+  const oldKey='hr349-old-partial-revision-0001',newKey='hr349-new-successor-revision-0002';
+  const first=await f.run(oldKey);
+  assert.equal(first.status,'partial');assert.equal(first.unresolvedEffects,0);assert.equal(first.unverifiedEffects,0);assert.equal(first.firestoreWrites,1);
+  const oldPath=first.receiptPath,lockPath=[...f.db.store.keys()].find(p=>/\/commandReceipts\/hr-scope-/.test(p));
+  const history=()=>[...f.db.store].filter(([p])=>p===oldPath||p.startsWith(oldPath+'/')).sort(([a],[b])=>a.localeCompare(b)).map(([p,v])=>[p,copy(v)]);
+  const newRevision=()=>{f.advance(101);fail=false;f.current={revision:'2'.repeat(64),snapshot:copy(f.current.snapshot)};};
+  return {...f,get current(){return f.current;},set current(v){f.current=v;},oldKey,newKey,oldPath,lockPath,first,history,newRevision,changeActor:v=>{actorUid=v;},allowShopper:()=>{fail=false;}};
+}
+
+test('HR349 new revision succeeds after an expired verified partial without rewriting history; exact replay is zero writes',async()=>{
+  const f=await hr349Partial(),preserved=f.history(),offset=f.db.log.length;
+  f.newRevision();f.changeActor('another-authorized-admin');
+  const result=await f.run(f.newKey);
+  assert.equal(result.ok,true,result.code);assert.equal(result.sourceRevision,'2'.repeat(64));assert.equal(result.readbackVerified,true);
+  assert.deepEqual(f.history(),preserved);assert.equal(f.db.log.slice(offset).filter(x=>x.path===f.oldPath||x.path.startsWith(f.oldPath+'/')).length,0);
+  assert.equal(f.auth.log.length,0);assert.equal(f.db.read('tenants/tenant-a/projects/project-a/visits/HR!2').hrSourceRevision,'2'.repeat(64));
+  assert.deepEqual(result.applicationWritesThisAttempt,{auth:0,firestore:1});
+  const proof=f.db.read(result.receiptPath).predecessorReconciliation;
+  assert.equal(proof.receiptPath,f.oldPath);assert.equal(proof.sourceRevision,'1'.repeat(64));assert.equal(proof.status,'partial');
+  assert.equal(proof.journalComplete,true);assert.equal(proof.confirmedProviderWrites,1);assert.equal(proof.intentCount,1);assert.equal(proof.effectCount,1);
+  assert.match(proof.journalSeal,/^[a-f0-9]{64}$/);assert.deepEqual(result.predecessorReconciliation,proof);
+  const dbOffset=f.db.log.length,authOffset=f.auth.log.length,readOffset=f.readCalls();
+  const replay=await f.run(f.newKey);assert.equal(replay.ok,true);assert.equal(replay.idempotentReplay,true);assert.deepEqual(replay.predecessorReconciliation,proof);
+  assert.deepEqual(replay.applicationWritesThisAttempt,{auth:0,firestore:0});assert.equal(f.db.log.length,dbOffset);assert.equal(f.auth.log.length,authOffset);assert.equal(f.readCalls(),readOffset);
+  f.changeActor('admin-1');const stale=await f.run(f.oldKey,{entityId:'1'.repeat(64),expectedVersion:'1'.repeat(64)});
+  assert.equal(stale.code,'HR_RECONCILIATION_SOURCE_CHANGED');assert.equal(f.db.log.length,dbOffset);assert.deepEqual(f.history(),preserved);
+});
+
+const hr349Edit=(f,collection,edit)=>{const p=[...f.db.store.keys()].find(p=>p.startsWith(f.oldPath+'/'+collection+'/'));assert.ok(p);f.db.seed(p,edit(f.db.read(p)));};
+for(const [name,alter]of [
+  ['unexpired lease',f=>f.db.seed(f.lockPath,{...f.db.read(f.lockPath),expiresAt:999999999})],
+  ['expired running lease',f=>f.db.seed(f.lockPath,{...f.db.read(f.lockPath),status:'running'})],
+  ['same HR revision with another key',f=>{f.current={...f.current,revision:'1'.repeat(64)};}],
+  ['different tenant',f=>f.db.seed(f.oldPath,{...f.db.read(f.oldPath),tenantId:'tenant-b'})],
+  ['different project',f=>f.db.seed(f.oldPath,{...f.db.read(f.oldPath),projectId:'project-b'})],
+  ['wrong lease project',f=>f.db.seed(f.lockPath,{...f.db.read(f.lockPath),projectId:'project-b'})],
+  ['wrong lease attempt',f=>f.db.seed(f.lockPath,{...f.db.read(f.lockPath),attemptId:'other-attempt'})],
+  ['foreign receipt path',f=>f.db.seed(f.lockPath,{...f.db.read(f.lockPath),receiptPath:f.oldPath.replace('tenant-a','tenant-b')})],
+  ['invalid expiry',f=>f.db.seed(f.lockPath,{...f.db.read(f.lockPath),expiresAt:'expired'})],
+  ['wrong historical digest',f=>f.db.seed(f.oldPath,{...f.db.read(f.oldPath),digest:'9'.repeat(64)})],
+  ['wrong historical actor',f=>f.db.seed(f.oldPath,{...f.db.read(f.oldPath),actorUid:'different-actor'})],
+  ['wrong historical key',f=>f.db.seed(f.oldPath,{...f.db.read(f.oldPath),idempotencyKey:'another-incorrect-historical-key'})],
+  ['wrong result binding',f=>{const r=f.db.read(f.oldPath);r.result.receiptBinding.actorUid='different-actor';f.db.seed(f.oldPath,r);}],
+  ['unknown historical counts',f=>{const r=f.db.read(f.oldPath);r.result.confirmedProviderWrites=null;f.db.seed(f.oldPath,r);}],
+  ['counter disagreement',f=>{const r=f.db.read(f.oldPath);r.result.firestoreWrites=0;f.db.seed(f.oldPath,r);}],
+  ['unfinished receipt',f=>{const r=f.db.read(f.oldPath);delete r.completedAt;f.db.seed(f.oldPath,r);}],
+  ['unverified effect',f=>hr349Edit(f,'effects',r=>({...r,readbackVerified:false}))],
+  ['missing provider ACK',f=>hr349Edit(f,'effects',r=>({...r,providerAck:false}))],
+  ['credential authentication pending',f=>hr349Edit(f,'effects',r=>({...r,credentialAuthenticationPending:true}))],
+  ['cross revision effect',f=>hr349Edit(f,'effects',r=>({...r,sourceRevision:'2'.repeat(64)}))],
+  ['cross attempt effect',f=>hr349Edit(f,'effects',r=>({...r,attemptId:'unbound-attempt'}))],
+  ['unknown stage',f=>hr349Edit(f,'effects',r=>({...r,stage:'unknown'}))],
+  ['cross stage effect',f=>hr349Edit(f,'effects',r=>({...r,stage:'shoppers'}))],
+  ['cross system effect',f=>hr349Edit(f,'effects',r=>({...r,system:'auth'}))],
+  ['invalid operation digest',f=>hr349Edit(f,'effects',r=>({...r,operations:r.operations.map(op=>({...op,expectedDigest:'invalid'}))}))],
+  ['foreign business operation',f=>hr349Edit(f,'effects',r=>({...r,operations:r.operations.map(op=>({...op,entity:op.entity.replace('tenant-a','tenant-b')}))}))],
+  ['empty effect operations',f=>hr349Edit(f,'effects',r=>({...r,operations:[]}))],
+  ['orphan effect',f=>{const p=[...f.db.store.keys()].find(p=>p.startsWith(f.oldPath+'/intents/'));f.db.store.delete(p);}],
+  ['contradictory no effect intent',f=>hr349Edit(f,'intents',r=>({...r,status:'no_effect'}))],
+  ['pending intent',f=>f.db.seed(f.oldPath+'/intents/unresolved',{attemptId:'prior-worker',stage:'visits',system:'firestore',operations:[],status:'pending',startedAt:'1970-01-01T00:16:40.000Z'})],
+  ['uncertain intent',f=>f.db.seed(f.oldPath+'/intents/unresolved',{attemptId:'prior-worker',stage:'visits',system:'firestore',operations:[],status:'uncertain',startedAt:'1970-01-01T00:16:40.000Z'})],
+  ['wrong stage revision',f=>hr349Edit(f,'stages',r=>({...r,sourceRevision:'3'.repeat(64)}))],
+  ['uncommitted stage',f=>hr349Edit(f,'stages',r=>({...r,status:'running'}))],
+  ['stage without ACK',f=>hr349Edit(f,'stages',r=>({...r,summary:{...r.summary,providerAck:false}}))]
+])test('HR349 successor holds with zero writes for '+name,async()=>{
+  const f=await hr349Partial();f.newRevision();alter(f);const old=f.history(),lock=f.db.read(f.lockPath),n=f.db.log.length,a=f.auth.log.length;
+  const result=await f.run(f.newKey);assert.equal(result.ok,false,name);assert.equal(f.db.log.length,n);assert.equal(f.auth.log.length,a);assert.deepEqual(f.history(),old);assert.deepEqual(f.db.read(f.lockPath),lock);
+});
+
+test('HR349 complete journal beyond 501 entries detects a late unverified effect and then permits a fully verified successor',async()=>{
+  const f=await hr349Partial();f.newRevision();
+  const intent=[...f.db.store].find(([p])=>p.startsWith(f.oldPath+'/intents/'))[1],effect=[...f.db.store].find(([p])=>p.startsWith(f.oldPath+'/effects/'))[1];
+  for(const p of [...f.db.store.keys()])if(p.startsWith(f.oldPath+'/intents/')||p.startsWith(f.oldPath+'/effects/'))f.db.store.delete(p);
+  for(let i=0;i<502;i++){const id='effect-'+String(i).padStart(4,'0');f.db.seed(f.oldPath+'/intents/'+id,{...intent,attemptId:'historical-attempt-'+i});f.db.seed(f.oldPath+'/effects/'+id,{...effect,attemptId:'historical-attempt-'+i,readbackVerified:i!==501});}
+  const r=f.db.read(f.oldPath);Object.assign(r.result,{authWrites:0,firestoreWrites:502,confirmedProviderWrites:502,providerWrites:502});r.result.systems={auth:0,firestore:502};f.db.seed(f.oldPath,r);
+  const n=f.db.log.length;assert.equal((await f.run(f.newKey)).ok,false);assert.equal(f.db.log.length,n);
+  const last=f.oldPath+'/effects/effect-0501';f.db.seed(last,{...f.db.read(last),readbackVerified:true});const before=f.history();
+  const result=await f.run(f.newKey);assert.equal(result.ok,true,result.code);assert.equal(result.predecessorReconciliation.intentCount,502);assert.equal(result.predecessorReconciliation.effectCount,502);assert.deepEqual(f.history(),before);
+});
+
+for(const [name,change]of [
+  ['new pending intent',f=>f.db.seed(f.oldPath+'/intents/late-new-intent',{attemptId:'late-worker',stage:'visits',system:'firestore',operations:[],status:'pending',startedAt:'1970-01-01T00:16:40.000Z'})],
+  ['changed readback',f=>hr349Edit(f,'effects',r=>({...r,readbackVerified:false}))],
+  ['resumed old lease',f=>{f.db.seed(f.lockPath,{...f.db.read(f.lockPath),status:'running',attemptId:'resumed-attempt',expiresAt:999999999});f.db.seed(f.oldPath,{...f.db.read(f.oldPath),status:'running',attemptId:'resumed-attempt'});}],
+  ['removed intent',f=>{const p=[...f.db.store.keys()].find(p=>p.startsWith(f.oldPath+'/intents/'));f.db.store.delete(p);}]
+])test('HR349 acquisition transaction retries and holds on '+name,async()=>{
+  const f=await hr349Partial();f.newRevision();let injected=0;
+  f.db.beforeCommit=({ops})=>{if(!injected&&ops.some(op=>op.ref.path===f.lockPath&&op.value?.status==='running')){injected++;change(f);}};
+  const n=f.db.log.length,result=await f.run(f.newKey);assert.equal(injected,1,'must reach acquisition with a settled predecessor');assert.equal(result.ok,false);assert.equal(f.db.log.length,n);assert.equal(f.auth.log.length,0);assert.equal(f.db.read(f.lockPath).receiptPath,f.oldPath);
+});
+
+test('HR349 two concurrent successors cannot both acquire or execute providers',async()=>{
+  const f=await hr349Partial();f.newRevision();const entered=deferred(),release=deferred();let blocked=false;
+  f.db.afterCommit=async({ops})=>{if(!blocked&&ops.some(op=>op.ref.path===f.lockPath&&op.value?.status==='running')){blocked=true;entered.resolve();await release.promise;}};
+  const first=f.run(f.newKey);const acquired=await Promise.race([entered.promise.then(()=>true),first.then(()=>false)]);assert.equal(acquired,true,'successor must acquire before its provider work');const offset=f.db.log.length;
+  const other=await f.run('hr349-competing-successor-0003');assert.equal(other.ok,false);assert.equal(f.db.log.length,offset);
+  release.resolve();const result=await first;assert.equal(result.ok,true,result.code);assert.equal(f.auth.log.length,0);assert.equal(f.db.log.filter(x=>x.path==='tenants/tenant-a/projects/project-a/visits/HR!2').length,2);
+});
+
+test('HR349 expired in-flight Auth cannot transfer lease and its late ACK stays in historical journal',async()=>{
+  const f=await setup({leaseMs:100}),entered=deferred(),release=deferred();
+  f.auth.before=async({method})=>{if(method==='createUser'){entered.resolve();await release.promise;}};
+  const old=f.run('hr349-late-auth-old-0001');await entered.promise;f.advance(101);f.current={revision:'2'.repeat(64),snapshot:copy(f.current.snapshot)};
+  const n=f.db.log.length;const successor=await f.run('hr349-late-auth-new-0002');assert.equal(successor.ok,false);assert.equal(f.db.log.length,n);assert.equal(f.auth.log.length,0);
+  release.resolve();const result=await old;assert.equal(result.ok,false);assert.equal(f.auth.log.filter(x=>x.method==='createUser').length,1);assert.ok(f.effects().some(e=>e.system==='auth'&&e.providerAck===true&&e.readbackVerified===true));
+});
+
+for(const altered of [false,true])test('HR349 Auth predecessor '+(altered?'rejects a contradictory valid-shaped readback digest':'accepts the exact verified non-credential operation'),async()=>{
+  let fail=true;const f=await setup({leaseMs:100,shopperProviderFactory:({auth})=>({reconcileSnapshot:async()=>{if(fail){await auth.setCustomUserClaims('existing-user',{tenantId:'tenant-a',role:'shopper'});throw Error('UNFINISHED_SHOPPER_STAGE');}return {ok:true,status:'committed',providerAck:true,providerWrites:0};}})});
+  f.auth.seed({uid:'existing-user'});f.current.snapshot.shoppers=[];
+  const first=await f.run('hr349-auth-digest-old-0001');assert.equal(first.status,'partial');assert.equal(first.authWrites,1);assert.equal(first.credentialAuthenticationPending,false);
+  const effectPath=[...f.db.store.keys()].find(p=>p.startsWith(first.receiptPath+'/effects/'));
+  if(altered)f.db.seed(effectPath,{...f.db.read(effectPath),readbackDigest:'9'.repeat(64)});
+  const old=[...f.db.store].filter(([p])=>p===first.receiptPath||p.startsWith(first.receiptPath+'/')).map(([p,v])=>[p,copy(v)]),n=f.db.log.length,a=f.auth.log.length;
+  fail=false;f.advance(101);f.current={revision:'2'.repeat(64),snapshot:copy(f.current.snapshot)};
+  const result=await f.run('hr349-auth-digest-new-0002');assert.equal(result.ok,!altered,result.code);assert.equal(f.auth.log.length,a);
+  if(altered){assert.equal(result.code,'HR_RECONCILIATION_PREDECESSOR_JOURNAL_INVALID');assert.equal(f.db.log.length,n);}else assert.equal(result.predecessorReconciliation.authWrites,1);
+  assert.deepEqual([...f.db.store].filter(([p])=>p===first.receiptPath||p.startsWith(first.receiptPath+'/')),old);
 });

@@ -25,6 +25,73 @@ const hrMatches=(actual,expected)=>Object.entries(expected).every(([key,value])=
 });
 const HR_TERMINAL=new Set(['committed','committed_with_identity_review']);
 
+const hrScopedPredecessorRef=(collection,lock)=>{
+  const prefix=collection.path+'/',path=lock?.receiptPath;
+  if(typeof path!=='string'||!path.startsWith(prefix)||!/^hr-[a-f0-9]{64}$/.test(path.slice(prefix.length)))return null;
+  return collection.doc(path.slice(prefix.length));
+};
+const hrAllowedJournalWrite=(path,scope,stage)=>{
+  const parts=str(path).split('/');
+  if(parts[0]!=='tenants'||parts[1]!==scope.tenantId)return false;
+  if(parts.length===4&&['shoppers','users','shopperIdentityCrosswalk','shopperIdentityReviews','reviewQueue'].includes(parts[2]))return true;
+  if(parts.length===6&&parts[2]==='projects'&&parts[3]===scope.projectId&&parts[4]==='visits')return true;
+  return stage==='shoppers'&&(parts.length===4&&['shopperIdentityLinks','paymentReconciliations'].includes(parts[2])||
+    parts.length===6&&parts[2]==='projects'&&parts[3]===scope.projectId&&['certifications','liquidations','postulations','reservations'].includes(parts[4]));
+};
+
+// HR349: a partial receipt is never promoted or erased. A new source revision
+// may succeed it only after FULL journal queries in the lease-acquisition
+// transaction prove that no old external operation remains uncertain/in flight.
+const hrSettledPredecessor=({oldRef,oldSnap,lock,intents,effects,stages,scope,sourceRevision,observedAt})=>{
+  const require=(ok,code='HR_RECONCILIATION_PREDECESSOR_INVALID')=>{if(!ok)throw hrError(code);};
+  const hash=v=>typeof v==='string'&&/^[a-f0-9]{64}$/.test(v);
+  const date=v=>typeof v==='string'&&Number.isFinite(Date.parse(v));
+  const old=oldSnap.data(),result=old?.result,binding=result?.receiptBinding;
+  require(oldSnap.exists&&lock?.status==='partial'&&Number.isFinite(lock.expiresAt)&&lock.expiresAt<=observedAt&&lock.projectId===scope.projectId);
+  require(old?.version==='cxorbia.hr-reconciliation-receipt.v1'&&old.status==='partial'&&date(old.completedAt));
+  require(old.tenantId===scope.tenantId&&old.projectId===scope.projectId&&hash(old.sourceRevision)&&old.sourceRevision!==sourceRevision);
+  require(typeof old.actorUid==='string'&&!!old.actorUid&&typeof old.idempotencyKey==='string'&&old.idempotencyKey.length>=16&&old.idempotencyKey.length<=200);
+  require(typeof old.attemptId==='string'&&!!old.attemptId&&old.attemptId===lock.attemptId&&oldRef.path===lock.receiptPath);
+  require(oldRef.id==='hr-'+hrDigest([scope.projectId,old.idempotencyKey])&&old.digest===hrDigest({actorUid:old.actorUid,scope,sourceRevision:old.sourceRevision,commandType:'hr.snapshot.reconcile'}));
+  const expectedBinding={...scope,sourceRevision:old.sourceRevision,actorUid:old.actorUid,idempotencyKey:old.idempotencyKey,commandType:'hr.snapshot.reconcile'};
+  require(result?.ok===false&&result.status==='partial'&&result.committed===false&&result.providerAck===false&&result.sourceRevision===old.sourceRevision&&result.receiptPath===oldRef.path);
+  require(hrDigest(binding)===hrDigest(expectedBinding)&&result.commandType==='hr.snapshot.reconcile'&&result.tenantId===scope.tenantId&&result.projectId===scope.projectId);
+  require(result.providerWritesScope==='cumulative_command_effects'&&result.intentCollectionPath===oldRef.collection('intents').path&&result.effectCollectionPath===oldRef.collection('effects').path);
+  const byIntent=new Map(intents.docs.map(doc=>[doc.id,doc.data()])),byEffect=new Map(effects.docs.map(doc=>[doc.id,doc.data()]));
+  let authWrites=0,firestoreWrites=0;
+  const knownStage=v=>['visits','shoppers'].includes(v),knownSystem=v=>['auth','firestore'].includes(v);
+  const validOperations=(operations,system,stage)=>Array.isArray(operations)&&operations.every(op=>
+    op&&typeof op.entity==='string'&&!!op.entity&&Array.isArray(op.fields)&&op.fields.every(f=>typeof f==='string'&&!!f)&&new Set(op.fields).size===op.fields.length&&hash(op.expectedDigest)&&
+    (system==='auth'?['createUser','updateUser','setCustomUserClaims'].includes(op.operation):['set','create'].includes(op.operation)&&hrAllowedJournalWrite(op.entity,scope,stage)));
+  for(const [id,intent]of byIntent){
+    require(knownStage(intent.stage)&&knownSystem(intent.system)&&typeof intent.attemptId==='string'&&!!intent.attemptId&&date(intent.startedAt),'HR_RECONCILIATION_PREDECESSOR_JOURNAL_INVALID');
+    require(validOperations(intent.operations,intent.system,intent.stage),'HR_RECONCILIATION_PREDECESSOR_JOURNAL_INVALID');
+    const effect=byEffect.get(id);
+    if(!effect){
+      require(['no_effect','failed_before_write'].includes(intent.status)&&date(intent.finishedAt)&&!(intent.system==='auth'&&intent.status==='no_effect'),'HR_RECONCILIATION_PREDECESSOR_UNSETTLED');
+      continue;
+    }
+    // Successful intents retain status pending; their matching effect is the ACK.
+    require(intent.status==='pending'&&effect.stage===intent.stage&&effect.system===intent.system&&effect.attemptId===intent.attemptId&&effect.sourceRevision===old.sourceRevision,'HR_RECONCILIATION_PREDECESSOR_JOURNAL_INVALID');
+    require(effect.providerAck===true&&effect.readbackVerified===true&&effect.credentialAuthenticationPending!==true&&date(effect.committedAt)&&date(effect.readbackAt),'HR_RECONCILIATION_PREDECESSOR_UNSETTLED');
+    require(validOperations(effect.operations,effect.system,effect.stage)&&effect.operations.length>0,'HR_RECONCILIATION_PREDECESSOR_JOURNAL_INVALID');
+    require(effect.system==='auth'?effect.operations.length===1&&hrDigest(intent.operations)===hrDigest(effect.operations)&&effect.readbackDigest===effect.operations[0].expectedDigest:intent.operations.length===0,'HR_RECONCILIATION_PREDECESSOR_JOURNAL_INVALID');
+    if(effect.system==='auth')authWrites+=effect.operations.length;else firestoreWrites+=effect.operations.length;
+  }
+  require([...byEffect.keys()].every(id=>byIntent.has(id)),'HR_RECONCILIATION_PREDECESSOR_JOURNAL_INVALID');
+  const confirmedProviderWrites=authWrites+firestoreWrites;
+  require(result.authWrites===authWrites&&result.firestoreWrites===firestoreWrites&&result.confirmedProviderWrites===confirmedProviderWrites&&result.providerWrites===confirmedProviderWrites&&result.unresolvedEffects===0&&result.unverifiedEffects===0&&result.credentialAuthenticationPending===false,'HR_RECONCILIATION_PREDECESSOR_COUNTS_MISMATCH');
+  for(const snap of Object.values(stages))if(snap.exists){
+    const stage=snap.data();
+    require(stage.status==='committed'&&stage.sourceRevision===old.sourceRevision&&stage.summary?.ok===true&&stage.summary?.providerAck===true&&HR_TERMINAL.has(stage.summary?.status)&&date(stage.completedAt),'HR_RECONCILIATION_PREDECESSOR_STAGE_INVALID');
+  }
+  const sorted=map=>[...map].sort(([a],[b])=>a.localeCompare(b));
+  return {schemaVersion:'cxorbia.hr-reconciliation-predecessor.v1',receiptPath:oldRef.path,receiptDigest:old.digest,sourceRevision:old.sourceRevision,
+    actorUidHash:hrDigest(old.actorUid),attemptId:old.attemptId,status:'partial',journalComplete:true,
+    journalSeal:hrDigest({receipt:old,intents:sorted(byIntent),effects:sorted(byEffect),stages:Object.fromEntries(Object.entries(stages).map(([name,snap])=>[name,snap.data()||null]))}),
+    intentCount:byIntent.size,effectCount:byEffect.size,authWrites,firestoreWrites,confirmedProviderWrites,unresolvedEffects:0,unverifiedEffects:0,credentialAuthenticationPending:false,verifiedAt:new Date(observedAt).toISOString()};
+};
+
 export function createHrSnapshotReconciler({
   verifyPrincipal,readSnapshot,ensureAdmin,shopperPolicy,operationalPolicy,
   shopperProviderFactory=createShopperCommandProvider,
@@ -35,12 +102,13 @@ export function createHrSnapshotReconciler({
 
   return async function reconcileHrSnapshot({req,command={}}={}){
     let receiptRef=null,lockRef=null,db=null,attemptId=null,digest=null,sourceRevision=null,principal=null;
-    let acquired=false,controlWrites=0;
+    let acquired=false,controlWrites=0,predecessorReconciliation=null;
     const base=()=>({
       commandType:'hr.snapshot.reconcile',tenantId:command.tenantId,projectId:command.projectId,
       sourceRevision,receiptPath:receiptRef?.path||null,
       receiptBinding:{tenantId:command.tenantId,projectId:command.projectId,sourceRevision,actorUid:principal?.uid||null,idempotencyKey:command.idempotencyKey,commandType:'hr.snapshot.reconcile'},
-      localMutation:false,localStorageWrite:false,hrWrites:0,storageWrites:0,production:false
+      localMutation:false,localStorageWrite:false,hrWrites:0,storageWrites:0,production:false,
+      ...(predecessorReconciliation?{predecessorReconciliation}:{})
     });
     const stop=(code,extra={})=>blocked(code,{...base(),controlWrites,...extra});
     const stamp=()=>new Date(now()).toISOString();
@@ -115,10 +183,12 @@ export function createHrSnapshotReconciler({
       if(previous&&HR_TERMINAL.has(previous.status))return await readCommitted(true);
       const priorLock=(await lockRef.get()).data();
       if(priorLock&&priorLock.status!=='committed'&&priorLock.receiptPath!==receiptRef.path){
-        const existingId=str(priorLock.receiptPath).split('/').at(-1);
-        const pending=(await collection.doc(existingId).get()).data()||{};
+        const existingRef=hrScopedPredecessorRef(collection,priorLock);
+        const pending=existingRef?(await existingRef.get()).data()||{}:{};
         const resume=pending.actorUid===principal.uid&&pending.projectId===scope.projectId&&pending.sourceRevision===sourceRevision?pending.idempotencyKey:null;
-        return stop('HR_RECONCILIATION_SCOPE_BUSY',{providerWrites:null,existingReceiptPath:priorLock.receiptPath,resumeIdempotencyKey:resume||null});
+        const candidate=!previous&&existingRef&&priorLock.status==='partial'&&Number.isFinite(priorLock.expiresAt)&&priorLock.expiresAt<=now()&&priorLock.projectId===scope.projectId&&
+          pending.status==='partial'&&pending.tenantId===scope.tenantId&&pending.projectId===scope.projectId&&/^[a-f0-9]{64}$/.test(pending.sourceRevision||'')&&pending.sourceRevision!==sourceRevision;
+        if(!candidate)return stop('HR_RECONCILIATION_SCOPE_BUSY',{providerWrites:null,existingReceiptPath:priorLock.receiptPath,resumeIdempotencyKey:resume||null});
       }
       if(priorLock?.status==='running'&&priorLock.expiresAt>now()){
         return stop('HR_RECONCILIATION_IN_PROGRESS',{providerWrites:null,existingReceiptPath:priorLock.receiptPath});
@@ -145,16 +215,26 @@ export function createHrSnapshotReconciler({
       if(freshPrincipal?.uid!==principal.uid||freshPrincipal?.namespace!=='staff'||!['super','admin'].includes(freshPrincipal?.role))return stop('HR_RECONCILIATION_PRINCIPAL_CHANGED',{httpStatus:403});
       principal=freshPrincipal;
       attemptId=crypto.randomUUID();
-      await db.runTransaction(async tx=>{
+      predecessorReconciliation=await db.runTransaction(async tx=>{
         const [receiptSnap,lockSnap]=await Promise.all([tx.get(receiptRef),tx.get(lockRef)]);
         const row=receiptSnap.data(),lock=lockSnap.data();
+        let predecessor=row?.predecessorReconciliation||null;
         if(row?.digest&&row.digest!==digest)throw hrError('HR_RECONCILIATION_IDEMPOTENCY_CONFLICT');
         if(row&&HR_TERMINAL.has(row.status))throw hrError('HR_RECONCILIATION_ALREADY_COMMITTED');
-        if(lock?.status!=='committed'&&lock?.receiptPath&&lock.receiptPath!==receiptRef.path)throw hrError('HR_RECONCILIATION_SCOPE_BUSY');
+        if(lock?.status!=='committed'&&lock?.receiptPath&&lock.receiptPath!==receiptRef.path){
+          const oldRef=hrScopedPredecessorRef(collection,lock);
+          if(!oldRef||receiptSnap.exists)throw hrError('HR_RECONCILIATION_PREDECESSOR_INVALID');
+          const [oldSnap,intents,effects,visits,shoppers]=await Promise.all([
+            tx.get(oldRef),tx.get(oldRef.collection('intents')),tx.get(oldRef.collection('effects')),
+            tx.get(oldRef.collection('stages').doc('visits')),tx.get(oldRef.collection('stages').doc('shoppers'))
+          ]);
+          predecessor=hrSettledPredecessor({oldRef,oldSnap,lock,intents,effects,stages:{visits,shoppers},scope,sourceRevision,observedAt:now()});
+        }
         if(lock?.status==='running'&&lock.expiresAt>now())throw hrError('HR_RECONCILIATION_IN_PROGRESS');
         if(row?.attemptId!==previous?.attemptId||row?.status!==previous?.status)throw hrError('HR_RECONCILIATION_ATTEMPT_CHANGED');
-        tx.set(receiptRef,{version:'cxorbia.hr-reconciliation-receipt.v1',digest,actorUid:principal.uid,idempotencyKey:command.idempotencyKey,...scope,sourceRevision,status:'running',attemptId,startedAt:stamp()},{merge:true});
+        tx.set(receiptRef,{version:'cxorbia.hr-reconciliation-receipt.v1',digest,actorUid:principal.uid,idempotencyKey:command.idempotencyKey,...scope,sourceRevision,status:'running',attemptId,startedAt:stamp(),...(predecessor?{predecessorReconciliation:predecessor}:{})},{merge:true});
         tx.set(lockRef,{receiptPath:receiptRef.path,attemptId,status:'running',expiresAt:now()+leaseMs,projectId:scope.projectId});
+        return predecessor;
       });
       acquired=true;controlWrites+=2;
 

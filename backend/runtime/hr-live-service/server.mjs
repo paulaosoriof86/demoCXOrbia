@@ -522,6 +522,7 @@ const server=http.createServer(async(req,res)=>{
   if(isCxorbiaCommandRuntimePath(url.pathname)){
     await maybeHandleCxorbiaCommandRuntimeRequest(req,res,url,{
       configure:async command=>{
+        if(command?.commandType==='visit.sync.confirm')await buildSnapshot({forceFresh:true});
         if(['client.nps.submit','client.note.create','client.meeting.request'].includes(command?.commandType))await buildSnapshot();
         configureCommandRuntime(cache?.snapshot);
       },

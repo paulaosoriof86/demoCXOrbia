@@ -42,6 +42,16 @@ for(const [label,mutate] of [
 test('missing trusted server revision cannot authorize an absent period',async()=>{const x=externalFixture(),p=createOperationalCommandProvider({auth:x.auth,db:x.db,policy,hrSnapshot:x.hrSnapshot,hrRevision:''});assert.equal((await p.execute('a',x.c)).ok,false);});
 test('command runtime passes the parsed command to server configuration before provider selection',async()=>{const x=externalFixture(),req=Readable.from([JSON.stringify(x.c)]);req.method='POST';req.headers={authorization:'Bearer a'};let configured=null,body=null;const res={setHeader(){},end(v){body=JSON.parse(v);}};await maybeHandleCxorbiaCommandRuntimeRequest(req,res,new URL('http://localhost/v1/cxorbia/commands'),{configure:async command=>{configured=command;}});assert.deepEqual(configured,x.c);assert.ok(body);});
 const actualServerConfigure=readFileSync(new URL('../server.mjs',import.meta.url),'utf8').split('configure:async command=>{')[1]?.split('},\n      hrSnapshotReconcile:')[0];
+test('VRM350 actual server confirmation and replay force fresh HR before provider selection',async()=>{
+ const seen=[],cache={snapshot:'old'},configure=Function('buildSnapshot','configureCommandRuntime','cache','return async command=>{'+actualServerConfigure+'}')(
+ async options=>{seen.push(options);cache.snapshot='fresh';},snapshot=>seen.push(snapshot),cache);
+ await configure({commandType:'visit.sync.confirm'});await configure({commandType:'visit.sync.confirm'});assert.deepEqual(seen,[{forceFresh:true},'fresh',{forceFresh:true},'fresh']);
+});
+test('VRM350 actual server confirmation never reuses cache on fresh HR failure',async()=>{
+ const seen=[],configure=Function('buildSnapshot','configureCommandRuntime','cache','return async command=>{'+actualServerConfigure+'}')(
+ async options=>{assert.deepEqual(options,{forceFresh:true});throw Error('FRESH_HR_DOWN');},snapshot=>seen.push(snapshot),{snapshot:'old'});
+ await assert.rejects(configure({commandType:'visit.sync.confirm'}),/FRESH_HR_DOWN/);assert.deepEqual(seen,[]);
+});
 test('actual server callback refreshes HR before each Client flow and retains other command behavior',async()=>{
  assert.ok(actualServerConfigure);for(const commandType of [...Object.values(types).map(x=>x[0]),'visit.assign']){const seen=[],cache={snapshot:'old'};const configure=Function('buildSnapshot','configureCommandRuntime','cache','return async command=>{'+actualServerConfigure+'}')(
  async()=>{seen.push('refresh');cache.snapshot='fresh';},snapshot=>seen.push(snapshot),cache);await configure({commandType});assert.deepEqual(seen,commandType.startsWith('client.')?['refresh','fresh']:['old']);}

@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "cxorbia.i3.p0.preedit-owner-scope.v1",
+  "findingId": "VRM-349",
+  "priority": "P0_PROVEN",
+  "classification": "PERSISTENCE_FAILURE",
+  "generatedAt": "2026-11-16T03:05:20.452815+00:00",
+  "sourceSha": "f2fcb6200843971485ef2b092240c5497148038b",
+  "sourceTree": "41c4a8c884808a6722ff7b7217eda0ea5fbf7ef3",
+  "headBeforeEdit": "998058d5272bf99c4e36b596dd6f67eab8737e66",
+  "moduleTruthBeforeEdit": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261116-V327.json",
+    "gitBlob": "0a29c50f8155d95f96c087298e0cb97fbe7b8aa3"
+  },
+  "moduleTruthDelta": [
+    {
+      "domain": "persistence-command-ack-boundary",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "lastApprovedAuthority": "P0_PROVEN_RUN269_HR_VISIT_DURABLE_RECONCILIATION",
+      "sourceCommit": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
+      "currentOwnerBlob": "332dac08d6c7e33d6297f0fbd75dc02084ffe199",
+      "sourceSuccessor": "f2fcb6200843971485ef2b092240c5497148038b",
+      "head": "998058d5272bf99c4e36b596dd6f67eab8737e66",
+      "live": {
+        "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
+        "mode": "CURRENT_SOURCE_SERVING",
+        "runId": 43791736690,
+        "runNumber": 2545,
+        "sourceSha": "f2fcb6200843971485ef2b092240c5497148038b",
+        "sourceTree": "41c4a8c884808a6722ff7b7217eda0ea5fbf7ef3",
+        "artifactDigest": "sha256:02f4effe48ed09b71a3d36387b4c219fc95bd85922fdea70b1820aace1bba9cb",
+        "runtimeRevision": "cxorbia-live-hr-dev-00373-fxw",
+        "runtimeDigest": "sha256:6fe218e2573028ef5889d67b890d434f1a022067c8f39e6c028323c707805feb",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/cd46b1801ecd0123",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794795989674000",
+        "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+        "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+        "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2545_PAIRED_DEV_AND_NOTIFICATION_CYCLE_ACK_20261116.json",
+        "receiptBlob": "f3073ec2b05f608f313e4289a0d2e6948f7e29de",
+        "liveE2e": "VRM143_PROVIDER_EXACT_CYCLE_FRESH_SESSION_REPLAY_SERVED_CONSUMER_AND_CLEANUP_PASS",
+        "humanAcceptance": "B4_B5_B6_B7_PASS_PRESERVED",
+        "gate20": "HOLD",
+        "gate21": "HOLD",
+        "production": false
+      },
+      "F9Authority": "PRESERVED_EXACT_BASE_MATRIX_OWNER_MAPPING",
+      "baselineMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261116-V327.json"
+    }
+  ],
+  "allowedProductFiles": [
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+  ],
+  "ownerBlobs": {
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs": "332dac08d6c7e33d6297f0fbd75dc02084ffe199"
+  },
+  "evidence": {
+    "c3-result.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2546_OBSERVED_EVIDENCE_20261116/c3-result.json",
+      "gitBlob": "2d4ed180109eba0dcf63d5cabc54addc9cf08136",
+      "sha256": "025d5d09d4eee0e475c68f0f3f00dcbd728e28cdfb895f2e0ff7ef3cdfe3e61b"
+    },
+    "b14-capability.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2546_OBSERVED_EVIDENCE_20261116/b14-capability.json",
+      "gitBlob": "b887a5af825eed31bdc96b8286cabda454e73bdb",
+      "sha256": "baf2f4ec4ef5436e40da03b1b575cc96778307f0f091005398ce8a26cda4c22e"
+    },
+    "b11-dashboard-stages.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2546_OBSERVED_EVIDENCE_20261116/b11-dashboard-stages.json",
+      "gitBlob": "7f7a25d639e5f7bdd4747855d0c63ecf11268ffb",
+      "sha256": "1e85f64887064d0bf9e3d877a0d2e04f5fd53be1a49c36a4c212ba1523adb9b5"
+    },
+    "hr-auto-admin-initial-session.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2546_OBSERVED_EVIDENCE_20261116/hr-auto-admin-initial-session.json",
+      "gitBlob": "752f3378912e42d8318309f251f6411de5f0a0f5",
+      "sha256": "5c92d1792f49cfb549eb0f775d2e43871ca3a2d0c4d7e16c0b22037e3d3472d8"
+    },
+    "hr-auto-admin-second-session.json": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2546_OBSERVED_EVIDENCE_20261116/hr-auto-admin-second-session.json",
+      "gitBlob": "bf3e5078c8c0d202fffafda9c262b8f7f2b31fb4",
+      "sha256": "cbaca4cb7785be40b3bae0a8a3cc7e04f55bdef21b08ceca8f7d12141fceda01"
+    }
+  },
+  "observedRootCause": "Current authorized Admin automatic reconcile with valid durable source config is blocked by a previous partial expired tenant lease for a different HR revision. Same prior receipt hash in both live session denials and independent durable metadata; no current-source resume allowed.",
+  "observedLimits": "Read-only journal501/501 was capped; stored result says0unresolved/0unverified but is not sufficient authority to transfer. Complete current journal must be read and validated atomically before any transfer.",
+  "allowedCorrection": "Within existing hr.snapshot.reconcile permit a new authorized same-project current-HR revision after expired partial predecessor only if exact prior binding/digest/status and FULL intents/effects/stages are verified in the lease-acquisition transaction. Preserve prior receipt/stages; write an explicit predecessor proof into the new receipt. Reject running/unknown/unverified/credential-pending/foreign-scope or concurrent changes. Run existing idempotent providers on current HR, no reimport/epoch change.",
+  "prohibited": [
+    "Delete/release lease without full transaction proof",
+    "Pretend prior partial receipt is committed",
+    "Use truncated journal/stored-zero counters as authorization",
+    "Skip stale HR revision guard",
+    "Change epoch or add workflow/candidate",
+    "Reimport or external HR writes",
+    "Production deploy"
+  ],
+  "requiredProof": [
+    "BEFORE new revision blocked despite settled verified prior effects",
+    "AFTER new revision commits with oldreceipt unchanged and replayzero",
+    "Unknown/unverified/credentialpending/running/samesource/foreign/scope denied",
+    "Late intent/effect/lock race detected by transaction readset",
+    "RealDEV fulljournal predecessor proof and newdurableHRsameRevision plusAdminautomaticreadback"
+  ],
+  "fullDomain": false,
+  "production": false
+}

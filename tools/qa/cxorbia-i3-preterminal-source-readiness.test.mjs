@@ -156,7 +156,8 @@ test('I3 current authority aliases are bound to the same C3 source, matrix, ledg
   const preC3=descriptor.i3Q2HostingReleaseC3Pending||{};
   const pendingFromPaired=pendingHostingOnly&&!descriptor.currentHostingOnlyDevMaterialization&&
     descriptor.pendingDevSuccessor.predecessorProductSourceSha===descriptor.currentMaterialization?.sourceSha&&
-    preC3.sourceSha===descriptor.currentMaterialization.sourceSha&&preC3.sourceTree===descriptor.currentMaterialization.sourceTree;
+    JSON.stringify(descriptor.pendingDevSuccessor.servingPairedMaterialization)===JSON.stringify(descriptor.currentMaterialization);
+  const completedPairedC3=pendingFromPaired&&!descriptor.i3Q2HostingReleaseC3Pending;
   const c3PendingAfterHosting=preC3.state==='DEV_HOSTING_VERIFIED_C3_PENDING'&&
     preC3.sourceSha===descriptor.productSourceSha&&
     preC3.hostingVersion===descriptor.currentHostingOnlyDevMaterialization?.hostingVersion;
@@ -179,11 +180,15 @@ test('I3 current authority aliases are bound to the same C3 source, matrix, ledg
     assert.equal(ledger.updatedAt,descriptor.updatedAt);
     assert.equal(execution.updatedAt,descriptor.updatedAt);
     assert.equal(execution.productSourceSha,descriptor.productSourceSha);
-    assert.equal(audit.sourceSha,pendingHostingOnly&&!pendingFromPaired?
+    assert.equal(audit.sourceSha,completedPairedC3?descriptor.currentMaterialization.sourceSha:pendingHostingOnly&&!pendingFromPaired?
       descriptor.pendingDevSuccessor.predecessorProductSourceSha:preC3.previousC3SourceSha);
-    assert.equal(audit.sourceTree,pendingHostingOnly&&!pendingFromPaired?
+    assert.equal(audit.sourceTree,completedPairedC3?descriptor.currentMaterialization.sourceTree:pendingHostingOnly&&!pendingFromPaired?
       descriptor.currentHostingOnlyDevMaterialization.sourceTree:preC3.previousC3SourceTree);
-    if(pendingHostingOnly&&!pendingFromPaired)assert.equal(audit.sourceSha,descriptor.currentHostingOnlyDevMaterialization.sourceSha);
+    if(completedPairedC3){
+      for(const k of ['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'])assert.equal(audit[k],descriptor.currentMaterialization[k]);
+      assert.equal(execution.i3Q2HostingReleaseC3Pending,undefined);assert.equal(ledger.i3Q2HostingReleaseC3Pending,undefined);
+      assert.notEqual(audit.sourceSha,descriptor.productSourceSha);
+    }else if(pendingHostingOnly&&!pendingFromPaired)assert.equal(audit.sourceSha,descriptor.currentHostingOnlyDevMaterialization.sourceSha);
     else{
       assert.equal(audit.hostingVersion,preC3.previousHostingVersion);
       assert.equal((c3PendingAfterPaired||pendingFromPaired?descriptor.currentMaterialization:descriptor.currentHostingOnlyDevMaterialization).sourceSha,

@@ -1,0 +1,186 @@
+{
+  "sourceSha": "f2fcb6200843971485ef2b092240c5497148038b",
+  "phaseAComplete": false,
+  "production": false,
+  "initial": {
+    "scope": "PASSIVE_EXISTING_ADMIN_SESSION_NO_SYNC_CALL_OR_REFRESH",
+    "capture": {
+      "ok": true,
+      "code": null
+    },
+    "projectPresent": true,
+    "operationalSourcePresent": true,
+    "operationalSourceType": "object",
+    "routeSourcePresent": false,
+    "routeSourceType": "undefined",
+    "sourceSelected": "operationalSource",
+    "sourceFields": {
+      "mode": {
+        "present": true,
+        "type": "string",
+        "valueHash": "3c4623849a49a53911c4a3e48d8cead8a1858960bccdea7a1b978d73ec2f06d7",
+        "value": "external"
+      },
+      "authority": {
+        "present": true,
+        "type": "string",
+        "valueHash": "532185557da80f4fc3276c93b2961fd93e87487c5062a4e0f597e1d32c4ad4d8"
+      },
+      "providerType": {
+        "present": true,
+        "type": "string",
+        "valueHash": "c71caf7afdcc481a1789d27dcc1b9a2b4fcb6318d2db778adc971153835b63ee"
+      },
+      "readPolicy": {
+        "present": true,
+        "type": "string",
+        "valueHash": "22acc0bf619cf3909d542071f792e6966592592c299de3b6275544d0ac58141a",
+        "value": "external_live"
+      },
+      "writePolicy": {
+        "present": true,
+        "type": "string",
+        "valueHash": "fd262d83d4066b721bfd22370683b3d6f242adbfebea011b1d9571650074bedf",
+        "value": null
+      },
+      "providerBindingId": {
+        "present": true,
+        "type": "string",
+        "valueHash": "46254408919385d91e4019d0e9a704629206e81fa2981f56f855981950ab450c"
+      },
+      "integrationSettingId": {
+        "present": false,
+        "type": "undefined",
+        "valueHash": null
+      },
+      "providerRef": {
+        "present": true,
+        "type": "string",
+        "valueHash": "46254408919385d91e4019d0e9a704629206e81fa2981f56f855981950ab450c"
+      },
+      "mappingRef": {
+        "present": true,
+        "type": "string",
+        "valueHash": "bb18e0a8469d6a086a65b04ed3d663863cd995af104201567b0d49eb4805bde4"
+      }
+    },
+    "selectedReferenceKind": "providerBindingId",
+    "actorHash": "625df6d4e4fc4937493507eb1ece6281a22903f1cab4a549909fdc471f2b8330",
+    "authRole": "admin",
+    "authNamespace": "staff",
+    "currentSourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "metaRevisionMatches": true,
+    "authorityApplied": true,
+    "commandWritesEnabled": true,
+    "commandAdapterAvailable": true,
+    "lastAutomatic": null,
+    "lastCommand": {
+      "kind": null,
+      "idempotencyKeyHash": null,
+      "receiptPathHash": null,
+      "existingReceiptPathHash": null,
+      "resumeKeyHash": null,
+      "code": null,
+      "status": null,
+      "providerAck": false,
+      "unresolvedEffects": null,
+      "unverifiedEffects": null
+    },
+    "observedAt": "2026-11-16T02:52:49.686Z"
+  },
+  "afterRoutes": {
+    "scope": "PASSIVE_EXISTING_ADMIN_SESSION_NO_SYNC_CALL_OR_REFRESH",
+    "capture": {
+      "ok": true,
+      "code": null
+    },
+    "projectPresent": true,
+    "operationalSourcePresent": true,
+    "operationalSourceType": "object",
+    "routeSourcePresent": false,
+    "routeSourceType": "undefined",
+    "sourceSelected": "operationalSource",
+    "sourceFields": {
+      "mode": {
+        "present": true,
+        "type": "string",
+        "valueHash": "3c4623849a49a53911c4a3e48d8cead8a1858960bccdea7a1b978d73ec2f06d7",
+        "value": "external"
+      },
+      "authority": {
+        "present": true,
+        "type": "string",
+        "valueHash": "532185557da80f4fc3276c93b2961fd93e87487c5062a4e0f597e1d32c4ad4d8"
+      },
+      "providerType": {
+        "present": true,
+        "type": "string",
+        "valueHash": "c71caf7afdcc481a1789d27dcc1b9a2b4fcb6318d2db778adc971153835b63ee"
+      },
+      "readPolicy": {
+        "present": true,
+        "type": "string",
+        "valueHash": "22acc0bf619cf3909d542071f792e6966592592c299de3b6275544d0ac58141a",
+        "value": "external_live"
+      },
+      "writePolicy": {
+        "present": true,
+        "type": "string",
+        "valueHash": "fd262d83d4066b721bfd22370683b3d6f242adbfebea011b1d9571650074bedf",
+        "value": null
+      },
+      "providerBindingId": {
+        "present": true,
+        "type": "string",
+        "valueHash": "46254408919385d91e4019d0e9a704629206e81fa2981f56f855981950ab450c"
+      },
+      "integrationSettingId": {
+        "present": false,
+        "type": "undefined",
+        "valueHash": null
+      },
+      "providerRef": {
+        "present": true,
+        "type": "string",
+        "valueHash": "46254408919385d91e4019d0e9a704629206e81fa2981f56f855981950ab450c"
+      },
+      "mappingRef": {
+        "present": true,
+        "type": "string",
+        "valueHash": "bb18e0a8469d6a086a65b04ed3d663863cd995af104201567b0d49eb4805bde4"
+      }
+    },
+    "selectedReferenceKind": "providerBindingId",
+    "actorHash": "625df6d4e4fc4937493507eb1ece6281a22903f1cab4a549909fdc471f2b8330",
+    "authRole": "admin",
+    "authNamespace": "staff",
+    "currentSourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "metaRevisionMatches": true,
+    "authorityApplied": true,
+    "commandWritesEnabled": true,
+    "commandAdapterAvailable": true,
+    "lastAutomatic": {
+      "ok": false,
+      "providerAck": false,
+      "readbackVerified": false,
+      "viewRefreshVerified": false,
+      "code": "HR_RECONCILIATION_SCOPE_BUSY",
+      "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+      "projectMatches": true,
+      "at": "2026-11-16T02:52:50.224Z"
+    },
+    "lastCommand": {
+      "kind": "sync-request",
+      "idempotencyKeyHash": "de04946c04ffa371e85192a1ba2471abdd2a11bc0a0ddd8ff2c883c4c0f220c6",
+      "receiptPathHash": "ea4dc4f0a73dcd4f45e97fd90deea5dbada1bfea3a523f9f8c41738d0c85e271",
+      "existingReceiptPathHash": "b54a5056b05bb79eefe78403dd25bec0a44e13a0cafb9d482389086f6aa84f2e",
+      "resumeKeyHash": null,
+      "code": "HR_RECONCILIATION_SCOPE_BUSY",
+      "status": "blocked",
+      "providerAck": false,
+      "unresolvedEffects": null,
+      "unverifiedEffects": null
+    },
+    "observedAt": "2026-11-16T02:53:17.943Z"
+  }
+}

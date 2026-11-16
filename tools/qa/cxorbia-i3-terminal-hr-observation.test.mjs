@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {createHash} from 'node:crypto';
 import {validateTerminalHrObservation} from './cxorbia-i3-terminal-hr-observation.mjs';
-import {b14PrincipalOf,b14DiagnosticError,b14RuntimeAuthority,b14WorkbookFromReaders,b14CapabilityVerdict,b14BindingProjection,b14ProjectSourceProjection,b14IntegrationCandidates,b14LeaseReceiptPath} from './cxorbia-i3-hr-ack-exact-same-revision.mjs';
+import {b14PredecessorReadOnly,b14PrincipalOf,b14DiagnosticError,b14RuntimeAuthority,b14WorkbookFromReaders,b14CapabilityVerdict,b14BindingProjection,b14ProjectSourceProjection,b14IntegrationCandidates,b14LeaseReceiptPath} from './cxorbia-i3-hr-ack-exact-same-revision.mjs';
 const valid=()=>({ok:true,revision:'a'.repeat(64),sourceSafe:true,refreshError:null,
   writes:false,hrWrites:false,production:false,shopperReconciliation:null,visitReconciliation:null});
 test('G05 valid read-only observation passes without inventing reconciliation ACK',()=>{
@@ -83,4 +84,40 @@ test('B14 alias candidates remain candidates and unsafe document paths are never
  assert.equal(r.length,4);assert.equal(r.find(x=>x.kind==='providerRef').validId,false);assert.equal(r.find(x=>x.source==='routeSource').selected,false);
  const safe='tenants/t/commandReceipts/hr-'+'a'.repeat(64);assert.equal(b14LeaseReceiptPath(safe,'t'),safe);
  for(const x of [safe.replace('tenants/t/','tenants/other/'),safe+'/stages/x','tenants/t/commandReceipts/../../secret'])assert.equal(b14LeaseReceiptPath(x,'t'),null);
+});
+
+function predecessorReadFixture(){
+ const stable=v=>Array.isArray(v)?v.map(stable):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,stable(v[k])])):v,digest=v=>createHash('sha256').update(JSON.stringify(stable(v))).digest('hex');
+ const tenantId='tenant-safe',projectId='project-safe',revision='2'.repeat(64),key='old-safe-idempotency-key',actorUid='private-old-actor';
+ const oldPath='tenants/'+tenantId+'/commandReceipts/hr-'+digest([projectId,key]);
+ const old={tenantId,projectId,sourceRevision:'1'.repeat(64),idempotencyKey:key,actorUid,attemptId:'old-attempt',status:'partial'};old.digest=digest({actorUid,scope:{tenantId,projectId},sourceRevision:old.sourceRevision,commandType:'hr.snapshot.reconcile'});
+ const intent={attemptId:'old-attempt',system:'firestore',stage:'visits',status:'pending',operations:[]},effect={attemptId:'old-attempt',system:'firestore',stage:'visits',operations:[{entity:'private-path',operation:'set',expectedDigest:'a'.repeat(64)}]};
+ const proof={schemaVersion:'cxorbia.hr-reconciliation-predecessor.v1',receiptPath:oldPath,receiptDigest:old.digest,sourceRevision:old.sourceRevision,actorUidHash:digest(actorUid),attemptId:old.attemptId,status:'partial',journalComplete:true,journalSeal:digest({receipt:old,intents:[['effect-id',intent]],effects:[['effect-id',effect]],stages:{visits:null,shoppers:null}}),intentCount:1,effectCount:1,authWrites:0,firestoreWrites:1,confirmedProviderWrites:1};
+ const records=new Map([[oldPath,old],[oldPath+'/intents/effect-id',intent],[oldPath+'/effects/effect-id',effect]]),reads=[];
+ const ref=(path,collection=false)=>({path,id:path.split('/').at(-1),isCollection:collection,collection:name=>ref(path+'/'+name,true),doc:id=>ref(path+'/'+id)});
+ const db={doc:ref},tx={get:async target=>{reads.push(target.path);if(target.isCollection){const docs=[...records].filter(([p])=>p.startsWith(target.path+'/')&&p.split('/').length===target.path.split('/').length+1).map(([p,v])=>({id:p.split('/').at(-1),data:()=>structuredClone(v)}));return {docs,size:docs.length};}return {exists:records.has(target.path),data:()=>structuredClone(records.get(target.path))};}};
+ const nextActor='new-authorized-admin',nextKey='new-safe-idempotency-key',receiptRef=ref('tenants/'+tenantId+'/commandReceipts/hr-'+digest([projectId,nextKey]));
+ const receipt={tenantId,projectId,sourceRevision:revision,actorUid:nextActor,idempotencyKey:nextKey,digest:digest({actorUid:nextActor,scope:{tenantId,projectId},sourceRevision:revision,commandType:'hr.snapshot.reconcile'}),status:'committed',predecessorReconciliation:proof,result:{ok:true,committed:true,providerAck:true,readbackVerified:false,sourceRevision:revision,receiptPath:receiptRef.path,receiptBinding:{tenantId,projectId,sourceRevision:revision,actorUid:nextActor,idempotencyKey:nextKey,commandType:'hr.snapshot.reconcile'},predecessorReconciliation:structuredClone(proof)}};
+ return {tx,db,receipt,receiptRef,tenantId,projectId,revision,records,reads,oldPath,proof};
+}
+test('HR349 readonly proof verifies complete historical bytes without exposing identity or treating stored readback false as failure',async()=>{
+ const f=predecessorReadFixture(),r=await b14PredecessorReadOnly(f.tx,f);
+ assert.equal(r.independentHistoricalReadback,true);assert.equal(r.successorTerminalCommitted,true);assert.equal(r.decision,'PASS_VERIFIED_PREDECESSOR_HISTORY_AND_COMMITTED_SUCCESSOR');assert.equal(r.intentsRead,1);assert.equal(r.effectsRead,1);assert.equal(r.writes,0);
+ for(const value of ['private-old-actor','private-path','old-safe-idempotency-key',f.oldPath])assert.equal(JSON.stringify(r).includes(value),false);
+});
+for(const [name,alter]of [
+ ['wrong successor digest',f=>{f.receipt.digest='9'.repeat(64);}],
+ ['wrong successor actor binding',f=>{f.receipt.result.receiptBinding.actorUid='another-actor';}],
+ ['wrong successor receipt path',f=>{f.receiptRef=f.db.doc('tenants/'+f.tenantId+'/commandReceipts/hr-'+'3'.repeat(64));}],
+ ['historical mutation',f=>{f.records.get(f.oldPath).status='committed';}],
+ ['late added intent',f=>{f.records.set(f.oldPath+'/intents/late',{status:'pending'});}],
+ ['contradictory result proof',f=>{f.receipt.result.predecessorReconciliation.journalSeal='b'.repeat(64);}],
+ ['wrong current revision',f=>{f.revision='4'.repeat(64);}],
+ ['foreign predecessor',f=>{f.proof.receiptPath=f.oldPath.replace('tenant-safe','foreign');}],
+ ['self predecessor',f=>{f.receiptRef=f.db.doc(f.oldPath);}],
+ ['counter disagreement',f=>{f.proof.effectCount=2;}]
+])test('HR349 readonly proof does not certify '+name,async()=>{const f=predecessorReadFixture();alter(f);const r=await b14PredecessorReadOnly(f.tx,f);assert.equal(r.independentHistoricalReadback,false);assert.equal(r.writes,0);});
+test('HR349 running successor remains explicitly uncommitted even with a verified predecessor',async()=>{
+ const f=predecessorReadFixture();f.receipt.status='running';f.receipt.result.ok=false;f.receipt.result.committed=false;f.receipt.result.providerAck=false;
+ const r=await b14PredecessorReadOnly(f.tx,f);assert.equal(r.independentHistoricalReadback,true);assert.equal(r.successorTerminalCommitted,false);assert.equal(r.decision,'VERIFIED_PREDECESSOR_HISTORY_SUCCESSOR_NOT_COMMITTED');
 });

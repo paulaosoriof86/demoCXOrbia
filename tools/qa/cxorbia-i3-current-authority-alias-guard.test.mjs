@@ -330,3 +330,54 @@ for(const [name,change,code]of [
  ['C3 components do not sum to pending',v=>{v.descriptor.currentC3PreterminalAudit.pendingMappingApprovalFiles=1;},'CURRENT_C3_PENDING_BREAKDOWN_DESYNC'],
  ['negative C3 pending component',v=>{v.descriptor.currentC3PreterminalAudit.pendingBlobProvenanceFiles=-1;},'CURRENT_C3_PENDING_BREAKDOWN_DESYNC']
 ])test('single canonical guard rejects '+name,()=>{const v=fixture();change(v);const r=validateCurrentAuthorityAliases(v);assert.equal(r.pass,false);assert.ok(r.failures.includes(code),JSON.stringify(r));});
+
+function completedPairedC3PendingFixture(){
+ const v=pairedPendingHostingFixture(),{descriptor:d,pointer:p,ledger:l}=v;
+ const materialization={...l.currentMaterialization,runtimeDigest:'sha256:'+'a'.repeat(64)};
+ d.currentMaterialization=structuredClone(materialization);p.currentDevMaterialization=structuredClone(materialization);l.currentMaterialization=structuredClone(materialization);
+ d.postDeployRunSeal.runtimeDigest=materialization.runtimeDigest;p.postDeployRunSeal=structuredClone(d.postDeployRunSeal);
+ for(const x of [d,p,l])delete x.i3Q2HostingReleaseC3Pending;
+ const audit={...d.currentC3PreterminalAudit,...materialization,runId:120};
+ for(const x of [d,p,l])x.currentC3PreterminalAudit=structuredClone(audit);
+ for(const x of [d,l]){x.lastModuleTruthProof=structuredClone(audit);x.c3PreterminalProof=structuredClone(audit);}
+ for(const x of [d,p]){x.currentCanonicalControl.sourceSha=materialization.sourceSha;x.currentCanonicalControl.sourceTree=materialization.sourceTree;}
+ Object.assign(d.pendingDevSuccessor,{scope:'RUNTIME_AND_HOSTING',servingPairedMaterialization:structuredClone(materialization),servingRuntimeSeal:structuredClone(d.postDeployRunSeal)});
+ p.pendingDevSuccessor=structuredClone(d.pendingDevSuccessor);return v;
+}
+test('completed C3 for exact paired predecessor remains truthful while one source successor is pending',()=>{
+ const v=completedPairedC3PendingFixture(),r=validateCurrentAuthorityAliases(v);assert.equal(r.pass,true,JSON.stringify(r));assert.equal(v.descriptor.i3Q2HostingReleaseC3Pending,undefined);assert.notEqual(v.descriptor.currentC3PreterminalAudit.sourceSha,v.descriptor.productSourceSha);
+});
+for(const field of ['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'])test('completed paired C3 rejects consistently relabelled '+field,()=>{
+ const v=completedPairedC3PendingFixture();for(const x of [v.descriptor,v.pointer,v.ledger])x.currentC3PreterminalAudit[field]='fabricated';for(const x of [v.descriptor,v.ledger]){x.lastModuleTruthProof=structuredClone(x.currentC3PreterminalAudit);x.c3PreterminalProof=structuredClone(x.currentC3PreterminalAudit);}assert.equal(validateCurrentAuthorityAliases(v).pass,false);
+});
+function latestPairedC3AttemptFixture(){
+ const v=latestC3AttemptFixture(),{descriptor:d,pointer:p}=v,h=d.currentHostingOnlyDevMaterialization;
+ const m={...structuredClone(h),materializationReceiptPath:'paired.json',artifactDigest:'sha256:'+'f'.repeat(64),builds:1,runtimeDeploys:1,hostingDeploys:1};
+ delete d.currentHostingOnlyDevMaterialization;delete p.currentHostingOnlyDevMaterialization;
+ d.currentMaterialization=structuredClone(m);p.currentDevMaterialization=structuredClone(m);
+ d.postDeployRunSeal={...m,mode:'PREDECESSOR_SERVING_PENDING_SOURCE',receiptPath:'paired.json',receiptBlob:'b'.repeat(40)};
+ const pending=d.pendingDevSuccessor;delete pending.servingHosting;pending.servingPairedMaterialization=structuredClone(m);pending.servingRuntimeSeal=structuredClone(d.postDeployRunSeal);p.pendingDevSuccessor=structuredClone(pending);
+ v.pairedReceipt={schemaVersion:'cxorbia.i3.current-source-dev-materialization.v1',sourceSha:m.sourceSha,sourceTree:m.sourceTree,materialization:structuredClone(m),production:false,i4Authorized:false,productionUnchanged:true};
+ v.gitBlob=path=>path==='c3-attempt.json'?'4'.repeat(40):path==='paired.json'?'b'.repeat(40):'';
+ v.readJson=path=>path==='c3-attempt.json'?v.receipt:path==='paired.json'?v.pairedReceipt:{};return v;
+}
+test('latest C3 attempt binds the completed paired predecessor receipt without a fictitious pending-C3 transition',()=>{
+ const v=latestPairedC3AttemptFixture(),r=validateLatestExecutionSource(v);assert.equal(r.pass,true,JSON.stringify(r));assert.equal(r.c3Attempt,true);
+});
+for(const [name,mutate]of [
+ ['changed paired blob',v=>{v.gitBlob=()=> '4'.repeat(40);}],
+ ['unreadable paired receipt',v=>{v.readJson=path=>{if(path==='paired.json')throw Error('missing');return v.receipt;};}],
+ ['wrong paired source',v=>{v.pairedReceipt.sourceSha='1'.repeat(40);}],
+ ['wrong paired runtime',v=>{v.pairedReceipt.materialization.runtimeRevision='wrong';}],
+ ['wrong paired digest',v=>{v.pairedReceipt.materialization.runtimeDigest='wrong';}],
+ ['wrong paired Hosting',v=>{v.pairedReceipt.materialization.hostingVersion='wrong';}],
+ ['wrong paired artifact',v=>{v.pairedReceipt.materialization.artifactDigest='wrong';}],
+ ['wrong paired run',v=>{v.pairedReceipt.materialization.runId=9;}],
+ ['paired receipt not actually deployed',v=>{v.pairedReceipt.materialization.runtimeDeploys=0;}],
+ ['production modification',v=>{v.pairedReceipt.productionUnchanged=false;}],
+ ['mismatched pointer',v=>{v.pointer.currentDevMaterialization.runtimeDigest='wrong';}],
+ ['fake C3 pending',v=>{v.descriptor.i3Q2HostingReleaseC3Pending={state:'DEV_RUNTIME_AND_HOSTING_VERIFIED_C3_PENDING'};}],
+ ['pending hosting alias retained',v=>{v.descriptor.pendingDevSuccessor.servingHosting={};v.pointer.pendingDevSuccessor=structuredClone(v.descriptor.pendingDevSuccessor);}],
+ ['candidate relabel',v=>{v.receipt.sourceSha=v.descriptor.productSourceSha;}],
+ ['terminal certificate claimed',v=>{v.receipt.terminalCertified=true;}]
+])test('latest paired C3 attempt rejects '+name,()=>{const v=latestPairedC3AttemptFixture();mutate(v);assert.equal(validateLatestExecutionSource(v).pass,false);});

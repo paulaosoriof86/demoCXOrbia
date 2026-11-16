@@ -100,7 +100,9 @@ const c3AfterPaired=preC3.state==='DEV_RUNTIME_AND_HOSTING_VERIFIED_C3_PENDING'&
 const c3PredecessorOnly=(pendingHostingOnly&&
   c3.sourceSha===d.currentHostingOnlyDevMaterialization.sourceSha&&
   c3.sourceTree===d.currentHostingOnlyDevMaterialization.sourceTree&&
-  c3.hostingVersion===d.currentHostingOnlyDevMaterialization.hostingVersion)||c3AfterHosting||c3AfterPaired;
+  c3.hostingVersion===d.currentHostingOnlyDevMaterialization.hostingVersion)||c3AfterHosting||c3AfterPaired||
+  (pendingFromPaired&&!d.i3Q2HostingReleaseC3Pending&&
+   ['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'].every(k=>c3[k]===d.currentMaterialization[k]));
 if(JSON.stringify(mt.currentC3PreterminalAudit||null)!==JSON.stringify(c3)||
    c3.moduleCount!==modules.length||(!c3PredecessorOnly&&c3.matchModules!==modules.filter(x=>x.classification==='MATCH').length)||
    (!c3PredecessorOnly&&(c3.sourceSha!==d.productSourceSha||c3.sourceTree!==d.productTreeAuthority)))
