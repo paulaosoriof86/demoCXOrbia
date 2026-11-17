@@ -1,0 +1,443 @@
+{
+  "schemaVersion": "cxorbia.i3.daily-execution-lock.v1",
+  "id": "CXORBIA-I3-DAILY-EXECUTION-20261117-FROZEN",
+  "frozenAt": "2026-11-17T18:55:11Z",
+  "timezone": "America/Guatemala",
+  "iteration": "I3",
+  "state": "HOLD",
+  "userDecision": {
+    "actor": "Paula Andrea Osorio Franco",
+    "verbatim": "congela decisiones y plan de trabajo, adelanta y siempre mueve indicadores",
+    "meaning": "Freeze the accepted daily execution plan; continue authorized DEV work; credit each complete verified unit immediately and report indicator changes without artificial promotion."
+  },
+  "authority": {
+    "frozenSevenBlockPlan": {
+      "path": "CXORBIA_I3_I4_PLAN_CHOQUE_20261113_FROZEN.md",
+      "gitBlob": "7a8d063d313704c042ccbcbedf142af4894ed64c"
+    },
+    "planV11": {
+      "filename": "PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+      "sha256": "83e8f2c0a6b190bab1d9dea32bf99158116f3164f419ae72e051fd791fd8576c",
+      "taskCount": 82,
+      "stageCounts": {
+        "I3": 63,
+        "I4": 7,
+        "POST": 6,
+        "FASE_B": 6
+      }
+    },
+    "scope": "EXECUTION_LOCK_OF_EXISTING_APPROVED_PLAN__NO_NEW_ITERATION_METHOD_OR_PRODUCT"
+  },
+  "baseline": {
+    "controlHead": "9e1247984be26193983a5a16b7f43b3114dda5e5",
+    "controlTree": "e2500c36992b5d2e66330571e0ea463697221eba",
+    "productSourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+    "productSourceTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
+    "devMaterialization": {
+      "builds": 1,
+      "decision": "PASS_I3_VRM358_EXACT_DEV_MATERIALIZATION",
+      "hostingDeploys": 1,
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794896476949000",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/4e615718c8ab4a03",
+      "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+      "production": false,
+      "runtimeDeploys": 1,
+      "runtimeDigest": "sha256:95eab8082b6e18a39164a22af7d27029558917f0ea0634a76055c6eb1b0dd395",
+      "runtimeRevision": "cxorbia-live-hr-dev-00380-s9m",
+      "scenarioDimensionsProven": true,
+      "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+      "sourceTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
+      "storageRulesDeploys": 0,
+      "verifiedServedAssetCount": 39,
+      "sourceHostedExact": true,
+      "runtimeTrafficExact": true,
+      "productionUnchanged": true,
+      "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+      "firestoreRulesDeploys": 0,
+      "hrWrites": 0,
+      "runId": 44030019174,
+      "runNumber": 2587,
+      "runAttempt": 1,
+      "controlHeadAtDeploy": "a6fc19b62ff54dce5250b6c1f55e4e14afed4caa",
+      "artifactId": 14305650388,
+      "artifactDigest": "sha256:453396f001e8b1b27b4203f1413b4fcd9a3aaeaf8eaf2deba30dd14639365732",
+      "artifactDigestType": "GITHUB_ACTIONS_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR",
+      "state": "PASS_DEV_EXACT_C3_TERMINAL_PENDING",
+      "fullTaskClosed": false,
+      "humanAcceptance": "B4_B5_B6_B7_PASS_PRESERVED__NO_NEW_HUMAN_APPROVAL",
+      "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2587_PRIVATE_HR_BINDING_DEV_READBACK_20261117.json",
+      "hrLiveVerified": true,
+      "lastVerifiedHrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+      "productionDeploys": 0
+    },
+    "currentC3Audit": {
+      "decision": "PASS_C3_PRETERMINAL_SOURCE_READY_EXACT_DEV",
+      "inputAuthorityStatus": "HOLD_I3_DEV_MATERIALIZED_RUN2588_BENEFITS_MATCH_6_OF_21_REMAINING_FROZEN_CONTRACTS",
+      "status": "READY_FOR_TERMINAL_CERTIFICATION",
+      "enabledNextBlock": "I3-Q3",
+      "enabledJob": "certify",
+      "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+      "sourceTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
+      "moduleTruthSha256": "78849067f6afe66d5eab97fa7c5c96057199a481a20434abc344d91e8d1b1572",
+      "moduleCount": 21,
+      "matchModules": 6,
+      "nonMatchModules": 15,
+      "sourceReadyModules": 21,
+      "pendingFiles": 0,
+      "terminalEligible": true,
+      "activeBrowserOwners": 133,
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/4e615718c8ab4a03",
+      "runtimeRevision": "cxorbia-live-hr-dev-00380-s9m",
+      "runtimeDigest": "sha256:95eab8082b6e18a39164a22af7d27029558917f0ea0634a76055c6eb1b0dd395",
+      "firestoreRulesSha256": "0708af825d2baaad974285acd8d72df0a7861105e453da26199f08fd5a985d3e",
+      "sameRunSourceQa": {
+        "receiptSha256": "8a35d964f2cda8efe03f181f73d04e9d1263f313bf53d0704bdddd70f12b15c0",
+        "controlSha": "bc08df86e5f49e399c406c338cdd3be226d4c70b",
+        "runId": 44034333358,
+        "producerRunAttempt": 1,
+        "pathCount": 23,
+        "acceptedPaths": [
+          "app/core/programa.js",
+          "app/core/ui.js",
+          "app/core/notif.js",
+          "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+          "app/core/backend-finance-benefits.js",
+          "app/core/backend-cxdata-finance-read.js",
+          "app/adapters/cxorbia-command-adapter-v1.js",
+          "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+          "app/core/backend-bulletins.js",
+          "app/modules/dashboard.js",
+          "app/modules/periodos.js",
+          "app/modules/configuracion.js",
+          "app/modules/cliente-insights.js",
+          "app/adapters/tya-c6-unified-human-runtime-v1.js",
+          "app/sw.js",
+          "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+          "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+          "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+          "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+          "backend/runtime/hr-live-service/server.mjs",
+          "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+          "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+          "tools/hr-source/tya-enforce-live-tab-registry.mjs"
+        ],
+        "scope": "SOURCE_QA_ONLY_NOT_E2E_OR_HUMAN_ACCEPTANCE"
+      },
+      "allApprovedOwnersLoaded": true,
+      "duplicateScripts": 0,
+      "builds": 0,
+      "deploys": 0,
+      "writes": 0,
+      "production": false,
+      "schemaVersion": "cxorbia.i3.current-c3-preterminal-audit.v1",
+      "localDate": "2026-11-17",
+      "controlHeadAtAudit": "bc08df86e5f49e399c406c338cdd3be226d4c70b",
+      "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/44034333358",
+      "runId": 44034333358,
+      "runNumber": 2588,
+      "runAttempt": 1,
+      "artifactId": 14306936915,
+      "artifactName": "cxorbia-recovery-i3-certify-diagnostics-44034333358",
+      "artifactDigest": "sha256:6e518201f1bac5604255fcbf8fa69a237b863659de8d1534e4f6cdd8e792b62f",
+      "artifactDigestIndependentlyVerified": true,
+      "artifactDigestAuthority": "PROVIDER_METADATA_AND_INDEPENDENTLY_DOWNLOADED_ZIP_SHA256",
+      "sourceReadyDomainNames": [
+        "auth-protected-data-runtime",
+        "base-router-shell-cache",
+        "benefits",
+        "canonical-hr-state-adapters",
+        "certifications",
+        "client-portal-reportkit",
+        "core-config-data-router-permissions",
+        "dashboard-operation",
+        "documents-resources",
+        "finance-core-liquidation-costs",
+        "historical",
+        "human-runtime-domain-consistency",
+        "identity-membership-roll-forward",
+        "persistence-command-ack-boundary",
+        "phase-a-supporting-core",
+        "projects-periods-hr-source-wizard-multiproject",
+        "questionnaire-shopper",
+        "reports-admin-shopper",
+        "shoppers-mi-visitas-profile",
+        "visits-review-postulations-reservations",
+        "tenant-admin-config-branding"
+      ],
+      "pendingOwnerProofFiles": 0,
+      "pendingBlobProvenanceFiles": 0,
+      "pendingMappingApprovalFiles": 0,
+      "phaseAComplete": false,
+      "allModulesMatch": false,
+      "gate20": "HOLD",
+      "gate21": "HOLD",
+      "i4Authorized": false,
+      "existingHumanPassBlocksPreserved": [
+        "B4",
+        "B5",
+        "B6",
+        "B7"
+      ],
+      "strictCertificationStatus": "HOLD",
+      "scope": "RUN2588_CURRENT_SOURCE_C3_PLUS_COMPLETE_BENEFITS_INCREMENTAL_READBACK__NOT_TERMINAL_CERTIFICATE",
+      "verifiedResult": {
+        "artifactId": 14306936915,
+        "file": "current-preterminal-result.json",
+        "sha256": "afabe209136fd698353f4ed44f7bdd9b283ca4c367672e4bb34d13dcded3107d",
+        "matchModulesBeforeBenefits": 5
+      },
+      "matchCountAuthority": {
+        "artifactId": 14306936915,
+        "file": "module-truth-progress.json",
+        "sha256": "5e056b5935690264e7c4db979fc3f5e49edac8732670ee8b624a1c754cba2c31",
+        "matchModules": 6,
+        "nonMatchModules": 15,
+        "scope": "DERIVED_AFTER_COMPLETE_BENEFITS_CONTRACT_ONLY"
+      },
+      "rawEvidencePreserved": {
+        "rawC3ResultInReceipt": true,
+        "originalC3MatchModules": 5,
+        "postBenefitsProgressMatchModules": 6,
+        "terminalArtifactProduced": false
+      }
+    },
+    "domainReceipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
+      "gitBlob": "710bfcc03e10070cd365d90ed52ff71f26bc72ff",
+      "sha256": "d09311c4eb786b57f751482f069293293fc8cae740aaafbaba50085d4051e2d5",
+      "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
+      "receiptBlob": "710bfcc03e10070cd365d90ed52ff71f26bc72ff",
+      "kind": "C3_PRETERMINAL_AND_CERTIFY_ATTEMPT_NOT_TERMINAL_CERTIFICATE",
+      "decision": "HOLD_I3_DEV_MATERIALIZED_RUN2588_BENEFITS_MATCH_6_OF_21_REMAINING_FROZEN_CONTRACTS",
+      "state": "HOLD",
+      "runId": 44034333358,
+      "runNumber": 2588,
+      "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+      "sourceTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
+      "artifactId": 14306936915,
+      "artifactDigest": "sha256:6e518201f1bac5604255fcbf8fa69a237b863659de8d1534e4f6cdd8e792b62f",
+      "production": false,
+      "terminalCertified": false,
+      "phaseAComplete": false,
+      "i4Authorized": false,
+      "matchModules": 6,
+      "nonMatchModules": 15,
+      "scope": "C3_AND_BENEFITS_FOCAL_READBACK_NOT_A_DEPLOYMENT_OR_TERMINAL_CERTIFICATE"
+    },
+    "matrix": {
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V359.json",
+      "gitBlob": "fe1df386c9905062b196f418a61ca16ebaafaefd"
+    },
+    "ledger": {
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V686_2026-11-17.json",
+      "gitBlob": "a5b61ad1f8367eb9873ee2f1cc3f578dd47124cf"
+    },
+    "validatedControl": {
+      "runId": 44150508959,
+      "runNumber": 2590,
+      "conclusion": "success"
+    },
+    "humanContinuity": {
+      "runId": 44150508243,
+      "conclusion": "success"
+    }
+  },
+  "startingIndicators": {
+    "strictDomains": {
+      "complete": 6,
+      "total": 21,
+      "pending": 15
+    },
+    "humanAcceptance": {
+      "complete": 4,
+      "total": 9,
+      "protectedBlocks": [
+        "B4",
+        "B5",
+        "B6",
+        "B7"
+      ]
+    },
+    "frozenExecutionBlocks": {
+      "complete": 2,
+      "total": 7,
+      "closed": [
+        0,
+        1
+      ]
+    },
+    "sourcePreparation": {
+      "ready": 21,
+      "total": 21,
+      "pendingFiles": 0
+    },
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "phaseAComplete": false,
+    "i4Authorized": false
+  },
+  "executionPlan": {
+    "date": "2026-11-17",
+    "timezone": "America/Guatemala",
+    "iteration": "I3",
+    "authority": "CXORBIA_I3_I4_PLAN_CHOQUE_20261113_FROZEN.md",
+    "scope": "DAILY_EXECUTION_BREAKDOWN_OF_EXISTING_FROZEN_BLOCKS_0_TO_6__NOT_A_NEW_PLAN_OR_ITERATION",
+    "objective": "Complete the remaining Phase A contracts, certify one immutable artifact and request exact production authorization; today is the target, not an evidence-free promise.",
+    "startingAccounting": {
+      "frozenBlocksClosed": [
+        0,
+        1
+      ],
+      "frozenBlockTotal": 7,
+      "strictDomainsMatch": 6,
+      "strictDomainTotal": 21,
+      "humanPassBlocks": [
+        "B4",
+        "B5",
+        "B6",
+        "B7"
+      ],
+      "humanBlockTotal": 9,
+      "sourceReady": 21,
+      "sourceTotal": 21,
+      "pendingSourceFiles": 0
+    },
+    "discoveredDesynchronizations": [
+      {
+        "id": "SYNC-20261117-01",
+        "classification": "MAPPING_FAILURE",
+        "finding": "Current aliases still described source680/RUN2581 or binding836 pending although source836/RUN2587 was already served.",
+        "resolution": "Archive predecessor wrappers and align current source, materialization, C3, checkpoint and next action; preserve immutable historical receipts.",
+        "verification": "Existing current-authority, latest-execution and shock continuity guards."
+      },
+      {
+        "id": "SYNC-20261117-02",
+        "classification": "MAPPING_FAILURE",
+        "finding": "RUN2588 progress proves Benefits MATCH6 but current matrix/counts/residual text still say5 and Benefits pending.",
+        "resolution": "Credit only the complete Benefits domain; preserve other20 modules and all B4-B7 human approvals; update all current counts and blockers atomically.",
+        "verification": "Owner-specific Benefits validator, artifact digest, observed hash, exactly one changed classification and strict count6/21."
+      },
+      {
+        "id": "SYNC-20261117-03",
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "findingId": "VRM-359",
+        "finding": "Focal certify SUCCESS activated consumers of a terminal artifact that focal mode intentionally did not produce.",
+        "resolution": "Existing workflow requires actual successful terminal upload with artifact ID before live-fixtures/gate21.",
+        "verification": "Regression fails before correction;140 tests pass after; current canonical CI bound to the correction commit."
+      },
+      {
+        "id": "SYNC-20261117-04",
+        "classification": "MAPPING_FAILURE",
+        "finding": "The consumption commit omitted the C3 counter prefix required by the existing control test.",
+        "resolution": "Restore the exact zero-gap/21-source-ready prefix with current6/21 domain status; preserve original guard and all certifications.",
+        "verification": "Reproduce RUN2589 failure locally, rerun the exact unchanged alias assertion after metadata correction and verify the existing canonical CI."
+      }
+    ],
+    "blocks": [
+      {
+        "id": 0,
+        "scope": "I4-P0 frozen deployment handoff",
+        "state": "CLOSED_PRESERVED",
+        "exit": "Preserve accepted guard; reprove only if its owner/contract changes."
+      },
+      {
+        "id": 1,
+        "scope": "I3-Q2 source accreditation",
+        "state": "CLOSED_PRESERVED",
+        "currentMaintenance": "Consume Benefits evidence and correct the existing focal/terminal artifact dependency; source21/21 remains closed.",
+        "exit": "One coherent descriptor/CURRENT/matrix/ledger set; original DEV2587 seal and6/21 current domain count; canonical control checks."
+      },
+      {
+        "id": 2,
+        "scope": "I3-Q3 Admin/Shopper/HR B1-B3 and B14",
+        "state": "NEXT",
+        "tasks": [
+          "Only uncovered login/identity/availability/postulation/assignment/history/GT-HN clauses",
+          "B14 real-provider fixture: independent same HR revision; last-valid-event ordering; conflict/echo; lost-response replay; remote ACK/readback and no duplicates",
+          "Reuse published private project HR binding; no reimport or rebuild of unchanged source"
+        ],
+        "exit": "Owner-specific receipts for uncovered clauses, ordinary sessions and required human/visual acceptance; current counters updated."
+      },
+      {
+        "id": 3,
+        "scope": "I3-Q4 B8 finance C09/C10 residuals",
+        "state": "PENDING_READONLY_PREPARATION_CAN_PARALLEL",
+        "tasks": [
+          "Per-row/currency/period ledger support and role/session parity",
+          "Accounts/movements/liquidations/batches/support persistence and eligible exports",
+          "Locate existing Q7300/application and only genuinely ambiguous September exceptions; no duplicate payment or invented financial data"
+        ],
+        "exit": "Independent session readback, provider ACK/idempotence when write applies, clean fixtures, B8 acceptance and covered financial-domain contracts."
+      },
+      {
+        "id": 4,
+        "scope": "I3-Q5 B9 and remaining21-domain coverage",
+        "state": "PENDING_READONLY_PREPARATION_CAN_PARALLEL",
+        "tasks": [
+          "D08 course/lesson/resource/evaluation/edit/progress in independent Admin/Shopper/Cliente sessions",
+          "Preserve already-proven D08 provider ACK/replay and B4 bank administration",
+          "Fill only missing owner-specific contracts among15 remaining domains and required visual coverage"
+        ],
+        "exit": "21 complete domain receipts, all required human/visual approvals, no unexplained drift; each completed domain credited immediately."
+      },
+      {
+        "id": 5,
+        "scope": "I3-Q6 Gate20 then Gate21",
+        "state": "HOLD_UNTIL_CONTRACT_CLOSURE",
+        "exit": "Gate20 PASS, Gate21 fingerprint PASS on same unique candidate and immutable artifact; I3 GO, exact manifest/TAR/runtime/Hosting identities ready."
+      },
+      {
+        "id": 6,
+        "scope": "I4 immutable production replacement",
+        "state": "HOLD_EXPLICIT_EXACT_ARTIFACT_AUTHORIZATION_REQUIRED",
+        "exit": "Paula authorizes exact certified artifact; no rebuild; production readback HR/Admin/Shopper/postulation/assignment/KPIs/no duplicates; PRODUCTION_LOCK and rollback evidence."
+      }
+    ],
+    "executionRules": {
+      "oneWriter": true,
+      "parallelWork": "Read-only evidence preparation and independent audit only; coordinate mutable fixtures and shared HR revision.",
+      "serialDevPublication": "Each proven functional delta: exact owner -> scoped fix -> meaningful tests -> existing single DEV lane -> version/digest readback -> receipt/counter. Evidence-only completion uses already-served bytes without redeploy.",
+      "preserveApprovals": "No replay of B4-B7 or other accepted cases unless exact owner/dependency/configuration/contract drift is demonstrated.",
+      "failureDiscipline": "Classify allowed failure, identify one owner and one concrete counterexample; correct within its current frozen block. No alternative workflow, overlay, candidate or general re-audit.",
+      "noUnboundedDayPromise": true,
+      "endOfEachIteration": [
+        "Block and contract advanced with before/after evidence",
+        "Exact currently served source/Hosting/runtime and control revision",
+        "What remains and its owner",
+        "Next exact action",
+        "GO/HOLD/NO_GO and indispensable authorization"
+      ],
+      "production": "DO_NOT_TOUCH_UNTIL_I3_GO_AND_EXPLICIT_EXACT_ARTIFACT_AUTHORIZATION"
+    }
+  },
+  "frozenDecisions": {
+    "soleRepository": "paulaosoriof86/demoCXOrbia",
+    "soleBranch": "recovery/cxorbia-phase-a-20260831",
+    "oneCandidate": true,
+    "oneWriter": "ChatGPT direct technical writer under CR-20260910-02; collaborators read-only",
+    "serialDevPublication": true,
+    "incrementalClosure": "A complete tested product delta is published to the existing DEV lane and read back in the same intervention; complete proof of already-served bytes is credited without rebuilding.",
+    "preservation": "Accepted source, functional and human receipts remain valid unless exact owner/dependency/configuration/contract drift is proved.",
+    "indicatorRule": "Update measured counters immediately for completed units. A source test, read-only capability check, control CI or partial scenario cannot be relabelled as a complete domain or production certificate.",
+    "failureRule": "One allowed failure classification, exact owner and counterexample; fix within the current block and repeat its gate. No extra workflow, overlay, transporter, candidate, general re-audit or data reimport.",
+    "b14Boundary": "Keep operational external_read_only policy. A B14 remote-write proof requires a concrete approved isolated fixture, exact provider path, preconditions, ACK/readback/replay/concurrency and cleanup; capability metadata and Firestore ACK alone do not close external HR bidirectionality.",
+    "d08FinancePreservation": "Preserve RUN2391 Academy provider progress/ACK/new-session/replay and RUN1992 financial C04/C05 commands while owners/dependencies remain identical; execute only uncovered UI/role/finance clauses.",
+    "production": "DO_NOT_TOUCH tya-plataforma.web.app until I3 GO and Paula explicit authorization for exact immutable artifact; no rebuild between certification and publication.",
+    "reportEachIteration": [
+      "What advanced with before/after evidence",
+      "Indicators changed and why; unchanged totals remain explicit",
+      "Exact served source/runtime/Hosting and control readback",
+      "What remains and its owner",
+      "Next exact action and required authorization"
+    ]
+  },
+  "nextAction": "I3-Q3: preserve source836/RUN2587 exact DEV and consume RUN2588 Benefits READ_ONLY PASS (6/21); after the existing canonical control CI verifies the artifact-consumer correction, execute only uncovered B14/Admin-Shopper-HR clauses on the approved real-provider fixture: same external HR revision, valid-event ordering, remote ACK, lost-response replay, conflict/echo handling and no duplicates. Reuse accepted source and B4/B5/B6/B7 evidence. Prepare C09/C10 finance and D08 Academy read-only in parallel, with one technical writer and serial DEV publication of each proven product delta. Credit complete domain receipts immediately without rebuilding unchanged served bytes. Then close frozen Q4/Q5 residuals and Gate20 -> Gate21; I4 remains blocked until I3 GO and explicit authorization for the exact certified artifact.",
+  "additionalCurrentObservation": {
+    "classification": "MAPPING_FAILURE",
+    "domain": "persistence-command-ack-boundary",
+    "scope": "ACTIVE_RESIDUAL_TEXT_ONLY",
+    "finding": "Current row still describes source607/HR503/materializeVRM358 despite verified source836/RUN2587.",
+    "resolution": "Correct the stale current residual text at the next evidence consumption; preserve immutable historical receipts and do not redeploy the already-served binding."
+  },
+  "immutability": "This freeze records the starting baseline. Future evidence and progress update CURRENT and successor receipts; do not overwrite this frozen baseline."
+}

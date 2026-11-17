@@ -23924,6 +23924,14 @@
         "GO/HOLD/NO_GO and indispensable authorization"
       ],
       "production": "DO_NOT_TOUCH_UNTIL_I3_GO_AND_EXPLICIT_EXACT_ARTIFACT_AUTHORIZATION"
+    },
+    "freeze": {
+      "path": "CXORBIA_I3_DAILY_EXECUTION_LOCK_20261117_FROZEN.json",
+      "gitBlob": "c2b43b884b37274e52f68d614e1cd6d877cfbf46",
+      "sha256": "6dfaeef0cbc358024a7ecda9d059ca40b687d1316dc30622e196553aba57391a",
+      "frozenAt": "2026-11-17T18:55:11Z",
+      "authority": "PAULA_EXPLICIT_20261117_FREEZE_AND_CONTINUE",
+      "baselineOnly": true
     }
   },
   "controlVerificationRun2589": {
@@ -23945,5 +23953,13 @@
     "scope": "CONTROL_METADATA_ONLY_NOT_PRODUCT_OR_CERTIFICATION_CHANGE",
     "production": false,
     "consumedAt": "2026-11-17T18:40:06Z"
+  },
+  "dailyExecutionPlanFreeze": {
+    "path": "CXORBIA_I3_DAILY_EXECUTION_LOCK_20261117_FROZEN.json",
+    "gitBlob": "c2b43b884b37274e52f68d614e1cd6d877cfbf46",
+    "sha256": "6dfaeef0cbc358024a7ecda9d059ca40b687d1316dc30622e196553aba57391a",
+    "frozenAt": "2026-11-17T18:55:11Z",
+    "authority": "PAULA_EXPLICIT_20261117_FREEZE_AND_CONTINUE",
+    "baselineOnly": true
   }
 }
