@@ -2,10 +2,60 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {spawnSync} from 'node:child_process';
-import {digest,projectIdFor,projectCommandPaths,observeCountryUpdate,validateCountryReadback,composeTenantCountryReceipts} from './cxorbia-i3-project-country-live-proof.mjs';
+import vm from 'node:vm';
+import {digest,projectIdFor,projectCommandPaths,observeCountryUpdate,validateCountryReadback,composeTenantCountryReceipts,countryConfigurationReady,installCountryUiObservation} from './cxorbia-i3-project-country-live-proof.mjs';
 import {validReadonlyReceipt} from './cxorbia-i3-tenant-readonly-acceptance.test.mjs';
 const descriptor=JSON.parse(fs.readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8'));
 const mod=JSON.parse(fs.readFileSync(descriptor.moduleTruthPath,'utf8')).modules.find(x=>x.domain==='tenant-admin-config-branding');
+function countryReadyFixture(){
+  const expected={tenantId:'tenant-a',projectId:'fixture-a',version:1,countries:['GT']},button={isConnected:true,disabled:false,getClientRects:()=>[{}]};
+  const body={isConnected:true,querySelectorAll:()=>[{dataset:{rmc:'GT'}}]};
+  const resources={status:'ready',source:'firestore',tenantId:'tenant-a',projectId:'fixture-a',periodId:''};
+  const cx={data:{currentProjectId:'fixture-a',__backendAllProjectRecords:[{id:'fixture-a',version:1,countries:['GT']}]},session:{view:'config'},
+    dataSource:{status:'ready',updating:false,sourceRef:'firestore-internal:tenant-a:fixture-a'},
+    backendResources:{scope:()=>({tenantId:'tenant-a',projectId:'fixture-a',periodId:''})},connectedAdminConfig:{enabled:()=>true,updateProjectCountries(){}}};
+  return {expected,button,body,cx,resources,document:{querySelector:()=>body,querySelectorAll:s=>s.includes('#addPais')?[button]:[{}]}};
+}
+function ready(f){return vm.runInNewContext('('+countryConfigurationReady.toString()+')(expected)',{window:{CX:f.cx,CX_BACKEND_RESOURCES_STATUS:f.resources},document:f.document,expected:f.expected});}
+test('country action waits for current provider publication without inventing a period for an internal draft',()=>assert.equal(ready(countryReadyFixture()),true));
+test('provider publication is awaited before opening Config, and final readiness still requires its live UI',()=>{
+  const f=countryReadyFixture();f.cx.session.view='dashboard';f.body.isConnected=false;
+  f.expected.requireUi=false;assert.equal(ready(f),true);
+  f.resources.status='loading';assert.equal(ready(f),false);
+  f.resources.status='ready';f.expected.requireUi=true;assert.equal(Boolean(ready(f)),false);
+});
+test('internal ready publication remains authoritative when its non-authoritative legacy updating flag is still true',()=>{
+  const f=countryReadyFixture();f.cx.dataSource.updating=true;assert.equal(ready(f),true);
+  f.cx.dataSource.status='updating';assert.equal(ready(f),false);
+});
+for(const [name,change] of [
+  ['resources pending',f=>f.resources.status='loading'],['foreign resource tenant',f=>f.resources.tenantId='other'],
+  ['foreign resource project',f=>f.resources.projectId='other'],['stale period',f=>f.resources.periodId='old'],
+  ['HR source still selected',f=>f.cx.dataSource.sourceRef='hr-live'],['authority updating',f=>f.cx.dataSource.status='updating'],
+  ['stale fixture version',f=>f.cx.data.__backendAllProjectRecords[0].version=2],['unexpected preimage',f=>f.cx.data.__backendAllProjectRecords[0].countries=['GT','HN']],
+  ['foreign active project',f=>f.cx.data.currentProjectId='other'],['different route',f=>f.cx.session.view='dashboard'],
+  ['disabled provider',f=>f.cx.connectedAdminConfig.enabled=()=>false],['detached button',f=>f.button.isConnected=false],
+  ['hidden button',f=>f.button.getClientRects=()=>[]],['disabled button',f=>f.button.disabled=true],
+  ['wrong visible country',f=>f.body.querySelectorAll=()=>[{dataset:{rmc:'HN'}}]],
+  ['ambiguous button',f=>f.document.querySelectorAll=s=>s.includes('#addPais')?[f.button,f.button]:[{}]]
+])test('country action remains blocked on '+name,()=>{const f=countryReadyFixture();change(f);assert.equal(Boolean(ready(f)),false);});
+test('passive modal trace preserves remount and removal order without recording body text or issuing product actions',()=>{
+  let mutations,click,resources,currentButton={},time=0;
+  const window={CX:{data:{currentProjectId:'fixture-a'},session:{view:'config'},bus:{on:(event,listener)=>{assert.equal(event,'resources');resources=listener;}}},addEventListener(){}};
+  const document={body:{},querySelector:()=>currentButton,addEventListener:(event,listener)=>{assert.equal(event,'click');click=listener;}};
+  class Observer{constructor(callback){mutations=callback;}observe(target,options){assert.equal(target,document.body);assert.equal(options.subtree,true);}}
+  vm.runInNewContext('('+installCountryUiObservation.toString()+')()',{window,document,MutationObserver:Observer,performance:{now:()=>++time}});
+  const dialog={nodeType:1,matches:s=>s==='.cx-ov',querySelectorAll:s=>s==='[data-c]'?[{dataset:{c:'HN'}}]:[],getAttribute:()=> 'Agregar país',innerText:'PRIVATE BODY'};
+  click({isTrusted:true,target:{closest:()=>({id:'addPais',dataset:{}})}});
+  mutations([{addedNodes:[dialog],removedNodes:[]}]);
+  resources({status:'ready',source:'firestore',projectId:'fixture-a',privateField:'PRIVATE BODY'});
+  currentButton={};mutations([{addedNodes:[],removedNodes:[dialog]}]);
+  const trace=window.__CX_I3_COUNTRY_UI_TRACE;
+  assert.deepEqual(Array.from(trace.events,x=>x.kind),['OBSERVATION_INSTALLED','NATIVE_CLICK','DIALOG_ADDED','RESOURCES_PUBLICATION','COUNTRY_BUTTON_REPLACED','DIALOG_REMOVED']);
+  assert.equal(trace.events[1].trusted,true);assert.equal(trace.viewGeneration,1);assert.equal(JSON.stringify(trace).includes('PRIVATE BODY'),false);
+  for(let i=0;i<180;i++)resources({status:'ready'});assert.equal(trace.events.length,160);assert.ok(trace.dropped>0);
+  trace.active=false;const count=trace.dropped;resources({status:'ready'});assert.equal(trace.dropped,count);
+});
 test('country observer keeps exact request scope and waits for the click before returning its response',async()=>{
   const response={url:()=>'/v1/cxorbia/commands',request:()=>({postDataJSON:()=>({commandType:'project.update',projectId:'owned-project'})})};
   const events=[];

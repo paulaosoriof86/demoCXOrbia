@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "cxorbia.i3.qa-control-source-proof.v1",
+  "createdAt": "2026-11-17T04:53:09Z",
+  "decision": "PASS_LOCAL_QA_CONTROL_SOURCE_TESTS_PENDING_SAME_ARTIFACT_CI",
+  "expectedControlParent": "388b1fd40deb2142789b1845cac5b536c98ca805",
+  "productSourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+  "productSourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
+  "scopeReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2584_COUNTRY_IDENTITY_QA_P0_SCOPE_20261117.json",
+    "gitBlob": "ab4803299ce70d59b85085cf661cc6584730cda0",
+    "sha256": "f785a609abc24da96881648327e9313ec68268185f46d1dc7b3e11fa713fed00"
+  },
+  "ownerGitBlobs": {
+    "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs": "049b8331d32726c898602e35a77e41d0d0abb48e",
+    "tools/qa/cxorbia-i3-terminal-human-contract.mjs": "aeabaaafcd1d18d685e774fa7da221219423ebfa",
+    "tools/qa/cxorbia-i3-terminal-human-contract.test.mjs": "37ec3971dda46e7ada00cfd88617fdb376e0a15c",
+    "tools/qa/cxorbia-i3-project-country-live-proof.mjs": "506fbb1f8709e714dd9380080151513eabbba184",
+    "tools/qa/cxorbia-i3-project-country-live-proof.test.mjs": "1b3bc4ac6f176b8e8da19d46009a5fa2637b3570"
+  },
+  "affectedTests": {
+    "pass": 442,
+    "fail": 0,
+    "logSha256": "8e0b26639b2396d57f6f7b95ae06023530d877c44d553a892d75304fd86af741",
+    "suites": [
+      "tools/qa/cxorbia-i3-project-country-live-proof.test.mjs",
+      "tools/qa/cxorbia-i3-terminal-human-contract.test.mjs",
+      "tools/qa/cxorbia-i3-tenant-readonly-acceptance.test.mjs",
+      "tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs",
+      "tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs",
+      "tools/qa/cxorbia-i3-human-pass-monotonic-guard.test.mjs"
+    ]
+  },
+  "additionalHistoricalSuiteObservation": {
+    "path": "backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-ui-cleanup.test.mjs",
+    "result": "214_PASS_1_FAIL_IN_COMBINED_OPTIONAL_RUN",
+    "failedTest": "I3 B2 self-display authority preserves HR and Auth ownership",
+    "assertion": "Historical literal source regex for displayNameAuthority assignment does not match unchanged source680 provider",
+    "productOwnerUnchanged": true,
+    "testOwnerUnchanged": true,
+    "notFixedByThisPackage": true,
+    "logSha256": "5bfbef8cc4f79bb8426a4f8fa499e9962cd4427a8b00f04b816dd80dea7346e5"
+  },
+  "identitySummaryPersistedOnPassAndFail": true,
+  "countryReadinessAndPassiveTrace": true,
+  "countryRetryOrForcedClick": false,
+  "actionAckReadbackReplayCleanupPredicatesPreserved": true,
+  "productChanges": 0,
+  "workflowChanges": 0,
+  "devDeploys": 0,
+  "production": false,
+  "terminalCertified": false,
+  "nextExactAction": "I3-Q3: persist the name-free Admin identity success/failure receipt and instrument the country modal lifecycle/readiness in the existing QA owners; preserve real HN action, ACK, independent durable readback, reload, replay and fixture cleanup. Execute the existing same-artifact C3/certify lane once after affected tests pass, then consume its terminal result atomically. Preserve DEV RUN2581/source680 and B4/B5/B6/B7; no new product deployment without a proven product delta. Continue B14 project binding/runtime mapping and remote ACK, D08, C09/C10, strict21/G20/G21; I4 only GO plus explicit exact-artifact authorization."
+}

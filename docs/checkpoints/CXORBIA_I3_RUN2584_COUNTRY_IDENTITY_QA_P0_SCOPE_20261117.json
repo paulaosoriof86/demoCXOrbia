@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "cxorbia.i3.qa-control-p0-scope.v1",
+  "createdAt": "2026-11-17T04:53:09Z",
+  "iteration": "I3",
+  "block": "I3-Q3",
+  "expectedControlParent": "388b1fd40deb2142789b1845cac5b536c98ca805",
+  "productSourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+  "productSourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "productDefectProven": false,
+  "decision": "P0_PROVEN_QA_EVIDENCE_COMPLETENESS_AND_MODAL_OBSERVATION_ONLY",
+  "evidence": {
+    "runId": 44011691775,
+    "runNumber": 2584,
+    "terminalArtifactId": 14296828733,
+    "identity": {
+      "artifactId": 14296828733,
+      "file": "full-human-acceptance/human-live-acceptance.json",
+      "sha256": "9d35f3903fc35ec42f0f2314054803670c8e364bf2dd5ea9c5ded4f91c1dea45"
+    },
+    "country": {
+      "artifactId": 14296828733,
+      "file": "full-human-acceptance/tenant-readonly/project-country-live-proof.json",
+      "sha256": "653e3ed99387156dfd82c06dfbc438a5c0584f54a5c25c635b602478366a24b2"
+    }
+  },
+  "provenFacts": [
+    "Admin identity invariant executed successfully but success summary is not persisted",
+    "HN selector exists in source; observed screenshot has no modal and no project.update; actual disappearance cause not yet traced"
+  ],
+  "allowlist": [
+    "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs",
+    "tools/qa/cxorbia-i3-terminal-human-contract.mjs",
+    "tools/qa/cxorbia-i3-terminal-human-contract.test.mjs",
+    "tools/qa/cxorbia-i3-project-country-live-proof.mjs",
+    "tools/qa/cxorbia-i3-project-country-live-proof.test.mjs"
+  ],
+  "requiredProof": [
+    "PASS and FAIL identity receipts persist name-free counts and exact tuple",
+    "Modal readiness/lifecycle observable without weakening real action or ACK",
+    "Country command/durable/reload/idempotency/cleanup predicates unchanged",
+    "Affected local tests then one existing current C3/certify attempt"
+  ],
+  "forbidden": [
+    "product changes based on modal hypothesis",
+    "new workflow or runner lane",
+    "source rebuild or DEV deployment without product delta",
+    "remote HR writes",
+    "new human approval",
+    "domain promotion from global automated PASS"
+  ],
+  "production": false,
+  "ownerTruth": [
+    {
+      "path": "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs",
+      "headBlob": "917b549102178d2d04ac2359203f682064819d89",
+      "F9": "CONTROL_QA_NOT_PRODUCT_RELEASE_OWNER",
+      "sourceSuccessor": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+      "liveRunId": 44011691775,
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "scope": "QA_SUCCESS_RECEIPT_GAP_OR_MODAL_DIAGNOSTIC_ONLY"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-terminal-human-contract.mjs",
+      "headBlob": "0269b51e5fcf575500e219c57ab946f2d3c3cde0",
+      "F9": "CONTROL_QA_NOT_PRODUCT_RELEASE_OWNER",
+      "sourceSuccessor": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+      "liveRunId": 44011691775,
+      "classification": "MATCH",
+      "scope": "QA_SUCCESS_RECEIPT_GAP_OR_MODAL_DIAGNOSTIC_ONLY"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-terminal-human-contract.test.mjs",
+      "headBlob": "93672a5b435de3aaeb81f2cd52a6417361294a65",
+      "F9": "CONTROL_QA_NOT_PRODUCT_RELEASE_OWNER",
+      "sourceSuccessor": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+      "liveRunId": 44011691775,
+      "classification": "MATCH",
+      "scope": "QA_SUCCESS_RECEIPT_GAP_OR_MODAL_DIAGNOSTIC_ONLY"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-project-country-live-proof.mjs",
+      "headBlob": "dc89904d47cec4a75b09e2c3302d3a3cf8aeb502",
+      "F9": "CONTROL_QA_NOT_PRODUCT_RELEASE_OWNER",
+      "sourceSuccessor": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+      "liveRunId": 44011691775,
+      "classification": "MATCH",
+      "scope": "QA_SUCCESS_RECEIPT_GAP_OR_MODAL_DIAGNOSTIC_ONLY"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-project-country-live-proof.test.mjs",
+      "headBlob": "3751b14f762ba46408a7684af28c0a6f34d411b3",
+      "F9": "CONTROL_QA_NOT_PRODUCT_RELEASE_OWNER",
+      "sourceSuccessor": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+      "liveRunId": 44011691775,
+      "classification": "MATCH",
+      "scope": "QA_SUCCESS_RECEIPT_GAP_OR_MODAL_DIAGNOSTIC_ONLY"
+    }
+  ]
+}

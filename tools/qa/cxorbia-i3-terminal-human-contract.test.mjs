@@ -2,13 +2,39 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
-import {collectTenantAdjudications,tenantAdjudicationReceiptRefs,currentHrPeriodId,representativeHrExpectation,representativeMatchesHr} from './cxorbia-i3-terminal-human-contract.mjs';
+import {collectTenantAdjudications,tenantAdjudicationReceiptRefs,currentHrPeriodId,representativeHrExpectation,representativeMatchesHr,persistAdminCompositionIdentityProof} from './cxorbia-i3-terminal-human-contract.mjs';
 import {canonicalNameHash,validateNameRepairRequest,nameRepairInvariant,validateNameRepairCommand,validateNameRepairSequence,validateNameRepairAck,validateNameRepairRecovery,selectNameRepairReceipt,allowNameRepairAbsentRetry} from './cxorbia-i3-canonical-name-repair-live.mjs';
 const link=()=>({id:'link-proof',tenantId:'tenant-a',projectScope:'project-a',canonicalShopperId:'canonical-a',
   sourceIdentityKey:'first-alias',exactAliases:['first-alias','second-alias'],sourceAliases:['first-alias','second-alias'],
   status:'active',authorityType:'tenant_adjudication',authorityRef:'durable-receipt',providerAck:true,
   humanConfirmed:true,fuzzyMatching:false,sourceSafe:true});
 const scope={tenantId:'tenant-a',projectId:'project-a'};
+function adminIdentityFixture(){return {summary:{visits:12,shoppers:4,hrShoppers:3,expectedCanonicalHrShoppers:3,
+  rawHrReferences:3,platformOnly:1,platformBadFlags:0,platformCrossProject:0,duplicateShopperIds:0,periods:2,
+  protectedNames:0,realNames:4,technicalPrimaryNames:0,unresolvedAuthorityCount:0,runtimeOutOfRange:1,expectedOutOfRange:1,
+  nameMismatches:[],unresolvedReviewMismatches:[],project:'project-a',revision:'c'.repeat(64)},
+  expected:{visits:12,periods:2,projectId:'project-a'},identity:{sourceSha:'a'.repeat(40),sourceTree:'b'.repeat(40),
+    hrRevision:'c'.repeat(64),runtimeRevision:'runtime-a',runtimeDigest:'sha256:'+'d'.repeat(64),hostingVersion:'hosting-a',runId:'123',runAttempt:'1'}};}
+test('Admin identity PASS is persisted with exact artifact binding and does not expose unexpected personal fields',()=>{
+  const f=adminIdentityFixture();f.summary.fullName='PRIVATE NAME MUST NOT BE PUBLISHED';f.summary.nameMismatchDetails=[{name:'PRIVATE NAME MUST NOT BE PUBLISHED'}];
+  const calls=[],proof=persistAdminCompositionIdentityProof({...f,write:(...args)=>calls.push(args)});
+  assert.equal(proof.decision,'PASS_I3_ADMIN_COMPOSITION_IDENTITY');assert.equal(calls.length,1);
+  assert.equal(calls[0][0],'admin-composition-identity-proof.json');assert.equal(calls[0][1],proof);
+  assert.equal(proof.sourceSha,f.identity.sourceSha);assert.equal(proof.humanApproval,false);assert.equal(proof.fullDomain,false);
+  assert.equal(JSON.stringify(proof).includes('PRIVATE NAME'),false);
+});
+for(const [name,change] of [
+  ['different HR revision',f=>f.summary.revision='e'.repeat(64)],['duplicate identity',f=>f.summary.duplicateShopperIds=1],
+  ['real name mismatch',f=>f.summary.nameMismatches=['private-identity']],['unresolved identity',f=>f.summary.unresolvedReviewMismatches=['private-identity']],
+  ['technical display name',f=>f.summary.technicalPrimaryNames=1],['cross-project row',f=>f.summary.platformCrossProject=1],
+  ['composition mismatch',f=>f.summary.shoppers=5],['missing summary field',f=>delete f.summary.nameMismatches],
+  ['missing binding',f=>delete f.identity.runtimeRevision],['wrong project',f=>f.summary.project='other']
+])test('Admin identity failure is persisted without losing its failed predicate: '+name,()=>{
+  const f=adminIdentityFixture();change(f);const calls=[];
+  const proof=persistAdminCompositionIdentityProof({...f,write:(...args)=>calls.push(args)});
+  assert.equal(proof.decision,'HOLD_I3_ADMIN_COMPOSITION_IDENTITY');assert.equal(calls.length,1);
+  assert.ok(Object.values(proof.checks).some(v=>v===false));assert.equal(JSON.stringify(proof).includes('private-identity'),false);
+});
 test('confirmed provider exact aliases reach the existing tenant adjudication check',()=>{
   const result=collectTenantAdjudications([link()],scope);
   assert.equal(result.targets['second-alias'],'canonical-a');

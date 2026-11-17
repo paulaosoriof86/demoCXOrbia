@@ -4,6 +4,41 @@ const str=v=>String(v??'').trim();
 const arr=v=>Array.isArray(v)?v:[];
 const active=new Set(['active','confirmed','approved','materialized']);
 
+// Persist successful checks as well as failures. Explicit projection prevents a
+// later diagnostic field from exporting an operational shopper display name.
+export function persistAdminCompositionIdentityProof({write,summary={},expected={},identity={}}){
+  const countKeys=['visits','shoppers','hrShoppers','expectedCanonicalHrShoppers','rawHrReferences','platformOnly',
+    'platformBadFlags','platformCrossProject','duplicateShopperIds','periods','protectedNames','realNames',
+    'technicalPrimaryNames','unresolvedAuthorityCount','runtimeOutOfRange','expectedOutOfRange'];
+  const counts=Object.fromEntries(countKeys.map(k=>[k,Number.isInteger(summary[k])&&summary[k]>=0?summary[k]:null]));
+  const mismatchKeys=['nameMismatches','unresolvedReviewMismatches'];
+  const mismatchCounts=Object.fromEntries(mismatchKeys.map(k=>[k,Array.isArray(summary[k])?summary[k].length:null]));
+  const binding=Object.fromEntries(['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion','hrRevision','runId','runAttempt'].map(k=>[k,str(identity[k])]));
+  const checks={
+    exactArtifactBinding:/^[a-f0-9]{40}$/.test(binding.sourceSha)&&/^[a-f0-9]{40}$/.test(binding.sourceTree)&&
+      /^[a-f0-9]{64}$/.test(binding.hrRevision)&&/^sha256:[a-f0-9]{64}$/.test(binding.runtimeDigest)&&
+      !!binding.runtimeRevision&&!!binding.hostingVersion&&/^\d+$/.test(binding.runId)&&/^\d+$/.test(binding.runAttempt),
+    completeSummary:countKeys.every(k=>counts[k]!==null)&&mismatchKeys.every(k=>mismatchCounts[k]!==null),
+    sameHrRevision:str(summary.revision)===binding.hrRevision,
+    sameProject:!!str(expected.projectId)&&str(summary.project)===str(expected.projectId),
+    composition:counts.visits===expected.visits&&counts.periods===expected.periods&&
+      counts.hrShoppers===counts.expectedCanonicalHrShoppers&&counts.shoppers===counts.expectedCanonicalHrShoppers+counts.platformOnly&&
+      counts.platformBadFlags===0&&counts.platformCrossProject===0&&counts.duplicateShopperIds===0,
+    humanDisplay:counts.realNames>0&&counts.protectedNames===0&&counts.technicalPrimaryNames===0&&
+      mismatchCounts.nameMismatches===0&&mismatchCounts.unresolvedReviewMismatches===0,
+    outOfRange:counts.runtimeOutOfRange===counts.expectedOutOfRange
+  };
+  const proof={schemaVersion:'cxorbia.i3.admin-composition-identity-proof.v1',
+    decision:Object.values(checks).every(v=>v===true)?'PASS_I3_ADMIN_COMPOSITION_IDENTITY':'HOLD_I3_ADMIN_COMPOSITION_IDENTITY',
+    ...binding,scope:'ADMIN_HR_COMPOSITION_AND_DISPLAY_INVARIANTS_ONLY_NOT_FULL_DOMAIN_OR_HUMAN_APPROVAL',
+    production:false,humanApproval:false,fullDomain:false,nameFree:true,checks,counts,mismatchCounts,
+    expected:{visits:expected.visits,periods:expected.periods,projectId:str(expected.projectId)},
+    observedProjectId:str(summary.project),observedHrRevision:str(summary.revision),
+    mismatchIdentityDigest:crypto.createHash('sha256').update(JSON.stringify(mismatchKeys.map(k=>arr(summary[k])))).digest('hex')};
+  write('admin-composition-identity-proof.json',proof);
+  return proof;
+}
+
 function historicalReceiptCandidate(link,{tenantId,projectId}){
   const target=str(link.canonicalShopperId),ref=str(link.authorityRef),id=str(link.identityLinkId);
   const aliases=arr(link.exactAliases),other=arr(link.sourceAliases);

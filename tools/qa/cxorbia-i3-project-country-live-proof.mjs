@@ -12,6 +12,51 @@ const assert=(ok,code)=>{if(!ok)fail(code);};
 const isAck=a=>a?.ok===true&&a.status==='committed'&&a.committed===true&&a.providerAck===true&&a.successUiAllowed===true&&a.readbackVerified===true;
 const snapshotProof=s=>({path:s.ref.path,data:s.data(),updateTime:{seconds:s.updateTime.seconds,nanoseconds:s.updateTime.nanoseconds}});
 
+// Browser predicate: wait for the existing provider publication and exact
+// fixture preimage. Authority-ready alone can precede a resources route remount.
+export function countryConfigurationReady({tenantId,projectId,version,countries,requireUi=true}){
+  const cx=window.CX||{},resources=window.CX_BACKEND_RESOURCES_STATUS||{},resourceScope=cx.backendResources?.scope?.()||{};
+  const record=(cx.data?.__backendAllProjectRecords||[]).find(x=>(x.id||x.projectId)===projectId);
+  const cards=document.querySelectorAll('#view [data-project-config-authority="provider"]');
+  const buttons=document.querySelectorAll('#view #addPais'),body=document.querySelector('#durableCountries'),button=buttons[0];
+  const visible=[...(body?.querySelectorAll('[data-rmc]')||[])].map(x=>x.dataset.rmc).sort();
+  // Internal publication sets status/sourceRef but does not own the legacy
+  // updating flag. Keep that flag diagnostic; do not invent a new gate for it.
+  const providerReady=cx.data?.currentProjectId===projectId&&cx.dataSource?.status==='ready'&&
+    cx.dataSource?.sourceRef==='firestore-internal:'+tenantId+':'+projectId&&
+    resources.status==='ready'&&resources.source==='firestore'&&resources.tenantId===tenantId&&resources.projectId===projectId&&
+    resourceScope.tenantId===tenantId&&resourceScope.projectId===projectId&&String(resources.periodId||'')===String(resourceScope.periodId||'')&&
+    cx.connectedAdminConfig?.enabled?.()===true&&typeof cx.connectedAdminConfig.updateProjectCountries==='function'&&
+    record?.version===version&&JSON.stringify([...(record?.countries||[])].sort())===JSON.stringify(countries.slice().sort());
+  if(!providerReady||requireUi===false)return providerReady;
+  return cx.session?.view==='config'&&cards.length===1&&buttons.length===1&&body?.isConnected===true&&button?.isConnected===true&&button.disabled!==true&&
+    button.getClientRects().length>0&&JSON.stringify(visible)===JSON.stringify(countries.slice().sort());
+}
+
+// Passive, bounded and name-free; never calls a product method or dispatches a
+// synthetic UI action. Reload replaces this observer together with its page.
+export function installCountryUiObservation(){
+  if(window.__CX_I3_COUNTRY_UI_TRACE)return;
+  const trace=window.__CX_I3_COUNTRY_UI_TRACE={events:[],dropped:0,viewGeneration:0,active:true};
+  const record=(kind,detail={})=>{if(!trace.active)return;const event={order:trace.events.length+trace.dropped,atMs:Math.round(performance.now()),kind,
+    projectId:String(window.CX?.data?.currentProjectId||''),view:String(window.CX?.session?.view||''),generation:trace.viewGeneration,...detail};
+    if(trace.events.length===160){trace.events.shift();trace.dropped++;}trace.events.push(event);};
+  let button=document.querySelector('#addPais');
+  const observer=new MutationObserver(records=>{
+    const next=document.querySelector('#addPais');if(next!==button){trace.viewGeneration++;record('COUNTRY_BUTTON_REPLACED');button=next;}
+    for(const mutation of records)for(const [kind,nodes] of [['DIALOG_ADDED',mutation.addedNodes],['DIALOG_REMOVED',mutation.removedNodes]])
+      for(const node of nodes){if(node.nodeType!==1)continue;const dialogs=[...(node.matches?.('.cx-ov')?[node]:[]),...(node.querySelectorAll?.('.cx-ov')||[])];
+        for(const dialog of dialogs)record(kind,{countryDialog:dialog.getAttribute('aria-label')==='Agregar país',countryCodes:[...dialog.querySelectorAll('[data-c]')].map(x=>x.dataset.c)});}
+  });
+  observer.observe(document.body,{childList:true,subtree:true});
+  document.addEventListener('click',event=>{const target=event.target?.closest?.('#addPais,[data-c],[data-rmc],[data-tab="paises"]');
+    if(target)record('NATIVE_CLICK',{trusted:event.isTrusted===true,buttonId:target.id||null,countryCode:target.dataset?.c||target.dataset?.rmc||null,tab:target.dataset?.tab||null});},true);
+  window.CX?.bus?.on?.('resources',state=>record('RESOURCES_PUBLICATION',{status:state?.status||null,source:state?.source||null,resourceProjectId:state?.projectId||null}));
+  window.addEventListener('cx:protected-auth-hr-authority-ready',()=>record('AUTHORITY_PUBLICATION'));
+  window.addEventListener('cx:protected-internal-project-ready',()=>record('INTERNAL_AUTHORITY_PUBLICATION'));
+  record('OBSERVATION_INSTALLED');
+}
+
 export async function observeCountryUpdate({page,projectId,click}){
   // Observe both outcomes immediately. A failed click must not leave a later
   // network timeout unhandled, and cleanup must still wait for the click to settle.
@@ -71,7 +116,7 @@ export async function proveProjectCountries({page,db,staffUid,tenantId,commercia
   const commercialRef=db.doc(`tenants/${tenantId}/projects/${commercialProjectId}`),originalUrl=page.url(),commands=new Map(),handlerErrors=[];
   const r={schemaVersion:'cxorbia.i3.project-country-live-proof.v1',decision:'HOLD_I3_PROJECT_COUNTRY_LIVE_PROOF',sourceSha,sourceTree,...identity,
     runId,runAttempt:attempt,production:false,hrWrites:0,authWrites:0,paymentWrites:0,projectId,periodId,syntheticOnly:true,
-    actionReal:false,providerAck:false,durableReadback:false,reloadProof:false,noDuplicateRegression:false,cleanupVerified:false,samePrincipal:false,commercialProjectUnchanged:false,steps:[],cleanup:{decision:'NOT_STARTED'}};
+    actionReal:false,providerAck:false,durableReadback:false,reloadProof:false,noDuplicateRegression:false,cleanupVerified:false,samePrincipal:false,commercialProjectUnchanged:false,steps:[],uiObservations:[],cleanup:{decision:'NOT_STARTED'}};
   let preflightAbsent=false,commercialBefore=null,routed=false;
   const write=()=>fs.writeFileSync(path.join(out,'project-country-live-proof.json'),JSON.stringify({...r,commands:[...commands.values()].map(x=>({commandType:x.command.commandType,commandDigest:digest(x.command),idempotencyKey:x.command.idempotencyKey,command:x.command,paths:x.paths,sent:x.sent,ack:x.ack||null,readback:x.readback||null,replayed:x.replayed===true}))},null,2)+'\n');
   const scopeReady=()=>page.waitForFunction(({uid,tenantId,projectId})=>{
@@ -130,13 +175,21 @@ export async function proveProjectCountries({page,db,staffUid,tenantId,commercia
       operationalSource:{mode:'internal',providerType:'internal_firestore',readPolicy:'internal_live',writePolicy:'platform_only',mappingRef:'internal-native-mapping'},
       __commandMeta:{ackAware:true,reason:'i3-country-proof'}});
     const createCommand=[...commands.values()].find(x=>x.command.commandType==='project.create')?.command;assert(createCommand,'CREATE_NOT_OBSERVED');await inspect(createCommand,creation);
+    let expectedVersion=creation.entityVersion,expectedCountries=[catalog[0].code];
     const qaUrl=new URL(originalUrl);qaUrl.searchParams.set('cxProjectId',projectId);
     await page.goto(qaUrl.toString(),{waitUntil:'domcontentloaded',timeout:90000});await scopeReady();
-    const showCountries=async()=>{await page.evaluate(()=>window.CX.router.nav('config'));await page.locator('#view [data-tab="paises"]').click();await page.locator('#view [data-project-config-authority="provider"]').waitFor({state:'visible'});};
+    const showCountries=async()=>{
+      await scopeReady();await page.evaluate(installCountryUiObservation);
+      await page.waitForFunction(countryConfigurationReady,{tenantId,projectId,version:expectedVersion,countries:expectedCountries,requireUi:false},{timeout:45000});
+      await page.evaluate(()=>window.CX.router.nav('config'));await page.locator('#view [data-tab="paises"]').click();
+      await page.waitForFunction(countryConfigurationReady,{tenantId,projectId,version:expectedVersion,countries:expectedCountries},{timeout:45000});
+      r.uiObservations.push({stage:'READY_FOR_COUNTRY_ACTION',version:expectedVersion,countries:expectedCountries.slice(),commandsSent:commands.size});
+    };
+    const captureUiTrace=async stage=>{r.uiObservations.push({stage,trace:await page.evaluate(()=>window.__CX_I3_COUNTRY_UI_TRACE||null)});write();};
     const uiRead=async(countries,version)=>{
       await scopeReady();
       await page.waitForFunction(({projectId,countries,version})=>{const p=(window.CX?.data?.__backendAllProjectRecords||[]).find(x=>(x.id||x.projectId)===projectId);return p?.version===version&&JSON.stringify([...(p.countries||[])].sort())===JSON.stringify(countries.slice().sort());},{projectId,countries,version},{timeout:45000});
-      await showCountries();
+      expectedVersion=version;expectedCountries=countries.slice();await showCountries();
       await page.waitForFunction(({projectId,countries,catalog})=>{
         const p=(window.CX?.data?.__backendAllProjectRecords||[]).find(x=>(x.id||x.projectId)===projectId),body=document.querySelector('#durableCountries');
         const visible=[...(body?.querySelectorAll('[data-rmc]')||[])].map(x=>x.dataset.rmc).sort();
@@ -146,14 +199,19 @@ export async function proveProjectCountries({page,db,staffUid,tenantId,commercia
     const cycle=async(label,countries,click)=>{
       await showCountries();
       const response=await observeCountryUpdate({page,projectId,click}),command=response.request().postDataJSON(),ack=await response.json();
-      await inspect(command,ack);await uiRead(countries,ack.entityVersion);await page.screenshot({path:path.join(out,label+'-before-reload.png'),fullPage:true});
+      await inspect(command,ack);await uiRead(countries,ack.entityVersion);await captureUiTrace(label+'-before-reload');await page.screenshot({path:path.join(out,label+'-before-reload.png'),fullPage:true});
       await page.reload({waitUntil:'domcontentloaded',timeout:90000});await uiRead(countries,ack.entityVersion);await page.screenshot({path:path.join(out,label+'-after-reload.png'),fullPage:true});
       const entry=commands.get(command.idempotencyKey);entry.replayAuthorized=true;
       const replay=await page.evaluate(async c=>window.CX.commandHttpTransport.execute(c),command);assert(isAck(replay)&&replay.idempotentReplay===true&&replay.providerWrites===0,'REPLAY_ACK');
       await inspect(command,replay);entry.replayed=true;
       r.steps.push({label,uiAction:true,providerAck:true,durableReadback:true,pageReload:true,idempotentReplay:true,providerWritesOnReplay:0,countries,version:replay.entityVersion,commandDigest:digest(command)});write();
     };
-    await cycle('add-country',catalog.map(x=>x.code),async()=>{await page.locator('#view #addPais').click();await page.locator('.cx-ov [data-c="'+catalog[1].code+'"]').click();});
+    await cycle('add-country',catalog.map(x=>x.code),async()=>{
+      await page.locator('#view #addPais').click();
+      const dialog=page.getByRole('dialog',{name:'Agregar país',exact:true});
+      await dialog.waitFor({state:'visible',timeout:15000});
+      await dialog.locator('[data-c="'+catalog[1].code+'"]').click();
+    });
     await cycle('remove-country',[catalog[0].code],async()=>page.locator('#durableCountries [data-rmc="'+catalog[1].code+'"]').click());
     assert(handlerErrors.length===0,'REQUEST_SCOPE_ERRORS');
     r.actionReal=r.steps.length===2;r.providerAck=r.steps.every(s=>s.providerAck);r.durableReadback=r.steps.every(s=>s.durableReadback);
@@ -163,11 +221,15 @@ export async function proveProjectCountries({page,db,staffUid,tenantId,commercia
     try{
       r.failureUi=await page.evaluate(()=>({projectId:String(window.CX?.data?.currentProjectId||''),route:location.hash,
         modalCount:document.querySelectorAll('.cx-ov').length,modalCountryCodes:[...document.querySelectorAll('.cx-ov [data-c]')].map(x=>x.dataset.c),
-        renderedCountryCodes:[...document.querySelectorAll('#durableCountries [data-rmc]')].map(x=>x.dataset.rmc)}));
+        renderedCountryCodes:[...document.querySelectorAll('#durableCountries [data-rmc]')].map(x=>x.dataset.rmc),
+        resources:window.CX_BACKEND_RESOURCES_STATUS||null,resourceScope:window.CX?.backendResources?.scope?.()||null,
+        dataSource:{status:window.CX?.dataSource?.status,updating:window.CX?.dataSource?.updating,sourceRef:window.CX?.dataSource?.sourceRef},
+        uiTrace:window.__CX_I3_COUNTRY_UI_TRACE||null}));
       await page.screenshot({path:path.join(out,'project-country-ui-failure.png'),fullPage:true,timeout:15000});
     }catch(diagnosticError){r.failureDiagnosticError=String(diagnosticError.message||diagnosticError);}
   }
   finally{
+    try{r.uiObservations.push({stage:'FINAL_BEFORE_CLEANUP',trace:await page.evaluate(()=>{const t=window.__CX_I3_COUNTRY_UI_TRACE;if(t)t.active=false;return t||null;})});}catch{}
     if(routed){try{await page.unroute('**/v1/cxorbia/commands',routeHandler);}catch(e){r.teardownError=String(e.message||e);}page.off('response',responseListener);}
     try{
       if(preflightAbsent&&commands.size){
