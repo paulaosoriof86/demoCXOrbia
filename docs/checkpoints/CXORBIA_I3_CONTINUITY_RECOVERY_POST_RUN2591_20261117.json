@@ -1,0 +1,234 @@
+{
+  "schemaVersion": "cxorbia.i3.continuity-recovery-readback.v1",
+  "id": "CXORBIA-I3-CONTINUITY-POST-RUN2591-20261117",
+  "observedAt": "2026-11-17T19:41:38Z",
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "MAPPING_FAILURE",
+  "existingFindingRefs": [
+    "SYNC-20261117-01",
+    "SYNC-20261117-02"
+  ],
+  "expectedParentSha": "3de6bd49c62cf0c792256814b90d388b8f5a3a1d",
+  "expectedParentTree": "44a4a3ea86ea2fd073bb319520c01fafcfb0bc98",
+  "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+  "sourceTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
+  "lastVerifiedRemoteControl": {
+    "runId": 44153116846,
+    "runNumber": 2591,
+    "conclusion": "success",
+    "scope": "CANONICAL_AUTHORITY_ONLY_NOT_FUNCTIONAL_CERTIFICATION"
+  },
+  "cause": "Current pointer and DEV seal were correct, but two active module residual records still instructed source607/source42b4 repairs and VRM358 materialization already superseded by RUN2587. Existing alias guard checked serving pointers but did not reject the contradicted active HR-failure state. Benefits QA scope also remained live-pending despite consumed RUN2588.",
+  "before": {
+    "moduleResiduals": {
+      "canonical-hr-state-adapters": {
+        "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
+        "actionRequired": "I3-Q3: materialize VRM358 source836 in the existing single paired DEV lane. Create only the absent project-private integrationSettings binding with exact transaction preconditions, external_read_only policy, independent readback and zero-write replay; verify both runtime readers consume its exact workbook/mapping before any B14 remote write test. Preserve RUN2585 functional evidence, RUN2586 source-only CI and B4/B5/B6/B7 human PASS. Then complete B14 bidirectional remote ACK, D08 UI/role residual and C09/C10 export/finance residual using current owner-specific receipts; strict21, G20, G21, I4 only GO and explicit exact-artifact authorization.",
+        "nextExactAction": "I3: canonical Node QA on source607ef20, then one existing paired DEV build/runtime/Hosting for VRM356. Verify exact artifact and four fresh independent HR reads at the pinned revision with bounded quota recovery. Only after exact RUN2566 receipt absence and unchanged target/lease proof, execute the existing native Admin sync once; require VRM354 full-name repair, VRM355 coherent durable receipt, unchanged keeper login/claims, full journal and exact-key zero-effect replay. Then uncovered D08/C09/C10/B14 and other frozen functional clauses, strict21/G20/G21, and exact-artifact I4 production authorization.",
+        "sourceProofState": "VRM358_LOCAL_EXACT_OWNER_QA_PENDING_CI_DEV",
+        "currentSourceQa": {
+          "path": "docs/checkpoints/CXORBIA_I3_VRM356_GRID_CUMULATIVE_SOURCE_AUTHORITY_20261116.json",
+          "gitBlob": "430a052eb5678f34bdd7df9a052c59bb6e98e20d",
+          "sha256": "69a896ab645e267bedc695966f782cff2bcc0f33926843e025c21a82d6d82873",
+          "sourceSha": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
+          "sourceTree": "b927ae81b1a3fd9eaf6f5ed2fe904a365678f3c7",
+          "decision": "PASS_NODE_VRM356_GRID_BODY_DEADLINE_CUMULATIVE_SOURCE_PENDING_REAL_DEV",
+          "testsPass": 141,
+          "testsFail": 0,
+          "scope": "EXACT_NODE_SOURCE_QA_ONLY_REAL_RANGE_AND_DEV_PENDING",
+          "production": false
+        },
+        "currentSourceQaState": "NODE141_PASS_PENDING_EXACT_CANONICAL_CI_AND_DEV",
+        "sourceProofReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM356_GRID_CUMULATIVE_SOURCE_AUTHORITY_20261116.json",
+        "sourceProofReceiptBlob": "430a052eb5678f34bdd7df9a052c59bb6e98e20d",
+        "currentDevStage": "SOURCE607_DEPLOYED_HR_FAILED_SOURCE42B4_PENDING",
+        "currentEvidenceDimensions": {
+          "source": "NODE141_OF141_SOURCE42B4_SCOPED_PASS",
+          "dev": "RUN2587_SOURCE836_RUNTIME380_HOSTING_EXACT39_PRIVATE_HR_BINDING_PASS",
+          "functional": "PRIOR_FOCAL_ACCEPTANCES_PRESERVED_NATIVE_VRM354355_B14_PENDING",
+          "human": "B4_B5_B6_B7_PRESERVED",
+          "newMatchPromotion": false
+        },
+        "currentResidualClauses": {
+          "pending": "RUN2571 proved physical-grid request mismatch; source42b4 corrects it with Node141 PASS. ActualDEV remains source607 HR503 until exact new runtime/Hosting readback. Native name/login/replay and real B14 remoteACK plus independent HR/UI contracts remain pending.",
+          "preserved": "G05 source/provider/readback; D08 RUN2391 real providerACK/new-session/replay/negative progress proof preserved.; RUN2537 internal refresh country full cycle PASS, separate scoped VRM345 closure.",
+          "historicalSupersededCurrentAliasesRun2546": {
+            "pending": "VRM349 exact HRfbaf vs durablecdc4 historicalrow, currentautomaticreceipts absent andexpiredpartiallease, currentconfigcause unresolved; B14 remoteACK andremaining independentHR/UIcontracts."
+          }
+        },
+        "currentResidualEvidence": {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN2571_RAW_RANGE_GRID_CAUSE_READBACK_20261116.json",
+          "gitBlob": "cd011829654efb7513911e3cf150ea8d2ea116f7",
+          "sha256": "a97ed41a62b62e6571b88b64a0f909145ba2bc3a3337346e0a07437c77ed1fbb"
+        },
+        "residual": "VRM356 fresh-read quota correction source-proven pending exact Node/DEV/readback; VRM354/355 native name and coherent receipt not yet executed. Existing accepted behavior retained. Full domain remainsHOLD.",
+        "currentReclassificationEvidence": {
+          "status": "P0_PROVEN_SOURCE_FIXED_NODE_PROVEN_DEV_PENDING",
+          "defectReproducibleCurrently": true,
+          "humanAccepted": false,
+          "wholeDomainCertified": false,
+          "scope": "VRM356_SOURCE607_HR503_AND_SOURCE42B4_PENDING"
+        }
+      },
+      "persistence-command-ack-boundary": {
+        "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
+        "actionRequired": "I3-Q3: materialize VRM358 source836 in the existing single paired DEV lane. Create only the absent project-private integrationSettings binding with exact transaction preconditions, external_read_only policy, independent readback and zero-write replay; verify both runtime readers consume its exact workbook/mapping before any B14 remote write test. Preserve RUN2585 functional evidence, RUN2586 source-only CI and B4/B5/B6/B7 human PASS. Then complete B14 bidirectional remote ACK, D08 UI/role residual and C09/C10 export/finance residual using current owner-specific receipts; strict21, G20, G21, I4 only GO and explicit exact-artifact authorization.",
+        "nextExactAction": "I3: canonical Node QA on source607ef20, then one existing paired DEV build/runtime/Hosting for VRM356. Verify exact artifact and four fresh independent HR reads at the pinned revision with bounded quota recovery. Only after exact RUN2566 receipt absence and unchanged target/lease proof, execute the existing native Admin sync once; require VRM354 full-name repair, VRM355 coherent durable receipt, unchanged keeper login/claims, full journal and exact-key zero-effect replay. Then uncovered D08/C09/C10/B14 and other frozen functional clauses, strict21/G20/G21, and exact-artifact I4 production authorization.",
+        "sourceProofState": "VRM358_LOCAL_EXACT_OWNER_QA_PENDING_CI_DEV",
+        "currentSourceQa": {
+          "path": "docs/checkpoints/CXORBIA_I3_VRM356_GRID_CUMULATIVE_SOURCE_AUTHORITY_20261116.json",
+          "gitBlob": "430a052eb5678f34bdd7df9a052c59bb6e98e20d",
+          "sha256": "69a896ab645e267bedc695966f782cff2bcc0f33926843e025c21a82d6d82873",
+          "sourceSha": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
+          "sourceTree": "b927ae81b1a3fd9eaf6f5ed2fe904a365678f3c7",
+          "decision": "PASS_NODE_VRM356_GRID_BODY_DEADLINE_CUMULATIVE_SOURCE_PENDING_REAL_DEV",
+          "testsPass": 141,
+          "testsFail": 0,
+          "scope": "EXACT_NODE_SOURCE_QA_ONLY_REAL_RANGE_AND_DEV_PENDING",
+          "production": false
+        },
+        "currentSourceQaState": "NODE141_PASS_PENDING_EXACT_CANONICAL_CI_AND_DEV",
+        "sourceProofReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM356_GRID_CUMULATIVE_SOURCE_AUTHORITY_20261116.json",
+        "sourceProofReceiptBlob": "430a052eb5678f34bdd7df9a052c59bb6e98e20d",
+        "currentDevStage": "SOURCE607_DEPLOYED_HR_FAILED_SOURCE42B4_PENDING",
+        "currentDevMaterialization": {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN2563_VRM354_VRM355_PAIRED_DEV_ACK_20261116.json",
+          "gitBlob": "d9739787f0e9d6b366353a83e1a7fc723958764a",
+          "sha256": "3e629067e0d7760f21927585b7be7e20b7a9c657f2635f92f93c2e1268c45769",
+          "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2563_VRM354_VRM355_PAIRED_DEV_ACK_20261116.json",
+          "runId": 43821946355,
+          "runNumber": 2563,
+          "sourceSha": "66312f88a70bd123b137c7a031a1f456969465f5",
+          "sourceTree": "38eba9364e0a7cbf1e505f84375959d19918391d",
+          "state": "PASS_EXACT_PAIRED_DEV_VRM354_VRM355_NATIVE_REPAIR_READBACK_PENDING",
+          "kind": "EXACT_PAIRED_DEV_ACK_NOT_NATIVE_REPAIR_OR_TERMINAL_CERTIFICATE",
+          "artifactId": 14204423509,
+          "artifactDigest": "sha256:492cc8a133711bc2fd4fd58fc57620b21383f41cb77a1254714acd10a49cf89b",
+          "production": false,
+          "receiptBlob": "d9739787f0e9d6b366353a83e1a7fc723958764a"
+        },
+        "currentEvidenceDimensions": {
+          "source": "NODE141_OF141_SOURCE42B4_SCOPED_PASS",
+          "dev": "RUN2587_SOURCE836_RUNTIME380_HOSTING_EXACT39_PRIVATE_HR_BINDING_PASS",
+          "functional": "PRIOR_FOCAL_ACCEPTANCES_PRESERVED_NATIVE_VRM354355_B14_PENDING",
+          "human": "B4_B5_B6_B7_PRESERVED",
+          "newMatchPromotion": false
+        },
+        "currentResidualClauses": {
+          "pending": "RUN2571 proved physical-grid request mismatch; source42b4 corrects it with Node141 PASS. ActualDEV remains source607 HR503 until exact new runtime/Hosting readback. Native name/login/replay and real B14 remoteACK plus independent HR/UI contracts remain pending.",
+          "preserved": "D08 RUN2391 provider,newsession,replay,otherlearner unchanged,wrong-audience denied; B7/B3/C04/C05 provider proofs retained. RUN2564 preceding automatic receipt journal verified1397 cumulative operations,0unresolved,0unverified; target visible login PASS; these do not prove the new native command.",
+          "historicalSupersededCurrentAliasesRun2546": {
+            "pending": "VRM350 false visit.sync.confirm reproduced offline2of2, exactprovider/server fix andliveproof required; preserve D08/B7/B3/C04/C05 and VRM143 scopedPASS. RemoteHRwriteACK andother uncoveredcommands remain."
+          }
+        },
+        "currentResidualEvidence": {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN2571_RAW_RANGE_GRID_CAUSE_READBACK_20261116.json",
+          "gitBlob": "cd011829654efb7513911e3cf150ea8d2ea116f7",
+          "sha256": "a97ed41a62b62e6571b88b64a0f909145ba2bc3a3337346e0a07437c77ed1fbb"
+        },
+        "residual": "VRM356 fresh-read quota correction source-proven pending exact Node/DEV/readback; VRM354/355 native name and coherent receipt not yet executed. Existing accepted behavior retained. Full domain remainsHOLD.",
+        "currentReclassificationEvidence": {
+          "status": "P0_PROVEN_SOURCE_FIXED_NODE_PROVEN_DEV_PENDING",
+          "defectReproducibleCurrently": true,
+          "humanAccepted": false,
+          "wholeDomainCertified": false,
+          "scope": "VRM356_SOURCE607_HR503_AND_SOURCE42B4_PENDING"
+        }
+      }
+    },
+    "currentQaControlScope": {
+      "path": "docs/checkpoints/CXORBIA_I3_BENEFITS_READONLY_CERTIFICATION_P0_20261117.json",
+      "gitBlob": "6ec5df58f582b6353bb6c1a8a0671d35be1e9ee6",
+      "sha256": "b7bfd1f1dac24d059de293b2996c72aabb1b834a35a30593188ab28473bf7a45",
+      "executionState": "LOCAL_51_PASS_LIVE_PENDING"
+    }
+  },
+  "after": {
+    "domainsUpdated": [
+      "canonical-hr-state-adapters",
+      "persistence-command-ack-boundary"
+    ],
+    "oldMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V359.json",
+    "newMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V360.json",
+    "oldLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V686_2026-11-17.json",
+    "newLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V687_2026-11-17.json",
+    "qaScopeState": "COMPLETED_LIVE_PASS",
+    "b14": {
+      "state": "HOLD",
+      "classification": "MAPPING_FAILURE",
+      "scope": "EXECUTION_PREREQUISITE_RESOLUTION_NOT_PROVIDER_WRITE_AUTHORIZATION",
+      "contractPath": "backend/contracts/hr-bidirectional-assignment-sync-v1.json",
+      "contractStatus": "source_ready_provider_writes_blocked",
+      "liveMakeBindingPresent": false,
+      "operationalWritePolicy": "external_read_only",
+      "hrWritesEnabled": false,
+      "currentQaMode": "B14_CAPABILITY_ONLY",
+      "missingEvidence": [
+        "concrete isolated real-provider fixture locator and approved scope",
+        "real writer binding with remote ACK/readback",
+        "executable focal bidirectional/replay/concurrency/echo test in the existing workflow"
+      ],
+      "genericC3WouldCloseB14": false,
+      "requiresNoNewWorkflow": true,
+      "production": false
+    },
+    "nextExactAction": "I3-Q3: preserve source836/RUN2587 exact DEV and RUN2588 Benefits MATCH6. Resolve the missing executable B14 prerequisite before dispatch: locate or prepare the concrete isolated real-provider fixture and exact writer binding within the approved scope, with workbook/tab/range, role, preconditions, cleanup and authorization evidence. The operational HR remains external_read_only and hrWritesEnabled=false; the existing B14 capability mode is not a remote-write test. Implement and source-prove only the missing focal B14 contract in the existing owners/workflow, then prove same external HR revision, valid-event ordering, remote ACK, independent readback, lost-response replay, conflict/echo and no duplicates on the authorized fixture. Do not repeat the completed VRM358 deployment or call generic C3 as a substitute for B14. Preserve all accepted native identity/login/replay clauses and execute only uncovered clauses; prepare C09/C10 and D08 read-only in parallel. Credit complete domain receipts immediately, publish proven product deltas serially to existing DEV, then Gate20 -> Gate21. I4 requires I3 GO and explicit authorization for the exact immutable artifact."
+  },
+  "guardProof": {
+    "owner": "tools/qa/cxorbia-i3-current-authority-alias-guard.mjs",
+    "regressionTests": "tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs",
+    "before": "New regression failed because the previous guard accepted obsolete active HR_FAILED despite later exact-source HR PASS",
+    "currentSnapshotBeforeCorrection": "Two CURRENT_MODULE_HR_FAILURE_WITHOUT_NEWER_EVIDENCE failures",
+    "afterTests": 238,
+    "afterPass": 238,
+    "afterFail": 0,
+    "remoteCommitChecks": "Verify on the resulting commit; not represented as a terminal certificate"
+  },
+  "preserved": {
+    "strictDomains": {
+      "complete": 6,
+      "total": 21,
+      "pending": 15
+    },
+    "sourceReady": 21,
+    "sourcePendingFiles": 0,
+    "humanPassBlocks": [
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ],
+    "humanPass": 4,
+    "humanTotal": 9,
+    "executionBlocksComplete": 2,
+    "executionBlocksTotal": 7,
+    "findingsUnchanged": 359,
+    "newDomainMatches": 0,
+    "newHumanApprovals": 0,
+    "phaseAComplete": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD"
+  },
+  "changes": {
+    "productFiles": 0,
+    "builds": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "productionDeploys": 0
+  },
+  "production": false,
+  "i4Authorized": false,
+  "conversationRecoveryLimit": "The missing 32-minute chat response was not retrieved verbatim. This receipt reconstructs persisted execution evidence and cannot establish the platform timeout cause.",
+  "allowlist": [
+    "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "CXORBIA_RECOVERY_EXECUTION_CURRENT.json",
+    "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V360.json",
+    "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V687_2026-11-17.json",
+    "docs/checkpoints/CXORBIA_I3_CONTINUITY_RECOVERY_POST_RUN2591_20261117.json",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs"
+  ]
+}

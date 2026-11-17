@@ -506,3 +506,45 @@ for(const [code,alter]of [
  ['CURRENT_MODULE_HOSTING_DESYNC',v=>{v.matrix.modules[0].servedHostingVersion='old';}],
  ['CURRENT_MODULE_SERVING_AUTHORITY_DESYNC',v=>{v.matrix.modules[0].currentServingAuthority.sourceSha='0'.repeat(40);}]
 ])test('current module evidence rejects '+code,()=>{const v=moduleServingAliasFixture();alter(v);assert.ok(validateCurrentAuthorityAliases(v).failures.includes(code));});
+
+// Regression: a verified later DEV HR readback must retire active failed-HR
+// instructions while preserving the immutable earlier failure as history.
+const servedHrResidualFixture=()=>{
+  const v=fixture();
+  v.descriptor.moduleTruthPath='matrix-V294.json';
+  v.ledger.currentTruth.moduleTruthPath=v.descriptor.moduleTruthPath;
+  v.pointer.activePhaseAClosureLock20261110.currentAccountingSemantics.strictOwnerDomainMatch.evidence.path=v.descriptor.moduleTruthPath;
+  for(const c of [v.descriptor,v.pointer])c.currentCanonicalControl.matrix.path=v.descriptor.moduleTruthPath;
+  v.ledger.currentMaterialization.hrLiveVerified=true;
+  v.descriptor.currentMaterialization=structuredClone(v.ledger.currentMaterialization);
+  v.descriptor.postDeployRunSeal={mode:'CURRENT_SOURCE_SERVING',sourceSha:v.descriptor.productSourceSha,sourceTree:v.descriptor.productSourceTree};
+  v.pointer.postDeployRunSeal=structuredClone(v.descriptor.postDeployRunSeal);
+  v.matrix={version:'V294',modules:Array.from({length:21},(_,i)=>({domain:'domain-'+i,classification:i<5?'MATCH':'HOLD'})),integralCertificationUnchanged:{match:5}};
+  const row=v.matrix.modules[13];
+  row.currentDevStage='SOURCE607_DEPLOYED_HR_FAILED_SOURCE42B4_PENDING';
+  row.currentResidualEvidence={runId:40,sourceSha:'a'.repeat(40),classification:'PROVIDER_FAILURE',state:'HOLD'};
+  return v;
+};
+test('later verified HR serving rejects an older failed-HR instruction in an active module',()=>{
+  const v=servedHrResidualFixture();
+  assert.ok(validateCurrentAuthorityAliases(v).failures.includes('CURRENT_MODULE_HR_FAILURE_WITHOUT_NEWER_EVIDENCE'));
+});
+test('a newer exact-source provider failure remains a valid HOLD after an earlier successful deployment',()=>{
+  const v=servedHrResidualFixture();
+  v.matrix.modules[13].currentResidualEvidence={runId:60,sourceSha:v.descriptor.productSourceSha,classification:'PROVIDER_FAILURE',state:'HOLD'};
+  assert.equal(validateCurrentAuthorityAliases(v).pass,true,JSON.stringify(validateCurrentAuthorityAliases(v)));
+});
+test('retired HR failure stays historical while current functional and human clauses remain pending',()=>{
+  const v=servedHrResidualFixture(),row=v.matrix.modules[13];
+  row.historicalBeforeReadback={currentDevStage:row.currentDevStage,currentResidualEvidence:row.currentResidualEvidence};
+  row.currentDevStage='EXACT_DEV_HR_READBACK_PASS_FULL_DOMAIN_PENDING';
+  assert.equal(validateCurrentAuthorityAliases(v).pass,true,JSON.stringify(validateCurrentAuthorityAliases(v)));
+  assert.equal(row.classification,'HOLD');
+  assert.match(row.historicalBeforeReadback.currentDevStage,/HR_FAILED/);
+});
+test('a successful predecessor HR read does not erase failure of a genuinely pending source successor',()=>{
+  const v=servedHrResidualFixture();
+  v.descriptor.postDeployRunSeal.mode=v.pointer.postDeployRunSeal.mode='PREDECESSOR_SERVING_PENDING_SOURCE';
+  v.descriptor.currentMaterialization.sourceSha='a'.repeat(40);
+  assert.ok(!validateCurrentAuthorityAliases(v).failures.includes('CURRENT_MODULE_HR_FAILURE_WITHOUT_NEWER_EVIDENCE'));
+});

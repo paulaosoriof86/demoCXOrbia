@@ -175,6 +175,18 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
   check(Boolean(d?.moduleTruthExpectedGitBlob)&&current.moduleTruthGitBlob===d.moduleTruthExpectedGitBlob,'CURRENT_TRUTH_MATRIX_BLOB_DESYNC');
   for(const control of [d,p])check(control?.currentCanonicalControl?.matrix?.path===d.moduleTruthPath && control?.currentCanonicalControl?.matrix?.gitBlob===d.moduleTruthExpectedGitBlob && control?.currentCanonicalControl?.ledger?.path===d.findingsLedgerPath && control?.currentCanonicalControl?.ledger?.gitBlob===d.findingsLedgerExpectedGitBlob,'CURRENT_CANONICAL_CONTROL_POINTER_DESYNC');
   if(m){
+    // A successful current-source HR readback retires older failed-HR
+    // instructions. A subsequent real failure must identify its newer run
+    // and exact source; historical receipts never act as current blockers.
+    if(postDeploy.mode==='CURRENT_SOURCE_SERVING'&&seal.sourceSha===source&&seal.hrLiveVerified===true){
+      for(const mod of m.modules||[]){
+        if(!/HR_FAILED/.test(String(mod.currentDevStage||'')))continue;
+        const residual=mod.currentResidualEvidence||{};
+        check(Number(residual.runId)>Number(seal.runId)&&residual.sourceSha===source&&
+          ['PROVIDER_FAILURE','ENVIRONMENT_FAILURE','AUTH_FAILURE'].includes(residual.classification)&&
+          ['HOLD','NO_GO'].includes(residual.state),'CURRENT_MODULE_HR_FAILURE_WITHOUT_NEWER_EVIDENCE');
+      }
+    }
     // This alias denotes the immutable paired runtime + Hosting receipt, even
     // when a newer source or Hosting-only release is pending. Never leave a
     // previous paired run labelled current beside a newer canonical DEV seal.
