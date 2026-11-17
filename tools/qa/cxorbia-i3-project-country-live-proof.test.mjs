@@ -1,10 +1,51 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {digest,projectIdFor,projectCommandPaths,validateCountryReadback,composeTenantCountryReceipts} from './cxorbia-i3-project-country-live-proof.mjs';
+import {spawnSync} from 'node:child_process';
+import {digest,projectIdFor,projectCommandPaths,observeCountryUpdate,validateCountryReadback,composeTenantCountryReceipts} from './cxorbia-i3-project-country-live-proof.mjs';
 import {validReadonlyReceipt} from './cxorbia-i3-tenant-readonly-acceptance.test.mjs';
 const descriptor=JSON.parse(fs.readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8'));
 const mod=JSON.parse(fs.readFileSync(descriptor.moduleTruthPath,'utf8')).modules.find(x=>x.domain==='tenant-admin-config-branding');
+test('country observer keeps exact request scope and waits for the click before returning its response',async()=>{
+  const response={url:()=>'/v1/cxorbia/commands',request:()=>({postDataJSON:()=>({commandType:'project.update',projectId:'owned-project'})})};
+  const events=[];
+  const page={waitForResponse(predicate,options){
+    assert.equal(options.timeout,60000);assert.equal(predicate(response),true);
+    assert.equal(predicate({...response,request:()=>({postDataJSON:()=>({commandType:'project.update',projectId:'other-project'})})}),false);
+    assert.equal(predicate({...response,request:()=>({postDataJSON:()=>({commandType:'project.create',projectId:'owned-project'})})}),false);
+    assert.equal(predicate({...response,url:()=>'/other-endpoint'}),false);
+    events.push('observer');return Promise.resolve(response);
+  }};
+  const actual=await observeCountryUpdate({page,projectId:'owned-project',click:async()=>{events.push('click:start');await new Promise(resolve=>setTimeout(resolve,5));events.push('click:settled');}});
+  events.push('returned');assert.equal(actual,response);assert.deepEqual(events,['observer','click:start','click:settled','returned']);
+});
+test('country observer propagates response failure only after the in-flight click has settled',async()=>{
+  const error=new Error('RESPONSE_TIMEOUT'),events=[];
+  const page={waitForResponse:()=>Promise.reject(error)};
+  await assert.rejects(async()=>{
+    try{await observeCountryUpdate({page,projectId:'owned-project',click:async()=>{await new Promise(resolve=>setTimeout(resolve,10));events.push('click:settled');}});}
+    finally{events.push('cleanup');}
+  },e=>e===error);
+  assert.deepEqual(events,['click:settled','cleanup']);
+});
+test('country observer preserves a late response timeout after a successful click',async()=>{
+  const error=new Error('RESPONSE_TIMEOUT');
+  const page={waitForResponse:()=>new Promise((resolve,reject)=>setTimeout(()=>reject(error),10))};
+  await assert.rejects(observeCountryUpdate({page,projectId:'owned-project',click:async()=>{}}),e=>e===error);
+});
+test('synchronous and asynchronous click failures cannot leave a fatal response rejection after cleanup',()=>{
+  const owner=new URL('./cxorbia-i3-project-country-live-proof.mjs',import.meta.url).href;
+  const code=`import assert from 'node:assert/strict';import {observeCountryUpdate} from ${JSON.stringify(owner)};
+    for(const delayed of [false,true]){
+      const error=new Error('CLICK_TIMEOUT');const events=[];
+      const page={waitForResponse:()=>new Promise((resolve,reject)=>setTimeout(()=>reject(new Error('RESPONSE_TIMEOUT')),25))};
+      try{await observeCountryUpdate({page,projectId:'owned-project',click:delayed?async()=>{await new Promise(r=>setTimeout(r,5));throw error;}:()=>{throw error;}});assert.fail('click error was suppressed');}
+      catch(e){assert.equal(e,error);events.push('click:failed');}finally{events.push('cleanup');}
+      await new Promise(r=>setTimeout(r,45));assert.deepEqual(events,['click:failed','cleanup']);
+    }console.log('PASS_LATE_REJECTION_HANDLED_WITH_ORIGINAL_CLICK_FAILURE');`;
+  const child=spawnSync(process.execPath,['--unhandled-rejections=strict','--input-type=module','-e',code],{encoding:'utf8',timeout:5000});
+  assert.equal(child.status,0,child.stderr);assert.match(child.stdout,/PASS_LATE_REJECTION_HANDLED_WITH_ORIGINAL_CLICK_FAILURE/);
+});
 function fixture(){
   const scope={projectId:'p',tenantId:'t',periodId:'qa-period',name:'I3 QA',runId:'123',staffUid:'staff'};
   const command={commandType:'project.update',idempotencyKey:'own-command',tenantId:'t',projectId:'p',periodId:'qa-period',payload:{periodId:'qa-period',countries:['GT','HN'],currency:{GT:'Q',HN:'L'}}};

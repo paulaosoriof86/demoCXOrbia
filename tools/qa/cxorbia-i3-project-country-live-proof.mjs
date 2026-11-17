@@ -12,6 +12,17 @@ const assert=(ok,code)=>{if(!ok)fail(code);};
 const isAck=a=>a?.ok===true&&a.status==='committed'&&a.committed===true&&a.providerAck===true&&a.successUiAllowed===true&&a.readbackVerified===true;
 const snapshotProof=s=>({path:s.ref.path,data:s.data(),updateTime:{seconds:s.updateTime.seconds,nanoseconds:s.updateTime.nanoseconds}});
 
+export async function observeCountryUpdate({page,projectId,click}){
+  // Observe both outcomes immediately. A failed click must not leave a later
+  // network timeout unhandled, and cleanup must still wait for the click to settle.
+  const observed=page.waitForResponse(res=>{try{const c=res.request().postDataJSON();return /\/v1\/cxorbia\/commands/.test(res.url())&&c?.commandType==='project.update'&&c.projectId===projectId;}catch{return false;}},{timeout:60000})
+    .then(response=>({ok:true,response}),error=>({ok:false,error}));
+  await click();
+  const outcome=await observed;
+  if(!outcome.ok)throw outcome.error;
+  return outcome.response;
+}
+
 export function validateCountryReadback({command,ack,record,receipt,audit,scope}){
   const errors=[],need=(ok,code)=>{if(!ok)errors.push(code);};
   need(isAck(ack)&&ack.commandType===command.commandType&&ack.idempotencyKey===command.idempotencyKey&&ack.projectId===scope.projectId&&ack.tenantId===scope.tenantId&&ack.periodId===scope.periodId,'PROVIDER_ACK');
@@ -134,8 +145,7 @@ export async function proveProjectCountries({page,db,staffUid,tenantId,commercia
     };
     const cycle=async(label,countries,click)=>{
       await showCountries();
-      const responsePromise=page.waitForResponse(res=>{try{const c=res.request().postDataJSON();return /\/v1\/cxorbia\/commands/.test(res.url())&&c?.commandType==='project.update'&&c.projectId===projectId;}catch{return false;}},{timeout:60000});
-      await click();const response=await responsePromise,command=response.request().postDataJSON(),ack=await response.json();
+      const response=await observeCountryUpdate({page,projectId,click}),command=response.request().postDataJSON(),ack=await response.json();
       await inspect(command,ack);await uiRead(countries,ack.entityVersion);await page.screenshot({path:path.join(out,label+'-before-reload.png'),fullPage:true});
       await page.reload({waitUntil:'domcontentloaded',timeout:90000});await uiRead(countries,ack.entityVersion);await page.screenshot({path:path.join(out,label+'-after-reload.png'),fullPage:true});
       const entry=commands.get(command.idempotencyKey);entry.replayAuthorized=true;
@@ -148,7 +158,15 @@ export async function proveProjectCountries({page,db,staffUid,tenantId,commercia
     assert(handlerErrors.length===0,'REQUEST_SCOPE_ERRORS');
     r.actionReal=r.steps.length===2;r.providerAck=r.steps.every(s=>s.providerAck);r.durableReadback=r.steps.every(s=>s.durableReadback);
     r.reloadProof=r.steps.every(s=>s.pageReload);r.noDuplicateRegression=r.steps.every(s=>s.idempotentReplay);r.samePrincipal=true;
-  }catch(e){r.error=String(e.message||e);}
+  }catch(e){
+    r.error=String(e.message||e);
+    try{
+      r.failureUi=await page.evaluate(()=>({projectId:String(window.CX?.data?.currentProjectId||''),route:location.hash,
+        modalCount:document.querySelectorAll('.cx-ov').length,modalCountryCodes:[...document.querySelectorAll('.cx-ov [data-c]')].map(x=>x.dataset.c),
+        renderedCountryCodes:[...document.querySelectorAll('#durableCountries [data-rmc]')].map(x=>x.dataset.rmc)}));
+      await page.screenshot({path:path.join(out,'project-country-ui-failure.png'),fullPage:true,timeout:15000});
+    }catch(diagnosticError){r.failureDiagnosticError=String(diagnosticError.message||diagnosticError);}
+  }
   finally{
     if(routed){try{await page.unroute('**/v1/cxorbia/commands',routeHandler);}catch(e){r.teardownError=String(e.message||e);}page.off('response',responseListener);}
     try{

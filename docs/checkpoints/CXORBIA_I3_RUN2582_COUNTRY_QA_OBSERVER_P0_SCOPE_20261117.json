@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "cxorbia.i3.qa-control-p0-scope.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "priority": "P0_PROVEN",
+  "classification": "MAPPING_FAILURE",
+  "findingScope": "QA_CONTROL_ONLY_NOT_NEW_PRODUCT_FINDING",
+  "code": "PROJECT_COUNTRY_QA_UNHANDLED_RESPONSE_WAITER_AFTER_CLICK_TIMEOUT",
+  "observedAt": "2026-11-17T03:23:06.958626+00:00",
+  "runId": 44008540028,
+  "runNumber": 2582,
+  "certifyJobId": 133790456042,
+  "controlHead": "540ef037c365c344230e3059c324818bd564f4d2",
+  "productSourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+  "productSourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
+  "allowedFiles": [
+    "tools/qa/cxorbia-i3-project-country-live-proof.mjs",
+    "tools/qa/cxorbia-i3-project-country-live-proof.test.mjs"
+  ],
+  "production": false,
+  "productCodeChangesAllowed": false,
+  "workflowChangesAllowed": false,
+  "builds": 0,
+  "deploys": 0,
+  "proof": {
+    "diagnosticArtifactId": 14296245823,
+    "diagnosticArtifactSha256": "ec9c8806a31330eb691a696a5ac749d896359f0612e4789084bce8a69947a6cb",
+    "countryProofSha256": "3eec70ea84f28e99a5a121b688d050498bbd47297261c48e4c4fb04f55ef9fe2",
+    "clickError": "locator.click timeout30000 for country HN",
+    "lateProcessFailure": "page.waitForResponse timeout60000 unhandled rejection",
+    "localNodeStrictReproducerExit": 1,
+    "localNodeStrictReproducerError": "RESPONSE_TIMEOUT",
+    "cleanupDeleted": 3,
+    "cleanupRemaining": 0,
+    "commercialProjectUnchanged": true
+  },
+  "MODULE_TRUTH_MATRIX": [
+    {
+      "module": "project-country QA observer",
+      "owner": "tools/qa/cxorbia-i3-project-country-live-proof.mjs",
+      "lastObservedPassingRun": 2577,
+      "approvedSource": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
+      "approvedGitBlob": "0aa10fb5b6ff4a6a70bbd49ee08e8e2af01f8ef4",
+      "F9": {
+        "scope": "CONTROL_QA_NOT_PRODUCT_RELEASE_OWNER",
+        "included": false
+      },
+      "sourceSuccessor": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+      "sourceBlob": "0aa10fb5b6ff4a6a70bbd49ee08e8e2af01f8ef4",
+      "headBlob": "0aa10fb5b6ff4a6a70bbd49ee08e8e2af01f8ef4",
+      "liveObservation": "RUN2582_EXECUTED_EXACT_CONTROL_OWNER_AND_REPRODUCED_UNHANDLED_WAITER",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "authorityScope": "QA_OBSERVER_ONLY_NOT_PRODUCT_COUNTRY_DRIFT"
+    }
+  ],
+  "repairContract": [
+    "Attach rejection handling to network waiter immediately, before awaiting the click",
+    "Preserve click-before-cleanup sequencing even if response wait fails first",
+    "Propagate response timeout when click succeeds; preserve country failure HOLD",
+    "Preserve exact request predicate, timeout, provider ACK, durable readback, reload, replay and cleanup assertions",
+    "Retain country modal absence as unresolved observation; capture bounded UI failure evidence without changing product"
+  ],
+  "validationRequired": [
+    "Immediate and delayed click rejection cannot create unhandled response rejection",
+    "Response rejection after successful click remains an error",
+    "Response rejection before click settlement cannot start cleanup early",
+    "Success returns exact scoped response",
+    "Existing country ACK/ownership/replay/cleanup rejection tests remain passing"
+  ],
+  "nextExactAction": "Correct only the proven QA observer, consume RUN2582 C3 and partial results, then repeat existing same-source C3/certify on current DEV with no build/deploy and VRM354 disabled."
+}
