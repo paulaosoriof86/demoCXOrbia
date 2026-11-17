@@ -1,0 +1,4955 @@
+{
+  "schemaVersion": "cxorbia.i3.c3-certify-attempt-readback.v1",
+  "kind": "C3_PRETERMINAL_AND_CERTIFY_ATTEMPT_NOT_TERMINAL_CERTIFICATE",
+  "decision": "HOLD_I3_DEV_MATERIALIZED_RUN2585_COUNTRY_IDENTITY_PASS_STRICT_DOMAIN_CLOSURE_PENDING",
+  "strictCertificationStatus": "HOLD",
+  "createdAt": "2026-11-17T05:09:25Z",
+  "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+  "sourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
+  "runId": 44020344602,
+  "runNumber": 2585,
+  "runAttempt": 1,
+  "controlSha": "4d655bc729bc96c912167d80da213c3b4d5b914f",
+  "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/44020344602",
+  "artifactId": 14301340422,
+  "artifactDigest": "sha256:0db19726cbe98a9f7fd35b1c6969769c86ad17c18e0f71cb89e1fb1c501d1efe",
+  "artifactDigestIndependentlyVerified": true,
+  "terminalArtifactId": 14300369680,
+  "terminalArtifactDigest": "sha256:e3333d4b8ba88808f8a2207f9305d9efca8ef997a51de6491564a2a1b18a3773",
+  "terminalArtifactDigestIndependentlyVerified": true,
+  "runtimeRevision": "cxorbia-live-hr-dev-00379-bvq",
+  "runtimeDigest": "sha256:b18dcc12defdd008b58dadeb334f9b263140823ec82eac70b5d3e0401224e173",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/3ffc1e8d04e144ef",
+  "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+  "c3Decision": "PASS_C3_PRETERMINAL_SOURCE_READY_EXACT_DEV",
+  "moduleCount": 21,
+  "matchModules": 5,
+  "nonMatchModules": 16,
+  "sourceReadyModules": 21,
+  "pendingFiles": 0,
+  "builds": 0,
+  "runtimeDeploys": 0,
+  "hostingDeploys": 0,
+  "rulesDeploys": 0,
+  "hrWrites": 0,
+  "productionDeploys": 0,
+  "production": false,
+  "terminalCertified": false,
+  "phaseAComplete": false,
+  "i4Authorized": false,
+  "b14Closed": false,
+  "sourceQa": {
+    "conclusion": "success",
+    "testsPassed": 627,
+    "testsFailed": 0,
+    "receiptSha256": "1cdf16abaa4f1093304c589538e4b5001c2e8a03dcb3f229caf0a3eff7bcf791",
+    "receipt": {
+      "schemaVersion": "cxorbia.i3.same-run-source-qa.v1",
+      "decision": "PASS_I3_SAME_RUN_PATH_BOUND_SOURCE_QA",
+      "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+      "sourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
+      "controlSha": "4d655bc729bc96c912167d80da213c3b4d5b914f",
+      "runId": 44020344602,
+      "runAttempt": 1,
+      "registrySha256": "06db40e1c68a38eb85704ae267f69ae1de76147d36f45c20523f3940bfb620d8",
+      "scope": "SOURCE_QA_ONLY_NOT_E2E_OR_HUMAN_ACCEPTANCE",
+      "production": false,
+      "suites": [
+        {
+          "id": "shopper-keeper-authority",
+          "owners": [
+            {
+              "path": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+              "gitBlob": "e5e6ab0bc8850d4a9f5c7a5aa9774973d1465070"
+            }
+          ],
+          "tests": [
+            {
+              "path": "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs",
+              "gitBlob": "79183b9c3e787adf37e260433e44afa26d7fbe37"
+            }
+          ],
+          "exitCode": 0,
+          "stats": {
+            "tests": 142,
+            "pass": 142,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          },
+          "logFile": "shopper-keeper-authority.tap",
+          "logSha256": "d257dff3a3cc90fe22ca92b53cb38bf1585325071ada813fb5e4775849335281"
+        },
+        {
+          "id": "human-project-scope",
+          "owners": [
+            {
+              "path": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+              "gitBlob": "24e71f22fa5d678e79cde0d131d1ff0b4ce0be8b"
+            },
+            {
+              "path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+              "gitBlob": "7b2c430814c93841c8392a16c029ce06d686e995"
+            }
+          ],
+          "tests": [
+            {
+              "path": "tools/qa/cxorbia-i3-human-project-scope.test.mjs",
+              "gitBlob": "dad79a83856d4fec8a324eda71aec46aa5eab69b"
+            }
+          ],
+          "exitCode": 0,
+          "stats": {
+            "tests": 25,
+            "pass": 25,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          },
+          "logFile": "human-project-scope.tap",
+          "logSha256": "1cbbf3b0b9b571ad5389f1f99176b233fd07347e478ea20c821fc0305356a53d"
+        },
+        {
+          "id": "frontend-behavior",
+          "owners": [
+            {
+              "path": "app/core/programa.js",
+              "gitBlob": "3560737099f97e0a4774420c10073e108da2677c"
+            },
+            {
+              "path": "app/core/ui.js",
+              "gitBlob": "4947c325a17c95086ae6006615b651aa39097d7c"
+            },
+            {
+              "path": "app/modules/periodos.js",
+              "gitBlob": "25d39e553da379d113dad8a6db8a1d70554c4cd7"
+            },
+            {
+              "path": "app/modules/configuracion.js",
+              "gitBlob": "33bd5e8d14860f50b706f7d4194c3754424cb8ea"
+            },
+            {
+              "path": "app/modules/cliente-insights.js",
+              "gitBlob": "f0f5f278117738eae1bf19453c144c95c536a341"
+            },
+            {
+              "path": "app/adapters/cxorbia-command-adapter-v1.js",
+              "gitBlob": "d9c222e81c7e1cbae7dbcc817e67dc4a4c6b084e"
+            },
+            {
+              "path": "app/core/backend-bulletins.js",
+              "gitBlob": "de066f9d684b203b62175ca5a675b9ffea4202f1"
+            },
+            {
+              "path": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+              "gitBlob": "e39b79845219752e003e573da1aacf53fde287d1"
+            },
+            {
+              "path": "app/sw.js",
+              "gitBlob": "5dc022b3dd08ba1a3eba701ddd8ec77776b45d9e"
+            },
+            {
+              "path": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+              "gitBlob": "382789cdca22de0042ebbe8c3f0cd52a77f7ba0a"
+            },
+            {
+              "path": "backend/runtime/hr-live-service/server.mjs",
+              "gitBlob": "edc293a7da5f499468ebaeb8967d58761030dc8a"
+            },
+            {
+              "path": "app/modules/dashboard.js",
+              "gitBlob": "174edadcb33f00afaa7e36262ed27aba1209a80e"
+            },
+            {
+              "path": "app/core/notif.js",
+              "gitBlob": "376524ce5b8b58ba40ff1d3ccb0af959b674272d"
+            }
+          ],
+          "tests": [
+            {
+              "path": "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs",
+              "gitBlob": "a9f09117384a305895ffd36bab133076aeeff87d"
+            },
+            {
+              "path": "tools/qa/cxorbia-i3-q2-frontend-owner-behavior.test.mjs",
+              "gitBlob": "5663fa516114a1e075f49074044a429851381e9e"
+            },
+            {
+              "path": "tools/qa/cxorbia-i3-e04-benchmark-source.test.mjs",
+              "gitBlob": "71ae40362db01bd57fede699a02e82096c4b5efb"
+            },
+            {
+              "path": "tools/qa/cxorbia-i3-client-collaboration-ui.test.mjs",
+              "gitBlob": "451b1024d51f34e43af62146e521bf4741148653"
+            },
+            {
+              "path": "backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs",
+              "gitBlob": "1dd89e228c74f1ae986b56e09031f33ec08422b6"
+            },
+            {
+              "path": "tools/qa/cxorbia-i3-d07-sw-pdf-cross-origin.test.mjs",
+              "gitBlob": "cbd8257156e9922475f6c1db386206fc7e6739d3"
+            },
+            {
+              "path": "tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs",
+              "gitBlob": "632d972c0e4cdfd9bb8531825ac504e4b79beb21"
+            },
+            {
+              "path": "tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs",
+              "gitBlob": "689863b661ec68c153f3814a6cf66c69c6a9a4a7"
+            },
+            {
+              "path": "backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs",
+              "gitBlob": "a31f0690ad2fc15ec1f061ea5f5f6d449ec0ebf8"
+            }
+          ],
+          "exitCode": 0,
+          "stats": {
+            "tests": 297,
+            "pass": 297,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          },
+          "logFile": "frontend-behavior.tap",
+          "logSha256": "a563d1b5bd4d93ac503ad783f9621a3d0e4187b628169b4a561f7ab84a05fdad"
+        },
+        {
+          "id": "finance-ack-boundary",
+          "owners": [
+            {
+              "path": "app/core/backend-finance-benefits.js",
+              "gitBlob": "66856002901be88aefb38acc0aaab635a8872c2b"
+            },
+            {
+              "path": "app/core/backend-cxdata-finance-read.js",
+              "gitBlob": "2a7cd3ffbd2bf0999b149b3095218b7d3d09276b"
+            },
+            {
+              "path": "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+              "gitBlob": "f4d4e19f3f6bb1087f21a0d4a04c623b93d8be74"
+            },
+            {
+              "path": "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+              "gitBlob": "57aefc43bf0f1bf31fdeea4eb3e80119c9cd82ff"
+            }
+          ],
+          "tests": [
+            {
+              "path": "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
+              "gitBlob": "538f41d46351fb488285a3303c2c60070609e537"
+            },
+            {
+              "path": "tools/qa/cxorbia-i3-b8-historical-command-boundary.test.mjs",
+              "gitBlob": "e7e477df5f8cd38e6299a0ce4fdb425535ab60d8"
+            }
+          ],
+          "exitCode": 0,
+          "stats": {
+            "tests": 103,
+            "pass": 103,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          },
+          "logFile": "finance-ack-boundary.tap",
+          "logSha256": "3694e7c874ce6d54958cbb5e93c192852eed82698aaed7032d8385ba3a2cccbb"
+        },
+        {
+          "id": "external-hr-source",
+          "owners": [
+            {
+              "path": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+              "gitBlob": "b2f8cf3f743730b5ce14e3fad31791ac34bd0291"
+            },
+            {
+              "path": "tools/hr-source/tya-enforce-live-tab-registry.mjs",
+              "gitBlob": "3ff548f1ef9d4af2ad899a2e58d948dfe92aa586"
+            },
+            {
+              "path": "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+              "gitBlob": "16753ae184e1c59426cc58c126214bc6742b0505"
+            }
+          ],
+          "tests": [
+            {
+              "path": "tools/hr-source/tya-resolve-live-month-tabs.test.mjs",
+              "gitBlob": "6149776378bfaac393d5a4a26bfa8796724cc6b1"
+            },
+            {
+              "path": "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+              "gitBlob": "2fa007443f138a9ec635b307fe115f69dc8e468f"
+            }
+          ],
+          "exitCode": 0,
+          "stats": {
+            "tests": 60,
+            "pass": 60,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          },
+          "logFile": "external-hr-source.tap",
+          "logSha256": "9db0e9b6d89b9d15a7e577968f885fecc723a39e250a416dfe3e068696ae4012"
+        }
+      ]
+    }
+  },
+  "certify": {
+    "jobId": 133828656736,
+    "conclusion": "failure",
+    "failureStage": "STRICT_MODULE_TRUTH_FINALIZER",
+    "fullHumanDecision": "PASS_I3_HUMAN_LIVE_ACCEPTANCE",
+    "hardenedFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+    "terminalClosure": {
+      "decision": "HOLD_C3_TERMINAL_MODULE_TRUTH",
+      "status": "HOLD",
+      "moduleCount": 21,
+      "matchModules": 5,
+      "nonMatchModules": 16,
+      "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+      "sourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
+      "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+      "runtimeRevision": "cxorbia-live-hr-dev-00379-bvq",
+      "runtimeDigest": "sha256:b18dcc12defdd008b58dadeb334f9b263140823ec82eac70b5d3e0401224e173",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/3ffc1e8d04e144ef",
+      "hardenedFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+      "fullHumanDecision": "PASS_I3_HUMAN_LIVE_ACCEPTANCE",
+      "qaReservationAfter": 0,
+      "pendingOwnerByteParity": "PASS_C3_PENDING_OWNER_BYTE_PARITY",
+      "terminalFindingsResolved": [
+        "VRM-033",
+        "VRM-034",
+        "VRM-035",
+        "VRM-038",
+        "VRM-040",
+        "VRM-041"
+      ],
+      "priorP0Resolved": [
+        "VRM-036",
+        "VRM-037",
+        "VRM-039",
+        "VRM-042"
+      ],
+      "ownerSpecificReceipts": [],
+      "domainResults": [
+        {
+          "moduleDomain": "auth-protected-data-runtime",
+          "status": "HOLD",
+          "requiredOwnerPaths": [
+            "app/core/backend-browser-auth.js",
+            "app/core/backend-protected-dev-session-continuity.js",
+            "app/core/backend-cxdata-read-guard.js",
+            "app/core/backend-firebase.js",
+            "app/core/backend-protected-dev-mode.js",
+            "app/core/backend-dev-auth.local.js",
+            "app/adapters/tya-dev-technical-auth-e2e-v1.js",
+            "app/adapters/tya-c6-shopper-auth-click-guard-v1.js"
+          ],
+          "coveredOwnerPaths": [],
+          "reasons": [
+            "C3_OWNER_RECEIPT_MISSING:auth-protected-data-runtime",
+            "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:auth-protected-data-runtime:app/core/backend-browser-auth.js,app/core/backend-protected-dev-session-continuity.js,app/core/backend-cxdata-read-guard.js,app/core/backend-firebase.js,app/core/backend-protected-dev-mode.js,app/core/backend-dev-auth.local.js,app/adapters/tya-dev-technical-auth-e2e-v1.js,app/adapters/tya-c6-shopper-auth-click-guard-v1.js"
+          ],
+          "rejectedReceipts": [],
+          "historicalReceiptCount": 0
+        },
+        {
+          "moduleDomain": "base-router-shell-cache",
+          "status": "HOLD",
+          "requiredOwnerPaths": [
+            "app/app.js",
+            "app/index-backend-dev.html",
+            "app/core/build-lock.js",
+            "app/styles/theme.css",
+            "app/styles/layout.css",
+            "app/manifest.webmanifest",
+            "app/sw.js",
+            "app/core/geo.js",
+            "app/core/store.js",
+            "app/core/dedupe.js",
+            "app/core/programa.js",
+            "app/core/automations.js",
+            "app/vendor/pptxgenjs.min.js",
+            "app/core/importador.js",
+            "app/core/ui.js",
+            "app/core/notif.js",
+            "app/core/backend-finance-benefits.js",
+            "app/core/backend-cxdata-finance-read.js",
+            "app/core/backend-operational-actions.js",
+            "app/core/backend-cxdata-readonly-corte4.js",
+            "app/core/backend-ui-action-bridge.js",
+            "app/core/backend-bulletins.js",
+            "app/core/backend-automations.js",
+            "app/core/backend-preview-status.js",
+            "app/core/topbar.js",
+            "app/core/pwa.js",
+            "app/modules/soporte.js",
+            "app/modules/saas-console.js",
+            "app/modules/importador.js",
+            "app/modules/comercial.js",
+            "app/modules/crm.js",
+            "app/modules/marketing.js",
+            "app/modules/integraciones.js",
+            "app/modules/automatizaciones.js",
+            "app/modules/correo.js",
+            "app/modules/marca.js",
+            "app/modules/diagnostico.js",
+            "app/modules/administrabilidad.js",
+            "app/adapters/tya-ab-cumulative-composition-v1.js",
+            "app/core/backend-corte4-empty-shell-guard.js"
+          ],
+          "coveredOwnerPaths": [],
+          "reasons": [
+            "C3_OWNER_RECEIPT_MISSING:base-router-shell-cache",
+            "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:base-router-shell-cache:app/app.js,app/index-backend-dev.html,app/core/build-lock.js,app/styles/theme.css,app/styles/layout.css,app/manifest.webmanifest,app/sw.js,app/core/geo.js,app/core/store.js,app/core/dedupe.js,app/core/programa.js,app/core/automations.js,app/vendor/pptxgenjs.min.js,app/core/importador.js,app/core/ui.js,app/core/notif.js,app/core/backend-finance-benefits.js,app/core/backend-cxdata-finance-read.js,app/core/backend-operational-actions.js,app/core/backend-cxdata-readonly-corte4.js,app/core/backend-ui-action-bridge.js,app/core/backend-bulletins.js,app/core/backend-automations.js,app/core/backend-preview-status.js,app/core/topbar.js,app/core/pwa.js,app/modules/soporte.js,app/modules/saas-console.js,app/modules/importador.js,app/modules/comercial.js,app/modules/crm.js,app/modules/marketing.js,app/modules/integraciones.js,app/modules/automatizaciones.js,app/modules/correo.js,app/modules/marca.js,app/modules/diagnostico.js,app/modules/administrabilidad.js,app/adapters/tya-ab-cumulative-composition-v1.js,app/core/backend-corte4-empty-shell-guard.js",
+            "C3_DOMAIN_P0_OPEN:base-router-shell-cache:VRM-347"
+          ],
+          "rejectedReceipts": [],
+          "historicalReceiptCount": 0
+        },
+        {
+          "moduleDomain": "benefits",
+          "status": "HOLD",
+          "requiredOwnerPaths": [
+            "app/modules/beneficios.js"
+          ],
+          "coveredOwnerPaths": [],
+          "reasons": [
+            "C3_OWNER_RECEIPT_MISSING:benefits",
+            "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:benefits:app/modules/beneficios.js"
+          ],
+          "rejectedReceipts": [],
+          "historicalReceiptCount": 0
+        },
+        {
+          "moduleDomain": "canonical-hr-state-adapters",
+          "status": "HOLD",
+          "requiredOwnerPaths": [
+            "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+            "app/adapters/tya-cumulative-read-model-v2.js",
+            "app/adapters/tya-canonical-state-semantics-v2.js",
+            "app/adapters/tya-live-source-refresh-watch-v2.js",
+            "app/adapters/tya-live-source-inplace-apply.js",
+            "backend/runtime/hr-live-service/server.mjs",
+            "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+            "tools/hr-source/tya-build-live-hr-source-safe-static.mjs",
+            "tools/hr-source/tya-canonical-visit-state-r20.mjs",
+            "tools/hr-source/tya-enforce-live-tab-registry.mjs",
+            "tools/hr-source/tya-reapply-canonical-state-r20.mjs",
+            "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+            "tools/hr-source/tya-resolve-live-month-tabs.mjs",
+            "backend/contracts/tya-hr-column-map-r20-v1.json",
+            "app/core/backend-hr-source-bridge.js",
+            "app/core/hr.js"
+          ],
+          "coveredOwnerPaths": [],
+          "reasons": [
+            "C3_OWNER_RECEIPT_MISSING:canonical-hr-state-adapters",
+            "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:canonical-hr-state-adapters:app/adapters/tya-protected-auth-hr-authority-bridge-v2.js,app/adapters/tya-cumulative-read-model-v2.js,app/adapters/tya-canonical-state-semantics-v2.js,app/adapters/tya-live-source-refresh-watch-v2.js,app/adapters/tya-live-source-inplace-apply.js,backend/runtime/hr-live-service/server.mjs,tools/hr-source/tya-build-live-hr-source-safe-r20.mjs,tools/hr-source/tya-build-live-hr-source-safe-static.mjs,tools/hr-source/tya-canonical-visit-state-r20.mjs,tools/hr-source/tya-enforce-live-tab-registry.mjs,tools/hr-source/tya-reapply-canonical-state-r20.mjs,tools/hr-source/tya-live-provider-registry-identity-dev.mjs,tools/hr-source/tya-resolve-live-month-tabs.mjs,backend/contracts/tya-hr-column-map-r20-v1.json,app/core/backend-hr-source-bridge.js,app/core/hr.js",
+            "C3_DOMAIN_P0_OPEN:canonical-hr-state-adapters:VRM-356"
+          ],
+          "rejectedReceipts": [],
+          "historicalReceiptCount": 0
+        },
+        {
+          "moduleDomain": "certifications",
+          "status": "HOLD",
+          "requiredOwnerPaths": [
+            "app/modules/academia.js",
+            "app/modules/cert.js",
+            "app/data/tya-certification-carryover-source-safe.js",
+            "backend/runtime/hr-live-service/certification-runtime.mjs",
+            "app/core/backend-certifications.js",
+            "app/core/backend-ai.js"
+          ],
+          "coveredOwnerPaths": [],
+          "reasons": [
+            "C3_OWNER_RECEIPT_MISSING:certifications",
+            "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:certifications:app/modules/academia.js,app/modules/cert.js,app/data/tya-certification-carryover-source-safe.js,backend/runtime/hr-live-service/certification-runtime.mjs,app/core/backend-certifications.js,app/core/backend-ai.js"
+          ],
+          "rejectedReceipts": [],
+          "historicalReceiptCount": 0
+        },
+        {
+          "moduleDomain": "client-portal-reportkit",
+          "status": "HOLD",
+          "requiredOwnerPaths": [
+            "app/core/cliente-data.js",
+            "app/modules/cliente.js",
+            "app/modules/cliente-extra.js",
+            "app/modules/cliente-insights.js",
+            "app/modules/clientes.js"
+          ],
+          "coveredOwnerPaths": [],
+          "reasons": [
+            "C3_OWNER_RECEIPT_MISSING:client-portal-reportkit",
+            "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:client-portal-reportkit:app/core/cliente-data.js,app/modules/cliente.js,app/modules/cliente-extra.js,app/modules/cliente-insights.js,app/modules/clientes.js"
+          ],
+          "rejectedReceipts": [],
+          "historicalReceiptCount": 0
+        },
+        {
+          "moduleDomain": "core-config-data-router-permissions",
+          "status": "HOLD",
+          "requiredOwnerPaths": [
+            "app/core/config.js",
+            "app/core/router.js",
+            "app/core/permissions.js",
+            "app/core/data.js",
+            "app/core/data-source.js",
+            "app/config/runtime.js"
+          ],
+          "coveredOwnerPaths": [],
+          "reasons": [
+            "C3_OWNER_RECEIPT_MISSING:core-config-data-router-permissions",
+            "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:core-config-data-router-permissions:app/core/config.js,app/core/router.js,app/core/permissions.js,app/core/data.js,app/core/data-source.js,app/config/runtime.js"
+          ],
+          "rejectedReceipts": [],
+          "historicalReceiptCount": 1
+        },
+        {
+          "moduleDomain": "dashboard-operation",
+          "status": "HOLD",
+          "requiredOwnerPaths": [
+            "app/modules/dashboard.js",
+            "app/modules/midia.js"
+          ],
+          "coveredOwnerPaths": [],
+          "reasons": [
+            "C3_OWNER_RECEIPT_MISSING:dashboard-operation",
+            "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:dashboard-operation:app/modules/dashboard.js,app/modules/midia.js",
+            "C3_DOMAIN_P0_OPEN:dashboard-operation:VRM-097,VRM-121,VRM-127,VRM-143,VRM-165"
+          ],
+          "rejectedReceipts": [],
+          "historicalReceiptCount": 0
+        },
+        {
+          "moduleDomain": "documents-resources",
+          "status": "HOLD",
+          "requiredOwnerPaths": [
+            "app/modules/novedades.js",
+            "app/modules/tablon.js",
+            "app/modules/documentos.js",
+            "app/core/backend-resources.js",
+            "app/modules/soporte.js",
+            "app/core/backend-bulletins.js",
+            "app/core/manuales-data.js"
+          ],
+          "coveredOwnerPaths": [],
+          "reasons": [
+            "C3_OWNER_RECEIPT_MISSING:documents-resources",
+            "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:documents-resources:app/modules/novedades.js,app/modules/tablon.js,app/modules/documentos.js,app/core/backend-resources.js,app/modules/soporte.js,app/core/backend-bulletins.js,app/core/manuales-data.js"
+          ],
+          "rejectedReceipts": [],
+          "historicalReceiptCount": 1
+        },
+        {
+          "moduleDomain": "finance-core-liquidation-costs",
+          "status": "HOLD",
+          "requiredOwnerPaths": [
+            "app/core/finanzas-core.js",
+            "app/core/liquidacion.js",
+            "app/core/costos.js",
+            "app/modules/finanzas.js",
+            "app/adapters/tya-project-financial-model-contract-v1.js",
+            "app/data/tya-financial-canonical-source-safe.js",
+            "app/data/tya-financial-canonical-source-safe-liq-01.js",
+            "app/data/tya-financial-canonical-source-safe-liq-02.js",
+            "app/data/tya-financial-canonical-source-safe-liq-03.js",
+            "app/data/tya-financial-canonical-source-safe-review-01.js",
+            "app/data/tya-financial-canonical-source-safe-review-02.js",
+            "app/data/tya-financial-canonical-source-safe-evidence.js",
+            "app/data/tya-financial-canonical-source-safe-final.js",
+            "app/data/tya-payment-history-source-safe.js"
+          ],
+          "coveredOwnerPaths": [],
+          "reasons": [
+            "C3_OWNER_RECEIPT_MISSING:finance-core-liquidation-costs",
+            "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:finance-core-liquidation-costs:app/core/finanzas-core.js,app/core/liquidacion.js,app/core/costos.js,app/modules/finanzas.js,app/adapters/tya-project-financial-model-contract-v1.js,app/data/tya-financial-canonical-source-safe.js,app/data/tya-financial-canonical-source-safe-liq-01.js,app/data/tya-financial-canonical-source-safe-liq-02.js,app/data/tya-financial-canonical-source-safe-liq-03.js,app/data/tya-financial-canonical-source-safe-review-01.js,app/data/tya-financial-canonical-source-safe-review-02.js,app/data/tya-financial-canonical-source-safe-evidence.js,app/data/tya-financial-canonical-source-safe-final.js,app/data/tya-payment-history-source-safe.js"
+          ],
+          "rejectedReceipts": [],
+          "historicalReceiptCount": 0
+        },
+        {
+          "moduleDomain": "human-runtime-domain-consistency",
+          "status": "HOLD",
+          "requiredOwnerPaths": [
+            "app/adapters/tya-c6-unified-human-runtime-v1.js",
+            "app/adapters/tya-c6-domain-consistency-bridge.js",
+            "app/adapters/cxorbia-admin-identity-review-notice-v1.js"
+          ],
+          "coveredOwnerPaths": [],
+          "reasons": [
+            "C3_OWNER_RECEIPT_MISSING:human-runtime-domain-consistency",
+            "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:human-runtime-domain-consistency:app/adapters/tya-c6-unified-human-runtime-v1.js,app/adapters/tya-c6-domain-consistency-bridge.js,app/adapters/cxorbia-admin-identity-review-notice-v1.js",
+            "C3_DOMAIN_P0_OPEN:human-runtime-domain-consistency:VRM-338,VRM-341"
+          ],
+          "rejectedReceipts": [],
+          "historicalReceiptCount": 0
+        },
+        {
+          "moduleDomain": "persistence-command-ack-boundary",
+          "status": "HOLD",
+          "requiredOwnerPaths": [
+            "app/adapters/cxorbia-canonical-write-firewall-v1.js",
+            "app/adapters/cxorbia-command-adapter-v1.js",
+            "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+            "app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js",
+            "app/adapters/cxorbia-shopper-admin-command-contract-v1.js",
+            "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+            "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+            "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+            "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+            "app/adapters/cxorbia-command-http-transport-v1.js",
+            "app/adapters/cxorbia-hr-write-adapter-contract-v1.js",
+            "app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js",
+            "app/adapters/cxorbia-legal-runtime-http-v1.js",
+            "backend/runtime/cxorbia-academy-command-provider-v1.mjs",
+            "backend/contracts/cxorbia-academy-base-progress-contract-v1.json"
+          ],
+          "coveredOwnerPaths": [],
+          "reasons": [
+            "C3_OWNER_RECEIPT_MISSING:persistence-command-ack-boundary",
+            "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:persistence-command-ack-boundary:app/adapters/cxorbia-canonical-write-firewall-v1.js,app/adapters/cxorbia-command-adapter-v1.js,app/adapters/cxorbia-cxdata-command-boundary-v1.js,app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js,app/adapters/cxorbia-shopper-admin-command-contract-v1.js,backend/runtime/cxorbia-finance-command-provider-v1.mjs,backend/runtime/cxorbia-operational-command-provider-v1.mjs,backend/runtime/cxorbia-shopper-command-provider-v1.mjs,backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs,app/adapters/cxorbia-command-http-transport-v1.js,app/adapters/cxorbia-hr-write-adapter-contract-v1.js,app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js,app/adapters/cxorbia-legal-runtime-http-v1.js,backend/runtime/cxorbia-academy-command-provider-v1.mjs,backend/contracts/cxorbia-academy-base-progress-contract-v1.json",
+            "C3_DOMAIN_P0_OPEN:persistence-command-ack-boundary:VRM-336,VRM-349,VRM-353,VRM-354,VRM-355"
+          ],
+          "rejectedReceipts": [],
+          "historicalReceiptCount": 2
+        },
+        {
+          "moduleDomain": "projects-periods-hr-source-wizard-multiproject",
+          "status": "HOLD",
+          "requiredOwnerPaths": [
+            "app/modules/proyectos.js",
+            "app/modules/periodos.js",
+            "app/modules/hr-source.js",
+            "app/modules/proyecto-wizard.js",
+            "backend/contracts/cxorbia-project-source-contract-v1.json",
+            "backend/runtime/cxorbia-project-command-provider-v1.mjs",
+            "app/core/backend-config.js",
+            "app/core/backend-config-preview-dev.js",
+            "app/core/backend-v57-extra-config.js",
+            "app/modules/configuracion.js"
+          ],
+          "coveredOwnerPaths": [],
+          "reasons": [
+            "C3_OWNER_RECEIPT_MISSING:projects-periods-hr-source-wizard-multiproject",
+            "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:projects-periods-hr-source-wizard-multiproject:app/modules/proyectos.js,app/modules/periodos.js,app/modules/hr-source.js,app/modules/proyecto-wizard.js,backend/contracts/cxorbia-project-source-contract-v1.json,backend/runtime/cxorbia-project-command-provider-v1.mjs,app/core/backend-config.js,app/core/backend-config-preview-dev.js,app/core/backend-v57-extra-config.js,app/modules/configuracion.js"
+          ],
+          "rejectedReceipts": [],
+          "historicalReceiptCount": 1
+        },
+        {
+          "moduleDomain": "questionnaire-shopper",
+          "status": "HOLD",
+          "requiredOwnerPaths": [
+            "app/modules/cuestionario-shopper.js"
+          ],
+          "coveredOwnerPaths": [],
+          "reasons": [
+            "C3_OWNER_RECEIPT_MISSING:questionnaire-shopper",
+            "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:questionnaire-shopper:app/modules/cuestionario-shopper.js"
+          ],
+          "rejectedReceipts": [],
+          "historicalReceiptCount": 0
+        },
+        {
+          "moduleDomain": "shoppers-mi-visitas-profile",
+          "status": "HOLD",
+          "requiredOwnerPaths": [
+            "app/core/shopper-credential-rule.js",
+            "app/adapters/tya-canonical-shopper-portal-v2.js",
+            "app/modules/shoppers.js",
+            "app/modules/misvisitas.js",
+            "app/core/shoppers-store.js"
+          ],
+          "coveredOwnerPaths": [],
+          "reasons": [
+            "C3_OWNER_RECEIPT_MISSING:shoppers-mi-visitas-profile",
+            "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:shoppers-mi-visitas-profile:app/core/shopper-credential-rule.js,app/adapters/tya-canonical-shopper-portal-v2.js,app/modules/shoppers.js,app/modules/misvisitas.js,app/core/shoppers-store.js"
+          ],
+          "rejectedReceipts": [],
+          "historicalReceiptCount": 1
+        },
+        {
+          "moduleDomain": "visits-review-postulations-reservations",
+          "status": "HOLD",
+          "requiredOwnerPaths": [
+            "app/adapters/tya-canonical-reservations-guard-v2.js",
+            "app/modules/visitas.js",
+            "app/modules/visita-detalle.js",
+            "app/modules/revision-admin.js",
+            "app/modules/postulaciones.js",
+            "app/modules/reservas.js",
+            "firestore.rules"
+          ],
+          "coveredOwnerPaths": [],
+          "reasons": [
+            "C3_OWNER_RECEIPT_MISSING:visits-review-postulations-reservations",
+            "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:visits-review-postulations-reservations:app/adapters/tya-canonical-reservations-guard-v2.js,app/modules/visitas.js,app/modules/visita-detalle.js,app/modules/revision-admin.js,app/modules/postulaciones.js,app/modules/reservas.js,firestore.rules"
+          ],
+          "rejectedReceipts": [],
+          "historicalReceiptCount": 1
+        }
+      ],
+      "historicalReceipts": [
+        {
+          "findingId": "VRM-077",
+          "moduleDomain": "visits-review-postulations-reservations",
+          "sourceSha": "ae6016a03e1943250d91f636132178802f4cb114",
+          "reason": "HISTORICAL_IDENTITY_NOT_CURRENT_RECEIPT"
+        },
+        {
+          "findingId": "VRM-077",
+          "moduleDomain": "shoppers-mi-visitas-profile",
+          "sourceSha": "ae6016a03e1943250d91f636132178802f4cb114",
+          "reason": "HISTORICAL_IDENTITY_NOT_CURRENT_RECEIPT"
+        },
+        {
+          "findingId": "VRM-078",
+          "moduleDomain": "projects-periods-hr-source-wizard-multiproject",
+          "sourceSha": "17ffd1cbac4aeee7f6a422b2c27b8d5c6111358f",
+          "reason": "HISTORICAL_IDENTITY_NOT_CURRENT_RECEIPT"
+        },
+        {
+          "findingId": "VRM-079",
+          "moduleDomain": "documents-resources",
+          "sourceSha": "6877b38171a3b1ef8caf88734d0884a31ebef639",
+          "reason": "HISTORICAL_IDENTITY_NOT_CURRENT_RECEIPT"
+        },
+        {
+          "findingId": "VRM-080",
+          "moduleDomain": "core-config-data-router-permissions",
+          "sourceSha": "77b29e303c825be586a97e159d4d65bfae7e66c8",
+          "reason": "HISTORICAL_IDENTITY_NOT_CURRENT_RECEIPT"
+        },
+        {
+          "findingId": "VRM-080",
+          "moduleDomain": "persistence-command-ack-boundary",
+          "sourceSha": "77b29e303c825be586a97e159d4d65bfae7e66c8",
+          "reason": "HISTORICAL_IDENTITY_NOT_CURRENT_RECEIPT"
+        },
+        {
+          "findingId": "VRM-081",
+          "moduleDomain": "persistence-command-ack-boundary",
+          "sourceSha": "b168955f405cd82630a8caad04de0b1766b26fc8",
+          "reason": "HISTORICAL_IDENTITY_NOT_CURRENT_RECEIPT"
+        },
+        {
+          "findingId": "VRM-194",
+          "moduleDomain": "tenant-admin-config-branding",
+          "sourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
+          "reason": "HISTORICAL_IDENTITY_NOT_CURRENT_RECEIPT"
+        },
+        {
+          "findingId": "VRM-330",
+          "moduleDomain": "tenant-admin-config-branding",
+          "sourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
+          "reason": "HISTORICAL_IDENTITY_NOT_CURRENT_RECEIPT"
+        },
+        {
+          "findingId": "VRM-335",
+          "moduleDomain": "tenant-admin-config-branding",
+          "sourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
+          "reason": "HISTORICAL_IDENTITY_NOT_CURRENT_RECEIPT"
+        }
+      ],
+      "rejectedReceipts": [],
+      "closedByCurrentReceipt": [
+        "VRM-194",
+        "VRM-330",
+        "VRM-335"
+      ],
+      "unresolvedP0": [
+        {
+          "id": "VRM-089",
+          "state": "SOURCE_FIX_REPROOF_REQUIRED",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-091",
+          "state": "SOURCE_FIX_REPROOF_REQUIRED",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-092",
+          "state": "HUMAN_FAIL_REOPENED_POSTULATION_ADMIN_SURFACE_NOT_ACCEPTABLE",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-093",
+          "state": "SOURCE_FIX_REPROOF_REQUIRED",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-096",
+          "state": "SOURCE_FIX_REPROOF_REQUIRED",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-097",
+          "state": "SOURCE_FIX_REPROOF_REQUIRED",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-100",
+          "state": "SOURCE_FIX_REPROOF_REQUIRED",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-104",
+          "state": "SOURCE_FIX_REPROOF_REQUIRED",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-121",
+          "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-122",
+          "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-123",
+          "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-124",
+          "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-125",
+          "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-126",
+          "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-127",
+          "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-128",
+          "state": "HUMAN_FAIL_REOPENED_IDENTITY_ADJUDICATION_NOT_DISCOVERABLE",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-129",
+          "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-130",
+          "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-132",
+          "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-133",
+          "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-134",
+          "state": "BOUNDED_HR_BATCH_EXACT_DEV_PASS_GLOBAL_PERFORMANCE_P0_OPEN",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-135",
+          "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-136",
+          "state": "SOURCE_FIX_PENDING_DEV_LIVE_REPROOF",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-142",
+          "state": "SOURCE_FIX_PENDING_DEV_LIVE_REPROOF",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-143",
+          "state": "SOURCE_FIXED_EXACT_DEV_PROVIDER_CYCLE_AND_SERVED_CONSUMER_PASS_LEGACY_UNLINKED_PENDING",
+          "priority": "P0_PROVEN"
+        },
+        {
+          "id": "VRM-147",
+          "state": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-148",
+          "state": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-150",
+          "state": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-151",
+          "state": "FINAL_CANONICAL_DRY_RUN_PASS_DURABLE_RECONCILIATION_REQUIRED",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-152",
+          "state": "RUNTIME_MATERIALIZED_DURABLE_RECONCILIATION_REQUIRED",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-153",
+          "state": "DEV_DURABLE_41_PROVIDER_ACK_READBACK_PASS_RUN1415_HUMAN_AND_ARTIFACT_E2E_PENDING",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-165",
+          "state": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-166",
+          "state": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-169",
+          "state": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-170",
+          "state": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-171",
+          "state": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-172",
+          "state": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-178",
+          "state": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-180",
+          "state": "DEV_MATERIALIZED_PENDING_LIVE_E2E",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-182",
+          "state": "CONTROL_FIXED_SOURCE_DRIFT_PROVEN_RESIDUAL_PERSISTENCE_SEPARATED",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-187",
+          "state": "SOURCE_PASS_PROVEN_RUN954_PENDING_BOUNDED_PACKAGE_MATERIALIZATION",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-188",
+          "state": "SOURCE_PASS_PROVEN_RUN956_PENDING_BOUNDED_PACKAGE_MATERIALIZATION",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-190",
+          "state": "SOURCE_PASS_RUN964",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-191",
+          "state": "SOURCE_PASS_RUN968",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-196",
+          "state": "CONTROL_FAIL_CLOSED_RUN980_PRODUCT_REMEDIATION_ACTIVE",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-200",
+          "state": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-201",
+          "state": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-218",
+          "state": "EXACT_OWNER_PROVEN_RUN1101_RUNTIME_RECONCILIATION_CONFIRMED_RESIDUALS_PRESERVED",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-222",
+          "state": "PROVEN_CONTROL_AND_RUNTIME_READBACK",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-240",
+          "state": "NO_WRITE_FAIL_CLOSED_RUN1127",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-271",
+          "state": "DEV_FOCAL_UI_E2E_PROVEN_HUMAN_AND_FULL_POPULATION_PENDING",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-272",
+          "state": "PRODUCT_FIXES_PASS_CONTROL_FALSE_NEGATIVES_FIXED_SAME_ARTIFACT_REPROOF_REQUIRED",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-273",
+          "state": "DEV_REPRESENTATIVE_E2E_PASS_PENDING_FOCAL_DISPLAY_ACK_AND_HUMAN",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-274",
+          "state": "DEV_MATERIALIZED_PENDING_HN_EXACT_POPULATION_E2E_AND_HUMAN",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-275",
+          "state": "SOURCE_PROVEN_DEV_MATERIALIZED_PENDING_AUTHENTICATED_E2E_HUMAN",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-276",
+          "state": "SOURCE_PROVEN_DEV_MATERIALIZED_PENDING_AUTHENTICATED_WORK_E2E_HUMAN",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-277",
+          "state": "SOURCE_PROVEN_DEV_MATERIALIZED_PENDING_AUTHENTICATED_WORK_E2E_HUMAN",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-278",
+          "state": "SOURCE_PROVEN_DEV_MATERIALIZED_PENDING_AUTHENTICATED_WORK_E2E_HUMAN",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-280",
+          "state": "SOURCE_PROVEN_DEV_MATERIALIZED_LIVE_E2E_FOCAL_PASS_RUN1820_HUMAN_PENDING",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-281",
+          "state": "DEV_MATERIALIZED_RUN1823_DURABLE_ASSIGNMENT_ACK_AND_E2E_PENDING",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-282",
+          "state": "SOURCE_FIXED_LOCAL_SYNTHETIC_PASS_CANONICAL_CI_AND_DEV_MATERIALIZATION_PENDING",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-283",
+          "state": "DEV_MATERIALIZED_RUN1829_BUTTON_VISIBLE_PRECHECK_PASS_HUMAN_MODAL_FAILURE_NEW_VRM284",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-284",
+          "state": "PARTIAL_PASS_MODAL_LIVE_STABLE__WRITER_ACK_AND_DURABLE_3_VISITS_PENDING",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-285",
+          "state": "DEV_MATERIALIZED_SOURCE_BYTES_PASS_PDF_CONTENT_E2E_PENDING",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-286",
+          "state": "SOURCE_PROOF_PASS_RUN1843_DEV_MATERIALIZED_RUN1844_CHROME_FOCAL_PASS_OTHER_I3_GATES_HOLD",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-287",
+          "state": "SOURCE_FIXED_CANONICAL_SOURCE_PROOF_PENDING",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-288",
+          "state": "SOURCE_FIXED_LOCAL_QA_PASS_CANONICAL_SOURCE_PROOF_PENDING_DEV_NOT_DEPLOYED",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-289",
+          "state": "SOURCE_AND_CANONICAL_CI_PASS_HOSTING_DEV_PASS_ADMIN_CLIENT_PREVIEW_PASS_REAL_CLIENT_E2E_PENDING",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-290",
+          "state": "SOURCE_FIXED_LOCAL_3_OF_3_CANONICAL_CI_DEV_AND_FRESH_PROVIDER_REPROOF_PENDING",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-291",
+          "state": "SOURCE_FIXED_FOCAL_49_TESTS_PASS_DEV_PROVIDER_AND_SHOPPER_E2E_PENDING",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-292",
+          "state": "SOURCE_FIXED_PENDING_CANONICAL_SOURCE_PROOF_DEV_E2E_HUMAN",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-293",
+          "state": "SOURCE_FIXED_PENDING_CANONICAL_CI_DEV_FIRESTORE_ACK_READBACK_AND_HUMAN",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-294",
+          "state": "SOURCE_FIXED_PENDING_CANONICAL_CI_AND_EXACT_DEV_HR_READBACK",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-296",
+          "state": "SOURCE_FIXED_LOCAL_PENDING_RULES_EMULATOR_AND_EXACT_DEV_DEPLOY",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-297",
+          "state": "DEV_SECURITY_PATH_REPROOF_PASS_QA_ATTEMPT_PENDING",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-298",
+          "state": "SOURCE_FIXED_PENDING_CANONICAL_CI_DEV_E2E",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-299",
+          "state": "SOURCE_FIXED_PENDING_CANONICAL_CI_AND_EXACT_HOSTING_DEV_E2E",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-300",
+          "state": "SOURCE_FIXED_PENDING_EXACT_RUNTIME_DEV_NOVEMBER_PARITY_AND_ROLE_E2E",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-301",
+          "state": "SOURCE_QA_DEV_ADMIN_FOCAL_PASS_PENDING_SHOPPER_AND_INTEGRAL_ACCEPTANCE",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-302",
+          "state": "SOURCE_FIXED_LOCAL_TESTS_PASS_CANONICAL_SOURCE_PROOF_PENDING",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-303",
+          "state": "CI_PASS_DEV_EXACT_HOSTING_PASS_ADMIN_94_94_E2E_PASS_SHOPPER_ROLE_PENDING",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-304",
+          "state": "STIVEN_AUTH_AND_10_OF_10_VISITS_LIVE_PASS_OTHER_OBSERVATIONS_RETAINED",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-305",
+          "state": "DEV_MATERIALIZED_RUN2150_AUTO_HR_ROLE_E2E_PROVIDER_ACK_PENDING",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-306",
+          "state": "DEV_MATERIALIZED_PASS_RUN2199_OWNER_UI_FUSIONS_ACK_PENDING_INDEPENDENT_PROVIDER_READBACK",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-308",
+          "state": "DEV_MATERIALIZED_SAME_ARTIFACT_ROLE_E2E_PENDING",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-309",
+          "state": "SOURCE_PROVEN_DEV_MATERIALIZATION_REQUIRED",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-310",
+          "state": "LIVE_E2E_FOCAL_PASS_PENDING_WHOLE_DOMAIN_HUMAN",
+          "priority": "P0"
+        },
+        {
+          "id": "VRM-311",
+          "priority": "P0_PROVEN"
+        },
+        {
+          "id": "VRM-312",
+          "priority": "P0_PROVEN"
+        },
+        {
+          "id": "VRM-313",
+          "priority": "P0_PROVEN"
+        },
+        {
+          "id": "VRM-314",
+          "priority": "P0_PROVEN"
+        },
+        {
+          "id": "VRM-315",
+          "priority": "P0_PROVEN"
+        },
+        {
+          "id": "VRM-317",
+          "priority": "P0_PROVEN"
+        },
+        {
+          "id": "VRM-318",
+          "priority": "P0_PROVEN"
+        },
+        {
+          "id": "VRM-319",
+          "priority": "P0_PROVEN"
+        },
+        {
+          "id": "VRM-321",
+          "state": "PASS_FOCAL_REAL_DEV_ADMIN_QA_ARCHIVE_ACK_RELOAD_B4_MODULE_HOLD",
+          "priority": "P0_PROVEN"
+        },
+        {
+          "id": "VRM-322",
+          "state": "SOURCE_FIXED_ISOLATED_11_PASS__CANONICAL_CI_DEV_AND_B4_HUMAN_PENDING",
+          "priority": "P0_PROVEN"
+        },
+        {
+          "id": "VRM-329",
+          "state": "SOURCE_FIXED_EXACT_DEV_HOSTING_PASS_PENDING_AUTHENTICATED_E2E",
+          "priority": "P0_PROVEN"
+        },
+        {
+          "id": "VRM-332",
+          "state": "SOURCE_FIXED_CONTROL_TESTS_PASS_PENDING_REMOTE_QA",
+          "priority": "P0_PROVEN"
+        },
+        {
+          "id": "VRM-336",
+          "state": "SOURCE_FIXED_PROVEN_TESTS_PASS_PENDING_EXACT_DEV_AND_FUNCTIONAL_REPROOF",
+          "priority": "P0_PROVEN"
+        },
+        {
+          "id": "VRM-337",
+          "state": "SOURCE_FIXED_PROVEN_TESTS_PASS_PENDING_EXACT_DEV_AND_FUNCTIONAL_REPROOF",
+          "priority": "P0_PROVEN"
+        },
+        {
+          "id": "VRM-338",
+          "state": "SOURCE_FIXED_PROVEN_TESTS_PASS_PENDING_EXACT_DEV_AND_FUNCTIONAL_REPROOF",
+          "priority": "P0_PROVEN"
+        },
+        {
+          "id": "VRM-341",
+          "state": "SOURCE_FIXED_PROVEN_TESTS_PASS_PENDING_EXACT_DEV_AND_FUNCTIONAL_REPROOF",
+          "priority": "P0_PROVEN"
+        },
+        {
+          "id": "VRM-343",
+          "state": "SOURCE_CONTROL_FIXED_LOCAL_TESTS_PASS_PENDING_CURRENT_DEV_LIVE_PROOF",
+          "priority": "P0_PROVEN"
+        },
+        {
+          "id": "VRM-347",
+          "state": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_AUTHENTICATED_RESOURCE_REPROOF",
+          "priority": "P0_PROVEN"
+        },
+        {
+          "id": "VRM-349",
+          "state": "PARTIAL_PROGRESS_LIVE_SUCCESSION_AND_DURABLE_VISITS_PASS_CURRENT_SHOPPER_UID_CONFLICT_OPEN",
+          "priority": "P0_PROVEN"
+        },
+        {
+          "id": "VRM-353",
+          "state": "SOURCE_FIXED_NODE111_DEV_MATERIALIZED_LIVE_TWO_REPAIRS_UID238_MATCH_REPLAY_LOGIN_PENDING",
+          "priority": "P0_PROVEN"
+        },
+        {
+          "id": "VRM-354",
+          "state": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_EXACT_LIVE_PROOF",
+          "priority": "P0_PROVEN"
+        },
+        {
+          "id": "VRM-355",
+          "state": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_EXACT_LIVE_PROOF",
+          "priority": "P0_PROVEN"
+        },
+        {
+          "id": "VRM-356",
+          "state": "SOURCE_FIXED_NODE_PROVEN_REAL_GRID_AND_DEV_PENDING",
+          "priority": "P0_PROVEN"
+        }
+      ],
+      "failures": [
+        "C3_OPEN_P0_FINDINGS:VRM-089,VRM-091,VRM-092,VRM-093,VRM-096,VRM-097,VRM-100,VRM-104,VRM-121,VRM-122,VRM-123,VRM-124,VRM-125,VRM-126,VRM-127,VRM-128,VRM-129,VRM-130,VRM-132,VRM-133,VRM-134,VRM-135,VRM-136,VRM-142,VRM-143,VRM-147,VRM-148,VRM-150,VRM-151,VRM-152,VRM-153,VRM-165,VRM-166,VRM-169,VRM-170,VRM-171,VRM-172,VRM-178,VRM-180,VRM-182,VRM-187,VRM-188,VRM-190,VRM-191,VRM-196,VRM-200,VRM-201,VRM-218,VRM-222,VRM-240,VRM-271,VRM-272,VRM-273,VRM-274,VRM-275,VRM-276,VRM-277,VRM-278,VRM-280,VRM-281,VRM-282,VRM-283,VRM-284,VRM-285,VRM-286,VRM-287,VRM-288,VRM-289,VRM-290,VRM-291,VRM-292,VRM-293,VRM-294,VRM-296,VRM-297,VRM-298,VRM-299,VRM-300,VRM-301,VRM-302,VRM-303,VRM-304,VRM-305,VRM-306,VRM-308,VRM-309,VRM-310,VRM-311,VRM-312,VRM-313,VRM-314,VRM-315,VRM-317,VRM-318,VRM-319,VRM-321,VRM-322,VRM-329,VRM-332,VRM-336,VRM-337,VRM-338,VRM-341,VRM-343,VRM-347,VRM-349,VRM-353,VRM-354,VRM-355,VRM-356",
+        "C3_OWNER_RECEIPT_MISSING:auth-protected-data-runtime",
+        "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:auth-protected-data-runtime:app/core/backend-browser-auth.js,app/core/backend-protected-dev-session-continuity.js,app/core/backend-cxdata-read-guard.js,app/core/backend-firebase.js,app/core/backend-protected-dev-mode.js,app/core/backend-dev-auth.local.js,app/adapters/tya-dev-technical-auth-e2e-v1.js,app/adapters/tya-c6-shopper-auth-click-guard-v1.js",
+        "C3_OWNER_RECEIPT_MISSING:base-router-shell-cache",
+        "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:base-router-shell-cache:app/app.js,app/index-backend-dev.html,app/core/build-lock.js,app/styles/theme.css,app/styles/layout.css,app/manifest.webmanifest,app/sw.js,app/core/geo.js,app/core/store.js,app/core/dedupe.js,app/core/programa.js,app/core/automations.js,app/vendor/pptxgenjs.min.js,app/core/importador.js,app/core/ui.js,app/core/notif.js,app/core/backend-finance-benefits.js,app/core/backend-cxdata-finance-read.js,app/core/backend-operational-actions.js,app/core/backend-cxdata-readonly-corte4.js,app/core/backend-ui-action-bridge.js,app/core/backend-bulletins.js,app/core/backend-automations.js,app/core/backend-preview-status.js,app/core/topbar.js,app/core/pwa.js,app/modules/soporte.js,app/modules/saas-console.js,app/modules/importador.js,app/modules/comercial.js,app/modules/crm.js,app/modules/marketing.js,app/modules/integraciones.js,app/modules/automatizaciones.js,app/modules/correo.js,app/modules/marca.js,app/modules/diagnostico.js,app/modules/administrabilidad.js,app/adapters/tya-ab-cumulative-composition-v1.js,app/core/backend-corte4-empty-shell-guard.js",
+        "C3_DOMAIN_P0_OPEN:base-router-shell-cache:VRM-347",
+        "C3_OWNER_RECEIPT_MISSING:benefits",
+        "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:benefits:app/modules/beneficios.js",
+        "C3_OWNER_RECEIPT_MISSING:canonical-hr-state-adapters",
+        "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:canonical-hr-state-adapters:app/adapters/tya-protected-auth-hr-authority-bridge-v2.js,app/adapters/tya-cumulative-read-model-v2.js,app/adapters/tya-canonical-state-semantics-v2.js,app/adapters/tya-live-source-refresh-watch-v2.js,app/adapters/tya-live-source-inplace-apply.js,backend/runtime/hr-live-service/server.mjs,tools/hr-source/tya-build-live-hr-source-safe-r20.mjs,tools/hr-source/tya-build-live-hr-source-safe-static.mjs,tools/hr-source/tya-canonical-visit-state-r20.mjs,tools/hr-source/tya-enforce-live-tab-registry.mjs,tools/hr-source/tya-reapply-canonical-state-r20.mjs,tools/hr-source/tya-live-provider-registry-identity-dev.mjs,tools/hr-source/tya-resolve-live-month-tabs.mjs,backend/contracts/tya-hr-column-map-r20-v1.json,app/core/backend-hr-source-bridge.js,app/core/hr.js",
+        "C3_DOMAIN_P0_OPEN:canonical-hr-state-adapters:VRM-356",
+        "C3_OWNER_RECEIPT_MISSING:certifications",
+        "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:certifications:app/modules/academia.js,app/modules/cert.js,app/data/tya-certification-carryover-source-safe.js,backend/runtime/hr-live-service/certification-runtime.mjs,app/core/backend-certifications.js,app/core/backend-ai.js",
+        "C3_OWNER_RECEIPT_MISSING:client-portal-reportkit",
+        "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:client-portal-reportkit:app/core/cliente-data.js,app/modules/cliente.js,app/modules/cliente-extra.js,app/modules/cliente-insights.js,app/modules/clientes.js",
+        "C3_OWNER_RECEIPT_MISSING:core-config-data-router-permissions",
+        "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:core-config-data-router-permissions:app/core/config.js,app/core/router.js,app/core/permissions.js,app/core/data.js,app/core/data-source.js,app/config/runtime.js",
+        "C3_OWNER_RECEIPT_MISSING:dashboard-operation",
+        "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:dashboard-operation:app/modules/dashboard.js,app/modules/midia.js",
+        "C3_DOMAIN_P0_OPEN:dashboard-operation:VRM-097,VRM-121,VRM-127,VRM-143,VRM-165",
+        "C3_OWNER_RECEIPT_MISSING:documents-resources",
+        "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:documents-resources:app/modules/novedades.js,app/modules/tablon.js,app/modules/documentos.js,app/core/backend-resources.js,app/modules/soporte.js,app/core/backend-bulletins.js,app/core/manuales-data.js",
+        "C3_OWNER_RECEIPT_MISSING:finance-core-liquidation-costs",
+        "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:finance-core-liquidation-costs:app/core/finanzas-core.js,app/core/liquidacion.js,app/core/costos.js,app/modules/finanzas.js,app/adapters/tya-project-financial-model-contract-v1.js,app/data/tya-financial-canonical-source-safe.js,app/data/tya-financial-canonical-source-safe-liq-01.js,app/data/tya-financial-canonical-source-safe-liq-02.js,app/data/tya-financial-canonical-source-safe-liq-03.js,app/data/tya-financial-canonical-source-safe-review-01.js,app/data/tya-financial-canonical-source-safe-review-02.js,app/data/tya-financial-canonical-source-safe-evidence.js,app/data/tya-financial-canonical-source-safe-final.js,app/data/tya-payment-history-source-safe.js",
+        "C3_OWNER_RECEIPT_MISSING:human-runtime-domain-consistency",
+        "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:human-runtime-domain-consistency:app/adapters/tya-c6-unified-human-runtime-v1.js,app/adapters/tya-c6-domain-consistency-bridge.js,app/adapters/cxorbia-admin-identity-review-notice-v1.js",
+        "C3_DOMAIN_P0_OPEN:human-runtime-domain-consistency:VRM-338,VRM-341",
+        "C3_OWNER_RECEIPT_MISSING:persistence-command-ack-boundary",
+        "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:persistence-command-ack-boundary:app/adapters/cxorbia-canonical-write-firewall-v1.js,app/adapters/cxorbia-command-adapter-v1.js,app/adapters/cxorbia-cxdata-command-boundary-v1.js,app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js,app/adapters/cxorbia-shopper-admin-command-contract-v1.js,backend/runtime/cxorbia-finance-command-provider-v1.mjs,backend/runtime/cxorbia-operational-command-provider-v1.mjs,backend/runtime/cxorbia-shopper-command-provider-v1.mjs,backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs,app/adapters/cxorbia-command-http-transport-v1.js,app/adapters/cxorbia-hr-write-adapter-contract-v1.js,app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js,app/adapters/cxorbia-legal-runtime-http-v1.js,backend/runtime/cxorbia-academy-command-provider-v1.mjs,backend/contracts/cxorbia-academy-base-progress-contract-v1.json",
+        "C3_DOMAIN_P0_OPEN:persistence-command-ack-boundary:VRM-336,VRM-349,VRM-353,VRM-354,VRM-355",
+        "C3_OWNER_RECEIPT_MISSING:projects-periods-hr-source-wizard-multiproject",
+        "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:projects-periods-hr-source-wizard-multiproject:app/modules/proyectos.js,app/modules/periodos.js,app/modules/hr-source.js,app/modules/proyecto-wizard.js,backend/contracts/cxorbia-project-source-contract-v1.json,backend/runtime/cxorbia-project-command-provider-v1.mjs,app/core/backend-config.js,app/core/backend-config-preview-dev.js,app/core/backend-v57-extra-config.js,app/modules/configuracion.js",
+        "C3_OWNER_RECEIPT_MISSING:questionnaire-shopper",
+        "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:questionnaire-shopper:app/modules/cuestionario-shopper.js",
+        "C3_OWNER_RECEIPT_MISSING:shoppers-mi-visitas-profile",
+        "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:shoppers-mi-visitas-profile:app/core/shopper-credential-rule.js,app/adapters/tya-canonical-shopper-portal-v2.js,app/modules/shoppers.js,app/modules/misvisitas.js,app/core/shoppers-store.js",
+        "C3_OWNER_RECEIPT_MISSING:visits-review-postulations-reservations",
+        "C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:visits-review-postulations-reservations:app/adapters/tya-canonical-reservations-guard-v2.js,app/modules/visitas.js,app/modules/visita-detalle.js,app/modules/revision-admin.js,app/modules/postulaciones.js,app/modules/reservas.js,firestore.rules",
+        "C3_MODULE_TRUTH_NOT_CLOSED"
+      ],
+      "selfApproval": false,
+      "production": false
+    }
+  },
+  "adminIdentityProof": {
+    "schemaVersion": "cxorbia.i3.admin-composition-identity-proof.v1",
+    "decision": "PASS_I3_ADMIN_COMPOSITION_IDENTITY",
+    "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+    "sourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
+    "runtimeRevision": "cxorbia-live-hr-dev-00379-bvq",
+    "runtimeDigest": "sha256:b18dcc12defdd008b58dadeb334f9b263140823ec82eac70b5d3e0401224e173",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/3ffc1e8d04e144ef",
+    "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "runId": "44020344602",
+    "runAttempt": "1",
+    "scope": "ADMIN_HR_COMPOSITION_AND_DISPLAY_INVARIANTS_ONLY_NOT_FULL_DOMAIN_OR_HUMAN_APPROVAL",
+    "production": false,
+    "humanApproval": false,
+    "fullDomain": false,
+    "nameFree": true,
+    "checks": {
+      "exactArtifactBinding": true,
+      "completeSummary": true,
+      "sameHrRevision": true,
+      "sameProject": true,
+      "composition": true,
+      "humanDisplay": true,
+      "outOfRange": true
+    },
+    "counts": {
+      "visits": 792,
+      "shoppers": 197,
+      "hrShoppers": 196,
+      "expectedCanonicalHrShoppers": 196,
+      "rawHrReferences": 238,
+      "platformOnly": 1,
+      "platformBadFlags": 0,
+      "platformCrossProject": 0,
+      "duplicateShopperIds": 0,
+      "periods": 18,
+      "protectedNames": 0,
+      "realNames": 197,
+      "technicalPrimaryNames": 0,
+      "unresolvedAuthorityCount": 1,
+      "runtimeOutOfRange": 3,
+      "expectedOutOfRange": 3
+    },
+    "mismatchCounts": {
+      "nameMismatches": 0,
+      "unresolvedReviewMismatches": 0
+    },
+    "expected": {
+      "visits": 792,
+      "periods": 18,
+      "projectId": "cinepolis"
+    },
+    "observedProjectId": "cinepolis",
+    "observedHrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "mismatchIdentityDigest": "643d5437104296e21d906ecb15b2c96ad278f20cfc4af53b12bb6069bd853726"
+  },
+  "tenantAdminDomainReceipts": [
+    {
+      "schemaVersion": "cxorbia.i3.owner-domain-mixed-receipt.v1",
+      "decision": "PASS_I3_TENANT_ADMIN_CONFIG_BRANDING_COMPLETE_CONTRACT",
+      "moduleDomain": "tenant-admin-config-branding",
+      "findingIds": [
+        "VRM-194",
+        "VRM-330"
+      ],
+      "operationKind": "MUTATION",
+      "scope": "APPROVED_CONNECTED_READONLY_VIEWS_AND_SYNTHETIC_PROJECT_COUNTRY_PROVIDER_UI",
+      "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+      "sourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
+      "runtimeRevision": "cxorbia-live-hr-dev-00379-bvq",
+      "runtimeDigest": "sha256:b18dcc12defdd008b58dadeb334f9b263140823ec82eac70b5d3e0401224e173",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/3ffc1e8d04e144ef",
+      "controlSha": "4d655bc729bc96c912167d80da213c3b4d5b914f",
+      "runId": "44020344602",
+      "runAttempt": "1",
+      "hrIndependent": true,
+      "hrRevision": null,
+      "production": false,
+      "ownerPaths": [
+        "app/modules/configuracion.js",
+        "app/modules/administrabilidad.js",
+        "app/modules/marca.js"
+      ],
+      "ownerEvidence": [
+        {
+          "path": "app/modules/configuracion.js",
+          "gitBlob": "33bd5e8d14860f50b706f7d4194c3754424cb8ea",
+          "sourceSha256": "6241a0f272cab3dc12476720d56d0fa6da6da4190cc352532022fd26f79df86d",
+          "servedSha256": "6241a0f272cab3dc12476720d56d0fa6da6da4190cc352532022fd26f79df86d",
+          "byteParity": true
+        },
+        {
+          "path": "app/modules/administrabilidad.js",
+          "gitBlob": "080922b933a92a89911847e127ed06c7d4d507fd",
+          "sourceSha256": "0e2e591c8d73f2faf7924eb8e38813fed77b92676ac01220b4dbc5c74ded9f5a",
+          "servedSha256": "0e2e591c8d73f2faf7924eb8e38813fed77b92676ac01220b4dbc5c74ded9f5a",
+          "byteParity": true
+        },
+        {
+          "path": "app/modules/marca.js",
+          "gitBlob": "a53957b4fb74dfe62c3ea2cb03cff758c7238ea0",
+          "sourceSha256": "bfeb16f3244149f870dc1b796978863b4da5bcbda9a8981af0497b214ec50836",
+          "servedSha256": "bfeb16f3244149f870dc1b796978863b4da5bcbda9a8981af0497b214ec50836",
+          "byteParity": true
+        },
+        {
+          "path": "app/core/config.js",
+          "gitBlob": "5446270196c99f01715f60d1ad65892d12a070db",
+          "sourceSha256": "32a1aa5bb671c27c5af8112cd03700b57b81d308b73cd9ef4936e49fe228acb9",
+          "servedSha256": "32a1aa5bb671c27c5af8112cd03700b57b81d308b73cd9ef4936e49fe228acb9",
+          "byteParity": true
+        },
+        {
+          "path": "app/core/backend-protected-dev-mode.js",
+          "gitBlob": "3924d7d02ea21f589e6be6d451dff740c884300a",
+          "sourceSha256": "7067f539192a26c69f66a796a881b2024f0291a8ac9d132475a693c73152a3fe",
+          "servedSha256": "7067f539192a26c69f66a796a881b2024f0291a8ac9d132475a693c73152a3fe",
+          "byteParity": true
+        },
+        {
+          "path": "app/core/backend-browser-auth.js",
+          "gitBlob": "1274e67e69a73fd619d81b0d01687e72894901e6",
+          "sourceSha256": "caa74dad682936e3cd5f40bb91bb7104d27eda9aa18fde40f5c1aac9444a38c8",
+          "servedSha256": "caa74dad682936e3cd5f40bb91bb7104d27eda9aa18fde40f5c1aac9444a38c8",
+          "byteParity": true
+        },
+        {
+          "path": "app/config/runtime.js",
+          "gitBlob": "48ef2eac898bc2ee8df1649830f12851d8836229",
+          "sourceSha256": "9f5f94475ca6ea194bd2b72519bfe5ade29a567397234493c0ed2bd1c915cc98",
+          "servedSha256": "9f5f94475ca6ea194bd2b72519bfe5ade29a567397234493c0ed2bd1c915cc98",
+          "byteParity": true
+        },
+        {
+          "path": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+          "gitBlob": "24e71f22fa5d678e79cde0d131d1ff0b4ce0be8b",
+          "sourceSha256": "cb49d8ea742b96ca867d5eeb8de96e28a66a603134df40ea7ffa1dbad05751cf",
+          "servedSha256": "cb49d8ea742b96ca867d5eeb8de96e28a66a603134df40ea7ffa1dbad05751cf",
+          "byteParity": true
+        }
+      ],
+      "auth": {
+        "authenticated": true,
+        "role": "super",
+        "principalFingerprint": "94816a0e1151d44ce7",
+        "tenantExact": true,
+        "projectAuthorized": true,
+        "samePrincipalAfterReload": true
+      },
+      "readOnlyProof": {
+        "canonicalTenantAuthority": true,
+        "protectedRuntime": true,
+        "localStorageTruth": false,
+        "commandWritesEnabled": true,
+        "checksBeforeReload": [
+          {
+            "id": "config:centro",
+            "ok": true,
+            "marker": "#cfgBody",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "config:marca",
+            "ok": true,
+            "marker": "[data-config-locked=\"tenant-brand\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "config:plan",
+            "ok": true,
+            "marker": "[data-config-locked=\"plan\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "config:paises",
+            "ok": true,
+            "marker": "[data-project-config-authority=\"provider\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": "PROVIDER_WRITE_ENABLED"
+          },
+          {
+            "id": "config:listas",
+            "ok": true,
+            "marker": "[data-config-locked=\"listas\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "config:nda",
+            "ok": true,
+            "marker": "[data-config-locked=\"nda\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "administrabilidad",
+            "ok": true,
+            "marker": "[data-connected-admin-readonly=\"true\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "marca",
+            "ok": true,
+            "marker": "[data-connected-brand-readonly=\"true\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          }
+        ],
+        "checksAfterReload": [
+          {
+            "id": "config:centro",
+            "ok": true,
+            "marker": "#cfgBody",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "config:marca",
+            "ok": true,
+            "marker": "[data-config-locked=\"tenant-brand\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "config:plan",
+            "ok": true,
+            "marker": "[data-config-locked=\"plan\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "config:paises",
+            "ok": true,
+            "marker": "[data-project-config-authority=\"provider\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": "PROVIDER_WRITE_ENABLED"
+          },
+          {
+            "id": "config:listas",
+            "ok": true,
+            "marker": "[data-config-locked=\"listas\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "config:nda",
+            "ok": true,
+            "marker": "[data-config-locked=\"nda\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "administrabilidad",
+            "ok": true,
+            "marker": "[data-connected-admin-readonly=\"true\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "marca",
+            "ok": true,
+            "marker": "[data-connected-brand-readonly=\"true\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          }
+        ],
+        "configurationProjectionUnchanged": true,
+        "relevantLocalStorageKeysUnchanged": true,
+        "configurationMutationRequestsObserved": 0,
+        "mutations": [
+          {
+            "method": "POST",
+            "path": "/v1/cxorbia/commands",
+            "commandType": "hr.snapshot.reconcile",
+            "tenantId": "tya",
+            "projectId": "cinepolis",
+            "commandDigest": "2941488fbf5ecf49c5f072adfac8f5478934ad51b496b005b6f06bac02c68537",
+            "classification": "AUTHORIZED_HR_RECONCILIATION_NOT_CONFIGURATION_WRITE"
+          }
+        ],
+        "projectionSha256": "dbd997d7718e65a0bc022c83829324ea15d8c49eb7d05c16b1de00a3e99450fb",
+        "countryMutationTested": false
+      },
+      "contractAuthority": {
+        "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V354.json",
+        "gitBlob": "88f456cec7e0cdeda3ec2b798a0ad3a519a97360",
+        "moduleDomain": "tenant-admin-config-branding",
+        "contractSha256": "df7951c9ad6baabcf948d19ab94269da82c68043bf5d98e491c36577828ad878"
+      },
+      "mutationEvidence": {
+        "applicable": true,
+        "providerAckClaimed": true,
+        "syntheticOnly": true,
+        "evidenceRef": "project-country-live-proof.json",
+        "cleanupVerified": true
+      },
+      "humanAcceptance": {
+        "mode": "PRESERVED_PRIOR_SCOPE_NO_NEW_DESIGN_CHANGE",
+        "authority": "VRM-080 connected administration contract + VRM-194 fail-closed correction",
+        "sourceEvidence": {
+          "connectedTenantAdminReadOnly": true,
+          "runId": 37163244743
+        }
+      },
+      "i3Go": false,
+      "gate20": "HOLD",
+      "gate21": "HOLD",
+      "i4Authorized": false,
+      "validation": {
+        "pass": true,
+        "failures": []
+      },
+      "actionReal": true,
+      "providerAck": true,
+      "durableReadback": true,
+      "reloadProof": true,
+      "noDuplicateRegression": true,
+      "contractCoverage": {
+        "fullDomain": true,
+        "obligations": [
+          {
+            "id": "approved-config-admin-brand-views-before-and-after-reload",
+            "observed": true,
+            "evidenceRef": "tenant-admin-config-branding-readonly.json"
+          },
+          {
+            "id": "actual-add-remove-country-ui-currency-ack-readback",
+            "observed": true,
+            "evidenceRef": "project-country-live-proof.json"
+          },
+          {
+            "id": "same-principal-reload-idempotence-cleanup",
+            "observed": true,
+            "evidenceRef": "project-country-live-proof.json"
+          }
+        ]
+      },
+      "countryProof": {
+        "schemaVersion": "cxorbia.i3.project-country-live-proof.v1",
+        "decision": "PASS_I3_PROJECT_COUNTRY_UI_PROVIDER_RELOAD_REPLAY_CLEANUP",
+        "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+        "sourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
+        "runtimeRevision": "cxorbia-live-hr-dev-00379-bvq",
+        "runtimeDigest": "sha256:b18dcc12defdd008b58dadeb334f9b263140823ec82eac70b5d3e0401224e173",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/3ffc1e8d04e144ef",
+        "runId": "44020344602",
+        "runAttempt": "1",
+        "production": false,
+        "hrWrites": 0,
+        "authWrites": 0,
+        "paymentWrites": 0,
+        "projectId": "prj-82c4851101d9ed7cb8ee",
+        "periodId": "setup-i3-country-44020344602-1",
+        "syntheticOnly": true,
+        "actionReal": true,
+        "providerAck": true,
+        "durableReadback": true,
+        "reloadProof": true,
+        "noDuplicateRegression": true,
+        "cleanupVerified": true,
+        "samePrincipal": true,
+        "commercialProjectUnchanged": true,
+        "steps": [
+          {
+            "label": "add-country",
+            "uiAction": true,
+            "providerAck": true,
+            "durableReadback": true,
+            "pageReload": true,
+            "idempotentReplay": true,
+            "providerWritesOnReplay": 0,
+            "countries": [
+              "GT",
+              "HN"
+            ],
+            "version": 2,
+            "commandDigest": "16ae4a80de7d09ff801f5fd9f42fbd5fcd800f88405f5c4b8547c18a44be7004"
+          },
+          {
+            "label": "remove-country",
+            "uiAction": true,
+            "providerAck": true,
+            "durableReadback": true,
+            "pageReload": true,
+            "idempotentReplay": true,
+            "providerWritesOnReplay": 0,
+            "countries": [
+              "GT"
+            ],
+            "version": 3,
+            "commandDigest": "2b7b4d51e33fa5c95eeab8c18091b0f61188c12d3b30a3b60144d02381723907"
+          }
+        ],
+        "uiObservations": [
+          {
+            "stage": "READY_FOR_COUNTRY_ACTION",
+            "version": 1,
+            "countries": [
+              "GT"
+            ],
+            "commandsSent": 1
+          },
+          {
+            "stage": "READY_FOR_COUNTRY_ACTION",
+            "version": 2,
+            "countries": [
+              "GT",
+              "HN"
+            ],
+            "commandsSent": 2
+          },
+          {
+            "stage": "add-country-before-reload",
+            "trace": {
+              "events": [
+                {
+                  "order": 0,
+                  "atMs": 1757,
+                  "kind": "OBSERVATION_INSTALLED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 0
+                },
+                {
+                  "order": 1,
+                  "atMs": 2154,
+                  "kind": "RESOURCES_PUBLICATION",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 0,
+                  "status": "ready",
+                  "source": "firestore",
+                  "resourceProjectId": "prj-82c4851101d9ed7cb8ee"
+                },
+                {
+                  "order": 2,
+                  "atMs": 2566,
+                  "kind": "NATIVE_CLICK",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 0,
+                  "trusted": true,
+                  "buttonId": null,
+                  "countryCode": null,
+                  "tab": "paises"
+                },
+                {
+                  "order": 3,
+                  "atMs": 2567,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 1
+                },
+                {
+                  "order": 4,
+                  "atMs": 2600,
+                  "kind": "NATIVE_CLICK",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 1,
+                  "trusted": true,
+                  "buttonId": "addPais",
+                  "countryCode": null,
+                  "tab": null
+                },
+                {
+                  "order": 5,
+                  "atMs": 2601,
+                  "kind": "DIALOG_ADDED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 1,
+                  "countryDialog": true,
+                  "countryCodes": [
+                    "HN",
+                    "SV",
+                    "NI",
+                    "CR",
+                    "PA",
+                    "MX",
+                    "CO",
+                    "PE",
+                    "EC",
+                    "CL",
+                    "AR",
+                    "DO",
+                    "US",
+                    "ES"
+                  ]
+                },
+                {
+                  "order": 6,
+                  "atMs": 2916,
+                  "kind": "NATIVE_CLICK",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 1,
+                  "trusted": true,
+                  "buttonId": null,
+                  "countryCode": "HN",
+                  "tab": null
+                },
+                {
+                  "order": 7,
+                  "atMs": 2917,
+                  "kind": "DIALOG_REMOVED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 1,
+                  "countryDialog": true,
+                  "countryCodes": [
+                    "HN",
+                    "SV",
+                    "NI",
+                    "CR",
+                    "PA",
+                    "MX",
+                    "CO",
+                    "PE",
+                    "EC",
+                    "CL",
+                    "AR",
+                    "DO",
+                    "US",
+                    "ES"
+                  ]
+                },
+                {
+                  "order": 8,
+                  "atMs": 3790,
+                  "kind": "INTERNAL_AUTHORITY_PUBLICATION",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 1
+                },
+                {
+                  "order": 9,
+                  "atMs": 3817,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 2
+                },
+                {
+                  "order": 10,
+                  "atMs": 3822,
+                  "kind": "INTERNAL_AUTHORITY_PUBLICATION",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 2
+                },
+                {
+                  "order": 11,
+                  "atMs": 3828,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 3
+                },
+                {
+                  "order": 12,
+                  "atMs": 3838,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 4
+                },
+                {
+                  "order": 13,
+                  "atMs": 3868,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 5
+                },
+                {
+                  "order": 14,
+                  "atMs": 4249,
+                  "kind": "NATIVE_CLICK",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 5,
+                  "trusted": true,
+                  "buttonId": null,
+                  "countryCode": null,
+                  "tab": "paises"
+                },
+                {
+                  "order": 15,
+                  "atMs": 4250,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 6
+                }
+              ],
+              "dropped": 0,
+              "viewGeneration": 6,
+              "active": true
+            }
+          },
+          {
+            "stage": "READY_FOR_COUNTRY_ACTION",
+            "version": 2,
+            "countries": [
+              "GT",
+              "HN"
+            ],
+            "commandsSent": 2
+          },
+          {
+            "stage": "READY_FOR_COUNTRY_ACTION",
+            "version": 2,
+            "countries": [
+              "GT",
+              "HN"
+            ],
+            "commandsSent": 2
+          },
+          {
+            "stage": "READY_FOR_COUNTRY_ACTION",
+            "version": 3,
+            "countries": [
+              "GT"
+            ],
+            "commandsSent": 3
+          },
+          {
+            "stage": "remove-country-before-reload",
+            "trace": {
+              "events": [
+                {
+                  "order": 0,
+                  "atMs": 1751,
+                  "kind": "OBSERVATION_INSTALLED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 0
+                },
+                {
+                  "order": 1,
+                  "atMs": 2108,
+                  "kind": "RESOURCES_PUBLICATION",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 0,
+                  "status": "ready",
+                  "source": "firestore",
+                  "resourceProjectId": "prj-82c4851101d9ed7cb8ee"
+                },
+                {
+                  "order": 2,
+                  "atMs": 2533,
+                  "kind": "NATIVE_CLICK",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 0,
+                  "trusted": true,
+                  "buttonId": null,
+                  "countryCode": null,
+                  "tab": "paises"
+                },
+                {
+                  "order": 3,
+                  "atMs": 2534,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 1
+                },
+                {
+                  "order": 4,
+                  "atMs": 5017,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 2
+                },
+                {
+                  "order": 5,
+                  "atMs": 5399,
+                  "kind": "NATIVE_CLICK",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 2,
+                  "trusted": true,
+                  "buttonId": null,
+                  "countryCode": null,
+                  "tab": "paises"
+                },
+                {
+                  "order": 6,
+                  "atMs": 5399,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 3
+                },
+                {
+                  "order": 7,
+                  "atMs": 5433,
+                  "kind": "NATIVE_CLICK",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 3,
+                  "trusted": true,
+                  "buttonId": null,
+                  "countryCode": "HN",
+                  "tab": null
+                },
+                {
+                  "order": 8,
+                  "atMs": 6279,
+                  "kind": "INTERNAL_AUTHORITY_PUBLICATION",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 3
+                },
+                {
+                  "order": 9,
+                  "atMs": 6311,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 4
+                },
+                {
+                  "order": 10,
+                  "atMs": 6316,
+                  "kind": "INTERNAL_AUTHORITY_PUBLICATION",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 4
+                },
+                {
+                  "order": 11,
+                  "atMs": 6322,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 5
+                },
+                {
+                  "order": 12,
+                  "atMs": 6331,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 6
+                },
+                {
+                  "order": 13,
+                  "atMs": 6363,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 7
+                },
+                {
+                  "order": 14,
+                  "atMs": 6749,
+                  "kind": "NATIVE_CLICK",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 7,
+                  "trusted": true,
+                  "buttonId": null,
+                  "countryCode": null,
+                  "tab": "paises"
+                },
+                {
+                  "order": 15,
+                  "atMs": 6749,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 8
+                }
+              ],
+              "dropped": 0,
+              "viewGeneration": 8,
+              "active": true
+            }
+          },
+          {
+            "stage": "READY_FOR_COUNTRY_ACTION",
+            "version": 3,
+            "countries": [
+              "GT"
+            ],
+            "commandsSent": 3
+          },
+          {
+            "stage": "FINAL_BEFORE_CLEANUP",
+            "trace": {
+              "events": [
+                {
+                  "order": 0,
+                  "atMs": 1825,
+                  "kind": "OBSERVATION_INSTALLED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 0
+                },
+                {
+                  "order": 1,
+                  "atMs": 2150,
+                  "kind": "RESOURCES_PUBLICATION",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 0,
+                  "status": "ready",
+                  "source": "firestore",
+                  "resourceProjectId": "prj-82c4851101d9ed7cb8ee"
+                },
+                {
+                  "order": 2,
+                  "atMs": 2566,
+                  "kind": "NATIVE_CLICK",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 0,
+                  "trusted": true,
+                  "buttonId": null,
+                  "countryCode": null,
+                  "tab": "paises"
+                },
+                {
+                  "order": 3,
+                  "atMs": 2566,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 1
+                }
+              ],
+              "dropped": 0,
+              "viewGeneration": 1,
+              "active": false
+            }
+          }
+        ],
+        "cleanup": {
+          "decision": "PASS_OWNED_FIXTURE_CLEANUP",
+          "before": [
+            {
+              "path": "tenants/tya/projects/prj-82c4851101d9ed7cb8ee",
+              "data": {
+                "periodId": "setup-i3-country-44020344602-1",
+                "name": "I3 QA Countries 44020344602 1 680c9db6d4",
+                "initialPeriodId": "setup-i3-country-44020344602-1",
+                "status": "draft",
+                "qaOnly": true,
+                "qaRunId": "44020344602",
+                "qaRunAttempt": "1",
+                "operationalSource": {
+                  "mode": "internal",
+                  "providerType": "internal_firestore",
+                  "readPolicy": "internal_live",
+                  "writePolicy": "platform_only",
+                  "mappingRef": "internal-native-mapping"
+                },
+                "modelo": "unconfigured",
+                "billingModel": "project_configuration_required",
+                "projectModel": "unconfigured",
+                "localBilling": null,
+                "royaltyApplicable": false,
+                "regalias": 0,
+                "compensationModel": "project_configuration_required",
+                "financialModelReviewRequired": true,
+                "financialModelNote": "Modelo financiero pendiente de configuración; no se calculan ingresos, regalías ni margen.",
+                "financialModelContractVersion": "cxorbia.project-financial-model.v1",
+                "financialModelNormalizedAt": "2026-11-17T04:58:01.976Z",
+                "id": "prj-82c4851101d9ed7cb8ee",
+                "projectId": "prj-82c4851101d9ed7cb8ee",
+                "tenantId": "tya",
+                "normalizedName": "i3 qa countries 44020344602 1 680c9db6d4",
+                "createdAt": "2026-11-17T04:58:02.423Z",
+                "createdBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+                "updatedBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+                "currency": {
+                  "GT": "Q",
+                  "HN": "L"
+                },
+                "countries": [
+                  "GT"
+                ],
+                "version": 3,
+                "updatedAt": "2026-11-17T04:58:12.591Z"
+              },
+              "updateTime": {
+                "seconds": 1794891492,
+                "nanoseconds": 623017000
+              }
+            },
+            {
+              "path": "tenants/tya/commandReceipts/8f528e701466ba1ae73bc7490d378c9134b64d64",
+              "data": {
+                "status": "committed",
+                "commandDigest": "2b7b4d51e33fa5c95eeab8c18091b0f61188c12d3b30a3b60144d02381723907",
+                "projectId": "prj-82c4851101d9ed7cb8ee",
+                "periodId": "setup-i3-country-44020344602-1",
+                "entityVersion": 3,
+                "commandType": "project.update",
+                "providerAck": true,
+                "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+                "updatedAt": "2026-11-17T04:58:12.591Z"
+              },
+              "updateTime": {
+                "seconds": 1794891492,
+                "nanoseconds": 623017000
+              }
+            },
+            {
+              "path": "tenants/tya/entityAuditTrail/project-834790eea286e28ae01de342adce7acd",
+              "data": {
+                "tenantId": "tya",
+                "projectId": "prj-82c4851101d9ed7cb8ee",
+                "periodId": "setup-i3-country-44020344602-1",
+                "entityType": "project",
+                "entityId": "prj-82c4851101d9ed7cb8ee",
+                "commandType": "project.update",
+                "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+                "actorRole": "super",
+                "idempotencyKey": "project.update:16pqy21",
+                "createdAt": "2026-11-17T04:58:12.591Z"
+              },
+              "updateTime": {
+                "seconds": 1794891492,
+                "nanoseconds": 623017000
+              }
+            },
+            {
+              "path": "tenants/tya/commandReceipts/c7cffbbb888425f5e9be2cae5ae62a24586f69be",
+              "data": {
+                "status": "committed",
+                "commandDigest": "16ae4a80de7d09ff801f5fd9f42fbd5fcd800f88405f5c4b8547c18a44be7004",
+                "projectId": "prj-82c4851101d9ed7cb8ee",
+                "periodId": "setup-i3-country-44020344602-1",
+                "entityVersion": 2,
+                "commandType": "project.update",
+                "providerAck": true,
+                "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+                "updatedAt": "2026-11-17T04:58:05.785Z"
+              },
+              "updateTime": {
+                "seconds": 1794891485,
+                "nanoseconds": 822735000
+              }
+            },
+            {
+              "path": "tenants/tya/entityAuditTrail/project-851a9f1b550432e70aef0b92999d6661",
+              "data": {
+                "tenantId": "tya",
+                "projectId": "prj-82c4851101d9ed7cb8ee",
+                "periodId": "setup-i3-country-44020344602-1",
+                "entityType": "project",
+                "entityId": "prj-82c4851101d9ed7cb8ee",
+                "commandType": "project.update",
+                "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+                "actorRole": "super",
+                "idempotencyKey": "project.update:1oitifz",
+                "createdAt": "2026-11-17T04:58:05.785Z"
+              },
+              "updateTime": {
+                "seconds": 1794891485,
+                "nanoseconds": 822735000
+              }
+            },
+            {
+              "path": "tenants/tya/commandReceipts/223340f01461d6f06155d8d4a36bbaa9a3acfb6f",
+              "data": {
+                "status": "committed",
+                "commandDigest": "4ce83354f5010084caff6e152b3e396827817a755276ed8a5e3c3d94d5fdd96b",
+                "projectId": "prj-82c4851101d9ed7cb8ee",
+                "periodId": "setup-i3-country-44020344602-1",
+                "entityVersion": 1,
+                "commandType": "project.create",
+                "providerAck": true,
+                "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+                "updatedAt": "2026-11-17T04:58:02.423Z"
+              },
+              "updateTime": {
+                "seconds": 1794891482,
+                "nanoseconds": 469941000
+              }
+            },
+            {
+              "path": "tenants/tya/entityAuditTrail/project-49fa2e947554279113692d9683fe2284",
+              "data": {
+                "tenantId": "tya",
+                "projectId": "prj-82c4851101d9ed7cb8ee",
+                "periodId": "setup-i3-country-44020344602-1",
+                "entityType": "project",
+                "entityId": "prj-82c4851101d9ed7cb8ee",
+                "commandType": "project.create",
+                "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+                "actorRole": "super",
+                "idempotencyKey": "project.create:13cgbv4",
+                "createdAt": "2026-11-17T04:58:02.423Z"
+              },
+              "updateTime": {
+                "seconds": 1794891482,
+                "nanoseconds": 469941000
+              }
+            }
+          ],
+          "deleted": 7,
+          "remaining": 0
+        },
+        "catalog": [
+          {
+            "code": "GT",
+            "currency": "Q"
+          },
+          {
+            "code": "HN",
+            "currency": "L"
+          }
+        ],
+        "returnedToCommercialProject": true,
+        "handlerErrors": []
+      }
+    },
+    {
+      "schemaVersion": "cxorbia.i3.owner-domain-mixed-receipt.v1",
+      "decision": "PASS_I3_TENANT_ADMIN_CONFIG_BRANDING_COMPLETE_CONTRACT",
+      "moduleDomain": "tenant-admin-config-branding",
+      "findingIds": [
+        "VRM-335"
+      ],
+      "operationKind": "MUTATION",
+      "scope": "APPROVED_CONNECTED_READONLY_VIEWS_AND_SYNTHETIC_PROJECT_COUNTRY_PROVIDER_UI",
+      "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+      "sourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
+      "runtimeRevision": "cxorbia-live-hr-dev-00379-bvq",
+      "runtimeDigest": "sha256:b18dcc12defdd008b58dadeb334f9b263140823ec82eac70b5d3e0401224e173",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/3ffc1e8d04e144ef",
+      "controlSha": "4d655bc729bc96c912167d80da213c3b4d5b914f",
+      "runId": "44020344602",
+      "runAttempt": "1",
+      "hrIndependent": true,
+      "hrRevision": null,
+      "production": false,
+      "ownerPaths": [
+        "app/modules/configuracion.js"
+      ],
+      "ownerEvidence": [
+        {
+          "path": "app/modules/configuracion.js",
+          "gitBlob": "33bd5e8d14860f50b706f7d4194c3754424cb8ea",
+          "sourceSha256": "6241a0f272cab3dc12476720d56d0fa6da6da4190cc352532022fd26f79df86d",
+          "servedSha256": "6241a0f272cab3dc12476720d56d0fa6da6da4190cc352532022fd26f79df86d",
+          "byteParity": true
+        },
+        {
+          "path": "app/modules/administrabilidad.js",
+          "gitBlob": "080922b933a92a89911847e127ed06c7d4d507fd",
+          "sourceSha256": "0e2e591c8d73f2faf7924eb8e38813fed77b92676ac01220b4dbc5c74ded9f5a",
+          "servedSha256": "0e2e591c8d73f2faf7924eb8e38813fed77b92676ac01220b4dbc5c74ded9f5a",
+          "byteParity": true
+        },
+        {
+          "path": "app/modules/marca.js",
+          "gitBlob": "a53957b4fb74dfe62c3ea2cb03cff758c7238ea0",
+          "sourceSha256": "bfeb16f3244149f870dc1b796978863b4da5bcbda9a8981af0497b214ec50836",
+          "servedSha256": "bfeb16f3244149f870dc1b796978863b4da5bcbda9a8981af0497b214ec50836",
+          "byteParity": true
+        },
+        {
+          "path": "app/core/config.js",
+          "gitBlob": "5446270196c99f01715f60d1ad65892d12a070db",
+          "sourceSha256": "32a1aa5bb671c27c5af8112cd03700b57b81d308b73cd9ef4936e49fe228acb9",
+          "servedSha256": "32a1aa5bb671c27c5af8112cd03700b57b81d308b73cd9ef4936e49fe228acb9",
+          "byteParity": true
+        },
+        {
+          "path": "app/core/backend-protected-dev-mode.js",
+          "gitBlob": "3924d7d02ea21f589e6be6d451dff740c884300a",
+          "sourceSha256": "7067f539192a26c69f66a796a881b2024f0291a8ac9d132475a693c73152a3fe",
+          "servedSha256": "7067f539192a26c69f66a796a881b2024f0291a8ac9d132475a693c73152a3fe",
+          "byteParity": true
+        },
+        {
+          "path": "app/core/backend-browser-auth.js",
+          "gitBlob": "1274e67e69a73fd619d81b0d01687e72894901e6",
+          "sourceSha256": "caa74dad682936e3cd5f40bb91bb7104d27eda9aa18fde40f5c1aac9444a38c8",
+          "servedSha256": "caa74dad682936e3cd5f40bb91bb7104d27eda9aa18fde40f5c1aac9444a38c8",
+          "byteParity": true
+        },
+        {
+          "path": "app/config/runtime.js",
+          "gitBlob": "48ef2eac898bc2ee8df1649830f12851d8836229",
+          "sourceSha256": "9f5f94475ca6ea194bd2b72519bfe5ade29a567397234493c0ed2bd1c915cc98",
+          "servedSha256": "9f5f94475ca6ea194bd2b72519bfe5ade29a567397234493c0ed2bd1c915cc98",
+          "byteParity": true
+        },
+        {
+          "path": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+          "gitBlob": "24e71f22fa5d678e79cde0d131d1ff0b4ce0be8b",
+          "sourceSha256": "cb49d8ea742b96ca867d5eeb8de96e28a66a603134df40ea7ffa1dbad05751cf",
+          "servedSha256": "cb49d8ea742b96ca867d5eeb8de96e28a66a603134df40ea7ffa1dbad05751cf",
+          "byteParity": true
+        }
+      ],
+      "auth": {
+        "authenticated": true,
+        "role": "super",
+        "principalFingerprint": "94816a0e1151d44ce7",
+        "tenantExact": true,
+        "projectAuthorized": true,
+        "samePrincipalAfterReload": true
+      },
+      "readOnlyProof": {
+        "canonicalTenantAuthority": true,
+        "protectedRuntime": true,
+        "localStorageTruth": false,
+        "commandWritesEnabled": true,
+        "checksBeforeReload": [
+          {
+            "id": "config:centro",
+            "ok": true,
+            "marker": "#cfgBody",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "config:marca",
+            "ok": true,
+            "marker": "[data-config-locked=\"tenant-brand\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "config:plan",
+            "ok": true,
+            "marker": "[data-config-locked=\"plan\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "config:paises",
+            "ok": true,
+            "marker": "[data-project-config-authority=\"provider\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": "PROVIDER_WRITE_ENABLED"
+          },
+          {
+            "id": "config:listas",
+            "ok": true,
+            "marker": "[data-config-locked=\"listas\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "config:nda",
+            "ok": true,
+            "marker": "[data-config-locked=\"nda\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "administrabilidad",
+            "ok": true,
+            "marker": "[data-connected-admin-readonly=\"true\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "marca",
+            "ok": true,
+            "marker": "[data-connected-brand-readonly=\"true\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          }
+        ],
+        "checksAfterReload": [
+          {
+            "id": "config:centro",
+            "ok": true,
+            "marker": "#cfgBody",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "config:marca",
+            "ok": true,
+            "marker": "[data-config-locked=\"tenant-brand\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "config:plan",
+            "ok": true,
+            "marker": "[data-config-locked=\"plan\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "config:paises",
+            "ok": true,
+            "marker": "[data-project-config-authority=\"provider\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": "PROVIDER_WRITE_ENABLED"
+          },
+          {
+            "id": "config:listas",
+            "ok": true,
+            "marker": "[data-config-locked=\"listas\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "config:nda",
+            "ok": true,
+            "marker": "[data-config-locked=\"nda\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "administrabilidad",
+            "ok": true,
+            "marker": "[data-connected-admin-readonly=\"true\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          },
+          {
+            "id": "marca",
+            "ok": true,
+            "marker": "[data-connected-brand-readonly=\"true\"]",
+            "forbiddenControls": [],
+            "tenantVisible": true,
+            "countryBranch": null
+          }
+        ],
+        "configurationProjectionUnchanged": true,
+        "relevantLocalStorageKeysUnchanged": true,
+        "configurationMutationRequestsObserved": 0,
+        "mutations": [
+          {
+            "method": "POST",
+            "path": "/v1/cxorbia/commands",
+            "commandType": "hr.snapshot.reconcile",
+            "tenantId": "tya",
+            "projectId": "cinepolis",
+            "commandDigest": "2941488fbf5ecf49c5f072adfac8f5478934ad51b496b005b6f06bac02c68537",
+            "classification": "AUTHORIZED_HR_RECONCILIATION_NOT_CONFIGURATION_WRITE"
+          }
+        ],
+        "projectionSha256": "dbd997d7718e65a0bc022c83829324ea15d8c49eb7d05c16b1de00a3e99450fb",
+        "countryMutationTested": false
+      },
+      "contractAuthority": {
+        "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V354.json",
+        "gitBlob": "88f456cec7e0cdeda3ec2b798a0ad3a519a97360",
+        "moduleDomain": "tenant-admin-config-branding",
+        "contractSha256": "df7951c9ad6baabcf948d19ab94269da82c68043bf5d98e491c36577828ad878"
+      },
+      "mutationEvidence": {
+        "applicable": true,
+        "providerAckClaimed": true,
+        "syntheticOnly": true,
+        "evidenceRef": "project-country-live-proof.json",
+        "cleanupVerified": true
+      },
+      "humanAcceptance": {
+        "mode": "PRESERVED_PRIOR_SCOPE_NO_NEW_DESIGN_CHANGE",
+        "authority": "VRM-080 connected administration contract + VRM-194 fail-closed correction",
+        "sourceEvidence": {
+          "connectedTenantAdminReadOnly": true,
+          "runId": 37163244743
+        }
+      },
+      "i3Go": false,
+      "gate20": "HOLD",
+      "gate21": "HOLD",
+      "i4Authorized": false,
+      "validation": {
+        "pass": true,
+        "failures": []
+      },
+      "actionReal": true,
+      "providerAck": true,
+      "durableReadback": true,
+      "reloadProof": true,
+      "noDuplicateRegression": true,
+      "contractCoverage": {
+        "fullDomain": true,
+        "obligations": [
+          {
+            "id": "approved-config-admin-brand-views-before-and-after-reload",
+            "observed": true,
+            "evidenceRef": "tenant-admin-config-branding-readonly.json"
+          },
+          {
+            "id": "actual-add-remove-country-ui-currency-ack-readback",
+            "observed": true,
+            "evidenceRef": "project-country-live-proof.json"
+          },
+          {
+            "id": "same-principal-reload-idempotence-cleanup",
+            "observed": true,
+            "evidenceRef": "project-country-live-proof.json"
+          }
+        ]
+      },
+      "countryProof": {
+        "schemaVersion": "cxorbia.i3.project-country-live-proof.v1",
+        "decision": "PASS_I3_PROJECT_COUNTRY_UI_PROVIDER_RELOAD_REPLAY_CLEANUP",
+        "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+        "sourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
+        "runtimeRevision": "cxorbia-live-hr-dev-00379-bvq",
+        "runtimeDigest": "sha256:b18dcc12defdd008b58dadeb334f9b263140823ec82eac70b5d3e0401224e173",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/3ffc1e8d04e144ef",
+        "runId": "44020344602",
+        "runAttempt": "1",
+        "production": false,
+        "hrWrites": 0,
+        "authWrites": 0,
+        "paymentWrites": 0,
+        "projectId": "prj-82c4851101d9ed7cb8ee",
+        "periodId": "setup-i3-country-44020344602-1",
+        "syntheticOnly": true,
+        "actionReal": true,
+        "providerAck": true,
+        "durableReadback": true,
+        "reloadProof": true,
+        "noDuplicateRegression": true,
+        "cleanupVerified": true,
+        "samePrincipal": true,
+        "commercialProjectUnchanged": true,
+        "steps": [
+          {
+            "label": "add-country",
+            "uiAction": true,
+            "providerAck": true,
+            "durableReadback": true,
+            "pageReload": true,
+            "idempotentReplay": true,
+            "providerWritesOnReplay": 0,
+            "countries": [
+              "GT",
+              "HN"
+            ],
+            "version": 2,
+            "commandDigest": "16ae4a80de7d09ff801f5fd9f42fbd5fcd800f88405f5c4b8547c18a44be7004"
+          },
+          {
+            "label": "remove-country",
+            "uiAction": true,
+            "providerAck": true,
+            "durableReadback": true,
+            "pageReload": true,
+            "idempotentReplay": true,
+            "providerWritesOnReplay": 0,
+            "countries": [
+              "GT"
+            ],
+            "version": 3,
+            "commandDigest": "2b7b4d51e33fa5c95eeab8c18091b0f61188c12d3b30a3b60144d02381723907"
+          }
+        ],
+        "uiObservations": [
+          {
+            "stage": "READY_FOR_COUNTRY_ACTION",
+            "version": 1,
+            "countries": [
+              "GT"
+            ],
+            "commandsSent": 1
+          },
+          {
+            "stage": "READY_FOR_COUNTRY_ACTION",
+            "version": 2,
+            "countries": [
+              "GT",
+              "HN"
+            ],
+            "commandsSent": 2
+          },
+          {
+            "stage": "add-country-before-reload",
+            "trace": {
+              "events": [
+                {
+                  "order": 0,
+                  "atMs": 1757,
+                  "kind": "OBSERVATION_INSTALLED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 0
+                },
+                {
+                  "order": 1,
+                  "atMs": 2154,
+                  "kind": "RESOURCES_PUBLICATION",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 0,
+                  "status": "ready",
+                  "source": "firestore",
+                  "resourceProjectId": "prj-82c4851101d9ed7cb8ee"
+                },
+                {
+                  "order": 2,
+                  "atMs": 2566,
+                  "kind": "NATIVE_CLICK",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 0,
+                  "trusted": true,
+                  "buttonId": null,
+                  "countryCode": null,
+                  "tab": "paises"
+                },
+                {
+                  "order": 3,
+                  "atMs": 2567,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 1
+                },
+                {
+                  "order": 4,
+                  "atMs": 2600,
+                  "kind": "NATIVE_CLICK",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 1,
+                  "trusted": true,
+                  "buttonId": "addPais",
+                  "countryCode": null,
+                  "tab": null
+                },
+                {
+                  "order": 5,
+                  "atMs": 2601,
+                  "kind": "DIALOG_ADDED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 1,
+                  "countryDialog": true,
+                  "countryCodes": [
+                    "HN",
+                    "SV",
+                    "NI",
+                    "CR",
+                    "PA",
+                    "MX",
+                    "CO",
+                    "PE",
+                    "EC",
+                    "CL",
+                    "AR",
+                    "DO",
+                    "US",
+                    "ES"
+                  ]
+                },
+                {
+                  "order": 6,
+                  "atMs": 2916,
+                  "kind": "NATIVE_CLICK",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 1,
+                  "trusted": true,
+                  "buttonId": null,
+                  "countryCode": "HN",
+                  "tab": null
+                },
+                {
+                  "order": 7,
+                  "atMs": 2917,
+                  "kind": "DIALOG_REMOVED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 1,
+                  "countryDialog": true,
+                  "countryCodes": [
+                    "HN",
+                    "SV",
+                    "NI",
+                    "CR",
+                    "PA",
+                    "MX",
+                    "CO",
+                    "PE",
+                    "EC",
+                    "CL",
+                    "AR",
+                    "DO",
+                    "US",
+                    "ES"
+                  ]
+                },
+                {
+                  "order": 8,
+                  "atMs": 3790,
+                  "kind": "INTERNAL_AUTHORITY_PUBLICATION",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 1
+                },
+                {
+                  "order": 9,
+                  "atMs": 3817,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 2
+                },
+                {
+                  "order": 10,
+                  "atMs": 3822,
+                  "kind": "INTERNAL_AUTHORITY_PUBLICATION",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 2
+                },
+                {
+                  "order": 11,
+                  "atMs": 3828,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 3
+                },
+                {
+                  "order": 12,
+                  "atMs": 3838,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 4
+                },
+                {
+                  "order": 13,
+                  "atMs": 3868,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 5
+                },
+                {
+                  "order": 14,
+                  "atMs": 4249,
+                  "kind": "NATIVE_CLICK",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 5,
+                  "trusted": true,
+                  "buttonId": null,
+                  "countryCode": null,
+                  "tab": "paises"
+                },
+                {
+                  "order": 15,
+                  "atMs": 4250,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 6
+                }
+              ],
+              "dropped": 0,
+              "viewGeneration": 6,
+              "active": true
+            }
+          },
+          {
+            "stage": "READY_FOR_COUNTRY_ACTION",
+            "version": 2,
+            "countries": [
+              "GT",
+              "HN"
+            ],
+            "commandsSent": 2
+          },
+          {
+            "stage": "READY_FOR_COUNTRY_ACTION",
+            "version": 2,
+            "countries": [
+              "GT",
+              "HN"
+            ],
+            "commandsSent": 2
+          },
+          {
+            "stage": "READY_FOR_COUNTRY_ACTION",
+            "version": 3,
+            "countries": [
+              "GT"
+            ],
+            "commandsSent": 3
+          },
+          {
+            "stage": "remove-country-before-reload",
+            "trace": {
+              "events": [
+                {
+                  "order": 0,
+                  "atMs": 1751,
+                  "kind": "OBSERVATION_INSTALLED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 0
+                },
+                {
+                  "order": 1,
+                  "atMs": 2108,
+                  "kind": "RESOURCES_PUBLICATION",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 0,
+                  "status": "ready",
+                  "source": "firestore",
+                  "resourceProjectId": "prj-82c4851101d9ed7cb8ee"
+                },
+                {
+                  "order": 2,
+                  "atMs": 2533,
+                  "kind": "NATIVE_CLICK",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 0,
+                  "trusted": true,
+                  "buttonId": null,
+                  "countryCode": null,
+                  "tab": "paises"
+                },
+                {
+                  "order": 3,
+                  "atMs": 2534,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 1
+                },
+                {
+                  "order": 4,
+                  "atMs": 5017,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 2
+                },
+                {
+                  "order": 5,
+                  "atMs": 5399,
+                  "kind": "NATIVE_CLICK",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 2,
+                  "trusted": true,
+                  "buttonId": null,
+                  "countryCode": null,
+                  "tab": "paises"
+                },
+                {
+                  "order": 6,
+                  "atMs": 5399,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 3
+                },
+                {
+                  "order": 7,
+                  "atMs": 5433,
+                  "kind": "NATIVE_CLICK",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 3,
+                  "trusted": true,
+                  "buttonId": null,
+                  "countryCode": "HN",
+                  "tab": null
+                },
+                {
+                  "order": 8,
+                  "atMs": 6279,
+                  "kind": "INTERNAL_AUTHORITY_PUBLICATION",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 3
+                },
+                {
+                  "order": 9,
+                  "atMs": 6311,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 4
+                },
+                {
+                  "order": 10,
+                  "atMs": 6316,
+                  "kind": "INTERNAL_AUTHORITY_PUBLICATION",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 4
+                },
+                {
+                  "order": 11,
+                  "atMs": 6322,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 5
+                },
+                {
+                  "order": 12,
+                  "atMs": 6331,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 6
+                },
+                {
+                  "order": 13,
+                  "atMs": 6363,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 7
+                },
+                {
+                  "order": 14,
+                  "atMs": 6749,
+                  "kind": "NATIVE_CLICK",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 7,
+                  "trusted": true,
+                  "buttonId": null,
+                  "countryCode": null,
+                  "tab": "paises"
+                },
+                {
+                  "order": 15,
+                  "atMs": 6749,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 8
+                }
+              ],
+              "dropped": 0,
+              "viewGeneration": 8,
+              "active": true
+            }
+          },
+          {
+            "stage": "READY_FOR_COUNTRY_ACTION",
+            "version": 3,
+            "countries": [
+              "GT"
+            ],
+            "commandsSent": 3
+          },
+          {
+            "stage": "FINAL_BEFORE_CLEANUP",
+            "trace": {
+              "events": [
+                {
+                  "order": 0,
+                  "atMs": 1825,
+                  "kind": "OBSERVATION_INSTALLED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 0
+                },
+                {
+                  "order": 1,
+                  "atMs": 2150,
+                  "kind": "RESOURCES_PUBLICATION",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 0,
+                  "status": "ready",
+                  "source": "firestore",
+                  "resourceProjectId": "prj-82c4851101d9ed7cb8ee"
+                },
+                {
+                  "order": 2,
+                  "atMs": 2566,
+                  "kind": "NATIVE_CLICK",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 0,
+                  "trusted": true,
+                  "buttonId": null,
+                  "countryCode": null,
+                  "tab": "paises"
+                },
+                {
+                  "order": 3,
+                  "atMs": 2566,
+                  "kind": "COUNTRY_BUTTON_REPLACED",
+                  "projectId": "prj-82c4851101d9ed7cb8ee",
+                  "view": "config",
+                  "generation": 1
+                }
+              ],
+              "dropped": 0,
+              "viewGeneration": 1,
+              "active": false
+            }
+          }
+        ],
+        "cleanup": {
+          "decision": "PASS_OWNED_FIXTURE_CLEANUP",
+          "before": [
+            {
+              "path": "tenants/tya/projects/prj-82c4851101d9ed7cb8ee",
+              "data": {
+                "periodId": "setup-i3-country-44020344602-1",
+                "name": "I3 QA Countries 44020344602 1 680c9db6d4",
+                "initialPeriodId": "setup-i3-country-44020344602-1",
+                "status": "draft",
+                "qaOnly": true,
+                "qaRunId": "44020344602",
+                "qaRunAttempt": "1",
+                "operationalSource": {
+                  "mode": "internal",
+                  "providerType": "internal_firestore",
+                  "readPolicy": "internal_live",
+                  "writePolicy": "platform_only",
+                  "mappingRef": "internal-native-mapping"
+                },
+                "modelo": "unconfigured",
+                "billingModel": "project_configuration_required",
+                "projectModel": "unconfigured",
+                "localBilling": null,
+                "royaltyApplicable": false,
+                "regalias": 0,
+                "compensationModel": "project_configuration_required",
+                "financialModelReviewRequired": true,
+                "financialModelNote": "Modelo financiero pendiente de configuración; no se calculan ingresos, regalías ni margen.",
+                "financialModelContractVersion": "cxorbia.project-financial-model.v1",
+                "financialModelNormalizedAt": "2026-11-17T04:58:01.976Z",
+                "id": "prj-82c4851101d9ed7cb8ee",
+                "projectId": "prj-82c4851101d9ed7cb8ee",
+                "tenantId": "tya",
+                "normalizedName": "i3 qa countries 44020344602 1 680c9db6d4",
+                "createdAt": "2026-11-17T04:58:02.423Z",
+                "createdBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+                "updatedBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+                "currency": {
+                  "GT": "Q",
+                  "HN": "L"
+                },
+                "countries": [
+                  "GT"
+                ],
+                "version": 3,
+                "updatedAt": "2026-11-17T04:58:12.591Z"
+              },
+              "updateTime": {
+                "seconds": 1794891492,
+                "nanoseconds": 623017000
+              }
+            },
+            {
+              "path": "tenants/tya/commandReceipts/8f528e701466ba1ae73bc7490d378c9134b64d64",
+              "data": {
+                "status": "committed",
+                "commandDigest": "2b7b4d51e33fa5c95eeab8c18091b0f61188c12d3b30a3b60144d02381723907",
+                "projectId": "prj-82c4851101d9ed7cb8ee",
+                "periodId": "setup-i3-country-44020344602-1",
+                "entityVersion": 3,
+                "commandType": "project.update",
+                "providerAck": true,
+                "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+                "updatedAt": "2026-11-17T04:58:12.591Z"
+              },
+              "updateTime": {
+                "seconds": 1794891492,
+                "nanoseconds": 623017000
+              }
+            },
+            {
+              "path": "tenants/tya/entityAuditTrail/project-834790eea286e28ae01de342adce7acd",
+              "data": {
+                "tenantId": "tya",
+                "projectId": "prj-82c4851101d9ed7cb8ee",
+                "periodId": "setup-i3-country-44020344602-1",
+                "entityType": "project",
+                "entityId": "prj-82c4851101d9ed7cb8ee",
+                "commandType": "project.update",
+                "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+                "actorRole": "super",
+                "idempotencyKey": "project.update:16pqy21",
+                "createdAt": "2026-11-17T04:58:12.591Z"
+              },
+              "updateTime": {
+                "seconds": 1794891492,
+                "nanoseconds": 623017000
+              }
+            },
+            {
+              "path": "tenants/tya/commandReceipts/c7cffbbb888425f5e9be2cae5ae62a24586f69be",
+              "data": {
+                "status": "committed",
+                "commandDigest": "16ae4a80de7d09ff801f5fd9f42fbd5fcd800f88405f5c4b8547c18a44be7004",
+                "projectId": "prj-82c4851101d9ed7cb8ee",
+                "periodId": "setup-i3-country-44020344602-1",
+                "entityVersion": 2,
+                "commandType": "project.update",
+                "providerAck": true,
+                "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+                "updatedAt": "2026-11-17T04:58:05.785Z"
+              },
+              "updateTime": {
+                "seconds": 1794891485,
+                "nanoseconds": 822735000
+              }
+            },
+            {
+              "path": "tenants/tya/entityAuditTrail/project-851a9f1b550432e70aef0b92999d6661",
+              "data": {
+                "tenantId": "tya",
+                "projectId": "prj-82c4851101d9ed7cb8ee",
+                "periodId": "setup-i3-country-44020344602-1",
+                "entityType": "project",
+                "entityId": "prj-82c4851101d9ed7cb8ee",
+                "commandType": "project.update",
+                "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+                "actorRole": "super",
+                "idempotencyKey": "project.update:1oitifz",
+                "createdAt": "2026-11-17T04:58:05.785Z"
+              },
+              "updateTime": {
+                "seconds": 1794891485,
+                "nanoseconds": 822735000
+              }
+            },
+            {
+              "path": "tenants/tya/commandReceipts/223340f01461d6f06155d8d4a36bbaa9a3acfb6f",
+              "data": {
+                "status": "committed",
+                "commandDigest": "4ce83354f5010084caff6e152b3e396827817a755276ed8a5e3c3d94d5fdd96b",
+                "projectId": "prj-82c4851101d9ed7cb8ee",
+                "periodId": "setup-i3-country-44020344602-1",
+                "entityVersion": 1,
+                "commandType": "project.create",
+                "providerAck": true,
+                "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+                "updatedAt": "2026-11-17T04:58:02.423Z"
+              },
+              "updateTime": {
+                "seconds": 1794891482,
+                "nanoseconds": 469941000
+              }
+            },
+            {
+              "path": "tenants/tya/entityAuditTrail/project-49fa2e947554279113692d9683fe2284",
+              "data": {
+                "tenantId": "tya",
+                "projectId": "prj-82c4851101d9ed7cb8ee",
+                "periodId": "setup-i3-country-44020344602-1",
+                "entityType": "project",
+                "entityId": "prj-82c4851101d9ed7cb8ee",
+                "commandType": "project.create",
+                "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+                "actorRole": "super",
+                "idempotencyKey": "project.create:13cgbv4",
+                "createdAt": "2026-11-17T04:58:02.423Z"
+              },
+              "updateTime": {
+                "seconds": 1794891482,
+                "nanoseconds": 469941000
+              }
+            }
+          ],
+          "deleted": 7,
+          "remaining": 0
+        },
+        "catalog": [
+          {
+            "code": "GT",
+            "currency": "Q"
+          },
+          {
+            "code": "HN",
+            "currency": "L"
+          }
+        ],
+        "returnedToCommercialProject": true,
+        "handlerErrors": []
+      }
+    }
+  ],
+  "countryProof": {
+    "schemaVersion": "cxorbia.i3.project-country-live-proof.v1",
+    "decision": "PASS_I3_PROJECT_COUNTRY_UI_PROVIDER_RELOAD_REPLAY_CLEANUP",
+    "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+    "sourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
+    "runtimeRevision": "cxorbia-live-hr-dev-00379-bvq",
+    "runtimeDigest": "sha256:b18dcc12defdd008b58dadeb334f9b263140823ec82eac70b5d3e0401224e173",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/3ffc1e8d04e144ef",
+    "runId": "44020344602",
+    "runAttempt": "1",
+    "production": false,
+    "hrWrites": 0,
+    "authWrites": 0,
+    "paymentWrites": 0,
+    "projectId": "prj-82c4851101d9ed7cb8ee",
+    "periodId": "setup-i3-country-44020344602-1",
+    "syntheticOnly": true,
+    "actionReal": true,
+    "providerAck": true,
+    "durableReadback": true,
+    "reloadProof": true,
+    "noDuplicateRegression": true,
+    "cleanupVerified": true,
+    "samePrincipal": true,
+    "commercialProjectUnchanged": true,
+    "steps": [
+      {
+        "label": "add-country",
+        "uiAction": true,
+        "providerAck": true,
+        "durableReadback": true,
+        "pageReload": true,
+        "idempotentReplay": true,
+        "providerWritesOnReplay": 0,
+        "countries": [
+          "GT",
+          "HN"
+        ],
+        "version": 2,
+        "commandDigest": "16ae4a80de7d09ff801f5fd9f42fbd5fcd800f88405f5c4b8547c18a44be7004"
+      },
+      {
+        "label": "remove-country",
+        "uiAction": true,
+        "providerAck": true,
+        "durableReadback": true,
+        "pageReload": true,
+        "idempotentReplay": true,
+        "providerWritesOnReplay": 0,
+        "countries": [
+          "GT"
+        ],
+        "version": 3,
+        "commandDigest": "2b7b4d51e33fa5c95eeab8c18091b0f61188c12d3b30a3b60144d02381723907"
+      }
+    ],
+    "uiObservations": [
+      {
+        "stage": "READY_FOR_COUNTRY_ACTION",
+        "version": 1,
+        "countries": [
+          "GT"
+        ],
+        "commandsSent": 1
+      },
+      {
+        "stage": "READY_FOR_COUNTRY_ACTION",
+        "version": 2,
+        "countries": [
+          "GT",
+          "HN"
+        ],
+        "commandsSent": 2
+      },
+      {
+        "stage": "add-country-before-reload",
+        "trace": {
+          "events": [
+            {
+              "order": 0,
+              "atMs": 1757,
+              "kind": "OBSERVATION_INSTALLED",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 0
+            },
+            {
+              "order": 1,
+              "atMs": 2154,
+              "kind": "RESOURCES_PUBLICATION",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 0,
+              "status": "ready",
+              "source": "firestore",
+              "resourceProjectId": "prj-82c4851101d9ed7cb8ee"
+            },
+            {
+              "order": 2,
+              "atMs": 2566,
+              "kind": "NATIVE_CLICK",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 0,
+              "trusted": true,
+              "buttonId": null,
+              "countryCode": null,
+              "tab": "paises"
+            },
+            {
+              "order": 3,
+              "atMs": 2567,
+              "kind": "COUNTRY_BUTTON_REPLACED",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 1
+            },
+            {
+              "order": 4,
+              "atMs": 2600,
+              "kind": "NATIVE_CLICK",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 1,
+              "trusted": true,
+              "buttonId": "addPais",
+              "countryCode": null,
+              "tab": null
+            },
+            {
+              "order": 5,
+              "atMs": 2601,
+              "kind": "DIALOG_ADDED",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 1,
+              "countryDialog": true,
+              "countryCodes": [
+                "HN",
+                "SV",
+                "NI",
+                "CR",
+                "PA",
+                "MX",
+                "CO",
+                "PE",
+                "EC",
+                "CL",
+                "AR",
+                "DO",
+                "US",
+                "ES"
+              ]
+            },
+            {
+              "order": 6,
+              "atMs": 2916,
+              "kind": "NATIVE_CLICK",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 1,
+              "trusted": true,
+              "buttonId": null,
+              "countryCode": "HN",
+              "tab": null
+            },
+            {
+              "order": 7,
+              "atMs": 2917,
+              "kind": "DIALOG_REMOVED",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 1,
+              "countryDialog": true,
+              "countryCodes": [
+                "HN",
+                "SV",
+                "NI",
+                "CR",
+                "PA",
+                "MX",
+                "CO",
+                "PE",
+                "EC",
+                "CL",
+                "AR",
+                "DO",
+                "US",
+                "ES"
+              ]
+            },
+            {
+              "order": 8,
+              "atMs": 3790,
+              "kind": "INTERNAL_AUTHORITY_PUBLICATION",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 1
+            },
+            {
+              "order": 9,
+              "atMs": 3817,
+              "kind": "COUNTRY_BUTTON_REPLACED",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 2
+            },
+            {
+              "order": 10,
+              "atMs": 3822,
+              "kind": "INTERNAL_AUTHORITY_PUBLICATION",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 2
+            },
+            {
+              "order": 11,
+              "atMs": 3828,
+              "kind": "COUNTRY_BUTTON_REPLACED",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 3
+            },
+            {
+              "order": 12,
+              "atMs": 3838,
+              "kind": "COUNTRY_BUTTON_REPLACED",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 4
+            },
+            {
+              "order": 13,
+              "atMs": 3868,
+              "kind": "COUNTRY_BUTTON_REPLACED",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 5
+            },
+            {
+              "order": 14,
+              "atMs": 4249,
+              "kind": "NATIVE_CLICK",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 5,
+              "trusted": true,
+              "buttonId": null,
+              "countryCode": null,
+              "tab": "paises"
+            },
+            {
+              "order": 15,
+              "atMs": 4250,
+              "kind": "COUNTRY_BUTTON_REPLACED",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 6
+            }
+          ],
+          "dropped": 0,
+          "viewGeneration": 6,
+          "active": true
+        }
+      },
+      {
+        "stage": "READY_FOR_COUNTRY_ACTION",
+        "version": 2,
+        "countries": [
+          "GT",
+          "HN"
+        ],
+        "commandsSent": 2
+      },
+      {
+        "stage": "READY_FOR_COUNTRY_ACTION",
+        "version": 2,
+        "countries": [
+          "GT",
+          "HN"
+        ],
+        "commandsSent": 2
+      },
+      {
+        "stage": "READY_FOR_COUNTRY_ACTION",
+        "version": 3,
+        "countries": [
+          "GT"
+        ],
+        "commandsSent": 3
+      },
+      {
+        "stage": "remove-country-before-reload",
+        "trace": {
+          "events": [
+            {
+              "order": 0,
+              "atMs": 1751,
+              "kind": "OBSERVATION_INSTALLED",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 0
+            },
+            {
+              "order": 1,
+              "atMs": 2108,
+              "kind": "RESOURCES_PUBLICATION",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 0,
+              "status": "ready",
+              "source": "firestore",
+              "resourceProjectId": "prj-82c4851101d9ed7cb8ee"
+            },
+            {
+              "order": 2,
+              "atMs": 2533,
+              "kind": "NATIVE_CLICK",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 0,
+              "trusted": true,
+              "buttonId": null,
+              "countryCode": null,
+              "tab": "paises"
+            },
+            {
+              "order": 3,
+              "atMs": 2534,
+              "kind": "COUNTRY_BUTTON_REPLACED",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 1
+            },
+            {
+              "order": 4,
+              "atMs": 5017,
+              "kind": "COUNTRY_BUTTON_REPLACED",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 2
+            },
+            {
+              "order": 5,
+              "atMs": 5399,
+              "kind": "NATIVE_CLICK",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 2,
+              "trusted": true,
+              "buttonId": null,
+              "countryCode": null,
+              "tab": "paises"
+            },
+            {
+              "order": 6,
+              "atMs": 5399,
+              "kind": "COUNTRY_BUTTON_REPLACED",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 3
+            },
+            {
+              "order": 7,
+              "atMs": 5433,
+              "kind": "NATIVE_CLICK",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 3,
+              "trusted": true,
+              "buttonId": null,
+              "countryCode": "HN",
+              "tab": null
+            },
+            {
+              "order": 8,
+              "atMs": 6279,
+              "kind": "INTERNAL_AUTHORITY_PUBLICATION",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 3
+            },
+            {
+              "order": 9,
+              "atMs": 6311,
+              "kind": "COUNTRY_BUTTON_REPLACED",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 4
+            },
+            {
+              "order": 10,
+              "atMs": 6316,
+              "kind": "INTERNAL_AUTHORITY_PUBLICATION",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 4
+            },
+            {
+              "order": 11,
+              "atMs": 6322,
+              "kind": "COUNTRY_BUTTON_REPLACED",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 5
+            },
+            {
+              "order": 12,
+              "atMs": 6331,
+              "kind": "COUNTRY_BUTTON_REPLACED",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 6
+            },
+            {
+              "order": 13,
+              "atMs": 6363,
+              "kind": "COUNTRY_BUTTON_REPLACED",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 7
+            },
+            {
+              "order": 14,
+              "atMs": 6749,
+              "kind": "NATIVE_CLICK",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 7,
+              "trusted": true,
+              "buttonId": null,
+              "countryCode": null,
+              "tab": "paises"
+            },
+            {
+              "order": 15,
+              "atMs": 6749,
+              "kind": "COUNTRY_BUTTON_REPLACED",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 8
+            }
+          ],
+          "dropped": 0,
+          "viewGeneration": 8,
+          "active": true
+        }
+      },
+      {
+        "stage": "READY_FOR_COUNTRY_ACTION",
+        "version": 3,
+        "countries": [
+          "GT"
+        ],
+        "commandsSent": 3
+      },
+      {
+        "stage": "FINAL_BEFORE_CLEANUP",
+        "trace": {
+          "events": [
+            {
+              "order": 0,
+              "atMs": 1825,
+              "kind": "OBSERVATION_INSTALLED",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 0
+            },
+            {
+              "order": 1,
+              "atMs": 2150,
+              "kind": "RESOURCES_PUBLICATION",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 0,
+              "status": "ready",
+              "source": "firestore",
+              "resourceProjectId": "prj-82c4851101d9ed7cb8ee"
+            },
+            {
+              "order": 2,
+              "atMs": 2566,
+              "kind": "NATIVE_CLICK",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 0,
+              "trusted": true,
+              "buttonId": null,
+              "countryCode": null,
+              "tab": "paises"
+            },
+            {
+              "order": 3,
+              "atMs": 2566,
+              "kind": "COUNTRY_BUTTON_REPLACED",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "view": "config",
+              "generation": 1
+            }
+          ],
+          "dropped": 0,
+          "viewGeneration": 1,
+          "active": false
+        }
+      }
+    ],
+    "cleanup": {
+      "decision": "PASS_OWNED_FIXTURE_CLEANUP",
+      "before": [
+        {
+          "path": "tenants/tya/projects/prj-82c4851101d9ed7cb8ee",
+          "data": {
+            "periodId": "setup-i3-country-44020344602-1",
+            "name": "I3 QA Countries 44020344602 1 680c9db6d4",
+            "initialPeriodId": "setup-i3-country-44020344602-1",
+            "status": "draft",
+            "qaOnly": true,
+            "qaRunId": "44020344602",
+            "qaRunAttempt": "1",
+            "operationalSource": {
+              "mode": "internal",
+              "providerType": "internal_firestore",
+              "readPolicy": "internal_live",
+              "writePolicy": "platform_only",
+              "mappingRef": "internal-native-mapping"
+            },
+            "modelo": "unconfigured",
+            "billingModel": "project_configuration_required",
+            "projectModel": "unconfigured",
+            "localBilling": null,
+            "royaltyApplicable": false,
+            "regalias": 0,
+            "compensationModel": "project_configuration_required",
+            "financialModelReviewRequired": true,
+            "financialModelNote": "Modelo financiero pendiente de configuración; no se calculan ingresos, regalías ni margen.",
+            "financialModelContractVersion": "cxorbia.project-financial-model.v1",
+            "financialModelNormalizedAt": "2026-11-17T04:58:01.976Z",
+            "id": "prj-82c4851101d9ed7cb8ee",
+            "projectId": "prj-82c4851101d9ed7cb8ee",
+            "tenantId": "tya",
+            "normalizedName": "i3 qa countries 44020344602 1 680c9db6d4",
+            "createdAt": "2026-11-17T04:58:02.423Z",
+            "createdBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "updatedBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "currency": {
+              "GT": "Q",
+              "HN": "L"
+            },
+            "countries": [
+              "GT"
+            ],
+            "version": 3,
+            "updatedAt": "2026-11-17T04:58:12.591Z"
+          },
+          "updateTime": {
+            "seconds": 1794891492,
+            "nanoseconds": 623017000
+          }
+        },
+        {
+          "path": "tenants/tya/commandReceipts/8f528e701466ba1ae73bc7490d378c9134b64d64",
+          "data": {
+            "status": "committed",
+            "commandDigest": "2b7b4d51e33fa5c95eeab8c18091b0f61188c12d3b30a3b60144d02381723907",
+            "projectId": "prj-82c4851101d9ed7cb8ee",
+            "periodId": "setup-i3-country-44020344602-1",
+            "entityVersion": 3,
+            "commandType": "project.update",
+            "providerAck": true,
+            "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "updatedAt": "2026-11-17T04:58:12.591Z"
+          },
+          "updateTime": {
+            "seconds": 1794891492,
+            "nanoseconds": 623017000
+          }
+        },
+        {
+          "path": "tenants/tya/entityAuditTrail/project-834790eea286e28ae01de342adce7acd",
+          "data": {
+            "tenantId": "tya",
+            "projectId": "prj-82c4851101d9ed7cb8ee",
+            "periodId": "setup-i3-country-44020344602-1",
+            "entityType": "project",
+            "entityId": "prj-82c4851101d9ed7cb8ee",
+            "commandType": "project.update",
+            "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "actorRole": "super",
+            "idempotencyKey": "project.update:16pqy21",
+            "createdAt": "2026-11-17T04:58:12.591Z"
+          },
+          "updateTime": {
+            "seconds": 1794891492,
+            "nanoseconds": 623017000
+          }
+        },
+        {
+          "path": "tenants/tya/commandReceipts/c7cffbbb888425f5e9be2cae5ae62a24586f69be",
+          "data": {
+            "status": "committed",
+            "commandDigest": "16ae4a80de7d09ff801f5fd9f42fbd5fcd800f88405f5c4b8547c18a44be7004",
+            "projectId": "prj-82c4851101d9ed7cb8ee",
+            "periodId": "setup-i3-country-44020344602-1",
+            "entityVersion": 2,
+            "commandType": "project.update",
+            "providerAck": true,
+            "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "updatedAt": "2026-11-17T04:58:05.785Z"
+          },
+          "updateTime": {
+            "seconds": 1794891485,
+            "nanoseconds": 822735000
+          }
+        },
+        {
+          "path": "tenants/tya/entityAuditTrail/project-851a9f1b550432e70aef0b92999d6661",
+          "data": {
+            "tenantId": "tya",
+            "projectId": "prj-82c4851101d9ed7cb8ee",
+            "periodId": "setup-i3-country-44020344602-1",
+            "entityType": "project",
+            "entityId": "prj-82c4851101d9ed7cb8ee",
+            "commandType": "project.update",
+            "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "actorRole": "super",
+            "idempotencyKey": "project.update:1oitifz",
+            "createdAt": "2026-11-17T04:58:05.785Z"
+          },
+          "updateTime": {
+            "seconds": 1794891485,
+            "nanoseconds": 822735000
+          }
+        },
+        {
+          "path": "tenants/tya/commandReceipts/223340f01461d6f06155d8d4a36bbaa9a3acfb6f",
+          "data": {
+            "status": "committed",
+            "commandDigest": "4ce83354f5010084caff6e152b3e396827817a755276ed8a5e3c3d94d5fdd96b",
+            "projectId": "prj-82c4851101d9ed7cb8ee",
+            "periodId": "setup-i3-country-44020344602-1",
+            "entityVersion": 1,
+            "commandType": "project.create",
+            "providerAck": true,
+            "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "updatedAt": "2026-11-17T04:58:02.423Z"
+          },
+          "updateTime": {
+            "seconds": 1794891482,
+            "nanoseconds": 469941000
+          }
+        },
+        {
+          "path": "tenants/tya/entityAuditTrail/project-49fa2e947554279113692d9683fe2284",
+          "data": {
+            "tenantId": "tya",
+            "projectId": "prj-82c4851101d9ed7cb8ee",
+            "periodId": "setup-i3-country-44020344602-1",
+            "entityType": "project",
+            "entityId": "prj-82c4851101d9ed7cb8ee",
+            "commandType": "project.create",
+            "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "actorRole": "super",
+            "idempotencyKey": "project.create:13cgbv4",
+            "createdAt": "2026-11-17T04:58:02.423Z"
+          },
+          "updateTime": {
+            "seconds": 1794891482,
+            "nanoseconds": 469941000
+          }
+        }
+      ],
+      "deleted": 7,
+      "remaining": 0
+    },
+    "catalog": [
+      {
+        "code": "GT",
+        "currency": "Q"
+      },
+      {
+        "code": "HN",
+        "currency": "L"
+      }
+    ],
+    "returnedToCommercialProject": true,
+    "handlerErrors": [],
+    "commands": [
+      {
+        "commandType": "project.create",
+        "commandDigest": "4ce83354f5010084caff6e152b3e396827817a755276ed8a5e3c3d94d5fdd96b",
+        "idempotencyKey": "project.create:13cgbv4",
+        "command": {
+          "version": "cxorbia-command-adapter-v1",
+          "commandType": "project.create",
+          "entityType": "project",
+          "entityId": null,
+          "tenantId": "tya",
+          "projectId": null,
+          "periodId": "setup-i3-country-44020344602-1",
+          "requireProject": false,
+          "requirePeriod": true,
+          "actor": {
+            "actorId": "authenticated-user",
+            "role": "super",
+            "projectIds": [
+              "cinepolis"
+            ],
+            "shopperId": null
+          },
+          "expectedVersion": "absent",
+          "idempotencyKey": "project.create:13cgbv4",
+          "payload": {
+            "periodId": "setup-i3-country-44020344602-1",
+            "name": "I3 QA Countries 44020344602 1 680c9db6d4",
+            "countries": [
+              "GT"
+            ],
+            "currency": {
+              "GT": "Q"
+            },
+            "initialPeriodId": "setup-i3-country-44020344602-1",
+            "status": "draft",
+            "qaOnly": true,
+            "qaRunId": "44020344602",
+            "qaRunAttempt": "1",
+            "operationalSource": {
+              "mode": "internal",
+              "providerType": "internal_firestore",
+              "readPolicy": "internal_live",
+              "writePolicy": "platform_only",
+              "mappingRef": "internal-native-mapping"
+            },
+            "modelo": "unconfigured",
+            "billingModel": "project_configuration_required",
+            "projectModel": "unconfigured",
+            "localBilling": null,
+            "royaltyApplicable": false,
+            "regalias": 0,
+            "compensationModel": "project_configuration_required",
+            "financialModelReviewRequired": true,
+            "financialModelNote": "Modelo financiero pendiente de configuración; no se calculan ingresos, regalías ni margen.",
+            "financialModelContractVersion": "cxorbia.project-financial-model.v1",
+            "financialModelNormalizedAt": "2026-11-17T04:58:01.976Z"
+          },
+          "source": "cx.data",
+          "requestedAt": null,
+          "authorization": {
+            "providerEnforcementRequired": true,
+            "permission": "project.create"
+          },
+          "audit": {
+            "reason": "i3-country-proof",
+            "correlationId": "project.create:13cgbv4",
+            "clientVersion": null
+          }
+        },
+        "paths": {
+          "receipt": "tenants/tya/commandReceipts/223340f01461d6f06155d8d4a36bbaa9a3acfb6f",
+          "audit": "tenants/tya/entityAuditTrail/project-49fa2e947554279113692d9683fe2284"
+        },
+        "sent": true,
+        "ack": {
+          "ok": true,
+          "status": "committed",
+          "committed": true,
+          "providerAck": true,
+          "successUiAllowed": true,
+          "localMutation": false,
+          "localStorageWrite": false,
+          "tenantId": "tya",
+          "projectId": "prj-82c4851101d9ed7cb8ee",
+          "periodId": "setup-i3-country-44020344602-1",
+          "commandType": "project.create",
+          "idempotencyKey": "project.create:13cgbv4",
+          "entityVersion": 1,
+          "entityReadback": {
+            "id": "prj-82c4851101d9ed7cb8ee",
+            "periodId": "setup-i3-country-44020344602-1",
+            "name": "I3 QA Countries 44020344602 1 680c9db6d4",
+            "countries": [
+              "GT"
+            ],
+            "currency": {
+              "GT": "Q"
+            },
+            "initialPeriodId": "setup-i3-country-44020344602-1",
+            "status": "draft",
+            "qaOnly": true,
+            "qaRunId": "44020344602",
+            "qaRunAttempt": "1",
+            "operationalSource": {
+              "mode": "internal",
+              "providerType": "internal_firestore",
+              "readPolicy": "internal_live",
+              "writePolicy": "platform_only",
+              "mappingRef": "internal-native-mapping"
+            },
+            "modelo": "unconfigured",
+            "billingModel": "project_configuration_required",
+            "projectModel": "unconfigured",
+            "localBilling": null,
+            "royaltyApplicable": false,
+            "regalias": 0,
+            "compensationModel": "project_configuration_required",
+            "financialModelReviewRequired": true,
+            "financialModelNote": "Modelo financiero pendiente de configuración; no se calculan ingresos, regalías ni margen.",
+            "financialModelContractVersion": "cxorbia.project-financial-model.v1",
+            "financialModelNormalizedAt": "2026-11-17T04:58:01.976Z",
+            "projectId": "prj-82c4851101d9ed7cb8ee",
+            "tenantId": "tya",
+            "normalizedName": "i3 qa countries 44020344602 1 680c9db6d4",
+            "version": 1,
+            "createdAt": "2026-11-17T04:58:02.423Z",
+            "createdBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "updatedAt": "2026-11-17T04:58:02.423Z",
+            "updatedBy": "tya-usr-bf5f1f5b2c873b016622d65d"
+          },
+          "readbackVerified": true,
+          "idempotentReplay": false,
+          "providerWrites": 3,
+          "warnings": []
+        },
+        "readback": {
+          "project": {
+            "path": "tenants/tya/projects/prj-82c4851101d9ed7cb8ee",
+            "data": {
+              "periodId": "setup-i3-country-44020344602-1",
+              "name": "I3 QA Countries 44020344602 1 680c9db6d4",
+              "countries": [
+                "GT"
+              ],
+              "currency": {
+                "GT": "Q"
+              },
+              "initialPeriodId": "setup-i3-country-44020344602-1",
+              "status": "draft",
+              "qaOnly": true,
+              "qaRunId": "44020344602",
+              "qaRunAttempt": "1",
+              "operationalSource": {
+                "mode": "internal",
+                "providerType": "internal_firestore",
+                "readPolicy": "internal_live",
+                "writePolicy": "platform_only",
+                "mappingRef": "internal-native-mapping"
+              },
+              "modelo": "unconfigured",
+              "billingModel": "project_configuration_required",
+              "projectModel": "unconfigured",
+              "localBilling": null,
+              "royaltyApplicable": false,
+              "regalias": 0,
+              "compensationModel": "project_configuration_required",
+              "financialModelReviewRequired": true,
+              "financialModelNote": "Modelo financiero pendiente de configuración; no se calculan ingresos, regalías ni margen.",
+              "financialModelContractVersion": "cxorbia.project-financial-model.v1",
+              "financialModelNormalizedAt": "2026-11-17T04:58:01.976Z",
+              "id": "prj-82c4851101d9ed7cb8ee",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "tenantId": "tya",
+              "normalizedName": "i3 qa countries 44020344602 1 680c9db6d4",
+              "version": 1,
+              "createdAt": "2026-11-17T04:58:02.423Z",
+              "createdBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+              "updatedAt": "2026-11-17T04:58:02.423Z",
+              "updatedBy": "tya-usr-bf5f1f5b2c873b016622d65d"
+            },
+            "updateTime": {
+              "seconds": 1794891482,
+              "nanoseconds": 469941000
+            }
+          },
+          "receipt": {
+            "path": "tenants/tya/commandReceipts/223340f01461d6f06155d8d4a36bbaa9a3acfb6f",
+            "data": {
+              "status": "committed",
+              "commandDigest": "4ce83354f5010084caff6e152b3e396827817a755276ed8a5e3c3d94d5fdd96b",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "periodId": "setup-i3-country-44020344602-1",
+              "entityVersion": 1,
+              "commandType": "project.create",
+              "providerAck": true,
+              "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+              "updatedAt": "2026-11-17T04:58:02.423Z"
+            },
+            "updateTime": {
+              "seconds": 1794891482,
+              "nanoseconds": 469941000
+            }
+          },
+          "audit": {
+            "path": "tenants/tya/entityAuditTrail/project-49fa2e947554279113692d9683fe2284",
+            "data": {
+              "tenantId": "tya",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "periodId": "setup-i3-country-44020344602-1",
+              "entityType": "project",
+              "entityId": "prj-82c4851101d9ed7cb8ee",
+              "commandType": "project.create",
+              "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+              "actorRole": "super",
+              "idempotencyKey": "project.create:13cgbv4",
+              "createdAt": "2026-11-17T04:58:02.423Z"
+            },
+            "updateTime": {
+              "seconds": 1794891482,
+              "nanoseconds": 469941000
+            }
+          },
+          "validation": {
+            "pass": true,
+            "errors": []
+          }
+        },
+        "replayed": false
+      },
+      {
+        "commandType": "project.update",
+        "commandDigest": "16ae4a80de7d09ff801f5fd9f42fbd5fcd800f88405f5c4b8547c18a44be7004",
+        "idempotencyKey": "project.update:1oitifz",
+        "command": {
+          "version": "cxorbia-command-adapter-v1",
+          "commandType": "project.update",
+          "entityType": "project",
+          "entityId": "prj-82c4851101d9ed7cb8ee",
+          "tenantId": "tya",
+          "projectId": "prj-82c4851101d9ed7cb8ee",
+          "periodId": "setup-i3-country-44020344602-1",
+          "requireProject": true,
+          "requirePeriod": true,
+          "actor": {
+            "actorId": "authenticated-user",
+            "role": "super",
+            "projectIds": [
+              "cinepolis"
+            ],
+            "shopperId": null
+          },
+          "expectedVersion": 1,
+          "idempotencyKey": "project.update:1oitifz",
+          "payload": {
+            "periodId": "setup-i3-country-44020344602-1",
+            "name": "I3 QA Countries 44020344602 1 680c9db6d4",
+            "countries": [
+              "GT",
+              "HN"
+            ],
+            "currency": {
+              "GT": "Q",
+              "HN": "L"
+            },
+            "operationalSource": {
+              "readPolicy": "internal_live",
+              "providerType": "internal_firestore",
+              "mode": "internal",
+              "writePolicy": "platform_only",
+              "mappingRef": "internal-native-mapping"
+            },
+            "version": 1,
+            "status": "draft",
+            "projectId": "prj-82c4851101d9ed7cb8ee"
+          },
+          "source": "cx.data",
+          "requestedAt": null,
+          "authorization": {
+            "providerEnforcementRequired": true,
+            "permission": "project.update"
+          },
+          "audit": {
+            "reason": "connected-config-project-countries",
+            "correlationId": "project.update:1oitifz",
+            "clientVersion": null
+          }
+        },
+        "paths": {
+          "receipt": "tenants/tya/commandReceipts/c7cffbbb888425f5e9be2cae5ae62a24586f69be",
+          "audit": "tenants/tya/entityAuditTrail/project-851a9f1b550432e70aef0b92999d6661"
+        },
+        "sent": true,
+        "ack": {
+          "ok": true,
+          "status": "committed",
+          "committed": true,
+          "providerAck": true,
+          "successUiAllowed": true,
+          "localMutation": false,
+          "localStorageWrite": false,
+          "tenantId": "tya",
+          "projectId": "prj-82c4851101d9ed7cb8ee",
+          "periodId": "setup-i3-country-44020344602-1",
+          "commandType": "project.update",
+          "idempotencyKey": "project.update:1oitifz",
+          "entityVersion": 2,
+          "entityReadback": {
+            "id": "prj-82c4851101d9ed7cb8ee",
+            "periodId": "setup-i3-country-44020344602-1",
+            "name": "I3 QA Countries 44020344602 1 680c9db6d4",
+            "initialPeriodId": "setup-i3-country-44020344602-1",
+            "status": "draft",
+            "qaOnly": true,
+            "qaRunId": "44020344602",
+            "qaRunAttempt": "1",
+            "operationalSource": {
+              "mode": "internal",
+              "providerType": "internal_firestore",
+              "readPolicy": "internal_live",
+              "writePolicy": "platform_only",
+              "mappingRef": "internal-native-mapping"
+            },
+            "modelo": "unconfigured",
+            "billingModel": "project_configuration_required",
+            "projectModel": "unconfigured",
+            "localBilling": null,
+            "royaltyApplicable": false,
+            "regalias": 0,
+            "compensationModel": "project_configuration_required",
+            "financialModelReviewRequired": true,
+            "financialModelNote": "Modelo financiero pendiente de configuración; no se calculan ingresos, regalías ni margen.",
+            "financialModelContractVersion": "cxorbia.project-financial-model.v1",
+            "financialModelNormalizedAt": "2026-11-17T04:58:01.976Z",
+            "projectId": "prj-82c4851101d9ed7cb8ee",
+            "tenantId": "tya",
+            "normalizedName": "i3 qa countries 44020344602 1 680c9db6d4",
+            "createdAt": "2026-11-17T04:58:02.423Z",
+            "createdBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "updatedBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "currency": {
+              "GT": "Q",
+              "HN": "L"
+            },
+            "countries": [
+              "GT",
+              "HN"
+            ],
+            "version": 2,
+            "updatedAt": "2026-11-17T04:58:05.785Z"
+          },
+          "readbackVerified": true,
+          "idempotentReplay": true,
+          "providerWrites": 0,
+          "warnings": []
+        },
+        "readback": {
+          "project": {
+            "path": "tenants/tya/projects/prj-82c4851101d9ed7cb8ee",
+            "data": {
+              "periodId": "setup-i3-country-44020344602-1",
+              "name": "I3 QA Countries 44020344602 1 680c9db6d4",
+              "initialPeriodId": "setup-i3-country-44020344602-1",
+              "status": "draft",
+              "qaOnly": true,
+              "qaRunId": "44020344602",
+              "qaRunAttempt": "1",
+              "operationalSource": {
+                "mode": "internal",
+                "providerType": "internal_firestore",
+                "readPolicy": "internal_live",
+                "writePolicy": "platform_only",
+                "mappingRef": "internal-native-mapping"
+              },
+              "modelo": "unconfigured",
+              "billingModel": "project_configuration_required",
+              "projectModel": "unconfigured",
+              "localBilling": null,
+              "royaltyApplicable": false,
+              "regalias": 0,
+              "compensationModel": "project_configuration_required",
+              "financialModelReviewRequired": true,
+              "financialModelNote": "Modelo financiero pendiente de configuración; no se calculan ingresos, regalías ni margen.",
+              "financialModelContractVersion": "cxorbia.project-financial-model.v1",
+              "financialModelNormalizedAt": "2026-11-17T04:58:01.976Z",
+              "id": "prj-82c4851101d9ed7cb8ee",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "tenantId": "tya",
+              "normalizedName": "i3 qa countries 44020344602 1 680c9db6d4",
+              "createdAt": "2026-11-17T04:58:02.423Z",
+              "createdBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+              "updatedBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+              "currency": {
+                "GT": "Q",
+                "HN": "L"
+              },
+              "countries": [
+                "GT",
+                "HN"
+              ],
+              "version": 2,
+              "updatedAt": "2026-11-17T04:58:05.785Z"
+            },
+            "updateTime": {
+              "seconds": 1794891485,
+              "nanoseconds": 822735000
+            }
+          },
+          "receipt": {
+            "path": "tenants/tya/commandReceipts/c7cffbbb888425f5e9be2cae5ae62a24586f69be",
+            "data": {
+              "status": "committed",
+              "commandDigest": "16ae4a80de7d09ff801f5fd9f42fbd5fcd800f88405f5c4b8547c18a44be7004",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "periodId": "setup-i3-country-44020344602-1",
+              "entityVersion": 2,
+              "commandType": "project.update",
+              "providerAck": true,
+              "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+              "updatedAt": "2026-11-17T04:58:05.785Z"
+            },
+            "updateTime": {
+              "seconds": 1794891485,
+              "nanoseconds": 822735000
+            }
+          },
+          "audit": {
+            "path": "tenants/tya/entityAuditTrail/project-851a9f1b550432e70aef0b92999d6661",
+            "data": {
+              "tenantId": "tya",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "periodId": "setup-i3-country-44020344602-1",
+              "entityType": "project",
+              "entityId": "prj-82c4851101d9ed7cb8ee",
+              "commandType": "project.update",
+              "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+              "actorRole": "super",
+              "idempotencyKey": "project.update:1oitifz",
+              "createdAt": "2026-11-17T04:58:05.785Z"
+            },
+            "updateTime": {
+              "seconds": 1794891485,
+              "nanoseconds": 822735000
+            }
+          },
+          "validation": {
+            "pass": true,
+            "errors": []
+          }
+        },
+        "replayed": true
+      },
+      {
+        "commandType": "project.update",
+        "commandDigest": "2b7b4d51e33fa5c95eeab8c18091b0f61188c12d3b30a3b60144d02381723907",
+        "idempotencyKey": "project.update:16pqy21",
+        "command": {
+          "version": "cxorbia-command-adapter-v1",
+          "commandType": "project.update",
+          "entityType": "project",
+          "entityId": "prj-82c4851101d9ed7cb8ee",
+          "tenantId": "tya",
+          "projectId": "prj-82c4851101d9ed7cb8ee",
+          "periodId": "setup-i3-country-44020344602-1",
+          "requireProject": true,
+          "requirePeriod": true,
+          "actor": {
+            "actorId": "authenticated-user",
+            "role": "super",
+            "projectIds": [
+              "cinepolis"
+            ],
+            "shopperId": null
+          },
+          "expectedVersion": 2,
+          "idempotencyKey": "project.update:16pqy21",
+          "payload": {
+            "periodId": "setup-i3-country-44020344602-1",
+            "name": "I3 QA Countries 44020344602 1 680c9db6d4",
+            "countries": [
+              "GT"
+            ],
+            "currency": {
+              "HN": "L",
+              "GT": "Q"
+            },
+            "operationalSource": {
+              "writePolicy": "platform_only",
+              "mappingRef": "internal-native-mapping",
+              "providerType": "internal_firestore",
+              "readPolicy": "internal_live",
+              "mode": "internal"
+            },
+            "version": 2,
+            "status": "draft",
+            "projectId": "prj-82c4851101d9ed7cb8ee"
+          },
+          "source": "cx.data",
+          "requestedAt": null,
+          "authorization": {
+            "providerEnforcementRequired": true,
+            "permission": "project.update"
+          },
+          "audit": {
+            "reason": "connected-config-project-countries",
+            "correlationId": "project.update:16pqy21",
+            "clientVersion": null
+          }
+        },
+        "paths": {
+          "receipt": "tenants/tya/commandReceipts/8f528e701466ba1ae73bc7490d378c9134b64d64",
+          "audit": "tenants/tya/entityAuditTrail/project-834790eea286e28ae01de342adce7acd"
+        },
+        "sent": true,
+        "ack": {
+          "ok": true,
+          "status": "committed",
+          "committed": true,
+          "providerAck": true,
+          "successUiAllowed": true,
+          "localMutation": false,
+          "localStorageWrite": false,
+          "tenantId": "tya",
+          "projectId": "prj-82c4851101d9ed7cb8ee",
+          "periodId": "setup-i3-country-44020344602-1",
+          "commandType": "project.update",
+          "idempotencyKey": "project.update:16pqy21",
+          "entityVersion": 3,
+          "entityReadback": {
+            "id": "prj-82c4851101d9ed7cb8ee",
+            "periodId": "setup-i3-country-44020344602-1",
+            "name": "I3 QA Countries 44020344602 1 680c9db6d4",
+            "initialPeriodId": "setup-i3-country-44020344602-1",
+            "status": "draft",
+            "qaOnly": true,
+            "qaRunId": "44020344602",
+            "qaRunAttempt": "1",
+            "operationalSource": {
+              "mode": "internal",
+              "providerType": "internal_firestore",
+              "readPolicy": "internal_live",
+              "writePolicy": "platform_only",
+              "mappingRef": "internal-native-mapping"
+            },
+            "modelo": "unconfigured",
+            "billingModel": "project_configuration_required",
+            "projectModel": "unconfigured",
+            "localBilling": null,
+            "royaltyApplicable": false,
+            "regalias": 0,
+            "compensationModel": "project_configuration_required",
+            "financialModelReviewRequired": true,
+            "financialModelNote": "Modelo financiero pendiente de configuración; no se calculan ingresos, regalías ni margen.",
+            "financialModelContractVersion": "cxorbia.project-financial-model.v1",
+            "financialModelNormalizedAt": "2026-11-17T04:58:01.976Z",
+            "projectId": "prj-82c4851101d9ed7cb8ee",
+            "tenantId": "tya",
+            "normalizedName": "i3 qa countries 44020344602 1 680c9db6d4",
+            "createdAt": "2026-11-17T04:58:02.423Z",
+            "createdBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "updatedBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+            "currency": {
+              "GT": "Q",
+              "HN": "L"
+            },
+            "countries": [
+              "GT"
+            ],
+            "version": 3,
+            "updatedAt": "2026-11-17T04:58:12.591Z"
+          },
+          "readbackVerified": true,
+          "idempotentReplay": true,
+          "providerWrites": 0,
+          "warnings": []
+        },
+        "readback": {
+          "project": {
+            "path": "tenants/tya/projects/prj-82c4851101d9ed7cb8ee",
+            "data": {
+              "periodId": "setup-i3-country-44020344602-1",
+              "name": "I3 QA Countries 44020344602 1 680c9db6d4",
+              "initialPeriodId": "setup-i3-country-44020344602-1",
+              "status": "draft",
+              "qaOnly": true,
+              "qaRunId": "44020344602",
+              "qaRunAttempt": "1",
+              "operationalSource": {
+                "mode": "internal",
+                "providerType": "internal_firestore",
+                "readPolicy": "internal_live",
+                "writePolicy": "platform_only",
+                "mappingRef": "internal-native-mapping"
+              },
+              "modelo": "unconfigured",
+              "billingModel": "project_configuration_required",
+              "projectModel": "unconfigured",
+              "localBilling": null,
+              "royaltyApplicable": false,
+              "regalias": 0,
+              "compensationModel": "project_configuration_required",
+              "financialModelReviewRequired": true,
+              "financialModelNote": "Modelo financiero pendiente de configuración; no se calculan ingresos, regalías ni margen.",
+              "financialModelContractVersion": "cxorbia.project-financial-model.v1",
+              "financialModelNormalizedAt": "2026-11-17T04:58:01.976Z",
+              "id": "prj-82c4851101d9ed7cb8ee",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "tenantId": "tya",
+              "normalizedName": "i3 qa countries 44020344602 1 680c9db6d4",
+              "createdAt": "2026-11-17T04:58:02.423Z",
+              "createdBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+              "updatedBy": "tya-usr-bf5f1f5b2c873b016622d65d",
+              "currency": {
+                "GT": "Q",
+                "HN": "L"
+              },
+              "countries": [
+                "GT"
+              ],
+              "version": 3,
+              "updatedAt": "2026-11-17T04:58:12.591Z"
+            },
+            "updateTime": {
+              "seconds": 1794891492,
+              "nanoseconds": 623017000
+            }
+          },
+          "receipt": {
+            "path": "tenants/tya/commandReceipts/8f528e701466ba1ae73bc7490d378c9134b64d64",
+            "data": {
+              "status": "committed",
+              "commandDigest": "2b7b4d51e33fa5c95eeab8c18091b0f61188c12d3b30a3b60144d02381723907",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "periodId": "setup-i3-country-44020344602-1",
+              "entityVersion": 3,
+              "commandType": "project.update",
+              "providerAck": true,
+              "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+              "updatedAt": "2026-11-17T04:58:12.591Z"
+            },
+            "updateTime": {
+              "seconds": 1794891492,
+              "nanoseconds": 623017000
+            }
+          },
+          "audit": {
+            "path": "tenants/tya/entityAuditTrail/project-834790eea286e28ae01de342adce7acd",
+            "data": {
+              "tenantId": "tya",
+              "projectId": "prj-82c4851101d9ed7cb8ee",
+              "periodId": "setup-i3-country-44020344602-1",
+              "entityType": "project",
+              "entityId": "prj-82c4851101d9ed7cb8ee",
+              "commandType": "project.update",
+              "actorUid": "tya-usr-bf5f1f5b2c873b016622d65d",
+              "actorRole": "super",
+              "idempotencyKey": "project.update:16pqy21",
+              "createdAt": "2026-11-17T04:58:12.591Z"
+            },
+            "updateTime": {
+              "seconds": 1794891492,
+              "nanoseconds": 623017000
+            }
+          },
+          "validation": {
+            "pass": true,
+            "errors": []
+          }
+        },
+        "replayed": true
+      }
+    ]
+  },
+  "countryPassed": true,
+  "identityPassed": true,
+  "actualDevEffects": {
+    "scope": "RUN2585_EFFECTS_SEPARATED_FROM_HISTORICAL_COMMITTED_COMMAND_TOTALS",
+    "entireCertificationReadOnly": false,
+    "hrReconciliation": {
+      "durableDiagnosisIdenticalToRun2584ExceptRunId": true,
+      "comparedProof": "hr-after-human/result.json",
+      "proofSha256": "f27e8aa8eafda35c50c3471066b872eaf466126dcc3a8ac438f42862f39a808c",
+      "currentAdminReceiptAndJournalUnchanged": true,
+      "priorAdminApplicationWrites": {
+        "auth": 0,
+        "firestore": 795
+      },
+      "priorCommandWritesAreNotNewWrites": true,
+      "observedAutomaticAcknowledgements": [
+        {
+          "file": "semantic/hr-auto-admin-625df6d4e4fc4937-1794891651615.json",
+          "stage": "afterRoutes",
+          "observedAt": "2026-11-17T05:01:19.172Z",
+          "providerAck": true,
+          "readbackVerified": true,
+          "viewRefreshVerified": true,
+          "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+          "ackAt": "2026-11-17T05:00:51.799Z",
+          "idempotencyKeyHash": "de04946c04ffa371e85192a1ba2471abdd2a11bc0a0ddd8ff2c883c4c0f220c6",
+          "receiptPathHash": "ea4dc4f0a73dcd4f45e97fd90deea5dbada1bfea3a523f9f8c41738d0c85e271",
+          "code": "HR_RECONCILIATION_COMMITTED"
+        },
+        {
+          "file": "semantic/hr-auto-admin-625df6d4e4fc4937-1794891724281.json",
+          "stage": "afterRoutes",
+          "observedAt": "2026-11-17T05:02:15.698Z",
+          "providerAck": true,
+          "readbackVerified": true,
+          "viewRefreshVerified": true,
+          "sourceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+          "ackAt": "2026-11-17T05:02:04.462Z",
+          "idempotencyKeyHash": "de04946c04ffa371e85192a1ba2471abdd2a11bc0a0ddd8ff2c883c4c0f220c6",
+          "receiptPathHash": "ea4dc4f0a73dcd4f45e97fd90deea5dbada1bfea3a523f9f8c41738d0c85e271",
+          "code": "HR_RECONCILIATION_COMMITTED"
+        }
+      ],
+      "explicitReplayZeroWritesAckPersisted": false,
+      "newApplicationWritesThisAttempt": null,
+      "inference": "Same idempotency/receipt hashes plus unchanged durable receipts, journal, versions and timestamps support effect-free replay; no full new-attempt applicationWritesThisAttempt ACK was preserved, so zero is not reported as directly observed."
+    },
+    "countryFixture": {
+      "syntheticProjectOnly": true,
+      "addAndRemoveAck": true,
+      "replayProviderWrites": [
+        0,
+        0
+      ],
+      "cleanupVerified": true,
+      "ownedDocumentsDeleted": 7,
+      "remaining": 0,
+      "commercialProjectUnchanged": true
+    },
+    "functionalFixtures": {
+      "pass": 10,
+      "total": 10,
+      "cleanupVerified": true,
+      "documentAbsenceReadbacks": 35,
+      "authAbsenceReadbacks": 4,
+      "creationJournalsResolved": true
+    },
+    "externalHrWrites": 0,
+    "newBuilds": 0,
+    "newDeploys": 0,
+    "productionDeploys": 0,
+    "lastVerifiedHrReadAt": "2026-11-17T05:05:36.127Z"
+  },
+  "proofs": {
+    "module-truth-matrix.json": {
+      "artifactId": 14300369680,
+      "file": "module-truth-matrix.json",
+      "sha256": "542577fc719b33b59444016caa69b0413ce6f238bc4fc049804207f69a0cf161"
+    },
+    "full-human-acceptance/human-live-acceptance.json": {
+      "artifactId": 14300369680,
+      "file": "full-human-acceptance/human-live-acceptance.json",
+      "sha256": "68b61fbd45c5c0e29f6f9ed4e078d8d422a26b786a297c27fd4b78e917ed0cb9"
+    },
+    "full-human-acceptance/admin-composition-identity-proof.json": {
+      "artifactId": 14300369680,
+      "file": "full-human-acceptance/admin-composition-identity-proof.json",
+      "sha256": "42baf07c1bdc40d254cb7888f5d23b8da01601c4ef4d83ceaf106ebc5a09b49a"
+    },
+    "full-human-acceptance/tenant-readonly/project-country-live-proof.json": {
+      "artifactId": 14300369680,
+      "file": "full-human-acceptance/tenant-readonly/project-country-live-proof.json",
+      "sha256": "cfd0498b1dc09dfe67c17faf5dcc44effd560e5a5b3ce11aed781cb284167a96"
+    },
+    "full-human-acceptance/tenant-readonly/tenant-admin-config-branding-domain.json": {
+      "artifactId": 14300369680,
+      "file": "full-human-acceptance/tenant-readonly/tenant-admin-config-branding-domain.json",
+      "sha256": "e92e26800e2aa1df66632b038977dcf874d76457084770f3934c517bfe461f88"
+    },
+    "semantic/browser-focal.json": {
+      "artifactId": 14300369680,
+      "file": "semantic/browser-focal.json",
+      "sha256": "a2ec42423894d06016e14b7b09246545f3daf5397be02932fedfbf01c7c91768"
+    },
+    "live-fixtures/i3-live-fixtures-result.json": {
+      "artifactId": 14300369680,
+      "file": "live-fixtures/i3-live-fixtures-result.json",
+      "sha256": "056678faddd29c1e86f8de4a870c84a3d6a15f90c057a1b8856c2f5e776e67fa"
+    },
+    "hr-after-human/result.json": {
+      "artifactId": 14300369680,
+      "file": "hr-after-human/result.json",
+      "sha256": "f27e8aa8eafda35c50c3471066b872eaf466126dcc3a8ac438f42862f39a808c"
+    },
+    "b14-capability/b14-capability.json": {
+      "artifactId": 14300369680,
+      "file": "b14-capability/b14-capability.json",
+      "sha256": "fa40e6436b153e4d033f7de43a89db1cb38a7e89ed9c6b340cdfbc3047a4018d"
+    }
+  },
+  "c3Result": {
+    "decision": "PASS_C3_PRETERMINAL_SOURCE_READY_EXACT_DEV",
+    "inputAuthorityStatus": "HOLD_I3_DEV_MATERIALIZED_RUN2584_SCOPED_PASSES_COUNTRY_AND_DOMAIN_RECEIPTS_PENDING",
+    "status": "READY_FOR_TERMINAL_CERTIFICATION",
+    "enabledNextBlock": "I3-Q3",
+    "enabledJob": "certify",
+    "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+    "sourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
+    "moduleTruthSha256": "d31daec3845f9466b1606d7ee712ebd1e86e03f597fc2ab402dc9bd27c652ef9",
+    "moduleCount": 21,
+    "matchModules": 5,
+    "nonMatchModules": 16,
+    "sourceReadyModules": 21,
+    "pendingFiles": 0,
+    "terminalEligible": true,
+    "activeBrowserOwners": 133,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/3ffc1e8d04e144ef",
+    "runtimeRevision": "cxorbia-live-hr-dev-00379-bvq",
+    "runtimeDigest": "sha256:b18dcc12defdd008b58dadeb334f9b263140823ec82eac70b5d3e0401224e173",
+    "firestoreRulesSha256": "0708af825d2baaad974285acd8d72df0a7861105e453da26199f08fd5a985d3e",
+    "sameRunSourceQa": {
+      "receiptSha256": "1cdf16abaa4f1093304c589538e4b5001c2e8a03dcb3f229caf0a3eff7bcf791",
+      "controlSha": "4d655bc729bc96c912167d80da213c3b4d5b914f",
+      "runId": 44020344602,
+      "producerRunAttempt": 1,
+      "pathCount": 23,
+      "acceptedPaths": [
+        "app/core/programa.js",
+        "app/core/ui.js",
+        "app/core/notif.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "app/core/backend-finance-benefits.js",
+        "app/core/backend-cxdata-finance-read.js",
+        "app/adapters/cxorbia-command-adapter-v1.js",
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+        "app/core/backend-bulletins.js",
+        "app/modules/dashboard.js",
+        "app/modules/periodos.js",
+        "app/modules/configuracion.js",
+        "app/modules/cliente-insights.js",
+        "app/adapters/tya-c6-unified-human-runtime-v1.js",
+        "app/sw.js",
+        "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+        "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+        "backend/runtime/hr-live-service/server.mjs",
+        "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+        "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+        "tools/hr-source/tya-enforce-live-tab-registry.mjs"
+      ],
+      "scope": "SOURCE_QA_ONLY_NOT_E2E_OR_HUMAN_ACCEPTANCE"
+    },
+    "allApprovedOwnersLoaded": true,
+    "duplicateScripts": 0,
+    "builds": 0,
+    "deploys": 0,
+    "writes": 0,
+    "production": false
+  },
+  "humanPassGuard": {
+    "runId": 44020344043,
+    "runNumber": 138,
+    "conclusion": "success",
+    "preservedBlocks": [
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ],
+    "newHumanApprovals": 0
+  },
+  "localAffectedTests": {
+    "pass": 442,
+    "fail": 0,
+    "evidencePath": "docs/checkpoints/CXORBIA_I3_RUN2584_QA_EVIDENCE_REPAIR_SOURCE_PROOF_20261117.json"
+  },
+  "sameArtifactInvariant": {
+    "sourceUnchanged": true,
+    "runtimeUnchanged": true,
+    "hostingUnchanged": true,
+    "deploymentRunId": 44007234676,
+    "deploymentRunNumber": 2581,
+    "newDeploymentRequired": false
+  },
+  "controlOnlyReadbackPolicy": "The GitHub checks attached to the control-consumption commit validate this graph; they do not create another functional execution or another DEV release.",
+  "nextExactAction": "I3-Q3: implement the proven project-scoped private HR binding/mapping resolution in the existing runtime owners and repair the missing integration document with exact preconditions; preserve external_read_only and the same operational workbook/mapping. Prove runtime consumption before any B14 remote-write ACK test; then close remaining D08, C09/C10 and current-owner receipts. Preserve country/Admin identity PASS RUN2585, DEV RUN2581/source680, historical B4/B5/B6/B7 and strict5/21; I4 only after strict21/G20/G21 GO and explicit exact-artifact authorization."
+}
