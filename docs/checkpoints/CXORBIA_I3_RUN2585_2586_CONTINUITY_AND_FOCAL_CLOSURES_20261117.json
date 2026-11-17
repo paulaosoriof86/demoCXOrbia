@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "cxorbia.i3.continuity-and-focal-certification.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+  "sourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
+  "run2585": {
+    "runId": 44020344602,
+    "checkpoint": "docs/checkpoints/CXORBIA_I3_RUN2585_COUNTRY_IDENTITY_TERMINAL_READBACK_20261117.json",
+    "checkpointBlob": "974bdcd79f9a9e6e58d52f40a0a0d8ae3009c357",
+    "sourceQaPass": 627,
+    "sourceQaFail": 0,
+    "sourceReadyDomains": 21,
+    "strictMatches": 5,
+    "strictPending": 16,
+    "identity": {
+      "visits": 792,
+      "periods": 18,
+      "visibleShoppers": 197,
+      "canonicalHrShoppers": 196,
+      "rawHrReferences": 238,
+      "duplicates": 0,
+      "technicalPrimaryNames": 0,
+      "nameMismatches": 0,
+      "authorityCasesOpen": 1
+    },
+    "country": "PASS_UI_ACK_DURABLE_RELOAD_ZERO_WRITE_REPLAY_AND_CLEANUP",
+    "functionalQaPass": 10,
+    "newHumanApproval": false,
+    "terminalState": "HOLD"
+  },
+  "run2586": {
+    "runId": 44022191163,
+    "controlSha": "172c2d339d36563abc226cc45338289a9e6253c3",
+    "decision": "PASS_SOURCE_QA_ONLY",
+    "sourceQaPass": 627,
+    "sourceQaFail": 0,
+    "artifactId": 14301323088,
+    "artifactDigest": "sha256:8e243ed35a23d180f2b01f21aca9735d9e39278261d7d5eacc6ec777abf30150",
+    "receiptSha256": "0d9a1530777789888cb8ec16a08e26f8aaf40d934f9b75a27db74bd6783b7e2d",
+    "c3Executed": false,
+    "functionalExecuted": false,
+    "builds": 0,
+    "deploys": 0
+  },
+  "focalClosures": {
+    "VRM-356": {
+      "decision": "FIXED_PROVEN_RUN2573_RUN2581_REAL_GRID_HR_READBACK",
+      "fullDomain": false,
+      "evidence": [
+        "docs/checkpoints/CXORBIA_I3_RUN2573_EXACT_DEV_MATERIALIZATION_CONSUMPTION_20261116.json",
+        "docs/checkpoints/CXORBIA_I3_RUN2581_VRM357_EXACT_DEV_MATERIALIZATION_20261117.json"
+      ],
+      "proof": "Both independent readers,36tabs per reader,prebuild actual range headers,exact DEV792visits/18periods,stable HR revision and no refresh error. Does not certify full reconciliation/auth/B14."
+    },
+    "VRM-338": {
+      "decision": "FIXED_PROVEN_RUN2585_AUTHENTICATED_INTERNAL_PROJECT_SCOPE",
+      "fullDomain": false,
+      "evidence": [
+        "docs/checkpoints/CXORBIA_I3_RUN2585_COUNTRY_IDENTITY_TERMINAL_READBACK_20261117.json"
+      ],
+      "proof": "25 exact-owner source tests plus authenticated distinct internal project live authority,UI ACK,durable/reload,replay0,7owned fixtures cleaned,commercial project unchanged."
+    }
+  },
+  "residualCorrections": {
+    "VRM-349": "Current238/238identitycrosswalk and COMMITTED ACK proved; explicit replayzero applicationWritesThisAttempt absent. Do not report old UID conflict or795historical writes as new.",
+    "VRM-341": "Source cold/deferred tests and live config navigation pass; first mount with no operational period and deferred live trace remain unrecorded."
+  },
+  "management": {
+    "shockBlocksComplete": 2,
+    "shockBlocksTotal": 7,
+    "shockPercent": 28.57,
+    "strictDomains": 5,
+    "strictTotal": 21,
+    "strictPercent": 23.81,
+    "humanBlocks": 4,
+    "humanTotal": 9,
+    "humanPercent": 44.44,
+    "newCompleteDomains": 0,
+    "newCompleteShockBlocks": 0
+  },
+  "production": false,
+  "i4Authorized": false,
+  "phaseAComplete": false,
+  "newB14SourceProof": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM358_PROJECT_HR_BINDING_SOURCE_PROOF_20261117.json",
+    "gitBlob": "b9dacd72eaaf0fcdd87390d9cb58b504fa0bcd15"
+  },
+  "createdAt": "2026-11-17T06:13:18.902734Z"
+}

@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-scoped-source-proof.v1",
+  "id": "VRM-358",
+  "decision": "PASS_LOCAL_VRM358_BINDING_AND_CUMULATIVE_SOURCE_QA_PENDING_CANONICAL_CI_DEV",
+  "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+  "sourceTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
+  "predecessorProductSourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM358_PROJECT_HR_BINDING_P0_SCOPE_20261117.json",
+  "scopeReceiptBlob": "55339800ea31da6080e0ebc3c83746d9c92ecb0b",
+  "allowedProductFiles": [
+    "backend/runtime/hr-live-service/server.mjs",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+    "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs"
+  ],
+  "sourceTestsPass": 667,
+  "sourceTestsFail": 0,
+  "newBindingTests": 20,
+  "controlTestsPass": 284,
+  "controlTestsFail": 0,
+  "suiteCounts": {
+    "shopper-keeper-authority": 142,
+    "human-project-scope": 25,
+    "frontend-behavior": 317,
+    "finance-ack-boundary": 103,
+    "external-hr-source": 80
+  },
+  "countSemantics": "Executed suite cases; binding20 also runs in both mapped owner suites. Control suite overlaps; totals are not additive.",
+  "findings": [
+    {
+      "id": "VRM-358",
+      "priority": "P0_PROVEN",
+      "classification": "MAPPING_FAILURE",
+      "owners": [
+        "backend/runtime/hr-live-service/server.mjs",
+        "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+        "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+        "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+      ]
+    }
+  ],
+  "testLogs": {
+    "shopper-keeper-authority": {
+      "sha256": "c04335ccc41a9077842b9397cfa4eaa1fe6c98f439f72af47273317bd7fe269c",
+      "scope": "LOCAL_NODE_TEST_NOT_LIVE_ACK"
+    },
+    "human-project-scope": {
+      "sha256": "7d95ba71aaa60005effdc4f1471c59a53fe89a9e0e8977ee1f80a4f833da7654",
+      "scope": "LOCAL_NODE_TEST_NOT_LIVE_ACK"
+    },
+    "frontend-behavior": {
+      "sha256": "9474ee3a08c4af06f7a31257f450b6c8ddef3d13a2f70810fd22f53b6f7050b4",
+      "scope": "LOCAL_NODE_TEST_NOT_LIVE_ACK"
+    },
+    "finance-ack-boundary": {
+      "sha256": "78652abfa4f0f50c9e916001c6c3aa32642f71d4389bea891aa123bf3c84eb61",
+      "scope": "LOCAL_NODE_TEST_NOT_LIVE_ACK"
+    },
+    "external-hr-source": {
+      "sha256": "2fe71ff404dd9c332598b733cac75646b693302b455f23b73c7a472e2a82659c",
+      "scope": "LOCAL_NODE_TEST_NOT_LIVE_ACK"
+    }
+  },
+  "production": false,
+  "devPublished": false,
+  "b14Closed": false,
+  "phaseAComplete": false,
+  "createdAt": "2026-11-17T06:13:18.902734Z"
+}
