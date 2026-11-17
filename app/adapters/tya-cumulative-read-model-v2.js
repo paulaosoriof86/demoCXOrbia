@@ -356,7 +356,7 @@
     for(const c of arr(payload.certifications)){const sid=str(c&&c.shopperId||c&&c.idShopper);if(!sid)continue;if(!certById.has(sid))certById.set(sid,[]);certById.get(sid).push(c);}
     const liqById=new Map();
     for(const l of arr(payload.liquidations)){const sid=str(l&&l.shopperId);if(!sid)continue;if(!liqById.has(sid))liqById.set(sid,[]);liqById.get(sid).push(l);}
-    const consumedProfiles=new Set(),shopperByCanonical=new Map();
+    const consumedProfiles=new Set(),shopperByCanonical=new Map(),canonicalDirectHrNames=new Map();
     for(const base of baseShoppers){
       const liveId=str(base.shopperId||base.id);if(!liveId)continue;const canonical=liveToCanonical.get(liveId)||liveId;
       const p=onlyUnique(profilesById,canonical)||onlyUnique(profilesByAlias,liveId)||null;if(p&&p.id)consumedProfiles.add(str(p.id));
@@ -366,6 +366,12 @@
       row.pais=operationalCountry(base.pais||base.country||row.pais||row.country);
       if(row.pais)row.country=row.pais;
       const hrDisplayName=normalizedName(base),profileDisplayName=p?normalizedName(p):'';
+      // A direct canonical HR row is the current external-name authority. An
+      // adjudicated *alias* may share its identity, but its historical label
+      // must not overwrite the canonical row's live HR display name merely
+      // because the alias happens to be composed last.
+      if(liveId===canonical&&hrDisplayName&&!technicalIdentityLabel(hrDisplayName,liveId))
+        canonicalDirectHrNames.set(canonical,hrDisplayName);
       /* VRM-258 corrected authority: a provider/tenant-adjudicated HR alias is already the same
          human as the canonical shopper. The live HR alias label remains valid source evidence,
          but it cannot replace the human name frozen on the canonical tenant-adjudicated profile.
@@ -391,6 +397,10 @@
       row.protectedLiquidations=[...(liqById.get(canonical)||[]),...(liqById.get(liveId)||[])];
       if(identityConflicts.some(x=>x.liveShopperId===liveId)){row.identityReviewRequired=true;row.identityReviewReason='conflicting_exact_crosswalk';}
       const old=shopperByCanonical.get(canonical);shopperByCanonical.set(canonical,old?patch(old,row):row);
+    }
+    for(const [canonical,hrName] of canonicalDirectHrNames){
+      const row=shopperByCanonical.get(canonical);
+      if(row&&!row.__verifiedDisplayName){row.nombre=hrName;row.__hrOriginalDisplayName=hrName;}
     }
     // PRE-I4 VRM-033 + VRM-044:
     // unmatched protected profiles remain review-only, but an exact trusted identity link
