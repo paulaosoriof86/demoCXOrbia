@@ -217,7 +217,7 @@
     "promotionRule": "PRESERVE_LIVE_AUTHORITATIVE_C3_ALIASES_UNTIL_21_OF_21_AND_GATE20_21; THIS_LATEST_RUN_RECEIPT_SUPERSEDES_2482_FOR_Q2_COUNTS_ONLY",
     "nextExactAction": "I3-Q2 path-bound source and served-owner proof for 7 provenance and 51 served owner paths, rerun canonical C3 and only promote evidenced MATCH; then Q3 Admin-Shopper-HR cross-role, Q4 finance, Q5 21-domain functional visual, Q6 exact artifact Gate20/21; I4 requires explicit authorization"
   },
-  "status": "HOLD_I3_RUN2573_DEV_MATERIALIZED_C3_CERTIFICATION_PENDING",
+  "status": "HOLD_I3_VRM350_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -29057,8 +29057,8 @@
   },
   "vrm356FreshReadPreflight": {
     "enabled": true,
-    "sourceSha": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
-    "sourceTree": "b927ae81b1a3fd9eaf6f5ed2fe904a365678f3c7",
+    "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+    "sourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
     "workbookRefSha256": "796d2ae2b7d3f948efce7d799ddb7c81684b94e274116c24322d5f742136b90e",
     "ownerBlobs": {
       "tools/hr-source/tya-live-provider-registry-identity-dev.mjs": "16753ae184e1c59426cc58c126214bc6742b0505",
@@ -29590,6 +29590,14 @@
     "rulesDeploys": 0,
     "storageRulesDeploys": 0,
     "devPublished": false,
+    "production": false
+  },
+  "vrm357ResumeControlReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM357_RESUME_CONTROL_READBACK_20261117.json",
+    "gitBlob": "a420828e0e58bb905ce6f41d62562155b5b9e5f8",
+    "sha256": "08a2d9c23ca57ffa5eb84cf4a808dcb8bcf4073da5035d6223550d3f69eb0a17",
+    "decision": "PASS_VRM357_CONTROL_SOURCE_SEPARATION_PENDING_CANONICAL_DEV",
+    "observedAt": "2026-11-17T03:01:02.801054+00:00",
     "production": false
   }
 }

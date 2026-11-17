@@ -901,6 +901,7 @@
     "moduleMatches": 5,
     "moduleTotal": 21,
     "nextTaskIds": [
+      "VRM357",
       "C3_RUN2573",
       "VRM354",
       "VRM355",
@@ -911,7 +912,7 @@
       "G20",
       "G21"
     ],
-    "immediateAction": "I3-Q3: run bounded same-source RUN2573 C3 preterminal and native VRM354/355 receipt discovery, preserve prior C3 as historical pending exact-source proof. Verify full canonical HR name, real login, durable journal and exact-key zero-effect replay. Resolve B14 project-specific provider binding and remote ACK; D08/C09/C10 and remaining functional clauses; strict 21-domain G20/G21. I4 only after GO and explicit Paula authorization.",
+    "immediateAction": "I3: preserve immutable RUN2573 served DEV, certify VRM357 single owner source680c9db P0, execute exactly one paired DEV materialization after canonical source/CI gates, then rerun same-source C3 terminal Admin HR canonical name readback, native VRM354/355 receipt discovery and bounded repair, B14 provider ACK and remaining D08/C09/C10 functional clauses; G20/G21; I4 only GO plus explicit authorization.",
     "noProduction": true,
     "latestFunctionalReadback": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2566_C3_NATIVE_QUOTA_READBACK_20261116.json",
@@ -11909,7 +11910,7 @@
     "moduleMatches": 5,
     "production": false
   },
-  "status": "HOLD_I3_RUN2573_DEV_MATERIALIZED_C3_CERTIFICATION_PENDING",
+  "status": "HOLD_I3_VRM350_DEV_MATERIALIZATION_REQUIRED",
   "b11HrDateSemanticsSourceOnly20261107": {
     "findingId": "VRM-315",
     "scopePath": "docs/checkpoints/CXORBIA_I3_B11_HR_DATE_SEMANTICS_SOURCE_SCOPE_20261107.json",
@@ -20220,8 +20221,8 @@
   "productSourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
   "vrm356FreshReadPreflight": {
     "enabled": true,
-    "sourceSha": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
-    "sourceTree": "b927ae81b1a3fd9eaf6f5ed2fe904a365678f3c7",
+    "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+    "sourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
     "workbookRefSha256": "796d2ae2b7d3f948efce7d799ddb7c81684b94e274116c24322d5f742136b90e",
     "ownerBlobs": {
       "tools/hr-source/tya-live-provider-registry-identity-dev.mjs": "16753ae184e1c59426cc58c126214bc6742b0505",
@@ -20939,6 +20940,14 @@
     "rulesDeploys": 0,
     "storageRulesDeploys": 0,
     "devPublished": false,
+    "production": false
+  },
+  "vrm357ResumeControlReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM357_RESUME_CONTROL_READBACK_20261117.json",
+    "gitBlob": "a420828e0e58bb905ce6f41d62562155b5b9e5f8",
+    "sha256": "08a2d9c23ca57ffa5eb84cf4a808dcb8bcf4073da5035d6223550d3f69eb0a17",
+    "decision": "PASS_VRM357_CONTROL_SOURCE_SEPARATION_PENDING_CANONICAL_DEV",
+    "observedAt": "2026-11-17T03:01:02.801054+00:00",
     "production": false
   }
 }

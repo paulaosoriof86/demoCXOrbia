@@ -1,0 +1,231 @@
+{
+  "schemaVersion": "cxorbia.i3.focal-control-resume-readback.v1",
+  "observedAt": "2026-11-17T03:01:02.801054+00:00",
+  "localDate": "2026-11-16",
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "MAPPING_FAILURE",
+  "findingId": "VRM-357",
+  "decision": "PASS_VRM357_CONTROL_SOURCE_SEPARATION_PENDING_CANONICAL_DEV",
+  "expectedParentSha": "21effafa7ebe595be7fef5a69a8b6d48dfd2cd6c",
+  "expectedParentTree": "6dc768fb4b7b29545a5b77114984eef5f7aab9e1",
+  "authorization": "PAULA_AUTHORIZED_PROMOTE_FOCAL_IDENTITY_I3_DEV_REPEAT_TESTS_AND_CONSUME_20261116",
+  "frozenPlanSha256": "83e8f2c0a6b190bab1d9dea32bf99158116f3164f419ae72e051fd791fd8576c",
+  "before": {
+    "descriptorStatus": "HOLD_I3_RUN2573_DEV_MATERIALIZED_C3_CERTIFICATION_PENDING",
+    "pointerStatus": "HOLD_I3_RUN2573_DEV_MATERIALIZED_C3_CERTIFICATION_PENDING",
+    "handoffImmediateAction": "I3-Q3: run bounded same-source RUN2573 C3 preterminal and native VRM354/355 receipt discovery, preserve prior C3 as historical pending exact-source proof. Verify full canonical HR name, real login, durable journal and exact-key zero-effect replay. Resolve B14 project-specific provider binding and remote ACK; D08/C09/C10 and remaining functional clauses; strict 21-domain G20/G21. I4 only after GO and explicit Paula authorization.",
+    "handoffNextTaskIds": [
+      "C3_RUN2573",
+      "VRM354",
+      "VRM355",
+      "B14",
+      "D08",
+      "C09",
+      "C10",
+      "G20",
+      "G21"
+    ],
+    "preflight": {
+      "enabled": true,
+      "sourceSha": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
+      "sourceTree": "b927ae81b1a3fd9eaf6f5ed2fe904a365678f3c7",
+      "workbookRefSha256": "796d2ae2b7d3f948efce7d799ddb7c81684b94e274116c24322d5f742136b90e",
+      "ownerBlobs": {
+        "tools/hr-source/tya-live-provider-registry-identity-dev.mjs": "16753ae184e1c59426cc58c126214bc6742b0505",
+        "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs": "b2f8cf3f743730b5ce14e3fad31791ac34bd0291"
+      },
+      "scope": {
+        "path": "docs/checkpoints/CXORBIA_I3_VRM356_EXACT_GRID_RANGE_P0_SCOPE_20261116.json",
+        "gitBlob": "dee2145c8332eff2dfa890189f45b17f3a86c7f2",
+        "sha256": "a71b62fa849c8c40b2499445fe279d83d67c47eff5c29c9e73071bdcb062c468"
+      },
+      "readsOnly": true,
+      "buildBeforePass": false,
+      "production": false
+    }
+  },
+  "after": {
+    "descriptorStatus": "HOLD_I3_VRM350_DEV_MATERIALIZATION_REQUIRED",
+    "pointerStatus": "HOLD_I3_VRM350_DEV_MATERIALIZATION_REQUIRED",
+    "handoffImmediateAction": "I3: preserve immutable RUN2573 served DEV, certify VRM357 single owner source680c9db P0, execute exactly one paired DEV materialization after canonical source/CI gates, then rerun same-source C3 terminal Admin HR canonical name readback, native VRM354/355 receipt discovery and bounded repair, B14 provider ACK and remaining D08/C09/C10 functional clauses; G20/G21; I4 only GO plus explicit authorization.",
+    "handoffNextTaskIds": [
+      "VRM357",
+      "C3_RUN2573",
+      "VRM354",
+      "VRM355",
+      "B14",
+      "D08",
+      "C09",
+      "C10",
+      "G20",
+      "G21"
+    ],
+    "preflight": {
+      "enabled": true,
+      "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+      "sourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
+      "workbookRefSha256": "796d2ae2b7d3f948efce7d799ddb7c81684b94e274116c24322d5f742136b90e",
+      "ownerBlobs": {
+        "tools/hr-source/tya-live-provider-registry-identity-dev.mjs": "16753ae184e1c59426cc58c126214bc6742b0505",
+        "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs": "b2f8cf3f743730b5ce14e3fad31791ac34bd0291"
+      },
+      "scope": {
+        "path": "docs/checkpoints/CXORBIA_I3_VRM356_EXACT_GRID_RANGE_P0_SCOPE_20261116.json",
+        "gitBlob": "dee2145c8332eff2dfa890189f45b17f3a86c7f2",
+        "sha256": "a71b62fa849c8c40b2499445fe279d83d67c47eff5c29c9e73071bdcb062c468"
+      },
+      "readsOnly": true,
+      "buildBeforePass": false,
+      "production": false
+    }
+  },
+  "causes": [
+    {
+      "code": "CURRENT_CHECKPOINT_DEV_SEAL_DESYNC",
+      "owner": "CXORBIA_RECOVERY_EXECUTION_CURRENT.json#/continuityHandoff/immediateAction",
+      "observation": "Nine artifact/source/deploy comparisons match; the operational action remained the predecessor action."
+    },
+    {
+      "code": "FALSE_PREDECESSOR_DEV_DECLARATION",
+      "owner": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json#/status",
+      "observation": "Candidate status declared DEV_MATERIALIZED while exact seal correctly identified the serving predecessor."
+    },
+    {
+      "code": "VRM356_PREFLIGHT_SCOPE_MISMATCH",
+      "owner": "vrm356FreshReadPreflight.sourceSha/sourceTree in descriptor and execution pointer",
+      "observation": "Read-only preflight request still selected predecessor source; both reader blobs are exactly unchanged in current candidate."
+    }
+  ],
+  "canonicalGuard": {
+    "decision": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+    "productSourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+    "productSourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
+    "predecessorProductSourceSha": "607ef20a5305209a46b8f61424f03475806f402d",
+    "findingCount": 357,
+    "nextFindingId": "VRM-358",
+    "postCandidateProductDrift": false,
+    "historicalSourceSpecificJobsDisabled": 8,
+    "proofScope": "CANONICAL_SOURCE_LINEAGE_ONLY_NOT_MODULE_OR_ARTIFACT_CERTIFICATION",
+    "continuityReadback": {
+      "pass": true,
+      "failures": [],
+      "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V350.json",
+      "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+      "classificationCounts": {
+        "COMPOSED_NOT_DEPLOYED": 2,
+        "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E": 3,
+        "MATCH": 5,
+        "SOURCE_FIXED_DEV_MATERIALIZED_ADMIN_B10_FOCAL_PASS_PENDING_SHOPPER_ROLE_PROVIDER_LINK": 1,
+        "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN": 2,
+        "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_AUTHENTICATED_ADMIN_SHOPPER_E2E": 1,
+        "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 6,
+        "SOURCE_FIXED_HOSTING_DEV_PUBLISHED_PENDING_AUTH_SHOPPER_B2_B3_E2E_HUMAN": 1
+      },
+      "domainCount": 21,
+      "status": "CONTROL_CONTINUITY_ONLY_NOT_I3_CERTIFICATION"
+    },
+    "moduleTruthReadback": {
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V350.json",
+      "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+      "expectedSourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+      "sourceAligned": true,
+      "domainCount": 21,
+      "uniqueDomainCount": 21,
+      "phaseAComplete": false,
+      "allModulesMatch": false,
+      "scope": "CONTROL_DIAGNOSTIC_ONLY_NOT_CERTIFICATION"
+    },
+    "moduleRegistryReadback": {
+      "path": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
+      "domainCount": 20,
+      "targetDomainCount": 21,
+      "coverageAligned": false,
+      "historicalSubsetValid": true,
+      "frozenHistoricalBaselineNotFinalAuthority": true
+    },
+    "moduleBlobReadback": {
+      "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+      "domainCount": 21,
+      "ownerCount": 107,
+      "sourceFileCount": 159,
+      "ownerMismatches": [],
+      "sourceFileMismatches": [],
+      "pass": true,
+      "scope": "EXACT_SOURCE_GIT_BLOBS_ONLY_NO_HUMAN_VISUAL_OR_PROVIDER_E2E"
+    },
+    "workflowLedgerReadback": {
+      "declaredPath": "",
+      "descriptorPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V677_2026-11-17.json",
+      "aligned": true,
+      "activelyConsumed": false,
+      "scope": "HISTORICAL_ENV_POINTER_NOT_RELEASE_AUTHORITY"
+    },
+    "postDeploySealReadback": {
+      "pass": true,
+      "runId": 43969895087,
+      "runNumber": 2573,
+      "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
+      "sourceSha": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/41e4a0e90f5b5295",
+      "artifactDigest": "sha256:7dbc5131c8687174b85f1f35282c0cdd454ad581e3f36aff8af473955895374f",
+      "terminalReady": false,
+      "production": false
+    },
+    "terminalReleaseEligible": false,
+    "production": false
+  },
+  "testEvidence": {
+    "command": "node --test tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs tools/qa/cxorbia-i3-terminal-human-contract.test.mjs tools/qa/cxorbia-i3-canonical-direct-hr-name-priority.test.mjs",
+    "tests": 350,
+    "pass": 350,
+    "fail": 0,
+    "logSha256": "941f45c5546045c8a048da89b6e8aa244e1648c21c4e5340c295302890371d59",
+    "scope": "CONTROL_SOURCE_AND_CONTRACT_TESTS_NOT_LIVE_E2E"
+  },
+  "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+  "sourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
+  "servedPredecessor": {
+    "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
+    "runId": 43969895087,
+    "runNumber": 2573,
+    "sourceSha": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
+    "sourceTree": "b927ae81b1a3fd9eaf6f5ed2fe904a365678f3c7",
+    "artifactDigest": "sha256:7dbc5131c8687174b85f1f35282c0cdd454ad581e3f36aff8af473955895374f",
+    "runtimeRevision": "cxorbia-live-hr-dev-00378-76t",
+    "runtimeDigest": "sha256:59285b02c93684c7b6272ee8079c2702210833e1da634e413ead4375091646e7",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/41e4a0e90f5b5295",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1794868204985000",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+    "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2573_EXACT_DEV_MATERIALIZATION_CONSUMPTION_20261116.json",
+    "receiptBlob": "1ffa98be3a5031476e4879ab4ff916b821e8ecab",
+    "liveE2e": "HR_LIVE_PROVIDER_READ_PASS_NATIVE_C3_NOT_REPROVEN",
+    "hrLiveVerified": true,
+    "certifiable": false,
+    "humanAcceptance": "B4_B5_B6_B7_PASS_PRESERVED",
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": false
+  },
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V350.json",
+  "moduleTruthBlob": "eeb66794a6b9e150b31d023824ba0fdd4035a453",
+  "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V677_2026-11-17.json",
+  "ledgerBlob": "5c8378f377d279dd9427ffe0af2c8e4ef0264634",
+  "allowedFiles": [
+    "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "CXORBIA_RECOVERY_EXECUTION_CURRENT.json",
+    "docs/checkpoints/CXORBIA_I3_VRM357_RESUME_CONTROL_READBACK_20261117.json"
+  ],
+  "productChanges": 0,
+  "guardChanges": 0,
+  "newTerminalCertifications": 0,
+  "builds": 0,
+  "runtimeDeploys": 0,
+  "hostingDeploys": 0,
+  "providerWrites": 0,
+  "production": false,
+  "i4Authorized": false,
+  "nextExactAction": "I3: preserve immutable RUN2573 served DEV, certify VRM357 single owner source680c9db P0, execute exactly one paired DEV materialization after canonical source/CI gates, then rerun same-source C3 terminal Admin HR canonical name readback, native VRM354/355 receipt discovery and bounded repair, B14 provider ACK and remaining D08/C09/C10 functional clauses; G20/G21; I4 only GO plus explicit authorization."
+}
