@@ -83,7 +83,7 @@ jobs:
       set -Eeuo pipefail
       mkdir -p .tmp/canonical-candidate-authority
       node --test tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs
-      node --test tools/qa/cxorbia-i3-live-fixture-contract.test.mjs tools/qa/cxorbia-i3-c3-finalize-module-truth.test.mjs tools/qa/cxorbia-i3-tenant-readonly-acceptance.test.mjs tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs tools/qa/cxorbia-pre-i4-focal-hr-reference.test.mjs tools/qa/cxorbia-i3-project-country-live-proof.test.mjs tools/qa/cxorbia-pre-i4-resource-read-contract.test.mjs
+      node --test tools/qa/cxorbia-i3-live-fixture-contract.test.mjs tools/qa/cxorbia-i3-c3-finalize-module-truth.test.mjs tools/qa/cxorbia-i3-tenant-readonly-acceptance.test.mjs tools/qa/cxorbia-i3-benefits-readonly-contract.test.mjs tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs tools/qa/cxorbia-pre-i4-focal-hr-reference.test.mjs tools/qa/cxorbia-i3-project-country-live-proof.test.mjs tools/qa/cxorbia-pre-i4-resource-read-contract.test.mjs
       node --test tools/qa/cxorbia-i3-r22-alias-notice-scope-transversal.test.mjs
       node --test tools/qa/cxorbia-i3-r22-tablon-provider-ack-source.test.mjs
       node --test tools/qa/cxorbia-i3-r20-pwa-auth-no-interrupt.test.mjs
@@ -2642,6 +2642,7 @@ jobs:
    runs-on: ubuntu-24.04
    timeout-minutes: 85
    env:
+    CX_I3_BENEFITS_ONLY: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-benefits-readonly]') && '1' || '0' }}
     I3_CERTIFICATION_SOURCE_SHA: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
     I3_CERTIFICATION_SOURCE_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
     C3_SOURCE_QA_REQUIRED: 'true'
@@ -2698,7 +2699,7 @@ jobs:
       echo "C3_SOURCE_QA_RECEIPT=$OUT/source-qa/source-qa-receipt.json" >> "$GITHUB_ENV"
    - run: |
       set -Eeuo pipefail
-      npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 2>&1 | tee "$OUT/npm-install.log"
+      npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 pdfjs-dist@3.11.174 2>&1 | tee "$OUT/npm-install.log"
       npx --no-install playwright install chromium 2>&1 | tee "$OUT/playwright-install.log"
       node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs | tee "$OUT/source-regressions.log"
       node --test --test-name-pattern="exact HR durable key" backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs | tee "$OUT/operational-visit-key-regression.log"
@@ -2770,31 +2771,18 @@ jobs:
       echo "HOSTING_RELEASE_NAME=$HOSTING_RELEASE_NAME" >> "$GITHUB_ENV"
       echo "HOSTING_VERSION_NAME=$HOSTING_VERSION_NAME" >> "$GITHUB_ENV"
       echo "HOSTING_RELEASE_TIME=$HOSTING_RELEASE_TIME" >> "$GITHUB_ENV"
-   - run: |
-      set -Eeuo pipefail
-      mkdir -p "$OUT/full-human-acceptance" "$OUT/semantic" "$OUT/gate20"
-      CXORBIA_I3_QA_SCOPE=B14_CAPABILITY_ONLY node tools/qa/cxorbia-i3-hr-ack-exact-same-revision.mjs "$OUT/b14-capability" "$HOSTING_URL" "$TENANT_ID" "$PROJECT_ID" "$GITHUB_RUN_ID"
-      if [[ "$(jq -r '.f09LiveVerificationPending // false' "$CANDIDATE_DESCRIPTOR")" == true ]]; then
-        FOCAL_SOURCE="$I3_CERTIFICATION_SOURCE_SHA" FOCAL_TREE="$I3_CERTIFICATION_SOURCE_TREE" EXPECTED_HR_REVISION="$CURRENT_LIVE_HR_REVISION" QA_OUT="$OUT/f09" CXORBIA_I3_QA_SCOPE=F09_CLIENT_COLLABORATION CXORBIA_I3_QA_ISOLATED_WRITE_GATE=PAULA_AUTHORIZED_F09_DEV_ONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs || jq -e '.decision=="HOLD" and .hrBefore==env.CURRENT_LIVE_HR_REVISION and .cleanup.ok and .cleanup.remainingDocuments==0 and .cleanup.remainingAuth==0 and .realProjectPeriodUnchanged and .productionIndexUnchanged and .runtimeTrafficExact and .hrBefore==.hrAfter' "$OUT/f09/result.json" >/dev/null
-      fi
-      PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" I3_CERTIFICATION_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" SOURCE_DIR="$SOURCE_DIR" CX_I3_PINNED_HR_FILE="$OUT/hr-current-live.json" CX_I3_PINNED_HR_REVISION="$CURRENT_LIVE_HR_REVISION" ACCEPTANCE_OUT="$OUT/full-human-acceptance" node RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
-      test "$(jq -r '.decision' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "PASS_I3_HUMAN_LIVE_ACCEPTANCE"
-      test "$(jq -r '.sourceSha' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
-      test "$(jq -r '.sourceRevision' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "$CURRENT_LIVE_HR_REVISION"
-      test "$(jq -r '.decision' "$OUT/full-human-acceptance/i3-functional-probes.json")" = "PASS_I3_ATOMIC_FUNCTIONAL_PROBES"
-      test "$(jq -r '.routeInventory.expectedRoleRouteEntries' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "56"
-      test "$(jq '[.routes[]|select(.undefinedVisible==true or .technicalVisible==true or .qaReservationVisible==true)]|length' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "0"
-      test "$(jq -r '.probe.reservations.ok' "$OUT/full-human-acceptance/i3-functional-probes.json")" = "true"
-      test "$(jq '.probe.reservations.qaResidueIds|length' "$OUT/full-human-acceptance/i3-functional-probes.json")" = "0"
+   - run: bash tools/qa/cxorbia-i3-human-acceptance-step.sh
    - name: Preserve current per-domain progress without promoting global gates
      if: always()
      run: |
       set -Eeuo pipefail
       test -s "$OUT/current-preterminal-matrix.json" || exit 0
       test -n "${DEV_REVISION:-}" && test -n "${HOSTING_VERSION_NAME:-}" || exit 0
-      C3_MODE=progress C3_PRETERMINAL="$OUT/current-preterminal-matrix.json" C3_LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")" C3_HUMAN="$OUT/full-human-acceptance/human-live-acceptance.json" C3_ADDITIONAL_RECEIPTS="$OUT/full-human-acceptance/tenant-readonly/tenant-admin-config-branding-domain.json" C3_FINAL_MATRIX="$OUT/module-truth-progress.json" C3_SOURCE="$I3_CERTIFICATION_SOURCE_SHA" C3_TREE="$I3_CERTIFICATION_SOURCE_TREE" C3_RUNTIME_REVISION="$DEV_REVISION" C3_RUNTIME_DIGEST="$RUNTIME_DIGEST" C3_HOSTING_VERSION="$HOSTING_VERSION_NAME" node tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs > "$OUT/module-truth-progress.log"
+      node --input-type=module -e 'import fs from "node:fs";const root=process.env.OUT;const files=["tenant-readonly/tenant-admin-config-branding-domain.json","benefits-readonly/benefits-domain.json"];const receipts=files.flatMap(p=>{const f=root+"/full-human-acceptance/"+p;if(!fs.existsSync(f))return [];const r=JSON.parse(fs.readFileSync(f));return Array.isArray(r)?r:[r];});fs.writeFileSync(root+"/current-domain-receipts.json",JSON.stringify(receipts,null,2)+"\n");'
+      C3_MODE=progress C3_PRETERMINAL="$OUT/current-preterminal-matrix.json" C3_LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")" C3_HUMAN="$OUT/full-human-acceptance/human-live-acceptance.json" C3_ADDITIONAL_RECEIPTS="$OUT/current-domain-receipts.json" C3_FINAL_MATRIX="$OUT/module-truth-progress.json" C3_SOURCE="$I3_CERTIFICATION_SOURCE_SHA" C3_TREE="$I3_CERTIFICATION_SOURCE_TREE" C3_RUNTIME_REVISION="$DEV_REVISION" C3_RUNTIME_DIGEST="$RUNTIME_DIGEST" C3_HOSTING_VERSION="$HOSTING_VERSION_NAME" node tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs > "$OUT/module-truth-progress.log"
       test "$(jq -r '.phaseAComplete' "$OUT/module-truth-progress.json")" = "false"
-   - run: |
+   - if: env.CX_I3_BENEFITS_ONLY != '1'
+     run: |
       set -Eeuo pipefail
       C3_SEM_OUT="$OUT/semantic" C3_HR_FILE="$OUT/hr-current-live.json" C3_FIREBASE_PROJECT="$PROJECT" C3_TENANT_ID="$TENANT_ID" C3_PROJECT_ID="$PROJECT_ID" C3_HR_REVISION="$CURRENT_LIVE_HR_REVISION" C3_HOSTING_URL="$HOSTING_URL" node tools/qa/cxorbia-i3-c3-terminal-semantic-oracle.mjs | tee "$OUT/semantic/oracle.log"
       test "$(jq -r '.decision' "$OUT/semantic/hr-contrast.json")" = "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE"
@@ -2806,6 +2794,7 @@ jobs:
       test "$(jq -r '.sourceSha' "$OUT/semantic/browser-focal.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
       test "$(jq -r '.hrRevision' "$OUT/semantic/browser-focal.json")" = "$CURRENT_LIVE_HR_REVISION"
    - name: Execute current functional fixtures before strict certification
+     if: env.CX_I3_BENEFITS_ONLY != '1'
      run: |
       set -Eeuo pipefail
       PERIOD_ID="$(jq -er '.currentPeriodId' "$OUT/semantic/hr-contrast.json")"
@@ -2820,7 +2809,8 @@ jobs:
       node tools/qa/cxorbia-i3-live-fixture-contract.mjs prepare "$OUT"
       I3_FIXTURE_STAGE=PRE_CERTIFICATION PRIOR_DIR="$OUT" PRIOR_RUN_ID="$GITHUB_RUN_ID" OUT="$OUT/live-fixtures" node "$GITHUB_WORKSPACE/.github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs"
       node tools/qa/cxorbia-i3-live-fixture-contract.mjs verify-live "$OUT"
-   - run: |
+   - if: env.CX_I3_BENEFITS_ONLY != '1'
+     run: |
       set -Eeuo pipefail
       if [[ "$(jq -r '.f09LiveVerificationPending // false' "$CANDIDATE_DESCRIPTOR")" == true ]]; then jq -e '.decision=="PASS_I3_F09_UI_PROVIDER_NEW_SESSION_PRIVACY_REPLAY_CLEANUP"' "$OUT/f09/result.json" >/dev/null; fi
       LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")"
@@ -2851,7 +2841,7 @@ jobs:
       test "$n" -gt 0
       jq -n -S '{decision:"PASS_C3_PENDING_OWNER_BYTE_PARITY",mismatches:0,rows:[],production:false}' > "$OUT/pending-owner-parity.json"
       jq -n -S '{decision:"PASS_C3_QA_RESERVATION_CLEANUP",mode:"CURRENT_TERMINAL_ACCEPTANCE_ZERO_RESIDUE",before:0,deletedIds:[],after:0,ambiguous:0,writes:0,production:false}' > "$OUT/qa-reservation-cleanup.json"
-      C3_PRETERMINAL="$OUT/module-truth-preterminal.json" C3_FOCAL="$OUT/semantic/browser-focal.json" C3_HUMAN="$OUT/full-human-acceptance/human-live-acceptance.json" C3_QA="$OUT/qa-reservation-cleanup.json" C3_PARITY="$OUT/pending-owner-parity.json" C3_LEDGER="$TERMINAL_LEDGER" C3_ADDITIONAL_RECEIPTS="$OUT/full-human-acceptance/tenant-readonly/tenant-admin-config-branding-domain.json" C3_FINAL_MATRIX="$OUT/module-truth-matrix.json" C3_SOURCE="$I3_CERTIFICATION_SOURCE_SHA" C3_TREE="$I3_CERTIFICATION_SOURCE_TREE" C3_RUNTIME_REVISION="$DEV_REVISION" C3_RUNTIME_DIGEST="$RUNTIME_DIGEST" C3_HOSTING_VERSION="$HOSTING_VERSION_NAME" node tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs > "$OUT/module-truth-terminal-console.log"
+      C3_PRETERMINAL="$OUT/module-truth-preterminal.json" C3_FOCAL="$OUT/semantic/browser-focal.json" C3_HUMAN="$OUT/full-human-acceptance/human-live-acceptance.json" C3_QA="$OUT/qa-reservation-cleanup.json" C3_PARITY="$OUT/pending-owner-parity.json" C3_LEDGER="$TERMINAL_LEDGER" C3_ADDITIONAL_RECEIPTS="$OUT/current-domain-receipts.json" C3_FINAL_MATRIX="$OUT/module-truth-matrix.json" C3_SOURCE="$I3_CERTIFICATION_SOURCE_SHA" C3_TREE="$I3_CERTIFICATION_SOURCE_TREE" C3_RUNTIME_REVISION="$DEV_REVISION" C3_RUNTIME_DIGEST="$RUNTIME_DIGEST" C3_HOSTING_VERSION="$HOSTING_VERSION_NAME" node tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs > "$OUT/module-truth-terminal-console.log"
       test "$(jq -r '.terminalClosure.decision' "$OUT/module-truth-matrix.json")" = "PASS_C3_TERMINAL_MODULE_TRUTH_21_21"
        node tools/qa/cxorbia-i3-terminal-module-domain-coverage.mjs "$OUT/module-truth-matrix.json" --require-match
       test "$(jq -r '.phaseAComplete' "$OUT/module-truth-matrix.json")" = "true"
@@ -2859,7 +2849,8 @@ jobs:
       test "$(jq '[.modules[]|select(.classification!="MATCH")]|length' "$OUT/module-truth-matrix.json")" = "0"
       MODULE_TRUTH_MATRIX_SHA256="$(sha256sum "$OUT/module-truth-matrix.json"|awk '{print $1}')"
       echo "MODULE_TRUTH_MATRIX_SHA256=$MODULE_TRUTH_MATRIX_SHA256" >> "$GITHUB_ENV"
-   - run: |
+   - if: env.CX_I3_BENEFITS_ONLY != '1'
+     run: |
       set -Eeuo pipefail
       test "$(sha256sum "$OUT/canonical-route-inventory.json"|awk '{print $1}')" = "ad262dd0165a7159e62076f67a6339b375ce0760dd6b650abc4ee438b04950af"
       grep -q "preserveDurableVisits" "$SOURCE_DIR/app/core/backend-firebase.js"
@@ -2874,7 +2865,8 @@ jobs:
       HUMAN_SHA="$(sha256sum "$HUMAN"|awk '{print $1}')"; PROBES_SHA="$(sha256sum "$PROBES"|awk '{print $1}')"; FOCAL_SHA="$(sha256sum "$FOCAL"|awk '{print $1}')"; MATRIX_SHA="$(sha256sum "$MATRIX"|awk '{print $1}')"; ROUTE_SHA="$(sha256sum "$OUT/canonical-route-inventory.json"|awk '{print $1}')"; SHOTS="$(jq -r '.screenshotCount' "$HUMAN")"
       jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg human "$HUMAN_SHA" --arg focal "$FOCAL_SHA" --arg matrix "$MATRIX_SHA" --arg routes "$ROUTE_SHA" --argjson shots "$SHOTS" '{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",gate:20,mode:"CURRENT_TERMINAL_FULL_CANONICAL_VISUAL",sourceSha:$source,fullHumanAcceptanceSha256:$human,hardenedFocalSha256:$focal,moduleTruthSha256:$matrix,routeInventorySha256:$routes,expectedRoleRouteEntries:56,screenshotCount:$shots,production:false}' > "$OUT/gate20/gate20-browser-visual.json"
       jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg human "$HUMAN_SHA" --arg probes "$PROBES_SHA" --arg focal "$FOCAL_SHA" --arg matrix "$MATRIX_SHA" --arg routes "$ROUTE_SHA" '{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",gate:20,mode:"CURRENT_TERMINAL_FULL_CANONICAL_SEMANTIC",sourceSha:$source,fullHumanAcceptanceSha256:$human,functionalProbesSha256:$probes,hardenedFocalSha256:$focal,moduleTruthSha256:$matrix,routeInventorySha256:$routes,expectedRoleRouteEntries:56,production:false}' > "$OUT/gate20-semantic-shopper.json"
-   - run: |
+   - if: env.CX_I3_BENEFITS_ONLY != '1'
+     run: |
       set -Eeuo pipefail
       test "$(sha256sum "$OUT/cxorbia-i3-certified-source.tar"|awk '{print $1}')" = "$ARTIFACT_SHA256"
       LIVE_SHA="$(sha256sum "$OUT/live-fixtures/i3-live-fixtures-result.json"|awk '{print $1}')"
@@ -2893,7 +2885,8 @@ jobs:
       jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg control "$GITHUB_SHA" --arg artifact "$ARTIFACT_SHA256" --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg image "$SOURCE_IMMUTABLE_IMAGE" --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hostingVersion "$HOSTING_VERSION_NAME" --arg hostingTime "$HOSTING_RELEASE_TIME" --arg hr "$CURRENT_LIVE_HR_REVISION" --arg hrSha "$HR_SHA" --arg hrMetaSha "$HR_META_SHA" --arg rulesSha "$RULES_SHA" --arg runtimeSha "$RUNTIME_SHA" --arg hostingSha "$HOSTING_SHA" --arg gate20Sha "$GATE20_SHA" --arg semantic20Sha "$SEM20_SHA" --arg humanSha "$HUMAN_SHA" --arg probesSha "$PROBES_SHA" --arg routesSha "$ROUTE_SHA" --arg moduleTruthSha "$MODULE_TRUTH_MATRIX_SHA256" --arg atomicSha "$ATOMIC_SHA" --arg run "$GITHUB_RUN_ID" --arg attempt "$GITHUB_RUN_ATTEMPT" --arg liveSha "$LIVE_SHA" --arg bindingSha "$BINDING_SHA" --slurpfile moduleTruth "$OUT/module-truth-matrix.json" '{schemaVersion:"cxorbia.i3.terminal-certification.v2",decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,runId:$run,runAttempt:$attempt,liveFixtures:{decision:"PASS_I3_LIVE_FIXTURES_V2",proofStage:"PRE_CERTIFICATION",certifiedAtExecution:false,beforeCertification:true,evidenceSha256:$liveSha,prerequisitesSha256:$bindingSha},artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,buildCount:1,artifactPackCount:1,runtimeBuilds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,rebuildAfterCertification:false,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingTime,certificationHrRevision:$hr,certificationHrEvidenceSha256:$hrSha,certificationHrMetaSha256:$hrMetaSha,firestoreParityEvidenceSha256:$rulesSha,runtimeEvidenceSha256:$runtimeSha,hostingEvidenceSha256:$hostingSha,atomicP0:{decision:"PASS_I3_ATOMIC_P0_SOURCE_CONTRACT",evidenceSha256:$atomicSha},fullHumanAcceptance:{decision:"PASS_I3_HUMAN_LIVE_ACCEPTANCE",evidenceSha256:$humanSha,functionalProbesSha256:$probesSha,routeInventorySha256:$routesSha,expectedRoleRouteEntries:56,beforeArtifact:true},gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},gate20Semantic:{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",sourceSha:$source,evidenceSha256:$semantic20Sha},moduleTruthEvidenceSha256:$moduleTruthSha,moduleTruth:$moduleTruth[0],pendingTerminalFindingsClosedByThisProof:["VRM-034","VRM-035","VRM-041","VRM-043","VRM-069","VRM-070","VRM-071","VRM-073"],sameRevisionWithinCertificationProof:true,production:false}' > "$OUT/i3-certification-manifest.json"
       node tools/qa/cxorbia-i3-live-fixture-contract.mjs verify-sealed "$OUT" "$OUT/sealed-fixtures"
       cp "$OUT/i3-certification-manifest.json" "$OUT/result.json"
-   - uses: actions/upload-artifact@v4
+   - if: env.CX_I3_BENEFITS_ONLY != '1'
+     uses: actions/upload-artifact@v4
      with: {name: 'cxorbia-recovery-i3-single-source-certification-${{ github.run_id }}', path: '${{ env.OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 6, include-hidden-files: true}
    - if: always()
      uses: actions/upload-artifact@v4

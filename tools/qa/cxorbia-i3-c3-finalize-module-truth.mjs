@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import {pathToFileURL} from 'node:url';
 import {assertCanonicalModuleCoverage} from './cxorbia-i3-terminal-module-domain-coverage.mjs';
 import {validateTenantReadonlyReceipt} from './cxorbia-i3-tenant-readonly-acceptance.mjs';
+import {validateBenefitsReadonlyReceipt,BENEFITS_FINDINGS} from './cxorbia-i3-benefits-readonly-contract.mjs';
 
 const resolvedState=state=>{
   const s=String(state||'');
@@ -55,9 +56,10 @@ export function evaluateTerminalModuleTruth({pre,ledger,focal={},human={},qa={},
     const ids=row.additional?(r.findingIds||[]):[id];
     need(ids.length>0 && ids.every(fid=>f[fid] && paths.every(p=>ownerPaths(f[fid]).includes(p))),'OWNER_MISMATCH');
     if(r.operationKind==='READ_ONLY'){
-      const check=validateTenantReadonlyReceipt(r,mod);errors.push(...check.failures);
+      const benefits=domain==='benefits';
+      const check=benefits?validateBenefitsReadonlyReceipt(r,mod):validateTenantReadonlyReceipt(r,mod);errors.push(...check.failures);
       // A readonly receipt closes only the exact approved readonly findings.
-      need(ids.every(fid=>['VRM-194','VRM-330'].includes(fid)),'READONLY_FINDING_SCOPE');
+      need(ids.every(fid=>(benefits?BENEFITS_FINDINGS:['VRM-194','VRM-330']).includes(fid)),'READONLY_FINDING_SCOPE');
     }else{
       for(const k of ['actionReal','providerAck','durableReadback','reloadProof','noDuplicateRegression'])need(r[k]===true,'INCOMPLETE:'+k);
       // Previously MATCH domains need only reproof of the affected owner files.

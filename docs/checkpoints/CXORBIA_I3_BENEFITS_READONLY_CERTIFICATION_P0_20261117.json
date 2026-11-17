@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "cxorbia.i3.owner-scoped-qa-p0.v1",
+  "iteration": "I3",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "findingId": "VRM-076",
+  "state": "P0_PROVEN_CONTROL_FIXED_LOCAL_51_PASS_LIVE_RECEIPT_PENDING",
+  "problem": "READ_ONLY receipts were exclusively routed to the tenant configuration validator; a complete Benefits readonly export contract could never promote its owner domain without false mutation ACK facts.",
+  "before": {
+    "tests": 15,
+    "pass": 14,
+    "fail": 1,
+    "assertion": "complete readonly Benefits evidence remained PENDING instead of MATCH",
+    "logSha256": "e82db20e13331d66c135749ac76f2d66fb8a8f0209c0004f9a9775efbca4a51c"
+  },
+  "after": {
+    "tests": 51,
+    "pass": 51,
+    "fail": 0,
+    "logSha256": "88e72206183c7408cf7aa0b8581c530783f8fe609be964170240cec94fe3ce0a"
+  },
+  "productSourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+  "productTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
+  "allowedFiles": [
+    "tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs",
+    "tools/qa/cxorbia-i3-benefits-readonly-contract.mjs",
+    "tools/qa/cxorbia-i3-benefits-readonly-contract.test.mjs",
+    "tools/qa/cxorbia-i3-benefits-readonly-live.mjs",
+    "tools/qa/cxorbia-i3-human-acceptance-step.sh",
+    "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs",
+    ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+  ],
+  "fileBlobs": {
+    "tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs": "33f84d347a8a32e15b40a42852bfa7fc9dda3b63",
+    "tools/qa/cxorbia-i3-benefits-readonly-contract.mjs": "7db9110381a1a7028a1b1f59a3ee44a6d0ce6898",
+    "tools/qa/cxorbia-i3-benefits-readonly-contract.test.mjs": "be8e4f8b5b8996f9aa6aea15efa2963b3ad7ace4",
+    "tools/qa/cxorbia-i3-benefits-readonly-live.mjs": "f9bde3a5f43b8ea224e55b055d85452775932618",
+    "tools/qa/cxorbia-i3-human-acceptance-step.sh": "0a90bdd32e2e57e72a4101fe54a53c5e4581f6d8",
+    "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs": "d032bd102a838c52128f4dfb781d5769766c9f53",
+    ".github/workflows/cxorbia-recovery-i3-dev-certification.yml": "e6a06ea3174284e78c573a84ea72118b36ae629c"
+  },
+  "contractAuthority": [
+    "FROZEN_C09",
+    "FROZEN_C10",
+    "ACCEPTED_B5"
+  ],
+  "realExportFormats": {
+    "shopper": "CSV",
+    "admin": "XLSX_AND_NATIVE_PRINT_PDF"
+  },
+  "preserves": [
+    "exact source/tree/runtime/digest/Hosting/HR identity",
+    "prior B5 three-owner hashes",
+    "five MATCH domains",
+    "B4/B5/B6/B7 human acceptance",
+    "global HOLD until all terminal obligations pass"
+  ],
+  "newModuleMatches": 0,
+  "liveExecuted": false,
+  "productCodeChanged": false,
+  "builds": 0,
+  "deploys": 0,
+  "production": false,
+  "nextExactAction": "I3: run the existing C3/certify lane in focal Benefits READ_ONLY mode on exact source836/RUN2587 DEV; inspect actual Shopper CSV, Admin XLSX and native print PDF, row/currency/period parity, independent sessions and ACL. Persist each complete domain receipt and counter immediately. No rebuild, redeploy, broad human replay or production action. Preserve B4/B5/B6/B7. Continue only uncovered frozen B14, D08 and C09/C10 clauses; I4 requires I3 GO and explicit exact-artifact authorization.",
+  "workflowSizeRepair": {
+    "classification": "ENVIRONMENT_FAILURE",
+    "beforeBytes": 511075,
+    "afterBytes": 508364,
+    "limitPreserved": 510000,
+    "action": "EXACT_COMMAND_EXTRACTION_TO_EXISTING_QA_STEP_SCRIPT",
+    "newJobs": 0,
+    "newWorkflows": 0
+  }
+}

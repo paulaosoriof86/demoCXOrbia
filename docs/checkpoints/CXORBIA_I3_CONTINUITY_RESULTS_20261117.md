@@ -1,3 +1,40 @@
+# CXOrbia — continuidad vigente al consumir RUN2587
+
+17 de noviembre de 2026, Guatemala. **I3 — HOLD.** Fuente producto `836a498063987f0fc471599723b4c4772d1aba09`; runtime `cxorbia-live-hr-dev-00380-s9m`; Hosting `sites/cxorbia-backend-dev/versions/4e615718c8ab4a03`. Producción DO_NOT_TOUCH.
+
+## Qué avanzó
+
+RUN2587 (44030019174) terminó y sus recibos fueron descargados, contrastados y consumidos en matriz V357 / ledger V684. Se verificaron 39 archivos servidos contra Git, runtime exacto, HR estable y producción byte a byte sin cambio. Fuente: 667 pruebas aprobadas, cero fallos; son suites con solapamiento y no se suman a otros conteos.
+
+VRM358 queda FIXED_PROVEN en su defecto exacto: ambos lectores usan el binding privado del proyecto. El alta realizó una escritura DEV en integrationSettings; readback durable confirmado; repetición con cero escrituras. No se escribieron HR externa, Auth ni proyecto. **B14 bidireccional continúa pendiente**: lectura correcta no acredita ACK de escritura externa.
+
+Se reprodujo un defecto del certificador (VRM076): trataba todos los recibos READ_ONLY como configuración de tenant. Beneficios no podía cerrar mediante sus exportes reales. Antes: un test funcional del consumidor fallaba. Después: 51 pruebas focales y 518 pruebas del conjunto de control aprobadas, sin fallos. Son conteos superpuestos. No hubo cambios de producto en esta corrección.
+
+Se incorporó la prueba focal al job certify existente. Admin exporta XLSX y PDF mediante impresión; Shopper exporta CSV. Se exigen bytes inspeccionados, contenido, periodo, moneda, scope propio, ACL negativa, filtros, detalle, recarga y sesión independiente. B5 se conserva mediante los tres blobs de owners aprobados. Los documentos con datos personales se inspeccionan temporalmente; los artifacts públicos conservan verificaciones, hashes y capturas con identidad oculta.
+
+## Qué falta y contador actual
+
+| Dimensión | Evidencia vigente | Pendiente |
+|---|---|---|
+| Módulos con contrato integral MATCH | 5/21 | 16; Beneficios aún necesita receipt live completo |
+| Preparación de fuente C3 | 21/21 en RUN2585, source680 | Nueva verificación de la fuente836 ya servida |
+| Fuente836 | 667 pruebas PASS, RUN2587 | No equivale a certificación integral |
+| Aceptación humana congelada | B4/B5/B6/B7: 4/9 | Restantes cláusulas; no reabrir estos PASS |
+| Plan de choque | 2/7 bloques cerrados | 5 pendientes |
+| Fase A / gates20–21 / I4 | HOLD / sin autorización I4 | Cierre integral y artefacto exacto |
+
+## Acción exacta en curso
+
+Ejecutar el carril existente C3/certify en modo Beneficios READ_ONLY sobre RUN2587, sin build ni deploy. Consumir el receipt y actualizar MATCH sólo si el contrato completo pasa. Si falla, conservar el avance probado, clasificar el fallo por owner y corregir únicamente ese punto. No relanzar toda la aceptación humana ni reabrir gates aprobados.
+
+## Regla de continuidad aplicada
+
+Cada unidad de trabajo deja en GitHub: identidad de fuente y DEV, resultado y recibo, contador antes/después, cláusulas pendientes y siguiente acción exacta. La matriz y el puntero canónico son la autoridad; un chat interrumpido no obliga a reiniciar el análisis ni a inventar otra candidata. El cierre de cada respuesta separa avance, pendiente y autorización. No se atribuye a esta regla capacidad para eliminar límites técnicos de ChatGPT.
+
+---
+
+## Histórico previo a RUN2587 (conservado con su alcance original)
+
 # CXOrbia — respuesta recuperada, acreditación focal y continuidad
 
 Corte de recuperación: 17 de noviembre de 2026, Guatemala. Iteración I3. Estado HOLD. Producción DO_NOT_TOUCH. Una candidata, repositorio y carril existentes.
