@@ -509,9 +509,9 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
-    "sourceTree": "b927ae81b1a3fd9eaf6f5ed2fe904a365678f3c7",
-    "predecessorSha": "38f16525c791b355e8f68a6f798defd9bc89ab37",
+    "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+    "sourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
+    "predecessorSha": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
     "production": false,
     "state": "SOURCE_FIXED_NODE_PROVEN_PENDING_EXACT_DEV",
     "previousStateBeforeDevPublication": "SOURCE_ONLY_P0_PROVEN_PENDING_CANONICAL_CI_AND_HOSTING_ONLY_DEV",
