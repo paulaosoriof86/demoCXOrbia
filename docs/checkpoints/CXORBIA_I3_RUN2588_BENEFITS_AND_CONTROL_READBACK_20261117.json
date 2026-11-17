@@ -1,0 +1,545 @@
+{
+  "schemaVersion": "cxorbia.i3.c3-certify-attempt-readback.v1",
+  "kind": "C3_PRETERMINAL_AND_CERTIFY_ATTEMPT_NOT_TERMINAL_CERTIFICATE",
+  "decision": "HOLD_I3_DEV_MATERIALIZED_RUN2588_BENEFITS_MATCH_6_OF_21_REMAINING_FROZEN_CONTRACTS",
+  "strictCertificationStatus": "HOLD",
+  "localDate": "2026-11-17",
+  "timezone": "America/Guatemala",
+  "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+  "sourceTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
+  "runId": 44034333358,
+  "runNumber": 2588,
+  "runAttempt": 1,
+  "controlHeadAtAudit": "bc08df86e5f49e399c406c338cdd3be226d4c70b",
+  "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/44034333358",
+  "artifactId": 14306936915,
+  "artifactName": "cxorbia-recovery-i3-certify-diagnostics-44034333358",
+  "artifactDigest": "sha256:6e518201f1bac5604255fcbf8fa69a237b863659de8d1534e4f6cdd8e792b62f",
+  "artifactDigestAuthority": "PROVIDER_METADATA_AND_INDEPENDENTLY_DOWNLOADED_ZIP_SHA256",
+  "artifactDigestIndependentlyVerified": true,
+  "runtimeRevision": "cxorbia-live-hr-dev-00380-s9m",
+  "runtimeDigest": "sha256:95eab8082b6e18a39164a22af7d27029558917f0ea0634a76055c6eb1b0dd395",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/4e615718c8ab4a03",
+  "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+  "currentDevMaterializationRunId": 44030019174,
+  "c3Decision": "PASS_C3_PRETERMINAL_SOURCE_READY_EXACT_DEV",
+  "moduleCount": 21,
+  "matchModules": 6,
+  "nonMatchModules": 15,
+  "sourceReadyModules": 21,
+  "pendingFiles": 0,
+  "rawPreterminalResult": {
+    "artifactPath": "current-preterminal-result.json",
+    "sha256": "afabe209136fd698353f4ed44f7bdd9b283ca4c367672e4bb34d13dcded3107d",
+    "result": {
+      "decision": "PASS_C3_PRETERMINAL_SOURCE_READY_EXACT_DEV",
+      "inputAuthorityStatus": "HOLD_I3_DEV_MATERIALIZED_RUN2587_BENEFITS_READONLY_DOMAIN_CLOSURE_PENDING",
+      "status": "READY_FOR_TERMINAL_CERTIFICATION",
+      "enabledNextBlock": "I3-Q3",
+      "enabledJob": "certify",
+      "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+      "sourceTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
+      "moduleTruthSha256": "78849067f6afe66d5eab97fa7c5c96057199a481a20434abc344d91e8d1b1572",
+      "moduleCount": 21,
+      "matchModules": 5,
+      "nonMatchModules": 16,
+      "sourceReadyModules": 21,
+      "pendingFiles": 0,
+      "terminalEligible": true,
+      "activeBrowserOwners": 133,
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/4e615718c8ab4a03",
+      "runtimeRevision": "cxorbia-live-hr-dev-00380-s9m",
+      "runtimeDigest": "sha256:95eab8082b6e18a39164a22af7d27029558917f0ea0634a76055c6eb1b0dd395",
+      "firestoreRulesSha256": "0708af825d2baaad974285acd8d72df0a7861105e453da26199f08fd5a985d3e",
+      "sameRunSourceQa": {
+        "receiptSha256": "8a35d964f2cda8efe03f181f73d04e9d1263f313bf53d0704bdddd70f12b15c0",
+        "controlSha": "bc08df86e5f49e399c406c338cdd3be226d4c70b",
+        "runId": 44034333358,
+        "producerRunAttempt": 1,
+        "pathCount": 23,
+        "acceptedPaths": [
+          "app/core/programa.js",
+          "app/core/ui.js",
+          "app/core/notif.js",
+          "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+          "app/core/backend-finance-benefits.js",
+          "app/core/backend-cxdata-finance-read.js",
+          "app/adapters/cxorbia-command-adapter-v1.js",
+          "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+          "app/core/backend-bulletins.js",
+          "app/modules/dashboard.js",
+          "app/modules/periodos.js",
+          "app/modules/configuracion.js",
+          "app/modules/cliente-insights.js",
+          "app/adapters/tya-c6-unified-human-runtime-v1.js",
+          "app/sw.js",
+          "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+          "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+          "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+          "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+          "backend/runtime/hr-live-service/server.mjs",
+          "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+          "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+          "tools/hr-source/tya-enforce-live-tab-registry.mjs"
+        ],
+        "scope": "SOURCE_QA_ONLY_NOT_E2E_OR_HUMAN_ACCEPTANCE"
+      },
+      "allApprovedOwnersLoaded": true,
+      "duplicateScripts": 0,
+      "builds": 0,
+      "deploys": 0,
+      "writes": 0,
+      "production": false
+    },
+    "scope": "SOURCE_READINESS_BEFORE_BENEFITS_CREDIT__ORIGINAL_5_MATCH_UNCHANGED"
+  },
+  "matchCountAuthority": {
+    "artifactId": 14306936915,
+    "file": "module-truth-progress.json",
+    "sha256": "5e056b5935690264e7c4db979fc3f5e49edac8732670ee8b624a1c754cba2c31",
+    "matchModules": 6,
+    "nonMatchModules": 15,
+    "scope": "DERIVED_AFTER_COMPLETE_BENEFITS_CONTRACT_ONLY"
+  },
+  "benefits": {
+    "artifactPath": "full-human-acceptance/benefits-readonly/benefits-domain.json",
+    "sha256": "954ea7e2dc8aae41a12dc5d14547d41cc37864bfe475545a4b32d475ebe4fcc6",
+    "observedArtifactPath": "full-human-acceptance/benefits-readonly/benefits-observed.json",
+    "observedSha256": "d3e333589609498ed4a24babdd0593226eafcb5a8f6272960cf28e8e0f5230cc",
+    "receipt": {
+      "schemaVersion": "cxorbia.i3.benefits-readonly-domain.v1",
+      "decision": "PASS_I3_BENEFITS_READONLY_DOMAIN",
+      "moduleDomain": "benefits",
+      "operationKind": "READ_ONLY",
+      "findingIds": [
+        "VRM-262",
+        "VRM-276",
+        "VRM-277"
+      ],
+      "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+      "sourceTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
+      "runtimeRevision": "cxorbia-live-hr-dev-00380-s9m",
+      "runtimeDigest": "sha256:95eab8082b6e18a39164a22af7d27029558917f0ea0634a76055c6eb1b0dd395",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/4e615718c8ab4a03",
+      "hrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+      "production": false,
+      "ownerPaths": [
+        "app/modules/beneficios.js"
+      ],
+      "ownerEvidence": [
+        {
+          "path": "app/modules/beneficios.js",
+          "gitBlob": "c7060562558f307b9b037e929a6fa7e179db1826",
+          "sourceSha256": "2c1763b65ef055eecd56e3622033d53c9946f679e758d06be797b7e854b6b419",
+          "servedSha256": "2c1763b65ef055eecd56e3622033d53c9946f679e758d06be797b7e854b6b419",
+          "byteParity": true
+        },
+        {
+          "path": "app/core/data.js",
+          "gitBlob": "c7fe15678c98c3c4a81c52225d60a84e0946d12f",
+          "sourceSha256": "f80436b1254a9eb6021b18b05aec82ec64c325c8b45130bc06880ef01914e76f",
+          "servedSha256": "f80436b1254a9eb6021b18b05aec82ec64c325c8b45130bc06880ef01914e76f",
+          "byteParity": true
+        },
+        {
+          "path": "app/core/backend-finance-benefits.js",
+          "gitBlob": "66856002901be88aefb38acc0aaab635a8872c2b",
+          "sourceSha256": "2fe664c9ba1c65bd712cf55875cb77a2ff3f9623e49b47c5d71158dfded7b13d",
+          "servedSha256": "2fe664c9ba1c65bd712cf55875cb77a2ff3f9623e49b47c5d71158dfded7b13d",
+          "byteParity": true
+        },
+        {
+          "path": "app/core/liquidacion.js",
+          "gitBlob": "b3f4d3fd387ad5dde454d115a7a3a8235fbfaaa3",
+          "sourceSha256": "a5928452a27fba34b9be898dca40adc382344f13df3f2e161836d3861704a5e5",
+          "servedSha256": "a5928452a27fba34b9be898dca40adc382344f13df3f2e161836d3861704a5e5",
+          "byteParity": true
+        },
+        {
+          "path": "app/core/finanzas-core.js",
+          "gitBlob": "6cab8b0e1138a2b736c014779f2c2500446843e1",
+          "sourceSha256": "c61e7f193992a4e6a60b9417a0ad3cdf3b82f3b06f5a569c25ce1caf0089b971",
+          "servedSha256": "c61e7f193992a4e6a60b9417a0ad3cdf3b82f3b06f5a569c25ce1caf0089b971",
+          "byteParity": true
+        },
+        {
+          "path": "app/modules/finanzas.js",
+          "gitBlob": "f1545f0439863090e04b4729e8483616f7d209cf",
+          "sourceSha256": "3f98f30564a18fbfa924d723d45e617a169e887c0a7136f44d85216d99dcf510",
+          "servedSha256": "3f98f30564a18fbfa924d723d45e617a169e887c0a7136f44d85216d99dcf510",
+          "byteParity": true
+        },
+        {
+          "path": "app/modules/cliente-extra.js",
+          "gitBlob": "ca3d2d6b356b3d942ebbb2076625ce0b000e4b64",
+          "sourceSha256": "27d3cae704bbf28f5a5c9c230d2b31b0684619fa60ea506534a5830e7750242a",
+          "servedSha256": "27d3cae704bbf28f5a5c9c230d2b31b0684619fa60ea506534a5830e7750242a",
+          "byteParity": true
+        },
+        {
+          "path": "app/adapters/tya-canonical-finance-read-model-v2.js",
+          "gitBlob": "4997010949dd8a126b058f720041fe5eeb04f1bd",
+          "sourceSha256": "acd44366661d26250e79fffd89fac27cdb503b2d4347d17b4b3f6e3d4a47b30f",
+          "servedSha256": "acd44366661d26250e79fffd89fac27cdb503b2d4347d17b4b3f6e3d4a47b30f",
+          "byteParity": true
+        }
+      ],
+      "runId": "44034333358",
+      "runAttempt": "1",
+      "controlSha": "bc08df86e5f49e399c406c338cdd3be226d4c70b",
+      "contractAuthority": {
+        "contractSha256": "0a2896c6d390cefc184324a75b0937af56ae70a463541de740b24c6951b2e3b1",
+        "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V357.json",
+        "gitBlob": "ae6ba14121a79a25fea4d95f614c9329f3b05dcb",
+        "formatAuthority": "EXISTING_APPROVED_PRODUCT_HANDLERS_CSV_SHOPPER_XLSX_ADMIN_PRINT_PDF"
+      },
+      "mutationEvidence": {
+        "applicable": false,
+        "providerAckClaimed": false,
+        "financialMutationRequestsObserved": 0,
+        "automaticHrReconciliationRequests": 1,
+        "totalProviderWritesNotInferred": true
+      },
+      "humanAcceptance": {
+        "mode": "PRESERVED_B5_OWNER_UNCHANGED_NO_NEW_DESIGN",
+        "newApproval": false,
+        "receipt": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_FUNCTIONAL_BLOCK_ACCEPTANCE_20261110.json"
+      },
+      "readOnlyProof": {
+        "exports": [
+          {
+            "format": "ADMIN_XLSX",
+            "rows": 1,
+            "principalFingerprint": "94816a0e1151d44ce7ec2116545d37f87ce1aef87cb482835f123ac7300216ce",
+            "periodId": "cinepolis-2026-10",
+            "excludedRows": 42,
+            "scope": "ELIGIBLE_ONLY_EXCLUDING_REVIEW",
+            "semanticRowsSha256": "9543532822b93f58d128bf44d4e8d025be3d108c375cc19a3c51db52d1cbc582",
+            "bytes": 21426,
+            "sha256": "ec3caf963e8b32c6b18a1dcb3d5c7703c7102656178688fd77f96cb6b72d56ac",
+            "parsed": true,
+            "contentMatches": true,
+            "evidenceRef": "benefits-observed.json"
+          },
+          {
+            "format": "ADMIN_PRINT_PDF",
+            "rows": 1,
+            "pages": 1,
+            "principalFingerprint": "94816a0e1151d44ce7ec2116545d37f87ce1aef87cb482835f123ac7300216ce",
+            "periodId": "cinepolis-2026-10",
+            "renderMode": "CHROMIUM_CAPTURE_OF_NATIVE_PRINT_OUTPUT_NOT_DOWNLOAD",
+            "textSha256": "5b294f7869fb9eda91ff8d8dd2fe0fa5b5d41df0859b419f7423e637f739ad7e",
+            "bytes": 76319,
+            "sha256": "10156b00262b0cd7d96dcdc90e45bc4edc773670eaac6594d81c3275a91bbb41",
+            "parsed": true,
+            "contentMatches": true,
+            "evidenceRef": "benefits-observed.json"
+          },
+          {
+            "format": "SHOPPER_CSV",
+            "rows": 1,
+            "principalFingerprint": "32d9e5b5a049a1b978410cd91c4f790cb1c8c1ed76769cb21a6610514b087199",
+            "periodId": "cinepolis-2026-10",
+            "scope": "FULL_SELECTED_PERIOD_INCLUDING_PENDING",
+            "semanticRowsSha256": "9543532822b93f58d128bf44d4e8d025be3d108c375cc19a3c51db52d1cbc582",
+            "bytes": 339,
+            "sha256": "b3997d449a78136e61b49e0c072702d7ed66f178fa82fc2079d583c675e02b81",
+            "parsed": true,
+            "contentMatches": true,
+            "evidenceRef": "benefits-observed.json"
+          },
+          {
+            "format": "SHOPPER_CSV",
+            "rows": 1,
+            "principalFingerprint": "32d9e5b5a049a1b978410cd91c4f790cb1c8c1ed76769cb21a6610514b087199",
+            "periodId": "cinepolis-2026-10",
+            "scope": "FULL_SELECTED_PERIOD_INCLUDING_PENDING",
+            "semanticRowsSha256": "9543532822b93f58d128bf44d4e8d025be3d108c375cc19a3c51db52d1cbc582",
+            "bytes": 339,
+            "sha256": "b3997d449a78136e61b49e0c072702d7ed66f178fa82fc2079d583c675e02b81",
+            "parsed": true,
+            "contentMatches": true,
+            "evidenceRef": "benefits-observed.json"
+          },
+          {
+            "format": "SHOPPER_CSV",
+            "rows": 1,
+            "principalFingerprint": "5513c195fcced4e31dc962c80a3be6576e0fef1a980a89b32e56e5960adaefca",
+            "periodId": "cinepolis-2026-11",
+            "scope": "FULL_SELECTED_PERIOD_INCLUDING_PENDING",
+            "semanticRowsSha256": "83728186b447f684a580328b59c99a63e8cc1cae9b9e58dc6e943325b04812f2",
+            "bytes": 336,
+            "sha256": "b2feac853b91eff5cb123c987f527153d89cb002c8102b5a89a60bc04bf196d6",
+            "parsed": true,
+            "contentMatches": true,
+            "evidenceRef": "benefits-observed.json"
+          },
+          {
+            "format": "SHOPPER_CSV",
+            "rows": 1,
+            "principalFingerprint": "5513c195fcced4e31dc962c80a3be6576e0fef1a980a89b32e56e5960adaefca",
+            "periodId": "cinepolis-2026-11",
+            "scope": "FULL_SELECTED_PERIOD_INCLUDING_PENDING",
+            "semanticRowsSha256": "83728186b447f684a580328b59c99a63e8cc1cae9b9e58dc6e943325b04812f2",
+            "bytes": 336,
+            "sha256": "b2feac853b91eff5cb123c987f527153d89cb002c8102b5a89a60bc04bf196d6",
+            "parsed": true,
+            "contentMatches": true,
+            "evidenceRef": "benefits-observed.json"
+          },
+          {
+            "format": "SHOPPER_CSV",
+            "rows": 2,
+            "principalFingerprint": "d79642b4e6a33bf976f5e587e856d7415dddc14041780a99a581710ac8da81a0",
+            "periodId": "cinepolis-2026-10",
+            "scope": "FULL_SELECTED_PERIOD_INCLUDING_PENDING",
+            "semanticRowsSha256": "b8249f724e524310619f1bec7f8e61fb16d9df64efc6d8a11f2e3436ac27f3f5",
+            "bytes": 531,
+            "sha256": "5ce92bfdec7bd5b70afce25ba17b1b06aed3b4c3f5385f520934af7f3b1aa2bd",
+            "parsed": true,
+            "contentMatches": true,
+            "evidenceRef": "benefits-observed.json"
+          },
+          {
+            "format": "SHOPPER_CSV",
+            "rows": 2,
+            "principalFingerprint": "d79642b4e6a33bf976f5e587e856d7415dddc14041780a99a581710ac8da81a0",
+            "periodId": "cinepolis-2026-10",
+            "scope": "FULL_SELECTED_PERIOD_INCLUDING_PENDING",
+            "semanticRowsSha256": "b8249f724e524310619f1bec7f8e61fb16d9df64efc6d8a11f2e3436ac27f3f5",
+            "bytes": 531,
+            "sha256": "5ce92bfdec7bd5b70afce25ba17b1b06aed3b4c3f5385f520934af7f3b1aa2bd",
+            "parsed": true,
+            "contentMatches": true,
+            "evidenceRef": "benefits-observed.json"
+          }
+        ],
+        "currencyScopes": [
+          "GT",
+          "HN"
+        ],
+        "independentSessions": 7,
+        "currenciesSeparated": true,
+        "perRowParity": true,
+        "periodIsolation": true,
+        "adminReviewRowsExcluded": true,
+        "roleSpecificUniversesPreserved": true,
+        "reloadProof": true,
+        "samePrincipalAfterReload": true,
+        "newSessionParity": true,
+        "acl": {
+          "ownRowsOnly": true,
+          "adminControlsDenied": true,
+          "foreignBenefitRead": "permission-denied"
+        },
+        "filtersAndDetail": true,
+        "paymentSourceTruth": true,
+        "emptyPeriodHonest": true
+      },
+      "contractCoverage": {
+        "fullDomain": true,
+        "obligations": [
+          {
+            "id": "shopper-csv-bytes-and-content",
+            "observed": true,
+            "evidenceRef": "benefits-observed.json",
+            "evidenceSha256": "d3e333589609498ed4a24babdd0593226eafcb5a8f6272960cf28e8e0f5230cc"
+          },
+          {
+            "id": "admin-xlsx-bytes-and-content",
+            "observed": true,
+            "evidenceRef": "benefits-observed.json",
+            "evidenceSha256": "d3e333589609498ed4a24babdd0593226eafcb5a8f6272960cf28e8e0f5230cc"
+          },
+          {
+            "id": "admin-print-pdf-bytes-and-content",
+            "observed": true,
+            "evidenceRef": "benefits-observed.json",
+            "evidenceSha256": "d3e333589609498ed4a24babdd0593226eafcb5a8f6272960cf28e8e0f5230cc"
+          },
+          {
+            "id": "row-currency-period-parity",
+            "observed": true,
+            "evidenceRef": "benefits-observed.json",
+            "evidenceSha256": "d3e333589609498ed4a24babdd0593226eafcb5a8f6272960cf28e8e0f5230cc"
+          },
+          {
+            "id": "independent-session-and-reload",
+            "observed": true,
+            "evidenceRef": "benefits-observed.json",
+            "evidenceSha256": "d3e333589609498ed4a24babdd0593226eafcb5a8f6272960cf28e8e0f5230cc"
+          },
+          {
+            "id": "own-scope-and-negative-acl",
+            "observed": true,
+            "evidenceRef": "benefits-observed.json",
+            "evidenceSha256": "d3e333589609498ed4a24babdd0593226eafcb5a8f6272960cf28e8e0f5230cc"
+          },
+          {
+            "id": "filters-and-detail",
+            "observed": true,
+            "evidenceRef": "benefits-observed.json",
+            "evidenceSha256": "d3e333589609498ed4a24babdd0593226eafcb5a8f6272960cf28e8e0f5230cc"
+          },
+          {
+            "id": "payment-source-truth",
+            "observed": true,
+            "evidenceRef": "benefits-observed.json",
+            "evidenceSha256": "d3e333589609498ed4a24babdd0593226eafcb5a8f6272960cf28e8e0f5230cc"
+          },
+          {
+            "id": "empty-period-honest",
+            "observed": true,
+            "evidenceRef": "benefits-observed.json",
+            "evidenceSha256": "d3e333589609498ed4a24babdd0593226eafcb5a8f6272960cf28e8e0f5230cc"
+          },
+          {
+            "id": "no-financial-mutations",
+            "observed": true,
+            "evidenceRef": "benefits-observed.json",
+            "evidenceSha256": "d3e333589609498ed4a24babdd0593226eafcb5a8f6272960cf28e8e0f5230cc"
+          }
+        ]
+      },
+      "gate20": "HOLD",
+      "gate21": "HOLD",
+      "i4Authorized": false,
+      "validation": {
+        "pass": true,
+        "failures": []
+      }
+    },
+    "validationReplayed": true,
+    "classificationBefore": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+    "classificationAfter": "MATCH",
+    "newHumanApprovals": 0,
+    "scope": "BENEFITS_DOMAIN_ONLY__OTHER_FINANCE_B8_C09_C10_RESIDUALS_NOT_WAIVED"
+  },
+  "execution": {
+    "workflowConclusion": "failure",
+    "certify": {
+      "jobId": 133874277177,
+      "conclusion": "success",
+      "scope": "BENEFITS_FOCAL_READ_ONLY_NOT_TERMINAL"
+    },
+    "liveFixtures": {
+      "jobId": 133875696407,
+      "conclusion": "failure",
+      "failedStep": 4,
+      "error": "no artifact matches any of the names or patterns provided",
+      "missingArtifact": "cxorbia-recovery-i3-single-source-certification-44034333358",
+      "beforeSealedVerification": true
+    },
+    "gate21": "skipped"
+  },
+  "controlDefect": {
+    "findingId": "VRM-359",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "owner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "rootCause": "A focal successful certify job skips the terminal artifact upload; downstream consumers incorrectly treated any certify success as proof of a terminal artifact.",
+    "correction": "Expose terminal_artifact_ready only from successful sealed terminal upload with an artifact ID; require it in live-fixtures and gate21 in addition to existing success dependencies.",
+    "testOwner": "tools/qa/cxorbia-i3-live-fixture-contract.test.mjs",
+    "regressionFailedBefore": true,
+    "testsAfter": {
+      "passed": 140,
+      "failed": 0
+    },
+    "noTerminalArtifactFabricated": true,
+    "noNewWorkflow": true,
+    "remoteValidation": "VERIFY_EXISTING_CANONICAL_CI_BY_THE_COMMIT_CONTAINING_THIS_CORRECTION; no fabricated future run ID or PASS.",
+    "workflowAfter": {
+      "path": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      "sha256": "8dba1ecbddcbd2d313f8674c458ce99c07b2952f4028f21415ee643bc0269c9b",
+      "gitBlob": "6e0df4e5468a4511e5cad900e24803972a8fc43b",
+      "bytes": 508648
+    },
+    "testAfter": {
+      "path": "tools/qa/cxorbia-i3-live-fixture-contract.test.mjs",
+      "sha256": "946a36a6f2945f4f1fe9c1676b4aff186f290458de31d1b06789e207ea1c66a9",
+      "gitBlob": "deec367d6384738a6c7b9853feed8861702acb3a",
+      "bytes": 36553
+    },
+    "workflowBeforeGitBlob": "e6a06ea3174284e78c573a84ea72118b36ae629c"
+  },
+  "builds": 0,
+  "runtimeDeploys": 0,
+  "hostingDeploys": 0,
+  "rulesDeploys": 0,
+  "hrWrites": 0,
+  "productionDeploys": 0,
+  "hrWritesScope": "EXTERNAL_HR_ONLY__C3_AND_HR_READ_POLICY_PLUS_EXACT_SOURCE836_HR_SNAPSHOT_RECONCILE_CODE_PATH",
+  "mutationEvidence": {
+    "financialMutationRequestsObserved": 0,
+    "automaticHrReconciliationRequests": 1,
+    "totalProviderWritesNotInferred": true,
+    "authOrFirestoreReconciliationWritesNotCountedAsExternalHrWrites": true,
+    "externalHrReadPolicy": "external_read_only",
+    "liveHrMetaReportedWrites": false,
+    "liveHrMetaReportedHrWrites": false,
+    "scopeLimit": "This is not a global zero-write assertion, financial command certificate, external write ACK or B14 replay proof."
+  },
+  "production": false,
+  "productionUnchanged": true,
+  "terminalCertified": false,
+  "phaseAComplete": false,
+  "i4Authorized": false,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "existingHumanPassBlocksPreserved": [
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ],
+  "humanPassCount": 4,
+  "humanBlockTotal": 9,
+  "frozenExecutionBlocksClosed": [
+    0,
+    1
+  ],
+  "frozenExecutionBlockTotal": 7,
+  "changesScope": "CONTROL_ONLY: preserve all product bytes and immutable DEV RUN2587 seal; credit exactly one proven module and repair existing workflow dependencies.",
+  "exactNextAction": "I3-Q3: preserve source836/RUN2587 exact DEV and consume RUN2588 Benefits READ_ONLY PASS (6/21); after the existing canonical control CI verifies the artifact-consumer correction, execute only uncovered B14/Admin-Shopper-HR clauses on the approved real-provider fixture: same external HR revision, valid-event ordering, remote ACK, lost-response replay, conflict/echo handling and no duplicates. Reuse accepted source and B4/B5/B6/B7 evidence. Prepare C09/C10 finance and D08 Academy read-only in parallel, with one technical writer and serial DEV publication of each proven product delta. Credit complete domain receipts immediately without rebuilding unchanged served bytes. Then close frozen Q4/Q5 residuals and Gate20 -> Gate21; I4 remains blocked until I3 GO and explicit authorization for the exact certified artifact.",
+  "nextExactAction": "I3-Q3: preserve source836/RUN2587 exact DEV and consume RUN2588 Benefits READ_ONLY PASS (6/21); after the existing canonical control CI verifies the artifact-consumer correction, execute only uncovered B14/Admin-Shopper-HR clauses on the approved real-provider fixture: same external HR revision, valid-event ordering, remote ACK, lost-response replay, conflict/echo handling and no duplicates. Reuse accepted source and B4/B5/B6/B7 evidence. Prepare C09/C10 finance and D08 Academy read-only in parallel, with one technical writer and serial DEV publication of each proven product delta. Credit complete domain receipts immediately without rebuilding unchanged served bytes. Then close frozen Q4/Q5 residuals and Gate20 -> Gate21; I4 remains blocked until I3 GO and explicit authorization for the exact certified artifact.",
+  "hrWriteScopeEvidence": {
+    "productSourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+    "owners": [
+      {
+        "path": "backend/runtime/hr-live-service/server.mjs",
+        "gitBlob": "eea1b41d78a0e1965aa40610efd61dbcd53ede5a",
+        "proof": "External HR read-only binding; both reconciliation policies disable external side effects."
+      },
+      {
+        "path": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+        "gitBlob": "36436a54e498ccb20252e28fba427abac5f650ca",
+        "proof": "hr.snapshot.reconcile only passes Auth/Firestore facade to shopper/visit reconciliation; hrWrites:0."
+      },
+      {
+        "path": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+        "gitBlob": "e5e6ab0bc8850d4a9f5c7a5aa9774973d1465070",
+        "proof": "Rejects policies allowing hrWrites or externalWrites."
+      },
+      {
+        "path": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "gitBlob": "e39b79845219752e003e573da1aacf53fde287d1",
+        "proof": "Rejects policies enabling external side effects."
+      }
+    ],
+    "liveMeta": {
+      "artifactId": 14306936915,
+      "path": "hr-current-live-meta.json",
+      "sha256": "27c6012ac4096b44d03caebba4851370386789cba1e66a7bc848628976a7d61c",
+      "writePolicy": "external_read_only",
+      "hrWrites": false
+    },
+    "stability": {
+      "artifactId": 14306936915,
+      "path": "hr-stability-proof.json",
+      "sha256": "17d332efebb8023e73f34e3e59998510638c746e5ad00c3b0d5f36adec7115c2",
+      "scope": "HR_OBSERVATION_ONLY_NOT_COMMAND_RECONCILIATION",
+      "reconciliationCertified": false
+    },
+    "limitation": "financialMutationRequestsObserved:0 is browser request evidence only; reconciliation may update internal Auth/Firestore identity references including financial documents. Total internal effects and reconciliation ACK/replay are not claimed."
+  },
+  "consumedAt": "2026-11-17T18:33:14Z"
+}

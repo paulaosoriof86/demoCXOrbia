@@ -2641,6 +2641,8 @@ jobs:
    if: ${{ needs.c3-preterminal-module-truth.outputs.terminal_ready=='true' }}
    runs-on: ubuntu-24.04
    timeout-minutes: 85
+   outputs:
+    terminal_artifact_ready: ${{ steps.terminal_artifact.outcome == 'success' && steps.terminal_artifact.outputs.artifact-id != '' }}
    env:
     CX_I3_BENEFITS_ONLY: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-benefits-readonly]') && '1' || '0' }}
     I3_CERTIFICATION_SOURCE_SHA: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
@@ -2885,7 +2887,8 @@ jobs:
       jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg control "$GITHUB_SHA" --arg artifact "$ARTIFACT_SHA256" --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg image "$SOURCE_IMMUTABLE_IMAGE" --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hostingVersion "$HOSTING_VERSION_NAME" --arg hostingTime "$HOSTING_RELEASE_TIME" --arg hr "$CURRENT_LIVE_HR_REVISION" --arg hrSha "$HR_SHA" --arg hrMetaSha "$HR_META_SHA" --arg rulesSha "$RULES_SHA" --arg runtimeSha "$RUNTIME_SHA" --arg hostingSha "$HOSTING_SHA" --arg gate20Sha "$GATE20_SHA" --arg semantic20Sha "$SEM20_SHA" --arg humanSha "$HUMAN_SHA" --arg probesSha "$PROBES_SHA" --arg routesSha "$ROUTE_SHA" --arg moduleTruthSha "$MODULE_TRUTH_MATRIX_SHA256" --arg atomicSha "$ATOMIC_SHA" --arg run "$GITHUB_RUN_ID" --arg attempt "$GITHUB_RUN_ATTEMPT" --arg liveSha "$LIVE_SHA" --arg bindingSha "$BINDING_SHA" --slurpfile moduleTruth "$OUT/module-truth-matrix.json" '{schemaVersion:"cxorbia.i3.terminal-certification.v2",decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,runId:$run,runAttempt:$attempt,liveFixtures:{decision:"PASS_I3_LIVE_FIXTURES_V2",proofStage:"PRE_CERTIFICATION",certifiedAtExecution:false,beforeCertification:true,evidenceSha256:$liveSha,prerequisitesSha256:$bindingSha},artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,buildCount:1,artifactPackCount:1,runtimeBuilds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,rebuildAfterCertification:false,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingTime,certificationHrRevision:$hr,certificationHrEvidenceSha256:$hrSha,certificationHrMetaSha256:$hrMetaSha,firestoreParityEvidenceSha256:$rulesSha,runtimeEvidenceSha256:$runtimeSha,hostingEvidenceSha256:$hostingSha,atomicP0:{decision:"PASS_I3_ATOMIC_P0_SOURCE_CONTRACT",evidenceSha256:$atomicSha},fullHumanAcceptance:{decision:"PASS_I3_HUMAN_LIVE_ACCEPTANCE",evidenceSha256:$humanSha,functionalProbesSha256:$probesSha,routeInventorySha256:$routesSha,expectedRoleRouteEntries:56,beforeArtifact:true},gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},gate20Semantic:{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",sourceSha:$source,evidenceSha256:$semantic20Sha},moduleTruthEvidenceSha256:$moduleTruthSha,moduleTruth:$moduleTruth[0],pendingTerminalFindingsClosedByThisProof:["VRM-034","VRM-035","VRM-041","VRM-043","VRM-069","VRM-070","VRM-071","VRM-073"],sameRevisionWithinCertificationProof:true,production:false}' > "$OUT/i3-certification-manifest.json"
       node tools/qa/cxorbia-i3-live-fixture-contract.mjs verify-sealed "$OUT" "$OUT/sealed-fixtures"
       cp "$OUT/i3-certification-manifest.json" "$OUT/result.json"
-   - if: env.CX_I3_BENEFITS_ONLY != '1'
+   - id: terminal_artifact
+     if: env.CX_I3_BENEFITS_ONLY != '1'
      uses: actions/upload-artifact@v4
      with: {name: 'cxorbia-recovery-i3-single-source-certification-${{ github.run_id }}', path: '${{ env.OUT }}', if-no-files-found: error, retention-days: 30, compression-level: 6, include-hidden-files: true}
    - if: always()
@@ -2895,7 +2898,7 @@ jobs:
      run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-i3-terminal-source" "$RUNNER_TEMP/cxorbia-current-module-truth"
   live-fixtures:
    needs: [canonical-candidate-authority, certify]
-   if: ${{ needs.certify.result=='success' }}
+   if: ${{ needs.certify.result=='success'&&needs.certify.outputs.terminal_artifact_ready=='true' }}
    runs-on: ubuntu-24.04
    timeout-minutes: 15
    permissions: {contents: read, actions: read}
@@ -2922,7 +2925,7 @@ jobs:
      run: rm -rf "$RUNNER_TEMP/cxorbia-terminal-cert"
   gate21:
    needs: [certify, live-fixtures]
-   if: ${{ needs.certify.result=='success'&&needs.live-fixtures.result=='success' }}
+   if: ${{ needs.certify.result=='success'&&needs.certify.outputs.terminal_artifact_ready=='true'&&needs.live-fixtures.result=='success' }}
    uses: ./.github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml
    secrets: inherit
   pre-i4-vrm039-config-diagnostic:
@@ -6506,4 +6509,5 @@ jobs:
    - uses: actions/upload-artifact@v4
      if: always()
      with: {name: 'cxorbia-i3-run2382-academy-b7-synthetic-${{ github.run_id }}', path: .tmp/i3-run2382-academy-b7-synthetic/, if-no-files-found: warn, retention-days: 30}
+
 

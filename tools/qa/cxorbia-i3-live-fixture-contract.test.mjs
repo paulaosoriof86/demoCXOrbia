@@ -298,6 +298,37 @@ test('single workflow gathers fixtures before strict21 and only verifies them af
   assert.match(workflow,/cancel-in-progress: false/);assert.ok(Buffer.byteLength(workflow)<510000);
 });
 
+test('terminal consumers require the actual sealed artifact upload, not focal job success',()=>{
+  const workflow=fs.readFileSync(new URL('../../.github/workflows/cxorbia-recovery-i3-dev-certification.yml',import.meta.url),'utf8');
+  const certify=workflow.split('  certify:\n')[1].split('  live-fixtures:\n')[0];
+  const fixtures=workflow.split('  live-fixtures:\n')[1].split('  gate21:\n')[0];
+  const gate=workflow.split('  gate21:\n')[1].split('\n  pre-i4-')[0];
+  const ready=certify.match(/terminal_artifact_ready:\s*\$\{\{([^}]+)\}\}/)?.[1];
+  assert.ok(ready,'certify must expose whether its terminal artifact was actually uploaded');
+  const evaluate=(expression,context)=>vm.runInNewContext(expression.replace(/\.artifact-id\b/g,"['artifact-id']").replace(/\.live-fixtures\b/g,"['live-fixtures']"),context);
+  const enabled=(job,needs)=>evaluate(job.match(/if:\s*\$\{\{([^}]+)\}\}/)[1],{needs});
+  const upload=certify.split('   - id: terminal_artifact\n')[1]?.split('\n   - ')[0];
+  assert.ok(upload,'ready output must bind the terminal uploader');
+  assert.match(upload,/if: env\.CX_I3_BENEFITS_ONLY != '1'/);
+  assert.match(upload,/actions\/upload-artifact@v4/);
+  assert.match(upload,/name: 'cxorbia-recovery-i3-single-source-certification-/);
+  assert.ok(certify.indexOf('verify-sealed')<certify.indexOf('   - id: terminal_artifact\n'));
+  for(const [name,result,outcome,artifactId,expected] of [
+    ['focal success','success','skipped','',false],
+    ['failed upload','failure','failure','',false],
+    ['missing upload output','success','success','',false],
+    ['cancelled certification','cancelled','success','123',false],
+    ['sealed terminal upload','success','success','123',true]
+  ]){
+    const steps={terminal_artifact:{outcome,outputs:{'artifact-id':artifactId}}};
+    const needs={certify:{result,outputs:{terminal_artifact_ready:String(evaluate(ready,{steps}))}},'live-fixtures':{result:'success'}};
+    assert.equal(enabled(fixtures,needs),expected,name+' fixture consumer');
+    assert.equal(enabled(gate,needs),expected,name+' Gate21');
+    needs['live-fixtures'].result='failure';
+    assert.equal(enabled(gate,needs),false,name+' failed sealed verification');
+  }
+});
+
 const reservationHarness=fs.readFileSync(new URL('../../.github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs',import.meta.url),'utf8').split('async function adminReservationReadback(')[1].split('\nasync function ')[0];
 const reservationWaitExpression=reservationHarness.match(/await page\.waitForFunction\((uid => [^\n]+), staffUid, \{timeout:150000\}\);/)?.[1];
 assert.ok(reservationWaitExpression,'test must execute the actual reservation authentication wait');
@@ -377,3 +408,4 @@ test('final HR invalid expected revision is rejected before network reads',async
 test('final HR inconsistent HTTP ok flag is rejected',async()=>{
   const f=finalHrRequestFixture();await assert.rejects(readFixtureFinalHr({...f.args,request:async()=>({status:503,ok:true,json:async()=>f.meta})}),/HTTP_RESPONSE_INVALID/);assert.deepEqual(f.waits,[]);
 });
+
