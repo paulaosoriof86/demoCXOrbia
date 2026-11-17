@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "cxorbia.i3.control-failure-correction.v1",
+  "createdAt": "2026-11-17T03:37:40Z",
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "MAPPING_FAILURE",
+  "priority": "P0_PROVEN",
+  "runId": 44010610155,
+  "runNumber": 2583,
+  "controlSha": "f2acfec31bec861622e6b9f9824cee2d184c080a",
+  "workflowConclusion": "failure",
+  "providerReached": false,
+  "canonicalFailure": "descriptor stale C3 blocker counters",
+  "humanContinuityRunId": 44010610017,
+  "humanFailure": "ENOBUFS skipped predecessor comparison in negative monotonicity test",
+  "scope": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2583_CONTROL_HISTORY_READ_P0_SCOPE_20261117.json",
+    "gitBlob": "00c838dca5ff66158f9bd93323e0a27dc3914d66",
+    "sha256": "55547c32ec0b6c067f67f225b979e26edbe47d7ffc6f72384d46ff0d982db0f9"
+  },
+  "correctedPrefix": "C3_0_PATH_BOUND_SOURCE_PROOF_GAPS_0_OWNER_PROOF_0_BLOB_PROVENANCE_0_MAPPING__21_SOURCE_READY",
+  "actualC3Counters": {
+    "pendingFiles": 0,
+    "pendingOwnerProofFiles": 0,
+    "pendingBlobProvenanceFiles": 0,
+    "pendingMappingApprovalFiles": 0,
+    "sourceReadyModules": 21
+  },
+  "guardFiles": [
+    {
+      "path": "tools/qa/cxorbia-i3-human-pass-monotonic-guard.mjs",
+      "beforeBlob": "b36c8e6255cd53a4ef5af4ce846a0b6f0e9fe0c1",
+      "afterBlob": "799c0e0dda8ed7c3e661d3393170f56238d2ebd8"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-human-pass-monotonic-guard.test.mjs",
+      "beforeBlob": "49c8a82c496e43521d43bf37f5e68d5f5830d6b3",
+      "afterBlob": "52de195fa2f9197dee421e2fdc2748854c8a4761"
+    }
+  ],
+  "guardBehavior": "Read complete predecessor with32MiB bound; fail closed on ENOBUFS or malformed JSON; preserve all acceptance assertions; fixture padded above default1MiB.",
+  "localValidation": {
+    "state": "PASS_AFFECTED_CONTROL_SUITE",
+    "tests": 450,
+    "pass": 450,
+    "fail": 0,
+    "logSha256": "1af803abe9349133ffddce4b4a132a265cf9be2d7dc53f1cd16d97f9a796f69b",
+    "includes": [
+      "preterminal source readiness",
+      "human monotonicity with predecessor over1MiB and malformed JSON",
+      "shock continuity",
+      "current authority aliases",
+      "terminal human contract",
+      "country observer",
+      "same-run source QA evidence"
+    ],
+    "environment": "GITHUB_ACTIONS=true; fixture-specific CI exclusions retained by existing tests"
+  },
+  "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+  "sourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
+  "latestC3RunUnchanged": 44008540028,
+  "materializationRunUnchanged": 44007234676,
+  "materializationReceiptUnchanged": "docs/checkpoints/CXORBIA_I3_RUN2581_VRM357_EXACT_DEV_MATERIALIZATION_20261117.json",
+  "productChanged": false,
+  "workflowChanged": false,
+  "builds": 0,
+  "deploys": 0,
+  "providerWrites": 0,
+  "production": false,
+  "i4Authorized": false,
+  "humanPassBlocksPreserved": [
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ],
+  "strictMatches": 5,
+  "domainTotal": 21,
+  "nextExactAction": "I3-Q3: after passing the affected control suite, repeat existing C3/certify on source680 and immutable DEV RUN2581; preserve C3 RUN2582 as the latest provider execution, because RUN2583 stopped at controls with zero provider access. Require complete Admin HR-name evidence and the exact country UI/ACK/reload/replay/cleanup result. Keep native VRM354/355 repair disabled and preserve prior committed journal and B4/B5/B6/B7; continue remaining B14 binding/remote ACK, D08, C09/C10, strict21/G20/G21; I4 only GO plus explicit exact-artifact authorization."
+}

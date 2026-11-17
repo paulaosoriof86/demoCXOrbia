@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "cxorbia.i3.qa-control-p0-scope.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "priority": "P0_PROVEN",
+  "classification": "MAPPING_FAILURE",
+  "findingScope": "QA_CONTROL_ONLY_NOT_NEW_PRODUCT_FINDING",
+  "code": "CURRENT_C3_BLOCKER_PREFIX_AND_PARENT_HISTORY_READ_LIMIT",
+  "observedAt": "2026-11-17T03:35:34.428730+00:00",
+  "runId": 44010610155,
+  "runNumber": 2583,
+  "canonicalJobId": 133796464840,
+  "humanContinuityRunId": 44010610017,
+  "humanContinuityJobId": 133796463085,
+  "controlHead": "f2acfec31bec861622e6b9f9824cee2d184c080a",
+  "productSourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+  "allowedCodeFiles": [
+    "tools/qa/cxorbia-i3-human-pass-monotonic-guard.mjs",
+    "tools/qa/cxorbia-i3-human-pass-monotonic-guard.test.mjs"
+  ],
+  "production": false,
+  "productCodeChangesAllowed": false,
+  "workflowChangesAllowed": false,
+  "providerReached": false,
+  "builds": 0,
+  "deploys": 0,
+  "proof": {
+    "historyReadback": {
+      "defaultError": {
+        "code": "ENOBUFS",
+        "errno": -105
+      },
+      "completeBytes": 1057896,
+      "humanPassBlocks": [
+        "B4",
+        "B5",
+        "B6",
+        "B7"
+      ]
+    },
+    "canonicalFailure": "descriptor stale C3 blocker counters",
+    "expectedPrefix": "C3_0_PATH_BOUND_SOURCE_PROOF_GAPS_0_OWNER_PROOF_0_BLOB_PROVENANCE_0_MAPPING__21_SOURCE_READY",
+    "actualCounters": {
+      "pendingFiles": 0,
+      "pendingOwnerProofFiles": 0,
+      "pendingBlobProvenanceFiles": 0,
+      "pendingMappingApprovalFiles": 0,
+      "sourceReadyModules": 21
+    },
+    "humanFailure": "newly acquired acceptance cannot disappear at next commit returned success because predecessor read ENOBUFS became null"
+  },
+  "MODULE_TRUTH_MATRIX": [
+    {
+      "module": "human-acceptance monotonic control",
+      "owner": "tools/qa/cxorbia-i3-human-pass-monotonic-guard.mjs",
+      "headBlob": "b36c8e6255cd53a4ef5af4ce846a0b6f0e9fe0c1",
+      "sourceSuccessor": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+      "sourceBlob": "b36c8e6255cd53a4ef5af4ce846a0b6f0e9fe0c1",
+      "lastObservedPassingRun": 135,
+      "F9": {
+        "scope": "CONTROL_QA_NOT_PRODUCT_RELEASE_OWNER",
+        "included": false
+      },
+      "liveObservation": "RUN136_NEGATIVE_MONOTONIC_TEST_FAILS_WITH_POINTER_OVER_DEFAULT_1MIB",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "authorityScope": "CONTROL_READER_ONLY_NO_REAL_HUMAN_APPROVAL_LOSS"
+    }
+  ],
+  "repairContract": [
+    "Restore measured C3 prefix in active blocker aliases without changing counters",
+    "Read complete predecessor JSON with bounded32MiB buffer",
+    "Fail closed on output-limit or malformed predecessor JSON; preserve no-parent tolerance",
+    "Keep all human PASS assertions and protected blocks unchanged",
+    "Make existing regression fixture exceed1MiB independent of future pointer size"
+  ],
+  "validationRequired": [
+    "Current-state preterminal source-readiness tests",
+    "Human monotonic negative test against large predecessor",
+    "Canonical/shock/current-alias/terminal-human controls",
+    "Existing country observer tests"
+  ],
+  "nextExactAction": "Pass the complete affected control test set locally, then repeat existing same-source C3/certify; no product/deploy/native-repair change."
+}

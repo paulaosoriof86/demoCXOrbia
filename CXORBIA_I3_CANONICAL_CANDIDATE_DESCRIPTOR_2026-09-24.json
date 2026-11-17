@@ -217,15 +217,15 @@
     "promotionRule": "PRESERVE_LIVE_AUTHORITATIVE_C3_ALIASES_UNTIL_21_OF_21_AND_GATE20_21; THIS_LATEST_RUN_RECEIPT_SUPERSEDES_2482_FOR_Q2_COUNTS_ONLY",
     "nextExactAction": "I3-Q2 path-bound source and served-owner proof for 7 provenance and 51 served owner paths, rerun canonical C3 and only promote evidenced MATCH; then Q3 Admin-Shopper-HR cross-role, Q4 finance, Q5 21-domain functional visual, Q6 exact artifact Gate20/21; I4 requires explicit authorization"
   },
-  "status": "HOLD_I3_RUN2582_DEV_MATERIALIZED_C3_PASS_QA_OBSERVER_REPROOF_REQUIRED",
+  "status": "HOLD_I3_DEV_MATERIALIZED_C3_PASS_CONTROL_HISTORY_READER_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
   "productTreeAuthority": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
   "predecessorProductSourceSha": "607ef20a5305209a46b8f61424f03475806f402d",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V679_2026-11-17.json",
-  "findingsLedgerExpectedGitBlob": "0f4c7678e4ea9af5ce6d7864981f945756590c90",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V680_2026-11-17.json",
+  "findingsLedgerExpectedGitBlob": "e5932aed3f90a709aad805f0d522ba164e99dfd3",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -244,11 +244,11 @@
     "observedC3ArtifactDigest": "sha256:515da7c9963e851fc1b3bec03bc00624955592cd900e88346b0b46df12f7d083",
     "observedResult": "THREE_PATHS_MATCHED_PRETERMINAL_HOLD"
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V352.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V353.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "MAPPING_FAILURE_PROJECT_COUNTRY_QA_ORPHAN_RESPONSE_WAITER_SOURCE_FIXED_43_TESTS_PASS__VRM357_CURRENT_VISIBLE_RESULT_PENDING",
+  "activeBlocker": "C3_0_PATH_BOUND_SOURCE_PROOF_GAPS_0_OWNER_PROOF_0_BLOB_PROVENANCE_0_MAPPING__21_SOURCE_READY__QA_COUNTRY_OBSERVER_AND_HUMAN_HISTORY_READER_FIXED_PENDING_SAME_ARTIFACT_REPROOF__VRM357_VISIBLE_RESULT_PENDING",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -363,7 +363,7 @@
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
   "historicalExactNextActionPreS1": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "I3-Q3: repeat only the existing same-source C3/certify lane after the proven project-country QA observer correction; keep source680c9db, RUN2581 runtime379 and Hosting3ffc unchanged, with zero new builds/deploys. Require a completed Admin HR-name result and record actual country-modal action/ACK/cleanup. Keep VRM354/355 native repair disabled and preserve its committed historical journal; inspect exact existing receipts before any further operation. Preserve B4/B5/B6/B7 and prior independent shopper proofs; then continue remaining B14 binding/remote ACK, D08, C09/C10 and frozen clauses; strict21/G20/G21; I4 only after GO and explicit exact-artifact authorization.",
+  "exactNextAction": "I3-Q3: after passing the affected control suite, repeat existing C3/certify on source680 and immutable DEV RUN2581; preserve C3 RUN2582 as the latest provider execution, because RUN2583 stopped at controls with zero provider access. Require complete Admin HR-name evidence and the exact country UI/ACK/reload/replay/cleanup result. Keep native VRM354/355 repair disabled and preserve prior committed journal and B4/B5/B6/B7; continue remaining B14 binding/remote ACK, D08, C09/C10, strict21/G20/G21; I4 only GO plus explicit exact-artifact authorization.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2078,7 +2078,7 @@
     "production": false
   },
   "activeBlockers": [
-    "MAPPING_FAILURE_PROJECT_COUNTRY_QA_ORPHAN_RESPONSE_WAITER_SOURCE_FIXED_43_TESTS_PASS__VRM357_CURRENT_VISIBLE_RESULT_PENDING"
+    "C3_0_PATH_BOUND_SOURCE_PROOF_GAPS_0_OWNER_PROOF_0_BLOB_PROVENANCE_0_MAPPING__21_SOURCE_READY__QA_COUNTRY_OBSERVER_AND_HUMAN_HISTORY_READER_FIXED_PENDING_SAME_ARTIFACT_REPROOF__VRM357_VISIBLE_RESULT_PENDING"
   ],
   "preI4Admin004": {
     "state": "FIXED_PROVEN_RUN686",
@@ -3542,7 +3542,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "3dd7e012c88f375f9790edde6a26ccc6922fd0ac",
+  "moduleTruthExpectedGitBlob": "6801bfc2fd5a6f4aaf525c1edc04902ccf2c536d",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12656,7 +12656,7 @@
     "scope": "NODE_SOURCE_QA_NOT_FULL_DOMAIN_OR_TERMINAL",
     "production": false
   },
-  "lastUpdatedAt": "2026-11-17T03:26:33Z",
+  "lastUpdatedAt": "2026-11-17T03:37:40Z",
   "a05SourceProof": {
     "recordedAt": "2026-10-17T12:00:37.826Z",
     "productSourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
@@ -17808,7 +17808,7 @@
     "qaContinuityGuardState": "V23_INITIAL_CONTROL_FAIL_CORRECTION_PENDING"
   },
   "priorStatusBeforeRootRun2222": "HOLD_VRM309_DEV_MATERIALIZED_ROLE_E2E_PENDING",
-  "nextExactAction": "I3-Q3: repeat only the existing same-source C3/certify lane after the proven project-country QA observer correction; keep source680c9db, RUN2581 runtime379 and Hosting3ffc unchanged, with zero new builds/deploys. Require a completed Admin HR-name result and record actual country-modal action/ACK/cleanup. Keep VRM354/355 native repair disabled and preserve its committed historical journal; inspect exact existing receipts before any further operation. Preserve B4/B5/B6/B7 and prior independent shopper proofs; then continue remaining B14 binding/remote ACK, D08, C09/C10 and frozen clauses; strict21/G20/G21; I4 only after GO and explicit exact-artifact authorization.",
+  "nextExactAction": "I3-Q3: after passing the affected control suite, repeat existing C3/certify on source680 and immutable DEV RUN2581; preserve C3 RUN2582 as the latest provider execution, because RUN2583 stopped at controls with zero provider access. Require complete Admin HR-name evidence and the exact country UI/ACK/reload/replay/cleanup result. Keep native VRM354/355 repair disabled and preserve prior committed journal and B4/B5/B6/B7; continue remaining B14 binding/remote ACK, D08, C09/C10, strict21/G20/G21; I4 only GO plus explicit exact-artifact authorization.",
   "i3Nov06SourceOnlyFocal": {
     "sourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
     "predecessorDevSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
@@ -18225,7 +18225,7 @@
     "sourceTestsFail": 0,
     "production": false
   },
-  "updatedAt": "2026-11-17T03:26:33Z",
+  "updatedAt": "2026-11-17T03:37:40Z",
   "previousCurrentMaterializationBeforeRun2248": {
     "builds": 1,
     "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
@@ -19248,12 +19248,12 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V352.json",
-      "gitBlob": "3dd7e012c88f375f9790edde6a26ccc6922fd0ac"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V353.json",
+      "gitBlob": "6801bfc2fd5a6f4aaf525c1edc04902ccf2c536d"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V679_2026-11-17.json",
-      "gitBlob": "0f4c7678e4ea9af5ce6d7864981f945756590c90"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V680_2026-11-17.json",
+      "gitBlob": "e5932aed3f90a709aad805f0d522ba164e99dfd3"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2582_C3_QA_OBSERVER_READBACK_20261117.json",
@@ -30311,5 +30311,19 @@
     "builds": 0,
     "deploys": 0,
     "behavior": "Handle response rejection immediately, preserve click-settlement before cleanup and rethrow response errors; capture bounded UI failure evidence; no predicate/timeout/ACK/replay relaxation."
+  },
+  "historicalBeforeRun2583ControlCorrection": {
+    "activeBlocker": "MAPPING_FAILURE_PROJECT_COUNTRY_QA_ORPHAN_RESPONSE_WAITER_SOURCE_FIXED_43_TESTS_PASS__VRM357_CURRENT_VISIBLE_RESULT_PENDING",
+    "exactNextAction": "I3-Q3: repeat only the existing same-source C3/certify lane after the proven project-country QA observer correction; keep source680c9db, RUN2581 runtime379 and Hosting3ffc unchanged, with zero new builds/deploys. Require a completed Admin HR-name result and record actual country-modal action/ACK/cleanup. Keep VRM354/355 native repair disabled and preserve its committed historical journal; inspect exact existing receipts before any further operation. Preserve B4/B5/B6/B7 and prior independent shopper proofs; then continue remaining B14 binding/remote ACK, D08, C09/C10 and frozen clauses; strict21/G20/G21; I4 only after GO and explicit exact-artifact authorization.",
+    "nextExactAction": "I3-Q3: repeat only the existing same-source C3/certify lane after the proven project-country QA observer correction; keep source680c9db, RUN2581 runtime379 and Hosting3ffc unchanged, with zero new builds/deploys. Require a completed Admin HR-name result and record actual country-modal action/ACK/cleanup. Keep VRM354/355 native repair disabled and preserve its committed historical journal; inspect exact existing receipts before any further operation. Preserve B4/B5/B6/B7 and prior independent shopper proofs; then continue remaining B14 binding/remote ACK, D08, C09/C10 and frozen clauses; strict21/G20/G21; I4 only after GO and explicit exact-artifact authorization."
+  },
+  "run2583ControlHistoryCorrection": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2583_CONTROL_HISTORY_READ_CORRECTION_20261117.json",
+    "gitBlob": "b444d32e759e441cef27fc98f348d40c8b8e2001",
+    "sha256": "b1c39740609f14d144faaeea3862193ce074838e10ceef055a1fa8e8e300e643",
+    "runId": 44010610155,
+    "runNumber": 2583,
+    "kind": "CONTROL_ONLY_FAILURE_CORRECTED_NOT_PROVIDER_OR_TERMINAL_EXECUTION",
+    "production": false
   }
 }

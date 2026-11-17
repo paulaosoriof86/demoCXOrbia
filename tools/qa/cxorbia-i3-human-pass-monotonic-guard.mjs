@@ -46,8 +46,12 @@ if(active.gate20!=='HOLD'||active.gate21!=='HOLD'){
   if(active.i4Authorized===true && active.phaseABlocksHumanPassed!==9)fail('EARLY_I4');
 }
 const previous=()=>{
-  try{return JSON.parse(execFileSync('git',['show','HEAD^:'+POINTER],{encoding:'utf8',stdio:['ignore','pipe','ignore']}));}
-  catch{return null;}
+  try{return JSON.parse(execFileSync('git',['show','HEAD^:'+POINTER],{encoding:'utf8',stdio:['ignore','pipe','ignore'],maxBuffer:32*1024*1024}));}
+  catch(error){
+    if(error?.code==='ENOBUFS')fail('PREVIOUS_ACCEPTANCE_HISTORY_UNREADABLE','OUTPUT_LIMIT');
+    if(error instanceof SyntaxError)fail('PREVIOUS_ACCEPTANCE_HISTORY_UNREADABLE','INVALID_JSON');
+    return null;
+  }
 };
 const old=previous();
 if(old?.activePhaseAClosureLock20261110?.humanPassBlocks){

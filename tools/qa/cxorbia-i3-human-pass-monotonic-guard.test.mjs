@@ -78,7 +78,7 @@ test('negative: a superseded root ledger cannot masquerade as the current ledger
   try{update(dir,p=>{p.findingsLedgerPath='CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V605_2026-11-10.json';});const r=check(dir);assert.notEqual(r.status,0);assert.match(r.stderr,/ROOT_DOCUMENT_AUTHORITY_DESYNC:findingsLedgerPath/);}finally{cleanup(dir);}
 });
 
-test('negative: newly acquired acceptance cannot disappear at next commit',t=>{
+test('negative: newly acquired acceptance cannot disappear with predecessor history above 1 MiB',t=>{
   const dir=fixture();
   try{
     const existing=JSON.parse(fs.readFileSync(path.join(dir,POINTER),'utf8')).activePhaseAClosureLock20261110.humanPassBlocks;
@@ -87,10 +87,21 @@ test('negative: newly acquired acceptance cannot disappear at next commit',t=>{
     git(dir,'init','-q');
     git(dir,'config','user.email','ci@cxorbia.invalid');
     git(dir,'config','user.name','CI fixture');
-    update(dir,p=>{const a=p.activePhaseAClosureLock20261110;a.humanPassBlocks.push(extra);a.phaseABlocksHumanPassed=a.humanPassBlocks.length;a.currentAccountingSemantics.humanFunctionalBlocks.passed=a.humanPassBlocks.length;});
+    update(dir,p=>{p.largeHistoryRegressionFixture='x'.repeat(2*1024*1024);const a=p.activePhaseAClosureLock20261110;a.humanPassBlocks.push(extra);a.phaseABlocksHumanPassed=a.humanPassBlocks.length;a.currentAccountingSemantics.humanFunctionalBlocks.passed=a.humanPassBlocks.length;});
     git(dir,'add','.');git(dir,'commit','-qm','baseline with newly accepted block');
     update(dir,p=>{const a=p.activePhaseAClosureLock20261110;a.humanPassBlocks=a.humanPassBlocks.filter(x=>x!==extra);a.phaseABlocksHumanPassed=a.humanPassBlocks.length;a.currentAccountingSemantics.humanFunctionalBlocks.passed=a.humanPassBlocks.length;});
     git(dir,'add','.');git(dir,'commit','-qm','attempt erase new PASS');
     const r=check(dir);assert.notEqual(r.status,0);assert.match(r.stderr,new RegExp('MONOTONE_PASS_REGRESSION_FROM_PARENT:'+extra));
+  }finally{cleanup(dir);}
+});
+
+test('negative: malformed predecessor history cannot silently disable acceptance comparison',()=>{
+  const dir=fixture();
+  try{
+    const file=path.join(dir,POINTER),valid=fs.readFileSync(file,'utf8');
+    git(dir,'init','-q');git(dir,'config','user.email','ci@cxorbia.invalid');git(dir,'config','user.name','CI fixture');
+    fs.writeFileSync(file,'{"incompleteHistory":');git(dir,'add','.');git(dir,'commit','-qm','malformed historical pointer');
+    fs.writeFileSync(file,valid);git(dir,'add','.');git(dir,'commit','-qm','valid current pointer');
+    const r=check(dir);assert.notEqual(r.status,0);assert.match(r.stderr,/PREVIOUS_ACCEPTANCE_HISTORY_UNREADABLE:INVALID_JSON/);
   }finally{cleanup(dir);}
 });
