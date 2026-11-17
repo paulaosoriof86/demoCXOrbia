@@ -5981,7 +5981,7 @@
     },
     "ledger": {
       "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V677_2026-11-17.json",
-      "gitBlob": "5cc534a1a50490258cfedc582f1b37ffe77d77d2"
+      "gitBlob": "79a327e78370bc59b203458fdcee66f4d0539407"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2566_C3_NATIVE_QUOTA_READBACK_20261116.json",
@@ -6801,7 +6801,7 @@
     "production": false
   },
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V677_2026-11-17.json",
-  "findingsLedgerExpectedGitBlob": "5cc534a1a50490258cfedc582f1b37ffe77d77d2",
+  "findingsLedgerExpectedGitBlob": "79a327e78370bc59b203458fdcee66f4d0539407",
   "nextFindingId": "VRM-358",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",

@@ -28632,7 +28632,7 @@
     },
     "postDeployRunSeal": {
       "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-      "mode": "CURRENT_SOURCE_SERVING",
+      "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
       "runId": 43969895087,
       "runNumber": 2573,
       "sourceSha": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
