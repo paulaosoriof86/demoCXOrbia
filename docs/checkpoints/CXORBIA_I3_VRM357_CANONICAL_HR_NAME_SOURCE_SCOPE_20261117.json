@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-proven-exact-source-scope.v1",
+  "findingId": "VRM-357",
+  "classification": "MAPPING_FAILURE",
+  "priority": "P0_PROVEN",
+  "decision": "APPROVED_SINGLE_OWNER_SOURCE_DELTA_FOR_EXACT_DEV_PROOF",
+  "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+  "sourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
+  "predecessorProductSourceSha": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
+  "controlParentSha": "90ddf6ab7e5de0ec2ba5b111006ffb749a75151b",
+  "owner": "app/adapters/tya-cumulative-read-model-v2.js",
+  "allowedProductFiles": [
+    "app/adapters/tya-cumulative-read-model-v2.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-canonical-direct-hr-name-priority.test.mjs"
+  ],
+  "rootCause": "Direct canonical HR label overwritten by later tenant-adjudicated alias compose order without explicit verified self display authority",
+  "providerReads": 0,
+  "providerWrites": 0,
+  "hrWrites": 0,
+  "production": false,
+  "forbidden": [
+    "broad_recompose",
+    "another_branch",
+    "another_candidate",
+    "unverified_identity_merge",
+    "production_deploy"
+  ],
+  "acceptedP0": "ADMIN_REAL_SHOPPER_IDENTITY_NOT_RENDERABLE",
+  "verification": {
+    "targetedTestsPass": 16,
+    "adjacentIdentityTestsPass": 120,
+    "syntacticPass": true,
+    "realDevE2ePending": true
+  }
+}

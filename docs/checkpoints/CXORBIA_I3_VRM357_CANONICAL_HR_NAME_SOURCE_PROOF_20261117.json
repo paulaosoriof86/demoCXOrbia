@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-proven-single-package-source-proof.v1",
+  "findingId": "VRM-357",
+  "state": "PASS_SOURCE_TESTS_PENDING_EXACT_DEV_MATERIALIZATION",
+  "decision": "PASS_VRM357_EXACT_OWNER_SOURCE_QA_PENDING_DEV",
+  "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+  "sourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a",
+  "predecessorProductSourceSha": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
+  "sourceTestsPass": 136,
+  "sourceTestsFail": 0,
+  "allowedProductFiles": [
+    "app/adapters/tya-cumulative-read-model-v2.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-canonical-direct-hr-name-priority.test.mjs"
+  ],
+  "ownerGitBlobs": {
+    "app/adapters/tya-cumulative-read-model-v2.js": "29b0f065280c1a7cfd163d7e6c24ffa934e57239"
+  },
+  "testGitBlobs": {
+    "tools/qa/cxorbia-i3-canonical-direct-hr-name-priority.test.mjs": "2b3bc2c9f13853af706e5d3bc7e1bb4be1237813"
+  },
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM357_CANONICAL_HR_NAME_SOURCE_SCOPE_20261117.json",
+  "scopeReceiptBlob": "a6bdb1b1f6383046b7b8fe6726912b4ae613467b",
+  "findings": [
+    {
+      "id": "VRM-357",
+      "priority": "P0_PROVEN",
+      "classification": "MAPPING_FAILURE",
+      "owner": "app/adapters/tya-cumulative-read-model-v2.js",
+      "state": "SOURCE_FIXED_PENDING_DEV_MATERIALIZATION",
+      "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+      "sourceTree": "eac812e8d3fadabe5d9fb73cd65db6dede42c21a"
+    }
+  ],
+  "tests": [
+    {
+      "name": "canonical-direct-hr-name-priority-and-vrm304",
+      "pass": 16,
+      "fail": 0
+    },
+    {
+      "name": "neighboring-identity-human-contracts",
+      "pass": 120,
+      "fail": 0
+    }
+  ],
+  "scope": "EXACT_CANONICAL_HR_NAME_SOURCE_P0_ONLY",
+  "i4Authorized": false,
+  "production": false
+}
