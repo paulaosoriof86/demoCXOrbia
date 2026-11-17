@@ -199,7 +199,7 @@ export function createHrSnapshotReconciler({
         if(priorEffects.unresolvedEffects||priorEffects.unverifiedEffects)return stop('HR_RECONCILIATION_UNCERTAIN_EFFECTS_REQUIRE_READBACK',{...priorEffects,status:'partial',committed:false});
       }
       let current;
-      try{current=await readSnapshot();}
+      try{current=await readSnapshot(scope);}
       catch(error){
         const failure=error?.hrSourceFailure;
         const sourceReadFailure=failure?.schemaVersion==='cxorbia.hr-source-read-failure.v1'&&failure.readOnly===true&&failure.code===error?.code&&

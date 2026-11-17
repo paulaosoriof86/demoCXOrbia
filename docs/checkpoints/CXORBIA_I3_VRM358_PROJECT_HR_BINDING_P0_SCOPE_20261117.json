@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-exact-owner-scope.v1",
+  "id": "VRM-358",
+  "task": "B14",
+  "classification": "MAPPING_FAILURE",
+  "iteration": "I3",
+  "state": "P0_PROVEN_OWNER_SCOPED",
+  "expectedParentSha": "172c2d339d36563abc226cc45338289a9e6253c3",
+  "expectedParentTree": "e569cf6a0f5ebbd02bcaa9b9d5c70d7fcc0fc293",
+  "productPredecessor": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+  "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V355.json",
+  "moduleTruth": [
+    {
+      "path": "backend/runtime/hr-live-service/server.mjs",
+      "domain": "canonical-hr-state-adapters",
+      "classification": "MATCH",
+      "historicalApprovedBlob": null,
+      "f9ApprovedSource": null,
+      "f9ApprovedBlob": null,
+      "latestApprovedSource": "607ef20a5305209a46b8f61424f03475806f402d",
+      "latestApprovedBlob": "edc293a7da5f499468ebaeb8967d58761030dc8a",
+      "currentBlob": "edc293a7da5f499468ebaeb8967d58761030dc8a",
+      "approvedSourceCommit": "607ef20a5305209a46b8f61424f03475806f402d",
+      "lastServedSource": "607ef20a5305209a46b8f61424f03475806f402d",
+      "lastServedBlob": "edc293a7da5f499468ebaeb8967d58761030dc8a",
+      "approvalStatus": "INDEPENDENT_PATH_BOUND_PROVEN"
+    },
+    {
+      "path": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+      "domain": "canonical-hr-state-adapters",
+      "classification": "MATCH",
+      "historicalApprovedBlob": null,
+      "f9ApprovedSource": null,
+      "f9ApprovedBlob": null,
+      "latestApprovedSource": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
+      "latestApprovedBlob": "b2f8cf3f743730b5ce14e3fad31791ac34bd0291",
+      "currentBlob": "b2f8cf3f743730b5ce14e3fad31791ac34bd0291",
+      "approvedSourceCommit": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
+      "lastServedSource": "607ef20a5305209a46b8f61424f03475806f402d",
+      "lastServedBlob": "b2f8cf3f743730b5ce14e3fad31791ac34bd0291",
+      "approvalStatus": "INDEPENDENT_PATH_BOUND_PROVEN"
+    },
+    {
+      "path": "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+      "domain": "canonical-hr-state-adapters",
+      "classification": "MATCH",
+      "historicalApprovedBlob": null,
+      "f9ApprovedSource": null,
+      "f9ApprovedBlob": null,
+      "latestApprovedSource": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
+      "latestApprovedBlob": "16753ae184e1c59426cc58c126214bc6742b0505",
+      "currentBlob": "16753ae184e1c59426cc58c126214bc6742b0505",
+      "approvedSourceCommit": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
+      "lastServedSource": "607ef20a5305209a46b8f61424f03475806f402d",
+      "lastServedBlob": "16753ae184e1c59426cc58c126214bc6742b0505",
+      "approvalStatus": "INDEPENDENT_PATH_BOUND_PROVEN"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+      "domain": "persistence-command-ack-boundary",
+      "classification": "MATCH",
+      "currentBlob": "382789cdca22de0042ebbe8c3f0cd52a77f7ba0a",
+      "latestApprovedSource": "da403803fffdf3472079b0939f3914cc0cceafff",
+      "latestApprovedBlob": "382789cdca22de0042ebbe8c3f0cd52a77f7ba0a",
+      "lastServedSource": "607ef20a5305209a46b8f61424f03475806f402d",
+      "lastServedBlob": "382789cdca22de0042ebbe8c3f0cd52a77f7ba0a"
+    }
+  ],
+  "evidence": [
+    "docs/checkpoints/CXORBIA_I3_RUN2565_B14_MISSING_PROJECT_BINDING_READBACK_20261116.json",
+    "docs/checkpoints/CXORBIA_I3_RUN2585_COUNTRY_IDENTITY_TERMINAL_READBACK_20261117.json"
+  ],
+  "provenCause": "Missing integrationSettings document referenced by durable project. Runtime refreshSnapshot starts global-fallback readers before withDurableProjectConfig; no private project binding resolution. Same mappingRef is exact contractId tya-hr-column-map-r20-v1 (hash verified).",
+  "productAllowlist": [
+    "backend/runtime/hr-live-service/server.mjs",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+    "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+  ],
+  "controlAllowlist": [
+    "tools/qa/cxorbia-i3-hr-ack-exact-same-revision.mjs",
+    "tools/qa/cxorbia-i3-project-hr-binding.test.mjs",
+    ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "tools/qa/cxorbia-i3-source-qa-evidence.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs"
+  ],
+  "change": "Resolve existing project-scoped private integration and approved mapping before read; pass exact workbook/mapping to both existing readers; scoped/cache/config fail-closed; private reference hashes in runtime read proof. Repair one missing DEV integration doc with exact project and target preconditions and idempotent readback.",
+  "scopeLimits": {
+    "externalHrWrites": 0,
+    "projectWrites": 0,
+    "authWrites": 0,
+    "payments": 0,
+    "production": false,
+    "newCandidate": false,
+    "newWorkflow": false
+  },
+  "liveDataPreconditions": {
+    "projectVersion": 5,
+    "projectUpdateTime": "2026-11-06T14:47:13.322Z",
+    "bindingRefSha256": "46254408919385d91e4019d0e9a704629206e81fa2981f56f855981950ab450c",
+    "mappingRefSha256": "bb18e0a8469d6a086a65b04ed3d663863cd995af104201567b0d49eb4805bde4",
+    "workbookSha256": "796d2ae2b7d3f948efce7d799ddb7c81684b94e274116c24322d5f742136b90e",
+    "bindingMustBeAbsentOrExactIdempotentRepair": true
+  },
+  "acceptance": [
+    "Missing/foreign/disabled/mismatched binding or mapping fails before provider read",
+    "Current configured workbook and exact approved mapping passed to both readers",
+    "Configuration rechecked before publishing fresh snapshot; config changes invalidate cached read",
+    "Supported adapter scope explicit; unsupported projects never receive Cin\u00e9polis snapshot",
+    "One durable DEV integration create with exact transaction preconditions and no project/HR writes",
+    "Exact serial DEV build/runtime/Hosting readback and runtime binding hashes verified before any B14 write test"
+  ],
+  "b14TerminalClosed": false,
+  "allowedProductFiles": [
+    "backend/runtime/hr-live-service/server.mjs",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+    "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs"
+  ]
+}

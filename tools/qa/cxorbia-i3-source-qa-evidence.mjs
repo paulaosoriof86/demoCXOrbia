@@ -14,13 +14,13 @@ export const SOURCE_OWNER_SUITES=Object.freeze([
     'app/adapters/cxorbia-command-adapter-v1.js','app/core/backend-bulletins.js','backend/runtime/cxorbia-operational-command-provider-v1.mjs','app/sw.js',
     'backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs','backend/runtime/hr-live-service/server.mjs','app/modules/dashboard.js','app/core/notif.js'],
     tests:['tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs','tools/qa/cxorbia-i3-q2-frontend-owner-behavior.test.mjs','tools/qa/cxorbia-i3-e04-benchmark-source.test.mjs',
-      'tools/qa/cxorbia-i3-client-collaboration-ui.test.mjs','backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs','tools/qa/cxorbia-i3-d07-sw-pdf-cross-origin.test.mjs',
+      'tools/qa/cxorbia-i3-project-hr-binding.test.mjs','tools/qa/cxorbia-i3-client-collaboration-ui.test.mjs','backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs','tools/qa/cxorbia-i3-d07-sw-pdf-cross-origin.test.mjs',
       'tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs','tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs','backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs']},
   {id:'finance-ack-boundary',owners:['app/core/backend-finance-benefits.js','app/core/backend-cxdata-finance-read.js',
     'app/adapters/cxorbia-cxdata-command-boundary-v1.js','backend/runtime/cxorbia-finance-command-provider-v1.mjs'],
     tests:['backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs','tools/qa/cxorbia-i3-b8-historical-command-boundary.test.mjs']},
   {id:'external-hr-source',owners:['tools/hr-source/tya-build-live-hr-source-safe-r20.mjs','tools/hr-source/tya-enforce-live-tab-registry.mjs','tools/hr-source/tya-live-provider-registry-identity-dev.mjs'],
-    tests:['tools/hr-source/tya-resolve-live-month-tabs.test.mjs','backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs']}
+    tests:['tools/qa/cxorbia-i3-project-hr-binding.test.mjs','tools/hr-source/tya-resolve-live-month-tabs.test.mjs','backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs']}
 ]);
 const SHA=/^[0-9a-f]{40}$/;
 const HASH=/^[0-9a-f]{64}$/;

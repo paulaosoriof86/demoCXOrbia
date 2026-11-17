@@ -45,12 +45,12 @@ const actualServerConfigure=readFileSync(new URL('../server.mjs',import.meta.url
 test('VRM350 actual server confirmation and replay force fresh HR before provider selection',async()=>{
  const seen=[],cache={snapshot:'old'},configure=Function('buildSnapshot','configureCommandRuntime','cache','return async command=>{'+actualServerConfigure+'}')(
  async options=>{seen.push(options);cache.snapshot='fresh';},snapshot=>seen.push(snapshot),cache);
- await configure({commandType:'visit.sync.confirm'});await configure({commandType:'visit.sync.confirm'});assert.deepEqual(seen,[{forceFresh:true},'fresh',{forceFresh:true},'fresh']);
+ await configure({commandType:'visit.sync.confirm',...scope});await configure({commandType:'visit.sync.confirm',...scope});assert.deepEqual(seen,[{forceFresh:true,scope:{tenantId:scope.tenantId,projectId:scope.projectId}},'fresh',{forceFresh:true,scope:{tenantId:scope.tenantId,projectId:scope.projectId}},'fresh']);
 });
 test('VRM350 actual server confirmation never reuses cache on fresh HR failure',async()=>{
  const seen=[],configure=Function('buildSnapshot','configureCommandRuntime','cache','return async command=>{'+actualServerConfigure+'}')(
- async options=>{assert.deepEqual(options,{forceFresh:true});throw Error('FRESH_HR_DOWN');},snapshot=>seen.push(snapshot),{snapshot:'old'});
- await assert.rejects(configure({commandType:'visit.sync.confirm'}),/FRESH_HR_DOWN/);assert.deepEqual(seen,[]);
+ async options=>{assert.deepEqual(options,{forceFresh:true,scope:{tenantId:scope.tenantId,projectId:scope.projectId}});throw Error('FRESH_HR_DOWN');},snapshot=>seen.push(snapshot),{snapshot:'old'});
+ await assert.rejects(configure({commandType:'visit.sync.confirm',...scope}),/FRESH_HR_DOWN/);assert.deepEqual(seen,[]);
 });
 test('actual server callback refreshes HR before each Client flow and retains other command behavior',async()=>{
  assert.ok(actualServerConfigure);for(const commandType of [...Object.values(types).map(x=>x[0]),'visit.assign']){const seen=[],cache={snapshot:'old'};const configure=Function('buildSnapshot','configureCommandRuntime','cache','return async command=>{'+actualServerConfigure+'}')(

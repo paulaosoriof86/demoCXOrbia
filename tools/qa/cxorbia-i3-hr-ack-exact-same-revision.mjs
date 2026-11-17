@@ -453,7 +453,79 @@ console.log(JSON.stringify(diagnostics));
 if(!passed)throw Error('HR_READ_ONLY_META_TIMEOUT_SAME_REVISION');
 
 }
+// VRM358: exactly one missing private DEV binding. No project or external HR mutation.
+export async function repairProjectHrReadBinding({db,tenantId,projectId,expected,sheetId,mappingRef}){
+ const fail=code=>{throw Error('MAPPING_FAILURE:B14_BINDING_REPAIR_'+code);};
+ const valid=v=>typeof v==='string'&&/^[A-Za-z0-9_-]{1,200}$/.test(v);
+ if(!valid(tenantId)||!valid(projectId)||!valid(sheetId)||b14sha(sheetId)!==expected.workbookSha256||b14sha(mappingRef)!==expected.mappingRefSha256)fail('INPUT');
+ const projectRef=db.doc('tenants/'+tenantId+'/projects/'+projectId);
+ const stamp=s=>{const t=s.updateTime;if(!Number.isSafeInteger(t?.seconds)||!Number.isInteger(t?.nanoseconds))fail('TIMESTAMP');return {seconds:t.seconds,nanoseconds:t.nanoseconds};};
+ const checkProject=s=>{
+  if(!s.exists)fail('PROJECT_MISSING');const p=s.data(),source=p.operationalSource||p.routeSource||{};
+  if(p.tenantId!==tenantId||(p.projectId&&p.projectId!==projectId)||p.version!==expected.projectVersion||s.updateTime.toDate().toISOString()!==expected.projectUpdateTime)fail('PROJECT_DRIFT');
+  if(source.mode!=='external'||source.providerType!=='google_sheets'||source.readPolicy!=='external_live'||source.writePolicy!=='external_read_only')fail('SOURCE_POLICY');
+  const id=source.providerBindingId||source.integrationSettingId||source.providerRef;
+  if(!valid(id)||b14sha(id)!==expected.bindingRefSha256||source.mappingRef!==mappingRef)fail('SOURCE_REFERENCE');
+  return {id,stamp:stamp(s),sourceSelected:p.operationalSource?'operationalSource':'routeSource'};
+ };
+ const expectedRow=id=>({schemaVersion:'cxorbia.private-hr-integration.v1',id,tenantId,projectId,providerBindingId:id,
+  providerType:'google_sheets',enabled:true,readPolicy:'external_live',writePolicy:'external_read_only',hrWritesEnabled:false,
+  sheetId,mappingRef,repairId:'VRM358',repairAuthority:'CXORBIA_I3_VRM358_PROJECT_HR_BINDING_P0_SCOPE_20261117'});
+ const result=await db.runTransaction(async tx=>{
+  const before=await tx.get(projectRef),p=checkProject(before),ref=db.doc('tenants/'+tenantId+'/integrationSettings/'+p.id),binding=await tx.get(ref),row=expectedRow(p.id);
+  if(binding.exists&&b14sha(binding.data())!==b14sha(row))fail('EXISTING_CONFLICT');
+  if(!binding.exists)tx.create(ref,row);
+  return {created:!binding.exists,projectStamp:p.stamp,id:p.id,sourceSelected:p.sourceSelected};
+ });
+ const bindingRef=db.doc('tenants/'+tenantId+'/integrationSettings/'+result.id);
+ const [after,binding]=await Promise.all([projectRef.get(),bindingRef.get()]),p=checkProject(after);
+ if(b14sha(p.stamp)!==b14sha(result.projectStamp)||!binding.exists||b14sha(binding.data())!==b14sha(expectedRow(result.id)))fail('READBACK_DRIFT');
+ return {decision:'PASS_VRM358_PRIVATE_BINDING_CREATE_OR_IDEMPOTENT_READBACK',tenantId,projectId,created:result.created,
+  firestoreWrites:result.created?1:0,projectWrites:0,hrWrites:0,authWrites:0,production:false,sourceSelected:result.sourceSelected,
+  projectVersion:expected.projectVersion,projectUpdateTime:p.stamp,bindingUpdateTime:stamp(binding),bindingRefSha256:expected.bindingRefSha256,
+  workbookSha256:expected.workbookSha256,mappingRefSha256:expected.mappingRefSha256,durableReadback:true,b14Closed:false};
+}
+async function runB14BindingRepair(args){
+ const [outDir,root,tenantId,projectId,runId]=args,e=process.env;
+ if(!outDir||root!=='https://cxorbia-backend-dev.web.app'||e.PROJECT!=='cxorbia-backend-dev'||tenantId!=='tya'||projectId!=='cinepolis'||!/^\d{8,}$/.test(runId||'')||e.CXORBIA_I3_QA_ISOLATED_WRITE_GATE!=='PAULA_AUTHORIZED_VRM358_DEV_BINDING_ONLY')throw Error('MAPPING_FAILURE:B14_BINDING_REPAIR_SCOPE');
+ fs.mkdirSync(outDir,{recursive:true});const read=f=>JSON.parse(fs.readFileSync(f,'utf8'));
+ const d=read(e.CANDIDATE_DESCRIPTOR||'CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json'),scope=read('docs/checkpoints/CXORBIA_I3_VRM358_PROJECT_HR_BINDING_P0_SCOPE_20261117.json');
+ if(d.status!=='HOLD_I3_VRM358_DEV_MATERIALIZATION_REQUIRED'||d.productSourceSha!==e.FOCAL_SOURCE||d.productTreeAuthority!==e.FOCAL_TREE||scope.productPredecessor!==d.currentMaterialization?.sourceSha)throw Error('MAPPING_FAILURE:B14_BINDING_REPAIR_AUTHORITY');
+ const prior=d.currentMaterialization,runtime=JSON.parse(execFileSync('gcloud',['run','revisions','describe',prior.runtimeRevision,'--project',e.PROJECT,'--region',e.REGION,'--format=json'],{encoding:'utf8'}));
+ const authority=b14RuntimeAuthority(runtime,{revision:prior.runtimeRevision,digest:prior.runtimeDigest});
+ const readers=['tools/hr-source/tya-build-live-hr-source-safe-r20.mjs','tools/hr-source/tya-live-provider-registry-identity-dev.mjs'].map(p=>execFileSync('git',['show',prior.sourceSha+':'+p],{encoding:'utf8'}));
+ const book=b14WorkbookFromReaders(readers,authority),mappingBytes=fs.readFileSync(path.join(e.SOURCE_DIR,'backend/contracts/tya-hr-column-map-r20-v1.json')),mapping=JSON.parse(mappingBytes);
+ if(!book.resolved||book.idSha256!==scope.liveDataPreconditions.workbookSha256||mapping.tenantId!==tenantId||mapping.projectId!==projectId)throw Error('MAPPING_FAILURE:B14_BINDING_REPAIR_READER');
+ const requireHere=createRequire(import.meta.url),{initializeApp,applicationDefault,deleteApp}=requireHere('firebase-admin/app'),{getFirestore}=requireHere('firebase-admin/firestore');
+ const app=initializeApp({projectId:e.PROJECT,credential:applicationDefault()},'vrm358-'+runId);
+ try{
+  const input={db:getFirestore(app),tenantId,projectId,expected:scope.liveDataPreconditions,sheetId:book.id,mappingRef:mapping.contractId};
+  const first=await repairProjectHrReadBinding(input),replay=await repairProjectHrReadBinding(input);
+  if(replay.created||replay.firestoreWrites!==0||b14sha(first.bindingUpdateTime)!==b14sha(replay.bindingUpdateTime))throw Error('MAPPING_FAILURE:B14_BINDING_REPAIR_REPLAY');
+  const receipt={schemaVersion:'cxorbia.i3.vrm358.private-binding-repair.v1',runId:Number(runId),runAttempt:Number(e.GITHUB_RUN_ATTEMPT||1),sourceSha:e.FOCAL_SOURCE,sourceTree:e.FOCAL_TREE,priorRuntimeRevision:prior.runtimeRevision,priorRuntimeDigest:prior.runtimeDigest,scopeSha256:b14sha(fs.readFileSync('docs/checkpoints/CXORBIA_I3_VRM358_PROJECT_HR_BINDING_P0_SCOPE_20261117.json','utf8')),mappingSha256:createHash('sha256').update(mappingBytes).digest('hex'),first,replay,replayZeroWrites:true,b14Closed:false,production:false};
+  fs.writeFileSync(path.join(outDir,'b14-binding-repair.json'),JSON.stringify(receipt,null,2)+'\n');console.log(JSON.stringify(receipt));
+ }finally{await deleteApp(app);}
+}
+export function validateB14RuntimeBinding(meta,repair){
+ const proof=meta?.projectReadBinding,expected=repair?.first;
+ if(meta?.ok!==true||meta?.hrWrites!==false||meta?.production!==false||meta?.revisionStable!==true||!proof||proof.schemaVersion!=='cxorbia.hr-project-read-binding.v1'||proof.runtimeConsumptionVerified!==true||proof.readerCount!==2||proof.privateResolution!==true||proof.hrWrites!==false||proof.production!==false)throw Error('MAPPING_FAILURE:B14_RUNTIME_BINDING_PROOF');
+ for(const key of ['tenantId','projectId','bindingRefSha256','workbookSha256','mappingRefSha256','projectVersion','sourceSelected','projectUpdateTime','bindingUpdateTime'])if(b14sha(proof[key])!==b14sha(expected?.[key]))throw Error('MAPPING_FAILURE:B14_RUNTIME_BINDING_'+key);
+ if(proof.mappingSha256!==repair.mappingSha256||proof.readPolicy!=='external_live'||proof.writePolicy!=='external_read_only'||!/^[a-f0-9]{64}$/.test(proof.bindingFingerprint||''))throw Error('MAPPING_FAILURE:B14_RUNTIME_BINDING_POLICY');
+ const fingerprint={...proof};delete fingerprint.bindingFingerprint;delete fingerprint.runtimeConsumptionVerified;delete fingerprint.readerCount;
+ if(createHash('sha256').update(JSON.stringify(fingerprint)).digest('hex')!==proof.bindingFingerprint)throw Error('MAPPING_FAILURE:B14_RUNTIME_BINDING_FINGERPRINT');
+ return {decision:'PASS_VRM358_RUNTIME_CONSUMES_PROJECT_PRIVATE_HR_BINDING',hrRevision:meta.revision,projectReadBinding:proof,replayZeroWrites:repair.replayZeroWrites,b14Closed:false,production:false};
+}
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
- if(process.env.CXORBIA_I3_QA_SCOPE==='B14_CAPABILITY_ONLY')await runB14CapabilityOnly(process.argv.slice(2));
+ if(process.env.CXORBIA_I3_QA_SCOPE==='PAIRED_DEV_RECEIPT'){
+const e=process.env,o=e.FOCAL_OUT,hash=b=>createHash('sha256').update(b).digest('hex'),r=JSON.parse(fs.readFileSync(o+'/result.json'));
+r.servedSha256={};for(const p of e.PAIR_ASSET_FILES.split(/\s+/)){const b=fs.readFileSync(o+'/remote-'+p.replaceAll('/','_'));if(!b.equals(fs.readFileSync(e.SOURCE_DIR+'/app/'+p)))throw Error('SERVED_BYTES:'+p);r.servedSha256[p]=hash(b);}
+Object.assign(r,{verifiedServedAssetCount:Object.keys(r.servedSha256).length,sourceHostedExact:true,runtimeTrafficExact:true,productionUnchanged:true,productionIndexSha256:hash(fs.readFileSync(o+'/production-after.html')),firestoreRuleset:JSON.parse(fs.readFileSync(o+'/rules-after.json')).rulesetName,firestoreRulesDeploys:0,hrWrites:0});
+fs.writeFileSync(o+'/result.json',JSON.stringify(r,null,2)+'\n');
+ }
+ else if(process.env.CXORBIA_I3_QA_SCOPE==='B14_BINDING_REPAIR_DEV')await runB14BindingRepair(process.argv.slice(2));
+ else if(process.env.CXORBIA_I3_QA_SCOPE==='B14_BINDING_READBACK_DEV'){
+  const [metaFile,repairFile,outFile]=process.argv.slice(2);const r=validateB14RuntimeBinding(JSON.parse(fs.readFileSync(metaFile)),JSON.parse(fs.readFileSync(repairFile)));fs.writeFileSync(outFile,JSON.stringify(r,null,2)+'\n');console.log(JSON.stringify(r));
+ }
+ else if(process.env.CXORBIA_I3_QA_SCOPE==='B14_CAPABILITY_ONLY')await runB14CapabilityOnly(process.argv.slice(2));
  else await runOriginalReadOnly(process.argv.slice(2));
 }

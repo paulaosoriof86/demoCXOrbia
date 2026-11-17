@@ -45,6 +45,7 @@ const VOLATILE_REVISION_KEYS=new Set(['generatedAt','lastSnapshotAt','sourceSnap
 
 let cache=null;
 let inFlight=null;
+let inFlightBinding=null;
 let lastRefreshError=null;
 let lastRefreshStartedAt=null;
 let lastRefreshFinishedAt=null;
@@ -167,6 +168,44 @@ async function withDurableProjectConfig(snapshot){
   const raw=snap.data()||{},durable=safeProjectConfig(raw);
   const merged={...(snapshot.projectConfig||{}),...durable,projectId:scope.projectId};
   return {...snapshot,projectConfig:merged,projectConfigAuthority:'firestore_project_config',projectConfigVersion:raw.version??null};
+}
+
+// VRM-358: this existing reader is a scoped adapter. Resolve its configured
+// private binding BEFORE reading HR; never borrow a global workbook or another
+// project's cache. Other adapters must supply their own proved mapping.
+async function resolveProjectHrReadBinding(requestedScope,{db=ensureAdmin().db,root=ROOT}={}){
+  const fail=code=>{throw new Error('MAPPING_FAILURE:HR_BINDING_'+code);};
+  const mappingFile=path.join(root,'backend/contracts/tya-hr-column-map-r20-v1.json');
+  const mappingBytes=fs.readFileSync(mappingFile),mapping=JSON.parse(mappingBytes);
+  const scope=requestedScope||{tenantId:mapping.tenantId,projectId:mapping.projectId};
+  const valid=v=>typeof v==='string'&&/^[A-Za-z0-9_-]{1,200}$/.test(v);
+  if(!valid(scope?.tenantId)||!valid(scope?.projectId))fail('INVALID_SCOPE');
+  if(scope.tenantId!==mapping.tenantId||scope.projectId!==mapping.projectId)fail('ADAPTER_SCOPE_UNSUPPORTED');
+  const project=await db.doc('tenants/'+scope.tenantId+'/projects/'+scope.projectId).get();
+  if(!project.exists)fail('PROJECT_MISSING');
+  const raw=project.data()||{},selected=raw.operationalSource?'operationalSource':'routeSource',source=raw[selected]||{};
+  if(raw.tenantId!==scope.tenantId||(raw.projectId&&raw.projectId!==scope.projectId))fail('PROJECT_SCOPE');
+  if(source.mode!=='external'||source.providerType!=='google_sheets'||source.readPolicy!=='external_live'||source.writePolicy!=='external_read_only')fail('SOURCE_POLICY');
+  const bindingId=source.providerBindingId||source.integrationSettingId||source.providerRef;
+  if(!valid(bindingId))fail('REFERENCE_REQUIRED');
+  if(source.mappingRef!==mapping.contractId)fail('MAPPING_UNSUPPORTED');
+  const binding=await db.doc('tenants/'+scope.tenantId+'/integrationSettings/'+bindingId).get();
+  if(!binding.exists)fail('INTEGRATION_MISSING');
+  const row=binding.data()||{};
+  if(row.tenantId!==scope.tenantId||(row.projectId?row.projectId!==scope.projectId:!Array.isArray(row.projectIds)||!row.projectIds.includes(scope.projectId)))fail('INTEGRATION_SCOPE');
+  if(row.enabled!==true||row.hrWritesEnabled!==false||row.providerType!=='google_sheets'||row.readPolicy!=='external_live'||row.writePolicy!=='external_read_only')fail('INTEGRATION_POLICY');
+  if(row.mappingRef!==source.mappingRef||(row.providerBindingId&&row.providerBindingId!==bindingId))fail('INTEGRATION_REFERENCE');
+  if(row.sheetId&&row.spreadsheetId&&row.sheetId!==row.spreadsheetId)fail('WORKBOOK_AMBIGUOUS');
+  const sheetId=row.sheetId||row.spreadsheetId;
+  if(!valid(sheetId))fail('WORKBOOK_MISSING');
+  const hash=v=>crypto.createHash('sha256').update(v).digest('hex');
+  const stamp=s=>{const t=s.updateTime;if(!Number.isSafeInteger(t?.seconds)||!Number.isInteger(t?.nanoseconds)||t.nanoseconds<0||t.nanoseconds>=1e9)fail('TIMESTAMP_UNVERIFIABLE');return {seconds:t.seconds,nanoseconds:t.nanoseconds};};
+  const proof={schemaVersion:'cxorbia.hr-project-read-binding.v1',tenantId:scope.tenantId,projectId:scope.projectId,sourceSelected:selected,
+    bindingRefSha256:hash(bindingId),workbookSha256:hash(sheetId),mappingRefSha256:hash(source.mappingRef),mappingSha256:hash(mappingBytes),
+    projectVersion:raw.version??null,projectUpdateTime:stamp(project),bindingUpdateTime:stamp(binding),readPolicy:source.readPolicy,writePolicy:source.writePolicy,
+    privateResolution:true,hrWrites:false,production:false};
+  proof.bindingFingerprint=hash(JSON.stringify(proof));
+  return {scope,proof,readerEnv:{CXORBIA_HR_LIVE_SHEET_ID:sheetId,CXORBIA_HR_COLUMN_MAP_FILE:mappingFile,CXORBIA_HR_REQUIRE_PROJECT_BINDING:'true'}};
 }
 function canonicalProtectedAuthNamespace(role,value){
   const namespace=String(value||'').trim().toLowerCase();
@@ -339,7 +378,7 @@ function configureCommandRuntime(snapshot){
 }
 const explicitHrReconciliation=createHrSnapshotReconciler({
   verifyPrincipal:verifiedProtectedPrincipal,
-  readSnapshot:()=>buildSnapshot({forceFresh:true}),
+  readSnapshot:scope=>buildSnapshot({forceFresh:true,scope}),
   ensureAdmin,shopperPolicy,operationalPolicy
 });
 
@@ -371,8 +410,12 @@ async function runIndependentHrSourceReads(timedNode){
   return stats;
 }
 
-async function refreshSnapshot(){
-  if(inFlight)return inFlight;
+async function refreshSnapshot(binding){
+  if(inFlight){
+    if(inFlightBinding!==binding.proof.bindingFingerprint)throw new Error('MAPPING_FAILURE:HR_BINDING_CHANGED_DURING_READ');
+    return inFlight;
+  }
+  inFlightBinding=binding.proof.bindingFingerprint;
   lastRefreshStartedAt=new Date().toISOString();
   const started=Date.now();
   inFlight=(async()=>{
@@ -383,6 +426,7 @@ async function refreshSnapshot(){
     const identityFile=path.join(dir,'operational-display-identity.dev.json');
     if(fs.existsSync(REGISTRY_FILE))fs.copyFileSync(REGISTRY_FILE,runtimeRegistry);
     const env={
+      ...binding.readerEnv,
       CXORBIA_HR_SOURCE_SAFE_OUT:payload,
       CXORBIA_HR_LIVE_MAX_ROW:process.env.CXORBIA_HR_LIVE_MAX_ROW||'140',
       CXORBIA_HR_LIVE_MAX_COL:process.env.CXORBIA_HR_LIVE_MAX_COL||'AI',
@@ -407,8 +451,15 @@ async function refreshSnapshot(){
       const parsed=parseSnapshot(payload);
       const durableStartedAt=Date.now();
       const configured=await withDurableProjectConfig(parsed);
+      const after=await resolveProjectHrReadBinding(binding.scope);
+      if(after.proof.bindingFingerprint!==binding.proof.bindingFingerprint)throw new Error('MAPPING_FAILURE:HR_BINDING_CHANGED_DURING_READ');
+      const actual=snapshotScope(configured);
+      if(actual.tenantId!==binding.scope.tenantId||actual.projectId!==binding.scope.projectId)throw new Error('MAPPING_FAILURE:HR_BINDING_READER_SCOPE');
       stagesMs.durableProjectConfig=Date.now()-durableStartedAt;
       const next=materialize(configured,'runtime_refresh',parseIdentity(identityFile));
+      // Binding metadata is separate from HR revision: identical external data
+      // retains its revision and does not trigger a new reconciliation event.
+      next.bindingProof={...binding.proof,runtimeConsumptionVerified:true,readerCount:2};
       lastRefreshStagesMs={...stagesMs};
       lastRefreshProviderReads=providerReadStats;
       /* G05: observation publishes a fresh read and never schedules a durable writer. */
@@ -430,22 +481,25 @@ async function refreshSnapshot(){
     throw error;
   }finally{
     inFlight=null;
+    inFlightBinding=null;
   }
 }
 
-async function buildSnapshot({forceFresh=false}={}){
-  if(forceFresh)return inFlight||refreshSnapshot();
-  if(cache?.origin==='build_bootstrap')return inFlight||refreshSnapshot();
+async function buildSnapshot({forceFresh=false,scope}={}){
+  const binding=await resolveProjectHrReadBinding(scope);
+  if(forceFresh)return refreshSnapshot(binding);
+  if(cache?.origin==='build_bootstrap')return refreshSnapshot(binding);
+  if(cache?.bindingProof?.bindingFingerprint!==binding.proof.bindingFingerprint)return refreshSnapshot(binding);
   const age=cache?Date.now()-cache.loadedAt:Infinity;
   if(cache&&age<CACHE_MS)return cache;
   /* Expired data is never served as current: wait for a fresh source-safe read. */
-  return inFlight||refreshSnapshot();
+  return refreshSnapshot(binding);
 }
 
 async function resolveHrAndProtectedPrincipal(req,scope,forceFresh,protectedRequested){
   const startedAt=Date.now();
   const hrStartedAt=Date.now();
-  const hrTask=buildSnapshot({forceFresh}).then(current=>({current,hrWaitMs:Date.now()-hrStartedAt}));
+  const hrTask=buildSnapshot({forceFresh,scope}).then(current=>({current,hrWaitMs:Date.now()-hrStartedAt}));
   if(!protectedRequested){
     const hr=await hrTask;
     return {current:hr.current,principal:null,timing:{hrWaitMs:hr.hrWaitMs}};
@@ -475,6 +529,7 @@ function runtimeMeta(current){
     sourceReadAt:new Date(current.loadedAt).toISOString(),
     runtimeRead:true,
     sourceSafe:true,
+    projectReadBinding:current.bindingProof||null,
     sourceAccessMode:current.snapshot.source?.accessMode||null,
     tabRegistryMode:current.snapshot.source?.tabRegistryMode||null,
     tabRegistryAutoDiscovery:current.snapshot.source?.tabRegistryAutoDiscovery===true,
@@ -544,7 +599,7 @@ const server=http.createServer(async(req,res)=>{
   if(isCxorbiaCommandRuntimePath(url.pathname)){
     await maybeHandleCxorbiaCommandRuntimeRequest(req,res,url,{
       configure:async command=>{
-        if(command?.commandType==='visit.sync.confirm')await buildSnapshot({forceFresh:true});
+        if(command?.commandType==='visit.sync.confirm')await buildSnapshot({forceFresh:true,scope:{tenantId:command.tenantId,projectId:command.projectId}});
         if(['client.nps.submit','client.note.create','client.meeting.request'].includes(command?.commandType))await buildSnapshot();
         configureCommandRuntime(cache?.snapshot);
       },

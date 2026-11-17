@@ -10,7 +10,8 @@ const IDENTITY_OUT=process.env.CXORBIA_HR_OPERATIONAL_IDENTITY_OUT?path.resolve(
 const SERVICE_ACCOUNT_JSON=process.env.FIREBASE_SERVICE_ACCOUNT_JSON||'';
 const MAX_ROW=Number(process.env.CXORBIA_HR_LIVE_MAX_ROW||140);
 const MAX_COL=process.env.CXORBIA_HR_LIVE_MAX_COL||'AI';
-const COLUMN_MAP=JSON.parse(fs.readFileSync(path.resolve('backend/contracts/tya-hr-column-map-r20-v1.json'),'utf8'));
+if(process.env.CXORBIA_HR_REQUIRE_PROJECT_BINDING==='true'&&(!process.env.CXORBIA_HR_LIVE_SHEET_ID||!process.env.CXORBIA_HR_COLUMN_MAP_FILE))throw new Error('MAPPING_FAILURE:HR_BINDING_READER_CONFIG_REQUIRED');
+const COLUMN_MAP=JSON.parse(fs.readFileSync(path.resolve(process.env.CXORBIA_HR_COLUMN_MAP_FILE||'backend/contracts/tya-hr-column-map-r20-v1.json'),'utf8'));
 const MONTH_NAMES=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
 
 
