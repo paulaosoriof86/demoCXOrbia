@@ -104,12 +104,14 @@ test('separate bounded receipts accumulate only against frozen complete obligati
 });
 test('ordinary credential login is an explicit non-writing proof kind',()=>{
   const f=append(fixture('auth'),receipt('auth','AUTH_SESSION'));
+  f.additionalReceipts[0].mutationEvidence.authWrites=1;
   assert.equal(decision(f).matchModules,21);
   f.additionalReceipts[0].authProof.ordinaryCredential=false;
   assert.equal(decision(f).matchModules,20);
 });
 test('real browser UI proof is not forced to fabricate provider writes',()=>{
   const f=append(fixture('ui'),receipt('ui','UI_INTERACTION'));
+  f.additionalReceipts[0].actionReal=true;
   assert.equal(decision(f).matchModules,21);
   f.additionalReceipts[0].uiProof.realBrowserE2E=false;
   assert.equal(decision(f).matchModules,20);

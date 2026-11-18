@@ -70,9 +70,13 @@ const scopeErrors=(r,mod,sourceFiles,paths)=>{
 const nonWritingErrors=(r)=>{
   const errors=[],need=(ok,key)=>{if(!ok)errors.push(key);};
   const m=r.mutationEvidence||{};
+  // Browser actions can be real without changing product state. Similarly,
+  // ordinary Firebase/Auth sign-in can refresh Auth session state without
+  // constituting a project/HR/Firestore business write.
+  const authOnlySession=r.operationKind==='AUTH_SESSION'&&Number.isSafeInteger(m.authWrites)&&m.authWrites>=0;
   need(m.applicable===false && m.providerAckClaimed===false && r.providerAck!==true &&
-    ['providerWrites','authWrites','firestoreWrites','hrWrites'].every(k=>m[k]===0) &&
-    r.actionReal!==true,'NO_PRODUCT_OR_PROVIDER_MUTATION');
+    ['providerWrites','firestoreWrites','hrWrites'].every(k=>m[k]===0) &&
+    (m.authWrites===0||authOnlySession),'NO_PRODUCT_OR_PROVIDER_MUTATION');
   if(r.operationKind==='READ_ONLY'){
     const p=r.readOnlyProof||{};
     need(p.liveReadback===true && p.expectedObserved===true && p.providerCommandsObserved===0,'LIVE_READONLY_REPROOF');
