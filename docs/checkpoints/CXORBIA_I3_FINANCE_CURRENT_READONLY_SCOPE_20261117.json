@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "cxorbia.i3.current-finance-readonly-scope.v1",
+  "dateLocal": "2026-11-17",
+  "iteration": "I3",
+  "state": "HOLD",
+  "mode": "READONLY_SEP_ADVANCES",
+  "classification": "MAPPING_FAILURE",
+  "expectedParentSha": "7b6af2b0c58de7ebc8fb38b924701877a63895fb",
+  "expectedParentTree": "2f783fc2f43802fbce4543546ffbd7acecda88c0",
+  "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+  "sourceTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "periodId": "cinepolis-2026-09",
+  "providerWrites": 0,
+  "production": false,
+  "newDomainMatches": 0,
+  "authority": "Frozen C09/C10, Paula continue with verifiable fronts 2026-11-17; read only, no new fixture writes",
+  "scope": "READ_CURRENT_DURABLE_FINANCIAL_IDS_APPLICATIONS_SEPTEMBER_ONLY_AND_HR_BINDING_METADATA",
+  "moduleTruth": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V360.json",
+    "gitBlob": "8d7fbbedb3f5686a8426dee652f143a585aba11c",
+    "domain": "finance-core-liquidation-costs",
+    "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+    "preserved": "RUN1992 C04/C05, RUN2588 benefits; no human approval invented"
+  },
+  "provenFailures": [
+    {
+      "owner": "tools/qa/cxorbia-i3-r22-finance-authority-readonly.mjs",
+      "before": "paymentBatches",
+      "after": "paymentLots"
+    },
+    {
+      "owner": "tools/qa/cxorbia-i3-r08-finance-provenance-readonly.mjs",
+      "before": "advance amount search in paymentReconciliations",
+      "after": "financialMovements with amount/currency/classification/scope conflicts explicit"
+    },
+    {
+      "owner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      "before": "finance job runs only obsolete status; invoking generic script may execute Conciliar or synthetic financial writes",
+      "after": "explicit read-only marker and fail-closed early branch before all commands/Auth/browser"
+    }
+  ],
+  "publicDataPolicy": "Only no-PII receipt and RSA-OAEP-SHA256/AES-256-GCM encrypted private manifest may be uploaded to public CI; no raw records in logs",
+  "encryptionPublicKey": "-----BEGIN PUBLIC KEY-----\nMIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAtSf4NizyhdAvBZH1Z1PT\nXou5klG/61tcTdZ5A5GtjM2fewbL4cqY+C2yFlAr91JFLX64R0y62jULd+1fUD1B\n0PVMSaXY8pcnh3apjEAdFbi03s3aSQ1eLggxmi4WTKsOK0svj4kqvnwc4isym7g5\nUOxjLDTpVhB11XdNpjR0tJhuRRlUw1IKsLeznEdh/ldkKCXFGUKU7mfUnmZFLY/p\nGGMStUc/wYA2QlPtjdw2Zoz70bu81A4nffmBpjCtROuWYagui8aChjQzz+wc7qFt\nRXpQy+9eb0lDrzswSF583dPrwps/SpnxSXd/BjOcbTmcoJewi7xbnv10TZKBDqsg\nCFda194/udjIiquWHBl/9OYbZNN8mGUVHDrEkl2e4DLLxmDpfoUVTdvkbnqCf1ct\nW5VmEK7kOgKpexRML0Q4XxS0vmSMP2UhUQzC2eiR4y06Do+UMdR9KMKPcCLejapp\na3B7eEzezzTwdXnfviDkJtl0kjPxTR6pnHJHDEMUAuBFAgMBAAE=\n-----END PUBLIC KEY-----\n",
+  "notCertified": [
+    "bank transfers",
+    "September settlement",
+    "C09/C10 full contract",
+    "B14 remote ACK",
+    "new functional domain",
+    "I4"
+  ]
+}

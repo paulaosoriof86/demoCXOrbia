@@ -36,7 +36,7 @@ try{
  if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
  const tenant=getFirestore().collection('tenants').doc(tenantId),auth=getAuth();
  const refs={users:tenant.collection('users'),bulletins:tenant.collection('bulletins'),reads:tenant.collection('bulletinReads'),
-  reconciliations:tenant.collection('paymentReconciliations'),batches:tenant.collection('paymentBatches'),
+  reconciliations:tenant.collection('paymentReconciliations'),batches:tenant.collection('paymentLots'),
   liquidations:tenant.collection('liquidations'),movement:tenant.collection('financialMovements'),
   accounts:tenant.collection('financeAccounts'),visits:tenant.collection('projects').doc(projectId).collection('visits')};
  const data=Object.fromEntries(await Promise.all(Object.entries(refs).map(async ([k,ref])=>{

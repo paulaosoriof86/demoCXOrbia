@@ -7,6 +7,7 @@ import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
 import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
 import {chromium} from 'playwright';
+import {runFinanceResidualReadonly} from './cxorbia-i3-finance-residual-readonly.mjs';
 
 const PROJECT=process.env.PROJECT||'cxorbia-backend-dev';
 const HOST=String(process.env.HOSTING_URL||'https://cxorbia-backend-dev.web.app').replace(/\/$/,'');
@@ -41,6 +42,12 @@ function runC01ConciliarIfRequired(){
   const result=JSON.parse(fs.readFileSync(path.join(c01Out,'result.json'),'utf8'));
   assert(result.decision==='PASS_PREI4_ADMIN_004_CUMULATIVE_LIVE','C01_CONCILIAR_DECISION');
   assert(result.hrWrites===0&&result.bankWrites===0&&result.externalPaymentWrites===0&&result.production===false,'C01_CONCILIAR_SIDE_EFFECT_CONTRACT');
+}
+const financeMode=String(process.env.CXORBIA_I3_FINANCE_MODE||'');
+if(financeMode){
+  if(financeMode!=='READONLY_SEP_ADVANCES')throw new Error('SOURCE_FAILURE:UNKNOWN_FINANCE_FOCAL_MODE');
+  await runFinanceResidualReadonly({project:PROJECT,host:HOST,out:OUT,source:SOURCE,period:PERIOD});
+  process.exit(0);
 }
 runC01ConciliarIfRequired();
 

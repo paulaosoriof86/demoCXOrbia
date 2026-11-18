@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
 import {getFirestore} from 'firebase-admin/firestore';
+import {advanceCandidate} from './cxorbia-i3-finance-residual-readonly.mjs';
 const t=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
 const src=t(process.env.FOCAL_SOURCE),rev=t(process.env.EXPECTED_HR_REVISION),host=t(process.env.HOSTING_URL||'https://cxorbia-backend-dev.web.app').replace(/\/$/,'');
 const out=t(process.env.R08_FINANCE_OUT||'.tmp/phasea-representative-live/r08-finance');
@@ -13,7 +14,7 @@ const r={schema:'cxorbia.i3.r08-finance.provenance.readonly.v1',sourceSha:src,re
 const save=()=>{fs.writeFileSync(out+'/result.json',JSON.stringify(r,null,2)+'\n');console.log(JSON.stringify(r));};
 const safeError=e=>t(e?.code||e?.message||e).replace(/[^a-zA-Z0-9_:.-]/g,'_').slice(0,80);
 const byProject=v=>!t(v.projectId)||t(v.projectId)==='cinepolis';
-async function col(ref){let a=await ref.limit(1600).get();return {rows:a.docs.map(d=>({id:d.id,...(d.data()||{})})),truncated:a.size===1600};}
+async function col(ref){let a=await ref.limit(1600).get();return {rows:a.docs.map(d=>({id:d.id,...(d.data()||{}),docId:d.id})),truncated:a.size===1600};}
 async function hr(){
  const x=await fetch(host+'/api/tya/cinepolis/hr-live?format=meta&focus='+Date.now(),{headers:{'cache-control':'no-store'},signal:AbortSignal.timeout(95000)});
  if(!x.ok)throw Error('ENVIRONMENT_FAILURE_HR_META_HTTP_'+x.status);
@@ -27,9 +28,9 @@ try{
  r.revisionObserved=await hr();if(r.revisionObserved!==rev)throw Error('ENVIRONMENT_FAILURE_HR_DRIFT');
  if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
  const ten=getFirestore().collection('tenants').doc('tya');
- const [resources,ai,reconciliations,project]=await Promise.all([
+ const [resources,ai,reconciliations,project,movements]=await Promise.all([
    col(ten.collection('resources')),col(ten.collection('aiSettings')),col(ten.collection('paymentReconciliations')),
-   ten.collection('projects').doc('cinepolis').get()
+   ten.collection('projects').doc('cinepolis').get(),col(ten.collection('financialMovements'))
  ]);
  const bank=resources.rows.filter(v=>byProject(v)&&v.resourceType==='certification_bank');
  const candidate=resources.rows.filter(v=>byProject(v)&&/instructivo|manual|protocolo|resource|training|certification/i.test([v.resourceType,v.tipo,v.n,v.name,v.title].map(t).join('|'))&&v.resourceType!=='certification_bank');
@@ -57,15 +58,16 @@ try{
   if(isPaid){paid++;if(!hasProof)paidWithoutProof++}else{pending++;if(!hasProof)pendingWithoutProof++}
   if(x.amountReviewRequired===true||t(x.amountStatus).includes('review'))amountReview++;
   if(t(x.sourceRef||x.reconciliationSourceRef))linkedSource++;else noSource++;
-  const amount=Number(x.amount||x.total||x.honorario||0);
-  if(Number.isFinite(amount)&&Math.abs(amount-7300)<0.001){amountQ7300++;if(hasProof)q7300Authority++}
  }
+ const advanceRows=movements.rows.map(x=>advanceCandidate(x,'cinepolis')).filter(Boolean);
+ amountQ7300=advanceRows.length;q7300Authority=advanceRows.filter(x=>x.scopeExact&&proof(x)).length;
  r.finance={state:'HOLD_FINANCE_HISTORICAL_BACKING_AND_BATCH_PENDING',reconciliations:rows.length,truncated:reconciliations.truncated,
   countries:{GT:rows.filter(x=>['GT','GUATEMALA'].includes(t(x.country||x.pais).toUpperCase())).length,HN:rows.filter(x=>['HN','HONDURAS'].includes(t(x.country||x.pais).toUpperCase())).length},
   statusDistribution:status,currencyDistribution:currencies,paidStatusCount:paid,paidStatusWithoutIndependentProofCount:paidWithoutProof,
   pendingStatusCount:pending,pendingWithoutProofCount:pendingWithoutProof,amountReviewRequired:amountReview,
   sourceRefPresent:linkedSource,sourceRefMissing:noSource,
   q7300AmountCandidates:amountQ7300,q7300CandidatesWithExternalProof:q7300Authority,
+  q7300Collection:'financialMovements',q7300ScopeConflicts:advanceRows.filter(x=>!x.scopeExact).length,q7300ReadTruncated:movements.truncated,
   realPaymentTransfersValidated:0, noPaymentWrite:true,
   caveat:'Paid status or reconciliation sourceRef does not independently establish bank transfer'};
  r.hrRevisionReadback=await hr();
