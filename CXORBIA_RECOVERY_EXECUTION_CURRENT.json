@@ -24314,5 +24314,24 @@
     "noProduction": true,
     "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V689_2026-11-18.json",
     "ledgerBlob": "1b0e2727e7125645cc36aa548b863bb00fe8e76d"
+  },
+  "latestI3A08ScopedAuthFirestoreRun2610": {
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2610_A08_AUTH_EXCEPTIONS_AND_NEGATIVE_FIRESTORE_DEV_20261118.json",
+    "receiptBlob": "a7c24270721fb275ce3e160c7994fbdf0bfbfc91",
+    "runId": 44403493588,
+    "runNumber": 2610,
+    "jobId": 135152975123,
+    "controlHead": "58e0fd474391ea52fa1316863a76ed015f79bfce",
+    "decision": "PASS_I3_A08_SCOPED_FIRESTORE_DENIALS_AUTH_TRIAGE",
+    "i3Status": "HOLD",
+    "domainPromotions": 0,
+    "matchDomains": 6,
+    "totalDomains": 21,
+    "provenNegativeFirestoreOperations": 4,
+    "exceptionIdsTriaged": 3,
+    "credentialPasswordLoginProven": 0,
+    "production": false,
+    "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+    "nextExactAction": "I3-Q3 only: real protected API role-denial, real cross-shopper Storage object-denial and independent password-login evidence for three exceptions; B14 remains blocked until real provider fixture/binding. No domain promotion without full contract."
   }
 }

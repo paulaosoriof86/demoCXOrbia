@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "cxorbia.i3.run2610.a08.scoped-auth-firestore-readonly.v1",
+  "dateGuatemala": "2026-11-18",
+  "iteration": "I3",
+  "block": "I3-Q3",
+  "state": "HOLD",
+  "scopeDecision": "PASS_I3_A08_SCOPED_FIRESTORE_DENIALS_AUTH_TRIAGE",
+  "fullA08Certified": false,
+  "fullI3Certified": false,
+  "domainPromotionCount": 0,
+  "accreditedDomains": 6,
+  "totalDomains": 21,
+  "execution": {
+    "repo": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "controlHead": "58e0fd474391ea52fa1316863a76ed015f79bfce",
+    "runId": 44403493588,
+    "runNumber": 2610,
+    "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/44403493588",
+    "jobId": 135152975123,
+    "jobConclusion": "success",
+    "workflowConclusion": "success",
+    "artifactId": 14472628105,
+    "artifactZipDigest": "sha256:3d554e82d4292efa3369d1d93f5601945c78c9a6820a3c3189d7a645c16d8ae7"
+  },
+  "authority": {
+    "productSourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+    "productTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
+    "devHostingVersion": "sites/cxorbia-backend-dev/versions/4e615718c8ab4a03",
+    "devRuntimeRevision": "cxorbia-live-hr-dev-00380-s9m",
+    "devRuntimeDigest": "sha256:95eab8082b6e18a39164a22af7d27029558917f0ea0634a76055c6eb1b0dd395",
+    "observedExternalHrRevision": "3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8",
+    "countryScopes": [
+      "GT",
+      "HN"
+    ],
+    "production": false
+  },
+  "exceptions": [
+    {
+      "shopperId": "shopper_gt_a092a0647f",
+      "profileExists": true,
+      "authMemberships": 2,
+      "activeEligibleAuth": 1,
+      "disabledInactiveAuth": 1,
+      "observedRawClassification": "AUTH_FAILURE:EXCEPTION_MEMBERSHIP_COLLISION",
+      "adjudication": "HISTORICAL_DISABLED_DUPLICATE_WITH_ONE_ELIGIBLE_PRINCIPAL__NO_ACTIVE_COLLISION_PROVEN",
+      "ordinaryPasswordLoginProven": false
+    },
+    {
+      "shopperId": "shopper_hn_3b3c2f5cc1",
+      "profileExists": true,
+      "authMemberships": 2,
+      "activeEligibleAuth": 1,
+      "disabledInactiveAuth": 1,
+      "observedRawClassification": "AUTH_FAILURE:EXCEPTION_MEMBERSHIP_COLLISION",
+      "adjudication": "HISTORICAL_DISABLED_DUPLICATE_WITH_ONE_ELIGIBLE_PRINCIPAL__NO_ACTIVE_COLLISION_PROVEN",
+      "ordinaryPasswordLoginProven": false
+    },
+    {
+      "shopperId": "shp-3669abbb015a",
+      "profileExists": true,
+      "authMemberships": 1,
+      "activeEligibleAuth": 1,
+      "disabledInactiveAuth": 0,
+      "observedRawClassification": "AUTH_RECORD_CONSISTENT_PASSWORD_LOGIN_UNPROVEN",
+      "adjudication": "ONE_ELIGIBLE_PRINCIPAL__PASSWORD_LOGIN_UNPROVEN",
+      "ordinaryPasswordLoginProven": false
+    }
+  ],
+  "denials": {
+    "sessions": [
+      {
+        "case": "GT_MURGA",
+        "ownShopperProfile": "READ_ALLOWED_EXISTS",
+        "otherShopperProfile": "permission-denied",
+        "staffMembership": "permission-denied"
+      },
+      {
+        "case": "HN_VILCA",
+        "ownShopperProfile": "READ_ALLOWED_EXISTS",
+        "otherShopperProfile": "permission-denied",
+        "staffMembership": "permission-denied"
+      }
+    ],
+    "authorizedReads": 2,
+    "deniedCrossOwnerReads": 2,
+    "deniedStaffReads": 2,
+    "verifiedNegativeChecks": 4,
+    "apiNegativeCoverage": "NOT_PROVEN",
+    "storageCrossOwnerNegativeCoverage": "NOT_PROVEN",
+    "authMode": "SIGNED_CUSTOM_TOKEN_NOT_ORDINARY_PASSWORD_LOGIN"
+  },
+  "preservation": {
+    "previousPass": "RUN2606_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E",
+    "replayedPreviousPositiveE2e": false,
+    "providerCommands": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "deploys": 0,
+    "productionWrites": 0
+  },
+  "remainingA08": [
+    "Authenticated operation-by-role negative API cases with exact existing endpoint",
+    "Cross-owner Storage negative read using an existing known evidence object",
+    "Independent ordinary credential login/adjudication for three scoped exceptions"
+  ],
+  "otherUnclosed": [
+    "B14 real external HR writer project binding+fixture+remote ACK absent",
+    "C09/C10 financial closure",
+    "D08 academy independent UI/roles",
+    "Gate20/Gate21 certification"
+  ],
+  "nextExactAction": "Continue I3-Q3 only: obtain real DEV API protected endpoint and existing Storage evidence object for two scoped negative role denials; leave three exception password-login observations unproven until independent evidence. Do not re-census, rewrite Auth, edit HR, deploy, compose new candidate or promote 6/21."
+}
