@@ -2,9 +2,15 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
-import {FINANCE_COLLECTIONS,IDENTITY_LINK_COLLECTION,identityLinkAssessment,amountOf,advanceCandidate,paymentEvidence,buildFinanceManifest,encryptManifest,validateReadonlyScope,runFinanceResidualReadonly} from './cxorbia-i3-finance-residual-readonly.mjs';
+import {FINANCE_COLLECTIONS,IDENTITY_LINK_COLLECTION,identityLinkAssessment,summarizeIdentityPreflight,amountOf,advanceCandidate,paymentEvidence,buildFinanceManifest,encryptManifest,validateReadonlyScope,runFinanceResidualReadonly} from './cxorbia-i3-finance-residual-readonly.mjs';
 const scope={tenantId:'tya',projectId:'cinepolis',periodId:'cinepolis-2026-09'};
 const movement={docId:'advance-a',id:'advance-a',tenantId:'tya',projectId:'cinepolis',tipo:'ingreso',tipoIngreso:'anticipo',amount:7300,country:'GT',currency:'Q'};
+test('public identity summary has counts only and no private IDs',()=>{
+ const raw=[{visitId:'secret-a',candidateLinks:[{docId:'private-link'}]},{visitId:'secret-b',candidateLinks:[]},{visitId:'secret-c',candidateLinks:[{docId:'x'},{docId:'y'}]}];
+ const result=summarizeIdentityPreflight(raw,25);
+ assert.deepEqual(result,{identityLinkRecordsRead:25,identityConflictVisits:3,zeroLinkCandidates:1,oneLinkCandidate:1,multipleLinkCandidates:1,autoAdjudicated:0,privateIdsExposed:false});
+ assert(!JSON.stringify(result).includes('secret-')&&!JSON.stringify(result).includes('private-link'));
+});
 test('current durable collections, never old paymentBatches',()=>{assert.equal(FINANCE_COLLECTIONS.movements,'financialMovements');assert.equal(FINANCE_COLLECTIONS.lots,'paymentLots');});
 test('provider identity link path is the durable tenant collection',()=>assert.equal(IDENTITY_LINK_COLLECTION,'shopperIdentityLinks'));
 test('identity conflicts are read only and require exact alias evidence',()=>{

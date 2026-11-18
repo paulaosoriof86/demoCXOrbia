@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "cxorbia.i3.daily-execution-freeze.v1",
+  "dateLocal": "2026-11-18",
+  "timezone": "America/Guatemala",
+  "decision": "FROZEN_DAILY_PRIORITIES_UNDER_EXISTING_I3_EXECUTION_LOCK",
+  "iteration": "I3",
+  "state": "HOLD",
+  "supersedesMethodology": false,
+  "sourceOfTruth": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "singleProductSourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+    "singleProductTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
+    "materializationRunId": 44030019174,
+    "devHostingVersion": "sites/cxorbia-backend-dev/versions/4e615718c8ab4a03",
+    "devRuntimeRevision": "cxorbia-live-hr-dev-00380-s9m",
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V361.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V688_2026-11-17.json",
+    "production": "DO_NOT_TOUCH",
+    "authorizationI4": false
+  },
+  "measuredYesterdayLocal20261117": {
+    "scopeUtc": ["2026-11-17T06:00:00Z", "2026-11-18T06:00:00Z"],
+    "branchCommits": 15,
+    "i3CertificationRuns": 13,
+    "i3CertificationSuccess": 8,
+    "i3CertificationFailure": 5,
+    "humanContinuityRuns": 8,
+    "humanContinuitySuccess": 7,
+    "humanContinuityFailure": 1,
+    "otherConditionalJobsSkipped": 56,
+    "domainMatchBefore": 5,
+    "domainMatchAfter": 6,
+    "domainTotal": 21,
+    "sourceReady": 21,
+    "phaseAComplete": false
+  },
+  "newEvidence": {
+    "financeReadbackRunId": 44216662990,
+    "financeReadback": "PASS_FINANCE_READONLY_CURRENT_MANIFEST",
+    "financialWrites": 0,
+    "productionWrites": 0,
+    "devShopperUiObserved": {
+      "role": "shopper",
+      "context": "tya/cinepolis/2026-11",
+      "ownerConsistentAcrossSidebarAndMiDia": true,
+      "myVisitsHistory": 10,
+      "historicallyConfirmedPaymentsShown": 7,
+      "pendingPaymentsShown": 3,
+      "september2026VisitShownPending": true,
+      "academyCoursesShown": 7,
+      "academyLessonsShown": 27,
+      "academyLessonOpened": true,
+      "persistenceOrWriteE2eClaimed": false,
+      "crossRoleE2eClaimed": false
+    }
+  },
+  "priorities": [
+    {
+      "order": 1,
+      "owner": "I3 finance protected reader",
+      "action": "Read private provider identity links and publish privacy-safe aggregate counters; reconcile exact pairs against supersession preconditions, not fuzzy identity",
+      "accept": "SUCCESS same-source readonly receipt, enumerated counts, zero sensitive IDs in public logs",
+      "writeAuthority": "READ_ONLY"
+    },
+    {
+      "order": 2,
+      "owner": "Finance command provider",
+      "action": "Prove one idempotent metadata edit for the owner-identified November advance; do not create a third Q7300 movement or infer funding allocation",
+      "accept": "Exact owner/source proof, safe command contract, DEV readback before-after and no duplicate",
+      "writeAuthority": "ONLY_IF_P0_PROVEN_AND_EXACT_CONTRACT"
+    },
+    {
+      "order": 3,
+      "owner": "Historical finance reconciliation and identity provider",
+      "action": "Handle 44 September reconciliations in authorized bounded groups once provider HR revision, money authority and identity links pass; never claim external bank confirmation from internal status",
+      "accept": "Per-visit durable ACK/readback/replay/no duplicates and separate bank truth",
+      "writeAuthority": "ONLY_AFTER_EXACT_PROVIDER_AUTHORITY"
+    },
+    {
+      "order": 4,
+      "owner": "Current Admin/Shopper I3 E2E",
+      "action": "Credit already proven same-artifact roles, Academy learner progress, identity/profile, payments view and functional flows through the existing matrix/ledger",
+      "accept": "Per-domain exact role, source revision, provider ACK if write, reload and human acceptance where required",
+      "writeAuthority": "NO_NEW_HUMAN_CHECKPOINT_UNTIL_P0_CLOSED"
+    },
+    {
+      "order": 5,
+      "owner": "B14 external HR provider",
+      "action": "Prove authorized isolated real provider fixture, writer binding, ACK, echo, lost response replay and conflict isolation",
+      "accept": "Same external revision, exact provider readback, no duplicated assignments",
+      "writeAuthority": "REQUIRES_EXACT_AUTHORIZED_FIXTURE"
+    },
+    {
+      "order": 6,
+      "owner": "Gate20 then Gate21 then I4",
+      "action": "Once 21 domains MATCH and all P0 are closed, certify same immutable artifact, obtain single human checkpoint, derive Gate21 from same manifest, request exact I4 authorization",
+      "accept": "I3 GO with one artifact digest and no build between certification and deployment",
+      "writeAuthority": "I4_EXPLICIT_AUTHORIZATION_REQUIRED"
+    }
+  ],
+  "executionPolicy": {
+    "oneCandidate": true,
+    "oneTechnicalWriter": true,
+    "noNewWorkflow": true,
+    "noOverlay": true,
+    "noDataReimport": true,
+    "preserveExistingHumanPass": true,
+    "creditOnlyWholeDomainEvidence": true,
+    "publishProvenProductDeltaToExistingDevInSameClosure": true,
+    "gate21ConsumesGate20ArtifactNotSeparateSource": true,
+    "statusVocabulary": ["GO", "HOLD", "NO_GO"]
+  }
+}

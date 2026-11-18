@@ -87,6 +87,15 @@ export function buildFinanceManifest(data,{tenantId,projectId,periodId}){
     hrAuthorityMode:'PINNED_SEAL_AND_STORED_FIELDS_ONLY',freshExternalHrVerified:false,providerCommandsExecuted:0,newDomainMatches:0,
     writes:{firestore:0,auth:0,hr:0,finance:0,bank:0},production:false};
 }
+export function summarizeIdentityPreflight(rows,linkCount){
+  const a=Array.isArray(rows)?rows:[];
+  const candidates=x=>Array.isArray(x.candidateLinks)?x.candidateLinks.length:0;
+  return {identityLinkRecordsRead:Number(linkCount)||0,identityConflictVisits:a.length,
+    zeroLinkCandidates:a.filter(x=>candidates(x)===0).length,
+    oneLinkCandidate:a.filter(x=>candidates(x)===1).length,
+    multipleLinkCandidates:a.filter(x=>candidates(x)>1).length,
+    autoAdjudicated:0,privateIdsExposed:false};
+}
 export function encryptManifest(manifest,publicKey){
   const key=crypto.randomBytes(32),iv=crypto.randomBytes(12),plain=Buffer.from(JSON.stringify(manifest));
   const cipher=crypto.createCipheriv('aes-256-gcm',key,iv);
@@ -156,7 +165,7 @@ export async function runFinanceResidualReadonly({project,host,out,source,period
       operationKind:'READ_ONLY',sourceSha:source,sourceTree:env.FOCAL_TREE,runId:env.GITHUB_RUN_ID,runAttempt:env.GITHUB_RUN_ATTEMPT,
       encryptedEvidence:'finance-private.json.enc',encryptedEvidenceSha256:hash(JSON.stringify(encrypted)+'\n'),privateEvidenceSha256:encrypted.plainSha256,
       exactCollections:{...FINANCE_COLLECTIONS,identityLinks:IDENTITY_LINK_COLLECTION},completeRead:true,sameDocumentsStable:stable,atomicSnapshotClaimed:false,
-      privateDataExposed:false,providerCommandsExecuted:0,freshExternalHrVerified:false,newDomainMatches:0,phaseAComplete:false,
+      privateDataExposed:false,identityPreflight:summarizeIdentityPreflight(manifest.identityLinkAssessment,manifest.identityLinkRecordsRead),providerCommandsExecuted:0,freshExternalHrVerified:false,newDomainMatches:0,phaseAComplete:false,
       writes:{firestore:0,auth:0,hr:0,finance:0,bank:0},production:false};
     fs.writeFileSync(path.join(out,'finance-readonly.json'),JSON.stringify(publicReceipt,null,2)+'\n');
     console.log('FINANCE_READONLY_RECEIPT='+JSON.stringify(publicReceipt));
