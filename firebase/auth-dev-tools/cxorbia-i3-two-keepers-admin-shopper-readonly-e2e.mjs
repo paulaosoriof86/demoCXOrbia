@@ -222,6 +222,11 @@ async function gotoRoute(page,route){
   await page.waitForFunction(r=>String(window.CX?.session?.view||'')===r,route,{timeout:30000});
   await page.waitForFunction(()=>String(document.querySelector('#view')?.innerText||'').trim().length>35,null,{timeout:30000});
 }
+const a08EventMessage=process.env.GITHUB_EVENT_PATH?
+  JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8')).head_commit?.message||'':'';
+if(a08EventMessage.includes('[i3-a08-exceptions-readonly]')){
+  await import('./cxorbia-i3-a08-exceptions-negative-readonly.mjs');
+}else{
 try {
   if(!/^[a-f0-9]{40}$/.test(SOURCE) ||
      !/^[a-f0-9]{64}$/.test(EXPECTED_HR) ||
@@ -362,4 +367,6 @@ try {
   if(browser)await browser.close().catch(()=>{});
   save();
   process.stdout.write(JSON.stringify(result,null,2)+'\n');
+}
+
 }
