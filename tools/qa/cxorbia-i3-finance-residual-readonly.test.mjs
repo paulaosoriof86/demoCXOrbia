@@ -15,6 +15,13 @@ test('identity conflicts are read only and require exact alias evidence',()=>{
  const rows=identityLinkAssessment([visit],[good,wrong]);assert.deepEqual(rows[0].candidateLinks.map(x=>x.docId),['link-a']);
  assert.equal(rows[0].automaticAdjudication,false);
 });
+test('ambiguous identity links remain unresolved, never auto-selected',()=>{
+ const row={docId:'v',shopperId:'new',priorReconciliations:[{shopperId:'old'}]};
+ const link={canonicalShopperId:'new',sourceAliases:['old'],status:'active',authorityType:'provider_exact'};
+ const found=identityLinkAssessment([row],[{...link,docId:'a'},{...link,docId:'b'}]);
+ assert.equal(found[0].candidateLinks.length,2);
+ assert.equal(found[0].automaticAdjudication,false);
+});
 test('zero amount is not replaced by monto',()=>assert.deepEqual(amountOf({amount:0,monto:7300}),{amount:0,conflict:true}));
 test('amount field conflict is retained, not certified',()=>assert(advanceCandidate({...movement,monto:7200},'cinepolis').conflicts.includes('AMOUNT_FIELDS_CONFLICT')));
 test('secondary amount match is not lost when primary amount conflicts',()=>assert(advanceCandidate({...movement,amount:7200,monto:7300},'cinepolis').conflicts.includes('AMOUNT_FIELDS_CONFLICT')));
