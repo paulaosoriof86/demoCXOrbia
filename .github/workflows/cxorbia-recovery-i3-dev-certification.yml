@@ -1394,14 +1394,7 @@ jobs:
       if [[ "$CXORBIA_I3_FINANCE_MODE" == READONLY_SEP_ADVANCES ]]; then
         SOURCE_SHA="$FOCAL_SOURCE" FINAL_FOCAL_OUT="$FINAL_FOCAL_OUT/readonly" FINAL_FOCAL_PERIOD_ID="$PERIOD_ID" node tools/qa/cxorbia-prei4-final-focal-finance-live.mjs | tee "$FINAL_FOCAL_OUT/console.log"
         jq -e '.decision=="PASS_FINANCE_READONLY_CURRENT_MANIFEST" and .sameDocumentsStable and .privateDataExposed==false and .providerCommandsExecuted==0 and .production==false and .newDomainMatches==0' "$FINAL_FOCAL_OUT/readonly/finance-readonly.json" >/dev/null
-        R="$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")"
-        H="$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")"
-        gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='json(status.latestReadyRevisionName,status.traffic)' > "$FINAL_FOCAL_OUT/runtime-after.json"
-        jq -e --arg r "$R" '.status.latestReadyRevisionName==$r and ([.status.traffic[]|select(.percent>0)|.percent]|add)==100 and all(.status.traffic[]|select(.percent>0);.revisionName==$r)' "$FINAL_FOCAL_OUT/runtime-after.json" >/dev/null
-        TOKEN="$(gcloud auth print-access-token)"
-        curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$FINAL_FOCAL_OUT/hosting-after.json"
-        test "$(jq -r '.release.version.name' "$FINAL_FOCAL_OUT/hosting-after.json")" = "$H"
-        jq -n --arg source "$FOCAL_SOURCE" --arg runtime "$R" --arg hosting "$H" '{decision:"PASS_CURRENT_FINANCE_DEV_IDENTITY_READBACK",sourceSha:$source,runtimeRevision:$runtime,hostingVersion:$hosting,runtimeTrafficExact:true,hostingBeforeAfterSame:true,production:false,deploys:0}' > "$FINAL_FOCAL_OUT/readonly/identity-live-readback.json"
+        bash tools/qa/cxorbia-i3-finance-current-readback.sh
       elif [[ "$STATUS" == "HOLD_I3_VRM174_HISTORICAL_PAYMENT_REPROOF_REQUIRED" ]]; then
         PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" VRM174_OUT="$FINAL_FOCAL_OUT/historical" node tools/qa/cxorbia-i3-vrm174-historical-payment-live.mjs | tee "$FINAL_FOCAL_OUT/console.log"
         R="$FINAL_FOCAL_OUT/historical/result.json"

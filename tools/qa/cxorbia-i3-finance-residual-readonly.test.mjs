@@ -53,3 +53,7 @@ test('public artifact excludes raw cloud runtime metadata',()=>{
  const finance=src.slice(src.indexOf('  i3-finance-focal-reproof:'),src.indexOf('  vrm085-postulation-sync-diagnostic:'));
  assert(finance.includes("&& '.tmp/i3-finance-focal/readonly'"));
 });
+test('canonical workflow stays below its existing 510000-byte guard',()=>{
+ const workflow=fs.readFileSync('.github/workflows/cxorbia-recovery-i3-dev-certification.yml');assert(workflow.byteLength<510000);
+ const step=fs.readFileSync('tools/qa/cxorbia-i3-finance-current-readback.sh','utf8');assert(step.includes('runtimeTrafficExact:true'));assert(step.includes('hostingBeforeAfterSame:true'));
+});
