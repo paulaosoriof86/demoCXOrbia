@@ -20847,7 +20847,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "I3-Q3: preserve source836/RUN2587 exact DEV and RUN2588 Benefits MATCH6. Resolve the missing executable B14 prerequisite before dispatch: locate or prepare the concrete isolated real-provider fixture and exact writer binding within the approved scope, with workbook/tab/range, role, preconditions, cleanup and authorization evidence. The operational HR remains external_read_only and hrWritesEnabled=false; the existing B14 capability mode is not a remote-write test. Implement and source-prove only the missing focal B14 contract in the existing owners/workflow, then prove same external HR revision, valid-event ordering, remote ACK, independent readback, lost-response replay, conflict/echo and no duplicates on the authorized fixture. Do not repeat the completed VRM358 deployment or call generic C3 as a substitute for B14. Preserve all accepted native identity/login/replay clauses and execute only uncovered clauses; prepare C09/C10 and D08 read-only in parallel. Credit complete domain receipts immediately, publish proven product deltas serially to existing DEV, then Gate20 -> Gate21. I4 requires I3 GO and explicit authorization for the exact immutable artifact.",
+  "nextExactAction": "I3-Q3: preserve source836/RUN2587 exact DEV and RUN2588 Benefits MATCH6. Consume RUN2595 as READ_ONLY finance evidence, not settlement: the owner-described advance identities and September inventory are located in the authenticated private manifest. Resolve only the enumerated historical/current identity pairs and amount/source authority; verify the existing safe movement-edit contract for the owner-identified November record, with no third advance, inferred allocation or bank transfer. Preserve RUN2391 D08 provider progress ACK/new-session/replay/isolation/cleanup; finish only current UI/content/independent-role residuals. B14 remains external_read_only/hrWritesEnabled=false until a concrete authorized isolated real-provider fixture and exact writer binding exist; capability/readback is not remote ACK. Prepare that bounded existing-owner test for same external revision, ordering, ACK, independent readback, lost-response replay, concurrency/echo and no duplicates. No repeat of completed VRM358 deployment or generic C3 substitute. Credit complete domain receipts immediately; publish only proven product deltas serially to existing DEV. Then Gate20 -> Gate21. I4 requires I3 GO and explicit exact-artifact authorization.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -31448,7 +31448,7 @@
     "decision": "P0_D08_DISPATCH_FIXED_LOCAL_9_OF_9_PENDING_CANONICAL_CI_EXACT_DEV",
     "production": false
   },
-  "generatedAt": "2026-11-18T00:46:52Z",
+  "generatedAt": "2026-11-18T00:52:48Z",
   "predecessorMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V356.json",
   "previousSourceProofBeforeD08Progress": {
     "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
@@ -31590,8 +31590,8 @@
     "decision": "PASS_VRM154_156_FRONTEND_SOURCE_CONTRACT_AND_D08_27_OF_27",
     "production": false
   },
-  "updatedAt": "2026-11-18T00:46:52Z",
-  "exactNextAction": "I3-Q3: preserve source836/RUN2587 exact DEV and RUN2588 Benefits MATCH6. Resolve the missing executable B14 prerequisite before dispatch: locate or prepare the concrete isolated real-provider fixture and exact writer binding within the approved scope, with workbook/tab/range, role, preconditions, cleanup and authorization evidence. The operational HR remains external_read_only and hrWritesEnabled=false; the existing B14 capability mode is not a remote-write test. Implement and source-prove only the missing focal B14 contract in the existing owners/workflow, then prove same external HR revision, valid-event ordering, remote ACK, independent readback, lost-response replay, conflict/echo and no duplicates on the authorized fixture. Do not repeat the completed VRM358 deployment or call generic C3 as a substitute for B14. Preserve all accepted native identity/login/replay clauses and execute only uncovered clauses; prepare C09/C10 and D08 read-only in parallel. Credit complete domain receipts immediately, publish proven product deltas serially to existing DEV, then Gate20 -> Gate21. I4 requires I3 GO and explicit authorization for the exact immutable artifact.",
+  "updatedAt": "2026-11-18T00:52:48Z",
+  "exactNextAction": "I3-Q3: preserve source836/RUN2587 exact DEV and RUN2588 Benefits MATCH6. Consume RUN2595 as READ_ONLY finance evidence, not settlement: the owner-described advance identities and September inventory are located in the authenticated private manifest. Resolve only the enumerated historical/current identity pairs and amount/source authority; verify the existing safe movement-edit contract for the owner-identified November record, with no third advance, inferred allocation or bank transfer. Preserve RUN2391 D08 provider progress ACK/new-session/replay/isolation/cleanup; finish only current UI/content/independent-role residuals. B14 remains external_read_only/hrWritesEnabled=false until a concrete authorized isolated real-provider fixture and exact writer binding exist; capability/readback is not remote ACK. Prepare that bounded existing-owner test for same external revision, ordering, ACK, independent readback, lost-response replay, concurrency/echo and no duplicates. No repeat of completed VRM358 deployment or generic C3 substitute. Credit complete domain receipts immediately; publish only proven product deltas serially to existing DEV. Then Gate20 -> Gate21. I4 requires I3 GO and explicit exact-artifact authorization.",
   "historicalActiveHeadersBeforeRun2263": {
     "currentActionReconciliation": {
       "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
@@ -44364,5 +44364,27 @@
   "previousCanonicalMatrix": {
     "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V360.json",
     "gitBlob": "8d7fbbedb3f5686a8426dee652f143a585aba11c"
+  },
+  "controlPointerRepairAfterRun2596": {
+    "failedRunId": 44210958044,
+    "failedRunNumber": 2596,
+    "classification": "MAPPING_FAILURE",
+    "scope": "CONTROL_POINTERS_ONLY",
+    "failedFields": [
+      "moduleTruthAuthority.path",
+      "moduleTruthAuthority.gitBlob",
+      "activeShockModuleTruth.matrixPath",
+      "activeShockModuleTruth.matrixBlob",
+      "continuityHandoff.immediateAction"
+    ],
+    "additionalCurrentAliasesAligned": [
+      "currentCanonicalCheckpoint.immediateAction",
+      "matrix.exactNextAction",
+      "matrix.nextExactAction"
+    ],
+    "guardsRelaxed": false,
+    "sourceOrDevSealChanged": false,
+    "verificationAuthority": "GITHUB_ACTIONS_CANONICAL_JOB_FOR_CURRENT_CONTROL_HEAD",
+    "production": false
   }
 }

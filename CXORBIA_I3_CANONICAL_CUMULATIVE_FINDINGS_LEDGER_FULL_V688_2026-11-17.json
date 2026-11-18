@@ -33706,7 +33706,7 @@
   },
   "currentTruth": {
     "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V361.json",
-    "moduleTruthGitBlob": "ebd9a85fed481c8f27bff3a6f42c2f1c5d19dbc3",
+    "moduleTruthGitBlob": "48ecd763897578bec2f2f3e0a3047fec930dea6e",
     "productSourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
     "productTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
     "moduleTruthCurrent": true,
@@ -47226,7 +47226,7 @@
     "decision": "P0_D08_DISPATCH_FIXED_LOCAL_9_OF_9_PENDING_CANONICAL_CI_EXACT_DEV",
     "production": false
   },
-  "updatedAt": "2026-11-18T00:46:52Z",
+  "updatedAt": "2026-11-18T00:52:48Z",
   "previousAuthorityBeforeD08Progress": {
     "sourceSha": "91d29146ede33924c831ae54fe3f7b00925fff26",
     "sourceTree": "aab7a7f00f406d2085f715fdd72e82b76f889b66",
@@ -54315,7 +54315,7 @@
     "gitBlob": "e4d6d18a975db73f6dc5cad6bb28a41f1eec612d",
     "sha256": "9d7855a34110acb5208edfb0e23322ae895f796c660ebab8ee30d5aa1b7ece2f"
   },
-  "generatedAt": "2026-11-18T00:46:52Z",
+  "generatedAt": "2026-11-18T00:52:48Z",
   "currentExecutionReceipt": {
     "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
     "gitBlob": "710bfcc03e10070cd365d90ed52ff71f26bc72ff",
@@ -57280,5 +57280,27 @@
       "production": false
     },
     "b14WritePolicyUnchanged": true
+  },
+  "controlPointerRepairAfterRun2596": {
+    "failedRunId": 44210958044,
+    "failedRunNumber": 2596,
+    "classification": "MAPPING_FAILURE",
+    "scope": "CONTROL_POINTERS_ONLY",
+    "failedFields": [
+      "moduleTruthAuthority.path",
+      "moduleTruthAuthority.gitBlob",
+      "activeShockModuleTruth.matrixPath",
+      "activeShockModuleTruth.matrixBlob",
+      "continuityHandoff.immediateAction"
+    ],
+    "additionalCurrentAliasesAligned": [
+      "currentCanonicalCheckpoint.immediateAction",
+      "matrix.exactNextAction",
+      "matrix.nextExactAction"
+    ],
+    "guardsRelaxed": false,
+    "sourceOrDevSealChanged": false,
+    "verificationAuthority": "GITHUB_ACTIONS_CANONICAL_JOB_FOR_CURRENT_CONTROL_HEAD",
+    "production": false
   }
 }

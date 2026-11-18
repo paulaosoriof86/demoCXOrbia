@@ -225,7 +225,7 @@
   "productTreeAuthority": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
   "predecessorProductSourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V688_2026-11-17.json",
-  "findingsLedgerExpectedGitBlob": "9450822f06e94e83b983184f180afa3416c94917",
+  "findingsLedgerExpectedGitBlob": "fc4c4183921a5fe943353ae90e42ae812d071ee2",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -4434,7 +4434,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "ebd9a85fed481c8f27bff3a6f42c2f1c5d19dbc3",
+  "moduleTruthExpectedGitBlob": "48ecd763897578bec2f2f3e0a3047fec930dea6e",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -19066,7 +19066,7 @@
     "sourceTestsFail": 0,
     "production": false
   },
-  "updatedAt": "2026-11-18T00:46:52Z",
+  "updatedAt": "2026-11-18T00:52:48Z",
   "previousCurrentMaterializationBeforeRun2248": {
     "builds": 1,
     "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
@@ -20090,11 +20090,11 @@
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
       "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V361.json",
-      "gitBlob": "ebd9a85fed481c8f27bff3a6f42c2f1c5d19dbc3"
+      "gitBlob": "48ecd763897578bec2f2f3e0a3047fec930dea6e"
     },
     "ledger": {
       "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V688_2026-11-17.json",
-      "gitBlob": "9450822f06e94e83b983184f180afa3416c94917"
+      "gitBlob": "fc4c4183921a5fe943353ae90e42ae812d071ee2"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
@@ -33477,5 +33477,27 @@
       "production": false
     },
     "b14WritePolicyUnchanged": true
+  },
+  "controlPointerRepairAfterRun2596": {
+    "failedRunId": 44210958044,
+    "failedRunNumber": 2596,
+    "classification": "MAPPING_FAILURE",
+    "scope": "CONTROL_POINTERS_ONLY",
+    "failedFields": [
+      "moduleTruthAuthority.path",
+      "moduleTruthAuthority.gitBlob",
+      "activeShockModuleTruth.matrixPath",
+      "activeShockModuleTruth.matrixBlob",
+      "continuityHandoff.immediateAction"
+    ],
+    "additionalCurrentAliasesAligned": [
+      "currentCanonicalCheckpoint.immediateAction",
+      "matrix.exactNextAction",
+      "matrix.nextExactAction"
+    ],
+    "guardsRelaxed": false,
+    "sourceOrDevSealChanged": false,
+    "verificationAuthority": "GITHUB_ACTIONS_CANONICAL_JOB_FOR_CURRENT_CONTROL_HEAD",
+    "production": false
   }
 }
