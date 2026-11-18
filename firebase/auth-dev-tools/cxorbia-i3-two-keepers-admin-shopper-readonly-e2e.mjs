@@ -28,7 +28,8 @@ const cases=[
 const result={schemaVersion:'cxorbia.i3.two-keepers.admin-shopper-readonly-e2e.v1',
   iteration:'I3',gate:'HOLD',sourceSha:SOURCE,expectedHrRevision:EXPECTED_HR,
   environment:PROJECT,projectId:PROGRAM,decision:'HOLD_NOT_EXECUTED',
-  admin:{},shoppers:[],checks:[],pdfComparison:{decision:'HOLD_NOT_RUN',sites:[]},
+  admin:{},shoppers:[],checks:[],roleProof:{decision:'HOLD_NOT_RUN',admin:false,shopperCases:[]},
+  sessionReadinessFailures:[],pdfComparison:{decision:'HOLD_NOT_RUN',sites:[]},
   safety:{providerCommands:0,directAuthWrites:0,directFirestoreWrites:0,
     hrWrites:0,deploys:0,production:false}};
 fs.mkdirSync(OUT,{recursive:true});
@@ -55,14 +56,20 @@ async function signed(auth,member,role,root=ROOT){
   const requestedUrl=authUrl.replace(ROOT,root);
   const context=await browser.newContext({viewport:{width:1440,height:1000}});
   const page=await context.newPage();
+  let stage='INITIAL_NAVIGATION';
+  try{
   const token=await auth.createCustomToken(member.uid);
   await page.goto(requestedUrl+'&case='+role+'&stamp='+Date.now(),{waitUntil:'domcontentloaded',timeout:90000});
+  stage='FIREBASE_SDK_READY';
   await page.waitForFunction(()=>!!window.firebase?.auth && window.firebase.apps?.length>0,null,{timeout:90000});
   await page.evaluate(async()=>{await window.firebase.auth().setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);});
+  stage='CUSTOM_TOKEN_SESSION';
   await page.evaluate(jwt=>{window.firebase.auth().signInWithCustomToken(jwt).catch(()=>{});return true;},token);
   await page.waitForFunction(uid=>window.firebase?.auth?.()?.currentUser?.uid===uid,member.uid,{timeout:90000});
+  stage='RELOAD_PERSISTED_SESSION';
   await page.goto('about:blank',{waitUntil:'domcontentloaded',timeout:30000});
   await page.goto(requestedUrl+'&settled='+role+'&stamp='+Date.now(),{waitUntil:'domcontentloaded',timeout:90000});
+  stage='PROTECTED_ROLE_AND_HR_REVISION';
   await page.waitForFunction(({uid,revision,role})=>{
     const cx=window.CX,ctx=cx?.backendAuth?.context?.()||{},value=String(ctx.role||'').toLowerCase();
     return window.firebase?.auth?.()?.currentUser?.uid===uid &&
@@ -71,6 +78,24 @@ async function signed(auth,member,role,root=ROOT){
       String(cx?.data?.previewMeta?.sourceRevision||'')===revision;
   },{uid:member.uid,revision:EXPECTED_HR,role},{timeout:120000});
   return {context,page};
+  }catch(error){
+    let observed={};
+    try{
+      observed=await page.evaluate(({uid,revision})=>{
+        const ctx=window.CX?.backendAuth?.context?.()||{};
+        return {documentReady:document.readyState,authSdkReady:!!window.firebase?.auth,
+          userMatches:window.firebase?.auth?.()?.currentUser?.uid===uid,
+          contextAuthenticated:ctx.authenticated===true,role:String(ctx.role||''),
+          hrApplied:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,
+          hrRevisionMatches:String(window.CX?.data?.previewMeta?.sourceRevision||'')===revision};
+      },{uid:member.uid,revision:EXPECTED_HR});
+    }catch{}
+    result.sessionReadinessFailures.push({
+      origin:root===ROOT?'CANONICAL_WEB_APP':'FIREBASEAPP_ALIAS',role,stage,
+      failureCode:shortError(error),...observed});
+    await context.close().catch(()=>{});
+    throw error;
+  }
 }
 // Separate fresh browser contexts prevent the real Julissa/Admin sessions from
 // sharing Firebase persistence. Reads only; never persist JWTs, Storage paths,
@@ -220,7 +245,6 @@ try {
   }
   check(validAdmins.length>=1,'AUTH_FAILURE:DEV_ADMIN_NOT_AVAILABLE',{count:validAdmins.length});
   browser=await chromium.launch({headless:true});
-  result.pdfComparison=await comparePdfOrigins(auth,members);
   const admin=await signed(auth,validAdmins[0],'admin');
   await gotoRoute(admin.page,'shoppers');
   result.admin={authenticated:true,staffUidFingerprint:fingerprint(validAdmins[0].uid),
@@ -281,6 +305,7 @@ try {
     viewLength:document.querySelector('#view')?.innerText?.length||0}));
   check(adminVisits.dataRows>0&&adminVisits.viewLength>35,'FUNCTIONAL_DEFECT:ADMIN_VISITS_NOT_HYDRATED');
   result.admin.visits=adminVisits;
+  result.roleProof.admin=true;
   await admin.context.close();
   for(const t of targets){
     const shopper=await signed(auth,t.member,'shopper');
@@ -307,8 +332,11 @@ try {
       check(state.role==='shopper'&&state.route===route&&state.viewLength>35,
         'FUNCTIONAL_DEFECT:SHOPPER_ROUTE_NOT_VISIBLE',{caseId:t.case.caseId,route});
     }
+    result.roleProof.shopperCases.push(t.case.caseId);
     await shopper.context.close();
   }
+  result.roleProof.decision='PASS_SCOPED_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E';
+  result.pdfComparison=await comparePdfOrigins(auth,members);
   if(result.pdfComparison?.decision!=='PASS_BOTH_ORIGINS_PDF_READ')
     throw Error('AUTH_FAILURE:SHOPPER_RESOURCE_PDF_ORIGIN_NOT_PROVEN');
   result.decision='PASS_SCOPED_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E';
