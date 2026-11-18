@@ -6,7 +6,6 @@ import crypto from 'node:crypto';
 import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
 import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
-import {chromium} from 'playwright';
 import {runFinanceResidualReadonly} from './cxorbia-i3-finance-residual-readonly.mjs';
 
 const PROJECT=process.env.PROJECT||'cxorbia-backend-dev';
@@ -50,6 +49,7 @@ if(financeMode){
   process.exit(0);
 }
 runC01ConciliarIfRequired();
+const {chromium}=await import('playwright');
 
 
 if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});

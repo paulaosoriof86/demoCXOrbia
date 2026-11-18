@@ -57,3 +57,13 @@ test('canonical workflow stays below its existing 510000-byte guard',()=>{
  const workflow=fs.readFileSync('.github/workflows/cxorbia-recovery-i3-dev-certification.yml');assert(workflow.byteLength<510000);
  const step=fs.readFileSync('tools/qa/cxorbia-i3-finance-current-readback.sh','utf8');assert(step.includes('runtimeTrafficExact:true'));assert(step.includes('hostingBeforeAfterSame:true'));
 });
+test('read-only branch resolves no browser and dependency failures are observable',()=>{
+ const src=fs.readFileSync('tools/qa/cxorbia-prei4-final-focal-finance-live.mjs','utf8');
+ assert(!src.includes("import {chromium} from 'playwright'"));assert(src.indexOf("await import('playwright')")>src.indexOf('process.exit(0)'));
+ const deps=fs.readFileSync('tools/qa/cxorbia-i3-finance-dependencies.sh','utf8'),branch=deps.split('\nelse\n')[0];
+ assert(!branch.includes('playwright'));assert(branch.includes('tee'));assert(branch.includes('set -Eeuo pipefail'));assert(!branch.includes('>/dev/null'));
+});
+test('dependency helper belongs only to the finance job',()=>{
+ const src=fs.readFileSync('.github/workflows/cxorbia-recovery-i3-dev-certification.yml','utf8');const target='bash tools/qa/cxorbia-i3-finance-dependencies.sh';
+ assert.equal(src.split(target).length-1,1);assert(src.slice(src.indexOf('  i3-finance-focal-reproof:'),src.indexOf('  vrm085-postulation-sync-diagnostic:')).includes(target));
+});
