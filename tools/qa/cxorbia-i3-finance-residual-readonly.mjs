@@ -6,6 +6,22 @@ import crypto from 'node:crypto';
 const s=v=>String(v??'').trim();
 const hash=v=>crypto.createHash('sha256').update(typeof v==='string'?v:JSON.stringify(v)).digest('hex');
 export const FINANCE_COLLECTIONS=Object.freeze({movements:'financialMovements',accounts:'financeAccounts',lots:'paymentLots',reconciliations:'paymentReconciliations'});
+export const IDENTITY_LINK_COLLECTION='shopperIdentityLinks';
+export function identityLinkAssessment(visits,links){
+  const rows=[];
+  for(const visit of visits){
+    const previous=(visit.priorReconciliations||[]).filter(r=>s(r.shopperId)&&s(r.shopperId)!==s(visit.shopperId));
+    if(!previous.length)continue;
+    const possible=links.filter(link=>{
+      const aliases=[link.canonicalShopperId,link.sourceIdentityKey,...(Array.isArray(link.sourceIdentityAliases)?link.sourceIdentityAliases:[]),...(Array.isArray(link.sourceAliases)?link.sourceAliases:[]),...(Array.isArray(link.aliases)?link.aliases:[])].map(s);
+      return aliases.includes(s(visit.shopperId))&&previous.some(r=>aliases.includes(s(r.shopperId)));
+    });
+    rows.push({visitId:visit.docId,currentShopperId:visit.shopperId,previousShopperIds:[...new Set(previous.map(r=>r.shopperId))],
+      candidateLinks:possible.map(link=>({docId:link.docId,status:link.status,authorityType:link.authorityType,authorityRef:link.authorityRef,projectScope:link.projectScope,sourceSystem:link.sourceSystem,sourceSafe:link.sourceSafe,periodIndependent:link.periodIndependent})),
+      automaticAdjudication:false});
+  }
+  return rows;
+}
 export function amountOf(row){
   const valid=v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v));
   const a=valid(row.amount)?Number(row.amount):null,m=valid(row.monto)?Number(row.monto):null;
@@ -66,6 +82,7 @@ export function buildFinanceManifest(data,{tenantId,projectId,periodId}){
     advances:{expectedCount:2,candidates,selectedExactIds:[],structurallyScopedIds:candidates.filter(x=>x.scopeExact).map(x=>x.docId),applications,
       warning:'Amount and row count alone do not prove the owner-authorized two advances or bank settlement'},
     september:{visits:september,periodAliasRows:(data.visits||[]).filter(x=>s(x.periodId)!==periodId&&[x.periodId,x.periodKey,x.sourcePeriodKey].some(p=>s(p).includes('2026-09')))},
+    identityLinkAssessment:identityLinkAssessment(september,data.identityLinks||[]),identityLinkRecordsRead:(data.identityLinks||[]).length,
     accounts,lots,reconciliations,movements:movements.filter(x=>!s(x.projectId)||s(x.projectId)===projectId),projectBinding:data.projectBinding||null,integrationMetadata:data.integrationMetadata||[],
     hrAuthorityMode:'PINNED_SEAL_AND_STORED_FIELDS_ONLY',freshExternalHrVerified:false,providerCommandsExecuted:0,newDomainMatches:0,
     writes:{firestore:0,auth:0,hr:0,finance:0,bank:0},production:false};
@@ -92,7 +109,8 @@ const fields={
  accounts:['id','tenantId','projectId','periodId','kind','country','pais','currency','moneda','amount','monto','balance','saldo','status','estado','sourceMovementId','lastMovementId','visitId','visitaId','updatedAt'],
  lots:['id','tenantId','projectId','periodId','country','pais','currency','moneda','visitIds','status','estado','paymentState','paymentSourceRef','externalPaymentConfirmed','createdAt','updatedAt'],
  reconciliations:['id','tenantId','projectId','periodId','visitId','durableVisitId','hrRowId','shopperId','country','currency','status','paymentState','paymentStatus','paymentConfirmed','externalPaymentConfirmed','historicalReconciliationConfirmed','reconciliationSourceRef','historicalPaymentAuthorityRef','sourceRef','sourceRevision','paymentDate','paymentAmount','amount','amountStatus','reconciliationBatchId','supersededBy','supersededAt','updatedAt'],
- visits:['id','visitId','hrRowId','shopperId','tenantId','projectId','periodId','periodKey','sourcePeriodKey','pais','country','currency','moneda','estado','status','canonicalState','canonicalFacets','submittedAt','hrManaged.honorario','honorario','honorarioSource','boleto','comboAmt','reimbursementSourceComplete','reimbursementPartial','financialSourceStatus','financialMatch','paymentState','paymentConfirmed','externalPaymentConfirmed','paymentSourceRef','paymentRef','externalPaymentSourceRef','bankProofRef','historicalPaymentAuthorityRef','historicalReconciliationConfirmed','historicalPaymentStatus','historicalPaymentDate','historicalPaymentAmount','historicalPaymentAmountStatus','reconciliationBatchId','reconciliationSourceRef','reconciliationSourceRevision','loteId','lastPaymentCommandId','version','updatedAt']
+ visits:['id','visitId','hrRowId','shopperId','tenantId','projectId','periodId','periodKey','sourcePeriodKey','pais','country','currency','moneda','estado','status','canonicalState','canonicalFacets','submittedAt','hrManaged.honorario','honorario','honorarioSource','boleto','comboAmt','reimbursementSourceComplete','reimbursementPartial','financialSourceStatus','financialMatch','paymentState','paymentConfirmed','externalPaymentConfirmed','paymentSourceRef','paymentRef','externalPaymentSourceRef','bankProofRef','historicalPaymentAuthorityRef','historicalReconciliationConfirmed','historicalPaymentStatus','historicalPaymentDate','historicalPaymentAmount','historicalPaymentAmountStatus','reconciliationBatchId','reconciliationSourceRef','reconciliationSourceRevision','loteId','lastPaymentCommandId','version','updatedAt'],
+ identityLinks:['id','tenantId','projectScope','sourceIdentityAliases','sourceAliases','aliases','sourceIdentityKey','canonicalShopperId','sourceSystem','status','authorityType','authorityRef','periodIndependent','sourceSafe']
 };
 export async function runFinanceResidualReadonly({project,host,out,source,period,env=process.env}){
   if(s(env.FIRESTORE_EMULATOR_HOST))throw Error('ENVIRONMENT_FAILURE:FINANCE_EMULATOR_NOT_LIVE');
@@ -119,6 +137,7 @@ export async function runFinanceResidualReadonly({project,host,out,source,period
   try{
     for(const [name,col] of Object.entries(FINANCE_COLLECTIONS))data[name]=await readCollection(name,tenant.collection(col));
     data.visits=await readCollection('visits',tenant.collection('projects').doc(scope.projectId).collection('visits'));
+    data.identityLinks=await readCollection('identityLinks',tenant.collection(IDENTITY_LINK_COLLECTION));
     const projectRef=tenant.collection('projects').doc(scope.projectId);
     const [pd]=await db.getAll(projectRef,{fieldMask:['id','tenantId','projectId','version','operationalSource.mode','operationalSource.providerType','operationalSource.readPolicy','operationalSource.writePolicy','operationalSource.providerBindingId','operationalSource.integrationSettingId','routeSource.mode','routeSource.writePolicy','routeSource.providerBindingId','routeSource.integrationSettingId']});
     data.projectBinding=pd.exists?{...pd.data(),docId:pd.id,providerUpdateTime:stamp(pd)}:null;
@@ -136,7 +155,7 @@ export async function runFinanceResidualReadonly({project,host,out,source,period
     const publicReceipt={schemaVersion:'cxorbia.i3.finance-residual-public.v1',decision:stable?'PASS_FINANCE_READONLY_CURRENT_MANIFEST':'HOLD_FINANCE_CONCURRENT_DOCUMENT_CHANGE',
       operationKind:'READ_ONLY',sourceSha:source,sourceTree:env.FOCAL_TREE,runId:env.GITHUB_RUN_ID,runAttempt:env.GITHUB_RUN_ATTEMPT,
       encryptedEvidence:'finance-private.json.enc',encryptedEvidenceSha256:hash(JSON.stringify(encrypted)+'\n'),privateEvidenceSha256:encrypted.plainSha256,
-      exactCollections:FINANCE_COLLECTIONS,completeRead:true,sameDocumentsStable:stable,atomicSnapshotClaimed:false,
+      exactCollections:{...FINANCE_COLLECTIONS,identityLinks:IDENTITY_LINK_COLLECTION},completeRead:true,sameDocumentsStable:stable,atomicSnapshotClaimed:false,
       privateDataExposed:false,providerCommandsExecuted:0,freshExternalHrVerified:false,newDomainMatches:0,phaseAComplete:false,
       writes:{firestore:0,auth:0,hr:0,finance:0,bank:0},production:false};
     fs.writeFileSync(path.join(out,'finance-readonly.json'),JSON.stringify(publicReceipt,null,2)+'\n');
