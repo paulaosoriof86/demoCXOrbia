@@ -6410,16 +6410,23 @@ jobs:
       test "$GITHUB_REF_NAME" = recovery/cxorbia-phase-a-20260831
       test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
       test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
-      P=docs/checkpoints/CXORBIA_I3_RUN2382_PAIRED_DEV_CHROME_READBACK_20261110.json
-      test "$(jq -r '.decision' "$P")" = PASS_EXACT_DEV_MATERIALIZATION__HOLD_INTEGRAL_PHASE_A
-      test "$(jq -r '.providerReceipt.production' "$P")" = false
-      SOURCE="$(jq -r '.productSourceSha' "$P")"
-      TREE="$(jq -r '.productSourceTree' "$P")"
-      HR="$(jq -r '.providerReceipt.hrRevision' "$P")"
+      # I3 Package A: source/tree/HR derived from the single RUN2587 served DEV receipt.
+      # The old RUN2382 certificate must remain historical, never a live pointer.
+      P=docs/checkpoints/CXORBIA_I3_RUN2587_PRIVATE_HR_BINDING_DEV_READBACK_20261117.json
+      test "$(jq -r '.decision' "$P")" = PASS_RUN2587_PRIVATE_HR_BINDING_EXACT_DEV_CONSUMED_C3_PENDING
+      test "$(jq -r '.production' "$P")" = false
+      test "$(jq -r '.i4Authorized' "$P")" = false
+      test "$(jq -r '.materialization.runId' "$P")" = 44030019174
+      test "$(jq -r '.materialization.sourceHostedExact' "$P")" = true
+      test "$(jq -r '.materialization.runtimeTrafficExact' "$P")" = true
+      SOURCE="$(jq -r '.sourceSha' "$P")"
+      TREE="$(jq -r '.sourceTree' "$P")"
+      HR="$(jq -r '.materialization.hrRevision' "$P")"
       test "$SOURCE" = "$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
       test "$TREE" = "$(jq -r '.productTreeAuthority' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
       test "$(git rev-parse "$SOURCE^{tree}")" = "$TREE"
-      test "$HR" = "$(jq -r '.latestRun2382DevAndRun2385FocalProviderContinuity.focalProviderQa.hrRevisionUnchanged' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)"
+      test "$SOURCE" = "$(jq -r '.currentMaterialization.sourceSha' RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V361.json)"
+      test "$HR" = "$(jq -r '.currentMaterialization.hrRevision' RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V361.json)"
       git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules
       node --check firebase/auth-dev-tools/cxorbia-i3-two-keepers-admin-shopper-readonly-e2e.mjs
       echo "CXORBIA_PRODUCT_SOURCE_SHA=$SOURCE" >> "$GITHUB_ENV"

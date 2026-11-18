@@ -1,0 +1,130 @@
+{
+  "schemaVersion": "cxorbia.i3.package-a-closure-continuity-lock.v1",
+  "id": "CXORBIA-I3-PAQUETE-A-20261118-R1",
+  "dateLocal": "2026-11-18",
+  "timezone": "America/Guatemala",
+  "iteration": "I3",
+  "state": "HOLD_PACKAGE_A_IN_PROGRESS",
+  "decision": "FROZEN_CONTINUE_UNTIL_CLOSED",
+  "supersedesMethodology": false,
+  "controlParentHead": "8b17d3909f0e1b7b8d08e3954fc663ee5f6acc5e",
+  "sourceOfTruth": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "productSourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+    "productSourceTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
+    "materializationRunId": 44030019174,
+    "devHostingVersion": "sites/cxorbia-backend-dev/versions/4e615718c8ab4a03",
+    "devRuntimeRevision": "cxorbia-live-hr-dev-00380-s9m",
+    "devHrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V361.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V688_2026-11-17.json",
+    "production": "DO_NOT_TOUCH",
+    "i4Authorized": false
+  },
+  "frozenDecisions": [
+    "one repository/branch/product source/manifest/build/certified artifact",
+    "I3 HOLD until 21 MATCH; preserve six existing MATCH",
+    "no production until I3 GO plus exact I4 authorization",
+    "source-only and DOM presence never become functional or human accreditation",
+    "no new candidate, overlay, transporter, data reimport, or second Firebase product",
+    "P0-only precise owner correction and exact DEV materialization/readback",
+    "one package until closed, carry exact receipt to next turn",
+    "B14 external HR writes need authorized isolated real fixture, remote ACK/replay; finance writes fail closed without proof"
+  ],
+  "packages": [
+    {
+      "order": 1,
+      "id": "A",
+      "domains": [
+        "auth-protected-data-runtime",
+        "base-router-shell-cache",
+        "core-config-data-router-permissions",
+        "human-runtime-domain-consistency"
+      ],
+      "criteria": "Same-artifact Admin+Shopper E2E, cold/warm routing, role/project/period isolation, negative authorization, human acceptance"
+    },
+    {
+      "order": 2,
+      "id": "B",
+      "domains": [
+        "certifications",
+        "client-portal-reportkit",
+        "documents-resources",
+        "questionnaire-shopper",
+        "shoppers-mi-visitas-profile"
+      ],
+      "criteria": "Role/CRUD/provider ACK/reload, no duplicate, relevant human acceptance"
+    },
+    {
+      "order": 3,
+      "id": "C",
+      "domains": [
+        "canonical-hr-state-adapters",
+        "dashboard-operation",
+        "persistence-command-ack-boundary",
+        "projects-periods-hr-source-wizard-multiproject",
+        "visits-review-postulations-reservations"
+      ],
+      "criteria": "Independent same HR revision and isolated real provider ACK, replay/conflicts"
+    },
+    {
+      "order": 4,
+      "id": "D",
+      "domains": [
+        "finance-core-liquidation-costs"
+      ],
+      "criteria": "Authenticated payment/identity authority, idempotent receipts and reconciliation with separate bank truth"
+    }
+  ],
+  "baseline": {
+    "strictMatch": 6,
+    "total": 21,
+    "sourceDevReady": 21,
+    "gate20": "HOLD",
+    "gate21": "HOLD"
+  },
+  "newEvidence": {
+    "chromeBrowser": "Chrome",
+    "shopperVisibleOwner": "Julissa Flores",
+    "consistentAcross": [
+      "sidebar",
+      "Mi Día",
+      "Mi Perfil"
+    ],
+    "historyRows": 10,
+    "paidConfirmedVisible": 7,
+    "shopperRoutes": [
+      "Mis Visitas",
+      "Reservas & Asignación",
+      "Academia",
+      "Certificación",
+      "Recursos del proyecto",
+      "Mis Beneficios",
+      "Mis Reportes",
+      "Visitas Disponibles"
+    ],
+    "routeNavigationPassCount": 8,
+    "visibleErrorCount": 0,
+    "noWrites": true,
+    "limitations": [
+      "one shopper session only",
+      "not Admin or role-negative readback",
+      "no independent HR revision read"
+    ]
+  },
+  "boundedFix": {
+    "class": "RELEASE_COMPOSITION_FAILURE",
+    "owner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml::i3-keeper-role-e2e-readonly",
+    "before": "stale RUN2382 source/tree/HR pointer",
+    "after": "single RUN2587 exact served DEV receipt verified against descriptor and V361",
+    "productFilesChanged": 0,
+    "trigger": "[i3-keeper-role-e2e-readonly]"
+  },
+  "continuation": {
+    "currentPackage": "A",
+    "nextExactAction": "Inspect role E2E run on exact RUN2587 DEV. If PASS, credit only its exact cases; prove remaining negatives and human, then promote accurately. If FAIL, classify its concrete owner, remediate within Package A. Preserve source and production.",
+    "nextPackageOnClosure": "B then C then D. Gate20 and Gate21 after all P0 and human acceptance.",
+    "newMatchAtFreeze": 0
+  }
+}
