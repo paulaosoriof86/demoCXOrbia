@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import './cxorbia-i3-c3-rootfix-spec.test.mjs';
 import {evaluateTerminalModuleTruth} from './cxorbia-i3-c3-finalize-module-truth.mjs';
 import {validReadonlyReceipt} from './cxorbia-i3-tenant-readonly-acceptance.test.mjs';
 const d=JSON.parse(fs.readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8'));
