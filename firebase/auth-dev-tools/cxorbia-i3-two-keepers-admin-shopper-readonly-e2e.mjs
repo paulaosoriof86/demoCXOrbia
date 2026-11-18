@@ -28,6 +28,7 @@ const cases=[
 const result={schemaVersion:'cxorbia.i3.two-keepers.admin-shopper-readonly-e2e.v1',
   iteration:'I3',gate:'HOLD',sourceSha:SOURCE,expectedHrRevision:EXPECTED_HR,
   environment:PROJECT,projectId:PROGRAM,decision:'HOLD_NOT_EXECUTED',
+  activeHrRevision:null,hrRevisionChangedSinceDevSeal:null,
   admin:{},shoppers:[],checks:[],roleProof:{decision:'HOLD_NOT_RUN',admin:false,shopperCases:[]},
   sessionReadinessFailures:[],pdfComparison:{decision:'HOLD_NOT_RUN',sites:[]},
   safety:{providerCommands:0,directAuthWrites:0,directFirestoreWrites:0,
@@ -41,7 +42,7 @@ const check=(ok,code,details={})=>{
 const authUrl=ROOT+'/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV'+
   '&cxProjectId='+PROGRAM+'&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV'+
   '&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV';
-let browser;
+let browser,runHrRevision='';
 const shortError=e=>{
   const s=str(e?.message||e),known=s.match(/(?:SOURCE_FAILURE|MAPPING_FAILURE|PROVIDER_FAILURE|PERSISTENCE_FAILURE|AUTH_FAILURE|FUNCTIONAL_DEFECT|VISUAL_DEFECT|RELEASE_COMPOSITION_FAILURE|ENVIRONMENT_FAILURE):[A-Z0-9_]+/);
   return known?known[0]:/timeout/i.test(s)?'ENVIRONMENT_FAILURE:E2E_TIMEOUT':
@@ -75,13 +76,22 @@ async function signed(auth,member,role,root=ROOT){
     return window.firebase?.auth?.()?.currentUser?.uid===uid &&
       ctx.authenticated===true && (role==='admin'?['admin','super'].includes(value):value==='shopper') &&
       window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true &&
-      String(cx?.data?.previewMeta?.sourceRevision||'')===revision;
-  },{uid:member.uid,revision:EXPECTED_HR,role},{timeout:120000});
+      /^[a-f0-9]{64}$/.test(String(cx?.data?.previewMeta?.sourceRevision||'')) &&
+      String(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.sourceRevision||'')===String(cx?.data?.previewMeta?.sourceRevision||'') &&
+      (!revision||String(cx?.data?.previewMeta?.sourceRevision||'')===revision);
+  },{uid:member.uid,revision:runHrRevision,role},{timeout:120000});
+  const liveRevision=await page.evaluate(()=>String(window.CX?.data?.previewMeta?.sourceRevision||''));
+  if(!runHrRevision){
+    if(role!=='admin'||root!==ROOT)throw Error('MAPPING_FAILURE:RUN_HR_REVISION_MUST_START_WITH_ADMIN');
+    runHrRevision=liveRevision;
+    result.activeHrRevision=liveRevision;
+    result.hrRevisionChangedSinceDevSeal=liveRevision!==EXPECTED_HR;
+  }
   return {context,page};
   }catch(error){
     let observed={};
     try{
-      observed=await page.evaluate(({uid,revision})=>{
+      observed=await page.evaluate(({uid,revision,historicalRevision})=>{
         const ctx=window.CX?.backendAuth?.context?.()||{};
         const currentRevision=String(window.CX?.data?.previewMeta?.sourceRevision||'');
         return {documentReady:document.readyState,authSdkReady:!!window.firebase?.auth,
@@ -90,8 +100,9 @@ async function signed(auth,member,role,root=ROOT){
           hrApplied:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,
           observedHrRevision:/^[a-f0-9]{64}$/.test(currentRevision)?currentRevision:'UNSET_OR_INVALID',
           observedHrRevisionLength:currentRevision.length,
-          hrRevisionMatches:currentRevision===revision};
-      },{uid:member.uid,revision:EXPECTED_HR});
+          hrRevisionMatches:currentRevision===revision,
+          historicalSealRevisionMatches:currentRevision===historicalRevision};
+      },{uid:member.uid,revision:runHrRevision||EXPECTED_HR,historicalRevision:EXPECTED_HR});
     }catch{}
     result.sessionReadinessFailures.push({
       origin:root===ROOT?'CANONICAL_WEB_APP':'FIREBASEAPP_ALIAS',role,stage,
