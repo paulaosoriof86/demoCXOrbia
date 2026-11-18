@@ -33706,7 +33706,7 @@
   },
   "currentTruth": {
     "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261118-V362.json",
-    "moduleTruthGitBlob": "d7dfe440a5fbe85f1ddb9e7996d0523856cf2faf",
+    "moduleTruthGitBlob": "f2a6cb6c4cc7c024270e00fe30db799b03885fa3",
     "productSourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
     "productTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
     "moduleTruthCurrent": true,
@@ -57329,7 +57329,7 @@
     "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2606_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E_20261118.json",
     "receiptBlob": "6e235a78ec05d6baa5ee7902749864e59c506298",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261118-V362.json",
-    "matrixBlob": "d7dfe440a5fbe85f1ddb9e7996d0523856cf2faf",
+    "matrixBlob": "f2a6cb6c4cc7c024270e00fe30db799b03885fa3",
     "scope": "SEVEN_DOMAIN_BOUND_FOCAL_CLAUSES_NO_FULL_DOMAIN_PROMOTION",
     "matchBefore": 6,
     "matchAfter": 6,

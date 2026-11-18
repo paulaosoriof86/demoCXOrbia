@@ -225,7 +225,7 @@
   "productTreeAuthority": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
   "predecessorProductSourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V689_2026-11-18.json",
-  "findingsLedgerExpectedGitBlob": "9d3e5a1d61027a1dadc6beffb823376de961e168",
+  "findingsLedgerExpectedGitBlob": "1b0e2727e7125645cc36aa548b863bb00fe8e76d",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -4434,7 +4434,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "d7dfe440a5fbe85f1ddb9e7996d0523856cf2faf",
+  "moduleTruthExpectedGitBlob": "f2a6cb6c4cc7c024270e00fe30db799b03885fa3",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -20090,11 +20090,11 @@
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
       "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261118-V362.json",
-      "gitBlob": "d7dfe440a5fbe85f1ddb9e7996d0523856cf2faf"
+      "gitBlob": "f2a6cb6c4cc7c024270e00fe30db799b03885fa3"
     },
     "ledger": {
       "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V689_2026-11-18.json",
-      "gitBlob": "9d3e5a1d61027a1dadc6beffb823376de961e168"
+      "gitBlob": "1b0e2727e7125645cc36aa548b863bb00fe8e76d"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
@@ -33523,9 +33523,9 @@
     "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2606_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E_20261118.json",
     "receiptBlob": "6e235a78ec05d6baa5ee7902749864e59c506298",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261118-V362.json",
-    "matrixBlob": "d7dfe440a5fbe85f1ddb9e7996d0523856cf2faf",
+    "matrixBlob": "f2a6cb6c4cc7c024270e00fe30db799b03885fa3",
     "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V689_2026-11-18.json",
-    "ledgerBlob": "9d3e5a1d61027a1dadc6beffb823376de961e168",
+    "ledgerBlob": "1b0e2727e7125645cc36aa548b863bb00fe8e76d",
     "scope": "SCOPED_ONLY_NO_NEW_DOMAIN",
     "matchDomains": 6,
     "phaseAState": "HOLD",

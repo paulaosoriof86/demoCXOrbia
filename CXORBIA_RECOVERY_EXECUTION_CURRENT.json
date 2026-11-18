@@ -419,7 +419,7 @@
         "differentDenominator": true,
         "evidence": {
           "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261118-V362.json",
-          "gitBlob": "d7dfe440a5fbe85f1ddb9e7996d0523856cf2faf",
+          "gitBlob": "f2a6cb6c4cc7c024270e00fe30db799b03885fa3",
           "runId": 44034333358,
           "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
           "scope": "SIX_COMPLETE_DOMAINS_BENEFITS_RUN2588_PRESERVED__RUN2606_ROLE_PDF_SCOPED_EVIDENCE_ADDED_NO_FULL_DOMAIN_PROMOTION"
@@ -2288,7 +2288,7 @@
   },
   "moduleTruthAuthority": {
     "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261118-V362.json",
-    "gitBlob": "d7dfe440a5fbe85f1ddb9e7996d0523856cf2faf"
+    "gitBlob": "f2a6cb6c4cc7c024270e00fe30db799b03885fa3"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -4289,7 +4289,7 @@
   "activeShockModuleTruth": {
     "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261118-V362.json",
-    "matrixBlob": "d7dfe440a5fbe85f1ddb9e7996d0523856cf2faf",
+    "matrixBlob": "f2a6cb6c4cc7c024270e00fe30db799b03885fa3",
     "classificationCounts": {
       "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E": 3,
       "MATCH": 6,
@@ -6248,11 +6248,11 @@
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
       "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261118-V362.json",
-      "gitBlob": "d7dfe440a5fbe85f1ddb9e7996d0523856cf2faf"
+      "gitBlob": "f2a6cb6c4cc7c024270e00fe30db799b03885fa3"
     },
     "ledger": {
       "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V689_2026-11-18.json",
-      "gitBlob": "9d3e5a1d61027a1dadc6beffb823376de961e168"
+      "gitBlob": "1b0e2727e7125645cc36aa548b863bb00fe8e76d"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
@@ -7195,7 +7195,7 @@
     "production": false
   },
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V689_2026-11-18.json",
-  "findingsLedgerExpectedGitBlob": "9d3e5a1d61027a1dadc6beffb823376de961e168",
+  "findingsLedgerExpectedGitBlob": "1b0e2727e7125645cc36aa548b863bb00fe8e76d",
   "nextFindingId": "VRM-360",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -10809,7 +10809,7 @@
       "production": false
     }
   },
-  "moduleTruthExpectedGitBlob": "d7dfe440a5fbe85f1ddb9e7996d0523856cf2faf",
+  "moduleTruthExpectedGitBlob": "f2a6cb6c4cc7c024270e00fe30db799b03885fa3",
   "d08AcademyDispatchSourceProof": {
     "path": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_DISPATCH_SOURCE_PROOF_20261107.json",
     "gitBlob": "2ad9d960cb958e84368cbbd70a7e9f2fb7864d3f",
@@ -24313,6 +24313,6 @@
     "humanApprovalsUnchanged": true,
     "noProduction": true,
     "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V689_2026-11-18.json",
-    "ledgerBlob": "9d3e5a1d61027a1dadc6beffb823376de961e168"
+    "ledgerBlob": "1b0e2727e7125645cc36aa548b863bb00fe8e76d"
   }
 }

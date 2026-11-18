@@ -39129,7 +39129,7 @@
     "phaseAComplete": false,
     "i4Authorized": false
   },
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V688_2026-11-17.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V689_2026-11-18.json",
   "qaCurrentFinalReadback": {
     "findingId": "VRM-352",
     "classification": "PROVIDER_FAILURE",
